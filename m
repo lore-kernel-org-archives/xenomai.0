@@ -1,13 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: FW: is memory locking per core necessary?
-Date: Fri, 15 Jan 2021 12:15:57 +0000
-Message-ID: <DB8PR05MB59154131C6E24BBBD60FB152F6A70@DB8PR05MB5915.eurprd05.prod.outlook.com>
-References: <DB8PR05MB59158B5B0C6DB849A7E75705F6A70@DB8PR05MB5915.eurprd05.prod.outlook.com>
-In-Reply-To: <DB8PR05MB59158B5B0C6DB849A7E75705F6A70@DB8PR05MB5915.eurprd05.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <20210115011639.15390-1-hongzhan.chen@intel.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH V2 1/8] dovetail/pipeline: implement out-of-band irq
+ management and handling
+In-reply-to: <20210115011639.15390-1-hongzhan.chen@intel.com>
+Date: Sat, 16 Jan 2021 12:38:22 +0100
+Message-ID: <877dodt8lt.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,131 +15,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
-I originally had the Xenomai thread tied to another CPU-Core, hence the sub=
-ject.
-The issue happens also if all threads are tied to Core #0.
 
-So the question should read: is memory locking per *thread* necessary?
+hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-> -----Original Message-----
-> From: Lange Norbert
-> Sent: Freitag, 15. J=E4nner 2021 13:14
-> To: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
-> Subject: is memory locking per core necessary?
+> implement oob irq request and free and post for both
+> TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
 >
-> Hello,
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 >
-> I am trying to track down some spurios relaxes.
->
-> What happens is that I:
-> -   cobalt_init calls  mlockall(MCL_CURRENT | MCL_FUTURE);
-> -   allocate and initialize some data in the heap area
-> -   spawn the xenomai-thread
-> -   wait for notification from the xenomai-thread (so that I know, any
-> initialization there is done)
-> -   call mlockall(MCL_CURRENT | MCL_FUTURE) once more
-> -   notify the xenomai-thread (only now the real work starts)
->
-> Then the Xenomai thread will have spurios relaxes when writing data in th=
-e heap
-> or bss (reads seem to be fine).
-> I am a bit confused why this happens, adding a mlockall(MCL_CURRENT |
-> MCL_FUTURE) in the Xenomai thread fixes the issue.
-> Note that  the locking should happen even before spawning the threads.
->
-> Message I get is:
-> Jan 15 12:05:19 buildroot kernel: [Xenomai] switching realtime_packet to
-> secondary mode after exception #14 from user-space at 0x40f3ed (pid 1383)
-> Code is always a store to heap or bss.
->
-> X86_64 + 4.19.152-cip37-xeno15-static + glibc 2.28
->
-> /proc/pid/maps:
-> 00429000-00435000 rw-p 00000000 00:00 0
-> 014b5000-014f8000 rw-p 00000000 00:00 0                                  =
-[heap]
->
-> /proc/pid/smaps:
-> 00429000-00435000 rw-p 00000000 00:00 0
-> Size:                 48 kB
-> KernelPageSize:        4 kB
-> MMUPageSize:           4 kB
-> Rss:                  48 kB
-> Pss:                  48 kB
-> Shared_Clean:          0 kB
-> Shared_Dirty:          0 kB
-> Private_Clean:         0 kB
-> Private_Dirty:        48 kB
-> Referenced:           48 kB
-> Anonymous:            48 kB
-> LazyFree:              0 kB
-> AnonHugePages:         0 kB
-> ShmemPmdMapped:        0 kB
-> Shared_Hugetlb:        0 kB
-> Private_Hugetlb:       0 kB
-> Swap:                  0 kB
-> SwapPss:               0 kB
-> Locked:               48 kB
-> THPeligible:    0
-> VmFlags: rd wr mr mw me lo ac
-> 014b5000-014f8000 rw-p 00000000 00:00 0                                  =
-[heap]
-> Size:                268 kB
-> KernelPageSize:        4 kB
-> MMUPageSize:           4 kB
-> Rss:                 268 kB
-> Pss:                 268 kB
-> Shared_Clean:          0 kB
-> Shared_Dirty:          0 kB
-> Private_Clean:         0 kB
-> Private_Dirty:       268 kB
-> Referenced:          268 kB
-> Anonymous:           268 kB
-> LazyFree:              0 kB
-> AnonHugePages:         0 kB
-> ShmemPmdMapped:        0 kB
-> Shared_Hugetlb:        0 kB
-> Private_Hugetlb:       0 kB
-> Swap:                  0 kB
-> SwapPss:               0 kB
-> Locked:              268 kB
-> THPeligible:    0
-> VmFlags: rd wr mr mw me lo ac
->
-> Mit besten Gr=FC=DFen / Kind regards
->
-> NORBERT LANGE
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> index 23c4a2c18..13fbd7942 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> @@ -8,9 +8,12 @@
+>  #include <linux/irq_pipeline.h>
+>  #include <cobalt/kernel/assert.h>
+>  #include <asm/xenomai/features.h>
+> +#include <pipeline/machine.h>
+>  
+>  typedef unsigned long spl_t;
+>  
+> +void xnintr_core_clock_handler(void);
+> +
+>  /*
+>   * We only keep the LSB when testing in SMP mode in order to strip off
+>   * the recursion marker (0x2) the nklock may store there.
+> @@ -30,18 +33,28 @@ typedef unsigned long spl_t;
+>  
+>  #ifdef CONFIG_SMP
+>  
+> +static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
+> +{
+> +
+> +	/* Will reschedule from irq_exit_pipeline. */
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static inline int pipeline_request_resched_ipi(void (*handler)(void))
+>  {
+>  	/* Trap the out-of-band rescheduling interrupt. */
+> -	TODO();
+> -
+> -	return 0;
+> +	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+> +			reschedule_interrupt_handler,
+> +			IRQF_OOB,
+> +			"Xenomai reschedule",
+> +			&cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_free_resched_ipi(void)
+>  {
+>  	/* Release the out-of-band rescheduling interrupt. */
+> -	TODO();
+> +	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+> @@ -50,21 +63,29 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+>  	 * Trigger the out-of-band rescheduling interrupt on remote
+>  	 * CPU(s).
+>  	 */
+> -	TODO();
+> +	irq_send_oob_ipi(RESCHEDULE_OOB_IPI, dest);
+> +}
+> +
+> +static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
+> +{
+> +	xnintr_core_clock_handler();
+> +
+> +	return IRQ_HANDLED;
+>  }
+>  
+>  static inline int pipeline_request_timer_ipi(void (*handler)(void))
+>  {
+>  	/* Trap the out-of-band timer interrupt. */
+> -	TODO();
+> -
+> -	return 0;
+> +	return __request_percpu_irq(TIMER_OOB_IPI,
+> +			timer_ipi_interrupt_handler,
+> +			IRQF_OOB, "Xenomai timer IPI",
+> +			&cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_free_timer_ipi(void)
+>  {
+>  	/* Release the out-of-band timer interrupt. */
+> -	TODO();
+> +	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+> @@ -72,7 +93,7 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+>  	/*
+>  	 * Trigger the out-of-band timer interrupt on remote CPU(s).
+>  	 */
+> -	TODO();
+> +	irq_send_oob_ipi(TIMER_OOB_IPI, dest);
+>  }
+>  
+>  #endif
 
-________________________________
+Merged, fixing up the short log on the fly, in order to align on the
+matching I-pipe patch as follows:
 
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
+"dovetail/irq: dovetail: implement out-of-band irq management and
+handling"
 
-ANDRITZ HYDRO GmbH
+Thanks,
 
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
+-- 
+Philippe.
 
