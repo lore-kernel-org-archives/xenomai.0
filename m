@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [RFC] Drop support for x86_32 from Xenomai 3.2
-Date: Sun, 17 Jan 2021 18:26:30 +0100
-Message-ID: <874kjffpa1.fsf@xenomai.org>
+Subject: [RFC] Drop support for ARM OABI from Xenomai 3.2
+Date: Sun, 17 Jan 2021 18:32:46 +0100
+Message-ID: <87wnwbeaf5.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,16 +15,16 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 
-The I-pipe and Cobalt ports to x86_32 received neither careful
-maintenance nor testing for ages. In addition, Dovetail does not support
-the 32bit legacy mode, and there is no plan to do so. Therefore I
-recommend to stop supporting the x86_32 architecture starting from
-Xenomai 3.2, which echoes what Jan has been saying for quite a while
-about this issue too.
+The old ARM ABI format is dead, however we still have the support bits
+to handle it in both the I-pipe and Cobalt, which - I believe - does not
+make sense anymore. In addition, Dovetail only supports the new EABI
+format, and there is definitely no plan to care about OABI.
 
-If you do care about running Xenomai on this architecture and are
-willing to maintain such a port in the long run, this is definitely the
-right time to make your case, asap.
+Given the burden of maintaining this obsolete code which nobody should
+be using these days, I recommend to drop support for the OABI format
+starting from Xenomai 3.2.
+
+Please comment.
 
 Thanks,
 
