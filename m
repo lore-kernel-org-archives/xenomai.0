@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/4] cobalt/kernel: add abstract inband work submission API
-Date: Sun, 17 Jan 2021 16:11:30 +0100
-Message-Id: <20210117151133.478069-1-rpm@xenomai.org>
+Subject: [PATCH 1/4] cobalt/kernel: pipeline: add abstract synthetic IRQ API
+Date: Sun, 17 Jan 2021 16:25:00 +0100
+Message-Id: <20210117152503.478765-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,57 +16,85 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Provide an abstract interface for triggering work handlers on the
-in-band execution stage (aka "secondary mode" in the old jargon),
-which can be implemented using ipipe_post_root_work() from the I-pipe,
-or as a Dovetail-aware irq_work.
+Add wrappers to create "synthetic IRQs" the I-pipe way (used to be
+called "virtual IRQs" there). Those interrupt channels can only be
+triggered by software, with per-CPU semantics. We use them to schedule
+handlers to be run on the in-band execution stage, meaning "secondary
+mode" in the Cobalt jargon.
 
-No functional change is introduced in the pre-existing code.
+We don't provide for executing handlers on the out-of-band stage,
+because Cobalt does not need this.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../kernel/ipipe/pipeline/inband_work.h       | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/inband_work.h
+ include/cobalt/kernel/ipipe/pipeline/sirq.h | 58 +++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/sirq.h
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/inband_work.h b/include/cobalt/kernel/ipipe/pipeline/inband_work.h
+diff --git a/include/cobalt/kernel/ipipe/pipeline/sirq.h b/include/cobalt/kernel/ipipe/pipeline/sirq.h
 new file mode 100644
-index 000000000..12ef07b00
+index 000000000..7c39244f9
 --- /dev/null
-+++ b/include/cobalt/kernel/ipipe/pipeline/inband_work.h
-@@ -0,0 +1,32 @@
++++ b/include/cobalt/kernel/ipipe/pipeline/sirq.h
+@@ -0,0 +1,58 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
 + *
-+ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
++ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+#ifndef _COBALT_KERNEL_IPIPE_INBAND_WORK_H
-+#define _COBALT_KERNEL_IPIPE_INBAND_WORK_H
++#ifndef _COBALT_KERNEL_IPIPE_SIRQ_H
++#define _COBALT_KERNEL_IPIPE_SIRQ_H
 +
 +#include <linux/ipipe.h>
++#include <pipeline/machine.h>
 +
 +/*
-+ * This field must be named inband_work and appear first in the
-+ * container work struct.
++ * Wrappers to create "synthetic IRQs" the I-pipe way (used to be
++ * called "virtual IRQs" there). Those interrupt channels can only be
++ * triggered by software; they have per-CPU semantics. We use them to
++ * schedule handlers to be run on the in-band execution stage, meaning
++ * "secondary mode" in the Cobalt jargon.
 + */
-+struct pipeline_inband_work {
-+	struct ipipe_work_header work;
-+};
 +
-+#define PIPELINE_INBAND_WORK_INITIALIZER(__work, __handler)		\
-+	{								\
-+		.work = {						\
-+			.size = sizeof(__work),				\
-+			.handler = (void (*)(struct ipipe_work_header *)) \
-+			__handler,					\
-+		},							\
++static inline
++int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
++{
++	int sirq = ipipe_alloc_virq(), ret;
++
++	if (sirq == 0)
++		return -EAGAIN;
++
++	/*
++	 * ipipe_irq_handler_t is close enough to the signature of a
++	 * regular IRQ handler: use the latter in the generic code
++	 * shared with Dovetail.  The extraneous return code will be
++	 * ignored by the I-pipe core.
++	 */
++	ret = ipipe_request_irq(ipipe_root_domain, sirq,
++				(ipipe_irq_handler_t)handler,
++				NULL, NULL);
++	if (ret) {
++		ipipe_free_virq(sirq);
++		return ret;
 +	}
 +
-+#define pipeline_post_inband_work(__work)	\
-+	ipipe_post_work_root(__work, inband_work.work)
++	return sirq;
++}
 +
-+#endif /* !_COBALT_KERNEL_IPIPE_INBAND_WORK_H */
++static inline
++void pipeline_delete_inband_sirq(int sirq)
++{
++	ipipe_free_irq(ipipe_root_domain, sirq);
++	ipipe_free_virq(sirq);
++}
++
++static inline void pipeline_post_sirq(int sirq)
++{
++	ipipe_post_irq_root(sirq);
++}
++
++#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
 -- 
 2.26.2
 
