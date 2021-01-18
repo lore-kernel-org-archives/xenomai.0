@@ -1,13 +1,13 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: [RFC] Drop support for x86_32 from Xenomai 3.2
-Date: Mon, 18 Jan 2021 02:49:51 +0000
-Message-ID: <CO1PR11MB518732B22D8A54FB5F9504A8EEA40@CO1PR11MB5187.namprd11.prod.outlook.com>
+Subject: Re: [RFC] Drop support for x86_32 from Xenomai 3.2
 References: <874kjffpa1.fsf@xenomai.org>
-In-Reply-To: <874kjffpa1.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7f2c3ca2-259e-2c26-536a-67787d8430ea@siemens.com>
+Date: Mon, 18 Jan 2021 15:07:28 +0100
 MIME-Version: 1.0
+In-Reply-To: <874kjffpa1.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-DQoNCj4NCj5UaGUgSS1waXBlIGFuZCBDb2JhbHQgcG9ydHMgdG8geDg2XzMyIHJlY2VpdmVkIG5l
-aXRoZXIgY2FyZWZ1bA0KPm1haW50ZW5hbmNlIG5vciB0ZXN0aW5nIGZvciBhZ2VzLiBJbiBhZGRp
-dGlvbiwgRG92ZXRhaWwgZG9lcyBub3Qgc3VwcG9ydA0KPnRoZSAzMmJpdCBsZWdhY3kgbW9kZSwg
-YW5kIHRoZXJlIGlzIG5vIHBsYW4gdG8gZG8gc28uIFRoZXJlZm9yZSBJDQo+cmVjb21tZW5kIHRv
-IHN0b3Agc3VwcG9ydGluZyB0aGUgeDg2XzMyIGFyY2hpdGVjdHVyZSBzdGFydGluZyBmcm9tDQo+
-WGVub21haSAzLjIsIHdoaWNoIGVjaG9lcyB3aGF0IEphbiBoYXMgYmVlbiBzYXlpbmcgZm9yIHF1
-aXRlIGEgd2hpbGUNCj5hYm91dCB0aGlzIGlzc3VlIHRvby4NCj4NCj5JZiB5b3UgZG8gY2FyZSBh
-Ym91dCBydW5uaW5nIFhlbm9tYWkgb24gdGhpcyBhcmNoaXRlY3R1cmUgYW5kIGFyZQ0KPndpbGxp
-bmcgdG8gbWFpbnRhaW4gc3VjaCBhIHBvcnQgaW4gdGhlIGxvbmcgcnVuLCB0aGlzIGlzIGRlZmlu
-aXRlbHkgdGhlDQo+cmlnaHQgdGltZSB0byBtYWtlIHlvdXIgY2FzZSwgYXNhcC4NCj4NCj5UaGFu
-a3MsDQo+DQo+LS0NCj5QaGlsaXBwZS4NCg0KQWdyZWUsICBwbGVudHkgb2YgTGludXggZGlzdHJv
-IGRyb3BwZWQgeDg2XzMyIHllYXJzIGFnby4NCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRl
-bCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0K
+On 17.01.21 18:26, Philippe Gerum wrote:
+> 
+> The I-pipe and Cobalt ports to x86_32 received neither careful
+> maintenance nor testing for ages. In addition, Dovetail does not support
+> the 32bit legacy mode, and there is no plan to do so. Therefore I
+> recommend to stop supporting the x86_32 architecture starting from
+> Xenomai 3.2, which echoes what Jan has been saying for quite a while
+> about this issue too.
+> 
+> If you do care about running Xenomai on this architecture and are
+> willing to maintain such a port in the long run, this is definitely the
+> right time to make your case, asap.
+> 
+
+Just to clarify: This affects the host kernel, not 32-bit userland
+(compat), right? The latter is still a must-have in several applications
+here, and I think beyond as well.
+
+BTW, we should also deprecate the x32 ABI.
+
+Jan
 
