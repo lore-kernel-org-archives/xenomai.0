@@ -1,15 +1,12 @@
-Subject: Re: [PATCH 4/4] cobalt/select: pipeline: convert to abstract
- synthetic IRQ API
-References: <20210117152503.478765-1-rpm@xenomai.org>
- <20210117152503.478765-4-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5d0a902d-7f32-e6b4-62bc-6bff98639d4c@siemens.com>
-Date: Tue, 19 Jan 2021 14:55:24 +0100
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <35a5-5ff8a600-5-48dc0d80@255670131>
+Content-Type: text/plain; charset="utf-8"
+Date: Tue, 19 Jan 2021 18:41:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210117152503.478765-4-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <4c80-60071a00-11-743e7c00@26732586>
+Subject: =?utf-8?q?Re=3A?= Weird =?utf-8?q?semaphore=2Ftimeout?= behaviour
+ with gdbserver
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,83 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 17.01.21 16:25, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+Le Vendredi, Janvier 08, 2021 19:35 CET, Fran=C3=A7ois Legal via Xenoma=
+i <xenomai@xenomai.org> a =C3=A9crit: 
+ 
+> Hello,
 > 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/cobalt/select.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
+> Working on ARMv7 with linux 4.4 and xenomai 3.1, I get a strange beha=
+viour when using GDB.
+> There seem to be troubles with threads pending on semaphores, which d=
+o not wake up when sem is posted nor when the timedwait is over.
+> It does not seem to make a problem with all the semaphores on the sof=
+tware, but at program startup, the behaviour is pretty constant.
 > 
-> diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-> index f45905112..bd790affe 100644
-> --- a/kernel/cobalt/select.c
-> +++ b/kernel/cobalt/select.c
-> @@ -23,6 +23,7 @@
->  #include <cobalt/kernel/sched.h>
->  #include <cobalt/kernel/synch.h>
->  #include <cobalt/kernel/select.h>
-> +#include <pipeline/sirq.h>
->  
->  /**
->   * @ingroup cobalt_core
-> @@ -398,12 +399,12 @@ void xnselector_destroy(struct xnselector *selector)
->  
->  	xnlock_get_irqsave(&nklock, s);
->  	list_add_tail(&selector->destroy_link, &selector_list);
-> -	ipipe_post_irq_root(deletion_virq);
-> +	pipeline_post_sirq(deletion_virq);
->  	xnlock_put_irqrestore(&nklock, s);
->  }
->  EXPORT_SYMBOL_GPL(xnselector_destroy);
->  
-> -static void xnselector_destroy_loop(unsigned int virq, void *arg)
-> +static irqreturn_t xnselector_destroy_loop(int virq, void *dev_id)
->  {
->  	struct xnselect_binding *binding, *tmpb;
->  	struct xnselector *selector, *tmps;
-> @@ -438,25 +439,22 @@ static void xnselector_destroy_loop(unsigned int virq, void *arg)
->  	}
->  out:
->  	xnlock_put_irqrestore(&nklock, s);
-> +
-> +	return IRQ_HANDLED;
->  }
->  
->  int xnselect_mount(void)
->  {
-> -	deletion_virq = ipipe_alloc_virq();
-> -	if (deletion_virq == 0)
-> -		return -EBUSY;
-> -
-> -	ipipe_request_irq(ipipe_root_domain,
-> -			deletion_virq,
-> -			xnselector_destroy_loop,
-> -			NULL, NULL);
-> +	deletion_virq = pipeline_create_inband_sirq(xnselector_destroy_loop);
-> +	if (deletion_virq < 0)
-> +		return deletion_virq;
-> +
->  	return 0;
->  }
->  
->  int xnselect_umount(void)
->  {
-> -	ipipe_free_irq(ipipe_root_domain, deletion_virq);
-> -	ipipe_free_virq(deletion_virq);
-> +	pipeline_delete_inband_sirq(deletion_virq);
->  	return 0;
->  }
->  
+> If I start the same program from shell, thread activation works flawl=
+essly.
 > 
+> ANybody can give a hint on this ?
+> 
+> Thanks.
+> 
+> Fran=C3=A7ois
+> 
+> 
+ 
+I've got another case with pulse semaphores with timeout, that outline =
+the same behaviour without gdbserver.
+I've got 2 threads and 2 pulse semaphores. Thread1 (priority 60) succes=
+sively pends (with 30s timeout) on SEM1 then posts SEM2, while thread2 =
+(priority 52) posts SEM1 then pends (forever) on SEM2. Both semaphores =
+are initialized at 0.
+I can see from debug log that Thread1 pends on SEM1, then thread2 posts=
+ SEM1 and pends SEM2, then thread1 posts SEM2, then thread2 posts SEM1 =
+then pends SEM2, then thread1 pends SEM1, then nothing happens anymore.=
+ I thought thread1 should be unblocked (either by thread2 posting SEM1,=
+ or by the 30s timeout) but that never happens.
 
-Thanks, all 4 applied.
+What am I getting wrong here ?
 
-Jan
+Fran=C3=A7ois
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
 
