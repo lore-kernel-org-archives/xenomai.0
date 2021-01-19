@@ -1,11 +1,12 @@
-Subject: Re: [PATCH 1/4] cobalt/kernel: pipeline: add abstract synthetic IRQ
- API
+Subject: Re: [PATCH 4/4] cobalt/select: pipeline: convert to abstract
+ synthetic IRQ API
 References: <20210117152503.478765-1-rpm@xenomai.org>
+ <20210117152503.478765-4-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0db4fe82-6801-91d8-5d45-fb03375ac87c@siemens.com>
-Date: Tue, 19 Jan 2021 14:54:49 +0100
+Message-ID: <5d0a902d-7f32-e6b4-62bc-6bff98639d4c@siemens.com>
+Date: Tue, 19 Jan 2021 14:55:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210117152503.478765-1-rpm@xenomai.org>
+In-Reply-To: <20210117152503.478765-4-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,91 +23,76 @@ To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 On 17.01.21 16:25, Philippe Gerum wrote:
 > From: Philippe Gerum <rpm@xenomai.org>
 > 
-> Add wrappers to create "synthetic IRQs" the I-pipe way (used to be
-> called "virtual IRQs" there). Those interrupt channels can only be
-> triggered by software, with per-CPU semantics. We use them to schedule
-> handlers to be run on the in-band execution stage, meaning "secondary
-> mode" in the Cobalt jargon.
-> 
-> We don't provide for executing handlers on the out-of-band stage,
-> because Cobalt does not need this.
-> 
 > Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->  include/cobalt/kernel/ipipe/pipeline/sirq.h | 58 +++++++++++++++++++++
->  1 file changed, 58 insertions(+)
->  create mode 100644 include/cobalt/kernel/ipipe/pipeline/sirq.h
+>  kernel/cobalt/select.c | 22 ++++++++++------------
+>  1 file changed, 10 insertions(+), 12 deletions(-)
 > 
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/sirq.h b/include/cobalt/kernel/ipipe/pipeline/sirq.h
-> new file mode 100644
-> index 000000000..7c39244f9
-> --- /dev/null
-> +++ b/include/cobalt/kernel/ipipe/pipeline/sirq.h
-> @@ -0,0 +1,58 @@
-> +/*
-> + * SPDX-License-Identifier: GPL-2.0
-> + *
-> + * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
-> + */
+> diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
+> index f45905112..bd790affe 100644
+> --- a/kernel/cobalt/select.c
+> +++ b/kernel/cobalt/select.c
+> @@ -23,6 +23,7 @@
+>  #include <cobalt/kernel/sched.h>
+>  #include <cobalt/kernel/synch.h>
+>  #include <cobalt/kernel/select.h>
+> +#include <pipeline/sirq.h>
+>  
+>  /**
+>   * @ingroup cobalt_core
+> @@ -398,12 +399,12 @@ void xnselector_destroy(struct xnselector *selector)
+>  
+>  	xnlock_get_irqsave(&nklock, s);
+>  	list_add_tail(&selector->destroy_link, &selector_list);
+> -	ipipe_post_irq_root(deletion_virq);
+> +	pipeline_post_sirq(deletion_virq);
+>  	xnlock_put_irqrestore(&nklock, s);
+>  }
+>  EXPORT_SYMBOL_GPL(xnselector_destroy);
+>  
+> -static void xnselector_destroy_loop(unsigned int virq, void *arg)
+> +static irqreturn_t xnselector_destroy_loop(int virq, void *dev_id)
+>  {
+>  	struct xnselect_binding *binding, *tmpb;
+>  	struct xnselector *selector, *tmps;
+> @@ -438,25 +439,22 @@ static void xnselector_destroy_loop(unsigned int virq, void *arg)
+>  	}
+>  out:
+>  	xnlock_put_irqrestore(&nklock, s);
 > +
-> +#ifndef _COBALT_KERNEL_IPIPE_SIRQ_H
-> +#define _COBALT_KERNEL_IPIPE_SIRQ_H
+> +	return IRQ_HANDLED;
+>  }
+>  
+>  int xnselect_mount(void)
+>  {
+> -	deletion_virq = ipipe_alloc_virq();
+> -	if (deletion_virq == 0)
+> -		return -EBUSY;
+> -
+> -	ipipe_request_irq(ipipe_root_domain,
+> -			deletion_virq,
+> -			xnselector_destroy_loop,
+> -			NULL, NULL);
+> +	deletion_virq = pipeline_create_inband_sirq(xnselector_destroy_loop);
+> +	if (deletion_virq < 0)
+> +		return deletion_virq;
 > +
-> +#include <linux/ipipe.h>
-> +#include <pipeline/machine.h>
-> +
-> +/*
-> + * Wrappers to create "synthetic IRQs" the I-pipe way (used to be
-> + * called "virtual IRQs" there). Those interrupt channels can only be
-> + * triggered by software; they have per-CPU semantics. We use them to
-> + * schedule handlers to be run on the in-band execution stage, meaning
-> + * "secondary mode" in the Cobalt jargon.
-> + */
-> +
-> +static inline
-> +int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
-> +{
-> +	int sirq = ipipe_alloc_virq(), ret;
+>  	return 0;
+>  }
+>  
+>  int xnselect_umount(void)
+>  {
+> -	ipipe_free_irq(ipipe_root_domain, deletion_virq);
+> -	ipipe_free_virq(deletion_virq);
+> +	pipeline_delete_inband_sirq(deletion_virq);
+>  	return 0;
+>  }
+>  
+> 
 
-Correct but uncommon style. I've broken that up into two lines.
+Thanks, all 4 applied.
 
 Jan
-
-> +
-> +	if (sirq == 0)
-> +		return -EAGAIN;
-> +
-> +	/*
-> +	 * ipipe_irq_handler_t is close enough to the signature of a
-> +	 * regular IRQ handler: use the latter in the generic code
-> +	 * shared with Dovetail.  The extraneous return code will be
-> +	 * ignored by the I-pipe core.
-> +	 */
-> +	ret = ipipe_request_irq(ipipe_root_domain, sirq,
-> +				(ipipe_irq_handler_t)handler,
-> +				NULL, NULL);
-> +	if (ret) {
-> +		ipipe_free_virq(sirq);
-> +		return ret;
-> +	}
-> +
-> +	return sirq;
-> +}
-> +
-> +static inline
-> +void pipeline_delete_inband_sirq(int sirq)
-> +{
-> +	ipipe_free_irq(ipipe_root_domain, sirq);
-> +	ipipe_free_virq(sirq);
-> +}
-> +
-> +static inline void pipeline_post_sirq(int sirq)
-> +{
-> +	ipipe_post_irq_root(sirq);
-> +}
-> +
-> +#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
-> 
 
 -- 
 Siemens AG, T RDA IOT
