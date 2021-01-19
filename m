@@ -1,10 +1,10 @@
-Subject: Re: [PATCH Dovetail v2 0/5] Get rid of the APC interface
-References: <20210117150803.477767-1-rpm@xenomai.org>
+Subject: Re: [PATCH 1/4] cobalt/kernel: add abstract inband work submission API
+References: <20210117151133.478069-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f18cd146-2c9e-d62b-1873-6fb191461079@siemens.com>
-Date: Tue, 19 Jan 2021 12:44:59 +0100
+Message-ID: <126ed98f-ee33-6958-d062-d9ae7872860f@siemens.com>
+Date: Tue, 19 Jan 2021 14:46:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210117150803.477767-1-rpm@xenomai.org>
+In-Reply-To: <20210117151133.478069-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,38 +18,65 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 17.01.21 16:07, Philippe Gerum wrote:
+On 17.01.21 16:11, Philippe Gerum wrote:
 > From: Philippe Gerum <rpm@xenomai.org>
 > 
-> This is v2, fixing the header install rule in the wake of the API
-> removal.
+> Provide an abstract interface for triggering work handlers on the
+> in-band execution stage (aka "secondary mode" in the old jargon),
+> which can be implemented using ipipe_post_root_work() from the I-pipe,
+> or as a Dovetail-aware irq_work.
 > 
-> Philippe Gerum (5):
->   cobalt/pipe: drop dependency on APCs
->   cobalt/registry: drop dependency on APCs
->   cobalt/select: drop dependency on APCs
->   cobalt/machine: drop obsolete APC bits
->   cobalt/apc: drop obsolete APC mechanism
+> No functional change is introduced in the pre-existing code.
 > 
->  include/cobalt/kernel/Makefile.am             |   1 -
->  include/cobalt/kernel/apc.h                   |  32 ---
->  .../cobalt/kernel/ipipe/pipeline/machine.h    |   9 -
->  include/cobalt/kernel/rtdm/driver.h           |   1 -
->  kernel/cobalt/ipipe/Makefile                  |   2 +-
->  kernel/cobalt/ipipe/apc.c                     | 202 ------------------
->  kernel/cobalt/ipipe/init.c                    |  19 --
->  kernel/cobalt/pipe.c                          |  26 ++-
->  kernel/cobalt/procfs.c                        |  42 ----
->  kernel/cobalt/registry.c                      |  30 +--
->  kernel/cobalt/rtdm/core.c                     |   1 -
->  kernel/cobalt/select.c                        |  23 +-
->  12 files changed, 49 insertions(+), 339 deletions(-)
->  delete mode 100644 include/cobalt/kernel/apc.h
->  delete mode 100644 kernel/cobalt/ipipe/apc.c
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  .../kernel/ipipe/pipeline/inband_work.h       | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/inband_work.h
+> 
+> diff --git a/include/cobalt/kernel/ipipe/pipeline/inband_work.h b/include/cobalt/kernel/ipipe/pipeline/inband_work.h
+> new file mode 100644
+> index 000000000..12ef07b00
+> --- /dev/null
+> +++ b/include/cobalt/kernel/ipipe/pipeline/inband_work.h
+> @@ -0,0 +1,32 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + *
+> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
+> + */
+> +
+> +#ifndef _COBALT_KERNEL_IPIPE_INBAND_WORK_H
+> +#define _COBALT_KERNEL_IPIPE_INBAND_WORK_H
+> +
+> +#include <linux/ipipe.h>
+> +
+> +/*
+> + * This field must be named inband_work and appear first in the
+> + * container work struct.
+> + */
+> +struct pipeline_inband_work {
+> +	struct ipipe_work_header work;
+> +};
+> +
+> +#define PIPELINE_INBAND_WORK_INITIALIZER(__work, __handler)		\
+> +	{								\
+> +		.work = {						\
+> +			.size = sizeof(__work),				\
+> +			.handler = (void (*)(struct ipipe_work_header *)) \
+> +			__handler,					\
+> +		},							\
+> +	}
+> +
+> +#define pipeline_post_inband_work(__work)	\
+> +	ipipe_post_work_root(__work, inband_work.work)
+> +
+> +#endif /* !_COBALT_KERNEL_IPIPE_INBAND_WORK_H */
 > 
 
-Thanks, applied to next.
+All 4 applied to next.
 
+Thanks,
 Jan
 
 -- 
