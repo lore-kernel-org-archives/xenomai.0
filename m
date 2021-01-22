@@ -1,7 +1,8 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH V2 4/5] cobalt/timer: pipeline: abstract signal test of XNTSTOP
-Date: Thu, 21 Jan 2021 21:12:39 -0500
-Message-Id: <20210122021240.18768-4-hongzhan.chen@intel.com>
+Subject: [PATCH V2 5/5] dovetail/tick: pipeline: implement
+ pipeline_must_force_program_tick
+Date: Thu, 21 Jan 2021 21:12:40 -0500
+Message-Id: <20210122021240.18768-5-hongzhan.chen@intel.com>
 In-Reply-To: <20210122021240.18768-1-hongzhan.chen@intel.com>
 References: <20210122021240.18768-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,81 +15,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-It adds a way to force the timer management code to reprogram the
-hardware on option, to make the real device controlled by the proxy
-tick again as it leaves the ONESHOT_STOPPED mode. The I-pipe does not
-require any further action in this case, leading to a nop.
+Force the next tick to be programmed in the hardware as a result of
+leaving the ONESHOT_STOPPED
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/tick.h b/include/cobalt/kernel/ipipe/pipeline/tick.h
-index 409581a3c..41347f7b1 100644
---- a/include/cobalt/kernel/ipipe/pipeline/tick.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/tick.h
-@@ -9,4 +9,10 @@ int pipeline_install_tick_proxy(void);
+diff --git a/include/cobalt/kernel/dovetail/pipeline/tick.h b/include/cobalt/kernel/dovetail/pipeline/tick.h
+index 409581a3c..8ac4760ec 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/tick.h
++++ b/include/cobalt/kernel/dovetail/pipeline/tick.h
+@@ -9,4 +9,8 @@ int pipeline_install_tick_proxy(void);
  
  void pipeline_uninstall_tick_proxy(void);
  
 +struct xnsched;
-+static inline bool pipeline_must_force_program_tick(struct xnsched *sched)
-+{
-+	return false;
-+}
++
++inline bool pipeline_must_force_program_tick(struct xnsched *sched);
 +
  #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index c13f46ff7..aa24d5442 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -48,6 +48,11 @@
- #define XNINIRQ		0x00004000	/* In IRQ handling context */
- #define XNHDEFER	0x00002000	/* Host tick deferred */
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+index 1b622defb..fc6203667 100644
+--- a/kernel/cobalt/dovetail/tick.c
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -89,6 +89,11 @@ void xn_core_tick(struct clock_event_device *dummy) /* hard irqs off */
+ 	xnintr_core_clock_handler();
+ }
  
-+/*
-+ * Hardware timer is stopped.
-+ */
-+#define XNTSTOP		0x00000800
++inline bool pipeline_must_force_program_tick(struct xnsched *sched)
++{
++	return sched->lflags & XNTSTOP;
++}
 +
- struct xnsched_rt {
- 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
- };
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index bf24e1693..2115b15ef 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -147,7 +147,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
- 	 * or a timer with an earlier timeout date is scheduled,
- 	 * whichever comes first.
- 	 */
--	sched->lflags &= ~(XNHDEFER|XNIDLE);
-+	sched->lflags &= ~(XNHDEFER|XNIDLE|XNTSTOP);
- 	timer = container_of(h, struct xntimer, aplink);
- 	if (unlikely(timer == &sched->htimer)) {
- 		if (xnsched_resched_p(sched) ||
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index f9aa457ce..f667a3878 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -18,6 +18,7 @@
-  * 02111-1307, USA.
-  */
- #include <linux/sched.h>
-+#include <pipeline/tick.h>
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/thread.h>
- #include <cobalt/kernel/timer.h>
-@@ -63,8 +64,10 @@ int xntimer_heading_p(struct xntimer *timer)
- 
- void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
+ static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
  {
-+	struct xnsched *sched = xntimer_sched(timer);
-+
- 	xntimer_enqueue(timer, q);
--	if (xntimer_heading_p(timer)) {
-+	if (pipeline_must_force_program_tick(sched) || xntimer_heading_p(timer)) {
- 		struct xnsched *sched = xntimer_sched(timer);
- 		struct xnclock *clock = xntimer_clock(timer);
- 		if (sched != xnsched_current())
+ 	struct clock_event_device *real_dev;
+@@ -110,7 +115,7 @@ static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
+ 	xnlock_get_irqsave(&nklock, s);
+ 	sched = xnsched_current();
+ 	xntimer_stop(&sched->htimer);
+-	//sched->lflags |= XNTSTOP;
++	sched->lflags |= XNTSTOP;
+ 
+ 	if (sched->lflags & XNIDLE) {
+ 		real_dev = dev->real_device;
 -- 
 2.17.1
 
