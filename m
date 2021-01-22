@@ -1,7 +1,7 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH V2 2/5] cobalt/tick: dovetail: implement pipeline_timer_name
-Date: Thu, 21 Jan 2021 21:12:37 -0500
-Message-Id: <20210122021240.18768-2-hongzhan.chen@intel.com>
+Subject: [PATCH V2 4/5] cobalt/timer: pipeline: abstract signal test of XNTSTOP
+Date: Thu, 21 Jan 2021 21:12:39 -0500
+Message-Id: <20210122021240.18768-4-hongzhan.chen@intel.com>
 In-Reply-To: <20210122021240.18768-1-hongzhan.chen@intel.com>
 References: <20210122021240.18768-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,55 +14,81 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Get the name of real device controlled by the proxy tick device.
+It adds a way to force the timer management code to reprogram the
+hardware on option, to make the real device controlled by the proxy
+tick again as it leaves the ONESHOT_STOPPED mode. The I-pipe does not
+require any further action in this case, leading to a nop.
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
-index 7b6ce161c..6761ed70d 100644
---- a/include/cobalt/kernel/dovetail/pipeline/clock.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-@@ -19,16 +19,7 @@ static inline u64 pipeline_read_cycle_counter(void)
+diff --git a/include/cobalt/kernel/ipipe/pipeline/tick.h b/include/cobalt/kernel/ipipe/pipeline/tick.h
+index 409581a3c..41347f7b1 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/tick.h
++++ b/include/cobalt/kernel/ipipe/pipeline/tick.h
+@@ -9,4 +9,10 @@ int pipeline_install_tick_proxy(void);
  
- void pipeline_set_timer_shot(unsigned long cycles);
+ void pipeline_uninstall_tick_proxy(void);
  
--static inline const char *pipeline_timer_name(void)
--{
--	/*
--	 * Return the name of the current clock event chip, which is
--	 * the real device controlled by the proxy tick device.
--	 */
--	TODO();
--
--	return "?";
--}
-+const char *pipeline_timer_name(void);
- 
- static inline const char *pipeline_clock_name(void)
- {
-diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-index 75d908bd4..1b622defb 100644
---- a/kernel/cobalt/dovetail/tick.c
-+++ b/kernel/cobalt/dovetail/tick.c
-@@ -16,6 +16,18 @@ extern struct xnintr nktimer;
- 
- static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
- 
-+const char *pipeline_timer_name(void)
++struct xnsched;
++static inline bool pipeline_must_force_program_tick(struct xnsched *sched)
 +{
-+	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
-+	struct clock_event_device *real_dev = dev->real_device;
-+
-+	/*
-+	 * Return the name of the current clock event chip, which is
-+	 * the real device controlled by the proxy tick device.
-+	 */
-+	return real_dev->name;
++	return false;
 +}
 +
- void pipeline_set_timer_shot(unsigned long cycles)
+ #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index c13f46ff7..aa24d5442 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -48,6 +48,11 @@
+ #define XNINIRQ		0x00004000	/* In IRQ handling context */
+ #define XNHDEFER	0x00002000	/* Host tick deferred */
+ 
++/*
++ * Hardware timer is stopped.
++ */
++#define XNTSTOP		0x00000800
++
+ struct xnsched_rt {
+ 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
+ };
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index bf24e1693..2115b15ef 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -147,7 +147,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
+ 	 * or a timer with an earlier timeout date is scheduled,
+ 	 * whichever comes first.
+ 	 */
+-	sched->lflags &= ~(XNHDEFER|XNIDLE);
++	sched->lflags &= ~(XNHDEFER|XNIDLE|XNTSTOP);
+ 	timer = container_of(h, struct xntimer, aplink);
+ 	if (unlikely(timer == &sched->htimer)) {
+ 		if (xnsched_resched_p(sched) ||
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index f9aa457ce..f667a3878 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -18,6 +18,7 @@
+  * 02111-1307, USA.
+  */
+ #include <linux/sched.h>
++#include <pipeline/tick.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/thread.h>
+ #include <cobalt/kernel/timer.h>
+@@ -63,8 +64,10 @@ int xntimer_heading_p(struct xntimer *timer)
+ 
+ void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
  {
- 	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
++	struct xnsched *sched = xntimer_sched(timer);
++
+ 	xntimer_enqueue(timer, q);
+-	if (xntimer_heading_p(timer)) {
++	if (pipeline_must_force_program_tick(sched) || xntimer_heading_p(timer)) {
+ 		struct xnsched *sched = xntimer_sched(timer);
+ 		struct xnclock *clock = xntimer_clock(timer);
+ 		if (sched != xnsched_current())
 -- 
 2.17.1
 
