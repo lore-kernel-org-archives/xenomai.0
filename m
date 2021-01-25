@@ -1,13 +1,20 @@
-References: <20210122021240.18768-1-hongzhan.chen@intel.com>
- <20210122021240.18768-3-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH V2 3/5] dovetail/kevents: dovetail: implement
- handle_ptrace_cont
-In-reply-to: <20210122021240.18768-3-hongzhan.chen@intel.com>
-Date: Sun, 24 Jan 2021 18:21:20 +0100
-Message-ID: <87y2gi6yjz.fsf@xenomai.org>
+Subject: Re: race in timerobj
+References: <CAMJ=MEfkw3N1O1t3Nic10sdYO6hrUU7OOR5=a0wi61w1V-23vA@mail.gmail.com>
+ <8149f85c-4d2e-8411-ee9a-86669c5a1532@siemens.com>
+ <CAMJ=MEeCbvzH8QjbZxAQd9H3fcCdNcYphqAXdHsBiUiXyXtUyw@mail.gmail.com>
+ <878sah7hyu.fsf@xenomai.org>
+ <CAMJ=MEc-Vs-pGXgzjxpM9m6BYMFvAHctm=bafHtmtXwsSf97Pg@mail.gmail.com>
+ <871rg54mkh.fsf@xenomai.org>
+ <CAMJ=MEdgoosLDBA+veLs48tSDJs_sx5ZaRbt+sLWPmq95bcEsw@mail.gmail.com>
+ <CAMJ=MEdDpgNxtw4NjEmfYP7Hqcxa0W4q29UO=eWuds0tKxcXuw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <90061cec-1289-025e-8896-5d85df0d1817@siemens.com>
+Date: Mon, 25 Jan 2021 07:49:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAMJ=MEdDpgNxtw4NjEmfYP7Hqcxa0W4q29UO=eWuds0tKxcXuw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,107 +23,304 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>
+To: Ronny Meeus <ronny.meeus@gmail.com>, Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+On 23.01.21 08:40, Ronny Meeus wrote:
+> 
+> 
+> Op vr 22 jan. 2021 om 08:57 schreef Ronny Meeus <ronny.meeus@gmail.com
+> <mailto:ronny.meeus@gmail.com>>:
+> 
+>     Op vr 4 dec. 2020 om 16:29 schreef Philippe Gerum <rpm@xenomai.org
+>     <mailto:rpm@xenomai.org>>:
+>     >
+>     >
+>     > Ronny Meeus <ronny.meeus@gmail.com <mailto:ronny.meeus@gmail.com>>
+>     writes:
+>     >
+>     > > Op di 1 dec. 2020 om 14:51 schreef Philippe Gerum
+>     <rpm@xenomai.org <mailto:rpm@xenomai.org>>:
+>     > >>
+>     > >>
+>     > >> Ronny Meeus via Xenomai <xenomai@xenomai.org
+>     <mailto:xenomai@xenomai.org>> writes:
+>     > >>
+>     > >> > Op di 1 dec. 2020 om 12:06 schreef Jan Kiszka
+>     <jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>:
+>     > >> >>
+>     > >> >> On 01.12.20 11:26, Ronny Meeus via Xenomai wrote:
+>     > >> >> > Hello Xenomai community,
+>     > >> >> >
+>     > >> >> > it looks like we have a race condition in the timer object
+>     handling.
+>     > >> >> > The scope of the below mentioned issue is the alarm
+>     interface of the
+>     > >> >> > alchemy skin:
+>     > >> >> > int rt_alarm_start(RT_ALARM *alarm, RTIME value, RTIME
+>     interval)
+>     > >> >> >
+>     > >> >> > The documentation mentions that this start can be called
+>     also on an
+>     > >> >> > already running timer:
+>     > >> >> > "This service overrides any previous setup of the expiry
+>     date and
+>     > >> >> > reload interval for the given alarm."
+>     > >> >> >
+>     > >> >> > In the timer server code (see file
+>     lib/copperplate/timerobj.c):
+>     > >> >> > static void *timerobj_server (void *arg))
+>     > >> >> > I see the timer being re-inserted in the timeout list in
+>     case of a
+>     > >> >> > periodic timer.
+>     > >> >> >
+>     > >> >> > write_lock_nocancel(&svlock);
+>     > >> >> > ...
+>     > >> >> > if (interval.tv_sec > 0 || interval.tv_nsec > 0) {
+>     > >> >> >   timespec_add(&tmobj->itspec.it_value, &value, &interval);
+>     > >> >> >   timerobj_enqueue(tmobj);
+>     > >> >> > }
+>     > >> >> > write_unlock(&svlock);
+>     > >> >> > tmobj->handler(tmobj);
+>     > >> >> > write_lock_nocancel(&svlock);
+>     > >> >> > }
+>     > >> >> >
+>     > >> >> > This re-insert is done with the svlock taken but the timer
+>     specific
+>     > >> >> > lock is not taken.
+>     > >> >> >
+>     > >> >> > In the start on the other hand I see:
+>     > >> >> >
+>     > >> >> > int timerobj_start(struct timerobj *tmobj,
+>     > >> >> >   void (*handler)(struct timerobj *tmobj),
+>     > >> >> >   struct itimerspec *it) /* lock held, dropped */
+>     > >> >> > {
+>     > >> >> > tmobj->handler = handler;
+>     > >> >> > tmobj->itspec = *it;
+>     > >> >> > ...
+>     > >> >> > write_lock_nocancel(&svlock);
+>     > >> >> >
+>     > >> >> > So the itspec is updated with only the timerobj lock taken.
+>     > >> >> > If the timeout value is changed via the timerobj_start
+>     while the timer is
+>     > >> >> > under processing by the timer server, we can enter an
+>     endless loop (at
+>     > >> >> > least that is what we see sporadically)
+>     > >> >> >
+>     > >> >> > Does this make sense?
+>     > >> >>
+>     > >> >> Yes, at least to me. Patch welcome.
+>     > >> >
+>     > >> > Jan,
+>     > >> >
+>     > >> > this is the patch we are currently testing with (note that
+>     the line numbers
+>     > >> > might not match since we are not at the latest revision).
+>     > >> >
+>     > >> > diff --git a/lib/copperplate/timerobj.c
+>     b/lib/copperplate/timerobj.c
+>     > >> > --- a/lib/copperplate/timerobj.c
+>     > >> > +++ b/lib/copperplate/timerobj.c
+>     > >> > @@ -165,7 +165,8 @@ static void *timerobj_server(void *arg)
+>     > >> >                                 timerobj_enqueue(tmobj);
+>     > >> >                         }
+>     > >> >                         write_unlock(&svlock);
+>     > >> > -                       tmobj->handler(tmobj);
+>     > >> > +                       if (tmobj->handler)
+>     > >> > +                               tmobj->handler(tmobj);
+>     > >> >                         write_lock_nocancel(&svlock);
+>     > >> >                 }
+>     > >> >
+>     > >> > @@ -232,10 +233,14 @@ int timerobj_start(struct timerobj *tmob
+>     > >> >                    void (*handler)(struct timerobj *tmobj),
+>     > >> >                    struct itimerspec *it) /* lock held,
+>     dropped */
+>     > >> >  {
+>     > >> > +       write_lock_nocancel(&svlock);
+>     > >> > +
+>     > >> > +       if (pvholder_linked(&tmobj->next))
+>     > >> > +               pvlist_remove_init(&tmobj->next);
+>     > >> > +
+>     > >> >         tmobj->handler = handler;
+>     > >> >         tmobj->itspec = *it;
+>     > >> >
+>     > >> > -       write_lock_nocancel(&svlock);
+>     > >> >         timerobj_enqueue(tmobj);
+>     > >> >         write_unlock(&svlock);
+>     > >> >         timerobj_unlock(tmobj);
+>     > >> >
+>     > >> >
+>     > >> >>
+>     > >> >> Note, though, that updating the handler will remain
+>     inherently racy.
+>     > >> >>
+>     > >>
+>     > >> Good catch. Also, we would need a consistent view of the
+>     > >> (value,interval,handler) triplet for any time wrt concurrent
+>     start/stop
+>     > >> updates, all accessed under server lock. We would not want a
+>     new value
+>     > >> being copied to be used with an old interval and/or handler for
+>     > >> instance.
+>     > >>
+>     > >> There is also a locking imbalance to be fixed on error in
+>     > >> timerobj_start().
+>     > >>
+>     > >> e.g. (proudly untested).
+>     > >>
+>     > >> diff --git a/lib/copperplate/timerobj.c
+>     b/lib/copperplate/timerobj.c
+>     > >> index cbfcda566..08cc0d3b9 100644
+>     > >> --- a/lib/copperplate/timerobj.c
+>     > >> +++ b/lib/copperplate/timerobj.c
+>     > >> @@ -98,6 +98,7 @@ static int server_prologue(void *arg)
+>     > >>
+>     > >>  static void *timerobj_server(void *arg)
+>     > >>  {
+>     > >> +       void (*handler)(struct timerobj *tmobj);
+>     > >>         struct timespec now, value, interval;
+>     > >>         struct timerobj *tmobj, *tmp;
+>     > >>         sigset_t set;
+>     > >> @@ -120,17 +121,18 @@ static void *timerobj_server(void *arg)
+>     > >>
+>     > >>                 pvlist_for_each_entry_safe(tmobj, tmp,
+>     &svtimers, next) {
+>     > >>                         value = tmobj->itspec.it_value;
+>     > >> +                       interval = tmobj->itspec.it_interval;
+>     > >> +                       handler = tmobj->handler;
+>     > >>                         if (timespec_after(&value, &now))
+>     > >>                                 break;
+>     > >>                         pvlist_remove_init(&tmobj->next);
+>     > >> -                       interval = tmobj->itspec.it_interval;
+>     > >>                         if (interval.tv_sec > 0 ||
+>     interval.tv_nsec > 0) {
+>     > >>                               
+>      timespec_add(&tmobj->itspec.it_value,
+>     > >>                                              &value, &interval);
+>     > >>                                 timerobj_enqueue(tmobj);
+>     > >>                         }
+>     > >>                         write_unlock(&svlock);
+>     > >> -                       tmobj->handler(tmobj);
+>     > >> +                       handler(tmobj);
+>     > >>                         write_lock_nocancel(&svlock);
+>     > >>                 }
+>     > >>
+>     > >> @@ -218,8 +220,7 @@ int timerobj_start(struct timerobj *tmobj,
+>     > >>                    void (*handler)(struct timerobj *tmobj),
+>     > >>                    struct itimerspec *it) /* lock held, dropped */
+>     > >>  {
+>     > >> -       tmobj->handler = handler;
+>     > >> -       tmobj->itspec = *it;
+>     > >> +       int ret = 0;
+>     > >>
+>     > >>         /*
+>     > >>          * We hold the queue lock long enough to prevent the timer
+>     > >> @@ -232,14 +233,23 @@ int timerobj_start(struct timerobj *tmobj,
+>     > >>          */
+>     > >>         write_lock_nocancel(&svlock);
+>     > >>
+>     > >> -       if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it,
+>     NULL)))
+>     > >> -               return __bt(-errno);
+>     > >> +       if (pvholder_linked(&tmobj->next))
+>     > >> +               pvlist_remove_init(&tmobj->next);
+>     > >> +
+>     > >> +       tmobj->handler = handler;
+>     > >> +       tmobj->itspec = *it;
+>     > >> +
+>     > >> +       if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it,
+>     NULL))) {
+>     > >> +               ret = __bt(-errno);
+>     > >> +               goto fail;
+>     > >> +       }
+>     > >>
+>     > >>         timerobj_enqueue(tmobj);
+>     > >> +fail:
+>     > >>         write_unlock(&svlock);
+>     > >>         timerobj_unlock(tmobj);
+>     > >>
+>     > >> -       return 0;
+>     > >> +       return ret;
+>     > >>  }
+>     > >>
+>     > >>  int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
+>     > >> @@ -251,10 +261,9 @@ int timerobj_stop(struct timerobj *tmobj)
+>     /* lock held, dropped */
+>     > >>         if (pvholder_linked(&tmobj->next))
+>     > >>                 pvlist_remove_init(&tmobj->next);
+>     > >>
+>     > >> -       write_unlock(&svlock);
+>     > >> -
+>     > >>         __RT(timer_settime(tmobj->timer, 0, &itimer_stop, NULL));
+>     > >>         tmobj->handler = NULL;
+>     > >> +       write_unlock(&svlock);
+>     > >>         timerobj_unlock(tmobj);
+>     > >>
+>     > >>         return 0;
+>     > >> --
+>     > >
+>     > > Philippe,
+>     > >
+>     > > we tested with the patch you proposed and the problem seem to be
+>     resolved.
+>     > > I think this is a good improvement.
+>     > >
+>     > > Best regards,
+>     > > Ronny
+>     > >
+>     > >> Philippe.
+>     >
+>     > Ok, thanks for testing. Now pushing a patch referring to your original
+>     > post with the preliminary fix.
+> 
+> 
+>     Hello
+> 
+>     In the same context we have hit another issue.
+>     It looks like there is a problem when a timer is deleted/stopped
+>     from within
+>     the handler callback, the mechanism to traverse the list does not behave
+>     correctly anymore.
+> 
+>     pvlist_for_each_entry_safe(tmobj, tmp, &svtimers, next) {
+>       value = tmobj->itspec.it_value;
+> 
+>     In the above code, "tmp" is used to reference the next entry to be
+>     processed
+>     in the next iteration of the loop. When in the callback, this next
+>     timer is
+>     changed or deleted, the reference is not valid anymore.
+> 
+>     I do not see immedialy a generic a solution for the pvlist.
+>     For the timer-server specifically, we could always start from the
+>     first element
+>     since we will remove from the head and possibly reinsert again in
+>     the list.
+> 
+> 
+> To work around the issue in the timer server we have adapter the code
+> like below.
+> Instead of the pvlist_for_each_entry_safe we use:
+> 
+> while (1) {
+>     if (pvlist_empty(&svtimers) != 0) {
+>         break;
+>     }
+>     tmobj = pvlist_first_entry(&svtimers, typeof(*tmobj), next);
+>  
+> This seems to solve our issue since there is no next pointer anymore
+> which can become invalid.
+> 
 
-hongzha1 via Xenomai <xenomai@xenomai.org> writes:
+This looks reasonable to me: every expired times will be removed from
+the list or re-appended after the current date.
 
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->
-> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-> index 6aec170d1..0528e2938 100644
-> --- a/kernel/cobalt/dovetail/kevents.c
-> +++ b/kernel/cobalt/dovetail/kevents.c
-> @@ -480,7 +480,75 @@ static void handle_ptrace_cont(void)
->  	 * stopped state, which is what look for in
->  	 * handle_schedule_event().
->  	 */
-> -	TODO();
-> +	struct task_struct *next_task;
-> +	struct xnthread *next;
-> +	sigset_t pending;
-> +	spl_t s;
-> +
-> +	cobalt_signal_yield();
-> +
-> +	next_task = current;
-> +	next = xnthread_from_task(next_task);
-> +	if (next == NULL)
-> +		return;
-> +
-> +	xnlock_get_irqsave(&nklock, s);
-> +
-> +	/*
-> +	 * Track tasks leaving the ptraced state.  Check both SIGSTOP
-> +	 * (NPTL) and SIGINT (LinuxThreads) to detect ptrace
-> +	 * continuation.
-> +	 */
-> +	if (xnthread_test_state(next, XNSSTEP)) {
-> +		if (signal_pending(next_task)) {
-> +			/*
-> +			 * Do not grab the sighand lock here: it's
-> +			 * useless, and we already own the runqueue
-> +			 * lock, so this would expose us to deadlock
-> +			 * situations on SMP.
-> +			 */
-> +			sigorsets(&pending,
-> +				  &next_task->pending.signal,
-> +				  &next_task->signal->shared_pending.signal);
-> +			if (sigismember(&pending, SIGSTOP) ||
-> +			    sigismember(&pending, SIGINT))
-> +				goto no_ptrace;
-> +		}
-> +
-> +		/*
-> +		 * Do not unregister before the thread migrated.
-> +		 * unregister_debugged_thread will then be called by our
-> +		 * resume_oob_task.
-> +		 */
-> +		if (!xnthread_test_info(next, XNCONTHI))
-> +			unregister_debugged_thread(next);
-> +
-> +		xnthread_set_localinfo(next, XNHICCUP);
-> +	}
-> +
+Could you translate this to a patch with appropriate commit message?
 
-Since we know Dovetail just called us because 'current' is about to
-resume from a stopped state, we don't need the hackish code above which
-was aimed at determining whether next_task was about to do so
-(i.e. resuming from ptrace stop).
-
-> +no_ptrace:
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
-> +	/*
-> +	 * Do basic sanity checks on the incoming thread state.
-> +	 * NOTE: we allow ptraced threads to run shortly in order to
-> +	 * properly recover from a stopped state.
-> +	 */
-> +	if (!XENO_WARN(COBALT, !xnthread_test_state(next, XNRELAX),
-> +		       "hardened thread %s[%d] running in Linux domain?! "
-> +		       "(status=0x%x, sig=%d)",
-> +		       next->name, task_pid_nr(next_task),
-> +		       xnthread_get_state(next),
-> +		       signal_pending(next_task)))
-> +		XENO_WARN(COBALT,
-> +			  !(next_task->ptrace & PT_PTRACED) &&
-> +			   !xnthread_test_state(next, XNDORMANT)
-> +			  && xnthread_test_state(next, XNPEND),
-> +			  "blocked thread %s[%d] rescheduled?! "
-> +			  "(status=0x%x, sig=%d)",
-> +			  next->name, task_pid_nr(next_task),
-> +			  xnthread_get_state(next),
-> +			  signal_pending(next_task));
->  }
->  
->  void handle_inband_event(enum inband_event_type event, void *data)
-
-On second thought, we could also drop the remaining check above, since
-what is being tested is a very basic Dovetail guarantee, i.e. that
-'current' must be running in-band. IOW, receiving ptrace_cont should
-lead to a nop when running on top of Dovetail.
+TIA,
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
