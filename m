@@ -1,11 +1,11 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: reminder: Xenomai community call on tomorrow, Jan 27th, UTC 7:00
+Date: Tue, 26 Jan 2021 11:03:30 +0000
+Message-ID: <CO1PR11MB5187C5CB6134384CDB25BA8CEEBC9@CO1PR11MB5187.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAPMj8MtS-vAssX+P8rywMUoFfs-DeCh_2f4sZts5Jk2Dk_rOEw@mail.gmail.com>
-In-Reply-To: <CAPMj8MtS-vAssX+P8rywMUoFfs-DeCh_2f4sZts5Jk2Dk_rOEw@mail.gmail.com>
-From: Sam Daniel <daniel.jacob.samuel@gmail.com>
-Date: Mon, 25 Jan 2021 13:07:01 -0800
-Message-ID: <CAPMj8Mv8194p8qCPRgke=w+A14d9f9mf0P6OhR2k67Tqr=JUJw@mail.gmail.com>
-Subject: Re: Look up all IDDP/XDDP labels in the registry from userspace
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Jan 25, 2021 at 12:20 PM Sam Daniel <daniel.jacob.samuel@gmail.com>
-wrote:
+SGkgYWxsLA0KDQpBcyBwbGFubmVkLCB0b21vcnJvdyB3aWxsIGhhdmUgWGVub21haSBjb21tdW5p
+dHkgY2FsbCwgDQpUb3BpY3MgbWF5IGluY2x1ZGUgYnV0IG5vdCBsaW1pdGVkIHRvIHVwc3RyZWFt
+L2Rvd25zdHJlYW0gcHJvamVjdCBwbGFuLCBzdGF0dXMgdXBkYXRlLCBhbmQgdGVjaG5pY2FsIGRp
+c2N1c3Npb24uDQpJdCdzIGFuIG9wZW4gb25saW5lIG1lZXRpbmcgdGhhdCBhbnlvbmUgY2FuIGpv
+aW4gYW5kIGFzayBxdWVzdGlvbnMsIA0KDQpUaW1lOiAgDQpKYW4gMjd0aCAoV2VkbmVzZGF5KSwg
+VVRDIDc6MDANCjE1OjAwIGZvciBDaGluYQ0KODowMCBmb3IgRnJhbmNlLCBHZXJtYW55LCBJdGFs
+eQ0KMjM6MDAgKEphbiAyNnRoICkgZm9yIFNhbnRhIENsYXJhDQoNClBscyBkb3dubG9hZCBXZWJl
+eCBtZWV0aW5nIHNvZnR3YXJlIG9yIHVzZSB0aGUgd2VicGFnZSB2ZXJzaW9uOg0KDQpodHRwczov
+L2ludGVsLndlYmV4LmNvbS9pbnRlbC9qLnBocD9NVElEPW0yMzBiMWQ5N2FiNGYyYTRmOWRiYzNi
+MjYyODg1YmFiNg0KDQpNZWV0aW5nIG51bWJlciAoYWNjZXNzIGNvZGUpOiAxMzAgNTE0IDc2MDUN
+Ck1lZXRpbmcgcGFzc3dvcmQ6IEpRcEVjN1VZQDM4ICANCiANCiAJDQpUYXAgdG8gam9pbiBmcm9t
+IGEgbW9iaWxlIGRldmljZSAoYXR0ZW5kZWVzIG9ubHkpICANCisxLTIxMC03OTUtMTExMCwsMTMw
+NTE0NzYwNSMjIFVTIFRvbGwgIA0KKzEtODY2LTY2Mi05OTg3LCwxMzA1MTQ3NjA1IyMgVVMgVG9s
+bCBGcmVlICANCg0KSm9pbiBieSBwaG9uZSAgDQorMS0yMTAtNzk1LTExMTAgVVMgVG9sbCAgDQor
+MS04NjYtNjYyLTk5ODcgVVMgVG9sbCBGcmVlICANCkdsb2JhbCBjYWxsLWluIG51bWJlcnMgIHwg
+IFRvbGwtZnJlZSBjYWxsaW5nIHJlc3RyaWN0aW9ucyAgIA0KICANCkpvaW4gZnJvbSBhIHZpZGVv
+IHN5c3RlbSBvciBhcHBsaWNhdGlvbg0KRGlhbCAxMzA1MTQ3NjA1QGludGVsLndlYmV4LmNvbSAg
+DQpZb3UgY2FuIGFsc28gZGlhbCAxNzMuMjQzLjIuNjggYW5kIGVudGVyIHlvdXIgbWVldGluZyBu
+dW1iZXIuICAgDQogIA0KIA0KTmVlZCBoZWxwPyBHbyB0byBodHRwOi8vaGVscC53ZWJleC5jb20g
+DQoNCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5h
+YmxpbmcNCg0KDQoNCg==
 
-> Is it possible to look up from userspace code all of the IDDP/XDDP labels
-> that exist in the registry without leaving the primary domain?
->
-> I have tried a few different ways of reading the contents of
-> /proc/xenomai/registry/rtipc/iddp. The inotify API causes mode switches (it
-> relies on select or poll), not to mention that inotify does not work well
-> with virtual filesystems. And using the C++ filesystem library to read the
-> contents of the directory also causes mode switches (filesystem
-> interactions).
->
-> Is there a real-time API function that I can use to query these labels?
->
-
-C++ filesystem library is causing mode switches because of an mmap deep in
-its call stack, not because of "filesystem interactions" like I initially
-thought.
