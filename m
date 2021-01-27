@@ -1,11 +1,13 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Xenomai Community Call Minutes - Janurary 27, 2021
-Date: Wed, 27 Jan 2021 12:45:41 +0000
-Message-ID: <BY5PR11MB4306C7185C978D903C6D3524BABB9@BY5PR11MB4306.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+References: <20210127054348.2128285-1-greg@embeddedgreg.com>
+ <e577f54b-43c8-0291-ef3a-e48b77d2ebdf@siemens.com>
+ <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
+In-Reply-To: <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 27 Jan 2021 09:26:07 -0500
+Message-ID: <CALLqZ8SshX0=ZJgdUjj9a2XBVsFfz6C5MXz-ysig8Tah3AD0+Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kernel: cobalt: Fix up elf_hwcap
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,68 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Attendees:
+On Wed, Jan 27, 2021 at 1:15 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Philippe Gerum, Jan Kiszka (Siemens), Hongzhan Chen (Intel),
-Fino Meng (Intel), Yipeng (intel), Bruce Bao (Intel),=20
-Florian Bezdeka (Siemens), Antoine Hoarau (Fuzzy Logic Robotics),
-Chensong (kylin software), Xiaoyan Gong (Intel), Yanfeng Pu (Intel),=20
-Dao Zhang (Intel), Rick Wang (Intel)=20
+> On 27.01.21 07:13, Jan Kiszka via Xenomai wrote:
+> > On 27.01.21 06:43, Greg Gallagher via Xenomai wrote:
+> >> Update elf_hwcap to ELF_HWCAP, this will work for newer 5.4 kernels
+> >>
+> >
+> > I assume you mean "also work" - or does it break on certain older
+> > kernels? Just asking before consulting our CI. ;)
+> >
+>
+> ...and the same pattern exists on ARM.
+>
+> Jan
+>
+> >> Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
+> >> ---
+> >>  kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+> b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+> >> index b7e3f52f2..291c9e5f0 100644
+> >> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+> >> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+> >> @@ -23,7 +23,7 @@
+> >>  #include <asm/xenomai/uapi/fptest.h>
+> >>  #include <asm/hwcap.h>
+> >>
+> >> -#define have_fp (elf_hwcap & HWCAP_FP)
+> >> +#define have_fp (ELF_HWCAP & HWCAP_FP)
+> >>
+> >>  static inline int fp_kernel_supported(void)
+> >>  {
+> >>
+> >
+> > Jan
+> >
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
 
+No problem, ACK.  I'll put a more meaningful commit message as well.  I
+thought I changed that before I sent the patch.
 
-Agenda:
-
-*Community update - Jan=20
-*Dovetail, CXP and EVL update - Philippe
-*Customer feedback - Fino
-*Open
-
-
-*Community update
-
-Xenomai porting to kernel 5.4 for ARM/ARM64 is coming soon.
-
-
-*Dovetail, CXP and EVL update
-
-Xenomai on Dovetail
-- Several crashing issue are being fixed.
-- Adding test tool from EVL to Xenomai. Extending latency test for GPIO.
-- X86 code ready within several days.
-- Then switch to ARM/ARM64 porting.
-- PowerPC is not supported by Dovetail. Community can chime in as needed.
-- Early delivery in Feb.
-
-CXP
-- The idea is to simplify the project
-  Not provide more than what we can sustain, and
-  Not provide no used features
-- Still lack of feedback in community.
-
-EVL
-- Support POSIX on EVL core
-- Plan to port RTDM to EVL
-- Concern on drivers
-- RT Network stack shall leverage as much the native stack rather than=20
-creating everything from the ground up.
-
-
-*Customer feedback
-
-Some PRC Xenomai customers feedback:
-- Generally OK to port to POSIX API if no functionality and performance=20
-downgrade;
-- Some customer is using Alchemy API "rt_task_*" since Xenomai 2. The=20
-customer is ok to port to POSIX API;
-- RTDM drivers used for GPIO, SPI, Serial, PCIe Can card, IgH EtherCAT, etc=
-.=20
-
-
-Next community call: Feb 10, 2021
-
-
-Thanks,
-Rick
-
+-Greg
