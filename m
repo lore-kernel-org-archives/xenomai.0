@@ -1,14 +1,14 @@
-Subject: Re: [PATCH 1/2] kernel: cobalt: Fix up elf_hwcap
-References: <20210127054348.2128285-1-greg@embeddedgreg.com>
- <e577f54b-43c8-0291-ef3a-e48b77d2ebdf@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
-Date: Wed, 27 Jan 2021 07:15:10 +0100
+References: <CAPMj8MtS-vAssX+P8rywMUoFfs-DeCh_2f4sZts5Jk2Dk_rOEw@mail.gmail.com>
+ <CAPMj8Mv8194p8qCPRgke=w+A14d9f9mf0P6OhR2k67Tqr=JUJw@mail.gmail.com>
+ <8ebae193-88ec-e4b1-d86b-642a594ac7da@siemens.com>
+ <CAPMj8Mtgv3FzX9H8ZRc9jCZsp8u6RhuyjXGJkbpfK6UoneNQVA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Look up all IDDP/XDDP labels in the registry from userspace
+In-reply-to: <CAPMj8Mtgv3FzX9H8ZRc9jCZsp8u6RhuyjXGJkbpfK6UoneNQVA@mail.gmail.com>
+Date: Wed, 27 Jan 2021 07:24:24 +0100
+Message-ID: <87ft2m3njb.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <e577f54b-43c8-0291-ef3a-e48b77d2ebdf@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: Sam Daniel <daniel.jacob.samuel@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 27.01.21 07:13, Jan Kiszka via Xenomai wrote:
-> On 27.01.21 06:43, Greg Gallagher via Xenomai wrote:
->> Update elf_hwcap to ELF_HWCAP, this will work for newer 5.4 kernels
+
+Sam Daniel via Xenomai <xenomai@xenomai.org> writes:
+
+> On Tue, Jan 26, 2021 at 10:07 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+>> On 25.01.21 22:07, Sam Daniel via Xenomai wrote:
+>> > On Mon, Jan 25, 2021 at 12:20 PM Sam Daniel <
+>> daniel.jacob.samuel@gmail.com>
+>> > wrote:
+>> >
+>> >> Is it possible to look up from userspace code all of the IDDP/XDDP
+>> labels
+>> >> that exist in the registry without leaving the primary domain?
+>> >>
+>> >> I have tried a few different ways of reading the contents of
+>> >> /proc/xenomai/registry/rtipc/iddp. The inotify API causes mode switches
+>> (it
+>> >> relies on select or poll), not to mention that inotify does not work
+>> well
+>> >> with virtual filesystems. And using the C++ filesystem library to read
+>> the
+>> >> contents of the directory also causes mode switches (filesystem
+>> >> interactions).
+>> >>
+>> >> Is there a real-time API function that I can use to query these labels?
+>> >>
+>> >
+>> > C++ filesystem library is causing mode switches because of an mmap deep
+>> in
+>> > its call stack, not because of "filesystem interactions" like I initially
+>> > thought.
+>> >
 >>
-> 
-> I assume you mean "also work" - or does it break on certain older
-> kernels? Just asking before consulting our CI. ;)
-> 
-
-...and the same pattern exists on ARM.
-
-Jan
-
->> Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
->> ---
->>  kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> What is the use case you need label listing from RT context for?
 >>
->> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> index b7e3f52f2..291c9e5f0 100644
->> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> @@ -23,7 +23,7 @@
->>  #include <asm/xenomai/uapi/fptest.h>
->>  #include <asm/hwcap.h>
->>  
->> -#define have_fp (elf_hwcap & HWCAP_FP)
->> +#define have_fp (ELF_HWCAP & HWCAP_FP)
->>  
->>  static inline int fp_kernel_supported(void)
->>  {
+>> Jan
 >>
-> 
-> Jan
-> 
+>> --
+>> Siemens AG, T RDA IOT
+>> Corporate Competence Center Embedded Linux
+>>
+>
+> My use case is an IDDP-based pub/sub messaging system for real-time threads.
+>
+> Threads publish and subscribe to a channel ("xyz"). Any number of threads
+> can publish to any channel. And any number of threads can subscribe to any
+> channel (and each one should receive every message published to that
+> channel).
+>
+> Subscribers bind labeled IDDP sockets for each channel using labels like
+> so: <channel name>-<thread name>. If three threads subscribe to channel
+> "xyz" then I would expect /proc/xenomai/registry/rtipc/iddp to show:
+> xyz-threadA -> 0
+> xyz-threadB -> 1
+> xyz-threadC -> 2
+>
+> For the pub/sub implementation to work, when thread X calls publish("xyz",
+> &message) the publish method would need to multicast the message to all
+> three of the IDDP sockets above.
+>
+
+This is pretty much what the Observable feature does in the EVL core
+which we are going to use for Xenomai 4:
+https://evlproject.org/core/user-api/observable/
+
+Adding this feature natively to the existing RTIPC driver may be a
+better option than emulating it over IDDP.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
