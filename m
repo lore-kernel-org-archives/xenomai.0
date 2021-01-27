@@ -1,7 +1,9 @@
 From: Greg Gallagher <greg@embeddedgreg.com>
-Subject: [PATCH 1/2] kernel: cobalt: Fix up elf_hwcap
-Date: Wed, 27 Jan 2021 00:43:47 -0500
-Message-Id: <20210127054348.2128285-1-greg@embeddedgreg.com>
+Subject: [PATCH 2/2] kernel: cobalt: Remove header file for newer kernels
+Date: Wed, 27 Jan 2021 00:43:48 -0500
+Message-Id: <20210127054348.2128285-2-greg@embeddedgreg.com>
+In-Reply-To: <20210127054348.2128285-1-greg@embeddedgreg.com>
+References: <20210127054348.2128285-1-greg@embeddedgreg.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,26 +16,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Update elf_hwcap to ELF_HWCAP, this will work for newer 5.4 kernels
+5.4 kernels do not have compiler.h, only include this header file for kernels older then 5.4
 
-Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
+Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
 ---
- kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-index b7e3f52f2..291c9e5f0 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-@@ -23,7 +23,7 @@
- #include <asm/xenomai/uapi/fptest.h>
- #include <asm/hwcap.h>
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+index 7444cc823..17be10339 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+@@ -29,7 +29,11 @@
+ #define XNARCH_HOST_TICK_IRQ __ipipe_hrtimer_irq
  
--#define have_fp (elf_hwcap & HWCAP_FP)
-+#define have_fp (ELF_HWCAP & HWCAP_FP)
- 
- static inline int fp_kernel_supported(void)
- {
+ #include <asm/barrier.h>
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
+ #include <asm/compiler.h>
++#endif
++
+ #include <asm/cmpxchg.h>
+ #include <asm/switch_to.h>
+ #include <asm/system_misc.h>
 -- 
 2.25.1
 
