@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 03/13] cobalt/clock: pipeline: abstract access to host
- (real)time
-Date: Sun, 31 Jan 2021 15:45:30 +0100
-Message-Id: <20210131144540.243363-3-rpm@xenomai.org>
+Subject: [PATCH 04/13] cobalt/arch: pipeline: move architecture code to
+ pipeline-specific section
+Date: Sun, 31 Jan 2021 15:45:31 +0100
+Message-Id: <20210131144540.243363-4-rpm@xenomai.org>
 In-Reply-To: <20210131144540.243363-1-rpm@xenomai.org>
 References: <20210131144540.243363-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,222 +19,532 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Dovetail enables applications to get timestamps from the
-CLOCK_MONOTONIC and CLOCK_REALTIME clocks via the regular vDSO by
-calling clock_gettime(), including from the out-of-band stage
-(i.e. primary mode).
+The Cobalt architecture code is overwhelmingly specific to a pipeline
+flavour, most of it for interfacing with the I-pipe. We may still need
+very little arch-specific code in the Dovetail set up though,
+specifically for implementing Cobalt's built-in FPU tests.
 
-Legacy support involving IPIPE_HOSTRT can move to the I-pipe specific
-section.
+Let's move the existing architecture code under the ipipe/ hierarchy,
+fixing up the kernel prep script accordingly.
 
 No functional change is introduced.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/ipipe/pipeline/clock.h |  4 ++
- include/cobalt/uapi/kernel/vdso.h            |  5 ++
- kernel/cobalt/ipipe/Makefile                 |  2 +-
- kernel/cobalt/ipipe/clock.c                  | 62 ++++++++++++++++++++
- kernel/cobalt/posix/clock.c                  | 57 +-----------------
- 5 files changed, 73 insertions(+), 57 deletions(-)
- create mode 100644 kernel/cobalt/ipipe/clock.c
+ kernel/cobalt/arch/arm/{ => ipipe}/Makefile   |  2 +-
+ kernel/cobalt/arch/arm/{ => ipipe}/README     |  0
+ .../include/asm/xenomai/calibration.h         |  0
+ .../include/asm/xenomai/features.h            |  0
+ .../{ => ipipe}/include/asm/xenomai/fptest.h  |  0
+ .../{ => ipipe}/include/asm/xenomai/machine.h |  0
+ .../{ => ipipe}/include/asm/xenomai/syscall.h |  0
+ .../include/asm/xenomai/syscall32.h           |  0
+ .../{ => ipipe}/include/asm/xenomai/thread.h  |  0
+ .../include/asm/xenomai/wrappers.h            |  0
+ kernel/cobalt/arch/arm/{ => ipipe}/machine.c  |  0
+ kernel/cobalt/arch/arm/{ => ipipe}/switch.S   |  0
+ kernel/cobalt/arch/arm/{ => ipipe}/syscall.c  |  0
+ kernel/cobalt/arch/arm/{ => ipipe}/thread.c   |  0
+ kernel/cobalt/arch/arm64/{ => ipipe}/Makefile |  0
+ kernel/cobalt/arch/arm64/{ => ipipe}/README   |  0
+ .../include/asm/xenomai/calibration.h         |  0
+ .../include/asm/xenomai/features.h            |  0
+ .../{ => ipipe}/include/asm/xenomai/fptest.h  |  0
+ .../{ => ipipe}/include/asm/xenomai/machine.h |  0
+ .../{ => ipipe}/include/asm/xenomai/syscall.h |  0
+ .../include/asm/xenomai/syscall32.h           |  0
+ .../{ => ipipe}/include/asm/xenomai/thread.h  |  0
+ .../include/asm/xenomai/wrappers.h            |  0
+ .../cobalt/arch/arm64/{ => ipipe}/machine.c   |  0
+ .../cobalt/arch/arm64/{ => ipipe}/syscall.c   |  0
+ kernel/cobalt/arch/arm64/{ => ipipe}/thread.c |  0
+ .../cobalt/arch/powerpc/{ => ipipe}/Makefile  |  0
+ kernel/cobalt/arch/powerpc/{ => ipipe}/README |  0
+ kernel/cobalt/arch/powerpc/{ => ipipe}/fpu.S  |  0
+ .../include/asm/xenomai/calibration.h         |  0
+ .../include/asm/xenomai/features.h            |  0
+ .../{ => ipipe}/include/asm/xenomai/fptest.h  |  0
+ .../{ => ipipe}/include/asm/xenomai/machine.h |  0
+ .../{ => ipipe}/include/asm/xenomai/syscall.h |  0
+ .../include/asm/xenomai/syscall32.h           |  0
+ .../{ => ipipe}/include/asm/xenomai/thread.h  |  0
+ .../include/asm/xenomai/wrappers.h            |  0
+ .../cobalt/arch/powerpc/{ => ipipe}/machine.c |  0
+ .../cobalt/arch/powerpc/{ => ipipe}/thread.c  |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/Makefile   |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/README     |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/c1e.c      |  0
+ .../x86/{ => ipipe}/include/asm/xenomai/c1e.h |  0
+ .../include/asm/xenomai/calibration.h         |  0
+ .../include/asm/xenomai/features.h            |  0
+ .../{ => ipipe}/include/asm/xenomai/fptest.h  |  0
+ .../{ => ipipe}/include/asm/xenomai/machine.h |  0
+ .../x86/{ => ipipe}/include/asm/xenomai/smi.h |  0
+ .../{ => ipipe}/include/asm/xenomai/syscall.h |  0
+ .../include/asm/xenomai/syscall32-table.h     |  0
+ .../include/asm/xenomai/syscall32.h           |  0
+ .../{ => ipipe}/include/asm/xenomai/thread.h  |  0
+ .../include/asm/xenomai/wrappers.h            |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/machine.c  |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/smi.c      |  0
+ kernel/cobalt/arch/x86/{ => ipipe}/thread.c   |  0
+ scripts/prepare-kernel.sh                     | 84 ++++++++++++-------
+ 58 files changed, 53 insertions(+), 33 deletions(-)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/Makefile (64%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/README (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/calibration.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/features.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/fptest.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/machine.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/syscall.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/syscall32.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/thread.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/include/asm/xenomai/wrappers.h (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/machine.c (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/switch.S (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/syscall.c (100%)
+ rename kernel/cobalt/arch/arm/{ => ipipe}/thread.c (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/Makefile (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/README (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/calibration.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/features.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/fptest.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/machine.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/syscall.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/syscall32.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/thread.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/include/asm/xenomai/wrappers.h (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/machine.c (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/syscall.c (100%)
+ rename kernel/cobalt/arch/arm64/{ => ipipe}/thread.c (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/Makefile (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/README (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/fpu.S (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/calibration.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/features.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/fptest.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/machine.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/syscall.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/syscall32.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/thread.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/include/asm/xenomai/wrappers.h (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/machine.c (100%)
+ rename kernel/cobalt/arch/powerpc/{ => ipipe}/thread.c (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/Makefile (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/README (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/c1e.c (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/c1e.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/calibration.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/features.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/fptest.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/machine.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/smi.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/syscall.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/syscall32-table.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/syscall32.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/thread.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/include/asm/xenomai/wrappers.h (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/machine.c (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/smi.c (100%)
+ rename kernel/cobalt/arch/x86/{ => ipipe}/thread.c (100%)
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/clock.h b/include/cobalt/kernel/ipipe/pipeline/clock.h
-index c607d9585..eeeae6602 100644
---- a/include/cobalt/kernel/ipipe/pipeline/clock.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/clock.h
-@@ -7,6 +7,8 @@
+diff --git a/kernel/cobalt/arch/arm/Makefile b/kernel/cobalt/arch/arm/ipipe/Makefile
+similarity index 64%
+rename from kernel/cobalt/arch/arm/Makefile
+rename to kernel/cobalt/arch/arm/ipipe/Makefile
+index 295ba614b..c482fb337 100644
+--- a/kernel/cobalt/arch/arm/Makefile
++++ b/kernel/cobalt/arch/arm/ipipe/Makefile
+@@ -1,5 +1,5 @@
+ obj-$(CONFIG_XENOMAI) += xenomai.o
  
- #include <linux/ipipe_tickdev.h>
+-xenomai-y := machine.o thread.o switch.o syscall.o
++xenomai-$(CONFIG_IPIPE) := machine.o thread.o switch.o syscall.o
  
-+struct timespec;
-+
- static inline u64 pipeline_read_cycle_counter(void)
- {
- 	u64 t;
-@@ -29,4 +31,6 @@ static inline const char *pipeline_clock_name(void)
- 	return ipipe_clock_name();
+ ccflags-y := -I$(srctree)/arch/arm/xenomai/include -I$(srctree)/include/xenomai
+diff --git a/kernel/cobalt/arch/arm/README b/kernel/cobalt/arch/arm/ipipe/README
+similarity index 100%
+rename from kernel/cobalt/arch/arm/README
+rename to kernel/cobalt/arch/arm/ipipe/README
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/calibration.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/calibration.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/calibration.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/calibration.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/features.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/features.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/features.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/features.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/fptest.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/fptest.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/machine.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/machine.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/machine.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/machine.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/syscall.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/syscall.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/syscall32.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/syscall32.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/thread.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/thread.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/wrappers.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm/include/asm/xenomai/wrappers.h
+rename to kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/wrappers.h
+diff --git a/kernel/cobalt/arch/arm/machine.c b/kernel/cobalt/arch/arm/ipipe/machine.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm/machine.c
+rename to kernel/cobalt/arch/arm/ipipe/machine.c
+diff --git a/kernel/cobalt/arch/arm/switch.S b/kernel/cobalt/arch/arm/ipipe/switch.S
+similarity index 100%
+rename from kernel/cobalt/arch/arm/switch.S
+rename to kernel/cobalt/arch/arm/ipipe/switch.S
+diff --git a/kernel/cobalt/arch/arm/syscall.c b/kernel/cobalt/arch/arm/ipipe/syscall.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm/syscall.c
+rename to kernel/cobalt/arch/arm/ipipe/syscall.c
+diff --git a/kernel/cobalt/arch/arm/thread.c b/kernel/cobalt/arch/arm/ipipe/thread.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm/thread.c
+rename to kernel/cobalt/arch/arm/ipipe/thread.c
+diff --git a/kernel/cobalt/arch/arm64/Makefile b/kernel/cobalt/arch/arm64/ipipe/Makefile
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/Makefile
+rename to kernel/cobalt/arch/arm64/ipipe/Makefile
+diff --git a/kernel/cobalt/arch/arm64/README b/kernel/cobalt/arch/arm64/ipipe/README
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/README
+rename to kernel/cobalt/arch/arm64/ipipe/README
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/calibration.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/calibration.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/calibration.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/calibration.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/features.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/features.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/features.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/features.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/fptest.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/fptest.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/machine.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/machine.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/syscall.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/syscall.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/syscall32.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/syscall32.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/thread.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/thread.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/wrappers.h
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/include/asm/xenomai/wrappers.h
+rename to kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/wrappers.h
+diff --git a/kernel/cobalt/arch/arm64/machine.c b/kernel/cobalt/arch/arm64/ipipe/machine.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/machine.c
+rename to kernel/cobalt/arch/arm64/ipipe/machine.c
+diff --git a/kernel/cobalt/arch/arm64/syscall.c b/kernel/cobalt/arch/arm64/ipipe/syscall.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/syscall.c
+rename to kernel/cobalt/arch/arm64/ipipe/syscall.c
+diff --git a/kernel/cobalt/arch/arm64/thread.c b/kernel/cobalt/arch/arm64/ipipe/thread.c
+similarity index 100%
+rename from kernel/cobalt/arch/arm64/thread.c
+rename to kernel/cobalt/arch/arm64/ipipe/thread.c
+diff --git a/kernel/cobalt/arch/powerpc/Makefile b/kernel/cobalt/arch/powerpc/ipipe/Makefile
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/Makefile
+rename to kernel/cobalt/arch/powerpc/ipipe/Makefile
+diff --git a/kernel/cobalt/arch/powerpc/README b/kernel/cobalt/arch/powerpc/ipipe/README
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/README
+rename to kernel/cobalt/arch/powerpc/ipipe/README
+diff --git a/kernel/cobalt/arch/powerpc/fpu.S b/kernel/cobalt/arch/powerpc/ipipe/fpu.S
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/fpu.S
+rename to kernel/cobalt/arch/powerpc/ipipe/fpu.S
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/calibration.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/calibration.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/calibration.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/calibration.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/features.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/features.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/features.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/features.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/fptest.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/fptest.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/fptest.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/machine.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/machine.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/machine.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/machine.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/syscall.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall32.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/syscall32.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall32.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/thread.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/thread.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/wrappers.h
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/include/asm/xenomai/wrappers.h
+rename to kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/wrappers.h
+diff --git a/kernel/cobalt/arch/powerpc/machine.c b/kernel/cobalt/arch/powerpc/ipipe/machine.c
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/machine.c
+rename to kernel/cobalt/arch/powerpc/ipipe/machine.c
+diff --git a/kernel/cobalt/arch/powerpc/thread.c b/kernel/cobalt/arch/powerpc/ipipe/thread.c
+similarity index 100%
+rename from kernel/cobalt/arch/powerpc/thread.c
+rename to kernel/cobalt/arch/powerpc/ipipe/thread.c
+diff --git a/kernel/cobalt/arch/x86/Makefile b/kernel/cobalt/arch/x86/ipipe/Makefile
+similarity index 100%
+rename from kernel/cobalt/arch/x86/Makefile
+rename to kernel/cobalt/arch/x86/ipipe/Makefile
+diff --git a/kernel/cobalt/arch/x86/README b/kernel/cobalt/arch/x86/ipipe/README
+similarity index 100%
+rename from kernel/cobalt/arch/x86/README
+rename to kernel/cobalt/arch/x86/ipipe/README
+diff --git a/kernel/cobalt/arch/x86/c1e.c b/kernel/cobalt/arch/x86/ipipe/c1e.c
+similarity index 100%
+rename from kernel/cobalt/arch/x86/c1e.c
+rename to kernel/cobalt/arch/x86/ipipe/c1e.c
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/c1e.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/c1e.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/c1e.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/c1e.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/calibration.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/calibration.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/calibration.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/calibration.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/features.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/features.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/features.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/features.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/fptest.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/fptest.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/machine.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/machine.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/smi.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/smi.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/smi.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/smi.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall32-table.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall32-table.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall32.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall32.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/wrappers.h
+similarity index 100%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+rename to kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/wrappers.h
+diff --git a/kernel/cobalt/arch/x86/machine.c b/kernel/cobalt/arch/x86/ipipe/machine.c
+similarity index 100%
+rename from kernel/cobalt/arch/x86/machine.c
+rename to kernel/cobalt/arch/x86/ipipe/machine.c
+diff --git a/kernel/cobalt/arch/x86/smi.c b/kernel/cobalt/arch/x86/ipipe/smi.c
+similarity index 100%
+rename from kernel/cobalt/arch/x86/smi.c
+rename to kernel/cobalt/arch/x86/ipipe/smi.c
+diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/ipipe/thread.c
+similarity index 100%
+rename from kernel/cobalt/arch/x86/thread.c
+rename to kernel/cobalt/arch/x86/ipipe/thread.c
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 1b5fb427d..7dba3d5a5 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -147,7 +147,7 @@ generate_patch() {
  }
  
-+int pipeline_get_host_time(struct timespec *tp);
-+
- #endif /* !_COBALT_KERNEL_IPIPE_CLOCK_H */
-diff --git a/include/cobalt/uapi/kernel/vdso.h b/include/cobalt/uapi/kernel/vdso.h
-index 396594bb0..5b9b1b66b 100644
---- a/include/cobalt/uapi/kernel/vdso.h
-+++ b/include/cobalt/uapi/kernel/vdso.h
-@@ -20,6 +20,11 @@
  
- #include <cobalt/uapi/kernel/urw.h>
+-usage='usage: prepare-kernel --linux=<linux-tree> --ipipe=<ipipe-patch> [--arch=<arch>] [--outpatch=<file> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose]'
++usage='usage: prepare-kernel --linux=<linux-tree> [--dovetail=<dovetail-patch>]|[--ipipe=<ipipe-patch>] [--arch=<arch>] [--outpatch=<file> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose]'
+ me=`basename $0`
  
-+/*
-+ * I-pipe only. Dovetail enables the common vDSO for getting
-+ * CLOCK_REALTIME timestamps from the out-of-band stage
-+ * (XNVDSO_FEAT_HOST_REALTIME is cleared in this case).
-+ */
- struct xnvdso_hostrt_data {
- 	__u64 wall_sec;
- 	__u64 wtom_sec;
-diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
-index eae6a4a7c..f2b877d45 100644
---- a/kernel/cobalt/ipipe/Makefile
-+++ b/kernel/cobalt/ipipe/Makefile
-@@ -2,4 +2,4 @@ ccflags-y += -I$(srctree)/kernel
+ while test $# -gt 0; do
+@@ -157,12 +157,25 @@ while test $# -gt 0; do
+ 	linux_tree=`eval "echo $linux_tree"`
+ 	;;
+     --adeos=*)
+-	ipipe_patch=`echo $1|sed -e 's,^--adeos=\\(.*\\)$,\\1,g'`
+-	ipipe_patch=`eval "echo $ipipe_patch"`
++	pipeline_patch=`echo $1|sed -e 's,^--adeos=\\(.*\\)$,\\1,g'`
++	pipeline_patch=`eval "echo $pipeline_patch"`
++	probe_header=include/linux/ipipe.h
++	arch_probe_header=include/asm/ipipe.h
++	pipeline_type=ipipe
+ 	;;
+     --ipipe=*)
+-	ipipe_patch=`echo $1|sed -e 's,^--ipipe=\\(.*\\)$,\\1,g'`
+-	ipipe_patch=`eval "echo $ipipe_patch"`
++	pipeline_patch=`echo $1|sed -e 's,^--ipipe=\\(.*\\)$,\\1,g'`
++	pipeline_patch=`eval "echo $pipeline_patch"`
++	probe_header=include/linux/ipipe.h
++	arch_probe_header=include/asm/ipipe.h
++	pipeline_type=ipipe
++	;;
++    --dovetail=*)
++	pipeline_patch=`echo $1|sed -e 's,^--dovetail=\\(.*\\)$,\\1,g'`
++	pipeline_patch=`eval "echo $pipeline_patch"`
++	probe_header=include/linux/dovetail.h
++	arch_probe_header=include/asm/dovetail.h
++	pipeline_type=dovetail
+ 	;;
+     --arch=*)
+ 	linux_arch=`echo $1|sed -e 's,^--arch=\\(.*\\)$,\\1,g'`
+@@ -305,51 +318,58 @@ eval linux_`grep '^VERSION =' $linux_tree/Makefile | sed -e 's, ,,g'`
  
- obj-y +=	pipeline.o
+ linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL"
  
--pipeline-y :=	init.o intr.o kevents.o tick.o syscall.o sched.o
-+pipeline-y :=	init.o intr.o kevents.o tick.o syscall.o sched.o clock.o
-diff --git a/kernel/cobalt/ipipe/clock.c b/kernel/cobalt/ipipe/clock.c
-new file mode 100644
-index 000000000..d0135dc7a
---- /dev/null
-+++ b/kernel/cobalt/ipipe/clock.c
-@@ -0,0 +1,62 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Written by Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>.
-+ */
++if test x$pipeline_type = x; then
++    if test -r include/linux/ipipe.h; then
++	probe_header=include/linux/ipipe.h
++	arch_probe_header=include/asm/ipipe.h
++	pipeline_type=ipipe
++    elif test -r include/linux/dovetail.h; then
++	probe_header=include/linux/dovetail.h
++	arch_probe_header=include/asm/dovetail.h
++	pipeline_type=dovetail
++    fi
++fi
 +
-+#include <cobalt/kernel/clock.h>
-+#include <cobalt/kernel/vdso.h>
-+
-+int pipeline_get_host_time(struct timespec *tp)
-+{
-+#ifdef CONFIG_IPIPE_HAVE_HOSTRT
-+	struct xnvdso_hostrt_data *hostrt_data;
-+	u64 now, base, mask, cycle_delta;
-+	__u32 mult, shift;
-+	unsigned long rem;
-+	urwstate_t tmp;
-+	__u64 nsec;
-+
-+	hostrt_data = get_hostrt_data();
-+	BUG_ON(!hostrt_data);
-+
-+	if (unlikely(!hostrt_data->live))
-+		return -1;
-+
-+	/*
-+	 * Note: Disabling HW interrupts around writes to hostrt_data
-+	 * ensures that a reader (on the Xenomai side) cannot
-+	 * interrupt a writer (on the Linux kernel side) on the same
-+	 * CPU.  The urw block is required when a reader is
-+	 * interleaved by a writer on a different CPU. This follows
-+	 * the approach from userland, where taking the spinlock is
-+	 * not possible.
-+	 */
-+	unsynced_read_block(&tmp, &hostrt_data->lock) {
-+		now = xnclock_read_raw(&nkclock);
-+		base = hostrt_data->cycle_last;
-+		mask = hostrt_data->mask;
-+		mult = hostrt_data->mult;
-+		shift = hostrt_data->shift;
-+		tp->tv_sec = hostrt_data->wall_sec;
-+		nsec = hostrt_data->wall_nsec;
-+	}
-+
-+	/*
-+	 * At this point, we have a consistent copy of the fundamental
-+	 * data structure - calculate the interval between the current
-+	 * and base time stamp cycles, and convert the difference
-+	 * to nanoseconds.
-+	 */
-+	cycle_delta = (now - base) & mask;
-+	nsec += (cycle_delta * mult) >> shift;
-+
-+	/* Convert to the desired sec, usec representation */
-+	tp->tv_sec += xnclock_divrem_billion(nsec, &rem);
-+	tp->tv_nsec = rem;
-+
-+	return 0;
-+#else
-+	return -EINVAL;
-+#endif
-+}
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 40271f3ed..e957dd956 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -18,7 +18,6 @@
+ if test x$verbose = x1; then
+ echo "Preparing kernel $linux_version$linux_EXTRAVERSION in $linux_tree..."
+ fi
  
- #include <linux/clocksource.h>
- #include <linux/bitmap.h>
--#include <cobalt/kernel/vdso.h>
- #include <cobalt/kernel/clock.h>
- #include "internal.h"
- #include "thread.h"
-@@ -29,60 +28,6 @@ static struct xnclock *external_clocks[COBALT_MAX_EXTCLOCKS];
+-if test -r $linux_tree/include/linux/ipipe.h; then
++if test -r $linux_tree/$probe_header; then
+     if test x$verbose = x1; then
+-       echo "I-pipe found - bypassing patch."
++       echo "IRQ pipeline found - bypassing patch."
+     fi
+ else
+    if test x$verbose = x1; then
+-      echo "$me: no I-pipe support found." >&2
++      echo "$me: no IRQ pipeline support found." >&2
+    fi
+-   while test x$ipipe_patch = x; do
+-      echo -n "I-pipe patch: "
+-      read ipipe_patch
+-      if test \! -r "$ipipe_patch" -o x$ipipe_patch = x; then
+-         echo "$me: cannot read I-pipe patch from $ipipe_patch" >&2
+-         ipipe_patch=
++   while test x$pipeline_patch = x; do
++      echo -n "IRQ pipeline patch: "
++      read pipeline_patch
++      if test \! -r "$pipeline_patch" -o x$pipeline_patch = x; then
++         echo "$me: cannot read IRQ pipeline support from $pipeline_patch" >&2
++         pipeline_patch=
+       fi
+    done
+-   patchdir=`dirname $ipipe_patch`; 
++   patchdir=`dirname $pipeline_patch`; 
+    patchdir=`cd $patchdir && pwd`
+-   ipipe_patch=$patchdir/`basename $ipipe_patch`
++   pipeline_patch=$patchdir/`basename $pipeline_patch`
+    curdir=$PWD
+-   cd $linux_tree && patch --dry-run -p1 -f < $ipipe_patch || { 
++   cd $linux_tree && patch --dry-run -p1 -f < $pipeline_patch || { 
+         cd $curdir;
+-        echo "$me: Unable to patch kernel $linux_version$linux_EXTRAVERSION with `basename $ipipe_patch`." >&2
++        echo "$me: Unable to patch kernel $linux_version$linux_EXTRAVERSION with `basename $pipeline_patch`." >&2
+         exit 2;
+    }
+-   patch -p1 -f -s < $ipipe_patch
++   patch -p1 -f -s < $pipeline_patch
+    cd $curdir
+ fi
  
- DECLARE_BITMAP(cobalt_clock_extids, COBALT_MAX_EXTCLOCKS);
+-if test \! -r $linux_tree/arch/$linux_arch/include/asm/ipipe.h; then
+-   echo "$me: $linux_tree has no I-pipe support for $linux_arch" >&2
++if test \! -r $linux_tree/arch/$linux_arch/$arch_probe_header; then
++   echo "$me: $linux_tree has no IRQ pipeline support for $linux_arch" >&2
+    exit 2
+ fi
  
--static int do_clock_host_realtime(struct timespec *tp)
--{
--#ifdef CONFIG_IPIPE_HAVE_HOSTRT
--	struct xnvdso_hostrt_data *hostrt_data;
--	u64 now, base, mask, cycle_delta;
--	__u32 mult, shift;
--	unsigned long rem;
--	urwstate_t tmp;
--	__u64 nsec;
--
--	hostrt_data = get_hostrt_data();
--	BUG_ON(!hostrt_data);
--
--	if (unlikely(!hostrt_data->live))
--		return -1;
--
--	/*
--	 * Note: Disabling HW interrupts around writes to hostrt_data
--	 * ensures that a reader (on the Xenomai side) cannot
--	 * interrupt a writer (on the Linux kernel side) on the same
--	 * CPU.  The urw block is required when a reader is
--	 * interleaved by a writer on a different CPU. This follows
--	 * the approach from userland, where taking the spinlock is
--	 * not possible.
--	 */
--	unsynced_read_block(&tmp, &hostrt_data->lock) {
--		now = xnclock_read_raw(&nkclock);
--		base = hostrt_data->cycle_last;
--		mask = hostrt_data->mask;
--		mult = hostrt_data->mult;
--		shift = hostrt_data->shift;
--		tp->tv_sec = hostrt_data->wall_sec;
--		nsec = hostrt_data->wall_nsec;
--	}
--
--	/*
--	 * At this point, we have a consistent copy of the fundamental
--	 * data structure - calculate the interval between the current
--	 * and base time stamp cycles, and convert the difference
--	 * to nanoseconds.
--	 */
--	cycle_delta = (now - base) & mask;
--	nsec += (cycle_delta * mult) >> shift;
--
--	/* Convert to the desired sec, usec representation */
--	tp->tv_sec += xnclock_divrem_billion(nsec, &rem);
--	tp->tv_nsec = rem;
--
--	return 0;
--#else
--	return -EINVAL;
--#endif
--}
--
- #define do_ext_clock(__clock_id, __handler, __ret, __args...)	\
- ({								\
- 	struct xnclock *__clock;				\
-@@ -161,7 +106,7 @@ int __cobalt_clock_gettime(clockid_t clock_id, struct timespec *ts)
- 		ns2ts(ts, xnclock_read_monotonic(&nkclock));
- 		break;
- 	case CLOCK_HOST_REALTIME:
--		if (do_clock_host_realtime(ts) != 0)
-+		if (pipeline_get_host_time(ts) != 0)
- 			return -EINVAL;
- 		break;
- 	default:
+-ipipe_core=`grep '^#define.*IPIPE_CORE_RELEASE.*' $linux_tree/arch/$linux_arch/include/asm/ipipe.h 2>/dev/null|head -n1|sed -e 's,[^0-9]*\([0-9]*\)$,\1,'`
+-if test "x$ipipe_core" = x; then
+-    echo "$me: $linux_tree has no I-pipe support for $linux_arch" >&2
+-    exit 2
+-fi
+ if test x$verbose = x1; then
+-   echo "I-pipe core/$linux_arch #$ipipe_core installed."
++   echo "IRQ pipeline installed."
+ fi
+ 
+ patch_kernelversion_specific="y"
+@@ -387,9 +407,9 @@ case $linux_VERSION.$linux_PATCHLEVEL in
+ test "x$CONFIG_XENO_REVISION_LEVEL" = "x" && CONFIG_XENO_REVISION_LEVEL=0
+ 
+     if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
+-	p="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/include/xenomai"
++	p="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/arch/\$(SRCARCH)/xenomai/$pipeline_type/include -I\$(srctree)/include/xenomai"
+ 	(echo; echo $p) | patch_append arch/$linux_arch/Makefile
+-	p="core-\$(CONFIG_XENOMAI)	+= arch/$linux_arch/xenomai/"
++	p="core-\$(CONFIG_XENOMAI)	+= arch/$linux_arch/xenomai/$pipeline_type/"
+ 	echo $p | patch_append arch/$linux_arch/Makefile
+     fi
+ 
+@@ -415,7 +435,7 @@ esac
+ patch_kernelversion_specific="n"
+ patch_architecture_specific="y"
+ patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
+-patch_link n n kernel/cobalt/include/ipipe arch/$linux_arch/include/ipipe
++patch_link n n kernel/cobalt/include/$pipeline_type arch/$linux_arch/include/$pipeline_type
+ patch_architecture_specific="n"
+ patch_link n m kernel/cobalt kernel/xenomai
+ patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
+@@ -425,11 +445,11 @@ patch_link r n kernel/cobalt/include/asm-generic/xenomai include/asm-generic/xen
+ patch_link r n kernel/cobalt/include/linux/xenomai include/linux/xenomai
+ patch_link n m kernel/cobalt/posix kernel/xenomai/posix
+ patch_link n m kernel/cobalt/rtdm kernel/xenomai/rtdm
+-patch_link n m kernel/cobalt/ipipe kernel/xenomai/pipeline
++patch_link n m kernel/cobalt/$pipeline_type kernel/xenomai/pipeline
+ patch_link r m kernel/drivers drivers/xenomai
+ patch_link n n include/cobalt/kernel include/xenomai/cobalt/kernel
+ patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
+-patch_link r n include/cobalt/kernel/ipipe/pipeline include/xenomai/pipeline
++patch_link r n include/cobalt/kernel/$pipeline_type/pipeline include/xenomai/pipeline
+ patch_link r n include/cobalt/uapi include/xenomai/cobalt/uapi
+ patch_link r n include/rtdm/uapi include/xenomai/rtdm/uapi
+ patch_link n version.h include/xenomai include/xenomai
 -- 
 2.26.2
 
