@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 07/13] cobalt/arm: ipipe: remove obsolete calibration handler
-Date: Sun, 31 Jan 2021 15:45:34 +0100
-Message-Id: <20210131144540.243363-7-rpm@xenomai.org>
+Subject: [PATCH 08/13] cobalt/arm64: ipipe: remove obsolete calibration handler
+Date: Sun, 31 Jan 2021 15:45:35 +0100
+Message-Id: <20210131144540.243363-8-rpm@xenomai.org>
 In-Reply-To: <20210131144540.243363-1-rpm@xenomai.org>
 References: <20210131144540.243363-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -20,13 +20,13 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/arch/arm/ipipe/machine.c | 59 --------------------------
- 1 file changed, 59 deletions(-)
+ kernel/cobalt/arch/arm64/ipipe/machine.c | 58 ------------------------
+ 1 file changed, 58 deletions(-)
 
-diff --git a/kernel/cobalt/arch/arm/ipipe/machine.c b/kernel/cobalt/arch/arm/ipipe/machine.c
-index 721567182..0fd48cae1 100644
---- a/kernel/cobalt/arch/arm/ipipe/machine.c
-+++ b/kernel/cobalt/arch/arm/ipipe/machine.c
+diff --git a/kernel/cobalt/arch/arm64/ipipe/machine.c b/kernel/cobalt/arch/arm64/ipipe/machine.c
+index cb2867492..a215e4caa 100644
+--- a/kernel/cobalt/arch/arm64/ipipe/machine.c
++++ b/kernel/cobalt/arch/arm64/ipipe/machine.c
 @@ -19,13 +19,8 @@
   */
  
@@ -41,7 +41,7 @@ index 721567182..0fd48cae1 100644
  static void mach_arm_prefault(struct vm_area_struct *vma)
  {
  	unsigned long addr;
-@@ -43,59 +38,6 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
+@@ -43,58 +38,6 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
  	}
  }
  
@@ -68,7 +68,6 @@ index 721567182..0fd48cae1 100644
 -	barrier();
 -
 -	for (i = 0; i < CALIBRATION_LOOPS; i++) {
--		flush_cache_all();
 -		for (j = 0; j < CALIBRATION_LOOPS; j++) {
 -			ipipe_read_tsc(start);
 -			barrier();
@@ -101,7 +100,7 @@ index 721567182..0fd48cae1 100644
  static const char *const fault_labels[] = {
  	[IPIPE_TRAP_ACCESS] = "Data or instruction access",
  	[IPIPE_TRAP_SECTION] = "Section fault",
-@@ -116,7 +58,6 @@ struct cobalt_machine cobalt_machine = {
+@@ -115,7 +58,6 @@ struct cobalt_machine cobalt_machine = {
  	.init = NULL,
  	.late_init = NULL,
  	.cleanup = NULL,
