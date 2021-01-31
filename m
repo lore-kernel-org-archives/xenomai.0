@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 06/13] cobalt/clock: drop timer calibration
-Date: Sun, 31 Jan 2021 15:45:33 +0100
-Message-Id: <20210131144540.243363-6-rpm@xenomai.org>
+Subject: [PATCH 07/13] cobalt/arm: ipipe: remove obsolete calibration handler
+Date: Sun, 31 Jan 2021 15:45:34 +0100
+Message-Id: <20210131144540.243363-7-rpm@xenomai.org>
 In-Reply-To: <20210131144540.243363-1-rpm@xenomai.org>
 References: <20210131144540.243363-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,101 +18,97 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-The calibrated timer setup time is currently accounted for in the
-timer gravity triplet (.user, also used as default .irq latency),
-exclusively. This forces in a dynamically calculated parameter with no
-way to override it. Meanwhile, this value would be already included in
-every gravity value which autotune may determine, so this setting is
-pretty much redundant.
-
-Drop nktimerlat and the requirement for the machine section to provide
-a timer calibration handler, we don't need these.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/clock.h                  | 2 --
- include/cobalt/kernel/ipipe/pipeline/machine.h | 6 ------
- kernel/cobalt/clock.c                          | 7 -------
- 3 files changed, 15 deletions(-)
+ kernel/cobalt/arch/arm/ipipe/machine.c | 59 --------------------------
+ 1 file changed, 59 deletions(-)
 
-diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-index 59835951c..bbf34c53c 100644
---- a/include/cobalt/kernel/clock.h
-+++ b/include/cobalt/kernel/clock.h
-@@ -104,8 +104,6 @@ struct xnclock_ratelimit_state {
+diff --git a/kernel/cobalt/arch/arm/ipipe/machine.c b/kernel/cobalt/arch/arm/ipipe/machine.c
+index 721567182..0fd48cae1 100644
+--- a/kernel/cobalt/arch/arm/ipipe/machine.c
++++ b/kernel/cobalt/arch/arm/ipipe/machine.c
+@@ -19,13 +19,8 @@
+  */
  
- extern struct xnclock nkclock;
+ #include <linux/mm.h>
+-#include <linux/ipipe_tickdev.h>
+-#include <cobalt/kernel/arith.h>
+-#include <asm/cacheflush.h>
+ #include <asm/xenomai/machine.h>
  
--extern unsigned long nktimerlat;
+-#define CALIBRATION_LOOPS 10
 -
- int xnclock_register(struct xnclock *clock,
- 		     const cpumask_t *affinity);
+ static void mach_arm_prefault(struct vm_area_struct *vma)
+ {
+ 	unsigned long addr;
+@@ -43,59 +38,6 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
+ 	}
+ }
  
-diff --git a/include/cobalt/kernel/ipipe/pipeline/machine.h b/include/cobalt/kernel/ipipe/pipeline/machine.h
-index 32d5cd2a2..a5a5197e9 100644
---- a/include/cobalt/kernel/ipipe/pipeline/machine.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/machine.h
-@@ -24,7 +24,6 @@ struct cobalt_machine {
- 	int (*late_init)(void);
- 	void (*cleanup)(void);
- 	void (*prefault)(struct vm_area_struct *vma);
--	unsigned long (*calibrate)(void);
- 	const char *const *fault_labels;
- };
- 
-@@ -46,11 +45,6 @@ struct cobalt_pipeline {
- #endif
- };
- 
--static inline unsigned long xnarch_timer_calibrate(void)
+-static unsigned long mach_arm_calibrate(void)
 -{
--	return cobalt_machine.calibrate();
+-	unsigned long delay = (cobalt_pipeline.timer_freq + HZ / 2) / HZ;
+-	unsigned long long start, end, sum = 0, sum_sq = 0;
+-	unsigned long result, flags, tsc_lat;
+-	long long diff;
+-	int i, j;
+-
+-	flags = ipipe_critical_enter(NULL);
+-
+-	/*
+-	 * Hw interrupts off, other CPUs quiesced, no migration
+-	 * possible. We can now fiddle with the timer chip (per-cpu
+-	 * local or global, ipipe_timer_set() will handle this
+-	 * transparently).
+-	 */
+-	ipipe_read_tsc(start);
+-	barrier();
+-	ipipe_read_tsc(end);
+-	tsc_lat = end - start;
+-	barrier();
+-
+-	for (i = 0; i < CALIBRATION_LOOPS; i++) {
+-		flush_cache_all();
+-		for (j = 0; j < CALIBRATION_LOOPS; j++) {
+-			ipipe_read_tsc(start);
+-			barrier();
+-			ipipe_timer_set(delay);
+-			barrier();
+-			ipipe_read_tsc(end);
+-			diff = end - start - tsc_lat;
+-			if (diff > 0) {
+-				sum += diff;
+-				sum_sq += diff * diff;
+-			}
+-		}
+-	}
+-
+-	ipipe_critical_exit(flags);
+-
+-	/* Use average + standard deviation as timer programming latency. */
+-	do_div(sum, CALIBRATION_LOOPS * CALIBRATION_LOOPS);
+-	do_div(sum_sq, CALIBRATION_LOOPS * CALIBRATION_LOOPS);
+-	result = sum + int_sqrt(sum_sq - sum * sum) + 1;
+-	/*
+-	 * Reset the max trace, since it contains the calibration time
+-	 * now.
+-	 */
+-	ipipe_trace_max_reset();
+-
+-	return result;
 -}
 -
- int pipeline_init(void);
- 
- int pipeline_late_init(void);
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index 7d1e00ea1..bf24e1693 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -32,7 +32,6 @@
-  *
-  * @{
-  */
--unsigned long nktimerlat;
- 
- #ifdef XNARCH_HAVE_NODIV_LLIMD
- 
-@@ -456,8 +455,6 @@ void print_core_clock_status(struct xnclock *clock,
- 	xnvfile_printf(it, "%8s: timer=%s, clock=%s\n",
- 		       "devices", pipeline_timer_name(), pipeline_clock_name());
- 	xnvfile_printf(it, "%8s: %s\n", "watchdog", wd_status);
--	xnvfile_printf(it, "%8s: %Lu\n", "setup",
--		       xnclock_ticks_to_ns(&nkclock, nktimerlat));
- }
- 
- static int clock_show(struct xnvfile_regular_iterator *it, void *data)
-@@ -784,11 +781,8 @@ static void reset_core_clock_gravity(struct xnclock *clock)
- 	struct xnclock_gravity gravity;
- 
- 	xnarch_get_latencies(&gravity);
--	gravity.user += nktimerlat;
- 	if (gravity.kernel == 0)
- 		gravity.kernel = gravity.user;
--	if (gravity.irq == 0)
--		gravity.irq = nktimerlat;
- 	set_core_clock_gravity(clock, &gravity);
- }
- 
-@@ -817,7 +811,6 @@ int __init xnclock_init()
- 	xnarch_init_u32frac(&bln_frac, 1, 1000000000);
- #endif
- 	pipeline_init_clock();
--	nktimerlat = xnarch_timer_calibrate();
- 	xnclock_reset_gravity(&nkclock);
- 	xnclock_register(&nkclock, &xnsched_realtime_cpus);
- 
+ static const char *const fault_labels[] = {
+ 	[IPIPE_TRAP_ACCESS] = "Data or instruction access",
+ 	[IPIPE_TRAP_SECTION] = "Section fault",
+@@ -116,7 +58,6 @@ struct cobalt_machine cobalt_machine = {
+ 	.init = NULL,
+ 	.late_init = NULL,
+ 	.cleanup = NULL,
+-	.calibrate = mach_arm_calibrate,
+ 	.prefault = mach_arm_prefault,
+ 	.fault_labels = fault_labels,
+ };
 -- 
 2.26.2
 
