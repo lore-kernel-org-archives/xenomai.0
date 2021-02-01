@@ -1,13 +1,11 @@
-References: <20210111064318.6154-1-hongzhan.chen@intel.com>
- <20210111064318.6154-9-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 09/10] dovetail/clock: implement pipeline_timer_name to
- get name of real device
-In-reply-to: <20210111064318.6154-9-hongzhan.chen@intel.com>
-Date: Tue, 12 Jan 2021 17:52:42 +0100
-Message-ID: <87turmksh1.fsf@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: several questions about porting latmus
+Date: Mon, 1 Feb 2021 04:36:29 +0000
+Message-ID: <MWHPR11MB1710FDC8D365CE3FCFADA88DF2B69@MWHPR11MB1710.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,63 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+
+Hi Philippe
+
+When I was trying to port latmus from evl to xenomai 3.2,  I met several is=
+sues that block porting
+and need your suggestions.
+
+1. When I tried to replace function evl_run_kthread_on_cpu of latmus.c driv=
+er ,  I found that only rtdm_task_init =20
+    can meet our requirements mostly  but we still cannot pass cpu affinity=
+ through it to pin task to required
+    cpu. Do we need to implement new API so that we can  pass cpu affinity =
+to pin task to required cpu but
+    finish all functions  of rtdm_task_init?
+
+2. Regarding replacement of evl_get_xbuf of latmus.c,  I would first call=20
+     rtdm_socket (AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP); to create socket an=
+d then call rtdm_bind  to bind
+     it to XDDP_PORT=3Dxfd that passed from user space  after call rtdm_set=
+sockopt to do corresponding operation like
+      demo/posix/cobalt/xddp-stream.c.
+     Of course , I would replace evl_write_xbuf with rtdm_sendto  and corre=
+sponding xbuf variable type in related=20
+     structure.  In addition , on userspace of latmus , I would  replace ev=
+l_create_xbuf with open ("/dev/rtp$xfd ",..) and then
+     read by returned handler to get data from socket.  Is such design OK f=
+or you?
+     Actually , I can not find any instance about rtdm_socket but descripti=
+on in doc/asciidoc/MIGRATION.adoc, I do not know
+    If such design is feasible. Please comment.
 
 
-hongzha1 via Xenomai <xenomai@xenomai.org> writes:
+Regards
 
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
-> ---
->  include/cobalt/kernel/dovetail/pipeline/clock.h | 5 ++---
->  kernel/cobalt/dovetail/tick.c                   | 8 ++++++++
->  2 files changed, 10 insertions(+), 3 deletions(-)
->
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> index ce9a5c867..771104ab4 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/clock.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> @@ -12,6 +12,7 @@
->  struct timespec64;
->  
->  extern inline void xnproxy_timer_set(unsigned long delta);
-> +inline const char *xn_get_timer_name(void);
->
->  static inline u64 pipeline_read_cycle_counter(void)
->  {
-> @@ -37,9 +38,7 @@ static inline const char *pipeline_timer_name(void)
->  	 * Return the name of the current clock event chip, which is
->  	 * the real device controlled by the proxy tick device.
->  	 */
-> -	TODO();
-> -
-> -	return "?";
-> +	return xn_get_timer_name();
->  }
->  
->  static inline const char *pipeline_clock_name(void)
-> diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-> index 58662e94e..e40ec06cb 100644
-> --- a/kernel/cobalt/dovetail/tick.c
-> +++ b/kernel/cobalt/dovetail/tick.c
-> @@ -16,6 +16,14 @@ extern struct xnintr nktimer;
->  
->  static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
->  
-> +inline const char *xn_get_timer_name(void)
-> +{
-> +	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
-> +	struct clock_event_device *real_dev = dev->real_device;
-> +
-> +	return real_dev->name;
-> +}
-> +
+Hongzhan Chen
 
-Please rename xn_get_timer_name() directly to pipeline_timer_name(),
-which should be out of line, so that we don't have to expose the
-proxy_device variable. This stuff is rarely called, and definitely not
-on the hot path.
-
--- 
-Philippe.
 
