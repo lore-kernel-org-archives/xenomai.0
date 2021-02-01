@@ -1,14 +1,13 @@
+Subject: Re: Using serial port with module xeno_16550A
+References: <AS8PR08MB6485476EF27D66304C35723F9AB69@AS8PR08MB6485.eurprd08.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1df23930-c896-51dd-2de4-21ff89c11b41@siemens.com>
+Date: Mon, 1 Feb 2021 20:26:18 +0100
 MIME-Version: 1.0
-References: <20210127054348.2128285-1-greg@embeddedgreg.com>
- <e577f54b-43c8-0291-ef3a-e48b77d2ebdf@siemens.com>
- <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
- <CALLqZ8SshX0=ZJgdUjj9a2XBVsFfz6C5MXz-ysig8Tah3AD0+Q@mail.gmail.com>
-In-Reply-To: <CALLqZ8SshX0=ZJgdUjj9a2XBVsFfz6C5MXz-ysig8Tah3AD0+Q@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 1 Feb 2021 14:15:55 -0500
-Message-ID: <CALLqZ8RKgSWYmiAPcezb3m4KfKnJE2PFTruFz6nmn7f3ptxq6Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kernel: cobalt: Fix up elf_hwcap
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <AS8PR08MB6485476EF27D66304C35723F9AB69@AS8PR08MB6485.eurprd08.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Zhao, Lixiang" <Lixiang.Zhao@leoni.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jan 27, 2021 at 9:26 AM Greg Gallagher <greg@embeddedgreg.com>
-wrote:
+On 01.02.21 19:02, Zhao, Lixiang via Xenomai wrote:
+> Hello,
+> 
+> I'm currently porting xenomai on my project on a raspberry pi 4B and I would like some advice, I'm using xenomai 3.0.9 with a ipipe patch that I found on the web, I managed to set the module xeno_16550A and I was able to replace the default module that load ttyAMA0 of the pi to /dev/rtdm/rtser0. Beside this, I was able to adapt the code to the real time task with the Xenomai API, and the performance I get with each cyclic is really good.
+> 
 
->
->
-> On Wed, Jan 27, 2021 at 1:15 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
->> On 27.01.21 07:13, Jan Kiszka via Xenomai wrote:
->> > On 27.01.21 06:43, Greg Gallagher via Xenomai wrote:
->> >> Update elf_hwcap to ELF_HWCAP, this will work for newer 5.4 kernels
->> >>
->> >
->> > I assume you mean "also work" - or does it break on certain older
->> > kernels? Just asking before consulting our CI. ;)
->> >
->>
->> ...and the same pattern exists on ARM.
->>
->> Jan
->>
->> >> Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
->> >> ---
->> >>  kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
->> >>  1 file changed, 1 insertion(+), 1 deletion(-)
->> >>
->> >> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> >> index b7e3f52f2..291c9e5f0 100644
->> >> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> >> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
->> >> @@ -23,7 +23,7 @@
->> >>  #include <asm/xenomai/uapi/fptest.h>
->> >>  #include <asm/hwcap.h>
->> >>
->> >> -#define have_fp (elf_hwcap & HWCAP_FP)
->> >> +#define have_fp (ELF_HWCAP & HWCAP_FP)
->> >>
->> >>  static inline int fp_kernel_supported(void)
->> >>  {
->> >>
->> >
->> > Jan
->> >
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
->>
->
-> No problem, ACK.  I'll put a more meaningful commit message as well.  I
-> thought I changed that before I sent the patch.
->
-> -Greg
->
+ttyAMA0 should refer to the pl011 UART, while the auxiliary one is a
+8250, thus the fit for the exist rtserial driver.
 
-These don't need to be updated on the arm (aarch32) side of things.  I have
-that port running now and should have testing done this evening.  I will
-update this patch with a better commit message.
+> I would like to use this file descriptor to perform some exchange, the simple test is to connect a Null cable on the RX/TX UART in order to form a loop. I did import the rtdm/serial.h, and explicitely call the __RT() functions on the open, write, read and ioctl on the low level functions. I am able to open the file, configure it with ioctl and the rtser_config struct, and writing on it. What I am struggling with is the read function, I am not able to retrieve the correct return value of the read, it always return -1, I'm not sure if my configuration is correct or not.
+> 
+> The rtser_config is the following :
+>     struct rtser_config my_config;
+> 
+>     my_config.config_mask       = 0xFFFF; // RTSER_SET_BAUD | RTSER_SET_TIMESTAMP_HISTORY; // //
+>     my_config.baud_rate         = 115200;
+>     my_config.parity            = RTSER_NO_PARITY;
+>     my_config.data_bits         = RTSER_8_BITS;
+>     my_config.stop_bits         = RTSER_2_STOPB;
+>     my_config.handshake         = RTSER_RTSCTS_HAND;
+>     my_config.fifo_depth        = RTSER_DEF_FIFO_DEPTH;
+>     my_config.rx_timeout        = RTDM_TIMEOUT_INFINITE;
+>     my_config.tx_timeout        = RTDM_TIMEOUT_INFINITE;
+>     my_config.event_timeout     = 1000000000; /* 1 s */
+>     my_config.timestamp_history = RTSER_RX_TIMESTAMP_HISTORY;
+>     my_config.event_mask        = RTSER_EVENT_RXPEND;
+>     my_config.rs485             = RTSER_RS485_DISABLE;
+> 
+> Could you help me on this issue ?
+> 
 
--Greg
+Did you study demo/alchemy/cobalt/cross-link.c already? It's using the
+alchemy skin rather than posix, but that you could translate once you
+have a working pattern.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
