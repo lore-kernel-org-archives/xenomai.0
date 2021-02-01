@@ -1,11 +1,14 @@
-From: "Zhao, Lixiang" <Lixiang.Zhao@leoni.com>
-Subject: Using serial port with module xeno_16550A
-Date: Mon, 1 Feb 2021 18:02:48 +0000
-Message-ID: <AS8PR08MB6485476EF27D66304C35723F9AB69@AS8PR08MB6485.eurprd08.prod.outlook.com>
-Content-Language: fr-FR
+Subject: Re: [PATCH 13/13] cobalt/assert: pipeline: add TODO() marker
+References: <20210131144540.243363-1-rpm@xenomai.org>
+ <20210131144540.243363-13-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4740e1bd-00d3-3004-817d-c684c0f40752@siemens.com>
+Date: Mon, 1 Feb 2021 19:20:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210131144540.243363-13-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +17,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Hello,
+On 31.01.21 15:45, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> As its name suggests, TODO() can be added to the code in order to
+> highlight a place where some implementation bits are known to be
+> missing. Turning on CONFIG_XENO_TODO reveals the places where such
+> markers might linger by triggering a build time assertion, so that
+> they don't go unnoticed.
+> 
+> We may drop this helper when the port to Dovetail is complete.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  include/cobalt/kernel/assert.h | 2 ++
+>  kernel/cobalt/Kconfig          | 6 ++++++
+>  2 files changed, 8 insertions(+)
+> 
+> diff --git a/include/cobalt/kernel/assert.h b/include/cobalt/kernel/assert.h
+> index 7d9433abc..8d004476b 100644
+> --- a/include/cobalt/kernel/assert.h
+> +++ b/include/cobalt/kernel/assert.h
+> @@ -58,6 +58,8 @@
+>  	do { } while (0)
+>  #endif
+>  
+> +#define TODO()    BUILD_BUG_ON(IS_ENABLED(CONFIG_XENO_TODO))
+> +
+>  #define primary_mode_only()	XENO_BUG_ON(CONTEXT, is_secondary_domain())
+>  #define secondary_mode_only()	XENO_BUG_ON(CONTEXT, !is_secondary_domain())
+>  #define interrupt_only()	XENO_BUG_ON(CONTEXT, !xnsched_interrupt_p())
+> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
+> index ead4740c1..a266011d4 100644
+> --- a/kernel/cobalt/Kconfig
+> +++ b/kernel/cobalt/Kconfig
+> @@ -485,3 +485,9 @@ config XENO_OPT_WATCHDOG_TIMEOUT
+>  	  Watchdog timeout value (in seconds).
+>  
+>  endif # XENO_OPT_DEBUG
+> +
+> +config XENO_TODO
+> +	bool "Reveal TODO places"
+> +	help
+> +	  This option causes a build time assertion to trigger
+> +	  when the TODO() marker is found in the compiled code.
+> 
 
-I'm currently porting xenomai on my project on a raspberry pi 4B and I woul=
-d like some advice, I'm using xenomai 3.0.9 with a ipipe patch that I found=
- on the web, I managed to set the module xeno_16550A and I was able to repl=
-ace the default module that load ttyAMA0 of the pi to /dev/rtdm/rtser0. Bes=
-ide this, I was able to adapt the code to the real time task with the Xenom=
-ai API, and the performance I get with each cyclic is really good.
+No user at this stage. Do you think we will have any while finishing the
+port in-tree?
 
-I would like to use this file descriptor to perform some exchange, the simp=
-le test is to connect a Null cable on the RX/TX UART in order to form a loo=
-p. I did import the rtdm/serial.h, and explicitely call the __RT() function=
-s on the open, write, read and ioctl on the low level functions. I am able =
-to open the file, configure it with ioctl and the rtser_config struct, and =
-writing on it. What I am struggling with is the read function, I am not abl=
-e to retrieve the correct return value of the read, it always return -1, I'=
-m not sure if my configuration is correct or not.
+Jan
 
-The rtser_config is the following :
-    struct rtser_config my_config;
-
-    my_config.config_mask       =3D 0xFFFF; // RTSER_SET_BAUD | RTSER_SET_T=
-IMESTAMP_HISTORY; // //
-    my_config.baud_rate         =3D 115200;
-    my_config.parity            =3D RTSER_NO_PARITY;
-    my_config.data_bits         =3D RTSER_8_BITS;
-    my_config.stop_bits         =3D RTSER_2_STOPB;
-    my_config.handshake         =3D RTSER_RTSCTS_HAND;
-    my_config.fifo_depth        =3D RTSER_DEF_FIFO_DEPTH;
-    my_config.rx_timeout        =3D RTDM_TIMEOUT_INFINITE;
-    my_config.tx_timeout        =3D RTDM_TIMEOUT_INFINITE;
-    my_config.event_timeout     =3D 1000000000; /* 1 s */
-    my_config.timestamp_history =3D RTSER_RX_TIMESTAMP_HISTORY;
-    my_config.event_mask        =3D RTSER_EVENT_RXPEND;
-    my_config.rs485             =3D RTSER_RS485_DISABLE;
-
-Could you help me on this issue ?
-
-Best regards,
-Li Xiang.
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
