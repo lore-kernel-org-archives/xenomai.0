@@ -1,14 +1,11 @@
-Subject: Re: [PATCH 06/13] cobalt/clock: drop timer calibration
-References: <20210131144540.243363-1-rpm@xenomai.org>
- <20210131144540.243363-6-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <dc0e32e6-b7f8-85c9-7c15-7bd9b10e6c6a@siemens.com>
-Date: Mon, 1 Feb 2021 19:14:17 +0100
+From: "Zhao, Lixiang" <Lixiang.Zhao@leoni.com>
+Subject: Using serial port with module xeno_16550A
+Date: Mon, 1 Feb 2021 18:02:48 +0000
+Message-ID: <AS8PR08MB6485476EF27D66304C35723F9AB69@AS8PR08MB6485.eurprd08.prod.outlook.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
-In-Reply-To: <20210131144540.243363-6-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,115 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 31.01.21 15:45, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> The calibrated timer setup time is currently accounted for in the
-> timer gravity triplet (.user, also used as default .irq latency),
-> exclusively. This forces in a dynamically calculated parameter with no
-> way to override it. Meanwhile, this value would be already included in
-> every gravity value which autotune may determine, so this setting is
-> pretty much redundant.
-> 
-> Drop nktimerlat and the requirement for the machine section to provide
-> a timer calibration handler, we don't need these.
-> 
+Hello,
 
-Do you recall the history of this features? Was it first, and then
-autotune came along, silently obsoleting it?
+I'm currently porting xenomai on my project on a raspberry pi 4B and I woul=
+d like some advice, I'm using xenomai 3.0.9 with a ipipe patch that I found=
+ on the web, I managed to set the module xeno_16550A and I was able to repl=
+ace the default module that load ttyAMA0 of the pi to /dev/rtdm/rtser0. Bes=
+ide this, I was able to adapt the code to the real time task with the Xenom=
+ai API, and the performance I get with each cyclic is really good.
 
-Jan
+I would like to use this file descriptor to perform some exchange, the simp=
+le test is to connect a Null cable on the RX/TX UART in order to form a loo=
+p. I did import the rtdm/serial.h, and explicitely call the __RT() function=
+s on the open, write, read and ioctl on the low level functions. I am able =
+to open the file, configure it with ioctl and the rtser_config struct, and =
+writing on it. What I am struggling with is the read function, I am not abl=
+e to retrieve the correct return value of the read, it always return -1, I'=
+m not sure if my configuration is correct or not.
 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  include/cobalt/kernel/clock.h                  | 2 --
->  include/cobalt/kernel/ipipe/pipeline/machine.h | 6 ------
->  kernel/cobalt/clock.c                          | 7 -------
->  3 files changed, 15 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-> index 59835951c..bbf34c53c 100644
-> --- a/include/cobalt/kernel/clock.h
-> +++ b/include/cobalt/kernel/clock.h
-> @@ -104,8 +104,6 @@ struct xnclock_ratelimit_state {
->  
->  extern struct xnclock nkclock;
->  
-> -extern unsigned long nktimerlat;
-> -
->  int xnclock_register(struct xnclock *clock,
->  		     const cpumask_t *affinity);
->  
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/machine.h b/include/cobalt/kernel/ipipe/pipeline/machine.h
-> index 32d5cd2a2..a5a5197e9 100644
-> --- a/include/cobalt/kernel/ipipe/pipeline/machine.h
-> +++ b/include/cobalt/kernel/ipipe/pipeline/machine.h
-> @@ -24,7 +24,6 @@ struct cobalt_machine {
->  	int (*late_init)(void);
->  	void (*cleanup)(void);
->  	void (*prefault)(struct vm_area_struct *vma);
-> -	unsigned long (*calibrate)(void);
->  	const char *const *fault_labels;
->  };
->  
-> @@ -46,11 +45,6 @@ struct cobalt_pipeline {
->  #endif
->  };
->  
-> -static inline unsigned long xnarch_timer_calibrate(void)
-> -{
-> -	return cobalt_machine.calibrate();
-> -}
-> -
->  int pipeline_init(void);
->  
->  int pipeline_late_init(void);
-> diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-> index 7d1e00ea1..bf24e1693 100644
-> --- a/kernel/cobalt/clock.c
-> +++ b/kernel/cobalt/clock.c
-> @@ -32,7 +32,6 @@
->   *
->   * @{
->   */
-> -unsigned long nktimerlat;
->  
->  #ifdef XNARCH_HAVE_NODIV_LLIMD
->  
-> @@ -456,8 +455,6 @@ void print_core_clock_status(struct xnclock *clock,
->  	xnvfile_printf(it, "%8s: timer=%s, clock=%s\n",
->  		       "devices", pipeline_timer_name(), pipeline_clock_name());
->  	xnvfile_printf(it, "%8s: %s\n", "watchdog", wd_status);
-> -	xnvfile_printf(it, "%8s: %Lu\n", "setup",
-> -		       xnclock_ticks_to_ns(&nkclock, nktimerlat));
->  }
->  
->  static int clock_show(struct xnvfile_regular_iterator *it, void *data)
-> @@ -784,11 +781,8 @@ static void reset_core_clock_gravity(struct xnclock *clock)
->  	struct xnclock_gravity gravity;
->  
->  	xnarch_get_latencies(&gravity);
-> -	gravity.user += nktimerlat;
->  	if (gravity.kernel == 0)
->  		gravity.kernel = gravity.user;
-> -	if (gravity.irq == 0)
-> -		gravity.irq = nktimerlat;
->  	set_core_clock_gravity(clock, &gravity);
->  }
->  
-> @@ -817,7 +811,6 @@ int __init xnclock_init()
->  	xnarch_init_u32frac(&bln_frac, 1, 1000000000);
->  #endif
->  	pipeline_init_clock();
-> -	nktimerlat = xnarch_timer_calibrate();
->  	xnclock_reset_gravity(&nkclock);
->  	xnclock_register(&nkclock, &xnsched_realtime_cpus);
->  
-> 
+The rtser_config is the following :
+    struct rtser_config my_config;
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+    my_config.config_mask       =3D 0xFFFF; // RTSER_SET_BAUD | RTSER_SET_T=
+IMESTAMP_HISTORY; // //
+    my_config.baud_rate         =3D 115200;
+    my_config.parity            =3D RTSER_NO_PARITY;
+    my_config.data_bits         =3D RTSER_8_BITS;
+    my_config.stop_bits         =3D RTSER_2_STOPB;
+    my_config.handshake         =3D RTSER_RTSCTS_HAND;
+    my_config.fifo_depth        =3D RTSER_DEF_FIFO_DEPTH;
+    my_config.rx_timeout        =3D RTDM_TIMEOUT_INFINITE;
+    my_config.tx_timeout        =3D RTDM_TIMEOUT_INFINITE;
+    my_config.event_timeout     =3D 1000000000; /* 1 s */
+    my_config.timestamp_history =3D RTSER_RX_TIMESTAMP_HISTORY;
+    my_config.event_mask        =3D RTSER_EVENT_RXPEND;
+    my_config.rs485             =3D RTSER_RS485_DISABLE;
+
+Could you help me on this issue ?
+
+Best regards,
+Li Xiang.
 
