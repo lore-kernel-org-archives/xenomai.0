@@ -1,7 +1,9 @@
 From: Greg Gallagher <greg@embeddedgreg.com>
-Subject: [PATCH v2 1/2] kernel: cobalt: Remove header file for newer kernels
-Date: Wed,  3 Feb 2021 02:01:58 -0500
-Message-Id: <20210203070159.3610435-1-greg@embeddedgreg.com>
+Subject: [PATCH v2 2/2] kernel: cobalt: Fix up elf_hwcap
+Date: Wed,  3 Feb 2021 02:01:59 -0500
+Message-Id: <20210203070159.3610435-2-greg@embeddedgreg.com>
+In-Reply-To: <20210203070159.3610435-1-greg@embeddedgreg.com>
+References: <20210203070159.3610435-1-greg@embeddedgreg.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,29 +16,40 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-5.4 kernels do not have compiler.h, only include this header file for kernels older then 5.4
+Update to use ELF_HWCAP instead of elf_hwcap directly.
 
-Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
 ---
- kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h   | 2 +-
+ kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
-index 7444cc823..17be10339 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
-@@ -29,7 +29,11 @@
- #define XNARCH_HOST_TICK_IRQ __ipipe_hrtimer_irq
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
+index a76f1e6bb..b8c627bed 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
+@@ -23,7 +23,7 @@
+ #include <asm/hwcap.h>
  
- #include <asm/barrier.h>
-+
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
- #include <asm/compiler.h>
-+#endif
-+
- #include <asm/cmpxchg.h>
- #include <asm/switch_to.h>
- #include <asm/system_misc.h>
+ #ifdef CONFIG_VFP
+-#define have_vfp (elf_hwcap & HWCAP_VFP)
++#define have_vfp (ELF_HWCAP & HWCAP_VFP)
+ #else /* !CONFIG_VFP */
+ #define have_vfp 0
+ #endif /* !CONFIG_VFP */
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+index b7e3f52f2..291c9e5f0 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+@@ -23,7 +23,7 @@
+ #include <asm/xenomai/uapi/fptest.h>
+ #include <asm/hwcap.h>
+ 
+-#define have_fp (elf_hwcap & HWCAP_FP)
++#define have_fp (ELF_HWCAP & HWCAP_FP)
+ 
+ static inline int fp_kernel_supported(void)
+ {
 -- 
 2.25.1
 
