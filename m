@@ -1,11 +1,14 @@
-From: Greg Gallagher <greg@embeddedgreg.com>
-Subject: [PATCH v2 2/2] kernel: cobalt: Fix up elf_hwcap
-Date: Wed,  3 Feb 2021 02:01:59 -0500
-Message-Id: <20210203070159.3610435-2-greg@embeddedgreg.com>
-In-Reply-To: <20210203070159.3610435-1-greg@embeddedgreg.com>
+Subject: Re: [PATCH v2 1/2] kernel: cobalt: Remove header file for newer
+ kernels
 References: <20210203070159.3610435-1-greg@embeddedgreg.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <15001d4b-48ce-7192-d5e8-0e4dab9a55e0@siemens.com>
+Date: Wed, 3 Feb 2021 10:50:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210203070159.3610435-1-greg@embeddedgreg.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,43 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-Update to use ELF_HWCAP instead of elf_hwcap directly.
+On 03.02.21 08:01, Greg Gallagher via Xenomai wrote:
+> 5.4 kernels do not have compiler.h, only include this header file for kernels older then 5.4
+> 
+> Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+> ---
+>  kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+> index 7444cc823..17be10339 100644
+> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/machine.h
+> @@ -29,7 +29,11 @@
+>  #define XNARCH_HOST_TICK_IRQ __ipipe_hrtimer_irq
+>  
+>  #include <asm/barrier.h>
+> +
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
+>  #include <asm/compiler.h>
+> +#endif
+> +
+>  #include <asm/cmpxchg.h>
+>  #include <asm/switch_to.h>
+>  #include <asm/system_misc.h>
+> 
 
-Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
----
- kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h   | 2 +-
- kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+There is still arch/arm64/include/asm/compiler.h in today's master.
 
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-index a76f1e6bb..b8c627bed 100644
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-@@ -23,7 +23,7 @@
- #include <asm/hwcap.h>
- 
- #ifdef CONFIG_VFP
--#define have_vfp (elf_hwcap & HWCAP_VFP)
-+#define have_vfp (ELF_HWCAP & HWCAP_VFP)
- #else /* !CONFIG_VFP */
- #define have_vfp 0
- #endif /* !CONFIG_VFP */
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-index b7e3f52f2..291c9e5f0 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-@@ -23,7 +23,7 @@
- #include <asm/xenomai/uapi/fptest.h>
- #include <asm/hwcap.h>
- 
--#define have_fp (elf_hwcap & HWCAP_FP)
-+#define have_fp (ELF_HWCAP & HWCAP_FP)
- 
- static inline int fp_kernel_supported(void)
- {
+What error exactly are you fixing? That we should rather including
+linux/compiler.h? Or is that header obsolete for us now, for all kernels?
+
+Jan
+
 -- 
-2.25.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
