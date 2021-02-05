@@ -1,13 +1,12 @@
-Subject: Re: mmap64 causes secondary mode switch
-References: <CAPMj8MvB2JmUPcLO8EX5o7RfLxUFb9d-NWGyz5XpCTxuD6QTug@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4f66d077-3c8f-d40a-d74c-ca5334eb2751@siemens.com>
-Date: Wed, 13 Jan 2021 09:03:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAPMj8MvB2JmUPcLO8EX5o7RfLxUFb9d-NWGyz5XpCTxuD6QTug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAPMj8MucOL7MPXCGj5PVvZJsXaOC9zBYbcd8aQx6KQ5yAn=qZQ@mail.gmail.com>
+ <0ca26c39-a1bb-3a4d-4726-6e782855c531@siemens.com>
+In-Reply-To: <0ca26c39-a1bb-3a4d-4726-6e782855c531@siemens.com>
+From: Sam Daniel <daniel.jacob.samuel@gmail.com>
+Date: Fri, 5 Feb 2021 14:58:25 -0800
+Message-ID: <CAPMj8Mu2g0osCxFcF64pNs-4W+4c51KG_wXVJZGeJjCuVf66Ng@mail.gmail.com>
+Subject: Re: POSIX clock_gettime value is incorrect
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +15,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sam Daniel <daniel.jacob.samuel@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>
 
-On 13.01.21 08:52, Sam Daniel via Xenomai wrote:
-> Should a call to mmap64 cause a switch to secondary mode?
-> 
-> I am using Cobalt v3.1 on an aarch64 platform. I am cross-compiling Xenomai
-> via buildroot. Then I am cross-compiling a C++ application with CMake
-> against the Xenomai sysroot and wrapping it with the POSIX skin. I set up
-> debugging as recommended in the Finding Spurious Relaxes page. When run in
-> gdb, I get the following stack trace:
-> 
-> #0  0x0000007fbf26978c in mmap64 () from /lib/libc.so.6
-> #1  0x0000007fbf213094 in ?? () from /lib/libc.so.6
-> #2  0x0000007fbf213998 in ?? () from /lib/libc.so.6
-> #3  0x0000007fbf216504 in ?? () from /lib/libc.so.6
-> #4  0x0000007fbf2173e8 in malloc () from /lib/libc.so.6
-> #5  0x0000007fbf47f834 in operator new(unsigned long) () from
-> /lib/libstdc++.so.6
-> #6  0x0000000000408744 in zcm::ZCM::publish<fcm_dm::fcm_dm_telemetry_t>
-> (this=0x46c0f0, channel=..., msg=0x7fbe7f34a8)
->     at /data/sam/mocha-death/tonkatime/src/zcm/zcm-cpp-impl.hpp:171
-> #7  0x000000000040819c in FcmDm::task (this=0x46aee0) at
-> /data/sam/mocha-death/tonkatime/apps/zcm_demo/fcm_dm.cpp:57
-> #8  0x0000000000415c28 in PeriodicTask::task_caller (_task=0x46aee0) at
-> /data/sam/mocha-death/tonkatime/src/common/periodic_task.cpp:27
-> #9  0x0000007fbf5c8e68 in ?? () from /usr/xenomai/lib/libcobalt.so.2
-> #10 0x0000007fbf57b6cc in start_thread () from /lib/libpthread.so.0
-> #11 0x0000007fbf26cf7c in ?? () from /lib/libc.so.6
-> 
-> This seems like the mode switch happens on the mmap64 call. From everything
-> I can tell, mmap64 should be a wrapped and supported system call, thus not
-> causing mode switches.
+On Fri, Feb 5, 2021 at 6:35 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Nope, this assumption is not correct: mmap64 leads to changes to the
-paging of the calling process, and that is not covered (and cannot be
-covered) by the Xenomai core. You will have to do any mappings upfront
-to entering your time-critical loop.
+> On 05.02.21 07:23, Sam Daniel via Xenomai wrote:
+> > This is my test program, compiled/linked against the POSIX skin.
+> > #include <stdio.h>
+> > #include <stdlib.h>
+> > #include <time.h>
+> > int main(int argc, char* argv[]) {
+> >     timespec time;
+> >     clock_gettime(CLOCK_REALTIME, &time);
+> >     fprintf(stdout, "%lu\n", time.tv_sec);
+> >     return 0;
+> > }
+> >
+> > When I run it on my Xenomai system, this is its output:
+> > $ ./clock
+> > 413
+> >
+> > This appears to be roughly the number of seconds since boot:
+> > $ uptime
+> > 04:40:44 up 7 min,  1 user,  load average: 0.36, 0.31, 0.16
+> >
+>
+> Yes, the Xenomai CLOCK_REALTIME is decoupled from the Linux realtime
+> clock, at least so far. Will change in future Xenomai versions.
+>
+> > Compiling without POSIX skin and running it has expected results:
+> > $ ./clock
+> > 1612500006
+> >
+> > Running date from my bash shell has expected results:
+> > $ date
+> > Fri Feb  5 04:38:10 UTC 2021
+> >
+> > I ran the clocktest tool:
+> > $ clocktest
+> > == Testing built-in CLOCK_REALTIME (0)
+> > CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> > --- -------------------- ---------------- ---------- --------------
+> >   0  -1612499588990078.2           -0.046          0            0.0
+> >   1  -1612499588990077.8            0.061          0            0.0
+> >   2  -1612499588990077.8            0.004          0            0.0
+> >   3  -1612499588990077.8            0.022          0            0.0
+> >
+> > I do not understand its output, but to my eye it does not appear to be
+> > "correct"...
+> >
+> > After searching through the mailing list, I tried this:
+> > $ clocktest -C CLOCK_HOST_REALTIME
+> > clock_gettime failed for clock id 32
+> > clock_gettime failed for clock id 32
+> > XNVDSO_FEAT_HOST_REALTIME not available
+> > clock_gettime failed for clock id 32
+> > XNVDSO_FEAT_HOST_REALTIME not available
+> >
+> > Which led me to this thread:
+> > https://www.mail-archive.com/xenomai@xenomai.org/msg15904.html. I, too,
+> > could not set CONFIG_XENO_OPT_HOSTRT or CONFIG_IPIPE_HAVE_HOSTRT
+> >
+> >
+> > So I made this patch:
+> > diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> > index 124398ef7336..28afa4b4b091 100644
+> > --- a/arch/arm64/Kconfig
+> > +++ b/arch/arm64/Kconfig
+> > @@ -149,6 +149,7 @@ config ARM64
+> >         select HAVE_KRETPROBES
+> >         select HAVE_IPIPE_SUPPORT
+> >         select HAVE_IPIPE_TRACER_SUPPORT
+> > +       select IPIPE_HAVE_HOSTRT if IPIPE
+> >         select IOMMU_DMA if IOMMU_SUPPORT
+> >         select IRQ_DOMAIN
+> >         select IRQ_FORCED_THREADING
+> >
+> > CONFIG_XENO_OPT_HOSTRT and CONFIG_IPIPE_HAVE_HOSTRT were now both set
+> > to y. Recompiled
+> > and re-ran with this patch:
+> > $  clocktest -C CLOCK_HOST_REALTIME
+> > clock_gettime failed for clock id 32
+> > clock_gettime failed for clock id 32
+> > clock_gettime failed for clock id 32
+> > hostrt data area is not live
+> > hostrt data area is not live
+> >
+> > I tried the extension flag as well:
+> > $ clocktest -E -C CLOCK_HOST_REALTIME
+> > clocktest: bad extension clock name 'CLOCK_HOST_REALTIME': Invalid
+> argument
+> >
+> > I am using Cobalt v3.1 with ipipe-core-4.19.55-arm64-4.patch. Is my
+> kernel
+> > building configured incorrectly? Am I missing some config parameter?
+> >
+>
+> That patch isn't sufficient. ARM64 lacks the architectural support for
+> that. I do not recall the reasons, though, maybe Greg can explain.
+>
+> Also note that CLOCK_HOST_REALTIME will serve for reading time only, not
+> for scheduling events on it. That is only possible for CLOCK_REALTIME
+> and CLOCK_MONOTONIC. The purpose of that clock is to permit timestamping
+> of events in the RT domain.
+>
+> Again, a limitation to be lifted in future versions.
+>
+> Jan
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
 
-Jan
+How would you recommend I get the current system time (preferably in
+seconds since epoch)? Is there a POSIX-friendly way of getting an accurate
+system time in primary mode without mode switches? Or do I need to
+wrap/link my executable with both Alchemy and POSIX in order to call the
+Alchemy API's rt_timer_read function?
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+Thanks in advance
+~ Sam
