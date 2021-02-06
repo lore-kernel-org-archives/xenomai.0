@@ -1,11 +1,12 @@
-Subject: Re: [I-PIPE] ipipe-core-5.4.93-arm-0 released
-References: <E1l7t9P-00049k-BZ@xenomai.org>
- <CALLqZ8QE8YCcRayB-Aahy+sWx1sUaKAuEh=jT2GauSOqo04N7A@mail.gmail.com>
+Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
+References: <874kixxf9e.fsf@xenomai.org>
+ <f850676b-a67f-442e-4642-0b8791162236@siemens.com>
+ <87k0rprr5a.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c1ff647d-f977-6b67-3922-10947a22756e@siemens.com>
-Date: Sat, 6 Feb 2021 13:25:40 +0100
+Message-ID: <46e13cc0-6f1c-65f3-34cc-4a6ea44d00d8@siemens.com>
+Date: Sat, 6 Feb 2021 13:29:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8QE8YCcRayB-Aahy+sWx1sUaKAuEh=jT2GauSOqo04N7A@mail.gmail.com>
+In-Reply-To: <87k0rprr5a.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,29 +18,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, hongzha1 <hongzhan.chen@intel.com>
 
-On 05.02.21 05:56, Greg Gallagher via Xenomai wrote:
-> On Thu, Feb 4, 2021 at 11:56 PM xenomai--- via Xenomai <xenomai@xenomai.org>
-> wrote:
+On 03.02.21 18:35, Philippe Gerum wrote:
 > 
->> Download URL:
->> https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.93-arm-0.patch
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 31.01.21 17:06, Philippe Gerum wrote:
+>>>
+>>> The initial port of the Cobalt core to Dovetail/x86 is available from
+>>> [1]. Ports to Dovetail/ARM and Dovetail/arm64 should follow within a
+>>> couple of weeks.
+>>>
+>>> So far, latency and switchtest run flawlessly. Most of the smokey test
+>>> suite passes successfully, except the GDB test at the moment.
+>>>
+>>> How to test this:
+>>>
+>>> - clone Xenomai from [1], switch to branch for-upstream/dovetail
+>>> - clone the Dovetail tree (v5.10) from [2], switch to branch dovetail/master
+>>> - run scripts/prepare-kernel.sh available from [1] into [2] (usual procedure)
+>>>   for x86, that would be: .../scripts/prepare-kernel.sh --arch=x86
+>>> - build your kernel using the sources from [2]
+>>>
+>>> There is no user-visible Kconfig change compared to an I-pipe based
+>>> version.
+>>>
+>>> Alternatively, the Xenomai code base in [1] can also run on top of the
+>>> I-pipe. prepare-kernel.sh detects which pipeline flavour is there, and
+>>> prepares the source tree accordingly.
+>>>
+>>> This code is being gradually merged into Xenomai's -next branch, and
+>>> will be at the core of Xenomai 3.2. Testing and feedback appreciated.
+>>>
+>>> Thanks,
+>>>
+>>> [1] https://lab.xenomai.org/xenomai-rpm.git, "for-upstream/dovetail" branch
+>>> [2] https://git.evlproject.org/linux-evl.git, "dovetail/master" branch
+>>>
 >>
->> Repository: https://git.xenomai.org/ipipe-arm
->> Release tag: ipipe-core-5.4.93-arm-0
+>> First try on my end looked good as well - great news, well done!
 >>
+>> Would it help to stick the wip branch into our CI/CT?
 >>
-> This is a beta release for the arm-ipipe on 5.4.93, any testing welcome.
+> 
+> Yep, it would. TIA,
 > 
 
-And I have something for this one as well:
+CI build is passing now, see
 
-https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218157#L890
-https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218158#L1374
+https://gitlab.denx.de/Xenomai/xenomai/-/pipelines/6258
 
-Line numbers are not accurate, at least for me here. Look for
-"setsched.c:120, assertion failed: stats.msw == msw".
+I'm carrying two fixes and a could of tweaks:
+
+https://gitlab.denx.de/Xenomai/xenomai/-/commits/wip/dovetail
+
+Specifically
+https://gitlab.denx.de/Xenomai/xenomai/-/commit/4196216e821abea3107284a8e31e13bdf05141d5
+would a second look as the timer ipi abstraction became obsolete with
+the code moving to pipeline-specific code.
+
+I've just started also target runs, see
+https://gitlab.denx.de/Xenomai/xenomai-images/-/pipelines/6263. There
+will be several known breakages, though, namely the gdb test but also
+the unrelated arm[64]-5.4 regressions.
 
 Jan
 
