@@ -1,11 +1,13 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 18/18] cobalt/assert: remove extraneous header inclusion
-Date: Sun,  7 Feb 2021 17:04:34 +0100
-Message-Id: <20210207160434.2869121-18-rpm@xenomai.org>
-In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
-References: <20210207160434.2869121-1-rpm@xenomai.org>
+References: <MWHPR11MB1710FDC8D365CE3FCFADA88DF2B69@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87o8h4uobn.fsf@xenomai.org>
+ <MWHPR11MB1710A620A26BF775C60336B4F2B29@MWHPR11MB1710.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: several questions about porting latmus
+In-reply-to: <MWHPR11MB1710A620A26BF775C60336B4F2B29@MWHPR11MB1710.namprd11.prod.outlook.com>
+Date: Sun, 07 Feb 2021 17:20:36 +0100
+Message-ID: <87r1lrq27f.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +16,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
 
-In the same move, fix places which depend on such inclusion but fail
-to pull the related headers directly.
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/cobalt/kernel/assert.h | 3 ---
- kernel/cobalt/heap.c           | 1 +
- 2 files changed, 1 insertion(+), 3 deletions(-)
+>>-----Original Message-----
+>>From: Philippe Gerum <rpm@xenomai.org> 
+>>Sent: Monday, February 1, 2021 5:31 PM
+>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>Cc: xenomai@xenomai.org
+>>Subject: Re: several questions about porting latmus
+>>
+>>
+>>Hi Hongzhan,
+>>
+>>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>
+>>> Hi Philippe
+>>>
+>>> When I was trying to port latmus from evl to xenomai 3.2,  I met several issues that block porting
+>>> and need your suggestions.
+>>>
+>>> 1. When I tried to replace function evl_run_kthread_on_cpu of latmus.c driver ,  I found that only rtdm_task_init  
+>>>     can meet our requirements mostly  but we still cannot pass cpu affinity through it to pin task to required
+>>>     cpu. Do we need to implement new API so that we can  pass cpu affinity to pin task to required cpu but
+>>>     finish all functions  of rtdm_task_init?
+>>>
+>>
+>>We should probably introduce rtdm_task_init_on_cpu() in 3.2, since this
+>>is a desirable feature which should be part of the CXP. Other ways to
+>>pin the new kthread are fairly ugly ATM, ranging from pinning the parent
+>>to the destination CPU before creating the child thread, or open coding
+>>the spawning sequence based on the internal interface (xnthread_init,
+>>xnthread_start). Please submit a patch for review of that change
+>>specifically, prior to submitting any latmus-related bits.
+>>
+>
+> OK.  I have finished latmus driver porting so far and built it successfully with linux.
+> In the following , I would  start to port latmus application. After latmus application is done,
+> I would validate all of them and then will try to submit patches to review after validation 
+> is successful. 
+>
 
-diff --git a/include/cobalt/kernel/assert.h b/include/cobalt/kernel/assert.h
-index 8d004476b..abe044100 100644
---- a/include/cobalt/kernel/assert.h
-+++ b/include/cobalt/kernel/assert.h
-@@ -20,9 +20,6 @@
- #define _COBALT_KERNEL_ASSERT_H
- 
- #include <linux/kconfig.h>
--#include <pipeline/pipeline.h>
--#include <cobalt/kernel/trace.h>
--#include <cobalt/kernel/ancillaries.h>
- 
- #define XENO_INFO	KERN_INFO    "[Xenomai] "
- #define XENO_WARNING	KERN_WARNING "[Xenomai] "
-diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
-index 5d14a4739..9e184d4c3 100644
---- a/kernel/cobalt/heap.c
-+++ b/kernel/cobalt/heap.c
-@@ -27,6 +27,7 @@
- #include <cobalt/kernel/assert.h>
- #include <cobalt/kernel/heap.h>
- #include <cobalt/kernel/vfile.h>
-+#include <cobalt/kernel/ancillaries.h>
- 
- /**
-  * @ingroup cobalt_core
+With respect to the timer responder test, the latmus application is
+based on EVL's built-in timerfd [1] feature, which is very close to the
+Cobalt/POSIX equivalent, so the port should be straightforward.
+
+Things may be a little trickier with the GPIO responder test, as Cobalt
+needs a specific RTDM driver to operate the GPIO lines (EVL reuses the
+common GPIOLIB for this [2], so do not look for any specific driver
+here). It depends on the GPIO controller you will test on. You will
+certainly need to add support for it to kernel/drivers/gpio.
+
+Which hardware do you plan to use?
+
+[1] https://evlproject.org/core/user-api/timer/
+[2] http://evlproject.org/core/oob-drivers/gpio/
+
 -- 
-2.26.2
-
+Philippe.
 
