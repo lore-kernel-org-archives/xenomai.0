@@ -1,7 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 15/18] cobalt/syscall: dovetail: implement syscall hooks
-Date: Sun,  7 Feb 2021 17:04:31 +0100
-Message-Id: <20210207160434.2869121-15-rpm@xenomai.org>
+Subject: [PATCH 16/18] cobalt/dovetail: provide core-specific context
+ extensions
+Date: Sun,  7 Feb 2021 17:04:32 +0100
+Message-Id: <20210207160434.2869121-16-rpm@xenomai.org>
 In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
 References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,68 +19,126 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Dovetail interposes on the in-band syscall entry, passing the request
-on to Cobalt via different handlers depending on the calling context:
+In order to intimately connect Cobalt to the kernel, Dovetail allows
+us to extend the latter with data and procedures we need:
 
-- via handle_oob_syscall() when the current thread is running
-  out-of-band, and the request is not an in-band (i.e. regular Linux)
-  system call, therefore shall be handled by Xenomai. This is the fast
-  path.
+- we can embed our own context information into a set of critical
+  kernel data structures. This information should be defined as a set
+  of core-specific types, such as struct oob_thread_state which is
+  going to be part of struct thread_info.
 
-- via handle_pipelined_syscall() in all other cases, e.g. when current
-  is running in-band, and/or the system call shall be handled by the
-  in-band kernel eventually (useful for relaxing the current thread in
-  the process if out-of-band on entry).
+- we can define preparation and finalization handlers for out-of-band
+  IRQ handling, which Dovetail should invoke right after entering the
+  outer interrupt frame, then right before leaving it respectively.
+
+Add the couple of interface headers we need to connect those elements
+to the kernel.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/dovetail/Makefile  |  2 +-
- kernel/cobalt/dovetail/syscall.c | 26 ++++++++++++++++++++++++++
- 2 files changed, 27 insertions(+), 1 deletion(-)
- create mode 100644 kernel/cobalt/dovetail/syscall.c
+ kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
+ kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
+ 2 files changed, 85 insertions(+)
+ create mode 100644 kernel/cobalt/include/dovetail/irq.h
+ create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
 
-diff --git a/kernel/cobalt/dovetail/Makefile b/kernel/cobalt/dovetail/Makefile
-index 84788f9ce..1ecbd97a9 100644
---- a/kernel/cobalt/dovetail/Makefile
-+++ b/kernel/cobalt/dovetail/Makefile
-@@ -2,4 +2,4 @@ ccflags-y += -I$(srctree)/kernel
- 
- obj-y +=	pipeline.o
- 
--pipeline-y :=	init.o kevents.o sched.o tick.o
-+pipeline-y :=	init.o kevents.o sched.o tick.o syscall.o
-diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
+diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/include/dovetail/irq.h
 new file mode 100644
-index 000000000..cec6c0244
+index 000000000..66d020fde
 --- /dev/null
-+++ b/kernel/cobalt/dovetail/syscall.c
-@@ -0,0 +1,26 @@
++++ b/kernel/cobalt/include/dovetail/irq.h
+@@ -0,0 +1,52 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
 + *
-+ * Copyright (C) 2005 Philippe Gerum <rpm@xenomai.org>
-+ * Copyright (C) 2005 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
++ * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+#include <linux/irqstage.h>
-+#include <pipeline/pipeline.h>
-+#include <pipeline/kevents.h>
-+#include <cobalt/kernel/assert.h>
-+#include <xenomai/posix/syscall.h>
++#ifndef _COBALT_DOVETAIL_IRQ_H
++#define _COBALT_DOVETAIL_IRQ_H
 +
-+int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
++#ifdef CONFIG_XENOMAI
++
++#include <cobalt/kernel/sched.h>
++
++/* hard irqs off. */
++static inline void irq_enter_pipeline(void)
 +{
-+	if (unlikely(running_inband()))
-+		return handle_root_syscall(regs);
++	struct xnsched *sched = xnsched_current();
 +
-+	return handle_head_syscall(stage == &inband_stage, regs);
++	sched->lflags |= XNINIRQ;
 +}
 +
-+void handle_oob_syscall(struct pt_regs *regs)
++/* hard irqs off. */
++static inline void irq_exit_pipeline(void)
 +{
-+	int ret = handle_head_syscall(false, regs);
-+	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
++	struct xnsched *sched = xnsched_current();
++
++	sched->lflags &= ~XNINIRQ;
++
++	/*
++	 * CAUTION: Switching stages as a result of rescheduling may
++	 * re-enable irqs, shut them off before returning if so.
++	 */
++	if ((sched->status|sched->lflags) & XNRESCHED) {
++		xnsched_run();
++		if (!hard_irqs_disabled())
++			hard_local_irq_disable();
++	}
 +}
++
++#else  /* !CONFIG_XENOMAI */
++
++static inline void irq_enter_pipeline(void)
++{
++}
++
++static inline void irq_exit_pipeline(void)
++{
++}
++
++#endif	/* !CONFIG_XENOMAI */
++
++#endif /* !_COBALT_DOVETAIL_IRQ_H */
+diff --git a/kernel/cobalt/include/dovetail/thread_info.h b/kernel/cobalt/include/dovetail/thread_info.h
+new file mode 100644
+index 000000000..69b89de35
+--- /dev/null
++++ b/kernel/cobalt/include/dovetail/thread_info.h
+@@ -0,0 +1,33 @@
++/**
++ * Copyright (C) 2012 Philippe Gerum <rpm@xenomai.org>.
++ * Copyright (c) Siemens AG, 2020
++ *
++ * Xenomai is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 02139,
++ * USA; either version 2 of the License, or (at your option) any later
++ * version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++#ifndef _COBALT_DOVETAIL_THREAD_INFO_H
++#define _COBALT_DOVETAIL_THREAD_INFO_H
++
++struct xnthread;
++struct cobalt_process;
++
++struct oob_thread_state {
++	/* Core thread backlink. */
++	struct xnthread *thread;
++	/* User process backlink. NULL for core threads. */
++	struct cobalt_process *process;
++};
++
++#endif /* !_COBALT_DOVETAIL_THREAD_INFO_H */
 -- 
 2.26.2
 
