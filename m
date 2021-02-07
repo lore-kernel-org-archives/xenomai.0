@@ -1,8 +1,10 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 01/18] cobalt/init: dovetail: add placeholders for core
- init/cleanup
-Date: Sun,  7 Feb 2021 17:04:17 +0100
-Message-Id: <20210207160434.2869121-1-rpm@xenomai.org>
+Subject: [PATCH 03/18] cobalt/irq: dovetail: add placeholders for out-of-band
+ IRQ management
+Date: Sun,  7 Feb 2021 17:04:19 +0100
+Message-Id: <20210207160434.2869121-3-rpm@xenomai.org>
+In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
+References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,140 +21,100 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../cobalt/kernel/dovetail/pipeline/machine.h | 51 ++++++++++++++++++
- kernel/cobalt/dovetail/Makefile               |  5 ++
- kernel/cobalt/dovetail/init.c                 | 52 +++++++++++++++++++
- 3 files changed, 108 insertions(+)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/machine.h
- create mode 100644 kernel/cobalt/dovetail/Makefile
- create mode 100644 kernel/cobalt/dovetail/init.c
+ .../kernel/dovetail/pipeline/pipeline.h       | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 include/cobalt/kernel/dovetail/pipeline/pipeline.h
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/machine.h b/include/cobalt/kernel/dovetail/pipeline/machine.h
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
 new file mode 100644
-index 000000000..4f3dd95e0
+index 000000000..4b8f6b259
 --- /dev/null
-+++ b/include/cobalt/kernel/dovetail/pipeline/machine.h
-@@ -0,0 +1,51 @@
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -0,0 +1,84 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+#ifndef _COBALT_KERNEL_DOVETAIL_MACHINE_H
-+#define _COBALT_KERNEL_DOVETAIL_MACHINE_H
++#ifndef _COBALT_KERNEL_DOVETAIL_PIPELINE_H
++#define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
 +
-+#include <linux/percpu.h>
-+
-+#ifdef CONFIG_FTRACE
-+#define boot_lat_trace_notice "[LTRACE]"
-+#else
-+#define boot_lat_trace_notice ""
-+#endif
-+
-+struct vm_area_struct;
-+
-+struct cobalt_machine {
-+	const char *name;
-+	int (*init)(void);
-+	int (*late_init)(void);
-+	void (*cleanup)(void);
-+	void (*prefault)(struct vm_area_struct *vma);
-+	const char *const *fault_labels;
-+};
-+
-+extern struct cobalt_machine cobalt_machine;
-+
-+struct cobalt_machine_cpudata {
-+	unsigned int faults[32];
-+};
-+
-+DECLARE_PER_CPU(struct cobalt_machine_cpudata, cobalt_machine_cpudata);
-+
-+struct cobalt_pipeline {
-+#ifdef CONFIG_SMP
-+	cpumask_t supported_cpus;
-+#endif
-+};
-+
-+int pipeline_init(void);
-+
-+int pipeline_late_init(void);
-+
-+void pipeline_cleanup(void);
-+
-+extern struct cobalt_pipeline cobalt_pipeline;
-+
-+#endif /* !_COBALT_KERNEL_IPIPE_MACHINE_H */
-diff --git a/kernel/cobalt/dovetail/Makefile b/kernel/cobalt/dovetail/Makefile
-new file mode 100644
-index 000000000..0bde9dfdb
---- /dev/null
-+++ b/kernel/cobalt/dovetail/Makefile
-@@ -0,0 +1,5 @@
-+ccflags-y += -Ikernel
-+
-+obj-y +=	pipeline.o
-+
-+pipeline-y :=	init.o
-diff --git a/kernel/cobalt/dovetail/init.c b/kernel/cobalt/dovetail/init.c
-new file mode 100644
-index 000000000..983186abe
---- /dev/null
-+++ b/kernel/cobalt/dovetail/init.c
-@@ -0,0 +1,52 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
-+ */
-+
-+#include <linux/init.h>
-+#include <pipeline/machine.h>
-+#include <cobalt/kernel/clock.h>
++#include <linux/irq_pipeline.h>
 +#include <cobalt/kernel/assert.h>
 +
-+int __init pipeline_init(void)
++typedef unsigned long spl_t;
++
++/*
++ * We only keep the LSB when testing in SMP mode in order to strip off
++ * the recursion marker (0x2) the nklock may store there.
++ */
++#define splhigh(x)  ((x) = oob_irq_save() & 1)
++#ifdef CONFIG_SMP
++#define splexit(x)  oob_irq_restore(x & 1)
++#else /* !CONFIG_SMP */
++#define splexit(x)  oob_irq_restore(x)
++#endif /* !CONFIG_SMP */
++#define splmax()    oob_irq_disable()
++#define splnone()   oob_irq_enable()
++#define spltest()   oob_irqs_disabled()
++
++#define is_secondary_domain()	running_inband()
++#define is_primary_domain()	running_oob()
++
++#ifdef CONFIG_SMP
++
++static inline int pipeline_request_resched_ipi(void (*handler)(void))
 +{
-+	int ret;
-+
-+	if (cobalt_machine.init) {
-+		ret = cobalt_machine.init();
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Enable the Xenomai out-of-band stage */
++	/* Trap the out-of-band rescheduling interrupt. */
 +	TODO();
-+
-+	ret = xnclock_init();
-+	if (ret)
-+		goto fail_clock;
-+
-+	return 0;
-+
-+fail_clock:
-+	if (cobalt_machine.cleanup)
-+		cobalt_machine.cleanup();
-+
-+	return ret;
-+}
-+
-+int __init pipeline_late_init(void)
-+{
-+	if (cobalt_machine.late_init)
-+		return cobalt_machine.late_init();
 +
 +	return 0;
 +}
 +
-+__init void pipeline_cleanup(void)
++static inline void pipeline_free_resched_ipi(void)
 +{
-+	/* Disable the Xenomai stage */
++	/* Release the out-of-band rescheduling interrupt. */
++	TODO();
++}
++
++static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
++{
++	/*
++	 * Trigger the out-of-band rescheduling interrupt on remote
++	 * CPU(s).
++	 */
++	TODO();
++}
++
++static inline int pipeline_request_timer_ipi(void (*handler)(void))
++{
++	/* Trap the out-of-band timer interrupt. */
 +	TODO();
 +
-+	xnclock_cleanup();
++	return 0;
 +}
++
++static inline void pipeline_free_timer_ipi(void)
++{
++	/* Release the out-of-band timer interrupt. */
++	TODO();
++}
++
++static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
++{
++	/*
++	 * Trigger the out-of-band timer interrupt on remote CPU(s).
++	 */
++	TODO();
++}
++
++#endif
++
++static inline void pipeline_prepare_panic(void)
++{
++	/* N/A */
++}
++
++#endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
 -- 
 2.26.2
 
