@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 09/18] cobalt/thread: dovetail: define out-of-band state
- accessors
-Date: Sun,  7 Feb 2021 17:04:25 +0100
-Message-Id: <20210207160434.2869121-9-rpm@xenomai.org>
+Subject: [PATCH 10/18] cobalt/timer: ipipe: directly use the abstract
+ interface for IPIs
+Date: Sun,  7 Feb 2021 17:04:26 +0100
+Message-Id: <20210207160434.2869121-10-rpm@xenomai.org>
 In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
 References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -21,43 +21,40 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../cobalt/kernel/dovetail/pipeline/thread.h  | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/thread.h
+ kernel/cobalt/ipipe/tick.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/thread.h b/include/cobalt/kernel/dovetail/pipeline/thread.h
-new file mode 100644
-index 000000000..1e6b0f091
---- /dev/null
-+++ b/include/cobalt/kernel/dovetail/pipeline/thread.h
-@@ -0,0 +1,27 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
-+ */
-+
-+#ifndef _COBALT_KERNEL_DOVETAIL_THREAD_H
-+#define _COBALT_KERNEL_DOVETAIL_THREAD_H
-+
-+#include <linux/dovetail.h>
-+
-+struct xnthread;
-+
-+#define cobalt_threadinfo oob_thread_state
-+
-+static inline struct cobalt_threadinfo *pipeline_current(void)
-+{
-+	return dovetail_current_state();
-+}
-+
-+static inline
-+struct xnthread *pipeline_thread_from_task(struct task_struct *p)
-+{
-+	return dovetail_task_state(p)->thread;
-+}
-+
-+#endif /* !_COBALT_KERNEL_DOVETAIL_THREAD_H */
+diff --git a/kernel/cobalt/ipipe/tick.c b/kernel/cobalt/ipipe/tick.c
+index da1563a66..b711bedc0 100644
+--- a/kernel/cobalt/ipipe/tick.c
++++ b/kernel/cobalt/ipipe/tick.c
+@@ -187,7 +187,7 @@ int pipeline_install_tick_proxy(void)
+ 	nkclock.wallclock_offset =
+ 		ktime_to_ns(ktime_get_real()) - xnclock_read_monotonic(&nkclock);
+ 
+-	ret = xntimer_setup_ipi();
++	ret = pipeline_request_timer_ipi(xnintr_core_clock_handler);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -244,7 +244,7 @@ fail:
+ 		ipipe_timer_stop(_cpu);
+ 	}
+ 
+-	xntimer_release_ipi();
++	pipeline_free_timer_ipi();
+ 
+ 	return ret;
+ }
+@@ -270,7 +270,7 @@ void pipeline_uninstall_tick_proxy(void)
+ 	for_each_realtime_cpu(cpu)
+ 		ipipe_timer_stop(cpu);
+ 
+-	xntimer_release_ipi();
++	pipeline_free_timer_ipi();
+ 
+ #ifdef CONFIG_XENO_OPT_STATS_IRQS
+ 	xnintr_destroy(&nktimer);
 -- 
 2.26.2
 
