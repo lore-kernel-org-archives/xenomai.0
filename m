@@ -1,7 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 11/18] cobalt/timer: remove useless wrappers to IPI management
-Date: Sun,  7 Feb 2021 17:04:27 +0100
-Message-Id: <20210207160434.2869121-11-rpm@xenomai.org>
+Subject: [PATCH 12/18] cobalt/tick: dovetail: add placeholders for tick
+ management
+Date: Sun,  7 Feb 2021 17:04:28 +0100
+Message-Id: <20210207160434.2869121-12-rpm@xenomai.org>
 In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
 References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -20,60 +21,92 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/timer.h | 11 -----------
- kernel/cobalt/timer.c         | 10 ----------
- 2 files changed, 21 deletions(-)
+ .../cobalt/kernel/dovetail/pipeline/tick.h    | 12 +++++
+ kernel/cobalt/dovetail/Makefile               |  2 +-
+ kernel/cobalt/dovetail/tick.c                 | 45 +++++++++++++++++++
+ 3 files changed, 58 insertions(+), 1 deletion(-)
+ create mode 100644 include/cobalt/kernel/dovetail/pipeline/tick.h
+ create mode 100644 kernel/cobalt/dovetail/tick.c
 
-diff --git a/include/cobalt/kernel/timer.h b/include/cobalt/kernel/timer.h
-index 691be7a3b..703a13506 100644
---- a/include/cobalt/kernel/timer.h
-+++ b/include/cobalt/kernel/timer.h
-@@ -517,10 +517,6 @@ void xntimer_migrate(struct xntimer *timer, struct xnsched *sched)
- 		__xntimer_migrate(timer, sched);
- }
+diff --git a/include/cobalt/kernel/dovetail/pipeline/tick.h b/include/cobalt/kernel/dovetail/pipeline/tick.h
+new file mode 100644
+index 000000000..409581a3c
+--- /dev/null
++++ b/include/cobalt/kernel/dovetail/pipeline/tick.h
+@@ -0,0 +1,12 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ */
++
++#ifndef _COBALT_KERNEL_IPIPE_TICK_H
++#define _COBALT_KERNEL_IPIPE_TICK_H
++
++int pipeline_install_tick_proxy(void);
++
++void pipeline_uninstall_tick_proxy(void);
++
++#endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
+diff --git a/kernel/cobalt/dovetail/Makefile b/kernel/cobalt/dovetail/Makefile
+index 24320b3f2..84788f9ce 100644
+--- a/kernel/cobalt/dovetail/Makefile
++++ b/kernel/cobalt/dovetail/Makefile
+@@ -2,4 +2,4 @@ ccflags-y += -I$(srctree)/kernel
  
--int xntimer_setup_ipi(void);
--
--void xntimer_release_ipi(void);
--
- void __xntimer_set_affinity(struct xntimer *timer,
- 			    struct xnsched *sched);
+ obj-y +=	pipeline.o
  
-@@ -539,13 +535,6 @@ static inline void xntimer_migrate(struct xntimer *timer,
- 	timer->sched = sched;
- }
- 
--static inline int xntimer_setup_ipi(void)
--{
--	return 0;
--}
--
--static inline void xntimer_release_ipi(void) { }
--
- static inline void xntimer_set_affinity(struct xntimer *timer,
- 					struct xnsched *sched)
- {
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index 7f5033c87..f9aa457ce 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -574,16 +574,6 @@ void __xntimer_set_affinity(struct xntimer *timer, struct xnsched *sched)
- }
- EXPORT_SYMBOL_GPL(__xntimer_set_affinity);
- 
--int xntimer_setup_ipi(void)
--{
--	return pipeline_request_timer_ipi(xnintr_core_clock_handler);
--}
--
--void xntimer_release_ipi(void)
--{
--	pipeline_free_timer_ipi();
--}
--
- #endif /* CONFIG_SMP */
- 
- /**
+-pipeline-y :=	init.o kevents.o sched.o
++pipeline-y :=	init.o kevents.o sched.o tick.o
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+new file mode 100644
+index 000000000..02cd86690
+--- /dev/null
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -0,0 +1,45 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2001,2002,2003,2007,2012 Philippe Gerum <rpm@xenomai.org>.
++ * Copyright (C) 2004 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
++ */
++
++#include <linux/tick.h>
++#include <cobalt/kernel/intr.h>
++#include <pipeline/tick.h>
++
++extern struct xnintr nktimer;
++
++int pipeline_install_tick_proxy(void)
++{
++	int ret;
++
++	ret = pipeline_request_timer_ipi(xnintr_core_clock_handler);
++	if (ret)
++		return ret;
++
++	/* Install the proxy tick device */
++	TODO();	ret = 0;
++	if (ret)
++		goto fail_proxy;
++
++	return 0;
++
++fail_proxy:
++	pipeline_free_timer_ipi();
++
++	return ret;
++}
++
++void pipeline_uninstall_tick_proxy(void)
++{
++	/* Uninstall the proxy tick device. */
++	TODO();
++
++	pipeline_free_timer_ipi();
++
++#ifdef CONFIG_XENO_OPT_STATS_IRQS
++	xnintr_destroy(&nktimer);
++#endif /* CONFIG_XENO_OPT_STATS_IRQS */
++}
 -- 
 2.26.2
 
