@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 04/18] cobalt/clock: dovetail: add placeholders for clock
- services
-Date: Sun,  7 Feb 2021 17:04:20 +0100
-Message-Id: <20210207160434.2869121-4-rpm@xenomai.org>
+Subject: [PATCH 05/18] cobalt/inband_work: dovetail: provide for deferred
+ in-band calls
+Date: Sun,  7 Feb 2021 17:04:21 +0100
+Message-Id: <20210207160434.2869121-5-rpm@xenomai.org>
 In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
 References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,98 +19,55 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
+Dovetail enables irq_work for deferring the execution of a routine
+until the in-band stage is active again on the current CPU, we don't
+need to provide for any additional mechanism. Therefore we just need
+to wrap the pipeline interface calls to the irq_work API.
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../cobalt/kernel/dovetail/pipeline/clock.h   | 80 +++++++++++++++++++
- 1 file changed, 80 insertions(+)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/clock.h
+ .../kernel/dovetail/pipeline/inband_work.h    | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+ create mode 100644 include/cobalt/kernel/dovetail/pipeline/inband_work.h
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
+diff --git a/include/cobalt/kernel/dovetail/pipeline/inband_work.h b/include/cobalt/kernel/dovetail/pipeline/inband_work.h
 new file mode 100644
-index 000000000..933e100ba
+index 000000000..317a31de7
 --- /dev/null
-+++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-@@ -0,0 +1,80 @@
++++ b/include/cobalt/kernel/dovetail/pipeline/inband_work.h
+@@ -0,0 +1,32 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+#ifndef _COBALT_KERNEL_DOVETAIL_CLOCK_H
-+#define _COBALT_KERNEL_DOVETAIL_CLOCK_H
++#ifndef _COBALT_KERNEL_DOVETAIL_INBAND_WORK_H
++#define _COBALT_KERNEL_DOVETAIL_INBAND_WORK_H
 +
-+#include <cobalt/uapi/kernel/types.h>
-+#include <cobalt/kernel/assert.h>
++#include <linux/irq_work.h>
 +
-+struct timespec;
++/*
++ * This field must be named inband_work and appear first in the
++ * container work struct.
++ */
++struct pipeline_inband_work {
++	struct irq_work work;
++};
 +
-+static inline u64 pipeline_read_cycle_counter(void)
-+{
-+	/* Read the raw cycle counter of the core clock. */
-+	TODO();
++#define PIPELINE_INBAND_WORK_INITIALIZER(__work, __handler)		\
++	{								\
++		.work = {						\
++			.func = (void (*)(struct irq_work *))		\
++			__handler,					\
++			.flags = ATOMIC_INIT(0),			\
++		},							\
++	}
 +
-+	return 0;
-+}
++#define pipeline_post_inband_work(__work)				\
++			irq_work_queue(&(__work)->inband_work.work)
 +
-+static inline void pipeline_set_timer_shot(unsigned long cycles)
-+{
-+	/*
-+	 * N/A. Revisit: xnclock_core_local_shot() should go to the
-+	 * I-pipe section, we do things differently on Dovetail via
-+	 * the proxy tick device. As a consequence,
-+	 * pipeline_set_timer_shot() should not be part of the
-+	 * pipeline interface.
-+	 */
-+	TODO();
-+}
-+
-+static inline const char *pipeline_timer_name(void)
-+{
-+	/*
-+	 * Return the name of the current clock event chip, which is
-+	 * the real device controlled by the proxy tick device.
-+	 */
-+	TODO();
-+
-+	return "?";
-+}
-+
-+static inline const char *pipeline_clock_name(void)
-+{
-+	/* Return the name of the current clock source. */
-+	TODO();
-+
-+	return "?";
-+}
-+
-+static inline int pipeline_get_host_time(struct timespec *tp)
-+{
-+	/* Convert ktime_get_real_fast_ns() to timespec. */
-+	TODO();
-+
-+	return 0;
-+}
-+
-+static inline void pipeline_init_clock(void)
-+{
-+	/* N/A */
-+}
-+
-+static inline xnsticks_t xnclock_core_ticks_to_ns(xnsticks_t ticks)
-+{
-+	return ticks;
-+}
-+
-+static inline xnsticks_t xnclock_core_ticks_to_ns_rounded(xnsticks_t ticks)
-+{
-+	return ticks;
-+}
-+
-+static inline xnsticks_t xnclock_core_ns_to_ticks(xnsticks_t ns)
-+{
-+	return ns;
-+}
-+
-+#endif /* !_COBALT_KERNEL_DOVETAIL_CLOCK_H */
++#endif /* !_COBALT_KERNEL_DOVETAIL_INBAND_WORK_H */
 -- 
 2.26.2
 
