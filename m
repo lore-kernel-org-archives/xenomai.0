@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 03/18] cobalt/irq: dovetail: add placeholders for out-of-band
- IRQ management
-Date: Sun,  7 Feb 2021 17:04:19 +0100
-Message-Id: <20210207160434.2869121-3-rpm@xenomai.org>
+Subject: [PATCH 04/18] cobalt/clock: dovetail: add placeholders for clock
+ services
+Date: Sun,  7 Feb 2021 17:04:20 +0100
+Message-Id: <20210207160434.2869121-4-rpm@xenomai.org>
 In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
 References: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -21,100 +21,96 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../kernel/dovetail/pipeline/pipeline.h       | 84 +++++++++++++++++++
- 1 file changed, 84 insertions(+)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/pipeline.h
+ .../cobalt/kernel/dovetail/pipeline/clock.h   | 80 +++++++++++++++++++
+ 1 file changed, 80 insertions(+)
+ create mode 100644 include/cobalt/kernel/dovetail/pipeline/clock.h
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
 new file mode 100644
-index 000000000..4b8f6b259
+index 000000000..933e100ba
 --- /dev/null
-+++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-@@ -0,0 +1,84 @@
++++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
+@@ -0,0 +1,80 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
 + */
 +
-+#ifndef _COBALT_KERNEL_DOVETAIL_PIPELINE_H
-+#define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
++#ifndef _COBALT_KERNEL_DOVETAIL_CLOCK_H
++#define _COBALT_KERNEL_DOVETAIL_CLOCK_H
 +
-+#include <linux/irq_pipeline.h>
++#include <cobalt/uapi/kernel/types.h>
 +#include <cobalt/kernel/assert.h>
 +
-+typedef unsigned long spl_t;
++struct timespec;
 +
-+/*
-+ * We only keep the LSB when testing in SMP mode in order to strip off
-+ * the recursion marker (0x2) the nklock may store there.
-+ */
-+#define splhigh(x)  ((x) = oob_irq_save() & 1)
-+#ifdef CONFIG_SMP
-+#define splexit(x)  oob_irq_restore(x & 1)
-+#else /* !CONFIG_SMP */
-+#define splexit(x)  oob_irq_restore(x)
-+#endif /* !CONFIG_SMP */
-+#define splmax()    oob_irq_disable()
-+#define splnone()   oob_irq_enable()
-+#define spltest()   oob_irqs_disabled()
-+
-+#define is_secondary_domain()	running_inband()
-+#define is_primary_domain()	running_oob()
-+
-+#ifdef CONFIG_SMP
-+
-+static inline int pipeline_request_resched_ipi(void (*handler)(void))
++static inline u64 pipeline_read_cycle_counter(void)
 +{
-+	/* Trap the out-of-band rescheduling interrupt. */
++	/* Read the raw cycle counter of the core clock. */
 +	TODO();
 +
 +	return 0;
 +}
 +
-+static inline void pipeline_free_resched_ipi(void)
-+{
-+	/* Release the out-of-band rescheduling interrupt. */
-+	TODO();
-+}
-+
-+static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
++static inline void pipeline_set_timer_shot(unsigned long cycles)
 +{
 +	/*
-+	 * Trigger the out-of-band rescheduling interrupt on remote
-+	 * CPU(s).
++	 * N/A. Revisit: xnclock_core_local_shot() should go to the
++	 * I-pipe section, we do things differently on Dovetail via
++	 * the proxy tick device. As a consequence,
++	 * pipeline_set_timer_shot() should not be part of the
++	 * pipeline interface.
 +	 */
 +	TODO();
 +}
 +
-+static inline int pipeline_request_timer_ipi(void (*handler)(void))
++static inline const char *pipeline_timer_name(void)
 +{
-+	/* Trap the out-of-band timer interrupt. */
++	/*
++	 * Return the name of the current clock event chip, which is
++	 * the real device controlled by the proxy tick device.
++	 */
++	TODO();
++
++	return "?";
++}
++
++static inline const char *pipeline_clock_name(void)
++{
++	/* Return the name of the current clock source. */
++	TODO();
++
++	return "?";
++}
++
++static inline int pipeline_get_host_time(struct timespec *tp)
++{
++	/* Convert ktime_get_real_fast_ns() to timespec. */
 +	TODO();
 +
 +	return 0;
 +}
 +
-+static inline void pipeline_free_timer_ipi(void)
-+{
-+	/* Release the out-of-band timer interrupt. */
-+	TODO();
-+}
-+
-+static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
-+{
-+	/*
-+	 * Trigger the out-of-band timer interrupt on remote CPU(s).
-+	 */
-+	TODO();
-+}
-+
-+#endif
-+
-+static inline void pipeline_prepare_panic(void)
++static inline void pipeline_init_clock(void)
 +{
 +	/* N/A */
 +}
 +
-+#endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
++static inline xnsticks_t xnclock_core_ticks_to_ns(xnsticks_t ticks)
++{
++	return ticks;
++}
++
++static inline xnsticks_t xnclock_core_ticks_to_ns_rounded(xnsticks_t ticks)
++{
++	return ticks;
++}
++
++static inline xnsticks_t xnclock_core_ns_to_ticks(xnsticks_t ns)
++{
++	return ns;
++}
++
++#endif /* !_COBALT_KERNEL_DOVETAIL_CLOCK_H */
 -- 
 2.26.2
 
