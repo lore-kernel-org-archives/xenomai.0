@@ -1,10 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 02/18] cobalt/sirq: dovetail: add placeholders for synthetic
- IRQ management
-Date: Sun,  7 Feb 2021 17:04:18 +0100
-Message-Id: <20210207160434.2869121-2-rpm@xenomai.org>
-In-Reply-To: <20210207160434.2869121-1-rpm@xenomai.org>
-References: <20210207160434.2869121-1-rpm@xenomai.org>
+Subject: [PATCH 01/18] cobalt/init: dovetail: add placeholders for core
+ init/cleanup
+Date: Sun,  7 Feb 2021 17:04:17 +0100
+Message-Id: <20210207160434.2869121-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,63 +19,140 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../cobalt/kernel/dovetail/pipeline/sirq.h    | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/sirq.h
+ .../cobalt/kernel/dovetail/pipeline/machine.h | 51 ++++++++++++++++++
+ kernel/cobalt/dovetail/Makefile               |  5 ++
+ kernel/cobalt/dovetail/init.c                 | 52 +++++++++++++++++++
+ 3 files changed, 108 insertions(+)
+ create mode 100644 include/cobalt/kernel/dovetail/pipeline/machine.h
+ create mode 100644 kernel/cobalt/dovetail/Makefile
+ create mode 100644 kernel/cobalt/dovetail/init.c
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+diff --git a/include/cobalt/kernel/dovetail/pipeline/machine.h b/include/cobalt/kernel/dovetail/pipeline/machine.h
 new file mode 100644
-index 000000000..be9dc587f
+index 000000000..4f3dd95e0
 --- /dev/null
-+++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-@@ -0,0 +1,47 @@
++++ b/include/cobalt/kernel/dovetail/pipeline/machine.h
+@@ -0,0 +1,51 @@
 +/*
 + * SPDX-License-Identifier: GPL-2.0
 + *
 + * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+#ifndef _COBALT_KERNEL_DOVETAIL_SIRQ_H
-+#define _COBALT_KERNEL_DOVETAIL_SIRQ_H
++#ifndef _COBALT_KERNEL_DOVETAIL_MACHINE_H
++#define _COBALT_KERNEL_DOVETAIL_MACHINE_H
 +
-+#include <linux/irq_pipeline.h>
-+#include <cobalt/kernel/assert.h>
++#include <linux/percpu.h>
 +
++#ifdef CONFIG_FTRACE
++#define boot_lat_trace_notice "[LTRACE]"
++#else
++#define boot_lat_trace_notice ""
++#endif
++
++struct vm_area_struct;
++
++struct cobalt_machine {
++	const char *name;
++	int (*init)(void);
++	int (*late_init)(void);
++	void (*cleanup)(void);
++	void (*prefault)(struct vm_area_struct *vma);
++	const char *const *fault_labels;
++};
++
++extern struct cobalt_machine cobalt_machine;
++
++struct cobalt_machine_cpudata {
++	unsigned int faults[32];
++};
++
++DECLARE_PER_CPU(struct cobalt_machine_cpudata, cobalt_machine_cpudata);
++
++struct cobalt_pipeline {
++#ifdef CONFIG_SMP
++	cpumask_t supported_cpus;
++#endif
++};
++
++int pipeline_init(void);
++
++int pipeline_late_init(void);
++
++void pipeline_cleanup(void);
++
++extern struct cobalt_pipeline cobalt_pipeline;
++
++#endif /* !_COBALT_KERNEL_IPIPE_MACHINE_H */
+diff --git a/kernel/cobalt/dovetail/Makefile b/kernel/cobalt/dovetail/Makefile
+new file mode 100644
+index 000000000..0bde9dfdb
+--- /dev/null
++++ b/kernel/cobalt/dovetail/Makefile
+@@ -0,0 +1,5 @@
++ccflags-y += -Ikernel
++
++obj-y +=	pipeline.o
++
++pipeline-y :=	init.o
+diff --git a/kernel/cobalt/dovetail/init.c b/kernel/cobalt/dovetail/init.c
+new file mode 100644
+index 000000000..983186abe
+--- /dev/null
++++ b/kernel/cobalt/dovetail/init.c
+@@ -0,0 +1,52 @@
 +/*
-+ * Wrappers to create "synthetic IRQs" the Dovetail way. Those
-+ * interrupt channels can only be trigged by software, in order to run
-+ * a handler on the in-band execution stage.
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
 + */
 +
-+static inline
-+int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
++#include <linux/init.h>
++#include <pipeline/machine.h>
++#include <cobalt/kernel/clock.h>
++#include <cobalt/kernel/assert.h>
++
++int __init pipeline_init(void)
 +{
-+	/*
-+	 * Allocate an IRQ from the synthetic interrupt domain then
-+	 * trap it to @handler, to be fired from the in-band stage.
-+	 */
++	int ret;
++
++	if (cobalt_machine.init) {
++		ret = cobalt_machine.init();
++		if (ret)
++			return ret;
++	}
++
++	/* Enable the Xenomai out-of-band stage */
 +	TODO();
++
++	ret = xnclock_init();
++	if (ret)
++		goto fail_clock;
++
++	return 0;
++
++fail_clock:
++	if (cobalt_machine.cleanup)
++		cobalt_machine.cleanup();
++
++	return ret;
++}
++
++int __init pipeline_late_init(void)
++{
++	if (cobalt_machine.late_init)
++		return cobalt_machine.late_init();
 +
 +	return 0;
 +}
 +
-+static inline
-+void pipeline_delete_inband_sirq(int sirq)
++__init void pipeline_cleanup(void)
 +{
-+	/*
-+	 * Free the synthetic IRQ then deallocate it to its
-+	 * originating domain.
-+	 */
++	/* Disable the Xenomai stage */
 +	TODO();
-+}
 +
-+static inline void pipeline_post_sirq(int sirq)
-+{
-+	/* Trigger the synthetic IRQ */
-+	TODO();
++	xnclock_cleanup();
 +}
-+
-+#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
 -- 
 2.26.2
 
