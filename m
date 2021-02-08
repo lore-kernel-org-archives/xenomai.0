@@ -1,10 +1,13 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 3/8] dovetail/clock: implement pipeline_set_timer_shot to
- trigger tick shot
-Date: Thu, 14 Jan 2021 20:16:33 -0500
-Message-Id: <20210115011639.15390-3-hongzhan.chen@intel.com>
-In-Reply-To: <20210115011639.15390-1-hongzhan.chen@intel.com>
-References: <20210115011639.15390-1-hongzhan.chen@intel.com>
+Subject: Re: Announce RTnet on PREEMPT_RT Linux
+References: <CAPm8-H53-z1ZGekQRHFQ667CRkSgZG7n_Z3Wya8pz9N88racAQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <b05c6db1-d300-0f52-657b-d3c8513f0191@siemens.com>
+Date: Mon, 8 Feb 2021 19:41:44 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAPm8-H53-z1ZGekQRHFQ667CRkSgZG7n_Z3Wya8pz9N88racAQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,82 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+On 08.02.21 15:45, Laurentiu-Cristian Duca via Xenomai wrote:
+> Dear friends,
+> 
+>   Please let me announce the port of the RTnet core on PREEMPT_RT Linux 5.9.
+>   Features:
+> - ported raspberry pi 4 (bcmgenet), orange pi one (stmmac),
+> realtek (8139too), ticpsw (beaglebone black), microchip (enc28j60)
+> - rtnet UDP socket, bind, recvmsg, sendto, recvfrom, sendmsg, select,
+> poll system calls;
+> - sockets with AF_INET (UDP) or AF_PACKET (raw) family;
+> - rtnetproxy for ssh and scp (but uses RT driver bandwidth)
+> 
+>   The project is available on my github [1].
+> I've made the code available although it needs some polishing.
+> 
+> Best regards,
+> L-C. Duca
+> 
+> [1] https://github.com/laurentiuduca/rtnet-preempt_rt
+> 
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
-index 28d89b44b..db982d969 100644
---- a/include/cobalt/kernel/dovetail/pipeline/clock.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-@@ -17,17 +17,7 @@ static inline u64 pipeline_read_cycle_counter(void)
- 	return  ktime_get_raw_fast_ns();
- }
- 
--static inline void pipeline_set_timer_shot(unsigned long cycles)
--{
--	/*
--	 * N/A. Revisit: xnclock_core_local_shot() should go to the
--	 * I-pipe section, we do things differently on Dovetail via
--	 * the proxy tick device. As a consequence,
--	 * pipeline_set_timer_shot() should not be part of the
--	 * pipeline interface.
--	 */
--	TODO();
--}
-+inline void pipeline_set_timer_shot(unsigned long cycles);
- 
- static inline const char *pipeline_timer_name(void)
- {
-diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-index 6a196496c..55039f96e 100644
---- a/kernel/cobalt/dovetail/tick.c
-+++ b/kernel/cobalt/dovetail/tick.c
-@@ -16,6 +16,43 @@ extern struct xnintr nktimer;
- 
- static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
- 
-+inline void pipeline_set_timer_shot(unsigned long cycles)
-+{
-+	/*
-+	 * N/A. Revisit: xnclock_core_local_shot() should go to the
-+	 * I-pipe section, we do things differently on Dovetail via
-+	 * the proxy tick device. As a consequence,
-+	 * pipeline_set_timer_shot() should not be part of the
-+	 * pipeline interface.
-+	 */
-+	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
-+	struct clock_event_device *real_dev = dev->real_device;
-+	int ret;
-+	u64 sumcyc;
-+	ktime_t t;
-+
-+	if (real_dev->features & CLOCK_EVT_FEAT_KTIME) {
-+		t = ktime_add(cycles, xnclock_core_read_raw());
-+		real_dev->set_next_ktime(t, real_dev);
-+	} else {
-+		if (cycles <= 0)
-+			cycles = real_dev->min_delta_ns;
-+		else {
-+			cycles = min_t(int64_t, cycles,
-+					real_dev->max_delta_ns);
-+			cycles = max_t(int64_t, cycles,
-+					real_dev->min_delta_ns);
-+		}
-+		sumcyc = ((u64)cycles * real_dev->mult) >> real_dev->shift;
-+
-+		ret = real_dev->set_next_event(sumcyc, real_dev);
-+		if (ret) {
-+			ret = real_dev->set_next_event(real_dev->min_delta_ticks,
-+							real_dev);
-+		}
-+	}
-+}
-+
- static int proxy_set_next_ktime(ktime_t expires,
- 				struct clock_event_device *proxy_dev)
- {
+Thanks for sharing!
+
+Very interesting to see this direction while people are (validly)
+concerned about maintaining the driver forks that RTnet implies. Can you
+share your motivation for and plans with this work?
+
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
