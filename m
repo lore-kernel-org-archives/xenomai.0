@@ -1,12 +1,9 @@
-Subject: Re: [PATCH 09/18] cobalt/thread: dovetail: define out-of-band state
- accessors
-References: <20210207160434.2869121-1-rpm@xenomai.org>
- <20210207160434.2869121-9-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9be9fa4b-2671-bacd-e993-5f7910ec7c9b@siemens.com>
-Date: Mon, 8 Feb 2021 20:03:43 +0100
+Subject: [xenomai-images][PATCH 2/2] ci: Add 5.4 kernels targets for arm and
+ arm64
+Message-ID: <a7e28517-505b-5b95-58ca-8a64d9310cbf@siemens.com>
+Date: Mon, 8 Feb 2021 21:48:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210207160434.2869121-9-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,58 +15,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 07.02.21 17:04, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  .../cobalt/kernel/dovetail/pipeline/thread.h  | 27 +++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 include/cobalt/kernel/dovetail/pipeline/thread.h
-> 
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/thread.h b/include/cobalt/kernel/dovetail/pipeline/thread.h
-> new file mode 100644
-> index 000000000..1e6b0f091
-> --- /dev/null
-> +++ b/include/cobalt/kernel/dovetail/pipeline/thread.h
-> @@ -0,0 +1,27 @@
-> +/*
-> + * SPDX-License-Identifier: GPL-2.0
-> + *
-> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
-> + */
-> +
-> +#ifndef _COBALT_KERNEL_DOVETAIL_THREAD_H
-> +#define _COBALT_KERNEL_DOVETAIL_THREAD_H
-> +
-> +#include <linux/dovetail.h>
-> +
-> +struct xnthread;
-> +
-> +#define cobalt_threadinfo oob_thread_state
-> +
-> +static inline struct cobalt_threadinfo *pipeline_current(void)
-> +{
-> +	return dovetail_current_state();
-> +}
-> +
-> +static inline
-> +struct xnthread *pipeline_thread_from_task(struct task_struct *p)
-> +{
-> +	return dovetail_task_state(p)->thread;
-> +}
-> +
-> +#endif /* !_COBALT_KERNEL_DOVETAIL_THREAD_H */
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Applied up to here to next.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ ci/kernel_5_4_xenomai_next.yml | 52 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
-Thanks,
-Jan
-
+diff --git a/ci/kernel_5_4_xenomai_next.yml b/ci/kernel_5_4_xenomai_next.yml
+index 4d366dc..1092aea 100644
+--- a/ci/kernel_5_4_xenomai_next.yml
++++ b/ci/kernel_5_4_xenomai_next.yml
+@@ -22,6 +22,58 @@ lava-test-5.4:qemu-amd64:
+     DEPLOY_DIR_EXTENSION: "5.4"
+     BUILD_IDENTIFIER: "5.4"
+ 
++build-5.4:board-qemu-armhf:
++  extends: .build:board-qemu-armhf
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
++    DEPLOY_DIR_EXTENSION: "5.4"
++
++lava-test-5.4:qemu-armhf:
++  needs: [ "build-5.4:board-qemu-armhf" ]
++  extends: .lava-test:qemu-armhf
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.4"
++    BUILD_IDENTIFIER: "5.4"
++
++build-5.4:board-qemu-arm64:
++  extends: .build:board-qemu-arm64
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
++    DEPLOY_DIR_EXTENSION: "5.4"
++
++lava-test-5.4:qemu-arm64:
++  needs: [ "build-5.4:board-qemu-arm64" ]
++  extends: .lava-test:qemu-arm64
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.4"
++    BUILD_IDENTIFIER: "5.4"
++
++build-5.4:board-hikey:
++  extends: .build:board-hikey
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
++    DEPLOY_DIR_EXTENSION: "5.4"
++
++lava-test-5.4:board-hikey:
++  needs: [ "build-5.4:board-hikey" ]
++  extends: .lava-test:board-hikey
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.4"
++    BUILD_IDENTIFIER: "5.4"
++
++build-5.4:board-beagle-bone-black:
++  extends: .build:board-beagle-bone-black
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
++    DEPLOY_DIR_EXTENSION: "5.4"
++
++lava-test-5.4:board-beagle-bone-black:
++  needs: [ "build-5.4:board-beagle-bone-black" ]
++  extends: .lava-test:board-beagle-bone-black
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.4"
++    BUILD_IDENTIFIER: "5.4"
++
+ build-5.4:board-x86-64-efi:
+   extends: .build:board-x86-64-efi
+   variables:
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
