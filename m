@@ -1,18 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: several questions about porting latmus
-Date: Mon, 8 Feb 2021 12:39:23 +0000
-Message-ID: <MWHPR11MB1710FADEAFBE0892DEEF39EBF28F9@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <MWHPR11MB1710FDC8D365CE3FCFADA88DF2B69@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87o8h4uobn.fsf@xenomai.org>
- <MWHPR11MB1710A620A26BF775C60336B4F2B29@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87r1lrq27f.fsf@xenomai.org>
- <MWHPR11MB1710B903D91D79F1B7737A56F28F9@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lfbznfc5.fsf@xenomai.org>
-In-Reply-To: <87lfbznfc5.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Mon, 8 Feb 2021 16:45:34 +0200
+Message-ID: <CAPm8-H53-z1ZGekQRHFQ667CRkSgZG7n_Z3Wya8pz9N88racAQ@mail.gmail.com>
+Subject: Announce RTnet on PREEMPT_RT Linux
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,112 +12,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->
->> -----Original Message-----
->>>From: Philippe Gerum <rpm@xenomai.org>=20
->>>Sent: Monday, February 8, 2021 12:21 AM
->>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>Cc: xenomai@xenomai.org
->>>Subject: Re: several questions about porting latmus
->>>
->>>
->>>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>
->>>>>-----Original Message-----
->>>>>From: Philippe Gerum <rpm@xenomai.org>=20
->>>>>Sent: Monday, February 1, 2021 5:31 PM
->>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>>Cc: xenomai@xenomai.org
->>>>>Subject: Re: several questions about porting latmus
->>>>>
->>>>>
->>>>>Hi Hongzhan,
->>>>>
->>>>>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>>
->>>>>> Hi Philippe
->>>>>>
->>>>>> When I was trying to port latmus from evl to xenomai 3.2,  I met sev=
-eral issues that block porting
->>>>>> and need your suggestions.
->>>>>>
->>>>>> 1. When I tried to replace function evl_run_kthread_on_cpu of latmus=
-.c driver ,  I found that only rtdm_task_init =20
->>>>>>     can meet our requirements mostly  but we still cannot pass cpu a=
-ffinity through it to pin task to required
->>>>>>     cpu. Do we need to implement new API so that we can  pass cpu af=
-finity to pin task to required cpu but
->>>>>>     finish all functions  of rtdm_task_init?
->>>>>>
->>>>>
->>>>>We should probably introduce rtdm_task_init_on_cpu() in 3.2, since thi=
-s
->>>>>is a desirable feature which should be part of the CXP. Other ways to
->>>>>pin the new kthread are fairly ugly ATM, ranging from pinning the pare=
-nt
->>>>>to the destination CPU before creating the child thread, or open codin=
-g
->>>>>the spawning sequence based on the internal interface (xnthread_init,
->>>>>xnthread_start). Please submit a patch for review of that change
->>>>>specifically, prior to submitting any latmus-related bits.
->>>>>
->>>>
->>>> OK.  I have finished latmus driver porting so far and built it success=
-fully with linux.
->>>> In the following , I would  start to port latmus application. After la=
-tmus application is done,
->>>> I would validate all of them and then will try to submit patches to re=
-view after validation=20
->>>> is successful.=20
->>>>
->>>
->>>With respect to the timer responder test, the latmus application is
->>>based on EVL's built-in timerfd [1] feature, which is very close to the
->>>Cobalt/POSIX equivalent, so the port should be straightforward.
->>>
->>>Things may be a little trickier with the GPIO responder test, as Cobalt
->>>needs a specific RTDM driver to operate the GPIO lines (EVL reuses the
->>>common GPIOLIB for this [2], so do not look for any specific driver
->>>here). It depends on the GPIO controller you will test on. You will
->>>certainly need to add support for it to kernel/drivers/gpio.
->>>
->>>Which hardware do you plan to use?
->>
->> Currently , I am working on up xtream Lite board which is based on
->> Intel Whiskey Lake.  Yes,  I need to add new GPIO controller rtdm driver
->> under kernel/drivers/gpio for my board after further investigated, thank=
-s=20
->> for your soft reminder.=20
->>
->> I have almost finished latmus application porting and validated that lat=
-mus driver is=20
->> working but I still have not got Freedom-K64F so far.  So the gpio test
->> environment can not be setup in short time because of lack of hardware o=
-n my side.
->>
->
->There is also the option of making benchmarks/zephyr/latmon a Xenomai
->application, which would act as the latency monitor running on a
->separate Linux board. Xenomai would then help testing Xenomai which
->might not be optimal at first glance, however this should be ok
->nevertheless provided that such monitoring board runs a known to be
->stable I-pipe configuration.
->
+Dear friends,
 
-One more question,  I saw that rtdm gpio driver can call rtdm_gpiochip_scan=
-_of
-to do init currently but actually rtdm_gpiochip_scan_of do call of_find_com=
-patible_node
-to find device node, It is workable for those devices registered through AC=
-PI table?
-If not , does that means we need to add new API to implement analogous func=
-tion for those
-gpio pinctrl devices registered by ACPI?
+  Please let me announce the port of the RTnet core on PREEMPT_RT Linux 5.9.
+  Features:
+- ported raspberry pi 4 (bcmgenet), orange pi one (stmmac),
+realtek (8139too), ticpsw (beaglebone black), microchip (enc28j60)
+- rtnet UDP socket, bind, recvmsg, sendto, recvfrom, sendmsg, select,
+poll system calls;
+- sockets with AF_INET (UDP) or AF_PACKET (raw) family;
+- rtnetproxy for ssh and scp (but uses RT driver bandwidth)
 
->--=20
->Philippe.
+  The project is available on my github [1].
+I've made the code available although it needs some polishing.
+
+Best regards,
+L-C. Duca
+
+[1] https://github.com/laurentiuduca/rtnet-preempt_rt
 
