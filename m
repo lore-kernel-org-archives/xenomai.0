@@ -1,18 +1,14 @@
-Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
-References: <874kixxf9e.fsf@xenomai.org>
- <f850676b-a67f-442e-4642-0b8791162236@siemens.com>
- <87k0rprr5a.fsf@xenomai.org>
- <46e13cc0-6f1c-65f3-34cc-4a6ea44d00d8@siemens.com>
- <aab28877-6309-edb3-45dc-b9d504451fc9@siemens.com>
- <d3aadb22-6426-5326-31ed-fb44ee2a31aa@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5a957790-9b3e-4df1-e0e8-96fa4e92e1eb@siemens.com>
-Date: Mon, 15 Feb 2021 17:53:56 +0100
+References: <20210207160434.2869121-1-rpm@xenomai.org>
+ <20210207160434.2869121-12-rpm@xenomai.org>
+ <d021db4a-ccc8-aa5a-3d13-d245ef449f52@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 12/18] cobalt/tick: dovetail: add placeholders for tick
+ management
+In-reply-to: <d021db4a-ccc8-aa5a-3d13-d245ef449f52@siemens.com>
+Date: Tue, 09 Feb 2021 10:15:44 +0100
+Message-ID: <87sg65mwjj.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <d3aadb22-6426-5326-31ed-fb44ee2a31aa@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,41 +17,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 15.02.21 16:11, Jan Kiszka via Xenomai wrote:
-> On 15.02.21 14:28, Jan Kiszka wrote:
->> Now the next issue is
->>
->> /usr/lib/xenomai/testsuite/smokey: test sched_quota failed: Protocol error
->> sched-quota.c:332, out of quota: 13.7%
->> (on a real target, an Atom-class box).
->>
-> 
-> Testsuite issue, long pending:
-> 
-> https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/testsuite/smokey/sched-quota/sched-quota.c#L204
-> 
-> Those pthread_kill() in the loop will kick the caller into non-rt, while
-> it is not yet done with collecting the loop counters from the other
-> workers. Result is pure random, sometimes still within the defined
-> limits, but sometimes reporting false overruns.
-> 
-> No idea what those signal submissions supposed to do - test runs and
-> terminates fine without them as well.
-> 
 
-Correction: The pthread_kill stay in primary and do not cause the issue
-(they are still not needed IMHO, though).
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-It must be something compiler (setting?) related: smokey built with my
-gcc-7 from SUSE is fine, the one build with Debian's gcc-8 is not,
-causing noteworthy variations on the measured workload. Examining further...
+> On 07.02.21 17:04, Philippe Gerum wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> 
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>  .../cobalt/kernel/dovetail/pipeline/tick.h    | 12 +++++
+>>  kernel/cobalt/dovetail/Makefile               |  2 +-
+>>  kernel/cobalt/dovetail/tick.c                 | 45 +++++++++++++++++++
+>>  3 files changed, 58 insertions(+), 1 deletion(-)
+>>  create mode 100644 include/cobalt/kernel/dovetail/pipeline/tick.h
+>>  create mode 100644 kernel/cobalt/dovetail/tick.c
+>> 
+>> diff --git a/include/cobalt/kernel/dovetail/pipeline/tick.h b/include/cobalt/kernel/dovetail/pipeline/tick.h
+>> new file mode 100644
+>> index 000000000..409581a3c
+>> --- /dev/null
+>> +++ b/include/cobalt/kernel/dovetail/pipeline/tick.h
+>> @@ -0,0 +1,12 @@
+>> +/*
+>> + * SPDX-License-Identifier: GPL-2.0
+>> + */
+>> +
+>> +#ifndef _COBALT_KERNEL_IPIPE_TICK_H
+>> +#define _COBALT_KERNEL_IPIPE_TICK_H
+>> +
+>> +int pipeline_install_tick_proxy(void);
+>> +
+>> +void pipeline_uninstall_tick_proxy(void);
+>> +
+>> +#endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
+>> diff --git a/kernel/cobalt/dovetail/Makefile b/kernel/cobalt/dovetail/Makefile
+>> index 24320b3f2..84788f9ce 100644
+>> --- a/kernel/cobalt/dovetail/Makefile
+>> +++ b/kernel/cobalt/dovetail/Makefile
+>> @@ -2,4 +2,4 @@ ccflags-y += -I$(srctree)/kernel
+>>  
+>>  obj-y +=	pipeline.o
+>>  
+>> -pipeline-y :=	init.o kevents.o sched.o
+>> +pipeline-y :=	init.o kevents.o sched.o tick.o
+>> diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+>> new file mode 100644
+>> index 000000000..02cd86690
+>> --- /dev/null
+>> +++ b/kernel/cobalt/dovetail/tick.c
+>> @@ -0,0 +1,45 @@
+>> +/*
+>> + * SPDX-License-Identifier: GPL-2.0
+>> + *
+>> + * Copyright (C) 2001,2002,2003,2007,2012 Philippe Gerum <rpm@xenomai.org>.
+>> + * Copyright (C) 2004 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>> + */
+>> +
+>> +#include <linux/tick.h>
+>> +#include <cobalt/kernel/intr.h>
+>> +#include <pipeline/tick.h>
+>> +
+>> +extern struct xnintr nktimer;
+>> +
+>> +int pipeline_install_tick_proxy(void)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = pipeline_request_timer_ipi(xnintr_core_clock_handler);
+>
+> Why calling an abstraction here? We know that we are in dovetail land.
+>
+> I know we do the same on ipipe already. But maybe fix that first and
+> avoid this over-abstraction here in the first place.
+>
 
-Jan
+Yes, we can remove that one. We need to keep the call hooking the
+rescheduling IPI though, this one needs to be pulled in from the generic
+scheduler core.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
