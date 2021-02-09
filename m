@@ -1,11 +1,17 @@
-References: <e6c263f5-80d1-7eac-7d9e-e511705242f6@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] lib: Drop unused copperplate/wrappers.h
-In-reply-to: <e6c263f5-80d1-7eac-7d9e-e511705242f6@siemens.com>
-Date: Tue, 16 Feb 2021 11:37:10 +0100
-Message-ID: <87mtw4i9ih.fsf@xenomai.org>
+Subject: Re: [PATCH 10/18] cobalt/timer: ipipe: directly use the abstract
+ interface for IPIs
+References: <20210207160434.2869121-1-rpm@xenomai.org>
+ <20210207160434.2869121-10-rpm@xenomai.org>
+ <05c67720-6321-4365-606c-f6657659f3d7@siemens.com>
+ <8735y5obmb.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1aa59b25-2038-c2da-dc42-bda5e24a4f4f@siemens.com>
+Date: Tue, 9 Feb 2021 11:28:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <8735y5obmb.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,79 +20,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
+On 09.02.21 10:04, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 07.02.21 17:04, Philippe Gerum wrote:
+>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>> ---
+>>>  kernel/cobalt/ipipe/tick.c | 6 +++---
+>>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/kernel/cobalt/ipipe/tick.c b/kernel/cobalt/ipipe/tick.c
+>>> index da1563a66..b711bedc0 100644
+>>> --- a/kernel/cobalt/ipipe/tick.c
+>>> +++ b/kernel/cobalt/ipipe/tick.c
+>>> @@ -187,7 +187,7 @@ int pipeline_install_tick_proxy(void)
+>>>  	nkclock.wallclock_offset =
+>>>  		ktime_to_ns(ktime_get_real()) - xnclock_read_monotonic(&nkclock);
+>>>  
+>>> -	ret = xntimer_setup_ipi();
+>>> +	ret = pipeline_request_timer_ipi(xnintr_core_clock_handler);
+>>
+>> Ah, here we change this to the suboptimal pattern: Just fold that
+>> implementation in here.
+>>
+>> We should try to reduce needless static inlines.
+>>
+> 
+> The idea is rather to drop the xnintr layer which has zero value in this
+> case, because it does not abstract anything by itself, all is provided
+> by the pipeline-specific section. This is why the pipeline call moved
+> there, this is the one which brings value in, just like we directly call
+> the pipeline interface elsewhere from the generic section, to flatten
+> the call stack.
+> 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+I don't disagree with this step, just that is stopped in the middle.
+Make it complete, if you like on top, by folding
+pipeline_request_timer_ipi & Co. in.
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> Internal header, broken for mercury and not used anymore.
->
-> Reported-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  include/copperplate/Makefile.am |  3 +--
->  include/copperplate/wrappers.h  | 30 ------------------------------
->  2 files changed, 1 insertion(+), 32 deletions(-)
->  delete mode 100644 include/copperplate/wrappers.h
->
-> diff --git a/include/copperplate/Makefile.am b/include/copperplate/Makefile.am
-> index 5b97c63d14..5baa09bdf9 100644
-> --- a/include/copperplate/Makefile.am
-> +++ b/include/copperplate/Makefile.am
-> @@ -13,8 +13,7 @@ includesub_HEADERS =		\
->  	threadobj.h		\
->  	timerobj.h		\
->  	traceobj.h		\
-> -	tunables.h		\
-> -	wrappers.h
-> +	tunables.h
->  
->  noinst_HEADERS =		\
->  	registry-obstack.h
-> diff --git a/include/copperplate/wrappers.h b/include/copperplate/wrappers.h
-> deleted file mode 100644
-> index a7c68f5cb8..0000000000
-> --- a/include/copperplate/wrappers.h
-> +++ /dev/null
-> @@ -1,30 +0,0 @@
-> -/*
-> - * Copyright (C) 2011 Philippe Gerum <rpm@xenomai.org>.
-> - *
-> - * This library is free software; you can redistribute it and/or
-> - * modify it under the terms of the GNU Lesser General Public
-> - * License as published by the Free Software Foundation; either
-> - * version 2 of the License, or (at your option) any later version.
-> - *
-> - * This library is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-> - * Lesser General Public License for more details.
-> -
-> - * You should have received a copy of the GNU Lesser General Public
-> - * License along with this library; if not, write to the Free Software
-> - * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-> - */
-> -
-> -#ifndef _COPPERPLATE_WRAPPERS_H
-> -#define _COPPERPLATE_WRAPPERS_H
-> -
-> -#include <xeno_config.h>
-> -
-> -#ifdef CONFIG_XENO_COBALT
-> -#include <cobalt/wrappers.h>
-> -#else /* CONFIG_XENO_MERCURY */
-> -#include <mercury/wrappers.h>
-> -#endif /* CONFIG_XENO_MERCURY */
-> -
-> -#endif /* _COPPERPLATE_WRAPPERS_H */
-> -- 
-> 2.26.2
-
-Ack.
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
