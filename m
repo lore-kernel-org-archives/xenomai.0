@@ -1,15 +1,10 @@
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: [I-PIPE][ARM64] Experimenting on Jetson Xavier
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-In-Reply-To: <652D6B1D-CE11-4C5B-93E5-0D02B07ABC35@gmail.com>
-Date: Mon, 22 Feb 2021 10:01:22 +0300
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <EF5EC26B-7904-492F-B893-AA43CB69EA29@gmail.com>
-References: <CD72004A-77C0-4041-8FD6-FF64932138D4@gmail.com>
- <87a6rx4c6k.fsf@xenomai.org> <34573B47-B373-46DB-A49D-FB6298AA65DC@gmail.com>
- <871rd947az.fsf@xenomai.org> <652D6B1D-CE11-4C5B-93E5-0D02B07ABC35@gmail.com>
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Subject: [xenomai-images][PATCH] Fix linux repo for 5.10 ARM
+Message-ID: <0bf0a241-624c-0d9e-7dc8-25eaa69de85e@qmul.ac.uk>
+Date: Tue, 9 Feb 2021 17:49:11 +0000
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Giulio Moro via Xenomai <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-Okay so, isolcpus=3D0 did not isolated the CPU#0 but
-isolcpus=3D1 worked on CPU#1, and that isolated CPU#1
-(confirmed by task set -cp 1).
+From: Giulio Moro <giuliomoro@yahoo.it>
 
-I don=E2=80=99t know why but I got the isolation working so its not a =
-problem which core gets isolated.
+Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
+---
+  recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
 
-After the isolation, the results are remarkable.
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index bbec6b0..e6834fd 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -25,7 +25,7 @@ def is_kernel(d, ver):
+  GIT_REPO_amd64 = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
+  GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
 
-No stress
-	min: ~0.1us
-	avg: ~0.1us
-	max: 5-20us
+-GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
++GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
+  GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19-y-cip'}"
 
-Hectic stress
-	min: ~5us
-	avg: ~6us
-	max: 15-20us (worst is 41us)
-
-> On 22 Feb 2021, at 00:44, Deniz U=C4=9Fur <deniz343@gmail.com> wrote:
->=20
-> Hi again,
->=20
-> So I=E2=80=99ve installed the evl/v5.10 on Jetson Xavier and after =
-setting the scaling_governor to performance I got somewhat good results.
->=20
-> I=E2=80=99ve set the isolcpus=3D0 command line argument but latmus =
-reports that CPU0 is not isolated. I=E2=80=99m not sure if that=E2=80=99s =
-a bug or I=E2=80=99ve missed something.
->=20
-> Other than that I=E2=80=99m getting latencies between +-10us and worst =
-latency is 73us. Even though I=E2=80=99ve ran latmus -t I=E2=80=99m =
-still getting negative latencies. Isn=E2=80=99t that supposed to fix =
-that?
->=20
-> evl test reports OK for everything except for scheduler-quota-accuracy =
-and sched-tp-accuracy (no kernel support)
->=20
-> Are these latencies best I can get or are there anything else I can do =
-to lower/stabilize the latencies?
->=20
-> Thanks.
-> Deniz.
->=20
->> On 21 Feb 2021, at 21:14, Philippe Gerum <rpm@xenomai.org> wrote:
->>=20
->>=20
->> Deniz U=C4=9Fur <deniz343@gmail.com> writes:
->>=20
->>> Hi Philippe,
->>>=20
->>> Thank you for your reply. It=E2=80=99s so good to hear that Xenomai =
-is evolving.
->>> Really appreciate the work you guys are doing.
->>>=20
->>> I would suggest to try booting the Jetson with [3] first,
->>> reporting any issue to this list so we can fix them
->>>=20
->>> I will try this ASAP and report my results under this thread.
->>> I will be eagerly waiting for the arm64 version of Dovetail :)
->>>=20
->>=20
->> Actually, Dovetail/arm64 has been alive and kicking for several years
->> now, EVL runs it today up to the latest v5.11. What is missing is the
->> Xenomai port to Dovetail/arm64, which is brewing. I'll keep you =
-posted
->> when it can be tested (within a week, I believe).
->>=20
->> --=20
->> Philippe.
->=20
-
+  GIT_REPO_arm64 = "git://github.com/xenomai-ci/ipipe-arm64.git"
+--
+2.17.1
 
