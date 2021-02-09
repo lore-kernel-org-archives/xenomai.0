@@ -1,14 +1,18 @@
-References: <20210220124527.401015-1-rpm@xenomai.org>
- <20210220124527.401015-6-rpm@xenomai.org> <6031B089.3010500@kylinos.cn>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 6/8] cobalt/dovetail: provide core-specific context
- extensions
-In-reply-to: <6031B089.3010500@kylinos.cn>
-Date: Thu, 25 Feb 2021 14:28:53 +0100
-Message-ID: <87blc88eei.fsf@xenomai.org>
+Subject: Re: [xenomai-images][PATCH 1/2] linux-xenomai: Fix arm/arm64 latest
+ branches, add 5.4 option
+References: <ca6c935b-a10c-589c-502d-0b9e439c7089@siemens.com>
+ <CALLqZ8RGYh5qevRX3NJ88MRrPcJyDfX0H2bd=d4TLiRBNCZ9hg@mail.gmail.com>
+ <4c9069df-2a3f-0a63-9553-f2da4679c8fa@qmul.ac.uk>
+ <a181852d-d194-5b87-6559-5358a1accc5a@siemens.com>
+ <3a693cb3-2dd3-288a-f717-0c366267db1e@qmul.ac.uk>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <422657c1-9e11-2f6a-20a3-d3634eea77eb@siemens.com>
+Date: Tue, 9 Feb 2021 20:23:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <3a693cb3-2dd3-288a-f717-0c366267db1e@qmul.ac.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,75 +21,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@kylinos.cn>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, Greg Gallagher <greg@embeddedgreg.com>, Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
+On 09.02.21 18:59, Giulio Moro wrote:
+>> What you are missing is also :opt-xenomai-next.yml because 5.4 requires
+> 
+> Yes! This worked:
+> 
+>   kas-container build
+> kas.yml:board-beagle-bone-black.yml:opt-xenomai-next.yml:opt-linux-latest-5.4.yml
+> 
+> 
+> Then I checked out c6fafd0b83752c529483f7ba3a4277d02ce6aace
+> (wip/dovetail) and attempted:
+> 
+>   kas-container build
+> kas.yml:board-beagle-bone-black.yml:opt-xenomai-next.yml:opt-linux-latest-5.10.yml
+> 
+> 
+> however this failed because `dovetail/master` was not available in
+> GIT_REPO_armhf. I am submitting a patch separately to fix this.
+> 
 
-chensong <chensong@kylinos.cn> writes:
+Should be fine now, we both fixed it.
 
-> On 2021=E5=B9=B402=E6=9C=8820=E6=97=A5 20:45, Philippe Gerum via Xenomai =
-wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->>
->> In order to intimately connect Cobalt to the kernel, Dovetail allows
->> us to extend the latter with data and procedures we need:
->>
->> - we can embed our own context information into a set of critical
->>    kernel data structures. This information should be defined as a set
->>    of core-specific types, such as struct oob_thread_state which is
->>    going to be part of struct thread_info.
->>
->> - we can define preparation and finalization handlers for out-of-band
->>    IRQ handling, which Dovetail should invoke right after entering the
->>    outer interrupt frame, then right before leaving it respectively.
->>
->> Add the couple of interface headers we need to connect those elements
->> to the kernel.
->>
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> ---
->>   kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
->>   kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
->>   2 files changed, 85 insertions(+)
->>   create mode 100644 kernel/cobalt/include/dovetail/irq.h
->>   create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
->>
->> diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/includ=
-e/dovetail/irq.h
->> new file mode 100644
->> index 000000000..66d020fde
->> --- /dev/null
->> +++ b/kernel/cobalt/include/dovetail/irq.h
->> @@ -0,0 +1,52 @@
->> +/*
->> + * SPDX-License-Identifier: GPL-2.0
->> + *
->> + * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
->> + */
->> +
->> +#ifndef _COBALT_DOVETAIL_IRQ_H
->> +#define _COBALT_DOVETAIL_IRQ_H
->> +
->> +#ifdef CONFIG_XENOMAI
->> +
->> +#include <cobalt/kernel/sched.h>
->> +
->> +/* hard irqs off. */
->> +static inline void irq_enter_pipeline(void)
->> +{
->> +	struct xnsched *sched =3D xnsched_current();
->> +
->> +	sched->lflags |=3D XNINIRQ;
->> +}
->> +
->> +/* hard irqs off. */
->
-> should be "hard irqs on"?
->
+> I also tried to build with gitlab-runner, but the line provided in the
+> README didn't work:
+> 
+> gitlab-runner exec docker --docker-privileged \
+>   --env "HTTP_PROXY=$HTTP_PROXY" --env "HTTPS_PROXY=$HTTPS_PROXY" \
+>   --env "NO_PROXY=$NO_PROXY" build:qemu-armhf
+> 
+> fails with
+> 
+> FATAL: no job named "build:qemu-armhf"
+> 
+> Note that I don't have any of those variables set in my env and that I
+> am not running behind a proxy, but the failure seems to be unrelated (I
+> am no docker expert), so maybe the README needs update on this one, too?
 
-The comment is ok, the interrupt pipeline always calls the exit handler
-with hard irqs off.
+Yeah, our README is totally outdated here. We changed the naming scheme
+of jobs since then. Plus I'm not sure how to specify the variations
+(kernel version, Xenomai versions) this way. Quirin?
 
---=20
-Philippe.
+Thanks for reporting in any case.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
