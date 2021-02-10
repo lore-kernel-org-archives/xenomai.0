@@ -1,20 +1,11 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: reminder: Xenomai community call on today, Feb 10th, UTC 7:00
+Date: Wed, 10 Feb 2021 01:33:37 +0000
+Message-ID: <CO1PR11MB5187EC81D1AEB3C91207285BEE8D9@CO1PR11MB5187.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <E1l9itV-000402-99@xenomai.org>
- <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
- <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
- <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
- <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
- <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
- <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
- <87zgzs6ymo.fsf@xenomai.org>
- <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
- <87tuq06xiq.fsf@xenomai.org>
-In-Reply-To: <87tuq06xiq.fsf@xenomai.org>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 25 Feb 2021 09:22:02 -0500
-Message-ID: <CALLqZ8Q-9-JyY41bG=zbqMrmLq9Ur9wHaXmSAAAwwbpNvyxC4g@mail.gmail.com>
-Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,94 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Feb 25, 2021 at 9:19 AM Philippe Gerum via Xenomai <
-xenomai@xenomai.org> wrote:
+U29ycnkgZm9yIHRoZSBsYXRlIHJlbWluZGVyLCBBcyBwbGFubmVkLCB3ZSBoYXZlIHRoZSBYZW5v
+bWFpIGNvbW11bml0eSBjYWxsDQpUb3BpY3MgbWF5IGluY2x1ZGUgYnV0IG5vdCBsaW1pdGVkIHRv
+IHVwc3RyZWFtL2Rvd25zdHJlYW0gcHJvamVjdCBwbGFuLCBzdGF0dXMgdXBkYXRlLCBhbmQgdGVj
+aG5pY2FsIGRpc2N1c3Npb24uDQpJdCdzIGFuIG9wZW4gb25saW5lIG1lZXRpbmcgdGhhdCBhbnlv
+bmUgY2FuIGpvaW4gYW5kIGFzayBxdWVzdGlvbnMsDQoNClRpbWU6DQpGZWIgMTB0aCAoV2VkbmVz
+ZGF5KSwgVVRDIDc6MDANCjE1OjAwIGZvciBDaGluYQ0KODowMCBmb3IgRnJhbmNlLCBHZXJtYW55
+LCBJdGFseQ0KMjM6MDAgKEZlYiA5dGggKSBmb3IgU2FudGEgQ2xhcmENCg0KUGxzIGRvd25sb2Fk
+IFdlYmV4IG1lZXRpbmcgc29mdHdhcmUgb3IgdXNlIHRoZSB3ZWJwYWdlIHZlcnNpb246DQpodHRw
+czovL2ludGVsLndlYmV4LmNvbS9pbnRlbC9qLnBocD9NVElEPW0yMzBiMWQ5N2FiNGYyYTRmOWRi
+YzNiMjYyODg1YmFiNg0KDQpNZWV0aW5nIG51bWJlciAoYWNjZXNzIGNvZGUpOiAxMzAgNTE0IDc2
+MDUNCk1lZXRpbmcgcGFzc3dvcmQ6IEpRcEVjN1VZQDM4ICANCiANClRhcCB0byBqb2luIGZyb20g
+YSBtb2JpbGUgZGV2aWNlIChhdHRlbmRlZXMgb25seSkgIA0KKzEtMjEwLTc5NS0xMTEwLCwxMzA1
+MTQ3NjA1IyMgVVMgVG9sbCAgDQorMS04NjYtNjYyLTk5ODcsLDEzMDUxNDc2MDUjIyBVUyBUb2xs
+IEZyZWUgIA0KDQpKb2luIGJ5IHBob25lICANCisxLTIxMC03OTUtMTExMCBVUyBUb2xsICANCisx
+LTg2Ni02NjItOTk4NyBVUyBUb2xsIEZyZWUgIA0KR2xvYmFsIGNhbGwtaW4gbnVtYmVycyAgfCAg
+VG9sbC1mcmVlIGNhbGxpbmcgcmVzdHJpY3Rpb25zICAgDQogIA0KSm9pbiBmcm9tIGEgdmlkZW8g
+c3lzdGVtIG9yIGFwcGxpY2F0aW9uDQpEaWFsIDEzMDUxNDc2MDVAaW50ZWwud2ViZXguY29tICAN
+CllvdSBjYW4gYWxzbyBkaWFsIDE3My4yNDMuMi42OCBhbmQgZW50ZXIgeW91ciBtZWV0aW5nIG51
+bWJlci4gICANCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9w
+ZXIgRW5hYmxpbmcNCg0KDQo=
 
->
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
->
-> > On 25.02.21 14:54, Philippe Gerum wrote:
-> >>
-> >> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> >>
-> >>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
-> >>>> Am Wed, 24 Feb 2021 11:24:55 +0100
-> >>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
-> >>>>
-> >>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
-> >>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
-> >>>>>
-> >>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> >>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
-> >>>>>>>
-> >>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:
-> >>>>>>>>> Download URL:
-> >>>>>>>>>
-> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
-> >>>>>>>>>
-> >>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
-> >>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
-> >>>>>>>>>
-> >>>>>>>>
-> >>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
-> >>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> I don't know much about the things going on here, but found this
-> >>>>>>> line in the log. Maybe a starting point...
-> >>>>>>>
-> >>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
-> >>>>>>> msw
-> >>>>>>
-> >>>>>> Exactly, that is causing the overall failure. And it was first seen
-> >>>>>> with the newly added 5.4 kernel.
-> >>>>>
-> >>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
-> >>>>>
-> >>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
-> >>>>>
-> >>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
-> >>>>>
-> >>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
-> >>>>> did not find it, so maybe our config differs
-> >>>
-> >>> Already compared yours against the one in xenomai-images? That would be
-> >>> useful.
-> >>>
-> >>>>
-> >>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6
-> likely
-> >>>> causing the problem.
-> >>>>
-> >>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
-> >>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
-> >>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
-> >>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
-> >>>>
-> >>>> I think here Jan or Phillipe should take over.
-> >>>
-> >>> Thanks for bisecting, this is helpful!
-> >>>
-> >>> Philippe, any immediate idea why all that is failing now?
-> >>
-> >> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
-> >> in Dovetail. I'm adding this to my debug queue.
-> >>
-> >
-> > This is still I-pipe, not a dovetail-related issues.
->
-> This I-pipe release mimics what Dovetail does wrt mm pinning.
->
-> --
-> Philippe.
->
-> I can start to look into this also if that would help and ping Philippe
-when I need some help.  I'm already doing a couple ipipe fixes.  I'll use a
-qemu ARM64 xenomai image to debug.
-
-Thanks
-
-Greg
