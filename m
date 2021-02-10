@@ -1,12 +1,10 @@
-References: <20210207160434.2869121-1-rpm@xenomai.org>
- <20210207160434.2869121-10-rpm@xenomai.org>
- <05c67720-6321-4365-606c-f6657659f3d7@siemens.com>
+References: <trinity-f80d2905-650a-40fe-868e-5e8b383b367c-1612976082333@3c-app-gmx-bap21>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 10/18] cobalt/timer: ipipe: directly use the abstract
- interface for IPIs
-In-reply-to: <05c67720-6321-4365-606c-f6657659f3d7@siemens.com>
-Date: Tue, 09 Feb 2021 10:04:44 +0100
-Message-ID: <8735y5obmb.fsf@xenomai.org>
+Subject: Re: Effective way to stream data from xenomai task to linux domain
+ task
+In-reply-to: <trinity-f80d2905-650a-40fe-868e-5e8b383b367c-1612976082333@3c-app-gmx-bap21>
+Date: Wed, 10 Feb 2021 18:08:48 +0100
+Message-ID: <87y2fvlujj.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,43 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Jan Holtz <jan5697@gmx.net>
 Cc: xenomai@xenomai.org
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Jan Holtz via Xenomai <xenomai@xenomai.org> writes:
 
-> On 07.02.21 17:04, Philippe Gerum wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->> 
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> ---
->>  kernel/cobalt/ipipe/tick.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->> 
->> diff --git a/kernel/cobalt/ipipe/tick.c b/kernel/cobalt/ipipe/tick.c
->> index da1563a66..b711bedc0 100644
->> --- a/kernel/cobalt/ipipe/tick.c
->> +++ b/kernel/cobalt/ipipe/tick.c
->> @@ -187,7 +187,7 @@ int pipeline_install_tick_proxy(void)
->>  	nkclock.wallclock_offset =
->>  		ktime_to_ns(ktime_get_real()) - xnclock_read_monotonic(&nkclock);
->>  
->> -	ret = xntimer_setup_ipi();
->> +	ret = pipeline_request_timer_ipi(xnintr_core_clock_handler);
+>    Hello,
 >
-> Ah, here we change this to the suboptimal pattern: Just fold that
-> implementation in here.
+>    i am running a xenomai 3 on a SMP cobalt kernel using the alchemy skin.
 >
-> We should try to reduce needless static inlines.
+>    I have a rt task running in a 10kHz period which has to transfer every
+>    40ms a amount of data (30.000 byte)  to the linux domain task.
+>
+>    At moment i am using a rt_pipe with the file backend on linux side.
+>    In my setup the rt_pipe_write call takes upto 60 microseconds .
+>    Measured using rt_timer_read.
+>
+>    I expected that writing to the pipe is the bottleneck, so i created a
+>    second task and used a queue to push data to this task, which is
+>    feeding the pipe.
+>    The runtime for the rt_queue_write is like the same, which i measured
+>    bevore using the rt_pipe_write.
+>
+>    My questions:
+>    Is the amout of time i need for this action expectable, or may i have
+>    another issue?
+>    Is there a more effective way to communicate/stream data to the linux
+>    task? Are the xddp sockets faster on the xenomai side (i iam correct
+>    the pipe is based on this?)
+>
+>
+>    Hope you have s suggestion or a tip.
 >
 
-The idea is rather to drop the xnintr layer which has zero value in this
-case, because it does not abstract anything by itself, all is provided
-by the pipeline-specific section. This is why the pipeline call moved
-there, this is the one which brings value in, just like we directly call
-the pipeline interface elsewhere from the generic section, to flatten
-the call stack.
+rt_pipe is based on xddp, which involves a user->kernel->user data
+roundtrip via Cobalt's xnpipe mechanism, this is likely what is time
+consuming for the most part. Using xddp should not give you better
+figures.
+
+rt_queue_write may be costly because it first allocates a buffer to
+write your data to, before queuing it. The allocation + copy ops are
+likely the outstanding ones in the benchmark figures.
+
+If the implementation allows this, you may want to pre-allocate a number
+of queue buffers using rt_queue_alloc, pushing them to the receiver by
+calling rt_queue_send. That would mimic rt_queue_write, but moving out
+the buffer allocation to a non time-sensitive place. You would simply
+have to manage a free list of pre-allocated buffers.
+
+Based on the previous optimization, you may want to prep your data in
+place, directly into a pre-allocated buffer if possible. That would save
+you one data copy.
 
 -- 
 Philippe.
