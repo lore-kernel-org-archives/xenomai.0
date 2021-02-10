@@ -1,13 +1,15 @@
-Subject: Re: Some build issues with dovetail + ipipe 4.19
-References: <VI1PR05MB591721033A800D11F012D853F68D9@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5c670c64-5460-a4e6-9f07-6dec20e06385@siemens.com>
-Date: Wed, 10 Feb 2021 12:44:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB591721033A800D11F012D853F68D9@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+In-Reply-To: <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 10 Feb 2021 07:41:34 -0500
+Message-ID: <CALLqZ8QAitq3mTQgT156BBEC5pHzQfM_v+CPZMmW4+EXpkmDDQ@mail.gmail.com>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10.02.21 12:23, Lange Norbert via Xenomai wrote:
-> Hello,
-> 
-> 
-> By accident I built 4.19.152-cip37-x86-15 with the wip/dovetail branch. I understand that this should be supported one day?
-> In the hope that this is of use for you, I get built following errors during the modpost step with this config:
-> 
-> ERROR: "__rtdm_nrtsig_execute" [drivers/xenomai/testing/xeno_switchtest.ko] undefined!
-> ERROR: "__rtdm_nrtsig_execute" [drivers/xenomai/net/drivers/igb/rt_igb.ko] undefined!
-> ERROR: "pipeline_read_wallclock" [drivers/xenomai/net/drivers/igb/rt_igb.ko] undefined!
-> 
+On Wed, Feb 10, 2021 at 6:08 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-RTnet is off already in our CI for that reason, but switchtest I thought
-would work. Anyway, all these need fixing.
+> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> > On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+> >> On 10.02.21 07:22, xenomai--- via Xenomai wrote:
+> >>> Download URL:
+> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-=
+arm64-09.patch
+> >>>
+> >>> Repository: https://git.xenomai.org/ipipe-arm64
+> >>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+> >>>
+> >>
+> >> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+> >> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+> >>
+> >
+> > I don't know much about the things going on here, but found this line
+> > in the log. Maybe a starting point...
+> >
+> > 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw =3D=3D =
+msw
+> >
+>
+> Exactly, that is causing the overall failure. And it was first seen with
+> the newly added 5.4 kernel.
+>
+> Jan
+>
+> >
+> >> Guess we need to understand this next now, specifically as it "spreads=
+".
+> >>
+> >> Jan
+> >>
+> >
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
 
-Thanks for reporting,
-Jan
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+I=E2=80=99ll look into this today, seems to be the same issue I=E2=80=99m l=
+ooking at for 5.4
 
+Greg
+
+>
+>
