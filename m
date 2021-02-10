@@ -1,13 +1,24 @@
-Date: Wed, 10 Feb 2021 15:12:35 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: reminder: Xenomai community call on today, Feb 10th, UTC 7:00
-Message-ID: <20210210071212.GA606@linux.intel.com>
-References: <CO1PR11MB5187EC81D1AEB3C91207285BEE8D9@CO1PR11MB5187.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CO1PR11MB5187EC81D1AEB3C91207285BEE8D9@CO1PR11MB5187.namprd11.prod.outlook.com>
+References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
+ <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
+ <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
+ <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
+ <CAPnNZ0Xv3gB5xnXaGN8wBfbgZgBB5XfDv9zBmyO9wD4T4WOBbA@mail.gmail.com>
+ <c0ac33c8-51a8-d2c9-e8cf-088bc17f033a@siemens.com>
+ <CAPnNZ0WyMCjodtJopJ7h0=28OVxeZHSgN6sQ9KJFKvf-aKYhug@mail.gmail.com>
+ <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
+ <CAPnNZ0WnsfxCrGWRhV0J0ROYB6t0wHTD25w4f8-cm1k5y4yvWg@mail.gmail.com>
+ <3c86b640-63f3-a358-4175-0397ce319c0a@siemens.com>
+ <1ded9560-5aa5-fdd1-6d64-6c02720cb02b@siemens.com>
+ <CAPnNZ0XoaDA-PK+h2MdUsWJEv7Rm-yYSKLM8VCSm6EmBJjSo0w@mail.gmail.com>
+ <8347be71-a8e2-1c0f-5229-6e379a380151@siemens.com>
+In-Reply-To: <8347be71-a8e2-1c0f-5229-6e379a380151@siemens.com>
+From: Antoine Hoarau <antoine@flr.io>
+Date: Wed, 10 Feb 2021 08:20:10 +0100
+Message-ID: <CAPnNZ0WYrZUfX112tQYEypXd-A6PhfmZzoaL3XL2633t9sbW0A@mail.gmail.com>
+Subject: Re: undefined symbol in tests
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +27,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Gylstorff Quirin <quirin.gylstorff@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-the meeting started.
+Still having this "undefined reference" issue on 3.1. Is there any news on
+that ?
 
-On Wed, Feb 10, 2021 at 01:33:37AM +0000, Meng, Fino via Xenomai wrote:
-> Sorry for the late reminder, As planned, we have the Xenomai community call
-> Topics may include but not limited to upstream/downstream project plan, status update, and technical discussion.
-> It's an open online meeting that anyone can join and ask questions,
-> 
-> Time:
-> Feb 10th (Wednesday), UTC 7:00
-> 15:00 for China
-> 8:00 for France, Germany, Italy
-> 23:00 (Feb 9th ) for Santa Clara
-> 
-> Pls download Webex meeting software or use the webpage version:
-> https://intel.webex.com/intel/j.php?MTID=m230b1d97ab4f2a4f9dbc3b262885bab6
-> 
-> Meeting number (access code): 130 514 7605
-> Meeting password: JQpEc7UY@38  
->  
-> Tap to join from a mobile device (attendees only)  
-> +1-210-795-1110,,1305147605## US Toll  
-> +1-866-662-9987,,1305147605## US Toll Free  
-> 
-> Join by phone  
-> +1-210-795-1110 US Toll  
-> +1-866-662-9987 US Toll Free  
-> Global call-in numbers  |  Toll-free calling restrictions   
->   
-> Join from a video system or application
-> Dial 1305147605@intel.webex.com  
-> You can also dial 173.243.2.68 and enter your meeting number.   
-> 
-> BR / Fino (孟祥夫)
-> Intel – IOTG Developer Enabling
-> 
-> 
+Le mer. 19 f=C3=A9vr. 2020 =C3=A0 13:13, Jan Kiszka <jan.kiszka@siemens.com=
+> a =C3=A9crit :
 
+> On 19.02.20 13:11, Antoine Hoarau wrote:
+> > Dohell does no seem to be included either. Is that normal ?
+> >
+>
+> It is, see /usr/lib/xenomai/testsuite/dohell.
+>
+> Jan
+>
+> > Le mer. 19 f=C3=A9vr. 2020 =C3=A0 12:35, Jan Kiszka <jan.kiszka@siemens=
+.com
+> > <mailto:jan.kiszka@siemens.com>> a =C3=A9crit :
+> >
+> >     On 19.02.20 09:54, Jan Kiszka via Xenomai wrote:
+> >      > On 18.02.20 18:45, Antoine Hoarau via Xenomai wrote:
+> >      >> Le mar. 18 f=C3=A9vr. 2020 =C3=A0 12:12, Gylstorff Quirin <
+> >      >> quirin.gylstorff@siemens.com
+> >     <mailto:quirin.gylstorff@siemens.com>> a =C3=A9crit :
+> >      >>
+> >      >>> Hi Antoine,
+> >      >>>
+> >      >>> On 2/18/20 12:04 AM, Antoine Hoarau via Xenomai wrote:
+> >      >>>> # ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
+> >      >>>>           linux-vdso.so.1 (0x00007fff1f944000)
+> >      >>>>           libcobalt.so.2 =3D> /usr/lib/libcobalt.so.2
+> >      >>>> (0x00007f2a40bc9000)
+> >      >>>>           libalchemy.so.0 =3D> /usr/lib/libalchemy.so.0
+> >      >>>> (0x00007f2a409b1000)
+> >      >>>>           libcopperplate.so.0 =3D> /usr/lib/libcopperplate.so=
+.0
+> >      >>>> (0x00007f2a407a3000)
+> >      >>>>           libc.so.6 =3D> /lib/x86_64-linux-gnu/libc.so.6
+> >      >>> (0x00007f2a403b2000)
+> >      >>>>           librt.so.1 =3D> /lib/x86_64-linux-gnu/librt.so.1
+> >      >>> (0x00007f2a401aa000)
+> >      >>>>           libpthread.so.0 =3D>
+> /lib/x86_64-linux-gnu/libpthread.so.0
+> >      >>>> (0x00007f2a3ff8b000)
+> >      >>>>           /lib64/ld-linux-x86-64.so.2 (0x00007f2a40ff4000)
+> >      >>>>
+> >      >>>>
+> >      >>>> For info I added --enable-dlopen-libs
+> >      >>>> As in
+> >     https://xenomai.org/pipermail/xenomai/2020-January/042306.html
+> >      >>>>
+> >      >>>> Le lun. 17 f=C3=A9vr. 2020 =C3=A0 17:51, Jan Kiszka
+> >     <jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>> a
+> >      >>> =C3=A9crit :
+> >      >>>>
+> >      >>>>> On 14.02.20 15:15, Antoine Hoarau wrote:
+> >      >>>>>> I just built the debians:
+> >      >>>>>> debchange -v 3.1 Release 3.1
+> >      >>>>>> debuild -uc -us
+> >      >>>>>>
+> >      >>>
+> >      >>> What is the Debian version and CPU architecture of your build
+> >     system?A
+> >      >>
+> >      >>
+> >      >> A very standard Ubuntu 18.04 x64.
+> >      >> Debuild version 2.17.12ubuntu1.1
+> >      >>
+> >      >
+> >      > Ah! That is surely untested as no one here is using Ubuntu
+> anymore.
+> >      > Will check if it's a generic or a Ubuntu-exposed issue.
+> >      >
+> >
+> >     I'm starting to understand the issue. It's likely related to
+> >     optimizations of library dependency done differently by the Ubuntu
+> >     toolchain than that of Debian 10. I think we can avoid that by addi=
+ng
+> >     all actual deps to our libs. Playing with it...
+> >
+> >     Jan
+> >
+> >     --
+> >     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> >     Corporate Competence Center Embedded Linux
+> >
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
