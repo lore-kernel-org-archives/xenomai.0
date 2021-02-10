@@ -1,15 +1,11 @@
-Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
-References: <E1l9itV-000402-99@xenomai.org>
- <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
- <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
-Date: Wed, 10 Feb 2021 12:08:43 +0100
-MIME-Version: 1.0
-In-Reply-To: <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: Some build issues with dovetail + ipipe 4.19
+Date: Wed, 10 Feb 2021 11:23:59 +0000
+Message-ID: <VI1PR05MB591721033A800D11F012D853F68D9@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,40 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "greg@embeddedgreg.com" <greg@embeddedgreg.com>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
->> On 10.02.21 07:22, xenomai--- via Xenomai wrote:
->>> Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
->>>
->>> Repository: https://git.xenomai.org/ipipe-arm64
->>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
->>>
->>
->> Hmm, now we have the 5.4-arm64 issue also on 4.19:
->> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
->>
-> 
-> I don't know much about the things going on here, but found this line
-> in the log. Maybe a starting point...
-> 
-> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw == msw
-> 
+Hello,
 
-Exactly, that is causing the overall failure. And it was first seen with
-the newly added 5.4 kernel.
 
-Jan
+By accident I built 4.19.152-cip37-x86-15 with the wip/dovetail branch. I u=
+nderstand that this should be supported one day?
+In the hope that this is of use for you, I get built following errors durin=
+g the modpost step with this config:
 
-> 
->> Guess we need to understand this next now, specifically as it "spreads".
->>
->> Jan
->>
-> 
+ERROR: "__rtdm_nrtsig_execute" [drivers/xenomai/testing/xeno_switchtest.ko]=
+ undefined!
+ERROR: "__rtdm_nrtsig_execute" [drivers/xenomai/net/drivers/igb/rt_igb.ko] =
+undefined!
+ERROR: "pipeline_read_wallclock" [drivers/xenomai/net/drivers/igb/rt_igb.ko=
+] undefined!
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Mit besten Gr=FC=DFen / Kind regards
 
+NORBERT LANGE
+
+AT-RD3
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
+andritz.com<http://www.andritz.com/>
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
