@@ -1,15 +1,15 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
-Date: Wed, 10 Feb 2021 10:07:30 +0000
-Message-ID: <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
 References: <E1l9itV-000402-99@xenomai.org>
  <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
-In-Reply-To: <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <14406A1831E98F458F920BD6AAE86FBC@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+Date: Wed, 10 Feb 2021 12:08:43 +0100
 MIME-Version: 1.0
+In-Reply-To: <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,40 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "greg@embeddedgreg.com" <greg@embeddedgreg.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "greg@embeddedgreg.com" <greg@embeddedgreg.com>
 
-T24gV2VkLCAyMDIxLTAyLTEwIGF0IDA5OjE1ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
-IHdyb3RlOg0KPiBPbiAxMC4wMi4yMSAwNzoyMiwgeGVub21haS0tLSB2aWEgWGVub21haSB3cm90
-ZToNCj4gPiBEb3dubG9hZCBVUkw6IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24u
-b3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnhlbm9tYWkub3JnJTJGZG93bmxvYWRzJTJG
-aXBpcGUlMkZ2NC54JTJGYXJtNjQlMkZpcGlwZS1jb3JlLTQuMTkuMTY1LWNpcDQxLWFybTY0LTA5
-LnBhdGNoJmFtcDtkYXRhPTA0JTdDMDElN0NmbG9yaWFuLmJlemRla2ElNDBzaWVtZW5zLmNvbSU3
-QzFlMDA2ZGViNWRlMTQ4Y2M5YzMyMDhkOGNkOWMxOWRmJTdDMzhhZTNiY2Q5NTc5NGZkNGFkZGFi
-NDJlMTQ5NWQ1NWElN0MxJTdDMCU3QzYzNzQ4NTQxNzYyNTk3MzIyMSU3Q1Vua25vd24lN0NUV0Zw
-Ykdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhh
-V3dpTENKWFZDSTZNbjAlM0QlN0MxMDAwJmFtcDtzZGF0YT1UZG5lM2xiRXRNUmdBQjBmcnBxT3Zh
-Q09VVlk3ZDR2ck1kOG5aWTlqZSUyRlUlM0QmYW1wO3Jlc2VydmVkPTANCj4gPiANCj4gPiBSZXBv
-c2l0b3J5OiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91
-cmw9aHR0cHMlM0ElMkYlMkZnaXQueGVub21haS5vcmclMkZpcGlwZS1hcm02NCZhbXA7ZGF0YT0w
-NCU3QzAxJTdDZmxvcmlhbi5iZXpkZWthJTQwc2llbWVucy5jb20lN0MxZTAwNmRlYjVkZTE0OGNj
-OWMzMjA4ZDhjZDljMTlkZiU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3
-QzAlN0M2Mzc0ODU0MTc2MjU5NzMyMjElN0NVbmtub3duJTdDVFdGcGJHWnNiM2Q4ZXlKV0lqb2lN
-QzR3TGpBd01EQWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNE
-JTdDMTAwMCZhbXA7c2RhdGE9ZWdWUzAwbzBqMDJqOGFxZmVlQWphakFKVlBuRkh5TWNrWHJaNU56
-TmdnRSUzRCZhbXA7cmVzZXJ2ZWQ9MA0KPiA+IFJlbGVhc2UgdGFnOiBpcGlwZS1jb3JlLTQuMTku
-MTY1LWNpcDQxLWFybTY0LTA5DQo+ID4gDQo+IA0KPiBIbW0sIG5vdyB3ZSBoYXZlIHRoZSA1LjQt
-YXJtNjQgaXNzdWUgYWxzbyBvbiA0LjE5Og0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90
-ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZnaXRsYWIuZGVueC5kZSUyRlhl
-bm9tYWklMkZ4ZW5vbWFpLWltYWdlcyUyRi0lMkZqb2JzJTJGMjE5OTg0JmFtcDtkYXRhPTA0JTdD
-MDElN0NmbG9yaWFuLmJlemRla2ElNDBzaWVtZW5zLmNvbSU3QzFlMDA2ZGViNWRlMTQ4Y2M5YzMy
-MDhkOGNkOWMxOWRmJTdDMzhhZTNiY2Q5NTc5NGZkNGFkZGFiNDJlMTQ5NWQ1NWElN0MxJTdDMCU3
-QzYzNzQ4NTQxNzYyNTk4MzIwOSU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdM
-akF3TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0Mx
-MDAwJmFtcDtzZGF0YT1EZzh0aFo2aGpBMmU4S1J5VXl1QTJ3eENaSTBBNmw4dXlyYTJWcWxCNUow
-JTNEJmFtcDtyZXNlcnZlZD0wDQo+IA0KDQpJIGRvbid0IGtub3cgbXVjaCBhYm91dCB0aGUgdGhp
-bmdzIGdvaW5nIG9uIGhlcmUsIGJ1dCBmb3VuZCB0aGlzIGxpbmUNCmluIHRoZSBsb2cuIE1heWJl
-IGEgc3RhcnRpbmcgcG9pbnQuLi4NCg0KMjAyMS0wMi0xMFQwNzo1MTo0NyBzZXRzY2hlZC5jOjEy
-MCwgYXNzZXJ0aW9uIGZhaWxlZDogc3RhdHMubXN3ID09IG1zdw0KDQoNCj4gR3Vlc3Mgd2UgbmVl
-ZCB0byB1bmRlcnN0YW5kIHRoaXMgbmV4dCBub3csIHNwZWNpZmljYWxseSBhcyBpdCAic3ByZWFk
-cyIuDQo+IA0KPiBKYW4NCj4gDQoNCg==
+On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:
+>>> Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>
+>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>
+>>
+>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+>>
+> 
+> I don't know much about the things going on here, but found this line
+> in the log. Maybe a starting point...
+> 
+> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw == msw
+> 
+
+Exactly, that is causing the overall failure. And it was first seen with
+the newly added 5.4 kernel.
+
+Jan
+
+> 
+>> Guess we need to understand this next now, specifically as it "spreads".
+>>
+>> Jan
+>>
+> 
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
