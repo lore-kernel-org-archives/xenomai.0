@@ -1,16 +1,9 @@
-Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
-References: <874kixxf9e.fsf@xenomai.org>
- <f850676b-a67f-442e-4642-0b8791162236@siemens.com>
- <87k0rprr5a.fsf@xenomai.org>
- <46e13cc0-6f1c-65f3-34cc-4a6ea44d00d8@siemens.com>
- <aab28877-6309-edb3-45dc-b9d504451fc9@siemens.com>
- <d3aadb22-6426-5326-31ed-fb44ee2a31aa@siemens.com>
- <5a957790-9b3e-4df1-e0e8-96fa4e92e1eb@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1346fbeb-63b6-4f29-e91d-deb1f200a195@siemens.com>
-Date: Mon, 15 Feb 2021 18:19:47 +0100
+Subject: [PATCH] testsuite/smokey/sched-quote: Make more deterministic and
+ simplify
+Message-ID: <ab085b30-c555-6259-a542-15a310c839e2@siemens.com>
+Date: Mon, 15 Feb 2021 18:41:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <5a957790-9b3e-4df1-e0e8-96fa4e92e1eb@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,52 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 15.02.21 17:53, Jan Kiszka via Xenomai wrote:
-> On 15.02.21 16:11, Jan Kiszka via Xenomai wrote:
->> On 15.02.21 14:28, Jan Kiszka wrote:
->>> Now the next issue is
->>>
->>> /usr/lib/xenomai/testsuite/smokey: test sched_quota failed: Protocol error
->>> sched-quota.c:332, out of quota: 13.7%
->>> (on a real target, an Atom-class box).
->>>
->>
->> Testsuite issue, long pending:
->>
->> https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/testsuite/smokey/sched-quota/sched-quota.c#L204
->>
->> Those pthread_kill() in the loop will kick the caller into non-rt, while
->> it is not yet done with collecting the loop counters from the other
->> workers. Result is pure random, sometimes still within the defined
->> limits, but sometimes reporting false overruns.
->>
->> No idea what those signal submissions supposed to do - test runs and
->> terminates fine without them as well.
->>
-> 
-> Correction: The pthread_kill stay in primary and do not cause the issue
-> (they are still not needed IMHO, though).
-> 
-> It must be something compiler (setting?) related: smokey built with my
-> gcc-7 from SUSE is fine, the one build with Debian's gcc-8 is not,
-> causing noteworthy variations on the measured workload. Examining further...
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-It was gcc-10 in fact on my machine - but the actual difference was
---enable-debug=full here vs. no debug in xenomai-images. Without full
-debugging, the loop calibration becomes too instable, likely because the
-inner __do_work is reduced to a simple
+As optimization can shrink __do_work to just two instruction, the
+calibration loop needs to run longer.
 
-  417960:       48 8d 47 01             lea    0x1(%rdi),%rax
-  417964:       c3                      retq
+At this chance, drop the pthread_kill to stop the thread and rely in
+both cases on the throttle mechanism.
 
-This can be mitigated by extending the calibration loop (crunch_loops =
-100000).
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/sched-quota/sched-quota.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-Jan
+diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
+index 5c35b551d8..ff7c584e39 100644
+--- a/testsuite/smokey/sched-quota/sched-quota.c
++++ b/testsuite/smokey/sched-quota/sched-quota.c
+@@ -199,13 +199,14 @@ static double run_quota(int quota)
+ 	req.tv_nsec = 0;
+ 	clock_nanosleep(CLOCK_MONOTONIC, 0, &req, NULL);
+ 
+-	for (n = 0, count = 0; n < nrthreads; n++) {
++	for (n = 0, count = 0; n < nrthreads; n++)
+ 		count += counts[n];
+-		pthread_kill(threads[n], SIGDEMT);
+-	}
+ 
+ 	percent = ((double)count / TEST_SECS) * 100.0 / loops_per_sec;
+ 
++	atomic_set(&throttle, 1);
++	smp_wmb();
++
+ 	for (n = 0; n < nrthreads; n++) {
+ 		smokey_trace("done quota_thread[%d], count=%lu", n, counts[n]);
+ 		pthread_cancel(threads[n]);
+@@ -224,7 +225,7 @@ static double run_quota(int quota)
+ static unsigned long long calibrate(void)
+ {
+ 	struct timespec start, end, delta;
+-	const int crunch_loops = 10000;
++	const int crunch_loops = 100000;
+ 	unsigned long long ns, lps;
+ 	unsigned long count;
+ 	struct timespec req;
+@@ -255,10 +256,8 @@ static unsigned long long calibrate(void)
+ 	req.tv_nsec = 0;
+ 	clock_nanosleep(CLOCK_MONOTONIC, 0, &req, NULL);
+ 
+-	for (n = 0, lps = 0; n < nrthreads; n++) {
++	for (n = 0, lps = 0; n < nrthreads; n++)
+ 		lps += counts[n];
+-		pthread_kill(threads[n], SIGDEMT);
+-	}
+ 
+ 	atomic_set(&throttle, 1);
+ 	smp_wmb();
+-- 
+2.26.2
+
 
 -- 
 Siemens AG, T RDA IOT
