@@ -1,11 +1,15 @@
-References: <9b5a8f4bb2b90758bc94f4fa7c7d96a4c3a0040a.camel@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: Where is <mercury/wrappers.h>?
-In-reply-to: <9b5a8f4bb2b90758bc94f4fa7c7d96a4c3a0040a.camel@siemens.com>
-Date: Mon, 15 Feb 2021 19:28:51 +0100
-Message-ID: <87sg5xi3rw.fsf@xenomai.org>
+Date: Mon, 15 Feb 2021 18:52:22 +0000
+Message-ID: <3ad86b598841326efba7c1185cedf9ebd286bfc7.camel@siemens.com>
+References: <9b5a8f4bb2b90758bc94f4fa7c7d96a4c3a0040a.camel@siemens.com>
+ <87sg5xi3rw.fsf@xenomai.org>
+In-Reply-To: <87sg5xi3rw.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B5EDF87003B5D44CA396BCE5C8BE512B@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,57 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-florian.bezdeka--- via Xenomai <xenomai@xenomai.org> writes:
-
-> Hi all,
->
-> I'm currently inspecting the code base regarding Y2038 problem (=
-> overflow of 32 bit time_t in January 2038) and trying to list /
-> summarize all affected APIs / drivers / ...
->
-> In include/copperplate/wrappers.h we have:
-> #include <mercury/wrappers.h>
->
-> I guess this is broken since 
-> 1fbf0f398064 ("lib/boilerplate: introduce ancillary service layer").
-> Right?
-
-Sorry, -ENOPARSE. What may be broken?
-
->
-> Background:
-> I'm trying to find the right expansion for __RT() used by the alchemy
-> library, e.g. in lib/alchemy/pipe.c. I found two possibilities so far:
->
-> - include/cobalt/wrappers.h
-> - include/mercury/boilerplate/wrappers.h
->
-> Which one is being used by the alchemy library? I was not able to find
-> my way through all the include directories and include paths...
->
-
-If you build for Mercury, libcobalt is not involved, Alchemy and other
-non-POSIX APIs are built on top of libcopperplate -> *libc
-directly. This is merely a native build for prototyping, or running the
-APIs on top of PREEMPT_RT. So in this case, __RT() and __STD() expand to:
-
-#define __RT(call)	call
-#define __STD(call)	call
-
-meaning, we don't route the call to libcobalt but to the regular
-*libc. This is defined in include/mercury/boilerplate/wrappers.h.
-
-So, for a Cobalt-based build:
-
-    include/copperplate/wrappers.h -> include/cobalt/boilerplate/wrappers.h.
-
-For a Mercury build:
-
-    include/copperplate/wrappers.h -> include/mercury/boilerplate/wrappers.h.
--- 
-Philippe.
+T24gTW9uLCAyMDIxLTAyLTE1IGF0IDE5OjI4ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gZmxvcmlhbi5iZXpkZWthLS0tIHZpYSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3
+cml0ZXM6DQo+IA0KPiA+IEhpIGFsbCwNCj4gPiANCj4gPiBJJ20gY3VycmVudGx5IGluc3BlY3Rp
+bmcgdGhlIGNvZGUgYmFzZSByZWdhcmRpbmcgWTIwMzggcHJvYmxlbSAoPQ0KPiA+IG92ZXJmbG93
+IG9mIDMyIGJpdCB0aW1lX3QgaW4gSmFudWFyeSAyMDM4KSBhbmQgdHJ5aW5nIHRvIGxpc3QgLw0K
+PiA+IHN1bW1hcml6ZSBhbGwgYWZmZWN0ZWQgQVBJcyAvIGRyaXZlcnMgLyAuLi4NCj4gPiANCj4g
+PiBJbiBpbmNsdWRlL2NvcHBlcnBsYXRlL3dyYXBwZXJzLmggd2UgaGF2ZToNCj4gPiAjaW5jbHVk
+ZSA8bWVyY3VyeS93cmFwcGVycy5oPg0KPiA+IA0KPiA+IEkgZ3Vlc3MgdGhpcyBpcyBicm9rZW4g
+c2luY2UgDQo+ID4gMWZiZjBmMzk4MDY0ICgibGliL2JvaWxlcnBsYXRlOiBpbnRyb2R1Y2UgYW5j
+aWxsYXJ5IHNlcnZpY2UgbGF5ZXIiKS4NCj4gPiBSaWdodD8NCj4gDQo+IFNvcnJ5LCAtRU5PUEFS
+U0UuIFdoYXQgbWF5IGJlIGJyb2tlbj8NCg0KU2VlIGJlbG93Li4uDQoNCj4gDQo+ID4gDQo+ID4g
+QmFja2dyb3VuZDoNCj4gPiBJJ20gdHJ5aW5nIHRvIGZpbmQgdGhlIHJpZ2h0IGV4cGFuc2lvbiBm
+b3IgX19SVCgpIHVzZWQgYnkgdGhlIGFsY2hlbXkNCj4gPiBsaWJyYXJ5LCBlLmcuIGluIGxpYi9h
+bGNoZW15L3BpcGUuYy4gSSBmb3VuZCB0d28gcG9zc2liaWxpdGllcyBzbyBmYXI6DQo+ID4gDQo+
+ID4gLSBpbmNsdWRlL2NvYmFsdC93cmFwcGVycy5oDQo+ID4gLSBpbmNsdWRlL21lcmN1cnkvYm9p
+bGVycGxhdGUvd3JhcHBlcnMuaA0KPiA+IA0KPiA+IFdoaWNoIG9uZSBpcyBiZWluZyB1c2VkIGJ5
+IHRoZSBhbGNoZW15IGxpYnJhcnk/IEkgd2FzIG5vdCBhYmxlIHRvIGZpbmQNCj4gPiBteSB3YXkg
+dGhyb3VnaCBhbGwgdGhlIGluY2x1ZGUgZGlyZWN0b3JpZXMgYW5kIGluY2x1ZGUgcGF0aHMuLi4N
+Cj4gPiANCj4gDQo+IElmIHlvdSBidWlsZCBmb3IgTWVyY3VyeSwgbGliY29iYWx0IGlzIG5vdCBp
+bnZvbHZlZCwgQWxjaGVteSBhbmQgb3RoZXINCj4gbm9uLVBPU0lYIEFQSXMgYXJlIGJ1aWx0IG9u
+IHRvcCBvZiBsaWJjb3BwZXJwbGF0ZSAtPiAqbGliYw0KPiBkaXJlY3RseS4gVGhpcyBpcyBtZXJl
+bHkgYSBuYXRpdmUgYnVpbGQgZm9yIHByb3RvdHlwaW5nLCBvciBydW5uaW5nIHRoZQ0KPiBBUElz
+IG9uIHRvcCBvZiBQUkVFTVBUX1JULiBTbyBpbiB0aGlzIGNhc2UsIF9fUlQoKSBhbmQgX19TVEQo
+KSBleHBhbmQgdG86DQo+IA0KPiAjZGVmaW5lIF9fUlQoY2FsbCkJY2FsbA0KPiAjZGVmaW5lIF9f
+U1REKGNhbGwpCWNhbGwNCj4gDQo+IG1lYW5pbmcsIHdlIGRvbid0IHJvdXRlIHRoZSBjYWxsIHRv
+IGxpYmNvYmFsdCBidXQgdG8gdGhlIHJlZ3VsYXINCj4gKmxpYmMuIFRoaXMgaXMgZGVmaW5lZCBp
+biBpbmNsdWRlL21lcmN1cnkvYm9pbGVycGxhdGUvd3JhcHBlcnMuaC4NCg0KVGhhbmtzIGZvciB0
+aGUgZXhwbGFuYXRpb24uIElPVFc6IE5vIChsaWJjKSBzeW1ib2wgd3JhcHBpbmcgaW4gY2FzZSBv
+Zg0KYnVpbGRpbmcgZm9yIG1lcmN1cnkuDQoNCkkgYXNzdW1lIHRoZSBzZWxlY3Rpb24gd2hpY2gg
+d3JhcHBlcnMuaCBpcyBiZWluZyB1c2VkIGlzIGRvbmUgaW4NCmluY2x1ZGUvY29wcGVycGxhdGUv
+d3JhcHBlcnMuaCwgYnV0IEknbSB1bmFibGUgdG8gZmluZCBhIHVzYWdlIG9mIHRoYXQNCmhlYWRl
+ci4uLg0KDQo+IA0KPiBTbywgZm9yIGEgQ29iYWx0LWJhc2VkIGJ1aWxkOg0KPiANCj4gwqDCoMKg
+wqBpbmNsdWRlL2NvcHBlcnBsYXRlL3dyYXBwZXJzLmggLT4gaW5jbHVkZS9jb2JhbHQvYm9pbGVy
+cGxhdGUvd3JhcHBlcnMuaC4NCj4gDQo+IEZvciBhIE1lcmN1cnkgYnVpbGQ6DQo+IA0KPiDCoMKg
+wqDCoGluY2x1ZGUvY29wcGVycGxhdGUvd3JhcHBlcnMuaCAtPiBpbmNsdWRlL21lcmN1cnkvYm9p
+bGVycGxhdGUvd3JhcHBlcnMuaC4NCg0KaW5jbHVkZS9jb3BwZXJwbGF0ZS93cmFwcGVycy5oIGhh
+cw0KI2luY2x1ZGUgPG1lcmN1cnkvd3JhcHBlcnMuaD4NCg0KYnV0IHRoZXJlIGlzIG5vIDxtZXJj
+dXJ5L3dyYXBwZXJzLmg+LiBBcyB5b3Ugc2FpZCBpdCBzaG91bGQgYmXCoA0KI2luY2x1ZGUgPG1l
+cmN1cnkvYm9pbGVycGxhdGUvd3JhcHBlcnMuaD4NCg0KVGhlIGNvbW1pdCBtZW50aW9uZWQgYWJv
+dmUgbW92ZWQgdGhlIGZpbGUgZnJvbQ0KaW5jbHVkZS9tZXJjdXJ5L3dyYXBwZXJzLmggdG8gaW5j
+bHVkZS9tZXJjdXJ5L2JvaWxlcnBsYXRlL3dyYXBwZXJzLmgNCg0K
 
