@@ -1,17 +1,17 @@
+Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <874kixxf9e.fsf@xenomai.org>
+ <f850676b-a67f-442e-4642-0b8791162236@siemens.com>
+ <87k0rprr5a.fsf@xenomai.org>
+ <46e13cc0-6f1c-65f3-34cc-4a6ea44d00d8@siemens.com>
+ <aab28877-6309-edb3-45dc-b9d504451fc9@siemens.com>
+Message-ID: <d3aadb22-6426-5326-31ed-fb44ee2a31aa@siemens.com>
+Date: Mon, 15 Feb 2021 16:11:31 +0100
 MIME-Version: 1.0
-References: <CAFZ-hKgrQwCVW8rUsMjj4ySBA_P3aYDss273B244y2x69QrOpQ@mail.gmail.com>
- <358306354.8105980.1613394904650.JavaMail.zimbra@wolfram.com>
- <CAFZ-hKiDZg9V7PhGfw_1rPFqm063-CnL0LbQ_6cc5hjZrhDq8A@mail.gmail.com>
- <1968963516.8138258.1613396774639.JavaMail.zimbra@wolfram.com>
- <CAFZ-hKg=m0t_dF7iqzzb=xSd15zJdyFK6kxZ9oEXcJyqJ+zXew@mail.gmail.com>
- <a3d7098288f689f83be4a3fd43d82ba6de379a68.camel@sprinte.eu>
-In-Reply-To: <a3d7098288f689f83be4a3fd43d82ba6de379a68.camel@sprinte.eu>
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Mon, 15 Feb 2021 15:06:10 +0100
-Message-ID: <CAFZ-hKi=Uc3f3hZokOtLOCazc-GMLEAeXyAOLWRM0QWR9uRMgw@mail.gmail.com>
-Subject: Re: Mode Switch
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <aab28877-6309-edb3-45dc-b9d504451fc9@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,24 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Blanc <julien.blanc@sprinte.eu>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-perfect it works! Thanks!
+On 15.02.21 14:28, Jan Kiszka wrote:
+> Now the next issue is
+> 
+> /usr/lib/xenomai/testsuite/smokey: test sched_quota failed: Protocol error
+> sched-quota.c:332, out of quota: 13.7%
+> (on a real target, an Atom-class box).
+> 
 
-Il giorno lun 15 feb 2021 alle ore 14:57 Julien Blanc via Xenomai <
-xenomai@xenomai.org> ha scritto:
+Testsuite issue, long pending:
 
-> Le lundi 15 f=C3=A9vrier 2021 =C3=A0 14:52 +0100, Leandro Bucci via Xenom=
-ai a
-> =C3=A9crit :
-> > What I want is to have a function that generates me mode switches
->
-> __STD(nanosleep)(timeout, NULL) with a zero timeout should do it.
->
-> and you can use any switch-primary call to go back to primary mode.
->
-> Regards,
->
-> Julien
->
+https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/testsuite/smokey/sched-quota/sched-quota.c#L204
+
+Those pthread_kill() in the loop will kick the caller into non-rt, while
+it is not yet done with collecting the loop counters from the other
+workers. Result is pure random, sometimes still within the defined
+limits, but sometimes reporting false overruns.
+
+No idea what those signal submissions supposed to do - test runs and
+terminates fine without them as well.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
