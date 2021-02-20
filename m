@@ -1,12 +1,9 @@
-Subject: Re: [PATCH 1/5] cobalt/rtdm: add new interface to init task on
- specified cpu
-References: <20210220055311.23826-1-hongzhan.chen@intel.com>
-From: chensong <chensong@kylinos.cn>
-Message-ID: <6030D8D3.9030108@kylinos.cn>
-Date: Sat, 20 Feb 2021 17:39:31 +0800
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/8] cobalt/tick: use the underlying pipeline timer API
+ directly
+Date: Sat, 20 Feb 2021 13:45:20 +0100
+Message-Id: <20210220124527.401015-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20210220055311.23826-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,115 +13,211 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-why do we need a new interface instead of adding a new parameter(cpu) in 
-old interface, in this case rtdm_task_init.
+From: Philippe Gerum <rpm@xenomai.org>
 
-For backward compatibility?
+Since the low-level tick management code is pipeline specific, we may
+flatten the call stack by using the underlying pipeline API directly.
 
-On 2021年02月20日 13:53, hongzha1 via Xenomai wrote:
-> Initialise and start a real-time task on specified cpu
->
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->
-> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> index 733c49df8..6cdace324 100644
-> --- a/include/cobalt/kernel/rtdm/driver.h
-> +++ b/include/cobalt/kernel/rtdm/driver.h
-> @@ -1024,6 +1024,9 @@ typedef void (*rtdm_task_proc_t)(void *arg);
->   int rtdm_task_init(rtdm_task_t *task, const char *name,
->   		   rtdm_task_proc_t task_proc, void *arg,
->   		   int priority, nanosecs_rel_t period);
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period);
->   int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
->   void rtdm_task_busy_sleep(nanosecs_rel_t delay);
->
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index b914fa312..7452850b7 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -157,6 +157,79 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
->
->   EXPORT_SYMBOL_GPL(rtdm_task_init);
->
-> +/**
-> + * @brief Initialise and start a real-time task on specified cpu
-> + *
-> + * After initialising a task, the task handle remains valid and can be
-> + * passed to RTDM services until either rtdm_task_destroy() or
-> + * rtdm_task_join() was invoked.
-> + *
-> + * @param[in,out] task Task handle
-> + * @param[in] cpu that task want to run on
-> + * @param[in] name Optional task name
-> + * @param[in] task_proc Procedure to be executed by the task
-> + * @param[in] arg Custom argument passed to @c task_proc() on entry
-> + * @param[in] priority Priority of the task, see also
-> + * @ref rtdmtaskprio "Task Priority Range"
-> + * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-> + * mode. Waiting for the first and subsequent periodic events is
-> + * done using rtdm_task_wait_period().
-> + *
-> + * @return 0 on success, otherwise negative error code
-> + *
-> + * @coretags{secondary-only, might-switch}
-> + */
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period)
-> +{
-> +	union xnsched_policy_param param;
-> +	struct xnthread_start_attr sattr;
-> +	struct xnthread_init_attr iattr;
-> +	int err;
-> +
-> +	if (!realtime_core_enabled())
-> +		return -ENOSYS;
-> +
-> +	iattr.name = name;
-> +	iattr.flags = 0;
-> +	iattr.personality = &xenomai_personality;
-> +	iattr.affinity = *cpumask_of(cpu);
-> +	param.rt.prio = priority;
-> +
-> +	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
-> +	if (err)
-> +		return err;
-> +
-> +	/* We need an anonymous registry entry to obtain a handle for fast
-> +	 * mutex locking.
-> +	 */
-> +	err = xnthread_register(task, "");
-> +	if (err)
-> +		goto cleanup_out;
-> +
-> +	if (period > 0) {
-> +		err = xnthread_set_periodic(task, XN_INFINITE,
-> +					    XN_RELATIVE, period);
-> +		if (err)
-> +			goto cleanup_out;
-> +	}
-> +
-> +	sattr.mode = 0;
-> +	sattr.entry = task_proc;
-> +	sattr.cookie = arg;
-> +	err = xnthread_start(task, &sattr);
-> +	if (err)
-> +		goto cleanup_out;
-> +
-> +	return 0;
-> +
-> +cleanup_out:
-> +	xnthread_cancel(task);
-> +	return err;
-> +}
-> +EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
-> +
->   #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
->   /**
->    * @brief Destroy a real-time task
->
+At this chance, fix a uniprocessor build issue with IPIs.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ .../kernel/dovetail/pipeline/pipeline.h       | 23 ++++++++++++++++++-
+ .../cobalt/kernel/ipipe/pipeline/pipeline.h   | 20 ++++++++--------
+ include/cobalt/kernel/timer.h                 | 11 ---------
+ kernel/cobalt/ipipe/tick.c                    | 11 ++++++---
+ kernel/cobalt/sched.c                         |  4 ----
+ kernel/cobalt/timer.c                         | 10 --------
+ 6 files changed, 39 insertions(+), 40 deletions(-)
+
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 4b8f6b259..a2e025e35 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -74,7 +74,28 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+ 	TODO();
+ }
+ 
+-#endif
++#else  /* !CONFIG_SMP */
++
++static inline int pipeline_request_resched_ipi(void (*handler)(void))
++{
++	return 0;
++}
++
++
++static inline void pipeline_free_resched_ipi(void)
++{
++}
++
++static inline int pipeline_request_timer_ipi(void (*handler)(void))
++{
++	return 0;
++}
++
++static inline void pipeline_free_timer_ipi(void)
++{
++}
++
++#endif	/* CONFIG_SMP */
+ 
+ static inline void pipeline_prepare_panic(void)
+ {
+diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+index fb0465fb2..ceba7e3b0 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
++++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+@@ -51,26 +51,24 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+ 	ipipe_send_ipi(IPIPE_RESCHEDULE_IPI, *dest);
+ }
+ 
+-static inline int pipeline_request_timer_ipi(void (*handler)(void))
++static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+ {
+-	return ipipe_request_irq(&cobalt_pipeline.domain,
+-				IPIPE_HRTIMER_IPI,
+-				(ipipe_irq_handler_t)handler,
+-				NULL, NULL);
++	ipipe_send_ipi(IPIPE_HRTIMER_IPI, *dest);
+ }
+ 
+-static inline void pipeline_free_timer_ipi(void)
++#else  /* !CONFIG_SMP */
++
++static inline int pipeline_request_resched_ipi(void (*handler)(void))
+ {
+-	return ipipe_free_irq(&cobalt_pipeline.domain,
+-			IPIPE_HRTIMER_IPI);
++	return 0;
+ }
+ 
+-static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
++
++static inline void pipeline_free_resched_ipi(void)
+ {
+-	ipipe_send_ipi(IPIPE_HRTIMER_IPI, *dest);
+ }
+ 
+-#endif
++#endif	/* CONFIG_SMP */
+ 
+ static inline void pipeline_prepare_panic(void)
+ {
+diff --git a/include/cobalt/kernel/timer.h b/include/cobalt/kernel/timer.h
+index 691be7a3b..703a13506 100644
+--- a/include/cobalt/kernel/timer.h
++++ b/include/cobalt/kernel/timer.h
+@@ -517,10 +517,6 @@ void xntimer_migrate(struct xntimer *timer, struct xnsched *sched)
+ 		__xntimer_migrate(timer, sched);
+ }
+ 
+-int xntimer_setup_ipi(void);
+-
+-void xntimer_release_ipi(void);
+-
+ void __xntimer_set_affinity(struct xntimer *timer,
+ 			    struct xnsched *sched);
+ 
+@@ -539,13 +535,6 @@ static inline void xntimer_migrate(struct xntimer *timer,
+ 	timer->sched = sched;
+ }
+ 
+-static inline int xntimer_setup_ipi(void)
+-{
+-	return 0;
+-}
+-
+-static inline void xntimer_release_ipi(void) { }
+-
+ static inline void xntimer_set_affinity(struct xntimer *timer,
+ 					struct xnsched *sched)
+ {
+diff --git a/kernel/cobalt/ipipe/tick.c b/kernel/cobalt/ipipe/tick.c
+index da1563a66..b80e56dc7 100644
+--- a/kernel/cobalt/ipipe/tick.c
++++ b/kernel/cobalt/ipipe/tick.c
+@@ -187,7 +187,10 @@ int pipeline_install_tick_proxy(void)
+ 	nkclock.wallclock_offset =
+ 		ktime_to_ns(ktime_get_real()) - xnclock_read_monotonic(&nkclock);
+ 
+-	ret = xntimer_setup_ipi();
++	ret = ipipe_request_irq(&cobalt_pipeline.domain,
++				IPIPE_HRTIMER_IPI,
++				(ipipe_irq_handler_t)xnintr_core_clock_handler,
++				NULL, NULL);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -244,7 +247,8 @@ fail:
+ 		ipipe_timer_stop(_cpu);
+ 	}
+ 
+-	xntimer_release_ipi();
++	ipipe_free_irq(&cobalt_pipeline.domain,
++		       IPIPE_HRTIMER_IPI);
+ 
+ 	return ret;
+ }
+@@ -270,7 +274,8 @@ void pipeline_uninstall_tick_proxy(void)
+ 	for_each_realtime_cpu(cpu)
+ 		ipipe_timer_stop(cpu);
+ 
+-	xntimer_release_ipi();
++	ipipe_free_irq(&cobalt_pipeline.domain,
++		       IPIPE_HRTIMER_IPI);
+ 
+ #ifdef CONFIG_XENO_OPT_STATS_IRQS
+ 	xnintr_destroy(&nktimer);
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index 8a5621642..7873fd652 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -235,9 +235,7 @@ void xnsched_init_all(void)
+ 		xnsched_init(sched, cpu);
+ 	}
+ 
+-#ifdef CONFIG_SMP
+ 	pipeline_request_resched_ipi(__xnsched_run_handler);
+-#endif
+ }
+ 
+ static void xnsched_destroy(struct xnsched *sched)
+@@ -258,9 +256,7 @@ void xnsched_destroy_all(void)
+ 	int cpu;
+ 	spl_t s;
+ 
+-#ifdef CONFIG_SMP
+ 	pipeline_free_resched_ipi();
+-#endif
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index 7f5033c87..f9aa457ce 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -574,16 +574,6 @@ void __xntimer_set_affinity(struct xntimer *timer, struct xnsched *sched)
+ }
+ EXPORT_SYMBOL_GPL(__xntimer_set_affinity);
+ 
+-int xntimer_setup_ipi(void)
+-{
+-	return pipeline_request_timer_ipi(xnintr_core_clock_handler);
+-}
+-
+-void xntimer_release_ipi(void)
+-{
+-	pipeline_free_timer_ipi();
+-}
+-
+ #endif /* CONFIG_SMP */
+ 
+ /**
+-- 
+2.26.2
+
 
