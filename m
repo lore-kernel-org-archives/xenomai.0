@@ -1,14 +1,8 @@
-MIME-Version: 1.0
-References: <CAFZ-hKgw2hNEHshGnw4q7c3suT3wO_92P1pPw0o2e86Rn=Z2uA@mail.gmail.com>
- <CALLqZ8QnoL314ZgmwCaTF7NhcrF94zS3Gpucc0BzQwP5LFK+GQ@mail.gmail.com>
- <CAFZ-hKjjbRMPw4fFn4rZh0ev+xdPQb+_5ftAhfWOuU_Qt8GxJw@mail.gmail.com>
- <CALLqZ8T8gnu7UmQoC3KeM1sPjrj9cAkVan_U+KQdhCGDvwC+EQ@mail.gmail.com>
-In-Reply-To: <CALLqZ8T8gnu7UmQoC3KeM1sPjrj9cAkVan_U+KQdhCGDvwC+EQ@mail.gmail.com>
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Fri, 19 Feb 2021 17:21:26 +0100
-Message-ID: <CAFZ-hKiz=E+EP4xWMWku2BDzCLCJoiqzZ66FjB=Fdvgfc1jKfg@mail.gmail.com>
-Subject: Re: real time serial communication
-Content-Type: text/plain; charset="UTF-8"
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 1/5] cobalt/rtdm: add new interface to init task on specified
+ cpu
+Date: Sat, 20 Feb 2021 00:53:07 -0500
+Message-Id: <20210220055311.23826-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +11,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-great thanks for the help
+Initialise and start a real-time task on specified cpu
 
-Il giorno ven 19 feb 2021 alle ore 17:07 Greg Gallagher <
-greg@embeddedgreg.com> ha scritto:
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
->
->
-> On Fri, Feb 19, 2021 at 11:04 AM Leandro Bucci <guestleandro11@gmail.com>
-> wrote:
->
->> ok so i have to recompile the kernel enabling what i need right?
->>
->> Il giorno ven 19 feb 2021 alle ore 16:57 Greg Gallagher <
->> greg@embeddedgreg.com> ha scritto:
->>
->>>
->>>
->>> On Fri, Feb 19, 2021 at 10:33 AM Leandro Bucci via Xenomai <
->>> xenomai@xenomai.org> wrote:
->>>
->>>> Hi.
->>>> I have Xenomai on the raspberry PI 3 B +. I would like to use the serial
->>>> port to make two raspberry (both with xenomai) communicate. If I use the
->>>> serial0 device everything works but I get huge latencies caused by the
->>>> modeswitches. I saw that it is possible to do serial communication even
->>>> using only the Xenomai domain. But I can't, in fact even the example in
->>>> the
->>>> Demo folder, "cross-link", works and I get the error "can't open / dev /
->>>> rtdm / rtser0". The problem is that I certainly didn't insert the rtdm
->>>> module when compiling the kernel. Can I somehow fix it without having to
->>>> reinstall xenomai all over again?
->>>> Thanks for your help
->>>>
->>> Hi,
->>>   You should be able to rebuild it as a module and insert it.
->>>
->>> -Greg
->>>
->>
-> Yes, recompile kernel and mark that driver to be built as a module. You
-> should be able to copy the module over and insert it at runtime.
->
-> -Greg
->
->>
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 733c49df8..6cdace324 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -1024,6 +1024,9 @@ typedef void (*rtdm_task_proc_t)(void *arg);
+ int rtdm_task_init(rtdm_task_t *task, const char *name,
+ 		   rtdm_task_proc_t task_proc, void *arg,
+ 		   int priority, nanosecs_rel_t period);
++int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
++		rtdm_task_proc_t task_proc, void *arg,
++		int priority, nanosecs_rel_t period);
+ int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
+ void rtdm_task_busy_sleep(nanosecs_rel_t delay);
+ 
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index b914fa312..7452850b7 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -157,6 +157,79 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
+ 
+ EXPORT_SYMBOL_GPL(rtdm_task_init);
+ 
++/**
++ * @brief Initialise and start a real-time task on specified cpu
++ *
++ * After initialising a task, the task handle remains valid and can be
++ * passed to RTDM services until either rtdm_task_destroy() or
++ * rtdm_task_join() was invoked.
++ *
++ * @param[in,out] task Task handle
++ * @param[in] cpu that task want to run on
++ * @param[in] name Optional task name
++ * @param[in] task_proc Procedure to be executed by the task
++ * @param[in] arg Custom argument passed to @c task_proc() on entry
++ * @param[in] priority Priority of the task, see also
++ * @ref rtdmtaskprio "Task Priority Range"
++ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
++ * mode. Waiting for the first and subsequent periodic events is
++ * done using rtdm_task_wait_period().
++ *
++ * @return 0 on success, otherwise negative error code
++ *
++ * @coretags{secondary-only, might-switch}
++ */
++int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
++		rtdm_task_proc_t task_proc, void *arg,
++		int priority, nanosecs_rel_t period)
++{
++	union xnsched_policy_param param;
++	struct xnthread_start_attr sattr;
++	struct xnthread_init_attr iattr;
++	int err;
++
++	if (!realtime_core_enabled())
++		return -ENOSYS;
++
++	iattr.name = name;
++	iattr.flags = 0;
++	iattr.personality = &xenomai_personality;
++	iattr.affinity = *cpumask_of(cpu);
++	param.rt.prio = priority;
++
++	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
++	if (err)
++		return err;
++
++	/* We need an anonymous registry entry to obtain a handle for fast
++	 * mutex locking.
++	 */
++	err = xnthread_register(task, "");
++	if (err)
++		goto cleanup_out;
++
++	if (period > 0) {
++		err = xnthread_set_periodic(task, XN_INFINITE,
++					    XN_RELATIVE, period);
++		if (err)
++			goto cleanup_out;
++	}
++
++	sattr.mode = 0;
++	sattr.entry = task_proc;
++	sattr.cookie = arg;
++	err = xnthread_start(task, &sattr);
++	if (err)
++		goto cleanup_out;
++
++	return 0;
++
++cleanup_out:
++	xnthread_cancel(task);
++	return err;
++}
++EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
++
+ #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+ /**
+  * @brief Destroy a real-time task
+-- 
+2.17.1
+
+
