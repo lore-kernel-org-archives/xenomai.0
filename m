@@ -1,7 +1,7 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 2/5] cobalt/rtdm: add interface to init timer on specified cpu
-Date: Sat, 20 Feb 2021 00:53:08 -0500
-Message-Id: <20210220055311.23826-2-hongzhan.chen@intel.com>
+Subject: [PATCH 4/5] drivers/gpio: core: introduce helper to find gpiochip
+Date: Sat, 20 Feb 2021 00:53:10 -0500
+Message-Id: <20210220055311.23826-4-hongzhan.chen@intel.com>
 In-Reply-To: <20210220055311.23826-1-hongzhan.chen@intel.com>
 References: <20210220055311.23826-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,63 +14,63 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Initialise timer on specified cpu
+To find gpiochip for non-OF platforms like x86
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index 6cdace324..6a431e7c5 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -966,6 +966,9 @@ enum rtdm_timer_mode {
- int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
- 		    const char *name);
+diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+index 00055ec0a..1d1e67bf7 100644
+--- a/include/cobalt/kernel/rtdm/gpio.h
++++ b/include/cobalt/kernel/rtdm/gpio.h
+@@ -61,6 +61,9 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+ 			     unsigned int offset);
  
-+int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
-+		    const char *name, int cpu);
++int rtdm_gpiochip_find(struct device_node *from,
++			  void *compat, int type);
 +
- void rtdm_timer_destroy(rtdm_timer_t *timer);
+ #ifdef CONFIG_OF
  
- int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 7452850b7..e6145b353 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -601,6 +601,34 @@ int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+ int rtdm_gpiochip_scan_of(struct device_node *from,
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 600ef9789..7ab989e94 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -554,6 +554,34 @@ static int match_gpio_chip(struct gpio_chip *gc, void *data)
+ 	return 0;
+ }
  
- EXPORT_SYMBOL_GPL(rtdm_timer_init);
- 
-+/**
-+ * @brief Initialise a timer on specified cpu
-+ *
-+ * @param[in,out] timer Timer handle
-+ * @param[in] handler Handler to be called on timer expiry
-+ * @param[in] name Optional timer name
-+ * @param[in] cpu that run on
-+ *
-+ * @return 0 on success, otherwise negative error code
-+ *
-+ * @coretags{task-unrestricted}
-+ */
-+int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
-+		    const char *name, int cpu)
++static int chip_match_name(struct gpio_chip *chip, void *data)
 +{
-+	struct xnsched *sched = xnsched_struct(cpu);
++	return !strncmp(chip->label, data, strlen(data));
++}
 +
-+	if (!realtime_core_enabled())
++int rtdm_gpiochip_find(struct device_node *from, void *compat,
++			  int type)
++{
++	struct rtdm_gpio_chip *rgc;
++	struct gpio_chip *chip;
++	int ret = -ENODEV;
++
++	if (!rtdm_available())
 +		return -ENOSYS;
 +
-+	sched = xnsched_struct(cpu);
-+	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
-+	xntimer_set_name((timer), (name));
++	chip = gpiochip_find(compat, chip_match_name);
++	if (chip == NULL)
++		return ret;
 +
-+	return 0;
++	ret = 0;
++	rgc = rtdm_gpiochip_alloc(chip, type);
++	if (IS_ERR(rgc))
++		ret = PTR_ERR(rgc);
++
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
 +
- /**
-  * @brief Destroy a timer
-  *
+ int rtdm_gpiochip_scan_of(struct device_node *from, const char *compat,
+ 			  int type)
+ {
 -- 
 2.17.1
 
