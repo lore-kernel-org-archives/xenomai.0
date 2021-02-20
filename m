@@ -1,12 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 1/2] linux-xenomai: Fix arm/arm64 latest
- branches, add 5.4 option
-Message-ID: <ca6c935b-a10c-589c-502d-0b9e439c7089@siemens.com>
-Date: Mon, 8 Feb 2021 21:48:22 +0100
+Subject: Re: [PATCH 1/5] cobalt/rtdm: add new interface to init task on
+ specified cpu
+References: <20210220055311.23826-1-hongzhan.chen@intel.com>
+From: chensong <chensong@kylinos.cn>
+Message-ID: <6030D8D3.9030108@kylinos.cn>
+Date: Sat, 20 Feb 2021 17:39:31 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210220055311.23826-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +16,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+why do we need a new interface instead of adding a new parameter(cpu) in 
+old interface, in this case rtdm_task_init.
 
-ipipe/master was no longer tracking the latest arm/arm64 I-pipe
-versions.
+For backward compatibility?
 
-While at it, add the new 5.4 branches.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- recipes-kernel/linux/linux-xenomai_latest.bb | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index f7d9e1b..9dd4c93 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -26,10 +26,10 @@ GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
- GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-5.4.y' if is_5_4_branch(d) else 'ipipe-x86-4.19.y-cip'}"
- 
- GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
--GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
-+GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/5.4.y' if is_5_4_branch(d) else 'ipipe/4.19-y-cip'}"
- 
- GIT_REPO_arm64 = "ipipe-arm64.git"
--GIT_BRANCH_arm64 = "ipipe/master"
-+GIT_BRANCH_arm64 = "${@'ipipe/5.4.y' if is_5_4_branch(d) else 'ipipe/4.19.y-cip'}"
- 
- SRC_URI += "git://github.com/xenomai-ci/${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
- SRCREV = "${AUTOREV}"
--- 
-2.26.2
+On 2021年02月20日 13:53, hongzha1 via Xenomai wrote:
+> Initialise and start a real-time task on specified cpu
+>
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>
+> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+> index 733c49df8..6cdace324 100644
+> --- a/include/cobalt/kernel/rtdm/driver.h
+> +++ b/include/cobalt/kernel/rtdm/driver.h
+> @@ -1024,6 +1024,9 @@ typedef void (*rtdm_task_proc_t)(void *arg);
+>   int rtdm_task_init(rtdm_task_t *task, const char *name,
+>   		   rtdm_task_proc_t task_proc, void *arg,
+>   		   int priority, nanosecs_rel_t period);
+> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
+> +		rtdm_task_proc_t task_proc, void *arg,
+> +		int priority, nanosecs_rel_t period);
+>   int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
+>   void rtdm_task_busy_sleep(nanosecs_rel_t delay);
+>
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index b914fa312..7452850b7 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -157,6 +157,79 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
+>
+>   EXPORT_SYMBOL_GPL(rtdm_task_init);
+>
+> +/**
+> + * @brief Initialise and start a real-time task on specified cpu
+> + *
+> + * After initialising a task, the task handle remains valid and can be
+> + * passed to RTDM services until either rtdm_task_destroy() or
+> + * rtdm_task_join() was invoked.
+> + *
+> + * @param[in,out] task Task handle
+> + * @param[in] cpu that task want to run on
+> + * @param[in] name Optional task name
+> + * @param[in] task_proc Procedure to be executed by the task
+> + * @param[in] arg Custom argument passed to @c task_proc() on entry
+> + * @param[in] priority Priority of the task, see also
+> + * @ref rtdmtaskprio "Task Priority Range"
+> + * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
+> + * mode. Waiting for the first and subsequent periodic events is
+> + * done using rtdm_task_wait_period().
+> + *
+> + * @return 0 on success, otherwise negative error code
+> + *
+> + * @coretags{secondary-only, might-switch}
+> + */
+> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
+> +		rtdm_task_proc_t task_proc, void *arg,
+> +		int priority, nanosecs_rel_t period)
+> +{
+> +	union xnsched_policy_param param;
+> +	struct xnthread_start_attr sattr;
+> +	struct xnthread_init_attr iattr;
+> +	int err;
+> +
+> +	if (!realtime_core_enabled())
+> +		return -ENOSYS;
+> +
+> +	iattr.name = name;
+> +	iattr.flags = 0;
+> +	iattr.personality = &xenomai_personality;
+> +	iattr.affinity = *cpumask_of(cpu);
+> +	param.rt.prio = priority;
+> +
+> +	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
+> +	if (err)
+> +		return err;
+> +
+> +	/* We need an anonymous registry entry to obtain a handle for fast
+> +	 * mutex locking.
+> +	 */
+> +	err = xnthread_register(task, "");
+> +	if (err)
+> +		goto cleanup_out;
+> +
+> +	if (period > 0) {
+> +		err = xnthread_set_periodic(task, XN_INFINITE,
+> +					    XN_RELATIVE, period);
+> +		if (err)
+> +			goto cleanup_out;
+> +	}
+> +
+> +	sattr.mode = 0;
+> +	sattr.entry = task_proc;
+> +	sattr.cookie = arg;
+> +	err = xnthread_start(task, &sattr);
+> +	if (err)
+> +		goto cleanup_out;
+> +
+> +	return 0;
+> +
+> +cleanup_out:
+> +	xnthread_cancel(task);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
+> +
+>   #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+>   /**
+>    * @brief Destroy a real-time task
+>
 
