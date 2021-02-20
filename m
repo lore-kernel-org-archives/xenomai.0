@@ -1,11 +1,11 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: [I-PIPE][ARM64] Experimenting on Jetson Xavier
-Message-Id: <CD72004A-77C0-4041-8FD6-FF64932138D4@gmail.com>
-Date: Sat, 20 Feb 2021 21:49:18 +0300
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: Y2038 re-sync request
+Message-ID: <375d9f2d-4182-cc45-6ac1-12fa44b7af96@siemens.com>
+Date: Sat, 20 Feb 2021 20:07:26 +0100
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, rick.y.wang@intel.com, chensong <chensong@tj.kylinos.cn>
 
-Hello all,
+Hi all!
 
-I=E2=80=99m currently trying to run Xenomai on Jetson Xavier (arm64) =
-(base kernel L4T 32.5). I had some successes and fails so far and I =
-wanted to share my progress with you all. Maybe we can find a way to =
-accomplish this experiment.
+I'm a little bit surprised to see patches caring about the Y2038 problem
+coming up. I guess Song and me have been to silent in the last months
+due to new year vacations and internal schedules...
 
-So far I=E2=80=99ve attempted to build mainline kernel versions =
-4.19.144, 5.4.72, and 5.7.0. I was only able to boot up 5.7.0 on the =
-Jetson Xavier. I believe this is a good thing because if we can boot up =
-mainline linux then there is a possibility that Xenomai can run as well. =
-On the other hand, NVIDIA supplies us with 4.9.140 and 4.9.210 versions. =
-I have tried to apply 4.9.55 I-pipe patch to 4.9.140 (L4T) and I=E2=80=99v=
-e resolved almost all conflicts. I couldn=E2=80=99t fix entry.S file...
+Maybe it's time to re-sync. CCing Rick as organizer of the community
+call minutes. Maybe we can get a timeslot in the meeting for that topic.
+Song already mentioned via private channel that he would be available as
+well.
 
-So right now, I=E2=80=99m thinking about two ways to accomplish this =
-experiment.=20
-	- Bump I-pipe 5.4.72 to 5.7.0 and use it as mainline kernel on =
-the target. This could work because Linux 5.7.0 already works without a =
-problem.
-	- Bump I-pipe 4.9.55 to L4T 4.9.140 and use it as NVIDIA=E2=80=99s=
- forked kernel on the target. If we can solve the conflict on =
-=E2=80=9Centry.S=E2=80=9D file then maybe this could work as well.
+The results of our investigations can be found here [1]. When we started
+we tried to stay fully backward compatible, so allowing updates of
+libcobalt without any need to update the Cobalt core as well. That may
+no longer be necessary, so let's discuss it. (IOW: Do we need a Y2038
+safe Xenomai 3.1?)
 
-What do you guys think about these solutions?
-Was this matter already tested by any of you?
+Btw: It isn't to late yet. Song reviewed [1] again over the weekend and
+we planned to discuss the roadmap with you within the next week(s). So
+Philippe was some kind of "ahead of time" for us ;-)
 
-I=E2=80=99m definitely open to suggestions as I=E2=80=99m not sure if =
-there are any other barriers on this path to run Xenomai on Jetson =
-Xavier.
+Happy hacking!
 
-Thank you.
-Be safe.
+Florian
 
--Deniz=
+[1] https://gitlab.com/fbezdeka/xenomai/-/wikis/Y2038_Roadmap
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
