@@ -1,13 +1,13 @@
-Date: Sun, 21 Feb 2021 23:12:28 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: [PATCH 2/2] drm/i195: control LLC CLOS for gpu via debugfs
- interface
-Message-ID: <20210221151227.GA22504@linux.intel.com>
-References: <20210221150136.22456-1-fino.meng@linux.intel.com>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+In-reply-to: <6031C2CF.3050202@kylinos.cn>
+Date: Sun, 21 Feb 2021 16:27:21 +0100
+Message-ID: <87h7m54f1i.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210221150136.22456-1-fino.meng@linux.intel.com>
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,81 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>
+To: chensong <chensong@kylinos.cn>
 Cc: xenomai@xenomai.org
 
 
-these 2 patches:
-"drm/i915/pm: support disable SAGV via debugfs interface" and
-"drm/i195: control LLC CLOS for gpu via debugfs interface"
-are for deterministic tuning, tested on x86_64's kernel 5.4 branch.
+chensong via Xenomai <xenomai@xenomai.org> writes:
 
-if think them OK for merged into IPIPE patches, I will send 4.19 version
-also.
+>> +/*
+>> + * Our representation of time at the kernel<->user interface boundary
+>> + * at the moment, until we have fully transitioned to a y2038-safe
+>> + * implementation in libcobalt.
+>> + */
+>> +struct __user_old_timespec {
+>> +	long  tv_sec;
+>> +	long  tv_nsec;
+>> +};
+>
+> why not use old_timespec32, which is timespec32 representation defined
+> in include/linux/time32?
+>
 
-BR/Fino
+Using old_timespec32 in this context would mean that any time value
+received from userland by the core should be restricted to 32bit time_t,
+which is not what we want, at least for 64bit platforms:
 
-On Sun, Feb 21, 2021 at 11:01:36PM +0800, Fino Meng via Xenomai wrote:
-> On CPU side, the Intel CAT(Cache-Allocation-Technology) can partition the
-> LLC (Last-Level-Cache). However, when LLC is shared between CPU and GPU,
-> GPU has no notion about the LLC partitions thus can thrash the cache lines.
-> By default the graphics device is configured to use as much of cache as
-> possible.
-> 
-> There is a register field to set CLOS(Class of Service) which restrict
-> the GPU's LLC usage globally to one of the supported CLOS levels. When
-> writes the minimum CLOS (3) to this debugfs file, the cache usage
-> for both render and non-render targets will be restricted to the top
-> 1/16th way of the cache (for 16 way cache).
-> 
-> CAUTION: this patch is a work around operation, formal solution is not
-> merged into Linux upstream yet. The allocation of certain LLC ways to
-> different class of service settings is a project dependent decision
-> and listed in the Bspec.
-> 
-> Ref:
-> https://01.org/sites/default/files/documentation/
-> intel-gfx-prm-osrc-kbl-vol05-memory_views.pdf
-> https://lists.freedesktop.org/archives/intel-gfx/2019-October/216196.html
-> 
-> [Fino: original patch was from Reinette Chatre]
-> Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
-> ---
->  drivers/gpu/drm/i915/i915_debugfs.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/i915_debugfs.c b/drivers/gpu/drm/i915/i915_debugfs.c
-> index eefeb3994d1d..0e28b499fd5a 100644
-> --- a/drivers/gpu/drm/i915/i915_debugfs.c
-> +++ b/drivers/gpu/drm/i915/i915_debugfs.c
-> @@ -3684,7 +3684,7 @@ i915_cache_sharing_get(void *data, u64 *val)
->  	intel_wakeref_t wakeref;
->  	u32 snpcr = 0;
->  
-> -	if (!(IS_GEN_RANGE(dev_priv, 6, 7)))
-> +	if (!(IS_GEN_RANGE(dev_priv, 6, 12)))
->  		return -ENODEV;
->  
->  	with_intel_runtime_pm(&dev_priv->runtime_pm, wakeref)
-> @@ -3701,7 +3701,7 @@ i915_cache_sharing_set(void *data, u64 val)
->  	struct drm_i915_private *dev_priv = data;
->  	intel_wakeref_t wakeref;
->  
-> -	if (!(IS_GEN_RANGE(dev_priv, 6, 7)))
-> +	if (!(IS_GEN_RANGE(dev_priv, 6, 12)))
->  		return -ENODEV;
->  
->  	if (val > 3)
-> @@ -3716,6 +3716,7 @@ i915_cache_sharing_set(void *data, u64 val)
->  		snpcr &= ~GEN6_MBC_SNPCR_MASK;
->  		snpcr |= val << GEN6_MBC_SNPCR_SHIFT;
->  		I915_WRITE(GEN6_MBCUNIT_SNPCR, snpcr);
-> +		I915_WRITE(HSW_IDICR, I915_READ(HSW_IDICR) | IDIHASHMSK(0xf) | val << 22);
->  	}
->  
->  	return 0;
-> -- 
-> 2.20.1
-> 
-> 
+include/vdso/time32.h:
+
+struct old_timespec32 {
+	old_time32_t	tv_sec;
+	s32		tv_nsec;
+};
+
+__user_old_timespec conveys the notion that we are generically talking
+about "the old timespec type which has a y2038 problem"; this is not
+specifically about the legacy timespec type on 32bit machines.
+
+Since v5.4-rc6, we do have __kernel_old_timespec though, which could
+have been used instead of __user_old_timespec:
+
+include/uapi/asm-generic/posix_types.h:
+
+typedef long __kernel_long_t;
+
+include/uapi/linux/time_types.h:
+
+struct __kernel_old_timespec {
+	__kernel_long_t		tv_sec;		/* seconds */
+	long			tv_nsec;	/* nanoseconds */
+};
+
+However, older (non-x86) toolchains do not define __kernel_old_timespec,
+so I went for adding __user_old_timespec to the Cobalt UAPI. This may be
+seen as a temporary option until stricter requirements on the minimum
+toolchain support for building Cobalt is decided.
+
+>>
+>>   COBALT_SYSCALL(clock_settime, current,
+>> -	       (clockid_t clock_id, const struct timespec __user *u_ts))
+>> +	       (clockid_t clock_id, const struct __user_old_timespec __user *u_ts))
+>
+> I planned to still use timespec as the argument, tv_sec is defined as
+> long, 32bit long in 32bit system, 64bit long in 64bit system, use 
+> timespec64 in implementation.
+>
+
+Keeping struct timespec for the argument does not seem the right thing
+to do, as this type has been phased out from recent kernels, precisely
+to stop spreading ambiguity wrt 32/64 bit time_t. It is only available
+from the UAPI section as a compat tweak for user code, not for kernel
+code.
+
+What should be done wrt addressing the y2038 issue fully is beyond this
+patch series. __user_old_timespec is merely an annotation on the
+existing implementation in order to highlight the kernel<->user
+interface boundary, which may help in fully addressing y2038 later on.
+
+Eventually, it should be decided whether a legacy timespec32 should
+still be supported for 32bit applications building in dual-time
+configurations (time32_t and time64_t), or single-time configuration
+should be the norm with user-space using time64_t exclusively. This is
+beyond the scope of this patch series to decide of the way to go.
+
+-- 
+Philippe.
 
