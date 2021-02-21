@@ -1,15 +1,13 @@
-Subject: Re: [xenomai-images][PATCH 1/2] linux-xenomai: Fix arm/arm64 latest
- branches, add 5.4 option
-References: <ca6c935b-a10c-589c-502d-0b9e439c7089@siemens.com>
- <CALLqZ8RGYh5qevRX3NJ88MRrPcJyDfX0H2bd=d4TLiRBNCZ9hg@mail.gmail.com>
- <4c9069df-2a3f-0a63-9553-f2da4679c8fa@qmul.ac.uk>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a181852d-d194-5b87-6559-5358a1accc5a@siemens.com>
-Date: Tue, 9 Feb 2021 12:42:29 +0100
+Subject: Re: [PATCH 6/8] cobalt/dovetail: provide core-specific context
+ extensions
+References: <20210220124527.401015-1-rpm@xenomai.org>
+ <20210220124527.401015-6-rpm@xenomai.org>
+From: chensong <chensong@kylinos.cn>
+Message-ID: <6031B089.3010500@kylinos.cn>
+Date: Sun, 21 Feb 2021 08:59:53 +0800
 MIME-Version: 1.0
-In-Reply-To: <4c9069df-2a3f-0a63-9553-f2da4679c8fa@qmul.ac.uk>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+In-Reply-To: <20210220124527.401015-6-rpm@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,66 +17,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 09.02.21 12:35, Giulio Moro wrote:
-> Hi there,
-> I tried building this with:
->    kas-container build
-> kas.yml:board-beagle-bone-black.yml:opt-linux-latest-5.4.yml
-> (not sure if that's the right syntax to get 5.4 ... I had to second
-> guess it)
 
-Yeah, all these knobs are not well documented, primarily as they are
-currently being added more for testing than for users. Should be improved.
 
-> 
-> but it errors. I think the relevant error is:
-> 
->   AR      kernel/printk/built-in.a
->   CC      kernel/trace/ring_buffer.o
->   DTC     arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dtb
->   CC      arch/arm/mach-omap2/prm2xxx_3xxx.o
->   DTC     arch/arm/boot/dts/omap3430-sdp.dtb
->   DTC     arch/arm/boot/dts/omap3-beagle.dtb
->   CC      arch/arm/mach-omap2/prm3xxx.o
->   CC      kernel/trace/trace.o
->   CC      kernel/irq/generic-chip.o
->   DTC     arch/arm/boot/dts/omap3-beagle-xm.dtb
->   AR      arch/arm/mach-imx/built-in.a
->   DTC     arch/arm/boot/dts/omap3-beagle-xm-ab.dtb
->   CC      arch/arm/mach-omap2/cm3xxx.o
-> ../kernel/xenomai/posix/clock.c:21:10: fatal error:
-> cobalt/kernel/vdso.h: No such file or directory
->  #include <cobalt/kernel/vdso.h>
->           ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
->   CC      kernel/time/timekeeping.o
-> make[6]: *** [../scripts/Makefile.build:262:
-> kernel/xenomai/posix/clock.o] Error 1
-> make[5]: *** [../scripts/Makefile.build:496: kernel/xenomai/posix] Error 2
-> make[4]: *** [../scripts/Makefile.build:496: kernel/xenomai] Error 2
-> make[4]: *** Waiting for unfinished jobs....
-> 
-> Full log is available here
-> https://gist.github.com/giuliomoro/c1996a5b4c915ea385f2bde3900f8bb2
-> (pastebin rejects the log because of "potentially offensive or
-> questionable content").
-> 
-> Any advice will be greatly appreciated.
-> 
+On 2021年02月20日 20:45, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+>
+> In order to intimately connect Cobalt to the kernel, Dovetail allows
+> us to extend the latter with data and procedures we need:
+>
+> - we can embed our own context information into a set of critical
+>    kernel data structures. This information should be defined as a set
+>    of core-specific types, such as struct oob_thread_state which is
+>    going to be part of struct thread_info.
+>
+> - we can define preparation and finalization handlers for out-of-band
+>    IRQ handling, which Dovetail should invoke right after entering the
+>    outer interrupt frame, then right before leaving it respectively.
+>
+> Add the couple of interface headers we need to connect those elements
+> to the kernel.
+>
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
+>   kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
+>   2 files changed, 85 insertions(+)
+>   create mode 100644 kernel/cobalt/include/dovetail/irq.h
+>   create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
+>
+> diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/include/dovetail/irq.h
+> new file mode 100644
+> index 000000000..66d020fde
+> --- /dev/null
+> +++ b/kernel/cobalt/include/dovetail/irq.h
+> @@ -0,0 +1,52 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + *
+> + * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
+> + */
+> +
+> +#ifndef _COBALT_DOVETAIL_IRQ_H
+> +#define _COBALT_DOVETAIL_IRQ_H
+> +
+> +#ifdef CONFIG_XENOMAI
+> +
+> +#include <cobalt/kernel/sched.h>
+> +
+> +/* hard irqs off. */
+> +static inline void irq_enter_pipeline(void)
+> +{
+> +	struct xnsched *sched = xnsched_current();
+> +
+> +	sched->lflags |= XNINIRQ;
+> +}
+> +
+> +/* hard irqs off. */
 
-What you are missing is also :opt-xenomai-next.yml because 5.4 requires
-some changes that are not in the last release (which is the default
-otherwise). Then you will get [1] - where the resulting options are
-unfortunately not printed.
+should be "hard irqs on"?
 
-Jan
-
-[1] https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/220139
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+> +static inline void irq_exit_pipeline(void)
+> +{
+> +	struct xnsched *sched = xnsched_current();
+> +
+> +	sched->lflags &= ~XNINIRQ;
+> +
+> +	/*
+> +	 * CAUTION: Switching stages as a result of rescheduling may
+> +	 * re-enable irqs, shut them off before returning if so.
+> +	 */
+> +	if ((sched->status|sched->lflags) & XNRESCHED) {
+> +		xnsched_run();
+> +		if (!hard_irqs_disabled())
+> +			hard_local_irq_disable();
+> +	}
+> +}
+> +
+> +#else  /* !CONFIG_XENOMAI */
+> +
+> +static inline void irq_enter_pipeline(void)
+> +{
+> +}
+> +
+> +static inline void irq_exit_pipeline(void)
+> +{
+> +}
+> +
+> +#endif	/* !CONFIG_XENOMAI */
+> +
+> +#endif /* !_COBALT_DOVETAIL_IRQ_H */
+> diff --git a/kernel/cobalt/include/dovetail/thread_info.h b/kernel/cobalt/include/dovetail/thread_info.h
+> new file mode 100644
+> index 000000000..69b89de35
+> --- /dev/null
+> +++ b/kernel/cobalt/include/dovetail/thread_info.h
+> @@ -0,0 +1,33 @@
+> +/**
+> + * Copyright (C) 2012 Philippe Gerum <rpm@xenomai.org>.
+> + * Copyright (c) Siemens AG, 2020
+> + *
+> + * Xenomai is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 02139,
+> + * USA; either version 2 of the License, or (at your option) any later
+> + * version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program; if not, write to the Free Software
+> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> + */
+> +#ifndef _COBALT_DOVETAIL_THREAD_INFO_H
+> +#define _COBALT_DOVETAIL_THREAD_INFO_H
+> +
+> +struct xnthread;
+> +struct cobalt_process;
+> +
+> +struct oob_thread_state {
+> +	/* Core thread backlink. */
+> +	struct xnthread *thread;
+> +	/* User process backlink. NULL for core threads. */
+> +	struct cobalt_process *process;
+> +};
+> +
+> +#endif /* !_COBALT_DOVETAIL_THREAD_INFO_H */
+>
 
