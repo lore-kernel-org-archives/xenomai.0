@@ -1,7 +1,7 @@
 From: Fino Meng <fino.meng@linux.intel.com>
-Subject: [PATCH 1/2] drm/i915/pm: support disable SAGV via debugfs interface
-Date: Sun, 21 Feb 2021 22:59:47 +0800
-Message-Id: <20210221145947.22408-1-fino.meng@linux.intel.com>
+Subject: [PATCH 2/2] drm/i195: control LLC CLOS for gpu via debugfs interface
+Date: Sun, 21 Feb 2021 23:01:36 +0800
+Message-Id: <20210221150136.22456-1-fino.meng@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,95 +14,64 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SAGV (System Agent Geyserville) is part of the Enhanced Intel Speedstep
-Technology. SAGV dynamically adjust the system agent's voltage and frequency
-for power saving. SAGV's point change will cause DRAM's frequency change
-accordingly, and DRAM is not accessible during the change. Disable SAGV will
-tune the system more deterministic.
+On CPU side, the Intel CAT(Cache-Allocation-Technology) can partition the
+LLC (Last-Level-Cache). However, when LLC is shared between CPU and GPU,
+GPU has no notion about the LLC partitions thus can thrash the cache lines.
+By default the graphics device is configured to use as much of cache as
+possible.
 
-CAUTION: this debugfs interface is a work around operation, it doesn't
-cope with any context state integrity of i915 driver.
+There is a register field to set CLOS(Class of Service) which restrict
+the GPU's LLC usage globally to one of the supported CLOS levels. When
+writes the minimum CLOS (3) to this debugfs file, the cache usage
+for both render and non-render targets will be restricted to the top
+1/16th way of the cache (for 16 way cache).
 
+CAUTION: this patch is a work around operation, formal solution is not
+merged into Linux upstream yet. The allocation of certain LLC ways to
+different class of service settings is a project dependent decision
+and listed in the Bspec.
+
+Ref:
+https://01.org/sites/default/files/documentation/
+intel-gfx-prm-osrc-kbl-vol05-memory_views.pdf
+https://lists.freedesktop.org/archives/intel-gfx/2019-October/216196.html
+
+[Fino: original patch was from Reinette Chatre]
 Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
 ---
- drivers/gpu/drm/i915/i915_debugfs.c | 57 +++++++++++++++++++++++++++++
- 1 file changed, 57 insertions(+)
+ drivers/gpu/drm/i915/i915_debugfs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_debugfs.c b/drivers/gpu/drm/i915/i915_debugfs.c
-index b0f51591f2e4..eefeb3994d1d 100644
+index eefeb3994d1d..0e28b499fd5a 100644
 --- a/drivers/gpu/drm/i915/i915_debugfs.c
 +++ b/drivers/gpu/drm/i915/i915_debugfs.c
-@@ -3725,6 +3725,62 @@ DEFINE_SIMPLE_ATTRIBUTE(i915_cache_sharing_fops,
- 			i915_cache_sharing_get, i915_cache_sharing_set,
- 			"%llu\n");
+@@ -3684,7 +3684,7 @@ i915_cache_sharing_get(void *data, u64 *val)
+ 	intel_wakeref_t wakeref;
+ 	u32 snpcr = 0;
  
-+static int
-+i915_sagv_disable_set(void *data, u64 val)
-+{
-+	/* SAGV (System Agent Geyserville)'s offical name is System Agent
-+	 * Speedstep, it dynamically adjust the system agent's voltage
-+	 * and frequency for power saving. SAGV's point change will cause
-+	 * DRAM's frequency change accordingly, and DRAM is not accessible
-+	 * during the change. Disable SAGV will tune the system more
-+	 * deterministic. If SAGV already disabled by BIOS, then it's not
-+	 * possible to disable SAGV via send request to P-Unit mailbox.
-+	 *
-+	 * CAUTION: this debugfs interface is a work around operation,
-+	 * it doesn't cope with of the state integrity of i915.
-+	 *
-+	 * Ref:
-+	 * https://01.org/sites/default/files/documentation/
-+	 * intel-gfx-prm-osrc-kbl-vol12-display.pdf
-+	 */
-+	struct drm_i915_private *dev_priv = data;
-+
+-	if (!(IS_GEN_RANGE(dev_priv, 6, 7)))
 +	if (!(IS_GEN_RANGE(dev_priv, 6, 12)))
-+		return -ENODEV;
-+
-+	if (val > 1)
-+		return -EINVAL;
-+
-+	DRM_DEBUG_DRIVER("Manually request sagv disable: %llu\n", val);
-+
-+	if (val)
-+		intel_disable_sagv(dev_priv);
-+	else
-+		intel_enable_sagv(dev_priv);
-+
-+	return 0;
-+}
-+
-+static int
-+i915_sagv_disable_get(void *data, u64 *val)
-+{
-+	struct drm_i915_private *dev_priv = data;
-+
+ 		return -ENODEV;
+ 
+ 	with_intel_runtime_pm(&dev_priv->runtime_pm, wakeref)
+@@ -3701,7 +3701,7 @@ i915_cache_sharing_set(void *data, u64 val)
+ 	struct drm_i915_private *dev_priv = data;
+ 	intel_wakeref_t wakeref;
+ 
+-	if (!(IS_GEN_RANGE(dev_priv, 6, 7)))
 +	if (!(IS_GEN_RANGE(dev_priv, 6, 12)))
-+		return -ENODEV;
-+
-+	if (dev_priv->sagv_status == I915_SAGV_DISABLED)
-+		*val = 1;
-+	else
-+		*val = 0;
-+
-+	return 0;
-+}
-+
-+DEFINE_SIMPLE_ATTRIBUTE(i915_sagv_disable_fops,
-+			i915_sagv_disable_get, i915_sagv_disable_set,
-+			"%llu\n");
-+
- static void cherryview_sseu_device_status(struct drm_i915_private *dev_priv,
- 					  struct sseu_dev_info *sseu)
- {
-@@ -4341,6 +4397,7 @@ static const struct i915_debugfs_files {
- } i915_debugfs_files[] = {
- 	{"i915_wedged", &i915_wedged_fops},
- 	{"i915_cache_sharing", &i915_cache_sharing_fops},
-+	{"i915_sagv_disable", &i915_sagv_disable_fops},
- 	{"i915_gem_drop_caches", &i915_drop_caches_fops},
- #if IS_ENABLED(CONFIG_DRM_I915_CAPTURE_ERROR)
- 	{"i915_error_state", &i915_error_state_fops},
+ 		return -ENODEV;
+ 
+ 	if (val > 3)
+@@ -3716,6 +3716,7 @@ i915_cache_sharing_set(void *data, u64 val)
+ 		snpcr &= ~GEN6_MBC_SNPCR_MASK;
+ 		snpcr |= val << GEN6_MBC_SNPCR_SHIFT;
+ 		I915_WRITE(GEN6_MBCUNIT_SNPCR, snpcr);
++		I915_WRITE(HSW_IDICR, I915_READ(HSW_IDICR) | IDIHASHMSK(0xf) | val << 22);
+ 	}
+ 
+ 	return 0;
 -- 
 2.20.1
 
