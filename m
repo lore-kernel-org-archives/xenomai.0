@@ -1,10 +1,15 @@
-Date: Sun, 21 Feb 2021 21:25:18 -0300
-From: Gabriel Dinse <gabriel_dinse@hotmail.com>
-Subject: Incompatible pointer type error when compiling kernel
-Message-ID: <SN6PR08MB566103B99883095420349D3393819@SN6PR08MB5661.namprd08.prod.outlook.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 1/5] cobalt/rtdm: add new interface to init task on
+ specified cpu
+Date: Mon, 22 Feb 2021 00:51:55 +0000
+Message-ID: <MWHPR11MB1710251FD215D5D9CDB2D641F2819@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <20210220055311.23826-1-hongzhan.chen@intel.com>
+ <6030D8D3.9030108@kylinos.cn>
+In-Reply-To: <6030D8D3.9030108@kylinos.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251; format=flowed
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,177 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: chensong <chensong@kylinos.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
-I'm currently compiling linux 5.4.93 patched with xenomai 3.1,
-using ipipe 5.4.93 for arm. The system is intended to run on a raspberry
-pi 3 b, but I'm getting the following errors related to incompatible
-pointer type:
-
-  CALL    scripts/atomic/check-atomics.sh
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  CC      kernel/fork.o
-  CC      kernel/xenomai/intr.o
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =91inc_irqstats=92:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
-of =91atomic_long_xchg=92 from incompatible pointer type=20
-[-Werror=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t=20
-*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:147:2: note: in expansion of macro=20
-=91xnstat_exectime_set_current=92
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:123:2: note: in expansion of macro=20
-=91xnstat_exectime_lazy_switch=92
-  xnstat_exectime_lazy_switch(sched, &statp->account, start);
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-/include/asm-generic/atomic-long.h:880:1: note: expected=20
-=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
-type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =91switch_to_irqstats=92:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
-of =91atomic_long_xchg=92 from incompatible pointer type=20
-[-Werror=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t=20
-*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
-=91xnstat_exectime_set_current=92
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:132:2: note: in expansion of macro=20
-=91xnstat_exectime_switch=92
-  xnstat_exectime_switch(sched, &statp->account);
-  ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-/include/asm-generic/atomic-long.h:880:1: note: expected=20
-=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
-type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =91switch_from_irqstats=92:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
-of =91atomic_long_xchg=92 from incompatible pointer type=20
-[-Werror=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t=20
-*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
-=91xnstat_exectime_set_current=92
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:138:2: note: in expansion of macro=20
-=91xnstat_exectime_switch=92
-  xnstat_exectime_switch(sched, prev);
-  ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-/include/asm-generic/atomic-long.h:880:1: note: expected=20
-=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
-type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =91switch_core_irqstats=92:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
-of =91atomic_long_xchg=92 from incompatible pointer type=20
-[-Werror=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t=20
-*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
-=91xnstat_exectime_set_current=92
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:147:9: note: in expansion of macro=20
-=91xnstat_exectime_switch=92
-  prev =3D xnstat_exectime_switch(sched, &statp->account);
-         ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-/include/asm-generic/atomic-long.h:880:1: note: expected=20
-=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
-type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-make[4]: *** [scripts/Makefile.build:262: kernel/xenomai/intr.o] Error 1
-make[3]: *** [scripts/Makefile.build:496: kernel/xenomai] Error 2
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [Makefile:1732: kernel] Error 2
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [package/pkg-generic.mk:269:=20
-/home/gabriel/Projects/buildroot/buildroot-2020.02.11-xenomai/output/build/=
-linux-5462eb01503dd1ad69d9cbe9f0d51a0bd4b0f98d/.stamp_built]=20
-Error 2
-make: *** [Makefile:84: _all] Error 2
-
-
-How can I solve this?
-Thank you,
-Gabriel Dinse
+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBjaGVuc29uZyA8Y2hlbnNvbmdA
+a3lsaW5vcy5jbj4gDQo+U2VudDogU2F0dXJkYXksIEZlYnJ1YXJ5IDIwLCAyMDIxIDU6NDAgUE0N
+Cj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4
+ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUEFUQ0ggMS81XSBjb2JhbHQvcnRkbTogYWRkIG5l
+dyBpbnRlcmZhY2UgdG8gaW5pdCB0YXNrIG9uIHNwZWNpZmllZCBjcHUNCj4NCj53aHkgZG8gd2Ug
+bmVlZCBhIG5ldyBpbnRlcmZhY2UgaW5zdGVhZCBvZiBhZGRpbmcgYSBuZXcgcGFyYW1ldGVyKGNw
+dSkgaW4gDQo+b2xkIGludGVyZmFjZSwgaW4gdGhpcyBjYXNlIHJ0ZG1fdGFza19pbml0Lg0KPg0K
+PkZvciBiYWNrd2FyZCBjb21wYXRpYmlsaXR5Pw0KDQpXZSBkaXNjdXNzZWQgaXQgYWJvdXQgaW50
+cm9kdWNpbmcgcnRkbV90YXNrX2luaXRfb25fY3B1IGluIFsxXS4gQWN0dWFsbHkgbW9zdCBvZiBj
+b250ZW50cyBvZg0KcnRkbV90YXNrX2luaXRfb25fY3B1IGlzIHJlYWxseSBzYW1lIHdpdGggcnRk
+bV90YXNrX2luaXQgZXhjZXB0IGNwdSBhZmZpbml0eS4gQnV0IHJ0ZG1fdGFza19pbml0IA0Kd2Fz
+IGFscmVhZHkgY2FsbGVkIGJ5IHNldmVyYWwgZHJpdmVycyBzdWNoIGFzIG5ldCBhbmQgdGVzdGlu
+Zy4gSWYgd2UgbW9kaWZ5IGRlZmluaXRpb24gb2YgDQpydGRtX3Rhc2tfaW5pdCAsIHdlIGhhdmUg
+dG8gbW9kaWZ5IGFsbCBvZiB0aGVzZSBkcml2ZXJzIHRoYXQgY2FsbGluZyBydGRtX3Rhc2tfaW5p
+dC4gDQoNClsxXTogaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIxLUZl
+YnJ1YXJ5LzA0NDI1MC5odG1sDQo+DQo+T24gMjAyMT8wMj8yMD8gMTM6NTMsIGhvbmd6aGExIHZp
+YSBYZW5vbWFpIHdyb3RlOg0KPj4gSW5pdGlhbGlzZSBhbmQgc3RhcnQgYSByZWFsLXRpbWUgdGFz
+ayBvbiBzcGVjaWZpZWQgY3B1DQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogaG9uZ3poYTEgPGhvbmd6
+aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4NCj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFsdC9r
+ZXJuZWwvcnRkbS9kcml2ZXIuaCBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL2RyaXZlci5o
+DQo+PiBpbmRleCA3MzNjNDlkZjguLjZjZGFjZTMyNCAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUv
+Y29iYWx0L2tlcm5lbC9ydGRtL2RyaXZlci5oDQo+PiArKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJu
+ZWwvcnRkbS9kcml2ZXIuaA0KPj4gQEAgLTEwMjQsNiArMTAyNCw5IEBAIHR5cGVkZWYgdm9pZCAo
+KnJ0ZG1fdGFza19wcm9jX3QpKHZvaWQgKmFyZyk7DQo+PiAgIGludCBydGRtX3Rhc2tfaW5pdChy
+dGRtX3Rhc2tfdCAqdGFzaywgY29uc3QgY2hhciAqbmFtZSwNCj4+ICAgCQkgICBydGRtX3Rhc2tf
+cHJvY190IHRhc2tfcHJvYywgdm9pZCAqYXJnLA0KPj4gICAJCSAgIGludCBwcmlvcml0eSwgbmFu
+b3NlY3NfcmVsX3QgcGVyaW9kKTsNCj4+ICtpbnQgcnRkbV90YXNrX2luaXRfb25fY3B1KHJ0ZG1f
+dGFza190ICp0YXNrLCBpbnQgY3B1LCBjb25zdCBjaGFyICpuYW1lLA0KPj4gKwkJcnRkbV90YXNr
+X3Byb2NfdCB0YXNrX3Byb2MsIHZvaWQgKmFyZywNCj4+ICsJCWludCBwcmlvcml0eSwgbmFub3Nl
+Y3NfcmVsX3QgcGVyaW9kKTsNCj4+ICAgaW50IF9fcnRkbV90YXNrX3NsZWVwKHhudGlja3NfdCB0
+aW1lb3V0LCB4bnRtb2RlX3QgbW9kZSk7DQo+PiAgIHZvaWQgcnRkbV90YXNrX2J1c3lfc2xlZXAo
+bmFub3NlY3NfcmVsX3QgZGVsYXkpOw0KPj4NCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0
+L3J0ZG0vZHJ2bGliLmMgYi9rZXJuZWwvY29iYWx0L3J0ZG0vZHJ2bGliLmMNCj4+IGluZGV4IGI5
+MTRmYTMxMi4uNzQ1Mjg1MGI3IDEwMDY0NA0KPj4gLS0tIGEva2VybmVsL2NvYmFsdC9ydGRtL2Ry
+dmxpYi5jDQo+PiArKysgYi9rZXJuZWwvY29iYWx0L3J0ZG0vZHJ2bGliLmMNCj4+IEBAIC0xNTcs
+NiArMTU3LDc5IEBAIGludCBydGRtX3Rhc2tfaW5pdChydGRtX3Rhc2tfdCAqdGFzaywgY29uc3Qg
+Y2hhciAqbmFtZSwNCj4+DQo+PiAgIEVYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fdGFza19pbml0KTsN
+Cj4+DQo+PiArLyoqDQo+PiArICogQGJyaWVmIEluaXRpYWxpc2UgYW5kIHN0YXJ0IGEgcmVhbC10
+aW1lIHRhc2sgb24gc3BlY2lmaWVkIGNwdQ0KPj4gKyAqDQo+PiArICogQWZ0ZXIgaW5pdGlhbGlz
+aW5nIGEgdGFzaywgdGhlIHRhc2sgaGFuZGxlIHJlbWFpbnMgdmFsaWQgYW5kIGNhbiBiZQ0KPj4g
+KyAqIHBhc3NlZCB0byBSVERNIHNlcnZpY2VzIHVudGlsIGVpdGhlciBydGRtX3Rhc2tfZGVzdHJv
+eSgpIG9yDQo+PiArICogcnRkbV90YXNrX2pvaW4oKSB3YXMgaW52b2tlZC4NCj4+ICsgKg0KPj4g
+KyAqIEBwYXJhbVtpbixvdXRdIHRhc2sgVGFzayBoYW5kbGUNCj4+ICsgKiBAcGFyYW1baW5dIGNw
+dSB0aGF0IHRhc2sgd2FudCB0byBydW4gb24NCj4+ICsgKiBAcGFyYW1baW5dIG5hbWUgT3B0aW9u
+YWwgdGFzayBuYW1lDQo+PiArICogQHBhcmFtW2luXSB0YXNrX3Byb2MgUHJvY2VkdXJlIHRvIGJl
+IGV4ZWN1dGVkIGJ5IHRoZSB0YXNrDQo+PiArICogQHBhcmFtW2luXSBhcmcgQ3VzdG9tIGFyZ3Vt
+ZW50IHBhc3NlZCB0byBAYyB0YXNrX3Byb2MoKSBvbiBlbnRyeQ0KPj4gKyAqIEBwYXJhbVtpbl0g
+cHJpb3JpdHkgUHJpb3JpdHkgb2YgdGhlIHRhc2ssIHNlZSBhbHNvDQo+PiArICogQHJlZiBydGRt
+dGFza3ByaW8gIlRhc2sgUHJpb3JpdHkgUmFuZ2UiDQo+PiArICogQHBhcmFtW2luXSBwZXJpb2Qg
+UGVyaW9kIGluIG5hbm9zZWNvbmRzIG9mIGEgY3ljbGljIHRhc2ssIDAgZm9yIG5vbi1jeWNsaWMN
+Cj4+ICsgKiBtb2RlLiBXYWl0aW5nIGZvciB0aGUgZmlyc3QgYW5kIHN1YnNlcXVlbnQgcGVyaW9k
+aWMgZXZlbnRzIGlzDQo+PiArICogZG9uZSB1c2luZyBydGRtX3Rhc2tfd2FpdF9wZXJpb2QoKS4N
+Cj4+ICsgKg0KPj4gKyAqIEByZXR1cm4gMCBvbiBzdWNjZXNzLCBvdGhlcndpc2UgbmVnYXRpdmUg
+ZXJyb3IgY29kZQ0KPj4gKyAqDQo+PiArICogQGNvcmV0YWdze3NlY29uZGFyeS1vbmx5LCBtaWdo
+dC1zd2l0Y2h9DQo+PiArICovDQo+PiAraW50IHJ0ZG1fdGFza19pbml0X29uX2NwdShydGRtX3Rh
+c2tfdCAqdGFzaywgaW50IGNwdSwgY29uc3QgY2hhciAqbmFtZSwNCj4+ICsJCXJ0ZG1fdGFza19w
+cm9jX3QgdGFza19wcm9jLCB2b2lkICphcmcsDQo+PiArCQlpbnQgcHJpb3JpdHksIG5hbm9zZWNz
+X3JlbF90IHBlcmlvZCkNCj4+ICt7DQo+PiArCXVuaW9uIHhuc2NoZWRfcG9saWN5X3BhcmFtIHBh
+cmFtOw0KPj4gKwlzdHJ1Y3QgeG50aHJlYWRfc3RhcnRfYXR0ciBzYXR0cjsNCj4+ICsJc3RydWN0
+IHhudGhyZWFkX2luaXRfYXR0ciBpYXR0cjsNCj4+ICsJaW50IGVycjsNCj4+ICsNCj4+ICsJaWYg
+KCFyZWFsdGltZV9jb3JlX2VuYWJsZWQoKSkNCj4+ICsJCXJldHVybiAtRU5PU1lTOw0KPj4gKw0K
+Pj4gKwlpYXR0ci5uYW1lID0gbmFtZTsNCj4+ICsJaWF0dHIuZmxhZ3MgPSAwOw0KPj4gKwlpYXR0
+ci5wZXJzb25hbGl0eSA9ICZ4ZW5vbWFpX3BlcnNvbmFsaXR5Ow0KPj4gKwlpYXR0ci5hZmZpbml0
+eSA9ICpjcHVtYXNrX29mKGNwdSk7DQo+PiArCXBhcmFtLnJ0LnByaW8gPSBwcmlvcml0eTsNCj4+
+ICsNCj4+ICsJZXJyID0geG50aHJlYWRfaW5pdCh0YXNrLCAmaWF0dHIsICZ4bnNjaGVkX2NsYXNz
+X3J0LCAmcGFyYW0pOw0KPj4gKwlpZiAoZXJyKQ0KPj4gKwkJcmV0dXJuIGVycjsNCj4+ICsNCj4+
+ICsJLyogV2UgbmVlZCBhbiBhbm9ueW1vdXMgcmVnaXN0cnkgZW50cnkgdG8gb2J0YWluIGEgaGFu
+ZGxlIGZvciBmYXN0DQo+PiArCSAqIG11dGV4IGxvY2tpbmcuDQo+PiArCSAqLw0KPj4gKwllcnIg
+PSB4bnRocmVhZF9yZWdpc3Rlcih0YXNrLCAiIik7DQo+PiArCWlmIChlcnIpDQo+PiArCQlnb3Rv
+IGNsZWFudXBfb3V0Ow0KPj4gKw0KPj4gKwlpZiAocGVyaW9kID4gMCkgew0KPj4gKwkJZXJyID0g
+eG50aHJlYWRfc2V0X3BlcmlvZGljKHRhc2ssIFhOX0lORklOSVRFLA0KPj4gKwkJCQkJICAgIFhO
+X1JFTEFUSVZFLCBwZXJpb2QpOw0KPj4gKwkJaWYgKGVycikNCj4+ICsJCQlnb3RvIGNsZWFudXBf
+b3V0Ow0KPj4gKwl9DQo+PiArDQo+PiArCXNhdHRyLm1vZGUgPSAwOw0KPj4gKwlzYXR0ci5lbnRy
+eSA9IHRhc2tfcHJvYzsNCj4+ICsJc2F0dHIuY29va2llID0gYXJnOw0KPj4gKwllcnIgPSB4bnRo
+cmVhZF9zdGFydCh0YXNrLCAmc2F0dHIpOw0KPj4gKwlpZiAoZXJyKQ0KPj4gKwkJZ290byBjbGVh
+bnVwX291dDsNCj4+ICsNCj4+ICsJcmV0dXJuIDA7DQo+PiArDQo+PiArY2xlYW51cF9vdXQ6DQo+
+PiArCXhudGhyZWFkX2NhbmNlbCh0YXNrKTsNCj4+ICsJcmV0dXJuIGVycjsNCj4+ICt9DQo+PiAr
+RVhQT1JUX1NZTUJPTF9HUEwocnRkbV90YXNrX2luaXRfb25fY3B1KTsNCj4+ICsNCj4+ICAgI2lm
+ZGVmIERPWFlHRU5fQ1BQIC8qIE9ubHkgdXNlZCBmb3IgZG94eWdlbiBkb2MgZ2VuZXJhdGlvbiAq
+Lw0KPj4gICAvKioNCj4+ICAgICogQGJyaWVmIERlc3Ryb3kgYSByZWFsLXRpbWUgdGFzaw0KPj4N
+Cg==
 
