@@ -1,16 +1,15 @@
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: [I-PIPE][ARM64] Experimenting on Jetson Xavier
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-In-Reply-To: <87y2fg339n.fsf@xenomai.org>
-Date: Mon, 22 Feb 2021 12:01:25 +0300
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <BFDB18B7-941A-4366-AE4B-EC1E3D080444@gmail.com>
-References: <CD72004A-77C0-4041-8FD6-FF64932138D4@gmail.com>
- <87a6rx4c6k.fsf@xenomai.org> <34573B47-B373-46DB-A49D-FB6298AA65DC@gmail.com>
- <871rd947az.fsf@xenomai.org> <652D6B1D-CE11-4C5B-93E5-0D02B07ABC35@gmail.com>
- <87y2fg339n.fsf@xenomai.org>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
+ <87h7m54f1i.fsf@xenomai.org>
+ <612b2ca09cb05c5cf641b35359205b905caf2a5c.camel@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+In-reply-to: <612b2ca09cb05c5cf641b35359205b905caf2a5c.camel@siemens.com>
+Date: Mon, 22 Feb 2021 10:08:55 +0100
+Message-ID: <87v9ak31w8.fsf@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,88 +18,172 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Cc: "chensong@kylinos.cn" <chensong@kylinos.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
 
-> I don't know
-> the Jetson enough to figure this out at the moment though.
+florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
 
-That=E2=80=99s more than okay, the EVL on Jetson works exceptionally =
-good at the moment.
-Anything more would be the cherry on top of it :)
+> On Sun, 2021-02-21 at 16:27 +0100, Philippe Gerum via Xenomai wrote:
+>> chensong via Xenomai <xenomai@xenomai.org> writes:
+>> 
+>> > > +/*
+>> > > + * Our representation of time at the kernel<->user interface boundary
+>> > > + * at the moment, until we have fully transitioned to a y2038-safe
+>> > > + * implementation in libcobalt.
+>> > > + */
+>> > > +struct __user_old_timespec {
+>> > > +	long  tv_sec;
+>> > > +	long  tv_nsec;
+>> > > +};
+>> > 
+>> > why not use old_timespec32, which is timespec32 representation defined
+>> > in include/linux/time32?
+>> > 
+>> 
+>> Using old_timespec32 in this context would mean that any time value
+>> received from userland by the core should be restricted to 32bit time_t,
+>> which is not what we want, at least for 64bit platforms:
+>> 
+>> include/vdso/time32.h:
+>> 
+>> struct old_timespec32 {
+>> 	old_time32_t	tv_sec;
+>> 	s32		tv_nsec;
+>> };
+>> 
+>> __user_old_timespec conveys the notion that we are generically talking
+>> about "the old timespec type which has a y2038 problem"; this is not
+>> specifically about the legacy timespec type on 32bit machines.
+>> 
+>> Since v5.4-rc6, we do have __kernel_old_timespec though, which could
+>> have been used instead of __user_old_timespec:
+>
+> According to my information (based on
+> https://elixir.bootlin.com/linux/v5.5-rc1/A/ident/__kernel_old_timespec
+> ) this is available since v5.5-rc1.
+>
 
-I will take a look at CPU idling and =E2=80=9Cevl check=E2=80=9D to be =
-sure that I=E2=80=99ve done everything=20
-that I could do to lower the latency figures.
+This disagrees with the git history then:
 
-> What
-> is the smallest negative value you get?
+commit 94c467ddb273dc9a6a4fb09aef392c119b151edb
+Author: Arnd Bergmann <arnd@arndb.de>
 
-I=E2=80=99m getting around -0.5us after isolating the CPU#1 before that =
-I was seeing around -7us.
+    y2038: add __kernel_old_timespec and __kernel_old_time_t
 
-> On 22 Feb 2021, at 11:39, Philippe Gerum <rpm@xenomai.org> wrote:
->=20
->=20
-> Deniz U=C4=9Fur <deniz343@gmail.com> writes:
->=20
->> Hi again,
->>=20
->> So I=E2=80=99ve installed the evl/v5.10 on Jetson Xavier and after =
-setting the scaling_governor to performance I got somewhat good results.
->>=20
->> I=E2=80=99ve set the isolcpus=3D0 command line argument but latmus =
-reports that CPU0 is not isolated. I=E2=80=99m not sure if that=E2=80=99s =
-a bug or I=E2=80=99ve missed something.
->>=20
->=20
-> You cannot isolate CPU0, this is a reserved one Linux-wise.
->=20
->> Other than that I=E2=80=99m getting latencies between +-10us and =
-worst latency
->> is 73us.
->=20
-> You may want to run "evl check" for a quick verification of the =
-running
-> kernel configuration wrt real-time. This reads /proc/config.gz on the
-> current system by default unless you pass it a .config file, so
-> CONFIG_IKCONFIG_PROC should be enabled if you want to check a running
-> kernel.
->=20
->> Even though I=E2=80=99ve ran latmus -t I=E2=80=99m still getting =
-negative latencies. Isn=E2=80=99t that supposed to fix that?
->>=20
->=20
-> Yep, it should. This can happen with high performance platforms as the
-> tuner is fairly conservative when determining the typical jitter. What
-> is the smallest negative value you get?
->=20
->> evl test reports OK for everything except for =
-scheduler-quota-accuracy and sched-tp-accuracy (no kernel support)
->>=20
->=20
-> You will need CONFIG_EVL_SCHED_QUOTA and CONFIG_EVL_SCHED_TP enabled =
-in
-> your Kconfig to run these tests.
->=20
-> The exhaustive list of the core options can be found at
-> https://evlproject.org/core/build-steps/#core-kconfig.
->=20
->> Are these latencies best I can get or are there anything else I can =
-do to lower/stabilize the latencies?
->>=20
->=20
-> Isolating the test CPU will certainly help. Next, a closer look to the
-> impact of CPU idling may help, such as measuring the latency with and
-> without idle=3Dpoll on the kernel boot line. As I hinted at earlier, =
-evl
-> check would detect the kernel options which are known to increase the
-> latency figures. There might be more SoC-specific tweaks, I don't know
-> the Jetson enough to figure this out at the moment though.
->=20
-> --=20
-> Philippe.
+$ git describe 94c467ddb273dc9a6a4fb09aef392c119b151edb
+v5.4-rc6-2-g94c467ddb273dc9
 
+>> 
+>> include/uapi/asm-generic/posix_types.h:
+>> 
+>> typedef long __kernel_long_t;
+>> 
+>> include/uapi/linux/time_types.h:
+>> 
+>> struct __kernel_old_timespec {
+>> 	__kernel_long_t		tv_sec;		/* seconds */
+>> 	long			tv_nsec;	/* nanoseconds */
+>> };
+>>  
+>> so I went for adding __user_old_timespec to the Cobalt UAPI. This may be
+>> seen as a temporary option until stricter requirements on the minimum
+>> toolchain support for building Cobalt is decided.
+>
+> __kernel_old_timespec is part of the "common" Linux uapi, so not x86
+> specific. Could you explain the problem you know of (or even see) with
+> some of the toolchains? Sounds strange...
+>
+
+(Cross) toolchains use a snapshot of the linux UAPI taken at some point
+in time. If a toolchain is somewhat outdated compared to the current
+state of the kernel UAPI, then there is a problem with using the types
+it defines. e.g. recent linaro toolchains for aarch32, aarch64 do not
+provide any definition for __kernel_old_timespec, yet.
+
+Now, as Song suggested, I could have defined __kernel_old_timespec in
+the Cobalt UAPI to address this, instead of defining
+__user_old_timespec. I found an upside in clearly stating this
+particular interface boundary for time values Cobalt-wise, using a
+Cobalt-specific type. What this should become in a subsequent series of
+patches addressing the y2038 issue fully is beyond the scope of the
+current series.
+
+>> 
+>> > > 
+>> > >   COBALT_SYSCALL(clock_settime, current,
+>> > > -	       (clockid_t clock_id, const struct timespec __user *u_ts))
+>> > > +	       (clockid_t clock_id, const struct __user_old_timespec __user *u_ts))
+>> > 
+>> > I planned to still use timespec as the argument, tv_sec is defined as
+>> > long, 32bit long in 32bit system, 64bit long in 64bit system, use 
+>> > timespec64 in implementation.
+>> > 
+>> 
+>> Keeping struct timespec for the argument does not seem the right thing
+>> to do, as this type has been phased out from recent kernels, precisely
+>> to stop spreading ambiguity wrt 32/64 bit time_t. It is only available
+>> from the UAPI section as a compat tweak for user code, not for kernel
+>> code.
+>
+> We would need a definition for older kernels anyway, but why are we not
+> allowed to re-use the definition from the uapi here?
+>
+
+Because the timespec type along with all other ambiguous types are now
+hidden from the kernel code in recent mainline releases:
+
+commit c766d1472c70d25ad475cf56042af1652e792b23
+Author: Arnd Bergmann <arnd@arndb.de>
+
+    y2038: hide timeval/timespec/itimerval/itimerspec types
+    
+Which gives, in include/uapi/linux/time.h:
+
+#ifndef __KERNEL__
+#ifndef _STRUCT_TIMESPEC
+#define _STRUCT_TIMESPEC
+struct timespec {
+	__kernel_old_time_t	tv_sec;		/* seconds */
+	long			tv_nsec;	/* nanoseconds */
+};
+#endif
+
+struct timeval {
+	__kernel_old_time_t	tv_sec;		/* seconds */
+	__kernel_suseconds_t	tv_usec;	/* microseconds */
+};
+
+struct itimerspec {
+	struct timespec it_interval;/* timer period */
+	struct timespec it_value;	/* timer expiration */
+};
+
+struct itimerval {
+	struct timeval it_interval;/* timer interval */
+	struct timeval it_value;	/* current value */
+};
+#endif
+
+>> 
+>> What should be done wrt addressing the y2038 issue fully is beyond this
+>> patch series. __user_old_timespec is merely an annotation on the
+>> existing implementation in order to highlight the kernel<->user
+>> interface boundary, which may help in fully addressing y2038 later on.
+>> 
+>> Eventually, it should be decided whether a legacy timespec32 should
+>> still be supported for 32bit applications building in dual-time
+>> configurations (time32_t and time64_t), or single-time configuration
+>> should be the norm with user-space using time64_t exclusively. This is
+>> beyond the scope of this patch series to decide of the way to go.
+>
+> Let's discuss that within the next Community Meeting Minutes. When we
+> started scanning the code base to get an overview of all the things
+> that have to be done we assumed that we would need to stay fully
+> backward compatible and "single time_t" defined by the libc that is
+> beeing used. That may have changed in the meantime and we could take
+> other patterns into account as well.
+
+-- 
+Philippe.
 
