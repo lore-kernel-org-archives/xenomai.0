@@ -1,15 +1,12 @@
-Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
- timespec64
-References: <20210220151840.409745-1-rpm@xenomai.org>
- <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
- <87h7m54f1i.fsf@xenomai.org>
-From: chensong <chensong@kylinos.cn>
-Message-ID: <60330307.2050108@kylinos.cn>
-Date: Mon, 22 Feb 2021 09:04:07 +0800
 MIME-Version: 1.0
-In-Reply-To: <87h7m54f1i.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+References: <SN6PR08MB566103B99883095420349D3393819@SN6PR08MB5661.namprd08.prod.outlook.com>
+In-Reply-To: <SN6PR08MB566103B99883095420349D3393819@SN6PR08MB5661.namprd08.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Sun, 21 Feb 2021 22:26:34 -0500
+Message-ID: <CALLqZ8RM+vcpWHeZtvvfDxsa1WbOg0s_=4eGQufkPNExbHCwiw@mail.gmail.com>
+Subject: Re: Incompatible pointer type error when compiling kernel
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,102 +15,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gabriel Dinse <gabriel_dinse@hotmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On Sun, Feb 21, 2021 at 7:25 PM Gabriel Dinse via Xenomai <
+xenomai@xenomai.org> wrote:
 
-
-On 2021年02月21日 23:27, Philippe Gerum wrote:
+> Hello,
+> I'm currently compiling linux 5.4.93 patched with xenomai 3.1,
+> using ipipe 5.4.93 for arm. The system is intended to run on a raspberry
+> pi 3 b, but I'm getting the following errors related to incompatible
+> pointer type:
 >
-> chensong via Xenomai <xenomai@xenomai.org> writes:
->
->>> +/*
->>> + * Our representation of time at the kernel<->user interface boundary
->>> + * at the moment, until we have fully transitioned to a y2038-safe
->>> + * implementation in libcobalt.
->>> + */
->>> +struct __user_old_timespec {
->>> +	long  tv_sec;
->>> +	long  tv_nsec;
->>> +};
->>
->> why not use old_timespec32, which is timespec32 representation defined
->> in include/linux/time32?
->>
->
-> Using old_timespec32 in this context would mean that any time value
-> received from userland by the core should be restricted to 32bit time_t,
-> which is not what we want, at least for 64bit platforms:
->
-> include/vdso/time32.h:
->
-> struct old_timespec32 {
-> 	old_time32_t	tv_sec;
-> 	s32		tv_nsec;
-> };
->
-> __user_old_timespec conveys the notion that we are generically talking
-> about "the old timespec type which has a y2038 problem"; this is not
-> specifically about the legacy timespec type on 32bit machines.
->
-> Since v5.4-rc6, we do have __kernel_old_timespec though, which could
-> have been used instead of __user_old_timespec:
->
-> include/uapi/asm-generic/posix_types.h:
->
-> typedef long __kernel_long_t;
->
-> include/uapi/linux/time_types.h:
->
-> struct __kernel_old_timespec {
-> 	__kernel_long_t		tv_sec;		/* seconds */
-> 	long			tv_nsec;	/* nanoseconds */
-> };
->
-> However, older (non-x86) toolchains do not define __kernel_old_timespec,
-> so I went for adding __user_old_timespec to the Cobalt UAPI. This may be
-> seen as a temporary option until stricter requirements on the minimum
-> toolchain support for building Cobalt is decided.
-
-what if we define __kernel_old_timespec in 
-./kernel/cobalt/include/asm-generic/xenomai/wrappers.h, like we always 
-do. we don't have to introduce a new struct.
-
+This is a 32-bit build running on the rpi3?
 
 >
->>>
->>>    COBALT_SYSCALL(clock_settime, current,
->>> -	       (clockid_t clock_id, const struct timespec __user *u_ts))
->>> +	       (clockid_t clock_id, const struct __user_old_timespec __user *u_ts))
->>
->> I planned to still use timespec as the argument, tv_sec is defined as
->> long, 32bit long in 32bit system, 64bit long in 64bit system, use
->> timespec64 in implementation.
->>
+>   CALL    scripts/atomic/check-atomics.sh
+>   CALL    scripts/checksyscalls.sh
+>   CHK     include/generated/compile.h
+>   CC      kernel/fork.o
+>   CC      kernel/xenomai/intr.o
+> In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+>                  from include/xenomai/cobalt/kernel/sched.h:24,
+>                  from kernel/xenomai/intr.c:24:
+> kernel/xenomai/intr.c: In function =E2=80=98inc_irqstats=E2=80=99:
+> include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1
+> of =E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type
+> [-Werror=3Dincompatible-pointer-types]
+>   __prev =3D (xnstat_exectime_t
+> *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+>                                                  ^
+> include/xenomai/cobalt/kernel/stat.h:147:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_set_current=E2=80=99
+>   xnstat_exectime_set_current(sched, new_account); \
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> kernel/xenomai/intr.c:123:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_lazy_switch=E2=80=99
+>   xnstat_exectime_lazy_switch(sched, &statp->account, start);
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In file included from ./include/linux/atomic.h:76:0,
+>                  from ./include/asm-generic/bitops/lock.h:5,
+>                  from ./arch/arm/include/asm/bitops.h:243,
+>                  from ./include/linux/bitops.h:26,
+>                  from ./include/linux/kernel.h:12,
+>                  from ./include/asm-generic/bug.h:19,
+>                  from ./arch/arm/include/asm/bug.h:60,
+>                  from ./include/linux/bug.h:5,
+>                  from ./include/linux/thread_info.h:12,
+>                  from ./include/asm-generic/current.h:5,
+>                  from ./arch/arm/include/generated/asm/current.h:1,
+>                  from ./include/linux/mutex.h:14,
+>                  from kernel/xenomai/intr.c:21:
+> /include/asm-generic/atomic-long.h:880:1: note: expected
+> =E2=80=98atomic_long_t * {aka struct <anonymous> *}=E2=80=99 but argument=
+ is of
+> type =E2=80=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=
+=99
+>  atomic_long_xchg(atomic_long_t *v, long i)
+>  ^~~~~~~~~~~~~~~~
+> In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+>                  from include/xenomai/cobalt/kernel/sched.h:24,
+>                  from kernel/xenomai/intr.c:24:
+> kernel/xenomai/intr.c: In function =E2=80=98switch_to_irqstats=E2=80=99:
+> include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1
+> of =E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type
+> [-Werror=3Dincompatible-pointer-types]
+>   __prev =3D (xnstat_exectime_t
+> *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+>                                                  ^
+> include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_set_current=E2=80=99
+>   xnstat_exectime_set_current(sched, new_account); \
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> kernel/xenomai/intr.c:132:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_switch=E2=80=99
+>   xnstat_exectime_switch(sched, &statp->account);
+>   ^~~~~~~~~~~~~~~~~~~~~~
+> In file included from ./include/linux/atomic.h:76:0,
+>                  from ./include/asm-generic/bitops/lock.h:5,
+>                  from ./arch/arm/include/asm/bitops.h:243,
+>                  from ./include/linux/bitops.h:26,
+>                  from ./include/linux/kernel.h:12,
+>                  from ./include/asm-generic/bug.h:19,
+>                  from ./arch/arm/include/asm/bug.h:60,
+>                  from ./include/linux/bug.h:5,
+>                  from ./include/linux/thread_info.h:12,
+>                  from ./include/asm-generic/current.h:5,
+>                  from ./arch/arm/include/generated/asm/current.h:1,
+>                  from ./include/linux/mutex.h:14,
+>                  from kernel/xenomai/intr.c:21:
+> /include/asm-generic/atomic-long.h:880:1: note: expected
+> =E2=80=98atomic_long_t * {aka struct <anonymous> *}=E2=80=99 but argument=
+ is of
+> type =E2=80=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=
+=99
+>  atomic_long_xchg(atomic_long_t *v, long i)
+>  ^~~~~~~~~~~~~~~~
+> In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+>                  from include/xenomai/cobalt/kernel/sched.h:24,
+>                  from kernel/xenomai/intr.c:24:
+> kernel/xenomai/intr.c: In function =E2=80=98switch_from_irqstats=E2=80=99=
+:
+> include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1
+> of =E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type
+> [-Werror=3Dincompatible-pointer-types]
+>   __prev =3D (xnstat_exectime_t
+> *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+>                                                  ^
+> include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_set_current=E2=80=99
+>   xnstat_exectime_set_current(sched, new_account); \
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> kernel/xenomai/intr.c:138:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_switch=E2=80=99
+>   xnstat_exectime_switch(sched, prev);
+>   ^~~~~~~~~~~~~~~~~~~~~~
+> In file included from ./include/linux/atomic.h:76:0,
+>                  from ./include/asm-generic/bitops/lock.h:5,
+>                  from ./arch/arm/include/asm/bitops.h:243,
+>                  from ./include/linux/bitops.h:26,
+>                  from ./include/linux/kernel.h:12,
+>                  from ./include/asm-generic/bug.h:19,
+>                  from ./arch/arm/include/asm/bug.h:60,
+>                  from ./include/linux/bug.h:5,
+>                  from ./include/linux/thread_info.h:12,
+>                  from ./include/asm-generic/current.h:5,
+>                  from ./arch/arm/include/generated/asm/current.h:1,
+>                  from ./include/linux/mutex.h:14,
+>                  from kernel/xenomai/intr.c:21:
+> /include/asm-generic/atomic-long.h:880:1: note: expected
+> =E2=80=98atomic_long_t * {aka struct <anonymous> *}=E2=80=99 but argument=
+ is of
+> type =E2=80=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=
+=99
+>  atomic_long_xchg(atomic_long_t *v, long i)
+>  ^~~~~~~~~~~~~~~~
+> In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+>                  from include/xenomai/cobalt/kernel/sched.h:24,
+>                  from kernel/xenomai/intr.c:24:
+> kernel/xenomai/intr.c: In function =E2=80=98switch_core_irqstats=E2=80=99=
+:
+> include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1
+> of =E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type
+> [-Werror=3Dincompatible-pointer-types]
+>   __prev =3D (xnstat_exectime_t
+> *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+>                                                  ^
+> include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro
+> =E2=80=98xnstat_exectime_set_current=E2=80=99
+>   xnstat_exectime_set_current(sched, new_account); \
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> kernel/xenomai/intr.c:147:9: note: in expansion of macro
+> =E2=80=98xnstat_exectime_switch=E2=80=99
+>   prev =3D xnstat_exectime_switch(sched, &statp->account);
+>          ^~~~~~~~~~~~~~~~~~~~~~
+> In file included from ./include/linux/atomic.h:76:0,
+>                  from ./include/asm-generic/bitops/lock.h:5,
+>                  from ./arch/arm/include/asm/bitops.h:243,
+>                  from ./include/linux/bitops.h:26,
+>                  from ./include/linux/kernel.h:12,
+>                  from ./include/asm-generic/bug.h:19,
+>                  from ./arch/arm/include/asm/bug.h:60,
+>                  from ./include/linux/bug.h:5,
+>                  from ./include/linux/thread_info.h:12,
+>                  from ./include/asm-generic/current.h:5,
+>                  from ./arch/arm/include/generated/asm/current.h:1,
+>                  from ./include/linux/mutex.h:14,
+>                  from kernel/xenomai/intr.c:21:
+> /include/asm-generic/atomic-long.h:880:1: note: expected
+> =E2=80=98atomic_long_t * {aka struct <anonymous> *}=E2=80=99 but argument=
+ is of
+> type =E2=80=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=
+=99
+>  atomic_long_xchg(atomic_long_t *v, long i)
+>  ^~~~~~~~~~~~~~~~
+> cc1: some warnings being treated as errors
+> make[4]: *** [scripts/Makefile.build:262: kernel/xenomai/intr.o] Error 1
+> make[3]: *** [scripts/Makefile.build:496: kernel/xenomai] Error 2
+> make[3]: *** Waiting for unfinished jobs....
+> make[2]: *** [Makefile:1732: kernel] Error 2
+> make[2]: *** Waiting for unfinished jobs....
+> make[1]: *** [package/pkg-generic.mk:269:
+> /home/gabriel/Projects/buildroot/buildroot-2020.02.11-xenomai/output/buil=
+d/linux-5462eb01503dd1ad69d9cbe9f0d51a0bd4b0f98d/.stamp_built]
+>
+> Error 2
+> make: *** [Makefile:84: _all] Error 2
+>
 
-same with above, like "__kernel_old_timespec __user *u_ts",.
+I have some ipipe fixes coming, but I don't think these are ipipe related.
+Can you show how you patched and built your kernel? I'll try to reproduce
+on my end.  What compiler are you using?
+
+-Greg
+
 
 >
-> Keeping struct timespec for the argument does not seem the right thing
-> to do, as this type has been phased out from recent kernels, precisely
-> to stop spreading ambiguity wrt 32/64 bit time_t. It is only available
-> from the UAPI section as a compat tweak for user code, not for kernel
-> code.
+> How can I solve this?
+> Thank you,
+> Gabriel Dinse
 >
-agree, in linux kernel, __kernel_timespec is specific for 64bit and 
-old_timespec32 is specific for 32bit, clear. but we kind of need a 
-blurry timespec, that's why we planed to keep timespec. 
-__kernel_old_timespec looks like a good solution in this case.
-
-> What should be done wrt addressing the y2038 issue fully is beyond this
-> patch series. __user_old_timespec is merely an annotation on the
-> existing implementation in order to highlight the kernel<->user
-> interface boundary, which may help in fully addressing y2038 later on.
 >
-> Eventually, it should be decided whether a legacy timespec32 should
-> still be supported for 32bit applications building in dual-time
-> configurations (time32_t and time64_t), or single-time configuration
-> should be the norm with user-space using time64_t exclusively. This is
-> beyond the scope of this patch series to decide of the way to go.
->
-
