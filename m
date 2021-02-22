@@ -1,9 +1,16 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: [xenomai-images][PATCH] Fix linux repo for 5.10 ARM
-Message-ID: <0bf0a241-624c-0d9e-7dc8-25eaa69de85e@qmul.ac.uk>
-Date: Tue, 9 Feb 2021 17:49:11 +0000
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+Date: Mon, 22 Feb 2021 08:21:41 +0000
+Message-ID: <612b2ca09cb05c5cf641b35359205b905caf2a5c.camel@siemens.com>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
+ <87h7m54f1i.fsf@xenomai.org>
+In-Reply-To: <87h7m54f1i.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CD4FA6E7D56954418EB3B7C59A006182@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,28 +20,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro via Xenomai <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Giulio Moro <giuliomoro@yahoo.it>
-
-Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
----
-  recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
-  1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index bbec6b0..e6834fd 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -25,7 +25,7 @@ def is_kernel(d, ver):
-  GIT_REPO_amd64 = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
-  GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
-
--GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
-+GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
-  GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19-y-cip'}"
-
-  GIT_REPO_arm64 = "git://github.com/xenomai-ci/ipipe-arm64.git"
---
-2.17.1
+T24gU3VuLCAyMDIxLTAyLTIxIGF0IDE2OjI3ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB2aWEgWGVu
+b21haSB3cm90ZToNCj4gY2hlbnNvbmcgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+
+IHdyaXRlczoNCj4gDQo+ID4gPiArLyoNCj4gPiA+ICsgKiBPdXIgcmVwcmVzZW50YXRpb24gb2Yg
+dGltZSBhdCB0aGUga2VybmVsPC0+dXNlciBpbnRlcmZhY2UgYm91bmRhcnkNCj4gPiA+ICsgKiBh
+dCB0aGUgbW9tZW50LCB1bnRpbCB3ZSBoYXZlIGZ1bGx5IHRyYW5zaXRpb25lZCB0byBhIHkyMDM4
+LXNhZmUNCj4gPiA+ICsgKiBpbXBsZW1lbnRhdGlvbiBpbiBsaWJjb2JhbHQuDQo+ID4gPiArICov
+DQo+ID4gPiArc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgew0KPiA+ID4gKwlsb25nICB0dl9z
+ZWM7DQo+ID4gPiArCWxvbmcgIHR2X25zZWM7DQo+ID4gPiArfTsNCj4gPiANCj4gPiB3aHkgbm90
+IHVzZSBvbGRfdGltZXNwZWMzMiwgd2hpY2ggaXMgdGltZXNwZWMzMiByZXByZXNlbnRhdGlvbiBk
+ZWZpbmVkDQo+ID4gaW4gaW5jbHVkZS9saW51eC90aW1lMzI/DQo+ID4gDQo+IA0KPiBVc2luZyBv
+bGRfdGltZXNwZWMzMiBpbiB0aGlzIGNvbnRleHQgd291bGQgbWVhbiB0aGF0IGFueSB0aW1lIHZh
+bHVlDQo+IHJlY2VpdmVkIGZyb20gdXNlcmxhbmQgYnkgdGhlIGNvcmUgc2hvdWxkIGJlIHJlc3Ry
+aWN0ZWQgdG8gMzJiaXQgdGltZV90LA0KPiB3aGljaCBpcyBub3Qgd2hhdCB3ZSB3YW50LCBhdCBs
+ZWFzdCBmb3IgNjRiaXQgcGxhdGZvcm1zOg0KPiANCj4gaW5jbHVkZS92ZHNvL3RpbWUzMi5oOg0K
+PiANCj4gc3RydWN0IG9sZF90aW1lc3BlYzMyIHsNCj4gCW9sZF90aW1lMzJfdAl0dl9zZWM7DQo+
+IAlzMzIJCXR2X25zZWM7DQo+IH07DQo+IA0KPiBfX3VzZXJfb2xkX3RpbWVzcGVjIGNvbnZleXMg
+dGhlIG5vdGlvbiB0aGF0IHdlIGFyZSBnZW5lcmljYWxseSB0YWxraW5nDQo+IGFib3V0ICJ0aGUg
+b2xkIHRpbWVzcGVjIHR5cGUgd2hpY2ggaGFzIGEgeTIwMzggcHJvYmxlbSI7IHRoaXMgaXMgbm90
+DQo+IHNwZWNpZmljYWxseSBhYm91dCB0aGUgbGVnYWN5IHRpbWVzcGVjIHR5cGUgb24gMzJiaXQg
+bWFjaGluZXMuDQo+IA0KPiBTaW5jZSB2NS40LXJjNiwgd2UgZG8gaGF2ZSBfX2tlcm5lbF9vbGRf
+dGltZXNwZWMgdGhvdWdoLCB3aGljaCBjb3VsZA0KPiBoYXZlIGJlZW4gdXNlZCBpbnN0ZWFkIG9m
+IF9fdXNlcl9vbGRfdGltZXNwZWM6DQoNCkFjY29yZGluZyB0byBteSBpbmZvcm1hdGlvbiAoYmFz
+ZWQgb24NCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjUtcmMxL0EvaWRlbnQv
+X19rZXJuZWxfb2xkX3RpbWVzcGVjDQopIHRoaXMgaXMgYXZhaWxhYmxlIHNpbmNlIHY1LjUtcmMx
+Lg0KDQo+IA0KPiBpbmNsdWRlL3VhcGkvYXNtLWdlbmVyaWMvcG9zaXhfdHlwZXMuaDoNCj4gDQo+
+IHR5cGVkZWYgbG9uZyBfX2tlcm5lbF9sb25nX3Q7DQo+IA0KPiBpbmNsdWRlL3VhcGkvbGludXgv
+dGltZV90eXBlcy5oOg0KPiANCj4gc3RydWN0IF9fa2VybmVsX29sZF90aW1lc3BlYyB7DQo+IAlf
+X2tlcm5lbF9sb25nX3QJCXR2X3NlYzsJCS8qIHNlY29uZHMgKi8NCj4gCWxvbmcJCQl0dl9uc2Vj
+OwkvKiBuYW5vc2Vjb25kcyAqLw0KPiB9Ow0KPiAgDQo+IHNvIEkgd2VudCBmb3IgYWRkaW5nIF9f
+dXNlcl9vbGRfdGltZXNwZWMgdG8gdGhlIENvYmFsdCBVQVBJLiBUaGlzIG1heSBiZQ0KPiBzZWVu
+IGFzIGEgdGVtcG9yYXJ5IG9wdGlvbiB1bnRpbCBzdHJpY3RlciByZXF1aXJlbWVudHMgb24gdGhl
+IG1pbmltdW0NCj4gdG9vbGNoYWluIHN1cHBvcnQgZm9yIGJ1aWxkaW5nIENvYmFsdCBpcyBkZWNp
+ZGVkLg0KDQpfX2tlcm5lbF9vbGRfdGltZXNwZWMgaXMgcGFydCBvZiB0aGUgImNvbW1vbiIgTGlu
+dXggdWFwaSwgc28gbm90IHg4Ng0Kc3BlY2lmaWMuIENvdWxkIHlvdSBleHBsYWluIHRoZSBwcm9i
+bGVtIHlvdSBrbm93IG9mIChvciBldmVuIHNlZSkgd2l0aA0Kc29tZSBvZiB0aGUgdG9vbGNoYWlu
+cz8gU291bmRzIHN0cmFuZ2UuLi4NCg0KPiANCj4gPiA+IA0KPiA+ID4gwqDCoENPQkFMVF9TWVND
+QUxMKGNsb2NrX3NldHRpbWUsIGN1cnJlbnQsDQo+ID4gPiAtCSAgICAgICAoY2xvY2tpZF90IGNs
+b2NrX2lkLCBjb25zdCBzdHJ1Y3QgdGltZXNwZWMgX191c2VyICp1X3RzKSkNCj4gPiA+ICsJICAg
+ICAgIChjbG9ja2lkX3QgY2xvY2tfaWQsIGNvbnN0IHN0cnVjdCBfX3VzZXJfb2xkX3RpbWVzcGVj
+IF9fdXNlciAqdV90cykpDQo+ID4gDQo+ID4gSSBwbGFubmVkIHRvIHN0aWxsIHVzZSB0aW1lc3Bl
+YyBhcyB0aGUgYXJndW1lbnQsIHR2X3NlYyBpcyBkZWZpbmVkIGFzDQo+ID4gbG9uZywgMzJiaXQg
+bG9uZyBpbiAzMmJpdCBzeXN0ZW0sIDY0Yml0IGxvbmcgaW4gNjRiaXQgc3lzdGVtLCB1c2UgDQo+
+ID4gdGltZXNwZWM2NCBpbiBpbXBsZW1lbnRhdGlvbi4NCj4gPiANCj4gDQo+IEtlZXBpbmcgc3Ry
+dWN0IHRpbWVzcGVjIGZvciB0aGUgYXJndW1lbnQgZG9lcyBub3Qgc2VlbSB0aGUgcmlnaHQgdGhp
+bmcNCj4gdG8gZG8sIGFzIHRoaXMgdHlwZSBoYXMgYmVlbiBwaGFzZWQgb3V0IGZyb20gcmVjZW50
+IGtlcm5lbHMsIHByZWNpc2VseQ0KPiB0byBzdG9wIHNwcmVhZGluZyBhbWJpZ3VpdHkgd3J0IDMy
+LzY0IGJpdCB0aW1lX3QuIEl0IGlzIG9ubHkgYXZhaWxhYmxlDQo+IGZyb20gdGhlIFVBUEkgc2Vj
+dGlvbiBhcyBhIGNvbXBhdCB0d2VhayBmb3IgdXNlciBjb2RlLCBub3QgZm9yIGtlcm5lbA0KPiBj
+b2RlLg0KDQpXZSB3b3VsZCBuZWVkIGEgZGVmaW5pdGlvbiBmb3Igb2xkZXIga2VybmVscyBhbnl3
+YXksIGJ1dCB3aHkgYXJlIHdlIG5vdA0KYWxsb3dlZCB0byByZS11c2UgdGhlIGRlZmluaXRpb24g
+ZnJvbSB0aGUgdWFwaSBoZXJlPw0KDQo+IA0KPiBXaGF0IHNob3VsZCBiZSBkb25lIHdydCBhZGRy
+ZXNzaW5nIHRoZSB5MjAzOCBpc3N1ZSBmdWxseSBpcyBiZXlvbmQgdGhpcw0KPiBwYXRjaCBzZXJp
+ZXMuIF9fdXNlcl9vbGRfdGltZXNwZWMgaXMgbWVyZWx5IGFuIGFubm90YXRpb24gb24gdGhlDQo+
+IGV4aXN0aW5nIGltcGxlbWVudGF0aW9uIGluIG9yZGVyIHRvIGhpZ2hsaWdodCB0aGUga2VybmVs
+PC0+dXNlcg0KPiBpbnRlcmZhY2UgYm91bmRhcnksIHdoaWNoIG1heSBoZWxwIGluIGZ1bGx5IGFk
+ZHJlc3NpbmcgeTIwMzggbGF0ZXIgb24uDQo+IA0KPiBFdmVudHVhbGx5LCBpdCBzaG91bGQgYmUg
+ZGVjaWRlZCB3aGV0aGVyIGEgbGVnYWN5IHRpbWVzcGVjMzIgc2hvdWxkDQo+IHN0aWxsIGJlIHN1
+cHBvcnRlZCBmb3IgMzJiaXQgYXBwbGljYXRpb25zIGJ1aWxkaW5nIGluIGR1YWwtdGltZQ0KPiBj
+b25maWd1cmF0aW9ucyAodGltZTMyX3QgYW5kIHRpbWU2NF90KSwgb3Igc2luZ2xlLXRpbWUgY29u
+ZmlndXJhdGlvbg0KPiBzaG91bGQgYmUgdGhlIG5vcm0gd2l0aCB1c2VyLXNwYWNlIHVzaW5nIHRp
+bWU2NF90IGV4Y2x1c2l2ZWx5LiBUaGlzIGlzDQo+IGJleW9uZCB0aGUgc2NvcGUgb2YgdGhpcyBw
+YXRjaCBzZXJpZXMgdG8gZGVjaWRlIG9mIHRoZSB3YXkgdG8gZ28uDQoNCkxldCdzIGRpc2N1c3Mg
+dGhhdCB3aXRoaW4gdGhlIG5leHQgQ29tbXVuaXR5IE1lZXRpbmcgTWludXRlcy4gV2hlbiB3ZQ0K
+c3RhcnRlZCBzY2FubmluZyB0aGUgY29kZSBiYXNlIHRvIGdldCBhbiBvdmVydmlldyBvZiBhbGwg
+dGhlIHRoaW5ncw0KdGhhdCBoYXZlIHRvIGJlIGRvbmUgd2UgYXNzdW1lZCB0aGF0IHdlIHdvdWxk
+IG5lZWQgdG8gc3RheSBmdWxseQ0KYmFja3dhcmQgY29tcGF0aWJsZSBhbmQgInNpbmdsZSB0aW1l
+X3QiIGRlZmluZWQgYnkgdGhlIGxpYmMgdGhhdCBpcw0KYmVlaW5nIHVzZWQuIFRoYXQgbWF5IGhh
+dmUgY2hhbmdlZCBpbiB0aGUgbWVhbnRpbWUgYW5kIHdlIGNvdWxkIHRha2UNCm90aGVyIHBhdHRl
+cm5zIGludG8gYWNjb3VudCBhcyB3ZWxsLg0KDQo=
 
