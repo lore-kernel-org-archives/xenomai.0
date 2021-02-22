@@ -1,15 +1,10 @@
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: [I-PIPE][ARM64] Experimenting on Jetson Xavier
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-In-Reply-To: <871rd947az.fsf@xenomai.org>
-Date: Mon, 22 Feb 2021 00:44:15 +0300
+Date: Sun, 21 Feb 2021 21:25:18 -0300
+From: Gabriel Dinse <gabriel_dinse@hotmail.com>
+Subject: Incompatible pointer type error when compiling kernel
+Message-ID: <SN6PR08MB566103B99883095420349D3393819@SN6PR08MB5661.namprd08.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1251; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <652D6B1D-CE11-4C5B-93E5-0D02B07ABC35@gmail.com>
-References: <CD72004A-77C0-4041-8FD6-FF64932138D4@gmail.com>
- <87a6rx4c6k.fsf@xenomai.org> <34573B47-B373-46DB-A49D-FB6298AA65DC@gmail.com>
- <871rd947az.fsf@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +13,177 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi again,
+Hello,
+I'm currently compiling linux 5.4.93 patched with xenomai 3.1,
+using ipipe 5.4.93 for arm. The system is intended to run on a raspberry
+pi 3 b, but I'm getting the following errors related to incompatible
+pointer type:
 
-So I=E2=80=99ve installed the evl/v5.10 on Jetson Xavier and after =
-setting the scaling_governor to performance I got somewhat good results.
+  CALL    scripts/atomic/check-atomics.sh
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC      kernel/fork.o
+  CC      kernel/xenomai/intr.o
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =91inc_irqstats=92:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
+of =91atomic_long_xchg=92 from incompatible pointer type=20
+[-Werror=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t=20
+*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:147:2: note: in expansion of macro=20
+=91xnstat_exectime_set_current=92
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:123:2: note: in expansion of macro=20
+=91xnstat_exectime_lazy_switch=92
+  xnstat_exectime_lazy_switch(sched, &statp->account, start);
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+/include/asm-generic/atomic-long.h:880:1: note: expected=20
+=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
+type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =91switch_to_irqstats=92:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
+of =91atomic_long_xchg=92 from incompatible pointer type=20
+[-Werror=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t=20
+*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
+=91xnstat_exectime_set_current=92
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:132:2: note: in expansion of macro=20
+=91xnstat_exectime_switch=92
+  xnstat_exectime_switch(sched, &statp->account);
+  ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+/include/asm-generic/atomic-long.h:880:1: note: expected=20
+=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
+type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =91switch_from_irqstats=92:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
+of =91atomic_long_xchg=92 from incompatible pointer type=20
+[-Werror=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t=20
+*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
+=91xnstat_exectime_set_current=92
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:138:2: note: in expansion of macro=20
+=91xnstat_exectime_switch=92
+  xnstat_exectime_switch(sched, prev);
+  ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+/include/asm-generic/atomic-long.h:880:1: note: expected=20
+=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
+type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =91switch_core_irqstats=92:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1=20
+of =91atomic_long_xchg=92 from incompatible pointer type=20
+[-Werror=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t=20
+*)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro=20
+=91xnstat_exectime_set_current=92
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:147:9: note: in expansion of macro=20
+=91xnstat_exectime_switch=92
+  prev =3D xnstat_exectime_switch(sched, &statp->account);
+         ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+/include/asm-generic/atomic-long.h:880:1: note: expected=20
+=91atomic_long_t * {aka struct <anonymous> *}=92 but argument is of=20
+type =91xnstat_exectime_t ** {aka struct xnstat_exectime **}=92
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[4]: *** [scripts/Makefile.build:262: kernel/xenomai/intr.o] Error 1
+make[3]: *** [scripts/Makefile.build:496: kernel/xenomai] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [Makefile:1732: kernel] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [package/pkg-generic.mk:269:=20
+/home/gabriel/Projects/buildroot/buildroot-2020.02.11-xenomai/output/build/=
+linux-5462eb01503dd1ad69d9cbe9f0d51a0bd4b0f98d/.stamp_built]=20
+Error 2
+make: *** [Makefile:84: _all] Error 2
 
-I=E2=80=99ve set the isolcpus=3D0 command line argument but latmus =
-reports that CPU0 is not isolated. I=E2=80=99m not sure if that=E2=80=99s =
-a bug or I=E2=80=99ve missed something.
 
-Other than that I=E2=80=99m getting latencies between +-10us and worst =
-latency is 73us. Even though I=E2=80=99ve ran latmus -t I=E2=80=99m =
-still getting negative latencies. Isn=E2=80=99t that supposed to fix =
-that?
-
-evl test reports OK for everything except for scheduler-quota-accuracy =
-and sched-tp-accuracy (no kernel support)
-
-Are these latencies best I can get or are there anything else I can do =
-to lower/stabilize the latencies?
-
-Thanks.
-Deniz.
-
-> On 21 Feb 2021, at 21:14, Philippe Gerum <rpm@xenomai.org> wrote:
->=20
->=20
-> Deniz U=C4=9Fur <deniz343@gmail.com> writes:
->=20
->> Hi Philippe,
->>=20
->> Thank you for your reply. It=E2=80=99s so good to hear that Xenomai =
-is evolving.
->> Really appreciate the work you guys are doing.
->>=20
->> I would suggest to try booting the Jetson with [3] first,
->> reporting any issue to this list so we can fix them
->>=20
->> I will try this ASAP and report my results under this thread.
->> I will be eagerly waiting for the arm64 version of Dovetail :)
->>=20
->=20
-> Actually, Dovetail/arm64 has been alive and kicking for several years
-> now, EVL runs it today up to the latest v5.11. What is missing is the
-> Xenomai port to Dovetail/arm64, which is brewing. I'll keep you posted
-> when it can be tested (within a week, I believe).
->=20
-> --=20
-> Philippe.
-
+How can I solve this?
+Thank you,
+Gabriel Dinse
 
