@@ -1,11 +1,9 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: Reminder: Xenomai community call on tomorrow, Feb 24th, UTC 7:00
-Date: Tue, 23 Feb 2021 11:34:21 +0000
-Message-ID: <CO1PR11MB5187DDB49A3D551DEE6F46E9EE809@CO1PR11MB5187.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Tue, 23 Feb 2021 12:36:09 +0100
+Message-ID: <CAFZ-hKhxmHDYOqQT_TWJaCLoFTiXB7d0Py_9XXLZehMshMBR-A@mail.gmail.com>
+Subject: rebuild kernel
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +12,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-QXMgcGxhbm5lZCwgd2UgaGF2ZSB0aGUgWGVub21haSBjb21tdW5pdHkgY2FsbCB0b21vcnJvdywN
-ClRvcGljcyBtYXkgaW5jbHVkZSBidXQgbm90IGxpbWl0ZWQgdG8gdXBzdHJlYW0vZG93bnN0cmVh
-bSBwcm9qZWN0IHBsYW4sIHN0YXR1cyB1cGRhdGUsIGFuZCB0ZWNobmljYWwgZGlzY3Vzc2lvbi4N
-Ckl0J3MgYW4gb3BlbiBvbmxpbmUgbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9pbiBhbmQgYXNr
-IHF1ZXN0aW9ucywNCg0KVGltZToNCkZlYiAyNHRoIChXZWRuZXNkYXkpLCBVVEMgNzowMA0KMTU6
-MDAgZm9yIENoaW5hDQo4OjAwIGZvciBGcmFuY2UsIEdlcm1hbnksIEl0YWx5DQoyMzowMCAoRmVi
-IDIzdGggKSBmb3IgU2FudGEgQ2xhcmENCg0KUGxzIGRvd25sb2FkIFdlYmV4IG1lZXRpbmcgc29m
-dHdhcmUgb3IgdXNlIHRoZSB3ZWJwYWdlIHZlcnNpb246DQpodHRwczovL2ludGVsLndlYmV4LmNv
-bS9pbnRlbC9qLnBocD9NVElEPW0yMzBiMWQ5N2FiNGYyYTRmOWRiYzNiMjYyODg1YmFiNg0KTWVl
-dGluZyBudW1iZXIgKGFjY2VzcyBjb2RlKTogMTMwIDUxNCA3NjA1DQpNZWV0aW5nIHBhc3N3b3Jk
-OiBKUXBFYzdVWUAzOCAgDQogDQpUYXAgdG8gam9pbiBmcm9tIGEgbW9iaWxlIGRldmljZSAoYXR0
-ZW5kZWVzIG9ubHkpICANCisxLTIxMC03OTUtMTExMCwsMTMwNTE0NzYwNSMjIFVTIFRvbGwgIA0K
-KzEtODY2LTY2Mi05OTg3LCwxMzA1MTQ3NjA1IyMgVVMgVG9sbCBGcmVlICANCg0KSm9pbiBieSBw
-aG9uZSAgDQorMS0yMTAtNzk1LTExMTAgVVMgVG9sbCAgDQorMS04NjYtNjYyLTk5ODcgVVMgVG9s
-bCBGcmVlICANCkdsb2JhbCBjYWxsLWluIG51bWJlcnMgIHwgIFRvbGwtZnJlZSBjYWxsaW5nIHJl
-c3RyaWN0aW9ucyAgIA0KICANCkpvaW4gZnJvbSBhIHZpZGVvIHN5c3RlbSBvciBhcHBsaWNhdGlv
-bg0KRGlhbCAxMzA1MTQ3NjA1QGludGVsLndlYmV4LmNvbSAgDQpZb3UgY2FuIGFsc28gZGlhbCAx
-NzMuMjQzLjIuNjggYW5kIGVudGVyIHlvdXIgbWVldGluZyBudW1iZXIuICAgDQoNCkJSIC8gRmlu
-byAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQoNCg0K
+Hi, I'm new to Linux and xenomai. I installed xenomai on raspberry and it
+works great. However, some kernel modules are missing. If I want to
+recompile the kernel with the missing modules, what I need to do is:
+$ make clean
+$ make menuconfig (and insert the modules)
+$ make
+$ make modules_install
+$ make install
 
+reboot the system.
+Is this correct?
