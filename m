@@ -1,9 +1,13 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Reminder: Xenomai community call on tomorrow, Feb 24th, UTC 7:00
+Date: Wed, 24 Feb 2021 06:59:39 +0000
+Message-ID: <CO1PR11MB5187B9789CEC71CCE7E754F9EE9F9@CO1PR11MB5187.namprd11.prod.outlook.com>
+References: <CO1PR11MB5187DDB49A3D551DEE6F46E9EE809@CO1PR11MB5187.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB5187DDB49A3D551DEE6F46E9EE809@CO1PR11MB5187.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Tue, 23 Feb 2021 12:36:09 +0100
-Message-ID: <CAFZ-hKhxmHDYOqQT_TWJaCLoFTiXB7d0Py_9XXLZehMshMBR-A@mail.gmail.com>
-Subject: rebuild kernel
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,16 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi, I'm new to Linux and xenomai. I installed xenomai on raspberry and it
-works great. However, some kernel modules are missing. If I want to
-recompile the kernel with the missing modules, what I need to do is:
-$ make clean
-$ make menuconfig (and insert the modules)
-$ make
-$ make modules_install
-$ make install
+VGhlIG1lZXRpbmcganVzdCBzdGFydGVkLg0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVs
+IOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0t
+LS0NCj5Gcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFs
+ZiBPZiBNZW5nLCBGaW5vIHZpYSBYZW5vbWFpDQo+U2VudDogVHVlc2RheSwgRmVicnVhcnkgMjMs
+IDIwMjEgNzozNCBQTQ0KPlRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmVtaW5k
+ZXI6IFhlbm9tYWkgY29tbXVuaXR5IGNhbGwgb24gdG9tb3Jyb3csIEZlYiAyNHRoLCBVVEMgNzow
+MA0KPg0KPkFzIHBsYW5uZWQsIHdlIGhhdmUgdGhlIFhlbm9tYWkgY29tbXVuaXR5IGNhbGwgdG9t
+b3Jyb3csDQo+VG9waWNzIG1heSBpbmNsdWRlIGJ1dCBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9k
+b3duc3RyZWFtIHByb2plY3QgcGxhbiwgc3RhdHVzIHVwZGF0ZSwgYW5kIHRlY2huaWNhbCBkaXNj
+dXNzaW9uLg0KPkl0J3MgYW4gb3BlbiBvbmxpbmUgbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9p
+biBhbmQgYXNrIHF1ZXN0aW9ucywNCj4NCj5UaW1lOg0KPkZlYiAyNHRoIChXZWRuZXNkYXkpLCBV
+VEMgNzowMA0KPjE1OjAwIGZvciBDaGluYQ0KPjg6MDAgZm9yIEZyYW5jZSwgR2VybWFueSwgSXRh
+bHkNCj4yMzowMCAoRmViIDIzdGggKSBmb3IgU2FudGEgQ2xhcmENCj4NCj5QbHMgZG93bmxvYWQg
+V2ViZXggbWVldGluZyBzb2Z0d2FyZSBvciB1c2UgdGhlIHdlYnBhZ2UgdmVyc2lvbjoNCj5odHRw
+czovL2ludGVsLndlYmV4LmNvbS9pbnRlbC9qLnBocD9NVElEPW0yMzBiMWQ5N2FiNGYyYTRmOWRi
+YzNiMjYyODg1YmFiNg0KPk1lZXRpbmcgbnVtYmVyIChhY2Nlc3MgY29kZSk6IDEzMCA1MTQgNzYw
+NQ0KPk1lZXRpbmcgcGFzc3dvcmQ6IEpRcEVjN1VZQDM4DQo+DQo+VGFwIHRvIGpvaW4gZnJvbSBh
+IG1vYmlsZSBkZXZpY2UgKGF0dGVuZGVlcyBvbmx5KQ0KPisxLTIxMC03OTUtMTExMCwsMTMwNTE0
+NzYwNSMjIFVTIFRvbGwNCj4rMS04NjYtNjYyLTk5ODcsLDEzMDUxNDc2MDUjIyBVUyBUb2xsIEZy
+ZWUNCj4NCj5Kb2luIGJ5IHBob25lDQo+KzEtMjEwLTc5NS0xMTEwIFVTIFRvbGwNCj4rMS04NjYt
+NjYyLTk5ODcgVVMgVG9sbCBGcmVlDQo+R2xvYmFsIGNhbGwtaW4gbnVtYmVycyAgfCAgVG9sbC1m
+cmVlIGNhbGxpbmcgcmVzdHJpY3Rpb25zDQo+DQo+Sm9pbiBmcm9tIGEgdmlkZW8gc3lzdGVtIG9y
+IGFwcGxpY2F0aW9uDQo+RGlhbCAxMzA1MTQ3NjA1QGludGVsLndlYmV4LmNvbQ0KPllvdSBjYW4g
+YWxzbyBkaWFsIDE3My4yNDMuMi42OCBhbmQgZW50ZXIgeW91ciBtZWV0aW5nIG51bWJlci4NCj4N
+Cj5CUiAvIEZpbm8gKOWtn+elpeWkqykNCj5JbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxp
+bmcNCj4NCg0K
 
-reboot the system.
-Is this correct?
