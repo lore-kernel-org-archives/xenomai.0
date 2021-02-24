@@ -1,13 +1,10 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Reminder: Xenomai community call on tomorrow, Feb 24th, UTC 7:00
-Date: Wed, 24 Feb 2021 06:59:39 +0000
-Message-ID: <CO1PR11MB5187B9789CEC71CCE7E754F9EE9F9@CO1PR11MB5187.namprd11.prod.outlook.com>
-References: <CO1PR11MB5187DDB49A3D551DEE6F46E9EE809@CO1PR11MB5187.namprd11.prod.outlook.com>
-In-Reply-To: <CO1PR11MB5187DDB49A3D551DEE6F46E9EE809@CO1PR11MB5187.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: [IMPORTANT] gitlab relocation / rename
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+Date: Wed, 24 Feb 2021 09:30:58 +0100
+Message-ID: <621240.1614155458@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +13,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, xenomai@xenomai.org
+Cc: Tom Rini <trini@konsulko.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Harald Seiler <hws@denx.de>
 
-VGhlIG1lZXRpbmcganVzdCBzdGFydGVkLg0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVs
-IOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0t
-LS0NCj5Gcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFs
-ZiBPZiBNZW5nLCBGaW5vIHZpYSBYZW5vbWFpDQo+U2VudDogVHVlc2RheSwgRmVicnVhcnkgMjMs
-IDIwMjEgNzozNCBQTQ0KPlRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmVtaW5k
-ZXI6IFhlbm9tYWkgY29tbXVuaXR5IGNhbGwgb24gdG9tb3Jyb3csIEZlYiAyNHRoLCBVVEMgNzow
-MA0KPg0KPkFzIHBsYW5uZWQsIHdlIGhhdmUgdGhlIFhlbm9tYWkgY29tbXVuaXR5IGNhbGwgdG9t
-b3Jyb3csDQo+VG9waWNzIG1heSBpbmNsdWRlIGJ1dCBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9k
-b3duc3RyZWFtIHByb2plY3QgcGxhbiwgc3RhdHVzIHVwZGF0ZSwgYW5kIHRlY2huaWNhbCBkaXNj
-dXNzaW9uLg0KPkl0J3MgYW4gb3BlbiBvbmxpbmUgbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9p
-biBhbmQgYXNrIHF1ZXN0aW9ucywNCj4NCj5UaW1lOg0KPkZlYiAyNHRoIChXZWRuZXNkYXkpLCBV
-VEMgNzowMA0KPjE1OjAwIGZvciBDaGluYQ0KPjg6MDAgZm9yIEZyYW5jZSwgR2VybWFueSwgSXRh
-bHkNCj4yMzowMCAoRmViIDIzdGggKSBmb3IgU2FudGEgQ2xhcmENCj4NCj5QbHMgZG93bmxvYWQg
-V2ViZXggbWVldGluZyBzb2Z0d2FyZSBvciB1c2UgdGhlIHdlYnBhZ2UgdmVyc2lvbjoNCj5odHRw
-czovL2ludGVsLndlYmV4LmNvbS9pbnRlbC9qLnBocD9NVElEPW0yMzBiMWQ5N2FiNGYyYTRmOWRi
-YzNiMjYyODg1YmFiNg0KPk1lZXRpbmcgbnVtYmVyIChhY2Nlc3MgY29kZSk6IDEzMCA1MTQgNzYw
-NQ0KPk1lZXRpbmcgcGFzc3dvcmQ6IEpRcEVjN1VZQDM4DQo+DQo+VGFwIHRvIGpvaW4gZnJvbSBh
-IG1vYmlsZSBkZXZpY2UgKGF0dGVuZGVlcyBvbmx5KQ0KPisxLTIxMC03OTUtMTExMCwsMTMwNTE0
-NzYwNSMjIFVTIFRvbGwNCj4rMS04NjYtNjYyLTk5ODcsLDEzMDUxNDc2MDUjIyBVUyBUb2xsIEZy
-ZWUNCj4NCj5Kb2luIGJ5IHBob25lDQo+KzEtMjEwLTc5NS0xMTEwIFVTIFRvbGwNCj4rMS04NjYt
-NjYyLTk5ODcgVVMgVG9sbCBGcmVlDQo+R2xvYmFsIGNhbGwtaW4gbnVtYmVycyAgfCAgVG9sbC1m
-cmVlIGNhbGxpbmcgcmVzdHJpY3Rpb25zDQo+DQo+Sm9pbiBmcm9tIGEgdmlkZW8gc3lzdGVtIG9y
-IGFwcGxpY2F0aW9uDQo+RGlhbCAxMzA1MTQ3NjA1QGludGVsLndlYmV4LmNvbQ0KPllvdSBjYW4g
-YWxzbyBkaWFsIDE3My4yNDMuMi42OCBhbmQgZW50ZXIgeW91ciBtZWV0aW5nIG51bWJlci4NCj4N
-Cj5CUiAvIEZpbm8gKOWtn+elpeWkqykNCj5JbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxp
-bmcNCj4NCg0K
+Hi all,
+
+I'm sorry that I have to inform you about a disruption of the gitlab
+services.  This has become necessary for a number of reasons:
+
+- repeated cases of poor performance
+- difficulties with CI setup
+- security issues
+
+We have to move all public projects off  gitlab.denx.de  to a new
+gitlab instance; the new host name is then  source.denx.de .
+We are fully aware that this will cause inconveniences, and I can
+only assure you that we try hard to keep these as limited as
+possible.
+
+# Details
+
+Around noon on Saturday, 2021-02-27, we will freeze all public
+repositories on gitlab.denx.de.  They will still be readable/
+cloneable but any attempt to push new commits after this point will
+fail.
+
+We will then copy them over to the now host, source.denx.de .
+All custodian accounts will also be transferred, the same login
+credentials from gitlab.denx.de will work on source.denx.de .
+
+The URLs for the repositories will stay the same, except of course
+for the host name.  So, for example, the U-Boot mainline repository
+will then be hosted at
+
+    https://source.denx.de/u-boot/u-boot.git
+
+We will install redirects to forward HTTP accesses from the old
+repository URLs to the new host.  This should make the transition
+mostly transparent, but does not cover everything.  The following
+needs to be taken care of manually:
+
+- Update the SSH URI for pushing to the repositories.  Just replace
+  gitlab.denx.de  with  source.denx.de .  We will transfer all the
+  SSH-keys to the new host so nothing else should be needed.
+
+- Make sure you're logging in on  source.denx.de .  Access to
+  gitlab.denx.de  will no longer work!
+
+- CI runners connected to  gitlab.denx.de  need to be re-registered
+  with  source.denx.de .
+
+The new host should hopefully be operational sometime on Sunday,
+2021-02-28.  We will send a further announcement once everything is
+back up and running.
+
+
+Thanks for your understanding and patience!
+
+
+
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+At the source of every error which is blamed on the computer you will
+find at least two human errors, including the error of blaming it  on
+the computer.
 
