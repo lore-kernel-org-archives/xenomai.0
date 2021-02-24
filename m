@@ -1,13 +1,11 @@
-Subject: Re: [xenomai-images][PATCH] Fix linux repo for 5.10 ARM
-References: <0bf0a241-624c-0d9e-7dc8-25eaa69de85e@qmul.ac.uk>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bfd72055-a5e3-76dd-532a-600331501f30@siemens.com>
-Date: Tue, 9 Feb 2021 20:17:47 +0100
+From: steve freyder <steve@freyder.net>
+Subject: [Xenomai] bad syscall <0x197>
+Message-ID: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+Date: Wed, 24 Feb 2021 14:45:14 -0600
 MIME-Version: 1.0
-In-Reply-To: <0bf0a241-624c-0d9e-7dc8-25eaa69de85e@qmul.ac.uk>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, Giulio Moro via Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09.02.21 18:49, Giulio Moro wrote:
-> From: Giulio Moro <giuliomoro@yahoo.it>
-> 
-> Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
-> ---
->  recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb
-> b/recipes-kernel/linux/linux-xenomai_latest.bb
-> index bbec6b0..e6834fd 100644
-> --- a/recipes-kernel/linux/linux-xenomai_latest.bb
-> +++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-> @@ -25,7 +25,7 @@ def is_kernel(d, ver):
->  GIT_REPO_amd64 = "${@'git://github.com/xenomai-ci/ipipe.git' if
-> is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if
-> is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
->  GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else
-> 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if
-> is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
-> 
-> -GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if
-> is_xeno_3_0(d) else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
-> +GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if
-> is_xeno_3_0(d) else 'git://git.evlproject.org/linux-evl.git' if
-> is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
->  GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else
-> 'dovetail/master' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if
-> is_kernel(d, '5.4') else 'ipipe/4.19-y-cip'}"
-> 
->  GIT_REPO_arm64 = "git://github.com/xenomai-ci/ipipe-arm64.git"
-> -- 
-> 2.17.1
+Greetings Xenomai list,
 
-Thanks, noticed that as well and pushed a force-update to wip/dovetail
-earlier.
 
-Jan
+I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am 
+seeing this:
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+root@ICB-G3L:~ # uname -a
+Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon Feb 
+22 20:57:38 UTC 2021 armv7l GN
+U/Linux
+root@ICB-G3L:~ # smokey --run=posix_mutex
+[  694.433129] [Xenomai] bad syscall <0x197>
+posix_mutex OK
+
+I found this thread:
+
+https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+
+But I can't get a clear picture on the proper resolution of this issue, 
+other than it's related to a non-existent syscall, perhaps glibc 
+version, and/or __real_usleep().  I'd like to get this working on either 
+4.14 or 4.19, is there a simple workaround for this?
+
+Thanks in advance,
+
+Steve
+
+
+
 
