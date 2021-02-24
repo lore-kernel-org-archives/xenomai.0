@@ -1,10 +1,15 @@
-Subject: [IMPORTANT] gitlab relocation / rename
-From: Wolfgang Denk <wd@denx.de>
+Date: Wed, 24 Feb 2021 11:24:55 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+Message-ID: <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+In-Reply-To: <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-Date: Wed, 24 Feb 2021 09:30:58 +0100
-Message-ID: <621240.1614155458@gemini.denx.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,74 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, xenomai@xenomai.org
-Cc: Tom Rini <trini@konsulko.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Harald Seiler <hws@denx.de>
+To: Jan Kiszka via Xenomai <xenomai@xenomai.org>
 
-Hi all,
+Am Wed, 10 Feb 2021 12:08:43 +0100
+schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
 
-I'm sorry that I have to inform you about a disruption of the gitlab
-services.  This has become necessary for a number of reasons:
+> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> > On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:  
+> >> On 10.02.21 07:22, xenomai--- via Xenomai wrote:  
+> >>> Download URL:
+> >>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+> >>>
+> >>> Repository: https://git.xenomai.org/ipipe-arm64
+> >>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+> >>>  
+> >>
+> >> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+> >> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+> >>  
+> > 
+> > I don't know much about the things going on here, but found this
+> > line in the log. Maybe a starting point...
+> > 
+> > 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+> > msw 
+> 
+> Exactly, that is causing the overall failure. And it was first seen
+> with the newly added 5.4 kernel.
 
-- repeated cases of poor performance
-- difficulties with CI setup
-- security issues
+Seing the same on amd64 when testing on qemu, real HW is fine.
 
-We have to move all public projects off  gitlab.denx.de  to a new
-gitlab instance; the new host name is then  source.denx.de .
-We are fully aware that this will cause inconveniences, and I can
-only assure you that we try hard to keep these as limited as
-possible.
+Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
 
-# Details
+Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
 
-Around noon on Saturday, 2021-02-27, we will freeze all public
-repositories on gitlab.denx.de.  They will still be readable/
-cloneable but any attempt to push new commits after this point will
-fail.
+https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+did not find it, so maybe our config differs
 
-We will then copy them over to the now host, source.denx.de .
-All custodian accounts will also be transferred, the same login
-credentials from gitlab.denx.de will work on source.denx.de .
+Henning
 
-The URLs for the repositories will stay the same, except of course
-for the host name.  So, for example, the U-Boot mainline repository
-will then be hosted at
+> Jan
+> 
+> >   
+> >> Guess we need to understand this next now, specifically as it
+> >> "spreads".
+> >>
+> >> Jan
+> >>  
+> >   
+> 
 
-    https://source.denx.de/u-boot/u-boot.git
-
-We will install redirects to forward HTTP accesses from the old
-repository URLs to the new host.  This should make the transition
-mostly transparent, but does not cover everything.  The following
-needs to be taken care of manually:
-
-- Update the SSH URI for pushing to the repositories.  Just replace
-  gitlab.denx.de  with  source.denx.de .  We will transfer all the
-  SSH-keys to the new host so nothing else should be needed.
-
-- Make sure you're logging in on  source.denx.de .  Access to
-  gitlab.denx.de  will no longer work!
-
-- CI runners connected to  gitlab.denx.de  need to be re-registered
-  with  source.denx.de .
-
-The new host should hopefully be operational sometime on Sunday,
-2021-02-28.  We will send a further announcement once everything is
-back up and running.
-
-
-Thanks for your understanding and patience!
-
-
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-At the source of every error which is blamed on the computer you will
-find at least two human errors, including the error of blaming it  on
-the computer.
 
