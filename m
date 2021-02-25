@@ -1,11 +1,13 @@
-From: Peter Laurich <Peter.Laurich@akamina.com>
-Subject: Memory allocation issue
-Message-ID: <af17cab0-8dce-e33c-b166-a3c5204a799f@akamina.com>
-Date: Thu, 25 Feb 2021 09:30:31 -0500
 MIME-Version: 1.0
-Content-Language: en-CA
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+References: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+ <CALLqZ8Tr4e_ObU1+NCsd0nfDGiG96ok7nb-xCxHrK8Gk3KZ3AA@mail.gmail.com>
+ <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+In-Reply-To: <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 25 Feb 2021 15:06:56 -0500
+Message-ID: <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+Subject: Re: [Xenomai] bad syscall <0x197>
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,57 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: steve freyder <steve@freyder.net>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On Wed, Feb 24, 2021 at 6:16 PM steve freyder <steve@freyder.net> wrote:
 
-I am having problems allocating a larger heap using Xenomai 
-rt_heap_create(). The attempt to allocate a heap of size 1.3M fails 
-after having allocated less than 8K from the heap. I have the Xenomai 
-memory configuration limits all set high enough (I think) and even pass 
-the xenomai.sysheap_size=8192 on the kernel command line. My kernel 
-config values for Xenomai are:
+>
+>
+> On 2/24/2021 2:52 PM, Greg Gallagher wrote:
+>
+>
+>
+> On Wed, Feb 24, 2021 at 3:45 PM steve freyder via Xenomai <
+> xenomai@xenomai.org> wrote:
+>
+>> Greetings Xenomai list,
+>>
+>>
+>> I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am
+>> seeing this:
+>>
+>> root@ICB-G3L:~ # uname -a
+>> Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon Feb
+>> 22 20:57:38 UTC 2021 armv7l GN
+>> U/Linux
+>> root@ICB-G3L:~ # smokey --run=posix_mutex
+>> [  694.433129] [Xenomai] bad syscall <0x197>
+>> posix_mutex OK
+>>
+>> I found this thread:
+>>
+>> https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+>>
+>> But I can't get a clear picture on the proper resolution of this issue,
+>> other than it's related to a non-existent syscall, perhaps glibc
+>> version, and/or __real_usleep().  I'd like to get this working on either
+>> 4.14 or 4.19, is there a simple workaround for this?
+>>
+>> Thanks in advance,
+>>
+>> Steve
+>>
+>>
+>>
+>>
+>> I forgot all about this, I'll take a look tonight and see what's
+> involved.  What gcc version are you using?
+>
+> Thanks
+>
+> Greg
+>
+>
+>
+> Greg,
+>
+> The compiler is gcc 9.3.0 using Yocto Dunfell.  glibc 2.31...
+>
+> I'm able to reproduce this with gcc 10, I'll hopefully have a fix or
+solution shortly.
 
-#
-# Sizes and static limits
-#
-CONFIG_XENO_OPT_PIPE_NRDEV=64
-CONFIG_XENO_OPT_REGISTRY_NRSLOTS=8196
-CONFIG_XENO_OPT_SYS_HEAPSZ=8192
-CONFIG_XENO_OPT_PRIVATE_HEAPSZ=512
-CONFIG_XENO_OPT_SHARED_HEAPSZ=512
-CONFIG_XENO_OPT_NRTIMERS=1024
-
-Executing the free command reports:
-
-         total  used    free      shared buff/cache   available
-Mem:  1026864 33720  974316        1208       18828 978560
-Swap:       0     0       0
-
-and the output from /proc/xenomai cat heap is:
-
-/proc/xenomai$ cat heap
-   TOTAL      FREE  NAME
-8388608   8386304  system heap
-  524288    524160  shared heap
-
-I am using Xenomai 3.1 with kernel 4.19.144 on a Cortex A9 Freescale 
-i.MX6DL processor with 1 GB RAM.
-
-I am also having a problem with page faults that may be related so I 
-will include a description of this problem as well. If I reduce my heap 
-requirements so that the rt_heap_create() no longer fails, I can attempt 
-to run another task that uses Analogy to initialize my data acquisition 
-hardware. When I run this task, Xenomai reports multiple switching to 
-secondary mode exceptions that result in SIGDEBUG_MIGRATE_FAULT 
-exceptions. I do have mlockall specified.
-
-Thanks in advance for any suggestions as to what may be causing my heap 
-allocation to fail. If the page fault issue is not related, I can post 
-that problem separately later.
-
-Thanks.
-
-Peter
-
-
+-Greg
