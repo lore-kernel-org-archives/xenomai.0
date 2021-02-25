@@ -1,9 +1,15 @@
-References: <533af59b8fb4005eac8dae32084e742cea56ccaa.camel@siemens.com>
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+ <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+ <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
+ <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Xenomai working branches for dovetail port / y2038
-In-reply-to: <533af59b8fb4005eac8dae32084e742cea56ccaa.camel@siemens.com>
-Date: Thu, 25 Feb 2021 14:48:54 +0100
-Message-ID: <8735xk8dh5.fsf@xenomai.org>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+In-reply-to: <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
+Date: Thu, 25 Feb 2021 14:54:55 +0100
+Message-ID: <87zgzs6ymo.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,34 +20,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>
 
 
-florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> Hi Philippe,
+> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+>> Am Wed, 24 Feb 2021 11:24:55 +0100
+>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>> 
+>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>>>
+>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
+>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>>>>>   
+>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
+>>>>>>> Download URL:
+>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>
+>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>    
+>>>>>>
+>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+>>>>>>    
+>>>>>
+>>>>> I don't know much about the things going on here, but found this
+>>>>> line in the log. Maybe a starting point...
+>>>>>
+>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+>>>>> msw   
+>>>>
+>>>> Exactly, that is causing the overall failure. And it was first seen
+>>>> with the newly added 5.4 kernel.  
+>>>
+>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+>>>
+>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+>>>
+>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+>>>
+>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+>>> did not find it, so maybe our config differs
 >
-> could you please point me to your working branch / tree that you are
-> using for the ongoing dovetail port? Or is it the wip/dovetail branch
-> on the Denx gitlab instance [1]?
+> Already compared yours against the one in xenomai-images? That would be
+> useful.
 >
-> Are we allowed, our is it possible that we get sufficient rights to use
-> the same git repository / git tree that you are using? I guess that
-> would simplify the workflow, but is not a must have...
+>> 
+>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
+>> causing the problem.
+>> 
+>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>> 
+>> I think here Jan or Phillipe should take over.
 >
-> @Jan
-> This is the second time that I'm facing some kind of "collaboration
-> hurdles" in the Xenomai project. The first time (preparation of the
-> y2038 roadmap) forced me to fork the gitlab project from the Denx
-> gitlab instance to gitlab.com [2] to allow Song to easily contribute.
-> Any plans / ideas to make collaboration easier?
+> Thanks for bisecting, this is helpful!
 >
+> Philippe, any immediate idea why all that is failing now?
 
-Btw, I'm unsure to understand what you mean by "collaboration
-hurdles". RW access to repositories can be obtained fairly easily with
-the current infrastructure. This is only a matter of asking and being
-granted such access by a maintainer.
+Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+in Dovetail. I'm adding this to my debug queue.
 
 -- 
 Philippe.
