@@ -1,12 +1,14 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Xenomai working branches for dovetail port / y2038
-Date: Thu, 25 Feb 2021 10:43:40 +0000
-Message-ID: <533af59b8fb4005eac8dae32084e742cea56ccaa.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4CF5AC7578C0924284BD17613B5DFEDD@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <20210220124527.401015-1-rpm@xenomai.org>
+ <20210220124527.401015-6-rpm@xenomai.org> <6031B089.3010500@kylinos.cn>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 6/8] cobalt/dovetail: provide core-specific context
+ extensions
+In-reply-to: <6031B089.3010500@kylinos.cn>
+Date: Thu, 25 Feb 2021 14:28:53 +0100
+Message-ID: <87blc88eei.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +17,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: chensong <chensong@kylinos.cn>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-SGkgUGhpbGlwcGUsDQoNCmNvdWxkIHlvdSBwbGVhc2UgcG9pbnQgbWUgdG8geW91ciB3b3JraW5n
-IGJyYW5jaCAvIHRyZWUgdGhhdCB5b3UgYXJlDQp1c2luZyBmb3IgdGhlIG9uZ29pbmcgZG92ZXRh
-aWwgcG9ydD8gT3IgaXMgaXQgdGhlIHdpcC9kb3ZldGFpbCBicmFuY2gNCm9uIHRoZSBEZW54IGdp
-dGxhYiBpbnN0YW5jZSBbMV0/DQoNCkFyZSB3ZSBhbGxvd2VkLCBvdXIgaXMgaXQgcG9zc2libGUg
-dGhhdCB3ZSBnZXQgc3VmZmljaWVudCByaWdodHMgdG8gdXNlDQp0aGUgc2FtZSBnaXQgcmVwb3Np
-dG9yeSAvIGdpdCB0cmVlIHRoYXQgeW91IGFyZSB1c2luZz8gSSBndWVzcyB0aGF0DQp3b3VsZCBz
-aW1wbGlmeSB0aGUgd29ya2Zsb3csIGJ1dCBpcyBub3QgYSBtdXN0IGhhdmUuLi4NCg0KQEphbg0K
-VGhpcyBpcyB0aGUgc2Vjb25kIHRpbWUgdGhhdCBJJ20gZmFjaW5nIHNvbWUga2luZCBvZiAiY29s
-bGFib3JhdGlvbg0KaHVyZGxlcyIgaW4gdGhlIFhlbm9tYWkgcHJvamVjdC4gVGhlIGZpcnN0IHRp
-bWUgKHByZXBhcmF0aW9uIG9mIHRoZQ0KeTIwMzggcm9hZG1hcCkgZm9yY2VkIG1lIHRvIGZvcmsg
-dGhlIGdpdGxhYiBwcm9qZWN0IGZyb20gdGhlIERlbngNCmdpdGxhYiBpbnN0YW5jZSB0byBnaXRs
-YWIuY29tIFsyXSB0byBhbGxvdyBTb25nIHRvIGVhc2lseSBjb250cmlidXRlLg0KQW55IHBsYW5z
-IC8gaWRlYXMgdG8gbWFrZSBjb2xsYWJvcmF0aW9uIGVhc2llcj8NCg0KWzFdIGh0dHBzOi8vZ2l0
-bGFiLmRlbnguZGUvWGVub21haS94ZW5vbWFpLy0vdHJlZS93aXAvZG92ZXRhaWwNClsyXSBodHRw
-czovL2dpdGxhYi5jb20vZmJlemRla2EveGVub21haQ0K
+
+chensong <chensong@kylinos.cn> writes:
+
+> On 2021=E5=B9=B402=E6=9C=8820=E6=97=A5 20:45, Philippe Gerum via Xenomai =
+wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>>
+>> In order to intimately connect Cobalt to the kernel, Dovetail allows
+>> us to extend the latter with data and procedures we need:
+>>
+>> - we can embed our own context information into a set of critical
+>>    kernel data structures. This information should be defined as a set
+>>    of core-specific types, such as struct oob_thread_state which is
+>>    going to be part of struct thread_info.
+>>
+>> - we can define preparation and finalization handlers for out-of-band
+>>    IRQ handling, which Dovetail should invoke right after entering the
+>>    outer interrupt frame, then right before leaving it respectively.
+>>
+>> Add the couple of interface headers we need to connect those elements
+>> to the kernel.
+>>
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>   kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
+>>   kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
+>>   2 files changed, 85 insertions(+)
+>>   create mode 100644 kernel/cobalt/include/dovetail/irq.h
+>>   create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
+>>
+>> diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/includ=
+e/dovetail/irq.h
+>> new file mode 100644
+>> index 000000000..66d020fde
+>> --- /dev/null
+>> +++ b/kernel/cobalt/include/dovetail/irq.h
+>> @@ -0,0 +1,52 @@
+>> +/*
+>> + * SPDX-License-Identifier: GPL-2.0
+>> + *
+>> + * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
+>> + */
+>> +
+>> +#ifndef _COBALT_DOVETAIL_IRQ_H
+>> +#define _COBALT_DOVETAIL_IRQ_H
+>> +
+>> +#ifdef CONFIG_XENOMAI
+>> +
+>> +#include <cobalt/kernel/sched.h>
+>> +
+>> +/* hard irqs off. */
+>> +static inline void irq_enter_pipeline(void)
+>> +{
+>> +	struct xnsched *sched =3D xnsched_current();
+>> +
+>> +	sched->lflags |=3D XNINIRQ;
+>> +}
+>> +
+>> +/* hard irqs off. */
+>
+> should be "hard irqs on"?
+>
+
+The comment is ok, the interrupt pipeline always calls the exit handler
+with hard irqs off.
+
+--=20
+Philippe.
 
