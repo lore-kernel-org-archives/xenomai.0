@@ -1,19 +1,9 @@
-References: <MWHPR11MB1710FDC8D365CE3FCFADA88DF2B69@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87o8h4uobn.fsf@xenomai.org>
- <MWHPR11MB1710A620A26BF775C60336B4F2B29@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87r1lrq27f.fsf@xenomai.org>
- <MWHPR11MB1710B903D91D79F1B7737A56F28F9@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lfbznfc5.fsf@xenomai.org>
- <MWHPR11MB1710FADEAFBE0892DEEF39EBF28F9@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87blcuo149.fsf@xenomai.org>
- <MWHPR11MB1710F548750FCD30C325AEF6F28E9@MWHPR11MB1710.namprd11.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: several questions about porting latmus
-In-reply-to: <MWHPR11MB1710F548750FCD30C325AEF6F28E9@MWHPR11MB1710.namprd11.prod.outlook.com>
-Date: Wed, 10 Feb 2021 07:46:23 +0100
-Message-ID: <878s7wmncw.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Sat, 27 Feb 2021 15:37:09 +0100
+Message-ID: <CAFZ-hKigqD1ogg8hV3--n5ts7gvHKnE3A6E2C=7cF6+zfaZqQw@mail.gmail.com>
+Subject: Kernel configuration
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,133 +12,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-
-Chen, Hongzhan <hongzhan.chen@intel.com> writes:
-
->>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>
->>>>> -----Original Message-----
->>>>>>From: Philippe Gerum <rpm@xenomai.org> 
->>>>>>Sent: Monday, February 8, 2021 12:21 AM
->>>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>>>Cc: xenomai@xenomai.org
->>>>>>Subject: Re: several questions about porting latmus
->>>>>>
->>>>>>
->>>>>>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>>>
->>>>>>>>-----Original Message-----
->>>>>>>>From: Philippe Gerum <rpm@xenomai.org> 
->>>>>>>>Sent: Monday, February 1, 2021 5:31 PM
->>>>>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>>>>>Cc: xenomai@xenomai.org
->>>>>>>>Subject: Re: several questions about porting latmus
->>>>>>>>
->>>>>>>>
->>>>>>>>Hi Hongzhan,
->>>>>>>>
->>>>>>>>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>>>>>
->>>>>>>>> Hi Philippe
->>>>>>>>>
->>>>>>>>> When I was trying to port latmus from evl to xenomai 3.2,  I met several issues that block porting
->>>>>>>>> and need your suggestions.
->>>>>>>>>
->>>>>>>>> 1. When I tried to replace function evl_run_kthread_on_cpu of latmus.c driver ,  I found that only rtdm_task_init  
->>>>>>>>>     can meet our requirements mostly  but we still cannot pass cpu affinity through it to pin task to required
->>>>>>>>>     cpu. Do we need to implement new API so that we can  pass cpu affinity to pin task to required cpu but
->>>>>>>>>     finish all functions  of rtdm_task_init?
->>>>>>>>>
->>>>>>>>
->>>>>>>>We should probably introduce rtdm_task_init_on_cpu() in 3.2, since this
->>>>>>>>is a desirable feature which should be part of the CXP. Other ways to
->>>>>>>>pin the new kthread are fairly ugly ATM, ranging from pinning the parent
->>>>>>>>to the destination CPU before creating the child thread, or open coding
->>>>>>>>the spawning sequence based on the internal interface (xnthread_init,
->>>>>>>>xnthread_start). Please submit a patch for review of that change
->>>>>>>>specifically, prior to submitting any latmus-related bits.
->>>>>>>>
->>>>>>>
->>>>>>> OK.  I have finished latmus driver porting so far and built it successfully with linux.
->>>>>>> In the following , I would  start to port latmus application. After latmus application is done,
->>>>>>> I would validate all of them and then will try to submit patches to review after validation 
->>>>>>> is successful. 
->>>>>>>
->>>>>>
->>>>>>With respect to the timer responder test, the latmus application is
->>>>>>based on EVL's built-in timerfd [1] feature, which is very close to the
->>>>>>Cobalt/POSIX equivalent, so the port should be straightforward.
->>>>>>
->>>>>>Things may be a little trickier with the GPIO responder test, as Cobalt
->>>>>>needs a specific RTDM driver to operate the GPIO lines (EVL reuses the
->>>>>>common GPIOLIB for this [2], so do not look for any specific driver
->>>>>>here). It depends on the GPIO controller you will test on. You will
->>>>>>certainly need to add support for it to kernel/drivers/gpio.
->>>>>>
->>>>>>Which hardware do you plan to use?
->>>>>
->>>>> Currently , I am working on up xtream Lite board which is based on
->>>>> Intel Whiskey Lake.  Yes,  I need to add new GPIO controller rtdm driver
->>>>> under kernel/drivers/gpio for my board after further investigated, thanks 
->>>>> for your soft reminder. 
->>>>>
->>>>> I have almost finished latmus application porting and validated that latmus driver is 
->>>>> working but I still have not got Freedom-K64F so far.  So the gpio test
->>>>> environment can not be setup in short time because of lack of hardware on my side.
->>>>>
->>>>
->>>>There is also the option of making benchmarks/zephyr/latmon a Xenomai
->>>>application, which would act as the latency monitor running on a
->>>>separate Linux board. Xenomai would then help testing Xenomai which
->>>>might not be optimal at first glance, however this should be ok
->>>>nevertheless provided that such monitoring board runs a known to be
->>>>stable I-pipe configuration.
->>>>
->>>
->>> One more question,  I saw that rtdm gpio driver can call rtdm_gpiochip_scan_of
->>> to do init currently but actually rtdm_gpiochip_scan_of do call of_find_compatible_node
->>> to find device node, It is workable for those devices registered through ACPI table?
->>> If not , does that means we need to add new API to implement analogous function for those
->>> gpio pinctrl devices registered by ACPI?
->>>
->>
->>gpiochip_find() is available to non-OF systems as well; what gets
->>enumerated by the platform code ends up being registered in the gpiolib
->>device list.
->>
->>The idea is to match by name the type of controller which is expected on
->>your platform with the gpio chips enumerated by gpiochip_find(). You may
->>want to add some generic helper to gpio-core.c doing that for non-OF
->>platforms, which you would call from additional controller-specific RTDM
->>modules (those which would define more GPIO device subclasses,
->>i.e. RTDM_SUBCLASS_xx).
->>
->>-- 
->>Philippe.
->
-> Thanks  for your suggestions. I have finished implementing generic helper in gpio-core.c and
-> also developed new gpio rtdm driver for my board. After build successfully and run xenomai 
-> on my board, bother latmus and gpio chip device file can be found under /dev/rtdm folder.
-> But when I try to run /usr/bin/latmus , it returned with error "measurement setup failed: Resource
-> Temporarily unavailable". After further debug, I found that actually it wrongly call ioctl_rt handler of
-> Latmus driver. I saw that libevl have explicit oob_ioctl for calling such realtime handler but how 
-> cobalt differentiate nrt and rt when call same ioctl?
->
-
-The driver itself differentiates this, not Cobalt per se. For Xenomai
-tasks, ioctl requests from libcobalt are always passed to the ioctl_rt
-handler first.
-
-When this handler detects that such request should be processed by the
-converse ioctl_nrt handler instead, it should simply return with -ENOSYS
-to the caller.
-
-As a result, Cobalt would switch the current task to secondary mode,
-then call the ioctl_nrt handler with the same request code and arg.
-
--- 
-Philippe.
-
+Hi, I wanted to ask how to enable serial communication in Xenomai. When
+compiling the kernel, what parameters should I set?
