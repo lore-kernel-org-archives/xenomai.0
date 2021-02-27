@@ -1,12 +1,14 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
-In-Reply-To: <4e03-60391f00-29-10b42340@55509927>
-Content-Type: text/plain; charset="utf-8"
-Date: Fri, 26 Feb 2021 17:36:47 +0100
 MIME-Version: 1.0
-Message-ID: <35a5-60392380-18f-48dc0d80@57279928>
-Subject: =?utf-8?q?Re=3A?= Weird =?utf-8?q?semaphore=2Ftimeout?= behaviour
- with gdbserver
-Content-Transfer-Encoding: quoted-printable
+References: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+ <CALLqZ8Tr4e_ObU1+NCsd0nfDGiG96ok7nb-xCxHrK8Gk3KZ3AA@mail.gmail.com>
+ <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+ <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+In-Reply-To: <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Sat, 27 Feb 2021 01:21:39 -0500
+Message-ID: <CALLqZ8RefLM_Wdosh_+DeLKS3DC4HhgxhJBi4ZwfrAdPNXz4HQ@mail.gmail.com>
+Subject: Re: [Xenomai] bad syscall <0x197>
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,110 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com
-Cc: xenomai@xenomai.org
+To: steve freyder <steve@freyder.net>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le Vendredi, F=C3=A9vrier 26, 2021 17:17 CET, Fran=C3=A7ois Legal via X=
-enomai <xenomai@xenomai.org> a =C3=A9crit: 
- 
-> Le Vendredi, F=C3=A9vrier 26, 2021 09:08 CET, Fran=C3=A7ois Legal via=
- Xenomai <xenomai@xenomai.org> a =C3=A9crit: 
->  
-> > Le Jeudi, Janvier 21, 2021 22:42 CET, Jan Kiszka <jan.kiszka@siemen=
-s.com> a =C3=A9crit: 
-> >  
-> > > On 19.01.21 18:41, Fran=C3=A7ois Legal via Xenomai wrote:
-> > > > Le Vendredi, Janvier 08, 2021 19:35 CET, Fran=C3=A7ois Legal vi=
-a Xenomai <xenomai@xenomai.org> a =C3=A9crit: 
-> > > >  
-> > > >> Hello,
-> > > >>
-> > > >> Working on ARMv7 with linux 4.4 and xenomai 3.1, I get a stran=
-ge behaviour when using GDB.
-> > > >> There seem to be troubles with threads pending on semaphores, =
-which do not wake up when sem is posted nor when the timedwait is over.=
+On Thu, Feb 25, 2021 at 3:06 PM Greg Gallagher <greg@embeddedgreg.com>
+wrote:
 
-> > > >> It does not seem to make a problem with all the semaphores on =
-the software, but at program startup, the behaviour is pretty constant.=
+>
+>
+> On Wed, Feb 24, 2021 at 6:16 PM steve freyder <steve@freyder.net> wrote:
+>
+>>
+>>
+>> On 2/24/2021 2:52 PM, Greg Gallagher wrote:
+>>
+>>
+>>
+>> On Wed, Feb 24, 2021 at 3:45 PM steve freyder via Xenomai <
+>> xenomai@xenomai.org> wrote:
+>>
+>>> Greetings Xenomai list,
+>>>
+>>>
+>>> I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am
+>>> seeing this:
+>>>
+>>> root@ICB-G3L:~ # uname -a
+>>> Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon Feb
+>>> 22 20:57:38 UTC 2021 armv7l GN
+>>> U/Linux
+>>> root@ICB-G3L:~ # smokey --run=posix_mutex
+>>> [  694.433129] [Xenomai] bad syscall <0x197>
+>>> posix_mutex OK
+>>>
+>>> I found this thread:
+>>>
+>>> https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+>>>
+>>> But I can't get a clear picture on the proper resolution of this issue,
+>>> other than it's related to a non-existent syscall, perhaps glibc
+>>> version, and/or __real_usleep().  I'd like to get this working on either
+>>> 4.14 or 4.19, is there a simple workaround for this?
+>>>
+>>> Thanks in advance,
+>>>
+>>> Steve
+>>>
+>>>
+>>>
+>>>
+>>> I forgot all about this, I'll take a look tonight and see what's
+>> involved.  What gcc version are you using?
+>>
+>> Thanks
+>>
+>> Greg
+>>
+>>
+>>
+>> Greg,
+>>
+>> The compiler is gcc 9.3.0 using Yocto Dunfell.  glibc 2.31...
+>>
+>> I'm able to reproduce this with gcc 10, I'll hopefully have a fix or
+> solution shortly.
+>
+> -Greg
+>
 
-> > > >>
-> > > >> If I start the same program from shell, thread activation work=
-s flawlessly.
-> > > >>
-> > > >> ANybody can give a hint on this ?
-> > > >>
-> > > >> Thanks.
-> > > >>
-> > > >> Fran=C3=A7ois
-> > > >>
-> > > >>
-> > > >  
-> > > > I've got another case with pulse semaphores with timeout, that =
-outline the same behaviour without gdbserver.
-> > > > I've got 2 threads and 2 pulse semaphores. Thread1 (priority 60=
-) successively pends (with 30s timeout) on SEM1 then posts SEM2, while =
-thread2 (priority 52) posts SEM1 then pends (forever) on SEM2. Both sem=
-aphores are initialized at 0.
-> > > > I can see from debug log that Thread1 pends on SEM1, then threa=
-d2 posts SEM1 and pends SEM2, then thread1 posts SEM2, then thread2 pos=
-ts SEM1 then pends SEM2, then thread1 pends SEM1, then nothing happens =
-anymore. I thought thread1 should be unblocked (either by thread2 posti=
-ng SEM1, or by the 30s timeout) but that never happens.
-> > > > 
-> > > > What am I getting wrong here ?
-> > > > 
-> > > 
-> > > These scenarios are hairy without test cases. Can you derive some=
-thing
-> > > simple, portable from your problems? There is testsuite/smokey/gd=
-b/gdb.c
-> > > for full automated tests, but already something we can compile an=
-d run
-> > > locally here, gdb manually operated, would be fine. It would also=
- allow
-> > > to cross-check on x86 and arm64 to see if this is arch-specific.
-> > > 
-> > > Jan
-> > > 
-> > > -- 
-> > > Siemens AG, T RDA IOT
-> > > Corporate Competence Center Embedded Linux
-> >  
-> >  
-> > Sorry to reply so late on this, but I've been busy on some other st=
-uff.I tried to write a simple piece of code that reproduces the problem=
-, but with no luck. In the simple case, the sems work as intended (and =
-thus do not need to honor the timeout).
-> > I'm not sure how I can find the answer on this. Also is there any w=
-ay to check the state of shored objects like semaphores, mutexes, ...
-> > I read the registry should provide this, but I not able to get more=
- entries than what already present in /proc/xenomai/ (heaps, threads an=
-d version)
-> > 
-> > Fran=C3=A7ois
-> > 
-> > 
->  
-> I believe I found out why my semaphores behave oddly when under GDB. =
-I checked /proc/xenomai/sched/stats, and saw that almost all of my thre=
-ads have the 0x400000 bit set (#define XNDBGSTOP 0x00400000 /**< Stoppe=
-d for synchronous debugging */)
-> 
-> So I believe that's perfectly normal for the semaphores not to timeou=
-t, because the threads are stopped.
-> 
-> What I wonder now, is why this bit got set for all but one thread in =
-the project.
-> 
-> Thanks
-> 
-> Fran=C3=A7ois
-> 
-> 
- 
-And if I check the same with the simple app I created, I don't see the =
-XNDBGSTOP bit being automagically set when running with GDB
+I had some time to look into this.  The issue seems to be coming from a
+newer version of glibc being used with an older kernel.  The usleep system
+call has been updated in the newer glibc and is outside the range that
+cobalt thinks is valid.  Cobalt gets the valid range from the kernel, so
+modifying it to accept this system call doesn't make much sense.  I looked
+at the newer 4.19 kernels and the system call range doesn't change.  So I
+think the better solution is to use an older toolchain, I had the test pass
+with gcc 7.3.  The newer 5.4 kernel does not hit this issue, using that
+kernel may be an option.  I'll do a 4.19 update once we sort out the CI
+failures.
 
-Fran=C3=A7ois
+Thanks
 
-
+Greg
