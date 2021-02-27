@@ -1,18 +1,9 @@
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>
-Subject: Re: [I-PIPE] ipipe-core-5.4.72-arm64-0 released
-References: <E1l7tad-0004W6-Pl@xenomai.org>
- <CALLqZ8T_rQfwvDVdBGutFhvdc3OrJnPJtqLyjrkKp9vax0afbQ@mail.gmail.com>
- <868d4cd4-7990-68fa-902d-0d62ac676918@siemens.com>
- <CALLqZ8TJruq==-Lc60dBniDb6H5dyLT+MNP9rP85Bc9tufbH3w@mail.gmail.com>
- <5d54c261-61b3-7981-8143-8adea4ad2765@siemens.com>
- <1b715c75-eef9-faa6-6c0d-1ba61400bdae@siemens.com>
-Message-ID: <f7cf94f6-e1f8-6867-2925-43c8b8094bbb@alstefgroup.com>
-Date: Thu, 25 Feb 2021 11:50:41 +0100
-In-Reply-To: <1b715c75-eef9-faa6-6c0d-1ba61400bdae@siemens.com>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Sat, 27 Feb 2021 13:12:04 +0100
+Message-ID: <CAFZ-hKiHXcHFSbks-PXZmWCTga8ikDBorAJujK3VEhbN1FvOzg@mail.gmail.com>
+Subject: Serial communication
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,54 +12,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-SGkgYWxsLAoKSSBoYWQgc29tZSBjb21waWxhdGlvbiBpc3N1ZXMgd2l0aCBpcGlwZS1jb3JlLTUu
-NC43MiBhbmQgeGVub21haSAzLjEgb24gCmFybTY0IHRhcmdldC4KCldpdGggc29tZSBtaW5vciBj
-aGFuZ2VzIChzZWUgYXR0YWNoZWQgcGF0Y2gpLCB0aGUga2VybmVsIGJvb3Qgb24gdGFyZ2V0LgoK
-SmVhbi1CYXB0aXN0ZQoKCgpMZSAwOC8wMi8yMDIxIMOgIDA5OjI2LCBKYW4gS2lzemthIHZpYSBY
-ZW5vbWFpIGEgw6ljcml0wqA6Cj4gT24gMDguMDIuMjEgMDk6MjQsIEphbiBLaXN6a2EgdmlhIFhl
-bm9tYWkgd3JvdGU6Cj4+IE9uIDA2LjAyLjIxIDE1OjUwLCBHcmVnIEdhbGxhZ2hlciB3cm90ZToK
-Pj4+IE9uIFNhdCwgRmViIDYsIDIwMjEgYXQgNzoyMyBBTSBKYW4gS2lzemthIDxqYW4ua2lzemth
-QHNpZW1lbnMuY29tCj4+PiA8bWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5jb20+PiB3cm90ZToK
-Pj4+Cj4+PiAgICAgIE9uIDA1LjAyLjIxIDA2OjI0LCBHcmVnIEdhbGxhZ2hlciB2aWEgWGVub21h
-aSB3cm90ZToKPj4+ICAgICAgPiBPbiBGcmksIEZlYiA1LCAyMDIxIGF0IDEyOjI0IEFNIHhlbm9t
-YWktLS0gdmlhIFhlbm9tYWkKPj4+ICAgICAgPHhlbm9tYWlAeGVub21haS5vcmcgIDxtYWlsdG86
-eGVub21haUB4ZW5vbWFpLm9yZz4+Cj4+PiAgICAgID4gd3JvdGU6Cj4+PiAgICAgID4KPj4+ICAg
-ICAgPj4gRG93bmxvYWQgVVJMOgo+Pj4gICAgICA+Pgo+Pj4gICAgICBodHRwczovL3hlbm9tYWku
-b3JnL2Rvd25sb2Fkcy9pcGlwZS92NS54L2FybTY0L2lwaXBlLWNvcmUtNS40LjcyLWFybTY0LTAu
-cGF0Y2gKPj4+ICAgICAgPGh0dHBzOi8veGVub21haS5vcmcvZG93bmxvYWRzL2lwaXBlL3Y1Lngv
-YXJtNjQvaXBpcGUtY29yZS01LjQuNzItYXJtNjQtMC5wYXRjaD4KPj4+ICAgICAgPj4KPj4+ICAg
-ICAgPj4gUmVwb3NpdG9yeTpodHRwczovL2dpdC54ZW5vbWFpLm9yZy9pcGlwZS1hcm02NAo+Pj4g
-ICAgICA8aHR0cHM6Ly9naXQueGVub21haS5vcmcvaXBpcGUtYXJtNjQ+Cj4+PiAgICAgID4+IFJl
-bGVhc2UgdGFnOiBpcGlwZS1jb3JlLTUuNC43Mi1hcm02NC0wCj4+PiAgICAgID4+Cj4+PiAgICAg
-ID4+Cj4+PiAgICAgID4gVGhpcyBpcyBhIGJldGEgcmVsZWFzZSwgYW55IHRlc3RpbmcgaXMgd2Vs
-Y29tZQo+Pj4gICAgICA+Cj4+Pgo+Pj4gICAgICBZb3UgYXNrZWQgZm9yIGl0OiA7KQo+Pj4KPj4+
-ICAgICAgaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2VzLy0vam9i
-cy8yMTgxNTkjTDYzOAo+Pj4gICAgICA8aHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hl
-bm9tYWktaW1hZ2VzLy0vam9icy8yMTgxNTkjTDYzOD4KPj4+Cj4+PiAgICAgIEphbgo+Pj4KPj4+
-ICAgICAgLS0KPj4+ICAgICAgU2llbWVucyBBRywgVCBSREEgSU9UCj4+PiAgICAgIENvcnBvcmF0
-ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAo+Pj4KPj4+Cj4+PiBBY2ssIEnigJls
-bCBsb29rIGludG8gdGhpcyB0b2RheS4gSG93IGhhcmQgaXMgaXQgdG8gZ2V0IGEgY2kgb3Igc29t
-ZXRoaW5nCj4+PiBzaW1pbGFyIHNldHVwIGluIGEgbG9jYWwgbWFjaGluZT8gSSB0aGluayBJIG1h
-eSBoYXZlIGFza2VkIHRoaXMgYmVmb3JlCj4+PiBidXQgaSBjYW7igJl0IHJlbWVtYmVyIHdoYXQg
-d2UgZGVjaWRlZC4KPj4+Cj4+IFRoZSBlYXNpZXN0IG9wdGlvbiBhcmUgdGhlIHFlbXUgdGFyZ2V0
-cywgZ2VuZXJhdGVkIGFuZCBydW4gdmlhCj4+IHhlbm9tYWktaW1hZ2VzLiBVbmZvcnR1bmF0ZWx5
-LCB0aGlzIGlzc3VlIGRvZXMgbm90IHNlZW0gdG8gdHJpZ2dlciBpbgo+PiBxZW11LCBvbmx5IG9u
-IHRoZSBCZWFnbGVCb25lLiBCdXQgaWYgeW91IGhhdmUgdGhhdCBib2FyZCwgYWxzbyB0aGF0Cj4+
-IHRhcmdldCBpbWFnZSBjYW4gYmUgcmVwcm9kdWNlZCwgb2J2aW91c2x5LiBGb2xsb3cgdGhlIFJF
-QURNRSBpbiB0aGF0IGNhc2UuCj4+Cj4+IE9yIHlvdSBqdXN0IHBpY2sgdXAgdGhlIGNvbmZpZyBm
-cm9tIHhlbm9tYWktaW1hZ2VzIGFuZCBkbyB5b3VyIG93biBzZXR1cC4KPj4KPiBFcnIsIHdyb25n
-IGNvbnRleHQsIHRoaXMgaXMgYXJtNjQuIEhlcmUgaXQncyB0aGUgaGlrZXksIGFuZCBvbmx5IHRo
-ZQo+IGhpa2V5IGJvYXJkLiBGb3IgdGhlIGFybSBpc3N1ZSwgYm90aCBxZW11IGFuZCBiYmIgZXhw
-b3NlIHRoZSBwcm9ibGVtLgo+Cj4gSmFuCj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAw
-MS1jb2JhbHQtYXJtNjQtUmVtb3ZlLWluY2x1ZGUtb2YtY29tcGlsZXIuaC5wYXRjaApUeXBlOiB0
-ZXh0L3gtcGF0Y2gKU2l6ZTogMTEwMyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
-dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDIyNS8y
-MzM5ZThlNC9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
-LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAwMi1j
-b2JhbHQtYXJtNjQtRml4LWVsZl9od2NhcC1hY2Nlcy5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gK
-U2l6ZTogMTEyNCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDIyNS8yMzM5ZThlNC9hdHRh
-Y2htZW50LTAwMDEuYmluPgo=
+Hello,
+after reinstalling Xenomai on the Raspberry pi3 +, I added serial
+communication, IDDP and XDDP, etc in the kernel.
+But in /dev/rtdm I don't have rtser0 yet.  I see GPIO for example and other
+thinghs.  How is it possible?  do I have to take a few more steps to enable
+it?
