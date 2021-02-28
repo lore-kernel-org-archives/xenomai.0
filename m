@@ -1,15 +1,12 @@
+From: Wolfgang Denk <wd@denx.de>
+Subject: Re: [IMPORTANT] gitlab relocation / rename
 MIME-Version: 1.0
-References: <CAFZ-hKipbe==Ca9FP5sbzO2QCamBp4vCbD3hfztcjV6-c_LF6A@mail.gmail.com>
- <CALLqZ8Qef6bxFp8oHbeGcujE_rXcrSePDbLsk=0hW6=+7fitAQ@mail.gmail.com>
- <CAFZ-hKgK8OhXObh+sSuUb7UQn5YsPPs=CNGc3J9u8uyb84vYHA@mail.gmail.com>
- <CALLqZ8Tjo+GdjKjBsDSMd3N_RaYqhyUxf+Cj7hb07jEh4suhyw@mail.gmail.com>
-In-Reply-To: <CALLqZ8Tjo+GdjKjBsDSMd3N_RaYqhyUxf+Cj7hb07jEh4suhyw@mail.gmail.com>
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Sun, 28 Feb 2021 14:20:49 +0100
-Message-ID: <CAFZ-hKiDGfNCZ+3=28ZD-hGE=xr5D3rBZZf+93BfTx8qnQB=Cw@mail.gmail.com>
-Subject: Re: RTDM
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <621240.1614155458@gemini.denx.de>
+References: <621240.1614155458@gemini.denx.de>
+Date: Sun, 28 Feb 2021 16:14:55 +0100
+Message-ID: <781641.1614525295@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,61 +15,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, xenomai@xenomai.org
+Cc: Tom Rini <trini@konsulko.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Harald Seiler <hws@denx.de>
 
-Thanks a lot!
+Hi all,
 
-Il dom 28 feb 2021, 14:11 Greg Gallagher <greg@embeddedgreg.com> ha scritto=
-:
+In message <621240.1614155458@gemini.denx.de> I wrote:
+>
+> We have to move all public projects off  gitlab.denx.de  to a new
+> gitlab instance; the new host name is then  source.denx.de .
+> We are fully aware that this will cause inconveniences, and I can
+> only assure you that we try hard to keep these as limited as
+> possible.
+>
+> # Details
+>
+> Around noon on Saturday, 2021-02-27, we will freeze all public
+> repositories on gitlab.denx.de.  They will still be readable/
+> cloneable but any attempt to push new commits after this point will
+> fail.
+>
+> We will then copy them over to the now host, source.denx.de .
+> All custodian accounts will also be transferred, the same login
+> credentials from gitlab.denx.de will work on source.denx.de .
+>
+> The URLs for the repositories will stay the same, except of course
+> for the host name.  So, for example, the U-Boot mainline repository
+> will then be hosted at
+>
+>     https://source.denx.de/u-boot/u-boot.git
+>
+> We will install redirects to forward HTTP accesses from the old
+> repository URLs to the new host.  This should make the transition
+> mostly transparent, but does not cover everything.  The following
+> needs to be taken care of manually:
+>
+> - Update the SSH URI for pushing to the repositories.  Just replace
+>   gitlab.denx.de  with  source.denx.de .  We will transfer all the
+>   SSH-keys to the new host so nothing else should be needed.
+>
+> - Make sure you're logging in on  source.denx.de .  Access to
+>   gitlab.denx.de  will no longer work!
+>
+> - CI runners connected to  gitlab.denx.de  need to be re-registered
+>   with  source.denx.de .
+>
+> The new host should hopefully be operational sometime on Sunday,
+> 2021-02-28.  We will send a further announcement once everything is
+> back up and running.
 
->
->
-> On Sun, Feb 28, 2021 at 4:59 AM Leandro Bucci <guestleandro11@gmail.com>
-> wrote:
->
->> thanks for the reply, I'm a newbie in this field.  So if another device
->> is already using the Raspberry serial, it is possible that this is the
->> cause of not having the rtser0 device.  maybe you could help me understa=
-nd
->> how to unload the drivers?
->>
->> Il dom 28 feb 2021, 02:22 Greg Gallagher <greg@embeddedgreg.com> ha
->> scritto:
->>
->>>
->>>
->>> On Sat, Feb 27, 2021 at 7:44 PM Leandro Bucci via Xenomai <
->>> xenomai@xenomai.org> wrote:
->>>
->>>> hello everyone, after installing xenomai on the Raspberry and insertin=
-g
->>>> the
->>>> kernel module related to the serial, in the folder / dev / rtdm / I
->>>> don't
->>>> have the rtser0 device.  How is it possible?
->>>>
->>> It=E2=80=99s possible that the device isn=E2=80=99t listed or enabled i=
-n the device tree
->>> or the device is in use by another driver. If it=E2=80=99s in use by an=
-other driver
->>> you=E2=80=99ll have to unbind that driver and then the serial driver sh=
-ould load.
->>> This is all assuming that the device is properly configured in the devi=
-ce
->>> tree.
->>>
->>> Thanks
->>>
->>> Greg
->>>
->>
-> This link is fairly dated, but it helped me get started with rtdm and
-> serial drivers. Take a look and we can try and fill in the missing pieces
-> to get you going.
->
-> https://wiki.emacinc.com/wiki/Xenomai_RTSerial
->
-> Greg
->
->>
+As far as we were able to test it, the move has been completed and
+is fully functional again.  All public project are now on the new
+gitlab instance  source.denx.de
+
+If you should experience any problems, please do not hesitate to ask 
+Harald Seiler <hws@denx.de>, he will try to help you.
+
+Thanks for your patience!
+
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+You could end up being oddly sad and full of a strange, diffuse  com-
+passion  which would lead you to believe that it might be a good idea
+to wipe out the whole human race and start again with amoebas.
+                                 - Terry Pratchett, _Guards! Guards!_
+
