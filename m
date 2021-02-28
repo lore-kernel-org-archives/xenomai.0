@@ -1,12 +1,9 @@
-References: <621240.1614155458@gemini.denx.de>
- <781641.1614525295@gemini.denx.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [IMPORTANT] gitlab relocation / rename
-In-reply-to: <781641.1614525295@gemini.denx.de>
-Date: Sun, 28 Feb 2021 17:28:33 +0100
-Message-ID: <87h7lw6tse.fsf@xenomai.org>
+Date: Sun, 28 Feb 2021 19:26:45 -0300
+From: Gabriel Dinse <gabriel_dinse@hotmail.com>
+Subject: High latency when over stress
+Message-ID: <SN6PR08MB5661F9CC518F4FDBA2B20066939B9@SN6PR08MB5661.namprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii; format=flowed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,73 +12,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>, Harald Seiler <hws@denx.de>
+To: xenomai@xenomai.org
 
+Hello,
+I'm doing a comparison of interrupt handling on Xenomai using a 
+raspberry pi 3-b in 2 situations:
+1- No stress
+2- Running stress-ng on terminal: $ nice -19 stress-ng -c 4 --metrics 
+--timeout 120s&
 
-Hi Wolfgang,
+What I do is to create a periodic task (priority 50) that runs every 
+500us activating gpio22 for 250us and save the activating time. Another 
+task, with priority 99 is meant to catch the interrupts in a while loop 
+and save the time as well for computing the time differences later. 
+This is done 100000 times and in the end I do some verifications.
 
-Wolfgang Denk <wd@denx.de> writes:
+On situation 1 (no stress) I get:
+Min: 11823ns
+Max: 17761ns
+Standard deviation: 258.96ns
+Mean: 13103.17ns
 
-> Hi all,
->
-> In message <621240.1614155458@gemini.denx.de> I wrote:
->>
->> We have to move all public projects off  gitlab.denx.de  to a new
->> gitlab instance; the new host name is then  source.denx.de .
->> We are fully aware that this will cause inconveniences, and I can
->> only assure you that we try hard to keep these as limited as
->> possible.
->>
->> # Details
->>
->> Around noon on Saturday, 2021-02-27, we will freeze all public
->> repositories on gitlab.denx.de.  They will still be readable/
->> cloneable but any attempt to push new commits after this point will
->> fail.
->>
->> We will then copy them over to the now host, source.denx.de .
->> All custodian accounts will also be transferred, the same login
->> credentials from gitlab.denx.de will work on source.denx.de .
->>
->> The URLs for the repositories will stay the same, except of course
->> for the host name.  So, for example, the U-Boot mainline repository
->> will then be hosted at
->>
->>     https://source.denx.de/u-boot/u-boot.git
->>
->> We will install redirects to forward HTTP accesses from the old
->> repository URLs to the new host.  This should make the transition
->> mostly transparent, but does not cover everything.  The following
->> needs to be taken care of manually:
->>
->> - Update the SSH URI for pushing to the repositories.  Just replace
->>   gitlab.denx.de  with  source.denx.de .  We will transfer all the
->>   SSH-keys to the new host so nothing else should be needed.
->>
->> - Make sure you're logging in on  source.denx.de .  Access to
->>   gitlab.denx.de  will no longer work!
->>
->> - CI runners connected to  gitlab.denx.de  need to be re-registered
->>   with  source.denx.de .
->>
->> The new host should hopefully be operational sometime on Sunday,
->> 2021-02-28.  We will send a further announcement once everything is
->> back up and running.
->
-> As far as we were able to test it, the move has been completed and
-> is fully functional again.  All public project are now on the new
-> gitlab instance  source.denx.de
->
-> If you should experience any problems, please do not hesitate to ask 
-> Harald Seiler <hws@denx.de>, he will try to help you.
->
-> Thanks for your patience!
->
+On situation 2 (with cpu stress)  I get:
+Min: 12239ns
+Max: 721302ns
+Standard deviation: 32976.01ns
+Mean: 29112.24ns
 
-Thanks to everyone involved in providing us with an even better
-infrastructure. Greatly appreciated.
+I would not say the higher mean is actually a problem (could be), but 
+the standard deviation is much higher and I don't think this is the 
+desired result for Xenomai.
+Is the first result fine?
+What could be causing this?
+Any addition information just ask me.
 
--- 
-Philippe.
+Thank you,
+Gabriel Dinse
 
