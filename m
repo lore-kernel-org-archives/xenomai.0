@@ -1,13 +1,9 @@
+Date: Sun, 28 Feb 2021 09:17:19 -0300
+From: Gabriel Dinse <gabriel_dinse@hotmail.com>
+Subject: GPIO interrupt reading timeout
+Message-ID: <SN6PR08MB5661EE942B37DBEF57E8272F939B9@SN6PR08MB5661.namprd08.prod.outlook.com>
 MIME-Version: 1.0
-References: <CAFZ-hKipbe==Ca9FP5sbzO2QCamBp4vCbD3hfztcjV6-c_LF6A@mail.gmail.com>
- <CALLqZ8Qef6bxFp8oHbeGcujE_rXcrSePDbLsk=0hW6=+7fitAQ@mail.gmail.com>
-In-Reply-To: <CALLqZ8Qef6bxFp8oHbeGcujE_rXcrSePDbLsk=0hW6=+7fitAQ@mail.gmail.com>
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Sun, 28 Feb 2021 10:59:32 +0100
-Message-ID: <CAFZ-hKgK8OhXObh+sSuUb7UQn5YsPPs=CNGc3J9u8uyb84vYHA@mail.gmail.com>
-Subject: Re: RTDM
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-thanks for the reply, I'm a newbie in this field.  So if another device is
-already using the Raspberry serial, it is possible that this is the cause
-of not having the rtser0 device.  maybe you could help me understand how to
-unload the drivers?
+Hello,
 
-Il dom 28 feb 2021, 02:22 Greg Gallagher <greg@embeddedgreg.com> ha scritto=
-:
+I currently have a loop rt_task for reading interrupts on a GPIO pin of 
+my raspberry pi.
 
->
->
-> On Sat, Feb 27, 2021 at 7:44 PM Leandro Bucci via Xenomai <
-> xenomai@xenomai.org> wrote:
->
->> hello everyone, after installing xenomai on the Raspberry and inserting
->> the
->> kernel module related to the serial, in the folder / dev / rtdm / I don'=
-t
->> have the rtser0 device.  How is it possible?
->>
-> It=E2=80=99s possible that the device isn=E2=80=99t listed or enabled in =
-the device tree
-> or the device is in use by another driver. If it=E2=80=99s in use by anot=
-her driver
-> you=E2=80=99ll have to unbind that driver and then the serial driver shou=
-ld load.
-> This is all assuming that the device is properly configured in the device
-> tree.
->
-> Thanks
->
-> Greg
->
+I'm using:
+ret = read(pin, &value, sizeof(value));
+
+but I don't want it to block forever, because my task should exit when 
+there are not more interrupts to read. Can I use "select" for 
+introducing a reading timeout on my loop and yet being "real-time"?
+
+Thank you,
+Gabriel Dinse
+
