@@ -1,17 +1,19 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
-Date: Thu, 4 Mar 2021 09:00:22 +0000
-Message-ID: <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
-References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
- <603E3952.1070109@tj.kylinos.cn>
- <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
- <6040770F.4000405@kylinos.cn>
-In-Reply-To: <6040770F.4000405@kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4562655A113CA84898A678C2EE8D5C04@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <E1l7tad-0004W6-Pl@xenomai.org>
+ <CALLqZ8T_rQfwvDVdBGutFhvdc3OrJnPJtqLyjrkKp9vax0afbQ@mail.gmail.com>
+ <868d4cd4-7990-68fa-902d-0d62ac676918@siemens.com>
+ <CALLqZ8TJruq==-Lc60dBniDb6H5dyLT+MNP9rP85Bc9tufbH3w@mail.gmail.com>
+ <5d54c261-61b3-7981-8143-8adea4ad2765@siemens.com>
+ <1b715c75-eef9-faa6-6c0d-1ba61400bdae@siemens.com>
+ <f7cf94f6-e1f8-6867-2925-43c8b8094bbb@alstefgroup.com>
+ <5444427a-dc9e-6026-7580-f5e563e11c73@siemens.com>
+In-Reply-To: <5444427a-dc9e-6026-7580-f5e563e11c73@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 1 Mar 2021 11:28:28 -0500
+Message-ID: <CALLqZ8TaZ1vH_wouT1Pus0k-cQt=5nVgzjbwRVjeuWL3JuHQWQ@mail.gmail.com>
+Subject: Re: [I-PIPE] ipipe-core-5.4.72-arm64-0 released
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,76 +22,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTAzLTA0IGF0IDEzOjU4ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gDQo+
-IE9uIDIwMjHlubQwM+aciDAy5pelIDIxOjQzLCBmbG9yaWFuLmJlemRla2EtLS0gdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+ID4gT24gVHVlLCAyMDIxLTAzLTAyIGF0IDIxOjEwICswODAwLCBjaGVuc29u
-ZyB3cm90ZToNCj4gPiA+IEZsb3JpYW4gJCBQaGlsaXBwZSwNCj4gPiA+IA0KPiA+ID4gQXMgdGhl
-IGRpc2N1c3Npb24gaW4gdGhlIG1haWxzIDIwMjEtMDItMjEsIHdlIGFyZSBnb2luZyB0byByZXBs
-YWNlDQo+ID4gPiBfX3VzZXJfb2xkX3RpbWVzcGVjIHdpdGggX19rZXJuZWxfb2xkX3RpbWVzcGVj
-IHRvIGtlZXAgYWxpZ25lZCB3aXRoDQo+ID4gPiB1cHN0cmVhbS4NCj4gPiANCj4gPiBQbGVhc2Ug
-bm90ZSB0aGUgeTIwMzggcmVsYXRlZCBwYXRjaGVzIGZyb20gUGhpbGlwcGUgbG9jYXRlZCBpbiB0
-aGUNCj4gPiB3aXAvZG92ZXRhaWwgYnJhbmNoIG9mIHRoZSBYZW5vbWFpIHJlcG9zaXRvcnkuIFRo
-YXQgd29yayBoYXMgYWxyZWFkeQ0KPiA+IGJlZW4gZG9uZS4NCj4gPiANCj4gDQo+IFRoYW5rcywg
-aSB3YXMgd29ya2luZyBvbiB0aGUgeGVub21haS1ycG0sIG5vdyBpIG1vdmUgdG8gWzFdIGJyYW5j
-aCANCj4gd2lwL2RvdmV0YWlsLCBpcyBpdCBjb3JyZWN0Pw0KDQpBZnRlciBhIHNob3J0IHN5bmMg
-d2l0aCBKYW4gYW5kIHRoZSBmYWN0IHRoYXQgdGhlIHkyMDM4IHJlbGF0ZWQgcGF0Y2hlcw0KZnJv
-bSBQaGlsaXBwZSBhcmUgYWxyZWFkeSBwYXJ0IG9mIHRoaXMgYnJhbmNoIGFuZCB3ZSBuZWVkIHRo
-ZW0gKGV2ZW4gaWYNCmN1cnJlbnRseSBicmVha2luZyAzMiBiaXQga2VybmVscyk6IHllcw0KDQpJ
-biBhZGRpdGlvbjogSSBoYXZlIGEgd2lwL3kyMDM4IGJyYW5jaCBvbiBteSBwdWJsaWMgZ2l0bGFi
-IHRyZWUgKFsyXSkswqANCmFscmVhZHkgYmFzZWQgb24gd2lwL2RvdmV0YWlsIHRoYXQgSSBjYW4g
-ZWFzaWx5IHJ1biB0aHJvdWdoIHRoZSBDSSBvZg0KdGhlIHhlbm9tYWktaW1hZ2VzIHByb2plY3Qg
-Zm9yIGNvbXBpbGUtdGVzdGluZyBhbGwgdGhlIGRpZmZlcmVudCBrZXJuZWwNCmNvbWJpbmF0aW9u
-cy4gRXZlbiB0ZXN0aW5nIGNvdWxkIGJlIGVuYWJsZWQgaW4gdGhlIGZ1dHVyZS4NCg0KQXMgcGF0
-Y2hlcyBzaG91bGQgYWx3YXlzIG1ha2UgaXQgdG8gdGhlIGxpc3QsIGhlcmUgY29tZXMgbXkgcHJv
-cG9zYWw6wqANCg0KRmVlbCBmcmVlIHRvIHNlbmQgeW91ciBwYXRjaGVzIHVzaW5nIGEgW3kyMDM4
-XSAob3Igc2ltaWxhcikgdGFnLCB0aGUNCmxpc3QgY2FuIHJldmlldyB0aGVtIGFuZCBJIHdvdWxk
-IHRha2UgY2FyZSBvZiBhcHBseWluZyBpdCB0byBbMl0uIEFsbA0Kb3RoZXJzIGludGVyZXN0ZWQg
-aW4gdGhpcyB0b3BpYyAob25nb2luZyBpbnRlZ3JhdGlvbikgY291bGQgcGljayB0aGVtDQphcyB3
-ZWxsLiBQaGlsaXBwZSBhbHJlYWR5IG1lbnRpb25lZCB0aGF0IGhlIGlzIGludGVyZXN0ZWQgaW4N
-CmludGVncmF0aW5nIHRoZW0gYXMgd2VsbC4NCg0KSWYgYWxsIHRoZSB0aGluZ3MgaW4gWzJdIGFy
-ZSBsb29raW5nIGdvb2QgYWZ0ZXIgc29tZSB0aW1lIHdlIGNhbiByZXNlbmQNCnRoZW0gYW5kIGFz
-ayBKYW4gdG8gYXBwbHkgdGhlbSAoYWZ0ZXIgYW50aGVyIHJvdW5kIG9mIHJldmlldykuDQoNCj4g
-DQo+IFsxXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haQ0KDQogIFsyXSBo
-dHRwczovL2dpdGxhYi5jb20vZmJlemRla2EveGVub21haS8NCiANCj4gPiA+IFRoaXMgcGF0Y2gg
-aW50cm9kdWNlZCB0aGVpciBkZWZpbml0aW9ucywgaWYgeW91IGJvdGggYWdyZWUsIGkgd2lsbCBz
-dGFydA0KPiA+ID4gcmVwbGFjaW5nIF9fdXNlcl9vbGRfdGltZXNwZWMgYW5kIF9fdXNlcl9vbGRf
-dGltZXZhbCBhZnRlcndhcmQuDQo+ID4gPiANCj4gPiA+IEJSDQo+ID4gPiANCj4gPiA+IFNvbmcN
-Cj4gPiA+IA0KPiA+ID4gT24gMjAyMeW5tDAz5pyIMDLml6UgMjE6MDUsIGNoZW5zb25nIHdyb3Rl
-Og0KPiA+ID4gPiBTaW5jZSB0aW1lc3BlYyBhbmQgdGltZXZhbCB3aWxsIGJlIHJlbW92ZWQgYmVj
-YXVzZSBvZg0KPiA+ID4gPiB5MjAzOCBwcm9ibGVtLCB3ZSBuZWVkIHRvIGludHJvZHVjZSBuZXcg
-dGltZSByZXByZXNlbnRhdGlvbnMgYXQNCj4gPiA+ID4gdGhlIGtlcm5lbC11c2VyIGJvdW5kYXJ5
-IGFuZCB3ZSBhbHNvIG5lZWQgdG8ga2VlcCBhbGlnbmVkIHdpdGgNCj4gPiA+ID4gdXBzdHJlYW0g
-YXQgdGhlIHNhbWUgdGltZS4NCj4gPiA+ID4gDQo+ID4gPiA+IFRoZXJlZm9yZSwgd2UgaW50cm9k
-dWNlOg0KPiA+ID4gPiAxKV9fa2VybmVsX29sZF90aW1ldmFsDQo+ID4gPiA+IDIpX19rZXJuZWxf
-b2xkX3RpbWVzcGVjDQo+ID4gPiA+IGZyb20gdXBzdHJlYW0sIHRoZWlyIHR2X3NlYyBhcmUgZGVm
-aW5lZCBhcyBsb25nIGFuZCBhcyBhIHJlc3VsdCB0aGVpciB3aWR0aA0KPiA+ID4gPiBpcyBhYmxl
-IHRvIGFkYXB0IGRpZmZlcmVudCBhcmNoIGF1dG9tYXRpY2FsbHkuDQo+ID4gPiA+IA0KPiA+ID4g
-PiBTaWduZWQtb2ZmLWJ5OiBjaGVuc29uZyA8Y2hlbnNvbmdAdGoua3lsaW5vcy5jbj4NCj4gPiA+
-ID4gLS0tDQo+ID4gPiA+IMKgwqDCoGluY2x1ZGUvY29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmgg
-fCAxNSArKysrKysrKysrKysrKysNCj4gPiA+ID4gwqDCoMKgMSBmaWxlIGNoYW5nZWQsIDE1IGlu
-c2VydGlvbnMoKykNCj4gPiA+ID4gDQo+ID4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFs
-dC91YXBpL2tlcm5lbC90eXBlcy5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9rZXJuZWwvdHlwZXMu
-aA0KPiA+ID4gPiBpbmRleCAyYzkzMWMyLi44OTMxZDgyIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS9p
-bmNsdWRlL2NvYmFsdC91YXBpL2tlcm5lbC90eXBlcy5oDQo+ID4gPiA+ICsrKyBiL2luY2x1ZGUv
-Y29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmgNCj4gPiA+ID4gQEAgLTIwLDYgKzIwLDcgQEANCj4g
-PiA+ID4gDQo+ID4gPiA+IMKgwqDCoCNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPiA+ID4gPiDC
-oMKgwqAjaW5jbHVkZSA8Y29iYWx0L3VhcGkva2VybmVsL2xpbWl0cy5oPg0KPiA+ID4gPiArI2lu
-Y2x1ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvd3JhcHBlcnMuaD4NCj4gPiA+ID4gDQo+ID4gPiA+
-IMKgwqDCoHR5cGVkZWYgX191NjQgeG50aWNrc190Ow0KPiA+ID4gPiANCj4gPiA+ID4gQEAgLTc4
-LDYgKzc5LDIwIEBAIHN0cnVjdCBfX3VzZXJfb2xkX3RpbWV2YWwgew0KPiA+ID4gPiDCoMKgwqAJ
-bG9uZyAgdHZfdXNlYzsNCj4gPiA+ID4gwqDCoMKgfTsNCj4gPiA+ID4gDQo+ID4gPiA+ICsjaWYg
-TElOVVhfVkVSU0lPTl9DT0RFIDwgS0VSTkVMX1ZFUlNJT04oNCwxNywwKQ0KPiA+ID4gPiArc3Ry
-dWN0IF9fa2VybmVsX29sZF90aW1ldmFsIHsNCj4gPiA+ID4gKwlfX2tlcm5lbF9sb25nX3QgdHZf
-c2VjOw0KPiA+ID4gPiArCV9fa2VybmVsX2xvbmdfdCB0dl91c2VjOw0KPiA+ID4gPiArfTsNCj4g
-PiA+ID4gKyNlbmRpZg0KPiA+ID4gPiArDQo+ID4gPiA+ICsjaWYgTElOVVhfVkVSU0lPTl9DT0RF
-IDwgS0VSTkVMX1ZFUlNJT04oNSw1LDApDQo+ID4gPiA+ICtzdHJ1Y3QgX19rZXJuZWxfb2xkX3Rp
-bWVzcGVjIHsNCj4gPiA+ID4gKwlfX2tlcm5lbF9vbGRfdGltZV90CXR2X3NlYzsJCS8qIHNlY29u
-ZHMgKi8NCj4gPiA+ID4gKwlsb25nCQkJdHZfbnNlYzsJLyogbmFub3NlY29uZHMgKi8NCj4gPiA+
-ID4gK307DQo+ID4gPiA+ICsjZW5kaWYNCj4gPiA+ID4gKw0KPiA+ID4gPiDCoMKgwqAvKiBMaWZ0
-ZWQgZnJvbSBpbmNsdWRlL3VhcGkvbGludXgvdGltZXguaC4gKi8NCj4gPiA+ID4gwqDCoMKgc3Ry
-dWN0IF9fdXNlcl9vbGRfdGltZXggew0KPiA+ID4gPiDCoMKgwqAJdW5zaWduZWQgaW50IG1vZGVz
-OwkvKiBtb2RlIHNlbGVjdG9yICovDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiANCj4gPiANCg0K
+On Mon, Mar 1, 2021 at 11:25 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
+> On 25.02.21 11:50, Jean-Baptiste Tredez via Xenomai wrote:
+> > Hi all,
+> >
+> > I had some compilation issues with ipipe-core-5.4.72 and xenomai 3.1 on
+> > arm64 target.
+> >
+> > With some minor changes (see attached patch), the kernel boot on target=
+.
+> >
+>
+> Thanks for the patches. Just note that those can easily get lost when
+> not sent separately and inline (this list has some funny settings /wrt
+> attachments, making them hard to read and impossible to comment on).
+>
+> I think you patches should be related to
+>
+> https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb38=
+9214a39d777465a
+> which is not in stable yet. Greg, can you help sorting out what we need
+> where?
+>
+> Thanks,
+> Jan
+>
+> > Jean-Baptiste
+> >
+> >
+> >
+> > Le 08/02/2021 =C3=A0 09:26, Jan Kiszka via Xenomai a =C3=A9crit :
+> >> On 08.02.21 09:24, Jan Kiszka via Xenomai wrote:
+> >>> On 06.02.21 15:50, Greg Gallagher wrote:
+> >>>> On Sat, Feb 6, 2021 at 7:23 AM Jan Kiszka <jan.kiszka@siemens.com
+> >>>> <mailto:jan.kiszka@siemens.com>> wrote:
+> >>>>
+> >>>>      On 05.02.21 06:24, Greg Gallagher via Xenomai wrote:
+> >>>>      > On Fri, Feb 5, 2021 at 12:24 AM xenomai--- via Xenomai
+> >>>>      <xenomai@xenomai.org  <mailto:xenomai@xenomai.org>>
+> >>>>      > wrote:
+> >>>>      >
+> >>>>      >> Download URL:
+> >>>>      >>
+> >>>>
+> >>>>
+> https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.=
+patch
+> >>>>
+> >>>>
+> >>>> <
+> https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.=
+patch
+> >
+> >>>>
+> >>>>      >>
+> >>>>      >> Repository:https://git.xenomai.org/ipipe-arm64
+> >>>>      <https://git.xenomai.org/ipipe-arm64>
+> >>>>      >> Release tag: ipipe-core-5.4.72-arm64-0
+> >>>>      >>
+> >>>>      >>
+> >>>>      > This is a beta release, any testing is welcome
+> >>>>      >
+> >>>>
+> >>>>      You asked for it: ;)
+> >>>>
+> >>>>      https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L63=
+8
+> >>>>      <
+> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>
+> >>>>
+> >>>>      Jan
+> >>>>
+> >>>>      --
+> >>>>      Siemens AG, T RDA IOT
+> >>>>      Corporate Competence Center Embedded Linux
+> >>>>
+> >>>>
+> >>>> Ack, I=E2=80=99ll look into this today. How hard is it to get a ci o=
+r
+> something
+> >>>> similar setup in a local machine? I think I may have asked this befo=
+re
+> >>>> but i can=E2=80=99t remember what we decided.
+> >>>>
+> >>> The easiest option are the qemu targets, generated and run via
+> >>> xenomai-images. Unfortunately, this issue does not seem to trigger in
+> >>> qemu, only on the BeagleBone. But if you have that board, also that
+> >>> target image can be reproduced, obviously. Follow the README in that
+> >>> case.
+> >>>
+> >>> Or you just pick up the config from xenomai-images and do your own
+> >>> setup.
+> >>>
+> >> Err, wrong context, this is arm64. Here it's the hikey, and only the
+> >> hikey board. For the arm issue, both qemu and bbb expose the problem.
+> >>
+> >> Jan
+> >>
+> > -------------- next part --------------
+> > A non-text attachment was scrubbed...
+> > Name: 0001-cobalt-arm64-Remove-include-of-compiler.h.patch
+> > Type: text/x-patch
+> > Size: 1103 bytes
+> > Desc: not available
+> > URL:
+> > <
+> http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attach=
+ment.bin
+> >
+> >
+> > -------------- next part --------------
+> > A non-text attachment was scrubbed...
+> > Name: 0002-cobalt-arm64-Fix-elf_hwcap-acces.patch
+> > Type: text/x-patch
+> > Size: 1124 bytes
+> > Desc: not available
+> > URL:
+> > <
+> http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attach=
+ment-0001.bin
+> >
+> >
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
+
+Yes, I believe all the needed patches are currently in next, but I will
+confirm.
+
+-Greg
