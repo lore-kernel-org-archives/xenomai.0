@@ -1,22 +1,24 @@
-Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
-References: <E1l9itV-000402-99@xenomai.org>
- <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
- <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
- <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
- <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
- <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
- <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
- <87zgzs6ymo.fsf@xenomai.org>
- <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
- <87tuq06xiq.fsf@xenomai.org>
+Subject: Re: [I-PIPE] ipipe-core-5.4.72-arm64-0 released
+References: <E1l7tad-0004W6-Pl@xenomai.org>
+ <CALLqZ8T_rQfwvDVdBGutFhvdc3OrJnPJtqLyjrkKp9vax0afbQ@mail.gmail.com>
+ <868d4cd4-7990-68fa-902d-0d62ac676918@siemens.com>
+ <CALLqZ8TJruq==-Lc60dBniDb6H5dyLT+MNP9rP85Bc9tufbH3w@mail.gmail.com>
+ <5d54c261-61b3-7981-8143-8adea4ad2765@siemens.com>
+ <1b715c75-eef9-faa6-6c0d-1ba61400bdae@siemens.com>
+ <f7cf94f6-e1f8-6867-2925-43c8b8094bbb@alstefgroup.com>
+ <5444427a-dc9e-6026-7580-f5e563e11c73@siemens.com>
+ <CALLqZ8TaZ1vH_wouT1Pus0k-cQt=5nVgzjbwRVjeuWL3JuHQWQ@mail.gmail.com>
+ <cc550fca-3d2b-921f-53a4-476c91efb6a4@siemens.com>
+ <22d6f4f8-3802-1a1b-a862-b9a0c7945b9a@alstefgroup.com>
+ <CALLqZ8SqdmxCg7iLh_Nx8pvuwvai350Zk4RFKM58JYL_eFpRnw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
-Date: Mon, 1 Mar 2021 17:15:00 +0100
+Message-ID: <73e90749-61e7-47a5-57fd-8daa5ab79f81@siemens.com>
+Date: Mon, 1 Mar 2021 20:25:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <87tuq06xiq.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CALLqZ8SqdmxCg7iLh_Nx8pvuwvai350Zk4RFKM58JYL_eFpRnw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,107 +27,235 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+To: Greg Gallagher <greg@embeddedgreg.com>, Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 25.02.21 15:18, Philippe Gerum wrote:
+On 01.03.21 19:10, Greg Gallagher wrote:
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
 > 
->> On 25.02.21 14:54, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
->>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
->>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
->>>>>
->>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
->>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
->>>>>>
->>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
->>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
->>>>>>>>   
->>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
->>>>>>>>>> Download URL:
->>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
->>>>>>>>>>
->>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
->>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
->>>>>>>>>>    
->>>>>>>>>
->>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
->>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
->>>>>>>>>    
->>>>>>>>
->>>>>>>> I don't know much about the things going on here, but found this
->>>>>>>> line in the log. Maybe a starting point...
->>>>>>>>
->>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
->>>>>>>> msw   
->>>>>>>
->>>>>>> Exactly, that is causing the overall failure. And it was first seen
->>>>>>> with the newly added 5.4 kernel.  
->>>>>>
->>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
->>>>>>
->>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
->>>>>>
->>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
->>>>>>
->>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
->>>>>> did not find it, so maybe our config differs
->>>>
->>>> Already compared yours against the one in xenomai-images? That would be
->>>> useful.
->>>>
->>>>>
->>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
->>>>> causing the problem.
->>>>>
->>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
->>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
->>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
->>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
->>>>>
->>>>> I think here Jan or Phillipe should take over.
->>>>
->>>> Thanks for bisecting, this is helpful!
->>>>
->>>> Philippe, any immediate idea why all that is failing now?
->>>
->>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
->>> in Dovetail. I'm adding this to my debug queue.
->>>
->>
->> This is still I-pipe, not a dovetail-related issues.
+> On Mon, Mar 1, 2021 at 1:03 PM Jean-Baptiste Tredez
+> <jean-baptiste.tredez@alstefgroup.com
+> <mailto:jean-baptiste.tredez@alstefgroup.com>> wrote:
 > 
-> This I-pipe release mimics what Dovetail does wrt mm pinning.
 > 
+>     Le 01/03/2021 à 17:45, Jan Kiszka a écrit :
+>     > On 01.03.21 17:28, Greg Gallagher wrote:
+>     >>
+>     >> On Mon, Mar 1, 2021 at 11:25 AM Jan Kiszka
+>     <jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>
+>     >> <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>>
+>     wrote:
+>     >>
+>     >>      On 25.02.21 11:50, Jean-Baptiste Tredez via Xenomai wrote:
+>     >>      > Hi all,
+>     >>      >
+>     >>      > I had some compilation issues with ipipe-core-5.4.72 and
+>     xenomai
+>     >>      3.1 on
+>     >>      > arm64 target.
+>     >>      >
+>     >>      > With some minor changes (see attached patch), the kernel
+>     boot on
+>     >>      target.
+>     >>      >
+>     >>
+>     >>      Thanks for the patches. Just note that those can easily get
+>     lost when
+>     >>      not sent separately and inline (this list has some funny
+>     settings /wrt
+>     >>      attachments, making them hard to read and impossible to
+>     comment on).
+>     >>
+>     >>      I think you patches should be related to
+>     >>     
+>     https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a
+>     <https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a>
+>     >>     
+>     <https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a
+>     <https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a>>
+>     >>      which is not in stable yet. Greg, can you help sorting out
+>     what we need
+>     >>      where?
+>     >>
+>     >>      Thanks,
+>     >>      Jan
+>     >>
+>     >>      > Jean-Baptiste
+>     >>      >
+>     >>      >
+>     >>      >
+>     >>      > Le 08/02/2021 à 09:26, Jan Kiszka via Xenomai a écrit :
+>     >>      >> On 08.02.21 09:24, Jan Kiszka via Xenomai wrote:
+>     >>      >>> On 06.02.21 15:50, Greg Gallagher wrote:
+>     >>      >>>> On Sat, Feb 6, 2021 at 7:23 AM Jan Kiszka
+>     >>      <jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>
+>     <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>
+>     >>      >>>> <mailto:jan.kiszka@siemens.com
+>     <mailto:jan.kiszka@siemens.com>
+>     >>      <mailto:jan.kiszka@siemens.com
+>     <mailto:jan.kiszka@siemens.com>>>> wrote:
+>     >>      >>>>
+>     >>      >>>>      On 05.02.21 06:24, Greg Gallagher via Xenomai wrote:
+>     >>      >>>>      > On Fri, Feb 5, 2021 at 12:24 AM xenomai--- via
+>     Xenomai
+>     >>      >>>>      <xenomai@xenomai.org <mailto:xenomai@xenomai.org>
+>     <mailto:xenomai@xenomai.org <mailto:xenomai@xenomai.org>>
+>     >>      <mailto:xenomai@xenomai.org <mailto:xenomai@xenomai.org>
+>     <mailto:xenomai@xenomai.org <mailto:xenomai@xenomai.org>>>>
+>     >>      >>>>      > wrote:
+>     >>      >>>>      >
+>     >>      >>>>      >> Download URL:
+>     >>      >>>>      >>
+>     >>      >>>>
+>     >>      >>>>
+>     >>     
+>     https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>
+>     >>     
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>>
+>     >>      >>>>
+>     >>      >>>>
+>     >>      >>>>
+>     >>     
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>
+>     >>     
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
+>     <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>>>
+>     >>      >>>>
+>     >>      >>>>      >>
+>     >>      >>>>      >> Repository:https://git.xenomai.org/ipipe-arm64
+>     <https://git.xenomai.org/ipipe-arm64>
+>     >>      <https://git.xenomai.org/ipipe-arm64
+>     <https://git.xenomai.org/ipipe-arm64>>
+>     >>      >>>>      <https://git.xenomai.org/ipipe-arm64
+>     <https://git.xenomai.org/ipipe-arm64>
+>     >>      <https://git.xenomai.org/ipipe-arm64
+>     <https://git.xenomai.org/ipipe-arm64>>>
+>     >>      >>>>      >> Release tag: ipipe-core-5.4.72-arm64-0
+>     >>      >>>>      >>
+>     >>      >>>>      >>
+>     >>      >>>>      > This is a beta release, any testing is welcome
+>     >>      >>>>      >
+>     >>      >>>>
+>     >>      >>>>      You asked for it: ;)
+>     >>      >>>>
+>     >>      >>>>
+>     >>     
+>     https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>
+>     >>     
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>>
+>     >>      >>>>
+>     >>     
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>
+>     >>     
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
+>     <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>>>
+>     >>      >>>>
+>     >>      >>>>      Jan
+>     >>      >>>>
+>     >>      >>>>      --
+>     >>      >>>>      Siemens AG, T RDA IOT
+>     >>      >>>>      Corporate Competence Center Embedded Linux
+>     >>      >>>>
+>     >>      >>>>
+>     >>      >>>> Ack, I’ll look into this today. How hard is it to get a
+>     ci or
+>     >>      something
+>     >>      >>>> similar setup in a local machine? I think I may have
+>     asked this
+>     >>      before
+>     >>      >>>> but i can’t remember what we decided.
+>     >>      >>>>
+>     >>      >>> The easiest option are the qemu targets, generated and
+>     run via
+>     >>      >>> xenomai-images. Unfortunately, this issue does not seem to
+>     >>      trigger in
+>     >>      >>> qemu, only on the BeagleBone. But if you have that
+>     board, also that
+>     >>      >>> target image can be reproduced, obviously. Follow the
+>     README in that
+>     >>      >>> case.
+>     >>      >>>
+>     >>      >>> Or you just pick up the config from xenomai-images and
+>     do your own
+>     >>      >>> setup.
+>     >>      >>>
+>     >>      >> Err, wrong context, this is arm64. Here it's the hikey,
+>     and only the
+>     >>      >> hikey board. For the arm issue, both qemu and bbb expose
+>     the problem.
+>     >>      >>
+>     >>      >> Jan
+>     >>      >>
+>     >>      > -------------- next part --------------
+>     >>      > A non-text attachment was scrubbed...
+>     >>      > Name: 0001-cobalt-arm64-Remove-include-of-compiler.h.patch
+>     >>      > Type: text/x-patch
+>     >>      > Size: 1103 bytes
+>     >>      > Desc: not available
+>     >>      > URL:
+>     >>      >
+>     >>     
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin>
+>     >>     
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin>>>
+>     >>      >
+>     >>      > -------------- next part --------------
+>     >>      > A non-text attachment was scrubbed...
+>     >>      > Name: 0002-cobalt-arm64-Fix-elf_hwcap-acces.patch
+>     >>      > Type: text/x-patch
+>     >>      > Size: 1124 bytes
+>     >>      > Desc: not available
+>     >>      > URL:
+>     >>      >
+>     >>     
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin>
+>     >>     
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin
+>     <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin>>>
+>     >>      >
+>     >>
+>     >>      --
+>     >>      Siemens AG, T RDA IOT
+>     >>      Corporate Competence Center Embedded Linux
+>     >>
+>     >>
+>     >> Yes, I believe all the needed patches are currently in next, but
+>     I will
+>     >> confirm.
+>     > I'm seeing cpu_get_elf_hwcap() in Jean-Baptiste's patch - is that a
+>     > better way to access it?
+>     >
+>     > And, Jean-Baptiste, can you confirm that using Greg's patch from
+>     next in
+>     > 3.1-stable also works for you? Then I would pull it over.
+>     >
+>     > Jan
+>     >
+>     It is working well with stable/v3.1.x and Greg's patch
+>     (2cc905236c7208f37f128bb389214a39d777465a and
+>     6faffb4fc7806f7442ec548a97157922523f5440 applied on previous
+>     location of
+>     files).
+> 
+>     Jean-Baptiste
+> 
+> 
+> ELF_HWCAP is a #define for the function cpu_get_elf_hwcap, the patches
+> are basically identical.
+> 
+> -Greg
+>  
 
-Any news on this from your side?
-
-Florian took a trace from the system where this was observed on x86. It 
-seems to confirm that we have an unexpected minor fault here:
-
-smokey-568   [000]    74.233945: cobalt_head_sysentry: syscall=thread_getschedparam_ex
-smokey-568   [000]    74.233950: cobalt_pthread_getschedparam: pth=0x7f2a18ebf700 policy=fifo param={ priority=3 }
-smokey-568   [000]    74.233950: cobalt_head_sysexit:  result=0
-smokey-568   [000]    74.233952: cobalt_head_sysentry: syscall=thread_getstat
-smokey-568   [000]    74.233952: cobalt_pthread_stat:  pid=568
-smokey-568   [000]    74.233953: cobalt_head_sysexit:  result=0
-smokey-568   [000]    74.233962: cobalt_thread_fault:  ip=0x7f2a19cd6b46 type=e
-smokey-568   [000]    74.233962: cobalt_shadow_gorelax: reason=fault
-smokey-568   [000]    74.233963: cobalt_lostage_request: request=ffffffffbcd85992 pid=568 comm=smokey
-...
-smokey-568   [000]    74.234005: cobalt_shadow_relaxed: state=0x480c0 info=0x0
-...
-smokey-568   [000]    74.235027: cobalt_head_sysentry: syscall=ftrace_puts
-smokey-568   [000]    74.235028: cobalt_root_sysentry: syscall=ftrace_puts
-smokey-568   [000]    74.235028: print:                CoBaLt_ftrace_puts: Second assertion failed
-(that's around line 120 in smokey/setsched/setsched.c)
-
-Now, before I dig into the code you pointed to, I just wanted to sync.
+Perfect. Both commits pushed to stable now.
 
 Jan
 
