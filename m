@@ -1,18 +1,17 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [RFC PATCH v2 1/4] y2038: Fixing the sem_timedwait syscall for 32
- bit systems
-Date: Tue, 9 Mar 2021 11:08:22 +0000
-Message-ID: <9aa1f746189ec2732d4be689fc7f87511585b019.camel@siemens.com>
-References: <87h7lqzzzw.fsf@xenomai.org>
- <20210308170206.313181-1-florian.bezdeka@siemens.com>
- <20210308170206.313181-2-florian.bezdeka@siemens.com>
- <87wnugirqu.fsf@xenomai.org>
-In-Reply-To: <87wnugirqu.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <58C33BFC8E8A75499F437CCA90F47724@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] bad syscall <0x197>
+References: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+ <CALLqZ8Tr4e_ObU1+NCsd0nfDGiG96ok7nb-xCxHrK8Gk3KZ3AA@mail.gmail.com>
+ <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+ <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+ <CALLqZ8RefLM_Wdosh_+DeLKS3DC4HhgxhJBi4ZwfrAdPNXz4HQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <879fe4d2-94ca-4650-0911-7d4a73b95228@siemens.com>
+Date: Mon, 1 Mar 2021 18:31:15 +0100
 MIME-Version: 1.0
+In-Reply-To: <CALLqZ8RefLM_Wdosh_+DeLKS3DC4HhgxhJBi4ZwfrAdPNXz4HQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,90 +20,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: Greg Gallagher <greg@embeddedgreg.com>, steve freyder <steve@freyder.net>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVHVlLCAyMDIxLTAzLTA5IGF0IDEwOjQ2ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
-Cj4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyaXRlczoN
-Cj4gDQo+ID4gT24gc3lzdGVtcyB1c2luZyAzMiBiaXQgZm9yIHRpbWVfdCB0aGUgc2VtX3RpbWVk
-d2FpdCBzeXNjYWxsIHdhcyBicm9rZW4NCj4gPiBiZWNhdXNlIHRoZSBmdW5jdGlvbiB1c2VkIGZv
-ciBjb3B5aW5nIHRoZSB0aW1lb3V0IHZhbHVlIGZyb20gdXNlcnNwYWNlDQo+ID4gdG8ga2VybmVs
-ICg9c2VtX2ZldGNoX3RpbWVvdXQoKSkgd2FzIGFsd2F5cyBjb3B5aW5nDQo+ID4gc2l6ZW9mKHN0
-cnVjdCB0aW1lc3BlYzY0KS4NCj4gPiANCj4gPiBBIDMyIGJpdCBhcHBsaWNhdGlvbiAob3IgbW9y
-ZSBzcGVjaWZpYyBhbiBhcHBsaWNhdGlvbiB3aXRoIDQgYnl0ZQ0KPiA+IHRpbWVfdCkgd291bGQg
-b25seSBwcm92aWRlIHNpemVvZihzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIpLg0KPiA+IA0KPiA+IE5v
-dGFibGUgY2hhbmdlczoNCj4gPiDCoMKgLSBUaGUgY29weSBvcGVyYXRpb24gZnJvbSB1c2Vyc3Bh
-Y2UgdG8ga2VybmVsIGlzIG5vdyBhbHJlYWR5IGRvbmUgaW4NCj4gPiDCoMKgwqDCoHRoZSBzeXNj
-YWxsIGhhbmRsZXIuIFNvIGl0IGlzIGFsd2F5cyBkb25lLiBQcmV2aW91c2x5IGl0IHdhcyBjb3Bp
-ZWQNCj4gPiDCoMKgwqDCoG92ZXIgYW5kIHZhbGlkYXRlZCBiZWZvcmUgdGhlIGZpcnN0IHVzZSAo
-d2hlbiB1c2VkIGF0IGFsbCkuDQo+ID4gwqDCoMKgwqBTbyB3ZSBoYXZlIHNvbWUgYWRkaXRpb25h
-bCBpbnN0cnVjdGlvbnMgbm93IHRoYXQgbWF5IGJlDQo+ID4gwqDCoMKgwqB1bm5lY2Vzc2FyeSwg
-YnV0IHRoYXQgc2ltcGxpZmllcyB0aGUgY29kZS4NCj4gPiANCj4gPiDCoMKgLSBWYWxpZGF0aW9u
-OiBTd2l0Y2hlZCB0byB0aW1lc3BlYzY0X3ZhbGlkKCkgaW5zdGVhZCBvZiBvdXIgb3duDQo+ID4g
-wqDCoMKgwqBjaGVjay4NCj4gPiANCj4gPiBGaXhlczogODA0M2VjY2QyMzJkICgiY29iYWx0L2tl
-cm5lbDogeTIwMzg6IGNvbnZlcnQgc3RydWN0IHRpbWVzcGVjIHRvIHRpbWVzcGVjNjQiKQ0KPiA+
-IFNpZ25lZC1vZmYtYnk6IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMu
-Y29tPg0KPiA+IC0tLQ0KPiA+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zZW0uYyAgICAgICB8IDQw
-ICsrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IMKga2VybmVsL2NvYmFsdC9w
-b3NpeC9zZW0uaCAgICAgICB8ICA2ICsrLS0tDQo+ID4gwqBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5
-c2NhbGwzMi5jIHwgMTAgKysrKysrKy0tDQo+ID4gwqBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2Nh
-bGwzMi5oIHwgIDIgKy0NCj4gPiDCoDQgZmlsZXMgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKSwg
-MjkgZGVsZXRpb25zKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvcG9z
-aXgvc2VtLmMgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L3NlbS5jDQo+ID4gaW5kZXggNDY3YTliN2Rk
-Li44MjdhNDc1MWEgMTAwNjQ0DQo+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9wb3NpeC9zZW0uYw0K
-PiA+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc2VtLmMNCj4gPiBAQCAtMjY3LDIwICsyNjcs
-MTEgQEAgb3V0Og0KPiA+IMKgCXJldHVybiByZXQ7DQo+ID4gwqB9DQo+ID4gwqANCj4gPiANCj4g
-PiANCj4gPiANCj4gPiAtc3RhdGljIGlubGluZSBpbnQgc2VtX2ZldGNoX3RpbWVvdXQoc3RydWN0
-IHRpbWVzcGVjNjQgKnRzLA0KPiA+IC0JCQkJICAgIGNvbnN0IHZvaWQgX191c2VyICp1X3RzKQ0K
-PiA+IC17DQo+ID4gLQlyZXR1cm4gdV90cyA9PSBOVUxMID8gLUVGQVVMVCA6DQo+ID4gLQkJY29i
-YWx0X2NvcHlfZnJvbV91c2VyKHRzLCB1X3RzLCBzaXplb2YoKnRzKSk7DQo+ID4gLX0NCj4gPiAt
-DQo+ID4gwqBpbnQgX19jb2JhbHRfc2VtX3RpbWVkd2FpdChzdHJ1Y3QgY29iYWx0X3NlbV9zaGFk
-b3cgX191c2VyICp1X3NlbSwNCj4gPiAtCQkJICAgY29uc3Qgdm9pZCBfX3VzZXIgKnVfdHMsDQo+
-ID4gLQkJCSAgIGludCAoKmZldGNoX3RpbWVvdXQpKHN0cnVjdCB0aW1lc3BlYzY0ICp0cywNCj4g
-PiAtCQkJCQkJY29uc3Qgdm9pZCBfX3VzZXIgKnVfdHMpKQ0KPiA+ICsJCQkgICBjb25zdCBzdHJ1
-Y3QgdGltZXNwZWM2NCAqdHMpDQo+ID4gwqB7DQo+ID4gLQlzdHJ1Y3QgdGltZXNwZWM2NCB0cyA9
-IHsgLnR2X3NlYyA9IDAsIC50dl9uc2VjID0gMCB9Ow0KPiA+IC0JaW50IHB1bGxfdHMgPSAxLCBy
-ZXQsIGluZm87DQo+ID4gKwlpbnQgcmV0LCBpbmZvOw0KPiA+ICsJYm9vbCB2YWxpZGF0ZV90cyA9
-IHRydWU7DQo+ID4gwqAJc3RydWN0IGNvYmFsdF9zZW0gKnNlbTsNCj4gPiDCoAl4bmhhbmRsZV90
-IGhhbmRsZTsNCj4gPiDCoAl4bnRtb2RlX3QgdG1vZGU7DQo+ID4gQEAgLTMwNCwyNCArMjk1LDIz
-IEBAIGludCBfX2NvYmFsdF9zZW1fdGltZWR3YWl0KHN0cnVjdCBjb2JhbHRfc2VtX3NoYWRvdyBf
-X3VzZXIgKnVfc2VtLA0KPiA+IMKgCQkgKiBpdCdzIGFjdHVhbGx5IG1vcmUgY29tcGxleCwgdG8g
-a2VlcCBzb21lDQo+ID4gwqAJCSAqIGFwcGxpY2F0aW9ucyBwb3J0ZWQgdG8gTGludXggaGFwcHku
-DQo+ID4gwqAJCSAqLw0KPiA+IC0JCWlmIChwdWxsX3RzKSB7DQo+ID4gKwkJaWYgKHZhbGlkYXRl
-X3RzKSB7DQo+ID4gwqAJCQlhdG9taWNfaW5jKCZzZW0tPnN0YXRlLT52YWx1ZSk7DQo+ID4gLQkJ
-CXhubG9ja19wdXRfaXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4gPiAtCQkJcmV0ID0gZmV0Y2hf
-dGltZW91dCgmdHMsIHVfdHMpOw0KPiA+IC0JCQl4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jaywg
-cyk7DQo+ID4gLQkJCWlmIChyZXQpDQo+IA0KPiBBcyBtZW50aW9uZWQgaW4gYSBwcmV2aW91cyBj
-b21tZW50IG9uIHRoaXMgc2VyaWVzLCB0aGlzIHR5cGUgb2YgcGF0Y2ggaXMNCj4gc3VidGx5IGNo
-YW5naW5nIHdoZXJlIHRoZSBjb3JlIGN1cnJlbnRseSBzdGFuZHMgd2l0aCByZXNwZWN0IHRvIGEN
-Cj4gcGVjdWxpYXIgUE9TSVggY29tcGxpYW5jZSBpc3N1ZS4gQ2hlY2tpbmcgdGhlIGNvbnRlbnQg
-b2YgYSB2YWxpZA0KPiB0aW1lc3BlYyBzdHJ1Y3QgaXMgY3VycmVudGx5IHBvc3Rwb25lZCB1bnRp
-bCB0aGUgdGltZW91dCBpcyBuZWVkZWQsIGJ1dA0KPiB0aGUgdmFsaWRpdHkgb2YgdGhlIHRpbWVz
-cGVjIHBvaW50ZXIgcmVmZXJyaW5nIHRvIHRoYXQgaW5mb3JtYXRpb24gaXMNCj4gY2hlY2tlZCBh
-cyBsYXRlIGFzIHBvc3NpYmxlIHRvby4NCg0KSSB0b29rIGNhcmUgb2YgdGhhdCBjb21tZW50LiBQ
-bGVhc2Ugbm90ZSB0aGF0ICJ0cyIgc3VwcGxpZWQgdG8NCl9fY29iYWx0X3NlbV90aW1lZHdhaXQo
-KSBpcyBub24gTlVMTCBvbmx5IGlmIGl0IGNvdWxkIGJlIHByb3Blcmx5IHJlYWQuDQpJZiB0aGUg
-cmVhZCBmYWlsZWQgKGluc2lkZSB0aGUgaGFuZGxlcikgd2Ugd2lsbCBub3QgcmV0dXJuIGFuIGVy
-cm9yLg0KVGhlIGVycm9yIHdpbGwgb2NjdXIgd2hlbiB0cnlpbmcgdG8gdmFsaWRhdGUgbGF0ZXIu
-DQoNCj4gDQo+IElmIHRoZSBjb2RlIG5vdyBwcmUtbG9hZHMgdGhlIHRpbWVzcGVjIHN0cnVjdCBl
-YXJseSBvbiBpbiB0aGUgc3lzY2FsbA0KPiBwYXRoLCBiZWZvcmUgdGhlIHRpbWVkIHNlcnZpY2Vz
-IGFyZSBjYWxsZWQsIHRoZSBwb2ludGVyIGlzIGV4cGxpY2l0bHkNCj4gY2hlY2tlZCBmb3IgdmFs
-aWRpdHkgYmVmb3JlIHdlIGNhbiBkZWNpZGUgaWYgdGhhdCB0aW1lb3V0IGluZm9ybWF0aW9uIGlz
-DQo+IGdvaW5nIHRvIGJlIHVzZWQuDQo+IA0KPiBlLmcuDQo+IA0KPiBzdHJ1Y3QgdGltZXNwZWMg
-dHMgPSB7IC50dl9zZWMgPSAwLCAudHZfbnNlYyA9IDEwMDAwMDAwMDAgfTsNCj4gc2VtX2luaXQo
-JnNlbSwgMCwgMCk7DQo+IHNlbV9wb3N0KCZzZW0pOw0KPiBzZW1fdGltZWR3YWl0KCZzZW0sICZ0
-cyk7IC8qIHNob3VsZCBub3QgZmFpbCwgYW5kIHdvbid0IGFzIGV4cGVjdGVkLiAqLw0KDQpUaGlz
-IGlzIGFscmVhZHkgcGFydCBvZiB0aGUgc21va2V5IHkyMDM4IHBsdWdpbiwgYW5kIGRvZXMgbm90
-IGZhaWwuDQoNCj4gDQo+IGJ1dCwNCj4gDQo+IHNlbV9pbml0KCZzZW0sIDAsIDApOw0KPiBzZW1f
-cG9zdCgmc2VtKTsNCj4gc2VtX3RpbWVkd2FpdCgmc2VtLCAodm9pZCAqKTB4ZGVhZGJlZWZVTCk7
-IC8qIHNob3VsZCBub3QgZmFpbCwgYnV0IHdpbGwuICovDQo+IA0KDQpUaGlzIGlzIG5vdCB5ZXQg
-cGFydCBvZiB0aGUgeTIwMzggc21va2V5IHRlc3RzLCBidXQgd29ya3MgKD0gZG9lcyBub3QNCmZh
-aWwpLiBJIHdpbGwgYWRkIGl0IHRvIHRoZSB0ZXN0cyBhcyB3ZWxsLg0KDQo+IFNpbmNlIHRoZSBz
-dGFuZGFyZCBkb2VzIG5vdCBtYW5kYXRlcyBzdWNoIGJlaGF2aW9yIGJ1dCBzZWVtcyB0byB0YWcg
-aXQNCj4gYXMgYW4gaW1wbGVtZW50YXRpb24tZGVwZW5kZW50IG9wdGlvbiAoIlRoZSB2YWxpZGl0
-eSBvZiB0aGUgYWJzdGltZSBuZWVkDQo+IG5vdCBiZSBjaGVja2VkIGlmLi4uIiksIHRoZSBjaGFu
-Z2Ugd291bGQgc3RpbGwgYmUgYWNjZXB0YWJsZSBQT1NJWC13aXNlDQo+IEkgYmVsaWV2ZS4gSG93
-ZXZlciwgSSdtIHByZXR0eSBzdXJlIHRoYXQgdGhlcmUgYXJlIFBPU0lYIGNvbXBsaWFuY2UgdGVz
-dA0KPiBzdWl0ZXMgYXJvdW5kIHdoaWNoIHdvdWxkIHN0YXJ0IHJlcG9ydGluZyBmYWlsdXJlcyBk
-dWUgdG8gdGhpcw0KPiBjaGFuZ2UuDQo+IA0KDQo=
+On 27.02.21 07:21, Greg Gallagher via Xenomai wrote:
+> On Thu, Feb 25, 2021 at 3:06 PM Greg Gallagher <greg@embeddedgreg.com>
+> wrote:
+> 
+>>
+>>
+>> On Wed, Feb 24, 2021 at 6:16 PM steve freyder <steve@freyder.net> wrote:
+>>
+>>>
+>>>
+>>> On 2/24/2021 2:52 PM, Greg Gallagher wrote:
+>>>
+>>>
+>>>
+>>> On Wed, Feb 24, 2021 at 3:45 PM steve freyder via Xenomai <
+>>> xenomai@xenomai.org> wrote:
+>>>
+>>>> Greetings Xenomai list,
+>>>>
+>>>>
+>>>> I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am
+>>>> seeing this:
+>>>>
+>>>> root@ICB-G3L:~ # uname -a
+>>>> Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon Feb
+>>>> 22 20:57:38 UTC 2021 armv7l GN
+>>>> U/Linux
+>>>> root@ICB-G3L:~ # smokey --run=posix_mutex
+>>>> [  694.433129] [Xenomai] bad syscall <0x197>
+>>>> posix_mutex OK
+>>>>
+>>>> I found this thread:
+>>>>
+>>>> https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+>>>>
+>>>> But I can't get a clear picture on the proper resolution of this issue,
+>>>> other than it's related to a non-existent syscall, perhaps glibc
+>>>> version, and/or __real_usleep().  I'd like to get this working on either
+>>>> 4.14 or 4.19, is there a simple workaround for this?
+>>>>
+>>>> Thanks in advance,
+>>>>
+>>>> Steve
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> I forgot all about this, I'll take a look tonight and see what's
+>>> involved.  What gcc version are you using?
+>>>
+>>> Thanks
+>>>
+>>> Greg
+>>>
+>>>
+>>>
+>>> Greg,
+>>>
+>>> The compiler is gcc 9.3.0 using Yocto Dunfell.  glibc 2.31...
+>>>
+>>> I'm able to reproduce this with gcc 10, I'll hopefully have a fix or
+>> solution shortly.
+>>
+>> -Greg
+>>
+> 
+> I had some time to look into this.  The issue seems to be coming from a
+> newer version of glibc being used with an older kernel.  The usleep system
+> call has been updated in the newer glibc and is outside the range that
+> cobalt thinks is valid.  Cobalt gets the valid range from the kernel, so
+> modifying it to accept this system call doesn't make much sense.  I looked
+> at the newer 4.19 kernels and the system call range doesn't change.  So I
+> think the better solution is to use an older toolchain, I had the test pass
+> with gcc 7.3.  The newer 5.4 kernel does not hit this issue, using that
+> kernel may be an option.  I'll do a 4.19 update once we sort out the CI
+> failures.
+
+Seems like userspace is probing for the existence of that newer syscall,
+and that probing triggers the Cobalt warning.
+
+I thought we got rid of any warnings that are not related to RT? If not,
+it's time to do that now.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
