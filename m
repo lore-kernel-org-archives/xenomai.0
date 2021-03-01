@@ -1,24 +1,13 @@
-Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
-References: <E1l9itV-000402-99@xenomai.org>
- <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
- <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
- <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
- <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
- <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
- <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
- <87zgzs6ymo.fsf@xenomai.org>
- <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
- <87tuq06xiq.fsf@xenomai.org>
- <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
- <878s767r3f.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <353a5ca7-7ccc-21df-983b-e6ca2cf5a73c@siemens.com>
-Date: Fri, 5 Mar 2021 10:32:19 +0100
+Subject: Re: Memory allocation issue
+References: <af17cab0-8dce-e33c-b166-a3c5204a799f@akamina.com>
+From: Peter Laurich <Peter.Laurich@akamina.com>
+Message-ID: <aa0602f5-a927-f568-d07d-7df0667c717b@akamina.com>
+Date: Mon, 1 Mar 2021 10:51:00 -0500
 MIME-Version: 1.0
-In-Reply-To: <878s767r3f.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <af17cab0-8dce-e33c-b166-a3c5204a799f@akamina.com>
+Content-Language: en-CA
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,108 +16,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
+To: xenomai@xenomai.org
 
-On 01.03.21 17:53, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 25.02.21 15:18, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 25.02.21 14:54, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
->>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
->>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
->>>>>>>
->>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
->>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
->>>>>>>>
->>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
->>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
->>>>>>>>>>   
->>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
->>>>>>>>>>>> Download URL:
->>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
->>>>>>>>>>>>
->>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
->>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
->>>>>>>>>>>>    
->>>>>>>>>>>
->>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
->>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
->>>>>>>>>>>    
->>>>>>>>>>
->>>>>>>>>> I don't know much about the things going on here, but found this
->>>>>>>>>> line in the log. Maybe a starting point...
->>>>>>>>>>
->>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
->>>>>>>>>> msw   
->>>>>>>>>
->>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
->>>>>>>>> with the newly added 5.4 kernel.  
->>>>>>>>
->>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
->>>>>>>>
->>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
->>>>>>>>
->>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
->>>>>>>>
->>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
->>>>>>>> did not find it, so maybe our config differs
->>>>>>
->>>>>> Already compared yours against the one in xenomai-images? That would be
->>>>>> useful.
->>>>>>
->>>>>>>
->>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
->>>>>>> causing the problem.
->>>>>>>
->>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
->>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
->>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
->>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
->>>>>>>
->>>>>>> I think here Jan or Phillipe should take over.
->>>>>>
->>>>>> Thanks for bisecting, this is helpful!
->>>>>>
->>>>>> Philippe, any immediate idea why all that is failing now?
->>>>>
->>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
->>>>> in Dovetail. I'm adding this to my debug queue.
->>>>>
->>>>
->>>> This is still I-pipe, not a dovetail-related issues.
->>>
->>> This I-pipe release mimics what Dovetail does wrt mm pinning.
->>>
->>
->> Any news on this from your side?
->>
-> 
-> No time slot for working on this yet. High multiplexing rate ATM.
-> 
+Hi,
 
-I reproduced the issue on qemu-arm64 (xenomai-images exposes it
-directly), and I'm testing a fix.
+I eventually sorted this one out on my own. In case anyone else is 
+puzzled by the problem, here is my solution:
 
-Brief summary:
-Removal of un-COW support was a mistake. We will continue to require it
-because it not only affects the child (where the removal argumentation
-was targeting), but it also prevents that shared pages - even if locked
-- on a RT parent suddenly become read-only.
+  * there is a default heap size that looks to be somewhere around 1 M.
+    If you want more than that, you need to pass --mem-pool-size=<your
+    size> as a command line argument when the program is started.
+  * if you want multiple programs to share Xenomai objects, you need to
+    have the same session. This is also a command line argument
+    (--session=<your session>)
+  * ALL programs that are to share the heap as well as the same Xenomai
+    objects need to include both command line arguments --session= as
+    well as --mem-pool-size=
+  * I have not sorted out if / how kernel config values such as
+    OPT_SHARED_HEAPSZ fit into the puzzle
 
-Expect some patches later today.
+Sadly, there is no --stop-page-faulting command line argument.
 
-Jan
+Good luck
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Peter
 
+On 2/25/2021 9:30 AM, Peter Laurich via Xenomai wrote:
+> Hi,
+>
+> I am having problems allocating a larger heap using Xenomai 
+> rt_heap_create(). The attempt to allocate a heap of size 1.3M fails 
+> after having allocated less than 8K from the heap. I have the Xenomai 
+> memory configuration limits all set high enough (I think) and even 
+> pass the xenomai.sysheap_size=8192 on the kernel command line. My 
+> kernel config values for Xenomai are:
+>
+> #
+> # Sizes and static limits
+> #
+> CONFIG_XENO_OPT_PIPE_NRDEV=64
+> CONFIG_XENO_OPT_REGISTRY_NRSLOTS=8196
+> CONFIG_XENO_OPT_SYS_HEAPSZ=8192
+> CONFIG_XENO_OPT_PRIVATE_HEAPSZ=512
+> CONFIG_XENO_OPT_SHARED_HEAPSZ=512
+> CONFIG_XENO_OPT_NRTIMERS=1024
+>
+> Executing the free command reports:
+>
+>         total  used    free      shared buff/cache   available
+> Mem:  1026864 33720  974316        1208       18828 978560
+> Swap:       0     0       0
+>
+> and the output from /proc/xenomai cat heap is:
+>
+> /proc/xenomai$ cat heap
+>   TOTAL      FREE  NAME
+> 8388608   8386304  system heap
+>  524288    524160  shared heap
+>
+> I am using Xenomai 3.1 with kernel 4.19.144 on a Cortex A9 Freescale 
+> i.MX6DL processor with 1 GB RAM.
+>
+> I am also having a problem with page faults that may be related so I 
+> will include a description of this problem as well. If I reduce my 
+> heap requirements so that the rt_heap_create() no longer fails, I can 
+> attempt to run another task that uses Analogy to initialize my data 
+> acquisition hardware. When I run this task, Xenomai reports multiple 
+> switching to secondary mode exceptions that result in 
+> SIGDEBUG_MIGRATE_FAULT exceptions. I do have mlockall specified.
+>
+> Thanks in advance for any suggestions as to what may be causing my 
+> heap allocation to fail. If the page fault issue is not related, I can 
+> post that problem separately later.
+>
+> Thanks.
+>
+> Peter
+>
+>
