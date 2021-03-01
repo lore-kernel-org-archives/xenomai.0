@@ -1,13 +1,14 @@
-Subject: Re: High latency when over stress
-References: <SN6PR08MB5661F9CC518F4FDBA2B20066939B9@SN6PR08MB5661.namprd08.prod.outlook.com>
-From: song <chensong@tj.kylinos.cn>
-Message-ID: <e1bd5679-db02-0657-eab7-fbdd2a68f294@tj.kylinos.cn>+0D7DD2791DB31AF7
-Date: Mon, 1 Mar 2021 10:13:02 +0800
+Subject: Re: [IMPORTANT] gitlab relocation / rename
+References: <621240.1614155458@gemini.denx.de>
+ <781641.1614525295@gemini.denx.de> <87h7lw6tse.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5400cb73-2245-3bdf-c5c8-fb236e98a241@siemens.com>
+Date: Mon, 1 Mar 2021 10:52:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <SN6PR08MB5661F9CC518F4FDBA2B20066939B9@SN6PR08MB5661.namprd08.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <87h7lw6tse.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gabriel Dinse <gabriel_dinse@hotmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Wolfgang Denk <wd@denx.de>, Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Cc: xenomai@xenomai.org, Harald Seiler <hws@denx.de>
 
-trace-cmd start -e all; your periodic task
-trace-cmd stop
-trace-cmd extract
-trace-cmd report -l
+On 28.02.21 17:28, Philippe Gerum wrote:
+> 
+> Hi Wolfgang,
+> 
+> Wolfgang Denk <wd@denx.de> writes:
+> 
+>> Hi all,
+>>
+>> In message <621240.1614155458@gemini.denx.de> I wrote:
+>>>
+>>> We have to move all public projects off  gitlab.denx.de  to a new
+>>> gitlab instance; the new host name is then  source.denx.de .
+>>> We are fully aware that this will cause inconveniences, and I can
+>>> only assure you that we try hard to keep these as limited as
+>>> possible.
+>>>
+>>> # Details
+>>>
+>>> Around noon on Saturday, 2021-02-27, we will freeze all public
+>>> repositories on gitlab.denx.de.  They will still be readable/
+>>> cloneable but any attempt to push new commits after this point will
+>>> fail.
+>>>
+>>> We will then copy them over to the now host, source.denx.de .
+>>> All custodian accounts will also be transferred, the same login
+>>> credentials from gitlab.denx.de will work on source.denx.de .
+>>>
+>>> The URLs for the repositories will stay the same, except of course
+>>> for the host name.  So, for example, the U-Boot mainline repository
+>>> will then be hosted at
+>>>
+>>>     https://source.denx.de/u-boot/u-boot.git
+>>>
+>>> We will install redirects to forward HTTP accesses from the old
+>>> repository URLs to the new host.  This should make the transition
+>>> mostly transparent, but does not cover everything.  The following
+>>> needs to be taken care of manually:
+>>>
+>>> - Update the SSH URI for pushing to the repositories.  Just replace
+>>>   gitlab.denx.de  with  source.denx.de .  We will transfer all the
+>>>   SSH-keys to the new host so nothing else should be needed.
+>>>
+>>> - Make sure you're logging in on  source.denx.de .  Access to
+>>>   gitlab.denx.de  will no longer work!
+>>>
+>>> - CI runners connected to  gitlab.denx.de  need to be re-registered
+>>>   with  source.denx.de .
+>>>
+>>> The new host should hopefully be operational sometime on Sunday,
+>>> 2021-02-28.  We will send a further announcement once everything is
+>>> back up and running.
+>>
+>> As far as we were able to test it, the move has been completed and
+>> is fully functional again.  All public project are now on the new
+>> gitlab instance  source.denx.de
+>>
+>> If you should experience any problems, please do not hesitate to ask 
+>> Harald Seiler <hws@denx.de>, he will try to help you.
+>>
+>> Thanks for your patience!
+>>
+> 
+> Thanks to everyone involved in providing us with an even better
+> infrastructure. Greatly appreciated.
+> 
 
-catch ftrace log to see what is going on in the system.
+Thanks a lot for the providing us the new infrastructure!
 
-Song
+Quirin, CI is down now. Not sure if tokens changed (I think they didn't)
+or if the runner is just still connecting to the old server. Please
+update once you are back in office.
 
-On 2021/3/1 上午6:26, Gabriel Dinse via Xenomai wrote:
-> Hello,
-> I'm doing a comparison of interrupt handling on Xenomai using a 
-> raspberry pi 3-b in 2 situations:
-> 1- No stress
-> 2- Running stress-ng on terminal: $ nice -19 stress-ng -c 4 --metrics 
-> --timeout 120s&
-> 
-> What I do is to create a periodic task (priority 50) that runs every 
-> 500us activating gpio22 for 250us and save the activating time. Another 
-> task, with priority 99 is meant to catch the interrupts in a while loop 
-> and save the time as well for computing the time differences later. This 
-> is done 100000 times and in the end I do some verifications.
-> 
-> On situation 1 (no stress) I get:
-> Min: 11823ns
-> Max: 17761ns
-> Standard deviation: 258.96ns
-> Mean: 13103.17ns
-> 
-> On situation 2 (with cpu stress)  I get:
-> Min: 12239ns
-> Max: 721302ns
-> Standard deviation: 32976.01ns
-> Mean: 29112.24ns
-> 
-> I would not say the higher mean is actually a problem (could be), but 
-> the standard deviation is much higher and I don't think this is the 
-> desired result for Xenomai.
-> Is the first result fine?
-> What could be causing this?
-> Any addition information just ask me.
-> 
-> Thank you,
-> Gabriel Dinse
-> 
-> 
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
