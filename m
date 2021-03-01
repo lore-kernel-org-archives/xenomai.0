@@ -1,18 +1,13 @@
-Subject: Re: [RFC PATCH v2 1/4] y2038: Fixing the sem_timedwait syscall for 32
- bit systems
-References: <87h7lqzzzw.fsf@xenomai.org>
- <20210308170206.313181-1-florian.bezdeka@siemens.com>
- <20210308170206.313181-2-florian.bezdeka@siemens.com>
- <95879ecb-09d5-79b4-34a3-91d3ca58bd0f@siemens.com>
- <e3b758642ba1ee6d8c4b459c2b476155194205bf.camel@siemens.com>
+Subject: Re: Weird semaphore/timeout behaviour with gdbserver
+References: <35a5-60392380-18f-48dc0d80@57279928>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <73957ba4-d06a-49c2-e6c0-0d43c8890632@siemens.com>
-Date: Mon, 8 Mar 2021 19:22:42 +0100
+Message-ID: <70abfb5d-6869-f49e-5e64-8b23daac055e@siemens.com>
+Date: Mon, 1 Mar 2021 18:28:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <e3b758642ba1ee6d8c4b459c2b476155194205bf.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <35a5-60392380-18f-48dc0d80@57279928>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,50 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>
+Cc: xenomai@xenomai.org
 
-On 08.03.21 19:11, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> On Mon, 2021-03-08 at 18:12 +0100, Jan Kiszka wrote:
->> On 08.03.21 18:02, Florian Bezdeka wrote:
->>> On systems using 32 bit for time_t the sem_timedwait syscall was broken
->>> because the function used for copying the timeout value from userspace
->>> to kernel (=sem_fetch_timeout()) was always copying
->>> sizeof(struct timespec64).
+On 26.02.21 17:36, François Legal wrote:
+> Le Vendredi, Février 26, 2021 17:17 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
+>  
+>> Le Vendredi, Février 26, 2021 09:08 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
+>>  
+>>> Le Jeudi, Janvier 21, 2021 22:42 CET, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
+>>>  
+>>>> On 19.01.21 18:41, François Legal via Xenomai wrote:
+>>>>> Le Vendredi, Janvier 08, 2021 19:35 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
+>>>>>  
+>>>>>> Hello,
+>>>>>>
+>>>>>> Working on ARMv7 with linux 4.4 and xenomai 3.1, I get a strange behaviour when using GDB.
+>>>>>> There seem to be troubles with threads pending on semaphores, which do not wake up when sem is posted nor when the timedwait is over.
+>>>>>> It does not seem to make a problem with all the semaphores on the software, but at program startup, the behaviour is pretty constant.
+>>>>>>
+>>>>>> If I start the same program from shell, thread activation works flawlessly.
+>>>>>>
+>>>>>> ANybody can give a hint on this ?
+>>>>>>
+>>>>>> Thanks.
+>>>>>>
+>>>>>> François
+>>>>>>
+>>>>>>
+>>>>>  
+>>>>> I've got another case with pulse semaphores with timeout, that outline the same behaviour without gdbserver.
+>>>>> I've got 2 threads and 2 pulse semaphores. Thread1 (priority 60) successively pends (with 30s timeout) on SEM1 then posts SEM2, while thread2 (priority 52) posts SEM1 then pends (forever) on SEM2. Both semaphores are initialized at 0.
+>>>>> I can see from debug log that Thread1 pends on SEM1, then thread2 posts SEM1 and pends SEM2, then thread1 posts SEM2, then thread2 posts SEM1 then pends SEM2, then thread1 pends SEM1, then nothing happens anymore. I thought thread1 should be unblocked (either by thread2 posting SEM1, or by the 30s timeout) but that never happens.
+>>>>>
+>>>>> What am I getting wrong here ?
+>>>>>
+>>>>
+>>>> These scenarios are hairy without test cases. Can you derive something
+>>>> simple, portable from your problems? There is testsuite/smokey/gdb/gdb.c
+>>>> for full automated tests, but already something we can compile and run
+>>>> locally here, gdb manually operated, would be fine. It would also allow
+>>>> to cross-check on x86 and arm64 to see if this is arch-specific.
+>>>>
+>>>> Jan
+>>>>
+>>>> -- 
+>>>> Siemens AG, T RDA IOT
+>>>> Corporate Competence Center Embedded Linux
+>>>  
+>>>  
+>>> Sorry to reply so late on this, but I've been busy on some other stuff.I tried to write a simple piece of code that reproduces the problem, but with no luck. In the simple case, the sems work as intended (and thus do not need to honor the timeout).
+>>> I'm not sure how I can find the answer on this. Also is there any way to check the state of shored objects like semaphores, mutexes, ...
+>>> I read the registry should provide this, but I not able to get more entries than what already present in /proc/xenomai/ (heaps, threads and version)
 >>>
->>> A 32 bit application (or more specific an application with 4 byte
->>> time_t) would only provide sizeof(struct old_timespec32).
+>>> François
 >>>
->>> Notable changes:
->>>   - The copy operation from userspace to kernel is now already done in
->>>     the syscall handler. So it is always done. Previously it was copied
->>>     over and validated before the first use (when used at all).
->>>     So we have some additional instructions now that may be
->>>     unnecessary, but that simplifies the code.
 >>>
->>>   - Validation: Switched to timespec64_valid() instead of our own
->>>     check.
->>>
->>> Fixes: 8043eccd232d ("cobalt/kernel: y2038: convert struct timespec to timespec64")
+>>  
+>> I believe I found out why my semaphores behave oddly when under GDB. I checked /proc/xenomai/sched/stats, and saw that almost all of my threads have the 0x400000 bit set (#define XNDBGSTOP 0x00400000 /**< Stopped for synchronous debugging */)
 >>
->> This patch was dropped from next again (and that sha was never applied).
->> We should go a for fixed version of that series (patches 2..5, only
->> patch 1 is now applied).
-> 
-> That's one of the things that may happen when working with branches
-> that are getting rebased... The correct refspec is maybe 4d31feb5 now,
-> which is part of wip/dovetail.
+>> So I believe that's perfectly normal for the semaphores not to timeout, because the threads are stopped.
+>>
+>> What I wonder now, is why this bit got set for all but one thread in the project.
+>>
+>> Thanks
+>>
+>> François
+>>
+>>
+>  
+> And if I check the same with the simple app I created, I don't see the XNDBGSTOP bit being automagically set when running with GDB
 
-All these are development branches, nothing considered stable. And, no,
-even wip/dovetail is the wrong target. The right one is the patch that
-needs to be fixed in v2 of Philippe's series.
+The basic idea behind this bit is that, when some RT thread hits a debug
+condition, all other RT threads in the process are stopped immediately
+by Xenomai - rather than letting gdb and ptrace to that by sending
+non-RT signals. That shall allow to debug the process in a state that
+comes closer to what was reality when the break condition occurred. That
+is also one aspect the the gdb smokey test validates.
 
-> 
-> Please note the RFC tag. Would be nice to get some feedback before
-> going ahead, otherwise the loops with all the necessary synchronization
-> and rebases is getting endless...
-
-For this particular patch, Philippe should comment first.
-I will have a look at the rest now.
+I'm still not sure if you see normal behavior or something odd, though.
 
 Jan
 
