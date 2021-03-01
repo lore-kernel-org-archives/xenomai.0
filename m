@@ -1,11 +1,21 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 5.4-arm/arm64 only] ipipe: mm: Sync with noarch
-Message-ID: <74e3f89f-3a2d-b512-1140-48d3a3d64050@siemens.com>
-Date: Fri, 5 Mar 2021 19:31:18 +0100
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+ <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+ <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
+ <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
+ <87zgzs6ymo.fsf@xenomai.org>
+ <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
+ <87tuq06xiq.fsf@xenomai.org>
+ <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+In-reply-to: <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+Date: Mon, 01 Mar 2021 17:53:40 +0100
+Message-ID: <878s767r3f.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,92 +24,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Remove remainders of a previous, incomplete update.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+> On 25.02.21 15:18, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> On 25.02.21 14:54, Philippe Gerum wrote:
+>>>>
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
+>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>>>>>>
+>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>>>>>>>
+>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
+>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>>>>>>>>>   
+>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
+>>>>>>>>>>> Download URL:
+>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>>>>>
+>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>>>>>    
+>>>>>>>>>>
+>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+>>>>>>>>>>    
+>>>>>>>>>
+>>>>>>>>> I don't know much about the things going on here, but found this
+>>>>>>>>> line in the log. Maybe a starting point...
+>>>>>>>>>
+>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+>>>>>>>>> msw   
+>>>>>>>>
+>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
+>>>>>>>> with the newly added 5.4 kernel.  
+>>>>>>>
+>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+>>>>>>>
+>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+>>>>>>>
+>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+>>>>>>>
+>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+>>>>>>> did not find it, so maybe our config differs
+>>>>>
+>>>>> Already compared yours against the one in xenomai-images? That would be
+>>>>> useful.
+>>>>>
+>>>>>>
+>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
+>>>>>> causing the problem.
+>>>>>>
+>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>>>>>>
+>>>>>> I think here Jan or Phillipe should take over.
+>>>>>
+>>>>> Thanks for bisecting, this is helpful!
+>>>>>
+>>>>> Philippe, any immediate idea why all that is failing now?
+>>>>
+>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+>>>> in Dovetail. I'm adding this to my debug queue.
+>>>>
+>>>
+>>> This is still I-pipe, not a dovetail-related issues.
+>> 
+>> This I-pipe release mimics what Dovetail does wrt mm pinning.
+>> 
+>
+> Any news on this from your side?
+>
 
-With this applied, my uncow fix fits for arm/arm64 as well.
+No time slot for working on this yet. High multiplexing rate ATM.
 
- mm/memory.c | 41 +++++------------------------------------
- 1 file changed, 5 insertions(+), 36 deletions(-)
-
-diff --git a/mm/memory.c b/mm/memory.c
-index 3958f20409f9..64206f1b0546 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -691,8 +691,8 @@ struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,
- 
- static inline unsigned long
- copy_one_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
--	     pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
--	     unsigned long addr, int *rss, struct page *uncow_page)
-+		pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
-+		unsigned long addr, int *rss)
- {
- 	unsigned long vm_flags = vma->vm_flags;
- 	pte_t pte = *src_pte;
-@@ -806,27 +806,13 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- 	int progress = 0;
- 	int rss[NR_MM_COUNTERS];
- 	swp_entry_t entry = (swp_entry_t){0};
--	struct page *uncow_page = NULL;
--#ifdef CONFIG_IPIPE
--	int do_cow_break = 0;
--again:
--	if (do_cow_break) {
--		uncow_page = alloc_page_vma(GFP_HIGHUSER, vma, addr);
--		if (uncow_page == NULL)
--			return -ENOMEM;
--		do_cow_break = 0;
--	}
--#else
-+
- again:
--#endif
- 	init_rss_vec(rss);
- 
- 	dst_pte = pte_alloc_map_lock(dst_mm, dst_pmd, addr, &dst_ptl);
--	if (!dst_pte) {
--		if (uncow_page)
--			put_page(uncow_page);
-+	if (!dst_pte)
- 		return -ENOMEM;
--	}
- 	src_pte = pte_offset_map(src_pmd, addr);
- 	src_ptl = pte_lockptr(src_mm, src_pmd);
- 	spin_lock_nested(src_ptl, SINGLE_DEPTH_NESTING);
-@@ -849,25 +835,8 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- 			progress++;
- 			continue;
- 		}
--#ifdef CONFIG_IPIPE
--		if (likely(uncow_page == NULL) && likely(pte_present(*src_pte))) {
--			if (is_cow_mapping(vma->vm_flags) &&
--			    test_bit(MMF_VM_PINNED, &src_mm->flags) &&
--			    ((vma->vm_flags|src_mm->def_flags) & VM_LOCKED)) {
--				arch_leave_lazy_mmu_mode();
--				spin_unlock(src_ptl);
--				pte_unmap(src_pte);
--				add_mm_rss_vec(dst_mm, rss);
--				pte_unmap_unlock(dst_pte, dst_ptl);
--				cond_resched();
--				do_cow_break = 1;
--				goto again;
--			}
--		}
--#endif
- 		entry.val = copy_one_pte(dst_mm, src_mm, dst_pte, src_pte,
--					 vma, addr, rss, uncow_page);
--		uncow_page = NULL;
-+							vma, addr, rss);
- 		if (entry.val)
- 			break;
- 		progress += 8;
 -- 
-2.26.2
+Philippe.
 
