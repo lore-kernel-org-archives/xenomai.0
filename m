@@ -1,12 +1,21 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [y2038][RFC PATCH 2/2] y2038: Adding sem_timedwait_time64
-Date: Thu,  4 Mar 2021 12:36:53 +0100
-Message-Id: <20210304113653.45432-3-florian.bezdeka@siemens.com>
-In-Reply-To: <20210304113653.45432-1-florian.bezdeka@siemens.com>
-References: <87v9a7z0xh.fsf@xenomai.org>
- <20210304113653.45432-1-florian.bezdeka@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+ <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+ <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
+ <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
+ <87zgzs6ymo.fsf@xenomai.org>
+ <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
+ <87tuq06xiq.fsf@xenomai.org>
+ <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+In-Reply-To: <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 1 Mar 2021 11:34:33 -0500
+Message-ID: <CALLqZ8SVgmQPJrf--NhyZnqoVA5ounrZUCxe=fn2p-yOwq1XLg@mail.gmail.com>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,117 +24,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com, rpm@xenomai.org, chensong@kylinos.cn
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Henning Schild via Xenomai <xenomai@xenomai.org>
 
-Implementation is heavily inspired by the sem_timedwait syscall,
-but expecting time64 based timespec / timeout.
+On Mon, Mar 1, 2021 at 11:20 AM Jan Kiszka via Xenomai <xenomai@xenomai.org>
+wrote:
 
-We need two new syscall handlers:
-  - The native one (COBALT_SYSCALL()) to get 32 bit kernels time64
-    aware. This handler is added for 64 bit kernels as well, but not
-    used. As we don't have separate syscall tables for this both
-    worlds we have to add it.
+> On 25.02.21 15:18, Philippe Gerum wrote:
+> >
+> > Jan Kiszka <jan.kiszka@siemens.com> writes:
+> >
+> >> On 25.02.21 14:54, Philippe Gerum wrote:
+> >>>
+> >>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> >>>
+> >>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+> >>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
+> >>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+> >>>>>
+> >>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+> >>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+> >>>>>>
+> >>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> >>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+> >>>>>>>>
+> >>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:
+> >>>>>>>>>> Download URL:
+> >>>>>>>>>>
+> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+> >>>>>>>>>>
+> >>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+> >>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+> >>>>>>>>>>
+> >>>>>>>>>
+> >>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+> >>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+> >>>>>>>>>
+> >>>>>>>>
+> >>>>>>>> I don't know much about the things going on here, but found this
+> >>>>>>>> line in the log. Maybe a starting point...
+> >>>>>>>>
+> >>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+> >>>>>>>> msw
+> >>>>>>>
+> >>>>>>> Exactly, that is causing the overall failure. And it was first seen
+> >>>>>>> with the newly added 5.4 kernel.
+> >>>>>>
+> >>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+> >>>>>>
+> >>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+> >>>>>>
+> >>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+> >>>>>>
+> >>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+> >>>>>> did not find it, so maybe our config differs
+> >>>>
+> >>>> Already compared yours against the one in xenomai-images? That would
+> be
+> >>>> useful.
+> >>>>
+> >>>>>
+> >>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6
+> likely
+> >>>>> causing the problem.
+> >>>>>
+> >>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+> >>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+> >>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+> >>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+> >>>>>
+> >>>>> I think here Jan or Phillipe should take over.
+> >>>>
+> >>>> Thanks for bisecting, this is helpful!
+> >>>>
+> >>>> Philippe, any immediate idea why all that is failing now?
+> >>>
+> >>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+> >>> in Dovetail. I'm adding this to my debug queue.
+> >>>
+> >>
+> >> This is still I-pipe, not a dovetail-related issues.
+> >
+> > This I-pipe release mimics what Dovetail does wrt mm pinning.
+> >
+>
+> Any news on this from your side?
+>
+> Florian took a trace from the system where this was observed on x86. It
+> seems to confirm that we have an unexpected minor fault here:
+>
+> smokey-568   [000]    74.233945: cobalt_head_sysentry:
+> syscall=thread_getschedparam_ex
+> smokey-568   [000]    74.233950: cobalt_pthread_getschedparam:
+> pth=0x7f2a18ebf700 policy=fifo param={ priority=3 }
+> smokey-568   [000]    74.233950: cobalt_head_sysexit:  result=0
+> smokey-568   [000]    74.233952: cobalt_head_sysentry:
+> syscall=thread_getstat
+> smokey-568   [000]    74.233952: cobalt_pthread_stat:  pid=568
+> smokey-568   [000]    74.233953: cobalt_head_sysexit:  result=0
+> smokey-568   [000]    74.233962: cobalt_thread_fault:  ip=0x7f2a19cd6b46
+> type=e
+> smokey-568   [000]    74.233962: cobalt_shadow_gorelax: reason=fault
+> smokey-568   [000]    74.233963: cobalt_lostage_request:
+> request=ffffffffbcd85992 pid=568 comm=smokey
+> ...
+> smokey-568   [000]    74.234005: cobalt_shadow_relaxed: state=0x480c0
+> info=0x0
+> ...
+> smokey-568   [000]    74.235027: cobalt_head_sysentry: syscall=ftrace_puts
+> smokey-568   [000]    74.235028: cobalt_root_sysentry: syscall=ftrace_puts
+> smokey-568   [000]    74.235028: print:                CoBaLt_ftrace_puts:
+> Second assertion failed
+> (that's around line 120 in smokey/setsched/setsched.c)
+>
+> Now, before I dig into the code you pointed to, I just wanted to sync.
+>
+> Jan
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
+>
+On my end I spent the weekend trying to reproduce the issue on ARM64.  I've
+been trying to reproduce on qemu using the default defconfig and the
+defconfig from the CI machines.  To save time I run the setsched test in
+smokey by passing in the test id.  I still haven't had any luck reproducing
+it.  I'm currently running it in a loop hoping it will cause the failure.
+When you guys reproduce the issue, do all the tests get run?
 
- - The compat handler (COBALT_SYSCALL32emu()) for x32 or x86
-   applications running on an x86_64 kernel. Otherwise the redirection
-   to the compat / emulation syscalls is broken.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/uapi/syscall.h   |  1 +
- kernel/cobalt/posix/sem.c       | 12 ++++++++++++
- kernel/cobalt/posix/sem.h       |  4 ++++
- kernel/cobalt/posix/syscall32.c | 12 ++++++++++++
- kernel/cobalt/posix/syscall32.h |  4 ++++
- 5 files changed, 33 insertions(+)
-
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index aa3c308d0..9b005da47 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -122,6 +122,7 @@
- #define sc_cobalt_sendmmsg			99
- #define sc_cobalt_clock_adjtime			100
- #define sc_cobalt_thread_setschedprio		101
-+#define sc_cobalt_sem_timedwait_time64		102
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index a0565e9f8..a2211af36 100644
---- a/kernel/cobalt/posix/sem.c
-+++ b/kernel/cobalt/posix/sem.c
-@@ -430,6 +430,18 @@ COBALT_SYSCALL(sem_timedwait, primary,
- 	return __cobalt_sem_timedwait(u_sem, &ts64);
- }
- 
-+COBALT_SYSCALL(sem_timedwait_time64, primary,
-+	       (struct cobalt_sem_shadow __user *u_sem,
-+		const struct __kernel_timespec __user *u_ts))
-+{
-+	struct timespec64 ts64;
-+
-+	if (get_timespec64(&ts64, u_ts))
-+		return -EFAULT;
-+
-+	return __cobalt_sem_timedwait(u_sem, &ts64);
-+}
-+
- COBALT_SYSCALL(sem_trywait, primary,
- 	       (struct cobalt_sem_shadow __user *u_sem))
- {
-diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
-index 658e11f7a..8491b69ba 100644
---- a/kernel/cobalt/posix/sem.h
-+++ b/kernel/cobalt/posix/sem.h
-@@ -66,6 +66,10 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
- int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
- 			   const struct timespec64 *ts);
- 
-+COBALT_SYSCALL_DECL(sem_timedwait_time64,
-+		    (struct cobalt_sem_shadow __user *u_sem,
-+		     const struct __kernel_timespec __user *u_ts));
-+
- int __cobalt_sem_destroy(xnhandle_t handle);
- 
- void cobalt_nsem_reclaim(struct cobalt_process *process);
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index c2a2423ed..d50532952 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -136,6 +136,18 @@ COBALT_SYSCALL32emu(sem_timedwait, primary,
- 	return __cobalt_sem_timedwait(u_sem, &ts64);
- }
- 
-+COBALT_SYSCALL32emu(sem_timedwait_time64, primary,
-+		    (struct cobalt_sem_shadow __user *u_sem,
-+		     const struct __kernel_timespec __user *u_ts))
-+{
-+	struct timespec64 ts64;
-+
-+	if (get_timespec64(&ts64, u_ts))
-+		return -EFAULT;
-+
-+	return __cobalt_sem_timedwait(u_sem, &ts64);
-+}
-+
- COBALT_SYSCALL32emu(clock_getres, current,
- 		    (clockid_t clock_id,
- 		     struct old_timespec32 __user *u_ts))
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index d72fd2022..3612bf751 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -231,4 +231,8 @@ COBALT_SYSCALL32emu_DECL(sem_timedwait,
- 			 (struct cobalt_sem_shadow __user *u_sem,
- 			  const struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(sem_timedwait_time64,
-+			 (struct cobalt_sem_shadow __user * u_sem,
-+			  const struct __kernel_timespec __user *u_ts));
-+
- #endif /* !_COBALT_POSIX_SYSCALL32_H */
--- 
-2.29.2
-
-
+-Greg
