@@ -1,14 +1,18 @@
-From: Wolfgang Denk <wd@denx.de>
-Subject: Re: [IMPORTANT] gitlab relocation / rename
+Subject: Re: [Xenomai] bad syscall <0x197>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+ <CALLqZ8Tr4e_ObU1+NCsd0nfDGiG96ok7nb-xCxHrK8Gk3KZ3AA@mail.gmail.com>
+ <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+ <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+ <CALLqZ8RefLM_Wdosh_+DeLKS3DC4HhgxhJBi4ZwfrAdPNXz4HQ@mail.gmail.com>
+ <879fe4d2-94ca-4650-0911-7d4a73b95228@siemens.com>
+Message-ID: <47e3a20a-863f-8805-6957-c38d088a7ba8@siemens.com>
+Date: Mon, 1 Mar 2021 18:43:38 +0100
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <20210308083457.76db0c20@md1za8fc.ad001.siemens.net>
-References: <621240.1614155458@gemini.denx.de>
- <781641.1614525295@gemini.denx.de>
- <20210308083457.76db0c20@md1za8fc.ad001.siemens.net>
-Date: Wed, 10 Mar 2021 08:56:48 +0100
-Message-ID: <1083829.1615363008@gemini.denx.de>
+In-Reply-To: <879fe4d2-94ca-4650-0911-7d4a73b95228@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +21,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Wolfgang Denk via Xenomai <xenomai@xenomai.org>, u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, Tom Rini <trini@konsulko.com>, Harald Seiler <hws@denx.de>
+To: Greg Gallagher <greg@embeddedgreg.com>, steve freyder <steve@freyder.net>, Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Henning,
+On 01.03.21 18:31, Jan Kiszka wrote:
+> On 27.02.21 07:21, Greg Gallagher via Xenomai wrote:
+>> On Thu, Feb 25, 2021 at 3:06 PM Greg Gallagher <greg@embeddedgreg.com>
+>> wrote:
+>>
+>>>
+>>>
+>>> On Wed, Feb 24, 2021 at 6:16 PM steve freyder <steve@freyder.net> wrote:
+>>>
+>>>>
+>>>>
+>>>> On 2/24/2021 2:52 PM, Greg Gallagher wrote:
+>>>>
+>>>>
+>>>>
+>>>> On Wed, Feb 24, 2021 at 3:45 PM steve freyder via Xenomai <
+>>>> xenomai@xenomai.org> wrote:
+>>>>
+>>>>> Greetings Xenomai list,
+>>>>>
+>>>>>
+>>>>> I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am
+>>>>> seeing this:
+>>>>>
+>>>>> root@ICB-G3L:~ # uname -a
+>>>>> Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon Feb
+>>>>> 22 20:57:38 UTC 2021 armv7l GN
+>>>>> U/Linux
+>>>>> root@ICB-G3L:~ # smokey --run=posix_mutex
+>>>>> [  694.433129] [Xenomai] bad syscall <0x197>
+>>>>> posix_mutex OK
+>>>>>
+>>>>> I found this thread:
+>>>>>
+>>>>> https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+>>>>>
+>>>>> But I can't get a clear picture on the proper resolution of this issue,
+>>>>> other than it's related to a non-existent syscall, perhaps glibc
+>>>>> version, and/or __real_usleep().  I'd like to get this working on either
+>>>>> 4.14 or 4.19, is there a simple workaround for this?
+>>>>>
+>>>>> Thanks in advance,
+>>>>>
+>>>>> Steve
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> I forgot all about this, I'll take a look tonight and see what's
+>>>> involved.  What gcc version are you using?
+>>>>
+>>>> Thanks
+>>>>
+>>>> Greg
+>>>>
+>>>>
+>>>>
+>>>> Greg,
+>>>>
+>>>> The compiler is gcc 9.3.0 using Yocto Dunfell.  glibc 2.31...
+>>>>
+>>>> I'm able to reproduce this with gcc 10, I'll hopefully have a fix or
+>>> solution shortly.
+>>>
+>>> -Greg
+>>>
+>>
+>> I had some time to look into this.  The issue seems to be coming from a
+>> newer version of glibc being used with an older kernel.  The usleep system
+>> call has been updated in the newer glibc and is outside the range that
+>> cobalt thinks is valid.  Cobalt gets the valid range from the kernel, so
+>> modifying it to accept this system call doesn't make much sense.  I looked
+>> at the newer 4.19 kernels and the system call range doesn't change.  So I
+>> think the better solution is to use an older toolchain, I had the test pass
+>> with gcc 7.3.  The newer 5.4 kernel does not hit this issue, using that
+>> kernel may be an option.  I'll do a 4.19 update once we sort out the CI
+>> failures.
+> 
+> Seems like userspace is probing for the existence of that newer syscall,
+> and that probing triggers the Cobalt warning.
+> 
+> I thought we got rid of any warnings that are not related to RT? If not,
+> it's time to do that now.
+> 
 
-In message <20210308083457.76db0c20@md1za8fc.ad001.siemens.net> you wrote:
->
-> I do not understand why this is not just gitlab (proper) or github. I
-> hope this discussion was held with the communities of the affected
-> projects involved. While being disruptive i would suggest for Xenomai
-> to move away from denx. For the git side of the operations. To be more
-> open and welcoming to users/contributers etc.
+I think we should kill that check and branching:
 
-Are you positively sure that moving to any otherhosting environment
-will have any positive effect on how the Xenomai community works?
+https://source.denx.de/Xenomai/xenomai/-/blob/2cc2f54b98921cc8ae2990eb4e8abb3f10902230/kernel/cobalt/posix/syscall.c#L649
 
-We use the very same setup for U-Boot as well, which has a _much_
-bigger and _much_ more active community.  We have regular releases
-every 3 months, and most releases include commits from >200
-developers from >30 employers.  And the CI setup for U-Boot is in no
-respect (number of supported architectures / processors / boards /
-tool chains) less challenging than what you do in Xenomai, on
-contrary.  Not to mention the development rate - U-Boot sees > 20
-commits per day in mainline.
+The only purpose this has is keeping a caller from RT in RT when
+invoking an invalid Linux syscall - plus noisily complaining on the
+kernel console. What would be the use case for that?
 
-Sorry, but I don't buy your "more open and welcoming to users/contri-
-buters" comment.  THe existing environment has proven to work fine
-for a FOSS community project.
-
-Best regards,
-
-Wolfgang Denk
+Jan
 
 -- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-Someone who thinks logically is a nice contrast to the real world.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
