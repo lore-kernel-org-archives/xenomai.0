@@ -1,15 +1,11 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
-Date: Tue, 2 Mar 2021 13:43:41 +0000
-Message-ID: <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
 References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
- <603E3952.1070109@tj.kylinos.cn>+67C36DF843AB5C23
-In-Reply-To: <603E3952.1070109@tj.kylinos.cn>+67C36DF843AB5C23
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <605F5C064A5F6247A9566BCCB9371B86@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
+In-reply-to: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
+Date: Tue, 02 Mar 2021 14:44:50 +0100
+Message-ID: <87y2f56565.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +14,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
-Cc: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: chensong <chensong@tj.kylinos.cn>
+Cc: florian.bezdeka@siemens.com, xenomai@xenomai.org, jan.kiszka@siemens.com
 
-T24gVHVlLCAyMDIxLTAzLTAyIGF0IDIxOjEwICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gRmxv
-cmlhbiAkIFBoaWxpcHBlLA0KPiANCj4gQXMgdGhlIGRpc2N1c3Npb24gaW4gdGhlIG1haWxzIDIw
-MjEtMDItMjEsIHdlIGFyZSBnb2luZyB0byByZXBsYWNlIA0KPiBfX3VzZXJfb2xkX3RpbWVzcGVj
-IHdpdGggX19rZXJuZWxfb2xkX3RpbWVzcGVjIHRvIGtlZXAgYWxpZ25lZCB3aXRoIA0KPiB1cHN0
-cmVhbS4NCg0KUGxlYXNlIG5vdGUgdGhlIHkyMDM4IHJlbGF0ZWQgcGF0Y2hlcyBmcm9tIFBoaWxp
-cHBlIGxvY2F0ZWQgaW4gdGhlDQp3aXAvZG92ZXRhaWwgYnJhbmNoIG9mIHRoZSBYZW5vbWFpIHJl
-cG9zaXRvcnkuIFRoYXQgd29yayBoYXMgYWxyZWFkeQ0KYmVlbiBkb25lLg0KDQo+IA0KPiBUaGlz
-IHBhdGNoIGludHJvZHVjZWQgdGhlaXIgZGVmaW5pdGlvbnMsIGlmIHlvdSBib3RoIGFncmVlLCBp
-IHdpbGwgc3RhcnQgDQo+IHJlcGxhY2luZyBfX3VzZXJfb2xkX3RpbWVzcGVjIGFuZCBfX3VzZXJf
-b2xkX3RpbWV2YWwgYWZ0ZXJ3YXJkLg0KPiANCj4gQlINCj4gDQo+IFNvbmcNCj4gDQo+IE9uIDIw
-MjHlubQwM+aciDAy5pelIDIxOjA1LCBjaGVuc29uZyB3cm90ZToNCj4gPiBTaW5jZSB0aW1lc3Bl
-YyBhbmQgdGltZXZhbCB3aWxsIGJlIHJlbW92ZWQgYmVjYXVzZSBvZg0KPiA+IHkyMDM4IHByb2Js
-ZW0sIHdlIG5lZWQgdG8gaW50cm9kdWNlIG5ldyB0aW1lIHJlcHJlc2VudGF0aW9ucyBhdA0KPiA+
-IHRoZSBrZXJuZWwtdXNlciBib3VuZGFyeSBhbmQgd2UgYWxzbyBuZWVkIHRvIGtlZXAgYWxpZ25l
-ZCB3aXRoDQo+ID4gdXBzdHJlYW0gYXQgdGhlIHNhbWUgdGltZS4NCj4gPiANCj4gPiBUaGVyZWZv
-cmUsIHdlIGludHJvZHVjZToNCj4gPiAxKV9fa2VybmVsX29sZF90aW1ldmFsDQo+ID4gMilfX2tl
-cm5lbF9vbGRfdGltZXNwZWMNCj4gPiBmcm9tIHVwc3RyZWFtLCB0aGVpciB0dl9zZWMgYXJlIGRl
-ZmluZWQgYXMgbG9uZyBhbmQgYXMgYSByZXN1bHQgdGhlaXIgd2lkdGgNCj4gPiBpcyBhYmxlIHRv
-IGFkYXB0IGRpZmZlcmVudCBhcmNoIGF1dG9tYXRpY2FsbHkuDQo+ID4gDQo+ID4gU2lnbmVkLW9m
-Zi1ieTogY2hlbnNvbmcgPGNoZW5zb25nQHRqLmt5bGlub3MuY24+DQo+ID4gLS0tDQo+ID4gwqDC
-oGluY2x1ZGUvY29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmggfCAxNSArKysrKysrKysrKysrKysN
-Cj4gPiDCoMKgMSBmaWxlIGNoYW5nZWQsIDE1IGluc2VydGlvbnMoKykNCj4gPiANCj4gPiBkaWZm
-IC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQvdWFwaS9rZXJuZWwvdHlwZXMuaCBiL2luY2x1ZGUvY29i
-YWx0L3VhcGkva2VybmVsL3R5cGVzLmgNCj4gPiBpbmRleCAyYzkzMWMyLi44OTMxZDgyIDEwMDY0
-NA0KPiA+IC0tLSBhL2luY2x1ZGUvY29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmgNCj4gPiArKysg
-Yi9pbmNsdWRlL2NvYmFsdC91YXBpL2tlcm5lbC90eXBlcy5oDQo+ID4gQEAgLTIwLDYgKzIwLDcg
-QEANCj4gPiANCj4gPiDCoMKgI2luY2x1ZGUgPGxpbnV4L3R5cGVzLmg+DQo+ID4gwqDCoCNpbmNs
-dWRlIDxjb2JhbHQvdWFwaS9rZXJuZWwvbGltaXRzLmg+DQo+ID4gKyNpbmNsdWRlIDxhc20tZ2Vu
-ZXJpYy94ZW5vbWFpL3dyYXBwZXJzLmg+DQo+ID4gDQo+ID4gwqDCoHR5cGVkZWYgX191NjQgeG50
-aWNrc190Ow0KPiA+IA0KPiA+IEBAIC03OCw2ICs3OSwyMCBAQCBzdHJ1Y3QgX191c2VyX29sZF90
-aW1ldmFsIHsNCj4gPiDCoMKgCWxvbmcgIHR2X3VzZWM7DQo+ID4gwqDCoH07DQo+ID4gDQo+ID4g
-KyNpZiBMSU5VWF9WRVJTSU9OX0NPREUgPCBLRVJORUxfVkVSU0lPTig0LDE3LDApDQo+ID4gK3N0
-cnVjdCBfX2tlcm5lbF9vbGRfdGltZXZhbCB7DQo+ID4gKwlfX2tlcm5lbF9sb25nX3QgdHZfc2Vj
-Ow0KPiA+ICsJX19rZXJuZWxfbG9uZ190IHR2X3VzZWM7DQo+ID4gK307DQo+ID4gKyNlbmRpZg0K
-PiA+ICsNCj4gPiArI2lmIExJTlVYX1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9OKDUsNSww
-KQ0KPiA+ICtzdHJ1Y3QgX19rZXJuZWxfb2xkX3RpbWVzcGVjIHsNCj4gPiArCV9fa2VybmVsX29s
-ZF90aW1lX3QJdHZfc2VjOwkJLyogc2Vjb25kcyAqLw0KPiA+ICsJbG9uZwkJCXR2X25zZWM7CS8q
-IG5hbm9zZWNvbmRzICovDQo+ID4gK307DQo+ID4gKyNlbmRpZg0KPiA+ICsNCj4gPiDCoMKgLyog
-TGlmdGVkIGZyb20gaW5jbHVkZS91YXBpL2xpbnV4L3RpbWV4LmguICovDQo+ID4gwqDCoHN0cnVj
-dCBfX3VzZXJfb2xkX3RpbWV4IHsNCj4gPiDCoMKgCXVuc2lnbmVkIGludCBtb2RlczsJLyogbW9k
-ZSBzZWxlY3RvciAqLw0KPiA+IA0KPiANCj4gDQoNCg==
+
+chensong <chensong@tj.kylinos.cn> writes:
+
+> Since timespec and timeval will be removed because of
+> y2038 problem, we need to introduce new time representations at
+> the kernel-user boundary and we also need to keep aligned with
+> upstream at the same time.
+>
+> Therefore, we introduce:
+> 1)__kernel_old_timeval
+> 2)__kernel_old_timespec
+> from upstream, their tv_sec are defined as long and as a result their width
+> is able to adapt different arch automatically.
+>
+> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+> ---
+>  include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+>
+> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
+> index 2c931c2..8931d82 100644
+> --- a/include/cobalt/uapi/kernel/types.h
+> +++ b/include/cobalt/uapi/kernel/types.h
+> @@ -20,6 +20,7 @@
+>  
+>  #include <linux/types.h>
+>  #include <cobalt/uapi/kernel/limits.h>
+> +#include <asm-generic/xenomai/wrappers.h>
+>  
+>  typedef __u64 xnticks_t;
+>  
+> @@ -78,6 +79,20 @@ struct __user_old_timeval {
+>  	long  tv_usec;
+>  };
+>  
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
+> +struct __kernel_old_timeval {
+> +	__kernel_long_t tv_sec;
+> +	__kernel_long_t tv_usec;
+> +};
+> +#endif
+> +
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
+> +struct __kernel_old_timespec {
+> +	__kernel_old_time_t	tv_sec;		/* seconds */
+> +	long			tv_nsec;	/* nanoseconds */
+> +};
+> +#endif
+> +
+>  /* Lifted from include/uapi/linux/timex.h. */
+>  struct __user_old_timex {
+>  	unsigned int modes;	/* mode selector */
+
+
+This won't work, the uapi is meant to be parsed by userland too,
+independently of the target kernel version. Therefore, testing
+LINUX_VERSION_CODE does not make sense there. Hence the reason for
+defining __user_old_timespec, which does not conflict with any
+pre-existing type in either kernel or userland namespaces.
+
+What you might do instead is defining __kernel_old_timespec to mirror
+the same kernel type only if __KERNEL__ is not set, but I would not
+recommend checking for __KERNEL__ in this context anyway, since that
+defeats the purpose of having separate uapi files.
+
+-- 
+Philippe.
 
