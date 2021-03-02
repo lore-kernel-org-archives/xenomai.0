@@ -1,12 +1,11 @@
-Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
-References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <603E3952.1070109@tj.kylinos.cn>+67C36DF843AB5C23
-Date: Tue, 2 Mar 2021 21:10:42 +0800
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: Does perf working for Xenomai?
+Date: Tue, 2 Mar 2021 13:30:08 +0000
+Message-ID: <CO1PR11MB5187796E7817657FD67BE5D2EE999@CO1PR11MB5187.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,72 +14,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org, rpm@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Florian $ Philippe,
-
-As the discussion in the mails 2021-02-21, we are going to replace 
-__user_old_timespec with __kernel_old_timespec to keep aligned with 
-upstream.
-
-This patch introduced their definitions, if you both agree, i will start 
-replacing __user_old_timespec and __user_old_timeval afterward.
-
-BR
-
-Song
-
-On 2021年03月02日 21:05, chensong wrote:
-> Since timespec and timeval will be removed because of
-> y2038 problem, we need to introduce new time representations at
-> the kernel-user boundary and we also need to keep aligned with
-> upstream at the same time.
->
-> Therefore, we introduce:
-> 1)__kernel_old_timeval
-> 2)__kernel_old_timespec
-> from upstream, their tv_sec are defined as long and as a result their width
-> is able to adapt different arch automatically.
->
-> Signed-off-by: chensong <chensong@tj.kylinos.cn>
-> ---
->   include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
->   1 file changed, 15 insertions(+)
->
-> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
-> index 2c931c2..8931d82 100644
-> --- a/include/cobalt/uapi/kernel/types.h
-> +++ b/include/cobalt/uapi/kernel/types.h
-> @@ -20,6 +20,7 @@
->
->   #include <linux/types.h>
->   #include <cobalt/uapi/kernel/limits.h>
-> +#include <asm-generic/xenomai/wrappers.h>
->
->   typedef __u64 xnticks_t;
->
-> @@ -78,6 +79,20 @@ struct __user_old_timeval {
->   	long  tv_usec;
->   };
->
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
-> +struct __kernel_old_timeval {
-> +	__kernel_long_t tv_sec;
-> +	__kernel_long_t tv_usec;
-> +};
-> +#endif
-> +
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
-> +struct __kernel_old_timespec {
-> +	__kernel_old_time_t	tv_sec;		/* seconds */
-> +	long			tv_nsec;	/* nanoseconds */
-> +};
-> +#endif
-> +
->   /* Lifted from include/uapi/linux/timex.h. */
->   struct __user_old_timex {
->   	unsigned int modes;	/* mode selector */
->
-
-
+SSBkaWQgc29tZSBzZWFyY2ggYnV0IGRpZG4ndCBmaW5kIGFueSBkZXRhaWxlZCBwYXBlciBhYm91
+dCB1c2UgcGVyZiB3aXRoIFhlbm9tYWksIA0KQXNzdW1lIG9uIHg4Nl82NCwgaW4gdGhlb3J5LCBk
+b2VzIHBlcmYgY2FuIHdvcmsgb24gWGVub21haSBvdXQtb2YtYm94LCANCm9yIG5lZWQgYWRhcHQg
+Zm9yIElQSVBFIGFuZCBDb2JhbHQgc2NoZWR1bGVyPyANCg0KQlIgLyBGaW5vICjlrZ/npaXlpKsp
+DQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0K
 
