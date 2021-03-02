@@ -1,13 +1,17 @@
-Date: Mon, 01 Mar 2021 17:49:50 -0300
-From: Gabriel Dinse <gabriel_dinse@hotmail.com>
-Subject: Re: High latency when over stress
-Message-ID: <SN6PR08MB56613104ADE0DA1381D2C581939A9@SN6PR08MB5661.namprd08.prod.outlook.com>
-In-Reply-To: <e1bd5679-db02-0657-eab7-fbdd2a68f294@tj.kylinos.cn>
-References: <SN6PR08MB5661F9CC518F4FDBA2B20066939B9@SN6PR08MB5661.namprd08.prod.outlook.com>
- <e1bd5679-db02-0657-eab7-fbdd2a68f294@tj.kylinos.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <d44aeeb8-f265-81fd-01b8-3f2648949ead@freyder.net>
+ <CALLqZ8Tr4e_ObU1+NCsd0nfDGiG96ok7nb-xCxHrK8Gk3KZ3AA@mail.gmail.com>
+ <a5a2923a-a14c-8eb9-c272-0eadc63f047c@freyder.net>
+ <CALLqZ8R_H1MGXfNWZ0G7j93h-LkD8hweMGCj4XjXXkv=3kqABA@mail.gmail.com>
+ <CALLqZ8RefLM_Wdosh_+DeLKS3DC4HhgxhJBi4ZwfrAdPNXz4HQ@mail.gmail.com>
+ <879fe4d2-94ca-4650-0911-7d4a73b95228@siemens.com>
+ <47e3a20a-863f-8805-6957-c38d088a7ba8@siemens.com>
+In-Reply-To: <47e3a20a-863f-8805-6957-c38d088a7ba8@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 2 Mar 2021 01:07:01 -0500
+Message-ID: <CALLqZ8T5o444bPUBLYr=4h-FAB7gWE-WD9PcFTrakHC5FGhgCw@mail.gmail.com>
+Subject: Re: [Xenomai] bad syscall <0x197>
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,81 +20,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: song <chensong@tj.kylinos.cn>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: steve freyder <steve@freyder.net>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I ran my program with trace-cmd as you said. In this case I did not=20
-apply stress to the system.
+On Mon, Mar 1, 2021 at 12:53 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Output from "trace-cmd extract" is:
-CPU 0: 7790693 events lost
-CPU 2: 4433 events lost
-CPU 3: 4900601 events lost
-CPU0 data recorded at offset=3D0x295000
-    1449984 bytes in size
-CPU1 data recorded at offset=3D0x3f7000
-    1331200 bytes in size
-CPU2 data recorded at offset=3D0x53c000
-    1449984 bytes in size
-CPU3 data recorded at offset=3D0x69e000
-    1449984 bytes in size
+> On 01.03.21 18:31, Jan Kiszka wrote:
+> > On 27.02.21 07:21, Greg Gallagher via Xenomai wrote:
+> >> On Thu, Feb 25, 2021 at 3:06 PM Greg Gallagher <greg@embeddedgreg.com>
+> >> wrote:
+> >>
+> >>>
+> >>>
+> >>> On Wed, Feb 24, 2021 at 6:16 PM steve freyder <steve@freyder.net>
+> wrote:
+> >>>
+> >>>>
+> >>>>
+> >>>> On 2/24/2021 2:52 PM, Greg Gallagher wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>> On Wed, Feb 24, 2021 at 3:45 PM steve freyder via Xenomai <
+> >>>> xenomai@xenomai.org> wrote:
+> >>>>
+> >>>>> Greetings Xenomai list,
+> >>>>>
+> >>>>>
+> >>>>> I have a Linux OE 4.14.85 build with Xenomai 3.1 -next branch, and am
+> >>>>> seeing this:
+> >>>>>
+> >>>>> root@ICB-G3L:~ # uname -a
+> >>>>> Linux ICB-G3L 4.14.85_C01571-15S01A01.000.zimg+35a84af5b7 #1 SMP Mon
+> Feb
+> >>>>> 22 20:57:38 UTC 2021 armv7l GN
+> >>>>> U/Linux
+> >>>>> root@ICB-G3L:~ # smokey --run=posix_mutex
+> >>>>> [  694.433129] [Xenomai] bad syscall <0x197>
+> >>>>> posix_mutex OK
+> >>>>>
+> >>>>> I found this thread:
+> >>>>>
+> >>>>> https://www.mail-archive.com/xenomai@xenomai.org/msg17931.html
+> >>>>>
+> >>>>> But I can't get a clear picture on the proper resolution of this
+> issue,
+> >>>>> other than it's related to a non-existent syscall, perhaps glibc
+> >>>>> version, and/or __real_usleep().  I'd like to get this working on
+> either
+> >>>>> 4.14 or 4.19, is there a simple workaround for this?
+> >>>>>
+> >>>>> Thanks in advance,
+> >>>>>
+> >>>>> Steve
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>> I forgot all about this, I'll take a look tonight and see what's
+> >>>> involved.  What gcc version are you using?
+> >>>>
+> >>>> Thanks
+> >>>>
+> >>>> Greg
+> >>>>
+> >>>>
+> >>>>
+> >>>> Greg,
+> >>>>
+> >>>> The compiler is gcc 9.3.0 using Yocto Dunfell.  glibc 2.31...
+> >>>>
+> >>>> I'm able to reproduce this with gcc 10, I'll hopefully have a fix or
+> >>> solution shortly.
+> >>>
+> >>> -Greg
+> >>>
+> >>
+> >> I had some time to look into this.  The issue seems to be coming from a
+> >> newer version of glibc being used with an older kernel.  The usleep
+> system
+> >> call has been updated in the newer glibc and is outside the range that
+> >> cobalt thinks is valid.  Cobalt gets the valid range from the kernel, so
+> >> modifying it to accept this system call doesn't make much sense.  I
+> looked
+> >> at the newer 4.19 kernels and the system call range doesn't change.  So
+> I
+> >> think the better solution is to use an older toolchain, I had the test
+> pass
+> >> with gcc 7.3.  The newer 5.4 kernel does not hit this issue, using that
+> >> kernel may be an option.  I'll do a 4.19 update once we sort out the CI
+> >> failures.
+> >
+> > Seems like userspace is probing for the existence of that newer syscall,
+> > and that probing triggers the Cobalt warning.
+> >
+> > I thought we got rid of any warnings that are not related to RT? If not,
+> > it's time to do that now.
+> >
+>
+> I think we should kill that check and branching:
+>
+>
+> https://source.denx.de/Xenomai/xenomai/-/blob/2cc2f54b98921cc8ae2990eb4e8abb3f10902230/kernel/cobalt/posix/syscall.c#L649
+>
+> The only purpose this has is keeping a caller from RT in RT when
+> invoking an invalid Linux syscall - plus noisily complaining on the
+> kernel console. What would be the use case for that?
+>
+> Jan
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
 
-Output from "trace-cmd report -l" can be seen in=20
-<https://drive.google.com/file/d/1AgRPuBXIB1dFFSkQGqV9-yiTo07r6kN3/view?usp=
-=3Dsharing>=20
-(because it is very long)
+I don't see an obvious use case, I can put a patch together for it's
+removal and do some testing.
 
-I'm not sure how to interpret the logs.
-
-Thank you,
-Gabriel Dinse
-
-On Mon, Mar 1, 2021 at 10:13 am, song <chensong@tj.kylinos.cn> wrote:
-> trace-cmd start -e all; your periodic task
-> trace-cmd stop
-> trace-cmd extract
-> trace-cmd report -l
->=20
-> catch ftrace log to see what is going on in the system.
->=20
-> Song
->=20
-> On 2021/3/1 =E4=B8=8A=E5=8D=886:26, Gabriel Dinse via Xenomai wrote:
->> Hello,
->> I'm doing a comparison of interrupt handling on Xenomai using a=20
->> =7Fraspberry pi 3-b in 2 situations:
->> 1- No stress
->> 2- Running stress-ng on terminal: $ nice -19 stress-ng -c 4=20
->> --metrics =7F--timeout 120s&
->>=20
->> What I do is to create a periodic task (priority 50) that runs every=20
->> =7F500us activating gpio22 for 250us and save the activating time.=20
->> Another =7Ftask, with priority 99 is meant to catch the interrupts in=20
->> a while loop =7Fand save the time as well for computing the time=20
->> differences later. This =7Fis done 100000 times and in the end I do=20
->> some verifications.
->>=20
->> On situation 1 (no stress) I get:
->> Min: 11823ns
->> Max: 17761ns
->> Standard deviation: 258.96ns
->> Mean: 13103.17ns
->>=20
->> On situation 2 (with cpu stress)  I get:
->> Min: 12239ns
->> Max: 721302ns
->> Standard deviation: 32976.01ns
->> Mean: 29112.24ns
->>=20
->> I would not say the higher mean is actually a problem (could be),=20
->> but =7Fthe standard deviation is much higher and I don't think this is=20
->> the =7Fdesired result for Xenomai.
->> Is the first result fine?
->> What could be causing this?
->> Any addition information just ask me.
->>=20
->> Thank you,
->> Gabriel Dinse
->>=20
->>=20
-
+-Greg
