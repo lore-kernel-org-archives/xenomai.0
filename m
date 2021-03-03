@@ -1,14 +1,16 @@
-Date: Wed, 3 Mar 2021 22:33:45 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: Linux and Xenomai task
-Message-ID: <20210303143344.GA19957@linux.intel.com>
-References: <CAFZ-hKg3kxBCEkQD3NsRT+fmo_N25se9+VSeMBDM_MNvX=uC=Q@mail.gmail.com>
- <20210303120206.GA19836@linux.intel.com>
- <CAFZ-hKhJoEq4j-+35qSjMPCpFNYKL3GqUkSE0j3iaQZ-4crKrA@mail.gmail.com>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+Date: Wed, 3 Mar 2021 14:36:28 +0000
+Message-ID: <7200b2df730dc65a5ce7e531109b6ba663e88ae7.camel@siemens.com>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org>
+In-Reply-To: <20210220151840.409745-2-rpm@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CA48F5EF03E8BE40842E151E79EC6A23@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFZ-hKhJoEq4j-+35qSjMPCpFNYKL3GqUkSE0j3iaQZ-4crKrA@mail.gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>
-Cc: xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
- Wed, Mar 03, 2021 at 01:14:42PM +0100, Leandro Bucci wrote:
-> thanks for the reply, I mean if I have 4 real time tasks assigned to a
-> single core and a linux process assigned to another core, the linux process
-> is not interrupted right?
-
-I think so, ftrace can show that on different cores, they are running in parallel.
-
-but if u put all the 4 rt-threads onto one core, they cannot run in
-parallel. assume all are SCHED_FIFO, higher priority thread will preempt
-the lowers.
-
-> 
-> Il mer 3 mar 2021, 13:03 Fino Meng <fino.meng@linux.intel.com> ha scritto:
-> 
-> > O Wed, Mar 03, 2021 at 11:24:00AM +0100, Leandro Bucci via Xenomai wrote:
-> > > hello, I would like confirmation to this question.  If I run a Linux
-> > > process on a certain processor # 0 and on another processor task of
-> > Xenomai
-> > > # 1, will the Xenomai tasks never interrupt the execution of the Linux
-> > task?
-> >
-> > by cpu isolation , cpu affinity and irq affinity,
-> >
-> > real-time threads are locked to its own core, should not migration,
-> >
-> > when u say interrupt, do u mean non-rt Linux task are interrupt by IRQ?
-> >
-> > BR fino
-> >
+T24gU2F0LCAyMDIxLTAyLTIwIGF0IDE2OjE4ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB2aWEgWGVu
+b21haSB3cm90ZToNCltzbmlwXQ0KPiArI2lmIF9fQklUU19QRVJfTE9ORyA9PSA2NA0KDQpUaGF0
+IG1pZ2h0IGJlIGEgYmVnaW5uZXIgcXVlc3Rpb24sIGJ1dCBJJ20gbGVhcm5pbmcgZnJvbSB0aGUg
+YmVzdCA7LSkNCg0KRG8gd2UgcmVhbGx5IGNhcmUgYWJvdXQgZWFjaCBzaW5nbGUgYXNzaWdubWVu
+dCAodHdvIHBlciB0aW1lc3BlYykgYW5kDQplYWNoIG9iamVjdCBvbiB0aGUgc3RhY2sgdGhhdCBp
+dCBpcyB3b3J0aCBkdXBsaWNhdGluZyBhbGwgdGhpcyBoZWxwZXJzPw0KV2UgY291bGQgdXNlIHRo
+ZSBfX0JJVFNfUEVSX0xPTkcgPT0gMzIgdmVyc2lvbiBmb3IgYm90aCB3b3JsZHMsDQpjb3VsZG4n
+dCB3ZT8NCg0KVGhhbmtzIGluIGFkdmFuY2UuLi4NCg0KPiArDQo+ICsvKg0KPiArICogTk9URTog
+dGhvc2UgY29weSBoZWxwZXJzIHdvbid0IHdvcmsgaW4gY29tcGF0IG1vZGU6IHVzZQ0KPiArICog
+c3lzMzJfZ2V0X3RpbWVzcGVjKCksIHN5czMyX3B1dF90aW1lc3BlYygpIGluc3RlYWQuDQo+ICsg
+Ki8NCj4gKw0KPiArc3RhdGljIGlubGluZSBpbnQgY29iYWx0X2dldF91X3RpbWVzcGVjKHN0cnVj
+dCB0aW1lc3BlYzY0ICpkc3QsDQo+ICsJCQljb25zdCBzdHJ1Y3QgX191c2VyX29sZF90aW1lc3Bl
+YyBfX3VzZXIgKnNyYykNCj4gK3sNCj4gKwlyZXR1cm4gY29iYWx0X2NvcHlfZnJvbV91c2VyKGRz
+dCwgc3JjLCBzaXplb2YoKmRzdCkpOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgaW5saW5lIGludCBj
+b2JhbHRfcHV0X3VfdGltZXNwZWMoDQo+ICsJc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191
+c2VyICpkc3QsDQo+ICsJY29uc3Qgc3RydWN0IHRpbWVzcGVjNjQgKnNyYykNCj4gK3sNCj4gKwly
+ZXR1cm4gY29iYWx0X2NvcHlfdG9fdXNlcihkc3QsIHNyYywgc2l6ZW9mKCpkc3QpKTsNCj4gK30N
+Cj4gKw0KPiArI2Vsc2UgLyogX19CSVRTX1BFUl9MT05HID09IDMyICovDQo+ICsNCj4gK3N0YXRp
+YyBpbmxpbmUgaW50IGNvYmFsdF9nZXRfdV90aW1lc3BlYyhzdHJ1Y3QgdGltZXNwZWM2NCAqZHN0
+LA0KPiArCQkJY29uc3Qgc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191c2VyICpzcmMpDQo+
+ICt7DQo+ICsJc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgdV90czsNCj4gKwlpbnQgcmV0Ow0K
+PiArDQo+ICsJcmV0ID0gY29iYWx0X2NvcHlfZnJvbV91c2VyKCZ1X3RzLCBzcmMsIHNpemVvZih1
+X3RzKSk7DQo+ICsJaWYgKHJldCkNCj4gKwkJcmV0dXJuIHJldDsNCj4gKw0KPiArCWRzdC0+dHZf
+c2VjID0gdV90cy50dl9zZWM7DQo+ICsJZHN0LT50dl9uc2VjID0gdV90cy50dl9uc2VjOw0KPiAr
+DQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBpbmxpbmUgaW50IGNvYmFsdF9w
+dXRfdV90aW1lc3BlYygNCj4gKwlzdHJ1Y3QgX191c2VyX29sZF90aW1lc3BlYyBfX3VzZXIgKmRz
+dCwNCj4gKwljb25zdCBzdHJ1Y3QgdGltZXNwZWM2NCAqc3JjKQ0KPiArew0KPiArCXN0cnVjdCBf
+X3VzZXJfb2xkX3RpbWVzcGVjIHVfdHM7DQo+ICsJaW50IHJldDsNCj4gKw0KPiArCXVfdHMudHZf
+c2VjID0gc3JjLT50dl9zZWM7DQo+ICsJdV90cy50dl9uc2VjID0gc3JjLT50dl9uc2VjOw0KPiAr
+DQo+ICsJcmV0ID0gY29iYWx0X2NvcHlfdG9fdXNlcihkc3QsICZ1X3RzLCBzaXplb2YoKmRzdCkp
+Ow0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVybiByZXQ7DQo+ICsNCj4gKwlyZXR1cm4gMDsNCj4g
+K30NCj4gKw0KPiArI2VuZGlmDQoNCltzbmlwXQ0KDQo=
 
