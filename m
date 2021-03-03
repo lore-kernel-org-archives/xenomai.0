@@ -1,16 +1,9 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
- timespec64
-Date: Wed, 3 Mar 2021 10:05:56 +0000
-Message-ID: <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
-References: <20210220151840.409745-1-rpm@xenomai.org>
- <20210220151840.409745-2-rpm@xenomai.org>
-In-Reply-To: <20210220151840.409745-2-rpm@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6F1157CA38AE9A45B4C17801CD5AE6A3@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Wed, 3 Mar 2021 11:24:00 +0100
+Message-ID: <CAFZ-hKg3kxBCEkQD3NsRT+fmo_N25se9+VSeMBDM_MNvX=uC=Q@mail.gmail.com>
+Subject: Linux and Xenomai task
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,43 +12,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: xenomai <xenomai@xenomai.org>
 
-T24gU2F0LCAyMDIxLTAyLTIwIGF0IDE2OjE4ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB2aWEgWGVu
-b21haSB3cm90ZToNCltzbmlwXQ0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9wb3NpeC9z
-ZW0uYyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc2VtLmMNCj4gaW5kZXggMDVhODYxZGZlLi40Njdh
-OWI3ZGQgMTAwNjQ0DQo+IC0tLSBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvc2VtLmMNCj4gKysrIGIv
-a2VybmVsL2NvYmFsdC9wb3NpeC9zZW0uYw0KPiBAQCAtMjY3LDcgKzI2Nyw3IEBAIG91dDoNCj4g
-wqAJcmV0dXJuIHJldDsNCj4gwqB9DQo+IMKgDQo+IC1zdGF0aWMgaW5saW5lIGludCBzZW1fZmV0
-Y2hfdGltZW91dChzdHJ1Y3QgdGltZXNwZWMgKnRzLA0KPiArc3RhdGljIGlubGluZSBpbnQgc2Vt
-X2ZldGNoX3RpbWVvdXQoc3RydWN0IHRpbWVzcGVjNjQgKnRzLA0KPiDCoAkJCQnCoMKgwqAgY29u
-c3Qgdm9pZCBfX3VzZXIgKnVfdHMpDQoNCkhhbmRsZSB0aGUgZm9sbG93aW5nIHdpdGggY2FyZSwg
-bWF5YmUgbXkgdW5kZXJzdGFuZGluZyBvZg0KQ09ORklHX1hFTk9fQVJDSF9TWVMzMjY0IGlzIHdy
-b25nLiBTZWUgYmVsb3cuLi4NCg0KTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0IHRoaXMgaXMgYSBi
-cmVha2luZyBjaGFuZ2UgZm9yIDMyIGJpdCBrZXJuZWxzLg0KVGhlIGJyb2tlbiBwYXJ0IGlzIGhp
-ZGRlbiBoZXJlLCBidXQgc2VtX2ZldGNoX3RpbWVvdXQoKSBub3cgYXNzdW1lcw0KdGhhdCB0aGUg
-dXNlciBwcm92aWRlZCB0aW1lc3BlYzY0LCB3aGljaCBpcyBub3QgYmUgdGhlIGNhc2UgZm9yIDMy
-IGJpdA0KYXBwbGljYXRpb25zIHJ1bm5pbmcgb24gYSAzMiBiaXQga2VybmVsLg0KDQoNCj4gwqB7
-DQo+IMKgCXJldHVybiB1X3RzID09IE5VTEwgPyAtRUZBVUxUIDoNCj4gQEAgLTI3NiwxMCArMjc2
-LDEwIEBAIHN0YXRpYyBpbmxpbmUgaW50IHNlbV9mZXRjaF90aW1lb3V0KHN0cnVjdCB0aW1lc3Bl
-YyAqdHMsDQo+IMKgDQo+IMKgaW50IF9fY29iYWx0X3NlbV90aW1lZHdhaXQoc3RydWN0IGNvYmFs
-dF9zZW1fc2hhZG93IF9fdXNlciAqdV9zZW0sDQo+IMKgCQkJwqDCoCBjb25zdCB2b2lkIF9fdXNl
-ciAqdV90cywNCj4gLQkJCcKgwqAgaW50ICgqZmV0Y2hfdGltZW91dCkoc3RydWN0IHRpbWVzcGVj
-ICp0cywNCj4gKwkJCcKgwqAgaW50ICgqZmV0Y2hfdGltZW91dCkoc3RydWN0IHRpbWVzcGVjNjQg
-KnRzLA0KPiDCoAkJCQkJCWNvbnN0IHZvaWQgX191c2VyICp1X3RzKSkNCj4gwqB7DQo+IC0Jc3Ry
-dWN0IHRpbWVzcGVjIHRzID0geyAudHZfc2VjID0gMCwgLnR2X25zZWMgPSAwIH07DQo+ICsJc3Ry
-dWN0IHRpbWVzcGVjNjQgdHMgPSB7IC50dl9zZWMgPSAwLCAudHZfbnNlYyA9IDAgfTsNCj4gwqAJ
-aW50IHB1bGxfdHMgPSAxLCByZXQsIGluZm87DQo+IMKgCXN0cnVjdCBjb2JhbHRfc2VtICpzZW07
-DQo+IMKgCXhuaGFuZGxlX3QgaGFuZGxlOw0KPiBAQCAtNDM0LDcgKzQzNCw3IEBAIENPQkFMVF9T
-WVNDQUxMKHNlbV93YWl0LCBwcmltYXJ5LA0KPiDCoA0KPiDCoENPQkFMVF9TWVNDQUxMKHNlbV90
-aW1lZHdhaXQsIHByaW1hcnksDQo+IMKgCcKgwqDCoMKgwqDCoCAoc3RydWN0IGNvYmFsdF9zZW1f
-c2hhZG93IF9fdXNlciAqdV9zZW0sDQo+IC0JCXN0cnVjdCB0aW1lc3BlYyBfX3VzZXIgKnVfdHMp
-KQ0KPiArCQlzdHJ1Y3QgX191c2VyX29sZF90aW1lc3BlYyBfX3VzZXIgKnVfdHMpKQ0KDQpUaGlz
-IGNoYW5nZSBpcyBzdGlsbCBjb3JyZWN0LCBidXQgdGhpcyBpcyB3aGVyZSB0aGUgam91cm5leSBi
-ZWdpbnMuIElmDQpteSB1bmRlcnN0YW5kaW5nIG9mIENPTkZJR19YRU5PX0FSQ0hfU1lTMzI2NCBp
-cyBjb3JyZWN0LCB0aGlzIHN5c2NhbGwNCmlzIGJlaW5nIHVzZWQgb24gMzIgYml0IGtlcm5lbHMg
-YXMgd2VsbC4gSXMgdGhhdCB1bmRlcnN0YW5kaW5nIGNvcnJlY3Q/DQoNCj4gwqB7DQo+IMKgCXJl
-dHVybiBfX2NvYmFsdF9zZW1fdGltZWR3YWl0KHVfc2VtLCB1X3RzLCBzZW1fZmV0Y2hfdGltZW91
-dCk7DQo+IMKgfQ0KDQo=
-
+hello, I would like confirmation to this question.  If I run a Linux
+process on a certain processor # 0 and on another processor task of Xenomai
+# 1, will the Xenomai tasks never interrupt the execution of the Linux task?
