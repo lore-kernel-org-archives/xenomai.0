@@ -1,14 +1,18 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [y2038][RFC PATCH 1/2] y2038: Fixing the sem_timedwait syscall
+ for 32 bit systems
+Date: Thu, 4 Mar 2021 15:22:54 +0000
+Message-ID: <27f15f128e365f572bbd1d002b8a39a9c415005a.camel@siemens.com>
 References: <87v9a7z0xh.fsf@xenomai.org>
  <20210304113653.45432-1-florian.bezdeka@siemens.com>
  <20210304113653.45432-2-florian.bezdeka@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [y2038][RFC PATCH 1/2] y2038: Fixing the sem_timedwait syscall
- for 32 bit systems
-In-reply-to: <20210304113653.45432-2-florian.bezdeka@siemens.com>
-Date: Thu, 04 Mar 2021 16:11:58 +0100
-Message-ID: <87pn0fymv5.fsf@xenomai.org>
+ <87pn0fymv5.fsf@xenomai.org>
+In-Reply-To: <87pn0fymv5.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <82AB868C10AE6C4FA61860CDD00674C6@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@xenomai.org, jan.kiszka@siemens.com, chensong@kylinos.cn
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
-
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
-> On systems using 32 bit for time_t the sem_timedwait syscall was broken
-> because the function used for copying the timeout value from userspace
-> to kernel (=sem_fetch_timeout()) was always copying
-> sizeof(struct timespec64).
->
-> A 32 bit application (or more specific an application with 4 byte
-> time_t) would only provide sizeof(struct old_timespec32).
->
-> Notable changes:
->   - The copy operation from userspace to kernel is now already done in
->     the syscall handler. So it is always done. Previously it was copied
->     over and validated before the first use (when used at all).
->     So we have some additional instructions now that may be
->     unnecessary, but that simplifies the code.
-
-Nack, there is a reason for this postponed copy of timespecs up to the
-point where they are actually needed. This patch would break POSIX
-compliance for some users. Please see the last sentence in the
-Description of sem_timedwait()
-https://pubs.opengroup.org/onlinepubs/009696699/functions/sem_timedwait.html
-
-I agree that the standard says "need not be checked", not "must not be
-checked" which may make this implementation-defined, but some test
-suites Xenomai runs against do expect this to pass.
-
--- 
-Philippe.
+T24gVGh1LCAyMDIxLTAzLTA0IGF0IDE2OjExICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyaXRlczoN
+Cj4gDQo+ID4gT24gc3lzdGVtcyB1c2luZyAzMiBiaXQgZm9yIHRpbWVfdCB0aGUgc2VtX3RpbWVk
+d2FpdCBzeXNjYWxsIHdhcyBicm9rZW4NCj4gPiBiZWNhdXNlIHRoZSBmdW5jdGlvbiB1c2VkIGZv
+ciBjb3B5aW5nIHRoZSB0aW1lb3V0IHZhbHVlIGZyb20gdXNlcnNwYWNlDQo+ID4gdG8ga2VybmVs
+ICg9c2VtX2ZldGNoX3RpbWVvdXQoKSkgd2FzIGFsd2F5cyBjb3B5aW5nDQo+ID4gc2l6ZW9mKHN0
+cnVjdCB0aW1lc3BlYzY0KS4NCj4gPiANCj4gPiBBIDMyIGJpdCBhcHBsaWNhdGlvbiAob3IgbW9y
+ZSBzcGVjaWZpYyBhbiBhcHBsaWNhdGlvbiB3aXRoIDQgYnl0ZQ0KPiA+IHRpbWVfdCkgd291bGQg
+b25seSBwcm92aWRlIHNpemVvZihzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIpLg0KPiA+IA0KPiA+IE5v
+dGFibGUgY2hhbmdlczoNCj4gPiDCoMKgLSBUaGUgY29weSBvcGVyYXRpb24gZnJvbSB1c2Vyc3Bh
+Y2UgdG8ga2VybmVsIGlzIG5vdyBhbHJlYWR5IGRvbmUgaW4NCj4gPiDCoMKgwqDCoHRoZSBzeXNj
+YWxsIGhhbmRsZXIuIFNvIGl0IGlzIGFsd2F5cyBkb25lLiBQcmV2aW91c2x5IGl0IHdhcyBjb3Bp
+ZWQNCj4gPiDCoMKgwqDCoG92ZXIgYW5kIHZhbGlkYXRlZCBiZWZvcmUgdGhlIGZpcnN0IHVzZSAo
+d2hlbiB1c2VkIGF0IGFsbCkuDQo+ID4gwqDCoMKgwqBTbyB3ZSBoYXZlIHNvbWUgYWRkaXRpb25h
+bCBpbnN0cnVjdGlvbnMgbm93IHRoYXQgbWF5IGJlDQo+ID4gwqDCoMKgwqB1bm5lY2Vzc2FyeSwg
+YnV0IHRoYXQgc2ltcGxpZmllcyB0aGUgY29kZS4NCj4gDQo+IE5hY2ssIHRoZXJlIGlzIGEgcmVh
+c29uIGZvciB0aGlzIHBvc3Rwb25lZCBjb3B5IG9mIHRpbWVzcGVjcyB1cCB0byB0aGUNCj4gcG9p
+bnQgd2hlcmUgdGhleSBhcmUgYWN0dWFsbHkgbmVlZGVkLiBUaGlzIHBhdGNoIHdvdWxkIGJyZWFr
+IFBPU0lYDQo+IGNvbXBsaWFuY2UgZm9yIHNvbWUgdXNlcnMuIFBsZWFzZSBzZWUgdGhlIGxhc3Qg
+c2VudGVuY2UgaW4gdGhlDQo+IERlc2NyaXB0aW9uIG9mIHNlbV90aW1lZHdhaXQoKQ0KPiBodHRw
+czovL3B1YnMub3Blbmdyb3VwLm9yZy9vbmxpbmVwdWJzLzAwOTY5NjY5OS9mdW5jdGlvbnMvc2Vt
+X3RpbWVkd2FpdC5odG1sDQoNCkkgY2FuJ3QgZmluZCBhbnkgY29tbWVudCByZWdhcmRpbmcgdGhl
+IHBvaW50IGluIHRpbWUgd2hlcmUgd2UgY29weSB0aGlzDQp0aW1lc3BlYyB0byB0aGUga2VybmVs
+IHNwYWNlLiBGb3IgdGhlIHRpbWUgb2YgdmFsaWRhdGlvbiBzZWUgYmVsb3cuDQpDb3VsZCB5b3Ug
+cG9pbnQgbWUgdG8gdGhlIGZhaWxpbmcgdGVzdHMgb3Igc29tZSBtb3JlIGRvY3VtZW50YXRpb24/
+DQoNCj4gDQo+IEkgYWdyZWUgdGhhdCB0aGUgc3RhbmRhcmQgc2F5cyAibmVlZCBub3QgYmUgY2hl
+Y2tlZCIsIG5vdCAibXVzdCBub3QgYmUNCj4gY2hlY2tlZCIgd2hpY2ggbWF5IG1ha2UgdGhpcyBp
+bXBsZW1lbnRhdGlvbi1kZWZpbmVkLCBidXQgc29tZSB0ZXN0DQo+IHN1aXRlcyBYZW5vbWFpIHJ1
+bnMgYWdhaW5zdCBkbyBleHBlY3QgdGhpcyB0byBwYXNzLg0KPiANCg0KVGhlIHZhbGlkYXRpb24g
+ZGlkIG5vdCBjaGFuZ2UuIEl0J3MgZG9uZSByaWdodCBiZWZvcmUgdGhlIGZpcnN0IHVzYWdlLg0K
+U28gaWYgbm90IG5lZWRlZCAoYmVjYXVzZSBzZW0gY291bGQgYmUgdGFrZW4gd2l0aG91dCB0aW1l
+b3V0KSB0aGVyZSBpcw0Kc3RpbGwgbm8gdmFsaWRhdGlvbi4NCg0KVGhhbmtzIGZvciB5b3VyIGZl
+ZWRiYWNrLCBQaGlsaXBwZSENCg0K
 
