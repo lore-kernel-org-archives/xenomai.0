@@ -1,16 +1,14 @@
-References: <87v9a7z0xh.fsf@xenomai.org>
- <20210304113653.45432-1-florian.bezdeka@siemens.com>
- <20210304113653.45432-2-florian.bezdeka@siemens.com>
- <87pn0fymv5.fsf@xenomai.org>
- <27f15f128e365f572bbd1d002b8a39a9c415005a.camel@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [y2038][RFC PATCH 1/2] y2038: Fixing the sem_timedwait syscall
- for 32 bit systems
-In-reply-to: <27f15f128e365f572bbd1d002b8a39a9c415005a.camel@siemens.com>
-Date: Thu, 04 Mar 2021 16:42:59 +0100
-Message-ID: <87h7lqzzzw.fsf@xenomai.org>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
+Date: Thu, 4 Mar 2021 18:33:15 +0000
+Message-ID: <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
+References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
+In-Reply-To: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E76897136C030F46B18AB8907A8FDD59@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,68 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
-
-> On Thu, 2021-03-04 at 16:11 +0100, Philippe Gerum wrote:
->> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> 
->> > On systems using 32 bit for time_t the sem_timedwait syscall was broken
->> > because the function used for copying the timeout value from userspace
->> > to kernel (=sem_fetch_timeout()) was always copying
->> > sizeof(struct timespec64).
->> > 
->> > A 32 bit application (or more specific an application with 4 byte
->> > time_t) would only provide sizeof(struct old_timespec32).
->> > 
->> > Notable changes:
->> >   - The copy operation from userspace to kernel is now already done in
->> >     the syscall handler. So it is always done. Previously it was copied
->> >     over and validated before the first use (when used at all).
->> >     So we have some additional instructions now that may be
->> >     unnecessary, but that simplifies the code.
->> 
->> Nack, there is a reason for this postponed copy of timespecs up to the
->> point where they are actually needed. This patch would break POSIX
->> compliance for some users. Please see the last sentence in the
->> Description of sem_timedwait()
->> https://pubs.opengroup.org/onlinepubs/009696699/functions/sem_timedwait.html
->
-> I can't find any comment regarding the point in time where we copy this
-> timespec to the kernel space. For the time of validation see below.
-> Could you point me to the failing tests or some more documentation?
->
-
-Assuming single thread, doing that in sequence:
-
-sem_t foo;
-
-sem_init(&foo, 0, 0);
-sem_post(&foo);
-sem_timedwait(&foo, NULL); /* <= should be ok, because we surely won't block */
-
-Disclaimer: I do find this fairly weird as well, but the privilege of
-any standard is to do weird things pretending this is the sane way.
-
->> 
->> I agree that the standard says "need not be checked", not "must not be
->> checked" which may make this implementation-defined, but some test
->> suites Xenomai runs against do expect this to pass.
->> 
->
-> The validation did not change. It's done right before the first usage.
-> So if not needed (because sem could be taken without timeout) there is
-> still no validation.
->
-> Thanks for your feedback, Philippe!
-
-The short log of the patch says that the copy of timespec is always done
-from user->kernel, which is the issue I'm referring to. Whether the data
-copied is sane is a different aspect.
-
--- 
-Philippe.
+T24gVGh1LCAyMDIxLTAzLTA0IGF0IDE0OjE4ICswMDAwLCBmbG9yaWFuLmJlemRla2EtLS0gdmlh
+IFhlbm9tYWkNCndyb3RlOg0KPiBIaSwNCj4gDQo+IHRoZSBhdHRhY2hlZCBrZXJuZWwgbG9nIHdh
+cyB0YWtlbiBmb3JtIGEgbG9jYWwgcWVtdSBtYWNoaW5lIHdpdGgNCj4gWGVub21haSBidWlsZCBm
+cm9tIHRoZSB3aXAvZG92ZXRhaWwgYnJhbmNoLiBUaGVyZSBpcyBhIGZhaWxpbmcgc2VsZnRlc3QN
+Cj4gKG1peGVkIHJlYWQtbG9jay9sb2NrLXdyaXRlIEFCQkEpLg0KPiANCg0KQ29ycmVjdGlvbjog
+SSBjYW4gcmVwcm9kdWNlIHRoYXQgd2l0aCBgbmV4dGAgYXMgd2VsbC4gU28gaXQncyBub3QNCnJl
+bGF0ZWQgdG8gdGhlIHdpcC9kb3ZldGFpbCBicmFuY2guIA0KDQo+IEkgZ3Vlc3MgaXQncyBPSyBm
+b3Igbm93IChhcyB0aGlzIGJyYW5jaCBpcyB3b3JrIGluIHByb2dyZXNzKS4gUHVzaGluZw0KPiBp
+dCBvdXQgdG8gdGhlIGxpc3QganVzdCBpbiBjYXNlIG5vYm9keSBub3RpY2VkIHNvIGZhciBhbmQg
+d2Ugc2hvdWxkDQo+IGhhdmUgYSBsb29rIGJlZm9yZSBtb3ZpbmcgZm9yd2FyZC4NCj4gDQo+IEJl
+c3QgcmVnYXJkcywNCj4gRmxvcmlhbg0KPiANCj4gDQo+IC0tIA0KPiBTaWVtZW5zIEFHLCBUIFJE
+QSBJT1QNCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+IC0t
+LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQ0KPiBBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uDQo+IE5hbWU6IGRtZXNnLmxvZw0KPiBUeXBlOiB0ZXh0L3gt
+bG9nDQo+IFNpemU6IDg5ODgzIGJ5dGVzDQo+IERlc2M6IGRtZXNnLmxvZw0KPiBVUkw6IDxodHRw
+czovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cCUzQSUy
+RiUyRnhlbm9tYWkub3JnJTJGcGlwZXJtYWlsJTJGeGVub21haSUyRmF0dGFjaG1lbnRzJTJGMjAy
+MTAzMDQlMkY1NThiNDhhYSUyRmF0dGFjaG1lbnQuYmluJmFtcDtkYXRhPTA0JTdDMDElN0NmbG9y
+aWFuLmJlemRla2ElNDBzaWVtZW5zLmNvbSU3QzUzMmJjMDhhZTc5YzRlOWQ5ZTQ5MDhkOGRmMTg3
+ODdlJTdDMzhhZTNiY2Q5NTc5NGZkNGFkZGFiNDJlMTQ5NWQ1NWElN0MxJTdDMCU3QzYzNzUwNDY0
+MzQ5MzE1MDE1MCU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxD
+SlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MxMDAwJmFtcDtz
+ZGF0YT0lMkJaQWYzcWFvMjJQUSUyQkc0NDJBOExON0psZnpReU54VjNuaGpoV0YzZklCNCUzRCZh
+bXA7cmVzZXJ2ZWQ9MD4NCg0K
 
