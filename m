@@ -1,11 +1,12 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Failing self-test on wip/dovetail with Linux 5.4
-Date: Thu, 4 Mar 2021 14:18:56 +0000
-Message-ID: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <20210304134540.5246-1-s.grosjean@peak-system.com>
+In-Reply-To: <20210304134540.5246-1-s.grosjean@peak-system.com>
+From: Andy Tannenbaum <trb@bioniklabs.com>
+Date: Thu, 4 Mar 2021 09:57:56 -0500
+Message-ID: <CAHcYe6nEAJU7NYKwA55T4U0qLm+Ux6CaKdbzMkq78m_gKVWK_w@mail.gmail.com>
+Subject: Re: [PATCH] RT-socket-CAN: Add support of PEAK PCAN-PCIe FD cards
+ family
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,18 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai mailing list <xenomai@xenomai.org>
 
-SGksDQoNCnRoZSBhdHRhY2hlZCBrZXJuZWwgbG9nIHdhcyB0YWtlbiBmb3JtIGEgbG9jYWwgcWVt
-dSBtYWNoaW5lIHdpdGgNClhlbm9tYWkgYnVpbGQgZnJvbSB0aGUgd2lwL2RvdmV0YWlsIGJyYW5j
-aC4gVGhlcmUgaXMgYSBmYWlsaW5nIHNlbGZ0ZXN0DQoobWl4ZWQgcmVhZC1sb2NrL2xvY2std3Jp
-dGUgQUJCQSkuDQoNCkkgZ3Vlc3MgaXQncyBPSyBmb3Igbm93IChhcyB0aGlzIGJyYW5jaCBpcyB3
-b3JrIGluIHByb2dyZXNzKS4gUHVzaGluZw0KaXQgb3V0IHRvIHRoZSBsaXN0IGp1c3QgaW4gY2Fz
-ZSBub2JvZHkgbm90aWNlZCBzbyBmYXIgYW5kIHdlIHNob3VsZA0KaGF2ZSBhIGxvb2sgYmVmb3Jl
-IG1vdmluZyBmb3J3YXJkLg0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQoNCg0KLS0gDQpTaWVt
-ZW5zIEFHLCBUIFJEQSBJT1QNCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBM
-aW51eA0KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQg
-YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1lc2cubG9nClR5cGU6IHRleHQveC1s
-b2cKU2l6ZTogODk4ODMgYnl0ZXMKRGVzYzogZG1lc2cubG9nClVSTDogPGh0dHA6Ly94ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDMwNC81NThiNDhhYS9hdHRh
-Y2htZW50LmJpbj4K
+I am using this PEAK pciefd patch with x86 and xenomai-next (3.1+) from the
+repo and Linux 5.4.77, in my motor control system.  I am using the same API
+that I had used for the PEAK PCIe device on Xenomai 2.6.4 and 3.1.  I do
+not use the CAN-FD API features of the new driver, I just wanted to use the
+newer PEAK M.2 device (because newer Intel motherboards support M.2 more
+than PCIe) with the older CAN API, so this worked well for me.  I will
+appreciate it if this patch is added to Xenomai 3.
+
+-- 
+*Andrew Tannenbaum*
+Software Architect
+
+*BIONIK, Inc.*
+80 Coolidge Hill Road
+Watertown, MA 02472
+Office: +1 617 926 4800 x4811
+www.bioniklabs.com
