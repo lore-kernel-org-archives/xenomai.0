@@ -1,16 +1,18 @@
-References: <20210220151840.409745-1-rpm@xenomai.org>
- <20210220151840.409745-2-rpm@xenomai.org>
- <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
- <878s731csg.fsf@xenomai.org>
- <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
  timespec64
-In-reply-to: <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
-Date: Thu, 04 Mar 2021 10:55:42 +0100
-Message-ID: <8735xb1bvl.fsf@xenomai.org>
+Date: Thu, 4 Mar 2021 09:57:54 +0000
+Message-ID: <4a7631614050326637af3d7da0e590d275440e04.camel@siemens.com>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org>
+ <7200b2df730dc65a5ce7e531109b6ba663e88ae7.camel@siemens.com>
+ <875z271cej.fsf@xenomai.org>
+In-Reply-To: <875z271cej.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D6E013B350CA1A49AF3D64330062AD43@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,64 +21,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-
-florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
-
-> On Thu, 2021-03-04 at 10:35 +0100, Philippe Gerum wrote:
->> florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
->> 
->> > On Sat, 2021-02-20 at 16:18 +0100, Philippe Gerum via Xenomai wrote:
->> > [snip]
->> > > diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
->> > > index 05a861dfe..467a9b7dd 100644
->> > > --- a/kernel/cobalt/posix/sem.c
->> > > +++ b/kernel/cobalt/posix/sem.c
->> > > @@ -267,7 +267,7 @@ out:
->> > >  	return ret;
->> > >  }
->> > >  
->> > > 
->> > > 
->> > > 
->> > > -static inline int sem_fetch_timeout(struct timespec *ts,
->> > > +static inline int sem_fetch_timeout(struct timespec64 *ts,
->> > >  				    const void __user *u_ts)
->> > 
->> > Handle the following with care, maybe my understanding of
->> > CONFIG_XENO_ARCH_SYS3264 is wrong. See below...
->> > 
->> > My understanding is that this is a breaking change for 32 bit kernels.
->> > The broken part is hidden here, but sem_fetch_timeout() now assumes
->> > that the user provided timespec64, which is not be the case for 32 bit
->> > applications running on a 32 bit kernel.
->> > 
->> 
->> The user-provided memory is referred to by u_ts, not ts, which receives
->> the timestamp fetch_timeout() is supposed to return. The change should
->> only affect the return type, not the source one. sys32_fetch_timeout()
->> should still do the right thing via sys32_get_timespec().
->
-> Adding the full code:
->
-> static inline int sem_fetch_timeout(struct timespec64 *ts,
-> 				    const void __user *u_ts)
-> {
-> 	return u_ts == NULL ? -EFAULT :
-> 		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
-> }
->
-> Copying sizeof(*ts) is to much if the application provided
-> "__old_time_t" (sizeof(time_t) =4) only. Isn't it? I would expect the
-> result (in ts) to be garbage. Due to different padding the "sec" field
-> (in ts) would now contain the nsec value from u_ts as well.
->
-
-Ah, I was looking at the wrong path (32emu). Yes, this is broken for
-mere 32bit now (i.e. natively 32bit platform).
-
--- 
-Philippe.
+T24gVGh1LCAyMDIxLTAzLTA0IGF0IDEwOjQ0ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gZmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5j
+b20+IHdyaXRlczoNCj4gDQo+ID4gT24gU2F0LCAyMDIxLTAyLTIwIGF0IDE2OjE4ICswMTAwLCBQ
+aGlsaXBwZSBHZXJ1bSB2aWEgWGVub21haSB3cm90ZToNCj4gPiBbc25pcF0NCj4gPiA+ICsjaWYg
+X19CSVRTX1BFUl9MT05HID09IDY0DQo+ID4gDQo+ID4gVGhhdCBtaWdodCBiZSBhIGJlZ2lubmVy
+IHF1ZXN0aW9uLCBidXQgSSdtIGxlYXJuaW5nIGZyb20gdGhlIGJlc3QgOy0pDQo+ID4gDQo+ID4g
+RG8gd2UgcmVhbGx5IGNhcmUgYWJvdXQgZWFjaCBzaW5nbGUgYXNzaWdubWVudCAodHdvIHBlciB0
+aW1lc3BlYykgYW5kDQo+ID4gZWFjaCBvYmplY3Qgb24gdGhlIHN0YWNrIHRoYXQgaXQgaXMgd29y
+dGggZHVwbGljYXRpbmcgYWxsIHRoaXMgaGVscGVycz8NCj4gPiBXZSBjb3VsZCB1c2UgdGhlIF9f
+QklUU19QRVJfTE9ORyA9PSAzMiB2ZXJzaW9uIGZvciBib3RoIHdvcmxkcywNCj4gPiBjb3VsZG4n
+dCB3ZT8NCj4gDQo+IFllcywgdGhpcyB3b3VsZCB3b3JrIGFzIHdlbGwuIEkgYWdyZWUgdGhhdCB0
+aGUgdmVyeSBsaW1pdGVkIGdhaW4gaXMgbm90DQo+IHdvcnRoIHRoZSBjb2RlIGR1cGxpY2F0aW9u
+Lg0KPiANCg0KSSAob3IgU29uZykgd2lsbCB0YWtlIGNhcmUgb2YgaXQuIE5vIG5lZWQgdG8gaW50
+ZXJydXB0IGRvdmV0YWlsDQpzdHVmZi4uLg0K
 
