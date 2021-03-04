@@ -1,12 +1,14 @@
+References: <87v9a7z0xh.fsf@xenomai.org>
+ <20210304113653.45432-1-florian.bezdeka@siemens.com>
+ <20210304113653.45432-2-florian.bezdeka@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [y2038][RFC PATCH 1/2] y2038: Fixing the sem_timedwait syscall
+ for 32 bit systems
+In-reply-to: <20210304113653.45432-2-florian.bezdeka@siemens.com>
+Date: Thu, 04 Mar 2021 16:11:58 +0100
+Message-ID: <87pn0fymv5.fsf@xenomai.org>
 MIME-Version: 1.0
-References: <20210304134540.5246-1-s.grosjean@peak-system.com>
-In-Reply-To: <20210304134540.5246-1-s.grosjean@peak-system.com>
-From: Andy Tannenbaum <trb@bioniklabs.com>
-Date: Thu, 4 Mar 2021 09:57:56 -0500
-Message-ID: <CAHcYe6nEAJU7NYKwA55T4U0qLm+Ux6CaKdbzMkq78m_gKVWK_w@mail.gmail.com>
-Subject: Re: [PATCH] RT-socket-CAN: Add support of PEAK PCAN-PCIe FD cards
- family
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai mailing list <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@xenomai.org, jan.kiszka@siemens.com, chensong@kylinos.cn
 
-I am using this PEAK pciefd patch with x86 and xenomai-next (3.1+) from the
-repo and Linux 5.4.77, in my motor control system.  I am using the same API
-that I had used for the PEAK PCIe device on Xenomai 2.6.4 and 3.1.  I do
-not use the CAN-FD API features of the new driver, I just wanted to use the
-newer PEAK M.2 device (because newer Intel motherboards support M.2 more
-than PCIe) with the older CAN API, so this worked well for me.  I will
-appreciate it if this patch is added to Xenomai 3.
+
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+
+> On systems using 32 bit for time_t the sem_timedwait syscall was broken
+> because the function used for copying the timeout value from userspace
+> to kernel (=sem_fetch_timeout()) was always copying
+> sizeof(struct timespec64).
+>
+> A 32 bit application (or more specific an application with 4 byte
+> time_t) would only provide sizeof(struct old_timespec32).
+>
+> Notable changes:
+>   - The copy operation from userspace to kernel is now already done in
+>     the syscall handler. So it is always done. Previously it was copied
+>     over and validated before the first use (when used at all).
+>     So we have some additional instructions now that may be
+>     unnecessary, but that simplifies the code.
+
+Nack, there is a reason for this postponed copy of timespecs up to the
+point where they are actually needed. This patch would break POSIX
+compliance for some users. Please see the last sentence in the
+Description of sem_timedwait()
+https://pubs.opengroup.org/onlinepubs/009696699/functions/sem_timedwait.html
+
+I agree that the standard says "need not be checked", not "must not be
+checked" which may make this implementation-defined, but some test
+suites Xenomai runs against do expect this to pass.
 
 -- 
-*Andrew Tannenbaum*
-Software Architect
+Philippe.
 
-*BIONIK, Inc.*
-80 Coolidge Hill Road
-Watertown, MA 02472
-Office: +1 617 926 4800 x4811
-www.bioniklabs.com
