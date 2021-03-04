@@ -1,16 +1,14 @@
-Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
-References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
- <603E3952.1070109@tj.kylinos.cn>
- <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
- <6040770F.4000405@kylinos.cn>
- <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <6040A742.3080008@tj.kylinos.cn>+E89B4B179B5B375C
-Date: Thu, 4 Mar 2021 17:24:18 +0800
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org>
+ <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+In-reply-to: <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
+Date: Thu, 04 Mar 2021 10:35:59 +0100
+Message-ID: <878s731csg.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,120 +17,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
 
+florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
 
-On 2021年03月04日 17:00, florian.bezdeka@siemens.com wrote:
-> On Thu, 2021-03-04 at 13:58 +0800, chensong wrote:
->>
->> On 2021年03月02日 21:43, florian.bezdeka--- via Xenomai wrote:
->>> On Tue, 2021-03-02 at 21:10 +0800, chensong wrote:
->>>> Florian $ Philippe,
->>>>
->>>> As the discussion in the mails 2021-02-21, we are going to replace
->>>> __user_old_timespec with __kernel_old_timespec to keep aligned with
->>>> upstream.
->>>
->>> Please note the y2038 related patches from Philippe located in the
->>> wip/dovetail branch of the Xenomai repository. That work has already
->>> been done.
->>>
->>
->> Thanks, i was working on the xenomai-rpm, now i move to [1] branch
->> wip/dovetail, is it correct?
+> On Sat, 2021-02-20 at 16:18 +0100, Philippe Gerum via Xenomai wrote:
+> [snip]
+>> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+>> index 05a861dfe..467a9b7dd 100644
+>> --- a/kernel/cobalt/posix/sem.c
+>> +++ b/kernel/cobalt/posix/sem.c
+>> @@ -267,7 +267,7 @@ out:
+>>  	return ret;
+>>  }
+>>  
+>> -static inline int sem_fetch_timeout(struct timespec *ts,
+>> +static inline int sem_fetch_timeout(struct timespec64 *ts,
+>>  				    const void __user *u_ts)
 >
-> After a short sync with Jan and the fact that the y2038 related patches
-> from Philippe are already part of this branch and we need them (even if
-> currently breaking 32 bit kernels): yes
+> Handle the following with care, maybe my understanding of
+> CONFIG_XENO_ARCH_SYS3264 is wrong. See below...
 >
-> In addition: I have a wip/y2038 branch on my public gitlab tree ([2]),
-> already based on wip/dovetail that I can easily run through the CI of
-> the xenomai-images project for compile-testing all the different kernel
-> combinations. Even testing could be enabled in the future.
->
-> As patches should always make it to the list, here comes my proposal:
->
-> Feel free to send your patches using a [y2038] (or similar) tag, the
-> list can review them and I would take care of applying it to [2]. All
-> others interested in this topic (ongoing integration) could pick them
-> as well. Philippe already mentioned that he is interested in
-> integrating them as well.
-
-ok, will do.
-
->
-> If all the things in [2] are looking good after some time we can resend
-> them and ask Jan to apply them (after anther round of review).
->
->>
->> [1] https://source.denx.de/Xenomai/xenomai
->
->    [2] https://gitlab.com/fbezdeka/xenomai/
->
->>>> This patch introduced their definitions, if you both agree, i will start
->>>> replacing __user_old_timespec and __user_old_timeval afterward.
->>>>
->>>> BR
->>>>
->>>> Song
->>>>
->>>> On 2021年03月02日 21:05, chensong wrote:
->>>>> Since timespec and timeval will be removed because of
->>>>> y2038 problem, we need to introduce new time representations at
->>>>> the kernel-user boundary and we also need to keep aligned with
->>>>> upstream at the same time.
->>>>>
->>>>> Therefore, we introduce:
->>>>> 1)__kernel_old_timeval
->>>>> 2)__kernel_old_timespec
->>>>> from upstream, their tv_sec are defined as long and as a result their width
->>>>> is able to adapt different arch automatically.
->>>>>
->>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>>>> ---
->>>>>     include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
->>>>>     1 file changed, 15 insertions(+)
->>>>>
->>>>> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
->>>>> index 2c931c2..8931d82 100644
->>>>> --- a/include/cobalt/uapi/kernel/types.h
->>>>> +++ b/include/cobalt/uapi/kernel/types.h
->>>>> @@ -20,6 +20,7 @@
->>>>>
->>>>>     #include <linux/types.h>
->>>>>     #include <cobalt/uapi/kernel/limits.h>
->>>>> +#include <asm-generic/xenomai/wrappers.h>
->>>>>
->>>>>     typedef __u64 xnticks_t;
->>>>>
->>>>> @@ -78,6 +79,20 @@ struct __user_old_timeval {
->>>>>     	long  tv_usec;
->>>>>     };
->>>>>
->>>>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
->>>>> +struct __kernel_old_timeval {
->>>>> +	__kernel_long_t tv_sec;
->>>>> +	__kernel_long_t tv_usec;
->>>>> +};
->>>>> +#endif
->>>>> +
->>>>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
->>>>> +struct __kernel_old_timespec {
->>>>> +	__kernel_old_time_t	tv_sec;		/* seconds */
->>>>> +	long			tv_nsec;	/* nanoseconds */
->>>>> +};
->>>>> +#endif
->>>>> +
->>>>>     /* Lifted from include/uapi/linux/timex.h. */
->>>>>     struct __user_old_timex {
->>>>>     	unsigned int modes;	/* mode selector */
->>>>>
->>>>
->>>>
->>>
+> My understanding is that this is a breaking change for 32 bit kernels.
+> The broken part is hidden here, but sem_fetch_timeout() now assumes
+> that the user provided timespec64, which is not be the case for 32 bit
+> applications running on a 32 bit kernel.
 >
 
+The user-provided memory is referred to by u_ts, not ts, which receives
+the timestamp fetch_timeout() is supposed to return. The change should
+only affect the return type, not the source one. sys32_fetch_timeout()
+should still do the right thing via sys32_get_timespec().
 
+Did you observe a manifest breakage with 32_64 setups?
+
+>
+>>  {
+>>  	return u_ts == NULL ? -EFAULT :
+>> @@ -276,10 +276,10 @@ static inline int sem_fetch_timeout(struct timespec *ts,
+>>  
+>>  int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
+>>  			   const void __user *u_ts,
+>> -			   int (*fetch_timeout)(struct timespec *ts,
+>> +			   int (*fetch_timeout)(struct timespec64 *ts,
+>>  						const void __user *u_ts))
+>>  {
+>> -	struct timespec ts = { .tv_sec = 0, .tv_nsec = 0 };
+>> +	struct timespec64 ts = { .tv_sec = 0, .tv_nsec = 0 };
+>>  	int pull_ts = 1, ret, info;
+>>  	struct cobalt_sem *sem;
+>>  	xnhandle_t handle;
+>> @@ -434,7 +434,7 @@ COBALT_SYSCALL(sem_wait, primary,
+>>  
+>>  COBALT_SYSCALL(sem_timedwait, primary,
+>>  	       (struct cobalt_sem_shadow __user *u_sem,
+>> -		struct timespec __user *u_ts))
+>> +		struct __user_old_timespec __user *u_ts))
+>
+> This change is still correct, but this is where the journey begins. If
+> my understanding of CONFIG_XENO_ARCH_SYS3264 is correct, this syscall
+> is being used on 32 bit kernels as well. Is that understanding correct?
+
+COBALT_SYSCALL(sem_timedwait, ...) is only used in native (e.g. mere
+64bit, or 32bit) mode. The following one is used in 32bit over 64bit
+mode specifically:
+
+COBALT_SYSCALL32emu(sem_timedwait, primary,
+		    (struct cobalt_sem_shadow __user *u_sem,
+		     struct old_timespec32 __user *u_ts))
+
+
+-- 
+Philippe.
 
