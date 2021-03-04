@@ -1,11 +1,14 @@
 Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
 References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
- <87y2f56565.fsf@xenomai.org>
-From: chensong <chensong@kylinos.cn>
-Message-ID: <6040A1E1.9030607@kylinos.cn>
-Date: Thu, 4 Mar 2021 17:01:21 +0800
+ <603E3952.1070109@tj.kylinos.cn>
+ <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
+ <6040770F.4000405@kylinos.cn>
+ <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <6040A742.3080008@tj.kylinos.cn>+E89B4B179B5B375C
+Date: Thu, 4 Mar 2021 17:24:18 +0800
 MIME-Version: 1.0
-In-Reply-To: <87y2f56565.fsf@xenomai.org>
+In-Reply-To: <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,77 +19,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, chensong <chensong@tj.kylinos.cn>
-Cc: xenomai@xenomai.org
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
 
-On 2021年03月02日 21:44, Philippe Gerum via Xenomai wrote:
+On 2021年03月04日 17:00, florian.bezdeka@siemens.com wrote:
+> On Thu, 2021-03-04 at 13:58 +0800, chensong wrote:
+>>
+>> On 2021年03月02日 21:43, florian.bezdeka--- via Xenomai wrote:
+>>> On Tue, 2021-03-02 at 21:10 +0800, chensong wrote:
+>>>> Florian $ Philippe,
+>>>>
+>>>> As the discussion in the mails 2021-02-21, we are going to replace
+>>>> __user_old_timespec with __kernel_old_timespec to keep aligned with
+>>>> upstream.
+>>>
+>>> Please note the y2038 related patches from Philippe located in the
+>>> wip/dovetail branch of the Xenomai repository. That work has already
+>>> been done.
+>>>
+>>
+>> Thanks, i was working on the xenomai-rpm, now i move to [1] branch
+>> wip/dovetail, is it correct?
 >
-> chensong <chensong@tj.kylinos.cn> writes:
+> After a short sync with Jan and the fact that the y2038 related patches
+> from Philippe are already part of this branch and we need them (even if
+> currently breaking 32 bit kernels): yes
 >
->> Since timespec and timeval will be removed because of
->> y2038 problem, we need to introduce new time representations at
->> the kernel-user boundary and we also need to keep aligned with
->> upstream at the same time.
->>
->> Therefore, we introduce:
->> 1)__kernel_old_timeval
->> 2)__kernel_old_timespec
->> from upstream, their tv_sec are defined as long and as a result their width
->> is able to adapt different arch automatically.
->>
->> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->> ---
->>   include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
->>   1 file changed, 15 insertions(+)
->>
->> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
->> index 2c931c2..8931d82 100644
->> --- a/include/cobalt/uapi/kernel/types.h
->> +++ b/include/cobalt/uapi/kernel/types.h
->> @@ -20,6 +20,7 @@
->>
->>   #include <linux/types.h>
->>   #include <cobalt/uapi/kernel/limits.h>
->> +#include <asm-generic/xenomai/wrappers.h>
->>
->>   typedef __u64 xnticks_t;
->>
->> @@ -78,6 +79,20 @@ struct __user_old_timeval {
->>   	long  tv_usec;
->>   };
->>
->> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
->> +struct __kernel_old_timeval {
->> +	__kernel_long_t tv_sec;
->> +	__kernel_long_t tv_usec;
->> +};
->> +#endif
->> +
->> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
->> +struct __kernel_old_timespec {
->> +	__kernel_old_time_t	tv_sec;		/* seconds */
->> +	long			tv_nsec;	/* nanoseconds */
->> +};
->> +#endif
->> +
->>   /* Lifted from include/uapi/linux/timex.h. */
->>   struct __user_old_timex {
->>   	unsigned int modes;	/* mode selector */
+> In addition: I have a wip/y2038 branch on my public gitlab tree ([2]),
+> already based on wip/dovetail that I can easily run through the CI of
+> the xenomai-images project for compile-testing all the different kernel
+> combinations. Even testing could be enabled in the future.
 >
+> As patches should always make it to the list, here comes my proposal:
 >
-> This won't work, the uapi is meant to be parsed by userland too,
-> independently of the target kernel version. Therefore, testing
-> LINUX_VERSION_CODE does not make sense there. Hence the reason for
-> defining __user_old_timespec, which does not conflict with any
-> pre-existing type in either kernel or userland namespaces.
+> Feel free to send your patches using a [y2038] (or similar) tag, the
+> list can review them and I would take care of applying it to [2]. All
+> others interested in this topic (ongoing integration) could pick them
+> as well. Philippe already mentioned that he is interested in
+> integrating them as well.
+
+ok, will do.
+
 >
-> What you might do instead is defining __kernel_old_timespec to mirror
-> the same kernel type only if __KERNEL__ is not set, but I would not
-> recommend checking for __KERNEL__ in this context anyway, since that
-> defeats the purpose of having separate uapi files.
+> If all the things in [2] are looking good after some time we can resend
+> them and ask Jan to apply them (after anther round of review).
+>
+>>
+>> [1] https://source.denx.de/Xenomai/xenomai
+>
+>    [2] https://gitlab.com/fbezdeka/xenomai/
+>
+>>>> This patch introduced their definitions, if you both agree, i will start
+>>>> replacing __user_old_timespec and __user_old_timeval afterward.
+>>>>
+>>>> BR
+>>>>
+>>>> Song
+>>>>
+>>>> On 2021年03月02日 21:05, chensong wrote:
+>>>>> Since timespec and timeval will be removed because of
+>>>>> y2038 problem, we need to introduce new time representations at
+>>>>> the kernel-user boundary and we also need to keep aligned with
+>>>>> upstream at the same time.
+>>>>>
+>>>>> Therefore, we introduce:
+>>>>> 1)__kernel_old_timeval
+>>>>> 2)__kernel_old_timespec
+>>>>> from upstream, their tv_sec are defined as long and as a result their width
+>>>>> is able to adapt different arch automatically.
+>>>>>
+>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>>>> ---
+>>>>>     include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
+>>>>>     1 file changed, 15 insertions(+)
+>>>>>
+>>>>> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
+>>>>> index 2c931c2..8931d82 100644
+>>>>> --- a/include/cobalt/uapi/kernel/types.h
+>>>>> +++ b/include/cobalt/uapi/kernel/types.h
+>>>>> @@ -20,6 +20,7 @@
+>>>>>
+>>>>>     #include <linux/types.h>
+>>>>>     #include <cobalt/uapi/kernel/limits.h>
+>>>>> +#include <asm-generic/xenomai/wrappers.h>
+>>>>>
+>>>>>     typedef __u64 xnticks_t;
+>>>>>
+>>>>> @@ -78,6 +79,20 @@ struct __user_old_timeval {
+>>>>>     	long  tv_usec;
+>>>>>     };
+>>>>>
+>>>>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
+>>>>> +struct __kernel_old_timeval {
+>>>>> +	__kernel_long_t tv_sec;
+>>>>> +	__kernel_long_t tv_usec;
+>>>>> +};
+>>>>> +#endif
+>>>>> +
+>>>>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
+>>>>> +struct __kernel_old_timespec {
+>>>>> +	__kernel_old_time_t	tv_sec;		/* seconds */
+>>>>> +	long			tv_nsec;	/* nanoseconds */
+>>>>> +};
+>>>>> +#endif
+>>>>> +
+>>>>>     /* Lifted from include/uapi/linux/timex.h. */
+>>>>>     struct __user_old_timex {
+>>>>>     	unsigned int modes;	/* mode selector */
+>>>>>
+>>>>
+>>>>
+>>>
 >
 
-ok, let's keep it this way.
+
 
