@@ -1,18 +1,16 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
- timespec64
-Date: Thu, 4 Mar 2021 09:49:51 +0000
-Message-ID: <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
 References: <20210220151840.409745-1-rpm@xenomai.org>
  <20210220151840.409745-2-rpm@xenomai.org>
  <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
  <878s731csg.fsf@xenomai.org>
-In-Reply-To: <878s731csg.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <EBA21A7A923C81489314EAFFB89EF7E5@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+In-reply-to: <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
+Date: Thu, 04 Mar 2021 10:55:42 +0100
+Message-ID: <8735xb1bvl.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,70 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
-T24gVGh1LCAyMDIxLTAzLTA0IGF0IDEwOjM1ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
-Cj4gZmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5j
-b20+IHdyaXRlczoNCj4gDQo+ID4gT24gU2F0LCAyMDIxLTAyLTIwIGF0IDE2OjE4ICswMTAwLCBQ
-aGlsaXBwZSBHZXJ1bSB2aWEgWGVub21haSB3cm90ZToNCj4gPiBbc25pcF0NCj4gPiA+IGRpZmYg
-LS1naXQgYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3NlbS5jIGIva2VybmVsL2NvYmFsdC9wb3NpeC9z
-ZW0uYw0KPiA+ID4gaW5kZXggMDVhODYxZGZlLi40NjdhOWI3ZGQgMTAwNjQ0DQo+ID4gPiAtLS0g
-YS9rZXJuZWwvY29iYWx0L3Bvc2l4L3NlbS5jDQo+ID4gPiArKysgYi9rZXJuZWwvY29iYWx0L3Bv
-c2l4L3NlbS5jDQo+ID4gPiBAQCAtMjY3LDcgKzI2Nyw3IEBAIG91dDoNCj4gPiA+IMKgCXJldHVy
-biByZXQ7DQo+ID4gPiDCoH0NCj4gPiA+IMKgDQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gDQo+ID4g
-PiAtc3RhdGljIGlubGluZSBpbnQgc2VtX2ZldGNoX3RpbWVvdXQoc3RydWN0IHRpbWVzcGVjICp0
-cywNCj4gPiA+ICtzdGF0aWMgaW5saW5lIGludCBzZW1fZmV0Y2hfdGltZW91dChzdHJ1Y3QgdGlt
-ZXNwZWM2NCAqdHMsDQo+ID4gPiDCoAkJCQkgICAgY29uc3Qgdm9pZCBfX3VzZXIgKnVfdHMpDQo+
-ID4gDQo+ID4gSGFuZGxlIHRoZSBmb2xsb3dpbmcgd2l0aCBjYXJlLCBtYXliZSBteSB1bmRlcnN0
-YW5kaW5nIG9mDQo+ID4gQ09ORklHX1hFTk9fQVJDSF9TWVMzMjY0IGlzIHdyb25nLiBTZWUgYmVs
-b3cuLi4NCj4gPiANCj4gPiBNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgdGhpcyBpcyBhIGJyZWFr
-aW5nIGNoYW5nZSBmb3IgMzIgYml0IGtlcm5lbHMuDQo+ID4gVGhlIGJyb2tlbiBwYXJ0IGlzIGhp
-ZGRlbiBoZXJlLCBidXQgc2VtX2ZldGNoX3RpbWVvdXQoKSBub3cgYXNzdW1lcw0KPiA+IHRoYXQg
-dGhlIHVzZXIgcHJvdmlkZWQgdGltZXNwZWM2NCwgd2hpY2ggaXMgbm90IGJlIHRoZSBjYXNlIGZv
-ciAzMiBiaXQNCj4gPiBhcHBsaWNhdGlvbnMgcnVubmluZyBvbiBhIDMyIGJpdCBrZXJuZWwuDQo+
-ID4gDQo+IA0KPiBUaGUgdXNlci1wcm92aWRlZCBtZW1vcnkgaXMgcmVmZXJyZWQgdG8gYnkgdV90
-cywgbm90IHRzLCB3aGljaCByZWNlaXZlcw0KPiB0aGUgdGltZXN0YW1wIGZldGNoX3RpbWVvdXQo
-KSBpcyBzdXBwb3NlZCB0byByZXR1cm4uIFRoZSBjaGFuZ2Ugc2hvdWxkDQo+IG9ubHkgYWZmZWN0
-IHRoZSByZXR1cm4gdHlwZSwgbm90IHRoZSBzb3VyY2Ugb25lLiBzeXMzMl9mZXRjaF90aW1lb3V0
-KCkNCj4gc2hvdWxkIHN0aWxsIGRvIHRoZSByaWdodCB0aGluZyB2aWEgc3lzMzJfZ2V0X3RpbWVz
-cGVjKCkuDQoNCkFkZGluZyB0aGUgZnVsbCBjb2RlOg0KDQpzdGF0aWMgaW5saW5lIGludCBzZW1f
-ZmV0Y2hfdGltZW91dChzdHJ1Y3QgdGltZXNwZWM2NCAqdHMsDQoJCQkJICAgIGNvbnN0IHZvaWQg
-X191c2VyICp1X3RzKQ0Kew0KCXJldHVybiB1X3RzID09IE5VTEwgPyAtRUZBVUxUIDoNCgkJY29i
-YWx0X2NvcHlfZnJvbV91c2VyKHRzLCB1X3RzLCBzaXplb2YoKnRzKSk7DQp9DQoNCkNvcHlpbmcg
-c2l6ZW9mKCp0cykgaXMgdG8gbXVjaCBpZiB0aGUgYXBwbGljYXRpb24gcHJvdmlkZWQNCiJfX29s
-ZF90aW1lX3QiIChzaXplb2YodGltZV90KSA9NCkgb25seS4gSXNuJ3QgaXQ/IEkgd291bGQgZXhw
-ZWN0IHRoZQ0KcmVzdWx0IChpbiB0cykgdG8gYmUgZ2FyYmFnZS4gRHVlIHRvIGRpZmZlcmVudCBw
-YWRkaW5nIHRoZSAic2VjIiBmaWVsZA0KKGluIHRzKSB3b3VsZCBub3cgY29udGFpbiB0aGUgbnNl
-YyB2YWx1ZSBmcm9tIHVfdHMgYXMgd2VsbC4NCg0KSSB3aWxsIGNvbWUgdXAgd2l0aCBhIHByb3Bv
-c2FsIHRvIGZpeCB0aGF0LiBXZSBuZWVkIHNvbWUgZGlzY3Vzc2lvbg0KYW55d2F5Li4uDQoNCj4g
-DQo+IERpZCB5b3Ugb2JzZXJ2ZSBhIG1hbmlmZXN0IGJyZWFrYWdlIHdpdGggMzJfNjQgc2V0dXBz
-Pw0KPiANCj4gPiANCj4gPiA+IMKgew0KPiA+ID4gwqAJcmV0dXJuIHVfdHMgPT0gTlVMTCA/IC1F
-RkFVTFQgOg0KPiA+ID4gQEAgLTI3NiwxMCArMjc2LDEwIEBAIHN0YXRpYyBpbmxpbmUgaW50IHNl
-bV9mZXRjaF90aW1lb3V0KHN0cnVjdCB0aW1lc3BlYyAqdHMsDQo+ID4gPiDCoA0KPiA+ID4gDQo+
-ID4gPiANCj4gPiA+IA0KPiA+ID4gwqBpbnQgX19jb2JhbHRfc2VtX3RpbWVkd2FpdChzdHJ1Y3Qg
-Y29iYWx0X3NlbV9zaGFkb3cgX191c2VyICp1X3NlbSwNCj4gPiA+IMKgCQkJICAgY29uc3Qgdm9p
-ZCBfX3VzZXIgKnVfdHMsDQo+ID4gPiAtCQkJICAgaW50ICgqZmV0Y2hfdGltZW91dCkoc3RydWN0
-IHRpbWVzcGVjICp0cywNCj4gPiA+ICsJCQkgICBpbnQgKCpmZXRjaF90aW1lb3V0KShzdHJ1Y3Qg
-dGltZXNwZWM2NCAqdHMsDQo+ID4gPiDCoAkJCQkJCWNvbnN0IHZvaWQgX191c2VyICp1X3RzKSkN
-Cj4gPiA+IMKgew0KPiA+ID4gLQlzdHJ1Y3QgdGltZXNwZWMgdHMgPSB7IC50dl9zZWMgPSAwLCAu
-dHZfbnNlYyA9IDAgfTsNCj4gPiA+ICsJc3RydWN0IHRpbWVzcGVjNjQgdHMgPSB7IC50dl9zZWMg
-PSAwLCAudHZfbnNlYyA9IDAgfTsNCj4gPiA+IMKgCWludCBwdWxsX3RzID0gMSwgcmV0LCBpbmZv
-Ow0KPiA+ID4gwqAJc3RydWN0IGNvYmFsdF9zZW0gKnNlbTsNCj4gPiA+IMKgCXhuaGFuZGxlX3Qg
-aGFuZGxlOw0KPiA+ID4gQEAgLTQzNCw3ICs0MzQsNyBAQCBDT0JBTFRfU1lTQ0FMTChzZW1fd2Fp
-dCwgcHJpbWFyeSwNCj4gPiA+IMKgDQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiDCoENP
-QkFMVF9TWVNDQUxMKHNlbV90aW1lZHdhaXQsIHByaW1hcnksDQo+ID4gPiDCoAkgICAgICAgKHN0
-cnVjdCBjb2JhbHRfc2VtX3NoYWRvdyBfX3VzZXIgKnVfc2VtLA0KPiA+ID4gLQkJc3RydWN0IHRp
-bWVzcGVjIF9fdXNlciAqdV90cykpDQo+ID4gPiArCQlzdHJ1Y3QgX191c2VyX29sZF90aW1lc3Bl
-YyBfX3VzZXIgKnVfdHMpKQ0KPiA+IA0KPiA+IFRoaXMgY2hhbmdlIGlzIHN0aWxsIGNvcnJlY3Qs
-IGJ1dCB0aGlzIGlzIHdoZXJlIHRoZSBqb3VybmV5IGJlZ2lucy4gSWYNCj4gPiBteSB1bmRlcnN0
-YW5kaW5nIG9mIENPTkZJR19YRU5PX0FSQ0hfU1lTMzI2NCBpcyBjb3JyZWN0LCB0aGlzIHN5c2Nh
-bGwNCj4gPiBpcyBiZWluZyB1c2VkIG9uIDMyIGJpdCBrZXJuZWxzIGFzIHdlbGwuIElzIHRoYXQg
-dW5kZXJzdGFuZGluZyBjb3JyZWN0Pw0KPiANCj4gQ09CQUxUX1NZU0NBTEwoc2VtX3RpbWVkd2Fp
-dCwgLi4uKSBpcyBvbmx5IHVzZWQgaW4gbmF0aXZlIChlLmcuIG1lcmUNCj4gNjRiaXQsIG9yIDMy
-Yml0KSBtb2RlLiBUaGUgZm9sbG93aW5nIG9uZSBpcyB1c2VkIGluIDMyYml0IG92ZXIgNjRiaXQN
-Cj4gbW9kZSBzcGVjaWZpY2FsbHk6DQo+IA0KPiBDT0JBTFRfU1lTQ0FMTDMyZW11KHNlbV90aW1l
-ZHdhaXQsIHByaW1hcnksDQo+IAkJICAgIChzdHJ1Y3QgY29iYWx0X3NlbV9zaGFkb3cgX191c2Vy
-ICp1X3NlbSwNCj4gCQkgICAgIHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfdHMpKQ0K
-PiANCj4gDQoNCg==
+
+florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
+
+> On Thu, 2021-03-04 at 10:35 +0100, Philippe Gerum wrote:
+>> florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
+>> 
+>> > On Sat, 2021-02-20 at 16:18 +0100, Philippe Gerum via Xenomai wrote:
+>> > [snip]
+>> > > diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+>> > > index 05a861dfe..467a9b7dd 100644
+>> > > --- a/kernel/cobalt/posix/sem.c
+>> > > +++ b/kernel/cobalt/posix/sem.c
+>> > > @@ -267,7 +267,7 @@ out:
+>> > >  	return ret;
+>> > >  }
+>> > >  
+>> > > 
+>> > > 
+>> > > 
+>> > > -static inline int sem_fetch_timeout(struct timespec *ts,
+>> > > +static inline int sem_fetch_timeout(struct timespec64 *ts,
+>> > >  				    const void __user *u_ts)
+>> > 
+>> > Handle the following with care, maybe my understanding of
+>> > CONFIG_XENO_ARCH_SYS3264 is wrong. See below...
+>> > 
+>> > My understanding is that this is a breaking change for 32 bit kernels.
+>> > The broken part is hidden here, but sem_fetch_timeout() now assumes
+>> > that the user provided timespec64, which is not be the case for 32 bit
+>> > applications running on a 32 bit kernel.
+>> > 
+>> 
+>> The user-provided memory is referred to by u_ts, not ts, which receives
+>> the timestamp fetch_timeout() is supposed to return. The change should
+>> only affect the return type, not the source one. sys32_fetch_timeout()
+>> should still do the right thing via sys32_get_timespec().
+>
+> Adding the full code:
+>
+> static inline int sem_fetch_timeout(struct timespec64 *ts,
+> 				    const void __user *u_ts)
+> {
+> 	return u_ts == NULL ? -EFAULT :
+> 		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
+> }
+>
+> Copying sizeof(*ts) is to much if the application provided
+> "__old_time_t" (sizeof(time_t) =4) only. Isn't it? I would expect the
+> result (in ts) to be garbage. Due to different padding the "sec" field
+> (in ts) would now contain the nsec value from u_ts as well.
+>
+
+Ah, I was looking at the wrong path (32emu). Yes, this is broken for
+mere 32bit now (i.e. natively 32bit platform).
+
+-- 
+Philippe.
 
