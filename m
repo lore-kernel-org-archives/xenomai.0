@@ -1,14 +1,17 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH] y2038: introduce new time representations at the boundary
+Date: Thu, 4 Mar 2021 09:00:22 +0000
+Message-ID: <27dee87faa97f5b13185ef54f238897370a9aa7b.camel@siemens.com>
 References: <1614690327-3500-1-git-send-email-chensong@tj.kylinos.cn>
  <603E3952.1070109@tj.kylinos.cn>
  <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
-From: chensong <chensong@kylinos.cn>
-Message-ID: <6040770F.4000405@kylinos.cn>
-Date: Thu, 4 Mar 2021 13:58:39 +0800
+ <6040770F.4000405@kylinos.cn>
+In-Reply-To: <6040770F.4000405@kylinos.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4562655A113CA84898A678C2EE8D5C04@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <ffa6da75a807470d49e15292e205f1c35c1993e6.camel@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,88 +20,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-
-On 2021年03月02日 21:43, florian.bezdeka--- via Xenomai wrote:
-> On Tue, 2021-03-02 at 21:10 +0800, chensong wrote:
->> Florian $ Philippe,
->>
->> As the discussion in the mails 2021-02-21, we are going to replace
->> __user_old_timespec with __kernel_old_timespec to keep aligned with
->> upstream.
->
-> Please note the y2038 related patches from Philippe located in the
-> wip/dovetail branch of the Xenomai repository. That work has already
-> been done.
->
-
-Thanks, i was working on the xenomai-rpm, now i move to [1] branch 
-wip/dovetail, is it correct?
-
-[1]https://source.denx.de/Xenomai/xenomai.git
->>
->> This patch introduced their definitions, if you both agree, i will start
->> replacing __user_old_timespec and __user_old_timeval afterward.
->>
->> BR
->>
->> Song
->>
->> On 2021年03月02日 21:05, chensong wrote:
->>> Since timespec and timeval will be removed because of
->>> y2038 problem, we need to introduce new time representations at
->>> the kernel-user boundary and we also need to keep aligned with
->>> upstream at the same time.
->>>
->>> Therefore, we introduce:
->>> 1)__kernel_old_timeval
->>> 2)__kernel_old_timespec
->>> from upstream, their tv_sec are defined as long and as a result their width
->>> is able to adapt different arch automatically.
->>>
->>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>> ---
->>>    include/cobalt/uapi/kernel/types.h | 15 +++++++++++++++
->>>    1 file changed, 15 insertions(+)
->>>
->>> diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
->>> index 2c931c2..8931d82 100644
->>> --- a/include/cobalt/uapi/kernel/types.h
->>> +++ b/include/cobalt/uapi/kernel/types.h
->>> @@ -20,6 +20,7 @@
->>>
->>>    #include <linux/types.h>
->>>    #include <cobalt/uapi/kernel/limits.h>
->>> +#include <asm-generic/xenomai/wrappers.h>
->>>
->>>    typedef __u64 xnticks_t;
->>>
->>> @@ -78,6 +79,20 @@ struct __user_old_timeval {
->>>    	long  tv_usec;
->>>    };
->>>
->>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,17,0)
->>> +struct __kernel_old_timeval {
->>> +	__kernel_long_t tv_sec;
->>> +	__kernel_long_t tv_usec;
->>> +};
->>> +#endif
->>> +
->>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)
->>> +struct __kernel_old_timespec {
->>> +	__kernel_old_time_t	tv_sec;		/* seconds */
->>> +	long			tv_nsec;	/* nanoseconds */
->>> +};
->>> +#endif
->>> +
->>>    /* Lifted from include/uapi/linux/timex.h. */
->>>    struct __user_old_timex {
->>>    	unsigned int modes;	/* mode selector */
->>>
->>
->>
->
+T24gVGh1LCAyMDIxLTAzLTA0IGF0IDEzOjU4ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gDQo+
+IE9uIDIwMjHlubQwM+aciDAy5pelIDIxOjQzLCBmbG9yaWFuLmJlemRla2EtLS0gdmlhIFhlbm9t
+YWkgd3JvdGU6DQo+ID4gT24gVHVlLCAyMDIxLTAzLTAyIGF0IDIxOjEwICswODAwLCBjaGVuc29u
+ZyB3cm90ZToNCj4gPiA+IEZsb3JpYW4gJCBQaGlsaXBwZSwNCj4gPiA+IA0KPiA+ID4gQXMgdGhl
+IGRpc2N1c3Npb24gaW4gdGhlIG1haWxzIDIwMjEtMDItMjEsIHdlIGFyZSBnb2luZyB0byByZXBs
+YWNlDQo+ID4gPiBfX3VzZXJfb2xkX3RpbWVzcGVjIHdpdGggX19rZXJuZWxfb2xkX3RpbWVzcGVj
+IHRvIGtlZXAgYWxpZ25lZCB3aXRoDQo+ID4gPiB1cHN0cmVhbS4NCj4gPiANCj4gPiBQbGVhc2Ug
+bm90ZSB0aGUgeTIwMzggcmVsYXRlZCBwYXRjaGVzIGZyb20gUGhpbGlwcGUgbG9jYXRlZCBpbiB0
+aGUNCj4gPiB3aXAvZG92ZXRhaWwgYnJhbmNoIG9mIHRoZSBYZW5vbWFpIHJlcG9zaXRvcnkuIFRo
+YXQgd29yayBoYXMgYWxyZWFkeQ0KPiA+IGJlZW4gZG9uZS4NCj4gPiANCj4gDQo+IFRoYW5rcywg
+aSB3YXMgd29ya2luZyBvbiB0aGUgeGVub21haS1ycG0sIG5vdyBpIG1vdmUgdG8gWzFdIGJyYW5j
+aCANCj4gd2lwL2RvdmV0YWlsLCBpcyBpdCBjb3JyZWN0Pw0KDQpBZnRlciBhIHNob3J0IHN5bmMg
+d2l0aCBKYW4gYW5kIHRoZSBmYWN0IHRoYXQgdGhlIHkyMDM4IHJlbGF0ZWQgcGF0Y2hlcw0KZnJv
+bSBQaGlsaXBwZSBhcmUgYWxyZWFkeSBwYXJ0IG9mIHRoaXMgYnJhbmNoIGFuZCB3ZSBuZWVkIHRo
+ZW0gKGV2ZW4gaWYNCmN1cnJlbnRseSBicmVha2luZyAzMiBiaXQga2VybmVscyk6IHllcw0KDQpJ
+biBhZGRpdGlvbjogSSBoYXZlIGEgd2lwL3kyMDM4IGJyYW5jaCBvbiBteSBwdWJsaWMgZ2l0bGFi
+IHRyZWUgKFsyXSkswqANCmFscmVhZHkgYmFzZWQgb24gd2lwL2RvdmV0YWlsIHRoYXQgSSBjYW4g
+ZWFzaWx5IHJ1biB0aHJvdWdoIHRoZSBDSSBvZg0KdGhlIHhlbm9tYWktaW1hZ2VzIHByb2plY3Qg
+Zm9yIGNvbXBpbGUtdGVzdGluZyBhbGwgdGhlIGRpZmZlcmVudCBrZXJuZWwNCmNvbWJpbmF0aW9u
+cy4gRXZlbiB0ZXN0aW5nIGNvdWxkIGJlIGVuYWJsZWQgaW4gdGhlIGZ1dHVyZS4NCg0KQXMgcGF0
+Y2hlcyBzaG91bGQgYWx3YXlzIG1ha2UgaXQgdG8gdGhlIGxpc3QsIGhlcmUgY29tZXMgbXkgcHJv
+cG9zYWw6wqANCg0KRmVlbCBmcmVlIHRvIHNlbmQgeW91ciBwYXRjaGVzIHVzaW5nIGEgW3kyMDM4
+XSAob3Igc2ltaWxhcikgdGFnLCB0aGUNCmxpc3QgY2FuIHJldmlldyB0aGVtIGFuZCBJIHdvdWxk
+IHRha2UgY2FyZSBvZiBhcHBseWluZyBpdCB0byBbMl0uIEFsbA0Kb3RoZXJzIGludGVyZXN0ZWQg
+aW4gdGhpcyB0b3BpYyAob25nb2luZyBpbnRlZ3JhdGlvbikgY291bGQgcGljayB0aGVtDQphcyB3
+ZWxsLiBQaGlsaXBwZSBhbHJlYWR5IG1lbnRpb25lZCB0aGF0IGhlIGlzIGludGVyZXN0ZWQgaW4N
+CmludGVncmF0aW5nIHRoZW0gYXMgd2VsbC4NCg0KSWYgYWxsIHRoZSB0aGluZ3MgaW4gWzJdIGFy
+ZSBsb29raW5nIGdvb2QgYWZ0ZXIgc29tZSB0aW1lIHdlIGNhbiByZXNlbmQNCnRoZW0gYW5kIGFz
+ayBKYW4gdG8gYXBwbHkgdGhlbSAoYWZ0ZXIgYW50aGVyIHJvdW5kIG9mIHJldmlldykuDQoNCj4g
+DQo+IFsxXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haQ0KDQogIFsyXSBo
+dHRwczovL2dpdGxhYi5jb20vZmJlemRla2EveGVub21haS8NCiANCj4gPiA+IFRoaXMgcGF0Y2gg
+aW50cm9kdWNlZCB0aGVpciBkZWZpbml0aW9ucywgaWYgeW91IGJvdGggYWdyZWUsIGkgd2lsbCBz
+dGFydA0KPiA+ID4gcmVwbGFjaW5nIF9fdXNlcl9vbGRfdGltZXNwZWMgYW5kIF9fdXNlcl9vbGRf
+dGltZXZhbCBhZnRlcndhcmQuDQo+ID4gPiANCj4gPiA+IEJSDQo+ID4gPiANCj4gPiA+IFNvbmcN
+Cj4gPiA+IA0KPiA+ID4gT24gMjAyMeW5tDAz5pyIMDLml6UgMjE6MDUsIGNoZW5zb25nIHdyb3Rl
+Og0KPiA+ID4gPiBTaW5jZSB0aW1lc3BlYyBhbmQgdGltZXZhbCB3aWxsIGJlIHJlbW92ZWQgYmVj
+YXVzZSBvZg0KPiA+ID4gPiB5MjAzOCBwcm9ibGVtLCB3ZSBuZWVkIHRvIGludHJvZHVjZSBuZXcg
+dGltZSByZXByZXNlbnRhdGlvbnMgYXQNCj4gPiA+ID4gdGhlIGtlcm5lbC11c2VyIGJvdW5kYXJ5
+IGFuZCB3ZSBhbHNvIG5lZWQgdG8ga2VlcCBhbGlnbmVkIHdpdGgNCj4gPiA+ID4gdXBzdHJlYW0g
+YXQgdGhlIHNhbWUgdGltZS4NCj4gPiA+ID4gDQo+ID4gPiA+IFRoZXJlZm9yZSwgd2UgaW50cm9k
+dWNlOg0KPiA+ID4gPiAxKV9fa2VybmVsX29sZF90aW1ldmFsDQo+ID4gPiA+IDIpX19rZXJuZWxf
+b2xkX3RpbWVzcGVjDQo+ID4gPiA+IGZyb20gdXBzdHJlYW0sIHRoZWlyIHR2X3NlYyBhcmUgZGVm
+aW5lZCBhcyBsb25nIGFuZCBhcyBhIHJlc3VsdCB0aGVpciB3aWR0aA0KPiA+ID4gPiBpcyBhYmxl
+IHRvIGFkYXB0IGRpZmZlcmVudCBhcmNoIGF1dG9tYXRpY2FsbHkuDQo+ID4gPiA+IA0KPiA+ID4g
+PiBTaWduZWQtb2ZmLWJ5OiBjaGVuc29uZyA8Y2hlbnNvbmdAdGoua3lsaW5vcy5jbj4NCj4gPiA+
+ID4gLS0tDQo+ID4gPiA+IMKgwqDCoGluY2x1ZGUvY29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmgg
+fCAxNSArKysrKysrKysrKysrKysNCj4gPiA+ID4gwqDCoMKgMSBmaWxlIGNoYW5nZWQsIDE1IGlu
+c2VydGlvbnMoKykNCj4gPiA+ID4gDQo+ID4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFs
+dC91YXBpL2tlcm5lbC90eXBlcy5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9rZXJuZWwvdHlwZXMu
+aA0KPiA+ID4gPiBpbmRleCAyYzkzMWMyLi44OTMxZDgyIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS9p
+bmNsdWRlL2NvYmFsdC91YXBpL2tlcm5lbC90eXBlcy5oDQo+ID4gPiA+ICsrKyBiL2luY2x1ZGUv
+Y29iYWx0L3VhcGkva2VybmVsL3R5cGVzLmgNCj4gPiA+ID4gQEAgLTIwLDYgKzIwLDcgQEANCj4g
+PiA+ID4gDQo+ID4gPiA+IMKgwqDCoCNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPiA+ID4gPiDC
+oMKgwqAjaW5jbHVkZSA8Y29iYWx0L3VhcGkva2VybmVsL2xpbWl0cy5oPg0KPiA+ID4gPiArI2lu
+Y2x1ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvd3JhcHBlcnMuaD4NCj4gPiA+ID4gDQo+ID4gPiA+
+IMKgwqDCoHR5cGVkZWYgX191NjQgeG50aWNrc190Ow0KPiA+ID4gPiANCj4gPiA+ID4gQEAgLTc4
+LDYgKzc5LDIwIEBAIHN0cnVjdCBfX3VzZXJfb2xkX3RpbWV2YWwgew0KPiA+ID4gPiDCoMKgwqAJ
+bG9uZyAgdHZfdXNlYzsNCj4gPiA+ID4gwqDCoMKgfTsNCj4gPiA+ID4gDQo+ID4gPiA+ICsjaWYg
+TElOVVhfVkVSU0lPTl9DT0RFIDwgS0VSTkVMX1ZFUlNJT04oNCwxNywwKQ0KPiA+ID4gPiArc3Ry
+dWN0IF9fa2VybmVsX29sZF90aW1ldmFsIHsNCj4gPiA+ID4gKwlfX2tlcm5lbF9sb25nX3QgdHZf
+c2VjOw0KPiA+ID4gPiArCV9fa2VybmVsX2xvbmdfdCB0dl91c2VjOw0KPiA+ID4gPiArfTsNCj4g
+PiA+ID4gKyNlbmRpZg0KPiA+ID4gPiArDQo+ID4gPiA+ICsjaWYgTElOVVhfVkVSU0lPTl9DT0RF
+IDwgS0VSTkVMX1ZFUlNJT04oNSw1LDApDQo+ID4gPiA+ICtzdHJ1Y3QgX19rZXJuZWxfb2xkX3Rp
+bWVzcGVjIHsNCj4gPiA+ID4gKwlfX2tlcm5lbF9vbGRfdGltZV90CXR2X3NlYzsJCS8qIHNlY29u
+ZHMgKi8NCj4gPiA+ID4gKwlsb25nCQkJdHZfbnNlYzsJLyogbmFub3NlY29uZHMgKi8NCj4gPiA+
+ID4gK307DQo+ID4gPiA+ICsjZW5kaWYNCj4gPiA+ID4gKw0KPiA+ID4gPiDCoMKgwqAvKiBMaWZ0
+ZWQgZnJvbSBpbmNsdWRlL3VhcGkvbGludXgvdGltZXguaC4gKi8NCj4gPiA+ID4gwqDCoMKgc3Ry
+dWN0IF9fdXNlcl9vbGRfdGltZXggew0KPiA+ID4gPiDCoMKgwqAJdW5zaWduZWQgaW50IG1vZGVz
+OwkvKiBtb2RlIHNlbGVjdG9yICovDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiANCj4gPiANCg0K
 
