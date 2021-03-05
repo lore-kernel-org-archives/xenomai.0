@@ -1,14 +1,12 @@
-Subject: Re: New developer accounts on source.denx.de
-References: <c6949f70dd57687afaabeaf4c10879ae1c6ec8b2.camel@siemens.com>
- <939281.1614936935@gemini.denx.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <704eeb93-e101-fb54-c3a2-0d2183a95e62@siemens.com>
-Date: Fri, 5 Mar 2021 10:48:59 +0100
+References: <MWHPR11MB17100A5F27118C92A44F94C4F2999@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <CY4PR11MB1703AFA86C561954ECFE93BAF2969@CY4PR11MB1703.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: gdb test failure issue on xenomai 3.2
+In-reply-to: <CY4PR11MB1703AFA86C561954ECFE93BAF2969@CY4PR11MB1703.namprd11.prod.outlook.com>
+Date: Fri, 05 Mar 2021 11:56:34 +0100
+Message-ID: <87k0qlyil9.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <939281.1614936935@gemini.denx.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +15,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: "quirin.gylstorff@siemens.com" <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "hws@denx.de" <hws@denx.de>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>, Philippe Gerum <rpm@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05.03.21 10:35, Wolfgang Denk wrote:
-> Dear Florian,
-> 
-> In message <c6949f70dd57687afaabeaf4c10879ae1c6ec8b2.camel@siemens.com> you wrote:
->>
->> as the new gitlab instance on source.denx.de is now available I would
->> like to apply for two developer accounts: One for myself and one for
->> Song (see CC), who is also contributing to Xenomai. 
->>
->> We both are working on the Y2038 topic and having such accounts would
->> simplify collaboration and contribution to the Xenomai projects. Beside
->> the xenomai project the xenomai-images project would be relevant for
->> us.
->>
->> The account creation for Quirin was on hold due to planned
->> infrastructure change. So hopefully you can now create all the accounts
->> at once.
-> 
-> I don't know how the Xenomai project is handling this, but I think
-> it would be incorrect if we (DENX) would add just anybody who asks.
-> In U-Boot, only custodians have write access to the repositories,
-> and to become a custodian you have to apply for the role on the
-> mailing list, and submit a patch that enters your data in the
-> MAINTAINERS list.  This patch goes through the regular review
-> process, so it is the community who finally decides who receives
-> such priviledges.
-> 
-> As you did not even have Philippe on Cc:, I'm adding him here.
-> 
-> Philippe:  How does the assigment of roles / priviledges work for
-> the Xenomai project?  Can / shall we grant the above request?
-> 
 
-The process shall be that frequent contributors (including supporters of
-our CI/CT deployment) first of all get an account on source.denx.de.
-That would allow them to create private trees (under their own
-namespace) - analogously to public platforms - and benefit from our CI
-(probably with my help as owner of the group the runners are assigned to).
+Hi Hongzhan,
 
-Further on, it would allow me to add them as developer or even just
-reporter to Xenomai to allow them to contribute to the wiki and issue
-tracker. That is critical to improve collaboration.
+Sorry for the lag in replying.
 
-Thanks,
-Jan
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+
+> Hi Philippe,
+>
+> I think I already found the root cause and almost fix it but still need time to validate it.
+>
+> Temporary patch like following:
+>
+> diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+> index de7c43b70..846b571b6 100644
+> --- a/kernel/cobalt/dovetail/sched.c
+> +++ b/kernel/cobalt/dovetail/sched.c
+> @@ -56,9 +56,22 @@ int pipeline_leave_inband(void)
+>
+>  int pipeline_leave_oob_prepare(void)
+>  {
+> -       dovetail_leave_oob();
+> +       int suspmask = XNRELAX;
+> +       struct xnthread *curr = xnthread_current();
+>
+> -       return XNRELAX;
+> +       dovetail_leave_oob();
+> +       /*
+> +        * If current is being debugged, record that it should migrate
+> +        * back in case it resumes in userspace. If it resumes in
+> +        * kernel space, i.e.  over a restarting syscall, the
+> +        * associated hardening will both clear XNCONTHI and disable
+> +        * the user return notifier again.
+> +        */
+> +       if (xnthread_test_state(curr, XNSSTEP)) {
+> +               xnthread_set_info(curr, XNCONTHI);
+> +               suspmask |= XNDBGSTOP;
+> +       }
+> +       return suspmask;
+>  }
+
+Yes, that part was definitely missing. I guess I dropped it mistakenly
+due to the condition on the obsolete IPIPE_KEVT_USERINTRET check.
+
+>
+>  void pipeline_leave_oob_finish(void)
+> intel@intel-Z97X-UD5H:~/iotg/dovetail/xenomaioverdovetail/cobalt-dovetail/upstream/xenomai-rpm$ git diff kernel/cobalt/dovetail/kevents.c
+> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+> index 966a63ce0..9bceffaac 100644
+> --- a/kernel/cobalt/dovetail/kevents.c
+> +++ b/kernel/cobalt/dovetail/kevents.c
+>         if (xnthread_test_info(thread, XNCONTHI)) {
+>                 xnlock_get_irqsave(&nklock, s);
+>                 xnthread_clear_info(thread, XNCONTHI);
+> @@ -492,6 +494,8 @@ static void handle_ptrace_cont(void)
+>                         unregister_debugged_thread(curr);
+>
+>                 xnthread_set_localinfo(curr, XNHICCUP);
+> +
+> +               dovetail_request_ucall(current);
+>         }
+>
+
+Looks good to me too. Once the ptrace core tells us that current is
+resuming from a stopped state, this is the right place to ask for
+switching back to oob mode.
+
+> After validation is done , I would submit clean patch to review.
+
+Thanks for looking at this one. This is quite tricky stuff.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
