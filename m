@@ -1,19 +1,24 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [y2038][RFC PATCH 2/2] y2038: Adding sem_timedwait_time64
-Date: Fri, 5 Mar 2021 07:53:47 +0000
-Message-ID: <d2cba251eaa972233bfc19c664b7c145bd3a1c63.camel@siemens.com>
-References: <87v9a7z0xh.fsf@xenomai.org>
- <20210304113653.45432-1-florian.bezdeka@siemens.com>
- <20210304113653.45432-3-florian.bezdeka@siemens.com>
- <6041C65D.1070109@tj.kylinos.cn>
- <20427835a99ada0a326072d8c4e2941e3b12121e.camel@siemens.com>
- <6041E0F6.9060509@tj.kylinos.cn>+54A20D85F00AA805
-In-Reply-To: <6041E0F6.9060509@tj.kylinos.cn>+54A20D85F00AA805
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <22AB7EE353608044854B23186836567E@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+ <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+ <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
+ <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
+ <87zgzs6ymo.fsf@xenomai.org>
+ <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
+ <87tuq06xiq.fsf@xenomai.org>
+ <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+ <878s767r3f.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <353a5ca7-7ccc-21df-983b-e6ca2cf5a73c@siemens.com>
+Date: Fri, 5 Mar 2021 10:32:19 +0100
 MIME-Version: 1.0
+In-Reply-To: <878s767r3f.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,32 +27,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
-Cc: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
 
-T24gRnJpLCAyMDIxLTAzLTA1IGF0IDE1OjQyICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gDQo+
-ID4gPiA+IA0KPiA+ID4gPiArQ09CQUxUX1NZU0NBTEwoc2VtX3RpbWVkd2FpdF90aW1lNjQsIHBy
-aW1hcnksDQo+ID4gPiA+ICsJICAgICAgIChzdHJ1Y3QgY29iYWx0X3NlbV9zaGFkb3cgX191c2Vy
-ICp1X3NlbSwNCj4gPiA+ID4gKwkJY29uc3Qgc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNl
-ciAqdV90cykpDQo+ID4gPiA+ICt7DQo+ID4gPiA+ICsJc3RydWN0IHRpbWVzcGVjNjQgdHM2NDsN
-Cj4gPiA+ID4gKw0KPiA+ID4gPiArCWlmIChnZXRfdGltZXNwZWM2NCgmdHM2NCwgdV90cykpDQo+
-ID4gPiANCj4gPiA+IGdldF90aW1lc3BlYzY0IGRpZG4ndCBleGlzdCB1bnRpbCBrZXJuZWwgNC4x
-Mywgc2hhbGwgd2UgdGFrZSBjYXJlIG9mIHRoaXM/DQo+ID4gPiBnZXRfdGltZXNwZWM2NCB1c2Vz
-IGNvcHlfZnJvbV91c2VyLCBpcyAgdGhlcmUgYW55IHNpZGUgZWZmZWN0Pw0KPiA+IA0KPiA+IFll
-cyBhbmQgeWVzLiBJIGFscmVhZHkgbm90aWNlZCBpdCBidXQgZGlkIG5vdCBzZW5kIG91dCB2MiBk
-dWUgdG8gc29tZQ0KPiA+IG90aGVyIHRoaXMgSSBoYXZlIHRvIGFkZHJlc3MgZmlyc3QuIFN0aWxs
-IHRyeWluZyB0byBmaW5kIGEgd2F5IHRoYXQNCj4gPiBhbGxvd3MgdXMgdG8gcHJldmVudCBkdXBs
-aWNhdGlvbiBhbGwgdGhlIG5lY2Vzc2FyeSBoZWxwZXJzLi4uDQo+IA0KPiBPciB3ZSBkb24ndCB1
-c2UgaGVscGVycywgbGlrZSB0aGlzDQo+IHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBrdHM7DQo+
-IHN0cnVjdCB0aW1lc3BlYzY0IHRzNjQ7DQo+IA0KPiBjb2JhbHRfY29weV9mcm9tX3VzZXIoJmt0
-cywgdV90cywgc2l6ZW9mKGt0cykpOw0KPiANCj4gdHM2NC50dl9zZWMgPSBrdHMudHZfc2VjOw0K
-PiANCj4gaSdtIHdvcmtpbmcgb24gY2xvY2suYywgYW5kIHdpbGwgc3VibWl0IHBhdGNoZXMsIHBs
-ZWFzZSByZXZpZXcuDQoNClRoaXMgaXMgbm90IGNvcnJlY3QgaW4gY2FzZSBvZiBhIGNvbXBhdCBz
-eXNjYWxsLiBXZSBoYXZlIGRpZmZlcmVudA0KcGFkZGluZyBiZXR3ZWVuIGtlcm5lbCBhbmQgYXBw
-bGljYXRpb24gd2hpY2ggbmVlZHMgdG8gYmUgYWRkcmVzc2VkLg0KVGhhdCBjYW4gYmUgZG9uZSBu
-aWNlbHkgaW4gYSBoZWxwZXIgd2hpY2ggY2FuIGNoZWNrIHRoZSBjb250ZXh0IGl0IGlzDQpiZWlu
-ZyBjYWxsZWQgaW4uIChTZWUgZ2V0X3RpbWVzcGVjNjQoKSBvZiBhIGtlcm5lbCB0aGF0IGhhcyBp
-dCkNCg0KQXMgeW91IHBvaW50ZWQgb3V0IHdlIGNhbiBub3QgdXNlIGdldF90aW1lc3BlYzY0KCkg
-YXMgaXMsIHdlIG5lZWQgYQ0KY29iYWx0IHZlcnNpb24gb2YgaXQuDQoNClBsZWFzZSB3YWl0IGZv
-ciB2MiwgeW91IHdpbGwgc2VlLi4uDQoNCg0KPiANCg==
+On 01.03.21 17:53, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 25.02.21 15:18, Philippe Gerum wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 25.02.21 14:54, Philippe Gerum wrote:
+>>>>>
+>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>
+>>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+>>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
+>>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>>>>>>>
+>>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+>>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>>>>>>>>
+>>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
+>>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>>>>>>>>>>   
+>>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
+>>>>>>>>>>>> Download URL:
+>>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>>>>>>
+>>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>>>>>>    
+>>>>>>>>>>>
+>>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+>>>>>>>>>>>    
+>>>>>>>>>>
+>>>>>>>>>> I don't know much about the things going on here, but found this
+>>>>>>>>>> line in the log. Maybe a starting point...
+>>>>>>>>>>
+>>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+>>>>>>>>>> msw   
+>>>>>>>>>
+>>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
+>>>>>>>>> with the newly added 5.4 kernel.  
+>>>>>>>>
+>>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+>>>>>>>>
+>>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+>>>>>>>>
+>>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+>>>>>>>>
+>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+>>>>>>>> did not find it, so maybe our config differs
+>>>>>>
+>>>>>> Already compared yours against the one in xenomai-images? That would be
+>>>>>> useful.
+>>>>>>
+>>>>>>>
+>>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
+>>>>>>> causing the problem.
+>>>>>>>
+>>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+>>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+>>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+>>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>>>>>>>
+>>>>>>> I think here Jan or Phillipe should take over.
+>>>>>>
+>>>>>> Thanks for bisecting, this is helpful!
+>>>>>>
+>>>>>> Philippe, any immediate idea why all that is failing now?
+>>>>>
+>>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+>>>>> in Dovetail. I'm adding this to my debug queue.
+>>>>>
+>>>>
+>>>> This is still I-pipe, not a dovetail-related issues.
+>>>
+>>> This I-pipe release mimics what Dovetail does wrt mm pinning.
+>>>
+>>
+>> Any news on this from your side?
+>>
+> 
+> No time slot for working on this yet. High multiplexing rate ATM.
+> 
+
+I reproduced the issue on qemu-arm64 (xenomai-images exposes it
+directly), and I'm testing a fix.
+
+Brief summary:
+Removal of un-COW support was a mistake. We will continue to require it
+because it not only affects the child (where the removal argumentation
+was targeting), but it also prevents that shared pages - even if locked
+- on a RT parent suddenly become read-only.
+
+Expect some patches later today.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
