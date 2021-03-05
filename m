@@ -1,4 +1,3 @@
-Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
 References: <E1l9itV-000402-99@xenomai.org>
  <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
  <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
@@ -13,14 +12,14 @@ References: <E1l9itV-000402-99@xenomai.org>
  <878s767r3f.fsf@xenomai.org>
  <353a5ca7-7ccc-21df-983b-e6ca2cf5a73c@siemens.com>
  <87wnumx7tm.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <39c37516-fef1-f337-7dca-7eef5069adaf@siemens.com>
-Date: Fri, 5 Mar 2021 11:54:28 +0100
+ <39c37516-fef1-f337-7dca-7eef5069adaf@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+In-reply-to: <39c37516-fef1-f337-7dca-7eef5069adaf@siemens.com>
+Date: Fri, 05 Mar 2021 12:29:29 +0100
+Message-ID: <87blbxyh2e.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <87wnumx7tm.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,121 +28,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
 
-On 05.03.21 10:34, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 01.03.21 17:53, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 25.02.21 15:18, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> On 25.02.21 14:54, Philippe Gerum wrote:
->>>>>>>
->>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>
->>>>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
->>>>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
->>>>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
->>>>>>>>>
->>>>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
->>>>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 05.03.21 10:34, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> On 01.03.21 17:53, Philippe Gerum wrote:
+>>>>
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> On 25.02.21 15:18, Philippe Gerum wrote:
+>>>>>>
+>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>
+>>>>>>> On 25.02.21 14:54, Philippe Gerum wrote:
+>>>>>>>>
+>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>
+>>>>>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+>>>>>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
+>>>>>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
 >>>>>>>>>>
->>>>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
->>>>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
->>>>>>>>>>>>   
->>>>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
->>>>>>>>>>>>>> Download URL:
->>>>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+>>>>>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>>>>>>>>>>>
+>>>>>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
+>>>>>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>>>>>>>>>>>>>   
+>>>>>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
+>>>>>>>>>>>>>>> Download URL:
+>>>>>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>>>>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>>>>>>>>>    
 >>>>>>>>>>>>>>
->>>>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
->>>>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>>>>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
 >>>>>>>>>>>>>>    
 >>>>>>>>>>>>>
->>>>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
->>>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
->>>>>>>>>>>>>    
+>>>>>>>>>>>>> I don't know much about the things going on here, but found this
+>>>>>>>>>>>>> line in the log. Maybe a starting point...
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+>>>>>>>>>>>>> msw   
 >>>>>>>>>>>>
->>>>>>>>>>>> I don't know much about the things going on here, but found this
->>>>>>>>>>>> line in the log. Maybe a starting point...
->>>>>>>>>>>>
->>>>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
->>>>>>>>>>>> msw   
+>>>>>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
+>>>>>>>>>>>> with the newly added 5.4 kernel.  
 >>>>>>>>>>>
->>>>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
->>>>>>>>>>> with the newly added 5.4 kernel.  
->>>>>>>>>>
->>>>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
->>>>>>>>>>
->>>>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
->>>>>>>>>>
->>>>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
->>>>>>>>>>
->>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
->>>>>>>>>> did not find it, so maybe our config differs
->>>>>>>>
->>>>>>>> Already compared yours against the one in xenomai-images? That would be
->>>>>>>> useful.
->>>>>>>>
+>>>>>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+>>>>>>>>>>>
+>>>>>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+>>>>>>>>>>>
+>>>>>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+>>>>>>>>>>>
+>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+>>>>>>>>>>> did not find it, so maybe our config differs
 >>>>>>>>>
->>>>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
->>>>>>>>> causing the problem.
+>>>>>>>>> Already compared yours against the one in xenomai-images? That would be
+>>>>>>>>> useful.
 >>>>>>>>>
->>>>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
->>>>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
->>>>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
->>>>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>>>>>>>>>>
+>>>>>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
+>>>>>>>>>> causing the problem.
+>>>>>>>>>>
+>>>>>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+>>>>>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+>>>>>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+>>>>>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>>>>>>>>>>
+>>>>>>>>>> I think here Jan or Phillipe should take over.
 >>>>>>>>>
->>>>>>>>> I think here Jan or Phillipe should take over.
+>>>>>>>>> Thanks for bisecting, this is helpful!
+>>>>>>>>>
+>>>>>>>>> Philippe, any immediate idea why all that is failing now?
 >>>>>>>>
->>>>>>>> Thanks for bisecting, this is helpful!
+>>>>>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+>>>>>>>> in Dovetail. I'm adding this to my debug queue.
 >>>>>>>>
->>>>>>>> Philippe, any immediate idea why all that is failing now?
 >>>>>>>
->>>>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
->>>>>>> in Dovetail. I'm adding this to my debug queue.
->>>>>>>
+>>>>>>> This is still I-pipe, not a dovetail-related issues.
 >>>>>>
->>>>>> This is still I-pipe, not a dovetail-related issues.
+>>>>>> This I-pipe release mimics what Dovetail does wrt mm pinning.
+>>>>>>
 >>>>>
->>>>> This I-pipe release mimics what Dovetail does wrt mm pinning.
+>>>>> Any news on this from your side?
 >>>>>
 >>>>
->>>> Any news on this from your side?
+>>>> No time slot for working on this yet. High multiplexing rate ATM.
 >>>>
 >>>
->>> No time slot for working on this yet. High multiplexing rate ATM.
+>>> I reproduced the issue on qemu-arm64 (xenomai-images exposes it
+>>> directly), and I'm testing a fix.
 >>>
->>
->> I reproduced the issue on qemu-arm64 (xenomai-images exposes it
->> directly), and I'm testing a fix.
->>
->> Brief summary:
->> Removal of un-COW support was a mistake. We will continue to require it
->> because it not only affects the child (where the removal argumentation
->> was targeting), but it also prevents that shared pages - even if locked
->> - on a RT parent suddenly become read-only.
->>
->> Expect some patches later today.
-> 
-> The best fix is not add that ugly code back, but rather make VMA commit
-> code work with shared mappings.
-> 
+>>> Brief summary:
+>>> Removal of un-COW support was a mistake. We will continue to require it
+>>> because it not only affects the child (where the removal argumentation
+>>> was targeting), but it also prevents that shared pages - even if locked
+>>> - on a RT parent suddenly become read-only.
+>>>
+>>> Expect some patches later today.
+>> 
+>> The best fix is not add that ugly code back, but rather make VMA commit
+>> code work with shared mappings.
+>> 
+>
+> What exactly do you mean?
+>
+> We must avoid that shared pages (with the child) become read-only on the
+> parent. How to do that other than un-COWing?
+>
 
-What exactly do you mean?
-
-We must avoid that shared pages (with the child) become read-only on the
-parent. How to do that other than un-COWing?
-
-Jan
+The issue is not with un-COW is obviously the only thing to do, but
+rather with how and where this is done. The way it used to be done when
+copying the PTEs led to several conflicts and subtle breakages due to
+upstream changes over time. Hopefully a better implementation is
+possible.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
