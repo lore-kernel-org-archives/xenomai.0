@@ -1,10 +1,28 @@
-From: Gunter Grau <gunter.grau@philips.com>
-Subject: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
-Date: Fri,  5 Mar 2021 09:22:59 +0100
-Message-Id: <20210305082259.18424-1-gunter.grau@philips.com>
+Subject: Re: [I-PIPE] ipipe-core-4.19.165-cip41-arm64-09 released
+References: <E1l9itV-000402-99@xenomai.org>
+ <7c43aa40-9754-2529-8bc7-7df8c7124a96@siemens.com>
+ <126b2b25b43ff4acbc3e5ffb902239e69fc67bfe.camel@siemens.com>
+ <bddc49db-2dbd-af33-1ebe-473bcf403e91@siemens.com>
+ <20210224112455.56da9faf@md1za8fc.ad001.siemens.net>
+ <20210224123511.529fe032@md1za8fc.ad001.siemens.net>
+ <a208dd97-7c5b-5944-5a8e-9752c6d235af@siemens.com>
+ <87zgzs6ymo.fsf@xenomai.org>
+ <12bfdd83-f44f-f152-9601-6f1038e4212a@siemens.com>
+ <87tuq06xiq.fsf@xenomai.org>
+ <b1b8cca0-007c-95d1-e97c-2e173f48d9a2@siemens.com>
+ <878s767r3f.fsf@xenomai.org>
+ <353a5ca7-7ccc-21df-983b-e6ca2cf5a73c@siemens.com>
+ <87wnumx7tm.fsf@xenomai.org>
+ <39c37516-fef1-f337-7dca-7eef5069adaf@siemens.com>
+ <87blbxyh2e.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d6a17474-3fe2-7c76-f622-62d1c900c58f@siemens.com>
+Date: Fri, 5 Mar 2021 12:36:14 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87blbxyh2e.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,45 +31,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
 
-When using the arm_global_timer as source for ipipe_tsc the mask
-was configured with 32 Bit.
-However this timer is a native 64 Bit counter. So use the complete
-hardware register by configuring a 64 Bit mask on initialization.
-The ipipe_tsc implementation is already 64 Bit ready and reads this
-register as described in the reference manual, so no further
-changes needed.
+On 05.03.21 12:29, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 05.03.21 10:34, Philippe Gerum wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 01.03.21 17:53, Philippe Gerum wrote:
+>>>>>
+>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>
+>>>>>> On 25.02.21 15:18, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>
+>>>>>>>> On 25.02.21 14:54, Philippe Gerum wrote:
+>>>>>>>>>
+>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>
+>>>>>>>>>> On 24.02.21 12:35, Henning Schild via Xenomai wrote:
+>>>>>>>>>>> Am Wed, 24 Feb 2021 11:24:55 +0100
+>>>>>>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>>>>>>>>>>>
+>>>>>>>>>>>> Am Wed, 10 Feb 2021 12:08:43 +0100
+>>>>>>>>>>>> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> On 10.02.21 11:07, Bezdeka, Florian (T RDA IOT SES-DE) wrote:  
+>>>>>>>>>>>>>> On Wed, 2021-02-10 at 09:15 +0100, Jan Kiszka via Xenomai wrote:
+>>>>>>>>>>>>>>   
+>>>>>>>>>>>>>>> On 10.02.21 07:22, xenomai--- via Xenomai wrote:    
+>>>>>>>>>>>>>>>> Download URL:
+>>>>>>>>>>>>>>>> https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.165-cip41-arm64-09.patch
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Repository: https://git.xenomai.org/ipipe-arm64
+>>>>>>>>>>>>>>>> Release tag: ipipe-core-4.19.165-cip41-arm64-09
+>>>>>>>>>>>>>>>>    
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Hmm, now we have the 5.4-arm64 issue also on 4.19:
+>>>>>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/219984
+>>>>>>>>>>>>>>>    
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> I don't know much about the things going on here, but found this
+>>>>>>>>>>>>>> line in the log. Maybe a starting point...
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> 2021-02-10T07:51:47 setsched.c:120, assertion failed: stats.msw ==
+>>>>>>>>>>>>>> msw   
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Exactly, that is causing the overall failure. And it was first seen
+>>>>>>>>>>>>> with the newly added 5.4 kernel.  
+>>>>>>>>>>>>
+>>>>>>>>>>>> Seing the same on amd64 when testing on qemu, real HW is fine.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Managed to bisect it down to 4.19.147-cip (good) 4.19.150-cip (bad)
+>>>>>>>>>>>>
+>>>>>>>>>>>> Which also means that ipipe-core-4.19.152-cip37-x86-15 is affected.
+>>>>>>>>>>>>
+>>>>>>>>>>>> https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/200646
+>>>>>>>>>>>> did not find it, so maybe our config differs
+>>>>>>>>>>
+>>>>>>>>>> Already compared yours against the one in xenomai-images? That would be
+>>>>>>>>>> useful.
+>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Digging further i found 0f0b6099c45ff3e06d2487816cf1ff30d21835f6 likely
+>>>>>>>>>>> causing the problem.
+>>>>>>>>>>>
+>>>>>>>>>>> ipipe-core-4.19.152-cip37-x86-15 <- bad
+>>>>>>>>>>> revert 2b294ac325c7ce3f36854b74d0d1d89dc1d1d8b8
+>>>>>>>>>>> revert 8579a0440381353e0a71dd6a4d4371be8457eac4 <- bad
+>>>>>>>>>>> revert 0f0b6099c45ff3e06d2487816cf1ff30d <- good
+>>>>>>>>>>>
+>>>>>>>>>>> I think here Jan or Phillipe should take over.
+>>>>>>>>>>
+>>>>>>>>>> Thanks for bisecting, this is helpful!
+>>>>>>>>>>
+>>>>>>>>>> Philippe, any immediate idea why all that is failing now?
+>>>>>>>>>
+>>>>>>>>> Something may be going wrong with MAP_SHARED mappings wrt commit_vma()
+>>>>>>>>> in Dovetail. I'm adding this to my debug queue.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> This is still I-pipe, not a dovetail-related issues.
+>>>>>>>
+>>>>>>> This I-pipe release mimics what Dovetail does wrt mm pinning.
+>>>>>>>
+>>>>>>
+>>>>>> Any news on this from your side?
+>>>>>>
+>>>>>
+>>>>> No time slot for working on this yet. High multiplexing rate ATM.
+>>>>>
+>>>>
+>>>> I reproduced the issue on qemu-arm64 (xenomai-images exposes it
+>>>> directly), and I'm testing a fix.
+>>>>
+>>>> Brief summary:
+>>>> Removal of un-COW support was a mistake. We will continue to require it
+>>>> because it not only affects the child (where the removal argumentation
+>>>> was targeting), but it also prevents that shared pages - even if locked
+>>>> - on a RT parent suddenly become read-only.
+>>>>
+>>>> Expect some patches later today.
+>>>
+>>> The best fix is not add that ugly code back, but rather make VMA commit
+>>> code work with shared mappings.
+>>>
+>>
+>> What exactly do you mean?
+>>
+>> We must avoid that shared pages (with the child) become read-only on the
+>> parent. How to do that other than un-COWing?
+>>
+> 
+> The issue is not with un-COW is obviously the only thing to do, but
+> rather with how and where this is done. The way it used to be done when
+> copying the PTEs led to several conflicts and subtle breakages due to
+> upstream changes over time. Hopefully a better implementation is
+> possible.
+> 
 
-Signed-off-by: Gunter Grau <gunter.grau@philips.com>
----
- drivers/clocksource/arm_global_timer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Do you have one at hand or can guide how to write that?
 
-diff --git a/drivers/clocksource/arm_global_timer.c b/drivers/clocksource/a=
-rm_global_timer.c
-index 77c116a3e85f..44c10e364f62 100644
---- a/drivers/clocksource/arm_global_timer.c
-+++ b/drivers/clocksource/arm_global_timer.c
-@@ -82,7 +82,7 @@ static inline void gt_ipipe_cs_setup(void)
-                .u =3D {
-                        {
-                                .counter_paddr =3D gt_pbase,
--                               .mask =3D 0xffffffff,
-+                               .mask =3D CLOCKSOURCE_MASK(64),
-                        }
-                },
-                .refresh_freq =3D refresh_gt_freq,
---
-2.17.1
+Otherwise, I would suggest to restore the code to fix the regression and
+clean up later. FWIW, I'll throw my current 4.19 fix on the list in a
+minute.
 
-
-________________________________
-The information contained in this message may be confidential and legally p=
-rotected under applicable law. The message is intended solely for the addre=
-ssee(s). If you are not the intended recipient, you are hereby notified tha=
-t any use, forwarding, dissemination, or reproduction of this message is st=
-rictly prohibited and may be unlawful. If you are not the intended recipien=
-t, please contact the sender by return e-mail and destroy all copies of the=
- original message.
+Jan
 
