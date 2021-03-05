@@ -1,14 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 4.19-arm64 only] ipipe: mm: Sync with noarch
+Message-ID: <67ecfe44-f4e2-6362-6b0b-9a2192a8338f@siemens.com>
+Date: Fri, 5 Mar 2021 19:31:14 +0100
 MIME-Version: 1.0
-References: <20210305082259.18424-1-gunter.grau@philips.com>
- <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
- <AM0P122MB01003ED2C020C155D13AC0B7F2969@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
-In-Reply-To: <AM0P122MB01003ED2C020C155D13AC0B7F2969@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 5 Mar 2021 07:57:04 -0500
-Message-ID: <CALLqZ8Rqbt5cPGck5EiQ9kKbG9tiZZJrvWjhNNBWvYeebM2+Gw@mail.gmail.com>
-Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,96 +14,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Grau, Gunter" <gunter.grau@philips.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, Xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 5, 2021 at 7:52 AM Grau, Gunter <gunter.grau@philips.com> wrote=
-:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-> > -----Original Message-----
-> > From: Jan Kiszka <jan.kiszka@siemens.com>
-> > Sent: Freitag, 5. M=C3=A4rz 2021 13:27
-> > To: Grau, Gunter <gunter.grau@philips.com>; xenomai@xenomai.org; Greg
-> > Gallagher <greg@embeddedgreg.com>
-> > Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for
-> ipipe_tsc
-> >
-> > Caution: This e-mail originated from outside of Philips, be careful for
-> > phishing.
-> >
-> >
-> > On 05.03.21 09:22, Gunter Grau via Xenomai wrote:
-> > > When using the arm_global_timer as source for ipipe_tsc the mask was
-> > > configured with 32 Bit.
-> > > However this timer is a native 64 Bit counter. So use the complete
-> > > hardware register by configuring a 64 Bit mask on initialization.
-> > > The ipipe_tsc implementation is already 64 Bit ready and reads this
-> > > register as described in the reference manual, so no further changes
-> > > needed.
-> > >
-> > > Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> > > ---
-> > >  drivers/clocksource/arm_global_timer.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/clocksource/arm_global_timer.c
-> > > b/drivers/clocksource/arm_global_timer.c
-> > > index 77c116a3e85f..44c10e364f62 100644
-> > > --- a/drivers/clocksource/arm_global_timer.c
-> > > +++ b/drivers/clocksource/arm_global_timer.c
-> > > @@ -82,7 +82,7 @@ static inline void gt_ipipe_cs_setup(void)
-> > >                 .u =3D {
-> > >                         {
-> > >                                 .counter_paddr =3D gt_pbase,
-> > > -                               .mask =3D 0xffffffff,
-> > > +                               .mask =3D CLOCKSOURCE_MASK(64),
-> > >                         }
-> > >                 },
-> > >                 .refresh_freq =3D refresh_gt_freq,
-> > > --
-> > > 2.17.1
-> > >
-> >
-> > Thanks for the fixes. You may help Greg with integrating them by tellin=
-g
-> us
-> > on which kernel versions they apply / have been tested.
-> >
-> > Jan
-> >
-> > --
-> > Siemens AG, T RDA IOT
-> > Corporate Competence Center Embedded Linux
->
->
-> Hi,
->
-> The patches apply to ipipe/master.
-> But as I have seen so far they should even apply to 5.4.y.
->
-> Unfortunately we are currently using a very old kernel on imx6.
-> So I can report this patches has been tested on 4.1.x only.
->
-> Thanks,
-> Gunter
->
-> ________________________________
-> The information contained in this message may be confidential and legally
-> protected under applicable law. The message is intended solely for the
-> addressee(s). If you are not the intended recipient, you are hereby
-> notified that any use, forwarding, dissemination, or reproduction of this
-> message is strictly prohibited and may be unlawful. If you are not the
-> intended recipient, please contact the sender by return e-mail and destro=
-y
-> all copies of the original message.
+Remove remainders of a previous, incomplete update.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Thanks! I can test them out this weekend, I have a bunch of ipipe work to
-do.
+With this applied, my uncow fix fits for 4.19-arm64 as well.
 
-Thanks
+ mm/memory.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
-Greg
+diff --git a/mm/memory.c b/mm/memory.c
+index f466aebf0fb9..4cc7c72a0b7e 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -141,10 +141,6 @@ EXPORT_SYMBOL(zero_pfn);
+ 
+ unsigned long highest_memmap_pfn __read_mostly;
+ 
+-static inline bool cow_user_page(struct page *dst,
+-				 struct page *src,
+-				 struct vm_fault *vmf);
+-
+ /*
+  * CONFIG_MMU architectures set up ZERO_PAGE in their paging_init()
+  */
+@@ -961,8 +957,8 @@ struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,
+ 
+ static inline unsigned long
+ copy_one_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+-	     pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
+-	     unsigned long addr, int *rss, struct page *uncow_page)
++		pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
++		unsigned long addr, int *rss)
+ {
+ 	unsigned long vm_flags = vma->vm_flags;
+ 	pte_t pte = *src_pte;
+@@ -1087,17 +1083,13 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 	int progress = 0;
+ 	int rss[NR_MM_COUNTERS];
+ 	swp_entry_t entry = (swp_entry_t){0};
+-	struct page *uncow_page = NULL;
+ 
+ again:
+ 	init_rss_vec(rss);
+ 
+ 	dst_pte = pte_alloc_map_lock(dst_mm, dst_pmd, addr, &dst_ptl);
+-	if (!dst_pte) {
+-		if (uncow_page)
+-			put_page(uncow_page);
++	if (!dst_pte)
+ 		return -ENOMEM;
+-	}
+ 	src_pte = pte_offset_map(src_pmd, addr);
+ 	src_ptl = pte_lockptr(src_mm, src_pmd);
+ 	spin_lock_nested(src_ptl, SINGLE_DEPTH_NESTING);
+@@ -1121,8 +1113,7 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 			continue;
+ 		}
+ 		entry.val = copy_one_pte(dst_mm, src_mm, dst_pte, src_pte,
+-					 vma, addr, rss, uncow_page);
+-		uncow_page = NULL;
++							vma, addr, rss);
+ 		if (entry.val)
+ 			break;
+ 		progress += 8;
+-- 
+2.26.2
 
->
->
