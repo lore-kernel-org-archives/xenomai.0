@@ -1,12 +1,11 @@
-References: <20210220055311.23826-1-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 1/5] cobalt/rtdm: add new interface to init task on
- specified cpu
-In-reply-to: <20210220055311.23826-1-hongzhan.chen@intel.com>
-Date: Fri, 05 Mar 2021 12:45:32 +0100
-Message-ID: <875z25ygbn.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 4.19] ipipe: mm: Restore unCOW support for copy_pte_range
+Message-ID: <ed8ae0bb-bf1d-60f0-e1b5-ca4cbd675076@siemens.com>
+Date: Fri, 5 Mar 2021 12:38:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,124 +14,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-hongzha1 via Xenomai <xenomai@xenomai.org> writes:
+This is still needed to avoid that a real-time parent seems minor faults
+after forking for shared pages until they are finally unshared.
 
-> Initialise and start a real-time task on specified cpu
->
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->
-> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> index 733c49df8..6cdace324 100644
-> --- a/include/cobalt/kernel/rtdm/driver.h
-> +++ b/include/cobalt/kernel/rtdm/driver.h
-> @@ -1024,6 +1024,9 @@ typedef void (*rtdm_task_proc_t)(void *arg);
->  int rtdm_task_init(rtdm_task_t *task, const char *name,
->  		   rtdm_task_proc_t task_proc, void *arg,
->  		   int priority, nanosecs_rel_t period);
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period);
->  int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
->  void rtdm_task_busy_sleep(nanosecs_rel_t delay);
->  
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index b914fa312..7452850b7 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -157,6 +157,79 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
->  
->  EXPORT_SYMBOL_GPL(rtdm_task_init);
->  
-> +/**
-> + * @brief Initialise and start a real-time task on specified cpu
-> + *
-> + * After initialising a task, the task handle remains valid and can be
-> + * passed to RTDM services until either rtdm_task_destroy() or
-> + * rtdm_task_join() was invoked.
-> + *
-> + * @param[in,out] task Task handle
-> + * @param[in] cpu that task want to run on
-> + * @param[in] name Optional task name
-> + * @param[in] task_proc Procedure to be executed by the task
-> + * @param[in] arg Custom argument passed to @c task_proc() on entry
-> + * @param[in] priority Priority of the task, see also
-> + * @ref rtdmtaskprio "Task Priority Range"
-> + * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-> + * mode. Waiting for the first and subsequent periodic events is
-> + * done using rtdm_task_wait_period().
-> + *
-> + * @return 0 on success, otherwise negative error code
-> + *
-> + * @coretags{secondary-only, might-switch}
-> + */
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period)
-> +{
-> +	union xnsched_policy_param param;
-> +	struct xnthread_start_attr sattr;
-> +	struct xnthread_init_attr iattr;
-> +	int err;
-> +
-> +	if (!realtime_core_enabled())
-> +		return -ENOSYS;
-> +
-> +	iattr.name = name;
-> +	iattr.flags = 0;
-> +	iattr.personality = &xenomai_personality;
-> +	iattr.affinity = *cpumask_of(cpu);
+This missing support became visible in Xenomai when running the complete
+smokey test suite on certain architectures/config combinations.
 
-We should probably check cpu for validity first, I don't think
-cpumask_of() does it (e.g. cpu_online(cpu) would ensure both validity
-and online presence).
+Fixes: 0f0b6099c45f ("ipipe: mm: Drop un-COW from copy_pte_range")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-> +	param.rt.prio = priority;
-> +
-> +	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
-> +	if (err)
-> +		return err;
-> +
-> +	/* We need an anonymous registry entry to obtain a handle for fast
-> +	 * mutex locking.
-> +	 */
-> +	err = xnthread_register(task, "");
-> +	if (err)
-> +		goto cleanup_out;
-> +
-> +	if (period > 0) {
-> +		err = xnthread_set_periodic(task, XN_INFINITE,
-> +					    XN_RELATIVE, period);
-> +		if (err)
-> +			goto cleanup_out;
-> +	}
-> +
-> +	sattr.mode = 0;
-> +	sattr.entry = task_proc;
-> +	sattr.cookie = arg;
-> +	err = xnthread_start(task, &sattr);
-> +	if (err)
-> +		goto cleanup_out;
-> +
-> +	return 0;
-> +
-> +cleanup_out:
-> +	xnthread_cancel(task);
-> +	return err;
-> +}
-> +EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
-> +
->  #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
->  /**
->   * @brief Destroy a real-time task
+For discussion. If there is a better pattern in reach, I'm happy to go 
+that path as well.
 
-Looks good. We may want to implement rtdm_task_init_cpu() as an inline
-variant calling rtdm_task_init_on_cpu() with the current CPU number, to
-prevent code duplication.
+Otherwise, this should go into our 4.19 branches (Greg, your arm64 isn't 
+in sync with noarch, you will need manual merging). Possibly, it already 
+applies to 5.4 as well, didn't check yet.
+
+ mm/memory.c | 76 ++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 69 insertions(+), 7 deletions(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index 4cc7c72a0b7e..f102f4de2213 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -141,6 +141,9 @@ EXPORT_SYMBOL(zero_pfn);
+ 
+ unsigned long highest_memmap_pfn __read_mostly;
+ 
++static bool cow_user_page(struct page *dst, struct page *src,
++			  struct vm_fault *vmf);
++
+ /*
+  * CONFIG_MMU architectures set up ZERO_PAGE in their paging_init()
+  */
+@@ -957,8 +960,9 @@ struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,
+ 
+ static inline unsigned long
+ copy_one_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+-		pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
+-		unsigned long addr, int *rss)
++	     pte_t *dst_pte, pte_t *src_pte, struct vm_area_struct *vma,
++	     unsigned long addr, int *rss, pmd_t *src_pmd,
++	     struct page *uncow_page)
+ {
+ 	unsigned long vm_flags = vma->vm_flags;
+ 	pte_t pte = *src_pte;
+@@ -1036,6 +1040,33 @@ copy_one_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 	 * in the parent and the child
+ 	 */
+ 	if (is_cow_mapping(vm_flags) && pte_write(pte)) {
++#ifdef CONFIG_IPIPE
++		if (uncow_page) {
++			struct page *old_page = vm_normal_page(vma, addr, pte);
++			struct vm_fault vmf;
++
++			vmf.vma = vma;
++			vmf.address = addr;
++			vmf.orig_pte = pte;
++			vmf.pmd = src_pmd;
++
++			if (cow_user_page(uncow_page, old_page, &vmf)) {
++				pte = mk_pte(uncow_page, vma->vm_page_prot);
++
++				if (vm_flags & VM_SHARED)
++					pte = pte_mkclean(pte);
++				pte = pte_mkold(pte);
++
++				page_add_new_anon_rmap(uncow_page, vma, addr,
++						       false);
++				rss[!!PageAnon(uncow_page)]++;
++				goto out_set_pte;
++			} else {
++				/* unexpected: source page no longer present */
++				WARN_ON_ONCE(1);
++			}
++		}
++#endif /* CONFIG_IPIPE */
+ 		ptep_set_wrprotect(src_mm, addr, src_pte);
+ 		pte = pte_wrprotect(pte);
+ 	}
+@@ -1083,13 +1114,27 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 	int progress = 0;
+ 	int rss[NR_MM_COUNTERS];
+ 	swp_entry_t entry = (swp_entry_t){0};
+-
++	struct page *uncow_page = NULL;
++#ifdef CONFIG_IPIPE
++	int do_cow_break = 0;
++again:
++	if (do_cow_break) {
++		uncow_page = alloc_page_vma(GFP_HIGHUSER, vma, addr);
++		if (uncow_page == NULL)
++			return -ENOMEM;
++		do_cow_break = 0;
++	}
++#else
+ again:
++#endif
+ 	init_rss_vec(rss);
+ 
+ 	dst_pte = pte_alloc_map_lock(dst_mm, dst_pmd, addr, &dst_ptl);
+-	if (!dst_pte)
++	if (!dst_pte) {
++		if (uncow_page)
++			put_page(uncow_page);
+ 		return -ENOMEM;
++	}
+ 	src_pte = pte_offset_map(src_pmd, addr);
+ 	src_ptl = pte_lockptr(src_mm, src_pmd);
+ 	spin_lock_nested(src_ptl, SINGLE_DEPTH_NESTING);
+@@ -1112,8 +1157,25 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 			progress++;
+ 			continue;
+ 		}
++#ifdef CONFIG_IPIPE
++		if (likely(uncow_page == NULL) && likely(pte_present(*src_pte))) {
++			if (is_cow_mapping(vma->vm_flags) &&
++			    test_bit(MMF_VM_PINNED, &src_mm->flags) &&
++			    ((vma->vm_flags|src_mm->def_flags) & VM_LOCKED)) {
++				arch_leave_lazy_mmu_mode();
++				spin_unlock(src_ptl);
++				pte_unmap(src_pte);
++				add_mm_rss_vec(dst_mm, rss);
++				pte_unmap_unlock(dst_pte, dst_ptl);
++				cond_resched();
++				do_cow_break = 1;
++				goto again;
++			}
++		}
++#endif
+ 		entry.val = copy_one_pte(dst_mm, src_mm, dst_pte, src_pte,
+-							vma, addr, rss);
++					 vma, addr, rss, src_pmd, uncow_page);
++		uncow_page = NULL;
+ 		if (entry.val)
+ 			break;
+ 		progress += 8;
+@@ -2348,8 +2410,8 @@ static inline int pte_unmap_same(struct mm_struct *mm, pmd_t *pmd,
+ 	return same;
+ }
+ 
+-static inline bool cow_user_page(struct page *dst, struct page *src,
+-				 struct vm_fault *vmf)
++static bool cow_user_page(struct page *dst, struct page *src,
++			  struct vm_fault *vmf)
+ {
+ 	bool ret;
+ 	void *kaddr;
+-- 
+2.26.2
+
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
