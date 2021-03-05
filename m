@@ -1,13 +1,14 @@
-Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: RE: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
+Date: Fri, 5 Mar 2021 12:52:20 +0000
+Message-ID: <AM0P122MB01003ED2C020C155D13AC0B7F2969@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
 References: <20210305082259.18424-1-gunter.grau@philips.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
-Date: Fri, 5 Mar 2021 13:27:21 +0100
-MIME-Version: 1.0
-In-Reply-To: <20210305082259.18424-1-gunter.grau@philips.com>
-Content-Type: text/plain; charset=utf-8
+ <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
+In-Reply-To: <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gunter Grau <gunter.grau@philips.com>, xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-On 05.03.21 09:22, Gunter Grau via Xenomai wrote:
-> When using the arm_global_timer as source for ipipe_tsc the mask
-> was configured with 32 Bit.
-> However this timer is a native 64 Bit counter. So use the complete
-> hardware register by configuring a 64 Bit mask on initialization.
-> The ipipe_tsc implementation is already 64 Bit ready and reads this
-> register as described in the reference manual, so no further
-> changes needed.
-> 
-> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> ---
->  drivers/clocksource/arm_global_timer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/clocksource/arm_global_timer.c b/drivers/clocksource/arm_global_timer.c
-> index 77c116a3e85f..44c10e364f62 100644
-> --- a/drivers/clocksource/arm_global_timer.c
-> +++ b/drivers/clocksource/arm_global_timer.c
-> @@ -82,7 +82,7 @@ static inline void gt_ipipe_cs_setup(void)
->                 .u = {
->                         {
->                                 .counter_paddr = gt_pbase,
-> -                               .mask = 0xffffffff,
-> +                               .mask = CLOCKSOURCE_MASK(64),
->                         }
->                 },
->                 .refresh_freq = refresh_gt_freq,
-> --
-> 2.17.1
-> 
-
-Thanks for the fixes. You may help Greg with integrating them by telling
-us on which kernel versions they apply / have been tested.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBGcmVpdGFnLCA1LiBNw6RyeiAyMDIxIDEzOjI3DQo+
+IFRvOiBHcmF1LCBHdW50ZXIgPGd1bnRlci5ncmF1QHBoaWxpcHMuY29tPjsgeGVub21haUB4ZW5v
+bWFpLm9yZzsgR3JlZw0KPiBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRncmVnLmNvbT4NCj4gU3Vi
+amVjdDogUmU6IFtQQVRDSF0gYXJtX2dsb2JhbF90aW1lcjogVXNlIDY0IEJpdCBodyBjb3VudGVy
+IGZvciBpcGlwZV90c2MNCj4NCj4gQ2F1dGlvbjogVGhpcyBlLW1haWwgb3JpZ2luYXRlZCBmcm9t
+IG91dHNpZGUgb2YgUGhpbGlwcywgYmUgY2FyZWZ1bCBmb3INCj4gcGhpc2hpbmcuDQo+DQo+DQo+
+IE9uIDA1LjAzLjIxIDA5OjIyLCBHdW50ZXIgR3JhdSB2aWEgWGVub21haSB3cm90ZToNCj4gPiBX
+aGVuIHVzaW5nIHRoZSBhcm1fZ2xvYmFsX3RpbWVyIGFzIHNvdXJjZSBmb3IgaXBpcGVfdHNjIHRo
+ZSBtYXNrIHdhcw0KPiA+IGNvbmZpZ3VyZWQgd2l0aCAzMiBCaXQuDQo+ID4gSG93ZXZlciB0aGlz
+IHRpbWVyIGlzIGEgbmF0aXZlIDY0IEJpdCBjb3VudGVyLiBTbyB1c2UgdGhlIGNvbXBsZXRlDQo+
+ID4gaGFyZHdhcmUgcmVnaXN0ZXIgYnkgY29uZmlndXJpbmcgYSA2NCBCaXQgbWFzayBvbiBpbml0
+aWFsaXphdGlvbi4NCj4gPiBUaGUgaXBpcGVfdHNjIGltcGxlbWVudGF0aW9uIGlzIGFscmVhZHkg
+NjQgQml0IHJlYWR5IGFuZCByZWFkcyB0aGlzDQo+ID4gcmVnaXN0ZXIgYXMgZGVzY3JpYmVkIGlu
+IHRoZSByZWZlcmVuY2UgbWFudWFsLCBzbyBubyBmdXJ0aGVyIGNoYW5nZXMNCj4gPiBuZWVkZWQu
+DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBHdW50ZXIgR3JhdSA8Z3VudGVyLmdyYXVAcGhpbGlw
+cy5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvY2xvY2tzb3VyY2UvYXJtX2dsb2JhbF90aW1l
+ci5jIHwgMiArLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRp
+b24oLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Nsb2Nrc291cmNlL2FybV9nbG9i
+YWxfdGltZXIuYw0KPiA+IGIvZHJpdmVycy9jbG9ja3NvdXJjZS9hcm1fZ2xvYmFsX3RpbWVyLmMN
+Cj4gPiBpbmRleCA3N2MxMTZhM2U4NWYuLjQ0YzEwZTM2NGY2MiAxMDA2NDQNCj4gPiAtLS0gYS9k
+cml2ZXJzL2Nsb2Nrc291cmNlL2FybV9nbG9iYWxfdGltZXIuYw0KPiA+ICsrKyBiL2RyaXZlcnMv
+Y2xvY2tzb3VyY2UvYXJtX2dsb2JhbF90aW1lci5jDQo+ID4gQEAgLTgyLDcgKzgyLDcgQEAgc3Rh
+dGljIGlubGluZSB2b2lkIGd0X2lwaXBlX2NzX3NldHVwKHZvaWQpDQo+ID4gICAgICAgICAgICAg
+ICAgIC51ID0gew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHsNCj4gPiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIC5jb3VudGVyX3BhZGRyID0gZ3RfcGJhc2UsDQo+ID4gLSAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9IDB4ZmZmZmZmZmYsDQo+ID4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9IENMT0NLU09VUkNFX01BU0soNjQp
+LA0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIH0NCj4gPiAgICAgICAgICAgICAgICAgfSwN
+Cj4gPiAgICAgICAgICAgICAgICAgLnJlZnJlc2hfZnJlcSA9IHJlZnJlc2hfZ3RfZnJlcSwNCj4g
+PiAtLQ0KPiA+IDIuMTcuMQ0KPiA+DQo+DQo+IFRoYW5rcyBmb3IgdGhlIGZpeGVzLiBZb3UgbWF5
+IGhlbHAgR3JlZyB3aXRoIGludGVncmF0aW5nIHRoZW0gYnkgdGVsbGluZyB1cw0KPiBvbiB3aGlj
+aCBrZXJuZWwgdmVyc2lvbnMgdGhleSBhcHBseSAvIGhhdmUgYmVlbiB0ZXN0ZWQuDQo+DQo+IEph
+bg0KPg0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj4gQ29ycG9yYXRlIENvbXBldGVu
+Y2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg0KSGksDQoNClRoZSBwYXRjaGVzIGFwcGx5IHRv
+IGlwaXBlL21hc3Rlci4NCkJ1dCBhcyBJIGhhdmUgc2VlbiBzbyBmYXIgdGhleSBzaG91bGQgZXZl
+biBhcHBseSB0byA1LjQueS4NCg0KVW5mb3J0dW5hdGVseSB3ZSBhcmUgY3VycmVudGx5IHVzaW5n
+IGEgdmVyeSBvbGQga2VybmVsIG9uIGlteDYuDQpTbyBJIGNhbiByZXBvcnQgdGhpcyBwYXRjaGVz
+IGhhcyBiZWVuIHRlc3RlZCBvbiA0LjEueCBvbmx5Lg0KDQpUaGFua3MsDQpHdW50ZXINCg0KX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NClRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQg
+aW4gdGhpcyBtZXNzYWdlIG1heSBiZSBjb25maWRlbnRpYWwgYW5kIGxlZ2FsbHkgcHJvdGVjdGVk
+IHVuZGVyIGFwcGxpY2FibGUgbGF3LiBUaGUgbWVzc2FnZSBpcyBpbnRlbmRlZCBzb2xlbHkgZm9y
+IHRoZSBhZGRyZXNzZWUocykuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQs
+IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSwgZm9yd2FyZGluZywgZGlzc2Vt
+aW5hdGlvbiwgb3IgcmVwcm9kdWN0aW9uIG9mIHRoaXMgbWVzc2FnZSBpcyBzdHJpY3RseSBwcm9o
+aWJpdGVkIGFuZCBtYXkgYmUgdW5sYXdmdWwuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCBy
+ZWNpcGllbnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCBhbmQg
+ZGVzdHJveSBhbGwgY29waWVzIG9mIHRoZSBvcmlnaW5hbCBtZXNzYWdlLg0K
 
