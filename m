@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] Update to kas 2.4
-Message-ID: <d30fa4a9-ae89-17d6-c05a-3ac2b303bbc3@siemens.com>
-Date: Fri, 5 Mar 2021 20:32:01 +0100
+Subject: [PATCH] testsuite/smokey/sched-quote: Fix throttling
+Message-ID: <be15f4cb-3e13-c200-fcac-c2440c1b88a8@siemens.com>
+Date: Sat, 6 Mar 2021 09:31:20 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,38 +18,72 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+A missing volatile caused some compiler versions (e.g. gcc-8) to skip
+updating the variable inside the loop. At this chance, drop the
+pointless and misleading usage of atomic_t for this variable.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- README.md             | 2 +-
- ci/gitlab-ci-base.yml | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ testsuite/smokey/sched-quota/sched-quota.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/README.md b/README.md
-index 19d39dd..69b3e13 100644
---- a/README.md
-+++ b/README.md
-@@ -13,7 +13,7 @@ from scratch.
+diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
+index ff7c584e39..acb9055fd0 100644
+--- a/testsuite/smokey/sched-quota/sched-quota.c
++++ b/testsuite/smokey/sched-quota/sched-quota.c
+@@ -18,7 +18,6 @@
+ #include <sys/cobalt.h>
+ #include <boilerplate/time.h>
+ #include <boilerplate/ancillaries.h>
+-#include <boilerplate/atomic.h>
+ #include <smokey/smokey.h>
  
- Install `kas-container` from the [kas project](https://github.com/siemens/kas):
+ smokey_test_plugin(sched_quota,
+@@ -60,7 +59,7 @@ static int started;
  
--    wget https://raw.githubusercontent.com/siemens/kas/2.3.3/kas-container -P ~/bin/
-+    wget https://raw.githubusercontent.com/siemens/kas/2.4/kas-container -P ~/bin/
-     chmod a+x ~/bin/kas-container
+ static sem_t ready;
  
- Furthermore, install docker and make sure you have required permissions to
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 9fc1ee6..53ae66b 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -24,7 +24,7 @@ variables:
-   ISAR_DISTRIBUTION: xenomai-demo
+-static atomic_t throttle;
++static volatile int throttle;
  
- default:
--  image: ghcr.io/siemens/kas/kas-isar:2.3.3
-+  image: ghcr.io/siemens/kas/kas-isar:2.4
+ static unsigned long __attribute__(( noinline ))
+ __do_work(unsigned long count)
+@@ -98,7 +97,7 @@ static void *thread_body(void *arg)
  
- .test:
-   extends: .add-lava-ssh-config
+ 	for (;;) {
+ 		do_work(loops, count_r);
+-		if (atomic_read(&throttle))
++		if (throttle)
+ 			sleep(1);
+ 		else if (nrthreads > 1)
+ 			sched_yield();
+@@ -204,7 +203,7 @@ static double run_quota(int quota)
+ 
+ 	percent = ((double)count / TEST_SECS) * 100.0 / loops_per_sec;
+ 
+-	atomic_set(&throttle, 1);
++	throttle = 1;
+ 	smp_wmb();
+ 
+ 	for (n = 0; n < nrthreads; n++) {
+@@ -259,7 +258,7 @@ static unsigned long long calibrate(void)
+ 	for (n = 0, lps = 0; n < nrthreads; n++)
+ 		lps += counts[n];
+ 
+-	atomic_set(&throttle, 1);
++	throttle = 1;
+ 	smp_wmb();
+ 
+ 	for (n = 0; n < nrthreads; n++) {
+@@ -268,7 +267,7 @@ static unsigned long long calibrate(void)
+ 	}
+ 
+ 	started = 0;
+-	atomic_set(&throttle, 0);
++	throttle = 0;
+ 
+ 	return lps;
+ }
 -- 
 2.26.2
 
