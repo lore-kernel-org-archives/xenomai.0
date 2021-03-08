@@ -1,13 +1,12 @@
-Subject: Re: [RFC PATCH v2 3/4] y2038: Add tests for the
- sc_cobalt_sem_timedwait_time64 syscall
+Subject: Re: [RFC PATCH v2 2/4] y2038: Adding sem_timedwait_time64
 References: <87h7lqzzzw.fsf@xenomai.org>
  <20210308170206.313181-1-florian.bezdeka@siemens.com>
- <20210308170206.313181-4-florian.bezdeka@siemens.com>
+ <20210308170206.313181-3-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0d4c8b7d-7f4f-49ec-c94c-87c4f2091d77@siemens.com>
-Date: Mon, 8 Mar 2021 19:35:01 +0100
+Message-ID: <d28c9144-a339-f3a0-0b4b-564073b25ad5@siemens.com>
+Date: Mon, 8 Mar 2021 19:28:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210308170206.313181-4-florian.bezdeka@siemens.com>
+In-Reply-To: <20210308170206.313181-3-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,262 +21,172 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org, rpm@xenomai.org, chensong@kylinos.cn
 
 On 08.03.21 18:02, Florian Bezdeka wrote:
-> Introducing a new smokey plugin that can be extended for all kind of
-> y2038 tests.
-
-And what does this version test? Some more words on how the new syscall
-is stressed would be valuable here.
-
+> Implementation is heavily inspired by the sem_timedwait syscall,
+> but expecting time64 based timespec / timeout.
+> 
+> We need two new syscall handlers:
+>   - The native one (COBALT_SYSCALL()) to get 32 bit kernels time64
+>     aware. This handler is added for 64 bit kernels as well, but not
+>     used. As we don't have separate syscall tables for this both
+>     worlds we have to add it.
+> 
+>  - The compat handler (COBALT_SYSCALL32emu()) for x32 or x86
+>    applications running on an x86_64 kernel. Otherwise the redirection
+>    to the compat / emulation syscalls is broken.
 > 
 > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 > ---
->  configure.ac                           |   1 +
->  testsuite/smokey/Makefile.am           |   6 +-
->  testsuite/smokey/y2038/Makefile.am     |  10 ++
->  testsuite/smokey/y2038/syscall-tests.c | 170 +++++++++++++++++++++++++
->  4 files changed, 185 insertions(+), 2 deletions(-)
->  create mode 100644 testsuite/smokey/y2038/Makefile.am
->  create mode 100644 testsuite/smokey/y2038/syscall-tests.c
+>  include/cobalt/uapi/syscall.h                 |  1 +
+>  .../include/asm-generic/xenomai/syscall.h     | 23 +++++++++++++++++++
+>  kernel/cobalt/posix/sem.c                     | 13 +++++++++++
+>  kernel/cobalt/posix/sem.h                     |  4 ++++
+>  kernel/cobalt/posix/syscall32.c               | 13 +++++++++++
+>  kernel/cobalt/posix/syscall32.h               |  4 ++++
+>  6 files changed, 58 insertions(+)
 > 
-> diff --git a/configure.ac b/configure.ac
-> index abe538dbd..bd5fd5ba9 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -990,6 +990,7 @@ AC_CONFIG_FILES([ \
->  	testsuite/smokey/net_common/Makefile \
->  	testsuite/smokey/cpu-affinity/Makefile \
->  	testsuite/smokey/gdb/Makefile \
-> +	testsuite/smokey/y2038/Makefile \
->  	testsuite/clocktest/Makefile \
->  	testsuite/xeno-test/Makefile \
->  	utils/Makefile \
-> diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-> index 02613c7dc..56c873026 100644
-> --- a/testsuite/smokey/Makefile.am
-> +++ b/testsuite/smokey/Makefile.am
-> @@ -38,7 +38,8 @@ COBALT_SUBDIRS = 	\
->  	timerfd		\
->  	tsc		\
->  	vdso-access 	\
-> -	xddp
-> +	xddp		\
-> +	y2038
+> diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+> index aa3c308d0..9b005da47 100644
+> --- a/include/cobalt/uapi/syscall.h
+> +++ b/include/cobalt/uapi/syscall.h
+> @@ -122,6 +122,7 @@
+>  #define sc_cobalt_sendmmsg			99
+>  #define sc_cobalt_clock_adjtime			100
+>  #define sc_cobalt_thread_setschedprio		101
+> +#define sc_cobalt_sem_timedwait_time64		102
+
+Maybe just sc_cobalt_sem_timedwait64?
+
+How many additional calls are probably required?
+
 >  
->  MERCURY_SUBDIRS =	\
->  	memory-heapmem	\
-> @@ -76,7 +77,8 @@ DIST_SUBDIRS = 		\
->  	timerfd		\
->  	tsc		\
->  	vdso-access 	\
-> -	xddp
-> +	xddp		\
-> +	y2038
+>  #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
 >  
->  if XENO_COBALT
->  if CONFIG_XENO_LIBS_DLOPEN
-> diff --git a/testsuite/smokey/y2038/Makefile.am b/testsuite/smokey/y2038/Makefile.am
-> new file mode 100644
-> index 000000000..a97591aa2
-> --- /dev/null
-> +++ b/testsuite/smokey/y2038/Makefile.am
-> @@ -0,0 +1,10 @@
-> +
-> +noinst_LIBRARIES = liby2038.a
-> +
-> +liby2038_a_SOURCES = syscall-tests.c
-> +
-> +liby2038_a_CPPFLAGS = 	\
-> +	@XENO_USER_CFLAGS@	\
-> +	-I$(top_srcdir)		\
-> +	-I$(top_srcdir)/include
-> +
-> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-> new file mode 100644
-> index 000000000..0fc96374f
-> --- /dev/null
-> +++ b/testsuite/smokey/y2038/syscall-tests.c
-> @@ -0,0 +1,170 @@
-> +/*
-> + * y2038 tests
-> + *
-> + * Copyright (c) Siemens AG 2021
-> + *
-> + * Authors:
-> + *  Florian Bezdeka <florian.bezdeka@siemens.com>
-> + *
-> + * Released under the terms of GPLv2.
-> + */
-> +#include <cobalt/uapi/syscall.h>
-> +#include <smokey/smokey.h>
-> +#include <semaphore.h>
-> +#include <unistd.h>
-> +#include <stdint.h>
-> +#include <errno.h>
-> +
-> +smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
-> +
-> +/*
-> + * libc independent data type representing a time64_t based struct timespec
-> + */
-> +struct xn_timespec64 {
-> +	int64_t tv_sec;
-> +	int64_t tv_nsec;
-> +};
-> +
-> +#define NSEC_PER_SEC 1000000000
-> +
-> +static void ts_normalise(struct xn_timespec64 *ts)
+> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> index 91bbf3bfd..40d64b7a1 100644
+> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> @@ -19,6 +19,7 @@
+>  #ifndef _COBALT_ASM_GENERIC_SYSCALL_H
+>  #define _COBALT_ASM_GENERIC_SYSCALL_H
+>  
+> +#include <linux/compat.h>
+>  #include <linux/types.h>
+>  #include <linux/version.h>
+>  #include <linux/uaccess.h>
+> @@ -82,6 +83,28 @@ static inline int cobalt_strncpy_from_user(char *dst, const char __user *src,
+>  	return __xn_strncpy_from_user(dst, src, count);
+>  }
+>  
+> +static inline int cobalt_get_timespec64(struct timespec64 *ts,
+> +				const struct __kernel_timespec __user *uts)
 > +{
-> +	while (ts->tv_nsec >= NSEC_PER_SEC) {
-> +		ts->tv_nsec += 1;
-> +		ts->tv_nsec -= NSEC_PER_SEC;
-> +	}
-> +
-> +	while (ts->tv_nsec <= -NSEC_PER_SEC) {
-> +		ts->tv_sec -= 1;
-> +		ts->tv_nsec += NSEC_PER_SEC;
-> +	}
-> +
-> +	if (ts->tv_nsec < 0) {
-> +		/*
-> +		 * Negative nanoseconds isn't valid according to POSIX.
-> +		 * Decrement tv_sec and roll tv_nsec over.
-> +		 */
-> +		ts->tv_sec -= 1;
-> +		ts->tv_nsec = (NSEC_PER_SEC + ts->tv_nsec);
-> +	}
-> +}
-> +
-> +static inline void ts_add_ns(struct xn_timespec64 *ts, int ns)
-> +{
-> +	ts->tv_nsec += ns;
-> +	ts_normalise(ts);
-> +}
-> +
-> +/**
-> + * Compare two struct timespec instances
-> + *
-> + * @param a
-> + * @param b
-> + * @return True if a < b, false otherwise
-> + */
-> +static inline bool ts_less(const struct xn_timespec64 *a,
-> +			   const struct xn_timespec64 *b)
-> +{
-> +	if (a->tv_sec < b->tv_sec)
-> +		return true;
-> +
-> +	if (a->tv_sec > b->tv_sec)
-> +		return false;
-> +
-> +	/* a->tv_sec == b->tv_sec */
-> +
-> +	if (a->tv_nsec < b->tv_nsec)
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +static int test_sc_cobalt_sem_timedwait_time64(void)
-> +{
-> +	long ret;
-> +	sem_t sem;
-> +	int code = __xn_syscode(sc_cobalt_sem_timedwait_time64);
-> +	struct xn_timespec64 ts64, ts_wu;
-> +	struct timespec ts_nat;
-> +
-> +	sem_init(&sem, 0, 0);
-> +
-> +	/*
-> +	 * TODO: Calling the syscall directly for now, as y2038 support is not
-> +	 * yet available in glibc. Once this is available we should use our
-> +	 * glibc wrappers provided by libcobalt.
-> +	 */
-
-Maybe wrap that, to make the invocations more readable? Maybe a macro
-can do that in a way that will not affect the code once glibc is ready.
-
-> +
-> +	/* Make sure we don't crash because of NULL pointers */
-> +	ret = syscall(code, NULL, NULL);
-> +	if (ret == -1 && errno == ENOSYS)
-> +		return 0; // Not implemented, nothing to test, success
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
-> +		return errno;
-> +
-> +	/* Timeout is never read by the kernel, so NULL should be OK */
-> +	sem_post(&sem);
-> +	ret = syscall(code, &sem, NULL);
-> +	if (!smokey_assert(!ret))
-> +		return errno;
-> +
-> +	/*
-> +	 * The semaphore is already exhausted, so calling again will validate
-> +	 * the provided timeout now. Providing NULL has to deliver EFAULT
-> +	 */
-> +	ret = syscall(code, &sem, NULL);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	/*
-> +	 * The semaphore is still exhausted, calling again will validate the
-> +	 * timeout, providing an invalid timeout has to deliver EINVAL
-> +	 */
-> +	ts64.tv_sec = -1;
-> +	ret = syscall(code, &sem, &ts64);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
-> +		return errno;
-> +
-> +	/*
-> +	 * Providing a valid timeout, waiting for it to time out and check
-> +	 * that we didn't come back to early.
-> +	 */
-> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts_nat);
-> +	if (ret)
-> +		return errno;
-> +
-> +	ts64.tv_sec = ts_nat.tv_sec;
-> +	ts64.tv_nsec = ts_nat.tv_nsec;
-> +	ts_add_ns(&ts64, 500000);
-> +
-> +	ret = syscall(code, &sem, &ts64);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == ETIMEDOUT))
-> +		return errno;
-> +
-> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts_nat);
-> +	if (ret)
-> +		return errno;
-> +
-> +	ts_wu.tv_sec = ts_nat.tv_sec;
-> +	ts_wu.tv_nsec = ts_nat.tv_nsec;
-> +
-> +	if (ts_less(&ts_wu, &ts64))
-> +		smokey_warning("sem_timedwait_time64 returned to early!\n"
-> +			       "Expected wakeup at: %lld sec %lld nsec\n"
-> +			       "Back at           : %lld sec %lld nsec\n",
-> +			       ts64.tv_sec, ts64.tv_nsec, ts_wu.tv_sec,
-> +			       ts_wu.tv_nsec);
-> +
-
-Does this already stress the 64-bit range of time_t? I don't spot that yet.
-
-> +	return 0;
-> +}
-> +
-> +static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
-> +{
+> +	struct __kernel_timespec kts;
 > +	int ret;
 > +
-> +	ret = test_sc_cobalt_sem_timedwait_time64();
+> +	ret = cobalt_copy_from_user(&kts, uts, sizeof(kts));
 > +	if (ret)
-> +		return ret;
+> +		return -EFAULT;
+> +
+> +	ts->tv_sec = kts.tv_sec;
+> +
+> +	/* Zero out the padding in compat mode */
+> +	if (in_compat_syscall())
+> +		kts.tv_nsec &= 0xFFFFFFFFUL;
+> +
+> +	/* In 32-bit mode, this drops the padding */
+> +	ts->tv_nsec = kts.tv_nsec;
 > +
 > +	return 0;
 > +}
-> 
+> +
 
-Such a test is obviously key to approach the issue correctly. It's a
-complex beast.
+Why inline? But that question is likely obsolete when we can avoid the
+code duplication below.
+
+>  #if __BITS_PER_LONG == 64
+>  
+>  /*
+> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+> index 827a4751a..3055a456d 100644
+> --- a/kernel/cobalt/posix/sem.c
+> +++ b/kernel/cobalt/posix/sem.c
+> @@ -435,6 +435,19 @@ COBALT_SYSCALL(sem_timedwait, primary,
+>  	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+>  }
+>  
+> +COBALT_SYSCALL(sem_timedwait_time64, primary,
+> +	       (struct cobalt_sem_shadow __user *u_sem,
+> +		const struct __kernel_timespec __user *u_ts))
+> +{
+> +	int ret = 1;
+> +	struct timespec64 ts64;
+> +
+> +	if (u_ts)
+> +		ret = cobalt_get_timespec64(&ts64, u_ts);
+> +
+> +	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+> +}
+> +
+>  COBALT_SYSCALL(sem_trywait, primary,
+>  	       (struct cobalt_sem_shadow __user *u_sem))
+>  {
+> diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
+> index 658e11f7a..8491b69ba 100644
+> --- a/kernel/cobalt/posix/sem.h
+> +++ b/kernel/cobalt/posix/sem.h
+> @@ -66,6 +66,10 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
+>  int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
+>  			   const struct timespec64 *ts);
+>  
+> +COBALT_SYSCALL_DECL(sem_timedwait_time64,
+> +		    (struct cobalt_sem_shadow __user *u_sem,
+> +		     const struct __kernel_timespec __user *u_ts));
+> +
+>  int __cobalt_sem_destroy(xnhandle_t handle);
+>  
+>  void cobalt_nsem_reclaim(struct cobalt_process *process);
+> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+> index edac7ea4a..f73bfcda3 100644
+> --- a/kernel/cobalt/posix/syscall32.c
+> +++ b/kernel/cobalt/posix/syscall32.c
+> @@ -135,6 +135,19 @@ COBALT_SYSCALL32emu(sem_timedwait, primary,
+>  	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+>  }
+>  
+> +COBALT_SYSCALL32emu(sem_timedwait_time64, primary,
+> +		    (struct cobalt_sem_shadow __user *u_sem,
+> +		     const struct __kernel_timespec __user *u_ts))
+> +{
+> +	int ret = 1;
+> +	struct timespec64 ts64;
+> +
+> +	if (u_ts)
+> +		ret = cobalt_get_timespec64(&ts64, u_ts);
+> +
+> +	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+> +}
+
+Why do we need to code this out twice? I don't spot the difference to
+the native implementation yet. Can't we point to it directly?
+
+> +
+>  COBALT_SYSCALL32emu(clock_getres, current,
+>  		    (clockid_t clock_id,
+>  		     struct old_timespec32 __user *u_ts))
+> diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+> index d72fd2022..3612bf751 100644
+> --- a/kernel/cobalt/posix/syscall32.h
+> +++ b/kernel/cobalt/posix/syscall32.h
+> @@ -231,4 +231,8 @@ COBALT_SYSCALL32emu_DECL(sem_timedwait,
+>  			 (struct cobalt_sem_shadow __user *u_sem,
+>  			  const struct old_timespec32 __user *u_ts));
+>  
+> +COBALT_SYSCALL32emu_DECL(sem_timedwait_time64,
+> +			 (struct cobalt_sem_shadow __user * u_sem,
+> +			  const struct __kernel_timespec __user *u_ts));
+> +
+>  #endif /* !_COBALT_POSIX_SYSCALL32_H */
+> 
 
 Jan
 
