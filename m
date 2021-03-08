@@ -1,11 +1,12 @@
-Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
-References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
- <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
+Subject: Re: [PATCH 6/8] cobalt/dovetail: provide core-specific context
+ extensions
+References: <20210220124527.401015-1-rpm@xenomai.org>
+ <20210220124527.401015-6-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
-Date: Mon, 8 Mar 2021 11:42:12 +0100
+Message-ID: <1760cd35-6a89-ae70-82b8-65b99c1d8098@siemens.com>
+Date: Mon, 8 Mar 2021 12:26:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
+In-Reply-To: <20210220124527.401015-6-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,45 +18,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
-> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
-> wrote:
->> Hi,
->>
->> the attached kernel log was taken form a local qemu machine with
->> Xenomai build from the wip/dovetail branch. There is a failing selftest
->> (mixed read-lock/lock-write ABBA).
->>
+On 20.02.21 13:45, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> Correction: I can reproduce that with `next` as well. So it's not
-> related to the wip/dovetail branch. 
+> In order to intimately connect Cobalt to the kernel, Dovetail allows
+> us to extend the latter with data and procedures we need:
 > 
+> - we can embed our own context information into a set of critical
+>   kernel data structures. This information should be defined as a set
+>   of core-specific types, such as struct oob_thread_state which is
+>   going to be part of struct thread_info.
+> 
+> - we can define preparation and finalization handlers for out-of-band
+>   IRQ handling, which Dovetail should invoke right after entering the
+>   outer interrupt frame, then right before leaving it respectively.
+> 
+> Add the couple of interface headers we need to connect those elements
+> to the kernel.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
+>  kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
+>  2 files changed, 85 insertions(+)
+>  create mode 100644 kernel/cobalt/include/dovetail/irq.h
+>  create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
+> 
+> diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/include/dovetail/irq.h
+> new file mode 100644
+> index 000000000..66d020fde
+> --- /dev/null
+> +++ b/kernel/cobalt/include/dovetail/irq.h
+> @@ -0,0 +1,52 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + *
+> + * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
+> + */
+> +
+> +#ifndef _COBALT_DOVETAIL_IRQ_H
+> +#define _COBALT_DOVETAIL_IRQ_H
+> +
+> +#ifdef CONFIG_XENOMAI
+> +
+> +#include <cobalt/kernel/sched.h>
+> +
+> +/* hard irqs off. */
+> +static inline void irq_enter_pipeline(void)
+> +{
+> +	struct xnsched *sched = xnsched_current();
+> +
+> +	sched->lflags |= XNINIRQ;
+> +}
+> +
+> +/* hard irqs off. */
+> +static inline void irq_exit_pipeline(void)
+> +{
+> +	struct xnsched *sched = xnsched_current();
+> +
+> +	sched->lflags &= ~XNINIRQ;
+> +
+> +	/*
+> +	 * CAUTION: Switching stages as a result of rescheduling may
+> +	 * re-enable irqs, shut them off before returning if so.
+> +	 */
+> +	if ((sched->status|sched->lflags) & XNRESCHED) {
+> +		xnsched_run();
+> +		if (!hard_irqs_disabled())
+> +			hard_local_irq_disable();
+> +	}
+> +}
+> +
+> +#else  /* !CONFIG_XENOMAI */
+> +
+> +static inline void irq_enter_pipeline(void)
+> +{
+> +}
+> +
+> +static inline void irq_exit_pipeline(void)
+> +{
+> +}
+> +
+> +#endif	/* !CONFIG_XENOMAI */
+> +
+> +#endif /* !_COBALT_DOVETAIL_IRQ_H */
+> diff --git a/kernel/cobalt/include/dovetail/thread_info.h b/kernel/cobalt/include/dovetail/thread_info.h
+> new file mode 100644
+> index 000000000..69b89de35
+> --- /dev/null
+> +++ b/kernel/cobalt/include/dovetail/thread_info.h
+> @@ -0,0 +1,33 @@
+> +/**
+> + * Copyright (C) 2012 Philippe Gerum <rpm@xenomai.org>.
+> + * Copyright (c) Siemens AG, 2020
+> + *
+> + * Xenomai is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 02139,
+> + * USA; either version 2 of the License, or (at your option) any later
+> + * version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program; if not, write to the Free Software
+> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-Situation still the same with the latest release?
+Also a stale copyright header.
+
+> + */
+> +#ifndef _COBALT_DOVETAIL_THREAD_INFO_H
+> +#define _COBALT_DOVETAIL_THREAD_INFO_H
+> +
+> +struct xnthread;
+> +struct cobalt_process;
+> +
+> +struct oob_thread_state {
+> +	/* Core thread backlink. */
+> +	struct xnthread *thread;
+> +	/* User process backlink. NULL for core threads. */
+> +	struct cobalt_process *process;
+> +};
+> +
+> +#endif /* !_COBALT_DOVETAIL_THREAD_INFO_H */
+> 
 
 Jan
-
->> I guess it's OK for now (as this branch is work in progress). Pushing
->> it out to the list just in case nobody noticed so far and we should
->> have a look before moving forward.
->>
->> Best regards,
->> Florian
->>
->>
->> -- 
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: dmesg.log
->> Type: text/x-log
->> Size: 89883 bytes
->> Desc: dmesg.log
->> URL: <http://xenomai.org/pipermail/xenomai/attachments/20210304/558b48aa/attachment.bin
-> 
 
 -- 
 Siemens AG, T RDA IOT
