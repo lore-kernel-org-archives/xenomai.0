@@ -1,14 +1,18 @@
-References: <20210220124527.401015-1-rpm@xenomai.org>
- <20210220124527.401015-3-rpm@xenomai.org>
- <b15e7868-3e9d-aed9-b503-9c71efac6a4b@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 3/8] cobalt/trace: dovetail: add placeholders for trace
- management
-In-reply-to: <b15e7868-3e9d-aed9-b503-9c71efac6a4b@siemens.com>
-Date: Mon, 08 Mar 2021 13:31:30 +0100
-Message-ID: <87a6rdkesd.fsf@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
+ <87h7m54f1i.fsf@xenomai.org>
+ <612b2ca09cb05c5cf641b35359205b905caf2a5c.camel@siemens.com>
+ <87v9ak31w8.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <03f66bd4-904f-7ed9-c93b-626e1f87dfd5@siemens.com>
+Date: Mon, 8 Mar 2021 13:19:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <87v9ak31w8.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,55 +21,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 22.02.21 10:08, Philippe Gerum via Xenomai wrote:
+> 
+> florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
+> 
+>> On Sun, 2021-02-21 at 16:27 +0100, Philippe Gerum via Xenomai wrote:
+>>> chensong via Xenomai <xenomai@xenomai.org> writes:
+>>>
+>>>>> +/*
+>>>>> + * Our representation of time at the kernel<->user interface boundary
+>>>>> + * at the moment, until we have fully transitioned to a y2038-safe
+>>>>> + * implementation in libcobalt.
+>>>>> + */
+>>>>> +struct __user_old_timespec {
+>>>>> +	long  tv_sec;
+>>>>> +	long  tv_nsec;
+>>>>> +};
+>>>>
+>>>> why not use old_timespec32, which is timespec32 representation defined
+>>>> in include/linux/time32?
+>>>>
+>>>
+>>> Using old_timespec32 in this context would mean that any time value
+>>> received from userland by the core should be restricted to 32bit time_t,
+>>> which is not what we want, at least for 64bit platforms:
+>>>
+>>> include/vdso/time32.h:
+>>>
+>>> struct old_timespec32 {
+>>> 	old_time32_t	tv_sec;
+>>> 	s32		tv_nsec;
+>>> };
+>>>
+>>> __user_old_timespec conveys the notion that we are generically talking
+>>> about "the old timespec type which has a y2038 problem"; this is not
+>>> specifically about the legacy timespec type on 32bit machines.
+>>>
+>>> Since v5.4-rc6, we do have __kernel_old_timespec though, which could
+>>> have been used instead of __user_old_timespec:
+>>
+>> According to my information (based on
+>> https://elixir.bootlin.com/linux/v5.5-rc1/A/ident/__kernel_old_timespec
+>> ) this is available since v5.5-rc1.
+>>
+> 
+> This disagrees with the git history then:
+> 
+> commit 94c467ddb273dc9a6a4fb09aef392c119b151edb
+> Author: Arnd Bergmann <arnd@arndb.de>
+> 
+>     y2038: add __kernel_old_timespec and __kernel_old_time_t
+> 
+> $ git describe 94c467ddb273dc9a6a4fb09aef392c119b151edb
+> v5.4-rc6-2-g94c467ddb273dc9
+> 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+This tells you *after* which tag it was applied, not when it was in and
+tagged there. That was indeed v5.5-rc1 (seen via gitk, still looking for
+a handy git command line to explore that).
 
-> On 20.02.21 13:45, Philippe Gerum wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->> 
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> ---
->>  .../cobalt/kernel/dovetail/pipeline/trace.h   | 123 ++++++++++++++++++
->>  1 file changed, 123 insertions(+)
->>  create mode 100644 include/cobalt/kernel/dovetail/pipeline/trace.h
->> 
->> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
->> new file mode 100644
->> index 000000000..819b8a713
->> --- /dev/null
->> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
->> @@ -0,0 +1,123 @@
->> +/*
->> + * Copyright (C) 2006 Jan Kiszka <jan.kiszka@web.de>.
->> + *
->
-> Should likely be updated when filled.
->
->> + * Xenomai is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published
->> + * by the Free Software Foundation; either version 2 of the License,
->> + * or (at your option) any later version.
->> + *
->> + * Xenomai is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
->> + * General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with Xenomai; if not, write to the Free Software
->> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
->> + * 02111-1307, USA.
->
-> And this can then be done shorter.
->
-> Both just remarks for future patches, no blockers.
-
-I moved to SPDX tags for libevl and the EVL core. I believe this is the
-way to go.
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
