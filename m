@@ -1,13 +1,16 @@
-Subject: Re: Weird semaphore/timeout behaviour with gdbserver
-References: <35a5-60392380-18f-48dc0d80@57279928>
+Subject: Re: [RFC PATCH v2 3/4] y2038: Add tests for the
+ sc_cobalt_sem_timedwait_time64 syscall
+References: <87h7lqzzzw.fsf@xenomai.org>
+ <20210308170206.313181-1-florian.bezdeka@siemens.com>
+ <20210308170206.313181-4-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <70abfb5d-6869-f49e-5e64-8b23daac055e@siemens.com>
-Date: Mon, 1 Mar 2021 18:28:47 +0100
+Message-ID: <0d4c8b7d-7f4f-49ec-c94c-87c4f2091d77@siemens.com>
+Date: Mon, 8 Mar 2021 19:35:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <35a5-60392380-18f-48dc0d80@57279928>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210308170206.313181-4-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,85 +19,265 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org, rpm@xenomai.org, chensong@kylinos.cn
 
-On 26.02.21 17:36, François Legal wrote:
-> Le Vendredi, Février 26, 2021 17:17 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
+On 08.03.21 18:02, Florian Bezdeka wrote:
+> Introducing a new smokey plugin that can be extended for all kind of
+> y2038 tests.
+
+And what does this version test? Some more words on how the new syscall
+is stressed would be valuable here.
+
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  configure.ac                           |   1 +
+>  testsuite/smokey/Makefile.am           |   6 +-
+>  testsuite/smokey/y2038/Makefile.am     |  10 ++
+>  testsuite/smokey/y2038/syscall-tests.c | 170 +++++++++++++++++++++++++
+>  4 files changed, 185 insertions(+), 2 deletions(-)
+>  create mode 100644 testsuite/smokey/y2038/Makefile.am
+>  create mode 100644 testsuite/smokey/y2038/syscall-tests.c
+> 
+> diff --git a/configure.ac b/configure.ac
+> index abe538dbd..bd5fd5ba9 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -990,6 +990,7 @@ AC_CONFIG_FILES([ \
+>  	testsuite/smokey/net_common/Makefile \
+>  	testsuite/smokey/cpu-affinity/Makefile \
+>  	testsuite/smokey/gdb/Makefile \
+> +	testsuite/smokey/y2038/Makefile \
+>  	testsuite/clocktest/Makefile \
+>  	testsuite/xeno-test/Makefile \
+>  	utils/Makefile \
+> diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
+> index 02613c7dc..56c873026 100644
+> --- a/testsuite/smokey/Makefile.am
+> +++ b/testsuite/smokey/Makefile.am
+> @@ -38,7 +38,8 @@ COBALT_SUBDIRS = 	\
+>  	timerfd		\
+>  	tsc		\
+>  	vdso-access 	\
+> -	xddp
+> +	xddp		\
+> +	y2038
 >  
->> Le Vendredi, Février 26, 2021 09:08 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
->>  
->>> Le Jeudi, Janvier 21, 2021 22:42 CET, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>  
->>>> On 19.01.21 18:41, François Legal via Xenomai wrote:
->>>>> Le Vendredi, Janvier 08, 2021 19:35 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
->>>>>  
->>>>>> Hello,
->>>>>>
->>>>>> Working on ARMv7 with linux 4.4 and xenomai 3.1, I get a strange behaviour when using GDB.
->>>>>> There seem to be troubles with threads pending on semaphores, which do not wake up when sem is posted nor when the timedwait is over.
->>>>>> It does not seem to make a problem with all the semaphores on the software, but at program startup, the behaviour is pretty constant.
->>>>>>
->>>>>> If I start the same program from shell, thread activation works flawlessly.
->>>>>>
->>>>>> ANybody can give a hint on this ?
->>>>>>
->>>>>> Thanks.
->>>>>>
->>>>>> François
->>>>>>
->>>>>>
->>>>>  
->>>>> I've got another case with pulse semaphores with timeout, that outline the same behaviour without gdbserver.
->>>>> I've got 2 threads and 2 pulse semaphores. Thread1 (priority 60) successively pends (with 30s timeout) on SEM1 then posts SEM2, while thread2 (priority 52) posts SEM1 then pends (forever) on SEM2. Both semaphores are initialized at 0.
->>>>> I can see from debug log that Thread1 pends on SEM1, then thread2 posts SEM1 and pends SEM2, then thread1 posts SEM2, then thread2 posts SEM1 then pends SEM2, then thread1 pends SEM1, then nothing happens anymore. I thought thread1 should be unblocked (either by thread2 posting SEM1, or by the 30s timeout) but that never happens.
->>>>>
->>>>> What am I getting wrong here ?
->>>>>
->>>>
->>>> These scenarios are hairy without test cases. Can you derive something
->>>> simple, portable from your problems? There is testsuite/smokey/gdb/gdb.c
->>>> for full automated tests, but already something we can compile and run
->>>> locally here, gdb manually operated, would be fine. It would also allow
->>>> to cross-check on x86 and arm64 to see if this is arch-specific.
->>>>
->>>> Jan
->>>>
->>>> -- 
->>>> Siemens AG, T RDA IOT
->>>> Corporate Competence Center Embedded Linux
->>>  
->>>  
->>> Sorry to reply so late on this, but I've been busy on some other stuff.I tried to write a simple piece of code that reproduces the problem, but with no luck. In the simple case, the sems work as intended (and thus do not need to honor the timeout).
->>> I'm not sure how I can find the answer on this. Also is there any way to check the state of shored objects like semaphores, mutexes, ...
->>> I read the registry should provide this, but I not able to get more entries than what already present in /proc/xenomai/ (heaps, threads and version)
->>>
->>> François
->>>
->>>
->>  
->> I believe I found out why my semaphores behave oddly when under GDB. I checked /proc/xenomai/sched/stats, and saw that almost all of my threads have the 0x400000 bit set (#define XNDBGSTOP 0x00400000 /**< Stopped for synchronous debugging */)
->>
->> So I believe that's perfectly normal for the semaphores not to timeout, because the threads are stopped.
->>
->> What I wonder now, is why this bit got set for all but one thread in the project.
->>
->> Thanks
->>
->> François
->>
->>
+>  MERCURY_SUBDIRS =	\
+>  	memory-heapmem	\
+> @@ -76,7 +77,8 @@ DIST_SUBDIRS = 		\
+>  	timerfd		\
+>  	tsc		\
+>  	vdso-access 	\
+> -	xddp
+> +	xddp		\
+> +	y2038
 >  
-> And if I check the same with the simple app I created, I don't see the XNDBGSTOP bit being automagically set when running with GDB
+>  if XENO_COBALT
+>  if CONFIG_XENO_LIBS_DLOPEN
+> diff --git a/testsuite/smokey/y2038/Makefile.am b/testsuite/smokey/y2038/Makefile.am
+> new file mode 100644
+> index 000000000..a97591aa2
+> --- /dev/null
+> +++ b/testsuite/smokey/y2038/Makefile.am
+> @@ -0,0 +1,10 @@
+> +
+> +noinst_LIBRARIES = liby2038.a
+> +
+> +liby2038_a_SOURCES = syscall-tests.c
+> +
+> +liby2038_a_CPPFLAGS = 	\
+> +	@XENO_USER_CFLAGS@	\
+> +	-I$(top_srcdir)		\
+> +	-I$(top_srcdir)/include
+> +
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> new file mode 100644
+> index 000000000..0fc96374f
+> --- /dev/null
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -0,0 +1,170 @@
+> +/*
+> + * y2038 tests
+> + *
+> + * Copyright (c) Siemens AG 2021
+> + *
+> + * Authors:
+> + *  Florian Bezdeka <florian.bezdeka@siemens.com>
+> + *
+> + * Released under the terms of GPLv2.
+> + */
+> +#include <cobalt/uapi/syscall.h>
+> +#include <smokey/smokey.h>
+> +#include <semaphore.h>
+> +#include <unistd.h>
+> +#include <stdint.h>
+> +#include <errno.h>
+> +
+> +smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
+> +
+> +/*
+> + * libc independent data type representing a time64_t based struct timespec
+> + */
+> +struct xn_timespec64 {
+> +	int64_t tv_sec;
+> +	int64_t tv_nsec;
+> +};
+> +
+> +#define NSEC_PER_SEC 1000000000
+> +
+> +static void ts_normalise(struct xn_timespec64 *ts)
+> +{
+> +	while (ts->tv_nsec >= NSEC_PER_SEC) {
+> +		ts->tv_nsec += 1;
+> +		ts->tv_nsec -= NSEC_PER_SEC;
+> +	}
+> +
+> +	while (ts->tv_nsec <= -NSEC_PER_SEC) {
+> +		ts->tv_sec -= 1;
+> +		ts->tv_nsec += NSEC_PER_SEC;
+> +	}
+> +
+> +	if (ts->tv_nsec < 0) {
+> +		/*
+> +		 * Negative nanoseconds isn't valid according to POSIX.
+> +		 * Decrement tv_sec and roll tv_nsec over.
+> +		 */
+> +		ts->tv_sec -= 1;
+> +		ts->tv_nsec = (NSEC_PER_SEC + ts->tv_nsec);
+> +	}
+> +}
+> +
+> +static inline void ts_add_ns(struct xn_timespec64 *ts, int ns)
+> +{
+> +	ts->tv_nsec += ns;
+> +	ts_normalise(ts);
+> +}
+> +
+> +/**
+> + * Compare two struct timespec instances
+> + *
+> + * @param a
+> + * @param b
+> + * @return True if a < b, false otherwise
+> + */
+> +static inline bool ts_less(const struct xn_timespec64 *a,
+> +			   const struct xn_timespec64 *b)
+> +{
+> +	if (a->tv_sec < b->tv_sec)
+> +		return true;
+> +
+> +	if (a->tv_sec > b->tv_sec)
+> +		return false;
+> +
+> +	/* a->tv_sec == b->tv_sec */
+> +
+> +	if (a->tv_nsec < b->tv_nsec)
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+> +static int test_sc_cobalt_sem_timedwait_time64(void)
+> +{
+> +	long ret;
+> +	sem_t sem;
+> +	int code = __xn_syscode(sc_cobalt_sem_timedwait_time64);
+> +	struct xn_timespec64 ts64, ts_wu;
+> +	struct timespec ts_nat;
+> +
+> +	sem_init(&sem, 0, 0);
+> +
+> +	/*
+> +	 * TODO: Calling the syscall directly for now, as y2038 support is not
+> +	 * yet available in glibc. Once this is available we should use our
+> +	 * glibc wrappers provided by libcobalt.
+> +	 */
 
-The basic idea behind this bit is that, when some RT thread hits a debug
-condition, all other RT threads in the process are stopped immediately
-by Xenomai - rather than letting gdb and ptrace to that by sending
-non-RT signals. That shall allow to debug the process in a state that
-comes closer to what was reality when the break condition occurred. That
-is also one aspect the the gdb smokey test validates.
+Maybe wrap that, to make the invocations more readable? Maybe a macro
+can do that in a way that will not affect the code once glibc is ready.
 
-I'm still not sure if you see normal behavior or something odd, though.
+> +
+> +	/* Make sure we don't crash because of NULL pointers */
+> +	ret = syscall(code, NULL, NULL);
+> +	if (ret == -1 && errno == ENOSYS)
+> +		return 0; // Not implemented, nothing to test, success
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
+> +		return errno;
+> +
+> +	/* Timeout is never read by the kernel, so NULL should be OK */
+> +	sem_post(&sem);
+> +	ret = syscall(code, &sem, NULL);
+> +	if (!smokey_assert(!ret))
+> +		return errno;
+> +
+> +	/*
+> +	 * The semaphore is already exhausted, so calling again will validate
+> +	 * the provided timeout now. Providing NULL has to deliver EFAULT
+> +	 */
+> +	ret = syscall(code, &sem, NULL);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> +		return errno;
+> +
+> +	/*
+> +	 * The semaphore is still exhausted, calling again will validate the
+> +	 * timeout, providing an invalid timeout has to deliver EINVAL
+> +	 */
+> +	ts64.tv_sec = -1;
+> +	ret = syscall(code, &sem, &ts64);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
+> +		return errno;
+> +
+> +	/*
+> +	 * Providing a valid timeout, waiting for it to time out and check
+> +	 * that we didn't come back to early.
+> +	 */
+> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts_nat);
+> +	if (ret)
+> +		return errno;
+> +
+> +	ts64.tv_sec = ts_nat.tv_sec;
+> +	ts64.tv_nsec = ts_nat.tv_nsec;
+> +	ts_add_ns(&ts64, 500000);
+> +
+> +	ret = syscall(code, &sem, &ts64);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == ETIMEDOUT))
+> +		return errno;
+> +
+> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts_nat);
+> +	if (ret)
+> +		return errno;
+> +
+> +	ts_wu.tv_sec = ts_nat.tv_sec;
+> +	ts_wu.tv_nsec = ts_nat.tv_nsec;
+> +
+> +	if (ts_less(&ts_wu, &ts64))
+> +		smokey_warning("sem_timedwait_time64 returned to early!\n"
+> +			       "Expected wakeup at: %lld sec %lld nsec\n"
+> +			       "Back at           : %lld sec %lld nsec\n",
+> +			       ts64.tv_sec, ts64.tv_nsec, ts_wu.tv_sec,
+> +			       ts_wu.tv_nsec);
+> +
+
+Does this already stress the 64-bit range of time_t? I don't spot that yet.
+
+> +	return 0;
+> +}
+> +
+> +static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+> +{
+> +	int ret;
+> +
+> +	ret = test_sc_cobalt_sem_timedwait_time64();
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> 
+
+Such a test is obviously key to approach the issue correctly. It's a
+complex beast.
 
 Jan
 
