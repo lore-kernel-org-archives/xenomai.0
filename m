@@ -1,18 +1,16 @@
-Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
- timespec64
-References: <20210220151840.409745-1-rpm@xenomai.org>
- <20210220151840.409745-2-rpm@xenomai.org> <6031C2CF.3050202@kylinos.cn>
- <87h7m54f1i.fsf@xenomai.org>
- <612b2ca09cb05c5cf641b35359205b905caf2a5c.camel@siemens.com>
- <87v9ak31w8.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <03f66bd4-904f-7ed9-c93b-626e1f87dfd5@siemens.com>
-Date: Mon, 8 Mar 2021 13:19:45 +0100
-MIME-Version: 1.0
-In-Reply-To: <87v9ak31w8.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
+Date: Mon, 8 Mar 2021 12:42:17 +0000
+Message-ID: <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
+References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
+ <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
+ <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
+In-Reply-To: <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E4703928A4869B469CD054A2EF10E9A9@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,71 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 22.02.21 10:08, Philippe Gerum via Xenomai wrote:
-> 
-> florian.bezdeka@siemens.com <florian.bezdeka@siemens.com> writes:
-> 
->> On Sun, 2021-02-21 at 16:27 +0100, Philippe Gerum via Xenomai wrote:
->>> chensong via Xenomai <xenomai@xenomai.org> writes:
->>>
->>>>> +/*
->>>>> + * Our representation of time at the kernel<->user interface boundary
->>>>> + * at the moment, until we have fully transitioned to a y2038-safe
->>>>> + * implementation in libcobalt.
->>>>> + */
->>>>> +struct __user_old_timespec {
->>>>> +	long  tv_sec;
->>>>> +	long  tv_nsec;
->>>>> +};
->>>>
->>>> why not use old_timespec32, which is timespec32 representation defined
->>>> in include/linux/time32?
->>>>
->>>
->>> Using old_timespec32 in this context would mean that any time value
->>> received from userland by the core should be restricted to 32bit time_t,
->>> which is not what we want, at least for 64bit platforms:
->>>
->>> include/vdso/time32.h:
->>>
->>> struct old_timespec32 {
->>> 	old_time32_t	tv_sec;
->>> 	s32		tv_nsec;
->>> };
->>>
->>> __user_old_timespec conveys the notion that we are generically talking
->>> about "the old timespec type which has a y2038 problem"; this is not
->>> specifically about the legacy timespec type on 32bit machines.
->>>
->>> Since v5.4-rc6, we do have __kernel_old_timespec though, which could
->>> have been used instead of __user_old_timespec:
->>
->> According to my information (based on
->> https://elixir.bootlin.com/linux/v5.5-rc1/A/ident/__kernel_old_timespec
->> ) this is available since v5.5-rc1.
->>
-> 
-> This disagrees with the git history then:
-> 
-> commit 94c467ddb273dc9a6a4fb09aef392c119b151edb
-> Author: Arnd Bergmann <arnd@arndb.de>
-> 
->     y2038: add __kernel_old_timespec and __kernel_old_time_t
-> 
-> $ git describe 94c467ddb273dc9a6a4fb09aef392c119b151edb
-> v5.4-rc6-2-g94c467ddb273dc9
-> 
-
-This tells you *after* which tag it was applied, not when it was in and
-tagged there. That was indeed v5.5-rc1 (seen via gitk, still looking for
-a handy git command line to explore that).
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gTW9uLCAyMDIxLTAzLTA4IGF0IDExOjQyICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwNC4wMy4yMSAxOTozMywgZmxvcmlhbi5iZXpkZWthLS0tIHZpYSBYZW5vbWFpIHdyb3RlOg0K
+PiA+IE9uIFRodSwgMjAyMS0wMy0wNCBhdCAxNDoxOCArMDAwMCwgZmxvcmlhbi5iZXpkZWthLS0t
+IHZpYSBYZW5vbWFpDQo+ID4gd3JvdGU6DQo+ID4gPiBIaSwNCj4gPiA+IA0KPiA+ID4gdGhlIGF0
+dGFjaGVkIGtlcm5lbCBsb2cgd2FzIHRha2VuIGZvcm0gYSBsb2NhbCBxZW11IG1hY2hpbmUgd2l0
+aA0KPiA+ID4gWGVub21haSBidWlsZCBmcm9tIHRoZSB3aXAvZG92ZXRhaWwgYnJhbmNoLiBUaGVy
+ZSBpcyBhIGZhaWxpbmcgc2VsZnRlc3QNCj4gPiA+IChtaXhlZCByZWFkLWxvY2svbG9jay13cml0
+ZSBBQkJBKS4NCj4gPiA+IA0KPiA+IA0KPiA+IENvcnJlY3Rpb246IEkgY2FuIHJlcHJvZHVjZSB0
+aGF0IHdpdGggYG5leHRgIGFzIHdlbGwuIFNvIGl0J3Mgbm90DQo+ID4gcmVsYXRlZCB0byB0aGUg
+d2lwL2RvdmV0YWlsIGJyYW5jaC4gDQo+ID4gDQo+IA0KPiBTaXR1YXRpb24gc3RpbGwgdGhlIHNh
+bWUgd2l0aCB0aGUgbGF0ZXN0IHJlbGVhc2U/DQoNCldoaWNoIHJlbGVhc2U/IEkgdHJpZWQgdG8g
+YnVpbGQgdGhlICJ0ZXN0aW5nIiBicmFuY2ggb2YgeGVub21haS1pbWFnZXMNCih3aGljaCBob2xk
+cyB0aGUgQ09XIHBhdGNoZXMpIGJ1dCB0aGF0IGRvZXNuJ3QgYnVpbGQgYXQgYWxsLCBwYXRjaGVz
+DQpjYW4gbm90IGJlIGFwcGxpZWQuDQoNCnVzZWQgY21kbGluZToNCmthcy1jb250YWluZXIgYnVp
+bGQga2FzLnltbDpvcHQtbGludXgtbGF0ZXN0LTUuNC55bWw6Ym9hcmQtcWVtdS1hbWQ2NC55bWw6
+b3B0LXhlbm9tYWktbmV4dC55bWwNCg0KQnVpbGRpbmcgYW5kIHJ1bm5pbmcgdGhlICJuZXh0IiBi
+cmFuY2ggb2YgeGVub21haS1pbWFnZXMgc3RpbGwgcmVwb3J0cyANCnRoZSBzYW1lIGZhaWxpbmcg
+c2VsZi10ZXN0Lg0KPiANCj4gSmFuDQo+IA0KPiA+ID4gSSBndWVzcyBpdCdzIE9LIGZvciBub3cg
+KGFzIHRoaXMgYnJhbmNoIGlzIHdvcmsgaW4gcHJvZ3Jlc3MpLiBQdXNoaW5nDQo+ID4gPiBpdCBv
+dXQgdG8gdGhlIGxpc3QganVzdCBpbiBjYXNlIG5vYm9keSBub3RpY2VkIHNvIGZhciBhbmQgd2Ug
+c2hvdWxkDQo+ID4gPiBoYXZlIGEgbG9vayBiZWZvcmUgbW92aW5nIGZvcndhcmQuDQo+ID4gPiAN
+Cj4gPiA+IEJlc3QgcmVnYXJkcywNCj4gPiA+IEZsb3JpYW4NCj4gPiA+IA0KPiA+ID4gDQo+ID4g
+PiAtLSANCj4gPiA+IFNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPiA+ID4gQ29ycG9yYXRlIENvbXBl
+dGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+ID4gPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBh
+cnQgLS0tLS0tLS0tLS0tLS0NCj4gPiA+IEEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4NCj4gPiA+IE5hbWU6IGRtZXNnLmxvZw0KPiA+ID4gVHlwZTogdGV4dC94LWxvZw0KPiA+
+ID4gU2l6ZTogODk4ODMgYnl0ZXMNCj4gPiA+IERlc2M6IGRtZXNnLmxvZw0KPiA+ID4gVVJMOiA8
+aHR0cHM6Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHAl
+M0ElMkYlMkZ4ZW5vbWFpLm9yZyUyRnBpcGVybWFpbCUyRnhlbm9tYWklMkZhdHRhY2htZW50cyUy
+RjIwMjEwMzA0JTJGNTU4YjQ4YWElMkZhdHRhY2htZW50LmJpbiZhbXA7ZGF0YT0wNCU3QzAxJTdD
+Zmxvcmlhbi5iZXpkZWthJTQwc2llbWVucy5jb20lN0NmYjJiNDhlNTQyNzQ0ZDhjODI5NjA4ZDhl
+MjIwM2JjMyU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3QzAlN0M2Mzc1
+MDc5NzUzNTgzMTA5MzklN0NVbmtub3duJTdDVFdGcGJHWnNiM2Q4ZXlKV0lqb2lNQzR3TGpBd01E
+QWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMTAwMCZh
+bXA7c2RhdGE9T2lBeUZCS05FM2ZjWUlmWER2YWJxc2J0dFo2VDBXSyUyQmlLa2hkVnI4Y2g0JTNE
+JmFtcDtyZXNlcnZlZD0wDQo+ID4gDQo+IA0KDQo=
 
