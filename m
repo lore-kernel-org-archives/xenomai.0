@@ -1,12 +1,12 @@
-Subject: Re: [PATCH 6/8] cobalt/dovetail: provide core-specific context
- extensions
+Subject: Re: [PATCH 3/8] cobalt/trace: dovetail: add placeholders for trace
+ management
 References: <20210220124527.401015-1-rpm@xenomai.org>
- <20210220124527.401015-6-rpm@xenomai.org>
+ <20210220124527.401015-3-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1760cd35-6a89-ae70-82b8-65b99c1d8098@siemens.com>
-Date: Mon, 8 Mar 2021 12:26:43 +0100
+Message-ID: <b15e7868-3e9d-aed9-b503-9c71efac6a4b@siemens.com>
+Date: Mon, 8 Mar 2021 12:22:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210220124527.401015-6-rpm@xenomai.org>
+In-Reply-To: <20210220124527.401015-3-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -24,129 +24,149 @@ Cc: xenomai@xenomai.org
 On 20.02.21 13:45, Philippe Gerum wrote:
 > From: Philippe Gerum <rpm@xenomai.org>
 > 
-> In order to intimately connect Cobalt to the kernel, Dovetail allows
-> us to extend the latter with data and procedures we need:
-> 
-> - we can embed our own context information into a set of critical
->   kernel data structures. This information should be defined as a set
->   of core-specific types, such as struct oob_thread_state which is
->   going to be part of struct thread_info.
-> 
-> - we can define preparation and finalization handlers for out-of-band
->   IRQ handling, which Dovetail should invoke right after entering the
->   outer interrupt frame, then right before leaving it respectively.
-> 
-> Add the couple of interface headers we need to connect those elements
-> to the kernel.
-> 
 > Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->  kernel/cobalt/include/dovetail/irq.h         | 52 ++++++++++++++++++++
->  kernel/cobalt/include/dovetail/thread_info.h | 33 +++++++++++++
->  2 files changed, 85 insertions(+)
->  create mode 100644 kernel/cobalt/include/dovetail/irq.h
->  create mode 100644 kernel/cobalt/include/dovetail/thread_info.h
+>  .../cobalt/kernel/dovetail/pipeline/trace.h   | 123 ++++++++++++++++++
+>  1 file changed, 123 insertions(+)
+>  create mode 100644 include/cobalt/kernel/dovetail/pipeline/trace.h
 > 
-> diff --git a/kernel/cobalt/include/dovetail/irq.h b/kernel/cobalt/include/dovetail/irq.h
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
 > new file mode 100644
-> index 000000000..66d020fde
+> index 000000000..819b8a713
 > --- /dev/null
-> +++ b/kernel/cobalt/include/dovetail/irq.h
-> @@ -0,0 +1,52 @@
+> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
+> @@ -0,0 +1,123 @@
 > +/*
-> + * SPDX-License-Identifier: GPL-2.0
+> + * Copyright (C) 2006 Jan Kiszka <jan.kiszka@web.de>.
 > + *
-> + * Copyright (C) 2017 Philippe Gerum  <rpm@xenomai.org>
-> + */
-> +
-> +#ifndef _COBALT_DOVETAIL_IRQ_H
-> +#define _COBALT_DOVETAIL_IRQ_H
-> +
-> +#ifdef CONFIG_XENOMAI
-> +
-> +#include <cobalt/kernel/sched.h>
-> +
-> +/* hard irqs off. */
-> +static inline void irq_enter_pipeline(void)
-> +{
-> +	struct xnsched *sched = xnsched_current();
-> +
-> +	sched->lflags |= XNINIRQ;
-> +}
-> +
-> +/* hard irqs off. */
-> +static inline void irq_exit_pipeline(void)
-> +{
-> +	struct xnsched *sched = xnsched_current();
-> +
-> +	sched->lflags &= ~XNINIRQ;
-> +
-> +	/*
-> +	 * CAUTION: Switching stages as a result of rescheduling may
-> +	 * re-enable irqs, shut them off before returning if so.
-> +	 */
-> +	if ((sched->status|sched->lflags) & XNRESCHED) {
-> +		xnsched_run();
-> +		if (!hard_irqs_disabled())
-> +			hard_local_irq_disable();
-> +	}
-> +}
-> +
-> +#else  /* !CONFIG_XENOMAI */
-> +
-> +static inline void irq_enter_pipeline(void)
-> +{
-> +}
-> +
-> +static inline void irq_exit_pipeline(void)
-> +{
-> +}
-> +
-> +#endif	/* !CONFIG_XENOMAI */
-> +
-> +#endif /* !_COBALT_DOVETAIL_IRQ_H */
-> diff --git a/kernel/cobalt/include/dovetail/thread_info.h b/kernel/cobalt/include/dovetail/thread_info.h
-> new file mode 100644
-> index 000000000..69b89de35
-> --- /dev/null
-> +++ b/kernel/cobalt/include/dovetail/thread_info.h
-> @@ -0,0 +1,33 @@
-> +/**
-> + * Copyright (C) 2012 Philippe Gerum <rpm@xenomai.org>.
-> + * Copyright (c) Siemens AG, 2020
-> + *
+
+Should likely be updated when filled.
+
 > + * Xenomai is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 02139,
-> + * USA; either version 2 of the License, or (at your option) any later
-> + * version.
+> + * it under the terms of the GNU General Public License as published
+> + * by the Free Software Foundation; either version 2 of the License,
+> + * or (at your option) any later version.
 > + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
+> + * Xenomai is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
 > + *
 > + * You should have received a copy of the GNU General Public License
-> + * along with this program; if not, write to the Free Software
-> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> + * along with Xenomai; if not, write to the Free Software
+> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+> + * 02111-1307, USA.
 
-Also a stale copyright header.
+And this can then be done shorter.
+
+Both just remarks for future patches, no blockers.
 
 > + */
-> +#ifndef _COBALT_DOVETAIL_THREAD_INFO_H
-> +#define _COBALT_DOVETAIL_THREAD_INFO_H
+> +#ifndef _COBALT_KERNEL_DOVETAIL_TRACE_H
+> +#define _COBALT_KERNEL_DOVETAIL_TRACE_H
 > +
-> +struct xnthread;
-> +struct cobalt_process;
+> +#include <linux/types.h>
+> +#include <linux/kconfig.h>
+> +#include <cobalt/uapi/kernel/trace.h>
 > +
-> +struct oob_thread_state {
-> +	/* Core thread backlink. */
-> +	struct xnthread *thread;
-> +	/* User process backlink. NULL for core threads. */
-> +	struct cobalt_process *process;
-> +};
+> +static inline int xntrace_max_begin(unsigned long v)
+> +{
+> +//#chz: NTD
+> +	//ipipe_trace_begin(v);
+> +	return 0;
+> +}
 > +
-> +#endif /* !_COBALT_DOVETAIL_THREAD_INFO_H */
+> +static inline int xntrace_max_end(unsigned long v)
+> +{
+> +//#chz: NTD
+> +	//ipipe_trace_end(v);
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_max_reset(void)
+> +{
+> +//#chz: NTD
+> +	//ipipe_trace_max_reset();
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_user_start(void)
+> +{
+> +//#chz: NTD
+> +	//return ipipe_trace_frozen_reset();
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_user_stop(unsigned long v)
+> +{
+> +//#chz: NTD
+> +	//ipipe_trace_freeze(v);
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_user_freeze(unsigned long v, int once)
+> +{
+> +	int ret = 0;
+> +//#chz: NTD
+> +/*
+> +	if (!once)
+> +		ret = ipipe_trace_frozen_reset();
+> +
+> +	ipipe_trace_freeze(v);
+> +*/
+> +	return ret;
+> +}
+> +
+> +static inline int xntrace_special(unsigned char id, unsigned long v)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_special(id, v);
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_special_u64(unsigned char id,
+> +					unsigned long long v)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_special(id, (unsigned long)(v >> 32));
+> +//	ipipe_trace_special(id, (unsigned long)(v & 0xFFFFFFFF));
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_pid(pid_t pid, short prio)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_pid(pid, prio);
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_tick(unsigned long delay_ticks)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_event(0, delay_ticks);
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_panic_freeze(void)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_panic_freeze();
+> +	return 0;
+> +}
+> +
+> +static inline int xntrace_panic_dump(void)
+> +{
+> +//#chz: NTD
+> +//	ipipe_trace_panic_dump();
+> +	return 0;
+> +}
+> +
+> +static inline bool xntrace_enabled(void)
+> +{
+> +	return IS_ENABLED(CONFIG_DOVETAIL_TRACE);
+> +}
+> +
+> +#endif /* !_COBALT_KERNEL_DOVETAIL_TRACE_H */
 > 
 
 Jan
