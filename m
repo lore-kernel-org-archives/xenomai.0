@@ -1,18 +1,18 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [RFC PATCH v2 1/4] y2038: Fixing the sem_timedwait syscall for 32
  bit systems
-Date: Mon, 8 Mar 2021 18:11:15 +0000
-Message-ID: <e3b758642ba1ee6d8c4b459c2b476155194205bf.camel@siemens.com>
 References: <87h7lqzzzw.fsf@xenomai.org>
  <20210308170206.313181-1-florian.bezdeka@siemens.com>
  <20210308170206.313181-2-florian.bezdeka@siemens.com>
  <95879ecb-09d5-79b4-34a3-91d3ca58bd0f@siemens.com>
-In-Reply-To: <95879ecb-09d5-79b4-34a3-91d3ca58bd0f@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1AC77427DA7F0B4C9EF2F83320F4C6DB@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <e3b758642ba1ee6d8c4b459c2b476155194205bf.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <73957ba4-d06a-49c2-e6c0-0d43c8890632@siemens.com>
+Date: Mon, 8 Mar 2021 19:22:42 +0100
 MIME-Version: 1.0
+In-Reply-To: <e3b758642ba1ee6d8c4b459c2b476155194205bf.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,35 +21,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
-T24gTW9uLCAyMDIxLTAzLTA4IGF0IDE4OjEyICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwOC4wMy4yMSAxODowMiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IE9uIHN5c3RlbXMg
-dXNpbmcgMzIgYml0IGZvciB0aW1lX3QgdGhlIHNlbV90aW1lZHdhaXQgc3lzY2FsbCB3YXMgYnJv
-a2VuDQo+ID4gYmVjYXVzZSB0aGUgZnVuY3Rpb24gdXNlZCBmb3IgY29weWluZyB0aGUgdGltZW91
-dCB2YWx1ZSBmcm9tIHVzZXJzcGFjZQ0KPiA+IHRvIGtlcm5lbCAoPXNlbV9mZXRjaF90aW1lb3V0
-KCkpIHdhcyBhbHdheXMgY29weWluZw0KPiA+IHNpemVvZihzdHJ1Y3QgdGltZXNwZWM2NCkuDQo+
-ID4gDQo+ID4gQSAzMiBiaXQgYXBwbGljYXRpb24gKG9yIG1vcmUgc3BlY2lmaWMgYW4gYXBwbGlj
-YXRpb24gd2l0aCA0IGJ5dGUNCj4gPiB0aW1lX3QpIHdvdWxkIG9ubHkgcHJvdmlkZSBzaXplb2Yo
-c3RydWN0IG9sZF90aW1lc3BlYzMyKS4NCj4gPiANCj4gPiBOb3RhYmxlIGNoYW5nZXM6DQo+ID4g
-wqDCoC0gVGhlIGNvcHkgb3BlcmF0aW9uIGZyb20gdXNlcnNwYWNlIHRvIGtlcm5lbCBpcyBub3cg
-YWxyZWFkeSBkb25lIGluDQo+ID4gwqDCoMKgwqB0aGUgc3lzY2FsbCBoYW5kbGVyLiBTbyBpdCBp
-cyBhbHdheXMgZG9uZS4gUHJldmlvdXNseSBpdCB3YXMgY29waWVkDQo+ID4gwqDCoMKgwqBvdmVy
-IGFuZCB2YWxpZGF0ZWQgYmVmb3JlIHRoZSBmaXJzdCB1c2UgKHdoZW4gdXNlZCBhdCBhbGwpLg0K
-PiA+IMKgwqDCoMKgU28gd2UgaGF2ZSBzb21lIGFkZGl0aW9uYWwgaW5zdHJ1Y3Rpb25zIG5vdyB0
-aGF0IG1heSBiZQ0KPiA+IMKgwqDCoMKgdW5uZWNlc3NhcnksIGJ1dCB0aGF0IHNpbXBsaWZpZXMg
-dGhlIGNvZGUuDQo+ID4gDQo+ID4gwqDCoC0gVmFsaWRhdGlvbjogU3dpdGNoZWQgdG8gdGltZXNw
-ZWM2NF92YWxpZCgpIGluc3RlYWQgb2Ygb3VyIG93bg0KPiA+IMKgwqDCoMKgY2hlY2suDQo+ID4g
-DQo+ID4gRml4ZXM6IDgwNDNlY2NkMjMyZCAoImNvYmFsdC9rZXJuZWw6IHkyMDM4OiBjb252ZXJ0
-IHN0cnVjdCB0aW1lc3BlYyB0byB0aW1lc3BlYzY0IikNCj4gDQo+IFRoaXMgcGF0Y2ggd2FzIGRy
-b3BwZWQgZnJvbSBuZXh0IGFnYWluIChhbmQgdGhhdCBzaGEgd2FzIG5ldmVyIGFwcGxpZWQpLg0K
-PiBXZSBzaG91bGQgZ28gYSBmb3IgZml4ZWQgdmVyc2lvbiBvZiB0aGF0IHNlcmllcyAocGF0Y2hl
-cyAyLi41LCBvbmx5DQo+IHBhdGNoIDEgaXMgbm93IGFwcGxpZWQpLg0KDQpUaGF0J3Mgb25lIG9m
-IHRoZSB0aGluZ3MgdGhhdCBtYXkgaGFwcGVuIHdoZW4gd29ya2luZyB3aXRoIGJyYW5jaGVzDQp0
-aGF0IGFyZSBnZXR0aW5nIHJlYmFzZWQuLi4gVGhlIGNvcnJlY3QgcmVmc3BlYyBpcyBtYXliZSA0
-ZDMxZmViNSBub3csDQp3aGljaCBpcyBwYXJ0IG9mIHdpcC9kb3ZldGFpbC4NCg0KUGxlYXNlIG5v
-dGUgdGhlIFJGQyB0YWcuIFdvdWxkIGJlIG5pY2UgdG8gZ2V0IHNvbWUgZmVlZGJhY2sgYmVmb3Jl
-DQpnb2luZyBhaGVhZCwgb3RoZXJ3aXNlIHRoZSBsb29wcyB3aXRoIGFsbCB0aGUgbmVjZXNzYXJ5
-IHN5bmNocm9uaXphdGlvbg0KYW5kIHJlYmFzZXMgaXMgZ2V0dGluZyBlbmRsZXNzLi4uDQoNClRo
-YW5rcyENCj4gDQo+IEphbg0KPiANCg0K
+On 08.03.21 19:11, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Mon, 2021-03-08 at 18:12 +0100, Jan Kiszka wrote:
+>> On 08.03.21 18:02, Florian Bezdeka wrote:
+>>> On systems using 32 bit for time_t the sem_timedwait syscall was broken
+>>> because the function used for copying the timeout value from userspace
+>>> to kernel (=sem_fetch_timeout()) was always copying
+>>> sizeof(struct timespec64).
+>>>
+>>> A 32 bit application (or more specific an application with 4 byte
+>>> time_t) would only provide sizeof(struct old_timespec32).
+>>>
+>>> Notable changes:
+>>>   - The copy operation from userspace to kernel is now already done in
+>>>     the syscall handler. So it is always done. Previously it was copied
+>>>     over and validated before the first use (when used at all).
+>>>     So we have some additional instructions now that may be
+>>>     unnecessary, but that simplifies the code.
+>>>
+>>>   - Validation: Switched to timespec64_valid() instead of our own
+>>>     check.
+>>>
+>>> Fixes: 8043eccd232d ("cobalt/kernel: y2038: convert struct timespec to timespec64")
+>>
+>> This patch was dropped from next again (and that sha was never applied).
+>> We should go a for fixed version of that series (patches 2..5, only
+>> patch 1 is now applied).
+> 
+> That's one of the things that may happen when working with branches
+> that are getting rebased... The correct refspec is maybe 4d31feb5 now,
+> which is part of wip/dovetail.
+
+All these are development branches, nothing considered stable. And, no,
+even wip/dovetail is the wrong target. The right one is the patch that
+needs to be fixed in v2 of Philippe's series.
+
+> 
+> Please note the RFC tag. Would be nice to get some feedback before
+> going ahead, otherwise the loops with all the necessary synchronization
+> and rebases is getting endless...
+
+For this particular patch, Philippe should comment first.
+I will have a look at the rest now.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
