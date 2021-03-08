@@ -1,16 +1,16 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
-Date: Mon, 8 Mar 2021 12:42:17 +0000
-Message-ID: <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
 References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
  <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
  <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
-In-Reply-To: <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E4703928A4869B469CD054A2EF10E9A9@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
+Date: Mon, 8 Mar 2021 13:46:10 +0100
 MIME-Version: 1.0
+In-Reply-To: <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gTW9uLCAyMDIxLTAzLTA4IGF0IDExOjQyICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwNC4wMy4yMSAxOTozMywgZmxvcmlhbi5iZXpkZWthLS0tIHZpYSBYZW5vbWFpIHdyb3RlOg0K
-PiA+IE9uIFRodSwgMjAyMS0wMy0wNCBhdCAxNDoxOCArMDAwMCwgZmxvcmlhbi5iZXpkZWthLS0t
-IHZpYSBYZW5vbWFpDQo+ID4gd3JvdGU6DQo+ID4gPiBIaSwNCj4gPiA+IA0KPiA+ID4gdGhlIGF0
-dGFjaGVkIGtlcm5lbCBsb2cgd2FzIHRha2VuIGZvcm0gYSBsb2NhbCBxZW11IG1hY2hpbmUgd2l0
-aA0KPiA+ID4gWGVub21haSBidWlsZCBmcm9tIHRoZSB3aXAvZG92ZXRhaWwgYnJhbmNoLiBUaGVy
-ZSBpcyBhIGZhaWxpbmcgc2VsZnRlc3QNCj4gPiA+IChtaXhlZCByZWFkLWxvY2svbG9jay13cml0
-ZSBBQkJBKS4NCj4gPiA+IA0KPiA+IA0KPiA+IENvcnJlY3Rpb246IEkgY2FuIHJlcHJvZHVjZSB0
-aGF0IHdpdGggYG5leHRgIGFzIHdlbGwuIFNvIGl0J3Mgbm90DQo+ID4gcmVsYXRlZCB0byB0aGUg
-d2lwL2RvdmV0YWlsIGJyYW5jaC4gDQo+ID4gDQo+IA0KPiBTaXR1YXRpb24gc3RpbGwgdGhlIHNh
-bWUgd2l0aCB0aGUgbGF0ZXN0IHJlbGVhc2U/DQoNCldoaWNoIHJlbGVhc2U/IEkgdHJpZWQgdG8g
-YnVpbGQgdGhlICJ0ZXN0aW5nIiBicmFuY2ggb2YgeGVub21haS1pbWFnZXMNCih3aGljaCBob2xk
-cyB0aGUgQ09XIHBhdGNoZXMpIGJ1dCB0aGF0IGRvZXNuJ3QgYnVpbGQgYXQgYWxsLCBwYXRjaGVz
-DQpjYW4gbm90IGJlIGFwcGxpZWQuDQoNCnVzZWQgY21kbGluZToNCmthcy1jb250YWluZXIgYnVp
-bGQga2FzLnltbDpvcHQtbGludXgtbGF0ZXN0LTUuNC55bWw6Ym9hcmQtcWVtdS1hbWQ2NC55bWw6
-b3B0LXhlbm9tYWktbmV4dC55bWwNCg0KQnVpbGRpbmcgYW5kIHJ1bm5pbmcgdGhlICJuZXh0IiBi
-cmFuY2ggb2YgeGVub21haS1pbWFnZXMgc3RpbGwgcmVwb3J0cyANCnRoZSBzYW1lIGZhaWxpbmcg
-c2VsZi10ZXN0Lg0KPiANCj4gSmFuDQo+IA0KPiA+ID4gSSBndWVzcyBpdCdzIE9LIGZvciBub3cg
-KGFzIHRoaXMgYnJhbmNoIGlzIHdvcmsgaW4gcHJvZ3Jlc3MpLiBQdXNoaW5nDQo+ID4gPiBpdCBv
-dXQgdG8gdGhlIGxpc3QganVzdCBpbiBjYXNlIG5vYm9keSBub3RpY2VkIHNvIGZhciBhbmQgd2Ug
-c2hvdWxkDQo+ID4gPiBoYXZlIGEgbG9vayBiZWZvcmUgbW92aW5nIGZvcndhcmQuDQo+ID4gPiAN
-Cj4gPiA+IEJlc3QgcmVnYXJkcywNCj4gPiA+IEZsb3JpYW4NCj4gPiA+IA0KPiA+ID4gDQo+ID4g
-PiAtLSANCj4gPiA+IFNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPiA+ID4gQ29ycG9yYXRlIENvbXBl
-dGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+ID4gPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBh
-cnQgLS0tLS0tLS0tLS0tLS0NCj4gPiA+IEEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4NCj4gPiA+IE5hbWU6IGRtZXNnLmxvZw0KPiA+ID4gVHlwZTogdGV4dC94LWxvZw0KPiA+
-ID4gU2l6ZTogODk4ODMgYnl0ZXMNCj4gPiA+IERlc2M6IGRtZXNnLmxvZw0KPiA+ID4gVVJMOiA8
-aHR0cHM6Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHAl
-M0ElMkYlMkZ4ZW5vbWFpLm9yZyUyRnBpcGVybWFpbCUyRnhlbm9tYWklMkZhdHRhY2htZW50cyUy
-RjIwMjEwMzA0JTJGNTU4YjQ4YWElMkZhdHRhY2htZW50LmJpbiZhbXA7ZGF0YT0wNCU3QzAxJTdD
-Zmxvcmlhbi5iZXpkZWthJTQwc2llbWVucy5jb20lN0NmYjJiNDhlNTQyNzQ0ZDhjODI5NjA4ZDhl
-MjIwM2JjMyU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3QzAlN0M2Mzc1
-MDc5NzUzNTgzMTA5MzklN0NVbmtub3duJTdDVFdGcGJHWnNiM2Q4ZXlKV0lqb2lNQzR3TGpBd01E
-QWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMTAwMCZh
-bXA7c2RhdGE9T2lBeUZCS05FM2ZjWUlmWER2YWJxc2J0dFo2VDBXSyUyQmlLa2hkVnI4Y2g0JTNE
-JmFtcDtyZXNlcnZlZD0wDQo+ID4gDQo+IA0KDQo=
+On 08.03.21 13:42, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Mon, 2021-03-08 at 11:42 +0100, Jan Kiszka wrote:
+>> On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
+>>> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
+>>> wrote:
+>>>> Hi,
+>>>>
+>>>> the attached kernel log was taken form a local qemu machine with
+>>>> Xenomai build from the wip/dovetail branch. There is a failing selftest
+>>>> (mixed read-lock/lock-write ABBA).
+>>>>
+>>>
+>>> Correction: I can reproduce that with `next` as well. So it's not
+>>> related to the wip/dovetail branch.
+>>>
+>>
+>> Situation still the same with the latest release?
+> 
+> Which release? I tried to build the "testing" branch of xenomai-images
+> (which holds the COW patches) but that doesn't build at all, patches
+> can not be applied.
+> 
+
+Yeah, that's because they are applied to latest x86 I-pipe releases. You
+don't need that branch for that arch anymore.
+
+> used cmdline:
+> kas-container build kas.yml:opt-linux-latest-5.4.yml:board-qemu-amd64.yml:opt-xenomai-next.yml
+> 
+> Building and running the "next" branch of xenomai-images still reports
+> the same failing self-test.
+
+Hmm, too bad...
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
