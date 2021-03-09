@@ -1,15 +1,8 @@
-Subject: Re: [RFC PATCH v2 2/4] y2038: Adding sem_timedwait_time64
-References: <87h7lqzzzw.fsf@xenomai.org>
- <20210308170206.313181-1-florian.bezdeka@siemens.com>
- <20210308170206.313181-3-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d28c9144-a339-f3a0-0b4b-564073b25ad5@siemens.com>
-Date: Mon, 8 Mar 2021 19:28:33 +0100
-MIME-Version: 1.0
-In-Reply-To: <20210308170206.313181-3-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH] cobalt/sched: dovetail: fix missed switching to OOB
+ opportunities
+Date: Mon,  8 Mar 2021 23:45:20 -0500
+Message-Id: <20210309044520.28816-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,179 +11,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org, rpm@xenomai.org, chensong@kylinos.cn
+To: xenomai@xenomai.org
 
-On 08.03.21 18:02, Florian Bezdeka wrote:
-> Implementation is heavily inspired by the sem_timedwait syscall,
-> but expecting time64 based timespec / timeout.
-> 
-> We need two new syscall handlers:
->   - The native one (COBALT_SYSCALL()) to get 32 bit kernels time64
->     aware. This handler is added for 64 bit kernels as well, but not
->     used. As we don't have separate syscall tables for this both
->     worlds we have to add it.
-> 
->  - The compat handler (COBALT_SYSCALL32emu()) for x32 or x86
->    applications running on an x86_64 kernel. Otherwise the redirection
->    to the compat / emulation syscalls is broken.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  include/cobalt/uapi/syscall.h                 |  1 +
->  .../include/asm-generic/xenomai/syscall.h     | 23 +++++++++++++++++++
->  kernel/cobalt/posix/sem.c                     | 13 +++++++++++
->  kernel/cobalt/posix/sem.h                     |  4 ++++
->  kernel/cobalt/posix/syscall32.c               | 13 +++++++++++
->  kernel/cobalt/posix/syscall32.h               |  4 ++++
->  6 files changed, 58 insertions(+)
-> 
-> diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-> index aa3c308d0..9b005da47 100644
-> --- a/include/cobalt/uapi/syscall.h
-> +++ b/include/cobalt/uapi/syscall.h
-> @@ -122,6 +122,7 @@
->  #define sc_cobalt_sendmmsg			99
->  #define sc_cobalt_clock_adjtime			100
->  #define sc_cobalt_thread_setschedprio		101
-> +#define sc_cobalt_sem_timedwait_time64		102
+Ask for switching back to oob mode once ptrace core tell that
+current is resuming from a stopped state, leaving space for
+other runnable RT threads of the process to take over.
 
-Maybe just sc_cobalt_sem_timedwait64?
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-How many additional calls are probably required?
-
->  
->  #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
->  
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> index 91bbf3bfd..40d64b7a1 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> @@ -19,6 +19,7 @@
->  #ifndef _COBALT_ASM_GENERIC_SYSCALL_H
->  #define _COBALT_ASM_GENERIC_SYSCALL_H
->  
-> +#include <linux/compat.h>
->  #include <linux/types.h>
->  #include <linux/version.h>
->  #include <linux/uaccess.h>
-> @@ -82,6 +83,28 @@ static inline int cobalt_strncpy_from_user(char *dst, const char __user *src,
->  	return __xn_strncpy_from_user(dst, src, count);
->  }
->  
-> +static inline int cobalt_get_timespec64(struct timespec64 *ts,
-> +				const struct __kernel_timespec __user *uts)
-> +{
-> +	struct __kernel_timespec kts;
-> +	int ret;
-> +
-> +	ret = cobalt_copy_from_user(&kts, uts, sizeof(kts));
-> +	if (ret)
-> +		return -EFAULT;
-> +
-> +	ts->tv_sec = kts.tv_sec;
-> +
-> +	/* Zero out the padding in compat mode */
-> +	if (in_compat_syscall())
-> +		kts.tv_nsec &= 0xFFFFFFFFUL;
-> +
-> +	/* In 32-bit mode, this drops the padding */
-> +	ts->tv_nsec = kts.tv_nsec;
-> +
-> +	return 0;
-> +}
-> +
-
-Why inline? But that question is likely obsolete when we can avoid the
-code duplication below.
-
->  #if __BITS_PER_LONG == 64
->  
->  /*
-> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-> index 827a4751a..3055a456d 100644
-> --- a/kernel/cobalt/posix/sem.c
-> +++ b/kernel/cobalt/posix/sem.c
-> @@ -435,6 +435,19 @@ COBALT_SYSCALL(sem_timedwait, primary,
->  	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
->  }
->  
-> +COBALT_SYSCALL(sem_timedwait_time64, primary,
-> +	       (struct cobalt_sem_shadow __user *u_sem,
-> +		const struct __kernel_timespec __user *u_ts))
-> +{
-> +	int ret = 1;
-> +	struct timespec64 ts64;
-> +
-> +	if (u_ts)
-> +		ret = cobalt_get_timespec64(&ts64, u_ts);
-> +
-> +	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
-> +}
-> +
->  COBALT_SYSCALL(sem_trywait, primary,
->  	       (struct cobalt_sem_shadow __user *u_sem))
->  {
-> diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
-> index 658e11f7a..8491b69ba 100644
-> --- a/kernel/cobalt/posix/sem.h
-> +++ b/kernel/cobalt/posix/sem.h
-> @@ -66,6 +66,10 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
->  int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
->  			   const struct timespec64 *ts);
->  
-> +COBALT_SYSCALL_DECL(sem_timedwait_time64,
-> +		    (struct cobalt_sem_shadow __user *u_sem,
-> +		     const struct __kernel_timespec __user *u_ts));
-> +
->  int __cobalt_sem_destroy(xnhandle_t handle);
->  
->  void cobalt_nsem_reclaim(struct cobalt_process *process);
-> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-> index edac7ea4a..f73bfcda3 100644
-> --- a/kernel/cobalt/posix/syscall32.c
-> +++ b/kernel/cobalt/posix/syscall32.c
-> @@ -135,6 +135,19 @@ COBALT_SYSCALL32emu(sem_timedwait, primary,
->  	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
->  }
->  
-> +COBALT_SYSCALL32emu(sem_timedwait_time64, primary,
-> +		    (struct cobalt_sem_shadow __user *u_sem,
-> +		     const struct __kernel_timespec __user *u_ts))
-> +{
-> +	int ret = 1;
-> +	struct timespec64 ts64;
-> +
-> +	if (u_ts)
-> +		ret = cobalt_get_timespec64(&ts64, u_ts);
-> +
-> +	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
-> +}
-
-Why do we need to code this out twice? I don't spot the difference to
-the native implementation yet. Can't we point to it directly?
-
-> +
->  COBALT_SYSCALL32emu(clock_getres, current,
->  		    (clockid_t clock_id,
->  		     struct old_timespec32 __user *u_ts))
-> diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-> index d72fd2022..3612bf751 100644
-> --- a/kernel/cobalt/posix/syscall32.h
-> +++ b/kernel/cobalt/posix/syscall32.h
-> @@ -231,4 +231,8 @@ COBALT_SYSCALL32emu_DECL(sem_timedwait,
->  			 (struct cobalt_sem_shadow __user *u_sem,
->  			  const struct old_timespec32 __user *u_ts));
->  
-> +COBALT_SYSCALL32emu_DECL(sem_timedwait_time64,
-> +			 (struct cobalt_sem_shadow __user * u_sem,
-> +			  const struct __kernel_timespec __user *u_ts));
-> +
->  #endif /* !_COBALT_POSIX_SYSCALL32_H */
-> 
-
-Jan
-
+diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+index 966a63ce0..a640c4d9e 100644
+--- a/kernel/cobalt/dovetail/kevents.c
++++ b/kernel/cobalt/dovetail/kevents.c
+@@ -492,6 +492,8 @@ static void handle_ptrace_cont(void)
+ 			unregister_debugged_thread(curr);
+ 
+ 		xnthread_set_localinfo(curr, XNHICCUP);
++
++		dovetail_request_ucall(current);
+ 	}
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+index de7c43b70..2bdddfeef 100644
+--- a/kernel/cobalt/dovetail/sched.c
++++ b/kernel/cobalt/dovetail/sched.c
+@@ -56,9 +56,21 @@ int pipeline_leave_inband(void)
+ 
+ int pipeline_leave_oob_prepare(void)
+ {
+-	dovetail_leave_oob();
++	int suspmask = XNRELAX;
++	struct xnthread *curr = xnthread_current();
+ 
+-	return XNRELAX;
++	dovetail_leave_oob();
++	/*
++	 * If current is being debugged, record that it should migrate
++	 * back in case it resumes in userspace. If it resumes in
++	 * kernel space, i.e.  over a restarting syscall, the
++	 * associated hardening will clear XNCONTHI.
++	 */
++	if (xnthread_test_state(curr, XNSSTEP)) {
++		xnthread_set_info(curr, XNCONTHI);
++		suspmask |= XNDBGSTOP;
++	}
++	return suspmask;
+ }
+ 
+ void pipeline_leave_oob_finish(void)
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
