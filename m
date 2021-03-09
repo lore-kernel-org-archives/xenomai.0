@@ -1,14 +1,18 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [RFC PATCH v2 1/4] y2038: Fixing the sem_timedwait syscall for 32
+ bit systems
+Date: Tue, 9 Mar 2021 11:08:22 +0000
+Message-ID: <9aa1f746189ec2732d4be689fc7f87511585b019.camel@siemens.com>
 References: <87h7lqzzzw.fsf@xenomai.org>
  <20210308170206.313181-1-florian.bezdeka@siemens.com>
  <20210308170206.313181-2-florian.bezdeka@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [RFC PATCH v2 1/4] y2038: Fixing the sem_timedwait syscall for
- 32 bit systems
-In-reply-to: <20210308170206.313181-2-florian.bezdeka@siemens.com>
-Date: Tue, 09 Mar 2021 10:46:49 +0100
-Message-ID: <87wnugirqu.fsf@xenomai.org>
+ <87wnugirqu.fsf@xenomai.org>
+In-Reply-To: <87wnugirqu.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <58C33BFC8E8A75499F437CCA90F47724@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,111 +21,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@xenomai.org, jan.kiszka@siemens.com, chensong@kylinos.cn
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
-
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
-> On systems using 32 bit for time_t the sem_timedwait syscall was broken
-> because the function used for copying the timeout value from userspace
-> to kernel (=sem_fetch_timeout()) was always copying
-> sizeof(struct timespec64).
->
-> A 32 bit application (or more specific an application with 4 byte
-> time_t) would only provide sizeof(struct old_timespec32).
->
-> Notable changes:
->   - The copy operation from userspace to kernel is now already done in
->     the syscall handler. So it is always done. Previously it was copied
->     over and validated before the first use (when used at all).
->     So we have some additional instructions now that may be
->     unnecessary, but that simplifies the code.
->
->   - Validation: Switched to timespec64_valid() instead of our own
->     check.
->
-> Fixes: 8043eccd232d ("cobalt/kernel: y2038: convert struct timespec to timespec64")
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  kernel/cobalt/posix/sem.c       | 40 +++++++++++++++------------------
->  kernel/cobalt/posix/sem.h       |  6 ++---
->  kernel/cobalt/posix/syscall32.c | 10 +++++++--
->  kernel/cobalt/posix/syscall32.h |  2 +-
->  4 files changed, 29 insertions(+), 29 deletions(-)
->
-> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-> index 467a9b7dd..827a4751a 100644
-> --- a/kernel/cobalt/posix/sem.c
-> +++ b/kernel/cobalt/posix/sem.c
-> @@ -267,20 +267,11 @@ out:
->  	return ret;
->  }
->  
-> -static inline int sem_fetch_timeout(struct timespec64 *ts,
-> -				    const void __user *u_ts)
-> -{
-> -	return u_ts == NULL ? -EFAULT :
-> -		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
-> -}
-> -
->  int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
-> -			   const void __user *u_ts,
-> -			   int (*fetch_timeout)(struct timespec64 *ts,
-> -						const void __user *u_ts))
-> +			   const struct timespec64 *ts)
->  {
-> -	struct timespec64 ts = { .tv_sec = 0, .tv_nsec = 0 };
-> -	int pull_ts = 1, ret, info;
-> +	int ret, info;
-> +	bool validate_ts = true;
->  	struct cobalt_sem *sem;
->  	xnhandle_t handle;
->  	xntmode_t tmode;
-> @@ -304,24 +295,23 @@ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
->  		 * it's actually more complex, to keep some
->  		 * applications ported to Linux happy.
->  		 */
-> -		if (pull_ts) {
-> +		if (validate_ts) {
->  			atomic_inc(&sem->state->value);
-> -			xnlock_put_irqrestore(&nklock, s);
-> -			ret = fetch_timeout(&ts, u_ts);
-> -			xnlock_get_irqsave(&nklock, s);
-> -			if (ret)
-
-As mentioned in a previous comment on this series, this type of patch is
-subtly changing where the core currently stands with respect to a
-peculiar POSIX compliance issue. Checking the content of a valid
-timespec struct is currently postponed until the timeout is needed, but
-the validity of the timespec pointer referring to that information is
-checked as late as possible too.
-
-If the code now pre-loads the timespec struct early on in the syscall
-path, before the timed services are called, the pointer is explicitly
-checked for validity before we can decide if that timeout information is
-going to be used.
-
-e.g.
-
-struct timespec ts = { .tv_sec = 0, .tv_nsec = 1000000000 };
-sem_init(&sem, 0, 0);
-sem_post(&sem);
-sem_timedwait(&sem, &ts); /* should not fail, and won't as expected. */
-
-but,
-
-sem_init(&sem, 0, 0);
-sem_post(&sem);
-sem_timedwait(&sem, (void *)0xdeadbeefUL); /* should not fail, but will. */
-
-Since the standard does not mandates such behavior but seems to tag it
-as an implementation-dependent option ("The validity of the abstime need
-not be checked if..."), the change would still be acceptable POSIX-wise
-I believe. However, I'm pretty sure that there are POSIX compliance test
-suites around which would start reporting failures due to this
-change.
-
--- 
-Philippe.
+T24gVHVlLCAyMDIxLTAzLTA5IGF0IDEwOjQ2ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyaXRlczoN
+Cj4gDQo+ID4gT24gc3lzdGVtcyB1c2luZyAzMiBiaXQgZm9yIHRpbWVfdCB0aGUgc2VtX3RpbWVk
+d2FpdCBzeXNjYWxsIHdhcyBicm9rZW4NCj4gPiBiZWNhdXNlIHRoZSBmdW5jdGlvbiB1c2VkIGZv
+ciBjb3B5aW5nIHRoZSB0aW1lb3V0IHZhbHVlIGZyb20gdXNlcnNwYWNlDQo+ID4gdG8ga2VybmVs
+ICg9c2VtX2ZldGNoX3RpbWVvdXQoKSkgd2FzIGFsd2F5cyBjb3B5aW5nDQo+ID4gc2l6ZW9mKHN0
+cnVjdCB0aW1lc3BlYzY0KS4NCj4gPiANCj4gPiBBIDMyIGJpdCBhcHBsaWNhdGlvbiAob3IgbW9y
+ZSBzcGVjaWZpYyBhbiBhcHBsaWNhdGlvbiB3aXRoIDQgYnl0ZQ0KPiA+IHRpbWVfdCkgd291bGQg
+b25seSBwcm92aWRlIHNpemVvZihzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIpLg0KPiA+IA0KPiA+IE5v
+dGFibGUgY2hhbmdlczoNCj4gPiDCoMKgLSBUaGUgY29weSBvcGVyYXRpb24gZnJvbSB1c2Vyc3Bh
+Y2UgdG8ga2VybmVsIGlzIG5vdyBhbHJlYWR5IGRvbmUgaW4NCj4gPiDCoMKgwqDCoHRoZSBzeXNj
+YWxsIGhhbmRsZXIuIFNvIGl0IGlzIGFsd2F5cyBkb25lLiBQcmV2aW91c2x5IGl0IHdhcyBjb3Bp
+ZWQNCj4gPiDCoMKgwqDCoG92ZXIgYW5kIHZhbGlkYXRlZCBiZWZvcmUgdGhlIGZpcnN0IHVzZSAo
+d2hlbiB1c2VkIGF0IGFsbCkuDQo+ID4gwqDCoMKgwqBTbyB3ZSBoYXZlIHNvbWUgYWRkaXRpb25h
+bCBpbnN0cnVjdGlvbnMgbm93IHRoYXQgbWF5IGJlDQo+ID4gwqDCoMKgwqB1bm5lY2Vzc2FyeSwg
+YnV0IHRoYXQgc2ltcGxpZmllcyB0aGUgY29kZS4NCj4gPiANCj4gPiDCoMKgLSBWYWxpZGF0aW9u
+OiBTd2l0Y2hlZCB0byB0aW1lc3BlYzY0X3ZhbGlkKCkgaW5zdGVhZCBvZiBvdXIgb3duDQo+ID4g
+wqDCoMKgwqBjaGVjay4NCj4gPiANCj4gPiBGaXhlczogODA0M2VjY2QyMzJkICgiY29iYWx0L2tl
+cm5lbDogeTIwMzg6IGNvbnZlcnQgc3RydWN0IHRpbWVzcGVjIHRvIHRpbWVzcGVjNjQiKQ0KPiA+
+IFNpZ25lZC1vZmYtYnk6IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMu
+Y29tPg0KPiA+IC0tLQ0KPiA+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zZW0uYyAgICAgICB8IDQw
+ICsrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IMKga2VybmVsL2NvYmFsdC9w
+b3NpeC9zZW0uaCAgICAgICB8ICA2ICsrLS0tDQo+ID4gwqBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5
+c2NhbGwzMi5jIHwgMTAgKysrKysrKy0tDQo+ID4gwqBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2Nh
+bGwzMi5oIHwgIDIgKy0NCj4gPiDCoDQgZmlsZXMgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKSwg
+MjkgZGVsZXRpb25zKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvcG9z
+aXgvc2VtLmMgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L3NlbS5jDQo+ID4gaW5kZXggNDY3YTliN2Rk
+Li44MjdhNDc1MWEgMTAwNjQ0DQo+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9wb3NpeC9zZW0uYw0K
+PiA+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc2VtLmMNCj4gPiBAQCAtMjY3LDIwICsyNjcs
+MTEgQEAgb3V0Og0KPiA+IMKgCXJldHVybiByZXQ7DQo+ID4gwqB9DQo+ID4gwqANCj4gPiANCj4g
+PiANCj4gPiANCj4gPiAtc3RhdGljIGlubGluZSBpbnQgc2VtX2ZldGNoX3RpbWVvdXQoc3RydWN0
+IHRpbWVzcGVjNjQgKnRzLA0KPiA+IC0JCQkJICAgIGNvbnN0IHZvaWQgX191c2VyICp1X3RzKQ0K
+PiA+IC17DQo+ID4gLQlyZXR1cm4gdV90cyA9PSBOVUxMID8gLUVGQVVMVCA6DQo+ID4gLQkJY29i
+YWx0X2NvcHlfZnJvbV91c2VyKHRzLCB1X3RzLCBzaXplb2YoKnRzKSk7DQo+ID4gLX0NCj4gPiAt
+DQo+ID4gwqBpbnQgX19jb2JhbHRfc2VtX3RpbWVkd2FpdChzdHJ1Y3QgY29iYWx0X3NlbV9zaGFk
+b3cgX191c2VyICp1X3NlbSwNCj4gPiAtCQkJICAgY29uc3Qgdm9pZCBfX3VzZXIgKnVfdHMsDQo+
+ID4gLQkJCSAgIGludCAoKmZldGNoX3RpbWVvdXQpKHN0cnVjdCB0aW1lc3BlYzY0ICp0cywNCj4g
+PiAtCQkJCQkJY29uc3Qgdm9pZCBfX3VzZXIgKnVfdHMpKQ0KPiA+ICsJCQkgICBjb25zdCBzdHJ1
+Y3QgdGltZXNwZWM2NCAqdHMpDQo+ID4gwqB7DQo+ID4gLQlzdHJ1Y3QgdGltZXNwZWM2NCB0cyA9
+IHsgLnR2X3NlYyA9IDAsIC50dl9uc2VjID0gMCB9Ow0KPiA+IC0JaW50IHB1bGxfdHMgPSAxLCBy
+ZXQsIGluZm87DQo+ID4gKwlpbnQgcmV0LCBpbmZvOw0KPiA+ICsJYm9vbCB2YWxpZGF0ZV90cyA9
+IHRydWU7DQo+ID4gwqAJc3RydWN0IGNvYmFsdF9zZW0gKnNlbTsNCj4gPiDCoAl4bmhhbmRsZV90
+IGhhbmRsZTsNCj4gPiDCoAl4bnRtb2RlX3QgdG1vZGU7DQo+ID4gQEAgLTMwNCwyNCArMjk1LDIz
+IEBAIGludCBfX2NvYmFsdF9zZW1fdGltZWR3YWl0KHN0cnVjdCBjb2JhbHRfc2VtX3NoYWRvdyBf
+X3VzZXIgKnVfc2VtLA0KPiA+IMKgCQkgKiBpdCdzIGFjdHVhbGx5IG1vcmUgY29tcGxleCwgdG8g
+a2VlcCBzb21lDQo+ID4gwqAJCSAqIGFwcGxpY2F0aW9ucyBwb3J0ZWQgdG8gTGludXggaGFwcHku
+DQo+ID4gwqAJCSAqLw0KPiA+IC0JCWlmIChwdWxsX3RzKSB7DQo+ID4gKwkJaWYgKHZhbGlkYXRl
+X3RzKSB7DQo+ID4gwqAJCQlhdG9taWNfaW5jKCZzZW0tPnN0YXRlLT52YWx1ZSk7DQo+ID4gLQkJ
+CXhubG9ja19wdXRfaXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4gPiAtCQkJcmV0ID0gZmV0Y2hf
+dGltZW91dCgmdHMsIHVfdHMpOw0KPiA+IC0JCQl4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jaywg
+cyk7DQo+ID4gLQkJCWlmIChyZXQpDQo+IA0KPiBBcyBtZW50aW9uZWQgaW4gYSBwcmV2aW91cyBj
+b21tZW50IG9uIHRoaXMgc2VyaWVzLCB0aGlzIHR5cGUgb2YgcGF0Y2ggaXMNCj4gc3VidGx5IGNo
+YW5naW5nIHdoZXJlIHRoZSBjb3JlIGN1cnJlbnRseSBzdGFuZHMgd2l0aCByZXNwZWN0IHRvIGEN
+Cj4gcGVjdWxpYXIgUE9TSVggY29tcGxpYW5jZSBpc3N1ZS4gQ2hlY2tpbmcgdGhlIGNvbnRlbnQg
+b2YgYSB2YWxpZA0KPiB0aW1lc3BlYyBzdHJ1Y3QgaXMgY3VycmVudGx5IHBvc3Rwb25lZCB1bnRp
+bCB0aGUgdGltZW91dCBpcyBuZWVkZWQsIGJ1dA0KPiB0aGUgdmFsaWRpdHkgb2YgdGhlIHRpbWVz
+cGVjIHBvaW50ZXIgcmVmZXJyaW5nIHRvIHRoYXQgaW5mb3JtYXRpb24gaXMNCj4gY2hlY2tlZCBh
+cyBsYXRlIGFzIHBvc3NpYmxlIHRvby4NCg0KSSB0b29rIGNhcmUgb2YgdGhhdCBjb21tZW50LiBQ
+bGVhc2Ugbm90ZSB0aGF0ICJ0cyIgc3VwcGxpZWQgdG8NCl9fY29iYWx0X3NlbV90aW1lZHdhaXQo
+KSBpcyBub24gTlVMTCBvbmx5IGlmIGl0IGNvdWxkIGJlIHByb3Blcmx5IHJlYWQuDQpJZiB0aGUg
+cmVhZCBmYWlsZWQgKGluc2lkZSB0aGUgaGFuZGxlcikgd2Ugd2lsbCBub3QgcmV0dXJuIGFuIGVy
+cm9yLg0KVGhlIGVycm9yIHdpbGwgb2NjdXIgd2hlbiB0cnlpbmcgdG8gdmFsaWRhdGUgbGF0ZXIu
+DQoNCj4gDQo+IElmIHRoZSBjb2RlIG5vdyBwcmUtbG9hZHMgdGhlIHRpbWVzcGVjIHN0cnVjdCBl
+YXJseSBvbiBpbiB0aGUgc3lzY2FsbA0KPiBwYXRoLCBiZWZvcmUgdGhlIHRpbWVkIHNlcnZpY2Vz
+IGFyZSBjYWxsZWQsIHRoZSBwb2ludGVyIGlzIGV4cGxpY2l0bHkNCj4gY2hlY2tlZCBmb3IgdmFs
+aWRpdHkgYmVmb3JlIHdlIGNhbiBkZWNpZGUgaWYgdGhhdCB0aW1lb3V0IGluZm9ybWF0aW9uIGlz
+DQo+IGdvaW5nIHRvIGJlIHVzZWQuDQo+IA0KPiBlLmcuDQo+IA0KPiBzdHJ1Y3QgdGltZXNwZWMg
+dHMgPSB7IC50dl9zZWMgPSAwLCAudHZfbnNlYyA9IDEwMDAwMDAwMDAgfTsNCj4gc2VtX2luaXQo
+JnNlbSwgMCwgMCk7DQo+IHNlbV9wb3N0KCZzZW0pOw0KPiBzZW1fdGltZWR3YWl0KCZzZW0sICZ0
+cyk7IC8qIHNob3VsZCBub3QgZmFpbCwgYW5kIHdvbid0IGFzIGV4cGVjdGVkLiAqLw0KDQpUaGlz
+IGlzIGFscmVhZHkgcGFydCBvZiB0aGUgc21va2V5IHkyMDM4IHBsdWdpbiwgYW5kIGRvZXMgbm90
+IGZhaWwuDQoNCj4gDQo+IGJ1dCwNCj4gDQo+IHNlbV9pbml0KCZzZW0sIDAsIDApOw0KPiBzZW1f
+cG9zdCgmc2VtKTsNCj4gc2VtX3RpbWVkd2FpdCgmc2VtLCAodm9pZCAqKTB4ZGVhZGJlZWZVTCk7
+IC8qIHNob3VsZCBub3QgZmFpbCwgYnV0IHdpbGwuICovDQo+IA0KDQpUaGlzIGlzIG5vdCB5ZXQg
+cGFydCBvZiB0aGUgeTIwMzggc21va2V5IHRlc3RzLCBidXQgd29ya3MgKD0gZG9lcyBub3QNCmZh
+aWwpLiBJIHdpbGwgYWRkIGl0IHRvIHRoZSB0ZXN0cyBhcyB3ZWxsLg0KDQo+IFNpbmNlIHRoZSBz
+dGFuZGFyZCBkb2VzIG5vdCBtYW5kYXRlcyBzdWNoIGJlaGF2aW9yIGJ1dCBzZWVtcyB0byB0YWcg
+aXQNCj4gYXMgYW4gaW1wbGVtZW50YXRpb24tZGVwZW5kZW50IG9wdGlvbiAoIlRoZSB2YWxpZGl0
+eSBvZiB0aGUgYWJzdGltZSBuZWVkDQo+IG5vdCBiZSBjaGVja2VkIGlmLi4uIiksIHRoZSBjaGFu
+Z2Ugd291bGQgc3RpbGwgYmUgYWNjZXB0YWJsZSBQT1NJWC13aXNlDQo+IEkgYmVsaWV2ZS4gSG93
+ZXZlciwgSSdtIHByZXR0eSBzdXJlIHRoYXQgdGhlcmUgYXJlIFBPU0lYIGNvbXBsaWFuY2UgdGVz
+dA0KPiBzdWl0ZXMgYXJvdW5kIHdoaWNoIHdvdWxkIHN0YXJ0IHJlcG9ydGluZyBmYWlsdXJlcyBk
+dWUgdG8gdGhpcw0KPiBjaGFuZ2UuDQo+IA0KDQo=
 
