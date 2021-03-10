@@ -1,18 +1,14 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [RFC PATCH v2 2/4] y2038: Adding sem_timedwait_time64
-Date: Wed, 10 Mar 2021 07:51:17 +0000
-Message-ID: <7a4aaa493fe5afbea25722bc2a04f7d91fc71275.camel@siemens.com>
-References: <87h7lqzzzw.fsf@xenomai.org>
- <20210308170206.313181-1-florian.bezdeka@siemens.com>
- <20210308170206.313181-3-florian.bezdeka@siemens.com>
- <d28c9144-a339-f3a0-0b4b-564073b25ad5@siemens.com>
- <e607edd1cf3ea18cdcd758bfbfa08f8233e4ccba.camel@siemens.com>
-In-Reply-To: <e607edd1cf3ea18cdcd758bfbfa08f8233e4ccba.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <04955EDF93BBA04DB468F5BC61E1FC63@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Wolfgang Denk <wd@denx.de>
+Subject: Re: [IMPORTANT] gitlab relocation / rename
 MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <20210308083457.76db0c20@md1za8fc.ad001.siemens.net>
+References: <621240.1614155458@gemini.denx.de>
+ <781641.1614525295@gemini.denx.de>
+ <20210308083457.76db0c20@md1za8fc.ad001.siemens.net>
+Date: Wed, 10 Mar 2021 08:56:48 +0100
+Message-ID: <1083829.1615363008@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,44 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Wolfgang Denk via Xenomai <xenomai@xenomai.org>, u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, Tom Rini <trini@konsulko.com>, Harald Seiler <hws@denx.de>
 
-T24gVHVlLCAyMDIxLTAzLTA5IGF0IDA3OjUzICswMDAwLCBmbG9yaWFuLmJlemRla2EtLS0gdmlh
-IFhlbm9tYWkNCndyb3RlOg0KPiBPbiBNb24sIDIwMjEtMDMtMDggYXQgMTk6MjggKzAxMDAsIEph
-biBLaXN6a2Egd3JvdGU6DQo+ID4gT24gMDguMDMuMjEgMTg6MDIsIEZsb3JpYW4gQmV6ZGVrYSB3
-cm90ZToNCj4gPiA+IEltcGxlbWVudGF0aW9uIGlzIGhlYXZpbHkgaW5zcGlyZWQgYnkgdGhlIHNl
-bV90aW1lZHdhaXQgc3lzY2FsbCwNCj4gPiA+IGJ1dCBleHBlY3RpbmcgdGltZTY0IGJhc2VkIHRp
-bWVzcGVjIC8gdGltZW91dC4NCj4gPiA+IA0KPiA+ID4gW3NuaXBdDQo+ID4gPiBAQCAtODIsNiAr
-ODMsMjggQEAgc3RhdGljIGlubGluZSBpbnQgY29iYWx0X3N0cm5jcHlfZnJvbV91c2VyKGNoYXIg
-KmRzdCwgY29uc3QgY2hhciBfX3VzZXIgKnNyYywNCj4gPiA+IMKgCXJldHVybiBfX3huX3N0cm5j
-cHlfZnJvbV91c2VyKGRzdCwgc3JjLCBjb3VudCk7DQo+ID4gPiDCoH0NCj4gPiA+IMKgDQo+ID4g
-PiArc3RhdGljIGlubGluZSBpbnQgY29iYWx0X2dldF90aW1lc3BlYzY0KHN0cnVjdCB0aW1lc3Bl
-YzY0ICp0cywNCj4gPiA+ICsJCQkJY29uc3Qgc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNl
-ciAqdXRzKQ0KPiA+ID4gK3sNCj4gPiA+ICsJc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIGt0czsN
-Cj4gPiA+ICsJaW50IHJldDsNCj4gPiA+ICsNCj4gPiA+ICsJcmV0ID0gY29iYWx0X2NvcHlfZnJv
-bV91c2VyKCZrdHMsIHV0cywgc2l6ZW9mKGt0cykpOw0KPiA+ID4gKwlpZiAocmV0KQ0KPiA+ID4g
-KwkJcmV0dXJuIC1FRkFVTFQ7DQo+ID4gPiArDQo+ID4gPiArCXRzLT50dl9zZWMgPSBrdHMudHZf
-c2VjOw0KPiA+ID4gKw0KPiA+ID4gKwkvKiBaZXJvIG91dCB0aGUgcGFkZGluZyBpbiBjb21wYXQg
-bW9kZSAqLw0KPiA+ID4gKwlpZiAoaW5fY29tcGF0X3N5c2NhbGwoKSkNCj4gPiA+ICsJCWt0cy50
-dl9uc2VjICY9IDB4RkZGRkZGRkZVTDsNCj4gPiA+ICsNCj4gPiA+ICsJLyogSW4gMzItYml0IG1v
-ZGUsIHRoaXMgZHJvcHMgdGhlIHBhZGRpbmcgKi8NCj4gPiA+ICsJdHMtPnR2X25zZWMgPSBrdHMu
-dHZfbnNlYzsNCj4gPiA+ICsNCj4gPiA+ICsJcmV0dXJuIDA7DQo+ID4gPiArfQ0KPiA+ID4gKw0K
-PiA+IA0KPiA+IFdoeSBpbmxpbmU/IEJ1dCB0aGF0IHF1ZXN0aW9uIGlzIGxpa2VseSBvYnNvbGV0
-ZSB3aGVuIHdlIGNhbiBhdm9pZCB0aGUNCj4gPiBjb2RlIGR1cGxpY2F0aW9uIGJlbG93Lg0KPiAN
-Cj4gSW5saW5lIGNhbiBiZSByZW1vdmVkLiBTb21ldGhpbmcgZm9yIHYzLiBUaGVyZSB3aWxsIGZv
-bGxvdyBtb3JlIGNhbGxzDQo+IHRvIHRoYXQgaGVscGVyLiBBbGwgc3lzY2FsbHMgcmVhZGluZyBh
-IHN0cnVjdCB0aW1lc3BlYyBmcm9tIHVzZXJzcGFjZQ0KPiB3aWxsIGhhdmUgdG8gdXNlIGl0Lg0K
-PiA+ID4gDQoNCkkgd2FzIGZvbGxvd2luZyB0aGUgcGF0dGVybiBvZiBhbGwgdGhlIG90aGVyIHN0
-cnVjdCB0aW1lc3BlYzY0IGhlcGxlcnMNCmludHJvZHVjZWQgYnkgUGhpbGlwcGUgaGVyZS4gU28g
-InN0YXRpYyBpbmxpbmUiLiBSZW1vdmluZyAiaW5saW5lIiBub3cNCnRocm93cyBzb21lIHdhcm5p
-bmdzIChhdCBsZWFzdCBvbiBnY2MgMTApLCBiZWNhdXNlIHRoZSBmdW5jdGlvbiBpcw0KdW51c2Vk
-IGluIHRoaXMgZmlsZS4NCg0KU28gbXkgcXVlc3Rpb24gaXMgbm93OiBXaGVyZSBzaG91bGQgdGhp
-cyBmdW5jdGlvbiByZXNpZGU/DQoNCkxpbnV4IHBhdHRlcm46IGtlcm5lbC90aW1lL3RpbWUuYyAo
-d2hlcmUgZ2V0X3RpbWVzcGVjNjQgcmVzaWRlcykNClhlbm9tYWkgcGF0aCB3b3VsZCBiZSBrZXJu
-ZWwvY29iYWx0L3RpbWUuYw0KDQpUaGlzIGlzIHRoZSBsYXN0IHRoaW5nIEkgaGF2ZSB0byBhZGRy
-ZXNzLiBBIG5vbiBSRkMgc2VyaWVzIHdpbGwgZm9sbG93DQphZnRlcndhcmRzLCBiYXNlZCBvbiBQ
-aGlsaXBwZSdzIHRyZWUuDQoNCkBTb25nOiBNeSBob3BlIHdhcyB0aGlzIHNlcmllcyBjYW4gYmUg
-dXNlZCBhcyBwYXR0ZXJuLCB0byBzdGFydA0KaW50ZWdyYXRpb24gb2YgYWxsIHRoZSBvdGhlciBy
-ZW1haW5pbmcgcGFydHMuIFdoYXQgZG8geW91IHRoaW5rPyBJcw0KdGhhdCBzdWZmaWNpZW50Pw0K
-LSANCg==
+Dear Henning,
+
+In message <20210308083457.76db0c20@md1za8fc.ad001.siemens.net> you wrote:
+>
+> I do not understand why this is not just gitlab (proper) or github. I
+> hope this discussion was held with the communities of the affected
+> projects involved. While being disruptive i would suggest for Xenomai
+> to move away from denx. For the git side of the operations. To be more
+> open and welcoming to users/contributers etc.
+
+Are you positively sure that moving to any otherhosting environment
+will have any positive effect on how the Xenomai community works?
+
+We use the very same setup for U-Boot as well, which has a _much_
+bigger and _much_ more active community.  We have regular releases
+every 3 months, and most releases include commits from >200
+developers from >30 employers.  And the CI setup for U-Boot is in no
+respect (number of supported architectures / processors / boards /
+tool chains) less challenging than what you do in Xenomai, on
+contrary.  Not to mention the development rate - U-Boot sees > 20
+commits per day in mainline.
+
+Sorry, but I don't buy your "more open and welcoming to users/contri-
+buters" comment.  THe existing environment has proven to work fine
+for a FOSS community project.
+
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+Someone who thinks logically is a nice contrast to the real world.
 
