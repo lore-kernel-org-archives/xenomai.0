@@ -1,7 +1,13 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH V2 1/2] cobalt/rtdm: introduce new interfaces to init task
-Date: Tue,  9 Mar 2021 19:57:31 -0500
-Message-Id: <20210310005732.13439-1-hongzhan.chen@intel.com>
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: reminder: Xenomai community call on tomorrow, March 10th, UTC 7:00
+Date: Wed, 10 Mar 2021 07:03:11 +0000
+Message-ID: <CO1PR11MB518762E3F959BB9FEC526D2BEE919@CO1PR11MB5187.namprd11.prod.outlook.com>
+References: <CO1PR11MB5187AEE5863D5AD56F3DE624EE929@CO1PR11MB5187.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB5187AEE5863D5AD56F3DE624EE929@CO1PR11MB5187.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,126 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Initialise and start a real-time task on specified cpu or current
-cpu.
-
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
-
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index 733c49df8..42daaa5b2 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -1024,6 +1024,20 @@ typedef void (*rtdm_task_proc_t)(void *arg);
- int rtdm_task_init(rtdm_task_t *task, const char *name,
- 		   rtdm_task_proc_t task_proc, void *arg,
- 		   int priority, nanosecs_rel_t period);
-+int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-+		rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period);
-+
-+static inline int rtdm_task_init_cpu(rtdm_task_t *task, const char *name,
-+		rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period)
-+{
-+	int cpu = raw_smp_processor_id();
-+
-+	return rtdm_task_init_on_cpu(task, cpu, name, task_proc, arg,
-+			priority, period);
-+}
-+
- int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
- void rtdm_task_busy_sleep(nanosecs_rel_t delay);
- 
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index b914fa312..1c999362e 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -157,6 +157,82 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 
- EXPORT_SYMBOL_GPL(rtdm_task_init);
- 
-+/**
-+ * @brief Initialise and start a real-time task on specified cpu
-+ *
-+ * After initialising a task, the task handle remains valid and can be
-+ * passed to RTDM services until either rtdm_task_destroy() or
-+ * rtdm_task_join() was invoked.
-+ *
-+ * @param[in,out] task Task handle
-+ * @param[in] cpu that task want to run on
-+ * @param[in] name Optional task name
-+ * @param[in] task_proc Procedure to be executed by the task
-+ * @param[in] arg Custom argument passed to @c task_proc() on entry
-+ * @param[in] priority Priority of the task, see also
-+ * @ref rtdmtaskprio "Task Priority Range"
-+ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-+ * mode. Waiting for the first and subsequent periodic events is
-+ * done using rtdm_task_wait_period().
-+ *
-+ * @return 0 on success, otherwise negative error code
-+ *
-+ * @coretags{secondary-only, might-switch}
-+ */
-+int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu,
-+		const char *name, rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period)
-+{
-+	union xnsched_policy_param param;
-+	struct xnthread_start_attr sattr;
-+	struct xnthread_init_attr iattr;
-+	int err;
-+
-+	if (!realtime_core_enabled())
-+		return -ENOSYS;
-+
-+	if (!cpu_online(cpu))
-+		return -EINVAL;
-+
-+	iattr.name = name;
-+	iattr.flags = 0;
-+	iattr.personality = &xenomai_personality;
-+	iattr.affinity = *cpumask_of(cpu);
-+	param.rt.prio = priority;
-+
-+	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
-+	if (err)
-+		return err;
-+
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	 * mutex locking.
-+	 */
-+	err = xnthread_register(task, "");
-+	if (err)
-+		goto cleanup_out;
-+
-+	if (period > 0) {
-+		err = xnthread_set_periodic(task, XN_INFINITE,
-+					    XN_RELATIVE, period);
-+		if (err)
-+			goto cleanup_out;
-+	}
-+
-+	sattr.mode = 0;
-+	sattr.entry = task_proc;
-+	sattr.cookie = arg;
-+	err = xnthread_start(task, &sattr);
-+	if (err)
-+		goto cleanup_out;
-+
-+	return 0;
-+
-+cleanup_out:
-+	xnthread_cancel(task);
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
-+
- #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
- /**
-  * @brief Destroy a real-time task
--- 
-2.17.1
-
+SnVzdCBzdGFydGVkLg0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVsIOKAkyBJT1RHIERl
+dmVsb3BlciBFbmFibGluZw0KDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBY
+ZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBNZW5nLCBG
+aW5vIHZpYSBYZW5vbWFpDQo+U2VudDogVHVlc2RheSwgTWFyY2ggOSwgMjAyMSA5OjU0IFBNDQo+
+VG86IHhlbm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiByZW1pbmRlcjogWGVub21haSBjb21t
+dW5pdHkgY2FsbCBvbiB0b21vcnJvdywgTWFyY2ggMTB0aCwgVVRDIDc6MDANCj4NCj5BcyBwbGFu
+bmVkLCB3ZSBoYXZlIHRoZSBYZW5vbWFpIGNvbW11bml0eSBjYWxsDQo+VG9waWNzIG1heSBpbmNs
+dWRlIGJ1dCBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9kb3duc3RyZWFtIHByb2plY3QgcGxhbiwg
+c3RhdHVzIHVwZGF0ZSwgYW5kIHRlY2huaWNhbCBkaXNjdXNzaW9uLg0KPkl0J3MgYW4gb3BlbiBv
+bmxpbmUgbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9pbiBhbmQgYXNrIHF1ZXN0aW9ucywNCj4N
+Cj5UaW1lOiBNYXJjaCAxMHRoDQo+V2VkbmVzZGF5LCBVVEMgNzowMA0KPjE1OjAwIGZvciBDaGlu
+YQ0KPjg6MDAgZm9yIEZyYW5jZSwgR2VybWFueSwgSXRhbHkNCj4yMzowMCAoVHVlc2RheSkgZm9y
+IFNhbnRhIENsYXJhDQo+DQo+TWljcm9zb2Z0IFRlYW1zIG1lZXRpbmcNCj5Kb2luIG9uIHlvdXIg
+Y29tcHV0ZXIgb3IgbW9iaWxlIGFwcA0KPkNsaWNrIGhlcmUgdG8gam9pbiB0aGUgbWVldGluZw0K
+Pg0KPmh0dHBzOi8vdGVhbXMubWljcm9zb2Z0LmNvbS9sL21lZXR1cC0NCj5qb2luLzE5JTNhbWVl
+dGluZ19NR1ppTXpBd09UY3RNVEkyWXkwME5qWmxMVGczTTJNdE5HTTBNV1EzT0dZME9HVmklNDB0
+aHJlYWQudjIvMD9jb250ZXh0PSU3YiUyMlRpZCUNCj4yMiUzYSUyMjQ2Yzk4ZDg4LWUzNDQtNGVk
+NC04NDk2LTRlZDc3MTJlMjU1ZCUyMiUyYyUyMk9pZCUyMiUzYSUyMjRlZTFiYjgyLTI4N2MtNDU2
+YS05OWQ4LQ0KPmZiMjMwNjQzYzk0NyUyMiU3ZA0KPg0KPkpvaW4gd2l0aCBhIHZpZGVvIGNvbmZl
+cmVuY2luZyBkZXZpY2UNCj50ZWFtc0Bjb25mLmludGVsLmNvbQ0KPlZpZGVvIENvbmZlcmVuY2Ug
+SUQ6IDExNCAwMjIgNDc0IDYNCj5BbHRlcm5hdGUgVlRDIGRpYWxpbmcgaW5zdHJ1Y3Rpb25zDQo+
+aHR0cHM6Ly9jb25mLmludGVsLmNvbS90ZWFtcy8/Y29uZj0xMTQwMjI0NzQ2Jml2cj10ZWFtcyZk
+PWNvbmYuaW50ZWwuY29tJnRlc3Q9dGVzdF9jYWxsDQo+T3IgY2FsbCBpbiAoYXVkaW8gb25seSkN
+Cj4rODYgMTAgNTY5NyAxMzQwLCw5Nzc2NzIyMDMjICAgQ2hpbmEsIOWMl+S6rCAoQmVpamluZykN
+Cj5QaG9uZSBDb25mZXJlbmNlIElEOiA5NzcgNjcyIDIwMyMNCj5GaW5kIGEgbG9jYWwgbnVtYmVy
+DQo+aHR0cHM6Ly9kaWFsaW4udGVhbXMubWljcm9zb2Z0LmNvbS9kMTk1ZDQzOC0yZGFhLTQyMGUt
+YjllYS1kYTI2ZjlkMWQ2ZDU/aWQ9OTc3NjcyMjAzDQo+DQo+QlIgLyBGaW5vICjlrZ/npaXlpKsp
+DQo+SW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQo+DQoNCg==
 
