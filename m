@@ -1,12 +1,20 @@
-References: <20210309044520.28816-1-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] cobalt/sched: dovetail: fix missed switching to OOB
- opportunities
-In-reply-to: <20210309044520.28816-1-hongzhan.chen@intel.com>
-Date: Wed, 10 Mar 2021 17:51:37 +0100
-Message-ID: <874khjhrza.fsf@xenomai.org>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/5] cobalt/kernel: y2038: convert struct timespec to
+ timespec64
+Date: Wed, 10 Mar 2021 17:52:54 +0000
+Message-ID: <8aeab853e8ff206dda95e115d2e97e787378168f.camel@siemens.com>
+References: <20210220151840.409745-1-rpm@xenomai.org>
+ <20210220151840.409745-2-rpm@xenomai.org>
+ <f369db49a43257fc7e7ae3f800dc1dbaed79f624.camel@siemens.com>
+ <878s731csg.fsf@xenomai.org>
+ <3867420a5cd0e2fd37a8036865f53a0881aef236.camel@siemens.com>
+ <8735xb1bvl.fsf@xenomai.org> <87v9a7z0xh.fsf@xenomai.org>
+In-Reply-To: <87v9a7z0xh.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C1D35A8BD8FBD44295604E7689A1D6E5@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,62 +23,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>
-Cc: xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@kylinos.cn" <chensong@kylinos.cn>
 
-
-hongzha1 via Xenomai <xenomai@xenomai.org> writes:
-
-> Ask for switching back to oob mode once ptrace core tell that
-> current is resuming from a stopped state, leaving space for
-> other runnable RT threads of the process to take over.
->
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->
-> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-> index 966a63ce0..a640c4d9e 100644
-> --- a/kernel/cobalt/dovetail/kevents.c
-> +++ b/kernel/cobalt/dovetail/kevents.c
-> @@ -492,6 +492,8 @@ static void handle_ptrace_cont(void)
->  			unregister_debugged_thread(curr);
->  
->  		xnthread_set_localinfo(curr, XNHICCUP);
-> +
-> +		dovetail_request_ucall(current);
->  	}
->  
->  	xnlock_put_irqrestore(&nklock, s);
-> diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
-> index de7c43b70..2bdddfeef 100644
-> --- a/kernel/cobalt/dovetail/sched.c
-> +++ b/kernel/cobalt/dovetail/sched.c
-> @@ -56,9 +56,21 @@ int pipeline_leave_inband(void)
->  
->  int pipeline_leave_oob_prepare(void)
->  {
-> -	dovetail_leave_oob();
-> +	int suspmask = XNRELAX;
-> +	struct xnthread *curr = xnthread_current();
->  
-> -	return XNRELAX;
-> +	dovetail_leave_oob();
-> +	/*
-> +	 * If current is being debugged, record that it should migrate
-> +	 * back in case it resumes in userspace. If it resumes in
-> +	 * kernel space, i.e.  over a restarting syscall, the
-> +	 * associated hardening will clear XNCONTHI.
-> +	 */
-> +	if (xnthread_test_state(curr, XNSSTEP)) {
-> +		xnthread_set_info(curr, XNCONTHI);
-> +		suspmask |= XNDBGSTOP;
-> +	}
-> +	return suspmask;
->  }
->  
->  void pipeline_leave_oob_finish(void)
-
-Merged, thanks.
-
--- 
-Philippe.
+T24gVGh1LCAyMDIxLTAzLTA0IGF0IDExOjA4ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4gd3JpdGVzOg0KPiANCj4gPiBmbG9y
+aWFuLmJlemRla2FAc2llbWVucy5jb20gPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4gd3Jp
+dGVzOg0KPiA+IA0KPiA+ID4gT24gVGh1LCAyMDIxLTAzLTA0IGF0IDEwOjM1ICswMTAwLCBQaGls
+aXBwZSBHZXJ1bSB3cm90ZToNCj4gPiA+ID4gZmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tIDxm
+bG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyaXRlczoNCj4gPiA+ID4gDQo+ID4gPiA+ID4g
+T24gU2F0LCAyMDIxLTAyLTIwIGF0IDE2OjE4ICswMTAwLCBQaGlsaXBwZSBHZXJ1bSB2aWEgWGVu
+b21haSB3cm90ZToNCj4gPiA+ID4gPiBbc25pcF0NCj4gPiA+IEFkZGluZyB0aGUgZnVsbCBjb2Rl
+Og0KPiA+ID4gDQo+ID4gPiBzdGF0aWMgaW5saW5lIGludCBzZW1fZmV0Y2hfdGltZW91dChzdHJ1
+Y3QgdGltZXNwZWM2NCAqdHMsDQo+ID4gPiAJCQkJICAgIGNvbnN0IHZvaWQgX191c2VyICp1X3Rz
+KQ0KPiA+ID4gew0KPiA+ID4gCXJldHVybiB1X3RzID09IE5VTEwgPyAtRUZBVUxUIDoNCj4gPiA+
+IAkJY29iYWx0X2NvcHlfZnJvbV91c2VyKHRzLCB1X3RzLCBzaXplb2YoKnRzKSk7DQo+ID4gPiB9
+DQo+ID4gPiANCj4gPiA+IENvcHlpbmcgc2l6ZW9mKCp0cykgaXMgdG8gbXVjaCBpZiB0aGUgYXBw
+bGljYXRpb24gcHJvdmlkZWQNCj4gPiA+ICJfX29sZF90aW1lX3QiIChzaXplb2YodGltZV90KSA9
+NCkgb25seS4gSXNuJ3QgaXQ/IEkgd291bGQgZXhwZWN0IHRoZQ0KPiA+ID4gcmVzdWx0IChpbiB0
+cykgdG8gYmUgZ2FyYmFnZS4gRHVlIHRvIGRpZmZlcmVudCBwYWRkaW5nIHRoZSAic2VjIiBmaWVs
+ZA0KPiA+ID4gKGluIHRzKSB3b3VsZCBub3cgY29udGFpbiB0aGUgbnNlYyB2YWx1ZSBmcm9tIHVf
+dHMgYXMgd2VsbC4NCj4gPiA+IA0KPiA+IA0KPiA+IEFoLCBJIHdhcyBsb29raW5nIGF0IHRoZSB3
+cm9uZyBwYXRoICgzMmVtdSkuIFllcywgdGhpcyBpcyBicm9rZW4gZm9yDQo+ID4gbWVyZSAzMmJp
+dCBub3cgKGkuZS4gbmF0aXZlbHkgMzJiaXQgcGxhdGZvcm0pLg0KPiANCj4gV2UgY291bGQgc2lt
+cGx5IHVzZSBjb2JhbHRfZ2V0X3VfdGltZXNwZWMoKSBpbnN0ZWFkIG9mIG9wZW4gY29kaW5nIHRo
+ZQ0KPiBjYWxsIHRvIGNvYmFsdF9jb3B5X2Zyb21fdXNlcigpLiBDb25kdmFycyBoYXZlIHRoaXMg
+cmlnaHQgYWxyZWFkeSwNCj4gbXV0ZXgsIG1xIGFuZCBzZW1hNHMgaGF2ZSB0aGVpciBmZXRjaF90
+aW1lb3V0KCkgaGVscGVyIGJyb2tlbg0KPiBpbmRlZWQuIEdvb2Qgc3BvdC4NCj4gDQoNCkkgaGFk
+IGEgbG9vayBhdCB0aGUgYWZmZWN0ZWQgbXV0ZXggc3lzY2FsbHMgdG9kYXkuDQpwdGhyZWFkX211
+dGV4X3RpbWVkbG9jaygpIGhhcyB0aGUgd2VsbCBrbm93biAiVGhlIHZhbGlkaXR5IG9mIHRoZQ0K
+YWJzX3RpbWVvdXQgcGFyYW1ldGVyIG5lZWQgbm90IGJlIGNoZWNrZWQgaWYgdGhlIG11dGV4IGNh
+biBiZSBsb2NrZWQNCmltbWVkaWF0ZWx5LiIgYXMgd2VsbC4NCg0KQ291bGQgc29tZW9uZSBwbGVh
+c2UgY29uZmlybSB0aGF0IFhlbm9tYWkgaXMgYWxyZWFkeSB2YWxpZGF0aW5nIHRoZQ0Kc3VwcGxp
+ZWQgdGltZW91dCBldmVuIGlmIHRoZSBtdXRleCBjb3VsZCBiZSB0YWtlbiBpbW1lZGlhdGVseT8g
+TWF5YmUNCkknbSBtaXNzaW5nIHNvbWV0aGluZy4NCg0KU2hvdWxkIHdlIGZpeCB0aGF0IGFzIHdl
+bGw/IEFueSBhZHZpY2UgaG93IHRvIGRvIHNvPw0KDQpTdGFydGluZyBwb2ludDrCoA0KX19jb2Jh
+bHRfbXV0ZXhfdGltZWRsb2NrX2JyZWFrKCkNCglfX2NvYmFsdF9tdXRleF90aW1lZGxvY2tfYnJl
+YWsoKTogVmFsaWRhdGlvbiBiZWZvcmUgY2FsbGluZw0KCQlfX2NvYmFsdF9tdXRleF9hY3F1aXJl
+X3VuY2hlY2tlZCgpDQoNCklmIEknbSByaWdodCwgdGhlIHByb2JsZW0gd2FzIG9uY2UgZml4ZWQg
+d2l0aDoNCjg2MGVhNDQ5YTI5OCAoImNvYmFsdC9wb3NpeC9tdXRleDogZml4IHRpbWVvdXQgaGFu
+ZGxpbmcgaW4gcHRocmVhZF9tdXRleF90aW1lZGxvY2soKSIpDQoNCmJ1dCBicm9rZW4gYWdhaW4g
+aW46DQpjNTNhOWRkM2ViYzcgKCJjb2JhbHQvcG9zaXgvbXV0ZXg6IHByZXBhcmUgZm9yIDMyYml0
+IHN5c2NhbGwgZW11bGF0aW9uIikNCg0KDQoJCQ0K
 
