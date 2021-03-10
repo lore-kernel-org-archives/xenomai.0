@@ -1,15 +1,13 @@
-Date: Wed, 10 Mar 2021 12:31:30 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: [IMPORTANT] gitlab relocation / rename
-Message-ID: <20210310123130.0ec40ac3@md1za8fc.ad001.siemens.net>
-In-Reply-To: <1083829.1615363008@gemini.denx.de>
-References: <621240.1614155458@gemini.denx.de>
- <781641.1614525295@gemini.denx.de>
- <20210308083457.76db0c20@md1za8fc.ad001.siemens.net>
- <1083829.1615363008@gemini.denx.de>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [y2038][PATCH v3 4/4] y2038: lib/cobalt: Add support of
+ sc_cobalt_sem_timedwait64
+Date: Wed, 10 Mar 2021 14:09:35 +0100
+Message-Id: <20210310130935.255197-5-florian.bezdeka@siemens.com>
+In-Reply-To: <20210310130935.255197-1-florian.bezdeka@siemens.com>
+References: <20210308170206.313181-5-florian.bezdeka@siemens.com>
+ <20210310130935.255197-1-florian.bezdeka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,69 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
-Cc: Wolfgang Denk via Xenomai <xenomai@xenomai.org>, u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, Tom Rini <trini@konsulko.com>, Harald Seiler <hws@denx.de>
+To: xenomai@xenomai.org, jan.kiszka@siemens.com, rpm@xenomai.org, chensong@kylinos.cn
 
-Am Wed, 10 Mar 2021 08:56:48 +0100
-schrieb Wolfgang Denk <wd@denx.de>:
+In case libcobalt is build with -D_TIME_BITS=64
+sc_cobalt_sem_timedwait64 will be used instead of
+sc_cobalt_sem_timedwait.
 
-> Dear Henning,
-> 
-> In message <20210308083457.76db0c20@md1za8fc.ad001.siemens.net> you
-> wrote:
-> >
-> > I do not understand why this is not just gitlab (proper) or github.
-> > I hope this discussion was held with the communities of the affected
-> > projects involved. While being disruptive i would suggest for
-> > Xenomai to move away from denx. For the git side of the operations.
-> > To be more open and welcoming to users/contributers etc.  
-> 
-> Are you positively sure that moving to any otherhosting environment
-> will have any positive effect on how the Xenomai community works?
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/semaphore.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-I am not sure. But i would be willing to give it a try. Sitting on a
-platform that is open to everyone means we might see "stars",
-"fork-relationships" etc. We might have to close issues and MRs with
-ever repeating ... "please use ML". But at that point you are already
-talking to someone who used the easy collaboration effects to
-drive-by/random interact. And chances are high you get them onto the ML,
-we see this in other projects where we keep PRs and issues enabled even
-though we do not "use them". 
-
-> We use the very same setup for U-Boot as well, which has a _much_
-> bigger and _much_ more active community.  We have regular releases
-> every 3 months, and most releases include commits from >200
-> developers from >30 employers.  And the CI setup for U-Boot is in no
-> respect (number of supported architectures / processors / boards /
-> tool chains) less challenging than what you do in Xenomai, on
-> contrary.  Not to mention the development rate - U-Boot sees > 20
-> commits per day in mainline.
-
-Xenomai does not have such a strong community, a point that needs to
-improve. Putting it on a social coding platform (probably in addition),
-where people can socialize could help. In a private gitlab social
-interaction is pretty limited, especially with a strict bouncer
-rejecting people that are invited to the party ;).
-
-CI/CT needs mean a hoster is more than a storage of code, and also
-means that more stakeholders need access. Many public hosters give
-compute+storage away for free. Plus free code-coverage, style checking
-with commercial tools ... Good stuff. Stuff that any project can
-benefit from, just put a "mirror fork" on github, no offense to the
-main hoster ... they can stay.
-
-> Sorry, but I don't buy your "more open and welcoming to users/contri-
-> buters" comment.  THe existing environment has proven to work fine
-> for a FOSS community project.
-
-Maybe you know now.
-
-regards,
-Henning 
-
-> Best regards,
-> 
-> Wolfgang Denk
-> 
+diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
+index 45705d48f..bff005440 100644
+--- a/lib/cobalt/semaphore.c
++++ b/lib/cobalt/semaphore.c
+@@ -373,7 +373,12 @@ COBALT_IMPL(int, sem_timedwait, (sem_t *sem, const struct timespec *abs_timeout)
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
++#ifdef __USE_TIME_BITS64
++	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem,
++			       abs_timeout);
++#else
+ 	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
++#endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+-- 
+2.29.2
 
 
