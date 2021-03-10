@@ -1,22 +1,16 @@
-Subject: Re: [I-PIPE] ipipe-core-5.4.72-arm64-0 released
-References: <E1l7tad-0004W6-Pl@xenomai.org>
- <CALLqZ8T_rQfwvDVdBGutFhvdc3OrJnPJtqLyjrkKp9vax0afbQ@mail.gmail.com>
- <868d4cd4-7990-68fa-902d-0d62ac676918@siemens.com>
- <CALLqZ8TJruq==-Lc60dBniDb6H5dyLT+MNP9rP85Bc9tufbH3w@mail.gmail.com>
- <5d54c261-61b3-7981-8143-8adea4ad2765@siemens.com>
- <1b715c75-eef9-faa6-6c0d-1ba61400bdae@siemens.com>
- <f7cf94f6-e1f8-6867-2925-43c8b8094bbb@alstefgroup.com>
- <5444427a-dc9e-6026-7580-f5e563e11c73@siemens.com>
- <CALLqZ8TaZ1vH_wouT1Pus0k-cQt=5nVgzjbwRVjeuWL3JuHQWQ@mail.gmail.com>
- <cc550fca-3d2b-921f-53a4-476c91efb6a4@siemens.com>
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>
-Message-ID: <22d6f4f8-3802-1a1b-a862-b9a0c7945b9a@alstefgroup.com>
-Date: Mon, 1 Mar 2021 19:03:25 +0100
-In-Reply-To: <cc550fca-3d2b-921f-53a4-476c91efb6a4@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Subject: Re: [PATCH] cobalt/sched: dovetail: fix missed switching to OOB
+ opportunities
+References: <20210309044520.28816-1-hongzhan.chen@intel.com>
+ <c205e32d-27aa-9f3e-c996-24110151e384@siemens.com>
+ <877dmfhs23.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9a0e802a-d142-1e89-ea63-c327ddfb4cb9@siemens.com>
+Date: Wed, 10 Mar 2021 18:53:29 +0100
 MIME-Version: 1.0
+In-Reply-To: <877dmfhs23.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,162 +19,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
+On 10.03.21 17:49, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 09.03.21 05:45, hongzha1 via Xenomai wrote:
+>>> Ask for switching back to oob mode once ptrace core tell that
+>>> current is resuming from a stopped state, leaving space for
+>>> other runnable RT threads of the process to take over.
+>>>
+>>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>>>
+>>> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+>>> index 966a63ce0..a640c4d9e 100644
+>>> --- a/kernel/cobalt/dovetail/kevents.c
+>>> +++ b/kernel/cobalt/dovetail/kevents.c
+>>> @@ -492,6 +492,8 @@ static void handle_ptrace_cont(void)
+>>>  			unregister_debugged_thread(curr);
+>>>  
+>>>  		xnthread_set_localinfo(curr, XNHICCUP);
+>>> +
+>>> +		dovetail_request_ucall(current);
+>>>  	}
+>>>  
+>>>  	xnlock_put_irqrestore(&nklock, s);
+>>> diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+>>> index de7c43b70..2bdddfeef 100644
+>>> --- a/kernel/cobalt/dovetail/sched.c
+>>> +++ b/kernel/cobalt/dovetail/sched.c
+>>> @@ -56,9 +56,21 @@ int pipeline_leave_inband(void)
+>>>  
+>>>  int pipeline_leave_oob_prepare(void)
+>>>  {
+>>> -	dovetail_leave_oob();
+>>> +	int suspmask = XNRELAX;
+>>> +	struct xnthread *curr = xnthread_current();
+>>>  
+>>> -	return XNRELAX;
+>>> +	dovetail_leave_oob();
+>>> +	/*
+>>> +	 * If current is being debugged, record that it should migrate
+>>> +	 * back in case it resumes in userspace. If it resumes in
+>>> +	 * kernel space, i.e.  over a restarting syscall, the
+>>> +	 * associated hardening will clear XNCONTHI.
+>>> +	 */
+>>> +	if (xnthread_test_state(curr, XNSSTEP)) {
+>>> +		xnthread_set_info(curr, XNCONTHI);
+>>> +		suspmask |= XNDBGSTOP;
+>>> +	}
+>>> +	return suspmask;
+>>>  }
+>>>  
+>>>  void pipeline_leave_oob_finish(void)
+>>>
+>>
+>> I've applied this to wip/dovetail, but that alone does not fix 
+>> ptrace/gdb use cases yet:
+>>
+>> (gdb latency -> run)
+>> [   52.097078] ------------[ cut here ]------------
+>> [   52.097079] WARNING: CPU: 2 PID: 1318 at ../kernel/irq/pipeline.c:316 inband_irq_enable+0x10/0x20
+>> [   52.097079] Modules linked in: 9p
+>> [   52.097080] CPU: 2 PID: 1318 Comm: latency Not tainted 5.10.19+ #41
+>> [   52.097080] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+>> [   52.097080] IRQ stage: Linux
+>> [   52.097081] RIP: 0010:inband_irq_enable+0x10/0x20
+>> [   52.097081] Code: 00 00 00 01 75 ee e8 cf fa ff ff 53 9d 5b c3 66 66 2e 0f 1f 84 00 00 00 00 00 80 3d 9a 38 b3 02 00 75 09 9c 58 f6 c4 02 75 02 <0f> 0b eb 8c 66 66 2e 0f 1f 84 00 00 00 00 00 90 0f 1f 44 00 00 48
+>> [   52.097081] RSP: 0000:ffffc90000783f20 EFLAGS: 00010046
+>> [   52.097082] RAX: 0000000000000046 RBX: ffffc90000783f58 RCX: 0000000000000000
+>> [   52.097082] RDX: ffffc90000783ef0 RSI: ffffffff8109e600 RDI: ffffffff81d4eee2
+>> [   52.097082] RBP: ffff888006e70000 R08: 0000000000000000 R09: 0000000000000000
+>> [   52.097083] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000004000
+>> [   52.097083] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+>> [   52.097083] FS:  00007ffff7fe6640(0000) GS:ffff88803ed00000(0000) knlGS:0000000000000000
+>> [   52.097084] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [   52.097084] CR2: 00007ffff7243610 CR3: 00000000070c6001 CR4: 0000000000370ee0
+>> [   52.097084] Call Trace:
+>> [   52.097084]  noist_exc_debug+0xf7/0x180
+>> [   52.097085]  ? asm_exc_debug+0x23/0x30
+>> [   52.097085]  asm_exc_debug+0x2b/0x30
+>> [   52.097085] RIP: 0033:0x401df3
+>> [   52.097086] Code: 00 00 e9 b0 fb ff ff ff 25 62 44 20 00 68 44 00 00 00 e9 a0 fb ff ff ff 25 5a 44 20 00 68 45 00 00 00 e9 90 fb ff ff 31 ed 90 <e8> f9 30 01 00 48 8d 65 d8 5b 41 5c 41 5d 41 70 44 40 00 48 c7 c1
+>> [   52.097086] RSP: 002b:00007fffffffe1c0 EFLAGS: 00000346
+>> [   52.097086] RAX: 00007ffff7ffe0e0 RBX: 00007ffff7ffe0e0 RCX: 00007ffff7df23c7
+>> [   52.097087] RDX: 0000103e00000000 RSI: 0000000000000000 RDI: 0000000000000000
+>> [   52.097087] RBP: 00007fffffffe3a0 R08: 00007ffff6e8f008 R09: 0000000000000009
+>> [   52.097087] R10: 00007ffff7ffd990 R11: 0000000000000206 R12: 0000000000000000
+>> [   52.097087] R13: 00007ffff7ffe110 R14: 00007ffff7ffe110 R15: 00007ffff7fe6640
+>> [   52.097088] irq event stamp: 0
+>> [   52.097088] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+>> [   52.097088] hardirqs last disabled at (0): [<ffffffff8106c648>] copy_process+0x718/0x1cd0
+>> [   52.097089] softirqs last  enabled at (0): [<ffffffff8106c648>] copy_process+0x718/0x1cd0
+>> [   52.097089] softirqs last disabled at (0): [<0000000000000000>] 0x0
+>> [   52.097089] ---[ end trace b07496576d3779dc ]---
+>>
+>> Do I miss some other patch?
+>>
+>> Jan
+> 
+> This may help:
+> 
+> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+> index 719ef25e43d0cd1..f15a07967070264 100644
+> --- a/arch/x86/kernel/traps.c
+> +++ b/arch/x86/kernel/traps.c
+> @@ -1025,7 +1025,7 @@ static __always_inline void exc_debug_user(struct pt_regs *regs,
+>  		goto out;
+>  
+>  	/* It's safe to allow irq's after DR6 has been saved */
+> -	local_irq_enable();
+> +	local_irq_enable_full();
+>  
+>  	if (v8086_mode(regs)) {
+>  		handle_vm86_trap((struct kernel_vm86_regs *)regs, 0, X86_TRAP_DB);
+> @@ -1038,7 +1038,7 @@ static __always_inline void exc_debug_user(struct pt_regs *regs,
+>  		send_sigtrap(regs, 0, get_si_code(dr6));
+>  
+>  out_irq:
+> -	local_irq_disable();
+> +	local_irq_disable_full();
+>  out:
+>  	instrumentation_end();
+>  	irqentry_exit_to_user_mode(regs);
+> 
 
-Le 01/03/2021 à 17:45, Jan Kiszka a écrit :
-> On 01.03.21 17:28, Greg Gallagher wrote:
->>
->> On Mon, Mar 1, 2021 at 11:25 AM Jan Kiszka <jan.kiszka@siemens.com
->> <mailto:jan.kiszka@siemens.com>> wrote:
->>
->>      On 25.02.21 11:50, Jean-Baptiste Tredez via Xenomai wrote:
->>      > Hi all,
->>      >
->>      > I had some compilation issues with ipipe-core-5.4.72 and xenomai
->>      3.1 on
->>      > arm64 target.
->>      >
->>      > With some minor changes (see attached patch), the kernel boot on
->>      target.
->>      >
->>
->>      Thanks for the patches. Just note that those can easily get lost when
->>      not sent separately and inline (this list has some funny settings /wrt
->>      attachments, making them hard to read and impossible to comment on).
->>
->>      I think you patches should be related to
->>      https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a
->>      <https://source.denx.de/Xenomai/xenomai/-/commit/2cc905236c7208f37f128bb389214a39d777465a>
->>      which is not in stable yet. Greg, can you help sorting out what we need
->>      where?
->>
->>      Thanks,
->>      Jan
->>
->>      > Jean-Baptiste
->>      >
->>      >
->>      >
->>      > Le 08/02/2021 à 09:26, Jan Kiszka via Xenomai a écrit :
->>      >> On 08.02.21 09:24, Jan Kiszka via Xenomai wrote:
->>      >>> On 06.02.21 15:50, Greg Gallagher wrote:
->>      >>>> On Sat, Feb 6, 2021 at 7:23 AM Jan Kiszka
->>      <jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>
->>      >>>> <mailto:jan.kiszka@siemens.com
->>      <mailto:jan.kiszka@siemens.com>>> wrote:
->>      >>>>
->>      >>>>      On 05.02.21 06:24, Greg Gallagher via Xenomai wrote:
->>      >>>>      > On Fri, Feb 5, 2021 at 12:24 AM xenomai--- via Xenomai
->>      >>>>      <xenomai@xenomai.org <mailto:xenomai@xenomai.org>
->>      <mailto:xenomai@xenomai.org <mailto:xenomai@xenomai.org>>>
->>      >>>>      > wrote:
->>      >>>>      >
->>      >>>>      >> Download URL:
->>      >>>>      >>
->>      >>>>
->>      >>>>
->>      https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
->>      <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>
->>      >>>>
->>      >>>>
->>      >>>>
->>      <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch
->>      <https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.72-arm64-0.patch>>
->>      >>>>
->>      >>>>      >>
->>      >>>>      >> Repository:https://git.xenomai.org/ipipe-arm64
->>      <https://git.xenomai.org/ipipe-arm64>
->>      >>>>      <https://git.xenomai.org/ipipe-arm64
->>      <https://git.xenomai.org/ipipe-arm64>>
->>      >>>>      >> Release tag: ipipe-core-5.4.72-arm64-0
->>      >>>>      >>
->>      >>>>      >>
->>      >>>>      > This is a beta release, any testing is welcome
->>      >>>>      >
->>      >>>>
->>      >>>>      You asked for it: ;)
->>      >>>>
->>      >>>>
->>      https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
->>      <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>
->>      >>>>
->>      <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638
->>      <https://gitlab.denx.de/Xenomai/xenomai-images/-/jobs/218159#L638>>
->>      >>>>
->>      >>>>      Jan
->>      >>>>
->>      >>>>      --
->>      >>>>      Siemens AG, T RDA IOT
->>      >>>>      Corporate Competence Center Embedded Linux
->>      >>>>
->>      >>>>
->>      >>>> Ack, I’ll look into this today. How hard is it to get a ci or
->>      something
->>      >>>> similar setup in a local machine? I think I may have asked this
->>      before
->>      >>>> but i can’t remember what we decided.
->>      >>>>
->>      >>> The easiest option are the qemu targets, generated and run via
->>      >>> xenomai-images. Unfortunately, this issue does not seem to
->>      trigger in
->>      >>> qemu, only on the BeagleBone. But if you have that board, also that
->>      >>> target image can be reproduced, obviously. Follow the README in that
->>      >>> case.
->>      >>>
->>      >>> Or you just pick up the config from xenomai-images and do your own
->>      >>> setup.
->>      >>>
->>      >> Err, wrong context, this is arm64. Here it's the hikey, and only the
->>      >> hikey board. For the arm issue, both qemu and bbb expose the problem.
->>      >>
->>      >> Jan
->>      >>
->>      > -------------- next part --------------
->>      > A non-text attachment was scrubbed...
->>      > Name: 0001-cobalt-arm64-Remove-include-of-compiler.h.patch
->>      > Type: text/x-patch
->>      > Size: 1103 bytes
->>      > Desc: not available
->>      > URL:
->>      >
->>      <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin
->>      <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment.bin>>
->>      >
->>      > -------------- next part --------------
->>      > A non-text attachment was scrubbed...
->>      > Name: 0002-cobalt-arm64-Fix-elf_hwcap-acces.patch
->>      > Type: text/x-patch
->>      > Size: 1124 bytes
->>      > Desc: not available
->>      > URL:
->>      >
->>      <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin
->>      <http://xenomai.org/pipermail/xenomai/attachments/20210225/2339e8e4/attachment-0001.bin>>
->>      >
->>
->>      --
->>      Siemens AG, T RDA IOT
->>      Corporate Competence Center Embedded Linux
->>
->>
->> Yes, I believe all the needed patches are currently in next, but I will
->> confirm.
-> I'm seeing cpu_get_elf_hwcap() in Jean-Baptiste's patch - is that a
-> better way to access it?
->
-> And, Jean-Baptiste, can you confirm that using Greg's patch from next in
-> 3.1-stable also works for you? Then I would pull it over.
->
-> Jan
->
-It is working well with stable/v3.1.x and Greg's patch 
-(2cc905236c7208f37f128bb389214a39d777465a and 
-6faffb4fc7806f7442ec548a97157922523f5440 applied on previous location of 
-files).
+Yep, better. Please queue up.
 
-Jean-Baptiste
+Thanks,
+Jan
 
-
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
