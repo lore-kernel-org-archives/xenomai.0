@@ -1,11 +1,13 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [y2038][PATCH v3 0/4] Pattern for implementing y2038 syscalls
-Date: Wed, 10 Mar 2021 14:09:31 +0100
-Message-Id: <20210310130935.255197-1-florian.bezdeka@siemens.com>
-In-Reply-To: <20210308170206.313181-5-florian.bezdeka@siemens.com>
-References: <20210308170206.313181-5-florian.bezdeka@siemens.com>
+Subject: Re: dovetail: ia32 emulation broken
+References: <d752faca-a518-793d-9a39-67f610ca9a92@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2a5775b1-914f-a8e0-2b59-67a9f6a2fc7b@siemens.com>
+Date: Wed, 10 Mar 2021 15:42:30 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <d752faca-a518-793d-9a39-67f610ca9a92@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com, rpm@xenomai.org, chensong@kylinos.cn
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-This series was tested against the following branches:
-  - upstream: wip/dovetail
-  - philippe-private: for-upstream/dovetail
+On 10.03.21 09:32, Jan Kiszka via Xenomai wrote:
+> Hi Philippe,
+> 
+> as already reported in the call today: Current dovetail, namely [1],
+> does not take the different argument mappings into account when entering
+> from a 32-bit app.
+> 
+> I-pipe has [2] in the arch-specific path to achieve that, but Dovetail
+> hooks into the generic path - too late for that. As a quick solution, I
+> would simply move the hooks into arch-specific code but I'm not sure if
+> that is best. Any suggestions?
+> 
 
-Song can take this series as template and continue to bring in more
-y2038 syscalls, while I will go and fixup some of the things that are
-alredy broken (on 32 bit systems).
+The cleanest option seems to me to use syscall_get_arguments in Xenomai.
+But as I-pipe does argument flipping for the compat path now, we need to
+abstract that.
 
-Changes in v3:
-  - Removed RFC tag
-  - Extended tests to cover one of the POSIX edge cases found during
-    review 
-                                                                                    
-Changes in v2:                                                                      
-  - Added a smokey plugin named y2038 for running Y2038 related tests               
-    (Should be extended with all related tests)                                     
-  - Review implementations (covered by tests now as well)                           
-  - Drop support for kernel 4.4                                                     
-  - Added the libcobalt part 
+Just hacked up a test, further patched the 32-bit paths in dovetail /wrt
+interrupt re-enabling, and this seems to work.
 
-Florian Bezdeka (4):
-  y2038: Fixing the sem_timedwait syscall for 32 bit systems
-  y2038: Adding sem_timedwait64
-  y2038: Add tests for the sc_cobalt_sem_timedwait64 syscall
-  y2038: lib/cobalt: Add support of sc_cobalt_sem_timedwait64
+Jan
 
- configure.ac                           |   1 +
- include/cobalt/kernel/time.h           |  22 ++++
- include/cobalt/uapi/syscall.h          |   1 +
- kernel/cobalt/Makefile                 |   1 +
- kernel/cobalt/posix/sem.c              |  60 +++++----
- kernel/cobalt/posix/sem.h              |  13 +-
- kernel/cobalt/posix/syscall32.c        |  17 ++-
- kernel/cobalt/posix/syscall32.h        |   6 +-
- kernel/cobalt/time.c                   |  29 ++++
- lib/cobalt/semaphore.c                 |   5 +
- testsuite/smokey/Makefile.am           |   6 +-
- testsuite/smokey/y2038/Makefile.am     |  10 ++
- testsuite/smokey/y2038/syscall-tests.c | 175 +++++++++++++++++++++++++
- 13 files changed, 315 insertions(+), 31 deletions(-)
- create mode 100644 include/cobalt/kernel/time.h
- create mode 100644 kernel/cobalt/time.c
- create mode 100644 testsuite/smokey/y2038/Makefile.am
- create mode 100644 testsuite/smokey/y2038/syscall-tests.c
+> Jan
+> 
+> [1]
+> https://git.evlproject.org/linux-evl.git/commit/?h=dovetail/master&id=4068dfd130ae0a1d10f88a7ea3be2c2e867e7ec1
+> [2]
+> https://source.denx.de/Xenomai/ipipe-x86/-/commit/114efa7b187e1e6702c0d2e208ac6b12c4d7b846#e9c562ce16c44dcda4bab48966c6bd5eafa9e811_320_346
+> 
 
 -- 
-2.29.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
