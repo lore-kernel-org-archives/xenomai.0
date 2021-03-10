@@ -1,8 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [y2038][PATCH v3 1/4] y2038: Fixing the sem_timedwait syscall for 32
- bit systems
-Date: Wed, 10 Mar 2021 14:09:32 +0100
-Message-Id: <20210310130935.255197-2-florian.bezdeka@siemens.com>
+Subject: [y2038][PATCH v3 2/4] y2038: Adding sem_timedwait64
+Date: Wed, 10 Mar 2021 14:09:33 +0100
+Message-Id: <20210310130935.255197-3-florian.bezdeka@siemens.com>
 In-Reply-To: <20210310130935.255197-1-florian.bezdeka@siemens.com>
 References: <20210308170206.313181-5-florian.bezdeka@siemens.com>
  <20210310130935.255197-1-florian.bezdeka@siemens.com>
@@ -18,166 +17,221 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com, rpm@xenomai.org, chensong@kylinos.cn
 
-On systems using 32 bit for time_t the sem_timedwait syscall was broken
-because the function used for copying the timeout value from userspace
-to kernel (=sem_fetch_timeout()) was always copying
-sizeof(struct timespec64).
+Implementation is heavily inspired by the sem_timedwait syscall,
+but expecting time64 based timespec / timeout.
 
-A 32 bit application (or more specific an application with 4 byte
-time_t) would only provide sizeof(struct old_timespec32).
+We need two new syscall handlers:
+  - The native one (COBALT_SYSCALL()) to get 32 bit kernels time64
+    aware. This handler is added for 64 bit kernels as well, but not
+    used. As we don't have separate syscall tables for this both
+    worlds we have to add it.
 
-Notable changes:
-  - The copy operation from userspace to kernel is now already done in
-    the syscall handler. So it is always done and might fail. Reporting
-    a failure is delayed until the timeout is being validated.
-
-  - Validation: Switched to timespec64_valid() instead of our own
-    check.
+ - The compat handler (COBALT_SYSCALL32emu()) for x32 or x86
+   applications running on an x86_64 kernel. Otherwise the redirection
+   to the compat / emulation syscalls is broken.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/sem.c       | 40 +++++++++++++++------------------
- kernel/cobalt/posix/sem.h       |  6 ++---
- kernel/cobalt/posix/syscall32.c | 10 +++++++--
- kernel/cobalt/posix/syscall32.h |  2 +-
- 4 files changed, 29 insertions(+), 29 deletions(-)
+ include/cobalt/kernel/time.h    | 22 ++++++++++++++++++++++
+ include/cobalt/uapi/syscall.h   |  1 +
+ kernel/cobalt/Makefile          |  1 +
+ kernel/cobalt/posix/sem.c       | 20 ++++++++++++++++++++
+ kernel/cobalt/posix/sem.h       |  7 +++++++
+ kernel/cobalt/posix/syscall32.c |  7 +++++++
+ kernel/cobalt/posix/syscall32.h |  4 ++++
+ kernel/cobalt/time.c            | 29 +++++++++++++++++++++++++++++
+ 8 files changed, 91 insertions(+)
+ create mode 100644 include/cobalt/kernel/time.h
+ create mode 100644 kernel/cobalt/time.c
 
+diff --git a/include/cobalt/kernel/time.h b/include/cobalt/kernel/time.h
+new file mode 100644
+index 000000000..19e8f2c56
+--- /dev/null
++++ b/include/cobalt/kernel/time.h
+@@ -0,0 +1,22 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ */
++
++#ifndef _COBALT_KERNEL_TIME_H
++#define _COBALT_KERNEL_TIME_H
++
++#include <linux/time.h>
++#include <linux/time64.h>
++
++/**
++ * Read struct __kernel_timespec from userspace and convert to
++ * struct timespec64
++ *
++ * @param ts The destination, will be filled
++ * @param uts The source, provided by an application
++ * @return 0 on success, -EFAULT otherwise
++ */
++int cobalt_get_timespec64(struct timespec64 *ts,
++			  const struct __kernel_timespec __user *uts);
++
++#endif //_COBALT_KERNEL_TIME_H
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index aa3c308d0..8895d2bff 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -122,6 +122,7 @@
+ #define sc_cobalt_sendmmsg			99
+ #define sc_cobalt_clock_adjtime			100
+ #define sc_cobalt_thread_setschedprio		101
++#define sc_cobalt_sem_timedwait64		102
+ 
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
+ 
+diff --git a/kernel/cobalt/Makefile b/kernel/cobalt/Makefile
+index 129005d8f..6cd2d5994 100644
+--- a/kernel/cobalt/Makefile
++++ b/kernel/cobalt/Makefile
+@@ -13,6 +13,7 @@ xenomai-y :=	arith.o 	\
+ 		select.o	\
+ 		synch.o		\
+ 		thread.o	\
++		time.o		\
+ 		timer.o		\
+ 		tree.o
+ 
 diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index 467a9b7dd..827a4751a 100644
+index 827a4751a..72b20c78d 100644
 --- a/kernel/cobalt/posix/sem.c
 +++ b/kernel/cobalt/posix/sem.c
-@@ -267,20 +267,11 @@ out:
+@@ -19,6 +19,7 @@
+ 
+ #include <stddef.h>
+ #include <linux/err.h>
++#include <cobalt/kernel/time.h>
+ #include "internal.h"
+ #include "thread.h"
+ #include "clock.h"
+@@ -326,6 +327,18 @@ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
  	return ret;
  }
  
--static inline int sem_fetch_timeout(struct timespec64 *ts,
--				    const void __user *u_ts)
--{
--	return u_ts == NULL ? -EFAULT :
--		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
--}
--
- int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
--			   const void __user *u_ts,
--			   int (*fetch_timeout)(struct timespec64 *ts,
--						const void __user *u_ts))
-+			   const struct timespec64 *ts)
- {
--	struct timespec64 ts = { .tv_sec = 0, .tv_nsec = 0 };
--	int pull_ts = 1, ret, info;
-+	int ret, info;
-+	bool validate_ts = true;
- 	struct cobalt_sem *sem;
- 	xnhandle_t handle;
- 	xntmode_t tmode;
-@@ -304,24 +295,23 @@ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
- 		 * it's actually more complex, to keep some
- 		 * applications ported to Linux happy.
- 		 */
--		if (pull_ts) {
-+		if (validate_ts) {
- 			atomic_inc(&sem->state->value);
--			xnlock_put_irqrestore(&nklock, s);
--			ret = fetch_timeout(&ts, u_ts);
--			xnlock_get_irqsave(&nklock, s);
--			if (ret)
-+			if (!ts) {
-+				ret = -EFAULT;
- 				break;
--			if (ts.tv_nsec >= ONE_BILLION) {
-+			}
-+			if (!timespec64_valid(ts)) {
- 				ret = -EINVAL;
- 				break;
- 			}
--			pull_ts = 0;
-+			validate_ts = false;
- 			continue;
- 		}
- 
- 		ret = 0;
- 		tmode = sem->flags & SEM_RAWCLOCK ? XN_ABSOLUTE : XN_REALTIME;
--		info = xnsynch_sleep_on(&sem->synchbase, ts2ns(&ts) + 1, tmode);
-+		info = xnsynch_sleep_on(&sem->synchbase, ts2ns(ts) + 1, tmode);
- 		if (info & XNRMID)
- 			ret = -EINVAL;
- 		else if (info & (XNBREAK|XNTIMEO)) {
-@@ -434,9 +424,15 @@ COBALT_SYSCALL(sem_wait, primary,
- 
- COBALT_SYSCALL(sem_timedwait, primary,
- 	       (struct cobalt_sem_shadow __user *u_sem,
--		struct __user_old_timespec __user *u_ts))
-+		const struct __user_old_timespec __user *u_ts))
- {
--	return __cobalt_sem_timedwait(u_sem, u_ts, sem_fetch_timeout);
++int __cobalt_sem_timedwait64(struct cobalt_sem_shadow __user *u_sem,
++			     const struct __kernel_timespec __user *u_ts)
++{
 +	int ret = 1;
 +	struct timespec64 ts64;
 +
 +	if (u_ts)
-+		ret = cobalt_get_u_timespec(&ts64, u_ts);
++		ret = cobalt_get_timespec64(&ts64, u_ts);
 +
 +	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
++}
++
+ static int sem_post(xnhandle_t handle)
+ {
+ 	struct cobalt_sem *sem;
+@@ -435,6 +448,13 @@ COBALT_SYSCALL(sem_timedwait, primary,
+ 	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
  }
  
++COBALT_SYSCALL(sem_timedwait64, primary,
++	       (struct cobalt_sem_shadow __user *u_sem,
++		const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_sem_timedwait64(u_sem, u_ts);
++}
++
  COBALT_SYSCALL(sem_trywait, primary,
+ 	       (struct cobalt_sem_shadow __user *u_sem))
+ {
 diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
-index d17299495..658e11f7a 100644
+index 658e11f7a..d7dbb9098 100644
 --- a/kernel/cobalt/posix/sem.h
 +++ b/kernel/cobalt/posix/sem.h
-@@ -64,9 +64,7 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
- 		  int oflags, mode_t mode, unsigned int value);
- 
+@@ -66,6 +66,9 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
  int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
--			   const void __user *u_ts,
--			   int (*fetch_timeout)(struct timespec64 *ts,
--						const void __user *u_ts));
-+			   const struct timespec64 *ts);
+ 			   const struct timespec64 *ts);
  
++int __cobalt_sem_timedwait64(struct cobalt_sem_shadow __user *u_sem,
++			     const struct __kernel_timespec __user *u_ts);
++
  int __cobalt_sem_destroy(xnhandle_t handle);
  
-@@ -91,7 +89,7 @@ COBALT_SYSCALL_DECL(sem_wait,
- 
- COBALT_SYSCALL_DECL(sem_timedwait,
+ void cobalt_nsem_reclaim(struct cobalt_process *process);
+@@ -91,6 +94,10 @@ COBALT_SYSCALL_DECL(sem_timedwait,
  		    (struct cobalt_sem_shadow __user *u_sem,
--		     struct __user_old_timespec __user *u_ts));
-+		     const struct __user_old_timespec __user *u_ts));
+ 		     const struct __user_old_timespec __user *u_ts));
  
++COBALT_SYSCALL_DECL(sem_timedwait64,
++		    (struct cobalt_sem_shadow __user *u_sem,
++		     const struct __kernel_timespec __user *u_ts));
++
  COBALT_SYSCALL_DECL(sem_trywait,
  		    (struct cobalt_sem_shadow __user *u_sem));
+ 
 diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index b83944089..bc60a81a7 100644
+index bc60a81a7..8bc74e997 100644
 --- a/kernel/cobalt/posix/syscall32.c
 +++ b/kernel/cobalt/posix/syscall32.c
-@@ -124,9 +124,15 @@ COBALT_SYSCALL32emu(sem_open, lostage,
- 
- COBALT_SYSCALL32emu(sem_timedwait, primary,
- 		    (struct cobalt_sem_shadow __user *u_sem,
--		     struct old_timespec32 __user *u_ts))
-+		     const struct old_timespec32 __user *u_ts))
- {
--	return __cobalt_sem_timedwait(u_sem, u_ts, sys32_fetch_timeout);
-+	int ret = 1;
-+	struct timespec64 ts64;
-+
-+	if (u_ts)
-+		ret = sys32_fetch_timeout(&ts64, u_ts);
-+
-+	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+@@ -135,6 +135,13 @@ COBALT_SYSCALL32emu(sem_timedwait, primary,
+ 	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
  }
  
++COBALT_SYSCALL32emu(sem_timedwait64, primary,
++		    (struct cobalt_sem_shadow __user *u_sem,
++		     const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_sem_timedwait64(u_sem, u_ts);
++}
++
  COBALT_SYSCALL32emu(clock_getres, current,
+ 		    (clockid_t clock_id,
+ 		     struct old_timespec32 __user *u_ts))
 diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 936343fa4..d5b07da86 100644
+index d5b07da86..c2e4bf355 100644
 --- a/kernel/cobalt/posix/syscall32.h
 +++ b/kernel/cobalt/posix/syscall32.h
-@@ -223,6 +223,6 @@ COBALT_SYSCALL32emu_DECL(sem_open,
- 
- COBALT_SYSCALL32emu_DECL(sem_timedwait,
+@@ -225,4 +225,8 @@ COBALT_SYSCALL32emu_DECL(sem_timedwait,
  			 (struct cobalt_sem_shadow __user *u_sem,
--			  struct old_timespec32 __user *u_ts));
-+			  const struct old_timespec32 __user *u_ts));
+ 			  const struct old_timespec32 __user *u_ts));
  
++COBALT_SYSCALL32emu_DECL(sem_timedwait64,
++			 (struct cobalt_sem_shadow __user * u_sem,
++			  const struct __kernel_timespec __user *u_ts));
++
  #endif /* !_COBALT_POSIX_SYSCALL32_H */
+diff --git a/kernel/cobalt/time.c b/kernel/cobalt/time.c
+new file mode 100644
+index 000000000..a3fd8a740
+--- /dev/null
++++ b/kernel/cobalt/time.c
+@@ -0,0 +1,29 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ */
++
++#include <asm-generic/xenomai/syscall.h>
++#include <cobalt/kernel/time.h>
++#include <linux/compat.h>
++
++int cobalt_get_timespec64(struct timespec64 *ts,
++			  const struct __kernel_timespec __user *uts)
++{
++	struct __kernel_timespec kts;
++	int ret;
++
++	ret = cobalt_copy_from_user(&kts, uts, sizeof(kts));
++	if (ret)
++		return -EFAULT;
++
++	ts->tv_sec = kts.tv_sec;
++
++	/* Zero out the padding in compat mode */
++	if (in_compat_syscall())
++		kts.tv_nsec &= 0xFFFFFFFFUL;
++
++	/* In 32-bit mode, this drops the padding */
++	ts->tv_nsec = kts.tv_nsec;
++
++	return 0;
++}
 -- 
 2.29.2
 
