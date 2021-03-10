@@ -1,11 +1,9 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: reminder: Xenomai community call on tomorrow, March 10th, UTC 7:00
-Date: Tue, 9 Mar 2021 13:53:50 +0000
-Message-ID: <CO1PR11MB5187AEE5863D5AD56F3DE624EE929@CO1PR11MB5187.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 2/2] cobalt/rtdm: introduce new interfaces to init timer
+Date: Tue,  9 Mar 2021 19:57:32 -0500
+Message-Id: <20210310005732.13439-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210310005732.13439-1-hongzhan.chen@intel.com>
+References: <20210310005732.13439-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,28 +12,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-QXMgcGxhbm5lZCwgd2UgaGF2ZSB0aGUgWGVub21haSBjb21tdW5pdHkgY2FsbA0KVG9waWNzIG1h
-eSBpbmNsdWRlIGJ1dCBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9kb3duc3RyZWFtIHByb2plY3Qg
-cGxhbiwgc3RhdHVzIHVwZGF0ZSwgYW5kIHRlY2huaWNhbCBkaXNjdXNzaW9uLg0KSXQncyBhbiBv
-cGVuIG9ubGluZSBtZWV0aW5nIHRoYXQgYW55b25lIGNhbiBqb2luIGFuZCBhc2sgcXVlc3Rpb25z
-LA0KDQpUaW1lOiBNYXJjaCAxMHRoDQpXZWRuZXNkYXksIFVUQyA3OjAwDQoxNTowMCBmb3IgQ2hp
-bmENCjg6MDAgZm9yIEZyYW5jZSwgR2VybWFueSwgSXRhbHkNCjIzOjAwIChUdWVzZGF5KSBmb3Ig
-U2FudGEgQ2xhcmENCg0KTWljcm9zb2Z0IFRlYW1zIG1lZXRpbmcgDQpKb2luIG9uIHlvdXIgY29t
-cHV0ZXIgb3IgbW9iaWxlIGFwcCANCkNsaWNrIGhlcmUgdG8gam9pbiB0aGUgbWVldGluZyANCg0K
-aHR0cHM6Ly90ZWFtcy5taWNyb3NvZnQuY29tL2wvbWVldHVwLWpvaW4vMTklM2FtZWV0aW5nX01H
-WmlNekF3T1RjdE1USTJZeTAwTmpabExUZzNNMk10TkdNME1XUTNPR1kwT0dWaSU0MHRocmVhZC52
-Mi8wP2NvbnRleHQ9JTdiJTIyVGlkJTIyJTNhJTIyNDZjOThkODgtZTM0NC00ZWQ0LTg0OTYtNGVk
-NzcxMmUyNTVkJTIyJTJjJTIyT2lkJTIyJTNhJTIyNGVlMWJiODItMjg3Yy00NTZhLTk5ZDgtZmIy
-MzA2NDNjOTQ3JTIyJTdkDQoNCkpvaW4gd2l0aCBhIHZpZGVvIGNvbmZlcmVuY2luZyBkZXZpY2Ug
-DQp0ZWFtc0Bjb25mLmludGVsLmNvbSANClZpZGVvIENvbmZlcmVuY2UgSUQ6IDExNCAwMjIgNDc0
-IDYgDQpBbHRlcm5hdGUgVlRDIGRpYWxpbmcgaW5zdHJ1Y3Rpb25zIA0KaHR0cHM6Ly9jb25mLmlu
-dGVsLmNvbS90ZWFtcy8/Y29uZj0xMTQwMjI0NzQ2Jml2cj10ZWFtcyZkPWNvbmYuaW50ZWwuY29t
-JnRlc3Q9dGVzdF9jYWxsDQpPciBjYWxsIGluIChhdWRpbyBvbmx5KSANCis4NiAxMCA1Njk3IDEz
-NDAsLDk3NzY3MjIwMyMgICBDaGluYSwg5YyX5LqsIChCZWlqaW5nKSANClBob25lIENvbmZlcmVu
-Y2UgSUQ6IDk3NyA2NzIgMjAzIyANCkZpbmQgYSBsb2NhbCBudW1iZXINCmh0dHBzOi8vZGlhbGlu
-LnRlYW1zLm1pY3Jvc29mdC5jb20vZDE5NWQ0MzgtMmRhYS00MjBlLWI5ZWEtZGEyNmY5ZDFkNmQ1
-P2lkPTk3NzY3MjIwMw0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVsIOKAkyBJT1RHIERl
-dmVsb3BlciBFbmFibGluZw0KDQoNCg==
+Initialise timer on specified cpu or current cpu.
+
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 42daaa5b2..4b4ee965d 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -966,6 +966,17 @@ enum rtdm_timer_mode {
+ int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+ 		    const char *name);
+ 
++int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
++		    const char *name, int cpu);
++
++static inline int rtdm_timer_init_cpu(rtdm_timer_t *timer,
++		rtdm_timer_handler_t handler, const char *name)
++{
++	int cpu = raw_smp_processor_id();
++
++	return rtdm_timer_init_on_cpu(timer, handler, name, cpu);
++}
++
+ void rtdm_timer_destroy(rtdm_timer_t *timer);
+ 
+ int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 1c999362e..4e00d4e02 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -604,6 +604,37 @@ int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+ 
+ EXPORT_SYMBOL_GPL(rtdm_timer_init);
+ 
++/**
++ * @brief Initialise a timer on specified cpu
++ *
++ * @param[in,out] timer Timer handle
++ * @param[in] handler Handler to be called on timer expiry
++ * @param[in] name Optional timer name
++ * @param[in] cpu that run on
++ *
++ * @return 0 on success, otherwise negative error code
++ *
++ * @coretags{task-unrestricted}
++ */
++int rtdm_timer_init_on_cpu(rtdm_timer_t *timer,
++		rtdm_timer_handler_t handler, const char *name, int cpu)
++{
++	struct xnsched *sched;
++
++	if (!realtime_core_enabled())
++		return -ENOSYS;
++
++	sched = xnsched_struct(cpu);
++	if (sched == NULL)
++		return -EINVAL;
++
++	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
++	xntimer_set_name((timer), (name));
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
++
+ /**
+  * @brief Destroy a timer
+  *
+-- 
+2.17.1
+
 
