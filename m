@@ -1,12 +1,14 @@
-References: <3c717e14-0494-75fa-90bd-738d5ac24972@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH wip/dovetail] cobalt/syscall: Account for different
- syscall argument marshaling
-In-reply-to: <3c717e14-0494-75fa-90bd-738d5ac24972@siemens.com>
-Date: Wed, 10 Mar 2021 17:15:02 +0100
-Message-ID: <87a6rbhto9.fsf@xenomai.org>
+Subject: Re: [PATCH] cobalt/sched: dovetail: fix missed switching to OOB
+ opportunities
+References: <20210309044520.28816-1-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c205e32d-27aa-9f3e-c996-24110151e384@siemens.com>
+Date: Wed, 10 Mar 2021 17:15:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210309044520.28816-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,200 +17,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> I-pipe makes sure that arguments of compat calls are ordered just like
-> native calls. Dovetail does not. But it is better to use the kernel's
-> syscall_get_arguments for retrieving the arguments anyway. Introduce
-> pipeline_get_syscall_args to abstract that difference.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> Applies on top of the dovetail branch, not yet next.
->
->  include/cobalt/kernel/dovetail/pipeline/pipeline.h |  8 ++++++++
->  include/cobalt/kernel/ipipe/pipeline/pipeline.h    | 12 ++++++++++++
->  .../arm/dovetail/include/asm/xenomai/syscall.h     |  5 -----
->  .../x86/dovetail/include/asm/xenomai/syscall.h     |  5 -----
->  .../cobalt/include/asm-generic/xenomai/syscall.h   |  7 -------
->  kernel/cobalt/posix/syscall.c                      | 14 ++++++++++----
->  6 files changed, 30 insertions(+), 21 deletions(-)
->
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> index 3cc7268d00..685af12af4 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> @@ -6,6 +6,7 @@
->  #define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
+On 09.03.21 05:45, hongzha1 via Xenomai wrote:
+> Ask for switching back to oob mode once ptrace core tell that
+> current is resuming from a stopped state, leaving space for
+> other runnable RT threads of the process to take over.
+> 
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> 
+> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+> index 966a63ce0..a640c4d9e 100644
+> --- a/kernel/cobalt/dovetail/kevents.c
+> +++ b/kernel/cobalt/dovetail/kevents.c
+> @@ -492,6 +492,8 @@ static void handle_ptrace_cont(void)
+>  			unregister_debugged_thread(curr);
 >  
->  #include <linux/irq_pipeline.h>
-> +#include <asm/syscall.h>
->  #include <cobalt/kernel/assert.h>
->  #include <asm/xenomai/features.h>
->  #include <pipeline/machine.h>
-> @@ -90,4 +91,11 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
->  	f->clock_freq = 0;	/* N/A */
->  }
->  
-> +static inline void pipeline_get_syscall_args(struct task_struct *task,
-> +					     struct pt_regs *regs,
-> +					     unsigned long *args)
-> +{
-> +	syscall_get_arguments(task, regs, args);
-> +}
+>  		xnthread_set_localinfo(curr, XNHICCUP);
 > +
->  #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> index fda962568a..ac9c92b1b0 100644
-> --- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> +++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> @@ -11,6 +11,7 @@
->  
->  #include <pipeline/machine.h>
->  #include <asm/xenomai/features.h>
-> +#include <asm/xenomai/syscall.h>
->  
->  #define xnsched_primary_domain  cobalt_pipeline.domain
->  
-> @@ -81,4 +82,15 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
->  	f->clock_freq = cobalt_pipeline.clock_freq;
->  }
->  
-> +static inline void pipeline_get_syscall_args(struct task_struct *task,
-> +					     struct pt_regs *regs,
-> +					     unsigned long *args)
-> +{
-> +	*args++ = __xn_reg_arg1(regs);
-> +	*args++ = __xn_reg_arg2(regs);
-> +	*args++ = __xn_reg_arg3(regs);
-> +	*args++ = __xn_reg_arg4(regs);
-> +	*args   = __xn_reg_arg5(regs);
-> +}
-> +
->  #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
-> diff --git a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-> index eb4ec1bbe1..fe8c1853aa 100644
-> --- a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-> +++ b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-> @@ -59,11 +59,6 @@
->  	})
->  
->  #define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
-> -#define __xn_reg_arg1(__regs)	((__regs)->ARM_r1)
-> -#define __xn_reg_arg2(__regs)	((__regs)->ARM_r2)
-> -#define __xn_reg_arg3(__regs)	((__regs)->ARM_r3)
-> -#define __xn_reg_arg4(__regs)	((__regs)->ARM_r4)
-> -#define __xn_reg_arg5(__regs)	((__regs)->ARM_r5)
->  #define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
->  #define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
->  
-> diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-> index bf7a44ea0c..212840b5ef 100644
-> --- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-> +++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-> @@ -29,11 +29,6 @@
->   */
->  #define __xn_reg_sys(regs)    ((regs)->orig_ax)
->  #define __xn_reg_rval(regs)   ((regs)->ax)
-> -#define __xn_reg_arg1(regs)   ((regs)->di)
-> -#define __xn_reg_arg2(regs)   ((regs)->si)
-> -#define __xn_reg_arg3(regs)   ((regs)->dx)
-> -#define __xn_reg_arg4(regs)   ((regs)->r10)
-> -#define __xn_reg_arg5(regs)   ((regs)->r8)
->  #define __xn_reg_pc(regs)     ((regs)->ip)
->  #define __xn_reg_sp(regs)     ((regs)->sp)
->  
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> index 91bbf3bfd1..194583c184 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> @@ -36,13 +36,6 @@
->  #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
->  #endif
->  
-> -#define __xn_reg_arglist(regs)	\
-> -	__xn_reg_arg1(regs),	\
-> -	__xn_reg_arg2(regs),	\
-> -	__xn_reg_arg3(regs),	\
-> -	__xn_reg_arg4(regs),	\
-> -	__xn_reg_arg5(regs)
-> -
->  #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
->  #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
->  #define __xn_put_user(src, dstP)		__put_user(src, dstP)
-> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-> index 30c33dda61..6a471758de 100644
-> --- a/kernel/cobalt/posix/syscall.c
-> +++ b/kernel/cobalt/posix/syscall.c
-> @@ -486,6 +486,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
->  	struct xnthread *thread;
->  	cobalt_syshand handler;
->  	struct task_struct *p;
-> +	unsigned long args[6];
->  	unsigned int nr, code;
->  	long ret;
->  
-> @@ -592,7 +593,10 @@ restart:
->  	 * handler (lostage ones), or rejected by allowed_syscall().
->  	 */
->  
-> -	ret = handler(__xn_reg_arglist(regs));
-> +	p = current;
-> +	pipeline_get_syscall_args(current, regs, args);
-
-pipeline_get_syscall_args(p, regs, args) ?
-
-> +
-> +	ret = handler(args[0], args[1], args[2], args[3], args[4]);
->  	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
->  		if (switched) {
->  			ret = xnthread_harden();
-> @@ -611,7 +615,6 @@ done:
->  	__xn_status_return(regs, ret);
->  	sigs = 0;
->  	if (!xnsched_root_p()) {
-> -		p = current;
->  		if (signal_pending(p) ||
->  		    xnthread_test_info(thread, XNKICKED)) {
->  			sigs = 1;
-> @@ -677,6 +680,7 @@ int handle_root_syscall(struct pt_regs *regs)
->  	struct xnthread *thread;
->  	cobalt_syshand handler;
->  	struct task_struct *p;
-> +	unsigned long args[6];
->  	unsigned int nr, code;
->  	long ret;
->  
-> @@ -735,7 +739,10 @@ restart:
->  			xnthread_propagate_schedparam(thread);
+> +		dovetail_request_ucall(current);
 >  	}
 >  
-> -	ret = handler(__xn_reg_arglist(regs));
-> +	p = current;
-> +	pipeline_get_syscall_args(p, regs, args);
-> +
-> +	ret = handler(args[0], args[1], args[2], args[3], args[4]);
->  	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
->  		sysflags ^= __xn_exec_histage;
->  		if (switched) {
-> @@ -756,7 +763,6 @@ restart:
->  		 * just invoked, so make sure to fetch it.
->  		 */
->  		thread = xnthread_current();
-> -		p = current;
->  		if (signal_pending(p)) {
->  			sigs = 1;
->  			prepare_for_signal(p, thread, regs, sysflags);
+>  	xnlock_put_irqrestore(&nklock, s);
+> diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+> index de7c43b70..2bdddfeef 100644
+> --- a/kernel/cobalt/dovetail/sched.c
+> +++ b/kernel/cobalt/dovetail/sched.c
+> @@ -56,9 +56,21 @@ int pipeline_leave_inband(void)
+>  
+>  int pipeline_leave_oob_prepare(void)
+>  {
+> -	dovetail_leave_oob();
+> +	int suspmask = XNRELAX;
+> +	struct xnthread *curr = xnthread_current();
+>  
+> -	return XNRELAX;
+> +	dovetail_leave_oob();
+> +	/*
+> +	 * If current is being debugged, record that it should migrate
+> +	 * back in case it resumes in userspace. If it resumes in
+> +	 * kernel space, i.e.  over a restarting syscall, the
+> +	 * associated hardening will clear XNCONTHI.
+> +	 */
+> +	if (xnthread_test_state(curr, XNSSTEP)) {
+> +		xnthread_set_info(curr, XNCONTHI);
+> +		suspmask |= XNDBGSTOP;
+> +	}
+> +	return suspmask;
+>  }
+>  
+>  void pipeline_leave_oob_finish(void)
+> 
 
-This approach looks right to me.
+I've applied this to wip/dovetail, but that alone does not fix 
+ptrace/gdb use cases yet:
+
+(gdb latency -> run)
+[   52.097078] ------------[ cut here ]------------
+[   52.097079] WARNING: CPU: 2 PID: 1318 at ../kernel/irq/pipeline.c:316 inband_irq_enable+0x10/0x20
+[   52.097079] Modules linked in: 9p
+[   52.097080] CPU: 2 PID: 1318 Comm: latency Not tainted 5.10.19+ #41
+[   52.097080] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[   52.097080] IRQ stage: Linux
+[   52.097081] RIP: 0010:inband_irq_enable+0x10/0x20
+[   52.097081] Code: 00 00 00 01 75 ee e8 cf fa ff ff 53 9d 5b c3 66 66 2e 0f 1f 84 00 00 00 00 00 80 3d 9a 38 b3 02 00 75 09 9c 58 f6 c4 02 75 02 <0f> 0b eb 8c 66 66 2e 0f 1f 84 00 00 00 00 00 90 0f 1f 44 00 00 48
+[   52.097081] RSP: 0000:ffffc90000783f20 EFLAGS: 00010046
+[   52.097082] RAX: 0000000000000046 RBX: ffffc90000783f58 RCX: 0000000000000000
+[   52.097082] RDX: ffffc90000783ef0 RSI: ffffffff8109e600 RDI: ffffffff81d4eee2
+[   52.097082] RBP: ffff888006e70000 R08: 0000000000000000 R09: 0000000000000000
+[   52.097083] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000004000
+[   52.097083] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[   52.097083] FS:  00007ffff7fe6640(0000) GS:ffff88803ed00000(0000) knlGS:0000000000000000
+[   52.097084] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   52.097084] CR2: 00007ffff7243610 CR3: 00000000070c6001 CR4: 0000000000370ee0
+[   52.097084] Call Trace:
+[   52.097084]  noist_exc_debug+0xf7/0x180
+[   52.097085]  ? asm_exc_debug+0x23/0x30
+[   52.097085]  asm_exc_debug+0x2b/0x30
+[   52.097085] RIP: 0033:0x401df3
+[   52.097086] Code: 00 00 e9 b0 fb ff ff ff 25 62 44 20 00 68 44 00 00 00 e9 a0 fb ff ff ff 25 5a 44 20 00 68 45 00 00 00 e9 90 fb ff ff 31 ed 90 <e8> f9 30 01 00 48 8d 65 d8 5b 41 5c 41 5d 41 70 44 40 00 48 c7 c1
+[   52.097086] RSP: 002b:00007fffffffe1c0 EFLAGS: 00000346
+[   52.097086] RAX: 00007ffff7ffe0e0 RBX: 00007ffff7ffe0e0 RCX: 00007ffff7df23c7
+[   52.097087] RDX: 0000103e00000000 RSI: 0000000000000000 RDI: 0000000000000000
+[   52.097087] RBP: 00007fffffffe3a0 R08: 00007ffff6e8f008 R09: 0000000000000009
+[   52.097087] R10: 00007ffff7ffd990 R11: 0000000000000206 R12: 0000000000000000
+[   52.097087] R13: 00007ffff7ffe110 R14: 00007ffff7ffe110 R15: 00007ffff7fe6640
+[   52.097088] irq event stamp: 0
+[   52.097088] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+[   52.097088] hardirqs last disabled at (0): [<ffffffff8106c648>] copy_process+0x718/0x1cd0
+[   52.097089] softirqs last  enabled at (0): [<ffffffff8106c648>] copy_process+0x718/0x1cd0
+[   52.097089] softirqs last disabled at (0): [<0000000000000000>] 0x0
+[   52.097089] ---[ end trace b07496576d3779dc ]---
+
+Do I miss some other patch?
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
