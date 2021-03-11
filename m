@@ -1,17 +1,14 @@
-References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
- <87ft0xfyj4.fsf@xenomai.org>
- <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
- <87czw0g5b5.fsf@xenomai.org>
- <bf661a41-7ddf-196f-e57f-eb0be99ea565@siemens.com>
- <874khcg3at.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm
- and unuse_temporary_mm
-In-reply-to: <874khcg3at.fsf@xenomai.org>
-Date: Mon, 15 Mar 2021 11:02:46 +0100
-Message-ID: <87y2eoenuh.fsf@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 2/2] cobalt/rtdm: introduce new interface to init timer
+Date: Thu, 11 Mar 2021 08:21:50 +0000
+Message-ID: <MWHPR11MB1710261A737D070A6CC0190CF2909@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <20210311064859.10971-1-hongzhan.chen@intel.com>
+ <20210311064859.10971-2-hongzhan.chen@intel.com> <87v99yglah.fsf@xenomai.org>
+In-Reply-To: <87v99yglah.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,69 +17,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>-----Original Message-----
+>From: Philippe Gerum <rpm@xenomai.org>=20
+>Sent: Thursday, March 11, 2021 4:14 PM
+>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>Cc: xenomai@xenomai.org
+>Subject: Re: [PATCH 2/2] cobalt/rtdm: introduce new interface to init time=
+r
 >
->> On 15.03.21 10:00, Philippe Gerum wrote:
->>> 
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>> 
->>>> On 14.03.21 18:14, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
->>>>>
->>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>
->>>>>> This is only called during early init, e.g. for switching alternatives.
->>>>>> Still, switch_mm_irqs_off would complain without this, and we are better
->>>>>> safe than sorry.
->>>>>>
->>>>>
->>>>> The way this is done in Dovetail is fragile too, since the protection we
->>>>> have there still expects the pipeline entry code not to mess up on
->>>>> handling an interrupt, which defeats the purpose of such
->>>>> precaution. Besides, the temp_state should be snapshot under protection
->>>>> too. IOW, IRQs should be hard disabled fully while using the temporary
->>>>> mm.
->>>>>
->>>>> Upstreaming a similar patch for Dovetail.
->>>>
->>>> Just saw it: It's wrong as it left the hard_irq_save_full at the caller
->>>> site. Would raise a warning when debugging is enabled. Please fix.
->>>>
->>> 
->>> I guess you mean local_irq_save_full(). After a second look, the hard
->>> irqs off section should cover the entire code poking new text into a
->>> live kernel. This is what switching to the _full() forms enforced
->>> already. So I see no point in changing the IRQ state in the use/unuse
->>> helpers eventually.
->>
->> Right, either way is needed. If the tlb flush should be fully protected,
->> the existing pattern is needed. But maybe more:
->>
->> Under I-pipe, playing with full disabling didn't work out well. Some
->> spinlock function called via get_locked_pte reenabled hard IRQs. Not
->> sure if dovetail is affected by that as well.
->>
 >
-> This was likely caused by ipipe_unstall_root(void) force enabling hard
-> irqs on. This is gone in Dovetail, and unstalling the inband stage with
-> hard irqs off is even considered a bug now (inband_irq_enable()
-> complains about this) so that we catch the callers who would still be
-> making the original assumption.
+>hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 >
-> IOW, allocating page table directories when locking PTEs should not
-> cause hard IRQs to be force enabled with Dovetail. I'm going to check
-> this for peace of mind.
+>> Initialise timer on specified cpu.
+>>
+>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>>
+>> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel=
+/rtdm/driver.h
+>> index 5406e54a5..d58df33ce 100644
+>> --- a/include/cobalt/kernel/rtdm/driver.h
+>> +++ b/include/cobalt/kernel/rtdm/driver.h
+>> @@ -966,6 +966,9 @@ enum rtdm_timer_mode {
+>>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>>  		    const char *name);
+>> =20
+>> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t ha=
+ndler,
+>> +		    const char *name, int cpu);
+>> +
+>>  void rtdm_timer_destroy(rtdm_timer_t *timer);
+>> =20
+>>  int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
+>> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+>> index 069a442e5..268bf8fbf 100644
+>> --- a/kernel/cobalt/rtdm/drvlib.c
+>> +++ b/kernel/cobalt/rtdm/drvlib.c
+>> @@ -583,15 +583,44 @@ EXPORT_SYMBOL_GPL(rtdm_task_busy_sleep);
+>>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>>  		    const char *name)
+>>  {
+>> +	/*cpu0 is used when no affinity was given*/
+>> +	return rtdm_timer_init_on_cpu(timer, handler, name, 0);
+>> +}
+>> +EXPORT_SYMBOL_GPL(rtdm_timer_init);
+>> +
+>> +/**
+>> + * @brief Initialise a timer on specified cpu
+>> + *
+>> + * @param[in,out] timer Timer handle
+>> + * @param[in] handler Handler to be called on timer expiry
+>> + * @param[in] name Optional timer name
+>> + * @param[in] cpu that run on
+>> + *
+>> + * @return 0 on success, otherwise negative error code
+>> + *
+>> + * @coretags{task-unrestricted}
+>> + */
+>> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer,
+>> +		rtdm_timer_handler_t handler, const char *name, int cpu)
+>> +{
+>> +	struct xnsched *sched;
+>> +
+>>  	if (!realtime_core_enabled())
+>>  		return -ENOSYS;
+>> =20
+>> -	xntimer_init((timer), &nkclock, handler, NULL, XNTIMER_IGRAVITY);
+>> +	if (!cpu_online(cpu))
+>> +		return -EINVAL;
+>> +
+>> +	sched =3D xnsched_struct(cpu);
+>> +	if (sched =3D=3D NULL)
+>> +		return -EINVAL;
+>> +
+>> +	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
+>  	xntimer_set_name((timer), (name));
+> +
+>  	return 0;
+>  }
+> -
+> -EXPORT_SYMBOL_GPL(rtdm_timer_init);
+> +EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
+> =20
+>  /**
+>   * @brief Destroy a timer
+>
+>Do we have a potential user for this call?
 
-Confirmed (with enabling dynamic tracepoints), get_locked_pte() won't
-change the hard irq state.
+Yes. Latmus is supposed to use it. Evl  Latmus  is calling evl_init_timer_o=
+n_cpu in=20
+create_uthread_runner. So I think Xenomai should have corresponding one.
 
--- 
-Philippe.
+Regards
+
+Hongzhan Chen
+>
+>--=20
+>Philippe.
 
