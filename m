@@ -1,14 +1,20 @@
-Subject: Re: [PATCH 4/8] lib: y2038: convert to internal timespec type
-References: <20210327095417.2289913-1-rpm@xenomai.org>
- <20210327095417.2289913-5-rpm@xenomai.org>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <556e88f0-6b20-ab48-1d22-d0dcf8a2d8f0@siemens.com>
-Date: Tue, 30 Mar 2021 23:20:11 +0200
-In-Reply-To: <20210327095417.2289913-5-rpm@xenomai.org>
+Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
+References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
+ <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
+ <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
+ <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
+ <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
+ <a5d4eb12-e327-7242-833a-40ae13d24ccb@siemens.com>
+ <1bb7e174-eadc-5c8d-606a-7374962a402c@siemens.com>
+ <ca7655e8-097c-0205-8a5a-34b66155d8ea@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7b05e81f-bc40-0864-3398-3cd585b9f549@siemens.com>
+Date: Thu, 11 Mar 2021 11:53:40 +0100
+MIME-Version: 1.0
+In-Reply-To: <ca7655e8-097c-0205-8a5a-34b66155d8ea@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,154 +23,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, chensong@tj.kylinos.cn
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
-
-which "internal timespec type" are you talking about? You're using
-struct timespec here, which is not y2038 safe on 32 bit platforms.
-
-I wonder about the effect of splitting the assignments into separate
-tv_sec and tv_nsec assignements. I know this pattern from getting aware
-of different paddings between kernel and user space in case we handle a
-compat application, but this is all library stuff and compat
-applications should use the compat syscalls which hopefully care about
-different paddings...
-
-On 27.03.21 10:54, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+On 11.03.21 11:46, Jan Kiszka via Xenomai wrote:
+> On 11.03.21 11:38, Florian Bezdeka wrote:
+>> On 11.03.21 10:12, Jan Kiszka wrote:
+>>> On 08.03.21 13:46, Jan Kiszka via Xenomai wrote:
+>>>> On 08.03.21 13:42, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+>>>>> On Mon, 2021-03-08 at 11:42 +0100, Jan Kiszka wrote:
+>>>>>> On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
+>>>>>>> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
+>>>>>>> wrote:
+>>>>>>>> Hi,
+>>>>>>>>
+>>>>>>>> the attached kernel log was taken form a local qemu machine with
+>>>>>>>> Xenomai build from the wip/dovetail branch. There is a failing selftest
+>>>>>>>> (mixed read-lock/lock-write ABBA).
+>>>>>>>>
+>>>>>>>
+>>>>>>> Correction: I can reproduce that with `next` as well. So it's not
+>>>>>>> related to the wip/dovetail branch.
+>>>>>>>
+>>>>>>
+>>>>>> Situation still the same with the latest release?
+>>>>>
+>>>>> Which release? I tried to build the "testing" branch of xenomai-images
+>>>>> (which holds the COW patches) but that doesn't build at all, patches
+>>>>> can not be applied.
+>>>>>
+>>>>
+>>>> Yeah, that's because they are applied to latest x86 I-pipe releases. You
+>>>> don't need that branch for that arch anymore.
+>>>>
+>>>>> used cmdline:
+>>>>> kas-container build kas.yml:opt-linux-latest-5.4.yml:board-qemu-amd64.yml:opt-xenomai-next.yml
+>>>>>
+>>>>> Building and running the "next" branch of xenomai-images still reports
+>>>>> the same failing self-test.
+>>>>
+>>>> Hmm, too bad...
+>>>>
+>>>> Jan
+>>>>
+>>>
+>>> FWIW, I'm still not getting this one, but I face random SEGV of
+>>> applications while latency is running. I'm not seeing this with latest
+>>> 4.19 so far. Seems like 5.4-x86 is not yet stable...
+>>
+>> $ cd xenomai-images
+>> $ git fetch
+>> $ git checkout origin/next
+>> $ kas-container build
+>> kas.yml:opt-linux-latest-5.4.yml:opt-xenomai-next.yml:board-qemu-amd64.yml
+>> $ ./start-qemu amd64
+>>
+>> $ login
+>> $ dmesg
+>>
+>> [    0.270682] ------------------------
+>> [    0.271303] | Locking API testsuite:
+>> [    0.271953]
+>> ----------------------------------------------------------------------------
+>> [    0.273260]                                  | spin |wlock |rlock
+>> |mutex | wsem | rsem |
+>> [    0.274480]
+>> --------------------------------------------------------------------------
+>> [    0.276748]                      A-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.293257]                  A-B-B-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.301759]              A-B-B-C-C-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.308446]              A-B-C-A-B-C deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.314094]          A-B-B-C-C-D-D-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.319191]          A-B-C-D-B-D-D-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.323848]          A-B-C-D-B-C-D-A deadlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.328360]                     double unlock:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.332703]                   initialize held:  ok  |  ok  |  ok  |
+>> ok  |  ok  |  ok  |  ok  |
+>> [    0.336563]
+>> --------------------------------------------------------------------------
+>> [    0.337730]               recursive read-lock:             |  ok  |
+>>            |  ok  |
+>> [    0.339691]            recursive read-lock #2:             |  ok  |
+>>            |  ok  |
+>> [    0.341601]             mixed read-write-lock:             |  ok  |
+>>            |  ok  |
+>> [    0.343578]             mixed write-read-lock:             |  ok  |
+>>            |  ok  |
+>> [    0.347917]   mixed read-lock/lock-write ABBA:             |FAILED|
+>>            |  ok  |
 > 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  lib/alchemy/task.c          | 9 ++++++---
->  lib/copperplate/threadobj.c | 9 ++++++---
->  lib/psos/task.c             | 9 ++++++---
->  lib/vxworks/kernLib.c       | 6 ++++--
->  lib/vxworks/taskLib.c       | 6 ++++--
->  5 files changed, 26 insertions(+), 13 deletions(-)
-> 
-> diff --git a/lib/alchemy/task.c b/lib/alchemy/task.c
-> index 949a996d0..9afa2af57 100644
-> --- a/lib/alchemy/task.c
-> +++ b/lib/alchemy/task.c
-> @@ -1410,11 +1410,14 @@ int rt_task_slice(RT_TASK *task, RTIME quantum)
->  
->  	param_ex.sched_priority = threadobj_get_priority(&tcb->thobj);
->  	if (quantum) {
-> +		struct timespec ts;
->  		policy = SCHED_RR;
-> -		clockobj_ticks_to_timespec(&alchemy_clock, quantum,
-> -					   &param_ex.sched_rr_quantum);
-> -	} else
-> +		clockobj_ticks_to_timespec(&alchemy_clock, quantum, &ts);
-> +		param_ex.sched_rr_quantum.tv_sec = ts.tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = ts.tv_nsec;
-> +	} else {
->  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
-> +	}
->  
->  	ret = threadobj_set_schedparam(&tcb->thobj, policy, &param_ex);
->  	switch (ret) {
-> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
-> index a3101baa1..f4588a17a 100644
-> --- a/lib/copperplate/threadobj.c
-> +++ b/lib/copperplate/threadobj.c
-> @@ -1741,7 +1741,8 @@ int threadobj_set_schedparam(struct threadobj *thobj, int policy,
->  		ret = enable_rr_corespec(thobj, param_ex);
->  		if (ret)
->  			return __bt(ret);
-> -		thobj->tslice = param_ex->sched_rr_quantum;
-> +		thobj->tslice.tv_sec = param_ex->sched_rr_quantum.tv_sec;
-> +		thobj->tslice.tv_nsec = param_ex->sched_rr_quantum.tv_nsec;
->  	} else if (thobj->policy == SCHED_RR) /* Switching off round-robin. */
->  		disable_rr_corespec(thobj);
->  
-> @@ -1761,8 +1762,10 @@ int threadobj_set_schedprio(struct threadobj *thobj, int priority)
->  	param_ex.sched_priority = priority;
->  	policy = thobj->policy;
->  
-> -	if (policy == SCHED_RR)
-> -		param_ex.sched_rr_quantum = thobj->tslice;
-> +	if (policy == SCHED_RR) {
-> +		param_ex.sched_rr_quantum.tv_sec = thobj->tslice.tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = thobj->tslice.tv_nsec;
-> +	}
->  
->  	return threadobj_set_schedparam(thobj, policy, &param_ex);
->  }
-> diff --git a/lib/psos/task.c b/lib/psos/task.c
-> index 46e49ea88..f678be61d 100644
-> --- a/lib/psos/task.c
-> +++ b/lib/psos/task.c
-> @@ -192,7 +192,8 @@ static void *task_trampoline(void *arg)
->  
->  	if (task->mode & T_TSLICE) {
->  		param_ex.sched_priority = threadobj_get_priority(&task->thobj);
-> -		param_ex.sched_rr_quantum = psos_rrperiod;
-> +		param_ex.sched_rr_quantum.tv_sec = psos_rrperiod.tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = psos_rrperiod.tv_nsec;
->  		threadobj_set_schedparam(&task->thobj, SCHED_RR, &param_ex);
->  	}
->  
-> @@ -630,9 +631,11 @@ u_long t_mode(u_long mask, u_long newmask, u_long *oldmode_r)
->  
->  	if (task->mode & T_TSLICE) {
->  		policy = SCHED_RR;
-> -		param_ex.sched_rr_quantum = psos_rrperiod;
-> -	} else
-> +		param_ex.sched_rr_quantum.tv_sec = psos_rrperiod.tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = psos_rrperiod.tv_nsec;
-> +	} else {
->  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
-> +	}
->  
->  	/* Working on self, so -EIDRM can't happen. */
->  	threadobj_set_schedparam(&task->thobj, policy, &param_ex);
-> diff --git a/lib/vxworks/kernLib.c b/lib/vxworks/kernLib.c
-> index 4f3bd8201..d67502730 100644
-> --- a/lib/vxworks/kernLib.c
-> +++ b/lib/vxworks/kernLib.c
-> @@ -30,9 +30,11 @@ static int switch_slicing(struct threadobj *thobj, struct timespec *quantum)
->  
->  	if (quantum) {
->  		policy = SCHED_RR;
-> -		param_ex.sched_rr_quantum = *quantum;
-> -	} else
-> +		param_ex.sched_rr_quantum.tv_sec = quantum->tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = quantum->tv_nsec;
-> +	} else {
->  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
-> +	}
->  
->  	return threadobj_set_schedparam(thobj, policy, &param_ex);
-
-@Song:
-Following this code paths brings me to
-sc_cobalt_thread_setschedparam_ex, which is not yet part of our y2038
-roadmap.
-
-
->  }
-> diff --git a/lib/vxworks/taskLib.c b/lib/vxworks/taskLib.c
-> index a4af36c1f..c8723c6be 100644
-> --- a/lib/vxworks/taskLib.c
-> +++ b/lib/vxworks/taskLib.c
-> @@ -265,8 +265,10 @@ static void *task_trampoline(void *arg)
->  
->  	/* Turn on time slicing if RR globally enabled. */
->  	if (wind_time_slice) {
-> -		clockobj_ticks_to_timespec(&wind_clock, wind_time_slice,
-> -					   &param_ex.sched_rr_quantum);
-> +		struct timespec ts;
-> +		clockobj_ticks_to_timespec(&wind_clock, wind_time_slice, &ts);
-> +		param_ex.sched_rr_quantum.tv_sec = ts.tv_sec;
-> +		param_ex.sched_rr_quantum.tv_nsec = ts.tv_nsec;
->  		threadobj_lock(&task->thobj);
->  		param_ex.sched_priority = threadobj_get_priority(&task->thobj);
->  		threadobj_set_schedparam(&task->thobj, SCHED_RR, &param_ex);
+> Ah, that I can confirm! Might be a trace to follow...
 > 
 
+Nope, false positive: https://bugzilla.kernel.org/show_bug.cgi?id=203647
+
+Jan
 
 -- 
 Siemens AG, T RDA IOT
