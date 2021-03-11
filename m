@@ -1,15 +1,12 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH V2 1/2] cobalt/rtdm: introduce new interfaces to init task
-Date: Thu, 11 Mar 2021 07:08:40 +0000
-Message-ID: <MWHPR11MB1710AA2988D7054EC577A076F2909@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <20210310005732.13439-1-hongzhan.chen@intel.com>
- <6ab75124-acb3-4276-c8c0-0e39f63a946a@siemens.com>
- <87im5zidmg.fsf@xenomai.org>
-In-Reply-To: <87im5zidmg.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+References: <20210311064859.10971-1-hongzhan.chen@intel.com>
+ <20210311064859.10971-2-hongzhan.chen@intel.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/2] cobalt/rtdm: introduce new interface to init timer
+In-reply-to: <20210311064859.10971-2-hongzhan.chen@intel.com>
+Date: Thu, 11 Mar 2021 09:13:42 +0100
+Message-ID: <87v99yglah.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,81 +15,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
-                                                                           =
- =20
->Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:                      =
-              =20
->                                                                          =
-              =20
->> On 10.03.21 01:57, hongzha1 via Xenomai wrote:                          =
-              =20
->>> Initialise and start a real-time task on specified cpu or current      =
-              =20
->>> cpu.                                                                   =
-              =20
->>>                                                                        =
-              =20
->>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>                      =
-              =20
->>>                                                                        =
-              =20
->>> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kerne=
-l/rtdm/driver.h
->>> index 733c49df8..42daaa5b2 100644                                      =
-              =20
->>> --- a/include/cobalt/kernel/rtdm/driver.h                              =
-              =20
->>> +++ b/include/cobalt/kernel/rtdm/driver.h                              =
-              =20
->>> @@ -1024,6 +1024,20 @@ typedef void (*rtdm_task_proc_t)(void *arg);    =
-              =20
->>>  int rtdm_task_init(rtdm_task_t *task, const char *name,               =
-              =20
->>>  		   rtdm_task_proc_t task_proc, void *arg,                           =
-            =20
->>>  		   int priority, nanosecs_rel_t period);                            =
-            =20
->>> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name=
-,             =20
->>> +		rtdm_task_proc_t task_proc, void *arg,                              =
-            =20
->>> +		int priority, nanosecs_rel_t period);                               =
-            =20
->>> +                                                                      =
-              =20
->>> +static inline int rtdm_task_init_cpu(rtdm_task_t *task, const char *na=
-me,           =20
->>> +		rtdm_task_proc_t task_proc, void *arg,                              =
-            =20
->>> +		int priority, nanosecs_rel_t period)                                =
-            =20
->>                                                                         =
-              =20
->> I think this was a typo of Philippe:                                    =
-              =20
->>                                                                         =
-              =20
->> rtdm_task_init should be implemented as a wrapper around                =
-              =20
-> rtdm_task_init_on_cpu. We don't need another call. =20
 
-I misunderstood something. Thanks for helping clarify it.                  =
-                =20
->                                                                          =
-             =20
->                                                                          =
-              =20
->Correct.                =20
+hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-New patches updated. Please review.
-                                                               =20
->                                                                          =
-              =20
->--                                                                        =
-              =20
->Philippe.                                                                 =
-              =20
+> Initialise timer on specified cpu.
+>
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>
+> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+> index 5406e54a5..d58df33ce 100644
+> --- a/include/cobalt/kernel/rtdm/driver.h
+> +++ b/include/cobalt/kernel/rtdm/driver.h
+> @@ -966,6 +966,9 @@ enum rtdm_timer_mode {
+>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>  		    const char *name);
+>  
+> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+> +		    const char *name, int cpu);
+> +
+>  void rtdm_timer_destroy(rtdm_timer_t *timer);
+>  
+>  int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index 069a442e5..268bf8fbf 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -583,15 +583,44 @@ EXPORT_SYMBOL_GPL(rtdm_task_busy_sleep);
+>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>  		    const char *name)
+>  {
+> +	/*cpu0 is used when no affinity was given*/
+> +	return rtdm_timer_init_on_cpu(timer, handler, name, 0);
+> +}
+> +EXPORT_SYMBOL_GPL(rtdm_timer_init);
+> +
+> +/**
+> + * @brief Initialise a timer on specified cpu
+> + *
+> + * @param[in,out] timer Timer handle
+> + * @param[in] handler Handler to be called on timer expiry
+> + * @param[in] name Optional timer name
+> + * @param[in] cpu that run on
+> + *
+> + * @return 0 on success, otherwise negative error code
+> + *
+> + * @coretags{task-unrestricted}
+> + */
+> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer,
+> +		rtdm_timer_handler_t handler, const char *name, int cpu)
+> +{
+> +	struct xnsched *sched;
+> +
+>  	if (!realtime_core_enabled())
+>  		return -ENOSYS;
+>  
+> -	xntimer_init((timer), &nkclock, handler, NULL, XNTIMER_IGRAVITY);
+> +	if (!cpu_online(cpu))
+> +		return -EINVAL;
+> +
+> +	sched = xnsched_struct(cpu);
+> +	if (sched == NULL)
+> +		return -EINVAL;
+> +
+> +	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
+>  	xntimer_set_name((timer), (name));
+> +
+>  	return 0;
+>  }
+> -
+> -EXPORT_SYMBOL_GPL(rtdm_timer_init);
+> +EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
+>  
+>  /**
+>   * @brief Destroy a timer
+
+Do we have a potential user for this call?
+
+-- 
+Philippe.
 
