@@ -1,20 +1,14 @@
-Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
-References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
- <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
- <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
- <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
- <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
- <a5d4eb12-e327-7242-833a-40ae13d24ccb@siemens.com>
- <1bb7e174-eadc-5c8d-606a-7374962a402c@siemens.com>
- <ca7655e8-097c-0205-8a5a-34b66155d8ea@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7b05e81f-bc40-0864-3398-3cd585b9f549@siemens.com>
-Date: Thu, 11 Mar 2021 11:53:40 +0100
-MIME-Version: 1.0
-In-Reply-To: <ca7655e8-097c-0205-8a5a-34b66155d8ea@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 0/4] [y2038] clock_settime for timespec64
+Date: Thu, 11 Mar 2021 08:27:53 +0000
+Message-ID: <b5f2535aa8cf432a23cda621a65ff0c266beff09.camel@siemens.com>
+References: <1615430738-23692-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1615430738-23692-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6CB9676DEC29DC4992E253A2D7EF2A88@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,110 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 11.03.21 11:46, Jan Kiszka via Xenomai wrote:
-> On 11.03.21 11:38, Florian Bezdeka wrote:
->> On 11.03.21 10:12, Jan Kiszka wrote:
->>> On 08.03.21 13:46, Jan Kiszka via Xenomai wrote:
->>>> On 08.03.21 13:42, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
->>>>> On Mon, 2021-03-08 at 11:42 +0100, Jan Kiszka wrote:
->>>>>> On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
->>>>>>> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
->>>>>>> wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> the attached kernel log was taken form a local qemu machine with
->>>>>>>> Xenomai build from the wip/dovetail branch. There is a failing selftest
->>>>>>>> (mixed read-lock/lock-write ABBA).
->>>>>>>>
->>>>>>>
->>>>>>> Correction: I can reproduce that with `next` as well. So it's not
->>>>>>> related to the wip/dovetail branch.
->>>>>>>
->>>>>>
->>>>>> Situation still the same with the latest release?
->>>>>
->>>>> Which release? I tried to build the "testing" branch of xenomai-images
->>>>> (which holds the COW patches) but that doesn't build at all, patches
->>>>> can not be applied.
->>>>>
->>>>
->>>> Yeah, that's because they are applied to latest x86 I-pipe releases. You
->>>> don't need that branch for that arch anymore.
->>>>
->>>>> used cmdline:
->>>>> kas-container build kas.yml:opt-linux-latest-5.4.yml:board-qemu-amd64.yml:opt-xenomai-next.yml
->>>>>
->>>>> Building and running the "next" branch of xenomai-images still reports
->>>>> the same failing self-test.
->>>>
->>>> Hmm, too bad...
->>>>
->>>> Jan
->>>>
->>>
->>> FWIW, I'm still not getting this one, but I face random SEGV of
->>> applications while latency is running. I'm not seeing this with latest
->>> 4.19 so far. Seems like 5.4-x86 is not yet stable...
->>
->> $ cd xenomai-images
->> $ git fetch
->> $ git checkout origin/next
->> $ kas-container build
->> kas.yml:opt-linux-latest-5.4.yml:opt-xenomai-next.yml:board-qemu-amd64.yml
->> $ ./start-qemu amd64
->>
->> $ login
->> $ dmesg
->>
->> [    0.270682] ------------------------
->> [    0.271303] | Locking API testsuite:
->> [    0.271953]
->> ----------------------------------------------------------------------------
->> [    0.273260]                                  | spin |wlock |rlock
->> |mutex | wsem | rsem |
->> [    0.274480]
->> --------------------------------------------------------------------------
->> [    0.276748]                      A-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.293257]                  A-B-B-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.301759]              A-B-B-C-C-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.308446]              A-B-C-A-B-C deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.314094]          A-B-B-C-C-D-D-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.319191]          A-B-C-D-B-D-D-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.323848]          A-B-C-D-B-C-D-A deadlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.328360]                     double unlock:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.332703]                   initialize held:  ok  |  ok  |  ok  |
->> ok  |  ok  |  ok  |  ok  |
->> [    0.336563]
->> --------------------------------------------------------------------------
->> [    0.337730]               recursive read-lock:             |  ok  |
->>            |  ok  |
->> [    0.339691]            recursive read-lock #2:             |  ok  |
->>            |  ok  |
->> [    0.341601]             mixed read-write-lock:             |  ok  |
->>            |  ok  |
->> [    0.343578]             mixed write-read-lock:             |  ok  |
->>            |  ok  |
->> [    0.347917]   mixed read-lock/lock-write ABBA:             |FAILED|
->>            |  ok  |
-> 
-> Ah, that I can confirm! Might be a trace to follow...
-> 
-
-Nope, false positive: https://bugzilla.kernel.org/show_bug.cgi?id=203647
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+SGkhDQoNCk9uIFRodSwgMjAyMS0wMy0xMSBhdCAxMDo0NSArMDgwMCwgY2hlbnNvbmcgd3JvdGU6
+DQo+IFRoaXMgcGF0Y2ggc2VyaWFsIGlzIGFpbWVkIHRvIGludHJvZHVjZSBhIG5ldyBzeXNjYWxs
+IGNsb2NrX3NldHRpbWU2NCwNCj4gd2hpY2ggaXMgc3BlY2lmaWMgZm9yIDY0LWJpdCB0aW1lX3Qu
+DQo+IA0KPiBUaGVyZSBpcyBubyBpbXBhY3QgdG8gY3VycmVudCBpbXBsZW1ldGF0aW9uIG9mIGNs
+b2NrX3NldHRpbWUsIG5vdGhpbmcNCj4gYnJva2VuLg0KPiANCj4gY2hlbnNvbmcgKDQpOg0KPiDC
+oMKgaW5jbHVkZTogd3JhcHBlcnM6IGludHJvZHVjZSBvbGRfdGltZXNwZWMzMiBhbmQgX19rZXJu
+ZWxfdGltZXNwZWMNCg0KVGhpcyBwYXRjaCBpcyBub3QgbmVjZXNzYXJ5LiBXZSBkb24ndCBjYXJl
+IGFib3V0IHRoZSA0LjQga2VybmVsICh0aGUNCm9ubHkgb25lIHdoaWNoIGRvZXMgbm90IHByb3Zp
+ZGUgdGhpcyBkYXRhIHR5cGVzKSBhcyBpdCBoYXMgbm8geTIwMzgNCnN5c2NhbGxzIGF0IGFsbC4N
+Cg0KPiDCoMKgW3kyMDM4XWNvYmFsdDogcG9zaXg6IGNsb2NrOiBBZGRpbmcgY2xvY2tfc2V0dGlt
+ZTY0DQo+IMKgwqBbeTIwMzhdY29iYWx0OiBwb3NpeDogc3lzY2FsbDMyOiBBZGRpbmcgY29tcGF0
+IGNsb2NrX3NldHRpbWU2NA0KDQpUaGlzIHR3byBwYXRjaGVzIHNob3VsZCBiZSBzcXVhc2hlZC4g
+Tm8gbmVlZCB0byBzZXBhcmF0ZSB0aGUgY29tcGF0DQpzeXNjYWxsLiBTb21lIGlubGluZSBjb21t
+ZW50cyB3aWxsIGZvbGxvdw0KDQo+IMKgwqBbeTIwMzhdIGxpYjogY29iYWx0OiBjbG9jazogZGlz
+cGF0Y2ggY2xvY2tfc2V0dGltZQ0KDQpXaWxsIGNvbW1lbnQgb24gdGhpcyBwYXRjaCBzZXBhcmF0
+ZWx5Lg0KDQo+IA0KPiDCoGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAgMSArDQo+IMKga2VybmVsL2NvYmFsdC9pbmNsdWRlL2FzbS1nZW5lcmlj
+L3hlbm9tYWkvd3JhcHBlcnMuaCB8IDE3ICsrKysrKysrKysrKysrKysrDQo+IMKga2VybmVsL2Nv
+YmFsdC9wb3NpeC9jbG9jay5jICAgICAgICAgICAgICAgICAgICAgICAgICB8IDEyICsrKysrKysr
+KysrKw0KPiDCoGtlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaCAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgNCArKysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuYyAgICAg
+ICAgICAgICAgICAgICAgICB8IDEzICsrKysrKysrKysrKysNCj4gwqBrZXJuZWwvY29iYWx0L3Bv
+c2l4L3N5c2NhbGwzMi5oICAgICAgICAgICAgICAgICAgICAgIHwgIDQgKysrKw0KPiDCoGxpYi9j
+b2JhbHQvY2xvY2suYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNiArKysr
+KysNCj4gwqA3IGZpbGVzIGNoYW5nZWQsIDU3IGluc2VydGlvbnMoKykNCj4gDQoNCg==
 
