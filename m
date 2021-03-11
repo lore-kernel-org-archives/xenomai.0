@@ -1,9 +1,15 @@
+Subject: Re: [PATCH 2/4] [y2038]cobalt: posix: clock: Adding clock_settime64
+References: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
+ <d77a82d1c4738402500af7b9b7bbb0f7ab70e66d.camel@siemens.com>
+ <6049E2F0.5010003@tj.kylinos.cn> <6049E9AE.7000103@tj.kylinos.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c2b70e9c-6f9f-4c49-397b-cfc106311f9e@siemens.com>
+Date: Thu, 11 Mar 2021 11:37:31 +0100
 MIME-Version: 1.0
-From: ashwin damle <ashwindamle@gmail.com>
-Date: Mon, 29 Mar 2021 23:51:38 +0530
-Message-ID: <CAC-NLwzFEyQVeHUXHa6jYG9BesxaoA=1c4BHJiBRuKWhSB6Svg@mail.gmail.com>
-Subject: How to use RTnet on xenomai3?
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <6049E9AE.7000103@tj.kylinos.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,53 +18,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: chensong <chensong@tj.kylinos.cn>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Xenomai support,
+On 11.03.21 10:58, chensong via Xenomai wrote:
+> 
+> 
+> On 2021年03月11日 17:29, chensong via Xenomai wrote:
+>>
+>>
+>> On 2021年03月11日 17:03, florian.bezdeka@siemens.com wrote:
+>>> On Thu, 2021-03-11 at 10:46 +0800, chensong wrote:
+>>>> Adding a new syscall clock_settime64 specific for timespec64,
+>>>> It can solve y2038 in below scenarios:
+>>>>
+>>>> 1, 64bit kernel, y2038 safe
+>>>> 2, 32bit kernel, 32bit time_t, go to clock_settime, no break,
+>>>>     y2038 not safe.
+>>>> 3, 32bit kernel, 64bit time_t, go to clock_settime64 by the help
+>>>>     of libcobalt, no break, y2038 safe.
+>>>>
+>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>>> ---
+>>>>   include/cobalt/uapi/syscall.h |  1 +
+>>>>   kernel/cobalt/posix/clock.c   | 12 ++++++++++++
+>>>>   kernel/cobalt/posix/clock.h   |  4 ++++
+>>>>   3 files changed, 17 insertions(+)
+>>>>
+>>>> diff --git a/include/cobalt/uapi/syscall.h
+>>>> b/include/cobalt/uapi/syscall.h
+>>>> index 8895d2b..291b550 100644
+>>>> --- a/include/cobalt/uapi/syscall.h
+>>>> +++ b/include/cobalt/uapi/syscall.h
+>>>> @@ -123,6 +123,7 @@
+>>>>   #define sc_cobalt_clock_adjtime            100
+>>>>   #define sc_cobalt_thread_setschedprio        101
+>>>>   #define sc_cobalt_sem_timedwait64        102
+>>>> +#define sc_cobalt_clock_settime64        103
+>>>
+>>> I assume we should keep the order of affected syscalls. The next one
+>>> would be sc_cobalt_clock_gettime64.
+>>
+>> yes, i thought about catagorizing them in order, probably adjust
+>> sc_cobalt_sem_timedwait64 later, next is sc_cobalt_clock_gettime64.
+>>
+>>
+>>>
+>>> And I'm missing the tests... Please add tests for everything you add /
+>>> fix.
+>>
+>> ongoing.
+>>
+>> Song
+> 
+> by the way, i think it's better test clock_settime64 and clock_gettime64
+> together, is it ok for you?
+> 
+> if i set time at 2038 and set it back at the end of test, will it have
+> impact to the testing devices?
 
-I am successfully able to run xenomai3.1 on 4.19.89 on my core-2-duo
-machine. Xenomai works nice. Further I want to use RTnet.
+Yes, if something is depending on the absence of time jumps while the
+test is running. But I think it is fine to require that nothing critical
+is running in parallel to the test anyway.
 
-From
-https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet#installation-folder-overview
-I learnt that RTNet is built into Xenomai 3 and so I need not download from
-the rtnet page and build it separately. If so then where do I start using
-RTNET? Is there any example? The folder mentioned at
-https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup do appear on my
-computer.
+BTW, with Dovetail and the unified clocksource, we have to require that
+the user disables any ntp services because they can get upset and work
+against the test. I-pipe based Xenomai has a separate time base, though.
 
->From https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup I
-understand that /usr/local/rtnet/ is the directory where the RTNET files
-including documentation would be, but this folder is not created on my
-system. Therefore, I tried building RTNET from source using the
-instructions in the README: I get the error as below
-
-I request your help with an error.
-"checking for RT-extension... configure: error: *** RT-extended kernel not
-found in /lib/modules/4.19.89_xenomai/build
-makefile:51: recipe for target 'config.status' failed
-"
-I found that many have resolved the problems from by searching for the
-error and 5 pages direct to the same solution and that is
-
- ./configure --with-linux=/path/to/linux-source-with-xenomai-extension
- --with-rtext-config=/path/to/xeno-config
-
-My doubts are
-
-1. Is it necessary to build RTNet from source or is it built in Xenomai 3?
-If it is built in then how do I use it. Some steps will be helpful.
-
-2. If the RTNet is to be built from source then how to solve the above
-error. I pointed to the Linux source tree I used to build the xenomai
-kernel but it throws the same error.
-
-3. What does " /path/to/linux-source-with-xenomai-extension mean the Linux
-source folder of Xenomai patched kernel? or does it mean
-"/lib/modules/uname-r/build"....None works for me. /path/to/xeno-config
-seems to be /usr/xenomai on my machine since xeno-config resides there.
-
-Please help with this. Let me know if you require any more information.
+Jan
 
 -- 
-Ashwin Damle
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
