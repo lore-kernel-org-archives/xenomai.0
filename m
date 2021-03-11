@@ -1,12 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 wip/dovetail] cobalt/syscall: Account for different syscall
- argument marshaling
-Message-ID: <10bdcdc7-bb7f-f3b5-faa7-93575ca15258@siemens.com>
-Date: Mon, 15 Mar 2021 09:42:52 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/4] [y2038]cobalt: posix: clock: Adding clock_settime64
+Date: Thu, 11 Mar 2021 09:03:34 +0000
+Message-ID: <d77a82d1c4738402500af7b9b7bbb0f7ab70e66d.camel@siemens.com>
+References: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5E41F2251821BF4EA48FF2F8513D70D4@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,204 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-I-pipe makes sure that arguments of compat calls are ordered just like
-native calls. Dovetail does not. But it is better to use the kernel's
-syscall_get_arguments for retrieving the arguments anyway. Introduce
-pipeline_get_syscall_args to abstract that difference.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/kernel/dovetail/pipeline/pipeline.h |  8 ++++++++
- include/cobalt/kernel/ipipe/pipeline/pipeline.h    | 12 ++++++++++++
- .../arm/dovetail/include/asm/xenomai/syscall.h     |  5 -----
- .../arm64/dovetail/include/asm/xenomai/syscall.h   |  5 -----
- .../x86/dovetail/include/asm/xenomai/syscall.h     |  5 -----
- .../cobalt/include/asm-generic/xenomai/syscall.h   |  7 -------
- kernel/cobalt/posix/syscall.c                      | 14 ++++++++++----
- 7 files changed, 30 insertions(+), 26 deletions(-)
-
-diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-index 3cc7268d00..685af12af4 100644
---- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-@@ -6,6 +6,7 @@
- #define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
- 
- #include <linux/irq_pipeline.h>
-+#include <asm/syscall.h>
- #include <cobalt/kernel/assert.h>
- #include <asm/xenomai/features.h>
- #include <pipeline/machine.h>
-@@ -90,4 +91,11 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
- 	f->clock_freq = 0;	/* N/A */
- }
- 
-+static inline void pipeline_get_syscall_args(struct task_struct *task,
-+					     struct pt_regs *regs,
-+					     unsigned long *args)
-+{
-+	syscall_get_arguments(task, regs, args);
-+}
-+
- #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
-diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-index fda962568a..ac9c92b1b0 100644
---- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-@@ -11,6 +11,7 @@
- 
- #include <pipeline/machine.h>
- #include <asm/xenomai/features.h>
-+#include <asm/xenomai/syscall.h>
- 
- #define xnsched_primary_domain  cobalt_pipeline.domain
- 
-@@ -81,4 +82,15 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
- 	f->clock_freq = cobalt_pipeline.clock_freq;
- }
- 
-+static inline void pipeline_get_syscall_args(struct task_struct *task,
-+					     struct pt_regs *regs,
-+					     unsigned long *args)
-+{
-+	*args++ = __xn_reg_arg1(regs);
-+	*args++ = __xn_reg_arg2(regs);
-+	*args++ = __xn_reg_arg3(regs);
-+	*args++ = __xn_reg_arg4(regs);
-+	*args   = __xn_reg_arg5(regs);
-+}
-+
- #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
-diff --git a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-index eb4ec1bbe1..fe8c1853aa 100644
---- a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-@@ -59,11 +59,6 @@
- 	})
- 
- #define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
--#define __xn_reg_arg1(__regs)	((__regs)->ARM_r1)
--#define __xn_reg_arg2(__regs)	((__regs)->ARM_r2)
--#define __xn_reg_arg3(__regs)	((__regs)->ARM_r3)
--#define __xn_reg_arg4(__regs)	((__regs)->ARM_r4)
--#define __xn_reg_arg5(__regs)	((__regs)->ARM_r5)
- #define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
- #define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
- 
-diff --git a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-index 33b4a710f8..96871e2473 100644
---- a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-@@ -23,11 +23,6 @@
- #define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
- 
- #define __xn_reg_rval(__regs)	((__regs)->regs[0])
--#define __xn_reg_arg1(__regs)	((__regs)->regs[0])
--#define __xn_reg_arg2(__regs)	((__regs)->regs[1])
--#define __xn_reg_arg3(__regs)	((__regs)->regs[2])
--#define __xn_reg_arg4(__regs)	((__regs)->regs[3])
--#define __xn_reg_arg5(__regs)	((__regs)->regs[4])
- #define __xn_reg_pc(__regs)	((__regs)->pc)
- #define __xn_reg_sp(__regs)	((__regs)->sp)
- 
-diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-index bf7a44ea0c..212840b5ef 100644
---- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-@@ -29,11 +29,6 @@
-  */
- #define __xn_reg_sys(regs)    ((regs)->orig_ax)
- #define __xn_reg_rval(regs)   ((regs)->ax)
--#define __xn_reg_arg1(regs)   ((regs)->di)
--#define __xn_reg_arg2(regs)   ((regs)->si)
--#define __xn_reg_arg3(regs)   ((regs)->dx)
--#define __xn_reg_arg4(regs)   ((regs)->r10)
--#define __xn_reg_arg5(regs)   ((regs)->r8)
- #define __xn_reg_pc(regs)     ((regs)->ip)
- #define __xn_reg_sp(regs)     ((regs)->sp)
- 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-index 91bbf3bfd1..194583c184 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-@@ -36,13 +36,6 @@
- #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
- #endif
- 
--#define __xn_reg_arglist(regs)	\
--	__xn_reg_arg1(regs),	\
--	__xn_reg_arg2(regs),	\
--	__xn_reg_arg3(regs),	\
--	__xn_reg_arg4(regs),	\
--	__xn_reg_arg5(regs)
--
- #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
- #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
- #define __xn_put_user(src, dstP)		__put_user(src, dstP)
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index 30c33dda61..b7177042e7 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -486,6 +486,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
-+	unsigned long args[6];
- 	unsigned int nr, code;
- 	long ret;
- 
-@@ -592,7 +593,10 @@ restart:
- 	 * handler (lostage ones), or rejected by allowed_syscall().
- 	 */
- 
--	ret = handler(__xn_reg_arglist(regs));
-+	p = current;
-+	pipeline_get_syscall_args(p, regs, args);
-+
-+	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
- 		if (switched) {
- 			ret = xnthread_harden();
-@@ -611,7 +615,6 @@ done:
- 	__xn_status_return(regs, ret);
- 	sigs = 0;
- 	if (!xnsched_root_p()) {
--		p = current;
- 		if (signal_pending(p) ||
- 		    xnthread_test_info(thread, XNKICKED)) {
- 			sigs = 1;
-@@ -677,6 +680,7 @@ int handle_root_syscall(struct pt_regs *regs)
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
-+	unsigned long args[6];
- 	unsigned int nr, code;
- 	long ret;
- 
-@@ -735,7 +739,10 @@ restart:
- 			xnthread_propagate_schedparam(thread);
- 	}
- 
--	ret = handler(__xn_reg_arglist(regs));
-+	p = current;
-+	pipeline_get_syscall_args(p, regs, args);
-+
-+	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
- 		sysflags ^= __xn_exec_histage;
- 		if (switched) {
-@@ -756,7 +763,6 @@ restart:
- 		 * just invoked, so make sure to fetch it.
- 		 */
- 		thread = xnthread_current();
--		p = current;
- 		if (signal_pending(p)) {
- 			sigs = 1;
- 			prepare_for_signal(p, thread, regs, sysflags);
--- 
-2.26.2
+T24gVGh1LCAyMDIxLTAzLTExIGF0IDEwOjQ2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gQWRk
+aW5nIGEgbmV3IHN5c2NhbGwgY2xvY2tfc2V0dGltZTY0IHNwZWNpZmljIGZvciB0aW1lc3BlYzY0
+LA0KPiBJdCBjYW4gc29sdmUgeTIwMzggaW4gYmVsb3cgc2NlbmFyaW9zOg0KPiANCj4gMSwgNjRi
+aXQga2VybmVsLCB5MjAzOCBzYWZlDQo+IDIsIDMyYml0IGtlcm5lbCwgMzJiaXQgdGltZV90LCBn
+byB0byBjbG9ja19zZXR0aW1lLCBubyBicmVhaywNCj4gwqDCoMKgeTIwMzggbm90IHNhZmUuDQo+
+IDMsIDMyYml0IGtlcm5lbCwgNjRiaXQgdGltZV90LCBnbyB0byBjbG9ja19zZXR0aW1lNjQgYnkg
+dGhlIGhlbHANCj4gwqDCoMKgb2YgbGliY29iYWx0LCBubyBicmVhaywgeTIwMzggc2FmZS4NCj4g
+DQo+IFNpZ25lZC1vZmYtYnk6IGNoZW5zb25nIDxjaGVuc29uZ0B0ai5reWxpbm9zLmNuPg0KPiAt
+LS0NCj4gwqBpbmNsdWRlL2NvYmFsdC91YXBpL3N5c2NhbGwuaCB8ICAxICsNCj4gwqBrZXJuZWwv
+Y29iYWx0L3Bvc2l4L2Nsb2NrLmMgICB8IDEyICsrKysrKysrKysrKw0KPiDCoGtlcm5lbC9jb2Jh
+bHQvcG9zaXgvY2xvY2suaCAgIHwgIDQgKysrKw0KPiDCoDMgZmlsZXMgY2hhbmdlZCwgMTcgaW5z
+ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2Fs
+bC5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gaW5kZXggODg5NWQyYi4uMjkx
+YjU1MCAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gKysr
+IGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gQEAgLTEyMyw2ICsxMjMsNyBAQA0K
+PiDCoCNkZWZpbmUgc2NfY29iYWx0X2Nsb2NrX2FkanRpbWUJCQkxMDANCj4gwqAjZGVmaW5lIHNj
+X2NvYmFsdF90aHJlYWRfc2V0c2NoZWRwcmlvCQkxMDENCj4gwqAjZGVmaW5lIHNjX2NvYmFsdF9z
+ZW1fdGltZWR3YWl0NjQJCTEwMg0KPiArI2RlZmluZSBzY19jb2JhbHRfY2xvY2tfc2V0dGltZTY0
+CQkxMDMNCg0KSSBhc3N1bWUgd2Ugc2hvdWxkIGtlZXAgdGhlIG9yZGVyIG9mIGFmZmVjdGVkIHN5
+c2NhbGxzLiBUaGUgbmV4dCBvbmUNCndvdWxkIGJlIHNjX2NvYmFsdF9jbG9ja19nZXR0aW1lNjQu
+DQoNCkFuZCBJJ20gbWlzc2luZyB0aGUgdGVzdHMuLi4gUGxlYXNlIGFkZCB0ZXN0cyBmb3IgZXZl
+cnl0aGluZyB5b3UgYWRkIC8NCmZpeC4NCg0KPiDCoA0KPiANCj4gDQo+IA0KPiDCoCNkZWZpbmUg
+X19OUl9DT0JBTFRfU1lTQ0FMTFMJCQkxMjggLyogUG93ZXIgb2YgMiAqLw0KPiDCoA0KPiANCj4g
+DQo+IA0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jIGIva2VybmVs
+L2NvYmFsdC9wb3NpeC9jbG9jay5jDQo+IGluZGV4IDZhNDc5NTYuLjk2NDNmOGYgMTAwNjQ0DQo+
+IC0tLSBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYw0KPiArKysgYi9rZXJuZWwvY29iYWx0
+L3Bvc2l4L2Nsb2NrLmMNCj4gQEAgLTIzLDYgKzIzLDcgQEANCj4gwqAjaW5jbHVkZSAidGhyZWFk
+LmgiDQo+IMKgI2luY2x1ZGUgImNsb2NrLmgiDQo+IMKgI2luY2x1ZGUgPHRyYWNlL2V2ZW50cy9j
+b2JhbHQtcG9zaXguaD4NCj4gKyNpbmNsdWRlIDxjb2JhbHQva2VybmVsL3RpbWUuaD4NCj4gwqAN
+Cj4gDQo+IA0KPiANCj4gwqBzdGF0aWMgc3RydWN0IHhuY2xvY2sgKmV4dGVybmFsX2Nsb2Nrc1tD
+T0JBTFRfTUFYX0VYVENMT0NLU107DQo+IMKgDQo+IA0KPiANCj4gDQo+IEBAIC0xOTMsNiArMTk0
+LDE3IEBAIENPQkFMVF9TWVNDQUxMKGNsb2NrX3NldHRpbWUsIGN1cnJlbnQsDQo+IMKgCXJldHVy
+biBfX2NvYmFsdF9jbG9ja19zZXR0aW1lKGNsb2NrX2lkLCAmdHMpOw0KPiDCoH0NCj4gwqANCj4g
+DQo+IA0KPiANCj4gK0NPQkFMVF9TWVNDQUxMKGNsb2NrX3NldHRpbWU2NCwgY3VycmVudCwNCj4g
+KwkgICAgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgY29uc3Qgc3RydWN0IF9fa2VybmVsX3RpbWVz
+cGVjIF9fdXNlciAqdV90cykpDQo+ICt7DQo+ICsJc3RydWN0IHRpbWVzcGVjNjQgdHM2NDsNCj4g
+Kw0KPiArCWlmIChjb2JhbHRfZ2V0X3RpbWVzcGVjNjQoJnRzNjQsIHVfdHMpKQ0KPiArCQlyZXR1
+cm4gLUVGQVVMVDsNCj4gKw0KPiArCXJldHVybiBfX2NvYmFsdF9jbG9ja19zZXR0aW1lKGNsb2Nr
+X2lkLCAmdHM2NCk7DQo+ICt9DQo+ICsNCj4gwqBDT0JBTFRfU1lTQ0FMTChjbG9ja19hZGp0aW1l
+LCBjdXJyZW50LA0KPiDCoAkgICAgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgc3RydWN0IF9fdXNl
+cl9vbGRfdGltZXggX191c2VyICp1X3R4KSkNCj4gwqB7DQo+IGRpZmYgLS1naXQgYS9rZXJuZWwv
+Y29iYWx0L3Bvc2l4L2Nsb2NrLmggYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmgNCj4gaW5k
+ZXggZTY5ZTc2ZS4uOTBmNzlmYSAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFsdC9wb3NpeC9j
+bG9jay5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaA0KPiBAQCAtMTE5LDYg
+KzExOSwxMCBAQCBDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX2dldHRpbWUsDQo+IMKgQ09CQUxU
+X1NZU0NBTExfREVDTChjbG9ja19zZXR0aW1lLA0KPiDCoAkJICAgIChjbG9ja2lkX3QgY2xvY2tf
+aWQsIGNvbnN0IHN0cnVjdCBfX3VzZXJfb2xkX3RpbWVzcGVjIF9fdXNlciAqdV90cykpOw0KPiDC
+oA0KPiANCj4gDQo+IA0KPiArQ09CQUxUX1NZU0NBTExfREVDTChjbG9ja19zZXR0aW1lNjQsDQo+
+ICsJCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLA0KPiArCQkJIGNvbnN0IHN0cnVjdCBfX2tlcm5l
+bF90aW1lc3BlYyBfX3VzZXIgKnVfdHMpKTsNCj4gKw0KPiDCoENPQkFMVF9TWVNDQUxMX0RFQ0wo
+Y2xvY2tfYWRqdGltZSwNCj4gwqAJCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLCBzdHJ1Y3QgX191
+c2VyX29sZF90aW1leCBfX3VzZXIgKnVfdHgpKTsNCj4gwqANCg0K
 
