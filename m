@@ -1,16 +1,13 @@
-References: <20210220124527.401015-1-rpm@xenomai.org>
- <20210220124527.401015-3-rpm@xenomai.org>
- <b15e7868-3e9d-aed9-b503-9c71efac6a4b@siemens.com>
- <87k0qdhekq.fsf@xenomai.org>
- <93c0d384-8b67-8b0f-3002-29f8a00842b9@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 3/8] cobalt/trace: dovetail: add placeholders for trace
- management
-In-reply-to: <93c0d384-8b67-8b0f-3002-29f8a00842b9@siemens.com>
-Date: Thu, 11 Mar 2021 17:18:22 +0100
-Message-ID: <87h7lhhdf5.fsf@xenomai.org>
+Date: Thu, 11 Mar 2021 17:35:41 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
+Message-ID: <20210311173541.5e1b13b3@md1za8fc.ad001.siemens.net>
+In-Reply-To: <20210222163530.443822b3@md1za8fc.ad001.siemens.net>
+References: <874kixxf9e.fsf@xenomai.org>
+ <20210222163530.443822b3@md1za8fc.ad001.siemens.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Henning Schild via Xenomai <xenomai@xenomai.org>
 
+Am Mon, 22 Feb 2021 16:35:30 +0100
+schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Am Sun, 31 Jan 2021 17:06:21 +0100
+> schrieb Philippe Gerum via Xenomai <xenomai@xenomai.org>:
+> 
+> > The initial port of the Cobalt core to Dovetail/x86 is available
+> > from [1]. Ports to Dovetail/ARM and Dovetail/arm64 should follow
+> > within a couple of weeks.
+> > 
+> > So far, latency and switchtest run flawlessly. Most of the smokey
+> > test suite passes successfully, except the GDB test at the moment.
+> > 
+> > How to test this:
+> > 
+> > - clone Xenomai from [1], switch to branch for-upstream/dovetail
+> > - clone the Dovetail tree (v5.10) from [2], switch to branch
+> > dovetail/master
+> > - run scripts/prepare-kernel.sh available from [1] into [2] (usual
+> > procedure) for x86, that would be: .../scripts/prepare-kernel.sh
+> > --arch=x86
+> > - build your kernel using the sources from [2]  
+> 
+> I followed this and got
+> 
+> 0625b829450dab22b2eea860eef4fb94f64af4fd
+> 61769e49d82a6775f6eb259bdc16c2f84df79505
+> 
+> 
+> > There is no user-visible Kconfig change compared to an I-pipe based
+> > version.  
+> 
+> took a 4.19 x86_64 savedefconfig in via olddefconfig
+> 
+> > Alternatively, the Xenomai code base in [1] can also run on top of
+> > the I-pipe. prepare-kernel.sh detects which pipeline flavour is
+> > there, and prepares the source tree accordingly.
+> > 
+> > This code is being gradually merged into Xenomai's -next branch, and
+> > will be at the core of Xenomai 3.2. Testing and feedback
+> > appreciated.  
+> 
+> Now i get a BUG pretty early on during boot. Since my config still
+> seems off i could not yet enter my rootfs, probably some
+> drivers/filesystems/raid switches got lost ...
+> 
+> Its a null pointer deref in kmem_cache_alloc, coming somewhere from
+> mempool_init_node
+> 
+> First guess was that "numa=off" would hide the problem, seems it does.
+> So my next guess is that even a qemu with numa could reproduce this
+> ... probably almost on a random config ... as long as it has smp+numa
 
-> On 11.03.21 16:53, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 20.02.21 13:45, Philippe Gerum wrote:
->>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>
->>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>> ---
->>>>  .../cobalt/kernel/dovetail/pipeline/trace.h   | 123 ++++++++++++++++++
->>>>  1 file changed, 123 insertions(+)
->>>>  create mode 100644 include/cobalt/kernel/dovetail/pipeline/trace.h
->>>>
->>>> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
->>>> new file mode 100644
->>>> index 000000000..819b8a713
->>>> --- /dev/null
->>>> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
->>>> @@ -0,0 +1,123 @@
->>>> +/*
->>>> + * Copyright (C) 2006 Jan Kiszka <jan.kiszka@web.de>.
->>>> + *
->>>
->>> Should likely be updated when filled.
->>>
->> 
->> I'm refraining from modifying others' copyright stanzas. When splitting
->> an existing file, I most often duplicate the copyright notice of the
->> original one into the resulting files "as is".
->> 
->
-> By the time you drop in your implementation and remove mine from the
-> stubs, just update this because latest then the copyright changed.
->
+It is not about numa, now also see that on qemu. Jan looks into it at
+the moment.
 
-Well, I did this out of courtesy because you actually defined the
-original API, which is where the value is (how this API operates is
-pretty much accessory). And that API stays. Anyway, I may update the
-notice next time I work on this code, this is not an issue.
+Henning
 
--- 
-Philippe.
+> I do not have more at the moment, but there seem to be issues around
+> NUMA.
+> 
+> regards,
+> Henning
+> 
+> > Thanks,
+> > 
+> > [1] https://lab.xenomai.org/xenomai-rpm.git, "for-upstream/dovetail"
+> > branch [2] https://git.evlproject.org/linux-evl.git,
+> > "dovetail/master" branch
+> >   
+> 
+> 
+
 
