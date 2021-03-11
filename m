@@ -1,15 +1,14 @@
-Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm and
- unuse_temporary_mm
-References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
- <87ft0xfyj4.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
-Date: Mon, 15 Mar 2021 07:19:40 +0100
+References: <20210311064859.10971-1-hongzhan.chen@intel.com>
+ <20210311064859.10971-2-hongzhan.chen@intel.com>
+ <87v99yglah.fsf@xenomai.org>
+ <MWHPR11MB1710261A737D070A6CC0190CF2909@MWHPR11MB1710.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 2/2] cobalt/rtdm: introduce new interface to init timer
+In-reply-to: <MWHPR11MB1710261A737D070A6CC0190CF2909@MWHPR11MB1710.namprd11.prod.outlook.com>
+Date: Thu, 11 Mar 2021 09:48:19 +0100
+Message-ID: <87pn06gjos.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <87ft0xfyj4.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,71 +17,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.03.21 18:14, Philippe Gerum wrote:
-> 
-> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
-> 
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->>
->> This is only called during early init, e.g. for switching alternatives.
->> Still, switch_mm_irqs_off would complain without this, and we are better
->> safe than sorry.
->>
-> 
-> The way this is done in Dovetail is fragile too, since the protection we
-> have there still expects the pipeline entry code not to mess up on
-> handling an interrupt, which defeats the purpose of such
-> precaution. Besides, the temp_state should be snapshot under protection
-> too. IOW, IRQs should be hard disabled fully while using the temporary
-> mm.
-> 
-> Upstreaming a similar patch for Dovetail.
 
-Just saw it: It's wrong as it left the hard_irq_save_full at the caller
-site. Would raise a warning when debugging is enabled. Please fix.
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
-Jan
-
-> 
-> Thanks,
-> 
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
+>>-----Original Message-----
+>>From: Philippe Gerum <rpm@xenomai.org> 
+>>Sent: Thursday, March 11, 2021 4:14 PM
+>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>Cc: xenomai@xenomai.org
+>>Subject: Re: [PATCH 2/2] cobalt/rtdm: introduce new interface to init timer
 >>
->> 4.19 is not affected. Dovetail solves this differently, via 
->> local_irq_save_full which is not available in I-pipe and not worth to 
->> introduce for this purpose.
 >>
->>  arch/x86/include/asm/mmu_context.h | 2 ++
->>  1 file changed, 2 insertions(+)
+>>hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 >>
->> diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
->> index 0d9dd08c2122..2b4afca4e15f 100644
->> --- a/arch/x86/include/asm/mmu_context.h
->> +++ b/arch/x86/include/asm/mmu_context.h
->> @@ -383,6 +383,7 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
->>  	temp_mm_state_t temp_state;
+>>> Initialise timer on specified cpu.
+>>>
+>>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>>>
+>>> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+>>> index 5406e54a5..d58df33ce 100644
+>>> --- a/include/cobalt/kernel/rtdm/driver.h
+>>> +++ b/include/cobalt/kernel/rtdm/driver.h
+>>> @@ -966,6 +966,9 @@ enum rtdm_timer_mode {
+>>>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>>>  		    const char *name);
+>>>  
+>>> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>>> +		    const char *name, int cpu);
+>>> +
+>>>  void rtdm_timer_destroy(rtdm_timer_t *timer);
+>>>  
+>>>  int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
+>>> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+>>> index 069a442e5..268bf8fbf 100644
+>>> --- a/kernel/cobalt/rtdm/drvlib.c
+>>> +++ b/kernel/cobalt/rtdm/drvlib.c
+>>> @@ -583,15 +583,44 @@ EXPORT_SYMBOL_GPL(rtdm_task_busy_sleep);
+>>>  int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+>>>  		    const char *name)
+>>>  {
+>>> +	/*cpu0 is used when no affinity was given*/
+>>> +	return rtdm_timer_init_on_cpu(timer, handler, name, 0);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(rtdm_timer_init);
+>>> +
+>>> +/**
+>>> + * @brief Initialise a timer on specified cpu
+>>> + *
+>>> + * @param[in,out] timer Timer handle
+>>> + * @param[in] handler Handler to be called on timer expiry
+>>> + * @param[in] name Optional timer name
+>>> + * @param[in] cpu that run on
+>>> + *
+>>> + * @return 0 on success, otherwise negative error code
+>>> + *
+>>> + * @coretags{task-unrestricted}
+>>> + */
+>>> +int rtdm_timer_init_on_cpu(rtdm_timer_t *timer,
+>>> +		rtdm_timer_handler_t handler, const char *name, int cpu)
+>>> +{
+>>> +	struct xnsched *sched;
+>>> +
+>>>  	if (!realtime_core_enabled())
+>>>  		return -ENOSYS;
+>>>  
+>>> -	xntimer_init((timer), &nkclock, handler, NULL, XNTIMER_IGRAVITY);
+>>> +	if (!cpu_online(cpu))
+>>> +		return -EINVAL;
+>>> +
+>>> +	sched = xnsched_struct(cpu);
+>>> +	if (sched == NULL)
+>>> +		return -EINVAL;
+>>> +
+>>> +	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
+>>  	xntimer_set_name((timer), (name));
+>> +
+>>  	return 0;
+>>  }
+>> -
+>> -EXPORT_SYMBOL_GPL(rtdm_timer_init);
+>> +EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
 >>  
->>  	lockdep_assert_irqs_disabled();
->> +	hard_cond_local_irq_disable();
->>  	temp_state.mm = this_cpu_read(cpu_tlbstate.loaded_mm);
->>  	switch_mm_irqs_off(NULL, mm, current);
->>  
->> @@ -407,6 +408,7 @@ static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
->>  {
->>  	lockdep_assert_irqs_disabled();
->>  	switch_mm_irqs_off(NULL, prev_state.mm, current);
->> +	hard_cond_local_irq_enable();
->>  
->>  	/*
->>  	 * Restore the breakpoints if they were disabled before the temporary mm
-> 
-> 
+>>  /**
+>>   * @brief Destroy a timer
+>>
+>>Do we have a potential user for this call?
+>
+> Yes. Latmus is supposed to use it. Evl  Latmus  is calling evl_init_timer_on_cpu in 
+> create_uthread_runner. So I think Xenomai should have corresponding one.
+>
+
+Agreed. Today, the timer benchmarking code can only land on CPU0,
+regardless of the affinity instruction given to 'latency', which is
+wrong. So we need this new call in order to be able to place the
+sampling timer on the tested CPU.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
