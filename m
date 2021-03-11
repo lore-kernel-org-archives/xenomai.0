@@ -1,11 +1,14 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Xenomai Community Call Minutes - March 24, 2021 
-Date: Wed, 24 Mar 2021 16:29:14 +0000
-Message-ID: <BY5PR11MB430683E41B8D0A2FAC5CB28BBA639@BY5PR11MB4306.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 2/4] [y2038]cobalt: posix: clock: Adding clock_settime64
+References: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
+ <d77a82d1c4738402500af7b9b7bbb0f7ab70e66d.camel@siemens.com>
+ <6049E2F0.5010003@tj.kylinos.cn>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <6049E9AE.7000103@tj.kylinos.cn>+B8F6BBBD54B8085D
+Date: Thu, 11 Mar 2021 17:58:06 +0800
 MIME-Version: 1.0
+In-Reply-To: <6049E2F0.5010003@tj.kylinos.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,74 +17,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Attendees:
-
-Jan Kiszka, Florent Pirou, Fino Meng, Florian Bezdeka, Song Chen,=20
-Antoine Hoarau, Hongzhan Chen, Dao Zhang, Jianbo Cao, Yanfeng Pu,
-Xiaoyan Gong, Jeroen Van den Keybus, Rick Wang
-
-
-Agenda:
-
-*Community update
-*Intel TCC
-*I/O latency
-*Open
-
-
-*Community update
-
-Online update from Jan:
-
-- Next branch is in good state.=20
-- Testing heavily on the Dovetail branch.=20
-- Debugging a TSC issue on Coffee Lake.
-- A Xenomai Hacker Space was setup on gitlab:
-  https://gitlab.com/Xenomai/xenomai-hacker-space
-  "This hacker space shall not replace the official project page but=20
-  augment it. Users with gitlab.com accounts can file issue or comment=20
-  on them, developers can request access in order to edit the wiki, and=20
-  - in the future - also benefit from CI and test lab resources Siemens=20
-  is donating to the project."
-
-
-Offline update from Philippe:
-
-"
-- The Xenomai/arm64 port to Dovetail is complete, available from my
-  private tree. Tested on kvm/aarch64, imx8mm, rpi4 and Odroid C4 so
-  far.
-- All pending patches now merged into my 3.2 tree.
-- A regression with Xenomai/I-pipe on this tree was fixed a couple of
-  days ago, causing switchtest to freeze the machine. You may want to
-  rebase on it.
-"
-
-
-* Intel(r) Time Coordinated Computing (Intel(r) TCC)
-
-https://www.intel.com/content/www/us/en/design/technologies-and-topics/iot/=
-real-time.html
-
-- TCC enabled processors deliver optimal compute and time performance for=20
-  real-time applications
-- Need to follow up on leveraging TCC capability in Xenomai
-
-
-* I/O latency
-
-- Currently no I/O latency benchmark tool or reference result in Xenomai
-- Philippe and Hongzhan are working on porting the latmus tool for GPIO
-  latency measurement
-- Jan used DPDK Pingpong test to measure the latency.=20
-- There is a RTCP KPI in TCC tools to measure round trip cycle time from=20
-  I/O to I/O (e.g. with I210 NIC).
- =20
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
 
-Thanks,
-Rick
+On 2021年03月11日 17:29, chensong via Xenomai wrote:
+>
+>
+> On 2021年03月11日 17:03, florian.bezdeka@siemens.com wrote:
+>> On Thu, 2021-03-11 at 10:46 +0800, chensong wrote:
+>>> Adding a new syscall clock_settime64 specific for timespec64,
+>>> It can solve y2038 in below scenarios:
+>>>
+>>> 1, 64bit kernel, y2038 safe
+>>> 2, 32bit kernel, 32bit time_t, go to clock_settime, no break,
+>>>     y2038 not safe.
+>>> 3, 32bit kernel, 64bit time_t, go to clock_settime64 by the help
+>>>     of libcobalt, no break, y2038 safe.
+>>>
+>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>> ---
+>>>   include/cobalt/uapi/syscall.h |  1 +
+>>>   kernel/cobalt/posix/clock.c   | 12 ++++++++++++
+>>>   kernel/cobalt/posix/clock.h   |  4 ++++
+>>>   3 files changed, 17 insertions(+)
+>>>
+>>> diff --git a/include/cobalt/uapi/syscall.h
+>>> b/include/cobalt/uapi/syscall.h
+>>> index 8895d2b..291b550 100644
+>>> --- a/include/cobalt/uapi/syscall.h
+>>> +++ b/include/cobalt/uapi/syscall.h
+>>> @@ -123,6 +123,7 @@
+>>>   #define sc_cobalt_clock_adjtime            100
+>>>   #define sc_cobalt_thread_setschedprio        101
+>>>   #define sc_cobalt_sem_timedwait64        102
+>>> +#define sc_cobalt_clock_settime64        103
+>>
+>> I assume we should keep the order of affected syscalls. The next one
+>> would be sc_cobalt_clock_gettime64.
+>
+> yes, i thought about catagorizing them in order, probably adjust
+> sc_cobalt_sem_timedwait64 later, next is sc_cobalt_clock_gettime64.
+>
+>
+>>
+>> And I'm missing the tests... Please add tests for everything you add /
+>> fix.
+>
+> ongoing.
+>
+> Song
+
+by the way, i think it's better test clock_settime64 and clock_gettime64 
+together, is it ok for you?
+
+if i set time at 2038 and set it back at the end of test, will it have 
+impact to the testing devices?
+
+Song
+
+>
+>>
+>>>
+>>>
+>>>
+>>>
+>>>   #define __NR_COBALT_SYSCALLS            128 /* Power of 2 */
+>>>
+>>>
+>>>
+>>>
+>>> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+>>> index 6a47956..9643f8f 100644
+>>> --- a/kernel/cobalt/posix/clock.c
+>>> +++ b/kernel/cobalt/posix/clock.c
+>>> @@ -23,6 +23,7 @@
+>>>   #include "thread.h"
+>>>   #include "clock.h"
+>>>   #include <trace/events/cobalt-posix.h>
+>>> +#include <cobalt/kernel/time.h>
+>>>
+>>>
+>>>
+>>>
+>>>   static struct xnclock *external_clocks[COBALT_MAX_EXTCLOCKS];
+>>>
+>>>
+>>>
+>>>
+>>> @@ -193,6 +194,17 @@ COBALT_SYSCALL(clock_settime, current,
+>>>       return __cobalt_clock_settime(clock_id, &ts);
+>>>   }
+>>>
+>>>
+>>>
+>>>
+>>> +COBALT_SYSCALL(clock_settime64, current,
+>>> +           (clockid_t clock_id, const struct __kernel_timespec
+>>> __user *u_ts))
+>>> +{
+>>> +    struct timespec64 ts64;
+>>> +
+>>> +    if (cobalt_get_timespec64(&ts64, u_ts))
+>>> +        return -EFAULT;
+>>> +
+>>> +    return __cobalt_clock_settime(clock_id, &ts64);
+>>> +}
+>>> +
+>>>   COBALT_SYSCALL(clock_adjtime, current,
+>>>              (clockid_t clock_id, struct __user_old_timex __user *u_tx))
+>>>   {
+>>> diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
+>>> index e69e76e..90f79fa 100644
+>>> --- a/kernel/cobalt/posix/clock.h
+>>> +++ b/kernel/cobalt/posix/clock.h
+>>> @@ -119,6 +119,10 @@ COBALT_SYSCALL_DECL(clock_gettime,
+>>>   COBALT_SYSCALL_DECL(clock_settime,
+>>>               (clockid_t clock_id, const struct __user_old_timespec
+>>> __user *u_ts));
+>>>
+>>>
+>>>
+>>>
+>>> +COBALT_SYSCALL_DECL(clock_settime64,
+>>> +            (clockid_t clock_id,
+>>> +             const struct __kernel_timespec __user *u_ts));
+>>> +
+>>>   COBALT_SYSCALL_DECL(clock_adjtime,
+>>>               (clockid_t clock_id, struct __user_old_timex __user
+>>> *u_tx));
+>>>
+>>
+>
+>
+>
+>
+
+
 
