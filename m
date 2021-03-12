@@ -1,15 +1,16 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2 2/5] [y2038] cobalt: posix: clock: Adding
- clock_gettime64
-Date: Fri, 12 Mar 2021 10:25:37 +0000
-Message-ID: <9a3884de2a28bf56b034781dd69efc9fef954728.camel@siemens.com>
-References: <1615521690-5859-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1615521690-5859-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <070943932367A34789D5DA533D6C4557@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <874kixxf9e.fsf@xenomai.org>
+ <20210222163530.443822b3@md1za8fc.ad001.siemens.net>
+ <20210311173541.5e1b13b3@md1za8fc.ad001.siemens.net>
+ <204ed847-12bf-4b8e-56a3-2e741dc9edf3@siemens.com>
+Message-ID: <4ff6d9aa-ea26-2195-a279-368a1eb7d099@siemens.com>
+Date: Fri, 12 Mar 2021 12:32:54 +0100
 MIME-Version: 1.0
+In-Reply-To: <204ed847-12bf-4b8e-56a3-2e741dc9edf3@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,17 +19,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
 
-T24gRnJpLCAyMDIxLTAzLTEyIGF0IDEyOjAxICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gZGlm
-ZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC90aW1lLmggYi9pbmNsdWRlL2NvYmFsdC9r
-ZXJuZWwvdGltZS5oDQo+IGluZGV4IDE5ZThmMmMuLmEwMTIzMDAgMTAwNjQ0DQo+IC0tLSBhL2lu
-Y2x1ZGUvY29iYWx0L2tlcm5lbC90aW1lLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQva2VybmVs
-L3RpbWUuaA0KPiBAQCAtMTksNCArMTksNyBAQA0KPiDCoGludCBjb2JhbHRfZ2V0X3RpbWVzcGVj
-NjQoc3RydWN0IHRpbWVzcGVjNjQgKnRzLA0KPiDCoAkJCcKgIGNvbnN0IHN0cnVjdCBfX2tlcm5l
-bF90aW1lc3BlYyBfX3VzZXIgKnV0cyk7DQo+IMKgDQo+ICtpbnQgY29iYWx0X3B1dF90aW1lc3Bl
-YzY0KGNvbnN0IHN0cnVjdCB0aW1lc3BlYzY0ICp0cywNCj4gKwkJCcKgwqAgc3RydWN0IF9fa2Vy
-bmVsX3RpbWVzcGVjIF9fdXNlciAqdXRzKTsNCj4gKw0KDQpQbGVhc2UgYWRkIHNvbWUgZG9jdW1l
-bnRhdGlvbiwgc2ltaWxhciB0byBjb2JhbHRfZ2V0X3RpbWVzcGVjNjQuIFRoYXQncw0KaGVscGZ1
-bCBmb3IgYWxsIG9mIHVzLg0K
+On 12.03.21 08:22, Jan Kiszka wrote:
+> On 11.03.21 17:35, Henning Schild wrote:
+>> Am Mon, 22 Feb 2021 16:35:30 +0100
+>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>>
+>>> Am Sun, 31 Jan 2021 17:06:21 +0100
+>>> schrieb Philippe Gerum via Xenomai <xenomai@xenomai.org>:
+>>>
+>>>> The initial port of the Cobalt core to Dovetail/x86 is available
+>>>> from [1]. Ports to Dovetail/ARM and Dovetail/arm64 should follow
+>>>> within a couple of weeks.
+>>>>
+>>>> So far, latency and switchtest run flawlessly. Most of the smokey
+>>>> test suite passes successfully, except the GDB test at the moment.
+>>>>
+>>>> How to test this:
+>>>>
+>>>> - clone Xenomai from [1], switch to branch for-upstream/dovetail
+>>>> - clone the Dovetail tree (v5.10) from [2], switch to branch
+>>>> dovetail/master
+>>>> - run scripts/prepare-kernel.sh available from [1] into [2] (usual
+>>>> procedure) for x86, that would be: .../scripts/prepare-kernel.sh
+>>>> --arch=x86
+>>>> - build your kernel using the sources from [2]  
+>>>
+>>> I followed this and got
+>>>
+>>> 0625b829450dab22b2eea860eef4fb94f64af4fd
+>>> 61769e49d82a6775f6eb259bdc16c2f84df79505
+>>>
+>>>
+>>>> There is no user-visible Kconfig change compared to an I-pipe based
+>>>> version.  
+>>>
+>>> took a 4.19 x86_64 savedefconfig in via olddefconfig
+>>>
+>>>> Alternatively, the Xenomai code base in [1] can also run on top of
+>>>> the I-pipe. prepare-kernel.sh detects which pipeline flavour is
+>>>> there, and prepares the source tree accordingly.
+>>>>
+>>>> This code is being gradually merged into Xenomai's -next branch, and
+>>>> will be at the core of Xenomai 3.2. Testing and feedback
+>>>> appreciated.  
+>>>
+>>> Now i get a BUG pretty early on during boot. Since my config still
+>>> seems off i could not yet enter my rootfs, probably some
+>>> drivers/filesystems/raid switches got lost ...
+>>>
+>>> Its a null pointer deref in kmem_cache_alloc, coming somewhere from
+>>> mempool_init_node
+>>>
+>>> First guess was that "numa=off" would hide the problem, seems it does.
+>>> So my next guess is that even a qemu with numa could reproduce this
+>>> ... probably almost on a random config ... as long as it has smp+numa
+>>
+>> It is not about numa, now also see that on qemu. Jan looks into it at
+>> the moment.
+>>
+> 
+> I'm suspecting an upstream issue. The bug is some freelist corruption,
+> possibly only surfaced by dovetail. After digging longer, I enabled
+> CONFIG_SLAB_FREELIST_HARDENED, and that gave
+> 
+> [    0.159611] ACPI Error: Could not remove SCI handler
+> (20210105/evmisc-251)
+> [    0.160188] ------------[ cut here ]------------
+> [    0.160566] cache_from_obj: Wrong slab cache. ftrace_event_field but
+> object is from kmalloc-64
+> 
+> and more. However: You get those bugs also from running latest 5.10.23
+> and even Linus' master. Will debug that further and then possibly report
+> upstream.
+
+This is a corner case of upstream (but still a bug there):
+
+Your config lost CONFIG_PCI, likely because it is no longer default y.
+That not only generates and unbootable systems, it also sends the ACPI
+subsystem into an error path. There it seems to release objects to the
+wrong caches, leading to corruptions later on. Enabling PCI resolves all
+this.
+
+I'll dump the config to upstream ACPI folks, should be their business.
+
+Jan
+
+PS: Your config has more issues as it does not even boot in QEMU, even
+with PCI enabled. You should (re-)derive from x86_64-defconfig.
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
