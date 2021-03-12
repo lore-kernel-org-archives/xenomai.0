@@ -1,7 +1,7 @@
 From: chensong <chensong@tj.kylinos.cn>
-Subject: [PATCH v2 3/5] [y2038] lib: cobalt: clock: dispatch clock_settime
-Date: Fri, 12 Mar 2021 12:01:43 +0800
-Message-Id: <1615521703-5902-1-git-send-email-chensong@tj.kylinos.cn>
+Subject: [PATCH v2 4/5] [y2038] lib: cobalt: clock: dispatch clock_gettime
+Date: Fri, 12 Mar 2021 12:02:01 +0800
+Message-Id: <1615521721-5945-1-git-send-email-chensong@tj.kylinos.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +13,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: florian.bezdeka@siemens.com, xenomai@xenomai.org, rpm@xenomai.org
 
 If sizeof time_t bigger than 4, which means glibc supports
-64bit timespec, go to clock_settime64.
+64bit timespec, go to clock_gettime64.
 
 otherwise, go to original clock_settime.
 
 Signed-off-by: chensong <chensong@tj.kylinos.cn>
-
 ---
-V2: remove checking __xn_feat_time64
----
- lib/cobalt/clock.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ lib/cobalt/clock.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
-index 8f06320..edd640b 100644
+index edd640b..e861413 100644
 --- a/lib/cobalt/clock.c
 +++ b/lib/cobalt/clock.c
-@@ -276,7 +276,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t clock_id, const struct timespec *tp))
- 	if (clock_id == CLOCK_REALTIME && !cobalt_use_legacy_tsc())
- 		return __STD(clock_settime(CLOCK_REALTIME, tp));
- 
+@@ -172,7 +172,11 @@ static int gettime_via_tsc(clockid_t clock_id, struct timespec *tp)
+ 		tp->tv_nsec = rem;
+ 		return 0;
+ 	default:
 +#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64, clock_id, tp);
++		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime64, clock_id, tp);
 +#else
- 	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
+ 		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
 +#endif
+ 	}
+ 
  	if (ret) {
- 		errno = ret;
- 		return -1;
+@@ -197,7 +201,11 @@ static int gettime_via_vdso(clockid_t clock_id, struct timespec *tp)
+ 		ret = __cobalt_vdso_gettime(clock_id, tp);
+ 		break;
+ 	default:
++#ifdef __USE_TIME_BITS64
++		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime64, clock_id, tp);
++#else
+ 		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
++#endif
+ 	}
+ 
+ 	if (ret) {
 -- 
 2.7.4
 
