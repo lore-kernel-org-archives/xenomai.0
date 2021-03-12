@@ -1,13 +1,14 @@
-Subject: Re: [Dovetail] x86 test version available (kernel v5.10)
-References: <874kixxf9e.fsf@xenomai.org>
- <20210222163530.443822b3@md1za8fc.ad001.siemens.net>
- <20210311173541.5e1b13b3@md1za8fc.ad001.siemens.net>
+Subject: Re: kernel BUG at kernel/auditsc.c:1527!
+References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
+ <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
+ <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
+ <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <204ed847-12bf-4b8e-56a3-2e741dc9edf3@siemens.com>
-Date: Fri, 12 Mar 2021 08:22:40 +0100
+Message-ID: <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
+Date: Fri, 12 Mar 2021 08:19:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210311173541.5e1b13b3@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
+Content-Type: text/plain; charset=koi8-r
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,79 +19,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>
+To: Vitaly Chikunov <vt@altlinux.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 11.03.21 17:35, Henning Schild wrote:
-> Am Mon, 22 Feb 2021 16:35:30 +0100
-> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+On 12.03.21 03:49, Vitaly Chikunov wrote:
+> Jan,
 > 
->> Am Sun, 31 Jan 2021 17:06:21 +0100
->> schrieb Philippe Gerum via Xenomai <xenomai@xenomai.org>:
+> On Thu, Mar 11, 2021 at 04:10:03PM +0100, Jan Kiszka wrote:
+>> On 11.03.21 12:49, Jan Kiszka via Xenomai wrote:
+>>> On 10.03.21 23:46, Vitaly Chikunov via Xenomai wrote:
+>>>> On Mon, Mar 08, 2021 at 07:12:26AM +0100, xenomai--- via Xenomai wrote:
+>>>>> Release tag: ipipe-core-4.19.177-cip44-x86-16
+>>>>
+>>>> This is not appeared first on this release, but (this release too)
+>>>> crashes when boot on x86_64 with audit enabled (audit=1, which is
+>>>> default).
+>>>>
+>>>> Boot console log:
+>>>>
 >>
->>> The initial port of the Cobalt core to Dovetail/x86 is available
->>> from [1]. Ports to Dovetail/ARM and Dovetail/arm64 should follow
->>> within a couple of weeks.
->>>
->>> So far, latency and switchtest run flawlessly. Most of the smokey
->>> test suite passes successfully, except the GDB test at the moment.
->>>
->>> How to test this:
->>>
->>> - clone Xenomai from [1], switch to branch for-upstream/dovetail
->>> - clone the Dovetail tree (v5.10) from [2], switch to branch
->>> dovetail/master
->>> - run scripts/prepare-kernel.sh available from [1] into [2] (usual
->>> procedure) for x86, that would be: .../scripts/prepare-kernel.sh
->>> --arch=x86
->>> - build your kernel using the sources from [2]  
->>
->> I followed this and got
->>
->> 0625b829450dab22b2eea860eef4fb94f64af4fd
->> 61769e49d82a6775f6eb259bdc16c2f84df79505
->>
->>
->>> There is no user-visible Kconfig change compared to an I-pipe based
->>> version.  
->>
->> took a 4.19 x86_64 savedefconfig in via olddefconfig
->>
->>> Alternatively, the Xenomai code base in [1] can also run on top of
->>> the I-pipe. prepare-kernel.sh detects which pipeline flavour is
->>> there, and prepares the source tree accordingly.
->>>
->>> This code is being gradually merged into Xenomai's -next branch, and
->>> will be at the core of Xenomai 3.2. Testing and feedback
->>> appreciated.  
->>
->> Now i get a BUG pretty early on during boot. Since my config still
->> seems off i could not yet enter my rootfs, probably some
->> drivers/filesystems/raid switches got lost ...
->>
->> Its a null pointer deref in kmem_cache_alloc, coming somewhere from
->> mempool_init_node
->>
->> First guess was that "numa=off" would hide the problem, seems it does.
->> So my next guess is that even a qemu with numa could reproduce this
->> ... probably almost on a random config ... as long as it has smp+numa
+>> Seems like something of the error/warning is missing here.
 > 
-> It is not about numa, now also see that on qemu. Jan looks into it at
-> the moment.
+> I will attach full boot log.
+
+Thanks, will have a look.
+
+> 
+>>> Can you share your kernel config?
+>>>
+>>
+>> Still no luck, also with the config you sent off-list.
+> 
+> I thought mailing list would not pass attachment and there is no
+> bugzilla to attach files.
+
+We are moving our closed tracker to
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues - didn't
+announce yet, though.
+
+> 
+>>
+>> Is there any specific service involved? But I do have auditd running
+>> here as well. auditctl -s reports "enabled". Or do I need a specific
+>> configuration of it to trigger this? A specific kernel command line?
+> 
+> If you wish, you can extract built kernel from RPM with rpm2cpio and
+> try boot on your system:
+>   http://git.altlinux.org/tasks/267579/build/100/x86_64/rpms/kernel-image-xenomai-4.19.177-alt1.cip44.16.x86_64.rpm
+> (Maybe it's hardware dependent?)
 > 
 
-I'm suspecting an upstream issue. The bug is some freelist corruption,
-possibly only surfaced by dovetail. After digging longer, I enabled
-CONFIG_SLAB_FREELIST_HARDENED, and that gave
-
-[    0.159611] ACPI Error: Could not remove SCI handler
-(20210105/evmisc-251)
-[    0.160188] ------------[ cut here ]------------
-[    0.160566] cache_from_obj: Wrong slab cache. ftrace_event_field but
-object is from kmalloc-64
-
-and more. However: You get those bugs also from running latest 5.10.23
-and even Linus' master. Will debug that further and then possibly report
-upstream.
+Will check that as well, just to exclude the hardware (I'm reproducing
+in QEMU). However, I will likely need more (debug symbols, gdb scripts)
+to debug that.
 
 Jan
 
