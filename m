@@ -1,15 +1,7 @@
-Date: Fri, 12 Mar 2021 05:49:03 +0300
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: Re: kernel BUG at kernel/auditsc.c:1527!
-Message-ID: <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
-References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
- <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
- <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
-Content-Type: text/plain; charset="koi8-r"
-Content-Transfer-Encoding: base64
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 1/2] cobalt/rtdm: introduce new interfaces to init task
+Date: Thu, 11 Mar 2021 21:42:22 -0500
+Message-Id: <20210312024223.22275-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,35 +10,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SmFuLAoKT24gVGh1LCBNYXIgMTEsIDIwMjEgYXQgMDQ6MTA6MDNQTSArMDEwMCwgSmFuIEtpc3pr
-YSB3cm90ZToKPiBPbiAxMS4wMy4yMSAxMjo0OSwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90
-ZToKPiA+IE9uIDEwLjAzLjIxIDIzOjQ2LCBWaXRhbHkgQ2hpa3Vub3YgdmlhIFhlbm9tYWkgd3Jv
-dGU6Cj4gPj4gT24gTW9uLCBNYXIgMDgsIDIwMjEgYXQgMDc6MTI6MjZBTSArMDEwMCwgeGVub21h
-aS0tLSB2aWEgWGVub21haSB3cm90ZToKPiA+Pj4gUmVsZWFzZSB0YWc6IGlwaXBlLWNvcmUtNC4x
-OS4xNzctY2lwNDQteDg2LTE2Cj4gPj4KPiA+PiBUaGlzIGlzIG5vdCBhcHBlYXJlZCBmaXJzdCBv
-biB0aGlzIHJlbGVhc2UsIGJ1dCAodGhpcyByZWxlYXNlIHRvbykKPiA+PiBjcmFzaGVzIHdoZW4g
-Ym9vdCBvbiB4ODZfNjQgd2l0aCBhdWRpdCBlbmFibGVkIChhdWRpdD0xLCB3aGljaCBpcwo+ID4+
-IGRlZmF1bHQpLgo+ID4+Cj4gPj4gQm9vdCBjb25zb2xlIGxvZzoKPiA+Pgo+IAo+IFNlZW1zIGxp
-a2Ugc29tZXRoaW5nIG9mIHRoZSBlcnJvci93YXJuaW5nIGlzIG1pc3NpbmcgaGVyZS4KCkkgd2ls
-bCBhdHRhY2ggZnVsbCBib290IGxvZy4KCj4gPiBDYW4geW91IHNoYXJlIHlvdXIga2VybmVsIGNv
-bmZpZz8KPiA+IAo+IAo+IFN0aWxsIG5vIGx1Y2ssIGFsc28gd2l0aCB0aGUgY29uZmlnIHlvdSBz
-ZW50IG9mZi1saXN0LgoKSSB0aG91Z2h0IG1haWxpbmcgbGlzdCB3b3VsZCBub3QgcGFzcyBhdHRh
-Y2htZW50IGFuZCB0aGVyZSBpcyBubwpidWd6aWxsYSB0byBhdHRhY2ggZmlsZXMuCgo+IAo+IElz
-IHRoZXJlIGFueSBzcGVjaWZpYyBzZXJ2aWNlIGludm9sdmVkPyBCdXQgSSBkbyBoYXZlIGF1ZGl0
-ZCBydW5uaW5nCj4gaGVyZSBhcyB3ZWxsLiBhdWRpdGN0bCAtcyByZXBvcnRzICJlbmFibGVkIi4g
-T3IgZG8gSSBuZWVkIGEgc3BlY2lmaWMKPiBjb25maWd1cmF0aW9uIG9mIGl0IHRvIHRyaWdnZXIg
-dGhpcz8gQSBzcGVjaWZpYyBrZXJuZWwgY29tbWFuZCBsaW5lPwoKSWYgeW91IHdpc2gsIHlvdSBj
-YW4gZXh0cmFjdCBidWlsdCBrZXJuZWwgZnJvbSBSUE0gd2l0aCBycG0yY3BpbyBhbmQKdHJ5IGJv
-b3Qgb24geW91ciBzeXN0ZW06CiAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5
-L2J1aWxkLzEwMC94ODZfNjQvcnBtcy9rZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQx
-LmNpcDQ0LjE2Lng4Nl82NC5ycG0KKE1heWJlIGl0J3MgaGFyZHdhcmUgZGVwZW5kZW50PykKClRo
-YW5rcywKIAo+IAo+IEphbgo+IAo+IC0tIAo+IFNpZW1lbnMgQUcsIFQgUkRBIElPVAo+IENvcnBv
-cmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiB4ZW5vbWFpLWJvb3QubG9nLjMuZ3oKVHlwZTogYXBwbGljYXRpb24vZ3ppcApTaXpl
-OiAyNDQzNSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDMxMi9iZmQ4MDlhZi9hdHRhY2ht
-ZW50LmJpbj4K
+Initialise and start a real-time task on specified cpu.
+
+Introduce rtdm_task_affinity as base called by other init
+task services to avoid code duplication.
+
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 733c49df8..5406e54a5 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -1024,6 +1024,11 @@ typedef void (*rtdm_task_proc_t)(void *arg);
+ int rtdm_task_init(rtdm_task_t *task, const char *name,
+ 		   rtdm_task_proc_t task_proc, void *arg,
+ 		   int priority, nanosecs_rel_t period);
++
++int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
++		rtdm_task_proc_t task_proc, void *arg,
++		int priority, nanosecs_rel_t period);
++
+ int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
+ void rtdm_task_busy_sleep(nanosecs_rel_t delay);
+ 
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index b914fa312..22ae79256 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -86,13 +86,14 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
+  */
+ 
+ /**
+- * @brief Initialise and start a real-time task
++ * @brief Initialise and start a real-time task with cpu affinity
+  *
+  * After initialising a task, the task handle remains valid and can be
+  * passed to RTDM services until either rtdm_task_destroy() or
+  * rtdm_task_join() was invoked.
+  *
+  * @param[in,out] task Task handle
++ * @param[in] cpu affinity that task want to run with
+  * @param[in] name Optional task name
+  * @param[in] task_proc Procedure to be executed by the task
+  * @param[in] arg Custom argument passed to @c task_proc() on entry
+@@ -106,9 +107,10 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
+  *
+  * @coretags{secondary-only, might-switch}
+  */
+-int rtdm_task_init(rtdm_task_t *task, const char *name,
+-		   rtdm_task_proc_t task_proc, void *arg,
+-		   int priority, nanosecs_rel_t period)
++static inline int rtdm_task_affinity(rtdm_task_t *task,
++		const struct cpumask *affinity, const char *name,
++		rtdm_task_proc_t task_proc, void *arg,
++		int priority, nanosecs_rel_t period)
+ {
+ 	union xnsched_policy_param param;
+ 	struct xnthread_start_attr sattr;
+@@ -121,7 +123,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
+ 	iattr.name = name;
+ 	iattr.flags = 0;
+ 	iattr.personality = &xenomai_personality;
+-	iattr.affinity = CPU_MASK_ALL;
++	iattr.affinity = affinity ? (*affinity) : CPU_MASK_ALL;
+ 	param.rt.prio = priority;
+ 
+ 	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
+@@ -155,8 +157,71 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
+ 	return err;
+ }
+ 
++/**
++ * @brief Initialise and start a real-time task
++ *
++ * After initialising a task, the task handle remains valid and can be
++ * passed to RTDM services until either rtdm_task_destroy() or
++ * rtdm_task_join() was invoked.
++ *
++ * @param[in,out] task Task handle
++ * @param[in] name Optional task name
++ * @param[in] task_proc Procedure to be executed by the task
++ * @param[in] arg Custom argument passed to @c task_proc() on entry
++ * @param[in] priority Priority of the task, see also
++ * @ref rtdmtaskprio "Task Priority Range"
++ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
++ * mode. Waiting for the first and subsequent periodic events is
++ * done using rtdm_task_wait_period().
++ *
++ * @return 0 on success, otherwise negative error code
++ *
++ * @coretags{secondary-only, might-switch}
++ */
++int rtdm_task_init(rtdm_task_t *task, const char *name,
++		   rtdm_task_proc_t task_proc, void *arg,
++		   int priority, nanosecs_rel_t period)
++{
++	return rtdm_task_affinity(task, NULL,
++			name, task_proc, arg, priority, period);
++}
+ EXPORT_SYMBOL_GPL(rtdm_task_init);
+ 
++/**
++ * @brief Initialise and start a real-time task on specified cpu
++ *
++ * After initialising a task, the task handle remains valid and can be
++ * passed to RTDM services until either rtdm_task_destroy() or
++ * rtdm_task_join() was invoked.
++ *
++ * @param[in,out] task Task handle
++ * @param[in] cpu that task want to run on
++ * @param[in] name Optional task name
++ * @param[in] task_proc Procedure to be executed by the task
++ * @param[in] arg Custom argument passed to @c task_proc() on entry
++ * @param[in] priority Priority of the task, see also
++ * @ref rtdmtaskprio "Task Priority Range"
++ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
++ * mode. Waiting for the first and subsequent periodic events is
++ * done using rtdm_task_wait_period().
++ *
++ * @return 0 on success, otherwise negative error code
++ *
++ * @coretags{secondary-only, might-switch}
++ */
++int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu,
++		const char *name, rtdm_task_proc_t task_proc, void *arg,
++		int priority, nanosecs_rel_t period)
++{
++	if (!cpu_online(cpu))
++		return -EINVAL;
++
++	return rtdm_task_affinity(task, cpumask_of(cpu),
++			name, task_proc, arg, priority, period);
++
++}
++EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
++
+ #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+ /**
+  * @brief Destroy a real-time task
+-- 
+2.17.1
+
+
