@@ -1,7 +1,9 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 1/2] cobalt/rtdm: introduce new interfaces to init task
-Date: Thu, 11 Mar 2021 21:42:22 -0500
-Message-Id: <20210312024223.22275-1-hongzhan.chen@intel.com>
+Subject: [PATCH 2/2] cobalt/rtdm: introduce new interface to init timer
+Date: Thu, 11 Mar 2021 21:42:23 -0500
+Message-Id: <20210312024223.22275-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210312024223.22275-1-hongzhan.chen@intel.com>
+References: <20210312024223.22275-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,144 +14,76 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Initialise and start a real-time task on specified cpu.
-
-Introduce rtdm_task_affinity as base called by other init
-task services to avoid code duplication.
+Initialise timer on specified cpu.
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
 diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index 733c49df8..5406e54a5 100644
+index 5406e54a5..d58df33ce 100644
 --- a/include/cobalt/kernel/rtdm/driver.h
 +++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -1024,6 +1024,11 @@ typedef void (*rtdm_task_proc_t)(void *arg);
- int rtdm_task_init(rtdm_task_t *task, const char *name,
- 		   rtdm_task_proc_t task_proc, void *arg,
- 		   int priority, nanosecs_rel_t period);
-+
-+int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-+		rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period);
-+
- int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
- void rtdm_task_busy_sleep(nanosecs_rel_t delay);
+@@ -966,6 +966,9 @@ enum rtdm_timer_mode {
+ int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+ 		    const char *name);
  
++int rtdm_timer_init_on_cpu(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
++		    const char *name, int cpu);
++
+ void rtdm_timer_destroy(rtdm_timer_t *timer);
+ 
+ int rtdm_timer_start(rtdm_timer_t *timer, nanosecs_abs_t expiry,
 diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index b914fa312..22ae79256 100644
+index 22ae79256..604947662 100644
 --- a/kernel/cobalt/rtdm/drvlib.c
 +++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -86,13 +86,14 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
-  */
- 
- /**
-- * @brief Initialise and start a real-time task
-+ * @brief Initialise and start a real-time task with cpu affinity
-  *
-  * After initialising a task, the task handle remains valid and can be
-  * passed to RTDM services until either rtdm_task_destroy() or
-  * rtdm_task_join() was invoked.
-  *
-  * @param[in,out] task Task handle
-+ * @param[in] cpu affinity that task want to run with
-  * @param[in] name Optional task name
-  * @param[in] task_proc Procedure to be executed by the task
-  * @param[in] arg Custom argument passed to @c task_proc() on entry
-@@ -106,9 +107,10 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
-  *
-  * @coretags{secondary-only, might-switch}
-  */
--int rtdm_task_init(rtdm_task_t *task, const char *name,
--		   rtdm_task_proc_t task_proc, void *arg,
--		   int priority, nanosecs_rel_t period)
-+static inline int rtdm_task_affinity(rtdm_task_t *task,
-+		const struct cpumask *affinity, const char *name,
-+		rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period)
+@@ -583,15 +583,44 @@ EXPORT_SYMBOL_GPL(rtdm_task_busy_sleep);
+ int rtdm_timer_init(rtdm_timer_t *timer, rtdm_timer_handler_t handler,
+ 		    const char *name)
  {
- 	union xnsched_policy_param param;
- 	struct xnthread_start_attr sattr;
-@@ -121,7 +123,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 	iattr.name = name;
- 	iattr.flags = 0;
- 	iattr.personality = &xenomai_personality;
--	iattr.affinity = CPU_MASK_ALL;
-+	iattr.affinity = affinity ? (*affinity) : CPU_MASK_ALL;
- 	param.rt.prio = priority;
- 
- 	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
-@@ -155,8 +157,71 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 	return err;
- }
- 
-+/**
-+ * @brief Initialise and start a real-time task
-+ *
-+ * After initialising a task, the task handle remains valid and can be
-+ * passed to RTDM services until either rtdm_task_destroy() or
-+ * rtdm_task_join() was invoked.
-+ *
-+ * @param[in,out] task Task handle
-+ * @param[in] name Optional task name
-+ * @param[in] task_proc Procedure to be executed by the task
-+ * @param[in] arg Custom argument passed to @c task_proc() on entry
-+ * @param[in] priority Priority of the task, see also
-+ * @ref rtdmtaskprio "Task Priority Range"
-+ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-+ * mode. Waiting for the first and subsequent periodic events is
-+ * done using rtdm_task_wait_period().
-+ *
-+ * @return 0 on success, otherwise negative error code
-+ *
-+ * @coretags{secondary-only, might-switch}
-+ */
-+int rtdm_task_init(rtdm_task_t *task, const char *name,
-+		   rtdm_task_proc_t task_proc, void *arg,
-+		   int priority, nanosecs_rel_t period)
-+{
-+	return rtdm_task_affinity(task, NULL,
-+			name, task_proc, arg, priority, period);
++	/* cpu0 is used when no affinity was given */
++	return rtdm_timer_init_on_cpu(timer, handler, name, 0);
 +}
- EXPORT_SYMBOL_GPL(rtdm_task_init);
- 
++EXPORT_SYMBOL_GPL(rtdm_timer_init);
++
 +/**
-+ * @brief Initialise and start a real-time task on specified cpu
++ * @brief Initialise a timer on specified cpu
 + *
-+ * After initialising a task, the task handle remains valid and can be
-+ * passed to RTDM services until either rtdm_task_destroy() or
-+ * rtdm_task_join() was invoked.
-+ *
-+ * @param[in,out] task Task handle
-+ * @param[in] cpu that task want to run on
-+ * @param[in] name Optional task name
-+ * @param[in] task_proc Procedure to be executed by the task
-+ * @param[in] arg Custom argument passed to @c task_proc() on entry
-+ * @param[in] priority Priority of the task, see also
-+ * @ref rtdmtaskprio "Task Priority Range"
-+ * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-+ * mode. Waiting for the first and subsequent periodic events is
-+ * done using rtdm_task_wait_period().
++ * @param[in,out] timer Timer handle
++ * @param[in] handler Handler to be called on timer expiry
++ * @param[in] name Optional timer name
++ * @param[in] cpu that run on
 + *
 + * @return 0 on success, otherwise negative error code
 + *
-+ * @coretags{secondary-only, might-switch}
++ * @coretags{task-unrestricted}
 + */
-+int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu,
-+		const char *name, rtdm_task_proc_t task_proc, void *arg,
-+		int priority, nanosecs_rel_t period)
++int rtdm_timer_init_on_cpu(rtdm_timer_t *timer,
++		rtdm_timer_handler_t handler, const char *name, int cpu)
 +{
-+	if (!cpu_online(cpu))
++	struct xnsched *sched;
++
+ 	if (!realtime_core_enabled())
+ 		return -ENOSYS;
+ 
+-	xntimer_init((timer), &nkclock, handler, NULL, XNTIMER_IGRAVITY);
++	if (!cpu_online(cpu) || !xnsched_supported_cpu(cpu))
 +		return -EINVAL;
 +
-+	return rtdm_task_affinity(task, cpumask_of(cpu),
-+			name, task_proc, arg, priority, period);
++	sched = xnsched_struct(cpu);
++	if (sched == NULL)
++		return -EINVAL;
 +
-+}
-+EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
++	xntimer_init((timer), &nkclock, handler, sched, XNTIMER_IGRAVITY);
+ 	xntimer_set_name((timer), (name));
 +
- #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+ 	return 0;
+ }
+-
+-EXPORT_SYMBOL_GPL(rtdm_timer_init);
++EXPORT_SYMBOL_GPL(rtdm_timer_init_on_cpu);
+ 
  /**
-  * @brief Destroy a real-time task
+  * @brief Destroy a timer
 -- 
 2.17.1
 
