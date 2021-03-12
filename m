@@ -1,17 +1,15 @@
-Date: Fri, 12 Mar 2021 11:00:39 +0300
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: Re: kernel BUG at kernel/auditsc.c:1527!
-Message-ID: <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
-References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
- <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
- <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
- <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
- <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="koi8-r"
-Content-Disposition: inline
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v2 2/5] [y2038] cobalt: posix: clock: Adding
+ clock_gettime64
+Date: Fri, 12 Mar 2021 10:14:23 +0000
+Message-ID: <21014c75de3f1686260b4adb00e272417a63c420.camel@siemens.com>
+References: <1615521690-5859-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1615521690-5859-1-git-send-email-chensong@tj.kylinos.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CD4AAFE33FB55041A693161649EA187A@EURPRD10.PROD.OUTLOOK.COM>
 Content-Transfer-Encoding: base64
-In-Reply-To: <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,17 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-T24gRnJpLCBNYXIgMTIsIDIwMjEgYXQgMDg6MTk6MzBBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90
-ZToKPiA+IElmIHlvdSB3aXNoLCB5b3UgY2FuIGV4dHJhY3QgYnVpbHQga2VybmVsIGZyb20gUlBN
-IHdpdGggcnBtMmNwaW8gYW5kCj4gPiB0cnkgYm9vdCBvbiB5b3VyIHN5c3RlbToKPiA+ICAgaHR0
-cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5L2J1aWxkLzEwMC94ODZfNjQvcnBtcy9r
-ZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQxLmNpcDQ0LjE2Lng4Nl82NC5ycG0KPiA+
-IChNYXliZSBpdCdzIGhhcmR3YXJlIGRlcGVuZGVudD8pCj4gPiAKPiAKPiBXaWxsIGNoZWNrIHRo
-YXQgYXMgd2VsbCwganVzdCB0byBleGNsdWRlIHRoZSBoYXJkd2FyZSAoSSdtIHJlcHJvZHVjaW5n
-Cj4gaW4gUUVNVSkuIEhvd2V2ZXIsIEkgd2lsbCBsaWtlbHkgbmVlZCBtb3JlIChkZWJ1ZyBzeW1i
-b2xzLCBnZGIgc2NyaXB0cykKPiB0byBkZWJ1ZyB0aGF0LgoKVGhlcmUgaXMgZGVidWdpbmZvIHBh
-Y2thZ2UgdG9vIGluCiAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5L2J1aWxk
-LzEwMC94ODZfNjQvcnBtcy8KCvRoYW5rcyEKCg==
+T24gRnJpLCAyMDIxLTAzLTEyIGF0IDEyOjAxICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gwqAj
+ZW5kaWYgLy9fQ09CQUxUX0tFUk5FTF9USU1FX0gNCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29i
+YWx0L3VhcGkvc3lzY2FsbC5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gaW5k
+ZXggMjkxYjU1MC4uN2ZmOGExNyAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQvdWFwaS9z
+eXNjYWxsLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gQEAgLTEy
+NCw2ICsxMjQsNyBAQA0KPiDCoCNkZWZpbmUgc2NfY29iYWx0X3RocmVhZF9zZXRzY2hlZHByaW8J
+CTEwMQ0KPiDCoCNkZWZpbmUgc2NfY29iYWx0X3NlbV90aW1lZHdhaXQ2NAkJMTAyDQo+IMKgI2Rl
+ZmluZSBzY19jb2JhbHRfY2xvY2tfc2V0dGltZTY0CQkxMDMNCj4gKyNkZWZpbmUgc2NfY29iYWx0
+X2Nsb2NrX2dldHRpbWU2NAkJMTA0DQo+IMKgDQo+IMKgI2RlZmluZSBfX05SX0NPQkFMVF9TWVND
+QUxMUwkJCTEyOCAvKiBQb3dlciBvZiAyICovDQo+IMKgDQoNCkkgc3RpbGwgd291bGQgcHJlZmVy
+IHRvIGtlZXAgdGhlIG9yZGVyIG9mIHRoZSBub24teTIwMzggc3lzY2FsbHMuIFNvDQoxMDMgPT4g
+Y2xvY2tfZ2V0dGltZTY0LCAxMDQgPT4gY2xvY2tfc2V0dGltZTY0LiBJT1c6IFRoZXkgYXJlIGN1
+cnJlbnRseQ0KZmxpcHBlZC4NCg0KQXQgdGhlIGVuZCBpdCdzIHVwIHRvIHRoZSBtYWludGFpbmVy
+cyBJIGd1ZXNzLg0K
+
