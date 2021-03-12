@@ -1,12 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [wip/dovetail][PATCH 1/2] cobalt/mutex: Bring back ia32 support for
- mutex_timedwait
-Date: Thu, 11 Mar 2021 17:38:26 +0100
-Message-Id: <20210311163827.67202-2-florian.bezdeka@siemens.com>
-In-Reply-To: <20210311163827.67202-1-florian.bezdeka@siemens.com>
-References: <20210311163827.67202-1-florian.bezdeka@siemens.com>
+Date: Fri, 12 Mar 2021 05:49:03 +0300
+From: Vitaly Chikunov <vt@altlinux.org>
+Subject: Re: kernel BUG at kernel/auditsc.c:1527!
+Message-ID: <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
+References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
+ <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
+ <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+In-Reply-To: <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
+Content-Type: text/plain; charset="koi8-r"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, rpm@xenomai.org, jan.kiszka@siemens.com, chensong@kylinos.cn
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-The helper used for copying the timeout values (=mutex_fetch_timeout())
-was always copying sizeof(struct timespec64) from user to kernel space.
-For applications with time_t being 4 bytes only (like for native 32 bit
-applications) that is simply too much.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- kernel/cobalt/posix/mutex.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
-index d43a747b3..70fe7960a 100644
---- a/kernel/cobalt/posix/mutex.c
-+++ b/kernel/cobalt/posix/mutex.c
-@@ -349,8 +349,7 @@ COBALT_SYSCALL(mutex_lock, primary,
- static inline int mutex_fetch_timeout(struct timespec64 *ts,
- 				      const void __user *u_ts)
- {
--	return u_ts == NULL ? -EFAULT :
--		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
-+	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
- }
- 
- COBALT_SYSCALL(mutex_timedlock, primary,
--- 
-2.29.2
-
-
+SmFuLAoKT24gVGh1LCBNYXIgMTEsIDIwMjEgYXQgMDQ6MTA6MDNQTSArMDEwMCwgSmFuIEtpc3pr
+YSB3cm90ZToKPiBPbiAxMS4wMy4yMSAxMjo0OSwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90
+ZToKPiA+IE9uIDEwLjAzLjIxIDIzOjQ2LCBWaXRhbHkgQ2hpa3Vub3YgdmlhIFhlbm9tYWkgd3Jv
+dGU6Cj4gPj4gT24gTW9uLCBNYXIgMDgsIDIwMjEgYXQgMDc6MTI6MjZBTSArMDEwMCwgeGVub21h
+aS0tLSB2aWEgWGVub21haSB3cm90ZToKPiA+Pj4gUmVsZWFzZSB0YWc6IGlwaXBlLWNvcmUtNC4x
+OS4xNzctY2lwNDQteDg2LTE2Cj4gPj4KPiA+PiBUaGlzIGlzIG5vdCBhcHBlYXJlZCBmaXJzdCBv
+biB0aGlzIHJlbGVhc2UsIGJ1dCAodGhpcyByZWxlYXNlIHRvbykKPiA+PiBjcmFzaGVzIHdoZW4g
+Ym9vdCBvbiB4ODZfNjQgd2l0aCBhdWRpdCBlbmFibGVkIChhdWRpdD0xLCB3aGljaCBpcwo+ID4+
+IGRlZmF1bHQpLgo+ID4+Cj4gPj4gQm9vdCBjb25zb2xlIGxvZzoKPiA+Pgo+IAo+IFNlZW1zIGxp
+a2Ugc29tZXRoaW5nIG9mIHRoZSBlcnJvci93YXJuaW5nIGlzIG1pc3NpbmcgaGVyZS4KCkkgd2ls
+bCBhdHRhY2ggZnVsbCBib290IGxvZy4KCj4gPiBDYW4geW91IHNoYXJlIHlvdXIga2VybmVsIGNv
+bmZpZz8KPiA+IAo+IAo+IFN0aWxsIG5vIGx1Y2ssIGFsc28gd2l0aCB0aGUgY29uZmlnIHlvdSBz
+ZW50IG9mZi1saXN0LgoKSSB0aG91Z2h0IG1haWxpbmcgbGlzdCB3b3VsZCBub3QgcGFzcyBhdHRh
+Y2htZW50IGFuZCB0aGVyZSBpcyBubwpidWd6aWxsYSB0byBhdHRhY2ggZmlsZXMuCgo+IAo+IElz
+IHRoZXJlIGFueSBzcGVjaWZpYyBzZXJ2aWNlIGludm9sdmVkPyBCdXQgSSBkbyBoYXZlIGF1ZGl0
+ZCBydW5uaW5nCj4gaGVyZSBhcyB3ZWxsLiBhdWRpdGN0bCAtcyByZXBvcnRzICJlbmFibGVkIi4g
+T3IgZG8gSSBuZWVkIGEgc3BlY2lmaWMKPiBjb25maWd1cmF0aW9uIG9mIGl0IHRvIHRyaWdnZXIg
+dGhpcz8gQSBzcGVjaWZpYyBrZXJuZWwgY29tbWFuZCBsaW5lPwoKSWYgeW91IHdpc2gsIHlvdSBj
+YW4gZXh0cmFjdCBidWlsdCBrZXJuZWwgZnJvbSBSUE0gd2l0aCBycG0yY3BpbyBhbmQKdHJ5IGJv
+b3Qgb24geW91ciBzeXN0ZW06CiAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5
+L2J1aWxkLzEwMC94ODZfNjQvcnBtcy9rZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQx
+LmNpcDQ0LjE2Lng4Nl82NC5ycG0KKE1heWJlIGl0J3MgaGFyZHdhcmUgZGVwZW5kZW50PykKClRo
+YW5rcywKIAo+IAo+IEphbgo+IAo+IC0tIAo+IFNpZW1lbnMgQUcsIFQgUkRBIElPVAo+IENvcnBv
+cmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBuZXh0
+IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
+LgpOYW1lOiB4ZW5vbWFpLWJvb3QubG9nLjMuZ3oKVHlwZTogYXBwbGljYXRpb24vZ3ppcApTaXpl
+OiAyNDQzNSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDMxMi9iZmQ4MDlhZi9hdHRhY2ht
+ZW50LmJpbj4K
