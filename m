@@ -1,11 +1,15 @@
-References: <20210311064859.10971-1-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 1/2] cobalt/rtdm: introduce new interfaces to init task
-In-reply-to: <20210311064859.10971-1-hongzhan.chen@intel.com>
-Date: Thu, 11 Mar 2021 09:32:32 +0100
-Message-ID: <87sg52gkf3.fsf@xenomai.org>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v2 5/5] [y2038] testsuite: smokey: y2038: testcase for
+ settime64 and gettime64
+Date: Sat, 13 Mar 2021 06:49:46 +0000
+Message-ID: <6391453ddc8206bbb84c3d216c64cdd0e93d3b80.camel@siemens.com>
+References: <1615521734-5989-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1615521734-5989-1-git-send-email-chensong@tj.kylinos.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <225580AB0C50FA45ACF166278279B603@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,160 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>
-Cc: xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-
-hongzha1 via Xenomai <xenomai@xenomai.org> writes:
-
-> Initialise and start a real-time task on specified cpu.
->
-> Introduce rtdm_task_init_with_affinity as base called by other init
-> task services to avoid code duplication.
->
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->
-> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> index 733c49df8..5406e54a5 100644
-> --- a/include/cobalt/kernel/rtdm/driver.h
-> +++ b/include/cobalt/kernel/rtdm/driver.h
-> @@ -1024,6 +1024,11 @@ typedef void (*rtdm_task_proc_t)(void *arg);
->  int rtdm_task_init(rtdm_task_t *task, const char *name,
->  		   rtdm_task_proc_t task_proc, void *arg,
->  		   int priority, nanosecs_rel_t period);
-> +
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period);
-> +
->  int __rtdm_task_sleep(xnticks_t timeout, xntmode_t mode);
->  void rtdm_task_busy_sleep(nanosecs_rel_t delay);
->  
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index b914fa312..069a442e5 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -86,13 +86,14 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
->   */
->  
->  /**
-> - * @brief Initialise and start a real-time task
-> + * @brief Initialise and start a real-time task with cpu affinity
->   *
->   * After initialising a task, the task handle remains valid and can be
->   * passed to RTDM services until either rtdm_task_destroy() or
->   * rtdm_task_join() was invoked.
->   *
->   * @param[in,out] task Task handle
-> + * @param[in] cpu affinity that task want to run with
->   * @param[in] name Optional task name
->   * @param[in] task_proc Procedure to be executed by the task
->   * @param[in] arg Custom argument passed to @c task_proc() on entry
-> @@ -106,9 +107,10 @@ nanosecs_abs_t rtdm_clock_read_monotonic(void);
->   *
->   * @coretags{secondary-only, might-switch}
->   */
-> -int rtdm_task_init(rtdm_task_t *task, const char *name,
-> -		   rtdm_task_proc_t task_proc, void *arg,
-> -		   int priority, nanosecs_rel_t period)
-> +static inline int rtdm_task_init_with_affinity(rtdm_task_t *task,
-> +		cpumask_t affinity, const char *name,
-> +		rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period)
-
-
-In general, I would refrain from passing CPU masks by value; these may
-represent pretty large data on x86 platforms, although the optimizer
-might find its way using a reference internally in this specific
-case. Receiving struct cpumask * would be better nevertheless.
-xnintr_affinity() is another candidate for such a change.
-
->  {
->  	union xnsched_policy_param param;
->  	struct xnthread_start_attr sattr;
-> @@ -121,7 +123,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
->  	iattr.name = name;
->  	iattr.flags = 0;
->  	iattr.personality = &xenomai_personality;
-> -	iattr.affinity = CPU_MASK_ALL;
-> +	iattr.affinity = affinity;
->  	param.rt.prio = priority;
->  
->  	err = xnthread_init(task, &iattr, &xnsched_class_rt, &param);
-> @@ -155,8 +157,71 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
->  	return err;
->  }
->  
-> +/**
-> + * @brief Initialise and start a real-time task
-> + *
-> + * After initialising a task, the task handle remains valid and can be
-> + * passed to RTDM services until either rtdm_task_destroy() or
-> + * rtdm_task_join() was invoked.
-> + *
-> + * @param[in,out] task Task handle
-> + * @param[in] name Optional task name
-> + * @param[in] task_proc Procedure to be executed by the task
-> + * @param[in] arg Custom argument passed to @c task_proc() on entry
-> + * @param[in] priority Priority of the task, see also
-> + * @ref rtdmtaskprio "Task Priority Range"
-> + * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-> + * mode. Waiting for the first and subsequent periodic events is
-> + * done using rtdm_task_wait_period().
-> + *
-> + * @return 0 on success, otherwise negative error code
-> + *
-> + * @coretags{secondary-only, might-switch}
-> + */
-> +int rtdm_task_init(rtdm_task_t *task, const char *name,
-> +		   rtdm_task_proc_t task_proc, void *arg,
-> +		   int priority, nanosecs_rel_t period)
-> +{
-> +	return rtdm_task_init_with_affinity(task, CPU_MASK_ALL,
-> +			name, task_proc, arg, priority, period);
-> +}
->  EXPORT_SYMBOL_GPL(rtdm_task_init);
->  
-> +/**
-> + * @brief Initialise and start a real-time task on specified cpu
-> + *
-> + * After initialising a task, the task handle remains valid and can be
-> + * passed to RTDM services until either rtdm_task_destroy() or
-> + * rtdm_task_join() was invoked.
-> + *
-> + * @param[in,out] task Task handle
-> + * @param[in] cpu that task want to run on
-> + * @param[in] name Optional task name
-> + * @param[in] task_proc Procedure to be executed by the task
-> + * @param[in] arg Custom argument passed to @c task_proc() on entry
-> + * @param[in] priority Priority of the task, see also
-> + * @ref rtdmtaskprio "Task Priority Range"
-> + * @param[in] period Period in nanoseconds of a cyclic task, 0 for non-cyclic
-> + * mode. Waiting for the first and subsequent periodic events is
-> + * done using rtdm_task_wait_period().
-> + *
-> + * @return 0 on success, otherwise negative error code
-> + *
-> + * @coretags{secondary-only, might-switch}
-> + */
-> +int rtdm_task_init_on_cpu(rtdm_task_t *task, int cpu,
-> +		const char *name, rtdm_task_proc_t task_proc, void *arg,
-> +		int priority, nanosecs_rel_t period)
-> +{
-> +	if (!cpu_online(cpu))
-> +		return -EINVAL;
-> +
-> +	return rtdm_task_init_with_affinity(task, *cpumask_of(cpu),
-> +			name, task_proc, arg, priority, period);
-> +
-> +}
-> +EXPORT_SYMBOL_GPL(rtdm_task_init_on_cpu);
-> +
->  #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
->  /**
->   * @brief Destroy a real-time task
-
-
--- 
-Philippe.
+T24gRnJpLCAyMDIxLTAzLTEyIGF0IDEyOjAyICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gbmV3
+IHRlc3QgY2FzZSBmb3IgY2xvY2tfc2V0dGltZTY0IGFuZCBjbG9ja19nZXR0aW1lNjQgYW5kIHJl
+b3JnYW5pemUNCj4gcnVuXzIwMzguDQo+IA0KPiBJZiB5b3Ugd2FudCB0byB0cmlnZ2VyIGFuZCB2
+ZXJpZnkgeTIwMzggcHJvYmxlbSwgcGxlYXNlIGJlIGNhcmVmdWwgYW5kDQo+IG1ha2Ugc3VyZSBp
+dCBoYXMgbm8gaW1wYWN0IHRvIHlvdXIgdGVzdCBkZXZpY2UuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5
+OiBjaGVuc29uZyA8Y2hlbnNvbmdAdGoua3lsaW5vcy5jbj4NCj4gLS0tDQo+IMKgdGVzdHN1aXRl
+L3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMgfCAxMTQgKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKy0tDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDEwOSBpbnNlcnRpb25zKCspLCA1IGRl
+bGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lz
+Y2FsbC10ZXN0cy5jIGIvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4g
+aW5kZXggMWQ2MWJiZC4uMzYzNGQ2OCAxMDA2NDQNCj4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS95
+MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4gKysrIGIvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNj
+YWxsLXRlc3RzLmMNCj4gQEAgLTE3LDYgKzE3LDM3IEBADQo+IMKgDQo+IA0KPiDCoHNtb2tleV90
+ZXN0X3BsdWdpbih5MjAzOCwgU01PS0VZX05PQVJHUywgIlZhbGlkYXRlIGNvcnJlY3QgeTIwMzgg
+c3VwcG9ydCIpOw0KPiDCoA0KPiANCj4gDQo+IA0KPiArDQo+ICsjZGVmaW5lIFJVTl9URVNUKG5h
+bWUpIHRlc3RfICMjIG5hbWUNCj4gK3R5cGVkZWYgaW50ICgqdGVzdGVlX2Z1bmMpKHZvaWQpOw0K
+PiArc3RydWN0IHRlc3RlZV9pbmZvIHsNCj4gKwljaGFyICpuYW1lOw0KPiArCXRlc3RlZV9mdW5j
+IGZ1bmM7DQo+ICsJYm9vbCByaXNreTsNCj4gK307DQo+ICsNCj4gK3N0YXRpYyBpbnQgdGVzdF9z
+Y19jb2JhbHRfc2VtX3RpbWVkd2FpdDY0KHZvaWQpOw0KPiArc3RhdGljIGludCB0ZXN0X3NjX2Nv
+YmFsdF9jbG9ja19zZXRfZ2V0dGltZTY0KHZvaWQpOw0KPiArDQo+ICsjZGVmaW5lIFRFU1RFRV9U
+QUJMRV9DT1VOVCAzMg0KPiArc3RhdGljIHN0cnVjdCB0ZXN0ZWVfaW5mbyB0ZXN0ZWVfdGFibGVb
+VEVTVEVFX1RBQkxFX0NPVU5UXSA9IHsNCj4gKwl7DQo+ICsJCS5uYW1lID0gInNjX2NvYmFsdF9z
+ZW1fdGltZWR3YWl0NjQiLA0KPiArCQkuZnVuYyA9IFJVTl9URVNUKHNjX2NvYmFsdF9zZW1fdGlt
+ZWR3YWl0NjQpLA0KPiArCQkucmlza3kgPSBmYWxzZSwNCj4gKwl9LA0KPiArCXsNCj4gKwkJLm5h
+bWUgPSAic2NfY29iYWx0X2Nsb2NrX3NldF9nZXR0aW1lNjQiLA0KPiArCQkuZnVuYyA9IFJVTl9U
+RVNUKHNjX2NvYmFsdF9jbG9ja19zZXRfZ2V0dGltZTY0KSwNCj4gKwkJLnJpc2t5ID0gZmFsc2Us
+DQo+ICsJfSwNCj4gKwl7DQo+ICsJCS5uYW1lID0gTlVMTCwNCj4gKwkJLmZ1bmMgPSBOVUxMLA0K
+PiArCQkucmlza3kgPSBmYWxzZSwNCj4gKwl9LA0KPiArfTsNCj4gKw0KDQpEb24ndCBrbm93IGlm
+IHRoYXQgYm9pbGVycGxhdGUgaXMgcmVhbGx5IG5lY2Vzc2FyeS4uLg0KDQo+IMKgLyoNCj4gwqDC
+oCogbGliYyBpbmRlcGVuZGVudCBkYXRhIHR5cGUgcmVwcmVzZW50aW5nIGEgdGltZTY0X3QgYmFz
+ZWQgc3RydWN0IHRpbWVzcGVjDQo+IMKgwqAqLw0KPiBAQCAtMjUsNyArNTYsOCBAQCBzdHJ1Y3Qg
+eG5fdGltZXNwZWM2NCB7DQo+IMKgCWludDY0X3QgdHZfbnNlYzsNCj4gwqB9Ow0KPiDCoC0jZGVm
+aW5lIE5TRUNfUEVSX1NFQyAxMDAwMDAwMDAwDQo+IA0KPiArI2RlZmluZSBOU0VDX1BFUl9TRUMJ
+CTEwMDAwMDAwMDANCj4gKyNkZWZpbmUgVVNFQ19QRVJfU0VDCQkxMDAwMDAwDQo+IMKgwqBzdGF0
+aWMgdm9pZCB0c19ub3JtYWxpc2Uoc3RydWN0IHhuX3RpbWVzcGVjNjQgKnRzKQ0KPiANCj4gwqB7
+DQo+IEBAIC0xMTcsNyArMTQ5LDcgQEAgc3RhdGljIGludCB0ZXN0X3NjX2NvYmFsdF9zZW1fdGlt
+ZWR3YWl0NjQodm9pZCkNCj4gwqAJICogdGhlIHByb3ZpZGVkIHRpbWVvdXQgbm93LiBQcm92aWRp
+bmcgYW4gaW52YWxpZCBhZHJlc3MgaGFzIHRvIGRlbGl2ZXINCj4gwqAJICogRUZBVUxUDQo+IMKg
+CSAqLw0KPiAtCXJldCA9IHN5c2NhbGwoY29kZSwgJnNlbSwgKHZvaWQqKSAweGRlYWRiZWVmVUwp
+Ow0KPiArCXJldCA9IHN5c2NhbGwoY29kZSwgJnNlbSwgKHZvaWQgKikweGRlYWRiZWVmVUwpOw0K
+PiDCoAlpZiAoIXNtb2tleV9hc3NlcnQocmV0ID09IC0xKSB8fCAhc21va2V5X2Fzc2VydChlcnJu
+byA9PSBFRkFVTFQpKQ0KPiDCoAkJcmV0dXJuIGVycm5vOw0KPiDCoEBAIC0xNjMsMTMgKzE5NSw4
+NSBAQCBzdGF0aWMgaW50IHRlc3Rfc2NfY29iYWx0X3NlbV90aW1lZHdhaXQ2NCh2b2lkKQ0KPiDC
+oAlyZXR1cm4gMDsNCj4gwqB9DQo+IMKgK3N0YXRpYyBpbmxpbmUgaW50NjRfdCBjYWxjZGlmZl9u
+cyhzdHJ1Y3QgdGltZXNwZWMgdDEsIHN0cnVjdCB0aW1lc3BlYyB0MikNCj4gK3sNCg0KTWlub3I6
+IFRoZSBwYXJhbWV0ZXIgbmFtZXMgaW5kaWNhdGUgdGhhdCB0MiBpcyB0aGUgYmlnZ2VyIG9uZSwg
+YnV0IGJsb3cNCml0J3MgdDEgLSB0Mi4gQSBzaG9ydCBkb2MgY291bGQgaGVscCBvciBzd2l0Y2gg
+bmFtZXMgLyBvcmRlcj8NCg0KPiArCXN0cnVjdCB0aW1lc3BlYyByOw0KPiArDQo+ICsJci50dl9z
+ZWMgPSB0MS50dl9zZWMgLSB0Mi50dl9zZWM7DQo+ICsJci50dl9uc2VjID0gdDEudHZfbnNlYyAt
+IHQyLnR2X25zZWM7DQo+ICsJaWYgKHIudHZfbnNlYyA8IDApIHsNCj4gKwkJci50dl9zZWMtLTsN
+Cj4gKwkJci50dl9uc2VjICs9IE5TRUNfUEVSX1NFQzsNCj4gKwl9DQoNCkluc3RlYWQgb2YgaGFu
+ZGxpbmcgdGhlIG92ZXJmbG93IGhlcmUgeW91IGNvdWxkIHNpbXBseSBjYWxsIHRoZQ0KIm5vcm1h
+bGl6ZSIgaGVscGVyLg0KDQo+ICsNCj4gKwlyZXR1cm4gci50dl9zZWMgKiBOU0VDX1BFUl9TRUMg
+KyByLnR2X25zZWM7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBpbmxpbmUgaW50NjRfdCBjYWxjZGlm
+ZihzdHJ1Y3QgdGltZXNwZWMgdDEsIHN0cnVjdCB0aW1lc3BlYyB0MikNCj4gK3sNCj4gKwlyZXR1
+cm4gY2FsY2RpZmZfbnModDEsIHQyKSAvIE5TRUNfUEVSX1NFQzsNCj4gK30NCj4gKw0KPiArc3Rh
+dGljIGludCB0ZXN0X3NjX2NvYmFsdF9jbG9ja19zZXRfZ2V0dGltZTY0KHZvaWQpDQo+ICt7DQo+
+ICsJbG9uZyByZXQ7DQo+ICsJc3RydWN0IHRpbWVzcGVjIG5vdywgYWZ0ZXI7DQoNCldyb25nIHR5
+cGUhIEl0IHNlZW1zIHlvdSBuZXZlciB0ZXN0ZWQgb24gYW4gMzIgYml0IHN5c3RlbSwgb3IgbW9y
+ZQ0Kc3BlY2lmaWMgb24gYSBzeXN0ZW0gaGF2aW5nIHNpemVvZih0aW1lX3QpID0gNC4NCg0KVGhl
+IHJlc3VsdCBpbiAibm93IiB3b3VsZCBiZSBnYXJiYWdlLiBUaGUga2VybmVsIGlzIHdyaXRpbmcg
+d2l0aA0Kc2l6ZW9mKHRpbWVfdCkgPSA4IGFsd2F5cyAod2UgYXJlIHVzaW5nIHRoZSB5MjAzOCBp
+bnRlcmZhY2UpLg0KDQpZb3UgaGF2ZSB0byB1c2UgeG5fdGltZXNwZWM2NCBoZXJlLg0KDQo+ICsJ
+dWludDY0X3QgZGlmZjsNCj4gKwlpbnQgY3NldCA9IF9feG5fc3lzY29kZShzY19jb2JhbHRfY2xv
+Y2tfc2V0dGltZTY0KTsNCj4gKwlpbnQgY2dldCA9IF9feG5fc3lzY29kZShzY19jb2JhbHRfY2xv
+Y2tfZ2V0dGltZTY0KTsNCj4gKw0KPiArDQo+ICsJLypnZXQgY3VycmVudCB0aW1lKi8NCj4gKwly
+ZXQgPSBzeXNjYWxsKGNnZXQsIENMT0NLX1JFQUxUSU1FLCAmbm93KTsNCj4gKwlpZiAocmV0KQ0K
+PiArCQlyZXR1cm4gZXJybm87DQoNCklmIHJldCBpcyAiRU5PU1lTIjogUHJvZHVjZSBhIHdhcm5p
+bmcgdGhhdCB3ZSBkb24ndCBoYXZlIGtlcm5lbCBzdXBwb3J0DQpmb3IgdGhhdCB0ZXN0IGFuZCBz
+aW11bGF0ZSBzdWNjZXNzLiBOb3RoaW5nIHdlIGNvdWxkIHRlc3QgaW4gdGhhdCBjYXNlLg0KDQo+
+ICsNCj4gKwlhZnRlci50dl9zZWMgPSBub3cudHZfc2VjICsgMTA7DQo+ICsJYWZ0ZXIudHZfbnNl
+YyA9IDA7DQo+ICsNCj4gKwkvKg0KPiArCSAqIHNldCB0aW1lIDEwIHNlY29uZHMgbGF0ZXINCj4g
+KwkgKiBvciBnbyB0byAweGZmZmZmZmZmIHRvIHRyaWdnZXIgeTIwMzgsDQo+ICsJICogYnV0IGJl
+IGNhdXRpb3VzLCBpdCBoYXMgaW1wYWN0IHRvDQo+ICsJICogdGhlIGRldmljZSB5b3UgYXJlIHdv
+cmtpbmcgb24uDQo+ICsJICovDQo+ICsJcmV0ID0gc3lzY2FsbChjc2V0LCBDTE9DS19SRUFMVElN
+RSwgJmFmdGVyKTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gZXJybm87DQo+ICsNCj4gKwkv
+KmdldCB0aW1lIGFnYWluKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNnZXQsIENMT0NLX1JFQUxUSU1F
+LCAmYWZ0ZXIpOw0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVybiBlcnJubzsNCj4gKw0KPiArCS8q
+Y29tcGFyZSovDQo+ICsJZGlmZiA9IGNhbGNkaWZmKGFmdGVyLCBub3cpOw0KPiArCWlmIChkaWZm
+ICE9IDEwKQ0KPiArCQlzbW9rZXlfd2FybmluZygiY2xvY2tfZ2V0dGltZTY0IGlzIGltcHJlY2lz
+ZSFcbiIpOw0KPiArDQo+ICsJLypzZXQgdGltZSBiYWNrKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNz
+ZXQsIENMT0NLX1JFQUxUSU1FLCAmbm93KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gZXJy
+bm87DQo+ICsNCj4gKwlyZXR1cm4gMDsNCj4gK30NCj4gKw0KPiDCoHN0YXRpYyBpbnQgcnVuX3ky
+MDM4KHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3ZbXSkN
+Cj4gwqB7DQo+IMKgCWludCByZXQ7DQo+ICsJc3RydWN0IHRlc3RlZV9pbmZvICpwID0gdGVzdGVl
+X3RhYmxlOw0KPiDCoA0KPiANCj4gDQo+ID4gLQlyZXQgPSB0ZXN0X3NjX2NvYmFsdF9zZW1fdGlt
+ZWR3YWl0NjQoKTsNCj4gLQlpZiAocmV0KQ0KPiAtCQlyZXR1cm4gcmV0Ow0KPiArCXdoaWxlIChw
+LT5uYW1lICE9IE5VTEwpIHsNCj4gKw0KPiArCQlpZiAocC0+cmlza3kgPT0gZmFsc2UpIHsNCj4g
+KwkJCXJldCA9IHAtPmZ1bmMoKTsNCj4gKwkJCWlmIChyZXQpDQo+ICsJCQkJc21va2V5X3dhcm5p
+bmcoIiVzIGZhaWxlZFxuIiwgcC0+bmFtZSk7DQo+ICsJCX0NCj4gKw0KPiArCQlwKys7DQo+ICsJ
+fQ0KPiANCj4gwqAJcmV0dXJuIDA7DQo+IMKgfQ0KDQo=
 
