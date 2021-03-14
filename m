@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 4.19 & 5.4] ftrace: ipipe: Fix hardening of
- trace_recursive_lock
-Message-ID: <3c22d72d-351e-ed2f-372a-ab5a1af5f38f@siemens.com>
-Date: Sun, 14 Mar 2021 17:09:06 +0100
+Subject: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm and
+ unuse_temporary_mm
+Message-ID: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
+Date: Sun, 14 Mar 2021 17:08:44 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -19,41 +19,40 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-cpu_buffer->current_context is supposed to be protected by irq
-disabling, just like in dovetail.
+This is only called during early init, e.g. for switching alternatives.
+Still, switch_mm_irqs_off would complain without this, and we are better
+safe than sorry.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
 
-No-arch branches updated with this already.
+4.19 is not affected. Dovetail solves this differently, via 
+local_irq_save_full which is not available in I-pipe and not worth to 
+introduce for this purpose.
 
- kernel/trace/ring_buffer.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/mmu_context.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
-index dfaeee5b54e3..90be9e613887 100644
---- a/kernel/trace/ring_buffer.c
-+++ b/kernel/trace/ring_buffer.c
-@@ -2726,9 +2726,9 @@ rb_wakeups(struct ring_buffer *buffer, struct ring_buffer_per_cpu *cpu_buffer)
- static __always_inline int
- trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+index 0d9dd08c2122..2b4afca4e15f 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -383,6 +383,7 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
+ 	temp_mm_state_t temp_state;
+ 
+ 	lockdep_assert_irqs_disabled();
++	hard_cond_local_irq_disable();
+ 	temp_state.mm = this_cpu_read(cpu_tlbstate.loaded_mm);
+ 	switch_mm_irqs_off(NULL, mm, current);
+ 
+@@ -407,6 +408,7 @@ static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
  {
--	unsigned int val = cpu_buffer->current_context;
- 	unsigned long pc = preempt_count();
- 	unsigned long flags;
-+	unsigned int val;
- 	int bit;
+ 	lockdep_assert_irqs_disabled();
+ 	switch_mm_irqs_off(NULL, prev_state.mm, current);
++	hard_cond_local_irq_enable();
  
- 	if (!(pc & (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)))
-@@ -2739,6 +2739,8 @@ trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
- 
- 	flags = hard_local_irq_save();
- 
-+	val = cpu_buffer->current_context;
-+
- 	if (unlikely(val & (1 << (bit + cpu_buffer->nest)))) {
- 		/*
- 		 * It is possible that this was called by transitioning
+ 	/*
+ 	 * Restore the breakpoints if they were disabled before the temporary mm
 -- 
 2.26.2
 
