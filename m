@@ -1,19 +1,12 @@
-Date: Sun, 14 Mar 2021 15:20:40 +0300
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: Re: kernel BUG at kernel/auditsc.c:1527!
-Message-ID: <20210314122040.hwtlltvpocj662ux@altlinux.org>
-References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
- <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
- <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
- <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
- <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
- <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
- <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 4.19 & 5.4] ftrace: ipipe: Fix hardening of
+ trace_recursive_lock
+Message-ID: <3c22d72d-351e-ed2f-372a-ab5a1af5f38f@siemens.com>
+Date: Sun, 14 Mar 2021 17:09:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="koi8-r"
-Content-Disposition: inline
-Content-Transfer-Encoding: base64
-In-Reply-To: <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,29 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-SmFuLAoKT24gU3VuLCBNYXIgMTQsIDIwMjEgYXQgMTA6NDU6NTZBTSArMDEwMCwgSmFuIEtpc3pr
-YSB3cm90ZToKPiBPbiAxMi4wMy4yMSAwOTowMCwgVml0YWx5IENoaWt1bm92IHdyb3RlOgo+ID4g
-T24gRnJpLCBNYXIgMTIsIDIwMjEgYXQgMDg6MTk6MzBBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90
-ZToKPiA+Pj4gSWYgeW91IHdpc2gsIHlvdSBjYW4gZXh0cmFjdCBidWlsdCBrZXJuZWwgZnJvbSBS
-UE0gd2l0aCBycG0yY3BpbyBhbmQKPiA+Pj4gdHJ5IGJvb3Qgb24geW91ciBzeXN0ZW06Cj4gPj4+
-ICAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5L2J1aWxkLzEwMC94ODZfNjQv
-cnBtcy9rZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQxLmNpcDQ0LjE2Lng4Nl82NC5y
-cG0KPiA+Pj4gKE1heWJlIGl0J3MgaGFyZHdhcmUgZGVwZW5kZW50PykKPiA+Pj4KPiA+Pgo+ID4+
-IFdpbGwgY2hlY2sgdGhhdCBhcyB3ZWxsLCBqdXN0IHRvIGV4Y2x1ZGUgdGhlIGhhcmR3YXJlIChJ
-J20gcmVwcm9kdWNpbmcKPiA+PiBpbiBRRU1VKS4gSG93ZXZlciwgSSB3aWxsIGxpa2VseSBuZWVk
-IG1vcmUgKGRlYnVnIHN5bWJvbHMsIGdkYiBzY3JpcHRzKQo+ID4+IHRvIGRlYnVnIHRoYXQuCj4g
-PiAKPiA+IFRoZXJlIGlzIGRlYnVnaW5mbyBwYWNrYWdlIHRvbyBpbgo+ID4gICBodHRwOi8vZ2l0
-LmFsdGxpbnV4Lm9yZy90YXNrcy8yNjc1NzkvYnVpbGQvMTAwL3g4Nl82NC9ycG1zLwo+ID4gCj4g
-PiD0aGFua3MhCj4gPiAKPiAKPiBGb3VuZCBhbmQgZml4ZWQ6Cj4gCj4gVGhlcmUgd2FzIGFuIGlt
-YmFsYW5jZSBpbiB0aGUgc3lzY2FsbCBleGl0IHBhdGNoLiBJdCB3YXMgdXNpbmcgYSBmcmFnaWxl
-Cj4gaGV1cmlzdGljIHRvIGd1ZXNzIGlmIHRoZSBzbG93LXdvcmsgcGF0aCBzaG91bGQgYmUgdGFr
-ZW4gb3Igbm90LiBUaGF0IGluCj4gY29tYmluYXRpb24gd2l0aCBsYXRlc3QgZ2xpYmMgdXNpbmcg
-c3lzY2FsbCBwcm9iaW5nIChJIGhhZCB0byBzd2l0Y2ggdG8KPiBhbiBBcmNoIHZtIGltYWdlKSBj
-YXVzZWQgdGhlIGF1ZGl0IHBhdGggdG8gYmUgdGFrZW4gb24gZW50cnkgYnV0IG5vdCBvbgo+IGV4
-aXQgaWYgYSBjYWxsIHdhcyB1bnN1cHBvcnRlZC4gQSBsb25nIHBlbmRpbmcgaXNzdWUgaW4gSS1w
-aXBlLgo+IAo+IFBhdGNoZXMgZm9yIHRoZSB2YXJpb3VzIHg4NiBicmFuY2hlcyB3aWxsIGZvbGxv
-dy4KClRoYW5rcyBtdWNoIQoKPiAKPiBKYW4KPiAKPiAtLSAKPiBTaWVtZW5zIEFHLCBUIFJEQSBJ
-T1QKPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKCg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+cpu_buffer->current_context is supposed to be protected by irq
+disabling, just like in dovetail.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+No-arch branches updated with this already.
+
+ kernel/trace/ring_buffer.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+index dfaeee5b54e3..90be9e613887 100644
+--- a/kernel/trace/ring_buffer.c
++++ b/kernel/trace/ring_buffer.c
+@@ -2726,9 +2726,9 @@ rb_wakeups(struct ring_buffer *buffer, struct ring_buffer_per_cpu *cpu_buffer)
+ static __always_inline int
+ trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
+ {
+-	unsigned int val = cpu_buffer->current_context;
+ 	unsigned long pc = preempt_count();
+ 	unsigned long flags;
++	unsigned int val;
+ 	int bit;
+ 
+ 	if (!(pc & (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)))
+@@ -2739,6 +2739,8 @@ trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
+ 
+ 	flags = hard_local_irq_save();
+ 
++	val = cpu_buffer->current_context;
++
+ 	if (unlikely(val & (1 << (bit + cpu_buffer->nest)))) {
+ 		/*
+ 		 * It is possible that this was called by transitioning
+-- 
+2.26.2
+
