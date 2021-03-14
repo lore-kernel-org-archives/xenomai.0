@@ -1,7 +1,9 @@
+References: <CADx0-8CNBVqiiKNqAsnZQjjEMNxZ4uW+MrNikh9MpSFKzStaiQ@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [Dovetail] arm64 test version available (kernel v5.10)
-Date: Sun, 14 Mar 2021 17:37:47 +0100
-Message-ID: <87lfapg084.fsf@xenomai.org>
+Subject: Re: [XENOMAI][ARM64] : Xenomai on Jetson TX2
+In-reply-to: <CADx0-8CNBVqiiKNqAsnZQjjEMNxZ4uW+MrNikh9MpSFKzStaiQ@mail.gmail.com>
+Date: Sun, 14 Mar 2021 17:41:22 +0100
+Message-ID: <87im5tg025.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -12,34 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Mohamed Irfanulla Mohamed Abdulla <m.mohamedirfanulla@gmail.com>
+Cc: xenomai@xenomai.org
 
 
-The initial port of the Cobalt core to Dovetail/arm64 is available from
-[1]. Tested on rpi4, Odroid C4 and KVM/arm64 so far.
+Mohamed Irfanulla Mohamed Abdulla via Xenomai <xenomai@xenomai.org> writes:
 
-How to test this:
+> Hi,
+>
+> We are trying to run xenomai on Jetson TX2. Following the discussion on
+> this Topic
+> https://www.mail-archive.com/xenomai@xenomai.org/msg19189.html
+>
+> What is missing is the
+> Xenomai port to Dovetail/arm64, which is brewing.
+>
+>
+> I would like to know if the Xenomai port to Dovetail/arm64 is
+> available? Since from the Topic we assume that Jetson SoC is bootable
+> with Linux mainline kernel > 5.7 and arm64 Ipipe is not available.
+>
+>
 
-- clone Xenomai from [1], switch to branch for-upstream/dovetail
-- clone the Dovetail tree (v5.10.23) from [2], switch to branch dovetail/v5.10
-- run scripts/prepare-kernel.sh available from [1] into [2] (usual procedure)
-  for arm64, that would be: .../scripts/prepare-kernel.sh --arch=arm64
-- build your kernel using the sources from [2]
-
-There is no user-visible Kconfig change compared to an I-pipe based
-version.
-
-Alternatively, the Xenomai code base in [1] can also run on top of the
-I-pipe. prepare-kernel.sh detects which pipeline flavour is there, and
-prepares the source tree accordingly.
-
-This code is being gradually merged into Xenomai's -next branch, and
-will be at the core of Xenomai 3.2. Testing and feedback appreciated.
+Please refer to
+https://xenomai.org/pipermail/xenomai/2021-March/044736.html.
 
 Thanks,
-
-[1] https://lab.xenomai.org/xenomai-rpm.git, "for-upstream/dovetail" branch
-[2] https://git.evlproject.org/linux-evl.git, "dovetail/v5.10" branch
 
 -- 
 Philippe.
