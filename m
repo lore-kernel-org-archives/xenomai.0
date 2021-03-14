@@ -1,10 +1,7 @@
-References: <09466f06-99c6-b98c-410f-1c834c92d182@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH dovetail/master & v5.10] x86: dovetail: add support to
- 32-bit syscall path
-In-reply-to: <09466f06-99c6-b98c-410f-1c834c92d182@siemens.com>
-Date: Sun, 14 Mar 2021 17:25:51 +0100
-Message-ID: <87o8flg0s0.fsf@xenomai.org>
+Subject: [Dovetail] arm64 test version available (kernel v5.10)
+Date: Sun, 14 Mar 2021 17:37:47 +0100
+Message-ID: <87lfapg084.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,71 +12,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>, Evl <evl@evlproject.org>
+To: xenomai@xenomai.org
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+The initial port of the Cobalt core to Dovetail/arm64 is available from
+[1]. Tested on rpi4, Odroid C4 and KVM/arm64 so far.
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> Analogously to do_syscall_64.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  arch/x86/entry/common.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
->
-> diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-> index c93d6be8f3ac..dc90c7fb4b9b 100644
-> --- a/arch/x86/entry/common.c
-> +++ b/arch/x86/entry/common.c
-> @@ -99,11 +99,22 @@ __visible noinstr void do_int80_syscall_32(struct pt_regs *regs)
->  	 * or may not be necessary, but it matches the old asm behavior.
->  	 */
->  	nr = (unsigned int)syscall_enter_from_user_mode(regs, nr);
-> +
-> +	if (dovetailing()) {
-> +		if (nr == EXIT_SYSCALL_OOB) {
-> +			hard_local_irq_disable();
-> +			return;
-> +		}
-> +		if (nr == EXIT_SYSCALL_TAIL)
-> +			goto done;
-> +	}
-> +
->  	instrumentation_begin();
->  
->  	do_syscall_32_irqs_on(regs, nr);
->  
->  	instrumentation_end();
-> +done:
->  	syscall_exit_to_user_mode(regs);
->  }
->  
-> @@ -145,9 +156,20 @@ static noinstr bool __do_fast_syscall_32(struct pt_regs *regs)
->  	/* The case truncates any ptrace induced syscall nr > 2^32 -1 */
->  	nr = (unsigned int)syscall_enter_from_user_mode_work(regs, nr);
->  
-> +	if (dovetailing()) {
-> +		if (nr == EXIT_SYSCALL_OOB) {
-> +			instrumentation_end();
-> +			hard_local_irq_disable();
-> +			return true;
-> +		}
-> +		if (nr == EXIT_SYSCALL_TAIL)
-> +			goto done;
-> +	}
-> +
->  	/* Now this is just like a normal syscall. */
->  	do_syscall_32_irqs_on(regs, nr);
->  
-> +done:
->  	instrumentation_end();
->  	syscall_exit_to_user_mode(regs);
->  	return true;
+How to test this:
 
-Merged, thanks.
+- clone Xenomai from [1], switch to branch for-upstream/dovetail
+- clone the Dovetail tree (v5.10.23) from [2], switch to branch dovetail/v5.10
+- run scripts/prepare-kernel.sh available from [1] into [2] (usual procedure)
+  for arm64, that would be: .../scripts/prepare-kernel.sh --arch=arm64
+- build your kernel using the sources from [2]
+
+There is no user-visible Kconfig change compared to an I-pipe based
+version.
+
+Alternatively, the Xenomai code base in [1] can also run on top of the
+I-pipe. prepare-kernel.sh detects which pipeline flavour is there, and
+prepares the source tree accordingly.
+
+This code is being gradually merged into Xenomai's -next branch, and
+will be at the core of Xenomai 3.2. Testing and feedback appreciated.
+
+Thanks,
+
+[1] https://lab.xenomai.org/xenomai-rpm.git, "for-upstream/dovetail" branch
+[2] https://git.evlproject.org/linux-evl.git, "dovetail/v5.10" branch
 
 -- 
 Philippe.
