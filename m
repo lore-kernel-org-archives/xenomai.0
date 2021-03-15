@@ -7,8 +7,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm
  and unuse_temporary_mm
 In-reply-to: <bf661a41-7ddf-196f-e57f-eb0be99ea565@siemens.com>
-Date: Mon, 15 Mar 2021 10:43:38 +0100
-Message-ID: <874khcg3at.fsf@xenomai.org>
+Date: Mon, 15 Mar 2021 10:47:23 +0100
+Message-ID: <871rcgg34k.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -67,15 +67,9 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 > sure if dovetail is affected by that as well.
 >
 
-This was likely caused by ipipe_unstall_root(void) force enabling hard
-irqs on. This is gone in Dovetail, and unstalling the inband stage with
-hard irqs off is even considered a bug now (inband_irq_enable()
-complains about this) so that we catch the callers who would still be
-making the original assumption.
-
-IOW, allocating page table directories when locking PTEs should not
-cause hard IRQs to be force enabled with Dovetail. I'm going to check
-this for peace of mind.
+In the case at hand, the PTE of the poking address is locked and
+returned outside of the locked section, so this should not be a concern
+for live patching.
 
 -- 
 Philippe.
