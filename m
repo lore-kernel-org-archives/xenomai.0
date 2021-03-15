@@ -1,12 +1,13 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <50033e69-b5a8-fffe-4e9e-516a947b70c4@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Mon, 15 Mar 2021 08:57:42 +0100
+Subject: Re: Get packet timestamp in af_packet or other RTNET components
+References: <35a5-604f1380-1a5-48dc0d80@57314281>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9cffc541-5e22-d874-8d60-8799a650e0b3@siemens.com>
+Date: Mon, 15 Mar 2021 08:59:40 +0100
 MIME-Version: 1.0
-Message-ID: <35a5-604f1380-1a5-48dc0d80@57314281>
-Subject: =?utf-8?q?Re=3A?= Get packet timestamp in =?utf-8?q?af=5Fpacket?= or
- other RTNET components
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <35a5-604f1380-1a5-48dc0d80@57314281>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
 Cc: xenomai@xenomai.org
 
-Le Lundi, Mars 15, 2021 08:16 CET, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit: 
- 
-> On 12.03.21 23:21, Fran=C3=A7ois Legal via Xenomai wrote:
-> > Hello,
-> > 
-> > working on a data recorder application, I would need to get access =
-to each packet receive timestamp (populated during packet reception ISR=
- generally in network drivers).
-> > 
-> > I figured out, the cleanest way to do it would be using the
-> >  "void =5F=5Fuser *msg=5Fcontrol;	/* ancillary data */" / "=5F=5Fke=
-rnel=5Fsize=5Ft msg=5Fcontrollen;	/* ancillary data buffer length */"
-> > members of the struct user=5Fmsghdr that is carried over when using=
- the recvmsg call, plus possibly an ioctl to enable the timestamp retri=
-eving
-> > 
-> > Did anybody already do something like this in xenomai/RTNET ?
-> > Any thought on the proposed vector ?
-> > Any chance such modification could become mainline ?
-> > 
+On 15.03.21 08:57, François Legal wrote:
+> Le Lundi, Mars 15, 2021 08:16 CET, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
+>  
+>> On 12.03.21 23:21, François Legal via Xenomai wrote:
+>>> Hello,
+>>>
+>>> working on a data recorder application, I would need to get access to each packet receive timestamp (populated during packet reception ISR generally in network drivers).
+>>>
+>>> I figured out, the cleanest way to do it would be using the
+>>>  "void __user *msg_control;	/* ancillary data */" / "__kernel_size_t msg_controllen;	/* ancillary data buffer length */"
+>>> members of the struct user_msghdr that is carried over when using the recvmsg call, plus possibly an ioctl to enable the timestamp retrieving
+>>>
+>>> Did anybody already do something like this in xenomai/RTNET ?
+>>> Any thought on the proposed vector ?
+>>> Any chance such modification could become mainline ?
+>>>
+>>
+>> I would add SO_RCVTIMEO support, like rtipc already has.
+>>
+>> Jan
+>>
+>> -- 
+>> Siemens AG, T RDA IOT
+>> Corporate Competence Center Embedded Linux
+>  
+> Hello,
 > 
-> I would add SO=5FRCVTIMEO support, like rtipc already has.
+> Isn't SO_RCVTIMEO used to set receive timeout ?
 > 
-> Jan
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
- 
-Hello,
+> What I intend to do is retrieve the receive time of the packet.
 
-Isn't SO=5FRCVTIMEO used to set receive timeout ?
+Sorry, wrong option. But I suspect there is something official to obtain
+the time stamps as well.
 
-What I intend to do is retrieve the receive time of the packet.
+Jan
 
-Fran=C3=A7ois
-
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
