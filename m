@@ -1,14 +1,14 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 2/4] [y2038]cobalt: posix: clock: Adding clock_settime64
-Date: Thu, 11 Mar 2021 09:03:34 +0000
-Message-ID: <d77a82d1c4738402500af7b9b7bbb0f7ab70e66d.camel@siemens.com>
-References: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5E41F2251821BF4EA48FF2F8513D70D4@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
+ <87ft0xfyj4.fsf@xenomai.org>
+ <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm
+ and unuse_temporary_mm
+In-reply-to: <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
+Date: Mon, 15 Mar 2021 10:00:14 +0100
+Message-ID: <87czw0g5b5.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-T24gVGh1LCAyMDIxLTAzLTExIGF0IDEwOjQ2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gQWRk
-aW5nIGEgbmV3IHN5c2NhbGwgY2xvY2tfc2V0dGltZTY0IHNwZWNpZmljIGZvciB0aW1lc3BlYzY0
-LA0KPiBJdCBjYW4gc29sdmUgeTIwMzggaW4gYmVsb3cgc2NlbmFyaW9zOg0KPiANCj4gMSwgNjRi
-aXQga2VybmVsLCB5MjAzOCBzYWZlDQo+IDIsIDMyYml0IGtlcm5lbCwgMzJiaXQgdGltZV90LCBn
-byB0byBjbG9ja19zZXR0aW1lLCBubyBicmVhaywNCj4gwqDCoMKgeTIwMzggbm90IHNhZmUuDQo+
-IDMsIDMyYml0IGtlcm5lbCwgNjRiaXQgdGltZV90LCBnbyB0byBjbG9ja19zZXR0aW1lNjQgYnkg
-dGhlIGhlbHANCj4gwqDCoMKgb2YgbGliY29iYWx0LCBubyBicmVhaywgeTIwMzggc2FmZS4NCj4g
-DQo+IFNpZ25lZC1vZmYtYnk6IGNoZW5zb25nIDxjaGVuc29uZ0B0ai5reWxpbm9zLmNuPg0KPiAt
-LS0NCj4gwqBpbmNsdWRlL2NvYmFsdC91YXBpL3N5c2NhbGwuaCB8ICAxICsNCj4gwqBrZXJuZWwv
-Y29iYWx0L3Bvc2l4L2Nsb2NrLmMgICB8IDEyICsrKysrKysrKysrKw0KPiDCoGtlcm5lbC9jb2Jh
-bHQvcG9zaXgvY2xvY2suaCAgIHwgIDQgKysrKw0KPiDCoDMgZmlsZXMgY2hhbmdlZCwgMTcgaW5z
-ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2Fs
-bC5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gaW5kZXggODg5NWQyYi4uMjkx
-YjU1MCAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gKysr
-IGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gQEAgLTEyMyw2ICsxMjMsNyBAQA0K
-PiDCoCNkZWZpbmUgc2NfY29iYWx0X2Nsb2NrX2FkanRpbWUJCQkxMDANCj4gwqAjZGVmaW5lIHNj
-X2NvYmFsdF90aHJlYWRfc2V0c2NoZWRwcmlvCQkxMDENCj4gwqAjZGVmaW5lIHNjX2NvYmFsdF9z
-ZW1fdGltZWR3YWl0NjQJCTEwMg0KPiArI2RlZmluZSBzY19jb2JhbHRfY2xvY2tfc2V0dGltZTY0
-CQkxMDMNCg0KSSBhc3N1bWUgd2Ugc2hvdWxkIGtlZXAgdGhlIG9yZGVyIG9mIGFmZmVjdGVkIHN5
-c2NhbGxzLiBUaGUgbmV4dCBvbmUNCndvdWxkIGJlIHNjX2NvYmFsdF9jbG9ja19nZXR0aW1lNjQu
-DQoNCkFuZCBJJ20gbWlzc2luZyB0aGUgdGVzdHMuLi4gUGxlYXNlIGFkZCB0ZXN0cyBmb3IgZXZl
-cnl0aGluZyB5b3UgYWRkIC8NCmZpeC4NCg0KPiDCoA0KPiANCj4gDQo+IA0KPiDCoCNkZWZpbmUg
-X19OUl9DT0JBTFRfU1lTQ0FMTFMJCQkxMjggLyogUG93ZXIgb2YgMiAqLw0KPiDCoA0KPiANCj4g
-DQo+IA0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jIGIva2VybmVs
-L2NvYmFsdC9wb3NpeC9jbG9jay5jDQo+IGluZGV4IDZhNDc5NTYuLjk2NDNmOGYgMTAwNjQ0DQo+
-IC0tLSBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYw0KPiArKysgYi9rZXJuZWwvY29iYWx0
-L3Bvc2l4L2Nsb2NrLmMNCj4gQEAgLTIzLDYgKzIzLDcgQEANCj4gwqAjaW5jbHVkZSAidGhyZWFk
-LmgiDQo+IMKgI2luY2x1ZGUgImNsb2NrLmgiDQo+IMKgI2luY2x1ZGUgPHRyYWNlL2V2ZW50cy9j
-b2JhbHQtcG9zaXguaD4NCj4gKyNpbmNsdWRlIDxjb2JhbHQva2VybmVsL3RpbWUuaD4NCj4gwqAN
-Cj4gDQo+IA0KPiANCj4gwqBzdGF0aWMgc3RydWN0IHhuY2xvY2sgKmV4dGVybmFsX2Nsb2Nrc1tD
-T0JBTFRfTUFYX0VYVENMT0NLU107DQo+IMKgDQo+IA0KPiANCj4gDQo+IEBAIC0xOTMsNiArMTk0
-LDE3IEBAIENPQkFMVF9TWVNDQUxMKGNsb2NrX3NldHRpbWUsIGN1cnJlbnQsDQo+IMKgCXJldHVy
-biBfX2NvYmFsdF9jbG9ja19zZXR0aW1lKGNsb2NrX2lkLCAmdHMpOw0KPiDCoH0NCj4gwqANCj4g
-DQo+IA0KPiANCj4gK0NPQkFMVF9TWVNDQUxMKGNsb2NrX3NldHRpbWU2NCwgY3VycmVudCwNCj4g
-KwkgICAgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgY29uc3Qgc3RydWN0IF9fa2VybmVsX3RpbWVz
-cGVjIF9fdXNlciAqdV90cykpDQo+ICt7DQo+ICsJc3RydWN0IHRpbWVzcGVjNjQgdHM2NDsNCj4g
-Kw0KPiArCWlmIChjb2JhbHRfZ2V0X3RpbWVzcGVjNjQoJnRzNjQsIHVfdHMpKQ0KPiArCQlyZXR1
-cm4gLUVGQVVMVDsNCj4gKw0KPiArCXJldHVybiBfX2NvYmFsdF9jbG9ja19zZXR0aW1lKGNsb2Nr
-X2lkLCAmdHM2NCk7DQo+ICt9DQo+ICsNCj4gwqBDT0JBTFRfU1lTQ0FMTChjbG9ja19hZGp0aW1l
-LCBjdXJyZW50LA0KPiDCoAkgICAgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgc3RydWN0IF9fdXNl
-cl9vbGRfdGltZXggX191c2VyICp1X3R4KSkNCj4gwqB7DQo+IGRpZmYgLS1naXQgYS9rZXJuZWwv
-Y29iYWx0L3Bvc2l4L2Nsb2NrLmggYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmgNCj4gaW5k
-ZXggZTY5ZTc2ZS4uOTBmNzlmYSAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFsdC9wb3NpeC9j
-bG9jay5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaA0KPiBAQCAtMTE5LDYg
-KzExOSwxMCBAQCBDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX2dldHRpbWUsDQo+IMKgQ09CQUxU
-X1NZU0NBTExfREVDTChjbG9ja19zZXR0aW1lLA0KPiDCoAkJICAgIChjbG9ja2lkX3QgY2xvY2tf
-aWQsIGNvbnN0IHN0cnVjdCBfX3VzZXJfb2xkX3RpbWVzcGVjIF9fdXNlciAqdV90cykpOw0KPiDC
-oA0KPiANCj4gDQo+IA0KPiArQ09CQUxUX1NZU0NBTExfREVDTChjbG9ja19zZXR0aW1lNjQsDQo+
-ICsJCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLA0KPiArCQkJIGNvbnN0IHN0cnVjdCBfX2tlcm5l
-bF90aW1lc3BlYyBfX3VzZXIgKnVfdHMpKTsNCj4gKw0KPiDCoENPQkFMVF9TWVNDQUxMX0RFQ0wo
-Y2xvY2tfYWRqdGltZSwNCj4gwqAJCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLCBzdHJ1Y3QgX191
-c2VyX29sZF90aW1leCBfX3VzZXIgKnVfdHgpKTsNCj4gwqANCg0K
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 14.03.21 18:14, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+>> 
+>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> This is only called during early init, e.g. for switching alternatives.
+>>> Still, switch_mm_irqs_off would complain without this, and we are better
+>>> safe than sorry.
+>>>
+>> 
+>> The way this is done in Dovetail is fragile too, since the protection we
+>> have there still expects the pipeline entry code not to mess up on
+>> handling an interrupt, which defeats the purpose of such
+>> precaution. Besides, the temp_state should be snapshot under protection
+>> too. IOW, IRQs should be hard disabled fully while using the temporary
+>> mm.
+>> 
+>> Upstreaming a similar patch for Dovetail.
+>
+> Just saw it: It's wrong as it left the hard_irq_save_full at the caller
+> site. Would raise a warning when debugging is enabled. Please fix.
+>
+
+I guess you mean local_irq_save_full(). After a second look, the hard
+irqs off section should cover the entire code poking new text into a
+live kernel. This is what switching to the _full() forms enforced
+already. So I see no point in changing the IRQ state in the use/unuse
+helpers eventually.
+
+> Jan
+>
+>> 
+>> Thanks,
+>> 
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>> ---
+>>>
+>>> 4.19 is not affected. Dovetail solves this differently, via 
+>>> local_irq_save_full which is not available in I-pipe and not worth to 
+>>> introduce for this purpose.
+>>>
+>>>  arch/x86/include/asm/mmu_context.h | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+>>> index 0d9dd08c2122..2b4afca4e15f 100644
+>>> --- a/arch/x86/include/asm/mmu_context.h
+>>> +++ b/arch/x86/include/asm/mmu_context.h
+>>> @@ -383,6 +383,7 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
+>>>  	temp_mm_state_t temp_state;
+>>>  
+>>>  	lockdep_assert_irqs_disabled();
+>>> +	hard_cond_local_irq_disable();
+>>>  	temp_state.mm = this_cpu_read(cpu_tlbstate.loaded_mm);
+>>>  	switch_mm_irqs_off(NULL, mm, current);
+>>>  
+>>> @@ -407,6 +408,7 @@ static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
+>>>  {
+>>>  	lockdep_assert_irqs_disabled();
+>>>  	switch_mm_irqs_off(NULL, prev_state.mm, current);
+>>> +	hard_cond_local_irq_enable();
+>>>  
+>>>  	/*
+>>>  	 * Restore the breakpoints if they were disabled before the temporary mm
+>> 
+>> 
+
+
+-- 
+Philippe.
 
