@@ -1,19 +1,17 @@
-Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm and
- unuse_temporary_mm
 References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
  <87ft0xfyj4.fsf@xenomai.org>
  <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
  <87czw0g5b5.fsf@xenomai.org>
  <bf661a41-7ddf-196f-e57f-eb0be99ea565@siemens.com>
- <871rcgg34k.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <18836a78-09e7-9032-9b85-7e8b60c40d4f@siemens.com>
-Date: Mon, 15 Mar 2021 10:57:41 +0100
+ <874khcg3at.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm
+ and unuse_temporary_mm
+In-reply-to: <874khcg3at.fsf@xenomai.org>
+Date: Mon, 15 Mar 2021 11:02:46 +0100
+Message-ID: <87y2eoenuh.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <871rcgg34k.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,17 +20,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 15.03.21 10:47, Philippe Gerum wrote:
-> 
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
 > Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
+>
 >> On 15.03.21 10:00, Philippe Gerum wrote:
->>>
+>>> 
 >>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
+>>> 
 >>>> On 14.03.21 18:14, Philippe Gerum wrote:
 >>>>>
 >>>>> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
@@ -56,7 +55,7 @@ On 15.03.21 10:47, Philippe Gerum wrote:
 >>>> Just saw it: It's wrong as it left the hard_irq_save_full at the caller
 >>>> site. Would raise a warning when debugging is enabled. Please fix.
 >>>>
->>>
+>>> 
 >>> I guess you mean local_irq_save_full(). After a second look, the hard
 >>> irqs off section should cover the entire code poking new text into a
 >>> live kernel. This is what switching to the _full() forms enforced
@@ -70,51 +69,20 @@ On 15.03.21 10:47, Philippe Gerum wrote:
 >> spinlock function called via get_locked_pte reenabled hard IRQs. Not
 >> sure if dovetail is affected by that as well.
 >>
-> 
-> In the case at hand, the PTE of the poking address is locked and
-> returned outside of the locked section, so this should not be a concern
-> for live patching.
-> 
+>
+> This was likely caused by ipipe_unstall_root(void) force enabling hard
+> irqs on. This is gone in Dovetail, and unstalling the inband stage with
+> hard irqs off is even considered a bug now (inband_irq_enable()
+> complains about this) so that we catch the callers who would still be
+> making the original assumption.
+>
+> IOW, allocating page table directories when locking PTEs should not
+> cause hard IRQs to be force enabled with Dovetail. I'm going to check
+> this for peace of mind.
 
-Yeah, I'm carrying this now:
-
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index cbaa584a9f23..affc594cc939 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -808,6 +808,7 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
- 	temp_mm_state_t temp_state;
- 
- 	lockdep_assert_irqs_disabled();
-+	WARN_ON_ONCE(irq_pipeline_debug() && !hard_irqs_disabled());
- 
- 	/*
- 	 * Make sure not to be in TLB lazy mode, as otherwise we'll end up
-@@ -821,8 +822,6 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
- 	 * unuse_temporary_mm() assumes hardirqs were off on entry to
- 	 * use_temporary_mm(), assert this condition.
- 	 */
--	WARN_ON_ONCE(irq_pipeline_debug() && hard_irqs_disabled());
--	hard_cond_local_irq_disable();
- 	temp_state.mm = this_cpu_read(cpu_tlbstate.loaded_mm);
- 	switch_mm_irqs_off(NULL, mm, current);
- 
-@@ -846,8 +845,8 @@ static inline temp_mm_state_t use_temporary_mm(struct mm_struct *mm)
- static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
- {
- 	lockdep_assert_irqs_disabled();
-+	WARN_ON_ONCE(irq_pipeline_debug() && !hard_irqs_disabled());
- 	switch_mm_irqs_off(NULL, prev_state.mm, current);
--	hard_cond_local_irq_enable();
- 
- 	/*
- 	 * Restore the breakpoints if they were disabled before the temporary mm
-
-And no warnings so far.
-
-Jan
+Confirmed (with enabling dynamic tracepoints), get_locked_pte() won't
+change the hard irq state.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
