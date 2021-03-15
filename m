@@ -1,16 +1,12 @@
-References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
- <87ft0xfyj4.fsf@xenomai.org>
- <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
- <87czw0g5b5.fsf@xenomai.org>
- <bf661a41-7ddf-196f-e57f-eb0be99ea565@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm
- and unuse_temporary_mm
-In-reply-to: <bf661a41-7ddf-196f-e57f-eb0be99ea565@siemens.com>
-Date: Mon, 15 Mar 2021 10:47:23 +0100
-Message-ID: <871rcgg34k.fsf@xenomai.org>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <a39b7f5a-fb6d-6744-2ac8-c36ade15c050@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Date: Mon, 15 Mar 2021 10:51:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Message-ID: <35a5-604f2e00-1a9-48dc0d80@57314347>
+Subject: =?utf-8?q?Re=3A?= Get packet timestamp in =?utf-8?q?af=5Fpacket?= or
+ other RTNET components
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,55 +18,64 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
+Le Lundi, Mars 15, 2021 09:03 CET, Jan Kiszka <jan.kiszka@siemens.com> =
+a =C3=A9crit: 
+ 
+> On 15.03.21 08:59, Jan Kiszka via Xenomai wrote:
+> > On 15.03.21 08:57, Fran=C3=A7ois Legal wrote:
+> >> Le Lundi, Mars 15, 2021 08:16 CET, Jan Kiszka <jan.kiszka@siemens.=
+com> a =C3=A9crit: 
+> >>  
+> >>> On 12.03.21 23:21, Fran=C3=A7ois Legal via Xenomai wrote:
+> >>>> Hello,
+> >>>>
+> >>>> working on a data recorder application, I would need to get acce=
+ss to each packet receive timestamp (populated during packet reception =
+ISR generally in network drivers).
+> >>>>
+> >>>> I figured out, the cleanest way to do it would be using the
+> >>>>  "void =5F=5Fuser *msg=5Fcontrol;	/* ancillary data */" / "=5F=5F=
+kernel=5Fsize=5Ft msg=5Fcontrollen;	/* ancillary data buffer length */"=
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+> >>>> members of the struct user=5Fmsghdr that is carried over when us=
+ing the recvmsg call, plus possibly an ioctl to enable the timestamp re=
+trieving
+> >>>>
+> >>>> Did anybody already do something like this in xenomai/RTNET ?
+> >>>> Any thought on the proposed vector ?
+> >>>> Any chance such modification could become mainline ?
+> >>>>
+> >>>
+> >>> I would add SO=5FRCVTIMEO support, like rtipc already has.
+> >>>
+> >>> Jan
+> >>>
+> >>> -- 
+> >>> Siemens AG, T RDA IOT
+> >>> Corporate Competence Center Embedded Linux
+> >>  
+> >> Hello,
+> >>
+> >> Isn't SO=5FRCVTIMEO used to set receive timeout ?
+> >>
+> >> What I intend to do is retrieve the receive time of the packet.
+> > 
+> > Sorry, wrong option. But I suspect there is something official to o=
+btain
+> > the time stamps as well.
+> > 
+> 
+> SO=5FTIMESTAMP, and that takes you to those ancillary data.
+> 
+> Jan
+> 
+> -- 
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+ 
+That's what I just figured out.
+I'll implement that then, and submit patch.
 
-> On 15.03.21 10:00, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 14.03.21 18:14, Philippe Gerum wrote:
->>>>
->>>> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
->>>>
->>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>
->>>>> This is only called during early init, e.g. for switching alternatives.
->>>>> Still, switch_mm_irqs_off would complain without this, and we are better
->>>>> safe than sorry.
->>>>>
->>>>
->>>> The way this is done in Dovetail is fragile too, since the protection we
->>>> have there still expects the pipeline entry code not to mess up on
->>>> handling an interrupt, which defeats the purpose of such
->>>> precaution. Besides, the temp_state should be snapshot under protection
->>>> too. IOW, IRQs should be hard disabled fully while using the temporary
->>>> mm.
->>>>
->>>> Upstreaming a similar patch for Dovetail.
->>>
->>> Just saw it: It's wrong as it left the hard_irq_save_full at the caller
->>> site. Would raise a warning when debugging is enabled. Please fix.
->>>
->> 
->> I guess you mean local_irq_save_full(). After a second look, the hard
->> irqs off section should cover the entire code poking new text into a
->> live kernel. This is what switching to the _full() forms enforced
->> already. So I see no point in changing the IRQ state in the use/unuse
->> helpers eventually.
->
-> Right, either way is needed. If the tlb flush should be fully protected,
-> the existing pattern is needed. But maybe more:
->
-> Under I-pipe, playing with full disabling didn't work out well. Some
-> spinlock function called via get_locked_pte reenabled hard IRQs. Not
-> sure if dovetail is affected by that as well.
->
+Fran=C3=A7ois
 
-In the case at hand, the PTE of the poking address is locked and
-returned outside of the locked section, so this should not be a concern
-for live patching.
-
--- 
-Philippe.
 
