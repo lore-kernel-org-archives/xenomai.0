@@ -1,13 +1,9 @@
-Subject: Re: [PATCH 5.4] x86: ipipe: Harden path between use_temporary_mm and
- unuse_temporary_mm
-References: <3511af9f-f393-a226-0e41-a23d8c1577c8@siemens.com>
- <87ft0xfyj4.fsf@xenomai.org>
- <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f1c8a7a3-6763-447b-d6ca-b60ee08054ea@siemens.com>
-Date: Mon, 15 Mar 2021 09:08:24 +0100
+Subject: [PATCH v2 wip/dovetail] cobalt/syscall: Account for different syscall
+ argument marshaling
+Message-ID: <10bdcdc7-bb7f-f3b5-faa7-93575ca15258@siemens.com>
+Date: Mon, 15 Mar 2021 09:42:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <4f5118a4-d362-7f18-fdcf-da22aabb7344@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,66 +15,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 15.03.21 07:19, Jan Kiszka via Xenomai wrote:
-> On 14.03.21 18:14, Philippe Gerum wrote:
->>
->> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
->>
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> This is only called during early init, e.g. for switching alternatives.
->>> Still, switch_mm_irqs_off would complain without this, and we are better
->>> safe than sorry.
->>>
->>
->> The way this is done in Dovetail is fragile too, since the protection we
->> have there still expects the pipeline entry code not to mess up on
->> handling an interrupt, which defeats the purpose of such
->> precaution. Besides, the temp_state should be snapshot under protection
->> too. IOW, IRQs should be hard disabled fully while using the temporary
->> mm.
->>
->> Upstreaming a similar patch for Dovetail.
-> 
-> Just saw it: It's wrong as it left the hard_irq_save_full at the caller
-> site. Would raise a warning when debugging is enabled. Please fix.
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-IOW, this should be merged into the original patch changing it:
+I-pipe makes sure that arguments of compat calls are ordered just like
+native calls. Dovetail does not. But it is better to use the kernel's
+syscall_get_arguments for retrieving the arguments anyway. Introduce
+pipeline_get_syscall_args to abstract that difference.
 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index cbaa584a9f23..d6c9fb7bd790 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -908,7 +908,7 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
- 	 */
- 	VM_BUG_ON(!ptep);
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/cobalt/kernel/dovetail/pipeline/pipeline.h |  8 ++++++++
+ include/cobalt/kernel/ipipe/pipeline/pipeline.h    | 12 ++++++++++++
+ .../arm/dovetail/include/asm/xenomai/syscall.h     |  5 -----
+ .../arm64/dovetail/include/asm/xenomai/syscall.h   |  5 -----
+ .../x86/dovetail/include/asm/xenomai/syscall.h     |  5 -----
+ .../cobalt/include/asm-generic/xenomai/syscall.h   |  7 -------
+ kernel/cobalt/posix/syscall.c                      | 14 ++++++++++----
+ 7 files changed, 30 insertions(+), 26 deletions(-)
+
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 3cc7268d00..685af12af4 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -6,6 +6,7 @@
+ #define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
  
--	local_irq_save_full(flags);
-+	local_irq_save(flags);
- 
- 	pte = mk_pte(pages[0], pgprot);
- 	set_pte_at(poking_mm, poking_addr, ptep, pte);
-@@ -959,7 +959,7 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
- 	 */
- 	BUG_ON(memcmp(addr, opcode, len));
- 
--	local_irq_restore_full(flags);
-+	local_irq_restore(flags);
- 	pte_unmap_unlock(ptep, ptl);
- 	return addr;
+ #include <linux/irq_pipeline.h>
++#include <asm/syscall.h>
+ #include <cobalt/kernel/assert.h>
+ #include <asm/xenomai/features.h>
+ #include <pipeline/machine.h>
+@@ -90,4 +91,11 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
+ 	f->clock_freq = 0;	/* N/A */
  }
-
-Without it, you get
-
-[    0.352686] WARNING: CPU: 0 PID: 1 at ../arch/x86/kernel/alternative.c:824 __text_poke+0x265/0x4a0
-
-Jan
-
+ 
++static inline void pipeline_get_syscall_args(struct task_struct *task,
++					     struct pt_regs *regs,
++					     unsigned long *args)
++{
++	syscall_get_arguments(task, regs, args);
++}
++
+ #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
+diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+index fda962568a..ac9c92b1b0 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
++++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+@@ -11,6 +11,7 @@
+ 
+ #include <pipeline/machine.h>
+ #include <asm/xenomai/features.h>
++#include <asm/xenomai/syscall.h>
+ 
+ #define xnsched_primary_domain  cobalt_pipeline.domain
+ 
+@@ -81,4 +82,15 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
+ 	f->clock_freq = cobalt_pipeline.clock_freq;
+ }
+ 
++static inline void pipeline_get_syscall_args(struct task_struct *task,
++					     struct pt_regs *regs,
++					     unsigned long *args)
++{
++	*args++ = __xn_reg_arg1(regs);
++	*args++ = __xn_reg_arg2(regs);
++	*args++ = __xn_reg_arg3(regs);
++	*args++ = __xn_reg_arg4(regs);
++	*args   = __xn_reg_arg5(regs);
++}
++
+ #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
+diff --git a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
+index eb4ec1bbe1..fe8c1853aa 100644
+--- a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
+@@ -59,11 +59,6 @@
+ 	})
+ 
+ #define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
+-#define __xn_reg_arg1(__regs)	((__regs)->ARM_r1)
+-#define __xn_reg_arg2(__regs)	((__regs)->ARM_r2)
+-#define __xn_reg_arg3(__regs)	((__regs)->ARM_r3)
+-#define __xn_reg_arg4(__regs)	((__regs)->ARM_r4)
+-#define __xn_reg_arg5(__regs)	((__regs)->ARM_r5)
+ #define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
+ #define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
+ 
+diff --git a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
+index 33b4a710f8..96871e2473 100644
+--- a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
+@@ -23,11 +23,6 @@
+ #define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
+ 
+ #define __xn_reg_rval(__regs)	((__regs)->regs[0])
+-#define __xn_reg_arg1(__regs)	((__regs)->regs[0])
+-#define __xn_reg_arg2(__regs)	((__regs)->regs[1])
+-#define __xn_reg_arg3(__regs)	((__regs)->regs[2])
+-#define __xn_reg_arg4(__regs)	((__regs)->regs[3])
+-#define __xn_reg_arg5(__regs)	((__regs)->regs[4])
+ #define __xn_reg_pc(__regs)	((__regs)->pc)
+ #define __xn_reg_sp(__regs)	((__regs)->sp)
+ 
+diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
+index bf7a44ea0c..212840b5ef 100644
+--- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
+@@ -29,11 +29,6 @@
+  */
+ #define __xn_reg_sys(regs)    ((regs)->orig_ax)
+ #define __xn_reg_rval(regs)   ((regs)->ax)
+-#define __xn_reg_arg1(regs)   ((regs)->di)
+-#define __xn_reg_arg2(regs)   ((regs)->si)
+-#define __xn_reg_arg3(regs)   ((regs)->dx)
+-#define __xn_reg_arg4(regs)   ((regs)->r10)
+-#define __xn_reg_arg5(regs)   ((regs)->r8)
+ #define __xn_reg_pc(regs)     ((regs)->ip)
+ #define __xn_reg_sp(regs)     ((regs)->sp)
+ 
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index 91bbf3bfd1..194583c184 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -36,13 +36,6 @@
+ #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
+ #endif
+ 
+-#define __xn_reg_arglist(regs)	\
+-	__xn_reg_arg1(regs),	\
+-	__xn_reg_arg2(regs),	\
+-	__xn_reg_arg3(regs),	\
+-	__xn_reg_arg4(regs),	\
+-	__xn_reg_arg5(regs)
+-
+ #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
+ #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
+ #define __xn_put_user(src, dstP)		__put_user(src, dstP)
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 30c33dda61..b7177042e7 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -486,6 +486,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
+ 	struct xnthread *thread;
+ 	cobalt_syshand handler;
+ 	struct task_struct *p;
++	unsigned long args[6];
+ 	unsigned int nr, code;
+ 	long ret;
+ 
+@@ -592,7 +593,10 @@ restart:
+ 	 * handler (lostage ones), or rejected by allowed_syscall().
+ 	 */
+ 
+-	ret = handler(__xn_reg_arglist(regs));
++	p = current;
++	pipeline_get_syscall_args(p, regs, args);
++
++	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
+ 		if (switched) {
+ 			ret = xnthread_harden();
+@@ -611,7 +615,6 @@ done:
+ 	__xn_status_return(regs, ret);
+ 	sigs = 0;
+ 	if (!xnsched_root_p()) {
+-		p = current;
+ 		if (signal_pending(p) ||
+ 		    xnthread_test_info(thread, XNKICKED)) {
+ 			sigs = 1;
+@@ -677,6 +680,7 @@ int handle_root_syscall(struct pt_regs *regs)
+ 	struct xnthread *thread;
+ 	cobalt_syshand handler;
+ 	struct task_struct *p;
++	unsigned long args[6];
+ 	unsigned int nr, code;
+ 	long ret;
+ 
+@@ -735,7 +739,10 @@ restart:
+ 			xnthread_propagate_schedparam(thread);
+ 	}
+ 
+-	ret = handler(__xn_reg_arglist(regs));
++	p = current;
++	pipeline_get_syscall_args(p, regs, args);
++
++	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
+ 		sysflags ^= __xn_exec_histage;
+ 		if (switched) {
+@@ -756,7 +763,6 @@ restart:
+ 		 * just invoked, so make sure to fetch it.
+ 		 */
+ 		thread = xnthread_current();
+-		p = current;
+ 		if (signal_pending(p)) {
+ 			sigs = 1;
+ 			prepare_for_signal(p, thread, regs, sysflags);
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
