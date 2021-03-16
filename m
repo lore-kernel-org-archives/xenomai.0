@@ -1,12 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: double enable_irq called in request_gpio_irq of
- kernel/drivers/gpio/gpio-core.c on dovetail-based xenomai
-Date: Tue, 16 Mar 2021 06:09:10 +0000
-Message-ID: <MWHPR11MB1710B256F2EA5537B38C8591F26B9@MWHPR11MB1710.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: Kernel 5.4 xenomai 3.1 -stable, e1000e, NIC crash on ifup
+References: <a5d49a09-0317-9f58-03ff-f1a1ef109b99@freyder.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e981039b-1309-8f18-d561-0c6491a81624@siemens.com>
+Date: Tue, 16 Mar 2021 13:08:26 +0100
 MIME-Version: 1.0
+In-Reply-To: <a5d49a09-0317-9f58-03ff-f1a1ef109b99@freyder.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: steve freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
+On 15.03.21 18:19, steve freyder via Xenomai wrote:
+> Greetings Xenomai list,
+> 
+> 
+> We are seeing the following stack trace when we 'ifup' the e1000e
+> adapter.  4.19 exhibits same failure, 4.14.96 also fails but with a
+> different stack trace.  Last working version is 4.14.85.
+> 
+> Thanks in advance for any assist,
+> 
+> Steve
+> 
+> ------------------------------------------------------------------------
+> 
+> [   47.635779] ------------[ cut here ]------------
+> [   47.637083] ip (658) used greatest stack depth: 3960 bytes left
+> [   47.640416] WARNING: CPU: 0 PID: 0 at kernel/ipipe/core.c:1968
+> __ipipe_spin_unlock_debug+0x50/0x5c
 
-When I validate latmus on dovetailed-based xenomai, I found that enable_irq=
- would be called=20
-twice in request_gpio_irq because xnintr_enable would be called by both rtd=
-m_irq_request=20
-and rtdm_irq_enable but  xnintr_enable  directly call enable_irq.  IPIPE  s=
-eems to test=20
-XN_IRQSTAT_DISABLED bit to avoid repeated calling ipipe_enable_irq.  May we=
- use same method
-like ipipe is handling  XN_IRQSTAT_DISABLED  in xnintr_enable  and xnintr_d=
-isable  to fix this such issue?
+        /*
+         * We catch a nasty issue where spin_unlock_irqrestore() on a
+         * regular kernel spinlock is about to re-enable hw interrupts
+         * in a section entered with hw irqs off. This is clearly the
+         * sign of a massive breakage coming. Usual suspect is a
+         * regular spinlock which was overlooked, used within a
+         * section which must run with hw irqs disabled.
+         */
 
+Something is broken in the rtnet driver, possibly due to changes in
+kernel code being called by it while holding an RT lock. Are you already
+running with all I-pipe and Xenomai debugging features enabled? Maybe
+they could tell you more and earlier.
 
-Regards
+Jan
 
-Hongzhan Chen
-
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
