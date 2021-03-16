@@ -1,19 +1,12 @@
-Date: Tue, 16 Mar 2021 08:51:37 +0300
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: Re: kernel BUG at kernel/auditsc.c:1527!
-Message-ID: <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
-References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
- <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
- <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
- <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
- <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
- <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
- <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: double enable_irq called in request_gpio_irq of
+ kernel/drivers/gpio/gpio-core.c on dovetail-based xenomai
+Date: Tue, 16 Mar 2021 06:09:10 +0000
+Message-ID: <MWHPR11MB1710B256F2EA5537B38C8591F26B9@MWHPR11MB1710.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="koi8-r"
-Content-Disposition: inline
-Content-Transfer-Encoding: base64
-In-Reply-To: <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,31 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SmFuLAoKT24gU3VuLCBNYXIgMTQsIDIwMjEgYXQgMTA6NDU6NTZBTSArMDEwMCwgSmFuIEtpc3pr
-YSB3cm90ZToKPiBPbiAxMi4wMy4yMSAwOTowMCwgVml0YWx5IENoaWt1bm92IHdyb3RlOgo+ID4g
-T24gRnJpLCBNYXIgMTIsIDIwMjEgYXQgMDg6MTk6MzBBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90
-ZToKPiA+Pj4gSWYgeW91IHdpc2gsIHlvdSBjYW4gZXh0cmFjdCBidWlsdCBrZXJuZWwgZnJvbSBS
-UE0gd2l0aCBycG0yY3BpbyBhbmQKPiA+Pj4gdHJ5IGJvb3Qgb24geW91ciBzeXN0ZW06Cj4gPj4+
-ICAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5L2J1aWxkLzEwMC94ODZfNjQv
-cnBtcy9rZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQxLmNpcDQ0LjE2Lng4Nl82NC5y
-cG0KPiA+Pj4gKE1heWJlIGl0J3MgaGFyZHdhcmUgZGVwZW5kZW50PykKPiA+Pj4KPiA+Pgo+ID4+
-IFdpbGwgY2hlY2sgdGhhdCBhcyB3ZWxsLCBqdXN0IHRvIGV4Y2x1ZGUgdGhlIGhhcmR3YXJlIChJ
-J20gcmVwcm9kdWNpbmcKPiA+PiBpbiBRRU1VKS4gSG93ZXZlciwgSSB3aWxsIGxpa2VseSBuZWVk
-IG1vcmUgKGRlYnVnIHN5bWJvbHMsIGdkYiBzY3JpcHRzKQo+ID4+IHRvIGRlYnVnIHRoYXQuCj4g
-PiAKPiA+IFRoZXJlIGlzIGRlYnVnaW5mbyBwYWNrYWdlIHRvbyBpbgo+ID4gICBodHRwOi8vZ2l0
-LmFsdGxpbnV4Lm9yZy90YXNrcy8yNjc1NzkvYnVpbGQvMTAwL3g4Nl82NC9ycG1zLwo+ID4gCj4g
-PiD0aGFua3MhCj4gPiAKPiAKPiBGb3VuZCBhbmQgZml4ZWQ6Cj4gCj4gVGhlcmUgd2FzIGFuIGlt
-YmFsYW5jZSBpbiB0aGUgc3lzY2FsbCBleGl0IHBhdGNoLiBJdCB3YXMgdXNpbmcgYSBmcmFnaWxl
-Cj4gaGV1cmlzdGljIHRvIGd1ZXNzIGlmIHRoZSBzbG93LXdvcmsgcGF0aCBzaG91bGQgYmUgdGFr
-ZW4gb3Igbm90LiBUaGF0IGluCj4gY29tYmluYXRpb24gd2l0aCBsYXRlc3QgZ2xpYmMgdXNpbmcg
-c3lzY2FsbCBwcm9iaW5nIChJIGhhZCB0byBzd2l0Y2ggdG8KPiBhbiBBcmNoIHZtIGltYWdlKSBj
-YXVzZWQgdGhlIGF1ZGl0IHBhdGggdG8gYmUgdGFrZW4gb24gZW50cnkgYnV0IG5vdCBvbgo+IGV4
-aXQgaWYgYSBjYWxsIHdhcyB1bnN1cHBvcnRlZC4gQSBsb25nIHBlbmRpbmcgaXNzdWUgaW4gSS1w
-aXBlLgo+IAo+IFBhdGNoZXMgZm9yIHRoZSB2YXJpb3VzIHg4NiBicmFuY2hlcyB3aWxsIGZvbGxv
-dy4KCkp1c3QgdG8gY29uZmlybSAtIG5ldyByZWxlYXNlIG9mIGlwaXBlLWNvcmUtNC4xOS4xNzct
-Y2lwNDQteDg2LTE3IHdvcmtlZApnb29kIGFmdGVyIGEgZGF5IG9mIHRoZSB0ZXN0aW5nLgoKVGhh
-bmtzIQoKPiAKPiBKYW4KPiAKPiAtLSAKPiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QKPiBDb3Jwb3Jh
-dGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKCg==
+Hi Philippe,
+
+When I validate latmus on dovetailed-based xenomai, I found that enable_irq=
+ would be called=20
+twice in request_gpio_irq because xnintr_enable would be called by both rtd=
+m_irq_request=20
+and rtdm_irq_enable but  xnintr_enable  directly call enable_irq.  IPIPE  s=
+eems to test=20
+XN_IRQSTAT_DISABLED bit to avoid repeated calling ipipe_enable_irq.  May we=
+ use same method
+like ipipe is handling  XN_IRQSTAT_DISABLED  in xnintr_enable  and xnintr_d=
+isable  to fix this such issue?
+
+
+Regards
+
+Hongzhan Chen
+
+
