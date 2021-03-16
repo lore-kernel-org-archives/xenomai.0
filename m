@@ -1,13 +1,20 @@
-Subject: Re: Kernel 5.4 xenomai 3.1 -stable, e1000e, NIC crash on ifup
-References: <a5d49a09-0317-9f58-03ff-f1a1ef109b99@freyder.net>
+Subject: Re: kernel BUG at kernel/auditsc.c:1527!
+References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
+ <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
+ <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
+ <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
+ <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
+ <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
+ <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
+ <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e981039b-1309-8f18-d561-0c6491a81624@siemens.com>
-Date: Tue, 16 Mar 2021 13:08:26 +0100
+Message-ID: <b80c2795-9205-ddc3-15d0-3fd0994ea45d@siemens.com>
+Date: Tue, 16 Mar 2021 13:08:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <a5d49a09-0317-9f58-03ff-f1a1ef109b99@freyder.net>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
+Content-Type: text/plain; charset="koi8-r"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +23,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: steve freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Vitaly Chikunov <vt@altlinux.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 15.03.21 18:19, steve freyder via Xenomai wrote:
-> Greetings Xenomai list,
-> 
-> 
-> We are seeing the following stack trace when we 'ifup' the e1000e
-> adapter.  4.19 exhibits same failure, 4.14.96 also fails but with a
-> different stack trace.  Last working version is 4.14.85.
-> 
-> Thanks in advance for any assist,
-> 
-> Steve
-> 
-> ------------------------------------------------------------------------
-> 
-> [   47.635779] ------------[ cut here ]------------
-> [   47.637083] ip (658) used greatest stack depth: 3960 bytes left
-> [   47.640416] WARNING: CPU: 0 PID: 0 at kernel/ipipe/core.c:1968
-> __ipipe_spin_unlock_debug+0x50/0x5c
-
-        /*
-         * We catch a nasty issue where spin_unlock_irqrestore() on a
-         * regular kernel spinlock is about to re-enable hw interrupts
-         * in a section entered with hw irqs off. This is clearly the
-         * sign of a massive breakage coming. Usual suspect is a
-         * regular spinlock which was overlooked, used within a
-         * section which must run with hw irqs disabled.
-         */
-
-Something is broken in the rtnet driver, possibly due to changes in
-kernel code being called by it while holding an RT lock. Are you already
-running with all I-pipe and Xenomai debugging features enabled? Maybe
-they could tell you more and earlier.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+T24gMTYuMDMuMjEgMDY6NTEsIFZpdGFseSBDaGlrdW5vdiB3cm90ZToKPiBKYW4sCj4gCj4gT24g
+U3VuLCBNYXIgMTQsIDIwMjEgYXQgMTA6NDU6NTZBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90ZToK
+Pj4gT24gMTIuMDMuMjEgMDk6MDAsIFZpdGFseSBDaGlrdW5vdiB3cm90ZToKPj4+IE9uIEZyaSwg
+TWFyIDEyLCAyMDIxIGF0IDA4OjE5OjMwQU0gKzAxMDAsIEphbiBLaXN6a2Egd3JvdGU6Cj4+Pj4+
+IElmIHlvdSB3aXNoLCB5b3UgY2FuIGV4dHJhY3QgYnVpbHQga2VybmVsIGZyb20gUlBNIHdpdGgg
+cnBtMmNwaW8gYW5kCj4+Pj4+IHRyeSBib290IG9uIHlvdXIgc3lzdGVtOgo+Pj4+PiAgIGh0dHA6
+Ly9naXQuYWx0bGludXgub3JnL3Rhc2tzLzI2NzU3OS9idWlsZC8xMDAveDg2XzY0L3JwbXMva2Vy
+bmVsLWltYWdlLXhlbm9tYWktNC4xOS4xNzctYWx0MS5jaXA0NC4xNi54ODZfNjQucnBtCj4+Pj4+
+IChNYXliZSBpdCdzIGhhcmR3YXJlIGRlcGVuZGVudD8pCj4+Pj4+Cj4+Pj4KPj4+PiBXaWxsIGNo
+ZWNrIHRoYXQgYXMgd2VsbCwganVzdCB0byBleGNsdWRlIHRoZSBoYXJkd2FyZSAoSSdtIHJlcHJv
+ZHVjaW5nCj4+Pj4gaW4gUUVNVSkuIEhvd2V2ZXIsIEkgd2lsbCBsaWtlbHkgbmVlZCBtb3JlIChk
+ZWJ1ZyBzeW1ib2xzLCBnZGIgc2NyaXB0cykKPj4+PiB0byBkZWJ1ZyB0aGF0Lgo+Pj4KPj4+IFRo
+ZXJlIGlzIGRlYnVnaW5mbyBwYWNrYWdlIHRvbyBpbgo+Pj4gICBodHRwOi8vZ2l0LmFsdGxpbnV4
+Lm9yZy90YXNrcy8yNjc1NzkvYnVpbGQvMTAwL3g4Nl82NC9ycG1zLwo+Pj4KPj4+IPRoYW5rcyEK
+Pj4+Cj4+Cj4+IEZvdW5kIGFuZCBmaXhlZDoKPj4KPj4gVGhlcmUgd2FzIGFuIGltYmFsYW5jZSBp
+biB0aGUgc3lzY2FsbCBleGl0IHBhdGNoLiBJdCB3YXMgdXNpbmcgYSBmcmFnaWxlCj4+IGhldXJp
+c3RpYyB0byBndWVzcyBpZiB0aGUgc2xvdy13b3JrIHBhdGggc2hvdWxkIGJlIHRha2VuIG9yIG5v
+dC4gVGhhdCBpbgo+PiBjb21iaW5hdGlvbiB3aXRoIGxhdGVzdCBnbGliYyB1c2luZyBzeXNjYWxs
+IHByb2JpbmcgKEkgaGFkIHRvIHN3aXRjaCB0bwo+PiBhbiBBcmNoIHZtIGltYWdlKSBjYXVzZWQg
+dGhlIGF1ZGl0IHBhdGggdG8gYmUgdGFrZW4gb24gZW50cnkgYnV0IG5vdCBvbgo+PiBleGl0IGlm
+IGEgY2FsbCB3YXMgdW5zdXBwb3J0ZWQuIEEgbG9uZyBwZW5kaW5nIGlzc3VlIGluIEktcGlwZS4K
+Pj4KPj4gUGF0Y2hlcyBmb3IgdGhlIHZhcmlvdXMgeDg2IGJyYW5jaGVzIHdpbGwgZm9sbG93Lgo+
+IAo+IEp1c3QgdG8gY29uZmlybSAtIG5ldyByZWxlYXNlIG9mIGlwaXBlLWNvcmUtNC4xOS4xNzct
+Y2lwNDQteDg2LTE3IHdvcmtlZAo+IGdvb2QgYWZ0ZXIgYSBkYXkgb2YgdGhlIHRlc3RpbmcuCj4g
+Cj4gVGhhbmtzIQo+IAoKR3JlYXQsIHRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrIQoKSmFuCgotLSAK
+U2llbWVucyBBRywgVCBSREEgSU9UCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRl
+ZCBMaW51eAoK
