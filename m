@@ -1,17 +1,19 @@
-Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
-References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
- <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
- <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
- <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
- <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a5d4eb12-e327-7242-833a-40ae13d24ccb@siemens.com>
-Date: Thu, 11 Mar 2021 10:12:38 +0100
+Date: Tue, 16 Mar 2021 08:51:37 +0300
+From: Vitaly Chikunov <vt@altlinux.org>
+Subject: Re: kernel BUG at kernel/auditsc.c:1527!
+Message-ID: <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
+References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
+ <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
+ <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
+ <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
+ <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
+ <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
+ <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="koi8-r"
+Content-Disposition: inline
+Content-Transfer-Encoding: base64
+In-Reply-To: <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,53 +22,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 08.03.21 13:46, Jan Kiszka via Xenomai wrote:
-> On 08.03.21 13:42, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
->> On Mon, 2021-03-08 at 11:42 +0100, Jan Kiszka wrote:
->>> On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
->>>> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
->>>> wrote:
->>>>> Hi,
->>>>>
->>>>> the attached kernel log was taken form a local qemu machine with
->>>>> Xenomai build from the wip/dovetail branch. There is a failing selftest
->>>>> (mixed read-lock/lock-write ABBA).
->>>>>
->>>>
->>>> Correction: I can reproduce that with `next` as well. So it's not
->>>> related to the wip/dovetail branch.
->>>>
->>>
->>> Situation still the same with the latest release?
->>
->> Which release? I tried to build the "testing" branch of xenomai-images
->> (which holds the COW patches) but that doesn't build at all, patches
->> can not be applied.
->>
-> 
-> Yeah, that's because they are applied to latest x86 I-pipe releases. You
-> don't need that branch for that arch anymore.
-> 
->> used cmdline:
->> kas-container build kas.yml:opt-linux-latest-5.4.yml:board-qemu-amd64.yml:opt-xenomai-next.yml
->>
->> Building and running the "next" branch of xenomai-images still reports
->> the same failing self-test.
-> 
-> Hmm, too bad...
-> 
-> Jan
-> 
-
-FWIW, I'm still not getting this one, but I face random SEGV of
-applications while latency is running. I'm not seeing this with latest
-4.19 so far. Seems like 5.4-x86 is not yet stable...
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SmFuLAoKT24gU3VuLCBNYXIgMTQsIDIwMjEgYXQgMTA6NDU6NTZBTSArMDEwMCwgSmFuIEtpc3pr
+YSB3cm90ZToKPiBPbiAxMi4wMy4yMSAwOTowMCwgVml0YWx5IENoaWt1bm92IHdyb3RlOgo+ID4g
+T24gRnJpLCBNYXIgMTIsIDIwMjEgYXQgMDg6MTk6MzBBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90
+ZToKPiA+Pj4gSWYgeW91IHdpc2gsIHlvdSBjYW4gZXh0cmFjdCBidWlsdCBrZXJuZWwgZnJvbSBS
+UE0gd2l0aCBycG0yY3BpbyBhbmQKPiA+Pj4gdHJ5IGJvb3Qgb24geW91ciBzeXN0ZW06Cj4gPj4+
+ICAgaHR0cDovL2dpdC5hbHRsaW51eC5vcmcvdGFza3MvMjY3NTc5L2J1aWxkLzEwMC94ODZfNjQv
+cnBtcy9rZXJuZWwtaW1hZ2UteGVub21haS00LjE5LjE3Ny1hbHQxLmNpcDQ0LjE2Lng4Nl82NC5y
+cG0KPiA+Pj4gKE1heWJlIGl0J3MgaGFyZHdhcmUgZGVwZW5kZW50PykKPiA+Pj4KPiA+Pgo+ID4+
+IFdpbGwgY2hlY2sgdGhhdCBhcyB3ZWxsLCBqdXN0IHRvIGV4Y2x1ZGUgdGhlIGhhcmR3YXJlIChJ
+J20gcmVwcm9kdWNpbmcKPiA+PiBpbiBRRU1VKS4gSG93ZXZlciwgSSB3aWxsIGxpa2VseSBuZWVk
+IG1vcmUgKGRlYnVnIHN5bWJvbHMsIGdkYiBzY3JpcHRzKQo+ID4+IHRvIGRlYnVnIHRoYXQuCj4g
+PiAKPiA+IFRoZXJlIGlzIGRlYnVnaW5mbyBwYWNrYWdlIHRvbyBpbgo+ID4gICBodHRwOi8vZ2l0
+LmFsdGxpbnV4Lm9yZy90YXNrcy8yNjc1NzkvYnVpbGQvMTAwL3g4Nl82NC9ycG1zLwo+ID4gCj4g
+PiD0aGFua3MhCj4gPiAKPiAKPiBGb3VuZCBhbmQgZml4ZWQ6Cj4gCj4gVGhlcmUgd2FzIGFuIGlt
+YmFsYW5jZSBpbiB0aGUgc3lzY2FsbCBleGl0IHBhdGNoLiBJdCB3YXMgdXNpbmcgYSBmcmFnaWxl
+Cj4gaGV1cmlzdGljIHRvIGd1ZXNzIGlmIHRoZSBzbG93LXdvcmsgcGF0aCBzaG91bGQgYmUgdGFr
+ZW4gb3Igbm90LiBUaGF0IGluCj4gY29tYmluYXRpb24gd2l0aCBsYXRlc3QgZ2xpYmMgdXNpbmcg
+c3lzY2FsbCBwcm9iaW5nIChJIGhhZCB0byBzd2l0Y2ggdG8KPiBhbiBBcmNoIHZtIGltYWdlKSBj
+YXVzZWQgdGhlIGF1ZGl0IHBhdGggdG8gYmUgdGFrZW4gb24gZW50cnkgYnV0IG5vdCBvbgo+IGV4
+aXQgaWYgYSBjYWxsIHdhcyB1bnN1cHBvcnRlZC4gQSBsb25nIHBlbmRpbmcgaXNzdWUgaW4gSS1w
+aXBlLgo+IAo+IFBhdGNoZXMgZm9yIHRoZSB2YXJpb3VzIHg4NiBicmFuY2hlcyB3aWxsIGZvbGxv
+dy4KCkp1c3QgdG8gY29uZmlybSAtIG5ldyByZWxlYXNlIG9mIGlwaXBlLWNvcmUtNC4xOS4xNzct
+Y2lwNDQteDg2LTE3IHdvcmtlZApnb29kIGFmdGVyIGEgZGF5IG9mIHRoZSB0ZXN0aW5nLgoKVGhh
+bmtzIQoKPiAKPiBKYW4KPiAKPiAtLSAKPiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QKPiBDb3Jwb3Jh
+dGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKCg==
