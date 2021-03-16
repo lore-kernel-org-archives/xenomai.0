@@ -1,20 +1,10 @@
-Subject: Re: kernel BUG at kernel/auditsc.c:1527!
-References: <20210310224629.fd6qttrnxock7gwc@altlinux.org>
- <e55dba39-4d3e-b396-5396-7302ce8ecc18@siemens.com>
- <69da21a9-3fcd-0041-fe0e-b930e32a3a21@siemens.com>
- <20210312024903.iff5tr5lgrf43bzm@altlinux.org>
- <136275a9-6221-0e3a-0c1c-eb89c148dc68@siemens.com>
- <20210312080039.azc7hhs2rc42jwaf@altlinux.org>
- <a4130391-2fd9-e14e-0adf-5d4850a92e6b@siemens.com>
- <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b80c2795-9205-ddc3-15d0-3fd0994ea45d@siemens.com>
-Date: Tue, 16 Mar 2021 13:08:52 +0100
+From: =?utf-8?B?TWF0w7rFoSBPbGVrxaHDoWs=?= <oleksak.matus@gmail.com>
+Subject: [PATCH] Fix undefined __bad_udelay() in e1000e driver
+Date: Tue, 16 Mar 2021 14:51:14 +0100
+Message-ID: <9737180.GSAqmONy18@mako-notebook>
 MIME-Version: 1.0
-In-Reply-To: <20210316055137.m3j6gfvizjqkdzj4@altlinux.org>
-Content-Type: text/plain; charset="koi8-r"
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,33 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Vitaly Chikunov <vt@altlinux.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gMTYuMDMuMjEgMDY6NTEsIFZpdGFseSBDaGlrdW5vdiB3cm90ZToKPiBKYW4sCj4gCj4gT24g
-U3VuLCBNYXIgMTQsIDIwMjEgYXQgMTA6NDU6NTZBTSArMDEwMCwgSmFuIEtpc3prYSB3cm90ZToK
-Pj4gT24gMTIuMDMuMjEgMDk6MDAsIFZpdGFseSBDaGlrdW5vdiB3cm90ZToKPj4+IE9uIEZyaSwg
-TWFyIDEyLCAyMDIxIGF0IDA4OjE5OjMwQU0gKzAxMDAsIEphbiBLaXN6a2Egd3JvdGU6Cj4+Pj4+
-IElmIHlvdSB3aXNoLCB5b3UgY2FuIGV4dHJhY3QgYnVpbHQga2VybmVsIGZyb20gUlBNIHdpdGgg
-cnBtMmNwaW8gYW5kCj4+Pj4+IHRyeSBib290IG9uIHlvdXIgc3lzdGVtOgo+Pj4+PiAgIGh0dHA6
-Ly9naXQuYWx0bGludXgub3JnL3Rhc2tzLzI2NzU3OS9idWlsZC8xMDAveDg2XzY0L3JwbXMva2Vy
-bmVsLWltYWdlLXhlbm9tYWktNC4xOS4xNzctYWx0MS5jaXA0NC4xNi54ODZfNjQucnBtCj4+Pj4+
-IChNYXliZSBpdCdzIGhhcmR3YXJlIGRlcGVuZGVudD8pCj4+Pj4+Cj4+Pj4KPj4+PiBXaWxsIGNo
-ZWNrIHRoYXQgYXMgd2VsbCwganVzdCB0byBleGNsdWRlIHRoZSBoYXJkd2FyZSAoSSdtIHJlcHJv
-ZHVjaW5nCj4+Pj4gaW4gUUVNVSkuIEhvd2V2ZXIsIEkgd2lsbCBsaWtlbHkgbmVlZCBtb3JlIChk
-ZWJ1ZyBzeW1ib2xzLCBnZGIgc2NyaXB0cykKPj4+PiB0byBkZWJ1ZyB0aGF0Lgo+Pj4KPj4+IFRo
-ZXJlIGlzIGRlYnVnaW5mbyBwYWNrYWdlIHRvbyBpbgo+Pj4gICBodHRwOi8vZ2l0LmFsdGxpbnV4
-Lm9yZy90YXNrcy8yNjc1NzkvYnVpbGQvMTAwL3g4Nl82NC9ycG1zLwo+Pj4KPj4+IPRoYW5rcyEK
-Pj4+Cj4+Cj4+IEZvdW5kIGFuZCBmaXhlZDoKPj4KPj4gVGhlcmUgd2FzIGFuIGltYmFsYW5jZSBp
-biB0aGUgc3lzY2FsbCBleGl0IHBhdGNoLiBJdCB3YXMgdXNpbmcgYSBmcmFnaWxlCj4+IGhldXJp
-c3RpYyB0byBndWVzcyBpZiB0aGUgc2xvdy13b3JrIHBhdGggc2hvdWxkIGJlIHRha2VuIG9yIG5v
-dC4gVGhhdCBpbgo+PiBjb21iaW5hdGlvbiB3aXRoIGxhdGVzdCBnbGliYyB1c2luZyBzeXNjYWxs
-IHByb2JpbmcgKEkgaGFkIHRvIHN3aXRjaCB0bwo+PiBhbiBBcmNoIHZtIGltYWdlKSBjYXVzZWQg
-dGhlIGF1ZGl0IHBhdGggdG8gYmUgdGFrZW4gb24gZW50cnkgYnV0IG5vdCBvbgo+PiBleGl0IGlm
-IGEgY2FsbCB3YXMgdW5zdXBwb3J0ZWQuIEEgbG9uZyBwZW5kaW5nIGlzc3VlIGluIEktcGlwZS4K
-Pj4KPj4gUGF0Y2hlcyBmb3IgdGhlIHZhcmlvdXMgeDg2IGJyYW5jaGVzIHdpbGwgZm9sbG93Lgo+
-IAo+IEp1c3QgdG8gY29uZmlybSAtIG5ldyByZWxlYXNlIG9mIGlwaXBlLWNvcmUtNC4xOS4xNzct
-Y2lwNDQteDg2LTE3IHdvcmtlZAo+IGdvb2QgYWZ0ZXIgYSBkYXkgb2YgdGhlIHRlc3RpbmcuCj4g
-Cj4gVGhhbmtzIQo+IAoKR3JlYXQsIHRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrIQoKSmFuCgotLSAK
-U2llbWVucyBBRywgVCBSREEgSU9UCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRl
-ZCBMaW51eAoK
+udelay() should not be used with values over 20 000. But the first calling =
+of udelay() in e1000e_phy_has_link_generic(), does not check delay value. I=
+t causes compile-time trap __bad_udelay() to occur. Bug is present on all X=
+enomai versions since commit 106ffba7b55d506143966ff16158ee79b0007336.
+
+Signed-off-by: Mat=C3=BA=C5=A1 Olek=C5=A1=C3=A1k <oleksak.matus@gmail.com>
+=2D--
+ kernel/drivers/net/drivers/e1000e/phy.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/drivers/net/drivers/e1000e/phy.c b/kernel/drivers/net/d=
+rivers/e1000e/phy.c
+index 66ae3891a..9ec7835bc 100644
+=2D-- a/kernel/drivers/net/drivers/e1000e/phy.c
++++ b/kernel/drivers/net/drivers/e1000e/phy.c
+@@ -1787,13 +1787,17 @@ s32 e1000e_phy_has_link_generic(struct e1000_hw *hw=
+, u32 iterations,
+ 		 * it across the board.
+ 		 */
+ 		ret_val =3D e1e_rphy(hw, PHY_STATUS, &phy_status);
+=2D		if (ret_val)
++		if (ret_val) {
+ 			/*
+ 			 * If the first read fails, another entity may have
+ 			 * ownership of the resources, wait and try again to
+ 			 * see if they have relinquished the resources yet.
+ 			 */
+=2D			udelay(usec_interval);
++			if (usec_interval >=3D 1000)
++				mdelay(usec_interval/1000);
++			else
++				udelay(usec_interval);
++		}
+ 		ret_val =3D e1e_rphy(hw, PHY_STATUS, &phy_status);
+ 		if (ret_val)
+ 			break;
+=2D-=20
+2.30.2
+
+
+
