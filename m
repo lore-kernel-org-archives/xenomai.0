@@ -1,12 +1,12 @@
-Subject: Re: [PATCH] Fix undefined __bad_udelay() in e1000e driver
-References: <9737180.GSAqmONy18@mako-notebook>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1d09756d-0122-7163-db02-d2baff7b8ac2@siemens.com>
-Date: Tue, 16 Mar 2021 15:06:08 +0100
+Subject: Re: [PATCH v2 0/5] clock_settime/gettime for timespec64
+References: <1615521662-5770-1-git-send-email-chensong@tj.kylinos.cn>
+ <a7b1d1b9ef48446ac096cbbd4700c0e77741f6b4.camel@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <6051C5FD.2010101@tj.kylinos.cn>+0A9710E77AB9D749
+Date: Wed, 17 Mar 2021 17:03:57 +0800
 MIME-Version: 1.0
-In-Reply-To: <9737180.GSAqmONy18@mako-notebook>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+In-Reply-To: <a7b1d1b9ef48446ac096cbbd4700c0e77741f6b4.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,52 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWF0w7rFoSBPbGVrxaHDoWs=?= <oleksak.matus@gmail.com>, xenomai@xenomai.org
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 16.03.21 14:51, Matúš Olekšák via Xenomai wrote:
-> udelay() should not be used with values over 20 000. But the first calling of udelay() in e1000e_phy_has_link_generic(), does not check delay value. It causes compile-time trap __bad_udelay() to occur. Bug is present on all Xenomai versions since commit 106ffba7b55d506143966ff16158ee79b0007336.
 
-Already merged into next, see
-https://source.denx.de/Xenomai/xenomai/-/commit/7857a1b154c327d68c5a5e5deedd908f6e0095a1
 
-I'll push that to stable branches as well.
+On 2021年03月12日 18:19, florian.bezdeka@siemens.com wrote:
+> On Fri, 2021-03-12 at 12:01 +0800, chensong wrote:
+>> This patch serial is aimed to introduce a new syscall clock_settime64
+>> and clock_gettime64 which are specific for 64-bit time_t.
+>>
+>> There is no impact to current implementation of clock_settime, nothing
+>> broken.
+>>
+>> ---
+>> v2:
+>> 1, merge clock_settime64 and compat clock_settime64
+>> 2, remove checking __xn_feat_time64
+>> 3, add clock_gettime64
+>> 4, add smokey test for clock_settime64 and clock_gettime64
+>>
+>> chensong (5):
+>>    [y2038] cobalt: posix: clock: Adding clock_settime64
+>>    [y2038] cobalt: posix: clock: Adding clock_gettime64
+>
+> I would suggest to change the order of the first two patches to use the
+> same order for y2038 syscalls as for non-y2038 ones.
 
-Thanks nevertheless!
-Jan
+please clarify the order you expected:
+[PATCH v2 2/5] [y2038] cobalt: posix: clock: Adding clock_gettime64
+[PATCH v2 1/5] [y2038] cobalt: posix: clock: Adding clock_settime64
 
-> 
-> Signed-off-by: Matúš Olekšák <oleksak.matus@gmail.com>
-> ---
->  kernel/drivers/net/drivers/e1000e/phy.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/drivers/e1000e/phy.c b/kernel/drivers/net/drivers/e1000e/phy.c
-> index 66ae3891a..9ec7835bc 100644
-> --- a/kernel/drivers/net/drivers/e1000e/phy.c
-> +++ b/kernel/drivers/net/drivers/e1000e/phy.c
-> @@ -1787,13 +1787,17 @@ s32 e1000e_phy_has_link_generic(struct e1000_hw *hw, u32 iterations,
->  		 * it across the board.
->  		 */
->  		ret_val = e1e_rphy(hw, PHY_STATUS, &phy_status);
-> -		if (ret_val)
-> +		if (ret_val) {
->  			/*
->  			 * If the first read fails, another entity may have
->  			 * ownership of the resources, wait and try again to
->  			 * see if they have relinquished the resources yet.
->  			 */
-> -			udelay(usec_interval);
-> +			if (usec_interval >= 1000)
-> +				mdelay(usec_interval/1000);
-> +			else
-> +				udelay(usec_interval);
-> +		}
->  		ret_val = e1e_rphy(hw, PHY_STATUS, &phy_status);
->  		if (ret_val)
->  			break;
-> 
+[PATCH v2 3/5] [y2038] lib: cobalt: clock: dispatch clock_settime
+[PATCH v2 4/5] [y2038] lib: cobalt: clock: dispatch clock_gettime
+[PATCH v2 5/5] [y2038] testsuite: smokey: y2038: testcase for settime64 
+and gettime64
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+is it correct?
+
+besides that, also need to do :
+1, flip order c_cobalt_clock_settime64 and c_cobalt_clock_gettime64
+2, documentation for cobalt_put_timespec64
+3, improve test case
+
+anything else?
+
+Song
+
+>
+>>    [y2038] lib: cobalt: clock: dispatch clock_settime
+>>    [y2038] lib: cobalt: clock: dispatch clock_gettime
+>>    [y2038] testsuite: smokey: y2038: testcase for settime64 and gettime64
+>>
+>>   include/cobalt/kernel/time.h           |   3 +
+>>   include/cobalt/uapi/syscall.h          |   2 +
+>>   kernel/cobalt/posix/clock.c            |  28 +++++++-
+>>   kernel/cobalt/posix/clock.h            |   7 ++
+>>   kernel/cobalt/posix/syscall32.c        |  27 ++++++++
+>>   kernel/cobalt/posix/syscall32.h        |   8 +++
+>>   kernel/cobalt/time.c                   |  11 ++++
+>>   lib/cobalt/clock.c                     |  12 ++++
+>>   testsuite/smokey/y2038/syscall-tests.c | 114 +++++++++++++++++++++++++++++++--
+>>   9 files changed, 206 insertions(+), 6 deletions(-)
+>>
+>
+
+
 
