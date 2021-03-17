@@ -1,13 +1,16 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH v2 0/5] clock_settime/gettime for timespec64
+Date: Wed, 17 Mar 2021 09:36:44 +0000
+Message-ID: <1a3a21feb4abd909ba39ff2c9a4bd3a3588b43bc.camel@siemens.com>
 References: <1615521662-5770-1-git-send-email-chensong@tj.kylinos.cn>
  <a7b1d1b9ef48446ac096cbbd4700c0e77741f6b4.camel@siemens.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <6051C5FD.2010101@tj.kylinos.cn>+0A9710E77AB9D749
-Date: Wed, 17 Mar 2021 17:03:57 +0800
+ <6051C5FD.2010101@tj.kylinos.cn>+0A9710E77AB9D749
+In-Reply-To: <6051C5FD.2010101@tj.kylinos.cn>+0A9710E77AB9D749
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <13DA44D2477F0C478878003A6D9C2918@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <a7b1d1b9ef48446ac096cbbd4700c0e77741f6b4.camel@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +19,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-
-
-On 2021年03月12日 18:19, florian.bezdeka@siemens.com wrote:
-> On Fri, 2021-03-12 at 12:01 +0800, chensong wrote:
->> This patch serial is aimed to introduce a new syscall clock_settime64
->> and clock_gettime64 which are specific for 64-bit time_t.
->>
->> There is no impact to current implementation of clock_settime, nothing
->> broken.
->>
->> ---
->> v2:
->> 1, merge clock_settime64 and compat clock_settime64
->> 2, remove checking __xn_feat_time64
->> 3, add clock_gettime64
->> 4, add smokey test for clock_settime64 and clock_gettime64
->>
->> chensong (5):
->>    [y2038] cobalt: posix: clock: Adding clock_settime64
->>    [y2038] cobalt: posix: clock: Adding clock_gettime64
->
-> I would suggest to change the order of the first two patches to use the
-> same order for y2038 syscalls as for non-y2038 ones.
-
-please clarify the order you expected:
-[PATCH v2 2/5] [y2038] cobalt: posix: clock: Adding clock_gettime64
-[PATCH v2 1/5] [y2038] cobalt: posix: clock: Adding clock_settime64
-
-[PATCH v2 3/5] [y2038] lib: cobalt: clock: dispatch clock_settime
-[PATCH v2 4/5] [y2038] lib: cobalt: clock: dispatch clock_gettime
-[PATCH v2 5/5] [y2038] testsuite: smokey: y2038: testcase for settime64 
-and gettime64
-
-is it correct?
-
-besides that, also need to do :
-1, flip order c_cobalt_clock_settime64 and c_cobalt_clock_gettime64
-2, documentation for cobalt_put_timespec64
-3, improve test case
-
-anything else?
-
-Song
-
->
->>    [y2038] lib: cobalt: clock: dispatch clock_settime
->>    [y2038] lib: cobalt: clock: dispatch clock_gettime
->>    [y2038] testsuite: smokey: y2038: testcase for settime64 and gettime64
->>
->>   include/cobalt/kernel/time.h           |   3 +
->>   include/cobalt/uapi/syscall.h          |   2 +
->>   kernel/cobalt/posix/clock.c            |  28 +++++++-
->>   kernel/cobalt/posix/clock.h            |   7 ++
->>   kernel/cobalt/posix/syscall32.c        |  27 ++++++++
->>   kernel/cobalt/posix/syscall32.h        |   8 +++
->>   kernel/cobalt/time.c                   |  11 ++++
->>   lib/cobalt/clock.c                     |  12 ++++
->>   testsuite/smokey/y2038/syscall-tests.c | 114 +++++++++++++++++++++++++++++++--
->>   9 files changed, 206 insertions(+), 6 deletions(-)
->>
->
-
-
+T24gV2VkLCAyMDIxLTAzLTE3IGF0IDE3OjAzICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gDQo+
+IE9uIDIwMjHlubQwM+aciDEy5pelIDE4OjE5LCBmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20g
+d3JvdGU6DQo+ID4gT24gRnJpLCAyMDIxLTAzLTEyIGF0IDEyOjAxICswODAwLCBjaGVuc29uZyB3
+cm90ZToNCj4gPiA+IFRoaXMgcGF0Y2ggc2VyaWFsIGlzIGFpbWVkIHRvIGludHJvZHVjZSBhIG5l
+dyBzeXNjYWxsIGNsb2NrX3NldHRpbWU2NA0KPiA+ID4gYW5kIGNsb2NrX2dldHRpbWU2NCB3aGlj
+aCBhcmUgc3BlY2lmaWMgZm9yIDY0LWJpdCB0aW1lX3QuDQo+ID4gPiANCj4gPiA+IFRoZXJlIGlz
+IG5vIGltcGFjdCB0byBjdXJyZW50IGltcGxlbWVudGF0aW9uIG9mIGNsb2NrX3NldHRpbWUsIG5v
+dGhpbmcNCj4gPiA+IGJyb2tlbi4NCj4gPiA+IA0KPiA+ID4gLS0tDQo+ID4gPiB2MjoNCj4gPiA+
+IDEsIG1lcmdlIGNsb2NrX3NldHRpbWU2NCBhbmQgY29tcGF0IGNsb2NrX3NldHRpbWU2NA0KPiA+
+ID4gMiwgcmVtb3ZlIGNoZWNraW5nIF9feG5fZmVhdF90aW1lNjQNCj4gPiA+IDMsIGFkZCBjbG9j
+a19nZXR0aW1lNjQNCj4gPiA+IDQsIGFkZCBzbW9rZXkgdGVzdCBmb3IgY2xvY2tfc2V0dGltZTY0
+IGFuZCBjbG9ja19nZXR0aW1lNjQNCj4gPiA+IA0KPiA+ID4gY2hlbnNvbmcgKDUpOg0KPiA+ID4g
+wqDCoMKgW3kyMDM4XSBjb2JhbHQ6IHBvc2l4OiBjbG9jazogQWRkaW5nIGNsb2NrX3NldHRpbWU2
+NA0KPiA+ID4gwqDCoMKgW3kyMDM4XSBjb2JhbHQ6IHBvc2l4OiBjbG9jazogQWRkaW5nIGNsb2Nr
+X2dldHRpbWU2NA0KPiA+IA0KPiA+IEkgd291bGQgc3VnZ2VzdCB0byBjaGFuZ2UgdGhlIG9yZGVy
+IG9mIHRoZSBmaXJzdCB0d28gcGF0Y2hlcyB0byB1c2UgdGhlDQo+ID4gc2FtZSBvcmRlciBmb3Ig
+eTIwMzggc3lzY2FsbHMgYXMgZm9yIG5vbi15MjAzOCBvbmVzLg0KPiANCj4gcGxlYXNlIGNsYXJp
+ZnkgdGhlIG9yZGVyIHlvdSBleHBlY3RlZDoNCj4gW1BBVENIIHYyIDIvNV0gW3kyMDM4XSBjb2Jh
+bHQ6IHBvc2l4OiBjbG9jazogQWRkaW5nIGNsb2NrX2dldHRpbWU2NA0KPiBbUEFUQ0ggdjIgMS81
+XSBbeTIwMzhdIGNvYmFsdDogcG9zaXg6IGNsb2NrOiBBZGRpbmcgY2xvY2tfc2V0dGltZTY0DQo+
+IA0KPiBbUEFUQ0ggdjIgMy81XSBbeTIwMzhdIGxpYjogY29iYWx0OiBjbG9jazogZGlzcGF0Y2gg
+Y2xvY2tfc2V0dGltZQ0KPiBbUEFUQ0ggdjIgNC81XSBbeTIwMzhdIGxpYjogY29iYWx0OiBjbG9j
+azogZGlzcGF0Y2ggY2xvY2tfZ2V0dGltZQ0KPiBbUEFUQ0ggdjIgNS81XSBbeTIwMzhdIHRlc3Rz
+dWl0ZTogc21va2V5OiB5MjAzODogdGVzdGNhc2UgZm9yIHNldHRpbWU2NCANCj4gYW5kIGdldHRp
+bWU2NA0KPiANCj4gaXMgaXQgY29ycmVjdD8NClllcy4gDQoNCj4gDQo+IGJlc2lkZXMgdGhhdCwg
+YWxzbyBuZWVkIHRvIGRvIDoNCj4gMSwgZmxpcCBvcmRlciBjX2NvYmFsdF9jbG9ja19zZXR0aW1l
+NjQgYW5kIGNfY29iYWx0X2Nsb2NrX2dldHRpbWU2NA0KPiAyLCBkb2N1bWVudGF0aW9uIGZvciBj
+b2JhbHRfcHV0X3RpbWVzcGVjNjQNCj4gMywgaW1wcm92ZSB0ZXN0IGNhc2UNCg0KV2hpbGUgYXQg
+aXQ6IE1ha2Ugc3VyZSB0aGF0IHdlIGRvbid0IGNyYXNoIHdoZW4gTlVMTCBvciBhIGJhZCBhZGRy
+ZXNzDQppcyBzdXBwbGllZCBhcyBhcmd1bWVudC4gVGhlIGV4cGVjdGVkIGVycm9yIGNvZGUgaXMg
+RUZBVUxULg0KDQo+IA0KPiBhbnl0aGluZyBlbHNlPw0KDQpJIGd1ZXNzIHRoYXQncyBpdC4NCg0K
+PiANCj4gU29uZw0KPiANCj4gPiANCj4gPiA+IMKgwqDCoFt5MjAzOF0gbGliOiBjb2JhbHQ6IGNs
+b2NrOiBkaXNwYXRjaCBjbG9ja19zZXR0aW1lDQo+ID4gPiDCoMKgwqBbeTIwMzhdIGxpYjogY29i
+YWx0OiBjbG9jazogZGlzcGF0Y2ggY2xvY2tfZ2V0dGltZQ0KPiA+ID4gwqDCoMKgW3kyMDM4XSB0
+ZXN0c3VpdGU6IHNtb2tleTogeTIwMzg6IHRlc3RjYXNlIGZvciBzZXR0aW1lNjQgYW5kIGdldHRp
+bWU2NA0KPiA+ID4gDQo+ID4gPiDCoMKgaW5jbHVkZS9jb2JhbHQva2VybmVsL3RpbWUuaCAgICAg
+ICAgICAgfCAgIDMgKw0KPiA+ID4gwqDCoGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAg
+ICAgICAgIHwgICAyICsNCj4gPiA+IMKgwqBrZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmMgICAg
+ICAgICAgICB8ICAyOCArKysrKysrLQ0KPiA+ID4gwqDCoGtlcm5lbC9jb2JhbHQvcG9zaXgvY2xv
+Y2suaCAgICAgICAgICAgIHwgICA3ICsrDQo+ID4gPiDCoMKga2VybmVsL2NvYmFsdC9wb3NpeC9z
+eXNjYWxsMzIuYyAgICAgICAgfCAgMjcgKysrKysrKysNCj4gPiA+IMKgwqBrZXJuZWwvY29iYWx0
+L3Bvc2l4L3N5c2NhbGwzMi5oICAgICAgICB8ICAgOCArKysNCj4gPiA+IMKgwqBrZXJuZWwvY29i
+YWx0L3RpbWUuYyAgICAgICAgICAgICAgICAgICB8ICAxMSArKysrDQo+ID4gPiDCoMKgbGliL2Nv
+YmFsdC9jbG9jay5jICAgICAgICAgICAgICAgICAgICAgfCAgMTIgKysrKw0KPiA+ID4gwqDCoHRl
+c3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgMTE0ICsrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKystLQ0KPiA+ID4gwqDCoDkgZmlsZXMgY2hhbmdlZCwgMjA2IGluc2Vy
+dGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+ID4gPiANCj4gPiANCj4gDQo+IA0KDQo=
 
