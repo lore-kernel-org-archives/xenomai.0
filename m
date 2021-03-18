@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [ANNOUNCE] Xenomai Hacker Space @gitlab.com
-Message-ID: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
-Date: Wed, 17 Mar 2021 12:26:17 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: [ANNOUNCE] Xenomai Hacker Space @gitlab.com
+Date: Thu, 18 Mar 2021 05:04:07 +0000
+Message-ID: <CO1PR11MB5187843251EA3F97066DE8B6EE699@CO1PR11MB5187.namprd11.prod.outlook.com>
+References: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
+In-Reply-To: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
-
-in order to make central project resources more accessible to
-contributors, I've set up a mirror of the main Xenomai repository on
-gitlab.com:
-
-https://gitlab.com/Xenomai/xenomai-hacker-space
-
-This hacker space shall not replace the official project page but
-augment it. Users with gitlab.com accounts can file issue or comment on
-them, developers can request access in order to edit the wiki, and - in
-the future - also benefit from CI and test lab resources Siemens is
-donating to the project.
-
-I've migrated two things from the main repo to gitlab.com:
-
- - Xenomai and xenomai-images issue trackers (to enable broader access
-   and use)
-
- - CI builds of main Xenomai, but not of xenomai-images (and, thus, CT
-   via LAVA)
-
-The latter migration allows us to use the free shared runners of
-gitlab.com, reducing load and costs of our CI farm.
-
-If you are interested in using resources that require developer access
-(currently only the wiki), let us know on the list (to make this
-transparent), specify your account name and then request access via
-gitlab.com so that I can grant it.
-
-Happy hacking,
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Q29vbH4gIHRoaXMgaXMgcmVhbGx5IGEgZ29vZCBpZGVhISANCg0KQlIgLyBGaW5vICjlrZ/npaXl
+pKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0KPg0KPkhpIGFsbCwNCj4N
+Cj5pbiBvcmRlciB0byBtYWtlIGNlbnRyYWwgcHJvamVjdCByZXNvdXJjZXMgbW9yZSBhY2Nlc3Np
+YmxlIHRvDQo+Y29udHJpYnV0b3JzLCBJJ3ZlIHNldCB1cCBhIG1pcnJvciBvZiB0aGUgbWFpbiBY
+ZW5vbWFpIHJlcG9zaXRvcnkgb24NCj5naXRsYWIuY29tOg0KPg0KPmh0dHBzOi8vZ2l0bGFiLmNv
+bS9YZW5vbWFpL3hlbm9tYWktaGFja2VyLXNwYWNlDQo+DQo+VGhpcyBoYWNrZXIgc3BhY2Ugc2hh
+bGwgbm90IHJlcGxhY2UgdGhlIG9mZmljaWFsIHByb2plY3QgcGFnZSBidXQNCj5hdWdtZW50IGl0
+LiBVc2VycyB3aXRoIGdpdGxhYi5jb20gYWNjb3VudHMgY2FuIGZpbGUgaXNzdWUgb3IgY29tbWVu
+dCBvbg0KPnRoZW0sIGRldmVsb3BlcnMgY2FuIHJlcXVlc3QgYWNjZXNzIGluIG9yZGVyIHRvIGVk
+aXQgdGhlIHdpa2ksIGFuZCAtIGluDQo+dGhlIGZ1dHVyZSAtIGFsc28gYmVuZWZpdCBmcm9tIENJ
+IGFuZCB0ZXN0IGxhYiByZXNvdXJjZXMgU2llbWVucyBpcw0KPmRvbmF0aW5nIHRvIHRoZSBwcm9q
+ZWN0Lg0KPg0KPkkndmUgbWlncmF0ZWQgdHdvIHRoaW5ncyBmcm9tIHRoZSBtYWluIHJlcG8gdG8g
+Z2l0bGFiLmNvbToNCj4NCj4gLSBYZW5vbWFpIGFuZCB4ZW5vbWFpLWltYWdlcyBpc3N1ZSB0cmFj
+a2VycyAodG8gZW5hYmxlIGJyb2FkZXIgYWNjZXNzDQo+ICAgYW5kIHVzZSkNCj4NCj4gLSBDSSBi
+dWlsZHMgb2YgbWFpbiBYZW5vbWFpLCBidXQgbm90IG9mIHhlbm9tYWktaW1hZ2VzIChhbmQsIHRo
+dXMsIENUDQo+ICAgdmlhIExBVkEpDQo+DQo+VGhlIGxhdHRlciBtaWdyYXRpb24gYWxsb3dzIHVz
+IHRvIHVzZSB0aGUgZnJlZSBzaGFyZWQgcnVubmVycyBvZg0KPmdpdGxhYi5jb20sIHJlZHVjaW5n
+IGxvYWQgYW5kIGNvc3RzIG9mIG91ciBDSSBmYXJtLg0KPg0KPklmIHlvdSBhcmUgaW50ZXJlc3Rl
+ZCBpbiB1c2luZyByZXNvdXJjZXMgdGhhdCByZXF1aXJlIGRldmVsb3BlciBhY2Nlc3MNCj4oY3Vy
+cmVudGx5IG9ubHkgdGhlIHdpa2kpLCBsZXQgdXMga25vdyBvbiB0aGUgbGlzdCAodG8gbWFrZSB0
+aGlzDQo+dHJhbnNwYXJlbnQpLCBzcGVjaWZ5IHlvdXIgYWNjb3VudCBuYW1lIGFuZCB0aGVuIHJl
+cXVlc3QgYWNjZXNzIHZpYQ0KPmdpdGxhYi5jb20gc28gdGhhdCBJIGNhbiBncmFudCBpdC4NCj4N
+Cj5IYXBweSBoYWNraW5nLA0KPkphbg0KPg0KPi0tDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+
+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg==
 
