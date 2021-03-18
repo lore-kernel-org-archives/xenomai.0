@@ -1,13 +1,7 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: [ANNOUNCE] Xenomai Hacker Space @gitlab.com
-Date: Thu, 18 Mar 2021 05:04:07 +0000
-Message-ID: <CO1PR11MB5187843251EA3F97066DE8B6EE699@CO1PR11MB5187.namprd11.prod.outlook.com>
-References: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
-In-Reply-To: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: chensong <chensong@tj.kylinos.cn>
+Subject: [PATCH v3 0/5] y2038:clock_settime/gettime for timespec64
+Date: Thu, 18 Mar 2021 15:34:22 +0800
+Message-Id: <1616052862-21869-1-git-send-email-chensong@tj.kylinos.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +10,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: florian.bezdeka@siemens.com, xenomai@xenomai.org, rpm@xenomai.org
 
-Q29vbH4gIHRoaXMgaXMgcmVhbGx5IGEgZ29vZCBpZGVhISANCg0KQlIgLyBGaW5vICjlrZ/npaXl
-pKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0KPg0KPkhpIGFsbCwNCj4N
-Cj5pbiBvcmRlciB0byBtYWtlIGNlbnRyYWwgcHJvamVjdCByZXNvdXJjZXMgbW9yZSBhY2Nlc3Np
-YmxlIHRvDQo+Y29udHJpYnV0b3JzLCBJJ3ZlIHNldCB1cCBhIG1pcnJvciBvZiB0aGUgbWFpbiBY
-ZW5vbWFpIHJlcG9zaXRvcnkgb24NCj5naXRsYWIuY29tOg0KPg0KPmh0dHBzOi8vZ2l0bGFiLmNv
-bS9YZW5vbWFpL3hlbm9tYWktaGFja2VyLXNwYWNlDQo+DQo+VGhpcyBoYWNrZXIgc3BhY2Ugc2hh
-bGwgbm90IHJlcGxhY2UgdGhlIG9mZmljaWFsIHByb2plY3QgcGFnZSBidXQNCj5hdWdtZW50IGl0
-LiBVc2VycyB3aXRoIGdpdGxhYi5jb20gYWNjb3VudHMgY2FuIGZpbGUgaXNzdWUgb3IgY29tbWVu
-dCBvbg0KPnRoZW0sIGRldmVsb3BlcnMgY2FuIHJlcXVlc3QgYWNjZXNzIGluIG9yZGVyIHRvIGVk
-aXQgdGhlIHdpa2ksIGFuZCAtIGluDQo+dGhlIGZ1dHVyZSAtIGFsc28gYmVuZWZpdCBmcm9tIENJ
-IGFuZCB0ZXN0IGxhYiByZXNvdXJjZXMgU2llbWVucyBpcw0KPmRvbmF0aW5nIHRvIHRoZSBwcm9q
-ZWN0Lg0KPg0KPkkndmUgbWlncmF0ZWQgdHdvIHRoaW5ncyBmcm9tIHRoZSBtYWluIHJlcG8gdG8g
-Z2l0bGFiLmNvbToNCj4NCj4gLSBYZW5vbWFpIGFuZCB4ZW5vbWFpLWltYWdlcyBpc3N1ZSB0cmFj
-a2VycyAodG8gZW5hYmxlIGJyb2FkZXIgYWNjZXNzDQo+ICAgYW5kIHVzZSkNCj4NCj4gLSBDSSBi
-dWlsZHMgb2YgbWFpbiBYZW5vbWFpLCBidXQgbm90IG9mIHhlbm9tYWktaW1hZ2VzIChhbmQsIHRo
-dXMsIENUDQo+ICAgdmlhIExBVkEpDQo+DQo+VGhlIGxhdHRlciBtaWdyYXRpb24gYWxsb3dzIHVz
-IHRvIHVzZSB0aGUgZnJlZSBzaGFyZWQgcnVubmVycyBvZg0KPmdpdGxhYi5jb20sIHJlZHVjaW5n
-IGxvYWQgYW5kIGNvc3RzIG9mIG91ciBDSSBmYXJtLg0KPg0KPklmIHlvdSBhcmUgaW50ZXJlc3Rl
-ZCBpbiB1c2luZyByZXNvdXJjZXMgdGhhdCByZXF1aXJlIGRldmVsb3BlciBhY2Nlc3MNCj4oY3Vy
-cmVudGx5IG9ubHkgdGhlIHdpa2kpLCBsZXQgdXMga25vdyBvbiB0aGUgbGlzdCAodG8gbWFrZSB0
-aGlzDQo+dHJhbnNwYXJlbnQpLCBzcGVjaWZ5IHlvdXIgYWNjb3VudCBuYW1lIGFuZCB0aGVuIHJl
-cXVlc3QgYWNjZXNzIHZpYQ0KPmdpdGxhYi5jb20gc28gdGhhdCBJIGNhbiBncmFudCBpdC4NCj4N
-Cj5IYXBweSBoYWNraW5nLA0KPkphbg0KPg0KPi0tDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+
-Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg==
+This patch serial is aimed to introduce a new syscall clock_settime64
+and clock_gettime64 which are specific for 64-bit time_t.
+
+There is no impact to current implementation of clock_settime, nothing
+broken.
+
+---
+v2:
+1, merge clock_settime64 and compat clock_settime64
+2, remove checking __xn_feat_time64
+3, add clock_gettime64
+4, add smokey test for clock_settime64 and clock_gettime64
+
+v3:
+1, flip patch order: clock_settime64 and clock_gettime54
+2, flip syscall number order:
+   sc_cobalt_clock_gettime64 and sc_cobalt_clock_settime64
+3, add documentation for cobalt_put_timespec64
+4, new implementation of smokey test for
+   clock_gettime64 and clock_settime64
+   it only validates syscalls and doesn't trigger y2038 problem
+   to avoid jeopardizing environment.
+
+chensong (5):
+  y2038: cobalt/posix/clock: Adding clock_gettime64
+  y2038: cobalt/posix/clock: Adding clock_settime64
+  y2038: lib/cobalt/clock: dispatch clock_settime
+  y2038: lib/cobalt/clock: dispatch clock_gettime
+  y2038: testsuite/smokey/y2038: testcase for settime64 and gettime64
+
+ include/cobalt/kernel/time.h           |  11 ++++
+ include/cobalt/uapi/syscall.h          |   2 +
+ kernel/cobalt/posix/clock.c            |  28 +++++++-
+ kernel/cobalt/posix/clock.h            |   7 ++
+ kernel/cobalt/posix/syscall32.c        |  27 ++++++++
+ kernel/cobalt/posix/syscall32.h        |   8 +++
+ kernel/cobalt/time.c                   |  11 ++++
+ lib/cobalt/clock.c                     |  12 ++++
+ testsuite/smokey/y2038/syscall-tests.c | 115 +++++++++++++++++++++++++++++++--
+ 9 files changed, 214 insertions(+), 7 deletions(-)
+
+-- 
+2.7.4
+
+
+
 
