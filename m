@@ -1,8 +1,11 @@
-From: chensong <chensong@tj.kylinos.cn>
-Subject: [PATCH v3 5/5] y2038: testsuite/smokey/y2038: testcase for settime64
- and gettime64
-Date: Thu, 18 Mar 2021 15:36:18 +0800
-Message-Id: <1616052978-22093-1-git-send-email-chensong@tj.kylinos.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: RTDM vs. "dovetail: implement interrupt management, handling"
+Message-ID: <b4d2aefd-a2fe-6d95-2ad8-7ddb881f3f66@siemens.com>
+Date: Thu, 18 Mar 2021 16:33:34 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,175 +14,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org, rpm@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-new test case for clock_settime64 and clock_gettime64 and reorganize
-run_2038.
+Hi Philippe,
 
-If you want to trigger and verify y2038 problem, please be careful and
-make sure it has no impact to your test device.
+with that patch, namely
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
----
- testsuite/smokey/y2038/syscall-tests.c | 115 +++++++++++++++++++++++++++++++--
- 1 file changed, 109 insertions(+), 6 deletions(-)
+void xnintr_enable(struct xnintr *intr)
+{
+	secondary_mode_only();
+	enable_irq(intr->irq);
+}
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 1d61bbd..89e7d47 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -17,6 +17,38 @@
- 
- smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
- 
-+
-+#define RUN_TEST(name) test_ ## name
-+typedef int (*testee_func)(void);
-+struct testee_info {
-+	char *name;
-+	testee_func func;
-+};
-+
-+static int test_sc_cobalt_sem_timedwait64(void);
-+static int test_sc_cobalt_clock_gettime64(void);
-+static int test_sc_cobalt_clock_settime64(void);
-+
-+#define TESTEE_TABLE_COUNT 32
-+static struct testee_info testee_table[TESTEE_TABLE_COUNT] = {
-+	{
-+		.name = "sc_cobalt_sem_timedwait64",
-+		.func = RUN_TEST(sc_cobalt_sem_timedwait64),
-+	},
-+	{
-+		.name = "sc_cobalt_clock_gettime64",
-+		.func = RUN_TEST(sc_cobalt_clock_gettime64),
-+	},
-+	{
-+		.name = "sc_cobalt_clock_settime64",
-+		.func = RUN_TEST(sc_cobalt_clock_settime64),
-+	},
-+	{
-+		.name = NULL,
-+		.func = NULL,
-+	},
-+};
-+
- /*
-  * libc independent data type representing a time64_t based struct timespec
-  */
-@@ -25,7 +57,8 @@ struct xn_timespec64 {
- 	int64_t tv_nsec;
- };
- 
--#define NSEC_PER_SEC 1000000000
-+#define NSEC_PER_SEC		1000000000
-+#define USEC_PER_SEC		1000000
- 
- static void ts_normalise(struct xn_timespec64 *ts)
- {
-@@ -114,10 +147,10 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 
- 	/*
- 	 * The semaphore is already exhausted, so calling again will validate
--	 * the provided timeout now. Providing an invalid adress has to deliver
-+	 * the provided timeout now. Providing an invalid address has to deliver
- 	 * EFAULT
- 	 */
--	ret = syscall(code, &sem, (void*) 0xdeadbeefUL);
-+	ret = syscall(code, &sem, (void *)0xdeadbeefUL);
- 	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
- 		return errno;
- 
-@@ -163,13 +196,83 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 	return 0;
- }
- 
-+static int test_sc_cobalt_clock_gettime64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_gettime64);
-+	struct xn_timespec64 ts64;
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_gettime64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
-+		return errno;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Provide a valid 64bit timespec*/
-+	ret = syscall(code, CLOCK_REALTIME, &ts64);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	return 0;
-+}
-+
-+static int test_sc_cobalt_clock_settime64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_settime64);
-+	struct xn_timespec64 ts64;
-+	struct timespec now;
-+
-+	/*Get current time and set it back at the end of the test*/
-+	clock_gettime(CLOCK_REALTIME, &now);
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_settime64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
-+		goto out;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		goto out;
-+
-+	/* Provide a valid 64bit timespec*/
-+	ts64.tv_sec  = now.tv_sec;
-+	ts64.tv_nsec = now.tv_nsec;
-+	ret = syscall(code, CLOCK_REALTIME, &ts64);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		goto out;
-+
-+out:
-+	clock_settime(CLOCK_REALTIME, &now);
-+	return errno;
-+}
-+
-+
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
-+	struct testee_info *p = testee_table;
- 
--	ret = test_sc_cobalt_sem_timedwait64();
--	if (ret)
--		return ret;
-+	while (p->name != NULL) {
-+		ret = p->func();
-+		if (ret)
-+			smokey_warning("%s failed, errno is %d\n", p->name, ret);
-+
-+		p++;
-+	}
- 
- 	return 0;
- }
+RTDM drivers stumble when using MSI and MSI-X, possibly also other
+interrupts types:
+
+[64630.529207] Unbalanced enable for IRQ 145
+[64630.529207] WARNING: CPU: 0 PID: 20057 at kernel/irq/manage.c:676
+__enable_irq+0x36/0x60
+[64630.529207] Modules linked in: univ(O+) veth xt_conntrack
+xt_MASQUERADE xfrm_user xfrm_algo xt_addrtype iptable_filter iptable_nat
+nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter bridge
+stp llc md4 md5 sha512_ssse3 sha512_generic cmac sha256_ssse3
+sha256_generic libsha256 hmac nls_cp437 cifs libdes libarc4 overlay
+x86_pkg_temp_thermal intel_powerclamp coretemp crct10dif_pclmul
+crc32_pclmul ftdi_sio usbserial iTCO_wdt iTCO_vendor_support mei_me mei
+ipmi_si ipmi_devintf ipmi_msghandler msr fuse configfs ip_tables
+x_tables ipv6 autofs4 raid10 raid456 async_raid6_recov async_memcpy
+async_pq async_xor xor async_tx hid_generic raid6_pq libcrc32c raid1
+multipath usbhid linear hid raid0 e1000e i2c_i801 xhci_pci i2c_smbus igb
+ahci i2c_algo_bit xhci_hcd libahci
+[64630.529218] CPU: 0 PID: 20057 Comm: insmod Tainted: G           O
+  5.10.19-xenomai-0 #1
+[64630.529218] Hardware name: Supermicro X11SCZ-F/X11SCZ-F, BIOS
+s1.2b_C2_01 05/14/2020
+[64630.529218] IRQ stage: Linux
+[64630.529219] RIP: 0010:__enable_irq+0x36/0x60
+[64630.529219] Code: c0 74 18 83 f8 01 74 0a 83 e8 01 89 87 98 00 00 00
+c3 f6 87 95 00 00 00 08 74 12 8b 77 2c 48 c7 c7 40 a3 d7 9a e8 31 41 68
+00 <0f> 0b c3 81 8f 90 00 00 00 00 04 00 00 ba 01 00 00 00 be 01 00 00
+[64630.529219] RSP: 0018:ffffb85c45c3fa70 EFLAGS: 00010082
+[64630.529220] RAX: 0000000000000000 RBX: ffff98bd42792200 RCX:
+0000000000000000
+[64630.529220] RDX: 0000000000000023 RSI: ffff98c47bc17968 RDI:
+ffff98c47bc17970
+[64630.529220] RBP: 0000000000000091 R08: 0000000000000002 R09:
+ffff98bd4209f908
+[64630.529220] R10: 0000000000000000 R11: ffff98c47bc179c6 R12:
+ffff98bd40cd2000
+[64630.529221] R13: 0000000000000000 R14: 0000000000000013 R15:
+ffff98bd4369a948
+[64630.529221] FS:  00007f51c1f5c540(0000) GS:ffff98c47bc00000(0000)
+knlGS:0000000000000000
+[64630.529221] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[64630.529221] CR2: 000055b74066a1b0 CR3: 0000000103334001 CR4:
+00000000001706f0
+[64630.529222] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+[64630.529222] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+0000000000000400
+[64630.529222] Call Trace:
+[64630.529222]  enable_irq+0x46/0x90
+[64630.529222]  rtdm_irq_request+0x57/0x80
+[64630.529223]  init_one+0x67c/0x778 [univ]
+[64630.529223]  local_pci_probe+0x3d/0x70
+[64630.529223]  ? pci_assign_irq+0x27/0xd0
+[64630.529223]  pci_device_probe+0xfc/0x1b0
+
+That's because it's driver business to call pci_enable_msi/msix which
+enables everything needed under dovetail apparently. Is there no
+separate (from Linux) masking bit in the dovetail pipeline? Because that
+is what ipipe_enable/disable_irq was targeting. If not,
+xnintr_enable/disable should likely be nops over dovetail, right?
+
+That would also make rtdm_irq_enable/disable nops which may cause other
+issues, though we stated that those services are "for exceptional use only".
+
+Jan
+
 -- 
-2.7.4
-
-
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
