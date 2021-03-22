@@ -1,15 +1,16 @@
-Subject: Re: RTDM vs. "dovetail: implement interrupt management, handling"
-References: <b4d2aefd-a2fe-6d95-2ad8-7ddb881f3f66@siemens.com>
- <87sg4smngm.fsf@xenomai.org>
- <MWHPR11MB1710CFF09F7EB52B8F8B9D3AF2689@MWHPR11MB1710.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <47230158-17b8-ab64-4b88-a4430ee6e5ae@siemens.com>
-Date: Fri, 19 Mar 2021 08:08:27 +0100
-MIME-Version: 1.0
-In-Reply-To: <MWHPR11MB1710CFF09F7EB52B8F8B9D3AF2689@MWHPR11MB1710.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: RE: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
+Date: Mon, 22 Mar 2021 11:48:02 +0000
+Message-ID: <AM0P122MB01000F45C8ED23A5D6270D89F2659@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
+References: <20210305082259.18424-1-gunter.grau@philips.com>
+ <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
+ <AM0P122MB01003ED2C020C155D13AC0B7F2969@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
+ <CALLqZ8Rqbt5cPGck5EiQ9kKbG9tiZZJrvWjhNNBWvYeebM2+Gw@mail.gmail.com>
+In-Reply-To: <CALLqZ8Rqbt5cPGck5EiQ9kKbG9tiZZJrvWjhNNBWvYeebM2+Gw@mail.gmail.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,183 +19,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 19.03.21 04:15, Chen, Hongzhan wrote:
->>
->>
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Philippe Gerum via Xenomai
->> Sent: Friday, March 19, 2021 12:33 AM
->> To: Jan Kiszka <jan.kiszka@siemens.com>
->> Cc: Xenomai <xenomai@xenomai.org>
->> Subject: Re: RTDM vs. "dovetail: implement interrupt management, handling"
->>
->>
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> Hi Philippe,
->>>
->>> with that patch, namely
->>>
->>> void xnintr_enable(struct xnintr *intr)
->>> {
->>> 	secondary_mode_only();
->>> 	enable_irq(intr->irq);
->>> }
->>>
->>> RTDM drivers stumble when using MSI and MSI-X, possibly also other
->>> interrupts types:
->>>
->>> [64630.529207] Unbalanced enable for IRQ 145
-> 
-> I also met this issue . Is following patch OK to fix it?
-> 
-
-It's an interesting alternative. However, it would not fix the MSI/MSI-X
-issue where the RTDM driver already enabled the interrupt. Possibly,
-things would work when assuming status = enabled on init.
-
-Jan
-
-> diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
-> index 068dfe306..571d89c88 100644
-> --- a/kernel/cobalt/dovetail/intr.c
-> +++ b/kernel/cobalt/dovetail/intr.c
-> @@ -68,7 +68,7 @@ int xnintr_init(struct xnintr *intr, const char *name,
->         intr->cookie = NULL;
->         intr->name = name ? : "<unknown>";
->         intr->flags = flags;
-> -       intr->status = 0;
-> +       intr->status = _XN_IRQSTAT_DISABLED;
->         intr->unhandled = 0;    /* unused */
->         raw_spin_lock_init(&intr->lock); /* unused */
-> 
-> @@ -110,14 +110,19 @@ EXPORT_SYMBOL_GPL(xnintr_detach);
->  void xnintr_enable(struct xnintr *intr)
->  {
->         secondary_mode_only();
-> -       enable_irq(intr->irq);
-> +       if (test_and_clear_bit(XN_IRQSTAT_DISABLED, &intr->status)) {
-> +               trace_cobalt_irq_enable(intr->irq);
-> +               enable_irq(intr->irq);
-> +       }
->  }
->  EXPORT_SYMBOL_GPL(xnintr_enable);
-> 
->  void xnintr_disable(struct xnintr *intr)
->  {
->         secondary_mode_only();
-> -       disable_irq(intr->irq);
-> +       trace_cobalt_irq_disable(intr->irq);
-> +       if (!test_and_set_bit(XN_IRQSTAT_DISABLED, &intr->status))
-> +               disable_irq(intr->irq);
->  }
->  EXPORT_SYMBOL_GPL(xnintr_disable);
-> 
->>> [64630.529207] WARNING: CPU: 0 PID: 20057 at kernel/irq/manage.c:676
->>> __enable_irq+0x36/0x60
->>> [64630.529207] Modules linked in: univ(O+) veth xt_conntrack
->>> xt_MASQUERADE xfrm_user xfrm_algo xt_addrtype iptable_filter iptable_nat
->>> nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter bridge
->>> stp llc md4 md5 sha512_ssse3 sha512_generic cmac sha256_ssse3
->>> sha256_generic libsha256 hmac nls_cp437 cifs libdes libarc4 overlay
->>> x86_pkg_temp_thermal intel_powerclamp coretemp crct10dif_pclmul
->>> crc32_pclmul ftdi_sio usbserial iTCO_wdt iTCO_vendor_support mei_me mei
->>> ipmi_si ipmi_devintf ipmi_msghandler msr fuse configfs ip_tables
->>> x_tables ipv6 autofs4 raid10 raid456 async_raid6_recov async_memcpy
->>> async_pq async_xor xor async_tx hid_generic raid6_pq libcrc32c raid1
->>> multipath usbhid linear hid raid0 e1000e i2c_i801 xhci_pci i2c_smbus igb
->>> ahci i2c_algo_bit xhci_hcd libahci
->>> [64630.529218] CPU: 0 PID: 20057 Comm: insmod Tainted: G           O
->>>   5.10.19-xenomai-0 #1
->>> [64630.529218] Hardware name: Supermicro X11SCZ-F/X11SCZ-F, BIOS
->>> s1.2b_C2_01 05/14/2020
->>> [64630.529218] IRQ stage: Linux
->>> [64630.529219] RIP: 0010:__enable_irq+0x36/0x60
->>> [64630.529219] Code: c0 74 18 83 f8 01 74 0a 83 e8 01 89 87 98 00 00 00
->>> c3 f6 87 95 00 00 00 08 74 12 8b 77 2c 48 c7 c7 40 a3 d7 9a e8 31 41 68
->>> 00 <0f> 0b c3 81 8f 90 00 00 00 00 04 00 00 ba 01 00 00 00 be 01 00 00
->>> [64630.529219] RSP: 0018:ffffb85c45c3fa70 EFLAGS: 00010082
->>> [64630.529220] RAX: 0000000000000000 RBX: ffff98bd42792200 RCX:
->>> 0000000000000000
->>> [64630.529220] RDX: 0000000000000023 RSI: ffff98c47bc17968 RDI:
->>> ffff98c47bc17970
->>> [64630.529220] RBP: 0000000000000091 R08: 0000000000000002 R09:
->>> ffff98bd4209f908
->>> [64630.529220] R10: 0000000000000000 R11: ffff98c47bc179c6 R12:
->>> ffff98bd40cd2000
->>> [64630.529221] R13: 0000000000000000 R14: 0000000000000013 R15:
->>> ffff98bd4369a948
->>> [64630.529221] FS:  00007f51c1f5c540(0000) GS:ffff98c47bc00000(0000)
->>> knlGS:0000000000000000
->>> [64630.529221] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> [64630.529221] CR2: 000055b74066a1b0 CR3: 0000000103334001 CR4:
->>> 00000000001706f0
->>> [64630.529222] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
->>> 0000000000000000
->>> [64630.529222] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
->>> 0000000000000400
->>> [64630.529222] Call Trace:
->>> [64630.529222]  enable_irq+0x46/0x90
->>> [64630.529222]  rtdm_irq_request+0x57/0x80
->>> [64630.529223]  init_one+0x67c/0x778 [univ]
->>> [64630.529223]  local_pci_probe+0x3d/0x70
->>> [64630.529223]  ? pci_assign_irq+0x27/0xd0
->>> [64630.529223]  pci_device_probe+0xfc/0x1b0
->>>
->>> That's because it's driver business to call pci_enable_msi/msix which
->>> enables everything needed under dovetail apparently. Is there no
->>> separate (from Linux) masking bit in the dovetail pipeline?
->>
->> There is nothing pipeline-specific in this regard with Dovetail anymore.
->>
->> ipipe_{enable, disable}_irq() bring no additional masking bit per
->> se. They merely bypass the common nesting and locking rules by calling
->> the corresponding chip handler directly. ipipe_enable() also has the
->> side-effect of starting up a channel first if need be, which is pretty
->> much a kludge, required at that time precisely because the I-pipe
->> pretends not to follow the common rules wrt IRQ management.
->>
->> Initially, that scheme was supposed to allow enabling/disabling IRQs
->>from any execution stage, until we figured out that some chip
->> controllers would have to traverse code from complex stacks anyway,
->> e.g. PCI, which at any rate, would require the caller to run in-band.
->>
->>> Because that
->>> is what ipipe_enable/disable_irq was targeting. If not,
->>> xnintr_enable/disable should likely be nops over dovetail, right?
->>>
->>
->> That would be a quick way to implement backward compatibility with the
->> assumption existing drivers make about the I-pipe bypassing the common
->> IRQ management rules. In the long run, a RTDM driver should initialize
->> like any regular driver in this regard, enabling particular interrupt
->> channel(s) on entry only when there is no way anyone else could have
->> done it after __setup_irq() has run. This is related to the fact that
->> Dovetail does not provide any pipeline-specific call to register IRQs
->> either. Common forms of request_irq() is enough, mentioning IRQF_OOB if
->> need be for out-of-band handling.
->>
->> The basic idea is that Dovetail strictly follows by the common kernel
->> logic when enabling/disabling IRQs, ipipe_{enable, disable}_irq() are
->> mere bypasses of such logic, which makes them unsafe since they don't
->> even abide by the proper locking rules (hence the requirement for
->> Xenomai 2/3 to provide their own lock for serializing device interrupts,
->> which does not solve other issues though, like IRQ migration or
->> un-registration).
->>
->>> That would also make rtdm_irq_enable/disable nops which may cause other
->>> issues, though we stated that those services are "for exceptional use only".
->>>
->>
->> Indeed.
->>
->> -- 
->> Philippe.
->>
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4gRnJvbTogR3JlZyBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRncmVnLmNvbT4NCj4gU2Vu
+dDogRnJlaXRhZywgNS4gTcOkcnogMjAyMSAxMzo1Nw0KPiBUbzogR3JhdSwgR3VudGVyIDxndW50
+ZXIuZ3JhdUBwaGlsaXBzLmNvbT4NCj4gQ2M6IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVu
+cy5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGFybV9n
+bG9iYWxfdGltZXI6IFVzZSA2NCBCaXQgaHcgY291bnRlciBmb3IgaXBpcGVfdHNjDQo+DQo+IENh
+dXRpb246IFRoaXMgZS1tYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIFBoaWxpcHMsIGJl
+IGNhcmVmdWwgZm9yIHBoaXNoaW5nLg0KPg0KPiA+IE9uIEZyaSwgTWFyIDUsIDIwMjEgYXQgNzo1
+MiBBTSBHcmF1LCBHdW50ZXIgPGd1bnRlci5ncmF1QHBoaWxpcHMuY29tPiB3cm90ZToNCj4gPiA+
+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPg0KPiA+ID4gU2VudDogRnJlaXRhZywgNS4gTcOkcnogMjAyMSAx
+MzoyNw0KPiA+ID4gVG86IEdyYXUsIEd1bnRlciA8Z3VudGVyLmdyYXVAcGhpbGlwcy5jb20+OyB4
+ZW5vbWFpQHhlbm9tYWkub3JnOyBHcmVnDQo+ID4gPiBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRn
+cmVnLmNvbT4NCj4gPiA+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGFybV9nbG9iYWxfdGltZXI6IFVz
+ZSA2NCBCaXQgaHcgY291bnRlciBmb3IgaXBpcGVfdHNjDQo+ID4gPg0KPiA+ID4gQ2F1dGlvbjog
+VGhpcyBlLW1haWwgb3JpZ2luYXRlZCBmcm9tIG91dHNpZGUgb2YgUGhpbGlwcywgYmUgY2FyZWZ1
+bCBmb3INCj4gPiA+IHBoaXNoaW5nLg0KPiA+ID4NCj4gPiA+DQo+ID4gPiBPbiAwNS4wMy4yMSAw
+OToyMiwgR3VudGVyIEdyYXUgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gPiA+IFdoZW4gdXNpbmcg
+dGhlIGFybV9nbG9iYWxfdGltZXIgYXMgc291cmNlIGZvciBpcGlwZV90c2MgdGhlIG1hc2sgd2Fz
+DQo+ID4gPiA+IGNvbmZpZ3VyZWQgd2l0aCAzMiBCaXQuDQo+ID4gPiA+IEhvd2V2ZXIgdGhpcyB0
+aW1lciBpcyBhIG5hdGl2ZSA2NCBCaXQgY291bnRlci4gU28gdXNlIHRoZSBjb21wbGV0ZQ0KPiA+
+ID4gPiBoYXJkd2FyZSByZWdpc3RlciBieSBjb25maWd1cmluZyBhIDY0IEJpdCBtYXNrIG9uIGlu
+aXRpYWxpemF0aW9uLg0KPiA+ID4gPiBUaGUgaXBpcGVfdHNjIGltcGxlbWVudGF0aW9uIGlzIGFs
+cmVhZHkgNjQgQml0IHJlYWR5IGFuZCByZWFkcyB0aGlzDQo+ID4gPiA+IHJlZ2lzdGVyIGFzIGRl
+c2NyaWJlZCBpbiB0aGUgcmVmZXJlbmNlIG1hbnVhbCwgc28gbm8gZnVydGhlciBjaGFuZ2VzDQo+
+ID4gPiA+IG5lZWRlZC4NCj4gPiA+ID4NCj4gPiA+ID4gU2lnbmVkLW9mZi1ieTogR3VudGVyIEdy
+YXUgPGd1bnRlci5ncmF1QHBoaWxpcHMuY29tPg0KPiA+ID4gPiAtLS0NCj4gPiA+ID4gIGRyaXZl
+cnMvY2xvY2tzb3VyY2UvYXJtX2dsb2JhbF90aW1lci5jIHwgMiArLQ0KPiA+ID4gPiAgMSBmaWxl
+IGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4gPiA+DQo+ID4gPiA+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Nsb2Nrc291cmNlL2FybV9nbG9iYWxfdGltZXIuYw0KPiA+
+ID4gPiBiL2RyaXZlcnMvY2xvY2tzb3VyY2UvYXJtX2dsb2JhbF90aW1lci5jDQo+ID4gPiA+IGlu
+ZGV4IDc3YzExNmEzZTg1Zi4uNDRjMTBlMzY0ZjYyIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS9kcml2
+ZXJzL2Nsb2Nrc291cmNlL2FybV9nbG9iYWxfdGltZXIuYw0KPiA+ID4gPiArKysgYi9kcml2ZXJz
+L2Nsb2Nrc291cmNlL2FybV9nbG9iYWxfdGltZXIuYw0KPiA+ID4gPiBAQCAtODIsNyArODIsNyBA
+QCBzdGF0aWMgaW5saW5lIHZvaWQgZ3RfaXBpcGVfY3Nfc2V0dXAodm9pZCkNCj4gPiA+ID4gICAg
+ICAgICAgICAgICAgIC51ID0gew0KPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICB7DQo+
+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLmNvdW50ZXJfcGFkZHIgPSBn
+dF9wYmFzZSwNCj4gPiA+ID4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9
+IDB4ZmZmZmZmZmYsDQo+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLm1h
+c2sgPSBDTE9DS1NPVVJDRV9NQVNLKDY0KSwNCj4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAg
+ICAgfQ0KPiA+ID4gPiAgICAgICAgICAgICAgICAgfSwNCj4gPiA+ID4gICAgICAgICAgICAgICAg
+IC5yZWZyZXNoX2ZyZXEgPSByZWZyZXNoX2d0X2ZyZXEsDQo+ID4gPiA+IC0tDQo+ID4gPiA+IDIu
+MTcuMQ0KPiA+ID4gPg0KPiA+ID4NCj4gPiA+IFRoYW5rcyBmb3IgdGhlIGZpeGVzLiBZb3UgbWF5
+IGhlbHAgR3JlZyB3aXRoIGludGVncmF0aW5nIHRoZW0gYnkgdGVsbGluZyB1cw0KPiA+ID4gb24g
+d2hpY2gga2VybmVsIHZlcnNpb25zIHRoZXkgYXBwbHkgLyBoYXZlIGJlZW4gdGVzdGVkLg0KPiA+
+ID4NCj4gPiA+IEphbg0KPiA+ID4NCj4gPiA+IC0tDQo+ID4gPiBTaWVtZW5zIEFHLCBUIFJEQSBJ
+T1QNCj4gPiA+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KPiA+
+DQo+ID4NCj4gPiBIaSwNCj4gPg0KPiA+IFRoZSBwYXRjaGVzIGFwcGx5IHRvIGlwaXBlL21hc3Rl
+ci4NCj4gPiBCdXQgYXMgSSBoYXZlIHNlZW4gc28gZmFyIHRoZXkgc2hvdWxkIGV2ZW4gYXBwbHkg
+dG8gNS40LnkuDQo+ID4NCj4gPiBVbmZvcnR1bmF0ZWx5IHdlIGFyZSBjdXJyZW50bHkgdXNpbmcg
+YSB2ZXJ5IG9sZCBrZXJuZWwgb24gaW14Ni4NCj4gPiBTbyBJIGNhbiByZXBvcnQgdGhpcyBwYXRj
+aGVzIGhhcyBiZWVuIHRlc3RlZCBvbiA0LjEueCBvbmx5Lg0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+
+IEd1bnRlcg0KPiA+DQo+ID4gWy4uLl0NCj4gPg0KPg0KPiBUaGFua3MhIEkgY2FuIHRlc3QgdGhl
+bSBvdXQgdGhpcyB3ZWVrZW5kLCBJIGhhdmUgYSBidW5jaCBvZiBpcGlwZSB3b3JrIHRvIGRvLg0K
+Pg0KPiBUaGFua3MNCj4NCj4gR3JlZw0KPg0KDQpIaSBHcmVnLA0KDQpEaWQgeW91IGhhdmUgdGhl
+IGNoYW5jZSB0byBsb29rIGludG8gdGhlIHR3byBwYXRjaGVzPw0KSXMgdGhlcmUgYW55dGhpbmcg
+SSBjYW4gZG8/DQoNClRoYW5rcywNCkd1bnRlcg0KDQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0KVGhlIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIG1lc3NhZ2UgbWF5IGJl
+IGNvbmZpZGVudGlhbCBhbmQgbGVnYWxseSBwcm90ZWN0ZWQgdW5kZXIgYXBwbGljYWJsZSBsYXcu
+IFRoZSBtZXNzYWdlIGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKS4gSWYg
+eW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZp
+ZWQgdGhhdCBhbnkgdXNlLCBmb3J3YXJkaW5nLCBkaXNzZW1pbmF0aW9uLCBvciByZXByb2R1Y3Rp
+b24gb2YgdGhpcyBtZXNzYWdlIGlzIHN0cmljdGx5IHByb2hpYml0ZWQgYW5kIG1heSBiZSB1bmxh
+d2Z1bC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRh
+Y3QgdGhlIHNlbmRlciBieSByZXR1cm4gZS1tYWlsIGFuZCBkZXN0cm95IGFsbCBjb3BpZXMgb2Yg
+dGhlIG9yaWdpbmFsIG1lc3NhZ2UuDQo=
 
