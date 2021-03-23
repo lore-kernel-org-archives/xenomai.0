@@ -1,14 +1,11 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 4/4] [y2038] lib: cobalt: clock: dispatch clock_settime
-Date: Thu, 11 Mar 2021 09:39:44 +0000
-Message-ID: <a49abf30dcd6c408656233511b83dcae954da6d8.camel@siemens.com>
-References: <1615430827-23866-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1615430827-23866-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C27E16F49CB16947AE569E00766813AE@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <BY5PR11MB4306385582356B11B21A19E1BA919@BY5PR11MB4306.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Xenomai Community Call Minutes - March 10, 2021
+In-reply-to: <BY5PR11MB4306385582356B11B21A19E1BA919@BY5PR11MB4306.namprd11.prod.outlook.com>
+Date: Tue, 23 Mar 2021 09:13:17 +0100
+Message-ID: <875z1il23m.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "Wang, Rick Y via Xenomai" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTAzLTExIGF0IDEwOjQ3ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gSWYg
-c2l6ZW9mIHRpbWVfdCBiaWdnZXIgdGhhbiA0LCB3aGljaCBtZWFucyBnbGliYyBzdXBwb3J0cw0K
-PiA2NGJpdCB0aW1lc3BlYywgYW5kIF9feG5fZmVhdF90aW1lNjQgaXMgYXZhaWxhYmxlIGluIGtl
-cm5lbCwNCj4gZ28gdG8gY2xvY2tfc2V0dGltZTY0Lg0KPiANCj4gb3RoZXJ3aXNlLCBnbyB0byBv
-cmlnaW5hbCBjbG9ja19zZXR0aW1lLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogY2hlbnNvbmcgPGNo
-ZW5zb25nQHRqLmt5bGlub3MuY24+DQo+IC0tLQ0KPiDCoGxpYi9jb2JhbHQvY2xvY2suYyB8IDYg
-KysrKysrDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAt
-LWdpdCBhL2xpYi9jb2JhbHQvY2xvY2suYyBiL2xpYi9jb2JhbHQvY2xvY2suYw0KPiBpbmRleCA4
-ZjA2MzIwLi44NDNlY2Q0IDEwMDY0NA0KPiAtLS0gYS9saWIvY29iYWx0L2Nsb2NrLmMNCj4gKysr
-IGIvbGliL2NvYmFsdC9jbG9jay5jDQo+IEBAIC0yNzYsNyArMjc2LDEzIEBAIENPQkFMVF9JTVBM
-KGludCwgY2xvY2tfc2V0dGltZSwgKGNsb2NraWRfdCBjbG9ja19pZCwgY29uc3Qgc3RydWN0IHRp
-bWVzcGVjICp0cCkpDQo+IMKgCWlmIChjbG9ja19pZCA9PSBDTE9DS19SRUFMVElNRSAmJiAhY29i
-YWx0X3VzZV9sZWdhY3lfdHNjKCkpDQo+IMKgCQlyZXR1cm4gX19TVEQoY2xvY2tfc2V0dGltZShD
-TE9DS19SRUFMVElNRSwgdHApKTsNCj4gwqANCj4gKyNpZmRlZiBfX1VTRV9USU1FX0JJVFM2NA0K
-PiArCXJldCA9IC1YRU5PTUFJX1NZU0NBTEwyKChjb2JhbHRfZmVhdHVyZXNfYXZhaWxhYmxlKF9f
-eG5fZmVhdF90aW1lNjQpKSA/DQo+ICsJCQkgc2NfY29iYWx0X2Nsb2NrX3NldHRpbWU2NCA6IHNj
-X2NvYmFsdF9jbG9ja19zZXR0aW1lLA0KPiArCQkJIGNsb2NrX2lkLCB0cCk7DQoNCldlIGRvbid0
-IGhhdmUgYSBfX3huX2ZlYXRfdGltZTY0IGZlYXR1cmUgZmxhZy4gSWYgdGhlIHN5c2NhbGwgaXMg
-bm90DQphdmFpbGFibGUgd2UgZ2V0IEVOT1NZUyB3aGljaCB0ZWxscyB0aGUgY2FsbGVyIHRoYXQg
-dGhlIGZlYXR1cmUgaXMgbm90DQphdmFpbGFibGUuDQoNCkZhbGxpbmcgYmFjayB0byBzY19jb2Jh
-bHRfY2xvY2tfc2V0dGltZSBpcyBhIGJ1ZyBhbnl3YXlzLg0KDQo+ICsjZWxzZQ0KPiDCoAlyZXQg
-PSAtWEVOT01BSV9TWVNDQUxMMihzY19jb2JhbHRfY2xvY2tfc2V0dGltZSwgY2xvY2tfaWQsIHRw
-KTsNCj4gKyNlbmRpZg0KPiDCoAlpZiAocmV0KSB7DQo+IMKgCQllcnJubyA9IHJldDsNCj4gwqAJ
-CXJldHVybiAtMTsNCg0K
+
+Hi,
+
+I will not be able to attend the next meeting planned tomorrow. Here is
+the update from my side since the last time we met:
+
+- The Xenomai/arm64 port to Dovetail is complete, available from my
+  private tree. Tested on kvm/aarch64, imx8mm, rpi4 and Odroid C4 so
+  far.
+
+- All pending patches now merged into my 3.2 tree.
+
+- A regression with Xenomai/I-pipe on this tree was fixed a couple of
+  days ago, causing switchtest to freeze the machine. You may want to
+  rebase on it.
+
+Thanks,
+
+-- 
+Philippe.
 
