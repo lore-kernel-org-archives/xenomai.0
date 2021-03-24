@@ -1,11 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: l2reflect - network-based I/O latency benchmark
-Message-ID: <ab49288f-2a12-4549-a335-5329a22d1585@siemens.com>
-Date: Wed, 24 Mar 2021 12:11:27 +0100
-MIME-Version: 1.0
+Subject: Re: [PATCH v3 5/5] y2038: testsuite/smokey/y2038: testcase for
+ settime64 and gettime64
+References: <1616052978-22093-1-git-send-email-chensong@tj.kylinos.cn>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <6a859195-4560-1bed-5c66-9ad8c223eb00@siemens.com>
+Date: Wed, 24 Mar 2021 13:28:06 +0100
+In-Reply-To: <1616052978-22093-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,22 +17,183 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: "Moessbauer, Felix (CT RDA IOT SES-DE)" <felix.moessbauer@siemens.com>
+To: chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org, rpm@xenomai.org
 
-Hi all,
+On 18.03.21 08:36, chensong wrote:
+> new test case for clock_settime64 and clock_gettime64 and reorganize
+> run_2038.
+> 
+> If you want to trigger and verify y2038 problem, please be careful and
+> make sure it has no impact to your test device.
+> 
+> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+> ---
+>  testsuite/smokey/y2038/syscall-tests.c | 115 +++++++++++++++++++++++++++++++--
+>  1 file changed, 109 insertions(+), 6 deletions(-)
+> 
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> index 1d61bbd..89e7d47 100644
+> --- a/testsuite/smokey/y2038/syscall-tests.c
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -17,6 +17,38 @@
+>  
+>  smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
+>  
+> +
+> +#define RUN_TEST(name) test_ ## name
+> +typedef int (*testee_func)(void);
+> +struct testee_info {
+> +	char *name;
+> +	testee_func func;
+> +};
+> +
+> +static int test_sc_cobalt_sem_timedwait64(void);
+> +static int test_sc_cobalt_clock_gettime64(void);
+> +static int test_sc_cobalt_clock_settime64(void);
+> +
+> +#define TESTEE_TABLE_COUNT 32
+> +static struct testee_info testee_table[TESTEE_TABLE_COUNT] = {
+> +	{
+> +		.name = "sc_cobalt_sem_timedwait64",
+> +		.func = RUN_TEST(sc_cobalt_sem_timedwait64),
+> +	},
+> +	{
+> +		.name = "sc_cobalt_clock_gettime64",
+> +		.func = RUN_TEST(sc_cobalt_clock_gettime64),
+> +	},
+> +	{
+> +		.name = "sc_cobalt_clock_settime64",
+> +		.func = RUN_TEST(sc_cobalt_clock_settime64),
+> +	},
+> +	{
+> +		.name = NULL,
+> +		.func = NULL,
+> +	},
+> +};
+> +
+>  /*
+>   * libc independent data type representing a time64_t based struct timespec
+>   */
+> @@ -25,7 +57,8 @@ struct xn_timespec64 {
+>  	int64_t tv_nsec;
+>  };
+>  
+> -#define NSEC_PER_SEC 1000000000
+> +#define NSEC_PER_SEC		1000000000
+> +#define USEC_PER_SEC		1000000
+>  
+>  static void ts_normalise(struct xn_timespec64 *ts)
+>  {
+> @@ -114,10 +147,10 @@ static int test_sc_cobalt_sem_timedwait64(void)
+>  
+>  	/*
+>  	 * The semaphore is already exhausted, so calling again will validate
+> -	 * the provided timeout now. Providing an invalid adress has to deliver
+> +	 * the provided timeout now. Providing an invalid address has to deliver
+>  	 * EFAULT
+>  	 */
+> -	ret = syscall(code, &sem, (void*) 0xdeadbeefUL);
+> +	ret = syscall(code, &sem, (void *)0xdeadbeefUL);
+>  	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+>  		return errno;
+>  
+> @@ -163,13 +196,83 @@ static int test_sc_cobalt_sem_timedwait64(void)
+>  	return 0;
+>  }
+>  
+> +static int test_sc_cobalt_clock_gettime64(void)
+> +{
+> +	long ret;
+> +	int code = __xn_syscode(sc_cobalt_clock_gettime64);
+> +	struct xn_timespec64 ts64;
+> +
+> +	/* Make sure we don't crash because of NULL pointers */
+> +	ret = syscall(code, NULL, NULL);
+> +	if (ret == -1 && errno == ENOSYS) {
+> +		smokey_note("clock_gettime64: skipped. (no kernel support)");
+> +		return 0; // Not implemented, nothing to test, success
+> +	}
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
+> +		return errno;
+> +
+> +	/* Providing an invalid address has to deliver EFAULT */
+> +	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> +		return errno;
+> +
+> +	/* Provide a valid 64bit timespec*/
+> +	ret = syscall(code, CLOCK_REALTIME, &ts64);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> +		return errno;
+> +
+> +	return 0;
+> +}
+> +
+> +static int test_sc_cobalt_clock_settime64(void)
+> +{
+> +	long ret;
+> +	int code = __xn_syscode(sc_cobalt_clock_settime64);
+> +	struct xn_timespec64 ts64;
+> +	struct timespec now;
+> +
+> +	/*Get current time and set it back at the end of the test*/
+> +	clock_gettime(CLOCK_REALTIME, &now);
+> +
+> +	/* Make sure we don't crash because of NULL pointers */
+> +	ret = syscall(code, NULL, NULL);
+> +	if (ret == -1 && errno == ENOSYS) {
+> +		smokey_note("clock_settime64: skipped. (no kernel support)");
+> +		return 0; // Not implemented, nothing to test, success
+> +	}
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EINVAL))
+> +		goto out;
+> +
+> +	/* Providing an invalid address has to deliver EFAULT */
+> +	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> +		goto out;
+> +
+> +	/* Provide a valid 64bit timespec*/
+> +	ts64.tv_sec  = now.tv_sec;
+> +	ts64.tv_nsec = now.tv_nsec;
+> +	ret = syscall(code, CLOCK_REALTIME, &ts64);
+> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> +		goto out;
+> +
+> +out:
+> +	clock_settime(CLOCK_REALTIME, &now);
+> +	return errno;
+> +}
+> +
+> +
+>  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+>  {
+>  	int ret;
+> +	struct testee_info *p = testee_table;
+>  
+> -	ret = test_sc_cobalt_sem_timedwait64();
+> -	if (ret)
+> -		return ret;
+> +	while (p->name != NULL) {
+> +		ret = p->func();
+> +		if (ret)
+> +			smokey_warning("%s failed, errno is %d\n", p->name, ret);
+> +
+> +		p++;
+> +	}
 
-as we discussed today in the community call how to use a network link to
-benchmark Xenomai I/O, here is the link to our work for a different
-activity that we shared with the dpdk community:
+I thought about that again and I still see no value for that. We have
+all the assertions in place which will tell us where exactly we failed.
+So why adding another error reporting here?
 
-http://mails.dpdk.org/archives/dev/2020-September/181035.html
+Just call the tests directly (without any need for additional
+infrastructure) and bail out on the first error.
 
-Being DPDK, this comes without interrupts, but that might be extensible.
-There are minor updates available internally, so let us know if interest
-is concrete, then we can refresh this.
+>  
+>  	return 0;
+>  }
+> 
 
-Jan
 
 -- 
 Siemens AG, T RDA IOT
