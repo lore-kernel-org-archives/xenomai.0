@@ -1,14 +1,16 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [ANNOUNCE] Xenomai Hacker Space @gitlab.com
+Date: Wed, 24 Mar 2021 09:22:27 +0000
+Message-ID: <c1a280ffbee247b6cb9b90a88de07fc3945a5ab7.camel@siemens.com>
 References: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
  <e6e17dfe757e72b10196be5e59a297084dae4f2b.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <37180ed8-ab12-2bc0-dbc3-7dc0b629225c@siemens.com>
-Date: Wed, 24 Mar 2021 09:20:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <e6e17dfe757e72b10196be5e59a297084dae4f2b.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+ <37180ed8-ab12-2bc0-dbc3-7dc0b629225c@siemens.com>
+In-Reply-To: <37180ed8-ab12-2bc0-dbc3-7dc0b629225c@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FDE462EB9BDF644F938D954327FCB197@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 24.03.21 08:34, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> Hi Jan,
-> 
-> I would migrate the Y2038 wiki pages to the hackerspace if you like
-> that. In order to do that and to allow collaboration with Song we would
-> need developer access.
-> 
-> The gitlab accounts:
->  - fbezdeka (myself)
->  - chensong-kylin (Song)
-> 
-
-Will do that - but could you first check if that is already possible? I
-changed to wiki access level to "everyone with access", and I'd like to
-understand what that effectively means.
-
-Jan
-
-> Thanks,
-> Florian
-> 
-> On Wed, 2021-03-17 at 12:26 +0100, Jan Kiszka via Xenomai wrote:
->> Hi all,
->>
->> in order to make central project resources more accessible to
->> contributors, I've set up a mirror of the main Xenomai repository on
->> gitlab.com:
->>
->> https://gitlab.com/Xenomai/xenomai-hacker-space
->>
->> This hacker space shall not replace the official project page but
->> augment it. Users with gitlab.com accounts can file issue or comment on
->> them, developers can request access in order to edit the wiki, and - in
->> the future - also benefit from CI and test lab resources Siemens is
->> donating to the project.
->>
->> I've migrated two things from the main repo to gitlab.com:
->>
->>  - Xenomai and xenomai-images issue trackers (to enable broader access
->>    and use)
->>
->>  - CI builds of main Xenomai, but not of xenomai-images (and, thus, CT
->>    via LAVA)
->>
->> The latter migration allows us to use the free shared runners of
->> gitlab.com, reducing load and costs of our CI farm.
->>
->> If you are interested in using resources that require developer access
->> (currently only the wiki), let us know on the list (to make this
->> transparent), specify your account name and then request access via
->> gitlab.com so that I can grant it.
->>
->> Happy hacking,
->> Jan
->>
-> 
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTAzLTI0IGF0IDA5OjIwICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyNC4wMy4yMSAwODozNCwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gSGkgSmFuLA0KPiA+IA0KPiA+IEkgd291bGQgbWlncmF0ZSB0aGUgWTIwMzggd2lr
+aSBwYWdlcyB0byB0aGUgaGFja2Vyc3BhY2UgaWYgeW91IGxpa2UNCj4gPiB0aGF0LiBJbiBvcmRl
+ciB0byBkbyB0aGF0IGFuZCB0byBhbGxvdyBjb2xsYWJvcmF0aW9uIHdpdGggU29uZyB3ZSB3b3Vs
+ZA0KPiA+IG5lZWQgZGV2ZWxvcGVyIGFjY2Vzcy4NCj4gPiANCj4gPiBUaGUgZ2l0bGFiIGFjY291
+bnRzOg0KPiA+IMKgLSBmYmV6ZGVrYSAobXlzZWxmKQ0KPiA+IMKgLSBjaGVuc29uZy1reWxpbiAo
+U29uZykNCj4gPiANCj4gDQo+IFdpbGwgZG8gdGhhdCAtIGJ1dCBjb3VsZCB5b3UgZmlyc3QgY2hl
+Y2sgaWYgdGhhdCBpcyBhbHJlYWR5IHBvc3NpYmxlPyBJDQo+IGNoYW5nZWQgdG8gd2lraSBhY2Nl
+c3MgbGV2ZWwgdG8gImV2ZXJ5b25lIHdpdGggYWNjZXNzIiwgYW5kIEknZCBsaWtlIHRvDQo+IHVu
+ZGVyc3RhbmQgd2hhdCB0aGF0IGVmZmVjdGl2ZWx5IG1lYW5zLg0KDQpJIHdhcyBhYmxlIHRvIGNs
+b25lIHRoZSBnaXQgcmVwbyBiZWhpbmQgdGhlIHdpa2kgYnV0IG5vdCBhbGxvd2VkIHRvDQpwdXNo
+IHRvIGl0LiBBbmQgb2YgY291cnNlIHJlYWRpbmcgaXQgKHdlYnBhZ2UpIGlzIGFsc28gcG9zc2li
+bGUuLi4NCg0KPiANCj4gSmFuDQo+IA0KPiA+IFRoYW5rcywNCj4gPiBGbG9yaWFuDQo+ID4gDQo+
+ID4gT24gV2VkLCAyMDIxLTAzLTE3IGF0IDEyOjI2ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5v
+bWFpIHdyb3RlOg0KPiA+ID4gSGkgYWxsLA0KPiA+ID4gDQo+ID4gPiBpbiBvcmRlciB0byBtYWtl
+IGNlbnRyYWwgcHJvamVjdCByZXNvdXJjZXMgbW9yZSBhY2Nlc3NpYmxlIHRvDQo+ID4gPiBjb250
+cmlidXRvcnMsIEkndmUgc2V0IHVwIGEgbWlycm9yIG9mIHRoZSBtYWluIFhlbm9tYWkgcmVwb3Np
+dG9yeSBvbg0KPiA+ID4gZ2l0bGFiLmNvbToNCj4gPiA+IA0KPiA+ID4gaHR0cHM6Ly9ldXIwMS5z
+YWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGZ2l0bGFi
+LmNvbSUyRlhlbm9tYWklMkZ4ZW5vbWFpLWhhY2tlci1zcGFjZSZhbXA7ZGF0YT0wNCU3QzAxJTdD
+Zmxvcmlhbi5iZXpkZWthJTQwc2llbWVucy5jb20lN0M1NTA1N2FmMTlkMDc0NmUwZmJlNTA4ZDhl
+ZTlkYmQxYSU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3QzAlN0M2Mzc1
+MjE3MDg1MzI1MjIzNDklN0NVbmtub3duJTdDVFdGcGJHWnNiM2Q4ZXlKV0lqb2lNQzR3TGpBd01E
+QWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMTAwMCZh
+bXA7c2RhdGE9UzJncm02bEJPOE51T1ZoSjF2ZFM5aXNIbHhXcSUyRlpCN3JuMERDRHdPREgwJTNE
+JmFtcDtyZXNlcnZlZD0wDQo+ID4gPiANCj4gPiA+IFRoaXMgaGFja2VyIHNwYWNlIHNoYWxsIG5v
+dCByZXBsYWNlIHRoZSBvZmZpY2lhbCBwcm9qZWN0IHBhZ2UgYnV0DQo+ID4gPiBhdWdtZW50IGl0
+LiBVc2VycyB3aXRoIGdpdGxhYi5jb20gYWNjb3VudHMgY2FuIGZpbGUgaXNzdWUgb3IgY29tbWVu
+dCBvbg0KPiA+ID4gdGhlbSwgZGV2ZWxvcGVycyBjYW4gcmVxdWVzdCBhY2Nlc3MgaW4gb3JkZXIg
+dG8gZWRpdCB0aGUgd2lraSwgYW5kIC0gaW4NCj4gPiA+IHRoZSBmdXR1cmUgLSBhbHNvIGJlbmVm
+aXQgZnJvbSBDSSBhbmQgdGVzdCBsYWIgcmVzb3VyY2VzIFNpZW1lbnMgaXMNCj4gPiA+IGRvbmF0
+aW5nIHRvIHRoZSBwcm9qZWN0Lg0KPiA+ID4gDQo+ID4gPiBJJ3ZlIG1pZ3JhdGVkIHR3byB0aGlu
+Z3MgZnJvbSB0aGUgbWFpbiByZXBvIHRvIGdpdGxhYi5jb206DQo+ID4gPiANCj4gPiA+IMKgLSBY
+ZW5vbWFpIGFuZCB4ZW5vbWFpLWltYWdlcyBpc3N1ZSB0cmFja2VycyAodG8gZW5hYmxlIGJyb2Fk
+ZXIgYWNjZXNzDQo+ID4gPiDCoMKgwqBhbmQgdXNlKQ0KPiA+ID4gDQo+ID4gPiDCoC0gQ0kgYnVp
+bGRzIG9mIG1haW4gWGVub21haSwgYnV0IG5vdCBvZiB4ZW5vbWFpLWltYWdlcyAoYW5kLCB0aHVz
+LCBDVA0KPiA+ID4gwqDCoMKgdmlhIExBVkEpDQo+ID4gPiANCj4gPiA+IFRoZSBsYXR0ZXIgbWln
+cmF0aW9uIGFsbG93cyB1cyB0byB1c2UgdGhlIGZyZWUgc2hhcmVkIHJ1bm5lcnMgb2YNCj4gPiA+
+IGdpdGxhYi5jb20sIHJlZHVjaW5nIGxvYWQgYW5kIGNvc3RzIG9mIG91ciBDSSBmYXJtLg0KPiA+
+ID4gDQo+ID4gPiBJZiB5b3UgYXJlIGludGVyZXN0ZWQgaW4gdXNpbmcgcmVzb3VyY2VzIHRoYXQg
+cmVxdWlyZSBkZXZlbG9wZXIgYWNjZXNzDQo+ID4gPiAoY3VycmVudGx5IG9ubHkgdGhlIHdpa2kp
+LCBsZXQgdXMga25vdyBvbiB0aGUgbGlzdCAodG8gbWFrZSB0aGlzDQo+ID4gPiB0cmFuc3BhcmVu
+dCksIHNwZWNpZnkgeW91ciBhY2NvdW50IG5hbWUgYW5kIHRoZW4gcmVxdWVzdCBhY2Nlc3Mgdmlh
+DQo+ID4gPiBnaXRsYWIuY29tIHNvIHRoYXQgSSBjYW4gZ3JhbnQgaXQuDQo+ID4gPiANCj4gPiA+
+IEhhcHB5IGhhY2tpbmcsDQo+ID4gPiBKYW4NCj4gPiA+IA0KPiA+IA0KPiANCg0K
 
