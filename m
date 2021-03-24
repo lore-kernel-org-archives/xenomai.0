@@ -1,14 +1,16 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v3 0/5] y2038:clock_settime/gettime for timespec64
-Date: Wed, 24 Mar 2021 09:33:01 +0000
-Message-ID: <c153b859f0d229bc13cdc794ab09eb2fd5588404.camel@siemens.com>
-References: <1616052862-21869-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1616052862-21869-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E4EAD888C187F846ACCCCC40DDC0E0D6@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [ANNOUNCE] Xenomai Hacker Space @gitlab.com
+References: <ff21d617-4a4e-4fe6-ed6e-6c8072aa0dc2@siemens.com>
+ <e6e17dfe757e72b10196be5e59a297084dae4f2b.camel@siemens.com>
+ <37180ed8-ab12-2bc0-dbc3-7dc0b629225c@siemens.com>
+ <c1a280ffbee247b6cb9b90a88de07fc3945a5ab7.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d40db50f-4091-99e5-236a-bafc2d26cd19@siemens.com>
+Date: Wed, 24 Mar 2021 10:52:09 +0100
 MIME-Version: 1.0
+In-Reply-To: <c1a280ffbee247b6cb9b90a88de07fc3945a5ab7.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,46 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Wang, Rick Y" <rick.y.wang@intel.com>
 
-SGkgU29uZyENCg0KVGhhdCBsb29rcyBnb29kIHNvIGZhci4gSSdtIG9uICJ2YWNhdGlvbiIgZm9y
-IHRoZSBuZXh0IHR3byB3ZWVrcywgc28gbm8NCnRpbWluZyBndWFyYW50ZWVzLCBidXQgSSB3aWxs
-IGdpdmUgaXQgYSB0cnkgYW5kIGludGVncmF0ZSBpdCBpbnRvIG15DQpwcml2YXRlIGdpdGxhYiB0
-cmVlIG9uY2UgSSd2ZSBzeW5jaHJvbml6ZWQgd2l0aCB0aGUgbmV3IFhlbm9tYWkNCmhhY2tlcnNw
-YWNlLiANCg0KSWYgdGhlcmUgaXMgc29tZSBmcmVlIHRpbWUgYXZhaWxhYmxlIEkgd291bGQgc3Rh
-cnQgaW1wbGVtZW50aW5nIHRoZQ0KbWlzc2luZyBBUEkgZnJvbSB0aGUgYmFjaywgc28gc3RhcnRp
-bmcgd2l0aCB0aGUgaGlnaGVzdCBzeXNjYWxsLiBJZiB5b3UNCmxpa2UsIGp1c3QgY29udGludWUg
-ImFzIHVzZWQgdG8iLi4uDQoNCkJlc3QgcmVnYXJkcywNCkZsb3JpYW4NCg0KT24gVGh1LCAyMDIx
-LTAzLTE4IGF0IDE1OjM0ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gVGhpcyBwYXRjaCBzZXJp
-YWwgaXMgYWltZWQgdG8gaW50cm9kdWNlIGEgbmV3IHN5c2NhbGwgY2xvY2tfc2V0dGltZTY0DQo+
-IGFuZCBjbG9ja19nZXR0aW1lNjQgd2hpY2ggYXJlIHNwZWNpZmljIGZvciA2NC1iaXQgdGltZV90
-Lg0KPiANCj4gVGhlcmUgaXMgbm8gaW1wYWN0IHRvIGN1cnJlbnQgaW1wbGVtZW50YXRpb24gb2Yg
-Y2xvY2tfc2V0dGltZSwgbm90aGluZw0KPiBicm9rZW4uDQo+IA0KPiAtLS0NCj4gdjI6DQo+IDEs
-IG1lcmdlIGNsb2NrX3NldHRpbWU2NCBhbmQgY29tcGF0IGNsb2NrX3NldHRpbWU2NA0KPiAyLCBy
-ZW1vdmUgY2hlY2tpbmcgX194bl9mZWF0X3RpbWU2NA0KPiAzLCBhZGQgY2xvY2tfZ2V0dGltZTY0
-DQo+IDQsIGFkZCBzbW9rZXkgdGVzdCBmb3IgY2xvY2tfc2V0dGltZTY0IGFuZCBjbG9ja19nZXR0
-aW1lNjQNCj4gDQo+IHYzOg0KPiAxLCBmbGlwIHBhdGNoIG9yZGVyOiBjbG9ja19zZXR0aW1lNjQg
-YW5kIGNsb2NrX2dldHRpbWU1NA0KPiAyLCBmbGlwIHN5c2NhbGwgbnVtYmVyIG9yZGVyOg0KPiDC
-oMKgwqBzY19jb2JhbHRfY2xvY2tfZ2V0dGltZTY0IGFuZCBzY19jb2JhbHRfY2xvY2tfc2V0dGlt
-ZTY0DQo+IDMsIGFkZCBkb2N1bWVudGF0aW9uIGZvciBjb2JhbHRfcHV0X3RpbWVzcGVjNjQNCj4g
-NCwgbmV3IGltcGxlbWVudGF0aW9uIG9mIHNtb2tleSB0ZXN0IGZvcg0KPiDCoMKgwqBjbG9ja19n
-ZXR0aW1lNjQgYW5kIGNsb2NrX3NldHRpbWU2NA0KPiDCoMKgwqBpdCBvbmx5IHZhbGlkYXRlcyBz
-eXNjYWxscyBhbmQgZG9lc24ndCB0cmlnZ2VyIHkyMDM4IHByb2JsZW0NCj4gwqDCoMKgdG8gYXZv
-aWQgamVvcGFyZGl6aW5nIGVudmlyb25tZW50Lg0KPiANCj4gY2hlbnNvbmcgKDUpOg0KPiDCoMKg
-eTIwMzg6IGNvYmFsdC9wb3NpeC9jbG9jazogQWRkaW5nIGNsb2NrX2dldHRpbWU2NA0KPiDCoMKg
-eTIwMzg6IGNvYmFsdC9wb3NpeC9jbG9jazogQWRkaW5nIGNsb2NrX3NldHRpbWU2NA0KPiDCoMKg
-eTIwMzg6IGxpYi9jb2JhbHQvY2xvY2s6IGRpc3BhdGNoIGNsb2NrX3NldHRpbWUNCj4gwqDCoHky
-MDM4OiBsaWIvY29iYWx0L2Nsb2NrOiBkaXNwYXRjaCBjbG9ja19nZXR0aW1lDQo+IMKgwqB5MjAz
-ODogdGVzdHN1aXRlL3Ntb2tleS95MjAzODogdGVzdGNhc2UgZm9yIHNldHRpbWU2NCBhbmQgZ2V0
-dGltZTY0DQo+IA0KPiDCoGluY2x1ZGUvY29iYWx0L2tlcm5lbC90aW1lLmggICAgICAgICAgIHwg
-IDExICsrKysNCj4gwqBpbmNsdWRlL2NvYmFsdC91YXBpL3N5c2NhbGwuaCAgICAgICAgICB8ICAg
-MiArDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jICAgICAgICAgICAgfCAgMjggKysr
-KysrKy0NCj4gwqBrZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmggICAgICAgICAgICB8ICAgNyAr
-Kw0KPiDCoGtlcm5lbC9jb2JhbHQvcG9zaXgvc3lzY2FsbDMyLmMgICAgICAgIHwgIDI3ICsrKysr
-KysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCAgICAgICAgfCAgIDggKysr
-DQo+IMKga2VybmVsL2NvYmFsdC90aW1lLmMgICAgICAgICAgICAgICAgICAgfCAgMTEgKysrKw0K
-PiDCoGxpYi9jb2JhbHQvY2xvY2suYyAgICAgICAgICAgICAgICAgICAgIHwgIDEyICsrKysNCj4g
-wqB0ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMuYyB8IDExNSArKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrLS0NCj4gwqA5IGZpbGVzIGNoYW5nZWQsIDIxNCBpbnNlcnRp
-b25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiANCg0K
+On 24.03.21 10:22, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Wed, 2021-03-24 at 09:20 +0100, Jan Kiszka wrote:
+>> On 24.03.21 08:34, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+>>> Hi Jan,
+>>>
+>>> I would migrate the Y2038 wiki pages to the hackerspace if you like
+>>> that. In order to do that and to allow collaboration with Song we would
+>>> need developer access.
+>>>
+>>> The gitlab accounts:
+>>>  - fbezdeka (myself)
+>>>  - chensong-kylin (Song)
+>>>
+>>
+>> Will do that - but could you first check if that is already possible? I
+>> changed to wiki access level to "everyone with access", and I'd like to
+>> understand what that effectively means.
+> 
+> I was able to clone the git repo behind the wiki but not allowed to
+> push to it. And of course reading it (webpage) is also possible...
+> 
+
+Ah, means you (now) have read access, but it still takes project
+membership to edit things. Perfect.
+
+Added you two, and also Rick who only requested via the web site (for
+the future, please drop a note here as well).
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
