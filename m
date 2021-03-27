@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 5/7] drivers/net: wrap csum_partial_copy_nocheck()
-Date: Sat, 27 Mar 2021 11:19:10 +0100
-Message-Id: <20210327101912.2291474-6-rpm@xenomai.org>
+Subject: [PATCH v2 7/7] drivers/net: cfg: fix config file load up
+Date: Sat, 27 Mar 2021 11:19:12 +0100
+Message-Id: <20210327101912.2291474-8-rpm@xenomai.org>
 In-Reply-To: <20210327101912.2291474-1-rpm@xenomai.org>
 References: <20210327101912.2291474-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,96 +18,148 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Since v5.9-rc1, csum_partial_copy_nocheck() forces a zero seed as its
-last argument to csum_partial(). According to #cc44c17baf7f3, passing
-a non-zero value would not even yield the proper result on some
-architectures.
+set_fs() is on its way out, so we cannot open code a file read
+operation by calling the VFS handler directly anymore, faking a user
+address space.
 
-Nevertheless, the current ICMP code does expect a non-zero csum seed
-to be used in the next computation, so let's wrap net_csum_copy() to
-csum_partial_copy_nocheck() for pre-5.9 kernels, and open code it for
-later kernels so that we still feed csum_partial() with the user-given
-csum. We still expect the x86, ARM and arm64 implementations of
-csum_partial() to do the right thing.
+We do have kernel interfaces for loading files though, particularly
+kernel_read_file(). So let's use that one for loading the
+configuration file contents. Unfortunately, the signature of this
+service changed during the 5.9-rc cycle, so we have to resort to an
+ugly wrapper to cope with all supported kernels once again. Sigh.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../include/asm-generic/xenomai/wrappers.h     | 11 +++++++++++
- kernel/drivers/net/stack/ipv4/icmp.c           | 18 +++++++++---------
- kernel/drivers/net/stack/rtskb.c               |  3 +--
- 3 files changed, 21 insertions(+), 11 deletions(-)
+ .../include/asm-generic/xenomai/wrappers.h    | 15 ++++
+ kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c  | 74 +++++++++----------
+ 2 files changed, 52 insertions(+), 37 deletions(-)
 
 diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index cc0cb0896..cfd28fc47 100644
+index cfd28fc47..f15fe4389 100644
 --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
 +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -209,4 +209,15 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
+@@ -220,4 +220,19 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ 	})
  #endif
  
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,9,0)
-+#define net_csum_copy(__src, __dst, __len, __csum)	\
-+	csum_partial_copy_nocheck(__src, __dst, __len, __csum)
-+#else
-+#define net_csum_copy(__src, __dst, __len, __csum)			\
++#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
 +	({								\
-+		memcpy(__dst, __src, __len);				\
-+		csum_partial(__dst, __len, (__force __wsum)__csum);	\
++		loff_t ___file_size;					\
++		int __ret;						\
++		__ret = kernel_read_file(__file, __buf, &___file_size,	\
++				__buf_size, __id);			\
++		(*__file_size) = ___file_size;				\
++		__ret;							\
 +	})
++#else
++#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
++	kernel_read_file(__file, 0, __buf, __buf_size, __file_size, __id)
 +#endif
 +
  #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
-diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
-index b723040aa..0671cbc93 100644
---- a/kernel/drivers/net/stack/ipv4/icmp.c
-+++ b/kernel/drivers/net/stack/ipv4/icmp.c
-@@ -142,9 +142,9 @@ static int rt_icmp_glue_reply_bits(const void *p, unsigned char *to,
- 	if (offset != 0)
- 		return -EMSGSIZE;
+diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+index 769b4e143..e460571c2 100644
+--- a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
++++ b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+@@ -22,6 +22,7 @@
+  *
+  */
  
--	csum = csum_partial_copy_nocheck((void *)&icmp_param->head, to,
--					 icmp_param->head_len,
--					 icmp_param->csum);
-+	csum = net_csum_copy((void *)&icmp_param->head, to,
-+			     icmp_param->head_len,
-+			     icmp_param->csum);
++#include <linux/fs.h>
+ #include <linux/file.h>
+ #include <linux/vmalloc.h>
  
- 	csum = rtskb_copy_and_csum_bits(icmp_param->data.skb,
- 					icmp_param->offset,
-@@ -259,13 +259,13 @@ static int rt_icmp_glue_request_bits(const void *p, unsigned char *to,
- 			    __FUNCTION__);
- 		return -1;);
+@@ -196,6 +197,40 @@ void cleanup_cmd_detach(void *priv_data)
+ 		kfree_rtskb(cmd->args.detach.stage2_chain);
+ }
  
--	csum = csum_partial_copy_nocheck((void *)&icmp_param->head, to,
--					 icmp_param->head_len,
--					 icmp_param->csum);
-+	csum = net_csum_copy((void *)&icmp_param->head, to,
-+			     icmp_param->head_len,
-+			     icmp_param->csum);
++static int load_cfg_file(struct rtcfg_file *cfgfile, struct rtcfg_cmd *cmd)
++{
++	size_t file_size = 0;
++	struct file *filp;
++	loff_t i_size;
++	int ret;
++
++	filp = filp_open(cfgfile->name, O_RDONLY, 0);
++	if (IS_ERR(filp))
++		return PTR_ERR(filp);
++
++	i_size = i_size_read(file_inode(filp));
++	if (i_size <= 0) {
++		/* allocate buffer even for empty files */
++		cfgfile->buffer = vmalloc(1);
++	} else {
++		cfgfile->buffer = NULL;
++		/* Assume 1Mb should be enough for a config file... */
++		ret = read_file_from_kernel(filp, &cfgfile->buffer,
++				1UL << 30, &file_size, READING_UNKNOWN);
++		if (ret < 0) {
++			fput(filp);
++			return ret;
++		}
++	}
++
++	fput(filp);
++	cfgfile->size = file_size;
++
++	/* dispatch again, this time with new file attached */
++	return rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
++				sizeof(*cmd), NULL, cleanup_cmd_add);
++}
++
+ int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
+ {
+ 	struct rtcfg_connection *conn_buf;
+@@ -264,46 +299,11 @@ int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
  
--	csum = csum_partial_copy_nocheck(icmp_param->data.buf,
--					 to + icmp_param->head_len,
--					 fraglen - icmp_param->head_len, csum);
-+	csum = net_csum_copy(icmp_param->data.buf,
-+			     to + icmp_param->head_len,
-+			     fraglen - icmp_param->head_len, csum);
+ 	/* load file if missing */
+ 	if (ret > 0) {
+-		struct file *filp;
+-		mm_segment_t oldfs;
+-
+-		filp = filp_open(file->name, O_RDONLY, 0);
+-		if (IS_ERR(filp)) {
++		ret = load_cfg_file(file, cmd);
++		if (ret) {
+ 			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			ret = PTR_ERR(filp);
+ 			goto err;
+ 		}
+-
+-		file->size = filp->f_path.dentry->d_inode->i_size;
+-
+-		/* allocate buffer even for empty files */
+-		file->buffer = vmalloc((file->size) ? file->size : 1);
+-		if (file->buffer == NULL) {
+-			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			fput(filp);
+-			ret = -ENOMEM;
+-			goto err;
+-		}
+-
+-		oldfs = get_fs();
+-		set_fs(KERNEL_DS);
+-		filp->f_pos = 0;
+-
+-		ret = filp->f_op->read(filp, file->buffer, file->size,
+-				       &filp->f_pos);
+-
+-		set_fs(oldfs);
+-		fput(filp);
+-
+-		if (ret != (int)file->size) {
+-			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			ret = -EIO;
+-			goto err;
+-		}
+-
+-		/* dispatch again, this time with new file attached */
+-		ret = rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
+-					 sizeof(*cmd), NULL, cleanup_cmd_add);
+ 	}
  
- 	icmph = (struct icmphdr *)to;
- 
-diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/rtskb.c
-index 84d021d24..0d0c66e58 100644
---- a/kernel/drivers/net/stack/rtskb.c
-+++ b/kernel/drivers/net/stack/rtskb.c
-@@ -69,8 +69,7 @@ unsigned int rtskb_copy_and_csum_bits(const struct rtskb *skb, int offset,
- 	if ((copy = skb->len - offset) > 0) {
- 		if (copy > len)
- 			copy = len;
--		csum = csum_partial_copy_nocheck(skb->data + offset, to, copy,
--						 csum);
-+		csum = net_csum_copy(skb->data + offset, to, copy, csum);
- 		if ((len -= copy) == 0)
- 			return csum;
- 		offset += copy;
+ 	return ret;
 -- 
 2.29.2
 
