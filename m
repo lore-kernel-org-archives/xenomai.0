@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 4/7] cobalt/debug: prefer dump_stack() to show_stack()
-Date: Sat, 27 Mar 2021 11:19:09 +0100
-Message-Id: <20210327101912.2291474-5-rpm@xenomai.org>
+Subject: [PATCH v2 6/7] drivers/net: icmp: remove variable-length array
+Date: Sat, 27 Mar 2021 11:19:11 +0100
+Message-Id: <20210327101912.2291474-7-rpm@xenomai.org>
 In-Reply-To: <20210327101912.2291474-1-rpm@xenomai.org>
 References: <20210327101912.2291474-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,27 +18,46 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-dump_stack() also prints out the system information, which is always
-good to have.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/drivers/net/stack/ipv4/icmp.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
-index f97144aeb..a6e2cc42d 100644
---- a/kernel/cobalt/debug.c
-+++ b/kernel/cobalt/debug.c
-@@ -592,7 +592,7 @@ int xnlock_dbg_release(struct xnlock *lock,
- 				"          last owner = %s:%u (%s(), CPU #%d)\n",
- 		       lock, cpu, lock->file, lock->line, lock->function,
- 		       lock->cpu);
--		show_stack(NULL,NULL);
-+		dump_stack();
- 		return 1;
- 	}
+diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
+index 0671cbc93..c3563595e 100644
+--- a/kernel/drivers/net/stack/ipv4/icmp.c
++++ b/kernel/drivers/net/stack/ipv4/icmp.c
+@@ -313,8 +313,17 @@ static int rt_icmp_send_request(u32 daddr, struct icmp_bxm *icmp_param)
+ int rt_icmp_send_echo(u32 daddr, u16 id, u16 sequence, size_t msg_size)
+ {
+ 	struct icmp_bxm icmp_param;
+-	unsigned char pattern_buf[msg_size];
++	unsigned char *pattern_buf;
+ 	off_t pos;
++	int ret;
++
++	/*
++	 * This is ping, exec time is not that critical, so
++	 * rtdm_malloc() is ok for the purpose of echoing.
++	 */
++	pattern_buf = rtdm_malloc(msg_size);
++	if (pattern_buf == NULL)
++		return -ENOMEM;
  
+ 	/* first purge any potentially pending ICMP fragments */
+ 	rt_ip_frag_invalidate_socket(icmp_socket);
+@@ -343,7 +352,10 @@ int rt_icmp_send_echo(u32 daddr, u16 id, u16 sequence, size_t msg_size)
+ 	}
+ 	icmp_param.data.buf = pattern_buf;
+ 
+-	return rt_icmp_send_request(daddr, &icmp_param);
++	ret = rt_icmp_send_request(daddr, &icmp_param);
++	rtdm_free(pattern_buf);
++
++	return ret;
+ }
+ 
+ /***
 -- 
 2.29.2
 
