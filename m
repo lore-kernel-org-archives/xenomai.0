@@ -1,10 +1,9 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 8/8] cobalt/sem: y2038: Fixing the sem_timedwait syscall for
- 32 bit systems
-Date: Sat, 27 Mar 2021 10:54:17 +0100
-Message-Id: <20210327095417.2289913-9-rpm@xenomai.org>
-In-Reply-To: <20210327095417.2289913-1-rpm@xenomai.org>
-References: <20210327095417.2289913-1-rpm@xenomai.org>
+Subject: [PATCH 1/6] cobalt/debug: switch to mmap_lock interface
+Date: Sat, 27 Mar 2021 11:14:23 +0100
+Message-Id: <20210327101428.2291095-2-rpm@xenomai.org>
+In-Reply-To: <20210327101428.2291095-1-rpm@xenomai.org>
+References: <20210327101428.2291095-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,168 +16,54 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
 
-On systems using 32 bit for time_t the sem_timedwait syscall was broken
-because the function used for copying the timeout value from userspace
-to kernel (=sem_fetch_timeout()) was always copying
-sizeof(struct timespec64).
-
-A 32 bit application (or more specific an application with 4 byte
-time_t) would only provide sizeof(struct old_timespec32).
-
-Notable changes:
-  - The copy operation from userspace to kernel is now already done in
-    the syscall handler. So it is always done and might fail. Reporting
-    a failure is delayed until the timeout is being validated.
-
-  - Validation: Switched to timespec64_valid() instead of our own
-    check.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/posix/sem.c       | 40 +++++++++++++++------------------
- kernel/cobalt/posix/sem.h       |  6 ++---
- kernel/cobalt/posix/syscall32.c | 10 +++++++--
- kernel/cobalt/posix/syscall32.h |  2 +-
- 4 files changed, 29 insertions(+), 29 deletions(-)
+ kernel/cobalt/debug.c                                | 4 ++--
+ kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 7 +++++++
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index 467a9b7dd..827a4751a 100644
---- a/kernel/cobalt/posix/sem.c
-+++ b/kernel/cobalt/posix/sem.c
-@@ -267,20 +267,11 @@ out:
- 	return ret;
- }
+diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
+index 1e9edda99..f97144aeb 100644
+--- a/kernel/cobalt/debug.c
++++ b/kernel/cobalt/debug.c
+@@ -239,7 +239,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
  
--static inline int sem_fetch_timeout(struct timespec64 *ts,
--				    const void __user *u_ts)
--{
--	return u_ts == NULL ? -EFAULT :
--		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
--}
--
- int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
--			   const void __user *u_ts,
--			   int (*fetch_timeout)(struct timespec64 *ts,
--						const void __user *u_ts))
-+			   const struct timespec64 *ts)
- {
--	struct timespec64 ts = { .tv_sec = 0, .tv_nsec = 0 };
--	int pull_ts = 1, ret, info;
-+	int ret, info;
-+	bool validate_ts = true;
- 	struct cobalt_sem *sem;
- 	xnhandle_t handle;
- 	xntmode_t tmode;
-@@ -304,24 +295,23 @@ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
- 		 * it's actually more complex, to keep some
- 		 * applications ported to Linux happy.
- 		 */
--		if (pull_ts) {
-+		if (validate_ts) {
- 			atomic_inc(&sem->state->value);
--			xnlock_put_irqrestore(&nklock, s);
--			ret = fetch_timeout(&ts, u_ts);
--			xnlock_get_irqsave(&nklock, s);
--			if (ret)
-+			if (!ts) {
-+				ret = -EFAULT;
- 				break;
--			if (ts.tv_nsec >= ONE_BILLION) {
-+			}
-+			if (!timespec64_valid(ts)) {
- 				ret = -EINVAL;
- 				break;
- 			}
--			pull_ts = 0;
-+			validate_ts = false;
- 			continue;
- 		}
+ 	memset(&spot, 0, sizeof(spot));
+ 	mm = get_task_mm(current);
+-	down_read(&mm->mmap_sem);
++	mmap_read_lock(mm);
  
- 		ret = 0;
- 		tmode = sem->flags & SEM_RAWCLOCK ? XN_ABSOLUTE : XN_REALTIME;
--		info = xnsynch_sleep_on(&sem->synchbase, ts2ns(&ts) + 1, tmode);
-+		info = xnsynch_sleep_on(&sem->synchbase, ts2ns(ts) + 1, tmode);
- 		if (info & XNRMID)
- 			ret = -EINVAL;
- 		else if (info & (XNBREAK|XNTIMEO)) {
-@@ -434,9 +424,15 @@ COBALT_SYSCALL(sem_wait, primary,
+ 	for (n = 0, depth = 0; n < nr; n++) {
+ 		pc = backtrace[n];
+@@ -278,7 +278,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
+ 		depth++;
+ 	}
  
- COBALT_SYSCALL(sem_timedwait, primary,
- 	       (struct cobalt_sem_shadow __user *u_sem,
--		struct __user_old_timespec __user *u_ts))
-+		const struct __user_old_timespec __user *u_ts))
- {
--	return __cobalt_sem_timedwait(u_sem, u_ts, sem_fetch_timeout);
-+	int ret = 1;
-+	struct timespec64 ts64;
+-	up_read(&mm->mmap_sem);
++	mmap_read_unlock(mm);
+ 	mmput(mm);
+ 	free_page((unsigned long)tmp);
+ 
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index ac4e95aa0..cd22a8db5 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -176,6 +176,13 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define old_timeval32     compat_timeval
+ #endif
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
++#define mmap_read_lock(__mm)	down_read(&mm->mmap_sem)
++#define mmap_read_unlock(__mm)	up_read(&mm->mmap_sem)
++#define mmap_write_lock(__mm)	down_write(&mm->mmap_sem)
++#define mmap_write_unlock(__mm)	up_write(&mm->mmap_sem)
++#endif
 +
-+	if (u_ts)
-+		ret = cobalt_get_u_timespec(&ts64, u_ts);
-+
-+	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
- }
- 
- COBALT_SYSCALL(sem_trywait, primary,
-diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
-index d17299495..658e11f7a 100644
---- a/kernel/cobalt/posix/sem.h
-+++ b/kernel/cobalt/posix/sem.h
-@@ -64,9 +64,7 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
- 		  int oflags, mode_t mode, unsigned int value);
- 
- int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
--			   const void __user *u_ts,
--			   int (*fetch_timeout)(struct timespec64 *ts,
--						const void __user *u_ts));
-+			   const struct timespec64 *ts);
- 
- int __cobalt_sem_destroy(xnhandle_t handle);
- 
-@@ -91,7 +89,7 @@ COBALT_SYSCALL_DECL(sem_wait,
- 
- COBALT_SYSCALL_DECL(sem_timedwait,
- 		    (struct cobalt_sem_shadow __user *u_sem,
--		     struct __user_old_timespec __user *u_ts));
-+		     const struct __user_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(sem_trywait,
- 		    (struct cobalt_sem_shadow __user *u_sem));
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 57aa7251a..edac7ea4a 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -124,9 +124,15 @@ COBALT_SYSCALL32emu(sem_open, lostage,
- 
- COBALT_SYSCALL32emu(sem_timedwait, primary,
- 		    (struct cobalt_sem_shadow __user *u_sem,
--		     struct old_timespec32 __user *u_ts))
-+		     const struct old_timespec32 __user *u_ts))
- {
--	return __cobalt_sem_timedwait(u_sem, u_ts, sys32_fetch_timeout);
-+	int ret = 1;
-+	struct timespec64 ts64;
-+
-+	if (u_ts)
-+		ret = sys32_fetch_timeout(&ts64, u_ts);
-+
-+	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
- }
- 
- COBALT_SYSCALL32emu(clock_getres, current,
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 66cd2a5d2..d72fd2022 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -229,6 +229,6 @@ COBALT_SYSCALL32emu_DECL(sem_open,
- 
- COBALT_SYSCALL32emu_DECL(sem_timedwait,
- 			 (struct cobalt_sem_shadow __user *u_sem,
--			  struct old_timespec32 __user *u_ts));
-+			  const struct old_timespec32 __user *u_ts));
- 
- #endif /* !_COBALT_POSIX_SYSCALL32_H */
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
+ #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags, PAGE_KERNEL)
+ #else
 -- 
 2.29.2
 
