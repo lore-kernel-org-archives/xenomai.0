@@ -1,17 +1,11 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 2/4] [y2038]cobalt: posix: clock: Adding clock_settime64
-Date: Thu, 11 Mar 2021 10:10:40 +0000
-Message-ID: <6506875c1832931796b0a1ad55090d11910ece04.camel@siemens.com>
-References: <1615430812-23822-1-git-send-email-chensong@tj.kylinos.cn>
- <d77a82d1c4738402500af7b9b7bbb0f7ab70e66d.camel@siemens.com>
- <6049E2F0.5010003@tj.kylinos.cn> <6049E9AE.7000103@tj.kylinos.cn>
- +B8F6BBBD54B8085D
-In-Reply-To: <6049E9AE.7000103@tj.kylinos.cn>+B8F6BBBD54B8085D
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F1DC83E23E273343A88A73BC46B9C48B@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 2/8] cobalt/mutex: Bring back ia32 support for mutex_timedwait
+Date: Sat, 27 Mar 2021 10:54:11 +0100
+Message-Id: <20210327095417.2289913-3-rpm@xenomai.org>
+In-Reply-To: <20210327095417.2289913-1-rpm@xenomai.org>
+References: <20210327095417.2289913-1-rpm@xenomai.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,20 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: xenomai@xenomai.org
 
-T24gVGh1LCAyMDIxLTAzLTExIGF0IDE3OjU4ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gPiA+
-IA0KPiA+ID4gSSBhc3N1bWUgd2Ugc2hvdWxkIGtlZXAgdGhlIG9yZGVyIG9mIGFmZmVjdGVkIHN5
-c2NhbGxzLiBUaGUgbmV4dCBvbmUNCj4gPiA+IHdvdWxkIGJlIHNjX2NvYmFsdF9jbG9ja19nZXR0
-aW1lNjQuDQo+ID4gDQo+ID4geWVzLCBpIHRob3VnaHQgYWJvdXQgY2F0YWdvcml6aW5nIHRoZW0g
-aW4gb3JkZXIsIHByb2JhYmx5IGFkanVzdA0KPiA+IHNjX2NvYmFsdF9zZW1fdGltZWR3YWl0NjQg
-bGF0ZXIsIG5leHQgaXMgc2NfY29iYWx0X2Nsb2NrX2dldHRpbWU2NC4NCj4gPiANCj4gPiANCj4g
-PiA+IA0KPiA+ID4gQW5kIEknbSBtaXNzaW5nIHRoZSB0ZXN0cy4uLiBQbGVhc2UgYWRkIHRlc3Rz
-IGZvciBldmVyeXRoaW5nIHlvdSBhZGQgLw0KPiA+ID4gZml4Lg0KPiA+IA0KPiA+IG9uZ29pbmcu
-DQo+ID4gDQo+ID4gU29uZw0KPiANCj4gYnkgdGhlIHdheSwgaSB0aGluayBpdCdzIGJldHRlciB0
-ZXN0IGNsb2NrX3NldHRpbWU2NCBhbmQgY2xvY2tfZ2V0dGltZTY0IA0KPiB0b2dldGhlciwgaXMg
-aXQgb2sgZm9yIHlvdT8NCj4gDQo+IGlmIGkgc2V0IHRpbWUgYXQgMjAzOCBhbmQgc2V0IGl0IGJh
-Y2sgYXQgdGhlIGVuZCBvZiB0ZXN0LCB3aWxsIGl0IGhhdmUgDQo+IGltcGFjdCB0byB0aGUgdGVz
-dGluZyBkZXZpY2VzPw0KDQpTb3VuZHMgcmVhc29uYWJsZS4uLg0KDQo+IA0KPiBTb25nDQo+IA0K
-PiA+IA0KPiA+IA0KDQo=
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+
+The helper used for copying the timeout values (=mutex_fetch_timeout())
+was always copying sizeof(struct timespec64) from user to kernel space.
+For applications with time_t being 4 bytes only (like for native 32 bit
+applications) that is simply too much.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ kernel/cobalt/posix/mutex.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
+index d43a747b3..70fe7960a 100644
+--- a/kernel/cobalt/posix/mutex.c
++++ b/kernel/cobalt/posix/mutex.c
+@@ -349,8 +349,7 @@ COBALT_SYSCALL(mutex_lock, primary,
+ static inline int mutex_fetch_timeout(struct timespec64 *ts,
+ 				      const void __user *u_ts)
+ {
+-	return u_ts == NULL ? -EFAULT :
+-		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
++	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
+ }
+ 
+ COBALT_SYSCALL(mutex_timedlock, primary,
+-- 
+2.29.2
+
 
