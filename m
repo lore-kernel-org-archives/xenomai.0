@@ -1,19 +1,11 @@
-Subject: Re: Failing self-test on wip/dovetail with Linux 5.4
-References: <f31c01722c02983cbbf04196d63f1e93d5ca70d3.camel@siemens.com>
- <7cfe500af39e85fd93ae8e95b9cfd63c8ff4930b.camel@siemens.com>
- <1a89d6f1-f199-8187-9df8-14e5aa5998eb@siemens.com>
- <e124bb8b9cedb1682cce4f192e22dd9872bc9c48.camel@siemens.com>
- <f034ba57-39cc-9231-2f94-d94267f317e6@siemens.com>
- <a5d4eb12-e327-7242-833a-40ae13d24ccb@siemens.com>
- <1bb7e174-eadc-5c8d-606a-7374962a402c@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ca7655e8-097c-0205-8a5a-34b66155d8ea@siemens.com>
-Date: Thu, 11 Mar 2021 11:46:46 +0100
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH v2 5/7] drivers/net: wrap csum_partial_copy_nocheck()
+Date: Sat, 27 Mar 2021 11:19:10 +0100
+Message-Id: <20210327101912.2291474-6-rpm@xenomai.org>
+In-Reply-To: <20210327101912.2291474-1-rpm@xenomai.org>
+References: <20210327101912.2291474-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <1bb7e174-eadc-5c8d-606a-7374962a402c@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,122 +14,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11.03.21 11:38, Florian Bezdeka wrote:
-> On 11.03.21 10:12, Jan Kiszka wrote:
->> On 08.03.21 13:46, Jan Kiszka via Xenomai wrote:
->>> On 08.03.21 13:42, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
->>>> On Mon, 2021-03-08 at 11:42 +0100, Jan Kiszka wrote:
->>>>> On 04.03.21 19:33, florian.bezdeka--- via Xenomai wrote:
->>>>>> On Thu, 2021-03-04 at 14:18 +0000, florian.bezdeka--- via Xenomai
->>>>>> wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> the attached kernel log was taken form a local qemu machine with
->>>>>>> Xenomai build from the wip/dovetail branch. There is a failing selftest
->>>>>>> (mixed read-lock/lock-write ABBA).
->>>>>>>
->>>>>>
->>>>>> Correction: I can reproduce that with `next` as well. So it's not
->>>>>> related to the wip/dovetail branch.
->>>>>>
->>>>>
->>>>> Situation still the same with the latest release?
->>>>
->>>> Which release? I tried to build the "testing" branch of xenomai-images
->>>> (which holds the COW patches) but that doesn't build at all, patches
->>>> can not be applied.
->>>>
->>>
->>> Yeah, that's because they are applied to latest x86 I-pipe releases. You
->>> don't need that branch for that arch anymore.
->>>
->>>> used cmdline:
->>>> kas-container build kas.yml:opt-linux-latest-5.4.yml:board-qemu-amd64.yml:opt-xenomai-next.yml
->>>>
->>>> Building and running the "next" branch of xenomai-images still reports
->>>> the same failing self-test.
->>>
->>> Hmm, too bad...
->>>
->>> Jan
->>>
->>
->> FWIW, I'm still not getting this one, but I face random SEGV of
->> applications while latency is running. I'm not seeing this with latest
->> 4.19 so far. Seems like 5.4-x86 is not yet stable...
-> 
-> $ cd xenomai-images
-> $ git fetch
-> $ git checkout origin/next
-> $ kas-container build
-> kas.yml:opt-linux-latest-5.4.yml:opt-xenomai-next.yml:board-qemu-amd64.yml
-> $ ./start-qemu amd64
-> 
-> $ login
-> $ dmesg
-> 
-> [    0.270682] ------------------------
-> [    0.271303] | Locking API testsuite:
-> [    0.271953]
-> ----------------------------------------------------------------------------
-> [    0.273260]                                  | spin |wlock |rlock
-> |mutex | wsem | rsem |
-> [    0.274480]
-> --------------------------------------------------------------------------
-> [    0.276748]                      A-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.293257]                  A-B-B-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.301759]              A-B-B-C-C-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.308446]              A-B-C-A-B-C deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.314094]          A-B-B-C-C-D-D-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.319191]          A-B-C-D-B-D-D-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.323848]          A-B-C-D-B-C-D-A deadlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.328360]                     double unlock:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.332703]                   initialize held:  ok  |  ok  |  ok  |
-> ok  |  ok  |  ok  |  ok  |
-> [    0.336563]
-> --------------------------------------------------------------------------
-> [    0.337730]               recursive read-lock:             |  ok  |
->            |  ok  |
-> [    0.339691]            recursive read-lock #2:             |  ok  |
->            |  ok  |
-> [    0.341601]             mixed read-write-lock:             |  ok  |
->            |  ok  |
-> [    0.343578]             mixed write-read-lock:             |  ok  |
->            |  ok  |
-> [    0.347917]   mixed read-lock/lock-write ABBA:             |FAILED|
->            |  ok  |
+From: Philippe Gerum <rpm@xenomai.org>
 
-Ah, that I can confirm! Might be a trace to follow...
+Since v5.9-rc1, csum_partial_copy_nocheck() forces a zero seed as its
+last argument to csum_partial(). According to #cc44c17baf7f3, passing
+a non-zero value would not even yield the proper result on some
+architectures.
 
-Jan
+Nevertheless, the current ICMP code does expect a non-zero csum seed
+to be used in the next computation, so let's wrap net_csum_copy() to
+csum_partial_copy_nocheck() for pre-5.9 kernels, and open code it for
+later kernels so that we still feed csum_partial() with the user-given
+csum. We still expect the x86, ARM and arm64 implementations of
+csum_partial() to do the right thing.
 
-> [    0.348703]    mixed read-lock/lock-read ABBA:             |  ok  |
->            |  ok  |
-> [    0.350734]  mixed write-lock/lock-write ABBA:             |  ok  |
->            |  ok  |
-> [    0.353076]
-> --------------------------------------------------------------------------
-> 
-> Btw: Adding "debug" to the kernel cmdline makes the selftest output
-> visible while booting up (so it would be part of the LAVA CI log as well).
-> 
->>
->> Jan
->>
-> 
-> 
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ .../include/asm-generic/xenomai/wrappers.h     | 11 +++++++++++
+ kernel/drivers/net/stack/ipv4/icmp.c           | 18 +++++++++---------
+ kernel/drivers/net/stack/rtskb.c               |  3 +--
+ 3 files changed, 21 insertions(+), 11 deletions(-)
 
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index cc0cb0896..cfd28fc47 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -209,4 +209,15 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
+ #endif
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,9,0)
++#define net_csum_copy(__src, __dst, __len, __csum)	\
++	csum_partial_copy_nocheck(__src, __dst, __len, __csum)
++#else
++#define net_csum_copy(__src, __dst, __len, __csum)			\
++	({								\
++		memcpy(__dst, __src, __len);				\
++		csum_partial(__dst, __len, (__force __wsum)__csum);	\
++	})
++#endif
++
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
+index b723040aa..0671cbc93 100644
+--- a/kernel/drivers/net/stack/ipv4/icmp.c
++++ b/kernel/drivers/net/stack/ipv4/icmp.c
+@@ -142,9 +142,9 @@ static int rt_icmp_glue_reply_bits(const void *p, unsigned char *to,
+ 	if (offset != 0)
+ 		return -EMSGSIZE;
+ 
+-	csum = csum_partial_copy_nocheck((void *)&icmp_param->head, to,
+-					 icmp_param->head_len,
+-					 icmp_param->csum);
++	csum = net_csum_copy((void *)&icmp_param->head, to,
++			     icmp_param->head_len,
++			     icmp_param->csum);
+ 
+ 	csum = rtskb_copy_and_csum_bits(icmp_param->data.skb,
+ 					icmp_param->offset,
+@@ -259,13 +259,13 @@ static int rt_icmp_glue_request_bits(const void *p, unsigned char *to,
+ 			    __FUNCTION__);
+ 		return -1;);
+ 
+-	csum = csum_partial_copy_nocheck((void *)&icmp_param->head, to,
+-					 icmp_param->head_len,
+-					 icmp_param->csum);
++	csum = net_csum_copy((void *)&icmp_param->head, to,
++			     icmp_param->head_len,
++			     icmp_param->csum);
+ 
+-	csum = csum_partial_copy_nocheck(icmp_param->data.buf,
+-					 to + icmp_param->head_len,
+-					 fraglen - icmp_param->head_len, csum);
++	csum = net_csum_copy(icmp_param->data.buf,
++			     to + icmp_param->head_len,
++			     fraglen - icmp_param->head_len, csum);
+ 
+ 	icmph = (struct icmphdr *)to;
+ 
+diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/rtskb.c
+index 84d021d24..0d0c66e58 100644
+--- a/kernel/drivers/net/stack/rtskb.c
++++ b/kernel/drivers/net/stack/rtskb.c
+@@ -69,8 +69,7 @@ unsigned int rtskb_copy_and_csum_bits(const struct rtskb *skb, int offset,
+ 	if ((copy = skb->len - offset) > 0) {
+ 		if (copy > len)
+ 			copy = len;
+-		csum = csum_partial_copy_nocheck(skb->data + offset, to, copy,
+-						 csum);
++		csum = net_csum_copy(skb->data + offset, to, copy, csum);
+ 		if ((len -= copy) == 0)
+ 			return csum;
+ 		offset += copy;
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.29.2
+
 
