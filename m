@@ -1,7 +1,10 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [Dovetail PATCH 0/5] More clock and IRQ abstraction
-Date: Sat, 27 Mar 2021 11:35:19 +0100
-Message-Id: <20210327103524.2305814-1-rpm@xenomai.org>
+Subject: [PATCH 1/5] cobalt/syscall: dovetail: do not expose clock frequency
+ to user
+Date: Sat, 27 Mar 2021 11:35:20 +0100
+Message-Id: <20210327103524.2305814-2-rpm@xenomai.org>
+In-Reply-To: <20210327103524.2305814-1-rpm@xenomai.org>
+References: <20210327103524.2305814-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,29 +19,74 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Jan Kiszka (1):
-  cobalt/intr: dovetail: Don't do anything in xnintr_enable/disable
+We don't need this with Dovetail, there is no timestamp arithmetics to
+perform in userland whatsoever: we get timestamps from the regular
+vDSO-based clock_gettime() call.
 
-Philippe Gerum (4):
-  cobalt/syscall: dovetail: do not expose clock frequency to user
-  cobalt/sched: dovetail: disable separate per-IRQ statistics
-  cobalt/intr: pipeline: abstract interrupt system inits
-  cobalt/intr: dovetail: implement interrupt management, handling
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ include/cobalt/kernel/dovetail/pipeline/pipeline.h | 6 ++++++
+ include/cobalt/kernel/ipipe/pipeline/pipeline.h    | 6 ++++++
+ kernel/cobalt/posix/syscall.c                      | 2 +-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
- include/cobalt/kernel/dovetail/pipeline/irq.h |  24 ++++
- .../kernel/dovetail/pipeline/pipeline.h       |   6 +
- include/cobalt/kernel/intr.h                  |   7 +-
- include/cobalt/kernel/ipipe/pipeline/irq.h    |  14 ++
- .../cobalt/kernel/ipipe/pipeline/pipeline.h   |   6 +
- kernel/cobalt/Kconfig                         |   4 +-
- kernel/cobalt/dovetail/Makefile               |   2 +-
- kernel/cobalt/dovetail/intr.c                 | 129 ++++++++++++++++++
- kernel/cobalt/posix/syscall.c                 |   2 +-
- 9 files changed, 185 insertions(+), 9 deletions(-)
- create mode 100644 include/cobalt/kernel/dovetail/pipeline/irq.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/irq.h
- create mode 100644 kernel/cobalt/dovetail/intr.c
-
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index a2e025e35..1d4e3f91d 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/irq_pipeline.h>
+ #include <cobalt/kernel/assert.h>
++#include <asm/xenomai/features.h>
+ 
+ typedef unsigned long spl_t;
+ 
+@@ -102,4 +103,9 @@ static inline void pipeline_prepare_panic(void)
+ 	/* N/A */
+ }
+ 
++static inline void pipeline_collect_features(struct cobalt_featinfo *f)
++{
++	f->clock_freq = 0;	/* N/A */
++}
++
+ #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
+diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+index ceba7e3b0..e9e357bb0 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
++++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+@@ -10,6 +10,7 @@
+ #endif
+ 
+ #include <pipeline/machine.h>
++#include <asm/xenomai/features.h>
+ 
+ #define xnsched_realtime_domain  cobalt_pipeline.domain
+ 
+@@ -75,4 +76,9 @@ static inline void pipeline_prepare_panic(void)
+ 	ipipe_prepare_panic();
+ }
+ 
++static inline void pipeline_collect_features(struct cobalt_featinfo *f)
++{
++	f->clock_freq = cobalt_pipeline.clock_freq;
++}
++
+ #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 3b3eaee8e..b9f33953a 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -332,7 +332,7 @@ static COBALT_SYSCALL(bind, lostage,
+ 	f->feat_abirev = XENOMAI_ABI_REV;
+ 	collect_arch_features(f);
+ 
+-	f->clock_freq = cobalt_pipeline.clock_freq;
++	pipeline_collect_features(f);
+ 	f->vdso_offset = cobalt_umm_offset(&cobalt_ppd_get(1)->umm, nkvdso);
+ 
+ 	if (cobalt_copy_to_user(u_breq, &breq, sizeof(breq)))
 -- 
 2.29.2
 
