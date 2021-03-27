@@ -1,9 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/6] cobalt/debug: switch to mmap_lock interface
-Date: Sat, 27 Mar 2021 11:14:23 +0100
-Message-Id: <20210327101428.2291095-2-rpm@xenomai.org>
-In-Reply-To: <20210327101428.2291095-1-rpm@xenomai.org>
-References: <20210327101428.2291095-1-rpm@xenomai.org>
+Subject: [PATCH 0/6] assorted v5.x related fixups
+Date: Sat, 27 Mar 2021 11:14:22 +0100
+Message-Id: <20210327101428.2291095-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,52 +16,29 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/cobalt/debug.c                                | 4 ++--
- kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 7 +++++++
- 2 files changed, 9 insertions(+), 2 deletions(-)
+More wrappers and other changes required to build for the kernel v5.x
+series.
 
-diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
-index 1e9edda99..f97144aeb 100644
---- a/kernel/cobalt/debug.c
-+++ b/kernel/cobalt/debug.c
-@@ -239,7 +239,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
- 
- 	memset(&spot, 0, sizeof(spot));
- 	mm = get_task_mm(current);
--	down_read(&mm->mmap_sem);
-+	mmap_read_lock(mm);
- 
- 	for (n = 0, depth = 0; n < nr; n++) {
- 		pc = backtrace[n];
-@@ -278,7 +278,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
- 		depth++;
- 	}
- 
--	up_read(&mm->mmap_sem);
-+	mmap_read_unlock(mm);
- 	mmput(mm);
- 	free_page((unsigned long)tmp);
- 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index ac4e95aa0..cd22a8db5 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -176,6 +176,13 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- #define old_timeval32     compat_timeval
- #endif
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
-+#define mmap_read_lock(__mm)	down_read(&mm->mmap_sem)
-+#define mmap_read_unlock(__mm)	up_read(&mm->mmap_sem)
-+#define mmap_write_lock(__mm)	down_write(&mm->mmap_sem)
-+#define mmap_write_unlock(__mm)	up_write(&mm->mmap_sem)
-+#endif
-+
- #if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
- #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags, PAGE_KERNEL)
- #else
+Philippe Gerum (6):
+  cobalt/debug: switch to mmap_lock interface
+  cobalt/kernel: convert to proc_ops
+  cobalt/debug: prefer dump_stack() to show_stack()
+  drivers/net: wrap csum_partial_copy_nocheck()
+  drivers/net: icmp: remove variable-length array
+  drivers/net: cfg: fix config file load up
+
+ kernel/cobalt/debug.c                         |  6 +-
+ .../include/asm-generic/xenomai/wrappers.h    | 53 +++++++++++++
+ kernel/cobalt/vfile.c                         | 26 +++----
+ kernel/drivers/analogy/device.c               | 12 +--
+ kernel/drivers/can/mscan/rtcan_mscan_proc.c   | 12 +--
+ kernel/drivers/can/rtcan_module.c             | 66 ++++++++---------
+ .../drivers/can/sja1000/rtcan_sja1000_proc.c  | 12 +--
+ kernel/drivers/net/stack/ipv4/icmp.c          | 34 ++++++---
+ kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c  | 74 +++++++++----------
+ kernel/drivers/net/stack/rtskb.c              |  3 +-
+ 10 files changed, 177 insertions(+), 121 deletions(-)
+
 -- 
 2.29.2
 
