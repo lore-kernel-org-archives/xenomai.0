@@ -1,8 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 6/8] cobalt/kernel: y2038: convert struct timex to
- __kernel_timex
-Date: Sat, 27 Mar 2021 10:54:15 +0100
-Message-Id: <20210327095417.2289913-7-rpm@xenomai.org>
+Subject: [PATCH 7/8] cobalt/kernel: y2038: switch to new legacy type names
+Date: Sat, 27 Mar 2021 10:54:16 +0100
+Message-Id: <20210327095417.2289913-8-rpm@xenomai.org>
 In-Reply-To: <20210327095417.2289913-1-rpm@xenomai.org>
 References: <20210327095417.2289913-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,304 +18,500 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-As internal interfaces are gradually being made y2038-safe, the
-__kernel_timex type should be used internally by the kernel to
-represent time adjustment parameters. Apply the same reasoning to
-Cobalt.
+Since 5.6-rc3, former 32bit compatibility types for time-related
+structs have been renamed as follows:
 
-We still use a legacy y2038-unsafe timex type at the kernel<->user
-interface boundary (struct __user_old_timex) until libcobalt is
-y2038-safe.
+compat_timeval -> old_timeval32
+compat_timespec -> old_timespec32
+compat_itimerspec -> old_itimerspec32
+
+Apply the same changes to the tree, providing backward compatibility
+wrappers for pre-5.7 kernels.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/clock.h                 |  7 +--
- include/cobalt/kernel/compat.h                |  4 +-
- include/cobalt/uapi/kernel/types.h            | 44 +++++++++++++++++--
- .../include/asm-generic/xenomai/wrappers.h    |  4 ++
- kernel/cobalt/posix/clock.c                   |  6 +--
- kernel/cobalt/posix/clock.h                   |  4 +-
- kernel/cobalt/posix/compat.c                  | 28 +++++++++---
- kernel/cobalt/posix/syscall32.c               |  2 +-
- kernel/cobalt/trace/cobalt-posix.h            |  4 +-
- 9 files changed, 81 insertions(+), 22 deletions(-)
+ include/cobalt/kernel/compat.h                | 22 +++++-----
+ .../include/asm-generic/xenomai/wrappers.h    |  6 +++
+ kernel/cobalt/posix/compat.c                  | 16 +++----
+ kernel/cobalt/posix/syscall32.c               | 42 +++++++++----------
+ kernel/cobalt/posix/syscall32.h               | 42 +++++++++----------
+ kernel/drivers/ipc/rtipc.c                    |  4 +-
+ 6 files changed, 69 insertions(+), 63 deletions(-)
 
-diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-index 1c99173ff..0e4f1e1cb 100644
---- a/include/cobalt/kernel/clock.h
-+++ b/include/cobalt/kernel/clock.h
-@@ -24,6 +24,7 @@
- #include <cobalt/kernel/list.h>
- #include <cobalt/kernel/vfile.h>
- #include <cobalt/uapi/kernel/types.h>
-+#include <asm/xenomai/wrappers.h>
- 
- /**
-  * @addtogroup cobalt_core_clock
-@@ -32,7 +33,7 @@
- 
- struct xnsched;
- struct xntimerdata;
--struct timex;
-+struct __kernel_timex;
- 
- struct xnclock_gravity {
- 	unsigned long irq;
-@@ -67,7 +68,7 @@ struct xnclock {
- 					    struct xnsched *sched);
- #endif
- 		int (*adjust_time)(struct xnclock *clock,
--				   struct timex *tx);
-+				   struct __kernel_timex *tx);
- 		int (*set_gravity)(struct xnclock *clock,
- 				   const struct xnclock_gravity *p);
- 		void (*reset_gravity)(struct xnclock *clock);
-@@ -275,7 +276,7 @@ static inline int xnclock_set_time(struct xnclock *clock,
- #endif /* !CONFIG_XENO_OPT_EXTCLOCK */
- 
- static inline int xnclock_adjust_time(struct xnclock *clock,
--				      struct timex *tx)
-+				      struct __kernel_timex *tx)
- {
- 	if (clock->ops.adjust_time == NULL)
- 		return -EOPNOTSUPP;
 diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-index 7bec8c3be..d7f0008d9 100644
+index d7f0008d9..6da7bafaf 100644
 --- a/include/cobalt/kernel/compat.h
 +++ b/include/cobalt/kernel/compat.h
-@@ -104,11 +104,11 @@ int sys32_get_timeval(struct __kernel_old_timeval *tv,
- int sys32_put_timeval(struct compat_timeval __user *ctv,
- 		      const struct __kernel_old_timeval *tv);
+@@ -29,13 +29,13 @@ struct mq_attr;
  
--int sys32_get_timex(struct timex *tx,
-+int sys32_get_timex(struct __kernel_timex *tx,
- 		    const struct old_timex32 __user *ctx);
- 
- int sys32_put_timex(struct old_timex32 __user *ctx,
--		    const struct timex *tx);
-+		    const struct __kernel_timex *tx);
- 
- ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
- 			size_t cfdsize);
-diff --git a/include/cobalt/uapi/kernel/types.h b/include/cobalt/uapi/kernel/types.h
-index 10abbb55a..2c931c29c 100644
---- a/include/cobalt/uapi/kernel/types.h
-+++ b/include/cobalt/uapi/kernel/types.h
-@@ -58,9 +58,10 @@ static inline xnhandle_t xnhandle_get_id(xnhandle_t handle)
- }
- 
- /*
-- * Our representation of time at the kernel<->user interface boundary
-- * at the moment, until we have fully transitioned to a y2038-safe
-- * implementation in libcobalt.
-+ * Our representation of time specs at the kernel<->user interface
-+ * boundary at the moment, until we have fully transitioned to a
-+ * y2038-safe implementation in libcobalt. Once done, those legacy
-+ * types will be removed.
-  */
- struct __user_old_timespec {
- 	long  tv_sec;
-@@ -72,4 +73,41 @@ struct __user_old_itimerspec {
- 	struct __user_old_timespec it_value;
+ struct __compat_sched_ss_param {
+ 	int __sched_low_priority;
+-	struct compat_timespec __sched_repl_period;
+-	struct compat_timespec __sched_init_budget;
++	struct old_timespec32 __sched_repl_period;
++	struct old_timespec32 __sched_init_budget;
+ 	int __sched_max_repl;
  };
  
-+struct __user_old_timeval {
-+	long  tv_sec;
-+	long  tv_usec;
-+};
-+
-+/* Lifted from include/uapi/linux/timex.h. */
-+struct __user_old_timex {
-+	unsigned int modes;	/* mode selector */
-+	__kernel_long_t offset;	/* time offset (usec) */
-+	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
-+	__kernel_long_t maxerror;/* maximum error (usec) */
-+	__kernel_long_t esterror;/* estimated error (usec) */
-+	int status;		/* clock command/status */
-+	__kernel_long_t constant;/* pll time constant */
-+	__kernel_long_t precision;/* clock precision (usec) (read only) */
-+	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
-+				   * (read only)
-+				   */
-+	struct __user_old_timeval time;	/* (read only, except for ADJ_SETOFFSET) */
-+	__kernel_long_t tick;	/* (modified) usecs between clock ticks */
-+
-+	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
-+	__kernel_long_t jitter; /* pps jitter (us) (ro) */
-+	int shift;              /* interval duration (s) (shift) (ro) */
-+	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
-+	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
-+	__kernel_long_t calcnt; /* calibration intervals (ro) */
-+	__kernel_long_t errcnt; /* calibration errors (ro) */
-+	__kernel_long_t stbcnt; /* stability limit exceeded (ro) */
-+
-+	int tai;		/* TAI offset (ro) */
-+
-+	int  :32; int  :32; int  :32; int  :32;
-+	int  :32; int  :32; int  :32; int  :32;
-+	int  :32; int  :32; int  :32;
-+};
-+
- #endif /* !_COBALT_UAPI_KERNEL_TYPES_H */
+ struct __compat_sched_rr_param {
+-	struct compat_timespec __sched_rr_quantum;
++	struct old_timespec32 __sched_rr_quantum;
+ };
+ 
+ struct compat_sched_param_ex {
+@@ -56,8 +56,8 @@ struct compat_mq_attr {
+ };
+ 
+ struct compat_sched_tp_window {
+-	struct compat_timespec offset;
+-	struct compat_timespec duration;
++	struct old_timespec32 offset;
++	struct old_timespec32 duration;
+ 	int ptid;
+ };
+ 
+@@ -87,21 +87,21 @@ struct compat_rtdm_mmap_request {
+ };
+ 
+ int sys32_get_timespec(struct timespec64 *ts,
+-		       const struct compat_timespec __user *cts);
++		       const struct old_timespec32 __user *cts);
+ 
+-int sys32_put_timespec(struct compat_timespec __user *cts,
++int sys32_put_timespec(struct old_timespec32 __user *cts,
+ 		       const struct timespec64 *ts);
+ 
+ int sys32_get_itimerspec(struct itimerspec64 *its,
+-			 const struct compat_itimerspec __user *cits);
++			 const struct old_itimerspec32 __user *cits);
+ 
+-int sys32_put_itimerspec(struct compat_itimerspec __user *cits,
++int sys32_put_itimerspec(struct old_itimerspec32 __user *cits,
+ 			 const struct itimerspec64 *its);
+ 
+ int sys32_get_timeval(struct __kernel_old_timeval *tv,
+-		      const struct compat_timeval __user *ctv);
++		      const struct old_timeval32 __user *ctv);
+ 
+-int sys32_put_timeval(struct compat_timeval __user *ctv,
++int sys32_put_timeval(struct old_timeval32 __user *ctv,
+ 		      const struct __kernel_old_timeval *tv);
+ 
+ int sys32_get_timex(struct __kernel_timex *tx,
 diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index 2e9fb203a..eaeeafd68 100644
+index eaeeafd68..9e8733b47 100644
 --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
 +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -152,6 +152,10 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- #error "Xenomai/cobalt requires Linux kernel 3.10 or above"
- #endif /* < 3.10 */
+@@ -170,4 +170,10 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define __kernel_old_timeval	timeval
+ #endif
  
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
-+#define __kernel_timex		timex
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
++#define old_timespec32    compat_timespec
++#define old_itimerspec32  compat_itimerspec
++#define old_timeval32     compat_timeval
 +#endif
 +
- #if LINUX_VERSION_CODE < KERNEL_VERSION(5,1,0)
- #define old_timex32		compat_timex
- #define SO_RCVTIMEO_OLD		SO_RCVTIMEO
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 4a3365d2a..23a45bba9 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -166,7 +166,7 @@ int __cobalt_clock_settime(clockid_t clock_id, const struct timespec64 *ts)
- 	return 0;
- }
- 
--int __cobalt_clock_adjtime(clockid_t clock_id, struct timex *tx)
-+int __cobalt_clock_adjtime(clockid_t clock_id, struct __kernel_timex *tx)
- {
- 	int _ret, ret = 0;
- 
-@@ -199,9 +199,9 @@ COBALT_SYSCALL(clock_settime, current,
- }
- 
- COBALT_SYSCALL(clock_adjtime, current,
--	       (clockid_t clock_id, struct timex __user *u_tx))
-+	       (clockid_t clock_id, struct __user_old_timex __user *u_tx))
- {
--	struct timex tx;
-+	struct __kernel_timex tx;
- 	int ret;
- 
- 	if (cobalt_copy_from_user(&tx, u_tx, sizeof(tx)))
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index 7e45fdcc6..e69e76e1b 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -104,7 +104,7 @@ int __cobalt_clock_settime(clockid_t clock_id,
- 			   const struct timespec64 *ts);
- 
- int __cobalt_clock_adjtime(clockid_t clock_id,
--			   struct timex *tx);
-+			   struct __kernel_timex *tx);
- 
- int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 			     const struct timespec64 *rqt,
-@@ -120,7 +120,7 @@ COBALT_SYSCALL_DECL(clock_settime,
- 		    (clockid_t clock_id, const struct __user_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_adjtime,
--		    (clockid_t clock_id, struct timex __user *u_tx));
-+		    (clockid_t clock_id, struct __user_old_timex __user *u_tx));
- 
- COBALT_SYSCALL_DECL(clock_nanosleep,
- 		    (clockid_t clock_id, int flags,
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
 diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-index 767a8033a..6002d7480 100644
+index 6002d7480..dbc9a9cf0 100644
 --- a/kernel/cobalt/posix/compat.c
 +++ b/kernel/cobalt/posix/compat.c
-@@ -98,11 +98,21 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
+@@ -23,9 +23,9 @@
+ #include <xenomai/posix/mqueue.h>
+ 
+ int sys32_get_timespec(struct timespec64 *ts,
+-		       const struct compat_timespec __user *u_cts)
++		       const struct old_timespec32 __user *u_cts)
+ {
+-	struct compat_timespec cts;
++	struct old_timespec32 cts;
+ 
+ 	if (u_cts == NULL || !access_rok(u_cts, sizeof(*u_cts)))
+ 		return -EFAULT;
+@@ -41,10 +41,10 @@ int sys32_get_timespec(struct timespec64 *ts,
  }
- EXPORT_SYMBOL_GPL(sys32_put_timeval);
+ EXPORT_SYMBOL_GPL(sys32_get_timespec);
  
--int sys32_get_timex(struct timex *tx,
-+int sys32_get_timex(struct __kernel_timex *tx,
- 		    const struct old_timex32 __user *ctx)
+-int sys32_put_timespec(struct compat_timespec __user *u_cts,
++int sys32_put_timespec(struct old_timespec32 __user *u_cts,
+ 		       const struct timespec64 *ts)
  {
-+	struct __kernel_old_timeval time;
-+	int ret;
-+
- 	memset(tx, 0, sizeof(*tx));
+-	struct compat_timespec cts;
++	struct old_timespec32 cts;
  
-+	ret = sys32_get_timeval(&time, &ctx->time);
-+	if (ret)
-+		return ret;
-+
-+	tx->time.tv_sec = time.tv_sec;
-+	tx->time.tv_usec = time.tv_usec;
-+
- 	if (!access_rok(ctx, sizeof(*ctx)) ||
- 	    __xn_get_user(tx->modes, &ctx->modes) ||
- 	    __xn_get_user(tx->offset, &ctx->offset) ||
-@@ -113,8 +123,6 @@ int sys32_get_timex(struct timex *tx,
- 	    __xn_get_user(tx->constant, &ctx->constant) ||
- 	    __xn_get_user(tx->precision, &ctx->precision) ||
- 	    __xn_get_user(tx->tolerance, &ctx->tolerance) ||
--	    __xn_get_user(tx->time.tv_sec, &ctx->time.tv_sec) ||
--	    __xn_get_user(tx->time.tv_usec, &ctx->time.tv_usec) ||
- 	    __xn_get_user(tx->tick, &ctx->tick) ||
- 	    __xn_get_user(tx->ppsfreq, &ctx->ppsfreq) ||
- 	    __xn_get_user(tx->jitter, &ctx->jitter) ||
-@@ -131,8 +139,18 @@ int sys32_get_timex(struct timex *tx,
- EXPORT_SYMBOL_GPL(sys32_get_timex);
+ 	if (u_cts == NULL || !access_wok(u_cts, sizeof(*u_cts)))
+ 		return -EFAULT;
+@@ -61,7 +61,7 @@ int sys32_put_timespec(struct compat_timespec __user *u_cts,
+ EXPORT_SYMBOL_GPL(sys32_put_timespec);
  
- int sys32_put_timex(struct old_timex32 __user *ctx,
--		    const struct timex *tx)
-+		    const struct __kernel_timex *tx)
+ int sys32_get_itimerspec(struct itimerspec64 *its,
+-			 const struct compat_itimerspec __user *cits)
++			 const struct old_itimerspec32 __user *cits)
  {
-+	struct __kernel_old_timeval time;
-+	int ret;
-+
-+	time.tv_sec = tx->time.tv_sec;
-+	time.tv_usec = tx->time.tv_usec;
-+
-+	ret = sys32_put_timeval(&ctx->time, &time);
-+	if (ret)
-+		return ret;
-+
- 	if (!access_wok(ctx, sizeof(*ctx)) ||
- 	    __xn_put_user(tx->modes, &ctx->modes) ||
- 	    __xn_put_user(tx->offset, &ctx->offset) ||
-@@ -143,8 +161,6 @@ int sys32_put_timex(struct old_timex32 __user *ctx,
- 	    __xn_put_user(tx->constant, &ctx->constant) ||
- 	    __xn_put_user(tx->precision, &ctx->precision) ||
- 	    __xn_put_user(tx->tolerance, &ctx->tolerance) ||
--	    __xn_put_user(tx->time.tv_sec, &ctx->time.tv_sec) ||
--	    __xn_put_user(tx->time.tv_usec, &ctx->time.tv_usec) ||
- 	    __xn_put_user(tx->tick, &ctx->tick) ||
- 	    __xn_put_user(tx->ppsfreq, &ctx->ppsfreq) ||
- 	    __xn_put_user(tx->jitter, &ctx->jitter) ||
+ 	int ret = sys32_get_timespec(&its->it_value, &cits->it_value);
+ 
+@@ -69,7 +69,7 @@ int sys32_get_itimerspec(struct itimerspec64 *its,
+ }
+ EXPORT_SYMBOL_GPL(sys32_get_itimerspec);
+ 
+-int sys32_put_itimerspec(struct compat_itimerspec __user *cits,
++int sys32_put_itimerspec(struct old_itimerspec32 __user *cits,
+ 			 const struct itimerspec64 *its)
+ {
+ 	int ret = sys32_put_timespec(&cits->it_value, &its->it_value);
+@@ -79,7 +79,7 @@ int sys32_put_itimerspec(struct compat_itimerspec __user *cits,
+ EXPORT_SYMBOL_GPL(sys32_put_itimerspec);
+ 
+ int sys32_get_timeval(struct __kernel_old_timeval *tv,
+-		      const struct compat_timeval __user *ctv)
++		      const struct old_timeval32 __user *ctv)
+ {
+ 	return (ctv == NULL ||
+ 		!access_rok(ctv, sizeof(*ctv)) ||
+@@ -88,7 +88,7 @@ int sys32_get_timeval(struct __kernel_old_timeval *tv,
+ }
+ EXPORT_SYMBOL_GPL(sys32_get_timeval);
+ 
+-int sys32_put_timeval(struct compat_timeval __user *ctv,
++int sys32_put_timeval(struct old_timeval32 __user *ctv,
+ 		      const struct __kernel_old_timeval *tv)
+ {
+ 	return (ctv == NULL ||
 diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 5c858806b..4f819e0e5 100644
+index 4f819e0e5..57aa7251a 100644
 --- a/kernel/cobalt/posix/syscall32.c
 +++ b/kernel/cobalt/posix/syscall32.c
-@@ -174,7 +174,7 @@ COBALT_SYSCALL32emu(clock_settime, current,
- COBALT_SYSCALL32emu(clock_adjtime, current,
- 		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
+@@ -124,14 +124,14 @@ COBALT_SYSCALL32emu(sem_open, lostage,
+ 
+ COBALT_SYSCALL32emu(sem_timedwait, primary,
+ 		    (struct cobalt_sem_shadow __user *u_sem,
+-		     struct compat_timespec __user *u_ts))
++		     struct old_timespec32 __user *u_ts))
  {
--	struct timex tx;
-+	struct __kernel_timex tx;
+ 	return __cobalt_sem_timedwait(u_sem, u_ts, sys32_fetch_timeout);
+ }
+ 
+ COBALT_SYSCALL32emu(clock_getres, current,
+ 		    (clockid_t clock_id,
+-		     struct compat_timespec __user *u_ts))
++		     struct old_timespec32 __user *u_ts))
+ {
+ 	struct timespec64 ts;
  	int ret;
+@@ -145,7 +145,7 @@ COBALT_SYSCALL32emu(clock_getres, current,
  
- 	ret = sys32_get_timex(&tx, u_tx);
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 3a649a671..cff1bd9b7 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -764,12 +764,12 @@ DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_settime,
- );
+ COBALT_SYSCALL32emu(clock_gettime, current,
+ 		    (clockid_t clock_id,
+-		     struct compat_timespec __user *u_ts))
++		     struct old_timespec32 __user *u_ts))
+ {
+ 	struct timespec64 ts;
+ 	int ret;
+@@ -159,7 +159,7 @@ COBALT_SYSCALL32emu(clock_gettime, current,
  
- TRACE_EVENT(cobalt_clock_adjtime,
--	TP_PROTO(clockid_t clk_id, struct timex *tx),
-+	TP_PROTO(clockid_t clk_id, struct __kernel_timex *tx),
- 	TP_ARGS(clk_id, tx),
+ COBALT_SYSCALL32emu(clock_settime, current,
+ 		    (clockid_t clock_id,
+-		     const struct compat_timespec __user *u_ts))
++		     const struct old_timespec32 __user *u_ts))
+ {
+ 	struct timespec64 ts;
+ 	int ret;
+@@ -190,8 +190,8 @@ COBALT_SYSCALL32emu(clock_adjtime, current,
  
- 	TP_STRUCT__entry(
- 		__field(clockid_t, clk_id)
--		__field(struct timex *, tx)
-+		__field(struct __kernel_timex *, tx)
- 	),
+ COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
+ 		    (clockid_t clock_id, int flags,
+-		     const struct compat_timespec __user *u_rqt,
+-		     struct compat_timespec __user *u_rmt))
++		     const struct old_timespec32 __user *u_rqt,
++		     struct old_timespec32 __user *u_rmt))
+ {
+ 	struct timespec64 rqt, rmt, *rmtp = NULL;
+ 	int ret;
+@@ -212,7 +212,7 @@ COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
  
- 	TP_fast_assign(
+ COBALT_SYSCALL32emu(mutex_timedlock, primary,
+ 		    (struct cobalt_mutex_shadow __user *u_mx,
+-		     const struct compat_timespec __user *u_ts))
++		     const struct old_timespec32 __user *u_ts))
+ {
+ 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, sys32_fetch_timeout);
+ }
+@@ -222,7 +222,7 @@ COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
+ 		     struct cobalt_mutex_shadow __user *u_mx,
+ 		     int *u_err,
+ 		     unsigned int timed,
+-		     struct compat_timespec __user *u_ts))
++		     struct old_timespec32 __user *u_ts))
+ {
+ 	return __cobalt_cond_wait_prologue(u_cnd, u_mx, u_err, u_ts,
+ 					   timed ? sys32_fetch_timeout : NULL);
+@@ -261,7 +261,7 @@ COBALT_SYSCALL32emu(mq_getattr, current,
+ COBALT_SYSCALL32emu(mq_timedsend, primary,
+ 		    (mqd_t uqd, const void __user *u_buf, size_t len,
+ 		     unsigned int prio,
+-		     const struct compat_timespec __user *u_ts))
++		     const struct old_timespec32 __user *u_ts))
+ {
+ 	return __cobalt_mq_timedsend(uqd, u_buf, len, prio,
+ 				     u_ts, u_ts ? sys32_fetch_timeout : NULL);
+@@ -271,7 +271,7 @@ COBALT_SYSCALL32emu(mq_timedreceive, primary,
+ 		    (mqd_t uqd, void __user *u_buf,
+ 		     compat_ssize_t __user *u_len,
+ 		     unsigned int __user *u_prio,
+-		     const struct compat_timespec __user *u_ts))
++		     const struct old_timespec32 __user *u_ts))
+ {
+ 	compat_ssize_t clen;
+ 	ssize_t len;
+@@ -511,8 +511,8 @@ COBALT_SYSCALL32emu(timer_create, current,
+ 
+ COBALT_SYSCALL32emu(timer_settime, primary,
+ 		    (timer_t tm, int flags,
+-		     const struct compat_itimerspec __user *u_newval,
+-		     struct compat_itimerspec __user *u_oldval))
++		     const struct old_itimerspec32 __user *u_newval,
++		     struct old_itimerspec32 __user *u_oldval))
+ {
+ 	struct itimerspec64 newv, oldv, *oldvp = &oldv;
+ 	int ret;
+@@ -538,7 +538,7 @@ COBALT_SYSCALL32emu(timer_settime, primary,
+ }
+ 
+ COBALT_SYSCALL32emu(timer_gettime, current,
+-		    (timer_t tm, struct compat_itimerspec __user *u_val))
++		    (timer_t tm, struct old_itimerspec32 __user *u_val))
+ {
+ 	struct itimerspec64 val;
+ 	int ret;
+@@ -550,8 +550,8 @@ COBALT_SYSCALL32emu(timer_gettime, current,
+ 
+ COBALT_SYSCALL32emu(timerfd_settime, primary,
+ 		    (int fd, int flags,
+-		     const struct compat_itimerspec __user *new_value,
+-		     struct compat_itimerspec __user *old_value))
++		     const struct old_itimerspec32 __user *new_value,
++		     struct old_itimerspec32 __user *old_value))
+ {
+ 	struct itimerspec64 ovalue, value;
+ 	int ret;
+@@ -575,7 +575,7 @@ COBALT_SYSCALL32emu(timerfd_settime, primary,
+ }
+ 
+ COBALT_SYSCALL32emu(timerfd_gettime, current,
+-		    (int fd, struct compat_itimerspec __user *curr_value))
++		    (int fd, struct old_itimerspec32 __user *curr_value))
+ {
+ 	struct itimerspec64 value;
+ 	int ret;
+@@ -606,7 +606,7 @@ COBALT_SYSCALL32emu(sigwait, primary,
+ COBALT_SYSCALL32emu(sigtimedwait, nonrestartable,
+ 		    (const compat_sigset_t __user *u_set,
+ 		     struct compat_siginfo __user *u_si,
+-		     const struct compat_timespec __user *u_timeout))
++		     const struct old_timespec32 __user *u_timeout))
+ {
+ 	struct timespec64 timeout;
+ 	sigset_t set;
+@@ -658,7 +658,7 @@ COBALT_SYSCALL32emu(sigqueue, conforming,
+ 
+ COBALT_SYSCALL32emu(monitor_wait, nonrestartable,
+ 		    (struct cobalt_monitor_shadow __user *u_mon,
+-		     int event, const struct compat_timespec __user *u_ts,
++		     int event, const struct old_timespec32 __user *u_ts,
+ 		     int __user *u_ret))
+ {
+ 	struct timespec64 ts, *tsp = NULL;
+@@ -678,7 +678,7 @@ COBALT_SYSCALL32emu(event_wait, primary,
+ 		    (struct cobalt_event_shadow __user *u_event,
+ 		     unsigned int bits,
+ 		     unsigned int __user *u_bits_r,
+-		     int mode, const struct compat_timespec __user *u_ts))
++		     int mode, const struct old_timespec32 __user *u_ts))
+ {
+ 	struct timespec64 ts, *tsp = NULL;
+ 	int ret;
+@@ -698,7 +698,7 @@ COBALT_SYSCALL32emu(select, nonrestartable,
+ 		     compat_fd_set __user *u_rfds,
+ 		     compat_fd_set __user *u_wfds,
+ 		     compat_fd_set __user *u_xfds,
+-		     struct compat_timeval __user *u_tv))
++		     struct old_timeval32 __user *u_tv))
+ {
+ 	compat_fd_set __user *ufd_sets[XNSELECT_MAX_TYPES] = {
+ 		[XNSELECT_READ] = u_rfds,
+@@ -829,7 +829,7 @@ static int put_mmsg32(void __user **u_mmsg_p, const struct mmsghdr *mmsg)
+ 
+ COBALT_SYSCALL32emu(recvmmsg, primary,
+ 	       (int ufd, struct compat_mmsghdr __user *u_msgvec, unsigned int vlen,
+-		unsigned int flags, struct compat_timespec *u_timeout))
++		unsigned int flags, struct old_timespec32 *u_timeout))
+ {
+ 	return __rtdm_fd_recvmmsg(ufd, u_msgvec, vlen, flags, u_timeout,
+ 				  get_mmsg32, put_mmsg32,
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 9da405229..66cd2a5d2 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -53,15 +53,15 @@ COBALT_SYSCALL32emu_DECL(thread_setschedprio,
+ 
+ COBALT_SYSCALL32emu_DECL(clock_getres,
+ 			 (clockid_t clock_id,
+-			  struct compat_timespec __user *u_ts));
++			  struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(clock_gettime,
+ 			 (clockid_t clock_id,
+-			  struct compat_timespec __user *u_ts));
++			  struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(clock_settime,
+ 			 (clockid_t clock_id,
+-			  const struct compat_timespec __user *u_ts));
++			  const struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(clock_adjtime,
+ 			 (clockid_t clock_id,
+@@ -69,19 +69,19 @@ COBALT_SYSCALL32emu_DECL(clock_adjtime,
+ 
+ COBALT_SYSCALL32emu_DECL(clock_nanosleep,
+ 			 (clockid_t clock_id, int flags,
+-			  const struct compat_timespec __user *u_rqt,
+-			  struct compat_timespec __user *u_rmt));
++			  const struct old_timespec32 __user *u_rqt,
++			  struct old_timespec32 __user *u_rmt));
+ 
+ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
+ 			 (struct cobalt_mutex_shadow __user *u_mx,
+-			  const struct compat_timespec __user *u_ts));
++			  const struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
+ 			 (struct cobalt_cond_shadow __user *u_cnd,
+ 			  struct cobalt_mutex_shadow __user *u_mx,
+ 			  int *u_err,
+ 			  unsigned int timed,
+-			  struct compat_timespec __user *u_ts));
++			  struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(mq_open,
+ 			 (const char __user *u_name, int oflags,
+@@ -93,13 +93,13 @@ COBALT_SYSCALL32emu_DECL(mq_getattr,
+ COBALT_SYSCALL32emu_DECL(mq_timedsend,
+ 			 (mqd_t uqd, const void __user *u_buf, size_t len,
+ 			  unsigned int prio,
+-			  const struct compat_timespec __user *u_ts));
++			  const struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(mq_timedreceive,
+ 			 (mqd_t uqd, void __user *u_buf,
+ 			  compat_ssize_t __user *u_len,
+ 			  unsigned int __user *u_prio,
+-			  const struct compat_timespec __user *u_ts));
++			  const struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32x_DECL(mq_timedreceive,
+ 		       (mqd_t uqd, void __user *u_buf,
+@@ -143,20 +143,20 @@ COBALT_SYSCALL32emu_DECL(timer_create,
+ 
+ COBALT_SYSCALL32emu_DECL(timer_settime,
+ 			 (timer_t tm, int flags,
+-			  const struct compat_itimerspec __user *u_newval,
+-			  struct compat_itimerspec __user *u_oldval));
++			  const struct old_itimerspec32 __user *u_newval,
++			  struct old_itimerspec32 __user *u_oldval));
+ 
+ COBALT_SYSCALL32emu_DECL(timer_gettime,
+ 			 (timer_t tm,
+-			  struct compat_itimerspec __user *u_val));
++			  struct old_itimerspec32 __user *u_val));
+ 
+ COBALT_SYSCALL32emu_DECL(timerfd_settime,
+ 			 (int fd, int flags,
+-			  const struct compat_itimerspec __user *new_value,
+-			  struct compat_itimerspec __user *old_value));
++			  const struct old_itimerspec32 __user *new_value,
++			  struct old_itimerspec32 __user *old_value));
+ 
+ COBALT_SYSCALL32emu_DECL(timerfd_gettime,
+-			 (int fd, struct compat_itimerspec __user *value));
++			 (int fd, struct old_itimerspec32 __user *value));
+ 
+ COBALT_SYSCALL32emu_DECL(sigwait,
+ 			 (const compat_sigset_t __user *u_set,
+@@ -165,7 +165,7 @@ COBALT_SYSCALL32emu_DECL(sigwait,
+ COBALT_SYSCALL32emu_DECL(sigtimedwait,
+ 			 (const compat_sigset_t __user *u_set,
+ 			  struct compat_siginfo __user *u_si,
+-			  const struct compat_timespec __user *u_timeout));
++			  const struct old_timespec32 __user *u_timeout));
+ 
+ COBALT_SYSCALL32emu_DECL(sigwaitinfo,
+ 			 (const compat_sigset_t __user *u_set,
+@@ -180,21 +180,21 @@ COBALT_SYSCALL32emu_DECL(sigqueue,
+ 
+ COBALT_SYSCALL32emu_DECL(monitor_wait,
+ 			 (struct cobalt_monitor_shadow __user *u_mon,
+-			  int event, const struct compat_timespec __user *u_ts,
++			  int event, const struct old_timespec32 __user *u_ts,
+ 			  int __user *u_ret));
+ 
+ COBALT_SYSCALL32emu_DECL(event_wait,
+ 			 (struct cobalt_event_shadow __user *u_event,
+ 			  unsigned int bits,
+ 			  unsigned int __user *u_bits_r,
+-			  int mode, const struct compat_timespec __user *u_ts));
++			  int mode, const struct old_timespec32 __user *u_ts));
+ 
+ COBALT_SYSCALL32emu_DECL(select,
+ 			 (int nfds,
+ 			  compat_fd_set __user *u_rfds,
+ 			  compat_fd_set __user *u_wfds,
+ 			  compat_fd_set __user *u_xfds,
+-			  struct compat_timeval __user *u_tv));
++			  struct old_timeval32 __user *u_tv));
+ 
+ COBALT_SYSCALL32emu_DECL(recvmsg,
+ 			 (int fd, struct compat_msghdr __user *umsg,
+@@ -203,7 +203,7 @@ COBALT_SYSCALL32emu_DECL(recvmsg,
+ COBALT_SYSCALL32emu_DECL(recvmmsg,
+ 			 (int fd, struct compat_mmsghdr __user *u_msgvec,
+ 			  unsigned int vlen,
+-			  unsigned int flags, struct compat_timespec *u_timeout));
++			  unsigned int flags, struct old_timespec32 *u_timeout));
+ 
+ COBALT_SYSCALL32emu_DECL(sendmsg,
+ 			 (int fd, struct compat_msghdr __user *umsg,
+@@ -229,6 +229,6 @@ COBALT_SYSCALL32emu_DECL(sem_open,
+ 
+ COBALT_SYSCALL32emu_DECL(sem_timedwait,
+ 			 (struct cobalt_sem_shadow __user *u_sem,
+-			  struct compat_timespec __user *u_ts));
++			  struct old_timespec32 __user *u_ts));
+ 
+ #endif /* !_COBALT_POSIX_SYSCALL32_H */
+diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
+index b6fafdb41..abb76817a 100644
+--- a/kernel/drivers/ipc/rtipc.c
++++ b/kernel/drivers/ipc/rtipc.c
+@@ -273,7 +273,7 @@ int rtipc_get_timeval(struct rtdm_fd *fd, struct __kernel_old_timeval *tv,
+ {
+ #ifdef CONFIG_XENO_ARCH_SYS3264
+ 	if (rtdm_fd_is_compat(fd)) {
+-		if (arglen != sizeof(struct compat_timeval))
++		if (arglen != sizeof(struct old_timeval32))
+ 			return -EINVAL;
+ 		return sys32_get_timeval(tv, arg);
+ 	}
+@@ -295,7 +295,7 @@ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ {
+ #ifdef CONFIG_XENO_ARCH_SYS3264
+ 	if (rtdm_fd_is_compat(fd)) {
+-		if (arglen != sizeof(struct compat_timeval))
++		if (arglen != sizeof(struct old_timeval32))
+ 			return -EINVAL;
+ 		return sys32_put_timeval(arg, tv);
+ 	}
 -- 
 2.29.2
 
