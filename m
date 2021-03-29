@@ -1,12 +1,10 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 5/5] cobalt/intr: dovetail: Don't do anything in
- xnintr_enable/disable
-Date: Sat, 27 Mar 2021 11:35:24 +0100
-Message-Id: <20210327103524.2305814-6-rpm@xenomai.org>
-In-Reply-To: <20210327103524.2305814-1-rpm@xenomai.org>
-References: <20210327103524.2305814-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Mon, 29 Mar 2021 11:20:13 +0200
+Message-ID: <CAFc1U0s93=zDEQA9X+QyGD=miNAHdhKVTwn0YPbsAAysChdMyA@mail.gmail.com>
+Subject: Arm64 jitter
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi all,
 
-As we are using regular request/free_irq under dovetail, there is no
-extra task to be done in the interrupt enable/disable services. In fact,
-calling enable_irq will rather trigger "Unbalanced enable for IRQ ..."
-errors.
+I=E2=80=99ve been using Xenomai-3.1/I-pipe for several months on Pi 3 B/B+ =
+with
+mainline kernel (4.19.128 and 4.19.144, arm). I had good results (about 30
+=C2=B5s jitter) with latency + dohell (or latency + hackbench).
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/dovetail/intr.c | 4 ----
- 1 file changed, 4 deletions(-)
+Unfortunately, a new arm64 test on  5.4.72 or 5.4.107
+(ipipe-core-5.4.107-arm64-1 tag) leads to a  70 =C2=B5s jitter on the same
+board.
 
-diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
-index 068dfe306..d1a1c14a9 100644
---- a/kernel/cobalt/dovetail/intr.c
-+++ b/kernel/cobalt/dovetail/intr.c
-@@ -109,15 +109,11 @@ EXPORT_SYMBOL_GPL(xnintr_detach);
- 
- void xnintr_enable(struct xnintr *intr)
- {
--	secondary_mode_only();
--	enable_irq(intr->irq);
- }
- EXPORT_SYMBOL_GPL(xnintr_enable);
- 
- void xnintr_disable(struct xnintr *intr)
- {
--	secondary_mode_only();
--	disable_irq(intr->irq);
- }
- EXPORT_SYMBOL_GPL(xnintr_disable);
- 
--- 
-2.29.2
+I know I-pipe support is recent for arm64 but do you have any idea about
+the problem? What are the results on other Arm64 boards such as iMX, or
+OMAP ?
 
 
+Please note, I removed the warnings about APM/ACPI/CPU freq/MIGRATION from
+the kernel config.
+
+
+Thx by advance
+
+
+Regards
+
+--=20
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
