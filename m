@@ -1,16 +1,9 @@
 MIME-Version: 1.0
-References: <CAFc1U0s93=zDEQA9X+QyGD=miNAHdhKVTwn0YPbsAAysChdMyA@mail.gmail.com>
- <CAFc1U0tfFRARvpZ4pWajwidipQ809dbORJZx10rv6rF7dZ3Nvw@mail.gmail.com>
- <CALLqZ8TEcPEyH9ZUMvOO6rSHPtzjZdGvrxCntW5OzwBRPGxngA@mail.gmail.com>
- <CAFc1U0t0EOejpmVsBQcnDzdBgmNbNYcxZbgbtMULKWt-0ECsAQ@mail.gmail.com>
- <CALLqZ8RQYv=+bDa=1KKqiRt+MMHCGRCbA+ynadEcaSwnf9nr0w@mail.gmail.com>
-In-Reply-To: <CALLqZ8RQYv=+bDa=1KKqiRt+MMHCGRCbA+ynadEcaSwnf9nr0w@mail.gmail.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 29 Mar 2021 15:35:31 +0200
-Message-ID: <CAFc1U0vL05ZNSP4G5S=aG2V_PRY041EHCop0p0xGFDEDSSWv4Q@mail.gmail.com>
-Subject: Re: Arm64 jitter
+From: ashwin damle <ashwindamle@gmail.com>
+Date: Mon, 29 Mar 2021 23:51:38 +0530
+Message-ID: <CAC-NLwzFEyQVeHUXHa6jYG9BesxaoA=1c4BHJiBRuKWhSB6Svg@mail.gmail.com>
+Subject: How to use RTnet on xenomai3?
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,124 +12,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thx a lot !
+Dear Xenomai support,
 
-Le lun. 29 mars 2021 =C3=A0 15:17, Greg Gallagher <greg@embeddedgreg.com> a
-=C3=A9crit :
+I am successfully able to run xenomai3.1 on 4.19.89 on my core-2-duo
+machine. Xenomai works nice. Further I want to use RTnet.
 
->
->
-> On Mon, Mar 29, 2021 at 8:06 AM Pierre FICHEUX <pierre.ficheux@smile.fr>
-> wrote:
->
->> Hi Greg,
->>
->> Thks for the answer, so you're currently tracking the problem?
->>
->> Le lun. 29 mars 2021 =C3=A0 13:43, Greg Gallagher <greg@embeddedgreg.com=
-> a
->> =C3=A9crit :
->>
->>>
->>>
->>> On Mon, Mar 29, 2021 at 5:22 AM Pierre FICHEUX via Xenomai <
->>> xenomai@xenomai.org> wrote:
->>>
->>>> I mean Arm64 AND 5.x is recent !
->>>>
->>>> Le lun. 29 mars 2021 =C3=A0 11:20, Pierre FICHEUX <pierre.ficheux@smil=
-e.fr>
->>>> a
->>>> =C3=A9crit :
->>>>
->>>> > Hi all,
->>>> >
->>>> > I=E2=80=99ve been using Xenomai-3.1/I-pipe for several months on Pi =
-3 B/B+
->>>> with
->>>> > mainline kernel (4.19.128 and 4.19.144, arm). I had good results
->>>> (about 30
->>>> > =C2=B5s jitter) with latency + dohell (or latency + hackbench).
->>>> >
->>>> > Unfortunately, a new arm64 test on  5.4.72 or 5.4.107
->>>> > (ipipe-core-5.4.107-arm64-1 tag) leads to a  70 =C2=B5s jitter on th=
-e same
->>>> > board.
->>>> >
->>>> > I know I-pipe support is recent for arm64 but do you have any idea
->>>> about
->>>> > the problem? What are the results on other Arm64 boards such as iMX,
->>>> or
->>>> > OMAP ?
->>>> >
->>>> >
->>>> > Please note, I removed the warnings about APM/ACPI/CPU freq/MIGRATIO=
-N
->>>> from
->>>> > the kernel config.
->>>> >
->>>> >
->>>> > Thx by advance
->>>> >
->>>> >
->>>> > Regards
->>>> >
->>>> > --
->>>> >
->>>> > Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
->>>> >                              http://www.smile.fr
->>>> >                              https://smile.eu/fr/offres/embarque-iot
->>>> > I would love to change the world, but they won't give me the source
->>>> code
->>>> >
->>>> >
->>>>
->>>> --
->>>>
->>>> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
->>>>                              http://www.smile.fr
->>>>                              https://smile.eu/fr/offres/embarque-iot
->>>> I would love to change the world, but they won't give me the source co=
-de
->>>
->>>
->>> I test with Ultra96 board and have seen higher then normal. I=E2=80=99m=
- using
->>> ftrace to track down the source of the latency.
->>>
->>> -Greg
->>>
->>
->>
->> --
->>
->> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
->>                              http://www.smile.fr
->>                              https://smile.eu/fr/offres/embarque-iot
->> I would love to change the world, but they won't give me the source code
->>
->> Hi Pierre,
->   I have a hang to look at in arm64 qemu and then I=E2=80=99m getting bac=
-k to
-> looking at what is causing the latency. The ultra96 is showing higher the=
-n
-> normal latency.
->    I=E2=80=99m hoping to have some answers by the end of the week. A upda=
-ted 4.19
-> release is on its way as well, but Im seeing good latency numbers with th=
-at
-> release.
->
-> -Greg
->
->>
+From
+https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet#installation-folder-overview
+I learnt that RTNet is built into Xenomai 3 and so I need not download from
+the rtnet page and build it separately. If so then where do I start using
+RTNET? Is there any example? The folder mentioned at
+https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup do appear on my
+computer.
 
---=20
+>From https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup I
+understand that /usr/local/rtnet/ is the directory where the RTNET files
+including documentation would be, but this folder is not created on my
+system. Therefore, I tried building RTNET from source using the
+instructions in the README: I get the error as below
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+I request your help with an error.
+"checking for RT-extension... configure: error: *** RT-extended kernel not
+found in /lib/modules/4.19.89_xenomai/build
+makefile:51: recipe for target 'config.status' failed
+"
+I found that many have resolved the problems from by searching for the
+error and 5 pages direct to the same solution and that is
+
+ ./configure --with-linux=/path/to/linux-source-with-xenomai-extension
+ --with-rtext-config=/path/to/xeno-config
+
+My doubts are
+
+1. Is it necessary to build RTNet from source or is it built in Xenomai 3?
+If it is built in then how do I use it. Some steps will be helpful.
+
+2. If the RTNet is to be built from source then how to solve the above
+error. I pointed to the Linux source tree I used to build the xenomai
+kernel but it throws the same error.
+
+3. What does " /path/to/linux-source-with-xenomai-extension mean the Linux
+source folder of Xenomai patched kernel? or does it mean
+"/lib/modules/uname-r/build"....None works for me. /path/to/xeno-config
+seems to be /usr/xenomai on my machine since xeno-config resides there.
+
+Please help with this. Let me know if you require any more information.
+
+-- 
+Ashwin Damle
