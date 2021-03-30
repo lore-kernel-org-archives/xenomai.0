@@ -1,10 +1,10 @@
-Subject: Re: [PATCH v3] y2038: testsuite/smokey/y2038: testcase for settime64
- and gettime64
-References: <1617099822-19340-1-git-send-email-chensong@tj.kylinos.cn>
+Subject: Re: [PATCH 4/8] lib: y2038: convert to internal timespec type
+References: <20210327095417.2289913-1-rpm@xenomai.org>
+ <20210327095417.2289913-5-rpm@xenomai.org>
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <86a5c936-e393-4598-b3b5-c22af9623ef2@siemens.com>
-Date: Tue, 30 Mar 2021 21:54:24 +0200
-In-Reply-To: <1617099822-19340-1-git-send-email-chensong@tj.kylinos.cn>
+Message-ID: <556e88f0-6b20-ab48-1d22-d0dcf8a2d8f0@siemens.com>
+Date: Tue, 30 Mar 2021 23:20:11 +0200
+In-Reply-To: <20210327095417.2289913-5-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,181 +17,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, chensong@tj.kylinos.cn
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hi Song!
+Hi Philippe,
 
-On 30.03.21 12:23, chensong wrote:
-> new test case for clock_settime64 and clock_gettime64 and reorganize
-> run_2038.
+which "internal timespec type" are you talking about? You're using
+struct timespec here, which is not y2038 safe on 32 bit platforms.
+
+I wonder about the effect of splitting the assignments into separate
+tv_sec and tv_nsec assignements. I know this pattern from getting aware
+of different paddings between kernel and user space in case we handle a
+compat application, but this is all library stuff and compat
+applications should use the compat syscalls which hopefully care about
+different paddings...
+
+On 27.03.21 10:54, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> If you want to trigger and verify y2038 problem, please be careful and
-> make sure it has no impact to your test device.
-> 
-> Signed-off-by: chensong <chensong@tj.kylinos.cn>
-> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
-> v3:
-> 1, rename structs, variables
-> 2, reorganize registration in run_y2038
-> 3, remove unnecessary definitions
-> ---
->  testsuite/smokey/y2038/syscall-tests.c | 109 ++++++++++++++++++++++++++++++---
->  1 file changed, 102 insertions(+), 7 deletions(-)
+>  lib/alchemy/task.c          | 9 ++++++---
+>  lib/copperplate/threadobj.c | 9 ++++++---
+>  lib/psos/task.c             | 9 ++++++---
+>  lib/vxworks/kernLib.c       | 6 ++++--
+>  lib/vxworks/taskLib.c       | 6 ++++--
+>  5 files changed, 26 insertions(+), 13 deletions(-)
 > 
-> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-> index 1d61bbd..b927a41 100644
-> --- a/testsuite/smokey/y2038/syscall-tests.c
-> +++ b/testsuite/smokey/y2038/syscall-tests.c
-> @@ -17,6 +17,36 @@
+> diff --git a/lib/alchemy/task.c b/lib/alchemy/task.c
+> index 949a996d0..9afa2af57 100644
+> --- a/lib/alchemy/task.c
+> +++ b/lib/alchemy/task.c
+> @@ -1410,11 +1410,14 @@ int rt_task_slice(RT_TASK *task, RTIME quantum)
 >  
->  smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
->  
-> +
-> +#define TEST_NAME(name) test_ ## name
-> +struct test_info {
-> +	char *name;
-> +	int (*test_fn)(void);
-> +};
-> +
-> +static int test_sc_cobalt_sem_timedwait64(void);
-> +static int test_sc_cobalt_clock_gettime64(void);
-> +static int test_sc_cobalt_clock_settime64(void);
-> +
-> +static struct test_info test_table[] = {
-> +	{
-> +		.name = "sc_cobalt_sem_timedwait64",
-> +		.test_fn = TEST_NAME(sc_cobalt_sem_timedwait64),
-> +	},
-> +	{
-> +		.name = "sc_cobalt_clock_gettime64",
-> +		.test_fn = TEST_NAME(sc_cobalt_clock_gettime64),
-> +	},
-> +	{
-> +		.name = "sc_cobalt_clock_settime64",
-> +		.test_fn = TEST_NAME(sc_cobalt_clock_settime64),
-> +	},
-> +	{
-> +		.name = NULL,
-> +		.test_fn = NULL,
-> +	},
-> +};
-> +
->  /*
->   * libc independent data type representing a time64_t based struct timespec
->   */
-> @@ -25,7 +55,8 @@ struct xn_timespec64 {
->  	int64_t tv_nsec;
->  };
->  
-> -#define NSEC_PER_SEC 1000000000
-> +#define NSEC_PER_SEC		1000000000
-> +#define USEC_PER_SEC		1000000
->  
->  static void ts_normalise(struct xn_timespec64 *ts)
->  {
-> @@ -114,10 +145,10 @@ static int test_sc_cobalt_sem_timedwait64(void)
->  
->  	/*
->  	 * The semaphore is already exhausted, so calling again will validate
-> -	 * the provided timeout now. Providing an invalid adress has to deliver
-> +	 * the provided timeout now. Providing an invalid address has to deliver
->  	 * EFAULT
->  	 */
-> -	ret = syscall(code, &sem, (void*) 0xdeadbeefUL);
-> +	ret = syscall(code, &sem, (void *)0xdeadbeefUL);
->  	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->  		return errno;
->  
-> @@ -163,13 +194,77 @@ static int test_sc_cobalt_sem_timedwait64(void)
->  	return 0;
->  }
->  
-> +static int test_sc_cobalt_clock_gettime64(void)
-> +{
-> +	long ret;
-> +	int code = __xn_syscode(sc_cobalt_clock_gettime64);
-> +	struct xn_timespec64 ts64;
-> +
-> +	/* Make sure we don't crash because of NULL pointers */
-> +	ret = syscall(code, NULL, NULL);
-> +	if (ret == -1 && errno == ENOSYS) {
-> +		smokey_note("clock_gettime64: skipped. (no kernel support)");
-> +		return 0; // Not implemented, nothing to test, success
+>  	param_ex.sched_priority = threadobj_get_priority(&tcb->thobj);
+>  	if (quantum) {
+> +		struct timespec ts;
+>  		policy = SCHED_RR;
+> -		clockobj_ticks_to_timespec(&alchemy_clock, quantum,
+> -					   &param_ex.sched_rr_quantum);
+> -	} else
+> +		clockobj_ticks_to_timespec(&alchemy_clock, quantum, &ts);
+> +		param_ex.sched_rr_quantum.tv_sec = ts.tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = ts.tv_nsec;
+> +	} else {
+>  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
 > +	}
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	/* Providing an invalid address has to deliver EFAULT */
-> +	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	/* Provide a valid 64bit timespec*/
-> +	ret = syscall(code, CLOCK_REALTIME, &ts64);
-> +	if (!smokey_assert(ret == 0) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	return 0;
-> +}
-> +
-> +static int test_sc_cobalt_clock_settime64(void)
-> +{
-> +	long ret;
-> +	int code = __xn_syscode(sc_cobalt_clock_settime64);
-> +	struct xn_timespec64 ts64;
-> +	struct timespec now;
-> +
-> +	/*Get current time and set it back at the end of the test*/
-> +	clock_gettime(CLOCK_REALTIME, &now);
-> +
-> +	/* Make sure we don't crash because of NULL pointers */
-> +	ret = syscall(code, NULL, NULL);
-> +	if (ret == -1 && errno == ENOSYS) {
-> +		smokey_note("clock_settime64: skipped. (no kernel support)");
-> +		return 0; // Not implemented, nothing to test, success
+>  
+>  	ret = threadobj_set_schedparam(&tcb->thobj, policy, &param_ex);
+>  	switch (ret) {
+> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+> index a3101baa1..f4588a17a 100644
+> --- a/lib/copperplate/threadobj.c
+> +++ b/lib/copperplate/threadobj.c
+> @@ -1741,7 +1741,8 @@ int threadobj_set_schedparam(struct threadobj *thobj, int policy,
+>  		ret = enable_rr_corespec(thobj, param_ex);
+>  		if (ret)
+>  			return __bt(ret);
+> -		thobj->tslice = param_ex->sched_rr_quantum;
+> +		thobj->tslice.tv_sec = param_ex->sched_rr_quantum.tv_sec;
+> +		thobj->tslice.tv_nsec = param_ex->sched_rr_quantum.tv_nsec;
+>  	} else if (thobj->policy == SCHED_RR) /* Switching off round-robin. */
+>  		disable_rr_corespec(thobj);
+>  
+> @@ -1761,8 +1762,10 @@ int threadobj_set_schedprio(struct threadobj *thobj, int priority)
+>  	param_ex.sched_priority = priority;
+>  	policy = thobj->policy;
+>  
+> -	if (policy == SCHED_RR)
+> -		param_ex.sched_rr_quantum = thobj->tslice;
+> +	if (policy == SCHED_RR) {
+> +		param_ex.sched_rr_quantum.tv_sec = thobj->tslice.tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = thobj->tslice.tv_nsec;
 > +	}
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		goto out;
-> +
-> +	/* Providing an invalid address has to deliver EFAULT */
-> +	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		goto out;
-> +
-> +	/* Provide a valid 64bit timespec*/
-> +	ts64.tv_sec  = now.tv_sec;
-> +	ts64.tv_nsec = now.tv_nsec;
-> +	ret = syscall(code, CLOCK_REALTIME, &ts64);
-> +	if (!smokey_assert(ret == 0) || !smokey_assert(errno == EFAULT))
-> +		goto out;
-> +
-> +out:
-> +	clock_settime(CLOCK_REALTIME, &now);
-> +	return errno;
-> +}
-> +
-> +
->  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->  {
-> -	int ret;
-> +	struct test_info *ti;
 >  
-> -	ret = test_sc_cobalt_sem_timedwait64();
-> -	if (ret)
-> -		return ret;
-> +	for (ti = test_table; ti->test_fn != NULL; ti++)
-> +		ti->test_fn();
-
-I guess that went to far now. The assertions inside the test functions
-will show us where we failed, but they won't report the value of errno.
-That has to be done here and was the main benefit of your approach.
-
-Note that the "name" field of struct test_info and all related stuff is
-completely unused if we don't use it here.
->  
->  	return 0;
+>  	return threadobj_set_schedparam(thobj, policy, &param_ex);
 >  }
+> diff --git a/lib/psos/task.c b/lib/psos/task.c
+> index 46e49ea88..f678be61d 100644
+> --- a/lib/psos/task.c
+> +++ b/lib/psos/task.c
+> @@ -192,7 +192,8 @@ static void *task_trampoline(void *arg)
+>  
+>  	if (task->mode & T_TSLICE) {
+>  		param_ex.sched_priority = threadobj_get_priority(&task->thobj);
+> -		param_ex.sched_rr_quantum = psos_rrperiod;
+> +		param_ex.sched_rr_quantum.tv_sec = psos_rrperiod.tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = psos_rrperiod.tv_nsec;
+>  		threadobj_set_schedparam(&task->thobj, SCHED_RR, &param_ex);
+>  	}
+>  
+> @@ -630,9 +631,11 @@ u_long t_mode(u_long mask, u_long newmask, u_long *oldmode_r)
+>  
+>  	if (task->mode & T_TSLICE) {
+>  		policy = SCHED_RR;
+> -		param_ex.sched_rr_quantum = psos_rrperiod;
+> -	} else
+> +		param_ex.sched_rr_quantum.tv_sec = psos_rrperiod.tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = psos_rrperiod.tv_nsec;
+> +	} else {
+>  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
+> +	}
+>  
+>  	/* Working on self, so -EIDRM can't happen. */
+>  	threadobj_set_schedparam(&task->thobj, policy, &param_ex);
+> diff --git a/lib/vxworks/kernLib.c b/lib/vxworks/kernLib.c
+> index 4f3bd8201..d67502730 100644
+> --- a/lib/vxworks/kernLib.c
+> +++ b/lib/vxworks/kernLib.c
+> @@ -30,9 +30,11 @@ static int switch_slicing(struct threadobj *thobj, struct timespec *quantum)
+>  
+>  	if (quantum) {
+>  		policy = SCHED_RR;
+> -		param_ex.sched_rr_quantum = *quantum;
+> -	} else
+> +		param_ex.sched_rr_quantum.tv_sec = quantum->tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = quantum->tv_nsec;
+> +	} else {
+>  		policy = param_ex.sched_priority ? SCHED_FIFO : SCHED_OTHER;
+> +	}
+>  
+>  	return threadobj_set_schedparam(thobj, policy, &param_ex);
+
+@Song:
+Following this code paths brings me to
+sc_cobalt_thread_setschedparam_ex, which is not yet part of our y2038
+roadmap.
+
+
+>  }
+> diff --git a/lib/vxworks/taskLib.c b/lib/vxworks/taskLib.c
+> index a4af36c1f..c8723c6be 100644
+> --- a/lib/vxworks/taskLib.c
+> +++ b/lib/vxworks/taskLib.c
+> @@ -265,8 +265,10 @@ static void *task_trampoline(void *arg)
+>  
+>  	/* Turn on time slicing if RR globally enabled. */
+>  	if (wind_time_slice) {
+> -		clockobj_ticks_to_timespec(&wind_clock, wind_time_slice,
+> -					   &param_ex.sched_rr_quantum);
+> +		struct timespec ts;
+> +		clockobj_ticks_to_timespec(&wind_clock, wind_time_slice, &ts);
+> +		param_ex.sched_rr_quantum.tv_sec = ts.tv_sec;
+> +		param_ex.sched_rr_quantum.tv_nsec = ts.tv_nsec;
+>  		threadobj_lock(&task->thobj);
+>  		param_ex.sched_priority = threadobj_get_priority(&task->thobj);
+>  		threadobj_set_schedparam(&task->thobj, SCHED_RR, &param_ex);
 > 
 
 
