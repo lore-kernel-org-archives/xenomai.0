@@ -1,11 +1,16 @@
-References: <CAESnvfOhCNj85NoKkJ2-3wNJPLqdUJTGxCaypG=WPZML=S5EHg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: evl core build on x86 machine
-In-reply-to: <CAESnvfOhCNj85NoKkJ2-3wNJPLqdUJTGxCaypG=WPZML=S5EHg@mail.gmail.com>
-Date: Wed, 31 Mar 2021 11:47:36 +0200
-Message-ID: <87tuorr6x3.fsf@xenomai.org>
+Subject: Re: [PATCH 4/8] lib: y2038: convert to internal timespec type
+References: <20210327095417.2289913-1-rpm@xenomai.org>
+ <20210327095417.2289913-5-rpm@xenomai.org>
+ <556e88f0-6b20-ab48-1d22-d0dcf8a2d8f0@siemens.com>
+ <87wntnr8y0.fsf@xenomai.org>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <019dc973-21ff-8663-a95f-fce52cd96ff6@siemens.com>
+Date: Wed, 31 Mar 2021 17:58:33 +0200
+In-Reply-To: <87wntnr8y0.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +19,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ashwik John <johnashwik994@gmail.com>
-Cc: xenomai@xenomai.org, evl@evlproject.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: chensong@tj.kylinos.cn, Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+
+On 31.03.21 11:03, Philippe Gerum wrote:
+> 
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> 
+>> Hi Philippe,
+>>
+>> which "internal timespec type" are you talking about?
+> 
+> struct __user_old_timespec. The one added to make the user / kernel
+> boundary wrt time specification explicit.
+> 
 
 
-Ashwik John via Evl <evl@evlproject.org> writes:
+Thanks! I just overlooked
 
-> Hi All,
->
-> I am trying to build evl core on x86 pc but it is not successful.
->
-> x86 pc works with Ubuntu 18.04.
->
-> evl project branch used is *evl/v5.10 : *git clone --depth 1 --branch
-> evl/v5.10 git://git.evlproject.org/linux-evl.git
->
-> for libevl, master branch was used: git clone --depth 1 --branch master
-> git://git.evlproject.org/libevl.git
->
-> when installing the modules with modules_install. Just the following
-> modules are installed.
->   INSTALL drivers/thermal/intel/x86_pkg_temp_thermal.ko
->   INSTALL fs/efivarfs/efivarfs.ko
->   INSTALL net/ipv4/netfilter/iptable_nat.ko
->   INSTALL net/ipv4/netfilter/nf_log_arp.ko
->   INSTALL net/ipv4/netfilter/nf_log_ipv4.ko
->   INSTALL net/ipv6/netfilter/nf_log_ipv6.ko
->   INSTALL net/netfilter/nf_log_common.ko
->   INSTALL net/netfilter/xt_LOG.ko
->   INSTALL net/netfilter/xt_MASQUERADE.ko
->   INSTALL net/netfilter/xt_addrtype.ko
->   INSTALL net/netfilter/xt_mark.ko
->   INSTALL net/netfilter/xt_nat.ko
->   DEPMOD  5.10.25evl+
->
-> When trying to boot with the evl kernel the boot fails since there are no
-> modules.
->
-> It will be of great help with your solutions to solve this issue.
+ struct __sched_rr_param {
+-	struct timespec __sched_rr_quantum;
++	struct __user_old_timespec __sched_rr_quantum;
+ };
 
-According to your description, this is not an EVL-specific issue, but a
-generic kernel build/install problem. You may want to refer to any of
-the many tutorials available on the net for this.
+from the first patch of the series. That explains it.
+
+Thanks for all the help and sorry for the noise.
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
