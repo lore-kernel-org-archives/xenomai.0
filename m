@@ -1,8 +1,7 @@
 From: chensong <chensong@tj.kylinos.cn>
-Subject: [PATCH v4] y2038: testsuite/smokey/y2038: testcase for settime64 and
- gettime64
-Date: Wed, 31 Mar 2021 09:30:19 +0800
-Message-Id: <1617154219-26473-1-git-send-email-chensong@tj.kylinos.cn>
+Subject: [PATCH 0/3] y2038:clock_nanosleep for timespec64 
+Date: Wed, 31 Mar 2021 11:25:46 +0800
+Message-Id: <1617161146-27094-1-git-send-email-chensong@tj.kylinos.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,127 +12,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: florian.bezdeka@siemens.com, xenomai@xenomai.org, rpm@xenomai.org
 
-new test case for clock_settime64 and clock_gettime64 and reorganize
-run_2038.
+This patch serial is aimed to introduce a new syscall clock_nanosleep64
+which is specific for 64-bit time_t.
 
-If you want to trigger and verify y2038 problem, please be careful and
-make sure it has no impact to your test device.
+chensong (3):
+  y2038: cobalt/posix/clock: Adding clock_nanosleep64
+  y2038: lib/cobalt/clock: dispatch clock_nanosleep
+  y2038: testsuite/smokey/y2038: testcase for nanosleep64
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
+ include/cobalt/uapi/syscall.h          |  1 +
+ kernel/cobalt/posix/clock.c            | 23 ++++++++++++
+ kernel/cobalt/posix/clock.h            |  5 +++
+ kernel/cobalt/posix/syscall32.c        | 23 ++++++++++++
+ kernel/cobalt/posix/syscall32.h        |  6 ++++
+ lib/cobalt/clock.c                     |  5 +++
+ testsuite/smokey/y2038/syscall-tests.c | 65 ++++++++++++++++++++++++++++++++++
+ 7 files changed, 128 insertions(+)
 
----
-v3:
-1, rename structs, variables
-2, reorganize registration in run_y2038
-3, remove unnecessary definitions
-
-v4:
-1, return run_y2038 to its original approach
----
- testsuite/smokey/y2038/syscall-tests.c | 75 +++++++++++++++++++++++++++++++++-
- 1 file changed, 73 insertions(+), 2 deletions(-)
-
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 1d61bbd..03a3198 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -114,10 +114,10 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 
- 	/*
- 	 * The semaphore is already exhausted, so calling again will validate
--	 * the provided timeout now. Providing an invalid adress has to deliver
-+	 * the provided timeout now. Providing an invalid address has to deliver
- 	 * EFAULT
- 	 */
--	ret = syscall(code, &sem, (void*) 0xdeadbeefUL);
-+	ret = syscall(code, &sem, (void *)0xdeadbeefUL);
- 	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
- 		return errno;
- 
-@@ -163,6 +163,69 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 	return 0;
- }
- 
-+static int test_sc_cobalt_clock_gettime64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_gettime64);
-+	struct xn_timespec64 ts64;
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_gettime64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Provide a valid 64bit timespec*/
-+	ret = syscall(code, CLOCK_REALTIME, &ts64);
-+	if (!smokey_assert(!ret))
-+		return errno;
-+
-+	return 0;
-+}
-+
-+static int test_sc_cobalt_clock_settime64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_settime64);
-+	struct xn_timespec64 ts64;
-+	struct timespec now;
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_settime64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Provide a valid 64bit timespec*/
-+	ret = clock_gettime(CLOCK_REALTIME, &now);
-+	if (ret)
-+		return errno;
-+
-+	ts64.tv_sec  = now.tv_sec;
-+	ts64.tv_nsec = now.tv_nsec;
-+	ret = syscall(code, CLOCK_REALTIME, &ts64);
-+	if (!smokey_assert(!ret))
-+		return errno;
-+
-+	return 0;
-+}
-+
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
-@@ -171,5 +234,13 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
- 
-+	ret = test_sc_cobalt_clock_gettime64();
-+	if (ret)
-+		return ret;
-+
-+	ret = test_sc_cobalt_clock_settime64();
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
 -- 
 2.7.4
 
