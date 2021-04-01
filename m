@@ -1,13 +1,15 @@
-References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
- <87pmz5nu08.fsf@xenomai.org>
- <fd783792-f2ee-c18d-7836-26221b10195a@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Xenomai Community Call Minutes - April 7, 2021
-In-reply-to: <fd783792-f2ee-c18d-7836-26221b10195a@siemens.com>
-Date: Thu, 08 Apr 2021 09:21:07 +0200
-Message-ID: <87h7khnsws.fsf@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
+References: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
+ <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
+From: "=?gb18030?B?enk=?=" <zhouyoung1995@qq.com>
+Subject: =?gb18030?B?u9i4tKO6IFNoYXJlZCBNZW1vcnkgYnkgdXNpbmcg?=
+ =?gb18030?B?UlRfSEVBUA==?=
+Mime-Version: 1.0
+Date: Thu, 1 Apr 2021 22:44:11 +0800
+Message-ID: <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Wang, Rick Y via Xenomai" <xenomai@xenomai.org>
+To: =?gb18030?B?UGV0ZXIgTGF1cmljaA==?= <Peter.Laurich@akamina.com>, =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 08.04.21 08:57, Philippe Gerum via Xenomai wrote:
->> 
->> Hello Rick,
->> 
->> At what time did that meeting take place yesterday? I tried to connect
->> several times to the usual 'teams' room from 7:55 to 8:10, but nobody
->> was there.
->
-> CEST mess: The meeting moved to 9am our time due to daylight saving.
->
-
-Mmf, ok.
-
-> Jan
->
->> 
->> Wang, Rick Y via Xenomai <xenomai@xenomai.org> writes:
->> 
->>> Attendees:
->>>
->>> Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,
->>> Dao Zhang, Jianbo Cao, Yanfeng Pu, Rick Wang
->>>
->>>
->>> *Community update
->>>
->>> - No code change in the past two weeks
->>> - Greg is debugging jitter issue on ARM.
->>> - Siemens is testing WIP-Dovetail branch internally. Some issues were
->>> reported related to clock source or gdb crash.
->>> - Jan will log the issues to gitlab Xenomai hacker space:
->>> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
->>> - For Xenomai 3.2, there are some submitted patches pending on Jan's review
->>> and merge. Also some patches in Philippe's private tree are pending on
->>> submission.
->>> - Florian and Song are working on Y2038 issue on Philippe's tree. It depends
->>> on some Dovetail codes to be merged first.
->>> - Hongzhan is working on latmus GPIO porting. 5.10 Dovetail-based Xenomai
->>> and EVL can't boot up on his dev board yet. 5.9 kernel can boot on the
->>> same board. It could be related to clock source and ACPI changes in kernel.
->>>
->>>
->>>
->>> Thanks,
->>> Rick
->> 
->> 
-
-
--- 
-Philippe.
-
+SGkgUGV0ZXIsDQoNCg0KWW91IHNvbHZlZCB3aGF0IGhhcyB0cm91YmxlZCBtZSBmb3IgYSBs
+b25nIHRpbWUuIFRoYW5rIHlvdSBmb3IgeW91ciByZXBseS4NCkkga25vdyB0aGUgY29uY2Vw
+dGlvbiBvZiBzZXNzaW9uIG9mIGxpbnV4IGZvciB0aGUgZmlyc3QgdGltZS4mbmJzcDsNCklu
+IGFkZGl0aW9uLCBJIHdvdWxkIGxpa2UgdG8ga25vdyBpZiB0aGVyZSBpcyBvdGhlciBtZXRo
+b2QgPw0KDQoNCkJlc3QgcmVnYXJkcywNClpob3UgWWFuZw0KDQoNCi0tLS0tLS0tLS0tLS0t
+LS0tLSZuYnNwO9StyrzTyrz+Jm5ic3A7LS0tLS0tLS0tLS0tLS0tLS0tDQq3orz+yMs6ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIlBldGVyIExhdXJpY2giICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+PHhlbm9tYWlAeGVub21haS5vcmcmZ3Q7Ow0Kt6LLzcqxvOQ6Jm5ic3A7MjAyMcTqNNTCMcjV
+KNDHxtrLxCkgze3Jzzg6NDMNCsrVvP7IyzombmJzcDsieGVub21haSI8eGVub21haUB4ZW5v
+bWFpLm9yZyZndDs7DQoNCtb3zOI6Jm5ic3A7UmU6IFNoYXJlZCBNZW1vcnkgYnkgdXNpbmcg
+UlRfSEVBUA0KDQoNCg0KSGVsbG8sDQoNCkkgc3VzcGVjdCB0aGF0IHlvdXIgcHJvYmxlbSBt
+YXkgYmUgdGhlIHNhbWUgYXMgSSBoYWQgZWFybGllci4gSWYgeW91IGFyZSANCnNoYXJpbmcg
+aGVhcHMgdGhlbiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHByb2dyYW0gdGhhdCBuZWVkcyB0
+byBoYXZlIHRoZSANCnNhbWUgWGVub21haSBzZXNzaW9uLiBIZXJlIGlzIGhvdyBJIHNwYXdu
+IHR3byBwcm9ncmFtcyB0aGF0IHNoYXJlIHRoZSANCnNhbWUgaGVhcCBhbmQgb3RoZXIgWGVu
+b21haSBvYmplY3RzOg0KDQombmJzcDsmbmJzcDsmbmJzcDsgLi9pbml0U3lzJm5ic3A7IC0t
+c2Vzc2lvbj1ha2FtaW5hIC0tbWVtLXBvb2wtc2l6ZT0yME0gJmFtcDsNCiZuYnNwOyZuYnNw
+OyZuYnNwOyAuL3NhY3FTY2FuIC0tc2Vzc2lvbj1ha2FtaW5hIC0tbWVtLXBvb2wtc2l6ZT0y
+ME0gJmFtcDsNCg0Kd2hlcmUgaW5pdFN5cyBhbmQgc2FjcVNjYW4gYXJlIHR3byBvZiBteSBw
+cm9ncmFtcywgSSBoYXZlIGNob3NlbiB0byBuYW1lIA0KdGhlIHNlc3Npb24gYWthbWluYSBh
+bmQgSSB3YW50ZWQgYSBtZW1vcnkgcG9vbCBzaXplIG9mIDIwTSAocmF0aGVyIHRoYW4gDQp0
+aGUgZGVmYXVsdCBvZiAxTSkuDQoNCkdvb2QgbHVjayB3aXRoIHlvdXIgdXBncmFkZS4gSSBo
+YXZlIGZvdW5kIHRoZSB1cGdyYWRlIGZyb20gMiB0byBiZSANCmluY3JlZGlibHkgcGFpbmZ1
+bCBhbmQgSSBhbSBub3cgc3R1Y2sgYSBsaXR0bGUgZnVydGhlciBkb3duIHRoZSBwYXRoIA0K
+dGhhbiB5b3UuIEkgZm91bmQgdGhhdCBJIGxvc3QgZnVuY3Rpb25hbGl0eSB0aGF0IEkgcmVs
+aWVkIG9uIChlLmcuIA0KZXhjaGFuZ2luZyBldmVudHMgYW5kIG1lc3NhZ2VzIGJldHdlZW4g
+a2VybmVsIGRyaXZlcnMgYW5kIHVzZXItc3BhY2UgDQpwcm9ncmFtcykgdGhhdCBpcyBub3Qg
+ZWFzeSB0byByZXBsYWNlLiBJIGxvb2tlZCBhdCBzdGF5aW5nIHdpdGggWGVub21haSANCjIg
+YnV0IEkgZG8gbmVlZCBhIG1vcmUgcmVjZW50IGtlcm5lbCBzbyBJIGFtIHN0dWNrLg0KDQpH
+b29kIGx1Y2suDQoNClBldGVyDQoNCg0KT24gMy8zMS8yMDIxIDk6MjUgUE0sIHp5IHZpYSBY
+ZW5vbWFpIHdyb3RlOg0KJmd0OyBIaSBhbGwsDQomZ3Q7DQomZ3Q7IE9uIFhlbm9tYWktMi42
+LjUsIEkgdXNlIHJ0X2hlYXBfY3JlYXRlIHdpdGggZmxhZyAiSF9TSEFSRUQiIHRvIGNyZWF0
+ZSBydF9oZWFwDQomZ3Q7IGluIG9uZSBwcm9jZXNzIGFuZCBjYWxsIHJ0X2hlYXBfYmluZCB0
+byBnZXQgdGhpcyBydF9oZWFwIGJ5IHRoZSBzYW1lIG5hbWUgaW4gYW5vdGhlcg0KJmd0OyBw
+cm9jZXNzLiBJIHVzZSBydF9oZWFwIGFzIHNoYXJlZCBtZW1vcnkgYmV0d2VlbiBwcm9jZXNz
+LiBCdXQgb24gWGVub21haS0zLjEsIEkNCiZndDsgZmluZCB0aGlzIG1ldGhvZCBkb2VzIG5v
+dCB3b3JrLiBXaGVuIGNhbGxpbmcgcnRfaGVhcF9iaW5kIHVzaW5nICJUTV9JTkZJTklURSIs
+DQomZ3Q7IHRoZSBmdW5jdGlvbiBkb2Vzbid0IHJldHVybiwgdXNpbmcgIlRNX05PTkVCTE9D
+SyIsIHJldHVybnMgLTExLiBJIGNoZWNrIHRoaXMNCiZndDsgZW1haWwgc3lzdGVtICwgZmlu
+ZCAiLS1lbmFibGUtcHNoYXJlZCIgc2hvdWxkIGJlIGNvbmZpZ3VyZWQgYmVmb3JlIGluc3Rh
+bGxhdGlvbiZuYnNwOyBhbmQNCiZndDsgSSBkbyBpdCwgYnV0IGl0IGRvZXNuJ3Qgd29yay4N
+CiZndDsgQ2FuIGFueW9uZSBnaXZlIG1lIGEgZGV0YWlsZWQgc29sdXRpb24/IE9yLCBzaGFy
+ZWQgbWVtb3J5IGNhbm5vdCBiZSBjcmVhdGVkIGJ5DQomZ3Q7IFJUX0hFQVAgb24gWGVub21h
+aS0zLg0KJmd0Ow0KJmd0OyBCZXN0IHJlZ2FyZHMsDQomZ3Q7IFpob3UgWWFuZw==
