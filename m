@@ -1,10 +1,17 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8miBTaGFyZWQgTWVtb3J5IGJ5IHVzaW5nIFJUX0hF?=
+ =?UTF-8?Q?AP?=
+References: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
+ <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
+ <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
+ <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
+From: steve freyder <steve@freyder.net>
+Message-ID: <33a1a822-3e6f-a952-d98d-8c22d233458a@freyder.net>
+Date: Thu, 1 Apr 2021 16:46:53 -0500
 MIME-Version: 1.0
-Date: Thu, 01 Apr 2021 23:42:42 +0200
-Subject: =?utf-8?q?Re=3A?= How to use RTnet on =?utf-8?q?xenomai3=3F?=
-Message-ID: <4e03-60663e80-47-10b42340@50501997>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="gb18030"; format="flowed"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,162 +20,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Peter Laurich <Peter.Laurich@akamina.com>, zy <zhouyoung1995@qq.com>, xenomai <xenomai@xenomai.org>
 
-Le Jeudi, Avril 01, 2021 20:09 CEST, ashwin damle via Xenomai <xenomai@=
-xenomai.org> a =C3=A9crit: 
- 
-> Hello Support,
-> 
-> I was able to locate the drivers for rtnet (/lib/modules/uname
-> -r/kernel/drivers/xenomai/net/drivers) and rtnet.conf is located at
-> /usr/xenomai/etc. It did not require compiling RTnet separately.
-> 
-> I tried following steps mentioned at
-> https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet=5FSetup. The
-> non-realtime driver is e100 for my Ethernet controller. I followed th=
-e
-> steps and also loaded the rt=5Feepro100 hoping that is the real-time =
-driver I
-> should use. The ethernet controller I have is Intel Corporation PRO/1=
-00 VE.
-> 
-> Output of sudo lspci -nn
-> *04:08.0 Ethernet controller [0200]: Intel Corporation PRO/100 VE Net=
-work
-> Connection [8086:1094] (rev 01)*
-> 
-> However, when I unload the e100 driver, loading the rt=5Feepro100 dri=
-ver, and
-> configuring rtnet.conf as mentioned on the RTnet=5FSetup page, I coul=
-d only
-> see the loopback.
-> from running sudo ../sbin/rtifconfig
-> 
-> rtlo      Medium: Local Loopback
->           IP address: 127.0.0.1
->           UP LOOPBACK RUNNING  MTU: 1500
-> 
-> There was a solution posted at
-> https://www.mail-archive.com/rtnet-users@lists.sourceforge.net/msg027=
-66.html
-> is
-> 
-> diff --git a/drivers/rt=5Feepro100.c b/drivers/rt=5Feepro100.c
-> index 15282e4..c6a1c93 100644
-> --- a/drivers/rt=5Feepro100.c
-> +++ b/drivers/rt=5Feepro100.c
-> @@ -1975,6 +1975,7 @@ static struct pci=5Fdevice=5Fid eepro100=5Fpci=5F=
-tbl[]
-> =5F=5Fdevinitdata =3D {
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x103C, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x103D, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x103E, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
-> +       { PCI=5FVENDOR=5FID=5FINTEL, 0x1092, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x1227, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x1228, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
->         { PCI=5FVENDOR=5FID=5FINTEL, 0x2449, PCI=5FANY=5FID, PCI=5FAN=
-Y=5FID, },
-> I seems to work for Breno, but I cannot understand what to do with it=
-.
-> 
-> I am using Trisquel Linux kernel Linux gnu 4.19.89 with Xenomai 3.1.
-> 
-> I think I am close to running RTnet and would appreciate it if some
-> guidance is provided.
-> 
-> Ashwin Damle
-> 
-> 
-> On Mon, 29 Mar 2021 at 23:51, ashwin damle <ashwindamle@gmail.com> wr=
-ote:
-> 
-> >
-> > Dear Xenomai support,
-> >
-> > I am successfully able to run xenomai3.1 on 4.19.89 on my core-2-du=
-o
-> > machine. Xenomai works nice. Further I want to use RTnet.
-> >
-> > From
-> > https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet#installation-f=
-older-overview
-> > I learnt that RTNet is built into Xenomai 3 and so I need not downl=
-oad from
-> > the rtnet page and build it separately. If so then where do I start=
- using
-> > RTNET? Is there any example? The folder mentioned at
-> > https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet=5FSetup do app=
-ear on
-> > my computer.
-> >
-> > From https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet=5FSetup I=
-> > understand that /usr/local/rtnet/ is the directory where the RTNET =
-files
-> > including documentation would be, but this folder is not created on=
- my
-> > system. Therefore, I tried building RTNET from source using the
-> > instructions in the README: I get the error as below
-> >
-> > I request your help with an error.
-> > "checking for RT-extension... configure: error: *** RT-extended ker=
-nel not
-> > found in /lib/modules/4.19.89=5Fxenomai/build
-> > makefile:51: recipe for target 'config.status' failed
-> > "
-> > I found that many have resolved the problems from by searching for =
-the
-> > error and 5 pages direct to the same solution and that is
-> >
-> >  ./configure --with-linux=3D/path/to/linux-source-with-xenomai-exte=
-nsion
-> >  --with-rtext-config=3D/path/to/xeno-config
-> >
-> > My doubts are
-> >
-> > 1. Is it necessary to build RTNet from source or is it built in Xen=
-omai 3?
-> > If it is built in then how do I use it. Some steps will be helpful.=
-> >
-> > 2. If the RTNet is to be built from source then how to solve the ab=
-ove
-> > error. I pointed to the Linux source tree I used to build the xenom=
-ai
-> > kernel but it throws the same error.
-> >
-> > 3. What does " /path/to/linux-source-with-xenomai-extension mean th=
-e Linux
-> > source folder of Xenomai patched kernel? or does it mean
-> > "/lib/modules/uname-r/build"....None works for me. /path/to/xeno-co=
-nfig
-> > seems to be /usr/xenomai on my machine since xeno-config resides th=
-ere.
-> >
-> > Please help with this. Let me know if you require any more informat=
-ion.
-> >
-> > --
-> > Ashwin Damle
-> >
-> 
-> 
-> -- 
-> Ashwin Damle
- 
-Hi Ashwin,
-
-you might want to try to modify the patch like 
-+       { PCI=5FVENDOR=5FID=5FINTEL, 0x1094, PCI=5FANY=5FID, PCI=5FANY=5F=
-ID, },*
-
-rebuild the module and try again
-
-Fran=C3=A7ois
-
-
+UlQgdGFza3MgY2FuIGNyZWF0ZS9tYXAgc3RhbmRhcmQgTGludXggc2hhcmVkIG1lbW9yeSB1c2lu
+ZyBlaXRoZXIgCm1tYXAoKSwgb3Igc2htX29wZW4oKS6BMIQyIEhvd2V2ZXIsIGlmIHlvdSBuZWVk
+IGR5bmFtaWMgbWVtb3J5IG1hbmFnZW1lbnQgCmluc2lkZSB0aGF0IHNoYXJlZCBtZW1vcnksIHlv
+dSdkIGhhdmUgdG8gYWRkIHRoYXQsIGFsb25nIHdpdGggYW55IApyZXF1aXJlZCBsb2NraW5nLCBz
+byBpbiB0aGF0IGNhc2UgeW91J3JlIGJldHRlciBvZmYgdXNpbmcgcnRfaGVhcF94eHgoKSAKcm91
+dGluZXMuCgpCdXQsIGlmIGFsbCB5b3UgbmVlZCBpcyBhIGZpeGVkLXNpemUgbWVtb3J5IGJsb2Nr
+IHNoYXJlZCBieSBtdWx0aXBsZSAKcHJvY2Vzc2VzIChsaWtlIHVzaW5nIEhfU0lOR0xFIHdpdGgg
+cnRfaGVhcF9jcmVhdGUoKSB3b3VsZCBkbyksIHRoZW4gCnRoZXNlIGNhbGxzIHdpbGwgZG8gdGhl
+IGpvYi6BMIQyIE5vcm1hbCBMaW51eCAobm9uLVhlbm9tYWkpIHByb2Nlc3NlcyBjYW4gCmFsc28g
+bWFwIHRvIHRoZXNlIHNoYXJlZCBtZW1vcnkgYmxvY2tzIHVzaW5nIHRoZSBzYW1lIGNhbGxzLgoK
+U3RldmUKCgpPbiA0LzEvMjAyMSAxMDowMiBBTSwgUGV0ZXIgTGF1cmljaCB2aWEgWGVub21haSB3
+cm90ZToKPiBObyBvdGhlciB3YXkgdGhhdCBJIGFtIGF3YXJlIG9mLiBJIHdhcyB0cm91YmxlZCBi
+eSB0aGUgLS1zZXNzaW9uIGFuZCAKPiAtLW1lbS1wb29sLXNpemUgc3dpdGNoZXMgZm9yIGEgbG9u
+ZyB0aW1lIGFzIHdlbGwuCj4KPiBQZXRlcgo+Cj4gT24gNC8xLzIwMjEgMTA6NDQgQU0sIHp5IHdy
+b3RlOgo+PiBIaSBQZXRlciwKPj4KPj4gWW91IHNvbHZlZCB3aGF0IGhhcyB0cm91YmxlZCBtZSBm
+b3IgYSBsb25nIHRpbWUuIFRoYW5rIHlvdSBmb3IgeW91ciAKPj4gcmVwbHkuCj4+IEkga25vdyB0
+aGUgY29uY2VwdGlvbiBvZiBzZXNzaW9uIG9mIGxpbnV4IGZvciB0aGUgZmlyc3QgdGltZS4KPj4g
+SW4gYWRkaXRpb24sIEkgd291bGQgbGlrZSB0byBrbm93IGlmIHRoZXJlIGlzIG90aGVyIG1ldGhv
+ZCA/Cj4+Cj4+IEJlc3QgcmVnYXJkcywKPj4gWmhvdSBZYW5nCj4+Cj4+IC0tLS0tLS0tLS0tLS0t
+LS0tLYEwhDLUrcq808q8/oEwhDItLS0tLS0tLS0tLS0tLS0tLS0KPj4gKreivP7IyzoqICJQZXRl
+ciBMYXVyaWNoIiA8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4+ICq3osvNyrG85DoqgTCEMjIwMjHE
+6jTUwjHI1SjQx8bay8QpIM3tyc84OjQzCj4+ICrK1bz+yMs6KoEwhDIieGVub21haSI8eGVub21h
+aUB4ZW5vbWFpLm9yZz47Cj4+ICrW98ziOiqBMIQyUmU6IFNoYXJlZCBNZW1vcnkgYnkgdXNpbmcg
+UlRfSEVBUAo+Pgo+PiBIZWxsbywKPj4KPj4gSSBzdXNwZWN0IHRoYXQgeW91ciBwcm9ibGVtIG1h
+eSBiZSB0aGUgc2FtZSBhcyBJIGhhZCBlYXJsaWVyLiBJZiB5b3UgYXJlCj4+IHNoYXJpbmcgaGVh
+cHMgdGhlbiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHByb2dyYW0gdGhhdCBuZWVkcyB0byBoYXZl
+IHRoZQo+PiBzYW1lIFhlbm9tYWkgc2Vzc2lvbi4gSGVyZSBpcyBob3cgSSBzcGF3biB0d28gcHJv
+Z3JhbXMgdGhhdCBzaGFyZSB0aGUKPj4gc2FtZSBoZWFwIGFuZCBvdGhlciBYZW5vbWFpIG9iamVj
+dHM6Cj4+Cj4+IIEwhDKBMIQygTCEMiAuL2luaXRTeXOBMIQyIC0tc2Vzc2lvbj1ha2FtaW5hIC0t
+bWVtLXBvb2wtc2l6ZT0yME0gJgo+PiCBMIQygTCEMoEwhDIgLi9zYWNxU2NhbiAtLXNlc3Npb249
+YWthbWluYSAtLW1lbS1wb29sLXNpemU9MjBNICYKPj4KPj4gd2hlcmUgaW5pdFN5cyBhbmQgc2Fj
+cVNjYW4gYXJlIHR3byBvZiBteSBwcm9ncmFtcywgSSBoYXZlIGNob3NlbiB0byBuYW1lCj4+IHRo
+ZSBzZXNzaW9uIGFrYW1pbmEgYW5kIEkgd2FudGVkIGEgbWVtb3J5IHBvb2wgc2l6ZSBvZiAyME0g
+KHJhdGhlciB0aGFuCj4+IHRoZSBkZWZhdWx0IG9mIDFNKS4KPj4KPj4gR29vZCBsdWNrIHdpdGgg
+eW91ciB1cGdyYWRlLiBJIGhhdmUgZm91bmQgdGhlIHVwZ3JhZGUgZnJvbSAyIHRvIGJlCj4+IGlu
+Y3JlZGlibHkgcGFpbmZ1bCBhbmQgSSBhbSBub3cgc3R1Y2sgYSBsaXR0bGUgZnVydGhlciBkb3du
+IHRoZSBwYXRoCj4+IHRoYW4geW91LiBJIGZvdW5kIHRoYXQgSSBsb3N0IGZ1bmN0aW9uYWxpdHkg
+dGhhdCBJIHJlbGllZCBvbiAoZS5nLgo+PiBleGNoYW5naW5nIGV2ZW50cyBhbmQgbWVzc2FnZXMg
+YmV0d2VlbiBrZXJuZWwgZHJpdmVycyBhbmQgdXNlci1zcGFjZQo+PiBwcm9ncmFtcykgdGhhdCBp
+cyBub3QgZWFzeSB0byByZXBsYWNlLiBJIGxvb2tlZCBhdCBzdGF5aW5nIHdpdGggWGVub21haQo+
+PiAyIGJ1dCBJIGRvIG5lZWQgYSBtb3JlIHJlY2VudCBrZXJuZWwgc28gSSBhbSBzdHVjay4KPj4K
+Pj4gR29vZCBsdWNrLgo+Pgo+PiBQZXRlcgo+Pgo+Pgo+PiBPbiAzLzMxLzIwMjEgOToyNSBQTSwg
+enkgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+ID4gSGkgYWxsLAo+PiA+Cj4+ID4gT24gWGVub21haS0y
+LjYuNSwgSSB1c2UgcnRfaGVhcF9jcmVhdGUgd2l0aCBmbGFnICJIX1NIQVJFRCIgdG8gCj4+IGNy
+ZWF0ZSBydF9oZWFwCj4+ID4gaW4gb25lIHByb2Nlc3MgYW5kIGNhbGwgcnRfaGVhcF9iaW5kIHRv
+IGdldCB0aGlzIHJ0X2hlYXAgYnkgdGhlIAo+PiBzYW1lIG5hbWUgaW4gYW5vdGhlcgo+PiA+IHBy
+b2Nlc3MuIEkgdXNlIHJ0X2hlYXAgYXMgc2hhcmVkIG1lbW9yeSBiZXR3ZWVuIHByb2Nlc3MuIEJ1
+dCBvbiAKPj4gWGVub21haS0zLjEsIEkKPj4gPiBmaW5kIHRoaXMgbWV0aG9kIGRvZXMgbm90IHdv
+cmsuIFdoZW4gY2FsbGluZyBydF9oZWFwX2JpbmQgdXNpbmcgCj4+ICJUTV9JTkZJTklURSIsCj4+
+ID4gdGhlIGZ1bmN0aW9uIGRvZXNuJ3QgcmV0dXJuLCB1c2luZyAiVE1fTk9ORUJMT0NLIiwgcmV0
+dXJucyAtMTEuIEkgCj4+IGNoZWNrIHRoaXMKPj4gPiBlbWFpbCBzeXN0ZW0gLCBmaW5kICItLWVu
+YWJsZS1wc2hhcmVkIiBzaG91bGQgYmUgY29uZmlndXJlZCBiZWZvcmUgCj4+IGluc3RhbGxhdGlv
+boEwhDIgYW5kCj4+ID4gSSBkbyBpdCwgYnV0IGl0IGRvZXNuJ3Qgd29yay4KPj4gPiBDYW4gYW55
+b25lIGdpdmUgbWUgYSBkZXRhaWxlZCBzb2x1dGlvbj8gT3IsIHNoYXJlZCBtZW1vcnkgY2Fubm90
+IGJlIAo+PiBjcmVhdGVkIGJ5Cj4+ID4gUlRfSEVBUCBvbiBYZW5vbWFpLTMuCj4+ID4KPj4gPiBC
+ZXN0IHJlZ2FyZHMsCj4+ID4gWmhvdSBZYW5nCg==
