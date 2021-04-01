@@ -1,14 +1,16 @@
-References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
- <87pmz5nu08.fsf@xenomai.org>
- <fd783792-f2ee-c18d-7836-26221b10195a@siemens.com>
- <87h7khnsws.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Xenomai Community Call Minutes - April 7, 2021
-In-reply-to: <87h7khnsws.fsf@xenomai.org>
-Date: Thu, 08 Apr 2021 09:29:04 +0200
-Message-ID: <87eeflnsjj.fsf@xenomai.org>
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8miBTaGFyZWQgTWVtb3J5IGJ5IHVzaW5nIFJUX0hF?=
+ =?UTF-8?Q?AP?=
+References: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
+ <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
+ <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
+From: Peter Laurich <Peter.Laurich@akamina.com>
+Message-ID: <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
+Date: Thu, 1 Apr 2021 11:02:17 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
+Content-Language: en-CA
+Content-Type: text/plain; charset="gb18030"; format="flowed"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Wang, Rick Y via Xenomai" <xenomai@xenomai.org>
+To: zy <zhouyoung1995@qq.com>, xenomai <xenomai@xenomai.org>
 
-
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
->
->> On 08.04.21 08:57, Philippe Gerum via Xenomai wrote:
->>> 
->>> Hello Rick,
->>> 
->>> At what time did that meeting take place yesterday? I tried to connect
->>> several times to the usual 'teams' room from 7:55 to 8:10, but nobody
->>> was there.
->>
->> CEST mess: The meeting moved to 9am our time due to daylight saving.
->>
->
-> Mmf, ok.
->
-
-Btw, maybe there could be an automatic reminder sent to the list about
-this recurring meeting a couple of days before it takes place? This
-might decide (a few) other people to join in out of curiosity, who
-knows.
-
--- 
-Philippe.
-
+Tm8gb3RoZXIgd2F5IHRoYXQgSSBhbSBhd2FyZSBvZi4gSSB3YXMgdHJvdWJsZWQgYnkgdGhlIC0t
+c2Vzc2lvbiBhbmQgCi0tbWVtLXBvb2wtc2l6ZSBzd2l0Y2hlcyBmb3IgYSBsb25nIHRpbWUgYXMg
+d2VsbC4KClBldGVyCgpPbiA0LzEvMjAyMSAxMDo0NCBBTSwgenkgd3JvdGU6Cj4gSGkgUGV0ZXIs
+Cj4KPiBZb3Ugc29sdmVkIHdoYXQgaGFzIHRyb3VibGVkIG1lIGZvciBhIGxvbmcgdGltZS4gVGhh
+bmsgeW91IGZvciB5b3VyIHJlcGx5Lgo+IEkga25vdyB0aGUgY29uY2VwdGlvbiBvZiBzZXNzaW9u
+IG9mIGxpbnV4IGZvciB0aGUgZmlyc3QgdGltZS4KPiBJbiBhZGRpdGlvbiwgSSB3b3VsZCBsaWtl
+IHRvIGtub3cgaWYgdGhlcmUgaXMgb3RoZXIgbWV0aG9kID8KPgo+IEJlc3QgcmVnYXJkcywKPiBa
+aG91IFlhbmcKPgo+IC0tLS0tLS0tLS0tLS0tLS0tLYEwhDLUrcq808q8/oEwhDItLS0tLS0tLS0t
+LS0tLS0tLS0KPiAqt6K8/sjLOiogIlBldGVyIExhdXJpY2giIDx4ZW5vbWFpQHhlbm9tYWkub3Jn
+PjsKPiAqt6LLzcqxvOQ6KoEwhDIyMDIxxOo01MIxyNUo0MfG2svEKSDN7cnPODo0Mwo+ICrK1bz+
+yMs6KoEwhDIieGVub21haSI8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4gKtb3zOI6KoEwhDJSZTog
+U2hhcmVkIE1lbW9yeSBieSB1c2luZyBSVF9IRUFQCj4KPiBIZWxsbywKPgo+IEkgc3VzcGVjdCB0
+aGF0IHlvdXIgcHJvYmxlbSBtYXkgYmUgdGhlIHNhbWUgYXMgSSBoYWQgZWFybGllci4gSWYgeW91
+IGFyZQo+IHNoYXJpbmcgaGVhcHMgdGhlbiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHByb2dyYW0g
+dGhhdCBuZWVkcyB0byBoYXZlIHRoZQo+IHNhbWUgWGVub21haSBzZXNzaW9uLiBIZXJlIGlzIGhv
+dyBJIHNwYXduIHR3byBwcm9ncmFtcyB0aGF0IHNoYXJlIHRoZQo+IHNhbWUgaGVhcCBhbmQgb3Ro
+ZXIgWGVub21haSBvYmplY3RzOgo+Cj4ggTCEMoEwhDKBMIQyIC4vaW5pdFN5c4EwhDIgLS1zZXNz
+aW9uPWFrYW1pbmEgLS1tZW0tcG9vbC1zaXplPTIwTSAmCj4ggTCEMoEwhDKBMIQyIC4vc2FjcVNj
+YW4gLS1zZXNzaW9uPWFrYW1pbmEgLS1tZW0tcG9vbC1zaXplPTIwTSAmCj4KPiB3aGVyZSBpbml0
+U3lzIGFuZCBzYWNxU2NhbiBhcmUgdHdvIG9mIG15IHByb2dyYW1zLCBJIGhhdmUgY2hvc2VuIHRv
+IG5hbWUKPiB0aGUgc2Vzc2lvbiBha2FtaW5hIGFuZCBJIHdhbnRlZCBhIG1lbW9yeSBwb29sIHNp
+emUgb2YgMjBNIChyYXRoZXIgdGhhbgo+IHRoZSBkZWZhdWx0IG9mIDFNKS4KPgo+IEdvb2QgbHVj
+ayB3aXRoIHlvdXIgdXBncmFkZS4gSSBoYXZlIGZvdW5kIHRoZSB1cGdyYWRlIGZyb20gMiB0byBi
+ZQo+IGluY3JlZGlibHkgcGFpbmZ1bCBhbmQgSSBhbSBub3cgc3R1Y2sgYSBsaXR0bGUgZnVydGhl
+ciBkb3duIHRoZSBwYXRoCj4gdGhhbiB5b3UuIEkgZm91bmQgdGhhdCBJIGxvc3QgZnVuY3Rpb25h
+bGl0eSB0aGF0IEkgcmVsaWVkIG9uIChlLmcuCj4gZXhjaGFuZ2luZyBldmVudHMgYW5kIG1lc3Nh
+Z2VzIGJldHdlZW4ga2VybmVsIGRyaXZlcnMgYW5kIHVzZXItc3BhY2UKPiBwcm9ncmFtcykgdGhh
+dCBpcyBub3QgZWFzeSB0byByZXBsYWNlLiBJIGxvb2tlZCBhdCBzdGF5aW5nIHdpdGggWGVub21h
+aQo+IDIgYnV0IEkgZG8gbmVlZCBhIG1vcmUgcmVjZW50IGtlcm5lbCBzbyBJIGFtIHN0dWNrLgo+
+Cj4gR29vZCBsdWNrLgo+Cj4gUGV0ZXIKPgo+Cj4gT24gMy8zMS8yMDIxIDk6MjUgUE0sIHp5IHZp
+YSBYZW5vbWFpIHdyb3RlOgo+ID4gSGkgYWxsLAo+ID4KPiA+IE9uIFhlbm9tYWktMi42LjUsIEkg
+dXNlIHJ0X2hlYXBfY3JlYXRlIHdpdGggZmxhZyAiSF9TSEFSRUQiIHRvIAo+IGNyZWF0ZSBydF9o
+ZWFwCj4gPiBpbiBvbmUgcHJvY2VzcyBhbmQgY2FsbCBydF9oZWFwX2JpbmQgdG8gZ2V0IHRoaXMg
+cnRfaGVhcCBieSB0aGUgc2FtZSAKPiBuYW1lIGluIGFub3RoZXIKPiA+IHByb2Nlc3MuIEkgdXNl
+IHJ0X2hlYXAgYXMgc2hhcmVkIG1lbW9yeSBiZXR3ZWVuIHByb2Nlc3MuIEJ1dCBvbiAKPiBYZW5v
+bWFpLTMuMSwgSQo+ID4gZmluZCB0aGlzIG1ldGhvZCBkb2VzIG5vdCB3b3JrLiBXaGVuIGNhbGxp
+bmcgcnRfaGVhcF9iaW5kIHVzaW5nIAo+ICJUTV9JTkZJTklURSIsCj4gPiB0aGUgZnVuY3Rpb24g
+ZG9lc24ndCByZXR1cm4sIHVzaW5nICJUTV9OT05FQkxPQ0siLCByZXR1cm5zIC0xMS4gSSAKPiBj
+aGVjayB0aGlzCj4gPiBlbWFpbCBzeXN0ZW0gLCBmaW5kICItLWVuYWJsZS1wc2hhcmVkIiBzaG91
+bGQgYmUgY29uZmlndXJlZCBiZWZvcmUgCj4gaW5zdGFsbGF0aW9ugTCEMiBhbmQKPiA+IEkgZG8g
+aXQsIGJ1dCBpdCBkb2Vzbid0IHdvcmsuCj4gPiBDYW4gYW55b25lIGdpdmUgbWUgYSBkZXRhaWxl
+ZCBzb2x1dGlvbj8gT3IsIHNoYXJlZCBtZW1vcnkgY2Fubm90IGJlIAo+IGNyZWF0ZWQgYnkKPiA+
+IFJUX0hFQVAgb24gWGVub21haS0zLgo+ID4KPiA+IEJlc3QgcmVnYXJkcywKPiA+IFpob3UgWWFu
+Zwo=
