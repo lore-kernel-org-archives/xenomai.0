@@ -1,16 +1,11 @@
-Subject: =?UTF-8?B?UmU6IOWbnuWkje+8miBTaGFyZWQgTWVtb3J5IGJ5IHVzaW5nIFJUX0hF?=
- =?UTF-8?Q?AP?=
-References: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
- <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
- <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
-From: Peter Laurich <Peter.Laurich@akamina.com>
-Message-ID: <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
-Date: Thu, 1 Apr 2021 11:02:17 -0400
 MIME-Version: 1.0
-In-Reply-To: <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
-Content-Language: en-CA
-Content-Type: text/plain; charset="gb18030"; format="flowed"
-Content-Transfer-Encoding: base64
+References: <CAC-NLwzFEyQVeHUXHa6jYG9BesxaoA=1c4BHJiBRuKWhSB6Svg@mail.gmail.com>
+In-Reply-To: <CAC-NLwzFEyQVeHUXHa6jYG9BesxaoA=1c4BHJiBRuKWhSB6Svg@mail.gmail.com>
+From: ashwin damle <ashwindamle@gmail.com>
+Date: Thu, 1 Apr 2021 23:39:36 +0530
+Message-ID: <CAC-NLwzi7dQq22sWLXjHixqgy3=BFC750i_sZtQc4Z5-rAy+3Q@mail.gmail.com>
+Subject: Re: How to use RTnet on xenomai3?
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +14,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: zy <zhouyoung1995@qq.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Tm8gb3RoZXIgd2F5IHRoYXQgSSBhbSBhd2FyZSBvZi4gSSB3YXMgdHJvdWJsZWQgYnkgdGhlIC0t
-c2Vzc2lvbiBhbmQgCi0tbWVtLXBvb2wtc2l6ZSBzd2l0Y2hlcyBmb3IgYSBsb25nIHRpbWUgYXMg
-d2VsbC4KClBldGVyCgpPbiA0LzEvMjAyMSAxMDo0NCBBTSwgenkgd3JvdGU6Cj4gSGkgUGV0ZXIs
-Cj4KPiBZb3Ugc29sdmVkIHdoYXQgaGFzIHRyb3VibGVkIG1lIGZvciBhIGxvbmcgdGltZS4gVGhh
-bmsgeW91IGZvciB5b3VyIHJlcGx5Lgo+IEkga25vdyB0aGUgY29uY2VwdGlvbiBvZiBzZXNzaW9u
-IG9mIGxpbnV4IGZvciB0aGUgZmlyc3QgdGltZS4KPiBJbiBhZGRpdGlvbiwgSSB3b3VsZCBsaWtl
-IHRvIGtub3cgaWYgdGhlcmUgaXMgb3RoZXIgbWV0aG9kID8KPgo+IEJlc3QgcmVnYXJkcywKPiBa
-aG91IFlhbmcKPgo+IC0tLS0tLS0tLS0tLS0tLS0tLYEwhDLUrcq808q8/oEwhDItLS0tLS0tLS0t
-LS0tLS0tLS0KPiAqt6K8/sjLOiogIlBldGVyIExhdXJpY2giIDx4ZW5vbWFpQHhlbm9tYWkub3Jn
-PjsKPiAqt6LLzcqxvOQ6KoEwhDIyMDIxxOo01MIxyNUo0MfG2svEKSDN7cnPODo0Mwo+ICrK1bz+
-yMs6KoEwhDIieGVub21haSI8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4gKtb3zOI6KoEwhDJSZTog
-U2hhcmVkIE1lbW9yeSBieSB1c2luZyBSVF9IRUFQCj4KPiBIZWxsbywKPgo+IEkgc3VzcGVjdCB0
-aGF0IHlvdXIgcHJvYmxlbSBtYXkgYmUgdGhlIHNhbWUgYXMgSSBoYWQgZWFybGllci4gSWYgeW91
-IGFyZQo+IHNoYXJpbmcgaGVhcHMgdGhlbiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHByb2dyYW0g
-dGhhdCBuZWVkcyB0byBoYXZlIHRoZQo+IHNhbWUgWGVub21haSBzZXNzaW9uLiBIZXJlIGlzIGhv
-dyBJIHNwYXduIHR3byBwcm9ncmFtcyB0aGF0IHNoYXJlIHRoZQo+IHNhbWUgaGVhcCBhbmQgb3Ro
-ZXIgWGVub21haSBvYmplY3RzOgo+Cj4ggTCEMoEwhDKBMIQyIC4vaW5pdFN5c4EwhDIgLS1zZXNz
-aW9uPWFrYW1pbmEgLS1tZW0tcG9vbC1zaXplPTIwTSAmCj4ggTCEMoEwhDKBMIQyIC4vc2FjcVNj
-YW4gLS1zZXNzaW9uPWFrYW1pbmEgLS1tZW0tcG9vbC1zaXplPTIwTSAmCj4KPiB3aGVyZSBpbml0
-U3lzIGFuZCBzYWNxU2NhbiBhcmUgdHdvIG9mIG15IHByb2dyYW1zLCBJIGhhdmUgY2hvc2VuIHRv
-IG5hbWUKPiB0aGUgc2Vzc2lvbiBha2FtaW5hIGFuZCBJIHdhbnRlZCBhIG1lbW9yeSBwb29sIHNp
-emUgb2YgMjBNIChyYXRoZXIgdGhhbgo+IHRoZSBkZWZhdWx0IG9mIDFNKS4KPgo+IEdvb2QgbHVj
-ayB3aXRoIHlvdXIgdXBncmFkZS4gSSBoYXZlIGZvdW5kIHRoZSB1cGdyYWRlIGZyb20gMiB0byBi
-ZQo+IGluY3JlZGlibHkgcGFpbmZ1bCBhbmQgSSBhbSBub3cgc3R1Y2sgYSBsaXR0bGUgZnVydGhl
-ciBkb3duIHRoZSBwYXRoCj4gdGhhbiB5b3UuIEkgZm91bmQgdGhhdCBJIGxvc3QgZnVuY3Rpb25h
-bGl0eSB0aGF0IEkgcmVsaWVkIG9uIChlLmcuCj4gZXhjaGFuZ2luZyBldmVudHMgYW5kIG1lc3Nh
-Z2VzIGJldHdlZW4ga2VybmVsIGRyaXZlcnMgYW5kIHVzZXItc3BhY2UKPiBwcm9ncmFtcykgdGhh
-dCBpcyBub3QgZWFzeSB0byByZXBsYWNlLiBJIGxvb2tlZCBhdCBzdGF5aW5nIHdpdGggWGVub21h
-aQo+IDIgYnV0IEkgZG8gbmVlZCBhIG1vcmUgcmVjZW50IGtlcm5lbCBzbyBJIGFtIHN0dWNrLgo+
-Cj4gR29vZCBsdWNrLgo+Cj4gUGV0ZXIKPgo+Cj4gT24gMy8zMS8yMDIxIDk6MjUgUE0sIHp5IHZp
-YSBYZW5vbWFpIHdyb3RlOgo+ID4gSGkgYWxsLAo+ID4KPiA+IE9uIFhlbm9tYWktMi42LjUsIEkg
-dXNlIHJ0X2hlYXBfY3JlYXRlIHdpdGggZmxhZyAiSF9TSEFSRUQiIHRvIAo+IGNyZWF0ZSBydF9o
-ZWFwCj4gPiBpbiBvbmUgcHJvY2VzcyBhbmQgY2FsbCBydF9oZWFwX2JpbmQgdG8gZ2V0IHRoaXMg
-cnRfaGVhcCBieSB0aGUgc2FtZSAKPiBuYW1lIGluIGFub3RoZXIKPiA+IHByb2Nlc3MuIEkgdXNl
-IHJ0X2hlYXAgYXMgc2hhcmVkIG1lbW9yeSBiZXR3ZWVuIHByb2Nlc3MuIEJ1dCBvbiAKPiBYZW5v
-bWFpLTMuMSwgSQo+ID4gZmluZCB0aGlzIG1ldGhvZCBkb2VzIG5vdCB3b3JrLiBXaGVuIGNhbGxp
-bmcgcnRfaGVhcF9iaW5kIHVzaW5nIAo+ICJUTV9JTkZJTklURSIsCj4gPiB0aGUgZnVuY3Rpb24g
-ZG9lc24ndCByZXR1cm4sIHVzaW5nICJUTV9OT05FQkxPQ0siLCByZXR1cm5zIC0xMS4gSSAKPiBj
-aGVjayB0aGlzCj4gPiBlbWFpbCBzeXN0ZW0gLCBmaW5kICItLWVuYWJsZS1wc2hhcmVkIiBzaG91
-bGQgYmUgY29uZmlndXJlZCBiZWZvcmUgCj4gaW5zdGFsbGF0aW9ugTCEMiBhbmQKPiA+IEkgZG8g
-aXQsIGJ1dCBpdCBkb2Vzbid0IHdvcmsuCj4gPiBDYW4gYW55b25lIGdpdmUgbWUgYSBkZXRhaWxl
-ZCBzb2x1dGlvbj8gT3IsIHNoYXJlZCBtZW1vcnkgY2Fubm90IGJlIAo+IGNyZWF0ZWQgYnkKPiA+
-IFJUX0hFQVAgb24gWGVub21haS0zLgo+ID4KPiA+IEJlc3QgcmVnYXJkcywKPiA+IFpob3UgWWFu
-Zwo=
+Hello Support,
+
+I was able to locate the drivers for rtnet (/lib/modules/uname
+-r/kernel/drivers/xenomai/net/drivers) and rtnet.conf is located at
+/usr/xenomai/etc. It did not require compiling RTnet separately.
+
+I tried following steps mentioned at
+https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup. The
+non-realtime driver is e100 for my Ethernet controller. I followed the
+steps and also loaded the rt_eepro100 hoping that is the real-time driver I
+should use. The ethernet controller I have is Intel Corporation PRO/100 VE.
+
+Output of sudo lspci -nn
+*04:08.0 Ethernet controller [0200]: Intel Corporation PRO/100 VE Network
+Connection [8086:1094] (rev 01)*
+
+However, when I unload the e100 driver, loading the rt_eepro100 driver, and
+configuring rtnet.conf as mentioned on the RTnet_Setup page, I could only
+see the loopback.
+from running sudo ../sbin/rtifconfig
+
+rtlo      Medium: Local Loopback
+          IP address: 127.0.0.1
+          UP LOOPBACK RUNNING  MTU: 1500
+
+There was a solution posted at
+https://www.mail-archive.com/rtnet-users@lists.sourceforge.net/msg02766.html
+is
+
+diff --git a/drivers/rt_eepro100.c b/drivers/rt_eepro100.c
+index 15282e4..c6a1c93 100644
+--- a/drivers/rt_eepro100.c
++++ b/drivers/rt_eepro100.c
+@@ -1975,6 +1975,7 @@ static struct pci_device_id eepro100_pci_tbl[]
+__devinitdata = {
+        { PCI_VENDOR_ID_INTEL, 0x103C, PCI_ANY_ID, PCI_ANY_ID, },
+        { PCI_VENDOR_ID_INTEL, 0x103D, PCI_ANY_ID, PCI_ANY_ID, },
+        { PCI_VENDOR_ID_INTEL, 0x103E, PCI_ANY_ID, PCI_ANY_ID, },
++       { PCI_VENDOR_ID_INTEL, 0x1092, PCI_ANY_ID, PCI_ANY_ID, },
+        { PCI_VENDOR_ID_INTEL, 0x1227, PCI_ANY_ID, PCI_ANY_ID, },
+        { PCI_VENDOR_ID_INTEL, 0x1228, PCI_ANY_ID, PCI_ANY_ID, },
+        { PCI_VENDOR_ID_INTEL, 0x2449, PCI_ANY_ID, PCI_ANY_ID, },
+I seems to work for Breno, but I cannot understand what to do with it.
+
+I am using Trisquel Linux kernel Linux gnu 4.19.89 with Xenomai 3.1.
+
+I think I am close to running RTnet and would appreciate it if some
+guidance is provided.
+
+Ashwin Damle
+
+
+On Mon, 29 Mar 2021 at 23:51, ashwin damle <ashwindamle@gmail.com> wrote:
+
+>
+> Dear Xenomai support,
+>
+> I am successfully able to run xenomai3.1 on 4.19.89 on my core-2-duo
+> machine. Xenomai works nice. Further I want to use RTnet.
+>
+> From
+> https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet#installation-folder-overview
+> I learnt that RTNet is built into Xenomai 3 and so I need not download from
+> the rtnet page and build it separately. If so then where do I start using
+> RTNET? Is there any example? The folder mentioned at
+> https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup do appear on
+> my computer.
+>
+> From https://source.denx.de/Xenomai/xenomai/-/wikis/RTnet_Setup I
+> understand that /usr/local/rtnet/ is the directory where the RTNET files
+> including documentation would be, but this folder is not created on my
+> system. Therefore, I tried building RTNET from source using the
+> instructions in the README: I get the error as below
+>
+> I request your help with an error.
+> "checking for RT-extension... configure: error: *** RT-extended kernel not
+> found in /lib/modules/4.19.89_xenomai/build
+> makefile:51: recipe for target 'config.status' failed
+> "
+> I found that many have resolved the problems from by searching for the
+> error and 5 pages direct to the same solution and that is
+>
+>  ./configure --with-linux=/path/to/linux-source-with-xenomai-extension
+>  --with-rtext-config=/path/to/xeno-config
+>
+> My doubts are
+>
+> 1. Is it necessary to build RTNet from source or is it built in Xenomai 3?
+> If it is built in then how do I use it. Some steps will be helpful.
+>
+> 2. If the RTNet is to be built from source then how to solve the above
+> error. I pointed to the Linux source tree I used to build the xenomai
+> kernel but it throws the same error.
+>
+> 3. What does " /path/to/linux-source-with-xenomai-extension mean the Linux
+> source folder of Xenomai patched kernel? or does it mean
+> "/lib/modules/uname-r/build"....None works for me. /path/to/xeno-config
+> seems to be /usr/xenomai on my machine since xeno-config resides there.
+>
+> Please help with this. Let me know if you require any more information.
+>
+> --
+> Ashwin Damle
+>
+
+
+-- 
+Ashwin Damle
