@@ -1,17 +1,17 @@
-Subject: =?UTF-8?B?UmU6IOWbnuWkje+8miBTaGFyZWQgTWVtb3J5IGJ5IHVzaW5nIFJUX0hF?=
- =?UTF-8?Q?AP?=
-References: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
- <fec9898d-cca5-e37c-11b7-c8b5471450b1@akamina.com>
- <tencent_90C71478DBE70AEB12485EDA6AD97173EA06@qq.com>
- <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
-From: steve freyder <steve@freyder.net>
-Message-ID: <33a1a822-3e6f-a952-d98d-8c22d233458a@freyder.net>
-Date: Thu, 1 Apr 2021 16:46:53 -0500
 MIME-Version: 1.0
-In-Reply-To: <560f5b63-4c78-d8ef-fd70-584c35cbcc4b@akamina.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="gb18030"; format="flowed"
-Content-Transfer-Encoding: base64
+References: <CAFc1U0s93=zDEQA9X+QyGD=miNAHdhKVTwn0YPbsAAysChdMyA@mail.gmail.com>
+ <CAFc1U0tfFRARvpZ4pWajwidipQ809dbORJZx10rv6rF7dZ3Nvw@mail.gmail.com>
+ <CALLqZ8TEcPEyH9ZUMvOO6rSHPtzjZdGvrxCntW5OzwBRPGxngA@mail.gmail.com>
+ <CAFc1U0t0EOejpmVsBQcnDzdBgmNbNYcxZbgbtMULKWt-0ECsAQ@mail.gmail.com>
+ <CALLqZ8RQYv=+bDa=1KKqiRt+MMHCGRCbA+ynadEcaSwnf9nr0w@mail.gmail.com>
+ <CAFc1U0vL05ZNSP4G5S=aG2V_PRY041EHCop0p0xGFDEDSSWv4Q@mail.gmail.com>
+In-Reply-To: <CAFc1U0vL05ZNSP4G5S=aG2V_PRY041EHCop0p0xGFDEDSSWv4Q@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 2 Apr 2021 00:54:48 -0400
+Message-ID: <CALLqZ8TJ2VqH7qRc=Kxy+3URveu=q2vcB7EbL1Z98-hUicrQMg@mail.gmail.com>
+Subject: Re: Arm64 jitter
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,61 +20,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Laurich <Peter.Laurich@akamina.com>, zy <zhouyoung1995@qq.com>, xenomai <xenomai@xenomai.org>
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Cc: xenomai <xenomai@xenomai.org>
 
-UlQgdGFza3MgY2FuIGNyZWF0ZS9tYXAgc3RhbmRhcmQgTGludXggc2hhcmVkIG1lbW9yeSB1c2lu
-ZyBlaXRoZXIgCm1tYXAoKSwgb3Igc2htX29wZW4oKS6BMIQyIEhvd2V2ZXIsIGlmIHlvdSBuZWVk
-IGR5bmFtaWMgbWVtb3J5IG1hbmFnZW1lbnQgCmluc2lkZSB0aGF0IHNoYXJlZCBtZW1vcnksIHlv
-dSdkIGhhdmUgdG8gYWRkIHRoYXQsIGFsb25nIHdpdGggYW55IApyZXF1aXJlZCBsb2NraW5nLCBz
-byBpbiB0aGF0IGNhc2UgeW91J3JlIGJldHRlciBvZmYgdXNpbmcgcnRfaGVhcF94eHgoKSAKcm91
-dGluZXMuCgpCdXQsIGlmIGFsbCB5b3UgbmVlZCBpcyBhIGZpeGVkLXNpemUgbWVtb3J5IGJsb2Nr
-IHNoYXJlZCBieSBtdWx0aXBsZSAKcHJvY2Vzc2VzIChsaWtlIHVzaW5nIEhfU0lOR0xFIHdpdGgg
-cnRfaGVhcF9jcmVhdGUoKSB3b3VsZCBkbyksIHRoZW4gCnRoZXNlIGNhbGxzIHdpbGwgZG8gdGhl
-IGpvYi6BMIQyIE5vcm1hbCBMaW51eCAobm9uLVhlbm9tYWkpIHByb2Nlc3NlcyBjYW4gCmFsc28g
-bWFwIHRvIHRoZXNlIHNoYXJlZCBtZW1vcnkgYmxvY2tzIHVzaW5nIHRoZSBzYW1lIGNhbGxzLgoK
-U3RldmUKCgpPbiA0LzEvMjAyMSAxMDowMiBBTSwgUGV0ZXIgTGF1cmljaCB2aWEgWGVub21haSB3
-cm90ZToKPiBObyBvdGhlciB3YXkgdGhhdCBJIGFtIGF3YXJlIG9mLiBJIHdhcyB0cm91YmxlZCBi
-eSB0aGUgLS1zZXNzaW9uIGFuZCAKPiAtLW1lbS1wb29sLXNpemUgc3dpdGNoZXMgZm9yIGEgbG9u
-ZyB0aW1lIGFzIHdlbGwuCj4KPiBQZXRlcgo+Cj4gT24gNC8xLzIwMjEgMTA6NDQgQU0sIHp5IHdy
-b3RlOgo+PiBIaSBQZXRlciwKPj4KPj4gWW91IHNvbHZlZCB3aGF0IGhhcyB0cm91YmxlZCBtZSBm
-b3IgYSBsb25nIHRpbWUuIFRoYW5rIHlvdSBmb3IgeW91ciAKPj4gcmVwbHkuCj4+IEkga25vdyB0
-aGUgY29uY2VwdGlvbiBvZiBzZXNzaW9uIG9mIGxpbnV4IGZvciB0aGUgZmlyc3QgdGltZS4KPj4g
-SW4gYWRkaXRpb24sIEkgd291bGQgbGlrZSB0byBrbm93IGlmIHRoZXJlIGlzIG90aGVyIG1ldGhv
-ZCA/Cj4+Cj4+IEJlc3QgcmVnYXJkcywKPj4gWmhvdSBZYW5nCj4+Cj4+IC0tLS0tLS0tLS0tLS0t
-LS0tLYEwhDLUrcq808q8/oEwhDItLS0tLS0tLS0tLS0tLS0tLS0KPj4gKreivP7IyzoqICJQZXRl
-ciBMYXVyaWNoIiA8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4+ICq3osvNyrG85DoqgTCEMjIwMjHE
-6jTUwjHI1SjQx8bay8QpIM3tyc84OjQzCj4+ICrK1bz+yMs6KoEwhDIieGVub21haSI8eGVub21h
-aUB4ZW5vbWFpLm9yZz47Cj4+ICrW98ziOiqBMIQyUmU6IFNoYXJlZCBNZW1vcnkgYnkgdXNpbmcg
-UlRfSEVBUAo+Pgo+PiBIZWxsbywKPj4KPj4gSSBzdXNwZWN0IHRoYXQgeW91ciBwcm9ibGVtIG1h
-eSBiZSB0aGUgc2FtZSBhcyBJIGhhZCBlYXJsaWVyLiBJZiB5b3UgYXJlCj4+IHNoYXJpbmcgaGVh
-cHMgdGhlbiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHByb2dyYW0gdGhhdCBuZWVkcyB0byBoYXZl
-IHRoZQo+PiBzYW1lIFhlbm9tYWkgc2Vzc2lvbi4gSGVyZSBpcyBob3cgSSBzcGF3biB0d28gcHJv
-Z3JhbXMgdGhhdCBzaGFyZSB0aGUKPj4gc2FtZSBoZWFwIGFuZCBvdGhlciBYZW5vbWFpIG9iamVj
-dHM6Cj4+Cj4+IIEwhDKBMIQygTCEMiAuL2luaXRTeXOBMIQyIC0tc2Vzc2lvbj1ha2FtaW5hIC0t
-bWVtLXBvb2wtc2l6ZT0yME0gJgo+PiCBMIQygTCEMoEwhDIgLi9zYWNxU2NhbiAtLXNlc3Npb249
-YWthbWluYSAtLW1lbS1wb29sLXNpemU9MjBNICYKPj4KPj4gd2hlcmUgaW5pdFN5cyBhbmQgc2Fj
-cVNjYW4gYXJlIHR3byBvZiBteSBwcm9ncmFtcywgSSBoYXZlIGNob3NlbiB0byBuYW1lCj4+IHRo
-ZSBzZXNzaW9uIGFrYW1pbmEgYW5kIEkgd2FudGVkIGEgbWVtb3J5IHBvb2wgc2l6ZSBvZiAyME0g
-KHJhdGhlciB0aGFuCj4+IHRoZSBkZWZhdWx0IG9mIDFNKS4KPj4KPj4gR29vZCBsdWNrIHdpdGgg
-eW91ciB1cGdyYWRlLiBJIGhhdmUgZm91bmQgdGhlIHVwZ3JhZGUgZnJvbSAyIHRvIGJlCj4+IGlu
-Y3JlZGlibHkgcGFpbmZ1bCBhbmQgSSBhbSBub3cgc3R1Y2sgYSBsaXR0bGUgZnVydGhlciBkb3du
-IHRoZSBwYXRoCj4+IHRoYW4geW91LiBJIGZvdW5kIHRoYXQgSSBsb3N0IGZ1bmN0aW9uYWxpdHkg
-dGhhdCBJIHJlbGllZCBvbiAoZS5nLgo+PiBleGNoYW5naW5nIGV2ZW50cyBhbmQgbWVzc2FnZXMg
-YmV0d2VlbiBrZXJuZWwgZHJpdmVycyBhbmQgdXNlci1zcGFjZQo+PiBwcm9ncmFtcykgdGhhdCBp
-cyBub3QgZWFzeSB0byByZXBsYWNlLiBJIGxvb2tlZCBhdCBzdGF5aW5nIHdpdGggWGVub21haQo+
-PiAyIGJ1dCBJIGRvIG5lZWQgYSBtb3JlIHJlY2VudCBrZXJuZWwgc28gSSBhbSBzdHVjay4KPj4K
-Pj4gR29vZCBsdWNrLgo+Pgo+PiBQZXRlcgo+Pgo+Pgo+PiBPbiAzLzMxLzIwMjEgOToyNSBQTSwg
-enkgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+ID4gSGkgYWxsLAo+PiA+Cj4+ID4gT24gWGVub21haS0y
-LjYuNSwgSSB1c2UgcnRfaGVhcF9jcmVhdGUgd2l0aCBmbGFnICJIX1NIQVJFRCIgdG8gCj4+IGNy
-ZWF0ZSBydF9oZWFwCj4+ID4gaW4gb25lIHByb2Nlc3MgYW5kIGNhbGwgcnRfaGVhcF9iaW5kIHRv
-IGdldCB0aGlzIHJ0X2hlYXAgYnkgdGhlIAo+PiBzYW1lIG5hbWUgaW4gYW5vdGhlcgo+PiA+IHBy
-b2Nlc3MuIEkgdXNlIHJ0X2hlYXAgYXMgc2hhcmVkIG1lbW9yeSBiZXR3ZWVuIHByb2Nlc3MuIEJ1
-dCBvbiAKPj4gWGVub21haS0zLjEsIEkKPj4gPiBmaW5kIHRoaXMgbWV0aG9kIGRvZXMgbm90IHdv
-cmsuIFdoZW4gY2FsbGluZyBydF9oZWFwX2JpbmQgdXNpbmcgCj4+ICJUTV9JTkZJTklURSIsCj4+
-ID4gdGhlIGZ1bmN0aW9uIGRvZXNuJ3QgcmV0dXJuLCB1c2luZyAiVE1fTk9ORUJMT0NLIiwgcmV0
-dXJucyAtMTEuIEkgCj4+IGNoZWNrIHRoaXMKPj4gPiBlbWFpbCBzeXN0ZW0gLCBmaW5kICItLWVu
-YWJsZS1wc2hhcmVkIiBzaG91bGQgYmUgY29uZmlndXJlZCBiZWZvcmUgCj4+IGluc3RhbGxhdGlv
-boEwhDIgYW5kCj4+ID4gSSBkbyBpdCwgYnV0IGl0IGRvZXNuJ3Qgd29yay4KPj4gPiBDYW4gYW55
-b25lIGdpdmUgbWUgYSBkZXRhaWxlZCBzb2x1dGlvbj8gT3IsIHNoYXJlZCBtZW1vcnkgY2Fubm90
-IGJlIAo+PiBjcmVhdGVkIGJ5Cj4+ID4gUlRfSEVBUCBvbiBYZW5vbWFpLTMuCj4+ID4KPj4gPiBC
-ZXN0IHJlZ2FyZHMsCj4+ID4gWmhvdSBZYW5nCg==
+On Mon, Mar 29, 2021 at 9:35 AM Pierre FICHEUX <pierre.ficheux@smile.fr>
+wrote:
+
+> Thx a lot !
+>
+> Le lun. 29 mars 2021 =C3=A0 15:17, Greg Gallagher <greg@embeddedgreg.com>=
+ a
+> =C3=A9crit :
+>
+>>
+>>
+>> On Mon, Mar 29, 2021 at 8:06 AM Pierre FICHEUX <pierre.ficheux@smile.fr>
+>> wrote:
+>>
+>>> Hi Greg,
+>>>
+>>> Thks for the answer, so you're currently tracking the problem?
+>>>
+>>> Le lun. 29 mars 2021 =C3=A0 13:43, Greg Gallagher <greg@embeddedgreg.co=
+m> a
+>>> =C3=A9crit :
+>>>
+>>>>
+>>>>
+>>>> On Mon, Mar 29, 2021 at 5:22 AM Pierre FICHEUX via Xenomai <
+>>>> xenomai@xenomai.org> wrote:
+>>>>
+>>>>> I mean Arm64 AND 5.x is recent !
+>>>>>
+>>>>> Le lun. 29 mars 2021 =C3=A0 11:20, Pierre FICHEUX <pierre.ficheux@smi=
+le.fr>
+>>>>> a
+>>>>> =C3=A9crit :
+>>>>>
+>>>>> > Hi all,
+>>>>> >
+>>>>> > I=E2=80=99ve been using Xenomai-3.1/I-pipe for several months on Pi=
+ 3 B/B+
+>>>>> with
+>>>>> > mainline kernel (4.19.128 and 4.19.144, arm). I had good results
+>>>>> (about 30
+>>>>> > =C2=B5s jitter) with latency + dohell (or latency + hackbench).
+>>>>> >
+>>>>> > Unfortunately, a new arm64 test on  5.4.72 or 5.4.107
+>>>>> > (ipipe-core-5.4.107-arm64-1 tag) leads to a  70 =C2=B5s jitter on t=
+he same
+>>>>> > board.
+>>>>> >
+>>>>> > I know I-pipe support is recent for arm64 but do you have any idea
+>>>>> about
+>>>>> > the problem? What are the results on other Arm64 boards such as iMX=
+,
+>>>>> or
+>>>>> > OMAP ?
+>>>>> >
+>>>>> >
+>>>>> > Please note, I removed the warnings about APM/ACPI/CPU
+>>>>> freq/MIGRATION from
+>>>>> > the kernel config.
+>>>>> >
+>>>>> >
+>>>>> > Thx by advance
+>>>>> >
+>>>>> >
+>>>>> > Regards
+>>>>> >
+>>>>> > --
+>>>>> >
+>>>>> > Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.f=
+r
+>>>>> >                              http://www.smile.fr
+>>>>> >                              https://smile.eu/fr/offres/embarque-io=
+t
+>>>>> > I would love to change the world, but they won't give me the source
+>>>>> code
+>>>>> >
+>>>>> >
+>>>>>
+>>>>> --
+>>>>>
+>>>>> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>>>>>                              http://www.smile.fr
+>>>>>                              https://smile.eu/fr/offres/embarque-iot
+>>>>> I would love to change the world, but they won't give me the source
+>>>>> code
+>>>>
+>>>>
+>>>> I test with Ultra96 board and have seen higher then normal. I=E2=80=99=
+m using
+>>>> ftrace to track down the source of the latency.
+>>>>
+>>>> -Greg
+>>>>
+>>>
+>>>
+>>> --
+>>>
+>>> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>>>                              http://www.smile.fr
+>>>                              https://smile.eu/fr/offres/embarque-iot
+>>> I would love to change the world, but they won't give me the source cod=
+e
+>>>
+>>> Hi Pierre,
+>>   I have a hang to look at in arm64 qemu and then I=E2=80=99m getting ba=
+ck to
+>> looking at what is causing the latency. The ultra96 is showing higher th=
+en
+>> normal latency.
+>>    I=E2=80=99m hoping to have some answers by the end of the week. A upd=
+ated 4.19
+>> release is on its way as well, but Im seeing good latency numbers with t=
+hat
+>> release.
+>>
+>> -Greg
+>>
+>>>
+>
+> --
+>
+> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>                              http://www.smile.fr
+>                              https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
+>
+>
+Looks like this is affecting 4.19/5.4 arm and arm64.  Still investigating,
+hopefully I'll have a root cause shortly.
+
+-Greg
