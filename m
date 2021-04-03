@@ -1,9 +1,12 @@
-Date: Wed, 14 Apr 2021 14:42:35 +0200
-From: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: ipipe 5.4.107 / 5.4.93 build issues on arm32
-Message-ID: <20210414144235.6e9d83cd@windsurf.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <CAMjL99KZFz3qd4tzuXERhLSnOTjG=SWZV2KtW2=3ipmvW4wuEA@mail.gmail.com>
+ <4e03-60663380-3f-10b42340@50501865>
+In-Reply-To: <4e03-60663380-3f-10b42340@50501865>
+From: John Ho <johnho26@gmail.com>
+Date: Sat, 3 Apr 2021 22:20:44 +0200
+Message-ID: <CAMjL99+4bL1XM0yohWSp=jcMR3eoNc_tVCTMc6nxLk5Jn+ofoA@mail.gmail.com>
+Subject: Re: Help with rtnet with soem
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,184 +16,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
 
-Hello,
+Hi Francois,
 
-I just tested the following ipipe patches on arm32:
+No the machine didnt freeze, it is only the Ethercat thread hangs.
+I will try to find the faulty ethercat network.
+Thank you for your reply
 
-  https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.107-arm-1.pat=
-ch
-  https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.93-arm-0.patch
+yours sincerely,
+John
 
-applied of course on the appropriate 5.4.x code base, configured with
-the sama5_defconfig kernel configuration, and in both cases the build
-fails with:
+On Thu, Apr 1, 2021 at 10:56 PM Fran=C3=A7ois Legal <devel@thom.fr.eu.org> =
+wrote:
 
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =E2=80=98inc_irqstats=E2=80=99:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
-=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
-=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
-t, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:147:2: note: in expansion of macro =E2=
-=80=98xnstat_exectime_set_current=E2=80=99
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:123:2: note: in expansion of macro =E2=80=98xnstat_ex=
-ectime_lazy_switch=E2=80=99
-  xnstat_exectime_lazy_switch(sched, &statp->account, start);
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
-ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
-=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =E2=80=98switch_to_irqstats=E2=80=99:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
-=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
-=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
-t, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
-=80=98xnstat_exectime_set_current=E2=80=99
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:132:2: note: in expansion of macro =E2=80=98xnstat_ex=
-ectime_switch=E2=80=99
-  xnstat_exectime_switch(sched, &statp->account);
-  ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
-ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
-=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =E2=80=98switch_from_irqstats=E2=80=99:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
-=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
-=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
-t, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
-=80=98xnstat_exectime_set_current=E2=80=99
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:138:2: note: in expansion of macro =E2=80=98xnstat_ex=
-ectime_switch=E2=80=99
-  xnstat_exectime_switch(sched, prev);
-  ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
-ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
-=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
-                 from include/xenomai/cobalt/kernel/sched.h:24,
-                 from kernel/xenomai/intr.c:24:
-kernel/xenomai/intr.c: In function =E2=80=98switch_core_irqstats=E2=80=99:
-include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
-=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
-=3Dincompatible-pointer-types]
-  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
-t, (long)(new_account)); \
-                                                 ^
-include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
-=80=98xnstat_exectime_set_current=E2=80=99
-  xnstat_exectime_set_current(sched, new_account); \
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/xenomai/intr.c:147:9: note: in expansion of macro =E2=80=98xnstat_ex=
-ectime_switch=E2=80=99
-  prev =3D xnstat_exectime_switch(sched, &statp->account);
-         ^~~~~~~~~~~~~~~~~~~~~~
-In file included from ./include/linux/atomic.h:76:0,
-                 from ./include/asm-generic/bitops/lock.h:5,
-                 from ./arch/arm/include/asm/bitops.h:243,
-                 from ./include/linux/bitops.h:26,
-                 from ./include/linux/kernel.h:12,
-                 from ./include/asm-generic/bug.h:19,
-                 from ./arch/arm/include/asm/bug.h:60,
-                 from ./include/linux/bug.h:5,
-                 from ./include/linux/thread_info.h:12,
-                 from ./include/asm-generic/current.h:5,
-                 from ./arch/arm/include/generated/asm/current.h:1,
-                 from ./include/linux/mutex.h:14,
-                 from kernel/xenomai/intr.c:21:
-./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
-ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
-=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
- atomic_long_xchg(atomic_long_t *v, long i)
- ^~~~~~~~~~~~~~~~
-  CC      kernel/xenomai/registry.o
-cc1: some warnings being treated as errors
-scripts/Makefile.build:261: recipe for target 'kernel/xenomai/intr.o' failed
-make[2]: *** [kernel/xenomai/intr.o] Error 1
-make[2]: *** Waiting for unfinished jobs....
-  CC      fs/iomap/apply.o
-  CC      crypto/kpp.o
-  CC      fs/fat/inode.o
-  CC      fs/iomap/buffered-io.o
-scripts/Makefile.build:496: recipe for target 'kernel/xenomai' failed
-make[1]: *** [kernel/xenomai] Error 2
-Makefile:1732: recipe for target 'kernel' failed
-
-Is this a known issue ?
-
-Best regards,
-
-Thomas Petazzoni
---=20
-Thomas Petazzoni, co-owner and CEO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
+> Le Jeudi, Avril 01, 2021 12:47 CEST, John Ho via Xenomai <
+> xenomai@xenomai.org> a =C3=A9crit:
+>
+> > Hi all,
+> >
+> > I wish to ask for some help. I was experiencing some issues with soem a=
+nd
+> > rtnet.
+> >
+> > I was able to run rtnet with soem till now, however, recently I realize=
+d
+> > that rtnet is freezing up occasionally.
+> >
+> > When i use eno1 with xenomai threading, if my ethercat fails it continu=
+es
+> > to the next cycle on my program. However when i switch over to rteth0,
+> and
+> > when my ethercat fails, it freezes.
+> >
+> > I have attached in this email the Wireshark info from both my master an=
+d
+> > sniffer pc:
+> >
+> >
+> > MASTER:
+> >
+> > 10456 4.296601704 JetwayIn_09:95:50 Broadcast ECAT 293 2 Cmds, 'LRW': l=
+en
+> > 245, 'FRMW': len 8
+> > 10457 4.296748257 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 29=
+3
+> 2
+> > Cmds, 'LRW': len 245, 'FRMW': len 8
+> > 10458 4.297302548 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> > 10459 4.298000197 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> > 10460 4.298700307 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> > 10461 4.298703155 JetwayIn_09:95:50 Broadcast ECAT 293 2 Cmds, 'LRW': l=
+en
+> > 245, 'FRMW': len 8
+> > 10462 4.299399782 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> > 10463 4.300100548 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> > 10464 4.300799199 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
+> >
+> >
+> >
+> >
+> >
+> >
+> > SNIFFER:
+> >
+> > 15935 4.121410 JetwayIn_09:95:50 Broadcast ECAT 313 2 Cmds, 'LRW': len
+> 245,
+> > 'FRMW': len 8
+> > 15936 4.121410 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 313 2
+> > Cmds, 'LRW': len 245, 'FRMW': len 8
+> > 15937 4.122238 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
+> > 15938 4.122238 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
+> > Unknown (0xc83e)
+> > 15939 4.122822 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
+> > 15940 4.122822 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
+> > Unknown (0xc83e)
+> > 15941 4.123625 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
+> > 15942 4.123625 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
+> > Unknown (0xc83e)
+> > 15943 4.123625 JetwayIn_09:95:50 Broadcast ECAT 313 2 Cmds, 'LRW': len
+> 245,
+> > 'FRMW': len 8
+> > 15944 4.123625 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 82
+> > [Malformed Packet]
+> > 15945 4.124208 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
+> > 15946 4.124208 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
+> > Unknown (0xc83e)
+> > 15947 4.125019 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
+> > 15948 4.125019 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
+> > Unknown (0xc83e)
+> >
+> >
+> >
+> >
+> > On the masterpc, i have instances like 10456 and 10457 where the master
+> pc
+> > was able to send and receive the packages. but on 10461 it sends out a
+> > package but didn't receive back and freezes up.
+> >
+> > On the snifferpc, 15935 and 15936 shows a working communication. Howeve=
+r
+> > when it reaches 15944, there is a malformed package
+> >
+> > as such i wish to ask if there is a way to prevent rtnet from freezing
+> and
+> > just skip over this malformed package?
+> >
+> > Looking forward for any assistance available.
+> >
+> > yours sincerely,
+> > John
+>
+> Hi John,
+>
+> could you be a little more specific with "rtnet is freezing".
+> Is the machine freezing ?
+> You seem to have a faulty ethercat network as the master is not seeing th=
+e
+> ethercat frame it sends echoed back after reaching the end of the bus. I
+> don't know how you use SOEM, but I'd say it might by endlessly polling
+> until it receives the echoed datagram back.
+> So you might first want to fix the network, and the problem may then
+> disappear.
+>
+> Fran=C3=A7ois
+>
+>
