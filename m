@@ -1,14 +1,13 @@
-Subject: Re: Xenomai Community Call Minutes - April 7, 2021
-References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
- <DM5PR11MB1852F1F506FE58645808D1B2F2749@DM5PR11MB1852.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f0d18fad-1dd8-7b78-7878-995ecaa5bfc9@siemens.com>
-Date: Thu, 8 Apr 2021 10:27:36 +0200
+Subject: arm32: 5.4.107 ipipe patch - bad kernel version choice ;)
+References: <4e03-60663e80-47-10b42340@50501997>
+From: Robert Berger <xenomai.list@gmail.com>
+Message-ID: <77b9bb71-4cdf-fb8e-9fde-4cfd033a7722@gmail.com>
+Date: Sat, 3 Apr 2021 14:56:11 +0300
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB1852F1F506FE58645808D1B2F2749@DM5PR11MB1852.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4e03-60663e80-47-10b42340@50501997>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 08.04.21 10:19, Chen, Hongzhan via Xenomai wrote:
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Wang, Rick Y via Xenomai
->> Sent: Thursday, April 8, 2021 8:52 AM
->> To: xenomai@xenomai.org
->> Subject: Xenomai Community Call Minutes - April 7, 2021
->>
->> Attendees:
->>
->> Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,
->> Dao Zhang, Jianbo Cao, Yanfeng Pu, Rick Wang
->>
->>
->> *Community update
->>
->> - No code change in the past two weeks
->> - Greg is debugging jitter issue on ARM.
->> - Siemens is testing WIP-Dovetail branch internally. Some issues were
->> reported related to clock source or gdb crash.
->> - Jan will log the issues to gitlab Xenomai hacker space:
->> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
->> - For Xenomai 3.2, there are some submitted patches pending on Jan's review
->> and merge. Also some patches in Philippe's private tree are pending on
->> submission.
->> - Florian and Song are working on Y2038 issue on Philippe's tree. It depends
->> on some Dovetail codes to be merged first.
->> - Hongzhan is working on latmus GPIO porting. 5.10 Dovetail-based Xenomai
->> and EVL can't boot up on his dev board yet. 5.9 kernel can boot on the
-> 
-> After further debug , when failure happen, actually system is wrong to use pit instead of 
-> LAPIC as clock event device because pit can not work with dovetail. After check log , found
-> that there is abnormal info related to APIC reported "[    2.812126] APIC: ACPI MADT or MP tables are not detected"
-> It mentioned ACPI.  So I traced ACPI related log suggested by Jan and Florian and found that there is
-> ACPI related error reported earlier in log like " [    0.013416] ACPI BIOS Error (bug): A valid RSDP was not found (20200925/tbxfroot-210)".
-> I googled this error but all the solution related to it  can not fix the issue for example enabling ACPI in BIOS.
-> And then I captured kernel log for 5.9 and compare them with 5.10 and finally found that there is log info related to ACPI missing with my 5.10 image like 
-> " [    0.000000] efi: ACPI 2.0=0x8c3ee000 ACPI=0x8c3ee000 TPMFinalLog=0x8c4ad000 SMBIOS=0x8c9ca000 SMBIOS 3.0=0x8c9c9000 MEMATTR=0x88059418"
-> After check kernel config, I found  that my 5.10 config actually have not enabled CONFIG_EFI. After enable it, evl successfully boot up on 
-> my Rock PI X board now. 
-> 
-> Thanks for Jan and Florian's suggestions.
-> 
-
-Great to hear it works now!
-
-Yeah, CONFIG_EFI=y is part of x86_64_defconfig - that's why I suggested
-to retry starting from there.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SGksCgpJIGp1c3QgY2hlY2tlZCB0aGlzIHBhdGNoIG9uIG9uZSBvZiBteSBpbXg2cSBib2FyZHM6
+CgpodHRwczovL3hlbm9tYWkub3JnL2Rvd25sb2Fkcy9pcGlwZS92NS54L2FybS9pcGlwZS1jb3Jl
+LTUuNC4xMDctYXJtLTEucGF0Y2gKCk9uZSBwcm9ibGVtIGlzLCB0aGF0IDUuNC4xMDcgZG9lcyBu
+b3Qgc2VlbSB0byBiZSBhIGdvb2QgY2hvaWNlIGR1ZSB0byAKdGhpcyBjcmFzaDoKCmh0dHBzOi8v
+cGFzdGViaW4uY29tL0V6VUU2aTNmCgpUaGlzIGlzIF9fTk9UX18gY2F1c2VkIGJ5IHRoZSBpcGlw
+ZSBwYXRjaCBhcyBmYXIgYXMgSSBjYW4gdGVsbCBhbmQgCmhhcHBlbnMgYWxzbyBvbiB2YXJpb3Vz
+IDUuMTAueCBrZXJuZWxzLCBidXQgd2FzIHJlc29sdmVkIGluIHRoZSBsYXRlc3QgCjUuMTAueCBr
+ZXJuZWxzLgoKU28gSSB0cmllZCB0byBwYXRjaCBhIG1vcmUgcmVjZW50IDUuNC54IGtlcm5lbCAt
+IDUuNC4xMDksIGFuZCBpdCBkb2VzIApub3QgY29udGFpbiB0aGUgY3Jhc2ggZnJvbSBhYm92ZSBh
+bnltb3JlLgoKMiBmaWxlcyBmcm9tIHRoZSA1LjQuMTA3IHBhdGNoIHdlcmUgcmVqZWN0ZWQ6Cgph
+cmNoL2FybS9rZXJuZWwvZW50cnktYXJtdi5TLnJlagp2aW0gYXJjaC9hcm0vdmZwL2VudHJ5LlMu
+cmVqCgpJdCBsb29rcyBsaWtlIHdoYXRldmVyIGlzIGluIGVudHJ5LlMgYWxyZWFkeSB3ZW50IHVw
+c3RyZWFtIGFuZCBJIHRyaWVkIAp0byBoYWNrIGVudHJ5LWFybXYuUyAocGxlYXNlIHJldmlldyku
+CgpDYW4geW91IHBsZWFzZSBjaGVjayBteSBhdHRhY2hlZC91cGRhdGVkIHBhdGNoIGFnYWluc3Qg
+dXBzdHJlYW0gNS40LjEwOSwgCndoaWNoLCBhZnRlciBzb21lIHF1aWNrIHRlc3RpbmcsIHNlZW1z
+IHRvIHdvcmsgZm9yIG1lLCBhbmQgdXBkYXRlIHlvdXIgCmlwaXBlLWNvcmUtNS40LjEwNyB0byA1
+LjQuMTA5PwoKUmVnYXJkcywKClJvYmVydAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAx
+LWZha2UtaXBpcGUtY29yZS01LjQuMTA5LWFybS0xLnBhdGNoClR5cGU6IHRleHQveC1wYXRjaApT
+aXplOiA2NjE2NzIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTA0MDMvMGY5ZDVjNmUvYXR0
+YWNobWVudC5iaW4+Cg==
