@@ -1,9 +1,14 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH V2 2/3] drivers/gpio: core: introduce helper to find gpiochip
-Date: Fri, 16 Apr 2021 01:31:32 -0400
-Message-Id: <20210416053133.23412-3-hongzhan.chen@intel.com>
-In-Reply-To: <20210416053133.23412-1-hongzhan.chen@intel.com>
-References: <20210416053133.23412-1-hongzhan.chen@intel.com>
+MIME-Version: 1.0
+References: <4e03-60663e80-47-10b42340@50501997>
+ <77b9bb71-4cdf-fb8e-9fde-4cfd033a7722@gmail.com>
+ <CALLqZ8S0o0qLJuFrcmF-_vKkf_v7Jbe0xQCQiSNKLQyRQ=4e_A@mail.gmail.com>
+ <e1c50754-6c29-62e2-5a22-45420d0336d0@gmail.com>
+In-Reply-To: <e1c50754-6c29-62e2-5a22-45420d0336d0@gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 5 Apr 2021 01:30:50 -0400
+Message-ID: <CALLqZ8S7GCcT_ogWtH8n0OMQtLxKfhLBx5KVDy2FQdpXZNYXcg@mail.gmail.com>
+Subject: Re: arm32: 5.4.107 ipipe patch - bad kernel version choice ;)
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,65 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Robert Berger <xenomai.list@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-To find gpiochip for non-OF platforms like x86
+On Sat, Apr 3, 2021 at 8:16 AM Robert Berger <xenomai.list@gmail.com> wrote:
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
----
- include/cobalt/kernel/rtdm/gpio.h |  3 +++
- kernel/drivers/gpio/gpio-core.c   | 23 +++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+> Hi Greg,
+>
+> My comments are in-line.
+>
+> On 03/04/2021 15:02, Greg Gallagher wrote:
+> >
+> > Thanks for testing, I can update to kernel version 5.4.109.
+>
+> Yes please. And please let me know, so I'll give a spin.
+>
+> >
+> > Thanks
+> >
+> > Greg
+>
+> Regards,
+>
+> Robert
+>
+Hi,
+  5.4.109 is now in the ipipe-arm tree in the ipipe/5.4.y branch. I'll
+generate a patch soon, once I get a handle on the latency issue.
 
-diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
-index 00055ec0a..c5fb20f25 100644
---- a/include/cobalt/kernel/rtdm/gpio.h
-+++ b/include/cobalt/kernel/rtdm/gpio.h
-@@ -61,6 +61,9 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
- int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
- 			     unsigned int offset);
- 
-+int rtdm_gpiochip_find(struct device_node *from,
-+			  const char *label, int type);
-+
- #ifdef CONFIG_OF
- 
- int rtdm_gpiochip_scan_of(struct device_node *from,
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index 600ef9789..b3d801fa1 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -520,6 +520,29 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
- }
- EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
- 
-+int rtdm_gpiochip_find(struct device_node *from, const char *label,
-+			  int type)
-+{
-+	struct rtdm_gpio_chip *rgc;
-+	struct gpio_chip *chip;
-+	int ret = -ENODEV;
-+
-+	if (!rtdm_available())
-+		return -ENOSYS;
-+
-+	chip = find_chip_by_name(label);
-+	if (chip == NULL)
-+		return ret;
-+
-+	ret = 0;
-+	rgc = rtdm_gpiochip_alloc(chip, type);
-+	if (IS_ERR(rgc))
-+		ret = PTR_ERR(rgc);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
-+
- #ifdef CONFIG_OF
- 
- #include <linux/of_platform.h>
--- 
-2.17.1
+Thanks
 
-
+Greg
