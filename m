@@ -1,11 +1,10 @@
-From: "=?ISO-8859-1?B?enk=?=" <zhouyoung1995@qq.com>
-Subject: Shared Memory by using RT_HEAP
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Thu, 1 Apr 2021 09:25:35 +0800
-Message-ID: <tencent_FCAD0A1D7FA4BE4D69B7E1AC0C2CB1E6C10A@qq.com>
+From: Wolfgang Denk <wd@denx.de>
+Subject: [IMPORTANT] gitlab downtime
+MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+Date: Tue, 06 Apr 2021 13:00:42 +0200
+Message-ID: <2079188.1617706842@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: u-boot@lists.denx.de, u-boot-custodians@lists.denx.de, u-boot-board-maintainers@lists.denx.de, xenomai@xenomai.org
+Cc: Tom Rini <trini@konsulko.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Harald Seiler <hws@denx.de>
 
-SGkgYWxsLAoKT24gWGVub21haS0yLjYuNSwgSSB1c2UgcnRfaGVhcF9jcmVhdGUgd2l0aCBm
-bGFnICJIX1NIQVJFRCIgdG8gY3JlYXRlIHJ0X2hlYXAKaW4gb25lIHByb2Nlc3MgYW5kIGNh
-bGwgcnRfaGVhcF9iaW5kIHRvIGdldCB0aGlzIHJ0X2hlYXAgYnkgdGhlIHNhbWUgbmFtZSBp
-biBhbm90aGVyCnByb2Nlc3MuIEkgdXNlIHJ0X2hlYXAgYXMgc2hhcmVkIG1lbW9yeSBiZXR3
-ZWVuIHByb2Nlc3MuIEJ1dCBvbiBYZW5vbWFpLTMuMSwgSQpmaW5kIHRoaXMgbWV0aG9kIGRv
-ZXMgbm90IHdvcmsuIFdoZW4gY2FsbGluZyBydF9oZWFwX2JpbmQgdXNpbmcgIlRNX0lORklO
-SVRFIiwKdGhlIGZ1bmN0aW9uIGRvZXNuJ3QgcmV0dXJuLCB1c2luZyAiVE1fTk9ORUJMT0NL
-IiwgcmV0dXJucyAtMTEuIEkgY2hlY2sgdGhpcwplbWFpbCBzeXN0ZW0gLCBmaW5kICItLWVu
-YWJsZS1wc2hhcmVkIiBzaG91bGQgYmUgY29uZmlndXJlZCBiZWZvcmUgaW5zdGFsbGF0aW9u
-ICBhbmQKSSBkbyBpdCwgYnV0IGl0IGRvZXNuJ3Qgd29yay4KQ2FuIGFueW9uZSBnaXZlIG1l
-IGEgZGV0YWlsZWQgc29sdXRpb24/IE9yLCBzaGFyZWQgbWVtb3J5IGNhbm5vdCBiZSBjcmVh
-dGVkIGJ5ClJUX0hFQVAgb24gWGVub21haS0zLgoKQmVzdCByZWdhcmRzLApaaG91IFlhbmc=
+Hi all,
 
+I just reeived a notification from our hoster that our gitlab server
+( source.denx.de ) will be offline for approx. 2 hours between now
+and 15:45 CEST (urgent maintenance work).
 
+Sorry for the inconvenience, but there is nothing we can do...
 
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+A direct quote from the Boss: "We passed over a lot of good people to
+get the ones we hired."
 
