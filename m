@@ -1,14 +1,14 @@
-Subject: Re: [PATCH v2 6/7] drivers/net: icmp: remove variable-length array
-References: <20210327101912.2291474-1-rpm@xenomai.org>
- <20210327101912.2291474-7-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4d5a7a87-c3d1-2e41-4c8b-e2cff1efd30a@siemens.com>
-Date: Wed, 7 Apr 2021 12:24:33 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210327101912.2291474-7-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 1/3] y2038: cobalt/posix/clock: Adding clock_nanosleep64
+Date: Wed, 7 Apr 2021 10:25:45 +0000
+Message-ID: <2f45ab8f4ff11d99831476aee549e49e14c04aa0.camel@siemens.com>
+References: <1617161160-27144-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1617161160-27144-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CC0E0EA553D4ED45BD90D36461E24B6C@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,61 +17,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 27.03.21 11:19, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/drivers/net/stack/ipv4/icmp.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
-> index 0671cbc93..c3563595e 100644
-> --- a/kernel/drivers/net/stack/ipv4/icmp.c
-> +++ b/kernel/drivers/net/stack/ipv4/icmp.c
-> @@ -313,8 +313,17 @@ static int rt_icmp_send_request(u32 daddr, struct icmp_bxm *icmp_param)
->  int rt_icmp_send_echo(u32 daddr, u16 id, u16 sequence, size_t msg_size)
->  {
->  	struct icmp_bxm icmp_param;
-> -	unsigned char pattern_buf[msg_size];
-> +	unsigned char *pattern_buf;
->  	off_t pos;
-> +	int ret;
-> +
-> +	/*
-> +	 * This is ping, exec time is not that critical, so
-> +	 * rtdm_malloc() is ok for the purpose of echoing.
-
-Solution is fine but comment is misleading: This is the submission path,
-not the reflection. We are setting up the ping message here, and this is
-indeed not time-critical. I'll fix that up on merge.
-
-> +	 */
-> +	pattern_buf = rtdm_malloc(msg_size);
-> +	if (pattern_buf == NULL)
-> +		return -ENOMEM;
->  
->  	/* first purge any potentially pending ICMP fragments */
->  	rt_ip_frag_invalidate_socket(icmp_socket);
-> @@ -343,7 +352,10 @@ int rt_icmp_send_echo(u32 daddr, u16 id, u16 sequence, size_t msg_size)
->  	}
->  	icmp_param.data.buf = pattern_buf;
->  
-> -	return rt_icmp_send_request(daddr, &icmp_param);
-> +	ret = rt_icmp_send_request(daddr, &icmp_param);
-> +	rtdm_free(pattern_buf);
-> +
-> +	return ret;
->  }
->  
->  /***
-> 
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTAzLTMxIGF0IDExOjI2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gQWRk
+IGEgc3lzY2FsbCBzcGVjaWZpYyBmb3IgY2xvY2tfbmFub3NsZWVwIHdpdGggNjRiaXQNCj4gdGlt
+ZV90Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogY2hlbnNvbmcgPGNoZW5zb25nQHRqLmt5bGlub3Mu
+Y24+DQo+IC0tLQ0KPiDCoGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgfCAgMSArDQo+
+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jICAgICB8IDIzICsrKysrKysrKysrKysrKysr
+KysrKysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5oICAgICB8ICA1ICsrKysrDQo+
+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuYyB8IDIzICsrKysrKysrKysrKysrKysr
+KysrKysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCB8ICA2ICsrKysrKw0K
+PiDCoDUgZmlsZXMgY2hhbmdlZCwgNTggaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBh
+L2luY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNj
+YWxsLmgNCj4gaW5kZXggNDM4YWYzMC4uYWNiODI2MCAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9j
+b2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxs
+LmgNCj4gQEAgLTEyNSw2ICsxMjUsNyBAQA0KPiDCoCNkZWZpbmUgc2NfY29iYWx0X3NlbV90aW1l
+ZHdhaXQ2NAkJMTAyDQo+IMKgI2RlZmluZSBzY19jb2JhbHRfY2xvY2tfZ2V0dGltZTY0CQkxMDMN
+Cj4gwqAjZGVmaW5lIHNjX2NvYmFsdF9jbG9ja19zZXR0aW1lNjQJCTEwNA0KPiArI2RlZmluZSBz
+Y19jb2JhbHRfY2xvY2tfbmFub3NsZWVwNjQJCTEwNQ0KPiDCoA0KPiANCj4gwqAjZGVmaW5lIF9f
+TlJfQ09CQUxUX1NZU0NBTExTCQkJMTI4IC8qIFBvd2VyIG9mIDIgKi8NCj4gwqANCj4gZGlmZiAt
+LWdpdCBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgv
+Y2xvY2suYw0KPiBpbmRleCBmMGY5ZmI0Li41YmU4OWFkIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwv
+Y29iYWx0L3Bvc2l4L2Nsb2NrLmMNCj4gKysrIGIva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5j
+DQo+IEBAIC0zMzgsNiArMzM4LDI5IEBAIENPQkFMVF9TWVNDQUxMKGNsb2NrX25hbm9zbGVlcCwg
+cHJpbWFyeSwNCj4gwqAJcmV0dXJuIHJldDsNCj4gwqB9DQo+IMKgDQo+ICtDT0JBTFRfU1lTQ0FM
+TChjbG9ja19uYW5vc2xlZXA2NCwgcHJpbWFyeSwNCj4gKwkgICAgICAgKGNsb2NraWRfdCBjbG9j
+a19pZCwgaW50IGZsYWdzLA0KPiArCQljb25zdCBzdHJ1Y3QgX19rZXJuZWxfdGltZXNwZWMgX191
+c2VyICp1X3JxdCwNCj4gKwkJc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNlciAqdV9ybXQp
+KQ0KPiArew0KPiArCXN0cnVjdCB0aW1lc3BlYzY0IHJxdCwgcm10LCAqcm10cCA9IE5VTEw7DQo+
+ICsJaW50IHJldDsNCj4gKw0KPiArCWlmICh1X3JtdCkNCj4gKwkJcm10cCA9ICZybXQ7DQo+ICsN
+Cj4gKwlpZiAoY29iYWx0X2dldF90aW1lc3BlYzY0KCZycXQsIHVfcnF0KSkNCj4gKwkJcmV0dXJu
+IC1FRkFVTFQ7DQo+ICsNCj4gKwlyZXQgPSBfX2NvYmFsdF9jbG9ja19uYW5vc2xlZXAoY2xvY2tf
+aWQsIGZsYWdzLCAmcnF0LCBybXRwKTsNCj4gKwlpZiAocmV0ID09IC1FSU5UUiAmJiBmbGFncyA9
+PSAwICYmIHJtdHApIHsNCj4gKwkJaWYgKGNvYmFsdF9wdXRfdGltZXNwZWM2NChybXRwLCB1X3Jt
+dCkpDQo+ICsJCQlyZXR1cm4gLUVGQVVMVDsNCj4gKwl9DQo+ICsNCj4gKwlyZXR1cm4gcmV0Ow0K
+PiArfQ0KDQpUaGUgY29tcGF0IHN5c2NhbGwgbG9va3MgZXhhY3RseSB0aGUgc2FtZS4gU28gSSB3
+b3VsZCB2b3RlIGZvciBtb3ZpbmcNCnRoZSBjb2RlIGludG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiAo
+bWF5YmUgY2FsbGVkDQpfX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCkgd2hpY2ggaG9sZHMgdGhl
+IGNvZGUgYWJvdmUgYW5kIGNhbGxpbmcgaXQNCmZyb20gYm90aCBzeXNjYWxsIGhhbmRsZXJzICh0
+aGlzIG9uZSArIHRoZSBjb21wYXQgb25lIGJlbG93KS4NCg0KPiArDQo+IMKgaW50IGNvYmFsdF9j
+bG9ja19yZWdpc3RlcihzdHJ1Y3QgeG5jbG9jayAqY2xvY2ssIGNvbnN0IGNwdW1hc2tfdCAqYWZm
+aW5pdHksDQo+IMKgCQkJICBjbG9ja2lkX3QgKmNsa19pZCkNCj4gwqB7DQo+IGRpZmYgLS1naXQg
+YS9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmggYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2Nr
+LmgNCj4gaW5kZXggZmEwN2M1Ni4uZjI0ODU3OCAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFs
+dC9wb3NpeC9jbG9jay5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaA0KPiBA
+QCAtMTM0LDYgKzEzNCwxMSBAQCBDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX25hbm9zbGVlcCwN
+Cj4gwqAJCSAgICAgY29uc3Qgc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191c2VyICp1X3Jx
+dCwNCj4gwqAJCSAgICAgc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191c2VyICp1X3JtdCkp
+Ow0KPiDCoCtDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX25hbm9zbGVlcDY0LA0KPiArCQkgICAg
+KGNsb2NraWRfdCBjbG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkgICAgIGNvbnN0IHN0cnVjdCBf
+X2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcnF0LA0KPiArCQkgICAgIHN0cnVjdCBfX2tlcm5l
+bF90aW1lc3BlYyBfX3VzZXIgKnVfcm10KSk7DQo+ICsNCj4gwqBpbnQgY29iYWx0X2Nsb2NrX3Jl
+Z2lzdGVyKHN0cnVjdCB4bmNsb2NrICpjbG9jaywNCj4gwqAJCQkgIGNvbnN0IGNwdW1hc2tfdCAq
+YWZmaW5pdHksDQo+IMKgCQkJICBjbG9ja2lkX3QgKmNsa19pZCk7DQo+IGRpZmYgLS1naXQgYS9r
+ZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jIGIva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNj
+YWxsMzIuYw0KPiBpbmRleCAxYTFiODMwLi5lYjgzYzU3IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwv
+Y29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc3lz
+Y2FsbDMyLmMNCj4gQEAgLTI1MCw2ICsyNTAsMjkgQEAgQ09CQUxUX1NZU0NBTEwzMmVtdShjbG9j
+a19uYW5vc2xlZXAsIG5vbnJlc3RhcnRhYmxlLA0KPiDCoAlyZXR1cm4gcmV0Ow0KPiDCoH0NCj4g
+wqANCj4gK0NPQkFMVF9TWVNDQUxMMzJlbXUoY2xvY2tfbmFub3NsZWVwNjQsIG5vbnJlc3RhcnRh
+YmxlLA0KPiArCQkgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkgICAg
+IGNvbnN0IHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcnF0LA0KPiArCQkgICAg
+IHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcm10KSkNCj4gK3sNCj4gKwlzdHJ1
+Y3QgdGltZXNwZWM2NCBycXQsIHJtdCwgKnJtdHAgPSBOVUxMOw0KPiArCWludCByZXQ7DQo+ICsN
+Cj4gKwlpZiAodV9ybXQpDQo+ICsJCXJtdHAgPSAmcm10Ow0KPiArDQo+ICsJcmV0ID0gY29iYWx0
+X2dldF90aW1lc3BlYzY0KCZycXQsIHVfcnF0KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4g
+cmV0Ow0KPiArDQo+ICsJcmV0ID0gX19jb2JhbHRfY2xvY2tfbmFub3NsZWVwKGNsb2NrX2lkLCBm
+bGFncywgJnJxdCwgcm10cCk7DQo+ICsJaWYgKHJldCA9PSAtRUlOVFIgJiYgZmxhZ3MgPT0gMCAm
+JiBybXRwKQ0KPiArCQlyZXQgPSBjb2JhbHRfcHV0X3RpbWVzcGVjNjQocm10cCwgdV9ybXQpOw0K
+PiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KPiArDQo+IMKgQ09CQUxUX1NZU0NBTEwz
+MmVtdShtdXRleF90aW1lZGxvY2ssIHByaW1hcnksDQo+IMKgCQkgICAgKHN0cnVjdCBjb2JhbHRf
+bXV0ZXhfc2hhZG93IF9fdXNlciAqdV9teCwNCj4gwqAJCSAgICAgY29uc3Qgc3RydWN0IG9sZF90
+aW1lc3BlYzMyIF9fdXNlciAqdV90cykpDQo+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L3Bv
+c2l4L3N5c2NhbGwzMi5oIGIva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaA0KPiBpbmRl
+eCA5MDk1ZWJkLi42YzIwZGExIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3N5
+c2NhbGwzMi5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc3lzY2FsbDMyLmgNCj4gQEAg
+LTgwLDYgKzgwLDEyIEBAIENPQkFMVF9TWVNDQUxMMzJlbXVfREVDTChjbG9ja19uYW5vc2xlZXAs
+DQo+IMKgCQkJICBjb25zdCBzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIgX191c2VyICp1X3JxdCwNCj4g
+wqAJCQkgIHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfcm10KSk7DQo+ICtDT0JBTFRf
+U1lTQ0FMTDMyZW11X0RFQ0woY2xvY2tfbmFub3NsZWVwNjQsDQo+ICsJCQkgKGNsb2NraWRfdCBj
+bG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkJICBjb25zdCBzdHJ1Y3QgX19rZXJuZWxfdGltZXNw
+ZWMgX191c2VyICp1X3JxdCwNCj4gKwkJCSAgc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNl
+ciAqdV9ybXQpKTsNCj4gKw0KPiArDQo+IMKgQ09CQUxUX1NZU0NBTEwzMmVtdV9ERUNMKG11dGV4
+X3RpbWVkbG9jaywNCj4gwqAJCQkgKHN0cnVjdCBjb2JhbHRfbXV0ZXhfc2hhZG93IF9fdXNlciAq
+dV9teCwNCj4gwqAJCQkgIGNvbnN0IHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfdHMp
+KTsNCg0K
 
