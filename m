@@ -1,14 +1,14 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 1/3] y2038: cobalt/posix/clock: Adding clock_nanosleep64
-Date: Wed, 7 Apr 2021 10:25:45 +0000
-Message-ID: <2f45ab8f4ff11d99831476aee549e49e14c04aa0.camel@siemens.com>
-References: <1617161160-27144-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1617161160-27144-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CC0E0EA553D4ED45BD90D36461E24B6C@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v2 7/7] drivers/net: cfg: fix config file load up
+References: <20210327101912.2291474-1-rpm@xenomai.org>
+ <20210327101912.2291474-8-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1d59794e-4d8c-7d50-2f99-a724f893098d@siemens.com>
+Date: Wed, 7 Apr 2021 12:35:47 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210327101912.2291474-8-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,89 +17,165 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-T24gV2VkLCAyMDIxLTAzLTMxIGF0IDExOjI2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gQWRk
-IGEgc3lzY2FsbCBzcGVjaWZpYyBmb3IgY2xvY2tfbmFub3NsZWVwIHdpdGggNjRiaXQNCj4gdGlt
-ZV90Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogY2hlbnNvbmcgPGNoZW5zb25nQHRqLmt5bGlub3Mu
-Y24+DQo+IC0tLQ0KPiDCoGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgfCAgMSArDQo+
-IMKga2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jICAgICB8IDIzICsrKysrKysrKysrKysrKysr
-KysrKysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5oICAgICB8ICA1ICsrKysrDQo+
-IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuYyB8IDIzICsrKysrKysrKysrKysrKysr
-KysrKysrDQo+IMKga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCB8ICA2ICsrKysrKw0K
-PiDCoDUgZmlsZXMgY2hhbmdlZCwgNTggaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBh
-L2luY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNj
-YWxsLmgNCj4gaW5kZXggNDM4YWYzMC4uYWNiODI2MCAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9j
-b2JhbHQvdWFwaS9zeXNjYWxsLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQvdWFwaS9zeXNjYWxs
-LmgNCj4gQEAgLTEyNSw2ICsxMjUsNyBAQA0KPiDCoCNkZWZpbmUgc2NfY29iYWx0X3NlbV90aW1l
-ZHdhaXQ2NAkJMTAyDQo+IMKgI2RlZmluZSBzY19jb2JhbHRfY2xvY2tfZ2V0dGltZTY0CQkxMDMN
-Cj4gwqAjZGVmaW5lIHNjX2NvYmFsdF9jbG9ja19zZXR0aW1lNjQJCTEwNA0KPiArI2RlZmluZSBz
-Y19jb2JhbHRfY2xvY2tfbmFub3NsZWVwNjQJCTEwNQ0KPiDCoA0KPiANCj4gwqAjZGVmaW5lIF9f
-TlJfQ09CQUxUX1NZU0NBTExTCQkJMTI4IC8qIFBvd2VyIG9mIDIgKi8NCj4gwqANCj4gZGlmZiAt
-LWdpdCBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgv
-Y2xvY2suYw0KPiBpbmRleCBmMGY5ZmI0Li41YmU4OWFkIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwv
-Y29iYWx0L3Bvc2l4L2Nsb2NrLmMNCj4gKysrIGIva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5j
-DQo+IEBAIC0zMzgsNiArMzM4LDI5IEBAIENPQkFMVF9TWVNDQUxMKGNsb2NrX25hbm9zbGVlcCwg
-cHJpbWFyeSwNCj4gwqAJcmV0dXJuIHJldDsNCj4gwqB9DQo+IMKgDQo+ICtDT0JBTFRfU1lTQ0FM
-TChjbG9ja19uYW5vc2xlZXA2NCwgcHJpbWFyeSwNCj4gKwkgICAgICAgKGNsb2NraWRfdCBjbG9j
-a19pZCwgaW50IGZsYWdzLA0KPiArCQljb25zdCBzdHJ1Y3QgX19rZXJuZWxfdGltZXNwZWMgX191
-c2VyICp1X3JxdCwNCj4gKwkJc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNlciAqdV9ybXQp
-KQ0KPiArew0KPiArCXN0cnVjdCB0aW1lc3BlYzY0IHJxdCwgcm10LCAqcm10cCA9IE5VTEw7DQo+
-ICsJaW50IHJldDsNCj4gKw0KPiArCWlmICh1X3JtdCkNCj4gKwkJcm10cCA9ICZybXQ7DQo+ICsN
-Cj4gKwlpZiAoY29iYWx0X2dldF90aW1lc3BlYzY0KCZycXQsIHVfcnF0KSkNCj4gKwkJcmV0dXJu
-IC1FRkFVTFQ7DQo+ICsNCj4gKwlyZXQgPSBfX2NvYmFsdF9jbG9ja19uYW5vc2xlZXAoY2xvY2tf
-aWQsIGZsYWdzLCAmcnF0LCBybXRwKTsNCj4gKwlpZiAocmV0ID09IC1FSU5UUiAmJiBmbGFncyA9
-PSAwICYmIHJtdHApIHsNCj4gKwkJaWYgKGNvYmFsdF9wdXRfdGltZXNwZWM2NChybXRwLCB1X3Jt
-dCkpDQo+ICsJCQlyZXR1cm4gLUVGQVVMVDsNCj4gKwl9DQo+ICsNCj4gKwlyZXR1cm4gcmV0Ow0K
-PiArfQ0KDQpUaGUgY29tcGF0IHN5c2NhbGwgbG9va3MgZXhhY3RseSB0aGUgc2FtZS4gU28gSSB3
-b3VsZCB2b3RlIGZvciBtb3ZpbmcNCnRoZSBjb2RlIGludG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiAo
-bWF5YmUgY2FsbGVkDQpfX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCkgd2hpY2ggaG9sZHMgdGhl
-IGNvZGUgYWJvdmUgYW5kIGNhbGxpbmcgaXQNCmZyb20gYm90aCBzeXNjYWxsIGhhbmRsZXJzICh0
-aGlzIG9uZSArIHRoZSBjb21wYXQgb25lIGJlbG93KS4NCg0KPiArDQo+IMKgaW50IGNvYmFsdF9j
-bG9ja19yZWdpc3RlcihzdHJ1Y3QgeG5jbG9jayAqY2xvY2ssIGNvbnN0IGNwdW1hc2tfdCAqYWZm
-aW5pdHksDQo+IMKgCQkJICBjbG9ja2lkX3QgKmNsa19pZCkNCj4gwqB7DQo+IGRpZmYgLS1naXQg
-YS9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmggYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2Nr
-LmgNCj4gaW5kZXggZmEwN2M1Ni4uZjI0ODU3OCAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFs
-dC9wb3NpeC9jbG9jay5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaA0KPiBA
-QCAtMTM0LDYgKzEzNCwxMSBAQCBDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX25hbm9zbGVlcCwN
-Cj4gwqAJCSAgICAgY29uc3Qgc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191c2VyICp1X3Jx
-dCwNCj4gwqAJCSAgICAgc3RydWN0IF9fdXNlcl9vbGRfdGltZXNwZWMgX191c2VyICp1X3JtdCkp
-Ow0KPiDCoCtDT0JBTFRfU1lTQ0FMTF9ERUNMKGNsb2NrX25hbm9zbGVlcDY0LA0KPiArCQkgICAg
-KGNsb2NraWRfdCBjbG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkgICAgIGNvbnN0IHN0cnVjdCBf
-X2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcnF0LA0KPiArCQkgICAgIHN0cnVjdCBfX2tlcm5l
-bF90aW1lc3BlYyBfX3VzZXIgKnVfcm10KSk7DQo+ICsNCj4gwqBpbnQgY29iYWx0X2Nsb2NrX3Jl
-Z2lzdGVyKHN0cnVjdCB4bmNsb2NrICpjbG9jaywNCj4gwqAJCQkgIGNvbnN0IGNwdW1hc2tfdCAq
-YWZmaW5pdHksDQo+IMKgCQkJICBjbG9ja2lkX3QgKmNsa19pZCk7DQo+IGRpZmYgLS1naXQgYS9r
-ZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jIGIva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNj
-YWxsMzIuYw0KPiBpbmRleCAxYTFiODMwLi5lYjgzYzU3IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwv
-Y29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc3lz
-Y2FsbDMyLmMNCj4gQEAgLTI1MCw2ICsyNTAsMjkgQEAgQ09CQUxUX1NZU0NBTEwzMmVtdShjbG9j
-a19uYW5vc2xlZXAsIG5vbnJlc3RhcnRhYmxlLA0KPiDCoAlyZXR1cm4gcmV0Ow0KPiDCoH0NCj4g
-wqANCj4gK0NPQkFMVF9TWVNDQUxMMzJlbXUoY2xvY2tfbmFub3NsZWVwNjQsIG5vbnJlc3RhcnRh
-YmxlLA0KPiArCQkgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkgICAg
-IGNvbnN0IHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcnF0LA0KPiArCQkgICAg
-IHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfcm10KSkNCj4gK3sNCj4gKwlzdHJ1
-Y3QgdGltZXNwZWM2NCBycXQsIHJtdCwgKnJtdHAgPSBOVUxMOw0KPiArCWludCByZXQ7DQo+ICsN
-Cj4gKwlpZiAodV9ybXQpDQo+ICsJCXJtdHAgPSAmcm10Ow0KPiArDQo+ICsJcmV0ID0gY29iYWx0
-X2dldF90aW1lc3BlYzY0KCZycXQsIHVfcnF0KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4g
-cmV0Ow0KPiArDQo+ICsJcmV0ID0gX19jb2JhbHRfY2xvY2tfbmFub3NsZWVwKGNsb2NrX2lkLCBm
-bGFncywgJnJxdCwgcm10cCk7DQo+ICsJaWYgKHJldCA9PSAtRUlOVFIgJiYgZmxhZ3MgPT0gMCAm
-JiBybXRwKQ0KPiArCQlyZXQgPSBjb2JhbHRfcHV0X3RpbWVzcGVjNjQocm10cCwgdV9ybXQpOw0K
-PiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KPiArDQo+IMKgQ09CQUxUX1NZU0NBTEwz
-MmVtdShtdXRleF90aW1lZGxvY2ssIHByaW1hcnksDQo+IMKgCQkgICAgKHN0cnVjdCBjb2JhbHRf
-bXV0ZXhfc2hhZG93IF9fdXNlciAqdV9teCwNCj4gwqAJCSAgICAgY29uc3Qgc3RydWN0IG9sZF90
-aW1lc3BlYzMyIF9fdXNlciAqdV90cykpDQo+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L3Bv
-c2l4L3N5c2NhbGwzMi5oIGIva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaA0KPiBpbmRl
-eCA5MDk1ZWJkLi42YzIwZGExIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3N5
-c2NhbGwzMi5oDQo+ICsrKyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc3lzY2FsbDMyLmgNCj4gQEAg
-LTgwLDYgKzgwLDEyIEBAIENPQkFMVF9TWVNDQUxMMzJlbXVfREVDTChjbG9ja19uYW5vc2xlZXAs
-DQo+IMKgCQkJICBjb25zdCBzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIgX191c2VyICp1X3JxdCwNCj4g
-wqAJCQkgIHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfcm10KSk7DQo+ICtDT0JBTFRf
-U1lTQ0FMTDMyZW11X0RFQ0woY2xvY2tfbmFub3NsZWVwNjQsDQo+ICsJCQkgKGNsb2NraWRfdCBj
-bG9ja19pZCwgaW50IGZsYWdzLA0KPiArCQkJICBjb25zdCBzdHJ1Y3QgX19rZXJuZWxfdGltZXNw
-ZWMgX191c2VyICp1X3JxdCwNCj4gKwkJCSAgc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIF9fdXNl
-ciAqdV9ybXQpKTsNCj4gKw0KPiArDQo+IMKgQ09CQUxUX1NZU0NBTEwzMmVtdV9ERUNMKG11dGV4
-X3RpbWVkbG9jaywNCj4gwqAJCQkgKHN0cnVjdCBjb2JhbHRfbXV0ZXhfc2hhZG93IF9fdXNlciAq
-dV9teCwNCj4gwqAJCQkgIGNvbnN0IHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfdHMp
-KTsNCg0K
+On 27.03.21 11:19, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> set_fs() is on its way out, so we cannot open code a file read
+> operation by calling the VFS handler directly anymore, faking a user
+> address space.
+> 
+> We do have kernel interfaces for loading files though, particularly
+> kernel_read_file(). So let's use that one for loading the
+> configuration file contents. Unfortunately, the signature of this
+> service changed during the 5.9-rc cycle, so we have to resort to an
+> ugly wrapper to cope with all supported kernels once again. Sigh.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  .../include/asm-generic/xenomai/wrappers.h    | 15 ++++
+>  kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c  | 74 +++++++++----------
+>  2 files changed, 52 insertions(+), 37 deletions(-)
+> 
+> diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> index cfd28fc47..f15fe4389 100644
+> --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> @@ -220,4 +220,19 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+>  	})
+>  #endif
+>  
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,9,0)
+> +#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
+> +	({								\
+> +		loff_t ___file_size;					\
+> +		int __ret;						\
+> +		__ret = kernel_read_file(__file, __buf, &___file_size,	\
+> +				__buf_size, __id);			\
+> +		(*__file_size) = ___file_size;				\
+> +		__ret;							\
+> +	})
+> +#else
+> +#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
+> +	kernel_read_file(__file, 0, __buf, __buf_size, __file_size, __id)
+> +#endif
+> +
+>  #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+> diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+> index 769b4e143..e460571c2 100644
+> --- a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+> +++ b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+> @@ -22,6 +22,7 @@
+>   *
+>   */
+>  
+> +#include <linux/fs.h>
+>  #include <linux/file.h>
+>  #include <linux/vmalloc.h>
+>  
+> @@ -196,6 +197,40 @@ void cleanup_cmd_detach(void *priv_data)
+>  		kfree_rtskb(cmd->args.detach.stage2_chain);
+>  }
+>  
+> +static int load_cfg_file(struct rtcfg_file *cfgfile, struct rtcfg_cmd *cmd)
+> +{
+> +	size_t file_size = 0;
+> +	struct file *filp;
+> +	loff_t i_size;
+> +	int ret;
+> +
+> +	filp = filp_open(cfgfile->name, O_RDONLY, 0);
+> +	if (IS_ERR(filp))
+> +		return PTR_ERR(filp);
+> +
+> +	i_size = i_size_read(file_inode(filp));
+> +	if (i_size <= 0) {
+> +		/* allocate buffer even for empty files */
+> +		cfgfile->buffer = vmalloc(1);
+> +	} else {
+> +		cfgfile->buffer = NULL;
+> +		/* Assume 1Mb should be enough for a config file... */
+
+This limitation is new, and I'm not sure if that would be a good idea.
+But I need to read up the protocol details again.
+
+Why do we need that limit? We know i_size already, no?
+
+Jan
+
+> +		ret = read_file_from_kernel(filp, &cfgfile->buffer,
+> +				1UL << 30, &file_size, READING_UNKNOWN);
+> +		if (ret < 0) {
+> +			fput(filp);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	fput(filp);
+> +	cfgfile->size = file_size;
+> +
+> +	/* dispatch again, this time with new file attached */
+> +	return rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
+> +				sizeof(*cmd), NULL, cleanup_cmd_add);
+> +}
+> +
+>  int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
+>  {
+>  	struct rtcfg_connection *conn_buf;
+> @@ -264,46 +299,11 @@ int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
+>  
+>  	/* load file if missing */
+>  	if (ret > 0) {
+> -		struct file *filp;
+> -		mm_segment_t oldfs;
+> -
+> -		filp = filp_open(file->name, O_RDONLY, 0);
+> -		if (IS_ERR(filp)) {
+> +		ret = load_cfg_file(file, cmd);
+> +		if (ret) {
+>  			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+> -			ret = PTR_ERR(filp);
+>  			goto err;
+>  		}
+> -
+> -		file->size = filp->f_path.dentry->d_inode->i_size;
+> -
+> -		/* allocate buffer even for empty files */
+> -		file->buffer = vmalloc((file->size) ? file->size : 1);
+> -		if (file->buffer == NULL) {
+> -			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+> -			fput(filp);
+> -			ret = -ENOMEM;
+> -			goto err;
+> -		}
+> -
+> -		oldfs = get_fs();
+> -		set_fs(KERNEL_DS);
+> -		filp->f_pos = 0;
+> -
+> -		ret = filp->f_op->read(filp, file->buffer, file->size,
+> -				       &filp->f_pos);
+> -
+> -		set_fs(oldfs);
+> -		fput(filp);
+> -
+> -		if (ret != (int)file->size) {
+> -			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+> -			ret = -EIO;
+> -			goto err;
+> -		}
+> -
+> -		/* dispatch again, this time with new file attached */
+> -		ret = rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
+> -					 sizeof(*cmd), NULL, cleanup_cmd_add);
+>  	}
+>  
+>  	return ret;
+> 
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
