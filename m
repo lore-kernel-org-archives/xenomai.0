@@ -1,15 +1,13 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for
- nanosleep64
-Date: Wed, 7 Apr 2021 10:42:00 +0000
-Message-ID: <83024fe06cff2042963185505b834d8be95bac5a.camel@siemens.com>
-References: <1617161188-27230-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1617161188-27230-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9736047F1E9FD64E8837E1246D85283B@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v2 0/7] assorted v5.x related fixups
+References: <20210327101912.2291474-1-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f817d11c-8ac9-42f6-ff5b-9d21027cebe5@siemens.com>
+Date: Wed, 7 Apr 2021 12:39:05 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210327101912.2291474-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,74 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-T24gV2VkLCAyMDIxLTAzLTMxIGF0IDExOjI2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gYWRk
-IHRlc3QgY2FzZSBmb3IgY2xvY2tfbmFub3NsZWVwNjQgaW4gdGVzdHN1aXRlDQo+IA0KPiBTaWdu
-ZWQtb2ZmLWJ5OiBjaGVuc29uZyA8Y2hlbnNvbmdAdGoua3lsaW5vcy5jbj4NCj4gLS0tDQo+IMKg
-dGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMgfCA2NSArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDY1IGluc2VydGlvbnMo
-KykNCj4gDQo+IGRpZmYgLS1naXQgYS90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVz
-dHMuYyBiL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jDQo+IGluZGV4IDAz
-YTMxOTguLmFmZmJiMmQgMTAwNjQ0DQo+IC0tLSBhL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lz
-Y2FsbC10ZXN0cy5jDQo+ICsrKyBiL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0
-cy5jDQo+IEBAIC0yMjYsNiArMjI2LDY3IEBAIHN0YXRpYyBpbnQgdGVzdF9zY19jb2JhbHRfY2xv
-Y2tfc2V0dGltZTY0KHZvaWQpDQo+IMKgCXJldHVybiAwOw0KPiDCoH0NCj4gwqANCj4gDQoNCj4g
-K3N0YXRpYyBpbmxpbmUgaW50NjRfdCBjYWxjZGlmZihzdHJ1Y3QgdGltZXNwZWMgdDEsIHN0cnVj
-dCB4bl90aW1lc3BlYzY0IHQyKQ0KPiANCj4gK3sNCj4gKwlzdHJ1Y3QgdGltZXNwZWMgcjsNCj4g
-Kw0KPiArCXIudHZfc2VjID0gdDEudHZfc2VjIC0gdDIudHZfc2VjOw0KPiArCXIudHZfbnNlYyA9
-IHQxLnR2X25zZWMgLSB0Mi50dl9uc2VjOw0KDQpXaGVuIGxvb2tpbmcgYXQgdGhlIGZ1bmN0aW9u
-IHNpZ25hdHVyZSBJIHdvdWxkIGFzc3VtZSB0MiBpcyB0aGUgYmlnZ2VyDQpvciBsYXRlciBvbmUu
-IEJ1dCBpdCdzIGZsaXBwZWQuIEJ1dCBtYXliZSB0aGlzIGZ1bmN0aW9uIGlzIGdldHRpbmcNCm9i
-c29sZXRlLCBzZWUgYmVsb3cuDQoNCj4gKwlpZiAoci50dl9uc2VjIDwgMCkgew0KPiArCQlyLnR2
-X3NlYy0tOw0KPiArCQlyLnR2X25zZWMgKz0gTlNFQ19QRVJfU0VDOw0KPiArCX0NCj4gKw0KPiAr
-CXJldHVybiAoci50dl9zZWMgKiBOU0VDX1BFUl9TRUMgKyByLnR2X25zZWMpIC8gMTAwMDsNCj4g
-K30NCj4gKw0KPiArc3RhdGljIGludCB0ZXN0X3NjX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCh2
-b2lkKQ0KPiArew0KPiArCWxvbmcgcmV0Ow0KPiArCWludCBjb2RlID0gX194bl9zeXNjb2RlKHNj
-X2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCk7DQo+ICsJc3RydWN0IHhuX3RpbWVzcGVjNjQgbmV4
-dDsNCj4gKwlzdHJ1Y3QgdGltZXNwZWMgbm93Ow0KPiArCWludDY0X3QgZGlmZjsNCj4gKwlpbnQ2
-NF90IHRocmVzaG9sZCA9IDUwMDsNCj4gKw0KPiArCS8qIE1ha2Ugc3VyZSB3ZSBkb24ndCBjcmFz
-aCBiZWNhdXNlIG9mIE5VTEwgcG9pbnRlcnMgKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNvZGUsIE5V
-TEwsIE5VTEwsIE5VTEwpOw0KPiArCWlmIChyZXQgPT0gLTEgJiYgZXJybm8gPT0gRU5PU1lTKSB7
-DQo+ICsJCXNtb2tleV9ub3RlKCJjbG9ja19uYW5vc2xlZXA2NDogc2tpcHBlZC4gKG5vIGtlcm5l
-bCBzdXBwb3J0KSIpOw0KPiArCQlyZXR1cm4gMDsgLy8gTm90IGltcGxlbWVudGVkLCBub3RoaW5n
-IHRvIHRlc3QsIHN1Y2Nlc3MNCj4gKwl9DQo+ICsJaWYgKCFzbW9rZXlfYXNzZXJ0KHJldCA9PSAt
-MSkgfHwgIXNtb2tleV9hc3NlcnQoZXJybm8gPT0gRUZBVUxUKSkNCj4gKwkJcmV0dXJuIGVycm5v
-Ow0KPiArDQo+ICsJLyogUHJvdmlkaW5nIGFuIGludmFsaWQgYWRkcmVzcyBoYXMgdG8gZGVsaXZl
-ciBFRkFVTFQgKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNvZGUsIENMT0NLX01PTk9UT05JQywgKHZv
-aWQgKikweGRlYWRiZWVmVUwsDQo+ICsJCQkJKHZvaWQgKikweGRlYWRiZWVmVUwpOw0KPiArCWlm
-ICghc21va2V5X2Fzc2VydChyZXQgPT0gLTEpIHx8ICFzbW9rZXlfYXNzZXJ0KGVycm5vID09IEVG
-QVVMVCkpDQo+ICsJCXJldHVybiBlcnJubzsNCg0KVG8gYmUgY29tcGxldGUgd2Ugc2hvdWxkIGNv
-dmVyIGFsbCBwb3NzaWJpbGl0aWVzIGhlcmUuIFdlIGFscmVhZHkgY292ZXINCnRoYXQgYm90aCBw
-b2ludGVycyBhcmUgaW52YWxpZCwgYnV0IHRoZXJlIG1pZ2h0IGJlIG9uZSBpbnZhbGlkIGFuZCBh
-DQp2YWxpZCBvbmUgaW4gYWxsIGNvbWJpbmF0aW9ucy4NCg0KPiArDQo+ICsJLyogUHJvdmlkZSBh
-biB2YWxpZCA2NGJpdCB0aW1lc3BlYyovDQoNCk1pbm9yOiAiYSB2YWxpZCIgaW5zdGVhZCBvZiAi
-YW4gdmFsaWQiDQoNCj4gKwlyZXQgPSBjbG9ja19nZXR0aW1lKENMT0NLX1JFQUxUSU1FLCAmbm93
-KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gZXJybm87DQoNCldoZW4gbGVhdmluZyB0aGUg
-ZnVuY3Rpb24gaGVyZSB3ZSBzaG91bGQgYWRkIGEgd2FybmluZyB0aGF0IHdlIGZhaWxlZA0KYmVj
-YXVzZSBjbG9ja19nZXR0aW1lIGRpZCBub3Qgd29yay4gT3RoZXJ3aXNlIHdlIG1pZ2h0IGVuZCB1
-cCBzZWFyY2hpbmcNCmZvciB0aGUgcm9vdCBjYXVzZSBpbiB0aGUgbmFub3NsZWVwIHN0dWZmLg0K
-DQpUaGVyZSBpcyBhIHNlY29uZCBjbG9ja19nZXR0aW1lKCkgZXJyb3IgcGF0aCBiZWxvdy4gQm90
-aCBzaG91bGQgYmUNCmhhbmRsZWQgdGhlIHNhbWUgd2F5Lg0KDQo+ICsNCj4gKwluZXh0LnR2X3Nl
-YyAgPSBub3cudHZfc2VjICsgMTsNCj4gKwluZXh0LnR2X25zZWMgPSBub3cudHZfbnNlYzsNCj4g
-Kw0KPiArCXJldCA9IHN5c2NhbGwoY29kZSwgQ0xPQ0tfUkVBTFRJTUUsIFRJTUVSX0FCU1RJTUUs
-ICZuZXh0LCBOVUxMKTsNCj4gKwlpZiAoIXNtb2tleV9hc3NlcnQoIXJldCkpDQo+ICsJCXJldHVy
-biBlcnJubzsNCj4gKw0KPiArCXJldCA9IGNsb2NrX2dldHRpbWUoQ0xPQ0tfUkVBTFRJTUUsICZu
-b3cpOw0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVybiBlcnJubzsNCj4gKw0KPiArCWRpZmYgPSBj
-YWxjZGlmZihub3csIG5leHQpOw0KPiArCWlmIChkaWZmID4gdGhyZXNob2xkKQ0KPiArCQlzbW9r
-ZXlfd2FybmluZygiY2xvY2tfbmFub3NsZWVwNjQsIGxhdGVuY3kgaXMgJWR1c1xuIik7DQo+ICsN
-Cg0KSSdtIG5vdCBhIGZhbiBvZiBtYWdpYyBudW1iZXJzICh0aHJlc2hvbGQgPSA1MDApLiBUaG9z
-ZSBudW1iZXJzIG1pZ2h0DQpiZSBPSyBvbiBzb21lIHN5c3RlbXMgLyBhcmNoaXRlY3R1cmVzIC8g
-Y2hpcHMgYnV0IG1pZ2h0IGJlIHdyb25nIGZvcg0Kb3RoZXJzLg0KDQpGb3IgdGhlIHNlbWFwaG9y
-ZSB0ZXN0IEkganVzdCBtYWRlIHN1cmUgdGhhdCB3ZSBkb24ndCBjb21lIGJhY2sgdG8NCmVhcmx5
-LiBNYXliZSBzb21lb25lIGhhcyBhIGJldHRlciBpZGVhPw0KDQpBcyBDTE9DS19SRUFMVElNRSBj
-b3VsZCBqdW1wIGJhY2sgYW5kIGZvcndhcmQgd2Ugc2hvdWxkIHN3aXRjaCB0bw0KQ0xPQ0tfTU9O
-T1RPTklDIGZvciBhbGwgc3VjaCB0ZXN0cyAoYXMgd2VsbCBhcyBmb3IgdGhlIGNsb2NrX2dldHRp
-bWUoKQ0KcGFydCkNCg0KPiArCXJldHVybiAwOw0KPiArfQ0KPiArDQo+IMKgc3RhdGljIGludCBy
-dW5feTIwMzgoc3RydWN0IHNtb2tleV90ZXN0ICp0LCBpbnQgYXJnYywgY2hhciAqY29uc3QgYXJn
-dltdKQ0KPiDCoHsNCj4gwqAJaW50IHJldDsNCj4gQEAgLTI0Miw1ICszMDMsOSBAQCBzdGF0aWMg
-aW50IHJ1bl95MjAzOChzdHJ1Y3Qgc21va2V5X3Rlc3QgKnQsIGludCBhcmdjLCBjaGFyICpjb25z
-dCBhcmd2W10pDQo+IMKgCWlmIChyZXQpDQo+IMKgCQlyZXR1cm4gcmV0Ow0KPiANCj4gKwlyZXQg
-PSB0ZXN0X3NjX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCgpOw0KPiArCWlmIChyZXQpDQo+ICsJ
-CXJldHVybiByZXQ7DQo+ICsNCj4gwqAJcmV0dXJuIDA7DQo+IMKgfQ0KDQo=
+On 27.03.21 11:19, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> More wrappers and other changes required to build for the kernel v5.x
+> series.
+> 
+> Philippe Gerum (7):
+>   cobalt/memory: fix __vmalloc() calls
+>   cobalt/debug: switch to mmap_lock interface
+>   cobalt/kernel: convert to proc_ops
+>   cobalt/debug: prefer dump_stack() to show_stack()
+>   drivers/net: wrap csum_partial_copy_nocheck()
+>   drivers/net: icmp: remove variable-length array
+>   drivers/net: cfg: fix config file load up
+> 
+>  kernel/cobalt/debug.c                         |  6 +-
+>  kernel/cobalt/heap.c                          |  3 +-
+>  .../include/asm-generic/xenomai/wrappers.h    | 59 +++++++++++++++
+>  kernel/cobalt/posix/memory.c                  |  7 +-
+>  kernel/cobalt/vfile.c                         | 26 +++----
+>  kernel/drivers/analogy/device.c               | 12 +--
+>  kernel/drivers/can/mscan/rtcan_mscan_proc.c   | 12 +--
+>  kernel/drivers/can/rtcan_module.c             | 66 ++++++++---------
+>  .../drivers/can/sja1000/rtcan_sja1000_proc.c  | 12 +--
+>  kernel/drivers/net/stack/ipv4/icmp.c          | 34 ++++++---
+>  kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c  | 74 +++++++++----------
+>  kernel/drivers/net/stack/rtskb.c              |  3 +-
+>  12 files changed, 189 insertions(+), 125 deletions(-)
+> 
+
+Applied 1-4 and 6. 5 and 7 may need further work.
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
