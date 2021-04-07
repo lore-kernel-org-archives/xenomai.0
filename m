@@ -1,16 +1,15 @@
-Subject: Re: [PATCH v2 3/7] cobalt/kernel: convert to proc_ops
-References: <20210327101912.2291474-1-rpm@xenomai.org>
- <20210327101912.2291474-4-rpm@xenomai.org>
- <60c2189c-b442-a5c8-d7b7-95804882ef07@siemens.com>
- <87a6qapfeu.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <980eea9f-5568-439e-3fdd-eeb9a38077b9@siemens.com>
-Date: Wed, 7 Apr 2021 12:37:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <87a6qapfeu.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for
+ nanosleep64
+Date: Wed, 7 Apr 2021 10:42:00 +0000
+Message-ID: <83024fe06cff2042963185505b834d8be95bac5a.camel@siemens.com>
+References: <1617161188-27230-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1617161188-27230-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9736047F1E9FD64E8837E1246D85283B@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,292 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 07.04.21 12:17, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 27.03.21 11:19, Philippe Gerum wrote:
->>> From: Philippe Gerum <rpm@xenomai.org>
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>  .../include/asm-generic/xenomai/wrappers.h    | 20 ++++++
->>>  kernel/cobalt/vfile.c                         | 26 ++++----
->>>  kernel/drivers/analogy/device.c               | 12 ++--
->>>  kernel/drivers/can/mscan/rtcan_mscan_proc.c   | 12 ++--
->>>  kernel/drivers/can/rtcan_module.c             | 66 +++++++++----------
->>>  .../drivers/can/sja1000/rtcan_sja1000_proc.c  | 12 ++--
->>>  6 files changed, 80 insertions(+), 68 deletions(-)
->>>
->>> diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
->>> index cd22a8db5..cc0cb0896 100644
->>> --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
->>> +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
->>> @@ -170,6 +170,26 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
->>>  #define __kernel_old_timeval	timeval
->>>  #endif
->>>  
->>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,6,0)
->>> +#define DEFINE_PROC_OPS(__name, __open, __release, __read, __write) \
->>> +	struct file_operations __name = {			    \
->>> +		.open = (__open),				    \
->>> +		.release = (__release),				    \
->>> +		.read = (__read),				    \
->>> +		.write = (__write),				    \
->>> +		.llseek = seq_lseek,				    \
->>> +}
->>> +#else
->>> +#define DEFINE_PROC_OPS(__name, __open, __release, __read, __write)	\
->>> +	struct proc_ops __name = {					\
->>> +		.proc_open = (__open),					\
->>> +		.proc_release = (__release),				\
->>> +		.proc_read = (__read),					\
->>> +		.proc_write = (__write),				\
->>> +		.proc_lseek = seq_lseek,				\
->>> +}
->>> +#endif
->>> +
->>>  #if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
->>>  #define old_timespec32    compat_timespec
->>>  #define old_itimerspec32  compat_itimerspec
->>> diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
->>> index f65d46ddf..e9e10ce8d 100644
->>> --- a/kernel/cobalt/vfile.c
->>> +++ b/kernel/cobalt/vfile.c
->>> @@ -340,13 +340,12 @@ ssize_t vfile_snapshot_write(struct file *file, const char __user *buf,
->>>  	return ret;
->>>  }
->>>  
->>> -static struct file_operations vfile_snapshot_fops = {
->>> -	.open = vfile_snapshot_open,
->>> -	.read = seq_read,
->>> -	.write = vfile_snapshot_write,
->>> -	.llseek = seq_lseek,
->>> -	.release = vfile_snapshot_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(vfile_snapshot_fops,
->>> +		       vfile_snapshot_open,
->>> +		       vfile_snapshot_release,
->>> +		       seq_read,
->>> +		       vfile_snapshot_write
->>> +);
->>>  
->>>  /**
->>>   * @fn int xnvfile_init_snapshot(const char *name, struct xnvfile_snapshot *vfile, struct xnvfile_directory *parent)
->>> @@ -592,13 +591,12 @@ ssize_t vfile_regular_write(struct file *file, const char __user *buf,
->>>  	return ret;
->>>  }
->>>  
->>> -static struct file_operations vfile_regular_fops = {
->>> -	.open = vfile_regular_open,
->>> -	.read = seq_read,
->>> -	.write = vfile_regular_write,
->>> -	.llseek = seq_lseek,
->>> -	.release = vfile_regular_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(vfile_regular_fops,
->>> +		       vfile_regular_open,
->>> +		       vfile_regular_release,
->>> +		       seq_read,
->>> +		       vfile_regular_write
->>> +);
->>>  
->>>  /**
->>>   * @fn int xnvfile_init_regular(const char *name, struct xnvfile_regular *vfile, struct xnvfile_directory *parent)
->>> diff --git a/kernel/drivers/analogy/device.c b/kernel/drivers/analogy/device.c
->>> index 160dcf547..6ed588708 100644
->>> --- a/kernel/drivers/analogy/device.c
->>> +++ b/kernel/drivers/analogy/device.c
->>> @@ -95,12 +95,12 @@ static int a4l_proc_transfer_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, a4l_rdproc_transfer, PDE_DATA(inode));
->>>  }
->>>  
->>> -static const struct file_operations a4l_proc_transfer_ops = {
->>> -	.open		= a4l_proc_transfer_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(a4l_proc_transfer_ops,
->>> +			     a4l_proc_transfer_open,
->>> +			     single_release,
->>> +			     seq_read,
->>> +			     NULL
->>> +);
->>>  
->>>  int a4l_proc_attach(struct a4l_device_context * cxt)
->>>  {
->>> diff --git a/kernel/drivers/can/mscan/rtcan_mscan_proc.c b/kernel/drivers/can/mscan/rtcan_mscan_proc.c
->>> index 6b54ad4c7..732a02765 100644
->>> --- a/kernel/drivers/can/mscan/rtcan_mscan_proc.c
->>> +++ b/kernel/drivers/can/mscan/rtcan_mscan_proc.c
->>> @@ -114,12 +114,12 @@ static int rtcan_mscan_proc_regs_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_mscan_proc_regs, PDE_DATA(inode));
->>>  }
->>>  
->>> -static const struct file_operations rtcan_mscan_proc_regs_ops = {
->>> -	.open		= rtcan_mscan_proc_regs_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(rtcan_mscan_proc_regs_ops,
->>> +			rtcan_mscan_proc_regs_open,
->>> +			single_elease,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  int rtcan_mscan_create_proc(struct rtcan_device* dev)
->>>  {
->>> diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
->>> index fbc5c35e4..7f3d4c395 100644
->>> --- a/kernel/drivers/can/rtcan_module.c
->>> +++ b/kernel/drivers/can/rtcan_module.c
->>> @@ -157,12 +157,12 @@ static int rtcan_proc_devices_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_read_proc_devices, NULL);
->>>  }
->>>  
->>> -static const struct file_operations rtcan_proc_devices_ops = {
->>> -	.open		= rtcan_proc_devices_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(rtcan_proc_devices_ops,
->>> +			rtcan_proc_devices_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  static int rtcan_read_proc_sockets(struct seq_file *p, void *data)
->>>  {
->>> @@ -220,13 +220,12 @@ static int rtcan_proc_sockets_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_read_proc_sockets, NULL);
->>>  }
->>>  
->>> -static const struct file_operations rtcan_proc_sockets_ops = {
->>> -	.open		= rtcan_proc_sockets_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> -
->>> +static const DEFINE_PROC_OPS(rtcan_proc_sockets_ops,
->>> +			rtcan_proc_sockets_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  static int rtcan_read_proc_info(struct seq_file *p, void *data)
->>>  {
->>> @@ -271,14 +270,12 @@ static int rtcan_proc_info_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_read_proc_info, PDE_DATA(inode));
->>>  }
->>>  
->>> -static const struct file_operations rtcan_proc_info_ops = {
->>> -	.open		= rtcan_proc_info_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> -
->>> -
->>> +static const DEFINE_PROC_OPS(rtcan_proc_info_ops,
->>> +			rtcan_proc_info_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  static int rtcan_read_proc_filter(struct seq_file *p, void *data)
->>>  {
->>> @@ -319,14 +316,12 @@ static int rtcan_proc_filter_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_read_proc_filter, PDE_DATA(inode));
->>>  }
->>>  
->>> -static const struct file_operations rtcan_proc_filter_ops = {
->>> -	.open		= rtcan_proc_filter_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> -
->>> -
->>> +static const DEFINE_PROC_OPS(rtcan_proc_filter_ops,
->>> +			rtcan_proc_filter_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  static int rtcan_read_proc_version(struct seq_file *p, void *data)
->>>  {
->>> @@ -341,13 +336,12 @@ static int rtcan_proc_version_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_read_proc_version, NULL);
->>>  }
->>>  
->>> -static const struct file_operations rtcan_proc_version_ops = {
->>> -	.open		= rtcan_proc_version_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> -
->>> +static const DEFINE_PROC_OPS(rtcan_proc_version_ops,
->>> +			rtcan_proc_version_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  void rtcan_dev_remove_proc(struct rtcan_device* dev)
->>>  {
->>> diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c b/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
->>> index b4af8ab2e..0fdee8c37 100644
->>> --- a/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
->>> +++ b/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
->>> @@ -50,12 +50,12 @@ static int rtcan_sja_proc_regs_open(struct inode *inode, struct file *file)
->>>  	return single_open(file, rtcan_sja_proc_regs, PDE_DATA(inode));
->>>  }
->>>  
->>> -static const struct file_operations rtcan_sja_proc_regs_ops = {
->>> -	.open		= rtcan_sja_proc_regs_open,
->>> -	.read		= seq_read,
->>> -	.llseek		= seq_lseek,
->>> -	.release	= single_release,
->>> -};
->>> +static const DEFINE_PROC_OPS(rtcan_sja_proc_regs_ops,
->>> +			rtcan_sja_proc_regs_open,
->>> +			single_release,
->>> +			seq_read,
->>> +			NULL
->>> +);
->>>  
->>>  int rtcan_sja_create_proc(struct rtcan_device* dev)
->>>  {
->>>
->>
->> This leaves out a4l_proc_devs_ops and a4l_proc_drvs_ops, while
->> converting a4l_proc_transfer_ops. By accident? In any case, I've added
->> those two cases to the patch.
->>
-> 
-> Not by accident, Analogy is off the map as far as I'm concerned. I would
-> simply disable it from the CI stuff, until a patch dropping it entirely
-> is pushed upstream.
-> 
-
-Well, touch it or leave it, but not half-convert it.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTAzLTMxIGF0IDExOjI2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gYWRk
+IHRlc3QgY2FzZSBmb3IgY2xvY2tfbmFub3NsZWVwNjQgaW4gdGVzdHN1aXRlDQo+IA0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBjaGVuc29uZyA8Y2hlbnNvbmdAdGoua3lsaW5vcy5jbj4NCj4gLS0tDQo+IMKg
+dGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMgfCA2NSArKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDY1IGluc2VydGlvbnMo
+KykNCj4gDQo+IGRpZmYgLS1naXQgYS90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVz
+dHMuYyBiL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jDQo+IGluZGV4IDAz
+YTMxOTguLmFmZmJiMmQgMTAwNjQ0DQo+IC0tLSBhL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lz
+Y2FsbC10ZXN0cy5jDQo+ICsrKyBiL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0
+cy5jDQo+IEBAIC0yMjYsNiArMjI2LDY3IEBAIHN0YXRpYyBpbnQgdGVzdF9zY19jb2JhbHRfY2xv
+Y2tfc2V0dGltZTY0KHZvaWQpDQo+IMKgCXJldHVybiAwOw0KPiDCoH0NCj4gwqANCj4gDQoNCj4g
+K3N0YXRpYyBpbmxpbmUgaW50NjRfdCBjYWxjZGlmZihzdHJ1Y3QgdGltZXNwZWMgdDEsIHN0cnVj
+dCB4bl90aW1lc3BlYzY0IHQyKQ0KPiANCj4gK3sNCj4gKwlzdHJ1Y3QgdGltZXNwZWMgcjsNCj4g
+Kw0KPiArCXIudHZfc2VjID0gdDEudHZfc2VjIC0gdDIudHZfc2VjOw0KPiArCXIudHZfbnNlYyA9
+IHQxLnR2X25zZWMgLSB0Mi50dl9uc2VjOw0KDQpXaGVuIGxvb2tpbmcgYXQgdGhlIGZ1bmN0aW9u
+IHNpZ25hdHVyZSBJIHdvdWxkIGFzc3VtZSB0MiBpcyB0aGUgYmlnZ2VyDQpvciBsYXRlciBvbmUu
+IEJ1dCBpdCdzIGZsaXBwZWQuIEJ1dCBtYXliZSB0aGlzIGZ1bmN0aW9uIGlzIGdldHRpbmcNCm9i
+c29sZXRlLCBzZWUgYmVsb3cuDQoNCj4gKwlpZiAoci50dl9uc2VjIDwgMCkgew0KPiArCQlyLnR2
+X3NlYy0tOw0KPiArCQlyLnR2X25zZWMgKz0gTlNFQ19QRVJfU0VDOw0KPiArCX0NCj4gKw0KPiAr
+CXJldHVybiAoci50dl9zZWMgKiBOU0VDX1BFUl9TRUMgKyByLnR2X25zZWMpIC8gMTAwMDsNCj4g
+K30NCj4gKw0KPiArc3RhdGljIGludCB0ZXN0X3NjX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCh2
+b2lkKQ0KPiArew0KPiArCWxvbmcgcmV0Ow0KPiArCWludCBjb2RlID0gX194bl9zeXNjb2RlKHNj
+X2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCk7DQo+ICsJc3RydWN0IHhuX3RpbWVzcGVjNjQgbmV4
+dDsNCj4gKwlzdHJ1Y3QgdGltZXNwZWMgbm93Ow0KPiArCWludDY0X3QgZGlmZjsNCj4gKwlpbnQ2
+NF90IHRocmVzaG9sZCA9IDUwMDsNCj4gKw0KPiArCS8qIE1ha2Ugc3VyZSB3ZSBkb24ndCBjcmFz
+aCBiZWNhdXNlIG9mIE5VTEwgcG9pbnRlcnMgKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNvZGUsIE5V
+TEwsIE5VTEwsIE5VTEwpOw0KPiArCWlmIChyZXQgPT0gLTEgJiYgZXJybm8gPT0gRU5PU1lTKSB7
+DQo+ICsJCXNtb2tleV9ub3RlKCJjbG9ja19uYW5vc2xlZXA2NDogc2tpcHBlZC4gKG5vIGtlcm5l
+bCBzdXBwb3J0KSIpOw0KPiArCQlyZXR1cm4gMDsgLy8gTm90IGltcGxlbWVudGVkLCBub3RoaW5n
+IHRvIHRlc3QsIHN1Y2Nlc3MNCj4gKwl9DQo+ICsJaWYgKCFzbW9rZXlfYXNzZXJ0KHJldCA9PSAt
+MSkgfHwgIXNtb2tleV9hc3NlcnQoZXJybm8gPT0gRUZBVUxUKSkNCj4gKwkJcmV0dXJuIGVycm5v
+Ow0KPiArDQo+ICsJLyogUHJvdmlkaW5nIGFuIGludmFsaWQgYWRkcmVzcyBoYXMgdG8gZGVsaXZl
+ciBFRkFVTFQgKi8NCj4gKwlyZXQgPSBzeXNjYWxsKGNvZGUsIENMT0NLX01PTk9UT05JQywgKHZv
+aWQgKikweGRlYWRiZWVmVUwsDQo+ICsJCQkJKHZvaWQgKikweGRlYWRiZWVmVUwpOw0KPiArCWlm
+ICghc21va2V5X2Fzc2VydChyZXQgPT0gLTEpIHx8ICFzbW9rZXlfYXNzZXJ0KGVycm5vID09IEVG
+QVVMVCkpDQo+ICsJCXJldHVybiBlcnJubzsNCg0KVG8gYmUgY29tcGxldGUgd2Ugc2hvdWxkIGNv
+dmVyIGFsbCBwb3NzaWJpbGl0aWVzIGhlcmUuIFdlIGFscmVhZHkgY292ZXINCnRoYXQgYm90aCBw
+b2ludGVycyBhcmUgaW52YWxpZCwgYnV0IHRoZXJlIG1pZ2h0IGJlIG9uZSBpbnZhbGlkIGFuZCBh
+DQp2YWxpZCBvbmUgaW4gYWxsIGNvbWJpbmF0aW9ucy4NCg0KPiArDQo+ICsJLyogUHJvdmlkZSBh
+biB2YWxpZCA2NGJpdCB0aW1lc3BlYyovDQoNCk1pbm9yOiAiYSB2YWxpZCIgaW5zdGVhZCBvZiAi
+YW4gdmFsaWQiDQoNCj4gKwlyZXQgPSBjbG9ja19nZXR0aW1lKENMT0NLX1JFQUxUSU1FLCAmbm93
+KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gZXJybm87DQoNCldoZW4gbGVhdmluZyB0aGUg
+ZnVuY3Rpb24gaGVyZSB3ZSBzaG91bGQgYWRkIGEgd2FybmluZyB0aGF0IHdlIGZhaWxlZA0KYmVj
+YXVzZSBjbG9ja19nZXR0aW1lIGRpZCBub3Qgd29yay4gT3RoZXJ3aXNlIHdlIG1pZ2h0IGVuZCB1
+cCBzZWFyY2hpbmcNCmZvciB0aGUgcm9vdCBjYXVzZSBpbiB0aGUgbmFub3NsZWVwIHN0dWZmLg0K
+DQpUaGVyZSBpcyBhIHNlY29uZCBjbG9ja19nZXR0aW1lKCkgZXJyb3IgcGF0aCBiZWxvdy4gQm90
+aCBzaG91bGQgYmUNCmhhbmRsZWQgdGhlIHNhbWUgd2F5Lg0KDQo+ICsNCj4gKwluZXh0LnR2X3Nl
+YyAgPSBub3cudHZfc2VjICsgMTsNCj4gKwluZXh0LnR2X25zZWMgPSBub3cudHZfbnNlYzsNCj4g
+Kw0KPiArCXJldCA9IHN5c2NhbGwoY29kZSwgQ0xPQ0tfUkVBTFRJTUUsIFRJTUVSX0FCU1RJTUUs
+ICZuZXh0LCBOVUxMKTsNCj4gKwlpZiAoIXNtb2tleV9hc3NlcnQoIXJldCkpDQo+ICsJCXJldHVy
+biBlcnJubzsNCj4gKw0KPiArCXJldCA9IGNsb2NrX2dldHRpbWUoQ0xPQ0tfUkVBTFRJTUUsICZu
+b3cpOw0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVybiBlcnJubzsNCj4gKw0KPiArCWRpZmYgPSBj
+YWxjZGlmZihub3csIG5leHQpOw0KPiArCWlmIChkaWZmID4gdGhyZXNob2xkKQ0KPiArCQlzbW9r
+ZXlfd2FybmluZygiY2xvY2tfbmFub3NsZWVwNjQsIGxhdGVuY3kgaXMgJWR1c1xuIik7DQo+ICsN
+Cg0KSSdtIG5vdCBhIGZhbiBvZiBtYWdpYyBudW1iZXJzICh0aHJlc2hvbGQgPSA1MDApLiBUaG9z
+ZSBudW1iZXJzIG1pZ2h0DQpiZSBPSyBvbiBzb21lIHN5c3RlbXMgLyBhcmNoaXRlY3R1cmVzIC8g
+Y2hpcHMgYnV0IG1pZ2h0IGJlIHdyb25nIGZvcg0Kb3RoZXJzLg0KDQpGb3IgdGhlIHNlbWFwaG9y
+ZSB0ZXN0IEkganVzdCBtYWRlIHN1cmUgdGhhdCB3ZSBkb24ndCBjb21lIGJhY2sgdG8NCmVhcmx5
+LiBNYXliZSBzb21lb25lIGhhcyBhIGJldHRlciBpZGVhPw0KDQpBcyBDTE9DS19SRUFMVElNRSBj
+b3VsZCBqdW1wIGJhY2sgYW5kIGZvcndhcmQgd2Ugc2hvdWxkIHN3aXRjaCB0bw0KQ0xPQ0tfTU9O
+T1RPTklDIGZvciBhbGwgc3VjaCB0ZXN0cyAoYXMgd2VsbCBhcyBmb3IgdGhlIGNsb2NrX2dldHRp
+bWUoKQ0KcGFydCkNCg0KPiArCXJldHVybiAwOw0KPiArfQ0KPiArDQo+IMKgc3RhdGljIGludCBy
+dW5feTIwMzgoc3RydWN0IHNtb2tleV90ZXN0ICp0LCBpbnQgYXJnYywgY2hhciAqY29uc3QgYXJn
+dltdKQ0KPiDCoHsNCj4gwqAJaW50IHJldDsNCj4gQEAgLTI0Miw1ICszMDMsOSBAQCBzdGF0aWMg
+aW50IHJ1bl95MjAzOChzdHJ1Y3Qgc21va2V5X3Rlc3QgKnQsIGludCBhcmdjLCBjaGFyICpjb25z
+dCBhcmd2W10pDQo+IMKgCWlmIChyZXQpDQo+IMKgCQlyZXR1cm4gcmV0Ow0KPiANCj4gKwlyZXQg
+PSB0ZXN0X3NjX2NvYmFsdF9jbG9ja19uYW5vc2xlZXA2NCgpOw0KPiArCWlmIChyZXQpDQo+ICsJ
+CXJldHVybiByZXQ7DQo+ICsNCj4gwqAJcmV0dXJuIDA7DQo+IMKgfQ0KDQo=
 
