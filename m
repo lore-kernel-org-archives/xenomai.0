@@ -1,10 +1,12 @@
-Subject: Re: [Dovetail PATCH 0/5] More clock and IRQ abstraction
-References: <20210327103524.2305814-1-rpm@xenomai.org>
+Subject: Re: [PATCH 2/8] cobalt/mutex: Bring back ia32 support for
+ mutex_timedwait
+References: <20210327095417.2289913-1-rpm@xenomai.org>
+ <20210327095417.2289913-3-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7acd9723-dbce-637c-5cb4-90c09d7847b6@siemens.com>
-Date: Wed, 7 Apr 2021 18:20:55 +0200
+Message-ID: <12f269c4-cd8f-3235-60a9-6f5029fe1529@siemens.com>
+Date: Wed, 7 Apr 2021 18:35:18 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210327103524.2305814-1-rpm@xenomai.org>
+In-Reply-To: <20210327095417.2289913-3-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,34 +20,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 27.03.21 11:35, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+On 27.03.21 10:54, Philippe Gerum wrote:
+> From: Florian Bezdeka <florian.bezdeka@siemens.com>
 > 
-> Jan Kiszka (1):
->   cobalt/intr: dovetail: Don't do anything in xnintr_enable/disable
+> The helper used for copying the timeout values (=mutex_fetch_timeout())
+> was always copying sizeof(struct timespec64) from user to kernel space.
+> For applications with time_t being 4 bytes only (like for native 32 bit
+> applications) that is simply too much.
 > 
-> Philippe Gerum (4):
->   cobalt/syscall: dovetail: do not expose clock frequency to user
->   cobalt/sched: dovetail: disable separate per-IRQ statistics
->   cobalt/intr: pipeline: abstract interrupt system inits
->   cobalt/intr: dovetail: implement interrupt management, handling
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  kernel/cobalt/posix/mutex.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
->  include/cobalt/kernel/dovetail/pipeline/irq.h |  24 ++++
->  .../kernel/dovetail/pipeline/pipeline.h       |   6 +
->  include/cobalt/kernel/intr.h                  |   7 +-
->  include/cobalt/kernel/ipipe/pipeline/irq.h    |  14 ++
->  .../cobalt/kernel/ipipe/pipeline/pipeline.h   |   6 +
->  kernel/cobalt/Kconfig                         |   4 +-
->  kernel/cobalt/dovetail/Makefile               |   2 +-
->  kernel/cobalt/dovetail/intr.c                 | 129 ++++++++++++++++++
->  kernel/cobalt/posix/syscall.c                 |   2 +-
->  9 files changed, 185 insertions(+), 9 deletions(-)
->  create mode 100644 include/cobalt/kernel/dovetail/pipeline/irq.h
->  create mode 100644 include/cobalt/kernel/ipipe/pipeline/irq.h
->  create mode 100644 kernel/cobalt/dovetail/intr.c
+> diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
+> index d43a747b3..70fe7960a 100644
+> --- a/kernel/cobalt/posix/mutex.c
+> +++ b/kernel/cobalt/posix/mutex.c
+> @@ -349,8 +349,7 @@ COBALT_SYSCALL(mutex_lock, primary,
+>  static inline int mutex_fetch_timeout(struct timespec64 *ts,
+>  				      const void __user *u_ts)
+>  {
+> -	return u_ts == NULL ? -EFAULT :
+> -		cobalt_copy_from_user(ts, u_ts, sizeof(*ts));
+> +	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
+>  }
+>  
+>  COBALT_SYSCALL(mutex_timedlock, primary,
 > 
 
-Patches 1-3 applied to next.
+Also here: Can we please avoid introducing a regression first and then
+fixing it in the same series? To my understanding, this belongs into
+patch 1, right?
+
+Same for patch 3 and 8 likely.
+
+Philippe, you can preserve Florian's fix-up credit simply in the commit
+message, if that was the concern.
 
 Jan
 
