@@ -1,9 +1,13 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Xenomai Community Call Minutes - April 7, 2021
+Date: Thu, 8 Apr 2021 08:19:57 +0000
+Message-ID: <DM5PR11MB1852F1F506FE58645808D1B2F2749@DM5PR11MB1852.namprd11.prod.outlook.com>
+References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
+In-Reply-To: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-From: John Ho <johnho26@gmail.com>
-Date: Thu, 1 Apr 2021 12:47:42 +0200
-Message-ID: <CAMjL99KZFz3qd4tzuXERhLSnOTjG=SWZV2KtW2=3ipmvW4wuEA@mail.gmail.com>
-Subject: Help with rtnet with soem
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,84 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
+>From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Wang, Rick Y via =
+Xenomai
+>Sent: Thursday, April 8, 2021 8:52 AM
+>To: xenomai@xenomai.org
+>Subject: Xenomai Community Call Minutes - April 7, 2021
+>
+>Attendees:
+>
+>Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,
+>Dao Zhang, Jianbo Cao, Yanfeng Pu, Rick Wang
+>
+>
+>*Community update
+>
+>- No code change in the past two weeks
+>- Greg is debugging jitter issue on ARM.
+>- Siemens is testing WIP-Dovetail branch internally. Some issues were
+>reported related to clock source or gdb crash.
+>- Jan will log the issues to gitlab Xenomai hacker space:
+>https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
+>- For Xenomai 3.2, there are some submitted patches pending on Jan's revie=
+w
+>and merge. Also some patches in Philippe's private tree are pending on
+>submission.
+>- Florian and Song are working on Y2038 issue on Philippe's tree. It depen=
+ds
+>on some Dovetail codes to be merged first.
+>- Hongzhan is working on latmus GPIO porting. 5.10 Dovetail-based Xenomai
+>and EVL can't boot up on his dev board yet. 5.9 kernel can boot on the
 
-I wish to ask for some help. I was experiencing some issues with soem and
-rtnet.
+After further debug , when failure happen, actually system is wrong to use =
+pit instead of=20
+LAPIC as clock event device because pit can not work with dovetail. After c=
+heck log , found
+that there is abnormal info related to APIC reported "[    2.812126] APIC: =
+ACPI MADT or MP tables are not detected"
+It mentioned ACPI.  So I traced ACPI related log suggested by Jan and Flori=
+an and found that there is
+ACPI related error reported earlier in log like " [    0.013416] ACPI BIOS =
+Error (bug): A valid RSDP was not found (20200925/tbxfroot-210)".
+I googled this error but all the solution related to it  can not fix the is=
+sue for example enabling ACPI in BIOS.
+And then I captured kernel log for 5.9 and compare them with 5.10 and final=
+ly found that there is log info related to ACPI missing with my 5.10 image =
+like=20
+" [    0.000000] efi: ACPI 2.0=3D0x8c3ee000 ACPI=3D0x8c3ee000 TPMFinalLog=
+=3D0x8c4ad000 SMBIOS=3D0x8c9ca000 SMBIOS 3.0=3D0x8c9c9000 MEMATTR=3D0x88059=
+418"
+After check kernel config, I found  that my 5.10 config actually have not e=
+nabled CONFIG_EFI. After enable it, evl successfully boot up on=20
+my Rock PI X board now.=20
 
-I was able to run rtnet with soem till now, however, recently I realized
-that rtnet is freezing up occasionally.
+Thanks for Jan and Florian's suggestions.
 
-When i use eno1 with xenomai threading, if my ethercat fails it continues
-to the next cycle on my program. However when i switch over to rteth0, and
-when my ethercat fails, it freezes.
+Regards
 
-I have attached in this email the Wireshark info from both my master and
-sniffer pc:
+Hongzhan Chen
 
+>same board. It could be related to clock source and ACPI changes in kernel=
+.
+>
+>
+>
+>Thanks,
+>Rick
 
-MASTER:
-
-10456 4.296601704 JetwayIn_09:95:50 Broadcast ECAT 293 2 Cmds, 'LRW': len
-245, 'FRMW': len 8
-10457 4.296748257 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 293 2
-Cmds, 'LRW': len 245, 'FRMW': len 8
-10458 4.297302548 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-10459 4.298000197 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-10460 4.298700307 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-10461 4.298703155 JetwayIn_09:95:50 Broadcast ECAT 293 2 Cmds, 'LRW': len
-245, 'FRMW': len 8
-10462 4.299399782 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-10463 4.300100548 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-10464 4.300799199 JetwayIn_09:95:51 Broadcast TDMA 42 Synchronisation
-
-
-
-
-
-
-SNIFFER:
-
-15935 4.121410 JetwayIn_09:95:50 Broadcast ECAT 313 2 Cmds, 'LRW': len 245,
-'FRMW': len 8
-15936 4.121410 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 313 2
-Cmds, 'LRW': len 245, 'FRMW': len 8
-15937 4.122238 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
-15938 4.122238 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
-Unknown (0xc83e)
-15939 4.122822 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
-15940 4.122822 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
-Unknown (0xc83e)
-15941 4.123625 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
-15942 4.123625 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
-Unknown (0xc83e)
-15943 4.123625 JetwayIn_09:95:50 Broadcast ECAT 313 2 Cmds, 'LRW': len 245,
-'FRMW': len 8
-15944 4.123625 MS-NLB-PhysServer-32_10:18:09:95:50 Broadcast ECAT 82
-[Malformed Packet]
-15945 4.124208 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
-15946 4.124208 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
-Unknown (0xc83e)
-15947 4.125019 JetwayIn_09:95:51 Broadcast TDMA 80 Synchronisation
-15948 4.125019 MS-NLB-PhysServer-32_10:18:09:95:51 Broadcast RTmac 60
-Unknown (0xc83e)
-
-
-
-
-On the masterpc, i have instances like 10456 and 10457 where the master pc
-was able to send and receive the packages. but on 10461 it sends out a
-package but didn't receive back and freezes up.
-
-On the snifferpc, 15935 and 15936 shows a working communication. However
-when it reaches 15944, there is a malformed package
-
-as such i wish to ask if there is a way to prevent rtnet from freezing and
-just skip over this malformed package?
-
-Looking forward for any assistance available.
-
-yours sincerely,
-John
