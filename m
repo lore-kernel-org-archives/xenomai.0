@@ -1,13 +1,10 @@
-Subject: arm32: 5.4.107 ipipe patch - bad kernel version choice ;)
-References: <4e03-60663e80-47-10b42340@50501997>
-From: Robert Berger <xenomai.list@gmail.com>
-Message-ID: <77b9bb71-4cdf-fb8e-9fde-4cfd033a7722@gmail.com>
-Date: Sat, 3 Apr 2021 14:56:11 +0300
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH] linux-xenomai: x86: Enable vfat support for
+ UEFI boot
+Date: Thu,  8 Apr 2021 17:12:55 +0200
+Message-Id: <20210408151255.946852-1-florian.bezdeka@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <4e03-60663e80-47-10b42340@50501997>
-Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,25 +15,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGksCgpJIGp1c3QgY2hlY2tlZCB0aGlzIHBhdGNoIG9uIG9uZSBvZiBteSBpbXg2cSBib2FyZHM6
-CgpodHRwczovL3hlbm9tYWkub3JnL2Rvd25sb2Fkcy9pcGlwZS92NS54L2FybS9pcGlwZS1jb3Jl
-LTUuNC4xMDctYXJtLTEucGF0Y2gKCk9uZSBwcm9ibGVtIGlzLCB0aGF0IDUuNC4xMDcgZG9lcyBu
-b3Qgc2VlbSB0byBiZSBhIGdvb2QgY2hvaWNlIGR1ZSB0byAKdGhpcyBjcmFzaDoKCmh0dHBzOi8v
-cGFzdGViaW4uY29tL0V6VUU2aTNmCgpUaGlzIGlzIF9fTk9UX18gY2F1c2VkIGJ5IHRoZSBpcGlw
-ZSBwYXRjaCBhcyBmYXIgYXMgSSBjYW4gdGVsbCBhbmQgCmhhcHBlbnMgYWxzbyBvbiB2YXJpb3Vz
-IDUuMTAueCBrZXJuZWxzLCBidXQgd2FzIHJlc29sdmVkIGluIHRoZSBsYXRlc3QgCjUuMTAueCBr
-ZXJuZWxzLgoKU28gSSB0cmllZCB0byBwYXRjaCBhIG1vcmUgcmVjZW50IDUuNC54IGtlcm5lbCAt
-IDUuNC4xMDksIGFuZCBpdCBkb2VzIApub3QgY29udGFpbiB0aGUgY3Jhc2ggZnJvbSBhYm92ZSBh
-bnltb3JlLgoKMiBmaWxlcyBmcm9tIHRoZSA1LjQuMTA3IHBhdGNoIHdlcmUgcmVqZWN0ZWQ6Cgph
-cmNoL2FybS9rZXJuZWwvZW50cnktYXJtdi5TLnJlagp2aW0gYXJjaC9hcm0vdmZwL2VudHJ5LlMu
-cmVqCgpJdCBsb29rcyBsaWtlIHdoYXRldmVyIGlzIGluIGVudHJ5LlMgYWxyZWFkeSB3ZW50IHVw
-c3RyZWFtIGFuZCBJIHRyaWVkIAp0byBoYWNrIGVudHJ5LWFybXYuUyAocGxlYXNlIHJldmlldyku
-CgpDYW4geW91IHBsZWFzZSBjaGVjayBteSBhdHRhY2hlZC91cGRhdGVkIHBhdGNoIGFnYWluc3Qg
-dXBzdHJlYW0gNS40LjEwOSwgCndoaWNoLCBhZnRlciBzb21lIHF1aWNrIHRlc3RpbmcsIHNlZW1z
-IHRvIHdvcmsgZm9yIG1lLCBhbmQgdXBkYXRlIHlvdXIgCmlwaXBlLWNvcmUtNS40LjEwNyB0byA1
-LjQuMTA5PwoKUmVnYXJkcywKClJvYmVydAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAx
-LWZha2UtaXBpcGUtY29yZS01LjQuMTA5LWFybS0xLnBhdGNoClR5cGU6IHRleHQveC1wYXRjaApT
-aXplOiA2NjE2NzIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTA0MDMvMGY5ZDVjNmUvYXR0
-YWNobWVudC5iaW4+Cg==
+Trying to boot up the example image on an x86 board with UEFI failed
+because vfat support was missing. The x86 defconfig has been
+re-synchronized with the arm64 defconfig to enable UEFI boot support.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ recipes-kernel/linux/files/amd64_defconfig | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
+index bc5cd0b..2b7e63f 100644
+--- a/recipes-kernel/linux/files/amd64_defconfig
++++ b/recipes-kernel/linux/files/amd64_defconfig
+@@ -3609,7 +3609,10 @@ CONFIG_FSCACHE_HISTOGRAM=y
+ # DOS/FAT/NT Filesystems
+ #
+ # CONFIG_MSDOS_FS is not set
+-# CONFIG_VFAT_FS is not set
++CONFIG_VFAT_FS=y
++CONFIG_FAT_DEFAULT_CODEPAGE=437
++CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
++# CONFIG_FAT_DEFAULT_UTF8 is not set
+ # CONFIG_NTFS_FS is not set
+ 
+ #
+@@ -3681,8 +3684,8 @@ CONFIG_9P_FSCACHE=y
+ CONFIG_9P_FS_POSIX_ACL=y
+ # CONFIG_9P_FS_SECURITY is not set
+ CONFIG_NLS=y
+-CONFIG_NLS_DEFAULT="cp437"
+-# CONFIG_NLS_CODEPAGE_437 is not set
++CONFIG_NLS_DEFAULT="iso8859-1"
++CONFIG_NLS_CODEPAGE_437=y
+ # CONFIG_NLS_CODEPAGE_737 is not set
+ # CONFIG_NLS_CODEPAGE_775 is not set
+ # CONFIG_NLS_CODEPAGE_850 is not set
+@@ -3706,7 +3709,7 @@ CONFIG_NLS_DEFAULT="cp437"
+ # CONFIG_NLS_CODEPAGE_1250 is not set
+ # CONFIG_NLS_CODEPAGE_1251 is not set
+ # CONFIG_NLS_ASCII is not set
+-# CONFIG_NLS_ISO8859_1 is not set
++CONFIG_NLS_ISO8859_1=y
+ # CONFIG_NLS_ISO8859_2 is not set
+ # CONFIG_NLS_ISO8859_3 is not set
+ # CONFIG_NLS_ISO8859_4 is not set
+-- 
+2.30.2
+
+
