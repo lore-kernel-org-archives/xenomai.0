@@ -1,14 +1,15 @@
-MIME-Version: 1.0
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Xenomai Community Call Minutes - April 7, 2021
+Date: Fri, 9 Apr 2021 01:07:17 +0000
+Message-ID: <DM5PR11MB1852C0D927196D5FEEEC62AFF2739@DM5PR11MB1852.namprd11.prod.outlook.com>
 References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
  <DM5PR11MB1852F1F506FE58645808D1B2F2749@DM5PR11MB1852.namprd11.prod.outlook.com>
  <f0d18fad-1dd8-7b78-7878-995ecaa5bfc9@siemens.com>
 In-Reply-To: <f0d18fad-1dd8-7b78-7878-995ecaa5bfc9@siemens.com>
-From: Antoine Hoarau <antoine@flr.io>
-Date: Thu, 8 Apr 2021 20:14:39 +0200
-Message-ID: <CAPnNZ0WNaJmfH=YDftgBkR2auEaXqEojmKAHcx2bmxh7-K85Hw@mail.gmail.com>
-Subject: Re: Xenomai Community Call Minutes - April 7, 2021
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,83 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I ran into the same issue. Using default config too. Had to enable EFI
-manually.
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBBcHJpbCA4LCAyMDIxIDQ6Mjgg
+UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
+aUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBYZW5vbWFpIENvbW11bml0eSBDYWxsIE1pbnV0
+ZXMgLSBBcHJpbCA3LCAyMDIxDQo+DQo+T24gMDguMDQuMjEgMTA6MTksIENoZW4sIEhvbmd6aGFu
+IHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4
+ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIFdhbmcsIFJpY2sgWSB2aWEgWGVub21haQ0KPj4+IFNl
+bnQ6IFRodXJzZGF5LCBBcHJpbCA4LCAyMDIxIDg6NTIgQU0NCj4+PiBUbzogeGVub21haUB4ZW5v
+bWFpLm9yZw0KPj4+IFN1YmplY3Q6IFhlbm9tYWkgQ29tbXVuaXR5IENhbGwgTWludXRlcyAtIEFw
+cmlsIDcsIDIwMjENCj4+Pg0KPj4+IEF0dGVuZGVlczoNCj4+Pg0KPj4+IEphbiBLaXN6a2EsIEZs
+b3JpYW4gQmV6ZGVrYSwgRmxvcmVudCBQaXJvdSwgSG9uZ3poYW4gQ2hlbiwNCj4+PiBEYW8gWmhh
+bmcsIEppYW5ibyBDYW8sIFlhbmZlbmcgUHUsIFJpY2sgV2FuZw0KPj4+DQo+Pj4NCj4+PiAqQ29t
+bXVuaXR5IHVwZGF0ZQ0KPj4+DQo+Pj4gLSBObyBjb2RlIGNoYW5nZSBpbiB0aGUgcGFzdCB0d28g
+d2Vla3MNCj4+PiAtIEdyZWcgaXMgZGVidWdnaW5nIGppdHRlciBpc3N1ZSBvbiBBUk0uDQo+Pj4g
+LSBTaWVtZW5zIGlzIHRlc3RpbmcgV0lQLURvdmV0YWlsIGJyYW5jaCBpbnRlcm5hbGx5LiBTb21l
+IGlzc3VlcyB3ZXJlDQo+Pj4gcmVwb3J0ZWQgcmVsYXRlZCB0byBjbG9jayBzb3VyY2Ugb3IgZ2Ri
+IGNyYXNoLg0KPj4+IC0gSmFuIHdpbGwgbG9nIHRoZSBpc3N1ZXMgdG8gZ2l0bGFiIFhlbm9tYWkg
+aGFja2VyIHNwYWNlOg0KPj4+IGh0dHBzOi8vZ2l0bGFiLmNvbS9YZW5vbWFpL3hlbm9tYWktaGFj
+a2VyLXNwYWNlLy0vaXNzdWVzDQo+Pj4gLSBGb3IgWGVub21haSAzLjIsIHRoZXJlIGFyZSBzb21l
+IHN1Ym1pdHRlZCBwYXRjaGVzIHBlbmRpbmcgb24gSmFuJ3MgcmV2aWV3DQo+Pj4gYW5kIG1lcmdl
+LiBBbHNvIHNvbWUgcGF0Y2hlcyBpbiBQaGlsaXBwZSdzIHByaXZhdGUgdHJlZSBhcmUgcGVuZGlu
+ZyBvbg0KPj4+IHN1Ym1pc3Npb24uDQo+Pj4gLSBGbG9yaWFuIGFuZCBTb25nIGFyZSB3b3JraW5n
+IG9uIFkyMDM4IGlzc3VlIG9uIFBoaWxpcHBlJ3MgdHJlZS4gSXQgZGVwZW5kcw0KPj4+IG9uIHNv
+bWUgRG92ZXRhaWwgY29kZXMgdG8gYmUgbWVyZ2VkIGZpcnN0Lg0KPj4+IC0gSG9uZ3poYW4gaXMg
+d29ya2luZyBvbiBsYXRtdXMgR1BJTyBwb3J0aW5nLiA1LjEwIERvdmV0YWlsLWJhc2VkIFhlbm9t
+YWkNCj4+PiBhbmQgRVZMIGNhbid0IGJvb3QgdXAgb24gaGlzIGRldiBib2FyZCB5ZXQuIDUuOSBr
+ZXJuZWwgY2FuIGJvb3Qgb24gdGhlDQo+PiANCj4+IEFmdGVyIGZ1cnRoZXIgZGVidWcgLCB3aGVu
+IGZhaWx1cmUgaGFwcGVuLCBhY3R1YWxseSBzeXN0ZW0gaXMgd3JvbmcgdG8gdXNlIHBpdCBpbnN0
+ZWFkIG9mIA0KPj4gTEFQSUMgYXMgY2xvY2sgZXZlbnQgZGV2aWNlIGJlY2F1c2UgcGl0IGNhbiBu
+b3Qgd29yayB3aXRoIGRvdmV0YWlsLiBBZnRlciBjaGVjayBsb2cgLCBmb3VuZA0KPj4gdGhhdCB0
+aGVyZSBpcyBhYm5vcm1hbCBpbmZvIHJlbGF0ZWQgdG8gQVBJQyByZXBvcnRlZCAiWyAgICAyLjgx
+MjEyNl0gQVBJQzogQUNQSSBNQURUIG9yIE1QIHRhYmxlcyBhcmUgbm90IGRldGVjdGVkIg0KPj4g
+SXQgbWVudGlvbmVkIEFDUEkuICBTbyBJIHRyYWNlZCBBQ1BJIHJlbGF0ZWQgbG9nIHN1Z2dlc3Rl
+ZCBieSBKYW4gYW5kIEZsb3JpYW4gYW5kIGZvdW5kIHRoYXQgdGhlcmUgaXMNCj4+IEFDUEkgcmVs
+YXRlZCBlcnJvciByZXBvcnRlZCBlYXJsaWVyIGluIGxvZyBsaWtlICIgWyAgICAwLjAxMzQxNl0g
+QUNQSSBCSU9TIEVycm9yIChidWcpOiBBIHZhbGlkIFJTRFAgd2FzIG5vdCBmb3VuZCAoMjAyMDA5
+MjUvdGJ4ZnJvb3QtMjEwKSIuDQo+PiBJIGdvb2dsZWQgdGhpcyBlcnJvciBidXQgYWxsIHRoZSBz
+b2x1dGlvbiByZWxhdGVkIHRvIGl0ICBjYW4gbm90IGZpeCB0aGUgaXNzdWUgZm9yIGV4YW1wbGUg
+ZW5hYmxpbmcgQUNQSSBpbiBCSU9TLg0KPj4gQW5kIHRoZW4gSSBjYXB0dXJlZCBrZXJuZWwgbG9n
+IGZvciA1LjkgYW5kIGNvbXBhcmUgdGhlbSB3aXRoIDUuMTAgYW5kIGZpbmFsbHkgZm91bmQgdGhh
+dCB0aGVyZSBpcyBsb2cgaW5mbyByZWxhdGVkIHRvIEFDUEkgbWlzc2luZyB3aXRoIG15IDUuMTAg
+aW1hZ2UgbGlrZSANCj4+ICIgWyAgICAwLjAwMDAwMF0gZWZpOiBBQ1BJIDIuMD0weDhjM2VlMDAw
+IEFDUEk9MHg4YzNlZTAwMCBUUE1GaW5hbExvZz0weDhjNGFkMDAwIFNNQklPUz0weDhjOWNhMDAw
+IFNNQklPUyAzLjA9MHg4YzljOTAwMCBNRU1BVFRSPTB4ODgwNTk0MTgiDQo+PiBBZnRlciBjaGVj
+ayBrZXJuZWwgY29uZmlnLCBJIGZvdW5kICB0aGF0IG15IDUuMTAgY29uZmlnIGFjdHVhbGx5IGhh
+dmUgbm90IGVuYWJsZWQgQ09ORklHX0VGSS4gQWZ0ZXIgZW5hYmxlIGl0LCBldmwgc3VjY2Vzc2Z1
+bGx5IGJvb3QgdXAgb24gDQo+PiBteSBSb2NrIFBJIFggYm9hcmQgbm93LiANCj4+IA0KPj4gVGhh
+bmtzIGZvciBKYW4gYW5kIEZsb3JpYW4ncyBzdWdnZXN0aW9ucy4NCj4+IA0KPg0KPkdyZWF0IHRv
+IGhlYXIgaXQgd29ya3Mgbm93IQ0KPg0KPlllYWgsIENPTkZJR19FRkk9eSBpcyBwYXJ0IG9mIHg4
+Nl82NF9kZWZjb25maWcgLSB0aGF0J3Mgd2h5IEkgc3VnZ2VzdGVkDQo+dG8gcmV0cnkgc3RhcnRp
+bmcgZnJvbSB0aGVyZS4NCg0KTXkgcHJvYmxlbSBpcyB0aGF0IHRoZSBzYW1lIGltYWdlIHRoYXQg
+aGFkIG5vdCBlbmFibGVkIGVmaSBzdWNjZXNzZnVsbHkgYm9vdCB1cCAgZnJvbSB0aGUgYmVnaW5u
+aW5nIG9uIE1heHRhbmcgYm9hcmQgd2hpY2ggSSANCmFscmVhZHkgc2V0dXAgbGF2YSBmb3IgaXQg
+IGF0IGZpcnN0IHNvIHRoYXQgSSBoYWQgbm90IHN1c3BlY3RlZCBjb25maWcgdGhpbmcgZm9yIG15
+IFJvY2sgUEkgWCBib2FyZCB0aGF0IEkgaGF2ZSBnb3QgcmVjZW50bHkuDQpCdXQgYWZ0ZXIgZnVy
+dGhlciBjaGVjayBsb2cgb24gTWF4dGFuZywgIGl0IHNlZW1zIHRoYXQgaXQgdXNlIG1wdGFibGUg
+dG8gZXhhbWluZSBNUFMgc28gdGhhdCBpdCBzdGlsbCBjYW4gY292ZXIgQVBJQy4NCg0KUmVnYXJk
+cw0KDQpIb25nemhhbiBDaGVuDQoNCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJE
+QSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
-Le jeu. 8 avr. 2021 =C3=A0 10:28, Jan Kiszka via Xenomai <xenomai@xenomai.o=
-rg> a
-=C3=A9crit :
-
-> On 08.04.21 10:19, Chen, Hongzhan via Xenomai wrote:
-> >> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Wang, Rick Y
-> via Xenomai
-> >> Sent: Thursday, April 8, 2021 8:52 AM
-> >> To: xenomai@xenomai.org
-> >> Subject: Xenomai Community Call Minutes - April 7, 2021
-> >>
-> >> Attendees:
-> >>
-> >> Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,
-> >> Dao Zhang, Jianbo Cao, Yanfeng Pu, Rick Wang
-> >>
-> >>
-> >> *Community update
-> >>
-> >> - No code change in the past two weeks
-> >> - Greg is debugging jitter issue on ARM.
-> >> - Siemens is testing WIP-Dovetail branch internally. Some issues were
-> >> reported related to clock source or gdb crash.
-> >> - Jan will log the issues to gitlab Xenomai hacker space:
-> >> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
-> >> - For Xenomai 3.2, there are some submitted patches pending on Jan's
-> review
-> >> and merge. Also some patches in Philippe's private tree are pending on
-> >> submission.
-> >> - Florian and Song are working on Y2038 issue on Philippe's tree. It
-> depends
-> >> on some Dovetail codes to be merged first.
-> >> - Hongzhan is working on latmus GPIO porting. 5.10 Dovetail-based
-> Xenomai
-> >> and EVL can't boot up on his dev board yet. 5.9 kernel can boot on the
-> >
-> > After further debug , when failure happen, actually system is wrong to
-> use pit instead of
-> > LAPIC as clock event device because pit can not work with dovetail.
-> After check log , found
-> > that there is abnormal info related to APIC reported "[    2.812126]
-> APIC: ACPI MADT or MP tables are not detected"
-> > It mentioned ACPI.  So I traced ACPI related log suggested by Jan and
-> Florian and found that there is
-> > ACPI related error reported earlier in log like " [    0.013416] ACPI
-> BIOS Error (bug): A valid RSDP was not found (20200925/tbxfroot-210)".
-> > I googled this error but all the solution related to it  can not fix th=
-e
-> issue for example enabling ACPI in BIOS.
-> > And then I captured kernel log for 5.9 and compare them with 5.10 and
-> finally found that there is log info related to ACPI missing with my 5.10
-> image like
-> > " [    0.000000] efi: ACPI 2.0=3D0x8c3ee000 ACPI=3D0x8c3ee000
-> TPMFinalLog=3D0x8c4ad000 SMBIOS=3D0x8c9ca000 SMBIOS 3.0=3D0x8c9c9000
-> MEMATTR=3D0x88059418"
-> > After check kernel config, I found  that my 5.10 config actually have
-> not enabled CONFIG_EFI. After enable it, evl successfully boot up on
-> > my Rock PI X board now.
-> >
-> > Thanks for Jan and Florian's suggestions.
-> >
->
-> Great to hear it works now!
->
-> Yeah, CONFIG_EFI=3Dy is part of x86_64_defconfig - that's why I suggested
-> to retry starting from there.
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
->
