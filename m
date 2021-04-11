@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@web.de>
-Subject: [PATCH 2/4] drivers/net: Account for renaming of
- pci_cleanup_aer_uncorrect_error_status in 5.7
-Date: Sun, 11 Apr 2021 09:54:19 +0200
-Message-Id: <896969c80aabcce00a32ccd3feb720220d2ac30e.1618127660.git.jan.kiszka@web.de>
+Subject: [PATCH 4/4] drivers/net/r8169: Remove duplicate and usused ether_crc
+ definition
+Date: Sun, 11 Apr 2021 09:54:21 +0200
+Message-Id: <1633db1b88bc0261b9919ea63481a23489921904.1618127660.git.jan.kiszka@web.de>
 In-Reply-To: <cover.1618127660.git.jan.kiszka@web.de>
 References: <cover.1618127660.git.jan.kiszka@web.de>
 MIME-Version: 1.0
@@ -19,64 +19,69 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Provided by linux/crc32.h as well, now causing build errors. But it was
+unused anyway.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 =2D--
- kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 ++++
- kernel/drivers/net/drivers/e1000e/netdev.c           | 2 +-
- kernel/drivers/net/drivers/igb/igb_main.c            | 4 ++--
- 3 files changed, 7 insertions(+), 3 deletions(-)
+ kernel/drivers/net/drivers/r8169.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel=
-/cobalt/include/asm-generic/xenomai/wrappers.h
-index 2bb344d737..be62ab744b 100644
-=2D-- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -199,4 +199,8 @@ devm_hwmon_device_register_with_groups(struct device *=
-dev, const char *name,
- #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__fl=
-ags)
- #endif
+diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drive=
+rs/r8169.c
+index 6255fcb3f2..b49a15e305 100644
+=2D-- a/kernel/drivers/net/drivers/r8169.c
++++ b/kernel/drivers/net/drivers/r8169.c
+@@ -466,7 +466,6 @@ static int rtl8169_interrupt(rtdm_irq_t *irq_handle);
+ static void rtl8169_init_ring (struct rtnet_device *rtdev);
+ static void rtl8169_hw_start (struct rtnet_device *rtdev);
+ static int rtl8169_close (struct rtnet_device *rtdev);
+-static inline u32 ether_crc (int length, unsigned char *data);
+ static void rtl8169_set_rx_mode (struct rtnet_device *rtdev);
+ /* static void rtl8169_tx_timeout (struct net_device *dev); */	/*** RTnet=
+ ***/
+ static struct net_device_stats *rtl8169_get_stats(struct rtnet_device *ne=
+tdev);
+@@ -1826,29 +1825,6 @@ static int rtl8169_close (struct rtnet_device *rtde=
+v)
 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,7,0)
-+#define pci_aer_clear_nonfatal_status	pci_cleanup_aer_uncorrect_error_sta=
-tus
-+#endif
-+
- #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
-diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/n=
-et/drivers/e1000e/netdev.c
-index 5beaf2b552..5ce4679113 100644
-=2D-- a/kernel/drivers/net/drivers/e1000e/netdev.c
-+++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -3778,7 +3778,7 @@ static pci_ers_result_t e1000_io_slot_reset(struct p=
-ci_dev *pdev)
- 		result =3D PCI_ERS_RESULT_RECOVERED;
- 	}
 
--	pci_cleanup_aer_uncorrect_error_status(pdev);
-+	pci_aer_clear_nonfatal_status(pdev);
 
- 	return result;
- }
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/ne=
-t/drivers/igb/igb_main.c
-index 01960a6c26..2f49ba17fe 100644
-=2D-- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -5437,10 +5437,10 @@ static pci_ers_result_t igb_io_slot_reset(struct p=
-ci_dev *pdev)
- 		result =3D PCI_ERS_RESULT_RECOVERED;
- 	}
-
--	err =3D pci_cleanup_aer_uncorrect_error_status(pdev);
-+	err =3D pci_aer_clear_nonfatal_status(pdev);
- 	if (err) {
- 		dev_err(&pdev->dev,
--			"pci_cleanup_aer_uncorrect_error_status failed 0x%0x\n",
-+			"pci_aer_clear_nonfatal_status failed 0x%0x\n",
- 			err);
- 		/* non-fatal, continue */
- 	}
+-//=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+-static unsigned const ethernet_polynomial =3D 0x04c11db7U;
+-static inline u32 ether_crc (int length, unsigned char *data)
+-{
+-	int crc =3D -1;
+-
+-	while (--length >=3D 0) {
+-		unsigned char current_octet =3D *data++;
+-		int bit;
+-		for (bit =3D 0; bit < 8; bit++, current_octet >>=3D 1)
+-			crc =3D (crc << 1) ^ ((crc < 0) ^ (current_octet & 1) ? ethernet_polyn=
+omial : 0);
+-	}
+-
+-	return crc;
+-}
+-
+-
+-
+-
+-
+-
+-
+-
+ //=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+ static void rtl8169_set_rx_mode (struct rtnet_device *rtdev)
+ {
 =2D-
 2.26.2
 
