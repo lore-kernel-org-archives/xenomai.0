@@ -1,9 +1,8 @@
-Subject: [PATCH 5/4] drivers/net/experimental/e1000: Annotate valid
- fall-through cases
+Subject: [PATCH 6/4] drivers/net/igb: Make sure CONFIG_IGB_HWMON is off
 References: <cover.1618127660.git.jan.kiszka@web.de>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <c4e3494d-0125-630a-950f-a652d2c44385@web.de>
-Date: Sun, 11 Apr 2021 10:51:04 +0200
+Message-ID: <e53d291e-6e20-e39b-521c-c121f7492afd@web.de>
+Date: Sun, 11 Apr 2021 12:09:14 +0200
 MIME-Version: 1.0
 In-Reply-To: <cover.1618127660.git.jan.kiszka@web.de>
 Content-Type: text/plain; charset=utf-8
@@ -17,33 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+We better exclude this code path due to unknown impact on RT.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 =2D--
- kernel/drivers/net/drivers/experimental/e1000/e1000_main.c | 2 ++
+ kernel/drivers/net/drivers/igb/igb.h | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/=
-kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-index 443a9f55b9..c9751c1ddc 100644
-=2D-- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-@@ -2396,9 +2396,11 @@ static void e1000_setup_rctl(struct e1000_adapter *=
-adapter)
- 		case 3:
- 			psrctl |=3D PAGE_SIZE <<
- 				E1000_PSRCTL_BSIZE3_SHIFT;
-+			/* fall through */
- 		case 2:
- 			psrctl |=3D PAGE_SIZE <<
- 				E1000_PSRCTL_BSIZE2_SHIFT;
-+			/* fall through */
- 		case 1:
- 			psrctl |=3D PAGE_SIZE >>
- 				E1000_PSRCTL_BSIZE1_SHIFT;
+diff --git a/kernel/drivers/net/drivers/igb/igb.h b/kernel/drivers/net/dri=
+vers/igb/igb.h
+index 16fb5e2ed4..4c65e31c35 100644
+=2D-- a/kernel/drivers/net/drivers/igb/igb.h
++++ b/kernel/drivers/net/drivers/igb/igb.h
+@@ -39,6 +39,8 @@
+
+ #include <rtdev.h>
+
++#undef CONFIG_IGB_HWMON
++
+ struct igb_adapter;
+
+ #define E1000_PCS_CFG_IGN_SD	1
 =2D-
 2.26.2
 
