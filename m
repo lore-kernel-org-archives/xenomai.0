@@ -1,15 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: Xenomai Community Call Minutes - April 7, 2021
-Date: Fri, 9 Apr 2021 01:07:17 +0000
-Message-ID: <DM5PR11MB1852C0D927196D5FEEEC62AFF2739@DM5PR11MB1852.namprd11.prod.outlook.com>
-References: <CO6PR11MB56493CA60ADCFBEFC2670FF3BA749@CO6PR11MB5649.namprd11.prod.outlook.com>
- <DM5PR11MB1852F1F506FE58645808D1B2F2749@DM5PR11MB1852.namprd11.prod.outlook.com>
- <f0d18fad-1dd8-7b78-7878-995ecaa5bfc9@siemens.com>
-In-Reply-To: <f0d18fad-1dd8-7b78-7878-995ecaa5bfc9@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@web.de>
+Subject: [PATCH 1/4] drivers/can/peak_canfd: Fix building out-of-tree
+Date: Sun, 11 Apr 2021 09:54:18 +0200
+Message-Id: <3e641de2fffe5690b8888f329c7941620acc2ce1.1618127660.git.jan.kiszka@web.de>
+In-Reply-To: <cover.1618127660.git.jan.kiszka@web.de>
+References: <cover.1618127660.git.jan.kiszka@web.de>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,65 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBBcHJpbCA4LCAyMDIxIDQ6Mjgg
-UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
-aUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBYZW5vbWFpIENvbW11bml0eSBDYWxsIE1pbnV0
-ZXMgLSBBcHJpbCA3LCAyMDIxDQo+DQo+T24gMDguMDQuMjEgMTA6MTksIENoZW4sIEhvbmd6aGFu
-IHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4
-ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIFdhbmcsIFJpY2sgWSB2aWEgWGVub21haQ0KPj4+IFNl
-bnQ6IFRodXJzZGF5LCBBcHJpbCA4LCAyMDIxIDg6NTIgQU0NCj4+PiBUbzogeGVub21haUB4ZW5v
-bWFpLm9yZw0KPj4+IFN1YmplY3Q6IFhlbm9tYWkgQ29tbXVuaXR5IENhbGwgTWludXRlcyAtIEFw
-cmlsIDcsIDIwMjENCj4+Pg0KPj4+IEF0dGVuZGVlczoNCj4+Pg0KPj4+IEphbiBLaXN6a2EsIEZs
-b3JpYW4gQmV6ZGVrYSwgRmxvcmVudCBQaXJvdSwgSG9uZ3poYW4gQ2hlbiwNCj4+PiBEYW8gWmhh
-bmcsIEppYW5ibyBDYW8sIFlhbmZlbmcgUHUsIFJpY2sgV2FuZw0KPj4+DQo+Pj4NCj4+PiAqQ29t
-bXVuaXR5IHVwZGF0ZQ0KPj4+DQo+Pj4gLSBObyBjb2RlIGNoYW5nZSBpbiB0aGUgcGFzdCB0d28g
-d2Vla3MNCj4+PiAtIEdyZWcgaXMgZGVidWdnaW5nIGppdHRlciBpc3N1ZSBvbiBBUk0uDQo+Pj4g
-LSBTaWVtZW5zIGlzIHRlc3RpbmcgV0lQLURvdmV0YWlsIGJyYW5jaCBpbnRlcm5hbGx5LiBTb21l
-IGlzc3VlcyB3ZXJlDQo+Pj4gcmVwb3J0ZWQgcmVsYXRlZCB0byBjbG9jayBzb3VyY2Ugb3IgZ2Ri
-IGNyYXNoLg0KPj4+IC0gSmFuIHdpbGwgbG9nIHRoZSBpc3N1ZXMgdG8gZ2l0bGFiIFhlbm9tYWkg
-aGFja2VyIHNwYWNlOg0KPj4+IGh0dHBzOi8vZ2l0bGFiLmNvbS9YZW5vbWFpL3hlbm9tYWktaGFj
-a2VyLXNwYWNlLy0vaXNzdWVzDQo+Pj4gLSBGb3IgWGVub21haSAzLjIsIHRoZXJlIGFyZSBzb21l
-IHN1Ym1pdHRlZCBwYXRjaGVzIHBlbmRpbmcgb24gSmFuJ3MgcmV2aWV3DQo+Pj4gYW5kIG1lcmdl
-LiBBbHNvIHNvbWUgcGF0Y2hlcyBpbiBQaGlsaXBwZSdzIHByaXZhdGUgdHJlZSBhcmUgcGVuZGlu
-ZyBvbg0KPj4+IHN1Ym1pc3Npb24uDQo+Pj4gLSBGbG9yaWFuIGFuZCBTb25nIGFyZSB3b3JraW5n
-IG9uIFkyMDM4IGlzc3VlIG9uIFBoaWxpcHBlJ3MgdHJlZS4gSXQgZGVwZW5kcw0KPj4+IG9uIHNv
-bWUgRG92ZXRhaWwgY29kZXMgdG8gYmUgbWVyZ2VkIGZpcnN0Lg0KPj4+IC0gSG9uZ3poYW4gaXMg
-d29ya2luZyBvbiBsYXRtdXMgR1BJTyBwb3J0aW5nLiA1LjEwIERvdmV0YWlsLWJhc2VkIFhlbm9t
-YWkNCj4+PiBhbmQgRVZMIGNhbid0IGJvb3QgdXAgb24gaGlzIGRldiBib2FyZCB5ZXQuIDUuOSBr
-ZXJuZWwgY2FuIGJvb3Qgb24gdGhlDQo+PiANCj4+IEFmdGVyIGZ1cnRoZXIgZGVidWcgLCB3aGVu
-IGZhaWx1cmUgaGFwcGVuLCBhY3R1YWxseSBzeXN0ZW0gaXMgd3JvbmcgdG8gdXNlIHBpdCBpbnN0
-ZWFkIG9mIA0KPj4gTEFQSUMgYXMgY2xvY2sgZXZlbnQgZGV2aWNlIGJlY2F1c2UgcGl0IGNhbiBu
-b3Qgd29yayB3aXRoIGRvdmV0YWlsLiBBZnRlciBjaGVjayBsb2cgLCBmb3VuZA0KPj4gdGhhdCB0
-aGVyZSBpcyBhYm5vcm1hbCBpbmZvIHJlbGF0ZWQgdG8gQVBJQyByZXBvcnRlZCAiWyAgICAyLjgx
-MjEyNl0gQVBJQzogQUNQSSBNQURUIG9yIE1QIHRhYmxlcyBhcmUgbm90IGRldGVjdGVkIg0KPj4g
-SXQgbWVudGlvbmVkIEFDUEkuICBTbyBJIHRyYWNlZCBBQ1BJIHJlbGF0ZWQgbG9nIHN1Z2dlc3Rl
-ZCBieSBKYW4gYW5kIEZsb3JpYW4gYW5kIGZvdW5kIHRoYXQgdGhlcmUgaXMNCj4+IEFDUEkgcmVs
-YXRlZCBlcnJvciByZXBvcnRlZCBlYXJsaWVyIGluIGxvZyBsaWtlICIgWyAgICAwLjAxMzQxNl0g
-QUNQSSBCSU9TIEVycm9yIChidWcpOiBBIHZhbGlkIFJTRFAgd2FzIG5vdCBmb3VuZCAoMjAyMDA5
-MjUvdGJ4ZnJvb3QtMjEwKSIuDQo+PiBJIGdvb2dsZWQgdGhpcyBlcnJvciBidXQgYWxsIHRoZSBz
-b2x1dGlvbiByZWxhdGVkIHRvIGl0ICBjYW4gbm90IGZpeCB0aGUgaXNzdWUgZm9yIGV4YW1wbGUg
-ZW5hYmxpbmcgQUNQSSBpbiBCSU9TLg0KPj4gQW5kIHRoZW4gSSBjYXB0dXJlZCBrZXJuZWwgbG9n
-IGZvciA1LjkgYW5kIGNvbXBhcmUgdGhlbSB3aXRoIDUuMTAgYW5kIGZpbmFsbHkgZm91bmQgdGhh
-dCB0aGVyZSBpcyBsb2cgaW5mbyByZWxhdGVkIHRvIEFDUEkgbWlzc2luZyB3aXRoIG15IDUuMTAg
-aW1hZ2UgbGlrZSANCj4+ICIgWyAgICAwLjAwMDAwMF0gZWZpOiBBQ1BJIDIuMD0weDhjM2VlMDAw
-IEFDUEk9MHg4YzNlZTAwMCBUUE1GaW5hbExvZz0weDhjNGFkMDAwIFNNQklPUz0weDhjOWNhMDAw
-IFNNQklPUyAzLjA9MHg4YzljOTAwMCBNRU1BVFRSPTB4ODgwNTk0MTgiDQo+PiBBZnRlciBjaGVj
-ayBrZXJuZWwgY29uZmlnLCBJIGZvdW5kICB0aGF0IG15IDUuMTAgY29uZmlnIGFjdHVhbGx5IGhh
-dmUgbm90IGVuYWJsZWQgQ09ORklHX0VGSS4gQWZ0ZXIgZW5hYmxlIGl0LCBldmwgc3VjY2Vzc2Z1
-bGx5IGJvb3QgdXAgb24gDQo+PiBteSBSb2NrIFBJIFggYm9hcmQgbm93LiANCj4+IA0KPj4gVGhh
-bmtzIGZvciBKYW4gYW5kIEZsb3JpYW4ncyBzdWdnZXN0aW9ucy4NCj4+IA0KPg0KPkdyZWF0IHRv
-IGhlYXIgaXQgd29ya3Mgbm93IQ0KPg0KPlllYWgsIENPTkZJR19FRkk9eSBpcyBwYXJ0IG9mIHg4
-Nl82NF9kZWZjb25maWcgLSB0aGF0J3Mgd2h5IEkgc3VnZ2VzdGVkDQo+dG8gcmV0cnkgc3RhcnRp
-bmcgZnJvbSB0aGVyZS4NCg0KTXkgcHJvYmxlbSBpcyB0aGF0IHRoZSBzYW1lIGltYWdlIHRoYXQg
-aGFkIG5vdCBlbmFibGVkIGVmaSBzdWNjZXNzZnVsbHkgYm9vdCB1cCAgZnJvbSB0aGUgYmVnaW5u
-aW5nIG9uIE1heHRhbmcgYm9hcmQgd2hpY2ggSSANCmFscmVhZHkgc2V0dXAgbGF2YSBmb3IgaXQg
-IGF0IGZpcnN0IHNvIHRoYXQgSSBoYWQgbm90IHN1c3BlY3RlZCBjb25maWcgdGhpbmcgZm9yIG15
-IFJvY2sgUEkgWCBib2FyZCB0aGF0IEkgaGF2ZSBnb3QgcmVjZW50bHkuDQpCdXQgYWZ0ZXIgZnVy
-dGhlciBjaGVjayBsb2cgb24gTWF4dGFuZywgIGl0IHNlZW1zIHRoYXQgaXQgdXNlIG1wdGFibGUg
-dG8gZXhhbWluZSBNUFMgc28gdGhhdCBpdCBzdGlsbCBjYW4gY292ZXIgQVBJQy4NCg0KUmVnYXJk
-cw0KDQpIb25nemhhbiBDaGVuDQoNCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJE
-QSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+=2D--
+ kernel/drivers/can/peak_canfd/Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/drivers/can/peak_canfd/Makefile b/kernel/drivers/can/p=
+eak_canfd/Makefile
+index 22670a9c46..f56f451562 100644
+=2D-- a/kernel/drivers/can/peak_canfd/Makefile
++++ b/kernel/drivers/can/peak_canfd/Makefile
+@@ -1,6 +1,8 @@
+ #
+ # Makefile for the PEAK-System CAN-FD IP module drivers
+ #
+-ccflags-y +=3D -Idrivers/xenomai/can
++ccflags-y +=3D -I$(srctree)/drivers/xenomai/can
++
+ obj-$(CONFIG_XENO_DRIVERS_CAN_PEAK_CANFD) +=3D xeno_can_peak_pciefd.o
++
+ xeno_can_peak_pciefd-y :=3D rtcan_peak_pciefd.o rtcan_peak_canfd.o
+=2D-
+2.26.2
+
 
