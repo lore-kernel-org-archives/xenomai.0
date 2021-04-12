@@ -1,13 +1,16 @@
-Subject: [PATCH 6/4] drivers/net/igb: Make sure CONFIG_IGB_HWMON is off
-References: <cover.1618127660.git.jan.kiszka@web.de>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <e53d291e-6e20-e39b-521c-c121f7492afd@web.de>
-Date: Sun, 11 Apr 2021 12:09:14 +0200
-MIME-Version: 1.0
-In-Reply-To: <cover.1618127660.git.jan.kiszka@web.de>
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [xenomai-images][PATCH] linux-xenomai: x86: Enable vfat support
+ for UEFI boot
+Date: Mon, 12 Apr 2021 07:45:21 +0000
+Message-ID: <0aef13f824395e02ddbf66e57c64b4577a0151ba.camel@siemens.com>
+References: <20210408151255.946852-1-florian.bezdeka@siemens.com>
+ <1312625a-17c9-801a-719a-08068b697b25@siemens.com>
+In-Reply-To: <1312625a-17c9-801a-719a-08068b697b25@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <06008680DE61804DA09FBCE302D2A6C8@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-We better exclude this code path due to unknown impact on RT.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-=2D--
- kernel/drivers/net/drivers/igb/igb.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/kernel/drivers/net/drivers/igb/igb.h b/kernel/drivers/net/dri=
-vers/igb/igb.h
-index 16fb5e2ed4..4c65e31c35 100644
-=2D-- a/kernel/drivers/net/drivers/igb/igb.h
-+++ b/kernel/drivers/net/drivers/igb/igb.h
-@@ -39,6 +39,8 @@
-
- #include <rtdev.h>
-
-+#undef CONFIG_IGB_HWMON
-+
- struct igb_adapter;
-
- #define E1000_PCS_CFG_IGN_SD	1
-=2D-
-2.26.2
+T24gVGh1LCAyMDIxLTA0LTA4IGF0IDE5OjI0ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwOC4wNC4yMSAxNzoxMiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IFRyeWluZyB0byBi
+b290IHVwIHRoZSBleGFtcGxlIGltYWdlIG9uIGFuIHg4NiBib2FyZCB3aXRoIFVFRkkgZmFpbGVk
+DQo+ID4gYmVjYXVzZSB2ZmF0IHN1cHBvcnQgd2FzIG1pc3NpbmcuIFRoZSB4ODYgZGVmY29uZmln
+IGhhcyBiZWVuDQo+ID4gcmUtc3luY2hyb25pemVkIHdpdGggdGhlIGFybTY0IGRlZmNvbmZpZyB0
+byBlbmFibGUgVUVGSSBib290IHN1cHBvcnQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogRmxv
+cmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gLS0tDQo+ID4g
+wqByZWNpcGVzLWtlcm5lbC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcgfCAxMSArKysrKysr
+LS0tLQ0KPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMo
+LSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYW1k
+NjRfZGVmY29uZmlnIGIvcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYW1kNjRfZGVmY29uZmln
+DQo+ID4gaW5kZXggYmM1Y2QwYi4uMmI3ZTYzZiAxMDA2NDQNCj4gPiAtLS0gYS9yZWNpcGVzLWtl
+cm5lbC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcNCj4gPiArKysgYi9yZWNpcGVzLWtlcm5l
+bC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcNCj4gPiBAQCAtMzYwOSw3ICszNjA5LDEwIEBA
+IENPTkZJR19GU0NBQ0hFX0hJU1RPR1JBTT15DQo+ID4gwqAjIERPUy9GQVQvTlQgRmlsZXN5c3Rl
+bXMNCj4gPiDCoCMNCj4gPiDCoCMgQ09ORklHX01TRE9TX0ZTIGlzIG5vdCBzZXQNCj4gPiAtIyBD
+T05GSUdfVkZBVF9GUyBpcyBub3Qgc2V0DQo+ID4gK0NPTkZJR19WRkFUX0ZTPXkNCj4gPiArQ09O
+RklHX0ZBVF9ERUZBVUxUX0NPREVQQUdFPTQzNw0KPiA+ICtDT05GSUdfRkFUX0RFRkFVTFRfSU9D
+SEFSU0VUPSJpc284ODU5LTEiDQo+ID4gKyMgQ09ORklHX0ZBVF9ERUZBVUxUX1VURjggaXMgbm90
+IHNldA0KPiA+IMKgIyBDT05GSUdfTlRGU19GUyBpcyBub3Qgc2V0DQo+ID4gwqAjDQo+ID4gQEAg
+LTM2ODEsOCArMzY4NCw4IEBAIENPTkZJR185UF9GU0NBQ0hFPXkNCj4gPiDCoENPTkZJR185UF9G
+U19QT1NJWF9BQ0w9eQ0KPiA+IMKgIyBDT05GSUdfOVBfRlNfU0VDVVJJVFkgaXMgbm90IHNldA0K
+PiA+IMKgQ09ORklHX05MUz15DQo+ID4gLUNPTkZJR19OTFNfREVGQVVMVD0iY3A0MzciDQo+ID4g
+LSMgQ09ORklHX05MU19DT0RFUEFHRV80MzcgaXMgbm90IHNldA0KPiA+ICtDT05GSUdfTkxTX0RF
+RkFVTFQ9Imlzbzg4NTktMSINCj4gPiArQ09ORklHX05MU19DT0RFUEFHRV80Mzc9eQ0KPiA+IMKg
+IyBDT05GSUdfTkxTX0NPREVQQUdFXzczNyBpcyBub3Qgc2V0DQo+ID4gwqAjIENPTkZJR19OTFNf
+Q09ERVBBR0VfNzc1IGlzIG5vdCBzZXQNCj4gPiDCoCMgQ09ORklHX05MU19DT0RFUEFHRV84NTAg
+aXMgbm90IHNldA0KPiA+IEBAIC0zNzA2LDcgKzM3MDksNyBAQCBDT05GSUdfTkxTX0RFRkFVTFQ9
+ImNwNDM3Ig0KPiA+IMKgIyBDT05GSUdfTkxTX0NPREVQQUdFXzEyNTAgaXMgbm90IHNldA0KPiA+
+IMKgIyBDT05GSUdfTkxTX0NPREVQQUdFXzEyNTEgaXMgbm90IHNldA0KPiA+IMKgIyBDT05GSUdf
+TkxTX0FTQ0lJIGlzIG5vdCBzZXQNCj4gPiAtIyBDT05GSUdfTkxTX0lTTzg4NTlfMSBpcyBub3Qg
+c2V0DQo+ID4gK0NPTkZJR19OTFNfSVNPODg1OV8xPXkNCj4gPiDCoCMgQ09ORklHX05MU19JU084
+ODU5XzIgaXMgbm90IHNldA0KPiA+IMKgIyBDT05GSUdfTkxTX0lTTzg4NTlfMyBpcyBub3Qgc2V0
+DQo+ID4gwqAjIENPTkZJR19OTFNfSVNPODg1OV80IGlzIG5vdCBzZXQNCj4gPiANCj4gDQo+IEkg
+d29uZGVyIGlmIHdlIHNob3VsZCByYXRoZXIgc3RvcmUgYSBzYXZlZGVmY29uZmlnIHJlc3VsdCBo
+ZXJlLiBUaGF0DQo+IG1pZ2h0IGhhdmUgcHJldmVudGVkIHRoaXMuIE9yIGFyZSB0aG9zZSBvcHRp
+b25zIG5vdCBwYXJ0IG9mIHRoZQ0KPiB4ODZfNjQtZGVmY29uZmlnPw0KDQpPbiB0aGUgbG9uZyBy
+dW46IFllcywgc291bmRzIHJlYXNvbmFibGUuIA0KDQpDb252ZXJ0aW5nIHRoYXQgdG8gYSBkZWZj
+b25maWcgbm93IHdpbGwgdHJpZ2dlciBhIGxvdCBvZiByZWZvcm1hdHRpbmcsDQpyZXN1bHRpbmcg
+aW4gYSBiaWcgZGlmZi4gT3RoZXIgY29uZmlncyAoYXJtNjQsIGFybWhmKSBhcmUgYWZmZWN0ZWQg
+YXMNCndlbGwuIE1heWJlIHNvbWV0aGluZyB3ZSBzaG91bGQgcG9zdHBvbmUgdG8gMy4yLCBzbyB3
+ZSBnZXQgdGhlDQpuZWNlc3NhcnkgdGVzdGluZz8NCg0KPiANCj4gSmFuDQo+IA0KDQo=
 
