@@ -1,16 +1,16 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images][PATCH] linux-xenomai: x86: Enable vfat support
  for UEFI boot
-Date: Mon, 12 Apr 2021 07:45:21 +0000
-Message-ID: <0aef13f824395e02ddbf66e57c64b4577a0151ba.camel@siemens.com>
 References: <20210408151255.946852-1-florian.bezdeka@siemens.com>
  <1312625a-17c9-801a-719a-08068b697b25@siemens.com>
-In-Reply-To: <1312625a-17c9-801a-719a-08068b697b25@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <06008680DE61804DA09FBCE302D2A6C8@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <0aef13f824395e02ddbf66e57c64b4577a0151ba.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <07bb46d6-848d-28fe-9cdf-569497c13a04@siemens.com>
+Date: Mon, 12 Apr 2021 09:46:32 +0200
 MIME-Version: 1.0
+In-Reply-To: <0aef13f824395e02ddbf66e57c64b4577a0151ba.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,48 +19,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTA0LTA4IGF0IDE5OjI0ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwOC4wNC4yMSAxNzoxMiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IFRyeWluZyB0byBi
-b290IHVwIHRoZSBleGFtcGxlIGltYWdlIG9uIGFuIHg4NiBib2FyZCB3aXRoIFVFRkkgZmFpbGVk
-DQo+ID4gYmVjYXVzZSB2ZmF0IHN1cHBvcnQgd2FzIG1pc3NpbmcuIFRoZSB4ODYgZGVmY29uZmln
-IGhhcyBiZWVuDQo+ID4gcmUtc3luY2hyb25pemVkIHdpdGggdGhlIGFybTY0IGRlZmNvbmZpZyB0
-byBlbmFibGUgVUVGSSBib290IHN1cHBvcnQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogRmxv
-cmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gLS0tDQo+ID4g
-wqByZWNpcGVzLWtlcm5lbC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcgfCAxMSArKysrKysr
-LS0tLQ0KPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMo
-LSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYW1k
-NjRfZGVmY29uZmlnIGIvcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYW1kNjRfZGVmY29uZmln
-DQo+ID4gaW5kZXggYmM1Y2QwYi4uMmI3ZTYzZiAxMDA2NDQNCj4gPiAtLS0gYS9yZWNpcGVzLWtl
-cm5lbC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcNCj4gPiArKysgYi9yZWNpcGVzLWtlcm5l
-bC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWcNCj4gPiBAQCAtMzYwOSw3ICszNjA5LDEwIEBA
-IENPTkZJR19GU0NBQ0hFX0hJU1RPR1JBTT15DQo+ID4gwqAjIERPUy9GQVQvTlQgRmlsZXN5c3Rl
-bXMNCj4gPiDCoCMNCj4gPiDCoCMgQ09ORklHX01TRE9TX0ZTIGlzIG5vdCBzZXQNCj4gPiAtIyBD
-T05GSUdfVkZBVF9GUyBpcyBub3Qgc2V0DQo+ID4gK0NPTkZJR19WRkFUX0ZTPXkNCj4gPiArQ09O
-RklHX0ZBVF9ERUZBVUxUX0NPREVQQUdFPTQzNw0KPiA+ICtDT05GSUdfRkFUX0RFRkFVTFRfSU9D
-SEFSU0VUPSJpc284ODU5LTEiDQo+ID4gKyMgQ09ORklHX0ZBVF9ERUZBVUxUX1VURjggaXMgbm90
-IHNldA0KPiA+IMKgIyBDT05GSUdfTlRGU19GUyBpcyBub3Qgc2V0DQo+ID4gwqAjDQo+ID4gQEAg
-LTM2ODEsOCArMzY4NCw4IEBAIENPTkZJR185UF9GU0NBQ0hFPXkNCj4gPiDCoENPTkZJR185UF9G
-U19QT1NJWF9BQ0w9eQ0KPiA+IMKgIyBDT05GSUdfOVBfRlNfU0VDVVJJVFkgaXMgbm90IHNldA0K
-PiA+IMKgQ09ORklHX05MUz15DQo+ID4gLUNPTkZJR19OTFNfREVGQVVMVD0iY3A0MzciDQo+ID4g
-LSMgQ09ORklHX05MU19DT0RFUEFHRV80MzcgaXMgbm90IHNldA0KPiA+ICtDT05GSUdfTkxTX0RF
-RkFVTFQ9Imlzbzg4NTktMSINCj4gPiArQ09ORklHX05MU19DT0RFUEFHRV80Mzc9eQ0KPiA+IMKg
-IyBDT05GSUdfTkxTX0NPREVQQUdFXzczNyBpcyBub3Qgc2V0DQo+ID4gwqAjIENPTkZJR19OTFNf
-Q09ERVBBR0VfNzc1IGlzIG5vdCBzZXQNCj4gPiDCoCMgQ09ORklHX05MU19DT0RFUEFHRV84NTAg
-aXMgbm90IHNldA0KPiA+IEBAIC0zNzA2LDcgKzM3MDksNyBAQCBDT05GSUdfTkxTX0RFRkFVTFQ9
-ImNwNDM3Ig0KPiA+IMKgIyBDT05GSUdfTkxTX0NPREVQQUdFXzEyNTAgaXMgbm90IHNldA0KPiA+
-IMKgIyBDT05GSUdfTkxTX0NPREVQQUdFXzEyNTEgaXMgbm90IHNldA0KPiA+IMKgIyBDT05GSUdf
-TkxTX0FTQ0lJIGlzIG5vdCBzZXQNCj4gPiAtIyBDT05GSUdfTkxTX0lTTzg4NTlfMSBpcyBub3Qg
-c2V0DQo+ID4gK0NPTkZJR19OTFNfSVNPODg1OV8xPXkNCj4gPiDCoCMgQ09ORklHX05MU19JU084
-ODU5XzIgaXMgbm90IHNldA0KPiA+IMKgIyBDT05GSUdfTkxTX0lTTzg4NTlfMyBpcyBub3Qgc2V0
-DQo+ID4gwqAjIENPTkZJR19OTFNfSVNPODg1OV80IGlzIG5vdCBzZXQNCj4gPiANCj4gDQo+IEkg
-d29uZGVyIGlmIHdlIHNob3VsZCByYXRoZXIgc3RvcmUgYSBzYXZlZGVmY29uZmlnIHJlc3VsdCBo
-ZXJlLiBUaGF0DQo+IG1pZ2h0IGhhdmUgcHJldmVudGVkIHRoaXMuIE9yIGFyZSB0aG9zZSBvcHRp
-b25zIG5vdCBwYXJ0IG9mIHRoZQ0KPiB4ODZfNjQtZGVmY29uZmlnPw0KDQpPbiB0aGUgbG9uZyBy
-dW46IFllcywgc291bmRzIHJlYXNvbmFibGUuIA0KDQpDb252ZXJ0aW5nIHRoYXQgdG8gYSBkZWZj
-b25maWcgbm93IHdpbGwgdHJpZ2dlciBhIGxvdCBvZiByZWZvcm1hdHRpbmcsDQpyZXN1bHRpbmcg
-aW4gYSBiaWcgZGlmZi4gT3RoZXIgY29uZmlncyAoYXJtNjQsIGFybWhmKSBhcmUgYWZmZWN0ZWQg
-YXMNCndlbGwuIE1heWJlIHNvbWV0aGluZyB3ZSBzaG91bGQgcG9zdHBvbmUgdG8gMy4yLCBzbyB3
-ZSBnZXQgdGhlDQpuZWNlc3NhcnkgdGVzdGluZz8NCg0KPiANCj4gSmFuDQo+IA0KDQo=
+On 12.04.21 09:45, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-04-08 at 19:24 +0200, Jan Kiszka wrote:
+>> On 08.04.21 17:12, Florian Bezdeka wrote:
+>>> Trying to boot up the example image on an x86 board with UEFI failed
+>>> because vfat support was missing. The x86 defconfig has been
+>>> re-synchronized with the arm64 defconfig to enable UEFI boot support.
+>>>
+>>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>>> ---
+>>>  recipes-kernel/linux/files/amd64_defconfig | 11 +++++++----
+>>>  1 file changed, 7 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
+>>> index bc5cd0b..2b7e63f 100644
+>>> --- a/recipes-kernel/linux/files/amd64_defconfig
+>>> +++ b/recipes-kernel/linux/files/amd64_defconfig
+>>> @@ -3609,7 +3609,10 @@ CONFIG_FSCACHE_HISTOGRAM=y
+>>>  # DOS/FAT/NT Filesystems
+>>>  #
+>>>  # CONFIG_MSDOS_FS is not set
+>>> -# CONFIG_VFAT_FS is not set
+>>> +CONFIG_VFAT_FS=y
+>>> +CONFIG_FAT_DEFAULT_CODEPAGE=437
+>>> +CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
+>>> +# CONFIG_FAT_DEFAULT_UTF8 is not set
+>>>  # CONFIG_NTFS_FS is not set
+>>>  #
+>>> @@ -3681,8 +3684,8 @@ CONFIG_9P_FSCACHE=y
+>>>  CONFIG_9P_FS_POSIX_ACL=y
+>>>  # CONFIG_9P_FS_SECURITY is not set
+>>>  CONFIG_NLS=y
+>>> -CONFIG_NLS_DEFAULT="cp437"
+>>> -# CONFIG_NLS_CODEPAGE_437 is not set
+>>> +CONFIG_NLS_DEFAULT="iso8859-1"
+>>> +CONFIG_NLS_CODEPAGE_437=y
+>>>  # CONFIG_NLS_CODEPAGE_737 is not set
+>>>  # CONFIG_NLS_CODEPAGE_775 is not set
+>>>  # CONFIG_NLS_CODEPAGE_850 is not set
+>>> @@ -3706,7 +3709,7 @@ CONFIG_NLS_DEFAULT="cp437"
+>>>  # CONFIG_NLS_CODEPAGE_1250 is not set
+>>>  # CONFIG_NLS_CODEPAGE_1251 is not set
+>>>  # CONFIG_NLS_ASCII is not set
+>>> -# CONFIG_NLS_ISO8859_1 is not set
+>>> +CONFIG_NLS_ISO8859_1=y
+>>>  # CONFIG_NLS_ISO8859_2 is not set
+>>>  # CONFIG_NLS_ISO8859_3 is not set
+>>>  # CONFIG_NLS_ISO8859_4 is not set
+>>>
+>>
+>> I wonder if we should rather store a savedefconfig result here. That
+>> might have prevented this. Or are those options not part of the
+>> x86_64-defconfig?
+> 
+> On the long run: Yes, sounds reasonable.
+> 
+> Converting that to a defconfig now will trigger a lot of reformatting,
+> resulting in a big diff. Other configs (arm64, armhf) are affected as
+> well. Maybe something we should postpone to 3.2, so we get the
+> necessary testing?
+
+I'm fine with doing that as a separate patch, but already because of the
+broad range of kernel versions we are testing NOW (4.4 - 5.10), we
+should convert ASAP.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
