@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Issue tracking on xenomai-hacker-space
-Message-ID: <39b16992-74fc-69ae-c33e-5598971b6c42@siemens.com>
-Date: Tue, 13 Apr 2021 20:01:54 +0200
+Subject: [PATCH] debian: Fix packaging of xeno-config
+Message-ID: <d4124d9d-86c7-8f47-76db-0586217ec10e@siemens.com>
+Date: Tue, 13 Apr 2021 21:04:24 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -16,20 +16,46 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-Just a heads-up and reminder:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I've just added some obvious or less obvious issues regarding the 3.2
-milestone to https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues.
-If you run into something (unsolved bug, feature request etc.), related
-to Dovetail or beyond, do not hesitate to use that tool.
+This is not a runtime tool, it's for development. And as libxenomai-dev
+has no dependency on xenomai-runtime (as there should be none), it is
+missed in build-only installations.
 
-Discussions should remain on the list to avoid excluding folks tracking
-this source primarily. We can use good-old links to refer to them later,
-in the tracker or commits.
+Reported-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Fixes: 6e77fe2b8d3f ("debian: drop xeno-config from -dev package")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ debian/libxenomai-dev.install | 1 +
+ debian/rules                  | 5 ++---
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Jan
-
+diff --git a/debian/libxenomai-dev.install b/debian/libxenomai-dev.install
+index 9f95c359c4..a8e6b4e339 100644
+--- a/debian/libxenomai-dev.install
++++ b/debian/libxenomai-dev.install
+@@ -1,3 +1,4 @@
++usr/bin/xeno-config
+ usr/include
+ usr/lib/*.la
+ usr/lib/*.a
+diff --git a/debian/rules b/debian/rules
+index 22c90586d1..3fc65ef3a2 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -73,9 +73,8 @@ install: build
+ 	for f in $(CURDIR)/kernel/cobalt/udev/*.rules ; do \
+ 	    cat $$f >> $(CURDIR)/debian/libxenomai1/etc/udev/xenomai.rules ; \
+ 	done
+-	# xeno-config should be only in xenomai-runtime
+-	rm -f $(CURDIR)/debian/libxenomai-dev/usr/bin/xeno-config
+-	rm -f $(CURDIR)/debian/libxenomai-dev/usr/share/man/man1/xeno-config.1
++	# xeno-config should be only in libxenomai-dev
++	rm -f $(CURDIR)/debian/xenomai-runtime/usr/bin/xeno-config
+ 	install -m 644 debian/libxenomai1.modprobe $(CURDIR)/debian/libxenomai1/etc/modprobe.d/xenomai.conf
+ 	# remove empty directory
+ 	rm -rf $(CURDIR)/debian/xenomai-doc/usr/share/doc/xenomai-doc/ps
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
+
 
