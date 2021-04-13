@@ -1,10 +1,8 @@
-Subject: Re: [PATCH] ci: Increase default of CCACHE_MAXSIZE to 1 gigabyte
-References: <20210412173721.13600-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f7ebcb51-7585-227e-f552-beb57325bfd7@siemens.com>
-Date: Mon, 12 Apr 2021 21:57:52 +0200
+Subject: Issue tracking on xenomai-hacker-space
+Message-ID: <39b16992-74fc-69ae-c33e-5598971b6c42@siemens.com>
+Date: Tue, 13 Apr 2021 20:01:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210412173721.13600-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,36 +14,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 12.04.21 19:37, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> The 5.4-arm64 build[1] needs a cache size greater than 400M.
-> 
-> [1]: https://gitlab.com/Xenomai/xenomai-hacker-space/-/jobs/1171197811
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->  .gitlab-ci.yml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-> index e04df30d1..d8dc67f68 100644
-> --- a/.gitlab-ci.yml
-> +++ b/.gitlab-ci.yml
-> @@ -18,7 +18,7 @@ variables:
->    GIT_STRATEGY: clone
->    KDIR: "/tmp/kernel"
->    USE_CCACHE: "1"
-> -  CCACHE_MAXSIZE: "400M"
-> +  CCACHE_MAXSIZE: "1G"
->    IPIPE_MIRROR_URL: "https://source.denx.de/Xenomai"
->    PACKAGES: "gcc-8 u-boot-tools git make bc bison libelf-dev autotools-dev \
->               autoconf autogen libtool pkg-config ccache flex libssl-dev"
-> 
+Just a heads-up and reminder:
 
-Thanks for analyzing and fixing this! Applied to next.
+I've just added some obvious or less obvious issues regarding the 3.2
+milestone to https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues.
+If you run into something (unsolved bug, feature request etc.), related
+to Dovetail or beyond, do not hesitate to use that tool.
+
+Discussions should remain on the list to avoid excluding folks tracking
+this source primarily. We can use good-old links to refer to them later,
+in the tracker or commits.
 
 Jan
 
