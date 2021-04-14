@@ -1,13 +1,10 @@
-Date: Wed, 14 Apr 2021 15:27:51 +0300
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: Re: Path to xeno-config - packages vs. scripts
-Message-ID: <20210414122751.d556ue2gopdmpdc7@altlinux.org>
-References: <c94b173cb6a3e8453133a98694795346ff5086a0.camel@siemens.com>
- <20210414141726.4fc3f4c3@md1za8fc.ad001.siemens.net>
+Date: Wed, 14 Apr 2021 14:42:35 +0200
+From: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: ipipe 5.4.107 / 5.4.93 build issues on arm32
+Message-ID: <20210414144235.6e9d83cd@windsurf.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-In-Reply-To: <20210414141726.4fc3f4c3@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +13,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Wed, Apr 14, 2021 at 02:17:26PM +0200, Henning Schild via Xenomai wrote:
-> Am Wed, 14 Apr 2021 12:08:13 +0200
-> schrieb "Bezdeka, Florian (T RDA IOT SES-DE)"
-> <florian.bezdeka@siemens.com>:
-> 
-> > Hi!
-> > 
-> > While porting a simple application to Xenomai I had some problems
-> > related to the xeno-config tool:
-> > 
-> > xeno-config is part of the xenomai-runtime package when installing
-> > xenomai using the debian packages. I guess that's a packaging bug and
-> > it should be located in libxenomai-dev. Calling xeno-config having
-> > xenomai-runtime installed but not libxenomai-dev fails because of
-> > unmet dependencies.
-> 
-> I guess xeno-config should move into libxenomai-dev.
-> 
-> > While preparing a patch for that I noticed that we have documented
-> > "/usr/xenomai/bin/xeno-config" as path to xeno-config in the project
-> > wiki while debian packages install to "/usr/bin/xeno-config"
-> > 
-> > "/usr/xenomai/bin" is correct in case someone used scripts/maint/test-
-> > xeno-test.rb. Which path should be documented in the wiki?
-> 
-> Not sure that is a big issue, probably has to do with configure arg
-> --prefix which is non-default in the debian package. If that script is
-> part of any of the packages and contains absolute paths, is should
-> probably take the prefix into consideration.
+Hello,
 
-Btw, we in ALT have three xeon-configs located at:
+I just tested the following ipipe patches on arm32:
 
-  libcobalt-devel: /usr/lib/xenomai/cobalt/bin/xeno-config
-  libmercury-devel: /usr/lib/xenomai/mercury/bin/xeno-config
-  xenomai: /usr/bin/xeno-config
+  https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.107-arm-1.pat=
+ch
+  https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.93-arm-0.patch
 
-Last one calls one of above depending on circumstances.
+applied of course on the appropriate 5.4.x code base, configured with
+the sama5_defconfig kernel configuration, and in both cases the build
+fails with:
 
-Vitaly,
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =E2=80=98inc_irqstats=E2=80=99:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
+=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
+=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
+t, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:147:2: note: in expansion of macro =E2=
+=80=98xnstat_exectime_set_current=E2=80=99
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:123:2: note: in expansion of macro =E2=80=98xnstat_ex=
+ectime_lazy_switch=E2=80=99
+  xnstat_exectime_lazy_switch(sched, &statp->account, start);
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
+ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
+=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =E2=80=98switch_to_irqstats=E2=80=99:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
+=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
+=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
+t, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
+=80=98xnstat_exectime_set_current=E2=80=99
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:132:2: note: in expansion of macro =E2=80=98xnstat_ex=
+ectime_switch=E2=80=99
+  xnstat_exectime_switch(sched, &statp->account);
+  ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
+ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
+=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =E2=80=98switch_from_irqstats=E2=80=99:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
+=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
+=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
+t, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
+=80=98xnstat_exectime_set_current=E2=80=99
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:138:2: note: in expansion of macro =E2=80=98xnstat_ex=
+ectime_switch=E2=80=99
+  xnstat_exectime_switch(sched, prev);
+  ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
+ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
+=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+In file included from include/xenomai/cobalt/kernel/thread.h:26:0,
+                 from include/xenomai/cobalt/kernel/sched.h:24,
+                 from kernel/xenomai/intr.c:24:
+kernel/xenomai/intr.c: In function =E2=80=98switch_core_irqstats=E2=80=99:
+include/xenomai/cobalt/kernel/stat.h:61:49: error: passing argument 1 of =
+=E2=80=98atomic_long_xchg=E2=80=99 from incompatible pointer type [-Werror=
+=3Dincompatible-pointer-types]
+  __prev =3D (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_accoun=
+t, (long)(new_account)); \
+                                                 ^
+include/xenomai/cobalt/kernel/stat.h:139:2: note: in expansion of macro =E2=
+=80=98xnstat_exectime_set_current=E2=80=99
+  xnstat_exectime_set_current(sched, new_account); \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/xenomai/intr.c:147:9: note: in expansion of macro =E2=80=98xnstat_ex=
+ectime_switch=E2=80=99
+  prev =3D xnstat_exectime_switch(sched, &statp->account);
+         ^~~~~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/atomic.h:76:0,
+                 from ./include/asm-generic/bitops/lock.h:5,
+                 from ./arch/arm/include/asm/bitops.h:243,
+                 from ./include/linux/bitops.h:26,
+                 from ./include/linux/kernel.h:12,
+                 from ./include/asm-generic/bug.h:19,
+                 from ./arch/arm/include/asm/bug.h:60,
+                 from ./include/linux/bug.h:5,
+                 from ./include/linux/thread_info.h:12,
+                 from ./include/asm-generic/current.h:5,
+                 from ./arch/arm/include/generated/asm/current.h:1,
+                 from ./include/linux/mutex.h:14,
+                 from kernel/xenomai/intr.c:21:
+./include/asm-generic/atomic-long.h:880:1: note: expected =E2=80=98atomic_l=
+ong_t * {aka struct <anonymous> *}=E2=80=99 but argument is of type =E2=80=
+=98xnstat_exectime_t ** {aka struct xnstat_exectime **}=E2=80=99
+ atomic_long_xchg(atomic_long_t *v, long i)
+ ^~~~~~~~~~~~~~~~
+  CC      kernel/xenomai/registry.o
+cc1: some warnings being treated as errors
+scripts/Makefile.build:261: recipe for target 'kernel/xenomai/intr.o' failed
+make[2]: *** [kernel/xenomai/intr.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+  CC      fs/iomap/apply.o
+  CC      crypto/kpp.o
+  CC      fs/fat/inode.o
+  CC      fs/iomap/buffered-io.o
+scripts/Makefile.build:496: recipe for target 'kernel/xenomai' failed
+make[1]: *** [kernel/xenomai] Error 2
+Makefile:1732: recipe for target 'kernel' failed
 
-> 
-> Henning
-> 
-> > Best regards,
-> > Florian
-> > 
-> > --
-> > Siemens AG, T RDA IOT
-> > Corporate Competence Center Embedded Linux
-> 
+Is this a known issue ?
+
+Best regards,
+
+Thomas Petazzoni
+--=20
+Thomas Petazzoni, co-owner and CEO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
