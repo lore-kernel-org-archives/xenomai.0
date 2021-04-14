@@ -1,14 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: Path to xeno-config - packages vs. scripts
-Date: Wed, 14 Apr 2021 10:39:01 +0000
-Message-ID: <37b0982595d8fc4df22ea9c5b07bb2b5b233bd2f.camel@siemens.com>
 References: <c94b173cb6a3e8453133a98694795346ff5086a0.camel@siemens.com>
-In-Reply-To: <c94b173cb6a3e8453133a98694795346ff5086a0.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <002633341934B1418C3B08F49F50A988@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <37b0982595d8fc4df22ea9c5b07bb2b5b233bd2f.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c7aac5f2-0501-1be4-0192-895edf1bdbfc@siemens.com>
+Date: Wed, 14 Apr 2021 13:04:11 +0200
 MIME-Version: 1.0
+In-Reply-To: <37b0982595d8fc4df22ea9c5b07bb2b5b233bd2f.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,26 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTA0LTE0IGF0IDEwOjA4ICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBIaSENCj4gDQo+IFdoaWxlIHBvcnRpbmcgYSBzaW1wbGUgYXBwbGlj
-YXRpb24gdG8gWGVub21haSBJIGhhZCBzb21lIHByb2JsZW1zDQo+IHJlbGF0ZWQgdG8gdGhlIHhl
-bm8tY29uZmlnIHRvb2w6DQo+IA0KPiB4ZW5vLWNvbmZpZyBpcyBwYXJ0IG9mIHRoZSB4ZW5vbWFp
-LXJ1bnRpbWUgcGFja2FnZSB3aGVuIGluc3RhbGxpbmcNCj4geGVub21haSB1c2luZyB0aGUgZGVi
-aWFuIHBhY2thZ2VzLiBJIGd1ZXNzIHRoYXQncyBhIHBhY2thZ2luZyBidWcgYW5kDQo+IGl0IHNo
-b3VsZCBiZSBsb2NhdGVkIGluIGxpYnhlbm9tYWktZGV2LiBDYWxsaW5nIHhlbm8tY29uZmlnIGhh
-dmluZw0KPiB4ZW5vbWFpLXJ1bnRpbWUgaW5zdGFsbGVkIGJ1dCBub3QgbGlieGVub21haS1kZXYg
-ZmFpbHMgYmVjYXVzZSBvZiB1bm1ldA0KPiBkZXBlbmRlbmNpZXMuDQoNCkEgcGF0Y2ggaGFzIGFs
-cmVhZHkgYmVlbiBwb3N0ZWQgYnkgSmFuLiBNeSBtYWlsYm94IGV4cGxvZGVkIHRvZGF5LCBzbyBJ
-DQptaXNzZWQgdGhhdC4uLg0KDQo+IA0KPiBXaGlsZSBwcmVwYXJpbmcgYSBwYXRjaCBmb3IgdGhh
-dCBJIG5vdGljZWQgdGhhdCB3ZSBoYXZlIGRvY3VtZW50ZWQNCj4gIi91c3IveGVub21haS9iaW4v
-eGVuby1jb25maWciIGFzIHBhdGggdG8geGVuby1jb25maWcgaW4gdGhlIHByb2plY3QNCj4gd2lr
-aSB3aGlsZSBkZWJpYW4gcGFja2FnZXMgaW5zdGFsbCB0byAiL3Vzci9iaW4veGVuby1jb25maWci
-DQo+IA0KPiAiL3Vzci94ZW5vbWFpL2JpbiIgaXMgY29ycmVjdCBpbiBjYXNlIHNvbWVvbmUgdXNl
-ZCBzY3JpcHRzL21haW50L3Rlc3QtDQo+IHhlbm8tdGVzdC5yYi4gV2hpY2ggcGF0aCBzaG91bGQg
-YmUgZG9jdW1lbnRlZCBpbiB0aGUgd2lraT8NCg0KVGhlIHF1ZXN0aW9uIHdoaWNoIHBhdGggc2hv
-dWxkIGJlIGRvY3VtZW50ZWQgaXMgc3RpbGwgc3RhbmRzLg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMs
-DQo+IEZsb3JpYW4NCj4gDQo+IC0tIA0KPiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj4gQ29ycG9y
-YXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg==
+On 14.04.21 12:39, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Wed, 2021-04-14 at 10:08 +0000, Bezdeka, Florian via Xenomai wrote:
+>> Hi!
+>>
+>> While porting a simple application to Xenomai I had some problems
+>> related to the xeno-config tool:
+>>
+>> xeno-config is part of the xenomai-runtime package when installing
+>> xenomai using the debian packages. I guess that's a packaging bug and
+>> it should be located in libxenomai-dev. Calling xeno-config having
+>> xenomai-runtime installed but not libxenomai-dev fails because of unmet
+>> dependencies.
+> 
+> A patch has already been posted by Jan. My mailbox exploded today, so I
+> missed that...
+> 
+>>
+>> While preparing a patch for that I noticed that we have documented
+>> "/usr/xenomai/bin/xeno-config" as path to xeno-config in the project
+>> wiki while debian packages install to "/usr/bin/xeno-config"
+>>
+>> "/usr/xenomai/bin" is correct in case someone used scripts/maint/test-
+>> xeno-test.rb. Which path should be documented in the wiki?
+> 
+> The question which path should be documented is still stands.
+> 
+
+Both I would say. I think we install to /usr/xenomai/bin/ by default
+unless you set an own prefix. And Debian uses a regular prefix when
+packaging.
+
+The documentation wiki is a git repo as well. Please clone, fix and send
+the patch. Or give me the link which page to edit.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
