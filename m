@@ -1,10 +1,10 @@
-References: <20210414021625.24725-1-hongzhan.chen@intel.com>
- <18d563d0-53d7-b7a0-9b0c-f328afef2513@siemens.com>
+References: <20210414043309.30451-1-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 1/3] rtdm/testing: latmus: introduce latmus driver
-In-reply-to: <18d563d0-53d7-b7a0-9b0c-f328afef2513@siemens.com>
-Date: Thu, 15 Apr 2021 09:47:26 +0200
-Message-ID: <87eefcugz5.fsf@xenomai.org>
+Subject: Re: [PATCH for linux] pinctrl/intel: irq_pipeline: enable pipelined
+ interrupt control
+In-reply-to: <20210414043309.30451-1-hongzhan.chen@intel.com>
+Date: Thu, 15 Apr 2021 09:50:32 +0200
+Message-ID: <87blagugtz.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,31 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: hongzha1 <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
 
-Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-> Missing commit message in this patch, and in patch 3.
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 >
-> Also, could you provide cover letters with your patch series (for series
->> 1 patch)? That letter would provide a chance to set the context,
-> explain potential dependencies.
->
-> Does this series already work over next? Or does it have dependencies on
-> the dovetail patches?
->
-> Given that some hardware setup will be needed, a patch adding
-> documentation would be useful. What does the user have to do to be able
-> to use the benchmark?
->
+> diff --git a/drivers/pinctrl/intel/pinctrl-cherryview.c b/drivers/pinctrl/intel/pinctrl-cherryview.c
+> index 2ed17cdf946d..80ee69a8cf90 100644
+> --- a/drivers/pinctrl/intel/pinctrl-cherryview.c
+> +++ b/drivers/pinctrl/intel/pinctrl-cherryview.c
+> @@ -562,7 +562,7 @@ static const struct intel_pinctrl_soc_data *chv_soc_data[] = {
+>   * See Intel Atom Z8000 Processor Series Specification Update (Rev. 005),
+>   * errata #CHT34, for further information.
+>   */
+> -static DEFINE_RAW_SPINLOCK(chv_lock);
+> +static DEFINE_HARD_SPINLOCK(chv_lock);
+>  
+>  static u32 chv_pctrl_readl(struct intel_pinctrl *pctrl, unsigned int offset)
+>  {
+> @@ -1554,7 +1554,8 @@ static int chv_gpio_probe(struct intel_pinctrl *pctrl, int irq)
+>  	pctrl->irqchip.irq_mask = chv_gpio_irq_mask;
+>  	pctrl->irqchip.irq_unmask = chv_gpio_irq_unmask;
+>  	pctrl->irqchip.irq_set_type = chv_gpio_irq_type;
+> -	pctrl->irqchip.flags = IRQCHIP_SKIP_SET_WAKE;
+> +	pctrl->irqchip.flags = IRQCHIP_SKIP_SET_WAKE |
+> +				IRQCHIP_PIPELINE_SAFE;
+>  
+>  	chip->irq.chip = &pctrl->irqchip;
+>  	chip->irq.init_hw = chv_gpio_irq_init_hw;
 
-Since this a backport from EVL to Cobalt, the procedure is fully
-described here: https://evlproject.org/core/benchmarks/
-
-This is a documentation which could be shared between the two cores,
-based on making latmus part of the CXP.
+Merged, thanks.
 
 -- 
 Philippe.
