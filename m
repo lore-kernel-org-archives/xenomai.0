@@ -1,11 +1,20 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <CAMjL99+4bL1XM0yohWSp=jcMR3eoNc_tVCTMc6nxLk5Jn+ofoA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Tue, 06 Apr 2021 11:01:58 +0200
+References: <20210327101912.2291474-1-rpm@xenomai.org>
+ <20210327101912.2291474-6-rpm@xenomai.org>
+ <f00e7b29-5d8d-cdcb-adeb-630c277f7d67@siemens.com>
+ <87k0p4ui5y.fsf@xenomai.org>
+ <ce95f3e8-7bdc-c94f-8814-d6af1c3e5d71@siemens.com>
+ <878s5kugo7.fsf@xenomai.org>
+ <8c69e790-a094-7c96-c5b0-d71899cfc4f9@siemens.com>
+ <87wnt25g5g.fsf@xenomai.org>
+ <a45f15ee-2432-fc18-f0c8-ec5f61fc1c4b@siemens.com>
+ <87r1j854tv.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH v2 5/7] drivers/net: wrap csum_partial_copy_nocheck()
+In-reply-to: <87r1j854tv.fsf@xenomai.org>
+Date: Sun, 18 Apr 2021 17:50:57 +0200
+Message-ID: <87h7k3617i.fsf@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <4e03-606c2380-4b-10b42340@50503350>
-Subject: =?utf-8?q?Re=3A?= Help with rtnet with soem
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,168 +23,352 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Ho <johnho26@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-Le Samedi, Avril 03, 2021 22:20 CEST, John Ho <johnho26@gmail.com> a =C3=
-=A9crit: 
- 
-> Hi Francois,
-> 
-> No the machine didnt freeze, it is only the Ethercat thread hangs.
-> I will try to find the faulty ethercat network.
-> Thank you for your reply
-> 
-> yours sincerely,
-> John
-> 
-> On Thu, Apr 1, 2021 at 10:56 PM Fran=C3=A7ois Legal <devel@thom.fr.eu=
-.org> wrote:
-> 
-> > Le Jeudi, Avril 01, 2021 12:47 CEST, John Ho via Xenomai <
-> > xenomai@xenomai.org> a =C3=A9crit:
-> >
-> > > Hi all,
-> > >
-> > > I wish to ask for some help. I was experiencing some issues with =
-soem and
-> > > rtnet.
-> > >
-> > > I was able to run rtnet with soem till now, however, recently I r=
-ealized
-> > > that rtnet is freezing up occasionally.
-> > >
-> > > When i use eno1 with xenomai threading, if my ethercat fails it c=
-ontinues
-> > > to the next cycle on my program. However when i switch over to rt=
-eth0,
-> > and
-> > > when my ethercat fails, it freezes.
-> > >
-> > > I have attached in this email the Wireshark info from both my mas=
-ter and
-> > > sniffer pc:
-> > >
-> > >
-> > > MASTER:
-> > >
-> > > 10456 4.296601704 JetwayIn=5F09:95:50 Broadcast ECAT 293 2 Cmds, =
-'LRW': len
-> > > 245, 'FRMW': len 8
-> > > 10457 4.296748257 MS-NLB-PhysServer-32=5F10:18:09:95:50 Broadcast=
- ECAT 293
-> > 2
-> > > Cmds, 'LRW': len 245, 'FRMW': len 8
-> > > 10458 4.297302548 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > > 10459 4.298000197 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > > 10460 4.298700307 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > > 10461 4.298703155 JetwayIn=5F09:95:50 Broadcast ECAT 293 2 Cmds, =
-'LRW': len
-> > > 245, 'FRMW': len 8
-> > > 10462 4.299399782 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > > 10463 4.300100548 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > > 10464 4.300799199 JetwayIn=5F09:95:51 Broadcast TDMA 42 Synchroni=
-sation
-> > >
-> > >
-> > >
-> > >
-> > >
-> > >
-> > > SNIFFER:
-> > >
-> > > 15935 4.121410 JetwayIn=5F09:95:50 Broadcast ECAT 313 2 Cmds, 'LR=
-W': len
-> > 245,
-> > > 'FRMW': len 8
-> > > 15936 4.121410 MS-NLB-PhysServer-32=5F10:18:09:95:50 Broadcast EC=
-AT 313 2
-> > > Cmds, 'LRW': len 245, 'FRMW': len 8
-> > > 15937 4.122238 JetwayIn=5F09:95:51 Broadcast TDMA 80 Synchronisat=
-ion
-> > > 15938 4.122238 MS-NLB-PhysServer-32=5F10:18:09:95:51 Broadcast RT=
-mac 60
-> > > Unknown (0xc83e)
-> > > 15939 4.122822 JetwayIn=5F09:95:51 Broadcast TDMA 80 Synchronisat=
-ion
-> > > 15940 4.122822 MS-NLB-PhysServer-32=5F10:18:09:95:51 Broadcast RT=
-mac 60
-> > > Unknown (0xc83e)
-> > > 15941 4.123625 JetwayIn=5F09:95:51 Broadcast TDMA 80 Synchronisat=
-ion
-> > > 15942 4.123625 MS-NLB-PhysServer-32=5F10:18:09:95:51 Broadcast RT=
-mac 60
-> > > Unknown (0xc83e)
-> > > 15943 4.123625 JetwayIn=5F09:95:50 Broadcast ECAT 313 2 Cmds, 'LR=
-W': len
-> > 245,
-> > > 'FRMW': len 8
-> > > 15944 4.123625 MS-NLB-PhysServer-32=5F10:18:09:95:50 Broadcast EC=
-AT 82
-> > > [Malformed Packet]
-> > > 15945 4.124208 JetwayIn=5F09:95:51 Broadcast TDMA 80 Synchronisat=
-ion
-> > > 15946 4.124208 MS-NLB-PhysServer-32=5F10:18:09:95:51 Broadcast RT=
-mac 60
-> > > Unknown (0xc83e)
-> > > 15947 4.125019 JetwayIn=5F09:95:51 Broadcast TDMA 80 Synchronisat=
-ion
-> > > 15948 4.125019 MS-NLB-PhysServer-32=5F10:18:09:95:51 Broadcast RT=
-mac 60
-> > > Unknown (0xc83e)
-> > >
-> > >
-> > >
-> > >
-> > > On the masterpc, i have instances like 10456 and 10457 where the =
-master
-> > pc
-> > > was able to send and receive the packages. but on 10461 it sends =
-out a
-> > > package but didn't receive back and freezes up.
-> > >
-> > > On the snifferpc, 15935 and 15936 shows a working communication. =
-However
-> > > when it reaches 15944, there is a malformed package
-> > >
-> > > as such i wish to ask if there is a way to prevent rtnet from fre=
-ezing
-> > and
-> > > just skip over this malformed package?
-> > >
-> > > Looking forward for any assistance available.
-> > >
-> > > yours sincerely,
-> > > John
-> >
-> > Hi John,
-> >
-> > could you be a little more specific with "rtnet is freezing".
-> > Is the machine freezing ?
-> > You seem to have a faulty ethercat network as the master is not see=
-ing the
-> > ethercat frame it sends echoed back after reaching the end of the b=
-us. I
-> > don't know how you use SOEM, but I'd say it might by endlessly poll=
-ing
-> > until it receives the echoed datagram back.
-> > So you might first want to fix the network, and the problem may the=
-n
-> > disappear.
-> >
-> > Fran=C3=A7ois
-> >
-> >
- 
-Have you tried to get that thread through GDB to see what happens ?
-Also, I'm not sure I fully understand "hangs" what does it mean ? The t=
-hread is running 100% on a CPU ?
 
-Fran=C3=A7ois
+Philippe Gerum <rpm@xenomai.org> writes:
 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>
+>> On 16.04.21 18:48, Philippe Gerum wrote:
+>>> 
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>> 
+>>>> On 15.04.21 09:54, Philippe Gerum wrote:
+>>>>>
+>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>
+>>>>>> On 15.04.21 09:21, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>
+>>>>>>>> On 27.03.21 11:19, Philippe Gerum wrote:
+>>>>>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>>>>>
+>>>>>>>>> Since v5.9-rc1, csum_partial_copy_nocheck() forces a zero seed as its
+>>>>>>>>> last argument to csum_partial(). According to #cc44c17baf7f3, passing
+>>>>>>>>> a non-zero value would not even yield the proper result on some
+>>>>>>>>> architectures.
+>>>>>>>>>
+>>>>>>>>> Nevertheless, the current ICMP code does expect a non-zero csum seed
+>>>>>>>>> to be used in the next computation, so let's wrap net_csum_copy() to
+>>>>>>>>> csum_partial_copy_nocheck() for pre-5.9 kernels, and open code it for
+>>>>>>>>> later kernels so that we still feed csum_partial() with the user-given
+>>>>>>>>> csum. We still expect the x86, ARM and arm64 implementations of
+>>>>>>>>> csum_partial() to do the right thing.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> If that issue only affects the ICMP code path, why not only changing
+>>>>>>>> that, leaving rtskb_copy_and_csum_bits with the benefit of doing copy
+>>>>>>>> and csum in one step?
+>>>>>>>>
+>>>>>>>
+>>>>>>> As a result of #cc44c17baf7f3, I see no common helper available from the
+>>>>>>> kernel folding the copy and checksum operations anymore, so I see no way
+>>>>>>> to keep rtskb_copy_and_csum_bits() as is. Did you find an all-in-one
+>>>>>>> replacement for csum_partial_copy_nocheck() which would allow a csum
+>>>>>>> value to be fed in?
+>>>>>>>
+>>>>>>
+>>>>>> rtskb_copy_and_csum_dev does not need that.
+>>>>>>
+>>>>>
+>>>>> You made rtskb_copy_and_csum_bits() part of the exported API. So how do
+>>>>> you want to deal with this?
+>>>>>
+>>>>
+>>>> That is an internal API, so we don't care.
+>>>>
+>>>> But even if we converted rtskb_copy_and_csum_bits to work as it used to
+>>>> (with a csum != 0), there would be not reason to make
+>>>> rtskb_copy_and_csum_dev pay that price.
+>>>>
+>>> 
+>>> Well, there may be a reason to challenge the idea that a folded
+>>> copy_and_csum is better for a real-time system than a split memcpy+csum
+>>> in the first place. Out of curiosity, I ran a few benchmarks lately on a
+>>> few SoCs regarding this, and it turned out that optimizing the data copy
+>>> to get the buffer quickly in place before checksumming the result may
+>>> well yield much better results with respect to jitter than what
+>>> csum_and_copy currently achieves on these SoCs.
+>>> 
+>>> Inline csum_and_copy did perform slightly better on average (a couple of
+>>> hundreds of nanosecs at best) but with pathological jittery in the worst
+>>> case at times. On the contrary, the split memcpy+csum method did not
+>>> exhibit such jittery during these tests, not once.
+>>> 
+>>> - four SoCs tested (2 x x86, armv7, armv8a)
+>>> - test code ran in kernel space (real-time task context,
+>>>   out-of-band/primary context)
+>>> - csum_partial_copy_nocheck() vs memcpy()+csum_partial()
+>>> - 3 buffer sizes tested (32, 1024, 1500 bytes), 3 runs each
+>>> - all buffers (src & dst) aligned on L1_CACHE_BYTES
+>>> - each run performed 1000,000 iterations of a given checksum loop, no
+>>>   pause in between.
+>>> - no concurrent load on the board
+>>> - all results in nanoseconds
+>>> 
+>>> The worst results obtained are presented here for each SoC.
+>>> 
+>>> x86[1]
+>>> ------
+>>> 
+>>> vendor_id	: GenuineIntel
+>>> cpu family	: 6
+>>> model		: 92
+>>> model name	: Intel(R) Atom(TM) Processor E3940 @ 1.60GHz
+>>> stepping	: 9
+>>> cpu MHz		: 1593.600
+>>> cache size	: 1024 KB
+>>> cpuid level	: 21
+>>> wp		: yes
+>>> flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 ds_cpl vmx est tm2 ssse3 sdbg cx16 xtpr pdcm sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave rdrand lahf_lm 3dnowprefetch cpuid_fault cat_l2 pti tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust smep erms mpx rdt_a rdseed smap clflushopt intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts
+>>> vmx flags	: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=68, max=653, avg=70
+>>> CSUM_COPY 1024b: min=248, max=373, avg=251
+>>> CSUM_COPY 1500b: min=344, max=3123, avg=350   <=================
+>>> COPY+CSUM 32b: min=101, max=790, avg=103
+>>> COPY+CSUM 1024b: min=297, max=397, avg=300
+>>> COPY+CSUM 1500b: min=402, max=490, avg=405
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=68, max=1420, avg=70
+>>> CSUM_COPY 1024b: min=248, max=29706, avg=251   <=================
+>>> CSUM_COPY 1500b: min=344, max=792, avg=350
+>>> COPY+CSUM 32b: min=101, max=872, avg=103
+>>> COPY+CSUM 1024b: min=297, max=776, avg=300
+>>> COPY+CSUM 1500b: min=402, max=853, avg=405
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=68, max=661, avg=70
+>>> CSUM_COPY 1024b: min=248, max=1714, avg=251
+>>> CSUM_COPY 1500b: min=344, max=33937, avg=350   <=================
+>>> COPY+CSUM 32b: min=101, max=610, avg=103
+>>> COPY+CSUM 1024b: min=297, max=605, avg=300
+>>> COPY+CSUM 1500b: min=402, max=712, avg=405
+>>> 
+>>> x86[2]
+>>> ------
+>>> 
+>>> vendor_id       : GenuineIntel
+>>> cpu family      : 6
+>>> model           : 23
+>>> model name      : Intel(R) Core(TM)2 Duo CPU     E7200  @ 2.53GHz
+>>> stepping        : 6
+>>> microcode       : 0x60c
+>>> cpu MHz         : 1627.113
+>>> cache size      : 3072 KB
+>>> cpuid level     : 10
+>>> wp              : yes
+>>> flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl cpuid aperfmperf pni dtes64 monitor ds_cpl est tm2 ssse3 cx16 xtpr pdcm sse4_1 lahf_lm pti dtherm
+>>> 
+>>> CSUM_COPY 32b: min=558, max=31010, avg=674     <=================
+>>> CSUM_COPY 1024b: min=558, max=2794, avg=745
+>>> CSUM_COPY 1500b: min=558, max=2794, avg=841
+>>> COPY+CSUM 32b: min=558, max=2794, avg=671
+>>> COPY+CSUM 1024b: min=558, max=2794, avg=778
+>>> COPY+CSUM 1500b: min=838, max=2794, avg=865
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=59, max=532, avg=62
+>>> CSUM_COPY 1024b: min=198, max=270, avg=201
+>>> CSUM_COPY 1500b: min=288, max=34921, avg=289   <=================
+>>> COPY+CSUM 32b: min=53, max=326, avg=56
+>>> COPY+CSUM 1024b: min=228, max=461, avg=232
+>>> COPY+CSUM 1500b: min=311, max=341, avg=317
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=59, max=382, avg=62
+>>> CSUM_COPY 1024b: min=198, max=383, avg=201
+>>> CSUM_COPY 1500b: min=285, max=21235, avg=289   <=================
+>>> COPY+CSUM 32b: min=52, max=300, avg=56
+>>> COPY+CSUM 1024b: min=228, max=348, avg=232
+>>> COPY+CSUM 1500b: min=311, max=409, avg=317
+>>> 
+>>> Cortex A9 quad-core 1.2Ghz (iMX6qp)
+>>> -----------------------------------
+>>> 
+>>> model name	: ARMv7 Processor rev 10 (v7l)
+>>> Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpd32 
+>>> CPU implementer	: 0x41
+>>> CPU architecture: 7
+>>> CPU variant	: 0x2
+>>> CPU part	: 0xc09
+>>> CPU revision	: 10
+>>> 
+>>> CSUM_COPY 32b: min=333, max=1334, avg=440
+>>> CSUM_COPY 1024b: min=1000, max=2666, avg=1060
+>>> CSUM_COPY 1500b: min=1333, max=45333, avg=1357   <=================
+>>> COPY+CSUM 32b: min=333, max=1334, avg=476
+>>> COPY+CSUM 1024b: min=1000, max=2333, avg=1324
+>>> COPY+CSUM 1500b: min=1666, max=2334, avg=1713
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=333, max=1334, avg=439
+>>> CSUM_COPY 1024b: min=1000, max=46000, avg=1060   <=================
+>>> CSUM_COPY 1500b: min=1333, max=5000, avg=1351
+>>> COPY+CSUM 32b: min=333, max=1334, avg=476
+>>> COPY+CSUM 1024b: min=1000, max=2334, avg=1324
+>>> COPY+CSUM 1500b: min=1666, max=2667, avg=1713
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=333, max=1666, avg=454
+>>> CSUM_COPY 1024b: min=1000, max=2000, avg=1060
+>>> CSUM_COPY 1500b: min=1333, max=45000, avg=1348   <=================
+>>> COPY+CSUM 32b: min=333, max=1334, avg=454
+>>> COPY+CSUM 1024b: min=1000, max=2334, avg=1317
+>>> COPY+CSUM 1500b: min=1666, max=6000, avg=1712
+>>> 
+>>> Cortex A55 quad-core 2Ghz (Odroid C4)
+>>> -------------------------------------
+>>> 
+>>> Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+>>> CPU implementer : 0x41
+>>> CPU architecture: 8
+>>> CPU variant     : 0x1
+>>> CPU part        : 0xd05
+>>> CPU revision    : 0
+>>> 
+>>> 
+>>> CSUM_COPY 32b: min=125, max=833, avg=140
+>>> CSUM_COPY 1024b: min=625, max=41916, avg=673   <=================
+>>> CSUM_COPY 1500b: min=875, max=3875, avg=923
+>>> COPY+CSUM 32b: min=125, max=458, avg=140
+>>> COPY+CSUM 1024b: min=625, max=1166, avg=666
+>>> COPY+CSUM 1500b: min=875, max=1167, avg=913
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=125, max=1292, avg=139
+>>> CSUM_COPY 1024b: min=541, max=48333, avg=555
+>>> CSUM_COPY 1500b: min=708, max=3458, avg=740
+>>> COPY+CSUM 32b: min=125, max=292, avg=136
+>>> COPY+CSUM 1024b: min=541, max=750, avg=556
+>>> COPY+CSUM 1500b: min=708, max=834, avg=740
+>>> 
+>>> ==
+>>> 
+>>> CSUM_COPY 32b: min=125, max=833, avg=140
+>>> CSUM_COPY 1024b: min=666, max=55667, avg=673   <=================
+>>> CSUM_COPY 1500b: min=875, max=4208, avg=913
+>>> COPY+CSUM 32b: min=125, max=375, avg=140
+>>> COPY+CSUM 1024b: min=666, max=916, avg=673
+>>> COPY+CSUM 1500b: min=875, max=1042, avg=913
+>>> 
+>>> ============
+>>> 
+>>> A few additional observations from looking at the implementation:
+>>> 
+>>> For memcpy, legacy x86[2] uses movsq, finishing with movsb to complete
+>>> buffers of unaligned length. Current x86[1] uses ERMS-optimized movsb
+>>> which is faster.
+>>> 
+>>> arm32/armv7 optimizes memcpy by loading up to 8 words in a single
+>>> instruction. csum_and_copy loads/stores at best 4 words at a time,
+>>> only when src and dst are 32bit aligned (which matches the test case).
+>>> 
+>>> arm64/armv8a uses load/store pair instructions to copy memory
+>>> blocks. It does not have asm-optimized csum_and_copy support, so it
+>>> uses the generic C version.
+>>> 
+>>> What could be inferred in terms of prefetching and speculation might
+>>> explain some differences between the approaches too.
+>>> 
+>>> I would be interested in any converging / diverging results testing the
+>>> same combo with a different test code, because from my standpoint,
+>>> things do not seem as obvious as they are supposed to be at the moment.
+>>> 
+>>
+>> If copy+csum is not using any recent memcopy optimizations, that is an
+>> argument for at least equivalent performance.
+>>
+>
+> You mean the folded version, i.e. copy_and_csum? If so, I can't see any
+> way for that one to optimize via fast string operations.
+>
+>> But I don't get yet where the huge jittery should be coming from. Were
+>> the measurement loop preemptible? In that case I would expect a split
+>
+> Out of band stage, so only preemptible by Xenomai timer ticks, which
+> means only the host tick emulation at this point since there was no
+> outstanding Xenomai timers started yet when running the loops. Pretty
+> slim chance to see these latency spots consistently reproduced, and only
+> for the folded copy_sum version.
+>
+>> copy followed by another loop to csum should give much worse results as
+>> it needs the cache to stay warm - while copy-csum only touches the data
+>> once.
+>>
+>
+> Conversely, if the copy is much faster, the odds of being preempted may
+> increase, yielding better results overall.
+
+False alarm. Preemption was the issue, by the top half of the host tick
+handling in primary mode. The latest clock event scheduled by the kernel
+managed to enter the pipeline at a random time, but always within the
+execution window of the all-in-one csum_and_copy code. Although this
+event was deferred and not immediately passed to the in-band context,
+the time spent dealing with it was enough to show up in the results.
+
+> This said, I'm unsure this is
+> related to preemption anyway, this looks like the fingerprints of minor
+> faults with PTEs. Why this would only happen in the folded version is
+> still a mystery to me at the moment.
+
+It did not actually, no minor faults.
+
+The results are now consistent, both implementations are comparable
+performance-wise as the optimized memcpy tends to offset the advantage
+of calculating the checksum on the fly, saving a read access. armv8
+benefits more from the former, since it does not have an optimized
+csum_and_copy but uses the generic C version instead.
+
+== x86[1]
+
+CSUM_COPY 32b: min=68, max=640, avg=70
+CSUM_COPY 1024b: min=247, max=773, avg=252
+CSUM_COPY 1500b: min=343, max=832, avg=350
+COPY+CSUM 32b: min=100, max=651, avg=131
+COPY+CSUM 1024b: min=296, max=752, avg=298
+COPY+CSUM 1500b: min=397, max=845, avg=400
+
+== x86[2]
+
+CSUM_COPY 32b: min=63, max=267, avg=66
+CSUM_COPY 1024b: min=198, max=300, avg=201
+CSUM_COPY 1500b: min=288, max=611, avg=291
+COPY+CSUM 32b: min=56, max=360, avg=56
+COPY+CSUM 1024b: min=228, max=420, avg=231
+COPY+CSUM 1500b: min=307, max=337, avg=318
+
+== armv7 (imx6qp)
+
+CSUM_COPY 32b: min=333, max=1334, avg=439
+CSUM_COPY 1024b: min=1000, max=2000, avg=1045
+CSUM_COPY 1500b: min=1000, max=2334, avg=1325
+COPY+CSUM 32b: min=333, max=1334, avg=454
+COPY+CSUM 1024b: min=1333, max=2334, avg=1347
+COPY+CSUM 1500b: min=1666, max=2667, avg=1734
+
+== armv8a (C4)
+
+CSUM_COPY 32b: min=125, max=792, avg=130
+CSUM_COPY 1024b: min=500, max=1125, avg=550
+CSUM_COPY 1500b: min=708, max=1833, avg=726
+COPY+CSUM 32b: min=125, max=292, avg=130
+COPY+CSUM 1024b: min=541, max=708, avg=550
+COPY+CSUM 1500b: min=708, max=875, avg=730
+
+-- 
+Philippe.
 
