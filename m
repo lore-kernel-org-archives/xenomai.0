@@ -1,13 +1,14 @@
-References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
- <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87bl9w2pkm.fsf@xenomai.org>
+References: <20210416053133.23412-1-hongzhan.chen@intel.com>
+ <20210416053133.23412-4-hongzhan.chen@intel.com>
+ <17adb9ac-7510-f1f6-9805-67ef8353b536@siemens.com>
+ <DM5PR11MB1852339EA17CEADCE2D3DB25F2489@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <da74b515-3982-1827-8b77-2ec3977aecea@siemens.com>
+ <DM5PR11MB1852A989610602EE30EA5E05F2489@DM5PR11MB1852.namprd11.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: gdb  test failure debug status update
-In-reply-to: <87bl9w2pkm.fsf@xenomai.org>
-Date: Fri, 30 Apr 2021 10:00:32 +0200
-Message-ID: <875z042odb.fsf@xenomai.org>
+Subject: Re: [PATCH V2 3/3] testsuite/latmus: introduce latmus benchmark
+In-reply-to: <DM5PR11MB1852A989610602EE30EA5E05F2489@DM5PR11MB1852.namprd11.prod.outlook.com>
+Date: Tue, 20 Apr 2021 10:27:08 +0200
+Message-ID: <87bla95pk3.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,48 +20,92 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
+Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
 
-> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->
->> The final xnthread_relaxed call path is like this asm_sysv_apic_timer_interrupt ->handle_irq_pipelined_finish 
->> ->dovetail_call_mayday ->handle_oob_mayday>xnthread_relax. 
->> That means that handle_irq_pipelined_finish is called under OOB condition of arch_pipeline_entry in
->>  arch/x86/kernel/irq_pipeline.c.  Does that means that kernel entry/exit code is never called after return from 
->> xnthread_relax to handle_irq_pipelined_finish then to asm_sysv_apic_timer_interrupt?  Even I enforce to 
->> call  dovetail_request_ucall before calling final xnthread_relax system would not try to switch back to primary mode
->> because kernel exit code is never called in this case?
+>>-----Original Message-----
+>>From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>Sent: Tuesday, April 20, 2021 2:48 PM
+>>To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>Subject: Re: [PATCH V2 3/3] testsuite/latmus: introduce latmus benchmark
 >>
+>>On 20.04.21 03:02, Chen, Hongzhan wrote:
+>>> 
+>>> 
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Friday, April 16, 2021 8:05 PM
+>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>> Subject: Re: [PATCH V2 3/3] testsuite/latmus: introduce latmus benchmark
+>>>>
+>>>> On 16.04.21 07:31, hongzha1 via Xenomai wrote:
+>>>>> Measure response time to GPIO events sent by a remote Zephyr-based
+>>>>> latency monitor (latmon). This monitor collects then sends the latency
+>>>>> data over a network connection to the latmus front-end which displays
+>>>>> the results received:
+>>>>>
+>>>>> [Linux device under test running latmus]  <--+
+>>>>>                                              |
+>>>>>         ^                 | (GPIO ack)       |
+>>>>>         |                 |                  |  TCP/IP network connection
+>>>>>         |                 |                  |  (control & data samples)
+>>>>>         | (GPIO pulse)    v                  |
+>>>>>                                              |
+>>>>> [Zephyr-based device running latmon]      <--+
+>>>>>
+>>>>> The generic latency monitor code running the measurement loop is
+>>>>> available from the zephyr/ directory. This support comes with a Zephyr
+>>>>> device tree patch for enabling this monitor on NXP's FRDM-K64F
+>>>>> development board.
+>>>>
+>>>> Where is all this?
+>>> 
+>>> Actually , this zephyr directory is located in libevl project  at https://git.evlproject.org/libevl.git/tree/benchmarks/zephyr.  
+>>> at this time. Do you think it is suitable to make a copy for this folder in xenomai code base? Or I just described in comments
+>>> that it is from https://git.evlproject.org/libevl.git/tree/benchmarks/zephyr .
+>>> 
+>>
+>>It's fine to link that. But, again, this needs to go into proper in-tree
+>>documentation.
 >
-> The IRQ frame is indeed kept from unwinding until the preempted task
-> context returns from irq_exit_pipeline(), which branches to the Cobalt
-> rescheduling procedure. From the Dovetail interface POV,
-> irq_exit_pipeline() is called by handle_irq_pipelined_finish() to allow
-> the companion core to perform post-IRQ chores, such as running its own
-> rescheduling procedure.
+> Could you be more specific about documentation that I need to do? Currently
+> I need to add ./doc/asciidoc/man1/latmus.adoc as you mentioned to tell how to 
+> use latmus app on Xenomai side. But actually it is more complicated than just
+> using latmus on xenomai side as described in  [1]
+> to get latmus gpio latency. Do I need to cover all [1]'s contents in
+> ./doc/asciidoc/man1/latmus.adoc?
 >
-> IOW, if task @foo is preempted by an IRQ, then suspended in oob context
-> as a result of what the interrupt handler just did for it (e.g. raising
-> XNDBGSTOP, XNRELAX, XNPEND, XNSUSP in its state), then
-> handle_irq_pipelined_finish()->irq_exit_pipeline()->xnsched_run() will
-> cause the @foo context to switch away, effectively preventing
-> handle_irq_pipelined_finish() to return, until @foo resumes execution
-> eventually.
->
-> The underlying issue I'd like to understand, is why do we have a mayday
-> condition raised in the context of this test in the first place? That
-> may be the root of the issue, the mayday and synchronous-bp handling
-> code may not cope that well.
->
-> So, question to address first: who ends up calling
-> dovetail_call_mayday(), detecting that the underlying task went south?
-> And why that?
+> [1]: https://evlproject.org/core/benchmarks/
 
-Possibly a caller of __xnthread_kick() is causing that, e.g.
-handle_sigwake_event -> __xnthread_kick.
+I believe Jan is referring to gathering all the bits required to run
+latmus on top of Cobalt, including the Zephyr code, along with the doc.
+
+This is part of a larger effort to have Xenomai 3 and EVL share common
+bits and co-exist under the umbrella of the Xenomai project, as the
+latter will become Xenomai 4 eventually.
+
+As announced during several Community Meetings over the past months,
+moving the EVL development infrastructure from git.evlproject.org to
+git.xenomai.org (as xenomai4) is going to happen this month, I've been
+doing some prep work on the EVL side for this lately. Problem #1 ATM
+concerns the current EVL documentation at [1], which is composed of a
+set of Markdown-formatted files, which is rendered by the hugo [2]
+static generator, depending on several of its short-codes.
+
+Regarding the Zephyr code, we could have a separate repo for it both
+Xenomai 3 & 4 would share as a common git module for instance.
+
+For the time being, the best course of action may be that your
+latmus-over-Cobalt code sits into my tree, where it can wait for the
+rest of the Cobalt-over-Dovetail code it depends on to be merged
+upstream. The documentation and latmon issues can be solved in parallel
+while Xenomai 4 emerges at git.xenomai.org. IOW, I will be picking this
+patch series, it does not belong to upstream/next yet.
+
+[1] https://evlproject.org
+[2] https://gohugo.io
 
 -- 
 Philippe.
