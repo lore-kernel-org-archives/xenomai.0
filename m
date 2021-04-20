@@ -1,12 +1,15 @@
-References: <CAK6DXL0YMe5o+Q6cr2Z5axY3XVVdd=ZUmV=HNR-EbStYfTAYSw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Lowest latency skin
-In-reply-to: <CAK6DXL0YMe5o+Q6cr2Z5axY3XVVdd=ZUmV=HNR-EbStYfTAYSw@mail.gmail.com>
-Date: Mon, 19 Apr 2021 11:09:30 +0200
-Message-ID: <87eef663p1.fsf@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH V2 3/3] testsuite/latmus: introduce latmus benchmark
+Date: Tue, 20 Apr 2021 01:02:50 +0000
+Message-ID: <DM5PR11MB1852339EA17CEADCE2D3DB25F2489@DM5PR11MB1852.namprd11.prod.outlook.com>
+References: <20210416053133.23412-1-hongzhan.chen@intel.com>
+ <20210416053133.23412-4-hongzhan.chen@intel.com>
+ <17adb9ac-7510-f1f6-9805-67ef8353b536@siemens.com>
+In-Reply-To: <17adb9ac-7510-f1f6-9805-67ef8353b536@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Barletta <barlettamarco8@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Marco Barletta via Xenomai <xenomai@xenomai.org> writes:
-
-> Hi everyone, I finally managed to run correctly Xenomai with acceptable
-> latencies (kernel 5.4.77 w ipipe patch2, linux Mint x86_64). Now I'm
-> starting to write some simple programs in order to practice. Is there an
-> API with lower latencies that I should use or it's just the same? I
-> programmed with RTAI API so the native API is quite familiar to me.
-> Best regards.
-
-With Xenomai 3.x, the POSIX API delivers lower latency figures than
-others: no intermediate layer there between the API and the core. We
-should be talking about only a handful of =C2=B5secs better in non-debug
-mode, though.
-
---=20
-Philippe.
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgQXByaWwgMTYsIDIwMjEgODowNSBQ
+TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
+QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCBWMiAzLzNdIHRlc3RzdWl0ZS9sYXRt
+dXM6IGludHJvZHVjZSBsYXRtdXMgYmVuY2htYXJrDQo+DQo+T24gMTYuMDQuMjEgMDc6MzEsIGhv
+bmd6aGExIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gTWVhc3VyZSByZXNwb25zZSB0aW1lIHRvIEdQ
+SU8gZXZlbnRzIHNlbnQgYnkgYSByZW1vdGUgWmVwaHlyLWJhc2VkDQo+PiBsYXRlbmN5IG1vbml0
+b3IgKGxhdG1vbikuIFRoaXMgbW9uaXRvciBjb2xsZWN0cyB0aGVuIHNlbmRzIHRoZSBsYXRlbmN5
+DQo+PiBkYXRhIG92ZXIgYSBuZXR3b3JrIGNvbm5lY3Rpb24gdG8gdGhlIGxhdG11cyBmcm9udC1l
+bmQgd2hpY2ggZGlzcGxheXMNCj4+IHRoZSByZXN1bHRzIHJlY2VpdmVkOg0KPj4gDQo+PiBbTGlu
+dXggZGV2aWNlIHVuZGVyIHRlc3QgcnVubmluZyBsYXRtdXNdICA8LS0rDQo+PiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8DQo+PiAgICAgICAgIF4gICAgICAg
+ICAgICAgICAgIHwgKEdQSU8gYWNrKSAgICAgICB8DQo+PiAgICAgICAgIHwgICAgICAgICAgICAg
+ICAgIHwgICAgICAgICAgICAgICAgICB8ICBUQ1AvSVAgbmV0d29yayBjb25uZWN0aW9uDQo+PiAg
+ICAgICAgIHwgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICB8ICAoY29udHJvbCAm
+IGRhdGEgc2FtcGxlcykNCj4+ICAgICAgICAgfCAoR1BJTyBwdWxzZSkgICAgdiAgICAgICAgICAg
+ICAgICAgIHwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwNCj4+IFtaZXBoeXItYmFzZWQgZGV2aWNlIHJ1bm5pbmcgbGF0bW9uXSAgICAgIDwtLSsNCj4+
+IA0KPj4gVGhlIGdlbmVyaWMgbGF0ZW5jeSBtb25pdG9yIGNvZGUgcnVubmluZyB0aGUgbWVhc3Vy
+ZW1lbnQgbG9vcCBpcw0KPj4gYXZhaWxhYmxlIGZyb20gdGhlIHplcGh5ci8gZGlyZWN0b3J5LiBU
+aGlzIHN1cHBvcnQgY29tZXMgd2l0aCBhIFplcGh5cg0KPj4gZGV2aWNlIHRyZWUgcGF0Y2ggZm9y
+IGVuYWJsaW5nIHRoaXMgbW9uaXRvciBvbiBOWFAncyBGUkRNLUs2NEYNCj4+IGRldmVsb3BtZW50
+IGJvYXJkLg0KPg0KPldoZXJlIGlzIGFsbCB0aGlzPw0KDQpBY3R1YWxseSAsIHRoaXMgemVwaHly
+IGRpcmVjdG9yeSBpcyBsb2NhdGVkIGluIGxpYmV2bCBwcm9qZWN0ICBhdCBodHRwczovL2dpdC5l
+dmxwcm9qZWN0Lm9yZy9saWJldmwuZ2l0L3RyZWUvYmVuY2htYXJrcy96ZXBoeXIuICANCmF0IHRo
+aXMgdGltZS4gRG8geW91IHRoaW5rIGl0IGlzIHN1aXRhYmxlIHRvIG1ha2UgYSBjb3B5IGZvciB0
+aGlzIGZvbGRlciBpbiB4ZW5vbWFpIGNvZGUgYmFzZT8gT3IgSSBqdXN0IGRlc2NyaWJlZCBpbiBj
+b21tZW50cw0KdGhhdCBpdCBpcyBmcm9tIGh0dHBzOi8vZ2l0LmV2bHByb2plY3Qub3JnL2xpYmV2
+bC5naXQvdHJlZS9iZW5jaG1hcmtzL3plcGh5ciAuDQoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBD
+aGVuDQo+DQo+QlRXLCB3b3VsZCBzb21lIGNoZWFwIEFyZHVpbm8gYm9hcmQgYW5kIHNrZXRjaCBi
+ZSBhbiBhbHRlcm5hdGl2ZT8gVGhleQ0KPmNvdWxkIGV4cG9zZSB0aGUgcmVjb3JkZWQgZGF0YSB2
+aWEgVVNCIHRvIHRoZSBob3N0IChldmVuIHRoZSBEVVQpLg0KPlByb3ZpZGVkIHRoZXkgaGF2ZSBl
+bm91Z2ggZnJlZSBSQU0gdG8gY29tcGVuc2F0ZSB0aGUgdHJhbnNmZXIgZGVsYXkuDQo+DQo+SmFu
+DQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQpDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBD
+ZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
