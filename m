@@ -1,13 +1,8 @@
-From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
- <jean-baptiste.tredez@alstefgroup.com>
-Subject: [PATCH 07/31] net/udp: allow retrieving irq timestamp with SIOCGSTAMP
- ioctl
-Date: Tue, 11 May 2021 18:05:11 +0200
-Message-Id: <20210511160535.26580-8-jean-baptiste.tredez@alstefgroup.com>
-In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-Content-Type: text/plain
-MIME-Version: 1.0
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v2 2/3] y2038: lib/cobalt/clock: dispatch clock_nanosleep
+Date: Wed, 21 Apr 2021 16:38:44 +0800
+Message-Id: <1618994324-21514-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +11,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, florian.bezdeka@siemens.com
+Cc: chensong <chensong@tj.kylinos.cn>
 
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: chensong <chensong@tj.kylinos.cn>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+If sizeof time_t bigger than 4, which means glibc supports
+64bit timespec, go to clock_nanosleep64.
+
+otherwise, go to original clock_nanosleep.
+
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
 ---
- kernel/drivers/net/stack/include/rtnet_socket.h | 2 ++
- kernel/drivers/net/stack/ipv4/udp/udp.c         | 9 +++++++++
- 2 files changed, 11 insertions(+)
+ lib/cobalt/clock.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/kernel/drivers/net/stack/include/rtnet_socket.h b/kernel/drivers/net/stack/include/rtnet_socket.h
-index af972c1a5..61bf8bea5 100644
---- a/kernel/drivers/net/stack/include/rtnet_socket.h
-+++ b/kernel/drivers/net/stack/include/rtnet_socket.h
-@@ -79,6 +79,8 @@ struct rtsocket {
- 			int ifindex;
- 		} packet;
- 	} prot;
-+
-+	u64 timestamp;
- };
+diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+index e861413..b799e27 100644
+--- a/lib/cobalt/clock.c
++++ b/lib/cobalt/clock.c
+@@ -360,8 +360,13 @@ COBALT_IMPL(int, clock_nanosleep, (clockid_t clock_id,
  
- static inline struct rtdm_fd *rt_socket_fd(struct rtsocket *sock)
-diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-index dcaec5618..beceb28cf 100644
---- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-+++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-@@ -359,6 +359,8 @@ int rt_udp_ioctl(struct rtdm_fd *fd, unsigned int request, void __user *arg)
- 	struct rtsocket *sock = rtdm_fd_to_private(fd);
- 	const struct _rtdm_setsockaddr_args *setaddr;
- 	struct _rtdm_setsockaddr_args _setaddr;
-+	unsigned long ns;
-+	struct timeval tv;
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
  
- 	/* fast path for common socket IOCTLs */
- 	if (_IOC_TYPE(request) == RTIOC_TYPE_NETWORK)
-@@ -377,6 +379,12 @@ int rt_udp_ioctl(struct rtdm_fd *fd, unsigned int request, void __user *arg)
- 		return rt_udp_connect(fd, sock, setaddr->addr,
- 				      setaddr->addrlen);
++#ifdef __USE_TIME_BITS64
++	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
++				clock_id, flags, rqtp, rmtp);
++#else
+ 	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
+ 				clock_id, flags, rqtp, rmtp);
++#endif
  
-+	case SIOCGSTAMP:
-+		tv.tv_sec = xnclock_divrem_billion(sock->timestamp, &ns);
-+		tv.tv_usec = ns / 1000;
-+
-+		return copy_to_user(arg, &tv, sizeof(tv));
-+
- 	default:
- 		return rt_ip_ioctl(fd, request, arg);
- 	}
-@@ -464,6 +472,7 @@ ssize_t rt_udp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
+ 	pthread_setcanceltype(oldtype, NULL);
  
- 	/* iterate over all IP fragments */
- 	do {
-+		sock->timestamp = skb->time_stamp;
- 		rtskb_trim(skb, data_len);
- 
- 		block_size = skb->len;
 -- 
-2.17.1
+2.7.4
 
 
