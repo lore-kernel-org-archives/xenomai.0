@@ -1,9 +1,8 @@
-MIME-Version: 1.0
-From: Fangsuo Wu <tiger20081015@gmail.com>
-Date: Mon, 10 May 2021 09:56:52 +0800
-Message-ID: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
-Subject: xeno-test failed due to cond_destroy error
-Content-Type: text/plain; charset="UTF-8"
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v2 0/3] y2038:clock_nanosleep for timespec64
+Date: Wed, 21 Apr 2021 16:38:20 +0800
+Message-Id: <1618994300-21411-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,39 +11,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, florian.bezdeka@siemens.com
+Cc: chensong <chensong@tj.kylinos.cn>
 
-Hi, I met below errors when running xeno-test in my board:
+From: chensong <chensong@tj.kylinos.cn>
+
+This patch serial is aimed to introduce a new syscall clock_nanosleep64
+which is specific for 64-bit time_t.
+
+---
+v2:
+1, introduce a new helper __cobalt_clock_nanosleep64 given the behavior
+in compat syscall is identical.
+2, REALTIME --> MONOTONIC in testsuite
+3, more combinations of parameters in testsuite
+4, smokey warning if clock_gettime goes wrong in testsuite
+5, remove magic number in testsuite
+
+chensong (3):
+  y2038: cobalt/posix/clock: Adding clock_nanosleep64
+  y2038: lib/cobalt/clock: dispatch clock_nanosleep
+  y2038: testsuite/smokey/y2038: testcase for nanosleep64
+
+ include/cobalt/uapi/syscall.h          |  1 +
+ kernel/cobalt/posix/clock.c            | 30 ++++++++++++++++++++
+ kernel/cobalt/posix/clock.h            |  9 ++++++
+ kernel/cobalt/posix/syscall32.c        |  9 ++++++
+ kernel/cobalt/posix/syscall32.h        |  6 ++++
+ lib/cobalt/clock.c                     |  5 ++++
+ testsuite/smokey/y2038/syscall-tests.c | 50 ++++++++++++++++++++++++++++++++++
+ 7 files changed, 110 insertions(+)
+
+-- 
+2.7.4
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*sh-4.4# ./xeno-testStarted child 209: /bin/sh
-/usr/xenomai/bin/xeno-test-run-wrapper ./xeno-test++ echo 0++
-testdir=/usr/xenomai/bin++ /usr/xenomai/bin/smokey --run
-random_alloc_rounds=64 pattern_check_rounds=64arith OKbufp skipped (no
-kernel support)cpu_affinity skipped (no kernel support)fpu_stress OKiddp
-skipped (no kernel support)leaks OKmemory_coreheap OKmemory_heapmem
-OKmemory_tlsf OKnet_packet_dgram skipped (no kernel support)net_packet_raw
-skipped (no kernel support)net_udp skipped (no kernel support)posix_clock
-OKFAILED autoinit_simple_conddestroy cond_destroy: returned -22 instead of
-0 - Invalid argumentchild 209 returned: exited with status 1*
-
-How can I solve the cond_destroy error and what kernel configurations do I
-need for "no kernel support" items? Can someone give some hints? Thanks!
