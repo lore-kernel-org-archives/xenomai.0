@@ -1,15 +1,8 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH V2 3/3] testsuite/latmus: introduce latmus benchmark
-Date: Tue, 20 Apr 2021 01:02:50 +0000
-Message-ID: <DM5PR11MB1852339EA17CEADCE2D3DB25F2489@DM5PR11MB1852.namprd11.prod.outlook.com>
-References: <20210416053133.23412-1-hongzhan.chen@intel.com>
- <20210416053133.23412-4-hongzhan.chen@intel.com>
- <17adb9ac-7510-f1f6-9805-67ef8353b536@siemens.com>
-In-Reply-To: <17adb9ac-7510-f1f6-9805-67ef8353b536@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v2 3/3] y2038: testsuite/smokey/y2038: testcase for nanosleep64
+Date: Wed, 21 Apr 2021 16:38:55 +0800
+Message-Id: <1618994335-21566-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +11,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, florian.bezdeka@siemens.com
+Cc: chensong <chensong@tj.kylinos.cn>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgQXByaWwgMTYsIDIwMjEgODowNSBQ
-TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
-QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCBWMiAzLzNdIHRlc3RzdWl0ZS9sYXRt
-dXM6IGludHJvZHVjZSBsYXRtdXMgYmVuY2htYXJrDQo+DQo+T24gMTYuMDQuMjEgMDc6MzEsIGhv
-bmd6aGExIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gTWVhc3VyZSByZXNwb25zZSB0aW1lIHRvIEdQ
-SU8gZXZlbnRzIHNlbnQgYnkgYSByZW1vdGUgWmVwaHlyLWJhc2VkDQo+PiBsYXRlbmN5IG1vbml0
-b3IgKGxhdG1vbikuIFRoaXMgbW9uaXRvciBjb2xsZWN0cyB0aGVuIHNlbmRzIHRoZSBsYXRlbmN5
-DQo+PiBkYXRhIG92ZXIgYSBuZXR3b3JrIGNvbm5lY3Rpb24gdG8gdGhlIGxhdG11cyBmcm9udC1l
-bmQgd2hpY2ggZGlzcGxheXMNCj4+IHRoZSByZXN1bHRzIHJlY2VpdmVkOg0KPj4gDQo+PiBbTGlu
-dXggZGV2aWNlIHVuZGVyIHRlc3QgcnVubmluZyBsYXRtdXNdICA8LS0rDQo+PiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8DQo+PiAgICAgICAgIF4gICAgICAg
-ICAgICAgICAgIHwgKEdQSU8gYWNrKSAgICAgICB8DQo+PiAgICAgICAgIHwgICAgICAgICAgICAg
-ICAgIHwgICAgICAgICAgICAgICAgICB8ICBUQ1AvSVAgbmV0d29yayBjb25uZWN0aW9uDQo+PiAg
-ICAgICAgIHwgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICB8ICAoY29udHJvbCAm
-IGRhdGEgc2FtcGxlcykNCj4+ICAgICAgICAgfCAoR1BJTyBwdWxzZSkgICAgdiAgICAgICAgICAg
-ICAgICAgIHwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IHwNCj4+IFtaZXBoeXItYmFzZWQgZGV2aWNlIHJ1bm5pbmcgbGF0bW9uXSAgICAgIDwtLSsNCj4+
-IA0KPj4gVGhlIGdlbmVyaWMgbGF0ZW5jeSBtb25pdG9yIGNvZGUgcnVubmluZyB0aGUgbWVhc3Vy
-ZW1lbnQgbG9vcCBpcw0KPj4gYXZhaWxhYmxlIGZyb20gdGhlIHplcGh5ci8gZGlyZWN0b3J5LiBU
-aGlzIHN1cHBvcnQgY29tZXMgd2l0aCBhIFplcGh5cg0KPj4gZGV2aWNlIHRyZWUgcGF0Y2ggZm9y
-IGVuYWJsaW5nIHRoaXMgbW9uaXRvciBvbiBOWFAncyBGUkRNLUs2NEYNCj4+IGRldmVsb3BtZW50
-IGJvYXJkLg0KPg0KPldoZXJlIGlzIGFsbCB0aGlzPw0KDQpBY3R1YWxseSAsIHRoaXMgemVwaHly
-IGRpcmVjdG9yeSBpcyBsb2NhdGVkIGluIGxpYmV2bCBwcm9qZWN0ICBhdCBodHRwczovL2dpdC5l
-dmxwcm9qZWN0Lm9yZy9saWJldmwuZ2l0L3RyZWUvYmVuY2htYXJrcy96ZXBoeXIuICANCmF0IHRo
-aXMgdGltZS4gRG8geW91IHRoaW5rIGl0IGlzIHN1aXRhYmxlIHRvIG1ha2UgYSBjb3B5IGZvciB0
-aGlzIGZvbGRlciBpbiB4ZW5vbWFpIGNvZGUgYmFzZT8gT3IgSSBqdXN0IGRlc2NyaWJlZCBpbiBj
-b21tZW50cw0KdGhhdCBpdCBpcyBmcm9tIGh0dHBzOi8vZ2l0LmV2bHByb2plY3Qub3JnL2xpYmV2
-bC5naXQvdHJlZS9iZW5jaG1hcmtzL3plcGh5ciAuDQoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBD
-aGVuDQo+DQo+QlRXLCB3b3VsZCBzb21lIGNoZWFwIEFyZHVpbm8gYm9hcmQgYW5kIHNrZXRjaCBi
-ZSBhbiBhbHRlcm5hdGl2ZT8gVGhleQ0KPmNvdWxkIGV4cG9zZSB0aGUgcmVjb3JkZWQgZGF0YSB2
-aWEgVVNCIHRvIHRoZSBob3N0IChldmVuIHRoZSBEVVQpLg0KPlByb3ZpZGVkIHRoZXkgaGF2ZSBl
-bm91Z2ggZnJlZSBSQU0gdG8gY29tcGVuc2F0ZSB0aGUgdHJhbnNmZXIgZGVsYXkuDQo+DQo+SmFu
-DQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQpDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBD
-ZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+From: chensong <chensong@tj.kylinos.cn>
+
+add test case for clock_nanosleep64 in testsuite
+
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
+
+---
+v2:
+1, REALTIME --> MONOTONIC
+2, more combinations
+3, smokey warning in clock_gettime
+4, remove magic number
+---
+ testsuite/smokey/y2038/syscall-tests.c | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 990e05c..0ea6ddd 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -228,6 +228,52 @@ static int test_sc_cobalt_clock_settime64(void)
+ 	return 0;
+ }
+ 
++static int test_sc_cobalt_clock_nanosleep64(void)
++{
++	long ret;
++	int code = __xn_syscode(sc_cobalt_clock_nanosleep64);
++	struct xn_timespec64 next, rmt;
++	struct timespec now;
++
++	/* Make sure we don't crash because of NULL pointers */
++	ret = syscall(code, NULL, NULL, NULL, NULL);
++	if (ret == -1 && errno == ENOSYS) {
++		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Provide a valid 64bit timespec*/
++	ret = clock_gettime(CLOCK_MONOTONIC, &now);
++	if (ret) {
++		smokey_warning("clock_gettime failed in clock_nanosleep64.");
++		return errno;
++	}
++
++	/* Providing an invalid address has to deliver EFAULT */
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
++				(void *)0xdeadbeefUL, &rmt);
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	next.tv_sec  = now.tv_sec + 1;
++	next.tv_nsec = now.tv_nsec;
++
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
++				&next, (void *)0xdeadbeefUL);
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	next.tv_sec  = next.tv_sec + 1;
++
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
++	if (!smokey_assert(!ret))
++		return errno;
++
++	return 0;
++}
++
+ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	int ret;
+@@ -244,5 +290,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
+ 
++	ret = test_sc_cobalt_clock_nanosleep64();
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
+-- 
+2.7.4
+
 
