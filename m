@@ -1,12 +1,9 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 9/9] y2038: lib/cobalt: Add support of
- sc_cobalt_sem_timedwait64
-Date: Wed,  5 May 2021 18:53:08 +0200
-Message-Id: <982238c6b23f47f49551c169c3e4837bb52de4d0.1620233588.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1620233588.git.jan.kiszka@siemens.com>
-References: <cover.1620233588.git.jan.kiszka@siemens.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH V3 2/3] drivers/gpio: core: introduce helper to find gpiochip
+Date: Wed, 21 Apr 2021 01:05:08 -0400
+Message-Id: <20210421050509.31420-3-hongzhan.chen@intel.com>
+In-Reply-To: <20210421050509.31420-1-hongzhan.chen@intel.com>
+References: <20210421050509.31420-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +14,63 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To find gpiochip for non-OF platforms like x86
 
-In case libcobalt is build with -D_TIME_BITS=64
-sc_cobalt_sem_timedwait64 will be used instead of
-sc_cobalt_sem_timedwait.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 ---
- lib/cobalt/semaphore.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/cobalt/kernel/rtdm/gpio.h |  3 +++
+ kernel/drivers/gpio/gpio-core.c   | 23 +++++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
-index 45705d48f3..bff0054401 100644
---- a/lib/cobalt/semaphore.c
-+++ b/lib/cobalt/semaphore.c
-@@ -373,7 +373,12 @@ COBALT_IMPL(int, sem_timedwait, (sem_t *sem, const struct timespec *abs_timeout)
+diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+index 00055ec0a..c5fb20f25 100644
+--- a/include/cobalt/kernel/rtdm/gpio.h
++++ b/include/cobalt/kernel/rtdm/gpio.h
+@@ -61,6 +61,9 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+ 			     unsigned int offset);
  
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
++int rtdm_gpiochip_find(struct device_node *from,
++			  const char *label, int type);
++
+ #ifdef CONFIG_OF
  
-+#ifdef __USE_TIME_BITS64
-+	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem,
-+			       abs_timeout);
-+#else
- 	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
-+#endif
+ int rtdm_gpiochip_scan_of(struct device_node *from,
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 600ef9789..b3d801fa1 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -520,6 +520,29 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+ }
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
  
- 	pthread_setcanceltype(oldtype, NULL);
++int rtdm_gpiochip_find(struct device_node *from, const char *label,
++			  int type)
++{
++	struct rtdm_gpio_chip *rgc;
++	struct gpio_chip *chip;
++	int ret = -ENODEV;
++
++	if (!rtdm_available())
++		return -ENOSYS;
++
++	chip = find_chip_by_name(label);
++	if (chip == NULL)
++		return ret;
++
++	ret = 0;
++	rgc = rtdm_gpiochip_alloc(chip, type);
++	if (IS_ERR(rgc))
++		ret = PTR_ERR(rgc);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
++
+ #ifdef CONFIG_OF
  
+ #include <linux/of_platform.h>
 -- 
-2.26.2
+2.17.1
 
 
