@@ -1,15 +1,9 @@
-Subject: Re: Timer_Create for periodic tasks
-References: <CAK6DXL0_dMXz7Xdi4vZSBZ9J5E9dVwiWiKOLnoX686ecWe5e3w@mail.gmail.com>
- <4b529835-b035-9e29-acc7-2fdc355222e5@siemens.com>
- <CAK6DXL2Dm5ANiw4fN6NVNeonjPi7mJrfMvLrdCDMOkgcJAKARA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5c4116b1-ba9a-1e3f-c359-f88ca66805a3@siemens.com>
-Date: Sun, 9 May 2021 13:23:56 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAK6DXL2Dm5ANiw4fN6NVNeonjPi7mJrfMvLrdCDMOkgcJAKARA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v5 5/5] y2038: testsuite/smokey/y2038: testcase for settime64
+ and gettime64
+Date: Wed, 21 Apr 2021 16:36:44 +0800
+Message-Id: <1618994204-21355-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +12,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Barletta <barlettamarco8@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, florian.bezdeka@siemens.com
+Cc: chensong <chensong@tj.kylinos.cn>
 
-[re-adding the list]
+From: chensong <chensong@tj.kylinos.cn>
 
-On 09.05.21 13:06, Marco Barletta wrote:
-> Yes, of course.
-> I attached "test3.c" that is a basic posix period task ripoff i found on
-> the web by Marc Le Douarain. I couldn't test with smokey since at the
-> best of my knowledge I realized it doesn't handles periodic tasks with
-> timers.
-> Then I launched Docker with "docker run -itd --name containerName
-> --volume=/usr/xenomai:/usr/xenomai --volume=/[folder with
-> proggrams]:/home/test --user 1000:1000 --device=/dev/rtdm:/dev/rtdm
-> ubuntu /bin/bash" and then I run the periodic task in the container. It
-> just blocks on waitsiginfo. Moreover I want to precise that adding
-> --pid=host everything is fine, but it can be just a workaround due to
-> security issues. I don't think you're also interesed in the server to
-> translate pid in different namespaces, the syscall just fail, is a wrong
-> way.
-> It would be great to add namespace support, and I could contribute to
-> it, although my experience limits.
+new test case for clock_settime64 and clock_gettime64 and reorganize
+run_2038.
 
-You could already help with adding the information and test case to
-https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/19 that i just
-created.
+If you want to trigger and verify y2038 problem, please be careful and
+make sure it has no impact to your test device.
 
-One note, though, to avoid the illusion of security: You cannot confine
-Xenomai by putting it into a namespace. It remains a set of privileged
-service that can easily be used to lock up the system. Also, its APIs
-are not consistently checked /wrt security loopholes that could be used
-for privilege escalation. That's also why you need CAP_SYS_NICE as
-caller or have to be in the 'allowed_group'.
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
 
-However, I would still consider namespace support a valid feature in
-order to use containers as deployment tool for Xenomai applications.
+---
+v3:
+1, rename structs, variables
+2, reorganize registration in run_y2038
+3, remove unnecessary definitions
 
-Jan
+v4:
+1, return run_y2038 to its original approach
 
+v5:
+1, smokey warning when clock_getime failed
+2, REALTIME --> MONOTONIC
+---
+ testsuite/smokey/y2038/syscall-tests.c | 77 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 75 insertions(+), 2 deletions(-)
+
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 1d61bbd..6ca841d 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -114,10 +114,10 @@ static int test_sc_cobalt_sem_timedwait64(void)
+ 
+ 	/*
+ 	 * The semaphore is already exhausted, so calling again will validate
+-	 * the provided timeout now. Providing an invalid adress has to deliver
++	 * the provided timeout now. Providing an invalid address has to deliver
+ 	 * EFAULT
+ 	 */
+-	ret = syscall(code, &sem, (void*) 0xdeadbeefUL);
++	ret = syscall(code, &sem, (void *)0xdeadbeefUL);
+ 	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+ 		return errno;
+ 
+@@ -163,6 +163,71 @@ static int test_sc_cobalt_sem_timedwait64(void)
+ 	return 0;
+ }
+ 
++static int test_sc_cobalt_clock_gettime64(void)
++{
++	long ret;
++	int code = __xn_syscode(sc_cobalt_clock_gettime64);
++	struct xn_timespec64 ts64;
++
++	/* Make sure we don't crash because of NULL pointers */
++	ret = syscall(code, NULL, NULL);
++	if (ret == -1 && errno == ENOSYS) {
++		smokey_note("clock_gettime64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Providing an invalid address has to deliver EFAULT */
++	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Provide a valid 64bit timespec*/
++	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
++	if (!smokey_assert(!ret))
++		return errno;
++
++	return 0;
++}
++
++static int test_sc_cobalt_clock_settime64(void)
++{
++	long ret;
++	int code = __xn_syscode(sc_cobalt_clock_settime64);
++	struct xn_timespec64 ts64;
++	struct timespec now;
++
++	/* Make sure we don't crash because of NULL pointers */
++	ret = syscall(code, NULL, NULL);
++	if (ret == -1 && errno == ENOSYS) {
++		smokey_note("clock_settime64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Providing an invalid address has to deliver EFAULT */
++	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Provide a valid 64bit timespec*/
++	ret = clock_gettime(CLOCK_MONOTONIC, &now);
++	if (ret) {
++		smokey_warning("clock_gettime failed in cloc_settime64.");
++		return errno;
++	}
++
++	ts64.tv_sec  = now.tv_sec;
++	ts64.tv_nsec = now.tv_nsec;
++	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
++	if (!smokey_assert(!ret))
++		return errno;
++
++	return 0;
++}
++
+ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	int ret;
+@@ -171,5 +236,13 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
+ 
++	ret = test_sc_cobalt_clock_gettime64();
++	if (ret)
++		return ret;
++
++	ret = test_sc_cobalt_clock_settime64();
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.7.4
+
 
