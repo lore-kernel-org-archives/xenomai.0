@@ -1,14 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <56335a02-69dd-32ed-5c1b-9df7b1a4b760@siemens.com>
-References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
- <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
- <CAMDn9+Rxc=H=0R46YK0CgbNLHQZuF8N=_KY-7S-87rY+r86zHw@mail.gmail.com>
- <56335a02-69dd-32ed-5c1b-9df7b1a4b760@siemens.com>
-From: Fangsuo Wu <tiger20081015@gmail.com>
-Date: Mon, 10 May 2021 17:28:39 +0800
-Message-ID: <CAMDn9+R2AozuqLk_eLge+vbnxj0vRFuzV0DuVdarCk1bLgcakA@mail.gmail.com>
-Subject: Re: xeno-test failed due to cond_destroy error
-Content-Type: text/plain; charset="UTF-8"
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v2 1/3] y2038: cobalt/posix/clock: Adding clock_nanosleep64
+Date: Wed, 21 Apr 2021 16:38:33 +0800
+Message-Id: <1618994313-21461-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,80 +11,145 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, florian.bezdeka@siemens.com
+Cc: chensong <chensong@tj.kylinos.cn>
 
-Jan,
-I removed the CFLAGS and LDFLAGS, with configure command:
+From: chensong <chensong@tj.kylinos.cn>
 
-./configure --build=i686-pc-linux-gnu --host=arm-linux-gnueabihf
---with-core=cobalt --enable-smp --enable-lazy-setsched
---enable-debug=symbols
+Add a syscall specific for clock_nanosleep with 64bit
+time_t.
 
-But the issue still remains. I changed the failed test case as below,
-the issue still exists.
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
 
-226 static void autoinit_simple_conddestroy(void)
-227 {
-228 >-------pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-229 #if 0
-230 >-------pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
-231 >-------unsigned int invalmagic = ~0x86860505; // ~COBALT_COND_MAGIC
-232
-233 >-------memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic),
-234 >------->-------&invalmagic, sizeof(invalmagic));
-235
-236 >-------smokey_trace("%s", __func__);
-237 #endif
-238 >-------check("cond_destroy", cond_destroy(&cond), 0);
-239 //>-----check("cond_destroy invalid", cond_destroy(&cond2), -EINVAL);
-240 }
+---
+v2:
+1, introduce new helper __cobalt_clock_nanosleep64
+---
+ include/cobalt/uapi/syscall.h   |  1 +
+ kernel/cobalt/posix/clock.c     | 30 ++++++++++++++++++++++++++++++
+ kernel/cobalt/posix/clock.h     |  9 +++++++++
+ kernel/cobalt/posix/syscall32.c |  9 +++++++++
+ kernel/cobalt/posix/syscall32.h |  6 ++++++
+ 5 files changed, 55 insertions(+)
 
-I'll try QEMU later to see if the issue also exits in QEMU.
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index 438af30..acb8260 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -125,6 +125,7 @@
+ #define sc_cobalt_sem_timedwait64		102
+ #define sc_cobalt_clock_gettime64		103
+ #define sc_cobalt_clock_settime64		104
++#define sc_cobalt_clock_nanosleep64		105
+ 
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
+ 
+diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+index ca5f266..70560dd 100644
+--- a/kernel/cobalt/posix/clock.c
++++ b/kernel/cobalt/posix/clock.c
+@@ -350,6 +350,36 @@ COBALT_SYSCALL(clock_nanosleep, primary,
+ 	return ret;
+ }
+ 
++int __cobalt_clock_nanosleep64(clockid_t clock_id, int flags,
++		const struct __kernel_timespec __user *u_rqt,
++		struct __kernel_timespec __user *u_rmt)
++{
++	struct timespec64 rqt, rmt, *rmtp = NULL;
++	int ret;
++
++	if (u_rmt)
++		rmtp = &rmt;
++
++	if (cobalt_get_timespec64(&rqt, u_rqt))
++		return -EFAULT;
++
++	ret = __cobalt_clock_nanosleep(clock_id, flags, &rqt, rmtp);
++	if (ret == -EINTR && flags == 0 && rmtp) {
++		if (cobalt_put_timespec64(rmtp, u_rmt))
++			return -EFAULT;
++	}
++
++	return ret;
++}
++
++COBALT_SYSCALL(clock_nanosleep64, primary,
++	       (clockid_t clock_id, int flags,
++		const struct __kernel_timespec __user *u_rqt,
++		struct __kernel_timespec __user *u_rmt))
++{
++	return __cobalt_clock_nanosleep64(clock_id, flags, u_rqt, u_rmt);
++}
++
+ int cobalt_clock_register(struct xnclock *clock, const cpumask_t *affinity,
+ 			  clockid_t *clk_id)
+ {
+diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
+index 74c71c8..ff8653b 100644
+--- a/kernel/cobalt/posix/clock.h
++++ b/kernel/cobalt/posix/clock.h
+@@ -116,6 +116,10 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
+ 			     const struct timespec64 *rqt,
+ 			     struct timespec64 *rmt);
+ 
++int __cobalt_clock_nanosleep64(clockid_t clock_id, int flags,
++		const struct __kernel_timespec __user *u_rqt,
++		struct __kernel_timespec __user *u_rmt);
++
+ COBALT_SYSCALL_DECL(clock_getres,
+ 		    (clockid_t clock_id, struct __user_old_timespec __user *u_ts));
+ 
+@@ -140,6 +144,11 @@ COBALT_SYSCALL_DECL(clock_nanosleep,
+ 		     const struct __user_old_timespec __user *u_rqt,
+ 		     struct __user_old_timespec __user *u_rmt));
+ 
++COBALT_SYSCALL_DECL(clock_nanosleep64,
++		    (clockid_t clock_id, int flags,
++		     const struct __kernel_timespec __user *u_rqt,
++		     struct __kernel_timespec __user *u_rmt));
++
+ int cobalt_clock_register(struct xnclock *clock,
+ 			  const cpumask_t *affinity,
+ 			  clockid_t *clk_id);
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index e84e56c..34fe6cb 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -238,6 +238,15 @@ COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
+ 	return ret;
+ }
+ 
++COBALT_SYSCALL32emu(clock_nanosleep64, nonrestartable,
++		    (clockid_t clock_id, int flags,
++		     const struct __kernel_timespec __user *u_rqt,
++		     struct __kernel_timespec __user *u_rmt))
++{
++	return __cobalt_clock_nanosleep64(clock_id, flags, u_rqt, u_rmt);
++}
++
++
+ COBALT_SYSCALL32emu(mutex_timedlock, primary,
+ 		    (struct cobalt_mutex_shadow __user *u_mx,
+ 		     const struct old_timespec32 __user *u_ts))
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 9095ebd..6c20da1 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -80,6 +80,12 @@ COBALT_SYSCALL32emu_DECL(clock_nanosleep,
+ 			  const struct old_timespec32 __user *u_rqt,
+ 			  struct old_timespec32 __user *u_rmt));
+ 
++COBALT_SYSCALL32emu_DECL(clock_nanosleep64,
++			 (clockid_t clock_id, int flags,
++			  const struct __kernel_timespec __user *u_rqt,
++			  struct __kernel_timespec __user *u_rmt));
++
++
+ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
+ 			 (struct cobalt_mutex_shadow __user *u_mx,
+ 			  const struct old_timespec32 __user *u_ts));
+-- 
+2.7.4
 
-BTW, I saw some below warnings in compiling, do they have any
-relationship with the issue?
-  /bin/bash ../../../libtool   --mode=install /usr/bin/install -c
-smokey_net_server '/home/data/nfs_test//usr/xenomai/bin'
-libtool: warning: '../../../lib/cobalt/libcobalt.la' has not been
-installed in '/usr/xenomai/lib'
-libtool: warning: '../../../lib/cobalt/libmodechk.la' has not been
-installed in '/usr/xenomai/lib'
-
-
-
-
-2021-05-10 15:35 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
-> On 10.05.21 09:20, Fangsuo Wu wrote:
->> Jan,
->> Thanks for your reply. The environment I used is listed below. BTW, I
->> can run latency test successfully.
->>
->> 1. The revision of Xenomai: xenomai-3.1.tar.bz2
->> 2. Soc: dual ARM cortex A7
->> 3. How I built application libraries:
->>     ./configure CFLAGS="-march=armv7-a -mfpu=vfp3"
->> LDFLAGS="-march=armv7-a -mfpu=vfp3"   --build=i686-pc-linux-gnu
->> --host=arm-linux-gnueabihf --with-core=cobalt --enable-smp
->> --enable-pshared
->>    make DESTDIR=/home/data/nfs_test/ install
->> 4. The kernel I used is 4.19 so I applied
->> ipipe-core-4.19.55-arm-5.patch, and manually enabled
->> CONFIG_IPIPE_ARM_KUSER_TSC. The full config file is:
->>
->
-> OK - our qemu-armhf target [1] is multicore A7 as well. Do you see the
-> problem in QEMU, too? Do any of the extra CFLAGS or LDFLAGS you pass
-> play a role here? We compile in CI only with "--enable-smp
-> --enable-lazy-setsched --enable-debug=symbols" - maybe
-> "--enable-pshared"...
->
-> Jan
->
-> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/265962#L387
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
 
