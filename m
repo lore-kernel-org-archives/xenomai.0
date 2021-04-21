@@ -1,13 +1,7 @@
-MIME-Version: 1.0
-References: <CAMDn9+QDJR1+2XErEeyaOGoBPUnKrKCi2_zA6gvpAfK08DyW3Q@mail.gmail.com>
-In-Reply-To: <CAMDn9+QDJR1+2XErEeyaOGoBPUnKrKCi2_zA6gvpAfK08DyW3Q@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sun, 2 May 2021 02:05:25 -0400
-Message-ID: <CALLqZ8SOrg4UoT5kG41tFSvyj1FXz2qiJ1vjs3gSaMxsOX_ZCg@mail.gmail.com>
-Subject: Re: How to solve "implicit declaration of function
- '__ipipe_tsc_register'"
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH V3 0/3] introduce latmus
+Date: Wed, 21 Apr 2021 01:05:06 -0400
+Message-Id: <20210421050509.31420-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,75 +10,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fangsuo Wu <tiger20081015@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Fri, Apr 30, 2021 at 6:26 AM Fangsuo Wu via Xenomai <xenomai@xenomai.org=
->
-wrote:
+Latmus is a backport from EVL to Cobalt, the procedure is fully
+described here: https://evlproject.org/core/benchmarks/
 
-> Hi, I'm a beginner of xenomai. After I applied
-> the ipipe-core-4.19.55-arm-5.patch to my 4.19 linux kernel, I found the
-> below compiling error:
->
->
->
->
->
-> */home/data/asr_code/nest/linux/drivers/clocksource/arm_arch_timer.c:1094=
-:2:
-> error: implicit declaration of function '__ipipe_tsc_register'; did you
-> mean 'ipipe_timer_register'? [-Werror=3Dimplicit-function-declaration]
-> __ipipe_tsc_register(&tsc_info);  ^~~~~~~~~~~~~~~~~~~~
-> ipipe_timer_register*
->
-> Checked the patch, it seems the CONFIG_IPIPE_ARM_KUSER_TSC is not set in =
-my
-> config. But in the kernel menu config,  CONFIG_IPIPE_ARM_KUSER_TSC is
-> defaulty n since the platform I used doesn't belong to ARCH_SOCFPGA or
-> ARCH_STI or ARCH_DAVINCI_DA850 or MACH_SUN8I. How can I solve this proble=
-m?
-> Thanks!
->
->  Symbol: IPIPE_ARM_KUSER_TSC [=3Dn]
->
->                                              =E2=94=82
->   =E2=94=82 Type  : bool
->
->                                                  =E2=94=82
->   =E2=94=82   Defined at arch/arm/Kconfig:924
->
->                                                 =E2=94=82
->   =E2=94=82   Depends on: IPIPE [=3Dy]
->
->                                                  =E2=94=82
->   =E2=94=82   Selects: HAVE_IPIPE_TRACER_SUPPORT [=3Dn] && GENERIC_TIME_V=
-SYSCALL [=3Dy]
-> && IPIPE_HAVE_HOSTRT [=3Dn]
->                                                 =E2=94=82
->   =E2=94=82   Selected by [n]:
->
->                                                  =E2=94=82
->   =E2=94=82   - ARCH_SOCFPGA [=3Dn] && ARCH_MULTI_V7 [=3Dy] && IPIPE [=3D=
-y]
->
->                                                 =E2=94=82
->   =E2=94=82   - ARCH_STI [=3Dn] && ARCH_MULTI_V7 [=3Dy] && IPIPE [=3Dy]
->
->                                                 =E2=94=82
->   =E2=94=82   - ARCH_DAVINCI_DA850 [=3Dn] && ARCH_DAVINCI [=3Dn] && (!ARC=
-H_DAVINCI_DMx
-> [=3Dn] || AUTO_ZRELADDR [=3Dy] && ARM_PATCH_PHYS_VIRT [=3Dy]) && IPIPE [=
-=3Dy]
->                                                  =E2=94=82
->   =E2=94=82   - MACH_SUN8I [=3Dn] && ARCH_SUNXI [=3Dn] && IPIPE [=3Dy]
->
->                                                  =E2=94=82
->   =E2=94=82
->
-Hi,
-  What defconfig are you using ?  Have you tried a more recent patch?
+I verified all functions of latmus on hardware environment under which 
+Rock PI X board connect GPIOs with FRDM K64F.But actually Rock PI X V1.4
+board's GPIO I/O voltage is 1.8V does not match 3.3V of FRDM K64F board.
+Even though I tried to set up IO shifter board to bridge two boards,
+still can not get correct latecny data because of bad IO signal. So I
+have to work around to loopback Input/Output GPIOs on both boards to do
+verify functions.
 
-Thanks
+Hardware setup:
 
-Greg
+---------------------------------------------------
+     eth|                                     |eth
+        +                                     +
+      FRDM K64F board                   Rock PI X board                  
+      |         |                       |           |
+      +_________+                       +___________+  
+     GPIO Loopback                      GPIO Loopback
+
+hongzha1 (3):
+  rtdm/testing: latmus: introduce latmus driver
+  drivers/gpio: core: introduce helper to find gpiochip
+  testsuite/latmus: introduce latmus benchmark
+
+ configure.ac                      |    1 +
+ doc/asciidoc/Makefile.am          |    2 +
+ doc/asciidoc/man1/latmus.adoc     |  112 +++
+ include/cobalt/kernel/rtdm/gpio.h |    3 +
+ include/rtdm/uapi/testing.h       |   79 ++
+ kernel/drivers/gpio/gpio-core.c   |   23 +
+ kernel/drivers/testing/Kconfig    |   10 +
+ kernel/drivers/testing/Makefile   |    3 +
+ kernel/drivers/testing/latmus.c   | 1237 ++++++++++++++++++++++++
+ testsuite/Makefile.am             |    4 +-
+ testsuite/latmus/Makefile.am      |   18 +
+ testsuite/latmus/latmus.c         | 1446 +++++++++++++++++++++++++++++
+ 12 files changed, 2937 insertions(+), 1 deletion(-)
+ create mode 100644 doc/asciidoc/man1/latmus.adoc
+ create mode 100644 kernel/drivers/testing/latmus.c
+ create mode 100644 testsuite/latmus/Makefile.am
+ create mode 100644 testsuite/latmus/latmus.c
+
+-- 
+2.17.1
+
+
