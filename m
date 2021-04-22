@@ -1,13 +1,10 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: reminder: Xenomai community call on today, April 21th, UTC 7:00
-Date: Wed, 21 Apr 2021 14:44:59 +0000
-Message-ID: <3577f7f7e3289ebd286ee232c5cbb2fe9155346d.camel@siemens.com>
-References: <DM5PR11MB1852C804E2CB83F7878F2F88F2479@DM5PR11MB1852.namprd11.prod.outlook.com>
-In-Reply-To: <DM5PR11MB1852C804E2CB83F7878F2F88F2479@DM5PR11MB1852.namprd11.prod.outlook.com>
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Xenomai Community Call Minutes - April 21, 2021 
+Date: Thu, 22 Apr 2021 14:40:49 +0000
+Message-ID: <CO6PR11MB56490563F70C498863F64C4EBA469@CO6PR11MB5649.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <80637D2CC122674F862A2CE15AFC86C9@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,26 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "hongzhan.chen@intel.com" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTA0LTIxIGF0IDA3OjA3ICswMDAwLCBDaGVuLCBIb25nemhhbiB2aWEgWGVu
-b21haSB3cm90ZToNCj4gU29ycnkgZm9yIHRoZSBsYXRlIHJlbWluZGVyLCBBcyBwbGFubmVkLCB3
-ZSBoYXZlIHRoZSBYZW5vbWFpIGNvbW11bml0eSBjYWxsDQo+IFRvcGljcyBtYXkgaW5jbHVkZSBi
-dXQgbm90IGxpbWl0ZWQgdG8gdXBzdHJlYW0vZG93bnN0cmVhbSBwcm9qZWN0IHBsYW4sIHN0YXR1
-cyB1cGRhdGUsIGFuZCB0ZWNobmljYWwgZGlzY3Vzc2lvbi4NCj4gSXQncyBhbiBvcGVuIG9ubGlu
-ZSBtZWV0aW5nIHRoYXQgYW55b25lIGNhbiBqb2luIGFuZCBhc2sgcXVlc3Rpb25zLA0KPiANCj4g
-VGltZToNCj4gRmViIDEwdGggKFdlZG5lc2RheSksIFVUQyA3OjAwDQo+IDE1OjAwIGZvciBDaGlu
-YQ0KPiA4OjAwIGZvciBGcmFuY2UsIEdlcm1hbnksIEl0YWx5DQoNCkR1ZSB0byBDRVNUL0NFVCB0
-aW1lem9uZSBzd2l0Y2ggYSBmZXcgd2Vla3MgYWdvIGl0J3MgOTowMCBub3cuDQoNCj4gMjM6MDAg
-KEZlYiA5dGggKSBmb3IgU2FudGEgQ2xhcmENCj4gDQo+IFRlYW1zIGxpbms6DQo+IGh0dHBzOi8v
-dGVhbXMubWljcm9zb2Z0LmNvbS9sL21lZXR1cC1qb2luLzE5JTNhbWVldGluZ19NR1ppTXpBd09U
-Y3RNVEkyWXkwME5qWmxMVGczTTJNdE5HTTBNV1EzT0dZME9HVmklNDB0aHJlYWQudjIvMD9jb250
-ZXh0PSU3YiUyMlRpZCUyMiUzYSUyMjQ2Yzk4ZDg4LWUzNDQtNGVkNC04NDk2LTRlZDc3MTJlMjU1
-ZCUyMiUyYyUyMk9pZCUyMiUzYSUyMjRlZTFiYjgyLTI4N2MtNDU2YS05OWQ4LWZiMjMwNjQzYzk0
-NyUyMiU3ZA0KPiANCj4gSm9pbiB3aXRoIGEgdmlkZW8gY29uZmVyZW5jaW5nIGRldmljZSANCj4g
-dGVhbXNAY29uZi5pbnRlbC5jb20gDQo+IFZpZGVvIENvbmZlcmVuY2UgSUQ6IDExNCAwMjIgNDc0
-IDYgDQo+IEFsdGVybmF0ZSBWVEMgZGlhbGluZyBpbnN0cnVjdGlvbnMgDQo+IE9yIGNhbGwgaW4g
-KGF1ZGlvIG9ubHkpIA0KPiArODYgMTAgNTY5NyAxMzQwLCw5Nzc2NzIyMDMjICAgQ2hpbmEsIOWM
-l+S6rCAoQmVpamluZykgDQo+IFBob25lIENvbmZlcmVuY2UgSUQ6IDk3NyA2NzIgMjAzIw0KPiAN
-Cj4gUmVnYXJkcw0KPiANCj4gSG9uZ3poYW4gQ2hlbg0KPiANCj4gDQoNCg==
+Attendees:
+
+Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,=20
+Dao Zhang, Jianbo Cao, Yanfeng Pu, Song Chen, Rick Wang
+
+
+*Community update
+
+- CI is up for WIP-Dovetail with the blocking issues on ARM fixed.
+- Florian reported a high latency issue with wip/dovetail. Debugging.
+- Hongzhan submitted patches for latmus GPIO latency test tool. The test=20
+  was blocked though by inconsistent GPIO voltages between the test board=20
+  and the target board. Pending on new board arrival.
+- Y2038 development in progress. Song to resend patchset with cover letter.
+
+- Issue tracker https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
+  Xenomai 3.2 tagged issues:
+  #18 Integrate wip/dovetail changes into mainline - Jan and Philippe
+         ~70 patches, 10-15 unmerged, 20-30 queued in Philippe
+  #17 Smokey gdb test fails over dovetail - Hongzhan will debug.
+  #16 Handling clocksource switch more gracefully - Jan and Philippe
+
+
+* Intel TCC discussion
+
+- Need to help the community to understand more on the TCC feature.
+- The starting point could be RT performance optimization with SRAM,=20
+  TGPIO etc.
+- Potential to add new smokey test suite for MMIO latency and MSI latency.=
+=20
+- Either XDP or DPDK are not available for Xenomai yet. Need further=20
+  investigation on the feasibility.
+
+
+
+Thanks,
+Rick
 
