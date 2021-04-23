@@ -1,14 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Sender: chensong_2000@189.cn
 Subject: Re: [PATCH v5 1/5] y2038: cobalt/posix/clock: Adding clock_gettime64
-Date: Fri, 23 Apr 2021 11:10:35 +0000
-Message-ID: <96da9caa811594f0f910491d1c4a99cece5032f5.camel@siemens.com>
 References: <1618993992-21069-1-git-send-email-chensong_2000@189.cn>
-In-Reply-To: <1618993992-21069-1-git-send-email-chensong_2000@189.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E43B541D3A80524FAB7C245422071B9C@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <96da9caa811594f0f910491d1c4a99cece5032f5.camel@siemens.com>
+From: chensong <chensong_2000@189.cn>
+Message-ID: <45c72bd2-2eac-f627-2e8f-8593389f4486@189.cn>
+Date: Fri, 23 Apr 2021 19:48:19 +0800
 MIME-Version: 1.0
+In-Reply-To: <96da9caa811594f0f910491d1c4a99cece5032f5.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 Cc: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-T24gV2VkLCAyMDIxLTA0LTIxIGF0IDE2OjMzICswODAwLCBTb25nIENoZW4gd3JvdGU6DQo+IEZy
-b206IGNoZW5zb25nIDxjaGVuc29uZ0B0ai5reWxpbm9zLmNuPg0KPiANCj4gQWRkIGEgc3lzY2Fs
-bCBzcGVjaWZpYyBmb3IgY2xvY2tfZ2V0dGltZSB3aXRoIDY0Yml0DQo+IHRpbWVfdC4NCj4gDQo+
-IFNpZ25lZC1vZmYtYnk6IGNoZW5zb25nIDxjaGVuc29uZ0B0ai5reWxpbm9zLmNuPg0KPiANCj4g
-LS0tDQo+IHY1Og0KPiAxLCBuZXcgaGVscGVyIF9fY29iYWx0X2Nsb2NrX2dldHRpbWU2NA0KPiAt
-LS0NCj4gwqBpbmNsdWRlL2NvYmFsdC9rZXJuZWwvdGltZS5oICAgIHwgMTEgKysrKysrKysrKysN
-Cj4gwqBpbmNsdWRlL2NvYmFsdC91YXBpL3N5c2NhbGwuaCAgIHwgIDEgKw0KPiDCoGtlcm5lbC9j
-b2JhbHQvcG9zaXgvY2xvY2suYyAgICAgfCAyMyArKysrKysrKysrKysrKysrKysrKysrLQ0KPiDC
-oGtlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suaCAgICAgfCAgNiArKysrKysNCj4gwqBrZXJuZWwv
-Y29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jIHwgIDggKysrKysrKysNCj4gwqBrZXJuZWwvY29iYWx0
-L3Bvc2l4L3N5c2NhbGwzMi5oIHwgIDQgKysrKw0KPiDCoGtlcm5lbC9jb2JhbHQvdGltZS5jICAg
-ICAgICAgICAgfCAxMSArKysrKysrKysrKw0KPiDCoDcgZmlsZXMgY2hhbmdlZCwgNjMgaW5zZXJ0
-aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gK0NPQkFMVF9TWVNDQUxMKGNsb2NrX2dldHRp
-bWU2NCwgY3VycmVudCwNCj4gKwkgICAgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgc3RydWN0IF9f
-a2VybmVsX3RpbWVzcGVjIF9fdXNlciAqdV90cykpDQo+ICt7DQo+ICsJcmV0dXJuIF9fY29iYWx0
-X2Nsb2NrX2dldHRpbWU2NChjbG9ja19pZCwgdV90cyk7CQ0KDQpXaGl0ZXNwYWNlIGF0IGVuZCBv
-ZiBsaW5lISBXaWxsIGZpeCBpdCB1cCBpbiBteSB0cmVlLg0KDQo+IA0KPiArQ09CQUxUX1NZU0NB
-TEwzMmVtdShjbG9ja19nZXR0aW1lNjQsIGN1cnJlbnQsDQo+ICsJCSAgICAoY2xvY2tpZF90IGNs
-b2NrX2lkLA0KPiArCQkgICAgIHN0cnVjdCBfX2tlcm5lbF90aW1lc3BlYyBfX3VzZXIgKnVfdHMp
-KQ0KPiArew0KPiArCXJldHVybiBfX2NvYmFsdF9jbG9ja19nZXR0aW1lNjQoY2xvY2tfaWQsIHVf
-dHMpOwkNCg0KV1MgYXQgRU9MIGFnYWluLiBXaWxsIGZpeCBpdCB1cCBpbiBteSB0cmVlLg0KDQoN
-Cj4gK30NCj4gDQoNCg==
+
+
+On 2021/4/23 下午7:10, Bezdeka, Florian wrote:
+> On Wed, 2021-04-21 at 16:33 +0800, Song Chen wrote:
+>> From: chensong <chensong@tj.kylinos.cn>
+>>
+>> Add a syscall specific for clock_gettime with 64bit
+>> time_t.
+>>
+>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>
+>> ---
+>> v5:
+>> 1, new helper __cobalt_clock_gettime64
+>> ---
+>>   include/cobalt/kernel/time.h    | 11 +++++++++++
+>>   include/cobalt/uapi/syscall.h   |  1 +
+>>   kernel/cobalt/posix/clock.c     | 23 ++++++++++++++++++++++-
+>>   kernel/cobalt/posix/clock.h     |  6 ++++++
+>>   kernel/cobalt/posix/syscall32.c |  8 ++++++++
+>>   kernel/cobalt/posix/syscall32.h |  4 ++++
+>>   kernel/cobalt/time.c            | 11 +++++++++++
+>>   7 files changed, 63 insertions(+), 1 deletion(-)
+>>
+>> +COBALT_SYSCALL(clock_gettime64, current,
+>> +	       (clockid_t clock_id, struct __kernel_timespec __user *u_ts))
+>> +{
+>> +	return __cobalt_clock_gettime64(clock_id, u_ts);	
+> 
+> Whitespace at end of line! Will fix it up in my tree.
+
+sorry, i did checkpatch each time, probably missed it this time.
+thanks for fixing it up.
+
+Song
+> 
+>>
+>> +COBALT_SYSCALL32emu(clock_gettime64, current,
+>> +		    (clockid_t clock_id,
+>> +		     struct __kernel_timespec __user *u_ts))
+>> +{
+>> +	return __cobalt_clock_gettime64(clock_id, u_ts);	
+> 
+> WS at EOL again. Will fix it up in my tree.
+> 
+> 
+>> +}
+>>
+> 
 
