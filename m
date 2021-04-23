@@ -1,14 +1,15 @@
-From: Alan Gaglio <AGaglio@jerviswebb.com>
-Subject: RE: RTSerial Difference in Behavior Between 2.6.4 & 3.1
-Date: Thu, 22 Apr 2021 18:52:31 +0000
-Message-ID: <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
+Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
 References: <CY4PR02MB261531B57960FF9BD47E890BDC489@CY4PR02MB2615.namprd02.prod.outlook.com>
  <39840ca2-483a-1ece-f6e2-c1a49f3fb462@siemens.com>
-In-Reply-To: <39840ca2-483a-1ece-f6e2-c1a49f3fb462@siemens.com>
-Content-Language: en-US
+ <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f4e3428b-232d-8d2c-0eb0-6d2a66ee6f2b@siemens.com>
+Date: Fri, 23 Apr 2021 07:51:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,95 +18,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Alan Gaglio <AGaglio@jerviswebb.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBXZWRu
-ZXNkYXksIEFwcmlsIDIxLCAyMDIxIDM6MDAgQU0NCj4gVG86IEFsYW4gR2FnbGlvIDxBR2FnbGlv
-QGplcnZpc3dlYmIuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogUlRT
-ZXJpYWwgRGlmZmVyZW5jZSBpbiBCZWhhdmlvciBCZXR3ZWVuIDIuNi40ICYgMy4xDQo+DQo+IE9u
-IDIwLjA0LjIxIDE2OjQ1LCBBbGFuIEdhZ2xpbyB2aWEgWGVub21haSB3cm90ZToNCj4gPiBJIGFt
-IGluIHRoZSBwcm9jZXNzIG9mIHVwZ3JhZGluZyBmcm9tIDMyLWJpdC9YZW5vbWFpIDIuNi40L1Vi
-dW50dQ0KPiA+IDE0LjA0LjQvIExpbnV4IDMuMTYuNyB0byA2NC1iaXQvWGVub21haSAzLjEvVWJ1
-bnR1IDIwLjA0LjEvTGludXgNCj4gPiA1LjQuNzcgYW5kIEknbSBleHBlcmllbmNpbmcgYW4gcnRz
-ZXJpYWwgZXZlbnQgZGlmZmVyZW5jZSBpbiBiZWhhdmlvci4NCj4gPiBPdXIgYXBwbGljYXRpb24g
-ZGVwZW5kcyBvbiBzaW5nbGUtYnl0ZSBpbnRlcnJ1cHRzIGZyb20gcnRzZXJpYWwgcG9ydHMsDQo+
-ID4gd2hpY2ggd2UncmUgbm90IHNlZWluZyBkZXNwaXRlIGhhdmluZyBjb25maWd1cmVkIHJ0c2Vy
-aWFsIHBvcnRzIHRoZQ0KPiA+IHNhbWUgYmV0d2VlbiBvdXIgMiBkaWZmZXJlbnQgaW1hZ2UgY29u
-ZmlndXJhdGlvbnMgdGhhdCBydW4gb24gdGhlIHNhbWUNCj4geDg2IGhhcmR3YXJlLg0KPiA+IEF0
-dGFjaGVkIGlzIGEgbW9kaWZpZWQgY3Jvc3MtbGluay5jIGV4YW1wbGUgdGhhdCBoaWdobGlnaHRz
-IHRoaXMNCj4gPiBkaWZmZXJlbmNlIGluIGJlaGF2aW9yLiBBbHNvIGluY2x1ZGVkIGlzIHJlbGV2
-YW50IGRldGFpbCBmb3IgZWFjaA0KPiA+IHRhcmdldCwgYnVpbGQsIGFuZCBzYW1wbGUgcHJvZ3Jh
-bSBvdXRwdXQuDQo+ID4NCj4gPiBNeSBtb2RpZmllZCBjcm9zcy1saW5rLmMgdHJhbnNtaXRzIDI2
-IGNoYXJhY3RlcnMgZXZlcnkgMSBzZWNvbmQgYW5kDQo+ID4gcHJpbnRzIHRoZSBudW1iZXIgb2Yg
-UlhfUEVORCBldmVudHMgYWxvbmcgd2l0aCByZWNlcHRpb24gYmlucyBldmVyeSAyNg0KPiA+IGNo
-YXJhY3RlcnMgcmVhZCBieSB0aGUgcmVjZWl2ZSB0aHJlYWQuIFJlY2VwdGlvbiBiaW5zIHNob3cg
-dGhlIG51bWJlcg0KPiA+IG9mIGJ5dGVzIHJlYWQgcGVyIFJYX1BFTkQgZXZlbnQgWzAtMTYsMTcr
-XS4gVGhlIHRvdGFsIG51bWJlciBvZiBieXRlcw0KPiA+IHByb2Nlc3NlZCBlcXVhbHMgdGhlIHN1
-bSBvZiBhbGwgYmlucyBtdWx0aXBsaWVkIGJ5IHRoZSBxdWFudGl0eSB0aGV5DQo+ID4gcmVwcmVz
-ZW50LiBGb3IgZXhhbXBsZSwgdGhlc2Ugc25pcHBlZCBvdXRwdXRzIChmcm9tIHRoZSBiZWxvdyBn
-cmVhdGVyDQo+ID4gZGV0YWlscykgd2VyZSB0YWtlbiBmb2xsb3dpbmcgYSB0b3RhbCBvZiAyMDgg
-Ynl0ZXMgdHJhbnNtaXR0ZWQuIEluDQo+ID4gMi42LjQgd2UgaGF2ZSAyMDggZXZlbnRzICogMSBi
-eXRlID0gMjA4IGJ5dGVzIGFuZCBpbiAzLjEgd2UgaGF2ZQ0KPiA+IDQ4IGV2ZW50cyAqIDQgYnl0
-ZXMgKyA4IGV2ZW50cyAqIDIgYnl0ZXMgPSAyMDggYnl0ZXMuIFdlIGV4cGVjdC9kZXNpcmUNCj4g
-PiB0aGUgc2Vjb25kIGJpbiB0byBiZSBleGNsdXNpdmVseSBub24temVybyAoMi42LjQgb3V0cHV0
-KSwgaW5kaWNhdGluZw0KPiA+IGFuIFJYX1BFTkQgZXZlbnQgZm9yIGVhY2ggYnl0ZSB0aGF0IGFy
-cml2ZXMgb24gdGhlIHNlcmlhbCBwb3J0Lg0KPiA+DQo+ID4gMi42LjQgT3V0cHV0Og0KPiA+IHJ4
-LmV2ZW50cz0xICB8IHJ4LnJ4X3BlbmRpbmc9MSB8IHJfdD0xNjE4NDA0MTY4NzA5ODE5NDQ2IENv
-dW50PSAyMDgNCj4gPiBiaW5zPTAgMjA4IDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAN
-Cj4gPiAzLjEgT3V0cHV0Og0KPiA+IHJ4LmV2ZW50cz0xICB8IHJ4LnJ4X3BlbmRpbmc9MiB8IHJf
-dD0xNjE4NDA2NzY3ODA2ODI4OTU0IENvdW50PSAgNTYNCj4gPiBiaW5zPTAgMCA4IDAgNDggMCAw
-IDAgMCAwIDAgMCAwIDAgMCAwIDAgMA0KPiA+DQo+ID4gSSdtIG5vdCBzdXJlIHdoZXJlIHRvIHRh
-a2UgdGhlIG5leHQgbGV2ZWwgb2YgdHJvdWJsZXNob290aW5nIGFuZCBhbQ0KPiA+IGhhcHB5IHRv
-IHByb3ZpZGUgYWRkaXRpb25hbCBkZXRhaWwsIHJ1biB0ZXN0cywgZXRjLiBUaGUgYXR0YWNoZWQN
-Cj4gPiBjcm9zcy1saW5rIGluY2x1ZGVzIHNvbWUgcHJlcHJvY2Vzc29yIGRlZmluZXMgdG8gbW9k
-aWZ5IHByb2dyYW0NCj4gPiBiZWhhdmlvcnMgdGhhdCBJIGNhbiBleHBsYWluIGlmIGhlbHBmdWwu
-IERldGFpbHMgc2hvd24gYmVsb3cgYXJlIGFsc28NCj4gPiBhdHRhY2hlZCB3aXRoIGxpbmUgd3Jh
-cHBpbmcgcmVtb3ZlZCBmb3IgcmVmZXJlbmNlLg0KPiA+DQo+DQo+IERpZG4ndCBkaWcgdGhyb3Vn
-aCBhbGwgdGhlIGRldGFpbGVkIGluZm9ybWF0aW9uIHlvdSBwcm92aWRlZCB5ZXQsIGJ1dCB0aGUg
-Zmlyc3QNCj4gcXVlc3Rpb25zIHRoYXQgY29tZSB1cCBmb3IgbWUgd291bGQgYmUNCj4NCj4gIC0g
-ZG8gaW50ZXJydXB0cyBmb3IgdGhlIFVBUlQgYXJyaXZlIGF0IHRoZSBleHBlY3RlZCByYXRlLCBv
-ciBhcmUgdGhleQ0KPiAgICBhbHJlYWR5IGRlbGF5ZWQ/DQo+DQo+ICAtIGFscmVhZHkgdHJpZWQg
-dG8gY29sbGVjdCBhIHN5c3RlbSB0cmFjZSAoZnRyYWNlIGV2ZW50IHRyYWNpbmcpIHRvDQo+ICAg
-IGdhaW4gYW4gb3ZlcnZpZXcgb2Ygd2hhdCB0aGUgYXBwbGljYXRpb24gZG9lcyB3aGVuIGFuZCB3
-aGF0IGhhcHBlbnMNCj4gICAgWGVub21haS13aXNlIGluIHRoZSBjb3JlIChjb250ZXh0IHN3aXRj
-aCwgaW50ZXJydXB0cywgZXRjLik/DQo+DQo+IElmIGludGVycHJldGluZyB0aGUgdHJhY2UgaXMg
-dHJpY2t5LCBzaGFyZSBpdC4gQWxzbyB0YWtpbmcgdHJhY2luZyBvbiBib3RoIDIuNiBhbmQNCj4g
-My4xIHNldHVwcyBjYW4gaGVscCB0byBmaW5kIGRpZmZlcmVuY2VzLg0KPg0KPiBKYW4NCj4NCj4g
-LS0NCj4gU2llbWVucyBBRywgVCBSREEgSU9UDQo+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRl
-ciBFbWJlZGRlZCBMaW51eA0KDQpJbnRlcnByZXRhdGlvbiBzdXBwb3J0IGlzIGFwcHJlY2lhdGVk
-LCBhdHRhY2hlZCBhcmUgdHJhY2VzIGZyb20gYm90aCBzZXR1cHMNCmZyb3plbiBmb2xsb3dpbmcg
-cmVjZXB0aW9uIG9mIHRoZSBmaXJzdCAyNiBjaGFyYWN0ZXJzIGJ5IHRoZSByZWNlaXZlIHRocmVh
-ZC4NCkZvciAyNiBieXRlIHRyYW5zbWlzc2lvbiBhdCAxMTUyMDAgYmF1ZCBhbmQgbXkgY29uZmln
-dXJlZCBzZXJpYWwgc2V0dGluZ3MsDQptaW5pbXVtIHRpbWUgZnJvbSB3cml0ZS10by1yZWNlaXZl
-IG91Z2h0IHRvIGJlIH4yMjU2IHVzLiBJJ3ZlIHJldmlld2VkDQpmcm9tIHRoZSBzdGFydCBvZiB0
-cmFuc21pc3Npb24gKHJ0XzE2NTUwX3dyaXRlIGNhbGxzIGFyb3VuZCBsaW5lcyA3ODg4IFgyXzYv
-DQo2MjI5IFgzXzEpIGF0IGEgc3VyZmFjZSBsZXZlbC4gQm90aCB0cmFjZXMgc2hvdyB0aGUgZmly
-c3QgaW50ZXJydXB0IGZvbGxvd2luZw0KcnRfMTY1NTBfd3JpdGUgMjMyMiB1cyBmcm9tIHRyYWNl
-IGZyZWV6ZSwgc28gSSBkb24ndCBzZWUgYSBtZWFuaW5nZnVsIGRlbGF5DQppbiBvdmVyYWxsIG1l
-c3NhZ2UgdHJhbnNtaXNzaW9uIHRpbWUuDQoNCkluIDIuNiwgSSBjb3VudCBhIHRvdGFsIG9mIDI4
-IHJ0XzE2NTUwX2ludGVycnVwdHMsIHdoaWNoIGNvcnJlc3BvbmRzIHdlbGwgdG8NCnRoZSBudW1i
-ZXIgb2Ygc2luZ2xlLWNoYXJhY3RlciByZWFkcyBvdXRwdXQgYnkgbXkgdGVzdCBwcm9ncmFtLiBU
-aGVzZSB3ZXJlDQpnZW5lcmF0ZWQgYXQgYXBwcm9wcmlhdGUgaW50ZXJ2YWxzIG9mIH44NiAoMjMy
-Mi8yNykgdXMgaW50ZXJ2YWxzLg0KDQpJbiAzLjEsIEkgY291bnQgYSB0b3RhbCBvZiAxNiBydF8x
-NjU1MF9pbnRlcnJ1cHRzLCB3aGljaCBJJ20gaGF2aW5nIGRpZmZpY3VsdHkNCm1ha2luZyBzZW5z
-ZSBvZi4gVUFSVCBpbnRlcnJ1cHRzIGFyZSBub3QgYXJyaXZpbmcgYXQgdGhlIGV4cGVjdGVkIHJh
-dGUgYnV0DQppbnN0ZWFkIGluIGxlc3MgZnJlcXVlbnQgYmF0Y2hlcyBpbiByb3VnaGx5IDQgY2hh
-cmFjdGVyLXRpbWUgaW50ZXJ2YWxzLg0KVGhlIGJlaGF2aW9yIHNlZW1zIGxpa2UgdGhlIEZJRk8g
-ZGVwdGggb2YgdGhlIFVBUlQgaXMgc3RpbGwgNCBjaGFyYWN0ZXJzIGRlZXANCmRlc3BpdGUgaGF2
-aW5nIHNwZWNpZmllZCBhIEZJRk8gZGVwdGggMSBpbiBydHNlcl9jb25maWcgYW5kIGhhdmluZyBy
-ZWFkIGJhY2sNCnRoZSBjb25maWd1cmVkIGRlcHRoIGZvciBjb25maXJtYXRpb24uDQpQUklWQUNZ
-IE5PVElDRTogVGhlIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGUtbWFpbCwgaW5jbHVk
-aW5nIGFueSBhdHRhY2htZW50cywgaXMgY29uZmlkZW50aWFsIGFuZCBpbnRlbmRlZCBvbmx5IGZv
-ciB0aGUgbmFtZWQgcmVjaXBpZW50KHMpLiBVbmF1dGhvcml6ZWQgdXNlLCBkaXNjbG9zdXJlLCBm
-b3J3YXJkaW5nLCBvciBjb3B5aW5nIGlzIHN0cmljdGx5IHByb2hpYml0ZWQgYW5kIG1heSBiZSB1
-bmxhd2Z1bC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGRl
-bGV0ZSB0aGUgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgYW5kIG5vdGlmeSB1cyBpbW1lZGlh
-dGVseSBieSByZXR1cm4gZS1tYWlsLg0KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
-LS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQgd2FzIHNjcnVi
-YmVkLi4uCk5hbWU6IFgyXzZfNF9GcmVlemVfQWZ0ZXJfMjZfQ2hhcnNfUmVjZWl2ZWQudHh0ClVS
-TDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIx
-MDQyMi82NDIyMjc1MS9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0t
-LS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IFgzXzFfRnJlZXplX0FmdGVyXzI2X0NoYXJzX1JlY2VpdmVkLnR4
-dApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAyMTA0MjIvNjQyMjI3NTEvYXR0YWNobWVudC0wMDAxLnR4dD4K
+On 22.04.21 20:52, Alan Gaglio wrote:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Wednesday, April 21, 2021 3:00 AM
+>> To: Alan Gaglio <AGaglio@jerviswebb.com>; xenomai@xenomai.org
+>> Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
+>>
+>> On 20.04.21 16:45, Alan Gaglio via Xenomai wrote:
+>>> I am in the process of upgrading from 32-bit/Xenomai 2.6.4/Ubuntu
+>>> 14.04.4/ Linux 3.16.7 to 64-bit/Xenomai 3.1/Ubuntu 20.04.1/Linux
+>>> 5.4.77 and I'm experiencing an rtserial event difference in behavior.
+>>> Our application depends on single-byte interrupts from rtserial ports,
+>>> which we're not seeing despite having configured rtserial ports the
+>>> same between our 2 different image configurations that run on the same
+>> x86 hardware.
+>>> Attached is a modified cross-link.c example that highlights this
+>>> difference in behavior. Also included is relevant detail for each
+>>> target, build, and sample program output.
+>>>
+>>> My modified cross-link.c transmits 26 characters every 1 second and
+>>> prints the number of RX_PEND events along with reception bins every 26
+>>> characters read by the receive thread. Reception bins show the number
+>>> of bytes read per RX_PEND event [0-16,17+]. The total number of bytes
+>>> processed equals the sum of all bins multiplied by the quantity they
+>>> represent. For example, these snipped outputs (from the below greater
+>>> details) were taken following a total of 208 bytes transmitted. In
+>>> 2.6.4 we have 208 events * 1 byte = 208 bytes and in 3.1 we have
+>>> 48 events * 4 bytes + 8 events * 2 bytes = 208 bytes. We expect/desire
+>>> the second bin to be exclusively non-zero (2.6.4 output), indicating
+>>> an RX_PEND event for each byte that arrives on the serial port.
+>>>
+>>> 2.6.4 Output:
+>>> rx.events=1  | rx.rx_pending=1 | r_t=1618404168709819446 Count= 208
+>>> bins=0 208 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+>>> 3.1 Output:
+>>> rx.events=1  | rx.rx_pending=2 | r_t=1618406767806828954 Count=  56
+>>> bins=0 0 8 0 48 0 0 0 0 0 0 0 0 0 0 0 0 0
+>>>
+>>> I'm not sure where to take the next level of troubleshooting and am
+>>> happy to provide additional detail, run tests, etc. The attached
+>>> cross-link includes some preprocessor defines to modify program
+>>> behaviors that I can explain if helpful. Details shown below are also
+>>> attached with line wrapping removed for reference.
+>>>
+>>
+>> Didn't dig through all the detailed information you provided yet, but the first
+>> questions that come up for me would be
+>>
+>>  - do interrupts for the UART arrive at the expected rate, or are they
+>>    already delayed?
+>>
+>>  - already tried to collect a system trace (ftrace event tracing) to
+>>    gain an overview of what the application does when and what happens
+>>    Xenomai-wise in the core (context switch, interrupts, etc.)?
+>>
+>> If interpreting the trace is tricky, share it. Also taking tracing on both 2.6 and
+>> 3.1 setups can help to find differences.
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, T RDA IOT
+>> Corporate Competence Center Embedded Linux
+> 
+> Interpretation support is appreciated, attached are traces from both setups
+> frozen following reception of the first 26 characters by the receive thread.
+> For 26 byte transmission at 115200 baud and my configured serial settings,
+> minimum time from write-to-receive ought to be ~2256 us. I've reviewed
+> from the start of transmission (rt_16550_write calls around lines 7888 X2_6/
+> 6229 X3_1) at a surface level. Both traces show the first interrupt following
+> rt_16550_write 2322 us from trace freeze, so I don't see a meaningful delay
+> in overall message transmission time.
+> 
+> In 2.6, I count a total of 28 rt_16550_interrupts, which corresponds well to
+> the number of single-character reads output by my test program. These were
+> generated at appropriate intervals of ~86 (2322/27) us intervals.
+> 
+> In 3.1, I count a total of 16 rt_16550_interrupts, which I'm having difficulty
+> making sense of. UART interrupts are not arriving at the expected rate but
+> instead in less frequent batches in roughly 4 character-time intervals.
+> The behavior seems like the FIFO depth of the UART is still 4 characters deep
+> despite having specified a FIFO depth 1 in rtser_config and having read back
+> the configured depth for confirmation.
+
+That is pointing to the driver, and you should be able to validate
+actual against desired registers settings. Already tried to instrument
+(printk...) the driver(s) along the evaluation of RTSER_SET_FIFO_DEPTH
+[1] and other manipulations of FCR [2]?
+
+Jan
+
+[1]
+https://source.denx.de/Xenomai/xenomai/-/blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L344
+[2]
+https://source.denx.de/Xenomai/xenomai/-/blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L748
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
