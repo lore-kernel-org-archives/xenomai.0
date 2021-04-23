@@ -1,15 +1,14 @@
-Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
-References: <CY4PR02MB261531B57960FF9BD47E890BDC489@CY4PR02MB2615.namprd02.prod.outlook.com>
- <39840ca2-483a-1ece-f6e2-c1a49f3fb462@siemens.com>
- <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f4e3428b-232d-8d2c-0eb0-6d2a66ee6f2b@siemens.com>
-Date: Fri, 23 Apr 2021 07:51:30 +0200
-MIME-Version: 1.0
-In-Reply-To: <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v5 4/5] y2038: lib/cobalt/clock: dispatch clock_gettime
+Date: Fri, 23 Apr 2021 10:13:16 +0000
+Message-ID: <36082be33e0269d00a466b0dc76924acf70fae42.camel@siemens.com>
+References: <1618994027-21224-1-git-send-email-chensong_2000@189.cn>
+In-Reply-To: <1618994027-21224-1-git-send-email-chensong_2000@189.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0DB3EFD1E0416C408A3B760033AC7A66@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,104 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alan Gaglio <AGaglio@jerviswebb.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
+Cc: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 22.04.21 20:52, Alan Gaglio wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Wednesday, April 21, 2021 3:00 AM
->> To: Alan Gaglio <AGaglio@jerviswebb.com>; xenomai@xenomai.org
->> Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
->>
->> On 20.04.21 16:45, Alan Gaglio via Xenomai wrote:
->>> I am in the process of upgrading from 32-bit/Xenomai 2.6.4/Ubuntu
->>> 14.04.4/ Linux 3.16.7 to 64-bit/Xenomai 3.1/Ubuntu 20.04.1/Linux
->>> 5.4.77 and I'm experiencing an rtserial event difference in behavior.
->>> Our application depends on single-byte interrupts from rtserial ports,
->>> which we're not seeing despite having configured rtserial ports the
->>> same between our 2 different image configurations that run on the same
->> x86 hardware.
->>> Attached is a modified cross-link.c example that highlights this
->>> difference in behavior. Also included is relevant detail for each
->>> target, build, and sample program output.
->>>
->>> My modified cross-link.c transmits 26 characters every 1 second and
->>> prints the number of RX_PEND events along with reception bins every 26
->>> characters read by the receive thread. Reception bins show the number
->>> of bytes read per RX_PEND event [0-16,17+]. The total number of bytes
->>> processed equals the sum of all bins multiplied by the quantity they
->>> represent. For example, these snipped outputs (from the below greater
->>> details) were taken following a total of 208 bytes transmitted. In
->>> 2.6.4 we have 208 events * 1 byte = 208 bytes and in 3.1 we have
->>> 48 events * 4 bytes + 8 events * 2 bytes = 208 bytes. We expect/desire
->>> the second bin to be exclusively non-zero (2.6.4 output), indicating
->>> an RX_PEND event for each byte that arrives on the serial port.
->>>
->>> 2.6.4 Output:
->>> rx.events=1  | rx.rx_pending=1 | r_t=1618404168709819446 Count= 208
->>> bins=0 208 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
->>> 3.1 Output:
->>> rx.events=1  | rx.rx_pending=2 | r_t=1618406767806828954 Count=  56
->>> bins=0 0 8 0 48 0 0 0 0 0 0 0 0 0 0 0 0 0
->>>
->>> I'm not sure where to take the next level of troubleshooting and am
->>> happy to provide additional detail, run tests, etc. The attached
->>> cross-link includes some preprocessor defines to modify program
->>> behaviors that I can explain if helpful. Details shown below are also
->>> attached with line wrapping removed for reference.
->>>
->>
->> Didn't dig through all the detailed information you provided yet, but the first
->> questions that come up for me would be
->>
->>  - do interrupts for the UART arrive at the expected rate, or are they
->>    already delayed?
->>
->>  - already tried to collect a system trace (ftrace event tracing) to
->>    gain an overview of what the application does when and what happens
->>    Xenomai-wise in the core (context switch, interrupts, etc.)?
->>
->> If interpreting the trace is tricky, share it. Also taking tracing on both 2.6 and
->> 3.1 setups can help to find differences.
->>
->> Jan
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
-> 
-> Interpretation support is appreciated, attached are traces from both setups
-> frozen following reception of the first 26 characters by the receive thread.
-> For 26 byte transmission at 115200 baud and my configured serial settings,
-> minimum time from write-to-receive ought to be ~2256 us. I've reviewed
-> from the start of transmission (rt_16550_write calls around lines 7888 X2_6/
-> 6229 X3_1) at a surface level. Both traces show the first interrupt following
-> rt_16550_write 2322 us from trace freeze, so I don't see a meaningful delay
-> in overall message transmission time.
-> 
-> In 2.6, I count a total of 28 rt_16550_interrupts, which corresponds well to
-> the number of single-character reads output by my test program. These were
-> generated at appropriate intervals of ~86 (2322/27) us intervals.
-> 
-> In 3.1, I count a total of 16 rt_16550_interrupts, which I'm having difficulty
-> making sense of. UART interrupts are not arriving at the expected rate but
-> instead in less frequent batches in roughly 4 character-time intervals.
-> The behavior seems like the FIFO depth of the UART is still 4 characters deep
-> despite having specified a FIFO depth 1 in rtser_config and having read back
-> the configured depth for confirmation.
-
-That is pointing to the driver, and you should be able to validate
-actual against desired registers settings. Already tried to instrument
-(printk...) the driver(s) along the evaluation of RTSER_SET_FIFO_DEPTH
-[1] and other manipulations of FCR [2]?
-
-Jan
-
-[1]
-https://source.denx.de/Xenomai/xenomai/-/blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L344
-[2]
-https://source.denx.de/Xenomai/xenomai/-/blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L748
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTA0LTIxIGF0IDE2OjMzICswODAwLCBTb25nIENoZW4gd3JvdGU6DQo+IEZy
+b206IGNoZW5zb25nIDxjaGVuc29uZ0B0ai5reWxpbm9zLmNuPg0KPiANCj4gSWYgc2l6ZW9mIHRp
+bWVfdCBiaWdnZXIgdGhhbiA0LCB3aGljaCBtZWFucyBnbGliYyBzdXBwb3J0cw0KPiA2NGJpdCB0
+aW1lc3BlYywgZ28gdG8gY2xvY2tfZ2V0dGltZTY0Lg0KPiANCj4gb3RoZXJ3aXNlLCBnbyB0byBv
+cmlnaW5hbCBjbG9ja19zZXR0aW1lLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogY2hlbnNvbmcgPGNo
+ZW5zb25nQHRqLmt5bGlub3MuY24+DQo+IC0tLQ0KPiDCoGxpYi9jb2JhbHQvY2xvY2suYyB8IDgg
+KysrKysrKysNCj4gwqAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZm
+IC0tZ2l0IGEvbGliL2NvYmFsdC9jbG9jay5jIGIvbGliL2NvYmFsdC9jbG9jay5jDQo+IGluZGV4
+IGVkZDY0MGIuLmU4NjE0MTMgMTAwNjQ0DQo+IC0tLSBhL2xpYi9jb2JhbHQvY2xvY2suYw0KPiAr
+KysgYi9saWIvY29iYWx0L2Nsb2NrLmMNCj4gQEAgLTE3Miw3ICsxNzIsMTEgQEAgc3RhdGljIGlu
+dCBnZXR0aW1lX3ZpYV90c2MoY2xvY2tpZF90IGNsb2NrX2lkLCBzdHJ1Y3QgdGltZXNwZWMgKnRw
+KQ0KPiDCoAkJdHAtPnR2X25zZWMgPSByZW07DQo+IMKgCQlyZXR1cm4gMDsNCj4gwqAJZGVmYXVs
+dDoNCj4gKyNpZmRlZiBfX1VTRV9USU1FX0JJVFM2NA0KPiArCQlyZXQgPSAtWEVOT01BSV9TWVND
+QUxMMihzY19jb2JhbHRfY2xvY2tfZ2V0dGltZTY0LCBjbG9ja19pZCwgdHApOw0KPiArI2Vsc2UN
+Cj4gwqAJCXJldCA9IC1YRU5PTUFJX1NZU0NBTEwyKHNjX2NvYmFsdF9jbG9ja19nZXR0aW1lLCBj
+bG9ja19pZCwgdHApOw0KPiArI2VuZGlmDQo+IMKgCX0NCg0KSSBkaWRuJ3QgcmVhbGl6ZSB0aGF0
+IGR1cmluZyB0aGUgZmlyc3QgcmV2aWV3IHJvdW5kOiBEdWUgdG8gdGhlDQpkb3ZldGFpbCBwb3J0
+aW5nIHdlIG5vdyBoYXZlIHR3byBwbGFjZXMgd2hlcmUgd2UgY2FsbA0Kc2NfY29iYWx0X2Nsb2Nr
+X2dldHRpbWUuIEkgd2lsbCBmaXggdGhhdCB1cCBvbiB0b3AuIFRoYXQgcmVkdWNlcyB0aGUNCm51
+bWJlciBvZiBuZWNlc3NhcnkgI2lmZGVmIHBhcnRzLiANCg0KPiDCoA0KPiANCj4gDQo+IA0KPiDC
+oAlpZiAocmV0KSB7DQo+IEBAIC0xOTcsNyArMjAxLDExIEBAIHN0YXRpYyBpbnQgZ2V0dGltZV92
+aWFfdmRzbyhjbG9ja2lkX3QgY2xvY2tfaWQsIHN0cnVjdCB0aW1lc3BlYyAqdHApDQo+IMKgCQly
+ZXQgPSBfX2NvYmFsdF92ZHNvX2dldHRpbWUoY2xvY2tfaWQsIHRwKTsNCj4gwqAJCWJyZWFrOw0K
+PiDCoAlkZWZhdWx0Og0KPiArI2lmZGVmIF9fVVNFX1RJTUVfQklUUzY0DQo+ICsJCXJldCA9IC1Y
+RU5PTUFJX1NZU0NBTEwyKHNjX2NvYmFsdF9jbG9ja19nZXR0aW1lNjQsIGNsb2NrX2lkLCB0cCk7
+DQo+ICsjZWxzZQ0KPiDCoAkJcmV0ID0gLVhFTk9NQUlfU1lTQ0FMTDIoc2NfY29iYWx0X2Nsb2Nr
+X2dldHRpbWUsIGNsb2NrX2lkLCB0cCk7DQo+ICsjZW5kaWYNCj4gwqAJfQ0KPiDCoA0KPiANCj4g
+DQo+IA0KPiDCoAlpZiAocmV0KSB7DQoNCg==
 
