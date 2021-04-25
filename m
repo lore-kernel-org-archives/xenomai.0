@@ -1,7 +1,7 @@
-Date: Sun, 25 Apr 2021 07:07:39 +0800
+Date: Sun, 25 Apr 2021 18:33:12 +0800
 From: Jamie Huang <jamienstar@163.com>
 Subject: Can printk in the root domain cause the system to hung ?
-Message-ID: <20210425070739.6c992d61@jamie-ThinkPad>
+Message-ID: <20210425183312.12d2e2a5@jamie-ThinkPad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -13,7 +13,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, rpm@xenomai.org
 
 Hi, all:
 	We are now porting ipipe on mips architecture. There is a
