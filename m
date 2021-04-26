@@ -1,13 +1,11 @@
 Sender: chensong_2000@189.cn
-Subject: Re: [PATCH v2 3/3] y2038: testsuite/smokey/y2038: testcase for
- nanosleep64
-References: <1618994335-21566-1-git-send-email-chensong_2000@189.cn>
- <a983931b4ac76dffd6df9d3327bd7fa38c1feb66.camel@siemens.com>
+Subject: Re: y2038 wiki/roadmap and development branch update
+References: <bd6bbdd2de6f649a5c93a31dd9ef0e1c432d9ca2.camel@siemens.com>
 From: "chensong_2000@189.cn" <chensong_2000@189.cn>
-Message-ID: <3becbc07-779c-2d09-59b4-2d1245569141@189.cn>
-Date: Tue, 27 Apr 2021 01:05:36 +0800
+Message-ID: <f16dfe97-865f-37ae-5979-11696f3c12bc@189.cn>
+Date: Mon, 26 Apr 2021 17:21:28 +0800
 MIME-Version: 1.0
-In-Reply-To: <a983931b4ac76dffd6df9d3327bd7fa38c1feb66.camel@siemens.com>
+In-Reply-To: <bd6bbdd2de6f649a5c93a31dd9ef0e1c432d9ca2.camel@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -19,90 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
 
 
-在 2021/4/23 下午8:48, Bezdeka, Florian 写道:
-> On Wed, 2021-04-21 at 16:38 +0800, Song Chen wrote:
->>   
->>
->> +static int test_sc_cobalt_clock_nanosleep64(void)+{
->> +	long ret;
->> +	int code = __xn_syscode(sc_cobalt_clock_nanosleep64);
->> +	struct xn_timespec64 next, rmt;
->> +	struct timespec now;
->> +
->> +	/* Make sure we don't crash because of NULL pointers */
->> +	ret = syscall(code, NULL, NULL, NULL, NULL);
->> +	if (ret == -1 && errno == ENOSYS) {
->> +		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
->> +		return 0; // Not implemented, nothing to test, success
->> +	}
->> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->> +		return errno;
->> +
->> +	/* Provide a valid 64bit timespec*/
->> +	ret = clock_gettime(CLOCK_MONOTONIC, &now);
->> +	if (ret) {
->> +		smokey_warning("clock_gettime failed in clock_nanosleep64.");
->> +		return errno;
->> +	}
->> +
->> +	/* Providing an invalid address has to deliver EFAULT */
->> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
->> +				(void *)0xdeadbeefUL, &rmt);
->> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->> +		return errno;
->> +
->> +	next.tv_sec  = now.tv_sec + 1;
->> +	next.tv_nsec = now.tv_nsec;
->> +
->> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
->> +				&next, (void *)0xdeadbeefUL);
->> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->> +		return errno;
->> +
->> +	next.tv_sec  = next.tv_sec + 1;
+在 2021/4/23 下午11:30, Bezdeka, Florian 写道:
+> Hi Song,
 > 
-> That looks like duplicate code. The last call to nanosleep was an error
-> handling check, so we would end up here adding 2 secs to "now".
-
-point taken
+> I just moved the y2038 roadmap we once prepared in my personal
+> gitlab.com project to the official Xenomai hackerspace [1].
 > 
->> +
->> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
->> +	if (!smokey_assert(!ret))
->> +		return errno;
->> +
+> In addition there is now a florian/y2038 branch in the Xenomai
+> hackerspace [2] which holds the current state. This branch is based on
+> current wip/dovetail, so it's not a stable branch and might be rebased
+> whenever needed.
 > 
-> As long as nobody has a better idea we should make sure that we don't
-> come back to early. Checking for the upper boundary requires some magic
-> numbers as already discussed, so let's check at least the lower
-> boundary.
+> While updating the roadmap I just realized that we already missed two
+> affected syscalls, which (according to the current syscall table
+> ordering) would be the first two:
+>    - sc_cobalt_thread_setschedparam_ex
+>    - sc_cobalt_thread_getschedparam_ex
 
-point is not taken, could you please explain upper/lower boundary more 
-specifically, thanks.
+i looked into functions thread_setschedparam_ex/thread_getschedparam_ex, 
+didn't find anything about time64, but i will keep it in mind.
+
+> 
+> I updated the roadmap accordingly and re-sorted the table. Would be
+> nice if you could double-check that again.
+
+done, thanks
 
 Song
 
 > 
->> +	return 0;
->> +}
->> +
->>   static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->>   {
->>   	int ret;
->> @@ -244,5 +290,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->>   	if (ret)
->>   		return ret;
->>   
->> +	ret = test_sc_cobalt_clock_nanosleep64();
->> +	if (ret)
->> +		return ret;
->> +
->>   	return 0;
->>   }
+> Happy hacking!
+> 
+> Florian
+> 
+> 
+> [1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/wikis/y2038/Y2038_Roadmap
+> [2] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
 > 
 
