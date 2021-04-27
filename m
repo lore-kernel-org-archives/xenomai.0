@@ -1,8 +1,15 @@
-Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 1/3] y2038: cobalt/posix/clock: Adding clock_getres64
-Date: Tue, 27 Apr 2021 15:26:56 +0800
-Message-Id: <1619508416-16733-1-git-send-email-chensong_2000@189.cn>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v3 3/3] y2038: testsuite/smokey/y2038: testcase for
+ nanosleep64
+Date: Tue, 27 Apr 2021 07:27:21 +0000
+Message-ID: <61cf70a8e5cd6a4b76d013121f352a36dc4b2dbe.camel@siemens.com>
+References: <1619505695-14319-1-git-send-email-chensong_2000@189.cn>
+In-Reply-To: <1619505695-14319-1-git-send-email-chensong_2000@189.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4671BDB61F81E14FAAD9A74898FD9AD6@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,137 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org
-Cc: chensong <chensong@tj.kylinos.cn>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
+Cc: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-From: chensong <chensong@tj.kylinos.cn>
-
-Add a syscall specific for clock_getres with 64bit
-time_t.
-
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
----
- include/cobalt/uapi/syscall.h   |  1 +
- kernel/cobalt/posix/clock.c     | 26 +++++++++++++++++++++++++-
- kernel/cobalt/posix/clock.h     |  6 ++++++
- kernel/cobalt/posix/syscall32.c |  7 +++++++
- kernel/cobalt/posix/syscall32.h |  4 ++++
- 5 files changed, 43 insertions(+), 1 deletion(-)
-
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index acb8260..0e178cd 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -126,6 +126,7 @@
- #define sc_cobalt_clock_gettime64		103
- #define sc_cobalt_clock_settime64		104
- #define sc_cobalt_clock_nanosleep64		105
-+#define sc_cobalt_clock_getres64		106
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 9b3a499..929b097 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -93,6 +93,30 @@ COBALT_SYSCALL(clock_getres, current,
- 	return 0;
- }
- 
-+int __cobalt_clock_getres64(clockid_t clock_id,
-+			struct __kernel_timespec __user *u_ts)
-+{
-+	struct timespec64 ts;
-+	int ret;
-+
-+	ret = __cobalt_clock_getres(clock_id, &ts);
-+	if (ret)
-+		return ret;
-+
-+	if (cobalt_put_timespec64(&ts, u_ts))
-+		return -EFAULT;
-+
-+	trace_cobalt_clock_getres(clock_id, &ts);
-+
-+	return 0;
-+}
-+
-+COBALT_SYSCALL(clock_getres64, current,
-+	       (clockid_t clock_id, struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_clock_getres64(clock_id, u_ts);
-+}
-+
- int __cobalt_clock_gettime(clockid_t clock_id, struct timespec64 *ts)
- {
- 	xnticks_t ns;
-@@ -437,7 +461,7 @@ struct xnclock *cobalt_clock_find(clockid_t clock_id)
- 	    clock_id == CLOCK_MONOTONIC_RAW ||
- 	    clock_id == CLOCK_REALTIME)
- 		return &nkclock;
--	
-+
- 	if (__COBALT_CLOCK_EXT_P(clock_id)) {
- 		nr = __COBALT_CLOCK_EXT_INDEX(clock_id);
- 		xnlock_get_irqsave(&nklock, s);
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index ff8653b..473c6aa 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -97,6 +97,9 @@ static inline int clock_flag(int flag, clockid_t clock_id)
- int __cobalt_clock_getres(clockid_t clock_id,
- 			  struct timespec64 *ts);
- 
-+int __cobalt_clock_getres64(clockid_t clock_id,
-+			struct __kernel_timespec __user *u_ts);
-+
- int __cobalt_clock_gettime(clockid_t clock_id,
- 			   struct timespec64 *ts);
- 
-@@ -123,6 +126,9 @@ int __cobalt_clock_nanosleep64(clockid_t clock_id, int flags,
- COBALT_SYSCALL_DECL(clock_getres,
- 		    (clockid_t clock_id, struct __user_old_timespec __user *u_ts));
- 
-+COBALT_SYSCALL_DECL(clock_getres64,
-+		    (clockid_t clock_id, struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL_DECL(clock_gettime,
- 		    (clockid_t clock_id, struct __user_old_timespec __user *u_ts));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 35bb454..36f2e3c 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -157,6 +157,13 @@ COBALT_SYSCALL32emu(clock_getres, current,
- 	return u_ts ? sys32_put_timespec(u_ts, &ts) : 0;
- }
- 
-+COBALT_SYSCALL32emu(clock_getres64, current,
-+		    (clockid_t clock_id,
-+		     struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_clock_getres64(clock_id, u_ts);
-+}
-+
- COBALT_SYSCALL32emu(clock_gettime, current,
- 		    (clockid_t clock_id,
- 		     struct old_timespec32 __user *u_ts))
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index e82596e..d03b640 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -55,6 +55,10 @@ COBALT_SYSCALL32emu_DECL(clock_getres,
- 			 (clockid_t clock_id,
- 			  struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(clock_getres64,
-+			 (clockid_t clock_id,
-+			  struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL32emu_DECL(clock_gettime,
- 			 (clockid_t clock_id,
- 			  struct old_timespec32 __user *u_ts));
--- 
-2.7.4
-
+T24gVHVlLCAyMDIxLTA0LTI3IGF0IDE0OjQxICswODAwLCBTb25nIENoZW4gd3JvdGU6DQo+ICsJ
+cmV0ID0gY2xvY2tfZ2V0dGltZShDTE9DS19NT05PVE9OSUMsICZ0czIpOw0KPiArCWlmIChyZXQp
+IHsNCj4gKwkJc21va2V5X3dhcm5pbmcoImNsb2NrX2dldHRpbWUgZmFpbGVkIGluIGNsb2NrX25h
+bm9zbGVlcDY0LiIpOw0KPiArCQlyZXR1cm4gZXJybm87DQo+ICsJfQ0KPiArDQo+ICsJdGltZXNw
+ZWNfc3ViKCZkZWx0YSwgJnRzMiwgJnRzMSk7DQoNCldoZXJlIGlzIHRpbWVzcGVjX3N1YiBjb21p
+bmcgZnJvbSBhbmQgd2h5IGNhbid0IHlvdSByZS11c2UgdHNfbGVzcyBhcw0Kd2UgZGlkIGJlZm9y
+ZSBpbiB0ZXN0X3NjX2NvYmFsdF9zZW1fdGltZWR3YWl0NjQgd2hlcmUgd2UgZG8gYSBzaW1pbGFy
+DQpjaGVjaz8NCg0KPiArCWlmIChkZWx0YS50dl9zZWMgPCBpbnRlcnZhbCkNCj4gKwkJc21va2V5
+X3dhcm5pbmcoIm5hbm9zbGVlcCBkaWRuJ3Qgc2xlZXAgbG9uZyBlbm91Z2guIik7DQo+ICsNCj4g
+KwkvKiBQcm92aWRlIGEgdmFsaWQgNjRiaXQgdGltZXNwZWMsIHJvdW5kIDIqLw0KPiArCW5leHQu
+dHZfc2VjwqAgPSB0czIudHZfc2VjICsgaW50ZXJ2YWw7DQo+ICsJbmV4dC50dl9uc2VjID0gdHMy
+LnR2X25zZWM7DQo+ICsNCj4gKwlyZXQgPSBzeXNjYWxsKGNvZGUsIENMT0NLX01PTk9UT05JQywg
+VElNRVJfQUJTVElNRSwgJm5leHQsICZybXQpOw0KPiArCWlmICghc21va2V5X2Fzc2VydCghcmV0
+KSkNCj4gKwkJcmV0dXJuIGVycm5vOw0KPiArDQo+ICsJcmV0ID0gY2xvY2tfZ2V0dGltZShDTE9D
+S19NT05PVE9OSUMsICZ0czEpOw0KPiArCWlmIChyZXQpIHsNCj4gKwkJc21va2V5X3dhcm5pbmco
+ImNsb2NrX2dldHRpbWUgZmFpbGVkIGluIGNsb2NrX25hbm9zbGVlcDY0LiIpOw0KPiArCQlyZXR1
+cm4gZXJybm87DQo+ICsJfQ0KPiArDQo+ICsJdGltZXNwZWNfc3ViKCZkZWx0YSwgJnRzMSwgJnRz
+Mik7DQo+ICsJaWYgKGRlbHRhLnR2X3NlYyA8IGludGVydmFsKQ0KPiArCQlzbW9rZXlfd2Fybmlu
+ZygibmFub3NsZWVwIGRpZG4ndCBzbGVlcCBsb25nIGVub3VnaC4iKTsNCj4gKw0KPiArCXJldHVy
+biAwOw0KPiArfQ0KDQo=
 
