@@ -1,8 +1,16 @@
 Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for getres64
-Date: Tue, 27 Apr 2021 15:27:28 +0800
-Message-Id: <1619508448-17174-1-git-send-email-chensong_2000@189.cn>
+Subject: Re: [PATCH v3 3/3] y2038: testsuite/smokey/y2038: testcase for
+ nanosleep64
+References: <1619505695-14319-1-git-send-email-chensong_2000@189.cn>
+ <61cf70a8e5cd6a4b76d013121f352a36dc4b2dbe.camel@siemens.com>
+From: "chensong_2000@189.cn" <chensong_2000@189.cn>
+Message-ID: <8dbb7a66-d8ec-7adc-2e4b-077bad78509b@189.cn>
+Date: Tue, 27 Apr 2021 15:35:02 +0800
+MIME-Version: 1.0
+In-Reply-To: <61cf70a8e5cd6a4b76d013121f352a36dc4b2dbe.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,73 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org
-Cc: chensong <chensong@tj.kylinos.cn>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-From: chensong <chensong@tj.kylinos.cn>
 
-add test case for clock_getres64 in testsuite
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
----
- testsuite/smokey/y2038/syscall-tests.c | 35 ++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+在 2021/4/27 下午3:27, Bezdeka, Florian 写道:
+> On Tue, 2021-04-27 at 14:41 +0800, Song Chen wrote:
+>> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
+>> +	if (ret) {
+>> +		smokey_warning("clock_gettime failed in clock_nanosleep64.");
+>> +		return errno;
+>> +	}
+>> +
+>> +	timespec_sub(&delta, &ts2, &ts1);
+> 
+> Where is timespec_sub coming from and why can't you re-use ts_less as
+> we did before in test_sc_cobalt_sem_timedwait64 where we do a similar
+> check?
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 5bbd35e..c59a9d6 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -296,8 +296,39 @@ static int test_sc_cobalt_clock_nanosleep64(void)
- 	return 0;
- }
- 
-+static int test_sc_cobalt_clock_getres64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_getres64);
-+	struct xn_timespec64 ts64;
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_getres64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Provide a valid 64bit timespec*/
-+	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
-+	if (!smokey_assert(!ret))
-+		return errno;
-+	if (ts64.tv_sec != 0 || ts64.tv_nsec != 1)
-+		smokey_warning("High resolution timers not available\n");
-+
-+	return 0;
-+}
-+
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
-+
- 	int ret;
- 
- 	ret = test_sc_cobalt_sem_timedwait64();
-@@ -316,5 +347,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
- 
-+	ret = test_sc_cobalt_clock_getres64();
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
--- 
-2.7.4
+check this out [1]
+https://elixir.bootlin.com/glibc/latest/source/sysdeps/pthread/posix-timer.h#L148
+i printed the result of timespec_sub, it's correct.
 
+ts_less returns a bool but i need a value.
+
+Song
+
+> 
+>> +	if (delta.tv_sec < interval)
+>> +		smokey_warning("nanosleep didn't sleep long enough.");
+>> +
+>> +	/* Provide a valid 64bit timespec, round 2*/
+>> +	next.tv_sec  = ts2.tv_sec + interval;
+>> +	next.tv_nsec = ts2.tv_nsec;
+>> +
+>> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
+>> +	if (!smokey_assert(!ret))
+>> +		return errno;
+>> +
+>> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+>> +	if (ret) {
+>> +		smokey_warning("clock_gettime failed in clock_nanosleep64.");
+>> +		return errno;
+>> +	}
+>> +
+>> +	timespec_sub(&delta, &ts1, &ts2);
+>> +	if (delta.tv_sec < interval)
+>> +		smokey_warning("nanosleep didn't sleep long enough.");
+>> +
+>> +	return 0;
+>> +}
+> 
 
