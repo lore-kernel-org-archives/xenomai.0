@@ -1,8 +1,8 @@
 Sender: chensong_2000@189.cn
 From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH v3 2/3] y2038: lib/cobalt/clock: dispatch clock_nanosleep
-Date: Tue, 27 Apr 2021 14:41:17 +0800
-Message-Id: <1619505677-14077-1-git-send-email-chensong_2000@189.cn>
+Subject: [PATCH v3 3/3] y2038: testsuite/smokey/y2038: testcase for nanosleep64
+Date: Tue, 27 Apr 2021 14:41:35 +0800
+Message-Id: <1619505695-14319-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +16,111 @@ Cc: chensong <chensong@tj.kylinos.cn>
 
 From: chensong <chensong@tj.kylinos.cn>
 
-If sizeof time_t bigger than 4, which means glibc supports
-64bit timespec, go to clock_nanosleep64.
-
-otherwise, go to original clock_nanosleep.
+add test case for clock_nanosleep64 in testsuite
 
 Signed-off-by: chensong <chensong@tj.kylinos.cn>
----
- lib/cobalt/clock.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
-index e33c2da..45593ed 100644
---- a/lib/cobalt/clock.c
-+++ b/lib/cobalt/clock.c
-@@ -365,8 +365,13 @@ COBALT_IMPL(int, clock_nanosleep, (clockid_t clock_id,
+v2:
+1, REALTIME --> MONOTONIC
+2, more combinations
+3, smokey warning in clock_gettime
+4, remove magic number
+
+v3:
+1, check lower boundary if nanosleep sleeps long enough
+---
+ testsuite/smokey/y2038/syscall-tests.c | 72 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 6ca841d..5bbd35e 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -228,6 +228,74 @@ static int test_sc_cobalt_clock_settime64(void)
+ 	return 0;
+ }
  
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
++static int test_sc_cobalt_clock_nanosleep64(void)
++{
++	long ret;
++	int code = __xn_syscode(sc_cobalt_clock_nanosleep64);
++	struct xn_timespec64 next, rmt;
++	struct timespec ts1, ts2, delta;
++	long interval = 1;
++
++	/* Make sure we don't crash because of NULL pointers */
++	ret = syscall(code, NULL, NULL, NULL, NULL);
++	if (ret == -1 && errno == ENOSYS) {
++		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Providing an invalid address has to deliver EFAULT */
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
++				(void *)0xdeadbeefUL, &rmt);
++	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
++		return errno;
++
++	/* Provide a valid 64bit timespec, round 1*/
++	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
++	if (ret) {
++		smokey_warning("clock_gettime failed in clock_nanosleep64.");
++		return errno;
++	}
++	next.tv_sec  = ts1.tv_sec + interval;
++	next.tv_nsec = ts1.tv_nsec;
++
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
++				&next, (void *)0xdeadbeefUL);
++	if (!smokey_assert(!ret))
++		return errno;
++
++	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
++	if (ret) {
++		smokey_warning("clock_gettime failed in clock_nanosleep64.");
++		return errno;
++	}
++
++	timespec_sub(&delta, &ts2, &ts1);
++	if (delta.tv_sec < interval)
++		smokey_warning("nanosleep didn't sleep long enough.");
++
++	/* Provide a valid 64bit timespec, round 2*/
++	next.tv_sec  = ts2.tv_sec + interval;
++	next.tv_nsec = ts2.tv_nsec;
++
++	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
++	if (!smokey_assert(!ret))
++		return errno;
++
++	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
++	if (ret) {
++		smokey_warning("clock_gettime failed in clock_nanosleep64.");
++		return errno;
++	}
++
++	timespec_sub(&delta, &ts1, &ts2);
++	if (delta.tv_sec < interval)
++		smokey_warning("nanosleep didn't sleep long enough.");
++
++	return 0;
++}
++
+ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	int ret;
+@@ -244,5 +312,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
  
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
-+				clock_id, flags, rqtp, rmtp);
-+#else
- 	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
- 				clock_id, flags, rqtp, rmtp);
-+#endif
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
++	ret = test_sc_cobalt_clock_nanosleep64();
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
 -- 
 2.7.4
 
