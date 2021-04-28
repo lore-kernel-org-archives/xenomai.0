@@ -1,10 +1,10 @@
-References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87mtti3325.fsf@xenomai.org>
+References: <784326e6-10d5-08b3-6dd6-ad830d3931c2@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: gdb  test failure debug status update
-In-reply-to: <87mtti3325.fsf@xenomai.org>
-Date: Wed, 28 Apr 2021 16:30:00 +0200
-Message-ID: <87k0om32jb.fsf@xenomai.org>
+Subject: Re: [RFC][PATCH] dovetail: intr: Clear affinity_hint before freeing
+ the IRQ
+In-reply-to: <784326e6-10d5-08b3-6dd6-ad830d3931c2@siemens.com>
+Date: Wed, 28 Apr 2021 16:58:37 +0200
+Message-ID: <87h7jq317m.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,68 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
 
-Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
->> According to my validation, gdb test fail on dovetail 5.10 branch but pass on v5.9-evl4 tag with same for-upstream/dovetail
->> xenomai code base.
->>
->> After further debug , the issue is more clear for me. Gdb test failure because low priority thread smokey  userspace  is still
->> executed after "cobalt_shadow_relaxed: state=0x4488c0 info=0x200"  like log [1] on dovetail-5.10 branch.
->> The weird thing is that its following first ftrace log  happen at 62235.848583 after cobalt_shadow_relaxed in log [1].
->> It is almost 3ms happened after cobalt_shadow_relaxed. The low priority smoke thread user space is executed during this
->> 3ms period so that test fail.
->>
->> But in success case with v5.9-evl4 like in  log [2], the time interval between cobalt_shadow_relaxed and the following first ftrace log
->> is only about 1us. It seems that low priority smokey userspace do not have chance to execute in this 1us because gdb test is successful.
->>
->> My question is why there is even no interrupt happened during that about 3ms period in failure case?  Tick seems in abnormal behavior.
->> Please comment if you have any ideas to further debug it.
->>
->> PS: All my tests run on same up Xtream board.
+> We are setting it on xnintr_attach(), and Linux seems to dislike when it
+> is non-NULL on free_irq().
 >
-> <snip>
+> __free_irq():
+> ...
+>         /* make sure affinity_hint is cleaned up */
+>         if (WARN_ON_ONCE(desc->affinity_hint))
+>                 desc->affinity_hint = NULL;
 >
-> Let's put aside the tick issue for now, there may be a valid reason for
-> this delay with dynticks enabled.
->
-> The issue at stake may be related to the way a return to kernel space is
-> forced on a @user task (Dovetail has an integrated service for
-> triggering this called dovetail_request_ucall()).
->
-> The logic for doing so is as follows:
->
-> 1. @user hits a breakpoint, which is an exception Dovetail-wise
->
-> 2. @user gets XNDBGSTOP set into its flags because Cobalt notices it is
-> being debugged via a breakpoint trap, then relaxed as a result of taking
-> a exception in general, so that we may traverse the common trap handling code
-> safely.
->
-> 3. since XNDBGSTOP is a blocking bit Cobalt-wise, it should prevent
-> @user from being picked for scheduling by the real-time core, next time
-> a Cobalt considers rescheduling that is. However, since @user is
-> currently relaxed, it can still run under the supervision of the common
-> Linux scheduler. This is what the log[1] show.
->
-> 4. the common/in-band kernel code stops @user due to the ptrace stop
-> condition caused by the breakpoint, waiting for a continuation event to
-> happen.
->
-> Therefore, upon PTRACE_CONT (i.e. gdb continue), we need to force @user
-> to call back into kernel context (handle_ptrace_cont ->
-> dovetail_request_ucall), then ask for a switch to primary mode from
-> there, which should eventually happen when @user is about to leave the
-> kernel (on x86, this now happens from a generic kernel entry/exit code
-> in kernel/entry/*). As a result, handle_taskexit_event() runs, figures
 
-Not quite:
-s,handle_taskexit_event,handle_user_return,
+Ack, definitely required -- since 2.6.35-rc1...
+
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> Only seen this now, with a plain rtdm_irq_request/free pattern, and I'm 
+> still wondering why this was missed so far - therefore RFC.
+>
+
+This would have required an RTDM driver compiled as a module over
+Dovetail, calling rtdm_irq_free() upon unload. We may not be there yet
+in terms of test coverage.
+
+The I-pipe has no issue because IRQs there are not managed by the
+regular genirq framework via the common IRQ API. Since Dovetail-managed
+IRQs are regular IRQs known from genirq, free_irq() is now applicable.
+
+>  kernel/cobalt/dovetail/intr.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
+> index d1a1c14a91..60d5bf882c 100644
+> --- a/kernel/cobalt/dovetail/intr.c
+> +++ b/kernel/cobalt/dovetail/intr.c
+> @@ -103,6 +103,7 @@ EXPORT_SYMBOL_GPL(xnintr_attach);
+>  void xnintr_detach(struct xnintr *intr)
+>  {
+>  	secondary_mode_only();
+> +	irq_set_affinity_hint(intr->irq, NULL);
+>  	free_irq(intr->irq, intr);
+>  }
+>  EXPORT_SYMBOL_GPL(xnintr_detach);
+
+
 
 -- 
 Philippe.
