@@ -1,12 +1,11 @@
-Date: Wed, 28 Apr 2021 20:05:09 +0800
-From: Jamie Huang <jamienstar@163.com>
-Subject: Re: Can printk in the root domain cause the system to hung ?
-Message-ID: <20210428200509.3a89d2b5@jamie-ThinkPad>
-In-Reply-To: <fa5a2efa-32ff-1386-630b-05099c49a7ff@siemens.com>
-References: <20210425183312.12d2e2a5@jamie-ThinkPad>
- <fa5a2efa-32ff-1386-630b-05099c49a7ff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [RFC][PATCH] dovetail: intr: Clear affinity_hint before freeing the
+ IRQ
+Message-ID: <784326e6-10d5-08b3-6dd6-ad830d3931c2@siemens.com>
+Date: Wed, 28 Apr 2021 15:51:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,34 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org, rpm@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On Tue, 27 Apr 2021 18:36:02 +0200
-Jan Kiszka <jan.kiszka@siemens.com> wrote:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thank you for reply!
+We are setting it on xnintr_attach(), and Linux seems to dislike when it
+is non-NULL on free_irq().
 
-> On 25.04.21 12:33, Jamie Huang via Xenomai wrote:
-> > Hi, all:
-> > 	We are now porting ipipe on mips architecture. There is a
-> > problem, after local_irq_enable() is called in start_kernel(),
-> > system looks hung. We found that this may be related to printk in
-> > root domain, if we use early_printk instead of printk, the system
-> > looks normal and can continue the kernel boot process. Can someone
-> > tell me the possible reason, thanks!  
-> 
-> Is your code published already?
+__free_irq():
+...
+        /* make sure affinity_hint is cleaned up */
+        if (WARN_ON_ONCE(desc->affinity_hint))
+                desc->affinity_hint = NULL;
 
-No, but I think we will publish it when it is basically available.
-> 
-> Also note that the I-pipe architecture is becoming legacy. We are
-> moving all archs to dovetail over 5.10 now.
-> 
-> Jan
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Our kernel version is 4.19, so we choose I-pipe now. We will consider
-dovetail if use a higher version of kernel.
+Only seen this now, with a plain rtdm_irq_request/free pattern, and I'm 
+still wondering why this was missed so far - therefore RFC.
 
+ kernel/cobalt/dovetail/intr.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
+index d1a1c14a91..60d5bf882c 100644
+--- a/kernel/cobalt/dovetail/intr.c
++++ b/kernel/cobalt/dovetail/intr.c
+@@ -103,6 +103,7 @@ EXPORT_SYMBOL_GPL(xnintr_attach);
+ void xnintr_detach(struct xnintr *intr)
+ {
+ 	secondary_mode_only();
++	irq_set_affinity_hint(intr->irq, NULL);
+ 	free_irq(intr->irq, intr);
+ }
+ EXPORT_SYMBOL_GPL(xnintr_detach);
+-- 
+2.26.2
 
