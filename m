@@ -1,8 +1,15 @@
-Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for adjtime64
-Date: Thu, 29 Apr 2021 15:45:20 +0800
-Message-Id: <1619682320-16309-1-git-send-email-chensong_2000@189.cn>
+From: Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>
+Subject: Re: Updating fec driver for kernel 5.4 and I.MX8Q
+References: <2dce9fd3-bc7e-d308-4485-7f7fe4df5eb7@alstefgroup.com>
+ <98f70f97-142c-1f18-f3cb-9cccf1bf55ca@siemens.com>
+ <87zgxj3b3v.fsf@xenomai.org> <87wnsn3ac8.fsf@xenomai.org>
+Message-ID: <134ed1e6-36e6-7e98-5f00-ec1ce04e46c1@alstefgroup.com>
+Date: Thu, 29 Apr 2021 11:20:46 +0200
+In-Reply-To: <87wnsn3ac8.fsf@xenomai.org>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,111 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-add test case for clock_adjtime64 in testsuite
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
----
- testsuite/smokey/y2038/syscall-tests.c | 71 ++++++++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+Le 27/04/2021 à 19:29, Philippe Gerum a écrit :
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index c59a9d6..22fd9b6 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -25,6 +25,43 @@ struct xn_timespec64 {
- 	int64_t tv_nsec;
- };
- 
-+struct xn_timex_timeval {
-+	int64_t tv_sec;
-+	int64_t	tv_usec;
-+};
-+
-+struct xn_timex64 {
-+	unsigned int modes;	/* mode selector */
-+	int:32;            /* pad */
-+	long long offset;	/* time offset (usec) */
-+	long long freq;	/* frequency offset (scaled ppm) */
-+	long long maxerror;/* maximum error (usec) */
-+	long long esterror;/* estimated error (usec) */
-+	int status;		/* clock command/status */
-+	int:32;            /* pad */
-+	long long constant;/* pll time constant */
-+	long long precision;/* clock precision (usec) (read only) */
-+	long long tolerance;/* clock frequency tolerance (ppm) (read only) */
-+	struct xn_timex_timeval time;	/* (read only, except for ADJ_SETOFFSET) */
-+	long long tick;	/* (modified) usecs between clock ticks */
-+
-+	long long ppsfreq;/* pps frequency (scaled ppm) (ro) */
-+	long long jitter; /* pps jitter (us) (ro) */
-+	int shift;              /* interval duration (s) (shift) (ro) */
-+	int:32;            /* pad */
-+	long long stabil;            /* pps stability (scaled ppm) (ro) */
-+	long long jitcnt; /* jitter limit exceeded (ro) */
-+	long long calcnt; /* calibration intervals (ro) */
-+	long long errcnt; /* calibration errors (ro) */
-+	long long stbcnt; /* stability limit exceeded (ro) */
-+
-+	int tai;		/* TAI offset (ro) */
-+
-+	int:32; int:32; int:32; int:32;
-+	int:32; int:32; int:32; int:32;
-+	int:32; int:32; int:32;
-+};
-+
- #define NSEC_PER_SEC 1000000000
- 
- static void ts_normalise(struct xn_timespec64 *ts)
-@@ -326,6 +363,36 @@ static int test_sc_cobalt_clock_getres64(void)
- 	return 0;
- }
- 
-+static int test_sc_cobalt_clock_adjtime64(void)
-+{
-+	long ret;
-+	int code = __xn_syscode(sc_cobalt_clock_adjtime64);
-+	struct xn_timex64 tx64 = {};
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = syscall(code, NULL, NULL);
-+	if (ret == -1 && errno == ENOSYS) {
-+		smokey_note("clock_adjtime64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-+		return errno;
-+
-+	/* Provide a valid 64bit timex*/
-+	tx64.modes = ADJ_SETOFFSET;
-+	tx64.time.tv_usec = 123;
-+	ret = syscall(code, CLOCK_REALTIME, &tx64);
-+	if (!smokey_assert(!ret))
-+		return errno;
-+
-+	return 0;
-+}
-+
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
- 
-@@ -351,5 +418,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
- 
-+	ret = test_sc_cobalt_clock_adjtime64();
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
--- 
-2.7.4
+> Philippe Gerum via Xenomai<xenomai@xenomai.org>  writes:
+>
+>> Jan Kiszka via Xenomai<xenomai@xenomai.org>  writes:
+>>
+>>> On 26.04.21 14:21, Jean-Baptiste Tredez via Xenomai wrote:
+>>>> Hello,
+>>>>
+>>>> Do you have plans for updating fec drivers on xenomai 3.1 ?
+>>>>
+>>>> We tried to merge uptream linux driver and Philippe Gerum work (commit
+>>>> 1b7a4bd9598aa0d777016fda7e51d2e22aa51e77). Here is the result, it seems
+>>>> to work on kernel 5.4 (I.MX8Q target).
+>>>>
+>>>> Any testing / help to improve this driver is welcomed.
+>>>>
+>>> Unfortunately, the change you shared is massive and does not apply at
+>>> all to Xenomai (you patched in the kernel tree, not in Xenomai). Could
+>>> you rebase over next and provide that as patch for review?
+>>>
+>>> I do not have any test targets, so we would definitely need feedback
+>>> from other users if there are no regressions. But as the change is so
+>>> significant, that will likely remain a 3.2 topic, nothing for stable
+>>> anymore (unless you can prove that current 3.1 is broken for anyone).
+>>>
+>> This is a complete rewrite of the RTnet driver for FEC, rebasing over
+>> 4.14.85 required just that unfortunately. This updated driver is part of
+>> a larger patch set mostly written by Gilles, I ported from Xenomai 2.6.x
+>> to 3.x some time ago. He added support for multicast and VLANs to RTnet;
+>> the code was contributed to us by iXblue (https://ixblue.com) who funded
+>> the initial development for 2.x.
+> And the port to 3.x as well.
 
+On xenomai 3.1, current fec driver seems broken, XENO_DRIVERS_NET_DRV_FEC is not in kconfig (fec driver can't be selected) and indeed, if you add the option in kconfig file, the old driver does not compile for kernel 5.4.
+
+>> It may be better to review and consider the whole set once rebased on
+>> -next at some point, since there may be some dependencies on other
+>> patches from the same set.
+
+Ok, I will rebase on the whole set on next.
 
