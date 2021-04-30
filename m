@@ -2,11 +2,12 @@ References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.
  <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
  <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
  <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB185284BA829F6F54FA556043F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: gdb  test failure debug status update
-In-reply-to: <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
-Date: Fri, 30 Apr 2021 09:34:33 +0200
-Message-ID: <87bl9w2pkm.fsf@xenomai.org>
+In-reply-to: <DM5PR11MB185284BA829F6F54FA556043F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+Date: Fri, 30 Apr 2021 09:36:31 +0200
+Message-ID: <878s502phc.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,6 +24,63 @@ Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
+> After applied following patch , the gdb test failure  issue seems fixed. Basically , it enforce going back to 
+> primary mode after check that XNCONTHI is set for current thread.  It seems ugly. Please suggest different 
+> solution.
+
+Agreed, this is ugly. This code is switching the current task back to
+oob mode right after it forced it to transition from oob to in-band
+mode. I'm not sure why that works in the end, we need to explain the
+mayday issue first in order to figure out.
+
+>
+> @@ -355,9 +357,36 @@ static int handle_user_return(struct task_struct *task)
+>
+>  void handle_oob_mayday(struct pt_regs *regs)
+>  {
+> +       struct xnthread *thread;
+> +       spl_t s;
+> +       int err;
+> +
+>         XENO_BUG_ON(COBALT, !xnthread_test_state(xnthread_current(), XNUSER));
+>
+> +       thread = xnthread_current();
+> +
+> +       trace_cobalt_handle_oob_mayday(thread);
+> +
+>         xnthread_relax(0, 0);
+> +
+> +       if (xnthread_test_info(thread, XNCONTHI)) {
+> +               xnlock_get_irqsave(&nklock, s);
+> +               xnthread_clear_info(thread, XNCONTHI);
+> +               xnlock_put_irqrestore(&nklock, s);
+> +
+> +               err = xnthread_harden();
+> +
+> +               /*
+> +                * XNCONTHI may or may not have been re-applied if
+> +                * harden bailed out due to pending signals. Make sure
+> +                * it is set in that case.
+> +                */
+> +               if (err == -ERESTARTSYS) {
+> +                       xnlock_get_irqsave(&nklock, s);
+> +                       xnthread_set_info(thread, XNCONTHI);
+> +                       xnlock_put_irqrestore(&nklock, s);
+> +               }
+> +       }
+>  }
+>
+>
+> Regards
+>
+> Hongzhan Chen
+>
+> -----Original Message-----
+> From: Chen, Hongzhan <hongzhan.chen@intel.com> 
+> Sent: Friday, April 30, 2021 1:26 PM
+> To: Chen, Hongzhan <hongzhan.chen@intel.com>; Philippe Gerum <rpm@xenomai.org>; xenomai@xenomai.org
+> Subject: RE: gdb test failure debug status update
+>
 > The final xnthread_relaxed call path is like this asm_sysv_apic_timer_interrupt ->handle_irq_pipelined_finish 
 > ->dovetail_call_mayday ->handle_oob_mayday>xnthread_relax. 
 > That means that handle_irq_pipelined_finish is called under OOB condition of arch_pipeline_entry in
@@ -31,30 +89,652 @@ Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 > call  dovetail_request_ucall before calling final xnthread_relax system would not try to switch back to primary mode
 > because kernel exit code is never called in this case?
 >
+> Regards
+>
+> Hongzhan Chen
+>
+> -----Original Message-----
+> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan via Xenomai
+> Sent: Thursday, April 29, 2021 2:31 PM
+> To: Philippe Gerum <rpm@xenomai.org>
+> Cc: xenomai@xenomai.org
+> Subject: RE: gdb test failure debug status update
+>
+>
+>>
+>>-----Original Message-----
+>>From: Philippe Gerum <rpm@xenomai.org> 
+>>Sent: Wednesday, April 28, 2021 10:30 PM
+>>To: Philippe Gerum <rpm@xenomai.org>
+>>Cc: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>Subject: Re: gdb test failure debug status update
+>>
+>>
+>>Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+>>
+>>> Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
+>>>
+>>>> According to my validation, gdb test fail on dovetail 5.10 branch but pass on v5.9-evl4 tag with same for-upstream/dovetail
+>>>> xenomai code base.
+>>>>
+>>>> After further debug , the issue is more clear for me. Gdb test failure because low priority thread smokey  userspace  is still
+>>>> executed after "cobalt_shadow_relaxed: state=0x4488c0 info=0x200"  like log [1] on dovetail-5.10 branch.
+>>>> The weird thing is that its following first ftrace log  happen at 62235.848583 after cobalt_shadow_relaxed in log [1].
+>>>> It is almost 3ms happened after cobalt_shadow_relaxed. The low priority smoke thread user space is executed during this
+>>>> 3ms period so that test fail.
+>>>>
+>>>> But in success case with v5.9-evl4 like in  log [2], the time interval between cobalt_shadow_relaxed and the following first ftrace log
+>>>> is only about 1us. It seems that low priority smokey userspace do not have chance to execute in this 1us because gdb test is successful.
+>>>>
+>>>> My question is why there is even no interrupt happened during that about 3ms period in failure case?  Tick seems in abnormal behavior.
+>>>> Please comment if you have any ideas to further debug it.
+>>>>
+>>>> PS: All my tests run on same up Xtream board.
+>>>
+>>> <snip>
+>>>
+>>> Let's put aside the tick issue for now, there may be a valid reason for
+>>> this delay with dynticks enabled.
+>>>
+>>> The issue at stake may be related to the way a return to kernel space is
+>>> forced on a @user task (Dovetail has an integrated service for
+>>> triggering this called dovetail_request_ucall()).
+>>>
+>>> The logic for doing so is as follows:
+>>>
+>>> 1. @user hits a breakpoint, which is an exception Dovetail-wise
+>>>
+>>> 2. @user gets XNDBGSTOP set into its flags because Cobalt notices it is
+>>> being debugged via a breakpoint trap, then relaxed as a result of taking
+>>> a exception in general, so that we may traverse the common trap handling code
+>>> safely.
+>>>
+>>> 3. since XNDBGSTOP is a blocking bit Cobalt-wise, it should prevent
+>>> @user from being picked for scheduling by the real-time core, next time
+>>> a Cobalt considers rescheduling that is. However, since @user is
+>>> currently relaxed, it can still run under the supervision of the common
+>>> Linux scheduler. This is what the log[1] show.
+>>>
+>>> 4. the common/in-band kernel code stops @user due to the ptrace stop
+>>> condition caused by the breakpoint, waiting for a continuation event to
+>>> happen.
+>>>
+>>> Therefore, upon PTRACE_CONT (i.e. gdb continue), we need to force @user
+>>> to call back into kernel context (handle_ptrace_cont ->
+>>> dovetail_request_ucall), then ask for a switch to primary mode from
+>>> there, which should eventually happen when @user is about to leave the
+>>> kernel (on x86, this now happens from a generic kernel entry/exit code
+>>> in kernel/entry/*). As a result, handle_taskexit_event() runs, figures
+>>
+>>Not quite:
+>>s,handle_taskexit_event,handle_user_return,
+>
+> There is trace_cobalt_shadow_unmap in handle_taskexit_event. I added 
+> trace_cobalt_handle_user_return and trace_cobalt_handle_ptrace_cont
+> like patch [3] in log [4].
+>
+> 1. In the log [4], the first cobalt_handle_ptrace_cont is followed by  cobalt_handle_user_return 
+> that clear info flag XNCONTHI for smokey-2499 because cobalt_handle_ptrace_cont  called dovetail_request_ucall .
+> the TIF_RETUSER bit was cleared for smokey-2499.
+> After then 61513.834832:  cobalt_thread_resume: name=smokey pid=2499 mask=0x400000
+> clear state flag XNDBGSTOP. After that, thread smokey-2499 run without these bit set till 
+> "hi-thread-2504    [000] *.~3 61513.836143: cobalt_thread_suspend: pid=2499 mask=0x400000".
+>
+> 2. There is second cobalt_handle_ptrace_cont called for smokey-2499 but at that time dovetail_request_ucall
+> would not be called because XNSSTEP Is not set like "smokey-2499    [000] ...1 61513.835073: cobalt_handle_ptrace_cont: pid=2499 state=0x480c0 info=0x0"
+>
+> 3. hi-thread-2504 breakpoint at its first breakpoint_target so it trigger hi-thread-2504    [000] *.~3 61513.836142: cobalt_thread_fault: ip=0x55555540b580 type=0x3
+>    It call dovetail_request_ucall(current); for itself and also call xnthread_set_info(thread, XNCONTHI);  That is why we can see this bit set in 
+> hi-thread-2504    [000] ...1 61513.836167: cobalt_shadow_relaxed: state=0x480c0 info=0x200
+>
+> 4. finally ,gdb call sys_tkill  in  gdb-2495    [000] ...1 61513.836529: sys_tkill(pid: 9c3, sig: 13) and trigger that handle_oob_mayday is called so that xnthread_relax for 
+>    smokey-2499 Is called in "smokey-2499    [000] *.~3 61513.836589: cobalt_shadow_gorelax: reason=undefined."
+>
+>
+> It seems that there never call dovetail_request_ucall for process smokey-2499 in log[4] so that final xhthread_relax would have chance to return to user?
+> The second handle_ptrace_cont happen too much earlier because XNSSTEP still have not been set so that system never have change to call dovetail_request_ucall 
+> for smokey-2499. 
+> In this case , do we need to do hack in 3 , when handle_oob_trap_entry is called  for hi-thread-2504  we call  xnthread_set_info(thread, XNCONTHI); 
+>  and dovetail_request_ucall for all threads that have same cobalt_process? Is this solution OK for fixing this case?
+>
+>
+> [3]:
+> index 07dcc7a63..cd76961f5 100644
+> --- a/kernel/cobalt/dovetail/kevents.c
+> +++ b/kernel/cobalt/dovetail/kevents.c
+> @@ -331,6 +331,8 @@ static int handle_user_return(struct task_struct *task)
+>         if (thread == NULL)
+>                 return KEVENT_PROPAGATE;
+>
+> +       trace_cobalt_handle_user_return(thread);
+> +
+>         if (xnthread_test_info(thread, XNCONTHI)) {
+>                 xnlock_get_irqsave(&nklock, s);
+>                 xnthread_clear_info(thread, XNCONTHI);
+> @@ -468,6 +470,8 @@ int handle_ptrace_resume(struct task_struct *tracee)
+>         if (thread == NULL)
+>                 return KEVENT_PROPAGATE;
+>
+> +       trace_cobalt_handle_ptrace_resume(thread);
+> +
+>         if (xnthread_test_state(thread, XNSSTEP)) {
+>                 xnlock_get_irqsave(&nklock, s);
+>
+> @@ -485,6 +489,8 @@ static void handle_ptrace_cont(void)
+>         struct xnthread *curr = xnthread_current();
+>         spl_t s;
+>
+> +       trace_cobalt_handle_ptrace_cont(curr);
+> +
+>         xnlock_get_irqsave(&nklock, s);
+>
+>         if (xnthread_test_state(curr, XNSSTEP)) {
+> @@ -604,6 +610,7 @@ void resume_oob_task(struct task_struct *p) /* inband, oob stage stalled */
+>         if (unlikely(xnthread_test_info(thread, XNCONTHI))) {
+>                 xnthread_clear_info(thread, XNCONTHI);
+>                 dovetail_clear_ucall();
+> +               trace_cobalt_resume_oob_task(thread);
+>         }
+>
+>         /* Unregister as debugged thread in case we postponed this. */
+> diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
+> index 78f66a106..88a4067fd 100644
+> --- a/kernel/cobalt/trace/cobalt-core.h
+> +++ b/kernel/cobalt/trace/cobalt-core.h
+> @@ -459,6 +459,27 @@ DEFINE_EVENT(curr_thread_event, cobalt_thread_set_mode,
+>         TP_ARGS(thread)
+>  );
+>
+> +DEFINE_EVENT(thread_event, cobalt_handle_ptrace_cont,
+> +       TP_PROTO(struct xnthread *thread),
+>
+> [4]:
+>                  gdb-2495    [000] d..3 61513.834825: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2499 next_prio=98
+>           smokey-2499    [000] ...1 61513.834827: cobalt_handle_ptrace_cont: pid=2499 state=0x4488c0 info=0x200
+>           smokey-2499    [000] d..1 61513.834828: cobalt_handle_user_return: pid=2499 state=0x4488c0 info=0x200
+>           smokey-2499    [000] d..1 61513.834828: cobalt_shadow_gohard: state=0x4488c0 info=0x0
+>           smokey-2499    [000] d..3 61513.834830: sched_stat_wait: comm=gdb pid=2495 delay=8017 [ns]
+>           smokey-2499    [000] d..3 61513.834831: sched_switch: prev_comm=smokey prev_pid=2499 prev_prio=98 prev_state=S ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] *..3 61513.834831: cobalt_thread_resume: name=smokey pid=2499 mask=0x80
+>              gdb-2495    [000] *..3 61513.834832: cobalt_trace_pid: pid=2499, prio=1
+>              gdb-2495    [000] *..3 61513.834832: cobalt_thread_resume: name=smokey pid=2499 mask=0x400000
+>              gdb-2495    [000] *..3 61513.834832: cobalt_trace_pid: pid=2499, prio=1
+>              gdb-2495    [000] *.~3 61513.834833: cobalt_schedule: status=0x10000000
+>              gdb-2495    [000] *.~3 61513.834833: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] *.~3 61513.834833: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x18008 ==> next_name=smokey next_pid=2499 next_prio=1
+>           smokey-2499    [000] d.~3 61513.834835: cobalt_shadow_hardened: state=0x48040 info=0x0
+>           smokey-2499    [000] d.~3 61513.834836: cobalt_head_sysentry: syscall=sem_init
+>           smokey-2499    [000] d.~3 61513.834839: cobalt_psem_init: sem=0x4e(anon) flags=0x0() value=0
+>           smokey-2499    [000] d.~3 61513.834839: cobalt_head_sysexit: result=0
+>           smokey-2499    [000] d.~3 61513.834848: cobalt_shadow_gorelax: reason=syscall
+>           smokey-2499    [000] d.~3 61513.834848: cobalt_lostage_request: request=wakeup pid=2499 comm=smokey
+>           smokey-2499    [000] *.~3 61513.834848: cobalt_thread_suspend: pid=2499 mask=0x80 timeout=0 timeout_mode=0 wchan=0000000000000000
+>           smokey-2499    [000] *.~3 61513.834849: cobalt_schedule: status=0x10000000
+>           smokey-2499    [000] *.~3 61513.834849: cobalt_trace_pid: pid=2499, prio=1
+>           smokey-2499    [000] *.~3 61513.834849: cobalt_switch_context: prev_name=smokey prev_pid=2499 prev_prio=1 prev_state=0x480c0 ==> next_name=ROOT/0 next_pid=0 next_prio=-1
+>              gdb-2495    [000] *.~3 61513.834850: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] d.h3 61513.834851: irq_handler_entry: irq=120 name=in-band work
+>              gdb-2495    [000] d.h3 61513.834852: cobalt_lostage_wakeup: pid=2499 comm=smokey
+>              gdb-2495    [000] d.h5 61513.834852: sched_waking: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] dNh6 61513.834853: sched_wakeup: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] dNh3 61513.834853: irq_handler_exit: irq=120 ret=handled
+>              gdb-2495    [000] dN.3 61513.834854: sched_stat_runtime: comm=gdb pid=2495 runtime=23565 [ns] vruntime=300514015543 [ns]
+>              gdb-2495    [000] d..3 61513.834855: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2499 next_prio=98
+>           smokey-2499    [000] ...1 61513.834856: cobalt_shadow_relaxed: state=0x480c0 info=0x0
+>           smokey-2499    [000] ...1 61513.834857: sys_sched_get_priority_min(policy: 1)
+>           smokey-2499    [000] ...1 61513.834857: sys_sched_get_priority_min -> 0x1
+>           smokey-2499    [000] ...1 61513.834859: sys_sched_get_priority_max(policy: 1)
+>           smokey-2499    [000] ...1 61513.834859: sys_sched_get_priority_max -> 0x63
+>           smokey-2499    [000] ..~1 61513.834862: cobalt_head_sysentry: syscall=thread_getschedparam_ex
+>           smokey-2499    [000] ...1 61513.834862: cobalt_root_sysentry: syscall=thread_getschedparam_ex
+>           smokey-2499    [000] ...1 61513.834863: cobalt_pthread_getschedparam: pth=000000008d36be1c policy=fifo param={ priority=1 }
+>           smokey-2499    [000] ...1 61513.834864: cobalt_root_sysexit: result=0
+>           smokey-2499    [000] ...1 61513.834872: sys_mmap(addr: 0, len: 11000, prot: 0, flags: 20022, fd: ffffffff, off: 0)
+>           smokey-2499    [000] ...1 61513.834877: sys_mmap -> 0x7ffff67b9000
+>           smokey-2499    [000] ...1 61513.834878: sys_mprotect(start: 7ffff67ba000, len: 10000, prot: 3)
+>           smokey-2499    [000] ...1 61513.834906: sys_mprotect -> 0x0
+>           smokey-2499    [000] ...1 61513.834909: sys_clone(clone_flags: 3d0f00, newsp: 7ffff67c8fb0, parent_tidptr: 7ffff67c99d0, child_tidptr: 7ffff67c99d0, tls: 7ffff67c9700)
+>           smokey-2499    [000] ...1 61513.834923: task_newtask: pid=2504 comm=smokey clone_flags=3d0f00 oom_score_adj=0
+>           smokey-2499    [000] ...1 61513.834923: sched_process_fork: comm=smokey pid=2499 child_comm=smokey child_pid=2504
+>           smokey-2499    [000] d..3 61513.834925: sched_wakeup_new: comm=smokey pid=2504 prio=98 target_cpu=000
+>           smokey-2499    [000] d..3 61513.834928: signal_generate: sig=17 errno=0 code=4 comm=gdb pid=2495 grp=1 res=0
+>           smokey-2499    [000] d..3 61513.834931: sched_switch: prev_comm=smokey prev_pid=2499 prev_prio=98 prev_state=t ==> next_comm=smokey next_pid=2504 next_prio=98
+>        hi-thread-2504    [000] ...1 61513.834932: sys_clone -> 0x0
+>        hi-thread-2504    [000] d..3 61513.834934: signal_generate: sig=17 errno=0 code=4 comm=gdb pid=2495 grp=1 res=2
+>        hi-thread-2504    [000] d..3 61513.834935: sched_stat_wait: comm=gdb pid=2495 delay=82002 [ns]
+>        hi-thread-2504    [000] d..3 61513.834936: sched_switch: prev_comm=smokey prev_pid=2504 prev_prio=98 prev_state=t ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] d..2 61513.834937: signal_deliver: sig=17 errno=0 code=4 sa_handler=5585fdc414d0 sa_flags=14000000
+>              gdb-2495    [000] ...1 61513.834940: sys_read(fd: f, buf: 7ffe8b2a71e7, count: 1)
+>              gdb-2495    [000] ...1 61513.834943: sys_read -> 0x1
+>              gdb-2495    [000] ...1 61513.834943: sys_read(fd: f, buf: 7ffe8b2a71e7, count: 1)
+>              gdb-2495    [000] ...1 61513.834944: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.834944: sys_write(fd: 10, buf: 5585fe0354b1, count: 1)
+>              gdb-2495    [000] ...1 61513.834946: sys_write -> 0x1
+>              gdb-2495    [000] ...1 61513.834947: sys_rt_sigreturn()
+>              gdb-2495    [000] ...1 61513.834953: sys_read(fd: 9, buf: 7ffe8b2a82e7, count: 1)
+>              gdb-2495    [000] ...1 61513.834953: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.834955: sys_poll(ufds: 5585fe898350, nfds: 4, timeout_msecs: 0)
+>              gdb-2495    [000] ...1 61513.834956: sys_poll -> 0x1
+>              gdb-2495    [000] ...1 61513.834957: sys_read(fd: f, buf: 7ffe8b2a7f27, count: 1)
+>              gdb-2495    [000] ...1 61513.834958: sys_read -> 0x1
+>              gdb-2495    [000] ...1 61513.834959: sys_read(fd: f, buf: 7ffe8b2a7f27, count: 1)
+>              gdb-2495    [000] ...1 61513.834960: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.834961: sys_rt_sigprocmask(how: 0, nset: 5585fe2d4a60, oset: 7ffe8b2a7e60, sigsetsize: 8)
+>              gdb-2495    [000] ...1 61513.834961: sys_rt_sigprocmask -> 0x0
+>              gdb-2495    [000] ...1 61513.834962: sys_wait4(upid: ffffffff, stat_addr: 7ffe8b2a7db4, options: 40000001, ru: 0)
+>              gdb-2495    [000] ...1 61513.834962: sched_process_wait: comm=gdb pid=0 prio=120
+>              gdb-2495    [000] ...1 61513.834964: sys_wait4 -> 0x9c3
+>              gdb-2495    [000] ...1 61513.834965: sys_ptrace(request: 4201, pid: 9c3, addr: 0, data: 7ffe8b2a7d08)
+>              gdb-2495    [000] d..3 61513.834966: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] ...1 61513.834967: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.834967: sys_wait4(upid: 9c8, stat_addr: 7ffe8b2a7cfc, options: 40000000, ru: 0)
+>              gdb-2495    [000] ...1 61513.834968: sched_process_wait: comm=gdb pid=2504 prio=120
+>              gdb-2495    [000] ...1 61513.834969: sys_wait4 -> 0x9c8
+>              gdb-2495    [000] ...1 61513.834972: sys_ptrace(request: 1, pid: 9c3, addr: 7ffff777f370, data: 7ffe8b2a7578)
+>              gdb-2495    [000] d..3 61513.834972: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] ...1 61513.834975: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.834976: sys_ptrace(request: 3, pid: 9c8, addr: a8, data: 7ffe8b2a78d8)
+>              gdb-2495    [000] d..3 61513.834977: sched_wait_task: comm=smokey pid=2504 prio=98
+>              gdb-2495    [000] ...1 61513.834977: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.834979: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a6de0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.834989: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.834990: sys_pread64(fd: 12, buf: 7ffe8b2a7130, count: 900, pos: 7ffff67c9700)
+>              gdb-2495    [000] ...1 61513.834992: sys_pread64 -> 0x900
+>              gdb-2495    [000] ...1 61513.834993: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.834994: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.835010: sys_ptrace(request: 1, pid: 9c3, addr: 7ffff777f370, data: 7ffe8b2a7578)
+>              gdb-2495    [000] d..3 61513.835011: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] ...1 61513.835012: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.835013: sys_ptrace(request: 3, pid: 9c3, addr: a8, data: 7ffe8b2a78d8)
+>              gdb-2495    [000] d..3 61513.835013: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] ...1 61513.835014: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.835015: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a6de0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.835022: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.835022: sys_pread64(fd: 12, buf: 7ffe8b2a7130, count: 900, pos: 7ffff758f740)
+>              gdb-2495    [000] ...1 61513.835025: sys_pread64 -> 0x900
+>              gdb-2495    [000] ...1 61513.835025: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.835026: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.835031: sys_wait4(upid: ffffffff, stat_addr: 7ffe8b2a7db4, options: 40000001, ru: 0)
+>              gdb-2495    [000] ...1 61513.835032: sched_process_wait: comm=gdb pid=0 prio=120
+>              gdb-2495    [000] ...1 61513.835033: sys_wait4 -> 0x0
+>              gdb-2495    [000] ...1 61513.835036: sys_ptrace(request: c, pid: 9c8, addr: 0, data: 7ffe8b2a6ef0)
+>              gdb-2495    [000] d..3 61513.835037: sched_wait_task: comm=smokey pid=2504 prio=98
+>              gdb-2495    [000] ...1 61513.835039: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.835043: sys_ptrace(request: 6, pid: 9c8, addr: 388, data: 0)
+>              gdb-2495    [000] d..3 61513.835044: sched_wait_task: comm=smokey pid=2504 prio=98
+>              gdb-2495    [000] ...1 61513.835044: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.835045: sys_ptrace(request: 7, pid: 9c8, addr: 1, data: 0)
+>              gdb-2495    [000] d..3 61513.835046: sched_wait_task: comm=smokey pid=2504 prio=98
+>              gdb-2495    [000] d..3 61513.835047: sched_waking: comm=smokey pid=2504 prio=98 target_cpu=000
+>              gdb-2495    [000] dN.4 61513.835048: sched_wakeup: comm=smokey pid=2504 prio=98 target_cpu=000
+>              gdb-2495    [000] .N.1 61513.835048: sys_ptrace -> 0x0
+>              gdb-2495    [000] dN.3 61513.835050: sched_stat_runtime: comm=gdb pid=2495 runtime=112561 [ns] vruntime=300514128104 [ns]
+>              gdb-2495    [000] d..3 61513.835051: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2504 next_prio=98
+>        hi-thread-2504    [000] ...1 61513.835055: sys_set_robust_list(head: 7ffff67c99e0, len: 18)
+>        hi-thread-2504    [000] ...1 61513.835055: sys_set_robust_list -> 0x0
+>        hi-thread-2504    [000] ...1 61513.835056: sys_futex(uaddr: 7ffff67c9d18, op: 80, val: 2, utime: 0, uaddr2: 7ffff67c9700, val3: 7ffff67c9700)
+>        hi-thread-2504    [000] d..3 61513.835059: sched_stat_wait: comm=gdb pid=2495 delay=10883 [ns]
+>        hi-thread-2504    [000] d..3 61513.835060: sched_switch: prev_comm=smokey prev_pid=2504 prev_prio=98 prev_state=S ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] ...1 61513.835063: sys_ptrace(request: c, pid: 9c3, addr: 0, data: 7ffe8b2a6ef0)
+>              gdb-2495    [000] d..3 61513.835064: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] ...1 61513.835065: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.835068: sys_ptrace(request: 7, pid: 9c3, addr: 1, data: 0)
+>              gdb-2495    [000] d..3 61513.835069: sched_wait_task: comm=smokey pid=2499 prio=98
+>              gdb-2495    [000] d..3 61513.835069: sched_waking: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] dN.4 61513.835070: sched_wakeup: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] .N.1 61513.835071: sys_ptrace -> 0x0
+>              gdb-2495    [000] dN.3 61513.835071: sched_stat_runtime: comm=gdb pid=2495 runtime=12210 [ns] vruntime=300514140314 [ns]
+>              gdb-2495    [000] d..3 61513.835072: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2499 next_prio=98
+>           smokey-2499    [000] ...1 61513.835073: cobalt_handle_ptrace_cont: pid=2499 state=0x480c0 info=0x0
+>           smokey-2499    [000] ...1 61513.835074: sys_clone -> 0x9c8
+>           smokey-2499    [000] ...1 61513.835075: sys_sched_setaffinity(pid: 9c8, len: 80, user_mask_ptr: 55555563e7c0)
+>           smokey-2499    [000] ...1 61513.835077: sys_sched_setaffinity -> 0x0
+>           smokey-2499    [000] ...1 61513.835077: sys_futex(uaddr: 7ffff67c9d18, op: 81, val: 1, utime: 7ffff67c99d0, uaddr2: 0, val3: 7ffff67c9700)
+>           smokey-2499    [000] d..3 61513.835078: sched_waking: comm=smokey pid=2504 prio=98 target_cpu=000
+>           smokey-2499    [000] d..4 61513.835079: sched_wakeup: comm=smokey pid=2504 prio=98 target_cpu=000
+>           smokey-2499    [000] ...1 61513.835080: sys_futex -> 0x1
+>           smokey-2499    [000] ...1 61513.835086: sys_futex(uaddr: 7fffffffe828, op: 189, val: 0, utime: 7fffffffe780, uaddr2: 0, val3: ffffffff)
+>           smokey-2499    [000] d..3 61513.835089: sched_switch: prev_comm=smokey prev_pid=2499 prev_prio=98 prev_state=S ==> next_comm=smokey next_pid=2504 next_prio=98
+>        hi-thread-2504    [000] ...1 61513.835090: sys_futex -> 0x0
+>        hi-thread-2504    [000] ...1 61513.835090: sys_futex(uaddr: 7ffff67c9d18, op: 81, val: 1, utime: 7ffff67c99d0, uaddr2: 7ffff67c9700, val3: 7ffff67c9700)
+>        hi-thread-2504    [000] ...1 61513.835091: sys_futex -> 0x0
+>        hi-thread-2504    [000] ...1 61513.835092: sys_sched_setscheduler(pid: 9c8, policy: 1, param: 7ffff67c8e70)
+>        hi-thread-2504    [000] ...1 61513.835095: sys_sched_setscheduler -> 0x0
+>        hi-thread-2504    [000] ..~1 61513.835096: cobalt_head_sysentry: syscall=thread_create
+>        hi-thread-2504    [000] ...1 61513.835097: cobalt_root_sysentry: syscall=thread_create
+>        hi-thread-2504    [000] ...1 61513.835098: cobalt_pthread_create: pth=00000000ba35a01d policy=fifo param={ priority=2 }
+>        hi-thread-2504    [000] ...1 61513.835099: cobalt_timer_migrate: timer=000000004d21df54 cpu=0
+>        hi-thread-2504    [000] ...1 61513.835100: cobalt_timer_migrate: timer=00000000c1301853 cpu=0
+>        hi-thread-2504    [000] ...1 61513.835101: cobalt_thread_set_current_prio: thread=00000000e9fda3c4 pid=-1 prio=2
+>        hi-thread-2504    [000] ...1 61513.835102: cobalt_thread_init: thread=00000000e9fda3c4 name=smokey flags=0x48000 class=rt prio=2
+>        hi-thread-2504    [000] ...1 61513.835104: cobalt_shadow_map: thread=00000000e9fda3c4 pid=2504 prio=2
+>        hi-thread-2504    [000] D..1 61513.835104: cobalt_thread_suspend: pid=2504 mask=0x80 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] D..1 61513.835105: cobalt_thread_start: pid=2504 state=0x480d0 info=0x0
+>        hi-thread-2504    [000] D..1 61513.835105: cobalt_thread_resume: name=smokey pid=2504 mask=0x10
+>        hi-thread-2504    [000] D..1 61513.835106: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] ...1 61513.835106: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] ...1 61513.835107: cobalt_shadow_gohard: state=0x480c0 info=0x0
+>        hi-thread-2504    [000] d..3 61513.835108: sched_stat_wait: comm=gdb pid=2495 delay=37231 [ns]
+>        hi-thread-2504    [000] d..3 61513.835109: sched_switch: prev_comm=smokey prev_pid=2504 prev_prio=97 prev_state=S ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] *..3 61513.835109: cobalt_thread_resume: name=smokey pid=2504 mask=0x80
+>              gdb-2495    [000] *..3 61513.835110: cobalt_trace_pid: pid=2504, prio=2
+>              gdb-2495    [000] *.~3 61513.835110: cobalt_schedule: status=0x10000000
+>              gdb-2495    [000] *.~3 61513.835110: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] *.~3 61513.835111: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x18008 ==> next_name=smokey next_pid=2504 next_prio=2
+>        hi-thread-2504    [000] d.~3 61513.835112: cobalt_shadow_hardened: state=0x48040 info=0x0
+>        hi-thread-2504    [000] d.~3 61513.835112: cobalt_root_sysexit: result=0
+>        hi-thread-2504    [000] d.~3 61513.835113: cobalt_head_sysentry: syscall=get_current
+>        hi-thread-2504    [000] d.~3 61513.835113: cobalt_head_sysexit: result=0
+>        hi-thread-2504    [000] d.~3 61513.835116: cobalt_shadow_gorelax: reason=syscall
+>        hi-thread-2504    [000] d.~3 61513.835117: cobalt_lostage_request: request=wakeup pid=2504 comm=smokey
+>        hi-thread-2504    [000] *.~3 61513.835117: cobalt_thread_suspend: pid=2504 mask=0x80 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] *.~3 61513.835117: cobalt_schedule: status=0x10000000
+>        hi-thread-2504    [000] *.~3 61513.835118: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] *.~3 61513.835118: cobalt_switch_context: prev_name=smokey prev_pid=2504 prev_prio=2 prev_state=0x480c0 ==> next_name=ROOT/0 next_pid=0 next_prio=-1
+>              gdb-2495    [000] *.~3 61513.835119: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] d.h3 61513.835120: irq_handler_entry: irq=120 name=in-band work
+>              gdb-2495    [000] d.h3 61513.835120: cobalt_lostage_wakeup: pid=2504 comm=smokey
+>              gdb-2495    [000] d.h5 61513.835120: sched_waking: comm=smokey pid=2504 prio=97 target_cpu=000
+>              gdb-2495    [000] dNh6 61513.835121: sched_wakeup: comm=smokey pid=2504 prio=97 target_cpu=000
+>              gdb-2495    [000] dNh3 61513.835122: irq_handler_exit: irq=120 ret=handled
+>              gdb-2495    [000] dN.3 61513.835122: sched_stat_runtime: comm=gdb pid=2495 runtime=13441 [ns] vruntime=300514153755 [ns]
+>              gdb-2495    [000] d..3 61513.835123: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2504 next_prio=97
+>        hi-thread-2504    [000] ...1 61513.835124: cobalt_shadow_relaxed: state=0x480c0 info=0x0
+>        hi-thread-2504    [000] ...1 61513.835125: sys_futex(uaddr: 7fffffffe828, op: 81, val: 1, utime: 0, uaddr2: 7ffff67c8e74, val3: 7fffffffe828)
+>        hi-thread-2504    [000] d..3 61513.835126: sched_waking: comm=smokey pid=2499 prio=98 target_cpu=000
+>        hi-thread-2504    [000] d..4 61513.835126: sched_wakeup: comm=smokey pid=2499 prio=98 target_cpu=000
+>        hi-thread-2504    [000] ...1 61513.835127: sys_futex -> 0x1
+>        hi-thread-2504    [000] ..~1 61513.835128: cobalt_head_sysentry: syscall=migrate
+>        hi-thread-2504    [000] ...1 61513.835128: cobalt_root_sysentry: syscall=migrate
+>        hi-thread-2504    [000] ...1 61513.835128: cobalt_shadow_gohard: state=0x480c0 info=0x0
+>        hi-thread-2504    [000] d..3 61513.835130: sched_switch: prev_comm=smokey prev_pid=2504 prev_prio=97 prev_state=S ==> next_comm=smokey next_pid=2499 next_prio=98
+>           smokey-2499    [000] *..3 61513.835130: cobalt_thread_resume: name=smokey pid=2504 mask=0x80
+>           smokey-2499    [000] *..3 61513.835130: cobalt_trace_pid: pid=2504, prio=2
+>           smokey-2499    [000] *.~3 61513.835131: cobalt_schedule: status=0x10000000
+>           smokey-2499    [000] *.~3 61513.835131: cobalt_trace_pid: pid=2499, prio=-1
+>           smokey-2499    [000] *.~3 61513.835131: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x18008 ==> next_name=smokey next_pid=2504 next_prio=2
+>        hi-thread-2504    [000] d.~3 61513.835132: cobalt_shadow_hardened: state=0x48040 info=0x0
+>        hi-thread-2504    [000] d.~3 61513.835132: cobalt_root_sysexit: result=1
+>        hi-thread-2504    [000] d.~3 61513.835133: cobalt_head_sysentry: syscall=thread_setname
+>        hi-thread-2504    [000] d.~3 61513.835134: cobalt_pthread_setname: pth=00000000ba35a01d name=hi-thread
+>        hi-thread-2504    [000] d.~3 61513.835135: cobalt_head_sysexit: result=0
+>        hi-thread-2504    [000] d.~3 61513.835136: cobalt_head_sysentry: syscall=clock_nanosleep
+>        hi-thread-2504    [000] d.~3 61513.835137: cobalt_clock_nanosleep: clock_id=0 flags=0x0() rqt=(0.001000000)
+>        hi-thread-2504    [000] *.~3 61513.835138: cobalt_thread_suspend: pid=2504 mask=0x4 timeout=1000001 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] *.~3 61513.835138: cobalt_timer_start: timer=000000004d21df54(smokey) value=1000001 interval=0 mode=rel
+>        hi-thread-2504    [000] *.~3 61513.835138: cobalt_schedule: status=0x10000000
+>        hi-thread-2504    [000] *.~3 61513.835139: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] *.~3 61513.835139: cobalt_switch_context: prev_name=hi-thread prev_pid=2504 prev_prio=2 prev_state=0x48044 ==> next_name=ROOT/0 next_pid=0 next_prio=-1
+>           smokey-2499    [000] *.~3 61513.835140: cobalt_trace_pid: pid=2499, prio=-1
+>           smokey-2499    [000] ...1 61513.835141: sys_futex -> 0x0
+>           smokey-2499    [000] ..~1 61513.835144: cobalt_head_sysentry: syscall=migrate
+>           smokey-2499    [000] ...1 61513.835144: cobalt_root_sysentry: syscall=migrate
+>           smokey-2499    [000] ...1 61513.835144: cobalt_shadow_gohard: state=0x480c0 info=0x0
+>           smokey-2499    [000] d..3 61513.835145: sched_stat_wait: comm=gdb pid=2495 delay=23982 [ns]
+>           smokey-2499    [000] d..3 61513.835146: sched_switch: prev_comm=smokey prev_pid=2499 prev_prio=98 prev_state=S ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] *..3 61513.835147: cobalt_thread_resume: name=smokey pid=2499 mask=0x80
+>              gdb-2495    [000] *..3 61513.835147: cobalt_trace_pid: pid=2499, prio=1
+>              gdb-2495    [000] *.~3 61513.835147: cobalt_schedule: status=0x10000000
+>              gdb-2495    [000] *.~3 61513.835147: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] *.~3 61513.835148: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x18008 ==> next_name=smokey next_pid=2499 next_prio=1
+>           smokey-2499    [000] d.~3 61513.835148: cobalt_shadow_hardened: state=0x48040 info=0x0
+>           smokey-2499    [000] d.~3 61513.835149: cobalt_root_sysexit: result=1
+>           smokey-2499    [000] *.~3 61513.835219: irq_pipeline_entry: irq=4354
+>           smokey-2499    [000] *.~3 61513.835219: irq_handler_entry: irq=4354 name=Out-of-band LAPIC timer interrupt
+>           smokey-2499    [000] *.~3 61513.835220: cobalt_timer_expire: timer=00000000d13b8aa9
+>           smokey-2499    [000] *.~3 61513.835220: cobalt_tick_shot: next tick at 61513.836136 (delay: 915 us)
+>           smokey-2499    [000] *.~3 61513.835221: irq_handler_exit: irq=4354 ret=handled
+>           smokey-2499    [000] *.~3 61513.835221: irq_pipeline_exit: irq=4354
+>           smokey-2499    [000] *.~3 61513.836137: irq_pipeline_entry: irq=4354
+>           smokey-2499    [000] *.~3 61513.836137: irq_handler_entry: irq=4354 name=Out-of-band LAPIC timer interrupt
+>           smokey-2499    [000] *.~3 61513.836138: cobalt_timer_expire: timer=000000004d21df54
+>           smokey-2499    [000] *.~3 61513.836138: cobalt_thread_resume: name=hi-thread pid=2504 mask=0x4
+>           smokey-2499    [000] *.~3 61513.836138: cobalt_trace_pid: pid=2504, prio=2
+>           smokey-2499    [000] *.~3 61513.836139: cobalt_timer_stop: timer=000000004d21df54
+>           smokey-2499    [000] *.~3 61513.836139: irq_handler_exit: irq=4354 ret=handled
+>           smokey-2499    [000] *.~3 61513.836139: irq_pipeline_exit: irq=4354
+>           smokey-2499    [000] *.~3 61513.836140: cobalt_schedule: status=0x10000000
+>           smokey-2499    [000] *.~3 61513.836140: cobalt_trace_pid: pid=2499, prio=1
+>           smokey-2499    [000] *.~3 61513.836140: cobalt_switch_context: prev_name=smokey prev_pid=2499 prev_prio=1 prev_state=0x48048 ==> next_name=hi-thread next_pid=2504 next_prio=2
+>        hi-thread-2504    [000] *.~3 61513.836141: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] d.~3 61513.836141: cobalt_head_sysexit: result=0
+>        hi-thread-2504    [000] *.~3 61513.836142: cobalt_thread_fault: ip=0x55555540b580 type=0x3
+>        hi-thread-2504    [000] *.~3 61513.836143: cobalt_thread_suspend: pid=2499 mask=0x400000 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] d.~3 61513.836143: cobalt_shadow_gorelax: reason=fault
+>        hi-thread-2504    [000] d.~3 61513.836143: cobalt_lostage_request: request=wakeup pid=2504 comm=hi-thread
+>        hi-thread-2504    [000] *.~3 61513.836144: cobalt_thread_suspend: pid=2504 mask=0x80 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] *.~3 61513.836144: cobalt_schedule: status=0x10000000
+>        hi-thread-2504    [000] *.~3 61513.836144: cobalt_trace_pid: pid=2504, prio=2
+>        hi-thread-2504    [000] *.~3 61513.836145: cobalt_switch_context: prev_name=hi-thread prev_pid=2504 prev_prio=2 prev_state=0x480c0 ==> next_name=ROOT/0 next_pid=0 next_prio=-1
+>              gdb-2495    [000] *.~3 61513.836146: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] d.h3 61513.836146: irq_handler_entry: irq=120 name=in-band work
+>              gdb-2495    [000] d.h3 61513.836147: cobalt_lostage_wakeup: pid=2504 comm=hi-thread
+>              gdb-2495    [000] d.h5 61513.836147: sched_waking: comm=hi-thread pid=2504 prio=97 target_cpu=000
+>              gdb-2495    [000] dNh6 61513.836147: sched_wakeup: comm=hi-thread pid=2504 prio=97 target_cpu=000
+>              gdb-2495    [000] dNh3 61513.836148: irq_handler_exit: irq=120 ret=handled
+>              gdb-2495    [000] dNh3 61513.836148: irq_handler_entry: irq=124 name=proxy tick
+>              gdb-2495    [000] dNh3 61513.836151: softirq_raise: vec=1 [action=TIMER]
+>              gdb-2495    [000] dNh3 61513.836152: softirq_raise: vec=9 [action=RCU]
+>              gdb-2495    [000] dNh4 61513.836152: sched_stat_runtime: comm=gdb pid=2495 runtime=1007474 [ns] vruntime=300515161229 [ns]
+>              gdb-2495    [000] *Nh3 61513.836154: cobalt_timer_start: timer=00000000d13b8aa9([host-timer/0]) value=2395843 interval=0 mode=rel
+>              gdb-2495    [000] *Nh3 61513.836155: cobalt_tick_shot: next tick at 61513.838550 (delay: 2395 us)
+>              gdb-2495    [000] dNh3 61513.836155: irq_handler_exit: irq=124 ret=handled
+>              gdb-2495    [000] .Ns3 61513.836156: softirq_entry: vec=1 [action=TIMER]
+>              gdb-2495    [000] .Ns3 61513.836157: softirq_exit: vec=1 [action=TIMER]
+>              gdb-2495    [000] .Ns3 61513.836157: softirq_entry: vec=9 [action=RCU]
+>              gdb-2495    [000] dNs6 61513.836158: sched_waking: comm=rcu_sched pid=11 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs7 61513.836159: sched_stat_runtime: comm=gdb pid=2495 runtime=6881 [ns] vruntime=300515168110 [ns]
+>              gdb-2495    [000] dNs7 61513.836160: sched_stat_blocked: comm=rcu_sched pid=11 delay=4188739 [ns]
+>              gdb-2495    [000] dNs7 61513.836161: sched_wakeup: comm=rcu_sched pid=11 prio=120 target_cpu=000
+>              gdb-2495    [000] .Ns3 61513.836164: softirq_exit: vec=9 [action=RCU]
+>              gdb-2495    [000] d..3 61513.836165: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=hi-thread next_pid=2504 next_prio=97
+>        hi-thread-2504    [000] ...1 61513.836167: cobalt_shadow_relaxed: state=0x480c0 info=0x200
+>        hi-thread-2504    [000] *..2 61513.836169: cobalt_thread_suspend: pid=2499 mask=0x400000 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] *..2 61513.836170: cobalt_thread_suspend: pid=2504 mask=0x400000 timeout=0 timeout_mode=0 wchan=0000000000000000
+>        hi-thread-2504    [000] d..2 61513.836170: signal_generate: sig=5 errno=0 code=128 comm=hi-thread pid=2504 grp=0 res=0
+>        hi-thread-2504    [000] d..3 61513.836173: signal_generate: sig=17 errno=0 code=4 comm=gdb pid=2495 grp=1 res=0
+>        hi-thread-2504    [000] d..3 61513.836175: sched_stat_wait: comm=rcu_sched pid=11 delay=14490 [ns]
+>        hi-thread-2504    [000] d..3 61513.836175: sched_switch: prev_comm=hi-thread prev_pid=2504 prev_prio=97 prev_state=t ==> next_comm=rcu_sched next_pid=11 next_prio=120
+>        rcu_sched-11      [000] d..3 61513.836179: sched_stat_runtime: comm=rcu_sched pid=11 runtime=4960 [ns] vruntime=300512173070 [ns]
+>        rcu_sched-11      [000] d..3 61513.836179: sched_stat_wait: comm=gdb pid=2495 delay=19450 [ns]
+>        rcu_sched-11      [000] d..3 61513.836180: sched_switch: prev_comm=rcu_sched prev_pid=11 prev_prio=120 prev_state=I ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] ...1 61513.836187: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a7cb0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.836197: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.836198: sys_newfstat(fd: 12, statbuf: 7ffe8b2a7ae0)
+>              gdb-2495    [000] ...1 61513.836199: sys_newfstat -> 0x0
+>              gdb-2495    [000] ...1 61513.836200: sys_read(fd: 12, buf: 5585fe9960e0, count: 400)
+>              gdb-2495    [000] ...1 61513.836214: sys_read -> 0x3f1
+>              gdb-2495    [000] ...1 61513.836217: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.836217: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.836221: sys_rt_sigprocmask(how: 2, nset: 7ffe8b2a7e60, oset: 0, sigsetsize: 8)
+>              gdb-2495    [000] ...1 61513.836222: sys_rt_sigprocmask -> 0x0
+>              gdb-2495    [000] d..2 61513.836223: signal_deliver: sig=17 errno=0 code=4 sa_handler=5585fdc414d0 sa_flags=14000000
+>              gdb-2495    [000] ...1 61513.836225: sys_read(fd: f, buf: 7ffe8b2a7667, count: 1)
+>              gdb-2495    [000] ...1 61513.836226: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.836227: sys_write(fd: 10, buf: 5585fe0354b1, count: 1)
+>              gdb-2495    [000] ...1 61513.836229: sys_write -> 0x1
+>              gdb-2495    [000] ...1 61513.836229: sys_rt_sigreturn()
+>              gdb-2495    [000] ...1 61513.836233: sys_read(fd: 9, buf: 7ffe8b2a82e7, count: 1)
+>              gdb-2495    [000] ...1 61513.836234: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.836235: sys_write(fd: 1, buf: 5585fe7a5290, count: 27)
+>              gdb-2495    [000] d..4 61513.836236: sched_waking: comm=smokey pid=2493 prio=120 target_cpu=000
+>              gdb-2495    [000] d..5 61513.836237: sched_stat_runtime: comm=gdb pid=2495 runtime=58399 [ns] vruntime=300515226509 [ns]
+>              gdb-2495    [000] d..5 61513.836238: sched_stat_sleep: comm=smokey pid=2493 delay=1717179 [ns]
+>              gdb-2495    [000] dN.5 61513.836239: sched_wakeup: comm=smokey pid=2493 prio=120 target_cpu=000
+>              gdb-2495    [000] .N.1 61513.836240: sys_write -> 0x27
+>              gdb-2495    [000] dN.3 61513.836241: sched_stat_wait: comm=smokey pid=2493 delay=0 [ns]
+>              gdb-2495    [000] d..3 61513.836241: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2493 next_prio=120
+>           smokey-2493    [000] ...1 61513.836244: sys_read -> 0x1
+>           smokey-2493    [000] ..~1 61513.836246: cobalt_head_sysentry: syscall=read
+>           ...
+>           smokey-2493    [000] d..3 61513.836344: sched_stat_runtime: comm=smokey pid=2493 runtime=106636 [ns] vruntime=300512333145 [ns]
+>           smokey-2493    [000] d..3 61513.836344: sched_stat_wait: comm=gdb pid=2495 delay=106636 [ns]
+>           smokey-2493    [000] d..3 61513.836345: sched_switch: prev_comm=smokey prev_pid=2493 prev_prio=120 prev_state=S ==> next_comm=gdb next_pid=2495 next_prio=120
+>              gdb-2495    [000] ...1 61513.836347: sys_poll(ufds: 5585fe898350, nfds: 4, timeout_msecs: 0)
+>              gdb-2495    [000] ...1 61513.836348: sys_poll -> 0x1
+>              gdb-2495    [000] ...1 61513.836350: sys_read(fd: f, buf: 7ffe8b2a7f27, count: 1)
+>              gdb-2495    [000] ...1 61513.836351: sys_read -> 0x1
+>              gdb-2495    [000] ...1 61513.836352: sys_read(fd: f, buf: 7ffe8b2a7f27, count: 1)
+>              gdb-2495    [000] ...1 61513.836352: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.836353: sys_rt_sigprocmask(how: 0, nset: 5585fe2d4a60, oset: 7ffe8b2a7e60, sigsetsize: 8)
+>              gdb-2495    [000] ...1 61513.836354: sys_rt_sigprocmask -> 0x0
+>              gdb-2495    [000] ...1 61513.836355: sys_wait4(upid: ffffffff, stat_addr: 7ffe8b2a7db4, options: 40000001, ru: 0)
+>              gdb-2495    [000] ...1 61513.836355: sched_process_wait: comm=gdb pid=0 prio=120
+>              gdb-2495    [000] ...1 61513.836357: sys_wait4 -> 0x9c8
+>              gdb-2495    [000] ...1 61513.836360: sys_ptrace(request: c, pid: 9c8, addr: 0, data: 7ffe8b2a6ef0)
+>              gdb-2495    [000] d..3 61513.836361: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836363: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836367: sys_ptrace(request: 4202, pid: 9c8, addr: 0, data: 7ffe8b2a7cb0)
+>              gdb-2495    [000] d..3 61513.836368: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836369: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836370: sys_ptrace(request: c, pid: 9c8, addr: 0, data: 7ffe8b2a6f10)
+>              gdb-2495    [000] d..3 61513.836370: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836371: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836372: sys_ptrace(request: d, pid: 9c8, addr: 0, data: 7ffe8b2a6f10)
+>              gdb-2495    [000] d..3 61513.836373: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836374: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836376: sys_wait4(upid: ffffffff, stat_addr: 7ffe8b2a7db4, options: 40000001, ru: 0)
+>              gdb-2495    [000] ...1 61513.836376: sched_process_wait: comm=gdb pid=0 prio=120
+>              gdb-2495    [000] ...1 61513.836377: sys_wait4 -> 0x0
+>              gdb-2495    [000] ...1 61513.836379: sys_rt_sigprocmask(how: 2, nset: 7ffe8b2a7e60, oset: 0, sigsetsize: 8)
+>              gdb-2495    [000] ...1 61513.836379: sys_rt_sigprocmask -> 0x0
+>              gdb-2495    [000] ...1 61513.836382: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a7cd0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.836399: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.836400: sys_newfstat(fd: 12, statbuf: 7ffe8b2a7b50)
+>              gdb-2495    [000] ...1 61513.836401: sys_newfstat -> 0x0
+>              gdb-2495    [000] ...1 61513.836402: sys_read(fd: 12, buf: 5585fe9960e0, count: 400)
+>              gdb-2495    [000] ...1 61513.836409: sys_read -> 0x140
+>              gdb-2495    [000] ...1 61513.836410: sys_read(fd: 12, buf: 5585fea6ccc0, count: 400)
+>              gdb-2495    [000] ...1 61513.836410: sys_read -> 0x0
+>              gdb-2495    [000] ...1 61513.836415: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.836416: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.836419: sys_read(fd: f, buf: 7ffe8b2a7f17, count: 1)
+>              gdb-2495    [000] ...1 61513.836420: sys_read -> 0xfffffffffffffff5
+>              gdb-2495    [000] ...1 61513.836421: sys_write(fd: 10, buf: 5585fe0354b1, count: 1)
+>              gdb-2495    [000] ...1 61513.836422: sys_write -> 0x1
+>              gdb-2495    [000] ...1 61513.836425: sys_ptrace(request: 1, pid: 9c8, addr: 7ffff777f370, data: 7ffe8b2a7878)
+>              gdb-2495    [000] d..3 61513.836426: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836428: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836430: sys_ptrace(request: 3, pid: 9c8, addr: a8, data: 7ffe8b2a7bd8)
+>              gdb-2495    [000] d..3 61513.836430: sched_wait_task: comm=hi-thread pid=2504 prio=97
+>              gdb-2495    [000] ...1 61513.836431: sys_ptrace -> 0x0
+>              gdb-2495    [000] ...1 61513.836433: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a70e0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.836446: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.836446: sys_pread64(fd: 12, buf: 7ffe8b2a7430, count: 900, pos: 7ffff67c9700)
+>              gdb-2495    [000] ...1 61513.836449: sys_pread64 -> 0x900
+>              gdb-2495    [000] ...1 61513.836450: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.836450: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.836479: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a7ad0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.836488: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.836489: sys_newfstat(fd: 12, statbuf: 7ffe8b2a7950)
+>              gdb-2495    [000] ...1 61513.836490: sys_newfstat -> 0x0
+>              gdb-2495    [000] ...1 61513.836490: sys_read(fd: 12, buf: 5585fea6ccc0, count: 400)
+>              gdb-2495    [000] ...1 61513.836498: sys_read -> 0x14d
+>              gdb-2495    [000] ...1 61513.836499: sys_read(fd: 12, buf: 5585fe9960e0, count: 400)
+>              gdb-2495    [000] ...1 61513.836499: sys_read -> 0x0
+>              gdb-2495    [000] ...1 61513.836503: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.836504: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.836507: sys_openat(dfd: ffffff9c, filename: 7ffe8b2a7ad0, flags: 80000, mode: 0)
+>              gdb-2495    [000] ...1 61513.836514: sys_openat -> 0x12
+>              gdb-2495    [000] ...1 61513.836515: sys_newfstat(fd: 12, statbuf: 7ffe8b2a7950)
+>              gdb-2495    [000] ...1 61513.836515: sys_newfstat -> 0x0
+>              gdb-2495    [000] ...1 61513.836516: sys_read(fd: 12, buf: 5585fe9960e0, count: 400)
+>              gdb-2495    [000] ...1 61513.836521: sys_read -> 0x13b
+>              gdb-2495    [000] ...1 61513.836522: sys_read(fd: 12, buf: 5585fea6ccc0, count: 400)
+>              gdb-2495    [000] ...1 61513.836522: sys_read -> 0x0
+>              gdb-2495    [000] ...1 61513.836525: sys_close(fd: 12)
+>              gdb-2495    [000] ...1 61513.836525: sys_close -> 0x0
+>              gdb-2495    [000] ...1 61513.836529: sys_tkill(pid: 9c3, sig: 13)
+>              gdb-2495    [000] *..3 61513.836532: cobalt_thread_resume: name=smokey pid=2499 mask=0x400000
+>              gdb-2495    [000] *..3 61513.836532: cobalt_trace_pid: pid=2499, prio=1
+>              gdb-2495    [000] *..3 61513.836533: cobalt_thread_unblock: pid=2499 state=0x48848 info=0x0
+>              gdb-2495    [000] *.~3 61513.836586: cobalt_schedule: status=0x10000000
+>              gdb-2495    [000] *.~3 61513.836586: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] *.~3 61513.836587: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x18008 ==> next_name=smokey next_pid=2499 next_prio=1
+>           smokey-2499    [000] *.~3 61513.836589: cobalt_trace_pid: pid=2499, prio=1
+>           smokey-2499    [000] *.~3 61513.836589: cobalt_shadow_gorelax: reason=undefined
+>           smokey-2499    [000] *.~3 61513.836589: cobalt_lostage_request: request=wakeup pid=2499 comm=smokey
+>           smokey-2499    [000] *.~3 61513.836590: cobalt_thread_suspend: pid=2499 mask=0x400080 timeout=0 timeout_mode=0 wchan=0000000000000000
+>           smokey-2499    [000] *.~3 61513.836590: cobalt_schedule: status=0x10000000
+>           smokey-2499    [000] *.~3 61513.836590: cobalt_trace_pid: pid=2499, prio=1
+>           smokey-2499    [000] *.~3 61513.836591: cobalt_switch_context: prev_name=smokey prev_pid=2499 prev_prio=1 prev_state=0x4488c0 ==> next_name=ROOT/0 next_pid=0 next_prio=-1
+>              gdb-2495    [000] *.~3 61513.836592: cobalt_trace_pid: pid=2495, prio=-1
+>              gdb-2495    [000] d..5 61513.836592: sched_waking: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] dN.6 61513.836594: sched_wakeup: comm=smokey pid=2499 prio=98 target_cpu=000
+>              gdb-2495    [000] dN.3 61513.836594: signal_generate: sig=19 errno=0 code=-6 comm=smokey pid=2499 grp=0 res=0
+>              gdb-2495    [000] dNh3 61513.836595: irq_handler_entry: irq=120 name=in-band work
+>              gdb-2495    [000] dNh3 61513.836596: cobalt_lostage_wakeup: pid=2499 comm=smokey
+>              gdb-2495    [000] *N~4 61513.838552: irq_pipeline_entry: irq=4354
+>              gdb-2495    [000] *N~4 61513.838553: irq_handler_entry: irq=4354 name=Out-of-band LAPIC timer interrupt
+>              gdb-2495    [000] *N~4 61513.838554: cobalt_timer_expire: timer=00000000d13b8aa9
+>              gdb-2495    [000] *N~4 61513.838555: irq_handler_exit: irq=4354 ret=handled
+>              gdb-2495    [000] *N~4 61513.838555: irq_pipeline_exit: irq=4354
+>              gdb-2495    [000] dNh8 61513.981277: sched_waking: comm=systemd-journal pid=163 prio=120 target_cpu=000
+>              gdb-2495    [000] dNh9 61513.981278: sched_stat_runtime: comm=gdb pid=2495 runtime=144934239 [ns] vruntime=300660160748 [ns]
+>              gdb-2495    [000] dNh9 61513.981280: sched_stat_sleep: comm=systemd-journal pid=163 delay=111416392895 [ns]
+>              gdb-2495    [000] dNh9 61513.981280: sched_wakeup: comm=systemd-journal pid=163 prio=120 target_cpu=000
+>              gdb-2495    [000] dNh3 61513.981281: irq_handler_exit: irq=120 ret=handled
+>              gdb-2495    [000] dNh3 61513.981282: irq_handler_entry: irq=124 name=proxy tick
+>              gdb-2495    [000] dNh3 61513.981285: softirq_raise: vec=1 [action=TIMER]
+>              gdb-2495    [000] dNh3 61513.981285: softirq_raise: vec=9 [action=RCU]
+>              gdb-2495    [000] dNh4 61513.981286: sched_stat_runtime: comm=gdb pid=2495 runtime=8375 [ns] vruntime=300660169123 [ns]
+>              gdb-2495    [000] dNh5 61513.981288: sched_waking: comm=cobalt_printf pid=2494 prio=120 target_cpu=000
+>              gdb-2495    [000] dNh6 61513.981289: sched_stat_runtime: comm=gdb pid=2495 runtime=2987 [ns] vruntime=300660172110 [ns]
+>              gdb-2495    [000] dNh6 61513.981291: sched_stat_sleep: comm=cobalt_printf pid=2494 delay=238660319 [ns]
+>              gdb-2495    [000] dNh6 61513.981291: sched_wakeup: comm=cobalt_printf pid=2494 prio=120 target_cpu=000
+>              gdb-2495    [000] dNh5 61513.981292: sched_waking: comm=cobalt_printf pid=2503 prio=120 target_cpu=000
+>              gdb-2495    [000] dNh6 61513.981292: sched_stat_runtime: comm=gdb pid=2495 runtime=3069 [ns] vruntime=300660175179 [ns]
+>              gdb-2495    [000] dNh6 61513.981294: sched_stat_sleep: comm=cobalt_printf pid=2503 delay=146611442 [ns]
+>              gdb-2495    [000] dNh6 61513.981294: sched_wakeup: comm=cobalt_printf pid=2503 prio=120 target_cpu=000
+>              gdb-2495    [000] *Nh3 61513.981295: cobalt_timer_start: timer=00000000d13b8aa9([host-timer/0]) value=588476 interval=0 mode=rel
+>              gdb-2495    [000] *Nh3 61513.981296: cobalt_tick_shot: next tick at 61513.981884 (delay: 588 us)
+>              gdb-2495    [000] dNh3 61513.981296: irq_handler_exit: irq=124 ret=handled
+>              gdb-2495    [000] .Ns3 61513.981297: softirq_entry: vec=1 [action=TIMER]
+>              gdb-2495    [000] dNs5 61513.981298: sched_waking: comm=rcu_sched pid=11 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs6 61513.981298: sched_stat_runtime: comm=gdb pid=2495 runtime=6218 [ns] vruntime=300660181397 [ns]
+>              gdb-2495    [000] dNs6 61513.981299: sched_stat_blocked: comm=rcu_sched pid=11 delay=145119923 [ns]
+>              gdb-2495    [000] dNs6 61513.981299: sched_wakeup: comm=rcu_sched pid=11 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs7 61513.981302: sched_waking: comm=kworker/0:1 pid=1932 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs8 61513.981302: sched_stat_runtime: comm=gdb pid=2495 runtime=3884 [ns] vruntime=300660185281 [ns]
+>              gdb-2495    [000] dNs8 61513.981303: sched_stat_blocked: comm=kworker/0:1 pid=1932 delay=206048652 [ns]
+>              gdb-2495    [000] dNs8 61513.981304: sched_wakeup: comm=kworker/0:1 pid=1932 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs5 61513.981309: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981309: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981310: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981310: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981310: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981311: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981311: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] dNs5 61513.981312: softirq_raise: vec=2 [action=NET_TX]
+>              gdb-2495    [000] .Ns3 61513.981314: softirq_exit: vec=1 [action=TIMER]
+>              gdb-2495    [000] .Ns3 61513.981314: softirq_entry: vec=9 [action=RCU]
+>              gdb-2495    [000] .Ns3 61513.981315: softirq_exit: vec=9 [action=RCU]
+>              gdb-2495    [000] dNs5 61513.981316: sched_waking: comm=ksoftirqd/0 pid=10 prio=120 target_cpu=000
+>              gdb-2495    [000] dNs6 61513.981316: sched_stat_runtime: comm=gdb pid=2495 runtime=13841 [ns] vruntime=300660199122 [ns]
+>              gdb-2495    [000] dNs6 61513.981317: sched_stat_sleep: comm=ksoftirqd/0 pid=10 delay=149349034 [ns]
+>              gdb-2495    [000] dNs6 61513.981317: sched_wakeup: comm=ksoftirqd/0 pid=10 prio=120 target_cpu=000
+>              gdb-2495    [000] .N.1 61513.981318: sys_tkill -> 0x0
+>              gdb-2495    [000] d..3 61513.981320: sched_switch: prev_comm=gdb prev_pid=2495 prev_prio=120 prev_state=R ==> next_comm=smokey next_pid=2499 next_prio=98
+>           smokey-2499    [000] *.~3 61513.981888: irq_pipeline_entry: irq=4354
+>           smokey-2499    [000] *.~3 61513.981888: irq_handler_entry: irq=4354 name=Out-of-band LAPIC timer interrupt
+>           smokey-2499    [000] *.~3 61513.981889: cobalt_timer_expire: timer=00000000d13b8aa9
+>           smokey-2499    [000] *.~3 61513.981889: irq_handler_exit: irq=4354 ret=handled
+>           smokey-2499    [000] *.~3 61513.981890: irq_pipeline_exit: irq=4354
+>           smokey-2499    [000] d.h1 61514.106435: irq_handler_entry: irq=124 name=proxy tick
+>           smokey-2499    [000] *.h1 61514.106441: cobalt_timer_start: timer=00000000d13b8aa9([host-timer/0]) value=2109534 interval=0 mode=rel
+>           smokey-2499    [000] *.h1 61514.106441: cobalt_tick_shot: next tick at 61514.108550 (delay: 2109 us)
+>           smokey-2499    [000] d.h1 61514.106442: irq_handler_exit: irq=124 ret=handled
+>           smokey-2499    [000] ...1 61514.106442: cobalt_shadow_relaxed: state=0x4488c0 info=0x200
+>           smokey-2499    [000] *.~1 61514.108552: irq_pipeline_entry: irq=4354
+>
+> Regards
+>
+> Hongzhan Chen
+>    
+>>
+>>-- 
+>>Philippe.
 
-The IRQ frame is indeed kept from unwinding until the preempted task
-context returns from irq_exit_pipeline(), which branches to the Cobalt
-rescheduling procedure. From the Dovetail interface POV,
-irq_exit_pipeline() is called by handle_irq_pipelined_finish() to allow
-the companion core to perform post-IRQ chores, such as running its own
-rescheduling procedure.
-
-IOW, if task @foo is preempted by an IRQ, then suspended in oob context
-as a result of what the interrupt handler just did for it (e.g. raising
-XNDBGSTOP, XNRELAX, XNPEND, XNSUSP in its state), then
-handle_irq_pipelined_finish()->irq_exit_pipeline()->xnsched_run() will
-cause the @foo context to switch away, effectively preventing
-handle_irq_pipelined_finish() to return, until @foo resumes execution
-eventually.
-
-The underlying issue I'd like to understand, is why do we have a mayday
-condition raised in the context of this test in the first place? That
-may be the root of the issue, the mayday and synchronous-bp handling
-code may not cope that well.
-
-So, question to address first: who ends up calling
-dovetail_call_mayday(), detecting that the underlying task went south?
-And why that?
 
 -- 
 Philippe.
