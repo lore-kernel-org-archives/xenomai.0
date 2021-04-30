@@ -1,11 +1,12 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
 Subject: RE: gdb  test failure debug status update
-Date: Fri, 30 Apr 2021 05:25:37 +0000
-Message-ID: <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+Date: Fri, 30 Apr 2021 05:51:03 +0000
+Message-ID: <DM5PR11MB185284BA829F6F54FA556043F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
 References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
  <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
  <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
-In-Reply-To: <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+In-Reply-To: <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -18,7 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+After applied following patch , the gdb test failure  issue seems fixed. Ba=
+sically , it enforce going back to=20
+primary mode after check that XNCONTHI is set for current thread.  It seems=
+ ugly. Please suggest different=20
+solution.
+
+@@ -355,9 +357,36 @@ static int handle_user_return(struct task_struct *task=
+)
+
+ void handle_oob_mayday(struct pt_regs *regs)
+ {
++       struct xnthread *thread;
++       spl_t s;
++       int err;
++
+        XENO_BUG_ON(COBALT, !xnthread_test_state(xnthread_current(), XNUSER=
+));
+
++       thread =3D xnthread_current();
++
++       trace_cobalt_handle_oob_mayday(thread);
++
+        xnthread_relax(0, 0);
++
++       if (xnthread_test_info(thread, XNCONTHI)) {
++               xnlock_get_irqsave(&nklock, s);
++               xnthread_clear_info(thread, XNCONTHI);
++               xnlock_put_irqrestore(&nklock, s);
++
++               err =3D xnthread_harden();
++
++               /*
++                * XNCONTHI may or may not have been re-applied if
++                * harden bailed out due to pending signals. Make sure
++                * it is set in that case.
++                */
++               if (err =3D=3D -ERESTARTSYS) {
++                       xnlock_get_irqsave(&nklock, s);
++                       xnthread_set_info(thread, XNCONTHI);
++                       xnlock_put_irqrestore(&nklock, s);
++               }
++       }
+ }
+
+
+Regards
+
+Hongzhan Chen
+
+-----Original Message-----
+From: Chen, Hongzhan <hongzhan.chen@intel.com>=20
+Sent: Friday, April 30, 2021 1:26 PM
+To: Chen, Hongzhan <hongzhan.chen@intel.com>; Philippe Gerum <rpm@xenomai.o=
+rg>; xenomai@xenomai.org
+Subject: RE: gdb test failure debug status update
 
 The final xnthread_relaxed call path is like this asm_sysv_apic_timer_inter=
 rupt ->handle_irq_pipelined_finish=20
