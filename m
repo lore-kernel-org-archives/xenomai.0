@@ -1,11 +1,12 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: x86 on dovetail: Stress-ng gets my system down
-Date: Mon, 3 May 2021 09:45:52 +0000
-Message-ID: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
-Content-Language: en-US
+Date: Mon, 3 May 2021 12:01:56 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: x86 on dovetail: Stress-ng gets my system down
+Message-ID: <20210503120156.00a5d23d@md1za8fc.ad001.siemens.net>
+In-Reply-To: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
+References: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,133 +15,172 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rpm@xenomai.org" <rpm@xenomai.org>, "Kiszka, Jan (T RDA IOT)" <jan.kiszka@siemens.com>
 
-SGksDQoNCndoaWxlIHRyeWluZyB0byBkZWJ1ZyBvbmUgb2YgdGhlIFhlbm9tYWkgMy4yIGlzc3Vl
-cyBsaXN0ZWQgYXQgWzFdIEkgcnVuDQppbnRvIHRoZSBzaXR1YXRpb24gZGVzY3JpYmVkIGJlbG93
-IG9uIG15IHg4NiBzeXN0ZW0uIFRoZSBwcm9ibGVtIChvciBhdA0KbGVhc3QgdGhlICJzeXN0ZW0g
-aGFuZyIgaXMgcmVwcm9kdWNpYmxlIG9uIHJlYWwgaGFyZHdhcmUgYW5kIG9uDQpxZW11L2t2bS4N
-Cg0KT25jZSB0aGUgc3lzdGVtIGlzIGZyb3plbiwgYXR0YWNoaW5nIEdEQiB0byB0aGUgcWVtdSBw
-cm9jZXNzIHNob3dzIG1lOg0KDQooZ2RiKSBpbmZvIHRocmVhZHMNCiAgSWQgICBUYXJnZXQgSWQg
-ICAgICAgICAgICAgICAgICBGcmFtZSANCiogMSAgICBUaHJlYWQgMSAoQ1BVIzAgW3J1bm5pbmdd
-KSBjc2RfbG9ja193YWl0IChjc2Q9MHhmZmZmODg4MDNlOTJlYTAwKSBhdCBrZXJuZWwvc21wLmM6
-MjI4DQogIDIgICAgVGhyZWFkIDIgKENQVSMxIFtydW5uaW5nXSkgMHgwMDAwNTY0ZjBiMDVkMzZk
-IGluID8/ICgpDQogIDMgICAgVGhyZWFkIDMgKENQVSMyIFtydW5uaW5nXSkgY3NkX2xvY2tfd2Fp
-dCAoY3NkPTB4ZmZmZjg4ODAzZTgyZjFlMCkgYXQga2VybmVsL3NtcC5jOjIyOA0KICA0ICAgIFRo
-cmVhZCA0IChDUFUjMyBbcnVubmluZ10pIGNzZF9sb2NrX3dhaXQgKGNzZD0weGZmZmY4ODgwM2U4
-MmYyMDApIGF0IGtlcm5lbC9zbXAuYzoyMjgNCg0KU28gdGhyZWUgb2YgbXkgQ1BVcyBhcmUgd2Fp
-dGluZyBmb3Igb3RoZXIgQ1BVcyB0byBjb21wbGV0ZSBhIGZ1bmN0aW9uDQpjYWxsIElQSS4gSXQg
-bG9va3MgbGlrZSBDUFUxIGlzIG5vdCByZXNwb25kaW5nIGFueW1vcmUuIFRoZSBzeXN0ZW0gaXMN
-CmNvbXBsZXRlbHkgdW51c2FibGUgYXQgdGhpcyBwb2ludC4NCg0KKGdkYikgYnQNCiMwICBjc2Rf
-bG9ja193YWl0IChjc2Q9MHhmZmZmODg4MDNlOTJlYTAwKSBhdCBrZXJuZWwvc21wLmM6MjI4DQoj
-MSAgc21wX2NhbGxfZnVuY3Rpb25fbWFueV9jb25kIChtYXNrPW1hc2tAZW50cnk9MHhmZmZmODg4
-MDA0NDhjMzQwLCBmdW5jPWZ1bmNAZW50cnk9MHhmZmZmZmZmZjgxMDU1YmIwIDxmbHVzaF90bGJf
-ZnVuY19yZW1vdGU+LCBpbmZvPWluZm9AZW50cnk9MHhmZmZmZmZmZjgyMDBhY2MwIDxmdWxsX2Zs
-dXNoX3RsYl9pbmZvPiwgd2FpdD13YWl0QGVudHJ5PXRydWUsIA0KICAgIGNvbmRfZnVuYz1jb25k
-X2Z1bmNAZW50cnk9MHhmZmZmZmZmZjgxMDU1MGIwIDx0bGJfaXNfbm90X2xhenk+KSBhdCBrZXJu
-ZWwvc21wLmM6NjkzDQojMiAgMHhmZmZmZmZmZjgxMGY1NmY1IGluIG9uX2VhY2hfY3B1X2NvbmRf
-bWFzayAoY29uZF9mdW5jPWNvbmRfZnVuY0BlbnRyeT0weGZmZmZmZmZmODEwNTUwYjAgPHRsYl9p
-c19ub3RfbGF6eT4sIGZ1bmM9ZnVuY0BlbnRyeT0weGZmZmZmZmZmODEwNTViYjAgPGZsdXNoX3Rs
-Yl9mdW5jX3JlbW90ZT4sIGluZm89aW5mb0BlbnRyeT0weGZmZmZmZmZmODIwMGFjYzAgPGZ1bGxf
-Zmx1c2hfdGxiX2luZm8+LCB3YWl0PXdhaXRAZW50cnk9dHJ1ZSwgDQogICAgbWFzaz1tYXNrQGVu
-dHJ5PTB4ZmZmZjg4ODAwNDQ4YzM0MCkgYXQga2VybmVsL3NtcC5jOjkwNA0KIzMgIDB4ZmZmZmZm
-ZmY4MTA1NTUzOCBpbiBuYXRpdmVfZmx1c2hfdGxiX290aGVycyAoY3B1bWFzaz1jcHVtYXNrQGVu
-dHJ5PTB4ZmZmZjg4ODAwNDQ4YzM0MCwgaW5mbz1pbmZvQGVudHJ5PTB4ZmZmZmZmZmY4MjAwYWNj
-MCA8ZnVsbF9mbHVzaF90bGJfaW5mbz4pIGF0IGFyY2gveDg2L21tL3RsYi5jOjg0MA0KIzQgIDB4
-ZmZmZmZmZmY4MTA1NWZhYyBpbiBmbHVzaF90bGJfb3RoZXJzIChpbmZvPTB4ZmZmZmZmZmY4MjAw
-YWNjMCA8ZnVsbF9mbHVzaF90bGJfaW5mbz4sIGNwdW1hc2s9MHhmZmZmODg4MDA0NDhjMzQwKSBh
-dCBhcmNoL3g4Ni9tbS90bGIuYzoxMTcwDQojNSAgYXJjaF90bGJiYXRjaF9mbHVzaCAoYmF0Y2g9
-YmF0Y2hAZW50cnk9MHhmZmZmODg4MDA0NDhjMzQwKSBhdCBhcmNoL3g4Ni9tbS90bGIuYzoxMTcw
-DQojNiAgMHhmZmZmZmZmZjgxMWFlM2UxIGluIHRyeV90b191bm1hcF9mbHVzaCAoKSBhdCBtbS9y
-bWFwLmM6NjAyDQojNyAgMHhmZmZmZmZmZjgxMTdkOWQzIGluIHNocmlua19wYWdlX2xpc3QgKHBh
-Z2VfbGlzdD1wYWdlX2xpc3RAZW50cnk9MHhmZmZmYzkwMDAzMDZmOTEwLCBwZ2RhdD1wZ2RhdEBl
-bnRyeT0weGZmZmY4ODgwM2ZmZGIwMDAsIHNjPXNjQGVudHJ5PTB4ZmZmZmM5MDAwMzA2ZmIxOCwg
-c3RhdD1zdGF0QGVudHJ5PTB4ZmZmZmM5MDAwMzA2ZjkyNCwgaWdub3JlX3JlZmVyZW5jZXM9aWdu
-b3JlX3JlZmVyZW5jZXNAZW50cnk9ZmFsc2UpIGF0IG1tL3Ztc2Nhbi5jOjE0ODcNCiM4ICAweGZm
-ZmZmZmZmODExN2Y3OWMgaW4gc2hyaW5rX2luYWN0aXZlX2xpc3QgKG5yX3RvX3NjYW49PG9wdGlt
-aXplZCBvdXQ+LCBscnV2ZWM9bHJ1dmVjQGVudHJ5PTB4ZmZmZjg4ODAzZmZkZTUwOCwgc2M9c2NA
-ZW50cnk9MHhmZmZmYzkwMDAzMDZmYjE4LCBscnU9bHJ1QGVudHJ5PUxSVV9JTkFDVElWRV9GSUxF
-KSBhdCBtbS92bXNjYW4uYzoxOTYyDQojOSAgMHhmZmZmZmZmZjgxMTgwMGRjIGluIHNocmlua19s
-aXN0IChzYz0weGZmZmZjOTAwMDMwNmZiMTgsIGxydXZlYz0weGZmZmY4ODgwM2ZmZGU1MDgsIG5y
-X3RvX3NjYW49PG9wdGltaXplZCBvdXQ+LCBscnU9PG9wdGltaXplZCBvdXQ+KSBhdCBtbS92bXNj
-YW4uYzoyMTY5DQojMTAgc2hyaW5rX2xydXZlYyAobHJ1dmVjPWxydXZlY0BlbnRyeT0weGZmZmY4
-ODgwM2ZmZGU1MDgsIHNjPXNjQGVudHJ5PTB4ZmZmZmM5MDAwMzA2ZmIxOCkgYXQgbW0vdm1zY2Fu
-LmM6MjQ2NA0KIzExIDB4ZmZmZmZmZmY4MTE4MDM3NCBpbiBzaHJpbmtfbm9kZV9tZW1jZ3MgKHNj
-PTB4ZmZmZmM5MDAwMzA2ZmIxOCwgcGdkYXQ9MHhmZmZmODg4MDNmZmRiMDAwKSBhdCBtbS92bXNj
-YW4uYzoyNjUyDQojMTIgc2hyaW5rX25vZGUgKHBnZGF0PXBnZGF0QGVudHJ5PTB4ZmZmZjg4ODAz
-ZmZkYjAwMCwgc2M9c2NAZW50cnk9MHhmZmZmYzkwMDAzMDZmYjE4KSBhdCBtbS92bXNjYW4uYzoy
-NzY5DQojMTMgMHhmZmZmZmZmZjgxMTgwNmM4IGluIHNocmlua196b25lcyAoc2M9MHhmZmZmYzkw
-MDAzMDZmYjE4LCB6b25lbGlzdD0weGZmZmY4ODgwM2ZmZGM0MDApIGF0IG1tL3Ztc2Nhbi5jOjI5
-NzINCiMxNCBkb190cnlfdG9fZnJlZV9wYWdlcyAoem9uZWxpc3Q9em9uZWxpc3RAZW50cnk9MHhm
-ZmZmODg4MDNmZmRjNDAwLCBzYz1zY0BlbnRyeT0weGZmZmZjOTAwMDMwNmZiMTgpIGF0IG1tL3Zt
-c2Nhbi5jOjMwMjcNCiMxNSAweGZmZmZmZmZmODExODE3ZjYgaW4gdHJ5X3RvX2ZyZWVfcGFnZXMg
-KHpvbmVsaXN0PTB4ZmZmZjg4ODAzZmZkYzQwMCwgb3JkZXI9b3JkZXJAZW50cnk9MSwgZ2ZwX21h
-c2s9Z2ZwX21hc2tAZW50cnk9NDE5NzgyNCwgbm9kZW1hc2s9PG9wdGltaXplZCBvdXQ+KSBhdCBt
-bS92bXNjYW4uYzozMjY2DQojMTYgMHhmZmZmZmZmZjgxMWJhNDExIGluIF9fcGVyZm9ybV9yZWNs
-YWltIChhYz0weGZmZmZjOTAwMDMwNmZjOTAsIGFjPTB4ZmZmZmM5MDAwMzA2ZmM5MCwgb3JkZXI9
-MSwgZ2ZwX21hc2s9NDE5NzgyNCkgYXQgbW0vcGFnZV9hbGxvYy5jOjQzMzUNCiMxNyBfX2FsbG9j
-X3BhZ2VzX2RpcmVjdF9yZWNsYWltIChkaWRfc29tZV9wcm9ncmVzcz08c3ludGhldGljIHBvaW50
-ZXI+LCBhYz0weGZmZmZjOTAwMDMwNmZjOTAsIGFsbG9jX2ZsYWdzPTIxMTIsIG9yZGVyPTEsIGdm
-cF9tYXNrPTQxOTc4MjQpIGF0IG1tL3BhZ2VfYWxsb2MuYzo0MzU2DQojMTggX19hbGxvY19wYWdl
-c19zbG93cGF0aCAoZ2ZwX21hc2s9PG9wdGltaXplZCBvdXQ+LCBnZnBfbWFza0BlbnRyeT00MTk3
-ODI0LCBvcmRlcj1vcmRlckBlbnRyeT0xLCBhYz1hY0BlbnRyeT0weGZmZmZjOTAwMDMwNmZjOTAp
-IGF0IG1tL3BhZ2VfYWxsb2MuYzo0NzYwDQojMTkgMHhmZmZmZmZmZjgxMWJhZjQ0IGluIF9fYWxs
-b2NfcGFnZXNfbm9kZW1hc2sgKGdmcF9tYXNrPTxvcHRpbWl6ZWQgb3V0PiwgZ2ZwX21hc2tAZW50
-cnk9NDE5NzgyNCwgb3JkZXI9b3JkZXJAZW50cnk9MSwgcHJlZmVycmVkX25pZD08b3B0aW1pemVk
-IG91dD4sIG5vZGVtYXNrPTB4MCA8Zml4ZWRfcGVyY3B1X2RhdGE+KSBhdCBtbS9wYWdlX2FsbG9j
-LmM6NDk3MA0KIzIwIDB4ZmZmZmZmZmY4MTFjZTAzOSBpbiBhbGxvY19wYWdlc19jdXJyZW50IChn
-ZnA9Z2ZwQGVudHJ5PTQxOTc4MjQsIG9yZGVyPW9yZGVyQGVudHJ5PTEpIGF0IC4vaW5jbHVkZS9s
-aW51eC90b3BvbG9neS5oOjg4DQojMjEgMHhmZmZmZmZmZjgxMWI2MjQ4IGluIGFsbG9jX3BhZ2Vz
-IChvcmRlcj1vcmRlckBlbnRyeT0xLCBnZnBfbWFzaz00MTk3ODI0KSBhdCAuL2luY2x1ZGUvbGlu
-dXgvZ2ZwLmg6NTQ3DQojMjIgX19nZXRfZnJlZV9wYWdlcyAoZ2ZwX21hc2s9Z2ZwX21hc2tAZW50
-cnk9NDE5NzgyNCwgb3JkZXI9b3JkZXJAZW50cnk9MSkgYXQgbW0vcGFnZV9hbGxvYy5jOjQ5OTQN
-CiMyMyAweGZmZmZmZmZmODEwNTQ4MmMgaW4gX3BnZF9hbGxvYyAoKSBhdCBhcmNoL3g4Ni9tbS9w
-Z3RhYmxlLmM6NDMwDQojMjQgcGdkX2FsbG9jIChtbT1tbUBlbnRyeT0weGZmZmY4ODgwMDMxNWU0
-MDApIGF0IGFyY2gveDg2L21tL3BndGFibGUuYzo0MzANCiMyNSAweGZmZmZmZmZmODEwNWVmYWUg
-aW4gbW1fYWxsb2NfcGdkIChtbT0weGZmZmY4ODgwMDMxNWU0MDApIGF0IGtlcm5lbC9mb3JrLmM6
-MTA1NA0KIzI2IG1tX2luaXQgKG1tPW1tQGVudHJ5PTB4ZmZmZjg4ODAwMzE1ZTQwMCwgdXNlcl9u
-cz08b3B0aW1pemVkIG91dD4sIHA9MHhmZmZmODg4MDAyYmJjODgwKSBhdCBrZXJuZWwvZm9yay5j
-OjEwNTQNCiMyNyAweGZmZmZmZmZmODEwNWY2MjQgaW4gZHVwX21tIChvbGRtbT0weGZmZmY4ODgw
-MDRlZmE4MDAsIHRzaz0weGZmZmY4ODgwMDJiYmM4ODApIGF0IGtlcm5lbC9mb3JrLmM6MTM2OQ0K
-IzI4IDB4ZmZmZmZmZmY4MTA2MTZhNSBpbiBjb3B5X21tICh0c2s9MHhmZmZmODg4MDAyYmJjODgw
-LCBjbG9uZV9mbGFncz0wKSBhdCAuL2FyY2gveDg2L2luY2x1ZGUvYXNtL2N1cnJlbnQuaDoxNQ0K
-IzI5IGNvcHlfcHJvY2VzcyAocGlkPXBpZEBlbnRyeT0weDAgPGZpeGVkX3BlcmNwdV9kYXRhPiwg
-dHJhY2U9dHJhY2VAZW50cnk9MCwgbm9kZT1ub2RlQGVudHJ5PS0xLCBhcmdzPWFyZ3NAZW50cnk9
-MHhmZmZmYzkwMDAzMDZmZWQwKSBhdCBrZXJuZWwvZm9yay5jOjIxMTANCiMzMCAweGZmZmZmZmZm
-ODEwNjE5MzQgaW4ga2VybmVsX2Nsb25lIChhcmdzPWFyZ3NAZW50cnk9MHhmZmZmYzkwMDAzMDZm
-ZWQwKSBhdCBrZXJuZWwvZm9yay5jOjI0NzENCiMzMSAweGZmZmZmZmZmODEwNjFjOGYgaW4gX19k
-b19zeXNfZm9yayAoX191bnVzZWQ9PG9wdGltaXplZCBvdXQ+KSBhdCBrZXJuZWwvZm9yay5jOjI1
-MzQNCiMzMiAweGZmZmZmZmZmODFiNDE2OTMgaW4gZG9fc3lzY2FsbF82NCAobnI9PG9wdGltaXpl
-ZCBvdXQ+LCByZWdzPTB4ZmZmZmM5MDAwMzA2ZmY1OCkgYXQgYXJjaC94ODYvZW50cnkvY29tbW9u
-LmM6NTUNCiMzMyAweGZmZmZmZmZmODFjMDAwN2MgaW4gZW50cnlfU1lTQ0FMTF82NCAoKSBhdCBh
-cmNoL3g4Ni9lbnRyeS9lbnRyeV82NC5TOjEyMA0KIzM0IDB4MDAwMDAwMDAwMDA1MjZhYSBpbiA/
-PyAoKQ0KIzM1IDB4MDAwMDU2NGYwYjBiYzJiMCBpbiA/PyAoKQ0KIzM2IDB4MDAwMDAwMDAwMDAw
-MDAwMSBpbiBmaXhlZF9wZXJjcHVfZGF0YSAoKQ0KIzM3IDB4MDAwMDdmZmUwZWU1NDlmMCBpbiA/
-PyAoKQ0KIzM4IDB4MDAwMDU2NGYwYjY1NzI2MCBpbiA/PyAoKQ0KIzM5IDB4MDAwMDAwMDAwMDAw
-MDAwMCBpbiA/PyAoKQ0KDQoNCktlcm5lbC1Db25maWc6IEF0dGFjaGVkLiBJdCdzIGEgeDg2XzY0
-IGRlZmNvbmZpZyB3aXRoIHRoZSBmb2xsb3dpbmcNCm1vZGlmaWNhdGlvbnM6DQogLSBDT05GSUdf
-WEVOT01BSSBkaXNhYmxlZA0KIC0gQ09ORklHX0RPVkVUQUlMIGRpc2FibGVkDQogLSBDT05GSUdf
-TUlHUkFUSU9OIGRpc2FibGVkDQogLSBDT05GSUdfREVCVUdfSU5GTyBlbmFibGVkICh0byBiZSBh
-YmxlIHRvIGRlYnVnKQ0KIC0gQ09ORklHX0dEQl9TQ1JJUFRTIGVuYWJsZWQgKGRlYnVnZ2luZy4u
-LikNCg0KSSBkaXNhYmxlZCBYZW5vbWFpIGFuZCBEb3ZldGFpbCB0byBsaW1pdCB0aGUgc2VhcmNo
-IHNjb3BlLiBUaGUgcHJvYmxlbQ0KcmVtYWlucyByZXByb2R1Y2libGUgd2l0aG91dCB0aGVtLg0K
-DQoNCldvcmtsb2FkOg0KU3RyZXNzaW5nIHRoZSBzeXN0ZW0gd2l0aCBzdHJlc3MtbmcuIEFmdGVy
-IDQ1IHRvIDYwIG1pbnV0ZXMgdGhlIHN5c3RlbQ0KaXMgZnJvemVuLg0KY21kbGluZTogc3RyZXNz
-LW5nIC0tY3B1IDQgLS1pbyAyIC0tdm0gMiAtLXZtLWJ5dGVzIDEyOE0gLS1mb3JrIDQgLS10aW1l
-b3V0IDANCg0KDQpJUlEgZmxhZzoNCkFsbCBDUFVzIChvciBnZGIgdGhyZWFkcykgd2FpdGluZyBh
-dCBrZXJuZWwvc21wLmM6MjI4IGhhdmUgdGhlIElGIGZsYWcNCihwYXJ0IG9mIGVmbGFnIHJlZ2lz
-dGVyKSB1bnNldCwgd2hpbGUgb3RoZXIgQ1BVcyBoYXZlIGl0IHNldDoNCg0KKGdkYikgaW5mbyBy
-ZWdpc3Rlcg0KZWZsYWdzICAgICAgICAgMHgyICAgICAgICAgICAgICAgICBbIF0NCg0KdnMNCg0K
-ZWZsYWdzICAgICAgICAgMHgyMDIgICAgICAgICAgICAgICBbIElGIF0NCg0KDQpzbXBfY2FsbF9m
-dW5jdGlvbl9tYW55X2NvbmQoKSBoYXMgc29tZSBub3RlcyBhYm91dCBkZWFkbG9ja3MgdGhhdCBt
-aWdodA0KYXBwZWFyIHdoZW4gYmVpbmcgY2FsbGVkIHdpdGggSVJRcyBkaXNhYmxlZCwgYnV0IEkg
-YWN0dWFsbHkgbmV2ZXIgc2F3DQpvbmUgb2YgdGhlIHdhcm5pbmdzIHRoYXQgc2hvdWxkIGNvbWUg
-dXAuIEFzIElGIGZsYWcgaXMgdW5zZXQsIHNvbWVvbmUNCmhhcyB0byB0dXJuIG9mZiBJUlFzIGxh
-dGVyICh3aGlsZSB3YWl0aW5nKSBhbmQgdGhhdCBtaWdodCBiZSB0aGUgcmVhc29uDQpmb3IgdGhl
-IGRlYWRsb2NrLg0KDQpJZGVhcyAvIGZlZWRiYWNrIC8gYWR2aWNlIHdlbGNvbWUuIFRoYW5rcyEN
-Cg0KQmVzdCByZWdhcmRzLA0KRmxvcmlhbg0KDQpbMV0gaHR0cHM6Ly9naXRsYWIuY29tL1hlbm9t
-YWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMTYNCi0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0
-ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBBVFQyMzM5NC5jb25maWdfcGlwZV9ub2RvdmV0YWls
-X25veGVubwpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNo
-bWVudHMvMjAyMTA1MDMvNzNjMjZhYWMvYXR0YWNobWVudC5rc2g+Cg==
+Am Mon, 3 May 2021 11:45:52 +0200
+schrieb "Bezdeka, Florian (T RDA IOT SES-DE)"
+<florian.bezdeka@siemens.com>:
+
+> Hi,
+> 
+> while trying to debug one of the Xenomai 3.2 issues listed at [1] I
+> run into the situation described below on my x86 system. The problem
+> (or at least the "system hang" is reproducible on real hardware and on
+> qemu/kvm.
+> 
+> Once the system is frozen, attaching GDB to the qemu process shows me:
+> 
+> (gdb) info threads
+>   Id   Target Id                  Frame
+> * 1    Thread 1 (CPU#0 [running]) csd_lock_wait
+> (csd=0xffff88803e92ea00) at kernel/smp.c:228 2    Thread 2 (CPU#1
+> [running]) 0x0000564f0b05d36d in ?? () 3    Thread 3 (CPU#2
+> [running]) csd_lock_wait (csd=0xffff88803e82f1e0) at kernel/smp.c:228
+> 4    Thread 4 (CPU#3 [running]) csd_lock_wait
+> (csd=0xffff88803e82f200) at kernel/smp.c:228
+> 
+> So three of my CPUs are waiting for other CPUs to complete a function
+> call IPI. It looks like CPU1 is not responding anymore. The system is
+> completely unusable at this point.
+> 
+> (gdb) bt
+> #0  csd_lock_wait (csd=0xffff88803e92ea00) at kernel/smp.c:228
+> #1  smp_call_function_many_cond (mask=mask@entry=0xffff88800448c340,
+> func=func@entry=0xffffffff81055bb0 <flush_tlb_func_remote>,
+> info=info@entry=0xffffffff8200acc0 <full_flush_tlb_info>,
+> wait=wait@entry=true, cond_func=cond_func@entry=0xffffffff810550b0
+> <tlb_is_not_lazy>) at kernel/smp.c:693 #2  0xffffffff810f56f5 in
+> on_each_cpu_cond_mask (cond_func=cond_func@entry=0xffffffff810550b0
+> <tlb_is_not_lazy>, func=func@entry=0xffffffff81055bb0
+> <flush_tlb_func_remote>, info=info@entry=0xffffffff8200acc0
+> <full_flush_tlb_info>, wait=wait@entry=true,
+> mask=mask@entry=0xffff88800448c340) at kernel/smp.c:904 #3
+> 0xffffffff81055538 in native_flush_tlb_others
+> (cpumask=cpumask@entry=0xffff88800448c340,
+> info=info@entry=0xffffffff8200acc0 <full_flush_tlb_info>) at
+> arch/x86/mm/tlb.c:840 #4  0xffffffff81055fac in flush_tlb_others
+> (info=0xffffffff8200acc0 <full_flush_tlb_info>,
+> cpumask=0xffff88800448c340) at arch/x86/mm/tlb.c:1170 #5
+> arch_tlbbatch_flush (batch=batch@entry=0xffff88800448c340) at
+> arch/x86/mm/tlb.c:1170 #6  0xffffffff811ae3e1 in try_to_unmap_flush
+> () at mm/rmap.c:602 #7  0xffffffff8117d9d3 in shrink_page_list
+> (page_list=page_list@entry=0xffffc9000306f910,
+> pgdat=pgdat@entry=0xffff88803ffdb000, sc=sc@entry=0xffffc9000306fb18,
+> stat=stat@entry=0xffffc9000306f924,
+> ignore_references=ignore_references@entry=false) at mm/vmscan.c:1487
+> #8  0xffffffff8117f79c in shrink_inactive_list (nr_to_scan=<optimized
+> out>, lruvec=lruvec@entry=0xffff88803ffde508,
+> out>sc=sc@entry=0xffffc9000306fb18, lru=lru@entry=LRU_INACTIVE_FILE)
+> out>at mm/vmscan.c:1962 #9  0xffffffff811800dc in shrink_list
+> out>(sc=0xffffc9000306fb18, lruvec=0xffff88803ffde508,
+> out>nr_to_scan=<optimized out>, lru=<optimized out>) at
+> out>mm/vmscan.c:2169 #10 shrink_lruvec
+> out>(lruvec=lruvec@entry=0xffff88803ffde508,
+> out>sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:2464 #11
+> out>0xffffffff81180374 in shrink_node_memcgs (sc=0xffffc9000306fb18,
+> out>pgdat=0xffff88803ffdb000) at mm/vmscan.c:2652 #12 shrink_node
+> out>(pgdat=pgdat@entry=0xffff88803ffdb000,
+> out>sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:2769 #13
+> out>0xffffffff811806c8 in shrink_zones (sc=0xffffc9000306fb18,
+> out>zonelist=0xffff88803ffdc400) at mm/vmscan.c:2972 #14
+> out>do_try_to_free_pages (zonelist=zonelist@entry=0xffff88803ffdc400,
+> out>sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:3027 #15
+> out>0xffffffff811817f6 in try_to_free_pages
+> out>(zonelist=0xffff88803ffdc400, order=order@entry=1,
+> out>gfp_mask=gfp_mask@entry=4197824, nodemask=<optimized out>) at
+> out>mm/vmscan.c:3266 #16 0xffffffff811ba411 in __perform_reclaim
+> out>(ac=0xffffc9000306fc90, ac=0xffffc9000306fc90, order=1,
+> out>gfp_mask=4197824) at mm/page_alloc.c:4335 #17
+> out>__alloc_pages_direct_reclaim (did_some_progress=<synthetic
+> out>pointer>, ac=0xffffc9000306fc90, alloc_flags=2112, order=1,
+> out>pointer>gfp_mask=4197824) at mm/page_alloc.c:4356 #18
+> out>pointer>__alloc_pages_slowpath (gfp_mask=<optimized out>,
+> out>pointer>gfp_mask@entry=4197824, order=order@entry=1,
+> out>pointer>ac=ac@entry=0xffffc9000306fc90) at mm/page_alloc.c:4760
+> out>pointer>#19 0xffffffff811baf44 in __alloc_pages_nodemask
+> out>pointer>(gfp_mask=<optimized out>, gfp_mask@entry=4197824,
+> out>pointer>order=order@entry=1, preferred_nid=<optimized out>,
+> out>pointer>nodemask=0x0 <fixed_percpu_data>) at mm/page_alloc.c:4970
+> out>pointer>#20 0xffffffff811ce039 in alloc_pages_current
+> out>pointer>(gfp=gfp@entry=4197824, order=order@entry=1) at
+> out>pointer>./include/linux/topology.h:88 #21 0xffffffff811b6248 in
+> out>pointer>alloc_pages (order=order@entry=1, gfp_mask=4197824) at
+> out>pointer>./include/linux/gfp.h:547 #22 __get_free_pages
+> out>pointer>(gfp_mask=gfp_mask@entry=4197824, order=order@entry=1) at
+> out>pointer>mm/page_alloc.c:4994 #23 0xffffffff8105482c in _pgd_alloc
+> out>pointer>() at arch/x86/mm/pgtable.c:430
+> #24 pgd_alloc (mm=mm@entry=0xffff88800315e400) at
+> arch/x86/mm/pgtable.c:430 #25 0xffffffff8105efae in mm_alloc_pgd
+> (mm=0xffff88800315e400) at kernel/fork.c:1054 #26 mm_init
+> (mm=mm@entry=0xffff88800315e400, user_ns=<optimized out>,
+> p=0xffff888002bbc880) at kernel/fork.c:1054 #27 0xffffffff8105f624 in
+> dup_mm (oldmm=0xffff888004efa800, tsk=0xffff888002bbc880) at
+> kernel/fork.c:1369 #28 0xffffffff810616a5 in copy_mm
+> (tsk=0xffff888002bbc880, clone_flags=0) at
+> ./arch/x86/include/asm/current.h:15 #29 copy_process
+> (pid=pid@entry=0x0 <fixed_percpu_data>, trace=trace@entry=0,
+> node=node@entry=-1, args=args@entry=0xffffc9000306fed0) at
+> kernel/fork.c:2110 #30 0xffffffff81061934 in kernel_clone
+> (args=args@entry=0xffffc9000306fed0) at kernel/fork.c:2471 #31
+> 0xffffffff81061c8f in __do_sys_fork (__unused=<optimized out>) at
+> kernel/fork.c:2534 #32 0xffffffff81b41693 in do_syscall_64
+> (nr=<optimized out>, regs=0xffffc9000306ff58) at
+> arch/x86/entry/common.c:55 #33 0xffffffff81c0007c in entry_SYSCALL_64
+> () at arch/x86/entry/entry_64.S:120 #34 0x00000000000526aa in ?? ()
+> #35 0x0000564f0b0bc2b0 in ?? () #36 0x0000000000000001 in
+> fixed_percpu_data () #37 0x00007ffe0ee549f0 in ?? () #38
+> 0x0000564f0b657260 in ?? () #39 0x0000000000000000 in ?? ()
+> 
+> 
+> Kernel-Config: Attached. It's a x86_64 defconfig with the following
+> modifications:
+>  - CONFIG_XENOMAI disabled
+>  - CONFIG_DOVETAIL disabled
+>  - CONFIG_MIGRATION disabled
+>  - CONFIG_DEBUG_INFO enabled (to be able to debug)
+>  - CONFIG_GDB_SCRIPTS enabled (debugging...)
+> 
+> I disabled Xenomai and Dovetail to limit the search scope. The problem
+> remains reproducible without them.
+> 
+> 
+> Workload:
+> Stressing the system with stress-ng. After 45 to 60 minutes the system
+> is frozen.
+> cmdline: stress-ng --cpu 4 --io 2 --vm 2 --vm-bytes 128M --fork 4
+> --timeout 0
+> 
+> 
+> IRQ flag:
+> All CPUs (or gdb threads) waiting at kernel/smp.c:228 have the IF flag
+> (part of eflag register) unset, while other CPUs have it set:
+> 
+> (gdb) info register
+> eflags         0x2                 [ ]
+> 
+> vs
+> 
+> eflags         0x202               [ IF ]
+> 
+> 
+> smp_call_function_many_cond() has some notes about deadlocks that
+> might appear when being called with IRQs disabled, but I actually
+> never saw one of the warnings that should come up. As IF flag is
+> unset, someone has to turn off IRQs later (while waiting) and that
+> might be the reason for the deadlock.
+> 
+> Ideas / feedback / advice welcome. Thanks!
+
+Anything in the kernel log? We have this tsc=reliable thing that causes
+all sorts of funny issues it seems.
+
+Henning
+
+> Best regards,
+> Florian
+> 
+> [1]
+> https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgitlab.com%2FXenomai%2Fxenomai-hacker-space%2F-%2Fissues%2F16&amp;data=04%7C01%7Cde173c00-e982-4fda-8644-47edf4671d63%40ad011.siemens.com%7C47300555f9b6471527d708d90e183dd7%7C38ae3bcd95794fd4addab42e1495d55a%7C1%7C0%7C637556319536919748%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=jzx060h5pSzs15pPpdPtIhPL8zDDRD5NHFH0Oz6BbqQ%3D&amp;reserved=0
+
+
