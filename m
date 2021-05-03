@@ -1,11 +1,15 @@
-References: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: x86 on dovetail: Stress-ng gets my system down
-In-reply-to: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
-Date: Mon, 03 May 2021 15:09:34 +0200
-Message-ID: <87h7jkt14h.fsf@xenomai.org>
+Date: Mon, 3 May 2021 13:28:48 +0000
+Message-ID: <0abceaada993ba96d011467778ecf4759888b2c5.camel@siemens.com>
+References: <6a9b67084f19b080d6b20b02e9385ce94ef1ab66.camel@siemens.com>
+ <87h7jkt14h.fsf@xenomai.org>
+In-Reply-To: <87h7jkt14h.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4C55835232C7774A92AB423E590D1FC9@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,143 +18,157 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "henning.schild@siemens.com" <henning.schild@siemens.com>
 
-
-Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
-
-> Hi,
->
-> while trying to debug one of the Xenomai 3.2 issues listed at [1] I run
-> into the situation described below on my x86 system. The problem (or at
-> least the "system hang" is reproducible on real hardware and on
-> qemu/kvm.
->
-> Once the system is frozen, attaching GDB to the qemu process shows me:
->
-> (gdb) info threads
->   Id   Target Id                  Frame 
-> * 1    Thread 1 (CPU#0 [running]) csd_lock_wait (csd=0xffff88803e92ea00) at kernel/smp.c:228
->   2    Thread 2 (CPU#1 [running]) 0x0000564f0b05d36d in ?? ()
->   3    Thread 3 (CPU#2 [running]) csd_lock_wait (csd=0xffff88803e82f1e0) at kernel/smp.c:228
->   4    Thread 4 (CPU#3 [running]) csd_lock_wait (csd=0xffff88803e82f200) at kernel/smp.c:228
->
-> So three of my CPUs are waiting for other CPUs to complete a function
-> call IPI. It looks like CPU1 is not responding anymore. The system is
-> completely unusable at this point.
->
-> (gdb) bt
-> #0  csd_lock_wait (csd=0xffff88803e92ea00) at kernel/smp.c:228
-> #1  smp_call_function_many_cond (mask=mask@entry=0xffff88800448c340, func=func@entry=0xffffffff81055bb0 <flush_tlb_func_remote>, info=info@entry=0xffffffff8200acc0 <full_flush_tlb_info>, wait=wait@entry=true, 
->     cond_func=cond_func@entry=0xffffffff810550b0 <tlb_is_not_lazy>) at kernel/smp.c:693
-> #2  0xffffffff810f56f5 in on_each_cpu_cond_mask (cond_func=cond_func@entry=0xffffffff810550b0 <tlb_is_not_lazy>, func=func@entry=0xffffffff81055bb0 <flush_tlb_func_remote>, info=info@entry=0xffffffff8200acc0 <full_flush_tlb_info>, wait=wait@entry=true, 
->     mask=mask@entry=0xffff88800448c340) at kernel/smp.c:904
-> #3  0xffffffff81055538 in native_flush_tlb_others (cpumask=cpumask@entry=0xffff88800448c340, info=info@entry=0xffffffff8200acc0 <full_flush_tlb_info>) at arch/x86/mm/tlb.c:840
-> #4  0xffffffff81055fac in flush_tlb_others (info=0xffffffff8200acc0 <full_flush_tlb_info>, cpumask=0xffff88800448c340) at arch/x86/mm/tlb.c:1170
-> #5  arch_tlbbatch_flush (batch=batch@entry=0xffff88800448c340) at arch/x86/mm/tlb.c:1170
-> #6  0xffffffff811ae3e1 in try_to_unmap_flush () at mm/rmap.c:602
-> #7  0xffffffff8117d9d3 in shrink_page_list (page_list=page_list@entry=0xffffc9000306f910, pgdat=pgdat@entry=0xffff88803ffdb000, sc=sc@entry=0xffffc9000306fb18, stat=stat@entry=0xffffc9000306f924, ignore_references=ignore_references@entry=false) at mm/vmscan.c:1487
-> #8  0xffffffff8117f79c in shrink_inactive_list (nr_to_scan=<optimized out>, lruvec=lruvec@entry=0xffff88803ffde508, sc=sc@entry=0xffffc9000306fb18, lru=lru@entry=LRU_INACTIVE_FILE) at mm/vmscan.c:1962
-> #9  0xffffffff811800dc in shrink_list (sc=0xffffc9000306fb18, lruvec=0xffff88803ffde508, nr_to_scan=<optimized out>, lru=<optimized out>) at mm/vmscan.c:2169
-> #10 shrink_lruvec (lruvec=lruvec@entry=0xffff88803ffde508, sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:2464
-> #11 0xffffffff81180374 in shrink_node_memcgs (sc=0xffffc9000306fb18, pgdat=0xffff88803ffdb000) at mm/vmscan.c:2652
-> #12 shrink_node (pgdat=pgdat@entry=0xffff88803ffdb000, sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:2769
-> #13 0xffffffff811806c8 in shrink_zones (sc=0xffffc9000306fb18, zonelist=0xffff88803ffdc400) at mm/vmscan.c:2972
-> #14 do_try_to_free_pages (zonelist=zonelist@entry=0xffff88803ffdc400, sc=sc@entry=0xffffc9000306fb18) at mm/vmscan.c:3027
-> #15 0xffffffff811817f6 in try_to_free_pages (zonelist=0xffff88803ffdc400, order=order@entry=1, gfp_mask=gfp_mask@entry=4197824, nodemask=<optimized out>) at mm/vmscan.c:3266
-> #16 0xffffffff811ba411 in __perform_reclaim (ac=0xffffc9000306fc90, ac=0xffffc9000306fc90, order=1, gfp_mask=4197824) at mm/page_alloc.c:4335
-> #17 __alloc_pages_direct_reclaim (did_some_progress=<synthetic pointer>, ac=0xffffc9000306fc90, alloc_flags=2112, order=1, gfp_mask=4197824) at mm/page_alloc.c:4356
-> #18 __alloc_pages_slowpath (gfp_mask=<optimized out>, gfp_mask@entry=4197824, order=order@entry=1, ac=ac@entry=0xffffc9000306fc90) at mm/page_alloc.c:4760
-> #19 0xffffffff811baf44 in __alloc_pages_nodemask (gfp_mask=<optimized out>, gfp_mask@entry=4197824, order=order@entry=1, preferred_nid=<optimized out>, nodemask=0x0 <fixed_percpu_data>) at mm/page_alloc.c:4970
-> #20 0xffffffff811ce039 in alloc_pages_current (gfp=gfp@entry=4197824, order=order@entry=1) at ./include/linux/topology.h:88
-> #21 0xffffffff811b6248 in alloc_pages (order=order@entry=1, gfp_mask=4197824) at ./include/linux/gfp.h:547
-> #22 __get_free_pages (gfp_mask=gfp_mask@entry=4197824, order=order@entry=1) at mm/page_alloc.c:4994
-> #23 0xffffffff8105482c in _pgd_alloc () at arch/x86/mm/pgtable.c:430
-> #24 pgd_alloc (mm=mm@entry=0xffff88800315e400) at arch/x86/mm/pgtable.c:430
-> #25 0xffffffff8105efae in mm_alloc_pgd (mm=0xffff88800315e400) at kernel/fork.c:1054
-> #26 mm_init (mm=mm@entry=0xffff88800315e400, user_ns=<optimized out>, p=0xffff888002bbc880) at kernel/fork.c:1054
-> #27 0xffffffff8105f624 in dup_mm (oldmm=0xffff888004efa800, tsk=0xffff888002bbc880) at kernel/fork.c:1369
-> #28 0xffffffff810616a5 in copy_mm (tsk=0xffff888002bbc880, clone_flags=0) at ./arch/x86/include/asm/current.h:15
-> #29 copy_process (pid=pid@entry=0x0 <fixed_percpu_data>, trace=trace@entry=0, node=node@entry=-1, args=args@entry=0xffffc9000306fed0) at kernel/fork.c:2110
-> #30 0xffffffff81061934 in kernel_clone (args=args@entry=0xffffc9000306fed0) at kernel/fork.c:2471
-> #31 0xffffffff81061c8f in __do_sys_fork (__unused=<optimized out>) at kernel/fork.c:2534
-> #32 0xffffffff81b41693 in do_syscall_64 (nr=<optimized out>, regs=0xffffc9000306ff58) at arch/x86/entry/common.c:55
-> #33 0xffffffff81c0007c in entry_SYSCALL_64 () at arch/x86/entry/entry_64.S:120
-> #34 0x00000000000526aa in ?? ()
-> #35 0x0000564f0b0bc2b0 in ?? ()
-> #36 0x0000000000000001 in fixed_percpu_data ()
-> #37 0x00007ffe0ee549f0 in ?? ()
-> #38 0x0000564f0b657260 in ?? ()
-> #39 0x0000000000000000 in ?? ()
->
->
-> Kernel-Config: Attached. It's a x86_64 defconfig with the following
-> modifications:
->  - CONFIG_XENOMAI disabled
->  - CONFIG_DOVETAIL disabled
->  - CONFIG_MIGRATION disabled
->  - CONFIG_DEBUG_INFO enabled (to be able to debug)
->  - CONFIG_GDB_SCRIPTS enabled (debugging...)
->
-> I disabled Xenomai and Dovetail to limit the search scope. The problem
-> remains reproducible without them.
->
->
-> Workload:
-> Stressing the system with stress-ng. After 45 to 60 minutes the system
-> is frozen.
-> cmdline: stress-ng --cpu 4 --io 2 --vm 2 --vm-bytes 128M --fork 4 --timeout 0
->
->
-> IRQ flag:
-> All CPUs (or gdb threads) waiting at kernel/smp.c:228 have the IF flag
-> (part of eflag register) unset, while other CPUs have it set:
->
-> (gdb) info register
-> eflags         0x2                 [ ]
->
-> vs
->
-> eflags         0x202               [ IF ]
->
->
-> smp_call_function_many_cond() has some notes about deadlocks that might
-> appear when being called with IRQs disabled, but I actually never saw
-> one of the warnings that should come up. As IF flag is unset, someone
-> has to turn off IRQs later (while waiting) and that might be the reason
-> for the deadlock.
-
-You should be able to prove it that way:
-
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 25240fb2df94922..35c439d1011b8fc 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -211,6 +211,8 @@ static __always_inline void csd_lock_wait(call_single_data_t *csd)
- 
- 	ts1 = ts0 = sched_clock();
- 	for (;;) {
-+		WARN_ON_ONCE(hard_irqs_disabled());
-+		WARN_ON_ONCE(irqs_disabled());
- 		if (csd_lock_wait_toolong(csd, ts0, &ts1, &bug_id))
- 			break;
- 		cpu_relax();
-
-It did happen that an issue in trap/irq mgmt caused the (virtual)
-interrupt state to become suddenly broken inside a loop. That snippet
-would detect it, without pinpointing the offender precisely though.
-
-A couple of questions:
-
-- how long does it take to lockup a KVM instance with stress-ng that
-  way?
-
-- are you running this kernel?
-https://git.evlproject.org/linux-evl.git/log/?h=dovetail/v5.10
-
-Thanks,
-
--- 
-Philippe.
+T24gTW9uLCAyMDIxLTA1LTAzIGF0IDE1OjA5ICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gQmV6ZGVrYSwgRmxvcmlhbiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cml0ZXM6
+DQo+IA0KPiA+IEhpLA0KPiA+IA0KPiA+IHdoaWxlIHRyeWluZyB0byBkZWJ1ZyBvbmUgb2YgdGhl
+IFhlbm9tYWkgMy4yIGlzc3VlcyBsaXN0ZWQgYXQgWzFdIEkgcnVuDQo+ID4gaW50byB0aGUgc2l0
+dWF0aW9uIGRlc2NyaWJlZCBiZWxvdyBvbiBteSB4ODYgc3lzdGVtLiBUaGUgcHJvYmxlbSAob3Ig
+YXQNCj4gPiBsZWFzdCB0aGUgInN5c3RlbSBoYW5nIiBpcyByZXByb2R1Y2libGUgb24gcmVhbCBo
+YXJkd2FyZSBhbmQgb24NCj4gPiBxZW11L2t2bS4NCj4gPiANCj4gPiBPbmNlIHRoZSBzeXN0ZW0g
+aXMgZnJvemVuLCBhdHRhY2hpbmcgR0RCIHRvIHRoZSBxZW11IHByb2Nlc3Mgc2hvd3MgbWU6DQo+
+ID4gDQo+ID4gKGdkYikgaW5mbyB0aHJlYWRzDQo+ID4gwqDCoElkICAgVGFyZ2V0IElkICAgICAg
+ICAgICAgICAgICAgRnJhbWUgDQo+ID4gKiAxICAgIFRocmVhZCAxIChDUFUjMCBbcnVubmluZ10p
+IGNzZF9sb2NrX3dhaXQgKGNzZD0weGZmZmY4ODgwM2U5MmVhMDApIGF0IGtlcm5lbC9zbXAuYzoy
+MjgNCj4gPiDCoMKgMiAgICBUaHJlYWQgMiAoQ1BVIzEgW3J1bm5pbmddKSAweDAwMDA1NjRmMGIw
+NWQzNmQgaW4gPz8gKCkNCj4gPiDCoMKgMyAgICBUaHJlYWQgMyAoQ1BVIzIgW3J1bm5pbmddKSBj
+c2RfbG9ja193YWl0IChjc2Q9MHhmZmZmODg4MDNlODJmMWUwKSBhdCBrZXJuZWwvc21wLmM6MjI4
+DQo+ID4gwqDCoDQgICAgVGhyZWFkIDQgKENQVSMzIFtydW5uaW5nXSkgY3NkX2xvY2tfd2FpdCAo
+Y3NkPTB4ZmZmZjg4ODAzZTgyZjIwMCkgYXQga2VybmVsL3NtcC5jOjIyOA0KPiA+IA0KPiA+IFNv
+IHRocmVlIG9mIG15IENQVXMgYXJlIHdhaXRpbmcgZm9yIG90aGVyIENQVXMgdG8gY29tcGxldGUg
+YSBmdW5jdGlvbg0KPiA+IGNhbGwgSVBJLiBJdCBsb29rcyBsaWtlIENQVTEgaXMgbm90IHJlc3Bv
+bmRpbmcgYW55bW9yZS4gVGhlIHN5c3RlbSBpcw0KPiA+IGNvbXBsZXRlbHkgdW51c2FibGUgYXQg
+dGhpcyBwb2ludC4NCj4gPiANCj4gPiAoZ2RiKSBidA0KPiA+ICMwICBjc2RfbG9ja193YWl0IChj
+c2Q9MHhmZmZmODg4MDNlOTJlYTAwKSBhdCBrZXJuZWwvc21wLmM6MjI4DQo+ID4gIzEgIHNtcF9j
+YWxsX2Z1bmN0aW9uX21hbnlfY29uZCAobWFzaz1tYXNrQGVudHJ5PTB4ZmZmZjg4ODAwNDQ4YzM0
+MCwgZnVuYz1mdW5jQGVudHJ5PTB4ZmZmZmZmZmY4MTA1NWJiMCA8Zmx1c2hfdGxiX2Z1bmNfcmVt
+b3RlPiwgaW5mbz1pbmZvQGVudHJ5PTB4ZmZmZmZmZmY4MjAwYWNjMCA8ZnVsbF9mbHVzaF90bGJf
+aW5mbz4sIHdhaXQ9d2FpdEBlbnRyeT10cnVlLCANCj4gPiDCoMKgwqDCoGNvbmRfZnVuYz1jb25k
+X2Z1bmNAZW50cnk9MHhmZmZmZmZmZjgxMDU1MGIwIDx0bGJfaXNfbm90X2xhenk+KSBhdCBrZXJu
+ZWwvc21wLmM6NjkzDQo+ID4gIzIgIDB4ZmZmZmZmZmY4MTBmNTZmNSBpbiBvbl9lYWNoX2NwdV9j
+b25kX21hc2sgKGNvbmRfZnVuYz1jb25kX2Z1bmNAZW50cnk9MHhmZmZmZmZmZjgxMDU1MGIwIDx0
+bGJfaXNfbm90X2xhenk+LCBmdW5jPWZ1bmNAZW50cnk9MHhmZmZmZmZmZjgxMDU1YmIwIDxmbHVz
+aF90bGJfZnVuY19yZW1vdGU+LCBpbmZvPWluZm9AZW50cnk9MHhmZmZmZmZmZjgyMDBhY2MwIDxm
+dWxsX2ZsdXNoX3RsYl9pbmZvPiwgd2FpdD13YWl0QGVudHJ5PXRydWUsIA0KPiA+IMKgwqDCoMKg
+bWFzaz1tYXNrQGVudHJ5PTB4ZmZmZjg4ODAwNDQ4YzM0MCkgYXQga2VybmVsL3NtcC5jOjkwNA0K
+PiA+ICMzICAweGZmZmZmZmZmODEwNTU1MzggaW4gbmF0aXZlX2ZsdXNoX3RsYl9vdGhlcnMgKGNw
+dW1hc2s9Y3B1bWFza0BlbnRyeT0weGZmZmY4ODgwMDQ0OGMzNDAsIGluZm89aW5mb0BlbnRyeT0w
+eGZmZmZmZmZmODIwMGFjYzAgPGZ1bGxfZmx1c2hfdGxiX2luZm8+KSBhdCBhcmNoL3g4Ni9tbS90
+bGIuYzo4NDANCj4gPiAjNCAgMHhmZmZmZmZmZjgxMDU1ZmFjIGluIGZsdXNoX3RsYl9vdGhlcnMg
+KGluZm89MHhmZmZmZmZmZjgyMDBhY2MwIDxmdWxsX2ZsdXNoX3RsYl9pbmZvPiwgY3B1bWFzaz0w
+eGZmZmY4ODgwMDQ0OGMzNDApIGF0IGFyY2gveDg2L21tL3RsYi5jOjExNzANCj4gPiAjNSAgYXJj
+aF90bGJiYXRjaF9mbHVzaCAoYmF0Y2g9YmF0Y2hAZW50cnk9MHhmZmZmODg4MDA0NDhjMzQwKSBh
+dCBhcmNoL3g4Ni9tbS90bGIuYzoxMTcwDQo+ID4gIzYgIDB4ZmZmZmZmZmY4MTFhZTNlMSBpbiB0
+cnlfdG9fdW5tYXBfZmx1c2ggKCkgYXQgbW0vcm1hcC5jOjYwMg0KPiA+ICM3ICAweGZmZmZmZmZm
+ODExN2Q5ZDMgaW4gc2hyaW5rX3BhZ2VfbGlzdCAocGFnZV9saXN0PXBhZ2VfbGlzdEBlbnRyeT0w
+eGZmZmZjOTAwMDMwNmY5MTAsIHBnZGF0PXBnZGF0QGVudHJ5PTB4ZmZmZjg4ODAzZmZkYjAwMCwg
+c2M9c2NAZW50cnk9MHhmZmZmYzkwMDAzMDZmYjE4LCBzdGF0PXN0YXRAZW50cnk9MHhmZmZmYzkw
+MDAzMDZmOTI0LCBpZ25vcmVfcmVmZXJlbmNlcz1pZ25vcmVfcmVmZXJlbmNlc0BlbnRyeT1mYWxz
+ZSkgYXQgbW0vdm1zY2FuLmM6MTQ4Nw0KPiA+ICM4ICAweGZmZmZmZmZmODExN2Y3OWMgaW4gc2hy
+aW5rX2luYWN0aXZlX2xpc3QgKG5yX3RvX3NjYW49PG9wdGltaXplZCBvdXQ+LCBscnV2ZWM9bHJ1
+dmVjQGVudHJ5PTB4ZmZmZjg4ODAzZmZkZTUwOCwgc2M9c2NAZW50cnk9MHhmZmZmYzkwMDAzMDZm
+YjE4LCBscnU9bHJ1QGVudHJ5PUxSVV9JTkFDVElWRV9GSUxFKSBhdCBtbS92bXNjYW4uYzoxOTYy
+DQo+ID4gIzkgIDB4ZmZmZmZmZmY4MTE4MDBkYyBpbiBzaHJpbmtfbGlzdCAoc2M9MHhmZmZmYzkw
+MDAzMDZmYjE4LCBscnV2ZWM9MHhmZmZmODg4MDNmZmRlNTA4LCBucl90b19zY2FuPTxvcHRpbWl6
+ZWQgb3V0PiwgbHJ1PTxvcHRpbWl6ZWQgb3V0PikgYXQgbW0vdm1zY2FuLmM6MjE2OQ0KPiA+ICMx
+MCBzaHJpbmtfbHJ1dmVjIChscnV2ZWM9bHJ1dmVjQGVudHJ5PTB4ZmZmZjg4ODAzZmZkZTUwOCwg
+c2M9c2NAZW50cnk9MHhmZmZmYzkwMDAzMDZmYjE4KSBhdCBtbS92bXNjYW4uYzoyNDY0DQo+ID4g
+IzExIDB4ZmZmZmZmZmY4MTE4MDM3NCBpbiBzaHJpbmtfbm9kZV9tZW1jZ3MgKHNjPTB4ZmZmZmM5
+MDAwMzA2ZmIxOCwgcGdkYXQ9MHhmZmZmODg4MDNmZmRiMDAwKSBhdCBtbS92bXNjYW4uYzoyNjUy
+DQo+ID4gIzEyIHNocmlua19ub2RlIChwZ2RhdD1wZ2RhdEBlbnRyeT0weGZmZmY4ODgwM2ZmZGIw
+MDAsIHNjPXNjQGVudHJ5PTB4ZmZmZmM5MDAwMzA2ZmIxOCkgYXQgbW0vdm1zY2FuLmM6Mjc2OQ0K
+PiA+ICMxMyAweGZmZmZmZmZmODExODA2YzggaW4gc2hyaW5rX3pvbmVzIChzYz0weGZmZmZjOTAw
+MDMwNmZiMTgsIHpvbmVsaXN0PTB4ZmZmZjg4ODAzZmZkYzQwMCkgYXQgbW0vdm1zY2FuLmM6Mjk3
+Mg0KPiA+ICMxNCBkb190cnlfdG9fZnJlZV9wYWdlcyAoem9uZWxpc3Q9em9uZWxpc3RAZW50cnk9
+MHhmZmZmODg4MDNmZmRjNDAwLCBzYz1zY0BlbnRyeT0weGZmZmZjOTAwMDMwNmZiMTgpIGF0IG1t
+L3Ztc2Nhbi5jOjMwMjcNCj4gPiAjMTUgMHhmZmZmZmZmZjgxMTgxN2Y2IGluIHRyeV90b19mcmVl
+X3BhZ2VzICh6b25lbGlzdD0weGZmZmY4ODgwM2ZmZGM0MDAsIG9yZGVyPW9yZGVyQGVudHJ5PTEs
+IGdmcF9tYXNrPWdmcF9tYXNrQGVudHJ5PTQxOTc4MjQsIG5vZGVtYXNrPTxvcHRpbWl6ZWQgb3V0
+PikgYXQgbW0vdm1zY2FuLmM6MzI2Ng0KPiA+ICMxNiAweGZmZmZmZmZmODExYmE0MTEgaW4gX19w
+ZXJmb3JtX3JlY2xhaW0gKGFjPTB4ZmZmZmM5MDAwMzA2ZmM5MCwgYWM9MHhmZmZmYzkwMDAzMDZm
+YzkwLCBvcmRlcj0xLCBnZnBfbWFzaz00MTk3ODI0KSBhdCBtbS9wYWdlX2FsbG9jLmM6NDMzNQ0K
+PiA+ICMxNyBfX2FsbG9jX3BhZ2VzX2RpcmVjdF9yZWNsYWltIChkaWRfc29tZV9wcm9ncmVzcz08
+c3ludGhldGljIHBvaW50ZXI+LCBhYz0weGZmZmZjOTAwMDMwNmZjOTAsIGFsbG9jX2ZsYWdzPTIx
+MTIsIG9yZGVyPTEsIGdmcF9tYXNrPTQxOTc4MjQpIGF0IG1tL3BhZ2VfYWxsb2MuYzo0MzU2DQo+
+ID4gIzE4IF9fYWxsb2NfcGFnZXNfc2xvd3BhdGggKGdmcF9tYXNrPTxvcHRpbWl6ZWQgb3V0Piwg
+Z2ZwX21hc2tAZW50cnk9NDE5NzgyNCwgb3JkZXI9b3JkZXJAZW50cnk9MSwgYWM9YWNAZW50cnk9
+MHhmZmZmYzkwMDAzMDZmYzkwKSBhdCBtbS9wYWdlX2FsbG9jLmM6NDc2MA0KPiA+ICMxOSAweGZm
+ZmZmZmZmODExYmFmNDQgaW4gX19hbGxvY19wYWdlc19ub2RlbWFzayAoZ2ZwX21hc2s9PG9wdGlt
+aXplZCBvdXQ+LCBnZnBfbWFza0BlbnRyeT00MTk3ODI0LCBvcmRlcj1vcmRlckBlbnRyeT0xLCBw
+cmVmZXJyZWRfbmlkPTxvcHRpbWl6ZWQgb3V0Piwgbm9kZW1hc2s9MHgwIDxmaXhlZF9wZXJjcHVf
+ZGF0YT4pIGF0IG1tL3BhZ2VfYWxsb2MuYzo0OTcwDQo+ID4gIzIwIDB4ZmZmZmZmZmY4MTFjZTAz
+OSBpbiBhbGxvY19wYWdlc19jdXJyZW50IChnZnA9Z2ZwQGVudHJ5PTQxOTc4MjQsIG9yZGVyPW9y
+ZGVyQGVudHJ5PTEpIGF0IC4vaW5jbHVkZS9saW51eC90b3BvbG9neS5oOjg4DQo+ID4gIzIxIDB4
+ZmZmZmZmZmY4MTFiNjI0OCBpbiBhbGxvY19wYWdlcyAob3JkZXI9b3JkZXJAZW50cnk9MSwgZ2Zw
+X21hc2s9NDE5NzgyNCkgYXQgLi9pbmNsdWRlL2xpbnV4L2dmcC5oOjU0Nw0KPiA+ICMyMiBfX2dl
+dF9mcmVlX3BhZ2VzIChnZnBfbWFzaz1nZnBfbWFza0BlbnRyeT00MTk3ODI0LCBvcmRlcj1vcmRl
+ckBlbnRyeT0xKSBhdCBtbS9wYWdlX2FsbG9jLmM6NDk5NA0KPiA+ICMyMyAweGZmZmZmZmZmODEw
+NTQ4MmMgaW4gX3BnZF9hbGxvYyAoKSBhdCBhcmNoL3g4Ni9tbS9wZ3RhYmxlLmM6NDMwDQo+ID4g
+IzI0IHBnZF9hbGxvYyAobW09bW1AZW50cnk9MHhmZmZmODg4MDAzMTVlNDAwKSBhdCBhcmNoL3g4
+Ni9tbS9wZ3RhYmxlLmM6NDMwDQo+ID4gIzI1IDB4ZmZmZmZmZmY4MTA1ZWZhZSBpbiBtbV9hbGxv
+Y19wZ2QgKG1tPTB4ZmZmZjg4ODAwMzE1ZTQwMCkgYXQga2VybmVsL2ZvcmsuYzoxMDU0DQo+ID4g
+IzI2IG1tX2luaXQgKG1tPW1tQGVudHJ5PTB4ZmZmZjg4ODAwMzE1ZTQwMCwgdXNlcl9ucz08b3B0
+aW1pemVkIG91dD4sIHA9MHhmZmZmODg4MDAyYmJjODgwKSBhdCBrZXJuZWwvZm9yay5jOjEwNTQN
+Cj4gPiAjMjcgMHhmZmZmZmZmZjgxMDVmNjI0IGluIGR1cF9tbSAob2xkbW09MHhmZmZmODg4MDA0
+ZWZhODAwLCB0c2s9MHhmZmZmODg4MDAyYmJjODgwKSBhdCBrZXJuZWwvZm9yay5jOjEzNjkNCj4g
+PiAjMjggMHhmZmZmZmZmZjgxMDYxNmE1IGluIGNvcHlfbW0gKHRzaz0weGZmZmY4ODgwMDJiYmM4
+ODAsIGNsb25lX2ZsYWdzPTApIGF0IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vY3VycmVudC5oOjE1
+DQo+ID4gIzI5IGNvcHlfcHJvY2VzcyAocGlkPXBpZEBlbnRyeT0weDAgPGZpeGVkX3BlcmNwdV9k
+YXRhPiwgdHJhY2U9dHJhY2VAZW50cnk9MCwgbm9kZT1ub2RlQGVudHJ5PS0xLCBhcmdzPWFyZ3NA
+ZW50cnk9MHhmZmZmYzkwMDAzMDZmZWQwKSBhdCBrZXJuZWwvZm9yay5jOjIxMTANCj4gPiAjMzAg
+MHhmZmZmZmZmZjgxMDYxOTM0IGluIGtlcm5lbF9jbG9uZSAoYXJncz1hcmdzQGVudHJ5PTB4ZmZm
+ZmM5MDAwMzA2ZmVkMCkgYXQga2VybmVsL2ZvcmsuYzoyNDcxDQo+ID4gIzMxIDB4ZmZmZmZmZmY4
+MTA2MWM4ZiBpbiBfX2RvX3N5c19mb3JrIChfX3VudXNlZD08b3B0aW1pemVkIG91dD4pIGF0IGtl
+cm5lbC9mb3JrLmM6MjUzNA0KPiA+ICMzMiAweGZmZmZmZmZmODFiNDE2OTMgaW4gZG9fc3lzY2Fs
+bF82NCAobnI9PG9wdGltaXplZCBvdXQ+LCByZWdzPTB4ZmZmZmM5MDAwMzA2ZmY1OCkgYXQgYXJj
+aC94ODYvZW50cnkvY29tbW9uLmM6NTUNCj4gPiAjMzMgMHhmZmZmZmZmZjgxYzAwMDdjIGluIGVu
+dHJ5X1NZU0NBTExfNjQgKCkgYXQgYXJjaC94ODYvZW50cnkvZW50cnlfNjQuUzoxMjANCj4gPiAj
+MzQgMHgwMDAwMDAwMDAwMDUyNmFhIGluID8/ICgpDQo+ID4gIzM1IDB4MDAwMDU2NGYwYjBiYzJi
+MCBpbiA/PyAoKQ0KPiA+ICMzNiAweDAwMDAwMDAwMDAwMDAwMDEgaW4gZml4ZWRfcGVyY3B1X2Rh
+dGEgKCkNCj4gPiAjMzcgMHgwMDAwN2ZmZTBlZTU0OWYwIGluID8/ICgpDQo+ID4gIzM4IDB4MDAw
+MDU2NGYwYjY1NzI2MCBpbiA/PyAoKQ0KPiA+ICMzOSAweDAwMDAwMDAwMDAwMDAwMDAgaW4gPz8g
+KCkNCj4gPiANCj4gPiANCj4gPiBLZXJuZWwtQ29uZmlnOiBBdHRhY2hlZC4gSXQncyBhIHg4Nl82
+NCBkZWZjb25maWcgd2l0aCB0aGUgZm9sbG93aW5nDQo+ID4gbW9kaWZpY2F0aW9uczoNCj4gPiDC
+oC0gQ09ORklHX1hFTk9NQUkgZGlzYWJsZWQNCj4gPiDCoC0gQ09ORklHX0RPVkVUQUlMIGRpc2Fi
+bGVkDQo+ID4gwqAtIENPTkZJR19NSUdSQVRJT04gZGlzYWJsZWQNCj4gPiDCoC0gQ09ORklHX0RF
+QlVHX0lORk8gZW5hYmxlZCAodG8gYmUgYWJsZSB0byBkZWJ1ZykNCj4gPiDCoC0gQ09ORklHX0dE
+Ql9TQ1JJUFRTIGVuYWJsZWQgKGRlYnVnZ2luZy4uLikNCj4gPiANCj4gPiBJIGRpc2FibGVkIFhl
+bm9tYWkgYW5kIERvdmV0YWlsIHRvIGxpbWl0IHRoZSBzZWFyY2ggc2NvcGUuIFRoZSBwcm9ibGVt
+DQo+ID4gcmVtYWlucyByZXByb2R1Y2libGUgd2l0aG91dCB0aGVtLg0KPiA+IA0KPiA+IA0KPiA+
+IFdvcmtsb2FkOg0KPiA+IFN0cmVzc2luZyB0aGUgc3lzdGVtIHdpdGggc3RyZXNzLW5nLiBBZnRl
+ciA0NSB0byA2MCBtaW51dGVzIHRoZSBzeXN0ZW0NCj4gPiBpcyBmcm96ZW4uDQo+ID4gY21kbGlu
+ZTogc3RyZXNzLW5nIC0tY3B1IDQgLS1pbyAyIC0tdm0gMiAtLXZtLWJ5dGVzIDEyOE0gLS1mb3Jr
+IDQgLS10aW1lb3V0IDANCj4gPiANCj4gPiANCj4gPiBJUlEgZmxhZzoNCj4gPiBBbGwgQ1BVcyAo
+b3IgZ2RiIHRocmVhZHMpIHdhaXRpbmcgYXQga2VybmVsL3NtcC5jOjIyOCBoYXZlIHRoZSBJRiBm
+bGFnDQo+ID4gKHBhcnQgb2YgZWZsYWcgcmVnaXN0ZXIpIHVuc2V0LCB3aGlsZSBvdGhlciBDUFVz
+IGhhdmUgaXQgc2V0Og0KPiA+IA0KPiA+IChnZGIpIGluZm8gcmVnaXN0ZXINCj4gPiBlZmxhZ3Mg
+ICAgICAgICAweDIgICAgICAgICAgICAgICAgIFsgXQ0KPiA+IA0KPiA+IHZzDQo+ID4gDQo+ID4g
+ZWZsYWdzICAgICAgICAgMHgyMDIgICAgICAgICAgICAgICBbIElGIF0NCj4gPiANCj4gPiANCj4g
+PiBzbXBfY2FsbF9mdW5jdGlvbl9tYW55X2NvbmQoKSBoYXMgc29tZSBub3RlcyBhYm91dCBkZWFk
+bG9ja3MgdGhhdCBtaWdodA0KPiA+IGFwcGVhciB3aGVuIGJlaW5nIGNhbGxlZCB3aXRoIElSUXMg
+ZGlzYWJsZWQsIGJ1dCBJIGFjdHVhbGx5IG5ldmVyIHNhdw0KPiA+IG9uZSBvZiB0aGUgd2Fybmlu
+Z3MgdGhhdCBzaG91bGQgY29tZSB1cC4gQXMgSUYgZmxhZyBpcyB1bnNldCwgc29tZW9uZQ0KPiA+
+IGhhcyB0byB0dXJuIG9mZiBJUlFzIGxhdGVyICh3aGlsZSB3YWl0aW5nKSBhbmQgdGhhdCBtaWdo
+dCBiZSB0aGUgcmVhc29uDQo+ID4gZm9yIHRoZSBkZWFkbG9jay4NCj4gDQo+IFlvdSBzaG91bGQg
+YmUgYWJsZSB0byBwcm92ZSBpdCB0aGF0IHdheToNCj4gDQo+IGRpZmYgLS1naXQgYS9rZXJuZWwv
+c21wLmMgYi9rZXJuZWwvc21wLmMNCj4gaW5kZXggMjUyNDBmYjJkZjk0OTIyLi4zNWM0MzlkMTAx
+MWI4ZmMgMTAwNjQ0DQo+IC0tLSBhL2tlcm5lbC9zbXAuYw0KPiArKysgYi9rZXJuZWwvc21wLmMN
+Cj4gQEAgLTIxMSw2ICsyMTEsOCBAQCBzdGF0aWMgX19hbHdheXNfaW5saW5lIHZvaWQgY3NkX2xv
+Y2tfd2FpdChjYWxsX3NpbmdsZV9kYXRhX3QgKmNzZCkNCj4gwqDCoAl0czEgPSB0czAgPSBzY2hl
+ZF9jbG9jaygpOw0KPiANCj4gwqAJZm9yICg7Oykgew0KPiArCQlXQVJOX09OX09OQ0UoaGFyZF9p
+cnFzX2Rpc2FibGVkKCkpOw0KPiArCQlXQVJOX09OX09OQ0UoaXJxc19kaXNhYmxlZCgpKTsNCj4g
+wqAJCWlmIChjc2RfbG9ja193YWl0X3Rvb2xvbmcoY3NkLCB0czAsICZ0czEsICZidWdfaWQpKQ0K
+PiDCoAkJCWJyZWFrOw0KPiDCoAkJY3B1X3JlbGF4KCk7DQo+IA0KPiBJdCBkaWQgaGFwcGVuIHRo
+YXQgYW4gaXNzdWUgaW4gdHJhcC9pcnEgbWdtdCBjYXVzZWQgdGhlICh2aXJ0dWFsKQ0KPiBpbnRl
+cnJ1cHQgc3RhdGUgdG8gYmVjb21lIHN1ZGRlbmx5IGJyb2tlbiBpbnNpZGUgYSBsb29wLiBUaGF0
+IHNuaXBwZXQNCj4gd291bGQgZGV0ZWN0IGl0LCB3aXRob3V0IHBpbnBvaW50aW5nIHRoZSBvZmZl
+bmRlciBwcmVjaXNlbHkgdGhvdWdoLg0KDQpJIHdpbGwgZ2l2ZSBpdCBhIHRyeSBhbmQgcmVwb3J0
+IGJhY2suDQoNCj4gDQo+IEEgY291cGxlIG9mIHF1ZXN0aW9uczoNCj4gDQo+IC0gaG93IGxvbmcg
+ZG9lcyBpdCB0YWtlIHRvIGxvY2t1cCBhIEtWTSBpbnN0YW5jZSB3aXRoIHN0cmVzcy1uZyB0aGF0
+DQo+IMKgwqB3YXk/DQoNCkluIG15IGNhc2UgYWJvdXQgNDUgbWludXRlcy4NCg0KPiANCj4gLSBh
+cmUgeW91IHJ1bm5pbmcgdGhpcyBrZXJuZWw/DQo+IGh0dHBzOi8vZ2l0LmV2bHByb2plY3Qub3Jn
+L2xpbnV4LWV2bC5naXQvbG9nLz9oPWRvdmV0YWlsL3Y1LjEwDQoNClllcy4gU29ycnkgZm9yIG5v
+dCBtZW50aW9uaW5nIHRoYXQuDQoNCj4gDQo+IFRoYW5rcywNCj4gDQoNCg==
 
