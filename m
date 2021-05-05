@@ -1,14 +1,20 @@
-Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
-References: <CY4PR02MB261531B57960FF9BD47E890BDC489@CY4PR02MB2615.namprd02.prod.outlook.com>
- <39840ca2-483a-1ece-f6e2-c1a49f3fb462@siemens.com>
- <DM5SPR00MB246AF6EA797021E37AAA7CEDC469@DM5SPR00MB246.namprd02.prod.outlook.com>
- <f4e3428b-232d-8d2c-0eb0-6d2a66ee6f2b@siemens.com>
- <DM5PR02MB2620C600FA8043BB5E65FC6CDC5A9@DM5PR02MB2620.namprd02.prod.outlook.com>
+Subject: Re: [PATCH v2 5/7] drivers/net: wrap csum_partial_copy_nocheck()
+References: <20210327101912.2291474-1-rpm@xenomai.org>
+ <20210327101912.2291474-6-rpm@xenomai.org>
+ <f00e7b29-5d8d-cdcb-adeb-630c277f7d67@siemens.com>
+ <87k0p4ui5y.fsf@xenomai.org>
+ <ce95f3e8-7bdc-c94f-8814-d6af1c3e5d71@siemens.com>
+ <878s5kugo7.fsf@xenomai.org>
+ <8c69e790-a094-7c96-c5b0-d71899cfc4f9@siemens.com>
+ <87wnt25g5g.fsf@xenomai.org>
+ <a45f15ee-2432-fc18-f0c8-ec5f61fc1c4b@siemens.com>
+ <87r1j854tv.fsf@xenomai.org> <87h7k3617i.fsf@xenomai.org>
+ <87wnsesgfz.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <da09edd1-f468-e417-f99b-07d4044cd3b7@siemens.com>
-Date: Wed, 5 May 2021 07:42:17 +0200
+Message-ID: <4208c1df-8501-450f-9925-54450fcd6803@siemens.com>
+Date: Wed, 5 May 2021 07:43:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <DM5PR02MB2620C600FA8043BB5E65FC6CDC5A9@DM5PR02MB2620.namprd02.prod.outlook.com>
+In-Reply-To: <87wnsesgfz.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,146 +26,435 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alan Gaglio <AGaglio@jerviswebb.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04.05.21 22:40, Alan Gaglio wrote:
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Friday, April 23, 2021 1:52 AM
->> To: Alan Gaglio <AGaglio@jerviswebb.com>; xenomai@xenomai.org
->> Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
->>
->> On 22.04.21 20:52, Alan Gaglio wrote:
->>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>> Sent: Wednesday, April 21, 2021 3:00 AM
->>>> To: Alan Gaglio <AGaglio@jerviswebb.com>; xenomai@xenomai.org
->>>> Subject: Re: RTSerial Difference in Behavior Between 2.6.4 & 3.1
->>>>
->>>> On 20.04.21 16:45, Alan Gaglio via Xenomai wrote:
->>>>> I am in the process of upgrading from 32-bit/Xenomai 2.6.4/Ubuntu
->>>>> 14.04.4/ Linux 3.16.7 to 64-bit/Xenomai 3.1/Ubuntu 20.04.1/Linux
->>>>> 5.4.77 and I'm experiencing an rtserial event difference in behavior.
->>>>> Our application depends on single-byte interrupts from rtserial
->>>>> ports, which we're not seeing despite having configured rtserial
->>>>> ports the same between our 2 different image configurations that run
->>>>> on the same
->>>> x86 hardware.
->>>>> Attached is a modified cross-link.c example that highlights this
->>>>> difference in behavior. Also included is relevant detail for each
->>>>> target, build, and sample program output.
->>>>>
->>>>> My modified cross-link.c transmits 26 characters every 1 second and
->>>>> prints the number of RX_PEND events along with reception bins every
->>>>> 26 characters read by the receive thread. Reception bins show the
->>>>> number of bytes read per RX_PEND event [0-16,17+]. The total number
->>>>> of bytes processed equals the sum of all bins multiplied by the
->>>>> quantity they represent. For example, these snipped outputs (from
->>>>> the below greater
->>>>> details) were taken following a total of 208 bytes transmitted. In
->>>>> 2.6.4 we have 208 events * 1 byte = 208 bytes and in 3.1 we have
->>>>> 48 events * 4 bytes + 8 events * 2 bytes = 208 bytes. We
->>>>> expect/desire the second bin to be exclusively non-zero (2.6.4
->>>>> output), indicating an RX_PEND event for each byte that arrives on the
->> serial port.
->>>>>
->>>>> 2.6.4 Output:
->>>>> rx.events=1  | rx.rx_pending=1 | r_t=1618404168709819446 Count= 208
->>>>> bins=0 208 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
->>>>> 3.1 Output:
->>>>> rx.events=1  | rx.rx_pending=2 | r_t=1618406767806828954 Count=  56
->>>>> bins=0 0 8 0 48 0 0 0 0 0 0 0 0 0 0 0 0 0
->>>>>
->>>>> I'm not sure where to take the next level of troubleshooting and am
->>>>> happy to provide additional detail, run tests, etc. The attached
->>>>> cross-link includes some preprocessor defines to modify program
->>>>> behaviors that I can explain if helpful. Details shown below are
->>>>> also attached with line wrapping removed for reference.
->>>>>
->>>>
->>>> Didn't dig through all the detailed information you provided yet, but
->>>> the first questions that come up for me would be
->>>>
->>>>  - do interrupts for the UART arrive at the expected rate, or are they
->>>>    already delayed?
->>>>
->>>>  - already tried to collect a system trace (ftrace event tracing) to
->>>>    gain an overview of what the application does when and what happens
->>>>    Xenomai-wise in the core (context switch, interrupts, etc.)?
->>>>
->>>> If interpreting the trace is tricky, share it. Also taking tracing on
->>>> both 2.6 and
->>>> 3.1 setups can help to find differences.
->>>>
->>>> Jan
->>>>
->>>> --
->>>> Siemens AG, T RDA IOT
->>>> Corporate Competence Center Embedded Linux
->>>
->>> Interpretation support is appreciated, attached are traces from both
->>> setups frozen following reception of the first 26 characters by the receive
->> thread.
->>> For 26 byte transmission at 115200 baud and my configured serial
->>> settings, minimum time from write-to-receive ought to be ~2256 us.
->>> I've reviewed from the start of transmission (rt_16550_write calls
->>> around lines 7888 X2_6/
->>> 6229 X3_1) at a surface level. Both traces show the first interrupt
->>> following rt_16550_write 2322 us from trace freeze, so I don't see a
->>> meaningful delay in overall message transmission time.
->>>
->>> In 2.6, I count a total of 28 rt_16550_interrupts, which corresponds
->>> well to the number of single-character reads output by my test
->>> program. These were generated at appropriate intervals of ~86 (2322/27)
->> us intervals.
->>>
->>> In 3.1, I count a total of 16 rt_16550_interrupts, which I'm having
->>> difficulty making sense of. UART interrupts are not arriving at the
->>> expected rate but instead in less frequent batches in roughly 4 character-
->> time intervals.
->>> The behavior seems like the FIFO depth of the UART is still 4
->>> characters deep despite having specified a FIFO depth 1 in
->>> rtser_config and having read back the configured depth for confirmation.
->>
->> That is pointing to the driver, and you should be able to validate actual
->> against desired registers settings. Already tried to instrument
->> (printk...) the driver(s) along the evaluation of RTSER_SET_FIFO_DEPTH [1]
->> and other manipulations of FCR [2]?
->>
->> Jan
->>
->> [1]
->> https://source.denx.de/Xenomai/xenomai/-
->> /blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L344
->> [2]
->> https://source.denx.de/Xenomai/xenomai/-
->> /blob/stable/v3.1.x/kernel/drivers/serial/16550A.c#L748
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
+On 04.05.21 16:48, Philippe Gerum wrote:
 > 
-> Thank you for the helpful suggestions Jan, I finally got back into the issue
-> and have it resolved. Our hardware provides UARTs via a Fintek F81866A
-> Super IO chip that has some extended configuration registers outside the
-> scope of the 16550 driver. A kernel patch from October 27th, 2016
-> to the 8250_fintek driver initialize the UART's FIFO Select Registers to
-> have a FIFO threshold multiplier (RXFTHR_MODE) of 4x the threshold set by
-> the standard FIFO Control Register in the 16550 driver [1]. Our image loads
-> the 8250 driver at boot and unloads it upon application execution. As a
-> result, the extended configuration settings persist in our F81866A and
-> cause the unexpected interrupt behavior witnessed.
+> Philippe Gerum <rpm@xenomai.org> writes:
 > 
-> I've confirmed that setting RXFTHR_MODE to a multiplier of 1x
-> generates single character interrupts in our 64b/X3.1/U20.04/L5.4.77
-> image just like our 32b/X2.6/U14.04/L3.16.7 image. We will make a
-> change in our application to ensure proper UART configuration for this
-> device going forward. Included is a link to the commit and sample program
-> output showing the change to RXFTHR_MODE prior to task execution
-> for reference.
+>> Philippe Gerum <rpm@xenomai.org> writes:
+>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 16.04.21 18:48, Philippe Gerum wrote:
+>>>>>
+>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>
+>>>>>> On 15.04.21 09:54, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>
+>>>>>>>> On 15.04.21 09:21, Philippe Gerum wrote:
+>>>>>>>>>
+>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>
+>>>>>>>>>> On 27.03.21 11:19, Philippe Gerum wrote:
+>>>>>>>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>>>>>>>
+>>>>>>>>>>> Since v5.9-rc1, csum_partial_copy_nocheck() forces a zero seed as its
+>>>>>>>>>>> last argument to csum_partial(). According to #cc44c17baf7f3, passing
+>>>>>>>>>>> a non-zero value would not even yield the proper result on some
+>>>>>>>>>>> architectures.
+>>>>>>>>>>>
+>>>>>>>>>>> Nevertheless, the current ICMP code does expect a non-zero csum seed
+>>>>>>>>>>> to be used in the next computation, so let's wrap net_csum_copy() to
+>>>>>>>>>>> csum_partial_copy_nocheck() for pre-5.9 kernels, and open code it for
+>>>>>>>>>>> later kernels so that we still feed csum_partial() with the user-given
+>>>>>>>>>>> csum. We still expect the x86, ARM and arm64 implementations of
+>>>>>>>>>>> csum_partial() to do the right thing.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> If that issue only affects the ICMP code path, why not only changing
+>>>>>>>>>> that, leaving rtskb_copy_and_csum_bits with the benefit of doing copy
+>>>>>>>>>> and csum in one step?
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> As a result of #cc44c17baf7f3, I see no common helper available from the
+>>>>>>>>> kernel folding the copy and checksum operations anymore, so I see no way
+>>>>>>>>> to keep rtskb_copy_and_csum_bits() as is. Did you find an all-in-one
+>>>>>>>>> replacement for csum_partial_copy_nocheck() which would allow a csum
+>>>>>>>>> value to be fed in?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> rtskb_copy_and_csum_dev does not need that.
+>>>>>>>>
+>>>>>>>
+>>>>>>> You made rtskb_copy_and_csum_bits() part of the exported API. So how do
+>>>>>>> you want to deal with this?
+>>>>>>>
+>>>>>>
+>>>>>> That is an internal API, so we don't care.
+>>>>>>
+>>>>>> But even if we converted rtskb_copy_and_csum_bits to work as it used to
+>>>>>> (with a csum != 0), there would be not reason to make
+>>>>>> rtskb_copy_and_csum_dev pay that price.
+>>>>>>
+>>>>>
+>>>>> Well, there may be a reason to challenge the idea that a folded
+>>>>> copy_and_csum is better for a real-time system than a split memcpy+csum
+>>>>> in the first place. Out of curiosity, I ran a few benchmarks lately on a
+>>>>> few SoCs regarding this, and it turned out that optimizing the data copy
+>>>>> to get the buffer quickly in place before checksumming the result may
+>>>>> well yield much better results with respect to jitter than what
+>>>>> csum_and_copy currently achieves on these SoCs.
+>>>>>
+>>>>> Inline csum_and_copy did perform slightly better on average (a couple of
+>>>>> hundreds of nanosecs at best) but with pathological jittery in the worst
+>>>>> case at times. On the contrary, the split memcpy+csum method did not
+>>>>> exhibit such jittery during these tests, not once.
+>>>>>
+>>>>> - four SoCs tested (2 x x86, armv7, armv8a)
+>>>>> - test code ran in kernel space (real-time task context,
+>>>>>   out-of-band/primary context)
+>>>>> - csum_partial_copy_nocheck() vs memcpy()+csum_partial()
+>>>>> - 3 buffer sizes tested (32, 1024, 1500 bytes), 3 runs each
+>>>>> - all buffers (src & dst) aligned on L1_CACHE_BYTES
+>>>>> - each run performed 1000,000 iterations of a given checksum loop, no
+>>>>>   pause in between.
+>>>>> - no concurrent load on the board
+>>>>> - all results in nanoseconds
+>>>>>
+>>>>> The worst results obtained are presented here for each SoC.
+>>>>>
+>>>>> x86[1]
+>>>>> ------
+>>>>>
+>>>>> vendor_id	: GenuineIntel
+>>>>> cpu family	: 6
+>>>>> model		: 92
+>>>>> model name	: Intel(R) Atom(TM) Processor E3940 @ 1.60GHz
+>>>>> stepping	: 9
+>>>>> cpu MHz		: 1593.600
+>>>>> cache size	: 1024 KB
+>>>>> cpuid level	: 21
+>>>>> wp		: yes
+>>>>> flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 ds_cpl vmx est tm2 ssse3 sdbg cx16 xtpr pdcm sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave rdrand lahf_lm 3dnowprefetch cpuid_fault cat_l2 pti tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust smep erms mpx rdt_a rdseed smap clflushopt intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts
+>>>>> vmx flags	: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=68, max=653, avg=70
+>>>>> CSUM_COPY 1024b: min=248, max=373, avg=251
+>>>>> CSUM_COPY 1500b: min=344, max=3123, avg=350   <=================
+>>>>> COPY+CSUM 32b: min=101, max=790, avg=103
+>>>>> COPY+CSUM 1024b: min=297, max=397, avg=300
+>>>>> COPY+CSUM 1500b: min=402, max=490, avg=405
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=68, max=1420, avg=70
+>>>>> CSUM_COPY 1024b: min=248, max=29706, avg=251   <=================
+>>>>> CSUM_COPY 1500b: min=344, max=792, avg=350
+>>>>> COPY+CSUM 32b: min=101, max=872, avg=103
+>>>>> COPY+CSUM 1024b: min=297, max=776, avg=300
+>>>>> COPY+CSUM 1500b: min=402, max=853, avg=405
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=68, max=661, avg=70
+>>>>> CSUM_COPY 1024b: min=248, max=1714, avg=251
+>>>>> CSUM_COPY 1500b: min=344, max=33937, avg=350   <=================
+>>>>> COPY+CSUM 32b: min=101, max=610, avg=103
+>>>>> COPY+CSUM 1024b: min=297, max=605, avg=300
+>>>>> COPY+CSUM 1500b: min=402, max=712, avg=405
+>>>>>
+>>>>> x86[2]
+>>>>> ------
+>>>>>
+>>>>> vendor_id       : GenuineIntel
+>>>>> cpu family      : 6
+>>>>> model           : 23
+>>>>> model name      : Intel(R) Core(TM)2 Duo CPU     E7200  @ 2.53GHz
+>>>>> stepping        : 6
+>>>>> microcode       : 0x60c
+>>>>> cpu MHz         : 1627.113
+>>>>> cache size      : 3072 KB
+>>>>> cpuid level     : 10
+>>>>> wp              : yes
+>>>>> flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl cpuid aperfmperf pni dtes64 monitor ds_cpl est tm2 ssse3 cx16 xtpr pdcm sse4_1 lahf_lm pti dtherm
+>>>>>
+>>>>> CSUM_COPY 32b: min=558, max=31010, avg=674     <=================
+>>>>> CSUM_COPY 1024b: min=558, max=2794, avg=745
+>>>>> CSUM_COPY 1500b: min=558, max=2794, avg=841
+>>>>> COPY+CSUM 32b: min=558, max=2794, avg=671
+>>>>> COPY+CSUM 1024b: min=558, max=2794, avg=778
+>>>>> COPY+CSUM 1500b: min=838, max=2794, avg=865
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=59, max=532, avg=62
+>>>>> CSUM_COPY 1024b: min=198, max=270, avg=201
+>>>>> CSUM_COPY 1500b: min=288, max=34921, avg=289   <=================
+>>>>> COPY+CSUM 32b: min=53, max=326, avg=56
+>>>>> COPY+CSUM 1024b: min=228, max=461, avg=232
+>>>>> COPY+CSUM 1500b: min=311, max=341, avg=317
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=59, max=382, avg=62
+>>>>> CSUM_COPY 1024b: min=198, max=383, avg=201
+>>>>> CSUM_COPY 1500b: min=285, max=21235, avg=289   <=================
+>>>>> COPY+CSUM 32b: min=52, max=300, avg=56
+>>>>> COPY+CSUM 1024b: min=228, max=348, avg=232
+>>>>> COPY+CSUM 1500b: min=311, max=409, avg=317
+>>>>>
+>>>>> Cortex A9 quad-core 1.2Ghz (iMX6qp)
+>>>>> -----------------------------------
+>>>>>
+>>>>> model name	: ARMv7 Processor rev 10 (v7l)
+>>>>> Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpd32 
+>>>>> CPU implementer	: 0x41
+>>>>> CPU architecture: 7
+>>>>> CPU variant	: 0x2
+>>>>> CPU part	: 0xc09
+>>>>> CPU revision	: 10
+>>>>>
+>>>>> CSUM_COPY 32b: min=333, max=1334, avg=440
+>>>>> CSUM_COPY 1024b: min=1000, max=2666, avg=1060
+>>>>> CSUM_COPY 1500b: min=1333, max=45333, avg=1357   <=================
+>>>>> COPY+CSUM 32b: min=333, max=1334, avg=476
+>>>>> COPY+CSUM 1024b: min=1000, max=2333, avg=1324
+>>>>> COPY+CSUM 1500b: min=1666, max=2334, avg=1713
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=333, max=1334, avg=439
+>>>>> CSUM_COPY 1024b: min=1000, max=46000, avg=1060   <=================
+>>>>> CSUM_COPY 1500b: min=1333, max=5000, avg=1351
+>>>>> COPY+CSUM 32b: min=333, max=1334, avg=476
+>>>>> COPY+CSUM 1024b: min=1000, max=2334, avg=1324
+>>>>> COPY+CSUM 1500b: min=1666, max=2667, avg=1713
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=333, max=1666, avg=454
+>>>>> CSUM_COPY 1024b: min=1000, max=2000, avg=1060
+>>>>> CSUM_COPY 1500b: min=1333, max=45000, avg=1348   <=================
+>>>>> COPY+CSUM 32b: min=333, max=1334, avg=454
+>>>>> COPY+CSUM 1024b: min=1000, max=2334, avg=1317
+>>>>> COPY+CSUM 1500b: min=1666, max=6000, avg=1712
+>>>>>
+>>>>> Cortex A55 quad-core 2Ghz (Odroid C4)
+>>>>> -------------------------------------
+>>>>>
+>>>>> Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+>>>>> CPU implementer : 0x41
+>>>>> CPU architecture: 8
+>>>>> CPU variant     : 0x1
+>>>>> CPU part        : 0xd05
+>>>>> CPU revision    : 0
+>>>>>
+>>>>>
+>>>>> CSUM_COPY 32b: min=125, max=833, avg=140
+>>>>> CSUM_COPY 1024b: min=625, max=41916, avg=673   <=================
+>>>>> CSUM_COPY 1500b: min=875, max=3875, avg=923
+>>>>> COPY+CSUM 32b: min=125, max=458, avg=140
+>>>>> COPY+CSUM 1024b: min=625, max=1166, avg=666
+>>>>> COPY+CSUM 1500b: min=875, max=1167, avg=913
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=125, max=1292, avg=139
+>>>>> CSUM_COPY 1024b: min=541, max=48333, avg=555
+>>>>> CSUM_COPY 1500b: min=708, max=3458, avg=740
+>>>>> COPY+CSUM 32b: min=125, max=292, avg=136
+>>>>> COPY+CSUM 1024b: min=541, max=750, avg=556
+>>>>> COPY+CSUM 1500b: min=708, max=834, avg=740
+>>>>>
+>>>>> ==
+>>>>>
+>>>>> CSUM_COPY 32b: min=125, max=833, avg=140
+>>>>> CSUM_COPY 1024b: min=666, max=55667, avg=673   <=================
+>>>>> CSUM_COPY 1500b: min=875, max=4208, avg=913
+>>>>> COPY+CSUM 32b: min=125, max=375, avg=140
+>>>>> COPY+CSUM 1024b: min=666, max=916, avg=673
+>>>>> COPY+CSUM 1500b: min=875, max=1042, avg=913
+>>>>>
+>>>>> ============
+>>>>>
+>>>>> A few additional observations from looking at the implementation:
+>>>>>
+>>>>> For memcpy, legacy x86[2] uses movsq, finishing with movsb to complete
+>>>>> buffers of unaligned length. Current x86[1] uses ERMS-optimized movsb
+>>>>> which is faster.
+>>>>>
+>>>>> arm32/armv7 optimizes memcpy by loading up to 8 words in a single
+>>>>> instruction. csum_and_copy loads/stores at best 4 words at a time,
+>>>>> only when src and dst are 32bit aligned (which matches the test case).
+>>>>>
+>>>>> arm64/armv8a uses load/store pair instructions to copy memory
+>>>>> blocks. It does not have asm-optimized csum_and_copy support, so it
+>>>>> uses the generic C version.
+>>>>>
+>>>>> What could be inferred in terms of prefetching and speculation might
+>>>>> explain some differences between the approaches too.
+>>>>>
+>>>>> I would be interested in any converging / diverging results testing the
+>>>>> same combo with a different test code, because from my standpoint,
+>>>>> things do not seem as obvious as they are supposed to be at the moment.
+>>>>>
+>>>>
+>>>> If copy+csum is not using any recent memcopy optimizations, that is an
+>>>> argument for at least equivalent performance.
+>>>>
+>>>
+>>> You mean the folded version, i.e. copy_and_csum? If so, I can't see any
+>>> way for that one to optimize via fast string operations.
+>>>
+>>>> But I don't get yet where the huge jittery should be coming from. Were
+>>>> the measurement loop preemptible? In that case I would expect a split
+>>>
+>>> Out of band stage, so only preemptible by Xenomai timer ticks, which
+>>> means only the host tick emulation at this point since there was no
+>>> outstanding Xenomai timers started yet when running the loops. Pretty
+>>> slim chance to see these latency spots consistently reproduced, and only
+>>> for the folded copy_sum version.
+>>>
+>>>> copy followed by another loop to csum should give much worse results as
+>>>> it needs the cache to stay warm - while copy-csum only touches the data
+>>>> once.
+>>>>
+>>>
+>>> Conversely, if the copy is much faster, the odds of being preempted may
+>>> increase, yielding better results overall.
+>>
+>> False alarm. Preemption was the issue, by the top half of the host tick
+>> handling in primary mode. The latest clock event scheduled by the kernel
+>> managed to enter the pipeline at a random time, but always within the
+>> execution window of the all-in-one csum_and_copy code. Although this
+>> event was deferred and not immediately passed to the in-band context,
+>> the time spent dealing with it was enough to show up in the results.
+>>
+>>> This said, I'm unsure this is
+>>> related to preemption anyway, this looks like the fingerprints of minor
+>>> faults with PTEs. Why this would only happen in the folded version is
+>>> still a mystery to me at the moment.
+>>
+>> It did not actually, no minor faults.
+>>
+>> The results are now consistent, both implementations are comparable
+>> performance-wise as the optimized memcpy tends to offset the advantage
+>> of calculating the checksum on the fly, saving a read access. armv8
+>> benefits more from the former, since it does not have an optimized
+>> csum_and_copy but uses the generic C version instead.
+>>
+>> == x86[1]
+>>
+>> CSUM_COPY 32b: min=68, max=640, avg=70
+>> CSUM_COPY 1024b: min=247, max=773, avg=252
+>> CSUM_COPY 1500b: min=343, max=832, avg=350
+>> COPY+CSUM 32b: min=100, max=651, avg=131
+>> COPY+CSUM 1024b: min=296, max=752, avg=298
+>> COPY+CSUM 1500b: min=397, max=845, avg=400
+>>
+>> == x86[2]
+>>
+>> CSUM_COPY 32b: min=63, max=267, avg=66
+>> CSUM_COPY 1024b: min=198, max=300, avg=201
+>> CSUM_COPY 1500b: min=288, max=611, avg=291
+>> COPY+CSUM 32b: min=56, max=360, avg=56
+>> COPY+CSUM 1024b: min=228, max=420, avg=231
+>> COPY+CSUM 1500b: min=307, max=337, avg=318
+>>
+>> == armv7 (imx6qp)
+>>
+>> CSUM_COPY 32b: min=333, max=1334, avg=439
+>> CSUM_COPY 1024b: min=1000, max=2000, avg=1045
+>> CSUM_COPY 1500b: min=1000, max=2334, avg=1325
+>> COPY+CSUM 32b: min=333, max=1334, avg=454
+>> COPY+CSUM 1024b: min=1333, max=2334, avg=1347
+>> COPY+CSUM 1500b: min=1666, max=2667, avg=1734
+>>
+>> == armv8a (C4)
+>>
+>> CSUM_COPY 32b: min=125, max=792, avg=130
+>> CSUM_COPY 1024b: min=500, max=1125, avg=550
+>> CSUM_COPY 1500b: min=708, max=1833, avg=726
+>> COPY+CSUM 32b: min=125, max=292, avg=130
+>> COPY+CSUM 1024b: min=541, max=708, avg=550
+>> COPY+CSUM 1500b: min=708, max=875, avg=730
+> 
+> Last round of results about this issue, now measuring the csum_copy vs
+> csum+copy performances in idle vs busy scenarios. Busy means
+> hackbench+dd loop streaming 128M in the background from zero -> null, in
+> order to badly trash the D-caches while the test runs. All figures in
+> nanosecs.
+> 
+> iMX6QP (Cortex A9)
+> ------------------
+> 
+> === idle
+> 
+> CSUM_COPY 32b: min=333, max=1333, avg=439
+> CSUM_COPY 1024b: min=1000, max=2000, avg=1045
+> CSUM_COPY 1500b: min=1333, max=2000, avg=1333
+> COPY+CSUM 32b: min=333, max=1333, avg=443
+> COPY+CSUM 1024b: min=1000, max=2334, avg=1345
+> COPY+CSUM 1500b: min=1666, max=2667, avg=1737
+> 
+> === busy
+> 
+> CSUM_COPY 32b: min=333, max=4333, avg=466
+> CSUM_COPY 1024b: min=1000, max=5000, avg=1088
+> CSUM_COPY 1500b: min=1333, max=5667, avg=1393
+> COPY+CSUM 32b: min=333, max=1334, avg=454
+> COPY+CSUM 1024b: min=1000, max=2000, avg=1341
+> COPY+CSUM 1500b: min=1666, max=2666, avg=1745
+> 
+> C4 (Cortex A55)
+> ---------------
+> 
+> === idle
+> 
+> CSUM_COPY 32b: min=125, max=791, avg=130
+> CSUM_COPY 1024b: min=541, max=834, avg=550
+> CSUM_COPY 1500b: min=708, max=1875, avg=740
+> COPY+CSUM 32b: min=125, max=167, avg=133
+> COPY+CSUM 1024b: min=541, max=625, avg=553
+> COPY+CSUM 1500b: min=708, max=750, avg=730
+> 
+> === busy
+> 
+> CSUM_COPY 32b: min=125, max=792, avg=133
+> CSUM_COPY 1024b: min=500, max=2000, avg=552
+> CSUM_COPY 1500b: min=708, max=1542, avg=744
+> COPY+CSUM 32b: min=125, max=375, avg=133
+> COPY+CSUM 1024b: min=500, max=709, avg=553
+> COPY+CSUM 1500b: min=708, max=916, avg=743
+> 
+> x86 (atom x5)
+> -------------
+> 
+> === idle
+> 
+> CSUM_COPY 32b: min=67, max=590, avg=70
+> CSUM_COPY 1024b: min=245, max=385, avg=251
+> CSUM_COPY 1500b: min=343, max=521, avg=350
+> COPY+CSUM 32b: min=101, max=679, avg=117
+> COPY+CSUM 1024b: min=296, max=379, avg=298
+> COPY+CSUM 1500b: min=399, max=502, avg=404
+> 
+> == busy
+> 
+> CSUM_COPY 32b: min=65, max=709, avg=71
+> CSUM_COPY 1024b: min=243, max=702, avg=252
+> CSUM_COPY 1500b: min=340, max=1055, avg=351
+> COPY+CSUM 32b: min=100, max=665, avg=120
+> COPY+CSUM 1024b: min=295, max=669, avg=298
+> COPY+CSUM 1500b: min=399, max=686, avg=403
+> 
+> As expected from the code, arm64 which has no folded csum_copy
+> implementation makes the best of using the split copy+csum path. All
+> architectures seem to benefit from optimized memcpy under load when it
+> comes to the worst case execution time. x86 is less prone to jittery
+> under cache trashing than others as usual, but even there, the
+> max. figures for csum+copy in busy context look pretty much on par with
+> the csum_copy version.
 > 
 
-OK, great to hear you solved it! If there is anything that could also be
-done in the rt_16550A driver, please share a patch or suggest a pattern.
+Then let's go for your conversion - but then possibly even
+unconditionally, no?
 
 Jan
 
