@@ -1,11 +1,10 @@
-Subject: Re: [PATCH v2 3/3] y2038: testsuite/smokey/y2038: testcase for
- nanosleep64
-References: <1618899904-13929-1-git-send-email-chensong_2000@189.cn>
+Subject: Re: [PATCH v2 0/9] y2038 groundwork and first steps
+References: <cover.1620233588.git.jan.kiszka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2a8e2b55-880d-9486-b168-f954ddb705d8@siemens.com>
-Date: Wed, 21 Apr 2021 08:56:01 +0200
+Message-ID: <ed990049-2320-aaa1-2ab7-e99895be1c5c@siemens.com>
+Date: Thu, 6 May 2021 07:20:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <1618899904-13929-1-git-send-email-chensong_2000@189.cn>
+In-Reply-To: <cover.1620233588.git.jan.kiszka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,103 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Song Chen <chensong_2000@189.cn>, xenomai@xenomai.org, florian.bezdeka@siemens.com
+To: xenomai@xenomai.org, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
 
-On 20.04.21 08:25, Song Chen via Xenomai wrote:
-> From: chensong <chensong@tj.kylinos.cn>
+On 05.05.21 18:52, Jan Kiszka via Xenomai wrote:
+> Picking up from Philippe's queue:
 > 
-> add test case for clock_nanosleep64 in testsuite
+> This patch series prepares the tree for the upcoming y2038 work,
+> converting obsolete/ambiguous time specification types to the proper
+> ones introduced upstream by the v5.x kernel series.
 > 
-> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+> In v2, feedback on the first round has been addressed, primarily
+> regarding folding fixing into the patches that need them.
 > 
-> ---
-> v2:
-> 1, REALTIME --> MONOTONIC
-> 2, more combinations
-> 3, smokey warning in clock_gettime
-> 4, remove magic number
-> ---
->  testsuite/smokey/y2038/syscall-tests.c | 50 ++++++++++++++++++++++++++++++++++
->  1 file changed, 50 insertions(+)
-> 
-> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-> index 990e05c..0ea6ddd 100644
-> --- a/testsuite/smokey/y2038/syscall-tests.c
-> +++ b/testsuite/smokey/y2038/syscall-tests.c
-> @@ -228,6 +228,52 @@ static int test_sc_cobalt_clock_settime64(void)
->  	return 0;
->  }
->  
-> +static int test_sc_cobalt_clock_nanosleep64(void)
-> +{
-> +	long ret;
-> +	int code = __xn_syscode(sc_cobalt_clock_nanosleep64);
-> +	struct xn_timespec64 next, rmt;
-> +	struct timespec now;
-> +
-> +	/* Make sure we don't crash because of NULL pointers */
-> +	ret = syscall(code, NULL, NULL, NULL, NULL);
-> +	if (ret == -1 && errno == ENOSYS) {
-> +		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
-> +		return 0; // Not implemented, nothing to test, success
-> +	}
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	/* Provide a valid 64bit timespec*/
-> +	ret = clock_gettime(CLOCK_MONOTONIC, &now);
-> +	if (ret) {
-> +		smokey_warning("clock_gettime failed in clock_nanosleep64.");
-> +		return errno;
-> +	}
-> +
-> +	/* Providing an invalid address has to deliver EFAULT */
-> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
-> +				(void *)0xdeadbeefUL, &rmt);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	next.tv_sec  = now.tv_sec + 1;
-> +	next.tv_nsec = now.tv_nsec;
-> +
-> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
-> +				&next, (void *)0xdeadbeefUL);
-> +	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
-> +		return errno;
-> +
-> +	next.tv_sec  = next.tv_sec + 1;
-> +
-> +	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
-> +	if (!smokey_assert(!ret))
-> +		return errno;
-> +
-> +	return 0;
-> +}
-> +
->  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->  {
->  	int ret;
-> @@ -244,5 +290,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->  	if (ret)
->  		return ret;
->  
-> +	ret = test_sc_cobalt_clock_nanosleep64();
-> +	if (ret)
-> +		return ret;
-> +
->  	return 0;
->  }
+> In addition, this includes 3 patches from Florian that add
+> sem_timedwait64 system call and a test suite for it.
 > 
 
-Looks like patch 2/3 didn't make it to the list. Also your other series
-arrived incompletely. Please check. And also consider adding a cover
-letter in order to associate patches of a series.
+Seems we have some issue on ARM ("Illegal instruction" in smokey):
+https://source.denx.de/Xenomai/xenomai-images/-/jobs/264219
+https://source.denx.de/Xenomai/xenomai-images/-/jobs/264225
+
+Florian, could you check that?
 
 Thanks,
 Jan
-
-PS: Dropping chensong@tj.kylinos.cn as your server does not know you
-anymore.
 
 -- 
 Siemens AG, T RDA IOT
