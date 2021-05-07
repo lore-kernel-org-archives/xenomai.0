@@ -3,8 +3,8 @@ Subject: Re: [PATCH v4 3/4] y2038: Add tests for the sc_cobalt_sem_timedwait64
 References: <20210507124953.1079415-1-florian.bezdeka@siemens.com>
  <20210507124953.1079415-4-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <268f9b87-e3bf-6628-3828-f48041e37e4a@siemens.com>
-Date: Fri, 7 May 2021 17:58:38 +0200
+Message-ID: <3de97c45-a786-6ccf-5eaa-ae65bb5a138f@siemens.com>
+Date: Fri, 7 May 2021 18:04:19 +0200
 MIME-Version: 1.0
 In-Reply-To: <20210507124953.1079415-4-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
@@ -47,7 +47,7 @@ On 07.05.21 14:49, Florian Bezdeka wrote:
 >  	testsuite/clocktest/Makefile \
 >  	testsuite/xeno-test/Makefile \
 >  	utils/Makefile \
-> diff --git a/testsuite/smokey/Makefile.am b/testsuite. Eventually, we /smokey/Makefile.am
+> diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
 > index 02613c7dc..56c873026 100644
 > --- a/testsuite/smokey/Makefile.am
 > +++ b/testsuite/smokey/Makefile.am
@@ -87,9 +87,6 @@ On 07.05.21 14:49, Florian Bezdeka wrote:
 > +	-I$(top_srcdir)		\
 > +	-I$(top_srcdir)/include \
 > +	-I$(top_srcdir)/lib/cobalt/arch/@XENO_TARGET_ARCH@/include
-
-Is that really needed? How do libs get access to those headers?
-
 > diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
 > new file mode 100644
 > index 000000000..9d5b93ef9
@@ -184,11 +181,6 @@ Is that really needed? How do libs get access to those headers?
 > +	int ret;
 > +	sem_t sem;
 > +	int sc_nr = sc_cobalt_sem_timedwait64;
-
-Why a variable? Do shorting the statements?
-
-How about wrapping the calls into helper functions (one per new syscall)?
-
 > +	struct xn_timespec64 ts64, ts_wu;
 > +	struct timespec ts_nat;
 > +
@@ -216,6 +208,10 @@ How about wrapping the calls into helper functions (one per new syscall)?
 > +	ret = XENOMAI_SYSCALL2(sc_nr, &sem, NULL);
 > +	if (!smokey_assert(ret == -EFAULT))
 > +		return ret;
+
+If this - unexpectedly - succeeds, we return 0, rather than a negative
+error. Same in the cases below.
+
 > +
 > +	/*
 > +	 * The semaphore is already exhausted, so calling again will validate
@@ -242,6 +238,10 @@ How about wrapping the calls into helper functions (one per new syscall)?
 > +	ret = clock_gettime(CLOCK_MONOTONIC, &ts_nat);
 > +	if (ret)
 > +		return ret;
+
+..and here you were returning errno so far. Not it will return -EPERM -
+we rather want -errno, no? Same below.
+
 > +
 > +	ts64.tv_sec = ts_nat.tv_sec;
 > +	ts64.tv_nsec = ts_nat.tv_nsec;
