@@ -1,10 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v5 4/4] y2038: lib/cobalt: Add support of
- sc_cobalt_sem_timedwait64
-Date: Fri,  7 May 2021 20:19:53 +0200
-Message-Id: <20210507181953.1396348-5-florian.bezdeka@siemens.com>
-In-Reply-To: <20210507181953.1396348-1-florian.bezdeka@siemens.com>
-References: <20210507181953.1396348-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v6 0/4] Adressing y2038 test failures on ARM and BBB 
+Date: Fri,  7 May 2021 23:51:45 +0200
+Message-Id: <20210507215149.1409729-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -18,32 +15,56 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-In case libcobalt is build with -D_TIME_BITS=64
-sc_cobalt_sem_timedwait64 will be used instead of
-sc_cobalt_sem_timedwait.
+The CI pipeline discovered an invalid instruction on some ARM boards,
+especially the BBB (beaglebone black). Applying this patch series should
+fix the current test failure on "next" branch.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- lib/cobalt/semaphore.c | 5 +++++
- 1 file changed, 5 insertions(+)
+As already discussed: There might be another problem in the ARM syscall
+prologue/epilogue but it still makes sense to use the same macro for
+calling the syscalls as libcobalt does.
 
-diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
-index 45705d48f..bff005440 100644
---- a/lib/cobalt/semaphore.c
-+++ b/lib/cobalt/semaphore.c
-@@ -373,7 +373,12 @@ COBALT_IMPL(int, sem_timedwait, (sem_t *sem, const struct timespec *abs_timeout)
- 
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
- 
-+#ifdef __USE_TIME_BITS64
-+	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem,
-+			       abs_timeout);
-+#else
- 	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
-+#endif
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
+I'm still asking myself why libcobalt has special macros for calling the
+syscalls instead of using plain syscall() from *libc. Any input?
+
+The difference to v5:
+ - Resend, forget to CC Philippe 
+ - Fixed SPDX license header (newer version of checkpatch seems to care)
+ - Fixed a typo in one of the test descriptions
+
+The difference to v4:
+ - Fixed the error handling / error reporting bugs introduced by v4
+   errno => ret migration gone wrong
+ - Took care of some review comments from Jan
+
+The main difference to v3:
+ - Migration from syscall() (libc) to XENOAMAI_SYSCALLx()
+
+
+Florian Bezdeka (4):
+  cobalt/sem: y2038: Fixing the sem_timedwait syscall for 32 bit systems
+  y2038: Adding sem_timedwait64
+  y2038: Add tests for the sc_cobalt_sem_timedwait64 syscall
+  y2038: lib/cobalt: Add support of sc_cobalt_sem_timedwait64
+
+ configure.ac                           |   1 +
+ include/cobalt/kernel/time.h           |  20 +++
+ include/cobalt/uapi/syscall.h          |   1 +
+ kernel/cobalt/Makefile                 |   1 +
+ kernel/cobalt/posix/sem.c              |  60 ++++++---
+ kernel/cobalt/posix/sem.h              |  13 +-
+ kernel/cobalt/posix/syscall32.c        |  17 ++-
+ kernel/cobalt/posix/syscall32.h        |   6 +-
+ kernel/cobalt/time.c                   |  27 ++++
+ lib/cobalt/semaphore.c                 |   5 +
+ testsuite/smokey/Makefile.am           |   6 +-
+ testsuite/smokey/y2038/Makefile.am     |  10 ++
+ testsuite/smokey/y2038/syscall-tests.c | 178 +++++++++++++++++++++++++
+ 13 files changed, 314 insertions(+), 31 deletions(-)
+ create mode 100644 include/cobalt/kernel/time.h
+ create mode 100644 kernel/cobalt/time.c
+ create mode 100644 testsuite/smokey/y2038/Makefile.am
+ create mode 100644 testsuite/smokey/y2038/syscall-tests.c
+
 -- 
 2.31.1
 
