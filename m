@@ -1,14 +1,21 @@
-Subject: Re: This 20-line Xenomai program crashes our servers
-References: <44426edd-947b-fcde-8b7d-fd08ae102f37@gmail.com>
- <87eees2qup.fsf@xenomai.org>
-From: Paul Janssen <paulus947@gmail.com>
-Message-ID: <bd183bbb-2e10-5c40-0338-eee07a73d4f2@gmail.com>
-Date: Thu, 6 May 2021 09:48:40 -0500
-MIME-Version: 1.0
-In-Reply-To: <87eees2qup.fsf@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: gdb  test failure debug status update
+Date: Fri, 7 May 2021 01:10:04 +0000
+Message-ID: <DM5PR11MB1852AB3F24A4FDE042C14E8FF2579@DM5PR11MB1852.namprd11.prod.outlook.com>
+References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
+ <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <87bl9w2pkm.fsf@xenomai.org> <875z042odb.fsf@xenomai.org>
+ <DM5PR11MB18527EA509FB99BF50D1ACFFF25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB18529649C47BF241930A2217F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <8735v82jmd.fsf@xenomai.org>
+ <DM5PR11MB18521837E79C031B621080A8F2589@DM5PR11MB1852.namprd11.prod.outlook.com>
+In-Reply-To: <DM5PR11MB18521837E79C031B621080A8F2589@DM5PR11MB1852.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,277 +24,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai Community <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-After applying the patch from Philippe (see below) the computer still crashes. After 17 minutes this time (it varies, see previous email).
-The kernel crash log indicated the exact same reason as described in the original email.
 
-Here is the related portion from the last kernel crash log file (the kernel with the patch):
 
-[ 1213.049371] BUG: unable to handle kernel paging request at fffffffeee7e52e0
-[ 1213.049403] PGD 2ee60c067 P4D 2ee60c067 PUD 0
-[ 1213.049422] Oops: 0010 [#1] SMP PTI
-[ 1213.049438] CPU: 3 PID: 256 Comm: kworker/u24:3 Kdump: loaded Not tainted 4.19.177-cip44-xenomai-3.1-patch1 #1
-[ 1213.049499] Hardware name: Supermicro Super Server/X11SCA, BIOS 1.4 09/03/2020
-[ 1213.049542] I-pipe domain: Linux
-[ 1213.049566] Workqueue: efi_rts_wq efi_call_rts
-[ 1213.049597] RIP: 0010:0xfffffffeee7e52e0
-[ 1213.049626] Code: Bad RIP value.
-[ 1213.049643] RSP: 0018:ffffa13bc3f63d48 EFLAGS: 00010246
-[ 1213.049664] RAX: 00000000000002ff RBX: 0000000000000000 RCX: fffffffeee7ea7c8
-[ 1213.049689] RDX: 0000000000000021 RSI: ffff9050c28ce400 RDI: 0000000000000000
-[ 1213.049724] RBP: ffff9050c28ce000 R08: fffffffeee7ea7c8 R09: ffffa13bc4a6fdd0
-[ 1213.049750] R10: 0000000000000200 R11: 0000000000000002 R12: ffff9050c28ce400
-[ 1213.049775] R13: 0000000000000000 R14: ffffa13bc4a6fdd0 R15: 0000000000000000
-[ 1213.049801] FS:  0000000000000000(0000) GS:ffff9050cc0c0000(0000) knlGS:0000000000000000
-[ 1213.049830] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1213.049852] CR2: fffffffeee7e52b6 CR3: 00000002ee60a006 CR4: 00000000003606e0
-[ 1213.049893] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1213.049934] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ 1213.049970] Call Trace:
-[ 1213.049984]  ? __switch_to_asm+0x35/0x70
-[ 1213.050000]  ? __switch_to_asm+0x41/0x70
-[ 1213.050016]  ? __switch_to_asm+0x35/0x70
-[ 1213.050032]  ? __switch_to_asm+0x41/0x70
-[ 1213.050049]  ? efi_call+0x58/0x90
-[ 1213.050063]  ? __switch_to_asm+0x41/0x70
-[ 1213.050081]  ? efi_call_rts+0x2ea/0x730
-[ 1213.050099]  ? process_one_work+0x1de/0x410
-[ 1213.050117]  ? worker_thread+0x34/0x400
-[ 1213.050142]  ? kthread+0x121/0x140
-[ 1213.050165]  ? set_worker_desc+0xb0/0xb0
-[ 1213.050191]  ? kthread_create_worker_on_cpu+0x70/0x70
-[ 1213.050227]  ? ret_from_fork+0x36/0x50
 
-Thanks,
---Paul Janssen
+>>
+>>>>-----Original Message-----
+>>>>From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan=
+ via Xenomai
+>>>>Sent: Friday, April 30, 2021 4:07 PM
+>>>>To: Philippe Gerum <rpm@xenomai.org>
+>>>>Cc: xenomai@xenomai.org
+>>>>Subject: RE: gdb test failure debug status update
+>>>>
+>>>>
+>>>>
+>>>>>-----Original Message-----
+>>>>>From: Philippe Gerum <rpm@xenomai.org>=20
+>>>>>Sent: Friday, April 30, 2021 4:01 PM
+>>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>>>Cc: xenomai@xenomai.org
+>>>>>Subject: Re: gdb test failure debug status update
+>>>>>
+>>>>>
+>>>>>Philippe Gerum <rpm@xenomai.org> writes:
+>>>>>
+>>>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>>>>
+>>>>>>> The final xnthread_relaxed call path is like this asm_sysv_apic_tim=
+er_interrupt ->handle_irq_pipelined_finish=20
+>>>>>>> ->dovetail_call_mayday ->handle_oob_mayday>xnthread_relax.=20
+>>>>>>> That means that handle_irq_pipelined_finish is called under OOB con=
+dition of arch_pipeline_entry in
+>>>>>>>  arch/x86/kernel/irq_pipeline.c.  Does that means that kernel entry=
+/exit code is never called after return from=20
+>>>>>>> xnthread_relax to handle_irq_pipelined_finish then to asm_sysv_apic=
+_timer_interrupt?  Even I enforce to=20
+>>>>>>> call  dovetail_request_ucall before calling final xnthread_relax sy=
+stem would not try to switch back to primary mode
+>>>>>>> because kernel exit code is never called in this case?
+>>>>>>>
+>>>>>>
+>>>>>> The IRQ frame is indeed kept from unwinding until the preempted task
+>>>>>> context returns from irq_exit_pipeline(), which branches to the Coba=
+lt
+>>>>>> rescheduling procedure. From the Dovetail interface POV,
+>>>>>> irq_exit_pipeline() is called by handle_irq_pipelined_finish() to al=
+low
+>>>>>> the companion core to perform post-IRQ chores, such as running its o=
+wn
+>>>>>> rescheduling procedure.
+>>>>>>
+>>>>>> IOW, if task @foo is preempted by an IRQ, then suspended in oob cont=
+ext
+>>>>>> as a result of what the interrupt handler just did for it (e.g. rais=
+ing
+>>>>>> XNDBGSTOP, XNRELAX, XNPEND, XNSUSP in its state), then
+>>>>>> handle_irq_pipelined_finish()->irq_exit_pipeline()->xnsched_run() wi=
+ll
+>>>>>> cause the @foo context to switch away, effectively preventing
+>>>>>> handle_irq_pipelined_finish() to return, until @foo resumes executio=
+n
+>>>>> eventually.
+>>>
+>>> ln handle_irq_pipelined_finish, irq_exit_pipeline would at first  be ex=
+ecuted and it=20
+>>> handle dovetail_call_mayday in the end. But issue happen after run dove=
+tail_call_mayday=20
+>>> because it call final xnthread_relax before gdb test failue.
+>>>
+>>
+>>Can you add WARN_ON(1) to dovetail_call_mayday() and report about the
+>>output? TIA,
+>>
+>>--=20
+>>Philippe.
+>>
+>=20
+>Please check following output.
 
-On 4/30/2021 2:06 AM, Philippe Gerum wrote:
-> Paul Janssen via Xenomai <xenomai@xenomai.org> writes:
+Hi Philippe,
+
+Please let me know if you have new patch or other thing to let me try.
+
+Regards
+
+Hongzhan Chen
 >
->> Hello everybody,
->>
->> Our group has been using Xenomai for many years. Version 3.1 for the last few years.
->> Recently we have run into a problem. Our main Xenomai program keeps crashing our servers.
->> The servers crash because of "unable to handle kernel paging request" (see details down below).
->>
->> We have researched the issue for many weeks, and have reduced the Xenomai program to a 20-line program (see below) that still crashes our servers.
->>
->> The servers run forever if we do not run the Xenomai program. When we do start the Xenomai program, the server will crash within 2 hours. But often after just 5 to 30 minutes. We have tested extensively on three-or-four different servers. All machines crash, consistently, with the exact same error in the kernel log. When the computer crashes, there are no warnings messages, or anything on the computer screen. We usually follow the run with "top" and see everything suddenly freeze. This is the exact same behavior on all machines.
->>
->> But, when we replace the single "clock_nanosleep()" with "__real_clock_nanosleep()" in our test program, and leave everything else unchanged, including the compilation process, then all servers run forever and never crash. We can repeat this consistently, always. As you all know, prepending __real_ will cause the original Linux function to be called instead of the Xenomai "__wrap".
->>
->> We have used "sem_timedwait()" instead of "clock_nanosleep()" and experienced the exact same crash behavior. And here too, replacing the "sem_timedwait()" with "__real_sem_timedwait()" makes the machines run forever and they never crash.
->>
->> All this has convinced us that the problem is directly related to something in Xenomai, probably with clock/time related calls.
->> We really hope that someone in the Xenomai community maybe knows about this problem, or can help us fix it.
->> Thank you very much for looking at this.
->>
->> --Paul Janssen
->>
->> Test program "drvr.c":
->>
->>       1 #include <stdio.h>
->>       2 #include <time.h>     // clock_nanosleep()
->>       3
->>       4 int main()
->>       5 {
->>       6     while( 1 )
->>       7     {
->>       8         // Sleep for 250,000 nsec
->>       9         struct timespec ts;
->>      10         ts.tv_nsec = 250000L;
->>      11         ts.tv_sec = 0;
->>      12
->>      13         int err = clock_nanosleep( CLOCK_REALTIME, 0, &ts, NULL );
->>      14         if( err != 0 )
->>      15         {
->>      16             printf( "clock_nanosleep failed\n" );
->>      17             break; // exit
->>      18         }
->>      19     }
->>      20
->>      21     return 0;
->>      22 }
->>
->> This single-file program has the following makefile:
->>
->>       1 .SUFFIXES: .c .h .o
->>       2
->>       3 drvr: drvr.o
->>       4         gcc drvr.o -o $@ -pthread $(shell xeno-config --skin=posix --ldflags)
->>       5         ls -al $@
->>       6
->>       7 drvr.o: drvr.c
->>       8         gcc -c drvr.c -o $@ -O2 -Wall -Wextra -march=native -pthread $(shell xeno-config --skin=posix --cflags)
->>       9
->>      10 .PHONY: clean
->>      11
->>      12 clean:
->>      13         rm -rf drvr drvr.o
->>
->>
->> The output from make (compilation) is as follows:
->>
->> $ make
->> gcc -c drvr.c -o drvr.o -O2 -Wall -Wextra -march=native -pthread -I/usr/include/xenomai/cobalt -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__COBALT__ -D__COBALT_WRAP__
->> gcc drvr.o -o drvr -pthread -Wl,--no-as-needed -Wl,@/usr/lib/cobalt.wrappers -Wl,@/usr/lib/modechk.wrappers  /usr/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/lib/dynlist.ld -L/usr/lib -lcobalt -lmodechk -lpthread -lrt
->>
->>
->> I have tried to include all information mentioned in the guidelines. The server crash log is at the bottom of this email. A full kernel log has been attached.
->> One more noteworthy thing. All crash logs (/var/crash/...) on all computers always show the same crash information:
->>
->>   * BUG: unable to handle kernel paging request
->>   * Oops: SMP PTI
->>   * Comm: kworker/u24
->>   * Workqueue: efi_rts_wq efi_call_rts
->>
->>
->> Server Simhost007 Information:
->>
->> This is an Intel x86-64 Linux Ubuntu 18.04 w/Xenomai 3.1 system
->> Processor is an Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
->> Motherboard is a Supermicro Super Server/X11SCA, BIOS 1.4 09/03/2020
->>
->>
->> $ uname -a
->> Linux simhost007 4.19.177-cip44-xenomai-3.1 #1 SMP Tue Apr 20 15:49:12 CDT 2021 x86_64 x86_64 x86_64 GNU/Linux
->>
->>
->> $ cat /proc/cmdline
->> BOOT_IMAGE=/vmlinuz-4.19.177-cip44-xenomai-3.1 root=/dev/mapper/vg00-lv00 ro splash quiet drm_kms_helper.poll=0 nouveau.noaccel=1 pci=routeirq xenomai.allowed_group=997 crashkernel=384M-2G:64M,2G-:128M workqueue.power_efficient=0 crashkernel=512M-:192M vt.handoff=1
->>
->>
->> $ /usr/sbin/version
->> Xenomai/cobalt v3.1
->>
->>
->> $ xeno-config --info | grep -i build
->> Build args: --prefix=/usr --includedir=/usr/include/xenomai --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite --enable-smp --enable-lazy-setsched --enable-debug=symbols --enable-dlopen-libs --build x86_64-linux-gnu build_alias=x86_64-linux-gnu
->>
->>
->> $ cat /proc/ipipe/version
->> 17
->>
->>
->> $ gcc --version
->> gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
->> Copyright (C) 2017 Free Software Foundation, Inc.
->> This is free software; see the source for copying conditions.  There is NO
->> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
->>
->>
->> $ xeno-config --skin=posix --cflags
->> -I/usr/include/xenomai/cobalt -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__COBALT__ -D__COBALT_WRAP__
->>
->>
->> $ xeno-config --skin=posix --ldflags
->> -Wl,--no-as-needed -Wl,@/usr/lib/cobalt.wrappers -Wl,@/usr/lib/modechk.wrappers  /usr/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/lib/dynlist.ld -L/usr/lib -lcobalt -lmodechk -lpthread -lrt
->>
->>
->> -------------------------------------------------------------------------------------------------
->> From /proc/cpuinfo:
->> ...
->> processor       : 11
->> vendor_id       : GenuineIntel
->> cpu family      : 6
->> model           : 158
->> model name      : Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
->> stepping        : 10
->> microcode       : 0xde
->> cpu MHz         : 3698.671
->> cache size      : 12288 KB
->> physical id     : 0
->> siblings        : 12
->> core id         : 5
->> cpu cores       : 6
->> apicid          : 11
->> initial apicid  : 11
->> fpu             : yes
->> fpu_exception   : yes
->> cpuid level     : 22
->> wp              : yes
->> flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm arat pln pts md_clear flush_l1d
->> bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit srbds
->> bogomips        : 7392.00
->> clflush size    : 64
->> cache_alignment : 64
->> address sizes   : 39 bits physical, 48 bits virtual
->> power management:
->>
->>
->> -------------------------------------------------------------------------------------------------
->> From the kernel crash log: /var/crash/<timestamp>/dmesg.<timestamp>
->> ...
->> [ 4826.941554] BUG: unable to handle kernel paging request at fffffffeee7e3960
->> [ 4826.941557] PGD 41940c067 P4D 41940c067 PUD 0
->> [ 4826.941560] Oops: 0010 [#1] SMP PTI
->> [ 4826.941562] CPU: 4 PID: 4619 Comm: kworker/u24:1 Kdump: loaded Not tainted 4.19.177-cip44-xenomai-3.1 #1
->> [ 4826.941564] Hardware name: Supermicro Super Server/X11SCA, BIOS 1.4 09/03/2020
->> [ 4826.941565] I-pipe domain: Linux
->> [ 4826.941568] Workqueue: efi_rts_wq efi_call_rts
->> [ 4826.941570] RIP: 0010:0xfffffffeee7e3960
->> [ 4826.941573] Code: Bad RIP value.
->> [ 4826.941574] RSP: 0018:ffffba3544ebfb98 EFLAGS: 00010286
->> [ 4826.941575] RAX: fffffffeee66c96c RBX: fffffffeee66c96c RCX: fffffffeee66c96c
->> [ 4826.941577] RDX: ffffa04b42cf7000 RSI: ffffba3544ebfc18 RDI: fffffffeee7eced0
->> [ 4826.941578] RBP: ffffa04b42cf7400 R08: ffffa04b42cf7400 R09: ffffba3544ebfc18
->> [ 4826.941579] R10: fffffffeee7eced0 R11: 0000000000000001 R12: ffffa04b42cf7000
->> [ 4826.941580] R13: ffffba3544ebfcc8 R14: ffffba3544ebfcc0 R15: ffffba3544ebfd08
->> [ 4826.941581] FS:  0000000000000000(0000) GS:ffffa04b4c100000(0000) knlGS:0000000000000000
->> [ 4826.941583] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [ 4826.941584] CR2: fffffffeee7e3936 CR3: 000000041940a005 CR4: 00000000003606e0
->> [ 4826.941585] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> [ 4826.941586] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> [ 4826.941587] Call Trace:
->> [ 4826.941594]  ? x2apic_send_IPI+0x2e/0x30
->> [ 4826.941597]  ? probe_sched_wakeup+0x35/0x40
->> [ 4826.941600]  ? __switch_to_asm+0x41/0x70
->> [ 4826.941602]  ? __switch_to_asm+0x41/0x70
->> [ 4826.941604]  ? __switch_to_asm+0x41/0x70
->> [ 4826.941606]  ? efi_call+0x58/0x90
->> [ 4826.941608]  ? __switch_to_asm+0x41/0x70
->> [ 4826.941611]  ? efi_call_rts+0x2ea/0x730
->> [ 4826.941614]  ? process_one_work+0x1de/0x410
->> [ 4826.941616]  ? worker_thread+0x34/0x400
->> [ 4826.941619]  ? kthread+0x121/0x140
->> [ 4826.941621]  ? set_worker_desc+0xb0/0xb0
->> [ 4826.941622]  ? kthread_create_worker_on_cpu+0x70/0x70
->> [ 4826.941624]  ? ret_from_fork+0x36/0x50
->>
->>
->>
->>
->> Let's start with this. We need the EFI mm switch to be protected against
->> preemption by the real-time core, at the very least. This would explain
->> the invalid mapping issue for a seemingly valid address. Please patch
->> your kernel with this snippet, and let us know of the outcome. TIA,
->>
->> diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
->> index ee5d08f25ce4..aa705d5ed1fc 100644
->> --- a/arch/x86/platform/efi/efi_64.c
->> +++ b/arch/x86/platform/efi/efi_64.c
->> @@ -35,6 +35,7 @@
->>  #include <linux/ucs2_string.h>
->>  #include <linux/mem_encrypt.h>
->>  #include <linux/sched/task.h>
->> +#include <linux/ipipe.h>
->>  
->>  #include <asm/setup.h>
->>  #include <asm/page.h>
->> @@ -626,10 +627,14 @@ void __init efi_dump_pagetable(void)
->>   */
->>  void efi_switch_mm(struct mm_struct *mm)
->>  {
->> +	unsigned long flags;
->> +
->>  	task_lock(current);
->> +	ipipe_mm_switch_protect(flags);
->>  	efi_scratch.prev_mm = current->active_mm;
->>  	current->active_mm = mm;
->>  	switch_mm(efi_scratch.prev_mm, mm, NULL);
->> +	ipipe_mm_switch_unprotect(flags);
->>  	task_unlock(current);
->>  }
->>  
+>[   27.260261] ------------[ cut here ]------------
+>[   27.260262] WARNING: CPU: 0 PID: 400 at kernel/dovetail.c:93 dovetail_c=
+all_mayday+0x6/0x20
+>[   27.260263] Modules linked in:
+>[   27.260265] CPU: 0 PID: 400 Comm: smokey Tainted: G        W         5.=
+10.25+ #588
+>[   27.260266] Hardware name: AAEON UP-WHL01/UP-WHL01, BIOS UPW1AM18D 06/2=
+3/2020
+>[   27.260266] IRQ stage: Xenomai
+>[   27.260267] RIP: 0010:dovetail_call_mayday+0x6/0x20
+>[   27.260269] Code: 00 00 00 00 0f 1f 44 00 00 31 c0 c3 0f 1f 84 00 00 00=
+ 00 00 0f 1f 44 00 00 f3 c3 66 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 53 <0=
+f> 0b 9c 5b fa f0 80 67 03 fb 48 89 f7 e8 48 04 02 00 53 9d 5b c3
+>[   27.260270] RSP: 0000:ffffc900014c3f30 EFLAGS: 00010006
+>[   27.260271] RAX: 0000000014000004 RBX: ffffc900014c3f58 RCX: ffff888264=
+e1cf40
+>[   27.260272] RDX: ffff888264e1cf40 RSI: ffffc900014c3f58 RDI: ffff888103=
+76e300
+>[   27.260273] RBP: ffff888264e1cf40 R08: 0000000000003904 R09: ffff88810b=
+408000
+>[   27.260274] R10: ffffc900014c3d48 R11: ffffffff8274a5e8 R12: ffffffff81=
+c00c3a
+>[   27.260274] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000=
+000000
+>[   27.260275] FS:  00007ffff758f740(0000) GS:ffff888264e00000(0000) knlGS=
+:0000000000000000
+>[   27.260276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>[   27.260277] CR2: 00007ff55f9909d8 CR3: 00000001156ea006 CR4: 0000000000=
+1706f0
+>[   27.260278] Call Trace:
+>[   27.260279]  handle_irq_pipelined_finish+0x154/0x190
+>[   27.260279]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+>[   27.260280] RIP: 0033:0x55555540b4d5
+>[   27.260281] Code: Unable to access opcode bytes at RIP 0x55555540b4ab.
+>[   27.260282] RSP: 002b:00007fffffffe940 EFLAGS: 00000206
+>[   27.260283] RAX: 0000000000043028 RBX: 000055555562a140 RCX: 0000000000=
+000000
+>[   27.260284] RDX: 000055555541fa4f RSI: 000000000000009f RDI: 0000555555=
+41fc68
+>[   27.260285] RBP: 00007fffffffe950 R08: 0000000000000000 R09: 00000000ff=
+ffffff
+>[   27.260285] R10: 0000000000000000 R11: 00007ffff799c820 R12: 0000000000=
+000002
+>[   27.260287] R13: 000055555562c9f0 R14: 00007fffffffeb04 R15: 00007ffff7=
+58f740
+>[   27.260287] irq event stamp: 2000
+>[   27.260288] hardirqs last  enabled at (1999): [<ffffffff8105face>] flus=
+h_tlb_mm_range+0x10e/0x140
+>[   27.260289] hardirqs last disabled at (2000): [<ffffffff81bd2264>] exc_=
+int3+0x44/0x1a0
+>[   27.260290] softirqs last  enabled at (784): [<ffffffff81e0030a>] __do_=
+softirq+0x30a/0x42d
+>[   27.260291] softirqs last disabled at (777): [<ffffffff81c00faf>] asm_c=
+all_irq_on_stack+0xf/0x20
+>[   27.260292] ---[ end trace ea56d34072e888ed ]---
+>
+>Regards
+>
+>Hongzhan Chen
 
