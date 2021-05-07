@@ -1,16 +1,9 @@
-Subject: Re: [PATCH v4 3/4] y2038: Add tests for the sc_cobalt_sem_timedwait64
- syscall
-References: <20210507124953.1079415-1-florian.bezdeka@siemens.com>
- <20210507124953.1079415-4-florian.bezdeka@siemens.com>
- <268f9b87-e3bf-6628-3828-f48041e37e4a@siemens.com>
- <cb54b4e9-bafc-c92f-c6f6-c3eb73199e97@siemens.com>
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <32896893-35f4-e906-9490-3a887d98cad2@siemens.com>
-Date: Fri, 7 May 2021 20:03:38 +0200
-In-Reply-To: <cb54b4e9-bafc-c92f-c6f6-c3eb73199e97@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v5 0/4] Adressing y2038 test failures on ARM and BBB
+Date: Fri,  7 May 2021 20:19:49 +0200
+Message-Id: <20210507181953.1396348-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,91 +13,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07.05.21 18:10, Jan Kiszka wrote:
-> On 07.05.21 17:58, Jan Kiszka via Xenomai wrote:
->> On 07.05.21 14:49, Florian Bezdeka wrote:
->>> Introducing a new smokey plugin that can be extended for all kind of
->>> y2038 tests. For now we are testing the new sc_cobalt_sem_timedwait64
->>> syscall without using any libc wrappers provided by libcobalt.
->>>
->>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->>> ---
->>>  configure.ac                           |   1 +
->>>  testsuite/smokey/Makefile.am           |   6 +-
->>>  testsuite/smokey/y2038/Makefile.am     |  10 ++
->>>  testsuite/smokey/y2038/syscall-tests.c | 177 +++++++++++++++++++++++++
->>>  4 files changed, 192 insertions(+), 2 deletions(-)
->>>  create mode 100644 testsuite/smokey/y2038/Makefile.am
->>>  create mode 100644 testsuite/smokey/y2038/syscall-tests.c
->>>
->>> diff --git a/configure.ac b/configure.ac
->>> index abe538dbd..bd5fd5ba9 100644
->>> --- a/configure.ac
->>> +++ b/configure.ac
->>> @@ -990,6 +990,7 @@ AC_CONFIG_FILES([ \
->>>  	testsuite/smokey/net_common/Makefile \
->>>  	testsuite/smokey/cpu-affinity/Makefile \
->>>  	testsuite/smokey/gdb/Makefile \
->>> +	testsuite/smokey/y2038/Makefile \
->>>  	testsuite/clocktest/Makefile \
->>>  	testsuite/xeno-test/Makefile \
->>>  	utils/Makefile \
->>> diff --git a/testsuite/smokey/Makefile.am b/testsuite. Eventually, we /smokey/Makefile.am
->>> index 02613c7dc..56c873026 100644
->>> --- a/testsuite/smokey/Makefile.am
->>> +++ b/testsuite/smokey/Makefile.am
->>> @@ -38,7 +38,8 @@ COBALT_SUBDIRS = 	\
->>>  	timerfd		\
->>>  	tsc		\
->>>  	vdso-access 	\
->>> -	xddp
->>> +	xddp		\
->>> +	y2038
->>>  
->>>  MERCURY_SUBDIRS =	\
->>>  	memory-heapmem	\
->>> @@ -76,7 +77,8 @@ DIST_SUBDIRS = 		\
->>>  	timerfd		\
->>>  	tsc		\
->>>  	vdso-access 	\
->>> -	xddp
->>> +	xddp		\
->>> +	y2038
->>>  
->>>  if XENO_COBALT
->>>  if CONFIG_XENO_LIBS_DLOPEN
->>> diff --git a/testsuite/smokey/y2038/Makefile.am b/testsuite/smokey/y2038/Makefile.am
->>> new file mode 100644
->>> index 000000000..4bf629e87
->>> --- /dev/null
->>> +++ b/testsuite/smokey/y2038/Makefile.am
->>> @@ -0,0 +1,10 @@
->>> +
->>> +noinst_LIBRARIES = liby2038.a
->>> +
->>> +liby2038_a_SOURCES = syscall-tests.c
->>> +
->>> +liby2038_a_CPPFLAGS = 	\
->>> +	@XENO_USER_CFLAGS@	\
->>> +	-I$(top_srcdir)		\
->>> +	-I$(top_srcdir)/include \
->>> +	-I$(top_srcdir)/lib/cobalt/arch/@XENO_TARGET_ARCH@/include
->>
->> Is that really needed? How do libs get access to those headers?
->>
-> 
-> XENO_USER_CFLAGS -> XENO_COBALT_CFLAGS may be better here.
+The CI pipeline discovered an invalid instruction on some ARM boards,
+especially the BBB (beaglebone black). Applying this patch series should
+fix the current test failure on "next" branch.
 
-Taken into v5.
+As already discussed: There might be another problem in the ARM syscall
+prologue/epilogue but it still makes sense to use the same macro for
+calling the syscalls as libcobalt does.
 
-> 
-> Jan
-> 
+I'm still asking myself why libcobalt has special macros for calling the
+syscalls instead of using plain syscall() from *libc. Any input?
 
+The difference to v4:
+ - Fixed the error handling / error reporting bugs introduced by v4
+   errno => ret migration gone wrong
+ - Took care of some review comments from Jan
+
+The main difference to v3:
+ - Migration from syscall() (libc) to XENOAMAI_SYSCALLx()
+
+Florian Bezdeka (4):
+  cobalt/sem: y2038: Fixing the sem_timedwait syscall for 32 bit systems
+  y2038: Adding sem_timedwait64
+  y2038: Add tests for the sc_cobalt_sem_timedwait64 syscall
+  y2038: lib/cobalt: Add support of sc_cobalt_sem_timedwait64
+
+ configure.ac                           |   1 +
+ include/cobalt/kernel/time.h           |  22 +++
+ include/cobalt/uapi/syscall.h          |   1 +
+ kernel/cobalt/Makefile                 |   1 +
+ kernel/cobalt/posix/sem.c              |  60 ++++++---
+ kernel/cobalt/posix/sem.h              |  13 +-
+ kernel/cobalt/posix/syscall32.c        |  17 ++-
+ kernel/cobalt/posix/syscall32.h        |   6 +-
+ kernel/cobalt/time.c                   |  29 ++++
+ lib/cobalt/semaphore.c                 |   5 +
+ testsuite/smokey/Makefile.am           |   6 +-
+ testsuite/smokey/y2038/Makefile.am     |  10 ++
+ testsuite/smokey/y2038/syscall-tests.c | 177 +++++++++++++++++++++++++
+ 13 files changed, 317 insertions(+), 31 deletions(-)
+ create mode 100644 include/cobalt/kernel/time.h
+ create mode 100644 kernel/cobalt/time.c
+ create mode 100644 testsuite/smokey/y2038/Makefile.am
+ create mode 100644 testsuite/smokey/y2038/syscall-tests.c
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
+
 
