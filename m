@@ -1,21 +1,9 @@
-References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
- <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87bl9w2pkm.fsf@xenomai.org> <875z042odb.fsf@xenomai.org>
- <DM5PR11MB18527EA509FB99BF50D1ACFFF25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <DM5PR11MB18529649C47BF241930A2217F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
- <8735v82jmd.fsf@xenomai.org>
- <DM5PR11MB18521837E79C031B621080A8F2589@DM5PR11MB1852.namprd11.prod.outlook.com>
- <DM5PR11MB1852AB3F24A4FDE042C14E8FF2579@DM5PR11MB1852.namprd11.prod.outlook.com>
- <87zgx3pzp9.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: gdb  test failure debug status update
-In-reply-to: <87zgx3pzp9.fsf@xenomai.org>
-Date: Sun, 09 May 2021 19:49:30 +0200
-Message-ID: <87wns7pzkl.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+From: Fangsuo Wu <tiger20081015@gmail.com>
+Date: Mon, 10 May 2021 09:56:52 +0800
+Message-ID: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
+Subject: xeno-test failed due to cond_destroy error
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,93 +12,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+Hi, I met below errors when running xeno-test in my board:
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->
->>>>
->>>>>>-----Original Message-----
->>>>>>From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan via Xenomai
->>>>>>Sent: Friday, April 30, 2021 4:07 PM
->>>>>>To: Philippe Gerum <rpm@xenomai.org>
->>>>>>Cc: xenomai@xenomai.org
->>>>>>Subject: RE: gdb test failure debug status update
->>>>>>
->>>>>>
->>>>>>
->>>>>>>-----Original Message-----
->>>>>>>From: Philippe Gerum <rpm@xenomai.org> 
->>>>>>>Sent: Friday, April 30, 2021 4:01 PM
->>>>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>>>>Cc: xenomai@xenomai.org
->>>>>>>Subject: Re: gdb test failure debug status update
->>>>>>>
->>>>>>>
->>>>>>>Philippe Gerum <rpm@xenomai.org> writes:
->>>>>>>
->>>>>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>>>>>
->>>>>>>>> The final xnthread_relaxed call path is like this asm_sysv_apic_timer_interrupt ->handle_irq_pipelined_finish 
->>>>>>>>> ->dovetail_call_mayday ->handle_oob_mayday>xnthread_relax. 
->>>>>>>>> That means that handle_irq_pipelined_finish is called under OOB condition of arch_pipeline_entry in
->>>>>>>>>  arch/x86/kernel/irq_pipeline.c.  Does that means that kernel entry/exit code is never called after return from 
->>>>>>>>> xnthread_relax to handle_irq_pipelined_finish then to asm_sysv_apic_timer_interrupt?  Even I enforce to 
->>>>>>>>> call  dovetail_request_ucall before calling final xnthread_relax system would not try to switch back to primary mode
->>>>>>>>> because kernel exit code is never called in this case?
->>>>>>>>>
->>>>>>>>
->>>>>>>> The IRQ frame is indeed kept from unwinding until the preempted task
->>>>>>>> context returns from irq_exit_pipeline(), which branches to the Cobalt
->>>>>>>> rescheduling procedure. From the Dovetail interface POV,
->>>>>>>> irq_exit_pipeline() is called by handle_irq_pipelined_finish() to allow
->>>>>>>> the companion core to perform post-IRQ chores, such as running its own
->>>>>>>> rescheduling procedure.
->>>>>>>>
->>>>>>>> IOW, if task @foo is preempted by an IRQ, then suspended in oob context
->>>>>>>> as a result of what the interrupt handler just did for it (e.g. raising
->>>>>>>> XNDBGSTOP, XNRELAX, XNPEND, XNSUSP in its state), then
->>>>>>>> handle_irq_pipelined_finish()->irq_exit_pipeline()->xnsched_run() will
->>>>>>>> cause the @foo context to switch away, effectively preventing
->>>>>>>> handle_irq_pipelined_finish() to return, until @foo resumes execution
->>>>>>> eventually.
->>>>>
->>>>> ln handle_irq_pipelined_finish, irq_exit_pipeline would at first  be executed and it 
->>>>> handle dovetail_call_mayday in the end. But issue happen after run dovetail_call_mayday 
->>>>> because it call final xnthread_relax before gdb test failue.
->>>>>
->>>>
->>>>Can you add WARN_ON(1) to dovetail_call_mayday() and report about the
->>>>output? TIA,
->>>>
->>>>-- 
->>>>Philippe.
->>>>
->>> 
->>>Please check following output.
->>
->> Hi Philippe,
->>
->> Please let me know if you have new patch or other thing to let me try.
->>
->
-> I spent hours of this issue, and there may be a wrong basic assumption
-> done in the smokey/gdb test. Specifically, handle_sigwake_event()
-> un-stops the debuggee (lifting XNDBGSTOP), then sends a mayday notice to
-> make sure that debuggee re-enters the kernel asap for leaving the oob
-> stage. What might happen between these two events might not be as
-> well-defined as this test expects (e.g. what if the debugger might be
-
-I meant the _debuggee_ (obvously not the debugger in this case)
-
-> able to run more user code before the mayday trap is enforced?).
->
-> I'll keep on debugging that stuff and let you know.
 
 
--- 
-Philippe.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*sh-4.4# ./xeno-testStarted child 209: /bin/sh
+/usr/xenomai/bin/xeno-test-run-wrapper ./xeno-test++ echo 0++
+testdir=/usr/xenomai/bin++ /usr/xenomai/bin/smokey --run
+random_alloc_rounds=64 pattern_check_rounds=64arith OKbufp skipped (no
+kernel support)cpu_affinity skipped (no kernel support)fpu_stress OKiddp
+skipped (no kernel support)leaks OKmemory_coreheap OKmemory_heapmem
+OKmemory_tlsf OKnet_packet_dgram skipped (no kernel support)net_packet_raw
+skipped (no kernel support)net_udp skipped (no kernel support)posix_clock
+OKFAILED autoinit_simple_conddestroy cond_destroy: returned -22 instead of
+0 - Invalid argumentchild 209 returned: exited with status 1*
+
+How can I solve the cond_destroy error and what kernel configurations do I
+need for "no kernel support" items? Can someone give some hints? Thanks!
