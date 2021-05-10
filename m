@@ -1,10 +1,12 @@
-Subject: Re: xeno-test failed due to cond_destroy error
-References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
+Subject: Re: [PATCH wip/dovetail 1/1] cobalt: Remove duplicate
+ timespec/itimerspec copy helpers
+References: <20210507151830.1260775-1-florian.bezdeka@siemens.com>
+ <20210507151830.1260775-2-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
-Date: Mon, 10 May 2021 08:49:52 +0200
+Message-ID: <cb1fed37-68a5-d08d-a323-b49778012665@siemens.com>
+Date: Mon, 10 May 2021 09:02:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
+In-Reply-To: <20210507151830.1260775-2-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,50 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fangsuo Wu <tiger20081015@gmail.com>, xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 10.05.21 03:56, Fangsuo Wu via Xenomai wrote:
-> Hi, I met below errors when running xeno-test in my board:
+On 07.05.21 17:18, Florian Bezdeka wrote:
+> The variant of such helpers which are using a temporary element on the
+> stack work in both worlds, so on systems with 4 and 8 byte time_t.
+> To keep the code as simple as possible we can remove the
+> __BITS_PER_LONG == 64 implementation.
 > 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  .../include/asm-generic/xenomai/syscall.h     | 31 -------------------
+>  1 file changed, 31 deletions(-)
 > 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> *sh-4.4# ./xeno-testStarted child 209: /bin/sh
-> /usr/xenomai/bin/xeno-test-run-wrapper ./xeno-test++ echo 0++
-> testdir=/usr/xenomai/bin++ /usr/xenomai/bin/smokey --run
-> random_alloc_rounds=64 pattern_check_rounds=64arith OKbufp skipped (no
-> kernel support)cpu_affinity skipped (no kernel support)fpu_stress OKiddp
-> skipped (no kernel support)leaks OKmemory_coreheap OKmemory_heapmem
-> OKmemory_tlsf OKnet_packet_dgram skipped (no kernel support)net_packet_raw
-> skipped (no kernel support)net_udp skipped (no kernel support)posix_clock
-> OKFAILED autoinit_simple_conddestroy cond_destroy: returned -22 instead of
-> 0 - Invalid argumentchild 209 returned: exited with status 1*
-> 
-> How can I solve the cond_destroy error and what kernel configurations do I
-> need for "no kernel support" items? Can someone give some hints? Thanks!
+> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> index 194583c18..117bb3ff8 100644
+> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> @@ -75,41 +75,12 @@ static inline int cobalt_strncpy_from_user(char *dst, const char __user *src,
+>  	return __xn_strncpy_from_user(dst, src, count);
+>  }
+>  
+> -#if __BITS_PER_LONG == 64
+>  
+>  /*
+>   * NOTE: those copy helpers won't work in compat mode: use
+>   * sys32_get_*(), sys32_put_*() instead.
+>   */
+>  
+> -static inline int cobalt_get_u_timespec(struct timespec64 *dst,
+> -			const struct __user_old_timespec __user *src)
+> -{
+> -	return cobalt_copy_from_user(dst, src, sizeof(*dst));
+> -}
+> -
+> -static inline int cobalt_put_u_timespec(
+> -	struct __user_old_timespec __user *dst,
+> -	const struct timespec64 *src)
+> -{
+> -	return cobalt_copy_to_user(dst, src, sizeof(*dst));
+> -}
+> -
+> -static inline int cobalt_get_u_itimerspec(struct itimerspec64 *dst,
+> -			const struct __user_old_itimerspec __user *src)
+> -{
+> -	return cobalt_copy_from_user(dst, src, sizeof(*dst));
+> -}
+> -
+> -static inline int cobalt_put_u_itimerspec(
+> -	struct __user_old_itimerspec __user *dst,
+> -	const struct itimerspec64 *src)
+> -{
+> -	return cobalt_copy_to_user(dst, src, sizeof(*dst));
+> -}
+> -
+> -#else /* __BITS_PER_LONG == 32 */
+> -
+>  static inline int cobalt_get_u_timespec(struct timespec64 *dst,
+>  			const struct __user_old_timespec __user *src)
+>  {
+> @@ -175,8 +146,6 @@ static inline int cobalt_put_u_itimerspec(
+>  	return cobalt_copy_to_user(dst, &u_its, sizeof(*dst));
+>  }
+>  
+> -#endif
+> -
+>  /* 32bit syscall emulation */
+>  #define __COBALT_COMPAT_BIT	0x1
+>  /* 32bit syscall emulation - extended form */
 > 
 
-Please use an email client that is capable of sending unmangled
-plaintext emails to prevent such things as above.
-
-Then we need more information about your board, the revision of Xenomai
-used, how you built etc.
+Thanks, applied to next.
 
 Jan
 
