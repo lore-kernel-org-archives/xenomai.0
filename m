@@ -1,10 +1,10 @@
-Subject: Re: [PATCH v6 0/4] Adressing y2038 test failures on ARM and BBB
-References: <20210507215149.1409729-1-florian.bezdeka@siemens.com>
+Subject: Re: xeno-test failed due to cond_destroy error
+References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3c9f9d64-0b11-23fa-f283-0b8128ed6b67@siemens.com>
-Date: Mon, 10 May 2021 08:51:42 +0200
+Message-ID: <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
+Date: Mon, 10 May 2021 08:49:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210507215149.1409729-1-florian.bezdeka@siemens.com>
+In-Reply-To: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,65 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: Fangsuo Wu <tiger20081015@gmail.com>, xenomai@xenomai.org
 
-On 07.05.21 23:51, Florian Bezdeka wrote:
-> The CI pipeline discovered an invalid instruction on some ARM boards,
-> especially the BBB (beaglebone black). Applying this patch series should
-> fix the current test failure on "next" branch.
-> 
-> As already discussed: There might be another problem in the ARM syscall
-> prologue/epilogue but it still makes sense to use the same macro for
-> calling the syscalls as libcobalt does.
-> 
-> I'm still asking myself why libcobalt has special macros for calling the
-> syscalls instead of using plain syscall() from *libc. Any input?
-> 
-> The difference to v5:
->  - Resend, forget to CC Philippe 
->  - Fixed SPDX license header (newer version of checkpatch seems to care)
->  - Fixed a typo in one of the test descriptions
-> 
-> The difference to v4:
->  - Fixed the error handling / error reporting bugs introduced by v4
->    errno => ret migration gone wrong
->  - Took care of some review comments from Jan
-> 
-> The main difference to v3:
->  - Migration from syscall() (libc) to XENOAMAI_SYSCALLx()
+On 10.05.21 03:56, Fangsuo Wu via Xenomai wrote:
+> Hi, I met below errors when running xeno-test in my board:
 > 
 > 
-> Florian Bezdeka (4):
->   cobalt/sem: y2038: Fixing the sem_timedwait syscall for 32 bit systems
->   y2038: Adding sem_timedwait64
->   y2038: Add tests for the sc_cobalt_sem_timedwait64 syscall
->   y2038: lib/cobalt: Add support of sc_cobalt_sem_timedwait64
 > 
->  configure.ac                           |   1 +
->  include/cobalt/kernel/time.h           |  20 +++
->  include/cobalt/uapi/syscall.h          |   1 +
->  kernel/cobalt/Makefile                 |   1 +
->  kernel/cobalt/posix/sem.c              |  60 ++++++---
->  kernel/cobalt/posix/sem.h              |  13 +-
->  kernel/cobalt/posix/syscall32.c        |  17 ++-
->  kernel/cobalt/posix/syscall32.h        |   6 +-
->  kernel/cobalt/time.c                   |  27 ++++
->  lib/cobalt/semaphore.c                 |   5 +
->  testsuite/smokey/Makefile.am           |   6 +-
->  testsuite/smokey/y2038/Makefile.am     |  10 ++
->  testsuite/smokey/y2038/syscall-tests.c | 178 +++++++++++++++++++++++++
->  13 files changed, 314 insertions(+), 31 deletions(-)
->  create mode 100644 include/cobalt/kernel/time.h
->  create mode 100644 kernel/cobalt/time.c
->  create mode 100644 testsuite/smokey/y2038/Makefile.am
->  create mode 100644 testsuite/smokey/y2038/syscall-tests.c
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> *sh-4.4# ./xeno-testStarted child 209: /bin/sh
+> /usr/xenomai/bin/xeno-test-run-wrapper ./xeno-test++ echo 0++
+> testdir=/usr/xenomai/bin++ /usr/xenomai/bin/smokey --run
+> random_alloc_rounds=64 pattern_check_rounds=64arith OKbufp skipped (no
+> kernel support)cpu_affinity skipped (no kernel support)fpu_stress OKiddp
+> skipped (no kernel support)leaks OKmemory_coreheap OKmemory_heapmem
+> OKmemory_tlsf OKnet_packet_dgram skipped (no kernel support)net_packet_raw
+> skipped (no kernel support)net_udp skipped (no kernel support)posix_clock
+> OKFAILED autoinit_simple_conddestroy cond_destroy: returned -22 instead of
+> 0 - Invalid argumentchild 209 returned: exited with status 1*
+> 
+> How can I solve the cond_destroy error and what kernel configurations do I
+> need for "no kernel support" items? Can someone give some hints? Thanks!
 > 
 
-With these four plus the first 5 of [1], testing passed - thanks, merged.
+Please use an email client that is capable of sending unmangled
+plaintext emails to prevent such things as above.
+
+Then we need more information about your board, the revision of Xenomai
+used, how you built etc.
 
 Jan
-
-[1] https://xenomai.org/pipermail/xenomai/2021-May/045094.html
 
 -- 
 Siemens AG, T RDA IOT
