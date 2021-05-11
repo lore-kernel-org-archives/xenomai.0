@@ -1,8 +1,12 @@
-Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH v2 2/3] y2038: lib/cobalt/clock: dispatch clock_nanosleep
-Date: Wed, 21 Apr 2021 16:38:44 +0800
-Message-Id: <1618994324-21514-1-git-send-email-chensong_2000@189.cn>
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 06/31] utils/net: add VLAN filter configuration tool
+Date: Tue, 11 May 2021 18:05:10 +0200
+Message-Id: <20210511160535.26580-7-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,40 +15,293 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, florian.bezdeka@siemens.com
-Cc: chensong <chensong@tj.kylinos.cn>
+To: xenomai@xenomai.org
 
-From: chensong <chensong@tj.kylinos.cn>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-If sizeof time_t bigger than 4, which means glibc supports
-64bit timespec, go to clock_nanosleep64.
-
-otherwise, go to original clock_nanosleep.
-
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- lib/cobalt/clock.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ utils/net/Makefile.am |   1 +
+ utils/net/rtvconfig.c | 257 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 258 insertions(+)
+ create mode 100644 utils/net/rtvconfig.c
 
-diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
-index e861413..b799e27 100644
---- a/lib/cobalt/clock.c
-+++ b/lib/cobalt/clock.c
-@@ -360,8 +360,13 @@ COBALT_IMPL(int, clock_nanosleep, (clockid_t clock_id,
- 
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
- 
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
-+				clock_id, flags, rqtp, rmtp);
-+#else
- 	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
- 				clock_id, flags, rqtp, rmtp);
-+#endif
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
+diff --git a/utils/net/Makefile.am b/utils/net/Makefile.am
+index 3b90f8adf..90e9002ea 100644
+--- a/utils/net/Makefile.am
++++ b/utils/net/Makefile.am
+@@ -11,6 +11,7 @@ sbin_PROGRAMS = \
+ 	rtcfg \
+ 	rtifconfig \
+ 	rtiwconfig \
++	rtvconfig \
+ 	rtping  \
+ 	rtroute \
+ 	tdmacfg
+diff --git a/utils/net/rtvconfig.c b/utils/net/rtvconfig.c
+new file mode 100644
+index 000000000..281e93422
+--- /dev/null
++++ b/utils/net/rtvconfig.c
+@@ -0,0 +1,257 @@
++//
++//Copyright (C) 2001  Ben Greear
++//
++//This program is free software; you can redistribute it and/or
++//modify it under the terms of the GNU Library General Public License
++//as published by the Free Software Foundation; either version 2
++//of the License, or (at your option) any later version.
++//
++//This program is distributed in the hope that it will be useful,
++//but WITHOUT ANY WARRANTY; without even the implied warranty of
++//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++//GNU General Public License for more details.
++//
++//You should have received a copy of the GNU Library General Public License
++//along with this program; if not, write to the Free Software
++//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++//
++// To contact the Author, Ben Greear:  greearb@candelatech.com
++//
++
++
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <strings.h>
++#include <sys/ioctl.h>
++#include <linux/if_vlan.h>
++#include <linux/sockios.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/types.h>
++
++
++#define MAX_HOSTNAME 256
++
++
++static char* usage =
++      "\n"
++"Usage: add             [interface-name] [vlan_id]\n"
++"       rem             [vlan-name]\n"
++"       set_flag        [interface-name] [flag-num]       [0 | 1]\n"
++"       set_egress_map  [vlan-name]      [skb_priority]   [vlan_qos]\n"
++"       set_ingress_map [vlan-name]      [skb_priority]   [vlan_qos]\n"
++"       set_name_type   [name-type]\n"
++"\n"
++"* The [interface-name] is the name of the ethernet card that hosts\n"
++"  the VLAN you are talking about.\n"
++"* The vlan_id is the identifier (0-4095) of the VLAN you are operating on.\n"
++"* skb_priority is the priority in the socket buffer (sk_buff).\n"
++"* vlan_qos is the 3 bit priority in the VLAN header\n"
++"* name-type:  VLAN_PLUS_VID (vlan0005), VLAN_PLUS_VID_NO_PAD (vlan5),\n"
++"              DEV_PLUS_VID (eth0.0005), DEV_PLUS_VID_NO_PAD (eth0.5)\n"
++"* bind-type:  PER_DEVICE  # Allows vlan 5 on eth0 and eth1 to be unique.\n"
++"              PER_KERNEL  # Forces vlan 5 to be unique across all devices.\n"
++"* FLAGS:  1 REORDER_HDR  When this is set, the VLAN device will move the\n"
++"            ethernet header around to make it look exactly like a real\n"
++"            ethernet device.  This may help programs such as DHCPd which\n"
++"            read the raw ethernet packet and make assumptions about the\n"
++"            location of bytes.  If you don't need it, don't turn it on, because\n"
++"            there will be at least a small performance degradation.  Default\n"
++"            is OFF.\n";
++
++void show_usage() {
++   fprintf(stdout,usage);
++}
++
++int hex_to_bytes(char* bytes, int bytes_length, char* hex_str) {
++   int hlen;
++   int i;
++
++   int j = 0;
++   char hex[3];
++   char* stop; /* not used for any real purpose */
++
++   hlen = strlen(hex_str);
++
++   hex[2] = 0;
++
++   for (i = 0; i<hlen; i++) {
++
++      hex[0] = hex_str[i];
++      i++;
++      if (i >= hlen) {
++	 return j; /* done */
++      }
++
++      hex[1] = hex_str[i];
++      bytes[j++] = (char)strtoul(hex, &stop, 16);
++   }
++   return j;
++}
++
++
++int main(int argc, char** argv) {
++   int fd;
++   struct vlan_ioctl_args if_request;
++
++   char* cmd = NULL;
++   char* if_name = NULL;
++   unsigned int vid = 0;
++   unsigned int skb_priority;
++   unsigned short vlan_qos;
++   unsigned int nm_type = VLAN_NAME_TYPE_PLUS_VID;
++
++   memset(&if_request, 0, sizeof(struct vlan_ioctl_args));
++
++   if ((argc < 3) || (argc > 5)) {
++      fprintf(stdout,"Expecting argc to be 3-5, inclusive.  Was: %d\n",argc);
++
++      show_usage();
++      exit(1);
++   }
++   else {
++      cmd = argv[1];
++
++      if (strcasecmp(cmd, "set_name_type") == 0) {
++	 if (strcasecmp(argv[2], "VLAN_PLUS_VID") == 0) {
++	    nm_type = VLAN_NAME_TYPE_PLUS_VID;
++	 }
++	 else if (strcasecmp(argv[2], "VLAN_PLUS_VID_NO_PAD") == 0) {
++	    nm_type = VLAN_NAME_TYPE_PLUS_VID_NO_PAD;
++	 }
++	 else if (strcasecmp(argv[2], "DEV_PLUS_VID") == 0) {
++	    nm_type = VLAN_NAME_TYPE_RAW_PLUS_VID;
++	 }
++	 else if (strcasecmp(argv[2], "DEV_PLUS_VID_NO_PAD") == 0) {
++	    nm_type = VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD;
++	 }
++	 else {
++	    // MATHIEU
++	    //cerr << "Invalid name type.\n";
++	    fprintf(stderr,"Invalid name type.\n");
++
++	    show_usage();
++	    exit(1);
++	 }
++	 if_request.u.name_type = nm_type;
++      }
++      else {
++	 if_name = argv[2];
++	 if (strlen(if_name) > 15) {
++	    // MATHIEU
++	    //cerr << "ERROR:  if_name must be 15 characters or less." << endl;
++	    fprintf(stderr,"ERROR:  if_name must be 15 characters or less.\n");
++	    exit(1);
++	 }
++	 strcpy(if_request.device1, if_name);
++      }
++
++      if (argc == 4) {
++	 vid = atoi(argv[3]);
++	 if_request.u.VID = vid;
++      }
++
++      if (argc == 5) {
++	 skb_priority = atoi(argv[3]);
++	 vlan_qos = atoi(argv[4]);
++	 if_request.u.skb_priority = skb_priority;
++	 if_request.vlan_qos = vlan_qos;
++      }
++   }
++
++   /* We use sockets now, instead of the file descriptor */
++   if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
++      fprintf(stderr, "FATAL:  Couldn't open a socket..go figure!\n");
++      exit(2);
++   }
++
++   /* add */
++   if (strcasecmp(cmd, "add") == 0) {
++      if_request.cmd = ADD_VLAN_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to add VLAN #%u to IF -:%s:-  error: %s\n",
++		    vid, if_name, strerror(errno));
++	 exit(3);
++      }
++      else {
++	 fprintf(stdout,"Added VLAN with VID == %u to IF -:%s:-\n",
++		 vid, if_name);
++	 if (vid == 1) {
++	    fprintf(stdout, "WARNING:  VLAN 1 does not work with many switches,\nconsider another number if you have problems.\n");
++	 }
++      }
++   }//if
++   else if (strcasecmp(cmd, "rem") == 0) {
++      if_request.cmd = DEL_VLAN_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to remove VLAN -:%s:- error: %s\n",
++		 if_name, strerror(errno));
++	 exit(4);
++      }
++      else {
++	 fprintf(stdout,"Removed VLAN -:%s:-\n", if_name);
++      }
++   }//if
++   else if (strcasecmp(cmd, "set_egress_map") == 0) {
++      if_request.cmd = SET_VLAN_EGRESS_PRIORITY_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to set egress map on device -:%s:- error: %s\n",
++		 if_name, strerror(errno));
++	 exit(5);
++      }
++      else {
++	 fprintf(stdout,"Set egress mapping on device -:%s:- "
++		 "Should be visible in /proc/net/vlan/%s\n",
++		 if_name, if_name);
++      }
++   }
++   else if (strcasecmp(cmd, "set_ingress_map") == 0) {
++      if_request.cmd = SET_VLAN_INGRESS_PRIORITY_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to set ingress map on device -:%s:- error: %s\n",
++		 if_name, strerror(errno));
++	 exit(6);
++      }
++      else {
++	 fprintf(stdout,"Set ingress mapping on device -:%s:- "
++		 "Should be visible in /proc/net/vlan/%s\n",
++		 if_name, if_name);
++      }
++   }
++   else if (strcasecmp(cmd, "set_flag") == 0) {
++      if_request.cmd = SET_VLAN_FLAG_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to set flag on device -:%s:- error: %s\n",
++		 if_name, strerror(errno));
++	 exit(7);
++      }
++      else {
++	 fprintf(stdout,"Set flag on device -:%s:- "
++		 "Should be visible in /proc/net/vlan/%s\n",
++		 if_name, if_name);
++      }
++   }
++   else if (strcasecmp(cmd, "set_name_type") == 0) {
++      if_request.cmd = SET_VLAN_NAME_TYPE_CMD;
++      if (ioctl(fd, SIOCSIFVLAN, &if_request) < 0) {
++	 fprintf(stderr,"ERROR: trying to set name type for VLAN subsystem, error: %s\n",
++		 strerror(errno));
++	 exit(8);
++      }
++      else {
++	 fprintf(stdout,"Set name-type for VLAN subsystem."
++		 " Should be visible in /proc/net/vlan/config\n");
++      }
++   }
++   else {
++      fprintf(stderr, "Unknown command -:%s:-\n", cmd);
++
++      show_usage();
++      exit(5);
++   }
++
++   return 0;
++}/* main */
 -- 
-2.7.4
+2.17.1
 
 
