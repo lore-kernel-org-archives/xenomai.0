@@ -1,11 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/7] cobalt/memory: fix __vmalloc() calls
-Date: Wed, 12 May 2021 12:05:51 +0200
-Message-Id: <cb76faf45c891829d52635cb56f5f3ff47bbc989.1620813957.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1620813957.git.jan.kiszka@siemens.com>
-References: <cover.1620813957.git.jan.kiszka@siemens.com>
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 19/31] utils/net: ping: display min and average round-trip time
+Date: Tue, 11 May 2021 18:05:23 +0200
+Message-Id: <20210511160535.26580-20-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +17,63 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
-
-Since kernel v5.8, __vmalloc() does not take protection bits as
-PROT_KERNEL is now wired in. Therefore we cannot disable the cache for
-the UMM segment via the allocation call directly anymore.
-
-This said, we don't support any CPU architecture exhibiting cache
-aliasing braindamage anymore either (was armv4/v5), so let's convert
-to the new __vmalloc() call format without bothering for cache
-settings.
+From: Christophe Carton <christophe.carton@ixblue.com>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ utils/net/rtping.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index 930e6364e5..652a04759f 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -210,4 +210,10 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- #define old_timeval32     compat_timeval
- #endif
+diff --git a/utils/net/rtping.c b/utils/net/rtping.c
+index bdaf6cb15..878fa6dce 100644
+--- a/utils/net/rtping.c
++++ b/utils/net/rtping.c
+@@ -29,6 +29,7 @@
+ #include <signal.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <float.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <sys/ioctl.h>
+@@ -46,7 +47,9 @@ unsigned int    count    = 0;
+ int             delay    = 1000;
+ unsigned int    sent     = 0;
+ unsigned int    received = 0;
+-float           wc_rtt   = 0;
++float           max_rtt   = FLT_MIN;
++float           min_rtt   = FLT_MAX;
++float           avr_rtt   = 0.0f;
  
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
-+#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags, PAGE_KERNEL)
-+#else
-+#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
-+#endif
-+
- #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+ 
+ void help(void)
+@@ -81,9 +84,9 @@ void print_statistics()
+ {
+     printf("\n--- %s rtping statistics ---\n"
+            "%d packets transmitted, %d received, %d%% packet loss\n"
+-           "worst case rtt = %.1f us\n",
++           "rtt min/avg/max = %.1f/%.1f/%.1f us\n",
+            inet_ntoa(addr), sent, received, 100 - ((received * 100) / sent),
+-           wc_rtt);
++           min_rtt, avr_rtt/received, max_rtt);
+     exit(0);
+ }
+ 
+@@ -117,8 +120,11 @@ void ping(int signal)
+     received++;
+     from.s_addr = cmd.args.ping.ip_addr;
+     rtt = (float)cmd.args.ping.rtt / (float)1000;
+-    if (rtt > wc_rtt)
+-        wc_rtt = rtt;
++    if (rtt > max_rtt)
++        max_rtt = rtt;
++    if (rtt < min_rtt)
++        min_rtt = rtt;
++    avr_rtt += rtt;
+     printf("%d bytes from %s: icmp_seq=%d time=%.1f us\n",
+            ret, inet_ntoa(from), cmd.args.ping.sequence, rtt);
+ 
 -- 
-2.26.2
+2.17.1
 
 
