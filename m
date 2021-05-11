@@ -1,14 +1,11 @@
-Subject: Re: [PATCH 00/31] Update fec driver for xenomai 3 and linux kernel
- 5.4 and add I.MX8 support
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 12/31] net/drivers: e1000e: enable multicast
+Date: Tue, 11 May 2021 18:05:16 +0200
+Message-Id: <20210511160535.26580-13-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
 References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
- <a32688bc-fa55-f0d3-f764-81edfd865def@siemens.com>
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@alstefgroup.com>
-Message-ID: <a4b5893b-3bdb-2fcb-ccde-fa331f90e380@alstefgroup.com>
-Date: Wed, 12 May 2021 11:52:13 +0200
-In-Reply-To: <a32688bc-fa55-f0d3-f764-81edfd865def@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,167 +15,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Le 12/05/2021 à 08:57, Jan Kiszka a écrit :
-> On 11.05.21 18:05, Jean-Baptiste Trédez via Xenomai wrote:
->> Update fec driver for xenomai 3 and linux kernel 5.4 and add I.MX8 support
->>
->> Patch  1 to 27 : rtnet-mcast+vlan branch from Philippe Gerum with updated driver for 4.18.85 kernel
->> Patch 28 to 29 : update driver for 5.4 kernel and add I.MX8 support
->> Patch 30 : bugfix on fec_enet_reset_skb
->> Patch 31 : reduce latency
->>
->>
->> Christophe Carton (1):
->>    utils/net: ping: display min and average round-trip time
->>
->> Florian Bezdeka (1):
->>    cobalt uapi: Introducing new feature flag for time64 availability
->>
-> Seems your baseline was off. Please check that you were really sending
-> from the right branch.
->
-> Jan
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/drivers/e1000e/e1000.h    | 2 +-
+ kernel/drivers/net/drivers/e1000e/hw.h       | 2 +-
+ kernel/drivers/net/drivers/e1000e/lib.c      | 7 ++++---
+ kernel/drivers/net/drivers/e1000e/netdev.c   | 6 ++++--
+ kernel/drivers/net/stack/include/ipv4/igmp.h | 4 ++--
+ kernel/drivers/net/stack/ipv4/igmp.c         | 6 +++---
+ 6 files changed, 15 insertions(+), 12 deletions(-)
 
-The patch "[PATCH 01/31] cobalt uapi: Introducing new feature flag for 
-time64 availability" was kept when i rebased rtnet-mcast+vlan branch on 
-next. I can resend the whole set without it if needed.
+diff --git a/kernel/drivers/net/drivers/e1000e/e1000.h b/kernel/drivers/net/drivers/e1000e/e1000.h
+index 7454c6350..a682de8d2 100644
+--- a/kernel/drivers/net/drivers/e1000e/e1000.h
++++ b/kernel/drivers/net/drivers/e1000e/e1000.h
+@@ -574,7 +574,7 @@ extern s32 e1000e_setup_link(struct e1000_hw *hw);
+ extern void e1000_clear_vfta_generic(struct e1000_hw *hw);
+ extern void e1000e_init_rx_addrs(struct e1000_hw *hw, u16 rar_count);
+ extern void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
+-					       u8 *mc_addr_list,
++					       struct rtdev_mc_list *mc_addr_list,
+ 					       u32 mc_addr_count);
+ extern void e1000e_rar_set(struct e1000_hw *hw, u8 *addr, u32 index);
+ extern s32 e1000e_set_fc_watermarks(struct e1000_hw *hw);
+diff --git a/kernel/drivers/net/drivers/e1000e/hw.h b/kernel/drivers/net/drivers/e1000e/hw.h
+index 247f79eea..94e91ed10 100644
+--- a/kernel/drivers/net/drivers/e1000e/hw.h
++++ b/kernel/drivers/net/drivers/e1000e/hw.h
+@@ -779,7 +779,7 @@ struct e1000_mac_operations {
+ 	s32  (*get_link_up_info)(struct e1000_hw *, u16 *, u16 *);
+ 	s32  (*led_on)(struct e1000_hw *);
+ 	s32  (*led_off)(struct e1000_hw *);
+-	void (*update_mc_addr_list)(struct e1000_hw *, u8 *, u32);
++	void (*update_mc_addr_list)(struct e1000_hw *, struct rtdev_mc_list *, u32);
+ 	s32  (*reset_hw)(struct e1000_hw *);
+ 	s32  (*init_hw)(struct e1000_hw *);
+ 	s32  (*setup_link)(struct e1000_hw *);
+diff --git a/kernel/drivers/net/drivers/e1000e/lib.c b/kernel/drivers/net/drivers/e1000e/lib.c
+index fbdccdc3b..e91037b33 100644
+--- a/kernel/drivers/net/drivers/e1000e/lib.c
++++ b/kernel/drivers/net/drivers/e1000e/lib.c
+@@ -356,7 +356,8 @@ static u32 e1000_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
+  *  The caller must have a packed mc_addr_list of multicast addresses.
+  **/
+ void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
+-					u8 *mc_addr_list, u32 mc_addr_count)
++					struct rtdev_mc_list *mc_addr_list,
++					u32 mc_addr_count)
+ {
+ 	u32 hash_value, hash_bit, hash_reg;
+ 	int i;
+@@ -366,13 +367,13 @@ void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
+ 
+ 	/* update mta_shadow from mc_addr_list */
+ 	for (i = 0; (u32) i < mc_addr_count; i++) {
+-		hash_value = e1000_hash_mc_addr(hw, mc_addr_list);
++		hash_value = e1000_hash_mc_addr(hw, mc_addr_list->dmi_addr);
+ 
+ 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
+ 		hash_bit = hash_value & 0x1F;
+ 
+ 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
+-		mc_addr_list += (ETH_ALEN);
++		mc_addr_list = mc_addr_list->next;
+ 	}
+ 
+ 	/* replace the entire MTA table */
+diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
+index 5ce467911..a75afa808 100644
+--- a/kernel/drivers/net/drivers/e1000e/netdev.c
++++ b/kernel/drivers/net/drivers/e1000e/netdev.c
+@@ -2156,7 +2156,8 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
+  *  Updates the Multicast Table Array.
+  *  The caller must have a packed mc_addr_list of multicast addresses.
+  **/
+-static void e1000_update_mc_addr_list(struct e1000_hw *hw, u8 *mc_addr_list,
++static void e1000_update_mc_addr_list(struct e1000_hw *hw,
++				struct rtdev_mc_list *mc_addr_list,
+ 				      u32 mc_addr_count)
+ {
+ 	hw->mac.ops.update_mc_addr_list(hw, mc_addr_list, mc_addr_count);
+@@ -2198,7 +2199,7 @@ static void e1000_set_multi(struct rtnet_device *netdev)
+ 
+ 	ew32(RCTL, rctl);
+ 
+-	e1000_update_mc_addr_list(hw, NULL, 0);
++	e1000_update_mc_addr_list(hw, netdev->mc_list, netdev->mc_count);
+ 
+ 	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
+ 		e1000e_vlan_strip_enable(adapter);
+@@ -4005,6 +4006,7 @@ static int e1000_probe(struct pci_dev *pdev,
+ 	netdev->open = e1000_open;
+ 	netdev->stop = e1000_close;
+ 	netdev->hard_start_xmit = e1000_xmit_frame;
++	netdev->set_multicast_list = e1000_set_multi;
+ 	//netdev->get_stats = e1000_get_stats;
+ 	netdev->map_rtskb = e1000_map_rtskb;
+ 	netdev->unmap_rtskb = e1000_unmap_rtskb;
+diff --git a/kernel/drivers/net/stack/include/ipv4/igmp.h b/kernel/drivers/net/stack/include/ipv4/igmp.h
+index a44e09041..3daa343e4 100644
+--- a/kernel/drivers/net/stack/include/ipv4/igmp.h
++++ b/kernel/drivers/net/stack/include/ipv4/igmp.h
+@@ -87,8 +87,8 @@ static inline bool rtnet_in_multicast(u32 addr)
+ }
+ 
+ #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_IGMP
+-int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr);
+-int rt_ip_mc_leave_group(struct rtsocket *sk, struct ip_mreq *imr);
++int rt_ip_mc_join_group(struct rtsocket *sk, const struct ip_mreq *imr);
++int rt_ip_mc_leave_group(struct rtsocket *sk, const struct ip_mreq *imr);
+ void rt_ip_mc_drop_socket(struct rtsocket *sk);
+ void rt_ip_mc_dec_group(struct rtnet_device *rtdev, u32 addr);
+ void rt_ip_mc_inc_group(struct rtnet_device *rtdev, u32 addr);
+diff --git a/kernel/drivers/net/stack/ipv4/igmp.c b/kernel/drivers/net/stack/ipv4/igmp.c
+index 3da21df5b..9568cedc7 100644
+--- a/kernel/drivers/net/stack/ipv4/igmp.c
++++ b/kernel/drivers/net/stack/ipv4/igmp.c
+@@ -339,7 +339,7 @@ void rt_ip_mc_dec_group(struct rtnet_device *rtdev, u32 addr)
+     rtdm_lock_put_irqrestore(&mc_list_lock, flags);
+ }
+ 
+-static struct rtnet_device *rt_ip_mc_find_dev(struct ip_mreq *imr)
++static struct rtnet_device *rt_ip_mc_find_dev(const struct ip_mreq *imr)
+ {
+     struct rtnet_device *rtdev = NULL;
+ 
+@@ -353,7 +353,7 @@ static struct rtnet_device *rt_ip_mc_find_dev(struct ip_mreq *imr)
+  *	Join a socket to a group
+  */
+ 
+-int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr)
++int rt_ip_mc_join_group(struct rtsocket *sk, const struct ip_mreq *imr)
+ {
+     int err = 0;
+     u32 addr = imr->imr_multiaddr.s_addr;
+@@ -399,7 +399,7 @@ int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr)
+ /*
+  *	Ask a socket to leave a group.
+  */
+-int rt_ip_mc_leave_group(struct rtsocket *sk, struct ip_mreq *imr)
++int rt_ip_mc_leave_group(struct rtsocket *sk, const struct ip_mreq *imr)
+ {
+     u32 addr = imr->imr_multiaddr.s_addr;
+     struct  rtnet_device *rtdev = rt_ip_mc_find_dev(imr);
+-- 
+2.17.1
 
-Jean-Baptiste
-
->
->> Gilles Chanteperdrix (17):
->>    net/stack: plan for merging private device flags with
->>      netdev_priv_flags
->>    net/stack: add multicast support
->>    utils/net: rtifconfig: display device name untruncated
->>    net/stack: add support for VLAN filtering
->>    utils/net: add VLAN filter configuration tool
->>    net/udp: allow retrieving irq timestamp with SIOCGSTAMP ioctl
->>    net/udp sendmsg: do not return an error if dest addr is null
->>    net/stack: rtskb: increase buffer size
->>    net/stack: manager: ratelimit printk when dropping buffers
->>    net/ipv4: icmp: forward unused packets to proxy
->>    net/drivers: e1000e: enable multicast
->>    net/drivers: e1000e: enable VLAN filtering
->>    net/drivers: e1000e: add netdevice stats
->>    net/drivers: igb: enable multicast
->>    net/drivers: igb: enable VLAN filtering
->>    demo/net: add rtnet tests
->>    net/stack: increase maximum number of ethernet devices
->>
->> Jean-Baptiste Trédez (3):
->>    net/drivers: fec: update from linux kernel 5.4 and NXP I.MX8
->>    Kconfig : enable fec for ARM64 build
->>    net/drivers: fec: fix dev_kfree_rtskb on wrong buffer
->>
->> Philippe Gerum (8):
->>    net/drivers: fec: rebase over original driver from kernel 4.14.85
->>    net/drivers: fec: enable multicast
->>    demo: restrict net/ to cobalt build
->>    net/ipv4: route: fix counting of allocated net routes
->>    net/ipv4: route: handle default net route
->>    utils/net: rtroute: add/del default route
->>    net/ipv4: sock: handle SO_REUSEADDR for SOCK_DGRAM gracefully
->>    net/stack: igmp: resolve default multicast interface
->>
->> Arnaud Bouvet (1):
->>    net/drivers: fec: remove 1ms latency on frames reception
->>
->>   configure.ac                                  |    1 +
->>   demo/Makefile.am                              |    4 +
->>   demo/net/Makefile.am                          |   78 +
->>   demo/net/mcast-receiver.c                     |  205 +
->>   demo/net/mcast-sender.c                       |  151 +
->>   demo/net/raw-ethernet.c                       |  100 +
->>   demo/net/rtt-mcast-measure.c                  |  210 +
->>   demo/net/rtt-mcast-responder.c                |  109 +
->>   demo/net/rtt-responder.c                      |  193 +
->>   demo/net/rtt-sender.c                         |  341 ++
->>   demo/net/rttcp-client.c                       |  212 +
->>   demo/net/rttcp-server.c                       |  181 +
->>   demo/net/udp-send.c                           |  136 +
->>   include/cobalt/uapi/asm-generic/features.h    |    6 +-
->>   .../arm64/include/asm/xenomai/uapi/features.h |    1 +
->>   .../include/asm/xenomai/uapi/features.h       |    1 +
->>   .../x86/include/asm/xenomai/uapi/features.h   |    1 +
->>   kernel/drivers/net/addons/cap.c               |   46 +-
->>   kernel/drivers/net/doc/README.routing         |   22 +
->>   kernel/drivers/net/doc/README.rtnetproxy      |    6 +-
->>   kernel/drivers/net/drivers/Kconfig            |   11 +-
->>   kernel/drivers/net/drivers/Makefile           |    6 +-
->>   kernel/drivers/net/drivers/e1000e/e1000.h     |    7 +-
->>   kernel/drivers/net/drivers/e1000e/hw.h        |    2 +-
->>   kernel/drivers/net/drivers/e1000e/lib.c       |    7 +-
->>   kernel/drivers/net/drivers/e1000e/netdev.c    |  266 +-
->>   kernel/drivers/net/drivers/fec.c              | 1859 -------
->>   kernel/drivers/net/drivers/freescale/Makefile |    5 +
->>   kernel/drivers/net/drivers/freescale/fec.h    |  642 +++
->>   .../drivers/net/drivers/freescale/fec_main.c  | 4736 +++++++++++++++++
->>   .../drivers/net/drivers/freescale/fec_ptp.c   |  638 +++
->>   kernel/drivers/net/drivers/igb/e1000_mac.c    |    6 +-
->>   kernel/drivers/net/drivers/igb/e1000_mac.h    |    2 +-
->>   kernel/drivers/net/drivers/igb/igb_main.c     |   53 +-
->>   kernel/drivers/net/drivers/rt_fec.h           |  153 -
->>   kernel/drivers/net/stack/Kconfig              |    8 +
->>   kernel/drivers/net/stack/Makefile             |    2 +
->>   kernel/drivers/net/stack/include/ipv4/arp.h   |    3 +
->>   kernel/drivers/net/stack/include/ipv4/igmp.h  |  102 +
->>   .../drivers/net/stack/include/ipv4/protocol.h |    1 +
->>   kernel/drivers/net/stack/include/rtdev.h      |   47 +-
->>   kernel/drivers/net/stack/include/rtif_vlan.h  |  105 +
->>   kernel/drivers/net/stack/include/rtnet_port.h |    6 +-
->>   .../drivers/net/stack/include/rtnet_socket.h  |    6 +
->>   kernel/drivers/net/stack/include/rtskb.h      |    4 +-
->>   kernel/drivers/net/stack/include/rtvlan.h     |   25 +
->>   kernel/drivers/net/stack/ipv4/Kconfig         |    7 +
->>   kernel/drivers/net/stack/ipv4/Makefile        |    1 +
->>   kernel/drivers/net/stack/ipv4/af_inet.c       |    5 +
->>   kernel/drivers/net/stack/ipv4/arp.c           |   26 +
->>   kernel/drivers/net/stack/ipv4/icmp.c          |   14 +
->>   kernel/drivers/net/stack/ipv4/igmp.c          |  624 +++
->>   kernel/drivers/net/stack/ipv4/ip_output.c     |   13 +-
->>   kernel/drivers/net/stack/ipv4/ip_sock.c       |   73 +-
->>   kernel/drivers/net/stack/ipv4/protocol.c      |   17 +
->>   kernel/drivers/net/stack/ipv4/route.c         |   56 +-
->>   kernel/drivers/net/stack/ipv4/tcp/tcp.c       |    2 +-
->>   kernel/drivers/net/stack/ipv4/udp/udp.c       |   53 +-
->>   kernel/drivers/net/stack/rtdev.c              |  214 +
->>   kernel/drivers/net/stack/rtnet_chrdev.c       |    8 +-
->>   kernel/drivers/net/stack/rtnet_module.c       |    5 +
->>   kernel/drivers/net/stack/socket.c             |   17 +-
->>   kernel/drivers/net/stack/stack_mgr.c          |    2 +-
->>   kernel/drivers/net/stack/vlan.c               |  725 +++
->>   utils/net/Makefile.am                         |    1 +
->>   utils/net/rtifconfig.c                        |    2 +-
->>   utils/net/rtping.c                            |   16 +-
->>   utils/net/rtroute.c                           |   39 +-
->>   utils/net/rtvconfig.c                         |  257 +
->>   69 files changed, 10741 insertions(+), 2142 deletions(-)
->>   create mode 100644 demo/net/Makefile.am
->>   create mode 100644 demo/net/mcast-receiver.c
->>   create mode 100644 demo/net/mcast-sender.c
->>   create mode 100644 demo/net/raw-ethernet.c
->>   create mode 100644 demo/net/rtt-mcast-measure.c
->>   create mode 100644 demo/net/rtt-mcast-responder.c
->>   create mode 100644 demo/net/rtt-responder.c
->>   create mode 100644 demo/net/rtt-sender.c
->>   create mode 100644 demo/net/rttcp-client.c
->>   create mode 100644 demo/net/rttcp-server.c
->>   create mode 100644 demo/net/udp-send.c
->>   delete mode 100644 kernel/drivers/net/drivers/fec.c
->>   create mode 100644 kernel/drivers/net/drivers/freescale/Makefile
->>   create mode 100644 kernel/drivers/net/drivers/freescale/fec.h
->>   create mode 100644 kernel/drivers/net/drivers/freescale/fec_main.c
->>   create mode 100644 kernel/drivers/net/drivers/freescale/fec_ptp.c
->>   delete mode 100644 kernel/drivers/net/drivers/rt_fec.h
->>   create mode 100644 kernel/drivers/net/stack/include/ipv4/igmp.h
->>   create mode 100644 kernel/drivers/net/stack/include/rtif_vlan.h
->>   create mode 100644 kernel/drivers/net/stack/include/rtvlan.h
->>   create mode 100644 kernel/drivers/net/stack/ipv4/igmp.c
->>   create mode 100644 kernel/drivers/net/stack/vlan.c
->>   create mode 100644 utils/net/rtvconfig.c
->>
 
