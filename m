@@ -1,14 +1,12 @@
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 27/31] net/stack: igmp: resolve default multicast interface
+Date: Tue, 11 May 2021 18:05:31 +0200
+Message-Id: <20210511160535.26580-28-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
-References: <CAB9YM8jgdbEYTB8Sb7212KWcLEkRDSVjEYZ8P2qCCStaX9CuPQ@mail.gmail.com>
- <a8412431-ccfb-dcc9-dfba-2da5374bcf1a@siemens.com>
-In-Reply-To: <a8412431-ccfb-dcc9-dfba-2da5374bcf1a@siemens.com>
-From: =?UTF-8?Q?Jo=C3=A3o_Costa?= <joaocostalapin@gmail.com>
-Date: Thu, 27 May 2021 12:52:04 +0100
-Message-ID: <CAB9YM8hdM5R9nsALRGQnXZ4hX0drJdYMDy=OroH92EzA_rqi5A@mail.gmail.com>
-Subject: Re: error: implicit declarations while compiling
- (xenomai3.1+ubuntu20.04)
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,80 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-VGhhbmtzIGZvciB5b3VyIGZlZWRiYWNrLgoKSSBoYWQgbm8gcmVwb3J0IG9mIGVycm9ycyBpbiB0
-aGUgQ0xJIHdoaWxlIHBhdGNoaW5nIHRoZSBrZXJuZWwuCkluIGF0dGFjaCB5b3UgbWF5IGZpbmQg
-dGhlIC5jb25maWcgZmlsZSBJIGFtIHVzaW5nLgoKSSBzZWUgdGhhdCBieSBkZWZhdWx0IFsxXSBn
-b2VzIHRvIHRoZSBpcGlwZS14ODYtNC4xOS55LWNpcApJZiBJIGNoYW5nZSB0aGUgYnJhbmNoL3Rh
-ZyB0byBpcGlwZS1jb3JlLTUuNC43Ny14ODYtMiBbMl0gd2lsbCBJIGJ5IGdldHRpbmcKdGhlIHBy
-ZXBhdGNoZWQgb25lIGZvciB0aGUgdmVyc2lvbiBJIHdhcyBwcmV2aW91c2x5IHRyeWluZyB0byB1
-c2U/CgpUaGFua3MKClsxXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkvaXBpcGUteDg2
-ClsyXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkvaXBpcGUteDg2Ly0vdHJlZS9pcGlw
-ZS1jb3JlLTUuNC43Ny14ODYtMgoKCgoKSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNv
-bT4gZXNjcmV2ZXUgbm8gZGlhIHF1YXJ0YSwgMjYvMDUvMjAyMSDDoChzKQowNjowMzoKCj4gT24g
-MjUuMDUuMjEgMjA6MDMsIEpvw6NvIENvc3RhIHZpYSBYZW5vbWFpIHdyb3RlOgo+ID4gSGVsbG8s
-Cj4gPgo+ID4gSSBhbSBoYXZpbmcgc29tZSBwcm9ibGVtcyB3aXRoIGEgZnJlc2ggaW5zdGFsbCBv
-ZiBYZW5vbWFpIDMuMSBhbmQgSSB3YXMKPiA+IGhvcGluZyB0aGF0IHNvbWVvbmUgY291bGQgaGVs
-cCBtZSBvdXQgc29sdmluZyB0aG9zZQo+ID4gIG9yIGJ5IHNoYXJpbmcgc29tZSBpbnN0YWxsYXRp
-b24gaW5zdHJ1Y3Rpb25zIGZvciBkdW1taWVzLgo+ID4KPiA+ICpUZXN0IGJlbmNoIGNvbmZpZ3Vy
-YXRpb246Kgo+ID4gLVVidW50dSBzZXJ2ZXIgMjAuMDQuMiBydW5uaW5nIGtlcm5lbCA1LjQuMC03
-My1nZW5lcmljCj4gPiAtWGVub21haSB2ZXJzaW9uIDMuMQo+ID4gLUtlcm5lbCBkb3dubG9hZGVk
-IGZvciBwYXRjaC9pbnN0YWxsYXRpb246IGxpbnV4LTUuNC43Ny50YXIuZ3ogKHNpbmNlIEkKPiA+
-IGNvdWxkIG5vdCBmaW5kIGFuIGV4YWN0IG1hdGNoIHdpdGggaXBpcGUgcGF0Y2ggYW5kIHRoZSBr
-ZXJuZWwgYWxyZWFkeQo+ID4gcnVubmluZykKPiA+IC1pcGlwZS1jb3JlLTUuNC43Ny14ODYtMi5w
-YXRjaAo+ID4KPiA+ICpJIGFtIGZvbGxvd2luZyB0aGlzIGluc3RydWN0aW9uczoqCj4gPiAtIGh0
-dHBzOi8vd3d3LnByb2dyYW1tZXJzb3VnaHQuY29tL2FydGljbGUvMTQzNzU0MzcyNDYvCj4gPiAt
-IGhhZCB0aGUgbmVlZCB0byBpbnN0YWxsL2NoYW5nZSBzb21lIHBhY2thZ2VzICIgZ2NjIGxpYm5j
-dXJzZXMtZGV2IGZsZXgKPiA+IGJpc29uIG9wZW5zc2wgbGlic3NsLWRldiBka21zIGxpYmVsZi1k
-ZXYgbGlidWRldi1kZXYgbGlicGNpLWRldgo+ID4gbGliaWJlcnR5LWRldiBidWlsZC1lc3NlbnRp
-YWwga2VybmVsLXBhY2thZ2UiCj4gPiAtIGFzc3VtZWQgdGhhdCB3aGVyZSBpcyB3cml0dGVuOgo+
-ID4gJG1ha2VvbGRkZWZjb25maWcKPiA+IGl0IHNob3VsZCBiZQo+ID4gJG1ha2Ugb2xkY29uZmln
-Cj4gPgo+ID4gKkkgYW0gZ2V0dGluZyB0aGUgZm9sbG93aW5nIGVycm9yczoqCj4gPiAqYWZ0ZXIg
-cnVubmluZyogIiBDT05DVVJSRU5DWV9MRVZFTD04IG1ha2Uta3BrZyAgLS1yb290Y21kIGZha2Vy
-b290Cj4gPiAtLWluaXRyZCAgLS1yZXZpc2lvbj0xLjAuMCBrZXJuZWxfaW1hZ2Uga2VybmVsX2hl
-YWRlcnMgIgo+ID4gKiMxKgo+ID4KPiA+PiBrZXJuZWwvaXBpcGUvY29yZS5jOiBJbiBmdW5jdGlv
-biDigJhfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZl4oCZOgo+ID4+IGtlcm5lbC9pcGlwZS9jb3Jl
-LmM6NTQ3Ojk6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbgo+ID4+IOKA
-mGFyY2hfbWFuZ2xlX2lycV9iaXRz4oCZIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xh
-cmF0aW9uXQo+ID4+ICAgNTQ3IHwgIHJldHVybiBhcmNoX21hbmdsZV9pcnFfYml0cyhzLCBmbGFn
-cyk7Cj4gPj4gICAgICAgfCAgICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+Cj4gPj4gICBDQyAg
-ICAgIGtlcm5lbC9zY2hlZC9jcHV0aW1lLm8KPiA+Pgo+ID4gKiMyKgo+ID4KPiA+PiBrZXJuZWwv
-aXBpcGUvY29yZS5jOiBJbiBmdW5jdGlvbiDigJhfX2lwaXBlX3NwaW5fdW5sb2NrX2lycXJlc3Rv
-cmXigJk6Cj4gPj4ga2VybmVsL2lwaXBlL2NvcmUuYzo1NzQ6NzogZXJyb3I6IGltcGxpY2l0IGRl
-Y2xhcmF0aW9uIG9mIGZ1bmN0aW9uCj4gPj4g4oCYYXJjaF9kZW1hbmdsZV9pcnFfYml0c+KAmTsg
-ZGlkIHlvdSBtZWFuIOKAmGFyY2hfZWFybHlfaXJxX2luaXTigJk/Cj4gPj4gWy1XZXJyb3I9aW1w
-bGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCj4gPj4gICA1NzQgfCAgaWYgKCFhcmNoX2RlbWFu
-Z2xlX2lycV9iaXRzKCZ4KSkKPiA+PiAgICAgICB8ICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+
-fn4KPiA+PiAgICAgICB8ICAgICAgIGFyY2hfZWFybHlfaXJxX2luaXQKPiA+Pgo+ID4gKiMzKgo+
-ID4KPiA+PiAgYXJjaC94ODYva2VybmVsL3Byb2Nlc3MuYzogSW4gZnVuY3Rpb24g4oCYbXdhaXRf
-aWRsZeKAmToKPiA+PiBhcmNoL3g4Ni9rZXJuZWwvcHJvY2Vzcy5jOjY5OTo0OiBlcnJvcjogaW1w
-bGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24KPiA+PiDigJhfX2lwaXBlX2hhbHRfcm9vdOKA
-mTsgZGlkIHlvdSBtZWFuIOKAmGlwaXBlX3Rlc3Rfcm9vdOKAmT8KPiA+PiBbLVdlcnJvcj1pbXBs
-aWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KPiA+PiAgIDY5OSB8ICAgIF9faXBpcGVfaGFsdF9y
-b290KDEpOwo+ID4+ICAgICAgIHwgICAgXn5+fn5+fn5+fn5+fn5+fn4KPiA+PiAgICAgICB8ICAg
-IGlwaXBlX3Rlc3Rfcm9vdAo+ID4KPiA+IGNjMTogc29tZSB3YXJuaW5ncyBiZWluZyB0cmVhdGVk
-IGFzIGVycm9ycwo+ID4+Cj4gPgo+ID4KPiA+PiBtYWtlWzNdOiAqKiogW3NjcmlwdHMvTWFrZWZp
-bGUuYnVpbGQ6MjY2OiBhcmNoL3g4Ni9rZXJuZWwvcHJvY2Vzcy5vXQo+IEVycm9yCj4gPj4gMQo+
-ID4+IG1ha2VbMl06ICoqKiBbc2NyaXB0cy9NYWtlZmlsZS5idWlsZDo1MDA6IGFyY2gveDg2L2tl
-cm5lbF0gRXJyb3IgMgo+ID4+IG1ha2VbMV06ICoqKiBbTWFrZWZpbGU6MTcyOTogYXJjaC94ODZd
-IEVycm9yIDIKPiA+Cj4gPgo+ID4gIG1ha2VbMV06ICoqKiBbTWFrZWZpbGU6MTcyOToga2VybmVs
-XSBFcnJvciAyCj4gPgo+ID4KPiA+ICpOb3RlczoqCj4gPiAtIEkgYW0gbm90IHN1cmUgaXQgbXkg
-YW5zd2VycyB3aGVuIGV4ZWN1dGluZyB0aGUgJG1ha2Ugb2xkY29uZmlnIHdlcmUgdGhlCj4gPiBj
-b3JyZWN0IG9uZXMgYW5kL29yIGNhbiBiZSByZWxhdGVkIHRvIHRoZXNlIHByb2JsZW1zCj4gPiAt
-IEFsc28sIHRoZSBjaGVja3MvdW5jaGVja3MgaW4gdGhlIGtlcm5lbCBtZW51ICgkbWVudWNvbmZp
-ZykgYXJlIG5vdAo+ID4gZXhhY3RseSBsaWtlIHRoZSBvbmVzIG9uIHRob3NlIGluc3RydWN0aW9u
-cyBzaW5jZSB0aGVyZSBhcmUgaXRlbXMgdGhhdCBkbwo+ID4gbm90IGFwcGVhciBvciBhcmUgZW5h
-YmxlZC9lbWJlZGRlZCBieSBkZWZhdWx0IGFuZCBjYW5ub3QgYmUgdW5zZWxlY3RlZAo+ID4KPgo+
-IFN0cmFuZ2UuIFRoZXJlIHdhcyBlaXRoZXIgYSBwcm9ibGVtIHdpdGggcGF0Y2hpbmcgdGhlIGtl
-cm5lbCAoeW91IGNhbgo+IGNyb3NzLWNoZWNrIGJ5IGRvd25sb2FkaW5nIGEgcHJlcGF0Y2hlZCBv
-bmUgZnJvbSBbMV0pLCBvciB5b3UgZm91bmQgYQo+IC5jb25maWcgdGhhdCBleHBvc2VzIGEgYnVp
-bGQgZXJyb3IgKHRoZW4gcGxlYXNlIHNoYXJlIGl0KS4KPgo+IEphbgo+Cj4gWzFdIGh0dHBzOi8v
-c291cmNlLmRlbnguZGUvWGVub21haS9pcGlwZS14ODYKPgo+IC0tCj4gU2llbWVucyBBRywgVCBS
-REEgSU9UCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cj4KLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogLmNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1z
-dHJlYW0KU2l6ZTogMjM2MjczIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNTI3LzNmOTBl
-ZjYwL2F0dGFjaG1lbnQub2JqPgo=
+From: Philippe Gerum <rpm@xenomai.org>
+
+If INADDR_ANY is passed as the imr_interface address, attempt to
+resolve the default multicast interface by finding a route to the
+multicast address.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/stack/ipv4/igmp.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/drivers/net/stack/ipv4/igmp.c b/kernel/drivers/net/stack/ipv4/igmp.c
+index 9568cedc7..cd193d699 100644
+--- a/kernel/drivers/net/stack/ipv4/igmp.c
++++ b/kernel/drivers/net/stack/ipv4/igmp.c
+@@ -342,9 +342,17 @@ void rt_ip_mc_dec_group(struct rtnet_device *rtdev, u32 addr)
+ static struct rtnet_device *rt_ip_mc_find_dev(const struct ip_mreq *imr)
+ {
+     struct rtnet_device *rtdev = NULL;
+-
+-    if (imr->imr_interface.s_addr)
+-	rtdev = rt_ip_dev_find(imr->imr_interface.s_addr);
++    struct dest_route rt;
++    int ret;
++
++    if (imr->imr_interface.s_addr != INADDR_ANY) {
++	    rtdev = rt_ip_dev_find(imr->imr_interface.s_addr);
++    } else {
++	    ret = rt_ip_route_output(&rt, imr->imr_multiaddr.s_addr,
++				    INADDR_ANY);
++	    if (!ret)
++		    rtdev = rt.rtdev;
++    }
+ 
+     return rtdev;
+ }
+-- 
+2.17.1
+
+
