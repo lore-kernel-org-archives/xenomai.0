@@ -1,17 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <CAMDn9+QAgAVtfchVkPS2j9UC0wiFO+uBjVPh4MLT084q40KL5Q@mail.gmail.com>
-References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
- <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
- <CAMDn9+Rxc=H=0R46YK0CgbNLHQZuF8N=_KY-7S-87rY+r86zHw@mail.gmail.com>
- <56335a02-69dd-32ed-5c1b-9df7b1a4b760@siemens.com>
- <CAMDn9+R2AozuqLk_eLge+vbnxj0vRFuzV0DuVdarCk1bLgcakA@mail.gmail.com>
- <CAMDn9+QAgAVtfchVkPS2j9UC0wiFO+uBjVPh4MLT084q40KL5Q@mail.gmail.com>
-From: Fangsuo Wu <tiger20081015@gmail.com>
-Date: Tue, 11 May 2021 18:37:51 +0800
-Message-ID: <CAMDn9+QdT887Fe97p7-aFKBX5ZtzxtVmPjUryySVxrnC2vW+PQ@mail.gmail.com>
-Subject: Re: xeno-test failed due to cond_destroy error
-Content-Type: text/plain; charset="UTF-8"
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: RE: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
+Date: Tue, 11 May 2021 14:57:47 +0000
+Message-ID: <DB7P122MB01061ED94990DB2540D9E54FF2539@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
+References: <20210305082208.18335-1-gunter.grau@philips.com>
+In-Reply-To: <20210305082208.18335-1-gunter.grau@philips.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,161 +16,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi, the issue seems related to the gcc compiler I
-used=EF=BC=88gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux=EF=BC=89.
-
-I added some log and found the failure was from below code, line 155:
-pthread_cond_destroy
-    -> cobalt_cond_autoinit_type:
-149 static int __attribute__((cold))
-150 >-------cobalt_cond_autoinit_type(const pthread_cond_t *cond)
-151 {
-152 >-------static const pthread_cond_t cond_initializer =3D
-153 >------->-------PTHREAD_COND_INITIALIZER;
-154
-155 >-------return memcmp(cond, &cond_initializer,
-sizeof(cond_initializer)) =3D=3D 0 ?
-156 >------->-------0 : -1;   //memcmp is not Zero
-157 }
-
-I dumped the content of pthread_cond_t  cond and cond_initializer. For
-the latter one, all bytes were 0, but for cond variable, only the
-first 44 bytes were 0, the last 4 bytes' value changed every time.
-
-I found the pthread_cond_t  and PTHREAD_COND_INITIALIZER definitions
-in the GCC I used:
-
-#define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0, 0, 0}}
-#define __SIZEOF_PTHREAD_COND_T 48
-
- 89 typedef union
- 90 {
- 91   struct
- 92   {
- 93     int __lock;
- 94     unsigned int __futex;
- 95     __extension__ unsigned long long int __total_seq;
- 96     __extension__ unsigned long long int __wakeup_seq;
- 97     __extension__ unsigned long long int __woken_seq;
- 98     void *__mutex;
- 99     unsigned int __nwaiters;
-100     unsigned int __broadcast_seq;
-101   } __data;
-102   char __size[__SIZEOF_PTHREAD_COND_T];
-103   __extension__ long long int __align;
-104 } pthread_cond_t;
-105
-
-The total size of pthread_cond_t.__size is 48. But
-PTHREAD_COND_INITIALIZER only initializes the first 44 bytes, thus the
-last 4 bytes' value becomes unpredictable. The issue was gone after I
-made the below change:
-
- 197 //#define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0,
-0, 0}}
- 198 #define PTHREAD_COND_INITIALIZER { .__size =3D {0}}
-
-
-
-2021-05-10 17:40 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
-> BTW, I just wrote an application which is exactly the same with
-> autoinit_simple_conddestroy. And it can run successfully in my board.
+> -----Original Message-----
+> From: Gunter Grau <gunter.grau@philips.com>
+> Sent: Freitag, 5. M=E4rz 2021 09:22
+> To: xenomai@xenomai.org
+> Cc: rpm@xenomai.org; Grau, Gunter <gunter.grau@philips.com>
+> Subject: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
 >
->   1 #include <stdio.h>
->   2 #include <pthread.h>
->   3 int main(void)
->   4 {
->   5 >-------pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
->   6 >-------if(pthread_cond_destroy(&cond) =3D=3D 0)
->   7 >------->-------printf("suc!\n");
->   8 >-------else
->   9 >------->-------printf("err!\n");
->  10 }
+> The gcc 8.3 compiler generated for the update of the last_tsc
+> 8 byte value two store commands (see __ipipe_update_tsc).
 >
-> sh-4.4# ./main
-> suc!
+>         e2500001        subs    r0, r0, #1
+>         e5830000        str     r0, [r3]
+>         e2c11000        sbc     r1, r1, #0
+>         e5831004        str     r1, [r3, #4]
+>
+> This may lead to wrong reading of the counter in the assembler part
+> __ipipe_tsc_get if a CPU core just reads this value when only half of the
+> last_tsc field is updated.
+>
+>         __ipipe_freerunning_32:
+>         ldr     r0, .LCfr32_cntr_addr
+>         /* User-space entry-point: r0 is the hardware counter virtual add=
+ress */
+>         myldrd  r2, r3, r1, .LCfr32_last_tsc
+>         #ifndef CONFIG_CPU_BIG_ENDIAN
+>         /* Little endian */
+>         ldr     r0, [r0]
+>         cmp     r2, r0
+>         adc     r1, r3, #0
+>
+> The issue can be seen when enabling DEBUG_TIMEKEEPING option in the
+> kernel and may lead to a jump backwards in time for the monotonic timer i=
+n
+> Linux.
+>
+> WARNING: Underflow in clocksource 'ipipe_tsc' observed, time update
+> ignored.
+>          Please report this, consider using a different clocksource, if p=
+ossible.
+>          Your kernel is probably still fine.
+>
+> Fix this by using the WRITE_ONCE macro to prevent the compiler from
+> tearing the write since this fields are accessed from different CPU cores=
+.
+> After this change the resulting assembler is using a double store command=
+,
+> which should fix the issue.
+>
+>         e2506001        subs    r6, r0, #1
+>         e2c17000        sbc     r7, r1, #0
+>         e1c360f0        strd    r6, [r3]
+>
+> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+> ---
+>  arch/arm/kernel/ipipe_tsc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/kernel/ipipe_tsc.c b/arch/arm/kernel/ipipe_tsc.c in=
+dex
+> 7e58118254b8..6d9e1cefa964 100644
+> --- a/arch/arm/kernel/ipipe_tsc.c
+> +++ b/arch/arm/kernel/ipipe_tsc.c
+> @@ -199,7 +199,7 @@ void __ipipe_tsc_update(void)
+>
+>         /* Update last_tsc, in order to remain compatible with legacy
+>            user-space 32 bits free-running counter implementation */
+> -       ipipe_tsc_value->last_tsc =3D __ipipe_tsc_get() - 1;
+> +       WRITE_ONCE(ipipe_tsc_value->last_tsc, __ipipe_tsc_get() - 1);
+>  }
+>  EXPORT_SYMBOL(__ipipe_tsc_get);
+>
+> --
+> 2.17.1
 >
 >
-> 2021-05-10 17:28 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
->> Jan,
->> I removed the CFLAGS and LDFLAGS, with configure command:
->>
->> ./configure --build=3Di686-pc-linux-gnu --host=3Darm-linux-gnueabihf
->> --with-core=3Dcobalt --enable-smp --enable-lazy-setsched
->> --enable-debug=3Dsymbols
->>
->> But the issue still remains. I changed the failed test case as below,
->> the issue still exists.
->>
->> 226 static void autoinit_simple_conddestroy(void)
->> 227 {
->> 228 >-------pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
->> 229 #if 0
->> 230 >-------pthread_cond_t cond2 =3D PTHREAD_COND_INITIALIZER;
->> 231 >-------unsigned int invalmagic =3D ~0x86860505; // ~COBALT_COND_MAG=
-IC
->> 232
->> 233 >-------memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic),
->> 234 >------->-------&invalmagic, sizeof(invalmagic));
->> 235
->> 236 >-------smokey_trace("%s", __func__);
->> 237 #endif
->> 238 >-------check("cond_destroy", cond_destroy(&cond), 0);
->> 239 //>-----check("cond_destroy invalid", cond_destroy(&cond2), -EINVAL)=
-;
->> 240 }
->>
->> I'll try QEMU later to see if the issue also exits in QEMU.
->>
->> BTW, I saw some below warnings in compiling, do they have any
->> relationship with the issue?
->>   /bin/bash ../../../libtool   --mode=3Dinstall /usr/bin/install -c
->> smokey_net_server '/home/data/nfs_test//usr/xenomai/bin'
->> libtool: warning: '../../../lib/cobalt/libcobalt.la' has not been
->> installed in '/usr/xenomai/lib'
->> libtool: warning: '../../../lib/cobalt/libmodechk.la' has not been
->> installed in '/usr/xenomai/lib'
->>
->>
->>
->>
->> 2021-05-10 15:35 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
->>> On 10.05.21 09:20, Fangsuo Wu wrote:
->>>> Jan,
->>>> Thanks for your reply. The environment I used is listed below. BTW, I
->>>> can run latency test successfully.
->>>>
->>>> 1. The revision of Xenomai: xenomai-3.1.tar.bz2
->>>> 2. Soc: dual ARM cortex A7
->>>> 3. How I built application libraries:
->>>>     ./configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3"
->>>> LDFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3"   --build=3Di686-pc-linux-gn=
-u
->>>> --host=3Darm-linux-gnueabihf --with-core=3Dcobalt --enable-smp
->>>> --enable-pshared
->>>>    make DESTDIR=3D/home/data/nfs_test/ install
->>>> 4. The kernel I used is 4.19 so I applied
->>>> ipipe-core-4.19.55-arm-5.patch, and manually enabled
->>>> CONFIG_IPIPE_ARM_KUSER_TSC. The full config file is:
->>>>
->>>
->>> OK - our qemu-armhf target [1] is multicore A7 as well. Do you see the
->>> problem in QEMU, too? Do any of the extra CFLAGS or LDFLAGS you pass
->>> play a role here? We compile in CI only with "--enable-smp
->>> --enable-lazy-setsched --enable-debug=3Dsymbols" - maybe
->>> "--enable-pshared"...
->>>
->>> Jan
->>>
->>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/265962#L387
->>>
->>> --
->>> Siemens AG, T RDA IOT
->>> Corporate Competence Center Embedded Linux
->>>
->>
->
+
+Hi,
+
+I wanted to ask if someone could have a look on this patch.
+I sent 2 patches for the ipipe at this time but did not see any follow ups =
+regarding this.
+
+The other one was just a goodie I wondered about while investigating this a=
+bove one.
+
+This was really a pain and I wanted to save others from having the same iss=
+ues.
+The observed issues where haning processes (looping in gettimeofday) or rcu=
+_stalls on different cores.
+
+If I see this correct this issue is present in any ipipe patch from xenomai=
+ 2.6 to 3.1.  I haven't checked older ones.
+If the compiler decides to generate such code (which it is allowed to) you =
+will see sporadic issues of the same type. Not really reproducible.
+
+So please have a look and take into account to accept this.
+
+Thanks in advance,
+Gunter
+
+
+________________________________
+The information contained in this message may be confidential and legally p=
+rotected under applicable law. The message is intended solely for the addre=
+ssee(s). If you are not the intended recipient, you are hereby notified tha=
+t any use, forwarding, dissemination, or reproduction of this message is st=
+rictly prohibited and may be unlawful. If you are not the intended recipien=
+t, please contact the sender by return e-mail and destroy all copies of the=
+ original message.
 
