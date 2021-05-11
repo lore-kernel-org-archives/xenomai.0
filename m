@@ -1,11 +1,12 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: Can we port latmon from zephyr to xenomai 3.2 for measuring gpio
- latency.
-Date: Wed, 26 May 2021 03:59:21 +0000
-Message-ID: <BN9PR11MB522741D310EA498FDA56B742F2249@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 08/31] net/udp sendmsg: do not return an error if dest addr is
+ null
+Date: Tue, 11 May 2021 18:05:12 +0200
+Message-Id: <20210511160535.26580-9-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,25 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Philippe
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-I have tried different ways and different X86 boards to co-work with FRDM K=
-64F to get correct GPIO latency
-for latmus test but failed because of voltage mismatch( 1.8V <-> 3.3V) or b=
-ad signal  of gpio connection between X86 boards=20
-and FRDM K64F triggering lots of invalid gpio interrupts after run.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/stack/ipv4/udp/udp.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Can we port latmon from zephyr to xenomai so that we can set up latmus and =
-latmon on same type of board
-which both run xenomai to measure gpio latency to avoid voltage mismatch or=
- bad signal caused by platform=20
-difference?  It would also provide more options for user to setup latmon to=
- measure gpio latency.  How do you think?
-
-Regards
-
-Hongzhan Chen
+diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
+index beceb28cf..2ff2febda 100644
+--- a/kernel/drivers/net/stack/ipv4/udp/udp.c
++++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+@@ -687,6 +687,9 @@ ssize_t rt_udp_sendmsg(struct rtdm_fd *fd, const struct user_msghdr *msg,
+ 
+ 	rtdm_lock_put_irqrestore(&udp_socket_base_lock, context);
+ 
++	if (daddr == 0)
++		return 0;
++
+ 	if ((daddr | dport) == 0) {
+ 		err = -EINVAL;
+ 		goto out;
+-- 
+2.17.1
 
 
