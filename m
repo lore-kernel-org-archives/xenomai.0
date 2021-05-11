@@ -1,11 +1,13 @@
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 26/31] net/ipv4: sock: handle SO_REUSEADDR for SOCK_DGRAM
+ gracefully
+Date: Tue, 11 May 2021 18:05:30 +0200
+Message-Id: <20210511160535.26580-27-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8SWfJqE64RfNfK-OXcj0mdWnU+5tTT9ABmMa-rz9QHZnA@mail.gmail.com>
-References: <CALLqZ8SWfJqE64RfNfK-OXcj0mdWnU+5tTT9ABmMa-rz9QHZnA@mail.gmail.com>
-From: liandao <liandao@gmail.com>
-Date: Tue, 25 May 2021 18:43:54 +0800
-Message-ID: <CAMC3Yu0FizU008EE9RNB+jMZUxeg8R-u+7v4FGCFjLsLP7aRFg@mail.gmail.com>
-Subject: Re: arm/arm64 ipipe performance
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,26 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-hi greg gallagher,
-    is this mean:the ipipe-core-5.4.119-arm64-2 released on 5/23 also
-should turn off ftrace when config kernel?
+From: Philippe Gerum <rpm@xenomai.org>
 
-On 5/19/21, Greg Gallagher via Xenomai <xenomai@xenomai.org> wrote:
-> Hi Everyone,
->    There's been a noticeable slow down in the arm and arm64 latency of
-> late.  I tracked the issue
->  down to the tracing infrastructure.  For now if you hit this issue,
-> disable ftrace.  Once this is done the latency numbers look much better.
-> I'm currently working on resolving the issue.
->
->   New patches will be released this week for both arm and arm64 now that
-> the issue is understood and a work around exists.
->
-> Thanks
->
-> Greg
->
+Issuing SO_REUSEADDR for an IP socket before binding it is part of the
+boilerplate code of many applications. Handle such request gracefully
+like the regular network stack does, returning success without
+performing any action since we implement no timed wait state for
+SOCK_DGRAM.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/stack/ipv4/ip_sock.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/drivers/net/stack/ipv4/ip_sock.c b/kernel/drivers/net/stack/ipv4/ip_sock.c
+index 0349ed1b1..a3f7d1f57 100644
+--- a/kernel/drivers/net/stack/ipv4/ip_sock.c
++++ b/kernel/drivers/net/stack/ipv4/ip_sock.c
+@@ -35,6 +35,9 @@ int rt_ip_setsockopt(struct rtdm_fd *fd, struct rtsocket *s, int level,
+ 	int err = 0;
+ 	unsigned int _tos, *tos;
+ 
++	if (level == SOL_SOCKET && optname == SO_REUSEADDR)
++		return 0;
++
+ 	if (level != SOL_IP)
+ 		return -ENOPROTOOPT;
+ 
+-- 
+2.17.1
+
 
