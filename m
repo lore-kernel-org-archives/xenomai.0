@@ -1,19 +1,12 @@
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 25/31] utils/net: rtroute: add/del default route
+Date: Tue, 11 May 2021 18:05:29 +0200
+Message-Id: <20210511160535.26580-26-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <6f675adc-5f4f-885f-f21e-5a8ce79797a1@siemens.com>
-References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
- <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
- <CAMDn9+Rxc=H=0R46YK0CgbNLHQZuF8N=_KY-7S-87rY+r86zHw@mail.gmail.com>
- <56335a02-69dd-32ed-5c1b-9df7b1a4b760@siemens.com>
- <CAMDn9+R2AozuqLk_eLge+vbnxj0vRFuzV0DuVdarCk1bLgcakA@mail.gmail.com>
- <CAMDn9+QAgAVtfchVkPS2j9UC0wiFO+uBjVPh4MLT084q40KL5Q@mail.gmail.com>
- <CAMDn9+QdT887Fe97p7-aFKBX5ZtzxtVmPjUryySVxrnC2vW+PQ@mail.gmail.com>
- <6f675adc-5f4f-885f-f21e-5a8ce79797a1@siemens.com>
-From: Fangsuo Wu <tiger20081015@gmail.com>
-Date: Wed, 12 May 2021 10:08:09 +0800
-Message-ID: <CAMDn9+Szhi28=0DNsbVjTzNesHnQ1ThO3C2ZPO8O3aEgxWt_bw@mail.gmail.com>
-Subject: Re: xeno-test failed due to cond_destroy error
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,188 +15,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-yes, to be more accurate, the issue is found in the libc file under
-gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux/arm-linux-gnueabihf/libc/u=
-sr/include/pthread.h.
+From: Philippe Gerum <rpm@xenomai.org>
 
-The glibc is accompanied with the gcc I downloaded from
-https://releases.linaro.org/archive/14.08/components/toolchain/binaries/.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ utils/net/rtroute.c | 39 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
 
-2021-05-11 23:10 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
-> On 11.05.21 12:37, Fangsuo Wu wrote:
->> Hi, the issue seems related to the gcc compiler I
->> used=EF=BC=88gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux=EF=BC=89.
->
-> Huh, that is... well "matured".
->
->>
->> I added some log and found the failure was from below code, line 155:
->> pthread_cond_destroy
->>     -> cobalt_cond_autoinit_type:
->> 149 static int __attribute__((cold))
->> 150 >-------cobalt_cond_autoinit_type(const pthread_cond_t *cond)
->> 151 {
->> 152 >-------static const pthread_cond_t cond_initializer =3D
->> 153 >------->-------PTHREAD_COND_INITIALIZER;
->> 154
->> 155 >-------return memcmp(cond, &cond_initializer,
->> sizeof(cond_initializer)) =3D=3D 0 ?
->> 156 >------->-------0 : -1;   //memcmp is not Zero
->> 157 }
->>
->> I dumped the content of pthread_cond_t  cond and cond_initializer. For
->> the latter one, all bytes were 0, but for cond variable, only the
->> first 44 bytes were 0, the last 4 bytes' value changed every time.
->>
->> I found the pthread_cond_t  and PTHREAD_COND_INITIALIZER definitions
->> in the GCC I used:
->>
->> #define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0, 0, 0}}
->> #define __SIZEOF_PTHREAD_COND_T 48
->>
->>  89 typedef union
->>  90 {
->>  91   struct
->>  92   {
->>  93     int __lock;
->>  94     unsigned int __futex;
->>  95     __extension__ unsigned long long int __total_seq;
->>  96     __extension__ unsigned long long int __wakeup_seq;
->>  97     __extension__ unsigned long long int __woken_seq;
->>  98     void *__mutex;
->>  99     unsigned int __nwaiters;
->> 100     unsigned int __broadcast_seq;
->> 101   } __data;
->> 102   char __size[__SIZEOF_PTHREAD_COND_T];
->> 103   __extension__ long long int __align;
->> 104 } pthread_cond_t;
->> 105
->>
->> The total size of pthread_cond_t.__size is 48. But
->> PTHREAD_COND_INITIALIZER only initializes the first 44 bytes, thus the
->> last 4 bytes' value becomes unpredictable. The issue was gone after I
->> made the below change:
->>
->>  197 //#define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0,
->> 0, 0}}
->>  198 #define PTHREAD_COND_INITIALIZER { .__size =3D {0}}
->>
->
-> Err, those types should rather come from glibc, not [lib]gcc.
->
-> Which glibc version are you using?
->
-> Jan
->
->>
->>
->> 2021-05-10 17:40 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
->>> BTW, I just wrote an application which is exactly the same with
->>> autoinit_simple_conddestroy. And it can run successfully in my board.
->>>
->>>   1 #include <stdio.h>
->>>   2 #include <pthread.h>
->>>   3 int main(void)
->>>   4 {
->>>   5 >-------pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
->>>   6 >-------if(pthread_cond_destroy(&cond) =3D=3D 0)
->>>   7 >------->-------printf("suc!\n");
->>>   8 >-------else
->>>   9 >------->-------printf("err!\n");
->>>  10 }
->>>
->>> sh-4.4# ./main
->>> suc!
->>>
->>>
->>> 2021-05-10 17:28 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
->>>> Jan,
->>>> I removed the CFLAGS and LDFLAGS, with configure command:
->>>>
->>>> ./configure --build=3Di686-pc-linux-gnu --host=3Darm-linux-gnueabihf
->>>> --with-core=3Dcobalt --enable-smp --enable-lazy-setsched
->>>> --enable-debug=3Dsymbols
->>>>
->>>> But the issue still remains. I changed the failed test case as below,
->>>> the issue still exists.
->>>>
->>>> 226 static void autoinit_simple_conddestroy(void)
->>>> 227 {
->>>> 228 >-------pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
->>>> 229 #if 0
->>>> 230 >-------pthread_cond_t cond2 =3D PTHREAD_COND_INITIALIZER;
->>>> 231 >-------unsigned int invalmagic =3D ~0x86860505; //
->>>> ~COBALT_COND_MAGIC
->>>> 232
->>>> 233 >-------memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic)=
-,
->>>> 234 >------->-------&invalmagic, sizeof(invalmagic));
->>>> 235
->>>> 236 >-------smokey_trace("%s", __func__);
->>>> 237 #endif
->>>> 238 >-------check("cond_destroy", cond_destroy(&cond), 0);
->>>> 239 //>-----check("cond_destroy invalid", cond_destroy(&cond2),
->>>> -EINVAL);
->>>> 240 }
->>>>
->>>> I'll try QEMU later to see if the issue also exits in QEMU.
->>>>
->>>> BTW, I saw some below warnings in compiling, do they have any
->>>> relationship with the issue?
->>>>   /bin/bash ../../../libtool   --mode=3Dinstall /usr/bin/install -c
->>>> smokey_net_server '/home/data/nfs_test//usr/xenomai/bin'
->>>> libtool: warning: '../../../lib/cobalt/libcobalt.la' has not been
->>>> installed in '/usr/xenomai/lib'
->>>> libtool: warning: '../../../lib/cobalt/libmodechk.la' has not been
->>>> installed in '/usr/xenomai/lib'
->>>>
->>>>
->>>>
->>>>
->>>> 2021-05-10 15:35 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
->>>>> On 10.05.21 09:20, Fangsuo Wu wrote:
->>>>>> Jan,
->>>>>> Thanks for your reply. The environment I used is listed below. BTW, =
-I
->>>>>> can run latency test successfully.
->>>>>>
->>>>>> 1. The revision of Xenomai: xenomai-3.1.tar.bz2
->>>>>> 2. Soc: dual ARM cortex A7
->>>>>> 3. How I built application libraries:
->>>>>>     ./configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3"
->>>>>> LDFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3"   --build=3Di686-pc-linux-=
-gnu
->>>>>> --host=3Darm-linux-gnueabihf --with-core=3Dcobalt --enable-smp
->>>>>> --enable-pshared
->>>>>>    make DESTDIR=3D/home/data/nfs_test/ install
->>>>>> 4. The kernel I used is 4.19 so I applied
->>>>>> ipipe-core-4.19.55-arm-5.patch, and manually enabled
->>>>>> CONFIG_IPIPE_ARM_KUSER_TSC. The full config file is:
->>>>>>
->>>>>
->>>>> OK - our qemu-armhf target [1] is multicore A7 as well. Do you see th=
-e
->>>>> problem in QEMU, too? Do any of the extra CFLAGS or LDFLAGS you pass
->>>>> play a role here? We compile in CI only with "--enable-smp
->>>>> --enable-lazy-setsched --enable-debug=3Dsymbols" - maybe
->>>>> "--enable-pshared"...
->>>>>
->>>>> Jan
->>>>>
->>>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/265962#L387
->>>>>
->>>>> --
->>>>> Siemens AG, T RDA IOT
->>>>> Corporate Competence Center Embedded Linux
->>>>>
->>>>
->>>
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
+diff --git a/utils/net/rtroute.c b/utils/net/rtroute.c
+index ef6b56ecf..42d526f9e 100644
+--- a/utils/net/rtroute.c
++++ b/utils/net/rtroute.c
+@@ -24,6 +24,7 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -37,9 +38,10 @@
+ #include <ipv4_chrdev.h>
+ 
+ 
+-int             f;
+-struct ipv4_cmd cmd;
+-struct in_addr  addr;
++static int             f;
++static struct ipv4_cmd cmd;
++static struct in_addr  addr;
++static bool default_route;
+ 
+ 
+ /* help gcc a bit... */
+@@ -52,8 +54,10 @@ void help(void)
+         "\trtroute solicit <addr> dev <dev>\n"
+         "\trtroute add <addr> <hwaddr> dev <dev>\n"
+         "\trtroute add <addr> netmask <mask> gw <gw-addr>\n"
++        "\trtroute add default gw <gw-addr>\n"
+         "\trtroute del <addr> [dev <dev>]\n"
+         "\trtroute del <addr> netmask <mask>\n"
++        "\trtroute del default gw\n"
+         "\trtroute get <addr> [dev <dev>]\n"
+         "\trtroute -f <host-routes-file>\n"
+         );
+@@ -130,7 +134,18 @@ void route_add(int argc, char *argv[])
+     int                 ret;
+ 
+ 
+-    if (argc == 6) {
++    if (default_route) {
++        /*** add default route ***/
++        if (argc != 5 || strcmp(argv[3], "gw") != 0)
++            help();
++
++        cmd.args.addnet.gw_addr = INADDR_ANY;
++        cmd.args.addnet.net_mask = INADDR_ANY;
++        if (!inet_aton(argv[4], &addr))
++            help();
++        cmd.args.addnet.gw_addr = addr.s_addr;
++        ret = ioctl(f, IOC_RT_NET_ROUTE_ADD, &cmd);
++    } else if (argc == 6) {
+         /*** add host route ***/
+         if ((ether_aton_r(argv[3], &dev_addr) == NULL) ||
+             (strcmp(argv[4], "dev") != 0))
+@@ -271,7 +286,15 @@ void route_delete(int argc, char *argv[])
+     int ret;
+ 
+ 
+-    if (argc == 3) {
++    if (default_route) {
++        /*** delete default route ***/
++        if (argc != 4 || strcmp(argv[3], "gw") != 0)
++            help();
++
++	cmd.args.delnet.net_addr = INADDR_ANY;
++	cmd.args.delnet.net_mask = INADDR_ANY;
++	ret = ioctl(f, IOC_RT_NET_ROUTE_DELETE, &cmd);
++    } else if (argc == 3) {
+         /*** delete host route ***/
+         cmd.args.delhost.ip_addr = addr.s_addr;
+ 
+@@ -374,8 +397,10 @@ int main(int argc, char *argv[])
+     if (strcmp(argv[1], "-f") == 0)
+         route_listadd(argv[2]);
+ 
+-    /* second argument is now always an IP address */
+-    if (!inet_aton(argv[2], &addr))
++    /* second argument is now either 'default' (for a gw) or an IP
++       address */
++    default_route = !strcmp(argv[2], "default");
++    if (!default_route && !inet_aton(argv[2], &addr))
+         help();
+ 
+     if (strcmp(argv[1], "solicit") == 0)
+-- 
+2.17.1
+
 
