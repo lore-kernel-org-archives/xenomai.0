@@ -1,16 +1,12 @@
+From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
+ <jean-baptiste.tredez@alstefgroup.com>
+Subject: [PATCH 15/31] net/drivers: igb: enable multicast
+Date: Tue, 11 May 2021 18:05:19 +0200
+Message-Id: <20210511160535.26580-16-jean-baptiste.tredez@alstefgroup.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
+Content-Type: text/plain
 MIME-Version: 1.0
-References: <20210305082259.18424-1-gunter.grau@philips.com>
- <217744bd-4588-02ea-0e85-0bb7d97436c0@siemens.com>
- <AM0P122MB01003ED2C020C155D13AC0B7F2969@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
- <CALLqZ8Rqbt5cPGck5EiQ9kKbG9tiZZJrvWjhNNBWvYeebM2+Gw@mail.gmail.com>
- <AM0P122MB01000F45C8ED23A5D6270D89F2659@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
-In-Reply-To: <AM0P122MB01000F45C8ED23A5D6270D89F2659@AM0P122MB0100.EURP122.PROD.OUTLOOK.COM>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 14 May 2021 00:42:22 -0400
-Message-ID: <CALLqZ8RLeS17QHCXGWPGK80WtZF32k3ot9uvWnO0BTWRFDzQ7A@mail.gmail.com>
-Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for ipipe_tsc
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,129 +15,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Grau, Gunter" <gunter.grau@philips.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, Mar 22, 2021 at 7:48 AM Grau, Gunter <gunter.grau@philips.com>
-wrote:
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
->
->
-> > From: Greg Gallagher <greg@embeddedgreg.com>
-> > Sent: Freitag, 5. M=C3=A4rz 2021 13:57
-> > To: Grau, Gunter <gunter.grau@philips.com>
-> > Cc: Jan Kiszka <jan.kiszka@siemens.com>; xenomai@xenomai.org
-> > Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for
-> ipipe_tsc
-> >
-> > Caution: This e-mail originated from outside of Philips, be careful for
-> phishing.
-> >
-> > > On Fri, Mar 5, 2021 at 7:52 AM Grau, Gunter <gunter.grau@philips.com>
-> wrote:
-> > > > -----Original Message-----
-> > > > From: Jan Kiszka <jan.kiszka@siemens.com>
-> > > > Sent: Freitag, 5. M=C3=A4rz 2021 13:27
-> > > > To: Grau, Gunter <gunter.grau@philips.com>; xenomai@xenomai.org;
-> Greg
-> > > > Gallagher <greg@embeddedgreg.com>
-> > > > Subject: Re: [PATCH] arm_global_timer: Use 64 Bit hw counter for
-> ipipe_tsc
-> > > >
-> > > > Caution: This e-mail originated from outside of Philips, be careful
-> for
-> > > > phishing.
-> > > >
-> > > >
-> > > > On 05.03.21 09:22, Gunter Grau via Xenomai wrote:
-> > > > > When using the arm_global_timer as source for ipipe_tsc the mask
-> was
-> > > > > configured with 32 Bit.
-> > > > > However this timer is a native 64 Bit counter. So use the complet=
-e
-> > > > > hardware register by configuring a 64 Bit mask on initialization.
-> > > > > The ipipe_tsc implementation is already 64 Bit ready and reads th=
-is
-> > > > > register as described in the reference manual, so no further
-> changes
-> > > > > needed.
-> > > > >
-> > > > > Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> > > > > ---
-> > > > >  drivers/clocksource/arm_global_timer.c | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/clocksource/arm_global_timer.c
-> > > > > b/drivers/clocksource/arm_global_timer.c
-> > > > > index 77c116a3e85f..44c10e364f62 100644
-> > > > > --- a/drivers/clocksource/arm_global_timer.c
-> > > > > +++ b/drivers/clocksource/arm_global_timer.c
-> > > > > @@ -82,7 +82,7 @@ static inline void gt_ipipe_cs_setup(void)
-> > > > >                 .u =3D {
-> > > > >                         {
-> > > > >                                 .counter_paddr =3D gt_pbase,
-> > > > > -                               .mask =3D 0xffffffff,
-> > > > > +                               .mask =3D CLOCKSOURCE_MASK(64),
-> > > > >                         }
-> > > > >                 },
-> > > > >                 .refresh_freq =3D refresh_gt_freq,
-> > > > > --
-> > > > > 2.17.1
-> > > > >
-> > > >
-> > > > Thanks for the fixes. You may help Greg with integrating them by
-> telling us
-> > > > on which kernel versions they apply / have been tested.
-> > > >
-> > > > Jan
-> > > >
-> > > > --
-> > > > Siemens AG, T RDA IOT
-> > > > Corporate Competence Center Embedded Linux
-> > >
-> > >
-> > > Hi,
-> > >
-> > > The patches apply to ipipe/master.
-> > > But as I have seen so far they should even apply to 5.4.y.
-> > >
-> > > Unfortunately we are currently using a very old kernel on imx6.
-> > > So I can report this patches has been tested on 4.1.x only.
-> > >
-> > > Thanks,
-> > > Gunter
-> > >
-> > > [...]
-> > >
-> >
-> > Thanks! I can test them out this weekend, I have a bunch of ipipe work
-> to do.
-> >
-> > Thanks
-> >
-> > Greg
-> >
->
-> Hi Greg,
->
-> Did you have the chance to look into the two patches?
-> Is there anything I can do?
->
-> Thanks,
-> Gunter
->
-> ________________________________
-> The information contained in this message may be confidential and legally
-> protected under applicable law. The message is intended solely for the
-> addressee(s). If you are not the intended recipient, you are hereby
-> notified that any use, forwarding, dissemination, or reproduction of this
-> message is strictly prohibited and may be unlawful. If you are not the
-> intended recipient, please contact the sender by return e-mail and destro=
-y
-> all copies of the original message.
->
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/drivers/igb/e1000_mac.c |  6 ++---
+ kernel/drivers/net/drivers/igb/e1000_mac.h |  2 +-
+ kernel/drivers/net/drivers/igb/igb_main.c  | 30 +++++-----------------
+ 3 files changed, 11 insertions(+), 27 deletions(-)
 
-Applied, thanks for the patch. Sorry it took so long, patches will be
-released this weekend.
+diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.c b/kernel/drivers/net/drivers/igb/e1000_mac.c
+index 500c92877..765604d5f 100644
+--- a/kernel/drivers/net/drivers/igb/e1000_mac.c
++++ b/kernel/drivers/net/drivers/igb/e1000_mac.c
+@@ -440,7 +440,7 @@ static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
+  *  The caller must have a packed mc_addr_list of multicast addresses.
+  **/
+ void igb_update_mc_addr_list(struct e1000_hw *hw,
+-			     u8 *mc_addr_list, u32 mc_addr_count)
++			     struct rtdev_mc_list *mc_addr, u32 mc_addr_count)
+ {
+ 	u32 hash_value, hash_bit, hash_reg;
+ 	int i;
+@@ -450,13 +450,13 @@ void igb_update_mc_addr_list(struct e1000_hw *hw,
+ 
+ 	/* update mta_shadow from mc_addr_list */
+ 	for (i = 0; (u32) i < mc_addr_count; i++) {
+-		hash_value = igb_hash_mc_addr(hw, mc_addr_list);
++		hash_value = igb_hash_mc_addr(hw, mc_addr->dmi_addr);
+ 
+ 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
+ 		hash_bit = hash_value & 0x1F;
+ 
+ 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
+-		mc_addr_list += (ETH_ALEN);
++		mc_addr = mc_addr->next;
+ 	}
+ 
+ 	/* replace the entire MTA table */
+diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.h b/kernel/drivers/net/drivers/igb/e1000_mac.h
+index b50d57c5d..a3ad413a0 100644
+--- a/kernel/drivers/net/drivers/igb/e1000_mac.h
++++ b/kernel/drivers/net/drivers/igb/e1000_mac.h
+@@ -49,7 +49,7 @@ s32  igb_get_speed_and_duplex_copper(struct e1000_hw *hw, u16 *speed,
+ s32  igb_id_led_init(struct e1000_hw *hw);
+ s32  igb_led_off(struct e1000_hw *hw);
+ void igb_update_mc_addr_list(struct e1000_hw *hw,
+-			     u8 *mc_addr_list, u32 mc_addr_count);
++			struct rtdev_mc_list *mc_addr, u32 mc_addr_count);
+ s32  igb_setup_link(struct e1000_hw *hw);
+ s32  igb_validate_mdi_setting(struct e1000_hw *hw);
+ s32  igb_write_8bit_ctrl_reg(struct e1000_hw *hw, u32 reg,
+diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
+index 1dc4732ee..9a3998719 100644
+--- a/kernel/drivers/net/drivers/igb/igb_main.c
++++ b/kernel/drivers/net/drivers/igb/igb_main.c
+@@ -2070,8 +2070,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	netdev->map_rtskb = igb_map_rtskb;
+ 	netdev->unmap_rtskb = igb_unmap_rtskb;
+ 	netdev->do_ioctl = igb_ioctl;
++	netdev->set_multicast_list = igb_set_rx_mode;
+ #if 0
+-	netdev->set_multicast_list = igb_set_multi;
+ 	netdev->set_mac_address = igb_set_mac;
+ 	netdev->change_mtu = igb_change_mtu;
+ 
+@@ -3370,34 +3370,18 @@ static int igb_write_mc_addr_list(struct rtnet_device *netdev)
+ {
+ 	struct igb_adapter *adapter = rtnetdev_priv(netdev);
+ 	struct e1000_hw *hw = &adapter->hw;
+-#if 0
+-	struct netdev_hw_addr *ha;
+-	u8  *mta_list;
+-	int i;
+-	if (netdev_mc_empty(netdev)) {
++	struct rtdev_mc_list *mc_addr = netdev->mc_list;
++	unsigned mc_addr_count = netdev->mc_count;
++
++	if (!mc_addr_count) {
+ 		/* nothing to program, so clear mc list */
+ 		igb_update_mc_addr_list(hw, NULL, 0);
+-		igb_restore_vf_multicasts(adapter);
+ 		return 0;
+ 	}
+ 
+-	mta_list = kzalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
+-	if (!mta_list)
+-		return -ENOMEM;
+-
+-	/* The shared function expects a packed array of only addresses. */
+-	i = 0;
+-	netdev_for_each_mc_addr(ha, netdev)
+-		memcpy(mta_list + (i++ * ETH_ALEN), ha->addr, ETH_ALEN);
++	igb_update_mc_addr_list(hw, mc_addr, mc_addr_count);
+ 
+-	igb_update_mc_addr_list(hw, mta_list, i);
+-	kfree(mta_list);
+-
+-	return netdev_mc_count(netdev);
+-#else
+-	igb_update_mc_addr_list(hw, NULL, 0);
+-	return 0;
+-#endif
++	return mc_addr_count;
+ }
+ 
+ /**
+-- 
+2.17.1
 
--Greg
+
