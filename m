@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 4/9] ci: Remove redundant job filtering on
- USE_GITLAB_ARTIFACTS
-Date: Wed, 12 May 2021 10:32:18 +0200
-Message-Id: <cb8aa4c02b9e8764419947d5db7ab14a4431e2a7.1620808343.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 8/9] ci: Factor out common bridge jobs
+Date: Wed, 12 May 2021 10:32:22 +0200
+Message-Id: <415b61ef8ffe882f5ba8a751e6ee8f277cd2b13d.1620808343.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
 References: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,37 +18,122 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Already done by including only one of the two files.
+Further reduces the duplicate parts in
+child_pipelines_[no_]artifacts.yml.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/artifacts.yml    | 4 ----
- ci/no-artifacts.yml | 3 ---
- 2 files changed, 7 deletions(-)
+ ci/child_pipelines_artifacts.yml    | 14 ++++++--------
+ ci/child_pipelines_common.yml       | 19 +++++++++++++++++++
+ ci/child_pipelines_no_artifacts.yml | 14 ++++++--------
+ 3 files changed, 31 insertions(+), 16 deletions(-)
+ create mode 100644 ci/child_pipelines_common.yml
 
-diff --git a/ci/artifacts.yml b/ci/artifacts.yml
-index fb1549f..9d6b0e1 100644
---- a/ci/artifacts.yml
-+++ b/ci/artifacts.yml
-@@ -30,7 +30,3 @@ variables:
-     paths:
-     - build/tmp/deploy/images/${TARGET}/
-     expire_in: 1 week
--  only:
--    variables:
--      - $USE_GITLAB_ARTIFACTS
--
-diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
-index 4efff7a..f7e0aed 100644
---- a/ci/no-artifacts.yml
-+++ b/ci/no-artifacts.yml
-@@ -23,6 +23,3 @@
-     - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
-     - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
-     - scripts/deploy_for_testing.sh ${TARGET}
--  except:
--    variables:
--      - $USE_GITLAB_ARTIFACTS
+diff --git a/ci/child_pipelines_artifacts.yml b/ci/child_pipelines_artifacts.yml
+index eb97f31..1dd856c 100644
+--- a/ci/child_pipelines_artifacts.yml
++++ b/ci/child_pipelines_artifacts.yml
+@@ -8,29 +8,27 @@
+ #
+ # SPDX-License-Identifier: MIT
+ #
+-stages:
+-  - parent
++
++include:
++  - local: '/ci/child_pipelines_common.yml'
+ 
+ stable/v3.0.x:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+       - local: '/ci/xenomai_3_0_x.yml'
+-    strategy: depend
+ 
+ stable/v3.1.x:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+       - local: '/ci/xenomai_3_1_x.yml'
+-    strategy: depend
+ 
+ next:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+       - local: '/ci/xenomai_next.yml'
+-    strategy: depend
+diff --git a/ci/child_pipelines_common.yml b/ci/child_pipelines_common.yml
+new file mode 100644
+index 0000000..d742041
+--- /dev/null
++++ b/ci/child_pipelines_common.yml
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019 - 2021
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++stages:
++  - parent
++
++.parent:
++  stage: parent
++  trigger:
++    strategy: depend
+diff --git a/ci/child_pipelines_no_artifacts.yml b/ci/child_pipelines_no_artifacts.yml
+index 2ff4d7b..c90204d 100644
+--- a/ci/child_pipelines_no_artifacts.yml
++++ b/ci/child_pipelines_no_artifacts.yml
+@@ -8,29 +8,27 @@
+ #
+ # SPDX-License-Identifier: MIT
+ #
+-stages:
+-  - parent
++
++include:
++  - local: '/ci/child_pipelines_common.yml'
+ 
+ stable/v3.0.x:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+       - local: '/ci/xenomai_3_0_x.yml'
+-    strategy: depend
+ 
+ stable/v3.1.x:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+       - local: '/ci/xenomai_3_1_x.yml'
+-    strategy: depend
+ 
+ next:
+-  stage: parent
++  extends: .parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+       - local: '/ci/xenomai_next.yml'
+-    strategy: depend
 -- 
 2.26.2
 
