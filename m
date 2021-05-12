@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 7/7] cobalt/x86: remove kernel support for x86_32
-Date: Wed, 12 May 2021 12:05:57 +0200
-Message-Id: <5bc2967d2d8981ecdc81e3b721ba349687347f57.1620813957.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/7] drivers/net: cfg: fix config file load up
+Date: Wed, 12 May 2021 12:05:53 +0200
+Message-Id: <07a626a19ac67d6dad54cc03a2b13ec4671a4f5d.1620813957.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620813957.git.jan.kiszka@siemens.com>
 References: <cover.1620813957.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -18,207 +18,148 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-The legacy x86_32 architecture is on its way out, with no support from
-Dovetail. Besides, it went untested with I-pipe configurations for
-many moons.
+set_fs() is on its way out, so we cannot open code a file read
+operation by calling the VFS handler directly anymore, faking a user
+address space.
 
-We still keep 32bit compat mode available for building the user-space
-libraries and executables though, along with IA32_EMULATION support in
-kernel space to cope with legacy applications.
+We do have kernel interfaces for loading files though, particularly
+kernel_read_file(). So let's use that one for loading the
+configuration file contents. Unfortunately, the signature of this
+service changed during the 5.9-rc cycle, so we have to resort to an
+ugly wrapper to cope with all supported kernels once again. Sigh.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../x86/ipipe/include/asm/xenomai/machine.h   |  4 -
- kernel/cobalt/arch/x86/ipipe/thread.c         | 91 +------------------
- 2 files changed, 1 insertion(+), 94 deletions(-)
+ .../include/asm-generic/xenomai/wrappers.h    | 15 ++++
+ kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c  | 74 +++++++++----------
+ 2 files changed, 52 insertions(+), 37 deletions(-)
 
-diff --git a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h
-index bb5ccc1178..aad700fb67 100644
---- a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h
-+++ b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/machine.h
-@@ -23,11 +23,7 @@
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index 652a04759f..54fdc8b05e 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -216,4 +216,19 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
+ #endif
  
- static inline __attribute_const__ unsigned long ffnz(unsigned long ul)
- {
--#ifdef __i386__
--	__asm__("bsfl %1, %0":"=r,r" (ul) : "r,?m" (ul));
--#else
- 	__asm__("bsfq %1, %0":"=r" (ul) : "rm" (ul));
--#endif
- 	return ul;
- }
- 
-diff --git a/kernel/cobalt/arch/x86/ipipe/thread.c b/kernel/cobalt/arch/x86/ipipe/thread.c
-index f1f81b7503..dd97a5d32c 100644
---- a/kernel/cobalt/arch/x86/ipipe/thread.c
-+++ b/kernel/cobalt/arch/x86/ipipe/thread.c
-@@ -82,66 +82,6 @@ static inline void x86_fpregs_activate(struct task_struct *t)
-  * This is obsolete context switch code uselessly duplicating
-  * mainline's.
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,9,0)
++#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
++	({								\
++		loff_t ___file_size;					\
++		int __ret;						\
++		__ret = kernel_read_file(__file, __buf, &___file_size,	\
++				__buf_size, __id);			\
++		(*__file_size) = ___file_size;				\
++		__ret;							\
++	})
++#else
++#define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
++	kernel_read_file(__file, 0, __buf, __buf_size, __file_size, __id)
++#endif
++
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+index 769b4e143c..158d7118f2 100644
+--- a/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
++++ b/kernel/drivers/net/stack/rtcfg/rtcfg_ioctl.c
+@@ -22,6 +22,7 @@
+  *
   */
--#ifdef CONFIG_X86_32
--
--#ifdef CONFIG_CC_STACKPROTECTOR
--
--#define __CANARY_OUTPUT							\
--	, [stack_canary] "=m" (stack_canary.canary)
--
--#define __CANARY_INPUT							\
--	, [task_canary] "i" (offsetof(struct task_struct, stack_canary))
--
--#define __CANARY_SWITCH							\
--	"movl %P[task_canary](%%edx), %%ebx\n\t"			\
--	"movl %%ebx, "__percpu_arg([stack_canary])"\n\t"
--
--#else /* !CONFIG_CC_STACKPROTECTOR */
--
--#define __CANARY_OUTPUT
--#define __CANARY_INPUT
--#define __CANARY_SWITCH
--
--#endif /* !CONFIG_CC_STACKPROTECTOR */
--
--static inline void do_switch_threads(struct xnarchtcb *out_tcb,
--				     struct xnarchtcb *in_tcb,
--				     struct task_struct *outproc,
--				     struct task_struct *inproc)
--{
--	long ebx_out, ecx_out, edi_out, esi_out;
--
--	__asm__ __volatile__("pushfl\n\t"
--			     "pushl %%ebp\n\t"
--			     "movl %[spp_out_ptr],%%ecx\n\t"
--			     "movl %%esp,(%%ecx)\n\t"
--			     "movl %[ipp_out_ptr],%%ecx\n\t"
--			     "movl $1f,(%%ecx)\n\t"
--			     "movl %[spp_in_ptr],%%ecx\n\t"
--			     "movl %[ipp_in_ptr],%%edi\n\t"
--			     "movl (%%ecx),%%esp\n\t"
--			     "pushl (%%edi)\n\t"
--			     __CANARY_SWITCH
--			     "jmp  __switch_to\n\t"
--			     "1: popl %%ebp\n\t"
--			     "popfl\n\t"
--			     : "=b"(ebx_out),
--			       "=&c"(ecx_out),
--			       "=S"(esi_out),
--			       "=D"(edi_out),
--			       "+a"(outproc),
--			       "+d"(inproc)
--			       __CANARY_OUTPUT
--			     : [spp_out_ptr] "m"(out_tcb->spp),
--			       [ipp_out_ptr] "m"(out_tcb->ipp),
--			       [spp_in_ptr] "m"(in_tcb->spp),
--			       [ipp_in_ptr] "m"(in_tcb->ipp)
--			       __CANARY_INPUT
--			     : "memory");
--}
--
--#else /* CONFIG_X86_64 */
--
- #define __SWITCH_CLOBBER_LIST  , "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"
  
- #ifdef CONFIG_CC_STACKPROTECTOR
-@@ -192,8 +132,6 @@ static inline void do_switch_threads(struct xnarchtcb *out_tcb,
- 			     : "memory", "cc" __SWITCH_CLOBBER_LIST);	\
- 	})
++#include <linux/fs.h>
+ #include <linux/file.h>
+ #include <linux/vmalloc.h>
  
--#endif /* CONFIG_X86_64 */
--
- #else /* LINUX_VERSION_CODE >= 4.8 */
+@@ -196,6 +197,40 @@ void cleanup_cmd_detach(void *priv_data)
+ 		kfree_rtskb(cmd->args.detach.stage2_chain);
+ }
  
- #include <asm/switch_to.h>
-@@ -260,13 +198,9 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
- 	}
- 
- #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
--#ifdef CONFIG_X86_32
--	do_switch_threads(out_tcb, in_tcb, prev, next);
--#else /* CONFIG_X86_64 */
- 	do_switch_threads(prev, next,
- 			  out_tcb->spp, in_tcb->spp,
- 			  out_tcb->ipp, in_tcb->ipp);
--#endif /* CONFIG_X86_64 */
- 	(void)last;
- #else /* LINUX_VERSION_CODE >= 4.8 */
- 	switch_to(prev, next, last);
-@@ -302,13 +236,8 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
- 
- #ifndef IPIPE_X86_FPU_EAGER
- 
--#ifdef CONFIG_X86_64
- #define XSAVE_PREFIX	"0x48,"
- #define XSAVE_SUFFIX	"q"
--#else
--#define XSAVE_PREFIX
--#define XSAVE_SUFFIX
--#endif
- 
- static inline void __do_save_fpu_state(x86_fpustate *fpup)
++static int load_cfg_file(struct rtcfg_file *cfgfile, struct rtcfg_cmd *cmd)
++{
++	size_t file_size = 0;
++	struct file *filp;
++	loff_t i_size;
++	int ret;
++
++	filp = filp_open(cfgfile->name, O_RDONLY, 0);
++	if (IS_ERR(filp))
++		return PTR_ERR(filp);
++
++	i_size = i_size_read(file_inode(filp));
++	if (i_size <= 0) {
++		/* allocate buffer even for empty files */
++		cfgfile->buffer = vmalloc(1);
++	} else {
++		cfgfile->buffer = NULL; /* Leave allocation to the kernel. */
++		ret = read_file_from_kernel(filp, &cfgfile->buffer,
++					i_size_read(file_inode(filp)),
++					&file_size, READING_UNKNOWN);
++		if (ret < 0) {
++			fput(filp);
++			return ret;
++		}
++	}
++
++	fput(filp);
++	cfgfile->size = file_size;
++
++	/* dispatch again, this time with new file attached */
++	return rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
++				sizeof(*cmd), NULL, cleanup_cmd_add);
++}
++
+ int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
  {
-@@ -327,12 +256,6 @@ static inline void __do_save_fpu_state(x86_fpustate *fpup)
- 		return;
+ 	struct rtcfg_connection *conn_buf;
+@@ -264,46 +299,11 @@ int rtcfg_ioctl_add(struct rtnet_device *rtdev, struct rtcfg_cmd *cmd)
+ 
+ 	/* load file if missing */
+ 	if (ret > 0) {
+-		struct file *filp;
+-		mm_segment_t oldfs;
+-
+-		filp = filp_open(file->name, O_RDONLY, 0);
+-		if (IS_ERR(filp)) {
++		ret = load_cfg_file(file, cmd);
++		if (ret) {
+ 			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			ret = PTR_ERR(filp);
+ 			goto err;
+ 		}
+-
+-		file->size = filp->f_path.dentry->d_inode->i_size;
+-
+-		/* allocate buffer even for empty files */
+-		file->buffer = vmalloc((file->size) ? file->size : 1);
+-		if (file->buffer == NULL) {
+-			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			fput(filp);
+-			ret = -ENOMEM;
+-			goto err;
+-		}
+-
+-		oldfs = get_fs();
+-		set_fs(KERNEL_DS);
+-		filp->f_pos = 0;
+-
+-		ret = filp->f_op->read(filp, file->buffer, file->size,
+-				       &filp->f_pos);
+-
+-		set_fs(oldfs);
+-		fput(filp);
+-
+-		if (ret != (int)file->size) {
+-			rtcfg_unlockwr_proc(cmd->internal.data.ifindex);
+-			ret = -EIO;
+-			goto err;
+-		}
+-
+-		/* dispatch again, this time with new file attached */
+-		ret = rtpc_dispatch_call(rtcfg_event_handler, 0, cmd,
+-					 sizeof(*cmd), NULL, cleanup_cmd_add);
  	}
- #endif /* cpu_has_xsave */
--#ifdef CONFIG_X86_32
--	if (cpu_has_fxsr)
--		__asm__ __volatile__("fxsave %0; fnclex":"=m"(*fpup));
--	else
--		__asm__ __volatile__("fnsave %0; fwait":"=m"(*fpup));
--#else /* CONFIG_X86_64 */
- #ifdef CONFIG_AS_FXSAVEQ
- 	__asm __volatile__("fxsaveq %0" : "=m" (fpup->fxsave));
- #else /* !CONFIG_AS_FXSAVEQ */
-@@ -340,7 +263,6 @@ static inline void __do_save_fpu_state(x86_fpustate *fpup)
- 		     : "=m" (fpup->fxsave)
- 		     : [fx] "R" (&fpup->fxsave));
- #endif /* !CONFIG_AS_FXSAVEQ */
--#endif /* CONFIG_X86_64 */
- }
  
- static inline void __do_restore_fpu_state(x86_fpustate *fpup)
-@@ -360,19 +282,12 @@ static inline void __do_restore_fpu_state(x86_fpustate *fpup)
- 		return;
- 	}
- #endif /* cpu_has_xsave */
--#ifdef CONFIG_X86_32
--	if (cpu_has_fxsr)
--		__asm__ __volatile__("fxrstor %0": /* no output */ :"m"(*fpup));
--	else
--		__asm__ __volatile__("frstor %0": /* no output */ :"m"(*fpup));
--#else /* CONFIG_X86_64 */
- #ifdef CONFIG_AS_FXSAVEQ
- 	__asm__ __volatile__("fxrstorq %0" : : "m" (fpup->fxsave));
- #else /* !CONFIG_AS_FXSAVEQ */
- 	__asm__ __volatile__("rex64/fxrstor (%0)"
- 		     : : "R" (&fpup->fxsave), "m" (fpup->fxsave));
- #endif /* !CONFIG_AS_FXSAVEQ */
--#endif /* CONFIG_X86_64 */
- }
- 
- int xnarch_handle_fpu_fault(struct xnthread *from, 
-@@ -434,7 +349,7 @@ void xnarch_leave_root(struct xnthread *root)
- 	struct task_struct *const p = current;
- 	x86_fpustate *const current_task_fpup = x86_fpustate_ptr(&p->thread);
- 
--#if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0) && defined(CONFIG_X86_64)
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
- 	rootcb->spp = &p->thread.sp;
- 	rootcb->ipp = &p->thread.rip;
- #endif
-@@ -564,12 +479,8 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
- #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
- 	tcb->sp = 0;
- 	tcb->spp = &p->thread.sp;
--#ifdef CONFIG_X86_32
--	tcb->ipp = &p->thread.ip;
--#else
- 	tcb->ipp = &p->thread.rip; /* <!> raw naming intended. */
- #endif
--#endif
- #ifndef IPIPE_X86_FPU_EAGER
- 	tcb->fpup = x86_fpustate_ptr(&p->thread);
- 	tcb->kfpu_state = NULL;
+ 	return ret;
 -- 
 2.26.2
 
