@@ -1,18 +1,11 @@
-Subject: Re: xeno-test failed due to cond_destroy error
-References: <CAMDn9+TNXf5msUQu6kobU9-b2-8O460rg6icT18NpJdnQzh1Rw@mail.gmail.com>
- <02935a30-7b67-5878-ce25-f2276aeea0a8@siemens.com>
- <CAMDn9+Rxc=H=0R46YK0CgbNLHQZuF8N=_KY-7S-87rY+r86zHw@mail.gmail.com>
- <56335a02-69dd-32ed-5c1b-9df7b1a4b760@siemens.com>
- <CAMDn9+R2AozuqLk_eLge+vbnxj0vRFuzV0DuVdarCk1bLgcakA@mail.gmail.com>
- <CAMDn9+QAgAVtfchVkPS2j9UC0wiFO+uBjVPh4MLT084q40KL5Q@mail.gmail.com>
- <CAMDn9+QdT887Fe97p7-aFKBX5ZtzxtVmPjUryySVxrnC2vW+PQ@mail.gmail.com>
- <6f675adc-5f4f-885f-f21e-5a8ce79797a1@siemens.com>
- <CAMDn9+Szhi28=0DNsbVjTzNesHnQ1ThO3C2ZPO8O3aEgxWt_bw@mail.gmail.com>
+Subject: Re: [PATCH 00/31] Update fec driver for xenomai 3 and linux kernel
+ 5.4 and add I.MX8 support
+References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <93a66592-d366-c2ae-a78b-967693bfc6b7@siemens.com>
-Date: Wed, 12 May 2021 08:51:52 +0200
+Message-ID: <a32688bc-fa55-f0d3-f764-81edfd865def@siemens.com>
+Date: Wed, 12 May 2021 08:57:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAMDn9+Szhi28=0DNsbVjTzNesHnQ1ThO3C2ZPO8O3aEgxWt_bw@mail.gmail.com>
+In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -24,193 +17,161 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fangsuo Wu <tiger20081015@gmail.com>
-Cc: xenomai@xenomai.org
+To: =?UTF-8?Q?Jean-Baptiste_Tr=c3=a9dez?= <jean-baptiste.tredez@alstefgroup.com>, xenomai@xenomai.org
 
-On 12.05.21 04:08, Fangsuo Wu wrote:
-> yes, to be more accurate, the issue is found in the libc file under
-> gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux/arm-linux-gnueabihf/libc/usr/include/pthread.h.
+On 11.05.21 18:05, Jean-Baptiste Trédez via Xenomai wrote:
+> Update fec driver for xenomai 3 and linux kernel 5.4 and add I.MX8 support
 > 
-> The glibc is accompanied with the gcc I downloaded from
-> https://releases.linaro.org/archive/14.08/components/toolchain/binaries/
+> Patch  1 to 27 : rtnet-mcast+vlan branch from Philippe Gerum with updated driver for 4.18.85 kernel
+> Patch 28 to 29 : update driver for 5.4 kernel and add I.MX8 support
+> Patch 30 : bugfix on fec_enet_reset_skb
+> Patch 31 : reduce latency
+> 
+> 
+> Christophe Carton (1):
+>   utils/net: ping: display min and average round-trip time
+> 
+> Florian Bezdeka (1):
+>   cobalt uapi: Introducing new feature flag for time64 availability
 > 
 
-Sounds a lot like a toolchain bug to me: Even if you only partially
-initialize a struct, the remaining fields must be zeroed. Only if you do
-struct.field1 = 0, struct.field2 is undefined.
+Seems your baseline was off. Please check that you were really sending
+from the right branch.
 
 Jan
 
-> 2021-05-11 23:10 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
->> On 11.05.21 12:37, Fangsuo Wu wrote:
->>> Hi, the issue seems related to the gcc compiler I
->>> used（gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux）.
->>
->> Huh, that is... well "matured".
->>
->>>
->>> I added some log and found the failure was from below code, line 155:
->>> pthread_cond_destroy
->>>     -> cobalt_cond_autoinit_type:
->>> 149 static int __attribute__((cold))
->>> 150 >-------cobalt_cond_autoinit_type(const pthread_cond_t *cond)
->>> 151 {
->>> 152 >-------static const pthread_cond_t cond_initializer =
->>> 153 >------->-------PTHREAD_COND_INITIALIZER;
->>> 154
->>> 155 >-------return memcmp(cond, &cond_initializer,
->>> sizeof(cond_initializer)) == 0 ?
->>> 156 >------->-------0 : -1;   //memcmp is not Zero
->>> 157 }
->>>
->>> I dumped the content of pthread_cond_t  cond and cond_initializer. For
->>> the latter one, all bytes were 0, but for cond variable, only the
->>> first 44 bytes were 0, the last 4 bytes' value changed every time.
->>>
->>> I found the pthread_cond_t  and PTHREAD_COND_INITIALIZER definitions
->>> in the GCC I used:
->>>
->>> #define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0, 0, 0}}
->>> #define __SIZEOF_PTHREAD_COND_T 48
->>>
->>>  89 typedef union
->>>  90 {
->>>  91   struct
->>>  92   {
->>>  93     int __lock;
->>>  94     unsigned int __futex;
->>>  95     __extension__ unsigned long long int __total_seq;
->>>  96     __extension__ unsigned long long int __wakeup_seq;
->>>  97     __extension__ unsigned long long int __woken_seq;
->>>  98     void *__mutex;
->>>  99     unsigned int __nwaiters;
->>> 100     unsigned int __broadcast_seq;
->>> 101   } __data;
->>> 102   char __size[__SIZEOF_PTHREAD_COND_T];
->>> 103   __extension__ long long int __align;
->>> 104 } pthread_cond_t;
->>> 105
->>>
->>> The total size of pthread_cond_t.__size is 48. But
->>> PTHREAD_COND_INITIALIZER only initializes the first 44 bytes, thus the
->>> last 4 bytes' value becomes unpredictable. The issue was gone after I
->>> made the below change:
->>>
->>>  197 //#define PTHREAD_COND_INITIALIZER { { 0, 0, 0, 0, 0, (void *) 0,
->>> 0, 0}}
->>>  198 #define PTHREAD_COND_INITIALIZER { .__size = {0}}
->>>
->>
->> Err, those types should rather come from glibc, not [lib]gcc.
->>
->> Which glibc version are you using?
->>
->> Jan
->>
->>>
->>>
->>> 2021-05-10 17:40 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
->>>> BTW, I just wrote an application which is exactly the same with
->>>> autoinit_simple_conddestroy. And it can run successfully in my board.
->>>>
->>>>   1 #include <stdio.h>
->>>>   2 #include <pthread.h>
->>>>   3 int main(void)
->>>>   4 {
->>>>   5 >-------pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
->>>>   6 >-------if(pthread_cond_destroy(&cond) == 0)
->>>>   7 >------->-------printf("suc!\n");
->>>>   8 >-------else
->>>>   9 >------->-------printf("err!\n");
->>>>  10 }
->>>>
->>>> sh-4.4# ./main
->>>> suc!
->>>>
->>>>
->>>> 2021-05-10 17:28 GMT+08:00, Fangsuo Wu <tiger20081015@gmail.com>:
->>>>> Jan,
->>>>> I removed the CFLAGS and LDFLAGS, with configure command:
->>>>>
->>>>> ./configure --build=i686-pc-linux-gnu --host=arm-linux-gnueabihf
->>>>> --with-core=cobalt --enable-smp --enable-lazy-setsched
->>>>> --enable-debug=symbols
->>>>>
->>>>> But the issue still remains. I changed the failed test case as below,
->>>>> the issue still exists.
->>>>>
->>>>> 226 static void autoinit_simple_conddestroy(void)
->>>>> 227 {
->>>>> 228 >-------pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
->>>>> 229 #if 0
->>>>> 230 >-------pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
->>>>> 231 >-------unsigned int invalmagic = ~0x86860505; //
->>>>> ~COBALT_COND_MAGIC
->>>>> 232
->>>>> 233 >-------memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic),
->>>>> 234 >------->-------&invalmagic, sizeof(invalmagic));
->>>>> 235
->>>>> 236 >-------smokey_trace("%s", __func__);
->>>>> 237 #endif
->>>>> 238 >-------check("cond_destroy", cond_destroy(&cond), 0);
->>>>> 239 //>-----check("cond_destroy invalid", cond_destroy(&cond2),
->>>>> -EINVAL);
->>>>> 240 }
->>>>>
->>>>> I'll try QEMU later to see if the issue also exits in QEMU.
->>>>>
->>>>> BTW, I saw some below warnings in compiling, do they have any
->>>>> relationship with the issue?
->>>>>   /bin/bash ../../../libtool   --mode=install /usr/bin/install -c
->>>>> smokey_net_server '/home/data/nfs_test//usr/xenomai/bin'
->>>>> libtool: warning: '../../../lib/cobalt/libcobalt.la' has not been
->>>>> installed in '/usr/xenomai/lib'
->>>>> libtool: warning: '../../../lib/cobalt/libmodechk.la' has not been
->>>>> installed in '/usr/xenomai/lib'
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> 2021-05-10 15:35 GMT+08:00, Jan Kiszka <jan.kiszka@siemens.com>:
->>>>>> On 10.05.21 09:20, Fangsuo Wu wrote:
->>>>>>> Jan,
->>>>>>> Thanks for your reply. The environment I used is listed below. BTW, I
->>>>>>> can run latency test successfully.
->>>>>>>
->>>>>>> 1. The revision of Xenomai: xenomai-3.1.tar.bz2
->>>>>>> 2. Soc: dual ARM cortex A7
->>>>>>> 3. How I built application libraries:
->>>>>>>     ./configure CFLAGS="-march=armv7-a -mfpu=vfp3"
->>>>>>> LDFLAGS="-march=armv7-a -mfpu=vfp3"   --build=i686-pc-linux-gnu
->>>>>>> --host=arm-linux-gnueabihf --with-core=cobalt --enable-smp
->>>>>>> --enable-pshared
->>>>>>>    make DESTDIR=/home/data/nfs_test/ install
->>>>>>> 4. The kernel I used is 4.19 so I applied
->>>>>>> ipipe-core-4.19.55-arm-5.patch, and manually enabled
->>>>>>> CONFIG_IPIPE_ARM_KUSER_TSC. The full config file is:
->>>>>>>
->>>>>>
->>>>>> OK - our qemu-armhf target [1] is multicore A7 as well. Do you see the
->>>>>> problem in QEMU, too? Do any of the extra CFLAGS or LDFLAGS you pass
->>>>>> play a role here? We compile in CI only with "--enable-smp
->>>>>> --enable-lazy-setsched --enable-debug=symbols" - maybe
->>>>>> "--enable-pshared"...
->>>>>>
->>>>>> Jan
->>>>>>
->>>>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/265962#L387
->>>>>>
->>>>>> --
->>>>>> Siemens AG, T RDA IOT
->>>>>> Corporate Competence Center Embedded Linux
->>>>>>
->>>>>
->>>>
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
->>
+> Gilles Chanteperdrix (17):
+>   net/stack: plan for merging private device flags with
+>     netdev_priv_flags
+>   net/stack: add multicast support
+>   utils/net: rtifconfig: display device name untruncated
+>   net/stack: add support for VLAN filtering
+>   utils/net: add VLAN filter configuration tool
+>   net/udp: allow retrieving irq timestamp with SIOCGSTAMP ioctl
+>   net/udp sendmsg: do not return an error if dest addr is null
+>   net/stack: rtskb: increase buffer size
+>   net/stack: manager: ratelimit printk when dropping buffers
+>   net/ipv4: icmp: forward unused packets to proxy
+>   net/drivers: e1000e: enable multicast
+>   net/drivers: e1000e: enable VLAN filtering
+>   net/drivers: e1000e: add netdevice stats
+>   net/drivers: igb: enable multicast
+>   net/drivers: igb: enable VLAN filtering
+>   demo/net: add rtnet tests
+>   net/stack: increase maximum number of ethernet devices
+> 
+> Jean-Baptiste Trédez (3):
+>   net/drivers: fec: update from linux kernel 5.4 and NXP I.MX8
+>   Kconfig : enable fec for ARM64 build
+>   net/drivers: fec: fix dev_kfree_rtskb on wrong buffer
+> 
+> Philippe Gerum (8):
+>   net/drivers: fec: rebase over original driver from kernel 4.14.85
+>   net/drivers: fec: enable multicast
+>   demo: restrict net/ to cobalt build
+>   net/ipv4: route: fix counting of allocated net routes
+>   net/ipv4: route: handle default net route
+>   utils/net: rtroute: add/del default route
+>   net/ipv4: sock: handle SO_REUSEADDR for SOCK_DGRAM gracefully
+>   net/stack: igmp: resolve default multicast interface
+> 
+> Arnaud Bouvet (1):
+>   net/drivers: fec: remove 1ms latency on frames reception
+> 
+>  configure.ac                                  |    1 +
+>  demo/Makefile.am                              |    4 +
+>  demo/net/Makefile.am                          |   78 +
+>  demo/net/mcast-receiver.c                     |  205 +
+>  demo/net/mcast-sender.c                       |  151 +
+>  demo/net/raw-ethernet.c                       |  100 +
+>  demo/net/rtt-mcast-measure.c                  |  210 +
+>  demo/net/rtt-mcast-responder.c                |  109 +
+>  demo/net/rtt-responder.c                      |  193 +
+>  demo/net/rtt-sender.c                         |  341 ++
+>  demo/net/rttcp-client.c                       |  212 +
+>  demo/net/rttcp-server.c                       |  181 +
+>  demo/net/udp-send.c                           |  136 +
+>  include/cobalt/uapi/asm-generic/features.h    |    6 +-
+>  .../arm64/include/asm/xenomai/uapi/features.h |    1 +
+>  .../include/asm/xenomai/uapi/features.h       |    1 +
+>  .../x86/include/asm/xenomai/uapi/features.h   |    1 +
+>  kernel/drivers/net/addons/cap.c               |   46 +-
+>  kernel/drivers/net/doc/README.routing         |   22 +
+>  kernel/drivers/net/doc/README.rtnetproxy      |    6 +-
+>  kernel/drivers/net/drivers/Kconfig            |   11 +-
+>  kernel/drivers/net/drivers/Makefile           |    6 +-
+>  kernel/drivers/net/drivers/e1000e/e1000.h     |    7 +-
+>  kernel/drivers/net/drivers/e1000e/hw.h        |    2 +-
+>  kernel/drivers/net/drivers/e1000e/lib.c       |    7 +-
+>  kernel/drivers/net/drivers/e1000e/netdev.c    |  266 +-
+>  kernel/drivers/net/drivers/fec.c              | 1859 -------
+>  kernel/drivers/net/drivers/freescale/Makefile |    5 +
+>  kernel/drivers/net/drivers/freescale/fec.h    |  642 +++
+>  .../drivers/net/drivers/freescale/fec_main.c  | 4736 +++++++++++++++++
+>  .../drivers/net/drivers/freescale/fec_ptp.c   |  638 +++
+>  kernel/drivers/net/drivers/igb/e1000_mac.c    |    6 +-
+>  kernel/drivers/net/drivers/igb/e1000_mac.h    |    2 +-
+>  kernel/drivers/net/drivers/igb/igb_main.c     |   53 +-
+>  kernel/drivers/net/drivers/rt_fec.h           |  153 -
+>  kernel/drivers/net/stack/Kconfig              |    8 +
+>  kernel/drivers/net/stack/Makefile             |    2 +
+>  kernel/drivers/net/stack/include/ipv4/arp.h   |    3 +
+>  kernel/drivers/net/stack/include/ipv4/igmp.h  |  102 +
+>  .../drivers/net/stack/include/ipv4/protocol.h |    1 +
+>  kernel/drivers/net/stack/include/rtdev.h      |   47 +-
+>  kernel/drivers/net/stack/include/rtif_vlan.h  |  105 +
+>  kernel/drivers/net/stack/include/rtnet_port.h |    6 +-
+>  .../drivers/net/stack/include/rtnet_socket.h  |    6 +
+>  kernel/drivers/net/stack/include/rtskb.h      |    4 +-
+>  kernel/drivers/net/stack/include/rtvlan.h     |   25 +
+>  kernel/drivers/net/stack/ipv4/Kconfig         |    7 +
+>  kernel/drivers/net/stack/ipv4/Makefile        |    1 +
+>  kernel/drivers/net/stack/ipv4/af_inet.c       |    5 +
+>  kernel/drivers/net/stack/ipv4/arp.c           |   26 +
+>  kernel/drivers/net/stack/ipv4/icmp.c          |   14 +
+>  kernel/drivers/net/stack/ipv4/igmp.c          |  624 +++
+>  kernel/drivers/net/stack/ipv4/ip_output.c     |   13 +-
+>  kernel/drivers/net/stack/ipv4/ip_sock.c       |   73 +-
+>  kernel/drivers/net/stack/ipv4/protocol.c      |   17 +
+>  kernel/drivers/net/stack/ipv4/route.c         |   56 +-
+>  kernel/drivers/net/stack/ipv4/tcp/tcp.c       |    2 +-
+>  kernel/drivers/net/stack/ipv4/udp/udp.c       |   53 +-
+>  kernel/drivers/net/stack/rtdev.c              |  214 +
+>  kernel/drivers/net/stack/rtnet_chrdev.c       |    8 +-
+>  kernel/drivers/net/stack/rtnet_module.c       |    5 +
+>  kernel/drivers/net/stack/socket.c             |   17 +-
+>  kernel/drivers/net/stack/stack_mgr.c          |    2 +-
+>  kernel/drivers/net/stack/vlan.c               |  725 +++
+>  utils/net/Makefile.am                         |    1 +
+>  utils/net/rtifconfig.c                        |    2 +-
+>  utils/net/rtping.c                            |   16 +-
+>  utils/net/rtroute.c                           |   39 +-
+>  utils/net/rtvconfig.c                         |  257 +
+>  69 files changed, 10741 insertions(+), 2142 deletions(-)
+>  create mode 100644 demo/net/Makefile.am
+>  create mode 100644 demo/net/mcast-receiver.c
+>  create mode 100644 demo/net/mcast-sender.c
+>  create mode 100644 demo/net/raw-ethernet.c
+>  create mode 100644 demo/net/rtt-mcast-measure.c
+>  create mode 100644 demo/net/rtt-mcast-responder.c
+>  create mode 100644 demo/net/rtt-responder.c
+>  create mode 100644 demo/net/rtt-sender.c
+>  create mode 100644 demo/net/rttcp-client.c
+>  create mode 100644 demo/net/rttcp-server.c
+>  create mode 100644 demo/net/udp-send.c
+>  delete mode 100644 kernel/drivers/net/drivers/fec.c
+>  create mode 100644 kernel/drivers/net/drivers/freescale/Makefile
+>  create mode 100644 kernel/drivers/net/drivers/freescale/fec.h
+>  create mode 100644 kernel/drivers/net/drivers/freescale/fec_main.c
+>  create mode 100644 kernel/drivers/net/drivers/freescale/fec_ptp.c
+>  delete mode 100644 kernel/drivers/net/drivers/rt_fec.h
+>  create mode 100644 kernel/drivers/net/stack/include/ipv4/igmp.h
+>  create mode 100644 kernel/drivers/net/stack/include/rtif_vlan.h
+>  create mode 100644 kernel/drivers/net/stack/include/rtvlan.h
+>  create mode 100644 kernel/drivers/net/stack/ipv4/igmp.c
+>  create mode 100644 kernel/drivers/net/stack/vlan.c
+>  create mode 100644 utils/net/rtvconfig.c
+> 
 
 -- 
 Siemens AG, T RDA IOT
