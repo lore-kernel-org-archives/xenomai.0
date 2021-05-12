@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 5/7] testsuite/smokey: trace test startup with verbose=2
-Date: Wed, 12 May 2021 12:05:55 +0200
-Message-Id: <7b14bedc2a3c8c6499e9c907c4e02e5e9a267d49.1620813957.git.jan.kiszka@siemens.com>
+Subject: [PATCH 4/7] drivers/testing: headcheck: remove variable-length array
+Date: Wed, 12 May 2021 12:05:54 +0200
+Message-Id: <154860d91888a771ab3fc580bbf49513a1cde0f8.1620813957.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620813957.git.jan.kiszka@siemens.com>
 References: <cover.1620813957.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -20,21 +20,58 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- testsuite/smokey/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/drivers/testing/heapcheck.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
-index 5702e825a0..f24c1e990b 100644
---- a/testsuite/smokey/main.c
-+++ b/testsuite/smokey/main.c
-@@ -31,6 +31,7 @@ int main(int argc, char *const argv[])
+diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
+index 023a06ca64..207f20921f 100644
+--- a/kernel/drivers/testing/heapcheck.c
++++ b/kernel/drivers/testing/heapcheck.c
+@@ -59,19 +59,19 @@ static inline void breathe(int loops)
+ 		rtdm_task_sleep(300000ULL);
+ }
  
- 	for_each_smokey_test(t) {
- 		pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
-+		smokey_trace("\n===  running %s ===\n", t->name);
- 		ret = t->run(t, argc, argv);
- 		if (ret) {
- 			if (ret == -ENOSYS) {
+-static inline void do_swap(void *left, void *right, const size_t size)
++static inline void do_swap(void *left, void *right)
+ {
+-	char trans[size];
++	char trans[sizeof(struct chunk)];
+ 
+-	memcpy(trans, left, size);
+-	memcpy(left, right, size);
+-	memcpy(right, trans, size);
++	memcpy(trans, left, sizeof(struct chunk));
++	memcpy(left, right, sizeof(struct chunk));
++	memcpy(right, trans, sizeof(struct chunk));
+ }
+ 
+-static void random_shuffle(void *vbase, size_t nmemb, const size_t size)
++static void random_shuffle(void *vbase, size_t nmemb)
+ {
+ 	struct {
+-		char x[size];
++		char x[sizeof(struct chunk)];
+ 	} __attribute__((packed)) *base = vbase;
+ 	unsigned int j, k;
+ 
+@@ -79,7 +79,7 @@ static void random_shuffle(void *vbase, size_t nmemb, const size_t size)
+ 		k = (unsigned int)(prandom_u32() % nmemb) + 1;
+ 		if (j == k)
+ 			continue;
+-		do_swap(&base[j - 1], &base[k - 1], size);
++		do_swap(&base[j - 1], &base[k - 1]);
+ 	}
+ }
+ 
+@@ -259,7 +259,7 @@ static int test_seq(size_t heap_size, size_t block_size, int flags)
+ 	}
+ 	
+ 	if (flags & RTTST_HEAPCHECK_SHUFFLE)
+-		random_shuffle(chunks, nrblocks, sizeof(*chunks));
++		random_shuffle(chunks, nrblocks);
+ 
+ 	/*
+ 	 * Release all blocks.
 -- 
 2.26.2
 
