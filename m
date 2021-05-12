@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 9/9] ci: Add job filter variable
-Date: Wed, 12 May 2021 10:32:23 +0200
-Message-Id: <566181deff98317051f959197171615b5cd9a1f9.1620808343.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 4/9] ci: Remove redundant job filtering on
+ USE_GITLAB_ARTIFACTS
+Date: Wed, 12 May 2021 10:32:18 +0200
+Message-Id: <cb8aa4c02b9e8764419947d5db7ab14a4431e2a7.1620808343.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
 References: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -18,26 +19,37 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This allows to set a filter variable when triggering the pipeline,
-effectively running only one of the currently three child pipelines.
-Will permit automatic triggering from the Xenomai repo on pushes to the
-corresponding branches.
+Already done by including only one of the two files.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/child_pipelines_common.yml | 2 ++
- 1 file changed, 2 insertions(+)
+ ci/artifacts.yml    | 4 ----
+ ci/no-artifacts.yml | 3 ---
+ 2 files changed, 7 deletions(-)
 
-diff --git a/ci/child_pipelines_common.yml b/ci/child_pipelines_common.yml
-index d742041..a96a81f 100644
---- a/ci/child_pipelines_common.yml
-+++ b/ci/child_pipelines_common.yml
-@@ -17,3 +17,5 @@ stages:
-   stage: parent
-   trigger:
-     strategy: depend
-+  rules:
-+    - if: '$ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME'
+diff --git a/ci/artifacts.yml b/ci/artifacts.yml
+index fb1549f..9d6b0e1 100644
+--- a/ci/artifacts.yml
++++ b/ci/artifacts.yml
+@@ -30,7 +30,3 @@ variables:
+     paths:
+     - build/tmp/deploy/images/${TARGET}/
+     expire_in: 1 week
+-  only:
+-    variables:
+-      - $USE_GITLAB_ARTIFACTS
+-
+diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
+index 4efff7a..f7e0aed 100644
+--- a/ci/no-artifacts.yml
++++ b/ci/no-artifacts.yml
+@@ -23,6 +23,3 @@
+     - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
+     - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
+     - scripts/deploy_for_testing.sh ${TARGET}
+-  except:
+-    variables:
+-      - $USE_GITLAB_ARTIFACTS
 -- 
 2.26.2
 
