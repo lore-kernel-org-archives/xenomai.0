@@ -1,9 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 3/9] ci: Fix USE_GITLAB_ARTIFACTS definition
-Date: Wed, 12 May 2021 10:32:17 +0200
-Message-Id: <5faf3357524c826de670c924db9acc9d03f064b6.1620808343.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
-References: <cover.1620808343.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 0/9] ci improvements
+Date: Wed, 12 May 2021 10:32:14 +0200
+Message-Id: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,45 +14,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This brings a number of improvements for our CI/CT:
+ - resource groups for board to avoid spinning actively on busy ones
+ - filter variable to run only for a specific Xenomai branch
+ - consolidation of the artifact/no-artifact cases
+ - fix for artifact child pipeline
 
-Variables do not propagate automatically to child pipelines. So define
-this one in the artifact version of the child pipeline file.
+With this and an upcoming CI patch for Xenomai, we can now trigger the
+lab test run for the specific Xenomai branch that received an update.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .gitlab-ci-artifacts.yml | 3 ---
- ci/artifacts.yml         | 4 ++++
- 2 files changed, 4 insertions(+), 3 deletions(-)
+Jan
 
-diff --git a/.gitlab-ci-artifacts.yml b/.gitlab-ci-artifacts.yml
-index 6d2f1ee..85345b8 100644
---- a/.gitlab-ci-artifacts.yml
-+++ b/.gitlab-ci-artifacts.yml
-@@ -9,8 +9,5 @@
- # SPDX-License-Identifier: MIT
- #
- 
--variables:
--  USE_GITLAB_ARTIFACTS: "true"
--
- include:
-   - local: '/ci/child_pipelines_artifacts.yml'
-diff --git a/ci/artifacts.yml b/ci/artifacts.yml
-index 2a0d639..fb1549f 100644
---- a/ci/artifacts.yml
-+++ b/ci/artifacts.yml
-@@ -8,6 +8,10 @@
- #
- # SPDX-License-Identifier: MIT
- #
-+
-+variables:
-+  USE_GITLAB_ARTIFACTS: "true"
-+
- # add lavacli to the container and install the ssh keys
- # for the test infrastructure
- .add-lava-ssh-config:
+Jan Kiszka (9):
+  ci: Create resource groups for all LAVA boards
+  ci: Remove "board-" from job names
+  ci: Fix USE_GITLAB_ARTIFACTS definition
+  ci: Remove redundant job filtering on USE_GITLAB_ARTIFACTS
+  ci: Pull common .add-lava-ssh-config into gitlab-ci-base.yml
+  ci: Consolidate artifacts/no-artifacts case
+  ci: Rename and reorder child pipeline
+  ci: Factor out common bridge jobs
+  ci: Add job filter variable
+
+ .gitlab-ci-artifacts.yml            |  3 --
+ ci/artifacts.yml                    | 22 +++----------
+ ci/child_pipelines_artifacts.yml    | 26 ++++++++--------
+ ci/child_pipelines_common.yml       | 21 +++++++++++++
+ ci/child_pipelines_no_artifacts.yml | 26 ++++++++--------
+ ci/gitlab-ci-base.yml               | 46 +++++++++++++++++++++------
+ ci/kernel_4_19_xenomai_next.yml     | 48 ++++++++++++++---------------
+ ci/kernel_5_4_xenomai_next.yml      | 48 ++++++++++++++---------------
+ ci/no-artifacts.yml                 | 19 ++----------
+ ci/xenomai_3_0_x.yml                | 20 ++++++------
+ ci/xenomai_3_1_x.yml                | 48 ++++++++++++++---------------
+ 11 files changed, 170 insertions(+), 157 deletions(-)
+ create mode 100644 ci/child_pipelines_common.yml
+
 -- 
 2.26.2
 
