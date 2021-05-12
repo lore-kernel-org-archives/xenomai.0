@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 6/9] ci: Consolidate artifacts/no-artifacts
- case
-Date: Wed, 12 May 2021 10:32:20 +0200
-Message-Id: <52d70d76b72cbd619ed991f29f8b80bc3f866a0d.1620808343.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 3/9] ci: Fix USE_GITLAB_ARTIFACTS definition
+Date: Wed, 12 May 2021 10:32:17 +0200
+Message-Id: <5faf3357524c826de670c924db9acc9d03f064b6.1620808343.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
 References: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,67 +18,43 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-By checking for USE_GITLAB_ARTIFACTS, we can share the scripts section.
-This leaves the variation to the addition of artifacts.
+Variables do not propagate automatically to child pipelines. So define
+this one in the artifact version of the child pipeline file.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/artifacts.yml      | 6 +-----
- ci/gitlab-ci-base.yml | 8 ++++++++
- ci/no-artifacts.yml   | 7 +------
- 3 files changed, 10 insertions(+), 11 deletions(-)
+ .gitlab-ci-artifacts.yml | 3 ---
+ ci/artifacts.yml         | 4 ++++
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/ci/artifacts.yml b/ci/artifacts.yml
-index d75559a..ba851cf 100644
---- a/ci/artifacts.yml
-+++ b/ci/artifacts.yml
-@@ -13,11 +13,7 @@ variables:
-   USE_GITLAB_ARTIFACTS: "true"
- 
- .build:
--  extends: .add-lava-ssh-config
--  stage: build
--  script:
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
-+  extends: .build-base
-   artifacts:
-     paths:
-     - build/tmp/deploy/images/${TARGET}/
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 839f6ea..8adc505 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -38,6 +38,14 @@ default:
-     - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
-     - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
- 
-+.build-base:
-+  extends: .add-lava-ssh-config
-+  stage: build
-+  script:
-+    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
-+    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
-+    - if [ -z "${USE_GITLAB_ARTIFACTS}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
-+
- .test:
-   extends: .add-lava-ssh-config
-   stage: test
-diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
-index e652a03..a820f89 100644
---- a/ci/no-artifacts.yml
-+++ b/ci/no-artifacts.yml
-@@ -10,9 +10,4 @@
+diff --git a/.gitlab-ci-artifacts.yml b/.gitlab-ci-artifacts.yml
+index 6d2f1ee..85345b8 100644
+--- a/.gitlab-ci-artifacts.yml
++++ b/.gitlab-ci-artifacts.yml
+@@ -9,8 +9,5 @@
+ # SPDX-License-Identifier: MIT
  #
  
- .build:
--  extends: .add-lava-ssh-config
--  stage: build
--  script:
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
--    - scripts/deploy_for_testing.sh ${TARGET}
-+  extends: .build-base
+-variables:
+-  USE_GITLAB_ARTIFACTS: "true"
+-
+ include:
+   - local: '/ci/child_pipelines_artifacts.yml'
+diff --git a/ci/artifacts.yml b/ci/artifacts.yml
+index 2a0d639..fb1549f 100644
+--- a/ci/artifacts.yml
++++ b/ci/artifacts.yml
+@@ -8,6 +8,10 @@
+ #
+ # SPDX-License-Identifier: MIT
+ #
++
++variables:
++  USE_GITLAB_ARTIFACTS: "true"
++
+ # add lavacli to the container and install the ssh keys
+ # for the test infrastructure
+ .add-lava-ssh-config:
 -- 
 2.26.2
 
