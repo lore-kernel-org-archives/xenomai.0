@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 5/9] ci: Pull common .add-lava-ssh-config into
- gitlab-ci-base.yml
-Date: Wed, 12 May 2021 10:32:19 +0200
-Message-Id: <817c8de17359d20eccdc1642832c3ccb605d6f59.1620808343.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 1/9] ci: Create resource groups for all LAVA
+ boards
+Date: Wed, 12 May 2021 10:32:15 +0200
+Message-Id: <011cc0ea0a524415333b8eebbcca4126964ae327.1620808343.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
 References: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,77 +19,66 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Also refactor a bit for better readability.
+We currently have only one instance per board in our lab. So far, test
+jobs requesting the same one can start in parallel and will then wait on
+the LAVA cli, consuming job time. Avoid this at CI level already.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/artifacts.yml      |  8 --------
- ci/gitlab-ci-base.yml | 12 ++++++++++++
- ci/no-artifacts.yml   |  9 +--------
- 3 files changed, 13 insertions(+), 16 deletions(-)
+ ci/gitlab-ci-base.yml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/ci/artifacts.yml b/ci/artifacts.yml
-index 9d6b0e1..d75559a 100644
---- a/ci/artifacts.yml
-+++ b/ci/artifacts.yml
-@@ -12,14 +12,6 @@
- variables:
-   USE_GITLAB_ARTIFACTS: "true"
- 
--# add lavacli to the container and install the ssh keys
--# for the test infrastructure
--.add-lava-ssh-config:
--  before_script:
--    - mkdir -p -m=700 ~/.ssh
--    - if [ -n "$https_proxy" ]; then echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config; fi;
--    - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
--    - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
- .build:
-   extends: .add-lava-ssh-config
-   stage: build
 diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 37811af..839f6ea 100644
+index 53ae66b..7ae2408 100644
 --- a/ci/gitlab-ci-base.yml
 +++ b/ci/gitlab-ci-base.yml
-@@ -26,6 +26,18 @@ variables:
- default:
-   image: ghcr.io/siemens/kas/kas-isar:2.4
+@@ -47,6 +47,7 @@ default:
  
-+# add lavacli to the container and install the ssh keys
-+# for the test infrastructure
-+.add-lava-ssh-config:
-+  before_script:
-+    - mkdir -p -m=700 ~/.ssh
-+    - if [ -n "$https_proxy" ]; then
-+          echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config;
-+          chmod 600 ~/.ssh/config;
-+      fi
-+    - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
-+    - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
-+
- .test:
-   extends: .add-lava-ssh-config
-   stage: test
-diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
-index f7e0aed..e652a03 100644
---- a/ci/no-artifacts.yml
-+++ b/ci/no-artifacts.yml
-@@ -8,14 +8,7 @@
- #
- # SPDX-License-Identifier: MIT
- #
--# add lavacli to the container and install the ssh keys
--# for the test infrastructure
--.add-lava-ssh-config:
--  before_script:
--    - mkdir -p -m=700 ~/.ssh
--    - if [ -n "$https_proxy" ]; then echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config; fi;
--    - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
--    - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
-+
- .build:
-   extends: .add-lava-ssh-config
-   stage: build
+ .lava-test:qemu-amd64:
+   extends: .test
++  resource_group: board-qemu-amd64
+   variables:
+     TARGET: qemu-amd64
+ 
+@@ -58,6 +59,7 @@ default:
+ 
+ .lava-test:qemu-armhf:
+   extends: .test
++  resource_group: board-qemu-armhf
+   variables:
+     TARGET: qemu-armhf
+ 
+@@ -69,6 +71,7 @@ default:
+ 
+ .lava-test:qemu-arm64:
+   extends: .test
++  resource_group: board-qemu-arm64
+   variables:
+     TARGET: qemu-arm64
+ 
+@@ -80,6 +83,7 @@ default:
+ 
+ .lava-test:board-hikey:
+   extends: .test
++  resource_group: board-hikey
+   variables:
+     TARGET: hikey
+ 
+@@ -91,6 +95,7 @@ default:
+ 
+ .lava-test:board-beagle-bone-black:
+   extends: .test
++  resource_group: board-beagle-bone-black
+   variables:
+     TARGET: beagle-bone-black
+ 
+@@ -102,5 +107,6 @@ default:
+ 
+ .lava-test:board-x86-64-efi:
+   extends: .test
++  resource_group: board-x86-64-efi
+   variables:
+     TARGET: x86-64-efi
 -- 
 2.26.2
 
