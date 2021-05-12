@@ -1,12 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Trigger xenomai-images child pipeline corresponding to
- main branches
-Message-ID: <68880373-ea2c-1751-d611-8ffd39b84c7f@siemens.com>
-Date: Wed, 12 May 2021 10:35:37 +0200
+Subject: [xenomai-images][PATCH 7/9] ci: Rename and reorder child pipeline
+Date: Wed, 12 May 2021 10:32:21 +0200
+Message-Id: <bf3d41701b404261dabe5a59ed28a553bb410816.1620808343.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1620808343.git.jan.kiszka@siemens.com>
+References: <cover.1620808343.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +14,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This couples pushing to next and stable branches with running
-xenomai-images, and then only the affected child pipeline. Precondition
-is setting XENOMAI_IMAGES_TOKEN as protected CI/CD variable.
+Ordering for pure aesthetic reasons, naming to align with the branch
+names from the main Xenomai repo. The latter will help with setting
+triggers.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ ci/child_pipelines_artifacts.yml    | 12 ++++++------
+ ci/child_pipelines_no_artifacts.yml | 12 ++++++------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index d8dc67f682..f6d2ee8843 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -10,6 +10,7 @@
- 
+diff --git a/ci/child_pipelines_artifacts.yml b/ci/child_pipelines_artifacts.yml
+index 6d8ce9f..eb97f31 100644
+--- a/ci/child_pipelines_artifacts.yml
++++ b/ci/child_pipelines_artifacts.yml
+@@ -11,26 +11,26 @@
  stages:
-   - build
-+  - test
+   - parent
  
- default:
-   image: debian:buster
-@@ -26,6 +27,7 @@ variables:
-   PACKAGES_arm64: "gcc-8-aarch64-linux-gnu libc6-dev-arm64-cross"
-   PACKAGES_powerpc: "gcc-8-powerpc-linux-gnu libc6-dev-powerpc-cross"
-   PACKAGES_x86: ""
-+  XENOMAI_IMAGES_BRANCH: "master"
+-xenomai next:
++stable/v3.0.x:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_next.yml'
++      - local: '/ci/xenomai_3_0_x.yml'
+     strategy: depend
  
- .build:
-   stage: build
-@@ -231,3 +233,14 @@ powerpc-4.19-release:
-     PIPELINE_REV: ipipe-core-4.19..*-ppc32-.*
-     PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-ppc32.git
-     KERNEL_DEFCONFIG: mpc5200_defconfig
-+
-+trigger-xenomai-images:
-+  stage: test
-+  image: curlimages/curl
-+  script:
-+    - curl -X POST -F "token=${XENOMAI_IMAGES_TOKEN}"
-+           -F "ref=${XENOMAI_IMAGES_BRANCH}"
-+           -F "variables[ONLY_RUN]=${CI_COMMIT_BRANCH}"
-+           https://source.denx.de/api/v4/projects/479/trigger/pipeline
-+  rules:
-+    - if: '$XENOMAI_IMAGES_TOKEN != "" && ($CI_COMMIT_BRANCH == "next" || $CI_COMMIT_BRANCH =~ /stable\/.*/)'
+-xenomai 3.0.x:
++stable/v3.1.x:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_3_0_x.yml'
++      - local: '/ci/xenomai_3_1_x.yml'
+     strategy: depend
+ 
+-xenomai 3.1.x:
++next:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_3_1_x.yml'
++      - local: '/ci/xenomai_next.yml'
+     strategy: depend
+diff --git a/ci/child_pipelines_no_artifacts.yml b/ci/child_pipelines_no_artifacts.yml
+index e347990..2ff4d7b 100644
+--- a/ci/child_pipelines_no_artifacts.yml
++++ b/ci/child_pipelines_no_artifacts.yml
+@@ -11,26 +11,26 @@
+ stages:
+   - parent
+ 
+-xenomai next:
++stable/v3.0.x:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_next.yml'
++      - local: '/ci/xenomai_3_0_x.yml'
+     strategy: depend
+ 
+-xenomai 3.0.x:
++stable/v3.1.x:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_3_0_x.yml'
++      - local: '/ci/xenomai_3_1_x.yml'
+     strategy: depend
+ 
+-xenomai 3.1.x:
++next:
+   stage: parent
+   trigger:
+     include:
+       - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_3_1_x.yml'
++      - local: '/ci/xenomai_next.yml'
+     strategy: depend
 -- 
 2.26.2
+
 
