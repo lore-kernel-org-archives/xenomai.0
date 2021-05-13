@@ -1,14 +1,10 @@
-Subject: Re: latency test crashing
-References: <ed8df10e-9353-6181-78df-535d4ccced59@akamina.com>
- <13f1c51c-c831-12e1-67bb-f701fd39f211@siemens.com>
-From: Peter Laurich <Peter.Laurich@akamina.com>
-Message-ID: <5b805394-acaf-77be-ad23-eae32fa179a5@akamina.com>
-Date: Wed, 12 May 2021 18:46:44 -0400
-MIME-Version: 1.0
-In-Reply-To: <13f1c51c-c831-12e1-67bb-f701fd39f211@siemens.com>
-Content-Language: en-CA
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper to
+ find array of gpiochips
+Date: Wed, 12 May 2021 21:02:37 -0400
+Message-Id: <20210513010238.32466-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210513010238.32466-1-hongzhan.chen@intel.com>
+References: <20210513010238.32466-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,70 +13,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thanks Jan.
+To find array of gpiochips for non-OF platform
 
-I experimented with a few of the Linux 4.9 kernels with 32-bit but all 
-with the same result. It is time for me to abandon x86_32 development. 
-Unfortunately, the BIOS will not allow me to put a 64-bit kernel onto 
-the hardware so that hardware is now obsolete. I'll have to think about 
-my options.
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+---
+ include/cobalt/kernel/rtdm/gpio.h |  4 ++++
+ kernel/drivers/gpio/gpio-core.c   | 19 +++++++++++++++++++
+ 2 files changed, 23 insertions(+)
 
-Peter
+diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+index c5fb20f25..99772f558 100644
+--- a/include/cobalt/kernel/rtdm/gpio.h
++++ b/include/cobalt/kernel/rtdm/gpio.h
+@@ -64,6 +64,10 @@ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+ int rtdm_gpiochip_find(struct device_node *from,
+ 			  const char *label, int type);
+ 
++int rtdm_gpiochip_array_find(struct device_node *from,
++				const char *compat[],
++				int nentries, int type);
++
+ #ifdef CONFIG_OF
+ 
+ int rtdm_gpiochip_scan_of(struct device_node *from,
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index b3d801fa1..20a6d7875 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -543,6 +543,25 @@ int rtdm_gpiochip_find(struct device_node *from, const char *label,
+ }
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
+ 
++int rtdm_gpiochip_array_find(struct device_node *from,
++				const char *compat[],
++				int nentries, int type)
++{
++	int ret = -ENODEV, _ret, n;
++
++	for (n = 0; n < nentries; n++) {
++		_ret = rtdm_gpiochip_find(from, compat[n], type);
++		if (_ret) {
++			if (_ret != -ENODEV)
++				return _ret;
++		} else
++			ret = 0;
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
++
+ #ifdef CONFIG_OF
+ 
+ #include <linux/of_platform.h>
+-- 
+2.17.1
 
-On 5/12/2021 3:00 AM, Jan Kiszka wrote:
-> On 12.05.21 00:04, Peter Laurich via Xenomai wrote:
->> Hi,
->>
->> I am hoping that someone can help me to solve a problem that I am having
->> with the Xenomai latency test.
->>
->> Here is my set up:
->>
->> * 4.9.146 kernel with ipipe patch (this is the last kernel version
->>    that supports 32-bit x86 and has a Xenomai patch file)
-> Honestly, it may only compile by chance. 32-bit is dead for ages, no one
-> tested that anymore. But your CPU supports 64-bit. So, turn that on in
-> the kernel while you can still run userspace in 32-bit.
->
-> Jan
->
->> * kernel config options set as defined in Xenomai wiki
->>    Configuring_For_X86_Based_Dual_Kernels
->> * kernel configured for NFS mounting the root fs
->> * using Buildroot 2021.02 set up for i386 build with GCC 9.3.0 and
->>    Xenomai 3.1
->> * processor set to Atom
->> * target processor is D2550 Atom
->>
->> When I attempting to run the latency program it crashes immediately
->> after the first few lines of preamble are output. The last few lines of
->> the call trace include entries such as:
->>
->>    xnintr_core_clock_handler
->>    dispatch_irq_head
->>    __ipipe_dispatch_irq
->>    __ipipe_handle_irq
->>    apic_timer_interrupt
->>    ? gdb_serial_stub
->>    ? __ipipe_halt_root
->>    mwait_idle
->>    arch_cpu_idle
->>    default_idle_call
->>    cpu_startup_entry
->>    rest_init
->>    start_kernel
->>    i386_start_kernel
->>    ...
->>
->> I have tried this on two different Atom targets with the same results -
->> the latency program crashes immediately after the preamble is printed.
->>
->> Any suggestions as to what the root cause might be would be appreciated.
->>
->> Thanks
->>
->> Peter
->>
->
+
