@@ -1,12 +1,15 @@
-From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
- <jean-baptiste.tredez@alstefgroup.com>
-Subject: [PATCH 15/31] net/drivers: igb: enable multicast
-Date: Tue, 11 May 2021 18:05:19 +0200
-Message-Id: <20210511160535.26580-16-jean-baptiste.tredez@alstefgroup.com>
-In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-Content-Type: text/plain
 MIME-Version: 1.0
+References: <20210305082208.18335-1-gunter.grau@philips.com>
+ <DB7P122MB01061ED94990DB2540D9E54FF2539@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
+ <e8746135-50d1-a025-fff0-f6c6e7dd63d6@siemens.com>
+ <CALLqZ8RvZm4ncExP6gU+QoV9L9qhwGZroHAsj-SKigrb-=twzQ@mail.gmail.com>
+In-Reply-To: <CALLqZ8RvZm4ncExP6gU+QoV9L9qhwGZroHAsj-SKigrb-=twzQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 14 May 2021 00:43:51 -0400
+Message-ID: <CALLqZ8SUiMX3aLqSqb59S3krWjcc0AGk6hX2KmUHw0MhZxbTPQ@mail.gmail.com>
+Subject: Re: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,115 +18,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Grau, Gunter" <gunter.grau@philips.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+On Tue, May 11, 2021 at 11:31 AM Greg Gallagher <greg@embeddedgreg.com>
+wrote:
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/drivers/net/drivers/igb/e1000_mac.c |  6 ++---
- kernel/drivers/net/drivers/igb/e1000_mac.h |  2 +-
- kernel/drivers/net/drivers/igb/igb_main.c  | 30 +++++-----------------
- 3 files changed, 11 insertions(+), 27 deletions(-)
+>
+>
+> On Tue, May 11, 2021 at 11:25 AM Jan Kiszka <jan.kiszka@siemens.com>
+> wrote:
+>
+>> On 11.05.21 16:57, Grau, Gunter via Xenomai wrote:
+>> >> -----Original Message-----
+>> >> From: Gunter Grau <gunter.grau@philips.com>
+>> >> Sent: Freitag, 5. M=C3=A4rz 2021 09:22
+>> >> To: xenomai@xenomai.org
+>> >> Cc: rpm@xenomai.org; Grau, Gunter <gunter.grau@philips.com>
+>> >> Subject: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
+>> >>
+>> >> The gcc 8.3 compiler generated for the update of the last_tsc
+>> >> 8 byte value two store commands (see __ipipe_update_tsc).
+>> >>
+>> >>         e2500001        subs    r0, r0, #1
+>> >>         e5830000        str     r0, [r3]
+>> >>         e2c11000        sbc     r1, r1, #0
+>> >>         e5831004        str     r1, [r3, #4]
+>> >>
+>> >> This may lead to wrong reading of the counter in the assembler part
+>> >> __ipipe_tsc_get if a CPU core just reads this value when only half of
+>> the
+>> >> last_tsc field is updated.
+>> >>
+>> >>         __ipipe_freerunning_32:
+>> >>         ldr     r0, .LCfr32_cntr_addr
+>> >>         /* User-space entry-point: r0 is the hardware counter virtual
+>> address */
+>> >>         myldrd  r2, r3, r1, .LCfr32_last_tsc
+>> >>         #ifndef CONFIG_CPU_BIG_ENDIAN
+>> >>         /* Little endian */
+>> >>         ldr     r0, [r0]
+>> >>         cmp     r2, r0
+>> >>         adc     r1, r3, #0
+>> >>
+>> >> The issue can be seen when enabling DEBUG_TIMEKEEPING option in the
+>> >> kernel and may lead to a jump backwards in time for the monotonic
+>> timer in
+>> >> Linux.
+>> >>
+>> >> WARNING: Underflow in clocksource 'ipipe_tsc' observed, time update
+>> >> ignored.
+>> >>          Please report this, consider using a different clocksource,
+>> if possible.
+>> >>          Your kernel is probably still fine.
+>> >>
+>> >> Fix this by using the WRITE_ONCE macro to prevent the compiler from
+>> >> tearing the write since this fields are accessed from different CPU
+>> cores.
+>> >> After this change the resulting assembler is using a double store
+>> command,
+>> >> which should fix the issue.
+>> >>
+>> >>         e2506001        subs    r6, r0, #1
+>> >>         e2c17000        sbc     r7, r1, #0
+>> >>         e1c360f0        strd    r6, [r3]
+>> >>
+>> >> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+>> >> ---
+>> >>  arch/arm/kernel/ipipe_tsc.c | 2 +-
+>> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >>
+>> >> diff --git a/arch/arm/kernel/ipipe_tsc.c b/arch/arm/kernel/ipipe_tsc.=
+c
+>> index
+>> >> 7e58118254b8..6d9e1cefa964 100644
+>> >> --- a/arch/arm/kernel/ipipe_tsc.c
+>> >> +++ b/arch/arm/kernel/ipipe_tsc.c
+>> >> @@ -199,7 +199,7 @@ void __ipipe_tsc_update(void)
+>> >>
+>> >>         /* Update last_tsc, in order to remain compatible with legacy
+>> >>            user-space 32 bits free-running counter implementation */
+>> >> -       ipipe_tsc_value->last_tsc =3D __ipipe_tsc_get() - 1;
+>> >> +       WRITE_ONCE(ipipe_tsc_value->last_tsc, __ipipe_tsc_get() - 1);
+>> >>  }
+>> >>  EXPORT_SYMBOL(__ipipe_tsc_get);
+>> >>
+>> >> --
+>> >> 2.17.1
+>> >>
+>> >>
+>> >
+>> > Hi,
+>> >
+>> > I wanted to ask if someone could have a look on this patch.
+>> > I sent 2 patches for the ipipe at this time but did not see any follow
+>> ups regarding this.
+>> >
+>> > The other one was just a goodie I wondered about while investigating
+>> this above one.
+>> >
+>> > This was really a pain and I wanted to save others from having the sam=
+e
+>> issues.
+>> > The observed issues where haning processes (looping in gettimeofday) o=
+r
+>> rcu_stalls on different cores.
+>> >
+>> > If I see this correct this issue is present in any ipipe patch from
+>> xenomai 2.6 to 3.1.  I haven't checked older ones.
+>> > If the compiler decides to generate such code (which it is allowed to)
+>> you will see sporadic issues of the same type. Not really reproducible.
+>> >
+>> > So please have a look and take into account to accept this.
+>> >
+>> > Thanks in advance,
+>> > Gunter
+>> >
+>>
+>> Sorry, this may have fallen through the cracks.
+>>
+>> Greg, did you have a look at this, or is this already in your queue?
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, T RDA IOT
+>> Corporate Competence Center Embedded Linux
+>
+>
+> Sorry, this one is my queue, I=E2=80=99ve tested it and it looks good. I=
+=E2=80=99ll apply
+> it tonight, and get new patches out.
+>
+> Thanks
+>
+> Greg
+>
+>>
+>> Applied, thanks for the patch.  Sorry it took so long, new patches will
+be pushed out this weekend.
 
-diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.c b/kernel/drivers/net/drivers/igb/e1000_mac.c
-index 500c92877..765604d5f 100644
---- a/kernel/drivers/net/drivers/igb/e1000_mac.c
-+++ b/kernel/drivers/net/drivers/igb/e1000_mac.c
-@@ -440,7 +440,7 @@ static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
-  *  The caller must have a packed mc_addr_list of multicast addresses.
-  **/
- void igb_update_mc_addr_list(struct e1000_hw *hw,
--			     u8 *mc_addr_list, u32 mc_addr_count)
-+			     struct rtdev_mc_list *mc_addr, u32 mc_addr_count)
- {
- 	u32 hash_value, hash_bit, hash_reg;
- 	int i;
-@@ -450,13 +450,13 @@ void igb_update_mc_addr_list(struct e1000_hw *hw,
- 
- 	/* update mta_shadow from mc_addr_list */
- 	for (i = 0; (u32) i < mc_addr_count; i++) {
--		hash_value = igb_hash_mc_addr(hw, mc_addr_list);
-+		hash_value = igb_hash_mc_addr(hw, mc_addr->dmi_addr);
- 
- 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
- 		hash_bit = hash_value & 0x1F;
- 
- 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
--		mc_addr_list += (ETH_ALEN);
-+		mc_addr = mc_addr->next;
- 	}
- 
- 	/* replace the entire MTA table */
-diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.h b/kernel/drivers/net/drivers/igb/e1000_mac.h
-index b50d57c5d..a3ad413a0 100644
---- a/kernel/drivers/net/drivers/igb/e1000_mac.h
-+++ b/kernel/drivers/net/drivers/igb/e1000_mac.h
-@@ -49,7 +49,7 @@ s32  igb_get_speed_and_duplex_copper(struct e1000_hw *hw, u16 *speed,
- s32  igb_id_led_init(struct e1000_hw *hw);
- s32  igb_led_off(struct e1000_hw *hw);
- void igb_update_mc_addr_list(struct e1000_hw *hw,
--			     u8 *mc_addr_list, u32 mc_addr_count);
-+			struct rtdev_mc_list *mc_addr, u32 mc_addr_count);
- s32  igb_setup_link(struct e1000_hw *hw);
- s32  igb_validate_mdi_setting(struct e1000_hw *hw);
- s32  igb_write_8bit_ctrl_reg(struct e1000_hw *hw, u32 reg,
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index 1dc4732ee..9a3998719 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -2070,8 +2070,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netdev->map_rtskb = igb_map_rtskb;
- 	netdev->unmap_rtskb = igb_unmap_rtskb;
- 	netdev->do_ioctl = igb_ioctl;
-+	netdev->set_multicast_list = igb_set_rx_mode;
- #if 0
--	netdev->set_multicast_list = igb_set_multi;
- 	netdev->set_mac_address = igb_set_mac;
- 	netdev->change_mtu = igb_change_mtu;
- 
-@@ -3370,34 +3370,18 @@ static int igb_write_mc_addr_list(struct rtnet_device *netdev)
- {
- 	struct igb_adapter *adapter = rtnetdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
--#if 0
--	struct netdev_hw_addr *ha;
--	u8  *mta_list;
--	int i;
--	if (netdev_mc_empty(netdev)) {
-+	struct rtdev_mc_list *mc_addr = netdev->mc_list;
-+	unsigned mc_addr_count = netdev->mc_count;
-+
-+	if (!mc_addr_count) {
- 		/* nothing to program, so clear mc list */
- 		igb_update_mc_addr_list(hw, NULL, 0);
--		igb_restore_vf_multicasts(adapter);
- 		return 0;
- 	}
- 
--	mta_list = kzalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
--	if (!mta_list)
--		return -ENOMEM;
--
--	/* The shared function expects a packed array of only addresses. */
--	i = 0;
--	netdev_for_each_mc_addr(ha, netdev)
--		memcpy(mta_list + (i++ * ETH_ALEN), ha->addr, ETH_ALEN);
-+	igb_update_mc_addr_list(hw, mc_addr, mc_addr_count);
- 
--	igb_update_mc_addr_list(hw, mta_list, i);
--	kfree(mta_list);
--
--	return netdev_mc_count(netdev);
--#else
--	igb_update_mc_addr_list(hw, NULL, 0);
--	return 0;
--#endif
-+	return mc_addr_count;
- }
- 
- /**
--- 
-2.17.1
-
-
+-Greg
