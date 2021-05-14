@@ -1,15 +1,15 @@
+Subject: Re: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
+ to find array of gpiochips
+References: <20210513010238.32466-1-hongzhan.chen@intel.com>
+ <20210513010238.32466-2-hongzhan.chen@intel.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <ab2507ce-cc32-c85e-2e0a-80d95f2067ce@siemens.com>
+Date: Fri, 14 May 2021 10:55:35 +0200
+In-Reply-To: <20210513010238.32466-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-References: <20210305082208.18335-1-gunter.grau@philips.com>
- <DB7P122MB01061ED94990DB2540D9E54FF2539@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
- <e8746135-50d1-a025-fff0-f6c6e7dd63d6@siemens.com>
- <CALLqZ8RvZm4ncExP6gU+QoV9L9qhwGZroHAsj-SKigrb-=twzQ@mail.gmail.com>
-In-Reply-To: <CALLqZ8RvZm4ncExP6gU+QoV9L9qhwGZroHAsj-SKigrb-=twzQ@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 14 May 2021 00:43:51 -0400
-Message-ID: <CALLqZ8SUiMX3aLqSqb59S3krWjcc0AGk6hX2KmUHw0MhZxbTPQ@mail.gmail.com>
-Subject: Re: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,144 +18,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Grau, Gunter" <gunter.grau@philips.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On Tue, May 11, 2021 at 11:31 AM Greg Gallagher <greg@embeddedgreg.com>
-wrote:
+On 13.05.21 03:02, hongzha1 via Xenomai wrote:
+> To find array of gpiochips for non-OF platform
+> 
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> ---
+>  include/cobalt/kernel/rtdm/gpio.h |  4 ++++
+>  kernel/drivers/gpio/gpio-core.c   | 19 +++++++++++++++++++
+>  2 files changed, 23 insertions(+)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+> index c5fb20f25..99772f558 100644
+> --- a/include/cobalt/kernel/rtdm/gpio.h
+> +++ b/include/cobalt/kernel/rtdm/gpio.h
+> @@ -64,6 +64,10 @@ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+>  int rtdm_gpiochip_find(struct device_node *from,
+>  			  const char *label, int type);
+>  
+> +int rtdm_gpiochip_array_find(struct device_node *from,
+> +				const char *compat[],
+> +				int nentries, int type);
+> +
+>  #ifdef CONFIG_OF
+>  
+>  int rtdm_gpiochip_scan_of(struct device_node *from,
+> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+> index b3d801fa1..20a6d7875 100644
+> --- a/kernel/drivers/gpio/gpio-core.c
+> +++ b/kernel/drivers/gpio/gpio-core.c
+> @@ -543,6 +543,25 @@ int rtdm_gpiochip_find(struct device_node *from, const char *label,
+>  }
+>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
+>  
+> +int rtdm_gpiochip_array_find(struct device_node *from,
+> +				const char *compat[],
+> +				int nentries, int type)
+> +{
+> +	int ret = -ENODEV, _ret, n;
+> +
+> +	for (n = 0; n < nentries; n++) {
+> +		_ret = rtdm_gpiochip_find(from, compat[n], type);
+> +		if (_ret) {
+> +			if (_ret != -ENODEV)
+> +				return _ret;
+> +		} else
+> +			ret = 0;
+> +	}
+> +
+> +	return ret;
+> +}
 
->
->
-> On Tue, May 11, 2021 at 11:25 AM Jan Kiszka <jan.kiszka@siemens.com>
-> wrote:
->
->> On 11.05.21 16:57, Grau, Gunter via Xenomai wrote:
->> >> -----Original Message-----
->> >> From: Gunter Grau <gunter.grau@philips.com>
->> >> Sent: Freitag, 5. M=C3=A4rz 2021 09:22
->> >> To: xenomai@xenomai.org
->> >> Cc: rpm@xenomai.org; Grau, Gunter <gunter.grau@philips.com>
->> >> Subject: [PATCH] ipipe_tsc: Use WRTIE_ONCE for updating last_tsc
->> >>
->> >> The gcc 8.3 compiler generated for the update of the last_tsc
->> >> 8 byte value two store commands (see __ipipe_update_tsc).
->> >>
->> >>         e2500001        subs    r0, r0, #1
->> >>         e5830000        str     r0, [r3]
->> >>         e2c11000        sbc     r1, r1, #0
->> >>         e5831004        str     r1, [r3, #4]
->> >>
->> >> This may lead to wrong reading of the counter in the assembler part
->> >> __ipipe_tsc_get if a CPU core just reads this value when only half of
->> the
->> >> last_tsc field is updated.
->> >>
->> >>         __ipipe_freerunning_32:
->> >>         ldr     r0, .LCfr32_cntr_addr
->> >>         /* User-space entry-point: r0 is the hardware counter virtual
->> address */
->> >>         myldrd  r2, r3, r1, .LCfr32_last_tsc
->> >>         #ifndef CONFIG_CPU_BIG_ENDIAN
->> >>         /* Little endian */
->> >>         ldr     r0, [r0]
->> >>         cmp     r2, r0
->> >>         adc     r1, r3, #0
->> >>
->> >> The issue can be seen when enabling DEBUG_TIMEKEEPING option in the
->> >> kernel and may lead to a jump backwards in time for the monotonic
->> timer in
->> >> Linux.
->> >>
->> >> WARNING: Underflow in clocksource 'ipipe_tsc' observed, time update
->> >> ignored.
->> >>          Please report this, consider using a different clocksource,
->> if possible.
->> >>          Your kernel is probably still fine.
->> >>
->> >> Fix this by using the WRITE_ONCE macro to prevent the compiler from
->> >> tearing the write since this fields are accessed from different CPU
->> cores.
->> >> After this change the resulting assembler is using a double store
->> command,
->> >> which should fix the issue.
->> >>
->> >>         e2506001        subs    r6, r0, #1
->> >>         e2c17000        sbc     r7, r1, #0
->> >>         e1c360f0        strd    r6, [r3]
->> >>
->> >> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
->> >> ---
->> >>  arch/arm/kernel/ipipe_tsc.c | 2 +-
->> >>  1 file changed, 1 insertion(+), 1 deletion(-)
->> >>
->> >> diff --git a/arch/arm/kernel/ipipe_tsc.c b/arch/arm/kernel/ipipe_tsc.=
-c
->> index
->> >> 7e58118254b8..6d9e1cefa964 100644
->> >> --- a/arch/arm/kernel/ipipe_tsc.c
->> >> +++ b/arch/arm/kernel/ipipe_tsc.c
->> >> @@ -199,7 +199,7 @@ void __ipipe_tsc_update(void)
->> >>
->> >>         /* Update last_tsc, in order to remain compatible with legacy
->> >>            user-space 32 bits free-running counter implementation */
->> >> -       ipipe_tsc_value->last_tsc =3D __ipipe_tsc_get() - 1;
->> >> +       WRITE_ONCE(ipipe_tsc_value->last_tsc, __ipipe_tsc_get() - 1);
->> >>  }
->> >>  EXPORT_SYMBOL(__ipipe_tsc_get);
->> >>
->> >> --
->> >> 2.17.1
->> >>
->> >>
->> >
->> > Hi,
->> >
->> > I wanted to ask if someone could have a look on this patch.
->> > I sent 2 patches for the ipipe at this time but did not see any follow
->> ups regarding this.
->> >
->> > The other one was just a goodie I wondered about while investigating
->> this above one.
->> >
->> > This was really a pain and I wanted to save others from having the sam=
-e
->> issues.
->> > The observed issues where haning processes (looping in gettimeofday) o=
-r
->> rcu_stalls on different cores.
->> >
->> > If I see this correct this issue is present in any ipipe patch from
->> xenomai 2.6 to 3.1.  I haven't checked older ones.
->> > If the compiler decides to generate such code (which it is allowed to)
->> you will see sporadic issues of the same type. Not really reproducible.
->> >
->> > So please have a look and take into account to accept this.
->> >
->> > Thanks in advance,
->> > Gunter
->> >
->>
->> Sorry, this may have fallen through the cracks.
->>
->> Greg, did you have a look at this, or is this already in your queue?
->>
->> Jan
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
->
->
-> Sorry, this one is my queue, I=E2=80=99ve tested it and it looks good. I=
-=E2=80=99ll apply
-> it tonight, and get new patches out.
->
-> Thanks
->
-> Greg
->
->>
->> Applied, thanks for the patch.  Sorry it took so long, new patches will
-be pushed out this weekend.
+I'm not sure if I completely understand the code, but maybe it could be
+simplified to:
 
--Greg
+{
+	int ret, n;
+
+	for (n = 0; n < nentries; n++) {
+		ret = rtdm_gpiochip_find(from, compat[n], type);
+
+		if (ret && ret != -ENODEV)
+			break;
+	}
+
+	return ret;
+}
+
+> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
+> +
+>  #ifdef CONFIG_OF
+>  
+>  #include <linux/of_platform.h>
+> 
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
