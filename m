@@ -1,16 +1,21 @@
-Subject: Re: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
- to find array of gpiochips
-References: <20210513010238.32466-1-hongzhan.chen@intel.com>
- <20210513010238.32466-2-hongzhan.chen@intel.com>
- <ab2507ce-cc32-c85e-2e0a-80d95f2067ce@siemens.com>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <2e41efd7-519f-d9c4-feda-8f60fc4ceb1c@siemens.com>
-Date: Fri, 14 May 2021 11:10:35 +0200
-In-Reply-To: <ab2507ce-cc32-c85e-2e0a-80d95f2067ce@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <DM5PR11MB18525F69E34389DE7A8EE49BF2409@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <87mtti3325.fsf@xenomai.org> <87k0om32jb.fsf@xenomai.org>
+ <DM5PR11MB1852E0C420E68BFB8CAFEE21F25F9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB1852D3221BDFC752C9CC1946F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <87bl9w2pkm.fsf@xenomai.org> <875z042odb.fsf@xenomai.org>
+ <DM5PR11MB18527EA509FB99BF50D1ACFFF25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB18529649C47BF241930A2217F25E9@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <8735v82jmd.fsf@xenomai.org>
+ <DM5PR11MB18521837E79C031B621080A8F2589@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <DM5PR11MB1852AB3F24A4FDE042C14E8FF2579@DM5PR11MB1852.namprd11.prod.outlook.com>
+ <87zgx3pzp9.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: gdb  test failure debug status update
+In-reply-to: <87zgx3pzp9.fsf@xenomai.org>
+Date: Sat, 15 May 2021 17:55:46 +0200
+Message-ID: <87fsyoout9.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,104 +24,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.05.21 10:55, Florian Bezdeka via Xenomai wrote:
-> On 13.05.21 03:02, hongzha1 via Xenomai wrote:
->> To find array of gpiochips for non-OF platform
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>
+>>>>
+>>>>>>-----Original Message-----
+>>>>>>From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan via Xenomai
+>>>>>>Sent: Friday, April 30, 2021 4:07 PM
+>>>>>>To: Philippe Gerum <rpm@xenomai.org>
+>>>>>>Cc: xenomai@xenomai.org
+>>>>>>Subject: RE: gdb test failure debug status update
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>>-----Original Message-----
+>>>>>>>From: Philippe Gerum <rpm@xenomai.org> 
+>>>>>>>Sent: Friday, April 30, 2021 4:01 PM
+>>>>>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>>>>>Cc: xenomai@xenomai.org
+>>>>>>>Subject: Re: gdb test failure debug status update
+>>>>>>>
+>>>>>>>
+>>>>>>>Philippe Gerum <rpm@xenomai.org> writes:
+>>>>>>>
+>>>>>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>>>>>>
+>>>>>>>>> The final xnthread_relaxed call path is like this asm_sysv_apic_timer_interrupt ->handle_irq_pipelined_finish 
+>>>>>>>>> ->dovetail_call_mayday ->handle_oob_mayday>xnthread_relax. 
+>>>>>>>>> That means that handle_irq_pipelined_finish is called under OOB condition of arch_pipeline_entry in
+>>>>>>>>>  arch/x86/kernel/irq_pipeline.c.  Does that means that kernel entry/exit code is never called after return from 
+>>>>>>>>> xnthread_relax to handle_irq_pipelined_finish then to asm_sysv_apic_timer_interrupt?  Even I enforce to 
+>>>>>>>>> call  dovetail_request_ucall before calling final xnthread_relax system would not try to switch back to primary mode
+>>>>>>>>> because kernel exit code is never called in this case?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> The IRQ frame is indeed kept from unwinding until the preempted task
+>>>>>>>> context returns from irq_exit_pipeline(), which branches to the Cobalt
+>>>>>>>> rescheduling procedure. From the Dovetail interface POV,
+>>>>>>>> irq_exit_pipeline() is called by handle_irq_pipelined_finish() to allow
+>>>>>>>> the companion core to perform post-IRQ chores, such as running its own
+>>>>>>>> rescheduling procedure.
+>>>>>>>>
+>>>>>>>> IOW, if task @foo is preempted by an IRQ, then suspended in oob context
+>>>>>>>> as a result of what the interrupt handler just did for it (e.g. raising
+>>>>>>>> XNDBGSTOP, XNRELAX, XNPEND, XNSUSP in its state), then
+>>>>>>>> handle_irq_pipelined_finish()->irq_exit_pipeline()->xnsched_run() will
+>>>>>>>> cause the @foo context to switch away, effectively preventing
+>>>>>>>> handle_irq_pipelined_finish() to return, until @foo resumes execution
+>>>>>>> eventually.
+>>>>>
+>>>>> ln handle_irq_pipelined_finish, irq_exit_pipeline would at first  be executed and it 
+>>>>> handle dovetail_call_mayday in the end. But issue happen after run dovetail_call_mayday 
+>>>>> because it call final xnthread_relax before gdb test failue.
+>>>>>
+>>>>
+>>>>Can you add WARN_ON(1) to dovetail_call_mayday() and report about the
+>>>>output? TIA,
+>>>>
+>>>>-- 
+>>>>Philippe.
+>>>>
+>>> 
+>>>Please check following output.
 >>
->> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->> ---
->>  include/cobalt/kernel/rtdm/gpio.h |  4 ++++
->>  kernel/drivers/gpio/gpio-core.c   | 19 +++++++++++++++++++
->>  2 files changed, 23 insertions(+)
+>> Hi Philippe,
 >>
->> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
->> index c5fb20f25..99772f558 100644
->> --- a/include/cobalt/kernel/rtdm/gpio.h
->> +++ b/include/cobalt/kernel/rtdm/gpio.h
->> @@ -64,6 +64,10 @@ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
->>  int rtdm_gpiochip_find(struct device_node *from,
->>  			  const char *label, int type);
->>  
->> +int rtdm_gpiochip_array_find(struct device_node *from,
->> +				const char *compat[],
->> +				int nentries, int type);
->> +
->>  #ifdef CONFIG_OF
->>  
->>  int rtdm_gpiochip_scan_of(struct device_node *from,
->> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
->> index b3d801fa1..20a6d7875 100644
->> --- a/kernel/drivers/gpio/gpio-core.c
->> +++ b/kernel/drivers/gpio/gpio-core.c
->> @@ -543,6 +543,25 @@ int rtdm_gpiochip_find(struct device_node *from, const char *label,
->>  }
->>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
->>  
->> +int rtdm_gpiochip_array_find(struct device_node *from,
->> +				const char *compat[],
->> +				int nentries, int type)
->> +{
->> +	int ret = -ENODEV, _ret, n;
->> +
->> +	for (n = 0; n < nentries; n++) {
->> +		_ret = rtdm_gpiochip_find(from, compat[n], type);
->> +		if (_ret) {
->> +			if (_ret != -ENODEV)
->> +				return _ret;
->> +		} else
->> +			ret = 0;
->> +	}
->> +
->> +	return ret;
->> +}
-> 
-> I'm not sure if I completely understand the code, but maybe it could be
-> simplified to:
-> 
-> {
-> 	int ret, n;
-> 
-> 	for (n = 0; n < nentries; n++) {
-> 		ret = rtdm_gpiochip_find(from, compat[n], type);
-> 
-> 		if (ret && ret != -ENODEV)
-> 			break;
-> 	}
-> 
-> 	return ret;
-> }
-
-v2:
-{
-	int ret, n;
-
-	for (n = 0; n < nentries; n++) {
-		ret = rtdm_gpiochip_find(from, compat[n], type);
-
-		if (ret && ret != -ENODEV)
-			break;
-
-		// Should we stop on first -ENODEV?
-		if (ret && ret == -ENODEV)
-			ret = 0;
-	}
-
-	return ret;
-}
-> 
->> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
->> +
->>  #ifdef CONFIG_OF
->>  
->>  #include <linux/of_platform.h>
+>> Please let me know if you have new patch or other thing to let me try.
 >>
-> 
-> 
+>
+> I spent hours of this issue, and there may be a wrong basic assumption
+> done in the smokey/gdb test. Specifically, handle_sigwake_event()
+> un-stops the debuggee (lifting XNDBGSTOP), then sends a mayday notice to
+> make sure that debuggee re-enters the kernel asap for leaving the oob
+> stage. What might happen between these two events might not be as
+> well-defined as this test expects (e.g. what if the debugger might be
+> able to run more user code before the mayday trap is enforced?).
+>
+> I'll keep on debugging that stuff and let you know.
 
+This one was nailed down eventually. As you found out, the "retuser"
+event was missed and left pending. This could happen when a task resumes
+to user, unwinding an IRQ frame, while being demoted from oob to in-band
+context in the process.
+
+This is typically the case of the gdb test:
+
+[hi-pri-task]
+        (...timed sleep...)
+[lo-spin-task]
+        (...spinning...)
+        TIMER-IRQENTRY
+                (wakeup hi-pri-task)
+[hi-pri-task]
+        (breakpoint)
+[gdb]
+        tkill(lo-spin-task, SIGTRAP)
+                  handle_sigwake_event(lo-spin-task)
+                        notify_mayday(lo-spin-task)
+[lo-spin-task]
+        handle_mayday_event(lo-spin-task)
+                switch_inband()
+        TIMER-IRQEXIT
+                ** missing check for pending _TIF_WORK|_TIF_RETUSER **
+
+Which explains why lo-spin-task could run un-preempted by hi-pri-task
+for a while, until the Cobalt core hits a rescheduling point eventually.
+Only x86 is affected, ARM and arm64 have a different way out of IRQ
+context which does not exhibit such issue.
+
+This bug is now fixed by [1] for v5.10-dovetail. As I was at it, I added
+a missing u-call request to the leave_oob helper.
+
+Thanks for your help in digging into this.
+
+[1] https://git.evlproject.org/linux-evl.git/commit/?h=dovetail/v5.10&id=cfcab38909d870d1ef484cd401fa00e52e86a8d0
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
