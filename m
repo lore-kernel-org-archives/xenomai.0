@@ -1,10 +1,11 @@
+References: <CAK6DXL3JYzvoz9tnMQJ+FBqUarS7DNh_06oLzfBoSF5gQBYNXw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Feedback on sched_quota modification
+In-reply-to: <CAK6DXL3JYzvoz9tnMQJ+FBqUarS7DNh_06oLzfBoSF5gQBYNXw@mail.gmail.com>
+Date: Sun, 16 May 2021 16:01:13 +0200
+Message-ID: <87fsymok0m.fsf@xenomai.org>
 MIME-Version: 1.0
-From: Marco Barletta <barlettamarco8@gmail.com>
-Date: Sun, 16 May 2021 13:11:02 +0200
-Message-ID: <CAK6DXL3JYzvoz9tnMQJ+FBqUarS7DNh_06oLzfBoSF5gQBYNXw@mail.gmail.com>
-Subject: Feedback on sched_quota modification
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +14,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Marco Barletta <barlettamarco8@gmail.com>
+Cc: xenomai@xenomai.org
 
-SGkgZXZlcnlvbmU7CnlvdSBjYW4gZmluZCBhdHRhY2hlZCB0aGUgbW9kaWZpY2F0aW9uIEkgbWFk
-ZSB0byBzY2hlZF9xdW90YSBpbiBvcmRlciB0bwpoYXZlIGEgaGllcmFyY2hpY2FsIHNjaGVkdWxl
-ci4gQWN0dWFsbHkgb3JpZ2luYWwgc2NoZWRfcXVvdGEgd2Fzbid0IHRydWx5CmhpZXJhcmNoaWNh
-bCBzaW5jZSB3aGVuIGEgZ3JvdXAgZXhwaXJlcyBhbmQgaGFzIGEgbG90IG9mIHRocmVhZCByZWFk
-eSB0bwpydW4sIGl0IGNvbnNpZGVycyBvbmUgYnkgb25lIHRocmVhZHMgYW5kIG9uIHRoZSBnbyBm
-bHVzaGVzIHRoZW0gdG8gdGhlCmV4cGlyZWQgbGlzdC4gSW4gdGhpcyB0aGVyZSdzIGEgcHJvYmxl
-bSBzaW5jZSB0aGlzIG9wZXJhdGlvbiBjb3VsZCBub3QgYmUKYm91bmRlZCBpbiB0aW1lIHNpbmNl
-IGl0J3MgTyhuKSBhbmQgY291bGQgYmUgbmFzdHkgZm9yIHRoZW9yZXRpY2FsIGFuYWx5c2lzCmlu
-IGhhcmQtcmVhbC10aW1lIHN5c3RlbXMuCklmIHlvdSBhcmUgaW50ZXJlc3RlZCBpbiBzdWNoIG1v
-ZGlmaWNhdGlvbiBpbiBvcmRlciB0byBhZGQgaXQgYXMgYSBzY2hlZAptb2RpZmljYXRpb24gb3Ig
-dG8gYWRkIGl0IGFzIGEgbmV3IHNjaGVkdWxlciwgSSdkIGJlIGRlbGlnaHRlZCB0byBoYXZlIGEK
-ZmVlZGJhY2sgZnJvbSB5b3UuCkkgaGFkIHNvbWUgcHJvYmxlbXMgdG8gaGFuZGxlIGtpY2sgZnVu
-Y3Rpb24gYmVjYXVzZSBvZiB0aGUgZG91YmxlIHJ1bm5hYmxlCnF1ZXVlLiBNb3Jlb3ZlciBJIHdh
-bnQgdG8gc3BlY2lmeSB0aGF0IEkgY2hvb3NlIHRvIGltcGxlbWVudCB0aGUgcnVubmFibGUKbGlz
-dCBvZiBncm91cHMgd2l0aCBhIGxpbmtlZCBsaXN0IGFuZCBub3QgeG5zY2hlZF9xdWV1ZV90IHNp
-bmNlIHdlIGV4cGVjdApqdXN0IGEgZmV3IGdvdXBzIGFuZCBhbnl3YXkgdGhlaXIgbnVtYmVyIGlz
-IGJvdW5kZWQgYnkgY29tcGlsZSB0aW1lIG1hY3JvLApzbyBpcyBzdGlsbCBPKDEpLgpCZXN0IHJl
-Z2FyZHMuCgotLSAKTWFyY28gQmFybGV0dGEKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogcXVv
-dGEucGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDEyOTk2IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMjEwNTE2L2RjMTE0OTA1L2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBtb2RpZmllZC56aXAKVHlwZTogYXBwbGljYXRpb24vemlwClNpemU6IDIwMzQw
-IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNTE2L2RjMTE0OTA1L2F0dGFjaG1lbnQuemlw
-Pgo=
+
+Hi,
+
+Marco Barletta via Xenomai <xenomai@xenomai.org> writes:
+
+> Hi everyone;
+> you can find attached the modification I made to sched_quota in order to
+> have a hierarchical scheduler. Actually original sched_quota wasn't truly
+> hierarchical since when a group expires and has a lot of thread ready to
+> run, it considers one by one threads and on the go flushes them to the
+> expired list. In this there's a problem since this operation could not be
+> bounded in time since it's O(n) and could be nasty for theoretical analysis
+> in hard-real-time systems.
+> If you are interested in such modification in order to add it as a sched
+> modification or to add it as a new scheduler, I'd be delighted to have a
+> feedback from you.
+> I had some problems to handle kick function because of the double runnable
+> queue. Moreover I want to specify that I choose to implement the runnable
+> list of groups with a linked list and not xnsched_queue_t since we expect
+> just a few goups and anyway their number is bounded by compile time macro,
+> so is still O(1).
+> Best regards.
+
+Introducing a dedicated SCHED_QUOTA runqueue instead of piggybacking on
+the SCHED_FIFO class simplifies some portions of the code elegantly and
+indeed solves the O(N) issue upon re-arming threads from groups which
+have their runtime budget replenished.
+
+However this also introduces a significant change to SCHED_QUOTA: a new
+group priority property needs to be defined, for ordering groups in the
+per-CPU runqueue for the quota policy if I got that correctly. Threads
+are then picked by group priority, then thread priority within that
+group, instead of competing solely on thread priority globally. I guess
+this denotes the hierarchical view you mentioned. In other words, this
+is no more SCHED_QUOTA as we currently define its behavior.
+
+A couple of nitpicks now:
+
+- it seems that any new active group would have to wait for the next
+  replenishment tick to happen via quota_refill_handler(), where it can
+  be queued as runnable into the per-CPU runqueue. Practically this
+  might not make much of a difference, but in theory, this might cause
+  some unexpected delay before its thread can be scheduled.
+
+- we tend to assume that list_get_*() means 'consume the item at head',
+  meaning the item is unlinked from the list if present then returned to
+  the caller. So list_get_entry_group() may be confusing with that in
+  mind, list_first_entry_group() would better describe what this does if
+  we were to follow the common convention.
+
+- the handling of kicked threads must be restored at some point,
+  otherwise this scheduling policy could cause soft hangs in some
+  runtime situations. This said, this is clearly not a fundamental issue
+  wrt mere scheduling.
+
+- C-style comments, English only. Generally speaking, we follow the
+  kernel coding style
+  (https://www.kernel.org/doc/html/latest/process/coding-style.html),
+  some fixes here and there may be due in this dept.
+
+PS: please post your patches inline instead of attached, this is easier
+for commenting on them.
+
+-- 
+Philippe.
+
