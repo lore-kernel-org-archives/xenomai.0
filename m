@@ -1,16 +1,12 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
- to find array of gpiochips
-Date: Mon, 17 May 2021 01:15:35 +0000
-Message-ID: <BN9PR11MB5227D0F0CA0B6FFD9DA2D54FF22D9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210513010238.32466-1-hongzhan.chen@intel.com>
- <20210513010238.32466-2-hongzhan.chen@intel.com>
- <ab2507ce-cc32-c85e-2e0a-80d95f2067ce@siemens.com>
- <2e41efd7-519f-d9c4-feda-8f60fc4ceb1c@siemens.com>
-In-Reply-To: <2e41efd7-519f-d9c4-feda-8f60fc4ceb1c@siemens.com>
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: RE: gdb and loading a realtime library with dlopen()
+Date: Mon, 17 May 2021 09:38:10 +0000
+Message-ID: <DB7P122MB01063FBEA7EF5B151713DA2BF22D9@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
+References: <DB7P122MB010621AE2B56C8BAA64C8346F2529@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
+In-Reply-To: <DB7P122MB010621AE2B56C8BAA64C8346F2529@DB7P122MB0106.EURP122.PROD.OUTLOOK.COM>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,111 +16,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBGbG9yaWFuIEJlemRla2Eg
-PGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4gDQo+U2VudDogRnJpZGF5LCBNYXkgMTQsIDIw
-MjEgNToxMSBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+
-OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtmb3ItdXBzdHJlYW0vZG92ZXRh
-aWwgMS8yXSBkcml2ZXJzL2dwaW86IGNvcmU6IGludHJvZHVjZSBoZWxwZXIgdG8gZmluZCBhcnJh
-eSBvZiBncGlvY2hpcHMNCj4NCj5PbiAxNC4wNS4yMSAxMDo1NSwgRmxvcmlhbiBCZXpkZWthIHZp
-YSBYZW5vbWFpIHdyb3RlOg0KPj4gT24gMTMuMDUuMjEgMDM6MDIsIGhvbmd6aGExIHZpYSBYZW5v
-bWFpIHdyb3RlOg0KPj4+IFRvIGZpbmQgYXJyYXkgb2YgZ3Bpb2NoaXBzIGZvciBub24tT0YgcGxh
-dGZvcm0NCj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGlu
-dGVsLmNvbT4NCj4+PiAtLS0NCj4+PiAgaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0vZ3Bpby5o
-IHwgIDQgKysrKw0KPj4+ICBrZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jICAgfCAxOSAr
-KysrKysrKysrKysrKysrKysrDQo+Pj4gIDIgZmlsZXMgY2hhbmdlZCwgMjMgaW5zZXJ0aW9ucygr
-KQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL2dwaW8u
-aCBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL2dwaW8uaA0KPj4+IGluZGV4IGM1ZmIyMGYy
-NS4uOTk3NzJmNTU4IDEwMDY0NA0KPj4+IC0tLSBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRt
-L2dwaW8uaA0KPj4+ICsrKyBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL2dwaW8uaA0KPj4+
-IEBAIC02NCw2ICs2NCwxMCBAQCBpbnQgcnRkbV9ncGlvY2hpcF9wb3N0X2V2ZW50KHN0cnVjdCBy
-dGRtX2dwaW9fY2hpcCAqcmdjLA0KPj4+ICBpbnQgcnRkbV9ncGlvY2hpcF9maW5kKHN0cnVjdCBk
-ZXZpY2Vfbm9kZSAqZnJvbSwNCj4+PiAgCQkJICBjb25zdCBjaGFyICpsYWJlbCwgaW50IHR5cGUp
-Ow0KPj4+ICANCj4+PiAraW50IHJ0ZG1fZ3Bpb2NoaXBfYXJyYXlfZmluZChzdHJ1Y3QgZGV2aWNl
-X25vZGUgKmZyb20sDQo+Pj4gKwkJCQljb25zdCBjaGFyICpjb21wYXRbXSwNCj4+PiArCQkJCWlu
-dCBuZW50cmllcywgaW50IHR5cGUpOw0KPj4+ICsNCj4+PiAgI2lmZGVmIENPTkZJR19PRg0KPj4+
-ICANCj4+PiAgaW50IHJ0ZG1fZ3Bpb2NoaXBfc2Nhbl9vZihzdHJ1Y3QgZGV2aWNlX25vZGUgKmZy
-b20sDQo+Pj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL2dwaW8vZ3Bpby1jb3JlLmMgYi9r
-ZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jDQo+Pj4gaW5kZXggYjNkODAxZmExLi4yMGE2
-ZDc4NzUgMTAwNjQ0DQo+Pj4gLS0tIGEva2VybmVsL2RyaXZlcnMvZ3Bpby9ncGlvLWNvcmUuYw0K
-Pj4+ICsrKyBiL2tlcm5lbC9kcml2ZXJzL2dwaW8vZ3Bpby1jb3JlLmMNCj4+PiBAQCAtNTQzLDYg
-KzU0MywyNSBAQCBpbnQgcnRkbV9ncGlvY2hpcF9maW5kKHN0cnVjdCBkZXZpY2Vfbm9kZSAqZnJv
-bSwgY29uc3QgY2hhciAqbGFiZWwsDQo+Pj4gIH0NCj4+PiAgRVhQT1JUX1NZTUJPTF9HUEwocnRk
-bV9ncGlvY2hpcF9maW5kKTsNCj4+PiAgDQo+Pj4gK2ludCBydGRtX2dwaW9jaGlwX2FycmF5X2Zp
-bmQoc3RydWN0IGRldmljZV9ub2RlICpmcm9tLA0KPj4+ICsJCQkJY29uc3QgY2hhciAqY29tcGF0
-W10sDQo+Pj4gKwkJCQlpbnQgbmVudHJpZXMsIGludCB0eXBlKQ0KPj4+ICt7DQo+Pj4gKwlpbnQg
-cmV0ID0gLUVOT0RFViwgX3JldCwgbjsNCj4+PiArDQo+Pj4gKwlmb3IgKG4gPSAwOyBuIDwgbmVu
-dHJpZXM7IG4rKykgew0KPj4+ICsJCV9yZXQgPSBydGRtX2dwaW9jaGlwX2ZpbmQoZnJvbSwgY29t
-cGF0W25dLCB0eXBlKTsNCj4+PiArCQlpZiAoX3JldCkgew0KPj4+ICsJCQlpZiAoX3JldCAhPSAt
-RU5PREVWKQ0KPj4+ICsJCQkJcmV0dXJuIF9yZXQ7DQo+Pj4gKwkJfSBlbHNlDQo+Pj4gKwkJCXJl
-dCA9IDA7DQo+Pj4gKwl9DQo+Pj4gKw0KPj4+ICsJcmV0dXJuIHJldDsNCj4+PiArfQ0KPj4gDQo+
-PiBJJ20gbm90IHN1cmUgaWYgSSBjb21wbGV0ZWx5IHVuZGVyc3RhbmQgdGhlIGNvZGUsIGJ1dCBt
-YXliZSBpdCBjb3VsZCBiZQ0KPj4gc2ltcGxpZmllZCB0bzoNCj4+IA0KPj4gew0KPj4gCWludCBy
-ZXQsIG47DQo+PiANCj4+IAlmb3IgKG4gPSAwOyBuIDwgbmVudHJpZXM7IG4rKykgew0KPiAJCXJl
-dCA9IHJ0ZG1fZ3Bpb2NoaXBfZmluZChmcm9tLCBjb21wYXRbbl0sIHR5cGUpOw0KPiANCj4gCQlp
-ZiAocmV0ICYmIHJldCAhPSAtRU5PREVWKQ0KPiAJCQlicmVhazsNCj4gCX0NCj4gDQo+IAlyZXR1
-cm4gcmV0Ow0KPiB9DQo+DQo+djI6DQo+ew0KPglpbnQgcmV0LCBuOw0KPg0KPglmb3IgKG4gPSAw
-OyBuIDwgbmVudHJpZXM7IG4rKykgew0KPgkJcmV0ID0gcnRkbV9ncGlvY2hpcF9maW5kKGZyb20s
-IGNvbXBhdFtuXSwgdHlwZSk7DQo+DQo+CQlpZiAocmV0ICYmIHJldCAhPSAtRU5PREVWKQ0KPgkJ
-CWJyZWFrOw0KPg0KPgkJLy8gU2hvdWxkIHdlIHN0b3Agb24gZmlyc3QgLUVOT0RFVj8NCj4JCWlm
-IChyZXQgJiYgcmV0ID09IC1FTk9ERVYpDQo+CQkJcmV0ID0gMDsNCg0KVGhhbmtzIGZvciB5b3Vy
-IGFkdmljZXMuIA0KDQpUaGUgY29kZSBhY3R1YWxseSBpcyByZWZlcnJpbmcgdG8gcnRkbV9ncGlv
-Y2hpcF9zY2FuX2FycmF5X29mIGZ1bmN0aW9uIHRvdGFsbHkgYnV0IHdlIGhhdmUgdG8gaW1wbGVt
-ZW50IGhlbHBlciBmb3IgDQpOb24tb2YgcGxhdGZvcm0gdG8gZmluZCBncGlvY2hpcCB3aXRoIHNj
-YW5uaW5nIHdob2xlIGFycmF5LiAgDQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0KDQo+CX0N
-Cj4NCj4JcmV0dXJuIHJldDsNCj59DQo+PiANCj4+PiArRVhQT1JUX1NZTUJPTF9HUEwocnRkbV9n
-cGlvY2hpcF9hcnJheV9maW5kKTsNCj4+PiArDQo+Pj4gICNpZmRlZiBDT05GSUdfT0YNCj4+PiAg
-DQo+Pj4gICNpbmNsdWRlIDxsaW51eC9vZl9wbGF0Zm9ybS5oPg0KPj4+DQo+PiANCj4+IA0KPg0K
-Pg0KPi0tIA0KPlNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENl
-bnRlciBFbWJlZGRlZCBMaW51eA0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTog
-RmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IA0KU2VudDogRnJp
-ZGF5LCBNYXkgMTQsIDIwMjEgNToxMSBQTQ0KVG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5j
-aGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbZm9yLXVw
-c3RyZWFtL2RvdmV0YWlsIDEvMl0gZHJpdmVycy9ncGlvOiBjb3JlOiBpbnRyb2R1Y2UgaGVscGVy
-IHRvIGZpbmQgYXJyYXkgb2YgZ3Bpb2NoaXBzDQoNCk9uIDE0LjA1LjIxIDEwOjU1LCBGbG9yaWFu
-IEJlemRla2EgdmlhIFhlbm9tYWkgd3JvdGU6DQo+IE9uIDEzLjA1LjIxIDAzOjAyLCBob25nemhh
-MSB2aWEgWGVub21haSB3cm90ZToNCj4+IFRvIGZpbmQgYXJyYXkgb2YgZ3Bpb2NoaXBzIGZvciBu
-b24tT0YgcGxhdGZvcm0NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBob25nemhhMSA8aG9uZ3poYW4u
-Y2hlbkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9n
-cGlvLmggfCAgNCArKysrDQo+PiAga2VybmVsL2RyaXZlcnMvZ3Bpby9ncGlvLWNvcmUuYyAgIHwg
-MTkgKysrKysrKysrKysrKysrKysrKw0KPj4gIDIgZmlsZXMgY2hhbmdlZCwgMjMgaW5zZXJ0aW9u
-cygrKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlv
-LmggYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IGluZGV4IGM1ZmIyMGYy
-NS4uOTk3NzJmNTU4IDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0v
-Z3Bpby5oDQo+PiArKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IEBA
-IC02NCw2ICs2NCwxMCBAQCBpbnQgcnRkbV9ncGlvY2hpcF9wb3N0X2V2ZW50KHN0cnVjdCBydGRt
-X2dwaW9fY2hpcCAqcmdjLA0KPj4gIGludCBydGRtX2dwaW9jaGlwX2ZpbmQoc3RydWN0IGRldmlj
-ZV9ub2RlICpmcm9tLA0KPj4gIAkJCSAgY29uc3QgY2hhciAqbGFiZWwsIGludCB0eXBlKTsNCj4+
-ICANCj4+ICtpbnQgcnRkbV9ncGlvY2hpcF9hcnJheV9maW5kKHN0cnVjdCBkZXZpY2Vfbm9kZSAq
-ZnJvbSwNCj4+ICsJCQkJY29uc3QgY2hhciAqY29tcGF0W10sDQo+PiArCQkJCWludCBuZW50cmll
-cywgaW50IHR5cGUpOw0KPj4gKw0KPj4gICNpZmRlZiBDT05GSUdfT0YNCj4+ICANCj4+ICBpbnQg
-cnRkbV9ncGlvY2hpcF9zY2FuX29mKHN0cnVjdCBkZXZpY2Vfbm9kZSAqZnJvbSwNCj4+IGRpZmYg
-LS1naXQgYS9rZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jIGIva2VybmVsL2RyaXZlcnMv
-Z3Bpby9ncGlvLWNvcmUuYw0KPj4gaW5kZXggYjNkODAxZmExLi4yMGE2ZDc4NzUgMTAwNjQ0DQo+
-PiAtLS0gYS9rZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jDQo+PiArKysgYi9rZXJuZWwv
-ZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jDQo+PiBAQCAtNTQzLDYgKzU0MywyNSBAQCBpbnQgcnRk
-bV9ncGlvY2hpcF9maW5kKHN0cnVjdCBkZXZpY2Vfbm9kZSAqZnJvbSwgY29uc3QgY2hhciAqbGFi
-ZWwsDQo+PiAgfQ0KPj4gIEVYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fZ3Bpb2NoaXBfZmluZCk7DQo+
-PiAgDQo+PiAraW50IHJ0ZG1fZ3Bpb2NoaXBfYXJyYXlfZmluZChzdHJ1Y3QgZGV2aWNlX25vZGUg
-KmZyb20sDQo+PiArCQkJCWNvbnN0IGNoYXIgKmNvbXBhdFtdLA0KPj4gKwkJCQlpbnQgbmVudHJp
-ZXMsIGludCB0eXBlKQ0KPj4gK3sNCj4+ICsJaW50IHJldCA9IC1FTk9ERVYsIF9yZXQsIG47DQo+
-PiArDQo+PiArCWZvciAobiA9IDA7IG4gPCBuZW50cmllczsgbisrKSB7DQo+PiArCQlfcmV0ID0g
-cnRkbV9ncGlvY2hpcF9maW5kKGZyb20sIGNvbXBhdFtuXSwgdHlwZSk7DQo+PiArCQlpZiAoX3Jl
-dCkgew0KPj4gKwkJCWlmIChfcmV0ICE9IC1FTk9ERVYpDQo+PiArCQkJCXJldHVybiBfcmV0Ow0K
-Pj4gKwkJfSBlbHNlDQo+PiArCQkJcmV0ID0gMDsNCj4+ICsJfQ0KPj4gKw0KPj4gKwlyZXR1cm4g
-cmV0Ow0KPj4gK30NCj4gDQo+IEknbSBub3Qgc3VyZSBpZiBJIGNvbXBsZXRlbHkgdW5kZXJzdGFu
-ZCB0aGUgY29kZSwgYnV0IG1heWJlIGl0IGNvdWxkIGJlDQo+IHNpbXBsaWZpZWQgdG86DQo+IA0K
-PiB7DQo+IAlpbnQgcmV0LCBuOw0KPiANCj4gCWZvciAobiA9IDA7IG4gPCBuZW50cmllczsgbisr
-KSB7DQo+IAkJcmV0ID0gcnRkbV9ncGlvY2hpcF9maW5kKGZyb20sIGNvbXBhdFtuXSwgdHlwZSk7
-DQo+IA0KPiAJCWlmIChyZXQgJiYgcmV0ICE9IC1FTk9ERVYpDQo+IAkJCWJyZWFrOw0KPiAJfQ0K
-PiANCj4gCXJldHVybiByZXQ7DQo+IH0NCg0KdjI6DQp7DQoJaW50IHJldCwgbjsNCg0KCWZvciAo
-biA9IDA7IG4gPCBuZW50cmllczsgbisrKSB7DQoJCXJldCA9IHJ0ZG1fZ3Bpb2NoaXBfZmluZChm
-cm9tLCBjb21wYXRbbl0sIHR5cGUpOw0KDQoJCWlmIChyZXQgJiYgcmV0ICE9IC1FTk9ERVYpDQoJ
-CQlicmVhazsNCg0KCQkvLyBTaG91bGQgd2Ugc3RvcCBvbiBmaXJzdCAtRU5PREVWPw0KCQlpZiAo
-cmV0ICYmIHJldCA9PSAtRU5PREVWKQ0KCQkJcmV0ID0gMDsNCgl9DQoNCglyZXR1cm4gcmV0Ow0K
-fQ0KPiANCj4+ICtFWFBPUlRfU1lNQk9MX0dQTChydGRtX2dwaW9jaGlwX2FycmF5X2ZpbmQpOw0K
-Pj4gKw0KPj4gICNpZmRlZiBDT05GSUdfT0YNCj4+ICANCj4+ICAjaW5jbHVkZSA8bGludXgvb2Zf
-cGxhdGZvcm0uaD4NCj4+DQo+IA0KPiANCg0KDQotLSANClNpZW1lbnMgQUcsIFQgUkRBIElPVA0K
-Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+
+
+> -----Original Message-----
+> From: Grau, Gunter
+> Sent: Mittwoch, 12. Mai 2021 08:32
+> To: xenomai@xenomai.org
+> Subject: gdb and loading a realtime library with dlopen()
+>
+> Hi,
+>
+> We currently porting a Xenomai application from 2.6 to 3.1. The platform =
+is
+> arm. The hardware is imx6.
+> We are using xenomai 3.1.x branch on git.
+>
+> The application startup is done by a "loader" which is not linked with
+> Xenomai, but it loads a shared library which contains the Xenomai realtim=
+e
+> part.
+> Because of this, the Xenomai userspace is configured with --enable-dlopen=
+-
+> libs.
+> The complete configuration line is:
+> ../configure --host=3Darm-linux-gnueabi --enable-smp --build=3Di686-pc-li=
+nux-
+> gnu --prefix=3D/usr/xenomai --enable-dlopen-libs --enable-async-cancel
+>
+> Since the realtime part uses posix skin and alchemy (was native) skin as =
+well,
+> we enable both. Also auto-init-solib.
+> xeno-config --rtdm --skin posix --skin alchemy --auto-init-solib --ldflag=
+s
+>
+> When we start the loader / application via command line everything works
+> fine. The dlopen call is successful and we can jump into the library usin=
+g
+> dlsym() for symbol lookup.
+>
+> But when we try to start the same application in gdb, the application han=
+gs
+> on dlopen(). Gdb backtrace look like it is waiting vor a mutex in the hea=
+p init
+> part of xenomai.
+> I  wrote a short test loader and library (attached). The same happens her=
+e.
+> You can find the backtrace below. Gdb revision is 8.2.1.
+>
+> Any hints, what may be wrong?
+>
+> Thanks in advance,
+> Gunter
+>
+>
+[...]
+>
+
+Hi,
+
+Since Jan asked me, but it was not CC on the mailing list.
+This also happens to me with the dlopen test in smokey. So there is no need=
+ to use my example code:
+
+root@xxxxx:~/smokey/dlopen# gdb ./dlopentest GNU gdb (GDB) 8.2.1 Copyright =
+(C) 2018 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.htm=
+l>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "arm-poky-linux-gnueabi".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./dlopentest...done.
+(gdb) run
+Starting program: /home/root/smokey/dlopen/dlopentest
+warning: Unable to find libthread_db matching inferior's thread library, th=
+read debugging will not be available.
+[New LWP 4050]
+
+Thread 1 "dlopentest" received signal SIGINT, Interrupt.
+0x76e47360 in __cobalt_pthread_mutex_lock (mutex=3Dmutex@entry=3D0x76e07410=
+ <heapmem_main>) at ../../../lib/cobalt/mutex.c:375
+375     ../../../lib/cobalt/mutex.c: No such file or directory.
+(gdb) backtrace
+#0  0x76e47360 in __cobalt_pthread_mutex_lock (mutex=3Dmutex@entry=3D0x76e0=
+7410 <heapmem_main>) at ../../../lib/cobalt/mutex.c:375
+#1  0x76e4d8e8 in add_extent (heap=3Dheap@entry=3D0x76e07410 <heapmem_main>=
+, mem=3Dmem@entry=3D0x762f3008, size=3Dsize@entry=3D2146400) at ../../../li=
+b/boilerplate/heapmem.c:679
+#2  0x76e4dec4 in heapmem_init (heap=3D0x76e07410 <heapmem_main>, mem=3Dmem=
+@entry=3D0x762f3008, size=3Dsize@entry=3D2146400) at ../../../lib/boilerpla=
+te/heapmem.c:711
+#3  0x76df625c in heapobj_pkg_init_private () at ../../../lib/copperplate/h=
+eapobj-heapmem.c:111
+#4  0x76df2b08 in copperplate_init () at ../../../lib/copperplate/init.c:20=
+4
+#5  0x76e4ee18 in __xenomai_init (argcp=3Dargcp@entry=3D0x7effe624, argvp=
+=3Dargvp@entry=3D0x7effe628, me=3D0x54abe2a0 "\230\336\253T") at ../../../l=
+ib/boilerplate/setup.c:631
+#6  0x76e4f390 in xenomai_init_dso (argcp=3Dargcp@entry=3D0x7effe624, argvp=
+=3Dargvp@entry=3D0x7effe628) at ../../../lib/boilerplate/setup.c:693
+#7  0x76e68738 in call_init (argvp=3D0x7effe628, argcp=3D0x7effe624) at ../=
+../../../lib/boilerplate/init/bootstrap.c:169
+#8  xenomai_bootstrap () at ../../../../lib/boilerplate/init/bootstrap.c:16=
+9
+#9  0x76fddc1c in call_init (l=3D<optimized out>, argc=3Dargc@entry=3D1, ar=
+gv=3Dargv@entry=3D0x7efffca4, env=3Denv@entry=3D0x7efffcac) at dl-init.c:72
+#10 0x76fddd20 in call_init (env=3D<optimized out>, argv=3D<optimized out>,=
+ argc=3D<optimized out>, l=3D<optimized out>) at dl-init.c:30
+#11 _dl_init (main_map=3Dmain_map@entry=3D0x54abc1b8, argc=3D1, argv=3D0x7e=
+fffca4, env=3D0x7efffcac) at dl-init.c:119
+#12 0x76fe1bd8 in dl_open_worker (a=3D<optimized out>) at dl-open.c:506
+#13 0x76f85c5c in __GI__dl_catch_exception (exception=3D0x76f85c5c <__GI__d=
+l_catch_exception+96>, operate=3D0x7effe930, args=3D0x7effe8ac) at dl-error=
+-skeleton.c:196
+#14 0x76fe1460 in _dl_open (file=3D0x7effeb28 "/usr/xenomai3/bin/libalchemy=
+-test.so", mode=3D-2147483391, caller_dlopen=3D0x54aaa7cc <my_dlopen+92>, n=
+sid=3D-2, argc=3D1, argv=3D0x7efffca4, env=3D0x7efffcac) at dl-open.c:588
+#15 0x76fbbcdc in dlopen_doit (a=3D0x7effeb08) at dlopen.c:66
+#16 0x76f85c5c in __GI__dl_catch_exception (exception=3D0x76f85c5c <__GI__d=
+l_catch_exception+96>, exception@entry=3D0x7effeac4, operate=3D0x0, args=3D=
+0x7effeacc, args@entry=3D0x76fbbc60 <dlopen_doit>) at dl-error-skeleton.c:1=
+96
+#17 0x76f85cd8 in __GI__dl_catch_error (objname=3D0x76fcd018 <last_result+1=
+2>, errstring=3D0x76fcd01c <last_result+16>, mallocedp=3D0x76fcd014 <last_r=
+esult+8>, operate=3D<optimized out>, args=3D0x7effeb08) at dl-error-skeleto=
+n.c:215
+#18 0x76fbc4c0 in _dlerror_run (operate=3D0x76fbbc60 <dlopen_doit>, args=3D=
+args@entry=3D0x7effeb08) at dlerror.c:163
+#19 0x76fbbd88 in __dlopen (file=3D0x7effeb28 "/usr/xenomai3/bin/libalchemy=
+-test.so", mode=3D<optimized out>) at dlopen.c:87
+#20 0x54aaa7cc in my_dlopen (name=3D<optimized out>) at ../../../../testsui=
+te/smokey/dlopen/dlopentest.c:44
+#21 0x54aaa808 in my_dlcall (lname=3D<optimized out>, fname=3D0x54aaa8e4 "l=
+ibalchemy_func", handle=3D0x7efffb40) at ../../../../testsuite/smokey/dlope=
+n/dlopentest.c:56
+#22 0x54aaa55c in main (argc=3D<optimized out>, argv=3D<optimized out>) at =
+../../../../testsuite/smokey/dlopen/dlopentest.c:70
+
+________________________________
+The information contained in this message may be confidential and legally p=
+rotected under applicable law. The message is intended solely for the addre=
+ssee(s). If you are not the intended recipient, you are hereby notified tha=
+t any use, forwarding, dissemination, or reproduction of this message is st=
+rictly prohibited and may be unlawful. If you are not the intended recipien=
+t, please contact the sender by return e-mail and destroy all copies of the=
+ original message.
 
