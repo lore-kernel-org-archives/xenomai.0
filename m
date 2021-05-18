@@ -1,13 +1,15 @@
+Subject: Re: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
+ to find array of gpiochips
+References: <20210513010238.32466-1-hongzhan.chen@intel.com>
+ <20210513010238.32466-2-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9f1b8c2a-20b7-8353-9b79-bff26d79d71c@siemens.com>
+Date: Tue, 18 May 2021 23:25:05 +0200
 MIME-Version: 1.0
-References: <CALLqZ8SWfJqE64RfNfK-OXcj0mdWnU+5tTT9ABmMa-rz9QHZnA@mail.gmail.com>
- <82f01d0d-360b-0016-9aec-24ef5b1a8d6b@siemens.com>
-In-Reply-To: <82f01d0d-360b-0016-9aec-24ef5b1a8d6b@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 18 May 2021 15:06:52 -0400
-Message-ID: <CALLqZ8R=tb5h7rkqnV9WYJZWSY2xMNRtdWZhzR1oCmkjJs0YQA@mail.gmail.com>
-Subject: Re: arm/arm64 ipipe performance
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210513010238.32466-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On Tue, May 18, 2021 at 2:49 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On 13.05.21 03:02, hongzha1 via Xenomai wrote:
+> To find array of gpiochips for non-OF platform
+> 
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-> On 18.05.21 20:28, Greg Gallagher via Xenomai wrote:
-> > Hi Everyone,
-> >    There's been a noticeable slow down in the arm and arm64 latency of
-> > late.  I tracked the issue
-> >  down to the tracing infrastructure.  For now if you hit this issue,
-> > disable ftrace.  Once this is done the latency numbers look much better=
-.
-> > I'm currently working on resolving the issue.
->
-> Do you mean disabling during build? Or is the issue only present when
-> tracing is actively used during runtime?
+Just noticed that all your patches carry your user name in the
+signed-off. You should fix that. Is this correct?
 
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
+Also, please make sure that patches carry the extra "From: your name
+<your@email>" at the top of the commit message. This list server has to
+mangle the sender, and that means the author on git can become something
+like "hongzha1 via Xenomai <xenomai@xenomai.org>". You can trigger this
+injection by providing a dummy address via --from when calling git
+format-patch.
 
+Thanks,
+Jan
 
->
-> >
-> >   New patches will be released this week for both arm and arm64 now tha=
-t
-> > the issue is understood and a work around exists.
-> >
->
-> That's great!
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
-
-Hi,
-   I mean disabled during build time. That=E2=80=99s at least how I tested =
-to see
-that the issue went away. Hopefully I=E2=80=99ll have a solution soon.
-
-Thanks
-
-Greg
