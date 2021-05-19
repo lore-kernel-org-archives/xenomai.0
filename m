@@ -1,11 +1,16 @@
-From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
- <jean-baptiste.tredez@alstefgroup.com>
-Subject: [PATCH 09/31] net/stack: rtskb: increase buffer size
-Date: Tue, 11 May 2021 18:05:13 +0200
-Message-Id: <20210511160535.26580-10-jean-baptiste.tredez@alstefgroup.com>
-In-Reply-To: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-References: <20210511160535.26580-1-jean-baptiste.tredez@alstefgroup.com>
-Content-Type: text/plain
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
+ to find array of gpiochips
+Date: Wed, 19 May 2021 01:34:26 +0000
+Message-ID: <BN9PR11MB5227F0177838DF458543BBE3F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210513010238.32466-1-hongzhan.chen@intel.com>
+ <20210513010238.32466-2-hongzhan.chen@intel.com>
+ <9f1b8c2a-20b7-8353-9b79-bff26d79d71c@siemens.com>
+ <f965ba97-ec16-8f44-b7fa-86db08814ad4@siemens.com>
+In-Reply-To: <f965ba97-ec16-8f44-b7fa-86db08814ad4@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,32 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-The largest packet size an IGB device can handle is 2k. Since we have
-a fixed buffer size, we need to accomodate for this.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/drivers/net/stack/include/rtskb.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
-index 4920b3916..8f0294fe3 100644
---- a/kernel/drivers/net/stack/include/rtskb.h
-+++ b/kernel/drivers/net/stack/include/rtskb.h
-@@ -269,7 +269,7 @@ struct rtskb_prio_queue {
- #define DEFAULT_SOCKET_RTSKBS 16 /* default number of rtskb's in socket pools */
- 
- #define ALIGN_RTSKB_STRUCT_LEN SKB_DATA_ALIGN(sizeof(struct rtskb))
--#define RTSKB_SIZE 1544 /* maximum needed by pcnet32-rt */
-+#define RTSKB_SIZE                  (2048 + NET_IP_ALIGN)    /* maximum needed by igb */
- 
- extern unsigned int rtskb_pools; /* current number of rtskb pools      */
- extern unsigned int rtskb_pools_max; /* maximum number of rtskb pools      */
--- 
-2.17.1
-
+DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBXZWRuZXNkYXksIE1heSAxOSwgMjAyMSA1OjQ0
+IEFNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
+YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW2Zvci11cHN0cmVhbS9kb3ZldGFpbCAxLzJd
+IGRyaXZlcnMvZ3BpbzogY29yZTogaW50cm9kdWNlIGhlbHBlciB0byBmaW5kIGFycmF5IG9mIGdw
+aW9jaGlwcw0KPg0KPk9uIDE4LjA1LjIxIDIzOjI1LCBKYW4gS2lzemthIHdyb3RlOg0KPj4gT24g
+MTMuMDUuMjEgMDM6MDIsIGhvbmd6aGExIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+IFRvIGZpbmQg
+YXJyYXkgb2YgZ3Bpb2NoaXBzIGZvciBub24tT0YgcGxhdGZvcm0NCj4+Pg0KPj4+IFNpZ25lZC1v
+ZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+IA0KPj4gSnVzdCBu
+b3RpY2VkIHRoYXQgYWxsIHlvdXIgcGF0Y2hlcyBjYXJyeSB5b3VyIHVzZXIgbmFtZSBpbiB0aGUN
+Cj4+IHNpZ25lZC1vZmYuIFlvdSBzaG91bGQgZml4IHRoYXQuIElzIHRoaXMgY29ycmVjdD8NCj4+
+IA0KPj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
+b20+DQo+PiANCj4+IEFsc28sIHBsZWFzZSBtYWtlIHN1cmUgdGhhdCBwYXRjaGVzIGNhcnJ5IHRo
+ZSBleHRyYSAiRnJvbTogeW91ciBuYW1lDQo+PiA8eW91ckBlbWFpbD4iIGF0IHRoZSB0b3Agb2Yg
+dGhlIGNvbW1pdCBtZXNzYWdlLiBUaGlzIGxpc3Qgc2VydmVyIGhhcyB0bw0KPj4gbWFuZ2xlIHRo
+ZSBzZW5kZXIsIGFuZCB0aGF0IG1lYW5zIHRoZSBhdXRob3Igb24gZ2l0IGNhbiBiZWNvbWUgc29t
+ZXRoaW5nDQo+PiBsaWtlICJob25nemhhMSB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9y
+Zz4iLiBZb3UgY2FuIHRyaWdnZXIgdGhpcw0KPj4gaW5qZWN0aW9uIGJ5IHByb3ZpZGluZyBhIGR1
+bW15IGFkZHJlc3MgdmlhIC0tZnJvbSB3aGVuIGNhbGxpbmcgZ2l0DQo+PiBmb3JtYXQtcGF0Y2gu
+DQo+PiANCj4+IFRoYW5rcywNCj4+IEphbg0KPj4gDQo+DQo+SnVzdCB0byBjbGFyaWZ5OiBObyBh
+Y3Rpb24gbmVlZCBmb3IgYW55dGhpbmcgaW4gd2lwL2RvdmV0YWlsIGlmIG15DQo+c3BlbGxpbmcg
+YWJvdmUgaXMgY29ycmVjdCAtIGp1c3QgYWRqdXN0ZWQgYWxsIHlvdXIgcGF0Y2hlcyB0aGVyZQ0K
+PmFjY29yZGluZ2x5Lg0KDQpUaGFua3MgZm9yIHlvdXIga2luZCBvZiByZW1pbmRpbmcgYW5kIGFk
+anVzdG1lbnQuIFNwZWxsaW5nIGlzIGNvcnJlY3QuIA0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENo
+ZW4NCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUg
+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4NCj4NCg==
 
