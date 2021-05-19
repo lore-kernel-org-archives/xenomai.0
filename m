@@ -1,15 +1,11 @@
-Subject: Re: reminder: Xenomai community call on today, May 19th, UTC 7:00
-References: <BN9PR11MB5227417B1E59EEAC767840B3F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
- <dc681cd6-1c14-d5c7-46cf-30db61e91503@siemens.com>
- <BN9PR11MB5227CABBE1919E36D7ACD414F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9555731e-5bc0-1dae-1e24-66efceb46bc1@siemens.com>
-Date: Wed, 19 May 2021 09:03:23 +0200
-MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227CABBE1919E36D7ACD414F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=iso-2022-jp
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: y2038 dependency to wip/dovetail
+Message-ID: <d9592ffe-9cd8-34dd-1101-fed34aeb49ac@siemens.com>
+Date: Wed, 19 May 2021 17:34:52 +0200
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Song Chen <chensong_2000@189.cn>
 
-On 19.05.21 08:57, Chen, Hongzhan wrote:
-> Sorry ,please use zoom https://us05web.zoom.us/j/81175706978?pwd=S1FmTWtKTGY3REJqNzJRbmt0ZzN4QT09 
-> 
+Hi Jan,
 
-Unfortunately, something is broken with Zoom here: This does not allow
-joining via the browser. Any other link, or any tweak to the meeting
-settings possible?
+as already mentioned this morning during Xenomai community call, the
+y2038 stuff has one more dependency that is not in next yet:
 
-Jan
+We need this commit from wip/dovetail:
 
-> Regards
-> 
-> Hongzhan Chen
-> 
-> -----Original Message-----
-> From: Jan Kiszka <jan.kiszka@siemens.com> 
-> Sent: Wednesday, May 19, 2021 2:11 PM
-> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
-> Subject: Re: reminder: Xenomai community call on today, May 19th, UTC 7:00
-> 
-> On 19.05.21 08:03, Chen, Hongzhan via Xenomai wrote:
->> Just for soft reminder, As planned, we have the Xenomai community call
->> Topics may include but not limited to upstream/downstream project plan, status update, and technical discussion.
->> It's an open online meeting that anyone can join and ask questions.
->>
->> Time:
->> May 19th (Wednesday), UTC 7:00
->> 15:00 for China
->> 8:00 for France, Germany, Italy
->> 23:00 (Feb 9th ) for Santa Clara
->>
->> Teams link:
->> https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGZiMzAwOTctMTI2Yy00NjZlLTg3M2MtNGM0MWQ3OGY0OGVi%40thread.v2/0?context=%7b%22Tid%22%3a%2246c98d88-e344-4ed4-8496-4ed7712e255d%22%2c%22Oid%22%3a%224ee1bb82-287c-456a-99d8-fb230643c947%22%7d
->>
-> 
-> Aren't we trying out Zoom today
-> (https://us05web.zoom.us/j/81175706978?pwd=S1FmTWtKTGY3REJqNzJRbmt0ZzN4QT09)?
-> 
-> Jan
-> 
->> Join with a video conferencing device 
->> teams@conf.intel.com 
->> Video Conference ID: 114 022 474 6 
->> Alternate VTC dialing instructions 
->> Or call in (audio only) 
->> +86 10 5697 1340,,977672203#   China, 北京 (Beijing) 
->> Phone Conference ID: 977 672 203#
->>
->> Regards
->>
->> Hongzhan Chen
->>
->>
-> 
+336f9d67e5a4 ("lib/cobalt: dovetail: use clock_gettime() vcall for reading timestamps")
+
+That's it for now.
+
+Best regards,
+Florian
 
 -- 
 Siemens AG, T RDA IOT
