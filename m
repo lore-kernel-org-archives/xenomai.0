@@ -1,16 +1,10 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [for-upstream/dovetail 1/2] drivers/gpio: core: introduce helper
- to find array of gpiochips
-Date: Wed, 19 May 2021 01:34:26 +0000
-Message-ID: <BN9PR11MB5227F0177838DF458543BBE3F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210513010238.32466-1-hongzhan.chen@intel.com>
- <20210513010238.32466-2-hongzhan.chen@intel.com>
- <9f1b8c2a-20b7-8353-9b79-bff26d79d71c@siemens.com>
- <f965ba97-ec16-8f44-b7fa-86db08814ad4@siemens.com>
-In-Reply-To: <f965ba97-ec16-8f44-b7fa-86db08814ad4@siemens.com>
+Subject: reminder: Xenomai community call on today, May 19th, UTC 7:00
+Date: Wed, 19 May 2021 06:03:55 +0000
+Message-ID: <BN9PR11MB5227417B1E59EEAC767840B3F22B9@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,32 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBXZWRuZXNkYXksIE1heSAxOSwgMjAyMSA1OjQ0
-IEFNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW2Zvci11cHN0cmVhbS9kb3ZldGFpbCAxLzJd
-IGRyaXZlcnMvZ3BpbzogY29yZTogaW50cm9kdWNlIGhlbHBlciB0byBmaW5kIGFycmF5IG9mIGdw
-aW9jaGlwcw0KPg0KPk9uIDE4LjA1LjIxIDIzOjI1LCBKYW4gS2lzemthIHdyb3RlOg0KPj4gT24g
-MTMuMDUuMjEgMDM6MDIsIGhvbmd6aGExIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+IFRvIGZpbmQg
-YXJyYXkgb2YgZ3Bpb2NoaXBzIGZvciBub24tT0YgcGxhdGZvcm0NCj4+Pg0KPj4+IFNpZ25lZC1v
-ZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+IA0KPj4gSnVzdCBu
-b3RpY2VkIHRoYXQgYWxsIHlvdXIgcGF0Y2hlcyBjYXJyeSB5b3VyIHVzZXIgbmFtZSBpbiB0aGUN
-Cj4+IHNpZ25lZC1vZmYuIFlvdSBzaG91bGQgZml4IHRoYXQuIElzIHRoaXMgY29ycmVjdD8NCj4+
-IA0KPj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
-b20+DQo+PiANCj4+IEFsc28sIHBsZWFzZSBtYWtlIHN1cmUgdGhhdCBwYXRjaGVzIGNhcnJ5IHRo
-ZSBleHRyYSAiRnJvbTogeW91ciBuYW1lDQo+PiA8eW91ckBlbWFpbD4iIGF0IHRoZSB0b3Agb2Yg
-dGhlIGNvbW1pdCBtZXNzYWdlLiBUaGlzIGxpc3Qgc2VydmVyIGhhcyB0bw0KPj4gbWFuZ2xlIHRo
-ZSBzZW5kZXIsIGFuZCB0aGF0IG1lYW5zIHRoZSBhdXRob3Igb24gZ2l0IGNhbiBiZWNvbWUgc29t
-ZXRoaW5nDQo+PiBsaWtlICJob25nemhhMSB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9y
-Zz4iLiBZb3UgY2FuIHRyaWdnZXIgdGhpcw0KPj4gaW5qZWN0aW9uIGJ5IHByb3ZpZGluZyBhIGR1
-bW15IGFkZHJlc3MgdmlhIC0tZnJvbSB3aGVuIGNhbGxpbmcgZ2l0DQo+PiBmb3JtYXQtcGF0Y2gu
-DQo+PiANCj4+IFRoYW5rcywNCj4+IEphbg0KPj4gDQo+DQo+SnVzdCB0byBjbGFyaWZ5OiBObyBh
-Y3Rpb24gbmVlZCBmb3IgYW55dGhpbmcgaW4gd2lwL2RvdmV0YWlsIGlmIG15DQo+c3BlbGxpbmcg
-YWJvdmUgaXMgY29ycmVjdCAtIGp1c3QgYWRqdXN0ZWQgYWxsIHlvdXIgcGF0Y2hlcyB0aGVyZQ0K
-PmFjY29yZGluZ2x5Lg0KDQpUaGFua3MgZm9yIHlvdXIga2luZCBvZiByZW1pbmRpbmcgYW5kIGFk
-anVzdG1lbnQuIFNwZWxsaW5nIGlzIGNvcnJlY3QuIA0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENo
-ZW4NCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUg
-Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4NCj4NCg==
+Just for soft reminder, As planned, we have the Xenomai community call
+Topics may include but not limited to upstream/downstream project plan, sta=
+tus update, and technical discussion.
+It's an open online meeting that anyone can join and ask questions.
+
+Time:
+May 19th (Wednesday), UTC 7:00
+15:00 for China
+8:00 for France, Germany, Italy
+23:00 (Feb 9th ) for Santa Clara
+
+Teams link:
+https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGZiMzAwOTctMTI2Yy00=
+NjZlLTg3M2MtNGM0MWQ3OGY0OGVi%40thread.v2/0?context=3D%7b%22Tid%22%3a%2246c9=
+8d88-e344-4ed4-8496-4ed7712e255d%22%2c%22Oid%22%3a%224ee1bb82-287c-456a-99d=
+8-fb230643c947%22%7d
+
+Join with a video conferencing device=20
+teams@conf.intel.com=20
+Video Conference ID: 114 022 474 6=20
+Alternate VTC dialing instructions=20
+Or call in (audio only)=20
++86 10 5697 1340,,977672203#   China, =1B$BKL5~=1B(B (Beijing)=20
+Phone Conference ID: 977 672 203#
+
+Regards
+
+Hongzhan Chen
+
 
