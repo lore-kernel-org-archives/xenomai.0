@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 23/25] lib/cobalt: dovetail: allow representing time as count
- of nanoseconds
-Date: Thu, 20 May 2021 23:44:33 +0200
-Message-Id: <1eeef00e313e980dd9e2e02e26754e3c8a68527e.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 18/25] cobalt/timer: pipeline: abstract handling of
+ ONESHOT_STOPPED mode
+Date: Thu, 20 May 2021 23:44:28 +0200
+Message-Id: <93e7b3481e764d6581fc58270ef3afa4490abf8a.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -17,196 +17,90 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Hongzhan Chen <hongzhan.chen@intel.com>
 
-When the core runs on top of Dovetail, all time values are represented
-as counts of nanoseconds, in which case a Cobalt tick equals a
-nanosecond.
+It adds a way to force the timer management code to reprogram the
+hardware on option, to make the real device controlled by the proxy
+tick again as it leaves the ONESHOT_STOPPED mode. The I-pipe does not
+require any further action in this case, leading to a nop.
 
-Introduce inline wrappers for tick-to/from-ns conversion which are
-nops in the latter case. Cobalt passes us a null clock frequency at
-binding time (__cobalt_tsc_clockfreq) when conversion is not needed;
-otherwise, the frequency is used in scaled maths for converting
-timestamps between their hardware tick and nanosec representation.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/ticks.h | 50 +++++++++++++++++++++++++++++++++++++++---
- lib/cobalt/ticks.c     | 42 +++++++++++++++++++----------------
- 2 files changed, 70 insertions(+), 22 deletions(-)
+ include/cobalt/kernel/ipipe/pipeline/tick.h | 6 ++++++
+ include/cobalt/kernel/sched.h               | 5 +++++
+ kernel/cobalt/clock.c                       | 2 +-
+ kernel/cobalt/timer.c                       | 5 ++++-
+ 4 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/include/cobalt/ticks.h b/include/cobalt/ticks.h
-index 2d0132db78..e59d86d499 100644
---- a/include/cobalt/ticks.h
-+++ b/include/cobalt/ticks.h
-@@ -18,17 +18,61 @@
- #ifndef _COBALT_TICKS_H
- #define _COBALT_TICKS_H
+diff --git a/include/cobalt/kernel/ipipe/pipeline/tick.h b/include/cobalt/kernel/ipipe/pipeline/tick.h
+index 409581a3cb..41347f7b18 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/tick.h
++++ b/include/cobalt/kernel/ipipe/pipeline/tick.h
+@@ -9,4 +9,10 @@ int pipeline_install_tick_proxy(void);
  
-+#include <stdbool.h>
- #include <cobalt/uapi/kernel/types.h>
+ void pipeline_uninstall_tick_proxy(void);
+ 
++struct xnsched;
++static inline bool pipeline_must_force_program_tick(struct xnsched *sched)
++{
++	return false;
++}
++
+ #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index c13f46ff7d..aa24d54420 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -48,6 +48,11 @@
+ #define XNINIRQ		0x00004000	/* In IRQ handling context */
+ #define XNHDEFER	0x00002000	/* Host tick deferred */
  
 +/*
-+ * Depending on the underlying pipeline support, we may represent time
-+ * stamps as count of nanoseconds (Dovetail), or as values of the
-+ * hardware tick counter (aka TSC) available with the platform
-+ * (I-pipe). In the latter - legacy - case, we need to convert from
-+ * TSC values to nanoseconds and conversely via scaled maths. This
-+ * indirection will go away once support for the I-pipe is removed.
++ * Hardware timer is stopped.
 + */
++#define XNTSTOP		0x00000800
 +
- #ifdef __cplusplus
- extern "C" {
- #endif
+ struct xnsched_rt {
+ 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
+ };
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index bf24e16938..2115b15ef8 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -147,7 +147,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
+ 	 * or a timer with an earlier timeout date is scheduled,
+ 	 * whichever comes first.
+ 	 */
+-	sched->lflags &= ~(XNHDEFER|XNIDLE);
++	sched->lflags &= ~(XNHDEFER|XNIDLE|XNTSTOP);
+ 	timer = container_of(h, struct xntimer, aplink);
+ 	if (unlikely(timer == &sched->htimer)) {
+ 		if (xnsched_resched_p(sched) ||
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index 9297cca186..1ec7617915 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -18,6 +18,7 @@
+  * 02111-1307, USA.
+  */
+ #include <linux/sched.h>
++#include <pipeline/tick.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/thread.h>
+ #include <cobalt/kernel/timer.h>
+@@ -63,8 +64,10 @@ int xntimer_heading_p(struct xntimer *timer)
  
--xnsticks_t cobalt_ticks_to_ns(xnsticks_t ticks);
-+extern unsigned long long __cobalt_tsc_clockfreq;
-+
-+static inline bool cobalt_use_legacy_tsc(void)
-+{
-+	return !!__cobalt_tsc_clockfreq;
-+}
-+
-+xnsticks_t __cobalt_tsc_to_ns(xnsticks_t ticks);
-+
-+xnsticks_t __cobalt_tsc_to_ns_rounded(xnsticks_t ticks);
-+
-+xnsticks_t __cobalt_ns_to_tsc(xnsticks_t ns);
- 
--xnsticks_t cobalt_ticks_to_ns_rounded(xnsticks_t ticks);
-+static inline
-+xnsticks_t cobalt_ns_to_ticks(xnsticks_t ns)
-+{
-+	if (cobalt_use_legacy_tsc())
-+		return __cobalt_ns_to_tsc(ns);
- 
--xnsticks_t cobalt_ns_to_ticks(xnsticks_t ns);
-+	return ns;
-+}
-+
-+static inline
-+xnsticks_t cobalt_ticks_to_ns(xnsticks_t ticks)
-+{
-+	if (cobalt_use_legacy_tsc())
-+		return __cobalt_tsc_to_ns(ticks);
-+
-+	return ticks;
-+}
-+
-+static inline
-+xnsticks_t cobalt_ticks_to_ns_rounded(xnsticks_t ticks)
-+{
-+	if (cobalt_use_legacy_tsc())
-+		return __cobalt_tsc_to_ns_rounded(ticks);
-+
-+	return ticks;
-+}
- 
- unsigned long long cobalt_divrem_billion(unsigned long long value,
- 					 unsigned long *rem);
-diff --git a/lib/cobalt/ticks.c b/lib/cobalt/ticks.c
-index 89d7f51e38..8313258117 100644
---- a/lib/cobalt/ticks.c
-+++ b/lib/cobalt/ticks.c
-@@ -20,7 +20,7 @@
- #include <asm/xenomai/tsc.h>
- #include "internal.h"
- 
--static unsigned long long clockfreq;
-+unsigned long long __cobalt_tsc_clockfreq;
- 
- #ifdef XNARCH_HAVE_LLMULSHFT
- 
-@@ -31,11 +31,6 @@ static unsigned int tsc_scale, tsc_shift;
- static struct xnarch_u32frac tsc_frac;
- static struct xnarch_u32frac bln_frac;
- 
--xnsticks_t cobalt_ns_to_ticks(xnsticks_t ns)
--{
--	return xnarch_nodiv_llimd(ns, tsc_frac.frac, tsc_frac.integ);
--}
--
- unsigned long long cobalt_divrem_billion(unsigned long long value,
- 					 unsigned long *rem)
+ void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
  {
-@@ -52,21 +47,26 @@ unsigned long long cobalt_divrem_billion(unsigned long long value,
- 	return q;
- }
- 
-+xnsticks_t __cobalt_ns_to_tsc(xnsticks_t ns)
-+{
-+	return xnarch_nodiv_llimd(ns, tsc_frac.frac, tsc_frac.integ);
-+}
++	struct xnsched *sched = xntimer_sched(timer);
 +
- #else /* !XNARCH_HAVE_NODIV_LLIMD */
- 
--xnsticks_t cobalt_ns_to_ticks(xnsticks_t ns)
-+xnsticks_t __cobalt_ns_to_tsc(xnsticks_t ns)
- {
- 	return xnarch_llimd(ns, 1 << tsc_shift, tsc_scale);
- }
- 
- #endif /* !XNARCH_HAVE_NODIV_LLIMD */
- 
--xnsticks_t cobalt_ticks_to_ns(xnsticks_t ticks)
-+xnsticks_t __cobalt_tsc_to_ns(xnsticks_t ticks)
- {
- 	return xnarch_llmulshft(ticks, tsc_scale, tsc_shift);
- }
- 
--xnsticks_t cobalt_ticks_to_ns_rounded(xnsticks_t ticks)
-+xnsticks_t __cobalt_tsc_to_ns_rounded(xnsticks_t ticks)
- {
- 	unsigned int shift = tsc_shift - 1;
- 	return (xnarch_llmulshft(ticks, tsc_scale, shift) + 1) / 2;
-@@ -74,19 +74,19 @@ xnsticks_t cobalt_ticks_to_ns_rounded(xnsticks_t ticks)
- 
- #else  /* !XNARCH_HAVE_LLMULSHFT */
- 
--xnsticks_t cobalt_ticks_to_ns(xnsticks_t ticks)
-+xnsticks_t __cobalt_tsc_to_ns(xnsticks_t ticks)
- {
--	return xnarch_llimd(ticks, 1000000000, clockfreq);
-+	return xnarch_llimd(ticks, 1000000000, __cobalt_tsc_clockfreq);
- }
- 
--xnsticks_t cobalt_ticks_to_ns_rounded(xnsticks_t ticks)
-+xnsticks_t __cobalt_tsc_to_ns_rounded(xnsticks_t ticks)
- {
--	return (xnarch_llimd(ticks, 1000000000, clockfreq/2) + 1) / 2;
-+	return (xnarch_llimd(ticks, 1000000000, __cobalt_tsc_clockfreq/2) + 1) / 2;
- }
- 
--xnsticks_t cobalt_ns_to_ticks(xnsticks_t ns)
-+xnsticks_t __cobalt_ns_to_tsc(xnsticks_t ns)
- {
--	return xnarch_llimd(ns, clockfreq, 1000000000);
-+	return xnarch_llimd(ns, __cobalt_tsc_clockfreq, 1000000000);
- }
- #endif /* !XNARCH_HAVE_LLMULSHFT */
- 
-@@ -101,12 +101,16 @@ unsigned long long cobalt_divrem_billion(unsigned long long value,
- 
- void cobalt_ticks_init(unsigned long long freq)
- {
--	clockfreq = freq;
-+	__cobalt_tsc_clockfreq = freq;
- #ifdef XNARCH_HAVE_LLMULSHFT
--	xnarch_init_llmulshft(1000000000, freq, &tsc_scale, &tsc_shift);
-+	if (freq) {
-+		xnarch_init_llmulshft(1000000000, freq, &tsc_scale, &tsc_shift);
- #ifdef XNARCH_HAVE_NODIV_LLIMD
--	xnarch_init_u32frac(&tsc_frac, 1 << tsc_shift, tsc_scale);
--	xnarch_init_u32frac(&bln_frac, 1, 1000000000);
-+		xnarch_init_u32frac(&tsc_frac, 1 << tsc_shift, tsc_scale);
-+#endif
-+	}
- #endif
-+#ifdef XNARCH_HAVE_NODIV_LLIMD
-+	xnarch_init_u32frac(&bln_frac, 1, 1000000000);
- #endif
- }
+ 	xntimer_enqueue(timer, q);
+-	if (xntimer_heading_p(timer)) {
++	if (pipeline_must_force_program_tick(sched) || xntimer_heading_p(timer)) {
+ 		struct xnsched *sched = xntimer_sched(timer);
+ 		struct xnclock *clock = xntimer_clock(timer);
+ 		if (sched != xnsched_current())
 -- 
 2.26.2
 
