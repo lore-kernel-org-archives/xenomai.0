@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 05/25] cobalt/kevents: dovetail: enable back tracing
-Date: Thu, 20 May 2021 23:44:15 +0200
-Message-Id: <ba85cd0f3662e5378734a4cb2f23660d31c2492c.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 24/25] lib/cobalt: add default wrapper to clock_settime()
+Date: Thu, 20 May 2021 23:44:34 +0200
+Message-Id: <db58a22eb536aaf31599b8d7248033eb286ef01e.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -16,32 +16,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Hongzhan Chen <hongzhan.chen@intel.com>
+From: Philippe Gerum <rpm@xenomai.org>
 
-enable back tracing for handle_oob_trap_entry
-
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/dovetail/kevents.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ lib/cobalt/wrappers.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index 64f6f421c1..a402d55690 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -97,10 +97,8 @@ void handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
+diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
+index 860b260201..18c237734f 100644
+--- a/lib/cobalt/wrappers.c
++++ b/lib/cobalt/wrappers.c
+@@ -524,6 +524,12 @@ int __real_clock_gettime(clockid_t clk_id, struct timespec *tp)
+ 	return clock_gettime(clk_id, tp);
+ }
  
- 	/*
- 	 * Enable back tracing.
--	 *
--	 * trace_cobalt_thread_fault(xnarch_fault_pc(regs), trapnr);
- 	 */
--	TODO();
-+	trace_cobalt_thread_fault(xnarch_fault_pc(regs), trapnr);
- 
- 	if (xnthread_test_state(thread, XNROOT))
- 		return;
++__weak
++int __real_clock_settime(clockid_t clk_id, const struct timespec *tp)
++{
++	return clock_settime(clk_id, tp);
++}
++
+ __weak
+ int __real_sigwait(const sigset_t *set, int *sig)
+ {
 -- 
 2.26.2
 
