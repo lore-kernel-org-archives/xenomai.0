@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 10/25] cobalt/kernel: dovetail: implement sirq services
-Date: Thu, 20 May 2021 23:44:20 +0200
-Message-Id: <98123ff55dc3f0287c9ac27e03ef536e6028b1c2.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 02/25] cobalt/kevents: dovetail: drop call to obsolete
+ force_commit_memory()
+Date: Thu, 20 May 2021 23:44:12 +0200
+Message-Id: <0aef0e3a27e225564879c2c1fb2c54da8f935f0f.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -16,68 +17,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Hongzhan Chen <hongzhan.chen@intel.com>
+From: Philippe Gerum <rpm@xenomai.org>
 
-inband sirq request through synthetic_irq_domain and free and post
-srq.
+A process is now marked for COW-breaking on fork() upon the first call
+to dovetail_init_altsched(), and must ensure its memory is locked via
+a call to mlockall(MCL_CURRENT|MCL_FUTURE) as usual.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+As a result, force_commit_memory() became pointless and was removed
+from the Dovetail interface.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+ kernel/cobalt/dovetail/kevents.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-index be9dc587fb..1da9d13b21 100644
---- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-@@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
- 	 * Allocate an IRQ from the synthetic interrupt domain then
- 	 * trap it to @handler, to be fired from the in-band stage.
- 	 */
--	TODO();
-+	int sirq, ret;
- 
--	return 0;
-+	sirq = irq_create_direct_mapping(synthetic_irq_domain);
-+	if (sirq == 0)
-+		return -EAGAIN;
-+
-+	ret = __request_percpu_irq(sirq,
-+			handler,
-+			IRQF_NO_THREAD,
-+			"Inband sirq",
-+			&cobalt_machine_cpudata);
-+
-+	if (ret) {
-+		irq_dispose_mapping(sirq);
-+		return ret;
-+	}
-+
-+	return sirq;
+diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+index 5efe30c22d..64f6f421c1 100644
+--- a/kernel/cobalt/dovetail/kevents.c
++++ b/kernel/cobalt/dovetail/kevents.c
+@@ -516,7 +516,8 @@ void handle_inband_event(enum inband_event_type event, void *data)
  }
  
- static inline
-@@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
- 	 * Free the synthetic IRQ then deallocate it to its
- 	 * originating domain.
- 	 */
--	TODO();
-+	free_percpu_irq(sirq,
-+		&cobalt_machine_cpudata);
+ #ifdef CONFIG_MMU
+-static inline int disable_ondemand_memory(void)
 +
-+	irq_dispose_mapping(sirq);
- }
- 
- static inline void pipeline_post_sirq(int sirq)
++int pipeline_prepare_current(void)
  {
- 	/* Trigger the synthetic IRQ */
--	TODO();
-+	irq_post_inband(sirq);
+ 	struct task_struct *p = current;
+ 	kernel_siginfo_t si;
+@@ -527,15 +528,9 @@ static inline int disable_ondemand_memory(void)
+ 		si.si_code = SI_QUEUE;
+ 		si.si_int = SIGDEBUG_NOMLOCK | sigdebug_marker;
+ 		send_sig_info(SIGDEBUG, &si, p);
+-		return 0;
+ 	}
+ 
+-	return force_commit_memory();
+-}
+-
+-int pipeline_prepare_current(void)
+-{
+-	return disable_ondemand_memory();
++	return 0;
  }
  
--#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
-+#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
+ static inline int get_mayday_prot(void)
 -- 
 2.26.2
 
