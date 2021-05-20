@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 14/25] cobalt/timer: Check if nklock is held in timer services
-Date: Thu, 20 May 2021 23:44:24 +0200
-Message-Id: <544cd293367276d8a5edaeaa47fbb4fdd315c835.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 10/25] cobalt/kernel: dovetail: implement sirq services
+Date: Thu, 20 May 2021 23:44:20 +0200
+Message-Id: <98123ff55dc3f0287c9ac27e03ef536e6028b1c2.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -16,72 +16,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+inband sirq request through synthetic_irq_domain and free and post
+srq.
+
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/timer.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index f9aa457ce9..9297cca186 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -118,6 +118,8 @@ int xntimer_start(struct xntimer *timer,
- 	unsigned long gravity;
- 	int ret = 0;
+diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+index be9dc587fb..1da9d13b21 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
++++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+@@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
+ 	 * Allocate an IRQ from the synthetic interrupt domain then
+ 	 * trap it to @handler, to be fired from the in-band stage.
+ 	 */
+-	TODO();
++	int sirq, ret;
  
-+	atomic_only();
+-	return 0;
++	sirq = irq_create_direct_mapping(synthetic_irq_domain);
++	if (sirq == 0)
++		return -EAGAIN;
 +
- 	trace_cobalt_timer_start(timer, value, interval, mode);
- 
- 	if ((timer->status & XNTIMER_DEQUEUED) == 0)
-@@ -204,6 +206,8 @@ void __xntimer_stop(struct xntimer *timer)
- 	struct xnsched *sched;
- 	int heading = 1;
- 
-+	atomic_only();
++	ret = __request_percpu_irq(sirq,
++			handler,
++			IRQF_NO_THREAD,
++			"Inband sirq",
++			&cobalt_machine_cpudata);
 +
- 	trace_cobalt_timer_stop(timer);
++	if (ret) {
++		irq_dispose_mapping(sirq);
++		return ret;
++	}
++
++	return sirq;
+ }
  
- 	if ((timer->status & XNTIMER_DEQUEUED) == 0) {
-@@ -239,6 +243,8 @@ EXPORT_SYMBOL_GPL(__xntimer_stop);
-  */
- xnticks_t xntimer_get_date(struct xntimer *timer)
+ static inline
+@@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
+ 	 * Free the synthetic IRQ then deallocate it to its
+ 	 * originating domain.
+ 	 */
+-	TODO();
++	free_percpu_irq(sirq,
++		&cobalt_machine_cpudata);
++
++	irq_dispose_mapping(sirq);
+ }
+ 
+ static inline void pipeline_post_sirq(int sirq)
  {
-+	atomic_only();
-+
- 	if (!xntimer_running_p(timer))
- 		return XN_INFINITE;
+ 	/* Trigger the synthetic IRQ */
+-	TODO();
++	irq_post_inband(sirq);
+ }
  
-@@ -269,6 +275,8 @@ xnticks_t __xntimer_get_timeout(struct xntimer *timer)
- 	struct xnclock *clock;
- 	xnticks_t expiry, now;
- 
-+	atomic_only();
-+
- 	clock = xntimer_clock(timer);
- 	now = xnclock_read_raw(clock);
- 	expiry = xntimer_expiry(timer);
-@@ -431,6 +439,8 @@ void __xntimer_switch_tracking(struct xntimer *timer,
- void xntimer_set_clock(struct xntimer *timer,
- 		       struct xnclock *newclock)
- {
-+	atomic_only();
-+
- 	if (timer->clock != newclock) {
- 		xntimer_stop(timer);
- 		timer->clock = newclock;
-@@ -605,6 +615,8 @@ unsigned long long xntimer_get_overruns(struct xntimer *timer,
- 	xnsticks_t delta;
- 	xntimerq_t *q;
- 
-+	atomic_only();
-+
- 	delta = now - xntimer_pexpect(timer);
- 	if (unlikely(delta >= (xnsticks_t) period)) {
- 		period = timer->interval_ns;
+-#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
++#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
 -- 
 2.26.2
 
