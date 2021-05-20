@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 06/25] cobalt/x86: ipipe: Remove leftover from x86_32 removal
-Date: Thu, 20 May 2021 23:44:16 +0200
-Message-Id: <d8be79d16f04a4d06db5e85ca2c97c6f4139bb4f.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 16/25] cobalt/tick: dovetail: implement
+ pipeline_set_timer_shot()
+Date: Thu, 20 May 2021 23:44:26 +0200
+Message-Id: <9f27d0341e36b617582ae63849a27b0e3c673dd9.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -16,37 +17,79 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Hongzhan Chen <hongzhan.chen@intel.com>
 
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+[Philippe: clarify some variable names]
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .../cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h   | 8 --------
- 1 file changed, 8 deletions(-)
+ .../cobalt/kernel/dovetail/pipeline/clock.h   | 12 +-------
+ kernel/cobalt/dovetail/tick.c                 | 28 +++++++++++++++++++
+ 2 files changed, 29 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h
-index f3f1b476f7..f889f5fc73 100644
---- a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/syscall.h
-@@ -29,19 +29,11 @@
-  */
- #define __xn_reg_sys(regs)    ((regs)->orig_ax)
- #define __xn_reg_rval(regs)   ((regs)->ax)
--#ifdef __i386__
--#define __xn_reg_arg1(regs)   ((regs)->bx)
--#define __xn_reg_arg2(regs)   ((regs)->cx)
--#define __xn_reg_arg3(regs)   ((regs)->dx)
--#define __xn_reg_arg4(regs)   ((regs)->si)
--#define __xn_reg_arg5(regs)   ((regs)->di)
--#else /* x86_64 */
- #define __xn_reg_arg1(regs)   ((regs)->di)
- #define __xn_reg_arg2(regs)   ((regs)->si)
- #define __xn_reg_arg3(regs)   ((regs)->dx)
- #define __xn_reg_arg4(regs)   ((regs)->r10)
- #define __xn_reg_arg5(regs)   ((regs)->r8)
--#endif /* x86_64 */
- #define __xn_reg_pc(regs)     ((regs)->ip)
- #define __xn_reg_sp(regs)     ((regs)->sp)
+diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
+index 1cd7530655..d5443a4fd6 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/clock.h
++++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
+@@ -19,17 +19,7 @@ static inline u64 pipeline_read_cycle_counter(void)
+ 	return 0;
+ }
  
+-static inline void pipeline_set_timer_shot(unsigned long cycles)
+-{
+-	/*
+-	 * N/A. Revisit: xnclock_core_local_shot() should go to the
+-	 * I-pipe section, we do things differently on Dovetail via
+-	 * the proxy tick device. As a consequence,
+-	 * pipeline_set_timer_shot() should not be part of the
+-	 * pipeline interface.
+-	 */
+-	TODO();
+-}
++void pipeline_set_timer_shot(unsigned long cycles);
+ 
+ static inline const char *pipeline_timer_name(void)
+ {
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+index fba9f78d00..a6633348b1 100644
+--- a/kernel/cobalt/dovetail/tick.c
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -14,6 +14,34 @@
+ 
+ static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
+ 
++void pipeline_set_timer_shot(unsigned long delay) /* ns */
++{
++	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
++	struct clock_event_device *real_dev = dev->real_device;
++	u64 cycles;
++	ktime_t t;
++	int ret;
++
++	if (real_dev->features & CLOCK_EVT_FEAT_KTIME) {
++		t = ktime_add(delay, xnclock_core_read_raw());
++		real_dev->set_next_ktime(t, real_dev);
++	} else {
++		if (delay <= 0) {
++			delay = real_dev->min_delta_ns;
++		} else {
++			delay = min_t(int64_t, delay,
++				real_dev->max_delta_ns);
++			delay = max_t(int64_t, delay,
++				real_dev->min_delta_ns);
++		}
++		cycles = ((u64)delay * real_dev->mult) >> real_dev->shift;
++		ret = real_dev->set_next_event(cycles, real_dev);
++		if (ret)
++			real_dev->set_next_event(real_dev->min_delta_ticks,
++						real_dev);
++	}
++}
++
+ static int proxy_set_next_ktime(ktime_t expires,
+ 				struct clock_event_device *proxy_dev)
+ {
 -- 
 2.26.2
 
