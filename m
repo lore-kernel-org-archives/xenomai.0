@@ -1,18 +1,14 @@
+Subject: Re: [PATCH V3 1/3] rtdm/testing: latmus: introduce latmus driver
+References: <20210421050509.31420-1-hongzhan.chen@intel.com>
+ <20210421050509.31420-2-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <bda1f940-8d6d-25c3-3947-3117c89d998d@siemens.com>
+Date: Thu, 20 May 2021 17:54:03 +0200
 MIME-Version: 1.0
-References: <PR3PR02MB6202C5373D6CECC72EBF45DAD12B9@PR3PR02MB6202.eurprd02.prod.outlook.com>
- <CADYdroOAiKwD_um-ONn=UfNQrOxjs0fM-7ozhUNc18jUQX9cQw@mail.gmail.com>
- <AM7PR02MB6194C2E06B14077092AA06A0D12A9@AM7PR02MB6194.eurprd02.prod.outlook.com>
- <CADYdroNm+rLkqXV3tjtQ94_PQM_mTiHvmx3JzJG5h2YHbRfguA@mail.gmail.com>
- <851697925.52293.1621518874455.JavaMail.zimbra@efficios.com>
- <201689209.52304.1621519010729.JavaMail.zimbra@efficios.com>
- <186729016.52398.1621523346736.JavaMail.zimbra@efficios.com>
-In-Reply-To: <186729016.52398.1621523346736.JavaMail.zimbra@efficios.com>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Thu, 20 May 2021 17:39:30 +0200
-Message-ID: <CADYdroOCUu7BWqMZ1CMa5mHSJB50V1aS+98sVfgXQRPdnJTyYg@mail.gmail.com>
-Subject: Re: [lttng-dev] LTTng - Xenomai : different results between
- timestamp-lttng and rt_time_read()
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210421050509.31420-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,77 +17,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: MONTET Julien <julien.montet@reseau.eseo.fr>, lttng-dev <lttng-dev@lists.lttng.org>, Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-Am Do., 20. Mai 2021 um 17:09 Uhr schrieb Mathieu Desnoyers
-<mathieu.desnoyers@efficios.com>:
->
-> ----- On May 20, 2021, at 9:56 AM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
->
-> > ----- On May 20, 2021, at 9:54 AM, lttng-dev lttng-dev@lists.lttng.org wrote:
-> >
-> >> ----- On May 20, 2021, at 5:11 AM, lttng-dev lttng-dev@lists.lttng.org wrote:
-> >>
-> >>> Am Do., 20. Mai 2021 um 10:28 Uhr schrieb MONTET Julien
-> >>> <julien.montet@reseau.eseo.fr>:
-> >>>>
-> >>>> Hi Norbert,
-> >>>>
-> >>>> Thank you for your answer !
-> >>>>
-> >>>> Yes, I am using a Xenomai cobalt - xenomai is 3.1
-> >>>> cat /proc/xenomai/version => 3.1
-> >>>>
-> >>>> After the installation, I tested "test tools" in /proc/xenomai/ and it worked
-> >>>> nice.
-> >>>
-> >>> Just asked to make sure, thought the scripts usual add some -xeno tag
-> >>> to the kernel version.
-> >>>
-> >>>> What do you mean by "it might deadlock really good" ?
-> >>>
-> >>> clock_gettime will either use a syscall (kills realtime always) or is
-> >>> optimized via VDSO (which very likely is your case).
-> >>>
-> >>> What happens is that the kernel will take a spinlock, then write new
-> >>> values, then releases the spinlock.
-> >>> your program will aswell spin (but just to see if the spinlock is
-> >>> free), read the values and interpolates them.
-> >>>
-> >>> But if your program interrupts the kernel while the kernel holds the
-> >>> lock (all on the same cpu core), then it will spin forever and the
-> >>> kernel will never execute.
-> >>
-> >> Just one clarification: the specific locking strategy used by the
-> >> Linux kernel monotonic clock vDSO is a "seqlock", where the kernel
-> >> sets a bit which keeps concurrent readers looping until they observe
-> >
-> > When I say "sets a bit", I actually mean "increment a sequence counter",
-> > and readers observe either odd or even state, thus knowing whether
-> > they need to retry, and whether the value read before/after reading
-> > the data structure changed.
->
-> Looking again at the Linux kernel's kernel/time/vsyscall.c implementation
-> of vdso_update_{begin,end}, I notice that interrupts are disabled across
-> the entire update. So I understand that the Interrupt pipeline (I-pipe)
-> interrupt gets delivered even when the kernel disables interrupts. Did
-> you consider modifying the I-pipe kernel patch to change the vdso update so
-> it updates the vdso from within an I-pipe virq handler ?
+On 21.04.21 07:05, hongzha1 via Xenomai wrote:
+> To support the latmus application for determining the best
+> gravity values for the cobalt core clock, and measuring
+> the response time to timer events.
+> 
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> ---
+>  include/rtdm/uapi/testing.h     |   63 ++
+>  kernel/drivers/testing/Kconfig  |   10 +
+>  kernel/drivers/testing/Makefile |    3 +
+>  kernel/drivers/testing/latmus.c | 1237 +++++++++++++++++++++++++++++++
+>  4 files changed, 1313 insertions(+)
+>  create mode 100644 kernel/drivers/testing/latmus.c
+> 
 
-Yes, I did use an non-upstreamed patch for a while to get things in order:
-https://www.xenomai.org/pipermail/xenomai/2018-December/040134.html
+...
 
-I would prefer just a NMI safe source that might jump back a bit, no matter how.
+> diff --git a/kernel/drivers/testing/latmus.c b/kernel/drivers/testing/latmus.c
+> new file mode 100644
+> index 000000000..bef662260
+> --- /dev/null
+> +++ b/kernel/drivers/testing/latmus.c
+> @@ -0,0 +1,1237 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + *
+> + * Derived from Xenomai Cobalt's autotune driver, https://xenomai.org/
+> + * Copyright (C) 2014, 2018 Philippe Gerum  <rpm@xenomai.org>
+> + */
+> +
+> +#include <linux/types.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/kernel.h>
+> +#include <linux/sort.h>
+> +#include <linux/cdev.h>
+> +#include <linux/fs.h>
+> +#include <linux/fcntl.h>
+> +#include <cobalt/kernel/pipe.h>
+> +#include <cobalt/kernel/sched.h>
+> +#include <rtdm/ipc.h>
+> +#include <rtdm/testing.h>
+> +#include <rtdm/driver.h>
+> +#include <rtdm/compat.h>
+> +
+> +#define ONE_BILLION  1000000000
+> +#define TUNER_SAMPLING_TIME	500000000UL
+> +#define TUNER_WARMUP_STEPS	10
+> +#define TUNER_RESULT_STEPS	40
+> +
+> +#define progress(__runner, __fmt, __args...)				\
+> +	do {								\
+> +		if ((__runner)->verbosity > 1)				\
+> +			printk(XENO_INFO "latmus(%s) " __fmt "\n",	\
+> +			       (__runner)->name, ##__args);		\
+> +	} while (0)
+> +
+> +#define cobalt_init_xntimer_on_cpu(__timer, __cpu, __handler)		\
+> +		rtdm_timer_init_on_cpu(__timer, __handler,		\
+> +			#__handler, __cpu)
 
-> AFAIU this would allow Xenomai userspace to use the Linux kernel vDSO
-> clock sources.
+Why this wrapper? Why not calling rtdm_timer... directly?
 
-The Xenomai folks are trying to get their next-gen abstraction "dovetail" closer
-coupled to the kernel, AFAIR their will be VDSO support and
-unification of the clock sources.
+Jan
 
-Still need to get stuff running today =)
-
-Norbert
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
