@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 18/25] cobalt/timer: pipeline: abstract handling of
- ONESHOT_STOPPED mode
-Date: Thu, 20 May 2021 23:44:28 +0200
-Message-Id: <93e7b3481e764d6581fc58270ef3afa4490abf8a.1621547075.git.jan.kiszka@siemens.com>
+Subject: [PATCH 04/25] cobalt/irq: dovetail: implement out-of-band irq
+ management and handling
+Date: Thu, 20 May 2021 23:44:14 +0200
+Message-Id: <ae4c4d8106737010b447ece4bdd57f8317f7e0df.1621547075.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
 References: <cover.1621547075.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,88 +19,109 @@ To: xenomai@xenomai.org
 
 From: Hongzhan Chen <hongzhan.chen@intel.com>
 
-It adds a way to force the timer management code to reprogram the
-hardware on option, to make the real device controlled by the proxy
-tick again as it leaves the ONESHOT_STOPPED mode. The I-pipe does not
-require any further action in this case, leading to a nop.
+implement oob irq request and free and post for both
+TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/kernel/ipipe/pipeline/tick.h | 6 ++++++
- include/cobalt/kernel/sched.h               | 5 +++++
- kernel/cobalt/clock.c                       | 2 +-
- kernel/cobalt/timer.c                       | 5 ++++-
- 4 files changed, 16 insertions(+), 2 deletions(-)
+ .../kernel/dovetail/pipeline/pipeline.h       | 41 ++++++++++++++-----
+ 1 file changed, 31 insertions(+), 10 deletions(-)
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/tick.h b/include/cobalt/kernel/ipipe/pipeline/tick.h
-index 409581a3cb..41347f7b18 100644
---- a/include/cobalt/kernel/ipipe/pipeline/tick.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/tick.h
-@@ -9,4 +9,10 @@ int pipeline_install_tick_proxy(void);
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 1d4e3f91d6..bbd45d13b3 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -8,9 +8,12 @@
+ #include <linux/irq_pipeline.h>
+ #include <cobalt/kernel/assert.h>
+ #include <asm/xenomai/features.h>
++#include <pipeline/machine.h>
  
- void pipeline_uninstall_tick_proxy(void);
+ typedef unsigned long spl_t;
  
-+struct xnsched;
-+static inline bool pipeline_must_force_program_tick(struct xnsched *sched)
++void xnintr_core_clock_handler(void);
++
+ /*
+  * We only keep the LSB when testing in SMP mode in order to strip off
+  * the recursion marker (0x2) the nklock may store there.
+@@ -30,18 +33,28 @@ typedef unsigned long spl_t;
+ 
+ #ifdef CONFIG_SMP
+ 
++static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
 +{
-+	return false;
++
++	/* Will reschedule from irq_exit_pipeline. */
++
++	return IRQ_HANDLED;
 +}
 +
- #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index c13f46ff7d..aa24d54420 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -48,6 +48,11 @@
- #define XNINIRQ		0x00004000	/* In IRQ handling context */
- #define XNHDEFER	0x00002000	/* Host tick deferred */
- 
-+/*
-+ * Hardware timer is stopped.
-+ */
-+#define XNTSTOP		0x00000800
-+
- struct xnsched_rt {
- 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
- };
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index bf24e16938..2115b15ef8 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -147,7 +147,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
- 	 * or a timer with an earlier timeout date is scheduled,
- 	 * whichever comes first.
- 	 */
--	sched->lflags &= ~(XNHDEFER|XNIDLE);
-+	sched->lflags &= ~(XNHDEFER|XNIDLE|XNTSTOP);
- 	timer = container_of(h, struct xntimer, aplink);
- 	if (unlikely(timer == &sched->htimer)) {
- 		if (xnsched_resched_p(sched) ||
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index 9297cca186..1ec7617915 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -18,6 +18,7 @@
-  * 02111-1307, USA.
-  */
- #include <linux/sched.h>
-+#include <pipeline/tick.h>
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/thread.h>
- #include <cobalt/kernel/timer.h>
-@@ -63,8 +64,10 @@ int xntimer_heading_p(struct xntimer *timer)
- 
- void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
+ static inline int pipeline_request_resched_ipi(void (*handler)(void))
  {
-+	struct xnsched *sched = xntimer_sched(timer);
+ 	/* Trap the out-of-band rescheduling interrupt. */
+-	TODO();
+-
+-	return 0;
++	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
++			reschedule_interrupt_handler,
++			IRQF_OOB,
++			"Xenomai reschedule",
++			&cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_free_resched_ipi(void)
+ {
+ 	/* Release the out-of-band rescheduling interrupt. */
+-	TODO();
++	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+@@ -50,21 +63,29 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+ 	 * Trigger the out-of-band rescheduling interrupt on remote
+ 	 * CPU(s).
+ 	 */
+-	TODO();
++	irq_send_oob_ipi(RESCHEDULE_OOB_IPI, dest);
++}
 +
- 	xntimer_enqueue(timer, q);
--	if (xntimer_heading_p(timer)) {
-+	if (pipeline_must_force_program_tick(sched) || xntimer_heading_p(timer)) {
- 		struct xnsched *sched = xntimer_sched(timer);
- 		struct xnclock *clock = xntimer_clock(timer);
- 		if (sched != xnsched_current())
++static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
++{
++	xnintr_core_clock_handler();
++
++	return IRQ_HANDLED;
+ }
+ 
+ static inline int pipeline_request_timer_ipi(void (*handler)(void))
+ {
+ 	/* Trap the out-of-band timer interrupt. */
+-	TODO();
+-
+-	return 0;
++	return __request_percpu_irq(TIMER_OOB_IPI,
++			timer_ipi_interrupt_handler,
++			IRQF_OOB, "Xenomai timer IPI",
++			&cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_free_timer_ipi(void)
+ {
+ 	/* Release the out-of-band timer interrupt. */
+-	TODO();
++	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+@@ -72,7 +93,7 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+ 	/*
+ 	 * Trigger the out-of-band timer interrupt on remote CPU(s).
+ 	 */
+-	TODO();
++	irq_send_oob_ipi(TIMER_OOB_IPI, dest);
+ }
+ 
+ #else  /* !CONFIG_SMP */
 -- 
 2.26.2
 
