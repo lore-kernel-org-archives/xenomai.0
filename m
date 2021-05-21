@@ -1,11 +1,11 @@
-Subject: Re: "cobalt/vfile: seq_file seek index must progress"
-References: <f31cf9eb-1bbe-f4ea-cf7e-ba10f3969236@siemens.com>
- <8735ugdv8n.fsf@xenomai.org>
+Subject: Re: xnsched_kick
+References: <CAK6DXL2H4OuDGehPaHwDtArtg=Y2H+xs6eC49_9NueYPtxRCHA@mail.gmail.com>
+ <87zgwocfoy.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <635bdb45-09b0-b1c0-424e-c0a474ac170f@siemens.com>
-Date: Fri, 21 May 2021 16:39:46 +0200
+Message-ID: <64d36bcd-5459-6224-da92-5ac7c30128d8@siemens.com>
+Date: Fri, 21 May 2021 17:13:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <8735ugdv8n.fsf@xenomai.org>
+In-Reply-To: <87zgwocfoy.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,37 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Marco Barletta <barlettamarco8@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 21.05.21 16:20, Philippe Gerum wrote:
+On 21.05.21 16:41, Philippe Gerum via Xenomai wrote:
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Marco Barletta via Xenomai <xenomai@xenomai.org> writes:
 > 
->> Hi Philippe,
->>
->> https://source.denx.de/Xenomai/xenomai/-/commit/dd9a5ee0ed6f734f40d3733f9fff23394c8647bd
->>
->> Bug fix unrelated to dovetail? There is no description, so I cannot
->> easily asses this.
->>
+>> Hi everyone, related to the sched_quota patch I posted about one week ago.
+>> I'm trying to understand why xnsched_kick is needed, in which situation is
+>> called. Reading the code it seems it's called when there's a xeno thread
+>> that must be downgraded and scheduled in Linux, but I didn't understand why
+>> there's the need to run to complention without respecting group budget. Can
+>> you help me?
+>> Best regards.
 > 
-> Yeah, not good. The idea is that the offset field we receive from the
-> kernel must progress in order for the loop to stop properly,
-> independently from our own tracking of the end-of-list condition.
+> When a thread is forcibly kicked out of oob context by the core, this
+> means that it ought to move quickly to in-band context in order to
+> respond to a pending kernel event, such as handling a signal. e.g. we
+> use xnthread_kick() to force a thread which is being sent a SIGTRAP
+> signal by a debugger, to receive that signal - otherwise bad things may
+> happen kernel-wise.
 > 
-> AFAIR, this was very easily reproducible by running a test app creating
-> a few tenths of threads (10-20 would suffice) which would exit shortly
-> after, while running a cat loop on /proc/xenomai/sched/next. At some
-> point, the cat loop would cause the vfile handler to crash.
+> With that in mind, what would happen if a SCHED_QUOTA thread is kicked
+> out, but belongs to a group which is given no runtime credit? Typically,
+> the user might set the quota limit to 0% for any group. In that case,
+> any thread from that group would be prevented from resuming, therefore
+> could not honor the request for switching back to in-band mode asap,
+> which is the only way to secure the handling of a pending kernel event
+> (again, such as a pending signal). To prevent this, every scheduler
+> module which might cause a thread to have no execution time due to its
+> policy must implement the sched_kick handler so that we have a bypass
+> method for that particular case.
+> 
+> SCHED_TP has no sched_kick handler because under such a policy, there is
+> no provision for permanently depriving a thread of execution time. At
+> worst, that thread would have to wait for a complete global time frame
+> to elapse before receiving renewed runtime credit. This implies that we
+> do expect the global time frame not to last for an unreasonably long
+> time, which has been a safe bet for SCHED_TP so far.
 > 
 
-OK, so this is an important independent bug fix.
+Thanks for the explanation! Would someone like to write a comment patch
+for the quota sched handler?
 
-It's not yet in next. Maybe you could sent it along with the reasoning
-as patch to the list. Would then also pick it into stable.
-
-Thanks,
 Jan
 
 -- 
