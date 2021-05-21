@@ -1,13 +1,14 @@
-Subject: Re: "cobalt/vfile: seq_file seek index must progress"
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <f31cf9eb-1bbe-f4ea-cf7e-ba10f3969236@siemens.com>
-Message-ID: <f6e381d0-2325-2b4c-31be-37c0b2574512@siemens.com>
-Date: Fri, 21 May 2021 11:48:09 +0200
+Subject: Re: [I-PIPE] ipipe-core-5.4.119-arm-2 released
+References: <d33f6074-8e95-d0d9-4153-261121d389cb@bootlin.com>
+ <f069a3cb-88c6-c269-fdba-2c9029ce5e0c@siemens.com>
+From: Michael Opdenacker <michael.opdenacker@bootlin.com>
+Message-ID: <19b928a6-2192-534e-9dc0-174e789f8b21@bootlin.com>
+Date: Fri, 21 May 2021 13:07:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <f31cf9eb-1bbe-f4ea-cf7e-ba10f3969236@siemens.com>
+In-Reply-To: <f069a3cb-88c6-c269-fdba-2c9029ce5e0c@siemens.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 20.05.21 18:13, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> https://source.denx.de/Xenomai/xenomai/-/commit/dd9a5ee0ed6f734f40d3733f9fff23394c8647bd
-> 
-> Bug fix unrelated to dovetail? There is no description, so I cannot
-> easily asses this.
-> 
+Hi Jan,
 
-Also, it seems to revert parts of
-https://source.denx.de/Xenomai/xenomai/-/commit/4cc1e7727d2144098e2f512be71dfe7199d0f7cd
-- granted, that was 11 years ago and had no description either.
+On 5/21/21 11:35 AM, Jan Kiszka wrote:
+> Yes:
+>
+> https://source.denx.de/Xenomai/xenomai/-/commit/18ab00b7b0c2c2d0ed1f560cf4fb4161f6e9bde6
 
-I'd like to clarify this before tagging some 3.1.1.
 
-Thanks,
-Jan
+Indeed, this fixes the kernel build, thanks!
+
+>
+> What's your Xenomai version? We likely need a 3.1.1 soon...
+
+
+I'm using Xenomai 3.1.
+
+Thanks again,
+
+Michael.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Michael Opdenacker, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
 
