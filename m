@@ -1,11 +1,15 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 19/25] cobalt/timer: dovetail: handle ONESHOT_STOPPED mode
-Date: Thu, 20 May 2021 23:44:29 +0200
-Message-Id: <f657ad6aff37bd5a2038163fa11b25309e4a0e3a.1621547075.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1621547075.git.jan.kiszka@siemens.com>
-References: <cover.1621547075.git.jan.kiszka@siemens.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH V3 1/3] rtdm/testing: latmus: introduce latmus driver
+Date: Fri, 21 May 2021 01:27:12 +0000
+Message-ID: <BN9PR11MB5227514AE1BF8D69CDD502A6F2299@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210421050509.31420-1-hongzhan.chen@intel.com>
+ <20210421050509.31420-2-hongzhan.chen@intel.com>
+ <bda1f940-8d6d-25c3-3947-3117c89d998d@siemens.com>
+In-Reply-To: <bda1f940-8d6d-25c3-3947-3117c89d998d@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,58 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-
-Force the next tick to be programmed in the hardware as a result of
-leaving the ONESHOT_STOPPED
-
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/kernel/dovetail/pipeline/tick.h | 4 ++++
- kernel/cobalt/dovetail/tick.c                  | 6 ++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/include/cobalt/kernel/dovetail/pipeline/tick.h b/include/cobalt/kernel/dovetail/pipeline/tick.h
-index 409581a3cb..8ac4760ecd 100644
---- a/include/cobalt/kernel/dovetail/pipeline/tick.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/tick.h
-@@ -9,4 +9,8 @@ int pipeline_install_tick_proxy(void);
- 
- void pipeline_uninstall_tick_proxy(void);
- 
-+struct xnsched;
-+
-+inline bool pipeline_must_force_program_tick(struct xnsched *sched);
-+
- #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
-diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-index 41aaa151a8..502ec27b22 100644
---- a/kernel/cobalt/dovetail/tick.c
-+++ b/kernel/cobalt/dovetail/tick.c
-@@ -84,6 +84,11 @@ void xn_core_tick(struct clock_event_device *dummy) /* hard irqs off */
- 	xnintr_core_clock_handler();
- }
- 
-+inline bool pipeline_must_force_program_tick(struct xnsched *sched)
-+{
-+	return sched->lflags & XNTSTOP;
-+}
-+
- static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
- {
- 	struct clock_event_device *real_dev;
-@@ -105,6 +110,7 @@ static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
- 	xnlock_get_irqsave(&nklock, s);
- 	sched = xnsched_current();
- 	xntimer_stop(&sched->htimer);
-+	sched->lflags |= XNTSTOP;
- 
- 	if (sched->lflags & XNIDLE) {
- 		real_dev = dev->real_device;
--- 
-2.26.2
-
+DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBUaHVyc2RheSwgTWF5IDIwLCAyMDIxIDExOjU0
+IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
+YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIFYzIDEvM10gcnRkbS90ZXN0aW5n
+OiBsYXRtdXM6IGludHJvZHVjZSBsYXRtdXMgZHJpdmVyDQo+DQo+T24gMjEuMDQuMjEgMDc6MDUs
+IGhvbmd6aGExIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gVG8gc3VwcG9ydCB0aGUgbGF0bXVzIGFw
+cGxpY2F0aW9uIGZvciBkZXRlcm1pbmluZyB0aGUgYmVzdA0KPj4gZ3Jhdml0eSB2YWx1ZXMgZm9y
+IHRoZSBjb2JhbHQgY29yZSBjbG9jaywgYW5kIG1lYXN1cmluZw0KPj4gdGhlIHJlc3BvbnNlIHRp
+bWUgdG8gdGltZXIgZXZlbnRzLg0KPj4gDQo+PiBTaWduZWQtb2ZmLWJ5OiBob25nemhhMSA8aG9u
+Z3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL3J0ZG0vdWFwaS90ZXN0
+aW5nLmggICAgIHwgICA2MyArKw0KPj4gIGtlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvS2NvbmZpZyAg
+fCAgIDEwICsNCj4+ICBrZXJuZWwvZHJpdmVycy90ZXN0aW5nL01ha2VmaWxlIHwgICAgMyArDQo+
+PiAga2VybmVsL2RyaXZlcnMvdGVzdGluZy9sYXRtdXMuYyB8IDEyMzcgKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKw0KPj4gIDQgZmlsZXMgY2hhbmdlZCwgMTMxMyBpbnNlcnRpb25zKCsp
+DQo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGtlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvbGF0bXVzLmMN
+Cj4+IA0KPg0KPi4uLg0KPg0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL3Rlc3Rpbmcv
+bGF0bXVzLmMgYi9rZXJuZWwvZHJpdmVycy90ZXN0aW5nL2xhdG11cy5jDQo+PiBuZXcgZmlsZSBt
+b2RlIDEwMDY0NA0KPj4gaW5kZXggMDAwMDAwMDAwLi5iZWY2NjIyNjANCj4+IC0tLSAvZGV2L251
+bGwNCj4+ICsrKyBiL2tlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvbGF0bXVzLmMNCj4+IEBAIC0wLDAg
+KzEsMTIzNyBAQA0KPj4gKy8qDQo+PiArICogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0y
+LjANCj4+ICsgKg0KPj4gKyAqIERlcml2ZWQgZnJvbSBYZW5vbWFpIENvYmFsdCdzIGF1dG90dW5l
+IGRyaXZlciwgaHR0cHM6Ly94ZW5vbWFpLm9yZy8NCj4+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMTQs
+IDIwMTggUGhpbGlwcGUgR2VydW0gIDxycG1AeGVub21haS5vcmc+DQo+PiArICovDQo+PiArDQo+
+PiArI2luY2x1ZGUgPGxpbnV4L3R5cGVzLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L2luaXQuaD4N
+Cj4+ICsjaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3NsYWIu
+aD4NCj4+ICsjaW5jbHVkZSA8bGludXgva2VybmVsLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3Nv
+cnQuaD4NCj4+ICsjaW5jbHVkZSA8bGludXgvY2Rldi5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9m
+cy5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9mY250bC5oPg0KPj4gKyNpbmNsdWRlIDxjb2JhbHQv
+a2VybmVsL3BpcGUuaD4NCj4+ICsjaW5jbHVkZSA8Y29iYWx0L2tlcm5lbC9zY2hlZC5oPg0KPj4g
+KyNpbmNsdWRlIDxydGRtL2lwYy5oPg0KPj4gKyNpbmNsdWRlIDxydGRtL3Rlc3RpbmcuaD4NCj4+
+ICsjaW5jbHVkZSA8cnRkbS9kcml2ZXIuaD4NCj4+ICsjaW5jbHVkZSA8cnRkbS9jb21wYXQuaD4N
+Cj4+ICsNCj4+ICsjZGVmaW5lIE9ORV9CSUxMSU9OICAxMDAwMDAwMDAwDQo+PiArI2RlZmluZSBU
+VU5FUl9TQU1QTElOR19USU1FCTUwMDAwMDAwMFVMDQo+PiArI2RlZmluZSBUVU5FUl9XQVJNVVBf
+U1RFUFMJMTANCj4+ICsjZGVmaW5lIFRVTkVSX1JFU1VMVF9TVEVQUwk0MA0KPj4gKw0KPj4gKyNk
+ZWZpbmUgcHJvZ3Jlc3MoX19ydW5uZXIsIF9fZm10LCBfX2FyZ3MuLi4pCQkJCVwNCj4+ICsJZG8g
+ewkJCQkJCQkJXA0KPj4gKwkJaWYgKChfX3J1bm5lciktPnZlcmJvc2l0eSA+IDEpCQkJCVwNCj4+
+ICsJCQlwcmludGsoWEVOT19JTkZPICJsYXRtdXMoJXMpICIgX19mbXQgIlxuIiwJXA0KPj4gKwkJ
+CSAgICAgICAoX19ydW5uZXIpLT5uYW1lLCAjI19fYXJncyk7CQlcDQo+PiArCX0gd2hpbGUgKDAp
+DQo+PiArDQo+PiArI2RlZmluZSBjb2JhbHRfaW5pdF94bnRpbWVyX29uX2NwdShfX3RpbWVyLCBf
+X2NwdSwgX19oYW5kbGVyKQkJXA0KPj4gKwkJcnRkbV90aW1lcl9pbml0X29uX2NwdShfX3RpbWVy
+LCBfX2hhbmRsZXIsCQlcDQo+PiArCQkJI19faGFuZGxlciwgX19jcHUpDQo+DQo+V2h5IHRoaXMg
+d3JhcHBlcj8gV2h5IG5vdCBjYWxsaW5nIHJ0ZG1fdGltZXIuLi4gZGlyZWN0bHk/DQoNCk9mIGNv
+dXJzZSwgd2UgY2FuIGNhbGwgcnRkbV90aW1lci4uLiBkaXJlY3RseS4gTXkgcmVhc29uIGlzIDog
+DQoNCjEuICBXaGVuIEkgcG9ydGVkIGl0IGZyb20gZXZsICwgSSBqdXN0IHdhbnQgdG8gYWxpZ24g
+d2l0aCBvcmlnaW5hbCBhcyBJIGNhbiANCiAgICB0byBwYXNzIHNhbWUgbnVtYmVyIG9mIHBhcmFt
+ZXRlcnMgaGVyZSB0byByZXBsYWNlIGV2bF9pbml0X3RpbWVyX29uX2NwdS4NCjIuICBJbiBhZGRp
+dGlvbiAsd2hlbiB1c2UgdGhpcyB3cmFwcGVyLCBjYWxsZXIgbWF5IG5vdCBuZWVkIHRvIGNhcmUg
+YWJvdXQNCiAgICBuYW1lIHdoZW4gaXQgZG9lcyBub3QgbWF0dGVyIGZvciB1c2VyIGJlY2F1c2Ug
+ZGVmaW5lIHdvdWxkIGhhbmRsZSBpdCBieSBkZWZhdWx0Lg0KICAgIA0KUmVnYXJkcw0KDQpIb25n
+emhhbiBDaGVuDQoNCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5D
+b3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
