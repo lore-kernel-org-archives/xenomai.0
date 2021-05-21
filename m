@@ -1,16 +1,17 @@
-Subject: Re: [PATCH V3 1/3] rtdm/testing: latmus: introduce latmus driver
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH V3 1/3] rtdm/testing: latmus: introduce latmus driver
+Date: Fri, 21 May 2021 06:49:45 +0000
+Message-ID: <BN9PR11MB5227BCB84F664600F9F04F44F2299@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210421050509.31420-1-hongzhan.chen@intel.com>
  <20210421050509.31420-2-hongzhan.chen@intel.com>
  <bda1f940-8d6d-25c3-3947-3117c89d998d@siemens.com>
  <BN9PR11MB5227514AE1BF8D69CDD502A6F2299@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <08fe3c7a-a541-404d-2f4f-293e78e0c958@siemens.com>
-Date: Fri, 21 May 2021 08:20:44 +0200
-MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227514AE1BF8D69CDD502A6F2299@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+ <08fe3c7a-a541-404d-2f4f-293e78e0c958@siemens.com>
+In-Reply-To: <08fe3c7a-a541-404d-2f4f-293e78e0c958@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,101 +20,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 21.05.21 03:27, Chen, Hongzhan wrote:
-> 
->>
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Thursday, May 20, 2021 11:54 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [PATCH V3 1/3] rtdm/testing: latmus: introduce latmus driver
->>
->> On 21.04.21 07:05, hongzha1 via Xenomai wrote:
->>> To support the latmus application for determining the best
->>> gravity values for the cobalt core clock, and measuring
->>> the response time to timer events.
->>>
->>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->>> ---
->>>  include/rtdm/uapi/testing.h     |   63 ++
->>>  kernel/drivers/testing/Kconfig  |   10 +
->>>  kernel/drivers/testing/Makefile |    3 +
->>>  kernel/drivers/testing/latmus.c | 1237 +++++++++++++++++++++++++++++++
->>>  4 files changed, 1313 insertions(+)
->>>  create mode 100644 kernel/drivers/testing/latmus.c
->>>
->>
->> ...
->>
->>> diff --git a/kernel/drivers/testing/latmus.c b/kernel/drivers/testing/latmus.c
->>> new file mode 100644
->>> index 000000000..bef662260
->>> --- /dev/null
->>> +++ b/kernel/drivers/testing/latmus.c
->>> @@ -0,0 +1,1237 @@
->>> +/*
->>> + * SPDX-License-Identifier: GPL-2.0
->>> + *
->>> + * Derived from Xenomai Cobalt's autotune driver, https://xenomai.org/
->>> + * Copyright (C) 2014, 2018 Philippe Gerum  <rpm@xenomai.org>
->>> + */
->>> +
->>> +#include <linux/types.h>
->>> +#include <linux/init.h>
->>> +#include <linux/module.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/sort.h>
->>> +#include <linux/cdev.h>
->>> +#include <linux/fs.h>
->>> +#include <linux/fcntl.h>
->>> +#include <cobalt/kernel/pipe.h>
->>> +#include <cobalt/kernel/sched.h>
-
-Do we need those two? RTDM should be the interface when possible. And if
-some RTDM header is need of any of them, that would be a bug and a
-separate patch.
-
->>> +#include <rtdm/ipc.h>
->>> +#include <rtdm/testing.h>
->>> +#include <rtdm/driver.h>
->>> +#include <rtdm/compat.h>
->>> +
->>> +#define ONE_BILLION  1000000000
->>> +#define TUNER_SAMPLING_TIME	500000000UL
->>> +#define TUNER_WARMUP_STEPS	10
->>> +#define TUNER_RESULT_STEPS	40
->>> +
->>> +#define progress(__runner, __fmt, __args...)				\
->>> +	do {								\
->>> +		if ((__runner)->verbosity > 1)				\
->>> +			printk(XENO_INFO "latmus(%s) " __fmt "\n",	\
->>> +			       (__runner)->name, ##__args);		\
->>> +	} while (0)
->>> +
->>> +#define cobalt_init_xntimer_on_cpu(__timer, __cpu, __handler)		\
->>> +		rtdm_timer_init_on_cpu(__timer, __handler,		\
->>> +			#__handler, __cpu)
->>
->> Why this wrapper? Why not calling rtdm_timer... directly?
-> 
-> Of course, we can call rtdm_timer... directly. My reason is : 
-> 
-> 1.  When I ported it from evl , I just want to align with original as I can 
->     to pass same number of parameters here to replace evl_init_timer_on_cpu.
-> 2.  In addition ,when use this wrapper, caller may not need to care about
->     name when it does not matter for user because define would handle it by default.
->     
-
-The current code is abstracting a single use case (you can't use the
-code over evl as-is) - that is usually not a good idea. Once you have
-two or more active use cases, abstraction can still be done.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgTWF5IDIxLCAyMDIxIDI6MjEgUE0N
+Cj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4
+ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUEFUQ0ggVjMgMS8zXSBydGRtL3Rlc3Rpbmc6IGxh
+dG11czogaW50cm9kdWNlIGxhdG11cyBkcml2ZXINCj4NCj5PbiAyMS4wNS4yMSAwMzoyNywgQ2hl
+biwgSG9uZ3poYW4gd3JvdGU6DQo+PiANCj4+Pg0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
+LS0tDQo+Pj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4g
+U2VudDogVGh1cnNkYXksIE1heSAyMCwgMjAyMSAxMTo1NCBQTQ0KPj4+IFRvOiBDaGVuLCBIb25n
+emhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4g
+U3ViamVjdDogUmU6IFtQQVRDSCBWMyAxLzNdIHJ0ZG0vdGVzdGluZzogbGF0bXVzOiBpbnRyb2R1
+Y2UgbGF0bXVzIGRyaXZlcg0KPj4+DQo+Pj4gT24gMjEuMDQuMjEgMDc6MDUsIGhvbmd6aGExIHZp
+YSBYZW5vbWFpIHdyb3RlOg0KPj4+PiBUbyBzdXBwb3J0IHRoZSBsYXRtdXMgYXBwbGljYXRpb24g
+Zm9yIGRldGVybWluaW5nIHRoZSBiZXN0DQo+Pj4+IGdyYXZpdHkgdmFsdWVzIGZvciB0aGUgY29i
+YWx0IGNvcmUgY2xvY2ssIGFuZCBtZWFzdXJpbmcNCj4+Pj4gdGhlIHJlc3BvbnNlIHRpbWUgdG8g
+dGltZXIgZXZlbnRzLg0KPj4+Pg0KPj4+PiBTaWduZWQtb2ZmLWJ5OiBob25nemhhMSA8aG9uZ3po
+YW4uY2hlbkBpbnRlbC5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgaW5jbHVkZS9ydGRtL3VhcGkvdGVz
+dGluZy5oICAgICB8ICAgNjMgKysNCj4+Pj4gIGtlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvS2NvbmZp
+ZyAgfCAgIDEwICsNCj4+Pj4gIGtlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvTWFrZWZpbGUgfCAgICAz
+ICsNCj4+Pj4gIGtlcm5lbC9kcml2ZXJzL3Rlc3RpbmcvbGF0bXVzLmMgfCAxMjM3ICsrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysNCj4+Pj4gIDQgZmlsZXMgY2hhbmdlZCwgMTMxMyBpbnNl
+cnRpb25zKCspDQo+Pj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVsL2RyaXZlcnMvdGVzdGlu
+Zy9sYXRtdXMuYw0KPj4+Pg0KPj4+DQo+Pj4gLi4uDQo+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL2tl
+cm5lbC9kcml2ZXJzL3Rlc3RpbmcvbGF0bXVzLmMgYi9rZXJuZWwvZHJpdmVycy90ZXN0aW5nL2xh
+dG11cy5jDQo+Pj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+Pj4+IGluZGV4IDAwMDAwMDAwMC4u
+YmVmNjYyMjYwDQo+Pj4+IC0tLSAvZGV2L251bGwNCj4+Pj4gKysrIGIva2VybmVsL2RyaXZlcnMv
+dGVzdGluZy9sYXRtdXMuYw0KPj4+PiBAQCAtMCwwICsxLDEyMzcgQEANCj4+Pj4gKy8qDQo+Pj4+
+ICsgKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPj4+PiArICoNCj4+Pj4gKyAq
+IERlcml2ZWQgZnJvbSBYZW5vbWFpIENvYmFsdCdzIGF1dG90dW5lIGRyaXZlciwgaHR0cHM6Ly94
+ZW5vbWFpLm9yZy8NCj4+Pj4gKyAqIENvcHlyaWdodCAoQykgMjAxNCwgMjAxOCBQaGlsaXBwZSBH
+ZXJ1bSAgPHJwbUB4ZW5vbWFpLm9yZz4NCj4+Pj4gKyAqLw0KPj4+PiArDQo+Pj4+ICsjaW5jbHVk
+ZSA8bGludXgvdHlwZXMuaD4NCj4+Pj4gKyNpbmNsdWRlIDxsaW51eC9pbml0Lmg+DQo+Pj4+ICsj
+aW5jbHVkZSA8bGludXgvbW9kdWxlLmg+DQo+Pj4+ICsjaW5jbHVkZSA8bGludXgvc2xhYi5oPg0K
+Pj4+PiArI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPg0KPj4+PiArI2luY2x1ZGUgPGxpbnV4L3Nv
+cnQuaD4NCj4+Pj4gKyNpbmNsdWRlIDxsaW51eC9jZGV2Lmg+DQo+Pj4+ICsjaW5jbHVkZSA8bGlu
+dXgvZnMuaD4NCj4+Pj4gKyNpbmNsdWRlIDxsaW51eC9mY250bC5oPg0KPj4+PiArI2luY2x1ZGUg
+PGNvYmFsdC9rZXJuZWwvcGlwZS5oPg0KPj4+PiArI2luY2x1ZGUgPGNvYmFsdC9rZXJuZWwvc2No
+ZWQuaD4NCj4NCj5EbyB3ZSBuZWVkIHRob3NlIHR3bz8gUlRETSBzaG91bGQgYmUgdGhlIGludGVy
+ZmFjZSB3aGVuIHBvc3NpYmxlLiBBbmQgaWYNCj5zb21lIFJURE0gaGVhZGVyIGlzIG5lZWQgb2Yg
+YW55IG9mIHRoZW0sIHRoYXQgd291bGQgYmUgYSBidWcgYW5kIGENCj5zZXBhcmF0ZSBwYXRjaC4N
+Cg0KVGhhbmtzIGZvciB5b3VyIHBvaW50aW5nIG91dC4gWWVzLCB3ZSBkbyBub3QgbmVlZCBzY2hl
+ZC5oIGhlcmUgYnV0IHdlIG5lZWQgcGlwZS5oDQpiZWNhdXNlIGxhdG11cyBtYWtlIHVzZSBvZiB4
+bnBpcGUuDQoNCj4NCj4+Pj4gKyNpbmNsdWRlIDxydGRtL2lwYy5oPg0KPj4+PiArI2luY2x1ZGUg
+PHJ0ZG0vdGVzdGluZy5oPg0KPj4+PiArI2luY2x1ZGUgPHJ0ZG0vZHJpdmVyLmg+DQo+Pj4+ICsj
+aW5jbHVkZSA8cnRkbS9jb21wYXQuaD4NCj4+Pj4gKw0KPj4+PiArI2RlZmluZSBPTkVfQklMTElP
+TiAgMTAwMDAwMDAwMA0KPj4+PiArI2RlZmluZSBUVU5FUl9TQU1QTElOR19USU1FCTUwMDAwMDAw
+MFVMDQo+Pj4+ICsjZGVmaW5lIFRVTkVSX1dBUk1VUF9TVEVQUwkxMA0KPj4+PiArI2RlZmluZSBU
+VU5FUl9SRVNVTFRfU1RFUFMJNDANCj4+Pj4gKw0KPj4+PiArI2RlZmluZSBwcm9ncmVzcyhfX3J1
+bm5lciwgX19mbXQsIF9fYXJncy4uLikJCQkJXA0KPj4+PiArCWRvIHsJCQkJCQkJCVwNCj4+Pj4g
+KwkJaWYgKChfX3J1bm5lciktPnZlcmJvc2l0eSA+IDEpCQkJCVwNCj4+Pj4gKwkJCXByaW50ayhY
+RU5PX0lORk8gImxhdG11cyglcykgIiBfX2ZtdCAiXG4iLAlcDQo+Pj4+ICsJCQkgICAgICAgKF9f
+cnVubmVyKS0+bmFtZSwgIyNfX2FyZ3MpOwkJXA0KPj4+PiArCX0gd2hpbGUgKDApDQo+Pj4+ICsN
+Cj4+Pj4gKyNkZWZpbmUgY29iYWx0X2luaXRfeG50aW1lcl9vbl9jcHUoX190aW1lciwgX19jcHUs
+IF9faGFuZGxlcikJCVwNCj4+Pj4gKwkJcnRkbV90aW1lcl9pbml0X29uX2NwdShfX3RpbWVyLCBf
+X2hhbmRsZXIsCQlcDQo+Pj4+ICsJCQkjX19oYW5kbGVyLCBfX2NwdSkNCj4+Pg0KPj4+IFdoeSB0
+aGlzIHdyYXBwZXI/IFdoeSBub3QgY2FsbGluZyBydGRtX3RpbWVyLi4uIGRpcmVjdGx5Pw0KPj4g
+DQo+PiBPZiBjb3Vyc2UsIHdlIGNhbiBjYWxsIHJ0ZG1fdGltZXIuLi4gZGlyZWN0bHkuIE15IHJl
+YXNvbiBpcyA6IA0KPj4gDQo+PiAxLiAgV2hlbiBJIHBvcnRlZCBpdCBmcm9tIGV2bCAsIEkganVz
+dCB3YW50IHRvIGFsaWduIHdpdGggb3JpZ2luYWwgYXMgSSBjYW4gDQo+PiAgICAgdG8gcGFzcyBz
+YW1lIG51bWJlciBvZiBwYXJhbWV0ZXJzIGhlcmUgdG8gcmVwbGFjZSBldmxfaW5pdF90aW1lcl9v
+bl9jcHUuDQo+PiAyLiAgSW4gYWRkaXRpb24gLHdoZW4gdXNlIHRoaXMgd3JhcHBlciwgY2FsbGVy
+IG1heSBub3QgbmVlZCB0byBjYXJlIGFib3V0DQo+PiAgICAgbmFtZSB3aGVuIGl0IGRvZXMgbm90
+IG1hdHRlciBmb3IgdXNlciBiZWNhdXNlIGRlZmluZSB3b3VsZCBoYW5kbGUgaXQgYnkgZGVmYXVs
+dC4NCj4+ICAgICANCj4NCj5UaGUgY3VycmVudCBjb2RlIGlzIGFic3RyYWN0aW5nIGEgc2luZ2xl
+IHVzZSBjYXNlICh5b3UgY2FuJ3QgdXNlIHRoZQ0KPmNvZGUgb3ZlciBldmwgYXMtaXMpIC0gdGhh
+dCBpcyB1c3VhbGx5IG5vdCBhIGdvb2QgaWRlYS4gT25jZSB5b3UgaGF2ZQ0KPnR3byBvciBtb3Jl
+IGFjdGl2ZSB1c2UgY2FzZXMsIGFic3RyYWN0aW9uIGNhbiBzdGlsbCBiZSBkb25lLg0KDQpJcyBp
+dCBiZXR0ZXIgdG8gbW92ZSB0aGlzIHdyYXBwZXIgdG8gLi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwv
+cnRkbS9kcml2ZXIuaCAganVzdCBsaWtlIGV2bF9pbml0X3RpbWVyX29uX3JxDQpkb2luZyBpbiBp
+bmNsdWRlL2V2bC90aW1lci5oPw0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCj4NCj5KYW4N
+Cj4NCg==
 
