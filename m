@@ -1,13 +1,11 @@
-Subject: Re: xnsched_kick
-References: <CAK6DXL2H4OuDGehPaHwDtArtg=Y2H+xs6eC49_9NueYPtxRCHA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <07f12d49-24fd-cc02-c5c6-143102e1c30f@siemens.com>
-Date: Fri, 21 May 2021 13:47:55 +0200
+References: <f31cf9eb-1bbe-f4ea-cf7e-ba10f3969236@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: "cobalt/vfile: seq_file seek index must progress"
+In-reply-to: <f31cf9eb-1bbe-f4ea-cf7e-ba10f3969236@siemens.com>
+Date: Fri, 21 May 2021 16:20:08 +0200
+Message-ID: <8735ugdv8n.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAK6DXL2H4OuDGehPaHwDtArtg=Y2H+xs6eC49_9NueYPtxRCHA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Barletta <barlettamarco8@gmail.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 21.05.21 13:21, Marco Barletta via Xenomai wrote:
-> Hi everyone, related to the sched_quota patch I posted about one week ago.
-> I'm trying to understand why xnsched_kick is needed, in which situation is
-> called. Reading the code it seems it's called when there's a xeno thread
-> that must be downgraded and scheduled in Linux, but I didn't understand why
-> there's the need to run to complention without respecting group budget. Can
-> you help me?
 
-I think that is a valid question because sched-tp does not implement
-such a scheme. Basic information can be found in
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-https://source.denx.de/Xenomai/xenomai/-/commit/cee27b2945f92857308dcde619a3e64607b5327e
+> Hi Philippe,
+>
+> https://source.denx.de/Xenomai/xenomai/-/commit/dd9a5ee0ed6f734f40d3733f9fff23394c8647bd
+>
+> Bug fix unrelated to dovetail? There is no description, so I cannot
+> easily asses this.
+>
 
-I would forward this for further background to the designer...
+Yeah, not good. The idea is that the offset field we receive from the
+kernel must progress in order for the loop to stop properly,
+independently from our own tracking of the end-of-list condition.
 
-Jan
+AFAIR, this was very easily reproducible by running a test app creating
+a few tenths of threads (10-20 would suffice) which would exit shortly
+after, while running a cat loop on /proc/xenomai/sched/next. At some
+point, the cat loop would cause the vfile handler to crash.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
