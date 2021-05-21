@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.190-cip49-arm-15 released
-Message-Id: <E1ljwlw-0008AD-Nn@xenomai.org>
-Date: Fri, 21 May 2021 06:28:28 +0200
+Subject: [I-PIPE] ipipe-core-5.4.119-arm-2 released
+Message-Id: <E1ljwqI-0000H1-Jb@xenomai.org>
+Date: Fri, 21 May 2021 06:32:58 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.19.190-cip49-arm-15.patch
+Download URL: https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.119-arm-2.patch
 
 Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-4.19.190-cip49-arm-15
+Release tag: ipipe-core-5.4.119-arm-2
 
