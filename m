@@ -1,6 +1,7 @@
-Date: Fri, 21 May 2021 15:43:30 +0800
+Date: Fri, 21 May 2021 15:46:42 +0800
 From: Jamie Huang <jamienstar@163.com>
-Message-ID: <20210521154330.1f2f4819@jamie-ThinkPad>
+Subject: Can dovetail in kernel 5.4 support both evl and xenomai 3.x ?
+Message-ID: <20210521154642.36c9eb19@jamie-ThinkPad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
