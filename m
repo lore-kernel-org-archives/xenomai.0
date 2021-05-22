@@ -1,13 +1,11 @@
+References: <b711cb1b-096c-d278-02be-ed8ff208a568@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: linux-v5.10.y-dovetail
+In-reply-to: <b711cb1b-096c-d278-02be-ed8ff208a568@siemens.com>
+Date: Sat, 22 May 2021 12:02:03 +0200
+Message-ID: <87wnrrccis.fsf@xenomai.org>
 MIME-Version: 1.0
-References: <CAK6DXL2H4OuDGehPaHwDtArtg=Y2H+xs6eC49_9NueYPtxRCHA@mail.gmail.com>
- <87zgwocfoy.fsf@xenomai.org>
- <64d36bcd-5459-6224-da92-5ac7c30128d8@siemens.com>
-In-Reply-To: <64d36bcd-5459-6224-da92-5ac7c30128d8@siemens.com>
-From: Marco Barletta <barlettamarco8@gmail.com>
-Date: Sat, 22 May 2021 00:04:57 +0200
-Message-ID: <CAK6DXL2qD9FYuOmA-NnPgEyGGRcfA79WRMH3L8q=oAHoxbN=uA@mail.gmail.com>
-Subject: Re: xnsched_kick
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +15,44 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-I want to thank you for time and patience as well!
 
-Il giorno ven 21 mag 2021 alle ore 17:13 Jan Kiszka <jan.kiszka@siemens.com>
-ha scritto:
+Hi Jan,
 
-> On 21.05.21 16:41, Philippe Gerum via Xenomai wrote:
-> >
-> > Marco Barletta via Xenomai <xenomai@xenomai.org> writes:
-> >
-> >> Hi everyone, related to the sched_quota patch I posted about one week
-> ago.
-> >> I'm trying to understand why xnsched_kick is needed, in which situation
-> is
-> >> called. Reading the code it seems it's called when there's a xeno thread
-> >> that must be downgraded and scheduled in Linux, but I didn't understand
-> why
-> >> there's the need to run to complention without respecting group budget.
-> Can
-> >> you help me?
-> >> Best regards.
-> >
-> > When a thread is forcibly kicked out of oob context by the core, this
-> > means that it ought to move quickly to in-band context in order to
-> > respond to a pending kernel event, such as handling a signal. e.g. we
-> > use xnthread_kick() to force a thread which is being sent a SIGTRAP
-> > signal by a debugger, to receive that signal - otherwise bad things may
-> > happen kernel-wise.
-> >
-> > With that in mind, what would happen if a SCHED_QUOTA thread is kicked
-> > out, but belongs to a group which is given no runtime credit? Typically,
-> > the user might set the quota limit to 0% for any group. In that case,
-> > any thread from that group would be prevented from resuming, therefore
-> > could not honor the request for switching back to in-band mode asap,
-> > which is the only way to secure the handling of a pending kernel event
-> > (again, such as a pending signal). To prevent this, every scheduler
-> > module which might cause a thread to have no execution time due to its
-> > policy must implement the sched_kick handler so that we have a bypass
-> > method for that particular case.
-> >
-> > SCHED_TP has no sched_kick handler because under such a policy, there is
-> > no provision for permanently depriving a thread of execution time. At
-> > worst, that thread would have to wait for a complete global time frame
-> > to elapse before receiving renewed runtime credit. This implies that we
-> > do expect the global time frame not to last for an unreasonably long
-> > time, which has been a safe bet for SCHED_TP so far.
-> >
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> Hi Philippe,
 >
-> Thanks for the explanation! Would someone like to write a comment patch
-> for the quota sched handler?
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+> first, is source.denx.de/Xenomai/xenomai4/linux-evl.git already
+> replacing git.evlproject.org/linux-evl.git? At least CI is currently
+> stuck over the latter [update: was stuck, it's moving again].
 >
 
+Not yet, I'll announce when the switch to
+source.denx.de/Xenomai/xenomai4 is complete, with a grace period of one
+week from that point to update the automated procedures there may be,
+before the trees at git.evlproject.org are decommissioned eventually. In
+the meantime, I'll make sure both sides remain on sync.
+
+> Regarding 5.10, I think we are getting closer to the point where our
+> users also need a merging stable branch to track what happens
+> dovetail-wise (at least I have such folks). Would you move
+> linux-v5.10.y-dovetail in that way forward from now on? Or is there a
+> need for one more hard rebase first?
+>
+> Some linux-v5.10.y-dovetail-rebase for the latest version could still be
+> provided in order to ease export to downstream kernels. That would bring
+> us in line with how -rt is maintained e.g.
+>
+> If you need help on the stable side, let me know.
+>
+
+I don't plan to maintain merging branches myself, only rebase ones. I'll
+rename the stable branches to *-rebase shortly, in order to follow the
+same convention as -rt, clearing the namespace for pulling the work of
+whoever wants to maintain merging branches.
 
 -- 
-Marco Barletta
+Philippe.
+
