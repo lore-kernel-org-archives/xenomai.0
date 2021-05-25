@@ -1,7 +1,14 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH] rtdm/testing: latmus: clean up patch
-Date: Tue, 25 May 2021 02:12:13 -0400
-Message-Id: <20210525061213.24193-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH] y2038: testsuite/smokey/y2038: replace syscall with
+ XENOMAI_SYSCALL
+References: <1621922726-7007-1-git-send-email-chensong_2000@189.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9384709e-6dc5-f730-a9f5-53afcf8387af@siemens.com>
+Date: Tue, 25 May 2021 08:44:21 +0200
+MIME-Version: 1.0
+In-Reply-To: <1621922726-7007-1-git-send-email-chensong_2000@189.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,68 +17,279 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org, xenomai@xenomai.org
+To: Song Chen <chensong_2000@189.cn>, florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-1. remove unnecessary include file
-2. remove wrapper for rtdm_timer_init_on_cpu and directly call it
+On 25.05.21 08:05, Song Chen via Xenomai wrote:
+> replace syscall with XENOMAI_SYSCALL and handle return value differently
+> 
+> Signed-off-by: Song Chen <chensong_2000@189.cn>
+> ---
+>  testsuite/smokey/y2038/syscall-tests.c | 128 +++++++++++++++------------------
+>  1 file changed, 56 insertions(+), 72 deletions(-)
+> 
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> index 45f2fbe..f62ad9d 100644
+> --- a/testsuite/smokey/y2038/syscall-tests.c
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -246,23 +246,23 @@ static int __mutex_timdlock64(pthread_mutex_t *lock)
+>  
+>  	ret = pthread_mutex_lock(lock);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	ret = pthread_create(&tid, NULL, __mutex_timedlock64_thread, lock);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	ret = pthread_join(tid, NULL);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	ret = pthread_mutex_unlock(lock);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	ret = pthread_mutex_destroy(lock);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	return 0;
+>  }
+> @@ -329,7 +329,7 @@ static int test_sc_cobalt_mutex_timedlock64(void)
+>  	 */
+>  	ret = __mutex_timdlock64(&lock);
+>  	if (ret)
+> -		return errno;
+> +		return -errno;
+>  
+>  	return 0;
+>  }
+> @@ -341,23 +341,21 @@ static int test_sc_cobalt_clock_gettime64(void)
+>  	struct xn_timespec64 ts64;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+> -	ret = syscall(code, NULL, NULL);
+> -	if (ret == -1 && errno == ENOSYS) {
+> +	ret = XENOMAI_SYSCALL2(code, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+>  		smokey_note("clock_gettime64: skipped. (no kernel support)");
+>  		return 0; // Not implemented, nothing to test, success
+>  	}
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+>  
+>  	/* Providing an invalid address has to deliver EFAULT */
+> -	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	/* Provide a valid 64bit timespec*/
+> -	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, &ts64);
+>  	if (!smokey_assert(!ret))
+> -		return errno;
+> +		return ret ? ret : -EINVAL;
+>  
+>  	return 0;
+>  }
+> @@ -370,31 +368,27 @@ static int test_sc_cobalt_clock_settime64(void)
+>  	struct timespec now;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+> -	ret = syscall(code, NULL, NULL);
+> -	if (ret == -1 && errno == ENOSYS) {
+> +	ret = XENOMAI_SYSCALL2(code, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+>  		smokey_note("clock_settime64: skipped. (no kernel support)");
+>  		return 0; // Not implemented, nothing to test, success
+>  	}
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+>  
+>  	/* Providing an invalid address has to deliver EFAULT */
+> -	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	/* Provide a valid 64bit timespec*/
+>  	ret = clock_gettime(CLOCK_MONOTONIC, &now);
+> -	if (ret) {
+> -		smokey_warning("clock_gettime failed in cloc_settime64.");
+> -		return errno;
+> -	}
+> +	if (ret)
+> +		return -errno;
+>  
+> -	ts64.tv_sec  = now.tv_sec;
+> +	ts64.tv_sec  = now.tv_sec + 1;
+>  	ts64.tv_nsec = now.tv_nsec;
+> -	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
+> -	if (!smokey_assert(!ret))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, &ts64);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	return 0;
+>  }
+> @@ -408,39 +402,34 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+>  	long interval = 1;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+> -	ret = syscall(code, NULL, NULL, NULL, NULL);
+> -	if (ret == -1 && errno == ENOSYS) {
+> +	ret = XENOMAI_SYSCALL4(code, NULL, NULL, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+>  		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
+>  		return 0; // Not implemented, nothing to test, success
+>  	}
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+>  
+>  	/* Providing an invalid address has to deliver EFAULT */
+> -	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
+> +	ret = XENOMAI_SYSCALL4(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
+>  				(void *)0xdeadbeefUL, &rmt);
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	/* Provide a valid 64bit timespec, round 1*/
+>  	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+> -	if (ret) {
+> -		smokey_warning("clock_gettime failed in clock_nanosleep64.");
+> -		return errno;
+> -	}
+> +	if (ret)
+> +		return -errno;
+> +
+>  	next.tv_sec  = ts1.tv_sec + interval;
+>  	next.tv_nsec = ts1.tv_nsec;
+>  
+> -	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
+> +	ret = XENOMAI_SYSCALL4(code, CLOCK_MONOTONIC, TIMER_ABSTIME,
+>  				&next, (void *)0xdeadbeefUL);
+>  	if (!smokey_assert(!ret))
+> -		return errno;
+> +		return ret ? ret : -EINVAL;
+>  
+>  	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
+> -	if (ret) {
+> -		smokey_warning("clock_gettime failed in clock_nanosleep64.");
+> -		return errno;
+> -	}
+> +	if (ret)
+> +		return -errno;
+>  
+>  	timespec_sub(&delta, &ts2, &ts1);
+>  	if (delta.tv_sec < interval)
+> @@ -450,15 +439,13 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+>  	next.tv_sec  = ts2.tv_sec + interval;
+>  	next.tv_nsec = ts2.tv_nsec;
+>  
+> -	ret = syscall(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
+> +	ret = XENOMAI_SYSCALL4(code, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
+>  	if (!smokey_assert(!ret))
+> -		return errno;
+> +		return ret ? ret : -EINVAL;
+>  
+>  	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+> -	if (ret) {
+> -		smokey_warning("clock_gettime failed in clock_nanosleep64.");
+> -		return errno;
+> -	}
+> +	if (ret)
+> +		return -errno;
+>  
+>  	timespec_sub(&delta, &ts1, &ts2);
+>  	if (delta.tv_sec < interval)
+> @@ -474,23 +461,22 @@ static int test_sc_cobalt_clock_getres64(void)
+>  	struct xn_timespec64 ts64;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+> -	ret = syscall(code, NULL, NULL);
+> -	if (ret == -1 && errno == ENOSYS) {
+> +	ret = XENOMAI_SYSCALL2(code, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+>  		smokey_note("clock_getres64: skipped. (no kernel support)");
+>  		return 0; // Not implemented, nothing to test, success
+>  	}
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+>  
+>  	/* Providing an invalid address has to deliver EFAULT */
+> -	ret = syscall(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	/* Provide a valid 64bit timespec*/
+> -	ret = syscall(code, CLOCK_MONOTONIC, &ts64);
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_MONOTONIC, &ts64);
+>  	if (!smokey_assert(!ret))
+> -		return errno;
+> +		return ret ? ret : -EINVAL;
+> +
+>  	if (ts64.tv_sec != 0 || ts64.tv_nsec != 1)
+>  		smokey_warning("High resolution timers not available\n");
+>  
+> @@ -504,25 +490,23 @@ static int test_sc_cobalt_clock_adjtime64(void)
+>  	struct xn_timex64 tx64 = {};
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+> -	ret = syscall(code, NULL, NULL);
+> -	if (ret == -1 && errno == ENOSYS) {
+> +	ret = XENOMAI_SYSCALL2(code, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+>  		smokey_note("clock_adjtime64: skipped. (no kernel support)");
+>  		return 0; // Not implemented, nothing to test, success
+>  	}
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+>  
+>  	/* Providing an invalid address has to deliver EFAULT */
+> -	ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
+> -	if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	/* Provide a valid 64bit timex*/
+>  	tx64.modes = ADJ_SETOFFSET;
+>  	tx64.time.tv_usec = 123;
+> -	ret = syscall(code, CLOCK_REALTIME, &tx64);
+> -	if (!smokey_assert(!ret))
+> -		return errno;
+> +	ret = XENOMAI_SYSCALL2(code, CLOCK_REALTIME, &tx64);
+> +	if (!smokey_assert(ret))
+> +		return ret ? ret : -EINVAL;
+>  
+>  	return 0;
+>  }
+> 
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+What is the baseline of this? It seems to be an unmerged patch, thus you
+rather want to send out a new version of that other patch, including
+this fix.
 
-diff --git a/kernel/drivers/testing/latmus.c b/kernel/drivers/testing/latmus.c
-index bef662260..36f829c0d 100644
---- a/kernel/drivers/testing/latmus.c
-+++ b/kernel/drivers/testing/latmus.c
-@@ -15,7 +15,6 @@
- #include <linux/fs.h>
- #include <linux/fcntl.h>
- #include <cobalt/kernel/pipe.h>
--#include <cobalt/kernel/sched.h>
- #include <rtdm/ipc.h>
- #include <rtdm/testing.h>
- #include <rtdm/driver.h>
-@@ -33,10 +32,6 @@
- 			       (__runner)->name, ##__args);		\
- 	} while (0)
- 
--#define cobalt_init_xntimer_on_cpu(__timer, __cpu, __handler)		\
--		rtdm_timer_init_on_cpu(__timer, __handler,		\
--			#__handler, __cpu)
--
- struct latmus_message {
- 	struct xnpipe_mh mh;
- 	char data[];
-@@ -342,7 +337,8 @@ static struct latmus_runner *create_irq_runner(int cpu)
- 	};
- 
- 	init_runner_base(&irq_runner->runner);
--	cobalt_init_xntimer_on_cpu(&irq_runner->timer, cpu, latmus_irq_handler);
-+	rtdm_timer_init_on_cpu(&irq_runner->timer, latmus_irq_handler,
-+			"latmus_irq_handler", cpu);
- 
- 	return &irq_runner->runner;
- }
-@@ -440,8 +436,8 @@ static struct latmus_runner *create_sirq_runner(int cpu)
- 	sirq_runner->sirq = sirq;
- 	sirq_runner->sirq_percpu = sirq_percpu;
- 	init_runner_base(&sirq_runner->runner);
--	cobalt_init_xntimer_on_cpu(&sirq_runner->timer, cpu,
--			latmus_sirq_timer_handler);
-+	rtdm_timer_init_on_cpu(&sirq_runner->timer, latmus_sirq_timer_handler,
-+			"latmus_sirq_timer_handler", cpu);
- 
- 	for_each_possible_cpu(_cpu)
- 		*per_cpu_ptr(sirq_percpu, _cpu) = sirq_runner;
-@@ -676,7 +672,8 @@ static struct latmus_runner *create_uthread_runner(int cpu)
- 	};
- 
- 	init_runner_base(&u_runner->runner);
--	cobalt_init_xntimer_on_cpu(&u_runner->timer, cpu, latmus_pulse_handler);
-+	rtdm_timer_init_on_cpu(&u_runner->timer, latmus_pulse_handler,
-+			"latmus_pulse_handler", cpu);
- 	xntimer_set_gravity(&u_runner->timer, XNTIMER_UGRAVITY);
- 	rtdm_event_init(&u_runner->pulse, 0);
- 
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
