@@ -1,9 +1,13 @@
-Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for
- mutex_timedlock64
-Date: Tue, 25 May 2021 11:03:56 +0800
-Message-Id: <1621911836-29209-1-git-send-email-chensong_2000@189.cn>
+Subject: Re: [PATCH 1/2] cobalt/vfile: seq_file seek index must progress
+References: <20210524073240.450274-1-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <8a8f6cc0-02fc-8f3e-9ece-d016af28ec8a@siemens.com>
+Date: Tue, 25 May 2021 08:00:15 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210524073240.450274-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,186 +16,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-add test case for mutex_timedlock64 in testsuite
+On 24.05.21 09:32, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> The offset field we receive from the kernel in a vfile next() handler
+> must progress in order for the loop to stop properly, independently
+> from our own tracking of the end-of-list condition.
+> 
+> Bug is reproducible by running two loops in parallel:
+> 
+> - one continuously spawning an application which creates a few tenths
+> of threads (10-20 would suffice) before exiting shortly after.
+> 
+> - another one continuously reading from /proc/xenomai/sched/{threads,
+>   stat, acct}.
+> 
+> At some point, the vfile handler should cause a kernel crash.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  kernel/cobalt/vfile.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
+> index c7b81a704..fae0cc377 100644
+> --- a/kernel/cobalt/vfile.c
+> +++ b/kernel/cobalt/vfile.c
+> @@ -109,11 +109,11 @@ static void *vfile_snapshot_next(struct seq_file *seq, void *v, loff_t *offp)
+>  	struct xnvfile_snapshot_iterator *it = seq->private;
+>  	loff_t pos = *offp;
+>  
+> +	++*offp;
+> +
+>  	if (pos >= it->nrdata)
+>  		return NULL;
+>  
+> -	++*offp;
+> -
+>  	return it->databuf + pos * it->vfile->datasz;
+>  }
+>  
+> @@ -452,17 +452,15 @@ static void *vfile_regular_next(struct seq_file *seq, void *v, loff_t *offp)
+>  	struct xnvfile_regular *vfile = it->vfile;
+>  	void *data;
+>  
+> +	it->pos = ++(*offp);
+> +
+>  	if (vfile->ops->next == NULL)
+>  		return NULL;
+>  
+> -	it->pos = *offp + 1;
+> -
+>  	data = vfile->ops->next(it);
+>  	if (data == NULL)
+>  		return NULL;
+>  
+> -	*offp = it->pos;
+> -
+>  	return data;
+>  }
+>  
+> 
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
----
- testsuite/smokey/y2038/syscall-tests.c | 139 ++++++++++++++++++++++++++++++++-
- 1 file changed, 138 insertions(+), 1 deletion(-)
+Thanks, applied to next and all stable branches.
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 22fd9b6..45f2fbe 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -14,6 +14,8 @@
- #include <unistd.h>
- #include <stdint.h>
- #include <errno.h>
-+#include <pthread.h>
-+#include <asm/xenomai/syscall.h>
- 
- smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
- 
-@@ -200,6 +202,138 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 	return 0;
- }
- 
-+static void *__mutex_timedlock64_thread(void *arg)
-+{
-+	pthread_mutex_t *lock = arg;
-+	long ret;
-+	int code = sc_cobalt_mutex_timedlock64;
-+	struct xn_timespec64 ts64, ts_wu;
-+	struct timespec ts_nat;
-+
-+	ret = clock_gettime(CLOCK_REALTIME, &ts_nat);
-+	if (ret)
-+		return NULL;
-+
-+	ts64.tv_sec = ts_nat.tv_sec;
-+	ts64.tv_nsec = ts_nat.tv_nsec;
-+	ts_add_ns(&ts64, 5000000);
-+
-+	ret = XENOMAI_SYSCALL2(code, lock, &ts64);
-+	if (!smokey_assert(ret == -ETIMEDOUT))
-+		return NULL;
-+
-+	ret = clock_gettime(CLOCK_REALTIME, &ts_nat);
-+	if (ret)
-+		return NULL;
-+
-+	ts_wu.tv_sec = ts_nat.tv_sec;
-+	ts_wu.tv_nsec = ts_nat.tv_nsec;
-+
-+	if (ts_less(&ts_wu, &ts64))
-+		smokey_warning("mutex_timedlock64 returned to early!\n"
-+			       "Expected wakeup at: %lld sec %lld nsec\n"
-+			       "Back at           : %lld sec %lld nsec\n",
-+			       ts64.tv_sec, ts64.tv_nsec, ts_wu.tv_sec,
-+			       ts_wu.tv_nsec);
-+
-+	return NULL;
-+}
-+
-+static int __mutex_timdlock64(pthread_mutex_t *lock)
-+{
-+	long ret;
-+	pthread_t tid;
-+
-+	ret = pthread_mutex_lock(lock);
-+	if (ret)
-+		return errno;
-+
-+	ret = pthread_create(&tid, NULL, __mutex_timedlock64_thread, lock);
-+	if (ret)
-+		return errno;
-+
-+	ret = pthread_join(tid, NULL);
-+	if (ret)
-+		return errno;
-+
-+	ret = pthread_mutex_unlock(lock);
-+	if (ret)
-+		return errno;
-+
-+	ret = pthread_mutex_destroy(lock);
-+	if (ret)
-+		return errno;
-+
-+	return 0;
-+}
-+
-+static int test_sc_cobalt_mutex_timedlock64(void)
-+{
-+	long ret;
-+	int code = sc_cobalt_mutex_timedlock64;
-+	struct xn_timespec64 ts64;
-+
-+	pthread_mutexattr_t mattr;
-+	pthread_mutex_t lock;
-+
-+	pthread_mutexattr_init(&mattr);
-+	pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_NORMAL);
-+	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
-+	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
-+	ret = __RT(pthread_mutex_init(&lock, &mattr));
-+	pthread_mutexattr_destroy(&mattr);
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = XENOMAI_SYSCALL2(code, NULL, NULL);
-+	if (ret == -ENOSYS) {
-+		smokey_note("mutex_timedlock64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -EINVAL))
-+		return ret ? ret : -EINVAL;
-+
-+	/* Timeout is never read by the kernel, so NULL should be OK */
-+	ret = XENOMAI_SYSCALL2(code, &lock, NULL);
-+	if (!smokey_assert(ret))
-+		return ret ? ret : -EINVAL;
-+
-+	/*
-+	 * The mutex is already exhausted, so calling again will validate
-+	 * the provided timeout now. Providing NULL has to deliver EFAULT
-+	 */
-+	ret = XENOMAI_SYSCALL2(code, &lock, NULL);
-+	if (!smokey_assert(ret))
-+		return ret ? ret : -EINVAL;
-+
-+	/*
-+	 * The mutex is already exhausted, so calling again will validate
-+	 * the provided timeout now. Providing an invalid address has to deliver
-+	 * EFAULT
-+	 */
-+	ret = XENOMAI_SYSCALL2(code, &lock, (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret))
-+		return ret ? ret : -EINVAL;
-+
-+	/*
-+	 * The mutex is still exhausted, calling again will validate the
-+	 * timeout, providing an invalid timeout has to deliver EINVAL
-+	 */
-+	ts64.tv_sec = -1;
-+	ret = XENOMAI_SYSCALL2(code, &lock, &ts64);
-+	if (!smokey_assert(ret))
-+		return ret ? ret : -EINVAL;
-+
-+	/*
-+	 * Providing a valid timeout, waiting for it to time out and check
-+	 * that we didn't come back to early.
-+	 */
-+	ret = __mutex_timdlock64(&lock);
-+	if (ret)
-+		return errno;
-+
-+	return 0;
-+}
-+
- static int test_sc_cobalt_clock_gettime64(void)
- {
- 	long ret;
-@@ -395,7 +529,6 @@ static int test_sc_cobalt_clock_adjtime64(void)
- 
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
--
- 	int ret;
- 
- 	ret = test_sc_cobalt_sem_timedwait64();
-@@ -422,5 +555,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
- 
-+	ret = test_sc_cobalt_mutex_timedlock64();
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
+Jan
+
 -- 
-2.7.4
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
