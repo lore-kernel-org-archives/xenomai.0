@@ -1,19 +1,14 @@
-References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
- <87lf83cj7k.fsf@xenomai.org>
- <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
- <87y2c3b092.fsf@xenomai.org>
- <3bf57e72-9992-0ab4-a956-d6f6197bfe24@siemens.com>
- <87sg2bat1l.fsf@xenomai.org>
- <c4aad772-ea81-11e5-afd3-ff269c6b2899@siemens.com>
- <87o8czar20.fsf@xenomai.org>
- <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
-In-reply-to: <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
-Message-ID: <87a6ohzjoi.fsf@xenomai.org>
-Date: Wed, 26 May 2021 15:52:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAB9YM8jgdbEYTB8Sb7212KWcLEkRDSVjEYZ8P2qCCStaX9CuPQ@mail.gmail.com>
+ <a8412431-ccfb-dcc9-dfba-2da5374bcf1a@siemens.com>
+In-Reply-To: <a8412431-ccfb-dcc9-dfba-2da5374bcf1a@siemens.com>
+From: =?UTF-8?Q?Jo=C3=A3o_Costa?= <joaocostalapin@gmail.com>
+Date: Thu, 27 May 2021 12:52:04 +0100
+Message-ID: <CAB9YM8hdM5R9nsALRGQnXZ4hX0drJdYMDy=OroH92EzA_rqi5A@mail.gmail.com>
+Subject: Re: error: implicit declarations while compiling
+ (xenomai3.1+ubuntu20.04)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,157 +18,79 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 25.05.21 15:20, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 25.05.21 14:37, Philippe Gerum wrote:
->>>>
->>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>
->>>>> On 25.05.21 12:01, Philippe Gerum wrote:
->>>>>>
->>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>
->>>>>>> On 25.05.21 10:46, Philippe Gerum wrote:
->>>>>>>>
->>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>>
->>>>>>>>> Hi Philippe,
->>>>>>>>>
->>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight service, compared
->>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothing you would
->>>>>>>>> expect from a "send a signal" service, specifically from
->>>>>>>>> rtdm_nrtsig_pend which does not even make use of the sending extra payload.
->>>>>>>>>
->>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd usecases are not
->>>>>>>>> time-sensitive anyway).
->>>>>>>>>
->>>>>>>>
->>>>>>>> Nope, I cannot see any significantly better option which would still
->>>>>>>> allow a common implementation we can map on top of Dovetail / I-pipe.
->>>>>>>>
->>>>>>>
->>>>>>> E.g. pre-allocate the work object for data-free signals and use that -
->>>>>>> or not send it when it is in use, thus pending.
->>>>>>>
->>>>>>
->>>>>> Ok, let's recap:
->>>>>>
->>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely uses a
->>>>>>   user-provided memory block, containing a request header. Current
->>>>>>   callers should either already care for not resending a request
->>>>>>   uselessly because it is pending (e.g. [1]), or their internal logic
->>>>>>   should prevent that (e.g. [2]). This interface always convey user data
->>>>>>   by reference.
->>>>>
->>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedule_nrt_work
->>>>> to do the work, it's the other way around. False alarm here.
->>>>>
->>>>>>
->>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct in order to
->>>>>>   convey a request block we cannot squeeze into a work_struct, since the
->>>>>>   latter is in itself an anchor type the user may embed into its own
->>>>>>   private argument block. I'm unsure ensuring that
->>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be worth it, as
->>>>>>   this call is not supposed to be used frenetically on some hot path in
->>>>>>   the first place. But if we'd want to do that, then we would have to
->>>>>>   change the signature of rtdm_schedule_nrt_work(), so that we gain a
->>>>>>   persistent context data we could use for determining whether a nrt
->>>>>>   work request is in flight. We could not probe the work_struct for that
->>>>>>   purpose, that would be racy.
->>>>>>
->>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work() without
->>>>>> changing its signature?
->>>>>
->>>>> There is no rule that prevents changing the signature if that is needed.
->>>>> However, the kernel is fine without allocation as well, using a very
->>>>> similar signature.
->>>>>
->>>>
->>>> schedule_work() and rtdm_schedule_nrt_work() have a major difference:
->>>> the latter has to pass on the request from the oob to the in-band
->>>> context. This is what bugs us and creates the requirement for additional
->>>> mechanism and data.
->>>>
->>>>> I do not yet understand way we need that indirection via the rtdm_nrtsig
->>>>> on Dovetail. I thought we can trigger work directly from the oob domain
->>>>> there, can't we? How do you handle such a case in evl so far?
->>>>>
->>>>
->>>> Dovetail can trigger in-band work from oob via the generic irq_work()
->>>> service, we don't need the extra code involved in the I-pipe for the
->>>> same purpose. The gist of the matter is about having the same
->>>> implementation for rtdm_schedule_nrt_work() which works in both Dovetail
->>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsig_pend()
->>>> which already abstracts the base mechanism for relaying oob -> in-band
->>>> signals.
->>>>
->>>> On the other hand, EVL has the evl_call_inband[_from]() service, which
->>>> combines the irq_work and work_struct anchors we need into a single
->>>> evl_work type, which in turn can be embedded into a user request
->>>> block. This is what rtdm_schedule_nrt_work() does not expose, so it has
->>>> to build one internally by combining a dynamic allocation and the
->>>> user-provided work_struct.
->>>>
->>>
->>> Then enhance the rtdm service to enable such a combination - and be even
->>> more ready for the switch to Xenomai 4, I would say. We can either add a
->>> new service and deprecate the old one (while implementing it as you
->>> suggest) or just break the interface to get the (presumably) few users
->>> quickly converted.
->>>
->> 
->> rtdm_schedule_nrt_work() was added by Gilles when merging the RTnet code
->> into Xenomai 3 IIRC, with little documentation. Widespread usage of this
->> call is unlikely, so I'd vote for simplifying the whole thing and
->> replace it entirely.
->> 
->
-> OK, then we have a plan for this piece.
->
->>>>> And the third case remains xnthread_signal, btw.
->>>>>
->>>>
->>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTERM signals
->>>> for a thread, a seldom event. Optimizing there would be overkill, unless
->>>> the application behaves wrongly in the first place.
->>>
->>> Some caller are under nklock, thus it makes potentially lengthy critical
->>> sections now a bit longer.
->>>
->> 
->> This is what needs to be fixed in the first place, we should not trigger
->> a signal relay when holding the ugly big lock.
->> 
->
-> Whatever is simpler.
->
-> Another aspect: Using xnmalloc for anything that should better succeed
-> is possibly not good when we are OOM. That is actually no strict
-> regression over I-pipe where we had a limited queue as well IIRC but a
-> reason to avoid carrying that over - and possibly creating new error
-> scenarios that are harder to debug.
->
-
-To mitigate the issue of generalized OOM, we could pull memory from a
-local xnheap privately attached to xnthread_signal() along with any
-caller requiring dynamic allocation, so that none of them could deplete
-the sysheap.
-
-Getting rid of dynamic allocation entirely on the other hand would
-require us to add one or more "signal slots" per possible cause of
-in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
-SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
-xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
-standard non-queueable signals, so we should only need a single slot per
-signal cause.
-
--- 
-Philippe.
-
+VGhhbmtzIGZvciB5b3VyIGZlZWRiYWNrLgoKSSBoYWQgbm8gcmVwb3J0IG9mIGVycm9ycyBpbiB0
+aGUgQ0xJIHdoaWxlIHBhdGNoaW5nIHRoZSBrZXJuZWwuCkluIGF0dGFjaCB5b3UgbWF5IGZpbmQg
+dGhlIC5jb25maWcgZmlsZSBJIGFtIHVzaW5nLgoKSSBzZWUgdGhhdCBieSBkZWZhdWx0IFsxXSBn
+b2VzIHRvIHRoZSBpcGlwZS14ODYtNC4xOS55LWNpcApJZiBJIGNoYW5nZSB0aGUgYnJhbmNoL3Rh
+ZyB0byBpcGlwZS1jb3JlLTUuNC43Ny14ODYtMiBbMl0gd2lsbCBJIGJ5IGdldHRpbmcKdGhlIHBy
+ZXBhdGNoZWQgb25lIGZvciB0aGUgdmVyc2lvbiBJIHdhcyBwcmV2aW91c2x5IHRyeWluZyB0byB1
+c2U/CgpUaGFua3MKClsxXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkvaXBpcGUteDg2
+ClsyXSBodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkvaXBpcGUteDg2Ly0vdHJlZS9pcGlw
+ZS1jb3JlLTUuNC43Ny14ODYtMgoKCgoKSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNv
+bT4gZXNjcmV2ZXUgbm8gZGlhIHF1YXJ0YSwgMjYvMDUvMjAyMSDDoChzKQowNjowMzoKCj4gT24g
+MjUuMDUuMjEgMjA6MDMsIEpvw6NvIENvc3RhIHZpYSBYZW5vbWFpIHdyb3RlOgo+ID4gSGVsbG8s
+Cj4gPgo+ID4gSSBhbSBoYXZpbmcgc29tZSBwcm9ibGVtcyB3aXRoIGEgZnJlc2ggaW5zdGFsbCBv
+ZiBYZW5vbWFpIDMuMSBhbmQgSSB3YXMKPiA+IGhvcGluZyB0aGF0IHNvbWVvbmUgY291bGQgaGVs
+cCBtZSBvdXQgc29sdmluZyB0aG9zZQo+ID4gIG9yIGJ5IHNoYXJpbmcgc29tZSBpbnN0YWxsYXRp
+b24gaW5zdHJ1Y3Rpb25zIGZvciBkdW1taWVzLgo+ID4KPiA+ICpUZXN0IGJlbmNoIGNvbmZpZ3Vy
+YXRpb246Kgo+ID4gLVVidW50dSBzZXJ2ZXIgMjAuMDQuMiBydW5uaW5nIGtlcm5lbCA1LjQuMC03
+My1nZW5lcmljCj4gPiAtWGVub21haSB2ZXJzaW9uIDMuMQo+ID4gLUtlcm5lbCBkb3dubG9hZGVk
+IGZvciBwYXRjaC9pbnN0YWxsYXRpb246IGxpbnV4LTUuNC43Ny50YXIuZ3ogKHNpbmNlIEkKPiA+
+IGNvdWxkIG5vdCBmaW5kIGFuIGV4YWN0IG1hdGNoIHdpdGggaXBpcGUgcGF0Y2ggYW5kIHRoZSBr
+ZXJuZWwgYWxyZWFkeQo+ID4gcnVubmluZykKPiA+IC1pcGlwZS1jb3JlLTUuNC43Ny14ODYtMi5w
+YXRjaAo+ID4KPiA+ICpJIGFtIGZvbGxvd2luZyB0aGlzIGluc3RydWN0aW9uczoqCj4gPiAtIGh0
+dHBzOi8vd3d3LnByb2dyYW1tZXJzb3VnaHQuY29tL2FydGljbGUvMTQzNzU0MzcyNDYvCj4gPiAt
+IGhhZCB0aGUgbmVlZCB0byBpbnN0YWxsL2NoYW5nZSBzb21lIHBhY2thZ2VzICIgZ2NjIGxpYm5j
+dXJzZXMtZGV2IGZsZXgKPiA+IGJpc29uIG9wZW5zc2wgbGlic3NsLWRldiBka21zIGxpYmVsZi1k
+ZXYgbGlidWRldi1kZXYgbGlicGNpLWRldgo+ID4gbGliaWJlcnR5LWRldiBidWlsZC1lc3NlbnRp
+YWwga2VybmVsLXBhY2thZ2UiCj4gPiAtIGFzc3VtZWQgdGhhdCB3aGVyZSBpcyB3cml0dGVuOgo+
+ID4gJG1ha2VvbGRkZWZjb25maWcKPiA+IGl0IHNob3VsZCBiZQo+ID4gJG1ha2Ugb2xkY29uZmln
+Cj4gPgo+ID4gKkkgYW0gZ2V0dGluZyB0aGUgZm9sbG93aW5nIGVycm9yczoqCj4gPiAqYWZ0ZXIg
+cnVubmluZyogIiBDT05DVVJSRU5DWV9MRVZFTD04IG1ha2Uta3BrZyAgLS1yb290Y21kIGZha2Vy
+b290Cj4gPiAtLWluaXRyZCAgLS1yZXZpc2lvbj0xLjAuMCBrZXJuZWxfaW1hZ2Uga2VybmVsX2hl
+YWRlcnMgIgo+ID4gKiMxKgo+ID4KPiA+PiBrZXJuZWwvaXBpcGUvY29yZS5jOiBJbiBmdW5jdGlv
+biDigJhfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZl4oCZOgo+ID4+IGtlcm5lbC9pcGlwZS9jb3Jl
+LmM6NTQ3Ojk6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbgo+ID4+IOKA
+mGFyY2hfbWFuZ2xlX2lycV9iaXRz4oCZIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xh
+cmF0aW9uXQo+ID4+ICAgNTQ3IHwgIHJldHVybiBhcmNoX21hbmdsZV9pcnFfYml0cyhzLCBmbGFn
+cyk7Cj4gPj4gICAgICAgfCAgICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+Cj4gPj4gICBDQyAg
+ICAgIGtlcm5lbC9zY2hlZC9jcHV0aW1lLm8KPiA+Pgo+ID4gKiMyKgo+ID4KPiA+PiBrZXJuZWwv
+aXBpcGUvY29yZS5jOiBJbiBmdW5jdGlvbiDigJhfX2lwaXBlX3NwaW5fdW5sb2NrX2lycXJlc3Rv
+cmXigJk6Cj4gPj4ga2VybmVsL2lwaXBlL2NvcmUuYzo1NzQ6NzogZXJyb3I6IGltcGxpY2l0IGRl
+Y2xhcmF0aW9uIG9mIGZ1bmN0aW9uCj4gPj4g4oCYYXJjaF9kZW1hbmdsZV9pcnFfYml0c+KAmTsg
+ZGlkIHlvdSBtZWFuIOKAmGFyY2hfZWFybHlfaXJxX2luaXTigJk/Cj4gPj4gWy1XZXJyb3I9aW1w
+bGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCj4gPj4gICA1NzQgfCAgaWYgKCFhcmNoX2RlbWFu
+Z2xlX2lycV9iaXRzKCZ4KSkKPiA+PiAgICAgICB8ICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+
+fn4KPiA+PiAgICAgICB8ICAgICAgIGFyY2hfZWFybHlfaXJxX2luaXQKPiA+Pgo+ID4gKiMzKgo+
+ID4KPiA+PiAgYXJjaC94ODYva2VybmVsL3Byb2Nlc3MuYzogSW4gZnVuY3Rpb24g4oCYbXdhaXRf
+aWRsZeKAmToKPiA+PiBhcmNoL3g4Ni9rZXJuZWwvcHJvY2Vzcy5jOjY5OTo0OiBlcnJvcjogaW1w
+bGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24KPiA+PiDigJhfX2lwaXBlX2hhbHRfcm9vdOKA
+mTsgZGlkIHlvdSBtZWFuIOKAmGlwaXBlX3Rlc3Rfcm9vdOKAmT8KPiA+PiBbLVdlcnJvcj1pbXBs
+aWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KPiA+PiAgIDY5OSB8ICAgIF9faXBpcGVfaGFsdF9y
+b290KDEpOwo+ID4+ICAgICAgIHwgICAgXn5+fn5+fn5+fn5+fn5+fn4KPiA+PiAgICAgICB8ICAg
+IGlwaXBlX3Rlc3Rfcm9vdAo+ID4KPiA+IGNjMTogc29tZSB3YXJuaW5ncyBiZWluZyB0cmVhdGVk
+IGFzIGVycm9ycwo+ID4+Cj4gPgo+ID4KPiA+PiBtYWtlWzNdOiAqKiogW3NjcmlwdHMvTWFrZWZp
+bGUuYnVpbGQ6MjY2OiBhcmNoL3g4Ni9rZXJuZWwvcHJvY2Vzcy5vXQo+IEVycm9yCj4gPj4gMQo+
+ID4+IG1ha2VbMl06ICoqKiBbc2NyaXB0cy9NYWtlZmlsZS5idWlsZDo1MDA6IGFyY2gveDg2L2tl
+cm5lbF0gRXJyb3IgMgo+ID4+IG1ha2VbMV06ICoqKiBbTWFrZWZpbGU6MTcyOTogYXJjaC94ODZd
+IEVycm9yIDIKPiA+Cj4gPgo+ID4gIG1ha2VbMV06ICoqKiBbTWFrZWZpbGU6MTcyOToga2VybmVs
+XSBFcnJvciAyCj4gPgo+ID4KPiA+ICpOb3RlczoqCj4gPiAtIEkgYW0gbm90IHN1cmUgaXQgbXkg
+YW5zd2VycyB3aGVuIGV4ZWN1dGluZyB0aGUgJG1ha2Ugb2xkY29uZmlnIHdlcmUgdGhlCj4gPiBj
+b3JyZWN0IG9uZXMgYW5kL29yIGNhbiBiZSByZWxhdGVkIHRvIHRoZXNlIHByb2JsZW1zCj4gPiAt
+IEFsc28sIHRoZSBjaGVja3MvdW5jaGVja3MgaW4gdGhlIGtlcm5lbCBtZW51ICgkbWVudWNvbmZp
+ZykgYXJlIG5vdAo+ID4gZXhhY3RseSBsaWtlIHRoZSBvbmVzIG9uIHRob3NlIGluc3RydWN0aW9u
+cyBzaW5jZSB0aGVyZSBhcmUgaXRlbXMgdGhhdCBkbwo+ID4gbm90IGFwcGVhciBvciBhcmUgZW5h
+YmxlZC9lbWJlZGRlZCBieSBkZWZhdWx0IGFuZCBjYW5ub3QgYmUgdW5zZWxlY3RlZAo+ID4KPgo+
+IFN0cmFuZ2UuIFRoZXJlIHdhcyBlaXRoZXIgYSBwcm9ibGVtIHdpdGggcGF0Y2hpbmcgdGhlIGtl
+cm5lbCAoeW91IGNhbgo+IGNyb3NzLWNoZWNrIGJ5IGRvd25sb2FkaW5nIGEgcHJlcGF0Y2hlZCBv
+bmUgZnJvbSBbMV0pLCBvciB5b3UgZm91bmQgYQo+IC5jb25maWcgdGhhdCBleHBvc2VzIGEgYnVp
+bGQgZXJyb3IgKHRoZW4gcGxlYXNlIHNoYXJlIGl0KS4KPgo+IEphbgo+Cj4gWzFdIGh0dHBzOi8v
+c291cmNlLmRlbnguZGUvWGVub21haS9pcGlwZS14ODYKPgo+IC0tCj4gU2llbWVucyBBRywgVCBS
+REEgSU9UCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cj4KLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogLmNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1z
+dHJlYW0KU2l6ZTogMjM2MjczIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
+L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNTI3LzNmOTBl
+ZjYwL2F0dGFjaG1lbnQub2JqPgo=
