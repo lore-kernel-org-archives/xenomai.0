@@ -1,22 +1,18 @@
-Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
-References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
- <87lf83cj7k.fsf@xenomai.org>
- <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
- <87y2c3b092.fsf@xenomai.org>
- <3bf57e72-9992-0ab4-a956-d6f6197bfe24@siemens.com>
- <87sg2bat1l.fsf@xenomai.org>
- <c4aad772-ea81-11e5-afd3-ff269c6b2899@siemens.com>
- <87o8czar20.fsf@xenomai.org>
- <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
- <87a6ohzjoi.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
-Date: Mon, 31 May 2021 17:07:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <87a6ohzjoi.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAB9YM8jgdbEYTB8Sb7212KWcLEkRDSVjEYZ8P2qCCStaX9CuPQ@mail.gmail.com>
+ <a8412431-ccfb-dcc9-dfba-2da5374bcf1a@siemens.com>
+ <CAB9YM8hdM5R9nsALRGQnXZ4hX0drJdYMDy=OroH92EzA_rqi5A@mail.gmail.com>
+ <f2b82aaf-f92e-ea00-e871-f089562f5a00@siemens.com>
+ <e87823b6-31b5-bb5d-201f-3054939024de@siemens.com>
+ <CAB9YM8gaH8phRFH=z_0ES2N0Tgy0tWUtUQB7ULDcyihPAkpUmQ@mail.gmail.com>
+In-Reply-To: <CAB9YM8gaH8phRFH=z_0ES2N0Tgy0tWUtUQB7ULDcyihPAkpUmQ@mail.gmail.com>
+From: =?UTF-8?Q?Jo=C3=A3o_Costa?= <joaocostalapin@gmail.com>
+Date: Mon, 31 May 2021 16:46:47 +0100
+Message-ID: <CAB9YM8gUHXQtvuDXe_T+gpPyngVSKc6mnH-Ufmu5NU1UiK1kng@mail.gmail.com>
+Subject: Re: error: implicit declarations while compiling
+ (xenomai3.1+ubuntu20.04)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,172 +21,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 26.05.21 15:52, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 25.05.21 15:20, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 25.05.21 14:37, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> On 25.05.21 12:01, Philippe Gerum wrote:
->>>>>>>
->>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>
->>>>>>>> On 25.05.21 10:46, Philippe Gerum wrote:
->>>>>>>>>
->>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>>>
->>>>>>>>>> Hi Philippe,
->>>>>>>>>>
->>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight service, compared
->>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothing you would
->>>>>>>>>> expect from a "send a signal" service, specifically from
->>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the sending extra payload.
->>>>>>>>>>
->>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd usecases are not
->>>>>>>>>> time-sensitive anyway).
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> Nope, I cannot see any significantly better option which would still
->>>>>>>>> allow a common implementation we can map on top of Dovetail / I-pipe.
->>>>>>>>>
->>>>>>>>
->>>>>>>> E.g. pre-allocate the work object for data-free signals and use that -
->>>>>>>> or not send it when it is in use, thus pending.
->>>>>>>>
->>>>>>>
->>>>>>> Ok, let's recap:
->>>>>>>
->>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely uses a
->>>>>>>   user-provided memory block, containing a request header. Current
->>>>>>>   callers should either already care for not resending a request
->>>>>>>   uselessly because it is pending (e.g. [1]), or their internal logic
->>>>>>>   should prevent that (e.g. [2]). This interface always convey user data
->>>>>>>   by reference.
->>>>>>
->>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedule_nrt_work
->>>>>> to do the work, it's the other way around. False alarm here.
->>>>>>
->>>>>>>
->>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct in order to
->>>>>>>   convey a request block we cannot squeeze into a work_struct, since the
->>>>>>>   latter is in itself an anchor type the user may embed into its own
->>>>>>>   private argument block. I'm unsure ensuring that
->>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be worth it, as
->>>>>>>   this call is not supposed to be used frenetically on some hot path in
->>>>>>>   the first place. But if we'd want to do that, then we would have to
->>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that we gain a
->>>>>>>   persistent context data we could use for determining whether a nrt
->>>>>>>   work request is in flight. We could not probe the work_struct for that
->>>>>>>   purpose, that would be racy.
->>>>>>>
->>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work() without
->>>>>>> changing its signature?
->>>>>>
->>>>>> There is no rule that prevents changing the signature if that is needed.
->>>>>> However, the kernel is fine without allocation as well, using a very
->>>>>> similar signature.
->>>>>>
->>>>>
->>>>> schedule_work() and rtdm_schedule_nrt_work() have a major difference:
->>>>> the latter has to pass on the request from the oob to the in-band
->>>>> context. This is what bugs us and creates the requirement for additional
->>>>> mechanism and data.
->>>>>
->>>>>> I do not yet understand way we need that indirection via the rtdm_nrtsig
->>>>>> on Dovetail. I thought we can trigger work directly from the oob domain
->>>>>> there, can't we? How do you handle such a case in evl so far?
->>>>>>
->>>>>
->>>>> Dovetail can trigger in-band work from oob via the generic irq_work()
->>>>> service, we don't need the extra code involved in the I-pipe for the
->>>>> same purpose. The gist of the matter is about having the same
->>>>> implementation for rtdm_schedule_nrt_work() which works in both Dovetail
->>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsig_pend()
->>>>> which already abstracts the base mechanism for relaying oob -> in-band
->>>>> signals.
->>>>>
->>>>> On the other hand, EVL has the evl_call_inband[_from]() service, which
->>>>> combines the irq_work and work_struct anchors we need into a single
->>>>> evl_work type, which in turn can be embedded into a user request
->>>>> block. This is what rtdm_schedule_nrt_work() does not expose, so it has
->>>>> to build one internally by combining a dynamic allocation and the
->>>>> user-provided work_struct.
->>>>>
->>>>
->>>> Then enhance the rtdm service to enable such a combination - and be even
->>>> more ready for the switch to Xenomai 4, I would say. We can either add a
->>>> new service and deprecate the old one (while implementing it as you
->>>> suggest) or just break the interface to get the (presumably) few users
->>>> quickly converted.
->>>>
->>>
->>> rtdm_schedule_nrt_work() was added by Gilles when merging the RTnet code
->>> into Xenomai 3 IIRC, with little documentation. Widespread usage of this
->>> call is unlikely, so I'd vote for simplifying the whole thing and
->>> replace it entirely.
->>>
+Just to be more precise, everything seemed to be going well until some
+other errors shown up.
+I have been fighting with these since then and I wasn't able to finish the
+installation.
+I will open a new and more generic thread.
+
+Jo=C3=A3o Costa <joaocostalapin@gmail.com> escreveu no dia quinta, 27/05/20=
+21
+=C3=A0(s) 15:26:
+
+> [ SOLUTION / SOLVED ] with the help of Jan. Thanks
+>
+> Turn off CONFIG_HYPERV - neither needed nor supported (but the failure
+>> mode is indeed unfortunate).
 >>
->> OK, then we have a plan for this piece.
+> I guess it was enabled or because I could not find it in previously in th=
+e
+> "GUI" of  *menuconfig *or because is was one of those options that was
+> selected by default and could not be disabled.
+>
+> I edited the file *.config* and disabled it as suggested.
+> Still I was getting this error:
+>
+>> make[1]: Leaving directory '/home/xxx/linux-5.4.77'
+>> make: *** [debian/ruleset/targets/common.mk:301:
+>> debian/stamp/build/kernel] Error 2
+>
+>
+> So I followed your other suggestion of using "*make localmodconfig*"
+> instead and everything worked.
+>
+>
+> Jan Kiszka <jan.kiszka@siemens.com> escreveu no dia quinta, 27/05/2021
+> =C3=A0(s) 13:20:
+>
+>> On 27.05.21 14:01, Jan Kiszka via Xenomai wrote:
+>> > On 27.05.21 13:52, Jo=C3=A3o Costa wrote:
+>> >> Thanks for your feedback.
+>> >>
+>> >> I had no report of errors in the CLI while patching the kernel.
+>> >> In attach you may find the .config file I am using.
+>> >>
+>> >
+>> > Thanks, will give that a try.
+>> >
 >>
->>>>>> And the third case remains xnthread_signal, btw.
->>>>>>
->>>>>
->>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTERM signals
->>>>> for a thread, a seldom event. Optimizing there would be overkill, unless
->>>>> the application behaves wrongly in the first place.
->>>>
->>>> Some caller are under nklock, thus it makes potentially lengthy critical
->>>> sections now a bit longer.
->>>>
->>>
->>> This is what needs to be fixed in the first place, we should not trigger
->>> a signal relay when holding the ugly big lock.
->>>
+>> Turn off CONFIG_HYPERV - neither needed nor supported (but the failure
+>> mode is indeed unfortunate).
 >>
->> Whatever is simpler.
+>> In general, as you are building a full-featured distro config, you will
+>> likely get much more than you need. And have to wait for that much
+>> longer. I can recommend "make localmodconfig" as alternative.
 >>
->> Another aspect: Using xnmalloc for anything that should better succeed
->> is possibly not good when we are OOM. That is actually no strict
->> regression over I-pipe where we had a limited queue as well IIRC but a
->> reason to avoid carrying that over - and possibly creating new error
->> scenarios that are harder to debug.
+>> Jan
 >>
-> 
-> To mitigate the issue of generalized OOM, we could pull memory from a
-> local xnheap privately attached to xnthread_signal() along with any
-> caller requiring dynamic allocation, so that none of them could deplete
-> the sysheap.
-> 
-> Getting rid of dynamic allocation entirely on the other hand would
-> require us to add one or more "signal slots" per possible cause of
-> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
-> SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
-> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
-> standard non-queueable signals, so we should only need a single slot per
-> signal cause.
-> 
-
-Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
-Likely, we only need to carry the single cause via a field in xnthread
-from the trigger point to the in-band handler. The same is probably the
-case for SIGSHADOW_ACTION_BACKTRACE.
-
-Now, the question for me is how we move forward from this? Is it simpler
-to fix these issues? Or would it be better first avoid affecting I-pipe
-cases and living with xnmalloc for an initial phase over Dovetail?
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+>> --
+>> Siemens AG, T RDA IOT
+>> Corporate Competence Center Embedded Linux
+>>
+>
