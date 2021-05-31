@@ -1,8 +1,8 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 MIME-Version: 1.0
-Date: Mon, 31 May 2021 18:06:08 +0200
+Date: Mon, 31 May 2021 18:06:48 +0200
 Subject: Hunting mode switches
-Message-ID: <10a7-60b50980-23-35a6e6c0@188334672>
+Message-ID: <10a7-60b50980-27-35a6e6c0@188334738>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
