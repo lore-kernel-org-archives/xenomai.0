@@ -1,12 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [dovetail][PATCH v3 1/3] irq_pipeline: Clean up stage_info field and
- users
-Date: Mon,  7 Jun 2021 08:19:37 +0200
-Message-Id: <eafffa8863147b9134e478b8bf9772af481eec4c.1623046779.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1623046779.git.jan.kiszka@siemens.com>
-References: <cover.1623046779.git.jan.kiszka@siemens.com>
-MIME-Version: 1.0
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 1/9] y2038: libcobalt: Centralize sc_cobalt_clock_gettime
+ syscall
+Date: Tue,  1 Jun 2021 11:43:26 +0200
+Message-Id: <20210601094334.774394-2-florian.bezdeka@siemens.com>
+In-Reply-To: <20210601094334.774394-1-florian.bezdeka@siemens.com>
+References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,152 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: jan.kiszka@siemens.com, chensong@tj.kylinos.cn, Florian Bezdeka <florian.bezdeka@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+There were two places invoking the sc_cobalt_clock_gettime syscalls
+and both places would be updated while introducing y2038 support. To
+keep y2038 compatibility as simple as possible the code has been moved
+into a simple helper function.
 
-This field represents mutually exclusive states, namely
-
-- IRQENTRY_INBAND_UNSTALLED
-- IRQENTRY_INBAND_STALLED
-- IRQENTRY_OOB
-
-Encodes them as enum and test against them, rather than against state
-bits that suggest they could be combined.
-
-Also flip the inverted naming of INBAND_STALLED vs. INBAND_UNSTALLED:
-Only when we entered under INBAND_UNSTALLED, certain actions need to be
-taken on exit.
-
-Finally, document the stage_info field of irqentry_state.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- arch/x86/kernel/irq_pipeline.c |  2 +-
- arch/x86/mm/fault.c            |  2 +-
- include/linux/entry-common.h   | 11 ++++++++---
- kernel/entry/common.c          | 12 ++++++------
- 4 files changed, 16 insertions(+), 11 deletions(-)
+ lib/cobalt/clock.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
-index 7ff5c03386e8..6944f9e4f852 100644
---- a/arch/x86/kernel/irq_pipeline.c
-+++ b/arch/x86/kernel/irq_pipeline.c
-@@ -64,7 +64,7 @@ static irqentry_state_t pipeline_enter_rcu(void)
- {
- 	irqentry_state_t state = {
- 		.exit_rcu = false,
--		.stage_info = 0,
-+		.stage_info = IRQENTRY_INBAND_UNSTALLED,
- 	};
- 
- 	if (!IS_ENABLED(CONFIG_TINY_RCU) && is_idle_task(current)) {
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index dcc3e77fed2b..a242ac40a71d 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -813,7 +813,7 @@ static inline void cond_reenable_irqs_kernel(irqentry_state_t state,
- 					struct pt_regs *regs)
- {
- 	if (regs->flags & X86_EFLAGS_IF) {
--		if (state.stage_info & IRQENTRY_INBAND_STALLED)
-+		if (state.stage_info == IRQENTRY_INBAND_UNSTALLED)
- 			unstall_inband_nocheck();
- 		hard_local_irq_enable();
- 	}
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 0b6639ff313f..2a08b00632b9 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -399,6 +399,12 @@ void irqentry_enter_from_user_mode(struct pt_regs *regs);
-  */
- void irqentry_exit_to_user_mode(struct pt_regs *regs);
- 
-+enum irqentry_info {
-+	IRQENTRY_INBAND_UNSTALLED = 0,
-+	IRQENTRY_INBAND_STALLED,
-+	IRQENTRY_OOB,
-+};
-+
- #ifndef irqentry_state
- /**
-  * struct irqentry_state - Opaque object for exception state storage
-@@ -406,6 +412,7 @@ void irqentry_exit_to_user_mode(struct pt_regs *regs);
-  *            exit path has to invoke rcu_irq_exit().
-  * @lockdep: Used exclusively in the irqentry_nmi_*() calls; ensures that
-  *           lockdep state is restored correctly on exit from nmi.
-+ * @stage_info: Information about pipeline state and current stage on IRQ entry.
-  *
-  * This opaque object is filled in by the irqentry_*_enter() functions and
-  * must be passed back into the corresponding irqentry_*_exit() functions
-@@ -421,9 +428,7 @@ typedef struct irqentry_state {
- 		bool	lockdep;
- 	};
- #ifdef CONFIG_IRQ_PIPELINE
--#define IRQENTRY_INBAND_STALLED	BIT(0)
--#define IRQENTRY_OOB_ENTRY	BIT(1)
--	int	stage_info;
-+	enum irqentry_info stage_info;
- #endif
- } irqentry_state_t;
- #endif
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index e8f274523217..5a669f87ec3f 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -404,13 +404,13 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	irqentry_state_t ret = {
- 		.exit_rcu = false,
- #ifdef CONFIG_IRQ_PIPELINE
--		.stage_info = 0,
-+		.stage_info = IRQENTRY_INBAND_STALLED,
- #endif
- 	};
- 
- #ifdef CONFIG_IRQ_PIPELINE
- 	if (running_oob()) {
--		ret.stage_info = IRQENTRY_OOB_ENTRY;
-+		ret.stage_info = IRQENTRY_OOB;
- 		return ret;
- 	}
- #endif
-@@ -419,7 +419,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- #ifdef CONFIG_IRQ_PIPELINE
- 		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
- 		stall_inband_nocheck();
--		ret.stage_info = IRQENTRY_INBAND_STALLED;
-+		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
- #endif
- 		irqentry_enter_from_user_mode(regs);
- 		return ret;
-@@ -432,7 +432,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	 * irqs are off on entry, we have to stall the in-band stage.
- 	 */
- 	if (!test_and_stall_inband_nocheck())
--		ret.stage_info = IRQENTRY_INBAND_STALLED;
-+		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
- #endif
- 
- 	/*
-@@ -510,7 +510,7 @@ static inline
- bool irqexit_may_preempt_schedule(irqentry_state_t state,
- 				struct pt_regs *regs)
- {
--	return !!(state.stage_info & IRQENTRY_INBAND_STALLED);
-+	return state.stage_info == IRQENTRY_INBAND_UNSTALLED;
+diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+index a0673d1fc..3f87278ce 100644
+--- a/lib/cobalt/clock.c
++++ b/lib/cobalt/clock.c
+@@ -149,6 +149,11 @@ static int __do_clock_host_realtime(struct timespec *ts)
+ 	return 0;
  }
  
- #else
-@@ -579,7 +579,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- 	 * irqentry_enter() raised it in order to mirror the hardware
- 	 * state.
- 	 */
--	if (state.stage_info & IRQENTRY_INBAND_STALLED)
-+	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED)
- 		unstall_inband();
- #endif
- 	return;
++static int __do_clock_gettime(clockid_t clock_id, struct timespec *tp)
++{
++	return -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
++}
++
+ static int gettime_via_tsc(clockid_t clock_id, struct timespec *tp)
+ {
+ 	unsigned long rem;
+@@ -172,7 +177,7 @@ static int gettime_via_tsc(clockid_t clock_id, struct timespec *tp)
+ 		tp->tv_nsec = rem;
+ 		return 0;
+ 	default:
+-		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
++		ret = __do_clock_gettime(clock_id, tp);
+ 	}
+ 
+ 	if (ret) {
+@@ -197,7 +202,7 @@ static int gettime_via_vdso(clockid_t clock_id, struct timespec *tp)
+ 		ret = __cobalt_vdso_gettime(clock_id, tp);
+ 		break;
+ 	default:
+-		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
++		ret = __do_clock_gettime(clock_id, tp);
+ 	}
+ 
+ 	if (ret) {
 -- 
-2.26.2
+2.31.1
 
 
