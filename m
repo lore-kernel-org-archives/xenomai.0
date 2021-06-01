@@ -1,13 +1,13 @@
-Subject: Re: problems installing Xenomai 3.1 in Ubuntu 20.04
-References: <CAB9YM8hS5tg+mK_uVs3qe8A=4NXOk-KVJq1FXrVPRG5GcFU-EQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b212b335-7aee-acd4-c809-3dafb937eb9e@siemens.com>
-Date: Tue, 1 Jun 2021 11:54:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAB9YM8hS5tg+mK_uVs3qe8A=4NXOk-KVJq1FXrVPRG5GcFU-EQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Subject: Re: [PATCH 0/3] y2038:clock_adjtime for 64bit timex
+References: <1619682245-15325-1-git-send-email-chensong_2000@189.cn>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <75f1e7cf-b91f-6642-2b12-a583cea1a4ea@siemens.com>
+Date: Tue, 1 Jun 2021 13:24:53 +0200
+In-Reply-To: <1619682245-15325-1-git-send-email-chensong_2000@189.cn>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Jo=c3=a3o_Costa?= <joaocostalapin@gmail.com>, xenomai@xenomai.org
+To: Song Chen <chensong_2000@189.cn>, xenomai@xenomai.org
 
-On 01.06.21 10:32, João Costa via Xenomai wrote:
-> Hello,
+On 29.04.21 09:44, Song Chen wrote:
+> This patch serial is aimed to introduce a new syscall clock_adjtime64
+> which is specific for 64-bit time_t.
 > 
-> I am having serious difficulties in getting Xenomai 3.1 to run in a Ubuntu
-> 20.04.2 LTS [1]
-> I should be doing something wrong but I don't know what. Hopefully, someone
-> can help me identify what is wrong.
+> Song Chen (3):
+>   y2038: cobalt/posix/clock: Adding clock_adjtime64
+>   y2038: lib/cobalt/clock: dispatch clock_adjtime
+>   y2038: testsuite/smokey/y2038: testcase for adjtime64
 > 
-> I was getting an error that apparently was solved (another email thread in
-> this mailing list) but after some other errors showed up. I went back to
-> the beginning and tried to:
-> - use kernel/ipipe version 5.4.77 (.config file in attach)
-
-Latest release is ipipe-core-5.4.105-x86-4, including a couple of I-pipe
-fixes. Don't use outdated versions.
-
-> - use kernel/ipipe version 4.19.114  (forgot to save the .config file)
-> - prepatched kernel version 5.4.77  (.config file in attach) [2]
-> 
-> Now I am always getting this *error message:*
-> 
-> make[1]: Leaving directory '/home/xxx/linux-5.4.77'
-> 
-> make: *** [debian/ruleset/targets/common.mk:301: debian/stamp/build/kernel]
-> Error 2
-> 
-> 
-> In the *output* sent to the *console* it is possible to identify the
-> following *errors*:
-> 
-> - too many arguments to function  'switch_fpu_finish'
-> 
-> - conflicting types for ‘sys32_put_timex’  143 |
-> EXPORT_SYMBOL_GPL(sys32_put_timex);
+>  include/cobalt/uapi/syscall.h          |  1 +
+>  kernel/cobalt/posix/clock.c            | 22 +++++++++++
+>  kernel/cobalt/posix/clock.h            |  6 +++
+>  kernel/cobalt/posix/syscall32.c        |  7 ++++
+>  kernel/cobalt/posix/syscall32.h        |  4 ++
+>  lib/cobalt/clock.c                     |  5 +++
+>  testsuite/smokey/y2038/syscall-tests.c | 71 ++++++++++++++++++++++++++++++++++
+>  7 files changed, 116 insertions(+)
 > 
 
-Cannot reproduce with your config yet over latest ipipe-5.4 and Xenomai
-3.1.1. You must be building something inconsistent.
+I applied this series to florian/y2038 with minor test adjustments. Will
+resend the updated series soon.
 
-> *In attach you my find a .pdf file with*:
-> - the specifications of the machine/OS I am using
-> - the sequence of commands I used (maybe I am missing something)
-> - the options I chose
-> - the errors
-> 
-
-Please share inline, copy&pasted from your shell (no screenshots etc.).
-Makes reviewing and commenting much easier. And make sure that you
-include it completely if you are unsure about the actual error messages.
-
-In general, I would recommend starting with the basic steps, not with
-generating debian packages but rather building the vanilla
-I-pipe/Xenomai trees manually. Then, with a working reference for your
-target OS, you can look into the packaging as well.
-
-Jan
+Best regards,
+Florian
 
 -- 
 Siemens AG, T RDA IOT
