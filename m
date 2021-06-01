@@ -1,12 +1,10 @@
-References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
- pending inband IRQs
-In-reply-to: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
-Date: Sun, 06 Jun 2021 16:43:59 +0200
-Message-ID: <875yyrf3yo.fsf@xenomai.org>
-MIME-Version: 1.0
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 0/9] y2038: clock_{g,s}ettime64, clock_nanosleep64 
+Date: Tue,  1 Jun 2021 11:43:25 +0200
+Message-Id: <20210601094334.774394-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,58 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+To: xenomai@xenomai.org
+Cc: jan.kiszka@siemens.com, chensong@tj.kylinos.cn, Florian Bezdeka <florian.bezdeka@siemens.com>
 
+Hi!
 
-Jan Kiszka <jan.kiszka@web.de> writes:
+This is the next set of changes needed for solving the y2038 problem.
+Most patches were provided by Song. I reviewed them and fixed some error
+handling problems as well as test failures on some architectures. Some
+of the tests were rebased on top of the current next branch.
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> The correct order is hard IRQs off first, then stalling inband, see also
-> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
-> do not inject it before returning to user space.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> Fixes the RCU stalls Florian reported, at least for me.
->
-> I'm afraid this wasn't the last regression of translating I-pipe into
-> dovetail..
->
->  include/linux/entry-common.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-> index 0fb45b2d6094..00540110985e 100644
-> --- a/include/linux/entry-common.h
-> +++ b/include/linux/entry-common.h
-> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
->  #ifndef local_irq_disable_exit_to_user
->  static inline void local_irq_disable_exit_to_user(void)
->  {
-> -	local_irq_disable_full();
-> +	hard_cond_local_irq_disable();
-> +	local_irq_disable();
->  }
->  #endif
+With this series applied the wip/dovetail and florian/y2038 [1] branches 
+are merge-able without conflicts.
 
-Good spot, real issue here, just like the CPU_IDLE code deals with. The
-fix looks good, but maybe we could do even better.
+Best regards,
+Florian
 
-The way local_irq_disable_full() works tends to introduce this issue in
-a sneaky way, when the code path does not synchronize the interrupt log
-(exit_to_user_mode_loop may be at fault in this case, which does not
-traverses synchronize_pipeline()). Lack of synchronization would still
-hit us if some trap handler turns hard irqs off -> on -> off the same
-way, and we don't leave through the user exit path.
+[1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
 
-Inverting the order of the actions in local_irq_disable_full() may be an
-option (inband_irq_disable would allow that), making sure we cannot be
-caught in the same issue when returning to kernel mode is another
-way. This needs more thought I think.
+Florian Bezdeka (1):
+  y2038: libcobalt: Centralize sc_cobalt_clock_gettime syscall
+
+chensong (8):
+  y2038: cobalt/posix/clock: Adding clock_gettime64
+  y2038: cobalt/posix/clock: Adding clock_settime64
+  y2038: lib/cobalt/clock: dispatch clock_gettime
+  y2038: lib/cobalt/clock: dispatch clock_settime
+  y2038: testsuite/smokey/y2038: testcase for settime64 and gettime64
+  y2038: cobalt/posix/clock: Adding clock_nanosleep64
+  y2038: lib/cobalt/clock: dispatch clock_nanosleep
+  y2038: testsuite/smokey/y2038: Adding testcase for nanosleep64
+
+ include/cobalt/kernel/time.h           |  11 ++
+ include/cobalt/uapi/syscall.h          |   3 +
+ kernel/cobalt/posix/clock.c            |  70 +++++++++++-
+ kernel/cobalt/posix/clock.h            |  22 ++++
+ kernel/cobalt/posix/syscall32.c        |  23 ++++
+ kernel/cobalt/posix/syscall32.h        |  14 +++
+ kernel/cobalt/time.c                   |  11 ++
+ lib/cobalt/clock.c                     |  22 +++-
+ testsuite/smokey/y2038/syscall-tests.c | 151 +++++++++++++++++++++++++
+ 9 files changed, 324 insertions(+), 3 deletions(-)
 
 -- 
-Philippe.
+2.31.1
+
 
