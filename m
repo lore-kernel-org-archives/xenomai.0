@@ -1,7 +1,9 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/6] y2038: clock_getres64 and clock_adjtime64
-Date: Tue,  1 Jun 2021 15:31:18 +0200
-Message-Id: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
+Subject: [PATCH 2/6] y2038: lib/cobalt/clock: dispatch clock_getres
+Date: Tue,  1 Jun 2021 15:31:20 +0200
+Message-Id: <20210601133124.1466307-3-florian.bezdeka@siemens.com>
+In-Reply-To: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
+References: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -14,41 +16,38 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: jan.kiszka@siemens.com, chensong <chensong@tj.kylinos.cn>, Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Hi!
+From: chensong <chensong@tj.kylinos.cn>
 
-The next set of changes for fixing the y2038 problem for Xenomai:
+If sizeof time_t bigger than 4, which means glibc supports
+64bit timespec, go to clock_getres64.
 
-  - clock_getres64
-  - clock_adjtime64 (only relevant for external clocks, so with limited
-    testing)
+otherwise, go to original clock_getres.
 
-Once again: Patches provided by Song, fixes like style adjustments,
-updated error handling, fixing failing tests done by me and squashed into
-the patch that introdoced the problem.
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
+Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/clock.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+index edecb40a0..37e01c130 100644
+--- a/lib/cobalt/clock.c
++++ b/lib/cobalt/clock.c
+@@ -101,7 +101,12 @@ COBALT_IMPL(int, clock_getres, (clockid_t clock_id, struct timespec *tp))
+ {
+ 	int ret;
  
-Best regards,
-Florian
-
-Song Chen (3):
-  y2038: cobalt/posix/clock: Adding clock_adjtime64
-  y2038: lib/cobalt/clock: dispatch clock_adjtime
-  y2038: testsuite/smokey/y2038: testcase for adjtime64
-
-chensong (3):
-  y2038: cobalt/posix/clock: Adding clock_getres64
-  y2038: lib/cobalt/clock: dispatch clock_getres
-  y2038: testsuite/smokey/y2038: testcase for getres64
-
- include/cobalt/uapi/syscall.h          |   2 +
- kernel/cobalt/posix/clock.c            |  48 ++++++++++-
- kernel/cobalt/posix/clock.h            |  12 +++
- kernel/cobalt/posix/syscall32.c        |  14 ++++
- kernel/cobalt/posix/syscall32.h        |   8 ++
- lib/cobalt/clock.c                     |  10 +++
- testsuite/smokey/y2038/syscall-tests.c | 105 +++++++++++++++++++++++++
- 7 files changed, 198 insertions(+), 1 deletion(-)
-
++#ifdef __USE_TIME_BITS64
++	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres64, clock_id, tp);
++#else
+ 	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres, clock_id, tp);
++#endif
++
+ 	if (ret) {
+ 		errno = ret;
+ 		return -1;
 -- 
 2.31.1
 
