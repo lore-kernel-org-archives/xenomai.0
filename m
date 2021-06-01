@@ -1,13 +1,10 @@
-Subject: Re: Hunting mode switches
-References: <10a0-60b92200-35-29fb8780@204320304>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <570aa22a-f112-f1df-7cba-4d77477938ef@siemens.com>
-Date: Fri, 4 Jun 2021 09:21:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <10a0-60b92200-35-29fb8780@204320304>
+From: =?UTF-8?Q?Jo=C3=A3o_Costa?= <joaocostalapin@gmail.com>
+Date: Tue, 1 Jun 2021 09:32:44 +0100
+Message-ID: <CAB9YM8hS5tg+mK_uVs3qe8A=4NXOk-KVJq1FXrVPRG5GcFU-EQ@mail.gmail.com>
+Subject: problems installing Xenomai 3.1 in Ubuntu 20.04
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,179 +13,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03.06.21 20:39, François Legal wrote:
-> Le Jeudi, Juin 03, 2021 10:57 CEST, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
->  
->> Le Mercredi, Juin 02, 2021 12:59 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>  
->>> On 02.06.21 12:26, François Legal wrote:
->>>> Le Mardi, Juin 01, 2021 10:31 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>>  
->>>>> On 01.06.21 09:47, François Legal wrote:
->>>>>> Le Lundi, Mai 31, 2021 20:57 CEST, François Legal via Xenomai <xenomai@xenomai.org> a écrit: 
->>>>>>  
->>>>>>> Le Lundi, Mai 31, 2021 18:14 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>>>>>  
->>>>>>>> On 31.05.21 18:06, François Legal via Xenomai wrote:
->>>>>>>>> Hello,
->>>>>>>>>
->>>>>>>>> I'm having trouble hunting mode switches on an arm embedded application.
->>>>>>>>>
->>>>>>>>> When I look at cat /proc/xenomai/sched/stat
->>>>>>>>>
->>>>>>>>> CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
->>>>>>>>>   0  0      0          476986     0          0     00218000   84.5  [ROOT/0]
->>>>>>>>>   1  0      0          137743     0          0     00218000   99.3  [ROOT/1]
->>>>>>>>>   1  667    0          137550     0          0     00200042    0.7  [rtnet-stack]
->>>>>>>>>   0  669    0          2          0          0     00220042    0.0  [rtnet-rtpc]
->>>>>>>>>   1  901    110        218        203        0     00264044    0.0  APP_Main
->>>>>>>>>   0  911    1          1216       3524       0     00240046    0.0  ThreadPar
->>>>>>>>>   0  912    3          56683      3531       0     00240046    0.2  ThreadMessage
->>>>>>>>>   0  913    309702     470522     2152301    0     00240046    8.9  ThreadExec
->>>>>>>>>   0  914    7          62         71         0     00240042    0.0  TheadGO
->>>>>>>>>   0  915    3          647        1190       0     00248046    0.0  ThreadDbg
->>>>>>>>>   0  916    1          2024       3087       0     00248046    0.0  ThreadCt
->>>>>>>>>   0  917    1          35801      320489     0     00248046    0.8  ThreadSupInv
->>>>>>>>>   0  918    1          1231       3596       0     00248046    0.0  ThreadMessage2
->>>>>>>>>   0  919    1          161554     479305     0     00248042    1.4  ThreadSched
->>>>>>>>>   0  0      0          247850     0          0     00000000    0.4  [IRQ18: [timer]]
->>>>>>>>>   1  0      0          15419      0          0     00000000    0.0  [IRQ18: [timer]]
->>>>>>>>>   0  0      0          137548     0          0     00000000    1.5  [IRQ31: rteth0]
->>>>>>>>>   1  0      0          0          0          0     00000000    0.0  [IRQ31: rteth0]
->>>>>>>>>   0  0      0          1          0          0     00000000    0.0  [IRQ118: rteth1-tx]
->>>>>>>>>   1  0      0          0          0          0     00000000    0.0  [IRQ118: rteth1-tx]
->>>>>>>>>   0  0      0          0          0          0     00000000    0.0  [IRQ119: rteth1-rx]
->>>>>>>>>   1  0      0          0          0          0     00000000    0.0  [IRQ119: rteth1-rx]
->>>>>>>>>
->>>>>>>>> But when following the procedure in [1], I get 
->>>>>>>>> no slacker
->>>>>>>>>
->>>>>>>>> I can however see that Thread 913 seem to switch to secondary more than once out of 2 cycles !
->>>>>>>>> What am I doing wrong.
->>>>>>>>>
->>>>>>>>
->>>>>>>> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX is on?
->>>>>>>>
->>>>>>>
->>>>>>> Yes, it is.
->>>>>>>
->>>>>>>> Did you also try the in-app instrumentation via SIGDEBUG, maybe> >>>>> attaching gdb to the process to catch the unwanted cases?
->>>>>>>>
->>>>>>>
->>>>>>> No, not yet. It seems mode switches happen hundreds of time every seconds, so I was willing to try the slackspot.
->>>>>>> I'll try that tomorrow and report back to the list 
->>>>>>>
->>>>>>
->>>>>> So trying the manual way, there seem to be something happening, but I could not tell exactly what, and I not sure how to track this.
->>>>>>
->>>>>> On thread ThreadExec, I get execution halted with SIGXCPU, and a backtrace indicating getpid(), then __pthread_kill() which I'm 100% sure I never call !
->>>>>>
->>>>>> Moreover, when being halted at that point, all threads are not created, and all of which are created seem to have done 3 or 4 MSW each, and without triggering any break.
->>>>>>
->>>>>> Moreover, in the stats capture below, the APP_Main (the main program entry), is looping on a 1s nanosleep, and it seems the MSW number increases once per second.
->>>>>>
->>>>>> I'm really confused now.
->>>>>>
->>>>>
->>>>> Are you instrumenting only the part of the thread that has all
->>>>> initialization done and until it starts to de-initialize again? You can
->>>>> control when the mode switches should be reported and when not.
->>>>>
->>>>> Then, if you have a backtrace and that backtrace contain a valid
->>>>> syscall, you should also find a valid point in your own application when
->>>>> this was started (indirectly). Maybe some library call?
->>>>>
->>>>> Jan
->>>>>
->>>>
->>>> So in the end, slackspot seems to work. I did not understand, by reading the manual, that slackspot/CONFIG_XENO_OPT_DEBUG_TRACE_RELAX also needed that each thread call pthread_setmode_np(0, PTHREAD_WARNSW, NULL);
->>>>
->>>
->>> We are happy to take patches - also against the doc / the wiki.
->>>
->>>> So now, I've got a working backtrace, however, I'm still lost onto understanding what happens.
->>>>
->>>> I believe I might be having some troubles with the signals, but I can't seem to find an explanation.
->>>> Maybe I should document more my app.
->>>>
->>>> ThreadSched is pending on a timer (with sigwaitinfo). That time triggers every 750µs. When waking up, this thread will post one or 2 semaphores, that will unlock other threads (of which ThreadExec which seem to be doing MSW more than once every two activations).
->>>>
->>>> I ended up modifying the app startup code because I was experiencing weirdness in the startup with debugger attached (some semaphores wouldn't unlock, ...). Anyhow, I ended up doing :
->>>>
->>>>     sigemptyset(&sigHandling.sa_mask);
->>>>     sigHandling.sa_sigaction = sigdebug_handler;
->>>>     sigHandling.sa_flags = SA_SIGINFO;
->>>>     sigaction(SIGDEBUG, &sigHandling, NULL);
->>>>
->>>>     sigemptyset(&sigset);
->>>>     sigaddset (&sigset, SIGALRM);
->>>>     sigaddset (&sigset, SIGDEBUG);
->>>>     sigprocmask (SIG_BLOCK, &sigset, NULL);
->>>>     pthread_sigmask (SIG_BLOCK, &sigset, NULL);
->>>>
->>>> before creating my RT threads (of which ThreadSched), then doing
->>>>
->>>>         sigdelset(&sigset, SIGALRM);
->>>>         sigprocmask (SIG_UNBLOCK, &sigset, NULL);
->>>>         pthread_sigmask (SIG_UNBLOCK, &sigset, NULL);
->>>>
->>>>         signal(SIGINT, sighandler_exit);
->>>>         signal(SIGTERM, sighandler_exit);
->>>>         signal(SIGUSR1, sighandler_exit);
->>>>
->>>> After my RT threads are created.
->>>>
->>>> If I comment out all of these, and add the pthread_setmode_np some place when initialisation of ThreadExec is over, I end up with the program being forcibly stopped with the indication [1]+  CPU time limit exceeded
->>>>
->>>> So I put all those back in place, start again, then /proc/xenomai/debug/relax gets populated :
->>>> 1115 75731 syscall ThreadExec 
->>>> 0x12720 /usr/lib/libcobalt.so.2.0.0
->>>> 0x127b0 /usr/lib/libcobalt.so.2.0.0
->>>> 0x2cd40 /usr/lib/libc-2.29.so
->>>> .
->>>> /usr/bin/CCN2019_DSP
->>>> 1115 80299 syscall ThreadExec 
->>>> 0xd58a0 /usr/lib/libc-2.29.so
->>>> .
->>>>
->>>> On this, slackspot gives :
->>>> Thread[1115] "Module d'Execution des Blocs" started by /usr/bin/CCN2019_DSP (107769 times):
->>>> Caused by: syscall
->>>>    #0  0x00000000000d589f prctl() in /home/dev/crosstool/arm-cortexa9_neon-linux-gnueabihf/.build/src/glibc-2.29/misc/../sysdeps/unix/syscall-template.S:78
->>>>
->>>> Thread[1115] "Module d'Execution des Blocs" started by /usr/bin/CCN2019_DSP (101892 times):
->>>> Caused by: syscall
->>>>    #0  0x000000000001271f ??? in [/usr/lib/libcobalt.so.2.0.0]
->>>>    #1  0x00000000000127af ??? in [/usr/lib/libcobalt.so.2.0.0]
->>>>    #2  0x000000000002cd3f __default_sa_restorer() in /home/dev/crosstool/arm-cortexa9_neon-linux-gnueabihf/.build/src/glibc-2.29/signal/../sysdeps/unix/sysv/linux/arm/sigrestorer.S:77
->>>>
->>>> So know, I really don't know where to go from here !
->>>>
->>>
->>> Could you recompile with debugging symbols for libcobalt and your
->>> application and check where exactly the Linux syscall is issued and what
->>> library call from your application relates to it? gdb may provide this
->>> better.
->>>
->>
->> Ok. I think I found it. I had put in some debug code in my semaphore wrappers to check if the timeout given was not before the current time, and thus I used pthread_getname to display a trace with the name of the thread. This was the main problem.
->>
-> 
-> After checking again, that wasn't it. I can still see lots (about the same as before) MSW on that same thread. However, the sigdebug never gets called now !
-> By checking the other, I could see that socket() triggers a MSW which is surprising.
-> 
-
-socket() is not a real-time service. File descriptor creation and
-destruction - even for RTDM - will happen in the Linux domain.
-Furthermore, socket() will fall back to Linux if the specified fd is not
-valid for RTDM.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SGVsbG8sCgpJIGFtIGhhdmluZyBzZXJpb3VzIGRpZmZpY3VsdGllcyBpbiBnZXR0aW5nIFhlbm9t
+YWkgMy4xIHRvIHJ1biBpbiBhIFVidW50dQoyMC4wNC4yIExUUyBbMV0KSSBzaG91bGQgYmUgZG9p
+bmcgc29tZXRoaW5nIHdyb25nIGJ1dCBJIGRvbid0IGtub3cgd2hhdC4gSG9wZWZ1bGx5LCBzb21l
+b25lCmNhbiBoZWxwIG1lIGlkZW50aWZ5IHdoYXQgaXMgd3JvbmcuCgpJIHdhcyBnZXR0aW5nIGFu
+IGVycm9yIHRoYXQgYXBwYXJlbnRseSB3YXMgc29sdmVkIChhbm90aGVyIGVtYWlsIHRocmVhZCBp
+bgp0aGlzIG1haWxpbmcgbGlzdCkgYnV0IGFmdGVyIHNvbWUgb3RoZXIgZXJyb3JzIHNob3dlZCB1
+cC4gSSB3ZW50IGJhY2sgdG8KdGhlIGJlZ2lubmluZyBhbmQgdHJpZWQgdG86Ci0gdXNlIGtlcm5l
+bC9pcGlwZSB2ZXJzaW9uIDUuNC43NyAoLmNvbmZpZyBmaWxlIGluIGF0dGFjaCkKLSB1c2Uga2Vy
+bmVsL2lwaXBlIHZlcnNpb24gNC4xOS4xMTQgIChmb3Jnb3QgdG8gc2F2ZSB0aGUgLmNvbmZpZyBm
+aWxlKQotIHByZXBhdGNoZWQga2VybmVsIHZlcnNpb24gNS40Ljc3ICAoLmNvbmZpZyBmaWxlIGlu
+IGF0dGFjaCkgWzJdCgpOb3cgSSBhbSBhbHdheXMgZ2V0dGluZyB0aGlzICplcnJvciBtZXNzYWdl
+OioKCm1ha2VbMV06IExlYXZpbmcgZGlyZWN0b3J5ICcvaG9tZS94eHgvbGludXgtNS40Ljc3JwoK
+bWFrZTogKioqIFtkZWJpYW4vcnVsZXNldC90YXJnZXRzL2NvbW1vbi5tazozMDE6IGRlYmlhbi9z
+dGFtcC9idWlsZC9rZXJuZWxdCkVycm9yIDIKCgpJbiB0aGUgKm91dHB1dCogc2VudCB0byB0aGUg
+KmNvbnNvbGUqIGl0IGlzIHBvc3NpYmxlIHRvIGlkZW50aWZ5IHRoZQpmb2xsb3dpbmcgKmVycm9y
+cyo6CgotIHRvbyBtYW55IGFyZ3VtZW50cyB0byBmdW5jdGlvbiAgJ3N3aXRjaF9mcHVfZmluaXNo
+JwoKLSBjb25mbGljdGluZyB0eXBlcyBmb3Ig4oCYc3lzMzJfcHV0X3RpbWV44oCZICAxNDMgfApF
+WFBPUlRfU1lNQk9MX0dQTChzeXMzMl9wdXRfdGltZXgpOwoKKkluIGF0dGFjaCB5b3UgbXkgZmlu
+ZCBhIC5wZGYgZmlsZSB3aXRoKjoKLSB0aGUgc3BlY2lmaWNhdGlvbnMgb2YgdGhlIG1hY2hpbmUv
+T1MgSSBhbSB1c2luZwotIHRoZSBzZXF1ZW5jZSBvZiBjb21tYW5kcyBJIHVzZWQgKG1heWJlIEkg
+YW0gbWlzc2luZyBzb21ldGhpbmcpCi0gdGhlIG9wdGlvbnMgSSBjaG9zZQotIHRoZSBlcnJvcnMK
+CgpMZXQgbWUganVzdCBhZGQgdGhhdCBJIHJlYWxseSBkbyBub3QgbmVlZCB0byB1c2UgdGhhdCBl
+eGFjdCBVYnVudHUgdmVyc2lvbgooYnV0IEkgc3VzcGVjdCB0aGlzIGlzIG5vdCB0aGUgcHJvYmxl
+bSkuCkFsc28sIGlmIHNvbWVvbmUgaGFzIHNvbWUgaW5zdHJ1Y3Rpb25zIGZvciBzdWNoIGEgaW5z
+dGFsbGF0aW9uIEkgd291bGQgYmUKZ2xhZCB0byBnaXZlIGl0IGEgdHJ5LgoKVGhhbmsgeW91LgoK
+ClsxXSBodHRwczovL3JlbGVhc2VzLnVidW50dS5jb20vMjAuMDQuMi91YnVudHUtMjAuMDQuMi1s
+aXZlLXNlcnZlci1hbWQ2NC5pc28KWzJdIGh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS9p
+cGlwZS14ODYvLS90cmVlL2lwaXBlLWNvcmUtNS40Ljc3LXg4Ni0yCi0tLS0tLS0tLS0tLS0tIG5l
+eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
+Li4uCk5hbWU6IC5jb25maWctNS40Ljc3LnppcApUeXBlOiBhcHBsaWNhdGlvbi94LXppcC1jb21w
+cmVzc2VkClNpemU6IDU1NjQxIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
+L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNjAxLzI5ZmI0
+OThlL2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29uZmlnLTUu
+NC43Ny1wcmVwYXRjaGVkLnppcApUeXBlOiBhcHBsaWNhdGlvbi94LXppcC1jb21wcmVzc2VkClNp
+emU6IDU1MDY1IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWku
+b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNjAxLzI5ZmI0OThlL2F0dGFj
+aG1lbnQtMDAwMS5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
+IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHhlbm9tYWkgaW5zdGFs
+bGF0aW9uLnBkZgpUeXBlOiBhcHBsaWNhdGlvbi9wZGYKU2l6ZTogMjQwMjgwIGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
+L2F0dGFjaG1lbnRzLzIwMjEwNjAxLzI5ZmI0OThlL2F0dGFjaG1lbnQucGRmPgo=
