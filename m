@@ -1,10 +1,8 @@
-Subject: Re: [ANNOUNCE] Xenomai 3.1.1 released
-References: <CAEkURaYJ60wL5VZQ4UVabHiHdWOjBr=M9BQvq1bbX09AOPGn9w@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b19ff20e-a0be-dbef-bde9-ffead32981eb@siemens.com>
-Date: Tue, 1 Jun 2021 18:59:08 +0200
+Subject: Dovetail/x86 still broken /wrt exception fixups
+Message-ID: <d38b6799-ed3e-f384-a70e-51c2d5170c73@siemens.com>
+Date: Tue, 1 Jun 2021 23:24:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAEkURaYJ60wL5VZQ4UVabHiHdWOjBr=M9BQvq1bbX09AOPGn9w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,22 +14,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yuri Zaporozhets <yuri.zaporozhets@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 01.06.21 18:55, Yuri Zaporozhets via Xenomai wrote:
-> Hi all,
-> 
-> Thank you Jan, thanks to other contributors for making this release
-> possible!
-> 
-> Jan, do you plan to put the archive with this brand new shiny version to
-> https://xenomai.org/downloads/xenomai/stable/ ? ;)
-> 
+Hi Philippe,
 
-The server behind this is on its way to retirement. We will therefore 
-use gitlab for the tarballs as well now:
+we are leaking the inband stall state into user land when the kernel
+takes a fixable exception in oob. The problem is either
+cond_disable_irqs() or its (missing?) counterpart. Where is the stall
+bit set in handle_page_fault->cond_disable_irqs supposed to be cleared
+again?
 
-https://source.denx.de/Xenomai/xenomai/-/archive/v3.1.1/xenomai-v3.1.1.tar.bz2
+I-pipe is fine in that regard, but it took us many years to get it into
+that state - and it didn't have to deal with the impact of ca4c6a9858
+("x86/traps: Make interrupt enable/disable symmetric in C code") anymore...
 
 Jan
 
