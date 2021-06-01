@@ -1,11 +1,11 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <63f1459f-54bd-a7e6-737d-683cd216822b@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Mon, 31 May 2021 20:57:28 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [ANNOUNCE] Xenomai 3.1.1 released
+Message-ID: <9b20f6a7-8f35-531a-989b-bd71874d81f3@siemens.com>
+Date: Tue, 1 Jun 2021 08:04:57 +0200
 MIME-Version: 1.0
-Message-ID: <1202-60b53180-ed-1ab27320@266121244>
-Subject: =?utf-8?q?Re=3A?= Hunting mode switches
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,101 +14,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Le Lundi, Mai 31, 2021 18:14 CEST, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit: 
- 
-> On 31.05.21 18:06, Fran=C3=A7ois Legal via Xenomai wrote:
-> > Hello,
-> > 
-> > I'm having trouble hunting mode switches on an arm embedded applica=
-tion.
-> > 
-> > When I look at cat /proc/xenomai/sched/stat
-> > 
-> > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU =
- NAME
-> >   0  0      0          476986     0          0     00218000   84.5 =
- [ROOT/0]
-> >   1  0      0          137743     0          0     00218000   99.3 =
- [ROOT/1]
-> >   1  667    0          137550     0          0     00200042    0.7 =
- [rtnet-stack]
-> >   0  669    0          2          0          0     00220042    0.0 =
- [rtnet-rtpc]
-> >   1  901    110        218        203        0     00264044    0.0 =
- APP=5FMain
-> >   0  911    1          1216       3524       0     00240046    0.0 =
- ThreadPar
-> >   0  912    3          56683      3531       0     00240046    0.2 =
- ThreadMessage
-> >   0  913    309702     470522     2152301    0     00240046    8.9 =
- ThreadExec
-> >   0  914    7          62         71         0     00240042    0.0 =
- TheadGO
-> >   0  915    3          647        1190       0     00248046    0.0 =
- ThreadDbg
-> >   0  916    1          2024       3087       0     00248046    0.0 =
- ThreadCt
-> >   0  917    1          35801      320489     0     00248046    0.8 =
- ThreadSupInv
-> >   0  918    1          1231       3596       0     00248046    0.0 =
- ThreadMessage2
-> >   0  919    1          161554     479305     0     00248042    1.4 =
- ThreadSched
-> >   0  0      0          247850     0          0     00000000    0.4 =
- [IRQ18: [timer]]
-> >   1  0      0          15419      0          0     00000000    0.0 =
- [IRQ18: [timer]]
-> >   0  0      0          137548     0          0     00000000    1.5 =
- [IRQ31: rteth0]
-> >   1  0      0          0          0          0     00000000    0.0 =
- [IRQ31: rteth0]
-> >   0  0      0          1          0          0     00000000    0.0 =
- [IRQ118: rteth1-tx]
-> >   1  0      0          0          0          0     00000000    0.0 =
- [IRQ118: rteth1-tx]
-> >   0  0      0          0          0          0     00000000    0.0 =
- [IRQ119: rteth1-rx]
-> >   1  0      0          0          0          0     00000000    0.0 =
- [IRQ119: rteth1-rx]
-> > 
-> > But when following the procedure in [1], I get 
-> > no slacker
-> > 
-> > I can however see that Thread 913 seem to switch to secondary more =
-than once out of 2 cycles !
-> > What am I doing wrong.
-> > 
-> 
-> CONFIG=5FXENO=5FOPT=5FDEBUG=5FTRACE=5FRELAX is on?
-> 
+Changes since 3.1:
 
-Yes, it is.
+Fino Meng (3):
+      scripts/prepare-kernel.sh: add $(srctree) to the include path of ccflags
+      cobalt/kernel: adapt adjtime syscall with upstream kernel
+      cobalt/kernel: fix compile error for incompatible pointer type
 
-> Did you also try the in-app instrumentation via SIGDEBUG, maybe
-> attaching gdb to the process to catch the unwanted cases?
-> 
+Florian Bezdeka (3):
+      lib/boilerplate/iniparser: Allow building with GCC 10.2 2020101
+      lib/cobalt: Rename cobalt_check_features to cobalt_arch_check_features
+      lib/cobalt: Introduce generic feature initialization and check API
 
-No, not yet. It seems mode switches happen hundreds of time every secon=
-ds, so I was willing to try the slackspot.
-I'll try that tomorrow and report back to the list 
+François LEGAL (4):
+      RTNet builtin kernel - Fix IP protocols
+      rtnet: af_packet: Remove duplicate copy_from/to_user
+      rtnet: udp: Remove duplicate copy_from/to_user
+      rtnet: tcp: Remove duplicate copy_from/to_user
 
-> Jan
-> 
-> > Thanks in advance
-> > 
-> > Fran=C3=A7ois
-> > 
-> > [1] : https://source.denx.de/Xenomai/xenomai/-/wikis/Finding=5FSpur=
-ious=5FRelaxes
-> > 
-> > 
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+Greg Gallagher (2):
+      Add RTDM gpio driver for the OMAP family of SOCs
+      kernel: cobalt: Remove header file for newer kernels
+
+Greg Gallagher via Xenomai (1):
+      kernel: cobalt: Fix up elf_hwcap
+
+Jan Kiszka (27):
+      smokey: Close tmp file at end of sigdebug test
+      testsuite: Fix installation path of smokey_net_server
+      libs: Add linking dependencies to libraries
+      posix/compat: Avoid get/put_compat_sigset
+      cobalt/posix/sem: Fix invalid parameter in tracepoint
+      demo/posix/cobalt: Avoid ancillaries header
+      demo: Remove obsolete includes
+      cobalt/x86: Account for FPU changes in kernel 5.2
+      drivers/ipc: Account for renaming of SO_RCVTIMEO/SO_SNDTIMEO
+      driver/net: Update to kernel 5.4
+      wrappers: Add mmiowb stub for kernels >= 5.2
+      drivers/analogy: Fix unintended fallthrough
+      drivers/e1000: Fix unintended fallthrough
+      cobalt/posix: Address -Wimplicit-fallthrough
+      testsuite/switchtest: Fix help output
+      ci: Add x86 5.4 kernel to CI
+      ci: Drop Travis CI
+      ci: Add 5.4 release builds for arm and arm64, drop 4.14
+      ci: Update URL to source.denx.de
+      ci: Do not install unneeded crosstools
+      ci: Trigger xenomai-images child pipeline corresponding to main branches
+      testsuite/smokey/sched-quote: Make more deterministic and simplify
+      testsuite/smokey/sched-quote: Fix throttling
+      cobalt/posix/mqueue: Avoid returning internal EADV as error
+      cobalt: Avoid reading time twice via xnstat_exectime_update
+      drivers/net/igb: Make sure CONFIG_IGB_HWMON is off
+      config: Bump version number
+
+Jan Leupold (1):
+      lib/cobalt: Wrap __open_2/__open64_2 to support _FORTIFY_SOURCE
+
+Joshua Karch (1):
+      Enable zynq gpio and xilinx gpio support for the Zynq MP platform.
+
+Laurentiu-Cristian Duca (1):
+      Avoid a possible too early interrupt from the omap mcSPI controller
+
+Matúš Olekšák (1):
+      Fixed long size in UDP port bitmap index
+
+Norbert Lange (1):
+      cobalt: allow to compile without __USE_LARGEFILE64
+
+Philippe Gerum (8):
+      cobalt/kernel: vfile_snapshot: fix seq_file leakage on race detection
+      build: fix make distcheck
+      demo/posix/cobalt: add missing __STD() annotation to sigwait()
+      lib: remove remaining likely/unlikely branch annotations
+      boilerplate: drop likely/unlikely annotations
+      cobalt/synch: uapi: silence pedantic warning (signed/unsigned)
+      copperplate/timerobj: fix start/start, start/stop races
+      cobalt/vfile: seq_file seek index must progress
+
+Pintu Kumar (1):
+      kernel:cobalt:heap: replace kzalloc with vzalloc
+
+Quirin Gylstorff (3):
+      ci: Add gitlab-ci.yml
+      gitlab-ci: add cache to decrease build times
+      ci: Increase default of CCACHE_MAXSIZE to 1 gigabyte
+
+Stephen Freyder (1):
+      Restore proper operation of ioctl(SET_CONFIG)
+
+Vitaly Chikunov (5):
+      testsuite/smokey: Do not load .gdbinit in gdb test
+      libs: Add linking dependencies to libcopperplate and libsmokey
+      libs: Add linking dependency for libmodechk
+      Multi-library support with core suffix in soname
+      rt_e1000e: Fix __bad_udelay linking error
+
+chensong (1):
+      testsuite: App of gpio loopback/react benchmark
+
+Thanks to all the contributors!
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
 
