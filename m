@@ -1,12 +1,11 @@
-Subject: Re: [PATCH 0/3] y2038:clock_getres for timespec64
-References: <1619508284-15215-1-git-send-email-chensong_2000@189.cn>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <c61665f2-87de-f406-65b4-215a1fb5278c@siemens.com>
-Date: Tue, 1 Jun 2021 13:49:27 +0200
-In-Reply-To: <1619508284-15215-1-git-send-email-chensong_2000@189.cn>
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: reminder: Xenomai community call on Wednesday, June 2, 2021, UTC 7:00
+ AM
+Date: Tue, 1 Jun 2021 12:13:00 +0000
+Message-ID: <BN9PR11MB52275FEF57A12BCD31C28BC5F23E9@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,34 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Song Chen <chensong_2000@189.cn>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.04.21 09:24, Song Chen wrote:
-> This patch serial is aimed to introduce a new syscall clock_getres64
-> which is specific for 64-bit time_t.
-> 
-> chensong (3):
->   y2038: cobalt/posix/clock: Adding clock_getres64
->   y2038: lib/cobalt/clock: dispatch clock_getres
->   y2038: testsuite/smokey/y2038: testcase for getres64
-> 
->  include/cobalt/uapi/syscall.h          |  1 +
->  kernel/cobalt/posix/clock.c            | 26 ++++++++++++++++++++++++-
->  kernel/cobalt/posix/clock.h            |  6 ++++++
->  kernel/cobalt/posix/syscall32.c        |  7 +++++++
->  kernel/cobalt/posix/syscall32.h        |  4 ++++
->  lib/cobalt/clock.c                     |  5 +++++
->  testsuite/smokey/y2038/syscall-tests.c | 35 ++++++++++++++++++++++++++++++++++
->  7 files changed, 83 insertions(+), 1 deletion(-)
-> 
+Just for soft reminder, As planned, we have the Xenomai community call.
+Topics may include but not limited to upstream/downstream project plan, sta=
+tus update, and technical discussion.
+It's an open online meeting that anyone can join and ask questions.
 
-I applied this series to florian/y2038 with minor test adjustments. Will
-resend soon.
+Time:
+Wednesday, June 2, 2021, UTC 7:00 AM
+Paris, France CEST 9:00 AM
+China CST 3:00 PM
 
-Best regards,
-Florian
+Please Join Zoom Meeting=20
+https://us05web.zoom.us/j/81175706978?pwd=3DS1FmTWtKTGY3REJqNzJRbmt0ZzN4QT0=
+9=20
+Meeting ID: 811 7570 6978=20
+Passcode: 6RhNiS=20
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Regards
+
+Hongzhan Chen
+
 
