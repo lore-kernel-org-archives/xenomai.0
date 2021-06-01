@@ -1,7 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 4/6] y2038: cobalt/posix/clock: Adding clock_adjtime64
-Date: Tue,  1 Jun 2021 15:31:22 +0200
-Message-Id: <20210601133124.1466307-5-florian.bezdeka@siemens.com>
+Subject: [PATCH 3/6] y2038: testsuite/smokey/y2038: testcase for getres64
+Date: Tue,  1 Jun 2021 15:31:21 +0200
+Message-Id: <20210601133124.1466307-4-florian.bezdeka@siemens.com>
 In-Reply-To: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
 References: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -16,124 +16,74 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: jan.kiszka@siemens.com, chensong <chensong@tj.kylinos.cn>, Florian Bezdeka <florian.bezdeka@siemens.com>
 
-From: Song Chen <chensong_2000@189.cn>
+From: chensong <chensong@tj.kylinos.cn>
 
-Add a syscall specific for clock_adjtime with 64bit
-time_t.
+add test case for clock_getres64 in testsuite
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: chensong <chensong@tj.kylinos.cn>
+[Florian: syscall()->XENOMAI_SYSCALLx(), fix test error handling]
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/uapi/syscall.h   |  1 +
- kernel/cobalt/posix/clock.c     | 22 ++++++++++++++++++++++
- kernel/cobalt/posix/clock.h     |  6 ++++++
- kernel/cobalt/posix/syscall32.c |  7 +++++++
- kernel/cobalt/posix/syscall32.h |  4 ++++
- 5 files changed, 40 insertions(+)
+ testsuite/smokey/y2038/syscall-tests.c | 36 ++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 0e178cdf0..a2795a364 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -127,6 +127,7 @@
- #define sc_cobalt_clock_settime64		104
- #define sc_cobalt_clock_nanosleep64		105
- #define sc_cobalt_clock_getres64		106
-+#define sc_cobalt_clock_adjtime64		107
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index d61e2b724..95af54845 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -276,6 +276,28 @@ COBALT_SYSCALL(clock_adjtime, current,
- 	return cobalt_copy_to_user(u_tx, &tx, sizeof(tx));
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 54d529b6b..e08d13639 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -305,8 +305,40 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+ 	return 0;
  }
  
-+int __cobalt_clock_adjtime64(clockid_t clock_id,
-+			struct __kernel_timex __user *u_tx)
++static int test_sc_cobalt_clock_getres64(void)
 +{
-+	struct __kernel_timex tx;
 +	int ret;
++	int sc_nr = sc_cobalt_clock_getres64;
++	struct xn_timespec64 ts64;
 +
-+	if (cobalt_copy_from_user(&tx, u_tx, sizeof(tx)))
-+		return -EFAULT;
++	/* Make sure we don't crash because of NULL pointers */
++	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
++	if (ret == -ENOSYS) {
++		smokey_note("clock_getres64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -EFAULT))
++		return ret ? ret : -EINVAL;
 +
-+	ret = __cobalt_clock_adjtime(clock_id, &tx);
++	/* Providing an invalid address has to deliver EFAULT */
++	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
++	if (!smokey_assert(ret == -EFAULT))
++		return ret ? ret : -EINVAL;
++
++	/* Provide a valid 64bit timespec */
++	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_MONOTONIC, &ts64);
++	if (!smokey_assert(!ret))
++		return ret ? ret : -EINVAL;
++
++	if (ts64.tv_sec != 0 || ts64.tv_nsec != 1)
++		smokey_warning("High resolution timers not available\n");
++
++	return 0;
++}
++
+ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ {
++
+ 	int ret;
+ 
+ 	ret = test_sc_cobalt_sem_timedwait64();
+@@ -325,5 +357,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
+ 
++	ret = test_sc_cobalt_clock_getres64();
 +	if (ret)
 +		return ret;
 +
-+	return cobalt_copy_to_user(u_tx, &tx, sizeof(tx));
-+}
-+
-+COBALT_SYSCALL(clock_adjtime64, current,
-+	       (clockid_t clock_id, struct __kernel_timex __user *u_tx))
-+{
-+	return __cobalt_clock_adjtime64(clock_id, u_tx);
-+}
-+
- int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 			     const struct timespec64 *rqt,
- 			     struct timespec64 *rmt)
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index 473c6aa0c..e18373979 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -115,6 +115,9 @@ int __cobalt_clock_settime64(clockid_t clock_id,
- int __cobalt_clock_adjtime(clockid_t clock_id,
- 			   struct __kernel_timex *tx);
- 
-+int __cobalt_clock_adjtime64(clockid_t clock_id,
-+			struct __kernel_timex __user *u_tx);
-+
- int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 			     const struct timespec64 *rqt,
- 			     struct timespec64 *rmt);
-@@ -145,6 +148,9 @@ COBALT_SYSCALL_DECL(clock_settime64,
- COBALT_SYSCALL_DECL(clock_adjtime,
- 		    (clockid_t clock_id, struct __user_old_timex __user *u_tx));
- 
-+COBALT_SYSCALL_DECL(clock_adjtime64,
-+		    (clockid_t clock_id, struct __kernel_timex __user *u_tx));
-+
- COBALT_SYSCALL_DECL(clock_nanosleep,
- 		    (clockid_t clock_id, int flags,
- 		     const struct __user_old_timespec __user *u_rqt,
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index bba4bebbd..29c99bd05 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -222,6 +222,13 @@ COBALT_SYSCALL32emu(clock_adjtime, current,
- 	return sys32_put_timex(u_tx, &tx);
+ 	return 0;
  }
- 
-+COBALT_SYSCALL32emu(clock_adjtime64, current,
-+		    (clockid_t clock_id, struct __kernel_timex __user *u_tx))
-+{
-+	return __cobalt_clock_adjtime64(clock_id, u_tx);
-+}
-+
-+
- COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
- 		    (clockid_t clock_id, int flags,
- 		     const struct old_timespec32 __user *u_rqt,
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 4897f676c..64f6e4931 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -79,6 +79,10 @@ COBALT_SYSCALL32emu_DECL(clock_adjtime,
- 			 (clockid_t clock_id,
- 			  struct old_timex32 __user *u_tx));
- 
-+COBALT_SYSCALL32emu_DECL(clock_adjtime64,
-+			 (clockid_t clock_id,
-+			  struct __kernel_timex __user *u_tx));
-+
- COBALT_SYSCALL32emu_DECL(clock_nanosleep,
- 			 (clockid_t clock_id, int flags,
- 			  const struct old_timespec32 __user *u_rqt,
 -- 
 2.31.1
 
