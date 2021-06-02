@@ -1,17 +1,18 @@
-Sender: chensong_2000@189.cn
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for adjtime64
+Date: Wed, 2 Jun 2021 08:01:01 +0000
+Message-ID: <8ea4ccd509107805ba9e37c5861639d2992c18cb.camel@siemens.com>
 References: <1619682320-16309-1-git-send-email-chensong_2000@189.cn>
  <ada790d9-2a5d-d722-ee36-a1ef06986975@siemens.com>
  <54dc65b0-42f2-8ab3-3084-cd5e118713b2@189.cn>
  <e042878c-2b6b-75fd-a4f5-92d36f24a335@siemens.com>
-From: "chensong_2000@189.cn" <chensong_2000@189.cn>
-Message-ID: <dff453e5-9aca-2914-8bd5-2b580a60ce94@189.cn>
-Date: Wed, 2 Jun 2021 14:59:28 +0800
-MIME-Version: 1.0
-In-Reply-To: <e042878c-2b6b-75fd-a4f5-92d36f24a335@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+ <dff453e5-9aca-2914-8bd5-2b580a60ce94@189.cn>
+In-Reply-To: <dff453e5-9aca-2914-8bd5-2b580a60ce94@189.cn>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2C62AAD463D144409C1023F41C46AA65@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,156 +21,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-
-
-在 2021/6/2 下午2:46, Florian Bezdeka 写道:
-> On 02.06.21 07:55, chensong_2000@189.cn wrote:
->>
->>
->> 在 2021/6/1 下午8:16, Florian Bezdeka 写道:
->>> On 29.04.21 09:45, Song Chen wrote:
->>>> add test case for clock_adjtime64 in testsuite
->>>>
->>>> Signed-off-by: Song Chen <chensong_2000@189.cn>
->>>> ---
->>>>    testsuite/smokey/y2038/syscall-tests.c | 71
->>>> ++++++++++++++++++++++++++++++++++
->>>>    1 file changed, 71 insertions(+)
->>>>
->>>> diff --git a/testsuite/smokey/y2038/syscall-tests.c
->>>> b/testsuite/smokey/y2038/syscall-tests.c
->>>> index c59a9d6..22fd9b6 100644
->>>> --- a/testsuite/smokey/y2038/syscall-tests.c
->>>> +++ b/testsuite/smokey/y2038/syscall-tests.c
->>>> @@ -25,6 +25,43 @@ struct xn_timespec64 {
->>>>        int64_t tv_nsec;
->>>>    };
->>>>    +struct xn_timex_timeval {
->>>> +    int64_t tv_sec;
->>>> +    int64_t    tv_usec;
->>>> +};
->>>> +
->>>> +struct xn_timex64 {
->>>> +    unsigned int modes;    /* mode selector */
->>>> +    int:32;            /* pad */
->>>> +    long long offset;    /* time offset (usec) */
->>>> +    long long freq;    /* frequency offset (scaled ppm) */
->>>> +    long long maxerror;/* maximum error (usec) */
->>>> +    long long esterror;/* estimated error (usec) */
->>>> +    int status;        /* clock command/status */
->>>> +    int:32;            /* pad */
->>>> +    long long constant;/* pll time constant */
->>>> +    long long precision;/* clock precision (usec) (read only) */
->>>> +    long long tolerance;/* clock frequency tolerance (ppm) (read
->>>> only) */
->>>> +    struct xn_timex_timeval time;    /* (read only, except for
->>>> ADJ_SETOFFSET) */
->>>> +    long long tick;    /* (modified) usecs between clock ticks */
->>>> +
->>>> +    long long ppsfreq;/* pps frequency (scaled ppm) (ro) */
->>>> +    long long jitter; /* pps jitter (us) (ro) */
->>>> +    int shift;              /* interval duration (s) (shift) (ro) */
->>>> +    int:32;            /* pad */
->>>> +    long long stabil;            /* pps stability (scaled ppm) (ro) */
->>>> +    long long jitcnt; /* jitter limit exceeded (ro) */
->>>> +    long long calcnt; /* calibration intervals (ro) */
->>>> +    long long errcnt; /* calibration errors (ro) */
->>>> +    long long stbcnt; /* stability limit exceeded (ro) */
->>>> +
->>>> +    int tai;        /* TAI offset (ro) */
->>>> +
->>>> +    int:32; int:32; int:32; int:32;
->>>> +    int:32; int:32; int:32; int:32;
->>>> +    int:32; int:32; int:32;
->>>> +};
->>>> +
->>>>    #define NSEC_PER_SEC 1000000000
->>>>      static void ts_normalise(struct xn_timespec64 *ts)
->>>> @@ -326,6 +363,36 @@ static int test_sc_cobalt_clock_getres64(void)
->>>>        return 0;
->>>>    }
->>>>    +static int test_sc_cobalt_clock_adjtime64(void)
->>>> +{
->>>> +    long ret;
->>>> +    int code = __xn_syscode(sc_cobalt_clock_adjtime64);
->>>> +    struct xn_timex64 tx64 = {};
->>>> +
->>>> +    /* Make sure we don't crash because of NULL pointers */
->>>> +    ret = syscall(code, NULL, NULL);
->>>> +    if (ret == -1 && errno == ENOSYS) {
->>>> +        smokey_note("clock_adjtime64: skipped. (no kernel support)");
->>>> +        return 0; // Not implemented, nothing to test, success
->>>> +    }
->>>> +    if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->>>> +        return errno;
->>>> +
->>>> +    /* Providing an invalid address has to deliver EFAULT */
->>>> +    ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
->>>> +    if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
->>>> +        return errno;
->>>> +
->>>> +    /* Provide a valid 64bit timex*/
->>>> +    tx64.modes = ADJ_SETOFFSET;
->>>> +    tx64.time.tv_usec = 123;
->>>> +    ret = syscall(code, CLOCK_REALTIME, &tx64);
->>>
->>> In int __cobalt_clock_adjtime() we have
->>>
->>>      switch (clock_id) {
->>>      case CLOCK_REALTIME:
->>>      case CLOCK_MONOTONIC:
->>>      case CLOCK_MONOTONIC_RAW:
->>>      case CLOCK_HOST_REALTIME:
->>>          return -EOPNOTSUPP;
->>>
->>> So the test-failure I see on x86 is fully expected. How did you get this
->>> test running successfully?
->>
->> In this revision, i got this:
->> root@kylin-Lenovo:/home/kylin/workspace/y2038/xenomai-hacker-space#
->> ./testsuite/smokey/smokey --run=27
->> syscall-tests.c:391, assertion failed: !ret
->> /home/kylin/workspace/y2038/xenomai-hacker-space/testsuite/smokey/.libs/lt-smokey:
->> test y2038 failed: Unknown error -95 (which is EOPNOTSUPP)
->>
->> In my last revision, which replaced syscall with XENOMAI_SYSCALL, it
->> returns -95, i'm afraid it will terminate smokey test, i turned it to if
->> !smokey_assert(ret) for now.
->>
->> when __cobalt_clock_adjtime becomes supported, i will turn it back.
-> 
-> Already done. See the series re-posted yesterday.
-
-great, i will submit a patch to address it.
-
-> 
->>
->>>
->>>
->>>> +    if (!smokey_assert(!ret))
->>>> +        return errno;
->>>> +
->>>> +    return 0;
->>>> +}
->>>> +
->>>>    static int run_y2038(struct smokey_test *t, int argc, char *const
->>>> argv[])
->>>>    {
->>>>    @@ -351,5 +418,9 @@ static int run_y2038(struct smokey_test *t, int
->>>> argc, char *const argv[])
->>>>        if (ret)
->>>>            return ret;
->>>>    +    ret = test_sc_cobalt_clock_adjtime64();
->>>> +    if (ret)
->>>> +        return ret;
->>>> +
->>>>        return 0;
->>>>    }
->>>>
->>>
->>>
-> 
-> 
+T24gV2VkLCAyMDIxLTA2LTAyIGF0IDE0OjU5ICswODAwLCBjaGVuc29uZ18yMDAwQDE4OS5jbiB3
+cm90ZToNCj4gDQo+IOWcqCAyMDIxLzYvMiDkuIvljYgyOjQ2LCBGbG9yaWFuIEJlemRla2Eg5YaZ
+6YGTOg0KPiA+IE9uIDAyLjA2LjIxIDA3OjU1LCBjaGVuc29uZ18yMDAwQDE4OS5jbiB3cm90ZToN
+Cj4gPiA+IA0KPiA+ID4gDQo+ID4gPiDlnKggMjAyMS82LzEg5LiL5Y2IODoxNiwgRmxvcmlhbiBC
+ZXpkZWthIOWGmemBkzoNCj4gPiA+ID4gT24gMjkuMDQuMjEgMDk6NDUsIFNvbmcgQ2hlbiB3cm90
+ZToNCj4gPiA+ID4gPiBhZGQgdGVzdCBjYXNlIGZvciBjbG9ja19hZGp0aW1lNjQgaW4gdGVzdHN1
+aXRlDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gU2lnbmVkLW9mZi1ieTogU29uZyBDaGVuIDxjaGVu
+c29uZ18yMDAwQDE4OS5jbj4NCj4gPiA+ID4gPiAtLS0NCj4gPiA+ID4gPiDCoMKgIHRlc3RzdWl0
+ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgNzENCj4gPiA+ID4gPiArKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gPiA+ID4gwqDCoCAxIGZpbGUgY2hhbmdlZCwg
+NzEgaW5zZXJ0aW9ucygrKQ0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IGRpZmYgLS1naXQgYS90ZXN0
+c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMuYw0KPiA+ID4gPiA+IGIvdGVzdHN1aXRl
+L3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4gPiA+ID4gPiBpbmRleCBjNTlhOWQ2Li4y
+MmZkOWI2IDEwMDY0NA0KPiA+ID4gPiA+IC0tLSBhL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lz
+Y2FsbC10ZXN0cy5jDQo+ID4gPiA+ID4gKysrIGIvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNj
+YWxsLXRlc3RzLmMNCj4gPiA+ID4gPiBAQCAtMjUsNiArMjUsNDMgQEAgc3RydWN0IHhuX3RpbWVz
+cGVjNjQgew0KPiA+ID4gPiA+IMKgwqDCoMKgwqDCoCBpbnQ2NF90IHR2X25zZWM7DQo+ID4gPiA+
+ID4gwqDCoCB9Ow0KPiA+ID4gPiA+IMKgwqAgK3N0cnVjdCB4bl90aW1leF90aW1ldmFsIHsNCj4g
+PiA+ID4gPiArwqDCoMKgIGludDY0X3QgdHZfc2VjOw0KPiA+ID4gPiA+ICvCoMKgwqAgaW50NjRf
+dMKgwqDCoCB0dl91c2VjOw0KPiA+ID4gPiA+ICt9Ow0KPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiAr
+c3RydWN0IHhuX3RpbWV4NjQgew0KPiA+ID4gPiA+ICvCoMKgwqAgdW5zaWduZWQgaW50IG1vZGVz
+O8KgwqDCoCAvKiBtb2RlIHNlbGVjdG9yICovDQo+ID4gPiA+ID4gK8KgwqDCoCBpbnQ6MzI7wqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBwYWQgKi8NCj4gPiA+ID4gPiArwqDCoMKgIGxvbmcgbG9u
+ZyBvZmZzZXQ7wqDCoMKgIC8qIHRpbWUgb2Zmc2V0ICh1c2VjKSAqLw0KPiA+ID4gPiA+ICvCoMKg
+wqAgbG9uZyBsb25nIGZyZXE7wqDCoMKgIC8qIGZyZXF1ZW5jeSBvZmZzZXQgKHNjYWxlZCBwcG0p
+ICovDQo+ID4gPiA+ID4gK8KgwqDCoCBsb25nIGxvbmcgbWF4ZXJyb3I7LyogbWF4aW11bSBlcnJv
+ciAodXNlYykgKi8NCj4gPiA+ID4gPiArwqDCoMKgIGxvbmcgbG9uZyBlc3RlcnJvcjsvKiBlc3Rp
+bWF0ZWQgZXJyb3IgKHVzZWMpICovDQo+ID4gPiA+ID4gK8KgwqDCoCBpbnQgc3RhdHVzO8KgwqDC
+oMKgwqDCoMKgIC8qIGNsb2NrIGNvbW1hbmQvc3RhdHVzICovDQo+ID4gPiA+ID4gK8KgwqDCoCBp
+bnQ6MzI7wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBwYWQgKi8NCj4gPiA+ID4gPiArwqDCoMKg
+IGxvbmcgbG9uZyBjb25zdGFudDsvKiBwbGwgdGltZSBjb25zdGFudCAqLw0KPiA+ID4gPiA+ICvC
+oMKgwqAgbG9uZyBsb25nIHByZWNpc2lvbjsvKiBjbG9jayBwcmVjaXNpb24gKHVzZWMpIChyZWFk
+IG9ubHkpICovDQo+ID4gPiA+ID4gK8KgwqDCoCBsb25nIGxvbmcgdG9sZXJhbmNlOy8qIGNsb2Nr
+IGZyZXF1ZW5jeSB0b2xlcmFuY2UgKHBwbSkgKHJlYWQNCj4gPiA+ID4gPiBvbmx5KSAqLw0KPiA+
+ID4gPiA+ICvCoMKgwqAgc3RydWN0IHhuX3RpbWV4X3RpbWV2YWwgdGltZTvCoMKgwqAgLyogKHJl
+YWQgb25seSwgZXhjZXB0IGZvcg0KPiA+ID4gPiA+IEFESl9TRVRPRkZTRVQpICovDQo+ID4gPiA+
+ID4gK8KgwqDCoCBsb25nIGxvbmcgdGljazvCoMKgwqAgLyogKG1vZGlmaWVkKSB1c2VjcyBiZXR3
+ZWVuIGNsb2NrIHRpY2tzICovDQo+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ICvCoMKgwqAgbG9uZyBs
+b25nIHBwc2ZyZXE7LyogcHBzIGZyZXF1ZW5jeSAoc2NhbGVkIHBwbSkgKHJvKSAqLw0KPiA+ID4g
+PiA+ICvCoMKgwqAgbG9uZyBsb25nIGppdHRlcjsgLyogcHBzIGppdHRlciAodXMpIChybykgKi8N
+Cj4gPiA+ID4gPiArwqDCoMKgIGludCBzaGlmdDvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAv
+KiBpbnRlcnZhbCBkdXJhdGlvbiAocykgKHNoaWZ0KSAocm8pICovDQo+ID4gPiA+ID4gK8KgwqDC
+oCBpbnQ6MzI7wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBwYWQgKi8NCj4gPiA+ID4gPiArwqDC
+oMKgIGxvbmcgbG9uZyBzdGFiaWw7wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBwcHMgc3RhYmls
+aXR5IChzY2FsZWQgcHBtKSAocm8pICovDQo+ID4gPiA+ID4gK8KgwqDCoCBsb25nIGxvbmcgaml0
+Y250OyAvKiBqaXR0ZXIgbGltaXQgZXhjZWVkZWQgKHJvKSAqLw0KPiA+ID4gPiA+ICvCoMKgwqAg
+bG9uZyBsb25nIGNhbGNudDsgLyogY2FsaWJyYXRpb24gaW50ZXJ2YWxzIChybykgKi8NCj4gPiA+
+ID4gPiArwqDCoMKgIGxvbmcgbG9uZyBlcnJjbnQ7IC8qIGNhbGlicmF0aW9uIGVycm9ycyAocm8p
+ICovDQo+ID4gPiA+ID4gK8KgwqDCoCBsb25nIGxvbmcgc3RiY250OyAvKiBzdGFiaWxpdHkgbGlt
+aXQgZXhjZWVkZWQgKHJvKSAqLw0KPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiArwqDCoMKgIGludCB0
+YWk7wqDCoMKgwqDCoMKgwqAgLyogVEFJIG9mZnNldCAocm8pICovDQo+ID4gPiA+ID4gKw0KPiA+
+ID4gPiA+ICvCoMKgwqAgaW50OjMyOyBpbnQ6MzI7IGludDozMjsgaW50OjMyOw0KPiA+ID4gPiA+
+ICvCoMKgwqAgaW50OjMyOyBpbnQ6MzI7IGludDozMjsgaW50OjMyOw0KPiA+ID4gPiA+ICvCoMKg
+wqAgaW50OjMyOyBpbnQ6MzI7IGludDozMjsNCj4gPiA+ID4gPiArfTsNCj4gPiA+ID4gPiArDQo+
+ID4gPiA+ID4gwqDCoCAjZGVmaW5lIE5TRUNfUEVSX1NFQyAxMDAwMDAwMDAwDQo+ID4gPiA+ID4g
+wqDCoCDCoCBzdGF0aWMgdm9pZCB0c19ub3JtYWxpc2Uoc3RydWN0IHhuX3RpbWVzcGVjNjQgKnRz
+KQ0KPiA+ID4gPiA+IEBAIC0zMjYsNiArMzYzLDM2IEBAIHN0YXRpYyBpbnQgdGVzdF9zY19jb2Jh
+bHRfY2xvY2tfZ2V0cmVzNjQodm9pZCkNCj4gPiA+ID4gPiDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7
+DQo+ID4gPiA+ID4gwqDCoCB9DQo+ID4gPiA+ID4gwqDCoCArc3RhdGljIGludCB0ZXN0X3NjX2Nv
+YmFsdF9jbG9ja19hZGp0aW1lNjQodm9pZCkNCj4gPiA+ID4gPiArew0KPiA+ID4gPiA+ICvCoMKg
+wqAgbG9uZyByZXQ7DQo+ID4gPiA+ID4gK8KgwqDCoCBpbnQgY29kZSA9IF9feG5fc3lzY29kZShz
+Y19jb2JhbHRfY2xvY2tfYWRqdGltZTY0KTsNCj4gPiA+ID4gPiArwqDCoMKgIHN0cnVjdCB4bl90
+aW1leDY0IHR4NjQgPSB7fTsNCj4gPiA+ID4gPiArDQo+ID4gPiA+ID4gK8KgwqDCoCAvKiBNYWtl
+IHN1cmUgd2UgZG9uJ3QgY3Jhc2ggYmVjYXVzZSBvZiBOVUxMIHBvaW50ZXJzICovDQo+ID4gPiA+
+ID4gK8KgwqDCoCByZXQgPSBzeXNjYWxsKGNvZGUsIE5VTEwsIE5VTEwpOw0KPiA+ID4gPiA+ICvC
+oMKgwqAgaWYgKHJldCA9PSAtMSAmJiBlcnJubyA9PSBFTk9TWVMpIHsNCj4gPiA+ID4gPiArwqDC
+oMKgwqDCoMKgwqAgc21va2V5X25vdGUoImNsb2NrX2FkanRpbWU2NDogc2tpcHBlZC4gKG5vIGtl
+cm5lbCBzdXBwb3J0KSIpOw0KPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gMDsgLy8g
+Tm90IGltcGxlbWVudGVkLCBub3RoaW5nIHRvIHRlc3QsIHN1Y2Nlc3MNCj4gPiA+ID4gPiArwqDC
+oMKgIH0NCj4gPiA+ID4gPiArwqDCoMKgIGlmICghc21va2V5X2Fzc2VydChyZXQgPT0gLTEpIHx8
+ICFzbW9rZXlfYXNzZXJ0KGVycm5vID09IEVGQVVMVCkpDQo+ID4gPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgIHJldHVybiBlcnJubzsNCj4gPiA+ID4gPiArDQo+ID4gPiA+ID4gK8KgwqDCoCAvKiBQcm92
+aWRpbmcgYW4gaW52YWxpZCBhZGRyZXNzIGhhcyB0byBkZWxpdmVyIEVGQVVMVCAqLw0KPiA+ID4g
+PiA+ICvCoMKgwqAgcmV0ID0gc3lzY2FsbChjb2RlLCBDTE9DS19SRUFMVElNRSwgKHZvaWQgKikw
+eGRlYWRiZWVmVUwpOw0KPiA+ID4gPiA+ICvCoMKgwqAgaWYgKCFzbW9rZXlfYXNzZXJ0KHJldCA9
+PSAtMSkgfHwgIXNtb2tleV9hc3NlcnQoZXJybm8gPT0gRUZBVUxUKSkNCj4gPiA+ID4gPiArwqDC
+oMKgwqDCoMKgwqAgcmV0dXJuIGVycm5vOw0KPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiArwqDCoMKg
+IC8qIFByb3ZpZGUgYSB2YWxpZCA2NGJpdCB0aW1leCovDQo+ID4gPiA+ID4gK8KgwqDCoCB0eDY0
+Lm1vZGVzID0gQURKX1NFVE9GRlNFVDsNCj4gPiA+ID4gPiArwqDCoMKgIHR4NjQudGltZS50dl91
+c2VjID0gMTIzOw0KPiA+ID4gPiA+ICvCoMKgwqAgcmV0ID0gc3lzY2FsbChjb2RlLCBDTE9DS19S
+RUFMVElNRSwgJnR4NjQpOw0KPiA+ID4gPiANCj4gPiA+ID4gSW4gaW50IF9fY29iYWx0X2Nsb2Nr
+X2FkanRpbWUoKSB3ZSBoYXZlDQo+ID4gPiA+IA0KPiA+ID4gPiDCoMKgwqDCoMKgc3dpdGNoIChj
+bG9ja19pZCkgew0KPiA+ID4gPiDCoMKgwqDCoMKgY2FzZSBDTE9DS19SRUFMVElNRToNCj4gPiA+
+ID4gwqDCoMKgwqDCoGNhc2UgQ0xPQ0tfTU9OT1RPTklDOg0KPiA+ID4gPiDCoMKgwqDCoMKgY2Fz
+ZSBDTE9DS19NT05PVE9OSUNfUkFXOg0KPiA+ID4gPiDCoMKgwqDCoMKgY2FzZSBDTE9DS19IT1NU
+X1JFQUxUSU1FOg0KPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiAtRU9QTk9UU1VQUDsN
+Cj4gPiA+ID4gDQo+ID4gPiA+IFNvIHRoZSB0ZXN0LWZhaWx1cmUgSSBzZWUgb24geDg2IGlzIGZ1
+bGx5IGV4cGVjdGVkLiBIb3cgZGlkIHlvdSBnZXQgdGhpcw0KPiA+ID4gPiB0ZXN0IHJ1bm5pbmcg
+c3VjY2Vzc2Z1bGx5Pw0KPiA+ID4gDQo+ID4gPiBJbiB0aGlzIHJldmlzaW9uLCBpIGdvdCB0aGlz
+Og0KPiA+ID4gcm9vdEBreWxpbi1MZW5vdm86L2hvbWUva3lsaW4vd29ya3NwYWNlL3kyMDM4L3hl
+bm9tYWktaGFja2VyLXNwYWNlIw0KPiA+ID4gLi90ZXN0c3VpdGUvc21va2V5L3Ntb2tleSAtLXJ1
+bj0yNw0KPiA+ID4gc3lzY2FsbC10ZXN0cy5jOjM5MSwgYXNzZXJ0aW9uIGZhaWxlZDogIXJldA0K
+PiA+ID4gL2hvbWUva3lsaW4vd29ya3NwYWNlL3kyMDM4L3hlbm9tYWktaGFja2VyLXNwYWNlL3Rl
+c3RzdWl0ZS9zbW9rZXkvLmxpYnMvbHQtc21va2V5Og0KPiA+ID4gdGVzdCB5MjAzOCBmYWlsZWQ6
+IFVua25vd24gZXJyb3IgLTk1ICh3aGljaCBpcyBFT1BOT1RTVVBQKQ0KPiA+ID4gDQo+ID4gPiBJ
+biBteSBsYXN0IHJldmlzaW9uLCB3aGljaCByZXBsYWNlZCBzeXNjYWxsIHdpdGggWEVOT01BSV9T
+WVNDQUxMLCBpdA0KPiA+ID4gcmV0dXJucyAtOTUsIGknbSBhZnJhaWQgaXQgd2lsbCB0ZXJtaW5h
+dGUgc21va2V5IHRlc3QsIGkgdHVybmVkIGl0IHRvIGlmDQo+ID4gPiAhc21va2V5X2Fzc2VydChy
+ZXQpIGZvciBub3cuDQo+ID4gPiANCj4gPiA+IHdoZW4gX19jb2JhbHRfY2xvY2tfYWRqdGltZSBi
+ZWNvbWVzIHN1cHBvcnRlZCwgaSB3aWxsIHR1cm4gaXQgYmFjay4NCj4gPiANCj4gPiBBbHJlYWR5
+IGRvbmUuIFNlZSB0aGUgc2VyaWVzIHJlLXBvc3RlZCB5ZXN0ZXJkYXkuDQo+IA0KPiBncmVhdCwg
+aSB3aWxsIHN1Ym1pdCBhIHBhdGNoIHRvIGFkZHJlc3MgaXQuDQoNCk5vIGFkZGl0aW9uYWwgd29y
+ayBuZWNlc3NhcnkuIFRoZSBwYXRjaGVzIHNlbnQgb3V0IGZvciBpbnRlZ3JhdGlvbg0KYWxyZWFk
+eSBoYXZlIGl0LiAoSSBzcXVhc2hlZCBteSBmaXhlcyBpbnRvIHlvdXIgcGF0Y2ggYmVmb3JlIHB1
+Ymxpc2hpbmcNCml0KQ0KDQo+ID4gDQo+ID4gPiANCj4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4g
+PiA+ICvCoMKgwqAgaWYgKCFzbW9rZXlfYXNzZXJ0KCFyZXQpKQ0KPiA+ID4gPiA+ICvCoMKgwqDC
+oMKgwqDCoCByZXR1cm4gZXJybm87DQo+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ICvCoMKgwqAgcmV0
+dXJuIDA7DQo+ID4gPiA+ID4gK30NCj4gPiA+ID4gPiArDQo+ID4gPiA+ID4gwqDCoCBzdGF0aWMg
+aW50IHJ1bl95MjAzOChzdHJ1Y3Qgc21va2V5X3Rlc3QgKnQsIGludCBhcmdjLCBjaGFyICpjb25z
+dA0KPiA+ID4gPiA+IGFyZ3ZbXSkNCj4gPiA+ID4gPiDCoMKgIHsNCj4gPiA+ID4gPiDCoMKgIEBA
+IC0zNTEsNSArNDE4LDkgQEAgc3RhdGljIGludCBydW5feTIwMzgoc3RydWN0IHNtb2tleV90ZXN0
+ICp0LCBpbnQNCj4gPiA+ID4gPiBhcmdjLCBjaGFyICpjb25zdCBhcmd2W10pDQo+ID4gPiA+ID4g
+wqDCoMKgwqDCoMKgIGlmIChyZXQpDQo+ID4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0
+dXJuIHJldDsNCj4gPiA+ID4gPiDCoMKgICvCoMKgwqAgcmV0ID0gdGVzdF9zY19jb2JhbHRfY2xv
+Y2tfYWRqdGltZTY0KCk7DQo+ID4gPiA+ID4gK8KgwqDCoCBpZiAocmV0KQ0KPiA+ID4gPiA+ICvC
+oMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Ow0KPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiDCoMKgwqDC
+oMKgwqAgcmV0dXJuIDA7DQo+ID4gPiA+ID4gwqDCoCB9DQo+ID4gPiA+ID4gDQo+ID4gPiA+IA0K
+PiA+ID4gPiANCj4gPiANCj4gPiANCg0K
 
