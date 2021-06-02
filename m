@@ -1,21 +1,17 @@
-References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
- <87lf83cj7k.fsf@xenomai.org>
- <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
- <87y2c3b092.fsf@xenomai.org>
- <3bf57e72-9992-0ab4-a956-d6f6197bfe24@siemens.com>
- <87sg2bat1l.fsf@xenomai.org>
- <c4aad772-ea81-11e5-afd3-ff269c6b2899@siemens.com>
- <87o8czar20.fsf@xenomai.org>
- <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
- <87a6ohzjoi.fsf@xenomai.org>
- <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
-In-reply-to: <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
-Date: Wed, 02 Jun 2021 08:51:21 +0200
-Message-ID: <87h7ighi8m.fsf@xenomai.org>
+Sender: chensong_2000@189.cn
+Subject: Re: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for adjtime64
+References: <1619682320-16309-1-git-send-email-chensong_2000@189.cn>
+ <ada790d9-2a5d-d722-ee36-a1ef06986975@siemens.com>
+ <54dc65b0-42f2-8ab3-3084-cd5e118713b2@189.cn>
+ <e042878c-2b6b-75fd-a4f5-92d36f24a335@siemens.com>
+From: "chensong_2000@189.cn" <chensong_2000@189.cn>
+Message-ID: <dff453e5-9aca-2914-8bd5-2b580a60ce94@189.cn>
+Date: Wed, 2 Jun 2021 14:59:28 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <e042878c-2b6b-75fd-a4f5-92d36f24a335@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,187 +20,156 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 26.05.21 15:52, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 25.05.21 15:20, Philippe Gerum wrote:
+在 2021/6/2 下午2:46, Florian Bezdeka 写道:
+> On 02.06.21 07:55, chensong_2000@189.cn wrote:
+>>
+>>
+>> 在 2021/6/1 下午8:16, Florian Bezdeka 写道:
+>>> On 29.04.21 09:45, Song Chen wrote:
+>>>> add test case for clock_adjtime64 in testsuite
 >>>>
->>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>> Signed-off-by: Song Chen <chensong_2000@189.cn>
+>>>> ---
+>>>>    testsuite/smokey/y2038/syscall-tests.c | 71
+>>>> ++++++++++++++++++++++++++++++++++
+>>>>    1 file changed, 71 insertions(+)
 >>>>
->>>>> On 25.05.21 14:37, Philippe Gerum wrote:
->>>>>>
->>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>
->>>>>>> On 25.05.21 12:01, Philippe Gerum wrote:
->>>>>>>>
->>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>>
->>>>>>>>> On 25.05.21 10:46, Philippe Gerum wrote:
->>>>>>>>>>
->>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>>>>
->>>>>>>>>>> Hi Philippe,
->>>>>>>>>>>
->>>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight service, compared
->>>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothing you would
->>>>>>>>>>> expect from a "send a signal" service, specifically from
->>>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the sending extra payload.
->>>>>>>>>>>
->>>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd usecases are not
->>>>>>>>>>> time-sensitive anyway).
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Nope, I cannot see any significantly better option which would still
->>>>>>>>>> allow a common implementation we can map on top of Dovetail / I-pipe.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> E.g. pre-allocate the work object for data-free signals and use that -
->>>>>>>>> or not send it when it is in use, thus pending.
->>>>>>>>>
->>>>>>>>
->>>>>>>> Ok, let's recap:
->>>>>>>>
->>>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely uses a
->>>>>>>>   user-provided memory block, containing a request header. Current
->>>>>>>>   callers should either already care for not resending a request
->>>>>>>>   uselessly because it is pending (e.g. [1]), or their internal logic
->>>>>>>>   should prevent that (e.g. [2]). This interface always convey user data
->>>>>>>>   by reference.
->>>>>>>
->>>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedule_nrt_work
->>>>>>> to do the work, it's the other way around. False alarm here.
->>>>>>>
->>>>>>>>
->>>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct in order to
->>>>>>>>   convey a request block we cannot squeeze into a work_struct, since the
->>>>>>>>   latter is in itself an anchor type the user may embed into its own
->>>>>>>>   private argument block. I'm unsure ensuring that
->>>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be worth it, as
->>>>>>>>   this call is not supposed to be used frenetically on some hot path in
->>>>>>>>   the first place. But if we'd want to do that, then we would have to
->>>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that we gain a
->>>>>>>>   persistent context data we could use for determining whether a nrt
->>>>>>>>   work request is in flight. We could not probe the work_struct for that
->>>>>>>>   purpose, that would be racy.
->>>>>>>>
->>>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work() without
->>>>>>>> changing its signature?
->>>>>>>
->>>>>>> There is no rule that prevents changing the signature if that is needed.
->>>>>>> However, the kernel is fine without allocation as well, using a very
->>>>>>> similar signature.
->>>>>>>
->>>>>>
->>>>>> schedule_work() and rtdm_schedule_nrt_work() have a major difference:
->>>>>> the latter has to pass on the request from the oob to the in-band
->>>>>> context. This is what bugs us and creates the requirement for additional
->>>>>> mechanism and data.
->>>>>>
->>>>>>> I do not yet understand way we need that indirection via the rtdm_nrtsig
->>>>>>> on Dovetail. I thought we can trigger work directly from the oob domain
->>>>>>> there, can't we? How do you handle such a case in evl so far?
->>>>>>>
->>>>>>
->>>>>> Dovetail can trigger in-band work from oob via the generic irq_work()
->>>>>> service, we don't need the extra code involved in the I-pipe for the
->>>>>> same purpose. The gist of the matter is about having the same
->>>>>> implementation for rtdm_schedule_nrt_work() which works in both Dovetail
->>>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsig_pend()
->>>>>> which already abstracts the base mechanism for relaying oob -> in-band
->>>>>> signals.
->>>>>>
->>>>>> On the other hand, EVL has the evl_call_inband[_from]() service, which
->>>>>> combines the irq_work and work_struct anchors we need into a single
->>>>>> evl_work type, which in turn can be embedded into a user request
->>>>>> block. This is what rtdm_schedule_nrt_work() does not expose, so it has
->>>>>> to build one internally by combining a dynamic allocation and the
->>>>>> user-provided work_struct.
->>>>>>
->>>>>
->>>>> Then enhance the rtdm service to enable such a combination - and be even
->>>>> more ready for the switch to Xenomai 4, I would say. We can either add a
->>>>> new service and deprecate the old one (while implementing it as you
->>>>> suggest) or just break the interface to get the (presumably) few users
->>>>> quickly converted.
->>>>>
->>>>
->>>> rtdm_schedule_nrt_work() was added by Gilles when merging the RTnet code
->>>> into Xenomai 3 IIRC, with little documentation. Widespread usage of this
->>>> call is unlikely, so I'd vote for simplifying the whole thing and
->>>> replace it entirely.
+>>>> diff --git a/testsuite/smokey/y2038/syscall-tests.c
+>>>> b/testsuite/smokey/y2038/syscall-tests.c
+>>>> index c59a9d6..22fd9b6 100644
+>>>> --- a/testsuite/smokey/y2038/syscall-tests.c
+>>>> +++ b/testsuite/smokey/y2038/syscall-tests.c
+>>>> @@ -25,6 +25,43 @@ struct xn_timespec64 {
+>>>>        int64_t tv_nsec;
+>>>>    };
+>>>>    +struct xn_timex_timeval {
+>>>> +    int64_t tv_sec;
+>>>> +    int64_t    tv_usec;
+>>>> +};
+>>>> +
+>>>> +struct xn_timex64 {
+>>>> +    unsigned int modes;    /* mode selector */
+>>>> +    int:32;            /* pad */
+>>>> +    long long offset;    /* time offset (usec) */
+>>>> +    long long freq;    /* frequency offset (scaled ppm) */
+>>>> +    long long maxerror;/* maximum error (usec) */
+>>>> +    long long esterror;/* estimated error (usec) */
+>>>> +    int status;        /* clock command/status */
+>>>> +    int:32;            /* pad */
+>>>> +    long long constant;/* pll time constant */
+>>>> +    long long precision;/* clock precision (usec) (read only) */
+>>>> +    long long tolerance;/* clock frequency tolerance (ppm) (read
+>>>> only) */
+>>>> +    struct xn_timex_timeval time;    /* (read only, except for
+>>>> ADJ_SETOFFSET) */
+>>>> +    long long tick;    /* (modified) usecs between clock ticks */
+>>>> +
+>>>> +    long long ppsfreq;/* pps frequency (scaled ppm) (ro) */
+>>>> +    long long jitter; /* pps jitter (us) (ro) */
+>>>> +    int shift;              /* interval duration (s) (shift) (ro) */
+>>>> +    int:32;            /* pad */
+>>>> +    long long stabil;            /* pps stability (scaled ppm) (ro) */
+>>>> +    long long jitcnt; /* jitter limit exceeded (ro) */
+>>>> +    long long calcnt; /* calibration intervals (ro) */
+>>>> +    long long errcnt; /* calibration errors (ro) */
+>>>> +    long long stbcnt; /* stability limit exceeded (ro) */
+>>>> +
+>>>> +    int tai;        /* TAI offset (ro) */
+>>>> +
+>>>> +    int:32; int:32; int:32; int:32;
+>>>> +    int:32; int:32; int:32; int:32;
+>>>> +    int:32; int:32; int:32;
+>>>> +};
+>>>> +
+>>>>    #define NSEC_PER_SEC 1000000000
+>>>>      static void ts_normalise(struct xn_timespec64 *ts)
+>>>> @@ -326,6 +363,36 @@ static int test_sc_cobalt_clock_getres64(void)
+>>>>        return 0;
+>>>>    }
+>>>>    +static int test_sc_cobalt_clock_adjtime64(void)
+>>>> +{
+>>>> +    long ret;
+>>>> +    int code = __xn_syscode(sc_cobalt_clock_adjtime64);
+>>>> +    struct xn_timex64 tx64 = {};
+>>>> +
+>>>> +    /* Make sure we don't crash because of NULL pointers */
+>>>> +    ret = syscall(code, NULL, NULL);
+>>>> +    if (ret == -1 && errno == ENOSYS) {
+>>>> +        smokey_note("clock_adjtime64: skipped. (no kernel support)");
+>>>> +        return 0; // Not implemented, nothing to test, success
+>>>> +    }
+>>>> +    if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+>>>> +        return errno;
+>>>> +
+>>>> +    /* Providing an invalid address has to deliver EFAULT */
+>>>> +    ret = syscall(code, CLOCK_REALTIME, (void *)0xdeadbeefUL);
+>>>> +    if (!smokey_assert(ret == -1) || !smokey_assert(errno == EFAULT))
+>>>> +        return errno;
+>>>> +
+>>>> +    /* Provide a valid 64bit timex*/
+>>>> +    tx64.modes = ADJ_SETOFFSET;
+>>>> +    tx64.time.tv_usec = 123;
+>>>> +    ret = syscall(code, CLOCK_REALTIME, &tx64);
+>>>
+>>> In int __cobalt_clock_adjtime() we have
+>>>
+>>>      switch (clock_id) {
+>>>      case CLOCK_REALTIME:
+>>>      case CLOCK_MONOTONIC:
+>>>      case CLOCK_MONOTONIC_RAW:
+>>>      case CLOCK_HOST_REALTIME:
+>>>          return -EOPNOTSUPP;
+>>>
+>>> So the test-failure I see on x86 is fully expected. How did you get this
+>>> test running successfully?
+>>
+>> In this revision, i got this:
+>> root@kylin-Lenovo:/home/kylin/workspace/y2038/xenomai-hacker-space#
+>> ./testsuite/smokey/smokey --run=27
+>> syscall-tests.c:391, assertion failed: !ret
+>> /home/kylin/workspace/y2038/xenomai-hacker-space/testsuite/smokey/.libs/lt-smokey:
+>> test y2038 failed: Unknown error -95 (which is EOPNOTSUPP)
+>>
+>> In my last revision, which replaced syscall with XENOMAI_SYSCALL, it
+>> returns -95, i'm afraid it will terminate smokey test, i turned it to if
+>> !smokey_assert(ret) for now.
+>>
+>> when __cobalt_clock_adjtime becomes supported, i will turn it back.
+> 
+> Already done. See the series re-posted yesterday.
+
+great, i will submit a patch to address it.
+
+> 
+>>
+>>>
+>>>
+>>>> +    if (!smokey_assert(!ret))
+>>>> +        return errno;
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>>    static int run_y2038(struct smokey_test *t, int argc, char *const
+>>>> argv[])
+>>>>    {
+>>>>    @@ -351,5 +418,9 @@ static int run_y2038(struct smokey_test *t, int
+>>>> argc, char *const argv[])
+>>>>        if (ret)
+>>>>            return ret;
+>>>>    +    ret = test_sc_cobalt_clock_adjtime64();
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>>        return 0;
+>>>>    }
 >>>>
 >>>
->>> OK, then we have a plan for this piece.
 >>>
->>>>>>> And the third case remains xnthread_signal, btw.
->>>>>>>
->>>>>>
->>>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTERM signals
->>>>>> for a thread, a seldom event. Optimizing there would be overkill, unless
->>>>>> the application behaves wrongly in the first place.
->>>>>
->>>>> Some caller are under nklock, thus it makes potentially lengthy critical
->>>>> sections now a bit longer.
->>>>>
->>>>
->>>> This is what needs to be fixed in the first place, we should not trigger
->>>> a signal relay when holding the ugly big lock.
->>>>
->>>
->>> Whatever is simpler.
->>>
->>> Another aspect: Using xnmalloc for anything that should better succeed
->>> is possibly not good when we are OOM. That is actually no strict
->>> regression over I-pipe where we had a limited queue as well IIRC but a
->>> reason to avoid carrying that over - and possibly creating new error
->>> scenarios that are harder to debug.
->>>
->> 
->> To mitigate the issue of generalized OOM, we could pull memory from a
->> local xnheap privately attached to xnthread_signal() along with any
->> caller requiring dynamic allocation, so that none of them could deplete
->> the sysheap.
->> 
->> Getting rid of dynamic allocation entirely on the other hand would
->> require us to add one or more "signal slots" per possible cause of
->> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
->> SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
->> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
->> standard non-queueable signals, so we should only need a single slot per
->> signal cause.
->> 
->
-> Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
-> Likely, we only need to carry the single cause via a field in xnthread
-> from the trigger point to the in-band handler. The same is probably the
-> case for SIGSHADOW_ACTION_BACKTRACE.
->
-
-Multiple events triggering SIGSHADOW_ACTION_HOME and
-SIGSHADOW_ACTION_HARDEN _might_ pile up, although unlikely.
-
-> Now, the question for me is how we move forward from this? Is it simpler
-> to fix these issues? Or would it be better first avoid affecting I-pipe
-> cases and living with xnmalloc for an initial phase over Dovetail?
->
-
-A much better option would be that somebody volunteers to work on
-implementing what has just been described, in order to have the proper
-solution available in both I-pipe an Dovetail contexts, based on generic
-code.
-
-Although such work may not seem obvious at first sight reading the
-jargonish descriptions above, it is actually fairly simple to
-implement. I believe that any contributor would be welcome to ask for
-explanations and details for that purpose.
-
--- 
-Philippe.
+> 
+> 
 
