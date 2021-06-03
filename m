@@ -1,12 +1,8 @@
-From: Jan Kiszka <jan.kiszka@web.de>
-Subject: [v5.13.y-dovetail][PATCH 2/2] irq_pipeline: Account for stage
- migration across faults
-Message-ID: <0eb03889-d16d-3446-e07b-a4a36964ef15@web.de>
-Date: Thu, 3 Jun 2021 11:50:59 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [florian/y2038][PATCH v2 0/3] y2038:mutex_timedlock for timespec64
+Date: Thu,  3 Jun 2021 18:55:49 +0800
+Message-Id: <1622717749-23101-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,73 +11,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This patch serial is aimed to introduce a new syscall mutex_timedlock64
+which is specific for 64-bit time_t.
 
-We need to unstall the inband stage when we entered for a fault over OOB
-and unstalled and then migrated to inband. So far we kept the inband
-stage stalled, causing a state corruption this way.
+---
+v2:
+1, new revision regarding review comments
 
-Introduce an additional state to irqentry_info for this, tracking the
-stalling state on OOB entry.
+Song Chen (3):
+  y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+  y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+  y2038: testsuite/smokey/y2038: testcase for mutex_timedlock64
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-=2D--
+ include/cobalt/uapi/syscall.h          |   1 +
+ kernel/cobalt/posix/mutex.c            |  22 +++++-
+ kernel/cobalt/posix/mutex.h            |   7 ++
+ kernel/cobalt/posix/syscall32.c        |   7 ++
+ kernel/cobalt/posix/syscall32.h        |   4 +
+ lib/cobalt/mutex.c                     |   4 +
+ testsuite/smokey/y2038/syscall-tests.c | 136 +++++++++++++++++++++++++++++++++
+ 7 files changed, 180 insertions(+), 1 deletion(-)
 
-Note: Tested only as backport to 5.10-x86 so far.
-
- include/linux/entry-common.h |  3 ++-
- kernel/entry/common.c        | 10 +++++++---
- 2 files changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 2a08b00632b9..782e94b88076 100644
-=2D-- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -402,7 +402,8 @@ void irqentry_exit_to_user_mode(struct pt_regs *regs);
- enum irqentry_info {
- 	IRQENTRY_INBAND_UNSTALLED =3D 0,
- 	IRQENTRY_INBAND_STALLED,
--	IRQENTRY_OOB,
-+	IRQENTRY_OOB_UNSTALLED,
-+	IRQENTRY_OOB_STALLED,
- };
-
- #ifndef irqentry_state
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 5a669f87ec3f..5f2ec6dba1a4 100644
-=2D-- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -410,7 +410,8 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs=
- *regs)
-
- #ifdef CONFIG_IRQ_PIPELINE
- 	if (running_oob()) {
--		ret.stage_info =3D IRQENTRY_OOB;
-+		ret.stage_info =3D test_oob_stall() ? IRQENTRY_OOB_STALLED :
-+			IRQENTRY_OOB_UNSTALLED;
- 		return ret;
- 	}
- #endif
-@@ -577,9 +578,12 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqe=
-ntry_state_t state)
- 	/*
- 	 * If pipelining interrupts, clear the in-band stall bit if
- 	 * irqentry_enter() raised it in order to mirror the hardware
--	 * state.
-+	 * state. Also clear it when we where coming from OOB_UNSTALLED,
-+	 * thus went through a migration that was caused by taking, e.g.,
-+	 * a fault.
- 	 */
--	if (state.stage_info =3D=3D IRQENTRY_INBAND_UNSTALLED)
-+	if (state.stage_info =3D=3D IRQENTRY_INBAND_UNSTALLED ||
-+	    state.stage_info =3D=3D IRQENTRY_OOB_UNSTALLED)
- 		unstall_inband();
- #endif
- 	return;
-=2D-
-2.26.2
+-- 
+2.7.4
 
 
