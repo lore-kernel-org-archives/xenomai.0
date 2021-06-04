@@ -1,11 +1,24 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <10a7-60b89980-61-35a6e6c0@10011745>
-Content-Type: text/plain; charset="utf-8"
-Date: Thu, 03 Jun 2021 20:39:52 +0200
-MIME-Version: 1.0
-Message-ID: <10a0-60b92200-35-29fb8780@204320304>
-Subject: =?utf-8?q?Re=3A?= Hunting mode switches
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: "rtdm/nrtsig: move inband work description off the stack"
+Date: Fri, 4 Jun 2021 06:34:28 +0000
+Message-ID: <BN9PR11MB522775EA51C691A702208894F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
+ <87lf83cj7k.fsf@xenomai.org>
+ <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
+ <87y2c3b092.fsf@xenomai.org>
+ <3bf57e72-9992-0ab4-a956-d6f6197bfe24@siemens.com>
+ <87sg2bat1l.fsf@xenomai.org>
+ <c4aad772-ea81-11e5-afd3-ff269c6b2899@siemens.com>
+ <87o8czar20.fsf@xenomai.org>
+ <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
+ <87a6ohzjoi.fsf@xenomai.org>
+ <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
+ <87h7ighi8m.fsf@xenomai.org>
+In-Reply-To: <87h7ighi8m.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,245 +27,282 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-
-Le Jeudi, Juin 03, 2021 10:57 CEST, Fran=C3=A7ois Legal via Xenomai <xe=
-nomai@xenomai.org> a =C3=A9crit: 
- 
-> Le Mercredi, Juin 02, 2021 12:59 CEST, Jan Kiszka <jan.kiszka@siemens=
-.com> a =C3=A9crit: 
->  
-> > On 02.06.21 12:26, Fran=C3=A7ois Legal wrote:
-> > > Le Mardi, Juin 01, 2021 10:31 CEST, Jan Kiszka <jan.kiszka@siemen=
-s.com> a =C3=A9crit: 
-> > >  
-> > >> On 01.06.21 09:47, Fran=C3=A7ois Legal wrote:
-> > >>> Le Lundi, Mai 31, 2021 20:57 CEST, Fran=C3=A7ois Legal via Xeno=
-mai <xenomai@xenomai.org> a =C3=A9crit: 
-> > >>>  
-> > >>>> Le Lundi, Mai 31, 2021 18:14 CEST, Jan Kiszka <jan.kiszka@siem=
-ens.com> a =C3=A9crit: 
-> > >>>>  
-> > >>>>> On 31.05.21 18:06, Fran=C3=A7ois Legal via Xenomai wrote:
-> > >>>>>> Hello,
-> > >>>>>>
-> > >>>>>> I'm having trouble hunting mode switches on an arm embedded =
-application.
-> > >>>>>>
-> > >>>>>> When I look at cat /proc/xenomai/sched/stat
-> > >>>>>>
-> > >>>>>> CPU  PID    MSW        CSW        XSC        PF    STAT     =
-  %CPU  NAME
-> > >>>>>>   0  0      0          476986     0          0     00218000 =
-  84.5  [ROOT/0]
-> > >>>>>>   1  0      0          137743     0          0     00218000 =
-  99.3  [ROOT/1]
-> > >>>>>>   1  667    0          137550     0          0     00200042 =
-   0.7  [rtnet-stack]
-> > >>>>>>   0  669    0          2          0          0     00220042 =
-   0.0  [rtnet-rtpc]
-> > >>>>>>   1  901    110        218        203        0     00264044 =
-   0.0  APP=5FMain
-> > >>>>>>   0  911    1          1216       3524       0     00240046 =
-   0.0  ThreadPar
-> > >>>>>>   0  912    3          56683      3531       0     00240046 =
-   0.2  ThreadMessage
-> > >>>>>>   0  913    309702     470522     2152301    0     00240046 =
-   8.9  ThreadExec
-> > >>>>>>   0  914    7          62         71         0     00240042 =
-   0.0  TheadGO
-> > >>>>>>   0  915    3          647        1190       0     00248046 =
-   0.0  ThreadDbg
-> > >>>>>>   0  916    1          2024       3087       0     00248046 =
-   0.0  ThreadCt
-> > >>>>>>   0  917    1          35801      320489     0     00248046 =
-   0.8  ThreadSupInv
-> > >>>>>>   0  918    1          1231       3596       0     00248046 =
-   0.0  ThreadMessage2
-> > >>>>>>   0  919    1          161554     479305     0     00248042 =
-   1.4  ThreadSched
-> > >>>>>>   0  0      0          247850     0          0     00000000 =
-   0.4  [IRQ18: [timer]]
-> > >>>>>>   1  0      0          15419      0          0     00000000 =
-   0.0  [IRQ18: [timer]]
-> > >>>>>>   0  0      0          137548     0          0     00000000 =
-   1.5  [IRQ31: rteth0]
-> > >>>>>>   1  0      0          0          0          0     00000000 =
-   0.0  [IRQ31: rteth0]
-> > >>>>>>   0  0      0          1          0          0     00000000 =
-   0.0  [IRQ118: rteth1-tx]
-> > >>>>>>   1  0      0          0          0          0     00000000 =
-   0.0  [IRQ118: rteth1-tx]
-> > >>>>>>   0  0      0          0          0          0     00000000 =
-   0.0  [IRQ119: rteth1-rx]
-> > >>>>>>   1  0      0          0          0          0     00000000 =
-   0.0  [IRQ119: rteth1-rx]
-> > >>>>>>
-> > >>>>>> But when following the procedure in [1], I get 
-> > >>>>>> no slacker
-> > >>>>>>
-> > >>>>>> I can however see that Thread 913 seem to switch to secondar=
-y more than once out of 2 cycles !
-> > >>>>>> What am I doing wrong.
-> > >>>>>>
-> > >>>>>
-> > >>>>> CONFIG=5FXENO=5FOPT=5FDEBUG=5FTRACE=5FRELAX is on?
-> > >>>>>
-> > >>>>
-> > >>>> Yes, it is.
-> > >>>>
-> > >>>>> Did you also try the in-app instrumentation via SIGDEBUG, may=
-be> >>>>> attaching gdb to the process to catch the unwanted cases?
-> > >>>>>
-> > >>>>
-> > >>>> No, not yet. It seems mode switches happen hundreds of time ev=
-ery seconds, so I was willing to try the slackspot.
-> > >>>> I'll try that tomorrow and report back to the list 
-> > >>>>
-> > >>>
-> > >>> So trying the manual way, there seem to be something happening,=
- but I could not tell exactly what, and I not sure how to track this.
-> > >>>
-> > >>> On thread ThreadExec, I get execution halted with SIGXCPU, and =
-a backtrace indicating getpid(), then =5F=5Fpthread=5Fkill() which I'm =
-100% sure I never call !
-> > >>>
-> > >>> Moreover, when being halted at that point, all threads are not =
-created, and all of which are created seem to have done 3 or 4 MSW each=
-, and without triggering any break.
-> > >>>
-> > >>> Moreover, in the stats capture below, the APP=5FMain (the main =
-program entry), is looping on a 1s nanosleep, and it seems the MSW numb=
-er increases once per second.
-> > >>>
-> > >>> I'm really confused now.
-> > >>>
-> > >>
-> > >> Are you instrumenting only the part of the thread that has all
-> > >> initialization done and until it starts to de-initialize again? =
-You can
-> > >> control when the mode switches should be reported and when not.
-> > >>
-> > >> Then, if you have a backtrace and that backtrace contain a valid=
-
-> > >> syscall, you should also find a valid point in your own applicat=
-ion when
-> > >> this was started (indirectly). Maybe some library call?
-> > >>
-> > >> Jan
-> > >>
-> > > 
-> > > So in the end, slackspot seems to work. I did not understand, by =
-reading the manual, that slackspot/CONFIG=5FXENO=5FOPT=5FDEBUG=5FTRACE=5F=
-RELAX also needed that each thread call pthread=5Fsetmode=5Fnp(0, PTHRE=
-AD=5FWARNSW, NULL);
-> > > 
-> > 
-> > We are happy to take patches - also against the doc / the wiki.
-> > 
-> > > So now, I've got a working backtrace, however, I'm still lost ont=
-o understanding what happens.
-> > > 
-> > > I believe I might be having some troubles with the signals, but I=
- can't seem to find an explanation.
-> > > Maybe I should document more my app.
-> > > 
-> > > ThreadSched is pending on a timer (with sigwaitinfo). That time t=
-riggers every 750=C2=B5s. When waking up, this thread will post one or =
-2 semaphores, that will unlock other threads (of which ThreadExec which=
- seem to be doing MSW more than once every two activations).
-> > > 
-> > > I ended up modifying the app startup code because I was experienc=
-ing weirdness in the startup with debugger attached (some semaphores wo=
-uldn't unlock, ...). Anyhow, I ended up doing :
-> > > 
-> > >     sigemptyset(&sigHandling.sa=5Fmask);
-> > >     sigHandling.sa=5Fsigaction =3D sigdebug=5Fhandler;
-> > >     sigHandling.sa=5Fflags =3D SA=5FSIGINFO;
-> > >     sigaction(SIGDEBUG, &sigHandling, NULL);
-> > > 
-> > >     sigemptyset(&sigset);
-> > >     sigaddset (&sigset, SIGALRM);
-> > >     sigaddset (&sigset, SIGDEBUG);
-> > >     sigprocmask (SIG=5FBLOCK, &sigset, NULL);
-> > >     pthread=5Fsigmask (SIG=5FBLOCK, &sigset, NULL);
-> > > 
-> > > before creating my RT threads (of which ThreadSched), then doing
-> > > 
-> > >         sigdelset(&sigset, SIGALRM);
-> > >         sigprocmask (SIG=5FUNBLOCK, &sigset, NULL);
-> > >         pthread=5Fsigmask (SIG=5FUNBLOCK, &sigset, NULL);
-> > > 
-> > >         signal(SIGINT, sighandler=5Fexit);
-> > >         signal(SIGTERM, sighandler=5Fexit);
-> > >         signal(SIGUSR1, sighandler=5Fexit);
-> > > 
-> > > After my RT threads are created.
-> > > 
-> > > If I comment out all of these, and add the pthread=5Fsetmode=5Fnp=
- some place when initialisation of ThreadExec is over, I end up with th=
-e program being forcibly stopped with the indication [1]+  CPU time lim=
-it exceeded
-> > > 
-> > > So I put all those back in place, start again, then /proc/xenomai=
-/debug/relax gets populated :
-> > > 1115 75731 syscall ThreadExec 
-> > > 0x12720 /usr/lib/libcobalt.so.2.0.0
-> > > 0x127b0 /usr/lib/libcobalt.so.2.0.0
-> > > 0x2cd40 /usr/lib/libc-2.29.so
-> > > .
-> > > /usr/bin/CCN2019=5FDSP
-> > > 1115 80299 syscall ThreadExec 
-> > > 0xd58a0 /usr/lib/libc-2.29.so
-> > > .
-> > > 
-> > > On this, slackspot gives :
-> > > Thread[1115] "Module d'Execution des Blocs" started by /usr/bin/C=
-CN2019=5FDSP (107769 times):
-> > > Caused by: syscall
-> > >    #0  0x00000000000d589f prctl() in /home/dev/crosstool/arm-cort=
-exa9=5Fneon-linux-gnueabihf/.build/src/glibc-2.29/misc/../sysdeps/unix/=
-syscall-template.S:78
-> > > 
-> > > Thread[1115] "Module d'Execution des Blocs" started by /usr/bin/C=
-CN2019=5FDSP (101892 times):
-> > > Caused by: syscall
-> > >    #0  0x000000000001271f ??? in [/usr/lib/libcobalt.so.2.0.0]
-> > >    #1  0x00000000000127af ??? in [/usr/lib/libcobalt.so.2.0.0]
-> > >    #2  0x000000000002cd3f =5F=5Fdefault=5Fsa=5Frestorer() in /hom=
-e/dev/crosstool/arm-cortexa9=5Fneon-linux-gnueabihf/.build/src/glibc-2.=
-29/signal/../sysdeps/unix/sysv/linux/arm/sigrestorer.S:77
-> > > 
-> > > So know, I really don't know where to go from here !
-> > > 
-> > 
-> > Could you recompile with debugging symbols for libcobalt and your
-> > application and check where exactly the Linux syscall is issued and=
- what
-> > library call from your application relates to it? gdb may provide t=
-his
-> > better.
-> > 
-> 
-> Ok. I think I found it. I had put in some debug code in my semaphore =
-wrappers to check if the timeout given was not before the current time,=
- and thus I used pthread=5Fgetname to display a trace with the name of =
-the thread. This was the main problem.
-> 
-
-After checking again, that wasn't it. I can still see lots (about the s=
-ame as before) MSW on that same thread. However, the sigdebug never get=
-s called now !
-By checking the other, I could see that socket() triggers a MSW which i=
-s surprising.
+To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-> > Jan
-> > 
-> > -- 
-> > Siemens AG, T RDA IOT
-> > Corporate Competence Center Embedded Linux
-> 
+>Jan Kiszka <jan.kiszka@siemens.com> writes:
 >
+>> On 26.05.21 15:52, Philippe Gerum wrote:
+>>>=20
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>=20
+>>>> On 25.05.21 15:20, Philippe Gerum wrote:
+>>>>>
+>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>
+>>>>>> On 25.05.21 14:37, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>
+>>>>>>>> On 25.05.21 12:01, Philippe Gerum wrote:
+>>>>>>>>>
+>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>
+>>>>>>>>>> On 25.05.21 10:46, Philippe Gerum wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>>
+>>>>>>>>>>>> Hi Philippe,
+>>>>>>>>>>>>
+>>>>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight service,=
+ compared
+>>>>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothing you=
+ would
+>>>>>>>>>>>> expect from a "send a signal" service, specifically from
+>>>>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the sending e=
+xtra payload.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd usecase=
+s are not
+>>>>>>>>>>>> time-sensitive anyway).
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Nope, I cannot see any significantly better option which would =
+still
+>>>>>>>>>>> allow a common implementation we can map on top of Dovetail / I=
+-pipe.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> E.g. pre-allocate the work object for data-free signals and use =
+that -
+>>>>>>>>>> or not send it when it is in use, thus pending.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Ok, let's recap:
+>>>>>>>>>
+>>>>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely uses a
+>>>>>>>>>   user-provided memory block, containing a request header. Curren=
+t
+>>>>>>>>>   callers should either already care for not resending a request
+>>>>>>>>>   uselessly because it is pending (e.g. [1]), or their internal l=
+ogic
+>>>>>>>>>   should prevent that (e.g. [2]). This interface always convey us=
+er data
+>>>>>>>>>   by reference.
+>>>>>>>>
+>>>>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedule_nr=
+t_work
+>>>>>>>> to do the work, it's the other way around. False alarm here.
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct in or=
+der to
+>>>>>>>>>   convey a request block we cannot squeeze into a work_struct, si=
+nce the
+>>>>>>>>>   latter is in itself an anchor type the user may embed into its =
+own
+>>>>>>>>>   private argument block. I'm unsure ensuring that
+>>>>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be worth it=
+, as
+>>>>>>>>>   this call is not supposed to be used frenetically on some hot p=
+ath in
+>>>>>>>>>   the first place. But if we'd want to do that, then we would hav=
+e to
+>>>>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that we ga=
+in a
+>>>>>>>>>   persistent context data we could use for determining whether a =
+nrt
+>>>>>>>>>   work request is in flight. We could not probe the work_struct f=
+or that
+>>>>>>>>>   purpose, that would be racy.
+>>>>>>>>>
+>>>>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work() wit=
+hout
+>>>>>>>>> changing its signature?
+>>>>>>>>
+>>>>>>>> There is no rule that prevents changing the signature if that is n=
+eeded.
+>>>>>>>> However, the kernel is fine without allocation as well, using a ve=
+ry
+>>>>>>>> similar signature.
+>>>>>>>>
+>>>>>>>
+>>>>>>> schedule_work() and rtdm_schedule_nrt_work() have a major differenc=
+e:
+>>>>>>> the latter has to pass on the request from the oob to the in-band
+>>>>>>> context. This is what bugs us and creates the requirement for addit=
+ional
+>>>>>>> mechanism and data.
+>>>>>>>
+>>>>>>>> I do not yet understand way we need that indirection via the rtdm_=
+nrtsig
+>>>>>>>> on Dovetail. I thought we can trigger work directly from the oob d=
+omain
+>>>>>>>> there, can't we? How do you handle such a case in evl so far?
+>>>>>>>>
+>>>>>>>
+>>>>>>> Dovetail can trigger in-band work from oob via the generic irq_work=
+()
+>>>>>>> service, we don't need the extra code involved in the I-pipe for th=
+e
+>>>>>>> same purpose. The gist of the matter is about having the same
+>>>>>>> implementation for rtdm_schedule_nrt_work() which works in both Dov=
+etail
+>>>>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsig_pen=
+d()
+>>>>>>> which already abstracts the base mechanism for relaying oob -> in-b=
+and
+>>>>>>> signals.
+>>>>>>>
+>>>>>>> On the other hand, EVL has the evl_call_inband[_from]() service, wh=
+ich
+>>>>>>> combines the irq_work and work_struct anchors we need into a single
+>>>>>>> evl_work type, which in turn can be embedded into a user request
+>>>>>>> block. This is what rtdm_schedule_nrt_work() does not expose, so it=
+ has
+>>>>>>> to build one internally by combining a dynamic allocation and the
+>>>>>>> user-provided work_struct.
+>>>>>>>
+>>>>>>
+>>>>>> Then enhance the rtdm service to enable such a combination - and be =
+even
+>>>>>> more ready for the switch to Xenomai 4, I would say. We can either a=
+dd a
+>>>>>> new service and deprecate the old one (while implementing it as you
+>>>>>> suggest) or just break the interface to get the (presumably) few use=
+rs
+>>>>>> quickly converted.
+>>>>>>
+>>>>>
+>>>>> rtdm_schedule_nrt_work() was added by Gilles when merging the RTnet c=
+ode
+>>>>> into Xenomai 3 IIRC, with little documentation. Widespread usage of t=
+his
+>>>>> call is unlikely, so I'd vote for simplifying the whole thing and
+>>>>> replace it entirely.
+>>>>>
+>>>>
+>>>> OK, then we have a plan for this piece.
 
+Do we  need to implement new API to replace rtdm_schedule_nrt_work() to avo=
+id call xnmalloc=20
+or just keep it as it is in Xenomai 3.2 ?
+
+>>>>
+>>>>>>>> And the third case remains xnthread_signal, btw.
+>>>>>>>>
+>>>>>>>
+>>>>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTERM sig=
+nals
+>>>>>>> for a thread, a seldom event. Optimizing there would be overkill, u=
+nless
+>>>>>>> the application behaves wrongly in the first place.
+>>>>>>
+>>>>>> Some caller are under nklock, thus it makes potentially lengthy crit=
+ical
+>>>>>> sections now a bit longer.
+>>>>>>
+>>>>>
+>>>>> This is what needs to be fixed in the first place, we should not trig=
+ger
+>>>>> a signal relay when holding the ugly big lock.
+
+Which functions we need to fix or do optimization to avoid calling xnthread=
+_signal when holding
+big lock if possible? xnthread_suspend and xnthread_cancel? =20
+
+>>>>>
+>>>>
+>>>> Whatever is simpler.
+>>>>
+>>>> Another aspect: Using xnmalloc for anything that should better succeed
+>>>> is possibly not good when we are OOM. That is actually no strict
+>>>> regression over I-pipe where we had a limited queue as well IIRC but a
+>>>> reason to avoid carrying that over - and possibly creating new error
+>>>> scenarios that are harder to debug.
+>>>>
+>>>=20
+>>> To mitigate the issue of generalized OOM, we could pull memory from a
+>>> local xnheap privately attached to xnthread_signal() along with any
+>>> caller requiring dynamic allocation, so that none of them could deplete
+>>> the sysheap.
+>>>=20
+>>> Getting rid of dynamic allocation entirely on the other hand would
+>>> require us to add one or more "signal slots" per possible cause of
+>>> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
+>>> SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
+>>> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
+>>> standard non-queueable signals, so we should only need a single slot pe=
+r
+>>> signal cause.
+>>>=20
+>>
+>> Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
+>> Likely, we only need to carry the single cause via a field in xnthread
+>> from the trigger point to the in-band handler. The same is probably the
+>> case for SIGSHADOW_ACTION_BACKTRACE.
+>>
+>
+>Multiple events triggering SIGSHADOW_ACTION_HOME and
+>SIGSHADOW_ACTION_HARDEN _might_ pile up, although unlikely.
+
+Does that means that in struct xnthread there should be three slots of
+struct lostage_signal to handle each of SIGDEBUG/SIGSHADOW/SIGTERM
+like patch [1]?
+
+ If there is no pile up for each signal , we would just allocate fixed posi=
+tion=20
+for three signals in the array and then handle corresponding  lostage_signa=
+l=20
+ by signo. Is it enough?
+
+[1]:
+
++++ b/include/cobalt/kernel/thread.h
+@@ -51,6 +51,15 @@ struct xnsched_tpslot;
+ struct xnthread_personality;
+ struct completion;
+
++#define XENO_MUM_SIGNALS 3 /*SIGDEBUG/SIGSHADOW/SIGTERM */
++
++struct lostage_signal {
++       struct pipeline_inband_work inband_work; /* Must be first. */
++       struct task_struct *task;
++       int signo, sigval;
++       struct lostage_signal *self; /* Revisit: I-pipe requirement */
++};
++
+ struct xnthread_init_attr {
+        struct xnthread_personality *personality;
+        cpumask_t affinity;
+@@ -205,6 +214,7 @@ struct xnthread {
+        const char *exe_path;   /* Executable path */
+        u32 proghash;           /* Hash value for exe_path */
+ #endif
++       struct lostage_signal sigarray[XENO_MUM_SIGNALS];
+ };
+
+>
+>> Now, the question for me is how we move forward from this? Is it simpler
+>> to fix these issues? Or would it be better first avoid affecting I-pipe
+>> cases and living with xnmalloc for an initial phase over Dovetail?
+>>
+>
+>A much better option would be that somebody volunteers to work on
+>implementing what has just been described, in order to have the proper
+>solution available in both I-pipe an Dovetail contexts, based on generic
+>code.
+>
+>Although such work may not seem obvious at first sight reading the
+>jargonish descriptions above, it is actually fairly simple to
+>implement. I believe that any contributor would be welcome to ask for
+>explanations and details for that purpose.
+>
+>--=20
+>Philippe.
+
+Regards
+
+Hongzhan Chen
 
