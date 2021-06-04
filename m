@@ -1,13 +1,10 @@
-Subject: Re: [PATCH 9/9] y2038: testsuite/smokey/y2038: Adding testcase for
- nanosleep64
+Subject: Re: [PATCH 0/9] y2038: clock_{g,s}ettime64, clock_nanosleep64
 References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
- <20210601094334.774394-10-florian.bezdeka@siemens.com>
- <e7724a84-cf55-20df-d8ed-fcc79a2772f1@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ca922ed2-f24a-60e1-772d-e335b78bbc6b@siemens.com>
-Date: Fri, 4 Jun 2021 13:43:38 +0200
+Message-ID: <2db8894a-6b69-46d8-c4e0-00397e11bcaa@siemens.com>
+Date: Fri, 4 Jun 2021 14:07:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <e7724a84-cf55-20df-d8ed-fcc79a2772f1@siemens.com>
+In-Reply-To: <20210601094334.774394-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,121 +19,54 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 Cc: chensong@tj.kylinos.cn
 
-On 04.06.21 13:41, Jan Kiszka via Xenomai wrote:
-> On 01.06.21 11:43, Florian Bezdeka wrote:
->> From: chensong <chensong@tj.kylinos.cn>
->>
->> Add test case for clock_nanosleep64 in smokey testsuite
->>
->> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->> [Florian: Reword commit msg, syscall()->XENOMAI_SYSCALLx()]
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
->>  testsuite/smokey/y2038/syscall-tests.c | 67 ++++++++++++++++++++++++++
->>  1 file changed, 67 insertions(+)
->>
->> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
->> index 840be89a5..54d529b6b 100644
->> --- a/testsuite/smokey/y2038/syscall-tests.c
->> +++ b/testsuite/smokey/y2038/syscall-tests.c
->> @@ -242,6 +242,69 @@ static int test_sc_cobalt_clock_settime64(void)
->>  	return 0;
->>  }
->>  
->> +static int test_sc_cobalt_clock_nanosleep64(void)
->> +{
->> +	int ret;
->> +	int sc_nr = sc_cobalt_clock_nanosleep64;
->> +	struct xn_timespec64 next, rmt;
->> +	struct timespec ts1, ts2, delta;
->> +	long interval = 1;
->> +
->> +	/* Make sure we don't crash because of NULL pointers */
->> +	ret = XENOMAI_SYSCALL4(sc_nr, NULL, NULL, NULL, NULL);
->> +	if (ret == -ENOSYS) {
->> +		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
->> +		return 0; // Not implemented, nothing to test, success
->> +	}
->> +	if (!smokey_assert(ret == -EFAULT))
->> +		return ret ? ret : -EINVAL;
->> +
->> +	/* Providing an invalid address has to deliver EFAULT */
->> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
->> +			       (void *)0xdeadbeefUL, &rmt);
->> +	if (!smokey_assert(ret == -EFAULT))
->> +		return ret ? ret : -EINVAL;
->> +
->> +	/* Provide a valid 64bit timespec, round 1 */
->> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
->> +	if (ret)
->> +		return -errno;
->> +
->> +	next.tv_sec  = ts1.tv_sec + interval;
->> +	next.tv_nsec = ts1.tv_nsec;
->> +
->> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
->> +			       &next, (void *)0xdeadbeefUL);
->> +	if (!smokey_assert(!ret))
->> +		return ret ? ret : -EINVAL;
+On 01.06.21 11:43, Florian Bezdeka wrote:
+> Hi!
 > 
-> Unneeded test here - ret is != 0.
+> This is the next set of changes needed for solving the y2038 problem.
+> Most patches were provided by Song. I reviewed them and fixed some error
+> handling problems as well as test failures on some architectures. Some
+> of the tests were rebased on top of the current next branch.
 > 
->> +
->> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
->> +	if (ret)
->> +		return -errno;
->> +
->> +	timespec_sub(&delta, &ts2, &ts1);
->> +	if (delta.tv_sec < interval)
->> +		smokey_warning("nanosleep didn't sleep long enough.");
->> +
->> +	/* Provide a valid 64bit timespec, round 2*/
->> +	next.tv_sec  = ts2.tv_sec + interval;
->> +	next.tv_nsec = ts2.tv_nsec;
->> +
->> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
->> +	if (!smokey_assert(!ret))
->> +		return ret ? ret : -EINVAL;
+> With this series applied the wip/dovetail and florian/y2038 [1] branches 
+> are merge-able without conflicts.
 > 
-> Same here.
+> Best regards,
+> Florian
 > 
-> I can fix those up - once I understood why they trigger here ATM.
+> [1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
+> 
+> Florian Bezdeka (1):
+>   y2038: libcobalt: Centralize sc_cobalt_clock_gettime syscall
+> 
+> chensong (8):
+>   y2038: cobalt/posix/clock: Adding clock_gettime64
+>   y2038: cobalt/posix/clock: Adding clock_settime64
+>   y2038: lib/cobalt/clock: dispatch clock_gettime
+>   y2038: lib/cobalt/clock: dispatch clock_settime
+>   y2038: testsuite/smokey/y2038: testcase for settime64 and gettime64
+>   y2038: cobalt/posix/clock: Adding clock_nanosleep64
+>   y2038: lib/cobalt/clock: dispatch clock_nanosleep
+>   y2038: testsuite/smokey/y2038: Adding testcase for nanosleep64
+> 
+>  include/cobalt/kernel/time.h           |  11 ++
+>  include/cobalt/uapi/syscall.h          |   3 +
+>  kernel/cobalt/posix/clock.c            |  70 +++++++++++-
+>  kernel/cobalt/posix/clock.h            |  22 ++++
+>  kernel/cobalt/posix/syscall32.c        |  23 ++++
+>  kernel/cobalt/posix/syscall32.h        |  14 +++
+>  kernel/cobalt/time.c                   |  11 ++
+>  lib/cobalt/clock.c                     |  22 +++-
+>  testsuite/smokey/y2038/syscall-tests.c | 151 +++++++++++++++++++++++++
+>  9 files changed, 324 insertions(+), 3 deletions(-)
 > 
 
-In fact, if we want to return the real error, errno needs to be
-consulted. What is the intention then?
+Thanks, applied to next. A tiny cleanup patch for the error test will
+follow on top.
+
+As I just found out: clock_settime does not work with dovetail yet. So
+the testsuite will fail over wip/dovetail for the time being.
 
 Jan
-
->> +
->> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
->> +	if (ret)
->> +		return -errno;
->> +
->> +	timespec_sub(&delta, &ts1, &ts2);
->> +	if (delta.tv_sec < interval)
->> +		smokey_warning("nanosleep didn't sleep long enough.");
->> +
->> +	return 0;
->> +}
->> +
->>  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->>  {
->>  	int ret;
->> @@ -258,5 +321,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->>  	if (ret)
->>  		return ret;
->>  
->> +	ret = test_sc_cobalt_clock_nanosleep64();
->> +	if (ret)
->> +		return ret;
->> +
->>  	return 0;
->>  }
->>
-> 
-> 
-
 
 -- 
 Siemens AG, T RDA IOT
