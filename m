@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 02/12] cobalt/thread: pipeline: refactor thread control block
-Date: Fri,  4 Jun 2021 12:05:12 +0200
-Message-Id: <5aa318915b590382f478d182cee5b14bc2c8efe2.1622801122.git.jan.kiszka@siemens.com>
+Subject: [PATCH 06/12] cobalt/trace: add tracing call to notify of a latency
+ peak
+Date: Fri,  4 Jun 2021 12:05:16 +0200
+Message-Id: <9dbd0ff9f31dad361b9ace5444fdffd8f6b4266c.1622801122.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1622801122.git.jan.kiszka@siemens.com>
 References: <cover.1622801122.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -18,244 +19,194 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-With Dovetail in, a thread control block is fully generic, merely
-composed of an alternate scheduling control descriptor. Refactor the
-definitions of the per-architecture control blocks accordingly.
+When running on top of Dovetail, we may want to perform a specific
+sequence of actions upon notification of a latency peak by some
+application. Let's create a dedicated trace call in the API to handle
+this particular case, instead of relying on the generic "user_freeze"
+event.
+
+NOTE: the new trace call does not return any value, because there is
+nothing valuable to receive from a trace call. If required,
+xntrace_enabled() should be tested beforehand to figure out whether
+the kernel tracer is enabled.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/kernel/thread.h                |  6 ++---
- .../arm/ipipe/include/asm/xenomai/thread.h    |  8 ++++++-
- .../arm64/ipipe/include/asm/xenomai/thread.h  |  8 ++++++-
- .../ipipe/include/asm/xenomai/thread.h        |  8 ++++++-
- .../x86/dovetail/include/asm/xenomai/thread.h |  8 +------
- .../x86/ipipe/include/asm/xenomai/thread.h    |  8 ++++++-
- .../asm-generic/xenomai/dovetail/thread.h     | 24 +++++++++++++++++++
- .../asm-generic/xenomai/{ => ipipe}/thread.h  |  9 +++----
- 8 files changed, 59 insertions(+), 20 deletions(-)
- create mode 100644 kernel/cobalt/include/asm-generic/xenomai/dovetail/thread.h
- rename kernel/cobalt/include/asm-generic/xenomai/{ => ipipe}/thread.h (87%)
+ include/cobalt/kernel/dovetail/pipeline/trace.h |  8 +++++++-
+ include/cobalt/kernel/ipipe/pipeline/trace.h    |  5 +++++
+ include/cobalt/trace.h                          |  2 ++
+ include/cobalt/uapi/kernel/trace.h              |  1 +
+ include/mercury/boilerplate/trace.h             |  4 ++++
+ kernel/cobalt/posix/syscall.c                   |  6 ++++++
+ kernel/cobalt/trace/cobalt-core.h               | 14 ++++++++++++++
+ kernel/drivers/testing/timerbench.c             |  2 +-
+ lib/cobalt/trace.c                              |  5 +++++
+ testsuite/latency/latency.c                     |  2 +-
+ 10 files changed, 46 insertions(+), 3 deletions(-)
 
-diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-index fe7390088..c92037bfe 100644
---- a/include/cobalt/kernel/thread.h
-+++ b/include/cobalt/kernel/thread.h
-@@ -268,7 +268,7 @@ static inline int xnthread_current_priority(const struct xnthread *thread)
- 
- static inline struct task_struct *xnthread_host_task(struct xnthread *thread)
+diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
+index e39fdfa7c..513d9b48b 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/trace.h
++++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
+@@ -58,10 +58,16 @@ static inline int xntrace_user_stop(unsigned long v)
+ static inline int xntrace_user_freeze(unsigned long v, int once)
  {
--	return xnthread_archtcb(thread)->core.host_task;
-+	return xnarch_host_task(xnthread_archtcb(thread));
+ 	trace_cobalt_trace_longval(0, v);
+-	trace_cobalt_trigger("freeze");
++	trace_cobalt_trigger("user-freeze");
+ 	return 0;
  }
  
- #define xnthread_for_each_booster(__pos, __thread)		\
-@@ -283,7 +283,7 @@ static inline struct task_struct *xnthread_host_task(struct xnthread *thread)
- 		if ((__p__)->ops.__h)					\
- 			(__p__)->ops.__h(__t, ##__a);			\
- 	} while (0)
--	
++static inline void xntrace_latpeak_freeze(int delay)
++{
++	trace_cobalt_latpeak(delay);
++	trace_cobalt_trigger("latency-freeze");
++}
 +
- #define xnthread_run_handler_stack(__t, __h, __a...)			\
- 	do {								\
- 		struct xnthread_personality *__p__ = (__t)->personality;	\
-@@ -293,7 +293,7 @@ static inline struct task_struct *xnthread_host_task(struct xnthread *thread)
- 			__p__ = (__p__)->ops.__h(__t, ##__a);		\
- 		} while (__p__);					\
- 	} while (0)
--	
-+
- static inline
- struct xnthread_wait_context *xnthread_get_wait_context(struct xnthread *thread)
+ static inline int xntrace_special(unsigned char id, unsigned long v)
  {
-diff --git a/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h
-index c51b51a93..93346fd2e 100644
---- a/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/arm/ipipe/include/asm/xenomai/thread.h
-@@ -19,7 +19,7 @@
- #ifndef _COBALT_ARM_ASM_THREAD_H
- #define _COBALT_ARM_ASM_THREAD_H
+ 	trace_cobalt_trace_longval(id, v);
+diff --git a/include/cobalt/kernel/ipipe/pipeline/trace.h b/include/cobalt/kernel/ipipe/pipeline/trace.h
+index d92e57a63..a28b83a48 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/trace.h
++++ b/include/cobalt/kernel/ipipe/pipeline/trace.h
+@@ -65,6 +65,11 @@ static inline int xntrace_user_freeze(unsigned long v, int once)
+ 	return ret;
+ }
  
--#include <asm-generic/xenomai/thread.h>
-+#include <asm-generic/xenomai/ipipe/thread.h>
- 
- #ifdef CONFIG_XENO_ARCH_FPU
- #ifdef CONFIG_VFP
-@@ -51,6 +51,12 @@ struct xnarchtcb {
- 
- #define xnarch_fault_notify(d) (!xnarch_fault_bp_p(d))
- 
-+static inline
-+struct task_struct *xnarch_host_task(struct xnarchtcb *tcb)
++static inline void xntrace_latpeak_freeze(int delay)
 +{
-+	return tcb->core.host_task;
++	xntrace_user_freeze(delay, 0);
 +}
 +
- void xnarch_switch_to(struct xnthread *out, struct xnthread *in);
+ static inline int xntrace_special(unsigned char id, unsigned long v)
+ {
+ 	ipipe_trace_special(id, v);
+diff --git a/include/cobalt/trace.h b/include/cobalt/trace.h
+index 172c0dc38..b2f9d954f 100644
+--- a/include/cobalt/trace.h
++++ b/include/cobalt/trace.h
+@@ -40,6 +40,8 @@ int xntrace_special(unsigned char id, unsigned long v);
  
- static inline void xnarch_enter_root(struct xnthread *root) { }
-diff --git a/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h
-index c81c01321..7899a49e6 100644
---- a/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/arm64/ipipe/include/asm/xenomai/thread.h
-@@ -20,7 +20,7 @@
- #define _COBALT_ARM64_ASM_THREAD_H
+ int xntrace_special_u64(unsigned char id, unsigned long long v);
  
- #include <linux/version.h>
--#include <asm-generic/xenomai/thread.h>
-+#include <asm-generic/xenomai/ipipe/thread.h>
++void xntrace_latpeak_freeze(int delay);
++
+ int xnftrace_vprintf(const char *format, va_list args);
+ int xnftrace_printf(const char *format, ...);
  
- #if defined(CONFIG_XENO_ARCH_FPU) && LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0)
- #define ARM64_XENO_OLD_SWITCH
-@@ -47,6 +47,12 @@ struct xnarchtcb {
+diff --git a/include/cobalt/uapi/kernel/trace.h b/include/cobalt/uapi/kernel/trace.h
+index 95fd07e76..a1add3013 100644
+--- a/include/cobalt/uapi/kernel/trace.h
++++ b/include/cobalt/uapi/kernel/trace.h
+@@ -26,5 +26,6 @@
+ #define __xntrace_op_user_freeze	5
+ #define __xntrace_op_special		6
+ #define __xntrace_op_special_u64	7
++#define __xntrace_op_latpeak_freeze	8
  
- #define xnarch_fault_notify(d) (!xnarch_fault_bp_p(d))
+ #endif /* !_COBALT_UAPI_KERNEL_TRACE_H */
+diff --git a/include/mercury/boilerplate/trace.h b/include/mercury/boilerplate/trace.h
+index 223e36429..787b088e3 100644
+--- a/include/mercury/boilerplate/trace.h
++++ b/include/mercury/boilerplate/trace.h
+@@ -50,6 +50,10 @@ static inline int xntrace_user_freeze(unsigned long v, int once)
+ 	return -ENOSYS;
+ }
  
-+static inline
-+struct task_struct *xnarch_host_task(struct xnarchtcb *tcb)
++static inline void xntrace_latpeak_freeze(int delay)
 +{
-+	return tcb->core.host_task;
 +}
 +
- void xnarch_switch_to(struct xnthread *out, struct xnthread *in);
+ static inline int xntrace_special(unsigned char id, unsigned long v)
+ {
+ 	return -ENOSYS;
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index c6fe737e6..30c33dda6 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -177,6 +177,12 @@ static COBALT_SYSCALL(trace, current,
+ 		ret = xntrace_special_u64(a1 & 0xFF,
+ 					  (((u64) a2) << 32) | a3);
+ 		break;
++
++	case __xntrace_op_latpeak_freeze:
++		xntrace_latpeak_freeze(a1);
++		ret = 0;
++		break;
++
+ 	}
+ 	return ret;
+ }
+diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
+index 76240d245..88ed5700d 100644
+--- a/kernel/cobalt/trace/cobalt-core.h
++++ b/kernel/cobalt/trace/cobalt-core.h
+@@ -839,6 +839,20 @@ TRACE_EVENT(cobalt_trace_pid,
+ 	TP_printk("pid=%d, prio=%d", __entry->pid, __entry->prio)
+ );
  
- static inline void xnarch_enter_root(struct xnthread *root) { }
-diff --git a/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
-index 97129f739..f91e26b36 100644
---- a/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
-@@ -19,7 +19,7 @@
- #ifndef _COBALT_POWERPC_ASM_THREAD_H
- #define _COBALT_POWERPC_ASM_THREAD_H
++TRACE_EVENT(cobalt_latpeak,
++	TP_PROTO(int latmax_ns),
++	TP_ARGS(latmax_ns),
++	TP_STRUCT__entry(
++		 __field(int, latmax_ns)
++	),
++	TP_fast_assign(
++		__entry->latmax_ns = latmax_ns;
++	),
++	TP_printk("** latency peak: %d.%.3d us **",
++		  __entry->latmax_ns / 1000,
++		  __entry->latmax_ns % 1000)
++);
++
+ /* Basically cobalt_trace() + trigger point */
+ TRACE_EVENT(cobalt_trigger,
+ 	TP_PROTO(const char *issuer),
+diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
+index 31f0bea76..68e50a241 100644
+--- a/kernel/drivers/testing/timerbench.c
++++ b/kernel/drivers/testing/timerbench.c
+@@ -82,8 +82,8 @@ static void eval_inner_loop(struct rt_tmbench_context *ctx, __s32 dt)
+ 		ctx->freeze_max &&
+ 		(dt > ctx->result.overall.max) &&
+ 		!ctx->warmup) {
+-		xntrace_user_freeze(dt, false);
+ 		ctx->result.overall.max = dt;
++		xntrace_latpeak_freeze(dt);
+ 	}
  
--#include <asm-generic/xenomai/thread.h>
-+#include <asm-generic/xenomai/ipipe/thread.h>
+ 	ctx->date += ctx->period;
+diff --git a/lib/cobalt/trace.c b/lib/cobalt/trace.c
+index 42e139f13..8d9c18902 100644
+--- a/lib/cobalt/trace.c
++++ b/lib/cobalt/trace.c
+@@ -53,6 +53,11 @@ int xntrace_user_freeze(unsigned long v, int once)
+ 				v, once);
+ }
  
- struct xnarchtcb {
- 	struct xntcb core;
-@@ -44,6 +44,12 @@ struct xnarchtcb {
- 				 (d)->exception == IPIPE_TRAP_DEBUG))
- #define xnarch_fault_notify(d) (xnarch_fault_bp_p(d) == 0)
- 
-+static inline
-+struct task_struct *xnarch_host_task(struct xnarchtcb *tcb)
++void xntrace_latpeak_freeze(int delay)
 +{
-+	return tcb->core.host_task;
++	XENOMAI_SYSCALL2(sc_cobalt_trace, __xntrace_op_latpeak_freeze, delay);
 +}
 +
- static inline void xnarch_enter_root(struct xnthread *root) { }
+ int xntrace_special(unsigned char id, unsigned long v)
+ {
+ 	return XENOMAI_SYSCALL3(sc_cobalt_trace, __xntrace_op_special, id, v);
+diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
+index 5304342ff..a0e6f4826 100644
+--- a/testsuite/latency/latency.c
++++ b/testsuite/latency/latency.c
+@@ -192,7 +192,7 @@ static void *latency(void *cookie)
  
- #ifdef CONFIG_XENO_ARCH_FPU
-diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/thread.h
-index 73ecd945c..6eb71e2a8 100644
---- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/thread.h
-@@ -20,15 +20,9 @@
- #ifndef _COBALT_X86_ASM_THREAD_H
- #define _COBALT_X86_ASM_THREAD_H
+ 			if (freeze_max && (dt > gmaxjitter)
+ 			    && !(finished || warmup)) {
+-				xntrace_user_freeze(dt, 0);
++				xntrace_latpeak_freeze(dt);
+ 				gmaxjitter = dt;
+ 			}
  
--#include <linux/dovetail.h>
--#include <asm-generic/xenomai/thread.h>
-+#include <asm-generic/xenomai/dovetail/thread.h>
- #include <asm/traps.h>
- 
--struct xnarchtcb {
--	struct xntcb core;
--	struct dovetail_altsched_context altsched;
--};
--
- #define xnarch_fault_pc(__regs)		((__regs)->ip)
- #define xnarch_fault_pf_p(__nr)		((__nr) == X86_TRAP_PF)
- #define xnarch_fault_bp_p(__nr)		((current->ptrace & PT_PTRACED) &&	\
-diff --git a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h
-index 10cd6ecd5..a1a79bbc0 100644
---- a/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/x86/ipipe/include/asm/xenomai/thread.h
-@@ -20,7 +20,7 @@
- #ifndef _COBALT_X86_ASM_THREAD_H
- #define _COBALT_X86_ASM_THREAD_H
- 
--#include <asm-generic/xenomai/thread.h>
-+#include <asm-generic/xenomai/ipipe/thread.h>
- #include <asm/xenomai/wrappers.h>
- #include <asm/traps.h>
- 
-@@ -64,6 +64,12 @@ struct xnarchtcb {
- 				 ((d)->exception == X86_TRAP_DB || (d)->exception == X86_TRAP_BP))
- #define xnarch_fault_notify(d)	(!xnarch_fault_bp_p(d))
- 
-+static inline
-+struct task_struct *xnarch_host_task(struct xnarchtcb *tcb)
-+{
-+	return tcb->core.host_task;
-+}
-+
- void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to);
- 
- int xnarch_handle_fpu_fault(struct xnthread *from, 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/dovetail/thread.h b/kernel/cobalt/include/asm-generic/xenomai/dovetail/thread.h
-new file mode 100644
-index 000000000..8939e45f3
---- /dev/null
-+++ b/kernel/cobalt/include/asm-generic/xenomai/dovetail/thread.h
-@@ -0,0 +1,24 @@
-+/*
-+ * Copyright (C) 2021 Philippe Gerum <rpm@xenomai.org>.
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+#ifndef _COBALT_ASM_GENERIC_DOVETAIL_THREAD_H
-+#define _COBALT_ASM_GENERIC_DOVETAIL_THREAD_H
-+
-+#include <linux/dovetail.h>
-+
-+struct xnarchtcb {
-+	struct dovetail_altsched_context altsched;
-+};
-+
-+static inline
-+struct task_struct *xnarch_host_task(struct xnarchtcb *tcb)
-+{
-+	return tcb->altsched.task;
-+}
-+
-+#endif /* !_COBALT_ASM_GENERIC_DOVETAIL_THREAD_H */
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/thread.h b/kernel/cobalt/include/asm-generic/xenomai/ipipe/thread.h
-similarity index 87%
-rename from kernel/cobalt/include/asm-generic/xenomai/thread.h
-rename to kernel/cobalt/include/asm-generic/xenomai/ipipe/thread.h
-index cd0c6e913..fcd7275d9 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/thread.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/ipipe/thread.h
-@@ -16,17 +16,14 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-  * 02111-1307, USA.
-  */
--#ifndef _COBALT_ASM_GENERIC_THREAD_H
--#define _COBALT_ASM_GENERIC_THREAD_H
-+#ifndef _COBALT_ASM_GENERIC_IPIPE_THREAD_H
-+#define _COBALT_ASM_GENERIC_IPIPE_THREAD_H
- 
- #include <asm/ptrace.h>
- #include <asm/processor.h>
- 
- struct task_struct;
- 
--struct xnthread;
--struct xnarchtcb;
--
- struct xntcb {
- 	struct task_struct *host_task;
- 	struct thread_struct *tsp;
-@@ -39,4 +36,4 @@ struct xntcb {
- #endif
- };
- 
--#endif /* !_COBALT_ASM_GENERIC_THREAD_H */
-+#endif /* !_COBALT_ASM_GENERIC_IPIPE_THREAD_H */
 -- 
 2.26.2
 
