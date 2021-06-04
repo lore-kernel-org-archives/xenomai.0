@@ -14,15 +14,14 @@ References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
  <871r9igj9p.fsf@xenomai.org>
  <955096e4-be49-7630-b6c9-465529cf79f8@siemens.com>
  <87y2bqf3lj.fsf@xenomai.org>
- <e38c772c-b925-53fb-92ac-f264969a35c8@siemens.com>
+ <BN9PR11MB522711543F9434C162E17D58F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
-In-reply-to: <e38c772c-b925-53fb-92ac-f264969a35c8@siemens.com>
-Date: Fri, 04 Jun 2021 14:53:20 +0200
-Message-ID: <87r1hhg5a7.fsf@xenomai.org>
+In-reply-to: <BN9PR11MB522711543F9434C162E17D58F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Date: Fri, 04 Jun 2021 14:54:01 +0200
+Message-ID: <87o8clg592.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,20 +30,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
-> On 04.06.21 10:15, Philippe Gerum wrote:
->>=20
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>=20
+>>-----Original Message-----
+>>From: Philippe Gerum <rpm@xenomai.org> 
+>>Sent: Friday, June 4, 2021 4:15 PM
+>>To: Jan Kiszka <jan.kiszka@siemens.com>
+>>Cc: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
+>>
+>>
+>>Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>
 >>> On 04.06.21 09:51, Philippe Gerum wrote:
->>>>
+>>>> 
 >>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>>>
+>>>> 
 >>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
 >>>>>>
 >>>>>>> On 26.05.21 15:52, Philippe Gerum wrote:
@@ -69,207 +74,146 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>> Hi Philippe,
 >>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight ser=
-vice, compared
->>>>>>>>>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothin=
-g you would
+>>>>>>>>>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight service, compared
+>>>>>>>>>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothing you would
 >>>>>>>>>>>>>>>>> expect from a "send a signal" service, specifically from
->>>>>>>>>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the send=
-ing extra payload.
+>>>>>>>>>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the sending extra payload.
 >>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd us=
-ecases are not
+>>>>>>>>>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd usecases are not
 >>>>>>>>>>>>>>>>> time-sensitive anyway).
 >>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Nope, I cannot see any significantly better option which w=
-ould still
->>>>>>>>>>>>>>>> allow a common implementation we can map on top of Dovetai=
-l / I-pipe.
+>>>>>>>>>>>>>>>> Nope, I cannot see any significantly better option which would still
+>>>>>>>>>>>>>>>> allow a common implementation we can map on top of Dovetail / I-pipe.
 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> E.g. pre-allocate the work object for data-free signals and=
- use that -
+>>>>>>>>>>>>>>> E.g. pre-allocate the work object for data-free signals and use that -
 >>>>>>>>>>>>>>> or not send it when it is in use, thus pending.
 >>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>
 >>>>>>>>>>>>>> Ok, let's recap:
 >>>>>>>>>>>>>>
->>>>>>>>>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely use=
-s a
->>>>>>>>>>>>>>   user-provided memory block, containing a request header. C=
-urrent
->>>>>>>>>>>>>>   callers should either already care for not resending a req=
-uest
->>>>>>>>>>>>>>   uselessly because it is pending (e.g. [1]), or their inter=
-nal logic
->>>>>>>>>>>>>>   should prevent that (e.g. [2]). This interface always conv=
-ey user data
+>>>>>>>>>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely uses a
+>>>>>>>>>>>>>>   user-provided memory block, containing a request header. Current
+>>>>>>>>>>>>>>   callers should either already care for not resending a request
+>>>>>>>>>>>>>>   uselessly because it is pending (e.g. [1]), or their internal logic
+>>>>>>>>>>>>>>   should prevent that (e.g. [2]). This interface always convey user data
 >>>>>>>>>>>>>>   by reference.
 >>>>>>>>>>>>>
->>>>>>>>>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedu=
-le_nrt_work
+>>>>>>>>>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedule_nrt_work
 >>>>>>>>>>>>> to do the work, it's the other way around. False alarm here.
 >>>>>>>>>>>>>
 >>>>>>>>>>>>>>
->>>>>>>>>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct =
-in order to
->>>>>>>>>>>>>>   convey a request block we cannot squeeze into a work_struc=
-t, since the
->>>>>>>>>>>>>>   latter is in itself an anchor type the user may embed into=
- its own
+>>>>>>>>>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct in order to
+>>>>>>>>>>>>>>   convey a request block we cannot squeeze into a work_struct, since the
+>>>>>>>>>>>>>>   latter is in itself an anchor type the user may embed into its own
 >>>>>>>>>>>>>>   private argument block. I'm unsure ensuring that
->>>>>>>>>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be wor=
-th it, as
->>>>>>>>>>>>>>   this call is not supposed to be used frenetically on some =
-hot path in
->>>>>>>>>>>>>>   the first place. But if we'd want to do that, then we woul=
-d have to
->>>>>>>>>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that =
-we gain a
->>>>>>>>>>>>>>   persistent context data we could use for determining wheth=
-er a nrt
->>>>>>>>>>>>>>   work request is in flight. We could not probe the work_str=
-uct for that
+>>>>>>>>>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be worth it, as
+>>>>>>>>>>>>>>   this call is not supposed to be used frenetically on some hot path in
+>>>>>>>>>>>>>>   the first place. But if we'd want to do that, then we would have to
+>>>>>>>>>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that we gain a
+>>>>>>>>>>>>>>   persistent context data we could use for determining whether a nrt
+>>>>>>>>>>>>>>   work request is in flight. We could not probe the work_struct for that
 >>>>>>>>>>>>>>   purpose, that would be racy.
 >>>>>>>>>>>>>>
->>>>>>>>>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work(=
-) without
+>>>>>>>>>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work() without
 >>>>>>>>>>>>>> changing its signature?
 >>>>>>>>>>>>>
->>>>>>>>>>>>> There is no rule that prevents changing the signature if that=
- is needed.
->>>>>>>>>>>>> However, the kernel is fine without allocation as well, using=
- a very
+>>>>>>>>>>>>> There is no rule that prevents changing the signature if that is needed.
+>>>>>>>>>>>>> However, the kernel is fine without allocation as well, using a very
 >>>>>>>>>>>>> similar signature.
 >>>>>>>>>>>>>
 >>>>>>>>>>>>
->>>>>>>>>>>> schedule_work() and rtdm_schedule_nrt_work() have a major diff=
-erence:
->>>>>>>>>>>> the latter has to pass on the request from the oob to the in-b=
-and
->>>>>>>>>>>> context. This is what bugs us and creates the requirement for =
-additional
+>>>>>>>>>>>> schedule_work() and rtdm_schedule_nrt_work() have a major difference:
+>>>>>>>>>>>> the latter has to pass on the request from the oob to the in-band
+>>>>>>>>>>>> context. This is what bugs us and creates the requirement for additional
 >>>>>>>>>>>> mechanism and data.
 >>>>>>>>>>>>
->>>>>>>>>>>>> I do not yet understand way we need that indirection via the =
-rtdm_nrtsig
->>>>>>>>>>>>> on Dovetail. I thought we can trigger work directly from the =
-oob domain
+>>>>>>>>>>>>> I do not yet understand way we need that indirection via the rtdm_nrtsig
+>>>>>>>>>>>>> on Dovetail. I thought we can trigger work directly from the oob domain
 >>>>>>>>>>>>> there, can't we? How do you handle such a case in evl so far?
 >>>>>>>>>>>>>
 >>>>>>>>>>>>
->>>>>>>>>>>> Dovetail can trigger in-band work from oob via the generic irq=
-_work()
->>>>>>>>>>>> service, we don't need the extra code involved in the I-pipe f=
-or the
+>>>>>>>>>>>> Dovetail can trigger in-band work from oob via the generic irq_work()
+>>>>>>>>>>>> service, we don't need the extra code involved in the I-pipe for the
 >>>>>>>>>>>> same purpose. The gist of the matter is about having the same
->>>>>>>>>>>> implementation for rtdm_schedule_nrt_work() which works in bot=
-h Dovetail
->>>>>>>>>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsi=
-g_pend()
->>>>>>>>>>>> which already abstracts the base mechanism for relaying oob ->=
- in-band
+>>>>>>>>>>>> implementation for rtdm_schedule_nrt_work() which works in both Dovetail
+>>>>>>>>>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsig_pend()
+>>>>>>>>>>>> which already abstracts the base mechanism for relaying oob -> in-band
 >>>>>>>>>>>> signals.
 >>>>>>>>>>>>
->>>>>>>>>>>> On the other hand, EVL has the evl_call_inband[_from]() servic=
-e, which
->>>>>>>>>>>> combines the irq_work and work_struct anchors we need into a s=
-ingle
->>>>>>>>>>>> evl_work type, which in turn can be embedded into a user reque=
-st
->>>>>>>>>>>> block. This is what rtdm_schedule_nrt_work() does not expose, =
-so it has
->>>>>>>>>>>> to build one internally by combining a dynamic allocation and =
-the
+>>>>>>>>>>>> On the other hand, EVL has the evl_call_inband[_from]() service, which
+>>>>>>>>>>>> combines the irq_work and work_struct anchors we need into a single
+>>>>>>>>>>>> evl_work type, which in turn can be embedded into a user request
+>>>>>>>>>>>> block. This is what rtdm_schedule_nrt_work() does not expose, so it has
+>>>>>>>>>>>> to build one internally by combining a dynamic allocation and the
 >>>>>>>>>>>> user-provided work_struct.
 >>>>>>>>>>>>
 >>>>>>>>>>>
->>>>>>>>>>> Then enhance the rtdm service to enable such a combination - an=
-d be even
->>>>>>>>>>> more ready for the switch to Xenomai 4, I would say. We can eit=
-her add a
->>>>>>>>>>> new service and deprecate the old one (while implementing it as=
- you
->>>>>>>>>>> suggest) or just break the interface to get the (presumably) fe=
-w users
+>>>>>>>>>>> Then enhance the rtdm service to enable such a combination - and be even
+>>>>>>>>>>> more ready for the switch to Xenomai 4, I would say. We can either add a
+>>>>>>>>>>> new service and deprecate the old one (while implementing it as you
+>>>>>>>>>>> suggest) or just break the interface to get the (presumably) few users
 >>>>>>>>>>> quickly converted.
 >>>>>>>>>>>
 >>>>>>>>>>
->>>>>>>>>> rtdm_schedule_nrt_work() was added by Gilles when merging the RT=
-net code
->>>>>>>>>> into Xenomai 3 IIRC, with little documentation. Widespread usage=
- of this
+>>>>>>>>>> rtdm_schedule_nrt_work() was added by Gilles when merging the RTnet code
+>>>>>>>>>> into Xenomai 3 IIRC, with little documentation. Widespread usage of this
 >>>>>>>>>> call is unlikely, so I'd vote for simplifying the whole thing and
 >>>>>>>>>> replace it entirely.
 >>>>>>>>>>
 >>>>>>>>>
 >>>>>>>>> OK, then we have a plan for this piece.
 >>>>>
->>>>> Do we  need to implement new API to replace rtdm_schedule_nrt_work() =
-to avoid call xnmalloc=20
+>>>>> Do we  need to implement new API to replace rtdm_schedule_nrt_work() to avoid call xnmalloc 
 >>>>> or just keep it as it is in Xenomai 3.2 ?
 >>>>>
 >>>>>>>>>
 >>>>>>>>>>>>> And the third case remains xnthread_signal, btw.
 >>>>>>>>>>>>>
 >>>>>>>>>>>>
->>>>>>>>>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTER=
-M signals
->>>>>>>>>>>> for a thread, a seldom event. Optimizing there would be overki=
-ll, unless
+>>>>>>>>>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTERM signals
+>>>>>>>>>>>> for a thread, a seldom event. Optimizing there would be overkill, unless
 >>>>>>>>>>>> the application behaves wrongly in the first place.
 >>>>>>>>>>>
->>>>>>>>>>> Some caller are under nklock, thus it makes potentially lengthy=
- critical
+>>>>>>>>>>> Some caller are under nklock, thus it makes potentially lengthy critical
 >>>>>>>>>>> sections now a bit longer.
 >>>>>>>>>>>
 >>>>>>>>>>
->>>>>>>>>> This is what needs to be fixed in the first place, we should not=
- trigger
+>>>>>>>>>> This is what needs to be fixed in the first place, we should not trigger
 >>>>>>>>>> a signal relay when holding the ugly big lock.
 >>>>>
->>>>> Which functions we need to fix or do optimization to avoid calling xn=
-thread_signal when holding
->>>>> big lock if possible? xnthread_suspend and xnthread_cancel?=20=20
+>>>>> Which functions we need to fix or do optimization to avoid calling xnthread_signal when holding
+>>>>> big lock if possible? xnthread_suspend and xnthread_cancel?  
 >>>>>
 >>>>>>>>>>
 >>>>>>>>>
 >>>>>>>>> Whatever is simpler.
 >>>>>>>>>
->>>>>>>>> Another aspect: Using xnmalloc for anything that should better su=
-cceed
+>>>>>>>>> Another aspect: Using xnmalloc for anything that should better succeed
 >>>>>>>>> is possibly not good when we are OOM. That is actually no strict
->>>>>>>>> regression over I-pipe where we had a limited queue as well IIRC =
-but a
->>>>>>>>> reason to avoid carrying that over - and possibly creating new er=
-ror
+>>>>>>>>> regression over I-pipe where we had a limited queue as well IIRC but a
+>>>>>>>>> reason to avoid carrying that over - and possibly creating new error
 >>>>>>>>> scenarios that are harder to debug.
 >>>>>>>>>
 >>>>>>>>
->>>>>>>> To mitigate the issue of generalized OOM, we could pull memory fro=
-m a
+>>>>>>>> To mitigate the issue of generalized OOM, we could pull memory from a
 >>>>>>>> local xnheap privately attached to xnthread_signal() along with any
->>>>>>>> caller requiring dynamic allocation, so that none of them could de=
-plete
+>>>>>>>> caller requiring dynamic allocation, so that none of them could deplete
 >>>>>>>> the sysheap.
 >>>>>>>>
 >>>>>>>> Getting rid of dynamic allocation entirely on the other hand would
 >>>>>>>> require us to add one or more "signal slots" per possible cause of
->>>>>>>> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRA=
-CE,
+>>>>>>>> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
 >>>>>>>> SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
 >>>>>>>> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
->>>>>>>> standard non-queueable signals, so we should only need a single sl=
-ot per
+>>>>>>>> standard non-queueable signals, so we should only need a single slot per
 >>>>>>>> signal cause.
 >>>>>>>>
 >>>>>>>
 >>>>>>> Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
->>>>>>> Likely, we only need to carry the single cause via a field in xnthr=
-ead
->>>>>>> from the trigger point to the in-band handler. The same is probably=
- the
+>>>>>>> Likely, we only need to carry the single cause via a field in xnthread
+>>>>>>> from the trigger point to the in-band handler. The same is probably the
 >>>>>>> case for SIGSHADOW_ACTION_BACKTRACE.
 >>>>>>>
 >>>>>>
@@ -280,10 +224,8 @@ ead
 >>>>> struct lostage_signal to handle each of SIGDEBUG/SIGSHADOW/SIGTERM
 >>>>> like patch [1]?
 >>>>>
->>>>>  If there is no pile up for each signal , we would just allocate fixe=
-d position=20
->>>>> for three signals in the array and then handle corresponding  lostage=
-_signal=20
+>>>>>  If there is no pile up for each signal , we would just allocate fixed position 
+>>>>> for three signals in the array and then handle corresponding  lostage_signal 
 >>>>>  by signo. Is it enough?
 >>>>>
 >>>>> [1]:
@@ -312,11 +254,10 @@ _signal=20
 >>>>> +       struct lostage_signal sigarray[XENO_MUM_SIGNALS];
 >>>>>  };
 >>>>>
->>>>
->>>> I would have as many entries than we have distinct reasons for notifyi=
-ng
+>>>> 
+>>>> I would have as many entries than we have distinct reasons for notifying
 >>>> the application. i.e. include/cobalt/uapi/signal.h:
->>>>
+>>>> 
 >>>> #define SIGSHADOW_ACTION_HARDEN		1
 >>>> #define SIGSHADOW_ACTION_BACKTRACE	2
 >>>> #define SIGSHADOW_ACTION_HOME		3
@@ -335,19 +276,38 @@ ng
 >>> migrate. Once it is migrated, it will consume that and only generate a
 >>> new reason after going back.
 >>>
->>=20
->> We may have SIGDEBUG_WATCHDOG pending concurrently to any other causes,
->> this is triggered asynchronously by the oob timer. So at the very least,
->> you want this one to have its own slot.
+>>
+>>We may have SIGDEBUG_WATCHDOG pending concurrently to any other causes,
+>>this is triggered asynchronously by the oob timer. So at the very least,
+>>you want this one to have its own slot.
+>>
+>>So, to sum up: the following events are synchronous and mutually
+>>exclusive due to the oob->in-band transition they cause:
+>>
+>>SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
+>>SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_MUTEX_SLEEP,
+>>SIGDEBUG_LOCK_BREAK, RESCNT_IMBALANCE. For these we may share a single slot.
+>>SIGDEBUG_NOMLOCK can only happen at init when no Xenomai service is
+>>available yet, we don't have to bother. This one can join the about
+>>group too.
+>>
+>>SIGDEBUG_WATCHDOG needs its own slot.
+>>
+>>All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
+>>SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
+>>the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
+>>SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
+>>cannot pile up though (single we have to transition from oob->in-band
+>>context in between).
+>>
+>>That would make five distinct slots in struct xnthread each representing
+>>a group of events, each advertising its own pipeline_inband_work struct.
 >
-> First come, first serve - we only need to know why we initially
-> migrated.
-> But, yes, that may imply locking against concurrent filling of
-> the reason field.
+> OK.   SIGTERM (1) + SIGDEBUG(2) + SIGSHADOW(3) = 6 slots in struct xnthread.
+>
 
-Which means you want distinct slots, otherwise all this work to save a
-couple of =C2=B5s on a weakly contended heap would make no sense I believe.
+Yes.
 
---=20
+-- 
 Philippe.
 
