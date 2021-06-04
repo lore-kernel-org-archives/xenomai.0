@@ -1,11 +1,10 @@
-Subject: Re: [PATCH 3/6] y2038: testsuite/smokey/y2038: testcase for getres64
+Subject: Re: [PATCH 0/6] y2038: clock_getres64 and clock_adjtime64
 References: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
- <20210601133124.1466307-4-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f428d1a0-c2aa-8356-8cfa-c43c0927a586@siemens.com>
-Date: Fri, 4 Jun 2021 15:11:00 +0200
+Message-ID: <364d983d-799e-97cc-d34b-fd6180c75a90@siemens.com>
+Date: Fri, 4 Jun 2021 15:23:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210601133124.1466307-4-florian.bezdeka@siemens.com>
+In-Reply-To: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,79 +17,44 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
-Cc: chensong <chensong@tj.kylinos.cn>
 
 On 01.06.21 15:31, Florian Bezdeka wrote:
-> From: chensong <chensong@tj.kylinos.cn>
+> Hi!
 > 
-> add test case for clock_getres64 in testsuite
+> The next set of changes for fixing the y2038 problem for Xenomai:
 > 
-> Signed-off-by: chensong <chensong@tj.kylinos.cn>
-> [Florian: syscall()->XENOMAI_SYSCALLx(), fix test error handling]
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  testsuite/smokey/y2038/syscall-tests.c | 36 ++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
+>   - clock_getres64
+>   - clock_adjtime64 (only relevant for external clocks, so with limited
+>     testing)
 > 
-> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-> index 54d529b6b..e08d13639 100644
-> --- a/testsuite/smokey/y2038/syscall-tests.c
-> +++ b/testsuite/smokey/y2038/syscall-tests.c
-> @@ -305,8 +305,40 @@ static int test_sc_cobalt_clock_nanosleep64(void)
->  	return 0;
->  }
+> Once again: Patches provided by Song, fixes like style adjustments,
+> updated error handling, fixing failing tests done by me and squashed into
+> the patch that introdoced the problem.
 >  
-> +static int test_sc_cobalt_clock_getres64(void)
-> +{
-> +	int ret;
-> +	int sc_nr = sc_cobalt_clock_getres64;
-> +	struct xn_timespec64 ts64;
-> +
-> +	/* Make sure we don't crash because of NULL pointers */
-> +	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
-> +	if (ret == -ENOSYS) {
-> +		smokey_note("clock_getres64: skipped. (no kernel support)");
-> +		return 0; // Not implemented, nothing to test, success
-> +	}
-> +	if (!smokey_assert(ret == -EFAULT))
-> +		return ret ? ret : -EINVAL;
-> +
-> +	/* Providing an invalid address has to deliver EFAULT */
-> +	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_MONOTONIC, (void *)0xdeadbeefUL);
-> +	if (!smokey_assert(ret == -EFAULT))
-> +		return ret ? ret : -EINVAL;
-> +
-> +	/* Provide a valid 64bit timespec */
-> +	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_MONOTONIC, &ts64);
-> +	if (!smokey_assert(!ret))
-> +		return ret ? ret : -EINVAL;
-> +
-> +	if (ts64.tv_sec != 0 || ts64.tv_nsec != 1)
-> +		smokey_warning("High resolution timers not available\n");
-> +
-> +	return 0;
-> +}
-> +
->  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->  {
-> +
+> Best regards,
+> Florian
+> 
+> Song Chen (3):
+>   y2038: cobalt/posix/clock: Adding clock_adjtime64
+>   y2038: lib/cobalt/clock: dispatch clock_adjtime
+>   y2038: testsuite/smokey/y2038: testcase for adjtime64
+> 
+> chensong (3):
+>   y2038: cobalt/posix/clock: Adding clock_getres64
+>   y2038: lib/cobalt/clock: dispatch clock_getres
+>   y2038: testsuite/smokey/y2038: testcase for getres64
+> 
+>  include/cobalt/uapi/syscall.h          |   2 +
+>  kernel/cobalt/posix/clock.c            |  48 ++++++++++-
+>  kernel/cobalt/posix/clock.h            |  12 +++
+>  kernel/cobalt/posix/syscall32.c        |  14 ++++
+>  kernel/cobalt/posix/syscall32.h        |   8 ++
+>  lib/cobalt/clock.c                     |  10 +++
+>  testsuite/smokey/y2038/syscall-tests.c | 105 +++++++++++++++++++++++++
+>  7 files changed, 198 insertions(+), 1 deletion(-)
+> 
 
-Spurious newline, dropping on merge.
-
->  	int ret;
->  
->  	ret = test_sc_cobalt_sem_timedwait64();
-> @@ -325,5 +357,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
->  	if (ret)
->  		return ret;
->  
-> +	ret = test_sc_cobalt_clock_getres64();
-> +	if (ret)
-> +		return ret;
-> +
->  	return 0;
->  }
-> 
+Thanks, also applied to next.
 
 Jan
 
