@@ -1,10 +1,25 @@
-References: <1202-60b53180-ed-1ab27320@266121244>
- <10a7-60b5e600-39-35a6e6c0@9974389>
+References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
+ <87lf83cj7k.fsf@xenomai.org>
+ <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
+ <87y2c3b092.fsf@xenomai.org>
+ <3bf57e72-9992-0ab4-a956-d6f6197bfe24@siemens.com>
+ <87sg2bat1l.fsf@xenomai.org>
+ <c4aad772-ea81-11e5-afd3-ff269c6b2899@siemens.com>
+ <87o8czar20.fsf@xenomai.org>
+ <c734a2e8-8ef0-bc48-f05e-5f96596eeca4@siemens.com>
+ <87a6ohzjoi.fsf@xenomai.org>
+ <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
+ <87h7ighi8m.fsf@xenomai.org>
+ <BN9PR11MB522775EA51C691A702208894F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <871r9igj9p.fsf@xenomai.org>
+ <955096e4-be49-7630-b6c9-465529cf79f8@siemens.com>
+ <87y2bqf3lj.fsf@xenomai.org>
+ <e38c772c-b925-53fb-92ac-f264969a35c8@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Hunting mode switches
-In-reply-to: <10a7-60b5e600-39-35a6e6c0@9974389>
-Date: Tue, 01 Jun 2021 10:46:10 +0200
-Message-ID: <871r9mht0t.fsf@xenomai.org>
+Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
+In-reply-to: <e38c772c-b925-53fb-92ac-f264969a35c8@siemens.com>
+Date: Fri, 04 Jun 2021 14:53:20 +0200
+Message-ID: <87r1hhg5a7.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -16,119 +31,322 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?Q?Fran=C3=A7ois?= Legal <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-Fran=C3=A7ois Legal via Xenomai <xenomai@xenomai.org> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> Le Lundi, Mai 31, 2021 20:57 CEST, Fran=C3=A7ois Legal via Xenomai <xenom=
-ai@xenomai.org> a =C3=A9crit:=20
->=20=20
->> Le Lundi, Mai 31, 2021 18:14 CEST, Jan Kiszka <jan.kiszka@siemens.com> a=
- =C3=A9crit:=20
->>=20=20
->> > On 31.05.21 18:06, Fran=C3=A7ois Legal via Xenomai wrote:
->> > > Hello,
->> > >=20
->> > > I'm having trouble hunting mode switches on an arm embedded applicat=
-ion.
->> > >=20
->> > > When I look at cat /proc/xenomai/sched/stat
->> > >=20
->> > > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  =
-NAME
->> > >   0  0      0          476986     0          0     00218000   84.5  =
-[ROOT/0]
->> > >   1  0      0          137743     0          0     00218000   99.3  =
-[ROOT/1]
->> > >   1  667    0          137550     0          0     00200042    0.7  =
-[rtnet-stack]
->> > >   0  669    0          2          0          0     00220042    0.0  =
-[rtnet-rtpc]
->> > >   1  901    110        218        203        0     00264044    0.0  =
-APP_Main
->> > >   0  911    1          1216       3524       0     00240046    0.0  =
-ThreadPar
->> > >   0  912    3          56683      3531       0     00240046    0.2  =
-ThreadMessage
->> > >   0  913    309702     470522     2152301    0     00240046    8.9  =
-ThreadExec
->> > >   0  914    7          62         71         0     00240042    0.0  =
-TheadGO
->> > >   0  915    3          647        1190       0     00248046    0.0  =
-ThreadDbg
->> > >   0  916    1          2024       3087       0     00248046    0.0  =
-ThreadCt
->> > >   0  917    1          35801      320489     0     00248046    0.8  =
-ThreadSupInv
->> > >   0  918    1          1231       3596       0     00248046    0.0  =
-ThreadMessage2
->> > >   0  919    1          161554     479305     0     00248042    1.4  =
-ThreadSched
->> > >   0  0      0          247850     0          0     00000000    0.4  =
-[IRQ18: [timer]]
->> > >   1  0      0          15419      0          0     00000000    0.0  =
-[IRQ18: [timer]]
->> > >   0  0      0          137548     0          0     00000000    1.5  =
-[IRQ31: rteth0]
->> > >   1  0      0          0          0          0     00000000    0.0  =
-[IRQ31: rteth0]
->> > >   0  0      0          1          0          0     00000000    0.0  =
-[IRQ118: rteth1-tx]
->> > >   1  0      0          0          0          0     00000000    0.0  =
-[IRQ118: rteth1-tx]
->> > >   0  0      0          0          0          0     00000000    0.0  =
-[IRQ119: rteth1-rx]
->> > >   1  0      0          0          0          0     00000000    0.0  =
-[IRQ119: rteth1-rx]
->> > >=20
->> > > But when following the procedure in [1], I get=20
->> > > no slacker
->> > >=20
->> > > I can however see that Thread 913 seem to switch to secondary more t=
-han once out of 2 cycles !
->> > > What am I doing wrong.
->> > >=20
->> >=20
->> > CONFIG_XENO_OPT_DEBUG_TRACE_RELAX is on?
->> >=20
+> On 04.06.21 10:15, Philippe Gerum wrote:
 >>=20
->> Yes, it is.
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
 >>=20
->> > Did you also try the in-app instrumentation via SIGDEBUG, maybe
->> > attaching gdb to the process to catch the unwanted cases?
->> >=20
+>>> On 04.06.21 09:51, Philippe Gerum wrote:
+>>>>
+>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>>
+>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>
+>>>>>>> On 26.05.21 15:52, Philippe Gerum wrote:
+>>>>>>>>
+>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>
+>>>>>>>>> On 25.05.21 15:20, Philippe Gerum wrote:
+>>>>>>>>>>
+>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>
+>>>>>>>>>>> On 25.05.21 14:37, Philippe Gerum wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> On 25.05.21 12:01, Philippe Gerum wrote:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> On 25.05.21 10:46, Philippe Gerum wrote:
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> Hi Philippe,
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> [1] makes rtdm_schedule_nrt_work a rather heavyweight ser=
+vice, compared
+>>>>>>>>>>>>>>>>> to what it was (and even over I-pipe). xnmalloc is nothin=
+g you would
+>>>>>>>>>>>>>>>>> expect from a "send a signal" service, specifically from
+>>>>>>>>>>>>>>>>> rtdm_nrtsig_pend which does not even make use of the send=
+ing extra payload.
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> Can we do better? Also for xnthread_signal (fd and udd us=
+ecases are not
+>>>>>>>>>>>>>>>>> time-sensitive anyway).
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Nope, I cannot see any significantly better option which w=
+ould still
+>>>>>>>>>>>>>>>> allow a common implementation we can map on top of Dovetai=
+l / I-pipe.
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> E.g. pre-allocate the work object for data-free signals and=
+ use that -
+>>>>>>>>>>>>>>> or not send it when it is in use, thus pending.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Ok, let's recap:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> - rtdm_nrtsig_pend(): does not allocate anything, merely use=
+s a
+>>>>>>>>>>>>>>   user-provided memory block, containing a request header. C=
+urrent
+>>>>>>>>>>>>>>   callers should either already care for not resending a req=
+uest
+>>>>>>>>>>>>>>   uselessly because it is pending (e.g. [1]), or their inter=
+nal logic
+>>>>>>>>>>>>>>   should prevent that (e.g. [2]). This interface always conv=
+ey user data
+>>>>>>>>>>>>>>   by reference.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Ah, I fantasized that rtdm_nrtsig_pend would call rtdm_schedu=
+le_nrt_work
+>>>>>>>>>>>>> to do the work, it's the other way around. False alarm here.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> - rtdm_schedule_nrt_work(): does allocate a nrtsig_t struct =
+in order to
+>>>>>>>>>>>>>>   convey a request block we cannot squeeze into a work_struc=
+t, since the
+>>>>>>>>>>>>>>   latter is in itself an anchor type the user may embed into=
+ its own
+>>>>>>>>>>>>>>   private argument block. I'm unsure ensuring that
+>>>>>>>>>>>>>>   rtdm_schedule_nrt_work() calls do not pile up would be wor=
+th it, as
+>>>>>>>>>>>>>>   this call is not supposed to be used frenetically on some =
+hot path in
+>>>>>>>>>>>>>>   the first place. But if we'd want to do that, then we woul=
+d have to
+>>>>>>>>>>>>>>   change the signature of rtdm_schedule_nrt_work(), so that =
+we gain a
+>>>>>>>>>>>>>>   persistent context data we could use for determining wheth=
+er a nrt
+>>>>>>>>>>>>>>   work request is in flight. We could not probe the work_str=
+uct for that
+>>>>>>>>>>>>>>   purpose, that would be racy.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Do you see any way to have a smarter rtdm_schedule_nrt_work(=
+) without
+>>>>>>>>>>>>>> changing its signature?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> There is no rule that prevents changing the signature if that=
+ is needed.
+>>>>>>>>>>>>> However, the kernel is fine without allocation as well, using=
+ a very
+>>>>>>>>>>>>> similar signature.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> schedule_work() and rtdm_schedule_nrt_work() have a major diff=
+erence:
+>>>>>>>>>>>> the latter has to pass on the request from the oob to the in-b=
+and
+>>>>>>>>>>>> context. This is what bugs us and creates the requirement for =
+additional
+>>>>>>>>>>>> mechanism and data.
+>>>>>>>>>>>>
+>>>>>>>>>>>>> I do not yet understand way we need that indirection via the =
+rtdm_nrtsig
+>>>>>>>>>>>>> on Dovetail. I thought we can trigger work directly from the =
+oob domain
+>>>>>>>>>>>>> there, can't we? How do you handle such a case in evl so far?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Dovetail can trigger in-band work from oob via the generic irq=
+_work()
+>>>>>>>>>>>> service, we don't need the extra code involved in the I-pipe f=
+or the
+>>>>>>>>>>>> same purpose. The gist of the matter is about having the same
+>>>>>>>>>>>> implementation for rtdm_schedule_nrt_work() which works in bot=
+h Dovetail
+>>>>>>>>>>>> and I-pipe contexts: the way we do that is by using rtdm_nrtsi=
+g_pend()
+>>>>>>>>>>>> which already abstracts the base mechanism for relaying oob ->=
+ in-band
+>>>>>>>>>>>> signals.
+>>>>>>>>>>>>
+>>>>>>>>>>>> On the other hand, EVL has the evl_call_inband[_from]() servic=
+e, which
+>>>>>>>>>>>> combines the irq_work and work_struct anchors we need into a s=
+ingle
+>>>>>>>>>>>> evl_work type, which in turn can be embedded into a user reque=
+st
+>>>>>>>>>>>> block. This is what rtdm_schedule_nrt_work() does not expose, =
+so it has
+>>>>>>>>>>>> to build one internally by combining a dynamic allocation and =
+the
+>>>>>>>>>>>> user-provided work_struct.
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Then enhance the rtdm service to enable such a combination - an=
+d be even
+>>>>>>>>>>> more ready for the switch to Xenomai 4, I would say. We can eit=
+her add a
+>>>>>>>>>>> new service and deprecate the old one (while implementing it as=
+ you
+>>>>>>>>>>> suggest) or just break the interface to get the (presumably) fe=
+w users
+>>>>>>>>>>> quickly converted.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> rtdm_schedule_nrt_work() was added by Gilles when merging the RT=
+net code
+>>>>>>>>>> into Xenomai 3 IIRC, with little documentation. Widespread usage=
+ of this
+>>>>>>>>>> call is unlikely, so I'd vote for simplifying the whole thing and
+>>>>>>>>>> replace it entirely.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> OK, then we have a plan for this piece.
+>>>>>
+>>>>> Do we  need to implement new API to replace rtdm_schedule_nrt_work() =
+to avoid call xnmalloc=20
+>>>>> or just keep it as it is in Xenomai 3.2 ?
+>>>>>
+>>>>>>>>>
+>>>>>>>>>>>>> And the third case remains xnthread_signal, btw.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> xnthread_signal() is used to trigger SIGDEBUG/SIGSHADOW/SIGTER=
+M signals
+>>>>>>>>>>>> for a thread, a seldom event. Optimizing there would be overki=
+ll, unless
+>>>>>>>>>>>> the application behaves wrongly in the first place.
+>>>>>>>>>>>
+>>>>>>>>>>> Some caller are under nklock, thus it makes potentially lengthy=
+ critical
+>>>>>>>>>>> sections now a bit longer.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> This is what needs to be fixed in the first place, we should not=
+ trigger
+>>>>>>>>>> a signal relay when holding the ugly big lock.
+>>>>>
+>>>>> Which functions we need to fix or do optimization to avoid calling xn=
+thread_signal when holding
+>>>>> big lock if possible? xnthread_suspend and xnthread_cancel?=20=20
+>>>>>
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Whatever is simpler.
+>>>>>>>>>
+>>>>>>>>> Another aspect: Using xnmalloc for anything that should better su=
+cceed
+>>>>>>>>> is possibly not good when we are OOM. That is actually no strict
+>>>>>>>>> regression over I-pipe where we had a limited queue as well IIRC =
+but a
+>>>>>>>>> reason to avoid carrying that over - and possibly creating new er=
+ror
+>>>>>>>>> scenarios that are harder to debug.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> To mitigate the issue of generalized OOM, we could pull memory fro=
+m a
+>>>>>>>> local xnheap privately attached to xnthread_signal() along with any
+>>>>>>>> caller requiring dynamic allocation, so that none of them could de=
+plete
+>>>>>>>> the sysheap.
+>>>>>>>>
+>>>>>>>> Getting rid of dynamic allocation entirely on the other hand would
+>>>>>>>> require us to add one or more "signal slots" per possible cause of
+>>>>>>>> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRA=
+CE,
+>>>>>>>> SIGDEBUG_MIGRATE_SIGNAL etc), passing the proper slot to
+>>>>>>>> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
+>>>>>>>> standard non-queueable signals, so we should only need a single sl=
+ot per
+>>>>>>>> signal cause.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
+>>>>>>> Likely, we only need to carry the single cause via a field in xnthr=
+ead
+>>>>>>> from the trigger point to the in-band handler. The same is probably=
+ the
+>>>>>>> case for SIGSHADOW_ACTION_BACKTRACE.
+>>>>>>>
+>>>>>>
+>>>>>> Multiple events triggering SIGSHADOW_ACTION_HOME and
+>>>>>> SIGSHADOW_ACTION_HARDEN _might_ pile up, although unlikely.
+>>>>>
+>>>>> Does that means that in struct xnthread there should be three slots of
+>>>>> struct lostage_signal to handle each of SIGDEBUG/SIGSHADOW/SIGTERM
+>>>>> like patch [1]?
+>>>>>
+>>>>>  If there is no pile up for each signal , we would just allocate fixe=
+d position=20
+>>>>> for three signals in the array and then handle corresponding  lostage=
+_signal=20
+>>>>>  by signo. Is it enough?
+>>>>>
+>>>>> [1]:
+>>>>>
+>>>>> +++ b/include/cobalt/kernel/thread.h
+>>>>> @@ -51,6 +51,15 @@ struct xnsched_tpslot;
+>>>>>  struct xnthread_personality;
+>>>>>  struct completion;
+>>>>>
+>>>>> +#define XENO_MUM_SIGNALS 3 /*SIGDEBUG/SIGSHADOW/SIGTERM */
+>>>>> +
+>>>>> +struct lostage_signal {
+>>>>> +       struct pipeline_inband_work inband_work; /* Must be first. */
+>>>>> +       struct task_struct *task;
+>>>>> +       int signo, sigval;
+>>>>> +       struct lostage_signal *self; /* Revisit: I-pipe requirement */
+>>>>> +};
+>>>>> +
+>>>>>  struct xnthread_init_attr {
+>>>>>         struct xnthread_personality *personality;
+>>>>>         cpumask_t affinity;
+>>>>> @@ -205,6 +214,7 @@ struct xnthread {
+>>>>>         const char *exe_path;   /* Executable path */
+>>>>>         u32 proghash;           /* Hash value for exe_path */
+>>>>>  #endif
+>>>>> +       struct lostage_signal sigarray[XENO_MUM_SIGNALS];
+>>>>>  };
+>>>>>
+>>>>
+>>>> I would have as many entries than we have distinct reasons for notifyi=
+ng
+>>>> the application. i.e. include/cobalt/uapi/signal.h:
+>>>>
+>>>> #define SIGSHADOW_ACTION_HARDEN		1
+>>>> #define SIGSHADOW_ACTION_BACKTRACE	2
+>>>> #define SIGSHADOW_ACTION_HOME		3
+>>>> #define SIGDEBUG_MIGRATE_SIGNAL		1
+>>>> #define SIGDEBUG_MIGRATE_SYSCALL	2
+>>>> #define SIGDEBUG_MIGRATE_FAULT		3
+>>>> #define SIGDEBUG_MIGRATE_PRIOINV	4
+>>>> #define SIGDEBUG_NOMLOCK		5
+>>>> #define SIGDEBUG_WATCHDOG		6
+>>>> #define SIGDEBUG_RESCNT_IMBALANCE	7
+>>>> #define SIGDEBUG_LOCK_BREAK		8
+>>>> #define SIGDEBUG_MUTEX_SLEEP		9
+>>>
+>>> For SIGDEBUG, I believe we only need the first reason, as I wrote in the
+>>> other reply. We are interested in the *initial* reason for a thread to
+>>> migrate. Once it is migrated, it will consume that and only generate a
+>>> new reason after going back.
+>>>
 >>=20
->> No, not yet. It seems mode switches happen hundreds of time every second=
-s, so I was willing to try the slackspot.
->> I'll try that tomorrow and report back to the list=20
->>=20
+>> We may have SIGDEBUG_WATCHDOG pending concurrently to any other causes,
+>> this is triggered asynchronously by the oob timer. So at the very least,
+>> you want this one to have its own slot.
 >
-> So trying the manual way, there seem to be something happening, but I cou=
-ld not tell exactly what, and I not sure how to track this.
->
-> On thread ThreadExec, I get execution halted with SIGXCPU, and a backtrac=
-e indicating getpid(), then __pthread_kill() which I'm 100% sure I never ca=
-ll !
->
-> Moreover, when being halted at that point, all threads are not created, a=
-nd all of which are created seem to have done 3 or 4 MSW each, and without =
-triggering any break.
->
-> Moreover, in the stats capture below, the APP_Main (the main program entr=
-y), is looping on a 1s nanosleep, and it seems the MSW number increases onc=
-e per second.
->
-> I'm really confused now.
->
+> First come, first serve - we only need to know why we initially
+> migrated.
+> But, yes, that may imply locking against concurrent filling of
+> the reason field.
 
-You may be receiving a SIGDEBUG signal from the Cobalt core which is not
-handled by cobalt_sigdebug_handler() in lib/cobalt (internal.c) and
-therefore passed on to the original handler, likely SIG_DFL. So first
-thing is to run the app over gdb, breakpoint into
-cobalt_sigdebug_handler(), then inspect the cause code in siginfo and
-the backtrace at this point (bt).
+Which means you want distinct slots, otherwise all this work to save a
+couple of =C2=B5s on a weakly contended heap would make no sense I believe.
 
 --=20
 Philippe.
