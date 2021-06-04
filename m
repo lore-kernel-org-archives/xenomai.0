@@ -1,10 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 08/12] cobalt/sched: dovetail: fix missed switching to OOB
- opportunities
-Date: Fri,  4 Jun 2021 12:05:18 +0200
-Message-Id: <5ca30341352bc10f520fbfc9a83216e481533269.1622801122.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1622801122.git.jan.kiszka@siemens.com>
-References: <cover.1622801122.git.jan.kiszka@siemens.com>
+Subject: [PATCH 00/12] Dovetail integration, moving forward
+Date: Fri,  4 Jun 2021 12:05:10 +0200
+Message-Id: <cover.1622801122.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,63 +14,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Hongzhan Chen <hongzhan.chen@intel.com>
+This pulls the first half of the last half, up to the RT-NRT signaling
+patches that need more work (Hongzhan is on that).
 
-Ask for switching back to oob mode once ptrace core tell that
-current is resuming from a stopped state, leaving space for
-other runnable RT threads of the process to take over.
+Jan
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-[Philippe: added missing dovetail_request_ucall to pipeline_leave_oob_prepare]
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/dovetail/kevents.c |  2 ++
- kernel/cobalt/dovetail/sched.c   | 17 +++++++++++++++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index 164ab9461..37ff6ca4b 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -491,6 +491,8 @@ static void handle_ptrace_cont(void)
- 			unregister_debugged_thread(curr);
- 
- 		xnthread_set_localinfo(curr, XNHICCUP);
-+
-+		dovetail_request_ucall(current);
- 	}
- 
- 	xnlock_put_irqrestore(&nklock, s);
-diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
-index de7c43b70..074bc006e 100644
---- a/kernel/cobalt/dovetail/sched.c
-+++ b/kernel/cobalt/dovetail/sched.c
-@@ -56,9 +56,22 @@ int pipeline_leave_inband(void)
- 
- int pipeline_leave_oob_prepare(void)
- {
--	dovetail_leave_oob();
-+	int suspmask = XNRELAX;
-+	struct xnthread *curr = xnthread_current();
- 
--	return XNRELAX;
-+	dovetail_leave_oob();
-+	/*
-+	 * If current is being debugged, record that it should migrate
-+	 * back in case it resumes in userspace. If it resumes in
-+	 * kernel space, i.e.  over a restarting syscall, the
-+	 * associated hardening will clear XNCONTHI.
-+	 */
-+	if (xnthread_test_state(curr, XNSSTEP)) {
-+		xnthread_set_info(curr, XNCONTHI);
-+		dovetail_request_ucall(current);
-+		suspmask |= XNDBGSTOP;
-+	}
-+	return suspmask;
- }
- 
- void pipeline_leave_oob_finish(void)
+CC: Hongzhan Chen <hongzhan.chen@intel.com>
+CC: Philippe Gerum <rpm@xenomai.org>
+
+Hongzhan Chen (1):
+  cobalt/sched: dovetail: fix missed switching to OOB opportunities
+
+Jan Kiszka (1):
+  cobalt/trace: Avoid clash with kernel trace definitions
+
+Philippe Gerum (10):
+  cobalt/kevents: dovetail: provide thread info initializer
+  cobalt/thread: pipeline: refactor thread control block
+  cobalt/build: pipeline: enable Dovetail support if detected
+  cobalt/trace: dovetail: enable basic tracepoints
+  cobalt/trace: add tracing call to notify of a latency peak
+  cobalt/kevents: dovetail: unregister thread resuming from ptrace stop
+  cobalt/clock: dovetail: use refined monotonic source
+  cobalt/clock: pipeline: abstract handling of CLOCK_REALTIME
+  rtdm/fd: move inband work description off the stack
+  drivers/udd: move inband work description off the stack
+
+ include/cobalt/kernel/clock.h                 | 12 ++-
+ .../cobalt/kernel/dovetail/pipeline/clock.h   | 21 +++-
+ .../cobalt/kernel/dovetail/pipeline/trace.h   | 56 +++++------
+ include/cobalt/kernel/ipipe/pipeline/clock.h  |  5 +
+ include/cobalt/kernel/ipipe/pipeline/trace.h  |  5 +
+ include/cobalt/kernel/thread.h                |  6 +-
+ include/cobalt/trace.h                        |  2 +
+ include/cobalt/uapi/kernel/trace.h            |  1 +
+ include/mercury/boilerplate/trace.h           |  4 +
+ .../arm/ipipe/include/asm/xenomai/thread.h    |  8 +-
+ .../arm64/ipipe/include/asm/xenomai/thread.h  |  8 +-
+ .../ipipe/include/asm/xenomai/thread.h        |  8 +-
+ .../x86/dovetail/include/asm/xenomai/thread.h |  8 +-
+ .../x86/ipipe/include/asm/xenomai/thread.h    |  8 +-
+ kernel/cobalt/clock.c                         | 66 +++++++------
+ kernel/cobalt/dovetail/kevents.c              | 41 ++++++--
+ kernel/cobalt/dovetail/sched.c                | 17 +++-
+ .../asm-generic/xenomai/dovetail/thread.h     | 24 +++++
+ .../asm-generic/xenomai/{ => ipipe}/thread.h  |  9 +-
+ kernel/cobalt/ipipe/clock.c                   | 15 +++
+ kernel/cobalt/ipipe/tick.c                    |  3 -
+ kernel/cobalt/posix/clock.c                   |  9 +-
+ kernel/cobalt/posix/syscall.c                 |  6 ++
+ kernel/cobalt/rtdm/fd.c                       | 22 ++---
+ kernel/cobalt/trace/cobalt-core.h             | 98 +++++++++++++++++++
+ kernel/cobalt/trace/cobalt-posix.h            | 12 +--
+ kernel/drivers/testing/timerbench.c           |  2 +-
+ kernel/drivers/udd/udd.c                      | 25 +++--
+ lib/cobalt/trace.c                            |  5 +
+ scripts/Kconfig.frag                          |  1 +
+ testsuite/latency/latency.c                   |  2 +-
+ 31 files changed, 375 insertions(+), 134 deletions(-)
+ create mode 100644 kernel/cobalt/include/asm-generic/xenomai/dovetail/thread.h
+ rename kernel/cobalt/include/asm-generic/xenomai/{ => ipipe}/thread.h (87%)
+
 -- 
 2.26.2
 
