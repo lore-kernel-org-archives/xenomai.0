@@ -1,4 +1,3 @@
-Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
 References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
  <87lf83cj7k.fsf@xenomai.org>
  <14ad027b-f326-5ea8-9cce-cb4b82984a23@siemens.com>
@@ -12,14 +11,13 @@ References: <2098c9e4-4fb1-ef49-2c2d-d2c6573499b5@siemens.com>
  <1ea00a75-379d-3d7f-cb33-406f8188d38e@siemens.com>
  <87h7ighi8m.fsf@xenomai.org>
  <BN9PR11MB522775EA51C691A702208894F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <654649ce-c8cd-1cf7-4281-768a87679ac5@siemens.com>
-Date: Fri, 4 Jun 2021 09:34:26 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: "rtdm/nrtsig: move inband work description off the stack"
+In-reply-to: <BN9PR11MB522775EA51C691A702208894F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Date: Fri, 04 Jun 2021 09:51:14 +0200
+Message-ID: <871r9igj9p.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB522775EA51C691A702208894F23B9@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,17 +26,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04.06.21 08:34, Chen, Hongzhan wrote:
-> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+
+>>Jan Kiszka <jan.kiszka@siemens.com> writes:
 >>
 >>> On 26.05.21 15:52, Philippe Gerum wrote:
->>>>
+>>>> 
 >>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>
+>>>> 
 >>>>> On 25.05.21 15:20, Philippe Gerum wrote:
 >>>>>>
 >>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
@@ -147,15 +146,10 @@ On 04.06.21 08:34, Chen, Hongzhan wrote:
 >>>>>>
 >>>>>
 >>>>> OK, then we have a plan for this piece.
-> 
+>
 > Do we  need to implement new API to replace rtdm_schedule_nrt_work() to avoid call xnmalloc 
 > or just keep it as it is in Xenomai 3.2 ?
-> 
-
-As Philippe said, we likely have not many users - if any at all -
-outside of the core. So, let's refactor it, enforcing users to migrate
-to the new version in 3.2.
-
+>
 >>>>>
 >>>>>>>>> And the third case remains xnthread_signal, btw.
 >>>>>>>>>
@@ -170,16 +164,10 @@ to the new version in 3.2.
 >>>>>>
 >>>>>> This is what needs to be fixed in the first place, we should not trigger
 >>>>>> a signal relay when holding the ugly big lock.
-> 
+>
 > Which functions we need to fix or do optimization to avoid calling xnthread_signal when holding
 > big lock if possible? xnthread_suspend and xnthread_cancel?  
-> 
-
-Let's postpone the nklock avoidance. Some cases are related to debugging
-anyway and not easy to break up (e.g. xnsynch_detect_relaxed_owner), and
-the others will get mitigated by avoiding xnmalloc - at least they will
-not get worse than what we have now.
-
+>
 >>>>>>
 >>>>>
 >>>>> Whatever is simpler.
@@ -190,12 +178,12 @@ not get worse than what we have now.
 >>>>> reason to avoid carrying that over - and possibly creating new error
 >>>>> scenarios that are harder to debug.
 >>>>>
->>>>
+>>>> 
 >>>> To mitigate the issue of generalized OOM, we could pull memory from a
 >>>> local xnheap privately attached to xnthread_signal() along with any
 >>>> caller requiring dynamic allocation, so that none of them could deplete
 >>>> the sysheap.
->>>>
+>>>> 
 >>>> Getting rid of dynamic allocation entirely on the other hand would
 >>>> require us to add one or more "signal slots" per possible cause of
 >>>> in-band signal into struct xnthread (e.g. SIGSHADOW_ACTION_BACKTRACE,
@@ -203,7 +191,7 @@ not get worse than what we have now.
 >>>> xnthread_signal(). SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
 >>>> standard non-queueable signals, so we should only need a single slot per
 >>>> signal cause.
->>>>
+>>>> 
 >>>
 >>> Can a thread actually trigger multiple causes per SIGDEBUG, e.g.?
 >>> Likely, we only need to carry the single cause via a field in xnthread
@@ -211,31 +199,24 @@ not get worse than what we have now.
 >>> case for SIGSHADOW_ACTION_BACKTRACE.
 >>>
 >>
->> Multiple events triggering SIGSHADOW_ACTION_HOME and
->> SIGSHADOW_ACTION_HARDEN _might_ pile up, although unlikely.
-> 
+>>Multiple events triggering SIGSHADOW_ACTION_HOME and
+>>SIGSHADOW_ACTION_HARDEN _might_ pile up, although unlikely.
+>
 > Does that means that in struct xnthread there should be three slots of
 > struct lostage_signal to handle each of SIGDEBUG/SIGSHADOW/SIGTERM
 > like patch [1]?
-> 
+>
 >  If there is no pile up for each signal , we would just allocate fixed position 
 > for three signals in the array and then handle corresponding  lostage_signal 
 >  by signo. Is it enough?
-> 
-
-One pending flag for SIGDEBUG and one field for its first reason, one
-for SIGTERM and one for each SIGSHADOW action. That is my current
-understanding of things that could be pending in parallel for a thread.
-
-Jan
-
+>
 > [1]:
-> 
+>
 > +++ b/include/cobalt/kernel/thread.h
 > @@ -51,6 +51,15 @@ struct xnsched_tpslot;
 >  struct xnthread_personality;
 >  struct completion;
-> 
+>
 > +#define XENO_MUM_SIGNALS 3 /*SIGDEBUG/SIGSHADOW/SIGTERM */
 > +
 > +struct lostage_signal {
@@ -254,32 +235,50 @@ Jan
 >  #endif
 > +       struct lostage_signal sigarray[XENO_MUM_SIGNALS];
 >  };
-> 
->>
->>> Now, the question for me is how we move forward from this? Is it simpler
->>> to fix these issues? Or would it be better first avoid affecting I-pipe
->>> cases and living with xnmalloc for an initial phase over Dovetail?
->>>
->>
->> A much better option would be that somebody volunteers to work on
->> implementing what has just been described, in order to have the proper
->> solution available in both I-pipe an Dovetail contexts, based on generic
->> code.
->>
->> Although such work may not seem obvious at first sight reading the
->> jargonish descriptions above, it is actually fairly simple to
->> implement. I believe that any contributor would be welcome to ask for
->> explanations and details for that purpose.
->>
->> -- 
->> Philippe.
-> 
-> Regards
-> 
-> Hongzhan Chen
-> 
+>
+
+I would have as many entries than we have distinct reasons for notifying
+the application. i.e. include/cobalt/uapi/signal.h:
+
+#define SIGSHADOW_ACTION_HARDEN		1
+#define SIGSHADOW_ACTION_BACKTRACE	2
+#define SIGSHADOW_ACTION_HOME		3
+#define SIGDEBUG_MIGRATE_SIGNAL		1
+#define SIGDEBUG_MIGRATE_SYSCALL	2
+#define SIGDEBUG_MIGRATE_FAULT		3
+#define SIGDEBUG_MIGRATE_PRIOINV	4
+#define SIGDEBUG_NOMLOCK		5
+#define SIGDEBUG_WATCHDOG		6
+#define SIGDEBUG_RESCNT_IMBALANCE	7
+#define SIGDEBUG_LOCK_BREAK		8
+#define SIGDEBUG_MUTEX_SLEEP		9
+
+plus, a dedicated entry for sending SIGTERM.
+
+The reason is that we may have some combinations in which events may be
+set pending concurrently for a given task
+e.g. SIGSHADOW_ACTION_BACKTRACE _and_ any of SIGDEBUG_MIGRATE_*.
+
+The irq_work interface Dovetail uses allows us to have multiple pending
+events, as long as they are represented by distinct work structs (hence
+the requirement to have a dedicated inband_work struct per event
+type). Likewise, the I-pipe allows multiple events to be set pending by
+logging each event into an internal buffer for later delivery to the
+notified task.
+
+Now the question is: what about a particular event being notified
+multiple times in a series by the core before userland had a chance to
+receive the first notification? Could we, or would it matter if we only
+receive a single notification for a series of identical events?  e.g.
+SIGDEBUG_MIGRATE_SYSCALL x 2, leading to the second one to be ignored as
+already pending.
+
+This case should never happen for any cause which is paired with a
+transition from oob -> in-band context like SIGDEBUG_MIGRATE_*, by
+design. Some causes even filter out multiple triggers explicitly, such
+as SIGDEBUG_MUTEX_SLEEP. Other actions are idempotent
+(e.g. SIGSHADOW_ACTION_HARDEN, _HOME).
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
