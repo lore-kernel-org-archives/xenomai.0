@@ -1,10 +1,8 @@
-Subject: Re: [PATCH 0/9] y2038: clock_{g,s}ettime64, clock_nanosleep64
-References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2db8894a-6b69-46d8-c4e0-00397e11bcaa@siemens.com>
-Date: Fri, 4 Jun 2021 14:07:23 +0200
+Subject: [PATCH] testsuite/smokey/y2038: Clean up error tests
+Message-ID: <906b8771-b3bd-78d4-150e-bcf032ec8d61@siemens.com>
+Date: Fri, 4 Jun 2021 14:07:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210601094334.774394-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,59 +14,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
-Cc: chensong@tj.kylinos.cn
+To: Xenomai <xenomai@xenomai.org>
 
-On 01.06.21 11:43, Florian Bezdeka wrote:
-> Hi!
-> 
-> This is the next set of changes needed for solving the y2038 problem.
-> Most patches were provided by Song. I reviewed them and fixed some error
-> handling problems as well as test failures on some architectures. Some
-> of the tests were rebased on top of the current next branch.
-> 
-> With this series applied the wip/dovetail and florian/y2038 [1] branches 
-> are merge-able without conflicts.
-> 
-> Best regards,
-> Florian
-> 
-> [1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
-> 
-> Florian Bezdeka (1):
->   y2038: libcobalt: Centralize sc_cobalt_clock_gettime syscall
-> 
-> chensong (8):
->   y2038: cobalt/posix/clock: Adding clock_gettime64
->   y2038: cobalt/posix/clock: Adding clock_settime64
->   y2038: lib/cobalt/clock: dispatch clock_gettime
->   y2038: lib/cobalt/clock: dispatch clock_settime
->   y2038: testsuite/smokey/y2038: testcase for settime64 and gettime64
->   y2038: cobalt/posix/clock: Adding clock_nanosleep64
->   y2038: lib/cobalt/clock: dispatch clock_nanosleep
->   y2038: testsuite/smokey/y2038: Adding testcase for nanosleep64
-> 
->  include/cobalt/kernel/time.h           |  11 ++
->  include/cobalt/uapi/syscall.h          |   3 +
->  kernel/cobalt/posix/clock.c            |  70 +++++++++++-
->  kernel/cobalt/posix/clock.h            |  22 ++++
->  kernel/cobalt/posix/syscall32.c        |  23 ++++
->  kernel/cobalt/posix/syscall32.h        |  14 +++
->  kernel/cobalt/time.c                   |  11 ++
->  lib/cobalt/clock.c                     |  22 +++-
->  testsuite/smokey/y2038/syscall-tests.c | 151 +++++++++++++++++++++++++
->  9 files changed, 324 insertions(+), 3 deletions(-)
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, applied to next. A tiny cleanup patch for the error test will
-follow on top.
+No checks of ret against 0 needed in those cases.
 
-As I just found out: clock_settime does not work with dovetail yet. So
-the testsuite will fail over wip/dovetail for the time being.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/y2038/syscall-tests.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Jan
-
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index e81d23557..24580f5a8 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -105,7 +105,7 @@ static int test_sc_cobalt_sem_timedwait64(void)
+ 	sem_post(&sem);
+ 	ret = XENOMAI_SYSCALL2(sc_nr, &sem, NULL);
+ 	if (!smokey_assert(!ret))
+-		return ret ? ret : -EINVAL;
++		return ret;
+ 
+ 	/*
+ 	 * The semaphore is already exhausted, so calling again will validate
+@@ -189,7 +189,7 @@ static int test_sc_cobalt_clock_gettime64(void)
+ 	/* Provide a valid 64bit timespec */
+ 	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_MONOTONIC, &ts64);
+ 	if (!smokey_assert(!ret))
+-		return ret ? ret : -EINVAL;
++		return ret;
+ 
+ 	/* Validate seconds only, nanoseconds might still be zero */
+ 	smokey_assert(ts64.tv_sec != 0);
+@@ -227,7 +227,7 @@ static int test_sc_cobalt_clock_settime64(void)
+ 	ts64.tv_nsec = now.tv_nsec;
+ 	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_REALTIME, &ts64);
+ 	if (!smokey_assert(!ret))
+-		return ret ? ret : -EINVAL;
++		return ret;
+ 
+ 	ret = clock_gettime(CLOCK_REALTIME, &now);
+ 	if (ret)
+@@ -276,7 +276,7 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+ 	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
+ 			       &next, (void *)0xdeadbeefUL);
+ 	if (!smokey_assert(!ret))
+-		return ret ? ret : -EINVAL;
++		return ret;
+ 
+ 	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
+ 	if (ret)
+@@ -292,7 +292,7 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+ 
+ 	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
+ 	if (!smokey_assert(!ret))
+-		return ret ? ret : -EINVAL;
++		return ret;
+ 
+ 	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+ 	if (ret)
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
