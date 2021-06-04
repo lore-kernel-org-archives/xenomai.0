@@ -1,11 +1,15 @@
+Subject: Re: [PATCH 9/9] y2038: testsuite/smokey/y2038: Adding testcase for
+ nanosleep64
+References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
+ <20210601094334.774394-10-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 11/12] rtdm/fd: move inband work description off the stack
-Date: Fri,  4 Jun 2021 12:05:21 +0200
-Message-Id: <01fe61c321703e48a8c5e4537fc5a3e7ae6138cc.1622801122.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1622801122.git.jan.kiszka@siemens.com>
-References: <cover.1622801122.git.jan.kiszka@siemens.com>
+Message-ID: <e7724a84-cf55-20df-d8ed-fcc79a2772f1@siemens.com>
+Date: Fri, 4 Jun 2021 13:41:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210601094334.774394-10-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,81 +18,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+Cc: chensong@tj.kylinos.cn
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 01.06.21 11:43, Florian Bezdeka wrote:
+> From: chensong <chensong@tj.kylinos.cn>
+> 
+> Add test case for clock_nanosleep64 in smokey testsuite
+> 
+> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+> [Florian: Reword commit msg, syscall()->XENOMAI_SYSCALLx()]
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/y2038/syscall-tests.c | 67 ++++++++++++++++++++++++++
+>  1 file changed, 67 insertions(+)
+> 
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> index 840be89a5..54d529b6b 100644
+> --- a/testsuite/smokey/y2038/syscall-tests.c
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -242,6 +242,69 @@ static int test_sc_cobalt_clock_settime64(void)
+>  	return 0;
+>  }
+>  
+> +static int test_sc_cobalt_clock_nanosleep64(void)
+> +{
+> +	int ret;
+> +	int sc_nr = sc_cobalt_clock_nanosleep64;
+> +	struct xn_timespec64 next, rmt;
+> +	struct timespec ts1, ts2, delta;
+> +	long interval = 1;
+> +
+> +	/* Make sure we don't crash because of NULL pointers */
+> +	ret = XENOMAI_SYSCALL4(sc_nr, NULL, NULL, NULL, NULL);
+> +	if (ret == -ENOSYS) {
+> +		smokey_note("clock_nanosleep64: skipped. (no kernel support)");
+> +		return 0; // Not implemented, nothing to test, success
+> +	}
+> +	if (!smokey_assert(ret == -EFAULT))
+> +		return ret ? ret : -EINVAL;
+> +
+> +	/* Providing an invalid address has to deliver EFAULT */
+> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
+> +			       (void *)0xdeadbeefUL, &rmt);
+> +	if (!smokey_assert(ret == -EFAULT))
+> +		return ret ? ret : -EINVAL;
+> +
+> +	/* Provide a valid 64bit timespec, round 1 */
+> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+> +	if (ret)
+> +		return -errno;
+> +
+> +	next.tv_sec  = ts1.tv_sec + interval;
+> +	next.tv_nsec = ts1.tv_nsec;
+> +
+> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
+> +			       &next, (void *)0xdeadbeefUL);
+> +	if (!smokey_assert(!ret))
+> +		return ret ? ret : -EINVAL;
 
-Unlike the I-pipe, Dovetail does not copy the work descriptor but
-merely hands over the request to the common irq_work() mechanism. We
-must guarantee that such descriptor lives in a portion of memory which
-won't go stale until the handler has run, which by design can only
-happen once the calling out-of-band context unwinds.
+Unneeded test here - ret is != 0.
 
-Therefore, we have to move the in-band work descriptor used in
-triggering fd closure off the stack to a global variable, which is
-fine since the action of flushing the lingering fds is globally
-scoped.
+> +
+> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts2);
+> +	if (ret)
+> +		return -errno;
+> +
+> +	timespec_sub(&delta, &ts2, &ts1);
+> +	if (delta.tv_sec < interval)
+> +		smokey_warning("nanosleep didn't sleep long enough.");
+> +
+> +	/* Provide a valid 64bit timespec, round 2*/
+> +	next.tv_sec  = ts2.tv_sec + interval;
+> +	next.tv_nsec = ts2.tv_nsec;
+> +
+> +	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME, &next, &rmt);
+> +	if (!smokey_assert(!ret))
+> +		return ret ? ret : -EINVAL;
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/rtdm/fd.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+Same here.
 
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index 038247d54..151884a24 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -257,10 +257,6 @@ out:
- }
- EXPORT_SYMBOL_GPL(rtdm_fd_get);
- 
--struct lostage_trigger_close {
--	struct pipeline_inband_work inband_work; /* Must be first. */
--};
--
- static int fd_cleanup_thread(void *data)
- {
- 	struct rtdm_fd *fd;
-@@ -293,9 +289,16 @@ static void lostage_trigger_close(struct pipeline_inband_work *inband_work)
- 	up(&rtdm_fd_cleanup_sem);
- }
- 
-+static struct lostage_trigger_close {
-+	struct pipeline_inband_work inband_work; /* Must be first. */
-+} fd_closework =  {
-+	.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(fd_closework,
-+						lostage_trigger_close),
-+};
-+
- static void __put_fd(struct rtdm_fd *fd, spl_t s)
- {
--	bool destroy;
-+	bool destroy, trigger;
- 
- 	XENO_WARN_ON(COBALT, fd->refs <= 0);
- 	destroy = --fd->refs == 0;
-@@ -310,16 +313,13 @@ static void __put_fd(struct rtdm_fd *fd, spl_t s)
- 	if (is_secondary_domain())
- 		fd->ops->close(fd);
- 	else {
--		struct lostage_trigger_close closework = {
--			.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(closework,
--					lostage_trigger_close),
--		};
--
- 		xnlock_get_irqsave(&fdtree_lock, s);
-+		trigger = list_empty(&rtdm_fd_cleanup_queue);
- 		list_add_tail(&fd->cleanup, &rtdm_fd_cleanup_queue);
- 		xnlock_put_irqrestore(&fdtree_lock, s);
- 
--		pipeline_post_inband_work(&closework);
-+		if (trigger)
-+			pipeline_post_inband_work(&fd_closework);
- 	}
- }
- 
+I can fix those up - once I understood why they trigger here ATM.
+
+Jan
+
+> +
+> +	ret = clock_gettime(CLOCK_MONOTONIC, &ts1);
+> +	if (ret)
+> +		return -errno;
+> +
+> +	timespec_sub(&delta, &ts1, &ts2);
+> +	if (delta.tv_sec < interval)
+> +		smokey_warning("nanosleep didn't sleep long enough.");
+> +
+> +	return 0;
+> +}
+> +
+>  static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+>  {
+>  	int ret;
+> @@ -258,5 +321,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = test_sc_cobalt_clock_nanosleep64();
+> +	if (ret)
+> +		return ret;
+> +
+>  	return 0;
+>  }
+> 
+
+
 -- 
-2.26.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
