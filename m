@@ -1,12 +1,13 @@
-References: <0eb03889-d16d-3446-e07b-a4a36964ef15@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [v5.13.y-dovetail][PATCH 2/2] irq_pipeline: Account for stage
- migration across faults
-In-reply-to: <0eb03889-d16d-3446-e07b-a4a36964ef15@web.de>
-Date: Sat, 05 Jun 2021 09:54:40 +0200
-Message-ID: <87lf7og30f.fsf@xenomai.org>
+From: MONTET Julien <julien.montet@reseau.eseo.fr>
+Subject: RE: Xenomai ipipe x86 64 bits with 32 bits librairies 
+Date: Sat, 5 Jun 2021 11:53:15 +0000
+Message-ID: <PR3PR02MB62022C741AA5039F06B4E367D13A9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+References: <PR3PR02MB620234FC0751074AE334B463D13D9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+In-Reply-To: <PR3PR02MB620234FC0751074AE334B463D13D9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,94 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+
+Hello everyone,
+
+To keep you informed of my progress to run a 32bits program on x86 with Xen=
+omai:
+-> I tried to build 32bits Xenomai library for a 64bits system built with a=
+ Cobalt version
+--> It doesn't work and stopped my exec or sudo /usr/xenomai/bin/latency wi=
+th the error below
+--> 0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
+
+-> I tried to build 64 bits Xenomai library for 64bits system built with Co=
+balt version
+--> The code doesn't build because it is waiting for 32bits library (alchem=
+y, ...)
+
+There is still an other possibility I have in mind, but I don't know if it =
+could work properly.
+During the kernel compilation I used "menuconfig" and noticed a line named =
+"Binary Emulations". Inside it I found :
+[*] IA32 Emulation
+< > IA32 a.out support
+[ ] x32 ABI for 64-bit mode
+
+I am tempted to select "IA32 a.out support" and "x32 ABI for 64-bit mode" a=
+s well.
+Do these options have an impact on Xenomai or are they only used in a gener=
+al case ?
+
+Regards,
 
 
-Jan Kiszka <jan.kiszka@web.de> writes:
+________________________________
+De : MONTET Julien
+Envoy=E9 : jeudi 3 juin 2021 00:15
+=C0 : Xenomai <xenomai@xenomai.org>
+Objet : Xenomai ipipe x86 64 bits with 32 bits librairies
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> We need to unstall the inband stage when we entered for a fault over OOB
-> and unstalled and then migrated to inband. So far we kept the inband
-> stage stalled, causing a state corruption this way.
->
-> Introduce an additional state to irqentry_info for this, tracking the
-> stalling state on OOB entry.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> Note: Tested only as backport to 5.10-x86 so far.
->
->  include/linux/entry-common.h |  3 ++-
->  kernel/entry/common.c        | 10 +++++++---
->  2 files changed, 9 insertions(+), 4 deletions(-)
->
-> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-> index 2a08b00632b9..782e94b88076 100644
-> --- a/include/linux/entry-common.h
-> +++ b/include/linux/entry-common.h
-> @@ -402,7 +402,8 @@ void irqentry_exit_to_user_mode(struct pt_regs *regs);
->  enum irqentry_info {
->  	IRQENTRY_INBAND_UNSTALLED = 0,
->  	IRQENTRY_INBAND_STALLED,
-> -	IRQENTRY_OOB,
-> +	IRQENTRY_OOB_UNSTALLED,
-> +	IRQENTRY_OOB_STALLED,
->  };
->
->  #ifndef irqentry_state
-> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-> index 5a669f87ec3f..5f2ec6dba1a4 100644
-> --- a/kernel/entry/common.c
-> +++ b/kernel/entry/common.c
-> @@ -410,7 +410,8 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
->
->  #ifdef CONFIG_IRQ_PIPELINE
->  	if (running_oob()) {
-> -		ret.stage_info = IRQENTRY_OOB;
-> +		ret.stage_info = test_oob_stall() ? IRQENTRY_OOB_STALLED :
-> +			IRQENTRY_OOB_UNSTALLED;
->  		return ret;
->  	}
->  #endif
-> @@ -577,9 +578,12 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
->  	/*
->  	 * If pipelining interrupts, clear the in-band stall bit if
->  	 * irqentry_enter() raised it in order to mirror the hardware
-> -	 * state.
-> +	 * state. Also clear it when we where coming from OOB_UNSTALLED,
-> +	 * thus went through a migration that was caused by taking, e.g.,
-> +	 * a fault.
->  	 */
-> -	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED)
-> +	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
-> +	    state.stage_info == IRQENTRY_OOB_UNSTALLED)
->  		unstall_inband();
->  #endif
->  	return;
+Hello the Xenomai team,
 
-The logic of your previous patch was correct, this one is
-not. IRQENTRY_OOB_UNSTALLED is useless and should not be used in this
-context. We have all the guarantees and information we need at the exit
-point above: we are running in-band, so if IRQENTRY_OOB was set on
-entry, we must have downgraded the current execution stage in the
-meantime.
+First of all I thank you for all your previous answers.
+Xenomai 3.1 (skins included) is working fine on arm 32bits !
+Now I am trying to find a way to do the same thing on x86 - ipipe 4.19.177+
 
-The stall bit for the oob stage would be almost always cleared, except
-when/if a synchronous fault is taken while the pipeline is entirely
-locked, e.g. hard_spin_lock+irqsave held then oops, which should never
-happen unless the code is doing something silly. In this case, we would
-still want the in-band stage to be unstalled on exit after the faulting
-task is demoted from a mere logic standpoint, although without much hope
-for the kernel sanity afterwards. Typically, the oob stage must not be
-stalled when raw_copy_to/from_user() is invoked. IOW, this new state is
-not conveying any valuable information.
+My current code is supposed to work on 32bits and I can't upgrade it to 64b=
+its.
+I know x86_32 is officially no more supported for ipipe patch since Februar=
+y, that is why my idea was to get an ipipe x86_64 (I already installed it o=
+n the machine) and compile Xenomai librairies in 32bits.
 
-Please resend a new iteration of your first patch, dropping the redundant
-check for running_inband(), this one would be fine.
 
--- 
-Philippe.
+My commands - I try to cross compile:
+./configure --host=3Di686-linux-gnu CFLAGS=3D"-m32 -O2" LDFLAGS=3D"-m32" --=
+with-core=3Dcobalt --enable-smp --enable-pshared
+https://paste.ubuntu.com/p/h74GSvMjP9/
+(I also tried to add -march=3Di686 in CFLAGS without success
 
+The two lines below produce the same errors :
+make ARCH=3Di686 CROSS_COMPILE=3Di686-linux-gnu-
+make install DESTDIR=3D"[PATH]/xenomai-3.1/tmp_xenomai"
+https://paste.ubuntu.com/p/M39PJgTM9X/
+
+
+A similar thread on the Xenomai forum :
+https://xenomai.org/pipermail/xenomai/2020-May/043000.html
+The strange thing with the link above is the method should be working for -=
+m32 (and not for -mx32). I tried with old librairies (3.0+), and I had the =
+same issues
+
+
+What I found :
+The macro  #ifdef CONFIG_X86_X32 may not be defined because I have errors o=
+n __COBALT_X32_BASE :
+https://xenomai.org/documentation/xenomai-3/html/xeno3prm/arch_2x86_2includ=
+e_2asm_2xenomai_2syscall32_8h_source.html
+
+What I have installed on my host :
+
+sudo apt-get install linux-libc-dev:i386
+sudo apt install gcc-i686-linux-gnu
+
+
+Is there a way to use i686 (x86_32) code with Xenomai ?
+Do you have any advices on this subject ?
+
+
+Best regards,
+
+Julien
+
+<mailto:xenomai@xenomai.org>
