@@ -1,13 +1,12 @@
-Subject: Re: [PATCH v3 0/3] y2038:clock_nanosleep for timespec64
-References: <1619505639-13582-1-git-send-email-chensong_2000@189.cn>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <3b8cc1d1-1999-e6cf-efda-8e8fd1b92392@siemens.com>
-Date: Tue, 1 Jun 2021 11:38:16 +0200
-In-Reply-To: <1619505639-13582-1-git-send-email-chensong_2000@189.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <PR3PR02MB620234FC0751074AE334B463D13D9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+ <PR3PR02MB62022C741AA5039F06B4E367D13A9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Xenomai ipipe x86 64 bits with 32 bits librairies
+In-reply-to: <PR3PR02MB62022C741AA5039F06B4E367D13A9@PR3PR02MB6202.eurprd02.prod.outlook.com>
+Date: Sat, 05 Jun 2021 15:15:24 +0200
+Message-ID: <87im2sfo5v.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Song Chen <chensong_2000@189.cn>, xenomai@xenomai.org
+To: MONTET Julien <julien.montet@reseau.eseo.fr>
+Cc: xenomai@xenomai.org
 
-On 27.04.21 08:40, Song Chen wrote:
-> This patch serial is aimed to introduce a new syscall clock_nanosleep64
-> which is specific for 64-bit time_t.
-> 
-> ---
-> v2:
-> 1, introduce a new helper __cobalt_clock_nanosleep64 given the behavior
-> in compat syscall is identical.
-> 2, REALTIME --> MONOTONIC in testsuite
-> 3, more combinations of parameters in testsuite
-> 4, smokey warning if clock_gettime goes wrong in testsuite
-> 5, remove magic number in testsuite
-> 
-> v3:
-> 1, check lower boundary if nanosleep sleeps long enough
-> 
-> chensong (3):
->   y2038: cobalt/posix/clock: Adding clock_nanosleep64
->   y2038: lib/cobalt/clock: dispatch clock_nanosleep
->   y2038: testsuite/smokey/y2038: testcase for nanosleep64
-> 
->  include/cobalt/uapi/syscall.h          |  1 +
->  kernel/cobalt/posix/clock.c            | 30 ++++++++++++++
->  kernel/cobalt/posix/clock.h            |  9 +++++
->  kernel/cobalt/posix/syscall32.c        |  9 +++++
->  kernel/cobalt/posix/syscall32.h        |  6 +++
->  lib/cobalt/clock.c                     |  5 +++
->  testsuite/smokey/y2038/syscall-tests.c | 72 ++++++++++++++++++++++++++++++++++
->  7 files changed, 132 insertions(+)
-> 
 
-I applied this series with some minor modifications to florian/y2038. I
-will send out a series together with the {s,g}ettime64 stuff later today.
+MONTET Julien via Xenomai <xenomai@xenomai.org> writes:
 
+> Hello everyone,
+>
+> To keep you informed of my progress to run a 32bits program on x86 with Xenomai:
+> -> I tried to build 32bits Xenomai library for a 64bits system built with a Cobalt version
+> --> It doesn't work and stopped my exec or sudo /usr/xenomai/bin/latency with the error below
+> --> 0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
+>
+
+You may want to double-check in the kernel log whether the core is
+actually enabled. Early init errors might prevent this.
+
+With dmesg, check that you do have an output of this sort:
+
+[    0.098064] [Xenomai] scheduling class idle registered.
+[    0.098074] [Xenomai] scheduling class rt registered.
+[    0.098258] I-pipe: head domain Xenomai registered.
+[    0.100609] [Xenomai] Cobalt v3.1
+
+Any error encountered while initializing the Cobalt core would disable
+it entirely for the whole session, hence receiving the low_init() error.
+
+> -> I tried to build 64 bits Xenomai library for 64bits system built with Cobalt version
+> --> The code doesn't build because it is waiting for 32bits library (alchemy, ...)
+>
+> There is still an other possibility I have in mind, but I don't know if it could work properly.
+> During the kernel compilation I used "menuconfig" and noticed a line named "Binary Emulations". Inside it I found :
+> [*] IA32 Emulation
+> < > IA32 a.out support
+> [ ] x32 ABI for 64-bit mode
+>
+> I am tempted to select "IA32 a.out support" and "x32 ABI for 64-bit mode" as well.
+> Do these options have an impact on Xenomai or are they only used in a general case ?
+>
+
+All you need is CONFIG_IA32_EMULATION=y to enable 32bit user
+compatibility mode over the x86_64 kernel.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
