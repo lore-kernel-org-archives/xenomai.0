@@ -1,13 +1,12 @@
-Subject: Re: [PATCH 0/6] y2038: clock_getres64 and clock_adjtime64
-References: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <364d983d-799e-97cc-d34b-fd6180c75a90@siemens.com>
-Date: Fri, 4 Jun 2021 15:23:19 +0200
+References: <0eb03889-d16d-3446-e07b-a4a36964ef15@web.de>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [v5.13.y-dovetail][PATCH 2/2] irq_pipeline: Account for stage
+ migration across faults
+In-reply-to: <0eb03889-d16d-3446-e07b-a4a36964ef15@web.de>
+Date: Sat, 05 Jun 2021 09:54:40 +0200
+Message-ID: <87lf7og30f.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20210601133124.1466307-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +15,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01.06.21 15:31, Florian Bezdeka wrote:
-> Hi!
-> 
-> The next set of changes for fixing the y2038 problem for Xenomai:
-> 
->   - clock_getres64
->   - clock_adjtime64 (only relevant for external clocks, so with limited
->     testing)
-> 
-> Once again: Patches provided by Song, fixes like style adjustments,
-> updated error handling, fixing failing tests done by me and squashed into
-> the patch that introdoced the problem.
->  
-> Best regards,
-> Florian
-> 
-> Song Chen (3):
->   y2038: cobalt/posix/clock: Adding clock_adjtime64
->   y2038: lib/cobalt/clock: dispatch clock_adjtime
->   y2038: testsuite/smokey/y2038: testcase for adjtime64
-> 
-> chensong (3):
->   y2038: cobalt/posix/clock: Adding clock_getres64
->   y2038: lib/cobalt/clock: dispatch clock_getres
->   y2038: testsuite/smokey/y2038: testcase for getres64
-> 
->  include/cobalt/uapi/syscall.h          |   2 +
->  kernel/cobalt/posix/clock.c            |  48 ++++++++++-
->  kernel/cobalt/posix/clock.h            |  12 +++
->  kernel/cobalt/posix/syscall32.c        |  14 ++++
->  kernel/cobalt/posix/syscall32.h        |   8 ++
->  lib/cobalt/clock.c                     |  10 +++
->  testsuite/smokey/y2038/syscall-tests.c | 105 +++++++++++++++++++++++++
->  7 files changed, 198 insertions(+), 1 deletion(-)
-> 
 
-Thanks, also applied to next.
+Jan Kiszka <jan.kiszka@web.de> writes:
 
-Jan
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> We need to unstall the inband stage when we entered for a fault over OOB
+> and unstalled and then migrated to inband. So far we kept the inband
+> stage stalled, causing a state corruption this way.
+>
+> Introduce an additional state to irqentry_info for this, tracking the
+> stalling state on OOB entry.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> Note: Tested only as backport to 5.10-x86 so far.
+>
+>  include/linux/entry-common.h |  3 ++-
+>  kernel/entry/common.c        | 10 +++++++---
+>  2 files changed, 9 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+> index 2a08b00632b9..782e94b88076 100644
+> --- a/include/linux/entry-common.h
+> +++ b/include/linux/entry-common.h
+> @@ -402,7 +402,8 @@ void irqentry_exit_to_user_mode(struct pt_regs *regs);
+>  enum irqentry_info {
+>  	IRQENTRY_INBAND_UNSTALLED = 0,
+>  	IRQENTRY_INBAND_STALLED,
+> -	IRQENTRY_OOB,
+> +	IRQENTRY_OOB_UNSTALLED,
+> +	IRQENTRY_OOB_STALLED,
+>  };
+>
+>  #ifndef irqentry_state
+> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+> index 5a669f87ec3f..5f2ec6dba1a4 100644
+> --- a/kernel/entry/common.c
+> +++ b/kernel/entry/common.c
+> @@ -410,7 +410,8 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+>
+>  #ifdef CONFIG_IRQ_PIPELINE
+>  	if (running_oob()) {
+> -		ret.stage_info = IRQENTRY_OOB;
+> +		ret.stage_info = test_oob_stall() ? IRQENTRY_OOB_STALLED :
+> +			IRQENTRY_OOB_UNSTALLED;
+>  		return ret;
+>  	}
+>  #endif
+> @@ -577,9 +578,12 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+>  	/*
+>  	 * If pipelining interrupts, clear the in-band stall bit if
+>  	 * irqentry_enter() raised it in order to mirror the hardware
+> -	 * state.
+> +	 * state. Also clear it when we where coming from OOB_UNSTALLED,
+> +	 * thus went through a migration that was caused by taking, e.g.,
+> +	 * a fault.
+>  	 */
+> -	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED)
+> +	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
+> +	    state.stage_info == IRQENTRY_OOB_UNSTALLED)
+>  		unstall_inband();
+>  #endif
+>  	return;
+
+The logic of your previous patch was correct, this one is
+not. IRQENTRY_OOB_UNSTALLED is useless and should not be used in this
+context. We have all the guarantees and information we need at the exit
+point above: we are running in-band, so if IRQENTRY_OOB was set on
+entry, we must have downgraded the current execution stage in the
+meantime.
+
+The stall bit for the oob stage would be almost always cleared, except
+when/if a synchronous fault is taken while the pipeline is entirely
+locked, e.g. hard_spin_lock+irqsave held then oops, which should never
+happen unless the code is doing something silly. In this case, we would
+still want the in-band stage to be unstalled on exit after the faulting
+task is demoted from a mere logic standpoint, although without much hope
+for the kernel sanity afterwards. Typically, the oob stage must not be
+stalled when raw_copy_to/from_user() is invoked. IOW, this new state is
+not conveying any valuable information.
+
+Please resend a new iteration of your first patch, dropping the redundant
+check for running_inband(), this one would be fine.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
