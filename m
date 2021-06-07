@@ -1,14 +1,8 @@
-Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
- pending inband IRQs
-References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
- <875yyrf3yo.fsf@xenomai.org>
- <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
- <87a6o2b0to.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <50f40c7f-ae8d-7ded-9dc7-91310f0d7909@siemens.com>
-Date: Mon, 7 Jun 2021 12:22:25 +0200
+Subject: Reminder: Contributions welcome, check issue list
+Message-ID: <4c33582e-0b6a-dbef-d002-8a96453a689f@siemens.com>
+Date: Mon, 7 Jun 2021 13:48:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <87a6o2b0to.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,101 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 07.06.21 09:17, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
->>>
->>> Jan Kiszka <jan.kiszka@web.de> writes:
->>>
->>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>
->>>> The correct order is hard IRQs off first, then stalling inband, see also
->>>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
->>>> do not inject it before returning to user space.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>> ---
->>>>
->>>> Fixes the RCU stalls Florian reported, at least for me.
->>>>
->>>> I'm afraid this wasn't the last regression of translating I-pipe into
->>>> dovetail..
->>>>
->>>>  include/linux/entry-common.h | 3 ++-
->>>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
->>>> index 0fb45b2d6094..00540110985e 100644
->>>> --- a/include/linux/entry-common.h
->>>> +++ b/include/linux/entry-common.h
->>>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
->>>>  #ifndef local_irq_disable_exit_to_user
->>>>  static inline void local_irq_disable_exit_to_user(void)
->>>>  {
->>>> -	local_irq_disable_full();
->>>> +	hard_cond_local_irq_disable();
->>>> +	local_irq_disable();
->>>>  }
->>>>  #endif
->>>
->>> Good spot, real issue here, just like the CPU_IDLE code deals with. The
->>> fix looks good, but maybe we could do even better.
->>>
->>> The way local_irq_disable_full() works tends to introduce this issue in
->>> a sneaky way, when the code path does not synchronize the interrupt log
->>> (exit_to_user_mode_loop may be at fault in this case, which does not
->>> traverses synchronize_pipeline()). Lack of synchronization would still
->>> hit us if some trap handler turns hard irqs off -> on -> off the same
->>> way, and we don't leave through the user exit path.
->>>
->>> Inverting the order of the actions in local_irq_disable_full() may be an
->>> option (inband_irq_disable would allow that), making sure we cannot be
->>> caught in the same issue when returning to kernel mode is another
->>> way. This needs more thought I think.
->>>
->>
->> So, always this way?
->>
->> local_irq_disable_full:
->> 	hard_local_irq_disable	
->> 	local_irq_disable
->>
->> local_irq_enable_full:
->> 	hard_local_irq_enable
->> 	local_irq_enable
->>
-> 
-> Yes.
-> 
->> Or even flip local_irq_enable_full as well?
-> 
-> Not this one, hard irqs must be on before local_irq_enable() is issued
-> otherwise we would trigger a debug assertion. The reason for such
-> assertion is that the I-pipe version of local_irq_enable() force enables
-> hard irqs on, and this is something we want to depart from because
-> whether the caller expects or not such side-effect is error-prone. For
-> this reason, inband_irq_enable() expects hard irqs on, which should be
-> the current hard irq state for the caller under normal circumstances.
-> 
->>
->> Was there ever code that required ordering local_irq_disable_full the
->> other way around?
->>
-> 
-> After review, I don't think so. The current order for
-> local_irq_disable_full() was rather determined by applying a reverse
-> sequence compared to local_irq_enable_full(). So this looks good. I need
-> to test this on the armv[7/8] side here first before merging.
-> 
+Hi all,
 
-Is there a commit somewhere that I can drop already?
+just a reminder to all who would like to give something back the Xenomai:
+
+We have a steadily growing list of issues on
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues. Specifically
+those tagged with "testing"
+(https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues?label_name%5B%5D=testing)
+do not require kernel guru level in order to give something valuable
+back to the project. If you have some free cycles, please stop by and
+have a look. When you start working on something, please assign the
+issue to you. And if you have questions, do not hesitate to ask them.
 
 Jan
+
+PS: And if you feel like something is missing, you may also augment the
+issue list!
 
 -- 
 Siemens AG, T RDA IOT
