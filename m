@@ -1,13 +1,15 @@
-Subject: Re: On update to 3.1, select() starts returning errno == EADV
-References: <e9111251-205c-1f96-5a0f-33456b576334@freyder.net>
+Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
+ pending inband IRQs
+References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
+ <875yyrf3yo.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ee25e5a5-4cbb-25d0-df96-5cd8bf9fbd8f@siemens.com>
-Date: Mon, 7 Jun 2021 07:52:22 +0200
+Message-ID: <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
+Date: Mon, 7 Jun 2021 07:53:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <e9111251-205c-1f96-5a0f-33456b576334@freyder.net>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <875yyrf3yo.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: steve freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 06.06.21 21:24, steve freyder via Xenomai wrote:
-> Hello Xenomai group,
+On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
 > 
-> We're in the process of moving from Xenomai 3.0.7/4.1.18 to
-> 3.1/4.14.85.  Testing one of our apps we found that select() was
-> returning -1 with errno == EADV.  This app was written before we knew
-> about the recommendation from Philippe contained in this message:
+> Jan Kiszka <jan.kiszka@web.de> writes:
 > 
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> The correct order is hard IRQs off first, then stalling inband, see also
+>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
+>> do not inject it before returning to user space.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> Fixes the RCU stalls Florian reported, at least for me.
+>>
+>> I'm afraid this wasn't the last regression of translating I-pipe into
+>> dovetail..
+>>
+>>  include/linux/entry-common.h | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>> index 0fb45b2d6094..00540110985e 100644
+>> --- a/include/linux/entry-common.h
+>> +++ b/include/linux/entry-common.h
+>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
+>>  #ifndef local_irq_disable_exit_to_user
+>>  static inline void local_irq_disable_exit_to_user(void)
+>>  {
+>> -	local_irq_disable_full();
+>> +	hard_cond_local_irq_disable();
+>> +	local_irq_disable();
+>>  }
+>>  #endif
 > 
-> https://xenomai.org/pipermail/xenomai/2019-August/041435.html
+> Good spot, real issue here, just like the CPU_IDLE code deals with. The
+> fix looks good, but maybe we could do even better.
 > 
+> The way local_irq_disable_full() works tends to introduce this issue in
+> a sneaky way, when the code path does not synchronize the interrupt log
+> (exit_to_user_mode_loop may be at fault in this case, which does not
+> traverses synchronize_pipeline()). Lack of synchronization would still
+> hit us if some trap handler turns hard irqs off -> on -> off the same
+> way, and we don't leave through the user exit path.
 > 
-> 
-> We're not mixing Linux/Xenomai descriptors in the select set, the fd's
-> (4 of them in this case) are all pointing to Linux FIFOs
-> (/dev/somename{1..4}), and we'll ultimately start using __STD(select)
-> like the above msg says we should (until this was found we were unaware
-> of the importance of using __STD(select)).
-> 
-> But my reason for posting is my confusion about the EADV return.  The
-> message says:
-> 
->>>> Switch from -EBADF to -EADV to notify userland that RTDM does not
->>>> manage a file descriptor, which cannot conflict with any sensible
->>>> error code the Cobalt core or any RTDM driver may return.
-> 
-> But also says:
-> 
->> We still want to receive -EBADF on wrong fildes appearing in select()
->> descriptors.
-> 
-> Taking both of those into account, I looked at the code in
-> lib/cobalt/select.c which implements the glibc fallback:
-> 
->         if (err == -EBADF || err == -EPERM || err == -ENOSYS)
->                 return __STD(select(__nfds, __readfds,
->                                     __writefds, __exceptfds, __timeout));
-> 
-> In the specific case of our app, had the above code included a check for
-> -EADV, things would operate as they did under 3.0.7.  However, the
-> statement "still want to receive -EBADF on wrong fildes appearing in
-> select" suggests that the check for -EADV shouldn't be necessary.  There
-> must be something at a lower level that is returning -EADV instead of
-> -EBADF when faced with a Linux FIFO fd, or, if -EADV is appropriate then
-> it seems adding a check for -EADV along with -EBADF, -EPERM, and -ENOSYS
-> is also appropriate if backwards compatibility is desired for select().
+> Inverting the order of the actions in local_irq_disable_full() may be an
+> option (inband_irq_disable would allow that), making sure we cannot be
+> caught in the same issue when returning to kernel mode is another
+> way. This needs more thought I think.
 > 
 
-I had a regression report on this topic internally as well, but no
-proper reproduction case. Do you have a self-contained test for us?
+So, always this way?
 
-The goal is clear: EADV should remain internal, not visible by select()
-callers (or any other service, see 5f14ea8ae6d6).
+local_irq_disable_full:
+	hard_local_irq_disable	
+	local_irq_disable
+
+local_irq_enable_full:
+	hard_local_irq_enable
+	local_irq_enable
+
+Or even flip local_irq_enable_full as well?
+
+Was there ever code that required ordering local_irq_disable_full the
+other way around?
 
 Jan
 
