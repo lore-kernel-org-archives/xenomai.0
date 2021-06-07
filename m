@@ -1,8 +1,14 @@
+Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
+ pending inband IRQs
+References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
+ <875yyrf3yo.fsf@xenomai.org>
+ <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
+ <87a6o2b0to.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [dovetail][PATCH] x86: dovetail: Fix TS flag reservation
-Message-ID: <b9298c16-0340-9189-a2a7-0fc678c84e98@siemens.com>
-Date: Mon, 7 Jun 2021 12:05:33 +0200
+Message-ID: <50f40c7f-ae8d-7ded-9dc7-91310f0d7909@siemens.com>
+Date: Mon, 7 Jun 2021 12:22:25 +0200
 MIME-Version: 1.0
+In-Reply-To: <87a6o2b0to.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,38 +20,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 07.06.21 09:17, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@web.de> writes:
+>>>
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>
+>>>> The correct order is hard IRQs off first, then stalling inband, see also
+>>>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
+>>>> do not inject it before returning to user space.
+>>>>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> ---
+>>>>
+>>>> Fixes the RCU stalls Florian reported, at least for me.
+>>>>
+>>>> I'm afraid this wasn't the last regression of translating I-pipe into
+>>>> dovetail..
+>>>>
+>>>>  include/linux/entry-common.h | 3 ++-
+>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>>>> index 0fb45b2d6094..00540110985e 100644
+>>>> --- a/include/linux/entry-common.h
+>>>> +++ b/include/linux/entry-common.h
+>>>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
+>>>>  #ifndef local_irq_disable_exit_to_user
+>>>>  static inline void local_irq_disable_exit_to_user(void)
+>>>>  {
+>>>> -	local_irq_disable_full();
+>>>> +	hard_cond_local_irq_disable();
+>>>> +	local_irq_disable();
+>>>>  }
+>>>>  #endif
+>>>
+>>> Good spot, real issue here, just like the CPU_IDLE code deals with. The
+>>> fix looks good, but maybe we could do even better.
+>>>
+>>> The way local_irq_disable_full() works tends to introduce this issue in
+>>> a sneaky way, when the code path does not synchronize the interrupt log
+>>> (exit_to_user_mode_loop may be at fault in this case, which does not
+>>> traverses synchronize_pipeline()). Lack of synchronization would still
+>>> hit us if some trap handler turns hard irqs off -> on -> off the same
+>>> way, and we don't leave through the user exit path.
+>>>
+>>> Inverting the order of the actions in local_irq_disable_full() may be an
+>>> option (inband_irq_disable would allow that), making sure we cannot be
+>>> caught in the same issue when returning to kernel mode is another
+>>> way. This needs more thought I think.
+>>>
+>>
+>> So, always this way?
+>>
+>> local_irq_disable_full:
+>> 	hard_local_irq_disable	
+>> 	local_irq_disable
+>>
+>> local_irq_enable_full:
+>> 	hard_local_irq_enable
+>> 	local_irq_enable
+>>
+> 
+> Yes.
+> 
+>> Or even flip local_irq_enable_full as well?
+> 
+> Not this one, hard irqs must be on before local_irq_enable() is issued
+> otherwise we would trigger a debug assertion. The reason for such
+> assertion is that the I-pipe version of local_irq_enable() force enables
+> hard irqs on, and this is something we want to depart from because
+> whether the caller expects or not such side-effect is error-prone. For
+> this reason, inband_irq_enable() expects hard irqs on, which should be
+> the current hard irq state for the caller under normal circumstances.
+> 
+>>
+>> Was there ever code that required ordering local_irq_disable_full the
+>> other way around?
+>>
+> 
+> After review, I don't think so. The current order for
+> local_irq_disable_full() was rather determined by applying a reverse
+> sequence compared to local_irq_enable_full(). So this looks good. I need
+> to test this on the armv[7/8] side here first before merging.
+> 
 
-We had an overlap with compat flags so that, e.g., TS_COMPAT_RESTART
-made a 32-bit standard task also a dovetail one.
+Is there a commit somewhere that I can drop already?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- arch/x86/include/asm/thread_info.h | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Jan
 
-diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-index 54e409140884..8c3e9c0c0045 100644
---- a/arch/x86/include/asm/thread_info.h
-+++ b/arch/x86/include/asm/thread_info.h
-@@ -215,10 +215,11 @@ static inline int arch_within_stack_frames(const void * const stack,
-  * have to worry about atomic accesses.
-  */
- #define TS_COMPAT		0x0002	/* 32bit syscall active (64BIT)*/
--#define TS_OOB			0x0004	/* Thread is running out-of-band */
--#define TS_DOVETAIL		0x0008  /* Dovetail notifier enabled */
--#define TS_OFFSTAGE		0x0010	/* Thread is in-flight to OOB context */
--#define TS_OOBTRAP		0x0020	/* Handling a trap from OOB context */
-+/* bits 2 and 3 reserved for compat */
-+#define TS_OOB			0x0010	/* Thread is running out-of-band */
-+#define TS_DOVETAIL		0x0020  /* Dovetail notifier enabled */
-+#define TS_OFFSTAGE		0x0040	/* Thread is in-flight to OOB context */
-+#define TS_OOBTRAP		0x0080	/* Handling a trap from OOB context */
- 
- #define _TLF_OOB		TS_OOB
- #define _TLF_DOVETAIL		TS_DOVETAIL
 -- 
-2.26.2
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
