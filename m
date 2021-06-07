@@ -1,12 +1,25 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 3/9] y2038: cobalt/posix/clock: Adding clock_settime64
-Date: Tue,  1 Jun 2021 11:43:28 +0200
-Message-Id: <20210601094334.774394-4-florian.bezdeka@siemens.com>
-In-Reply-To: <20210601094334.774394-1-florian.bezdeka@siemens.com>
-References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
+ pending inband IRQs
+References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
+ <875yyrf3yo.fsf@xenomai.org>
+ <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
+ <87a6o2b0to.fsf@xenomai.org>
+ <50f40c7f-ae8d-7ded-9dc7-91310f0d7909@siemens.com>
+ <874ke9bzde.fsf@xenomai.org>
+ <3814ce50-b6cd-04e3-587b-40197f905ef8@siemens.com>
+ <f701eccc-5407-86ec-512f-460391c80fb9@siemens.com>
+ <e9d381b2-deea-d2fa-79df-940bac1c044e@siemens.com>
+ <87k0n5af78.fsf@xenomai.org>
+ <14f3aaa0-0d59-3b10-c21e-d408a1346673@siemens.com>
+ <87eeddabpx.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a7991626-3080-7789-e003-9e74626de784@siemens.com>
+Date: Mon, 7 Jun 2021 18:35:30 +0200
 MIME-Version: 1.0
+In-Reply-To: <87eeddabpx.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,123 +28,177 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: jan.kiszka@siemens.com, chensong@tj.kylinos.cn, Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: chensong <chensong@tj.kylinos.cn>
+On 07.06.21 18:19, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 07.06.21 17:04, Philippe Gerum wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 07.06.21 15:48, Jan Kiszka wrote:
+>>>>> On 07.06.21 15:44, Jan Kiszka wrote:
+>>>>>> On 07.06.21 15:03, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>
+>>>>>>>> On 07.06.21 09:17, Philippe Gerum wrote:
+>>>>>>>>>
+>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>
+>>>>>>>>>> On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Jan Kiszka <jan.kiszka@web.de> writes:
+>>>>>>>>>>>
+>>>>>>>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>>>>>>>>
+>>>>>>>>>>>> The correct order is hard IRQs off first, then stalling inband, see also
+>>>>>>>>>>>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
+>>>>>>>>>>>> do not inject it before returning to user space.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>>>>>>>> ---
+>>>>>>>>>>>>
+>>>>>>>>>>>> Fixes the RCU stalls Florian reported, at least for me.
+>>>>>>>>>>>>
+>>>>>>>>>>>> I'm afraid this wasn't the last regression of translating I-pipe into
+>>>>>>>>>>>> dovetail..
+>>>>>>>>>>>>
+>>>>>>>>>>>>  include/linux/entry-common.h | 3 ++-
+>>>>>>>>>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>>>>>>>
+>>>>>>>>>>>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>>>>>>>>>>>> index 0fb45b2d6094..00540110985e 100644
+>>>>>>>>>>>> --- a/include/linux/entry-common.h
+>>>>>>>>>>>> +++ b/include/linux/entry-common.h
+>>>>>>>>>>>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
+>>>>>>>>>>>>  #ifndef local_irq_disable_exit_to_user
+>>>>>>>>>>>>  static inline void local_irq_disable_exit_to_user(void)
+>>>>>>>>>>>>  {
+>>>>>>>>>>>> -	local_irq_disable_full();
+>>>>>>>>>>>> +	hard_cond_local_irq_disable();
+>>>>>>>>>>>> +	local_irq_disable();
+>>>>>>>>>>>>  }
+>>>>>>>>>>>>  #endif
+>>>>>>>>>>>
+>>>>>>>>>>> Good spot, real issue here, just like the CPU_IDLE code deals with. The
+>>>>>>>>>>> fix looks good, but maybe we could do even better.
+>>>>>>>>>>>
+>>>>>>>>>>> The way local_irq_disable_full() works tends to introduce this issue in
+>>>>>>>>>>> a sneaky way, when the code path does not synchronize the interrupt log
+>>>>>>>>>>> (exit_to_user_mode_loop may be at fault in this case, which does not
+>>>>>>>>>>> traverses synchronize_pipeline()). Lack of synchronization would still
+>>>>>>>>>>> hit us if some trap handler turns hard irqs off -> on -> off the same
+>>>>>>>>>>> way, and we don't leave through the user exit path.
+>>>>>>>>>>>
+>>>>>>>>>>> Inverting the order of the actions in local_irq_disable_full() may be an
+>>>>>>>>>>> option (inband_irq_disable would allow that), making sure we cannot be
+>>>>>>>>>>> caught in the same issue when returning to kernel mode is another
+>>>>>>>>>>> way. This needs more thought I think.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> So, always this way?
+>>>>>>>>>>
+>>>>>>>>>> local_irq_disable_full:
+>>>>>>>>>> 	hard_local_irq_disable	
+>>>>>>>>>> 	local_irq_disable
+>>>>>>>>>>
+>>>>>>>>>> local_irq_enable_full:
+>>>>>>>>>> 	hard_local_irq_enable
+>>>>>>>>>> 	local_irq_enable
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Yes.
+>>>>>>>>>
+>>>>>>>>>> Or even flip local_irq_enable_full as well?
+>>>>>>>>>
+>>>>>>>>> Not this one, hard irqs must be on before local_irq_enable() is issued
+>>>>>>>>> otherwise we would trigger a debug assertion. The reason for such
+>>>>>>>>> assertion is that the I-pipe version of local_irq_enable() force enables
+>>>>>>>>> hard irqs on, and this is something we want to depart from because
+>>>>>>>>> whether the caller expects or not such side-effect is error-prone. For
+>>>>>>>>> this reason, inband_irq_enable() expects hard irqs on, which should be
+>>>>>>>>> the current hard irq state for the caller under normal circumstances.
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Was there ever code that required ordering local_irq_disable_full the
+>>>>>>>>>> other way around?
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> After review, I don't think so. The current order for
+>>>>>>>>> local_irq_disable_full() was rather determined by applying a reverse
+>>>>>>>>> sequence compared to local_irq_enable_full(). So this looks good. I need
+>>>>>>>>> to test this on the armv[7/8] side here first before merging.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Is there a commit somewhere that I can drop already?
+>>>>>>>>
+>>>>>>>
+>>>>>>> 1. These are fine with me in their latest iteration:
+>>>>>>>
+>>>>>>>   irq_pipeline: Clean up stage_info field and users
+>>>>>>>   irq_pipeline: Account for stage migration across faults
+>>>>>>>   irq_pipeline: Warn when calling irqentry_enter with oob stalled
+>>>>>>>   x86: dovetail: Fix TS flag reservation
+>>>>>>>
+>>>>>>> 2. This one should be replaced by a fix in local_irq_disable_full(),
+>>>>>>> pending some tests ongoing here:
+>>>>>>>
+>>>>>>> irq_pipeline: Prevent returning to user space with pending inband IRQs
+>>>>>>>
+>>>>>>> However, as I mentioned earlier, this may not be sufficient per se, we
+>>>>>>> may have to synchronize the in-band log when unstalling the stage on the
+>>>>>>> kernel exit path, i.e. the exit point fixed up by the "Account for stage
+>>>>>>> migration across faults" patch. This would address the following
+>>>>>>> scenario:
+>>>>>>>
+>>>>>>>         irqentry_enter on kernel context:
+>>>>>>>                        stall_inband();
+>>>>>>>                                 trap_handler();
+>>>>>>>                                         hard_local_irq_enable()
+>>>>>>>                                         hard_local_irq_disable()
+>>>>>>>                        if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
+>>>>>>>                            state.stage_info == IRQENTRY_OOB) {
+>>>>>>>                              unstall_inband();
+>>>>>>>                        	     synchronize_pipeline();
+>>>>>>
+>>>>>> Oh, unstall_inband does not synchronize? Because of
+>>>>>> hard_local_irq_disable or in general?
+>>>>>>
+>>>>>
+>>>>> Ah, found it - unstall != inband_irq_enable. Why not using the latter
+>>>>> directly?
+>>>>>
+>>>>
+>>>> ...because it's instrumented to detect hard_irqs_disabled.
+>>>>
+>>>> Can we safely sync at that point?
+>>>
+>>> Yes we may do this, because we restore the original -unstalled- state of
+>>> the in-band stage. So if we have pending IRQs, we may play them at this
+>>> point. What we may not do obviously, is creating synchronization points
+>>> where the kernel does not expect irqs.
+>>>
+>>
+>> Again: When will any reschedules that might be requested by those
+>> replayed IRQs be handled then?
+>>
+> 
+> Nowhere unless we provide a log synchronization routine dedicated to the
+> in-band kernel exit path, which would fold in the rescheduling call via
+> irqentry_exit_cond_resched(). I'll write that one.
+> 
 
-Adding a new syscall clock_settime64 which is y2038 safe
+How about simply moving the replay up, before the kernel checks for
+pending reschedules anyway? We can stall inband then again, to please
+lockdep & Co., as long as there is no hard-irq-on section before the intret.
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
-[Florian: Reword commit msg]
-Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/uapi/syscall.h   |  1 +
- kernel/cobalt/posix/clock.c     | 17 +++++++++++++++++
- kernel/cobalt/posix/clock.h     |  7 +++++++
- kernel/cobalt/posix/syscall32.c |  7 +++++++
- kernel/cobalt/posix/syscall32.h |  4 ++++
- 5 files changed, 36 insertions(+)
+Jan
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 985996339..438af30ad 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -124,6 +124,7 @@
- #define sc_cobalt_thread_setschedprio		101
- #define sc_cobalt_sem_timedwait64		102
- #define sc_cobalt_clock_gettime64		103
-+#define sc_cobalt_clock_settime64		104
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 34faf23bb..a30ed6c4b 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -219,6 +219,23 @@ COBALT_SYSCALL(clock_settime, current,
- 	return __cobalt_clock_settime(clock_id, &ts);
- }
- 
-+int __cobalt_clock_settime64(clockid_t clock_id,
-+			const struct __kernel_timespec __user *u_ts)
-+{
-+	struct timespec64 ts64;
-+
-+	if (cobalt_get_timespec64(&ts64, u_ts))
-+		return -EFAULT;
-+
-+	return __cobalt_clock_settime(clock_id, &ts64);
-+}
-+
-+COBALT_SYSCALL(clock_settime64, current,
-+	       (clockid_t clock_id, const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_clock_settime64(clock_id, u_ts);
-+}
-+
- COBALT_SYSCALL(clock_adjtime, current,
- 	       (clockid_t clock_id, struct __user_old_timex __user *u_tx))
- {
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index 639f03093..74c71c826 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -106,6 +106,9 @@ int __cobalt_clock_gettime64(clockid_t clock_id,
- int __cobalt_clock_settime(clockid_t clock_id,
- 			   const struct timespec64 *ts);
- 
-+int __cobalt_clock_settime64(clockid_t clock_id,
-+			const struct __kernel_timespec __user *u_ts);
-+
- int __cobalt_clock_adjtime(clockid_t clock_id,
- 			   struct __kernel_timex *tx);
- 
-@@ -125,6 +128,10 @@ COBALT_SYSCALL_DECL(clock_gettime64,
- COBALT_SYSCALL_DECL(clock_settime,
- 		    (clockid_t clock_id, const struct __user_old_timespec __user *u_ts));
- 
-+COBALT_SYSCALL_DECL(clock_settime64,
-+		    (clockid_t clock_id,
-+			 const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL_DECL(clock_adjtime,
- 		    (clockid_t clock_id, struct __user_old_timex __user *u_tx));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 138779011..464d7a8dd 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -191,6 +191,13 @@ COBALT_SYSCALL32emu(clock_settime, current,
- 	return __cobalt_clock_settime(clock_id, &ts);
- }
- 
-+COBALT_SYSCALL32emu(clock_settime64, current,
-+		    (clockid_t clock_id,
-+		     const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_clock_settime64(clock_id, u_ts);
-+}
-+
- COBALT_SYSCALL32emu(clock_adjtime, current,
- 		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
- {
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index a6e3aff65..4ec5ee599 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -67,6 +67,10 @@ COBALT_SYSCALL32emu_DECL(clock_settime,
- 			 (clockid_t clock_id,
- 			  const struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(clock_settime64,
-+			 (clockid_t clock_id,
-+			  const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL32emu_DECL(clock_adjtime,
- 			 (clockid_t clock_id,
- 			  struct old_timex32 __user *u_tx));
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
