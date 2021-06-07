@@ -1,23 +1,14 @@
-Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
- pending inband IRQs
-References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
- <875yyrf3yo.fsf@xenomai.org>
- <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
- <87a6o2b0to.fsf@xenomai.org>
- <50f40c7f-ae8d-7ded-9dc7-91310f0d7909@siemens.com>
- <874ke9bzde.fsf@xenomai.org>
- <3814ce50-b6cd-04e3-587b-40197f905ef8@siemens.com>
- <f701eccc-5407-86ec-512f-460391c80fb9@siemens.com>
- <e9d381b2-deea-d2fa-79df-940bac1c044e@siemens.com>
- <87mts1ag5d.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56f8a747-1d85-6058-3d2e-e53bd4b6b997@siemens.com>
-Date: Mon, 7 Jun 2021 16:52:02 +0200
-MIME-Version: 1.0
-In-Reply-To: <87mts1ag5d.fsf@xenomai.org>
+Subject: Re: [dovetail][PATCH v3 0/3] Fix state corruption on fault migration, 
+ cleanups
+References: <cover.1623046779.git.jan.kiszka@siemens.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <2c8d62b2-c712-6eae-c57e-e8c5e85e934b@siemens.com>
+Date: Mon, 7 Jun 2021 17:03:45 +0200
+In-Reply-To: <cover.1623046779.git.jan.kiszka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,169 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 07.06.21 16:44, Philippe Gerum wrote:
+On 07.06.21 08:19, Jan Kiszka via Xenomai wrote:
+> Changes in v3:
+>  - do not track oob stalling on iryentry
+>  - add check that oob is unstalled on irqentry
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Jan
 > 
->> On 07.06.21 15:48, Jan Kiszka wrote:
->>> On 07.06.21 15:44, Jan Kiszka wrote:
->>>> On 07.06.21 15:03, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> On 07.06.21 09:17, Philippe Gerum wrote:
->>>>>>>
->>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>>>
->>>>>>>> On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
->>>>>>>>>
->>>>>>>>> Jan Kiszka <jan.kiszka@web.de> writes:
->>>>>>>>>
->>>>>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>>>>>
->>>>>>>>>> The correct order is hard IRQs off first, then stalling inband, see also
->>>>>>>>>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
->>>>>>>>>> do not inject it before returning to user space.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>>>>> ---
->>>>>>>>>>
->>>>>>>>>> Fixes the RCU stalls Florian reported, at least for me.
->>>>>>>>>>
->>>>>>>>>> I'm afraid this wasn't the last regression of translating I-pipe into
->>>>>>>>>> dovetail..
->>>>>>>>>>
->>>>>>>>>>  include/linux/entry-common.h | 3 ++-
->>>>>>>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
->>>>>>>>>> index 0fb45b2d6094..00540110985e 100644
->>>>>>>>>> --- a/include/linux/entry-common.h
->>>>>>>>>> +++ b/include/linux/entry-common.h
->>>>>>>>>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
->>>>>>>>>>  #ifndef local_irq_disable_exit_to_user
->>>>>>>>>>  static inline void local_irq_disable_exit_to_user(void)
->>>>>>>>>>  {
->>>>>>>>>> -	local_irq_disable_full();
->>>>>>>>>> +	hard_cond_local_irq_disable();
->>>>>>>>>> +	local_irq_disable();
->>>>>>>>>>  }
->>>>>>>>>>  #endif
->>>>>>>>>
->>>>>>>>> Good spot, real issue here, just like the CPU_IDLE code deals with. The
->>>>>>>>> fix looks good, but maybe we could do even better.
->>>>>>>>>
->>>>>>>>> The way local_irq_disable_full() works tends to introduce this issue in
->>>>>>>>> a sneaky way, when the code path does not synchronize the interrupt log
->>>>>>>>> (exit_to_user_mode_loop may be at fault in this case, which does not
->>>>>>>>> traverses synchronize_pipeline()). Lack of synchronization would still
->>>>>>>>> hit us if some trap handler turns hard irqs off -> on -> off the same
->>>>>>>>> way, and we don't leave through the user exit path.
->>>>>>>>>
->>>>>>>>> Inverting the order of the actions in local_irq_disable_full() may be an
->>>>>>>>> option (inband_irq_disable would allow that), making sure we cannot be
->>>>>>>>> caught in the same issue when returning to kernel mode is another
->>>>>>>>> way. This needs more thought I think.
->>>>>>>>>
->>>>>>>>
->>>>>>>> So, always this way?
->>>>>>>>
->>>>>>>> local_irq_disable_full:
->>>>>>>> 	hard_local_irq_disable	
->>>>>>>> 	local_irq_disable
->>>>>>>>
->>>>>>>> local_irq_enable_full:
->>>>>>>> 	hard_local_irq_enable
->>>>>>>> 	local_irq_enable
->>>>>>>>
->>>>>>>
->>>>>>> Yes.
->>>>>>>
->>>>>>>> Or even flip local_irq_enable_full as well?
->>>>>>>
->>>>>>> Not this one, hard irqs must be on before local_irq_enable() is issued
->>>>>>> otherwise we would trigger a debug assertion. The reason for such
->>>>>>> assertion is that the I-pipe version of local_irq_enable() force enables
->>>>>>> hard irqs on, and this is something we want to depart from because
->>>>>>> whether the caller expects or not such side-effect is error-prone. For
->>>>>>> this reason, inband_irq_enable() expects hard irqs on, which should be
->>>>>>> the current hard irq state for the caller under normal circumstances.
->>>>>>>
->>>>>>>>
->>>>>>>> Was there ever code that required ordering local_irq_disable_full the
->>>>>>>> other way around?
->>>>>>>>
->>>>>>>
->>>>>>> After review, I don't think so. The current order for
->>>>>>> local_irq_disable_full() was rather determined by applying a reverse
->>>>>>> sequence compared to local_irq_enable_full(). So this looks good. I need
->>>>>>> to test this on the armv[7/8] side here first before merging.
->>>>>>>
->>>>>>
->>>>>> Is there a commit somewhere that I can drop already?
->>>>>>
->>>>>
->>>>> 1. These are fine with me in their latest iteration:
->>>>>
->>>>>   irq_pipeline: Clean up stage_info field and users
->>>>>   irq_pipeline: Account for stage migration across faults
->>>>>   irq_pipeline: Warn when calling irqentry_enter with oob stalled
->>>>>   x86: dovetail: Fix TS flag reservation
->>>>>
->>>>> 2. This one should be replaced by a fix in local_irq_disable_full(),
->>>>> pending some tests ongoing here:
->>>>>
->>>>> irq_pipeline: Prevent returning to user space with pending inband IRQs
->>>>>
->>>>> However, as I mentioned earlier, this may not be sufficient per se, we
->>>>> may have to synchronize the in-band log when unstalling the stage on the
->>>>> kernel exit path, i.e. the exit point fixed up by the "Account for stage
->>>>> migration across faults" patch. This would address the following
->>>>> scenario:
->>>>>
->>>>>         irqentry_enter on kernel context:
->>>>>                        stall_inband();
->>>>>                                 trap_handler();
->>>>>                                         hard_local_irq_enable()
->>>>>                                         hard_local_irq_disable()
->>>>>                        if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
->>>>>                            state.stage_info == IRQENTRY_OOB) {
->>>>>                              unstall_inband();
->>>>>                        	     synchronize_pipeline();
->>>>
->>>> Oh, unstall_inband does not synchronize? Because of
->>>> hard_local_irq_disable or in general?
->>>>
->>>
->>> Ah, found it - unstall != inband_irq_enable. Why not using the latter
->>> directly?
->>>
->>
->> ...because it's instrumented to detect hard_irqs_disabled.
->>
->> Can we safely sync at that point? Will that also ensure that an inband
->> rescheduling event will not be delayed? We are not running
->> irqentry_exit_cond_resched after that.
->>
+> Jan Kiszka (3):
+>   irq_pipeline: Clean up stage_info field and users
+>   irq_pipeline: Account for stage migration across faults
+>   irq_pipeline: Warn when calling irqentry_enter with oob stalled
 > 
-> We should have hit irqexit_may_preempt_schedule() and rescheduled
-> appropriately before branching to unstall_inband(). Since we cannot log
-> more IRQs in the meantime, we should not miss any rescheduling
-> opportunity.
-> 
-> [Yes, __inband_irq_enable() reschedules, but does not perform any of the
-> expected rcu tweaks, so we should not count on it in this particular
-> case].
+>  arch/x86/kernel/irq_pipeline.c |  2 +-
+>  arch/x86/mm/fault.c            |  2 +-
+>  include/linux/entry-common.h   | 11 ++++++++---
+>  kernel/entry/common.c          | 17 ++++++++++-------
+>  4 files changed, 20 insertions(+), 12 deletions(-)
 > 
 
-I don't get this argument yet: irqexit_may_preempt_schedule() runs
-before we replayed the log, no? So it cannot act on any reschedules that
-only replay the log will mark pending.
+Tested and Reported-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Jan
+I stressed my system for a few hours with the stress-ng workload that
+was triggering the complete system hang. Normally the system was dead
+after 40-50 minutes, it survived for at least a couple of hours now.
 
 -- 
 Siemens AG, T RDA IOT
