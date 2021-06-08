@@ -1,13 +1,15 @@
-MIME-Version: 1.0
+Subject: Re: problems installing Xenomai 3.1 in Ubuntu 20.04
 References: <CAB9YM8hS5tg+mK_uVs3qe8A=4NXOk-KVJq1FXrVPRG5GcFU-EQ@mail.gmail.com>
  <b212b335-7aee-acd4-c809-3dafb937eb9e@siemens.com>
-In-Reply-To: <b212b335-7aee-acd4-c809-3dafb937eb9e@siemens.com>
-From: =?UTF-8?Q?Jo=C3=A3o_Costa?= <joaocostalapin@gmail.com>
-Date: Tue, 8 Jun 2021 16:16:02 +0100
-Message-ID: <CAB9YM8i-cVW8SycKU64L3_9_miFT595WiGhtWDPXa7L5F6wOLw@mail.gmail.com>
-Subject: Re: problems installing Xenomai 3.1 in Ubuntu 20.04
+ <CAB9YM8i-cVW8SycKU64L3_9_miFT595WiGhtWDPXa7L5F6wOLw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <239c15e7-dcd4-6f97-3a8c-7e4ddf374003@siemens.com>
+Date: Tue, 8 Jun 2021 18:49:59 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAB9YM8i-cVW8SycKU64L3_9_miFT595WiGhtWDPXa7L5F6wOLw@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,102 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?Q?Jo=c3=a3o_Costa?= <joaocostalapin@gmail.com>
 Cc: xenomai@xenomai.org
 
-SSB3YXMgYWJsZSB0byBtb3ZlIGZvcndhcmQgYnV0IEkgZ290IHN0dWNrIGluIHRoaXMgZXJyb3Ig
-d2hlbiBJIHRyaWVkIHRvCmV4ZWN1dGUgdGhlIGxhdGVuY3kgdGVzdDoKCnh4eEBoeXBlcnRlc3Rz
-Oi91c3IvbGliL3hlbm9tYWkvdGVzdHN1aXRlJCAuL2xhdGVuY3kKPiAgICAwIjAwMC4wMDB8IEJV
-RyBpbiBsb3dfaW5pdCgpOiBbbWFpbl0gQ29iYWx0IGNvcmUgbm90IGVuYWJsZWQgaW4ga2VybmVs
-CgoKSSB1c2VkIHRoZSBwcmUtcGF0Y2hlZCBrZXJuZWwgWzFdIGFuZCB1c2VkIHRoZSAiaW5zdHJ1
-Y3Rpb24gc2VxdWVuY2luZyAjMSIKcHJlc2VudGVkIGJlbG93LgoKSSBhc3N1bWVkIHRoYXQgdGhl
-IGNvYmFsdCBrZXJuZWwvc3VwcG9ydCBpcyBhbHJlYWR5IGVtYmVkZGVkL3BhdGNoZWQgaW4KdGhp
-cyBwcmUtcGF0Y2hlZCB2ZXJzaW9uLiBIb3dldmVyLCBzaW5jZSB0aGUgd2lraSBwb2ludHMgdG8g
-dGhlIGxhY2sgb2YKY29iYWx0IHN1cHBvcnQgWzJdLCB0aGlzIGFzc3VtcHRpb24gbWF5IG5vdCBi
-ZSBjb3JyZWN0IGFuZC9vciBJIG1heSBiZQptaXNzaW5nIHNvbWUgc3RlcHMuCgpXaGF0IGRvZXMg
-dGhlIHByZS1wYXRjaGVkIGtlcm5lbCBpbmNsdWRlcz8KCkFzIGEgc2hvdCBpbiB0aGUgZGFyaywg
-SSBhbHNvIHRyaWVkIHRvIGVuYWJsZSB0aGUgY29iYWx0IGNvcmUgKHJ1bm5pbmcgdGhlCmluc3Ry
-dWN0aW9ucyBiZWxvdyBhZnRlciBkZWNvbXByZXNzaW5nIHRoZSBpcGlwZS14OTYqKSBidXQgZ290
-IHN0dWNrCndoZW4gY29tcGlsaW5nCmFuZCBnZW5lcmF0aW5nIHRoZSBkZWJpYW4gcGFja2FnZXMg
-KGl0IGp1c3QgZnJlZXplZCB0aGVyZSkKCiQgY2QgeGVub21haS0zLjEvc2NyaXB0cy8KPiAkIC4v
-cHJlcGFyZS1rZXJuZWwuc2gKPiAtLWxpbnV4PS9ob21lL3h4eC9pcGlwZS14ODYtaXBpcGUtY29y
-ZS01LjQuMTA1LXg4Ni00LS1hcmNoPXg4Nl82NAo+IC0tb3V0cGF0Y2g9L2hvbWUveHh4L2NvYmFs
-dC1jb3JlLTMuMS01LjQuMTA1LnBhdGNoCj4gJCBjZCB+L2lwaXBlLXg4Ni1pcGlwZS1jb3JlLTUu
-NC4xMDUteDg2LTQvCj4gJCBwYXRjaCAtcDEgPCAuLi9jb2JhbHQtY29yZS0zLjEtNS40LjEwNS5w
-YXRjaAoKCgoqSW5zdHJ1Y3Rpb24gc2VxdWVuY2luZyAjMToqCgo+ICQgd2dldAo+IGh0dHBzOi8v
-eGVub21haS5vcmcvZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL2xhdGVzdC94ZW5vbWFpLTMuMS50
-YXIuYnoyCj4gJCB0YXIgLXh2ZiB4ZW5vbWFpLTMuMS50YXIuYnoyCj4gJCB3Z2V0Cj4gaHR0cHM6
-Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL2lwaXBlLXg4Ni8tL2FyY2hpdmUvaXBpcGUtY29yZS01
-LjQuMTA1LXg4Ni00L2lwaXBlLXg4Ni1pcGlwZS1jb3JlLTUuNC4xMDUteDg2LTQudGFyLmd6Cj4g
-JCB0YXIgLXh2ZiBpcGlwZS14ODYtaXBpcGUtY29yZS01LjQuMTA1LXg4Ni00LnRhci5nego+CiQg
-Y2QgIGlwaXBlLXg4Ni1pcGlwZS1jb3JlLTUuNC4xMDUteDg2LTQvCgoKCiQgbWFrZSBvbGRjb25m
-aWcKPiAkIG1ha2UgbWVudWNvbmZpZwoKKHlvdSBtYXkgZmluZCBpbiBhdHRhY2ggdGhlIC5jb25m
-aWcgZmlsZSkKCgoKJCBzdWRvIENPTkNVUlJFTkNZX0xFVkVMPTEyIG1ha2Uta3BrZyAtLXJvb3Rj
-bWQgZmFrZXJvb3QgLS1pbml0cmQKPiAtLXJldmlzaW9uPTEuMC4wIGtlcm5lbF9pbWFnZSBrZXJu
-ZWxfaGVhZGVycwo+CihhY2NlcHRlZCB0aGUgZGVmYXVsdCBwYXJhbWV0ZXJzKQoKJCBjZCAuLgo+
-ICQgc3VkbyBkcGtnIC1pIGxpbnV4LWhlYWRlcnMtNS40LjEwNV8xLjAuMF9hbWQ2NC5kZWIKPiBs
-aW51eC1pbWFnZS01LjQuMTA1XzEuMC4wX2FtZDY0LmRlYgo+ICQgc3VkbyByZWJvb3QKPgoKCiQg
-Y2QgeGVub21haS0zLjEvCj4gJCBkZWJ1aWxkIC11cyAtdWMKPiAkIGNkIC4uCj4gJCBzdWRvIGRw
-a2cgLWkgbGlieGVub21haTFfMi45OS4wX2FtZDY0LmRlYgo+IHhlbm9tYWkta2VybmVsLXNvdXJj
-ZV8yLjk5LjBfYWxsLmRlYiBsaWJ4ZW5vbWFpLWRldl8yLjk5LjBfYW1kNjQuZGViCj4geGVub21h
-aS1ydW50aW1lXzIuOTkuMF9hbWQ2NC5kZWIKPiAkIHN1ZG8gcmVib290Cj4KCgokIGNkIC91c3Iv
-bGliL3hlbm9tYWkvdGVzdHN1aXRlLwo+ICQgLi9sYXRlbmN5Cgoqb3VwdXQ6KgoKPiB4eHhAaHlw
-ZXJ0ZXN0czovdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZSQgLi9sYXRlbmN5Cj4gICAgMCIwMDAu
-MDAwfCBCVUcgaW4gbG93X2luaXQoKTogW21haW5dIENvYmFsdCBjb3JlIG5vdCBlbmFibGVkIGlu
-IGtlcm5lbAoKCgo+CipHUlVCIEJPT1QgT1BUSU9OUyoKCipVYnVudHUsIHdpdGggTGludXggNS40
-LjEwNQoKVWJ1bnR1LCB3aXRoIExpbnV4IDUuNC4xMDUgKHJlY292ZXJ5IG1vZGUpCgpVYnVudHUs
-IHdpdGggTGludXggNS40LjAtNzQtZ2VuZXJpYwoKVWJ1bnR1LCB3aXRoIExpbnV4IDUuNC4wLTc0
-LWdlbmVyaWMgKHJlY292ZXJ5IG1vZGUpCgoKKkNPTU1BTkRTIGFuZCBPVVBVVCoKCiQKKnVuYW1l
-IC1hKkxpbnV4IGh5cGVydGVzdHMgNS40LjEwNSAjMSBTTVAgUFJFRU1QVCBNb24gSnVuIDcgMTU6
-Mzk6MDAgVVRDCjIwMjEgeDg2XzY0IHg4Nl82NCB4ODZfNjQgR05VL0xpbnV4CgoKJCogc3VkbyBk
-bWVzZyB8IGdyZXAgLWkgeGVub21haSoKJCogc3VkbyBkbWVzZyB8IGdyZXAgLWkgY29iYWx0KgoK
-Ym90aCByZXR1cm4gZW1wdHkKCgpbMV0KaHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL2lw
-aXBlLXg4Ni8tL2FyY2hpdmUvaXBpcGUtY29yZS01LjQuMTA1LXg4Ni00L2lwaXBlLXg4Ni1pcGlw
-ZS1jb3JlLTUuNC4xMDUteDg2LTQudGFyLmd6ClsyXQpodHRwczovL3NvdXJjZS5kZW54LmRlL1hl
-bm9tYWkveGVub21haS8tL3dpa2lzL1Ryb3VibGVzaG9vdGluZyN1c2VyLWNvbnRlbnQtY29iYWx0
-LWNvcmUtbm90LWVuYWJsZWQtaW4ta2VybmVsCgoKSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVt
-ZW5zLmNvbT4gZXNjcmV2ZXUgbm8gZGlhIHRlcsOnYSwgMS8wNi8yMDIxIMOgKHMpCjExOjAxOgoK
-PiBPbiAwMS4wNi4yMSAxMDozMiwgSm/Do28gQ29zdGEgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gPiBI
-ZWxsbywKPiA+Cj4gPiBJIGFtIGhhdmluZyBzZXJpb3VzIGRpZmZpY3VsdGllcyBpbiBnZXR0aW5n
-IFhlbm9tYWkgMy4xIHRvIHJ1biBpbiBhCj4gVWJ1bnR1Cj4gPiAyMC4wNC4yIExUUyBbMV0KPiA+
-IEkgc2hvdWxkIGJlIGRvaW5nIHNvbWV0aGluZyB3cm9uZyBidXQgSSBkb24ndCBrbm93IHdoYXQu
-IEhvcGVmdWxseSwKPiBzb21lb25lCj4gPiBjYW4gaGVscCBtZSBpZGVudGlmeSB3aGF0IGlzIHdy
-b25nLgo+ID4KPiA+IEkgd2FzIGdldHRpbmcgYW4gZXJyb3IgdGhhdCBhcHBhcmVudGx5IHdhcyBz
-b2x2ZWQgKGFub3RoZXIgZW1haWwgdGhyZWFkCj4gaW4KPiA+IHRoaXMgbWFpbGluZyBsaXN0KSBi
-dXQgYWZ0ZXIgc29tZSBvdGhlciBlcnJvcnMgc2hvd2VkIHVwLiBJIHdlbnQgYmFjayB0bwo+ID4g
-dGhlIGJlZ2lubmluZyBhbmQgdHJpZWQgdG86Cj4gPiAtIHVzZSBrZXJuZWwvaXBpcGUgdmVyc2lv
-biA1LjQuNzcgKC5jb25maWcgZmlsZSBpbiBhdHRhY2gpCj4KPiBMYXRlc3QgcmVsZWFzZSBpcyBp
-cGlwZS1jb3JlLTUuNC4xMDUteDg2LTQsIGluY2x1ZGluZyBhIGNvdXBsZSBvZiBJLXBpcGUKPiBm
-aXhlcy4gRG9uJ3QgdXNlIG91dGRhdGVkIHZlcnNpb25zLgo+Cj4gPiAtIHVzZSBrZXJuZWwvaXBp
-cGUgdmVyc2lvbiA0LjE5LjExNCAgKGZvcmdvdCB0byBzYXZlIHRoZSAuY29uZmlnIGZpbGUpCj4g
-PiAtIHByZXBhdGNoZWQga2VybmVsIHZlcnNpb24gNS40Ljc3ICAoLmNvbmZpZyBmaWxlIGluIGF0
-dGFjaCkgWzJdCj4gPgo+ID4gTm93IEkgYW0gYWx3YXlzIGdldHRpbmcgdGhpcyAqZXJyb3IgbWVz
-c2FnZToqCj4gPgo+ID4gbWFrZVsxXTogTGVhdmluZyBkaXJlY3RvcnkgJy9ob21lL3h4eC9saW51
-eC01LjQuNzcnCj4gPgo+ID4gbWFrZTogKioqIFtkZWJpYW4vcnVsZXNldC90YXJnZXRzL2NvbW1v
-bi5tazozMDE6Cj4gZGViaWFuL3N0YW1wL2J1aWxkL2tlcm5lbF0KPiA+IEVycm9yIDIKPiA+Cj4g
-Pgo+ID4gSW4gdGhlICpvdXRwdXQqIHNlbnQgdG8gdGhlICpjb25zb2xlKiBpdCBpcyBwb3NzaWJs
-ZSB0byBpZGVudGlmeSB0aGUKPiA+IGZvbGxvd2luZyAqZXJyb3JzKjoKPiA+Cj4gPiAtIHRvbyBt
-YW55IGFyZ3VtZW50cyB0byBmdW5jdGlvbiAgJ3N3aXRjaF9mcHVfZmluaXNoJwo+ID4KPiA+IC0g
-Y29uZmxpY3RpbmcgdHlwZXMgZm9yIOKAmHN5czMyX3B1dF90aW1leOKAmSAgMTQzIHwKPiA+IEVY
-UE9SVF9TWU1CT0xfR1BMKHN5czMyX3B1dF90aW1leCk7Cj4gPgo+Cj4gQ2Fubm90IHJlcHJvZHVj
-ZSB3aXRoIHlvdXIgY29uZmlnIHlldCBvdmVyIGxhdGVzdCBpcGlwZS01LjQgYW5kIFhlbm9tYWkK
-PiAzLjEuMS4gWW91IG11c3QgYmUgYnVpbGRpbmcgc29tZXRoaW5nIGluY29uc2lzdGVudC4KPgo+
-ID4gKkluIGF0dGFjaCB5b3UgbXkgZmluZCBhIC5wZGYgZmlsZSB3aXRoKjoKPiA+IC0gdGhlIHNw
-ZWNpZmljYXRpb25zIG9mIHRoZSBtYWNoaW5lL09TIEkgYW0gdXNpbmcKPiA+IC0gdGhlIHNlcXVl
-bmNlIG9mIGNvbW1hbmRzIEkgdXNlZCAobWF5YmUgSSBhbSBtaXNzaW5nIHNvbWV0aGluZykKPiA+
-IC0gdGhlIG9wdGlvbnMgSSBjaG9zZQo+ID4gLSB0aGUgZXJyb3JzCj4gPgo+Cj4gUGxlYXNlIHNo
-YXJlIGlubGluZSwgY29weSZwYXN0ZWQgZnJvbSB5b3VyIHNoZWxsIChubyBzY3JlZW5zaG90cyBl
-dGMuKS4KPiBNYWtlcyByZXZpZXdpbmcgYW5kIGNvbW1lbnRpbmcgbXVjaCBlYXNpZXIuIEFuZCBt
-YWtlIHN1cmUgdGhhdCB5b3UKPiBpbmNsdWRlIGl0IGNvbXBsZXRlbHkgaWYgeW91IGFyZSB1bnN1
-cmUgYWJvdXQgdGhlIGFjdHVhbCBlcnJvciBtZXNzYWdlcy4KPgo+IEluIGdlbmVyYWwsIEkgd291
-bGQgcmVjb21tZW5kIHN0YXJ0aW5nIHdpdGggdGhlIGJhc2ljIHN0ZXBzLCBub3Qgd2l0aAo+IGdl
-bmVyYXRpbmcgZGViaWFuIHBhY2thZ2VzIGJ1dCByYXRoZXIgYnVpbGRpbmcgdGhlIHZhbmlsbGEK
-PiBJLXBpcGUvWGVub21haSB0cmVlcyBtYW51YWxseS4gVGhlbiwgd2l0aCBhIHdvcmtpbmcgcmVm
-ZXJlbmNlIGZvciB5b3VyCj4gdGFyZ2V0IE9TLCB5b3UgY2FuIGxvb2sgaW50byB0aGUgcGFja2Fn
-aW5nIGFzIHdlbGwuCj4KPiBKYW4KPgo+IC0tCj4gU2llbWVucyBBRywgVCBSREEgSU9UCj4gQ29y
-cG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cj4KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogLmNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
-MjMxNTQxIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNjA4L2YyMDBmMDZlL2F0dGFjaG1l
-bnQub2JqPgo=
+On 08.06.21 17:16, João Costa wrote:
+> I was able to move forward but I got stuck in this error when I tried to
+> execute the latency test:
+> 
+>     xxx@hypertests:/usr/lib/xenomai/testsuite$ ./latency
+>        0"000.000| BUG in low_init(): [main] Cobalt core not enabled in
+>     kernel
+> 
+> 
+> I used the pre-patched kernel [1] and used the "instruction sequencing
+> #1" presented below.
+> 
+> I assumed that the cobalt kernel/support is already embedded/patched in
+> this pre-patched version. However, since the wiki points to the lack of
+> cobalt support [2], this assumption may not be correct and/or I may be
+> missing some steps.
+> 
+> What does the pre-patched kernel includes?  
+> 
+
+Die Wiki is actually right: You do need to run the prepare script. If
+the target kernel happens to already contain the I-pipe (or, soon,
+dovetail) patch, that part of the preparation is automatically skipped.
+
+> As a shot in the dark, I also tried to enable the cobalt core (running
+> the instructions below after decompressing the ipipe-x96*) but got stuck
+> when compiling and generating the debian packages (it just freezed there) 
+> 
+>     $ cd xenomai-3.1/scripts/
+>     $ ./prepare-kernel.sh
+>     --linux=/home/xxx/ipipe-x86-ipipe-core-5.4.105-x86-4--arch=x86_64
+>     --outpatch=/home/xxx/cobalt-core-3.1-5.4.105.patch
+>     $ cd ~/ipipe-x86-ipipe-core-5.4.105-x86-4/
+>     $ patch -p1 < ../cobalt-core-3.1-5.4.105.patch
+> 
+
+You can just run "./prepare-kernel.sh --linux=... --arch=...", no need
+to route out the cobalt patch first. Just like the wiki does.
+
+If you have improvement suggestions for the wiki, please fork the
+project (https://source.denx.de/Xenomai/xenomai/-/wikis/git_access) and
+submit patches against.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
