@@ -1,15 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] cobalt/thread: get rid of dynamic allocation for
+Subject: Re: [PATCH] cobalt/thread: get rid of dynamic allocation for
  xnthread_signal
-Date: Tue, 8 Jun 2021 09:13:41 +0000
-Message-ID: <BN9PR11MB52273EEB710CED0BA5947BF6F2379@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210608070436.1198-1-hongzhan.chen@intel.com>
  <768ca079-fefa-e11c-2271-7c5340be69c1@siemens.com>
-In-Reply-To: <768ca079-fefa-e11c-2271-7c5340be69c1@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN9PR11MB52273EEB710CED0BA5947BF6F2379@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f4f08ab3-4bbc-07e7-f3b8-57642a3ec281@siemens.com>
+Date: Tue, 8 Jun 2021 12:03:12 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB52273EEB710CED0BA5947BF6F2379@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,120 +19,201 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pk9uIDA4LjA2LjIxIDA5OjA0LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4g
-QWRkIG9uZSBvciBtb3JlICJzaWduYWwgc2xvdHMiIHBlciBwb3NzaWJsZSBjYXVzZSBvZiBpbi1i
-YW5kIHNpZ25hbA0KPj4gaW50byBzdHJ1Y3QgeG50aHJlYWQgdG8gZ2V0IHJpZCBvZiBkeW5hbWlj
-IGFsbG9jYXRpb24uDQo+PiANCj4+IEZvciBTSUdERUJVRywgZXhjZXB0IFNJR0RFQlVHX1dBVENI
-RE9HIGFsbCBvdGhlciBTSUdERUJVR18qIGNhdXNlDQo+PiBpbmNsdWRpbmcgU0lHREVCVUdfTUlH
-UkFURV9TSUdOQUwsIFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTCwNCj4+IFNJR0RFQlVHX01JR1JB
-VEVfRkFVTFQsIFNJR0RFQlVHX01JR1JBVEVfUFJJT0lOViwgU0lHREVCVUdfTk9NTE9DSywNCj4+
-IFNJR0RFQlVHX1JFU0NOVF9JTUJBTEFOQ0UsIFNJR0RFQlVHX0xPQ0tfQlJFQUssIFNJR0RFQlVH
-X01VVEVYX1NMRUVQDQo+PiBhcmUgc3luY2hyb25vdXMgYW5kIG11dHVhbGx5IGV4Y2x1c2l2ZSBk
-dWUgdG8gdGhlIG9vYi0+aW4tYmFuZCB0cmFuc2l0aW9uLg0KPj4gQnV0IFNJR0RFQlVHX1dBVENI
-RE9HIGlzIHRyaWdnZXJlZCBhc3luY2hyb25vdXNseSBieSB0aGUgb29iIHRpbWVyLg0KPj4gDQo+
-PiBBbGwgU0lHU0hBRE9XXyogZXZlbnRzIG5lZWQgdGhlaXIgb3duIHNsb3Q6IFNJR1NIQURPV19B
-Q1RJT05fSEFSREVOIGFuZA0KPj4gU0lHU0hBRE9XX0FDVElPTl9IT01FIGNhbiBiZSByYWlzZWQg
-YnkgcmVtb3RlIHRocmVhZHMgYXN5bmNocm9ub3VzbHkgdG8NCj4+IHRoZSB0YXJnZXQgdGhyZWFk
-LiBTSUdTSEFET1dfQUNUSU9OX0JBQ0tUUkFDRSBjb21lcyBpbiBhZGRpdGlvbiB0bw0KPj4gU0lH
-REVCVUdfTUlHUkFURV8qLiBGb3IgdGhlIGxhdHRlciByZWFzb24sIFNJR1NIQURPV19BQ1RJT05f
-QkFDS1RSQUNFDQo+PiBjYW5ub3QgcGlsZSB1cCB0aG91Z2guDQo+PiANCj4+IEluY2x1ZGluZyBT
-SUdURVJNLCB3ZSBoYXZlIHRvdGFsbHkgNiBzbG90cy4NCj4+IA0KPg0KPlBsZWFzZSByZWJhc2Ug
-b24gdG9wIG9mIG5leHQsIHJhdGhlciB0aGFuIHdpcC9kb3ZldGFpbC4gSXQgd2lsbCByZXBsYWNl
-DQo+dGhlIHJlbGF0ZWQgcGF0Y2ggaW4gd2lwL2RvdmV0YWlsLg0KPg0KPj4gU2lnbmVkLW9mZi1i
-eTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiANCj4+IGRpZmYg
-LS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvdGhyZWFkLmggYi9pbmNsdWRlL2NvYmFsdC9r
-ZXJuZWwvdGhyZWFkLmgNCj4+IGluZGV4IGJjODNjYzU1Ni4uMjk3OTVmNzljIDEwMDY0NA0KPj4g
-LS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3RocmVhZC5oDQo+PiArKysgYi9pbmNsdWRlL2Nv
-YmFsdC9rZXJuZWwvdGhyZWFkLmgNCj4+IEBAIC00Miw2ICs0Miw3IEBADQo+PiAgICovDQo+PiAg
-I2RlZmluZSBYTlRIUkVBRF9CTE9DS19CSVRTICAgKFhOU1VTUHxYTlBFTkR8WE5ERUxBWXxYTkRP
-Uk1BTlR8WE5SRUxBWHxYTkhFTER8WE5EQkdTVE9QKQ0KPj4gICNkZWZpbmUgWE5USFJFQURfTU9E
-RV9CSVRTICAgIChYTlJSQnxYTldBUk58WE5UUkFQTEIpDQo+PiArI2RlZmluZSBYTlRIUkVBRF9T
-SUdOQUxTX05VTSAgNg0KPj4gIA0KPj4gIHN0cnVjdCB4bnRocmVhZDsNCj4+ICBzdHJ1Y3QgeG5z
-Y2hlZDsNCj4+IEBAIC01MSw2ICs1MiwxMyBAQCBzdHJ1Y3QgeG5zY2hlZF90cHNsb3Q7DQo+PiAg
-c3RydWN0IHhudGhyZWFkX3BlcnNvbmFsaXR5Ow0KPj4gIHN0cnVjdCBjb21wbGV0aW9uOw0KPj4g
-IA0KPj4gK3N0cnVjdCBsb3N0YWdlX3NpZ25hbCB7DQo+PiArCXN0cnVjdCBwaXBlbGluZV9pbmJh
-bmRfd29yayBpbmJhbmRfd29yazsgLyogTXVzdCBiZSBmaXJzdC4gKi8NCj4+ICsJc3RydWN0IHRh
-c2tfc3RydWN0ICp0YXNrOw0KPj4gKwlpbnQgc2lnbm8sIHNpZ3ZhbDsNCj4+ICsJc3RydWN0IGxv
-c3RhZ2Vfc2lnbmFsICpzZWxmOyAvKiBSZXZpc2l0OiBJLXBpcGUgcmVxdWlyZW1lbnQgKi8NCj4+
-ICt9Ow0KPj4gKw0KPj4gIHN0cnVjdCB4bnRocmVhZF9pbml0X2F0dHIgew0KPj4gIAlzdHJ1Y3Qg
-eG50aHJlYWRfcGVyc29uYWxpdHkgKnBlcnNvbmFsaXR5Ow0KPj4gIAljcHVtYXNrX3QgYWZmaW5p
-dHk7DQo+PiBAQCAtMjA1LDYgKzIxMywyOSBAQCBzdHJ1Y3QgeG50aHJlYWQgew0KPj4gIAljb25z
-dCBjaGFyICpleGVfcGF0aDsJLyogRXhlY3V0YWJsZSBwYXRoICovDQo+PiAgCXUzMiBwcm9naGFz
-aDsJCS8qIEhhc2ggdmFsdWUgZm9yIGV4ZV9wYXRoICovDQo+PiAgI2VuZGlmDQo+PiArCS8qDQo+
-PiArCSAqIEVhY2ggc2xvdCBoYW5kbGUgZGlmZmVyZW50IGNhdXNlIG9mIHNpZ25hbA0KPj4gKwkg
-KiBzbG90IDA6DQo+PiArCSAqIAlTSUdERUJVR19NSUdSQVRFX1NJR05BTA0KPj4gKwkgKiAJU0lH
-REVCVUdfTUlHUkFURV9TWVNDQUxMDQo+PiArCSAqIAlTSUdERUJVR19NSUdSQVRFX0ZBVUxUDQo+
-PiArCSAqIAlTSUdERUJVR19NSUdSQVRFX1BSSU9JTlYNCj4+ICsJICogCVNJR0RFQlVHX05PTUxP
-Q0sNCj4+ICsJICogCVNJR0RFQlVHX1JFU0NOVF9JTUJBTEFOQ0UNCj4+ICsJICogCVNJR0RFQlVH
-X0xPQ0tfQlJFQUsNCj4+ICsJICogCVNJR0RFQlVHX01VVEVYX1NMRUVQDQo+PiArCSAqIHNsb3Qg
-MToNCj4+ICsJICogCVNJR0RFQlVHX1dBVENIRE9HDQo+DQo+SSdtIHN0aWxsIGEgYml0IHVuZGVj
-aWRlZCBpZiB3ZSBzaG91bGQgc2VyaWFsaXplIHdhdGNoZG9nIGV2ZW50cyB3aXRoDQo+b3RoZXIg
-U0lHREVCVUcgcmVhc29ucywgYnV0IHRoYXQgY291bGQgYWxzbyBiZSBkb25lIG9uIHRvcCBsYXRl
-ciBvbiBhcw0KPml0IGFwcGVhcnMgdG8gbWUgbm93IGFzIHNsaWdodGx5IG1vcmUgY29tcGxpY2F0
-ZWQuDQo+DQo+PiArCSAqIHNsb3QgMjoNCj4+ICsJICogCVNJR1NIQURPV19BQ1RJT05fSEFSREVO
-DQo+PiArCSAqIHNsb3QgMzoNCj4+ICsJICogCVNJR1NIQURPV19BQ1RJT05fQkFDS1RSQUNFDQo+
-PiArCSAqIHNsb3QgNDoNCj4+ICsJICogCVNJR1NIQURPV19BQ1RJT05fSE9NRQ0KPj4gKwkgKiBz
-bG90IDU6DQo+PiArCSAqIAlTSUdURVJNDQo+PiArCSAqLw0KPg0KPkNvdWxkIHdlIGFsc28gZGVm
-aW5lIG5hbWVzIGZvciB0aGUgc2xvdHM/DQo+DQo+PiArCXN0cnVjdCBsb3N0YWdlX3NpZ25hbCBz
-aWdhcnJheVtYTlRIUkVBRF9TSUdOQUxTX05VTV07DQo+PiAgfTsNCj4+ICANCj4+ICBzdGF0aWMg
-aW5saW5lIGludCB4bnRocmVhZF9nZXRfc3RhdGUoY29uc3Qgc3RydWN0IHhudGhyZWFkICp0aHJl
-YWQpDQo+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC90aHJlYWQuYyBiL2tlcm5lbC9jb2Jh
-bHQvdGhyZWFkLmMNCj4+IGluZGV4IDljNzc1M2FjNC4uZWJiNzk4YjU4IDEwMDY0NA0KPj4gLS0t
-IGEva2VybmVsL2NvYmFsdC90aHJlYWQuYw0KPj4gKysrIGIva2VybmVsL2NvYmFsdC90aHJlYWQu
-Yw0KPj4gQEAgLTIwNjUsMTMgKzIwNjUsNiBAQCB2b2lkIHhudGhyZWFkX3JlbGF4KGludCBub3Rp
-ZnksIGludCByZWFzb24pDQo+PiAgfQ0KPj4gIEVYUE9SVF9TWU1CT0xfR1BMKHhudGhyZWFkX3Jl
-bGF4KTsNCj4+ICANCj4+IC1zdHJ1Y3QgbG9zdGFnZV9zaWduYWwgew0KPj4gLQlzdHJ1Y3QgcGlw
-ZWxpbmVfaW5iYW5kX3dvcmsgaW5iYW5kX3dvcms7IC8qIE11c3QgYmUgZmlyc3QuICovDQo+PiAt
-CXN0cnVjdCB0YXNrX3N0cnVjdCAqdGFzazsNCj4+IC0JaW50IHNpZ25vLCBzaWd2YWw7DQo+PiAt
-CXN0cnVjdCBsb3N0YWdlX3NpZ25hbCAqc2VsZjsgLyogUmV2aXNpdDogSS1waXBlIHJlcXVpcmVt
-ZW50ICovDQo+PiAtfTsNCj4+IC0NCj4+ICBzdGF0aWMgaW5saW5lIHZvaWQgZG9fa3RocmVhZF9z
-aWduYWwoc3RydWN0IHRhc2tfc3RydWN0ICpwLA0KPj4gIAkJCQkgICAgIHN0cnVjdCB4bnRocmVh
-ZCAqdGhyZWFkLA0KPj4gIAkJCQkgICAgIHN0cnVjdCBsb3N0YWdlX3NpZ25hbCAqcnEpDQo+PiBA
-QCAtMjExMSw3ICsyMTA0LDcgQEAgc3RhdGljIHZvaWQgbG9zdGFnZV90YXNrX3NpZ25hbChzdHJ1
-Y3QgcGlwZWxpbmVfaW5iYW5kX3dvcmsgKmluYmFuZF93b3JrKQ0KPj4gIAl9IGVsc2UNCj4+ICAJ
-CXNlbmRfc2lnKHNpZ25vLCBwLCAxKTsNCj4+ICBvdXQ6DQo+PiAtCXhuZnJlZShycS0+c2VsZik7
-DQo+PiArCW1lbXNldChycS0+c2VsZiwgMCwgc2l6ZW9mKCpycSkpOw0KPj4gIH0NCj4+ICANCj4+
-ICBzdGF0aWMgaW50IGZvcmNlX3dha2V1cChzdHJ1Y3QgeG50aHJlYWQgKnRocmVhZCkgLyogbmts
-b2NrIGxvY2tlZCwgaXJxcyBvZmYgKi8NCj4+IEBAIC0yMjczLDE0ICsyMjY2LDU2IEBAIHZvaWQg
-eG50aHJlYWRfZGVtb3RlKHN0cnVjdCB4bnRocmVhZCAqdGhyZWFkKQ0KPj4gIH0NCj4+ICBFWFBP
-UlRfU1lNQk9MX0dQTCh4bnRocmVhZF9kZW1vdGUpOw0KPj4gIA0KPj4gK2ludCBnZXRfc2xvdF9p
-bmRleF9mcm9tX3NpZyhpbnQgc2lnLCBpbnQgYXJnKQ0KPj4gK3sNCj4+ICsJaW50IGFjdGlvbjsN
-Cj4+ICsNCj4+ICsJc3dpdGNoIChzaWcpIHsNCj4+ICsJY2FzZSBTSUdERUJVRzoNCj4+ICsJCXN3
-aXRjaCAoYXJnKSB7DQo+PiArCQljYXNlIFNJR0RFQlVHX1dBVENIRE9HOg0KPj4gKwkJCXJldHVy
-biAxOw0KPj4gKwkJY2FzZSBTSUdERUJVR19NSUdSQVRFX1NJR05BTDoNCj4+ICsJCWNhc2UgU0lH
-REVCVUdfTUlHUkFURV9TWVNDQUxMOg0KPj4gKwkJY2FzZSBTSUdERUJVR19NSUdSQVRFX0ZBVUxU
-Og0KPj4gKwkJY2FzZSBTSUdERUJVR19NSUdSQVRFX1BSSU9JTlY6DQo+PiArCQljYXNlIFNJR0RF
-QlVHX05PTUxPQ0s6DQo+PiArCQljYXNlIFNJR0RFQlVHX1JFU0NOVF9JTUJBTEFOQ0U6DQo+PiAr
-CQljYXNlIFNJR0RFQlVHX0xPQ0tfQlJFQUs6DQo+PiArCQljYXNlIFNJR0RFQlVHX01VVEVYX1NM
-RUVQOg0KPj4gKwkJCXJldHVybiAwOw0KPj4gKwkJfQ0KPj4gKwkJYnJlYWs7DQo+PiArCWNhc2Ug
-U0lHU0hBRE9XOg0KPj4gKwkJYWN0aW9uID0gc2lnc2hhZG93X2FjdGlvbihhcmcpOw0KPj4gKwkJ
-c3dpdGNoIChhY3Rpb24pIHsNCj4+ICsJCWNhc2UgU0lHU0hBRE9XX0FDVElPTl9IQVJERU46DQo+
-PiArCQkJcmV0dXJuIDI7DQo+PiArCQljYXNlIFNJR1NIQURPV19BQ1RJT05fQkFDS1RSQUNFOg0K
-Pj4gKwkJCXJldHVybiAzOw0KPj4gKwkJY2FzZSBTSUdTSEFET1dfQUNUSU9OX0hPTUU6DQo+PiAr
-CQkJcmV0dXJuIDQ7DQo+PiArCQl9DQo+PiArCQlicmVhazsNCj4+ICsJY2FzZSBTSUdURVJNOg0K
-Pj4gKwkJcmV0dXJuIDU7DQo+PiArCX0NCj4+ICsNCj4+ICsJcmV0dXJuIC0xOw0KPj4gK30NCj4+
-ICsNCj4+ICB2b2lkIHhudGhyZWFkX3NpZ25hbChzdHJ1Y3QgeG50aHJlYWQgKnRocmVhZCwgaW50
-IHNpZywgaW50IGFyZykNCj4+ICB7DQo+PiAgCXN0cnVjdCBsb3N0YWdlX3NpZ25hbCAqc2lnd29y
-azsNCj4+ICsJaW50IHNsb3Q7DQo+PiArDQo+PiArCXNsb3QgPSBnZXRfc2xvdF9pbmRleF9mcm9t
-X3NpZyhzaWcsIGFyZyk7DQo+PiAgDQo+PiAtCXNpZ3dvcmsgPSB4bm1hbGxvYyhzaXplb2YoKnNp
-Z3dvcmspKTsNCj4+IC0JaWYgKFdBUk5fT04oc2lnd29yayA9PSBOVUxMKSkNCj4+ICsJaWYgKHNs
-b3QgPCAwIHx8IHNsb3QgPj0gWE5USFJFQURfU0lHTkFMU19OVU0pDQo+PiAgCQlyZXR1cm47DQo+
-DQo+U2hvdWxkIGtlZXAgdGhlIHdhcm5pbmcgb24gZXJyb3JzLiBBbmQgPj0gWE5USFJFQURfU0lH
-TkFMU19OVU0gY2Fubm90DQo+aGFwcGVuIChvdmVyLWRlZmVuc2l2ZSBwcm9ncmFtbWluZykuDQo+
-DQo+PiAgDQo+PiArCXNpZ3dvcmsgPSAmdGhyZWFkLT5zaWdhcnJheVtzbG90XTsNCj4+ICsNCj4N
-Cj5Eb2VzIHRoaXMgYXV0b21hdGljYWxseSBoYW5kbGUgdGhlIGNhc2Ugb2YgZHVwbGljYXRlIHN1
-Ym1pc3Npb25zIG9uIHRoZQ0KPnNhbWUgc2xvdD8NCg0KTm8sIGl0IGNhbiBub3QuICBJZiB0aGVy
-ZSBpcyBkdXBsaWNhdGUgc3VibWlzc2lvbnMgb24gdGhlIHNhbWUgc2xvdCAsIHdlIGhhdmUgdG8g
-DQpjcmVhdGUgYSBxdWV1ZSB0byBoYW5kbGUgdGhlbSBmb3IgZWFjaCBzbG90LiBCdXQgYWNjb3Jk
-aW5nIHRvICIgU0lHU0hBRE9XKFNJR1dJTkNIKSBhbmQgU0lHREVCVUcoU0lHWENQVSkgYXJlDQog
-c3RhbmRhcmQgbm9uLXF1ZXVlYWJsZSBzaWduYWxzIHNvIHdlIHNob3VsZCBvbmx5IG5lZWQgYSBz
-aW5nbGUgc2xvdCBwZXIgc2lnbmFsIGNhdXNlLiIgZGVzY3JpYmVkIGJ5IFBoaWxpcHBlLA0KdGhl
-eSBzaG91bGQgYmUgbm9uLXF1ZXVlYWJsZSBzaWduYWxzPyBQbGVhc2UgY29ycmVjdCBtZSBpZiAg
-SSBhbSB3cm9uZy4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo+DQo+PiAgCXNpZ3dvcmst
-PmluYmFuZF93b3JrID0gKHN0cnVjdCBwaXBlbGluZV9pbmJhbmRfd29yaykNCj4+ICAJCQlQSVBF
-TElORV9JTkJBTkRfV09SS19JTklUSUFMSVpFUigqc2lnd29yaywNCj4+ICAJCQkJCWxvc3RhZ2Vf
-dGFza19zaWduYWwpOw0KPj4gDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEg
-SU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg==
+On 08.06.21 11:13, Chen, Hongzhan wrote:
+>> On 08.06.21 09:04, Hongzhan Chen via Xenomai wrote:
+>>> Add one or more "signal slots" per possible cause of in-band signal
+>>> into struct xnthread to get rid of dynamic allocation.
+>>>
+>>> For SIGDEBUG, except SIGDEBUG_WATCHDOG all other SIGDEBUG_* cause
+>>> including SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
+>>> SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_NOMLOCK,
+>>> SIGDEBUG_RESCNT_IMBALANCE, SIGDEBUG_LOCK_BREAK, SIGDEBUG_MUTEX_SLEEP
+>>> are synchronous and mutually exclusive due to the oob->in-band transition.
+>>> But SIGDEBUG_WATCHDOG is triggered asynchronously by the oob timer.
+>>>
+>>> All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
+>>> SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
+>>> the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
+>>> SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
+>>> cannot pile up though.
+>>>
+>>> Including SIGTERM, we have totally 6 slots.
+>>>
+>>
+>> Please rebase on top of next, rather than wip/dovetail. It will replace
+>> the related patch in wip/dovetail.
+>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>
+>>> diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+>>> index bc83cc556..29795f79c 100644
+>>> --- a/include/cobalt/kernel/thread.h
+>>> +++ b/include/cobalt/kernel/thread.h
+>>> @@ -42,6 +42,7 @@
+>>>   */
+>>>  #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD|XNDBGSTOP)
+>>>  #define XNTHREAD_MODE_BITS    (XNRRB|XNWARN|XNTRAPLB)
+>>> +#define XNTHREAD_SIGNALS_NUM  6
+>>>  
+>>>  struct xnthread;
+>>>  struct xnsched;
+>>> @@ -51,6 +52,13 @@ struct xnsched_tpslot;
+>>>  struct xnthread_personality;
+>>>  struct completion;
+>>>  
+>>> +struct lostage_signal {
+>>> +	struct pipeline_inband_work inband_work; /* Must be first. */
+>>> +	struct task_struct *task;
+>>> +	int signo, sigval;
+>>> +	struct lostage_signal *self; /* Revisit: I-pipe requirement */
+>>> +};
+>>> +
+>>>  struct xnthread_init_attr {
+>>>  	struct xnthread_personality *personality;
+>>>  	cpumask_t affinity;
+>>> @@ -205,6 +213,29 @@ struct xnthread {
+>>>  	const char *exe_path;	/* Executable path */
+>>>  	u32 proghash;		/* Hash value for exe_path */
+>>>  #endif
+>>> +	/*
+>>> +	 * Each slot handle different cause of signal
+>>> +	 * slot 0:
+>>> +	 * 	SIGDEBUG_MIGRATE_SIGNAL
+>>> +	 * 	SIGDEBUG_MIGRATE_SYSCALL
+>>> +	 * 	SIGDEBUG_MIGRATE_FAULT
+>>> +	 * 	SIGDEBUG_MIGRATE_PRIOINV
+>>> +	 * 	SIGDEBUG_NOMLOCK
+>>> +	 * 	SIGDEBUG_RESCNT_IMBALANCE
+>>> +	 * 	SIGDEBUG_LOCK_BREAK
+>>> +	 * 	SIGDEBUG_MUTEX_SLEEP
+>>> +	 * slot 1:
+>>> +	 * 	SIGDEBUG_WATCHDOG
+>>
+>> I'm still a bit undecided if we should serialize watchdog events with
+>> other SIGDEBUG reasons, but that could also be done on top later on as
+>> it appears to me now as slightly more complicated.
+>>
+>>> +	 * slot 2:
+>>> +	 * 	SIGSHADOW_ACTION_HARDEN
+>>> +	 * slot 3:
+>>> +	 * 	SIGSHADOW_ACTION_BACKTRACE
+>>> +	 * slot 4:
+>>> +	 * 	SIGSHADOW_ACTION_HOME
+>>> +	 * slot 5:
+>>> +	 * 	SIGTERM
+>>> +	 */
+>>
+>> Could we also define names for the slots?
+>>
+>>> +	struct lostage_signal sigarray[XNTHREAD_SIGNALS_NUM];
+>>>  };
+>>>  
+>>>  static inline int xnthread_get_state(const struct xnthread *thread)
+>>> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+>>> index 9c7753ac4..ebb798b58 100644
+>>> --- a/kernel/cobalt/thread.c
+>>> +++ b/kernel/cobalt/thread.c
+>>> @@ -2065,13 +2065,6 @@ void xnthread_relax(int notify, int reason)
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(xnthread_relax);
+>>>  
+>>> -struct lostage_signal {
+>>> -	struct pipeline_inband_work inband_work; /* Must be first. */
+>>> -	struct task_struct *task;
+>>> -	int signo, sigval;
+>>> -	struct lostage_signal *self; /* Revisit: I-pipe requirement */
+>>> -};
+>>> -
+>>>  static inline void do_kthread_signal(struct task_struct *p,
+>>>  				     struct xnthread *thread,
+>>>  				     struct lostage_signal *rq)
+>>> @@ -2111,7 +2104,7 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
+>>>  	} else
+>>>  		send_sig(signo, p, 1);
+>>>  out:
+>>> -	xnfree(rq->self);
+>>> +	memset(rq->self, 0, sizeof(*rq));
+>>>  }
+>>>  
+>>>  static int force_wakeup(struct xnthread *thread) /* nklock locked, irqs off */
+>>> @@ -2273,14 +2266,56 @@ void xnthread_demote(struct xnthread *thread)
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(xnthread_demote);
+>>>  
+>>> +int get_slot_index_from_sig(int sig, int arg)
+>>> +{
+>>> +	int action;
+>>> +
+>>> +	switch (sig) {
+>>> +	case SIGDEBUG:
+>>> +		switch (arg) {
+>>> +		case SIGDEBUG_WATCHDOG:
+>>> +			return 1;
+>>> +		case SIGDEBUG_MIGRATE_SIGNAL:
+>>> +		case SIGDEBUG_MIGRATE_SYSCALL:
+>>> +		case SIGDEBUG_MIGRATE_FAULT:
+>>> +		case SIGDEBUG_MIGRATE_PRIOINV:
+>>> +		case SIGDEBUG_NOMLOCK:
+>>> +		case SIGDEBUG_RESCNT_IMBALANCE:
+>>> +		case SIGDEBUG_LOCK_BREAK:
+>>> +		case SIGDEBUG_MUTEX_SLEEP:
+>>> +			return 0;
+>>> +		}
+>>> +		break;
+>>> +	case SIGSHADOW:
+>>> +		action = sigshadow_action(arg);
+>>> +		switch (action) {
+>>> +		case SIGSHADOW_ACTION_HARDEN:
+>>> +			return 2;
+>>> +		case SIGSHADOW_ACTION_BACKTRACE:
+>>> +			return 3;
+>>> +		case SIGSHADOW_ACTION_HOME:
+>>> +			return 4;
+>>> +		}
+>>> +		break;
+>>> +	case SIGTERM:
+>>> +		return 5;
+>>> +	}
+>>> +
+>>> +	return -1;
+>>> +}
+>>> +
+>>>  void xnthread_signal(struct xnthread *thread, int sig, int arg)
+>>>  {
+>>>  	struct lostage_signal *sigwork;
+>>> +	int slot;
+>>> +
+>>> +	slot = get_slot_index_from_sig(sig, arg);
+>>>  
+>>> -	sigwork = xnmalloc(sizeof(*sigwork));
+>>> -	if (WARN_ON(sigwork == NULL))
+>>> +	if (slot < 0 || slot >= XNTHREAD_SIGNALS_NUM)
+>>>  		return;
+>>
+>> Should keep the warning on errors. And >= XNTHREAD_SIGNALS_NUM cannot
+>> happen (over-defensive programming).
+>>
+>>>  
+>>> +	sigwork = &thread->sigarray[slot];
+>>> +
+>>
+>> Does this automatically handle the case of duplicate submissions on the
+>> same slot?
+> 
+> No, it can not.  If there is duplicate submissions on the same slot , we have to 
+> create a queue to handle them for each slot. But according to " SIGSHADOW(SIGWINCH) and SIGDEBUG(SIGXCPU) are
+>  standard non-queueable signals so we should only need a single slot per signal cause." described by Philippe,
+> they should be non-queueable signals? Please correct me if  I am wrong.
+
+I'm not concerned about queuing, rather about that we might crash or
+somehow invalidate the already submitted event. That's why we should
+think this case through even if impossible for some cases but maybe not all.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
