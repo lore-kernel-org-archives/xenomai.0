@@ -1,11 +1,8 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2] drivers/testing/heapcheck: Add compat support
-Message-ID: <18beef2e-1369-2029-9e6b-d52e176ac26b@siemens.com>
-Date: Tue, 8 Jun 2021 09:20:19 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH] cobalt/thread: get rid of dynamic allocation for
+ xnthread_signal
+Date: Tue,  8 Jun 2021 03:04:36 -0400
+Message-Id: <20210608070436.1198-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,108 +11,171 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Add one or more "signal slots" per possible cause of in-band signal
+into struct xnthread to get rid of dynamic allocation.
 
-This unbreaks smokey's memory_coreheap check with 32-bit userland on
-64-bit kernels.
+For SIGDEBUG, except SIGDEBUG_WATCHDOG all other SIGDEBUG_* cause
+including SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
+SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_NOMLOCK,
+SIGDEBUG_RESCNT_IMBALANCE, SIGDEBUG_LOCK_BREAK, SIGDEBUG_MUTEX_SLEEP
+are synchronous and mutually exclusive due to the oob->in-band transition.
+But SIGDEBUG_WATCHDOG is triggered asynchronously by the oob timer.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
+SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
+the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
+SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
+cannot pile up though.
 
-Changes in v2:
- - address build error
- - better readable structuring of compat vs. standard case
+Including SIGTERM, we have totally 6 slots.
 
- include/cobalt/kernel/rtdm/testing.h |  5 ++++
- kernel/drivers/testing/heapcheck.c   | 43 ++++++++++++++++++++++------
- 2 files changed, 39 insertions(+), 9 deletions(-)
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-diff --git a/include/cobalt/kernel/rtdm/testing.h b/include/cobalt/kernel/rtdm/testing.h
-index 070ee98fe..d2669e122 100644
---- a/include/cobalt/kernel/rtdm/testing.h
-+++ b/include/cobalt/kernel/rtdm/testing.h
-@@ -32,6 +32,11 @@ struct compat_rttst_overall_bench_res {
- 	compat_uptr_t histogram_max;
- };
+diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+index bc83cc556..29795f79c 100644
+--- a/include/cobalt/kernel/thread.h
++++ b/include/cobalt/kernel/thread.h
+@@ -42,6 +42,7 @@
+  */
+ #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD|XNDBGSTOP)
+ #define XNTHREAD_MODE_BITS    (XNRRB|XNWARN|XNTRAPLB)
++#define XNTHREAD_SIGNALS_NUM  6
  
-+struct compat_rttst_heap_stathdr {
-+	int nrstats;
-+	compat_uptr_t buf;
+ struct xnthread;
+ struct xnsched;
+@@ -51,6 +52,13 @@ struct xnsched_tpslot;
+ struct xnthread_personality;
+ struct completion;
+ 
++struct lostage_signal {
++	struct pipeline_inband_work inband_work; /* Must be first. */
++	struct task_struct *task;
++	int signo, sigval;
++	struct lostage_signal *self; /* Revisit: I-pipe requirement */
 +};
 +
- #define RTTST_RTIOC_TMBENCH_STOP_COMPAT \
- 	_IOWR(RTIOC_TYPE_TESTING, 0x11, struct compat_rttst_overall_bench_res)
+ struct xnthread_init_attr {
+ 	struct xnthread_personality *personality;
+ 	cpumask_t affinity;
+@@ -205,6 +213,29 @@ struct xnthread {
+ 	const char *exe_path;	/* Executable path */
+ 	u32 proghash;		/* Hash value for exe_path */
+ #endif
++	/*
++	 * Each slot handle different cause of signal
++	 * slot 0:
++	 * 	SIGDEBUG_MIGRATE_SIGNAL
++	 * 	SIGDEBUG_MIGRATE_SYSCALL
++	 * 	SIGDEBUG_MIGRATE_FAULT
++	 * 	SIGDEBUG_MIGRATE_PRIOINV
++	 * 	SIGDEBUG_NOMLOCK
++	 * 	SIGDEBUG_RESCNT_IMBALANCE
++	 * 	SIGDEBUG_LOCK_BREAK
++	 * 	SIGDEBUG_MUTEX_SLEEP
++	 * slot 1:
++	 * 	SIGDEBUG_WATCHDOG
++	 * slot 2:
++	 * 	SIGSHADOW_ACTION_HARDEN
++	 * slot 3:
++	 * 	SIGSHADOW_ACTION_BACKTRACE
++	 * slot 4:
++	 * 	SIGSHADOW_ACTION_HOME
++	 * slot 5:
++	 * 	SIGTERM
++	 */
++	struct lostage_signal sigarray[XNTHREAD_SIGNALS_NUM];
+ };
  
-diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
-index 207f20921..1b97d1d02 100644
---- a/kernel/drivers/testing/heapcheck.c
-+++ b/kernel/drivers/testing/heapcheck.c
-@@ -23,7 +23,7 @@
- #include <linux/random.h>
- #include <cobalt/kernel/assert.h>
- #include <cobalt/kernel/heap.h>
--#include <rtdm/uapi/testing.h>
-+#include <rtdm/testing.h>
- #include <rtdm/driver.h>
+ static inline int xnthread_get_state(const struct xnthread *thread)
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 9c7753ac4..ebb798b58 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2065,13 +2065,6 @@ void xnthread_relax(int notify, int reason)
+ }
+ EXPORT_SYMBOL_GPL(xnthread_relax);
  
- #define complain(__fmt, __args...)	\
-@@ -446,6 +446,9 @@ static void heapcheck_close(struct rtdm_fd *fd)
- static int heapcheck_ioctl(struct rtdm_fd *fd,
- 			   unsigned int request, void __user *arg)
- {
-+#ifdef CONFIG_XENO_ARCH_SYS3264
-+	struct compat_rttst_heap_stathdr compat_sthdr;
-+#endif
- 	struct rttst_heap_stathdr sthdr;
- 	struct rttst_heap_parms parms;
- 	int ret;
-@@ -465,14 +468,36 @@ static int heapcheck_ioctl(struct rtdm_fd *fd,
- 		break;
- 	case RTTST_RTIOC_HEAP_STAT_COLLECT:
- 		sthdr.buf = NULL;
--		ret = rtdm_copy_from_user(fd, &sthdr, arg, sizeof(sthdr));
--		if (ret)
--			return ret;
--		ret = collect_stats(fd, sthdr.buf, sthdr.nrstats);
--		if (ret < 0)
--			return ret;
--		sthdr.nrstats = ret;
--		ret = rtdm_copy_to_user(fd, arg, &sthdr, sizeof(sthdr));
-+#ifdef CONFIG_XENO_ARCH_SYS3264
-+		if (rtdm_fd_is_compat(fd)) {
-+			ret = rtdm_copy_from_user(fd, &compat_sthdr, arg,
-+						  sizeof(compat_sthdr));
-+			if (ret)
-+				return ret;
+-struct lostage_signal {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
+-	struct task_struct *task;
+-	int signo, sigval;
+-	struct lostage_signal *self; /* Revisit: I-pipe requirement */
+-};
+-
+ static inline void do_kthread_signal(struct task_struct *p,
+ 				     struct xnthread *thread,
+ 				     struct lostage_signal *rq)
+@@ -2111,7 +2104,7 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
+ 	} else
+ 		send_sig(signo, p, 1);
+ out:
+-	xnfree(rq->self);
++	memset(rq->self, 0, sizeof(*rq));
+ }
+ 
+ static int force_wakeup(struct xnthread *thread) /* nklock locked, irqs off */
+@@ -2273,14 +2266,56 @@ void xnthread_demote(struct xnthread *thread)
+ }
+ EXPORT_SYMBOL_GPL(xnthread_demote);
+ 
++int get_slot_index_from_sig(int sig, int arg)
++{
++	int action;
 +
-+			ret = collect_stats(fd, compat_ptr(compat_sthdr.buf),
-+					    compat_sthdr.nrstats);
-+			if (ret < 0)
-+				return ret;
-+
-+			compat_sthdr.nrstats = ret;
-+			ret = rtdm_copy_to_user(fd, arg, &compat_sthdr,
-+						sizeof(compat_sthdr));
-+		} else
-+#endif
-+		{
-+			ret = rtdm_copy_from_user(fd, &sthdr, arg,
-+						  sizeof(sthdr));
-+			if (ret)
-+				return ret;
-+
-+			ret = collect_stats(fd, sthdr.buf, sthdr.nrstats);
-+			if (ret < 0)
-+				return ret;
-+
-+			sthdr.nrstats = ret;
-+			ret = rtdm_copy_to_user(fd, arg, &sthdr, sizeof(sthdr));
++	switch (sig) {
++	case SIGDEBUG:
++		switch (arg) {
++		case SIGDEBUG_WATCHDOG:
++			return 1;
++		case SIGDEBUG_MIGRATE_SIGNAL:
++		case SIGDEBUG_MIGRATE_SYSCALL:
++		case SIGDEBUG_MIGRATE_FAULT:
++		case SIGDEBUG_MIGRATE_PRIOINV:
++		case SIGDEBUG_NOMLOCK:
++		case SIGDEBUG_RESCNT_IMBALANCE:
++		case SIGDEBUG_LOCK_BREAK:
++		case SIGDEBUG_MUTEX_SLEEP:
++			return 0;
 +		}
- 		break;
- 	default:
- 		ret = -EINVAL;
++		break;
++	case SIGSHADOW:
++		action = sigshadow_action(arg);
++		switch (action) {
++		case SIGSHADOW_ACTION_HARDEN:
++			return 2;
++		case SIGSHADOW_ACTION_BACKTRACE:
++			return 3;
++		case SIGSHADOW_ACTION_HOME:
++			return 4;
++		}
++		break;
++	case SIGTERM:
++		return 5;
++	}
++
++	return -1;
++}
++
+ void xnthread_signal(struct xnthread *thread, int sig, int arg)
+ {
+ 	struct lostage_signal *sigwork;
++	int slot;
++
++	slot = get_slot_index_from_sig(sig, arg);
+ 
+-	sigwork = xnmalloc(sizeof(*sigwork));
+-	if (WARN_ON(sigwork == NULL))
++	if (slot < 0 || slot >= XNTHREAD_SIGNALS_NUM)
+ 		return;
+ 
++	sigwork = &thread->sigarray[slot];
++
+ 	sigwork->inband_work = (struct pipeline_inband_work)
+ 			PIPELINE_INBAND_WORK_INITIALIZER(*sigwork,
+ 					lostage_task_signal);
 -- 
-2.26.2
+2.17.1
+
 
