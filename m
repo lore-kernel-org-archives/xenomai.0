@@ -1,8 +1,15 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH] cobalt/thread: get rid of dynamic allocation for
- xnthread_signal
-Date: Tue,  8 Jun 2021 03:04:36 -0400
-Message-Id: <20210608070436.1198-1-hongzhan.chen@intel.com>
+Sender: chensong_2000@189.cn
+Subject: Re: [florian/y2038][PATCH v3 0/3] y2038:mutex_timedlock for timespec64
+References: <1622721916-1824-1-git-send-email-chensong_2000@189.cn>
+ <049086bd-62ee-70f0-6bb0-9f2906ff19f6@siemens.com>
+From: "chensong_2000@189.cn" <chensong_2000@189.cn>
+Message-ID: <7106d860-c9c5-2eea-2332-fb90fc1e0a0d@189.cn>
+Date: Tue, 8 Jun 2021 15:37:59 +0800
+MIME-Version: 1.0
+In-Reply-To: <049086bd-62ee-70f0-6bb0-9f2906ff19f6@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,171 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-Add one or more "signal slots" per possible cause of in-band signal
-into struct xnthread to get rid of dynamic allocation.
 
-For SIGDEBUG, except SIGDEBUG_WATCHDOG all other SIGDEBUG_* cause
-including SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
-SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_NOMLOCK,
-SIGDEBUG_RESCNT_IMBALANCE, SIGDEBUG_LOCK_BREAK, SIGDEBUG_MUTEX_SLEEP
-are synchronous and mutually exclusive due to the oob->in-band transition.
-But SIGDEBUG_WATCHDOG is triggered asynchronously by the oob timer.
 
-All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
-SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
-the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
-SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
-cannot pile up though.
+在 2021/6/8 下午2:39, Florian Bezdeka 写道:
+> Hi Song,
+> 
+> On 03.06.21 14:05, Song Chen wrote:
+>> This patch serial is aimed to introduce a new syscall mutex_timedlock64
+>> which is specific for 64-bit time_t.
+>>
+>> ---
+>> v2:
+>> 1, new revision regarding review comments
+>>
+>> v3:
+>> 1, return -errno
+>> 2, throw a warning if timeout is NULL
+> 
+> Will you take care of the POSIX violation as well, or should I try to
+> find a timeslot and do it?
 
-Including SIGTERM, we have totally 6 slots.
+I will take care of it.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+POSIX violation, do you mean:
 
-diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-index bc83cc556..29795f79c 100644
---- a/include/cobalt/kernel/thread.h
-+++ b/include/cobalt/kernel/thread.h
-@@ -42,6 +42,7 @@
-  */
- #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD|XNDBGSTOP)
- #define XNTHREAD_MODE_BITS    (XNRRB|XNWARN|XNTRAPLB)
-+#define XNTHREAD_SIGNALS_NUM  6
- 
- struct xnthread;
- struct xnsched;
-@@ -51,6 +52,13 @@ struct xnsched_tpslot;
- struct xnthread_personality;
- struct completion;
- 
-+struct lostage_signal {
-+	struct pipeline_inband_work inband_work; /* Must be first. */
-+	struct task_struct *task;
-+	int signo, sigval;
-+	struct lostage_signal *self; /* Revisit: I-pipe requirement */
-+};
++	/* Timeout is never read by the kernel, so NULL should be OK */
++	ret = XENOMAI_SYSCALL2(sr_nc, &lock, NULL);
++	if (!smokey_assert(!ret))
++		smokey_warning("POSIX mutex_timedlock64 violation detected");
 +
- struct xnthread_init_attr {
- 	struct xnthread_personality *personality;
- 	cpumask_t affinity;
-@@ -205,6 +213,29 @@ struct xnthread {
- 	const char *exe_path;	/* Executable path */
- 	u32 proghash;		/* Hash value for exe_path */
- #endif
-+	/*
-+	 * Each slot handle different cause of signal
-+	 * slot 0:
-+	 * 	SIGDEBUG_MIGRATE_SIGNAL
-+	 * 	SIGDEBUG_MIGRATE_SYSCALL
-+	 * 	SIGDEBUG_MIGRATE_FAULT
-+	 * 	SIGDEBUG_MIGRATE_PRIOINV
-+	 * 	SIGDEBUG_NOMLOCK
-+	 * 	SIGDEBUG_RESCNT_IMBALANCE
-+	 * 	SIGDEBUG_LOCK_BREAK
-+	 * 	SIGDEBUG_MUTEX_SLEEP
-+	 * slot 1:
-+	 * 	SIGDEBUG_WATCHDOG
-+	 * slot 2:
-+	 * 	SIGSHADOW_ACTION_HARDEN
-+	 * slot 3:
-+	 * 	SIGSHADOW_ACTION_BACKTRACE
-+	 * slot 4:
-+	 * 	SIGSHADOW_ACTION_HOME
-+	 * slot 5:
-+	 * 	SIGTERM
-+	 */
-+	struct lostage_signal sigarray[XNTHREAD_SIGNALS_NUM];
- };
- 
- static inline int xnthread_get_state(const struct xnthread *thread)
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 9c7753ac4..ebb798b58 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -2065,13 +2065,6 @@ void xnthread_relax(int notify, int reason)
- }
- EXPORT_SYMBOL_GPL(xnthread_relax);
- 
--struct lostage_signal {
--	struct pipeline_inband_work inband_work; /* Must be first. */
--	struct task_struct *task;
--	int signo, sigval;
--	struct lostage_signal *self; /* Revisit: I-pipe requirement */
--};
--
- static inline void do_kthread_signal(struct task_struct *p,
- 				     struct xnthread *thread,
- 				     struct lostage_signal *rq)
-@@ -2111,7 +2104,7 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
- 	} else
- 		send_sig(signo, p, 1);
- out:
--	xnfree(rq->self);
-+	memset(rq->self, 0, sizeof(*rq));
- }
- 
- static int force_wakeup(struct xnthread *thread) /* nklock locked, irqs off */
-@@ -2273,14 +2266,56 @@ void xnthread_demote(struct xnthread *thread)
- }
- EXPORT_SYMBOL_GPL(xnthread_demote);
- 
-+int get_slot_index_from_sig(int sig, int arg)
-+{
-+	int action;
-+
-+	switch (sig) {
-+	case SIGDEBUG:
-+		switch (arg) {
-+		case SIGDEBUG_WATCHDOG:
-+			return 1;
-+		case SIGDEBUG_MIGRATE_SIGNAL:
-+		case SIGDEBUG_MIGRATE_SYSCALL:
-+		case SIGDEBUG_MIGRATE_FAULT:
-+		case SIGDEBUG_MIGRATE_PRIOINV:
-+		case SIGDEBUG_NOMLOCK:
-+		case SIGDEBUG_RESCNT_IMBALANCE:
-+		case SIGDEBUG_LOCK_BREAK:
-+		case SIGDEBUG_MUTEX_SLEEP:
-+			return 0;
-+		}
-+		break;
-+	case SIGSHADOW:
-+		action = sigshadow_action(arg);
-+		switch (action) {
-+		case SIGSHADOW_ACTION_HARDEN:
-+			return 2;
-+		case SIGSHADOW_ACTION_BACKTRACE:
-+			return 3;
-+		case SIGSHADOW_ACTION_HOME:
-+			return 4;
-+		}
-+		break;
-+	case SIGTERM:
-+		return 5;
-+	}
-+
-+	return -1;
-+}
-+
- void xnthread_signal(struct xnthread *thread, int sig, int arg)
- {
- 	struct lostage_signal *sigwork;
-+	int slot;
-+
-+	slot = get_slot_index_from_sig(sig, arg);
- 
--	sigwork = xnmalloc(sizeof(*sigwork));
--	if (WARN_ON(sigwork == NULL))
-+	if (slot < 0 || slot >= XNTHREAD_SIGNALS_NUM)
- 		return;
- 
-+	sigwork = &thread->sigarray[slot];
-+
- 	sigwork->inband_work = (struct pipeline_inband_work)
- 			PIPELINE_INBAND_WORK_INITIALIZER(*sigwork,
- 					lostage_task_signal);
--- 
-2.17.1
 
+what else should i do to take care of it, sorry if i missed some 
+information in the past emails.
+
+/Song
+
+> 
+>>
+>> Song Chen (3):
+>>    y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+>>    y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+>>    y2038: testsuite/smokey/y2038: testcase for mutex_timedlock64
+>>
+>>   include/cobalt/uapi/syscall.h          |   1 +
+>>   kernel/cobalt/posix/mutex.c            |  22 +++++-
+>>   kernel/cobalt/posix/mutex.h            |   7 ++
+>>   kernel/cobalt/posix/syscall32.c        |   7 ++
+>>   kernel/cobalt/posix/syscall32.h        |   4 +
+>>   lib/cobalt/mutex.c                     |   4 +
+>>   testsuite/smokey/y2038/syscall-tests.c | 136 +++++++++++++++++++++++++++++++++
+>>   7 files changed, 180 insertions(+), 1 deletion(-)
+>>
+> 
+> 
 
