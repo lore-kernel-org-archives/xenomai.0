@@ -3,8 +3,8 @@ References: <7bd62ff7-0f90-d881-4a5f-7a80091aa321@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: dovetail: DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
 In-reply-to: <87eedb6n9q.fsf@xenomai.org>
-Date: Wed, 09 Jun 2021 18:03:47 +0200
-Message-ID: <87bl8f6n4s.fsf@xenomai.org>
+Date: Wed, 09 Jun 2021 18:05:57 +0200
+Message-ID: <878s3j6n16.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -37,37 +37,9 @@ Philippe Gerum <rpm@xenomai.org> writes:
 > (debug) traps invoke directly, and this one does not reconcile the hard
 > irq state with the stall bit.
 >
->> Interestingly, I do not get this with my local .config, and I still
->> didn't find the switches that make the difference.
->>
->> Jan
->>
->> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/276895#L946
 
-Something like this may help:
-
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 4e81c0c03e5726a..b52f4ac50fd04bb 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -343,6 +343,8 @@ __visible noinstr void syscall_exit_to_user_mode(struct pt_regs *regs)
- 
- noinstr void irqentry_enter_from_user_mode(struct pt_regs *regs)
- {
-+	WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
-+	stall_inband_nocheck();
- 	enter_from_user_mode(regs);
- }
- 
-@@ -373,8 +375,6 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 
- 	if (user_mode(regs)) {
- #ifdef CONFIG_IRQ_PIPELINE
--		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
--		stall_inband_nocheck();
- 		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
- #endif
- 		irqentry_enter_from_user_mode(regs);
+Unfortunately, arm and arm64 do not use the generic kernel entry code
+yet, so we can exercise the Dovetail-related code only with x86.
 
 -- 
 Philippe.
