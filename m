@@ -1,12 +1,8 @@
-Subject: Re: [dovetail][PATCH] irq_pipeline: Mark inband stalled also on
- exceptions
-References: <e3039175-369c-4be9-c3c6-02f4756aff77@siemens.com>
- <875yyn6lf9.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <db77f69b-4fda-2167-cdca-20a20e1e2b54@siemens.com>
-Date: Wed, 9 Jun 2021 20:34:31 +0200
+Subject: [PATCH] testsuite/xeno-test: Stop systemd-timesyncd across smokey runs
+Message-ID: <46f42fa7-be5c-1b0c-4e04-67098423c68f@siemens.com>
+Date: Wed, 9 Jun 2021 21:53:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <875yyn6lf9.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,66 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 09.06.21 18:40, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> From: Philippe Gerum <rpm@xenomai.org>
->>
->> Make sure that inband is marked stalled when entering from user mode,
->> taking an exception.
->>
->> This affects x86 which is currently the only arch using generic
->> irqentry_enter_from_user_mode on exceptions. It fixes this lockdep
->> warning:
->>
->> DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
->> WARNING: CPU: 2 PID: 1477 at ../kernel/locking/lockdep.c:4129 lockdep_hardirqs_on_prepare+0x160/0x1a0
->>
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>
->> Works as it should here. If the wording is fine, please add.
->>
->>  kernel/entry/common.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
->> index 995123075375..51af58e61cb8 100644
->> --- a/kernel/entry/common.c
->> +++ b/kernel/entry/common.c
->> @@ -343,6 +343,8 @@ __visible noinstr void syscall_exit_to_user_mode(struct pt_regs *regs)
->>  
->>  noinstr void irqentry_enter_from_user_mode(struct pt_regs *regs)
->>  {
->> +	WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
->> +	stall_inband_nocheck();
->>  	enter_from_user_mode(regs);
->>  }
->>  
->> @@ -373,8 +375,6 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
->>  
->>  	if (user_mode(regs)) {
->>  #ifdef CONFIG_IRQ_PIPELINE
->> -		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
->> -		stall_inband_nocheck();
->>  		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
->>  #endif
->>  		irqentry_enter_from_user_mode(regs);
-> 
-> Ok, picked it. Thanks.
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-For the sake of completeness: CONFIG_PROVE_RAW_LOCK_NESTING=y papered
-over this. But I still don't get why as that only affects complete_all()...
+With dovetail, clock_settime affects the Linux wall clock as well. When
+systemd-timesyncd is running, the posix-clock test will fail because its
+check of clock settings will immediately be overwritten by timesyncd
+again. So stop that service if present and running and restart it after
+the test.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/xeno-test/xeno-test.in | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
+diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
+index 505adfd75..95bf59606 100644
+--- a/testsuite/xeno-test/xeno-test.in
++++ b/testsuite/xeno-test/xeno-test.in
+@@ -82,7 +82,18 @@ echo 0 > /proc/xenomai/latency || :
+ 
+ testdir=@testdir@
+ 
++timesyncd_running=false
++if which systemctl > /dev/null && systemctl is-active --quiet systemd-timesyncd; then
++    timesyncd_running=true
++    systemctl stop systemd-timesyncd
++fi
++
+ $testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
++
++if $timesyncd_running; then
++    systemctl start systemd-timesyncd
++fi
++
+ $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
+ $testdir/switchtest -T 30
+ 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
