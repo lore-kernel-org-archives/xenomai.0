@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/pipe: Add support for compat_ioctl
-Message-ID: <0c98b3ff-18b1-959a-2e48-02bb19e6eb14@siemens.com>
-Date: Wed, 9 Jun 2021 10:01:26 +0200
+Subject: dovetail: DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
+Message-ID: <7bd62ff7-0f90-d881-4a5f-7a80091aa321@siemens.com>
+Date: Wed, 9 Jun 2021 14:27:22 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -14,48 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi Philippe,
 
-There are only two pipe IOCTLs that take arguments and both are int
-pointers. Therefore, use the compat_ptr_ioctl pattern, just open-coding
-it for support of kernels < 5.4.4.
+currently trying to understand [1]: The check in
+lockdep_hardirqs_on_prepare triggers, e.g. over exc_int3 ->
+do_int3_user, and then on cond_local_irq_enable().
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/pipe.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Where should have the current stage be stalled after exc_int3 so that
+lockdep is happy?
 
-diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
-index 9465fb2da..19064ea69 100644
---- a/kernel/cobalt/pipe.c
-+++ b/kernel/cobalt/pipe.c
-@@ -1052,6 +1052,16 @@ static long xnpipe_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	return ret;
- }
- 
-+/*
-+ * Could be replaced with compat_ptr_ioctl if support for kernels < 5.4 is
-+ * dropped.
-+ */
-+static long xnpipe_compat_ioctl(struct file *file, unsigned int cmd,
-+				unsigned long arg)
-+{
-+	return xnpipe_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
-+}
-+
- static int xnpipe_fasync(int fd, struct file *file, int on)
- {
- 	struct xnpipe_state *state = file->private_data;
-@@ -1112,6 +1122,7 @@ static struct file_operations xnpipe_fops = {
- 	.write = xnpipe_write,
- 	.poll = xnpipe_poll,
- 	.unlocked_ioctl = xnpipe_ioctl,
-+	.compat_ioctl = xnpipe_compat_ioctl,
- 	.open = xnpipe_open,
- 	.release = xnpipe_release,
- 	.fasync = xnpipe_fasync
+Interestingly, I do not get this with my local .config, and I still
+didn't find the switches that make the difference.
+
+Jan
+
+[1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/276895#L946
+
 -- 
-2.26.2
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
