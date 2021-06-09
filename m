@@ -1,15 +1,27 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] cobalt/thread: get rid of dynamic allocation for
- xnthread_signal
-Date: Wed, 9 Jun 2021 05:10:00 +0000
-Message-ID: <BN9PR11MB522722EBB828C6991F269E9FF2369@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210608070436.1198-1-hongzhan.chen@intel.com>
- <768ca079-fefa-e11c-2271-7c5340be69c1@siemens.com>
-In-Reply-To: <768ca079-fefa-e11c-2271-7c5340be69c1@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH] irq_pipeline: Prevent returning to user space with
+ pending inband IRQs
+References: <0531d2db-aa87-1950-6d7f-41c80d4fe679@web.de>
+ <875yyrf3yo.fsf@xenomai.org>
+ <c6633047-7570-294f-e0b0-ab74f0c2a33e@siemens.com>
+ <87a6o2b0to.fsf@xenomai.org>
+ <50f40c7f-ae8d-7ded-9dc7-91310f0d7909@siemens.com>
+ <874ke9bzde.fsf@xenomai.org>
+ <3814ce50-b6cd-04e3-587b-40197f905ef8@siemens.com>
+ <f701eccc-5407-86ec-512f-460391c80fb9@siemens.com>
+ <e9d381b2-deea-d2fa-79df-940bac1c044e@siemens.com>
+ <87k0n5af78.fsf@xenomai.org>
+ <14f3aaa0-0d59-3b10-c21e-d408a1346673@siemens.com>
+ <87eeddabpx.fsf@xenomai.org>
+ <a7991626-3080-7789-e003-9e74626de784@siemens.com>
+ <87im2o8fn6.fsf@xenomai.org> <87zgw06ysa.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <22521ff4-b3b1-86c7-2486-831fade9f268@siemens.com>
+Date: Wed, 9 Jun 2021 07:34:06 +0200
 MIME-Version: 1.0
+In-Reply-To: <87zgw06ysa.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,125 +30,318 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBUdWVzZGF5LCBKdW5lIDgsIDIwMjEgNDoyOCBQ
-TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
-QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSF0gY29iYWx0L3RocmVhZDogZ2V0IHJp
-ZCBvZiBkeW5hbWljIGFsbG9jYXRpb24gZm9yIHhudGhyZWFkX3NpZ25hbA0KPg0KPk9uIDA4LjA2
-LjIxIDA5OjA0LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gQWRkIG9uZSBv
-ciBtb3JlICJzaWduYWwgc2xvdHMiIHBlciBwb3NzaWJsZSBjYXVzZSBvZiBpbi1iYW5kIHNpZ25h
-bA0KPj4gaW50byBzdHJ1Y3QgeG50aHJlYWQgdG8gZ2V0IHJpZCBvZiBkeW5hbWljIGFsbG9jYXRp
-b24uDQo+PiANCj4+IEZvciBTSUdERUJVRywgZXhjZXB0IFNJR0RFQlVHX1dBVENIRE9HIGFsbCBv
-dGhlciBTSUdERUJVR18qIGNhdXNlDQo+PiBpbmNsdWRpbmcgU0lHREVCVUdfTUlHUkFURV9TSUdO
-QUwsIFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTCwNCj4+IFNJR0RFQlVHX01JR1JBVEVfRkFVTFQs
-IFNJR0RFQlVHX01JR1JBVEVfUFJJT0lOViwgU0lHREVCVUdfTk9NTE9DSywNCj4+IFNJR0RFQlVH
-X1JFU0NOVF9JTUJBTEFOQ0UsIFNJR0RFQlVHX0xPQ0tfQlJFQUssIFNJR0RFQlVHX01VVEVYX1NM
-RUVQDQo+PiBhcmUgc3luY2hyb25vdXMgYW5kIG11dHVhbGx5IGV4Y2x1c2l2ZSBkdWUgdG8gdGhl
-IG9vYi0+aW4tYmFuZCB0cmFuc2l0aW9uLg0KPj4gQnV0IFNJR0RFQlVHX1dBVENIRE9HIGlzIHRy
-aWdnZXJlZCBhc3luY2hyb25vdXNseSBieSB0aGUgb29iIHRpbWVyLg0KPj4gDQo+PiBBbGwgU0lH
-U0hBRE9XXyogZXZlbnRzIG5lZWQgdGhlaXIgb3duIHNsb3Q6IFNJR1NIQURPV19BQ1RJT05fSEFS
-REVOIGFuZA0KPj4gU0lHU0hBRE9XX0FDVElPTl9IT01FIGNhbiBiZSByYWlzZWQgYnkgcmVtb3Rl
-IHRocmVhZHMgYXN5bmNocm9ub3VzbHkgdG8NCj4+IHRoZSB0YXJnZXQgdGhyZWFkLiBTSUdTSEFE
-T1dfQUNUSU9OX0JBQ0tUUkFDRSBjb21lcyBpbiBhZGRpdGlvbiB0bw0KPj4gU0lHREVCVUdfTUlH
-UkFURV8qLiBGb3IgdGhlIGxhdHRlciByZWFzb24sIFNJR1NIQURPV19BQ1RJT05fQkFDS1RSQUNF
-DQo+PiBjYW5ub3QgcGlsZSB1cCB0aG91Z2guDQo+PiANCj4+IEluY2x1ZGluZyBTSUdURVJNLCB3
-ZSBoYXZlIHRvdGFsbHkgNiBzbG90cy4NCj4+IA0KPg0KPlBsZWFzZSByZWJhc2Ugb24gdG9wIG9m
-IG5leHQsIHJhdGhlciB0aGFuIHdpcC9kb3ZldGFpbC4gSXQgd2lsbCByZXBsYWNlDQo+dGhlIHJl
-bGF0ZWQgcGF0Y2ggaW4gd2lwL2RvdmV0YWlsLg0KDQpBY3R1YWxseSAsIHRoZSBwYXRjaCBpcyBi
-YXNlZCBvbiBodHRwczovL2xhYi54ZW5vbWFpLm9yZy94ZW5vbWFpLXJwbS5naXQvbG9nLz9oPWZv
-ci11cHN0cmVhbS9kb3ZldGFpbC4NClRoZXJlIGlzIHN0aWxsIHNldmVyYWwgcGF0Y2hlcyB0aGF0
-IGN1cnJlbnQgcGF0Y2ggaXMgZGVwZW5kaW5nIG9uIGhhdmUgbm90IGJlZW4gbWVyZ2VkIGludG8g
-bmV4dC4NCkRvIHdlIG5lZWQgdG8gbWVyZ2UgaW50byBmb3ItdXBzdHJlYW0vZG92ZXRhaWwgYXQg
-Zmlyc3Qgb3IgSSBzaG91bGQgY3JlYXRlIG5ldyBwYXRjaCBmb3IgbmV4dCB0aGF0IEkgc2hvdWxk
-IHdvcmsgb24/DQpQbGVhc2Ugc3VnZ2VzdC4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoN
-Cj4NCj4+IFNpZ25lZC1vZmYtYnk6IEhvbmd6aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwu
-Y29tPg0KPj4gDQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3RocmVhZC5o
-IGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL3RocmVhZC5oDQo+PiBpbmRleCBiYzgzY2M1NTYuLjI5
-Nzk1Zjc5YyAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC90aHJlYWQuaA0K
-Pj4gKysrIGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL3RocmVhZC5oDQo+PiBAQCAtNDIsNiArNDIs
-NyBAQA0KPj4gICAqLw0KPj4gICNkZWZpbmUgWE5USFJFQURfQkxPQ0tfQklUUyAgIChYTlNVU1B8
-WE5QRU5EfFhOREVMQVl8WE5ET1JNQU5UfFhOUkVMQVh8WE5IRUxEfFhOREJHU1RPUCkNCj4+ICAj
-ZGVmaW5lIFhOVEhSRUFEX01PREVfQklUUyAgICAoWE5SUkJ8WE5XQVJOfFhOVFJBUExCKQ0KPj4g
-KyNkZWZpbmUgWE5USFJFQURfU0lHTkFMU19OVU0gIDYNCj4+ICANCj4+ICBzdHJ1Y3QgeG50aHJl
-YWQ7DQo+PiAgc3RydWN0IHhuc2NoZWQ7DQo+PiBAQCAtNTEsNiArNTIsMTMgQEAgc3RydWN0IHhu
-c2NoZWRfdHBzbG90Ow0KPj4gIHN0cnVjdCB4bnRocmVhZF9wZXJzb25hbGl0eTsNCj4+ICBzdHJ1
-Y3QgY29tcGxldGlvbjsNCj4+ICANCj4+ICtzdHJ1Y3QgbG9zdGFnZV9zaWduYWwgew0KPj4gKwlz
-dHJ1Y3QgcGlwZWxpbmVfaW5iYW5kX3dvcmsgaW5iYW5kX3dvcms7IC8qIE11c3QgYmUgZmlyc3Qu
-ICovDQo+PiArCXN0cnVjdCB0YXNrX3N0cnVjdCAqdGFzazsNCj4+ICsJaW50IHNpZ25vLCBzaWd2
-YWw7DQo+PiArCXN0cnVjdCBsb3N0YWdlX3NpZ25hbCAqc2VsZjsgLyogUmV2aXNpdDogSS1waXBl
-IHJlcXVpcmVtZW50ICovDQo+PiArfTsNCj4+ICsNCj4+ICBzdHJ1Y3QgeG50aHJlYWRfaW5pdF9h
-dHRyIHsNCj4+ICAJc3RydWN0IHhudGhyZWFkX3BlcnNvbmFsaXR5ICpwZXJzb25hbGl0eTsNCj4+
-ICAJY3B1bWFza190IGFmZmluaXR5Ow0KPj4gQEAgLTIwNSw2ICsyMTMsMjkgQEAgc3RydWN0IHhu
-dGhyZWFkIHsNCj4+ICAJY29uc3QgY2hhciAqZXhlX3BhdGg7CS8qIEV4ZWN1dGFibGUgcGF0aCAq
-Lw0KPj4gIAl1MzIgcHJvZ2hhc2g7CQkvKiBIYXNoIHZhbHVlIGZvciBleGVfcGF0aCAqLw0KPj4g
-ICNlbmRpZg0KPj4gKwkvKg0KPj4gKwkgKiBFYWNoIHNsb3QgaGFuZGxlIGRpZmZlcmVudCBjYXVz
-ZSBvZiBzaWduYWwNCj4+ICsJICogc2xvdCAwOg0KPj4gKwkgKiAJU0lHREVCVUdfTUlHUkFURV9T
-SUdOQUwNCj4+ICsJICogCVNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTA0KPj4gKwkgKiAJU0lHREVC
-VUdfTUlHUkFURV9GQVVMVA0KPj4gKwkgKiAJU0lHREVCVUdfTUlHUkFURV9QUklPSU5WDQo+PiAr
-CSAqIAlTSUdERUJVR19OT01MT0NLDQo+PiArCSAqIAlTSUdERUJVR19SRVNDTlRfSU1CQUxBTkNF
-DQo+PiArCSAqIAlTSUdERUJVR19MT0NLX0JSRUFLDQo+PiArCSAqIAlTSUdERUJVR19NVVRFWF9T
-TEVFUA0KPj4gKwkgKiBzbG90IDE6DQo+PiArCSAqIAlTSUdERUJVR19XQVRDSERPRw0KPg0KPkkn
-bSBzdGlsbCBhIGJpdCB1bmRlY2lkZWQgaWYgd2Ugc2hvdWxkIHNlcmlhbGl6ZSB3YXRjaGRvZyBl
-dmVudHMgd2l0aA0KPm90aGVyIFNJR0RFQlVHIHJlYXNvbnMsIGJ1dCB0aGF0IGNvdWxkIGFsc28g
-YmUgZG9uZSBvbiB0b3AgbGF0ZXIgb24gYXMNCj5pdCBhcHBlYXJzIHRvIG1lIG5vdyBhcyBzbGln
-aHRseSBtb3JlIGNvbXBsaWNhdGVkLg0KPg0KPj4gKwkgKiBzbG90IDI6DQo+PiArCSAqIAlTSUdT
-SEFET1dfQUNUSU9OX0hBUkRFTg0KPj4gKwkgKiBzbG90IDM6DQo+PiArCSAqIAlTSUdTSEFET1df
-QUNUSU9OX0JBQ0tUUkFDRQ0KPj4gKwkgKiBzbG90IDQ6DQo+PiArCSAqIAlTSUdTSEFET1dfQUNU
-SU9OX0hPTUUNCj4+ICsJICogc2xvdCA1Og0KPj4gKwkgKiAJU0lHVEVSTQ0KPj4gKwkgKi8NCj4N
-Cj5Db3VsZCB3ZSBhbHNvIGRlZmluZSBuYW1lcyBmb3IgdGhlIHNsb3RzPw0KPg0KPj4gKwlzdHJ1
-Y3QgbG9zdGFnZV9zaWduYWwgc2lnYXJyYXlbWE5USFJFQURfU0lHTkFMU19OVU1dOw0KPj4gIH07
-DQo+PiAgDQo+PiAgc3RhdGljIGlubGluZSBpbnQgeG50aHJlYWRfZ2V0X3N0YXRlKGNvbnN0IHN0
-cnVjdCB4bnRocmVhZCAqdGhyZWFkKQ0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvdGhy
-ZWFkLmMgYi9rZXJuZWwvY29iYWx0L3RocmVhZC5jDQo+PiBpbmRleCA5Yzc3NTNhYzQuLmViYjc5
-OGI1OCAxMDA2NDQNCj4+IC0tLSBhL2tlcm5lbC9jb2JhbHQvdGhyZWFkLmMNCj4+ICsrKyBiL2tl
-cm5lbC9jb2JhbHQvdGhyZWFkLmMNCj4+IEBAIC0yMDY1LDEzICsyMDY1LDYgQEAgdm9pZCB4bnRo
-cmVhZF9yZWxheChpbnQgbm90aWZ5LCBpbnQgcmVhc29uKQ0KPj4gIH0NCj4+ICBFWFBPUlRfU1lN
-Qk9MX0dQTCh4bnRocmVhZF9yZWxheCk7DQo+PiAgDQo+PiAtc3RydWN0IGxvc3RhZ2Vfc2lnbmFs
-IHsNCj4+IC0Jc3RydWN0IHBpcGVsaW5lX2luYmFuZF93b3JrIGluYmFuZF93b3JrOyAvKiBNdXN0
-IGJlIGZpcnN0LiAqLw0KPj4gLQlzdHJ1Y3QgdGFza19zdHJ1Y3QgKnRhc2s7DQo+PiAtCWludCBz
-aWdubywgc2lndmFsOw0KPj4gLQlzdHJ1Y3QgbG9zdGFnZV9zaWduYWwgKnNlbGY7IC8qIFJldmlz
-aXQ6IEktcGlwZSByZXF1aXJlbWVudCAqLw0KPj4gLX07DQo+PiAtDQo+PiAgc3RhdGljIGlubGlu
-ZSB2b2lkIGRvX2t0aHJlYWRfc2lnbmFsKHN0cnVjdCB0YXNrX3N0cnVjdCAqcCwNCj4+ICAJCQkJ
-ICAgICBzdHJ1Y3QgeG50aHJlYWQgKnRocmVhZCwNCj4+ICAJCQkJICAgICBzdHJ1Y3QgbG9zdGFn
-ZV9zaWduYWwgKnJxKQ0KPj4gQEAgLTIxMTEsNyArMjEwNCw3IEBAIHN0YXRpYyB2b2lkIGxvc3Rh
-Z2VfdGFza19zaWduYWwoc3RydWN0IHBpcGVsaW5lX2luYmFuZF93b3JrICppbmJhbmRfd29yaykN
-Cj4+ICAJfSBlbHNlDQo+PiAgCQlzZW5kX3NpZyhzaWdubywgcCwgMSk7DQo+PiAgb3V0Og0KPj4g
-LQl4bmZyZWUocnEtPnNlbGYpOw0KPj4gKwltZW1zZXQocnEtPnNlbGYsIDAsIHNpemVvZigqcnEp
-KTsNCj4+ICB9DQo+PiAgDQo+PiAgc3RhdGljIGludCBmb3JjZV93YWtldXAoc3RydWN0IHhudGhy
-ZWFkICp0aHJlYWQpIC8qIG5rbG9jayBsb2NrZWQsIGlycXMgb2ZmICovDQo+PiBAQCAtMjI3Mywx
-NCArMjI2Niw1NiBAQCB2b2lkIHhudGhyZWFkX2RlbW90ZShzdHJ1Y3QgeG50aHJlYWQgKnRocmVh
-ZCkNCj4+ICB9DQo+PiAgRVhQT1JUX1NZTUJPTF9HUEwoeG50aHJlYWRfZGVtb3RlKTsNCj4+ICAN
-Cj4+ICtpbnQgZ2V0X3Nsb3RfaW5kZXhfZnJvbV9zaWcoaW50IHNpZywgaW50IGFyZykNCj4+ICt7
-DQo+PiArCWludCBhY3Rpb247DQo+PiArDQo+PiArCXN3aXRjaCAoc2lnKSB7DQo+PiArCWNhc2Ug
-U0lHREVCVUc6DQo+PiArCQlzd2l0Y2ggKGFyZykgew0KPj4gKwkJY2FzZSBTSUdERUJVR19XQVRD
-SERPRzoNCj4+ICsJCQlyZXR1cm4gMTsNCj4+ICsJCWNhc2UgU0lHREVCVUdfTUlHUkFURV9TSUdO
-QUw6DQo+PiArCQljYXNlIFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTDoNCj4+ICsJCWNhc2UgU0lH
-REVCVUdfTUlHUkFURV9GQVVMVDoNCj4+ICsJCWNhc2UgU0lHREVCVUdfTUlHUkFURV9QUklPSU5W
-Og0KPj4gKwkJY2FzZSBTSUdERUJVR19OT01MT0NLOg0KPj4gKwkJY2FzZSBTSUdERUJVR19SRVND
-TlRfSU1CQUxBTkNFOg0KPj4gKwkJY2FzZSBTSUdERUJVR19MT0NLX0JSRUFLOg0KPj4gKwkJY2Fz
-ZSBTSUdERUJVR19NVVRFWF9TTEVFUDoNCj4+ICsJCQlyZXR1cm4gMDsNCj4+ICsJCX0NCj4+ICsJ
-CWJyZWFrOw0KPj4gKwljYXNlIFNJR1NIQURPVzoNCj4+ICsJCWFjdGlvbiA9IHNpZ3NoYWRvd19h
-Y3Rpb24oYXJnKTsNCj4+ICsJCXN3aXRjaCAoYWN0aW9uKSB7DQo+PiArCQljYXNlIFNJR1NIQURP
-V19BQ1RJT05fSEFSREVOOg0KPj4gKwkJCXJldHVybiAyOw0KPj4gKwkJY2FzZSBTSUdTSEFET1df
-QUNUSU9OX0JBQ0tUUkFDRToNCj4+ICsJCQlyZXR1cm4gMzsNCj4+ICsJCWNhc2UgU0lHU0hBRE9X
-X0FDVElPTl9IT01FOg0KPj4gKwkJCXJldHVybiA0Ow0KPj4gKwkJfQ0KPj4gKwkJYnJlYWs7DQo+
-PiArCWNhc2UgU0lHVEVSTToNCj4+ICsJCXJldHVybiA1Ow0KPj4gKwl9DQo+PiArDQo+PiArCXJl
-dHVybiAtMTsNCj4+ICt9DQo+PiArDQo+PiAgdm9pZCB4bnRocmVhZF9zaWduYWwoc3RydWN0IHhu
-dGhyZWFkICp0aHJlYWQsIGludCBzaWcsIGludCBhcmcpDQo+PiAgew0KPj4gIAlzdHJ1Y3QgbG9z
-dGFnZV9zaWduYWwgKnNpZ3dvcms7DQo+PiArCWludCBzbG90Ow0KPj4gKw0KPj4gKwlzbG90ID0g
-Z2V0X3Nsb3RfaW5kZXhfZnJvbV9zaWcoc2lnLCBhcmcpOw0KPj4gIA0KPj4gLQlzaWd3b3JrID0g
-eG5tYWxsb2Moc2l6ZW9mKCpzaWd3b3JrKSk7DQo+PiAtCWlmIChXQVJOX09OKHNpZ3dvcmsgPT0g
-TlVMTCkpDQo+PiArCWlmIChzbG90IDwgMCB8fCBzbG90ID49IFhOVEhSRUFEX1NJR05BTFNfTlVN
-KQ0KPj4gIAkJcmV0dXJuOw0KPg0KPlNob3VsZCBrZWVwIHRoZSB3YXJuaW5nIG9uIGVycm9ycy4g
-QW5kID49IFhOVEhSRUFEX1NJR05BTFNfTlVNIGNhbm5vdA0KPmhhcHBlbiAob3Zlci1kZWZlbnNp
-dmUgcHJvZ3JhbW1pbmcpLg0KPg0KPj4gIA0KPj4gKwlzaWd3b3JrID0gJnRocmVhZC0+c2lnYXJy
-YXlbc2xvdF07DQo+PiArDQo+DQo+RG9lcyB0aGlzIGF1dG9tYXRpY2FsbHkgaGFuZGxlIHRoZSBj
-YXNlIG9mIGR1cGxpY2F0ZSBzdWJtaXNzaW9ucyBvbiB0aGUNCj5zYW1lIHNsb3Q/DQo+DQo+PiAg
-CXNpZ3dvcmstPmluYmFuZF93b3JrID0gKHN0cnVjdCBwaXBlbGluZV9pbmJhbmRfd29yaykNCj4+
-ICAJCQlQSVBFTElORV9JTkJBTkRfV09SS19JTklUSUFMSVpFUigqc2lnd29yaywNCj4+ICAJCQkJ
-CWxvc3RhZ2VfdGFza19zaWduYWwpOw0KPj4gDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBB
-RywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4
-DQo=
+On 08.06.21 19:39, Philippe Gerum wrote:
+> 
+> Philippe Gerum <rpm@xenomai.org> writes:
+> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>
+>>> On 07.06.21 18:19, Philippe Gerum wrote:
+>>>>
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> On 07.06.21 17:04, Philippe Gerum wrote:
+>>>>>>
+>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>
+>>>>>>> On 07.06.21 15:48, Jan Kiszka wrote:
+>>>>>>>> On 07.06.21 15:44, Jan Kiszka wrote:
+>>>>>>>>> On 07.06.21 15:03, Philippe Gerum wrote:
+>>>>>>>>>>
+>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>
+>>>>>>>>>>> On 07.06.21 09:17, Philippe Gerum wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> On 06.06.21 16:43, Philippe Gerum via Xenomai wrote:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Jan Kiszka <jan.kiszka@web.de> writes:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The correct order is hard IRQs off first, then stalling inband, see also
+>>>>>>>>>>>>>>> I-pipe. Otherwise, we risk to take an interrupt for the inband stage but
+>>>>>>>>>>>>>>> do not inject it before returning to user space.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>>>>>>>>>>> ---
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Fixes the RCU stalls Florian reported, at least for me.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> I'm afraid this wasn't the last regression of translating I-pipe into
+>>>>>>>>>>>>>>> dovetail..
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>  include/linux/entry-common.h | 3 ++-
+>>>>>>>>>>>>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>>>>>>>>>>>>>>> index 0fb45b2d6094..00540110985e 100644
+>>>>>>>>>>>>>>> --- a/include/linux/entry-common.h
+>>>>>>>>>>>>>>> +++ b/include/linux/entry-common.h
+>>>>>>>>>>>>>>> @@ -203,7 +203,8 @@ static inline void local_irq_disable_exit_to_user(void);
+>>>>>>>>>>>>>>>  #ifndef local_irq_disable_exit_to_user
+>>>>>>>>>>>>>>>  static inline void local_irq_disable_exit_to_user(void)
+>>>>>>>>>>>>>>>  {
+>>>>>>>>>>>>>>> -	local_irq_disable_full();
+>>>>>>>>>>>>>>> +	hard_cond_local_irq_disable();
+>>>>>>>>>>>>>>> +	local_irq_disable();
+>>>>>>>>>>>>>>>  }
+>>>>>>>>>>>>>>>  #endif
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Good spot, real issue here, just like the CPU_IDLE code deals with. The
+>>>>>>>>>>>>>> fix looks good, but maybe we could do even better.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> The way local_irq_disable_full() works tends to introduce this issue in
+>>>>>>>>>>>>>> a sneaky way, when the code path does not synchronize the interrupt log
+>>>>>>>>>>>>>> (exit_to_user_mode_loop may be at fault in this case, which does not
+>>>>>>>>>>>>>> traverses synchronize_pipeline()). Lack of synchronization would still
+>>>>>>>>>>>>>> hit us if some trap handler turns hard irqs off -> on -> off the same
+>>>>>>>>>>>>>> way, and we don't leave through the user exit path.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Inverting the order of the actions in local_irq_disable_full() may be an
+>>>>>>>>>>>>>> option (inband_irq_disable would allow that), making sure we cannot be
+>>>>>>>>>>>>>> caught in the same issue when returning to kernel mode is another
+>>>>>>>>>>>>>> way. This needs more thought I think.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> So, always this way?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> local_irq_disable_full:
+>>>>>>>>>>>>> 	hard_local_irq_disable	
+>>>>>>>>>>>>> 	local_irq_disable
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> local_irq_enable_full:
+>>>>>>>>>>>>> 	hard_local_irq_enable
+>>>>>>>>>>>>> 	local_irq_enable
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Yes.
+>>>>>>>>>>>>
+>>>>>>>>>>>>> Or even flip local_irq_enable_full as well?
+>>>>>>>>>>>>
+>>>>>>>>>>>> Not this one, hard irqs must be on before local_irq_enable() is issued
+>>>>>>>>>>>> otherwise we would trigger a debug assertion. The reason for such
+>>>>>>>>>>>> assertion is that the I-pipe version of local_irq_enable() force enables
+>>>>>>>>>>>> hard irqs on, and this is something we want to depart from because
+>>>>>>>>>>>> whether the caller expects or not such side-effect is error-prone. For
+>>>>>>>>>>>> this reason, inband_irq_enable() expects hard irqs on, which should be
+>>>>>>>>>>>> the current hard irq state for the caller under normal circumstances.
+>>>>>>>>>>>>
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Was there ever code that required ordering local_irq_disable_full the
+>>>>>>>>>>>>> other way around?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> After review, I don't think so. The current order for
+>>>>>>>>>>>> local_irq_disable_full() was rather determined by applying a reverse
+>>>>>>>>>>>> sequence compared to local_irq_enable_full(). So this looks good. I need
+>>>>>>>>>>>> to test this on the armv[7/8] side here first before merging.
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Is there a commit somewhere that I can drop already?
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> 1. These are fine with me in their latest iteration:
+>>>>>>>>>>
+>>>>>>>>>>   irq_pipeline: Clean up stage_info field and users
+>>>>>>>>>>   irq_pipeline: Account for stage migration across faults
+>>>>>>>>>>   irq_pipeline: Warn when calling irqentry_enter with oob stalled
+>>>>>>>>>>   x86: dovetail: Fix TS flag reservation
+>>>>>>>>>>
+>>>>>>>>>> 2. This one should be replaced by a fix in local_irq_disable_full(),
+>>>>>>>>>> pending some tests ongoing here:
+>>>>>>>>>>
+>>>>>>>>>> irq_pipeline: Prevent returning to user space with pending inband IRQs
+>>>>>>>>>>
+>>>>>>>>>> However, as I mentioned earlier, this may not be sufficient per se, we
+>>>>>>>>>> may have to synchronize the in-band log when unstalling the stage on the
+>>>>>>>>>> kernel exit path, i.e. the exit point fixed up by the "Account for stage
+>>>>>>>>>> migration across faults" patch. This would address the following
+>>>>>>>>>> scenario:
+>>>>>>>>>>
+>>>>>>>>>>         irqentry_enter on kernel context:
+>>>>>>>>>>                        stall_inband();
+>>>>>>>>>>                                 trap_handler();
+>>>>>>>>>>                                         hard_local_irq_enable()
+>>>>>>>>>>                                         hard_local_irq_disable()
+>>>>>>>>>>                        if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
+>>>>>>>>>>                            state.stage_info == IRQENTRY_OOB) {
+>>>>>>>>>>                              unstall_inband();
+>>>>>>>>>>                        	     synchronize_pipeline();
+>>>>>>>>>
+>>>>>>>>> Oh, unstall_inband does not synchronize? Because of
+>>>>>>>>> hard_local_irq_disable or in general?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Ah, found it - unstall != inband_irq_enable. Why not using the latter
+>>>>>>>> directly?
+>>>>>>>>
+>>>>>>>
+>>>>>>> ...because it's instrumented to detect hard_irqs_disabled.
+>>>>>>>
+>>>>>>> Can we safely sync at that point?
+>>>>>>
+>>>>>> Yes we may do this, because we restore the original -unstalled- state of
+>>>>>> the in-band stage. So if we have pending IRQs, we may play them at this
+>>>>>> point. What we may not do obviously, is creating synchronization points
+>>>>>> where the kernel does not expect irqs.
+>>>>>>
+>>>>>
+>>>>> Again: When will any reschedules that might be requested by those
+>>>>> replayed IRQs be handled then?
+>>>>>
+>>>>
+>>>> Nowhere unless we provide a log synchronization routine dedicated to the
+>>>> in-band kernel exit path, which would fold in the rescheduling call via
+>>>> irqentry_exit_cond_resched(). I'll write that one.
+>>>>
+>>>
+>>> How about simply moving the replay up, before the kernel checks for
+>>> pending reschedules anyway? We can stall inband then again, to please
+>>> lockdep & Co., as long as there is no hard-irq-on section before the intret.
+>>>
+>>
+>> Yes, this is the right way to do this. I'm on it.
+> 
+> Please test this (heavily) with cobalt. This survived a 2-hours long kvm
+> test here, running loops of the evl test suite + hackbench over 64 vcpus,
+> so far so good. No reason for any difference in behavior between cobalt
+> and evl in this area, this is merely a dovetail business.
+> 
+> commit 30808d958277a525baad33f3c68ccb7910dc3176 (HEAD -> rebase/v5.10.y-evl)
+> Author: Philippe Gerum <rpm@xenomai.org>
+> 
+>     genirq: irq_pipeline: synchronize log on irq exit to kernel
+>     
+>     We must make sure to play any IRQ which might be pending in the
+>     in-band log before leaving an interrupt frame for a preempted kernel
+>     context.
+>     
+>     This completes "irq_pipeline: Account for stage migration across
+>     faults", so that we synchronize the log once the in-band stage is
+>     unstalled. In addition, we also care to do this before
+>     preempt_schedule_irq() runs, so that we won't miss any rescheduling
+>     request which might have been triggered by some IRQ we just played.
+>     
+>     Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>     Suggested-by: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+> index 4e81c0c03e5726a..99512307537561b 100644
+> --- a/kernel/entry/common.c
+> +++ b/kernel/entry/common.c
+> @@ -477,8 +477,57 @@ bool irqexit_may_preempt_schedule(irqentry_state_t state,
+>  
+>  #endif
+>  
+> +#ifdef CONFIG_IRQ_PIPELINE
+> +
+> +static bool irqentry_syncstage(irqentry_state_t state) /* hard irqs off */
+> +{
+> +	/*
+> +	 * If pipelining interrupts, enable in-band IRQs then
+> +	 * synchronize the interrupt log on exit if:
+> +	 *
+> +	 * - irqentry_enter() stalled the stage in order to mirror the
+> +	 * hardware state.
+> +	 *
+> +	 * - we where coming from oob, thus went through a stage migration
+> +	 * that was caused by taking a CPU exception, e.g., a fault.
+> +	 *
+> +	 * We run before preempt_schedule_irq() may be called later on
+> +	 * by preemptible kernels, so that any rescheduling request
+> +	 * triggered by in-band IRQ handlers is considered.
+> +	 */
+> +	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
+> +		state.stage_info == IRQENTRY_OOB) {
+> +		unstall_inband_nocheck();
+> +		synchronize_pipeline_on_irq();
+> +		stall_inband_nocheck();
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void irqentry_unstall(void)
+> +{
+> +	unstall_inband_nocheck();
+> +}
+> +
+> +#else
+> +
+> +static bool irqentry_syncstage(irqentry_state_t state)
+> +{
+> +	return false;
+> +}
+> +
+> +static void irqentry_unstall(void)
+> +{
+> +}
+> +
+> +#endif
+> +
+>  noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+>  {
+> +	bool synchronized = false;
+> +
+>  	if (running_oob())
+>  		return;
+>  
+> @@ -488,7 +537,11 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+>  	if (user_mode(regs)) {
+>  		irqentry_exit_to_user_mode(regs);
+>  		return;
+> -	} else if (irqexit_may_preempt_schedule(state, regs)) {
+> +	}
+> +
+> +	synchronized = irqentry_syncstage(state);
+> +
+> +	if (irqexit_may_preempt_schedule(state, regs)) {
+>  		/*
+>  		 * If RCU was not watching on entry this needs to be done
+>  		 * carefully and needs the same ordering of lockdep/tracing
+> @@ -521,17 +574,9 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+>  	}
+>  
+>  out:
+> -#ifdef CONFIG_IRQ_PIPELINE
+> -	/*
+> -	 * If pipelining interrupts, clear the in-band stall bit if
+> -	 * irqentry_enter() raised it in order to mirror the hardware
+> -	 * state. Also clear it when we where coming from oob, thus went
+> -	 * through a migration that was caused by taking, e.g., a fault.
+> -	 */
+> -	if (state.stage_info == IRQENTRY_INBAND_UNSTALLED ||
+> -	    state.stage_info == IRQENTRY_OOB)
+> -		unstall_inband();
+> -#endif
+> +	if (synchronized)
+> +		irqentry_unstall();
+> +
+>  	return;
+>  }
+>  
+> 
+
+I've put that into a staging/v5.10.y-dovetail branch, pointed
+xenomai-images to that and started a run in our lab. That should give us
+some confidence that things work under cobalt across all archs, and we
+can make that commit official.
+
+However, heavy stressing would require triggering migration-on-fault in
+tighter loops while running something like stress-ng in the background.
+Maybe it would make sense to add such a pattern to the switchtest (would
+also require a way to silence the related kernel warnings during
+runtime, not only build-time)?
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
