@@ -1,9 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Xenomai 4 kick-off
-Message-ID: <87im3jnjyg.fsf@xenomai.org>
-Date: Wed, 09 Jun 2021 09:04:31 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] cobalt/pipe: Add support for compat_ioctl
+Message-ID: <0c98b3ff-18b1-959a-2e48-02bb19e6eb14@siemens.com>
+Date: Wed, 9 Jun 2021 10:01:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,46 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, evl@evlproject.org
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-As hinted some time ago, the EVL project is being gradually merged into
-the Xenomai project. As a result, the git trees hosted at
-git.evlproject.org are now moving to git.xenomai.org. This code is the
-cornerstone of the Xenomai 4 effort, which is now officially live. Many
-thanks -once more- to Denx Engineering and particularly to Wolfgang Denk
-for providing us with hosting services.
+There are only two pipe IOCTLs that take arguments and both are int
+pointers. Therefore, use the compat_ptr_ioctl pattern, just open-coding
+it for support of kernels < 5.4.4.
 
-To this end, a xenomai4 sub-group was created in the main Xenomai group
-which runs on the official gitlab instance on source.denx.de, for
-maintaining the Xenomai 4 resources. The mapping from the old trees to
-the new ones is as follows:
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/pipe.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-git://git.evlproject.org/linux-evl.git -> git@git.xenomai.org:Xenomai/xenomai4/linux-evl.git
-git://git.evlproject.org/libevl.git -> git@git.xenomai.org:Xenomai/xenomai4/libevl.git
-
-At this chance, the Dovetail development moved away from linux-evl.git
-to its own separate tree at:
-
-git@git.xenomai.org:Xenomai/linux-dovetail.git
-https://git.xenomai.org/linux-dovetail.git
-
-The former trees at git://git.evlproject.org will remain accessible
-until June 18 2021, please update your scripts/bookmarks to point at
-https://git.xenomai.org/xenomai4 before this date.
-
-In addition, the sources of the website currently located at
-https://evlproject.org are now available from
-git@git.xenomai.org:Xenomai/xenomai4/website.git. This is the base of
-the upcoming Xenomai 4 documentation.
-
-If you are interested in knowing more about the EVL real-time core
-Xenomai 4 is based on, you may want to visit these pages:
-https://evlproject.org/core/
-https://evlproject.org/overview/
-
-Thanks,
-
+diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
+index 9465fb2da..19064ea69 100644
+--- a/kernel/cobalt/pipe.c
++++ b/kernel/cobalt/pipe.c
+@@ -1052,6 +1052,16 @@ static long xnpipe_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	return ret;
+ }
+ 
++/*
++ * Could be replaced with compat_ptr_ioctl if support for kernels < 5.4 is
++ * dropped.
++ */
++static long xnpipe_compat_ioctl(struct file *file, unsigned int cmd,
++				unsigned long arg)
++{
++	return xnpipe_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
++}
++
+ static int xnpipe_fasync(int fd, struct file *file, int on)
+ {
+ 	struct xnpipe_state *state = file->private_data;
+@@ -1112,6 +1122,7 @@ static struct file_operations xnpipe_fops = {
+ 	.write = xnpipe_write,
+ 	.poll = xnpipe_poll,
+ 	.unlocked_ioctl = xnpipe_ioctl,
++	.compat_ioctl = xnpipe_compat_ioctl,
+ 	.open = xnpipe_open,
+ 	.release = xnpipe_release,
+ 	.fasync = xnpipe_fasync
 -- 
-Philippe.
+2.26.2
 
