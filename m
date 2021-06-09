@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] testsuite/xeno-test: Stop systemd-timesyncd across smokey runs
-Message-ID: <46f42fa7-be5c-1b0c-4e04-67098423c68f@siemens.com>
-Date: Wed, 9 Jun 2021 21:53:24 +0200
+Subject: [PATCH v2] cobalt/pipe: Add support for compat_ioctl
+Message-ID: <8c159b30-8270-1a39-4442-03bd005f2b60@siemens.com>
+Date: Wed, 9 Jun 2021 22:54:47 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,40 +18,52 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-With dovetail, clock_settime affects the Linux wall clock as well. When
-systemd-timesyncd is running, the posix-clock test will fail because its
-check of clock settings will immediately be overwritten by timesyncd
-again. So stop that service if present and running and restart it after
-the test.
+There are only two pipe IOCTLs that take arguments and both are int
+pointers. Therefore, use the compat_ptr_ioctl pattern, just open-coding
+it for support of kernels < 5.4.4.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/xeno-test/xeno-test.in | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 
-diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
-index 505adfd75..95bf59606 100644
---- a/testsuite/xeno-test/xeno-test.in
-+++ b/testsuite/xeno-test/xeno-test.in
-@@ -82,7 +82,18 @@ echo 0 > /proc/xenomai/latency || :
+Changes in v2:
+ - fix !CONFIG_COMPAT build
+
+ kernel/cobalt/pipe.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
+index 9465fb2da..17aca5df6 100644
+--- a/kernel/cobalt/pipe.c
++++ b/kernel/cobalt/pipe.c
+@@ -1052,6 +1052,20 @@ static long xnpipe_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	return ret;
+ }
  
- testdir=@testdir@
- 
-+timesyncd_running=false
-+if which systemctl > /dev/null && systemctl is-active --quiet systemd-timesyncd; then
-+    timesyncd_running=true
-+    systemctl stop systemd-timesyncd
-+fi
++#ifdef CONFIG_COMPAT
++/*
++ * Could be replaced with compat_ptr_ioctl if support for kernels < 5.4 is
++ * dropped.
++ */
++static long xnpipe_compat_ioctl(struct file *file, unsigned int cmd,
++				unsigned long arg)
++{
++	return xnpipe_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
++}
++#else
++#define xnpipe_compat_ioctl	NULL
++#endif
 +
- $testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
-+
-+if $timesyncd_running; then
-+    systemctl start systemd-timesyncd
-+fi
-+
- $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
- $testdir/switchtest -T 30
- 
+ static int xnpipe_fasync(int fd, struct file *file, int on)
+ {
+ 	struct xnpipe_state *state = file->private_data;
+@@ -1112,6 +1126,7 @@ static struct file_operations xnpipe_fops = {
+ 	.write = xnpipe_write,
+ 	.poll = xnpipe_poll,
+ 	.unlocked_ioctl = xnpipe_ioctl,
++	.compat_ioctl = xnpipe_compat_ioctl,
+ 	.open = xnpipe_open,
+ 	.release = xnpipe_release,
+ 	.fasync = xnpipe_fasync
 -- 
 2.26.2
 
