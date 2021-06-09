@@ -1,12 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 8/9] y2038: lib/cobalt/clock: dispatch clock_nanosleep
-Date: Tue,  1 Jun 2021 11:43:33 +0200
-Message-Id: <20210601094334.774394-9-florian.bezdeka@siemens.com>
-In-Reply-To: <20210601094334.774394-1-florian.bezdeka@siemens.com>
-References: <20210601094334.774394-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [dovetail][PATCH] irq_pipeline: Mark inband stalled also on
+ exceptions
+References: <e3039175-369c-4be9-c3c6-02f4756aff77@siemens.com>
+ <875yyn6lf9.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <db77f69b-4fda-2167-cdca-20a20e1e2b54@siemens.com>
+Date: Wed, 9 Jun 2021 20:34:31 +0200
 MIME-Version: 1.0
+In-Reply-To: <875yyn6lf9.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +18,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: jan.kiszka@siemens.com, chensong@tj.kylinos.cn, Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: chensong <chensong@tj.kylinos.cn>
+On 09.06.21 18:40, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> From: Philippe Gerum <rpm@xenomai.org>
+>>
+>> Make sure that inband is marked stalled when entering from user mode,
+>> taking an exception.
+>>
+>> This affects x86 which is currently the only arch using generic
+>> irqentry_enter_from_user_mode on exceptions. It fixes this lockdep
+>> warning:
+>>
+>> DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
+>> WARNING: CPU: 2 PID: 1477 at ../kernel/locking/lockdep.c:4129 lockdep_hardirqs_on_prepare+0x160/0x1a0
+>>
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> Works as it should here. If the wording is fine, please add.
+>>
+>>  kernel/entry/common.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+>> index 995123075375..51af58e61cb8 100644
+>> --- a/kernel/entry/common.c
+>> +++ b/kernel/entry/common.c
+>> @@ -343,6 +343,8 @@ __visible noinstr void syscall_exit_to_user_mode(struct pt_regs *regs)
+>>  
+>>  noinstr void irqentry_enter_from_user_mode(struct pt_regs *regs)
+>>  {
+>> +	WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
+>> +	stall_inband_nocheck();
+>>  	enter_from_user_mode(regs);
+>>  }
+>>  
+>> @@ -373,8 +375,6 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+>>  
+>>  	if (user_mode(regs)) {
+>>  #ifdef CONFIG_IRQ_PIPELINE
+>> -		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
+>> -		stall_inband_nocheck();
+>>  		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
+>>  #endif
+>>  		irqentry_enter_from_user_mode(regs);
+> 
+> Ok, picked it. Thanks.
+> 
 
-If sizeof time_t bigger than 4, which means glibc supports
-64bit timespec, go to clock_nanosleep64.
+For the sake of completeness: CONFIG_PROVE_RAW_LOCK_NESTING=y papered
+over this. But I still don't get why as that only affects complete_all()...
 
-otherwise, go to original clock_nanosleep.
+Jan
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
-Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- lib/cobalt/clock.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
-index 16081c86e..edecb40a0 100644
---- a/lib/cobalt/clock.c
-+++ b/lib/cobalt/clock.c
-@@ -361,8 +361,13 @@ COBALT_IMPL(int, clock_nanosleep, (clockid_t clock_id,
- 
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
- 
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
-+				clock_id, flags, rqtp, rmtp);
-+#else
- 	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
- 				clock_id, flags, rqtp, rmtp);
-+#endif
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
