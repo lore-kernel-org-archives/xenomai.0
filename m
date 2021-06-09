@@ -1,11 +1,8 @@
-Subject: Re: dovetail: DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
-References: <7bd62ff7-0f90-d881-4a5f-7a80091aa321@siemens.com>
- <87eedb6n9q.fsf@xenomai.org> <878s3j6n16.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <df14e448-33c5-90cd-ef09-ae6bf1ce7108@siemens.com>
-Date: Wed, 9 Jun 2021 18:07:52 +0200
+Subject: [dovetail][PATCH] irq_pipeline: Mark inband stalled also on exceptions
+Message-ID: <e3039175-369c-4be9-c3c6-02f4756aff77@siemens.com>
+Date: Wed, 9 Jun 2021 18:24:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <878s3j6n16.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,42 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 09.06.21 18:05, Philippe Gerum wrote:
-> 
-> Philippe Gerum <rpm@xenomai.org> writes:
-> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> Hi Philippe,
->>>
->>> currently trying to understand [1]: The check in
->>> lockdep_hardirqs_on_prepare triggers, e.g. over exc_int3 ->
->>> do_int3_user, and then on cond_local_irq_enable().
->>>
->>> Where should have the current stage be stalled after exc_int3 so that
->>> lockdep is happy?
->>>
->>
->> Nowhere. v5.8 introduced irqentry_enter_from_user_mode() which raw
->> (debug) traps invoke directly, and this one does not reconcile the hard
->> irq state with the stall bit.
->>
-> 
-> Unfortunately, arm and arm64 do not use the generic kernel entry code
-> yet, so we can exercise the Dovetail-related code only with x86.
-> 
+From: Philippe Gerum <rpm@xenomai.org>
 
-Yeah, but once they do, things should Just Work (TM) by then. ;)
+Make sure that inband is marked stalled when entering from user mode,
+taking an exception.
 
-Testing your fix right now.
+This affects x86 which is currently the only arch using generic
+irqentry_enter_from_user_mode on exceptions. It fixes this lockdep
+warning:
 
-Thanks,
-Jan
+DEBUG_LOCKS_WARN_ON(!lockdep_stage_disabled())
+WARNING: CPU: 2 PID: 1477 at ../kernel/locking/lockdep.c:4129 lockdep_hardirqs_on_prepare+0x160/0x1a0
 
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+Works as it should here. If the wording is fine, please add.
+
+ kernel/entry/common.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 995123075375..51af58e61cb8 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -343,6 +343,8 @@ __visible noinstr void syscall_exit_to_user_mode(struct pt_regs *regs)
+ 
+ noinstr void irqentry_enter_from_user_mode(struct pt_regs *regs)
+ {
++	WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
++	stall_inband_nocheck();
+ 	enter_from_user_mode(regs);
+ }
+ 
+@@ -373,8 +375,6 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+ 
+ 	if (user_mode(regs)) {
+ #ifdef CONFIG_IRQ_PIPELINE
+-		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
+-		stall_inband_nocheck();
+ 		ret.stage_info = IRQENTRY_INBAND_UNSTALLED;
+ #endif
+ 		irqentry_enter_from_user_mode(regs);
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
