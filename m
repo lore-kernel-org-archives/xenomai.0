@@ -1,12 +1,12 @@
 References: <6caeb963-97fc-c858-8c89-6cafda765d9a@siemens.com>
+ <87wnr25gqw.fsf@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: Dovetail: Possible boot issue on BeagleBone Black
-In-reply-to: <6caeb963-97fc-c858-8c89-6cafda765d9a@siemens.com>
-Date: Thu, 10 Jun 2021 09:19:19 +0200
-Message-ID: <87wnr25gqw.fsf@xenomai.org>
+In-reply-to: <87wnr25gqw.fsf@xenomai.org>
+Date: Thu, 10 Jun 2021 09:23:36 +0200
+Message-ID: <87tum65gjr.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +18,66 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-CkphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IHdyaXRlczoKCj4gSGkgUGhpbGlw
-cGUsCj4KPiBzZWVtcyB3ZSBoYXZlIHNvbWUgZWFybHkgYm9vdCBwcm9ibGVtIHdpdGggRG92ZXRh
-aWwgb24gdGhlIEJCQiAod2hpbGUKPiBxZW11LWFybSBpcyBmaW5lKSwgc2VlIFsxXSB2cy4gWzJd
-IChkaXNhYmxlZCBYZW5vbWFpIGZvciBbMl0sIHNlZSBbM10pLgo+IERvIHlvdSBoYXBwZW4gdG8g
-aGF2ZSBzdWNoIGEgdGFyZ2V0IGFyb3VuZD8gT3IgYSByZWZlcmVuY2UgY29uZmlnIHRoYXQKPiBp
-cyBzdXBwb3NlZCB0byB3b3JrPwo+Cj4gSmFuCj4KPiBbMV0gaHR0cHM6Ly9zb3VyY2UuZGVueC5k
-ZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2VzLy0vam9icy8yNzczOTIjTDQ0NAo+IFsyXSBodHRwczov
-L3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haS1pbWFnZXMvLS9qb2JzLzI3NzgyMSNMNDQ0
-Cj4gWzNdCj4gaHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2VzLy0v
-Y29tbWl0L2Q0OGMyOGE4MmYxNmI1MTQxOTQ4ZjIzY2M1YmNlMjQ0MjE3ZWRhMTUKClllcywgSSBo
-YXZlIHRoYXQgb25lIGF0IGhhbmQsIG15IEtjb25maWcgYXR0YWNoZWQuIE5vIGlzc3VlIHdpdGgg
-Ym9vdGluZwpFVkwgb24gdGhlIGxhdGVzdCBEb3ZldGFpbC81LjEwLUxUUy4gSSdsbCBnaXZlIGEg
-dHJ5IHRvIERvdmV0YWlsK0NvYmFsdApsYXRlciB0b2RheS4gKGR0YiBpc3N1ZSBpbiB0aGUgQ0k/
-KQoKWyAgICAwLjAwMDAwMF0gQm9vdGluZyBMaW51eCBvbiBwaHlzaWNhbCBDUFUgMHgwClsgICAg
-MC4wMDAwMDBdIExpbnV4IHZlcnNpb24gNS4xMC40Mi0wMDU5MC1nY2Q3YjYxZmY1NDViIChycG1A
-cHlybykgKGFybS1saW51eC1nbnVlYWJpaGYtZ2NjIChMaW5hcm8gR0NDIDcuNS0yMDE5LjEyKSA3
-LjUuMCwgR05VIGxkIChMaW5hcm9fQmludXRpbHMtMjAxOS4xMikgMi4yOC4yLjIwMTcwNzA2KSAj
-MSBQUkVFTVBUIElSUVBJUEUgVGh1IEp1biAxMCAwOTowODo1NiBDRVNUIDIwMjEKWyAgICAwLjAw
-MDAwMF0gQ1BVOiBBUk12NyBQcm9jZXNzb3IgWzQxM2ZjMDgyXSByZXZpc2lvbiAyIChBUk12Nyks
-IGNyPTEwYzUzODdkClsgICAgMC4wMDAwMDBdIENQVTogUElQVCAvIFZJUFQgbm9uYWxpYXNpbmcg
-ZGF0YSBjYWNoZSwgVklQVCBhbGlhc2luZyBpbnN0cnVjdGlvbiBjYWNoZQpbICAgIDAuMDAwMDAw
-XSBPRjogZmR0OiBNYWNoaW5lIG1vZGVsOiBUSSBBTTMzNXggQmVhZ2xlQm9uZSBCbGFjawpbICAg
-IDAuMDAwMDAwXSBNZW1vcnkgcG9saWN5OiBEYXRhIGNhY2hlIHdyaXRlYmFjawpbICAgIDAuMDAw
-MDAwXSBlZmk6IFVFRkkgbm90IGZvdW5kLgpbICAgIDAuMDAwMDAwXSBjbWE6IFJlc2VydmVkIDY0
-IE1pQiBhdCAweDliODAwMDAwClsgICAgMC4wMDAwMDBdIFpvbmUgcmFuZ2VzOgpbICAgIDAuMDAw
-MDAwXSAgIERNQSAgICAgIFttZW0gMHgwMDAwMDAwMDgwMDAwMDAwLTB4MDAwMDAwMDA5ZmRmZmZm
-Zl0KWyAgICAwLjAwMDAwMF0gICBOb3JtYWwgICBlbXB0eQpbICAgIDAuMDAwMDAwXSAgIEhpZ2hN
-ZW0gIGVtcHR5ClsgICAgMC4wMDAwMDBdIE1vdmFibGUgem9uZSBzdGFydCBmb3IgZWFjaCBub2Rl
-ClsgICAgMC4wMDAwMDBdIEVhcmx5IG1lbW9yeSBub2RlIHJhbmdlcwpbICAgIDAuMDAwMDAwXSAg
-IG5vZGUgICAwOiBbbWVtIDB4MDAwMDAwMDA4MDAwMDAwMC0weDAwMDAwMDAwOWZkZmZmZmZdClsg
-ICAgMC4wMDAwMDBdIEluaXRtZW0gc2V0dXAgbm9kZSAwIFttZW0gMHgwMDAwMDAwMDgwMDAwMDAw
-LTB4MDAwMDAwMDA5ZmRmZmZmZl0KWyAgICAwLjAwMDAwMF0gQ1BVOiBBbGwgQ1BVKHMpIHN0YXJ0
-ZWQgaW4gU1ZDIG1vZGUuClsgICAgMC4wMDAwMDBdIEFNMzM1WCBFUzIuMSAoc2d4IG5lb24pClsg
-ICAgMC4wMDAwMDBdIEJ1aWx0IDEgem9uZWxpc3RzLCBtb2JpbGl0eSBncm91cGluZyBvbi4gIFRv
-dGFsIHBhZ2VzOiAxMjk1NDAKWyAgICAwLjAwMDAwMF0gS2VybmVsIGNvbW1hbmQgbGluZTogcm9v
-dD0vZGV2L25mcyBydyBuZnNyb290PTE5Mi4xNjguMy4xOi92YXIvbGFiL25mc3Jvb3QvZ2VuZXJp
-Yy9hcm12Nyx2Myx0Y3AgcGFuaWM9MSBjb25zb2xlPXR0eVMwLDExNTIwMG44IGlwPWRoY3AKWyAg
-ICAwLjAwMDAwMF0gRGVudHJ5IGNhY2hlIGhhc2ggdGFibGUgZW50cmllczogNjU1MzYgKG9yZGVy
-OiA2LCAyNjIxNDQgYnl0ZXMsIGxpbmVhcikKWyAgICAwLjAwMDAwMF0gSW5vZGUtY2FjaGUgaGFz
-aCB0YWJsZSBlbnRyaWVzOiAzMjc2OCAob3JkZXI6IDUsIDEzMTA3MiBieXRlcywgbGluZWFyKQpb
-ICAgIDAuMDAwMDAwXSBtZW0gYXV0by1pbml0OiBzdGFjazpvZmYsIGhlYXAgYWxsb2M6b2ZmLCBo
-ZWFwIGZyZWU6b2ZmClsgICAgMC4wMDAwMDBdIE1lbW9yeTogNDI4MTYwSy81MjIyNDBLIGF2YWls
-YWJsZSAoMTMzMTJLIGtlcm5lbCBjb2RlLCAxNzEySyByd2RhdGEsIDUyMjhLIHJvZGF0YSwgMjA0
-OEsgaW5pdCwgNDExSyBic3MsIDI4NTQ0SyByZXNlcnZlZCwgNjU1MzZLIGNtYS1yZXNlcnZlZCwg
-MEsgaGlnaG1lbSkKWyAgICAwLjAwMDAwMF0gU0xVQjogSFdhbGlnbj02NCwgT3JkZXI9MC0zLCBN
-aW5PYmplY3RzPTAsIENQVXM9MSwgTm9kZXM9MQpbICAgIDAuMDAwMDAwXSByY3U6IFByZWVtcHRp
-YmxlIGhpZXJhcmNoaWNhbCBSQ1UgaW1wbGVtZW50YXRpb24uClsgICAgMC4wMDAwMDBdIHJjdTog
-CVJDVSBldmVudCB0cmFjaW5nIGlzIGVuYWJsZWQuClsgICAgMC4wMDAwMDBdIAlUcmFtcG9saW5l
-IHZhcmlhbnQgb2YgVGFza3MgUkNVIGVuYWJsZWQuClsgICAgMC4wMDAwMDBdIHJjdTogUkNVIGNh
-bGN1bGF0ZWQgdmFsdWUgb2Ygc2NoZWR1bGVyLWVubGlzdG1lbnQgZGVsYXkgaXMgMTAgamlmZmll
-cy4KWyAgICAwLjAwMDAwMF0gTlJfSVJRUzogMTYsIG5yX2lycXM6IDE2LCBwcmVhbGxvY2F0ZWQg
-aXJxczogMTYKWyAgICAwLjAwMDAwMF0gSVJROiBGb3VuZCBhbiBJTlRDIGF0IDB4KHB0cnZhbCkg
-KHJldmlzaW9uIDUuMCkgd2l0aCAxMjggaW50ZXJydXB0cwpbICAgIDAuMDAwMDAwXSByYW5kb206
-IGdldF9yYW5kb21fYnl0ZXMgY2FsbGVkIGZyb20gc3RhcnRfa2VybmVsKzB4MzMwLzB4NGM0IHdp
-dGggY3JuZ19pbml0PTAKWyAgICAwLjAwNDUxM10gSVJRIHBpcGVsaW5lIGVuYWJsZWQKCi0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
-d2FzIHNjcnViYmVkLi4uCk5hbWU6IC5jb25maWcKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
-ZWFtClNpemU6IDIzNTExNiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94
-ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMDYxMC9mN2Y4NDI2
-ZS9hdHRhY2htZW50Lm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
-CgotLSAKUGhpbGlwcGUuCg==
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>
+>> Hi Philippe,
+>>
+>> seems we have some early boot problem with Dovetail on the BBB (while
+>> qemu-arm is fine), see [1] vs. [2] (disabled Xenomai for [2], see [3]).
+>> Do you happen to have such a target around? Or a reference config that
+>> is supposed to work?
+>>
+>> Jan
+>>
+>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277392#L444
+>> [2] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277821#L444
+>> [3]
+>> https://source.denx.de/Xenomai/xenomai-images/-/commit/d48c28a82f16b5141948f23cc5bce244217eda15
+>
+> Yes, I have that one at hand, my Kconfig attached. No issue with booting
+> EVL on the latest Dovetail/5.10-LTS. I'll give a try to Dovetail+Cobalt
+> later today. (dtb issue in the CI?)
+>
+> [    0.000000] Booting Linux on physical CPU 0x0
+> [    0.000000] Linux version 5.10.42-00590-gcd7b61ff545b (rpm@pyro) (arm-linux-gnueabihf-gcc (Linaro GCC 7.5-2019.12) 7.5.0, GNU ld (Linaro_Binutils-2019.12) 2.28.2.20170706) #1 PREEMPT IRQPIPE Thu Jun 10 09:08:56 CEST 2021
+> [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c5387d
+> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+> [    0.000000] OF: fdt: Machine model: TI AM335x BeagleBone Black
+> [    0.000000] Memory policy: Data cache writeback
+> [    0.000000] efi: UEFI not found.
+> [    0.000000] cma: Reserved 64 MiB at 0x9b800000
+> [    0.000000] Zone ranges:
+> [    0.000000]   DMA      [mem 0x0000000080000000-0x000000009fdfffff]
+> [    0.000000]   Normal   empty
+> [    0.000000]   HighMem  empty
+> [    0.000000] Movable zone start for each node
+> [    0.000000] Early memory node ranges
+> [    0.000000]   node   0: [mem 0x0000000080000000-0x000000009fdfffff]
+> [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000009fdfffff]
+> [    0.000000] CPU: All CPU(s) started in SVC mode.
+> [    0.000000] AM335X ES2.1 (sgx neon)
+> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129540
+> [    0.000000] Kernel command line: root=/dev/nfs rw nfsroot=192.168.3.1:/var/lab/nfsroot/generic/armv7,v3,tcp panic=1 console=ttyS0,115200n8 ip=dhcp
+> [    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+> [    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+> [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+> [    0.000000] Memory: 428160K/522240K available (13312K kernel code, 1712K rwdata, 5228K rodata, 2048K init, 411K bss, 28544K reserved, 65536K cma-reserved, 0K highmem)
+> [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+> [    0.000000] rcu: Preemptible hierarchical RCU implementation.
+> [    0.000000] rcu: 	RCU event tracing is enabled.
+> [    0.000000] 	Trampoline variant of Tasks RCU enabled.
+> [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+> [    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+> [    0.000000] IRQ: Found an INTC at 0x(ptrval) (revision 5.0) with 128 interrupts
+> [    0.000000] random: get_random_bytes called from start_kernel+0x330/0x4c4 with crng_init=0
+> [    0.004513] IRQ pipeline enabled
+
+Just tried with PROVE_LOCKING, and DEBUG_DOVETAIL enabled. Still ok (evl
+test suite passes as well).
+
+-- 
+Philippe.
+
