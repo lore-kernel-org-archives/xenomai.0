@@ -1,9 +1,10 @@
-References: <f5a5c0eb-444d-2af3-b493-ec0c9b9ee428@siemens.com>
+References: <be8ef36d-5e37-d88e-c088-fcb76e43bdc2@siemens.com>
+ <fa53a917-b07f-1006-3c6d-d1d525d00804@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Moving inband work off stack - remaing cases
-In-reply-to: <f5a5c0eb-444d-2af3-b493-ec0c9b9ee428@siemens.com>
-Date: Fri, 11 Jun 2021 17:35:32 +0200
-Message-ID: <875yykbeij.fsf@xenomai.org>
+Subject: Re: [PATCH] cobalt/tick: dovetail: Fix non-SMP build
+In-reply-to: <fa53a917-b07f-1006-3c6d-d1d525d00804@siemens.com>
+Date: Thu, 10 Jun 2021 18:56:39 +0200
+Message-ID: <87sg1pbquw.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,35 +16,80 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
 
-> Hi Philippe,
+> On 10.06.21 18:39, Jan Kiszka via Xenomai wrote:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> 
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>  kernel/cobalt/dovetail/tick.c | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>> 
+>> diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+>> index 81eaab84a..570f6a1f5 100644
+>> --- a/kernel/cobalt/dovetail/tick.c
+>> +++ b/kernel/cobalt/dovetail/tick.c
+>> @@ -130,23 +130,27 @@ static void setup_proxy(struct clock_proxy_device *dev)
+>>  	__this_cpu_write(proxy_device, dev);
+>>  }
+>>  
+>> +#ifdef CONFIG_SMP
+>>  static irqreturn_t tick_ipi_handler(int irq, void *dev_id)
+>>  {
+>>  	xnintr_core_clock_handler();
+>>  
+>>  	return IRQ_HANDLED;
+>>  }
+>> +#endif
+>>  
+>>  int pipeline_install_tick_proxy(void)
+>>  {
+>>  	int ret;
+>>  
+>> +#ifdef CONFIG_SMP
+>>  	ret = __request_percpu_irq(TIMER_OOB_IPI,
+>>  				tick_ipi_handler,
+>>  				IRQF_OOB, "Xenomai timer IPI",
+>>  				&cobalt_machine_cpudata);
+>>  	if (ret)
+>>  		return ret;
+>> +#endif
+>>  
+>>  	/* Install the proxy tick device */
+>>  	ret = tick_install_proxy(setup_proxy, &xnsched_realtime_cpus);
+>> @@ -156,7 +160,9 @@ int pipeline_install_tick_proxy(void)
+>>  	return 0;
+>>  
+>>  fail_proxy:
+>> +#ifdef CONFIG_SMP
+>>  	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+>> +#endif
+>>  
+>>  	return ret;
+>>  }
+>> @@ -166,5 +172,7 @@ void pipeline_uninstall_tick_proxy(void)
+>>  	/* Uninstall the proxy tick device. */
+>>  	tick_uninstall_proxy(&xnsched_realtime_cpus);
+>>  
+>> +#ifdef CONFIG_SMP
+>>  	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+>> +#endif
+>>  }
+>> 
 >
-> I'm trying to understand the reasoning for moving inband work struct for
-> the remaining cases of the triggering stack.
+> Should have been more precise: This definitely breaks on arm, possibly
+> on other archs as well.
 >
-> To my understanding, this is not needed for xnthread_map (to be
-> privatized soon, so only for the in-tree case) because the caller
-> providing the struct waits for the completion which will be triggered
-> via the inband handler.
+> Found while diff'ing broken to (possibly) working .configs for
+> BeagleBone Black.
 >
 
-Correct.
-
-> Looking at xnthread_relax(), the same should apply to post_wakeup -
-> provided it is inlined into xnthread_relax - because, again, we won't
-> leave that function before the signal was sent, thus the work consumed.
->
-
-Correct.
-
-> Am I missing something?
->
-
-Nope.
+bbb and other A8-based SoCs are probably the only hw we have been using
+with SMP off these days.
 
 -- 
 Philippe.
