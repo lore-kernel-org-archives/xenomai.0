@@ -1,20 +1,14 @@
-From: <dietmar.schindler@manrolandgoss.com>
-Subject: RE: [florian/y2038][PATCH v3 0/3] y2038:mutex_timedlock for timespec64
-Date: Tue, 15 Jun 2021 13:14:32 +0000
-Message-ID: <829d243103234720a484176083552912@manrolandgoss.com>
-References: <1622721916-1824-1-git-send-email-chensong_2000@189.cn>
- <049086bd-62ee-70f0-6bb0-9f2906ff19f6@siemens.com>
- <7106d860-c9c5-2eea-2332-fb90fc1e0a0d@189.cn>
- <d69873c9-2a1f-4b32-e415-175b332b7083@189.cn>
- <b0da37ec-ddbe-3e65-f8fd-c4b8edbc08cf@siemens.com>
- <00fbbce846894e3baa48956fe5c3a0fa@manrolandgoss.com>
- <85462809-3d63-0d18-98e5-45bdce8b929e@189.cn>
- <a95782f5-f429-eea2-c52c-c49e53615933@siemens.com>
-In-Reply-To: <a95782f5-f429-eea2-c52c-c49e53615933@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <6caeb963-97fc-c858-8c89-6cafda765d9a@siemens.com>
+ <87wnr25gqw.fsf@xenomai.org> <87v96lbqz0.fsf@xenomai.org>
+ <296ac220-8a0b-a719-d3b6-7bab2b4fc4f4@siemens.com>
+ <87k0n1bpom.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Dovetail: Possible boot issue on BeagleBone Black
+In-reply-to: <87k0n1bpom.fsf@xenomai.org>
+Date: Thu, 10 Jun 2021 19:47:23 +0200
+Message-ID: <87eed9boic.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,128 +17,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-PiBGcm9tOiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4g
-U2VudDogRnJpZGF5LCBKdW5lIDExLCAyMDIxIDk6MjkgQU0NCj4gVG86IGNoZW5zb25nXzIwMDBA
-MTg5LmNuOyB4ZW5vbWFpQHhlbm9tYWkub3JnOyBTY2hpbmRsZXIsIERpZXRtYXIgLSBPVFBTDQo+
-IDxkaWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmRnb3NzLmNvbT4NCj4NCj4gT24gMTEuMDYuMjEg
-MDQ6MTcsIGNoZW5zb25nXzIwMDAtLS0gdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gaGkgRGlldG1h
-ciwNCj4gPg0KPiA+IOWcqCAyMDIxLzYvMTAg5LiL5Y2IMzowMywgRGlldG1hciBTY2hpbmRsZXIg
-dmlhIFhlbm9tYWkg5YaZ6YGTOg0KPiA+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2Vz
-QHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgRmxvcmlhbg0KPiA+Pj4gQmV6ZGVrYSB2aWEgWGVu
-b21haQ0KPiA+Pj4gU2VudDogVHVlc2RheSwgSnVuZSA4LCAyMDIxIDE6MDQgUE0NCj4gPj4+IFRv
-OiBjaGVuc29uZ18yMDAwQDE4OS5jbjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiA+Pj4gU3ViamVj
-dDogUmU6IFtmbG9yaWFuL3kyMDM4XVtQQVRDSCB2MyAwLzNdIHkyMDM4Om11dGV4X3RpbWVkbG9j
-ayBmb3INCj4gPj4+IHRpbWVzcGVjNjQNCj4gPj4+DQo+ID4+PiBPbiAwOC4wNi4yMSAwOTo1MSwg
-Y2hlbnNvbmdfMjAwMC0tLSB2aWEgWGVub21haSB3cm90ZToNCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+
-Pj4g5ZyoIDIwMjEvNi84IOS4i+WNiDM6MzcsIGNoZW5zb25nXzIwMDAtLS0gdmlhIFhlbm9tYWkg
-5YaZ6YGTOg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+PiDlnKggMjAyMS82Lzgg5LiL5Y2IMjoz
-OSwgRmxvcmlhbiBCZXpkZWthIOWGmemBkzoNCj4gPj4+Pj4+IEhpIFNvbmcsDQo+ID4+Pj4+Pg0K
-PiA+Pj4+Pj4gT24gMDMuMDYuMjEgMTQ6MDUsIFNvbmcgQ2hlbiB3cm90ZToNCj4gPj4+Pj4+PiBU
-aGlzIHBhdGNoIHNlcmlhbCBpcyBhaW1lZCB0byBpbnRyb2R1Y2UgYSBuZXcgc3lzY2FsbA0KPiA+
-Pj4+Pj4+IG11dGV4X3RpbWVkbG9jazY0DQo+ID4+Pj4+Pj4gd2hpY2ggaXMgc3BlY2lmaWMgZm9y
-IDY0LWJpdCB0aW1lX3QuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiAtLS0NCj4gPj4+Pj4+PiB2MjoN
-Cj4gPj4+Pj4+PiAxLCBuZXcgcmV2aXNpb24gcmVnYXJkaW5nIHJldmlldyBjb21tZW50cw0KPiA+
-Pj4+Pj4+DQo+ID4+Pj4+Pj4gdjM6DQo+ID4+Pj4+Pj4gMSwgcmV0dXJuIC1lcnJubw0KPiA+Pj4+
-Pj4+IDIsIHRocm93IGEgd2FybmluZyBpZiB0aW1lb3V0IGlzIE5VTEwNCj4gPj4+Pj4+DQo+ID4+
-Pj4+PiBXaWxsIHlvdSB0YWtlIGNhcmUgb2YgdGhlIFBPU0lYIHZpb2xhdGlvbiBhcyB3ZWxsLCBv
-ciBzaG91bGQgSSB0cnkgdG8NCj4gPj4+Pj4+IGZpbmQgYSB0aW1lc2xvdCBhbmQgZG8gaXQ/DQo+
-ID4+Pj4+DQo+ID4+Pj4+IEkgd2lsbCB0YWtlIGNhcmUgb2YgaXQuDQo+ID4+Pj4+DQo+ID4+Pj4+
-IFBPU0lYIHZpb2xhdGlvbiwgZG8geW91IG1lYW46DQo+ID4+Pj4+DQo+ID4+Pj4+ICsgICAgLyog
-VGltZW91dCBpcyBuZXZlciByZWFkIGJ5IHRoZSBrZXJuZWwsIHNvIE5VTEwgc2hvdWxkIGJlIE9L
-ICovDQo+ID4+Pj4+ICsgICAgcmV0ID0gWEVOT01BSV9TWVNDQUxMMihzcl9uYywgJmxvY2ssIE5V
-TEwpOw0KPiA+Pj4+PiArICAgIGlmICghc21va2V5X2Fzc2VydCghcmV0KSkNCj4gPj4+Pj4gKyAg
-ICAgICAgc21va2V5X3dhcm5pbmcoIlBPU0lYIG11dGV4X3RpbWVkbG9jazY0IHZpb2xhdGlvbiBk
-ZXRlY3RlZCIpOw0KPiA+Pj4+PiArDQo+ID4+Pj4+DQo+ID4+Pj4+IHdoYXQgZWxzZSBzaG91bGQg
-aSBkbyB0byB0YWtlIGNhcmUgb2YgaXQsIHNvcnJ5IGlmIGkgbWlzc2VkIHNvbWUNCj4gPj4+Pj4g
-aW5mb3JtYXRpb24gaW4gdGhlIHBhc3QgZW1haWxzLg0KPiA+Pj4+Pg0KPiA+Pj4+PiAvU29uZw0K
-PiA+Pj4+DQo+ID4+Pj4gdG8gZmluZCBvdXQgdGhlIHJlYXNvbiBpdCByZXR1cm5zIDAgZXZlbiBp
-ZiB0aW1lb3V0IGlzIE5VTEw/DQo+ID4+Pg0KPiA+Pj4gSSBhbHJlYWR5IGhhZCBhIHNob3J0IGRp
-c2N1c3Npb24gd2l0aCBQaGlsaXBwZSBhYm91dCB0aGF0IHRvcGljIHNvbWUNCj4gPj4+IHRpbWUg
-YWdvLiBTZWUgWzFdLg0KPiA+Pj4NCj4gPj4+IEl0J3MgbW9yZSBvciBsZXNzIHRoZSBzYW1lIGFz
-IGZvciB0aGUgc2VtX3RpbWVkd2FpdCBzeXNjYWxsLiBBcyBsb25nIGFzDQo+ID4+PiB0aGUgc3Vw
-cGxpZWQgdGltZW91dCBpcyBub3QgdXNlZCAvIHJlYWQgYnkgdGhlIGtlcm5lbCBpdCBzaG91bGQg
-YmUNCj4gPj4+IHRyZWF0ZWQgYXMgIm9wdGlvbmFsIGFyZ3VtZW50Ii4gUmVhc29uOiBUaGUgUE9T
-SVggc3BlYywgd2hpY2ggc2F5czoNCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gVW5kZXIgbm8gY2lyY3Vt
-c3RhbmNlIHNoYWxsIHRoZSBmdW5jdGlvbiBmYWlsIHdpdGggYSB0aW1lb3V0IGlmIHRoZQ0KPiA+
-Pj4gbXV0ZXggY2FuIGJlIGxvY2tlZCBpbW1lZGlhdGVseS4gVGhlIHZhbGlkaXR5IG9mIHRoZSBh
-YnNfdGltZW91dA0KPiA+Pj4gcGFyYW1ldGVyIG5lZWQgbm90IGJlIGNoZWNrZWQgaWYgdGhlIG11
-dGV4IGNhbiBiZSBsb2NrZWQgaW1tZWRpYXRlbHkuDQo+ID4+Pg0KPiA+Pj4NCj4gPj4+IFRvIGZp
-eCB0aGlzIHZpb2xhdGlvbiAod2UgcmV0dXJuIGFuIGVycm9yIGlmIG5vIHRpbWVvdXQgaXMgZ2l2
-ZW4NCj4gPj4+IGluZGVwZW5kZW50IGZyb20gdGhlIGZhY3QgaWYgd2FzIHVzZWQgb3Igbm90KSBh
-IHJlZmFjdG9yaW5nIG1pZ2h0IGJlDQo+ID4+PiBuZWVkZWQuIFBoaWxpcHBlIGFscmVhZHkgcG9z
-dGVkIGhpcyBpZGVhIGluIFsxXSBob3cgdG8gZG8gdGhhdC4NCj4gPj4+DQo+ID4+PiBbMV0NCj4g
-Pj4+DQo+IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
-bD1odHRwcyUzQSUyRiUyRnhlbm9tYWkub3JnJTJGcGlwZXJtYWlsJQ0KPiAyRnhlbm9tYWklMkYy
-MDIxLQ0KPiBNYXJjaCUyRjA0NDY2OC5odG1sJmFtcDtkYXRhPTA0JTdDMDElN0NmbG9yaWFuLmJl
-emRla2ElNDBzaWVtZW5zLmNvbSU3Q2I5OWU4NTU1NWRiYzRkYmM4YjYNCj4gMjA4ZDkyYzdmMWQ1
-ZiU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3QzAlN0M2Mzc1ODk3NDY3
-Mzk5MTQxMjIlN0NVbmtub3duJTdDDQo+IFRXRnBiR1pzYjNkOGV5SldJam9pTUM0d0xqQXdNREFp
-TENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzEwMDAmYW1w
-Ow0KPiBzZGF0YT12NngwSFlOQWhCcyUyRmdWb1NzdUk4aGtId3JJdFdmWWJGV1hNanRWZFRIaVUl
-M0QmYW1wO3Jlc2VydmVkPTANCj4gPj4+DQo+ID4+DQo+ID4+IFBsZWFzZSBleGN1c2UgbXkganVt
-cGluZyBpbiB0aGUgZGlzY3Vzc2lvbiAtIHBlcmhhcHMgSSdtIG1pc3NpbmcNCj4gPj4gc29tZXRo
-aW5nLCBidXQgSU1ITyAibmVlZCBub3QgYmUgY2hlY2tlZCIgZG9lcyBub3QgbWVhbiAibXVzdCBu
-b3QgYmUNCj4gPj4gY2hlY2tlZCIsIGJ1dCByYXRoZXIgaW1wbGllcyAibWF5IGJlIGNoZWNrZWQi
-LCBzbyBhIG1lcmUgdmFsaWRpdHkNCj4gPj4gY2hlY2sgaXMgbm90IGEgdmlvbGF0aW9uIG9mIFBP
-U0lYLiBZb3UsIEZsb3JpYW4sIGluIFsxXSBqdXN0IHNhaWQNCj4gPj4gYWJvdXQgdGhlIHZhbGlk
-YXRpbmc6ICJZZXMgaXQgZG9lcywgYW5kIHByb2JhYmx5IHNob3VsZCBub3QgZm9yDQo+ID4+IGNv
-bnNpc3RlbmN5IHdpdGggb3RoZXIgY2FsbHMiIC0gdGhhdCdzIGEgZGlmZmVyZW50LCBhbHNvIGZh
-aXIgcmVhc29uDQo+ID4+IGZvciBhdm9pZGluZyB0aGUgY2hlY2suDQo+DQo+ICJZZXMgaXQgZG9l
-cywgYW5kIHByb2JhYmx5IHNob3VsZCBub3QgZm9yIGNvbnNpc3RlbmN5IHdpdGggb3RoZXIgY2Fs
-bHMiDQo+IHdlcmUgUGhpbGlwcGUncyB3b3JkcyA7LSkNCg0KTXkgYXBvbG9naWVzIHRvIHlvdSBh
-bmQgUGhpbGlwcGUhDQoNCj4gPg0KPiA+IHlvdSBhcmUgc28gd2VsY29tZWQgdG8gam9pbiB0aGUg
-ZGlzY3Vzc2lvbiBhbmQgeW91ciBvcGluaW9uIGlzIHZhbHVlZA0KPiA+IGFuZCBoZWxwZnVsLg0K
-DQpUaGFuayB5b3UsIFNvbmcsIGZvciB0aGUgZnJpZW5kbHkgd29yZHMhDQoNCj4gPg0KPiA+IHdl
-IGhhdmUgdGhyZWUgY2FzZXMgYWJvdXQgdmFsaWRhdGluZyB0aW1lb3V0Og0KPiA+IDEpIHNlbV90
-aW1lZHdhaXQNCj4gPiBpdCBtZXJlbHkgdmFsaWRhdGVzIHRpbWVvdXQsIG5vdCByZXR1cm5zIGVy
-cm9yIGJhY2sgdG8gdXNlciBzcGFjZSBldmVuDQo+ID4gaXQgZmFpbHMsIHNhbWUgd2l0aCB3aGF0
-IHlvdSBzYWlkLg0KPg0KPiBJdCB2YWxpZGF0ZXMgdGhlIHRpbWVvdXQgYmVmb3JlIGZpcnN0IHVz
-ZSAobm90IG9uIGtlcm5lbCBlbnRyeSBsaWtlDQo+IGJlbG93KS4gSWYgdmFsaWRhdGlvbiBmYWls
-cyBpdCB3aWxsIHJlcG9ydCB0aGUgZXJyb3IuDQo+DQo+ID4NCj4gPiAyKSBtdXRleF90aW1lZGxv
-Y2sNCj4gPiBpdCBhY3RzIGRpZmZlcmVudGx5IHdpdGggc2VtX3RpbWVkd2FpdCwgaWYgdGltZW91
-dCBpcyBudWxsLCByZXR1cm5zDQo+ID4gLUVGQVVMVCBiZWZvcmUgdHJ5aW5nIHRvIGFjcXVpcmUN
-Cj4NCj4gTGV0J3MgZm9jdXMgb24gdGhpcyBvbmUgZmlyc3QuIEkgaGF2ZW4ndCBsb29rZWQgYXQg
-dGhlIGZvbGx3aW5nIChtcSkgeWV0Lg0KPg0KPiBQT1NJWCBhZ2FpbjoNCj4NCj4gVGhlIHZhbGlk
-aXR5IG9mIHRoZSBhYnNfdGltZW91dCBwYXJhbWV0ZXIgbmVlZCBub3QgYmUgY2hlY2tlZCBpZiB0
-aGUNCj4gbXV0ZXggY2FuIGJlIGxvY2tlZCBpbW1lZGlhdGVseS4NCj4NCj4gSU9XOiBDYWxsaW5n
-IG11dGV4X3RpbWVkd2FpdCgpIG9uIGFuIG11dGV4IHRoYXQgaXMgbm90IHRha2VuIGZvciBzdXJl
-DQo+ICh0aGUgY2FsbGVyIGtub3dzIHRoYXQpIHdpdGggYW4gaW52YWxpZC9OVUxMIHRpbWVvdXQg
-c2hvdWxkIHN1Y2NlZWQNCj4gYmVjYXVzZSB0aGVyZSBpcyBubyBuZWVkIHRvIHRvdWNoL3ZhbGlk
-YXRlIHRoZSBnaXZlbiB0aW1lb3V0LiBDdXJyZW50bHkNCj4gd2UgZmFpbC4NCj4NCj4gTWF5YmUg
-dGhlIHdvcmRpbmcgInZpb2xhdGlvbiIgaXMgdG8gaGFyZCBoZXJlLi4uDQoNCkkgYWdyZWUsIG9m
-IGNvdXJzZSwgc2luY2UgSSBkb24ndCBzZWUgaXQgYXMgYSB2aW9sYXRpb24gYXQgYWxsLiA6LSkN
-Cg0KPiA+IDMpIG1xX3RpbWVkc2VuZC9tcV90aW1lZHJlY2VpdmUNCj4gPiBpZiBpdCBtYW5hZ2Vz
-IHRvIHNlbmQgbXNnIHRvIHRoZSBxdWV1ZSwgaXQgZXZlbiBkb2Vzbid0IHZhbGlkYXRlIHRpbWVv
-dXQNCj4gPiBhdCBhbGwuDQo+ID4NCj4gPiBob3dldmVyLCBpbiB2YW5pbGxhIGtlcm5lbCwgaXQg
-dmFsaWRhdGVzIHRpbWVvdXQgYXQgdGhlIGJlZ2lubmluZyBhbmQNCj4gPiByZXR1cm4gRUZBVUxU
-IGlmIGl0IGZhaWxzLCBhcyBhIHJlc3VsdCwgbXFfdGltZWRzZW5kL21xX3RpbWVkcmVjZWl2ZSBo
-YXMNCj4gPiBkaWZmZXJlbnQgc2VtYW50aWNzLCByZXR1cm5zIGRpZmZlcmVudCB2YWx1ZXMgYW5k
-IGxlYWRzIHRvIGRpZmZlcmVudA0KPiA+IGJlaGF2aW9ycyBpbiB1c2VyIHNwYWNlLg0KPiA+DQo+
-ID4gSSB3b3VsZCBzdWdnZXN0IHdlIHNob3VsZCBmb2xsb3cgdmFuaWxsYSBrZXJuZWwsIHdoYXQg
-ZG8geW91IHRoaW5rPw0KPiA+DQo+ID4gd2hhdCdzIG1vcmUsIGkgZGlkbid0IGZpbmQgaW1wbGVt
-ZW50YXRpb24gb2Ygc2VtX3RpbWVkd2FpdCBhbmQNCj4gPiBtdXRleF90aW1lZGxvY2ssIGFyZSB0
-aGV5IGluIGdsaWJjPyB0aGVuIHdlIHNob3VsZCBmb2xsb3cgZ2xpYmMuDQoNCkFnYWluIEkgYWdy
-ZWUgdGhhdCAiY29uc2lzdGVuY3kgd2l0aCBvdGhlciBjYWxscyIgaXMgYSBnb29kIHRoaW5nLg0K
-DQotLQ0KQmVzdCByZWdhcmRzLA0KRGlldG1hciBTY2hpbmRsZXINCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQptYW5yb2xhbmQgR29zcyB3ZWIgc3lzdGVtcyBHbWJIIHwgTWFuYWdp
-bmcgRGlyZWN0b3I6IEZyYW56IEtyaWVjaGJhdW0NClJlZ2lzdGVyZWQgT2ZmaWNlOiBBdWdzYnVy
-ZyB8IFRyYWRlIFJlZ2lzdGVyOiBBRyBBdWdzYnVyZyB8IEhSQi1Oby46IDMyNjA5IHwgVkFUOiBE
-RTgxNTc2NDg1Nw0KDQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgbWVzc2FnZSBhbmQgYW55
-IGF0dGFjaGVkIGRvY3VtZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgb3IgcHJvcHJpZXRh
-cnkgaW5mb3JtYXRpb24gb2YgbWFucm9sYW5kfEdvc3MuIFRoZXNlIG1hdGVyaWFscyBhcmUgaW50
-ZW5kZWQgb25seSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LiBJZiB5b3Ug
-YXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgdHJhbnNtaXNzaW9uLCB5b3Ug
-YXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSBkaXN0cmlidXRpb24sIGRpc2Nsb3N1cmUsIHBy
-aW50aW5nLCBjb3B5aW5nLCBzdG9yYWdlLCBtb2RpZmljYXRpb24gb3IgdGhlIHRha2luZyBvZiBh
-bnkgYWN0aW9uIGluIHJlbGlhbmNlIHVwb24gdGhpcyB0cmFuc21pc3Npb24gaXMgc3RyaWN0bHkg
-cHJvaGliaXRlZC4gRGVsaXZlcnkgb2YgdGhpcyBtZXNzYWdlIHRvIGFueSBwZXJzb24gb3RoZXIg
-dGhhbiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IHNoYWxsIG5vdCBjb21wcm9taXNlIG9yIHdhaXZl
-IHN1Y2ggY29uZmlkZW50aWFsaXR5LCBwcml2aWxlZ2Ugb3IgZXhlbXB0aW9uIGZyb20gZGlzY2xv
-c3VyZSBhcyB0byB0aGlzIGNvbW11bmljYXRpb24uIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMg
-Y29tbXVuaWNhdGlvbiBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2Vu
-ZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgZnJvbSB5b3VyIHN5c3RlbS4gQWxsIGxpYWJpbGl0
-eSBmb3IgdmlydXNlcyBpcyBleGNsdWRlZCB0byB0aGUgZnVsbGVzdCBleHRlbnQgcGVybWl0dGVk
-IGJ5IGxhdy4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>
+>> On 10.06.21 18:54, Philippe Gerum wrote:
+>>> 
+>>> Philippe Gerum <rpm@xenomai.org> writes:
+>>> 
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> Hi Philippe,
+>>>>>
+>>>>> seems we have some early boot problem with Dovetail on the BBB (while
+>>>>> qemu-arm is fine), see [1] vs. [2] (disabled Xenomai for [2], see [3]).
+>>>>> Do you happen to have such a target around? Or a reference config that
+>>>>> is supposed to work?
+>>>>>
+>>>>> Jan
+>>>>>
+>>>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277392#L444
+>>>>> [2] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277821#L444
+>>>>> [3]
+>>>>> https://source.denx.de/Xenomai/xenomai-images/-/commit/d48c28a82f16b5141948f23cc5bce244217eda15
+>>>>
+>>>> Yes, I have that one at hand, my Kconfig attached. No issue with booting
+>>>> EVL on the latest Dovetail/5.10-LTS. I'll give a try to Dovetail+Cobalt
+>>>> later today. (dtb issue in the CI?)
+>>>>
+>>>> [    0.000000] Booting Linux on physical CPU 0x0
+>>>> [    0.000000] Linux version 5.10.42-00590-gcd7b61ff545b (rpm@pyro) (arm-linux-gnueabihf-gcc (Linaro GCC 7.5-2019.12) 7.5.0, GNU ld (Linaro_Binutils-2019.12) 2.28.2.20170706) #1 PREEMPT IRQPIPE Thu Jun 10 09:08:56 CEST 2021
+>>>> [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c5387d
+>>>> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+>>>> [    0.000000] OF: fdt: Machine model: TI AM335x BeagleBone Black
+>>>> [    0.000000] Memory policy: Data cache writeback
+>>>> [    0.000000] efi: UEFI not found.
+>>>> [    0.000000] cma: Reserved 64 MiB at 0x9b800000
+>>>> [    0.000000] Zone ranges:
+>>>> [    0.000000]   DMA      [mem 0x0000000080000000-0x000000009fdfffff]
+>>>> [    0.000000]   Normal   empty
+>>>> [    0.000000]   HighMem  empty
+>>>> [    0.000000] Movable zone start for each node
+>>>> [    0.000000] Early memory node ranges
+>>>> [    0.000000]   node   0: [mem 0x0000000080000000-0x000000009fdfffff]
+>>>> [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000009fdfffff]
+>>>> [    0.000000] CPU: All CPU(s) started in SVC mode.
+>>>> [    0.000000] AM335X ES2.1 (sgx neon)
+>>>> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129540
+>>>> [    0.000000] Kernel command line: root=/dev/nfs rw nfsroot=192.168.3.1:/var/lab/nfsroot/generic/armv7,v3,tcp panic=1 console=ttyS0,115200n8 ip=dhcp
+>>>> [    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+>>>> [    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+>>>> [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+>>>> [    0.000000] Memory: 428160K/522240K available (13312K kernel code, 1712K rwdata, 5228K rodata, 2048K init, 411K bss, 28544K reserved, 65536K cma-reserved, 0K highmem)
+>>>> [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+>>>> [    0.000000] rcu: Preemptible hierarchical RCU implementation.
+>>>> [    0.000000] rcu: 	RCU event tracing is enabled.
+>>>> [    0.000000] 	Trampoline variant of Tasks RCU enabled.
+>>>> [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+>>>> [    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+>>>> [    0.000000] IRQ: Found an INTC at 0x(ptrval) (revision 5.0) with 128 interrupts
+>>>> [    0.000000] random: get_random_bytes called from start_kernel+0x330/0x4c4 with crng_init=0
+>>>> [    0.004513] IRQ pipeline enabled
+>>> 
+>>> Using wip/dovetail over dovetail-v5.10.y (.42 so far), bbb boots fine
+>>> with Dovetail fully enabled, Cobalt in stopped mode. Enabling the core
+>>> once booted, then running latency crashes in a fairly trivial way. It
+>>> looks like the paint is still wet there:
+>>> 
+>>> ~ # corectl --start
+>>> [   34.405086] [Xenomai] services started
+>>> ~ # 
+>>> ~ # 
+>>> ~ # latency
+>>> == Sampling period: 1000 us
+>>> == Test mode: periodic user-mode task
+>>> == All results in micro[   37.067419] 8<--- cut here ---
+>>> [   37.067431] Unable to handle kernel NULL pointer dereference at virtual address 000000c0
+>>> [   37.067435] pgd = 49eec2f1
+>>> [   37.067439] [000000c0] *pgd=83b78831, *pte=00000000, *ppte=00000000
+>>> [   37.067457] Internal error: Oops: 17 [#1] PREEMPT SMP ARM
+>>> [   37.067461] Modules linked in:
+>>> [   37.067468] CPU: 0 PID: 123 Comm: sampling-120 Not tainted 5.10.42-00113-gbc20d0c23c02-dirty #10
+>>> [   37.067473] Hardware name: Generic AM33XX (Flattened Device Tree)
+>>> [   37.067476] IRQ stage: Linux
+>>> [   37.067480] PC is at pipeline_set_timer_shot+0x24/0xd8
+>>> [   37.067484] LR is at pipeline_set_timer_shot+0x14/0xd8
+>>> [   37.067488] pc : [<c0402ce0>]    lr : [<c0402cd0>]    psr: 20070093
+>>> [   37.067492] sp : c3abfe58  ip : 10e28280  fp : c3abe000
+>>> [   37.067496] r10: c1a8fab8  r9 : 00000000  r8 : 000f4240
+>>> [   37.067500] r7 : 00000008  r6 : a03fb0a9  r5 : 000edea5  r4 : e147f638
+>>> [   37.067505] r3 : 00000000  r2 : 1e04f000  r1 : c1526704  r0 : 00000000
+>>> [   37.067509] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
+>>> [   37.067513] Control: 10c5387d  Table: 83b50019  DAC: 00000051
+>>> [   37.067518] Process sampling-120 (pid: 123, stack limit = 0x86f5afaa)
+>>> [   37.067522] Stack: (0xc3abfe58 to 0xc3ac0000)
+>>> [   37.067526] fe40:                                                       e147f638 df9ab790
+>>> [   37.067531] fe60: a03fb0a9 00000008 000f4240 00000000 c1a8fab8 c040eef0 c3a54100 df9a6840
+>>> [   37.067536] fe80: 000f01f6 00000000 00000000 fffffffd 00000002 3574c753 c3abff04 00000000
+>>> [   37.067541] fea0: 00000000 00000000 00000008 000f4240 00000001 00000001 00000000 c0425e64
+>>> [   37.067546] fec0: 000f4240 00000000 00000001 00000001 e147f600 00000000 c3abff08 e147f638
+>>> [   37.067550] fee0: c3abff28 c04276ec c3abe000 ffffe000 00000003 00000001 00000000 00000051
+>>> [   37.067555] ff00: 00000000 c0427848 00000000 00000000 00000000 02e07ea8 00000000 00000000
+>>> [   37.067560] ff20: 00000000 c042530c 00000000 00000000 000f4240 c3abffb0 00000025 00000000
+>>> [   37.067565] ff40: 02e07ea8 000000f0 00000000 3574c753 c1a8bd40 c3abffb0 00000006 00000000
+>>> [   37.067570] ff60: e147f808 00000000 c3abe000 c3abff78 c0427784 c0423840 00000000 c1baa36b
+>>> [   37.067574] ff80: c3abff70 c3a54100 00000078 00000000 00000000 b63d8db8 100f0042 c0300370
+>>> [   37.067579] ffa0: c3abe000 00000007 00000000 c0300264 1000003a 00000003 00000001 b63d8db8
+>>> [   37.067584] ffc0: 00000000 00000000 b63d8db8 000f0042 b63d8e1c 00000001 bea8ba5c 00000000
+>>> [   37.067589] ffe0: 00000001 b63d8d48 00000003 b6ebc488 20070030 1000003a 00000000 00000000
+>>> [   37.067594] [<c0402ce0>] (pipeline_set_timer_shot) from [<c040eef0>] (xntimer_start+0x164/0x260)
+>>> [   37.067599] [<c040eef0>] (xntimer_start) from [<c0425e64>] (__cobalt_timer_setval+0xd4/0x100)
+>>> [   37.067604] [<c0425e64>] (__cobalt_timer_setval) from [<c04276ec>] (__cobalt_timerfd_settime+0xfc/0x194)
+>>> [   37.067609] [<c04276ec>] (__cobalt_timerfd_settime) from [<c0427848>] (CoBaLt_timerfd_settime+0xc4/0x18c)
+>>> [   37.067614] [<c0427848>] (CoBaLt_timerfd_settime) from [<c0423840>] (handle_head_syscall+0x13c/0x30c)
+>>> [   37.067619] [<c0423840>] (handle_head_syscall) from [<c0300264>] (fastcall_try+0x10/0x24)
+>>> [   37.067623] Exception stack(0xc3abffb0 to 0xc3abfff8)
+>>> [   37.067627] ffa0:                                     1000003a 00000003 00000001 b63d8db8
+>>> [   37.067632] ffc0: 00000000 00000000 b63d8db8 000f0042 b63d8e1c 00000001 bea8ba5c 00000000
+>>> [   37.067636] ffe0: 00000001 b63d8d48 00000003 b6ebc488 20070030 1000003a
+>>> [   37.067641] Code: e3053974 e34c3195 ee1d2f90 e7933002 (e59340c0) 
+>>> [   37.067645] ---[ end trace 09d1faca36a5025f ]---
+>>> seconds
+>>> warming up...
+>>> 
+>>> NOTE: imx6qp is fine booting with Cobalt enabled. Go figure.
+>>> 
+>>> NOTE2: we cannot build the bbb kernel with SMP support off. I'll send a
+>>> patch to fix this.
+>>> 
+>>
+>> Note2 is fixed already, you were in CC. !SMP may actually be a key to
+>> the stuck boot with the xenomai-images config.
+>>
+>
+> It seems the proxy tick device is not started, so this is clearly not
+> going to work. I'll have a look at this some time tomorrow.
+
+Confirmed, this is triggered by CONFIG_SMP which enables code expecting
+the tick device to be enabled, although it could not be
+enabled. Uniprocessor boots fine with the patch fixing the spurious call
+to __request_percpu_irq applied.
+
+With CONFIG_SMP, the core dereferences NULL in pipeline_set_timer_shot()
+likely at the first host tick the in-band code attempts to program.
+
+-- 
+Philippe.
 
