@@ -1,17 +1,14 @@
-Subject: Re: Large gpio interrupt latency
-References: <1202-60cce900-16b-1ab27320@266264893>
- <44a6fe35-7e36-39c6-6a3e-3aa39e796eac@siemens.com>
- <87eecv1rr2.fsf@xenomai.org>
- <730a599c-4a53-1b48-a5ec-442e58eb34df@siemens.com>
- <8735tb1fye.fsf@xenomai.org>
+Subject: Re: Dovetail: Possible boot issue on BeagleBone Black
+References: <6caeb963-97fc-c858-8c89-6cafda765d9a@siemens.com>
+ <87wnr25gqw.fsf@xenomai.org> <87v96lbqz0.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <772da1d1-1d01-89ba-4b89-474e53aa68c5@siemens.com>
-Date: Mon, 21 Jun 2021 16:02:30 +0200
+Message-ID: <296ac220-8a0b-a719-d3b6-7bab2b4fc4f4@siemens.com>
+Date: Thu, 10 Jun 2021 18:56:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <8735tb1fye.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <87v96lbqz0.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,323 +18,135 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 21.06.21 15:54, Philippe Gerum wrote:
+On 10.06.21 18:54, Philippe Gerum wrote:
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Philippe Gerum <rpm@xenomai.org> writes:
 > 
->> On 21.06.21 11:39, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 18.06.21 20:41, François Legal wrote:
->>>>> Le Mercredi, Juin 16, 2021 17:10 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>>>  
->>>>>> On 16.06.21 15:51, François Legal wrote:
->>>>>>> Le Mercredi, Juin 16, 2021 15:38 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>>>>>  
->>>>>>>> On 16.06.21 15:29, François Legal wrote:
->>>>>>>>> Le Mercredi, Juin 16, 2021 11:40 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>>>>>>>  
->>>>>>>>>> On 16.06.21 11:12, François Legal via Xenomai wrote:
->>>>>>>>>>> Le Mercredi, Juin 16, 2021 11:05 CEST, "Chen, Hongzhan" <hongzhan.chen@intel.com> a écrit: 
->>>>>>>>>>>  
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>>> -----Original Message-----
->>>>>>>>>>>>> From: François Legal <devel@thom.fr.eu.org> 
->>>>>>>>>>>>> Sent: Wednesday, June 16, 2021 4:19 PM
->>>>>>>>>>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>>>>>>>>>> Cc: xenomai@xenomai.org
->>>>>>>>>>>>> Subject: RE: Large gpio interrupt latency
->>>>>>>>>>>>>
->>>>>>>>>>>>> Le Mercredi, Juin 16, 2021 10:10 CEST, "Chen, Hongzhan" <hongzhan.chen@intel.com> a écrit: 
->>>>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> -----Original Message-----
->>>>>>>>>>>>>>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of François Legal via Xenomai
->>>>>>>>>>>>>>> Sent: Wednesday, June 16, 2021 3:16 PM
->>>>>>>>>>>>>>> To: xenomai@xenomai.org
->>>>>>>>>>>>>>> Subject: Large gpio interrupt latency
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Hello,
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> working on a realtime data recorder (for which I submitted a patch to add timestamp retrieval for net packets), I experience a strange latency problem with taking GPIO interrupts.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> So basically my app monitors network packets (which as received by the DUT would trigger toggling of a GPIO on the DUT) and one GPIO.
->>>>>>>>>>>>>>> We know (from some ohter reference instrument) that the DUT would toggle the GPIO 1-2ms after receiving a specific network packet.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> My recorder app relies on the timestamping of events done in interrupts service routines for GPIOs and network interface. By checking the timestamps returned by the application, I get an about 50ms delay between the network packet and the GPIO (so something between 51 and 52ms delay).
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Are you toggling gpio and access gpio device  through your rtdm device like on path /dev/rtdm/your_gpiocontroller/gpio*?
->>>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> Maybe my setup was not very clear.
->>>>>>>>>>>>> I've got a DUT that receives network data, and toggles one of its GPIOs depending one the network data.
->>>>>>>>>>>>>
->>>>>>>>>>>>> I've got another device running my realtime recording app, that receives the same network data as the DUT, and that has one of its GPIO connected to the DUT GPIO.
->>>>>>>>>>>>>
->>>>>>>>>>>>> On the recording app, I use the RTDM device to open, ioctl (enable interrupt + timestamp), then select & read the GPIO value.
->>>>>>>>>>>>
->>>>>>>>>>>> When issue happen, the recording app side have got same number of network data packages and gpio interrupts with that DUT have been toggling?  
->>>>>>>>>>>> I am asking this because I met gpio hardware issue that would cause gpio interrupt missing or invalid gpio interrupts when gpio is connecting on two different boards.
->>>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> AFAICT, I'm not missing GPIO edges/interrupts in the app. Regarding network, the DUT and the recoding device are connected to the same switch with the same port config.
->>>>>>>>>>>
->>>>>>>>>>> Moreover, I tried changing the interrupt polarity of the recording device (switched from rising edge to falling edge), and the result is 1-2ms + ~30ms (the width of the pulse of the DUT) + 50ms latency
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Can you (or did you already) break down the latencies on the DUT via
->>>>>>>>>> tracing? Is it really the GPIO output path? What is happening in it,
->>>>>>>>>> starting with RT/Linux task switches, mode transitions etc.?
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> I just did it.
->>>>>>>>>
->>>>>>>>> I did put gpio_pin_interrupt as trigger, then ran my application, triggered the GPIO.
->>>>>>>>> This is what I get in frozen, but I'm not quite sure how to read it and what conclusion I could derive :
->>>>>>>>>  cat frozen
->>>>>>>>> I-pipe frozen back-tracing service on 4.4.227+/ipipe release #10
->>>>>>>>> ------------------------------------------------------------
->>>>>>>>> CPU: 0, Freeze: 218343820846 cycles, Trace Points: 100 (+10)
->>>>>>>>> Calibrated minimum trace-point overhead: 0.461 us
->>>>>>>>>
->>>>>>>>>  +----- Hard IRQs ('|': locked)
->>>>>>>>>  |+-- Xenomai
->>>>>>>>>  ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
->>>>>>>>>  |||                      +---------- Delay flag ('+': > 1 us, '!': > 10 us)
->>>>>>>>>  |||                      |        +- NMI noise ('N')
->>>>>>>>>  |||                      |        |
->>>>>>>>>           Type    User Val.   Time    Delay  Function (Parent)
->>>>>>>>> :  +func               -6087+   1.302  load_balance+0x14 (run_rebalance_domains+0x7e8)
->>>>>>>>> :  +func               -6085      0.826  idle_cpu+0x10 (load_balance+0x180)
->>>>>>>>> :  +func               -6084      0.892  find_busiest_group+0x14 (load_balance+0x1a4)
->>>>>>>>> :  +func               -6084      0.757  update_group_capacity+0x14 (find_busiest_group+0x128)
->>>>>>>>> :  +func               -6083+   1.452  __msecs_to_jiffies+0x10 (update_group_capacity+0x30)
->>>>>>>>> :  +func               -6081+   1.535  idle_cpu+0x10 (find_busiest_group+0x1e4)
->>>>>>>>> :  +func               -6080+   1.410  idle_cpu+0x10 (find_busiest_group+0x1e4)
->>>>>>>>> :  +func               -6078      0.967  __msecs_to_jiffies+0x10 (run_rebalance_domains+0x810)
->>>>>>>>> :  +func               -6077      0.886  __rcu_read_unlock+0x10 (run_rebalance_domains+0x648)
->>>>>>>>> :  +func               -6077      0.820  rcu_bh_qs+0x10 (__do_softirq+0x1b0)
->>>>>>>>> :  +func               -6076      0.742  ipipe_stall_root+0x10 (__do_softirq+0x1b4)
->>>>>>>>> :  +func               -6075      0.766  ipipe_root_only+0x10 (ipipe_stall_root+0x18)
->>>>>>>>> :| +begin   0x80000001 -6074      0.934  ipipe_trace_begin+0x24 (ipipe_root_only+0xb8)
->>>>>>>>> :| +end     0x80000001 -6073      0.811  ipipe_trace_end+0x24 (ipipe_root_only+0xfc)
->>>>>>>>> :| +begin   0x80000001 -6072      0.895  ipipe_trace_begin+0x24 (ipipe_stall_root+0x78)
->>>>>>>>> :| #end     0x80000001 -6072      0.847  ipipe_trace_end+0x24 (ipipe_stall_root+0xb8)
->>>>>>>>> :  #func               -6071      0.814  __local_bh_enable+0x10 (__do_softirq+0x214)
->>>>>>>>> :  #func               -6070      0.760  ipipe_test_root+0x10 (__local_bh_enable+0x1c)
->>>>>>>>> :| #begin   0x80000001 -6069      0.907  ipipe_trace_begin+0x24 (ipipe_test_root+0x74)
->>>>>>>>> :| #end     0x80000001 -6068      0.898  ipipe_trace_end+0x24 (ipipe_test_root+0xb8)
->>>>>>>>> :  #func               -6067      0.811  rcu_irq_exit+0x10 (irq_exit+0x84)
->>>>>>>>> :  #func               -6067      0.781  ipipe_test_and_stall_root+0x10 (rcu_irq_exit+0x18)
->>>>>>>>> :  #func               -6066      0.799  ipipe_root_only+0x10 (ipipe_test_and_stall_root+0x18)
->>>>>>>>> :| #begin   0x80000001 -6065+   1.041  ipipe_trace_begin+0x24 (ipipe_root_only+0xb8)
->>>>>>>>> :| #end     0x80000001 -6064      0.769  ipipe_trace_end+0x24 (ipipe_root_only+0xfc)
->>>>>>>>> :| #begin   0x80000001 -6063      0.895  ipipe_trace_begin+0x24 (ipipe_test_and_stall_root+0x80)
->>>>>>>>> :| #end     0x80000001 -6062      0.841  ipipe_trace_end+0x24 (ipipe_test_and_stall_root+0xc4)
->>>>>>>>> :  #func               -6061+   1.197  rcu_eqs_enter_common.constprop.21+0x10 (rcu_irq_exit+0x80)
->>>>>>>>> :| #begin   0x80000000 -6060+   1.413  ipipe_trace_begin+0x24 (__ipipe_do_sync_stage+0x2b8)
->>>>>>>>> :| +end     0x00000012 -6059+   1.044  ipipe_trace_end+0x24 (__ipipe_grab_irq+0x84)
->>>>>>>>> :| +func               -6058      0.988  __ipipe_check_root_interruptible+0x10 (__irq_svc+0x70)
->>>>>>>>> :| +func               -6057      0.976  ipipe_test_root+0x10 (__ipipe_check_root_interruptible+0x68)
->>>>>>>>> :| +func               -6056      0.829  __ipipe_bugon_irqs_enabled+0x10 (__ipipe_fast_svc_irq_exit+0x4)
->>>>>>>>> :| +end     0x90000000 -6055      0.913  __ipipe_fast_svc_irq_exit+0x20 (ipipe_unstall_root+0x88)
->>>>>>>>> :  +func               -6054      0.781  ipipe_test_root+0x10 (cpu_startup_entry+0x12c)
->>>>>>>>> :| +begin   0x80000001 -6053      0.868  ipipe_trace_begin+0x24 (ipipe_test_root+0x74)
->>>>>>>>> :| +end     0x80000001 -6052      0.781  ipipe_trace_end+0x24 (ipipe_test_root+0xb8)
->>>>>>>>> :  +func               -6052      0.748  rcu_idle_exit+0x10 (cpu_startup_entry+0x138)
->>>>>>>>> :  +func               -6051      0.739  ipipe_test_and_stall_root+0x10 (rcu_idle_exit+0x18)
->>>>>>>>> :  +func               -6050      0.775  ipipe_root_only+0x10 (ipipe_test_and_stall_root+0x18)
->>>>>>>>> :| +begin   0x80000001 -6049+   1.011  ipipe_trace_begin+0x24 (ipipe_root_only+0xb8)
->>>>>>>>> :| +end     0x80000001 -6048      0.742  ipipe_trace_end+0x24 (ipipe_root_only+0xfc)
->>>>>>>>> :| +begin   0x80000001 -6048      0.940  ipipe_trace_begin+0x24 (ipipe_test_and_stall_root+0x80)
->>>>>>>>> :| #end     0x80000001 -6047      0.790  ipipe_trace_end+0x24 (ipipe_test_and_stall_root+0xc4)
->>>>>>>>> :  #func               -6046      0.859  rcu_eqs_exit_common.constprop.19+0x10 (rcu_idle_exit+0x8c)
->>>>>>>>> :  #func               -6045      0.772  ipipe_unstall_root+0x10 (rcu_idle_exit+0x78)
->>>>>>>>> :| #begin   0x80000000 -6044      0.814  ipipe_trace_begin+0x24 (ipipe_unstall_root+0x98)
->>>>>>>>> :| #func               -6043+   1.077  ipipe_root_only+0x10 (ipipe_unstall_root+0x24)
->>>>>>>>> :| +end     0x80000000 -6042      0.835  ipipe_trace_end+0x24 (ipipe_unstall_root+0x84)
->>>>>>>>> :  +func               -6042      0.922  arch_cpu_idle_exit+0x10 (cpu_startup_entry+0xfc)
->>>>>>>>> :  +func               -6041      0.793  ipipe_stall_root+0x10 (cpu_startup_entry+0xc4)
->>>>>>>>> :  +func               -6040      0.724  ipipe_root_only+0x10 (ipipe_stall_root+0x18)
->>>>>>>>> :| +begin   0x80000001 -6039+   1.098  ipipe_trace_begin+0x24 (ipipe_root_only+0xb8)
->>>>>>>>> :| +end     0x80000001 -6038      0.772  ipipe_trace_end+0x24 (ipipe_root_only+0xfc)
->>>>>>>>> :| +begin   0x80000001 -6037      0.841  ipipe_trace_begin+0x24 (ipipe_stall_root+0x78)
->>>>>>>>> :| #end     0x80000001 -6036      0.763  ipipe_trace_end+0x24 (ipipe_stall_root+0xb8)
->>>>>>>>> :  #func               -6036      0.838  arch_cpu_idle_enter+0x10 (cpu_startup_entry+0xc8)
->>>>>>>>> :  #func               -6035      0.745  arm_heavy_mb+0x10 (arch_cpu_idle_enter+0x1c)
->>>>>>>>> :  #func               -6034      0.916  l2c210_sync+0x10 (arm_heavy_mb+0x2c)
->>>>>>>>> :  #func               -6033+   1.062  tick_check_broadcast_expired+0x10 (cpu_startup_entry+0xd8)
->>>>>>>>> :  #func               -6032      0.787  rcu_idle_enter+0x10 (cpu_startup_entry+0x124)
->>>>>>>>> :  #func               -6031      0.745  ipipe_test_and_stall_root+0x10 (rcu_idle_enter+0x18)
->>>>>>>>> :  #func               -6031      0.751  ipipe_root_only+0x10 (ipipe_test_and_stall_root+0x18)
->>>>>>>>> :| #begin   0x80000001 -6030      0.991  ipipe_trace_begin+0x24 (ipipe_root_only+0xb8)
->>>>>>>>> :| #end     0x80000001 -6029      0.772  ipipe_trace_end+0x24 (ipipe_root_only+0xfc)
->>>>>>>>> :| #begin   0x80000001 -6028      0.892  ipipe_trace_begin+0x24 (ipipe_test_and_stall_root+0x80)
->>>>>>>>> :| #end     0x80000001 -6027      0.847  ipipe_trace_end+0x24 (ipipe_test_and_stall_root+0xc4)
->>>>>>>>> :  #func               -6026      0.922  rcu_eqs_enter_common.constprop.21+0x10 (rcu_idle_enter+0x90)
->>>>>>>>> :  #func               -6025      0.862  default_idle_call+0x10 (cpu_startup_entry+0x128)
->>>>>>>>> :  #func               -6024      0.877  arch_cpu_idle+0x10 (default_idle_call+0x38)
->>>>>>>>> :| #begin   0x80000000 -6024! 5992.167  ipipe_trace_begin+0x24 (arch_cpu_idle+0xb8)
->>>>>>>>
->>>>>>>> Here your system (or this core) went idle, waiting for the next event.
->>>>>>>>
->>>>>>>>> :| +func                 -31      0.760  ipipe_unstall_root+0x10 (arch_cpu_idle+0x30)
->>>>>>>>
->>>>>>>> Comming back from idle.
->>>>>>>>
->>>>>>>>> :| +func                 -31+   1.116  ipipe_root_only+0x10 (ipipe_unstall_root+0x24)
->>>>>>>>> :| +end     0x80000000   -30      0.931  ipipe_trace_end+0x24 (ipipe_unstall_root+0x84)
->>>>>>>>> :| +begin   0x90000000   -29      0.844  __irq_svc+0x58 (ipipe_unstall_root+0x88)
->>>>>>>>> :| +func                 -28      0.925  gic_handle_irq+0x10 (__irq_svc+0x6c)
->>>>>>>>> :| +func                 -27      0.904  irq_find_mapping+0x10 (gic_handle_irq+0x50)
->>>>>>>>> :| +func                 -26      0.940  __ipipe_grab_irq+0x10 (gic_handle_irq+0x58)
->>>>>>>>> :| +begin   0x000000c9   -25      0.826  ipipe_trace_begin+0x24 (__ipipe_grab_irq+0x58)
->>>>>>>>> :| +func                 -24      0.814  __ipipe_dispatch_irq+0x10 (__ipipe_grab_irq+0x7c)
->>>>>>>>> :| +func                 -23+   1.275  irq_to_desc+0x10 (__ipipe_dispatch_irq+0x184)
->>>>>>>>> :| +func                 -22+   1.679  irq_to_desc+0x10 (__ipipe_dispatch_irq+0x198)
->>>>>>>>> :| +func                 -20+   2.092  ucc_gpio_irqhandler+0x14 (__ipipe_dispatch_irq+0x1fc)
->>>>>>>>> :| +func                 -18+   1.413  irq_find_mapping+0x10 (ucc_gpio_irqhandler+0x84)
->>>>>>>>> :| +begin   0x000000e3   -17      0.757  ipipe_trace_begin+0x24 (ucc_gpio_irqhandler+0x8c)
->>>>>>>>> :| +func                 -16      0.778  __ipipe_dispatch_irq+0x10 (ucc_gpio_irqhandler+0x98)
->>>>>>>>> :| +func                 -15+   1.023  irq_to_desc+0x10 (__ipipe_dispatch_irq+0x184)
->>>>>>>>> :| +func                 -14+   1.494  irq_to_desc+0x10 (__ipipe_dispatch_irq+0x198)
->>>>>>>>> :| +func                 -13+   1.014  __ipipe_ack_level_irq+0x10 (__ipipe_dispatch_irq+0x1fc)
->>>>>>>>> :| +func                 -12      0.763  ucc_gpio_irq_mask+0x10 (__ipipe_ack_level_irq+0x54)
->>>>>>>>> :| +func                 -11+   1.248  __ipipe_spin_lock_irqsave+0x10 (ucc_gpio_irq_mask+0x2c)
->>>>>>>>> :| #func                 -10+   1.619  __ipipe_spin_unlock_irqrestore+0x10 (ucc_gpio_irq_mask+0x4c)
->>>>>>>>> :| +func                  -8+   1.239  __ipipe_set_irq_pending+0x10 (__ipipe_dispatch_irq+0x3bc)
->>>>>>>>> :| +end     0x000000e3    -7      0.994  ipipe_trace_end+0x24 (ucc_gpio_irqhandler+0xa0)
->>>>>>>>> :| +func                  -6+   1.029  gic_eoi_irq+0x10 (ucc_gpio_irqhandler+0xd4)
->>>>>>>>> :| +func                  -5+   1.353  __ipipe_do_sync_pipeline+0x14 (__ipipe_dispatch_irq+0x17c)
->>>>>>>>> :|+ func                  -4+   1.449  __ipipe_do_sync_stage+0x14 (__ipipe_do_sync_pipeline+0xf0)
->>>>>>>>> :|# func                  -2+   1.191  xnintr_irq_handler+0x14 (__ipipe_do_sync_stage+0x200)
->>>>>>>>> :|# func                  -1+   1.455  ___xnlock_get+0x10 (xnintr_irq_handler+0xc0)
->>>>>>>>> <|# func                   0      1.107  gpio_pin_interrupt+0x10 (xnintr_irq_handler+0xf4)
->>>>>>>>
->>>>>>>> And here we start to process that GPIO interrupt in the RTDM handler,
->>>>>>>> roughly after 30 µs (which are also due to tracing overhead). So far
->>>>>>>> nothing suspiciuos.
->>>>>>>>
->>>>>>>>>  |# func                   1      1.236  xnclock_core_read_monotonic+0x10 (gpio_pin_interrupt+0x1c)
->>>>>>>>>  |# func                   2      1.224  rtdm_event_signal+0x10 (gpio_pin_interrupt+0x2c)
->>>>>>>>
->>>>>>>> Here some likely waiting RT task is signalled. Does that one notice a
->>>>>>>> too high latency?
->>>>>>>
->>>>>>> I may have been wrong speaking of "latency". The problem I'm trying to fix, is understanding why my reference instrument indicates a delay from network packet to GPIO on the DUT of about 1 to 2ms, whereas my xenomai powered realtime recorder application, given the same network stream and gpio access gives me ~50 to 52 ms.
->>>>>>>
->>>>>>> I first though there was something wrong/delayed on the GPIO interrupt side (the network packet could not have been received before it is sent right).
->>>>>>> The trace seem to demonstrate ~30µs of interrupt latency (a number I expected for interrupt latency on that system) for the GPIO. So something is wrong on my system, but I don't know what !
->>>>>>>
->>>>>>
->>>>>> Try to trace events, not functions, using regular ftrace ("trace-cmd
->>>>>> record -e cobalt* -e sched* -e irq* -e signal*" e.g.). Check when the
->>>>>> NIC gets the interrupt and compare that to when the GPIO event is
->>>>>> triggered (or whatever is trigger and reaction). Function tracing is for
->>>>>> zooming in when you know where to zoom.
->>>>>>
->>>>>
->>>>> So I think I found the answer to my problem.
->>>>> Is there any reason why NET events (in NIC irq functions) are dated with rtdm_clock_read, whereas GPIO event are dated with rtdm_clock_read_monotonic ?
->>>>>
->>>>
->>>> Inconsistency of the GPIO drivers, UART drivers use rtdm_clock_read for
->>>> user-exposed timestamping as well. Maybe Philippe can comment on
->>>> thoughts behind this deviation.
->>>>
->>>
->>> When running over the I-pipe, rtdm_clock_read() is based on Xenomai's
->>> idea of real time, which is the Cobalt monotonic clock plus an arbitrary
->>> offset. For this reason, rtdm_clock_read() is not SMP-consistent
->>> (different CPUs might read different timestamps at the exact same time),
->>> is not in sync with linux's wall clock either. For these reasons, I
->>> don't see any practical way to synchronize multiple systems on the clock
->>> underlying rtdm_clock_read().
->>>
->>> Therefore, there is no upside in using rtdm_clock_read() for
->>> timestamping in this context, only adding the potential for even more
->>> surprising results due to the mono->real-time offset changing under our
->>> feet, since the epoch of the Xenomai real-time clock can be (re)set
->>> during runtime.
->>>
->>> I believe the UART driver is wrong here, it should return timestamps
->>> based on the monotonic source, which best fits the common need: getting
->>> timestamps from the local CPU for measuring delays between events
->>> received by drivers and the actions taken by the applications which
->>> consume them, immune from updates to the underlying clock
->>> epoch. Granted, there might be a catch when a timestamp is taken from
->>> IRQ context, which is then consumed from a thread living on a different
->>> CPU, if per-CPU clocks are not/badly synchronized. But that would happen
->>> the exact same way with rtdm_clock_read() anyway.
->>>
->>> The situation improves when running on top of Dovetail, since Xenomai
->>> now refers to the common linux clocks (mono / real) instead of providing
->>> its own idea of time, but the UART driver code predates the Dovetail
->>> port.
->>>  
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
 >>
->> Well, it's not just UART. All hardware drivers - except for GPIO - use
->> rtdm_clock_read. That was no problem in practice for their use cases so
->> far. One problem is that GPIO timestamps are now not comparable to others.
+>>> Hi Philippe,
+>>>
+>>> seems we have some early boot problem with Dovetail on the BBB (while
+>>> qemu-arm is fine), see [1] vs. [2] (disabled Xenomai for [2], see [3]).
+>>> Do you happen to have such a target around? Or a reference config that
+>>> is supposed to work?
+>>>
+>>> Jan
+>>>
+>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277392#L444
+>>> [2] https://source.denx.de/Xenomai/xenomai-images/-/jobs/277821#L444
+>>> [3]
+>>> https://source.denx.de/Xenomai/xenomai-images/-/commit/d48c28a82f16b5141948f23cc5bce244217eda15
 >>
->> But IIRC, most Xenomai APIs using absolute timestamps are based on
->> Xenomai's real-time clock. Therefore, providing timestamps for that
-> 
-> /*
->  * The Copperplate clock shall be monotonic unless the threading
->  * library has restrictions to support this over Mercury.
->  *
->  * In the normal case, this means that ongoing delays and timeouts
->  * won't be affected when the host system date is changed. In the
->  * restricted case by contrast, ongoing delays and timeouts may be
->  * impacted by changes to the host system date.
->  *
->  * The implementation maintains a per-clock epoch value, so that
->  * different emulators can have different (virtual) system dates.
->  */
-> #ifdef CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED
-> #define CLOCK_COPPERPLATE  CLOCK_REALTIME
-> #else
-> #define CLOCK_COPPERPLATE  CLOCK_MONOTONIC
-> #endif
-> 
-> So no, only the POSIX API is using what the standard mandates, which is
-> CLOCK_REALTIME. All other APIs are based on copperplate, and they are
-> using a monotonic source as documented above.
-
-OK, but that changed in 3.x. At the time that RTDM API was originally
-added and then promoted, it was the other not this way. We became
-inconsistent then.
-
-> 
->> particular clock was the original idea of rtdm_clock_read (which
->> predates rtdm_clock_read_monotonic). GPIO breaks that and should be
->> fixed - unless I'm wrong with that assumption.
+>> Yes, I have that one at hand, my Kconfig attached. No issue with booting
+>> EVL on the latest Dovetail/5.10-LTS. I'll give a try to Dovetail+Cobalt
+>> later today. (dtb issue in the CI?)
 >>
+>> [    0.000000] Booting Linux on physical CPU 0x0
+>> [    0.000000] Linux version 5.10.42-00590-gcd7b61ff545b (rpm@pyro) (arm-linux-gnueabihf-gcc (Linaro GCC 7.5-2019.12) 7.5.0, GNU ld (Linaro_Binutils-2019.12) 2.28.2.20170706) #1 PREEMPT IRQPIPE Thu Jun 10 09:08:56 CEST 2021
+>> [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c5387d
+>> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+>> [    0.000000] OF: fdt: Machine model: TI AM335x BeagleBone Black
+>> [    0.000000] Memory policy: Data cache writeback
+>> [    0.000000] efi: UEFI not found.
+>> [    0.000000] cma: Reserved 64 MiB at 0x9b800000
+>> [    0.000000] Zone ranges:
+>> [    0.000000]   DMA      [mem 0x0000000080000000-0x000000009fdfffff]
+>> [    0.000000]   Normal   empty
+>> [    0.000000]   HighMem  empty
+>> [    0.000000] Movable zone start for each node
+>> [    0.000000] Early memory node ranges
+>> [    0.000000]   node   0: [mem 0x0000000080000000-0x000000009fdfffff]
+>> [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000009fdfffff]
+>> [    0.000000] CPU: All CPU(s) started in SVC mode.
+>> [    0.000000] AM335X ES2.1 (sgx neon)
+>> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129540
+>> [    0.000000] Kernel command line: root=/dev/nfs rw nfsroot=192.168.3.1:/var/lab/nfsroot/generic/armv7,v3,tcp panic=1 console=ttyS0,115200n8 ip=dhcp
+>> [    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+>> [    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+>> [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+>> [    0.000000] Memory: 428160K/522240K available (13312K kernel code, 1712K rwdata, 5228K rodata, 2048K init, 411K bss, 28544K reserved, 65536K cma-reserved, 0K highmem)
+>> [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+>> [    0.000000] rcu: Preemptible hierarchical RCU implementation.
+>> [    0.000000] rcu: 	RCU event tracing is enabled.
+>> [    0.000000] 	Trampoline variant of Tasks RCU enabled.
+>> [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+>> [    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+>> [    0.000000] IRQ: Found an INTC at 0x(ptrval) (revision 5.0) with 128 interrupts
+>> [    0.000000] random: get_random_bytes called from start_kernel+0x330/0x4c4 with crng_init=0
+>> [    0.004513] IRQ pipeline enabled
 > 
-> We cannot assume the epoch is going to remain stable with
-> rtdm_clock_read() the way it is implemented, which is quite of a
-> problem wrt the common use case. For timestamping, a majority of
-> mainline drivers is using ktime_get() or a variant thereof which is
-> based on the monotonic clock source, not the _real form. Why would the
-> real-time I/O drivers be different?
+> Using wip/dovetail over dovetail-v5.10.y (.42 so far), bbb boots fine
+> with Dovetail fully enabled, Cobalt in stopped mode. Enabling the core
+> once booted, then running latency crashes in a fairly trivial way. It
+> looks like the paint is still wet there:
+> 
+> ~ # corectl --start
+> [   34.405086] [Xenomai] services started
+> ~ # 
+> ~ # 
+> ~ # latency
+> == Sampling period: 1000 us
+> == Test mode: periodic user-mode task
+> == All results in micro[   37.067419] 8<--- cut here ---
+> [   37.067431] Unable to handle kernel NULL pointer dereference at virtual address 000000c0
+> [   37.067435] pgd = 49eec2f1
+> [   37.067439] [000000c0] *pgd=83b78831, *pte=00000000, *ppte=00000000
+> [   37.067457] Internal error: Oops: 17 [#1] PREEMPT SMP ARM
+> [   37.067461] Modules linked in:
+> [   37.067468] CPU: 0 PID: 123 Comm: sampling-120 Not tainted 5.10.42-00113-gbc20d0c23c02-dirty #10
+> [   37.067473] Hardware name: Generic AM33XX (Flattened Device Tree)
+> [   37.067476] IRQ stage: Linux
+> [   37.067480] PC is at pipeline_set_timer_shot+0x24/0xd8
+> [   37.067484] LR is at pipeline_set_timer_shot+0x14/0xd8
+> [   37.067488] pc : [<c0402ce0>]    lr : [<c0402cd0>]    psr: 20070093
+> [   37.067492] sp : c3abfe58  ip : 10e28280  fp : c3abe000
+> [   37.067496] r10: c1a8fab8  r9 : 00000000  r8 : 000f4240
+> [   37.067500] r7 : 00000008  r6 : a03fb0a9  r5 : 000edea5  r4 : e147f638
+> [   37.067505] r3 : 00000000  r2 : 1e04f000  r1 : c1526704  r0 : 00000000
+> [   37.067509] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [   37.067513] Control: 10c5387d  Table: 83b50019  DAC: 00000051
+> [   37.067518] Process sampling-120 (pid: 123, stack limit = 0x86f5afaa)
+> [   37.067522] Stack: (0xc3abfe58 to 0xc3ac0000)
+> [   37.067526] fe40:                                                       e147f638 df9ab790
+> [   37.067531] fe60: a03fb0a9 00000008 000f4240 00000000 c1a8fab8 c040eef0 c3a54100 df9a6840
+> [   37.067536] fe80: 000f01f6 00000000 00000000 fffffffd 00000002 3574c753 c3abff04 00000000
+> [   37.067541] fea0: 00000000 00000000 00000008 000f4240 00000001 00000001 00000000 c0425e64
+> [   37.067546] fec0: 000f4240 00000000 00000001 00000001 e147f600 00000000 c3abff08 e147f638
+> [   37.067550] fee0: c3abff28 c04276ec c3abe000 ffffe000 00000003 00000001 00000000 00000051
+> [   37.067555] ff00: 00000000 c0427848 00000000 00000000 00000000 02e07ea8 00000000 00000000
+> [   37.067560] ff20: 00000000 c042530c 00000000 00000000 000f4240 c3abffb0 00000025 00000000
+> [   37.067565] ff40: 02e07ea8 000000f0 00000000 3574c753 c1a8bd40 c3abffb0 00000006 00000000
+> [   37.067570] ff60: e147f808 00000000 c3abe000 c3abff78 c0427784 c0423840 00000000 c1baa36b
+> [   37.067574] ff80: c3abff70 c3a54100 00000078 00000000 00000000 b63d8db8 100f0042 c0300370
+> [   37.067579] ffa0: c3abe000 00000007 00000000 c0300264 1000003a 00000003 00000001 b63d8db8
+> [   37.067584] ffc0: 00000000 00000000 b63d8db8 000f0042 b63d8e1c 00000001 bea8ba5c 00000000
+> [   37.067589] ffe0: 00000001 b63d8d48 00000003 b6ebc488 20070030 1000003a 00000000 00000000
+> [   37.067594] [<c0402ce0>] (pipeline_set_timer_shot) from [<c040eef0>] (xntimer_start+0x164/0x260)
+> [   37.067599] [<c040eef0>] (xntimer_start) from [<c0425e64>] (__cobalt_timer_setval+0xd4/0x100)
+> [   37.067604] [<c0425e64>] (__cobalt_timer_setval) from [<c04276ec>] (__cobalt_timerfd_settime+0xfc/0x194)
+> [   37.067609] [<c04276ec>] (__cobalt_timerfd_settime) from [<c0427848>] (CoBaLt_timerfd_settime+0xc4/0x18c)
+> [   37.067614] [<c0427848>] (CoBaLt_timerfd_settime) from [<c0423840>] (handle_head_syscall+0x13c/0x30c)
+> [   37.067619] [<c0423840>] (handle_head_syscall) from [<c0300264>] (fastcall_try+0x10/0x24)
+> [   37.067623] Exception stack(0xc3abffb0 to 0xc3abfff8)
+> [   37.067627] ffa0:                                     1000003a 00000003 00000001 b63d8db8
+> [   37.067632] ffc0: 00000000 00000000 b63d8db8 000f0042 b63d8e1c 00000001 bea8ba5c 00000000
+> [   37.067636] ffe0: 00000001 b63d8d48 00000003 b6ebc488 20070030 1000003a
+> [   37.067641] Code: e3053974 e34c3195 ee1d2f90 e7933002 (e59340c0) 
+> [   37.067645] ---[ end trace 09d1faca36a5025f ]---
+> seconds
+> warming up...
+> 
+> NOTE: imx6qp is fine booting with Cobalt enabled. Go figure.
+> 
+> NOTE2: we cannot build the bbb kernel with SMP support off. I'll send a
+> patch to fix this.
+> 
 
-We have two cases here:
-
- - I-pipe-based version where the realtime clock is under full
-   application control -> no problem to use rtdm_clock_read
- - Dovetail where we share the realtime clock - with all its tuning -
-   with Linux -> here we have a problem with rtdm_clock_read and should
-   reconsider its usage (and promotion!)
-
-For stable 3.1, the proper fix is with GPIO going to rtdm_clock_read.
-For 3.2, I'm not sure yet what to do with rtdm_clock_read.
+Note2 is fixed already, you were in CC. !SMP may actually be a key to
+the stuck boot with the xenomai-images config.
 
 Jan
 
