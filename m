@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2] cobalt/pipe: Add support for compat_ioctl
-Message-ID: <8c159b30-8270-1a39-4442-03bd005f2b60@siemens.com>
-Date: Wed, 9 Jun 2021 22:54:47 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Reminder: Contributions welcome, check issue list
+Date: Thu, 10 Jun 2021 01:21:16 +0000
+Message-ID: <BN9PR11MB5227BD97572BBD1F25865507F2359@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <4c33582e-0b6a-dbef-d002-8a96453a689f@siemens.com>
+In-Reply-To: <4c33582e-0b6a-dbef-d002-8a96453a689f@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-There are only two pipe IOCTLs that take arguments and both are int
-pointers. Therefore, use the compat_ptr_ioctl pattern, just open-coding
-it for support of kernels < 5.4.4.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-Changes in v2:
- - fix !CONFIG_COMPAT build
-
- kernel/cobalt/pipe.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
-index 9465fb2da..17aca5df6 100644
---- a/kernel/cobalt/pipe.c
-+++ b/kernel/cobalt/pipe.c
-@@ -1052,6 +1052,20 @@ static long xnpipe_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	return ret;
- }
- 
-+#ifdef CONFIG_COMPAT
-+/*
-+ * Could be replaced with compat_ptr_ioctl if support for kernels < 5.4 is
-+ * dropped.
-+ */
-+static long xnpipe_compat_ioctl(struct file *file, unsigned int cmd,
-+				unsigned long arg)
-+{
-+	return xnpipe_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
-+}
-+#else
-+#define xnpipe_compat_ioctl	NULL
-+#endif
-+
- static int xnpipe_fasync(int fd, struct file *file, int on)
- {
- 	struct xnpipe_state *state = file->private_data;
-@@ -1112,6 +1126,7 @@ static struct file_operations xnpipe_fops = {
- 	.write = xnpipe_write,
- 	.poll = xnpipe_poll,
- 	.unlocked_ioctl = xnpipe_ioctl,
-+	.compat_ioctl = xnpipe_compat_ioctl,
- 	.open = xnpipe_open,
- 	.release = xnpipe_release,
- 	.fasync = xnpipe_fasync
--- 
-2.26.2
+PlRvOiBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPlN1YmplY3Q6IFJlbWluZGVyOiBD
+b250cmlidXRpb25zIHdlbGNvbWUsIGNoZWNrIGlzc3VlIGxpc3QNCj4NCj5IaSBhbGwsDQo+DQo+
+anVzdCBhIHJlbWluZGVyIHRvIGFsbCB3aG8gd291bGQgbGlrZSB0byBnaXZlIHNvbWV0aGluZyBi
+YWNrIHRoZSBYZW5vbWFpOg0KPg0KPldlIGhhdmUgYSBzdGVhZGlseSBncm93aW5nIGxpc3Qgb2Yg
+aXNzdWVzIG9uDQo+aHR0cHM6Ly9naXRsYWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3Bh
+Y2UvLS9pc3N1ZXMuIFNwZWNpZmljYWxseQ0KPnRob3NlIHRhZ2dlZCB3aXRoICJ0ZXN0aW5nIg0K
+PihodHRwczovL2dpdGxhYi5jb20vWGVub21haS94ZW5vbWFpLWhhY2tlci1zcGFjZS8tL2lzc3Vl
+cz9sYWJlbF9uYW1lJTVCJTVEPXRlc3RpbmcpDQoNCkkgd291bGQgbGlrZSB0byB3b3JrIG9uIGlz
+c3VlICMxNCBmb3IgeDg2IGluIHRoZSBmb2xsb3dpbmcuIFdvdWxkIEkgcHJvdmlkZSBkaWZmZXJl
+bmNlIA0KcGF0Y2ggZm9yIGFscmVhZHkgZXhpc3RpbmcgY29uZmlnIG9yIHByb3ZpZGUgYSBuZXcg
+Y29tcGxldGUgY29uZmlnPw0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KPmRvIG5vdCBy
+ZXF1aXJlIGtlcm5lbCBndXJ1IGxldmVsIGluIG9yZGVyIHRvIGdpdmUgc29tZXRoaW5nIHZhbHVh
+YmxlDQo+YmFjayB0byB0aGUgcHJvamVjdC4gSWYgeW91IGhhdmUgc29tZSBmcmVlIGN5Y2xlcywg
+cGxlYXNlIHN0b3AgYnkgYW5kDQo+aGF2ZSBhIGxvb2suIFdoZW4geW91IHN0YXJ0IHdvcmtpbmcg
+b24gc29tZXRoaW5nLCBwbGVhc2UgYXNzaWduIHRoZQ0KPmlzc3VlIHRvIHlvdS4gQW5kIGlmIHlv
+dSBoYXZlIHF1ZXN0aW9ucywgZG8gbm90IGhlc2l0YXRlIHRvIGFzayB0aGVtLg0KPg0KPkphbg0K
+Pg0KPlBTOiBBbmQgaWYgeW91IGZlZWwgbGlrZSBzb21ldGhpbmcgaXMgbWlzc2luZywgeW91IG1h
+eSBhbHNvIGF1Z21lbnQgdGhlDQo+aXNzdWUgbGlzdCENCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBU
+IFJEQSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
