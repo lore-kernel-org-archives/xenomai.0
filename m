@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 12/17] cobalt/tick: dovetail: improve accuracy of the host
- tick delay
-Date: Fri, 11 Jun 2021 20:05:38 +0200
-Message-Id: <7b6dd52ed44d59ed87d260d7e35663dbb8cb3cd2.1623434743.git.jan.kiszka@siemens.com>
+Subject: [PATCH 13/17] cobalt/tick: dovetail: Drop pointless inline specifier
+ from pipeline_must_force_program_tick
+Date: Fri, 11 Jun 2021 20:05:39 +0200
+Message-Id: <45cdd37e28e904735e8d9c32200f75dc07d64c6d.1623434743.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1623434743.git.jan.kiszka@siemens.com>
 References: <cover.1623434743.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -17,50 +17,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Expiration dates of in-band timers are based on the monotonic time
-base read by ktime_get(), which is ok for us to use from non-NMI
-context.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/dovetail/tick.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ include/cobalt/kernel/dovetail/pipeline/tick.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-index fa041092e..ac343e4d3 100644
---- a/kernel/cobalt/dovetail/tick.c
-+++ b/kernel/cobalt/dovetail/tick.c
-@@ -55,19 +55,21 @@ void pipeline_set_timer_shot(unsigned long delay) /* ns */
- }
+diff --git a/include/cobalt/kernel/dovetail/pipeline/tick.h b/include/cobalt/kernel/dovetail/pipeline/tick.h
+index 8ac4760ec..372d8323f 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/tick.h
++++ b/include/cobalt/kernel/dovetail/pipeline/tick.h
+@@ -11,6 +11,6 @@ void pipeline_uninstall_tick_proxy(void);
  
- static int proxy_set_next_ktime(ktime_t expires,
--				struct clock_event_device *proxy_dev)
-+				struct clock_event_device *proxy_dev) /* hard irqs on/off */
- {
- 	struct xnsched *sched;
--	ktime_t delta;
- 	unsigned long flags;
-+	ktime_t delta;
- 	int ret;
+ struct xnsched;
  
- 	/*
--	 * When Negative delta have been observed, we set delta zero.
--	 * Or else exntimer_start() will return -ETIMEDOUT and do not
--	 * trigger shot
-+	 * Expiration dates of in-band timers are based on the common
-+	 * monotonic time base. If the timeout date has already
-+	 * elapsed, make sure xntimer_start() does not fail with
-+	 * -ETIMEDOUT but programs the hardware for ticking
-+	 * immediately instead.
- 	 */
--	delta = ktime_sub(expires, ktime_get_mono_fast_ns());
-+	delta = ktime_sub(expires, ktime_get());
- 	if (delta < 0)
- 		delta = 0;
+-inline bool pipeline_must_force_program_tick(struct xnsched *sched);
++bool pipeline_must_force_program_tick(struct xnsched *sched);
  
+ #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
 -- 
 2.26.2
 
