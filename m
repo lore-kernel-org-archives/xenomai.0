@@ -1,8 +1,9 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
- Rtdmtest and RTIPC
-Date: Thu, 24 Jun 2021 02:45:05 -0400
-Message-Id: <20210624064505.25467-1-hongzhan.chen@intel.com>
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH][3.x] kernel: syscall: Correctly check for x32
+Date: Fri, 11 Jun 2021 09:57:06 +0200
+Message-Id: <20210611075706.29544-1-richard@nod.at>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,207 +12,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-enable Rtnet, Rtdmtest, RTIPC, watchdog, RT sched class and
-related drivers that would be tested by smokey test.
+Since 10.2 gcc it sets __ILP32__ even for i386.
+To check for x32 we need to check for __x86_64__ being set too.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+While x32 is gone in master, 3.x stable still has it.
+Without this patch it is not possible to build Xenomai for i386
+with a recent gcc toolchain.
+---
+ kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
-index d4e717e..122aeac 100644
---- a/recipes-kernel/linux/files/arm64_defconfig
-+++ b/recipes-kernel/linux/files/arm64_defconfig
-@@ -360,19 +360,31 @@ CONFIG_XENOMAI=y
- #
- # Core features
- #
--# CONFIG_XENO_OPT_SCHED_CLASSES is not set
-+CONFIG_XENO_OPT_SCHED_CLASSES=y
-+CONFIG_XENO_OPT_SCHED_WEAK=y
-+CONFIG_XENO_OPT_SCHED_TP=y
-+CONFIG_XENO_OPT_SCHED_TP_NRPART=4
-+CONFIG_XENO_OPT_SCHED_SPORADIC=y
-+CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
-+CONFIG_XENO_OPT_SCHED_QUOTA=y
-+CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
-+CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
- CONFIG_XENO_OPT_STATS=y
--# CONFIG_XENO_OPT_SHIRQ is not set
-+CONFIG_XENO_OPT_STATS_IRQS=y
-+CONFIG_XENO_OPT_SHIRQ=y
- CONFIG_XENO_OPT_RR_QUANTUM=1000
- CONFIG_XENO_OPT_AUTOTUNE=y
--# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
--CONFIG_XENO_OPT_TIMER_LIST=y
--# CONFIG_XENO_OPT_TIMER_RBTREE is not set
-+CONFIG_XENO_OPT_SCALABLE_SCHED=y
-+# CONFIG_XENO_OPT_TIMER_LIST is not set
-+CONFIG_XENO_OPT_TIMER_RBTREE=y
-+CONFIG_XENO_OPT_PIPE=y
-+CONFIG_XENO_OPT_MAP=y
- CONFIG_XENO_OPT_VFILE=y
- 
- #
- # Sizes and static limits
- #
-+CONFIG_XENO_OPT_PIPE_NRDEV=32
- CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
- CONFIG_XENO_OPT_SYS_HEAPSZ=4096
- CONFIG_XENO_OPT_PRIVATE_HEAPSZ=256
-@@ -396,7 +408,12 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
- #
- # Serial drivers
- #
--# CONFIG_XENO_DRIVERS_16550A is not set
-+CONFIG_XENO_DRIVERS_16550A=y
-+CONFIG_XENO_DRIVERS_16550A_PIO=y
-+# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
-+# CONFIG_XENO_DRIVERS_16550A_ANY is not set
-+CONFIG_XENO_DRIVERS_16550A_PCI=y
-+CONFIG_XENO_DRIVERS_16550A_PCI_MOXA=y
- 
- #
- # Testing drivers
-@@ -404,17 +421,106 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
- CONFIG_XENO_DRIVERS_TIMERBENCH=y
- CONFIG_XENO_DRIVERS_SWITCHTEST=y
- CONFIG_XENO_DRIVERS_HEAPCHECK=y
--# CONFIG_XENO_DRIVERS_RTDMTEST is not set
-+CONFIG_XENO_DRIVERS_RTDMTEST=m
- 
- #
- # CAN drivers
- #
--# CONFIG_XENO_DRIVERS_CAN is not set
-+CONFIG_XENO_DRIVERS_CAN=y
-+CONFIG_XENO_DRIVERS_CAN_DEBUG=y
-+CONFIG_XENO_DRIVERS_CAN_LOOPBACK=y
-+CONFIG_XENO_DRIVERS_CAN_RXBUF_SIZE=1024
-+CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES=4
-+CONFIG_XENO_DRIVERS_CAN_MAX_RECEIVERS=16
-+CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
-+# CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
-+CONFIG_XENO_DRIVERS_CAN_VIRT=y
-+# CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
-+CONFIG_XENO_DRIVERS_CAN_SJA1000=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI=y
-+CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG=y
- 
- #
- # RTnet
- #
--# CONFIG_XENO_DRIVERS_NET is not set
-+CONFIG_XENO_DRIVERS_NET=m
-+CONFIG_XENO_DRIVERS_RTNET_CHECKED=y
-+
-+#
-+# Protocol Stack
-+#
-+
-+#
-+# Stack parameters
-+#
-+CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
-+CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
-+CONFIG_XENO_DRIVERS_NET_RTWLAN=y
-+
-+#
-+# Protocols
-+#
-+CONFIG_XENO_DRIVERS_NET_RTIPV4=m
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING=y
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_NET_ROUTES=16
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTER=y
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP=m
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION=y
-+CONFIG_XENO_DRIVERS_NET_RTPACKET=m
-+CONFIG_XENO_DRIVERS_NET_RTMAC=m
-+CONFIG_XENO_DRIVERS_NET_TDMA=m
-+CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
-+CONFIG_XENO_DRIVERS_NET_NOMAC=m
-+CONFIG_XENO_DRIVERS_NET_RTCFG=m
-+CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
-+
-+#
-+# Drivers
-+#
-+
-+#
-+# Common PCI Drivers
-+#
-+CONFIG_XENO_DRIVERS_NET_DRV_PCNET32=m
-+CONFIG_XENO_DRIVERS_NET_DRV_TULIP=m
-+CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100=m
-+CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT=20
-+# CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG is not set
-+CONFIG_XENO_DRIVERS_NET_DRV_E1000=m
-+CONFIG_XENO_DRIVERS_NET_DRV_E1000E=m
-+CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI=m
-+CONFIG_XENO_DRIVERS_NET_DRV_8139=m
-+CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE=m
-+CONFIG_XENO_DRIVERS_NET_DRV_IGB=m
-+CONFIG_XENO_DRIVERS_NET_DRV_R8169=m
-+
-+#
-+# Misc Drivers
-+#
-+CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
-+CONFIG_XENO_DRIVERS_NET_DRV_SMC91111=m
-+CONFIG_XENO_DRIVERS_NET_EXP_DRIVERS=y
-+CONFIG_XENO_DRIVERS_NET_DRV_3C59X=m
-+CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW=m
-+CONFIG_XENO_DRIVERS_NET_DRV_RT2500=m
-+
-+#
-+# Add-Ons
-+#
-+CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
-+CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
-+CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
- 
- #
- # ANALOGY drivers
-@@ -424,7 +530,12 @@ CONFIG_XENO_DRIVERS_HEAPCHECK=y
- #
- # Real-time IPC drivers
- #
--# CONFIG_XENO_DRIVERS_RTIPC is not set
-+CONFIG_XENO_DRIVERS_RTIPC=y
-+CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-+CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
-+CONFIG_XENO_OPT_IDDP_NRPORT=32
-+CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
-+CONFIG_XENO_OPT_BUFP_NRPORT=32
- 
- #
- # UDD support
-@@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
- # cause troubles with Xenomai. You should disable them.
- #
- CONFIG_XENO_VERSION_MAJOR=3
--CONFIG_XENO_VERSION_MINOR=0
--CONFIG_XENO_REVISION_LEVEL=90
--CONFIG_XENO_VERSION_STRING="3.1-devel"
--CONFIG_XENO_VERSION_NAME="Xenomai -next"
-+CONFIG_XENO_VERSION_MINOR=1
-+CONFIG_XENO_REVISION_LEVEL=0
-+CONFIG_XENO_VERSION_STRING="3.1"
- CONFIG_FREEZER=y
- 
- #
--- 
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h b/=
+kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
+index aa9936dfd..1626430c1 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
+@@ -18,7 +18,7 @@
+ #ifndef _COBALT_X86_ASM_UAPI_SYSCALL_H
+ #define _COBALT_X86_ASM_UAPI_SYSCALL_H
+=20
+-#ifdef __ILP32__
++#if defined(__x86_64__) && defined(__ILP32__)
+ #define __xn_syscall_base  __COBALT_X32_BASE
+ #else
+ #define __xn_syscall_base  0
+--=20
 2.17.1
 
 
