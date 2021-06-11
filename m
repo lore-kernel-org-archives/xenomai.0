@@ -1,13 +1,10 @@
-Subject: Re: [xenomai-images 2/2] tests: restrict realtime cpu for x86 and
- qemu type of devices
-References: <20210628062624.2244-1-hongzhan.chen@intel.com>
- <20210628062624.2244-2-hongzhan.chen@intel.com>
- <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
+Subject: Re: [PATCH][3.x] kernel: syscall: Correctly check for x32
+References: <20210611075706.29544-1-richard@nod.at>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
-Date: Mon, 28 Jun 2021 12:21:25 +0200
+Message-ID: <4c58b839-6b7d-35f3-2900-2a0fa1ad0356@siemens.com>
+Date: Fri, 11 Jun 2021 10:31:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
+In-Reply-To: <20210611075706.29544-1-richard@nod.at>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,84 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
 
-On 28.06.21 09:08, Jan Kiszka via Xenomai wrote:
-> On 28.06.21 08:26, Hongzhan Chen wrote:
->> If there is no CPU restriction on the bootargs, smokey cpu_affinity
->> test would be skipped reporting with "no kernel support" for those
->> without non-RT cpu.
->>
->> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>
->> diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
->> index a5a181c..209c5d4 100644
->> --- a/tests/jobs/xenomai-ipc227e.yml
->> +++ b/tests/jobs/xenomai-ipc227e.yml
->> @@ -72,3 +72,5 @@ actions:
->>        from: inline
->>        path: inline/xenomai-test-suite.yaml
->>        name: xenomai-test-suite
->> +context:
->> +  extra_kernel_args: xenomai.supported_cpus=7
->> diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
->> index c335292..e42f6ec 100644
->> --- a/tests/jobs/xenomai-qemu-amd64.yml
->> +++ b/tests/jobs/xenomai-qemu-amd64.yml
->> @@ -46,7 +46,7 @@ actions:
->>      to: tmpfs
->>      images:
->>        kernel:
->> -        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0"
->> +        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0 xenomai.supported_cpus=1"
->>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>        initrd:
->>          image_arg: -initrd {initrd}
->> diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
->> index 88fb880..cc60564 100644
->> --- a/tests/jobs/xenomai-qemu-arm64.yml
->> +++ b/tests/jobs/xenomai-qemu-arm64.yml
->> @@ -50,7 +50,7 @@ actions:
->>      to: tmpfs
->>      images:
->>        kernel:
->> -        image_arg: -kernel {kernel} -append "root=/dev/vda"
->> +        image_arg: -kernel {kernel} -append "root=/dev/vda xenomai.supported_cpus=1"
->>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>        initrd:
->>          image_arg: -initrd {initrd}
->> diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
->> index 3e3a8ab..2afe250 100644
->> --- a/tests/jobs/xenomai-qemu-armhf.yml
->> +++ b/tests/jobs/xenomai-qemu-armhf.yml
->> @@ -46,7 +46,7 @@ actions:
->>      to: tmpfs
->>      images:
->>        kernel:
->> -        image_arg: -kernel {kernel} -append "root=/dev/vdb"
->> +        image_arg: -kernel {kernel} -append "root=/dev/vdb xenomai.supported_cpus=1"
->>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>        initrd:
->>          image_arg: -initrd {initrd}
->> diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
->> index bc71b75..d1418c1 100644
->> --- a/tests/jobs/xenomai-x86-64-efi.yml
->> +++ b/tests/jobs/xenomai-x86-64-efi.yml
->> @@ -72,3 +72,5 @@ actions:
->>        from: inline
->>        path: inline/xenomai-test-suite.yaml
->>        name: xenomai-test-suite
->> +context:
->> +  extra_kernel_args: xenomai.supported_cpus=7
->>
+On 11.06.21 09:57, Richard Weinberger via Xenomai wrote:
+> Since 10.2 gcc it sets __ILP32__ even for i386.
+> To check for x32 we need to check for __x86_64__ being set too.
 > 
-> Thanks, both applied, just formatting the masks as hex.
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+> While x32 is gone in master, 3.x stable still has it.
+> Without this patch it is not possible to build Xenomai for i386
+> with a recent gcc toolchain.
+> ---
+>  kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
+> index aa9936dfd..1626430c1 100644
+> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
+> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
+> @@ -18,7 +18,7 @@
+>  #ifndef _COBALT_X86_ASM_UAPI_SYSCALL_H
+>  #define _COBALT_X86_ASM_UAPI_SYSCALL_H
+>  
+> -#ifdef __ILP32__
+> +#if defined(__x86_64__) && defined(__ILP32__)
+>  #define __xn_syscall_base  __COBALT_X32_BASE
+>  #else
+>  #define __xn_syscall_base  0
 > 
 
-Seems as if this triggers an issue with dovetail/5.10:
-https://source.denx.de/Xenomai/xenomai-images/-/jobs/283341
-
-Let's see how the corresponding QEMU behaves...
+Thanks, applied to stable/v3.1.x. No one should be doing gcc-10 with
+v3.0.x anymore...
 
 Jan
 
