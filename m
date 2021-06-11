@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 3/5] linux-xenomai: Add 5.4 recipe and make it
- default
-Date: Fri, 11 Jun 2021 22:13:10 +0200
-Message-Id: <73be0c2eba0da87a487708b29fcbf31899bbf03a.1623442392.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 1/5] linux-xenomai: Update to latest 4.4 and
+ 4.19 ipipe releases
+Date: Fri, 11 Jun 2021 22:13:08 +0200
+Message-Id: <e5ba93f17dac1cce9700a92637aff05007a5585b.1623442392.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1623442392.git.jan.kiszka@siemens.com>
 References: <cover.1623442392.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,60 +19,58 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This is currently our most recent stable kernel.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- conf/distro/include/xenomai-version.inc   |  2 +-
- recipes-kernel/linux/linux-xenomai_5.4.bb | 26 +++++++++++++++++++++++
- 2 files changed, 27 insertions(+), 1 deletion(-)
- create mode 100644 recipes-kernel/linux/linux-xenomai_5.4.bb
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 12 ++++++------
+ recipes-kernel/linux/linux-xenomai_4.4.bb  |  8 ++++----
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
-index 9bf3087..24e0dd6 100644
---- a/conf/distro/include/xenomai-version.inc
-+++ b/conf/distro/include/xenomai-version.inc
-@@ -9,7 +9,7 @@
- # SPDX-License-Identifier: MIT
- #
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+index 12e2199..ef67067 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.19.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
+@@ -12,15 +12,15 @@
+ require recipes-kernel/linux/linux-xenomai.inc
  
--XENOMAI_DEFAULT_KERNEL_VERSION = "4.19%"
-+XENOMAI_DEFAULT_KERNEL_VERSION = "5.4%"
- XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.10"
- XENOMAI_3_0_KERNEL_VERSION = "4.4%"
- # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
-diff --git a/recipes-kernel/linux/linux-xenomai_5.4.bb b/recipes-kernel/linux/linux-xenomai_5.4.bb
-new file mode 100644
-index 0000000..9f070cf
---- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai_5.4.bb
-@@ -0,0 +1,26 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2021
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require recipes-kernel/linux/linux-xenomai.inc
-+
-+SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
-+SRCREV_amd64 ?= "ipipe-core-5.4.124-x86-5"
-+PV_amd64 ?= "5.4.124+"
-+
-+SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
-+SRCREV_arm64 ?= "ipipe-core-5.4.119-arm64-2"
-+PV_arm64 ?= "5.4.119+"
-+
-+SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
-+SRCREV_armhf ?= "ipipe-core-5.4.119-arm-2"
-+PV_armhf ?= "5.4.119+"
-+
-+S = "${WORKDIR}/git"
+ SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "ipipe-core-4.19.140-cip33-x86-14"
+-PV_amd64 ?= "4.19.140+"
++SRCREV_amd64 ?= "ipipe-core-4.19.192-cip50-x86-18"
++PV_amd64 ?= "4.19.192+"
+ 
+ SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
+-SRCREV_arm64 ?= "ipipe-core-4.19.144-cip34-arm64-08"
+-PV_arm64 ?= "4.19.144+"
++SRCREV_arm64 ?= "ipipe-core-4.19.190-cip49-arm64-10"
++PV_arm64 ?= "4.19.190+"
+ 
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
+-SRCREV_armhf ?= "ipipe-core-4.19.140-cip33-arm-11"
+-PV_armhf ?= "4.19.140+"
++SRCREV_armhf ?= "ipipe-core-4.19.190-cip49-arm-15"
++PV_armhf ?= "4.19.190+"
+ 
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
+index 0c2b1f3..2a1137c 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.4.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
+@@ -12,11 +12,11 @@
+ require recipes-kernel/linux/linux-xenomai.inc
+ 
+ SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "ipipe-core-4.4.238-cip50-x86-26"
+-PV_amd64 = "4.4.238+"
++SRCREV_amd64 ?= "ipipe-core-4.4.268-cip57-x86-28"
++PV_amd64 = "4.4.268+"
+ 
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
+-SRCREV_armhf ?= "ipipe-core-4.4.238-cip50-arm-11"
+-PV_armhf = "4.4.238+"
++SRCREV_armhf ?= "ipipe-core-4.4.268-cip57-arm-13"
++PV_armhf = "4.4.268+"
+ 
+ S = "${WORKDIR}/git"
 -- 
 2.26.2
 
