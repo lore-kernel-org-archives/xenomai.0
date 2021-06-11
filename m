@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 10/17] lib/cobalt/arm: dovetail: skip detection of KUSER_TSC
- support
-Date: Fri, 11 Jun 2021 20:05:36 +0200
-Message-Id: <ea5688a154ec6cdb3a95dc025e13985c90e9c0da.1623434743.git.jan.kiszka@siemens.com>
+Subject: [PATCH 16/17] cobalt/syscall: Account for different syscall argument
+ marshaling
+Date: Fri, 11 Jun 2021 20:05:42 +0200
+Message-Id: <d1fe9293f177efcf5e95960e948516ccf37e2d71.1623434743.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1623434743.git.jan.kiszka@siemens.com>
 References: <cover.1623434743.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -17,41 +17,237 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-When Dovetail is enabled in the kernel, we get timestamps for common
-clocks (CLOCK_REALTIME, CLOCK_MONOTONIC) from the vDSO-based gettime()
-routine as usual.  Do not expect KUSER_TSC support to be there in such
-a case, it is not.
+I-pipe makes sure that arguments of compat calls are ordered just like
+native calls. Dovetail does not. But it is better to use the kernel's
+syscall_get_arguments for retrieving the arguments anyway. Introduce
+pipeline_get_syscall_args to abstract that difference.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Xenomai/ARM syscalls have an unconventional argument marshalling, with
+ARM_ORIG_r0 containing the Xenomai syscall number (ORed with
+__COBALT_SYSCALL_BIT), followed by the first actual argument to the
+syscall in ARM_r1.
+
+For this reason, using syscall_get_arguments() to collect the syscall
+parameters won't yield the expected result, with regs[0] matching
+__xn_reg_sys(regs) instead of __xn_reg_arg1(regs).
+
+Allow Dovetail-enabled architectures to override the generic
+implementation of pipeline_get_syscall_args(), provide a working one
+for ARM.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+[Philippe: add special handling of ARM]
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- lib/cobalt/arch/arm/features.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../cobalt/kernel/dovetail/pipeline/pipeline.h  | 11 +++++++++++
+ include/cobalt/kernel/ipipe/pipeline/pipeline.h | 12 ++++++++++++
+ .../arm/dovetail/include/asm/xenomai/syscall.h  | 17 ++++++++++++-----
+ .../dovetail/include/asm/xenomai/syscall.h      |  5 -----
+ .../x86/dovetail/include/asm/xenomai/syscall.h  |  5 -----
+ .../include/asm-generic/xenomai/syscall.h       |  7 -------
+ kernel/cobalt/posix/syscall.c                   | 14 ++++++++++----
+ 7 files changed, 45 insertions(+), 26 deletions(-)
 
-diff --git a/lib/cobalt/arch/arm/features.c b/lib/cobalt/arch/arm/features.c
-index d7b50f73f..b4eddaad4 100644
---- a/lib/cobalt/arch/arm/features.c
-+++ b/lib/cobalt/arch/arm/features.c
-@@ -25,6 +25,7 @@
- #include <unistd.h>
- #include <limits.h>
- #include <cobalt/wrappers.h>
-+#include <cobalt/ticks.h>
- #include <asm/xenomai/syscall.h>
- #include <asm/xenomai/tsc.h>
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index a985e367a..2ee7b3210 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -9,6 +9,8 @@
+ #include <linux/cpumask.h>
+ #include <cobalt/kernel/assert.h>
  #include <asm/xenomai/features.h>
-@@ -44,6 +45,9 @@ void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
- 	int err, fd;
- 	void *addr;
++#include <asm/xenomai/syscall.h>
++#include <asm/syscall.h>
+ #include <pipeline/machine.h>
  
-+	if (!cobalt_use_legacy_tsc())
-+		return;
+ typedef unsigned long spl_t;
+@@ -95,4 +97,13 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
+ 	f->clock_freq = 0;	/* N/A */
+ }
+ 
++#ifndef pipeline_get_syscall_args
++static inline void pipeline_get_syscall_args(struct task_struct *task,
++					     struct pt_regs *regs,
++					     unsigned long *args)
++{
++	syscall_get_arguments(task, regs, args);
++}
++#endif	/* !pipeline_get_syscall_args */
 +
- 	if (__xn_tscinfo.kinfo.counter != NULL)
- 		return;
+ #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
+diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+index fda962568..ac9c92b1b 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
++++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
+@@ -11,6 +11,7 @@
  
+ #include <pipeline/machine.h>
+ #include <asm/xenomai/features.h>
++#include <asm/xenomai/syscall.h>
+ 
+ #define xnsched_primary_domain  cobalt_pipeline.domain
+ 
+@@ -81,4 +82,15 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
+ 	f->clock_freq = cobalt_pipeline.clock_freq;
+ }
+ 
++static inline void pipeline_get_syscall_args(struct task_struct *task,
++					     struct pt_regs *regs,
++					     unsigned long *args)
++{
++	*args++ = __xn_reg_arg1(regs);
++	*args++ = __xn_reg_arg2(regs);
++	*args++ = __xn_reg_arg3(regs);
++	*args++ = __xn_reg_arg4(regs);
++	*args   = __xn_reg_arg5(regs);
++}
++
+ #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
+diff --git a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
+index eb4ec1bbe..d41b25768 100644
+--- a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
+@@ -59,11 +59,6 @@
+ 	})
+ 
+ #define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
+-#define __xn_reg_arg1(__regs)	((__regs)->ARM_r1)
+-#define __xn_reg_arg2(__regs)	((__regs)->ARM_r2)
+-#define __xn_reg_arg3(__regs)	((__regs)->ARM_r3)
+-#define __xn_reg_arg4(__regs)	((__regs)->ARM_r4)
+-#define __xn_reg_arg5(__regs)	((__regs)->ARM_r5)
+ #define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
+ #define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
+ 
+@@ -91,4 +86,16 @@ int xnarch_local_syscall(unsigned long a1, unsigned long a2,
+ 	return -ENOSYS;
+ }
+ 
++#define pipeline_get_syscall_args pipeline_get_syscall_args
++static inline void pipeline_get_syscall_args(struct task_struct *task,
++					     struct pt_regs *regs,
++					     unsigned long *args)
++{
++	args[0] = regs->ARM_r1;
++	args[1] = regs->ARM_r2;
++	args[2] = regs->ARM_r3;
++	args[3] = regs->ARM_r4;
++	args[4] = regs->ARM_r5;
++}
++
+ #endif /* !_COBALT_ARM_DOVETAIL_SYSCALL_H */
+diff --git a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
+index 33b4a710f..96871e247 100644
+--- a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
+@@ -23,11 +23,6 @@
+ #define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
+ 
+ #define __xn_reg_rval(__regs)	((__regs)->regs[0])
+-#define __xn_reg_arg1(__regs)	((__regs)->regs[0])
+-#define __xn_reg_arg2(__regs)	((__regs)->regs[1])
+-#define __xn_reg_arg3(__regs)	((__regs)->regs[2])
+-#define __xn_reg_arg4(__regs)	((__regs)->regs[3])
+-#define __xn_reg_arg5(__regs)	((__regs)->regs[4])
+ #define __xn_reg_pc(__regs)	((__regs)->pc)
+ #define __xn_reg_sp(__regs)	((__regs)->sp)
+ 
+diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
+index c64196b6a..b2e158247 100644
+--- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
+@@ -29,11 +29,6 @@
+  */
+ #define __xn_reg_sys(regs)    ((regs)->orig_ax)
+ #define __xn_reg_rval(regs)   ((regs)->ax)
+-#define __xn_reg_arg1(regs)   ((regs)->di)
+-#define __xn_reg_arg2(regs)   ((regs)->si)
+-#define __xn_reg_arg3(regs)   ((regs)->dx)
+-#define __xn_reg_arg4(regs)   ((regs)->r10)
+-#define __xn_reg_arg5(regs)   ((regs)->r8)
+ #define __xn_reg_pc(regs)     ((regs)->ip)
+ #define __xn_reg_sp(regs)     ((regs)->sp)
+ 
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index 48c44c49d..117bb3ff8 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -36,13 +36,6 @@
+ #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
+ #endif
+ 
+-#define __xn_reg_arglist(regs)	\
+-	__xn_reg_arg1(regs),	\
+-	__xn_reg_arg2(regs),	\
+-	__xn_reg_arg3(regs),	\
+-	__xn_reg_arg4(regs),	\
+-	__xn_reg_arg5(regs)
+-
+ #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
+ #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
+ #define __xn_put_user(src, dstP)		__put_user(src, dstP)
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 30c33dda6..b7177042e 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -486,6 +486,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
+ 	struct xnthread *thread;
+ 	cobalt_syshand handler;
+ 	struct task_struct *p;
++	unsigned long args[6];
+ 	unsigned int nr, code;
+ 	long ret;
+ 
+@@ -592,7 +593,10 @@ restart:
+ 	 * handler (lostage ones), or rejected by allowed_syscall().
+ 	 */
+ 
+-	ret = handler(__xn_reg_arglist(regs));
++	p = current;
++	pipeline_get_syscall_args(p, regs, args);
++
++	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
+ 		if (switched) {
+ 			ret = xnthread_harden();
+@@ -611,7 +615,6 @@ done:
+ 	__xn_status_return(regs, ret);
+ 	sigs = 0;
+ 	if (!xnsched_root_p()) {
+-		p = current;
+ 		if (signal_pending(p) ||
+ 		    xnthread_test_info(thread, XNKICKED)) {
+ 			sigs = 1;
+@@ -677,6 +680,7 @@ int handle_root_syscall(struct pt_regs *regs)
+ 	struct xnthread *thread;
+ 	cobalt_syshand handler;
+ 	struct task_struct *p;
++	unsigned long args[6];
+ 	unsigned int nr, code;
+ 	long ret;
+ 
+@@ -735,7 +739,10 @@ restart:
+ 			xnthread_propagate_schedparam(thread);
+ 	}
+ 
+-	ret = handler(__xn_reg_arglist(regs));
++	p = current;
++	pipeline_get_syscall_args(p, regs, args);
++
++	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
+ 		sysflags ^= __xn_exec_histage;
+ 		if (switched) {
+@@ -756,7 +763,6 @@ restart:
+ 		 * just invoked, so make sure to fetch it.
+ 		 */
+ 		thread = xnthread_current();
+-		p = current;
+ 		if (signal_pending(p)) {
+ 			sigs = 1;
+ 			prepare_for_signal(p, thread, regs, sysflags);
 -- 
 2.26.2
 
