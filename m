@@ -1,7 +1,10 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 00/17] Dovetail integration - the finals
-Date: Fri, 11 Jun 2021 20:05:26 +0200
-Message-Id: <cover.1623434743.git.jan.kiszka@siemens.com>
+Subject: [PATCH 06/17] cobalt/thread: dovetail: keep hard irqs off on
+ transition to in-band
+Date: Fri, 11 Jun 2021 20:05:32 +0200
+Message-Id: <98288382bd466130fedd65c653f70f90a7e5c4af.1623434743.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1623434743.git.jan.kiszka@siemens.com>
+References: <cover.1623434743.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,125 +17,183 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Now the final bits to git dovetail / 5.10 support into mainline. The
-last missing piece was the avoidance xnmalloc in critical paths when
-submitting inband work. I've used Hongzhan's patch for xnthread_signal
-and also Philippe's patches for the remaining cases. The outcome seems
-to work fine for both I-pipe and Dovetail now - but please review!
+From: Philippe Gerum <rpm@xenomai.org>
 
-Not included are necessary RTDM extensions and the addition of latmus as
-currently still queued in wip/dovetail. There were some open issues, but
-those could not be easily addressed on top of next.
+Dovetail provides a fast service to escalate the caller to out-of-band
+mode for executing a routine (run_oob_call()), which we use to enforce
+primary mode in ___xnsched_run() to schedule out the relaxing thread.
 
-On top, I would also still like to understand - and ideally address
-prior to releasing a new major version - if we cannot align the ARM
-syscall ABI of Xenomai to the kernel /wrt argument passing. Now is a
-good chance to do that.
+Due to the way run_oob_call() works, enabling hardirqs during this
+transition can trigger a subtle bug caused by the relaxing thread to
+be switched out, as a result of taking an interrupt during the irqs on
+section, before __xnsched_run() actually runs on behalf of
+xnthread_relax() -> xnthread_suspend().
 
-Jan
+This may lead to a breakage of the inband interrupt state, revealed by
+lockdep complaining about a HARDIRQ-IN-W -> HARDIRQ-ON-W situation,
+when finalize_task_switch() runs for reconciling both the in-band and
+Xenomai scheduler states.
 
+Re-enabling hard irqs before switching out the relaxing thread was
+throught as a mean to reduce the scope of the interrupt-free section
+while relaxing a thread with the I-pipe, which unlike Dovetail
+requires us to open code an escalation service based on triggering a
+synthetic interrupt.
 
-CC: Philippe Gerum <rpm@xenomai.org>
+We differentiate the behavior between the I-pipe and Dovetail by
+abstracting the related bits as pipeline_leave_oob_unlock(), keeping
+the current implementation unchanged for the I-pipe.
 
-Jan Kiszka (9):
-  cobalt/thread: Rework kthread check for xnthread_signal
-  cobalt/thread: Move xnthread_signal work off the stack
-  cobalt/thread: Privatize xnthread_map to map_kthread
-  cobalt/thread: Pull kthread inband work onto creator stack
-  cobalt/thread: Make sure relax inband work is on a stack outliving the
-    wakeup
-  lib/cobalt: Reorder low_init for having cobalt_use_legacy_tsc earlier
-    available
-  cobalt/tick: dovetail: Drop pointless inline specifier from
-    pipeline_must_force_program_tick
-  cobalt/syscall: Account for different syscall argument marshaling
-  ci: Add arm, arm64 and x86 dovetail targets for kernel 5.10
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .../cobalt/kernel/dovetail/pipeline/sched.h   | 12 +++++++
+ include/cobalt/kernel/ipipe/pipeline/sched.h  | 20 ++++++++++++
+ kernel/cobalt/thread.c                        | 32 +++++++------------
+ 3 files changed, 43 insertions(+), 21 deletions(-)
 
-Philippe Gerum (8):
-  cobalt/thread: dovetail: keep hard irqs off on transition to in-band
-  cobalt/sched: dovetail: prevent early scheduling on uninit runqueues
-  cobalt/arm: dovetail: add architecture bits
-  lib/cobalt/arm: dovetail: skip detection of KUSER_TSC support
-  lib/cobalt/arm64: dovetail: skip detection of KUSER_TSC support
-  cobalt/tick: dovetail: improve accuracy of the host tick delay
-  cobalt/clock: dovetail: abstract interface to hardware TSC
-  cobalt/arm64: dovetail: add architecture bits
-
- .gitlab-ci.yml                                |  26 ++
- .../kernel/dovetail/pipeline/pipeline.h       |  11 +
- .../cobalt/kernel/dovetail/pipeline/sched.h   |  12 +
- .../cobalt/kernel/dovetail/pipeline/tick.h    |   2 +-
- .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  12 +
- include/cobalt/kernel/ipipe/pipeline/sched.h  |  20 +
- include/cobalt/kernel/thread.h                |  24 +-
- include/cobalt/sys/cobalt.h                   |   2 +
- include/copperplate/clockobj.h                |  12 +-
- kernel/cobalt/arch/arm/Kconfig                |   4 +
- kernel/cobalt/arch/arm/dovetail/Makefile      |   5 +
- .../include/asm/xenomai/calibration.h         |  39 ++
- .../dovetail/include/asm/xenomai/features.h   |  30 ++
- .../arm/dovetail/include/asm/xenomai/fptest.h |  52 +++
- .../dovetail}/include/asm/xenomai/machine.h   |  67 +--
- .../dovetail/include/asm/xenomai/syscall.h    | 101 +++++
- .../dovetail/include/asm/xenomai/syscall32.h  |  24 ++
- .../arm/dovetail/include/asm/xenomai/thread.h |  32 ++
- .../dovetail/include/asm/xenomai/wrappers.h   |  27 ++
- kernel/cobalt/arch/arm/dovetail/machine.c     |  44 ++
- kernel/cobalt/arch/arm64/dovetail/Makefile    |   5 +
- .../include/asm/xenomai/calibration.h         |  24 ++
- .../dovetail/include/asm/xenomai/features.h   |  15 +
- .../dovetail/include/asm/xenomai/fptest.h     |  35 ++
- .../dovetail/include/asm/xenomai/machine.h    |  33 ++
- .../dovetail/include/asm/xenomai/syscall.h    |  63 +++
- .../dovetail/include/asm/xenomai/syscall32.h  |  12 +
- .../dovetail/include/asm/xenomai/thread.h     |  22 +
- .../dovetail/include/asm/xenomai/wrappers.h   |  15 +
- kernel/cobalt/arch/arm64/dovetail/machine.c   |  41 ++
- .../arm64/ipipe/include/asm/xenomai/machine.h |   3 +
- kernel/cobalt/arch/arm64/ipipe/machine.c      |   3 +
- .../dovetail/include/asm/xenomai/syscall.h    |   5 -
- kernel/cobalt/dovetail/kevents.c              |   2 +-
- kernel/cobalt/dovetail/sched.c                |   1 +
- kernel/cobalt/dovetail/tick.c                 |  14 +-
- .../include/asm-generic/xenomai/syscall.h     |   7 -
- kernel/cobalt/ipipe/kevents.c                 |   2 +-
- kernel/cobalt/posix/syscall.c                 |  14 +-
- kernel/cobalt/sched.c                         |  10 +-
- kernel/cobalt/synch.c                         |   4 +-
- kernel/cobalt/thread.c                        | 402 ++++++++----------
- lib/cobalt/arch/arm/features.c                |   4 +
- lib/cobalt/arch/arm/include/asm/xenomai/tsc.h |   2 +-
- lib/cobalt/arch/arm64/features.c              |   4 +
- .../arch/arm64/include/asm/xenomai/tsc.h      |   2 +-
- .../arch/powerpc/include/asm/xenomai/tsc.h    |   2 +-
- lib/cobalt/arch/x86/include/asm/xenomai/tsc.h |   2 +-
- lib/cobalt/clock.c                            |   6 +-
- lib/cobalt/init.c                             |   2 +-
- lib/cobalt/internal.c                         |  18 +-
- lib/copperplate/clockobj.c                    |  12 +-
- testsuite/smokey/tsc/tsc.c                    |   2 +-
- 53 files changed, 1030 insertions(+), 304 deletions(-)
- create mode 100644 kernel/cobalt/arch/arm/dovetail/Makefile
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/calibration.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/features.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/fptest.h
- copy kernel/cobalt/arch/{arm64/ipipe => arm/dovetail}/include/asm/xenomai/machine.h (59%)
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall32.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/thread.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/wrappers.h
- create mode 100644 kernel/cobalt/arch/arm/dovetail/machine.c
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/Makefile
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/calibration.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/features.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/fptest.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/machine.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall32.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/thread.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/wrappers.h
- create mode 100644 kernel/cobalt/arch/arm64/dovetail/machine.c
-
+diff --git a/include/cobalt/kernel/dovetail/pipeline/sched.h b/include/cobalt/kernel/dovetail/pipeline/sched.h
+index b5d6c1773..45512b983 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/sched.h
++++ b/include/cobalt/kernel/dovetail/pipeline/sched.h
+@@ -7,6 +7,8 @@
+ #ifndef _COBALT_KERNEL_DOVETAIL_SCHED_H
+ #define _COBALT_KERNEL_DOVETAIL_SCHED_H
+ 
++#include <cobalt/kernel/lock.h>
++
+ struct xnthread;
+ struct xnsched;
+ struct task_struct;
+@@ -35,6 +37,16 @@ int pipeline_leave_inband(void);
+ 
+ int pipeline_leave_oob_prepare(void);
+ 
++static inline void pipeline_leave_oob_unlock(void)
++{
++	/*
++	 * We may not re-enable hard irqs due to the specifics of
++	 * stage escalation via run_oob_call(), to prevent breaking
++	 * the (virtual) interrupt state.
++	 */
++	xnlock_put(&nklock);
++}
++
+ void pipeline_leave_oob_finish(void);
+ 
+ static inline
+diff --git a/include/cobalt/kernel/ipipe/pipeline/sched.h b/include/cobalt/kernel/ipipe/pipeline/sched.h
+index 3fd5c4bea..9d7bf886b 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/sched.h
++++ b/include/cobalt/kernel/ipipe/pipeline/sched.h
+@@ -7,6 +7,8 @@
+ #ifndef _COBALT_KERNEL_IPIPE_SCHED_H
+ #define _COBALT_KERNEL_IPIPE_SCHED_H
+ 
++#include <cobalt/kernel/lock.h>
++
+ struct xnthread;
+ struct xnsched;
+ struct task_struct;
+@@ -27,6 +29,24 @@ int pipeline_leave_inband(void);
+ 
+ int pipeline_leave_oob_prepare(void);
+ 
++static inline void pipeline_leave_oob_unlock(void)
++{
++	/*
++	 * Introduce an opportunity for interrupt delivery right
++	 * before switching context, which shortens the
++	 * uninterruptible code path.
++	 *
++	 * We have to shut irqs off before __xnsched_run() is called
++	 * next though: if an interrupt could preempt us right after
++	 * xnarch_escalate() is passed but before the nklock is
++	 * grabbed, we would enter the critical section in
++	 * ___xnsched_run() from the root domain, which would defeat
++	 * the purpose of escalating the request.
++	 */
++	xnlock_clear_irqon(&nklock);
++	splmax();
++}
++
+ void pipeline_leave_oob_finish(void);
+ 
+ void pipeline_finalize_thread(struct xnthread *thread);
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index bc2eebc92..d096a20d3 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -955,27 +955,17 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 	if (wchan)
+ 		thread->wchan = wchan;
+ 
+-	/*
+-	 * If the current thread is being relaxed, we must have been
+-	 * called from xnthread_relax(), in which case we introduce an
+-	 * opportunity for interrupt delivery right before switching
+-	 * context, which shortens the uninterruptible code path.
+-	 *
+-	 * We have to shut irqs off before calling __xnsched_run()
+-	 * though: if an interrupt could preempt us right after
+-	 * xnarch_escalate() is passed but before the nklock is
+-	 * grabbed, we would enter the critical section in
+-	 * ___xnsched_run() from the root domain, which would defeat
+-	 * the purpose of escalating the request.
+-	 *
+-	 * NOTE: using __xnsched_run() for rescheduling allows us to
+-	 * break the scheduler lock temporarily.
+-	 */
+ 	if (likely(thread == sched->curr)) {
+ 		xnsched_set_resched(sched);
++		/*
++		 * Transition to secondary mode (XNRELAX) is a
++		 * separate path which is only available to
++		 * xnthread_relax(). Using __xnsched_run() there for
++		 * rescheduling allows us to break the scheduler lock
++		 * temporarily.
++		 */
+ 		if (unlikely(mask & XNRELAX)) {
+-			xnlock_clear_irqon(&nklock);
+-			splmax();
++			pipeline_leave_oob_unlock();
+ 			__xnsched_run(sched);
+ 			return;
+ 		}
+@@ -1683,7 +1673,7 @@ int xnthread_join(struct xnthread *thread, bool uninterruptible)
+ 
+ 	xnthread_set_state(thread, XNJOINED);
+ 	tpid = xnthread_host_pid(thread);
+-	
++
+ 	if (curr && !xnthread_test_state(curr, XNRELAX)) {
+ 		xnlock_put_irqrestore(&nklock, s);
+ 		xnthread_relax(0, 0);
+@@ -1889,7 +1879,7 @@ int __xnthread_set_schedparam(struct xnthread *thread,
+ 	/* Ask the target thread to call back if relaxed. */
+ 	if (xnthread_test_state(thread, XNRELAX))
+ 		__xnthread_signal(thread, SIGSHADOW, SIGSHADOW_ACTION_HOME);
+-	
++
+ 	return ret;
+ }
+ 
+@@ -2081,7 +2071,6 @@ void xnthread_relax(int notify, int reason)
+ 	 * We disable interrupts during the migration sequence, but
+ 	 * xnthread_suspend() has an interrupts-on section built in.
+ 	 */
+-	splmax();
+ 	trace_cobalt_lostage_request("wakeup", p);
+ 	pipeline_post_inband_work(&wakework);
+ 	/*
+@@ -2089,6 +2078,7 @@ void xnthread_relax(int notify, int reason)
+ 	 * manipulation with handle_sigwake_event. This lock will be
+ 	 * dropped by xnthread_suspend().
+ 	 */
++	splmax();
+ 	xnlock_get(&nklock);
+ 	xnthread_run_handler_stack(thread, relax_thread);
+ 	suspension = pipeline_leave_oob_prepare();
 -- 
 2.26.2
 
