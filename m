@@ -1,11 +1,12 @@
-Subject: Re: [Xenomai-images][PATCH] tests: restrict realtime cpu for x86 and
- qemu type of devices
-References: <20210628044326.1220-1-hongzhan.chen@intel.com>
+Subject: Re: [[next]PATCH v2] cobalt/thread: move inband work descriptions off
+ the stack
+References: <20210610021438.8004-1-hongzhan.chen@intel.com>
+ <69a56c2c-dbed-e665-e5cb-26be63f67595@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3ca6e2a0-3ee3-017f-1da7-930a2f4e35ae@siemens.com>
-Date: Mon, 28 Jun 2021 08:28:45 +0200
+Message-ID: <f749f738-8627-fc80-6b6c-29d98b0da4af@siemens.com>
+Date: Fri, 11 Jun 2021 10:27:46 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210628044326.1220-1-hongzhan.chen@intel.com>
+In-Reply-To: <69a56c2c-dbed-e665-e5cb-26be63f67595@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,160 +20,268 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On 28.06.21 06:43, Hongzhan Chen wrote:
-> 1. If there is no CPU restriction on the bootargs, smokey cpu_affinity
-> test would be skipped reporting with "no kernel support" for those
-> without non-RT cpu.
+On 10.06.21 17:42, Jan Kiszka via Xenomai wrote:
+> On 10.06.21 04:14, Hongzhan Chen via Xenomai wrote:
+>> Unlike the I-pipe, Dovetail does not copy the work descriptor but
+>> merely hands over the request to the common irq_work() mechanism. We
+>> must guarantee that such descriptor lives in a portion of memory which
+>> won't go stale until the handler has run, which by design can only
+>> happen once the calling out-of-band context unwinds.
+>>
+>> Therefore, we have to add one or more "signal slots" per possible
+>> cause of in-band signal into this thread's control block.
+>>
+>> For SIGDEBUG, except SIGDEBUG_WATCHDOG all other SIGDEBUG_* cause
+>> including SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
+>> SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_NOMLOCK,
+>> SIGDEBUG_RESCNT_IMBALANCE, SIGDEBUG_LOCK_BREAK, SIGDEBUG_MUTEX_SLEEP
+>> are synchronous and mutually exclusive due to the oob->in-band transition.
+>> But SIGDEBUG_WATCHDOG is triggered asynchronously by the oob timer.
+>>
+>> All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
+>> SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
+>> the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
+>> SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
+>> cannot pile up though.
+>>
+>> Including SIGTERM, we have totally 6 slots.
+>>
+>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>
+>> diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+>> index c92037bfe..0c5eacda7 100644
+>> --- a/include/cobalt/kernel/thread.h
+>> +++ b/include/cobalt/kernel/thread.h
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/sched.h>
+>>  #include <linux/sched/rt.h>
+>>  #include <pipeline/thread.h>
+>> +#include <pipeline/inband_work.h>
+>>  #include <cobalt/kernel/list.h>
+>>  #include <cobalt/kernel/stat.h>
+>>  #include <cobalt/kernel/timer.h>
+>> @@ -42,6 +43,14 @@
+>>  #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD|XNDBGSTOP)
+>>  #define XNTHREAD_MODE_BITS    (XNRRB|XNWARN|XNTRAPLB)
+>>  
+>> +#define XNTHREAD_SIGNALS_NUM           6
 > 
-> 2. delete unused test job.
+> Better put at the end.
+> 
+>> +#define XNTHREAD_SIGDEBUG_NONWATCHDOG  0
+>> +#define XNTHREAD_SIGDEBUG_WATCHDOD     1
+>> +#define XNTHREAD_SIGSHADOW_HARDEN      2
+>> +#define XNTHREAD_SIGSHADOW_BACKTRACE   3
+>> +#define XNTHREAD_SIGSHADOW_HOME        4
+>> +#define XNTHREAD_SIGTERM               5
+> 
+> How about
+> 
+> XNSIGSLOT_...
+> XNSIGSLOT_NUM	6
+> 
+> ?
+> 
+>> +
+>>  struct xnthread;
+>>  struct xnsched;
+>>  struct xnselector;
+>> @@ -50,6 +59,13 @@ struct xnsched_tpslot;
+>>  struct xnthread_personality;
+>>  struct completion;
+>>  
+>> +struct lostage_signal {
+>> +	struct pipeline_inband_work inband_work; /* Must be first. */
+>> +	struct task_struct *task;
+>> +	int signo, sigval;
+>> +	struct lostage_signal *self; /* Revisit: I-pipe requirement */
+>> +};
+>> +
+>>  struct xnthread_init_attr {
+>>  	struct xnthread_personality *personality;
+>>  	cpumask_t affinity;
+>> @@ -199,6 +215,29 @@ struct xnthread {
+>>  	const char *exe_path;	/* Executable path */
+>>  	u32 proghash;		/* Hash value for exe_path */
+>>  #endif
+>> +	/*
+>> +	 * Each slot handle different cause of signal
+>> +	 * slot 0:
+>> +	 *	SIGDEBUG_MIGRATE_SIGNAL
+>> +	 *	SIGDEBUG_MIGRATE_SYSCALL
+>> +	 *	SIGDEBUG_MIGRATE_FAULT
+>> +	 *	SIGDEBUG_MIGRATE_PRIOINV
+>> +	 *	SIGDEBUG_NOMLOCK
+>> +	 *	SIGDEBUG_RESCNT_IMBALANCE
+>> +	 *	SIGDEBUG_LOCK_BREAK
+>> +	 *	SIGDEBUG_MUTEX_SLEEP
+>> +	 * slot 1:
+>> +	 *	SIGDEBUG_WATCHDOG
+>> +	 * slot 2:
+>> +	 *	SIGSHADOW_ACTION_HARDEN
+>> +	 * slot 3:
+>> +	 *	SIGSHADOW_ACTION_BACKTRACE
+>> +	 * slot 4:
+>> +	 *	SIGSHADOW_ACTION_HOME
+>> +	 * slot 5:
+>> +	 *	SIGTERM
+>> +	 */
+>> +	struct lostage_signal sigarray[XNTHREAD_SIGNALS_NUM];
+>>  };
+>>  
+>>  static inline int xnthread_get_state(const struct xnthread *thread)
+>> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+>> index d3a827eaa..d180aa85c 100644
+>> --- a/kernel/cobalt/thread.c
+>> +++ b/kernel/cobalt/thread.c
+>> @@ -2083,12 +2083,6 @@ void xnthread_relax(int notify, int reason)
+>>  }
+>>  EXPORT_SYMBOL_GPL(xnthread_relax);
+>>  
+>> -struct lostage_signal {
+>> -	struct pipeline_inband_work inband_work; /* Must be first. */
+>> -	struct task_struct *task;
+>> -	int signo, sigval;
+>> -};
+>> -
+>>  static inline void do_kthread_signal(struct task_struct *p,
+>>  				     struct xnthread *thread,
+>>  				     struct lostage_signal *rq)
+>> @@ -2112,7 +2106,7 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
+>>  	thread = xnthread_from_task(p);
+>>  	if (thread && !xnthread_test_state(thread, XNUSER)) {
+>>  		do_kthread_signal(p, thread, rq);
+>> -		return;
+>> +		goto out;
+>>  	}
+>>  
+>>  	signo = rq->signo;
+>> @@ -2127,6 +2121,8 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
+>>  		send_sig_info(signo, &si, p);
+>>  	} else
+>>  		send_sig(signo, p, 1);
+>> +out:
+>> +	memset(rq->self, 0, sizeof(*rq));
+> 
+> "rq->self->self = NULL" would suffice, I suppose - but it reads even
+> more weirdly.
+> 
+> I missed that on 96d70658a589: We should document what the exact I-pipe
+> requirement is here. And that is that the lostage handler will be called
+> with a pointer to a copy of that work item under I-pipe, not the
+> original one. That is only referenced by self. Had to think about that
+> again myself.
+> 
+>>  }
+>>  
+>>  static int force_wakeup(struct xnthread *thread) /* nklock locked, irqs off */
+>> @@ -2288,19 +2284,77 @@ void xnthread_demote(struct xnthread *thread)
+>>  }
+>>  EXPORT_SYMBOL_GPL(xnthread_demote);
+>>  
+>> +static int get_slot_index_from_sig(int sig, int arg)
+>> +{
+>> +	int action;
+>> +
+>> +	switch (sig) {
+>> +	case SIGDEBUG:
+>> +		switch (arg) {
+>> +		case SIGDEBUG_WATCHDOG:
+>> +			return XNTHREAD_SIGDEBUG_WATCHDOD;
+>> +		case SIGDEBUG_MIGRATE_SIGNAL:
+>> +		case SIGDEBUG_MIGRATE_SYSCALL:
+>> +		case SIGDEBUG_MIGRATE_FAULT:
+>> +		case SIGDEBUG_MIGRATE_PRIOINV:
+>> +		case SIGDEBUG_NOMLOCK:
+>> +		case SIGDEBUG_RESCNT_IMBALANCE:
+>> +		case SIGDEBUG_LOCK_BREAK:
+>> +		case SIGDEBUG_MUTEX_SLEEP:
+>> +			return XNTHREAD_SIGDEBUG_NONWATCHDOG;
+>> +		}
+>> +		break;
+>> +	case SIGSHADOW:
+>> +		action = sigshadow_action(arg);
+>> +		switch (action) {
+>> +		case SIGSHADOW_ACTION_HARDEN:
+>> +			return XNTHREAD_SIGSHADOW_HARDEN;
+>> +		case SIGSHADOW_ACTION_BACKTRACE:
+>> +			return XNTHREAD_SIGSHADOW_BACKTRACE;
+>> +		case SIGSHADOW_ACTION_HOME:
+>> +			return XNTHREAD_SIGSHADOW_HOME;
+>> +		}
+>> +		break;
+>> +	case SIGTERM:
+>> +		return XNTHREAD_SIGTERM;
+>> +	}
+>> +
+>> +	return -1;
+>> +}
+>> +
+>>  void xnthread_signal(struct xnthread *thread, int sig, int arg)
+>>  {
+>> -	struct lostage_signal sigwork = {
+>> -		.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(sigwork,
+>> -					lostage_task_signal),
+>> -		.task = xnthread_host_task(thread),
+>> -		.signo = sig,
+>> -		.sigval = sig == SIGDEBUG ? arg | sigdebug_marker : arg,
+>> -	};
+>> +	struct lostage_signal *sigwork;
+>> +	int slot;
+>> +
+>> +	slot = get_slot_index_from_sig(sig, arg);
+>> +
+>> +	if (WARN_ON(slot < 0))
+>> +		return;
+>> +
+>> +	sigwork = &thread->sigarray[slot];
+>> +
+>> +	/* To avoid invalidating the already submitted event
+>> +	 * if previous submitted has not been handled as we expected
+>> +	 * because setting sigwork->self zero is final step
+>> +	 * in handling sig.
+>> +	 */
+>> +	if (WARN_ON((sigwork->self != NULL) &&
+> 
+> So, we are still assuming that multiple signals for the same slot should
+> be a bug? I'm not sure it is. I'm also not sure that sender and lostage
+> handler will always be on the same CPU. Look at
+> __xnthread_set_schedparam. It's "xnthread_signal(thread, SIGSHADOW,
+> SIGSHADOW_ACTION_HOME)" in xnthread_suspend() can run on any CPU,
+> targeting any thread on some other CPU, and that possibly multiple times.
+> 
+> I'm afraid we need nklock around enqueue and dequeue so that we neither
+> lose a signal nor warn needlessly.
+> 
+>> +				(sigwork->self == sigwork))) {
+> 
+> What case is this part of the test excluding?
+> 
+>> +		return;
+>> +	}
+>> +
+>> +	sigwork->inband_work = (struct pipeline_inband_work)
+>> +			PIPELINE_INBAND_WORK_INITIALIZER(*sigwork,
+>> +					lostage_task_signal);
+>> +	sigwork->task = xnthread_host_task(thread);
+>> +	sigwork->signo = sig;
+>> +	sigwork->sigval = sig == SIGDEBUG ? arg | sigdebug_marker : arg;
+>> +	sigwork->self = sigwork; /* Revisit: I-pipe requirement */
+>>  
+>> -	trace_cobalt_lostage_request("signal", sigwork.task);
+>> +	trace_cobalt_lostage_request("signal", sigwork->task);
+>>  
+>> -	pipeline_post_inband_work(&sigwork);
+>> +	pipeline_post_inband_work(sigwork);
+>>  }
+>>  EXPORT_SYMBOL_GPL(xnthread_signal);
+>>  
+>>
+> 
+> Jan
 > 
 
-2 items, 2 patches, please.
-
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
-> index a5a181c..209c5d4 100644
-> --- a/tests/jobs/xenomai-ipc227e.yml
-> +++ b/tests/jobs/xenomai-ipc227e.yml
-> @@ -72,3 +72,5 @@ actions:
->        from: inline
->        path: inline/xenomai-test-suite.yaml
->        name: xenomai-test-suite
-> +context:
-> +  extra_kernel_args: xenomai.supported_cpus=7
-
-Maybe format this as hex (0x7) to remind people that this is a mask.
-
-> diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
-> deleted file mode 100644
-> index d5292ff..0000000
-> --- a/tests/jobs/xenomai-minnow.yml
-> +++ /dev/null
-> @@ -1,73 +0,0 @@
-> -#
-> -# Xenomai Real-Time System
-> -#
-> -# Copyright (c) Siemens AG, 2019
-> -#
-> -# Authors:
-> -#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> -#
-> -# SPDX-License-Identifier: MIT
-> -#
-> -job_name: xenomai-test-suite
-> -device_type: minnowboard-max-E3825
-> -timeouts:
-> -  job:
-> -    minutes: 90
-> -  action:
-> -    minutes: 65
-> -  connection:
-> -    minutes: 5
-> -priority: medium
-> -visibility: public
-> -
-> -metadata:
-> -  # please change these fields when modifying this job for your own tests.
-> -  docs-source: xenomai-cof
-> -  docs-filename: pipeline-xenomai-cof
-> -# ACTION_BLOCK
-> -actions:
-> -- deploy:
-> -    timeout:
-> -      minutes: 15
-> -    to: tftp
-> -    kernel:
-> -      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
-> -      type: bzimage
-> -    ramdisk:
-> -      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-initrd.img
-> -      compression: gz
-> -    nfsrootfs:
-> -      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}.tar.gz
-> -      compression: gz
-> -# BOOT_BLOCK
-> -- boot:
-> -    timeout:
-> -      minutes: 5
-> -    method: grub
-> -    commands: nfs
-> -    prompts: ["root@demo:"]
-> -    auto_login:
-> -      login_prompt: 'demo login:'
-> -      username: root
-> -      password_prompt: 'Password:'
-> -      password: root
-> -
-> -- test:
-> -    timeout:
-> -      minutes: 30
-> -    definitions:
-> -    - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
-> -      from: git
-> -      path: lava-test-shell/smoke-tests-basic.yaml
-> -      name: smoke-tests
-> -    - repository:
-> -        metadata:
-> -          format: Lava-Test Test Definition 1.0
-> -          name: xenomai-test-suite
-> -          description: "runs the xenomai test suite"
-> -        run:
-> -          steps:
-> -            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-> -      from: inline
-> -      path: inline/xenomai-test-suite.yaml
-> -      name: xenomai-test-suite
-> diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
-> index c335292..e42f6ec 100644
-> --- a/tests/jobs/xenomai-qemu-amd64.yml
-> +++ b/tests/jobs/xenomai-qemu-amd64.yml
-> @@ -46,7 +46,7 @@ actions:
->      to: tmpfs
->      images:
->        kernel:
-> -        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0"
-> +        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0 xenomai.supported_cpus=1"
->          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->        initrd:
->          image_arg: -initrd {initrd}
-> diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
-> index 88fb880..cc60564 100644
-> --- a/tests/jobs/xenomai-qemu-arm64.yml
-> +++ b/tests/jobs/xenomai-qemu-arm64.yml
-> @@ -50,7 +50,7 @@ actions:
->      to: tmpfs
->      images:
->        kernel:
-> -        image_arg: -kernel {kernel} -append "root=/dev/vda"
-> +        image_arg: -kernel {kernel} -append "root=/dev/vda xenomai.supported_cpus=1"
->          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->        initrd:
->          image_arg: -initrd {initrd}
-> diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
-> index 3e3a8ab..2afe250 100644
-> --- a/tests/jobs/xenomai-qemu-armhf.yml
-> +++ b/tests/jobs/xenomai-qemu-armhf.yml
-> @@ -46,7 +46,7 @@ actions:
->      to: tmpfs
->      images:
->        kernel:
-> -        image_arg: -kernel {kernel} -append "root=/dev/vdb"
-> +        image_arg: -kernel {kernel} -append "root=/dev/vdb xenomai.supported_cpus=1"
->          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->        initrd:
->          image_arg: -initrd {initrd}
-> diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
-> index bc71b75..d1418c1 100644
-> --- a/tests/jobs/xenomai-x86-64-efi.yml
-> +++ b/tests/jobs/xenomai-x86-64-efi.yml
-> @@ -72,3 +72,5 @@ actions:
->        from: inline
->        path: inline/xenomai-test-suite.yaml
->        name: xenomai-test-suite
-> +context:
-> +  extra_kernel_args: xenomai.supported_cpus=7
-> 
+I'm on a reworked, locked version of this. Will keep you posted.
 
 Jan
 
