@@ -1,7 +1,10 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 0/5] Update versions, add 5.10 kernel
-Date: Fri, 11 Jun 2021 22:13:07 +0200
-Message-Id: <cover.1623442392.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 3/5] linux-xenomai: Add 5.4 recipe and make it
+ default
+Date: Fri, 11 Jun 2021 22:13:10 +0200
+Message-Id: <73be0c2eba0da87a487708b29fcbf31899bbf03a.1623442392.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1623442392.git.jan.kiszka@siemens.com>
+References: <cover.1623442392.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,37 +17,62 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This first of all updates a number of recipes to reflect latest Xenomai
-and I-pipe release.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-And then, now that Dovetail support is part of the Xenomai next branch,
-add CI and testing targets for this kernel. This obsoletes the
-wip/dovetail branch.
+This is currently our most recent stable kernel.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ conf/distro/include/xenomai-version.inc   |  2 +-
+ recipes-kernel/linux/linux-xenomai_5.4.bb | 26 +++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+ create mode 100644 recipes-kernel/linux/linux-xenomai_5.4.bb
 
-Jan Kiszka (5):
-  linux-xenomai: Update to latest 4.4 and 4.19 ipipe releases
-  xenomai: Update to 3.1.1
-  linux-xenomai: Add 5.4 recipe and make it default
-  linux-xenomai: Add support for 5.10 to latest recipe
-  ci: Add kernel 5.10 to xenomai_next build
-
- ci/kernel_5_10_xenomai_next.yml               | 88 +++++++++++++++++++
- ci/xenomai_next.yml                           |  3 +-
- conf/distro/include/xenomai-version.inc       |  2 +-
- opt-linux-latest-5.10.yml                     | 18 ++++
- recipes-kernel/linux/linux-xenomai_4.19.bb    | 12 +--
- recipes-kernel/linux/linux-xenomai_4.4.bb     |  8 +-
- ...x-xenomai_4.19.bb => linux-xenomai_5.4.bb} | 16 ++--
- recipes-kernel/linux/linux-xenomai_latest.bb  | 20 ++---
- .../{xenomai_3.1.bb => xenomai_3.1.1.bb}      |  4 +-
- 9 files changed, 139 insertions(+), 32 deletions(-)
- create mode 100644 ci/kernel_5_10_xenomai_next.yml
- create mode 100644 opt-linux-latest-5.10.yml
- copy recipes-kernel/linux/{linux-xenomai_4.19.bb => linux-xenomai_5.4.bb} (58%)
- rename recipes-xenomai/xenomai/{xenomai_3.1.bb => xenomai_3.1.1.bb} (78%)
-
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index 9bf3087..24e0dd6 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
+@@ -9,7 +9,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-XENOMAI_DEFAULT_KERNEL_VERSION = "4.19%"
++XENOMAI_DEFAULT_KERNEL_VERSION = "5.4%"
+ XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.10"
+ XENOMAI_3_0_KERNEL_VERSION = "4.4%"
+ # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
+diff --git a/recipes-kernel/linux/linux-xenomai_5.4.bb b/recipes-kernel/linux/linux-xenomai_5.4.bb
+new file mode 100644
+index 0000000..9f070cf
+--- /dev/null
++++ b/recipes-kernel/linux/linux-xenomai_5.4.bb
+@@ -0,0 +1,26 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2021
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-kernel/linux/linux-xenomai.inc
++
++SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
++SRCREV_amd64 ?= "ipipe-core-5.4.124-x86-5"
++PV_amd64 ?= "5.4.124+"
++
++SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
++SRCREV_arm64 ?= "ipipe-core-5.4.119-arm64-2"
++PV_arm64 ?= "5.4.119+"
++
++SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
++SRCREV_armhf ?= "ipipe-core-5.4.119-arm-2"
++PV_armhf ?= "5.4.119+"
++
++S = "${WORKDIR}/git"
 -- 
 2.26.2
 
