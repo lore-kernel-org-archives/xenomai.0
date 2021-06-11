@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 4/5] linux-xenomai: Add support for 5.10 to
- latest recipe
-Date: Fri, 11 Jun 2021 22:13:11 +0200
-Message-Id: <2b000ccfc7c4e8ee8ded825339a4a89ca8413dd5.1623442392.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 5/5] ci: Add kernel 5.10 to xenomai_next build
+Date: Fri, 11 Jun 2021 22:13:12 +0200
+Message-Id: <cb5aeba22b094511e4ab8e082227be571ddba4ef.1623442392.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1623442392.git.jan.kiszka@siemens.com>
 References: <cover.1623442392.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,25 +18,23 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Add a corresponding kas option file as well.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- opt-linux-latest-5.10.yml                    | 18 ++++++++++++++++++
- recipes-kernel/linux/linux-xenomai_latest.bb | 20 ++++++++++----------
- 2 files changed, 28 insertions(+), 10 deletions(-)
- create mode 100644 opt-linux-latest-5.10.yml
+ ci/kernel_5_10_xenomai_next.yml | 88 +++++++++++++++++++++++++++++++++
+ ci/xenomai_next.yml             |  3 +-
+ 2 files changed, 90 insertions(+), 1 deletion(-)
+ create mode 100644 ci/kernel_5_10_xenomai_next.yml
 
-diff --git a/opt-linux-latest-5.10.yml b/opt-linux-latest-5.10.yml
+diff --git a/ci/kernel_5_10_xenomai_next.yml b/ci/kernel_5_10_xenomai_next.yml
 new file mode 100644
-index 0000000..89530b8
+index 0000000..80bcf87
 --- /dev/null
-+++ b/opt-linux-latest-5.10.yml
-@@ -0,0 +1,18 @@
++++ b/ci/kernel_5_10_xenomai_next.yml
+@@ -0,0 +1,88 @@
 +#
 +# Xenomai Real-Time System
 +#
-+# Copyright (c) Siemens AG, 2021
++# Copyright (c) Siemens AG, 2019 - 2021
 +#
 +# Authors:
 +#  Jan Kiszka <jan.kiszka@siemens.com>
@@ -45,56 +42,101 @@ index 0000000..89530b8
 +# SPDX-License-Identifier: MIT
 +#
 +
-+header:
-+  version: 10
++build-5.10:qemu-amd64:
++  extends: .build:qemu-amd64
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
 +
-+local_conf_header:
-+  linux-xenomai-latest: |
-+    PREFERRED_VERSION_linux-xenomai = "9999-%"
-+    LATEST_GIT_BRANCH = "5.10"
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 91b4743..09df461 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
++lava-test-5.10:qemu-amd64:
++  needs: [ "build-5.10:qemu-amd64" ]
++  extends: .lava-test:qemu-amd64
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
++
++build-5.10:qemu-armhf:
++  extends: .build:qemu-armhf
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
++
++lava-test-5.10:qemu-armhf:
++  needs: [ "build-5.10:qemu-armhf" ]
++  extends: .lava-test:qemu-armhf
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
++
++build-5.10:qemu-arm64:
++  extends: .build:qemu-arm64
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
++
++lava-test-5.10:qemu-arm64:
++  needs: [ "build-5.10:qemu-arm64" ]
++  extends: .lava-test:qemu-arm64
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
++
++build-5.10:hikey:
++  extends: .build:hikey
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
++
++lava-test-5.10:hikey:
++  needs: [ "build-5.10:hikey" ]
++  extends: .lava-test:hikey
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
++
++build-5.10:beagle-bone-black:
++  extends: .build:beagle-bone-black
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
++
++lava-test-5.10:beagle-bone-black:
++  needs: [ "build-5.10:beagle-bone-black" ]
++  extends: .lava-test:beagle-bone-black
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
++
++build-5.10:x86-64-efi:
++  extends: .build:x86-64-efi
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
++    DEPLOY_DIR_EXTENSION: "5.10"
++
++lava-test-5.10:x86-64-efi:
++  needs: [ "build-5.10:x86-64-efi" ]
++  extends: .lava-test:x86-64-efi
++  variables:
++    DEPLOY_DIR_EXTENSION: "5.10"
++    BUILD_IDENTIFIER: "5.10"
+diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
+index 6d964a6..b13dfa8 100644
+--- a/ci/xenomai_next.yml
++++ b/ci/xenomai_next.yml
 @@ -1,7 +1,7 @@
  #
  # Xenomai Real-Time System
  #
--# Copyright (c) Siemens AG, 2019-2020
-+# Copyright (c) Siemens AG, 2019-2021
+-# Copyright (c) Siemens AG, 2019 - 2020
++# Copyright (c) Siemens AG, 2019 - 2021
  #
  # Authors:
  #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -18,20 +18,20 @@ def is_xeno_3_0(d):
-     xeno_ver = d.getVar('PREFERRED_VERSION_xenomai') or ''
-     return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
- 
--def is_5_4_branch(d):
-+def is_kernel(d, ver):
-     linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
--    return linux_ver.startswith('5.4')
-+    return linux_ver.startswith(ver)
- 
--GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
--GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-5.4.y' if is_5_4_branch(d) else 'ipipe-x86-4.19.y-cip'}"
-+GIT_REPO_amd64 = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
-+GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
- 
--GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
--GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/5.4.y' if is_5_4_branch(d) else 'ipipe/4.19.y-cip'}"
-+GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
-+GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
- 
--GIT_REPO_arm64 = "ipipe-arm64.git"
--GIT_BRANCH_arm64 = "${@'ipipe/5.4.y' if is_5_4_branch(d) else 'ipipe/4.19.y-cip'}"
-+GIT_REPO_arm64 = "${@'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm64.git'}"
-+GIT_BRANCH_arm64 = "${@'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
- 
--SRC_URI += "git://github.com/xenomai-ci/${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
-+SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
- SRCREV = "${AUTOREV}"
- 
- S = "${WORKDIR}/git"
+@@ -12,3 +12,4 @@ include:
+   - local: '/ci/gitlab-ci-base.yml'
+   - local: '/ci/kernel_4_19_xenomai_next.yml'
+   - local: '/ci/kernel_5_4_xenomai_next.yml'
++  - local: '/ci/kernel_5_10_xenomai_next.yml'
 -- 
 2.26.2
 
