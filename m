@@ -1,10 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 16/17] cobalt/syscall: Account for different syscall argument
- marshaling
-Date: Fri, 11 Jun 2021 20:05:42 +0200
-Message-Id: <d1fe9293f177efcf5e95960e948516ccf37e2d71.1623434743.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1623434743.git.jan.kiszka@siemens.com>
-References: <cover.1623434743.git.jan.kiszka@siemens.com>
+Subject: [PATCH 00/17] Dovetail integration - the finals
+Date: Fri, 11 Jun 2021 20:05:26 +0200
+Message-Id: <cover.1623434743.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,237 +14,125 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Now the final bits to git dovetail / 5.10 support into mainline. The
+last missing piece was the avoidance xnmalloc in critical paths when
+submitting inband work. I've used Hongzhan's patch for xnthread_signal
+and also Philippe's patches for the remaining cases. The outcome seems
+to work fine for both I-pipe and Dovetail now - but please review!
 
-I-pipe makes sure that arguments of compat calls are ordered just like
-native calls. Dovetail does not. But it is better to use the kernel's
-syscall_get_arguments for retrieving the arguments anyway. Introduce
-pipeline_get_syscall_args to abstract that difference.
+Not included are necessary RTDM extensions and the addition of latmus as
+currently still queued in wip/dovetail. There were some open issues, but
+those could not be easily addressed on top of next.
 
-Xenomai/ARM syscalls have an unconventional argument marshalling, with
-ARM_ORIG_r0 containing the Xenomai syscall number (ORed with
-__COBALT_SYSCALL_BIT), followed by the first actual argument to the
-syscall in ARM_r1.
+On top, I would also still like to understand - and ideally address
+prior to releasing a new major version - if we cannot align the ARM
+syscall ABI of Xenomai to the kernel /wrt argument passing. Now is a
+good chance to do that.
 
-For this reason, using syscall_get_arguments() to collect the syscall
-parameters won't yield the expected result, with regs[0] matching
-__xn_reg_sys(regs) instead of __xn_reg_arg1(regs).
+Jan
 
-Allow Dovetail-enabled architectures to override the generic
-implementation of pipeline_get_syscall_args(), provide a working one
-for ARM.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-[Philippe: add special handling of ARM]
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- .../cobalt/kernel/dovetail/pipeline/pipeline.h  | 11 +++++++++++
- include/cobalt/kernel/ipipe/pipeline/pipeline.h | 12 ++++++++++++
- .../arm/dovetail/include/asm/xenomai/syscall.h  | 17 ++++++++++++-----
- .../dovetail/include/asm/xenomai/syscall.h      |  5 -----
- .../x86/dovetail/include/asm/xenomai/syscall.h  |  5 -----
- .../include/asm-generic/xenomai/syscall.h       |  7 -------
- kernel/cobalt/posix/syscall.c                   | 14 ++++++++++----
- 7 files changed, 45 insertions(+), 26 deletions(-)
+CC: Philippe Gerum <rpm@xenomai.org>
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-index a985e367a..2ee7b3210 100644
---- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-@@ -9,6 +9,8 @@
- #include <linux/cpumask.h>
- #include <cobalt/kernel/assert.h>
- #include <asm/xenomai/features.h>
-+#include <asm/xenomai/syscall.h>
-+#include <asm/syscall.h>
- #include <pipeline/machine.h>
- 
- typedef unsigned long spl_t;
-@@ -95,4 +97,13 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
- 	f->clock_freq = 0;	/* N/A */
- }
- 
-+#ifndef pipeline_get_syscall_args
-+static inline void pipeline_get_syscall_args(struct task_struct *task,
-+					     struct pt_regs *regs,
-+					     unsigned long *args)
-+{
-+	syscall_get_arguments(task, regs, args);
-+}
-+#endif	/* !pipeline_get_syscall_args */
-+
- #endif /* !_COBALT_KERNEL_DOVETAIL_PIPELINE_H */
-diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-index fda962568..ac9c92b1b 100644
---- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-@@ -11,6 +11,7 @@
- 
- #include <pipeline/machine.h>
- #include <asm/xenomai/features.h>
-+#include <asm/xenomai/syscall.h>
- 
- #define xnsched_primary_domain  cobalt_pipeline.domain
- 
-@@ -81,4 +82,15 @@ static inline void pipeline_collect_features(struct cobalt_featinfo *f)
- 	f->clock_freq = cobalt_pipeline.clock_freq;
- }
- 
-+static inline void pipeline_get_syscall_args(struct task_struct *task,
-+					     struct pt_regs *regs,
-+					     unsigned long *args)
-+{
-+	*args++ = __xn_reg_arg1(regs);
-+	*args++ = __xn_reg_arg2(regs);
-+	*args++ = __xn_reg_arg3(regs);
-+	*args++ = __xn_reg_arg4(regs);
-+	*args   = __xn_reg_arg5(regs);
-+}
-+
- #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
-diff --git a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-index eb4ec1bbe..d41b25768 100644
---- a/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
-@@ -59,11 +59,6 @@
- 	})
- 
- #define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
--#define __xn_reg_arg1(__regs)	((__regs)->ARM_r1)
--#define __xn_reg_arg2(__regs)	((__regs)->ARM_r2)
--#define __xn_reg_arg3(__regs)	((__regs)->ARM_r3)
--#define __xn_reg_arg4(__regs)	((__regs)->ARM_r4)
--#define __xn_reg_arg5(__regs)	((__regs)->ARM_r5)
- #define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
- #define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
- 
-@@ -91,4 +86,16 @@ int xnarch_local_syscall(unsigned long a1, unsigned long a2,
- 	return -ENOSYS;
- }
- 
-+#define pipeline_get_syscall_args pipeline_get_syscall_args
-+static inline void pipeline_get_syscall_args(struct task_struct *task,
-+					     struct pt_regs *regs,
-+					     unsigned long *args)
-+{
-+	args[0] = regs->ARM_r1;
-+	args[1] = regs->ARM_r2;
-+	args[2] = regs->ARM_r3;
-+	args[3] = regs->ARM_r4;
-+	args[4] = regs->ARM_r5;
-+}
-+
- #endif /* !_COBALT_ARM_DOVETAIL_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-index 33b4a710f..96871e247 100644
---- a/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
-@@ -23,11 +23,6 @@
- #define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
- 
- #define __xn_reg_rval(__regs)	((__regs)->regs[0])
--#define __xn_reg_arg1(__regs)	((__regs)->regs[0])
--#define __xn_reg_arg2(__regs)	((__regs)->regs[1])
--#define __xn_reg_arg3(__regs)	((__regs)->regs[2])
--#define __xn_reg_arg4(__regs)	((__regs)->regs[3])
--#define __xn_reg_arg5(__regs)	((__regs)->regs[4])
- #define __xn_reg_pc(__regs)	((__regs)->pc)
- #define __xn_reg_sp(__regs)	((__regs)->sp)
- 
-diff --git a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-index c64196b6a..b2e158247 100644
---- a/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/x86/dovetail/include/asm/xenomai/syscall.h
-@@ -29,11 +29,6 @@
-  */
- #define __xn_reg_sys(regs)    ((regs)->orig_ax)
- #define __xn_reg_rval(regs)   ((regs)->ax)
--#define __xn_reg_arg1(regs)   ((regs)->di)
--#define __xn_reg_arg2(regs)   ((regs)->si)
--#define __xn_reg_arg3(regs)   ((regs)->dx)
--#define __xn_reg_arg4(regs)   ((regs)->r10)
--#define __xn_reg_arg5(regs)   ((regs)->r8)
- #define __xn_reg_pc(regs)     ((regs)->ip)
- #define __xn_reg_sp(regs)     ((regs)->sp)
- 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-index 48c44c49d..117bb3ff8 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-@@ -36,13 +36,6 @@
- #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
- #endif
- 
--#define __xn_reg_arglist(regs)	\
--	__xn_reg_arg1(regs),	\
--	__xn_reg_arg2(regs),	\
--	__xn_reg_arg3(regs),	\
--	__xn_reg_arg4(regs),	\
--	__xn_reg_arg5(regs)
--
- #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
- #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
- #define __xn_put_user(src, dstP)		__put_user(src, dstP)
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index 30c33dda6..b7177042e 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -486,6 +486,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
-+	unsigned long args[6];
- 	unsigned int nr, code;
- 	long ret;
- 
-@@ -592,7 +593,10 @@ restart:
- 	 * handler (lostage ones), or rejected by allowed_syscall().
- 	 */
- 
--	ret = handler(__xn_reg_arglist(regs));
-+	p = current;
-+	pipeline_get_syscall_args(p, regs, args);
-+
-+	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
- 		if (switched) {
- 			ret = xnthread_harden();
-@@ -611,7 +615,6 @@ done:
- 	__xn_status_return(regs, ret);
- 	sigs = 0;
- 	if (!xnsched_root_p()) {
--		p = current;
- 		if (signal_pending(p) ||
- 		    xnthread_test_info(thread, XNKICKED)) {
- 			sigs = 1;
-@@ -677,6 +680,7 @@ int handle_root_syscall(struct pt_regs *regs)
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
-+	unsigned long args[6];
- 	unsigned int nr, code;
- 	long ret;
- 
-@@ -735,7 +739,10 @@ restart:
- 			xnthread_propagate_schedparam(thread);
- 	}
- 
--	ret = handler(__xn_reg_arglist(regs));
-+	p = current;
-+	pipeline_get_syscall_args(p, regs, args);
-+
-+	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
- 		sysflags ^= __xn_exec_histage;
- 		if (switched) {
-@@ -756,7 +763,6 @@ restart:
- 		 * just invoked, so make sure to fetch it.
- 		 */
- 		thread = xnthread_current();
--		p = current;
- 		if (signal_pending(p)) {
- 			sigs = 1;
- 			prepare_for_signal(p, thread, regs, sysflags);
+Jan Kiszka (9):
+  cobalt/thread: Rework kthread check for xnthread_signal
+  cobalt/thread: Move xnthread_signal work off the stack
+  cobalt/thread: Privatize xnthread_map to map_kthread
+  cobalt/thread: Pull kthread inband work onto creator stack
+  cobalt/thread: Make sure relax inband work is on a stack outliving the
+    wakeup
+  lib/cobalt: Reorder low_init for having cobalt_use_legacy_tsc earlier
+    available
+  cobalt/tick: dovetail: Drop pointless inline specifier from
+    pipeline_must_force_program_tick
+  cobalt/syscall: Account for different syscall argument marshaling
+  ci: Add arm, arm64 and x86 dovetail targets for kernel 5.10
+
+Philippe Gerum (8):
+  cobalt/thread: dovetail: keep hard irqs off on transition to in-band
+  cobalt/sched: dovetail: prevent early scheduling on uninit runqueues
+  cobalt/arm: dovetail: add architecture bits
+  lib/cobalt/arm: dovetail: skip detection of KUSER_TSC support
+  lib/cobalt/arm64: dovetail: skip detection of KUSER_TSC support
+  cobalt/tick: dovetail: improve accuracy of the host tick delay
+  cobalt/clock: dovetail: abstract interface to hardware TSC
+  cobalt/arm64: dovetail: add architecture bits
+
+ .gitlab-ci.yml                                |  26 ++
+ .../kernel/dovetail/pipeline/pipeline.h       |  11 +
+ .../cobalt/kernel/dovetail/pipeline/sched.h   |  12 +
+ .../cobalt/kernel/dovetail/pipeline/tick.h    |   2 +-
+ .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  12 +
+ include/cobalt/kernel/ipipe/pipeline/sched.h  |  20 +
+ include/cobalt/kernel/thread.h                |  24 +-
+ include/cobalt/sys/cobalt.h                   |   2 +
+ include/copperplate/clockobj.h                |  12 +-
+ kernel/cobalt/arch/arm/Kconfig                |   4 +
+ kernel/cobalt/arch/arm/dovetail/Makefile      |   5 +
+ .../include/asm/xenomai/calibration.h         |  39 ++
+ .../dovetail/include/asm/xenomai/features.h   |  30 ++
+ .../arm/dovetail/include/asm/xenomai/fptest.h |  52 +++
+ .../dovetail}/include/asm/xenomai/machine.h   |  67 +--
+ .../dovetail/include/asm/xenomai/syscall.h    | 101 +++++
+ .../dovetail/include/asm/xenomai/syscall32.h  |  24 ++
+ .../arm/dovetail/include/asm/xenomai/thread.h |  32 ++
+ .../dovetail/include/asm/xenomai/wrappers.h   |  27 ++
+ kernel/cobalt/arch/arm/dovetail/machine.c     |  44 ++
+ kernel/cobalt/arch/arm64/dovetail/Makefile    |   5 +
+ .../include/asm/xenomai/calibration.h         |  24 ++
+ .../dovetail/include/asm/xenomai/features.h   |  15 +
+ .../dovetail/include/asm/xenomai/fptest.h     |  35 ++
+ .../dovetail/include/asm/xenomai/machine.h    |  33 ++
+ .../dovetail/include/asm/xenomai/syscall.h    |  63 +++
+ .../dovetail/include/asm/xenomai/syscall32.h  |  12 +
+ .../dovetail/include/asm/xenomai/thread.h     |  22 +
+ .../dovetail/include/asm/xenomai/wrappers.h   |  15 +
+ kernel/cobalt/arch/arm64/dovetail/machine.c   |  41 ++
+ .../arm64/ipipe/include/asm/xenomai/machine.h |   3 +
+ kernel/cobalt/arch/arm64/ipipe/machine.c      |   3 +
+ .../dovetail/include/asm/xenomai/syscall.h    |   5 -
+ kernel/cobalt/dovetail/kevents.c              |   2 +-
+ kernel/cobalt/dovetail/sched.c                |   1 +
+ kernel/cobalt/dovetail/tick.c                 |  14 +-
+ .../include/asm-generic/xenomai/syscall.h     |   7 -
+ kernel/cobalt/ipipe/kevents.c                 |   2 +-
+ kernel/cobalt/posix/syscall.c                 |  14 +-
+ kernel/cobalt/sched.c                         |  10 +-
+ kernel/cobalt/synch.c                         |   4 +-
+ kernel/cobalt/thread.c                        | 402 ++++++++----------
+ lib/cobalt/arch/arm/features.c                |   4 +
+ lib/cobalt/arch/arm/include/asm/xenomai/tsc.h |   2 +-
+ lib/cobalt/arch/arm64/features.c              |   4 +
+ .../arch/arm64/include/asm/xenomai/tsc.h      |   2 +-
+ .../arch/powerpc/include/asm/xenomai/tsc.h    |   2 +-
+ lib/cobalt/arch/x86/include/asm/xenomai/tsc.h |   2 +-
+ lib/cobalt/clock.c                            |   6 +-
+ lib/cobalt/init.c                             |   2 +-
+ lib/cobalt/internal.c                         |  18 +-
+ lib/copperplate/clockobj.c                    |  12 +-
+ testsuite/smokey/tsc/tsc.c                    |   2 +-
+ 53 files changed, 1030 insertions(+), 304 deletions(-)
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/Makefile
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/calibration.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/features.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/fptest.h
+ copy kernel/cobalt/arch/{arm64/ipipe => arm/dovetail}/include/asm/xenomai/machine.h (59%)
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/syscall32.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/thread.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/include/asm/xenomai/wrappers.h
+ create mode 100644 kernel/cobalt/arch/arm/dovetail/machine.c
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/Makefile
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/calibration.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/features.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/fptest.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/machine.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/syscall32.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/thread.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/include/asm/xenomai/wrappers.h
+ create mode 100644 kernel/cobalt/arch/arm64/dovetail/machine.c
+
 -- 
 2.26.2
 
