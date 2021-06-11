@@ -1,10 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 05/17] cobalt/thread: Make sure relax inband work is on a
- stack outliving the wakeup
-Date: Fri, 11 Jun 2021 20:05:31 +0200
-Message-Id: <6cacd089663d187d6f0ab1203b8def11148fa89b.1623434743.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1623434743.git.jan.kiszka@siemens.com>
-References: <cover.1623434743.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 0/5] Update versions, add 5.10 kernel
+Date: Fri, 11 Jun 2021 22:13:07 +0200
+Message-Id: <cover.1623442392.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,69 +14,37 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This first of all updates a number of recipes to reflect latest Xenomai
+and I-pipe release.
 
-As dovetail does not copy the work passed to pipeline_post_inband_work,
-we must ensure that the one used in xnthread_relax lives as long as the
-wakeup takes. Therefore, fold post_wakeup into the only caller so that
-the stack frame of xnthread_relax is guaranteed to be used which
-fulfills this requirement.
+And then, now that Dovetail support is part of the Xenomai next branch,
+add CI and testing targets for this kernel. This obsoletes the
+wip/dovetail branch.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/thread.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+Jan
 
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 27f51bd58..bc2eebc92 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -1993,19 +1993,6 @@ static void lostage_task_wakeup(struct pipeline_inband_work *inband_work)
- 	wake_up_process(p);
- }
- 
--static void post_wakeup(struct task_struct *p)
--{
--	struct lostage_wakeup wakework = {
--		.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(wakework,
--					lostage_task_wakeup),
--		.task = p,
--	};
--
--	trace_cobalt_lostage_request("wakeup", wakework.task);
--
--	pipeline_post_inband_work(&wakework);
--}
--
- void __xnthread_propagate_schedparam(struct xnthread *curr)
- {
- 	int kpolicy = SCHED_FIFO, kprio = curr->bprio, ret;
-@@ -2065,9 +2052,14 @@ void __xnthread_propagate_schedparam(struct xnthread *curr)
-  */
- void xnthread_relax(int notify, int reason)
- {
-+	struct task_struct *p = current;
-+	struct lostage_wakeup wakework = {
-+		.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(wakework,
-+					lostage_task_wakeup),
-+		.task = p,
-+	};
- 	struct xnthread *thread = xnthread_current();
- 	int cpu __maybe_unused, suspension;
--	struct task_struct *p = current;
- 	kernel_siginfo_t si;
- 
- 	primary_mode_only();
-@@ -2090,7 +2082,8 @@ void xnthread_relax(int notify, int reason)
- 	 * xnthread_suspend() has an interrupts-on section built in.
- 	 */
- 	splmax();
--	post_wakeup(p);
-+	trace_cobalt_lostage_request("wakeup", p);
-+	pipeline_post_inband_work(&wakework);
- 	/*
- 	 * Grab the nklock to synchronize the Linux task state
- 	 * manipulation with handle_sigwake_event. This lock will be
+Jan Kiszka (5):
+  linux-xenomai: Update to latest 4.4 and 4.19 ipipe releases
+  xenomai: Update to 3.1.1
+  linux-xenomai: Add 5.4 recipe and make it default
+  linux-xenomai: Add support for 5.10 to latest recipe
+  ci: Add kernel 5.10 to xenomai_next build
+
+ ci/kernel_5_10_xenomai_next.yml               | 88 +++++++++++++++++++
+ ci/xenomai_next.yml                           |  3 +-
+ conf/distro/include/xenomai-version.inc       |  2 +-
+ opt-linux-latest-5.10.yml                     | 18 ++++
+ recipes-kernel/linux/linux-xenomai_4.19.bb    | 12 +--
+ recipes-kernel/linux/linux-xenomai_4.4.bb     |  8 +-
+ ...x-xenomai_4.19.bb => linux-xenomai_5.4.bb} | 16 ++--
+ recipes-kernel/linux/linux-xenomai_latest.bb  | 20 ++---
+ .../{xenomai_3.1.bb => xenomai_3.1.1.bb}      |  4 +-
+ 9 files changed, 139 insertions(+), 32 deletions(-)
+ create mode 100644 ci/kernel_5_10_xenomai_next.yml
+ create mode 100644 opt-linux-latest-5.10.yml
+ copy recipes-kernel/linux/{linux-xenomai_4.19.bb => linux-xenomai_5.4.bb} (58%)
+ rename recipes-xenomai/xenomai/{xenomai_3.1.bb => xenomai_3.1.1.bb} (78%)
+
 -- 
 2.26.2
 
