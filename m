@@ -1,16 +1,9 @@
-From: MONTET Julien <julien.montet@reseau.eseo.fr>
-Subject: RE: Docker - Xenomai hangs on rt_task_wait_period()
-Date: Thu, 1 Jul 2021 07:47:40 +0000
-Message-ID: <PR3PR02MB620279405871EBD699FC4B35D1039@PR3PR02MB6202.eurprd02.prod.outlook.com>
-References: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
- <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>,
- <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>,
- <PR3PR02MB6202344CA134AA59D0BE84A2D1089@PR3PR02MB6202.eurprd02.prod.outlook.com>
-In-Reply-To: <PR3PR02MB6202344CA134AA59D0BE84A2D1089@PR3PR02MB6202.eurprd02.prod.outlook.com>
-Content-Language: fr-FR
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH] cobalt: dovetail: fix SMP kernel boot on uniprocessor machine
+Date: Fri, 11 Jun 2021 17:30:02 +0200
+Message-Id: <20210611153002.2416047-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,145 +12,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
+From: Philippe Gerum <rpm@xenomai.org>
 
-Unfortunately I can't, and do not want to try on X86.
-Even if it is possible, I am using a 32 bits x86 executable and it increase=
-s the complexity of my dockerfile (new libraries, support...) and risks of =
-errors.
-I prefer to stay on ARM for now.
-I am going to try the following resolution options and keep you informed :
+We may be running a SMP kernel on a uniprocessor machine whose
+interrupt controller supports no IPI. We should attempt to hook IPIs
+only if the hardware can support multiple CPUs, otherwise it is
+unneeded and poised to fail.
 
-  *   Have a look at the file threadobj.c line 1645 from function sev.sigev=
-_notify_thread_id =3D threadobj_get_pid(thobj);
-  *   Test the cobalt docker of Yogu : https://hub.docker.com/r/yogu/cobalt
-  *   Test with a qemu-target, but I have to use Docker in a long run.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ .../kernel/dovetail/pipeline/pipeline.h       |  9 +++++--
+ kernel/cobalt/dovetail/tick.c                 | 26 +++++++++++++------
+ 2 files changed, 25 insertions(+), 10 deletions(-)
 
-Regards
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 980350dce..2ee7b3210 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -6,6 +6,7 @@
+ #define _COBALT_KERNEL_DOVETAIL_PIPELINE_H
+ 
+ #include <linux/irq_pipeline.h>
++#include <linux/cpumask.h>
+ #include <cobalt/kernel/assert.h>
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/syscall.h>
+@@ -37,6 +38,9 @@ irqreturn_t pipeline_reschedule_ipi_handler(int irq, void *dev_id);
+ 
+ static inline int pipeline_request_resched_ipi(void (*handler)(void))
+ {
++	if (num_possible_cpus() == 1)
++		return 0;
++
+ 	/* Trap the out-of-band rescheduling interrupt. */
+ 	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+ 			pipeline_reschedule_ipi_handler,
+@@ -47,8 +51,9 @@ static inline int pipeline_request_resched_ipi(void (*handler)(void))
+ 
+ static inline void pipeline_free_resched_ipi(void)
+ {
+-	/* Release the out-of-band rescheduling interrupt. */
+-	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
++	if (num_possible_cpus() > 1)
++		/* Release the out-of-band rescheduling interrupt. */
++		free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+index c945f7da4..ac343e4d3 100644
+--- a/kernel/cobalt/dovetail/tick.c
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -146,12 +146,20 @@ int pipeline_install_tick_proxy(void)
+ 	int ret;
+ 
+ #ifdef CONFIG_SMP
+-	ret = __request_percpu_irq(TIMER_OOB_IPI,
+-				tick_ipi_handler,
+-				IRQF_OOB, "Xenomai timer IPI",
+-				&cobalt_machine_cpudata);
+-	if (ret)
+-		return ret;
++	/*
++	 * We may be running a SMP kernel on a uniprocessor machine
++	 * whose interrupt controller provides no IPI: attempt to hook
++	 * the timer IPI only if the hardware can support multiple
++	 * CPUs.
++	 */
++	if (num_possible_cpus() > 1) {
++		ret = __request_percpu_irq(TIMER_OOB_IPI,
++					tick_ipi_handler,
++					IRQF_OOB, "Xenomai timer IPI",
++					&cobalt_machine_cpudata);
++		if (ret)
++			return ret;
++	}
+ #endif
+ 
+ 	/* Install the proxy tick device */
+@@ -163,7 +171,8 @@ int pipeline_install_tick_proxy(void)
+ 
+ fail_proxy:
+ #ifdef CONFIG_SMP
+-	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
++	if (num_possible_cpus() > 1)
++		free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+ #endif
+ 
+ 	return ret;
+@@ -175,6 +184,7 @@ void pipeline_uninstall_tick_proxy(void)
+ 	tick_uninstall_proxy(&xnsched_realtime_cpus);
+ 
+ #ifdef CONFIG_SMP
+-	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
++	if (num_possible_cpus() > 1)
++		free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+ #endif
+ }
+-- 
+2.31.1
 
-Julien
-
-
-
-
-________________________________
-De : MONTET Julien <julien.montet@reseau.eseo.fr>
-Envoy=E9 : mercredi 23 juin 2021 09:55
-=C0 : Bezdeka, Florian <florian.bezdeka@siemens.com>; jan.kiszka@siemens.co=
-m <jan.kiszka@siemens.com>
-Cc : xenomai@xenomai.org <xenomai@xenomai.org>
-Objet : RE: Docker - Xenomai hangs on rt_task_wait_period()
-
-Hi,
-
-I tried again this morning, and run the latency bin of Xenomai on the Docke=
-r, it doesn't hang :
-
-root@f2f41a83e749:/usr/xenomai/bin# ./latency
-=3D=3D Sampling period: 1000 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
-orst
-RTD|      1.666|      2.070|      7.187|       0|     0|      1.666|      7=
-.187
-RTD|      1.666|      2.074|     17.447|       0|     0|      1.666|     17=
-.447
-RTD|      1.613|      2.003|     14.113|       0|     0|      1.613|     17=
-.447
-RTD|      1.561|      2.045|     12.967|       0|     0|      1.561|     17=
-.447
-RTD|      1.716|      2.061|     19.217|       0|     0|      1.561|     19=
-.217
-RTD|      1.664|      2.062|     15.675|       0|     0|      1.561|     19=
-.217
-^C---|-----------|-----------|-----------|--------|------|-----------------=
---------
-RTS|      1.561|      2.052|     19.217|       0|     0|    00:00:07/00:00:=
-07
-
-
-I can't test my Docker on x86 now, I will do it as soon as I can, most prob=
-ably this evening.
-Regarding the link Florian sent, I didn't use this to run my docker : -devi=
-ce=3D/dev/rtdm:/dev/rtdm
-I have almost the same "docker run" call as Marco Barletta, I just added : =
---privileged --cap-add SYS_NICE.
-This PID issue might be related, I don't kow how to check this.
-
-Regards,
-
-On Wed, 2021-06-23 at 07:37 +0200, Jan Kiszka wrote:
-> On 22.06.21 18:38, MONTET Julien via Xenomai wrote:
-> > Hello the developers,
-> >
-> > I have been using Xenomai for the past two months on different targets =
-/ skins / architectures, and it is a great real time solution !
-> > For the past few days, I have been trying to use my code on a docker :
-> >
-> >   *   Compiled on a debian 10.9 with Xenomai libraries (3.1) for an ARM=
- target
-> >   *   This code runs on a raspberry pi 3B with an IPIPE patch (Cobalt)
-> >   *   The kernel version is 4.19+
-> >
-> > My code is running fine with different methods, there is no crash.
-> > However, the execution hangs when  I use the couple rt_task_set_periodi=
-c/rt_task_wait_period.
-> > Methods such as "RTIME", rt_printf(), rt_task_set_periodic() do not han=
-gs, but my code seems to keep waiting on rt_task_wait_period().
-> >
-> > I am aware someone had this issue four years ago :
-> > https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fxen=
-omai.org%2Fpipermail%2Fxenomai%2F2017-November%2F037890.html&amp;data=3D04%=
-7C01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C=
-4d7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CT=
-WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%=
-3D%7C1000&amp;sdata=3DIdqQYU1WPAP4XP8yb6HWRn%2B10BsbRJRtrm3iEPDsqQQ%3D&amp;=
-reserved=3D0
-> > According to the link above, Cobalt does not support PID namespaces.
-> > I also understood it is needed to convert vpid <-> pid by using the fin=
-d_task_vpid().
-> >
-> > I am not an expert on the interaction between Docker and Linux - specif=
-ically on PID.
-> > Is it a normal behaviour in my case ? Where would it be interesting to =
-make these changes ?
-> > What is the link between RT_TASK and PID / vPID ?
-> >
-> > Regards,
-> >
-> > Julien
-> >
->
-> Do you see this issue only on ARM, or is the pattern also reproducible
-> on x86 (qemu/kvm)? Are only native/alchemy apps affected, or does the
-> latency test hang as well?
->
-> Maybe you can describe what would be needed to reproduce inside a
-> xenomai-images qemu target so that we look at the same thing.
->
-> Florian, we only have some x86 hosts enabled to run docker aside
-> Xenomai, right?
-
-Yes, we have a x86 setup running containers, but AFAIK there is no
-Xenomai workload inside the container.
-
-We know about [1] (bug /wrt PID namespace). Might that be related?
-
-[1] https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit=
-lab.com%2FXenomai%2Fxenomai-hacker-space%2F-%2Fissues%2F19&amp;data=3D04%7C=
-01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C4d=
-7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CTWF=
-pbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D=
-%7C1000&amp;sdata=3DqI0zj%2F4PgzYoXyZBUE%2F9xYSbRI7vAp%2FPegw2JuCNcqM%3D&am=
-p;reserved=3D0
-
->
-> Jan
->
 
