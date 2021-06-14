@@ -1,11 +1,12 @@
-References: <cover.1623434743.git.jan.kiszka@siemens.com>
- <87r1h57kx5.fsf@xenomai.org>
- <a10bb646-fea6-7bbd-60f2-b02c08789dbc@siemens.com>
+References: <20210613155522.1851338-1-rpm@xenomai.org>
+ <20210613155522.1851338-2-rpm@xenomai.org> <87wnqx7o3k.fsf@xenomai.org>
+ <e480b487-e30a-bcb8-fa61-5b613756a8d0@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 00/17] Dovetail integration - the finals
-In-reply-to: <a10bb646-fea6-7bbd-60f2-b02c08789dbc@siemens.com>
-Date: Mon, 14 Jun 2021 08:24:21 +0200
-Message-ID: <87k0mx6k16.fsf@xenomai.org>
+Subject: Re: [PATCH 2/2] ARM: irq_pipeline: preserve lockdep irq state
+ across kernel entries
+In-reply-to: <e480b487-e30a-bcb8-fa61-5b613756a8d0@siemens.com>
+Date: Mon, 14 Jun 2021 08:40:36 +0200
+Message-ID: <87eed56ja3.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,42 +18,44 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org, Hongzhan Chen <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 13.06.21 19:07, Philippe Gerum wrote:
+> On 13.06.21 17:58, Philippe Gerum via Xenomai wrote:
 >> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> Philippe Gerum <rpm@xenomai.org> writes:
 >> 
->>> On top, I would also still like to understand - and ideally address
->>> prior to releasing a new major version - if we cannot align the ARM
->>> syscall ABI of Xenomai to the kernel /wrt argument passing. Now is a
->>> good chance to do that.
+>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>> When lockdep is enabled, per_cpu(hardirqs_enabled) may not be in sync
+>>> with the in-band stall bit on kernel entry upon preemption by an
+>>> IRQ. This may happen since the relevant local_irq_* calls do not
+>>> manipulate the stall bit and the lockdep irq state atomically (for a
+>>> good reason). In addition, the raw_local_irq API may be used directly,
+>>> without lockdep tracking whatsoever (e.g. when manipulating raw
+>>> spinlocks).
 >> 
->> That would be fairly simple implementation-wise, problem though: this
->> would require to add this change to the next I-pipe/arm releases,
->> invalidating all previous I-pipe releases for 3.2 in the same move. In
->> theory, all existing I-pipe/arm patches starting from kernel 3.10 can
->> run the -next branch (although it may be better to stick with 4.14+ in
->> practice).
+>> A similar fix may be needed for x86 in the generic entry code when
+>> pipelining interrupts.
 >> 
 >
-> 4.14 is long dead, 4.19 could be the lowest target. Yes, that might
-> involve some some complications. Maybe we could add a feature flag for
-> the new ABI, start with dovetail and then look into lifting 4.19 and 5.4
-> I-pipe.
+> Is there a good way to tickle the related splat out of the system? At
+> least locally, I have PROVE_LOCKING on but didn't see this so far.
 >
 
-Dovetail already follows the ARM EABI, only using a marker to
-distinguish in-band syscalls from foreign ones in r7, on all archs. This
-said, I plan to work on another option for conveying oob syscalls based
-on prctl() asap, this would be saner than invalidating a whole range of
-syscall numbers for the regular kernel.  In addition, this might help
-enabling tools like valgrind at little/no cost. The earlier the better
-to investigate this, I'd rather not have to maintain multiple ABIs in
-Dovetail.
+Only the bbb displayed such bug so far here, PROVE_LOCKING and
+DOVETAIL_DEBUG on, function ftracing might help lowering the odds of
+reproducing the bug. Running latency, the assertion would trigger at ^C
+within secs, rarely during boot although this has been observed a couple
+of times too.
+
+I believe that some network traffic may help, increasing the rate of
+softirqs (I'm running with a rootfs over nfs). In this case,
+__local_bh_disable_ip would be preempted by an IRQ while covered by
+raw_local_irq_save, exposing the issue described in the commit log, and
+lockdep_assert_irqs_enabled() would trigger in __local_bh_enable_ip.
 
 -- 
 Philippe.
