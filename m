@@ -1,11 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/2] cobalt/ipipe: Drop tests for IPIPE_KEVT_*
-Date: Mon, 14 Jun 2021 14:07:35 +0200
-Message-Id: <31d0c3616192e29c9a719d0ade56977120204273.1623672456.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1623672456.git.jan.kiszka@siemens.com>
-References: <cover.1623672456.git.jan.kiszka@siemens.com>
+Subject: dovetail on x86: TSC switching and the fallout
+Message-ID: <ad8fbcff-8e4c-723a-380b-d5acfe6ea530@siemens.com>
+Date: Mon, 14 Jun 2021 18:46:42 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,154 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Philippe Gerum <philippe.gerum@ixblue.com>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi Philippe,
 
-All those events have been added long ago to I-pipe versions we want to
-support with the next release. Time to drop the tests which will also
-allow sharing some code with dovetail.
+we are still looking for the reasons, but some systems here consider the 
+TSC already unstable during early boot (can be reproduced with
+"tsc=unstable"):
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/ipipe/kevents.c | 28 ----------------------------
- kernel/cobalt/ipipe/sched.c   |  2 --
- 2 files changed, 30 deletions(-)
+2021-06-11T17:12:17 [    2.059118] TSC synchronization [CPU#0 -> CPU#2]:
+2021-06-11T17:12:17 [    2.059124] Measured 63 cycles TSC warp between CPUs, turning off TSC clock.
+2021-06-11T17:12:17 [    2.059128] tsc: Marking TSC unstable due to check_tsc_sync_source failed
 
-diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
-index 19970c8b8..32d305cb2 100644
---- a/kernel/cobalt/ipipe/kevents.c
-+++ b/kernel/cobalt/ipipe/kevents.c
-@@ -32,8 +32,6 @@ process_from_thread(struct xnthread *thread)
- 	return container_of(thread, struct cobalt_thread, threadbase)->process;
- }
- 
--#ifdef IPIPE_KEVT_PTRESUME
--
- static void stop_debugged_process(struct xnthread *thread)
- {
- 	struct cobalt_process *process = process_from_thread(thread);
-@@ -64,18 +62,6 @@ static void resume_debugged_process(struct cobalt_process *process)
- 	xnsched_unlock();
- }
- 
--#else /* !IPIPE_KEVT_PTRESUME */
--
--static inline void stop_debugged_process(struct xnthread *thread)
--{
--}
--
--static inline void resume_debugged_process(struct cobalt_process *process)
--{
--}
--
--#endif /* !IPIPE_KEVT_PTRESUME */
--
- /* called with nklock held */
- static void register_debugged_thread(struct xnthread *thread)
- {
-@@ -117,7 +103,6 @@ static inline int handle_exception(struct ipipe_trap_data *d)
- 	if (xnthread_test_state(thread, XNROOT))
- 		return 0;
- 
--#ifdef IPIPE_KEVT_USERINTRET
- 	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
- 		spl_t s;
- 
-@@ -129,7 +114,6 @@ static inline int handle_exception(struct ipipe_trap_data *d)
- 		xnlock_put_irqrestore(&nklock, s);
- 		xnsched_run();
- 	}
--#endif
- 
- 	if (xnarch_fault_fpu_p(d)) {
- #ifdef CONFIG_XENO_ARCH_FPU
-@@ -359,7 +343,6 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
- 	if (affinity_ok(p))
- 		xnthread_resume(thread, XNRELAX);
- 
--#ifdef IPIPE_KEVT_USERINTRET
- 	/*
- 	 * In case we migrated independently of the user return notifier, clear
- 	 * XNCONTHI here and also disable the notifier - we are already done.
-@@ -368,7 +351,6 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
- 		xnthread_clear_info(thread, XNCONTHI);
- 		ipipe_disable_user_intret_notifier();
- 	}
--#endif
- 
- 	/* Unregister as debugged thread in case we postponed this. */
- 	if (unlikely(xnthread_test_state(thread, XNSSTEP)))
-@@ -681,7 +663,6 @@ static inline int handle_clockfreq_event(unsigned int *p)
- 	return KEVENT_PROPAGATE;
- }
- 
--#ifdef IPIPE_KEVT_USERINTRET
- static int handle_user_return(struct task_struct *task)
- {
- 	struct xnthread *thread;
-@@ -715,9 +696,7 @@ static int handle_user_return(struct task_struct *task)
- 
- 	return KEVENT_PROPAGATE;
- }
--#endif /* IPIPE_KEVT_USERINTRET */
- 
--#ifdef IPIPE_KEVT_PTRESUME
- int handle_ptrace_resume(struct ipipe_ptrace_resume_data *resume)
- {
- 	struct xnthread *thread;
-@@ -739,7 +718,6 @@ int handle_ptrace_resume(struct ipipe_ptrace_resume_data *resume)
- 
- 	return KEVENT_PROPAGATE;
- }
--#endif /* IPIPE_KEVT_PTRESUME */
- 
- int ipipe_kevent_hook(int kevent, void *data)
- {
-@@ -766,21 +744,15 @@ int ipipe_kevent_hook(int kevent, void *data)
- 		ret = handle_hostrt_event(data);
- 		break;
- #endif
--#ifdef IPIPE_KEVT_CLOCKFREQ
- 	case IPIPE_KEVT_CLOCKFREQ:
- 		ret = handle_clockfreq_event(data);
- 		break;
--#endif
--#ifdef IPIPE_KEVT_USERINTRET
- 	case IPIPE_KEVT_USERINTRET:
- 		ret = handle_user_return(data);
- 		break;
--#endif
--#ifdef IPIPE_KEVT_PTRESUME
- 	case IPIPE_KEVT_PTRESUME:
- 		ret = handle_ptrace_resume(data);
- 		break;
--#endif
- 	default:
- 		ret = KEVENT_PROPAGATE;
- 	}
-diff --git a/kernel/cobalt/ipipe/sched.c b/kernel/cobalt/ipipe/sched.c
-index 411c5ec8c..3104e5015 100644
---- a/kernel/cobalt/ipipe/sched.c
-+++ b/kernel/cobalt/ipipe/sched.c
-@@ -158,7 +158,6 @@ int pipeline_leave_oob_prepare(void)
- 
- 	set_current_state(p->state & ~TASK_NOWAKEUP);
- 
--#ifdef IPIPE_KEVT_USERINTRET
- 	/*
- 	 * If current is being debugged, record that it should migrate
- 	 * back in case it resumes in userspace. If it resumes in
-@@ -171,7 +170,6 @@ int pipeline_leave_oob_prepare(void)
- 		ipipe_enable_user_intret_notifier();
- 		suspmask |= XNDBGSTOP;
- 	}
--#endif
- 	/*
- 	 * Return the suspension bits the caller should pass to
- 	 * xnthread_suspend().
+As we know, this will cause troubles later on. An immediate result is
+
+[    1.858649] IRQ pipeline: high-priority Xenomai stage added.
+[    1.859341] IRQ pipeline: oob stage found stalled while modifying in-band
+[    1.859342]               interrupt state and/or running sleeping code
+[    1.859343] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.42+ #153
+[    1.859343] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[    1.859344] IRQ stage: Linux
+[    1.859345] Call Trace:
+[    1.859345]  dump_stack+0x84/0x9c
+[    1.859346]  inband_irq_save+0xa/0x30
+[    1.859346]  read_hpet+0x66/0x110
+[    1.859347]  ktime_get_mono_fast_ns+0x53/0xb0
+[    1.859347]  ? rdinit_setup+0x2b/0x2b
+[    1.859348]  xnlock_dbg_prepare_acquire+0xe/0x20
+[    1.859348]  ____xnlock_get.constprop.25+0x3b/0xa0
+[    1.859349]  xnclock_init+0x95/0xe6
+[    1.859349]  pipeline_init+0x23/0x49
+[    1.859350]  xenomai_init+0x10c/0x264
+[    1.859350]  ? xnclock_init+0xe6/0xe6
+[    1.859351]  do_one_initcall+0x64/0x320
+[    1.859352]  ? rdinit_setup+0x2b/0x2b
+[    1.859352]  ? rcu_read_lock_sched_held+0x52/0x90
+[    1.859353]  kernel_init_freeable+0x228/0x266
+[    1.859353]  ? rest_init+0x250/0x250
+[    1.859354]  kernel_init+0xa/0x120
+[    1.859354]  ret_from_fork+0x22/0x30
+
+because read_hpet is not oob-ready. Are clocksources on x86 supposed to 
+be usable with Dovetail, or is this expected because nothing by tsc 
+should be active?
+
+Jan
+
 -- 
-2.26.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
