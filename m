@@ -1,13 +1,20 @@
-References: <ad8fbcff-8e4c-723a-380b-d5acfe6ea530@siemens.com>
- <87wnqw5pak.fsf@xenomai.org>
- <1a777055-400b-d291-3fa1-53852494e866@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: dovetail on x86: TSC switching and the fallout
-In-reply-to: <1a777055-400b-d291-3fa1-53852494e866@siemens.com>
-Date: Tue, 15 Jun 2021 10:19:37 +0200
-Message-ID: <87r1h35yli.fsf@xenomai.org>
+From: <dietmar.schindler@manrolandgoss.com>
+Subject: RE: [florian/y2038][PATCH v3 0/3] y2038:mutex_timedlock for timespec64
+Date: Tue, 15 Jun 2021 13:14:32 +0000
+Message-ID: <829d243103234720a484176083552912@manrolandgoss.com>
+References: <1622721916-1824-1-git-send-email-chensong_2000@189.cn>
+ <049086bd-62ee-70f0-6bb0-9f2906ff19f6@siemens.com>
+ <7106d860-c9c5-2eea-2332-fb90fc1e0a0d@189.cn>
+ <d69873c9-2a1f-4b32-e415-175b332b7083@189.cn>
+ <b0da37ec-ddbe-3e65-f8fd-c4b8edbc08cf@siemens.com>
+ <00fbbce846894e3baa48956fe5c3a0fa@manrolandgoss.com>
+ <85462809-3d63-0d18-98e5-45bdce8b929e@189.cn>
+ <a95782f5-f429-eea2-c52c-c49e53615933@siemens.com>
+In-Reply-To: <a95782f5-f429-eea2-c52c-c49e53615933@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,132 +23,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 14.06.21 19:28, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> Hi Philippe,
->>>
->>> we are still looking for the reasons, but some systems here consider the 
->>> TSC already unstable during early boot (can be reproduced with
->>> "tsc=unstable"):
->>>
->>> 2021-06-11T17:12:17 [    2.059118] TSC synchronization [CPU#0 -> CPU#2]:
->>> 2021-06-11T17:12:17 [    2.059124] Measured 63 cycles TSC warp between CPUs, turning off TSC clock.
->>> 2021-06-11T17:12:17 [    2.059128] tsc: Marking TSC unstable due to check_tsc_sync_source failed
->>>
->>> As we know, this will cause troubles later on. An immediate result is
->>>
->>> [    1.858649] IRQ pipeline: high-priority Xenomai stage added.
->>> [    1.859341] IRQ pipeline: oob stage found stalled while modifying in-band
->>> [    1.859342]               interrupt state and/or running sleeping code
->>> [    1.859343] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.42+ #153
->>> [    1.859343] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
->>> [    1.859344] IRQ stage: Linux
->>> [    1.859345] Call Trace:
->>> [    1.859345]  dump_stack+0x84/0x9c
->>> [    1.859346]  inband_irq_save+0xa/0x30
->>> [    1.859346]  read_hpet+0x66/0x110
->>> [    1.859347]  ktime_get_mono_fast_ns+0x53/0xb0
->>> [    1.859347]  ? rdinit_setup+0x2b/0x2b
->>> [    1.859348]  xnlock_dbg_prepare_acquire+0xe/0x20
->>> [    1.859348]  ____xnlock_get.constprop.25+0x3b/0xa0
->>> [    1.859349]  xnclock_init+0x95/0xe6
->>> [    1.859349]  pipeline_init+0x23/0x49
->>> [    1.859350]  xenomai_init+0x10c/0x264
->>> [    1.859350]  ? xnclock_init+0xe6/0xe6
->>> [    1.859351]  do_one_initcall+0x64/0x320
->>> [    1.859352]  ? rdinit_setup+0x2b/0x2b
->>> [    1.859352]  ? rcu_read_lock_sched_held+0x52/0x90
->>> [    1.859353]  kernel_init_freeable+0x228/0x266
->>> [    1.859353]  ? rest_init+0x250/0x250
->>> [    1.859354]  kernel_init+0xa/0x120
->>> [    1.859354]  ret_from_fork+0x22/0x30
->>>
->>> because read_hpet is not oob-ready. Are clocksources on x86 supposed to 
->>> be usable with Dovetail, or is this expected because nothing by tsc 
->>> should be active?
->> 
->> The common requirement applies to x86 clocksources: they need to be made
->> oob-capable. HPET was not fixed up that way, I may have postponed doing
->> this sine die because that particular hardware is a mess in and of
->> itself: it requires CPUs to either serialize on access or use a cached
->> value.
->> 
->> I see no obvious problem in fixing read_hpet() to make it oob-capable as
->> follows (I don't think it would be safe to take the NMI path
->> unconditionally if oob. EVL is SMP scalable, so having a truckload of
->> concurrent CPUs running real-time stuff may be an option here, and we
->> don't want to take any chance allowing those CPUs to read the HPET
->> counter simultaneously un-serialized.
->> 
->> diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
->> index 67a9f248270ca7f..ce8e15aa8a97b8f 100644
->> --- a/arch/x86/kernel/hpet.c
->> +++ b/arch/x86/kernel/hpet.c
->> @@ -811,7 +811,7 @@ static u64 read_hpet(struct clocksource *cs)
->>  	if (arch_spin_is_locked(&old.lock))
->>  		goto contended;
->>  
->> -	local_irq_save(flags);
->> +	flags = hard_local_irq_save();
->>  	if (arch_spin_trylock(&hpet.lock)) {
->>  		new.value = hpet_readl(HPET_COUNTER);
->>  		/*
->> @@ -819,10 +819,10 @@ static u64 read_hpet(struct clocksource *cs)
->>  		 */
->>  		WRITE_ONCE(hpet.value, new.value);
->>  		arch_spin_unlock(&hpet.lock);
->> -		local_irq_restore(flags);
->> +		hard_local_irq_restore(flags);
->>  		return (u64)new.value;
->>  	}
->> -	local_irq_restore(flags);
->> +	hard_local_irq_restore(flags);
->>  
->>  contended:
->>  	/*
->> 
->
-> Sure. Unfortunately, hpet is next-best after tsc on x86 (not sure why
-> pm-timer was rated lower, maybe even slower or overrunning too quickly),
-> so this needs to be addressed.
->
-
-Maybe due to the I/O port access compared to MMIO? Anyway, acpi_pm via
-syscall redirection (i.e. without vDSO) gives fairly decent latency
-figures on an old DQ45CB motherboard. This could be tried with HPET.
-
->> There is another aspect, which is accessing the clocksource via the vDSO
->> via Dovetail's generic MMIO interface. We cannot do that with acpi_pm
->> (this one is accessed via I/O ports), hpet would also be a problem
->> unless we read that counter unconditionally since we would not be able
->> to serialize CPUs on the kernel spinlock - back to square #1
->> performance-wise.
->> 
->> With HPET, some simple fixup like the one above would be required, and
->> Cobalt would also need a way to respond to clock_gettime* requests that
->> did not go through the vDSO directly from the oob stage, as illustrated
->> by this EVL code [2].
->> 
->> [1] https://evlproject.org/dovetail/porting/clocksource/
->> [2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/3451245cdc9846835f8a2786767b17037ee13dda/kernel/evl/syscall.c#L205
->> 
->
-> This looks like the answer to
-> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/16...
->
-
-Could be. With the I-pipe, the tsc is always used in user-space,
-regardless of what the kernel thinks about its stability. So this might
-look like working, but does not with bad hardware.
-
--- 
-Philippe.
+PiBGcm9tOiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4g
+U2VudDogRnJpZGF5LCBKdW5lIDExLCAyMDIxIDk6MjkgQU0NCj4gVG86IGNoZW5zb25nXzIwMDBA
+MTg5LmNuOyB4ZW5vbWFpQHhlbm9tYWkub3JnOyBTY2hpbmRsZXIsIERpZXRtYXIgLSBPVFBTDQo+
+IDxkaWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmRnb3NzLmNvbT4NCj4NCj4gT24gMTEuMDYuMjEg
+MDQ6MTcsIGNoZW5zb25nXzIwMDAtLS0gdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gaGkgRGlldG1h
+ciwNCj4gPg0KPiA+IOWcqCAyMDIxLzYvMTAg5LiL5Y2IMzowMywgRGlldG1hciBTY2hpbmRsZXIg
+dmlhIFhlbm9tYWkg5YaZ6YGTOg0KPiA+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2Vz
+QHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgRmxvcmlhbg0KPiA+Pj4gQmV6ZGVrYSB2aWEgWGVu
+b21haQ0KPiA+Pj4gU2VudDogVHVlc2RheSwgSnVuZSA4LCAyMDIxIDE6MDQgUE0NCj4gPj4+IFRv
+OiBjaGVuc29uZ18yMDAwQDE4OS5jbjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiA+Pj4gU3ViamVj
+dDogUmU6IFtmbG9yaWFuL3kyMDM4XVtQQVRDSCB2MyAwLzNdIHkyMDM4Om11dGV4X3RpbWVkbG9j
+ayBmb3INCj4gPj4+IHRpbWVzcGVjNjQNCj4gPj4+DQo+ID4+PiBPbiAwOC4wNi4yMSAwOTo1MSwg
+Y2hlbnNvbmdfMjAwMC0tLSB2aWEgWGVub21haSB3cm90ZToNCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+
+Pj4g5ZyoIDIwMjEvNi84IOS4i+WNiDM6MzcsIGNoZW5zb25nXzIwMDAtLS0gdmlhIFhlbm9tYWkg
+5YaZ6YGTOg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+PiDlnKggMjAyMS82Lzgg5LiL5Y2IMjoz
+OSwgRmxvcmlhbiBCZXpkZWthIOWGmemBkzoNCj4gPj4+Pj4+IEhpIFNvbmcsDQo+ID4+Pj4+Pg0K
+PiA+Pj4+Pj4gT24gMDMuMDYuMjEgMTQ6MDUsIFNvbmcgQ2hlbiB3cm90ZToNCj4gPj4+Pj4+PiBU
+aGlzIHBhdGNoIHNlcmlhbCBpcyBhaW1lZCB0byBpbnRyb2R1Y2UgYSBuZXcgc3lzY2FsbA0KPiA+
+Pj4+Pj4+IG11dGV4X3RpbWVkbG9jazY0DQo+ID4+Pj4+Pj4gd2hpY2ggaXMgc3BlY2lmaWMgZm9y
+IDY0LWJpdCB0aW1lX3QuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiAtLS0NCj4gPj4+Pj4+PiB2MjoN
+Cj4gPj4+Pj4+PiAxLCBuZXcgcmV2aXNpb24gcmVnYXJkaW5nIHJldmlldyBjb21tZW50cw0KPiA+
+Pj4+Pj4+DQo+ID4+Pj4+Pj4gdjM6DQo+ID4+Pj4+Pj4gMSwgcmV0dXJuIC1lcnJubw0KPiA+Pj4+
+Pj4+IDIsIHRocm93IGEgd2FybmluZyBpZiB0aW1lb3V0IGlzIE5VTEwNCj4gPj4+Pj4+DQo+ID4+
+Pj4+PiBXaWxsIHlvdSB0YWtlIGNhcmUgb2YgdGhlIFBPU0lYIHZpb2xhdGlvbiBhcyB3ZWxsLCBv
+ciBzaG91bGQgSSB0cnkgdG8NCj4gPj4+Pj4+IGZpbmQgYSB0aW1lc2xvdCBhbmQgZG8gaXQ/DQo+
+ID4+Pj4+DQo+ID4+Pj4+IEkgd2lsbCB0YWtlIGNhcmUgb2YgaXQuDQo+ID4+Pj4+DQo+ID4+Pj4+
+IFBPU0lYIHZpb2xhdGlvbiwgZG8geW91IG1lYW46DQo+ID4+Pj4+DQo+ID4+Pj4+ICsgICAgLyog
+VGltZW91dCBpcyBuZXZlciByZWFkIGJ5IHRoZSBrZXJuZWwsIHNvIE5VTEwgc2hvdWxkIGJlIE9L
+ICovDQo+ID4+Pj4+ICsgICAgcmV0ID0gWEVOT01BSV9TWVNDQUxMMihzcl9uYywgJmxvY2ssIE5V
+TEwpOw0KPiA+Pj4+PiArICAgIGlmICghc21va2V5X2Fzc2VydCghcmV0KSkNCj4gPj4+Pj4gKyAg
+ICAgICAgc21va2V5X3dhcm5pbmcoIlBPU0lYIG11dGV4X3RpbWVkbG9jazY0IHZpb2xhdGlvbiBk
+ZXRlY3RlZCIpOw0KPiA+Pj4+PiArDQo+ID4+Pj4+DQo+ID4+Pj4+IHdoYXQgZWxzZSBzaG91bGQg
+aSBkbyB0byB0YWtlIGNhcmUgb2YgaXQsIHNvcnJ5IGlmIGkgbWlzc2VkIHNvbWUNCj4gPj4+Pj4g
+aW5mb3JtYXRpb24gaW4gdGhlIHBhc3QgZW1haWxzLg0KPiA+Pj4+Pg0KPiA+Pj4+PiAvU29uZw0K
+PiA+Pj4+DQo+ID4+Pj4gdG8gZmluZCBvdXQgdGhlIHJlYXNvbiBpdCByZXR1cm5zIDAgZXZlbiBp
+ZiB0aW1lb3V0IGlzIE5VTEw/DQo+ID4+Pg0KPiA+Pj4gSSBhbHJlYWR5IGhhZCBhIHNob3J0IGRp
+c2N1c3Npb24gd2l0aCBQaGlsaXBwZSBhYm91dCB0aGF0IHRvcGljIHNvbWUNCj4gPj4+IHRpbWUg
+YWdvLiBTZWUgWzFdLg0KPiA+Pj4NCj4gPj4+IEl0J3MgbW9yZSBvciBsZXNzIHRoZSBzYW1lIGFz
+IGZvciB0aGUgc2VtX3RpbWVkd2FpdCBzeXNjYWxsLiBBcyBsb25nIGFzDQo+ID4+PiB0aGUgc3Vw
+cGxpZWQgdGltZW91dCBpcyBub3QgdXNlZCAvIHJlYWQgYnkgdGhlIGtlcm5lbCBpdCBzaG91bGQg
+YmUNCj4gPj4+IHRyZWF0ZWQgYXMgIm9wdGlvbmFsIGFyZ3VtZW50Ii4gUmVhc29uOiBUaGUgUE9T
+SVggc3BlYywgd2hpY2ggc2F5czoNCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gVW5kZXIgbm8gY2lyY3Vt
+c3RhbmNlIHNoYWxsIHRoZSBmdW5jdGlvbiBmYWlsIHdpdGggYSB0aW1lb3V0IGlmIHRoZQ0KPiA+
+Pj4gbXV0ZXggY2FuIGJlIGxvY2tlZCBpbW1lZGlhdGVseS4gVGhlIHZhbGlkaXR5IG9mIHRoZSBh
+YnNfdGltZW91dA0KPiA+Pj4gcGFyYW1ldGVyIG5lZWQgbm90IGJlIGNoZWNrZWQgaWYgdGhlIG11
+dGV4IGNhbiBiZSBsb2NrZWQgaW1tZWRpYXRlbHkuDQo+ID4+Pg0KPiA+Pj4NCj4gPj4+IFRvIGZp
+eCB0aGlzIHZpb2xhdGlvbiAod2UgcmV0dXJuIGFuIGVycm9yIGlmIG5vIHRpbWVvdXQgaXMgZ2l2
+ZW4NCj4gPj4+IGluZGVwZW5kZW50IGZyb20gdGhlIGZhY3QgaWYgd2FzIHVzZWQgb3Igbm90KSBh
+IHJlZmFjdG9yaW5nIG1pZ2h0IGJlDQo+ID4+PiBuZWVkZWQuIFBoaWxpcHBlIGFscmVhZHkgcG9z
+dGVkIGhpcyBpZGVhIGluIFsxXSBob3cgdG8gZG8gdGhhdC4NCj4gPj4+DQo+ID4+PiBbMV0NCj4g
+Pj4+DQo+IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
+bD1odHRwcyUzQSUyRiUyRnhlbm9tYWkub3JnJTJGcGlwZXJtYWlsJQ0KPiAyRnhlbm9tYWklMkYy
+MDIxLQ0KPiBNYXJjaCUyRjA0NDY2OC5odG1sJmFtcDtkYXRhPTA0JTdDMDElN0NmbG9yaWFuLmJl
+emRla2ElNDBzaWVtZW5zLmNvbSU3Q2I5OWU4NTU1NWRiYzRkYmM4YjYNCj4gMjA4ZDkyYzdmMWQ1
+ZiU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVkNTVhJTdDMSU3QzAlN0M2Mzc1ODk3NDY3
+Mzk5MTQxMjIlN0NVbmtub3duJTdDDQo+IFRXRnBiR1pzYjNkOGV5SldJam9pTUM0d0xqQXdNREFp
+TENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzEwMDAmYW1w
+Ow0KPiBzZGF0YT12NngwSFlOQWhCcyUyRmdWb1NzdUk4aGtId3JJdFdmWWJGV1hNanRWZFRIaVUl
+M0QmYW1wO3Jlc2VydmVkPTANCj4gPj4+DQo+ID4+DQo+ID4+IFBsZWFzZSBleGN1c2UgbXkganVt
+cGluZyBpbiB0aGUgZGlzY3Vzc2lvbiAtIHBlcmhhcHMgSSdtIG1pc3NpbmcNCj4gPj4gc29tZXRo
+aW5nLCBidXQgSU1ITyAibmVlZCBub3QgYmUgY2hlY2tlZCIgZG9lcyBub3QgbWVhbiAibXVzdCBu
+b3QgYmUNCj4gPj4gY2hlY2tlZCIsIGJ1dCByYXRoZXIgaW1wbGllcyAibWF5IGJlIGNoZWNrZWQi
+LCBzbyBhIG1lcmUgdmFsaWRpdHkNCj4gPj4gY2hlY2sgaXMgbm90IGEgdmlvbGF0aW9uIG9mIFBP
+U0lYLiBZb3UsIEZsb3JpYW4sIGluIFsxXSBqdXN0IHNhaWQNCj4gPj4gYWJvdXQgdGhlIHZhbGlk
+YXRpbmc6ICJZZXMgaXQgZG9lcywgYW5kIHByb2JhYmx5IHNob3VsZCBub3QgZm9yDQo+ID4+IGNv
+bnNpc3RlbmN5IHdpdGggb3RoZXIgY2FsbHMiIC0gdGhhdCdzIGEgZGlmZmVyZW50LCBhbHNvIGZh
+aXIgcmVhc29uDQo+ID4+IGZvciBhdm9pZGluZyB0aGUgY2hlY2suDQo+DQo+ICJZZXMgaXQgZG9l
+cywgYW5kIHByb2JhYmx5IHNob3VsZCBub3QgZm9yIGNvbnNpc3RlbmN5IHdpdGggb3RoZXIgY2Fs
+bHMiDQo+IHdlcmUgUGhpbGlwcGUncyB3b3JkcyA7LSkNCg0KTXkgYXBvbG9naWVzIHRvIHlvdSBh
+bmQgUGhpbGlwcGUhDQoNCj4gPg0KPiA+IHlvdSBhcmUgc28gd2VsY29tZWQgdG8gam9pbiB0aGUg
+ZGlzY3Vzc2lvbiBhbmQgeW91ciBvcGluaW9uIGlzIHZhbHVlZA0KPiA+IGFuZCBoZWxwZnVsLg0K
+DQpUaGFuayB5b3UsIFNvbmcsIGZvciB0aGUgZnJpZW5kbHkgd29yZHMhDQoNCj4gPg0KPiA+IHdl
+IGhhdmUgdGhyZWUgY2FzZXMgYWJvdXQgdmFsaWRhdGluZyB0aW1lb3V0Og0KPiA+IDEpIHNlbV90
+aW1lZHdhaXQNCj4gPiBpdCBtZXJlbHkgdmFsaWRhdGVzIHRpbWVvdXQsIG5vdCByZXR1cm5zIGVy
+cm9yIGJhY2sgdG8gdXNlciBzcGFjZSBldmVuDQo+ID4gaXQgZmFpbHMsIHNhbWUgd2l0aCB3aGF0
+IHlvdSBzYWlkLg0KPg0KPiBJdCB2YWxpZGF0ZXMgdGhlIHRpbWVvdXQgYmVmb3JlIGZpcnN0IHVz
+ZSAobm90IG9uIGtlcm5lbCBlbnRyeSBsaWtlDQo+IGJlbG93KS4gSWYgdmFsaWRhdGlvbiBmYWls
+cyBpdCB3aWxsIHJlcG9ydCB0aGUgZXJyb3IuDQo+DQo+ID4NCj4gPiAyKSBtdXRleF90aW1lZGxv
+Y2sNCj4gPiBpdCBhY3RzIGRpZmZlcmVudGx5IHdpdGggc2VtX3RpbWVkd2FpdCwgaWYgdGltZW91
+dCBpcyBudWxsLCByZXR1cm5zDQo+ID4gLUVGQVVMVCBiZWZvcmUgdHJ5aW5nIHRvIGFjcXVpcmUN
+Cj4NCj4gTGV0J3MgZm9jdXMgb24gdGhpcyBvbmUgZmlyc3QuIEkgaGF2ZW4ndCBsb29rZWQgYXQg
+dGhlIGZvbGx3aW5nIChtcSkgeWV0Lg0KPg0KPiBQT1NJWCBhZ2FpbjoNCj4NCj4gVGhlIHZhbGlk
+aXR5IG9mIHRoZSBhYnNfdGltZW91dCBwYXJhbWV0ZXIgbmVlZCBub3QgYmUgY2hlY2tlZCBpZiB0
+aGUNCj4gbXV0ZXggY2FuIGJlIGxvY2tlZCBpbW1lZGlhdGVseS4NCj4NCj4gSU9XOiBDYWxsaW5n
+IG11dGV4X3RpbWVkd2FpdCgpIG9uIGFuIG11dGV4IHRoYXQgaXMgbm90IHRha2VuIGZvciBzdXJl
+DQo+ICh0aGUgY2FsbGVyIGtub3dzIHRoYXQpIHdpdGggYW4gaW52YWxpZC9OVUxMIHRpbWVvdXQg
+c2hvdWxkIHN1Y2NlZWQNCj4gYmVjYXVzZSB0aGVyZSBpcyBubyBuZWVkIHRvIHRvdWNoL3ZhbGlk
+YXRlIHRoZSBnaXZlbiB0aW1lb3V0LiBDdXJyZW50bHkNCj4gd2UgZmFpbC4NCj4NCj4gTWF5YmUg
+dGhlIHdvcmRpbmcgInZpb2xhdGlvbiIgaXMgdG8gaGFyZCBoZXJlLi4uDQoNCkkgYWdyZWUsIG9m
+IGNvdXJzZSwgc2luY2UgSSBkb24ndCBzZWUgaXQgYXMgYSB2aW9sYXRpb24gYXQgYWxsLiA6LSkN
+Cg0KPiA+IDMpIG1xX3RpbWVkc2VuZC9tcV90aW1lZHJlY2VpdmUNCj4gPiBpZiBpdCBtYW5hZ2Vz
+IHRvIHNlbmQgbXNnIHRvIHRoZSBxdWV1ZSwgaXQgZXZlbiBkb2Vzbid0IHZhbGlkYXRlIHRpbWVv
+dXQNCj4gPiBhdCBhbGwuDQo+ID4NCj4gPiBob3dldmVyLCBpbiB2YW5pbGxhIGtlcm5lbCwgaXQg
+dmFsaWRhdGVzIHRpbWVvdXQgYXQgdGhlIGJlZ2lubmluZyBhbmQNCj4gPiByZXR1cm4gRUZBVUxU
+IGlmIGl0IGZhaWxzLCBhcyBhIHJlc3VsdCwgbXFfdGltZWRzZW5kL21xX3RpbWVkcmVjZWl2ZSBo
+YXMNCj4gPiBkaWZmZXJlbnQgc2VtYW50aWNzLCByZXR1cm5zIGRpZmZlcmVudCB2YWx1ZXMgYW5k
+IGxlYWRzIHRvIGRpZmZlcmVudA0KPiA+IGJlaGF2aW9ycyBpbiB1c2VyIHNwYWNlLg0KPiA+DQo+
+ID4gSSB3b3VsZCBzdWdnZXN0IHdlIHNob3VsZCBmb2xsb3cgdmFuaWxsYSBrZXJuZWwsIHdoYXQg
+ZG8geW91IHRoaW5rPw0KPiA+DQo+ID4gd2hhdCdzIG1vcmUsIGkgZGlkbid0IGZpbmQgaW1wbGVt
+ZW50YXRpb24gb2Ygc2VtX3RpbWVkd2FpdCBhbmQNCj4gPiBtdXRleF90aW1lZGxvY2ssIGFyZSB0
+aGV5IGluIGdsaWJjPyB0aGVuIHdlIHNob3VsZCBmb2xsb3cgZ2xpYmMuDQoNCkFnYWluIEkgYWdy
+ZWUgdGhhdCAiY29uc2lzdGVuY3kgd2l0aCBvdGhlciBjYWxscyIgaXMgYSBnb29kIHRoaW5nLg0K
+DQotLQ0KQmVzdCByZWdhcmRzLA0KRGlldG1hciBTY2hpbmRsZXINCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fDQptYW5yb2xhbmQgR29zcyB3ZWIgc3lzdGVtcyBHbWJIIHwgTWFuYWdp
+bmcgRGlyZWN0b3I6IEZyYW56IEtyaWVjaGJhdW0NClJlZ2lzdGVyZWQgT2ZmaWNlOiBBdWdzYnVy
+ZyB8IFRyYWRlIFJlZ2lzdGVyOiBBRyBBdWdzYnVyZyB8IEhSQi1Oby46IDMyNjA5IHwgVkFUOiBE
+RTgxNTc2NDg1Nw0KDQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgbWVzc2FnZSBhbmQgYW55
+IGF0dGFjaGVkIGRvY3VtZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgb3IgcHJvcHJpZXRh
+cnkgaW5mb3JtYXRpb24gb2YgbWFucm9sYW5kfEdvc3MuIFRoZXNlIG1hdGVyaWFscyBhcmUgaW50
+ZW5kZWQgb25seSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LiBJZiB5b3Ug
+YXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgdHJhbnNtaXNzaW9uLCB5b3Ug
+YXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSBkaXN0cmlidXRpb24sIGRpc2Nsb3N1cmUsIHBy
+aW50aW5nLCBjb3B5aW5nLCBzdG9yYWdlLCBtb2RpZmljYXRpb24gb3IgdGhlIHRha2luZyBvZiBh
+bnkgYWN0aW9uIGluIHJlbGlhbmNlIHVwb24gdGhpcyB0cmFuc21pc3Npb24gaXMgc3RyaWN0bHkg
+cHJvaGliaXRlZC4gRGVsaXZlcnkgb2YgdGhpcyBtZXNzYWdlIHRvIGFueSBwZXJzb24gb3RoZXIg
+dGhhbiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IHNoYWxsIG5vdCBjb21wcm9taXNlIG9yIHdhaXZl
+IHN1Y2ggY29uZmlkZW50aWFsaXR5LCBwcml2aWxlZ2Ugb3IgZXhlbXB0aW9uIGZyb20gZGlzY2xv
+c3VyZSBhcyB0byB0aGlzIGNvbW11bmljYXRpb24uIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMg
+Y29tbXVuaWNhdGlvbiBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2Vu
+ZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgZnJvbSB5b3VyIHN5c3RlbS4gQWxsIGxpYWJpbGl0
+eSBmb3IgdmlydXNlcyBpcyBleGNsdWRlZCB0byB0aGUgZnVsbGVzdCBleHRlbnQgcGVybWl0dGVk
+IGJ5IGxhdy4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
