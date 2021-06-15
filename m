@@ -1,12 +1,14 @@
+Subject: Re: dovetail on x86: TSC switching and the fallout
+References: <ad8fbcff-8e4c-723a-380b-d5acfe6ea530@siemens.com>
+ <87wnqw5pak.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/3] cobalt: Move common cleanup code out of pipeline
- diversion again
-Date: Tue, 15 Jun 2021 08:56:32 +0200
-Message-Id: <748ed827411a42171a58108e955dc0716770d9d0.1623740192.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1623740192.git.jan.kiszka@siemens.com>
-References: <cover.1623740192.git.jan.kiszka@siemens.com>
+Message-ID: <1a777055-400b-d291-3fa1-53852494e866@siemens.com>
+Date: Tue, 15 Jun 2021 09:48:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <87wnqw5pak.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,492 +17,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 14.06.21 19:28, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> Hi Philippe,
+>>
+>> we are still looking for the reasons, but some systems here consider the 
+>> TSC already unstable during early boot (can be reproduced with
+>> "tsc=unstable"):
+>>
+>> 2021-06-11T17:12:17 [    2.059118] TSC synchronization [CPU#0 -> CPU#2]:
+>> 2021-06-11T17:12:17 [    2.059124] Measured 63 cycles TSC warp between CPUs, turning off TSC clock.
+>> 2021-06-11T17:12:17 [    2.059128] tsc: Marking TSC unstable due to check_tsc_sync_source failed
+>>
+>> As we know, this will cause troubles later on. An immediate result is
+>>
+>> [    1.858649] IRQ pipeline: high-priority Xenomai stage added.
+>> [    1.859341] IRQ pipeline: oob stage found stalled while modifying in-band
+>> [    1.859342]               interrupt state and/or running sleeping code
+>> [    1.859343] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.42+ #153
+>> [    1.859343] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+>> [    1.859344] IRQ stage: Linux
+>> [    1.859345] Call Trace:
+>> [    1.859345]  dump_stack+0x84/0x9c
+>> [    1.859346]  inband_irq_save+0xa/0x30
+>> [    1.859346]  read_hpet+0x66/0x110
+>> [    1.859347]  ktime_get_mono_fast_ns+0x53/0xb0
+>> [    1.859347]  ? rdinit_setup+0x2b/0x2b
+>> [    1.859348]  xnlock_dbg_prepare_acquire+0xe/0x20
+>> [    1.859348]  ____xnlock_get.constprop.25+0x3b/0xa0
+>> [    1.859349]  xnclock_init+0x95/0xe6
+>> [    1.859349]  pipeline_init+0x23/0x49
+>> [    1.859350]  xenomai_init+0x10c/0x264
+>> [    1.859350]  ? xnclock_init+0xe6/0xe6
+>> [    1.859351]  do_one_initcall+0x64/0x320
+>> [    1.859352]  ? rdinit_setup+0x2b/0x2b
+>> [    1.859352]  ? rcu_read_lock_sched_held+0x52/0x90
+>> [    1.859353]  kernel_init_freeable+0x228/0x266
+>> [    1.859353]  ? rest_init+0x250/0x250
+>> [    1.859354]  kernel_init+0xa/0x120
+>> [    1.859354]  ret_from_fork+0x22/0x30
+>>
+>> because read_hpet is not oob-ready. Are clocksources on x86 supposed to 
+>> be usable with Dovetail, or is this expected because nothing by tsc 
+>> should be active?
+> 
+> The common requirement applies to x86 clocksources: they need to be made
+> oob-capable. HPET was not fixed up that way, I may have postponed doing
+> this sine die because that particular hardware is a mess in and of
+> itself: it requires CPUs to either serialize on access or use a cached
+> value.
+> 
+> I see no obvious problem in fixing read_hpet() to make it oob-capable as
+> follows (I don't think it would be safe to take the NMI path
+> unconditionally if oob. EVL is SMP scalable, so having a truckload of
+> concurrent CPUs running real-time stuff may be an option here, and we
+> don't want to take any chance allowing those CPUs to read the HPET
+> counter simultaneously un-serialized.
+> 
+> diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
+> index 67a9f248270ca7f..ce8e15aa8a97b8f 100644
+> --- a/arch/x86/kernel/hpet.c
+> +++ b/arch/x86/kernel/hpet.c
+> @@ -811,7 +811,7 @@ static u64 read_hpet(struct clocksource *cs)
+>  	if (arch_spin_is_locked(&old.lock))
+>  		goto contended;
+>  
+> -	local_irq_save(flags);
+> +	flags = hard_local_irq_save();
+>  	if (arch_spin_trylock(&hpet.lock)) {
+>  		new.value = hpet_readl(HPET_COUNTER);
+>  		/*
+> @@ -819,10 +819,10 @@ static u64 read_hpet(struct clocksource *cs)
+>  		 */
+>  		WRITE_ONCE(hpet.value, new.value);
+>  		arch_spin_unlock(&hpet.lock);
+> -		local_irq_restore(flags);
+> +		hard_local_irq_restore(flags);
+>  		return (u64)new.value;
+>  	}
+> -	local_irq_restore(flags);
+> +	hard_local_irq_restore(flags);
+>  
+>  contended:
+>  	/*
+> 
 
-Same pattern as for previous changes: All that code it common, no need
-to duplicate it. The only difference between the two versions of
-handle_cleanup_event was what is now encapsulated in
-pipeline_cleanup_process.
+Sure. Unfortunately, hpet is next-best after tsc on x86 (not sure why
+pm-timer was rated lower, maybe even slower or overrunning too quickly),
+so this needs to be addressed.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .../cobalt/kernel/dovetail/pipeline/kevents.h |   2 +
- .../cobalt/kernel/ipipe/pipeline/kevents.h    |   2 +
- kernel/cobalt/dovetail/kevents.c              | 114 ++---------------
- kernel/cobalt/ipipe/kevents.c                 | 119 ++----------------
- kernel/cobalt/posix/process.c                 | 111 ++++++++++++++++
- kernel/cobalt/posix/process.h                 |   4 +
- 6 files changed, 138 insertions(+), 214 deletions(-)
+> There is another aspect, which is accessing the clocksource via the vDSO
+> via Dovetail's generic MMIO interface. We cannot do that with acpi_pm
+> (this one is accessed via I/O ports), hpet would also be a problem
+> unless we read that counter unconditionally since we would not be able
+> to serialize CPUs on the kernel spinlock - back to square #1
+> performance-wise.
+> 
+> With HPET, some simple fixup like the one above would be required, and
+> Cobalt would also need a way to respond to clock_gettime* requests that
+> did not go through the vDSO directly from the oob stage, as illustrated
+> by this EVL code [2].
+> 
+> [1] https://evlproject.org/dovetail/porting/clocksource/
+> [2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/3451245cdc9846835f8a2786767b17037ee13dda/kernel/evl/syscall.c#L205
+> 
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/kevents.h b/include/cobalt/kernel/dovetail/pipeline/kevents.h
-index 5cc78721a2..fa47f0375c 100644
---- a/include/cobalt/kernel/dovetail/pipeline/kevents.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/kevents.h
-@@ -31,4 +31,6 @@ int pipeline_trap_kevents(void);
- 
- void pipeline_enable_kevents(void);
- 
-+void pipeline_cleanup_process(void);
-+
- #endif /* !_COBALT_KERNEL_DOVETAIL_KEVENTS_H */
-diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
-index 2f186a57ee..f3f0c2f95e 100644
---- a/include/cobalt/kernel/ipipe/pipeline/kevents.h
-+++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
-@@ -31,4 +31,6 @@ int pipeline_trap_kevents(void);
- 
- void pipeline_enable_kevents(void);
- 
-+void pipeline_cleanup_process(void);
-+
- #endif /* !_COBALT_KERNEL_IPIPE_KEVENTS_H */
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index e2ded266c0..96180731e6 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -22,8 +22,6 @@
- #include "../posix/thread.h"
- #include "../posix/memory.h"
- 
--static void detach_current(void);
--
- void arch_inband_task_init(struct task_struct *tsk)
- {
- 	struct cobalt_threadinfo *p = dovetail_task_state(tsk);
-@@ -99,56 +97,9 @@ static inline int handle_setaffinity_event(struct dovetail_migration_data *d)
- 	return cobalt_handle_setaffinity_event(d->task);
- }
- 
--static void __handle_taskexit_event(struct task_struct *p)
--{
--	struct cobalt_ppd *sys_ppd;
--	struct xnthread *thread;
--	spl_t s;
--
--	/*
--	 * We are called for both kernel and user shadows over the
--	 * root thread.
--	 */
--	secondary_mode_only();
--
--	thread = xnthread_current();
--	XENO_BUG_ON(COBALT, thread == NULL);
--	trace_cobalt_shadow_unmap(thread);
--
--	xnlock_get_irqsave(&nklock, s);
--
--	if (xnthread_test_state(thread, XNSSTEP))
--		cobalt_unregister_debugged_thread(thread);
--
--	xnsched_run();
--
--	xnlock_put_irqrestore(&nklock, s);
--
--	xnthread_run_handler_stack(thread, exit_thread);
--
--	if (xnthread_test_state(thread, XNUSER)) {
--		cobalt_umm_free(&cobalt_kernel_ppd.umm, thread->u_window);
--		thread->u_window = NULL;
--		sys_ppd = cobalt_ppd_get(0);
--		if (atomic_dec_and_test(&sys_ppd->refcnt))
--			cobalt_remove_process(cobalt_current_process());
--	}
--}
--
--static int handle_taskexit_event(struct task_struct *p) /* p == current */
-+static inline int handle_taskexit_event(struct task_struct *p)
- {
--	__handle_taskexit_event(p);
--
--	/*
--	 * __xnthread_cleanup() -> ... -> finalize_thread
--	 * handler. From that point, the TCB is dropped. Be careful of
--	 * not treading on stale memory within @thread.
--	 */
--	__xnthread_cleanup(xnthread_current());
--
--	detach_current();
--
--	return KEVENT_PROPAGATE;
-+	return cobalt_handle_taskexit_event(p);
- }
- 
- static int handle_user_return(struct task_struct *task)
-@@ -238,55 +189,14 @@ out:
- 	return KEVENT_PROPAGATE;
- }
- 
--static int handle_cleanup_event(struct mm_struct *mm)
-+static inline int handle_cleanup_event(struct mm_struct *mm)
- {
--	struct cobalt_process *old, *process;
--	struct cobalt_ppd *sys_ppd;
--	struct xnthread *curr;
--
--	/*
--	 * We are NOT called for exiting kernel shadows.
--	 * cobalt_current_process() is cleared if we get there after
--	 * handle_task_exit(), so we need to restore this context
--	 * pointer temporarily.
--	 */
--	process = cobalt_search_process(mm);
--	old = cobalt_set_process(process);
--	sys_ppd = cobalt_ppd_get(0);
--	if (sys_ppd != &cobalt_kernel_ppd) {
--		bool running_exec;
--
--		/*
--		 * Detect a userland shadow running exec(), i.e. still
--		 * attached to the current linux task (no prior
--		 * detach_current). In this case, we emulate a task
--		 * exit, since the Xenomai binding shall not survive
--		 * the exec() syscall. Since the process will keep on
--		 * running though, we have to disable the event
--		 * notifier manually for it.
--		 */
--		curr = xnthread_current();
--		running_exec = curr && (current->flags & PF_EXITING) == 0;
--		if (running_exec) {
--			__handle_taskexit_event(current);
--			dovetail_stop_altsched();
--		}
--		if (atomic_dec_and_test(&sys_ppd->refcnt))
--			cobalt_remove_process(process);
--		if (running_exec) {
--			__xnthread_cleanup(curr);
--			detach_current();
--		}
--	}
--
--	/*
--	 * CAUTION: Do not override a state change caused by
--	 * cobalt_remove_process().
--	 */
--	if (cobalt_current_process() == process)
--		cobalt_set_process(old);
-+	return cobalt_handle_cleanup_event(mm);
-+}
- 
--	return KEVENT_PROPAGATE;
-+void pipeline_cleanup_process(void)
-+{
-+	dovetail_stop_altsched();
- }
- 
- int handle_ptrace_resume(struct task_struct *tracee)
-@@ -456,14 +366,6 @@ void pipeline_attach_current(struct xnthread *thread)
- 	dovetail_init_altsched(&xnthread_archtcb(thread)->altsched);
- }
- 
--static void detach_current(void)
--{
--	struct cobalt_threadinfo *p = pipeline_current();
--
--	p->thread = NULL;
--	p->process = NULL;
--}
--
- int pipeline_trap_kevents(void)
- {
- 	dovetail_start();
-diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
-index 3142d17780..94a951d0a6 100644
---- a/kernel/cobalt/ipipe/kevents.c
-+++ b/kernel/cobalt/ipipe/kevents.c
-@@ -24,8 +24,6 @@
- #include "../posix/thread.h"
- #include "../posix/memory.h"
- 
--static void detach_current(void);
--
- static inline int handle_exception(struct ipipe_trap_data *d)
- {
- 	struct xnthread *thread;
-@@ -156,6 +154,11 @@ static inline int handle_setaffinity_event(struct ipipe_cpu_migration_data *d)
- 	return cobalt_handle_setaffinity_event(d->task);
- }
- 
-+static inline int handle_taskexit_event(struct task_struct *p)
-+{
-+	return cobalt_handle_taskexit_event(p);
-+}
-+
- void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
- {
- 	struct xnthread *thread = xnthread_from_task(p);
-@@ -242,58 +245,6 @@ static inline void init_hostrt(void) { }
- 
- #endif /* !CONFIG_IPIPE_HAVE_HOSTRT */
- 
--static void __handle_taskexit_event(struct task_struct *p)
--{
--	struct cobalt_ppd *sys_ppd;
--	struct xnthread *thread;
--	spl_t s;
--
--	/*
--	 * We are called for both kernel and user shadows over the
--	 * root thread.
--	 */
--	secondary_mode_only();
--
--	thread = xnthread_current();
--	XENO_BUG_ON(COBALT, thread == NULL);
--	trace_cobalt_shadow_unmap(thread);
--
--	xnlock_get_irqsave(&nklock, s);
--
--	if (xnthread_test_state(thread, XNSSTEP))
--		cobalt_unregister_debugged_thread(thread);
--
--	xnsched_run();
--
--	xnlock_put_irqrestore(&nklock, s);
--
--	xnthread_run_handler_stack(thread, exit_thread);
--
--	if (xnthread_test_state(thread, XNUSER)) {
--		cobalt_umm_free(&cobalt_kernel_ppd.umm, thread->u_window);
--		thread->u_window = NULL;
--		sys_ppd = cobalt_ppd_get(0);
--		if (atomic_dec_and_test(&sys_ppd->refcnt))
--			cobalt_remove_process(cobalt_current_process());
--	}
--}
--
--static int handle_taskexit_event(struct task_struct *p) /* p == current */
--{
--	__handle_taskexit_event(p);
--
--	/*
--	 * __xnthread_cleanup() -> ... -> finalize_thread
--	 * handler. From that point, the TCB is dropped. Be careful of
--	 * not treading on stale memory within @thread.
--	 */
--	__xnthread_cleanup(xnthread_current());
--
--	detach_current();
--
--	return KEVENT_PROPAGATE;
--}
--
- static int handle_schedule_event(struct task_struct *next_task)
- {
- 	struct task_struct *prev_task;
-@@ -431,55 +382,14 @@ out:
- 	return KEVENT_PROPAGATE;
- }
- 
--static int handle_cleanup_event(struct mm_struct *mm)
-+static inline int handle_cleanup_event(struct mm_struct *mm)
- {
--	struct cobalt_process *old, *process;
--	struct cobalt_ppd *sys_ppd;
--	struct xnthread *curr;
--
--	/*
--	 * We are NOT called for exiting kernel shadows.
--	 * cobalt_current_process() is cleared if we get there after
--	 * handle_task_exit(), so we need to restore this context
--	 * pointer temporarily.
--	 */
--	process = cobalt_search_process(mm);
--	old = cobalt_set_process(process);
--	sys_ppd = cobalt_ppd_get(0);
--	if (sys_ppd != &cobalt_kernel_ppd) {
--		bool running_exec;
--
--		/*
--		 * Detect a userland shadow running exec(), i.e. still
--		 * attached to the current linux task (no prior
--		 * detach_current). In this case, we emulate a task
--		 * exit, since the Xenomai binding shall not survive
--		 * the exec() syscall. Since the process will keep on
--		 * running though, we have to disable the event
--		 * notifier manually for it.
--		 */
--		curr = xnthread_current();
--		running_exec = curr && (current->flags & PF_EXITING) == 0;
--		if (running_exec) {
--			__handle_taskexit_event(current);
--			ipipe_disable_notifier(current);
--		}
--		if (atomic_dec_and_test(&sys_ppd->refcnt))
--			cobalt_remove_process(process);
--		if (running_exec) {
--			__xnthread_cleanup(curr);
--			detach_current();
--		}
--	}
--
--	/*
--	 * CAUTION: Do not override a state change caused by
--	 * cobalt_remove_process().
--	 */
--	if (cobalt_current_process() == process)
--		cobalt_set_process(old);
-+	return cobalt_handle_cleanup_event(mm);
-+}
- 
--	return KEVENT_PROPAGATE;
-+void pipeline_cleanup_process(void)
-+{
-+	ipipe_disable_notifier(current);
- }
- 
- static inline int handle_clockfreq_event(unsigned int *p)
-@@ -642,13 +552,6 @@ void pipeline_attach_current(struct xnthread *thread)
- 	p->process = cobalt_search_process(current->mm);
- }
- 
--static void detach_current(void)
--{
--	struct cobalt_threadinfo *p = pipeline_current();
--	p->thread = NULL;
--	p->process = NULL;
--}
--
- int pipeline_trap_kevents(void)
- {
- 	init_hostrt();
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 5f92ba8b3d..3cbad9bbb0 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -834,6 +834,117 @@ bool cobalt_affinity_ok(struct task_struct *task) /* nklocked, IRQs off */
- }
- #endif /* CONFIG_SMP */
- 
-+static void __handle_taskexit_event(struct task_struct *p)
-+{
-+	struct cobalt_ppd *sys_ppd;
-+	struct xnthread *thread;
-+	spl_t s;
-+
-+	/*
-+	 * We are called for both kernel and user shadows over the
-+	 * root thread.
-+	 */
-+	secondary_mode_only();
-+
-+	thread = xnthread_current();
-+	XENO_BUG_ON(COBALT, thread == NULL);
-+	trace_cobalt_shadow_unmap(thread);
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	if (xnthread_test_state(thread, XNSSTEP))
-+		cobalt_unregister_debugged_thread(thread);
-+
-+	xnsched_run();
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	xnthread_run_handler_stack(thread, exit_thread);
-+
-+	if (xnthread_test_state(thread, XNUSER)) {
-+		cobalt_umm_free(&cobalt_kernel_ppd.umm, thread->u_window);
-+		thread->u_window = NULL;
-+		sys_ppd = cobalt_ppd_get(0);
-+		if (atomic_dec_and_test(&sys_ppd->refcnt))
-+			cobalt_remove_process(cobalt_current_process());
-+	}
-+}
-+
-+static void detach_current(void)
-+{
-+	struct cobalt_threadinfo *p = pipeline_current();
-+
-+	p->thread = NULL;
-+	p->process = NULL;
-+}
-+
-+int cobalt_handle_taskexit_event(struct task_struct *task) /* task == current */
-+{
-+	__handle_taskexit_event(task);
-+
-+	/*
-+	 * __xnthread_cleanup() -> ... -> finalize_thread
-+	 * handler. From that point, the TCB is dropped. Be careful of
-+	 * not treading on stale memory within @thread.
-+	 */
-+	__xnthread_cleanup(xnthread_current());
-+
-+	detach_current();
-+
-+	return KEVENT_PROPAGATE;
-+}
-+
-+int cobalt_handle_cleanup_event(struct mm_struct *mm)
-+{
-+	struct cobalt_process *old, *process;
-+	struct cobalt_ppd *sys_ppd;
-+	struct xnthread *curr;
-+
-+	/*
-+	 * We are NOT called for exiting kernel shadows.
-+	 * cobalt_current_process() is cleared if we get there after
-+	 * handle_task_exit(), so we need to restore this context
-+	 * pointer temporarily.
-+	 */
-+	process = cobalt_search_process(mm);
-+	old = cobalt_set_process(process);
-+	sys_ppd = cobalt_ppd_get(0);
-+	if (sys_ppd != &cobalt_kernel_ppd) {
-+		bool running_exec;
-+
-+		/*
-+		 * Detect a userland shadow running exec(), i.e. still
-+		 * attached to the current linux task (no prior
-+		 * detach_current). In this case, we emulate a task
-+		 * exit, since the Xenomai binding shall not survive
-+		 * the exec() syscall. Since the process will keep on
-+		 * running though, we have to disable the event
-+		 * notifier manually for it.
-+		 */
-+		curr = xnthread_current();
-+		running_exec = curr && (current->flags & PF_EXITING) == 0;
-+		if (running_exec) {
-+			__handle_taskexit_event(current);
-+			pipeline_cleanup_process();
-+		}
-+		if (atomic_dec_and_test(&sys_ppd->refcnt))
-+			cobalt_remove_process(process);
-+		if (running_exec) {
-+			__xnthread_cleanup(curr);
-+			detach_current();
-+		}
-+	}
-+
-+	/*
-+	 * CAUTION: Do not override a state change caused by
-+	 * cobalt_remove_process().
-+	 */
-+	if (cobalt_current_process() == process)
-+		cobalt_set_process(old);
-+
-+	return KEVENT_PROPAGATE;
-+}
-+
- static int attach_process(struct cobalt_process *process)
- {
- 	struct cobalt_ppd *p = &process->sys_ppd;
-diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-index 051a0d90be..de3d9144d7 100644
---- a/kernel/cobalt/posix/process.h
-+++ b/kernel/cobalt/posix/process.h
-@@ -169,4 +169,8 @@ bool cobalt_affinity_ok(struct task_struct *task);
- #define cobalt_affinity_ok(task)	(true)
- #endif
- 
-+int cobalt_handle_taskexit_event(struct task_struct *task);
-+
-+int cobalt_handle_cleanup_event(struct mm_struct *mm);
-+
- #endif /* !_COBALT_POSIX_PROCESS_H */
+This looks like the answer to
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/16...
+
+Jan
+
 -- 
-2.26.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
