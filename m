@@ -1,10 +1,11 @@
+Subject: Re: [PATCH] cobalt/thread: initialize sigarray in __xnthread_init
+References: <20210616021943.13526-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: reminder: Xenomai community call on Wednesday, June 16, 2021, UTC
- 7:00 AM
-Message-ID: <790e8771-b1fb-1c92-b462-c81e0971b7e0@siemens.com>
-Date: Wed, 16 Jun 2021 07:32:28 +0200
+Message-ID: <b4a9412c-a39a-b28d-4240-6e58947a21ff@siemens.com>
+Date: Wed, 16 Jun 2021 07:35:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20210616021943.13526-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,26 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-Hi all,
+On 16.06.21 04:19, Hongzhan Chen via Xenomai wrote:
+> Add missing sigarray initialization to avoid missing signal in
+> __xnthread_signal.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> 
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index d096a20d3..49913accc 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -287,6 +287,8 @@ int __xnthread_init(struct xnthread *thread,
+>  	thread->cookie = NULL;
+>  	init_completion(&thread->exited);
+>  	memset(xnthread_archtcb(thread), 0, sizeof(struct xnarchtcb));
+> +	memset(thread->sigarray, 0, sizeof(thread->sigarray[0]) *
+> +				XNTHREAD_MAX_SIGNALS);
+>  
+>  	gravity = flags & XNUSER ? XNTIMER_UGRAVITY : XNTIMER_KGRAVITY;
+>  	xntimer_init(&thread->rtimer, &nkclock, timeout_handler,
+> 
 
-we have the Xenomai community call today.
+Good catch! Queued, though like this:
 
-Topics may include but are not limited to upstream/downstream project 
-plans, status updates, and technical discussions. It's an open online 
-meeting that anyone can join and ask questions.
+memset(thread->sigarray, 0, sizeof(thread->sigarray));
 
-Time:
-Wednesday, June 16, 2021, UTC 7:00 AM
-Paris, France CEST 9:00 AM
-China CST 3:00 PM
-
-Please Join Zoom Meeting under
-https://us05web.zoom.us/wc/join/81175706978?pwd=S1FmTWtKTGY3REJqNzJRbmt0ZzN4QT09
-Meeting ID: 811 7570 6978 Passcode: 6RhNiS 
-
-See you,
+Thanks,
 Jan
 
 -- 
