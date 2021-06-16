@@ -1,13 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: Large gpio interrupt latency
-Date: Wed, 16 Jun 2021 08:10:00 +0000
-Message-ID: <BN9PR11MB5227C5DCA32CA04F3F367B8EF20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <10a7-60c9a500-7f-35a6e6c0@10047649>
-In-Reply-To: <10a7-60c9a500-7f-35a6e6c0@10047649>
-Content-Language: en-US
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <BN9PR11MB5227C5DCA32CA04F3F367B8EF20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Wed, 16 Jun 2021 10:18:46 +0200
 MIME-Version: 1.0
+Message-ID: <10a7-60c9b400-83-35a6e6c0@10047715>
+Subject: =?utf-8?q?RE=3A?= Large gpio interrupt latency
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?RnJhbsOnb2lzIExlZ2Fs?= <devel@thom.fr.eu.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?q?Chen=2C_Hongzhan?= <hongzhan.chen@intel.com>
+Cc: =?utf-8?q?xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
 
-DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBYZW5vbWFpIDx4ZW5vbWFp
-LWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBGcmFuw6dvaXMgTGVnYWwgdmlhIFhl
-bm9tYWkNCj5TZW50OiBXZWRuZXNkYXksIEp1bmUgMTYsIDIwMjEgMzoxNiBQTQ0KPlRvOiB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogTGFyZ2UgZ3BpbyBpbnRlcnJ1cHQgbGF0ZW5jeQ0K
-Pg0KPkhlbGxvLA0KPg0KPndvcmtpbmcgb24gYSByZWFsdGltZSBkYXRhIHJlY29yZGVyIChmb3Ig
-d2hpY2ggSSBzdWJtaXR0ZWQgYSBwYXRjaCB0byBhZGQgdGltZXN0YW1wIHJldHJpZXZhbCBmb3Ig
-bmV0IHBhY2tldHMpLCBJIGV4cGVyaWVuY2UgYSBzdHJhbmdlIGxhdGVuY3kgcHJvYmxlbSB3aXRo
-IHRha2luZyBHUElPIGludGVycnVwdHMuDQo+DQo+U28gYmFzaWNhbGx5IG15IGFwcCBtb25pdG9y
-cyBuZXR3b3JrIHBhY2tldHMgKHdoaWNoIGFzIHJlY2VpdmVkIGJ5IHRoZSBEVVQgd291bGQgdHJp
-Z2dlciB0b2dnbGluZyBvZiBhIEdQSU8gb24gdGhlIERVVCkgYW5kIG9uZSBHUElPLg0KPldlIGtu
-b3cgKGZyb20gc29tZSBvaHRlciByZWZlcmVuY2UgaW5zdHJ1bWVudCkgdGhhdCB0aGUgRFVUIHdv
-dWxkIHRvZ2dsZSB0aGUgR1BJTyAxLTJtcyBhZnRlciByZWNlaXZpbmcgYSBzcGVjaWZpYyBuZXR3
-b3JrIHBhY2tldC4NCj4NCj5NeSByZWNvcmRlciBhcHAgcmVsaWVzIG9uIHRoZSB0aW1lc3RhbXBp
-bmcgb2YgZXZlbnRzIGRvbmUgaW4gaW50ZXJydXB0cyBzZXJ2aWNlIHJvdXRpbmVzIGZvciBHUElP
-cyBhbmQgbmV0d29yayBpbnRlcmZhY2UuIEJ5IGNoZWNraW5nIHRoZSB0aW1lc3RhbXBzIHJldHVy
-bmVkIGJ5IHRoZSBhcHBsaWNhdGlvbiwgSSBnZXQgYW4gYWJvdXQgNTBtcyBkZWxheSBiZXR3ZWVu
-IHRoZSBuZXR3b3JrIHBhY2tldCBhbmQgdGhlIEdQSU8gKHNvIHNvbWV0aGluZyBiZXR3ZWVuIDUx
-IGFuZCA1Mm1zIGRlbGF5KS4NCj4NCg0KQXJlIHlvdSB0b2dnbGluZyBncGlvIGFuZCBhY2Nlc3Mg
-Z3BpbyBkZXZpY2UgIHRocm91Z2ggeW91ciBydGRtIGRldmljZSBsaWtlIG9uIHBhdGggL2Rldi9y
-dGRtL3lvdXJfZ3Bpb2NvbnRyb2xsZXIvZ3Bpbyo/DQoNCkhvbmd6aGFuIENoZW4NCg0KPkkgd29u
-ZGVyIHdoZXJlIHRoYXQgbWlnaHQgYmUgY29taW5nIGZyb20uDQo+DQo+QW55IGlkZWEgPw0KPg0K
-PnRoYW5rcyBpbiBhZHZhbmNlDQo+DQo+RnJhbsOnb2lzDQo=
+Le Mercredi, Juin 16, 2021 10:10 CEST, "Chen, Hongzhan" <hongzhan.chen@=
+intel.com> a =C3=A9crit: 
+ 
+> 
+> >
+> >-----Original Message-----
+> >From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Fran=C3=A7o=
+is Legal via Xenomai
+> >Sent: Wednesday, June 16, 2021 3:16 PM
+> >To: xenomai@xenomai.org
+> >Subject: Large gpio interrupt latency
+> >
+> >Hello,
+> >
+> >working on a realtime data recorder (for which I submitted a patch t=
+o add timestamp retrieval for net packets), I experience a strange late=
+ncy problem with taking GPIO interrupts.
+> >
+> >So basically my app monitors network packets (which as received by t=
+he DUT would trigger toggling of a GPIO on the DUT) and one GPIO.
+> >We know (from some ohter reference instrument) that the DUT would to=
+ggle the GPIO 1-2ms after receiving a specific network packet.
+> >
+> >My recorder app relies on the timestamping of events done in interru=
+pts service routines for GPIOs and network interface. By checking the t=
+imestamps returned by the application, I get an about 50ms delay betwee=
+n the network packet and the GPIO (so something between 51 and 52ms del=
+ay).
+> >
+> 
+> Are you toggling gpio and access gpio device  through your rtdm devic=
+e like on path /dev/rtdm/your=5Fgpiocontroller/gpio*?
+> 
+
+Maybe my setup was not very clear.
+I've got a DUT that receives network data, and toggles one of its GPIOs=
+ depending one the network data.
+
+I've got another device running my realtime recording app, that receive=
+s the same network data as the DUT, and that has one of its GPIO connec=
+ted to the DUT GPIO.
+
+On the recording app, I use the RTDM device to open, ioctl (enable inte=
+rrupt + timestamp), then select & read the GPIO value.
+
+Fran=C3=A7ois
+
+
+> Hongzhan Chen
+> 
+> >I wonder where that might be coming from.
+> >
+> >Any idea ?
+> >
+> >thanks in advance
+> >
+> >Fran=C3=A7ois
+
 
