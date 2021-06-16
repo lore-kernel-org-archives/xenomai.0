@@ -1,7 +1,17 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH] cobalt/thread: initialize sigarray in __xnthread_init
-Date: Tue, 15 Jun 2021 22:19:43 -0400
-Message-Id: <20210616021943.13526-1-hongzhan.chen@intel.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [[next]PATCH v2] cobalt/thread: move inband work descriptions off
+ the stack
+Date: Wed, 16 Jun 2021 02:45:04 +0000
+Message-ID: <BN9PR11MB52276640D543ED07A0A7994CF20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210610021438.8004-1-hongzhan.chen@intel.com>
+ <69a56c2c-dbed-e665-e5cb-26be63f67595@siemens.com>
+ <BN9PR11MB522777296CD7B9F7082EEAE7F2309@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <79150e26-91bf-2cfd-7801-c8c75ea35096@siemens.com>
+In-Reply-To: <79150e26-91bf-2cfd-7801-c8c75ea35096@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,27 +20,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Add missing sigarray initialization to avoid missing signal in
-__xnthread_signal.
-
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index d096a20d3..49913accc 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -287,6 +287,8 @@ int __xnthread_init(struct xnthread *thread,
- 	thread->cookie = NULL;
- 	init_completion(&thread->exited);
- 	memset(xnthread_archtcb(thread), 0, sizeof(struct xnarchtcb));
-+	memset(thread->sigarray, 0, sizeof(thread->sigarray[0]) *
-+				XNTHREAD_MAX_SIGNALS);
- 
- 	gravity = flags & XNUSER ? XNTIMER_UGRAVITY : XNTIMER_KGRAVITY;
- 	xntimer_init(&thread->rtimer, &nkclock, timeout_handler,
--- 
-2.17.1
-
+Pj4+DQo+Pj4gSSdtIGFmcmFpZCB3ZSBuZWVkIG5rbG9jayBhcm91bmQgZW5xdWV1ZSBhbmQgZGVx
+dWV1ZSBzbyB0aGF0IHdlIG5laXRoZXINCj4+PiBsb3NlIGEgc2lnbmFsIG5vciB3YXJuIG5lZWRs
+ZXNzbHkuDQo+PiANCj4+IEkgdGhvdWdodCB0aGVyZSBtaWdodCBiZSBtdWx0aXBsZSBzaWduYWxz
+IHBpbGUgdXAgaGVyZSBidXQgYWN0dWFsbHkgdGhpcyB3YXJuIG5ldmVyDQo+PiBoYXBwZW4gYWNj
+b3JkaW5nIHRvIG15IHRlc3Qgd2l0aCBzbW9rZXkgc2lnZGVidWcgdGVzdCBpdGVtIGFmdGVyIGFw
+cGx5aW5nIHRoZSBwYXRjaC4NCj4+IA0KPj4+DQo+Pj4+ICsJCQkJKHNpZ3dvcmstPnNlbGYgPT0g
+c2lnd29yaykpKSB7DQo+Pj4NCj4+PiBXaGF0IGNhc2UgaXMgdGhpcyBwYXJ0IG9mIHRoZSB0ZXN0
+IGV4Y2x1ZGluZz8NCj4+IA0KPj4gQmVjYXVzZSB3ZSBoYXZlIG5vdCBpbml0dGVkIHRoZW0gYWZ0
+ZXIgeG50aHJlYWQgaXMgYWxsb2NhdGVkLCBzb21lIGRhdGEgbWlnaHQgbm90IGJlIGVtcHR5IEkg
+Z3Vlc3MgYXQgdGhlIGZpcnN0IHRpbWUgb2YgdXNpbmcNCj4+IGFjY29yZGluZyB0byBteSB0ZXN0
+IC4gVGhhdCB3YXMgd2h5IEkgc2FpZCBJIGZvdW5kIGR1cGxpY2F0ZSBzaWduYWwgY2FzZSAgaW4g
+cHJldmlvdXMgdGhyZWFkIHdoZW4gSSBkaWQgbm90IGFkZCBpdCBidXQgYWN0dWFsbHkgaXQgd2Fz
+IG5vdA0KPj4gbXVsdGlwbGUgc2lnbmFscyBjYXNlIGNhdXNpbmcgcmV0dXJuLg0KPj4gSWYgc2ln
+bmFsIGNhbiBiZSBxdWV1ZWQgLCBpdCBpcyBxdWl0ZSBkaWZmZXJlbnQgdGhhbiB3aGF0IHdlIGhh
+ZCBkaXNjdXNzZWQuICBBY3R1YWxseSBJIGRvIG5vdCBrbm93IGluIHdoaWNoIGNhc2UgbXVsdGlw
+bGUgc2lnbmFscw0KPj4gd291bGQgcGlsZSB1cCBoZXJlIGFmdGVyIHNwbGl0dGluZyBpbnRvIHNs
+b3RzLiBBdCBsZWFzdCAsIEkgY2Fubm90IHJlcHJvZHVjZSBtdWx0aXBsZSBzaW5nbGVzIHBpbGUg
+dXAgaXNzdWUgd2l0aCBzaWdkZWJ1ZyB0ZXN0IGl0ZW0uDQo+PiBJZiB3ZSBjb25zaWRlciBxdWV1
+ZSB0byBhdm9pZCBsb3Npbmcgc2lnbmFscyBmb3IgbXVsdGlwbGUgc2lnbmFsIGluIHNhbWUgc2xv
+dCAsIGhvdyBjYW4gd2UgZGVjaWRlIHRoZSBzaXplIG9mIHF1ZXVlIGZvciBlYWNoIHNsb3Q/DQo+
+PiBTb3JyeSBmb3IgbGF0ZSByZXNwb25zZSwgSSB3YXMgdGFraW5nIEFMLg0KPj4gDQo+DQo+Tm8g
+cHJvYmxlbS4gUGxlYXNlIGhhdmUgYSBsb29rIHdoYXQgaXMgbWVhbndoaWxlIGluIG1hc3Rlciwg
+cmV2aWV3IGl0LA0KPnN0cmVzcyBpdCwgYW5kIGlmIHlvdSBzZWUgaXNzdWVzIHRoYXQgd2UgbWlz
+c2VkLCBwbGVhc2Ugc3BlYWsgdXAuIEl0J3MNCj5ub3QgcXVldWluZywgaXQncyBmaXJzdC1jb21l
+LWZpcnN0LXNlcnZlLg0KDQpJIG1pc3MgaW5pdGlhbGl6aW5nIHNpZ2FycmF5IHdoZW4gd2UgdXNl
+IHhudGhyZWFkLT50YXNrIHRvIGNoZWNrIGlmIHRoZXJlIGlzIHNpZ25hbCBwZW5kaW5nIGJlY2F1
+c2UgdGhlcmUgaXMgcmFuZG9tIGRhdGEgd2hlbiBpdCBoYXZlIG5vdA0KYmVlbiBpbml0aWFsaXpl
+ZCB0aGF0IGNhdXNlIGZhaWx1cmUgb2Ygc2lnZGVidWcgdGVzdC4gUGxlYXNlIHJldmlldyBuZXcg
+cGF0Y2ggaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIxLUp1bmUvMDQ1
+NjQyLmh0bWwNCg0KDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+
+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+DQo+DQo=
 
