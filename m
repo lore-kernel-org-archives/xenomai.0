@@ -1,10 +1,13 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-MIME-Version: 1.0
-Date: Wed, 16 Jun 2021 09:15:31 +0200
-Subject: Large gpio interrupt latency
-Message-ID: <10a7-60c9a500-7f-35a6e6c0@10047649>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Large gpio interrupt latency
+Date: Wed, 16 Jun 2021 08:10:00 +0000
+Message-ID: <BN9PR11MB5227C5DCA32CA04F3F367B8EF20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <10a7-60c9a500-7f-35a6e6c0@10047649>
+In-Reply-To: <10a7-60c9a500-7f-35a6e6c0@10047649>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?utf-8?B?RnJhbsOnb2lzIExlZ2Fs?= <devel@thom.fr.eu.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
-
-working on a realtime data recorder (for which I submitted a patch to a=
-dd timestamp retrieval for net packets), I experience a strange latency=
- problem with taking GPIO interrupts.
-
-So basically my app monitors network packets (which as received by the =
-DUT would trigger toggling of a GPIO on the DUT) and one GPIO.
-We know (from some ohter reference instrument) that the DUT would toggl=
-e the GPIO 1-2ms after receiving a specific network packet.
-
-My recorder app relies on the timestamping of events done in interrupts=
- service routines for GPIOs and network interface. By checking the time=
-stamps returned by the application, I get an about 50ms delay between t=
-he network packet and the GPIO (so something between 51 and 52ms delay)=
-.
-
-I wonder where that might be coming from.
-
-Any idea ?
-
-thanks in advance
-
-Fran=C3=A7ois
-
+DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBYZW5vbWFpIDx4ZW5vbWFp
+LWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBGcmFuw6dvaXMgTGVnYWwgdmlhIFhl
+bm9tYWkNCj5TZW50OiBXZWRuZXNkYXksIEp1bmUgMTYsIDIwMjEgMzoxNiBQTQ0KPlRvOiB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogTGFyZ2UgZ3BpbyBpbnRlcnJ1cHQgbGF0ZW5jeQ0K
+Pg0KPkhlbGxvLA0KPg0KPndvcmtpbmcgb24gYSByZWFsdGltZSBkYXRhIHJlY29yZGVyIChmb3Ig
+d2hpY2ggSSBzdWJtaXR0ZWQgYSBwYXRjaCB0byBhZGQgdGltZXN0YW1wIHJldHJpZXZhbCBmb3Ig
+bmV0IHBhY2tldHMpLCBJIGV4cGVyaWVuY2UgYSBzdHJhbmdlIGxhdGVuY3kgcHJvYmxlbSB3aXRo
+IHRha2luZyBHUElPIGludGVycnVwdHMuDQo+DQo+U28gYmFzaWNhbGx5IG15IGFwcCBtb25pdG9y
+cyBuZXR3b3JrIHBhY2tldHMgKHdoaWNoIGFzIHJlY2VpdmVkIGJ5IHRoZSBEVVQgd291bGQgdHJp
+Z2dlciB0b2dnbGluZyBvZiBhIEdQSU8gb24gdGhlIERVVCkgYW5kIG9uZSBHUElPLg0KPldlIGtu
+b3cgKGZyb20gc29tZSBvaHRlciByZWZlcmVuY2UgaW5zdHJ1bWVudCkgdGhhdCB0aGUgRFVUIHdv
+dWxkIHRvZ2dsZSB0aGUgR1BJTyAxLTJtcyBhZnRlciByZWNlaXZpbmcgYSBzcGVjaWZpYyBuZXR3
+b3JrIHBhY2tldC4NCj4NCj5NeSByZWNvcmRlciBhcHAgcmVsaWVzIG9uIHRoZSB0aW1lc3RhbXBp
+bmcgb2YgZXZlbnRzIGRvbmUgaW4gaW50ZXJydXB0cyBzZXJ2aWNlIHJvdXRpbmVzIGZvciBHUElP
+cyBhbmQgbmV0d29yayBpbnRlcmZhY2UuIEJ5IGNoZWNraW5nIHRoZSB0aW1lc3RhbXBzIHJldHVy
+bmVkIGJ5IHRoZSBhcHBsaWNhdGlvbiwgSSBnZXQgYW4gYWJvdXQgNTBtcyBkZWxheSBiZXR3ZWVu
+IHRoZSBuZXR3b3JrIHBhY2tldCBhbmQgdGhlIEdQSU8gKHNvIHNvbWV0aGluZyBiZXR3ZWVuIDUx
+IGFuZCA1Mm1zIGRlbGF5KS4NCj4NCg0KQXJlIHlvdSB0b2dnbGluZyBncGlvIGFuZCBhY2Nlc3Mg
+Z3BpbyBkZXZpY2UgIHRocm91Z2ggeW91ciBydGRtIGRldmljZSBsaWtlIG9uIHBhdGggL2Rldi9y
+dGRtL3lvdXJfZ3Bpb2NvbnRyb2xsZXIvZ3Bpbyo/DQoNCkhvbmd6aGFuIENoZW4NCg0KPkkgd29u
+ZGVyIHdoZXJlIHRoYXQgbWlnaHQgYmUgY29taW5nIGZyb20uDQo+DQo+QW55IGlkZWEgPw0KPg0K
+PnRoYW5rcyBpbiBhZHZhbmNlDQo+DQo+RnJhbsOnb2lzDQo=
 
