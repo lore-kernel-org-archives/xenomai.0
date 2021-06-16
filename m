@@ -1,14 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: Large gpio interrupt latency
-Date: Wed, 16 Jun 2021 09:05:15 +0000
-Message-ID: <BN9PR11MB5227F2779A44C6154AE060D7F20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <BN9PR11MB5227C5DCA32CA04F3F367B8EF20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
- <10a7-60c9b400-83-35a6e6c0@10047715>
-In-Reply-To: <10a7-60c9b400-83-35a6e6c0@10047715>
-Content-Language: en-US
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <BN9PR11MB5227F2779A44C6154AE060D7F20F9@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Wed, 16 Jun 2021 11:12:36 +0200
 MIME-Version: 1.0
+Message-ID: <1202-60c9c080-151-1ab27320@266229055>
+Subject: =?utf-8?q?RE=3A?= Large gpio interrupt latency
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?RnJhbsOnb2lzIExlZ2Fs?= <devel@thom.fr.eu.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?q?Chen=2C_Hongzhan?= <hongzhan.chen@intel.com>
+Cc: =?utf-8?q?xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEZyYW7Dp29pcyBMZWdhbCA8
-ZGV2ZWxAdGhvbS5mci5ldS5vcmc+IA0KPlNlbnQ6IFdlZG5lc2RheSwgSnVuZSAxNiwgMjAyMSA0
-OjE5IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj5D
-YzogeGVub21haUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJFOiBMYXJnZSBncGlvIGludGVycnVw
-dCBsYXRlbmN5DQo+DQo+TGUgTWVyY3JlZGksIEp1aW4gMTYsIDIwMjEgMTA6MTAgQ0VTVCwgIkNo
-ZW4sIEhvbmd6aGFuIiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+IGEgw6ljcml0OiANCj4gDQo+
-PiANCj4+ID4NCj4+ID4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4gPkZyb206IFhlbm9t
-YWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIEZyYW7Dp29pcyBM
-ZWdhbCB2aWEgWGVub21haQ0KPj4gPlNlbnQ6IFdlZG5lc2RheSwgSnVuZSAxNiwgMjAyMSAzOjE2
-IFBNDQo+PiA+VG86IHhlbm9tYWlAeGVub21haS5vcmcNCj4+ID5TdWJqZWN0OiBMYXJnZSBncGlv
-IGludGVycnVwdCBsYXRlbmN5DQo+PiA+DQo+PiA+SGVsbG8sDQo+PiA+DQo+PiA+d29ya2luZyBv
-biBhIHJlYWx0aW1lIGRhdGEgcmVjb3JkZXIgKGZvciB3aGljaCBJIHN1Ym1pdHRlZCBhIHBhdGNo
-IHRvIGFkZCB0aW1lc3RhbXAgcmV0cmlldmFsIGZvciBuZXQgcGFja2V0cyksIEkgZXhwZXJpZW5j
-ZSBhIHN0cmFuZ2UgbGF0ZW5jeSBwcm9ibGVtIHdpdGggdGFraW5nIEdQSU8gaW50ZXJydXB0cy4N
-Cj4+ID4NCj4+ID5TbyBiYXNpY2FsbHkgbXkgYXBwIG1vbml0b3JzIG5ldHdvcmsgcGFja2V0cyAo
-d2hpY2ggYXMgcmVjZWl2ZWQgYnkgdGhlIERVVCB3b3VsZCB0cmlnZ2VyIHRvZ2dsaW5nIG9mIGEg
-R1BJTyBvbiB0aGUgRFVUKSBhbmQgb25lIEdQSU8uDQo+PiA+V2Uga25vdyAoZnJvbSBzb21lIG9o
-dGVyIHJlZmVyZW5jZSBpbnN0cnVtZW50KSB0aGF0IHRoZSBEVVQgd291bGQgdG9nZ2xlIHRoZSBH
-UElPIDEtMm1zIGFmdGVyIHJlY2VpdmluZyBhIHNwZWNpZmljIG5ldHdvcmsgcGFja2V0Lg0KPj4g
-Pg0KPj4gPk15IHJlY29yZGVyIGFwcCByZWxpZXMgb24gdGhlIHRpbWVzdGFtcGluZyBvZiBldmVu
-dHMgZG9uZSBpbiBpbnRlcnJ1cHRzIHNlcnZpY2Ugcm91dGluZXMgZm9yIEdQSU9zIGFuZCBuZXR3
-b3JrIGludGVyZmFjZS4gQnkgY2hlY2tpbmcgdGhlIHRpbWVzdGFtcHMgcmV0dXJuZWQgYnkgdGhl
-IGFwcGxpY2F0aW9uLCBJIGdldCBhbiBhYm91dCA1MG1zIGRlbGF5IGJldHdlZW4gdGhlIG5ldHdv
-cmsgcGFja2V0IGFuZCB0aGUgR1BJTyAoc28gc29tZXRoaW5nIGJldHdlZW4gNTEgYW5kIDUybXMg
-ZGVsYXkpLg0KPj4gPg0KPj4gDQo+PiBBcmUgeW91IHRvZ2dsaW5nIGdwaW8gYW5kIGFjY2VzcyBn
-cGlvIGRldmljZSAgdGhyb3VnaCB5b3VyIHJ0ZG0gZGV2aWNlIGxpa2Ugb24gcGF0aCAvZGV2L3J0
-ZG0veW91cl9ncGlvY29udHJvbGxlci9ncGlvKj8NCj4+IA0KPg0KPk1heWJlIG15IHNldHVwIHdh
-cyBub3QgdmVyeSBjbGVhci4NCj5JJ3ZlIGdvdCBhIERVVCB0aGF0IHJlY2VpdmVzIG5ldHdvcmsg
-ZGF0YSwgYW5kIHRvZ2dsZXMgb25lIG9mIGl0cyBHUElPcyBkZXBlbmRpbmcgb25lIHRoZSBuZXR3
-b3JrIGRhdGEuDQo+DQo+SSd2ZSBnb3QgYW5vdGhlciBkZXZpY2UgcnVubmluZyBteSByZWFsdGlt
-ZSByZWNvcmRpbmcgYXBwLCB0aGF0IHJlY2VpdmVzIHRoZSBzYW1lIG5ldHdvcmsgZGF0YSBhcyB0
-aGUgRFVULCBhbmQgdGhhdCBoYXMgb25lIG9mIGl0cyBHUElPIGNvbm5lY3RlZCB0byB0aGUgRFVU
-IEdQSU8uDQo+DQo+T24gdGhlIHJlY29yZGluZyBhcHAsIEkgdXNlIHRoZSBSVERNIGRldmljZSB0
-byBvcGVuLCBpb2N0bCAoZW5hYmxlIGludGVycnVwdCArIHRpbWVzdGFtcCksIHRoZW4gc2VsZWN0
-ICYgcmVhZCB0aGUgR1BJTyB2YWx1ZS4NCg0KV2hlbiBpc3N1ZSBoYXBwZW4sIHRoZSByZWNvcmRp
-bmcgYXBwIHNpZGUgaGF2ZSBnb3Qgc2FtZSBudW1iZXIgb2YgbmV0d29yayBkYXRhIHBhY2thZ2Vz
-IGFuZCBncGlvIGludGVycnVwdHMgd2l0aCB0aGF0IERVVCBoYXZlIGJlZW4gdG9nZ2xpbmc/ICAN
-CkkgYW0gYXNraW5nIHRoaXMgYmVjYXVzZSBJIG1ldCBncGlvIGhhcmR3YXJlIGlzc3VlIHRoYXQg
-d291bGQgY2F1c2UgZ3BpbyBpbnRlcnJ1cHQgbWlzc2luZyBvciBpbnZhbGlkIGdwaW8gaW50ZXJy
-dXB0cyB3aGVuIGdwaW8gaXMgY29ubmVjdGluZyBvbiB0d28gZGlmZmVyZW50IGJvYXJkcy4NCg0K
-Pg0KPkZyYW7Dp29pcw0KPg0KPg0KPj4gSG9uZ3poYW4gQ2hlbg0KPj4gDQo+PiA+SSB3b25kZXIg
-d2hlcmUgdGhhdCBtaWdodCBiZSBjb21pbmcgZnJvbS4NCj4+ID4NCj4+ID5BbnkgaWRlYSA/DQo+
-PiA+DQo+PiA+dGhhbmtzIGluIGFkdmFuY2UNCj4+ID4NCj4+ID5GcmFuw6dvaXMNCj4NCj4NCj4N
-Cg==
+Le Mercredi, Juin 16, 2021 11:05 CEST, "Chen, Hongzhan" <hongzhan.chen@=
+intel.com> a =C3=A9crit: 
+ 
+> 
+> 
+> >-----Original Message-----
+> >From: Fran=C3=A7ois Legal <devel@thom.fr.eu.org> 
+> >Sent: Wednesday, June 16, 2021 4:19 PM
+> >To: Chen, Hongzhan <hongzhan.chen@intel.com>
+> >Cc: xenomai@xenomai.org
+> >Subject: RE: Large gpio interrupt latency
+> >
+> >Le Mercredi, Juin 16, 2021 10:10 CEST, "Chen, Hongzhan" <hongzhan.ch=
+en@intel.com> a =C3=A9crit: 
+> > 
+> >> 
+> >> >
+> >> >-----Original Message-----
+> >> >From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Fran=C3=A7=
+ois Legal via Xenomai
+> >> >Sent: Wednesday, June 16, 2021 3:16 PM
+> >> >To: xenomai@xenomai.org
+> >> >Subject: Large gpio interrupt latency
+> >> >
+> >> >Hello,
+> >> >
+> >> >working on a realtime data recorder (for which I submitted a patc=
+h to add timestamp retrieval for net packets), I experience a strange l=
+atency problem with taking GPIO interrupts.
+> >> >
+> >> >So basically my app monitors network packets (which as received b=
+y the DUT would trigger toggling of a GPIO on the DUT) and one GPIO.
+> >> >We know (from some ohter reference instrument) that the DUT would=
+ toggle the GPIO 1-2ms after receiving a specific network packet.
+> >> >
+> >> >My recorder app relies on the timestamping of events done in inte=
+rrupts service routines for GPIOs and network interface. By checking th=
+e timestamps returned by the application, I get an about 50ms delay bet=
+ween the network packet and the GPIO (so something between 51 and 52ms =
+delay).
+> >> >
+> >> 
+> >> Are you toggling gpio and access gpio device  through your rtdm de=
+vice like on path /dev/rtdm/your=5Fgpiocontroller/gpio*?
+> >> 
+> >
+> >Maybe my setup was not very clear.
+> >I've got a DUT that receives network data, and toggles one of its GP=
+IOs depending one the network data.
+> >
+> >I've got another device running my realtime recording app, that rece=
+ives the same network data as the DUT, and that has one of its GPIO con=
+nected to the DUT GPIO.
+> >
+> >On the recording app, I use the RTDM device to open, ioctl (enable i=
+nterrupt + timestamp), then select & read the GPIO value.
+> 
+> When issue happen, the recording app side have got same number of net=
+work data packages and gpio interrupts with that DUT have been toggling=
+?  
+> I am asking this because I met gpio hardware issue that would cause g=
+pio interrupt missing or invalid gpio interrupts when gpio is connectin=
+g on two different boards.
+> 
+
+AFAICT, I'm not missing GPIO edges/interrupts in the app. Regarding net=
+work, the DUT and the recoding device are connected to the same switch =
+with the same port config.
+
+Moreover, I tried changing the interrupt polarity of the recording devi=
+ce (switched from rising edge to falling edge), and the result is 1-2ms=
+ + ~30ms (the width of the pulse of the DUT) + 50ms latency
+
+> >
+> >Fran=C3=A7ois
+> >
+> >
+> >> Hongzhan Chen
+> >> 
+> >> >I wonder where that might be coming from.
+> >> >
+> >> >Any idea ?
+> >> >
+> >> >thanks in advance
+> >> >
+> >> >Fran=C3=A7ois
+> >
+> >
+> >
+
 
