@@ -1,19 +1,14 @@
-References: <87o8bzyxne.fsf@xenomai.org>
- <10a0-60d0d500-8b-29fb8780@204427917> <87lf72z6ux.fsf@xenomai.org>
- <19ba6735ee0f09c8abb7ff8aa405d6f63aae959e.camel@sprinte.eu>
- <2f00ba9e-c0e2-a0fb-4ba4-bb6cc7a651fe@siemens.com>
- <87im26z44t.fsf@xenomai.org>
- <669e153a-2cb8-4de4-a75e-b3e82f09dcb8@siemens.com>
- <87fsxaz1my.fsf@xenomai.org>
- <47dd2aec-3adf-53eb-bdae-b069d626849a@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Large gpio interrupt latency
-In-reply-to: <47dd2aec-3adf-53eb-bdae-b069d626849a@siemens.com>
-Date: Tue, 22 Jun 2021 12:07:09 +0200
-Message-ID: <87czseyzzm.fsf@xenomai.org>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: x86: ipipe: Tracing of preemptirq events triggers a kernel PANIC
+Date: Tue, 22 Jun 2021 14:54:44 +0000
+Message-ID: <d89e97920b8f5273aee2f6bac72ff6c8fe6bb3d6.camel@siemens.com>
+References: <58aec7dc526848372d3ac2f9cb7ee7663a0794d1.camel@siemens.com>
+In-Reply-To: <58aec7dc526848372d3ac2f9cb7ee7663a0794d1.camel@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9F8A3D8D2085084FBD60BD5E4C65B883@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,92 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Julien Blanc <julien.blanc@sprinte.eu>, "francois.legal@thom.fr.eu.org" <francois.legal@thom.fr.eu.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 22.06.21 11:31, Philippe Gerum wrote:
->>=20
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>=20
->>> On 22.06.21 10:37, Philippe Gerum wrote:
->>>>
->>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>
->>>>> On 22.06.21 09:49, Julien Blanc via Xenomai wrote:
->>>>>> Le mardi 22 juin 2021 =C3=A0 09:38 +0200, Philippe Gerum via Xenomai=
- a
->>>>>> =C3=A9crit :
->>>>>>>
->>>>>>> With this in mind, assuming that we have previously sanitized the
->>>>>>> clock
->>>>>>> identifier, doing this:
->>>>>>>
->>>>>>> #define get_timestamp(__clock) \
->>>>>>> ({ (__clock) =3D=3D CLOCK_MONOTONIC ? rtdm_clock_read_monotonic() :
->>>>>>> rtdm_clock_read(); })
->>>>>>>
->>>>>>> may end up being faster than:
->>>>>>>
->>>>>>> xnticks_t (*__get_timestamp)(clockid_t clock);
->>>>>>> #define get_timestamp(__clock)	__get_timestamp(__clock)
->>>>>>
->>>>>> Is really a runtime switch necessary ? Since relying on the realtime
->>>>>> clock is inherently broken, my understanding is that it should be ke=
-pt
->>>>>> as compatibility purpose only.
->>>>>
->>>>> Again: The real-time clock is not a broken clock per se. It is the ba=
-sis
->>>>> of many services (POSIX...) and - if managed properly - it is as sound
->>>>> clock to build upon. If you need absolute timestamps to calculate
->>>>> absolute timeouts (like users of the existing code do), this is the
->>>>> clock to go, also in future versions.
->>>>
->>>> Definitely correct, for timeout specs.
->>>>
->>>>> Also if you want to use
->>>>> PTP-sync'ed clocks across systems (TSN...), it is THE way to go. At t=
-hat
->>>>> point, monotonic timestamps will lose relevance in practice.
->>>>>
->>>>
->>>> We are not there yet. So, let's all agree than we need both clock base=
-s,
->>>> and a flexible way to select the current one.
->>>>
->>>
->>> What's still missing with Dovetail and a Linux-operated PTP sync for the
->>> main clocksource? Hardending of software-based sync paths? Where it's
->>> hw-based, that should already be fine (latest Intel SOCs).
->>>
->>=20
->> Again, we have two use cases: absolute timeouts based on a common epoch
->> which may change, and delays. We do know PTP with hw-based support is an
->> efficient way to maintain consistency among users of the former,
->> nevertheless we still need to express/measure strict delays in other
->> cases. So, we do need both clocks.
->>=20
->
-> If you need cross-system event stamping, the unsync'ed monotonic clock
-> is the wrong choice as well.
->
-
-As usual, it's a trade-off, a risk assessment between observing
-non-coherent SMP readings and warp jumps. This is a call an application
-should be allowed to make, I see no reason to impose a solution
-arbitrarily without knowing what the app actually wants to do.
-
-> Again: What is missing to use PTP-sync'ed clock-realtime under Dovetail
-> today?
->
-
-Nothing when it comes to reading timestamps, via the NMI-safe
-ktime_get_real_fast_ns() service (updates will be non-preemptible while
-holding the seqlock).
-
---=20
-Philippe.
+T24gVHVlLCAyMDIxLTA2LTIyIGF0IDA5OjQxICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
+ZW5vbWFpIHdyb3RlOg0KPiBIaSwNCj4gDQo+IEknbSBhYmxlIHRvIGVhc2lseSByZXByb2R1Y2Ug
+YSBrZXJuZWwgUEFOSUMgd2hlbiB0cnlpbmcgdG8gZW5hYmxlIHRoZQ0KPiBmb2xsb3dpbmcgdHJh
+Y2UgZXZlbnRzOg0KPiANCj4gLSBwcmVlbXB0aXJxOmlycV9lbmFibGUNCj4gLSBwcmVlbXB0aXJx
+OmlycV9kaXNhYmxlDQo+IA0KPiBvciBhcyBjbWRsaW5lOg0KPiANCj4gdHJhY2UtY21kIHN0YXJ0
+IC1lICJwcmVlbXB0aXJxOmlycV9lbmFibGUiDQo+IHRyYWNlLWNtZCBzdGFydCAtZSAicHJlZW1w
+dGlycTppcnFfZGlzYWJsZSINCj4gDQo+IFRoZSBQQU5JQyBjYW4gYmUgcmVwcm9kdWNlZCB3aXRo
+IDQuMTkgYW5kIDUuNCBhbmQgaXMgaXBpcGUgc3BlY2lmaWMuIEkNCj4gd2FzIG5vdCBhYmxlIHRv
+IHJlcHJvZHVjZSB3aXRoIDUuMTAgYW5kIGRvdmV0YWlsLiAoTW9yZSBkZXRhaWxzIGJlbG93DQo+
+IHRoZSBwYW5pYyBkdW1wLikgVGhlIFBBTklDIGhhcHBlbnMganVzdCBhZnRlciBlbmFibGluZyB0
+aGUgdHJhY2UNCj4gZXZlbnRzLg0KPiANCj4gVGhlICh0cnVuY2F0ZWQpIHBhbmljIGR1bXA6DQo+
+IA0KPiBbMTY1OTguNTk5MzMxXSBQQU5JQzogZG91YmxlIGZhdWx0LCBlcnJvcl9jb2RlOiAweDAN
+Cj4gWzE2NTk4LjYyNjkzOF0gQ1BVOiAxMCBQSUQ6IDI1NzY1NyBDb21tOiBjb250YWluZXJkIE5v
+dCB0YWludGVkIDQuMTkuMTkyLWNpcDUwLXhlbm9tYWktMSAjMQ0KPiBbMTY1OTguNjc1MzQ5XSBI
+YXJkd2FyZSBuYW1lOiBTaWVtZW5zIDxzbmlwPg0KPiBbMTY1OTguNzI4NDQwXSBJLXBpcGUgZG9t
+YWluOiBMaW51eA0KPiBbMTY1OTguNzQ3NzM3XSBSSVA6IDAwMTA6cGFnZV9mYXVsdCsweDAvMHg1
+OA0KPiBbMTY1OTguNzcxNzA0XSBDb2RlOiA3NCAxNCBmYSBmNiA4NCAyNCA4OCAwMCAwMCAwMCAw
+MyAwZiA4NCBkYSBmNCBmZiBmZiBlOSA0NSBmNCBmZiBmZiBlOSA0ZiAwMyAwMCAwMCA2NiA2NiAy
+ZSAwZiAxZiA4NCAwMCAwMCAwMCAwMCAwMA0KPiDCoDBmIDFmIDQwIDAwICAzYiAwMiAwMCAwMCA0
+YyA4YiBiNCAyNCA5MCAwMCAwMCAwMCA0OCA4OSBlNyBiZSAwZSAwMCAwMCAwMCA0OA0KPiBbMTY1
+OTguODg0MDcyXSBSU1A6IDAwMTg6ZmZmZmZlMDAwMDFiYTAwMCBFRkxBR1M6IDAwMDEwMjkzDQo+
+IFsxNjU5OC45MTUzMjNdIFJBWDogMDAwMDAwMDBiNjgwMGIxNyBSQlg6IDAwMDAwMDAwMDAwMDAw
+MDAgUkNYOiBmZmZmZmZmZmI2ODAwYjE3DQo+IFsxNjU5OC45NTgwMTZdIFJEWDogMDAwMDAwMDAw
+MDAwMDAwMCBSU0k6IGZmZmZmZmZmYjY4MDE2MjUgUkRJOiBmZmZmZmUwMDAwMWJhZjM4DQo+IFsx
+NjU5OS4wMDA3MDddIFJCUDogMDAwMDAwMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAg
+UjA5OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5OS4wNDMzOTldIFIxMDogMDAwMDAwMDAwMDAw
+MDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDAgUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5
+OS4wODYwOTBdIFIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1
+OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5OS4xMjg3ODNdIEZTOiAgMDAwMDdmNDIwMTdmYTcw
+MCgwMDAwKSBHUzpmZmZmOWFhM2RmODgwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAN
+Cj4gWzE2NTk5LjE3NzE5M10gQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAw
+MDA4MDA1MDAzMw0KPiBbMTY1OTkuMjExNTczXSBDUjI6IGZmZmZmZTAwMDAxYjlmZjggQ1IzOiAw
+MDAwMDAwODQ5NjRlMDA1IENSNDogMDAwMDAwMDAwMDE2MDZlMA0KPiBbMTY1OTkuMjU0MjU3XSBD
+YWxsIFRyYWNlOg0KPiBbMTY1OTkuMjY4ODcxXSAgDQo+IFsxNjU5OS4yODc2NDVdIFJJUDogMDAx
+MDp0cmFjZV9oYXJkaXJxc19vZmZfdGh1bmsrMHgwLzB4MzkNCj4gWzE2NTk5LjMxODg5Ml0gQ29k
+ZTogNTIgNDEgNTMgNDggOGIgN2QgMDggZTggZTcgY2QgMTEgMDAgZWIgMzggNTUgNDggODkgZTUg
+NTcgNTYgNTIgNTEgNTAgNDEgNTAgNDEgNTEgNDEgNTIgNDEgNTMgNDggOGIgN2QgMDggZTggOWIg
+ZDINCj4gwqAxMSAwMCBlYiAxYyA8NTU+IDQ4IDg5IGU1IDU3IDU2IDUyIDUxIDUwIDQxIDUwIDQx
+IDUxIDQxIDUyIDQxIDUzIDQ4IDhiIDdkIDA4IGU4DQo+IFsxNjU5OS40MzEyNjJdIFJTUDogMDAx
+ODpmZmZmZmUwMDAwMWJhMDM4IEVGTEFHUzogMDAwMTAwOTMNCj4gWzE2NTk5LjQzMTI2N10gIGVy
+cm9yX2VudHJ5KzB4ODIvMHgxMDANCj4gWzE2NTk5LjQ4MzM2N10gUklQOiAwMDEwOnRyYWNlX2hh
+cmRpcnFzX29mZl90aHVuaysweDAvMHgzOQ0KPiBbMTY1OTkuNTE0NjE3XSBDb2RlOiA1MiA0MSA1
+MyA0OCA4YiA3ZCAwOCBlOCBlNyBjZCAxMSAwMCBlYiAzOCA1NSA0OCA4OSBlNSA1NyA1NiA1MiA1
+MSA1MCA0MSA1MCA0MSA1MSA0MSA1MiA0MSA1MyA0OCA4YiA3ZCAwOCBlOCA5YiBkMg0KPiDCoDEx
+IDAwIGViIDFjIDw1NT4gNDggODkgZTUgNTcgNTYgNTIgNTEgNTAgNDEgNTAgNDEgNTEgNDEgNTIg
+NDEgNTMgNDggOGIgN2QgMDggZTgNCj4gDQo+IA0KPiBUZXN0ZWQgdmVyc2lvbnM6DQo+IA0KPiA0
+LjE5IHdpdGggQ09ORklHX0lSUV9QSVBMSU5FIGVuYWJsZWQ6IFBBTklDDQo+IDQuMTkgd2l0aCBD
+T05GSUdfSVJRX1BJUExJTkUgZGlzYWJsZWQ6IFBBTklDDQo+IDUuNCAgd2l0aCBDT05GSUdfSVJR
+X1BJUExJTkUgZW5hYmxlZDogUEFOSUMNCj4gNS40ICB3aXRoIENPTkZJR19JUlFfUElQTElORSBk
+aXNhYmxlZDogT0sNCg0KSSBoYXZlIHRvIGNvcnJlY3QgbXlzZWxmOiBJdCdzIENPTkZJR19JUElQ
+RSBvZiBjb3Vyc2UuIFNvcnJ5Lg0KDQo+IA0KPiANCj4gVGhlIHByb2JsZW0gc291bmRzIHZlcnkg
+c2ltaWxhciB0byBbMV0uIFRoZXNlIHBhdGNoZXMgd2VyZSBub3QNCj4gYmFja3BvcnRlZCB0byA0
+LjE5IGJlY2F1c2UgdGhleSB3ZXJlIGNvbnNpZGVyZWQgdG8gaW50cnVzaXZlLiBTbyBJDQo+IGd1
+ZXNzIDUuNCBzaG91bGQgYmUgZmluZSwgYnV0IHRoZSBDT05GSUdfSVJRX1BJUExJTkUgY29kZSAv
+d3J0IHBhZ2UNCj4gZmF1bHRzIHJlLWludHJvZHVjZXMgc29tZXRoaW5nIHNpbWlsYXIgdG8gdGhl
+IENSMiBjb3JydXB0aW9uIGluIFsxXS4NCg0KQWdhaW46IC9zL0NPTkZJR19JUlFfUElQTElORS9D
+T05GSUdfSVBJUEUNCg0KPiANCj4gWzFdIGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rp
+b24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnd3dy5sa21sLm9yZyUyRmxrbWwlMkYy
+MDIwJTJGMTAlMkY1JTJGNTM1JmFtcDtkYXRhPTA0JTdDMDElN0NmbG9yaWFuLmJlemRla2ElNDBz
+aWVtZW5zLmNvbSU3Q2JkYjZlODNhNDQ0YTRmZmUzYTFkMDhkOTM1NjFmNmExJTdDMzhhZTNiY2Q5
+NTc5NGZkNGFkZGFiNDJlMTQ5NWQ1NWElN0MxJTdDMCU3QzYzNzU5OTUxNzEyNTI3ODcwNiU3Q1Vu
+a25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlM
+Q0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MxMDAwJmFtcDtzZGF0YT1EcEo5Wjd5b3pB
+NTBRQlJGY3JUbEY1dXZjTjJ2VThiRVI1a0FGZTZyUWNVJTNEJmFtcDtyZXNlcnZlZD0wDQo+IA0K
+PiANCj4gQmVzdCByZWdhcmRzLA0KPiBGbG9yaWFuDQo+IA0KPiANCj4gLS0gDQo+IFNpZW1lbnMg
+QUcsIFQgUkRBIElPVA0KPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGlu
+dXgNCg0K
 
