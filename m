@@ -1,14 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: x86: ipipe: Tracing of preemptirq events triggers a kernel PANIC
-Date: Tue, 22 Jun 2021 14:54:44 +0000
-Message-ID: <d89e97920b8f5273aee2f6bac72ff6c8fe6bb3d6.camel@siemens.com>
-References: <58aec7dc526848372d3ac2f9cb7ee7663a0794d1.camel@siemens.com>
-In-Reply-To: <58aec7dc526848372d3ac2f9cb7ee7663a0794d1.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9F8A3D8D2085084FBD60BD5E4C65B883@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: MONTET Julien <julien.montet@reseau.eseo.fr>
+Subject: Docker  - Xenomai hangs on rt_task_wait_period()
+Date: Tue, 22 Jun 2021 16:38:33 +0000
+Message-ID: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-T24gVHVlLCAyMDIxLTA2LTIyIGF0IDA5OjQxICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBIaSwNCj4gDQo+IEknbSBhYmxlIHRvIGVhc2lseSByZXByb2R1Y2Ug
-YSBrZXJuZWwgUEFOSUMgd2hlbiB0cnlpbmcgdG8gZW5hYmxlIHRoZQ0KPiBmb2xsb3dpbmcgdHJh
-Y2UgZXZlbnRzOg0KPiANCj4gLSBwcmVlbXB0aXJxOmlycV9lbmFibGUNCj4gLSBwcmVlbXB0aXJx
-OmlycV9kaXNhYmxlDQo+IA0KPiBvciBhcyBjbWRsaW5lOg0KPiANCj4gdHJhY2UtY21kIHN0YXJ0
-IC1lICJwcmVlbXB0aXJxOmlycV9lbmFibGUiDQo+IHRyYWNlLWNtZCBzdGFydCAtZSAicHJlZW1w
-dGlycTppcnFfZGlzYWJsZSINCj4gDQo+IFRoZSBQQU5JQyBjYW4gYmUgcmVwcm9kdWNlZCB3aXRo
-IDQuMTkgYW5kIDUuNCBhbmQgaXMgaXBpcGUgc3BlY2lmaWMuIEkNCj4gd2FzIG5vdCBhYmxlIHRv
-IHJlcHJvZHVjZSB3aXRoIDUuMTAgYW5kIGRvdmV0YWlsLiAoTW9yZSBkZXRhaWxzIGJlbG93DQo+
-IHRoZSBwYW5pYyBkdW1wLikgVGhlIFBBTklDIGhhcHBlbnMganVzdCBhZnRlciBlbmFibGluZyB0
-aGUgdHJhY2UNCj4gZXZlbnRzLg0KPiANCj4gVGhlICh0cnVuY2F0ZWQpIHBhbmljIGR1bXA6DQo+
-IA0KPiBbMTY1OTguNTk5MzMxXSBQQU5JQzogZG91YmxlIGZhdWx0LCBlcnJvcl9jb2RlOiAweDAN
-Cj4gWzE2NTk4LjYyNjkzOF0gQ1BVOiAxMCBQSUQ6IDI1NzY1NyBDb21tOiBjb250YWluZXJkIE5v
-dCB0YWludGVkIDQuMTkuMTkyLWNpcDUwLXhlbm9tYWktMSAjMQ0KPiBbMTY1OTguNjc1MzQ5XSBI
-YXJkd2FyZSBuYW1lOiBTaWVtZW5zIDxzbmlwPg0KPiBbMTY1OTguNzI4NDQwXSBJLXBpcGUgZG9t
-YWluOiBMaW51eA0KPiBbMTY1OTguNzQ3NzM3XSBSSVA6IDAwMTA6cGFnZV9mYXVsdCsweDAvMHg1
-OA0KPiBbMTY1OTguNzcxNzA0XSBDb2RlOiA3NCAxNCBmYSBmNiA4NCAyNCA4OCAwMCAwMCAwMCAw
-MyAwZiA4NCBkYSBmNCBmZiBmZiBlOSA0NSBmNCBmZiBmZiBlOSA0ZiAwMyAwMCAwMCA2NiA2NiAy
-ZSAwZiAxZiA4NCAwMCAwMCAwMCAwMCAwMA0KPiDCoDBmIDFmIDQwIDAwICAzYiAwMiAwMCAwMCA0
-YyA4YiBiNCAyNCA5MCAwMCAwMCAwMCA0OCA4OSBlNyBiZSAwZSAwMCAwMCAwMCA0OA0KPiBbMTY1
-OTguODg0MDcyXSBSU1A6IDAwMTg6ZmZmZmZlMDAwMDFiYTAwMCBFRkxBR1M6IDAwMDEwMjkzDQo+
-IFsxNjU5OC45MTUzMjNdIFJBWDogMDAwMDAwMDBiNjgwMGIxNyBSQlg6IDAwMDAwMDAwMDAwMDAw
-MDAgUkNYOiBmZmZmZmZmZmI2ODAwYjE3DQo+IFsxNjU5OC45NTgwMTZdIFJEWDogMDAwMDAwMDAw
-MDAwMDAwMCBSU0k6IGZmZmZmZmZmYjY4MDE2MjUgUkRJOiBmZmZmZmUwMDAwMWJhZjM4DQo+IFsx
-NjU5OS4wMDA3MDddIFJCUDogMDAwMDAwMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAg
-UjA5OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5OS4wNDMzOTldIFIxMDogMDAwMDAwMDAwMDAw
-MDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDAgUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5
-OS4wODYwOTBdIFIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1
-OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsxNjU5OS4xMjg3ODNdIEZTOiAgMDAwMDdmNDIwMTdmYTcw
-MCgwMDAwKSBHUzpmZmZmOWFhM2RmODgwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAN
-Cj4gWzE2NTk5LjE3NzE5M10gQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAw
-MDA4MDA1MDAzMw0KPiBbMTY1OTkuMjExNTczXSBDUjI6IGZmZmZmZTAwMDAxYjlmZjggQ1IzOiAw
-MDAwMDAwODQ5NjRlMDA1IENSNDogMDAwMDAwMDAwMDE2MDZlMA0KPiBbMTY1OTkuMjU0MjU3XSBD
-YWxsIFRyYWNlOg0KPiBbMTY1OTkuMjY4ODcxXSAgDQo+IFsxNjU5OS4yODc2NDVdIFJJUDogMDAx
-MDp0cmFjZV9oYXJkaXJxc19vZmZfdGh1bmsrMHgwLzB4MzkNCj4gWzE2NTk5LjMxODg5Ml0gQ29k
-ZTogNTIgNDEgNTMgNDggOGIgN2QgMDggZTggZTcgY2QgMTEgMDAgZWIgMzggNTUgNDggODkgZTUg
-NTcgNTYgNTIgNTEgNTAgNDEgNTAgNDEgNTEgNDEgNTIgNDEgNTMgNDggOGIgN2QgMDggZTggOWIg
-ZDINCj4gwqAxMSAwMCBlYiAxYyA8NTU+IDQ4IDg5IGU1IDU3IDU2IDUyIDUxIDUwIDQxIDUwIDQx
-IDUxIDQxIDUyIDQxIDUzIDQ4IDhiIDdkIDA4IGU4DQo+IFsxNjU5OS40MzEyNjJdIFJTUDogMDAx
-ODpmZmZmZmUwMDAwMWJhMDM4IEVGTEFHUzogMDAwMTAwOTMNCj4gWzE2NTk5LjQzMTI2N10gIGVy
-cm9yX2VudHJ5KzB4ODIvMHgxMDANCj4gWzE2NTk5LjQ4MzM2N10gUklQOiAwMDEwOnRyYWNlX2hh
-cmRpcnFzX29mZl90aHVuaysweDAvMHgzOQ0KPiBbMTY1OTkuNTE0NjE3XSBDb2RlOiA1MiA0MSA1
-MyA0OCA4YiA3ZCAwOCBlOCBlNyBjZCAxMSAwMCBlYiAzOCA1NSA0OCA4OSBlNSA1NyA1NiA1MiA1
-MSA1MCA0MSA1MCA0MSA1MSA0MSA1MiA0MSA1MyA0OCA4YiA3ZCAwOCBlOCA5YiBkMg0KPiDCoDEx
-IDAwIGViIDFjIDw1NT4gNDggODkgZTUgNTcgNTYgNTIgNTEgNTAgNDEgNTAgNDEgNTEgNDEgNTIg
-NDEgNTMgNDggOGIgN2QgMDggZTgNCj4gDQo+IA0KPiBUZXN0ZWQgdmVyc2lvbnM6DQo+IA0KPiA0
-LjE5IHdpdGggQ09ORklHX0lSUV9QSVBMSU5FIGVuYWJsZWQ6IFBBTklDDQo+IDQuMTkgd2l0aCBD
-T05GSUdfSVJRX1BJUExJTkUgZGlzYWJsZWQ6IFBBTklDDQo+IDUuNCAgd2l0aCBDT05GSUdfSVJR
-X1BJUExJTkUgZW5hYmxlZDogUEFOSUMNCj4gNS40ICB3aXRoIENPTkZJR19JUlFfUElQTElORSBk
-aXNhYmxlZDogT0sNCg0KSSBoYXZlIHRvIGNvcnJlY3QgbXlzZWxmOiBJdCdzIENPTkZJR19JUElQ
-RSBvZiBjb3Vyc2UuIFNvcnJ5Lg0KDQo+IA0KPiANCj4gVGhlIHByb2JsZW0gc291bmRzIHZlcnkg
-c2ltaWxhciB0byBbMV0uIFRoZXNlIHBhdGNoZXMgd2VyZSBub3QNCj4gYmFja3BvcnRlZCB0byA0
-LjE5IGJlY2F1c2UgdGhleSB3ZXJlIGNvbnNpZGVyZWQgdG8gaW50cnVzaXZlLiBTbyBJDQo+IGd1
-ZXNzIDUuNCBzaG91bGQgYmUgZmluZSwgYnV0IHRoZSBDT05GSUdfSVJRX1BJUExJTkUgY29kZSAv
-d3J0IHBhZ2UNCj4gZmF1bHRzIHJlLWludHJvZHVjZXMgc29tZXRoaW5nIHNpbWlsYXIgdG8gdGhl
-IENSMiBjb3JydXB0aW9uIGluIFsxXS4NCg0KQWdhaW46IC9zL0NPTkZJR19JUlFfUElQTElORS9D
-T05GSUdfSVBJUEUNCg0KPiANCj4gWzFdIGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rp
-b24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnd3dy5sa21sLm9yZyUyRmxrbWwlMkYy
-MDIwJTJGMTAlMkY1JTJGNTM1JmFtcDtkYXRhPTA0JTdDMDElN0NmbG9yaWFuLmJlemRla2ElNDBz
-aWVtZW5zLmNvbSU3Q2JkYjZlODNhNDQ0YTRmZmUzYTFkMDhkOTM1NjFmNmExJTdDMzhhZTNiY2Q5
-NTc5NGZkNGFkZGFiNDJlMTQ5NWQ1NWElN0MxJTdDMCU3QzYzNzU5OTUxNzEyNTI3ODcwNiU3Q1Vu
-a25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlM
-Q0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MxMDAwJmFtcDtzZGF0YT1EcEo5Wjd5b3pB
-NTBRQlJGY3JUbEY1dXZjTjJ2VThiRVI1a0FGZTZyUWNVJTNEJmFtcDtyZXNlcnZlZD0wDQo+IA0K
-PiANCj4gQmVzdCByZWdhcmRzLA0KPiBGbG9yaWFuDQo+IA0KPiANCj4gLS0gDQo+IFNpZW1lbnMg
-QUcsIFQgUkRBIElPVA0KPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGlu
-dXgNCg0K
+Hello the developers,
 
+I have been using Xenomai for the past two months on different targets / sk=
+ins / architectures, and it is a great real time solution !
+For the past few days, I have been trying to use my code on a docker :
+
+  *   Compiled on a debian 10.9 with Xenomai libraries (3.1) for an ARM tar=
+get
+  *   This code runs on a raspberry pi 3B with an IPIPE patch (Cobalt)
+  *   The kernel version is 4.19+
+
+My code is running fine with different methods, there is no crash.
+However, the execution hangs when  I use the couple rt_task_set_periodic/rt=
+_task_wait_period.
+Methods such as "RTIME", rt_printf(), rt_task_set_periodic() do not hangs, =
+but my code seems to keep waiting on rt_task_wait_period().
+
+I am aware someone had this issue four years ago :
+https://xenomai.org/pipermail/xenomai/2017-November/037890.html
+According to the link above, Cobalt does not support PID namespaces.
+I also understood it is needed to convert vpid <-> pid by using the find_ta=
+sk_vpid().
+
+I am not an expert on the interaction between Docker and Linux - specifical=
+ly on PID.
+Is it a normal behaviour in my case ? Where would it be interesting to make=
+ these changes ?
+What is the link between RT_TASK and PID / vPID ?
+
+Regards,
+
+Julien
