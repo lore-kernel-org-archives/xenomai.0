@@ -1,15 +1,14 @@
-From: MONTET Julien <julien.montet@reseau.eseo.fr>
-Subject: RE: Docker - Xenomai hangs on rt_task_wait_period()
-Date: Wed, 23 Jun 2021 07:55:14 +0000
-Message-ID: <PR3PR02MB6202344CA134AA59D0BE84A2D1089@PR3PR02MB6202.eurprd02.prod.outlook.com>
-References: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
- <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>,
- <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>
-In-Reply-To: <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>
-Content-Language: fr-FR
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [xenomai-images PATCH] tests: restrict realtime cpu
+Date: Wed, 23 Jun 2021 07:58:11 +0000
+Message-ID: <DM4PR11MB523256D02BC0CC8132DFD67AF2089@DM4PR11MB5232.namprd11.prod.outlook.com>
+References: <20210623053136.22521-1-hongzhan.chen@intel.com>
+ <84895ed2-041a-b755-03a6-fe11c5038ff1@siemens.com>
+In-Reply-To: <84895ed2-041a-b755-03a6-fe11c5038ff1@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,116 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-I tried again this morning, and run the latency bin of Xenomai on the Docke=
-r, it doesn't hang :
-
-root@f2f41a83e749:/usr/xenomai/bin# ./latency
-=3D=3D Sampling period: 1000 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
-orst
-RTD|      1.666|      2.070|      7.187|       0|     0|      1.666|      7=
-.187
-RTD|      1.666|      2.074|     17.447|       0|     0|      1.666|     17=
-.447
-RTD|      1.613|      2.003|     14.113|       0|     0|      1.613|     17=
-.447
-RTD|      1.561|      2.045|     12.967|       0|     0|      1.561|     17=
-.447
-RTD|      1.716|      2.061|     19.217|       0|     0|      1.561|     19=
-.217
-RTD|      1.664|      2.062|     15.675|       0|     0|      1.561|     19=
-.217
-^C---|-----------|-----------|-----------|--------|------|-----------------=
---------
-RTS|      1.561|      2.052|     19.217|       0|     0|    00:00:07/00:00:=
-07
-
-
-I can't test my Docker on x86 now, I will do it as soon as I can, most prob=
-ably this evening.
-Regarding the link Florian sent, I didn't use this to run my docker : -devi=
-ce=3D/dev/rtdm:/dev/rtdm
-I have almost the same "docker run" call as Marco Barletta, I just added : =
---privileged --cap-add SYS_NICE.
-This PID issue might be related, I don't kow how to check this.
-
-Regards,
-
-On Wed, 2021-06-23 at 07:37 +0200, Jan Kiszka wrote:
-> On 22.06.21 18:38, MONTET Julien via Xenomai wrote:
-> > Hello the developers,
-> >
-> > I have been using Xenomai for the past two months on different targets =
-/ skins / architectures, and it is a great real time solution !
-> > For the past few days, I have been trying to use my code on a docker :
-> >
-> >   *   Compiled on a debian 10.9 with Xenomai libraries (3.1) for an ARM=
- target
-> >   *   This code runs on a raspberry pi 3B with an IPIPE patch (Cobalt)
-> >   *   The kernel version is 4.19+
-> >
-> > My code is running fine with different methods, there is no crash.
-> > However, the execution hangs when  I use the couple rt_task_set_periodi=
-c/rt_task_wait_period.
-> > Methods such as "RTIME", rt_printf(), rt_task_set_periodic() do not han=
-gs, but my code seems to keep waiting on rt_task_wait_period().
-> >
-> > I am aware someone had this issue four years ago :
-> > https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fxen=
-omai.org%2Fpipermail%2Fxenomai%2F2017-November%2F037890.html&amp;data=3D04%=
-7C01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C=
-4d7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CT=
-WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%=
-3D%7C1000&amp;sdata=3DIdqQYU1WPAP4XP8yb6HWRn%2B10BsbRJRtrm3iEPDsqQQ%3D&amp;=
-reserved=3D0
-> > According to the link above, Cobalt does not support PID namespaces.
-> > I also understood it is needed to convert vpid <-> pid by using the fin=
-d_task_vpid().
-> >
-> > I am not an expert on the interaction between Docker and Linux - specif=
-ically on PID.
-> > Is it a normal behaviour in my case ? Where would it be interesting to =
-make these changes ?
-> > What is the link between RT_TASK and PID / vPID ?
-> >
-> > Regards,
-> >
-> > Julien
-> >
->
-> Do you see this issue only on ARM, or is the pattern also reproducible
-> on x86 (qemu/kvm)? Are only native/alchemy apps affected, or does the
-> latency test hang as well?
->
-> Maybe you can describe what would be needed to reproduce inside a
-> xenomai-images qemu target so that we look at the same thing.
->
-> Florian, we only have some x86 hosts enabled to run docker aside
-> Xenomai, right?
-
-Yes, we have a x86 setup running containers, but AFAIK there is no
-Xenomai workload inside the container.
-
-We know about [1] (bug /wrt PID namespace). Might that be related?
-
-[1] https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit=
-lab.com%2FXenomai%2Fxenomai-hacker-space%2F-%2Fissues%2F19&amp;data=3D04%7C=
-01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C4d=
-7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CTWF=
-pbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D=
-%7C1000&amp;sdata=3DqI0zj%2F4PgzYoXyZBUE%2F9xYSbRI7vAp%2FPegw2JuCNcqM%3D&am=
-p;reserved=3D0
-
->
-> Jan
->
+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPiANCj5TZW50OiBXZWRuZXNkYXksIEp1bmUgMjMsIDIwMjEgMjoxOCBQ
+TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
+QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFt4ZW5vbWFpLWltYWdlcyBQQVRDSF0gdGVzdHM6
+IHJlc3RyaWN0IHJlYWx0aW1lIGNwdQ0KPg0KPk9uIDIzLjA2LjIxIDA3OjMxLCBIb25nemhhbiBD
+aGVuIHdyb3RlOg0KPj4gSWYgdGhlcmUgaXMgbm8gQ1BVIHJlc3RyaWN0aW9uIG9uIHRoZSBib290
+YXJncywgc21va2V5IGNwdV9hZmZpbml0eQ0KPj4gdGVzdCB3b3VsZCBiZSBza2lwcGVkIHJlcG9y
+dGluZyB3aXRoICJubyBrZXJuZWwgc3VwcG9ydCIuDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IEhv
+bmd6aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4gDQo+PiBkaWZmIC0tZ2l0
+IGEvdGVzdHMvam9icy94ZW5vbWFpLWJlYWdsZS1ib25lLWJsYWNrLnltbCBiL3Rlc3RzL2pvYnMv
+eGVub21haS1iZWFnbGUtYm9uZS1ibGFjay55bWwNCj4+IGluZGV4IDAzNGFjOTkuLjgxMTdmMjkg
+MTAwNjQ0DQo+PiAtLS0gYS90ZXN0cy9qb2JzL3hlbm9tYWktYmVhZ2xlLWJvbmUtYmxhY2sueW1s
+DQo+PiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktYmVhZ2xlLWJvbmUtYmxhY2sueW1sDQo+PiBA
+QCAtNzEsMyArNzEsNSBAQCBhY3Rpb25zOg0KPj4gICAgICAgIGZyb206IGlubGluZQ0KPj4gICAg
+ICAgIHBhdGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUueWFtbA0KPj4gICAgICAgIG5hbWU6
+IHhlbm9tYWktdGVzdC1zdWl0ZQ0KPj4gK2NvbnRleHQ6DQo+PiArICBleHRyYV9rZXJuZWxfYXJn
+czogeGVub21haS5zdXBwb3J0ZWRfY3B1cz0xDQo+PiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94
+ZW5vbWFpLWhpa2V5LnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1oaWtleS55bWwNCj4+IGluZGV4
+IGY2ZWI0YTQuLjU5ODdjOTQgMTAwNjQ0DQo+PiAtLS0gYS90ZXN0cy9qb2JzL3hlbm9tYWktaGlr
+ZXkueW1sDQo+PiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktaGlrZXkueW1sDQo+PiBAQCAtNzAs
+MyArNzAsNSBAQCBhY3Rpb25zOg0KPj4gICAgICAgIGZyb206IGlubGluZQ0KPj4gICAgICAgIHBh
+dGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUueWFtbA0KPj4gICAgICAgIG5hbWU6IHhlbm9t
+YWktdGVzdC1zdWl0ZQ0KPj4gK2NvbnRleHQ6DQo+PiArICBleHRyYV9rZXJuZWxfYXJnczogeGVu
+b21haS5zdXBwb3J0ZWRfY3B1cz0xDQo+PiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFp
+LWlwYzIyN2UueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIyN2UueW1sDQo+PiBpbmRleCBh
+NWExODFjLi43ZjM2MDBkIDEwMDY0NA0KPj4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIy
+N2UueW1sDQo+PiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktaXBjMjI3ZS55bWwNCj4+IEBAIC03
+MiwzICs3Miw1IEBAIGFjdGlvbnM6DQo+PiAgICAgICAgZnJvbTogaW5saW5lDQo+PiAgICAgICAg
+cGF0aDogaW5saW5lL3hlbm9tYWktdGVzdC1zdWl0ZS55YW1sDQo+PiAgICAgICAgbmFtZTogeGVu
+b21haS10ZXN0LXN1aXRlDQo+PiArY29udGV4dDoNCj4+ICsgIGV4dHJhX2tlcm5lbF9hcmdzOiB4
+ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTENCj4+IGRpZmYgLS1naXQgYS90ZXN0cy9qb2JzL3hlbm9t
+YWktbWlubm93LnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1taW5ub3cueW1sDQo+PiBpbmRleCBk
+NTI5MmZmLi45OGMzZWFjIDEwMDY0NA0KPj4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLW1pbm5v
+dy55bWwNCj4+ICsrKyBiL3Rlc3RzL2pvYnMveGVub21haS1taW5ub3cueW1sDQo+PiBAQCAtNzEs
+MyArNzEsNSBAQCBhY3Rpb25zOg0KPj4gICAgICAgIGZyb206IGlubGluZQ0KPj4gICAgICAgIHBh
+dGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUueWFtbA0KPj4gICAgICAgIG5hbWU6IHhlbm9t
+YWktdGVzdC1zdWl0ZQ0KPj4gK2NvbnRleHQ6DQo+PiArICBleHRyYV9rZXJuZWxfYXJnczogeGVu
+b21haS5zdXBwb3J0ZWRfY3B1cz0xDQo+PiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFp
+LXFlbXUtYW1kNjQueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYW1kNjQueW1sDQo+PiBp
+bmRleCBjMzM1MjkyLi5iMzVhMWE1IDEwMDY0NA0KPj4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFp
+LXFlbXUtYW1kNjQueW1sDQo+PiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1hbWQ2NC55
+bWwNCj4+IEBAIC04NywzICs4Nyw1IEBAIGFjdGlvbnM6DQo+PiAgICAgICAgZnJvbTogaW5saW5l
+DQo+PiAgICAgICAgcGF0aDogaW5saW5lL3hlbm9tYWktdGVzdC1zdWl0ZS55YW1sDQo+PiAgICAg
+ICAgbmFtZTogeGVub21haS10ZXN0LXN1aXRlDQo+PiArY29udGV4dDoNCj4+ICsgIGV4dHJhX2tl
+cm5lbF9hcmdzOiB4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTENCj4+IGRpZmYgLS1naXQgYS90ZXN0
+cy9qb2JzL3hlbm9tYWktcWVtdS1hcm02NC55bWwgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1h
+cm02NC55bWwNCj4+IGluZGV4IDg4ZmI4ODAuLjI3NDE4ZmYgMTAwNjQ0DQo+PiAtLS0gYS90ZXN0
+cy9qb2JzL3hlbm9tYWktcWVtdS1hcm02NC55bWwNCj4+ICsrKyBiL3Rlc3RzL2pvYnMveGVub21h
+aS1xZW11LWFybTY0LnltbA0KPj4gQEAgLTkzLDMgKzkzLDUgQEAgYWN0aW9uczoNCj4+ICAgICAg
+ICBmcm9tOiBpbmxpbmUNCj4+ICAgICAgICBwYXRoOiBpbmxpbmUveGVub21haS10ZXN0LXN1aXRl
+LnlhbWwNCj4+ICAgICAgICBuYW1lOiB4ZW5vbWFpLXRlc3Qtc3VpdGUNCj4+ICtjb250ZXh0Og0K
+Pj4gKyAgZXh0cmFfa2VybmVsX2FyZ3M6IHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MQ0KPj4gZGlm
+ZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhmLnltbCBiL3Rlc3RzL2pvYnMv
+eGVub21haS1xZW11LWFybWhmLnltbA0KPj4gaW5kZXggM2UzYThhYi4uMTQ1MDFiNyAxMDA2NDQN
+Cj4+IC0tLSBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhmLnltbA0KPj4gKysrIGIvdGVz
+dHMvam9icy94ZW5vbWFpLXFlbXUtYXJtaGYueW1sDQo+PiBAQCAtODcsMyArODcsNSBAQCBhY3Rp
+b25zOg0KPj4gICAgICAgIGZyb206IGlubGluZQ0KPj4gICAgICAgIHBhdGg6IGlubGluZS94ZW5v
+bWFpLXRlc3Qtc3VpdGUueWFtbA0KPj4gICAgICAgIG5hbWU6IHhlbm9tYWktdGVzdC1zdWl0ZQ0K
+Pj4gK2NvbnRleHQ6DQo+PiArICBleHRyYV9rZXJuZWxfYXJnczogeGVub21haS5zdXBwb3J0ZWRf
+Y3B1cz0xDQo+PiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXg4Ni02NC1lZmkueW1s
+IGIvdGVzdHMvam9icy94ZW5vbWFpLXg4Ni02NC1lZmkueW1sDQo+PiBpbmRleCBiYzcxYjc1Li45
+NWIyMjg4IDEwMDY0NA0KPj4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLXg4Ni02NC1lZmkueW1s
+DQo+PiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwNCj4+IEBAIC03Miwz
+ICs3Miw1IEBAIGFjdGlvbnM6DQo+PiAgICAgICAgZnJvbTogaW5saW5lDQo+PiAgICAgICAgcGF0
+aDogaW5saW5lL3hlbm9tYWktdGVzdC1zdWl0ZS55YW1sDQo+PiAgICAgICAgbmFtZTogeGVub21h
+aS10ZXN0LXN1aXRlDQo+PiArY29udGV4dDoNCj4+ICsgIGV4dHJhX2tlcm5lbF9hcmdzOiB4ZW5v
+bWFpLnN1cHBvcnRlZF9jcHVzPTENCj4+IA0KPg0KPkxldCdzIG5vdCBtYWtlIGFsbCB0YXJnZXRz
+IHNpbmdsZS1jb3JlIHJlZ2FyZGluZyByZWFsLXRpbWUuIFJhdGhlciwNCj5leGNsdWRlIG9uZSBz
+aW5nbGUtY29yZSBmcm9tIHRoZSByZWFsLXRpbWUgZG9tYWluLg0KDQpJZiB3ZSBwYXNzIGludmFs
+aWQgc3VwcG9ydGVkX2NwdXMgdmFsdWUsIGNwdS1hZmZpbml0eSB0ZXN0IHdvdWxkIHJldHVybiBF
+SU5WQUwgZXJyb3IuDQpUaGF0IG1lYW5zIHdlIGNhbm5vdCBzZXQgdW5pZm9ybSB2YWx1ZSBmb3Ig
+ZGlmZmVyZW50IGJvYXJkcyBiZWNhdXNlIGRpZmZlcmVudA0KYm9hcmRzIGhhdmUgZGlmZmVyZW50
+IGNwdSBjb25maWd1cmF0aW9uIGlmIHdlIHdhbnQgdG8gZXhjbHVkZSBvbmUgc2lnbmFsLWNvcmUN
+CmZyb20gcmVhbC10aW1lIGRvbWFpbiB2aWEgeGVub21haS5zdXBwb3J0ZWRfY3B1cy4gSW4gYWRk
+aXRpb24gLCBJIGRvIG5vdCBrbm93DQp0aGUgZXhhY3QgIGhhcmR3YXJlIGNwdSBjb25maWd1cmF0
+aW9uIGZvciBkaWZmZXJlbnQgdGFyZ2V0IGJvYXJkcyBiZWhpbmQgZWFjaCBsYXZhIHRlc3Qgam9i
+LiANCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVu
+cyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
+bnV4DQo=
 
