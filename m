@@ -1,13 +1,7 @@
-Subject: Re: Docker - Xenomai hangs on rt_task_wait_period()
-References: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>
-Date: Wed, 23 Jun 2021 07:37:06 +0200
-MIME-Version: 1.0
-In-Reply-To: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-images PATCH] tests: restrict realtime cpu
+Date: Wed, 23 Jun 2021 01:31:36 -0400
+Message-Id: <20210623053136.22521-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +10,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: MONTET Julien <julien.montet@reseau.eseo.fr>, Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On 22.06.21 18:38, MONTET Julien via Xenomai wrote:
-> Hello the developers,
-> 
-> I have been using Xenomai for the past two months on different targets / skins / architectures, and it is a great real time solution !
-> For the past few days, I have been trying to use my code on a docker :
-> 
->   *   Compiled on a debian 10.9 with Xenomai libraries (3.1) for an ARM target
->   *   This code runs on a raspberry pi 3B with an IPIPE patch (Cobalt)
->   *   The kernel version is 4.19+
-> 
-> My code is running fine with different methods, there is no crash.
-> However, the execution hangs when  I use the couple rt_task_set_periodic/rt_task_wait_period.
-> Methods such as "RTIME", rt_printf(), rt_task_set_periodic() do not hangs, but my code seems to keep waiting on rt_task_wait_period().
-> 
-> I am aware someone had this issue four years ago :
-> https://xenomai.org/pipermail/xenomai/2017-November/037890.html
-> According to the link above, Cobalt does not support PID namespaces.
-> I also understood it is needed to convert vpid <-> pid by using the find_task_vpid().
-> 
-> I am not an expert on the interaction between Docker and Linux - specifically on PID.
-> Is it a normal behaviour in my case ? Where would it be interesting to make these changes ?
-> What is the link between RT_TASK and PID / vPID ?
-> 
-> Regards,
-> 
-> Julien
-> 
+If there is no CPU restriction on the bootargs, smokey cpu_affinity
+test would be skipped reporting with "no kernel support".
 
-Do you see this issue only on ARM, or is the pattern also reproducible
-on x86 (qemu/kvm)? Are only native/alchemy apps affected, or does the
-latency test hang as well?
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Maybe you can describe what would be needed to reproduce inside a
-xenomai-images qemu target so that we look at the same thing.
-
-Florian, we only have some x86 hosts enabled to run docker aside
-Xenomai, right?
-
-Jan
-
+diff --git a/tests/jobs/xenomai-beagle-bone-black.yml b/tests/jobs/xenomai-beagle-bone-black.yml
+index 034ac99..8117f29 100644
+--- a/tests/jobs/xenomai-beagle-bone-black.yml
++++ b/tests/jobs/xenomai-beagle-bone-black.yml
+@@ -71,3 +71,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
+index f6eb4a4..5987c94 100644
+--- a/tests/jobs/xenomai-hikey.yml
++++ b/tests/jobs/xenomai-hikey.yml
+@@ -70,3 +70,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
+index a5a181c..7f3600d 100644
+--- a/tests/jobs/xenomai-ipc227e.yml
++++ b/tests/jobs/xenomai-ipc227e.yml
+@@ -72,3 +72,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+index d5292ff..98c3eac 100644
+--- a/tests/jobs/xenomai-minnow.yml
++++ b/tests/jobs/xenomai-minnow.yml
+@@ -71,3 +71,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index c335292..b35a1a5 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -87,3 +87,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index 88fb880..27418ff 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -93,3 +93,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index 3e3a8ab..14501b7 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -87,3 +87,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
+diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
+index bc71b75..95b2288 100644
+--- a/tests/jobs/xenomai-x86-64-efi.yml
++++ b/tests/jobs/xenomai-x86-64-efi.yml
+@@ -72,3 +72,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=1
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
