@@ -1,15 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: Docker - Xenomai hangs on rt_task_wait_period()
-Date: Wed, 23 Jun 2021 07:21:16 +0000
-Message-ID: <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>
+From: MONTET Julien <julien.montet@reseau.eseo.fr>
+Subject: RE: Docker - Xenomai hangs on rt_task_wait_period()
+Date: Wed, 23 Jun 2021 07:55:14 +0000
+Message-ID: <PR3PR02MB6202344CA134AA59D0BE84A2D1089@PR3PR02MB6202.eurprd02.prod.outlook.com>
 References: <AM7PR02MB61947BF8EFF0C1BCEE882A1AD1099@AM7PR02MB6194.eurprd02.prod.outlook.com>
- <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>
-In-Reply-To: <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <156C87837E0EFF488BF73ACA15125EC2@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <80bc7b48-87b3-c739-d11d-140eab432990@siemens.com>,
+ <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>
+In-Reply-To: <9ce86b28d28ecbfa8af84c457254d2ee179ca601.camel@siemens.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,51 +18,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "julien.montet@reseau.eseo.fr" <julien.montet@reseau.eseo.fr>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTA2LTIzIGF0IDA3OjM3ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAyMi4wNi4yMSAxODozOCwgTU9OVEVUIEp1bGllbiB2aWEgWGVub21haSB3cm90ZToNCj4gPiBI
-ZWxsbyB0aGUgZGV2ZWxvcGVycywNCj4gPiANCj4gPiBJIGhhdmUgYmVlbiB1c2luZyBYZW5vbWFp
-IGZvciB0aGUgcGFzdCB0d28gbW9udGhzIG9uIGRpZmZlcmVudCB0YXJnZXRzIC8gc2tpbnMgLyBh
-cmNoaXRlY3R1cmVzLCBhbmQgaXQgaXMgYSBncmVhdCByZWFsIHRpbWUgc29sdXRpb24gIQ0KPiA+
-IEZvciB0aGUgcGFzdCBmZXcgZGF5cywgSSBoYXZlIGJlZW4gdHJ5aW5nIHRvIHVzZSBteSBjb2Rl
-IG9uIGEgZG9ja2VyIDoNCj4gPiANCj4gPiDCoMKgKiAgIENvbXBpbGVkIG9uIGEgZGViaWFuIDEw
-Ljkgd2l0aCBYZW5vbWFpIGxpYnJhcmllcyAoMy4xKSBmb3IgYW4gQVJNIHRhcmdldA0KPiA+IMKg
-wqAqICAgVGhpcyBjb2RlIHJ1bnMgb24gYSByYXNwYmVycnkgcGkgM0Igd2l0aCBhbiBJUElQRSBw
-YXRjaCAoQ29iYWx0KQ0KPiA+IMKgwqAqICAgVGhlIGtlcm5lbCB2ZXJzaW9uIGlzIDQuMTkrDQo+
-ID4gDQo+ID4gTXkgY29kZSBpcyBydW5uaW5nIGZpbmUgd2l0aCBkaWZmZXJlbnQgbWV0aG9kcywg
-dGhlcmUgaXMgbm8gY3Jhc2guDQo+ID4gSG93ZXZlciwgdGhlIGV4ZWN1dGlvbiBoYW5ncyB3aGVu
-ICBJIHVzZSB0aGUgY291cGxlIHJ0X3Rhc2tfc2V0X3BlcmlvZGljL3J0X3Rhc2tfd2FpdF9wZXJp
-b2QuDQo+ID4gTWV0aG9kcyBzdWNoIGFzICJSVElNRSIsIHJ0X3ByaW50ZigpLCBydF90YXNrX3Nl
-dF9wZXJpb2RpYygpIGRvIG5vdCBoYW5ncywgYnV0IG15IGNvZGUgc2VlbXMgdG8ga2VlcCB3YWl0
-aW5nIG9uIHJ0X3Rhc2tfd2FpdF9wZXJpb2QoKS4NCj4gPiANCj4gPiBJIGFtIGF3YXJlIHNvbWVv
-bmUgaGFkIHRoaXMgaXNzdWUgZm91ciB5ZWFycyBhZ28gOg0KPiA+IGh0dHBzOi8vZXVyMDEuc2Fm
-ZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnhlbm9tYWku
-b3JnJTJGcGlwZXJtYWlsJTJGeGVub21haSUyRjIwMTctTm92ZW1iZXIlMkYwMzc4OTAuaHRtbCZh
-bXA7ZGF0YT0wNCU3QzAxJTdDZmxvcmlhbi5iZXpkZWthJTQwc2llbWVucy5jb20lN0M2NzVhOTZh
-OGI1YjY0NDZkYTJmOTA4ZDkzNjA4ZjEwMSU3QzM4YWUzYmNkOTU3OTRmZDRhZGRhYjQyZTE0OTVk
-NTVhJTdDMSU3QzAlN0M2Mzc2MDAyMzQyOTU5Njg1MDUlN0NVbmtub3duJTdDVFdGcGJHWnNiM2Q4
-ZXlKV0lqb2lNQzR3TGpBd01EQWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhW
-Q0k2TW4wJTNEJTdDMTAwMCZhbXA7c2RhdGE9VUhRTDgwRDFIT3VKcW5nMUhUQ3hQYWgxaWxrSTd6
-SlFsU2hOdDk2dzF4USUzRCZhbXA7cmVzZXJ2ZWQ9MA0KPiA+IEFjY29yZGluZyB0byB0aGUgbGlu
-ayBhYm92ZSwgQ29iYWx0IGRvZXMgbm90IHN1cHBvcnQgUElEIG5hbWVzcGFjZXMuDQo+ID4gSSBh
-bHNvIHVuZGVyc3Rvb2QgaXQgaXMgbmVlZGVkIHRvIGNvbnZlcnQgdnBpZCA8LT4gcGlkIGJ5IHVz
-aW5nIHRoZSBmaW5kX3Rhc2tfdnBpZCgpLg0KPiA+IA0KPiA+IEkgYW0gbm90IGFuIGV4cGVydCBv
-biB0aGUgaW50ZXJhY3Rpb24gYmV0d2VlbiBEb2NrZXIgYW5kIExpbnV4IC0gc3BlY2lmaWNhbGx5
-IG9uIFBJRC4NCj4gPiBJcyBpdCBhIG5vcm1hbCBiZWhhdmlvdXIgaW4gbXkgY2FzZSA/IFdoZXJl
-IHdvdWxkIGl0IGJlIGludGVyZXN0aW5nIHRvIG1ha2UgdGhlc2UgY2hhbmdlcyA/DQo+ID4gV2hh
-dCBpcyB0aGUgbGluayBiZXR3ZWVuIFJUX1RBU0sgYW5kIFBJRCAvIHZQSUQgPw0KPiA+IA0KPiA+
-IFJlZ2FyZHMsDQo+ID4gDQo+ID4gSnVsaWVuDQo+ID4gDQo+IA0KPiBEbyB5b3Ugc2VlIHRoaXMg
-aXNzdWUgb25seSBvbiBBUk0sIG9yIGlzIHRoZSBwYXR0ZXJuIGFsc28gcmVwcm9kdWNpYmxlDQo+
-IG9uIHg4NiAocWVtdS9rdm0pPyBBcmUgb25seSBuYXRpdmUvYWxjaGVteSBhcHBzIGFmZmVjdGVk
-LCBvciBkb2VzIHRoZQ0KPiBsYXRlbmN5IHRlc3QgaGFuZyBhcyB3ZWxsPw0KPiANCj4gTWF5YmUg
-eW91IGNhbiBkZXNjcmliZSB3aGF0IHdvdWxkIGJlIG5lZWRlZCB0byByZXByb2R1Y2UgaW5zaWRl
-IGENCj4geGVub21haS1pbWFnZXMgcWVtdSB0YXJnZXQgc28gdGhhdCB3ZSBsb29rIGF0IHRoZSBz
-YW1lIHRoaW5nLg0KPiANCj4gRmxvcmlhbiwgd2Ugb25seSBoYXZlIHNvbWUgeDg2IGhvc3RzIGVu
-YWJsZWQgdG8gcnVuIGRvY2tlciBhc2lkZQ0KPiBYZW5vbWFpLCByaWdodD8NCg0KWWVzLCB3ZSBo
-YXZlIGEgeDg2IHNldHVwIHJ1bm5pbmcgY29udGFpbmVycywgYnV0IEFGQUlLIHRoZXJlIGlzIG5v
-DQpYZW5vbWFpIHdvcmtsb2FkIGluc2lkZSB0aGUgY29udGFpbmVyLg0KDQpXZSBrbm93IGFib3V0
-IFsxXSAoYnVnIC93cnQgUElEIG5hbWVzcGFjZSkuIE1pZ2h0IHRoYXQgYmUgcmVsYXRlZD8NCg0K
-WzFdIGh0dHBzOi8vZ2l0bGFiLmNvbS9YZW5vbWFpL3hlbm9tYWktaGFja2VyLXNwYWNlLy0vaXNz
-dWVzLzE5DQoNCj4gDQo+IEphbg0KPiANCg0K
+Hi,
+
+I tried again this morning, and run the latency bin of Xenomai on the Docke=
+r, it doesn't hang :
+
+root@f2f41a83e749:/usr/xenomai/bin# ./latency
+=3D=3D Sampling period: 1000 us
+=3D=3D Test mode: periodic user-mode task
+=3D=3D All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
+orst
+RTD|      1.666|      2.070|      7.187|       0|     0|      1.666|      7=
+.187
+RTD|      1.666|      2.074|     17.447|       0|     0|      1.666|     17=
+.447
+RTD|      1.613|      2.003|     14.113|       0|     0|      1.613|     17=
+.447
+RTD|      1.561|      2.045|     12.967|       0|     0|      1.561|     17=
+.447
+RTD|      1.716|      2.061|     19.217|       0|     0|      1.561|     19=
+.217
+RTD|      1.664|      2.062|     15.675|       0|     0|      1.561|     19=
+.217
+^C---|-----------|-----------|-----------|--------|------|-----------------=
+--------
+RTS|      1.561|      2.052|     19.217|       0|     0|    00:00:07/00:00:=
+07
+
+
+I can't test my Docker on x86 now, I will do it as soon as I can, most prob=
+ably this evening.
+Regarding the link Florian sent, I didn't use this to run my docker : -devi=
+ce=3D/dev/rtdm:/dev/rtdm
+I have almost the same "docker run" call as Marco Barletta, I just added : =
+--privileged --cap-add SYS_NICE.
+This PID issue might be related, I don't kow how to check this.
+
+Regards,
+
+On Wed, 2021-06-23 at 07:37 +0200, Jan Kiszka wrote:
+> On 22.06.21 18:38, MONTET Julien via Xenomai wrote:
+> > Hello the developers,
+> >
+> > I have been using Xenomai for the past two months on different targets =
+/ skins / architectures, and it is a great real time solution !
+> > For the past few days, I have been trying to use my code on a docker :
+> >
+> >   *   Compiled on a debian 10.9 with Xenomai libraries (3.1) for an ARM=
+ target
+> >   *   This code runs on a raspberry pi 3B with an IPIPE patch (Cobalt)
+> >   *   The kernel version is 4.19+
+> >
+> > My code is running fine with different methods, there is no crash.
+> > However, the execution hangs when  I use the couple rt_task_set_periodi=
+c/rt_task_wait_period.
+> > Methods such as "RTIME", rt_printf(), rt_task_set_periodic() do not han=
+gs, but my code seems to keep waiting on rt_task_wait_period().
+> >
+> > I am aware someone had this issue four years ago :
+> > https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fxen=
+omai.org%2Fpipermail%2Fxenomai%2F2017-November%2F037890.html&amp;data=3D04%=
+7C01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C=
+4d7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CT=
+WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%=
+3D%7C1000&amp;sdata=3DIdqQYU1WPAP4XP8yb6HWRn%2B10BsbRJRtrm3iEPDsqQQ%3D&amp;=
+reserved=3D0
+> > According to the link above, Cobalt does not support PID namespaces.
+> > I also understood it is needed to convert vpid <-> pid by using the fin=
+d_task_vpid().
+> >
+> > I am not an expert on the interaction between Docker and Linux - specif=
+ically on PID.
+> > Is it a normal behaviour in my case ? Where would it be interesting to =
+make these changes ?
+> > What is the link between RT_TASK and PID / vPID ?
+> >
+> > Regards,
+> >
+> > Julien
+> >
+>
+> Do you see this issue only on ARM, or is the pattern also reproducible
+> on x86 (qemu/kvm)? Are only native/alchemy apps affected, or does the
+> latency test hang as well?
+>
+> Maybe you can describe what would be needed to reproduce inside a
+> xenomai-images qemu target so that we look at the same thing.
+>
+> Florian, we only have some x86 hosts enabled to run docker aside
+> Xenomai, right?
+
+Yes, we have a x86 setup running containers, but AFAIK there is no
+Xenomai workload inside the container.
+
+We know about [1] (bug /wrt PID namespace). Might that be related?
+
+[1] https://eur02.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit=
+lab.com%2FXenomai%2Fxenomai-hacker-space%2F-%2Fissues%2F19&amp;data=3D04%7C=
+01%7Cjulien.montet%40reseau.eseo.fr%7C00a8a1217b1347e085d708d936177e97%7C4d=
+7ad1591265437ab9f62946247d5bf9%7C0%7C0%7C637600296802295046%7CUnknown%7CTWF=
+pbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D=
+%7C1000&amp;sdata=3DqI0zj%2F4PgzYoXyZBUE%2F9xYSbRI7vAp%2FPegw2JuCNcqM%3D&am=
+p;reserved=3D0
+
+>
+> Jan
+>
 
