@@ -1,13 +1,7 @@
-Subject: Re: is clock_nanosleep ok?
-References: <CAK6DXL01snXqWfUPh3wVTgqLR0V4MWHzJ-PF-JtyOCSZJWC+yQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ec2d99c2-1294-827c-2adc-89a15b18f388@siemens.com>
-Date: Mon, 28 Jun 2021 08:33:30 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAK6DXL01snXqWfUPh3wVTgqLR0V4MWHzJ-PF-JtyOCSZJWC+yQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-images 1/2] tests: remove unused test job
+Date: Mon, 28 Jun 2021 02:26:23 -0400
+Message-Id: <20210628062624.2244-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +10,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Barletta <barlettamarco8@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On 23.06.21 12:36, Marco Barletta via Xenomai wrote:
-> Hi everyone;
-> I need to do some stress-tests and i found some programs ad-hoc that wait
-> period with clocknanosleep. In the xenomai doc is written to use a timer or
-> a timerfd. So the question is: is ok to use clock_nanosleep? Why isn't it
-> listed between methods to wait period?
+Delete minnow test job that does not run anymore.
 
-You can use clock_nanosleep just like other methods. What is best
-depends on your application, if there are additional needs that make one
-or the other method more favorable from the API point of view.
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Jan
-
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+deleted file mode 100644
+index d5292ff..0000000
+--- a/tests/jobs/xenomai-minnow.yml
++++ /dev/null
+@@ -1,73 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-job_name: xenomai-test-suite
+-device_type: minnowboard-max-E3825
+-timeouts:
+-  job:
+-    minutes: 90
+-  action:
+-    minutes: 65
+-  connection:
+-    minutes: 5
+-priority: medium
+-visibility: public
+-
+-metadata:
+-  # please change these fields when modifying this job for your own tests.
+-  docs-source: xenomai-cof
+-  docs-filename: pipeline-xenomai-cof
+-# ACTION_BLOCK
+-actions:
+-- deploy:
+-    timeout:
+-      minutes: 15
+-    to: tftp
+-    kernel:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+-      type: bzimage
+-    ramdisk:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-initrd.img
+-      compression: gz
+-    nfsrootfs:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}.tar.gz
+-      compression: gz
+-# BOOT_BLOCK
+-- boot:
+-    timeout:
+-      minutes: 5
+-    method: grub
+-    commands: nfs
+-    prompts: ["root@demo:"]
+-    auto_login:
+-      login_prompt: 'demo login:'
+-      username: root
+-      password_prompt: 'Password:'
+-      password: root
+-
+-- test:
+-    timeout:
+-      minutes: 30
+-    definitions:
+-    - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+-      from: git
+-      path: lava-test-shell/smoke-tests-basic.yaml
+-      name: smoke-tests
+-    - repository:
+-        metadata:
+-          format: Lava-Test Test Definition 1.0
+-          name: xenomai-test-suite
+-          description: "runs the xenomai test suite"
+-        run:
+-          steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
+-      from: inline
+-      path: inline/xenomai-test-suite.yaml
+-      name: xenomai-test-suite
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
