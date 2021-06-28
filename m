@@ -1,18 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [xenomai-images 2/2] tests: restrict realtime cpu for x86 and
- qemu type of devices
-Date: Mon, 28 Jun 2021 11:06:09 +0000
-Message-ID: <b883b8e1a3182303a25b678738dfca938e7af504.camel@siemens.com>
-References: <20210628062624.2244-1-hongzhan.chen@intel.com>
- <20210628062624.2244-2-hongzhan.chen@intel.com>
- <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
- <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
-In-Reply-To: <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0CAC9EFB1848C3428D3121E03D44A5CF@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <22d045f858ff5e9b4daddb410540be94@tiscali.it>
+ <CALLqZ8TGTWVBj=VoZSVXizQPWLevYVCBr6R6gBf0TBtZui0kvg@mail.gmail.com>
+ <c6eea2e7c5c83292853a70c76a951cfe@tiscali.it>
+In-Reply-To: <c6eea2e7c5c83292853a70c76a951cfe@tiscali.it>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 28 Jun 2021 07:33:00 -0400
+Message-ID: <CALLqZ8QOZS9mJBsFcU6uZWVDOHXhC4QsYLstb7hxFOg1wf3C7w@mail.gmail.com>
+Subject: Re: Raspberry pi 4 second monitor problem on xeno3
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,86 +17,193 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "hongzhan.chen@intel.com" <hongzhan.chen@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: 77dab@tiscali.it
+Cc: xenomai@xenomai.org
 
-T24gTW9uLCAyMDIxLTA2LTI4IGF0IDEyOjIxICswMjAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
-IHdyb3RlOg0KPiBPbiAyOC4wNi4yMSAwOTowOCwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90
-ZToNCj4gPiBPbiAyOC4wNi4yMSAwODoyNiwgSG9uZ3poYW4gQ2hlbiB3cm90ZToNCj4gPiA+IElm
-IHRoZXJlIGlzIG5vIENQVSByZXN0cmljdGlvbiBvbiB0aGUgYm9vdGFyZ3MsIHNtb2tleSBjcHVf
-YWZmaW5pdHkNCj4gPiA+IHRlc3Qgd291bGQgYmUgc2tpcHBlZCByZXBvcnRpbmcgd2l0aCAibm8g
-a2VybmVsIHN1cHBvcnQiIGZvciB0aG9zZQ0KPiA+ID4gd2l0aG91dCBub24tUlQgY3B1Lg0KPiA+
-ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGlu
-dGVsLmNvbT4NCj4gPiA+IA0KPiA+ID4gZGlmZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1p
-cGMyMjdlLnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1pcGMyMjdlLnltbA0KPiA+ID4gaW5kZXgg
-YTVhMTgxYy4uMjA5YzVkNCAxMDA2NDQNCj4gPiA+IC0tLSBhL3Rlc3RzL2pvYnMveGVub21haS1p
-cGMyMjdlLnltbA0KPiA+ID4gKysrIGIvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIyN2UueW1sDQo+
-ID4gPiBAQCAtNzIsMyArNzIsNSBAQCBhY3Rpb25zOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBmcm9t
-OiBpbmxpbmUNCj4gPiA+IMKgwqDCoMKgwqDCoMKgcGF0aDogaW5saW5lL3hlbm9tYWktdGVzdC1z
-dWl0ZS55YW1sDQo+ID4gPiDCoMKgwqDCoMKgwqDCoG5hbWU6IHhlbm9tYWktdGVzdC1zdWl0ZQ0K
-PiA+ID4gK2NvbnRleHQ6DQo+ID4gPiArICBleHRyYV9rZXJuZWxfYXJnczogeGVub21haS5zdXBw
-b3J0ZWRfY3B1cz03DQo+ID4gPiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUt
-YW1kNjQueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYW1kNjQueW1sDQo+ID4gPiBpbmRl
-eCBjMzM1MjkyLi5lNDJmNmVjIDEwMDY0NA0KPiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFp
-LXFlbXUtYW1kNjQueW1sDQo+ID4gPiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1hbWQ2
-NC55bWwNCj4gPiA+IEBAIC00Niw3ICs0Niw3IEBAIGFjdGlvbnM6DQo+ID4gPiDCoMKgwqDCoMKg
-dG86IHRtcGZzDQo+ID4gPiDCoMKgwqDCoMKgaW1hZ2VzOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBr
-ZXJuZWw6DQo+ID4gPiAtICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFwcGVu
-ZCAicm9vdD0vZGV2L3NkYiBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAiDQo+ID4g
-PiArICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFwcGVuZCAicm9vdD0vZGV2
-L3NkYiBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgeGVub21haS5zdXBwb3J0ZWRf
-Y3B1cz0xIg0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgdXJsOiAke0RFUExPWV9VUkx9LyR7SVNB
-Ul9JTUFHRX0tJHtJU0FSX0RJU1RSSUJVVElPTn0tJHtUQVJHRVR9LXZtbGludXoNCj4gPiA+IMKg
-wqDCoMKgwqDCoMKgaW5pdHJkOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgaW1hZ2VfYXJnOiAt
-aW5pdHJkIHtpbml0cmR9DQo+ID4gPiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXFl
-bXUtYXJtNjQueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtNjQueW1sDQo+ID4gPiBp
-bmRleCA4OGZiODgwLi5jYzYwNTY0IDEwMDY0NA0KPiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5v
-bWFpLXFlbXUtYXJtNjQueW1sDQo+ID4gPiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1h
-cm02NC55bWwNCj4gPiA+IEBAIC01MCw3ICs1MCw3IEBAIGFjdGlvbnM6DQo+ID4gPiDCoMKgwqDC
-oMKgdG86IHRtcGZzDQo+ID4gPiDCoMKgwqDCoMKgaW1hZ2VzOg0KPiA+ID4gwqDCoMKgwqDCoMKg
-wqBrZXJuZWw6DQo+ID4gPiAtICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFw
-cGVuZCAicm9vdD0vZGV2L3ZkYSINCj4gPiA+ICsgICAgICAgIGltYWdlX2FyZzogLWtlcm5lbCB7
-a2VybmVsfSAtYXBwZW5kICJyb290PS9kZXYvdmRhIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MSIN
-Cj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoHVybDogJHtERVBMT1lfVVJMfS8ke0lTQVJfSU1BR0V9
-LSR7SVNBUl9ESVNUUklCVVRJT059LSR7VEFSR0VUfS12bWxpbnV6DQo+ID4gPiDCoMKgwqDCoMKg
-wqDCoGluaXRyZDoNCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoGltYWdlX2FyZzogLWluaXRyZCB7
-aW5pdHJkfQ0KPiA+ID4gZGlmZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhm
-LnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhmLnltbA0KPiA+ID4gaW5kZXggM2Uz
-YThhYi4uMmFmZTI1MCAxMDA2NDQNCj4gPiA+IC0tLSBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11
-LWFybWhmLnltbA0KPiA+ID4gKysrIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtaGYueW1s
-DQo+ID4gPiBAQCAtNDYsNyArNDYsNyBAQCBhY3Rpb25zOg0KPiA+ID4gwqDCoMKgwqDCoHRvOiB0
-bXBmcw0KPiA+ID4gwqDCoMKgwqDCoGltYWdlczoNCj4gPiA+IMKgwqDCoMKgwqDCoMKga2VybmVs
-Og0KPiA+ID4gLSAgICAgICAgaW1hZ2VfYXJnOiAta2VybmVsIHtrZXJuZWx9IC1hcHBlbmQgInJv
-b3Q9L2Rldi92ZGIiDQo+ID4gPiArICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0g
-LWFwcGVuZCAicm9vdD0vZGV2L3ZkYiB4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTEiDQo+ID4gPiDC
-oMKgwqDCoMKgwqDCoMKgwqB1cmw6ICR7REVQTE9ZX1VSTH0vJHtJU0FSX0lNQUdFfS0ke0lTQVJf
-RElTVFJJQlVUSU9OfS0ke1RBUkdFVH0tdm1saW51eg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBpbml0
-cmQ6DQo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgwqBpbWFnZV9hcmc6IC1pbml0cmQge2luaXRyZH0N
-Cj4gPiA+IGRpZmYgLS1naXQgYS90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwgYi90
-ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwNCj4gPiA+IGluZGV4IGJjNzFiNzUuLmQx
-NDE4YzEgMTAwNjQ0DQo+ID4gPiAtLS0gYS90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55
-bWwNCj4gPiA+ICsrKyBiL3Rlc3RzL2pvYnMveGVub21haS14ODYtNjQtZWZpLnltbA0KPiA+ID4g
-QEAgLTcyLDMgKzcyLDUgQEAgYWN0aW9uczoNCj4gPiA+IMKgwqDCoMKgwqDCoMKgZnJvbTogaW5s
-aW5lDQo+ID4gPiDCoMKgwqDCoMKgwqDCoHBhdGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUu
-eWFtbA0KPiA+ID4gwqDCoMKgwqDCoMKgwqBuYW1lOiB4ZW5vbWFpLXRlc3Qtc3VpdGUNCj4gPiA+
-ICtjb250ZXh0Og0KPiA+ID4gKyAgZXh0cmFfa2VybmVsX2FyZ3M6IHhlbm9tYWkuc3VwcG9ydGVk
-X2NwdXM9Nw0KPiA+ID4gDQo+ID4gDQo+ID4gVGhhbmtzLCBib3RoIGFwcGxpZWQsIGp1c3QgZm9y
-bWF0dGluZyB0aGUgbWFza3MgYXMgaGV4Lg0KPiA+IA0KPiANCj4gU2VlbXMgYXMgaWYgdGhpcyB0
-cmlnZ2VycyBhbiBpc3N1ZSB3aXRoIGRvdmV0YWlsLzUuMTA6DQo+IGh0dHBzOi8vZXVyMDEuc2Fm
-ZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnNvdXJjZS5k
-ZW54LmRlJTJGWGVub21haSUyRnhlbm9tYWktaW1hZ2VzJTJGLSUyRmpvYnMlMkYyODMzNDEmYW1w
-O2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0MHNpZW1lbnMuY29tJTdDNDE3MDg4YTUw
-MTQ2NDk5Zjk5NmYwOGQ5M2ExZTg2Y2MlN0MzOGFlM2JjZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1ZDU1
-YSU3QzElN0MwJTdDNjM3NjA0NzI1MDQ5MzgxNjM4JTdDVW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5
-SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJ
-Nk1uMCUzRCU3QzEwMDAmYW1wO3NkYXRhPWVOMnc1UUZKNmFpSTB4SmJDWjRuT3RMMlVncHJPQUNL
-ZlBXYU5HRExRZkklM0QmYW1wO3Jlc2VydmVkPTANCj4gDQo+IA0KPiANCjIwMjEtMDYtMjhUMTA6
-MTQ6MTMgTWFya2luZyB1bmZpbmlzaGVkIHRlc3QgcnVuIGFzIGZhaWxlZA0KMjAyMS0wNi0yOFQx
-MDoxNDoxMyB7J2Nhc2UnOiAnMV94ZW5vbWFpLXRlc3Qtc3VpdGUnLCAnZGVmaW5pdGlvbic6ICds
-YXZhJywgJ2R1cmF0aW9uJzogJzE3OTIuNjYnLCAncmVzdWx0JzogJ2ZhaWwnLCAndXVpZCc6ICcz
-ODgxXzEuNC4yLjQuNSd9DQoyMDIxLTA2LTI4VDEwOjE0OjEzIGxhdmEtdGVzdC1zaGVsbCB0aW1l
-ZCBvdXQgYWZ0ZXIgMTgwMCBzZWNvbmRzDQoNCkxvb2tzIGxpa2UgYW4gdGltZW91dCB0cmlnZ2Vy
-ZWQgYnnCoA0KDQoyMDIxLTA2LTI4VDA5OjQ3OjEwICsgL3Vzci9saWIveGVub21haS90ZXN0c3Vp
-dGUvY2xvY2t0ZXN0IC1EIC1UIDMwIC1DIENMT0NLX0hPU1RfUkVBTFRJTUUNCjIwMjEtMDYtMjhU
-MDk6NDc6MTAgWE5WRFNPX0ZFQVRfSE9TVF9SRUFMVElNRSBub3QgYXZhaWxhYmxlDQoNCkxldCdz
-IHNlZSBob3cgdGhlIGNvcnJlc3BvbmRpbmcgUUVNVSBiZWhhdmVzLi4uDQoNCkphbg0KDQoNCg==
+On Mon, Jun 28, 2021 at 4:30 AM davide via Xenomai <xenomai@xenomai.org>
+wrote:
 
+>
+> Hi, Found out it's using iPipe here.
+> Is there something I can look
+> for to understand why it doesn't work?
+>
+> Il 26.06.2021 15:09 Greg
+> Gallagher ha scritto:
+>
+> > On Sat, Jun 26, 2021 at 9:06 AM davide via
+> Xenomai wrote:
+> >
+> >> Hi, it is the first time I ask for an help on this
+> mailing list.
+> >> My
+> >> setup:
+> >> -Raspberry Pi 4, 4gb ram (forced to
+> 3gb) running debian buster
+> >> 64bit.
+> >>
+> >> pi@picat:~ $ uname -a
+> >>
+> Linux picat 4.19.126-v8-xeno3+ #1 SMP
+> >> PREEMPT Wed Mar 24 12:53:24 +07
+> 2021 aarch64 GNU/Linux
+> >>
+> >> pi@picat:~ $
+> >> hostnamectl
+> >>
+> >>
+> ...cut...
+> >> Operating System: Debian GNU/Linux 10 (buster)
+> >>
+> >>
+> Kernel: Linux 4.19.126-v8-xeno3+
+> >> Architecture: arm64
+> >>
+> >> - two
+> HDMI
+> >> identical monitor connected . 1920x1080 60Hz 148.6 MHz clock.
+> >>
+>
+> >> My
+> >> propblem:
+> >> on a clean raspbian 64bit, with 5.x kernel both
+> monitors work
+> >> as expected.
+> >> I'm working on a prebuilt image to use
+> as an Ethercat
+> >> Master, Picat4, from simplerobot.org [1], which has
+> this kernel, and what
+> >> happens is that at booting both monitors start,
+> I see booting info on
+> >> second monitor for 2-3 seconds, after that
+> image get frozen on the
+> >> second monitor and the first starts as
+> expected with the system running
+> >> fine.
+> >>
+> >> this is an extract of
+> dmesg:
+> >>
+> >> pi@picat:~ $ dmesg | grep fb
+> >> [
+> >> 0.000000] Kernel
+> command line: coherent_pool=3D1M 8250.nr_uarts=3D0 cma=3D64M
+> >>
+> bcm2708_fb.fbwidth=3D1920 bcm2708_fb.fbheight=3D1080 bcm2708_fb.fbswap=3D=
+1
+> >>
+> smsc95xx.macaddr=3DDC:A6:32:F5:24:DE vc_mem.mem_base=3D0x3ec00000
+> >>
+> vc_mem.mem_size=3D0x40000000 console=3DttyS0,115200 console=3Dtty1
+> >>
+> root=3DPARTUUID=3D84c8ffd9-02 rootfstype=3Dext4 elevator=3Ddeadline
+> >>
+> fsck.repair=3Dyes rootwait quiet splash plymouth.ignore-serial-consoles
+> >>
+> isolcpus=3D2,3 xenomai.supported_cpus=3D0xC
+> >> [ 0.172711] pci_bus
+> 0000:00:
+> >> root bus resource [mem 0x600000000-0x603ffffff] (bus
+> address
+> >> [0xf8000000-0xfbffffff])
+> >> [ 0.176577] bcm2708_fb soc:fb: FB
+> found 2
+> >> display(s)
+> >> [ 0.209547] bcm2708_fb soc:fb: Registered
+> framebuffer for
+> >> display 0, size 1920x1080
+> >> [ 0.233066] bcm2708_fb
+> soc:fb: Registered
+> >> framebuffer for display 1, size 1920x1080
+> >>
+> >>
+> from those commands I confirm
+> >> monitors are recognized:
+> >>
+> >>
+> pi@picat:~ $ tvservice -l
+> >> 2 attached
+> >> device(s), display ID's are :
+>
+> >> Display Number 2, type HDMI 0
+> >> Display
+> >> Number 7, type HDMI 1
+> >>
+> pi@picat:~ $ tvservice -v 2 -s
+> >> state 0xa [HDMI CEA
+> >> (16) RGB lim
+> 16:9], 1920x1080 @ 60.00Hz, progressive
+> >> pi@picat:~ $
+> >> tvservice -v
+> 7 -s
+> >> state 0xa [HDMI CEA (16) RGB lim 16:9], 1920x1080 @
+> >> 60.00Hz,
+> progressive
+> >>
+> >> ...and 2 framebuffers are created:
+> >>
+> >> pi@picat:~
+> $
+> >> ls /dev/fb*
+> >> /dev/fb0 /dev/fb1
+> >>
+> >> BUT xrandr give me this:
+> >>
+>
+> >> pi@picat:~ $
+> >> xrandr
+> >> xrandr: Failed to get size of gamma for
+> output default
+> >> Screen 0:
+> >> minimum 1920 x 1080, current 1920 x 1080,
+> maximum 1920 x 1080
+> >> default
+> >> connected 1920x1080+0+0 0mm x 0mm
+> >>
+> 1920x1080 0.00*
+> >>
+> >> only one
+> >> monitor...
+> >>
+> >> I know that's a
+> Raspberry, and I have to expect strange
+> >> behave, but it looks
+> promising that at booting both monitors work,
+> >> so..
+> >>
+> >> Can you
+> point me in the right direction to look where, when and
+> >> why the
+> second monitor stops to work?
+> >>
+> >> Thanks, Davide.
+> >>
+> >> Con Tiscali
+> Mobile Smart 70 hai 70 GB in 4G, minuti illimitati e 100 SMS a soli
+> 7,99EUR al mese http://tisca.li/Smart70 [2]
+> >
+> > Hi,
+> > Are you using
+> ipipe or dovetail? This may not be a xenomai issue, how do you build
+> your kernel?
+> > Thanks
+> > Greg
+>
+>
+>
+> Con Tiscali Mobile Smart 70 hai 70 GB in 4G, minuti illimitati e 100 SMS =
+a
+> soli 7,99=E2=82=AC al mese http://tisca.li/Smart70
+
+
+It=E2=80=99s possible the drivers aren=E2=80=99t working in the kernel with=
+out ipipe,
+you=E2=80=99ll want to confirm that first.  If you didn=E2=80=99t compile t=
+he kernel
+yourself you=E2=80=99ll want to find the sources so you can debug..
+
+Greg
+
+> <http://tisca.li/Smart70>
+>
+>
