@@ -1,12 +1,8 @@
-MIME-Version: 1.0
-References: <22d045f858ff5e9b4daddb410540be94@tiscali.it>
-In-Reply-To: <22d045f858ff5e9b4daddb410540be94@tiscali.it>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sat, 26 Jun 2021 09:09:52 -0400
-Message-ID: <CALLqZ8TGTWVBj=VoZSVXizQPWLevYVCBr6R6gBf0TBtZui0kvg@mail.gmail.com>
-Subject: Re: Raspberry pi 4 second monitor problem on xeno3
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [Xenomai-images][PATCH] tests: restrict realtime cpu for x86 and qemu
+ type of devices
+Date: Mon, 28 Jun 2021 00:43:26 -0400
+Message-Id: <20210628044326.1220-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,131 +11,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 77dab@tiscali.it
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On Sat, Jun 26, 2021 at 9:06 AM davide via Xenomai <xenomai@xenomai.org>
-wrote:
+1. If there is no CPU restriction on the bootargs, smokey cpu_affinity
+test would be skipped reporting with "no kernel support" for those
+without non-RT cpu.
 
->
->
-> Hi, it is the first time I ask for an help on this mailing list.
-> My
-> setup:
-> -Raspberry Pi 4, 4gb ram (forced to 3gb) running debian buster
-> 64bit.
->
-> pi@picat:~ $ uname -a
-> Linux picat 4.19.126-v8-xeno3+ #1 SMP
-> PREEMPT Wed Mar 24 12:53:24 +07 2021 aarch64 GNU/Linux
->
-> pi@picat:~ $
-> hostnamectl
->
-> ...cut...
-> Operating System: Debian GNU/Linux 10 (buster)
->
-> Kernel: Linux 4.19.126-v8-xeno3+
->  Architecture: arm64
->
-> - two HDMI
-> identical monitor connected . 1920x1080 60Hz 148.6 MHz clock.
->
-> My
-> propblem:
-> on a clean raspbian 64bit, with 5.x kernel both monitors work
-> as expected.
-> I'm working on a prebuilt image to use as an Ethercat
-> Master, Picat4, from simplerobot.org, which has this kernel, and what
-> happens is that at booting both monitors start, I see booting info on
-> second monitor for 2-3 seconds, after that image get frozen on the
-> second monitor and the first starts as expected with the system running
-> fine.
->
-> this is an extract of dmesg:
->
-> pi@picat:~ $ dmesg | grep fb
-> [
-> 0.000000] Kernel command line: coherent_pool=3D1M 8250.nr_uarts=3D0 cma=
-=3D64M
-> bcm2708_fb.fbwidth=3D1920 bcm2708_fb.fbheight=3D1080 bcm2708_fb.fbswap=3D=
-1
-> smsc95xx.macaddr=3DDC:A6:32:F5:24:DE vc_mem.mem_base=3D0x3ec00000
-> vc_mem.mem_size=3D0x40000000 console=3DttyS0,115200 console=3Dtty1
-> root=3DPARTUUID=3D84c8ffd9-02 rootfstype=3Dext4 elevator=3Ddeadline
-> fsck.repair=3Dyes rootwait quiet splash plymouth.ignore-serial-consoles
-> isolcpus=3D2,3 xenomai.supported_cpus=3D0xC
-> [ 0.172711] pci_bus 0000:00:
-> root bus resource [mem 0x600000000-0x603ffffff] (bus address
-> [0xf8000000-0xfbffffff])
-> [ 0.176577] bcm2708_fb soc:fb: FB found 2
-> display(s)
-> [ 0.209547] bcm2708_fb soc:fb: Registered framebuffer for
-> display 0, size 1920x1080
-> [ 0.233066] bcm2708_fb soc:fb: Registered
-> framebuffer for display 1, size 1920x1080
->
-> from those commands I confirm
-> monitors are recognized:
->
-> pi@picat:~ $ tvservice -l
-> 2 attached
-> device(s), display ID's are :
-> Display Number 2, type HDMI 0
-> Display
-> Number 7, type HDMI 1
-> pi@picat:~ $ tvservice -v 2 -s
-> state 0xa [HDMI CEA
-> (16) RGB lim 16:9], 1920x1080 @ 60.00Hz, progressive
-> pi@picat:~ $
-> tvservice -v 7 -s
-> state 0xa [HDMI CEA (16) RGB lim 16:9], 1920x1080 @
-> 60.00Hz, progressive
->
-> ...and 2 framebuffers are created:
->
-> pi@picat:~ $
-> ls /dev/fb*
-> /dev/fb0 /dev/fb1
->
-> BUT xrandr give me this:
->
-> pi@picat:~ $
-> xrandr
-> xrandr: Failed to get size of gamma for output default
-> Screen 0:
-> minimum 1920 x 1080, current 1920 x 1080, maximum 1920 x 1080
-> default
-> connected 1920x1080+0+0 0mm x 0mm
->  1920x1080 0.00*
->
-> only one
-> monitor...
->
-> I know that's a Raspberry, and I have to expect strange
-> behave, but it looks promising that at booting both monitors work,
-> so..
->
-> Can you point me in the right direction to look where, when and
-> why the second monitor stops to work?
->
-> Thanks, Davide.
->
->
->
->
-> Con Tiscali Mobile Smart 70 hai 70 GB in 4G, minuti illimitati e 100 SMS =
-a
-> soli 7,99=E2=82=AC al mese http://tisca.li/Smart70
->
+2. delete unused test job.
 
-Hi,
-  Are you using ipipe or dovetail? This may not be a xenomai issue, how do
-you build your kernel?
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Thanks
+diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
+index a5a181c..209c5d4 100644
+--- a/tests/jobs/xenomai-ipc227e.yml
++++ b/tests/jobs/xenomai-ipc227e.yml
+@@ -72,3 +72,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=7
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+deleted file mode 100644
+index d5292ff..0000000
+--- a/tests/jobs/xenomai-minnow.yml
++++ /dev/null
+@@ -1,73 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-job_name: xenomai-test-suite
+-device_type: minnowboard-max-E3825
+-timeouts:
+-  job:
+-    minutes: 90
+-  action:
+-    minutes: 65
+-  connection:
+-    minutes: 5
+-priority: medium
+-visibility: public
+-
+-metadata:
+-  # please change these fields when modifying this job for your own tests.
+-  docs-source: xenomai-cof
+-  docs-filename: pipeline-xenomai-cof
+-# ACTION_BLOCK
+-actions:
+-- deploy:
+-    timeout:
+-      minutes: 15
+-    to: tftp
+-    kernel:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+-      type: bzimage
+-    ramdisk:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-initrd.img
+-      compression: gz
+-    nfsrootfs:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}.tar.gz
+-      compression: gz
+-# BOOT_BLOCK
+-- boot:
+-    timeout:
+-      minutes: 5
+-    method: grub
+-    commands: nfs
+-    prompts: ["root@demo:"]
+-    auto_login:
+-      login_prompt: 'demo login:'
+-      username: root
+-      password_prompt: 'Password:'
+-      password: root
+-
+-- test:
+-    timeout:
+-      minutes: 30
+-    definitions:
+-    - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+-      from: git
+-      path: lava-test-shell/smoke-tests-basic.yaml
+-      name: smoke-tests
+-    - repository:
+-        metadata:
+-          format: Lava-Test Test Definition 1.0
+-          name: xenomai-test-suite
+-          description: "runs the xenomai test suite"
+-        run:
+-          steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
+-      from: inline
+-      path: inline/xenomai-test-suite.yaml
+-      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index c335292..e42f6ec 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -46,7 +46,7 @@ actions:
+     to: tmpfs
+     images:
+       kernel:
+-        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0"
++        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0 xenomai.supported_cpus=1"
+         url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index 88fb880..cc60564 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -50,7 +50,7 @@ actions:
+     to: tmpfs
+     images:
+       kernel:
+-        image_arg: -kernel {kernel} -append "root=/dev/vda"
++        image_arg: -kernel {kernel} -append "root=/dev/vda xenomai.supported_cpus=1"
+         url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index 3e3a8ab..2afe250 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -46,7 +46,7 @@ actions:
+     to: tmpfs
+     images:
+       kernel:
+-        image_arg: -kernel {kernel} -append "root=/dev/vdb"
++        image_arg: -kernel {kernel} -append "root=/dev/vdb xenomai.supported_cpus=1"
+         url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
+index bc71b75..d1418c1 100644
+--- a/tests/jobs/xenomai-x86-64-efi.yml
++++ b/tests/jobs/xenomai-x86-64-efi.yml
+@@ -72,3 +72,5 @@ actions:
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
++context:
++  extra_kernel_args: xenomai.supported_cpus=7
+-- 
+2.17.1
 
-Greg
 
->
->
