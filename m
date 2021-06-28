@@ -1,11 +1,10 @@
-Subject: Re: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
- Rtdmtest and RTIPC
-References: <20210624064505.25467-1-hongzhan.chen@intel.com>
+Subject: Re: is clock_nanosleep ok?
+References: <CAK6DXL01snXqWfUPh3wVTgqLR0V4MWHzJ-PF-JtyOCSZJWC+yQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c550d801-3d5b-e831-aca8-6103f7043290@siemens.com>
-Date: Mon, 28 Jun 2021 08:31:44 +0200
+Message-ID: <ec2d99c2-1294-827c-2adc-89a15b18f388@siemens.com>
+Date: Mon, 28 Jun 2021 08:33:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210624064505.25467-1-hongzhan.chen@intel.com>
+In-Reply-To: <CAK6DXL01snXqWfUPh3wVTgqLR0V4MWHzJ-PF-JtyOCSZJWC+yQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,210 +16,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Marco Barletta <barlettamarco8@gmail.com>, xenomai@xenomai.org
 
-On 24.06.21 08:45, Hongzhan Chen wrote:
-> enable Rtnet, Rtdmtest, RTIPC, watchdog, RT sched class and
-> related drivers that would be tested by smokey test.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
-> index d4e717e..122aeac 100644
-> --- a/recipes-kernel/linux/files/arm64_defconfig
-> +++ b/recipes-kernel/linux/files/arm64_defconfig
-> @@ -360,19 +360,31 @@ CONFIG_XENOMAI=y
->  #
->  # Core features
->  #
-> -# CONFIG_XENO_OPT_SCHED_CLASSES is not set
-> +CONFIG_XENO_OPT_SCHED_CLASSES=y
-> +CONFIG_XENO_OPT_SCHED_WEAK=y
-> +CONFIG_XENO_OPT_SCHED_TP=y
-> +CONFIG_XENO_OPT_SCHED_TP_NRPART=4
-> +CONFIG_XENO_OPT_SCHED_SPORADIC=y
-> +CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
-> +CONFIG_XENO_OPT_SCHED_QUOTA=y
-> +CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
-> +CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
->  CONFIG_XENO_OPT_STATS=y
-> -# CONFIG_XENO_OPT_SHIRQ is not set
-> +CONFIG_XENO_OPT_STATS_IRQS=y
-> +CONFIG_XENO_OPT_SHIRQ=y
->  CONFIG_XENO_OPT_RR_QUANTUM=1000
->  CONFIG_XENO_OPT_AUTOTUNE=y
-> -# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
-> -CONFIG_XENO_OPT_TIMER_LIST=y
-> -# CONFIG_XENO_OPT_TIMER_RBTREE is not set
-> +CONFIG_XENO_OPT_SCALABLE_SCHED=y
-> +# CONFIG_XENO_OPT_TIMER_LIST is not set
-> +CONFIG_XENO_OPT_TIMER_RBTREE=y
-> +CONFIG_XENO_OPT_PIPE=y
-> +CONFIG_XENO_OPT_MAP=y
->  CONFIG_XENO_OPT_VFILE=y
->  
->  #
->  # Sizes and static limits
->  #
-> +CONFIG_XENO_OPT_PIPE_NRDEV=32
->  CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
->  CONFIG_XENO_OPT_SYS_HEAPSZ=4096
->  CONFIG_XENO_OPT_PRIVATE_HEAPSZ=256
-> @@ -396,7 +408,12 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
->  #
->  # Serial drivers
->  #
-> -# CONFIG_XENO_DRIVERS_16550A is not set
-> +CONFIG_XENO_DRIVERS_16550A=y
-> +CONFIG_XENO_DRIVERS_16550A_PIO=y
-> +# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
-> +# CONFIG_XENO_DRIVERS_16550A_ANY is not set
-> +CONFIG_XENO_DRIVERS_16550A_PCI=y
-> +CONFIG_XENO_DRIVERS_16550A_PCI_MOXA=y
->  
->  #
->  # Testing drivers
-> @@ -404,17 +421,106 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
->  CONFIG_XENO_DRIVERS_TIMERBENCH=y
->  CONFIG_XENO_DRIVERS_SWITCHTEST=y
->  CONFIG_XENO_DRIVERS_HEAPCHECK=y
-> -# CONFIG_XENO_DRIVERS_RTDMTEST is not set
-> +CONFIG_XENO_DRIVERS_RTDMTEST=m
->  
->  #
->  # CAN drivers
->  #
-> -# CONFIG_XENO_DRIVERS_CAN is not set
-> +CONFIG_XENO_DRIVERS_CAN=y
-> +CONFIG_XENO_DRIVERS_CAN_DEBUG=y
-> +CONFIG_XENO_DRIVERS_CAN_LOOPBACK=y
-> +CONFIG_XENO_DRIVERS_CAN_RXBUF_SIZE=1024
-> +CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES=4
-> +CONFIG_XENO_DRIVERS_CAN_MAX_RECEIVERS=16
-> +CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
-> +# CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
-> +CONFIG_XENO_DRIVERS_CAN_VIRT=y
-> +# CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI=y
-> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG=y
->  
->  #
->  # RTnet
->  #
-> -# CONFIG_XENO_DRIVERS_NET is not set
-> +CONFIG_XENO_DRIVERS_NET=m
-> +CONFIG_XENO_DRIVERS_RTNET_CHECKED=y
-> +
-> +#
-> +# Protocol Stack
-> +#
-> +
-> +#
-> +# Stack parameters
-> +#
-> +CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
-> +CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
-> +CONFIG_XENO_DRIVERS_NET_RTWLAN=y
-> +
-> +#
-> +# Protocols
-> +#
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4=m
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING=y
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NET_ROUTES=16
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTER=y
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP=m
-> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION=y
-> +CONFIG_XENO_DRIVERS_NET_RTPACKET=m
-> +CONFIG_XENO_DRIVERS_NET_RTMAC=m
-> +CONFIG_XENO_DRIVERS_NET_TDMA=m
-> +CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
-> +CONFIG_XENO_DRIVERS_NET_NOMAC=m
-> +CONFIG_XENO_DRIVERS_NET_RTCFG=m
-> +CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
-> +
-> +#
-> +# Drivers
-> +#
-> +
-> +#
-> +# Common PCI Drivers
-> +#
-> +CONFIG_XENO_DRIVERS_NET_DRV_PCNET32=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_TULIP=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT=20
-> +# CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG is not set
-> +CONFIG_XENO_DRIVERS_NET_DRV_E1000=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_E1000E=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_8139=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_IGB=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_R8169=m
-> +
-> +#
-> +# Misc Drivers
-> +#
-> +CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_SMC91111=m
-> +CONFIG_XENO_DRIVERS_NET_EXP_DRIVERS=y
-> +CONFIG_XENO_DRIVERS_NET_DRV_3C59X=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW=m
-> +CONFIG_XENO_DRIVERS_NET_DRV_RT2500=m
-> +
-> +#
-> +# Add-Ons
-> +#
-> +CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
-> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
-> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
->  
->  #
->  # ANALOGY drivers
-> @@ -424,7 +530,12 @@ CONFIG_XENO_DRIVERS_HEAPCHECK=y
->  #
->  # Real-time IPC drivers
->  #
-> -# CONFIG_XENO_DRIVERS_RTIPC is not set
-> +CONFIG_XENO_DRIVERS_RTIPC=y
-> +CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-> +CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
-> +CONFIG_XENO_OPT_IDDP_NRPORT=32
-> +CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
-> +CONFIG_XENO_OPT_BUFP_NRPORT=32
->  
->  #
->  # UDD support
-> @@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
->  # cause troubles with Xenomai. You should disable them.
->  #
->  CONFIG_XENO_VERSION_MAJOR=3
-> -CONFIG_XENO_VERSION_MINOR=0
-> -CONFIG_XENO_REVISION_LEVEL=90
-> -CONFIG_XENO_VERSION_STRING="3.1-devel"
-> -CONFIG_XENO_VERSION_NAME="Xenomai -next"
-> +CONFIG_XENO_VERSION_MINOR=1
-> +CONFIG_XENO_REVISION_LEVEL=0
-> +CONFIG_XENO_VERSION_STRING="3.1"
->  CONFIG_FREEZER=y
->  
->  #
-> 
+On 23.06.21 12:36, Marco Barletta via Xenomai wrote:
+> Hi everyone;
+> I need to do some stress-tests and i found some programs ad-hoc that wait
+> period with clocknanosleep. In the xenomai doc is written to use a timer or
+> a timerfd. So the question is: is ok to use clock_nanosleep? Why isn't it
+> listed between methods to wait period?
 
-Thanks, applied (with tiny wording tweaks to the log).
+You can use clock_nanosleep just like other methods. What is best
+depends on your application, if there are additional needs that make one
+or the other method more favorable from the API point of view.
 
 Jan
 
