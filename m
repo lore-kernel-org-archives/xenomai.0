@@ -1,13 +1,18 @@
-Subject: Re: [PATCH][3.x] kernel: syscall: Correctly check for x32
-References: <20210611075706.29544-1-richard@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4c58b839-6b7d-35f3-2900-2a0fa1ad0356@siemens.com>
-Date: Fri, 11 Jun 2021 10:31:15 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210611075706.29544-1-richard@nod.at>
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [xenomai-images 2/2] tests: restrict realtime cpu for x86 and
+ qemu type of devices
+Date: Mon, 28 Jun 2021 11:06:09 +0000
+Message-ID: <b883b8e1a3182303a25b678738dfca938e7af504.camel@siemens.com>
+References: <20210628062624.2244-1-hongzhan.chen@intel.com>
+ <20210628062624.2244-2-hongzhan.chen@intel.com>
+ <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
+ <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
+In-Reply-To: <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0CAC9EFB1848C3428D3121E03D44A5CF@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +21,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
+To: "hongzhan.chen@intel.com" <hongzhan.chen@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11.06.21 09:57, Richard Weinberger via Xenomai wrote:
-> Since 10.2 gcc it sets __ILP32__ even for i386.
-> To check for x32 we need to check for __x86_64__ being set too.
-> 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
-> While x32 is gone in master, 3.x stable still has it.
-> Without this patch it is not possible to build Xenomai for i386
-> with a recent gcc toolchain.
-> ---
->  kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
-> index aa9936dfd..1626430c1 100644
-> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
-> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
-> @@ -18,7 +18,7 @@
->  #ifndef _COBALT_X86_ASM_UAPI_SYSCALL_H
->  #define _COBALT_X86_ASM_UAPI_SYSCALL_H
->  
-> -#ifdef __ILP32__
-> +#if defined(__x86_64__) && defined(__ILP32__)
->  #define __xn_syscall_base  __COBALT_X32_BASE
->  #else
->  #define __xn_syscall_base  0
-> 
-
-Thanks, applied to stable/v3.1.x. No one should be doing gcc-10 with
-v3.0.x anymore...
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gTW9uLCAyMDIxLTA2LTI4IGF0IDEyOjIxICswMjAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
+IHdyb3RlOg0KPiBPbiAyOC4wNi4yMSAwOTowOCwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90
+ZToNCj4gPiBPbiAyOC4wNi4yMSAwODoyNiwgSG9uZ3poYW4gQ2hlbiB3cm90ZToNCj4gPiA+IElm
+IHRoZXJlIGlzIG5vIENQVSByZXN0cmljdGlvbiBvbiB0aGUgYm9vdGFyZ3MsIHNtb2tleSBjcHVf
+YWZmaW5pdHkNCj4gPiA+IHRlc3Qgd291bGQgYmUgc2tpcHBlZCByZXBvcnRpbmcgd2l0aCAibm8g
+a2VybmVsIHN1cHBvcnQiIGZvciB0aG9zZQ0KPiA+ID4gd2l0aG91dCBub24tUlQgY3B1Lg0KPiA+
+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGlu
+dGVsLmNvbT4NCj4gPiA+IA0KPiA+ID4gZGlmZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1p
+cGMyMjdlLnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1pcGMyMjdlLnltbA0KPiA+ID4gaW5kZXgg
+YTVhMTgxYy4uMjA5YzVkNCAxMDA2NDQNCj4gPiA+IC0tLSBhL3Rlc3RzL2pvYnMveGVub21haS1p
+cGMyMjdlLnltbA0KPiA+ID4gKysrIGIvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIyN2UueW1sDQo+
+ID4gPiBAQCAtNzIsMyArNzIsNSBAQCBhY3Rpb25zOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBmcm9t
+OiBpbmxpbmUNCj4gPiA+IMKgwqDCoMKgwqDCoMKgcGF0aDogaW5saW5lL3hlbm9tYWktdGVzdC1z
+dWl0ZS55YW1sDQo+ID4gPiDCoMKgwqDCoMKgwqDCoG5hbWU6IHhlbm9tYWktdGVzdC1zdWl0ZQ0K
+PiA+ID4gK2NvbnRleHQ6DQo+ID4gPiArICBleHRyYV9rZXJuZWxfYXJnczogeGVub21haS5zdXBw
+b3J0ZWRfY3B1cz03DQo+ID4gPiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUt
+YW1kNjQueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYW1kNjQueW1sDQo+ID4gPiBpbmRl
+eCBjMzM1MjkyLi5lNDJmNmVjIDEwMDY0NA0KPiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFp
+LXFlbXUtYW1kNjQueW1sDQo+ID4gPiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1hbWQ2
+NC55bWwNCj4gPiA+IEBAIC00Niw3ICs0Niw3IEBAIGFjdGlvbnM6DQo+ID4gPiDCoMKgwqDCoMKg
+dG86IHRtcGZzDQo+ID4gPiDCoMKgwqDCoMKgaW1hZ2VzOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBr
+ZXJuZWw6DQo+ID4gPiAtICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFwcGVu
+ZCAicm9vdD0vZGV2L3NkYiBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAiDQo+ID4g
+PiArICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFwcGVuZCAicm9vdD0vZGV2
+L3NkYiBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgeGVub21haS5zdXBwb3J0ZWRf
+Y3B1cz0xIg0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgdXJsOiAke0RFUExPWV9VUkx9LyR7SVNB
+Ul9JTUFHRX0tJHtJU0FSX0RJU1RSSUJVVElPTn0tJHtUQVJHRVR9LXZtbGludXoNCj4gPiA+IMKg
+wqDCoMKgwqDCoMKgaW5pdHJkOg0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgaW1hZ2VfYXJnOiAt
+aW5pdHJkIHtpbml0cmR9DQo+ID4gPiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXFl
+bXUtYXJtNjQueW1sIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtNjQueW1sDQo+ID4gPiBp
+bmRleCA4OGZiODgwLi5jYzYwNTY0IDEwMDY0NA0KPiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5v
+bWFpLXFlbXUtYXJtNjQueW1sDQo+ID4gPiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1h
+cm02NC55bWwNCj4gPiA+IEBAIC01MCw3ICs1MCw3IEBAIGFjdGlvbnM6DQo+ID4gPiDCoMKgwqDC
+oMKgdG86IHRtcGZzDQo+ID4gPiDCoMKgwqDCoMKgaW1hZ2VzOg0KPiA+ID4gwqDCoMKgwqDCoMKg
+wqBrZXJuZWw6DQo+ID4gPiAtICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0gLWFw
+cGVuZCAicm9vdD0vZGV2L3ZkYSINCj4gPiA+ICsgICAgICAgIGltYWdlX2FyZzogLWtlcm5lbCB7
+a2VybmVsfSAtYXBwZW5kICJyb290PS9kZXYvdmRhIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MSIN
+Cj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoHVybDogJHtERVBMT1lfVVJMfS8ke0lTQVJfSU1BR0V9
+LSR7SVNBUl9ESVNUUklCVVRJT059LSR7VEFSR0VUfS12bWxpbnV6DQo+ID4gPiDCoMKgwqDCoMKg
+wqDCoGluaXRyZDoNCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoGltYWdlX2FyZzogLWluaXRyZCB7
+aW5pdHJkfQ0KPiA+ID4gZGlmZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhm
+LnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhmLnltbA0KPiA+ID4gaW5kZXggM2Uz
+YThhYi4uMmFmZTI1MCAxMDA2NDQNCj4gPiA+IC0tLSBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11
+LWFybWhmLnltbA0KPiA+ID4gKysrIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtaGYueW1s
+DQo+ID4gPiBAQCAtNDYsNyArNDYsNyBAQCBhY3Rpb25zOg0KPiA+ID4gwqDCoMKgwqDCoHRvOiB0
+bXBmcw0KPiA+ID4gwqDCoMKgwqDCoGltYWdlczoNCj4gPiA+IMKgwqDCoMKgwqDCoMKga2VybmVs
+Og0KPiA+ID4gLSAgICAgICAgaW1hZ2VfYXJnOiAta2VybmVsIHtrZXJuZWx9IC1hcHBlbmQgInJv
+b3Q9L2Rldi92ZGIiDQo+ID4gPiArICAgICAgICBpbWFnZV9hcmc6IC1rZXJuZWwge2tlcm5lbH0g
+LWFwcGVuZCAicm9vdD0vZGV2L3ZkYiB4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTEiDQo+ID4gPiDC
+oMKgwqDCoMKgwqDCoMKgwqB1cmw6ICR7REVQTE9ZX1VSTH0vJHtJU0FSX0lNQUdFfS0ke0lTQVJf
+RElTVFJJQlVUSU9OfS0ke1RBUkdFVH0tdm1saW51eg0KPiA+ID4gwqDCoMKgwqDCoMKgwqBpbml0
+cmQ6DQo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgwqBpbWFnZV9hcmc6IC1pbml0cmQge2luaXRyZH0N
+Cj4gPiA+IGRpZmYgLS1naXQgYS90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwgYi90
+ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwNCj4gPiA+IGluZGV4IGJjNzFiNzUuLmQx
+NDE4YzEgMTAwNjQ0DQo+ID4gPiAtLS0gYS90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55
+bWwNCj4gPiA+ICsrKyBiL3Rlc3RzL2pvYnMveGVub21haS14ODYtNjQtZWZpLnltbA0KPiA+ID4g
+QEAgLTcyLDMgKzcyLDUgQEAgYWN0aW9uczoNCj4gPiA+IMKgwqDCoMKgwqDCoMKgZnJvbTogaW5s
+aW5lDQo+ID4gPiDCoMKgwqDCoMKgwqDCoHBhdGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUu
+eWFtbA0KPiA+ID4gwqDCoMKgwqDCoMKgwqBuYW1lOiB4ZW5vbWFpLXRlc3Qtc3VpdGUNCj4gPiA+
+ICtjb250ZXh0Og0KPiA+ID4gKyAgZXh0cmFfa2VybmVsX2FyZ3M6IHhlbm9tYWkuc3VwcG9ydGVk
+X2NwdXM9Nw0KPiA+ID4gDQo+ID4gDQo+ID4gVGhhbmtzLCBib3RoIGFwcGxpZWQsIGp1c3QgZm9y
+bWF0dGluZyB0aGUgbWFza3MgYXMgaGV4Lg0KPiA+IA0KPiANCj4gU2VlbXMgYXMgaWYgdGhpcyB0
+cmlnZ2VycyBhbiBpc3N1ZSB3aXRoIGRvdmV0YWlsLzUuMTA6DQo+IGh0dHBzOi8vZXVyMDEuc2Fm
+ZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRnNvdXJjZS5k
+ZW54LmRlJTJGWGVub21haSUyRnhlbm9tYWktaW1hZ2VzJTJGLSUyRmpvYnMlMkYyODMzNDEmYW1w
+O2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0MHNpZW1lbnMuY29tJTdDNDE3MDg4YTUw
+MTQ2NDk5Zjk5NmYwOGQ5M2ExZTg2Y2MlN0MzOGFlM2JjZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1ZDU1
+YSU3QzElN0MwJTdDNjM3NjA0NzI1MDQ5MzgxNjM4JTdDVW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5
+SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJ
+Nk1uMCUzRCU3QzEwMDAmYW1wO3NkYXRhPWVOMnc1UUZKNmFpSTB4SmJDWjRuT3RMMlVncHJPQUNL
+ZlBXYU5HRExRZkklM0QmYW1wO3Jlc2VydmVkPTANCj4gDQo+IA0KPiANCjIwMjEtMDYtMjhUMTA6
+MTQ6MTMgTWFya2luZyB1bmZpbmlzaGVkIHRlc3QgcnVuIGFzIGZhaWxlZA0KMjAyMS0wNi0yOFQx
+MDoxNDoxMyB7J2Nhc2UnOiAnMV94ZW5vbWFpLXRlc3Qtc3VpdGUnLCAnZGVmaW5pdGlvbic6ICds
+YXZhJywgJ2R1cmF0aW9uJzogJzE3OTIuNjYnLCAncmVzdWx0JzogJ2ZhaWwnLCAndXVpZCc6ICcz
+ODgxXzEuNC4yLjQuNSd9DQoyMDIxLTA2LTI4VDEwOjE0OjEzIGxhdmEtdGVzdC1zaGVsbCB0aW1l
+ZCBvdXQgYWZ0ZXIgMTgwMCBzZWNvbmRzDQoNCkxvb2tzIGxpa2UgYW4gdGltZW91dCB0cmlnZ2Vy
+ZWQgYnnCoA0KDQoyMDIxLTA2LTI4VDA5OjQ3OjEwICsgL3Vzci9saWIveGVub21haS90ZXN0c3Vp
+dGUvY2xvY2t0ZXN0IC1EIC1UIDMwIC1DIENMT0NLX0hPU1RfUkVBTFRJTUUNCjIwMjEtMDYtMjhU
+MDk6NDc6MTAgWE5WRFNPX0ZFQVRfSE9TVF9SRUFMVElNRSBub3QgYXZhaWxhYmxlDQoNCkxldCdz
+IHNlZSBob3cgdGhlIGNvcnJlc3BvbmRpbmcgUUVNVSBiZWhhdmVzLi4uDQoNCkphbg0KDQoNCg==
 
