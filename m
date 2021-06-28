@@ -1,12 +1,11 @@
-Subject: Re: [[next]PATCH v2] cobalt/thread: move inband work descriptions off
- the stack
-References: <20210610021438.8004-1-hongzhan.chen@intel.com>
- <69a56c2c-dbed-e665-e5cb-26be63f67595@siemens.com>
+Subject: Re: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
+ Rtdmtest and RTIPC
+References: <20210624064505.25467-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f749f738-8627-fc80-6b6c-29d98b0da4af@siemens.com>
-Date: Fri, 11 Jun 2021 10:27:46 +0200
+Message-ID: <c550d801-3d5b-e831-aca8-6103f7043290@siemens.com>
+Date: Mon, 28 Jun 2021 08:31:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <69a56c2c-dbed-e665-e5cb-26be63f67595@siemens.com>
+In-Reply-To: <20210624064505.25467-1-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,268 +19,208 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On 10.06.21 17:42, Jan Kiszka via Xenomai wrote:
-> On 10.06.21 04:14, Hongzhan Chen via Xenomai wrote:
->> Unlike the I-pipe, Dovetail does not copy the work descriptor but
->> merely hands over the request to the common irq_work() mechanism. We
->> must guarantee that such descriptor lives in a portion of memory which
->> won't go stale until the handler has run, which by design can only
->> happen once the calling out-of-band context unwinds.
->>
->> Therefore, we have to add one or more "signal slots" per possible
->> cause of in-band signal into this thread's control block.
->>
->> For SIGDEBUG, except SIGDEBUG_WATCHDOG all other SIGDEBUG_* cause
->> including SIGDEBUG_MIGRATE_SIGNAL, SIGDEBUG_MIGRATE_SYSCALL,
->> SIGDEBUG_MIGRATE_FAULT, SIGDEBUG_MIGRATE_PRIOINV, SIGDEBUG_NOMLOCK,
->> SIGDEBUG_RESCNT_IMBALANCE, SIGDEBUG_LOCK_BREAK, SIGDEBUG_MUTEX_SLEEP
->> are synchronous and mutually exclusive due to the oob->in-band transition.
->> But SIGDEBUG_WATCHDOG is triggered asynchronously by the oob timer.
->>
->> All SIGSHADOW_* events need their own slot: SIGSHADOW_ACTION_HARDEN and
->> SIGSHADOW_ACTION_HOME can be raised by remote threads asynchronously to
->> the target thread. SIGSHADOW_ACTION_BACKTRACE comes in addition to
->> SIGDEBUG_MIGRATE_*. For the latter reason, SIGSHADOW_ACTION_BACKTRACE
->> cannot pile up though.
->>
->> Including SIGTERM, we have totally 6 slots.
->>
->> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>
->> diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
->> index c92037bfe..0c5eacda7 100644
->> --- a/include/cobalt/kernel/thread.h
->> +++ b/include/cobalt/kernel/thread.h
->> @@ -23,6 +23,7 @@
->>  #include <linux/sched.h>
->>  #include <linux/sched/rt.h>
->>  #include <pipeline/thread.h>
->> +#include <pipeline/inband_work.h>
->>  #include <cobalt/kernel/list.h>
->>  #include <cobalt/kernel/stat.h>
->>  #include <cobalt/kernel/timer.h>
->> @@ -42,6 +43,14 @@
->>  #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD|XNDBGSTOP)
->>  #define XNTHREAD_MODE_BITS    (XNRRB|XNWARN|XNTRAPLB)
->>  
->> +#define XNTHREAD_SIGNALS_NUM           6
+On 24.06.21 08:45, Hongzhan Chen wrote:
+> enable Rtnet, Rtdmtest, RTIPC, watchdog, RT sched class and
+> related drivers that would be tested by smokey test.
 > 
-> Better put at the end.
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
->> +#define XNTHREAD_SIGDEBUG_NONWATCHDOG  0
->> +#define XNTHREAD_SIGDEBUG_WATCHDOD     1
->> +#define XNTHREAD_SIGSHADOW_HARDEN      2
->> +#define XNTHREAD_SIGSHADOW_BACKTRACE   3
->> +#define XNTHREAD_SIGSHADOW_HOME        4
->> +#define XNTHREAD_SIGTERM               5
-> 
-> How about
-> 
-> XNSIGSLOT_...
-> XNSIGSLOT_NUM	6
-> 
-> ?
-> 
->> +
->>  struct xnthread;
->>  struct xnsched;
->>  struct xnselector;
->> @@ -50,6 +59,13 @@ struct xnsched_tpslot;
->>  struct xnthread_personality;
->>  struct completion;
->>  
->> +struct lostage_signal {
->> +	struct pipeline_inband_work inband_work; /* Must be first. */
->> +	struct task_struct *task;
->> +	int signo, sigval;
->> +	struct lostage_signal *self; /* Revisit: I-pipe requirement */
->> +};
->> +
->>  struct xnthread_init_attr {
->>  	struct xnthread_personality *personality;
->>  	cpumask_t affinity;
->> @@ -199,6 +215,29 @@ struct xnthread {
->>  	const char *exe_path;	/* Executable path */
->>  	u32 proghash;		/* Hash value for exe_path */
->>  #endif
->> +	/*
->> +	 * Each slot handle different cause of signal
->> +	 * slot 0:
->> +	 *	SIGDEBUG_MIGRATE_SIGNAL
->> +	 *	SIGDEBUG_MIGRATE_SYSCALL
->> +	 *	SIGDEBUG_MIGRATE_FAULT
->> +	 *	SIGDEBUG_MIGRATE_PRIOINV
->> +	 *	SIGDEBUG_NOMLOCK
->> +	 *	SIGDEBUG_RESCNT_IMBALANCE
->> +	 *	SIGDEBUG_LOCK_BREAK
->> +	 *	SIGDEBUG_MUTEX_SLEEP
->> +	 * slot 1:
->> +	 *	SIGDEBUG_WATCHDOG
->> +	 * slot 2:
->> +	 *	SIGSHADOW_ACTION_HARDEN
->> +	 * slot 3:
->> +	 *	SIGSHADOW_ACTION_BACKTRACE
->> +	 * slot 4:
->> +	 *	SIGSHADOW_ACTION_HOME
->> +	 * slot 5:
->> +	 *	SIGTERM
->> +	 */
->> +	struct lostage_signal sigarray[XNTHREAD_SIGNALS_NUM];
->>  };
->>  
->>  static inline int xnthread_get_state(const struct xnthread *thread)
->> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
->> index d3a827eaa..d180aa85c 100644
->> --- a/kernel/cobalt/thread.c
->> +++ b/kernel/cobalt/thread.c
->> @@ -2083,12 +2083,6 @@ void xnthread_relax(int notify, int reason)
->>  }
->>  EXPORT_SYMBOL_GPL(xnthread_relax);
->>  
->> -struct lostage_signal {
->> -	struct pipeline_inband_work inband_work; /* Must be first. */
->> -	struct task_struct *task;
->> -	int signo, sigval;
->> -};
->> -
->>  static inline void do_kthread_signal(struct task_struct *p,
->>  				     struct xnthread *thread,
->>  				     struct lostage_signal *rq)
->> @@ -2112,7 +2106,7 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
->>  	thread = xnthread_from_task(p);
->>  	if (thread && !xnthread_test_state(thread, XNUSER)) {
->>  		do_kthread_signal(p, thread, rq);
->> -		return;
->> +		goto out;
->>  	}
->>  
->>  	signo = rq->signo;
->> @@ -2127,6 +2121,8 @@ static void lostage_task_signal(struct pipeline_inband_work *inband_work)
->>  		send_sig_info(signo, &si, p);
->>  	} else
->>  		send_sig(signo, p, 1);
->> +out:
->> +	memset(rq->self, 0, sizeof(*rq));
-> 
-> "rq->self->self = NULL" would suffice, I suppose - but it reads even
-> more weirdly.
-> 
-> I missed that on 96d70658a589: We should document what the exact I-pipe
-> requirement is here. And that is that the lostage handler will be called
-> with a pointer to a copy of that work item under I-pipe, not the
-> original one. That is only referenced by self. Had to think about that
-> again myself.
-> 
->>  }
->>  
->>  static int force_wakeup(struct xnthread *thread) /* nklock locked, irqs off */
->> @@ -2288,19 +2284,77 @@ void xnthread_demote(struct xnthread *thread)
->>  }
->>  EXPORT_SYMBOL_GPL(xnthread_demote);
->>  
->> +static int get_slot_index_from_sig(int sig, int arg)
->> +{
->> +	int action;
->> +
->> +	switch (sig) {
->> +	case SIGDEBUG:
->> +		switch (arg) {
->> +		case SIGDEBUG_WATCHDOG:
->> +			return XNTHREAD_SIGDEBUG_WATCHDOD;
->> +		case SIGDEBUG_MIGRATE_SIGNAL:
->> +		case SIGDEBUG_MIGRATE_SYSCALL:
->> +		case SIGDEBUG_MIGRATE_FAULT:
->> +		case SIGDEBUG_MIGRATE_PRIOINV:
->> +		case SIGDEBUG_NOMLOCK:
->> +		case SIGDEBUG_RESCNT_IMBALANCE:
->> +		case SIGDEBUG_LOCK_BREAK:
->> +		case SIGDEBUG_MUTEX_SLEEP:
->> +			return XNTHREAD_SIGDEBUG_NONWATCHDOG;
->> +		}
->> +		break;
->> +	case SIGSHADOW:
->> +		action = sigshadow_action(arg);
->> +		switch (action) {
->> +		case SIGSHADOW_ACTION_HARDEN:
->> +			return XNTHREAD_SIGSHADOW_HARDEN;
->> +		case SIGSHADOW_ACTION_BACKTRACE:
->> +			return XNTHREAD_SIGSHADOW_BACKTRACE;
->> +		case SIGSHADOW_ACTION_HOME:
->> +			return XNTHREAD_SIGSHADOW_HOME;
->> +		}
->> +		break;
->> +	case SIGTERM:
->> +		return XNTHREAD_SIGTERM;
->> +	}
->> +
->> +	return -1;
->> +}
->> +
->>  void xnthread_signal(struct xnthread *thread, int sig, int arg)
->>  {
->> -	struct lostage_signal sigwork = {
->> -		.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(sigwork,
->> -					lostage_task_signal),
->> -		.task = xnthread_host_task(thread),
->> -		.signo = sig,
->> -		.sigval = sig == SIGDEBUG ? arg | sigdebug_marker : arg,
->> -	};
->> +	struct lostage_signal *sigwork;
->> +	int slot;
->> +
->> +	slot = get_slot_index_from_sig(sig, arg);
->> +
->> +	if (WARN_ON(slot < 0))
->> +		return;
->> +
->> +	sigwork = &thread->sigarray[slot];
->> +
->> +	/* To avoid invalidating the already submitted event
->> +	 * if previous submitted has not been handled as we expected
->> +	 * because setting sigwork->self zero is final step
->> +	 * in handling sig.
->> +	 */
->> +	if (WARN_ON((sigwork->self != NULL) &&
-> 
-> So, we are still assuming that multiple signals for the same slot should
-> be a bug? I'm not sure it is. I'm also not sure that sender and lostage
-> handler will always be on the same CPU. Look at
-> __xnthread_set_schedparam. It's "xnthread_signal(thread, SIGSHADOW,
-> SIGSHADOW_ACTION_HOME)" in xnthread_suspend() can run on any CPU,
-> targeting any thread on some other CPU, and that possibly multiple times.
-> 
-> I'm afraid we need nklock around enqueue and dequeue so that we neither
-> lose a signal nor warn needlessly.
-> 
->> +				(sigwork->self == sigwork))) {
-> 
-> What case is this part of the test excluding?
-> 
->> +		return;
->> +	}
->> +
->> +	sigwork->inband_work = (struct pipeline_inband_work)
->> +			PIPELINE_INBAND_WORK_INITIALIZER(*sigwork,
->> +					lostage_task_signal);
->> +	sigwork->task = xnthread_host_task(thread);
->> +	sigwork->signo = sig;
->> +	sigwork->sigval = sig == SIGDEBUG ? arg | sigdebug_marker : arg;
->> +	sigwork->self = sigwork; /* Revisit: I-pipe requirement */
->>  
->> -	trace_cobalt_lostage_request("signal", sigwork.task);
->> +	trace_cobalt_lostage_request("signal", sigwork->task);
->>  
->> -	pipeline_post_inband_work(&sigwork);
->> +	pipeline_post_inband_work(sigwork);
->>  }
->>  EXPORT_SYMBOL_GPL(xnthread_signal);
->>  
->>
-> 
-> Jan
+> diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
+> index d4e717e..122aeac 100644
+> --- a/recipes-kernel/linux/files/arm64_defconfig
+> +++ b/recipes-kernel/linux/files/arm64_defconfig
+> @@ -360,19 +360,31 @@ CONFIG_XENOMAI=y
+>  #
+>  # Core features
+>  #
+> -# CONFIG_XENO_OPT_SCHED_CLASSES is not set
+> +CONFIG_XENO_OPT_SCHED_CLASSES=y
+> +CONFIG_XENO_OPT_SCHED_WEAK=y
+> +CONFIG_XENO_OPT_SCHED_TP=y
+> +CONFIG_XENO_OPT_SCHED_TP_NRPART=4
+> +CONFIG_XENO_OPT_SCHED_SPORADIC=y
+> +CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
+> +CONFIG_XENO_OPT_SCHED_QUOTA=y
+> +CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
+> +CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
+>  CONFIG_XENO_OPT_STATS=y
+> -# CONFIG_XENO_OPT_SHIRQ is not set
+> +CONFIG_XENO_OPT_STATS_IRQS=y
+> +CONFIG_XENO_OPT_SHIRQ=y
+>  CONFIG_XENO_OPT_RR_QUANTUM=1000
+>  CONFIG_XENO_OPT_AUTOTUNE=y
+> -# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+> -CONFIG_XENO_OPT_TIMER_LIST=y
+> -# CONFIG_XENO_OPT_TIMER_RBTREE is not set
+> +CONFIG_XENO_OPT_SCALABLE_SCHED=y
+> +# CONFIG_XENO_OPT_TIMER_LIST is not set
+> +CONFIG_XENO_OPT_TIMER_RBTREE=y
+> +CONFIG_XENO_OPT_PIPE=y
+> +CONFIG_XENO_OPT_MAP=y
+>  CONFIG_XENO_OPT_VFILE=y
+>  
+>  #
+>  # Sizes and static limits
+>  #
+> +CONFIG_XENO_OPT_PIPE_NRDEV=32
+>  CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
+>  CONFIG_XENO_OPT_SYS_HEAPSZ=4096
+>  CONFIG_XENO_OPT_PRIVATE_HEAPSZ=256
+> @@ -396,7 +408,12 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
+>  #
+>  # Serial drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_16550A is not set
+> +CONFIG_XENO_DRIVERS_16550A=y
+> +CONFIG_XENO_DRIVERS_16550A_PIO=y
+> +# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
+> +# CONFIG_XENO_DRIVERS_16550A_ANY is not set
+> +CONFIG_XENO_DRIVERS_16550A_PCI=y
+> +CONFIG_XENO_DRIVERS_16550A_PCI_MOXA=y
+>  
+>  #
+>  # Testing drivers
+> @@ -404,17 +421,106 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
+>  CONFIG_XENO_DRIVERS_TIMERBENCH=y
+>  CONFIG_XENO_DRIVERS_SWITCHTEST=y
+>  CONFIG_XENO_DRIVERS_HEAPCHECK=y
+> -# CONFIG_XENO_DRIVERS_RTDMTEST is not set
+> +CONFIG_XENO_DRIVERS_RTDMTEST=m
+>  
+>  #
+>  # CAN drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_CAN is not set
+> +CONFIG_XENO_DRIVERS_CAN=y
+> +CONFIG_XENO_DRIVERS_CAN_DEBUG=y
+> +CONFIG_XENO_DRIVERS_CAN_LOOPBACK=y
+> +CONFIG_XENO_DRIVERS_CAN_RXBUF_SIZE=1024
+> +CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES=4
+> +CONFIG_XENO_DRIVERS_CAN_MAX_RECEIVERS=16
+> +CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
+> +# CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
+> +CONFIG_XENO_DRIVERS_CAN_VIRT=y
+> +# CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG=y
+>  
+>  #
+>  # RTnet
+>  #
+> -# CONFIG_XENO_DRIVERS_NET is not set
+> +CONFIG_XENO_DRIVERS_NET=m
+> +CONFIG_XENO_DRIVERS_RTNET_CHECKED=y
+> +
+> +#
+> +# Protocol Stack
+> +#
+> +
+> +#
+> +# Stack parameters
+> +#
+> +CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
+> +CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
+> +CONFIG_XENO_DRIVERS_NET_RTWLAN=y
+> +
+> +#
+> +# Protocols
+> +#
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NET_ROUTES=16
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTER=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION=y
+> +CONFIG_XENO_DRIVERS_NET_RTPACKET=m
+> +CONFIG_XENO_DRIVERS_NET_RTMAC=m
+> +CONFIG_XENO_DRIVERS_NET_TDMA=m
+> +CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
+> +CONFIG_XENO_DRIVERS_NET_NOMAC=m
+> +CONFIG_XENO_DRIVERS_NET_RTCFG=m
+> +CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
+> +
+> +#
+> +# Drivers
+> +#
+> +
+> +#
+> +# Common PCI Drivers
+> +#
+> +CONFIG_XENO_DRIVERS_NET_DRV_PCNET32=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_TULIP=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT=20
+> +# CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG is not set
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000E=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_8139=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_IGB=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_R8169=m
+> +
+> +#
+> +# Misc Drivers
+> +#
+> +CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_SMC91111=m
+> +CONFIG_XENO_DRIVERS_NET_EXP_DRIVERS=y
+> +CONFIG_XENO_DRIVERS_NET_DRV_3C59X=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_RT2500=m
+> +
+> +#
+> +# Add-Ons
+> +#
+> +CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
+> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
+> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
+>  
+>  #
+>  # ANALOGY drivers
+> @@ -424,7 +530,12 @@ CONFIG_XENO_DRIVERS_HEAPCHECK=y
+>  #
+>  # Real-time IPC drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_RTIPC is not set
+> +CONFIG_XENO_DRIVERS_RTIPC=y
+> +CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+> +CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+> +CONFIG_XENO_OPT_IDDP_NRPORT=32
+> +CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+> +CONFIG_XENO_OPT_BUFP_NRPORT=32
+>  
+>  #
+>  # UDD support
+> @@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
+>  # cause troubles with Xenomai. You should disable them.
+>  #
+>  CONFIG_XENO_VERSION_MAJOR=3
+> -CONFIG_XENO_VERSION_MINOR=0
+> -CONFIG_XENO_REVISION_LEVEL=90
+> -CONFIG_XENO_VERSION_STRING="3.1-devel"
+> -CONFIG_XENO_VERSION_NAME="Xenomai -next"
+> +CONFIG_XENO_VERSION_MINOR=1
+> +CONFIG_XENO_REVISION_LEVEL=0
+> +CONFIG_XENO_VERSION_STRING="3.1"
+>  CONFIG_FREEZER=y
+>  
+>  #
 > 
 
-I'm on a reworked, locked version of this. Will keep you posted.
+Thanks, applied (with tiny wording tweaks to the log).
 
 Jan
 
