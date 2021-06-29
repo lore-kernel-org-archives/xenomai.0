@@ -1,13 +1,11 @@
-Subject: Re: Xeno3-x86: system freezes with SEGFAULT
-References: <89a388f9-f30b-59d5-7a6f-e46026793089@tin.it>
-From: "Mauro S." <mau.salvi@tin.it>
-Message-ID: <2c802ed0-30eb-1717-1cf4-904ad49af5cd@tin.it>
-Date: Tue, 29 Jun 2021 14:42:13 +0200
+References: <239ad2a2-c093-86ee-3d1f-f38abd2df673@sina.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: linux-evl-5.10.46-evl1: INTC/gpmc is not pipeline-safe warning
+In-reply-to: <239ad2a2-c093-86ee-3d1f-f38abd2df673@sina.com>
+Date: Tue, 29 Jun 2021 18:35:46 +0200
+Message-ID: <87v95wiq71.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <89a388f9-f30b-59d5-7a6f-e46026793089@tin.it>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Language: it-IT
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +14,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: wayhoo <wayhoo@sina.com>
+Cc: xenomai@xenomai.org
 
-Il 28/06/21 16:33, Mauro S. via Xenomai ha scritto:
-> Hi all,
-> 
-> I'm using Xenomai3 (master branch, commit 
-> d98c99798836dd3571144203b51ff787d2108f1b) on a X86_64bit Intel Atom 
-> x5-E8000 with 2GB RAM, using kernel from Xenomai repos, in Cobalt 
-> coniguration.
-> Just for completeness, I'm using a Yocto built filesystem (but I think 
-> it doesn't matter to the issue that I'm going to describe).
-> 
-> Consider the simple test program attached: it creates 120 tasks that 
-> does nothing than sleep. This test is compiled with the Yocto toolchain 
-> using the attached makefile. Toolchain have Xenomai installed in.
-> 
-> (By the way, I needed to raise to 2048 the registry slots number in 
-> kernel configuration: without raising this, I cannot create more than 
-> 110 tasks.)
-> 
-> If I kill this program with TERM signal, sighandler does its work and 
-> the application exits cleanly.
-> 
-> If I kill this application with SEGV signal (no custom sighandler 
-> installed), system freezes.
-> 
-> If I build this application with 50 tasks, then SEGV does not cause 
-> system to freeze.
-> 
-> Bisecting the number of tasks, SIGSEGV freezes starts with a number of 
-> tasks greater than 85.
-> 
-> I enabled watchdog (and almost all of the debug options) in Xenomai 
-> section of the kernel configuration, without success.
-> 
-> Are there some system limits? I checked under /proc/xenomai but all 
-> seems to be OK.
-> 
-> Thanks in advance, regards
-> 
 
-Hi all,
+wayhoo via Xenomai <xenomai@xenomai.org> writes:
 
-update: I tested also latest commit of 5.4-x86 kernel + latest commit of 
-Xenomai master branch, same behavior.
+> Hello,
+>
+>     Ported linux-evl-5.10.46-evl1 to an am335x board, two warnings
+> occurred at kernel startup, but evl test passed.
+>
+>     1. when CONFIG_SMP was not enabled, INTC warning information occurred:
+>
+> [    0.002179] IRQ pipeline enabled
+> [    0.002190] TI gptimer clocksource: always-on
+> /ocp/interconnect@44c00000/segment@200000/target-module@31000
+> [    0.002196] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps
+> every 89478484971ns
+> [    0.002202] clocksource: dmtimer: freq: 24000000 Hz, mask:
+> 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79635851949 ns
+> [    0.002206] ------------[ cut here ]------------
+> [    0.002211] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:53
+> irq_set_chip+0xc0/0xe0
+> [    0.002215] irqchip INTC is not pipeline-safe!Modules linked in:
+>
 
-In one test, with 86 tasks active (just one more than the maximum number 
-of tasks that does not freeze system), system didn't freeeze 
-immediately, so I had the time to launch a `cat 
-/proc/xenomai/sched/stat`. I saw that all the process task were in 
-000480c0 status, consuming 0.0% CPU, except the last one (the 86th one) 
-that were in 00048040 status, consuming 100% CPU (system is quad core).
+[SNIP]
 
-In previous mail I also forgot to mention that:
-- this CPU is actually used with success with Xenomai 2.6 (32bit mode)
-- all dangerous settings (e.g. c-states) are off in BIOS (in fact 
-Xenomai 2.6 works well)
-- xeno-test is executed without errors
-- latency measurements are good
-- SMI workaround is applied
+>     2. when CONFIG_SMP was enabled,  there was no INTC warning, but
+> gpmc warning occurred:
+>
+> [    7.596903] omap-gpmc 50000000.gpmc: GPMC revision 6.0
+> [    7.602570] gpmc_mem_init: disabling cs 0 mapped at 0x0-0x1000000
+> [    7.613268] ------------[ cut here ]------------
+> [    7.613283] WARNING: CPU: 0 PID: 50 at kernel/irq/chip.c:53
+> irq_set_chip+0xc0/0xe0
+> [    7.613291] irqchip gpmc is not pipeline-safe!Modules linked in:
+>
 
-Thanks in advance, regards
+[SNIP]
+
+These issues would require two fixups: one applied to the INTC
+controller, the other to the generic irq chip support the former is
+using:
+
+diff --git a/drivers/irqchip/irq-omap-intc.c b/drivers/irqchip/irq-omap-intc.c
+index d360a6eddd6d369..a8647443cc7b806 100644
+--- a/drivers/irqchip/irq-omap-intc.c
++++ b/drivers/irqchip/irq-omap-intc.c
+@@ -211,7 +211,7 @@ static int __init omap_alloc_gc_of(struct irq_domain *d, void __iomem *base)
+ 		ct->chip.irq_mask = irq_gc_mask_disable_reg;
+ 		ct->chip.irq_unmask = irq_gc_unmask_enable_reg;
+ 
+-		ct->chip.flags |= IRQCHIP_SKIP_SET_WAKE;
++		ct->chip.flags |= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_PIPELINE_SAFE;
+ 
+ 		ct->regs.enable = INTC_MIR_CLEAR0 + 32 * i;
+ 		ct->regs.disable = INTC_MIR_SET0 + 32 * i;
+
+
+diff --git a/kernel/irq/generic-chip.c b/kernel/irq/generic-chip.c
+index e2999a070a99a2b..378fb58219c6544 100644
+--- a/kernel/irq/generic-chip.c
++++ b/kernel/irq/generic-chip.c
+@@ -16,7 +16,7 @@
+ #include "internals.h"
+ 
+ static LIST_HEAD(gc_list);
+-static DEFINE_RAW_SPINLOCK(gc_lock);
++static DEFINE_HARD_SPINLOCK(gc_lock);
+ 
+ /**
+  * irq_gc_noop - NOOP function
+
+You may want to read this page [1], which explains the rationale for
+those changes to the irqchip code.
+
+>     3. below is the patch for gpmc warning, it just simply masks the
+> warning.
+>
+> diff -uNr a/drivers/memory/omap-gpmc.c b/drivers/memory/omap-gpmc.c
+> --- a/drivers/memory/omap-gpmc.c    2021-06-27 23:33:13.000000000 +0800
+> +++ b/drivers/memory/omap-gpmc.c    2021-06-29 13:09:45.151032676 +0800
+> @@ -1405,6 +1405,7 @@
+>      gpmc->irq_chip.irq_mask = gpmc_irq_mask;
+>      gpmc->irq_chip.irq_unmask = gpmc_irq_unmask;
+>      gpmc->irq_chip.irq_set_type = gpmc_irq_set_type;
+> +    gpmc->irq_chip.flags = IRQCHIP_PIPELINE_SAFE;
+>
+>      gpmc_irq_domain = irq_domain_add_linear(gpmc->dev->of_node,
+>                          gpmc->nirqs,
+>
+>     4. What more needs to be done to timer-ti-dm-timer.c and/or
+> omap-gpmc.c? any advice, please.
+>
+>
+
+Regarding the the gpmc, you may need to run the IRQ demultiplexer
+directly from the out-of-band stage, the following patch would ensure
+this.
+
+diff --git a/drivers/memory/omap-gpmc.c b/drivers/memory/omap-gpmc.c
+index f80c2ea39ca4c1c..ebcda04da440b8f 100644
+--- a/drivers/memory/omap-gpmc.c
++++ b/drivers/memory/omap-gpmc.c
+@@ -1405,6 +1405,7 @@ static int gpmc_setup_irq(struct gpmc_device *gpmc)
+ 	gpmc->irq_chip.irq_mask = gpmc_irq_mask;
+ 	gpmc->irq_chip.irq_unmask = gpmc_irq_unmask;
+ 	gpmc->irq_chip.irq_set_type = gpmc_irq_set_type;
++	gpmc->irq_chip.flags = IRQCHIP_PIPELINE_SAFE;
+ 
+ 	gpmc_irq_domain = irq_domain_add_linear(gpmc->dev->of_node,
+ 						gpmc->nirqs,
+@@ -1415,7 +1416,7 @@ static int gpmc_setup_irq(struct gpmc_device *gpmc)
+ 		return -ENODEV;
+ 	}
+ 
+-	rc = request_irq(gpmc->irq, gpmc_handle_irq, 0, "gpmc", gpmc);
++	rc = request_irq(gpmc->irq, gpmc_handle_irq, IRQF_OOB, "gpmc", gpmc);
+ 	if (rc) {
+ 		dev_err(gpmc->dev, "failed to request irq %d: %d\n",
+ 			gpmc->irq, rc);
+
+
+Feedback welcome and needed so that proper fixes for your hardware could
+be part of the next Dovetail and EVL releases.
+
+[1] https://evlproject.org/dovetail/porting/irqflow/#irqchip-fixup
 
 -- 
-Mauro S.
+Philippe.
 
