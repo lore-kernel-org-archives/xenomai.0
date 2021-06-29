@@ -1,19 +1,18 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [xenomai-images 2/2] tests: restrict realtime cpu for x86 and
+ qemu type of devices
+Date: Tue, 29 Jun 2021 01:38:53 +0000
+Message-ID: <BN9PR11MB5227B97944D5109157C6E775F2029@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210628062624.2244-1-hongzhan.chen@intel.com>
+ <20210628062624.2244-2-hongzhan.chen@intel.com>
+ <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
+ <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
+ <b883b8e1a3182303a25b678738dfca938e7af504.camel@siemens.com>
+In-Reply-To: <b883b8e1a3182303a25b678738dfca938e7af504.camel@siemens.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Date: Mon, 28 Jun 2021 17:38:45 +0200
-From: 77dab@tiscali.it
-Subject: Re: Raspberry pi 4 second monitor problem on xeno3
-In-Reply-To: <CALLqZ8Rm=Ofk+-wRYUW0MSvpEsoqBm4JmcWMCWEo70EuP_gkVg@mail.gmail.com>
-References: <22d045f858ff5e9b4daddb410540be94@tiscali.it>
- <CALLqZ8TGTWVBj=VoZSVXizQPWLevYVCBr6R6gBf0TBtZui0kvg@mail.gmail.com>
- <c6eea2e7c5c83292853a70c76a951cfe@tiscali.it>
- <CALLqZ8QOZS9mJBsFcU6uZWVDOHXhC4QsYLstb7hxFOg1wf3C7w@mail.gmail.com>
- <6bab10316f0b227ba253558b1ea667e4@tiscali.it>
- <CALLqZ8SxnNhZu0T3d=4KPCre=eNCWxed3GN2AifMjbH2XLYa=g@mail.gmail.com>
- <ed912b560cf986b36bf9210d1a90b234@tiscali.it>
- <CALLqZ8Rm=Ofk+-wRYUW0MSvpEsoqBm4JmcWMCWEo70EuP_gkVg@mail.gmail.com>
-Message-ID: <1e7c44b82898d9aff0732cf1bb593964@tiscali.it>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,125 +21,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-  Ok, thank you for your time.
-
-Il 28.06.2021 15:49 Greg Gallagher ha
-scritto: 
-
-> On Mon, Jun 28, 2021 at 9:02 AM davide via Xenomai wrote:
-
-> 
->> (sorry if I'm down-quoting, but I cannot write below here..) 
->>
-I
->> agree with you, it's just I don't know how to debug this..
->> 
->>
-I'm looking
->> at /var/log/Xorg.0.log differences between the
-non-working situation Vs
->> a standard debian64bit working one:
->> first
-difference is -> working:
->> 
->> [
->> 5.854] (II) xfree86: Adding drm
-device (/dev/dri/card1)
->> [ 5.862] (II)
->> xfree86: Adding drm device
-(/dev/dri/card0)
->> 
->> while those lines aren't
->> present in the
-NOT-working, and there is:
->> 
->> [ 5.307] (EE) open
->> /dev/dri/card0:
-No such file or directory
->> 
->> does that tells anything?
->> 
->> Il
->>
-28.06.2021 14:17 Greg Gallagher ha scritto: 
->> 
->> > On Mon, Jun 28,
-2021 at
->> 8:12 AM davide via Xenomai wrote: 
->> > 
->> >> kernel comes
-from here: 
->> >>
->> https://github.com/thanhtam-h/rpi4-xeno3 [1] [1]
->>
->> 
->> >> One thing: even if
->> desktop isn't extended to the second
-screen, and
->> >> xrandr sees only a
->> 'default' screen 
->> >> if I
-give: 
->> >> 
->> >> cat /dev/random >
->> >> /dev/fb1
->> 
->> >> the
-second screen gets filled.. 
->> >> it sounds odd to me, because
->> >>
->>
-that means framebuffer is open and working. 
->> >> So, what's going
-on
->> here?
->> >> 
->> >> Il 28.06.2021 13:33 Greg Gallagher ha scritto:
-
->> >> 
->> >> >
->> It's possible the
->> >> drivers aren't working in the
-kernel without ipipe,
->> you'll want to
->> >> confirm that first. If you
-didn't compile the kernel
->> yourself you'll
->> >> want to find the
-sources so you can debug.. 
->> >> >
->> Greg
->> >> 
->> >> Con Tiscali
-Mobile Smart 70 hai 70 GB in 4G, minuti
->> illimitati e 100 SMS a soli
-7,99EUR al mese http://tisca.li/Smart70 [2]
->> [2]
->> > 
->> > This
-doesn't sound like a xenomai or ipipe issue, you'll have
->> to do some
-further debug and see if this issue is being caused by the
->> ipipe or
-xenomai. Right now what you have described doesn't sound like
->> an
-issue with the real-time core. 
->> > Greg
->> 
->> Con Tiscali Mobile
-Smart 70 hai 70 GB in 4G, minuti illimitati e 100 SMS a soli 7,99EUR al
-mese http://tisca.li/Smart70 [3]
-> 
-> Ok, you may be missing a driver or
-certain modules aren't loaded yet. You could see if you can log an issue
-on the GitHub project you referenced. But this doesn't look to be a
-xenomai or ipipe issue so this list probably won't be able to help too
-much. 
-> Greg
-  
-
-
-Con Tiscali Mobile Smart 70 hai 70 GB in 4G, minuti illimitati e 100 SMS a soli 7,99€ al mese http://tisca.li/Smart70
-
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEJlemRla2EsIEZsb3JpYW4g
+PGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj5TZW50OiBNb25kYXksIEp1bmUgMjgsIDIw
+MjEgNzowNiBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+
+OyBqYW4ua2lzemthQHNpZW1lbnMuY29tOyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDog
+UmU6IFt4ZW5vbWFpLWltYWdlcyAyLzJdIHRlc3RzOiByZXN0cmljdCByZWFsdGltZSBjcHUgZm9y
+IHg4NiBhbmQgcWVtdSB0eXBlIG9mIGRldmljZXMNCj4NCj5PbiBNb24sIDIwMjEtMDYtMjggYXQg
+MTI6MjEgKzAyMDAsIEphbiBLaXN6a2EgdmlhIFhlbm9tYWkgd3JvdGU6DQo+PiBPbiAyOC4wNi4y
+MSAwOTowOCwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90ZToNCj4+ID4gT24gMjguMDYuMjEg
+MDg6MjYsIEhvbmd6aGFuIENoZW4gd3JvdGU6DQo+PiA+ID4gSWYgdGhlcmUgaXMgbm8gQ1BVIHJl
+c3RyaWN0aW9uIG9uIHRoZSBib290YXJncywgc21va2V5IGNwdV9hZmZpbml0eQ0KPj4gPiA+IHRl
+c3Qgd291bGQgYmUgc2tpcHBlZCByZXBvcnRpbmcgd2l0aCAibm8ga2VybmVsIHN1cHBvcnQiIGZv
+ciB0aG9zZQ0KPj4gPiA+IHdpdGhvdXQgbm9uLVJUIGNwdS4NCj4+ID4gPg0KPj4gPiA+IFNpZ25l
+ZC1vZmYtYnk6IEhvbmd6aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4gPiA+
+DQo+PiA+ID4gZGlmZiAtLWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1pcGMyMjdlLnltbCBiL3Rl
+c3RzL2pvYnMveGVub21haS1pcGMyMjdlLnltbA0KPj4gPiA+IGluZGV4IGE1YTE4MWMuLjIwOWM1
+ZDQgMTAwNjQ0DQo+PiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIyN2UueW1sDQo+
+PiA+ID4gKysrIGIvdGVzdHMvam9icy94ZW5vbWFpLWlwYzIyN2UueW1sDQo+PiA+ID4gQEAgLTcy
+LDMgKzcyLDUgQEAgYWN0aW9uczoNCj4+ID4gPiAgICAgICAgZnJvbTogaW5saW5lDQo+PiA+ID4g
+ICAgICAgIHBhdGg6IGlubGluZS94ZW5vbWFpLXRlc3Qtc3VpdGUueWFtbA0KPj4gPiA+ICAgICAg
+ICBuYW1lOiB4ZW5vbWFpLXRlc3Qtc3VpdGUNCj4+ID4gPiArY29udGV4dDoNCj4+ID4gPiArICBl
+eHRyYV9rZXJuZWxfYXJnczogeGVub21haS5zdXBwb3J0ZWRfY3B1cz03DQo+PiA+ID4gZGlmZiAt
+LWdpdCBhL3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFtZDY0LnltbCBiL3Rlc3RzL2pvYnMveGVu
+b21haS1xZW11LWFtZDY0LnltbA0KPj4gPiA+IGluZGV4IGMzMzUyOTIuLmU0MmY2ZWMgMTAwNjQ0
+DQo+PiA+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYW1kNjQueW1sDQo+PiA+ID4g
+KysrIGIvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYW1kNjQueW1sDQo+PiA+ID4gQEAgLTQ2LDcg
+KzQ2LDcgQEAgYWN0aW9uczoNCj4+ID4gPiAgICAgIHRvOiB0bXBmcw0KPj4gPiA+ICAgICAgaW1h
+Z2VzOg0KPj4gPiA+ICAgICAgICBrZXJuZWw6DQo+PiA+ID4gLSAgICAgICAgaW1hZ2VfYXJnOiAt
+a2VybmVsIHtrZXJuZWx9IC1hcHBlbmQgInJvb3Q9L2Rldi9zZGIgY29uc29sZT10dHlTMCwxMTUy
+MDAgY29uc29sZT10dHkwIg0KPj4gPiA+ICsgICAgICAgIGltYWdlX2FyZzogLWtlcm5lbCB7a2Vy
+bmVsfSAtYXBwZW5kICJyb290PS9kZXYvc2RiIGNvbnNvbGU9dHR5UzAsMTE1MjAwIGNvbnNvbGU9
+dHR5MCB4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTEiDQo+PiA+ID4gICAgICAgICAgdXJsOiAke0RF
+UExPWV9VUkx9LyR7SVNBUl9JTUFHRX0tJHtJU0FSX0RJU1RSSUJVVElPTn0tJHtUQVJHRVR9LXZt
+bGludXoNCj4+ID4gPiAgICAgICAgaW5pdHJkOg0KPj4gPiA+ICAgICAgICAgIGltYWdlX2FyZzog
+LWluaXRyZCB7aW5pdHJkfQ0KPj4gPiA+IGRpZmYgLS1naXQgYS90ZXN0cy9qb2JzL3hlbm9tYWkt
+cWVtdS1hcm02NC55bWwgYi90ZXN0cy9qb2JzL3hlbm9tYWktcWVtdS1hcm02NC55bWwNCj4+ID4g
+PiBpbmRleCA4OGZiODgwLi5jYzYwNTY0IDEwMDY0NA0KPj4gPiA+IC0tLSBhL3Rlc3RzL2pvYnMv
+eGVub21haS1xZW11LWFybTY0LnltbA0KPj4gPiA+ICsrKyBiL3Rlc3RzL2pvYnMveGVub21haS1x
+ZW11LWFybTY0LnltbA0KPj4gPiA+IEBAIC01MCw3ICs1MCw3IEBAIGFjdGlvbnM6DQo+PiA+ID4g
+ICAgICB0bzogdG1wZnMNCj4+ID4gPiAgICAgIGltYWdlczoNCj4+ID4gPiAgICAgICAga2VybmVs
+Og0KPj4gPiA+IC0gICAgICAgIGltYWdlX2FyZzogLWtlcm5lbCB7a2VybmVsfSAtYXBwZW5kICJy
+b290PS9kZXYvdmRhIg0KPj4gPiA+ICsgICAgICAgIGltYWdlX2FyZzogLWtlcm5lbCB7a2VybmVs
+fSAtYXBwZW5kICJyb290PS9kZXYvdmRhIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MSINCj4+ID4g
+PiAgICAgICAgICB1cmw6ICR7REVQTE9ZX1VSTH0vJHtJU0FSX0lNQUdFfS0ke0lTQVJfRElTVFJJ
+QlVUSU9OfS0ke1RBUkdFVH0tdm1saW51eg0KPj4gPiA+ICAgICAgICBpbml0cmQ6DQo+PiA+ID4g
+ICAgICAgICAgaW1hZ2VfYXJnOiAtaW5pdHJkIHtpbml0cmR9DQo+PiA+ID4gZGlmZiAtLWdpdCBh
+L3Rlc3RzL2pvYnMveGVub21haS1xZW11LWFybWhmLnltbCBiL3Rlc3RzL2pvYnMveGVub21haS1x
+ZW11LWFybWhmLnltbA0KPj4gPiA+IGluZGV4IDNlM2E4YWIuLjJhZmUyNTAgMTAwNjQ0DQo+PiA+
+ID4gLS0tIGEvdGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtaGYueW1sDQo+PiA+ID4gKysrIGIv
+dGVzdHMvam9icy94ZW5vbWFpLXFlbXUtYXJtaGYueW1sDQo+PiA+ID4gQEAgLTQ2LDcgKzQ2LDcg
+QEAgYWN0aW9uczoNCj4+ID4gPiAgICAgIHRvOiB0bXBmcw0KPj4gPiA+ICAgICAgaW1hZ2VzOg0K
+Pj4gPiA+ICAgICAgICBrZXJuZWw6DQo+PiA+ID4gLSAgICAgICAgaW1hZ2VfYXJnOiAta2VybmVs
+IHtrZXJuZWx9IC1hcHBlbmQgInJvb3Q9L2Rldi92ZGIiDQo+PiA+ID4gKyAgICAgICAgaW1hZ2Vf
+YXJnOiAta2VybmVsIHtrZXJuZWx9IC1hcHBlbmQgInJvb3Q9L2Rldi92ZGIgeGVub21haS5zdXBw
+b3J0ZWRfY3B1cz0xIg0KPj4gPiA+ICAgICAgICAgIHVybDogJHtERVBMT1lfVVJMfS8ke0lTQVJf
+SU1BR0V9LSR7SVNBUl9ESVNUUklCVVRJT059LSR7VEFSR0VUfS12bWxpbnV6DQo+PiA+ID4gICAg
+ICAgIGluaXRyZDoNCj4+ID4gPiAgICAgICAgICBpbWFnZV9hcmc6IC1pbml0cmQge2luaXRyZH0N
+Cj4+ID4gPiBkaWZmIC0tZ2l0IGEvdGVzdHMvam9icy94ZW5vbWFpLXg4Ni02NC1lZmkueW1sIGIv
+dGVzdHMvam9icy94ZW5vbWFpLXg4Ni02NC1lZmkueW1sDQo+PiA+ID4gaW5kZXggYmM3MWI3NS4u
+ZDE0MThjMSAxMDA2NDQNCj4+ID4gPiAtLS0gYS90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVm
+aS55bWwNCj4+ID4gPiArKysgYi90ZXN0cy9qb2JzL3hlbm9tYWkteDg2LTY0LWVmaS55bWwNCj4+
+ID4gPiBAQCAtNzIsMyArNzIsNSBAQCBhY3Rpb25zOg0KPj4gPiA+ICAgICAgICBmcm9tOiBpbmxp
+bmUNCj4+ID4gPiAgICAgICAgcGF0aDogaW5saW5lL3hlbm9tYWktdGVzdC1zdWl0ZS55YW1sDQo+
+PiA+ID4gICAgICAgIG5hbWU6IHhlbm9tYWktdGVzdC1zdWl0ZQ0KPj4gPiA+ICtjb250ZXh0Og0K
+Pj4gPiA+ICsgIGV4dHJhX2tlcm5lbF9hcmdzOiB4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTcNCj4+
+ID4gPg0KPj4gPg0KPj4gPiBUaGFua3MsIGJvdGggYXBwbGllZCwganVzdCBmb3JtYXR0aW5nIHRo
+ZSBtYXNrcyBhcyBoZXguDQo+PiA+DQo+Pg0KPj4gU2VlbXMgYXMgaWYgdGhpcyB0cmlnZ2VycyBh
+biBpc3N1ZSB3aXRoIGRvdmV0YWlsLzUuMTA6DQo+PiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5w
+cm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZzb3VyY2UuZGVueC5kZSUy
+Rlhlbm9tYWklMkZ4ZW5vbWFpLWltYWdlcyUyRi0lMkZqb2JzJTJGMjgzMzQxJmFtcDtkYXRhPTA0
+JTdDMDElN0NmbG9yaWFuLmJlemRla2ElNDBzaWVtZW5zLmNvbSU3QzQxNzA4OGE1MDE0NjQ5OWY5
+OTZmMDhkOTNhMWU4NmNjJTdDMzhhZTNiY2Q5NTc5NGZkNGFkZGFiNDJlMTQ5NWQ1NWElN0MxJTdD
+MCU3QzYzNzYwNDcyNTA0OTM4MTYzOCU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1D
+NHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0Ql
+N0MxMDAwJmFtcDtzZGF0YT1lTjJ3NVFGSjZhaUkweEpiQ1o0bk90TDJVZ3ByT0FDS2ZQV2FOR0RM
+UWZJJTNEJmFtcDtyZXNlcnZlZD0wDQoNCjUuNCBhbmQgNC4xOSBkbyBub3QgaGF2ZSBzdWNoIGlz
+c3VlLiBJdCBzaG91bGQgZXhwb3NlIGRvdmV0YWlsLzUuMTAgaW50ZXJuYWwgaXNzdWUuIExldCBt
+ZSByZXByb2R1Y2UgaXQgb24gbXkgc2lkZS4NCg0KSG9uZ3poYW4gQ2hlbg0KDQo+Pg0KPj4NCj4+
+DQo+MjAyMS0wNi0yOFQxMDoxNDoxMyBNYXJraW5nIHVuZmluaXNoZWQgdGVzdCBydW4gYXMgZmFp
+bGVkDQo+MjAyMS0wNi0yOFQxMDoxNDoxMyB7J2Nhc2UnOiAnMV94ZW5vbWFpLXRlc3Qtc3VpdGUn
+LCAnZGVmaW5pdGlvbic6ICdsYXZhJywgJ2R1cmF0aW9uJzogJzE3OTIuNjYnLCAncmVzdWx0Jzog
+J2ZhaWwnLCAndXVpZCc6ICczODgxXzEuNC4yLjQuNSd9DQo+MjAyMS0wNi0yOFQxMDoxNDoxMyBs
+YXZhLXRlc3Qtc2hlbGwgdGltZWQgb3V0IGFmdGVyIDE4MDAgc2Vjb25kcw0KPg0KPkxvb2tzIGxp
+a2UgYW4gdGltZW91dCB0cmlnZ2VyZWQgYnkNCj4NCj4yMDIxLTA2LTI4VDA5OjQ3OjEwICsgL3Vz
+ci9saWIveGVub21haS90ZXN0c3VpdGUvY2xvY2t0ZXN0IC1EIC1UIDMwIC1DIENMT0NLX0hPU1Rf
+UkVBTFRJTUUNCj4yMDIxLTA2LTI4VDA5OjQ3OjEwIFhOVkRTT19GRUFUX0hPU1RfUkVBTFRJTUUg
+bm90IGF2YWlsYWJsZQ0KPg0KPkxldCdzIHNlZSBob3cgdGhlIGNvcnJlc3BvbmRpbmcgUUVNVSBi
+ZWhhdmVzLi4uDQoNCg0KDQo+DQo+SmFuDQo=
