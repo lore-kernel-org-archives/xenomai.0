@@ -1,9 +1,9 @@
 Sender: chensong_2000@189.cn
 From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 0/2] [florian/y2038] try to acquire mutex before checking
- timeout
-Date: Wed, 30 Jun 2021 14:31:06 +0800
-Message-Id: <1625034666-29093-1-git-send-email-chensong_2000@189.cn>
+Subject: [PATCH 1/2] y2038: cobalt/posix/mutex: try acquire mutex before
+ checking timeout
+Date: Wed, 30 Jun 2021 14:32:11 +0800
+Message-Id: <1625034731-29827-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,20 +14,35 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-This patch serial is going to change mutex_timedlock's behavior, instead of
-validating timeout first, it tries to acquire resource at the beginning and
-returns 0 if resource is available even timeout is invalid.
+If a preocess is calling mutex_timedlock to acquire resource with
+an invalid timeout, mutex_timedlock returns -EFAULT even resource
+is available, it doesn't make any sense.
 
-smokey test for mutex should be adjusted regarding the change. 
+Therefore, this patch tries to acquire mutex before validating timeout,
+as a result, the process can lock the mutex immediately if it's
+available.
 
-Song Chen (2):
-  y2038: cobalt/posix/mutex: try acquire mutex before checking timeout
-  y2038: testsuite/smokey/2038: move mutex test to another thread
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+---
+ kernel/cobalt/posix/mutex.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
- kernel/cobalt/posix/mutex.c            |  5 +++
- testsuite/smokey/y2038/syscall-tests.c | 74 +++++++++++++++++-----------------
- 2 files changed, 41 insertions(+), 38 deletions(-)
-
+diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
+index 1bd4703..6270520 100644
+--- a/kernel/cobalt/posix/mutex.c
++++ b/kernel/cobalt/posix/mutex.c
+@@ -167,6 +167,11 @@ redo:
+ 
+ 	xnthread_commit_ceiling(curr);
+ 
++	/*check if resourse is already available*/
++	ret = xnsynch_try_acquire(&mutex->synchbase);
++	if (ret != -EBUSY)
++		goto out;
++
+ 	if (xnsynch_owner_check(&mutex->synchbase, curr)) {
+ 		if (fetch_timeout) {
+ 			xnlock_put_irqrestore(&nklock, s);
 -- 
 2.7.4
 
