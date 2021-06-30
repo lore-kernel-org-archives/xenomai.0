@@ -1,18 +1,11 @@
-Subject: Re: [xenomai-images 2/2] tests: restrict realtime cpu for x86 and
- qemu type of devices
-References: <20210628062624.2244-1-hongzhan.chen@intel.com>
- <20210628062624.2244-2-hongzhan.chen@intel.com>
- <a93a52c0-0913-bb2a-952b-91ab11b33b01@siemens.com>
- <7b93c0ce-8013-c6d2-2a02-07480112d7ce@siemens.com>
- <ffd681a7-5408-1d91-5781-b0d9036ae131@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fbe63f8c-e220-35a3-4fb0-3c5943cf175a@siemens.com>
-Date: Wed, 30 Jun 2021 14:51:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <ffd681a7-5408-1d91-5781-b0d9036ae131@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Xenomai Community Call Minutes - June 30, 2021
+Date: Wed, 30 Jun 2021 15:28:46 +0000
+Message-ID: <PH0PR11MB5658192F3D5CD894D60F76BCBA019@PH0PR11MB5658.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,104 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 30.06.21 11:25, Jan Kiszka via Xenomai wrote:
-> On 28.06.21 12:21, Jan Kiszka via Xenomai wrote:
->> On 28.06.21 09:08, Jan Kiszka via Xenomai wrote:
->>> On 28.06.21 08:26, Hongzhan Chen wrote:
->>>> If there is no CPU restriction on the bootargs, smokey cpu_affinity
->>>> test would be skipped reporting with "no kernel support" for those
->>>> without non-RT cpu.
->>>>
->>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>>>
->>>> diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
->>>> index a5a181c..209c5d4 100644
->>>> --- a/tests/jobs/xenomai-ipc227e.yml
->>>> +++ b/tests/jobs/xenomai-ipc227e.yml
->>>> @@ -72,3 +72,5 @@ actions:
->>>>        from: inline
->>>>        path: inline/xenomai-test-suite.yaml
->>>>        name: xenomai-test-suite
->>>> +context:
->>>> +  extra_kernel_args: xenomai.supported_cpus=7
->>>> diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
->>>> index c335292..e42f6ec 100644
->>>> --- a/tests/jobs/xenomai-qemu-amd64.yml
->>>> +++ b/tests/jobs/xenomai-qemu-amd64.yml
->>>> @@ -46,7 +46,7 @@ actions:
->>>>      to: tmpfs
->>>>      images:
->>>>        kernel:
->>>> -        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0"
->>>> +        image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0 xenomai.supported_cpus=1"
->>>>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>>>        initrd:
->>>>          image_arg: -initrd {initrd}
->>>> diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
->>>> index 88fb880..cc60564 100644
->>>> --- a/tests/jobs/xenomai-qemu-arm64.yml
->>>> +++ b/tests/jobs/xenomai-qemu-arm64.yml
->>>> @@ -50,7 +50,7 @@ actions:
->>>>      to: tmpfs
->>>>      images:
->>>>        kernel:
->>>> -        image_arg: -kernel {kernel} -append "root=/dev/vda"
->>>> +        image_arg: -kernel {kernel} -append "root=/dev/vda xenomai.supported_cpus=1"
->>>>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>>>        initrd:
->>>>          image_arg: -initrd {initrd}
->>>> diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
->>>> index 3e3a8ab..2afe250 100644
->>>> --- a/tests/jobs/xenomai-qemu-armhf.yml
->>>> +++ b/tests/jobs/xenomai-qemu-armhf.yml
->>>> @@ -46,7 +46,7 @@ actions:
->>>>      to: tmpfs
->>>>      images:
->>>>        kernel:
->>>> -        image_arg: -kernel {kernel} -append "root=/dev/vdb"
->>>> +        image_arg: -kernel {kernel} -append "root=/dev/vdb xenomai.supported_cpus=1"
->>>>          url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
->>>>        initrd:
->>>>          image_arg: -initrd {initrd}
->>>> diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
->>>> index bc71b75..d1418c1 100644
->>>> --- a/tests/jobs/xenomai-x86-64-efi.yml
->>>> +++ b/tests/jobs/xenomai-x86-64-efi.yml
->>>> @@ -72,3 +72,5 @@ actions:
->>>>        from: inline
->>>>        path: inline/xenomai-test-suite.yaml
->>>>        name: xenomai-test-suite
->>>> +context:
->>>> +  extra_kernel_args: xenomai.supported_cpus=7
->>>>
->>>
->>> Thanks, both applied, just formatting the masks as hex.
->>>
->>
->> Seems as if this triggers an issue with dovetail/5.10:
->> https://source.denx.de/Xenomai/xenomai-images/-/jobs/283341
->>
->> Let's see how the corresponding QEMU behaves...
->>
-> 
-> clocktest starts threads on all cores, not only on xenomai-supported
-> ones. That thread creation fails, but it leaves the process in stuck
-> state. This is a regression of the dovetail mapping, we don't have that
-> with ipipe.
-> 
+Attendees:
 
-Will keep this commit rolled back from next until we sorted out the
-issues it exposes. That way we can keep CI sensitive for potential other
-changes.
+Philippe Gerum, Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,=
+=20
+Dao Zhang, Hao Li, Song Chen, Rick Wang
 
-BTW, we should also adjust start-qemu.sh accordingly for the next
-version so that we can reproduce locally what CI runs.
 
-Jan
+*Community update
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+- Top issues for Xenomai 3.2:
+  https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
+ =20
+  #16 Handling clocksource switch more gracefully - Done
+  #24 select may fail with EADV - Open
+  Large gpio interrupt latency - To be added to the issues tracker.
+  Xenomai hangs on rt_task_wait_period() - To be added to the issues tracke=
+r.
+
+- Lava master server is running on public cloud.=20
+
+- We'll create Xenomai mirrors on gitee.com for better connectivity in PRC.
+
+
+
+Thanks,
+Rick
 
