@@ -1,11 +1,11 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Xenomai Community Call Minutes - June 30, 2021
-Date: Wed, 30 Jun 2021 15:28:46 +0000
-Message-ID: <PH0PR11MB5658192F3D5CD894D60F76BCBA019@PH0PR11MB5658.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: resume_oob_task & not actually resuming
+Message-ID: <558c11ab-794c-29f6-be73-6045a0b90198@siemens.com>
+Date: Wed, 30 Jun 2021 17:56:03 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Attendees:
+Hi Philippe,
 
-Philippe Gerum, Jan Kiszka, Florian Bezdeka, Florent Pirou, Hongzhan Chen,=
-=20
-Dao Zhang, Hao Li, Song Chen, Rick Wang
+need you guidance here to fix the "thread ... switched to non-rt CPU,
+aborted" issue:
 
+For some reason, I-pipe is fine and kicks the migrating non-rt task
+again when ipipe_migration_hook() does not resume the target thread due
+to failing cobalt_affinity_ok() check. Over dovetail, this is not
+working, and the thread is stuck in nirvana, i.e. suspended as hardened
+from Linux POV but not resumed on the Xenomai side. Looking at how
+finalize_oob_transition() is called in the dovetail kernel, it does not
+seem like it is prepared for not being in oob after that call
+(finish_task_switch is not called - not sure if that makes the difference).
 
-*Community update
+So, either the point of checking and failing the migration in Xenomai is
+wrong for dovetail, or we need some extension of the latter to account
+for that case. What was the intended design?
 
-- Top issues for Xenomai 3.2:
-  https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues
- =20
-  #16 Handling clocksource switch more gracefully - Done
-  #24 select may fail with EADV - Open
-  Large gpio interrupt latency - To be added to the issues tracker.
-  Xenomai hangs on rt_task_wait_period() - To be added to the issues tracke=
-r.
+Jan
 
-- Lava master server is running on public cloud.=20
-
-- We'll create Xenomai mirrors on gitee.com for better connectivity in PRC.
-
-
-
-Thanks,
-Rick
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
