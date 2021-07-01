@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ipipe: Avoid recursive faults on root work overflow
-Message-ID: <a2c9518f-8468-e8c5-c4fa-c266b29000be@siemens.com>
-Date: Thu, 1 Jul 2021 09:19:24 +0200
+References: <558c11ab-794c-29f6-be73-6045a0b90198@siemens.com>
+ <87wnqbgs91.fsf@xenomai.org> <87tulfgrzh.fsf@xenomai.org>
+ <b2fac120-76d8-5501-cbfe-a8e5d40ef5a9@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: resume_oob_task & not actually resuming
+In-reply-to: <b2fac120-76d8-5501-cbfe-a8e5d40ef5a9@siemens.com>
+Date: Thu, 01 Jul 2021 09:29:48 +0200
+Message-ID: <87pmw2h4pf.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +16,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
 
-On some archs, WARN* is implemented by triggering a fault. This can
-cause troubles if we are already in a fault and try to submit too much
-root work. Convert to open-coded warning and stack dump.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+> On 30.06.21 19:52, Philippe Gerum wrote:
+>> 
+>> Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+>> 
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> Hi Philippe,
+>>>>
+>>>> need you guidance here to fix the "thread ... switched to non-rt CPU,
+>>>> aborted" issue:
+>>>>
+>>>> For some reason, I-pipe is fine and kicks the migrating non-rt task
+>>>> again when ipipe_migration_hook() does not resume the target thread due
+>>>> to failing cobalt_affinity_ok() check. Over dovetail, this is not
+>>>> working, and the thread is stuck in nirvana, i.e. suspended as hardened
+>>>> from Linux POV but not resumed on the Xenomai side. Looking at how
+>>>> finalize_oob_transition() is called in the dovetail kernel, it does not
+>>>> seem like it is prepared for not being in oob after that call
+>>>> (finish_task_switch is not called - not sure if that makes the difference).
+>>>>
+>>>> So, either the point of checking and failing the migration in Xenomai is
+>>>> wrong for dovetail, or we need some extension of the latter to account
+>>>> for that case. What was the intended design?
+>>>>
+>>>
+>>> Dovetail has it right, Cobalt is wrong in this case. Cobalt-wise: we
+>>> should always 1) raise a cancellation request upon any issue with
+>>> switching to the oob stage on behalf of resume_oob_task(), 2) lift the
+>>> XNRELAX suspension bit, 3) detect the pending cancellation in
+>>> xnshadow_harden(), forcing the current thread to exit. I did not dive
+>>> into the details yet, but I suspect that Cobalt might be lucky with the
+>>> I-pipe in skipping xnthread_resume() upon failure (some pending signal,
+>>> forcing sigwake maybe?).
+>>>
+>>> IOW, we should complete the switch to oob in any case, then kick out the
+>>> thread with a bad affinity when unwinding from xnshadow_harden().
+>> 
+>> Of course, this means that all runqueues must be built for all possible
+>> CPUs, NOT restricted to the CPUs which are part of the oob-capable
+>> set. Cobalt sets up a runqueue for each online CPU in xnsched_init_all()
+>> which is more restrictive, but that should still work provided the
+>> hot-plug scenario is dismissed.
+>
+> The hot-plug scenario cannot be dismissed, obviously. It was one of
+> motivations to enable partial CPU sets.
+>
 
-Doesn't solve the overflow you've seen, Mauro, but should give a better 
-hint.
+I did not know that. I-pipe wise, how/when are we turning on the per-cpu
+tick diversion for a new CPU when it appears, so that such CPU can run
+Xenomai threads?
 
- kernel/ipipe/core.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+> I don't think we are on the right way yet. Can't we prevent entering the
+> migration procedure in the first place when detecting affinity issues?
+> That would be way cleaner than letting a misguided thread pop up on a
+> CPU it does not belong or creating data structures (or even more) for
+> CPUs Xenomai has no business in.
 
-diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
-index 99a88e4d620e..485db973b81b 100644
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -2027,9 +2027,16 @@ void __ipipe_post_work_root(struct ipipe_work_header *work)
- 	cpu = ipipe_processor_id();
- 	tail = per_cpu(work_tail, cpu);
+I'm not sure this would be any cleaner: there are internal callers
+fixing up the thread affinity via do_set_cpus_allowed(), which might
+then start receiving failure codes returned by some Dovetail hook
+denying the move, then what should they do?
+
+The upside of checking the affinity when a thread actually moves back to
+oob context is that we can catch any wrongful situation, without
+sprinkling the in-band code with checks and hooks, playing whack-a-mole
+with issues induced by upstream changes.
+
+Before anything, this hunk should be merged into the Dovetail code
+before testing...
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index ee6fe5e9c7faaaf..891398dc63aec07 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2384,9 +2384,9 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
  
--	if (WARN_ON_ONCE((unsigned char *)tail + work->size >=
--			 per_cpu(work_buf, cpu) + WORKBUF_SIZE))
-+	if (unlikely((unsigned char *)tail + work->size >=
-+		     per_cpu(work_buf, cpu) + WORKBUF_SIZE)) {
-+		static volatile unsigned long once;
-+		if (!test_and_set_bit(0, &once)) {
-+			ipipe_prepare_panic();
-+			pr_err("I-pipe root work queue overflow! System may be unstable now.\n");
-+			dump_stack();
-+		}
- 		goto out;
-+	}
+ 	__do_set_cpus_allowed(p, new_mask, flags);
  
- 	/* Work handling is deferred, so data has to be copied. */
- 	memcpy(tail, work, work->size);
+-	return affine_move_task(rq, p, &rf, dest_cpu, flags);
+-
+ 	inband_migration_notify(p, dest_cpu);
++
++	return affine_move_task(rq, p, &rf, dest_cpu, flags);
+ out:
+ 	task_rq_unlock(rq, p, &rf);
+ 
+
 -- 
-2.26.2
+Philippe.
 
