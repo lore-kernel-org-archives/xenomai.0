@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-From: Byron Jacquot <bjacquot@cardinalpeak.com>
-Date: Thu, 15 Jul 2021 17:34:37 -0600
-Message-ID: <CAJte2PC6cFhYMqY9-XGbrkmiw+U5_hQW0S03iCjDWuLKtDW8OA@mail.gmail.com>
-Subject: Taking first steps with EVL
+References: <CAB9YM8jh8oB9JR8+08CPtaQ8e8ViEqKS2gvgeNgXpdU7coBzug@mail.gmail.com>
+In-Reply-To: <CAB9YM8jh8oB9JR8+08CPtaQ8e8ViEqKS2gvgeNgXpdU7coBzug@mail.gmail.com>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Thu, 1 Jul 2021 18:19:08 +0200
+Message-ID: <CAFc1U0sj6MXuD=ACKDWcbbPamrHjPG6f+RW4KLAn9TG=Sibw6Q@mail.gmail.com>
+Subject: Re: cyclictest + cobalt
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,53 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Rui Queiroz <rqueiroz@dei.uc.pt>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hello Everyone,
+AFAIK cyclictest uses the POSIX skin.
 
-I'm evaluating some of the newer options for doing real-time audio
-processing.  I've been playing with the Xenomai-based ElkOS - some online
-discussion led me to EVL.
+The Xenomai version is based on rt-tests 0.92 (current version is 2.1).
 
-I'm working with a Rasbperry Pi 4B - I started with a Raspbian Lite card,
-and have been building EVL kernels from the v5.12-evl-rebase branch.
+I do prefer using "latency" for Xenomai.
 
-I've got a grasp on the basics - I cloned & built the kernel, then ran `evl
-test`, discovered missing configuration parameters, added them, and now the
-tests all pass.  I've poked at Hectic and Latmus, too.
+Regards
 
-I also noticed a boot-time message about pipeline capable Pi4 IRQ chips,
-and found the following discussion of a patch to fix it, so added that and
-eliminated the message.
-https://evlproject.org/pipermail/evl/2021-February/000300.html
 
-I'm pulling the basics of application and driver development together
-also.  I'm getting to know EVL thread spawning, diagnosing inappropriate
-system calls, etc.  I've got a stub of a character device driver with the
-OOB calls attached, and my application successfully attached and using
-those calls, partitioning the RT and non-RT access.  Much of this was
-informed by looking at both sides  (user/driver) of Hectic and Latmus.  So
-far, so good!
+Le jeu. 1 juil. 2021 =C3=A0 16:24, Rui Queiroz via Xenomai <xenomai@xenomai=
+.org>
+a =C3=A9crit :
 
-Now I'm looking to get audio in & out of the system - it looks like there
-are two possible paths I could follow, and wanted to see if anyone here
-might be able to offer steering and guidance.
+> Hi,
+>
+> I have no experience with Xenomai and I was wondering if someone could
+> clarify if cyclictest is included in Xenomai 3.1?
+> Here [1] says "cyclictest is part of the Xenomai test suite..." but I cou=
+ld
+> not confirm it.
+>
+> If I simply install the rt-tests package and run cyclictest will it take
+> advantage of the cobalt "kernel" by default or do I need to preform some
+> extra steps (activate a posix skin etc)
+>
+> Thank you
+>
+>
+> [1] http://manpages.ubuntu.com/manpages/groovy/en/man1/cyclictest.1.html
+>
 
-The first path would be to port the RTDM driver from ElkOS - unwind the
-RTDM parts, and replace them with EVL ones.  I'm reasonably familiar with
-that driver.  Is my understanding correct, that the heart of it is really
-setting up the DMA IRQ with the OOB flag, and the OOB DMA is functional on
-the bcm2835/Pi4?
 
-The other path would be the ALSA patches described below, plus porting work
-based on it for the BCM2711 I2S port & my converters.  My application
-doesn't need ALSA, but if it's a useful stepping stone, it's not precluded,
-either.
-https://xenomai.org/pipermail/xenomai/2020-September/043502.html
+--=20
 
-Does one of these seem like a shorter path to proof of concept than the
-other?
-
-Thank you,
-
-Byron Jacquot
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
