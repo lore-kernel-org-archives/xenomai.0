@@ -1,11 +1,9 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] README: Update board list
-Message-ID: <01b3cb12-7135-27be-76de-8146dee6577a@siemens.com>
-Date: Mon, 5 Jul 2021 20:02:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Rui Queiroz <rqueiroz@dei.uc.pt>
+Date: Thu, 1 Jul 2021 15:23:29 +0100
+Message-ID: <CAB9YM8jh8oB9JR8+08CPtaQ8e8ViEqKS2gvgeNgXpdU7coBzug@mail.gmail.com>
+Subject: cyclictest + cobalt
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi,
 
-We replaced the ipc227e with a generic x86-efi target long ago. Also
-include the .yml endings in the mentioning to make the relationship
-clearer.
+I have no experience with Xenomai and I was wondering if someone could
+clarify if cyclictest is included in Xenomai 3.1?
+Here [1] says "cyclictest is part of the Xenomai test suite..." but I could
+not confirm it.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- README.md | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+If I simply install the rt-tests package and run cyclictest will it take
+advantage of the cobalt "kernel" by default or do I need to preform some
+extra steps (activate a posix skin etc)
 
-diff --git a/README.md b/README.md
-index 69b3e13..d97c6aa 100644
---- a/README.md
-+++ b/README.md
-@@ -32,8 +32,8 @@ installed.
- 
- ### Physical Targets
- 
--This repository contains recipes for x86 (`board-simatic-ipc227e`),
--armhf(`board-beagle-bone-black`) and arm64(`board-hikey`) targets.
-+This repository contains recipes for x86 (`board-x86-64-efi.yml`),
-+armhf(`board-beagle-bone-black.yml`) and arm64(`board-hikey.yml`) targets.
- 
- Each physical target will generate ready-to-boot images under
- `build/tmp/deploy/images/`. To flash, e.g., the HiKey image to an SD card, run
--- 
-2.26.2
+Thank you
 
+
+[1] http://manpages.ubuntu.com/manpages/groovy/en/man1/cyclictest.1.html
