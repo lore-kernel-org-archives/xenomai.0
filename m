@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 5/9] cobalt/rtdm/fd: Fix default handler setups
-Date: Mon,  5 Jul 2021 09:36:37 +0200
-Message-Id: <3b7f4bc45d90dadad263ec036381e9a652b0a714.1625470600.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
-References: <cover.1625470600.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAB9YM8jh8oB9JR8+08CPtaQ8e8ViEqKS2gvgeNgXpdU7coBzug@mail.gmail.com>
+ <CAFc1U0sj6MXuD=ACKDWcbbPamrHjPG6f+RW4KLAn9TG=Sibw6Q@mail.gmail.com>
+In-Reply-To: <CAFc1U0sj6MXuD=ACKDWcbbPamrHjPG6f+RW4KLAn9TG=Sibw6Q@mail.gmail.com>
+From: Rui Queiroz <rqueiroz@dei.uc.pt>
+Date: Thu, 1 Jul 2021 17:41:50 +0100
+Message-ID: <CAB9YM8iMyYHjEQkca3qUwYnKjvHnxtOujcYQ8Mg=k38KCC7fug@mail.gmail.com>
+Subject: Re: cyclictest + cobalt
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,134 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Cc: xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+When you say
 
-2db562ad62ec had a point in avoiding EBADF for file descriptors that are
-not under RTDM management. But it unfortunately got a lot of other cases
-wrong along this.
+> The Xenomai version is based on rt-tests 0.92 (current version is 2.1).
 
-This one is about returning the right error code if an RTDM driver does
-not implement a particular handler. That must never be EADV because that
-error would signal "not an RTDM fd, retry with Linux" which is obviously
-wrong. Even worse, mmap clearly defines the right error to return in
-case it is not implemented, and that is ENODEV as was returned before.
+Do you mean that there is an embedded cyclictest?
 
-So this restores ENODEV as invalid default for mmap, uses ENOTTY for
-unimplemented IOCTL and switches all others to EBADF which is a match
-for select and a reasonable choice for read/write/recvmsg/sendmsg.
+I could not find any trace of cyclictest. I had to install it using apt and
+the rt-tests package.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/rtdm/fd.c | 61 ++++++++++++++++++++++++-----------------
- 1 file changed, 36 insertions(+), 25 deletions(-)
-
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index e5e0c02376..8e4e15e794 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -52,9 +52,19 @@ static int enosys(void)
- 	return -ENOSYS;
- }
- 
--static int eadv(void)
-+static int enotty(void)
- {
--	return -EADV;
-+	return -ENOTTY;
-+}
-+
-+static int ebadf(void)
-+{
-+	return -EBADF;
-+}
-+
-+static int enodev(void)
-+{
-+	return -ENODEV;
- }
- 
- static inline struct rtdm_fd_index *
-@@ -76,24 +86,23 @@ static struct rtdm_fd *fetch_fd(struct cobalt_ppd *p, int ufd)
- 	return idx->fd;
- }
- 
--#define assign_invalid_handler(__handler)				\
-+#define assign_invalid_handler(__handler, __invalid)			\
- 	do								\
--		(__handler) = (typeof(__handler))eadv;			\
-+		(__handler) = (typeof(__handler))__invalid;		\
- 	while (0)
- 
--#define __assign_default_handler(__handler, __placeholder)		\
-+/* Calling this handler should beget ENOSYS if not implemented. */
-+#define assign_switch_handler(__handler)				\
- 	do								\
- 		if ((__handler) == NULL)				\
--			(__handler) = (typeof(__handler))__placeholder;	\
-+			assign_invalid_handler(__handler, enosys);	\
- 	while (0)
- 
--/* Calling this handler should beget EADV if not implemented. */
--#define assign_invalid_default_handler(__handler)			\
--	__assign_default_handler(__handler, eadv)
--
--/* Calling this handler should beget ENOSYS if not implemented. */
--#define assign_default_handler(__handler)				\
--	__assign_default_handler(__handler, enosys)
-+#define assign_default_handler(__handler, __invalid)			\
-+	do								\
-+		if ((__handler) == NULL)				\
-+			assign_invalid_handler(__handler, __invalid);	\
-+	while (0)
- 
- #define __rt(__handler)		__handler ## _rt
- #define __nrt(__handler)	__handler ## _nrt
-@@ -103,14 +112,16 @@ static struct rtdm_fd *fetch_fd(struct cobalt_ppd *p, int ufd)
-  * are implemented, ENOSYS otherwise for NULL handlers to trigger the
-  * adaptive switch.
-  */
--#define assign_default_dual_handlers(__handler)				\
-+#define assign_default_dual_handlers(__handler, __invalid_handler)	\
- 	do								\
- 		if (__rt(__handler) || __nrt(__handler)) {		\
--			assign_default_handler(__rt(__handler));	\
--			assign_default_handler(__nrt(__handler));	\
-+			assign_switch_handler(__rt(__handler));		\
-+			assign_switch_handler(__nrt(__handler));	\
- 		} else {						\
--			assign_invalid_handler(__rt(__handler));	\
--			assign_invalid_handler(__nrt(__handler));	\
-+			assign_invalid_handler(__rt(__handler),		\
-+					       __invalid_handler);	\
-+			assign_invalid_handler(__nrt(__handler),	\
-+					       __invalid_handler);	\
- 		}							\
- 	while (0)
- 
-@@ -147,13 +158,13 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 	if (magic == 0)
- 		return -EINVAL;
- 
--	assign_default_dual_handlers(ops->ioctl);
--	assign_default_dual_handlers(ops->read);
--	assign_default_dual_handlers(ops->write);
--	assign_default_dual_handlers(ops->recvmsg);
--	assign_default_dual_handlers(ops->sendmsg);
--	assign_invalid_default_handler(ops->select);
--	assign_invalid_default_handler(ops->mmap);
-+	assign_default_dual_handlers(ops->ioctl, enotty);
-+	assign_default_dual_handlers(ops->read, ebadf);
-+	assign_default_dual_handlers(ops->write, ebadf);
-+	assign_default_dual_handlers(ops->recvmsg, ebadf);
-+	assign_default_dual_handlers(ops->sendmsg, ebadf);
-+	assign_default_handler(ops->select, ebadf);
-+	assign_default_handler(ops->mmap, enodev);
- 
- 	ppd = cobalt_ppd_get(0);
- 	fd->magic = magic;
--- 
-2.26.2
+I see a huge difference when executing cyclictest after booting with the
+xenomai kernel vs the vanilla but how can I be sure that it is using cobalt=
+?
 
 
+
+Pierre FICHEUX via Xenomai <xenomai@xenomai.org> escreveu no dia quinta,
+1/07/2021 =C3=A0(s) 17:20:
+
+> AFAIK cyclictest uses the POSIX skin.
+>
+> The Xenomai version is based on rt-tests 0.92 (current version is 2.1).
+>
+> I do prefer using "latency" for Xenomai.
+>
+> Regards
+>
+>
+> Le jeu. 1 juil. 2021 =C3=A0 16:24, Rui Queiroz via Xenomai <xenomai@xenom=
+ai.org
+> >
+> a =C3=A9crit :
+>
+> > Hi,
+> >
+> > I have no experience with Xenomai and I was wondering if someone could
+> > clarify if cyclictest is included in Xenomai 3.1?
+> > Here [1] says "cyclictest is part of the Xenomai test suite..." but I
+> could
+> > not confirm it.
+> >
+> > If I simply install the rt-tests package and run cyclictest will it tak=
+e
+> > advantage of the cobalt "kernel" by default or do I need to preform som=
+e
+> > extra steps (activate a posix skin etc)
+> >
+> > Thank you
+> >
+> >
+> > [1] http://manpages.ubuntu.com/manpages/groovy/en/man1/cyclictest.1.htm=
+l
+> >
+>
+>
+> --
+>
+> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>                              http://www.smile.fr
+>                              https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
+>
