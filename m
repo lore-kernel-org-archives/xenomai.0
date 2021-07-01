@@ -1,12 +1,11 @@
-Subject: Re: resume_oob_task & not actually resuming
-References: <558c11ab-794c-29f6-be73-6045a0b90198@siemens.com>
- <87wnqbgs91.fsf@xenomai.org> <87tulfgrzh.fsf@xenomai.org>
+Subject: Re: Xeno3-x86: system freezes with SEGFAULT
+References: <89a388f9-f30b-59d5-7a6f-e46026793089@tin.it>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b2fac120-76d8-5501-cbfe-a8e5d40ef5a9@siemens.com>
-Date: Thu, 1 Jul 2021 08:11:05 +0200
+Message-ID: <66468230-c49a-c0e3-2687-90fe6c7d49e7@siemens.com>
+Date: Thu, 1 Jul 2021 08:38:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <87tulfgrzh.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <89a388f9-f30b-59d5-7a6f-e46026793089@tin.it>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,62 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Mauro S." <mau.salvi@tin.it>, xenomai@xenomai.org
 
-On 30.06.21 19:52, Philippe Gerum wrote:
+On 28.06.21 16:33, Mauro S. via Xenomai wrote:
+> Hi all,
 > 
-> Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+> I'm using Xenomai3 (master branch, commit
+> d98c99798836dd3571144203b51ff787d2108f1b) on a X86_64bit Intel Atom
+> x5-E8000 with 2GB RAM, using kernel from Xenomai repos, in Cobalt
+> coniguration.
+> Just for completeness, I'm using a Yocto built filesystem (but I think
+> it doesn't matter to the issue that I'm going to describe).
 > 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> Hi Philippe,
->>>
->>> need you guidance here to fix the "thread ... switched to non-rt CPU,
->>> aborted" issue:
->>>
->>> For some reason, I-pipe is fine and kicks the migrating non-rt task
->>> again when ipipe_migration_hook() does not resume the target thread due
->>> to failing cobalt_affinity_ok() check. Over dovetail, this is not
->>> working, and the thread is stuck in nirvana, i.e. suspended as hardened
->>> from Linux POV but not resumed on the Xenomai side. Looking at how
->>> finalize_oob_transition() is called in the dovetail kernel, it does not
->>> seem like it is prepared for not being in oob after that call
->>> (finish_task_switch is not called - not sure if that makes the difference).
->>>
->>> So, either the point of checking and failing the migration in Xenomai is
->>> wrong for dovetail, or we need some extension of the latter to account
->>> for that case. What was the intended design?
->>>
->>
->> Dovetail has it right, Cobalt is wrong in this case. Cobalt-wise: we
->> should always 1) raise a cancellation request upon any issue with
->> switching to the oob stage on behalf of resume_oob_task(), 2) lift the
->> XNRELAX suspension bit, 3) detect the pending cancellation in
->> xnshadow_harden(), forcing the current thread to exit. I did not dive
->> into the details yet, but I suspect that Cobalt might be lucky with the
->> I-pipe in skipping xnthread_resume() upon failure (some pending signal,
->> forcing sigwake maybe?).
->>
->> IOW, we should complete the switch to oob in any case, then kick out the
->> thread with a bad affinity when unwinding from xnshadow_harden().
+> Consider the simple test program attached: it creates 120 tasks that
+> does nothing than sleep. This test is compiled with the Yocto toolchain
+> using the attached makefile. Toolchain have Xenomai installed in.
 > 
-> Of course, this means that all runqueues must be built for all possible
-> CPUs, NOT restricted to the CPUs which are part of the oob-capable
-> set. Cobalt sets up a runqueue for each online CPU in xnsched_init_all()
-> which is more restrictive, but that should still work provided the
-> hot-plug scenario is dismissed.
+> (By the way, I needed to raise to 2048 the registry slots number in
+> kernel configuration: without raising this, I cannot create more than
+> 110 tasks.)
+> 
+> If I kill this program with TERM signal, sighandler does its work and
+> the application exits cleanly.
+> 
+> If I kill this application with SEGV signal (no custom sighandler
+> installed), system freezes.
+> 
+> If I build this application with 50 tasks, then SEGV does not cause
+> system to freeze.
+> 
+> Bisecting the number of tasks, SIGSEGV freezes starts with a number of
+> tasks greater than 85.
+> 
+> I enabled watchdog (and almost all of the debug options) in Xenomai
+> section of the kernel configuration, without success.
+> 
+> Are there some system limits? I checked under /proc/xenomai but all
+> seems to be OK.
+> 
+> Thanks in advance, regards
+> 
 
-The hot-plug scenario cannot be dismissed, obviously. It was one of
-motivations to enable partial CPU sets.
+Just reproduced over ipipe-core-5.4.124-x86-5: We are running into [1].
+That is an architectural limitation of I-pipe that bit me a couple of
+times in the past as well. You can shift that limit by increasing
+WORKBUF_SIZE [2]. For you test case, using 4K was enough to get over the
+hill. This is rather unhandy, no question.
 
-I don't think we are on the right way yet. Can't we prevent entering the
-migration procedure in the first place when detecting affinity issues?
-That would be way cleaner than letting a misguided thread pop up on a
-CPU it does not belong or creating data structures (or even more) for
-CPUs Xenomai has no business in.
+The good news is: Dovetail with kernel 5.10+ is not affected by this
+limitation anymore.
 
 Jan
+
+[1]
+https://source.denx.de/Xenomai/ipipe-x86/-/blob/ipipe-x86-5.4.y/kernel/ipipe/core.c#L2030
+[2]
+https://source.denx.de/Xenomai/ipipe-x86/-/blob/ipipe-x86-5.4.y/kernel/ipipe/core.c#L74
 
 -- 
 Siemens AG, T RDA IOT
