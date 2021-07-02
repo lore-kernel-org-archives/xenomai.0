@@ -1,10 +1,9 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 3/4] scripts/run-lava-tests: replace sed
- with envsubst
-Date: Wed, 14 Jul 2021 09:41:54 +0200
-Message-Id: <20210714074155.2625-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
-References: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 2/4] cobalt/intr: Add error handling to xnintr_affinity
+Date: Fri,  2 Jul 2021 16:27:45 +0200
+Message-Id: <502f94fbd239762ad8f783f83eb78f233d8441cd.1625236067.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1625236067.git.jan.kiszka@siemens.com>
+References: <cover.1625236067.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,56 +14,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This patch incorporates a comment from the mailing list[1].
+This function should respect the supported cpu set and report an error
+if the specified set has no intersection with it. It should also return
+potential errors for the underlying pipeline code.
 
-It simplifies the script.
-
-[1]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- scripts/run-lava-tests.sh | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ include/cobalt/kernel/intr.h  |  3 +--
+ kernel/cobalt/dovetail/intr.c | 11 +++++++----
+ kernel/cobalt/ipipe/intr.c    | 16 +++++++++++++---
+ 3 files changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index e398afd..44e02fc 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -50,24 +50,22 @@ echo "connect to lava server: ${lava_master_uri}"
+diff --git a/include/cobalt/kernel/intr.h b/include/cobalt/kernel/intr.h
+index 6db4cfd905..9177141cba 100644
+--- a/include/cobalt/kernel/intr.h
++++ b/include/cobalt/kernel/intr.h
+@@ -124,8 +124,7 @@ void xnintr_enable(struct xnintr *intr);
  
- # connect to lava master
- lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
+ void xnintr_disable(struct xnintr *intr);
+ 
+-void xnintr_affinity(struct xnintr *intr,
+-		     const cpumask_t *cpumask);
++int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask);
+ 
+ #ifdef CONFIG_XENO_OPT_STATS_IRQS
+ 
+diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
+index 7953050fb0..da36f74462 100644
+--- a/kernel/cobalt/dovetail/intr.c
++++ b/kernel/cobalt/dovetail/intr.c
+@@ -118,13 +118,16 @@ void xnintr_disable(struct xnintr *intr)
+ }
+ EXPORT_SYMBOL_GPL(xnintr_disable);
+ 
+-void xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
++int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
+ {
+-	int ret;
++	cpumask_t effective_mask;
+ 
+ 	secondary_mode_only();
+-	ret = irq_set_affinity_hint(intr->irq, cpumask);
+ 
+-	WARN_ON_ONCE(ret);
++	cpumask_and(&effective_mask, &xnsched_realtime_cpus, cpumask);
++	if (cpumask_empty(&effective_mask))
++		return -EINVAL;
 +
- #generate lava job description from template
- if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
-     DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
- else
-     DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
- fi
--
-+export DEPLOY_URL
- echo "Deploy artifacts from '${artifact_url}'"
- 
- job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
- tmp_dir=$(mktemp -d)
- template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
--cp "${job_template_path}-${TARGET}.yml" "${template}"
--sed -i "s|\${TARGET}|${TARGET}|g" "$template"
--sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
--sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
--sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
--sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
++	return irq_set_affinity_hint(intr->irq, &effective_mask);
+ }
+ EXPORT_SYMBOL_GPL(xnintr_affinity);
+diff --git a/kernel/cobalt/ipipe/intr.c b/kernel/cobalt/ipipe/intr.c
+index 0d2c515af8..29adf1a7ae 100644
+--- a/kernel/cobalt/ipipe/intr.c
++++ b/kernel/cobalt/ipipe/intr.c
+@@ -992,11 +992,21 @@ EXPORT_SYMBOL_GPL(xnintr_disable);
+  *
+  * @coretags{secondary-only}
+  */
+-void xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
++int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
+ {
+-	secondary_mode_only();
+ #ifdef CONFIG_SMP
+-	ipipe_set_irq_affinity(intr->irq, *cpumask);
++	cpumask_t effective_mask;
 +
-+cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
++	secondary_mode_only();
 +
- 
- echo "submit lava job"
- 
++	cpumask_and(&effective_mask, &xnsched_realtime_cpus, cpumask);
++	if (cpumask_empty(&effective_mask))
++		return -EINVAL;
++
++	return ipipe_set_irq_affinity(intr->irq, effective_mask);
++#else
++	secondary_mode_only();
++	return 0;
+ #endif
+ }
+ EXPORT_SYMBOL_GPL(xnintr_affinity);
 -- 
-2.20.1
+2.26.2
 
 
