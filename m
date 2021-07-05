@@ -1,11 +1,14 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/1] license: summarize the licensing terms
-Date: Sun, 18 Jul 2021 11:23:47 +0200
-Message-Id: <20210718092347.473513-2-rpm@xenomai.org>
-In-Reply-To: <20210718092347.473513-1-rpm@xenomai.org>
-References: <20210718092347.473513-1-rpm@xenomai.org>
+Subject: Re: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
+ Rtdmtest and RTIPC
+References: <20210624064505.25467-1-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5e09fce4-2455-3cb4-791b-32a3fed46e75@siemens.com>
+Date: Mon, 5 Jul 2021 08:18:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210624064505.25467-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,62 +17,218 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 24.06.21 08:45, Hongzhan Chen wrote:
+> enable Rtnet, Rtdmtest, RTIPC, watchdog, RT sched class and
+> related drivers that would be tested by smokey test.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> 
+> diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
+> index d4e717e..122aeac 100644
+> --- a/recipes-kernel/linux/files/arm64_defconfig
+> +++ b/recipes-kernel/linux/files/arm64_defconfig
+> @@ -360,19 +360,31 @@ CONFIG_XENOMAI=y
+>  #
+>  # Core features
+>  #
+> -# CONFIG_XENO_OPT_SCHED_CLASSES is not set
+> +CONFIG_XENO_OPT_SCHED_CLASSES=y
+> +CONFIG_XENO_OPT_SCHED_WEAK=y
+> +CONFIG_XENO_OPT_SCHED_TP=y
+> +CONFIG_XENO_OPT_SCHED_TP_NRPART=4
+> +CONFIG_XENO_OPT_SCHED_SPORADIC=y
+> +CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
+> +CONFIG_XENO_OPT_SCHED_QUOTA=y
+> +CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
+> +CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
+>  CONFIG_XENO_OPT_STATS=y
+> -# CONFIG_XENO_OPT_SHIRQ is not set
+> +CONFIG_XENO_OPT_STATS_IRQS=y
+> +CONFIG_XENO_OPT_SHIRQ=y
+>  CONFIG_XENO_OPT_RR_QUANTUM=1000
+>  CONFIG_XENO_OPT_AUTOTUNE=y
+> -# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+> -CONFIG_XENO_OPT_TIMER_LIST=y
+> -# CONFIG_XENO_OPT_TIMER_RBTREE is not set
+> +CONFIG_XENO_OPT_SCALABLE_SCHED=y
+> +# CONFIG_XENO_OPT_TIMER_LIST is not set
+> +CONFIG_XENO_OPT_TIMER_RBTREE=y
+> +CONFIG_XENO_OPT_PIPE=y
+> +CONFIG_XENO_OPT_MAP=y
+>  CONFIG_XENO_OPT_VFILE=y
+>  
+>  #
+>  # Sizes and static limits
+>  #
+> +CONFIG_XENO_OPT_PIPE_NRDEV=32
+>  CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
+>  CONFIG_XENO_OPT_SYS_HEAPSZ=4096
+>  CONFIG_XENO_OPT_PRIVATE_HEAPSZ=256
+> @@ -396,7 +408,12 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
+>  #
+>  # Serial drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_16550A is not set
+> +CONFIG_XENO_DRIVERS_16550A=y
+> +CONFIG_XENO_DRIVERS_16550A_PIO=y
+> +# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
+> +# CONFIG_XENO_DRIVERS_16550A_ANY is not set
+> +CONFIG_XENO_DRIVERS_16550A_PCI=y
+> +CONFIG_XENO_DRIVERS_16550A_PCI_MOXA=y
+>  
+>  #
+>  # Testing drivers
+> @@ -404,17 +421,106 @@ CONFIG_XENO_DRIVERS_AUTOTUNE=y
+>  CONFIG_XENO_DRIVERS_TIMERBENCH=y
+>  CONFIG_XENO_DRIVERS_SWITCHTEST=y
+>  CONFIG_XENO_DRIVERS_HEAPCHECK=y
+> -# CONFIG_XENO_DRIVERS_RTDMTEST is not set
+> +CONFIG_XENO_DRIVERS_RTDMTEST=m
+>  
+>  #
+>  # CAN drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_CAN is not set
+> +CONFIG_XENO_DRIVERS_CAN=y
+> +CONFIG_XENO_DRIVERS_CAN_DEBUG=y
+> +CONFIG_XENO_DRIVERS_CAN_LOOPBACK=y
+> +CONFIG_XENO_DRIVERS_CAN_RXBUF_SIZE=1024
+> +CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES=4
+> +CONFIG_XENO_DRIVERS_CAN_MAX_RECEIVERS=16
+> +CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
+> +# CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
+> +CONFIG_XENO_DRIVERS_CAN_VIRT=y
+> +# CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI=y
+> +CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG=y
+>  
+>  #
+>  # RTnet
+>  #
+> -# CONFIG_XENO_DRIVERS_NET is not set
+> +CONFIG_XENO_DRIVERS_NET=m
+> +CONFIG_XENO_DRIVERS_RTNET_CHECKED=y
+> +
+> +#
+> +# Protocol Stack
+> +#
+> +
+> +#
+> +# Stack parameters
+> +#
+> +CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
+> +CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
+> +CONFIG_XENO_DRIVERS_NET_RTWLAN=y
+> +
+> +#
+> +# Protocols
+> +#
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_NET_ROUTES=16
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTER=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP=m
+> +CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION=y
+> +CONFIG_XENO_DRIVERS_NET_RTPACKET=m
+> +CONFIG_XENO_DRIVERS_NET_RTMAC=m
+> +CONFIG_XENO_DRIVERS_NET_TDMA=m
+> +CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
+> +CONFIG_XENO_DRIVERS_NET_NOMAC=m
+> +CONFIG_XENO_DRIVERS_NET_RTCFG=m
+> +CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
+> +
+> +#
+> +# Drivers
+> +#
+> +
+> +#
+> +# Common PCI Drivers
+> +#
+> +CONFIG_XENO_DRIVERS_NET_DRV_PCNET32=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_TULIP=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT=20
+> +# CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG is not set
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000E=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_8139=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_IGB=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_R8169=m
+> +
+> +#
+> +# Misc Drivers
+> +#
+> +CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_SMC91111=m
+> +CONFIG_XENO_DRIVERS_NET_EXP_DRIVERS=y
+> +CONFIG_XENO_DRIVERS_NET_DRV_3C59X=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW=m
+> +CONFIG_XENO_DRIVERS_NET_DRV_RT2500=m
+> +
+> +#
+> +# Add-Ons
+> +#
+> +CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
+> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
+> +CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
+>  
+>  #
+>  # ANALOGY drivers
+> @@ -424,7 +530,12 @@ CONFIG_XENO_DRIVERS_HEAPCHECK=y
+>  #
+>  # Real-time IPC drivers
+>  #
+> -# CONFIG_XENO_DRIVERS_RTIPC is not set
+> +CONFIG_XENO_DRIVERS_RTIPC=y
+> +CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+> +CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+> +CONFIG_XENO_OPT_IDDP_NRPORT=32
+> +CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+> +CONFIG_XENO_OPT_BUFP_NRPORT=32
+>  
+>  #
+>  # UDD support
+> @@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
+>  # cause troubles with Xenomai. You should disable them.
+>  #
+>  CONFIG_XENO_VERSION_MAJOR=3
+> -CONFIG_XENO_VERSION_MINOR=0
+> -CONFIG_XENO_REVISION_LEVEL=90
+> -CONFIG_XENO_VERSION_STRING="3.1-devel"
+> -CONFIG_XENO_VERSION_NAME="Xenomai -next"
+> +CONFIG_XENO_VERSION_MINOR=1
+> +CONFIG_XENO_REVISION_LEVEL=0
+> +CONFIG_XENO_VERSION_STRING="3.1"
+>  CONFIG_FREEZER=y
+>  
+>  #
+> 
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- COPYING | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 COPYING
+This revealed a bug in bufp [1] - good that we enabled it...
 
-diff --git a/COPYING b/COPYING
-new file mode 100644
-index 000000000..583410189
---- /dev/null
-+++ b/COPYING
-@@ -0,0 +1,39 @@
-+
-+Licensing terms
-+---------------
-+
-+Xenomai 3 is composed of a number of libraries, user-space application
-+programs, and kernel code. This file summarizes the licenses used for
-+the libraries and kernel code. Please refer to the COPYING file in the
-+corresponding directory for details. The licensing terms of each
-+application program shipped with Xenomai 3 is stated in the
-+corresponding source code.
-+
-+-- Libraries
-+
-+./lib/boilerplate/COPYING: LGPLv2 + MIT
-+./lib/boilerplate/iniparser/LICENSE: MIT
-+./lib/trank/COPYING: LGPLv2
-+./lib/copperplate/COPYING: LGPLv2
-+./lib/cobalt/COPYING: LGPLv2
-+./lib/psos/COPYING: LGPLv2
-+./lib/smokey/COPYING: LGPLv2
-+./lib/vxworks/COPYING: LGPLv2
-+./lib/alchemy/COPYING: LGPLv2
-+
-+-- Kernel code
-+
-+./kernel/cobalt/posix/COPYING: GPLv2
-+./kernel/cobalt/COPYING: GPLv2
-+./kernel/cobalt/rtdm/COPYING: GPLv2
-+
-+Please note that the common Linux licensing rules as stated in the
-+document mentioned below apply to all the Xenomai kernel code once
-+compiled in the Linux kernel, with no exception:
-+
-+https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
-+
-+-- Header files, including UAPI (kernel <-> user interface)
-+
-+./include/COPYING: GPLv2 + exception for additional uses in
-+                   user-space application programs.
+I think we still need something similar for armhf as well.
+
+Jan
+
+[1] https://xenomai.org/pipermail/xenomai/2021-July/045767.html
+
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
