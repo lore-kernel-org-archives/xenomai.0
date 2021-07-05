@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2] testsuite/clocktest: Account for unsupported CPUs
-Message-ID: <c85a95af-09a7-0602-c344-5562f05d0ad1@siemens.com>
-Date: Mon, 5 Jul 2021 17:22:14 +0200
+Subject: [xenomai-images][PATCH] tests: Remove another unused job description
+Message-ID: <e5a72ca4-b003-a091-e586-1084350d11c4@siemens.com>
+Date: Mon, 5 Jul 2021 20:02:11 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,110 +18,96 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Scheduling a thread on a CPU that is not supported by Xenomai will only
-fail and flood the screen with error messages.
+Covered by xenomai-x86-64-efi.yml in practice.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
+ tests/jobs/xenomai-ipc227e.yml | 76 ----------------------------------
+ 1 file changed, 76 deletions(-)
+ delete mode 100644 tests/jobs/xenomai-ipc227e.yml
 
-Changes in v2:
- - restrict cpu_realtime_set by online cpus
-
- testsuite/clocktest/clocktest.c | 49 ++++++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 13 deletions(-)
-
-diff --git a/testsuite/clocktest/clocktest.c b/testsuite/clocktest/clocktest.c
-index a40fcaca9d..c524f42fb7 100644
---- a/testsuite/clocktest/clocktest.c
-+++ b/testsuite/clocktest/clocktest.c
-@@ -29,6 +29,7 @@
- #include <unistd.h>
- #include <sys/syscall.h>
- #include <sys/time.h>
-+#include <boilerplate/ancillaries.h>
- #include <boilerplate/atomic.h>
- #include <cobalt/uapi/kernel/vdso.h>
- #include <xeno_config.h>
-@@ -52,8 +53,9 @@ pthread_mutex_t lock;
- #define release_lock(lock)			pthread_mutex_unlock(lock)
- #endif
- 
--uint64_t last_common = 0;
--clockid_t clock_id = CLOCK_REALTIME;
-+static uint64_t last_common = 0;
-+static clockid_t clock_id = CLOCK_REALTIME;
-+static cpu_set_t cpu_realtime_set, cpu_online_set;
- 
- struct per_cpu_data {
- 	uint64_t first_tod, first_clock;
-@@ -298,7 +300,7 @@ static clockid_t resolve_clock_name(const char *name,
- int main(int argc, char *argv[])
- {
- 	const char *clock_name = NULL, *real_clock_name = "CLOCK_REALTIME";
--	int cpus = sysconf(_SC_NPROCESSORS_ONLN);
-+	int max_cpu, cpus;
- 	int i;
- 	int c;
- 	int d = 0;
-@@ -341,13 +343,33 @@ int main(int argc, char *argv[])
- 	if (d && clock_id == CLOCK_HOST_REALTIME)
- 		show_hostrt_diagnostics();
- 
--	per_cpu_data = malloc(sizeof(*per_cpu_data) * cpus);
-+	if (get_realtime_cpu_set(&cpu_realtime_set) != 0)
-+		error(1, ENOSYS, "get_realtime_cpu_set");
-+
-+	if (get_online_cpu_set(&cpu_online_set) != 0)
-+		error(1, ENOSYS, "get_online_cpu_set");
-+
-+	CPU_AND(&cpu_realtime_set, &cpu_realtime_set, &cpu_online_set);
-+
-+	max_cpu = 0;
-+	cpus = 0;
-+	for (i = 0; i < CPU_SETSIZE; i++) {
-+		if (!CPU_ISSET(i, &cpu_realtime_set))
-+			continue;
-+		cpus++;
-+		if (i > max_cpu)
-+			max_cpu = i;
-+	}
-+
-+	per_cpu_data = malloc(sizeof(*per_cpu_data) * (max_cpu + 1));
- 	if (per_cpu_data == NULL)
- 		error(1, ENOMEM, "malloc");
- 
--	memset(per_cpu_data, 0, sizeof(*per_cpu_data) * cpus);
-+	memset(per_cpu_data, 0, sizeof(*per_cpu_data) * (max_cpu + 1));
- 
--	for (i = 0; i < cpus; i++) {
-+	for (i = 0; i <= max_cpu; i++) {
-+		if (!CPU_ISSET(i, &cpu_realtime_set))
-+			continue;
- 		per_cpu_data[i].first_round = 1;
- 		pthread_create(&per_cpu_data[i].thread, NULL, cpu_thread,
- 			       (void *)(long)i);
-@@ -359,13 +381,14 @@ int main(int argc, char *argv[])
- 	       "--- -------------------- ---------------- ---------- --------------\n");
- 
- 	while (1) {
--		for (i = 0; i < cpus; i++)
--			printf("%3d %20.1f %16.3f %10lu %14.1f\n",
--			       i,
--			       per_cpu_data[i].offset/1000.0,
--			       per_cpu_data[i].drift * 1000000.0,
--			       per_cpu_data[i].warps,
--			       per_cpu_data[i].max_warp/1000.0);
-+		for (i = 0; i <= max_cpu; i++)
-+			if (CPU_ISSET(i, &cpu_realtime_set))
-+				printf("%3d %20.1f %16.3f %10lu %14.1f\n",
-+				       i,
-+				       per_cpu_data[i].offset/1000.0,
-+				       per_cpu_data[i].drift * 1000000.0,
-+				       per_cpu_data[i].warps,
-+				       per_cpu_data[i].max_warp/1000.0);
- 		usleep(250000);
- 		printf("\033[%dA", cpus);
- 	}
+diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
+deleted file mode 100644
+index 131415a..0000000
+--- a/tests/jobs/xenomai-ipc227e.yml
++++ /dev/null
+@@ -1,76 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-job_name: xenomai-test-suite
+-device_type: ipc227e
+-
+-timeouts:
+-  job:
+-    minutes: 90
+-  action:
+-    minutes: 65
+-  connection:
+-    minutes: 5
+-priority: medium
+-visibility: public
+-
+-metadata:
+-  # please change these fields when modifying this job for your own tests.
+-  docs-source: xenomai-cof
+-  docs-filename: pipeline-xenomai-cof
+-# ACTION_BLOCK
+-actions:
+-- deploy:
+-    timeout:
+-      minutes: 15
+-    to: tftp
+-    kernel:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+-      type: bzimage
+-    ramdisk:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-initrd.img
+-      compression: gz
+-    nfsrootfs:
+-      url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}.tar.gz
+-      compression: gz
+-# BOOT_BLOCK
+-- boot:
+-    timeout:
+-      minutes: 5
+-    method: ipxe
+-    commands: nfs
+-    prompts: ["root@demo:"]
+-    auto_login:
+-      login_prompt: 'demo login:'
+-      username: root
+-      password_prompt: 'Password:'
+-      password: root
+-
+-- test:
+-    timeout:
+-      minutes: 30
+-    definitions:
+-    - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+-      from: git
+-      path: lava-test-shell/smoke-tests-basic.yaml
+-      name: smoke-tests
+-    - repository:
+-        metadata:
+-          format: Lava-Test Test Definition 1.0
+-          name: xenomai-test-suite
+-          description: "runs the xenomai test suite"
+-        run:
+-          steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
+-      from: inline
+-      path: inline/xenomai-test-suite.yaml
+-      name: xenomai-test-suite
+-context:
+-  extra_kernel_args: xenomai.supported_cpus=0x7
 -- 
 2.26.2
 
