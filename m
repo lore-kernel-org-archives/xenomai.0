@@ -1,13 +1,11 @@
-Subject: Re: ipipe: IRQ not received on i.MX8 (linux-imx)
-References: <a57774b8-46af-5db9-1ab4-163210bc1396@smile.fr>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <05232e08-17d7-4b61-2b5c-c3cb97b4145f@siemens.com>
-Date: Mon, 5 Jul 2021 13:02:52 +0200
+Subject: [PATCH v2] testsuite/clocktest: Account for unsupported CPUs
+Message-ID: <c85a95af-09a7-0602-c344-5562f05d0ad1@siemens.com>
+Date: Mon, 5 Jul 2021 17:22:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <a57774b8-46af-5db9-1ab4-163210bc1396@smile.fr>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,65 +14,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre-Loup Gosse <pierre-loup.gosse@smile.fr>, xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>, Philippe Gerum <rpm@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 05.07.21 09:10, Pierre-Loup Gosse via Xenomai wrote:
-> Hi,
-> 
-> For a client project I try to port Xenomai 3.1 + I-pipe to the kernel
-> linux-imx 5.4.70 for arm64 (i.MX8 Mini). I adapted the I-pipe patch
-> (5.4.72-arm64). The kernel boots and works well.
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I think the imx8mm is fairly well supported in upstream by now. Maybe
-worth to have a look at 5.10-dovetail and the Xenomai devel branch
-(upcoming 3.2) so that you do not need to fiddle with the downstream
-linux-imx mess in your product. I think Philippe is even testing on
-imx8mm, but I might be wrong.
+Scheduling a thread on a CPU that is not supported by Xenomai will only
+fail and flood the screen with error messages.
 
-> However, for the non-regression test, I run a client test that uses
-> Xenomai and UDD (to register a PCIe driver). The test waits for a
-> hardware IRQ from a PCIe device. This IRQ is never received which lead
-> the test to fail. To be more precise, after running the test, Xenomai
-> show that no IRQs was received for this device:
-> 
-> # cat /proc/xenomai/irq
->   IRQ         CPU0        CPU1 CPU2        CPU3
->     3:        4027       14050 3708        4488         [timer/0]
-> **223:           0           0 0           0         netx00
->  1031:           0           0 0           0         [sync]
->  1032:           1           1 1           0         [timer-ipi]
->  1033:           0           0 0           0         [reschedule]
->  1037:           0          44 0           0         [virtual]
-> 
-> 'netx00' is our device with the IRQ 223.
-> /proc/xenomai/irq simply reads the irqall counter per CPU per IRQ
-> (/__ipipe_cpudata_irq_hits/). This means that no IRQ 223 went through
-> the I-pipe, or worse, not even sent.
-> 
-> But in comparison, I reproduced this test with the old client image
-> (Xenomai 3.1 + I-pipe on the kernel linux-imx 4.14.98) on the same
-> hardware (arm64 i.MX8 Mini). The test passed and Xenomai received IRQs
-> for 'next00'.
-> 
-> This leads me to the conclusion that on the new kernel our IRQ is sent
-> but does not pass through the I-pipe.
-> 
-> I noticed that some irq handler functions from driver do not use the
-> /ipipe_handle_domain_irq/ or /ipipe_handle_demuxed_irq/ but the generic
-> function, respectively /handle_domain_irq/ and /generic_handle_irq/.
-> Especially for the imx irqchip (_drivers/irqchip/irq-imx-intmux.c_ and
-> _drivers/irqchip/irq-imx-irqsteer.c_). I patched these files to use
-> /ipipe_handle_demuxed_irq/ rather than /generic_handle_irq/. But
-> /proc/xenomai/irq still shows 0 IRQs and the test still fails.
-> 
-> Am I doing things right ? Or am I missing something ?
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Greg may provide some hints here from his porting to 5.4.
+Changes in v2:
+ - restrict cpu_realtime_set by online cpus
 
-Jan
+ testsuite/clocktest/clocktest.c | 49 ++++++++++++++++++++++++---------
+ 1 file changed, 36 insertions(+), 13 deletions(-)
 
+diff --git a/testsuite/clocktest/clocktest.c b/testsuite/clocktest/clocktest.c
+index a40fcaca9d..c524f42fb7 100644
+--- a/testsuite/clocktest/clocktest.c
++++ b/testsuite/clocktest/clocktest.c
+@@ -29,6 +29,7 @@
+ #include <unistd.h>
+ #include <sys/syscall.h>
+ #include <sys/time.h>
++#include <boilerplate/ancillaries.h>
+ #include <boilerplate/atomic.h>
+ #include <cobalt/uapi/kernel/vdso.h>
+ #include <xeno_config.h>
+@@ -52,8 +53,9 @@ pthread_mutex_t lock;
+ #define release_lock(lock)			pthread_mutex_unlock(lock)
+ #endif
+ 
+-uint64_t last_common = 0;
+-clockid_t clock_id = CLOCK_REALTIME;
++static uint64_t last_common = 0;
++static clockid_t clock_id = CLOCK_REALTIME;
++static cpu_set_t cpu_realtime_set, cpu_online_set;
+ 
+ struct per_cpu_data {
+ 	uint64_t first_tod, first_clock;
+@@ -298,7 +300,7 @@ static clockid_t resolve_clock_name(const char *name,
+ int main(int argc, char *argv[])
+ {
+ 	const char *clock_name = NULL, *real_clock_name = "CLOCK_REALTIME";
+-	int cpus = sysconf(_SC_NPROCESSORS_ONLN);
++	int max_cpu, cpus;
+ 	int i;
+ 	int c;
+ 	int d = 0;
+@@ -341,13 +343,33 @@ int main(int argc, char *argv[])
+ 	if (d && clock_id == CLOCK_HOST_REALTIME)
+ 		show_hostrt_diagnostics();
+ 
+-	per_cpu_data = malloc(sizeof(*per_cpu_data) * cpus);
++	if (get_realtime_cpu_set(&cpu_realtime_set) != 0)
++		error(1, ENOSYS, "get_realtime_cpu_set");
++
++	if (get_online_cpu_set(&cpu_online_set) != 0)
++		error(1, ENOSYS, "get_online_cpu_set");
++
++	CPU_AND(&cpu_realtime_set, &cpu_realtime_set, &cpu_online_set);
++
++	max_cpu = 0;
++	cpus = 0;
++	for (i = 0; i < CPU_SETSIZE; i++) {
++		if (!CPU_ISSET(i, &cpu_realtime_set))
++			continue;
++		cpus++;
++		if (i > max_cpu)
++			max_cpu = i;
++	}
++
++	per_cpu_data = malloc(sizeof(*per_cpu_data) * (max_cpu + 1));
+ 	if (per_cpu_data == NULL)
+ 		error(1, ENOMEM, "malloc");
+ 
+-	memset(per_cpu_data, 0, sizeof(*per_cpu_data) * cpus);
++	memset(per_cpu_data, 0, sizeof(*per_cpu_data) * (max_cpu + 1));
+ 
+-	for (i = 0; i < cpus; i++) {
++	for (i = 0; i <= max_cpu; i++) {
++		if (!CPU_ISSET(i, &cpu_realtime_set))
++			continue;
+ 		per_cpu_data[i].first_round = 1;
+ 		pthread_create(&per_cpu_data[i].thread, NULL, cpu_thread,
+ 			       (void *)(long)i);
+@@ -359,13 +381,14 @@ int main(int argc, char *argv[])
+ 	       "--- -------------------- ---------------- ---------- --------------\n");
+ 
+ 	while (1) {
+-		for (i = 0; i < cpus; i++)
+-			printf("%3d %20.1f %16.3f %10lu %14.1f\n",
+-			       i,
+-			       per_cpu_data[i].offset/1000.0,
+-			       per_cpu_data[i].drift * 1000000.0,
+-			       per_cpu_data[i].warps,
+-			       per_cpu_data[i].max_warp/1000.0);
++		for (i = 0; i <= max_cpu; i++)
++			if (CPU_ISSET(i, &cpu_realtime_set))
++				printf("%3d %20.1f %16.3f %10lu %14.1f\n",
++				       i,
++				       per_cpu_data[i].offset/1000.0,
++				       per_cpu_data[i].drift * 1000000.0,
++				       per_cpu_data[i].warps,
++				       per_cpu_data[i].max_warp/1000.0);
+ 		usleep(250000);
+ 		printf("\033[%dA", cpus);
+ 	}
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
 
