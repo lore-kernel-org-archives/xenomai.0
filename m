@@ -1,7 +1,12 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-image PATCH v2 0/5] control applying of no-debug config
-Date: Mon, 26 Jul 2021 20:42:12 -0400
-Message-Id: <20210727004217.10892-1-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 7/9] cobalt/posix/syscall32: Mark compat clock_nanosleep
+ restartable
+Date: Mon,  5 Jul 2021 09:36:39 +0200
+Message-Id: <ffca672400c0f151dc0ee3b25c12f1cad06c033d.1625470600.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
+References: <cover.1625470600.git.jan.kiszka@siemens.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,29 +17,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-1. enable IPIPE_DEBUG uniformly for all arch by default in order to use
-uniform method to control it via applying config fragment or not.
-2. create common config fragment to switch debug off.
-3. add control to apply config fragment or not.
-4. add kas option to control applying config fragment.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Hongzhan Chen (5):
-  recipes-kernel: arm64_config: enable IPIPE_DEBUG for arm64 by default
-  recipes-kernel: armhf_config: enable IPIPE_DEBUG for armhf by default
-  recipes-kernel: add common config fragment file to disable debug
-  recipes-kernel/linux: control appyling of no debug config fragment
-  Add kas option for swithing off debug
+Commit 36132cdb21cd forgot to align this with the native syscall.
 
- opt-set-nodbg.yml                           | 20 ++++++++++++++++++++
- recipes-kernel/linux/files/arm64_defconfig  |  9 +++++----
- recipes-kernel/linux/files/armhf_defconfig  | 15 +++++++++++++--
- recipes-kernel/linux/files/common_nodbg.cfg |  1 +
- recipes-kernel/linux/linux-xenomai.inc      | 10 +++++++++-
- 5 files changed, 48 insertions(+), 7 deletions(-)
- create mode 100644 opt-set-nodbg.yml
- create mode 100644 recipes-kernel/linux/files/common_nodbg.cfg
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/syscall32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index 5a6de285f9..c298f38f5a 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -229,7 +229,7 @@ COBALT_SYSCALL32emu(clock_adjtime64, current,
+ }
+ 
+ 
+-COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
++COBALT_SYSCALL32emu(clock_nanosleep, primary,
+ 		    (clockid_t clock_id, int flags,
+ 		     const struct old_timespec32 __user *u_rqt,
+ 		     struct old_timespec32 __user *u_rmt))
 -- 
-2.17.1
+2.26.2
 
 
