@@ -1,9 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 8/9] cobalt/posix/compat: Privatize sys32_get/put_fdset
-Date: Mon,  5 Jul 2021 09:36:40 +0200
-Message-Id: <28f7f7e92f8098e01d9030fe29f5aa0535bcefb2.1625470600.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
-References: <cover.1625470600.git.jan.kiszka@siemens.com>
+Subject: [PATCH 0/9] EADV-related fixes, select refactorings,
+ restartable compat syscalls
+Date: Mon,  5 Jul 2021 09:36:32 +0200
+Message-Id: <cover.1625470600.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,81 +15,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This should resolved the EADV bug seen with select when called with
+Linux fds. It also fixes wrong EADV reporting for other services. And it
+adds the missing syscall restart support for clock_nanosleep and select
+when taking the compat path.
 
-There is no use for this outside of the core that implements select. So
-stop exporting these helpers. As there are no users outside, simplify
-their return value on success to 0 because their callers do not care
-about more.
+Please review and test carefully, some details are rather tricky.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/kernel/compat.h |  8 ++++----
- kernel/cobalt/posix/compat.c   | 14 ++++++--------
- 2 files changed, 10 insertions(+), 12 deletions(-)
+I'm considering the EADV fixes for stable as well, though they will
+alter the return codes. But the current scheme was broken anyway.
 
-diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-index 6da7bafaf8..275735df59 100644
---- a/include/cobalt/kernel/compat.h
-+++ b/include/cobalt/kernel/compat.h
-@@ -110,11 +110,11 @@ int sys32_get_timex(struct __kernel_timex *tx,
- int sys32_put_timex(struct old_timex32 __user *ctx,
- 		    const struct __kernel_timex *tx);
- 
--ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
--			size_t cfdsize);
-+int sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
-+		    size_t cfdsize);
- 
--ssize_t sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
--			size_t fdsize);
-+int sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
-+		    size_t fdsize);
- 
- int sys32_get_param_ex(int policy,
- 		       struct sched_param_ex *p,
-diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-index dbc9a9cf02..029fe2582a 100644
---- a/kernel/cobalt/posix/compat.c
-+++ b/kernel/cobalt/posix/compat.c
-@@ -176,8 +176,8 @@ int sys32_put_timex(struct old_timex32 __user *ctx,
- }
- EXPORT_SYMBOL_GPL(sys32_put_timex);
- 
--ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
--			size_t cfdsize)
-+int sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
-+		    size_t cfdsize)
- {
- 	int rdpos, wrpos, rdlim = cfdsize / sizeof(compat_ulong_t);
- 
-@@ -188,12 +188,11 @@ ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
- 		if (__xn_get_user(fds->fds_bits[wrpos], cfds->fds_bits + rdpos))
- 			return -EFAULT;
- 
--	return (ssize_t)rdlim * sizeof(long);
-+	return 0;
- }
--EXPORT_SYMBOL_GPL(sys32_get_fdset);
- 
--ssize_t sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
--			size_t fdsize)
-+int sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
-+		    size_t fdsize)
- {
- 	int rdpos, wrpos, wrlim = fdsize / sizeof(long);
- 
-@@ -204,9 +203,8 @@ ssize_t sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
- 		if (__xn_put_user(fds->fds_bits[rdpos], cfds->fds_bits + wrpos))
- 			return -EFAULT;
- 
--	return (ssize_t)wrlim * sizeof(compat_ulong_t);
-+	return 0;
- }
--EXPORT_SYMBOL_GPL(sys32_put_fdset);
- 
- int sys32_get_param_ex(int policy,
- 		       struct sched_param_ex *p,
+Jan
+
+
+CC: Philippe Gerum <rpm@xenomai.org>
+CC: Steve Freyder <steve@freyder.net>
+
+Jan Kiszka (9):
+  cobalt/posix/io: Remove unneeded special case of select_bind_one
+  cobalt/posix/io: Avoid err variable shadowing
+  cobalt/rtdm/fd: Fix comment typo
+  cobalt/rtdm/fd: Fix error code documentation of rtdm_fd_select
+  cobalt/rtdm/fd: Fix default handler setups
+  cobalt/select: Add proper handling of EADV
+  cobalt/posix/syscall32: Mark compat clock_nanosleep restartable
+  cobalt/posix/compat: Privatize sys32_get/put_fdset
+  cobalt/posix/io: Unify native and compat versions of select
+
+ include/cobalt/kernel/compat.h  |   8 +-
+ kernel/cobalt/posix/compat.c    |  14 ++--
+ kernel/cobalt/posix/io.c        | 131 +++++++++++++++++++++-----------
+ kernel/cobalt/posix/io.h        |   3 +
+ kernel/cobalt/posix/syscall32.c |  93 +----------------------
+ kernel/cobalt/rtdm/fd.c         |  69 ++++++++++-------
+ lib/cobalt/select.c             |   2 +-
+ 7 files changed, 146 insertions(+), 174 deletions(-)
+
 -- 
 2.26.2
 
