@@ -1,14 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [xenomai-images 0/7] control applying of no-debug config
-Date: Mon, 26 Jul 2021 00:31:43 +0000
-Message-ID: <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210723031811.19290-1-hongzhan.chen@intel.com>
- <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
-In-Reply-To: <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 6/9] cobalt/select: Add proper handling of EADV
+Date: Mon,  5 Jul 2021 09:36:38 +0200
+Message-Id: <ef3dd5c07befc1051ddce5c802edc3b070a50568.1625470600.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
+References: <cover.1625470600.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,49 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEd5bHN0b3JmZiBRdWlyaW4g
-PHF1aXJpbi5neWxzdG9yZmZAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgSnVseSAyMywg
-MjAyMSA4OjI3IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNv
-bT47IHhlbm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW3hlbm9tYWktaW1hZ2VzIDAv
-N10gY29udHJvbCBhcHBseWluZyBvZiBuby1kZWJ1ZyBjb25maWcNCj4NCj4NCj4NCj5PbiA3LzIz
-LzIxIDU6MTggQU0sIEhvbmd6aGFuIENoZW4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+PiAxLiBlbmFi
-bGUgSVBJUEVfREVCVUcgdW5pZm9ybWx5IGZvciBhbGwgYXJjaCBieSBkZWZhdWx0IGluIG9yZGVy
-IHRvIHVzZQ0KPj4gdW5pZm9ybSBtZXRob2QgdG8gY29udHJvbCBpdCB2aWEgYXBwbHlpbmcgY29u
-ZmlnIGZyYWdtZW50IG9yIG5vdC4NCj4+IDIuIGNyZWF0ZSBjb25maWcgZnJhZ21lbnQgZm9yIGVh
-cmNoIGFyY2ggdG8gc3dpdGNoIGRlYnVnIG9mZi4NCj4+IDMuIGFkZCBjb250cm9sIHRvIGFwcGx5
-IGNvbmZpZyBmcmFnbWVudCBvciBub3QuDQo+PiA0LiBhZGQga2FzIG9wdGlvbiB0byBjb250cm9s
-IGFwcGx5aW5nIGNvbmZpZyBmcmFnbWVudC4NCj4+IA0KPj4gKioqIEJMVVJCIEhFUkUgKioqDQo+
-PiANCj4+IEhvbmd6aGFuIENoZW4gKDcpOg0KPj4gICAgcmVjaXBlcy1rZXJuZWw6IGFybTY0X2Nv
-bmZpZzogZW5hYmxlIElQSVBFX0RFQlVHIGZvciBhcm02NCBieSBkZWZhdWx0DQo+PiAgICByZWNp
-cGVzLWtlcm5lbDogYXJtaGZfY29uZmlnOiBlbmFibGUgSVBJUEVfREVCVUcgZm9yIGFybWhmIGJ5
-IGRlZmF1bHQNCj4+ICAgIHJlY2lwZXMta2VybmVsOiBhZGQgY29uZmlnIGZyYWdtZW50IGZpbGUg
-dG8gZGlzYWJsZSBkZWJ1ZyBmb3IgYW1kNjQNCj4+ICAgIHJlY2lwZXMta2VybmVsOiBhZGQgY29u
-ZmlnIGZyYWdtZW50IGZpbGUgdG8gZGlzYWJsZSBkZWJ1ZyBmb3IgYXJtNjQNCj4+ICAgIHJlY2lw
-ZXMta2VybmVsOiBhZGQgY29uZmlnIGZyYWdtZW50IGZpbGUgdG8gZGlzYWJsZSBkZWJ1ZyBmb3Ig
-YXJtDQo+PiAgICByZWNpcGVzLWtlcm5lbC9saW51eDogY29udHJvbCBhcHB5bGluZyBvZiBubyBk
-ZWJ1ZyBjb25maWcgZnJhZ21lbnQNCj4+ICAgIEFkZCBrYXMgb3B0aW9uIGZvciBzd2l0aGluZyBv
-ZmYgZGVidWcNCj4+IA0KPj4gICBvcHQtc2V0LW5vZGJnLnltbCAgICAgICAgICAgICAgICAgICAg
-ICAgICAgfCAyMCArKysrKysrKysrKysrKysrKysrKw0KPj4gICByZWNpcGVzLWtlcm5lbC9saW51
-eC9maWxlcy9hbWQ2NF9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJlY2lwZXMta2VybmVsL2xpbnV4
-L2ZpbGVzL2FybTY0X2RlZmNvbmZpZyB8ICA5ICsrKysrLS0tLQ0KPj4gICByZWNpcGVzLWtlcm5l
-bC9saW51eC9maWxlcy9hcm02NF9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJlY2lwZXMta2VybmVs
-L2xpbnV4L2ZpbGVzL2FybWhmX2RlZmNvbmZpZyB8IDE1ICsrKysrKysrKysrKystLQ0KPj4gICBy
-ZWNpcGVzLWtlcm5lbC9saW51eC9maWxlcy9hcm1oZl9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJl
-Y2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jICAgICB8IDEwICsrKysrKysrKy0N
-Cj4+ICAgNyBmaWxlcyBjaGFuZ2VkLCA1MCBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0K
-Pj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgb3B0LXNldC1ub2RiZy55bWwNCj4+ICAgY3JlYXRlIG1v
-ZGUgMTAwNjQ0IHJlY2lwZXMta2VybmVsL2xpbnV4L2ZpbGVzL2FtZDY0X25vZGJnLmNmZw0KPj4g
-ICBjcmVhdGUgbW9kZSAxMDA2NDQgcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYXJtNjRfbm9k
-YmcuY2ZnDQo+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCByZWNpcGVzLWtlcm5lbC9saW51eC9maWxl
-cy9hcm1oZl9ub2RiZy5jZmcNCj4+IA0KPg0KPldoeSBpcyB0aGVyZSBhICpfbm9kYmcsY2ZnIGZv
-ciBlYWNoIEFyY2g/IFRoZSBjb250ZW50IGZvciBhbGwgaXMgdGhlIA0KPnNhbWUsIHNvIElITU8g
-b25lIGZpbGUgc2hvdWxkIGJlIGVub3VnaC4NCg0KQ3VycmVudCBjb250ZW50IGlzIHNhbWUgYmVj
-YXVzZSB3ZSBqdXN0IHRyeSB0byBzd2l0Y2ggb2ZmIElQSVBFX0RFQlVHIGZvciBhbGwgYXJjaGVz
-Lg0KQnV0IGl0cyBmaW5hbCBwdXJwb3NlcyBpcyB0byBpbXByb3ZlIHBlcmZvcm1hbmNlIGZvciB0
-YXJnZXQgaW1hZ2UgdG8gZGlmZmVyZW50aWF0ZSBpdCBmcm9tIA0KZGVidWcgaW1hZ2UsIHdoaWNo
-IG1heSBpbmNsdWRlIG90aGVyIGxpbnV4IG9wdGlvbnMgb3IgYXJjaCByZWxhdGVkIG9wdGlvbnMu
-IFRoYXQgaXMgd2h5IA0KSSBjcmVhdGUgKl9ub2RnYi5jZmcgZm9yIGVhY2ggYXJjaC4gDQoNCj4N
-Cj5UaGFua3MNCj4NCj5RdWlyaW4NCg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+Since rtdm_fd_select started to return EADV for unknown fds
+(2db562ad62ec), we were returning that code to applications in case a
+selector had been allocated for the caller already. That was because
+libcobalt lacked handling of this error.
+
+This fixes it and also establish proper signaling of EBADF in case the
+is a real error related to an RTDM fd. For that purpose, detect if
+__cobalt_select_bind_all got EADV for the first fd or for a succeeding
+one, i.e. on an unsupported mixed fd set.
+
+Also return EADV if the early __cobalt_first_fd_valid_p test fails. That
+ensures that we only retry with the regular Linux call when it makes
+sense.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/io.c        | 13 +++++++++++--
+ kernel/cobalt/posix/syscall32.c |  2 +-
+ lib/cobalt/select.c             |  2 +-
+ 3 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+index 70dd3c9c55..8a74074f3c 100644
+--- a/kernel/cobalt/posix/io.c
++++ b/kernel/cobalt/posix/io.c
+@@ -183,6 +183,7 @@ int __cobalt_first_fd_valid_p(fd_set *fds[XNSELECT_MAX_TYPES], int nfds)
+ int __cobalt_select_bind_all(struct xnselector *selector,
+ 			     fd_set *fds[XNSELECT_MAX_TYPES], int nfds)
+ {
++	bool first_fd = true;
+ 	unsigned fd, type;
+ 	int err;
+ 
+@@ -193,8 +194,16 @@ int __cobalt_select_bind_all(struct xnselector *selector,
+ 			     fd < nfds;
+ 			     fd = find_next_bit(set->fds_bits, nfds, fd + 1)) {
+ 				err = rtdm_fd_select(fd, selector, type);
+-				if (err)
++				if (err) {
++					/*
++					 * Do not needlessly signal "retry
++					 * under Linux" for mixed fd sets.
++					 */
++					if (err == -EADV && !first_fd)
++						return -EBADF;
+ 					return err;
++				}
++				first_fd = false;
+ 			}
+ 	}
+ 
+@@ -275,7 +284,7 @@ COBALT_SYSCALL(select, primary,
+ 		   simple test: test if the first file descriptor we find in the
+ 		   fd_set is an RTDM descriptor or a message queue descriptor. */
+ 		if (!__cobalt_first_fd_valid_p(in_fds, nfds))
+-			return -EBADF;
++			return -EADV;
+ 
+ 		selector = xnmalloc(sizeof(*curr->selector));
+ 		if (selector == NULL)
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index 98b9218a81..5a6de285f9 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -796,7 +796,7 @@ COBALT_SYSCALL32emu(select, nonrestartable,
+ 	if (selector == NULL) {
+ 		/* Bail out if non-RTDM fildes is found. */
+ 		if (!__cobalt_first_fd_valid_p(in_fds, nfds))
+-			return -EBADF;
++			return -EADV;
+ 
+ 		selector = xnmalloc(sizeof(*curr->selector));
+ 		if (selector == NULL)
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+index 362a182389..7727012c7a 100644
+--- a/lib/cobalt/select.c
++++ b/lib/cobalt/select.c
+@@ -36,7 +36,7 @@ COBALT_IMPL(int, select, (int __nfds, fd_set *__restrict __readfds,
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+-	if (err == -EBADF || err == -EPERM || err == -ENOSYS)
++	if (err == -EADV || err == -EPERM || err == -ENOSYS)
+ 		return __STD(select(__nfds, __readfds,
+ 				    __writefds, __exceptfds, __timeout));
+ 
+-- 
+2.26.2
+
 
