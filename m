@@ -1,12 +1,16 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/6] gpio: omap: irq_pipeline: enable out-of-band interrupt
- handling
-Date: Thu, 22 Jul 2021 11:48:55 +0200
-Message-Id: <20210722094859.3580166-3-rpm@xenomai.org>
-In-Reply-To: <20210722094859.3580166-1-rpm@xenomai.org>
-References: <20210722094859.3580166-1-rpm@xenomai.org>
+Subject: Re: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
+ Rtdmtest and RTIPC
+References: <20210624064505.25467-1-hongzhan.chen@intel.com>
+ <5e09fce4-2455-3cb4-791b-32a3fed46e75@siemens.com>
+ <BN9PR11MB5227C06C8E6373E8DD9C0FECF21C9@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5c39cfe3-8a92-cee4-9a84-a4800be3ddf2@siemens.com>
+Date: Mon, 5 Jul 2021 09:22:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB5227C06C8E6373E8DD9C0FECF21C9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +19,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 05.07.21 08:26, Chen, Hongzhan wrote:
+> 
+> 
+>>
+>>>  # UDD support
+>>> @@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
+>>>  # cause troubles with Xenomai. You should disable them.
+>>>  #
+>>>  CONFIG_XENO_VERSION_MAJOR=3
+>>> -CONFIG_XENO_VERSION_MINOR=0
+>>> -CONFIG_XENO_REVISION_LEVEL=90
+>>> -CONFIG_XENO_VERSION_STRING="3.1-devel"
+>>> -CONFIG_XENO_VERSION_NAME="Xenomai -next"
+>>> +CONFIG_XENO_VERSION_MINOR=1
+>>> +CONFIG_XENO_REVISION_LEVEL=0
+>>> +CONFIG_XENO_VERSION_STRING="3.1"
+>>>  CONFIG_FREEZER=y
+>>>  
+>>>  #
+>>>
+>>
+>> This revealed a bug in bufp [1] - good that we enabled it...
+>>
+>> I think we still need something similar for armhf as well.
+> 
+> I can help enable them for armhf but the problem is that I do not have arm platform
+> so that I cannot validate the patch for armhf.
+> 
 
-We must decode the chained interrupts on the out-of-band stage to
-enable end-to-end out-of-band delivery. Set IRQF_OOB for the parent
-handler.
+QEMU is sufficient for a first test, the rest will be revealed by the lab.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- drivers/gpio/gpio-omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks in advance!
+Jan
 
-diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
-index 8c02307ab2d0aa7..9e0eb9a7bfa671b 100644
---- a/drivers/gpio/gpio-omap.c
-+++ b/drivers/gpio/gpio-omap.c
-@@ -1055,7 +1055,7 @@ static int omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
- 
- 	ret = devm_request_irq(bank->chip.parent, bank->irq,
- 			       omap_gpio_irq_handler,
--			       0, dev_name(bank->chip.parent), bank);
-+			       IRQF_OOB, dev_name(bank->chip.parent), bank);
- 	if (ret)
- 		gpiochip_remove(&bank->chip);
- 
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
