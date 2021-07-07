@@ -1,8 +1,8 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-images PATCH] recipes-kernel: armrh_config: enable more
- features for testing purposes
-Date: Tue,  6 Jul 2021 20:19:17 -0400
-Message-Id: <20210707001917.26834-1-hongzhan.chen@intel.com>
+Subject: [xenomai-images PATCH] recipes-kernel: arm64_config: enable debug for
+ testing purposes
+Date: Tue,  6 Jul 2021 22:34:42 -0400
+Message-Id: <20210707023442.8318-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +13,15 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-Enable watchdog and debug and related drivers, modify RTIPC to
-buildin, which would be needed and tested by smokey test.
+Enable debug for sigdebug of smokey test.
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
-index 567b61b..3c42582 100644
---- a/recipes-kernel/linux/files/armhf_defconfig
-+++ b/recipes-kernel/linux/files/armhf_defconfig
-@@ -357,13 +357,13 @@ CONFIG_XENO_OPT_SCHED_QUOTA=y
- CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
- CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
- CONFIG_XENO_OPT_STATS=y
-+CONFIG_XENO_OPT_STATS_IRQS=y
- CONFIG_XENO_OPT_SHIRQ=y
- CONFIG_XENO_OPT_RR_QUANTUM=1000
- CONFIG_XENO_OPT_AUTOTUNE=y
--# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
--CONFIG_XENO_OPT_TIMER_LIST=y
--# CONFIG_XENO_OPT_TIMER_RBTREE is not set
--CONFIG_XENO_OPT_HOSTRT=y
-+CONFIG_XENO_OPT_SCALABLE_SCHED=y
-+# CONFIG_XENO_OPT_TIMER_LIST is not set
-+CONFIG_XENO_OPT_TIMER_RBTREE=y
- CONFIG_XENO_OPT_PIPE=y
- CONFIG_XENO_OPT_MAP=y
- CONFIG_XENO_OPT_VFILE=y
-@@ -377,6 +377,7 @@ CONFIG_XENO_OPT_SYS_HEAPSZ=4096
+diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
+index 122aeac..7634788 100644
+--- a/recipes-kernel/linux/files/arm64_defconfig
++++ b/recipes-kernel/linux/files/arm64_defconfig
+@@ -390,6 +390,7 @@ CONFIG_XENO_OPT_SYS_HEAPSZ=4096
  CONFIG_XENO_OPT_PRIVATE_HEAPSZ=256
  CONFIG_XENO_OPT_SHARED_HEAPSZ=256
  CONFIG_XENO_OPT_NRTIMERS=256
@@ -48,7 +29,7 @@ index 567b61b..3c42582 100644
  
  #
  # Latency settings
-@@ -384,7 +385,19 @@ CONFIG_XENO_OPT_NRTIMERS=256
+@@ -397,7 +398,19 @@ CONFIG_XENO_OPT_NRTIMERS=256
  CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
  CONFIG_XENO_OPT_TIMING_KSCHEDLAT=0
  CONFIG_XENO_OPT_TIMING_IRQLAT=0
@@ -69,75 +50,14 @@ index 567b61b..3c42582 100644
  
  #
  # Drivers
-@@ -422,6 +435,7 @@ CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
+@@ -436,6 +449,7 @@ CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
  # CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
- CONFIG_XENO_DRIVERS_CAN_VIRT=m
- CONFIG_XENO_DRIVERS_CAN_FLEXCAN=m
-+CONFIG_XENO_DRIVERS_CAN_PEAK_CANFD=m
- CONFIG_XENO_DRIVERS_CAN_SJA1000=m
- # CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA is not set
- CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=m
-@@ -478,16 +492,18 @@ CONFIG_XENO_DRIVERS_NET_RTCFG=m
- #
- # Common PCI Drivers
- #
--# CONFIG_XENO_DRIVERS_NET_DRV_PCNET32 is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_TULIP is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100 is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_E1000 is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_E1000E is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_8139 is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_IGB is not set
--# CONFIG_XENO_DRIVERS_NET_DRV_R8169 is not set
-+CONFIG_XENO_DRIVERS_NET_DRV_PCNET32=m
-+CONFIG_XENO_DRIVERS_NET_DRV_TULIP=m
-+CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100=m
-+CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT=20
-+CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG=y
-+CONFIG_XENO_DRIVERS_NET_DRV_E1000=m
-+CONFIG_XENO_DRIVERS_NET_DRV_E1000E=m
-+CONFIG_XENO_DRIVERS_NET_DRV_NATSEMI=m
-+CONFIG_XENO_DRIVERS_NET_DRV_8139=m
-+CONFIG_XENO_DRIVERS_NET_DRV_VIA_RHINE=m
-+CONFIG_XENO_DRIVERS_NET_DRV_IGB=m
-+CONFIG_XENO_DRIVERS_NET_DRV_R8169=m
- 
- #
- # Misc Drivers
-@@ -520,7 +536,7 @@ CONFIG_XENO_DRIVERS_ANALOGY_S526=m
- #
- # Real-time IPC drivers
- #
--CONFIG_XENO_DRIVERS_RTIPC=m
-+CONFIG_XENO_DRIVERS_RTIPC=y
- CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
- CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
- CONFIG_XENO_OPT_IDDP_NRPORT=32
-@@ -557,15 +573,14 @@ CONFIG_XENO_DRIVERS_SPI_BCM2835=m
- CONFIG_XENO_DRIVERS_SPI_SUN6I=m
- CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT=m
- # CONFIG_XENO_DRIVERS_SPI_DEBUG is not set
--
--#
--# Machine/platform-specific options
--#
-+CONFIG_XENO_ARCH_FPU=y
-+# CONFIG_XENO_ARCH_SYS3264 is not set
-+CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
-+# CONFIG_XENO_ARCH_IPIPE_COMPAT is not set
- CONFIG_XENO_VERSION_MAJOR=3
--CONFIG_XENO_VERSION_MINOR=0
--CONFIG_XENO_REVISION_LEVEL=90
--CONFIG_XENO_VERSION_STRING="3.1-devel"
--CONFIG_XENO_VERSION_NAME="Xenomai -next"
-+CONFIG_XENO_VERSION_MINOR=1
-+CONFIG_XENO_REVISION_LEVEL=0
-+CONFIG_XENO_VERSION_STRING="3.1"
- CONFIG_FREEZER=y
- 
- #
+ CONFIG_XENO_DRIVERS_CAN_VIRT=y
+ # CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
++# CONFIG_XENO_DRIVERS_CAN_PEAK_CANFD is not set
+ CONFIG_XENO_DRIVERS_CAN_SJA1000=y
+ CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
+ CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
 -- 
 2.17.1
 
