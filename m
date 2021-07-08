@@ -1,11 +1,11 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 2/4] ci: adapt to public lava-server
-Date: Thu,  8 Jul 2021 17:02:59 +0200
-Message-Id: <20210708150301.24083-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
-References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] cobalt: Sort out virtual vs. real pids
+Message-ID: <af9a744d-9617-ed83-6391-edd5fd9ff26d@siemens.com>
+Date: Thu, 8 Jul 2021 17:17:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,125 +14,310 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
+Cc: MONTET Julien <julien.montet@reseau.eseo.fr>, Marco Barletta <barlettamarco8@gmail.com>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Adapt ci scripts to the new lava-server[1].
+Make sure that we consider all pids taken from or sent to userspace via
+syscalls as virtual. That means converting them to global pids before
+processing them or converting them back to virtual pids in the caller's
+namespace before reporting them.
 
-[1]: https://lava.xenomai.org
+Not converted is the procfs interface as this one continues to provide
+only a global view on cobalt objects and associated pids.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+A view syscall tracepoints that report the vpid as passed down from
+userspace get adjusted in their output so that it is clear that no
+global pid is shown.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/gitlab-ci-base.yml     |  3 ++-
- scripts/run-lava-tests.sh | 57 ++++++++++++++++++++++-----------------
- 2 files changed, 35 insertions(+), 25 deletions(-)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 352e023..96b9c2c 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -22,6 +22,7 @@ variables:
-   LINUX_BUILD_OPTION: ":opt-linux-latest.yml"
-   ISAR_IMAGE: demo-image
-   ISAR_DISTRIBUTION: xenomai-demo
-+  LAVA_TESTS_ENABLED: "true"
+WARNING: This is only compile-tested so far. I'll push that into CI to 
+make sure that we have no regressions, but I still don't have a setup 
+actually stressing the pid namespace thing. So any feedback on how it 
+behaves would be very welcome!
+
+ include/cobalt/kernel/thread.h     |  2 ++
+ kernel/cobalt/debug.c              |  2 +-
+ kernel/cobalt/posix/event.c        |  2 +-
+ kernel/cobalt/posix/mqueue.c       |  2 +-
+ kernel/cobalt/posix/process.c      | 14 ++++++++++++++
+ kernel/cobalt/posix/process.h      |  2 ++
+ kernel/cobalt/posix/sched.c        | 10 ++++++----
+ kernel/cobalt/posix/sem.c          |  2 +-
+ kernel/cobalt/posix/signal.c       | 10 ++++++----
+ kernel/cobalt/posix/thread.c       | 10 ++++++----
+ kernel/cobalt/thread.c             | 10 ++++++++++
+ kernel/cobalt/trace/cobalt-posix.h |  4 ++--
+ 12 files changed, 52 insertions(+), 18 deletions(-)
+
+diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+index b79cb84296..4c8a0b9f2a 100644
+--- a/include/cobalt/kernel/thread.h
++++ b/include/cobalt/kernel/thread.h
+@@ -450,6 +450,8 @@ char *xnthread_format_status(unsigned long status,
  
- default:
-   image: ghcr.io/siemens/kas/kas-isar:2.4
-@@ -58,7 +59,7 @@ default:
-     BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
-   only:
-     variables:
--      - $LAVA_SSH_USER
-+      - $LAVA_TESTS_ENABLED == "true"
+ pid_t xnthread_host_pid(struct xnthread *thread);
  
- .build:qemu-amd64:
-   extends: .build
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index 764f3a9..e8c7377 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -16,28 +16,36 @@ if [ -z "${TARGET}" ]; then
-     exit -1
- fi
++pid_t xnthread_host_vpid(struct xnthread *thread);
++
+ int xnthread_set_clock(struct xnthread *thread,
+ 		       struct xnclock *newclock);
  
--lava_master_port="${LAVA_MASTER_PORT:-28080}"
--if [ -n "${LAVA_SSH_PORT}" ]; then
--    lava_ssh_port="-p ${LAVA_SSH_PORT}"
-+if [ -n "${LAVA_SSH_HOST}" ]; then
-+    echo "use SSH to connect to lava server"
-+    # private master with ssh forward access
-+    lava_master_port="${LAVA_MASTER_PORT:-28080}"
-+    lava_ssh_port="-p ${LAVA_SSH_PORT:-22}"
-+    lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
-+    lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
-+    # open connection for ssh port forwarding
-+    ssh -N "${lava_ssh_port}" "${lava_identity}" -o 'LocalForward localhost:'"${lava_master_port}"' localhost:80' "${lava_ssh_destination}" &
-+    ssh_pid="$!"
-+    # wait for connection
-+    interval=1
-+    timeout=60
-+    until ss -tulw | grep -q "${lava_master_port}"
-+    do
-+        if [ ${timeout} -le 0 ]; then
-+            echo "could not open connection to LAVA Master"
-+            exit 1
-+        fi
-+        sleep ${interval}
-+        timeout=$(( timeout - interval ))
-+    done
-+    artifact_url="${LAVA_ARTIFACTS_URL:-http://localhost/artifacts}"
-+    lava_master_uri="${LAVA_MASTER_URL:-http://localhost}:${lava_master_port}"
-+else
-+    # S3 artifacts
-+    artifact_url="${LAVA_ARTIFACTS_URL:-https://xenomai-images-artifacts.s3.eu-central-1.amazonaws.com/artifacts}"
-+    # public master
-+    lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org}"
- fi
--lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
--lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
--# open connection for ssh port forwarding
--ssh -N ${lava_ssh_port} ${lava_identity} -o 'LocalForward localhost:'${lava_master_port}' localhost:80' ${lava_ssh_destination} &
--ssh_pid=$!
--# wait for connection
--interval=1
--timeout=60
--until ss -tulw | grep -q "${lava_master_port}"
--do
--    if [ ${timeout} -le 0 ]; then
--        echo "could not open connection to LAVA Master"
--        exit 1
--    fi
--    sleep ${interval}
--    timeout=$(expr ${timeout} - ${interval})
--done
--lava_master_uri=${LAVA_MASTER_URL:-http://localhost}:${lava_master_port}
+diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
+index a6e2cc42d3..4dd938be51 100644
+--- a/kernel/cobalt/debug.c
++++ b/kernel/cobalt/debug.c
+@@ -292,7 +292,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
+ 	 */
+ 	spot.depth = depth;
+ 	spot.proghash = thread->proghash;
+-	spot.pid = xnthread_host_pid(thread);
++	spot.pid = xnthread_host_vpid(thread);
+ 	spot.reason = reason;
+ 	strcpy(spot.thread, thread->name);
+ 	hash = jhash2((u32 *)&spot, sizeof(spot) / sizeof(u32), 0);
+diff --git a/kernel/cobalt/posix/event.c b/kernel/cobalt/posix/event.c
+index 3712154f53..5871106301 100644
+--- a/kernel/cobalt/posix/event.c
++++ b/kernel/cobalt/posix/event.c
+@@ -352,7 +352,7 @@ COBALT_SYSCALL(event_inquire, current,
+ 		xnsynch_for_each_sleeper(thread, &event->synch) {
+ 			if (nrwait >= nrpids)
+ 				break;
+-			t[nrwait++] = xnthread_host_pid(thread);
++			t[nrwait++] = xnthread_host_vpid(thread);
+ 		}
+ 	}
  
- # connect to lava master
- lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${lava_master_uri} --username ${LAVA_MASTER_ACCOUNT} default
-@@ -45,7 +53,6 @@ lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${lava_master_uri} --u
- if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
-     DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
- else
--    artifact_url="${LAVA_ARTIFACTS_URL:-http://localhost/artifacts}"
-     DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
- fi
- job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
-@@ -61,8 +68,10 @@ test_id=$(lavacli jobs submit ${template})
- lavacli jobs logs ${test_id}
- lavacli results ${test_id}
- # change return code to generate a error in gitlab-ci if a test is failed
--number_of_fails=$(lavacli results ${test_id} | grep fail | wc -l)
--kill ${ssh_pid}
-+number_of_fails=$(lavacli results ${test_id} | grep fail | wc -l )
-+if [ -n "${ssh_pid}" ];then
-+   kill "${ssh_pid}"
-+fi
- if [ "${number_of_fails}" -gt "0" ]; then
-     exit 1
- fi
+diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+index dd8acd55b0..fcde87a077 100644
+--- a/kernel/cobalt/posix/mqueue.c
++++ b/kernel/cobalt/posix/mqueue.c
+@@ -720,7 +720,7 @@ mq_notify(struct cobalt_mqd *mqd, unsigned index, const struct sigevent *evp)
+ 		 * receiver's namespaces. We pass the receiver's creds
+ 		 * into the init namespace instead.
+ 		 */
+-		mq->si.si_pid = task_pid_nr(current);
++		mq->si.si_pid = task_pid_vnr(current);
+ 		mq->si.si_uid = get_current_uuid();
+ 	}
+ 
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 76514ec82f..ad7def2f27 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -1004,6 +1004,20 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm)
+ 	return KEVENT_PROPAGATE;
+ }
+ 
++pid_t cobalt_vpid2pid_nr(pid_t vpid)
++{
++	struct pid *pid;
++	pid_t nr = -1;
++
++	rcu_read_lock();
++	pid = find_vpid(vpid);
++	if (pid)
++		nr = pid_nr(pid);
++	rcu_read_unlock();
++
++	return nr;
++}
++
+ static int attach_process(struct cobalt_process *process)
+ {
+ 	struct cobalt_ppd *p = &process->sys_ppd;
+diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
+index 29294a8f60..c9bccdb361 100644
+--- a/kernel/cobalt/posix/process.h
++++ b/kernel/cobalt/posix/process.h
+@@ -180,4 +180,6 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm);
+ 
+ int cobalt_handle_user_return(struct task_struct *task);
+ 
++pid_t cobalt_vpid2pid_nr(pid_t vpid);
++
+ #endif /* !_COBALT_POSIX_PROCESS_H */
+diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
+index 4fd9c2b46e..26259fbd3f 100644
+--- a/kernel/cobalt/posix/sched.c
++++ b/kernel/cobalt/posix/sched.c
+@@ -736,7 +736,7 @@ COBALT_SYSCALL(sched_weightprio, current,
+ 	return __cobalt_sched_weightprio(policy, &param_ex);
+ }
+ 
+-int cobalt_sched_setscheduler_ex(pid_t pid,
++int cobalt_sched_setscheduler_ex(pid_t vpid,
+ 				 int policy,
+ 				 const struct sched_param_ex *param_ex,
+ 				 __u32 __user *u_winoff,
+@@ -747,9 +747,11 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
+ 	int ret, promoted = 0;
+ 	spl_t s;
+ 
+-	trace_cobalt_sched_setscheduler(pid, policy, param_ex);
++	trace_cobalt_sched_setscheduler(vpid, policy, param_ex);
++
++	if (vpid) {
++		pid_t pid = cobalt_vpid2pid_nr(vpid);
+ 
+-	if (pid) {
+ 		xnlock_get_irqsave(&nklock, s);
+ 		thread = cobalt_thread_find(pid);
+ 		xnlock_put_irqrestore(&nklock, s);
+@@ -757,7 +759,7 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
+ 		thread = cobalt_current_thread();
+ 
+ 	if (thread == NULL) {
+-		if (u_winoff == NULL || pid != task_pid_vnr(current))
++		if (u_winoff == NULL || vpid != task_pid_vnr(current))
+ 			return -ESRCH;
+ 			
+ 		thread = cobalt_thread_shadow(&hkey, u_winoff);
+diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+index 72b20c78d2..030ce8ffed 100644
+--- a/kernel/cobalt/posix/sem.c
++++ b/kernel/cobalt/posix/sem.c
+@@ -602,7 +602,7 @@ COBALT_SYSCALL(sem_inquire, current,
+ 		xnsynch_for_each_sleeper(thread, &sem->synchbase) {
+ 			if (nrwait >= nrpids)
+ 				break;
+-			t[nrwait++] = xnthread_host_pid(thread);
++			t[nrwait++] = xnthread_host_vpid(thread);
+ 		}
+ 	}
+ 
+diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
+index 0b43b5fcfa..c2c9c092c4 100644
+--- a/kernel/cobalt/posix/signal.c
++++ b/kernel/cobalt/posix/signal.c
+@@ -510,7 +510,7 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
+ 			sigp->si.si_signo = sig;
+ 			sigp->si.si_errno = 0;
+ 			sigp->si.si_code = SI_USER;
+-			sigp->si.si_pid = task_pid_nr(current);
++			sigp->si.si_pid = task_pid_vnr(current);
+ 			sigp->si.si_uid = get_current_uuid();
+ 			if (cobalt_signal_send(thread, sigp, group) <= 0)
+ 				cobalt_signal_free(sigp);
+@@ -525,8 +525,9 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
+ 	return ret;
+ }
+ 
+-COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
++COBALT_SYSCALL(kill, conforming, (pid_t vpid, int sig))
+ {
++	pid_t pid = cobalt_vpid2pid_nr(vpid);
+ 	struct cobalt_thread *thread;
+ 	int ret;
+ 	spl_t s;
+@@ -544,8 +545,9 @@ COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
+ 	return ret;
+ }
+ 
+-int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
++int __cobalt_sigqueue(pid_t vpid, int sig, const union sigval *value)
+ {
++	pid_t pid = cobalt_vpid2pid_nr(vpid);
+ 	struct cobalt_sigpending *sigp;
+ 	struct cobalt_thread *thread;
+ 	int ret = 0;
+@@ -569,7 +571,7 @@ int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
+ 			sigp->si.si_signo = sig;
+ 			sigp->si.si_errno = 0;
+ 			sigp->si.si_code = SI_QUEUE;
+-			sigp->si.si_pid = task_pid_nr(current);
++			sigp->si.si_pid = task_pid_vnr(current);
+ 			sigp->si.si_uid = get_current_uuid();
+ 			sigp->si.si_value = *value;
+ 			if (cobalt_signal_send(thread, sigp, 1) <= 0)
+diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+index cdeb66d4f3..d7c55df8f1 100644
+--- a/kernel/cobalt/posix/thread.c
++++ b/kernel/cobalt/posix/thread.c
+@@ -819,7 +819,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
+ 	if (thread == NULL)
+ 		pid = -ESRCH;
+ 	else
+-		pid = xnthread_host_pid(&thread->threadbase);
++		pid = xnthread_host_vpid(&thread->threadbase);
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+@@ -827,7 +827,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
+ }
+ 
+ COBALT_SYSCALL(thread_getstat, current,
+-	       (pid_t pid, struct cobalt_threadstat __user *u_stat))
++	       (pid_t vpid, struct cobalt_threadstat __user *u_stat))
+ {
+ 	struct cobalt_threadstat stat;
+ 	struct cobalt_thread *p;
+@@ -835,14 +835,16 @@ COBALT_SYSCALL(thread_getstat, current,
+ 	xnticks_t xtime;
+ 	spl_t s;
+ 
+-	trace_cobalt_pthread_stat(pid);
++	trace_cobalt_pthread_stat(vpid);
+ 
+-	if (pid == 0) {
++	if (vpid == 0) {
+ 		thread = xnthread_current();
+ 		if (thread == NULL)
+ 			return -EPERM;
+ 		xnlock_get_irqsave(&nklock, s);
+ 	} else {
++		pid_t pid = cobalt_vpid2pid_nr(vpid);
++
+ 		xnlock_get_irqsave(&nklock, s);
+ 		p = cobalt_thread_find(pid);
+ 		if (p == NULL) {
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 2c1ec6d3a4..9a97213fbe 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -388,6 +388,16 @@ pid_t xnthread_host_pid(struct xnthread *thread)
+ 	return task_pid_nr(xnthread_host_task(thread));
+ }
+ 
++pid_t xnthread_host_vpid(struct xnthread *thread)
++{
++	if (xnthread_test_state(thread, XNROOT))
++		return 0;
++	if (!xnthread_host_task(thread))
++		return -1;
++
++	return task_pid_vnr(xnthread_host_task(thread));
++}
++
+ int xnthread_set_clock(struct xnthread *thread, struct xnclock *newclock)
+ {
+ 	spl_t s;
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index 1d623069df..d66053da8d 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -246,7 +246,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_scheduler,
+ 		memcpy(__get_dynamic_array(param_ex), param_ex, sizeof(*param_ex));
+ 	),
+ 
+-	TP_printk("pid=%d policy=%s param={ %s }",
++	TP_printk("vpid=%d policy=%s param={ %s }",
+ 		  __entry->pid,
+ 		  cobalt_print_sched_policy(__entry->policy),
+ 		  __parse_sched_params(__entry->policy,
+@@ -363,7 +363,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_pid,
+ 	TP_fast_assign(
+ 		__entry->pid = pid;
+ 	),
+-	TP_printk("pid=%d", __entry->pid)
++	TP_printk("vpid=%d", __entry->pid)
+ );
+ 
+ DEFINE_EVENT(cobalt_posix_pid, cobalt_pthread_stat,
 -- 
-2.20.1
-
+2.26.2
 
