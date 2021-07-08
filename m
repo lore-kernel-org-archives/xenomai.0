@@ -1,11 +1,18 @@
+Subject: Re: [PATCH 2/3] cobalt: Add ptrace debugging helper interface
+References: <cover.1625688977.git.jan.kiszka@siemens.com>
+ <38334cd4bacae85a759591823d6e8898e7d52f76.1625688977.git.jan.kiszka@siemens.com>
+ <1b34cb70-ba44-8083-e197-2159f0db48e8@siemens.com>
+ <254d53bb-2b0b-f682-3bfc-687a8dd4bdb4@siemens.com>
+ <2bf5330d-9b30-4c73-231c-c3b2ead73c24@189.cn>
+ <999c9753a276eba679c8a818aa54e8cd8a750a5b.camel@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt: Sort out virtual vs. real pids
-Message-ID: <af9a744d-9617-ed83-6391-edd5fd9ff26d@siemens.com>
-Date: Thu, 8 Jul 2021 17:17:15 +0200
+Message-ID: <e54ec9f7-e3fc-e019-f69d-fc66d79ba79e@siemens.com>
+Date: Thu, 8 Jul 2021 17:23:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <999c9753a276eba679c8a818aa54e8cd8a750a5b.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,310 +21,202 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: MONTET Julien <julien.montet@reseau.eseo.fr>, Marco Barletta <barlettamarco8@gmail.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 08.07.21 11:16, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-07-08 at 17:03 +0800, chensong_2000@189.cn wrote:
+>>
+>> 在 2021/7/8 下午4:05, Jan Kiszka 写道:
+>>> On 08.07.21 09:58, Florian Bezdeka wrote:
+>>>> On 07.07.21 22:16, Jan Kiszka via Xenomai wrote:
+>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>
+>>>>> This introduces the concept of a debugging helper thread. It can
+>>>>> register itself with the cobalt core and then wait for ptrace stop and
+>>>>> resumption events. This can be used to bring the connected devices or
+>>>>> other parts of the system into a state that can tolerate the potentially
+>>>>> long interruption and also synchronize again with it to continue.
+>>>>>
+>>>>> On stop events (breakpoints, debugger interceptions), the core will
+>>>>> ensure that the helper is run after all primary-mode threads were put on
+>>>>> hold and before the debugger will gain control over the whole process.
+>>>>> For that purpose, the helper will receive a notification when it was
+>>>>> pending on the corresponding event-wait syscall and will release the
+>>>>> process into debugging by invoking that syscall to wait for the
+>>>>> resumption event.
+>>>>>
+>>>>> When the debugger resumes the whole process, the helper is resumed
+>>>>> first, right before all threads that will continue in primary mode are
+>>>>> released (threads in secondary mode may run earlier but will have to
+>>>>> wait when trying to enter primary mode). Again, the helper thread
+>>>>> decides when to continue by calling the event-wait system again, in
+>>>>> that case in order to wait for the next stop event.
+>>>>>
+>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>> ---
+>>>>>   include/cobalt/Makefile.am      |  1 +
+>>>>>   include/cobalt/ptrace.h         | 37 ++++++++++++++
+>>>>>   include/cobalt/uapi/Makefile.am |  1 +
+>>>>>   include/cobalt/uapi/ptrace.h    | 24 +++++++++
+>>>>>   include/cobalt/uapi/syscall.h   |  2 +
+>>>>>   kernel/cobalt/posix/process.c   | 34 +++++++++++-
+>>>>>   kernel/cobalt/posix/process.h   |  5 ++
+>>>>>   kernel/cobalt/posix/syscall.c   | 86 +++++++++++++++++++++++++++++++
+>>>>>   lib/cobalt/Makefile.am          |  1 +
+>>>>>   lib/cobalt/ptrace.c             | 91 +++++++++++++++++++++++++++++++++
+>>>>>   10 files changed, 280 insertions(+), 2 deletions(-)
+>>>>>   create mode 100644 include/cobalt/ptrace.h
+>>>>>   create mode 100644 include/cobalt/uapi/ptrace.h
+>>>>>   create mode 100644 lib/cobalt/ptrace.c
+>>>>>
+>>>>> diff --git a/include/cobalt/Makefile.am b/include/cobalt/Makefile.am
+>>>>> index 19e96112e8..e0b203193d 100644
+>>>>> --- a/include/cobalt/Makefile.am
+>>>>> +++ b/include/cobalt/Makefile.am
+>>>>> @@ -4,6 +4,7 @@ includesub_HEADERS =    \
+>>>>>         fcntl.h         \
+>>>>>         mqueue.h        \
+>>>>>         pthread.h       \
+>>>>> +       ptrace.h        \
+>>>>>         sched.h         \
+>>>>>         semaphore.h     \
+>>>>>         signal.h        \
+>>>>> diff --git a/include/cobalt/ptrace.h b/include/cobalt/ptrace.h
+>>>>> new file mode 100644
+>>>>> index 0000000000..f5bec56c9d
+>>>>> --- /dev/null
+>>>>> +++ b/include/cobalt/ptrace.h
+>>>>> @@ -0,0 +1,37 @@
+>>>>> +/*
+>>>>> + * Copyright (C) Siemens AG, 2015-2021
+>>>>> + *
+>>>>> + * Authors:
+>>>>> + *  Jan Kiszka <jan.kiszka@siemens.com>
+>>>>> + *
+>>>>> + * This library is free software; you can redistribute it and/or
+>>>>> + * modify it under the terms of the GNU Lesser General Public
+>>>>> + * License as published by the Free Software Foundation; either
+>>>>> + * version 2 of the License, or (at your option) any later version.
+>>>>> + *
+>>>>> + * This library is distributed in the hope that it will be useful,
+>>>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>>>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>>>> + * Lesser General Public License for more details.
+>>>>> + *
+>>>>> + * You should have received a copy of the GNU Lesser General Public
+>>>>> + * License along with this library; if not, write to the Free Software
+>>>>> + * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+>>>>> + */
+>>>>> +#ifndef _COBALT_PTRACE_H
+>>>>> +#define _COBALT_PTRACE_H
+>>>>> +
+>>>>> +#include <cobalt/uapi/ptrace.h>
+>>>>> +
+>>>>> +#ifdef __cplusplus
+>>>>> +extern "C" {
+>>>>> +#endif
+>>>>> +
+>>>>> +int cobalt_ptrace_helper_init(void);
+>>>>> +int cobalt_ptrace_event_wait(int event);
+>>>>> +
+>>>>> +#ifdef __cplusplus
+>>>>> +}
+>>>>> +#endif
+>>>>> +
+>>>>> +#endif /* !_COBALT_PTRACE_H */
+>>>>> diff --git a/include/cobalt/uapi/Makefile.am b/include/cobalt/uapi/Makefile.am
+>>>>> index d887213f8e..41076e23d9 100644
+>>>>> --- a/include/cobalt/uapi/Makefile.am
+>>>>> +++ b/include/cobalt/uapi/Makefile.am
+>>>>> @@ -6,6 +6,7 @@ includesub_HEADERS =    \
+>>>>>         event.h         \
+>>>>>         monitor.h       \
+>>>>>         mutex.h         \
+>>>>> +       ptrace.h        \
+>>>>>         sched.h         \
+>>>>>         sem.h           \
+>>>>>         signal.h        \
+>>>>> diff --git a/include/cobalt/uapi/ptrace.h b/include/cobalt/uapi/ptrace.h
+>>>>> new file mode 100644
+>>>>> index 0000000000..4e61d458c1
+>>>>> --- /dev/null
+>>>>> +++ b/include/cobalt/uapi/ptrace.h
+>>>>> @@ -0,0 +1,24 @@
+>>>>> +/*
+>>>>> + * Copyright (C) Siemens AG, 2015-2021
+>>>>> + *
+>>>>> + * This library is free software; you can redistribute it and/or
+>>>>> + * modify it under the terms of the GNU Lesser General Public
+>>>>> + * License as published by the Free Software Foundation; either
+>>>>> + * version 2 of the License, or (at your option) any later version.
+>>>>> + *
+>>>>> + * This library is distributed in the hope that it will be useful,
+>>>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>>>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>>>> + * Lesser General Public License for more details.
+>>>>> + *
+>>>>> + * You should have received a copy of the GNU Lesser General Public
+>>>>> + * License along with this library; if not, write to the Free Software
+>>>>> + * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+>>>>> + */
+>>>>> +#ifndef _COBALT_UAPI_PTRACE_H
+>>>>> +#define _COBALT_UAPI_PTRACE_H
+>>>>> +
+>>>>> +#define COBALT_PTRACE_EVENT_STOP       0x1
+>>>>> +#define COBALT_PTRACE_EVENT_RESUME     0x2
+>>>>> +
+>>>>> +#endif /* !_COBALT_UAPI_PTRACE_H */
+>>>>> diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+>>>>> index a2795a3644..1fb4009d64 100644
+>>>>> --- a/include/cobalt/uapi/syscall.h
+>>>>> +++ b/include/cobalt/uapi/syscall.h
+>>>>> @@ -128,6 +128,8 @@
+>>>>>   #define sc_cobalt_clock_nanosleep64           105
+>>>>>   #define sc_cobalt_clock_getres64              106
+>>>>>   #define sc_cobalt_clock_adjtime64             107
+>>>>> +#define sc_cobalt_ptrace_helper_init           108
+>>>>> +#define sc_cobalt_ptrace_event_wait            109
+>>>>
+>>>> Just a note that this affects the onoing Y2038 work. Song, we might have
+>>>> to adjust the syscall numbers again (assuming that Jan is coming in earlier)
+>>>>
+>>>
+>>> If you already know how many additional calls you need, I can move my
+>>> reservation up and keep you block together.
+>>
+>> sc_cobalt_mutex_timedlock64
+>> sc_cobalt_mq_timedsend64
+>> sc_cobalt_mq_timedreceive64
+>> sc_cobalt_sigtimedwait64
+>> sc_cobalt_thread_setschedparam_ex64
+>> sc_cobalt_thread_getschedparam_ex64
+>> cond_wait_prologue64
+>> monitor_wait64
+>> event_wait64
+>> select64
+>> recvmmsg64
+>>
+>> those implementations are ongoing, please reserve, thanks.
+> 
+> According to our list in [1] clock_adjtime64 is missing.
+> 
 
-Make sure that we consider all pids taken from or sent to userspace via
-syscalls as virtual. That means converting them to global pids before
-processing them or converting them back to virtual pids in the caller's
-namespace before reporting them.
+That one is already upstream.
 
-Not converted is the procfs interface as this one continues to provide
-only a global view on cobalt objects and associated pids.
+So I'm reserving now
 
-A view syscall tracepoints that report the vpid as passed down from
-userspace get adjusted in their output so that it is clear that no
-global pid is shown.
+/* 108-119 reserved for 64-bit time_t syscalls */
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+> We should follow the order defined in [1] as well.
+> 
+> [1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/wikis/y2038/Y2038_Affected_Syscalls
+> 
 
-WARNING: This is only compile-tested so far. I'll push that into CI to 
-make sure that we have no regressions, but I still don't have a setup 
-actually stressing the pid namespace thing. So any feedback on how it 
-behaves would be very welcome!
+Well, then make sure to send a patch soon that reassigns IDs accordingly.
 
- include/cobalt/kernel/thread.h     |  2 ++
- kernel/cobalt/debug.c              |  2 +-
- kernel/cobalt/posix/event.c        |  2 +-
- kernel/cobalt/posix/mqueue.c       |  2 +-
- kernel/cobalt/posix/process.c      | 14 ++++++++++++++
- kernel/cobalt/posix/process.h      |  2 ++
- kernel/cobalt/posix/sched.c        | 10 ++++++----
- kernel/cobalt/posix/sem.c          |  2 +-
- kernel/cobalt/posix/signal.c       | 10 ++++++----
- kernel/cobalt/posix/thread.c       | 10 ++++++----
- kernel/cobalt/thread.c             | 10 ++++++++++
- kernel/cobalt/trace/cobalt-posix.h |  4 ++--
- 12 files changed, 52 insertions(+), 18 deletions(-)
+Jan
 
-diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-index b79cb84296..4c8a0b9f2a 100644
---- a/include/cobalt/kernel/thread.h
-+++ b/include/cobalt/kernel/thread.h
-@@ -450,6 +450,8 @@ char *xnthread_format_status(unsigned long status,
- 
- pid_t xnthread_host_pid(struct xnthread *thread);
- 
-+pid_t xnthread_host_vpid(struct xnthread *thread);
-+
- int xnthread_set_clock(struct xnthread *thread,
- 		       struct xnclock *newclock);
- 
-diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
-index a6e2cc42d3..4dd938be51 100644
---- a/kernel/cobalt/debug.c
-+++ b/kernel/cobalt/debug.c
-@@ -292,7 +292,7 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
- 	 */
- 	spot.depth = depth;
- 	spot.proghash = thread->proghash;
--	spot.pid = xnthread_host_pid(thread);
-+	spot.pid = xnthread_host_vpid(thread);
- 	spot.reason = reason;
- 	strcpy(spot.thread, thread->name);
- 	hash = jhash2((u32 *)&spot, sizeof(spot) / sizeof(u32), 0);
-diff --git a/kernel/cobalt/posix/event.c b/kernel/cobalt/posix/event.c
-index 3712154f53..5871106301 100644
---- a/kernel/cobalt/posix/event.c
-+++ b/kernel/cobalt/posix/event.c
-@@ -352,7 +352,7 @@ COBALT_SYSCALL(event_inquire, current,
- 		xnsynch_for_each_sleeper(thread, &event->synch) {
- 			if (nrwait >= nrpids)
- 				break;
--			t[nrwait++] = xnthread_host_pid(thread);
-+			t[nrwait++] = xnthread_host_vpid(thread);
- 		}
- 	}
- 
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index dd8acd55b0..fcde87a077 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -720,7 +720,7 @@ mq_notify(struct cobalt_mqd *mqd, unsigned index, const struct sigevent *evp)
- 		 * receiver's namespaces. We pass the receiver's creds
- 		 * into the init namespace instead.
- 		 */
--		mq->si.si_pid = task_pid_nr(current);
-+		mq->si.si_pid = task_pid_vnr(current);
- 		mq->si.si_uid = get_current_uuid();
- 	}
- 
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 76514ec82f..ad7def2f27 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -1004,6 +1004,20 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm)
- 	return KEVENT_PROPAGATE;
- }
- 
-+pid_t cobalt_vpid2pid_nr(pid_t vpid)
-+{
-+	struct pid *pid;
-+	pid_t nr = -1;
-+
-+	rcu_read_lock();
-+	pid = find_vpid(vpid);
-+	if (pid)
-+		nr = pid_nr(pid);
-+	rcu_read_unlock();
-+
-+	return nr;
-+}
-+
- static int attach_process(struct cobalt_process *process)
- {
- 	struct cobalt_ppd *p = &process->sys_ppd;
-diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-index 29294a8f60..c9bccdb361 100644
---- a/kernel/cobalt/posix/process.h
-+++ b/kernel/cobalt/posix/process.h
-@@ -180,4 +180,6 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm);
- 
- int cobalt_handle_user_return(struct task_struct *task);
- 
-+pid_t cobalt_vpid2pid_nr(pid_t vpid);
-+
- #endif /* !_COBALT_POSIX_PROCESS_H */
-diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-index 4fd9c2b46e..26259fbd3f 100644
---- a/kernel/cobalt/posix/sched.c
-+++ b/kernel/cobalt/posix/sched.c
-@@ -736,7 +736,7 @@ COBALT_SYSCALL(sched_weightprio, current,
- 	return __cobalt_sched_weightprio(policy, &param_ex);
- }
- 
--int cobalt_sched_setscheduler_ex(pid_t pid,
-+int cobalt_sched_setscheduler_ex(pid_t vpid,
- 				 int policy,
- 				 const struct sched_param_ex *param_ex,
- 				 __u32 __user *u_winoff,
-@@ -747,9 +747,11 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
- 	int ret, promoted = 0;
- 	spl_t s;
- 
--	trace_cobalt_sched_setscheduler(pid, policy, param_ex);
-+	trace_cobalt_sched_setscheduler(vpid, policy, param_ex);
-+
-+	if (vpid) {
-+		pid_t pid = cobalt_vpid2pid_nr(vpid);
- 
--	if (pid) {
- 		xnlock_get_irqsave(&nklock, s);
- 		thread = cobalt_thread_find(pid);
- 		xnlock_put_irqrestore(&nklock, s);
-@@ -757,7 +759,7 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
- 		thread = cobalt_current_thread();
- 
- 	if (thread == NULL) {
--		if (u_winoff == NULL || pid != task_pid_vnr(current))
-+		if (u_winoff == NULL || vpid != task_pid_vnr(current))
- 			return -ESRCH;
- 			
- 		thread = cobalt_thread_shadow(&hkey, u_winoff);
-diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index 72b20c78d2..030ce8ffed 100644
---- a/kernel/cobalt/posix/sem.c
-+++ b/kernel/cobalt/posix/sem.c
-@@ -602,7 +602,7 @@ COBALT_SYSCALL(sem_inquire, current,
- 		xnsynch_for_each_sleeper(thread, &sem->synchbase) {
- 			if (nrwait >= nrpids)
- 				break;
--			t[nrwait++] = xnthread_host_pid(thread);
-+			t[nrwait++] = xnthread_host_vpid(thread);
- 		}
- 	}
- 
-diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-index 0b43b5fcfa..c2c9c092c4 100644
---- a/kernel/cobalt/posix/signal.c
-+++ b/kernel/cobalt/posix/signal.c
-@@ -510,7 +510,7 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
- 			sigp->si.si_signo = sig;
- 			sigp->si.si_errno = 0;
- 			sigp->si.si_code = SI_USER;
--			sigp->si.si_pid = task_pid_nr(current);
-+			sigp->si.si_pid = task_pid_vnr(current);
- 			sigp->si.si_uid = get_current_uuid();
- 			if (cobalt_signal_send(thread, sigp, group) <= 0)
- 				cobalt_signal_free(sigp);
-@@ -525,8 +525,9 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
- 	return ret;
- }
- 
--COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
-+COBALT_SYSCALL(kill, conforming, (pid_t vpid, int sig))
- {
-+	pid_t pid = cobalt_vpid2pid_nr(vpid);
- 	struct cobalt_thread *thread;
- 	int ret;
- 	spl_t s;
-@@ -544,8 +545,9 @@ COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
- 	return ret;
- }
- 
--int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
-+int __cobalt_sigqueue(pid_t vpid, int sig, const union sigval *value)
- {
-+	pid_t pid = cobalt_vpid2pid_nr(vpid);
- 	struct cobalt_sigpending *sigp;
- 	struct cobalt_thread *thread;
- 	int ret = 0;
-@@ -569,7 +571,7 @@ int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
- 			sigp->si.si_signo = sig;
- 			sigp->si.si_errno = 0;
- 			sigp->si.si_code = SI_QUEUE;
--			sigp->si.si_pid = task_pid_nr(current);
-+			sigp->si.si_pid = task_pid_vnr(current);
- 			sigp->si.si_uid = get_current_uuid();
- 			sigp->si.si_value = *value;
- 			if (cobalt_signal_send(thread, sigp, 1) <= 0)
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index cdeb66d4f3..d7c55df8f1 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -819,7 +819,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
- 	if (thread == NULL)
- 		pid = -ESRCH;
- 	else
--		pid = xnthread_host_pid(&thread->threadbase);
-+		pid = xnthread_host_vpid(&thread->threadbase);
- 
- 	xnlock_put_irqrestore(&nklock, s);
- 
-@@ -827,7 +827,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
- }
- 
- COBALT_SYSCALL(thread_getstat, current,
--	       (pid_t pid, struct cobalt_threadstat __user *u_stat))
-+	       (pid_t vpid, struct cobalt_threadstat __user *u_stat))
- {
- 	struct cobalt_threadstat stat;
- 	struct cobalt_thread *p;
-@@ -835,14 +835,16 @@ COBALT_SYSCALL(thread_getstat, current,
- 	xnticks_t xtime;
- 	spl_t s;
- 
--	trace_cobalt_pthread_stat(pid);
-+	trace_cobalt_pthread_stat(vpid);
- 
--	if (pid == 0) {
-+	if (vpid == 0) {
- 		thread = xnthread_current();
- 		if (thread == NULL)
- 			return -EPERM;
- 		xnlock_get_irqsave(&nklock, s);
- 	} else {
-+		pid_t pid = cobalt_vpid2pid_nr(vpid);
-+
- 		xnlock_get_irqsave(&nklock, s);
- 		p = cobalt_thread_find(pid);
- 		if (p == NULL) {
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 2c1ec6d3a4..9a97213fbe 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -388,6 +388,16 @@ pid_t xnthread_host_pid(struct xnthread *thread)
- 	return task_pid_nr(xnthread_host_task(thread));
- }
- 
-+pid_t xnthread_host_vpid(struct xnthread *thread)
-+{
-+	if (xnthread_test_state(thread, XNROOT))
-+		return 0;
-+	if (!xnthread_host_task(thread))
-+		return -1;
-+
-+	return task_pid_vnr(xnthread_host_task(thread));
-+}
-+
- int xnthread_set_clock(struct xnthread *thread, struct xnclock *newclock)
- {
- 	spl_t s;
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 1d623069df..d66053da8d 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -246,7 +246,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_scheduler,
- 		memcpy(__get_dynamic_array(param_ex), param_ex, sizeof(*param_ex));
- 	),
- 
--	TP_printk("pid=%d policy=%s param={ %s }",
-+	TP_printk("vpid=%d policy=%s param={ %s }",
- 		  __entry->pid,
- 		  cobalt_print_sched_policy(__entry->policy),
- 		  __parse_sched_params(__entry->policy,
-@@ -363,7 +363,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_pid,
- 	TP_fast_assign(
- 		__entry->pid = pid;
- 	),
--	TP_printk("pid=%d", __entry->pid)
-+	TP_printk("vpid=%d", __entry->pid)
- );
- 
- DEFINE_EVENT(cobalt_posix_pid, cobalt_pthread_stat,
 -- 
-2.26.2
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
