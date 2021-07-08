@@ -1,9 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 4/4] README: Add information about LAVA Lab
-Date: Thu,  8 Jul 2021 17:03:01 +0200
-Message-Id: <20210708150301.24083-5-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
-References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 0/4] Prepare xenomai-images for public LAVA
+ Server
+Date: Thu,  8 Jul 2021 17:02:57 +0200
+Message-Id: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,37 +17,29 @@ To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- README.md | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Add option to upload the image under test to AWS.
+Add option to use AWS as image download source and use
+[1] as default LAVA server.
 
-diff --git a/README.md b/README.md
-index 69b3e13..c195c0c 100644
---- a/README.md
-+++ b/README.md
-@@ -53,6 +53,20 @@ gitlab-runner exec docker --docker-privileged \
-   --env "NO_PROXY=$NO_PROXY" build:qemu-armhf
- ```
- 
-+## LAVA Lab
-+
-+The [Xenomai project](https://www.xenomai.org/) maintains a
-+[LAVA lab](https://lava.xenomai.org) for integration testing.
-+
-+A LAVA lab can be created by following the
-+[installation instructions](https://docs.lavasoftware.org/lava/first-installation.html)
-+or use
-+[lava docker](https://github.com/kernelci/lava-docker) for a faster setup.
-+
-+It is also possible to connect a lab to lava.xenomai.org. Please get in
-+touch with the maintainers via mailing list to join a new lab with
-+lava.xenomai.org.
-+
- ## Community Resources
- 
- See [Xenomai project](https://www.xenomai.org/).
--- 
+After this patchset is merged the private lava lab
+can be migrated.
+
+[1]: https://lava.xenomai.org
+
+Quirin Gylstorff (4):
+  ci: Add option to upload artifacts to aws bucket
+  ci: adapt to public lava-server
+  scripts/run_lava_tests.sh: cleanup shellcheck warnings
+  README: Add information about LAVA Lab
+
+ README.md                 | 14 ++++++
+ ci/gitlab-ci-base.yml     |  6 ++-
+ scripts/deploy_to_aws.sh  | 46 ++++++++++++++++++++
+ scripts/run-lava-tests.sh | 90 +++++++++++++++++++++++----------------
+ 4 files changed, 117 insertions(+), 39 deletions(-)
+ create mode 100755 scripts/deploy_to_aws.sh
+
+- '- 
 2.20.1
 
 
