@@ -1,16 +1,16 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images][PATCH 3/4] scripts/run_lava_tests.sh: cleanup
  shellcheck warnings
-Date: Thu, 8 Jul 2021 15:50:48 +0000
-Message-ID: <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
 References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
  <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FF1F194B86A1C94D9CC07A151E011216@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4ad42f7f-7156-fd06-687d-3bcc665f5659@siemens.com>
+Date: Thu, 8 Jul 2021 17:56:03 +0200
 MIME-Version: 1.0
+In-Reply-To: <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,82 +19,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "quirin.gylstorff@siemens.com" <quirin.gylstorff@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "Gylstorff, Quirin (T RDA IOT SES-DE)" <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTA3LTA4IGF0IDE3OjAzICswMjAwLCBRLiBHeWxzdG9yZmYgdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+IEZyb206IFF1aXJpbiBHeWxzdG9yZmYgPHF1aXJpbi5neWxzdG9yZmZAc2ll
-bWVucy5jb20+DQo+IA0KPiBBZGQgbWlzc2luZyBxdW90ZXMgYW5kIHNpbXBsaWZ5IHN0YXRlbWVu
-dHMuDQo+IEFsc28gYWRkIG1lc3NhZ2VzIHRvIGluZGljYXRlIHByb2dyZXNzLg0KPiANCj4gU2ln
-bmVkLW9mZi1ieTogUXVpcmluIEd5bHN0b3JmZiA8cXVpcmluLmd5bHN0b3JmZkBzaWVtZW5zLmNv
-bT4NCj4gLS0tDQo+IMKgc2NyaXB0cy9ydW4tbGF2YS10ZXN0cy5zaCB8IDM3ICsrKysrKysrKysr
-KysrKysrKysrKystLS0tLS0tLS0tLS0tLS0NCj4gwqAxIGZpbGUgY2hhbmdlZCwgMjIgaW5zZXJ0
-aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvc2NyaXB0cy9ydW4t
-bGF2YS10ZXN0cy5zaCBiL3NjcmlwdHMvcnVuLWxhdmEtdGVzdHMuc2gNCj4gaW5kZXggZThjNzM3
-Ny4uNzIxMzhjMyAxMDA3NTUNCj4gLS0tIGEvc2NyaXB0cy9ydW4tbGF2YS10ZXN0cy5zaA0KPiAr
-KysgYi9zY3JpcHRzL3J1bi1sYXZhLXRlc3RzLnNoDQo+IEBAIC05LDExICs5LDEwIEBADQo+IMKg
-Iw0KPiDCoCMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVA0KPiDCoCMNCj4gLXNldCAtZQ0K
-PiDCoFRBUkdFVD0kMQ0KPiDCoGlmIFsgLXogIiR7VEFSR0VUfSIgXTsgdGhlbg0KPiDCoMKgwqDC
-oMKgZWNobyAibm8gdGFyZ2V0IHdhcyBnaXZlbiINCj4gLSAgICBleGl0IC0xDQo+ICsgICAgZXhp
-dCAxDQo+IMKgZmkNCj4gwqANCj4gDQo+IA0KPiANCj4gwqBpZiBbIC1uICIke0xBVkFfU1NIX0hP
-U1R9IiBdOyB0aGVuDQo+IEBAIC0yNCw3ICsyMyw3IEBAIGlmIFsgLW4gIiR7TEFWQV9TU0hfSE9T
-VH0iIF07IHRoZW4NCj4gwqDCoMKgwqDCoGxhdmFfaWRlbnRpdHk9Ii1pICR7TEFWQV9TU0hfS0VZ
-X1BBVEg6LX4vLnNzaC9sYXZhX2lkX3JzYX0iDQo+IMKgwqDCoMKgwqBsYXZhX3NzaF9kZXN0aW5h
-dGlvbj0iJHtMQVZBX1NTSF9VU0VSfUAke0xBVkFfU1NIX0hPU1R9Ig0KPiDCoMKgwqDCoMKgIyBv
-cGVuIGNvbm5lY3Rpb24gZm9yIHNzaCBwb3J0IGZvcndhcmRpbmcNCj4gLSAgICBzc2ggLU4gIiR7
-bGF2YV9zc2hfcG9ydH0iICIke2xhdmFfaWRlbnRpdHl9IiAtbyAnTG9jYWxGb3J3YXJkIGxvY2Fs
-aG9zdDonIiR7bGF2YV9tYXN0ZXJfcG9ydH0iJyBsb2NhbGhvc3Q6ODAnICIke2xhdmFfc3NoX2Rl
-c3RpbmF0aW9ufSIgJg0KPiArICAgIHNzaCAtTiAke2xhdmFfc3NoX3BvcnR9ICR7bGF2YV9pZGVu
-dGl0eX0gLW8gJ0xvY2FsRm9yd2FyZCBsb2NhbGhvc3Q6JyR7bGF2YV9tYXN0ZXJfcG9ydH0nIGxv
-Y2FsaG9zdDo4MCcgJHtsYXZhX3NzaF9kZXN0aW5hdGlvbn0gJg0KPiDCoMKgwqDCoMKgc3NoX3Bp
-ZD0iJCEiDQo+IMKgwqDCoMKgwqAjIHdhaXQgZm9yIGNvbm5lY3Rpb24NCj4gwqDCoMKgwqDCoGlu
-dGVydmFsPTENCj4gQEAgLTQ3LDI4ICs0NiwzNiBAQCBlbHNlDQo+IMKgwqDCoMKgwqBsYXZhX21h
-c3Rlcl91cmk9IiR7TEFWQV9NQVNURVJfVVJMOi1odHRwczovL2xhdmEueGVub21haS5vcmd9Ig0K
-PiDCoGZpDQo+IMKgDQo+IA0KPiANCj4gDQo+ICtlY2hvICJjb25uZWN0IHRvIGxhdmEgc2VydmVy
-OiAke2xhdmFfbWFzdGVyX3VyaX0iDQo+ICsNCj4gwqAjIGNvbm5lY3QgdG8gbGF2YSBtYXN0ZXIN
-Cj4gLWxhdmFjbGkgaWRlbnRpdGllcyBhZGQgLS10b2tlbiAke0xBVkFfTUFTVEVSX1RPS0VOfSAt
-LXVyaSAke2xhdmFfbWFzdGVyX3VyaX0gLS11c2VybmFtZSAke0xBVkFfTUFTVEVSX0FDQ09VTlR9
-IGRlZmF1bHQNCj4gK2xhdmFjbGkgaWRlbnRpdGllcyBhZGQgLS10b2tlbiAiJHtMQVZBX01BU1RF
-Ul9UT0tFTn0iIC0tdXJpICIke2xhdmFfbWFzdGVyX3VyaX0iIC0tdXNlcm5hbWUgIiR7TEFWQV9N
-QVNURVJfQUNDT1VOVH0iIGRlZmF1bHQNCj4gwqAjZ2VuZXJhdGUgbGF2YSBqb2IgZGVzY3JpcHRp
-b24gZnJvbSB0ZW1wbGF0ZQ0KPiDCoGlmIFsgLW4gIiR7VVNFX0dJVExBQl9BUlRJRkFDVFN9IiBd
-OyB0aGVuDQo+IMKgwqDCoMKgwqBERVBMT1lfVVJMPSIke0NJX0FQSV9WNF9VUkx9L3Byb2plY3Rz
-LyR7Q0lfUFJPSkVDVF9JRH0vam9icy8ke0JVSUxEX0pPQl9JRH0vYXJ0aWZhY3RzL2J1aWxkL3Rt
-cC9kZXBsb3kvaW1hZ2VzLyR7VEFSR0VUfSINCj4gwqBlbHNlDQo+IMKgwqDCoMKgwqBERVBMT1lf
-VVJMPSIke2FydGlmYWN0X3VybH0vJHtDSV9QSVBFTElORV9JRH0vJHtERVBMT1lfRElSX0VYVEVO
-U0lPTn0iDQo+IMKgZmkNCj4gKw0KPiArZWNobyAiRGVwbG95IGFydGlmYWN0cyBmcm9tICcke2Fy
-dGlmYWN0X3VybH0nIg0KPiArDQo+IMKgam9iX3RlbXBsYXRlX3BhdGg9IiR7Sk9CX1RFTVBMQVRF
-X1BBVEg6LXRlc3RzL2pvYnMveGVub21haX0iDQo+IMKgdG1wX2Rpcj0kKG1rdGVtcCAtZCkNCj4g
-LXRlbXBsYXRlPSR7dG1wX2Rpcn0vam9iXyR7VEFSR0VUfV8ke0NJX1BJUEVMSU5FX0lEfS55bWwN
-Cj4gLWNwICR7am9iX3RlbXBsYXRlX3BhdGh9LSR7VEFSR0VUfS55bWwgJHt0ZW1wbGF0ZX0NCj4g
-LXNlZCAtaSAic3xcJHtUQVJHRVR9fCR7VEFSR0VUfXxnIiAkdGVtcGxhdGUNCj4gLXNlZCAtaSAi
-c3xcJHtCVUlMRF9BUkNIfXwke0JVSUxEX0FSQ0h9fGciICR0ZW1wbGF0ZQ0KPiAtc2VkIC1pICJz
-fFwke0RFUExPWV9VUkx9fCR7REVQTE9ZX1VSTH18ZyIgJHRlbXBsYXRlDQo+IC1zZWQgLWkgInN8
-XCR7SVNBUl9JTUFHRX18JHtJU0FSX0lNQUdFfXxnIiAkdGVtcGxhdGUNCj4gLXNlZCAtaSAic3xc
-JHtJU0FSX0RJU1RSSUJVVElPTn18JHtJU0FSX0RJU1RSSUJVVElPTn18ZyIgJHRlbXBsYXRlDQo+
-IC10ZXN0X2lkPSQobGF2YWNsaSBqb2JzIHN1Ym1pdCAke3RlbXBsYXRlfSkNCj4gLWxhdmFjbGkg
-am9icyBsb2dzICR7dGVzdF9pZH0NCj4gLWxhdmFjbGkgcmVzdWx0cyAke3Rlc3RfaWR9DQo+ICt0
-ZW1wbGF0ZT0iJHt0bXBfZGlyfS9qb2JfJHtUQVJHRVR9XyR7Q0lfUElQRUxJTkVfSUR9LnltbCIN
-Cj4gK2NwICIke2pvYl90ZW1wbGF0ZV9wYXRofS0ke1RBUkdFVH0ueW1sIiAiJHt0ZW1wbGF0ZX0i
-DQo+ICtzZWQgLWkgInN8XCR7VEFSR0VUfXwke1RBUkdFVH18ZyIgIiR0ZW1wbGF0ZSINCj4gK3Nl
-ZCAtaSAic3xcJHtCVUlMRF9BUkNIfXwke0JVSUxEX0FSQ0h9fGciICIkdGVtcGxhdGUiDQo+ICtz
-ZWQgLWkgInN8XCR7REVQTE9ZX1VSTH18JHtERVBMT1lfVVJMfXxnIiAiJHRlbXBsYXRlIg0KPiAr
-c2VkIC1pICJzfFwke0lTQVJfSU1BR0V9fCR7SVNBUl9JTUFHRX18ZyIgIiR0ZW1wbGF0ZSINCj4g
-K3NlZCAtaSAic3xcJHtJU0FSX0RJU1RSSUJVVElPTn18JHtJU0FSX0RJU1RSSUJVVElPTn18ZyIg
-IiR0ZW1wbGF0ZSINCj4gKw0KPiArZWNobyAic3VibWl0IGxhdmEgam9iIg0KPiArDQo+ICt0ZXN0
-X2lkPSQobGF2YWNsaSBqb2JzIHN1Ym1pdCAiJHt0ZW1wbGF0ZX0iKQ0KPiArbGF2YWNsaSBqb2Jz
-IGxvZ3MgIiR7dGVzdF9pZH0iDQo+ICtsYXZhY2xpIHJlc3VsdHMgIiR7dGVzdF9pZH0iDQo+IMKg
-IyBjaGFuZ2UgcmV0dXJuIGNvZGUgdG8gZ2VuZXJhdGUgYSBlcnJvciBpbiBnaXRsYWItY2kgaWYg
-YSB0ZXN0IGlzIGZhaWxlZA0KPiAtbnVtYmVyX29mX2ZhaWxzPSQobGF2YWNsaSByZXN1bHRzICR7
-dGVzdF9pZH0gfCBncmVwIGZhaWwgfCB3YyAtbCApDQo+ICtudW1iZXJfb2ZfZmFpbHM9IiQobGF2
-YWNsaSByZXN1bHRzICIke3Rlc3RfaWR9IiB8IGdyZXAgLWMgZmFpbCApIg0KDQpJbiBhZGRpdGlv
-biB0byBmZXRjaGluZyB0aGUgbnVtYmVyIG9mIGZhaWxlZCB0ZXN0cyBpdCB3b3VsZCBiZSBwb3Nz
-aWJsZQ0KdG8gZG93bmxvYWQgYSBqdW5pdCB0ZXN0IHJlcG9ydCBmcm9tIHRoZSBsYXZhIG1hc3Rl
-ci4NCg0KU29tZXRoaW5nIGxpa2UgdGhlIGZvbGxvd2luZyBjb3VsZCBkbyBpdDoNCg0KYXBpPSIk
-e2xhdmFfbWFzdGVyX3VyaX0vYXBpL3YwLjIvam9icy8ke3Rlc3RfaWR9L2p1bml0Ig0KYXV0aD0i
-P3Rva2VuPSR7TEFWQV9NQVNURVJfVE9LRU59Ig0KdXJsPSIke2FwaX0vJHthdXRofSINCmN1cmwg
-IiR7dXJsfSIgLW8gdGVzdC1yZXBvcnQueG1sDQoNClRoaXMgeG1sIGNhbiBiZSBpbnRlZ3JhdGVk
-IGFzIGFydGlmYWN0IGludG8gZ2l0bGFiLCBzbyB3ZSBjYW4gc2VlDQpkZXRhaWxzIGFib3V0IHRl
-c3QgZHVyYXRpb24sIHN0YXRlLCAuLi4sIGluIGdpdGxhYiBkaXJlY3RseS4gTm8gbmVlZCB0bw0K
-dmlzaXQgdGhlIExBVkEgaW5zdGFuY2UgZm9yIGRldGFpbHMuDQoNCg0KPiDCoGlmIFsgLW4gIiR7
-c3NoX3BpZH0iIF07dGhlbg0KPiDCoMKgwqDCoGtpbGwgIiR7c3NoX3BpZH0iDQo+IMKgZmkNCg0K
+On 08.07.21 17:50, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-07-08 at 17:03 +0200, Q. Gylstorff via Xenomai wrote:
+>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>
+>> Add missing quotes and simplify statements.
+>> Also add messages to indicate progress.
+>>
+>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> ---
+>>  scripts/run-lava-tests.sh | 37 ++++++++++++++++++++++---------------
+>>  1 file changed, 22 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+>> index e8c7377..72138c3 100755
+>> --- a/scripts/run-lava-tests.sh
+>> +++ b/scripts/run-lava-tests.sh
+>> @@ -9,11 +9,10 @@
+>>  #
+>>  # SPDX-License-Identifier: MIT
+>>  #
+>> -set -e
+>>  TARGET=$1
+>>  if [ -z "${TARGET}" ]; then
+>>      echo "no target was given"
+>> -    exit -1
+>> +    exit 1
+>>  fi
+>>
+>>
+>>
+>>
+>>  if [ -n "${LAVA_SSH_HOST}" ]; then
+>> @@ -24,7 +23,7 @@ if [ -n "${LAVA_SSH_HOST}" ]; then
+>>      lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
+>>      lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
+>>      # open connection for ssh port forwarding
+>> -    ssh -N "${lava_ssh_port}" "${lava_identity}" -o 'LocalForward localhost:'"${lava_master_port}"' localhost:80' "${lava_ssh_destination}" &
+>> +    ssh -N ${lava_ssh_port} ${lava_identity} -o 'LocalForward localhost:'${lava_master_port}' localhost:80' ${lava_ssh_destination} &
+>>      ssh_pid="$!"
+>>      # wait for connection
+>>      interval=1
+>> @@ -47,28 +46,36 @@ else
+>>      lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org/}"
+>>  fi
+>>
+>>
+>>
+>>
+>> +echo "connect to lava server: ${lava_master_uri}"
+>> +
+>>  # connect to lava master
+>> -lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${lava_master_uri} --username ${LAVA_MASTER_ACCOUNT} default
+>> +lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
+>>  #generate lava job description from template
+>>  if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
+>>      DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
+>>  else
+>>      DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
+>>  fi
+>> +
+>> +echo "Deploy artifacts from '${artifact_url}'"
+>> +
+>>  job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
+>>  tmp_dir=$(mktemp -d)
+>> -template=${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml
+>> -cp ${job_template_path}-${TARGET}.yml ${template}
+>> -sed -i "s|\${TARGET}|${TARGET}|g" $template
+>> -sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" $template
+>> -sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" $template
+>> -sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" $template
+>> -sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" $template
+>> -test_id=$(lavacli jobs submit ${template})
+>> -lavacli jobs logs ${test_id}
+>> -lavacli results ${test_id}
+>> +template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+>> +cp "${job_template_path}-${TARGET}.yml" "${template}"
+>> +sed -i "s|\${TARGET}|${TARGET}|g" "$template"
+>> +sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
+>> +sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
+>> +sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
+>> +sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
+>> +
+>> +echo "submit lava job"
+>> +
+>> +test_id=$(lavacli jobs submit "${template}")
+>> +lavacli jobs logs "${test_id}"
+>> +lavacli results "${test_id}"
+>>  # change return code to generate a error in gitlab-ci if a test is failed
+>> -number_of_fails=$(lavacli results ${test_id} | grep fail | wc -l )
+>> +number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
+> 
+> In addition to fetching the number of failed tests it would be possible
+> to download a junit test report from the lava master.
+> 
+> Something like the following could do it:
+> 
+> api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
+> auth="?token=${LAVA_MASTER_TOKEN}"
+> url="${api}/${auth}"
+> curl "${url}" -o test-report.xml
+> 
+> This xml can be integrated as artifact into gitlab, so we can see
+> details about test duration, state, ..., in gitlab directly. No need to
+> visit the LAVA instance for details.
+> 
+
+Sound interesting. Do you have an example for such visualization at hand?
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
