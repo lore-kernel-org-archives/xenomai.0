@@ -1,14 +1,12 @@
-Subject: Re: Xeno3-x86: system freezes with SEGFAULT
-References: <89a388f9-f30b-59d5-7a6f-e46026793089@tin.it>
- <66468230-c49a-c0e3-2687-90fe6c7d49e7@siemens.com>
-From: "Mauro S." <mau.salvi@tin.it>
-Message-ID: <29dce262-d3d4-f2e9-38f5-7b872912e367@tin.it>
-Date: Fri, 2 Jul 2021 11:25:03 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 1/4] ci: Add option to upload artifacts to aws
+ bucket
+Date: Thu,  8 Jul 2021 17:02:58 +0200
+Message-Id: <20210708150301.24083-2-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
+References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <66468230-c49a-c0e3-2687-90fe6c7d49e7@siemens.com>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Language: it-IT
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,76 +15,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-Il 01/07/21 08:38, Jan Kiszka ha scritto:
-> On 28.06.21 16:33, Mauro S. via Xenomai wrote:
->> Hi all,
->>
->> I'm using Xenomai3 (master branch, commit
->> d98c99798836dd3571144203b51ff787d2108f1b) on a X86_64bit Intel Atom
->> x5-E8000 with 2GB RAM, using kernel from Xenomai repos, in Cobalt
->> coniguration.
->> Just for completeness, I'm using a Yocto built filesystem (but I think
->> it doesn't matter to the issue that I'm going to describe).
->>
->> Consider the simple test program attached: it creates 120 tasks that
->> does nothing than sleep. This test is compiled with the Yocto toolchain
->> using the attached makefile. Toolchain have Xenomai installed in.
->>
->> (By the way, I needed to raise to 2048 the registry slots number in
->> kernel configuration: without raising this, I cannot create more than
->> 110 tasks.)
->>
->> If I kill this program with TERM signal, sighandler does its work and
->> the application exits cleanly.
->>
->> If I kill this application with SEGV signal (no custom sighandler
->> installed), system freezes.
->>
->> If I build this application with 50 tasks, then SEGV does not cause
->> system to freeze.
->>
->> Bisecting the number of tasks, SIGSEGV freezes starts with a number of
->> tasks greater than 85.
->>
->> I enabled watchdog (and almost all of the debug options) in Xenomai
->> section of the kernel configuration, without success.
->>
->> Are there some system limits? I checked under /proc/xenomai but all
->> seems to be OK.
->>
->> Thanks in advance, regards
->>
-> 
-> Just reproduced over ipipe-core-5.4.124-x86-5: We are running into [1].
-> That is an architectural limitation of I-pipe that bit me a couple of
-> times in the past as well. You can shift that limit by increasing
-> WORKBUF_SIZE [2]. For you test case, using 4K was enough to get over the
-> hill. This is rather unhandy, no question.
-> 
-> The good news is: Dovetail with kernel 5.10+ is not affected by this
-> limitation anymore.
-> 
-> Jan
-> 
-> [1]
-> https://source.denx.de/Xenomai/ipipe-x86/-/blob/ipipe-x86-5.4.y/kernel/ipipe/core.c#L2030
-> [2]
-> https://source.denx.de/Xenomai/ipipe-x86/-/blob/ipipe-x86-5.4.y/kernel/ipipe/core.c#L74
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
+The current build time is doubled by uploading the build artifacts
+to the lava-server. By moving the storage of the build artifacts
+to aws The build time should be reduces significantly.
 
-Hi Jan,
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ ci/gitlab-ci-base.yml    |  3 ++-
+ scripts/deploy_to_aws.sh | 46 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+), 1 deletion(-)
+ create mode 100755 scripts/deploy_to_aws.sh
 
-thank you very much for your fast answer and for the patch.
-
-Is there a upper limit on WORKBUF_SIZE value to consider?
-
-Thanks again, regards
-
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index cf91379..352e023 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -44,7 +44,8 @@ default:
+   script:
+     - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
+     - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
+-    - if [ -z "${USE_GITLAB_ARTIFACTS}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
++    - if [ -z "${USE_GITLAB_ARTIFACTS}" -a -z "${USE_S3_BUCKET}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
++    - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+ 
+ .test:
+   extends: .add-lava-ssh-config
+diff --git a/scripts/deploy_to_aws.sh b/scripts/deploy_to_aws.sh
+new file mode 100755
+index 0000000..814aec7
+--- /dev/null
++++ b/scripts/deploy_to_aws.sh
+@@ -0,0 +1,46 @@
++#!/bin/sh
++
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019-2021
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++set -e
++target="$1"
++
++if [ -z "${target}" ]; then
++    exit 1
++fi
++images_dir=build/tmp/deploy/images
++
++if [ -z "${S3_BUCKET_URL}" ] || [ -z "${AWS_ACCESS_KEY_ID}" ]  || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
++    echo "environment not available or incomplete - do not deploy"
++    exit 0
++fi
++
++destination="${S3_BUCKET_URL}"
++
++aws_args="--acl=public-read"
++
++isar_base_name="${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${target}"
++deploy_dir="${destination}${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
++#KERNEL
++aws s3 cp "${aws_args}" "${images_dir}/${target}/${isar_base_name}-vmlinuz" "${deploy_dir}/${isar_base_name}-vmlinuz"
++# INITRD
++aws s3 cp "${aws_args}" "${images_dir}/${target}/${isar_base_name}-initrd.img" "${deploy_dir}/${isar_base_name}-initrd.img"
++# ROOTFS
++if ! ls "${images_dir}/${target}/${isar_base_name}".*.gz ; then
++    gzip "${images_dir}/${target}/${isar_base_name}.*"
++fi
++image=$(ls "${images_dir}/${target}/${isar_base_name}".*.gz)
++aws s3 cp "${aws_args}" "${image}" "${deploy_dir}/$(basename "${image}")"
++# DTB
++dtb="$(ls "${images_dir}/${target}/*.dtb" 2> /dev/null)"
++if [ -n "${dtb}" ] ; then
++    aws s3 cp "${aws_args}" "${dtb}" "${deploy_dir}/$(basename "${dtb}")"
++fi
 -- 
-Mauro S.
+2.20.1
 
 
