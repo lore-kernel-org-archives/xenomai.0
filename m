@@ -1,16 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [xenomai-images][PATCH 3/4] scripts/run_lava_tests.sh: cleanup
- shellcheck warnings
-Date: Thu, 8 Jul 2021 15:43:54 +0000
-Message-ID: <486e63ca19a8e3b4b89f1f352477f3d5305a422e.camel@siemens.com>
+Subject: Re: [xenomai-images][PATCH 0/4] Prepare xenomai-images for public
+ LAVA Server
 References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
- <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FF1E33BFB50314448FB025581816FF11@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e87744e6-b0ae-62c6-bf3b-d6a62233e354@siemens.com>
+Date: Thu, 8 Jul 2021 17:43:46 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,74 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "quirin.gylstorff@siemens.com" <quirin.gylstorff@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-T24gVGh1LCAyMDIxLTA3LTA4IGF0IDE3OjAzICswMjAwLCBRLiBHeWxzdG9yZmYgdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+IEZyb206IFF1aXJpbiBHeWxzdG9yZmYgPHF1aXJpbi5neWxzdG9yZmZAc2ll
-bWVucy5jb20+DQo+IA0KPiBBZGQgbWlzc2luZyBxdW90ZXMgYW5kIHNpbXBsaWZ5IHN0YXRlbWVu
-dHMuDQo+IEFsc28gYWRkIG1lc3NhZ2VzIHRvIGluZGljYXRlIHByb2dyZXNzLg0KPiANCj4gU2ln
-bmVkLW9mZi1ieTogUXVpcmluIEd5bHN0b3JmZiA8cXVpcmluLmd5bHN0b3JmZkBzaWVtZW5zLmNv
-bT4NCj4gLS0tDQo+IMKgc2NyaXB0cy9ydW4tbGF2YS10ZXN0cy5zaCB8IDM3ICsrKysrKysrKysr
-KysrKysrKysrKystLS0tLS0tLS0tLS0tLS0NCj4gwqAxIGZpbGUgY2hhbmdlZCwgMjIgaW5zZXJ0
-aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvc2NyaXB0cy9ydW4t
-bGF2YS10ZXN0cy5zaCBiL3NjcmlwdHMvcnVuLWxhdmEtdGVzdHMuc2gNCj4gaW5kZXggZThjNzM3
-Ny4uNzIxMzhjMyAxMDA3NTUNCj4gLS0tIGEvc2NyaXB0cy9ydW4tbGF2YS10ZXN0cy5zaA0KPiAr
-KysgYi9zY3JpcHRzL3J1bi1sYXZhLXRlc3RzLnNoDQo+IEBAIC05LDExICs5LDEwIEBADQo+IMKg
-Iw0KPiDCoCMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVA0KPiDCoCMNCj4gLXNldCAtZQ0K
-PiDCoFRBUkdFVD0kMQ0KPiDCoGlmIFsgLXogIiR7VEFSR0VUfSIgXTsgdGhlbg0KPiDCoMKgwqDC
-oMKgZWNobyAibm8gdGFyZ2V0IHdhcyBnaXZlbiINCj4gLSAgICBleGl0IC0xDQo+ICsgICAgZXhp
-dCAxDQo+IMKgZmkNCj4gwqANCj4gwqBpZiBbIC1uICIke0xBVkFfU1NIX0hPU1R9IiBdOyB0aGVu
-DQo+IEBAIC0yNCw3ICsyMyw3IEBAIGlmIFsgLW4gIiR7TEFWQV9TU0hfSE9TVH0iIF07IHRoZW4N
-Cj4gwqDCoMKgwqDCoGxhdmFfaWRlbnRpdHk9Ii1pICR7TEFWQV9TU0hfS0VZX1BBVEg6LX4vLnNz
-aC9sYXZhX2lkX3JzYX0iDQo+IMKgwqDCoMKgwqBsYXZhX3NzaF9kZXN0aW5hdGlvbj0iJHtMQVZB
-X1NTSF9VU0VSfUAke0xBVkFfU1NIX0hPU1R9Ig0KPiDCoMKgwqDCoMKgIyBvcGVuIGNvbm5lY3Rp
-b24gZm9yIHNzaCBwb3J0IGZvcndhcmRpbmcNCj4gLSAgICBzc2ggLU4gIiR7bGF2YV9zc2hfcG9y
-dH0iICIke2xhdmFfaWRlbnRpdHl9IiAtbyAnTG9jYWxGb3J3YXJkIGxvY2FsaG9zdDonIiR7bGF2
-YV9tYXN0ZXJfcG9ydH0iJyBsb2NhbGhvc3Q6ODAnICIke2xhdmFfc3NoX2Rlc3RpbmF0aW9ufSIg
-Jg0KPiArICAgIHNzaCAtTiAke2xhdmFfc3NoX3BvcnR9ICR7bGF2YV9pZGVudGl0eX0gLW8gJ0xv
-Y2FsRm9yd2FyZCBsb2NhbGhvc3Q6JyR7bGF2YV9tYXN0ZXJfcG9ydH0nIGxvY2FsaG9zdDo4MCcg
-JHtsYXZhX3NzaF9kZXN0aW5hdGlvbn0gJg0KPiDCoMKgwqDCoMKgc3NoX3BpZD0iJCEiDQo+IMKg
-wqDCoMKgwqAjIHdhaXQgZm9yIGNvbm5lY3Rpb24NCj4gwqDCoMKgwqDCoGludGVydmFsPTENCj4g
-QEAgLTQ3LDI4ICs0NiwzNiBAQCBlbHNlDQo+IMKgwqDCoMKgwqBsYXZhX21hc3Rlcl91cmk9IiR7
-TEFWQV9NQVNURVJfVVJMOi1odHRwczovL2xhdmEueGVub21haS5vcmd9Ig0KPiDCoGZpDQo+IMKg
-DQo+ICtlY2hvICJjb25uZWN0IHRvIGxhdmEgc2VydmVyOiAke2xhdmFfbWFzdGVyX3VyaX0iDQo+
-ICsNCj4gwqAjIGNvbm5lY3QgdG8gbGF2YSBtYXN0ZXINCj4gLWxhdmFjbGkgaWRlbnRpdGllcyBh
-ZGQgLS10b2tlbiAke0xBVkFfTUFTVEVSX1RPS0VOfSAtLXVyaSAke2xhdmFfbWFzdGVyX3VyaX0g
-LS11c2VybmFtZSAke0xBVkFfTUFTVEVSX0FDQ09VTlR9IGRlZmF1bHQNCj4gK2xhdmFjbGkgaWRl
-bnRpdGllcyBhZGQgLS10b2tlbiAiJHtMQVZBX01BU1RFUl9UT0tFTn0iIC0tdXJpICIke2xhdmFf
-bWFzdGVyX3VyaX0iIC0tdXNlcm5hbWUgIiR7TEFWQV9NQVNURVJfQUNDT1VOVH0iIGRlZmF1bHQN
-Cj4gwqAjZ2VuZXJhdGUgbGF2YSBqb2IgZGVzY3JpcHRpb24gZnJvbSB0ZW1wbGF0ZQ0KPiDCoGlm
-IFsgLW4gIiR7VVNFX0dJVExBQl9BUlRJRkFDVFN9IiBdOyB0aGVuDQo+IMKgwqDCoMKgwqBERVBM
-T1lfVVJMPSIke0NJX0FQSV9WNF9VUkx9L3Byb2plY3RzLyR7Q0lfUFJPSkVDVF9JRH0vam9icy8k
-e0JVSUxEX0pPQl9JRH0vYXJ0aWZhY3RzL2J1aWxkL3RtcC9kZXBsb3kvaW1hZ2VzLyR7VEFSR0VU
-fSINCj4gwqBlbHNlDQo+IMKgwqDCoMKgwqBERVBMT1lfVVJMPSIke2FydGlmYWN0X3VybH0vJHtD
-SV9QSVBFTElORV9JRH0vJHtERVBMT1lfRElSX0VYVEVOU0lPTn0iDQo+IMKgZmkNCj4gKw0KPiAr
-ZWNobyAiRGVwbG95IGFydGlmYWN0cyBmcm9tICcke2FydGlmYWN0X3VybH0nIg0KPiArDQo+IMKg
-am9iX3RlbXBsYXRlX3BhdGg9IiR7Sk9CX1RFTVBMQVRFX1BBVEg6LXRlc3RzL2pvYnMveGVub21h
-aX0iDQo+IMKgdG1wX2Rpcj0kKG1rdGVtcCAtZCkNCj4gLXRlbXBsYXRlPSR7dG1wX2Rpcn0vam9i
-XyR7VEFSR0VUfV8ke0NJX1BJUEVMSU5FX0lEfS55bWwNCj4gLWNwICR7am9iX3RlbXBsYXRlX3Bh
-dGh9LSR7VEFSR0VUfS55bWwgJHt0ZW1wbGF0ZX0NCj4gLXNlZCAtaSAic3xcJHtUQVJHRVR9fCR7
-VEFSR0VUfXxnIiAkdGVtcGxhdGUNCj4gLXNlZCAtaSAic3xcJHtCVUlMRF9BUkNIfXwke0JVSUxE
-X0FSQ0h9fGciICR0ZW1wbGF0ZQ0KPiAtc2VkIC1pICJzfFwke0RFUExPWV9VUkx9fCR7REVQTE9Z
-X1VSTH18ZyIgJHRlbXBsYXRlDQo+IC1zZWQgLWkgInN8XCR7SVNBUl9JTUFHRX18JHtJU0FSX0lN
-QUdFfXxnIiAkdGVtcGxhdGUNCj4gLXNlZCAtaSAic3xcJHtJU0FSX0RJU1RSSUJVVElPTn18JHtJ
-U0FSX0RJU1RSSUJVVElPTn18ZyIgJHRlbXBsYXRlDQo+IC10ZXN0X2lkPSQobGF2YWNsaSBqb2Jz
-IHN1Ym1pdCAke3RlbXBsYXRlfSkNCj4gLWxhdmFjbGkgam9icyBsb2dzICR7dGVzdF9pZH0NCj4g
-LWxhdmFjbGkgcmVzdWx0cyAke3Rlc3RfaWR9DQo+ICt0ZW1wbGF0ZT0iJHt0bXBfZGlyfS9qb2Jf
-JHtUQVJHRVR9XyR7Q0lfUElQRUxJTkVfSUR9LnltbCINCj4gK2NwICIke2pvYl90ZW1wbGF0ZV9w
-YXRofS0ke1RBUkdFVH0ueW1sIiAiJHt0ZW1wbGF0ZX0iDQo+ICtzZWQgLWkgInN8XCR7VEFSR0VU
-fXwke1RBUkdFVH18ZyIgIiR0ZW1wbGF0ZSINCj4gK3NlZCAtaSAic3xcJHtCVUlMRF9BUkNIfXwk
-e0JVSUxEX0FSQ0h9fGciICIkdGVtcGxhdGUiDQo+ICtzZWQgLWkgInN8XCR7REVQTE9ZX1VSTH18
-JHtERVBMT1lfVVJMfXxnIiAiJHRlbXBsYXRlIg0KPiArc2VkIC1pICJzfFwke0lTQVJfSU1BR0V9
-fCR7SVNBUl9JTUFHRX18ZyIgIiR0ZW1wbGF0ZSINCj4gK3NlZCAtaSAic3xcJHtJU0FSX0RJU1RS
-SUJVVElPTn18JHtJU0FSX0RJU1RSSUJVVElPTn18ZyIgIiR0ZW1wbGF0ZSINCg0KQ2FuJ3Qgd2Ug
-c2ltcGx5IHVzZSBzb21ldGhpbmcgbGlrZSBlbnZzdWJzdD8NCg0KPiArDQo+ICtlY2hvICJzdWJt
-aXQgbGF2YSBqb2IiDQo+ICsNCj4gK3Rlc3RfaWQ9JChsYXZhY2xpIGpvYnMgc3VibWl0ICIke3Rl
-bXBsYXRlfSIpDQo+ICtsYXZhY2xpIGpvYnMgbG9ncyAiJHt0ZXN0X2lkfSINCj4gK2xhdmFjbGkg
-cmVzdWx0cyAiJHt0ZXN0X2lkfSINCj4gwqAjIGNoYW5nZSByZXR1cm4gY29kZSB0byBnZW5lcmF0
-ZSBhIGVycm9yIGluIGdpdGxhYi1jaSBpZiBhIHRlc3QgaXMgZmFpbGVkDQo+IC1udW1iZXJfb2Zf
-ZmFpbHM9JChsYXZhY2xpIHJlc3VsdHMgJHt0ZXN0X2lkfSB8IGdyZXAgZmFpbCB8IHdjIC1sICkN
-Cj4gK251bWJlcl9vZl9mYWlscz0iJChsYXZhY2xpIHJlc3VsdHMgIiR7dGVzdF9pZH0iIHwgZ3Jl
-cCAtYyBmYWlsICkiDQo+IMKgaWYgWyAtbiAiJHtzc2hfcGlkfSIgXTt0aGVuDQo+IMKgwqDCoMKg
-a2lsbCAiJHtzc2hfcGlkfSINCj4gwqBmaQ0KDQo=
+On 08.07.21 17:02, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Add option to upload the image under test to AWS.
+> Add option to use AWS as image download source and use
+> [1] as default LAVA server.
+> 
+> After this patchset is merged the private lava lab
+> can be migrated.
+> 
+> [1]: https://lava.xenomai.org
+> 
+> Quirin Gylstorff (4):
+>   ci: Add option to upload artifacts to aws bucket
+>   ci: adapt to public lava-server
+>   scripts/run_lava_tests.sh: cleanup shellcheck warnings
+>   README: Add information about LAVA Lab
+> 
+>  README.md                 | 14 ++++++
+>  ci/gitlab-ci-base.yml     |  6 ++-
+>  scripts/deploy_to_aws.sh  | 46 ++++++++++++++++++++
+>  scripts/run-lava-tests.sh | 90 +++++++++++++++++++++++----------------
+>  4 files changed, 117 insertions(+), 39 deletions(-)
+>  create mode 100755 scripts/deploy_to_aws.sh
+> 
+> - '- 
+> 2.20.1
+> 
+
+Thanks, applied to next.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
