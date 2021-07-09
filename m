@@ -1,8 +1,16 @@
-Sender: chensong_2000@189.cn
-From: Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 1/3] y2038: cobalt/posix/signal: Adding sigtimedwait64
-Date: Fri,  9 Jul 2021 15:13:57 +0800
-Message-Id: <1625814837-25176-1-git-send-email-chensong_2000@189.cn>
+Subject: Re: [xenomai-images][PATCH 3/4] scripts/run_lava_tests.sh: cleanup
+ shellcheck warnings
+References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
+ <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
+ <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <66104a5d-3773-77d4-f8fc-f01586ef404f@siemens.com>
+Date: Fri, 9 Jul 2021 13:40:54 +0200
+MIME-Version: 1.0
+In-Reply-To: <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,160 +19,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: florian.bezdeka@siemens.com, xenomai@xenomai.org
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "Kiszka, Jan (T RDA IOT)" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Add a syscall specific for sigtimedwait with 64bit
-time_t.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
----
- include/cobalt/uapi/syscall.h   |  1 +
- kernel/cobalt/posix/signal.c    | 23 ++++++++++++++++++++---
- kernel/cobalt/posix/signal.h    |  5 +++++
- kernel/cobalt/posix/syscall32.c | 21 +++++++++++++++++++++
- kernel/cobalt/posix/syscall32.h |  5 +++++
- 5 files changed, 52 insertions(+), 3 deletions(-)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index c27d6d0..4de7e59 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -131,6 +131,7 @@
- #define sc_cobalt_mutex_timedlock64		108
- #define sc_cobalt_mq_timedsend64		109
- #define sc_cobalt_mq_timedreceive64		110
-+#define sc_cobalt_sigtimedwait64		111
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-index 0b43b5f..c7110ef 100644
---- a/kernel/cobalt/posix/signal.c
-+++ b/kernel/cobalt/posix/signal.c
-@@ -18,6 +18,7 @@
- #include <linux/sched.h>
- #include <cobalt/kernel/assert.h>
- #include <cobalt/kernel/compat.h>
-+#include <cobalt/kernel/time.h>
- #include "internal.h"
- #include "signal.h"
- #include "thread.h"
-@@ -306,7 +307,8 @@ wait:
- 	ret = xnsynch_sleep_on(&curr->sigwait, timeout, XN_RELATIVE);
- 	if (ret) {
- 		list_del(&curr->signext);
--		ret = ret & XNBREAK ? -EINTR : -EAGAIN;
-+		ret = ret & XNTIMEO ?
-+			-ETIMEDOUT : (ret & XNBREAK ? -EINTR : -EAGAIN);
- 		goto fail;
- 	}
- 	sig = si.si_signo;
-@@ -413,9 +415,8 @@ int __cobalt_sigtimedwait(sigset_t *set,
- {
- 	xnticks_t ticks;
- 
--	if ((unsigned long)timeout->tv_nsec >= ONE_BILLION)
-+	if (!timespec64_valid(timeout))
- 		return -EINVAL;
--
- 	ticks = ts2ns(timeout);
- 	if (ticks++ == 0)
- 		ticks = XN_NONBLOCK;
-@@ -440,6 +441,22 @@ COBALT_SYSCALL(sigtimedwait, nonrestartable,
- 	return __cobalt_sigtimedwait(&set, &timeout, u_si, false);
- }
- 
-+COBALT_SYSCALL(sigtimedwait64, nonrestartable,
-+	       (const sigset_t __user *u_set,
-+		struct siginfo __user *u_si,
-+		const struct __kernel_timespec __user *u_timeout))
-+{
-+	struct timespec64 timeout;
-+	sigset_t set;
-+
-+	if (cobalt_copy_from_user(&set, u_set, sizeof(set)))
-+		return -EFAULT;
-+
-+	if (cobalt_get_timespec64(&timeout, u_timeout))
-+		return -EFAULT;
-+
-+	return __cobalt_sigtimedwait(&set, &timeout, u_si, false);
-+}
- int __cobalt_sigwaitinfo(sigset_t *set,
- 			 void __user *u_si,
- 			 bool compat)
-diff --git a/kernel/cobalt/posix/signal.h b/kernel/cobalt/posix/signal.h
-index fc26ad0..121db8f 100644
---- a/kernel/cobalt/posix/signal.h
-+++ b/kernel/cobalt/posix/signal.h
-@@ -96,6 +96,11 @@ COBALT_SYSCALL_DECL(sigtimedwait,
- 		     struct siginfo __user *u_si,
- 		     const struct __user_old_timespec __user *u_timeout));
- 
-+COBALT_SYSCALL_DECL(sigtimedwait64,
-+		    (const sigset_t __user *u_set,
-+		     struct siginfo __user *u_si,
-+		     const struct __kernel_timespec __user *u_timeout));
-+
- COBALT_SYSCALL_DECL(sigwaitinfo,
- 		    (const sigset_t __user *u_set,
- 		     struct siginfo __user *u_si));
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index e24c96a..7e47c63 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -18,6 +18,7 @@
- #include <linux/types.h>
- #include <linux/err.h>
- #include <cobalt/uapi/syscall.h>
-+#include <cobalt/kernel/time.h>
- #include <xenomai/rtdm/internal.h>
- #include "internal.h"
- #include "syscall32.h"
-@@ -698,6 +699,26 @@ COBALT_SYSCALL32emu(sigtimedwait, nonrestartable,
- 	return __cobalt_sigtimedwait(&set, &timeout, u_si, true);
- }
- 
-+COBALT_SYSCALL32emu(sigtimedwait64, nonrestartable,
-+		    (const compat_sigset_t __user *u_set,
-+		     struct compat_siginfo __user *u_si,
-+		     const struct __kernel_timespec __user *u_timeout))
-+{
-+	struct timespec64 timeout;
-+	sigset_t set;
-+	int ret;
-+
-+	ret = sys32_get_sigset(&set, u_set);
-+	if (ret)
-+		return ret;
-+
-+	ret = cobalt_get_timespec64(&timeout, u_timeout);
-+	if (ret)
-+		return ret;
-+
-+	return __cobalt_sigtimedwait(&set, &timeout, u_si, true);
-+}
-+
- COBALT_SYSCALL32emu(sigwaitinfo, nonrestartable,
- 		    (const compat_sigset_t __user *u_set,
- 		     struct compat_siginfo __user *u_si))
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 3a551b9..d29ff4d 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -198,6 +198,11 @@ COBALT_SYSCALL32emu_DECL(sigtimedwait,
- 			  struct compat_siginfo __user *u_si,
- 			  const struct old_timespec32 __user *u_timeout));
- 
-+COBALT_SYSCALL32emu_DECL(sigtimedwait64,
-+			 (const compat_sigset_t __user *u_set,
-+			  struct compat_siginfo __user *u_si,
-+			  const struct __kernel_timespec __user *u_timeout));
-+
- COBALT_SYSCALL32emu_DECL(sigwaitinfo,
- 			 (const compat_sigset_t __user *u_set,
- 			  struct compat_siginfo __user *u_si));
--- 
-2.7.4
+On 7/8/21 5:50 PM, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-07-08 at 17:03 +0200, Q. Gylstorff via Xenomai wrote:
+>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>
+>> Add missing quotes and simplify statements.
+>> Also add messages to indicate progress.
+>>
+>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> ---
+>>   scripts/run-lava-tests.sh | 37 ++++++++++++++++++++++---------------
+>>   1 file changed, 22 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+>> index e8c7377..72138c3 100755
+>> --- a/scripts/run-lava-tests.sh
+>> +++ b/scripts/run-lava-tests.sh
+>> @@ -9,11 +9,10 @@
+>>   #
+>>   # SPDX-License-Identifier: MIT
+>>   #
+>> -set -e
+>>   TARGET=$1
+>>   if [ -z "${TARGET}" ]; then
+>>       echo "no target was given"
+>> -    exit -1
+>> +    exit 1
+>>   fi
+>>
+>>
+>>
+>>
+>>   if [ -n "${LAVA_SSH_HOST}" ]; then
+>> @@ -24,7 +23,7 @@ if [ -n "${LAVA_SSH_HOST}" ]; then
+>>       lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
+>>       lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
+>>       # open connection for ssh port forwarding
+>> -    ssh -N "${lava_ssh_port}" "${lava_identity}" -o 'LocalForward localhost:'"${lava_master_port}"' localhost:80' "${lava_ssh_destination}" &
+>> +    ssh -N ${lava_ssh_port} ${lava_identity} -o 'LocalForward localhost:'${lava_master_port}' localhost:80' ${lava_ssh_destination} &
+>>       ssh_pid="$!"
+>>       # wait for connection
+>>       interval=1
+>> @@ -47,28 +46,36 @@ else
+>>       lava_master_uri="${LAVA_MASTER_URL:-https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Flava.xenomai.org%2F&amp;data=04%7C01%7C6549bcd2-981c-4c06-8e1b-b5c6cc3441b4%40ad011.siemens.com%7Cbb6b436ee86c4149281908d94228280e%7C38ae3bcd95794fd4addab42e1495d55a%7C1%7C0%7C637613562491292282%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=DDVQCcSXv8grFeFCLbCl3voK%2BOkQll8dRW2q4%2Fnozx0%3D&amp;reserved=0}"
+>>   fi
+>>
+>>
+>>
+>>
+>> +echo "connect to lava server: ${lava_master_uri}"
+>> +
+>>   # connect to lava master
+>> -lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${lava_master_uri} --username ${LAVA_MASTER_ACCOUNT} default
+>> +lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
+>>   #generate lava job description from template
+>>   if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
+>>       DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
+>>   else
+>>       DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
+>>   fi
+>> +
+>> +echo "Deploy artifacts from '${artifact_url}'"
+>> +
+>>   job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
+>>   tmp_dir=$(mktemp -d)
+>> -template=${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml
+>> -cp ${job_template_path}-${TARGET}.yml ${template}
+>> -sed -i "s|\${TARGET}|${TARGET}|g" $template
+>> -sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" $template
+>> -sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" $template
+>> -sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" $template
+>> -sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" $template
+>> -test_id=$(lavacli jobs submit ${template})
+>> -lavacli jobs logs ${test_id}
+>> -lavacli results ${test_id}
+>> +template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+>> +cp "${job_template_path}-${TARGET}.yml" "${template}"
+>> +sed -i "s|\${TARGET}|${TARGET}|g" "$template"
+>> +sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
+>> +sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
+>> +sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
+>> +sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
+>> +
+>> +echo "submit lava job"
+>> +
+>> +test_id=$(lavacli jobs submit "${template}")
+>> +lavacli jobs logs "${test_id}"
+>> +lavacli results "${test_id}"
+>>   # change return code to generate a error in gitlab-ci if a test is failed
+>> -number_of_fails=$(lavacli results ${test_id} | grep fail | wc -l )
+>> +number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
+> 
+> In addition to fetching the number of failed tests it would be possible
+> to download a junit test report from the lava master.
+> 
+> Something like the following could do it:
+> 
+> api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
+> auth="?token=${LAVA_MASTER_TOKEN}"
+> url="${api}/${auth}"
+> curl "${url}" -o test-report.xml
+> 
+> This xml can be integrated as artifact into gitlab, so we can see
+> details about test duration, state, ..., in gitlab directly. No need to
+> visit the LAVA instance for details.
+
+Do we have artifacts on https://source.denx.de? If not we can use AWS 
+for storage.
+
+
+Quirin
+> 
+> 
+>>   if [ -n "${ssh_pid}" ];then
+>>      kill "${ssh_pid}"
+>>   fi
+> 
 
 
