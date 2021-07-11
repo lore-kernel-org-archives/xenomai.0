@@ -1,17 +1,10 @@
-Subject: Re: [xenomai-images][PATCH 3/4] scripts/run_lava_tests.sh: cleanup
- shellcheck warnings
-References: <20210708150301.24083-1-Quirin.Gylstorff@siemens.com>
- <20210708150301.24083-4-Quirin.Gylstorff@siemens.com>
- <d1a0cbbffe252f7ceba3110da22ad734974d23b1.camel@siemens.com>
- <66104a5d-3773-77d4-f8fc-f01586ef404f@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <31c4ae0d-89dd-2201-f74c-672d8378e8fd@siemens.com>
-Date: Fri, 9 Jul 2021 13:48:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <66104a5d-3773-77d4-f8fc-f01586ef404f@siemens.com>
+From: Joe Lee <joelee271828@gmail.com>
+Date: Mon, 12 Jul 2021 00:37:02 +0800
+Message-ID: <CAJONJDuaHXswNMQrT9RsMioCMbr5GXbri=B8ZicNOeasc65VMw@mail.gmail.com>
+Subject: I-pipe ARM64 on Armv8 NXP LS1028A
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,138 +13,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 09.07.21 13:40, Gylstorff Quirin wrote:
-> 
-> 
-> On 7/8/21 5:50 PM, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
->> On Thu, 2021-07-08 at 17:03 +0200, Q. Gylstorff via Xenomai wrote:
->>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>>
->>> Add missing quotes and simplify statements.
->>> Also add messages to indicate progress.
->>>
->>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>> ---
->>>   scripts/run-lava-tests.sh | 37 ++++++++++++++++++++++---------------
->>>   1 file changed, 22 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
->>> index e8c7377..72138c3 100755
->>> --- a/scripts/run-lava-tests.sh
->>> +++ b/scripts/run-lava-tests.sh
->>> @@ -9,11 +9,10 @@
->>>   #
->>>   # SPDX-License-Identifier: MIT
->>>   #
->>> -set -e
->>>   TARGET=$1
->>>   if [ -z "${TARGET}" ]; then
->>>       echo "no target was given"
->>> -    exit -1
->>> +    exit 1
->>>   fi
->>>
->>>
->>>
->>>
->>>   if [ -n "${LAVA_SSH_HOST}" ]; then
->>> @@ -24,7 +23,7 @@ if [ -n "${LAVA_SSH_HOST}" ]; then
->>>       lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
->>>       lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
->>>       # open connection for ssh port forwarding
->>> -    ssh -N "${lava_ssh_port}" "${lava_identity}" -o 'LocalForward
->>> localhost:'"${lava_master_port}"' localhost:80'
->>> "${lava_ssh_destination}" &
->>> +    ssh -N ${lava_ssh_port} ${lava_identity} -o 'LocalForward
->>> localhost:'${lava_master_port}' localhost:80' ${lava_ssh_destination} &
->>>       ssh_pid="$!"
->>>       # wait for connection
->>>       interval=1
->>> @@ -47,28 +46,36 @@ else
->>>      
->>> lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org/}"
->>>
->>>   fi
->>>
->>>
->>>
->>>
->>> +echo "connect to lava server: ${lava_master_uri}"
->>> +
->>>   # connect to lava master
->>> -lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri
->>> ${lava_master_uri} --username ${LAVA_MASTER_ACCOUNT} default
->>> +lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri
->>> "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
->>>   #generate lava job description from template
->>>   if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
->>>      
->>> DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
->>>
->>>   else
->>>      
->>> DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
->>>   fi
->>> +
->>> +echo "Deploy artifacts from '${artifact_url}'"
->>> +
->>>   job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
->>>   tmp_dir=$(mktemp -d)
->>> -template=${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml
->>> -cp ${job_template_path}-${TARGET}.yml ${template}
->>> -sed -i "s|\${TARGET}|${TARGET}|g" $template
->>> -sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" $template
->>> -sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" $template
->>> -sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" $template
->>> -sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" $template
->>> -test_id=$(lavacli jobs submit ${template})
->>> -lavacli jobs logs ${test_id}
->>> -lavacli results ${test_id}
->>> +template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
->>> +cp "${job_template_path}-${TARGET}.yml" "${template}"
->>> +sed -i "s|\${TARGET}|${TARGET}|g" "$template"
->>> +sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
->>> +sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
->>> +sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
->>> +sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
->>> +
->>> +echo "submit lava job"
->>> +
->>> +test_id=$(lavacli jobs submit "${template}")
->>> +lavacli jobs logs "${test_id}"
->>> +lavacli results "${test_id}"
->>>   # change return code to generate a error in gitlab-ci if a test is
->>> failed
->>> -number_of_fails=$(lavacli results ${test_id} | grep fail | wc -l )
->>> +number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
->>
->> In addition to fetching the number of failed tests it would be possible
->> to download a junit test report from the lava master.
->>
->> Something like the following could do it:
->>
->> api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
->> auth="?token=${LAVA_MASTER_TOKEN}"
->> url="${api}/${auth}"
->> curl "${url}" -o test-report.xml
->>
->> This xml can be integrated as artifact into gitlab, so we can see
->> details about test duration, state, ..., in gitlab directly. No need to
->> visit the LAVA instance for details.
-> 
-> Do we have artifacts on https://source.denx.de? If not we can use AWS
-> for storage.
-> 
-
-I don't see anything that should prevent storing a few small files along
-the usual logs. Not sure how long the latter are kept, but those test
-reports should probably have a similar lifetime.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SGkgUGFscywKCkkgYXBwbGllZCB0aGUgaXBpcGUtY29yZS01LjQuMTE5LWFybTY0LTIucGF0Y2gg
+b24gYW4gTlhQIExTMTAyOEEsIGEKNjQtYml0IEFybXY4IHByb2Nlc3Nvci4KCkJ1dCB0aGVuIHRo
+ZXJlIGFyZSB0d28gcHJvYmxlbXMsIGNvdWxkIGFueW9uZSBnaXZlIG1lIHNvbWUgYWR2aWNlID8K
+CjEuIFdhcm5pbmcgIm5vdCBwaXBlbGluZS1zYWZlIiB3aGVuIGJvb3RpbmcgbGlrZSBiZWxvdzoK
+ClsgICAgMC4wNTMyOTVdIEFTSUQgYWxsb2NhdG9yIGluaXRpYWxpc2VkIHdpdGggMzI3NjggZW50
+cmllcwpbICAgIDAuMDU4ODA3XSByY3U6IEhpZXJhcmNoaWNhbCBTUkNVIGltcGxlbWVudGF0aW9u
+LgpbICAgIDAuMDYzNzY0XSAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0KWyAg
+ICAwLjA2ODQzNV0gTVNJIGRvbWFpbiBpcnFjaGlwIElUUy1wTVNJIGlzIG5vdCBwaXBlbGluZS1z
+YWZlIQpbICAgIDAuMDY4NDU5XSBXQVJOSU5HOiBDUFU6IDAgUElEOiAxIGF0Ci9ob21lL2pvZS9u
+eHAvbGludXgva2VybmVsL2lycS9tc2kuYzoyNzMgbXNpX2NyZWF0ZV9pcnFfZG9tMApbICAgIDAu
+MDkyMzMxXSBNb2R1bGVzIGxpbmtlZCBpbjoKWyAgICAwLjA5NTQwOV0gQ1BVOiAwIFBJRDogMSBD
+b21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgNS40LjExOS1kaXJ0eSAjMQpbICAgIDAuMTAxOTk0
+XSBIYXJkd2FyZSBuYW1lOiBMUzEwMjhBIFJEQiBCb2FyZCAoRFQpClsgICAgMC4xMDY3MzVdIEkt
+cGlwZSBkb21haW46IExpbnV4ClsgICAgMC4xMDk5ODZdIHBzdGF0ZTogNjAwMDAwMDUgKG5aQ3Yg
+ZGFpZiAtUEFOIC1VQU8pClsgICAgMC4xMTQ4MTddIHBjIDogbXNpX2NyZWF0ZV9pcnFfZG9tYWlu
+KzB4MTg0LzB4MTkwClsgICAgMC4xMTk2NDhdIGxyIDogbXNpX2NyZWF0ZV9pcnFfZG9tYWluKzB4
+MTg0LzB4MTkwClsgICAgMC4xMjQ0NzddIHNwIDogZmZmZjgwMDAxMDAyYmNhMApbICAgIDAuMTI3
+ODE1XSB4Mjk6IGZmZmY4MDAwMTAwMmJjYTAgeDI4OiAwMDAwMDAwMDAwMDAwMDAwClsgICAgMC4x
+MzMxNzNdIHgyNzogMDAwMDAwMDAwMDAwMDAwMCB4MjY6IGZmZmYwMDAwN2JhMGNiOTAKWyAgICAw
+LjEzODUzMF0geDI1OiBmZmZmODAwMDExMzJjOTI4IHgyNDogZmZmZjAwMDA3OTAxNDEwMApbICAg
+IDAuMTQzODg3XSB4MjM6IGZmZmYwMDAwN2JhMGNiMDggeDIyOiBmZmZmODAwMDExNzQ5MDAwClsg
+ICAgMC4xNDkyNDNdIHgyMTogZmZmZjgwMDAxMTc3ZTMyMCB4MjA6IGZmZmYwMDAwNzkwMTQxMDAK
+WyAgICAwLjE1NDYwMF0geDE5OiBmZmZmODAwMDExNzdlMmEwIHgxODogZmZmZmZmZmZmZmZmZmZm
+ZgpbICAgIDAuMTU5OTU3XSB4MTc6IDAwMDAwMDAwNjgyNzg3MTEgeDE2OiAwMDAwMDAwMDlkNDhm
+ZTMwClsgICAgMC4xNjUzMTRdIHgxNTogZmZmZjgwMDAxMTc0OTkwOCB4MTQ6IDAwMDAwMDAwMDAw
+MDAwMDAKWyAgICAwLjE3MDY3MF0geDEzOiAwMDAwMDAwMDAwMDAwMDAxIHgxMjogMDAwMDAwMDAw
+MDAwMDAwMApbICAgIDAuMTc2MDI3XSB4MTE6IDAwMDAwMDAwMDAwMDAwMDEgeDEwOiBmZmZmODAw
+MDExODNmMDkwClsgICAgMC4xODEzODRdIHg5IDogZmZmZjgwMDAxMDAyYmNhMCB4OCA6IDY1NjY2
+MTczMmQ2NTZlNjkKWyAgICAwLjE4Njc0MV0geDcgOiA2YzY1NzA2OTcwMjA3NDZmIHg2IDogZmZm
+ZjgwMDAxMTgzZjBkMQpbICAgIDAuMTkyMDk4XSB4NSA6IDAwMDAwMDAwMDAwMDAwMDAgeDQgOiAw
+MDAwMDAwMDAwMDAwMDAwClsgICAgMC4xOTc0NTVdIHgzIDogZmZmZjAwMDA3OWJjZWUxOCB4MiA6
+IDAwMDAwMDAwMDAwMDAwMDAKWyAgICAwLjIwMjgxMV0geDEgOiA3NDFkYjk5YzA0MTRjNTAwIHgw
+IDogMDAwMDAwMDAwMDAwMDAwMApbICAgIDAuMjA4MTY4XSBDYWxsIHRyYWNlOgpbICAgIDAuMjEw
+NjMxXSAgbXNpX2NyZWF0ZV9pcnFfZG9tYWluKzB4MTg0LzB4MTkwClsgICAgMC4yMTUxMTRdICBw
+bGF0Zm9ybV9tc2lfY3JlYXRlX2lycV9kb21haW4rMHgxYy8weDEzMApbICAgIDAuMjIwMjk3XSAg
+aXRzX3Btc2lfaW5pdCsweGUwLzB4MTU0ClsgICAgMC4yMjM5ODhdICBkb19vbmVfaW5pdGNhbGwr
+MHg1Yy8weDFhOApbICAgIDAuMjI3ODU1XSAga2VybmVsX2luaXRfZnJlZWFibGUrMHhkMC8weDI0
+MApbICAgIDAuMjMyMTYxXSAga2VybmVsX2luaXQrMHgxMC8weDEwOApbICAgIDAuMjM1Njc1XSAg
+cmV0X2Zyb21fZm9yaysweDEwLzB4MWMKWyAgICAwLjIzOTI3OF0gLS0tWyBlbmQgdHJhY2UgZDVi
+OTVkMWFkYmE1Y2ZjOSBdLS0tClsgICAgMC4yNDM5NTddIFBsYXRmb3JtIE1TSTogZ2ljLWl0c0A2
+MDIwMDAwIGRvbWFpbiBjcmVhdGVkClsgICAgMC4yNDkzNjhdIFBDSS9NU0k6IC9pbnRlcnJ1cHQt
+Y29udHJvbGxlckA2MDAwMDAwL2dpYy1pdHNANjAyMDAwMApkb21haW4gY3JlYXRlZApbICAgIDAu
+MjU2OTQ5XSBmc2wtbWMgTVNJOgovaW50ZXJydXB0LWNvbnRyb2xsZXJANjAwMDAwMC9naWMtaXRz
+QDYwMjAwMDAgZG9tYWluIGNyZWF0ZWQKCjIuIFdoZW4gdGhlIGV0aGVybmV0IGxpbmsgdXAsIGtl
+cm5lbCB3aWxsIGNyYXNoIGxpa2UgYmVsb3cuCgpbIDQ2MjUuNzc5ODA1XSBVbmFibGUgdG8gaGFu
+ZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQKdmlydHVhbCBhZGRyZXNzIDAw
+MDAwMDAwMDAwMDAwMDAKWyA0NjI1Ljc4ODYyMl0gTWVtIGFib3J0IGluZm86ClsgNDYyNS43OTE0
+MThdICAgRVNSID0gMHg4NjAwMDAwNApbIDQ2MjUuNzk0NDc2XSAgIEVDID0gMHgyMTogSUFCVCAo
+Y3VycmVudCBFTCksIElMID0gMzIgYml0cwpbIDQ2MjUuNzk5ODAxXSAgIFNFVCA9IDAsIEZuViA9
+IDAKWyA0NjI1LjgwMjg1N10gICBFQSA9IDAsIFMxUFRXID0gMApbIDQ2MjUuODA2MDAzXSB1c2Vy
+IHBndGFibGU6IDRrIHBhZ2VzLCA0OC1iaXQgVkFzLCBwZ2RwPTAwMDAwMDAwZjY5M2EwMDAKWyA0
+NjI1LjgxMjQ2MV0gWzAwMDAwMDAwMDAwMDAwMDBdIHBnZD0wMDAwMDAwMDAwMDAwMDAwClsgNDYy
+NS44MTczNTJdIEludGVybmFsIGVycm9yOiBPb3BzOiA4NjAwMDAwNCBbIzFdIFBSRUVNUFQgU01Q
+ClsgNDYyNS44MjI5MzhdIE1vZHVsZXMgbGlua2VkIGluOiB4dF9hZGRydHlwZSB4dF9jb25udHJh
+Y2sKY3JjdDEwZGlmX2NlIGdhbGNvcmUoTykKWyA0NjI1LjgzMDI3N10gQ1BVOiAwIFBJRDogMCBD
+b21tOiBzd2FwcGVyLzAgVGFpbnRlZDogRyAgICAgICAgVyAgTwogIDUuNC4xMTktZGlydHkgIzEK
+WyA0NjI1LjgzODIxOF0gSGFyZHdhcmUgbmFtZTogTFMxMDI4QSBSREIgQm9hcmQgKERUKQpbIDQ2
+MjUuODQyOTMyXSBJLXBpcGUgZG9tYWluOiBMaW51eApbIDQ2MjUuODQ2MTY0XSBwc3RhdGU6IDQw
+MDAwMDg1IChuWmN2IGRhSWYgLVBBTiAtVUFPKQpbIDQ2MjUuODUwOTY3XSBwYyA6IDB4MApbIDQ2
+MjUuODUzMTU3XSBsciA6IF9faXBpcGVfYWNrX2Zhc3Rlb2lfaXJxKzB4MWMvMHgyOApbIDQ2MjUu
+ODU3OTU3XSBzcCA6IGZmZmY4MDAwMTAwMDNmNjAKWyA0NjI1Ljg2MTI3N10geDI5OiBmZmZmODAw
+MDEwMDAzZjYwIHgyODogZmZmZjgwMDAxMTc1MjFjMApbIDQ2MjUuODY2NjAzXSB4Mjc6IDAwMDAw
+MDAwMDAwMDAwMDAgeDI2OiBmZmZmODAwMDEwMDA0MDAwClsgNDYyNS44NzE5MjldIHgyNTogZmZm
+ZjgwMDAxMDAwMDAwMCB4MjQ6IGZmZmY4MDAwMTE4M2EwMDAKWyA0NjI1Ljg3NzI1NV0geDIzOiAw
+MDAwMDAwMDAwMDAwMDAwIHgyMjogZmZmZjgwMDAxMTc2NzAwMApbIDQ2MjUuODgyNTgxXSB4MjE6
+IDAwMDAwMDAwMDAwMDAwNmQgeDIwOiAwMDAwMDAwMDAwMDAwMDAwClsgNDYyNS44ODc5MDZdIHgx
+OTogMDAwMDAwMDAwMDAwMDA2ZCB4MTg6IDAwMDAwMDAwMDAwMDAwMDAKWyA0NjI1Ljg5MzIzMl0g
+eDE3OiAwMDAwMDAwMDAwMDAwMDAwIHgxNjogMDAwMDAwMDAwMDAwMDAwMApbIDQ2MjUuODk4NTU3
+XSB4MTU6IDAwMDAwMDAwMDAwMDAwMDAgeDE0OiAwMDAwMDAwMDAwMDAwMDAwClsgNDYyNS45MDM4
+ODNdIHgxMzogMDAwMDAwMDAwMDAwMDAwMSB4MTI6IDAwMDAwMDAwMDAwMDAwMDAKWyA0NjI1Ljkw
+OTIwOF0geDExOiAwMDAwMDAwMDAwMDAwMDAwIHgxMDogMDAwMDAwMDAwMDAwMDA0MApbIDQ2MjUu
+OTE0NTM0XSB4OSA6IGZmZmY4MDAwMTE3NjBiNTAgeDggOiBmZmZmODAwMDExNzYwYjQ4ClsgNDYy
+NS45MTk4NTldIHg3IDogZmZmZjAwMDA3OGMwZjE5MCB4NiA6IDAwMDAwMDAwMDAwMDAwMDAKWyA0
+NjI1LjkyNTE4NV0geDUgOiBmZmZmMDAwMDc4YzBmMDAwIHg0IDogMDAwMDAwMDAwMDAwMDAwMApb
+IDQ2MjUuOTMwNTEwXSB4MyA6IGZmZmY4MDAwMTE4ODU1ODAgeDIgOiAwMDAwMDAwMDAwMDAxYjgw
+ClsgNDYyNS45MzU4MzVdIHgxIDogMDAwMDAwMDAwMDAwMDAwMCB4MCA6IGZmZmYwMDAwNzgyNzVl
+MjgKWyA0NjI1Ljk0MTE2MV0gQ2FsbCB0cmFjZToKWyA0NjI1Ljk0MzYxMF0gIDB4MApbIDQ2MjUu
+OTQ1NDUwXSAgX19pcGlwZV9kaXNwYXRjaF9pcnErMHgxNzQvMHgxYzAKWyA0NjI1Ljk0OTgxNl0g
+IF9faXBpcGVfZ3JhYl9pcnErMHg1Yy8weDk4ClsgNDYyNS45NTM2NjBdICBnaWNfaGFuZGxlX2ly
+cSsweDVjLzB4ZTQKWyA0NjI1Ljk1NzMyOV0gIGhhbmRsZV9hcmNoX2lycV9waXBlbGluZWQrMHgx
+NC8weDYwClsgNDYyNS45NjE5NTddICBlbDFfaXJxKzB4YzgvMHgxNzQKWyA0NjI1Ljk2NTEwM10g
+IGlwaXBlX3Vuc3RhbGxfcm9vdCsweDM0LzB4NTAKWyA0NjI1Ljk2OTEyMl0gIGFyY2hfY3B1X2lk
+bGUrMHgxNC8weDIwClsgNDYyNS45NzI3MDRdICBkZWZhdWx0X2lkbGVfY2FsbCsweDNjLzB4NDQK
+WyA0NjI1Ljk3NjYzNV0gIGRvX2lkbGUrMHhjMC8weDE1MApbIDQ2MjUuOTc5NzgxXSAgY3B1X3N0
+YXJ0dXBfZW50cnkrMHgyMC8weDQ4ClsgNDYyNS45ODM3MTJdICByZXN0X2luaXQrMHhkNC8weGUw
+ClsgNDYyNS45ODY5NDZdICBhcmNoX2NhbGxfcmVzdF9pbml0KzB4Yy8weDE0ClsgNDYyNS45OTA5
+NjNdICBzdGFydF9rZXJuZWwrMHg0MDQvMHg0MzgKWyA0NjI1Ljk5NDYzNF0gQ29kZTogYmFkIFBD
+IHZhbHVlClsgNDYyNS45OTc2OTddIC0tLVsgZW5kIHRyYWNlIGQ1Yjk1ZDFhZGJhNWNmY2MgXS0t
+LQpbIDQ2MjYuMDAyMzI2XSBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogQXR0ZW1wdGVkIHRv
+IGtpbGwgdGhlIGlkbGUgdGFzayEKWyA0NjI2LjAwOTA0Nl0gU01QOiBzdG9wcGluZyBzZWNvbmRh
+cnkgQ1BVcwpbIDQ2MjYuMDEyOTc5XSBLZXJuZWwgT2Zmc2V0OiBkaXNhYmxlZApbIDQ2MjYuMDE2
+NDc0XSBDUFUgZmVhdHVyZXM6IDB4MDAwMiwyMTAwNjAwOApbIDQ2MjYuMDIwNDg5XSBNZW1vcnkg
+TGltaXQ6IG5vbmUKWyA0NjI2LjAyMzU1Ml0gLS0tWyBlbmQgS2VybmVsIHBhbmljIC0gbm90IHN5
+bmNpbmc6IEF0dGVtcHRlZCB0byBraWxsCnRoZSBpZGxlIHRhc2shIF0tLS0KCkF0dGFjaGVkIG15
+IGtlcm5lbCBjb25maWcuCgotLSAKSm9lIExlZQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBj
+b25maWctNS40LjExOS1kaXJ0eQpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
+MTg0Nzg3IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNzEyLzY0NDNmZmI4L2F0dGFjaG1l
+bnQub2JqPgo=
