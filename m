@@ -1,7 +1,10 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 0/4] Incorporate Comments and fix AWS upload
-Date: Tue, 13 Jul 2021 16:51:38 +0200
-Message-Id: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 3/4] scripts/run-lava-tests: replace sed with
+ envsubst
+Date: Tue, 13 Jul 2021 16:51:41 +0200
+Message-Id: <20210713145142.16025-4-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
+References: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,24 +19,51 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
- Incorporate the comments from patchset[1] set by uploading a test-report.xml
- to gitlab artifacts[2] and replace sed commands with envsubst[3].
+This patch incorporates a comment from the mailing list[1].
 
-[1]: https://xenomai.org/pipermail/xenomai/2021-July/045823.html
-[2]: https://xenomai.org/pipermail/xenomai/2021-July/045833.html
-[3]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
+It simplifies the script.
 
-Quirin Gylstorff (4):
-  scripts/deploy_to_aws: Correct upload of dtb
-  scripts/run-lava-tests: upload lava test report
-  scripts/run-lava-tests: replace sed with envsubst
-  scripts/run-lava-tests: parse test-report for errors
+[1]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
 
- ci/gitlab-ci-base.yml     |  5 +++++
- scripts/deploy_to_aws.sh  |  4 ++--
- scripts/run-lava-tests.sh | 26 ++++++++++++++++++--------
- 3 files changed, 25 insertions(+), 10 deletions(-)
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ scripts/run-lava-tests.sh | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index a69bd87..c787160 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -51,24 +51,22 @@ echo "connect to lava server: ${lava_master_uri}"
+ 
+ # connect to lava master
+ lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
++
+ #generate lava job description from template
+ if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
+     DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
+ else
+     DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
+ fi
+-
++export DEPLOY_URL
+ echo "Deploy artifacts from '${artifact_url}'"
+ 
+ job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
+ tmp_dir=$(mktemp -d)
+ template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+-cp "${job_template_path}-${TARGET}.yml" "${template}"
+-sed -i "s|\${TARGET}|${TARGET}|g" "$template"
+-sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
+-sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
+-sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
+-sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
++
++cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
++
+ 
+ echo "submit lava job"
+ 
 -- 
 2.20.1
 
