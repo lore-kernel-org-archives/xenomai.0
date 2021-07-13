@@ -1,8 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 2/4] scripts/run-lava-tests: upload lava test
- report
-Date: Tue, 13 Jul 2021 16:51:40 +0200
-Message-Id: <20210713145142.16025-3-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 4/4] scripts/run-lava-tests: parse test-report
+ for errors
+Date: Tue, 13 Jul 2021 16:51:42 +0200
+Message-Id: <20210713145142.16025-5-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 References: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -19,65 +19,28 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-upload a test report to gitlab to increase tracing of build
-errors.
+The total number of errors is easier collected by parsing
+the LAVA API output as it already contains the information
+requested. The lavacli output does not contain the sum of errors.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- ci/gitlab-ci-base.yml     |  5 +++++
- scripts/run-lava-tests.sh | 12 ++++++++++++
- 2 files changed, 17 insertions(+)
+ scripts/run-lava-tests.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 96b9c2c..e14cef5 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -57,6 +57,11 @@ default:
-     - scripts/run-lava-tests.sh ${TARGET}
-   variables:
-     BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
-+  artifacts:
-+    when: always
-+    paths:
-+    - test-report.xml
-+    expire_in: 1 week
-   only:
-     variables:
-       - $LAVA_TESTS_ENABLED == "true"
 diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index 72138c3..a69bd87 100755
+index c787160..0c39340 100755
 --- a/scripts/run-lava-tests.sh
 +++ b/scripts/run-lava-tests.sh
-@@ -9,6 +9,7 @@
- #
- # SPDX-License-Identifier: MIT
- #
-+
- TARGET=$1
- if [ -z "${TARGET}" ]; then
-     echo "no target was given"
-@@ -72,10 +73,21 @@ sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
- echo "submit lava job"
+@@ -84,7 +84,7 @@ url="${api}/${auth}"
+ curl --silent "${url}" -o test-report.xml
  
- test_id=$(lavacli jobs submit "${template}")
-+
-+echo "get logs from  lava job ${test_id}"
- lavacli jobs logs "${test_id}"
- lavacli results "${test_id}"
-+
-+# add test report download
-+api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
-+auth="?token=${LAVA_MASTER_TOKEN}"
-+url="${api}/${auth}"
-+
-+curl --silent "${url}" -o test-report.xml
-+
  # change return code to generate a error in gitlab-ci if a test is failed
- number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
-+
+-number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
++number_of_fails="$(grep -o "errors=\"[0-9]*\"" test-report.xml | head -1  | cut -d\" -f2 )"
+ 
  if [ -n "${ssh_pid}" ];then
     kill "${ssh_pid}"
- fi
 -- 
 2.20.1
 
