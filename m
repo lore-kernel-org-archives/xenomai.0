@@ -1,14 +1,9 @@
-Subject: Re: [PATCH] Remove analogy support
-References: <27482c83-6428-30df-52a6-b2fa9c61c98b@siemens.com>
- <76895dcc-ef00-b24a-9b00-c928425a2148@akamina.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <05cdf5a9-e599-82f3-ad57-8f3fe7677990@siemens.com>
-Date: Tue, 13 Jul 2021 16:08:24 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 0/4] Incorporate Comments and fix AWS upload
+Date: Tue, 13 Jul 2021 16:51:38 +0200
+Message-Id: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <76895dcc-ef00-b24a-9b00-c928425a2148@akamina.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Laurich <Peter.Laurich@akamina.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On 13.07.21 15:57, Peter Laurich via Xenomai wrote:
-> Hi,
-> 
-> I noticed this patch being submitted and was caught a bit off-guard by
-> the situation. How long has it been since Analogy was actively
-> maintained? A lot of the drivers that I have developed use the Analogy
-> API to pass information between acquisition hardware and user-space code.
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Hah, finally a reaction, after so many calls! :)
+ Incorporate the comments from patchset[1] set by uploading a test-report.xml
+ to gitlab artifacts[2] and replace sed commands with envsubst[3].
 
-Well, the last driver change not fixing forward-porting issues or
-adjusting to refactorings was this one, I think:
+[1]: https://xenomai.org/pipermail/xenomai/2021-July/045823.html
+[2]: https://xenomai.org/pipermail/xenomai/2021-July/045833.html
+[3]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
 
-commit 328b0447cfa282fbe926ebbd9113224e4a1c18b9
-Author: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
-Date:   Thu Aug 13 10:23:16 2015 -0400
+Quirin Gylstorff (4):
+  scripts/deploy_to_aws: Correct upload of dtb
+  scripts/run-lava-tests: upload lava test report
+  scripts/run-lava-tests: replace sed with envsubst
+  scripts/run-lava-tests: parse test-report for errors
 
-    drivers/analogy: release pci region if mapping failed
-
-So, almost 6 years ago. No one cared since then, neither by adding new
-drivers or features, nor by fixing issues that should have been visible
-by using things (only issues found by chance when looking at or
-compiling of code).
-
-Are you still actively using analogy? Or are you considering to?
-
-Jan
+ ci/gitlab-ci-base.yml     |  5 +++++
+ scripts/deploy_to_aws.sh  |  4 ++--
+ scripts/run-lava-tests.sh | 26 ++++++++++++++++++--------
+ 3 files changed, 25 insertions(+), 10 deletions(-)
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
