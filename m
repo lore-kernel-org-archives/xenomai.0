@@ -1,8 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 3/4] scripts/run-lava-tests: replace sed with
- envsubst
-Date: Tue, 13 Jul 2021 16:51:41 +0200
-Message-Id: <20210713145142.16025-4-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 2/4] scripts/run-lava-tests: upload lava test
+ report
+Date: Tue, 13 Jul 2021 16:51:40 +0200
+Message-Id: <20210713145142.16025-3-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 References: <20210713145142.16025-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -19,51 +19,65 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-This patch incorporates a comment from the mailing list[1].
-
-It simplifies the script.
-
-[1]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
+upload a test report to gitlab to increase tracing of build
+errors.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- scripts/run-lava-tests.sh | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ ci/gitlab-ci-base.yml     |  5 +++++
+ scripts/run-lava-tests.sh | 12 ++++++++++++
+ 2 files changed, 17 insertions(+)
 
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 96b9c2c..e14cef5 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -57,6 +57,11 @@ default:
+     - scripts/run-lava-tests.sh ${TARGET}
+   variables:
+     BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
++  artifacts:
++    when: always
++    paths:
++    - test-report.xml
++    expire_in: 1 week
+   only:
+     variables:
+       - $LAVA_TESTS_ENABLED == "true"
 diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index a69bd87..c787160 100755
+index 72138c3..a69bd87 100755
 --- a/scripts/run-lava-tests.sh
 +++ b/scripts/run-lava-tests.sh
-@@ -51,24 +51,22 @@ echo "connect to lava server: ${lava_master_uri}"
- 
- # connect to lava master
- lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
+@@ -9,6 +9,7 @@
+ #
+ # SPDX-License-Identifier: MIT
+ #
 +
- #generate lava job description from template
- if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
-     DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
- else
-     DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
- fi
--
-+export DEPLOY_URL
- echo "Deploy artifacts from '${artifact_url}'"
- 
- job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
- tmp_dir=$(mktemp -d)
- template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
--cp "${job_template_path}-${TARGET}.yml" "${template}"
--sed -i "s|\${TARGET}|${TARGET}|g" "$template"
--sed -i "s|\${BUILD_ARCH}|${BUILD_ARCH}|g" "$template"
--sed -i "s|\${DEPLOY_URL}|${DEPLOY_URL}|g" "$template"
--sed -i "s|\${ISAR_IMAGE}|${ISAR_IMAGE}|g" "$template"
--sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
-+
-+cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
-+
- 
+ TARGET=$1
+ if [ -z "${TARGET}" ]; then
+     echo "no target was given"
+@@ -72,10 +73,21 @@ sed -i "s|\${ISAR_DISTRIBUTION}|${ISAR_DISTRIBUTION}|g" "$template"
  echo "submit lava job"
  
+ test_id=$(lavacli jobs submit "${template}")
++
++echo "get logs from  lava job ${test_id}"
+ lavacli jobs logs "${test_id}"
+ lavacli results "${test_id}"
++
++# add test report download
++api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
++auth="?token=${LAVA_MASTER_TOKEN}"
++url="${api}/${auth}"
++
++curl --silent "${url}" -o test-report.xml
++
+ # change return code to generate a error in gitlab-ci if a test is failed
+ number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
++
+ if [ -n "${ssh_pid}" ];then
+    kill "${ssh_pid}"
+ fi
 -- 
 2.20.1
 
