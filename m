@@ -1,11 +1,13 @@
-References: <27482c83-6428-30df-52a6-b2fa9c61c98b@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: [PATCH] Remove analogy support
-In-reply-to: <27482c83-6428-30df-52a6-b2fa9c61c98b@siemens.com>
-Date: Tue, 13 Jul 2021 14:52:21 +0200
-Message-ID: <87r1g274vu.fsf@xenomai.org>
+References: <27482c83-6428-30df-52a6-b2fa9c61c98b@siemens.com>
+From: Peter Laurich <Peter.Laurich@akamina.com>
+Message-ID: <76895dcc-ef00-b24a-9b00-c928425a2148@akamina.com>
+Date: Tue, 13 Jul 2021 09:57:29 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <27482c83-6428-30df-52a6-b2fa9c61c98b@siemens.com>
+Content-Language: en-CA
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,246 +16,251 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hi,
 
-Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+I noticed this patch being submitted and was caught a bit off-guard by 
+the situation. How long has it been since Analogy was actively 
+maintained? A lot of the drivers that I have developed use the Analogy 
+API to pass information between acquisition hardware and user-space code.
 
+Thanks
+
+Peter
+
+On 7/13/2021 8:38 AM, Jan Kiszka via Xenomai wrote:
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 >
 > This has been unmaintained for a long while, and its removal came up
 > several times already. Now is a good point as we are approaching a new
 > major release.
 >
-
-Full ack.
-
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  .gitlab-ci.yml                                |    6 -
->  configure.ac                                  |    3 -
->  debian/libxenomai1.lintian                    |    2 +-
->  doc/asciidoc/MIGRATION.adoc                   |   32 -
->  doc/doxygen/xeno3prm-common.conf.in           |    1 -
->  include/cobalt/kernel/rtdm/Makefile.am        |    2 -
->  .../cobalt/kernel/rtdm/analogy/Makefile.am    |   12 -
->  include/cobalt/kernel/rtdm/analogy/buffer.h   |  461 --
->  .../kernel/rtdm/analogy/channel_range.h       |  272 -
->  include/cobalt/kernel/rtdm/analogy/command.h  |   35 -
->  include/cobalt/kernel/rtdm/analogy/context.h  |   48 -
->  include/cobalt/kernel/rtdm/analogy/device.h   |   67 -
->  include/cobalt/kernel/rtdm/analogy/driver.h   |   74 -
->  .../cobalt/kernel/rtdm/analogy/instruction.h  |   45 -
->  .../cobalt/kernel/rtdm/analogy/rtdm_helpers.h |  143 -
->  .../cobalt/kernel/rtdm/analogy/subdevice.h    |  118 -
->  include/cobalt/kernel/rtdm/analogy/transfer.h |   78 -
->  include/rtdm/Makefile.am                      |    1 -
->  include/rtdm/analogy.h                        |  264 -
->  include/rtdm/uapi/Makefile.am                 |    1 -
->  include/rtdm/uapi/analogy.h                   |  743 ---
->  kernel/drivers/Kconfig                        |    1 -
->  kernel/drivers/Makefile                       |    2 +-
->  kernel/drivers/analogy/Kconfig                |   56 -
->  kernel/drivers/analogy/Makefile               |   16 -
->  kernel/drivers/analogy/buffer.c               | 1145 ----
->  kernel/drivers/analogy/command.c              |  392 --
->  kernel/drivers/analogy/device.c               |  458 --
->  kernel/drivers/analogy/driver.c               |  104 -
->  kernel/drivers/analogy/driver_facilities.c    |  608 --
->  kernel/drivers/analogy/instruction.c          |  427 --
->  kernel/drivers/analogy/intel/8255.c           |  331 -
->  kernel/drivers/analogy/intel/8255.h           |   60 -
->  kernel/drivers/analogy/intel/Kconfig          |   10 -
->  kernel/drivers/analogy/intel/Makefile         |   10 -
->  kernel/drivers/analogy/intel/parport.c        |  457 --
->  .../analogy/national_instruments/Kconfig      |   42 -
->  .../analogy/national_instruments/Makefile     |   16 -
->  .../analogy/national_instruments/mio_common.c | 5590 -----------------
->  .../analogy/national_instruments/mite.c       |  839 ---
->  .../analogy/national_instruments/mite.h       |  435 --
->  .../analogy/national_instruments/ni_660x.c    | 1481 -----
->  .../analogy/national_instruments/ni_670x.c    |  443 --
->  .../analogy/national_instruments/ni_mio.h     |  122 -
->  .../analogy/national_instruments/ni_stc.h     | 1417 -----
->  .../analogy/national_instruments/ni_tio.h     | 1192 ----
->  .../analogy/national_instruments/pcimio.c     | 1603 -----
->  .../analogy/national_instruments/tio_common.c | 1999 ------
->  kernel/drivers/analogy/proc.h                 |   33 -
->  kernel/drivers/analogy/rtdm_helpers.c         |  214 -
->  kernel/drivers/analogy/rtdm_interface.c       |  308 -
->  kernel/drivers/analogy/sensoray/Kconfig       |    5 -
->  kernel/drivers/analogy/sensoray/Makefile      |    6 -
->  kernel/drivers/analogy/sensoray/s526.c        |  756 ---
->  kernel/drivers/analogy/subdevice.c            |  449 --
->  kernel/drivers/analogy/testing/Kconfig        |   13 -
->  kernel/drivers/analogy/testing/Makefile       |    8 -
->  kernel/drivers/analogy/testing/fake.c         |  686 --
->  kernel/drivers/analogy/testing/loop.c         |  285 -
->  kernel/drivers/analogy/transfer.c             |  259 -
->  lib/Makefile.am                               |    2 -
->  lib/analogy/COPYING                           |  458 --
->  lib/analogy/Makefile.am                       |   23 -
->  lib/analogy/async.c                           |  471 --
->  lib/analogy/calibration.c                     |  473 --
->  lib/analogy/calibration.h                     |   68 -
->  lib/analogy/descriptor.c                      |  503 --
->  lib/analogy/info.c                            |   84 -
->  lib/analogy/internal.h                        |   58 -
->  lib/analogy/math.c                            |  457 --
->  lib/analogy/range.c                           |  638 --
->  lib/analogy/root_leaf.h                       |   54 -
->  lib/analogy/sync.c                            |  426 --
->  lib/analogy/sys.c                             |  213 -
->  utils/Makefile.am                             |    2 +-
->  utils/analogy/Makefile.am                     |  100 -
->  utils/analogy/analogy_calibrate.c             |  124 -
->  utils/analogy/analogy_calibrate.h             |  150 -
->  utils/analogy/analogy_config.c                |  305 -
->  utils/analogy/calibration_ni_m.c              | 1282 ----
->  utils/analogy/calibration_ni_m.h              |  260 -
->  utils/analogy/cmd_bits.c                      |  279 -
->  utils/analogy/cmd_read.c                      |  435 --
->  utils/analogy/cmd_write.c                     |  551 --
->  utils/analogy/insn_bits.c                     |  227 -
->  utils/analogy/insn_read.c                     |  462 --
->  utils/analogy/insn_write.c                    |  279 -
->  utils/analogy/wf_facilities.c                 |  177 -
->  utils/analogy/wf_facilities.h                 |   56 -
->  utils/analogy/wf_generate.c                   |  251 -
->  90 files changed, 3 insertions(+), 33551 deletions(-)
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/Makefile.am
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/buffer.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/channel_range.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/command.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/context.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/device.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/driver.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/instruction.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/subdevice.h
->  delete mode 100644 include/cobalt/kernel/rtdm/analogy/transfer.h
->  delete mode 100644 include/rtdm/analogy.h
->  delete mode 100644 include/rtdm/uapi/analogy.h
->  delete mode 100644 kernel/drivers/analogy/Kconfig
->  delete mode 100644 kernel/drivers/analogy/Makefile
->  delete mode 100644 kernel/drivers/analogy/buffer.c
->  delete mode 100644 kernel/drivers/analogy/command.c
->  delete mode 100644 kernel/drivers/analogy/device.c
->  delete mode 100644 kernel/drivers/analogy/driver.c
->  delete mode 100644 kernel/drivers/analogy/driver_facilities.c
->  delete mode 100644 kernel/drivers/analogy/instruction.c
->  delete mode 100644 kernel/drivers/analogy/intel/8255.c
->  delete mode 100644 kernel/drivers/analogy/intel/8255.h
->  delete mode 100644 kernel/drivers/analogy/intel/Kconfig
->  delete mode 100644 kernel/drivers/analogy/intel/Makefile
->  delete mode 100644 kernel/drivers/analogy/intel/parport.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/Kconfig
->  delete mode 100644 kernel/drivers/analogy/national_instruments/Makefile
->  delete mode 100644 kernel/drivers/analogy/national_instruments/mio_common.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/mite.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/mite.h
->  delete mode 100644 kernel/drivers/analogy/national_instruments/ni_660x.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/ni_670x.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/ni_mio.h
->  delete mode 100644 kernel/drivers/analogy/national_instruments/ni_stc.h
->  delete mode 100644 kernel/drivers/analogy/national_instruments/ni_tio.h
->  delete mode 100644 kernel/drivers/analogy/national_instruments/pcimio.c
->  delete mode 100644 kernel/drivers/analogy/national_instruments/tio_common.c
->  delete mode 100644 kernel/drivers/analogy/proc.h
->  delete mode 100644 kernel/drivers/analogy/rtdm_helpers.c
->  delete mode 100644 kernel/drivers/analogy/rtdm_interface.c
->  delete mode 100644 kernel/drivers/analogy/sensoray/Kconfig
->  delete mode 100644 kernel/drivers/analogy/sensoray/Makefile
->  delete mode 100644 kernel/drivers/analogy/sensoray/s526.c
->  delete mode 100644 kernel/drivers/analogy/subdevice.c
->  delete mode 100644 kernel/drivers/analogy/testing/Kconfig
->  delete mode 100644 kernel/drivers/analogy/testing/Makefile
->  delete mode 100644 kernel/drivers/analogy/testing/fake.c
->  delete mode 100644 kernel/drivers/analogy/testing/loop.c
->  delete mode 100644 kernel/drivers/analogy/transfer.c
->  delete mode 100644 lib/analogy/COPYING
->  delete mode 100644 lib/analogy/Makefile.am
->  delete mode 100644 lib/analogy/async.c
->  delete mode 100644 lib/analogy/calibration.c
->  delete mode 100644 lib/analogy/calibration.h
->  delete mode 100644 lib/analogy/descriptor.c
->  delete mode 100644 lib/analogy/info.c
->  delete mode 100644 lib/analogy/internal.h
->  delete mode 100644 lib/analogy/math.c
->  delete mode 100644 lib/analogy/range.c
->  delete mode 100644 lib/analogy/root_leaf.h
->  delete mode 100644 lib/analogy/sync.c
->  delete mode 100644 lib/analogy/sys.c
->  delete mode 100644 utils/analogy/Makefile.am
->  delete mode 100644 utils/analogy/analogy_calibrate.c
->  delete mode 100644 utils/analogy/analogy_calibrate.h
->  delete mode 100644 utils/analogy/analogy_config.c
->  delete mode 100644 utils/analogy/calibration_ni_m.c
->  delete mode 100644 utils/analogy/calibration_ni_m.h
->  delete mode 100644 utils/analogy/cmd_bits.c
->  delete mode 100644 utils/analogy/cmd_read.c
->  delete mode 100644 utils/analogy/cmd_write.c
->  delete mode 100644 utils/analogy/insn_bits.c
->  delete mode 100644 utils/analogy/insn_read.c
->  delete mode 100644 utils/analogy/insn_write.c
->  delete mode 100644 utils/analogy/wf_facilities.c
->  delete mode 100644 utils/analogy/wf_facilities.h
->  delete mode 100644 utils/analogy/wf_generate.c
+>   .gitlab-ci.yml                                |    6 -
+>   configure.ac                                  |    3 -
+>   debian/libxenomai1.lintian                    |    2 +-
+>   doc/asciidoc/MIGRATION.adoc                   |   32 -
+>   doc/doxygen/xeno3prm-common.conf.in           |    1 -
+>   include/cobalt/kernel/rtdm/Makefile.am        |    2 -
+>   .../cobalt/kernel/rtdm/analogy/Makefile.am    |   12 -
+>   include/cobalt/kernel/rtdm/analogy/buffer.h   |  461 --
+>   .../kernel/rtdm/analogy/channel_range.h       |  272 -
+>   include/cobalt/kernel/rtdm/analogy/command.h  |   35 -
+>   include/cobalt/kernel/rtdm/analogy/context.h  |   48 -
+>   include/cobalt/kernel/rtdm/analogy/device.h   |   67 -
+>   include/cobalt/kernel/rtdm/analogy/driver.h   |   74 -
+>   .../cobalt/kernel/rtdm/analogy/instruction.h  |   45 -
+>   .../cobalt/kernel/rtdm/analogy/rtdm_helpers.h |  143 -
+>   .../cobalt/kernel/rtdm/analogy/subdevice.h    |  118 -
+>   include/cobalt/kernel/rtdm/analogy/transfer.h |   78 -
+>   include/rtdm/Makefile.am                      |    1 -
+>   include/rtdm/analogy.h                        |  264 -
+>   include/rtdm/uapi/Makefile.am                 |    1 -
+>   include/rtdm/uapi/analogy.h                   |  743 ---
+>   kernel/drivers/Kconfig                        |    1 -
+>   kernel/drivers/Makefile                       |    2 +-
+>   kernel/drivers/analogy/Kconfig                |   56 -
+>   kernel/drivers/analogy/Makefile               |   16 -
+>   kernel/drivers/analogy/buffer.c               | 1145 ----
+>   kernel/drivers/analogy/command.c              |  392 --
+>   kernel/drivers/analogy/device.c               |  458 --
+>   kernel/drivers/analogy/driver.c               |  104 -
+>   kernel/drivers/analogy/driver_facilities.c    |  608 --
+>   kernel/drivers/analogy/instruction.c          |  427 --
+>   kernel/drivers/analogy/intel/8255.c           |  331 -
+>   kernel/drivers/analogy/intel/8255.h           |   60 -
+>   kernel/drivers/analogy/intel/Kconfig          |   10 -
+>   kernel/drivers/analogy/intel/Makefile         |   10 -
+>   kernel/drivers/analogy/intel/parport.c        |  457 --
+>   .../analogy/national_instruments/Kconfig      |   42 -
+>   .../analogy/national_instruments/Makefile     |   16 -
+>   .../analogy/national_instruments/mio_common.c | 5590 -----------------
+>   .../analogy/national_instruments/mite.c       |  839 ---
+>   .../analogy/national_instruments/mite.h       |  435 --
+>   .../analogy/national_instruments/ni_660x.c    | 1481 -----
+>   .../analogy/national_instruments/ni_670x.c    |  443 --
+>   .../analogy/national_instruments/ni_mio.h     |  122 -
+>   .../analogy/national_instruments/ni_stc.h     | 1417 -----
+>   .../analogy/national_instruments/ni_tio.h     | 1192 ----
+>   .../analogy/national_instruments/pcimio.c     | 1603 -----
+>   .../analogy/national_instruments/tio_common.c | 1999 ------
+>   kernel/drivers/analogy/proc.h                 |   33 -
+>   kernel/drivers/analogy/rtdm_helpers.c         |  214 -
+>   kernel/drivers/analogy/rtdm_interface.c       |  308 -
+>   kernel/drivers/analogy/sensoray/Kconfig       |    5 -
+>   kernel/drivers/analogy/sensoray/Makefile      |    6 -
+>   kernel/drivers/analogy/sensoray/s526.c        |  756 ---
+>   kernel/drivers/analogy/subdevice.c            |  449 --
+>   kernel/drivers/analogy/testing/Kconfig        |   13 -
+>   kernel/drivers/analogy/testing/Makefile       |    8 -
+>   kernel/drivers/analogy/testing/fake.c         |  686 --
+>   kernel/drivers/analogy/testing/loop.c         |  285 -
+>   kernel/drivers/analogy/transfer.c             |  259 -
+>   lib/Makefile.am                               |    2 -
+>   lib/analogy/COPYING                           |  458 --
+>   lib/analogy/Makefile.am                       |   23 -
+>   lib/analogy/async.c                           |  471 --
+>   lib/analogy/calibration.c                     |  473 --
+>   lib/analogy/calibration.h                     |   68 -
+>   lib/analogy/descriptor.c                      |  503 --
+>   lib/analogy/info.c                            |   84 -
+>   lib/analogy/internal.h                        |   58 -
+>   lib/analogy/math.c                            |  457 --
+>   lib/analogy/range.c                           |  638 --
+>   lib/analogy/root_leaf.h                       |   54 -
+>   lib/analogy/sync.c                            |  426 --
+>   lib/analogy/sys.c                             |  213 -
+>   utils/Makefile.am                             |    2 +-
+>   utils/analogy/Makefile.am                     |  100 -
+>   utils/analogy/analogy_calibrate.c             |  124 -
+>   utils/analogy/analogy_calibrate.h             |  150 -
+>   utils/analogy/analogy_config.c                |  305 -
+>   utils/analogy/calibration_ni_m.c              | 1282 ----
+>   utils/analogy/calibration_ni_m.h              |  260 -
+>   utils/analogy/cmd_bits.c                      |  279 -
+>   utils/analogy/cmd_read.c                      |  435 --
+>   utils/analogy/cmd_write.c                     |  551 --
+>   utils/analogy/insn_bits.c                     |  227 -
+>   utils/analogy/insn_read.c                     |  462 --
+>   utils/analogy/insn_write.c                    |  279 -
+>   utils/analogy/wf_facilities.c                 |  177 -
+>   utils/analogy/wf_facilities.h                 |   56 -
+>   utils/analogy/wf_generate.c                   |  251 -
+>   90 files changed, 3 insertions(+), 33551 deletions(-)
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/Makefile.am
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/buffer.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/channel_range.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/command.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/context.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/device.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/driver.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/instruction.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/subdevice.h
+>   delete mode 100644 include/cobalt/kernel/rtdm/analogy/transfer.h
+>   delete mode 100644 include/rtdm/analogy.h
+>   delete mode 100644 include/rtdm/uapi/analogy.h
+>   delete mode 100644 kernel/drivers/analogy/Kconfig
+>   delete mode 100644 kernel/drivers/analogy/Makefile
+>   delete mode 100644 kernel/drivers/analogy/buffer.c
+>   delete mode 100644 kernel/drivers/analogy/command.c
+>   delete mode 100644 kernel/drivers/analogy/device.c
+>   delete mode 100644 kernel/drivers/analogy/driver.c
+>   delete mode 100644 kernel/drivers/analogy/driver_facilities.c
+>   delete mode 100644 kernel/drivers/analogy/instruction.c
+>   delete mode 100644 kernel/drivers/analogy/intel/8255.c
+>   delete mode 100644 kernel/drivers/analogy/intel/8255.h
+>   delete mode 100644 kernel/drivers/analogy/intel/Kconfig
+>   delete mode 100644 kernel/drivers/analogy/intel/Makefile
+>   delete mode 100644 kernel/drivers/analogy/intel/parport.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/Kconfig
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/Makefile
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/mio_common.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/mite.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/mite.h
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/ni_660x.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/ni_670x.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/ni_mio.h
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/ni_stc.h
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/ni_tio.h
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/pcimio.c
+>   delete mode 100644 kernel/drivers/analogy/national_instruments/tio_common.c
+>   delete mode 100644 kernel/drivers/analogy/proc.h
+>   delete mode 100644 kernel/drivers/analogy/rtdm_helpers.c
+>   delete mode 100644 kernel/drivers/analogy/rtdm_interface.c
+>   delete mode 100644 kernel/drivers/analogy/sensoray/Kconfig
+>   delete mode 100644 kernel/drivers/analogy/sensoray/Makefile
+>   delete mode 100644 kernel/drivers/analogy/sensoray/s526.c
+>   delete mode 100644 kernel/drivers/analogy/subdevice.c
+>   delete mode 100644 kernel/drivers/analogy/testing/Kconfig
+>   delete mode 100644 kernel/drivers/analogy/testing/Makefile
+>   delete mode 100644 kernel/drivers/analogy/testing/fake.c
+>   delete mode 100644 kernel/drivers/analogy/testing/loop.c
+>   delete mode 100644 kernel/drivers/analogy/transfer.c
+>   delete mode 100644 lib/analogy/COPYING
+>   delete mode 100644 lib/analogy/Makefile.am
+>   delete mode 100644 lib/analogy/async.c
+>   delete mode 100644 lib/analogy/calibration.c
+>   delete mode 100644 lib/analogy/calibration.h
+>   delete mode 100644 lib/analogy/descriptor.c
+>   delete mode 100644 lib/analogy/info.c
+>   delete mode 100644 lib/analogy/internal.h
+>   delete mode 100644 lib/analogy/math.c
+>   delete mode 100644 lib/analogy/range.c
+>   delete mode 100644 lib/analogy/root_leaf.h
+>   delete mode 100644 lib/analogy/sync.c
+>   delete mode 100644 lib/analogy/sys.c
+>   delete mode 100644 utils/analogy/Makefile.am
+>   delete mode 100644 utils/analogy/analogy_calibrate.c
+>   delete mode 100644 utils/analogy/analogy_calibrate.h
+>   delete mode 100644 utils/analogy/analogy_config.c
+>   delete mode 100644 utils/analogy/calibration_ni_m.c
+>   delete mode 100644 utils/analogy/calibration_ni_m.h
+>   delete mode 100644 utils/analogy/cmd_bits.c
+>   delete mode 100644 utils/analogy/cmd_read.c
+>   delete mode 100644 utils/analogy/cmd_write.c
+>   delete mode 100644 utils/analogy/insn_bits.c
+>   delete mode 100644 utils/analogy/insn_read.c
+>   delete mode 100644 utils/analogy/insn_write.c
+>   delete mode 100644 utils/analogy/wf_facilities.c
+>   delete mode 100644 utils/analogy/wf_facilities.h
+>   delete mode 100644 utils/analogy/wf_generate.c
 >
 > diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
 > index 7644861104..4acb59afc3 100644
 > --- a/.gitlab-ci.yml
 > +++ b/.gitlab-ci.yml
 > @@ -136,12 +136,6 @@ variables:
->      - ./scripts/config -m XENO_DRIVERS_NET_ADDON_RTCAP
->      - ./scripts/config -m XENO_DRIVERS_NET_ADDON_PROXY
->      - ./scripts/config -e XENO_DRIVERS_NET_ADDON_PROXY_ARP
+>       - ./scripts/config -m XENO_DRIVERS_NET_ADDON_RTCAP
+>       - ./scripts/config -m XENO_DRIVERS_NET_ADDON_PROXY
+>       - ./scripts/config -e XENO_DRIVERS_NET_ADDON_PROXY_ARP
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY_FAKE
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_PCIMIO
 > -    - ./scripts/config -e XENO_DRIVERS_ANALOGY_S526
->      - ./scripts/config -e XENO_DRIVERS_RTIPC
->      - ./scripts/config -e XENO_DRIVERS_UDD
->      - ./scripts/config -e XENO_DRIVERS_GPIO
+>       - ./scripts/config -e XENO_DRIVERS_RTIPC
+>       - ./scripts/config -e XENO_DRIVERS_UDD
+>       - ./scripts/config -e XENO_DRIVERS_GPIO
 > diff --git a/configure.ac b/configure.ac
 > index bd5fd5ba9a..179afc5cca 100644
 > --- a/configure.ac
 > +++ b/configure.ac
 > @@ -949,7 +949,6 @@ AC_CONFIG_FILES([ \
->  	lib/alchemy/Makefile \
->  	lib/vxworks/Makefile \
->  	lib/psos/Makefile \
+>   	lib/alchemy/Makefile \
+>   	lib/vxworks/Makefile \
+>   	lib/psos/Makefile \
 > -	lib/analogy/Makefile \
->  	lib/smokey/Makefile \
->  	lib/trank/Makefile \
->  	testsuite/Makefile \
+>   	lib/smokey/Makefile \
+>   	lib/trank/Makefile \
+>   	testsuite/Makefile \
 > @@ -996,7 +995,6 @@ AC_CONFIG_FILES([ \
->  	utils/Makefile \
->  	utils/hdb/Makefile \
->  	utils/can/Makefile \
+>   	utils/Makefile \
+>   	utils/hdb/Makefile \
+>   	utils/can/Makefile \
 > -	utils/analogy/Makefile \
->  	utils/ps/Makefile \
->  	utils/slackspot/Makefile \
->  	utils/corectl/Makefile \
+>   	utils/ps/Makefile \
+>   	utils/slackspot/Makefile \
+>   	utils/corectl/Makefile \
 > @@ -1018,7 +1016,6 @@ AC_CONFIG_FILES([ \
->  	include/cobalt/sys/Makefile \
->  	include/cobalt/kernel/Makefile \
->  	include/cobalt/kernel/rtdm/Makefile \
+>   	include/cobalt/sys/Makefile \
+>   	include/cobalt/kernel/Makefile \
+>   	include/cobalt/kernel/rtdm/Makefile \
 > -	include/cobalt/kernel/rtdm/analogy/Makefile \
->  	include/cobalt/boilerplate/Makefile \
->  	include/rtdm/Makefile \
->  	include/rtdm/uapi/Makefile \
+>   	include/cobalt/boilerplate/Makefile \
+>   	include/rtdm/Makefile \
+>   	include/rtdm/uapi/Makefile \
 > diff --git a/debian/libxenomai1.lintian b/debian/libxenomai1.lintian
 > index 951aa93980..00af08cbcc 100644
 > --- a/debian/libxenomai1.lintian
 > +++ b/debian/libxenomai1.lintian
 > @@ -4,4 +4,4 @@
->  # downgrading the number in the package name is probably a bad idea, and
->  # synchronizing the package name with the SO version number isn't easily
->  # possible anyway since the package contains several libraries.
+>   # downgrading the number in the package name is probably a bad idea, and
+>   # synchronizing the package name with the SO version number isn't easily
+>   # possible anyway since the package contains several libraries.
 > -libxenomai1: package-name-doesnt-match-sonames libanalogy1 libnative3 libpthread-rt1 librtdk0 librtdm1 libxenomai0
 > +libxenomai1: package-name-doesnt-match-sonames libnative3 libpthread-rt1 librtdk0 librtdm1 libxenomai0
 > diff --git a/doc/asciidoc/MIGRATION.adoc b/doc/asciidoc/MIGRATION.adoc
@@ -261,9 +268,9 @@ Full ack.
 > --- a/doc/asciidoc/MIGRATION.adoc
 > +++ b/doc/asciidoc/MIGRATION.adoc
 > @@ -1025,38 +1025,6 @@ straightforward naming for the RTDM-to-RTDM API, keeping the +rtdm_+
->  prefix.
->  ******************************************************************
->  
+>   prefix.
+>   ******************************************************************
+>   
 > -== Analogy interface changes ==
 > -
 > -=== Files renamed ===
@@ -296,29 +303,29 @@ Full ack.
 > -As a consequence of these changes, the former include/analogy/ file
 > -tree has been entirely removed.
 > -
->  == RTnet changes ==
->  
->  RTnet is integrated into Xenomai 3, but some of its behaviour and
+>   == RTnet changes ==
+>   
+>   RTnet is integrated into Xenomai 3, but some of its behaviour and
 > diff --git a/doc/doxygen/xeno3prm-common.conf.in b/doc/doxygen/xeno3prm-common.conf.in
 > index cd77650533..774d948966 100644
 > --- a/doc/doxygen/xeno3prm-common.conf.in
 > +++ b/doc/doxygen/xeno3prm-common.conf.in
 > @@ -855,7 +855,6 @@ INPUT                  =						\
->   		       @top_srcdir@/lib/cobalt				\
->   		       @top_srcdir@/lib/copperplate			\
->   		       @top_srcdir@/lib/smokey				\
+>    		       @top_srcdir@/lib/cobalt				\
+>    		       @top_srcdir@/lib/copperplate			\
+>    		       @top_srcdir@/lib/smokey				\
 > - 		       @top_srcdir@/lib/analogy				\
->   		       @top_srcdir@/lib/alchemy				\
->   		       @top_srcdir@/lib/vxworks				\
->   		       @top_srcdir@/lib/psos				\
+>    		       @top_srcdir@/lib/alchemy				\
+>    		       @top_srcdir@/lib/vxworks				\
+>    		       @top_srcdir@/lib/psos				\
 > diff --git a/include/cobalt/kernel/rtdm/Makefile.am b/include/cobalt/kernel/rtdm/Makefile.am
 > index fe2e4d5c99..adf8124e00 100644
 > --- a/include/cobalt/kernel/rtdm/Makefile.am
 > +++ b/include/cobalt/kernel/rtdm/Makefile.am
 > @@ -13,5 +13,3 @@ noinst_HEADERS =	\
->  	serial.h	\
->  	testing.h	\
->  	udd.h
+>   	serial.h	\
+>   	testing.h	\
+>   	udd.h
 > -
 > -SUBDIRS = analogy
 > diff --git a/include/cobalt/kernel/rtdm/analogy/Makefile.am b/include/cobalt/kernel/rtdm/analogy/Makefile.am
@@ -359,13 +366,13 @@ Full ack.
 > --- a/include/rtdm/Makefile.am
 > +++ b/include/rtdm/Makefile.am
 > @@ -4,7 +4,6 @@ includesub_HEADERS = rtdm.h
->  
->  if XENO_COBALT
->  includesub_HEADERS +=	\
+>   
+>   if XENO_COBALT
+>   includesub_HEADERS +=	\
 > -	analogy.h	\
->  	autotune.h	\
->  	can.h		\
->  	gpio.h		\
+>   	autotune.h	\
+>   	can.h		\
+>   	gpio.h		\
 > diff --git a/include/rtdm/analogy.h b/include/rtdm/analogy.h
 > deleted file mode 100644
 > index 066d05af57..0000000000
@@ -374,13 +381,13 @@ Full ack.
 > --- a/include/rtdm/uapi/Makefile.am
 > +++ b/include/rtdm/uapi/Makefile.am
 > @@ -4,7 +4,6 @@ includesub_HEADERS = rtdm.h
->  
->  if XENO_COBALT
->  includesub_HEADERS +=	\
+>   
+>   if XENO_COBALT
+>   includesub_HEADERS +=	\
 > -	analogy.h	\
->  	autotune.h	\
->  	can.h		\
->  	gpio.h		\
+>   	autotune.h	\
+>   	can.h		\
+>   	gpio.h		\
 > diff --git a/include/rtdm/uapi/analogy.h b/include/rtdm/uapi/analogy.h
 > deleted file mode 100644
 > index 2d53168017..0000000000
@@ -389,13 +396,13 @@ Full ack.
 > --- a/kernel/drivers/Kconfig
 > +++ b/kernel/drivers/Kconfig
 > @@ -25,7 +25,6 @@ source "drivers/xenomai/serial/Kconfig"
->  source "drivers/xenomai/testing/Kconfig"
->  source "drivers/xenomai/can/Kconfig"
->  source "drivers/xenomai/net/Kconfig"
+>   source "drivers/xenomai/testing/Kconfig"
+>   source "drivers/xenomai/can/Kconfig"
+>   source "drivers/xenomai/net/Kconfig"
 > -source "drivers/xenomai/analogy/Kconfig"
->  source "drivers/xenomai/ipc/Kconfig"
->  source "drivers/xenomai/udd/Kconfig"
->  source "drivers/xenomai/gpio/Kconfig"
+>   source "drivers/xenomai/ipc/Kconfig"
+>   source "drivers/xenomai/udd/Kconfig"
+>   source "drivers/xenomai/gpio/Kconfig"
 > diff --git a/kernel/drivers/Makefile b/kernel/drivers/Makefile
 > index b8fe1b3f6a..21d5400182 100644
 > --- a/kernel/drivers/Makefile
@@ -519,19 +526,19 @@ Full ack.
 > --- a/lib/Makefile.am
 > +++ b/lib/Makefile.am
 > @@ -15,13 +15,11 @@ SUBDIRS +=		\
->  
->  if XENO_COBALT
->  SUBDIRS += 		\
+>   
+>   if XENO_COBALT
+>   SUBDIRS += 		\
 > -	analogy		\
->  	trank
->  endif
->  
->  DIST_SUBDIRS = 		\
->  	alchemy		\
+>   	trank
+>   endif
+>   
+>   DIST_SUBDIRS = 		\
+>   	alchemy		\
 > -	analogy		\
->  	boilerplate	\
->  	cobalt		\
->  	copperplate	\
+>   	boilerplate	\
+>   	cobalt		\
+>   	copperplate	\
 > diff --git a/lib/analogy/COPYING b/lib/analogy/COPYING
 > deleted file mode 100644
 > index 3b204400cf..0000000000
@@ -576,11 +583,11 @@ Full ack.
 > --- a/utils/Makefile.am
 > +++ b/utils/Makefile.am
 > @@ -1,4 +1,4 @@
->  SUBDIRS = hdb
->  if XENO_COBALT
+>   SUBDIRS = hdb
+>   if XENO_COBALT
 > -SUBDIRS += analogy autotune can net ps slackspot corectl
 > +SUBDIRS += autotune can net ps slackspot corectl
->  endif
+>   endif
 > diff --git a/utils/analogy/Makefile.am b/utils/analogy/Makefile.am
 > deleted file mode 100644
 > index f8a304b601..0000000000
@@ -626,8 +633,3 @@ Full ack.
 > diff --git a/utils/analogy/wf_generate.c b/utils/analogy/wf_generate.c
 > deleted file mode 100644
 > index e9373097d6..0000000000
-
-
--- 
-Philippe.
-
