@@ -1,15 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images][PATCH v2 0/4] Incorporate Comments and fix AWS
  upload
-Date: Wed, 14 Jul 2021 07:53:12 +0000
-Message-ID: <56a0171b932f8285113ab462a02ef60dbad3b134.camel@siemens.com>
 References: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AC70B364C501904CA679629AE6DA6A42@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <fc8f8ca1-5f79-2c65-db65-219a8f12edf0@siemens.com>
+Date: Wed, 14 Jul 2021 10:07:31 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,28 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "quirin.gylstorff@siemens.com" <quirin.gylstorff@siemens.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-T24gV2VkLCAyMDIxLTA3LTE0IGF0IDA5OjQxICswMjAwLCBRLiBHeWxzdG9yZmYgdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+IEZyb206IFF1aXJpbiBHeWxzdG9yZmYgPHF1aXJpbi5neWxzdG9yZmZAc2ll
-bWVucy5jb20+DQo+IA0KPiDCoEluY29ycG9yYXRlIHRoZSBjb21tZW50cyBmcm9tIHBhdGNoc2V0
-WzFdIHNldCBieSB1cGxvYWRpbmcgYSB0ZXN0LXJlcG9ydC54bWwNCj4gwqB0byBnaXRsYWIgYXJ0
-aWZhY3RzWzJdIGFuZCByZXBsYWNlIHNlZCBjb21tYW5kcyB3aXRoIGVudnN1YnN0WzNdLg0KPiAN
-Cj4gDQo+IENoYW5nZXMgVjI6DQo+IMKgLSB1c2UgZ2l0bGFiIHJlcG9ydHMgdG8gZGlzcGxheSBh
-IHRlc3Qgc3VtbWFyeSwgIGUuZy4gWzRdDQo+IMKgLSBzaW1wbGlmeSBpZiBkdGIgZXhpc3RzIGNo
-ZWNrDQo+IA0KPiBbMV06IGh0dHBzOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAy
-MS1KdWx5LzA0NTgyMy5odG1sDQo+IFsyXTogaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS8yMDIxLUp1bHkvMDQ1ODMzLmh0bWwNCj4gWzNdOiBodHRwczovL3hlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpLzIwMjEtSnVseS8wNDU4MzAuaHRtbA0KPiBbNF06IGh0dHBzOi8v
-Z2l0bGFiLmNvbS9RdWlyaW4uR3kveGVub21haS1pbWFnZXMtdGVzdC8tL3BpcGVsaW5lcy8zMzYz
-MjMwNzAvdGVzdF9yZXBvcnQNCg0KWzRdIGxvb2tzIGxpa2UgSSB3b3VsZCBleHBlY3QgaXQuIFRo
-YW5rcyENCg0KPiANCj4gUXVpcmluIEd5bHN0b3JmZiAoNCk6DQo+IMKgwqBzY3JpcHRzL2RlcGxv
-eV90b19hd3M6IENvcnJlY3QgdXBsb2FkIG9mIGR0Yg0KPiDCoMKgc2NyaXB0cy9ydW4tbGF2YS10
-ZXN0czogdXBsb2FkIGxhdmEgdGVzdCByZXBvcnQNCj4gwqDCoHNjcmlwdHMvcnVuLWxhdmEtdGVz
-dHM6IHJlcGxhY2Ugc2VkIHdpdGggZW52c3Vic3QNCj4gwqDCoHNjcmlwdHMvcnVuLWxhdmEtdGVz
-dHM6IHBhcnNlIHRlc3QtcmVwb3J0IGZvciBlcnJvcnMNCj4gDQo+IMKgY2kvZ2l0bGFiLWNpLWJh
-c2UueW1sICAgICB8ICA2ICsrKysrKw0KPiDCoHNjcmlwdHMvZGVwbG95X3RvX2F3cy5zaCAgfCAg
-MiArLQ0KPiDCoHNjcmlwdHMvcnVuLWxhdmEtdGVzdHMuc2ggfCAyMyArKysrKysrKysrKysrKyst
-LS0tLS0tLQ0KPiDCoDMgZmlsZXMgY2hhbmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
-bnMoLSkNCj4gDQoNCg==
+On 14.07.21 09:41, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+>  Incorporate the comments from patchset[1] set by uploading a test-report.xml
+>  to gitlab artifacts[2] and replace sed commands with envsubst[3].
+> 
+> 
+> Changes V2:
+>  - use gitlab reports to display a test summary,  e.g. [4]
+>  - simplify if dtb exists check
+> 
+> [1]: https://xenomai.org/pipermail/xenomai/2021-July/045823.html
+> [2]: https://xenomai.org/pipermail/xenomai/2021-July/045833.html
+> [3]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
+> [4]: https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/336323070/test_report
+> 
+> Quirin Gylstorff (4):
+>   scripts/deploy_to_aws: Correct upload of dtb
+>   scripts/run-lava-tests: upload lava test report
+>   scripts/run-lava-tests: replace sed with envsubst
+>   scripts/run-lava-tests: parse test-report for errors
+> 
+>  ci/gitlab-ci-base.yml     |  6 ++++++
+>  scripts/deploy_to_aws.sh  |  2 +-
+>  scripts/run-lava-tests.sh | 23 +++++++++++++++--------
+>  3 files changed, 22 insertions(+), 9 deletions(-)
+> 
+
+Thanks, all applied to next. Let's see if we can get the new lab setup
+started...
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
