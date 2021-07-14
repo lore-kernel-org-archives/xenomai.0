@@ -1,9 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/4] cobalt/intr: Add error handling to xnintr_affinity
-Date: Fri,  2 Jul 2021 16:27:45 +0200
-Message-Id: <502f94fbd239762ad8f783f83eb78f233d8441cd.1625236067.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1625236067.git.jan.kiszka@siemens.com>
-References: <cover.1625236067.git.jan.kiszka@siemens.com>
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 4/4] scripts/run-lava-tests: parse
+ test-report for errors
+Date: Wed, 14 Jul 2021 09:41:55 +0200
+Message-Id: <20210714074155.2625-5-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
+References: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,90 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-This function should respect the supported cpu set and report an error
-if the specified set has no intersection with it. It should also return
-potential errors for the underlying pipeline code.
+The total number of errors is easier collected by parsing
+the LAVA API output as it already contains the information
+requested. The lavacli output does not contain the sum of errors.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- include/cobalt/kernel/intr.h  |  3 +--
- kernel/cobalt/dovetail/intr.c | 11 +++++++----
- kernel/cobalt/ipipe/intr.c    | 16 +++++++++++++---
- 3 files changed, 21 insertions(+), 9 deletions(-)
+ scripts/run-lava-tests.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/cobalt/kernel/intr.h b/include/cobalt/kernel/intr.h
-index 6db4cfd905..9177141cba 100644
---- a/include/cobalt/kernel/intr.h
-+++ b/include/cobalt/kernel/intr.h
-@@ -124,8 +124,7 @@ void xnintr_enable(struct xnintr *intr);
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index 44e02fc..7972279 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -81,7 +81,7 @@ url="${api}/${auth}"
+ curl --silent "${url}" -o report.xml
  
- void xnintr_disable(struct xnintr *intr);
+ # change return code to generate a error in gitlab-ci if a test is failed
+-number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
++number_of_fails="$(grep -o "errors=\"[0-9]*\"" report.xml | head -1  | cut -d\" -f2 )"
  
--void xnintr_affinity(struct xnintr *intr,
--		     const cpumask_t *cpumask);
-+int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask);
- 
- #ifdef CONFIG_XENO_OPT_STATS_IRQS
- 
-diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
-index 7953050fb0..da36f74462 100644
---- a/kernel/cobalt/dovetail/intr.c
-+++ b/kernel/cobalt/dovetail/intr.c
-@@ -118,13 +118,16 @@ void xnintr_disable(struct xnintr *intr)
- }
- EXPORT_SYMBOL_GPL(xnintr_disable);
- 
--void xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
-+int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
- {
--	int ret;
-+	cpumask_t effective_mask;
- 
- 	secondary_mode_only();
--	ret = irq_set_affinity_hint(intr->irq, cpumask);
- 
--	WARN_ON_ONCE(ret);
-+	cpumask_and(&effective_mask, &xnsched_realtime_cpus, cpumask);
-+	if (cpumask_empty(&effective_mask))
-+		return -EINVAL;
-+
-+	return irq_set_affinity_hint(intr->irq, &effective_mask);
- }
- EXPORT_SYMBOL_GPL(xnintr_affinity);
-diff --git a/kernel/cobalt/ipipe/intr.c b/kernel/cobalt/ipipe/intr.c
-index 0d2c515af8..29adf1a7ae 100644
---- a/kernel/cobalt/ipipe/intr.c
-+++ b/kernel/cobalt/ipipe/intr.c
-@@ -992,11 +992,21 @@ EXPORT_SYMBOL_GPL(xnintr_disable);
-  *
-  * @coretags{secondary-only}
-  */
--void xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
-+int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask)
- {
--	secondary_mode_only();
- #ifdef CONFIG_SMP
--	ipipe_set_irq_affinity(intr->irq, *cpumask);
-+	cpumask_t effective_mask;
-+
-+	secondary_mode_only();
-+
-+	cpumask_and(&effective_mask, &xnsched_realtime_cpus, cpumask);
-+	if (cpumask_empty(&effective_mask))
-+		return -EINVAL;
-+
-+	return ipipe_set_irq_affinity(intr->irq, effective_mask);
-+#else
-+	secondary_mode_only();
-+	return 0;
- #endif
- }
- EXPORT_SYMBOL_GPL(xnintr_affinity);
+ if [ -n "${ssh_pid}" ];then
+    kill "${ssh_pid}"
 -- 
-2.26.2
+2.20.1
 
 
