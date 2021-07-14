@@ -1,12 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] testsuite/smokey: rtdm: Give delayed close more time for
- running in QEMU
-Message-ID: <81e1134c-cc58-45e0-99ed-a8447ab0862d@siemens.com>
-Date: Tue, 13 Jul 2021 18:36:44 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: reminder: Xenomai community call on Wednesday, July 14, 2021, UTC
+ 7:00 AM
+Date: Wed, 14 Jul 2021 05:11:33 +0000
+Message-ID: <BN9PR11MB5227B445523D67F53EB4DE2EF2139@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +15,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-RTTST_RTIOC_RTDM_DEFER_CLOSE causes a 300 ms delay by the driver. We
-only added 1 ms plus the open/close of the second device, and that was
-sometimes too short when running in QEMU:
-
-2021-06-18T18:58:41 FAILED run_rtdm:186: open returned -16 instead of 12 - Device or resource busy
-
-Make it 100 ms in that case, to be safe.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- testsuite/smokey/rtdm/rtdm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/testsuite/smokey/rtdm/rtdm.c b/testsuite/smokey/rtdm/rtdm.c
-index 187333770e..0b89228fcd 100644
---- a/testsuite/smokey/rtdm/rtdm.c
-+++ b/testsuite/smokey/rtdm/rtdm.c
-@@ -182,7 +182,7 @@ static int run_rtdm(struct smokey_test *t, int argc, char *const argv[])
- 	check("open", open(devname, O_RDWR), -EBUSY);
- 	dev2 = check("open", open(devname2, O_RDWR), dev);
- 	check("close", close(dev2), 0);
--	usleep(301000);
-+	usleep(smokey_on_vm ? 400000 : 301000);
- 	dev = check("open", open(devname, O_RDWR), dev);
- 
- 	smokey_trace("Normal close");
--- 
-2.26.2
+Hi all,
 
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+We have the Xenomai community call today.
+
+
+
+Topics may include but are not limited to upstream/downstream project
+
+plans, status updates, and technical discussions. It's an open online
+
+meeting that anyone can join and ask questions.
+
+
+
+Time:
+
+Wednesday, July 14, 2021, UTC 7:00 AM
+
+Paris, France CEST 9:00 AM
+
+China CST 3:00 PM
+
+Join Zoom Meeting
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+91297279269@zoomcrc.com<mailto:91297279269@zoomcrc.com>
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+
+Regards
+
+Hongzhan Chen
 
