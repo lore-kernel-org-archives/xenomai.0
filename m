@@ -1,7 +1,10 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 0/4] Incorporate Comments and fix AWS upload
-Date: Wed, 14 Jul 2021 09:41:51 +0200
-Message-Id: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 2/4] scripts/run-lava-tests: upload lava
+ test report
+Date: Wed, 14 Jul 2021 09:41:53 +0200
+Message-Id: <20210714074155.2625-3-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
+References: <20210714074155.2625-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,30 +19,54 @@ To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
- Incorporate the comments from patchset[1] set by uploading a test-report.xml
- to gitlab artifacts[2] and replace sed commands with envsubst[3].
+upload a test report to gitlab to increase tracing of build
+errors.
 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ ci/gitlab-ci-base.yml     | 6 ++++++
+ scripts/run-lava-tests.sh | 9 +++++++++
+ 2 files changed, 15 insertions(+)
 
-Changes V2:
- - use gitlab reports to display a test summary,  e.g. [4]
- - simplify if dtb exists check
-
-[1]: https://xenomai.org/pipermail/xenomai/2021-July/045823.html
-[2]: https://xenomai.org/pipermail/xenomai/2021-July/045833.html
-[3]: https://xenomai.org/pipermail/xenomai/2021-July/045830.html
-[4]: https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/336323070/test_report
-
-Quirin Gylstorff (4):
-  scripts/deploy_to_aws: Correct upload of dtb
-  scripts/run-lava-tests: upload lava test report
-  scripts/run-lava-tests: replace sed with envsubst
-  scripts/run-lava-tests: parse test-report for errors
-
- ci/gitlab-ci-base.yml     |  6 ++++++
- scripts/deploy_to_aws.sh  |  2 +-
- scripts/run-lava-tests.sh | 23 +++++++++++++++--------
- 3 files changed, 22 insertions(+), 9 deletions(-)
-
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 96b9c2c..7f245e3 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -57,6 +57,12 @@ default:
+     - scripts/run-lava-tests.sh ${TARGET}
+   variables:
+     BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
++  artifacts:
++    when: always
++    reports:
++      junit:
++        - report.xml
++    expire_in: 1 week
+   only:
+     variables:
+       - $LAVA_TESTS_ENABLED == "true"
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index 72138c3..e398afd 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -74,8 +74,17 @@ echo "submit lava job"
+ test_id=$(lavacli jobs submit "${template}")
+ lavacli jobs logs "${test_id}"
+ lavacli results "${test_id}"
++
++# add test report download
++api="${lava_master_uri}/api/v0.2/jobs/${test_id}/junit"
++auth="?token=${LAVA_MASTER_TOKEN}"
++url="${api}/${auth}"
++
++curl --silent "${url}" -o report.xml
++
+ # change return code to generate a error in gitlab-ci if a test is failed
+ number_of_fails="$(lavacli results "${test_id}" | grep -c fail )"
++
+ if [ -n "${ssh_pid}" ];then
+    kill "${ssh_pid}"
+ fi
 -- 
 2.20.1
 
