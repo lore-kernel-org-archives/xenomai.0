@@ -1,11 +1,11 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Xenomai Community Call Minutes - July 14, 2021
-Date: Wed, 14 Jul 2021 10:04:21 +0000
-Message-ID: <CO6PR11MB5649C263459CED696B0A368DBA139@CO6PR11MB5649.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH] tests: Consolidate xeno-test parameters
+Message-ID: <f0a7fe76-2daa-1eac-7866-a71c094df1dc@siemens.com>
+Date: Wed, 14 Jul 2021 15:10:59 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +14,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Attendees:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan Kiszka, Philippe Gerum, Florian Bezdeka, Song Chen, Hongzhan Chen,=20
-Hao Li, Yanfeng Pu, Rick Wang
+QEMU targets were run the full default 15 minutes while real targets
+only used 5. Use 5 min. for all now.
 
+Furthermore, '-p 1000' was passed to real targets. This is redundant as
+latency already uses 1000 µs as default period.
 
-*Community update
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ tests/jobs/xenomai-beagle-bone-black.yml | 2 +-
+ tests/jobs/xenomai-hikey.yml             | 2 +-
+ tests/jobs/xenomai-qemu-amd64.yml        | 2 +-
+ tests/jobs/xenomai-qemu-arm64.yml        | 2 +-
+ tests/jobs/xenomai-qemu-armhf.yml        | 2 +-
+ tests/jobs/xenomai-x86-64-efi.yml        | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
 
-- Xenomai mirror on gitee.com is setup. Commit to the original repo will
-auto sync to the mirror (Not vice versa though). It's expected that PRC=20
-developers can get much improved download speed with this mirror.
-https://gitee.com/xenomai
-
-- Xenomai CI LAVA master setup on public cloud. Open for Xenomai developers
-to connect target boards to the system.=20
-http://lava.xenomai.org/
-
-- Xenomai 3.2 is just a few weeks away. The major blocker so far is the=20
-GPIO latency issue. Philippe/Jan will follow up.
-
-- Dovetail and I-PIPE ABI compatibility will not be covered in Xenomai 3.2.
-
-- Yanfeng tested a DPDK demo app on Cobalt which works just fine.
-=20
-- Hao Li shared Xenomai dovetail kernel test result on Intel platform.=20
-Total 560 passed, 16 failed and 2 blocked. Investigating the fail cases.
-
-
-
-Thanks,
-Rick
+diff --git a/tests/jobs/xenomai-beagle-bone-black.yml b/tests/jobs/xenomai-beagle-bone-black.yml
+index 034ac99..9a4acf1 100644
+--- a/tests/jobs/xenomai-beagle-bone-black.yml
++++ b/tests/jobs/xenomai-beagle-bone-black.yml
+@@ -67,7 +67,7 @@ actions:
+           description: "runs the xenomai test suite"
+         run:
+           steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\"
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
+index a2cbdaa..14fd9f3 100644
+--- a/tests/jobs/xenomai-hikey.yml
++++ b/tests/jobs/xenomai-hikey.yml
+@@ -66,7 +66,7 @@ actions:
+           description: "runs the xenomai test suite"
+         run:
+           steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\"
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index c335292..29f5216 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -83,7 +83,7 @@ actions:
+           description: "runs the xenomai test suite"
+         run:
+           steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k --vm
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" --vm
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index 88fb880..fa0b5bb 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -89,7 +89,7 @@ actions:
+             - quirin.gylstorff@siemens.org
+         run:
+           steps:
+-            - lava-test-case xenomai-smokey --shell xeno-test -k --vm
++            - lava-test-case xenomai-smokey --shell xeno-test -k -l \"dohell -m /tmp 300\" --vm
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index 3e3a8ab..9507a4f 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -83,7 +83,7 @@ actions:
+           description: "runs the xenomai test suite"
+         run:
+           steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k --vm
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" --vm
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
+index 5a2f533..ec28291 100644
+--- a/tests/jobs/xenomai-x86-64-efi.yml
++++ b/tests/jobs/xenomai-x86-64-efi.yml
+@@ -68,7 +68,7 @@ actions:
+           description: "runs the xenomai test suite"
+         run:
+           steps:
+-            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\"
+       from: inline
+       path: inline/xenomai-test-suite.yaml
+       name: xenomai-test-suite
+-- 
+2.26.2
 
