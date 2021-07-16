@@ -1,10 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] drivers/ipc: bufp: Add missing initialization of rdsem/wrsem
-Message-ID: <94b17b84-0e9f-573b-4d74-c3733c0b6eac@siemens.com>
-Date: Mon, 5 Jul 2021 08:15:39 +0200
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: Xenomai 3: Wierd problem resuming task
+Message-ID: <7321df79-b945-d152-4bb0-7792189bac2a@tin.it>
+Date: Fri, 16 Jul 2021 11:45:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Language: it-IT
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,33 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi,
 
-This caused random values in those vars, and that led to premature
-leaving of __bufp_readbuf and __bufp_writebuf with waiter states not
-properly updated, e.g.
+I'm using Xenomai3 (master branch, commit 
+bca41678742be80c3a0d5a01935c671c385a95a1) on a X86_64bit Intel Atom 
+x5-E8000 with 2GB RAM, using kernel from Xenomai repos, in Cobalt 
+coniguration. SMI workaround is enabled and all latency tests are good.
 
-Fixes: 0a67a85bdd00 ("drivers/ipc: bufp: fix rd/rd and wr/wr races")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/ipc/bufp.c | 2 ++
- 1 file changed, 2 insertions(+)
+I'm facing with a very weird problem in my application. I have some 
+tasks with priority < 90 that call rt_task_suspend() on themselves. 
+Then, I have a task with priority 99 that resumes all other tasks with 
+rt_task_resume(), when they are suspended.
 
-diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
-index 5692f31469..d673ee8f32 100644
---- a/kernel/drivers/ipc/bufp.c
-+++ b/kernel/drivers/ipc/bufp.c
-@@ -120,6 +120,8 @@ static int bufp_socket(struct rtdm_fd *fd)
- 	sk->fillsz = 0;
- 	sk->rdrsvd = 0;
- 	sk->wrrsvd = 0;
-+	sk->rdsem = 0;
-+	sk->wrsem = 0;
- 	sk->status = 0;
- 	sk->handle = 0;
- 	sk->rx_timeout = RTDM_TIMEOUT_INFINITE;
+Sometimes a task does not get resumed.
+
+In /proc/xenomai/sched/stat I have this status for my suspendend task:
+
+CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
+   1  620    3          8          13         0     00048041    0.0  t12
+
+Analizing the scenario attaching gdb to the application, I observe that 
+the not-resuming task has this backtrace:
+
+#0  0x00007f0ec14c9b38 in __cobalt_kill (pid=620, sig=65) at signal.c:100
+100	signal.c: No such file or directory.
+(gdb) bt
+#0  0x00007f0ec14c9b38 in __cobalt_kill (pid=620, sig=65) at signal.c:100
+#1  0x00007f0ec14eb379 in threadobj_suspend 
+(thobj=thobj@entry=0x7f0ec06bfcd0) at threadobj.c:335
+#2  0x00007f0ec15013dc in rt_task_suspend (task=task@entry=0x0) at 
+task.c:1154
+
+that seems to me OK. If I understood correctly, it is locked in its 
+SIGSUSP handler, that calls sigsuspend() waiting SIGRESM to "restart".
+
+Then, I placed some breakpoints where rt_task_resume() were called, and 
+in rt_task_resume() itself. I set tcb->suspends=1 with GDB and followed 
+the subsequent call of threadobj_resume(). Then, I placed some 
+breakpoints in threadobj_resume, I forced __THREAD_S_SUSPENDED bit in 
+thobj->status, and I observed that __RT(kill(thobj->pid, SIGRESM)) got 
+called, with a retval 0. thobj->pid has the right value.
+
+But the suspended task does not get resumed.
+
+Any idea/suggestion?
+
+Thanks in advance, regards
+
 -- 
-2.26.2
+Mauro
 
