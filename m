@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Switch to bullseye and gcc-10
-Message-ID: <8ed67e75-50e3-3264-fb91-3bbf6184554e@siemens.com>
-Date: Sun, 18 Jul 2021 10:46:53 +0200
+Subject: [PATCH] ci: Rename I-pipe URL variable
+Message-ID: <5597380b-789c-fd3d-b3a3-e6f1d994e398@siemens.com>
+Date: Sun, 18 Jul 2021 10:47:02 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -15,101 +15,102 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
-Cc: Steven Seeger <steven.seeger@flightsystems.net>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Debian 11 is almost ready. It comes with newer gcc-10. So better test
-now to avoid surprises.
-
-We just need to hold powerpc at Debian 10 as it does not build with
-gcc-10. It's also unclear if the removal of SPE support in recent gcc
-would affect us.
+Pure cosmetics: We are no longer pulling from a mirror but from the
+official source.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ .gitlab-ci.yml | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 7644861104..8be00c3cec 100644
+index 8be00c3cec..0d354c04d7 100644
 --- a/.gitlab-ci.yml
 +++ b/.gitlab-ci.yml
-@@ -13,7 +13,7 @@ stages:
-   - test
- 
- default:
--  image: debian:buster
-+  image: debian:bullseye
- 
- variables:
-   GIT_STRATEGY: clone
-@@ -22,12 +22,13 @@ variables:
+@@ -20,7 +20,7 @@ variables:
+   KDIR: "/tmp/kernel"
+   USE_CCACHE: "1"
    CCACHE_MAXSIZE: "1G"
-   IPIPE_MIRROR_URL: "https://source.denx.de/Xenomai"
+-  IPIPE_MIRROR_URL: "https://source.denx.de/Xenomai"
++  IPIPE_URL: "https://source.denx.de/Xenomai"
    DOVETAIL_URL: "https://source.denx.de/Xenomai/linux-dovetail.git"
--  PACKAGES: "gcc-8 u-boot-tools git make bc bison libelf-dev autotools-dev \
-+  GCC_VERSION: "10"
-+  PACKAGES: "u-boot-tools git make bc bison libelf-dev autotools-dev \
-              autoconf autogen libtool pkg-config ccache flex libssl-dev"
--  PACKAGES_arm: "gcc-8-arm-linux-gnueabihf libc6-dev-armhf-cross"
--  PACKAGES_arm64: "gcc-8-aarch64-linux-gnu libc6-dev-arm64-cross"
--  PACKAGES_powerpc: "gcc-8-powerpc-linux-gnu libc6-dev-powerpc-cross"
--  PACKAGES_x86: ""
-+  PACKAGES_arm: "gcc-${GCC_VERSION} gcc-${GCC_VERSION}-arm-linux-gnueabihf libc6-dev-armhf-cross"
-+  PACKAGES_arm64: "gcc-${GCC_VERSION} gcc-${GCC_VERSION}-aarch64-linux-gnu libc6-dev-arm64-cross"
-+  PACKAGES_powerpc: "gcc-8 gcc-8-powerpc-linux-gnu libc6-dev-powerpc-cross"
-+  PACKAGES_x86: "gcc-${GCC_VERSION}"
-   XENOMAI_IMAGES_BRANCH: "master"
+   GCC_VERSION: "10"
+   PACKAGES: "u-boot-tools git make bc bison libelf-dev autotools-dev \
+@@ -187,7 +187,7 @@ arm-5.4-release:
+   variables:
+     ARCH: arm
+     PIPELINE_REV: ipipe-core-5.4..*-arm-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
+     KERNEL_DEFCONFIG: multi_v7_defconfig
  
- .build:
-@@ -36,7 +37,6 @@ variables:
-     - apt update
-     - ARCH_PACKAGES="PACKAGES_${ARCH}"
-     - apt install -y ${PACKAGES} ${!ARCH_PACKAGES}
--    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800
-     - REV=$(git ls-remote --tags --head --refs ${PIPELINE_KERNEL} | sed -e "s/.*[[:space:]]refs\/\(tags\|heads\)\///" | grep "${PIPELINE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
-     - test -n "${REV}" || REV="${PIPELINE_REV}"
-     - git clone --depth 1 --branch ${REV} ${PIPELINE_KERNEL} ${KDIR}
-@@ -44,24 +44,26 @@ variables:
-       "arm64")
-       export CROSS_COMPILE=aarch64-linux-gnu-;
-       export CONFIGURE_OPTS="--host=aarch64-linux-gnu --with-cc=aarch64-linux-gnu-gcc";
--      update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 800;
-+      update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-${GCC_VERSION} 800;
-       ;;
-       "arm")
-       export CROSS_COMPILE=arm-linux-gnueabihf-;
-       export CONFIGURE_OPTS="--host=arm-linux-gnueabihf --with-cc=arm-linux-gnueabihf-gcc";
--      update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 800;
-+      update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-${GCC_VERSION} 800;
-       ;;
-       "powerpc")
-+      export GCC_VERSION=8
-       export CROSS_COMPILE=powerpc-linux-gnu-;
-       export CONFIGURE_OPTS="--host=powerpc-linux-gnu --with-cc=powerpc-linux-gnu-gcc";
--      update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-8 800;
-+      update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-${GCC_VERSION} 800;
-       ;;
-       "x86")
-       export CROSS_COMPILE=;
-       export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched";
-       ;;
-       esac
--    - ln -s /usr/lib/ccache/${CROSS_COMPILE}gcc-8 /usr/lib/ccache/${CROSS_COMPILE}gcc
-+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_VERSION} 800
-+    - ln -s /usr/lib/ccache/${CROSS_COMPILE}gcc-${GCC_VERSION} /usr/lib/ccache/${CROSS_COMPILE}gcc
-     - export PATH=/usr/lib/ccache:$PATH
-     - ${CROSS_COMPILE}gcc --version
+ arm-4.19-release:
+@@ -195,7 +195,7 @@ arm-4.19-release:
+   variables:
+     ARCH: arm
+     PIPELINE_REV: ipipe-core-4.19..*-arm-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
+     KERNEL_DEFCONFIG: multi_v7_defconfig
  
-@@ -254,6 +256,7 @@ x86-4.19-cip-release:
+ arm64-5.10-head:
+@@ -211,7 +211,7 @@ arm64-5.4-release:
+   variables:
+     ARCH: arm64
+     PIPELINE_REV: ipipe-core-5.4..*-arm64-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
+     KERNEL_DEFCONFIG: defconfig
+ 
+ arm64-4.19-cip-release:
+@@ -219,7 +219,7 @@ arm64-4.19-cip-release:
+   variables:
+     ARCH: arm64
+     PIPELINE_REV: ipipe-core-4.19..*cip.*-arm64-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
+     KERNEL_DEFCONFIG: defconfig
+ 
+ x86-5.10-head:
+@@ -235,7 +235,7 @@ x86-5.4-head:
+   variables:
+     ARCH: x86
+     PIPELINE_REV: ipipe-x86-5.4.y
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+     KERNEL_DEFCONFIG: x86_64_defconfig
+ 
+ x86-4.19-cip-head:
+@@ -243,7 +243,7 @@ x86-4.19-cip-head:
+   variables:
+     ARCH: x86
+     PIPELINE_REV: ipipe-x86-4.19.y-cip
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+     KERNEL_DEFCONFIG: x86_64_defconfig
+ 
+ x86-4.19-cip-release:
+@@ -251,7 +251,7 @@ x86-4.19-cip-release:
+   variables:
+     ARCH: x86
+     PIPELINE_REV: ipipe-core-4.19..*cip.*-x86-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+     KERNEL_DEFCONFIG: x86_64_defconfig
  
  powerpc-4.19-release:
-   extends: .build
-+  image: debian:buster
+@@ -260,7 +260,7 @@ powerpc-4.19-release:
    variables:
      ARCH: powerpc
      PIPELINE_REV: ipipe-core-4.19..*-ppc32-.*
+-    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-ppc32.git
++    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-ppc32.git
+     KERNEL_DEFCONFIG: mpc5200_defconfig
+ 
+ trigger-xenomai-images:
 -- 
 2.26.2
 
