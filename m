@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 2/3] ci: Remove deploy with ssh
-Date: Mon, 19 Jul 2021 18:29:48 +0200
-Message-Id: <20210719162949.4342-3-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 1/3] ci: Remove artifact deployment
+Date: Mon, 19 Jul 2021 18:29:47 +0200
+Message-Id: <20210719162949.4342-2-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20210719162949.4342-1-Quirin.Gylstorff@siemens.com>
 References: <20210719162949.4342-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,215 +18,324 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-We will use AWS S3 deployment for LAVA Build Artifacts. Therefore
-remove the Deployment via ssh as the LAVA Lab is now public
+We will use AWS S3 deployment for LAVA CI Artifacts. Therefore
+remove the Deployment via gitlab artifacts as the LAVA Lab is now public
 available.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- ci/gitlab-ci-base.yml         | 11 +++-----
- scripts/deploy_for_testing.sh | 51 -----------------------------------
- scripts/run-lava-tests.sh     | 37 +++----------------------
- tests/README.md               | 17 +++---------
- 4 files changed, 10 insertions(+), 106 deletions(-)
- delete mode 100755 scripts/deploy_for_testing.sh
+ .gitlab-ci-artifacts.yml            | 13 -----------
+ .gitlab-ci.yml                      | 30 +++++++++++++++++++++++--
+ ci/artifacts.yml                    | 20 -----------------
+ ci/child_pipelines_artifacts.yml    | 34 -----------------------------
+ ci/child_pipelines_common.yml       |  9 --------
+ ci/child_pipelines_no_artifacts.yml | 34 -----------------------------
+ ci/gitlab-ci-base.yml               |  5 ++---
+ ci/no-artifacts.yml                 | 13 -----------
+ scripts/get-build-id.sh             | 34 -----------------------------
+ scripts/run-lava-tests.sh           |  8 ++-----
+ 10 files changed, 32 insertions(+), 168 deletions(-)
+ delete mode 100644 .gitlab-ci-artifacts.yml
+ delete mode 100644 ci/artifacts.yml
+ delete mode 100644 ci/child_pipelines_artifacts.yml
+ delete mode 100644 ci/child_pipelines_no_artifacts.yml
+ delete mode 100644 ci/no-artifacts.yml
+ delete mode 100755 scripts/get-build-id.sh
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 362a636..d80efa1 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -27,29 +27,24 @@ variables:
- default:
-   image: ghcr.io/siemens/kas/kas-isar:2.4
- 
--# add lavacli to the container and install the ssh keys
--# for the test infrastructure
--.add-lava-ssh-config:
-+.add-proxy-config:
-   before_script:
-     - mkdir -p -m=700 ~/.ssh
-     - if [ -n "$https_proxy" ]; then
-           echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config;
-           chmod 600 ~/.ssh/config;
-       fi
--    - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
--    - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
- 
- .build:
--  extends: .add-lava-ssh-config
-+  extends: .add-proxy-config
-   stage: build
-   script:
-     - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
-     - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
--    - if [ -z "${USE_S3_BUCKET}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
-     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
- 
- .test:
--  extends: .add-lava-ssh-config
-+  extends: .add-proxy-config
-   stage: test
-   script:
-     - scripts/install-lavacli.sh
-diff --git a/scripts/deploy_for_testing.sh b/scripts/deploy_for_testing.sh
-deleted file mode 100755
-index 3878e7d..0000000
---- a/scripts/deploy_for_testing.sh
+diff --git a/.gitlab-ci-artifacts.yml b/.gitlab-ci-artifacts.yml
+deleted file mode 100644
+index 85345b8..0000000
+--- a/.gitlab-ci-artifacts.yml
 +++ /dev/null
-@@ -1,51 +0,0 @@
--#!/bin/sh
--
+@@ -1,13 +0,0 @@
 -#
 -# Xenomai Real-Time System
 -#
--# Copyright (c) Siemens AG, 2019-2020
+-# Copyright (c) Siemens AG, 2019 - 2021
 -#
 -# Authors:
 -#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
 -#
 -# SPDX-License-Identifier: MIT
 -#
--set -e
--target="$1"
 -
--if [ -z "${target}" ]; then
--    exit 1
--fi
--images_dir=build/tmp/deploy/images
+-include:
+-  - local: '/ci/child_pipelines_artifacts.yml'
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index a808859..c1eb0b3 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -9,5 +9,31 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-include:
+-  - local: '/ci/child_pipelines_no_artifacts.yml'
++stages:
++  - parent
++
++.parent:
++  stage: parent
++  trigger:
++    strategy: depend
++  rules:
++    - if: '$ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME'
++
++
++stable/v3.0.x:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/xenomai_3_0_x.yml'
++
++stable/v3.1.x:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/xenomai_3_1_x.yml'
++
++next:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/xenomai_next.yml'
+diff --git a/ci/artifacts.yml b/ci/artifacts.yml
+deleted file mode 100644
+index ba851cf..0000000
+--- a/ci/artifacts.yml
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019 - 2021
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
 -
--if [ -z "${LAVA_SSH_USER}" ] || [ -z "${LAVA_SSH_HOST}" ]  || [ -z "${LAVA_SSH_PORT}" ]; then
--    echo "Lava environment not available or incomplete - do not deploy"
--    exit 0
--fi
+-variables:
+-  USE_GITLAB_ARTIFACTS: "true"
 -
--lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
+-.build:
+-  extends: .build-base
+-  artifacts:
+-    paths:
+-    - build/tmp/deploy/images/${TARGET}/
+-    expire_in: 1 week
+diff --git a/ci/child_pipelines_artifacts.yml b/ci/child_pipelines_artifacts.yml
+deleted file mode 100644
+index 1dd856c..0000000
+--- a/ci/child_pipelines_artifacts.yml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019 - 2021
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
 -
--isar_base_name="${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${target}"
--lava_deploy_dir="${LAVA_DEPLOY_DIR:-/var/lib/lava/artifacts}"
--deploy_dir="${lava_deploy_dir}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
--lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
--if [ -n "${CI_PIPELINE_ID}" ]; then
--    ssh -p ${LAVA_SSH_PORT} ${lava_identity} ${lava_ssh_destination} 'install -d -m 755 "'${deploy_dir}'"'
+-include:
+-  - local: '/ci/child_pipelines_common.yml'
+-
+-stable/v3.0.x:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_3_0_x.yml'
+-
+-stable/v3.1.x:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_3_1_x.yml'
+-
+-next:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/artifacts.yml'
+-      - local: '/ci/xenomai_next.yml'
+diff --git a/ci/child_pipelines_common.yml b/ci/child_pipelines_common.yml
+index a96a81f..eee53f3 100644
+--- a/ci/child_pipelines_common.yml
++++ b/ci/child_pipelines_common.yml
+@@ -10,12 +10,3 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-stages:
+-  - parent
+-
+-.parent:
+-  stage: parent
+-  trigger:
+-    strategy: depend
+-  rules:
+-    - if: '$ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME'
+diff --git a/ci/child_pipelines_no_artifacts.yml b/ci/child_pipelines_no_artifacts.yml
+deleted file mode 100644
+index c90204d..0000000
+--- a/ci/child_pipelines_no_artifacts.yml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019 - 2021
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-include:
+-  - local: '/ci/child_pipelines_common.yml'
+-
+-stable/v3.0.x:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_3_0_x.yml'
+-
+-stable/v3.1.x:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_3_1_x.yml'
+-
+-next:
+-  extends: .parent
+-  trigger:
+-    include:
+-      - local: '/ci/no-artifacts.yml'
+-      - local: '/ci/xenomai_next.yml'
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 7f245e3..362a636 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -39,13 +39,13 @@ default:
+     - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
+     - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+ 
+-.build-base:
++.build:
+   extends: .add-lava-ssh-config
+   stage: build
+   script:
+     - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
+     - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
+-    - if [ -z "${USE_GITLAB_ARTIFACTS}" -a -z "${USE_S3_BUCKET}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
++    - if [ -z "${USE_S3_BUCKET}" ]; then scripts/deploy_for_testing.sh ${TARGET}; fi
+     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+ 
+ .test:
+@@ -53,7 +53,6 @@ default:
+   stage: test
+   script:
+     - scripts/install-lavacli.sh
+-    - export BUILD_JOB_ID=$(scripts/get-build-id.sh ${BUILD_JOB_NAME})
+     - scripts/run-lava-tests.sh ${TARGET}
+   variables:
+     BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
+diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
+deleted file mode 100644
+index a820f89..0000000
+--- a/ci/no-artifacts.yml
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2019 - 2021
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-.build:
+-  extends: .build-base
+diff --git a/scripts/get-build-id.sh b/scripts/get-build-id.sh
+deleted file mode 100755
+index 1a0dcaa..0000000
+--- a/scripts/get-build-id.sh
++++ /dev/null
+@@ -1,34 +0,0 @@
+-#!/bin/sh
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2020
+-#
+-# Authors:
+-#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-name=$1
+-if [ -z "${name}" ]; then
+-    echo "no build name was given"
+-    exit -1
 -fi
--#KERNEL
--scp -P ${LAVA_SSH_PORT} ${lava_identity} ${images_dir}/${target}/${isar_base_name}-vmlinuz \
--    ${lava_ssh_destination}:${deploy_dir}
--# INITRD
--scp -P ${LAVA_SSH_PORT} ${lava_identity} ${images_dir}/${target}/${isar_base_name}-initrd.img \
--    ${lava_ssh_destination}:${deploy_dir}
--# ROOTFS
--if [ ! -e ${images_dir}/${target}/${isar_base_name}.*.gz  ]; then
--    gzip ${images_dir}/${target}/${isar_base_name}.*
--fi
--scp -P ${LAVA_SSH_PORT} ${lava_identity} ${images_dir}/${target}/${isar_base_name}.* \
--    ${lava_ssh_destination}:${deploy_dir}
--# DTB
--dtb="${images_dir}/${target}/*.dtb"
--if [ -e ${dtb} ]; then
--    scp -P ${LAVA_SSH_PORT} ${lava_identity} ${dtb} ${lava_ssh_destination}:${deploy_dir}
+-index=0
+-JSON=$(curl -s --header "PRIVATE-TOKEN: ${API_TOKEN}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/jobs?scope[]=success"  )
+-while build_name=$(echo "${JSON}" | tr '\r\n' ' ' | jq -re ".[${index}].name")
+-do
+-    if [ "${build_name}" = "${name}" ]; then
+-        break
+-    fi
+-     index=$((index+1))
+-done
+-id=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].id")
+-if [ "$id" = "null" ]; then
+-    >&2 echo "ERROR: did not find build with name: $name"
+-    return 1
+-else
+-    echo $id
+-    return 0
 -fi
 diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index 13fac31..b1b51bb 100755
+index 7972279..13fac31 100755
 --- a/scripts/run-lava-tests.sh
 +++ b/scripts/run-lava-tests.sh
-@@ -15,36 +15,10 @@ if [ -z "${TARGET}" ]; then
-     exit 1
- fi
+@@ -52,12 +52,9 @@ echo "connect to lava server: ${lava_master_uri}"
+ lavacli identities add --token "${LAVA_MASTER_TOKEN}" --uri "${lava_master_uri}" --username "${LAVA_MASTER_ACCOUNT}" default
  
--if [ -n "${LAVA_SSH_HOST}" ]; then
--    echo "use SSH to connect to lava server"
--    # private master with ssh forward access
--    lava_master_port="${LAVA_MASTER_PORT:-28080}"
--    lava_ssh_port="-p ${LAVA_SSH_PORT:-22}"
--    lava_identity="-i ${LAVA_SSH_KEY_PATH:-~/.ssh/lava_id_rsa}"
--    lava_ssh_destination="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
--    # open connection for ssh port forwarding
--    ssh -N ${lava_ssh_port} ${lava_identity} -o 'LocalForward localhost:'${lava_master_port}' localhost:80' ${lava_ssh_destination} &
--    ssh_pid="$!"
--    # wait for connection
--    interval=1
--    timeout=60
--    until ss -tulw | grep -q "${lava_master_port}"
--    do
--        if [ ${timeout} -le 0 ]; then
--            echo "could not open connection to LAVA Master"
--            exit 1
--        fi
--        sleep ${interval}
--        timeout=$(( timeout - interval ))
--    done
--    artifact_url="${LAVA_ARTIFACTS_URL:-http://localhost/artifacts}"
--    lava_master_uri="${LAVA_MASTER_URL:-http://localhost}:${lava_master_port}"
+ #generate lava job description from template
+-if [ -n "${USE_GITLAB_ARTIFACTS}" ]; then
+-    DEPLOY_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${BUILD_JOB_ID}/artifacts/build/tmp/deploy/images/${TARGET}"
 -else
--    # S3 artifacts
--    artifact_url="${LAVA_ARTIFACTS_URL:-https://xenomai-images-artifacts.s3.eu-central-1.amazonaws.com/artifacts}"
--    # public master
--    lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org}"
+-    DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
 -fi
-+# S3 artifacts
-+artifact_url="${LAVA_ARTIFACTS_URL:-https://xenomai-images-artifacts.s3.eu-central-1.amazonaws.com/artifacts}"
-+# public master
-+lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org}"
++DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}/${DEPLOY_DIR_EXTENSION}"
+ export DEPLOY_URL
++
+ echo "Deploy artifacts from '${artifact_url}'"
  
- echo "connect to lava server: ${lava_master_uri}"
+ job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
+@@ -66,7 +63,6 @@ template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
  
-@@ -79,9 +53,6 @@ curl --silent "${url}" -o report.xml
- # change return code to generate a error in gitlab-ci if a test is failed
- number_of_fails="$(grep -o "errors=\"[0-9]*\"" report.xml | head -1  | cut -d\" -f2 )"
+ cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
  
--if [ -n "${ssh_pid}" ];then
--   kill "${ssh_pid}"
--fi
- if [ "${number_of_fails}" -gt "0" ]; then
-     exit 1
- fi
-diff --git a/tests/README.md b/tests/README.md
-index e0d50a9..3e17271 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -46,9 +46,9 @@ is used:
-                                                                | Target 1 |
-                                                             /--|  beagle  |
- +-----------+        +---------+       +---------+    /-----   |  bone    |
--|           |  ssh   | LAVA    |       | LAVA    | ---         +----------+
-+|           |        | LAVA    |       | LAVA    | ---         +----------+
- | gitlab-   | ------ | master  |------ | Dis-    | --
--| runner    | tunnel |         |       | patcher | \ \---      +----------+
-+| runner    |        |         |       | patcher | \ \---      +----------+
- +-----------+        +---------+       +---------+  \-   \---  | Target 2 |
-                                                       \      \-| x86-64   |
-                                                        \       |          |
-@@ -62,8 +62,7 @@ is used:
- ```
- A test is deployed in the following steps:
- 1. gitlab-runner: builds the artifacts
--2. After the build is successful the build artifacts are deployed to the
--   Lava master per scp.
-+2. After the build is successful the build artifacts are deployed to a AWS S3 bucket.
- 3. The runner sends a lava job description to the LAVA master, who triggers the
- job execution on LAVA Dispatcher.
- 
-@@ -103,20 +102,10 @@ The following variables are used and set by the ci system:
-   - `FTP_PROXY`     : ftp proxy
-   - `NO_PROXY`      : no proxy
- 
--- SSH settings:
--  - `LAVA_SSH_USER` : ssh user to connect to the LAVA master
--  - `LAVA_SSH_HOST` : ssh host name to connect to the LAVA master
--  - `LAVA_SSH_PORT` : ssh port used for the ssh tunnel
--  - `LAVA_SSH_UPLOAD_KEY`  :  private ssh key to connect to the LAVA master
--  - `LAVA_SSH_KNOWN_HOSTS` : Known hosts to connect via ssh to the host given by `LAVA_SSH_HOST`
 -
- - LAVA settings:
-   - `LAVA_MASTER_ACCOUNT`  : lava master account name to register lavacli for test execution
-   - `LAVA_MASTER_TOKEN`    : token to connect with the lava master
--  - `LAVA_DEPLOY_DIR`    : optional variable to define directory to store the build artifacts
-   - `LAVA_ARTIFACTS_URL` : optional variable where to get the artifacts for testing
--  - `LAVA_DEPLOY_DIR`: Directory to deploy the Artifacts in a build. Default /var/lib/lava/artifacts
--  - `LAVA_MASTER_PORT`: PORT to access the LAVA Master
-   - `LAVA_MASTER_URL`: URL to the LAVA Master
+ echo "submit lava job"
  
- - General build settings
+ test_id=$(lavacli jobs submit "${template}")
 -- 
 2.20.1
 
