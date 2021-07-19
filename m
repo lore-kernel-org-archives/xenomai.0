@@ -1,13 +1,14 @@
-Subject: Re: [PATCH 1/1] license: summarize the licensing terms
-References: <20210718092347.473513-1-rpm@xenomai.org>
- <20210718092347.473513-2-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <88390652-4ae4-5bbe-354c-eb327d6a2560@siemens.com>
-Date: Mon, 19 Jul 2021 07:50:08 +0200
+Subject: Re: Xenomai 3: Wierd problem resuming task
+References: <7321df79-b945-d152-4bb0-7792189bac2a@tin.it>
+ <87k0lq79a0.fsf@xenomai.org> <e2aa120a-d4da-f288-fedc-ccd5823e5587@tin.it>
+ <87h7gu71bk.fsf@xenomai.org>
+From: "Mauro S." <mau.salvi@tin.it>
+Message-ID: <d8dfdd00-7a27-1256-15e5-93248dc66ce7@tin.it>
+Date: Mon, 19 Jul 2021 10:10:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210718092347.473513-2-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <87h7gu71bk.fsf@xenomai.org>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Language: it-IT
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,71 +18,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 18.07.21 11:23, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+Il 16/07/21 16:58, Philippe Gerum ha scritto:
 > 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  COPYING | 39 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->  create mode 100644 COPYING
+> Mauro S. <mau.salvi@tin.it> writes:
 > 
-> diff --git a/COPYING b/COPYING
-> new file mode 100644
-> index 000000000..583410189
-> --- /dev/null
-> +++ b/COPYING
-> @@ -0,0 +1,39 @@
-> +
-> +Licensing terms
-> +---------------
-> +
-> +Xenomai 3 is composed of a number of libraries, user-space application
-> +programs, and kernel code. This file summarizes the licenses used for
-> +the libraries and kernel code. Please refer to the COPYING file in the
-> +corresponding directory for details. The licensing terms of each
-> +application program shipped with Xenomai 3 is stated in the
-> +corresponding source code.
-> +
-> +-- Libraries
-> +
-> +./lib/boilerplate/COPYING: LGPLv2 + MIT
-> +./lib/boilerplate/iniparser/LICENSE: MIT
-> +./lib/trank/COPYING: LGPLv2
-> +./lib/copperplate/COPYING: LGPLv2
-> +./lib/cobalt/COPYING: LGPLv2
-> +./lib/psos/COPYING: LGPLv2
-> +./lib/smokey/COPYING: LGPLv2
-> +./lib/vxworks/COPYING: LGPLv2
-> +./lib/alchemy/COPYING: LGPLv2
-> +
-> +-- Kernel code
-> +
-> +./kernel/cobalt/posix/COPYING: GPLv2
-> +./kernel/cobalt/COPYING: GPLv2
-> +./kernel/cobalt/rtdm/COPYING: GPLv2
-> +
-> +Please note that the common Linux licensing rules as stated in the
-> +document mentioned below apply to all the Xenomai kernel code once
-> +compiled in the Linux kernel, with no exception:
-> +
-> +https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
-> +
-> +-- Header files, including UAPI (kernel <-> user interface)
-> +
-> +./include/COPYING: GPLv2 + exception for additional uses in
-> +                   user-space application programs.
+>> Il 16/07/21 14:06, Philippe Gerum ha scritto:
+>>> Mauro S. via Xenomai <xenomai@xenomai.org> writes:
+>>>
+>>>> Hi,
+>>>>
+>>>> I'm using Xenomai3 (master branch, commit
+>>>> bca41678742be80c3a0d5a01935c671c385a95a1) on a X86_64bit Intel Atom
+>>>> x5-E8000 with 2GB RAM, using kernel from Xenomai repos, in Cobalt
+>>>> coniguration. SMI workaround is enabled and all latency tests are
+>>>> good.
+>>>>
+>>>> I'm facing with a very weird problem in my application. I have some
+>>>> tasks with priority < 90 that call rt_task_suspend() on themselves.
+>>>> Then, I have a task with priority 99 that resumes all other tasks with
+>>>> rt_task_resume(), when they are suspended.
+>>>>
+>>>> Sometimes a task does not get resumed.
+>>>>
+>>>> In /proc/xenomai/sched/stat I have this status for my suspendend task:
+>>>>
+>>>> CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
+>>>>     1  620    3          8          13         0     00048041    0.0
+>>>> t12
+>>>                                                               ^
+>>> That bit (XNSUSP) indicates that the core thinks the task is still
+>>> in
+>>> suspended state.
+>>>
+>>>>
+>>>> Analizing the scenario attaching gdb to the application, I observe
+>>>> that the not-resuming task has this backtrace:
+>>>>
+>>>> #0  0x00007f0ec14c9b38 in __cobalt_kill (pid=620, sig=65) at signal.c:100
+>>>> 100	signal.c: No such file or directory.
+>>>> (gdb) bt
+>>>> #0  0x00007f0ec14c9b38 in __cobalt_kill (pid=620, sig=65) at signal.c:100
+>>>> #1  0x00007f0ec14eb379 in threadobj_suspend
+>>>>    (thobj=thobj@entry=0x7f0ec06bfcd0) at threadobj.c:335
+>>>> #2  0x00007f0ec15013dc in rt_task_suspend (task=task@entry=0x0) at
+>>>>    task.c:1154
+>>>>
+>>>> that seems to me OK. If I understood correctly, it is locked in its
+>>>> SIGSUSP handler, that calls sigsuspend() waiting SIGRESM to "restart".
+>>>>
+>>>> Then, I placed some breakpoints where rt_task_resume() were called,
+>>>> and in rt_task_resume() itself. I set tcb->suspends=1 with GDB and
+>>>> followed the subsequent call of threadobj_resume(). Then, I placed
+>>>> some breakpoints in threadobj_resume, I forced __THREAD_S_SUSPENDED
+>>>> bit in thobj->status, and I observed that __RT(kill(thobj->pid,
+>>>> SIGRESM)) got called, with a retval 0. thobj->pid has the right value.
+>>>>
+>>>> But the suspended task does not get resumed.
+>>>>
+>>>> Any idea/suggestion?
+>>>>
+>>> You may want to check what happens in __cobalt_kill()
+>>> (kernel/cobalt/posix/signal.c), and in COBALT_SYSCALL(kill, ...), to
+>>> make sure the call actually succeeds.
+>>
+>> I traversed the code until lib/cobalt/signal.c (__cobalt_kill()
+>> library-side) and I cheched retval of XENOMAI_SYSCALL2(sc_cobalt_kill,
+>> pid, sig) (that is 0).
+>>
+>> If I understand correctly, kernel/cobalt/posix/signal.c is kernel
+>> code. Should I add printks? Or should I have to attach gdb to kernel
+>> (I think I'm not able)
+> 
+> printk() would be fine.
 > 
 
-Let's use SPDX identifiers (https://spdx.org/licenses/) and logic (OR,
-AND, WITH - https://spdx.dev/ids/).
+Hi Philippe an Jan,
 
-Thanks for taking care of this!
-Jan
+I have to check more deeply my application because there are some other 
+strange behaviors that make me think that there could be memory leaks 
+somewhere (and a standalone simple test code does not have the problem I 
+seen).
+
+I will be back if I will find something regarding Xenomai.
+
+Thanks again for your help.
+
+Regards
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Mauro
+
 
