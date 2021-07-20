@@ -1,11 +1,20 @@
-From: Pierre-Loup Gosse <pierre-loup.gosse@smile.fr>
-Subject: ipipe: IRQ not received on i.MX8 (linux-imx)
-Message-ID: <a57774b8-46af-5db9-1ab4-163210bc1396@smile.fr>
-Date: Mon, 5 Jul 2021 09:10:58 +0200
+References: <cover.1625777265.git.jan.kiszka@siemens.com>
+ <CAFLxGvw34vnYx57bP7cYv5HgRCbmPaGNBQzeQudyU-upq+u_-w@mail.gmail.com>
+ <5185508f-d8b7-fb49-de71-65c70eb33f8a@siemens.com>
+ <CAFLxGvyKL0gW4Nz41vwDFG6JRWb9YMQxtuB81=24B677mVebdQ@mail.gmail.com>
+ <bd64f2a7-f81a-5121-d428-54e3dde17f37@siemens.com>
+ <CAFLxGvxqpKLF5xE3-D-b_kQoUtZOcpfk-MK8DAo94Sz8VCOoog@mail.gmail.com>
+ <7daf0026-aab0-0d32-b52f-3f5ce993a7ac@siemens.com>
+ <CAFLxGvwxCyhxVAFP6nRBgi5riFVTxHWPZ7H0gisL=6trWeMhuA@mail.gmail.com>
+ <87r1ftqeaq.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH v2 0/3] Add callback-like mechanism before/after ptrace
+ stops
+In-reply-to: <87r1ftqeaq.fsf@xenomai.org>
+Date: Tue, 20 Jul 2021 16:08:43 +0200
+Message-ID: <87k0llqdqs.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,53 +23,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hi,
 
-For a client project I try to port Xenomai 3.1 + I-pipe to the kernel 
-linux-imx 5.4.70 for arm64 (i.MX8 Mini). I adapted the I-pipe patch 
-(5.4.72-arm64). The kernel boots and works well.
+Philippe Gerum <rpm@xenomai.org> writes:
 
-However, for the non-regression test, I run a client test that uses 
-Xenomai and UDD (to register a PCIe driver). The test waits for a 
-hardware IRQ from a PCIe device. This IRQ is never received which lead 
-the test to fail. To be more precise, after running the test, Xenomai 
-show that no IRQs was received for this device:
+> Richard Weinberger via Xenomai <xenomai@xenomai.org> writes:
+>
+>> On Tue, Jul 20, 2021 at 12:53 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>> > I've heard that with dovetail Xenomai no longer sees exceptions.
+>>> > So this is a set in stone concept?
+>>>
+>>> Xenomai can no longer declare exceptions resolved. It still sees them.
+>>
+>> Understood.
+>>
+>>> If we come up with a reasonable use case, I can't imagine that this is
+>>> set in stone.
+>>
+>> I can understand that dovetail doesn't want to offer something super generic
+>> as ipipe_trap_hook().
+>
+> Just like the I-pipe, Dovetail implements a way to tell the companion
+> core that "something happened", including a fault for the current task,
+> by calling handlers with weak bindings the core can
+> override. For faults, this would be oob_trap_notify().
 
-# cat /proc/xenomai/irq
-   IRQ         CPU0        CPU1 CPU2        CPU3
-     3:        4027       14050 3708        4488         [timer/0]
-**223:           0           0 0           0         netx00
-  1031:           0           0 0           0         [sync]
-  1032:           1           1 1           0         [timer-ipi]
-  1033:           0           0 0           0         [reschedule]
-  1037:           0          44 0           0         [virtual]
-
-'netx00' is our device with the IRQ 223.
-/proc/xenomai/irq simply reads the irqall counter per CPU per IRQ 
-(/__ipipe_cpudata_irq_hits/). This means that no IRQ 223 went through 
-the I-pipe, or worse, not even sent.
-
-But in comparison, I reproduced this test with the old client image 
-(Xenomai 3.1 + I-pipe on the kernel linux-imx 4.14.98) on the same 
-hardware (arm64 i.MX8 Mini). The test passed and Xenomai received IRQs 
-for 'next00'.
-
-This leads me to the conclusion that on the new kernel our IRQ is sent 
-but does not pass through the I-pipe.
-
-I noticed that some irq handler functions from driver do not use the 
-/ipipe_handle_domain_irq/ or /ipipe_handle_demuxed_irq/ but the generic 
-function, respectively /handle_domain_irq/ and /generic_handle_irq/. 
-Especially for the imx irqchip (_drivers/irqchip/irq-imx-intmux.c_ and 
-_drivers/irqchip/irq-imx-irqsteer.c_). I patched these files to use 
-/ipipe_handle_demuxed_irq/ rather than /generic_handle_irq/. But 
-/proc/xenomai/irq still shows 0 IRQs and the test still fails.
-
-Am I doing things right ? Or am I missing something ?
-
-Best regards,
+oob_trap_notify() is a Dovetail service calling the following weak hooks
+which should be provided by the core actually: handle_oob_trap_entry()
+then handle_oob_trap_exit().
 
 -- 
-Pierre-Loup.
+Philippe.
+
