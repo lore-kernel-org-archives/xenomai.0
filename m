@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/6] pinctrl: samsung: irq_pipeline: enable out-of-band
- interrupt handling
-Date: Thu, 22 Jul 2021 11:48:57 +0200
-Message-Id: <20210722094859.3580166-5-rpm@xenomai.org>
+Subject: [PATCH 5/6] genirq: irq_pipeline: export oob status to
+ /proc/interrupts
+Date: Thu, 22 Jul 2021 11:48:58 +0200
+Message-Id: <20210722094859.3580166-6-rpm@xenomai.org>
 In-Reply-To: <20210722094859.3580166-1-rpm@xenomai.org>
 References: <20210722094859.3580166-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,28 +19,25 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-We must decode the chained interrupts on the out-of-band stage to
-enable end-to-end out-of-band delivery. Set IRQF_OOB for the parent
-handler.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- drivers/pinctrl/samsung/pinctrl-exynos.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/irq/proc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.c b/drivers/pinctrl/samsung/pinctrl-exynos.c
-index e1c86adb8f9421e..7da7f80e654380a 100644
---- a/drivers/pinctrl/samsung/pinctrl-exynos.c
-+++ b/drivers/pinctrl/samsung/pinctrl-exynos.c
-@@ -288,7 +288,7 @@ __init int exynos_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
- 	}
- 
- 	ret = devm_request_irq(dev, d->irq, exynos_eint_gpio_irq,
--					0, dev_name(dev), d);
-+					IRQF_OOB, dev_name(dev), d);
- 	if (ret) {
- 		dev_err(dev, "irq request failed\n");
- 		return -ENXIO;
+diff --git a/kernel/irq/proc.c b/kernel/irq/proc.c
+index 7c5cd42df3b93e7..1428d83d7da8658 100644
+--- a/kernel/irq/proc.c
++++ b/kernel/irq/proc.c
+@@ -518,6 +518,9 @@ int show_interrupts(struct seq_file *p, void *v)
+ 		seq_printf(p, " %*s", prec, "");
+ #ifdef CONFIG_GENERIC_IRQ_SHOW_LEVEL
+ 	seq_printf(p, " %-8s", irqd_is_level_type(&desc->irq_data) ? "Level" : "Edge");
++#endif
++#ifdef CONFIG_IRQ_PIPELINE
++	seq_printf(p, " %-3s", irq_settings_is_oob(desc) ? "oob" : "");
+ #endif
+ 	if (desc->name)
+ 		seq_printf(p, "-%-8s", desc->name);
 -- 
 2.31.1
 
