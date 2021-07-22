@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/6] drm/msm/mdp5: irq_pipeline: enable out-of-band interrupt
- handling
-Date: Thu, 22 Jul 2021 11:48:56 +0200
-Message-Id: <20210722094859.3580166-4-rpm@xenomai.org>
+Subject: [PATCH 4/6] pinctrl: samsung: irq_pipeline: enable out-of-band
+ interrupt handling
+Date: Thu, 22 Jul 2021 11:48:57 +0200
+Message-Id: <20210722094859.3580166-5-rpm@xenomai.org>
 In-Reply-To: <20210722094859.3580166-1-rpm@xenomai.org>
 References: <20210722094859.3580166-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -25,22 +25,22 @@ handler.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c | 2 +-
+ drivers/pinctrl/samsung/pinctrl-exynos.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
-index 8e0f2be155d8625..781d701dfc75457 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
-@@ -255,7 +255,7 @@ int mdp5_mdss_init(struct drm_device *dev)
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.c b/drivers/pinctrl/samsung/pinctrl-exynos.c
+index e1c86adb8f9421e..7da7f80e654380a 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos.c
++++ b/drivers/pinctrl/samsung/pinctrl-exynos.c
+@@ -288,7 +288,7 @@ __init int exynos_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
  	}
  
- 	ret = devm_request_irq(dev->dev, platform_get_irq(pdev, 0),
--			       mdss_irq, 0, "mdss_isr", mdp5_mdss);
-+			       mdss_irq, IRQF_OOB, "mdss_isr", mdp5_mdss);
+ 	ret = devm_request_irq(dev, d->irq, exynos_eint_gpio_irq,
+-					0, dev_name(dev), d);
++					IRQF_OOB, dev_name(dev), d);
  	if (ret) {
- 		DRM_DEV_ERROR(dev->dev, "failed to init irq: %d\n", ret);
- 		goto fail_irq;
+ 		dev_err(dev, "irq request failed\n");
+ 		return -ENXIO;
 -- 
 2.31.1
 
