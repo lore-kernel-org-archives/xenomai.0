@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 5/6] genirq: irq_pipeline: export oob status to
- /proc/interrupts
-Date: Thu, 22 Jul 2021 11:48:58 +0200
-Message-Id: <20210722094859.3580166-6-rpm@xenomai.org>
+Subject: [PATCH 6/6] clocksource/exynos_mct: irq_pipeline: enable out-of-band
+ clock events
+Date: Thu, 22 Jul 2021 11:48:59 +0200
+Message-Id: <20210722094859.3580166-7-rpm@xenomai.org>
 In-Reply-To: <20210722094859.3580166-1-rpm@xenomai.org>
 References: <20210722094859.3580166-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,25 +19,27 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
+Ensure end-of-end out-of-band event delivery by receiving the clock
+interrupts directly on the out-of-band stage.
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/irq/proc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/clocksource/exynos_mct.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/irq/proc.c b/kernel/irq/proc.c
-index 7c5cd42df3b93e7..1428d83d7da8658 100644
---- a/kernel/irq/proc.c
-+++ b/kernel/irq/proc.c
-@@ -518,6 +518,9 @@ int show_interrupts(struct seq_file *p, void *v)
- 		seq_printf(p, " %*s", prec, "");
- #ifdef CONFIG_GENERIC_IRQ_SHOW_LEVEL
- 	seq_printf(p, " %-8s", irqd_is_level_type(&desc->irq_data) ? "Level" : "Edge");
-+#endif
-+#ifdef CONFIG_IRQ_PIPELINE
-+	seq_printf(p, " %-3s", irq_settings_is_oob(desc) ? "oob" : "");
- #endif
- 	if (desc->name)
- 		seq_printf(p, "-%-8s", desc->name);
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index a60cecf62c1cd6c..8d8ad16c13c3712 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -340,7 +340,7 @@ static int exynos4_clockevent_init(void)
+ 	clockevents_config_and_register(&mct_comp_device, clk_rate,
+ 					0xf, 0xffffffff);
+ 	if (request_irq(mct_irqs[MCT_G0_IRQ], exynos4_mct_comp_isr,
+-			IRQF_TIMER | IRQF_IRQPOLL, "mct_comp_irq",
++			IRQF_TIMER | IRQF_IRQPOLL | IRQF_OOB, "mct_comp_irq",
+ 			&mct_comp_device))
+ 		pr_err("%s: request_irq() failed\n", "mct_comp_irq");
+ 
 -- 
 2.31.1
 
