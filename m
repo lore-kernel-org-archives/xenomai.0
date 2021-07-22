@@ -1,16 +1,12 @@
-Subject: Re: [xenomai-images PATCH] recipes-kernel: arm64_config: enable Rtnet
- Rtdmtest and RTIPC
-References: <20210624064505.25467-1-hongzhan.chen@intel.com>
- <5e09fce4-2455-3cb4-791b-32a3fed46e75@siemens.com>
- <BN9PR11MB5227C06C8E6373E8DD9C0FECF21C9@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5c39cfe3-8a92-cee4-9a84-a4800be3ddf2@siemens.com>
-Date: Mon, 5 Jul 2021 09:22:35 +0200
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 3/6] drm/msm/mdp5: irq_pipeline: enable out-of-band interrupt
+ handling
+Date: Thu, 22 Jul 2021 11:48:56 +0200
+Message-Id: <20210722094859.3580166-4-rpm@xenomai.org>
+In-Reply-To: <20210722094859.3580166-1-rpm@xenomai.org>
+References: <20210722094859.3580166-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227C06C8E6373E8DD9C0FECF21C9@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,43 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05.07.21 08:26, Chen, Hongzhan wrote:
-> 
-> 
->>
->>>  # UDD support
->>> @@ -469,10 +580,9 @@ CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
->>>  # cause troubles with Xenomai. You should disable them.
->>>  #
->>>  CONFIG_XENO_VERSION_MAJOR=3
->>> -CONFIG_XENO_VERSION_MINOR=0
->>> -CONFIG_XENO_REVISION_LEVEL=90
->>> -CONFIG_XENO_VERSION_STRING="3.1-devel"
->>> -CONFIG_XENO_VERSION_NAME="Xenomai -next"
->>> +CONFIG_XENO_VERSION_MINOR=1
->>> +CONFIG_XENO_REVISION_LEVEL=0
->>> +CONFIG_XENO_VERSION_STRING="3.1"
->>>  CONFIG_FREEZER=y
->>>  
->>>  #
->>>
->>
->> This revealed a bug in bufp [1] - good that we enabled it...
->>
->> I think we still need something similar for armhf as well.
-> 
-> I can help enable them for armhf but the problem is that I do not have arm platform
-> so that I cannot validate the patch for armhf.
-> 
+From: Philippe Gerum <rpm@xenomai.org>
 
-QEMU is sufficient for a first test, the rest will be revealed by the lab.
+We must decode the chained interrupts on the out-of-band stage to
+enable end-to-end out-of-band delivery. Set IRQF_OOB for the parent
+handler.
 
-Thanks in advance!
-Jan
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
+index 8e0f2be155d8625..781d701dfc75457 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mdss.c
+@@ -255,7 +255,7 @@ int mdp5_mdss_init(struct drm_device *dev)
+ 	}
+ 
+ 	ret = devm_request_irq(dev->dev, platform_get_irq(pdev, 0),
+-			       mdss_irq, 0, "mdss_isr", mdp5_mdss);
++			       mdss_irq, IRQF_OOB, "mdss_isr", mdp5_mdss);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev->dev, "failed to init irq: %d\n", ret);
+ 		goto fail_irq;
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
+
 
