@@ -1,12 +1,10 @@
-Subject: Re: [xenomai-images 0/7] control applying of no-debug config
-References: <20210723031811.19290-1-hongzhan.chen@intel.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
-Date: Fri, 23 Jul 2021 14:27:18 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210723031811.19290-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Date: Fri, 23 Jul 2021 15:58:11 -0400
+From: ivan@rtxi.org
+Subject: Analogy usage
+Message-ID: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,46 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hi everyone,
 
+My name is Ivan and I am the current (new) maintainer for the Real-Time 
+eXperiment
+Interface (RTXI). This is an application that uses Xenomai to provide 
+real-time
+performance for experimental setups requiring deterministic control. A 
+number
+of laboratories both here in the United States and abroad use RTXI for 
+their
+biological experiments. RTXI uses the Analogy modules in order to 
+interface
+with a variety DAQ cards. This has allowed easy adoption of RTXI as it 
+provides
+compatibility among a wide range of DAQ cards out of the box.
 
-On 7/23/21 5:18 AM, Hongzhan Chen via Xenomai wrote:
-> 1. enable IPIPE_DEBUG uniformly for all arch by default in order to use
-> uniform method to control it via applying config fragment or not.
-> 2. create config fragment for earch arch to switch debug off.
-> 3. add control to apply config fragment or not.
-> 4. add kas option to control applying config fragment.
-> 
-> *** BLURB HERE ***
-> 
-> Hongzhan Chen (7):
->    recipes-kernel: arm64_config: enable IPIPE_DEBUG for arm64 by default
->    recipes-kernel: armhf_config: enable IPIPE_DEBUG for armhf by default
->    recipes-kernel: add config fragment file to disable debug for amd64
->    recipes-kernel: add config fragment file to disable debug for arm64
->    recipes-kernel: add config fragment file to disable debug for arm
->    recipes-kernel/linux: control appyling of no debug config fragment
->    Add kas option for swithing off debug
-> 
->   opt-set-nodbg.yml                          | 20 ++++++++++++++++++++
->   recipes-kernel/linux/files/amd64_nodbg.cfg |  1 +
->   recipes-kernel/linux/files/arm64_defconfig |  9 +++++----
->   recipes-kernel/linux/files/arm64_nodbg.cfg |  1 +
->   recipes-kernel/linux/files/armhf_defconfig | 15 +++++++++++++--
->   recipes-kernel/linux/files/armhf_nodbg.cfg |  1 +
->   recipes-kernel/linux/linux-xenomai.inc     | 10 +++++++++-
->   7 files changed, 50 insertions(+), 7 deletions(-)
->   create mode 100644 opt-set-nodbg.yml
->   create mode 100644 recipes-kernel/linux/files/amd64_nodbg.cfg
->   create mode 100644 recipes-kernel/linux/files/arm64_nodbg.cfg
->   create mode 100644 recipes-kernel/linux/files/armhf_nodbg.cfg
-> 
+I am new to the mailing list and while researching came across your 
+discussion to
+discontinue Analogy. Removing Analogy would undoubtedly have an impact 
+on all
+laboratories who use RTXI for their setups. What are the current plans 
+for
+Analogy? What issues can I assist with to improve the state of this 
+module?
 
-Why is there a *_nodbg,cfg for each Arch? The content for all is the 
-same, so IHMO one file should be enough.
+Thanks,
 
-Thanks
-
-Quirin
+Ivan F. Valerio
 
