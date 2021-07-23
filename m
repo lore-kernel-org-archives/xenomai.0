@@ -1,8 +1,7 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-images 5/7] recipes-kernel: add config fragment file to
- disable debug for arm
-Date: Thu, 22 Jul 2021 23:18:09 -0400
-Message-Id: <20210723031811.19290-6-hongzhan.chen@intel.com>
+Subject: [xenomai-images 7/7] Add kas option for swithing off debug
+Date: Thu, 22 Jul 2021 23:18:11 -0400
+Message-Id: <20210723031811.19290-8-hongzhan.chen@intel.com>
 In-Reply-To: <20210723031811.19290-1-hongzhan.chen@intel.com>
 References: <20210723031811.19290-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,22 +14,41 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Add config fragment file to disable debug for arm. For performance
-or latency testing and demonstration, debug switches should be off.
+For performance or latency testing and demonstration, debug switches
+should be off but it is on by default.
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 ---
- recipes-kernel/linux/files/armhf_nodbg.cfg | 1 +
- 1 file changed, 1 insertion(+)
- create mode 100644 recipes-kernel/linux/files/armhf_nodbg.cfg
+ opt-set-nodbg.yml | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 opt-set-nodbg.yml
 
-diff --git a/recipes-kernel/linux/files/armhf_nodbg.cfg b/recipes-kernel/linux/files/armhf_nodbg.cfg
+diff --git a/opt-set-nodbg.yml b/opt-set-nodbg.yml
 new file mode 100644
-index 0000000..749799d
+index 0000000..16a2fec
 --- /dev/null
-+++ b/recipes-kernel/linux/files/armhf_nodbg.cfg
-@@ -0,0 +1 @@
-+# CONFIG_IPIPE_DEBUG is not set
++++ b/opt-set-nodbg.yml
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (C) 2021 Intel Corporation
++#
++# Authors:
++#  Hongzhan Chen <hongzhan.chen@intel.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 10
++
++# to use kernel config fragments for disabling dbg and
++# improving performance
++
++local_conf_header:
++  distro-nodbg: |
++    DISTRO_NODBG = "YES"
 -- 
 2.17.1
 
