@@ -1,11 +1,9 @@
 MIME-Version: 1.0
-Date: Fri, 23 Jul 2021 15:58:11 -0400
-From: ivan@rtxi.org
-Subject: Analogy usage
-Message-ID: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+From: Virendra Kate <virendrakate@gmail.com>
+Date: Sat, 24 Jul 2021 03:25:31 -0700
+Message-ID: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
+Subject: Xenomai 3.1 User API : Posix vs Cobalt
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +12,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi everyone,
+Hello,
 
-My name is Ivan and I am the current (new) maintainer for the Real-Time 
-eXperiment
-Interface (RTXI). This is an application that uses Xenomai to provide 
-real-time
-performance for experimental setups requiring deterministic control. A 
-number
-of laboratories both here in the United States and abroad use RTXI for 
-their
-biological experiments. RTXI uses the Analogy modules in order to 
-interface
-with a variety DAQ cards. This has allowed easy adoption of RTXI as it 
-provides
-compatibility among a wide range of DAQ cards out of the box.
+According to the Xenomai 3.1 documentation, we found multiple sets of API
+documentations, cobalt API and
+the Xeno-Posix API (skipping Alchemy and the emulator skins for now). The
+Cobalt API seems to
+be rich in terms of the APIs.
 
-I am new to the mailing list and while researching came across your 
-discussion to
-discontinue Analogy. Removing Analogy would undoubtedly have an impact 
-on all
-laboratories who use RTXI for their setups. What are the current plans 
-for
-Analogy? What issues can I assist with to improve the state of this 
-module?
+Xeno-Posix API doc:
+https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__api.html
+Cobalt API doc:
+https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__core.html
+
+Which one should be used by the userspace application?
+According to the information mentioned in the
+https://source.denx.de/Xenomai/xenomai/-/wikis/Start_Here,
+section "
+<https://outlook.office.com/mail/sentitems/id/AAQkAGMyODIzYjdlLTc4NzItNDc4MS1iMzQxLWI0M2QzNjg3ODZiMgAQAHLZer7LYJ5Hua%2FPoWPXSJY%3D#x_user-content-how-does-xenomai-deliver-real-time>How
+does Xenomai deliver real-time?": "In this *dual kernel* configuration, all
+the RTOS APIs Xenomai
+provides interface with the Cobalt core, and only those APIs are deemed
+real-time capable, including the subset
+of POSIX 1003.1c services implemented by Xenomai (aka *libcobalt*)."
+
+Is the Cobalt API part of the Cobalt core or libcobalt? If it is part of
+the Cobalt Core can the userspace application
+directly use it?
 
 Thanks,
-
-Ivan F. Valerio
-
+Virendra
