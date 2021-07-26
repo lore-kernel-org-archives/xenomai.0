@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 6/9] cobalt/select: Add proper handling of EADV
-Date: Mon,  5 Jul 2021 09:36:38 +0200
-Message-Id: <ef3dd5c07befc1051ddce5c802edc3b070a50568.1625470600.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
-References: <cover.1625470600.git.jan.kiszka@siemens.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Xenomai 3.1 User API : Posix vs Cobalt
+Date: Mon, 26 Jul 2021 01:05:12 +0000
+Message-ID: <BN9PR11MB522740D77B7A43644A1B43C2F2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
+In-Reply-To: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,97 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Virendra Kate <virendrakate@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-Since rtdm_fd_select started to return EADV for unknown fds
-(2db562ad62ec), we were returning that code to applications in case a
-selector had been allocated for the caller already. That was because
-libcobalt lacked handling of this error.
-
-This fixes it and also establish proper signaling of EBADF in case the
-is a real error related to an RTDM fd. For that purpose, detect if
-__cobalt_select_bind_all got EADV for the first fd or for a succeeding
-one, i.e. on an unsupported mixed fd set.
-
-Also return EADV if the early __cobalt_first_fd_valid_p test fails. That
-ensures that we only retry with the regular Linux call when it makes
-sense.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/posix/io.c        | 13 +++++++++++--
- kernel/cobalt/posix/syscall32.c |  2 +-
- lib/cobalt/select.c             |  2 +-
- 3 files changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
-index 70dd3c9c55..8a74074f3c 100644
---- a/kernel/cobalt/posix/io.c
-+++ b/kernel/cobalt/posix/io.c
-@@ -183,6 +183,7 @@ int __cobalt_first_fd_valid_p(fd_set *fds[XNSELECT_MAX_TYPES], int nfds)
- int __cobalt_select_bind_all(struct xnselector *selector,
- 			     fd_set *fds[XNSELECT_MAX_TYPES], int nfds)
- {
-+	bool first_fd = true;
- 	unsigned fd, type;
- 	int err;
- 
-@@ -193,8 +194,16 @@ int __cobalt_select_bind_all(struct xnselector *selector,
- 			     fd < nfds;
- 			     fd = find_next_bit(set->fds_bits, nfds, fd + 1)) {
- 				err = rtdm_fd_select(fd, selector, type);
--				if (err)
-+				if (err) {
-+					/*
-+					 * Do not needlessly signal "retry
-+					 * under Linux" for mixed fd sets.
-+					 */
-+					if (err == -EADV && !first_fd)
-+						return -EBADF;
- 					return err;
-+				}
-+				first_fd = false;
- 			}
- 	}
- 
-@@ -275,7 +284,7 @@ COBALT_SYSCALL(select, primary,
- 		   simple test: test if the first file descriptor we find in the
- 		   fd_set is an RTDM descriptor or a message queue descriptor. */
- 		if (!__cobalt_first_fd_valid_p(in_fds, nfds))
--			return -EBADF;
-+			return -EADV;
- 
- 		selector = xnmalloc(sizeof(*curr->selector));
- 		if (selector == NULL)
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 98b9218a81..5a6de285f9 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -796,7 +796,7 @@ COBALT_SYSCALL32emu(select, nonrestartable,
- 	if (selector == NULL) {
- 		/* Bail out if non-RTDM fildes is found. */
- 		if (!__cobalt_first_fd_valid_p(in_fds, nfds))
--			return -EBADF;
-+			return -EADV;
- 
- 		selector = xnmalloc(sizeof(*curr->selector));
- 		if (selector == NULL)
-diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
-index 362a182389..7727012c7a 100644
---- a/lib/cobalt/select.c
-+++ b/lib/cobalt/select.c
-@@ -36,7 +36,7 @@ COBALT_IMPL(int, select, (int __nfds, fd_set *__restrict __readfds,
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
--	if (err == -EBADF || err == -EPERM || err == -ENOSYS)
-+	if (err == -EADV || err == -EPERM || err == -ENOSYS)
- 		return __STD(select(__nfds, __readfds,
- 				    __writefds, __exceptfds, __timeout));
- 
--- 
-2.26.2
-
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IFhlbm9tYWkgPHhlbm9tYWkt
+Ym91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIFZpcmVuZHJhIEthdGUgdmlhIFhlbm9t
+YWkNCj5TZW50OiBTYXR1cmRheSwgSnVseSAyNCwgMjAyMSA2OjI2IFBNDQo+VG86IFhlbm9tYWlA
+eGVub21haS5vcmcNCj5TdWJqZWN0OiBYZW5vbWFpIDMuMSBVc2VyIEFQSSA6IFBvc2l4IHZzIENv
+YmFsdA0KPg0KPkhlbGxvLA0KPg0KPkFjY29yZGluZyB0byB0aGUgWGVub21haSAzLjEgZG9jdW1l
+bnRhdGlvbiwgd2UgZm91bmQgbXVsdGlwbGUgc2V0cyBvZiBBUEkNCj5kb2N1bWVudGF0aW9ucywg
+Y29iYWx0IEFQSSBhbmQNCj50aGUgWGVuby1Qb3NpeCBBUEkgKHNraXBwaW5nIEFsY2hlbXkgYW5k
+IHRoZSBlbXVsYXRvciBza2lucyBmb3Igbm93KS4gVGhlDQo+Q29iYWx0IEFQSSBzZWVtcyB0bw0K
+PmJlIHJpY2ggaW4gdGVybXMgb2YgdGhlIEFQSXMuDQo+DQo+WGVuby1Qb3NpeCBBUEkgZG9jOg0K
+Pmh0dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3By
+bS9ncm91cF9fY29iYWx0X19hcGkuaHRtbA0KPkNvYmFsdCBBUEkgZG9jOg0KPmh0dHBzOi8veGVu
+b21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9ncm91cF9fY29i
+YWx0X19jb3JlLmh0bWwNCj4NCj5XaGljaCBvbmUgc2hvdWxkIGJlIHVzZWQgYnkgdGhlIHVzZXJz
+cGFjZSBhcHBsaWNhdGlvbj8NCj5BY2NvcmRpbmcgdG8gdGhlIGluZm9ybWF0aW9uIG1lbnRpb25l
+ZCBpbiB0aGUNCj5odHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haS8tL3dpa2lz
+L1N0YXJ0X0hlcmUsDQo+c2VjdGlvbiAiDQo+PGh0dHBzOi8vb3V0bG9vay5vZmZpY2UuY29tL21h
+aWwvc2VudGl0ZW1zL2lkL0FBUWtBR015T0RJellqZGxMVGM0TnpJdE5EYzRNUzFpTXpReExXSTBN
+MlF6TmpnM09EWmlNZ0FRQUhMWmVyN0xZSjVIdWElMkZQb1dQWFNKWSUzRCN4X3VzZXItY29udGVu
+dC1ob3ctZG9lcy14ZW5vbWFpLWRlbGl2ZXItcmVhbC10aW1lPkhvdw0KPmRvZXMgWGVub21haSBk
+ZWxpdmVyIHJlYWwtdGltZT8iOiAiSW4gdGhpcyAqZHVhbCBrZXJuZWwqIGNvbmZpZ3VyYXRpb24s
+IGFsbA0KPnRoZSBSVE9TIEFQSXMgWGVub21haQ0KPnByb3ZpZGVzIGludGVyZmFjZSB3aXRoIHRo
+ZSBDb2JhbHQgY29yZSwgYW5kIG9ubHkgdGhvc2UgQVBJcyBhcmUgZGVlbWVkDQo+cmVhbC10aW1l
+IGNhcGFibGUsIGluY2x1ZGluZyB0aGUgc3Vic2V0DQo+b2YgUE9TSVggMTAwMy4xYyBzZXJ2aWNl
+cyBpbXBsZW1lbnRlZCBieSBYZW5vbWFpIChha2EgKmxpYmNvYmFsdCopLiINCj4NCj5JcyB0aGUg
+Q29iYWx0IEFQSSBwYXJ0IG9mIHRoZSBDb2JhbHQgY29yZSBvciBsaWJjb2JhbHQ/IElmIGl0IGlz
+IHBhcnQgb2YNCg0KVGhlIENvYmFsdC9QT1NJWCBpbnRlcmZhY2UgaXMgYW4gaW1wbGVtZW50YXRp
+b24gb2YgYSBzdWJzZXQgb2YgdGhlIFNpbmdsZSBVbml4IHNwZWNpZmljYXRpb24gb3ZlciB0aGUg
+Q29iYWx0IGNvcmUuDQoNCj50aGUgQ29iYWx0IENvcmUgY2FuIHRoZSB1c2Vyc3BhY2UgYXBwbGlj
+YXRpb24NCg0KVXNlcnNwYWNlIGNhbiBub3QgZGlyZWN0bHkgY2FsbCBjb2JhbHQgY29yZSBpbnRl
+cmZhY2UuIA0KQ29iYWx0IGNvcmUgaW1wbGVtZW50cyBhIHNldCBvZiBnZW5lcmljIFJUT1MgYnVp
+bGRpbmcgYmxvY2tzLCB3aGljaCB0aGUgQ29iYWx0L1BPU0lYIGFuZCBDb2JhbHQvUlRETSBBUElz
+IGFyZSBiYXNlZCBvbi4NCg0KPmRpcmVjdGx5IHVzZSBpdD8NCj4NCj5UaGFua3MsDQo+VmlyZW5k
+cmENCg==
 
