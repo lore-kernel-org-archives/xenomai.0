@@ -1,13 +1,15 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: Xenomai 3.1 User API : Posix vs Cobalt
-Date: Mon, 26 Jul 2021 01:05:12 +0000
-Message-ID: <BN9PR11MB522740D77B7A43644A1B43C2F2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
-In-Reply-To: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [xenomai-images 0/7] control applying of no-debug config
+References: <20210723031811.19290-1-hongzhan.chen@intel.com>
+ <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
+ <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ef774f04-0ac3-dd9d-9379-e26cff4be36a@siemens.com>
+Date: Mon, 26 Jul 2021 07:30:53 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Virendra Kate <virendrakate@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IFhlbm9tYWkgPHhlbm9tYWkt
-Ym91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIFZpcmVuZHJhIEthdGUgdmlhIFhlbm9t
-YWkNCj5TZW50OiBTYXR1cmRheSwgSnVseSAyNCwgMjAyMSA2OjI2IFBNDQo+VG86IFhlbm9tYWlA
-eGVub21haS5vcmcNCj5TdWJqZWN0OiBYZW5vbWFpIDMuMSBVc2VyIEFQSSA6IFBvc2l4IHZzIENv
-YmFsdA0KPg0KPkhlbGxvLA0KPg0KPkFjY29yZGluZyB0byB0aGUgWGVub21haSAzLjEgZG9jdW1l
-bnRhdGlvbiwgd2UgZm91bmQgbXVsdGlwbGUgc2V0cyBvZiBBUEkNCj5kb2N1bWVudGF0aW9ucywg
-Y29iYWx0IEFQSSBhbmQNCj50aGUgWGVuby1Qb3NpeCBBUEkgKHNraXBwaW5nIEFsY2hlbXkgYW5k
-IHRoZSBlbXVsYXRvciBza2lucyBmb3Igbm93KS4gVGhlDQo+Q29iYWx0IEFQSSBzZWVtcyB0bw0K
-PmJlIHJpY2ggaW4gdGVybXMgb2YgdGhlIEFQSXMuDQo+DQo+WGVuby1Qb3NpeCBBUEkgZG9jOg0K
-Pmh0dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3By
-bS9ncm91cF9fY29iYWx0X19hcGkuaHRtbA0KPkNvYmFsdCBBUEkgZG9jOg0KPmh0dHBzOi8veGVu
-b21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9ncm91cF9fY29i
-YWx0X19jb3JlLmh0bWwNCj4NCj5XaGljaCBvbmUgc2hvdWxkIGJlIHVzZWQgYnkgdGhlIHVzZXJz
-cGFjZSBhcHBsaWNhdGlvbj8NCj5BY2NvcmRpbmcgdG8gdGhlIGluZm9ybWF0aW9uIG1lbnRpb25l
-ZCBpbiB0aGUNCj5odHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haS8tL3dpa2lz
-L1N0YXJ0X0hlcmUsDQo+c2VjdGlvbiAiDQo+PGh0dHBzOi8vb3V0bG9vay5vZmZpY2UuY29tL21h
-aWwvc2VudGl0ZW1zL2lkL0FBUWtBR015T0RJellqZGxMVGM0TnpJdE5EYzRNUzFpTXpReExXSTBN
-MlF6TmpnM09EWmlNZ0FRQUhMWmVyN0xZSjVIdWElMkZQb1dQWFNKWSUzRCN4X3VzZXItY29udGVu
-dC1ob3ctZG9lcy14ZW5vbWFpLWRlbGl2ZXItcmVhbC10aW1lPkhvdw0KPmRvZXMgWGVub21haSBk
-ZWxpdmVyIHJlYWwtdGltZT8iOiAiSW4gdGhpcyAqZHVhbCBrZXJuZWwqIGNvbmZpZ3VyYXRpb24s
-IGFsbA0KPnRoZSBSVE9TIEFQSXMgWGVub21haQ0KPnByb3ZpZGVzIGludGVyZmFjZSB3aXRoIHRo
-ZSBDb2JhbHQgY29yZSwgYW5kIG9ubHkgdGhvc2UgQVBJcyBhcmUgZGVlbWVkDQo+cmVhbC10aW1l
-IGNhcGFibGUsIGluY2x1ZGluZyB0aGUgc3Vic2V0DQo+b2YgUE9TSVggMTAwMy4xYyBzZXJ2aWNl
-cyBpbXBsZW1lbnRlZCBieSBYZW5vbWFpIChha2EgKmxpYmNvYmFsdCopLiINCj4NCj5JcyB0aGUg
-Q29iYWx0IEFQSSBwYXJ0IG9mIHRoZSBDb2JhbHQgY29yZSBvciBsaWJjb2JhbHQ/IElmIGl0IGlz
-IHBhcnQgb2YNCg0KVGhlIENvYmFsdC9QT1NJWCBpbnRlcmZhY2UgaXMgYW4gaW1wbGVtZW50YXRp
-b24gb2YgYSBzdWJzZXQgb2YgdGhlIFNpbmdsZSBVbml4IHNwZWNpZmljYXRpb24gb3ZlciB0aGUg
-Q29iYWx0IGNvcmUuDQoNCj50aGUgQ29iYWx0IENvcmUgY2FuIHRoZSB1c2Vyc3BhY2UgYXBwbGlj
-YXRpb24NCg0KVXNlcnNwYWNlIGNhbiBub3QgZGlyZWN0bHkgY2FsbCBjb2JhbHQgY29yZSBpbnRl
-cmZhY2UuIA0KQ29iYWx0IGNvcmUgaW1wbGVtZW50cyBhIHNldCBvZiBnZW5lcmljIFJUT1MgYnVp
-bGRpbmcgYmxvY2tzLCB3aGljaCB0aGUgQ29iYWx0L1BPU0lYIGFuZCBDb2JhbHQvUlRETSBBUElz
-IGFyZSBiYXNlZCBvbi4NCg0KPmRpcmVjdGx5IHVzZSBpdD8NCj4NCj5UaGFua3MsDQo+VmlyZW5k
-cmENCg==
+On 26.07.21 02:31, Chen, Hongzhan via Xenomai wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Gylstorff Quirin <quirin.gylstorff@siemens.com> 
+>> Sent: Friday, July 23, 2021 8:27 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [xenomai-images 0/7] control applying of no-debug config
+>>
+>>
+>>
+>> On 7/23/21 5:18 AM, Hongzhan Chen via Xenomai wrote:
+>>> 1. enable IPIPE_DEBUG uniformly for all arch by default in order to use
+>>> uniform method to control it via applying config fragment or not.
+>>> 2. create config fragment for earch arch to switch debug off.
+>>> 3. add control to apply config fragment or not.
+>>> 4. add kas option to control applying config fragment.
+>>>
+>>> *** BLURB HERE ***
+>>>
+>>> Hongzhan Chen (7):
+>>>    recipes-kernel: arm64_config: enable IPIPE_DEBUG for arm64 by default
+>>>    recipes-kernel: armhf_config: enable IPIPE_DEBUG for armhf by default
+>>>    recipes-kernel: add config fragment file to disable debug for amd64
+>>>    recipes-kernel: add config fragment file to disable debug for arm64
+>>>    recipes-kernel: add config fragment file to disable debug for arm
+>>>    recipes-kernel/linux: control appyling of no debug config fragment
+>>>    Add kas option for swithing off debug
+>>>
+>>>   opt-set-nodbg.yml                          | 20 ++++++++++++++++++++
+>>>   recipes-kernel/linux/files/amd64_nodbg.cfg |  1 +
+>>>   recipes-kernel/linux/files/arm64_defconfig |  9 +++++----
+>>>   recipes-kernel/linux/files/arm64_nodbg.cfg |  1 +
+>>>   recipes-kernel/linux/files/armhf_defconfig | 15 +++++++++++++--
+>>>   recipes-kernel/linux/files/armhf_nodbg.cfg |  1 +
+>>>   recipes-kernel/linux/linux-xenomai.inc     | 10 +++++++++-
+>>>   7 files changed, 50 insertions(+), 7 deletions(-)
+>>>   create mode 100644 opt-set-nodbg.yml
+>>>   create mode 100644 recipes-kernel/linux/files/amd64_nodbg.cfg
+>>>   create mode 100644 recipes-kernel/linux/files/arm64_nodbg.cfg
+>>>   create mode 100644 recipes-kernel/linux/files/armhf_nodbg.cfg
+>>>
+>>
+>> Why is there a *_nodbg,cfg for each Arch? The content for all is the 
+>> same, so IHMO one file should be enough.
+> 
+> Current content is same because we just try to switch off IPIPE_DEBUG for all arches.
+> But its final purposes is to improve performance for target image to differentiate it from 
+> debug image, which may include other linux options or arch related options. That is why 
+> I create *_nodgb.cfg for each arch. 
+
+Duplicating is never a good things. So let's keep the common switches in
+a common_nodbg.cfg and add the <arch>_nodbg.cfg files once they are needed.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
