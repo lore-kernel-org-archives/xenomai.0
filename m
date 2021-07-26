@@ -1,12 +1,10 @@
-Subject: Re: [xenomai-images 0/7] control applying of no-debug config
-References: <20210723031811.19290-1-hongzhan.chen@intel.com>
- <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
- <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+Subject: Re: Analogy usage
+References: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ef774f04-0ac3-dd9d-9379-e26cff4be36a@siemens.com>
-Date: Mon, 26 Jul 2021 07:30:53 +0200
+Message-ID: <591b95a6-d81e-0f87-5d36-1af5d05e0688@siemens.com>
+Date: Mon, 26 Jul 2021 07:37:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+In-Reply-To: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,63 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: ivan@rtxi.org, xenomai@xenomai.org
 
-On 26.07.21 02:31, Chen, Hongzhan via Xenomai wrote:
+On 23.07.21 21:58, Ivan F. Valerio via Xenomai wrote:
+> Hi everyone,
 > 
+> My name is Ivan and I am the current (new) maintainer for the Real-Time
+> eXperiment
+> Interface (RTXI). This is an application that uses Xenomai to provide
+> real-time
+> performance for experimental setups requiring deterministic control. A
+> number
+> of laboratories both here in the United States and abroad use RTXI for
+> their
+> biological experiments. RTXI uses the Analogy modules in order to interface
+> with a variety DAQ cards. This has allowed easy adoption of RTXI as it
+> provides
+> compatibility among a wide range of DAQ cards out of the box.
 > 
->> -----Original Message-----
->> From: Gylstorff Quirin <quirin.gylstorff@siemens.com> 
->> Sent: Friday, July 23, 2021 8:27 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [xenomai-images 0/7] control applying of no-debug config
->>
->>
->>
->> On 7/23/21 5:18 AM, Hongzhan Chen via Xenomai wrote:
->>> 1. enable IPIPE_DEBUG uniformly for all arch by default in order to use
->>> uniform method to control it via applying config fragment or not.
->>> 2. create config fragment for earch arch to switch debug off.
->>> 3. add control to apply config fragment or not.
->>> 4. add kas option to control applying config fragment.
->>>
->>> *** BLURB HERE ***
->>>
->>> Hongzhan Chen (7):
->>>    recipes-kernel: arm64_config: enable IPIPE_DEBUG for arm64 by default
->>>    recipes-kernel: armhf_config: enable IPIPE_DEBUG for armhf by default
->>>    recipes-kernel: add config fragment file to disable debug for amd64
->>>    recipes-kernel: add config fragment file to disable debug for arm64
->>>    recipes-kernel: add config fragment file to disable debug for arm
->>>    recipes-kernel/linux: control appyling of no debug config fragment
->>>    Add kas option for swithing off debug
->>>
->>>   opt-set-nodbg.yml                          | 20 ++++++++++++++++++++
->>>   recipes-kernel/linux/files/amd64_nodbg.cfg |  1 +
->>>   recipes-kernel/linux/files/arm64_defconfig |  9 +++++----
->>>   recipes-kernel/linux/files/arm64_nodbg.cfg |  1 +
->>>   recipes-kernel/linux/files/armhf_defconfig | 15 +++++++++++++--
->>>   recipes-kernel/linux/files/armhf_nodbg.cfg |  1 +
->>>   recipes-kernel/linux/linux-xenomai.inc     | 10 +++++++++-
->>>   7 files changed, 50 insertions(+), 7 deletions(-)
->>>   create mode 100644 opt-set-nodbg.yml
->>>   create mode 100644 recipes-kernel/linux/files/amd64_nodbg.cfg
->>>   create mode 100644 recipes-kernel/linux/files/arm64_nodbg.cfg
->>>   create mode 100644 recipes-kernel/linux/files/armhf_nodbg.cfg
->>>
->>
->> Why is there a *_nodbg,cfg for each Arch? The content for all is the 
->> same, so IHMO one file should be enough.
+> I am new to the mailing list and while researching came across your
+> discussion to
+> discontinue Analogy. Removing Analogy would undoubtedly have an impact
+> on all
+> laboratories who use RTXI for their setups. What are the current plans for
+> Analogy? What issues can I assist with to improve the state of this module?
 > 
-> Current content is same because we just try to switch off IPIPE_DEBUG for all arches.
-> But its final purposes is to improve performance for target image to differentiate it from 
-> debug image, which may include other linux options or arch related options. That is why 
-> I create *_nodgb.cfg for each arch. 
 
-Duplicating is never a good things. So let's keep the common switches in
-a common_nodbg.cfg and add the <arch>_nodbg.cfg files once they are needed.
+Thanks for you offer! It's great to learn about usage this way and also
+to hear that you would like to help improving the situation.
+
+As I explained in [1], we need at least some basic regular test
+infrastructure. The other thing is to understand how Analogy is used:
+with all its features or with specific aspects only (like Peter said he
+is only using own, out-of-tree drivers with the framework)? The work
+should focus on that first.
 
 Jan
+
+[1] https://xenomai.org/pipermail/xenomai/2021-July/045875.html
 
 -- 
 Siemens AG, T RDA IOT
