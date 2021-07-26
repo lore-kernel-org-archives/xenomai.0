@@ -1,9 +1,14 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [xenomai-images 0/7] control applying of no-debug config
+Date: Mon, 26 Jul 2021 00:31:43 +0000
+Message-ID: <BN9PR11MB52275788D64DA0883795DB1AF2E89@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210723031811.19290-1-hongzhan.chen@intel.com>
+ <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
+In-Reply-To: <cc0b9573-c11b-6957-14a5-de51e6d447d2@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: Virendra Kate <virendrakate@gmail.com>
-Date: Sat, 24 Jul 2021 03:25:31 -0700
-Message-ID: <CAA3JOdbNPJKfSoE1KgLa9C+_CdnLpyYbOZb+Fix9RtTjkUEM8Q@mail.gmail.com>
-Subject: Xenomai 3.1 User API : Posix vs Cobalt
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,35 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEd5bHN0b3JmZiBRdWlyaW4g
+PHF1aXJpbi5neWxzdG9yZmZAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgSnVseSAyMywg
+MjAyMSA4OjI3IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNv
+bT47IHhlbm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW3hlbm9tYWktaW1hZ2VzIDAv
+N10gY29udHJvbCBhcHBseWluZyBvZiBuby1kZWJ1ZyBjb25maWcNCj4NCj4NCj4NCj5PbiA3LzIz
+LzIxIDU6MTggQU0sIEhvbmd6aGFuIENoZW4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+PiAxLiBlbmFi
+bGUgSVBJUEVfREVCVUcgdW5pZm9ybWx5IGZvciBhbGwgYXJjaCBieSBkZWZhdWx0IGluIG9yZGVy
+IHRvIHVzZQ0KPj4gdW5pZm9ybSBtZXRob2QgdG8gY29udHJvbCBpdCB2aWEgYXBwbHlpbmcgY29u
+ZmlnIGZyYWdtZW50IG9yIG5vdC4NCj4+IDIuIGNyZWF0ZSBjb25maWcgZnJhZ21lbnQgZm9yIGVh
+cmNoIGFyY2ggdG8gc3dpdGNoIGRlYnVnIG9mZi4NCj4+IDMuIGFkZCBjb250cm9sIHRvIGFwcGx5
+IGNvbmZpZyBmcmFnbWVudCBvciBub3QuDQo+PiA0LiBhZGQga2FzIG9wdGlvbiB0byBjb250cm9s
+IGFwcGx5aW5nIGNvbmZpZyBmcmFnbWVudC4NCj4+IA0KPj4gKioqIEJMVVJCIEhFUkUgKioqDQo+
+PiANCj4+IEhvbmd6aGFuIENoZW4gKDcpOg0KPj4gICAgcmVjaXBlcy1rZXJuZWw6IGFybTY0X2Nv
+bmZpZzogZW5hYmxlIElQSVBFX0RFQlVHIGZvciBhcm02NCBieSBkZWZhdWx0DQo+PiAgICByZWNp
+cGVzLWtlcm5lbDogYXJtaGZfY29uZmlnOiBlbmFibGUgSVBJUEVfREVCVUcgZm9yIGFybWhmIGJ5
+IGRlZmF1bHQNCj4+ICAgIHJlY2lwZXMta2VybmVsOiBhZGQgY29uZmlnIGZyYWdtZW50IGZpbGUg
+dG8gZGlzYWJsZSBkZWJ1ZyBmb3IgYW1kNjQNCj4+ICAgIHJlY2lwZXMta2VybmVsOiBhZGQgY29u
+ZmlnIGZyYWdtZW50IGZpbGUgdG8gZGlzYWJsZSBkZWJ1ZyBmb3IgYXJtNjQNCj4+ICAgIHJlY2lw
+ZXMta2VybmVsOiBhZGQgY29uZmlnIGZyYWdtZW50IGZpbGUgdG8gZGlzYWJsZSBkZWJ1ZyBmb3Ig
+YXJtDQo+PiAgICByZWNpcGVzLWtlcm5lbC9saW51eDogY29udHJvbCBhcHB5bGluZyBvZiBubyBk
+ZWJ1ZyBjb25maWcgZnJhZ21lbnQNCj4+ICAgIEFkZCBrYXMgb3B0aW9uIGZvciBzd2l0aGluZyBv
+ZmYgZGVidWcNCj4+IA0KPj4gICBvcHQtc2V0LW5vZGJnLnltbCAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAyMCArKysrKysrKysrKysrKysrKysrKw0KPj4gICByZWNpcGVzLWtlcm5lbC9saW51
+eC9maWxlcy9hbWQ2NF9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJlY2lwZXMta2VybmVsL2xpbnV4
+L2ZpbGVzL2FybTY0X2RlZmNvbmZpZyB8ICA5ICsrKysrLS0tLQ0KPj4gICByZWNpcGVzLWtlcm5l
+bC9saW51eC9maWxlcy9hcm02NF9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJlY2lwZXMta2VybmVs
+L2xpbnV4L2ZpbGVzL2FybWhmX2RlZmNvbmZpZyB8IDE1ICsrKysrKysrKysrKystLQ0KPj4gICBy
+ZWNpcGVzLWtlcm5lbC9saW51eC9maWxlcy9hcm1oZl9ub2RiZy5jZmcgfCAgMSArDQo+PiAgIHJl
+Y2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jICAgICB8IDEwICsrKysrKysrKy0N
+Cj4+ICAgNyBmaWxlcyBjaGFuZ2VkLCA1MCBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0K
+Pj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgb3B0LXNldC1ub2RiZy55bWwNCj4+ICAgY3JlYXRlIG1v
+ZGUgMTAwNjQ0IHJlY2lwZXMta2VybmVsL2xpbnV4L2ZpbGVzL2FtZDY0X25vZGJnLmNmZw0KPj4g
+ICBjcmVhdGUgbW9kZSAxMDA2NDQgcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYXJtNjRfbm9k
+YmcuY2ZnDQo+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCByZWNpcGVzLWtlcm5lbC9saW51eC9maWxl
+cy9hcm1oZl9ub2RiZy5jZmcNCj4+IA0KPg0KPldoeSBpcyB0aGVyZSBhICpfbm9kYmcsY2ZnIGZv
+ciBlYWNoIEFyY2g/IFRoZSBjb250ZW50IGZvciBhbGwgaXMgdGhlIA0KPnNhbWUsIHNvIElITU8g
+b25lIGZpbGUgc2hvdWxkIGJlIGVub3VnaC4NCg0KQ3VycmVudCBjb250ZW50IGlzIHNhbWUgYmVj
+YXVzZSB3ZSBqdXN0IHRyeSB0byBzd2l0Y2ggb2ZmIElQSVBFX0RFQlVHIGZvciBhbGwgYXJjaGVz
+Lg0KQnV0IGl0cyBmaW5hbCBwdXJwb3NlcyBpcyB0byBpbXByb3ZlIHBlcmZvcm1hbmNlIGZvciB0
+YXJnZXQgaW1hZ2UgdG8gZGlmZmVyZW50aWF0ZSBpdCBmcm9tIA0KZGVidWcgaW1hZ2UsIHdoaWNo
+IG1heSBpbmNsdWRlIG90aGVyIGxpbnV4IG9wdGlvbnMgb3IgYXJjaCByZWxhdGVkIG9wdGlvbnMu
+IFRoYXQgaXMgd2h5IA0KSSBjcmVhdGUgKl9ub2RnYi5jZmcgZm9yIGVhY2ggYXJjaC4gDQoNCj4N
+Cj5UaGFua3MNCj4NCj5RdWlyaW4NCg==
 
-According to the Xenomai 3.1 documentation, we found multiple sets of API
-documentations, cobalt API and
-the Xeno-Posix API (skipping Alchemy and the emulator skins for now). The
-Cobalt API seems to
-be rich in terms of the APIs.
-
-Xeno-Posix API doc:
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__api.html
-Cobalt API doc:
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__core.html
-
-Which one should be used by the userspace application?
-According to the information mentioned in the
-https://source.denx.de/Xenomai/xenomai/-/wikis/Start_Here,
-section "
-<https://outlook.office.com/mail/sentitems/id/AAQkAGMyODIzYjdlLTc4NzItNDc4MS1iMzQxLWI0M2QzNjg3ODZiMgAQAHLZer7LYJ5Hua%2FPoWPXSJY%3D#x_user-content-how-does-xenomai-deliver-real-time>How
-does Xenomai deliver real-time?": "In this *dual kernel* configuration, all
-the RTOS APIs Xenomai
-provides interface with the Cobalt core, and only those APIs are deemed
-real-time capable, including the subset
-of POSIX 1003.1c services implemented by Xenomai (aka *libcobalt*)."
-
-Is the Cobalt API part of the Cobalt core or libcobalt? If it is part of
-the Cobalt Core can the userspace application
-directly use it?
-
-Thanks,
-Virendra
