@@ -1,12 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 7/9] cobalt/posix/syscall32: Mark compat clock_nanosleep
- restartable
-Date: Mon,  5 Jul 2021 09:36:39 +0200
-Message-Id: <ffca672400c0f151dc0ee3b25c12f1cad06c033d.1625470600.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1625470600.git.jan.kiszka@siemens.com>
-References: <cover.1625470600.git.jan.kiszka@siemens.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-image PATCH v2 1/5] recipes-kernel: arm64_config: enable
+ IPIPE_DEBUG for arm64 by default
+Date: Mon, 26 Jul 2021 20:42:13 -0400
+Message-Id: <20210727004217.10892-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210727004217.10892-1-hongzhan.chen@intel.com>
+References: <20210727004217.10892-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +15,58 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Enable IPIPE_DEBUG for arm64 by default. We enable IPIPE_DEBUG for
+all arch types uniformly by default in order to controll enabling
+and disabling them via same method.
 
-Commit 36132cdb21cd forgot to align this with the native syscall.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 ---
- kernel/cobalt/posix/syscall32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ recipes-kernel/linux/files/arm64_defconfig | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 5a6de285f9..c298f38f5a 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -229,7 +229,7 @@ COBALT_SYSCALL32emu(clock_adjtime64, current,
- }
+diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
+index 7634788..a010c30 100644
+--- a/recipes-kernel/linux/files/arm64_defconfig
++++ b/recipes-kernel/linux/files/arm64_defconfig
+@@ -191,7 +191,7 @@ CONFIG_KALLSYMS_ALL=y
+ CONFIG_KALLSYMS_BASE_RELATIVE=y
+ CONFIG_PRINTK=y
+ CONFIG_PRINTK_NMI=y
+-# CONFIG_RAW_PRINTK is not set
++CONFIG_RAW_PRINTK=y
+ CONFIG_BUG=y
+ CONFIG_ELF_CORE=y
+ CONFIG_BASE_FULL=y
+@@ -410,7 +410,6 @@ CONFIG_XENO_OPT_DEBUG_LEGACY=y
+ CONFIG_XENO_OPT_DEBUG_TRACE_RELAX=y
+ CONFIG_XENO_OPT_WATCHDOG=y
+ CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=4
+-# CONFIG_XENO_TODO is not set
  
+ #
+ # Drivers
+@@ -449,7 +448,6 @@ CONFIG_XENO_DRIVERS_CAN_BUS_ERR=y
+ # CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD is not set
+ CONFIG_XENO_DRIVERS_CAN_VIRT=y
+ # CONFIG_XENO_DRIVERS_CAN_FLEXCAN is not set
+-# CONFIG_XENO_DRIVERS_CAN_PEAK_CANFD is not set
+ CONFIG_XENO_DRIVERS_CAN_SJA1000=y
+ CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA=y
+ CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM=y
+@@ -5907,8 +5905,11 @@ CONFIG_FRAME_POINTER=y
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
+ CONFIG_MAGIC_SYSRQ_SERIAL=y
+-# CONFIG_IPIPE_DEBUG is not set
++CONFIG_IPIPE_DEBUG=y
++CONFIG_IPIPE_DEBUG_CONTEXT=y
++CONFIG_IPIPE_DEBUG_INTERNAL=y
+ CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
++# CONFIG_IPIPE_TRACE is not set
+ CONFIG_DEBUG_KERNEL=y
  
--COBALT_SYSCALL32emu(clock_nanosleep, nonrestartable,
-+COBALT_SYSCALL32emu(clock_nanosleep, primary,
- 		    (clockid_t clock_id, int flags,
- 		     const struct old_timespec32 __user *u_rqt,
- 		     struct old_timespec32 __user *u_rmt))
+ #
 -- 
-2.26.2
+2.17.1
 
 
