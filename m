@@ -1,12 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v4 3/5] y2038: cobalt/posix/mutex: Adding mutex_timedlock64
-Date: Sat, 31 Jul 2021 09:08:24 +0200
-Message-Id: <20210731070826.67908-4-florian.bezdeka@siemens.com>
-In-Reply-To: <20210731070826.67908-1-florian.bezdeka@siemens.com>
-References: <20210731070826.67908-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [xenomai-image PATCH v2 4/5] recipes-kernel/linux: control
+ appyling of no debug config fragment
+References: <20210727004217.10892-1-hongzhan.chen@intel.com>
+ <20210727004217.10892-5-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <88fd782a-8fa8-36df-33ca-d36f714a91bb@siemens.com>
+Date: Tue, 27 Jul 2021 12:49:05 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210727004217.10892-5-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,165 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-From: Song Chen <chensong_2000@189.cn>
+On 27.07.21 02:42, Hongzhan Chen via Xenomai wrote:
+> For performance or latency testing and demonstration, debug switches
+> should be off but it is on by default.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  recipes-kernel/linux/linux-xenomai.inc | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+> index 185b60b..ff54ce2 100644
+> --- a/recipes-kernel/linux/linux-xenomai.inc
+> +++ b/recipes-kernel/linux/linux-xenomai.inc
+> @@ -11,9 +11,17 @@
+>  
+>  require recipes-kernel/linux/linux-custom.inc
+>  
+> +def is_nodbg_support(d):
+> +    dbg_ver = d.getVar('DISTRO_NODBG') or ''
+> +    return dbg_ver.startswith('YES') or dbg_ver == 'YES'
+> +
+>  KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
+> +KERNEL_NODBG_FRAGMENTS ?= "common_nodbg.cfg"
+> +KERNEL_NODBG_FRAGMENTS_append = "${@'' if is_nodbg_support(d) else ';apply=no'}"
+>  
+> -SRC_URI += "file://${KERNEL_DEFCONFIG}"
+> +SRC_URI += "file://${KERNEL_DEFCONFIG} \
+> +    file://${KERNEL_NODBG_FRAGMENTS} \
+> +"
+>  
+>  DEPENDS += "xenomai-kernel-source"
+>  KBUILD_DEPENDS += "xenomai-kernel-source"
+> 
 
-Add a syscall specific for mutex_timedlock with 64bit time_t.
+How about
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-[Florian: Rearranged code, coding style fixes, tracing]
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/uapi/syscall.h      |  1 +
- kernel/cobalt/posix/mutex.c        | 23 ++++++++++++++++++++++-
- kernel/cobalt/posix/mutex.h        |  7 +++++++
- kernel/cobalt/posix/syscall32.c    |  7 +++++++
- kernel/cobalt/posix/syscall32.h    |  4 ++++
- kernel/cobalt/trace/cobalt-posix.h |  4 +++-
- 6 files changed, 44 insertions(+), 2 deletions(-)
+DISTRO_NODBG ?= "0"
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index a2795a364..6fe57c7e8 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -128,6 +128,7 @@
- #define sc_cobalt_clock_nanosleep64		105
- #define sc_cobalt_clock_getres64		106
- #define sc_cobalt_clock_adjtime64		107
-+#define sc_cobalt_mutex_timedlock64		108
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
-index 01478978e..0f1c01851 100644
---- a/kernel/cobalt/posix/mutex.c
-+++ b/kernel/cobalt/posix/mutex.c
-@@ -21,6 +21,7 @@
- #include "mutex.h"
- #include "cond.h"
- #include "clock.h"
-+#include <cobalt/kernel/time.h>
- 
- static int cobalt_mutex_init_inner(struct cobalt_mutex_shadow *shadow,
- 				   struct cobalt_mutex *mutex,
-@@ -76,7 +77,7 @@ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
- 	int ret;
- 
- 	if (ts) {
--		if (ts->tv_nsec >= ONE_BILLION)
-+		if (!timespec64_valid(ts))
- 			return -EINVAL;
- 		ret = xnsynch_acquire(&mutex->synchbase, ts2ns(ts) + 1, XN_REALTIME);
- 	} else
-@@ -357,6 +358,19 @@ static inline int mutex_fetch_timeout(struct timespec64 *ts,
- 	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
- }
- 
-+static inline int mutex_fetch_timeout64(struct timespec64 *ts,
-+					const void __user *u_ts)
-+{
-+	return u_ts == NULL ? -EFAULT : cobalt_get_timespec64(ts, u_ts);
-+}
-+
-+int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
-+			       const void __user *u_ts)
-+{
-+	return __cobalt_mutex_timedlock_break(u_mx, u_ts,
-+					      mutex_fetch_timeout64);
-+}
-+
- COBALT_SYSCALL(mutex_timedlock, primary,
- 	       (struct cobalt_mutex_shadow __user *u_mx,
- 		const struct __user_old_timespec __user *u_ts))
-@@ -364,6 +378,13 @@ COBALT_SYSCALL(mutex_timedlock, primary,
- 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, mutex_fetch_timeout);
- }
- 
-+COBALT_SYSCALL(mutex_timedlock64, primary,
-+	       (struct cobalt_mutex_shadow __user *u_mx,
-+		const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_mutex_timedlock64(u_mx, u_ts);
-+}
-+
- COBALT_SYSCALL(mutex_unlock, nonrestartable,
- 	       (struct cobalt_mutex_shadow __user *u_mx))
- {
-diff --git a/kernel/cobalt/posix/mutex.h b/kernel/cobalt/posix/mutex.h
-index d76f2a9ea..d7d43219e 100644
---- a/kernel/cobalt/posix/mutex.h
-+++ b/kernel/cobalt/posix/mutex.h
-@@ -40,6 +40,9 @@ int __cobalt_mutex_timedlock_break(struct cobalt_mutex_shadow __user *u_mx,
- 				   int (*fetch_timeout)(struct timespec64 *ts,
- 							const void __user *u_ts));
- 
-+int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
-+				   const void __user *u_ts);
-+
- int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
- 				     struct cobalt_mutex *mutex,
- 				     const struct timespec64 *ts);
-@@ -64,6 +67,10 @@ COBALT_SYSCALL_DECL(mutex_timedlock,
- 		    (struct cobalt_mutex_shadow __user *u_mx,
- 		     const struct __user_old_timespec __user *u_ts));
- 
-+COBALT_SYSCALL(mutex_timedlock64, primary,
-+	       (struct cobalt_mutex_shadow __user *u_mx,
-+		const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL_DECL(mutex_unlock,
- 		    (struct cobalt_mutex_shadow __user *u_mx));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index a37478f3f..bd30decce 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -267,6 +267,13 @@ COBALT_SYSCALL32emu(mutex_timedlock, primary,
- 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, sys32_fetch_timeout);
- }
- 
-+COBALT_SYSCALL32emu(mutex_timedlock64, primary,
-+		    (struct cobalt_mutex_shadow __user *u_mx,
-+		     const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_mutex_timedlock64(u_mx, u_ts);
-+}
-+
- COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 64f6e4931..d464d967f 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -98,6 +98,10 @@ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
- 			 (struct cobalt_mutex_shadow __user *u_mx,
- 			  const struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(mutex_timedlock64,
-+			 (struct cobalt_mutex_shadow __user *u_mx,
-+			  const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
- 			 (struct cobalt_cond_shadow __user *u_cnd,
- 			  struct cobalt_mutex_shadow __user *u_mx,
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index d994007bb..b7fc5ff64 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -160,7 +160,9 @@
- 		__cobalt_symbolic_syscall(clock_settime64),		\
- 		__cobalt_symbolic_syscall(clock_nanosleep64),		\
- 		__cobalt_symbolic_syscall(clock_getres64),		\
--		__cobalt_symbolic_syscall(clock_adjtime64))
-+		__cobalt_symbolic_syscall(clock_adjtime64),		\
-+		__cobalt_symbolic_syscall(mutex_timedlock64))
-+
- 
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
- 	TP_PROTO(unsigned int nr),
+SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
+
+?
+
+Jan
+
 -- 
-2.30.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
