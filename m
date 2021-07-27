@@ -1,10 +1,8 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] smokey: posix_mutex: Fix mutex/smokey_barrier leak
-Date: Thu, 29 Jul 2021 13:29:02 +0200
-Message-Id: <20210729112902.30409-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-MIME-Version: 1.0
+Sender: chensong_2000@189.cn
+From: Song Chen <chensong_2000@189.cn>
+Subject: [PATCH 2/3] y2038: lib/cobalt/internal: dispatch event_wait
+Date: Tue, 27 Jul 2021 14:55:44 +0800
+Message-Id: <1627368944-12861-1-git-send-email-chensong_2000@189.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +11,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-The mutex of the smokey_barrier used inside protect_handover() was
-never destroyed. This had side effects when trying to extend the test
-suite with an additional function that had a mutex located on the same
-address than the never cleaned up smokey_barrier lock.
+If sizeof time_t bigger than 4, which means glibc supports
+64bit timespec, go to event_wait64.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+otherwise, go to original event_wait.
+
+Signed-off-by: Song Chen <chensong_2000@189.cn>
 ---
- testsuite/smokey/posix-mutex/posix-mutex.c | 2 ++
- 1 file changed, 2 insertions(+)
+ lib/cobalt/internal.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 9a55d0973..e5793c42c 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -997,6 +997,8 @@ static int protect_handover(void)
- 	if (!__T(ret, pthread_mutex_destroy(&mutex)))
- 		return ret;
+diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
+index eadb064..ef3f163 100644
+--- a/lib/cobalt/internal.c
++++ b/lib/cobalt/internal.c
+@@ -482,8 +482,13 @@ int cobalt_event_wait(cobalt_event_t *event,
  
-+	smokey_barrier_destroy(&barrier);
-+
- 	return 0;
- }
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
  
++#ifdef __USE_TIME_BITS64
++	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait64,
++			       event, bits, bits_r, mode, timeout);
++#else
+ 	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait,
+ 			       event, bits, bits_r, mode, timeout);
++#endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+@@ -579,4 +584,4 @@ void cobalt_features_init(struct cobalt_featinfo *f)
+ 
+ 	/* Trigger arch specific feature initialization */
+ 	cobalt_arch_check_features(f);
+-}
+\ No newline at end of file
++}
 -- 
-2.30.2
+2.7.4
 
 
