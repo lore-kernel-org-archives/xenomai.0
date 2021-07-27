@@ -1,18 +1,10 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
- debug config fragment
-Date: Wed, 28 Jul 2021 06:37:30 +0000
-Message-ID: <BN9PR11MB5227090FC9FE15DE12248E07F2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210728022124.23466-1-hongzhan.chen@intel.com>
- <20210728022124.23466-2-hongzhan.chen@intel.com>
- <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
- <BN9PR11MB522761A4169EEF751D100A8BF2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
- <75fcd4f6-7f34-3742-be46-e465f9d0a8b7@siemens.com>
-In-Reply-To: <75fcd4f6-7f34-3742-be46-e465f9d0a8b7@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-image PATCH v2 2/5] recipes-kernel: armhf_config: enable
+ IPIPE_DEBUG for armhf by default
+Date: Mon, 26 Jul 2021 20:42:14 -0400
+Message-Id: <20210727004217.10892-3-hongzhan.chen@intel.com>
+In-Reply-To: <20210727004217.10892-1-hongzhan.chen@intel.com>
+References: <20210727004217.10892-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,45 +13,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgSnVseSAyOCwgMjAyMSAyOjIx
-IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW3hlbm9tYWktaW1hZ2UgMS8zXSByZWNpcGVz
-LWtlcm5lbC9saW51eDogY29udHJvbCBhcHB5bGluZyBvZiBubyBkZWJ1ZyBjb25maWcgZnJhZ21l
-bnQNCj4NCj5PbiAyOC4wNy4yMSAwODoxNCwgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+PiANCj4+
-IA0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4gRnJvbTogSmFuIEtpc3prYSA8
-amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4gU2VudDogV2VkbmVzZGF5LCBKdWx5IDI4LCAy
-MDIxIDE6NTIgUE0NCj4+PiBUbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwu
-Y29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPj4+IFN1YmplY3Q6IFJlOiBbeGVub21haS1pbWFn
-ZSAxLzNdIHJlY2lwZXMta2VybmVsL2xpbnV4OiBjb250cm9sIGFwcHlsaW5nIG9mIG5vIGRlYnVn
-IGNvbmZpZyBmcmFnbWVudA0KPj4+DQo+Pj4gT24gMjguMDcuMjEgMDQ6MjEsIEhvbmd6aGFuIENo
-ZW4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+Pj4+IEJ5IGRlZmF1bHQsIG5vZGJnIGNvbmZpZyBmcmFn
-bWVudCB3b3VsZCBub3QgYmUgYXBwbGllZC4NCj4+Pj4NCj4+Pj4gU2lnbmVkLW9mZi1ieTogSG9u
-Z3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgcmVj
-aXBlcy1rZXJuZWwvbGludXgvbGludXgteGVub21haS5pbmMgfCAyICsrDQo+Pj4+ICAxIGZpbGUg
-Y2hhbmdlZCwgMiBpbnNlcnRpb25zKCspDQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9yZWNpcGVz
-LWtlcm5lbC9saW51eC9saW51eC14ZW5vbWFpLmluYyBiL3JlY2lwZXMta2VybmVsL2xpbnV4L2xp
-bnV4LXhlbm9tYWkuaW5jDQo+Pj4+IGluZGV4IDE4NWI2MGIuLjVmNjM5ZGYgMTAwNjQ0DQo+Pj4+
-IC0tLSBhL3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+Pj4+ICsrKyBi
-L3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+Pj4+IEBAIC0xMiw4ICsx
-MiwxMCBAQA0KPj4+PiAgcmVxdWlyZSByZWNpcGVzLWtlcm5lbC9saW51eC9saW51eC1jdXN0b20u
-aW5jDQo+Pj4+ICANCj4+Pj4gIEtFUk5FTF9ERUZDT05GSUcgPz0gIiR7RElTVFJPX0FSQ0h9X2Rl
-ZmNvbmZpZyINCj4+Pj4gK0RJU1RST19OT0RCRyA/PSAiMCINCj4+PiAgDQo+Pj4gIFNSQ19VUkkg
-Kz0gImZpbGU6Ly8ke0tFUk5FTF9ERUZDT05GSUd9Ig0KPj4+ICtTUkNfVVJJICs9ICIke0AnZmls
-ZTovL2NvbW1vbl9ub2RiZy5jZmcnIGlmIGQuZ2V0VmFyKCdESVNUUk9fTk9EQkcnKSA9PSAnMScg
-ZWxzZSAnJ30iDQo+Pj4gIA0KPj4+ICBERVBFTkRTICs9ICJ4ZW5vbWFpLWtlcm5lbC1zb3VyY2Ui
-DQo+Pj4gIEtCVUlMRF9ERVBFTkRTICs9ICJ4ZW5vbWFpLWtlcm5lbC1zb3VyY2UiDQo+Pj4NCj4+
-PkFzIGRpc2N1c3NlZCwgbGV0J3MgZmxpcCB0aGUgZGVmYXVsdCB0byBuby1kZWJ1ZyBhbmQgZW5h
-YmxlIGRlYnVnZ2luZw0KPj4+IHZpYSBYRU5PTUFJX0RFQlVHID0gIjEiLCBJIHdvdWxkIHNheS4N
-Cj4+IA0KPj4gSWYgQ0kgaXMgdXNpbmcgbm8tZGVidWcgYnkgZGVmYXVsdCwgc29tZSBzbW9rZXkg
-dGVzdHMgd291bGQgZmFpbCBiZWNhdXNlIHRoZXkgZGVwZW5kcw0KPj4gb24gQ09ORklHX1hFTk9f
-T1BUX0RFQlVHKi4gVGhhdCBpcyB3aGF0IHdlIGV4cGVjdD8NCj4+IA0KPg0KPkFzIGRpc2N1c3Nl
-ZCwgdGhlIENJIHNldHVwcyB3b3VsZCBuZWVkIDpvcHQtZGVidWcueW1sIGluIGFkZGl0aW9uLiBU
-aGV5DQo+YWxyZWFkeSBoYXZlIHNvbWUgc3BlY2lhbCBvcHRpb24gdG8gc3VwcG9ydCBMQVZBIG5l
-ZWRzLg0KDQpPSy4gSSBtaXN1bmRlcnN0b29kIHNvbWV0aGluZyBiZWNhdXNlIEkgdGhvdWdodCB3
-ZSB3b3VsZCBzdGlsbCBrZWVwIGN1cnJlbnQgQ0kgc2V0dXBzLg0KDQo+DQo+SmFuDQo+DQo+LS0g
-DQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQo=
+Enable IPIPE_DEBUG for armhf by default. We enable IPIPE_DEBUG for
+all arch types uniformly by default in order to controll enabling
+and disabling them via same method.
+
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ recipes-kernel/linux/files/armhf_defconfig | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
+index 3c42582..ef4981d 100644
+--- a/recipes-kernel/linux/files/armhf_defconfig
++++ b/recipes-kernel/linux/files/armhf_defconfig
+@@ -162,7 +162,7 @@ CONFIG_KALLSYMS=y
+ CONFIG_KALLSYMS_BASE_RELATIVE=y
+ CONFIG_PRINTK=y
+ CONFIG_PRINTK_NMI=y
+-# CONFIG_RAW_PRINTK is not set
++CONFIG_RAW_PRINTK=y
+ CONFIG_BUG=y
+ CONFIG_ELF_CORE=y
+ CONFIG_BASE_FULL=y
+@@ -1079,6 +1079,14 @@ CONFIG_IPIPE_CORE_APIREV=2
+ CONFIG_IPIPE_WANT_APIREV_2=y
+ CONFIG_IPIPE_TARGET_APIREV=2
+ CONFIG_IPIPE_HAVE_HOSTRT=y
++
++#
++# CAUTION: DEBUG_LL must be selected, and properly configured for
++#
++
++#
++# RAW_PRINTK to work. Otherwise, you will get no output on raw_printk()
++#
+ CONFIG_PREEMPT_NONE=y
+ # CONFIG_PREEMPT_VOLUNTARY is not set
+ # CONFIG_PREEMPT is not set
+@@ -6820,8 +6828,11 @@ CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
+ CONFIG_MAGIC_SYSRQ_SERIAL=y
+-# CONFIG_IPIPE_DEBUG is not set
++CONFIG_IPIPE_DEBUG=y
++CONFIG_IPIPE_DEBUG_CONTEXT=y
++CONFIG_IPIPE_DEBUG_INTERNAL=y
+ CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
++# CONFIG_IPIPE_TRACE is not set
+ CONFIG_DEBUG_KERNEL=y
+ 
+ #
+-- 
+2.17.1
+
 
