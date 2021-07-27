@@ -1,16 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
- debug config fragment
-Date: Wed, 28 Jul 2021 06:14:04 +0000
-Message-ID: <BN9PR11MB522761A4169EEF751D100A8BF2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210728022124.23466-1-hongzhan.chen@intel.com>
- <20210728022124.23466-2-hongzhan.chen@intel.com>
- <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
-In-Reply-To: <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-image PATCH v2 5/5] Add kas option for swithing off debug
+Date: Mon, 26 Jul 2021 20:42:17 -0400
+Message-Id: <20210727004217.10892-6-hongzhan.chen@intel.com>
+In-Reply-To: <20210727004217.10892-1-hongzhan.chen@intel.com>
+References: <20210727004217.10892-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,34 +12,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgSnVseSAyOCwgMjAyMSAxOjUy
-IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW3hlbm9tYWktaW1hZ2UgMS8zXSByZWNpcGVz
-LWtlcm5lbC9saW51eDogY29udHJvbCBhcHB5bGluZyBvZiBubyBkZWJ1ZyBjb25maWcgZnJhZ21l
-bnQNCj4NCj5PbiAyOC4wNy4yMSAwNDoyMSwgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90
-ZToNCj4+IEJ5IGRlZmF1bHQsIG5vZGJnIGNvbmZpZyBmcmFnbWVudCB3b3VsZCBub3QgYmUgYXBw
-bGllZC4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hl
-bkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICByZWNpcGVzLWtlcm5lbC9saW51eC9saW51eC14ZW5v
-bWFpLmluYyB8IDIgKysNCj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspDQo+PiAN
-Cj4+IGRpZmYgLS1naXQgYS9yZWNpcGVzLWtlcm5lbC9saW51eC9saW51eC14ZW5vbWFpLmluYyBi
-L3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+PiBpbmRleCAxODViNjBi
-Li41ZjYzOWRmIDEwMDY0NA0KPj4gLS0tIGEvcmVjaXBlcy1rZXJuZWwvbGludXgvbGludXgteGVu
-b21haS5pbmMNCj4+ICsrKyBiL3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5j
-DQo+PiBAQCAtMTIsOCArMTIsMTAgQEANCj4+ICByZXF1aXJlIHJlY2lwZXMta2VybmVsL2xpbnV4
-L2xpbnV4LWN1c3RvbS5pbmMNCj4+ICANCj4+ICBLRVJORUxfREVGQ09ORklHID89ICIke0RJU1RS
-T19BUkNIfV9kZWZjb25maWciDQo+PiArRElTVFJPX05PREJHID89ICIwIg0KPiAgDQo+ICBTUkNf
-VVJJICs9ICJmaWxlOi8vJHtLRVJORUxfREVGQ09ORklHfSINCj4gK1NSQ19VUkkgKz0gIiR7QCdm
-aWxlOi8vY29tbW9uX25vZGJnLmNmZycgaWYgZC5nZXRWYXIoJ0RJU1RST19OT0RCRycpID09ICcx
-JyBlbHNlICcnfSINCj4gIA0KPiAgREVQRU5EUyArPSAieGVub21haS1rZXJuZWwtc291cmNlIg0K
-PiAgS0JVSUxEX0RFUEVORFMgKz0gInhlbm9tYWkta2VybmVsLXNvdXJjZSINCj4gDQo+DQo+QXMg
-ZGlzY3Vzc2VkLCBsZXQncyBmbGlwIHRoZSBkZWZhdWx0IHRvIG5vLWRlYnVnIGFuZCBlbmFibGUg
-ZGVidWdnaW5nDQo+dmlhIFhFTk9NQUlfREVCVUcgPSAiMSIsIEkgd291bGQgc2F5Lg0KDQpJZiBD
-SSBpcyB1c2luZyBuby1kZWJ1ZyBieSBkZWZhdWx0LCBzb21lIHNtb2tleSB0ZXN0cyB3b3VsZCBm
-YWlsIGJlY2F1c2UgdGhleSBkZXBlbmRzDQpvbiBDT05GSUdfWEVOT19PUFRfREVCVUcqLiBUaGF0
-IGlzIHdoYXQgd2UgZXhwZWN0Pw0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KPg0KPkph
-bg0KPg0KPi0tIA0KPlNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNl
-IENlbnRlciBFbWJlZGRlZCBMaW51eA0K
+For performance or latency testing and demonstration, debug switches
+should be off but it is on by default.
+
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ opt-set-nodbg.yml | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 opt-set-nodbg.yml
+
+diff --git a/opt-set-nodbg.yml b/opt-set-nodbg.yml
+new file mode 100644
+index 0000000..16a2fec
+--- /dev/null
++++ b/opt-set-nodbg.yml
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (C) 2021 Intel Corporation
++#
++# Authors:
++#  Hongzhan Chen <hongzhan.chen@intel.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 10
++
++# to use kernel config fragments for disabling dbg and
++# improving performance
++
++local_conf_header:
++  distro-nodbg: |
++    DISTRO_NODBG = "YES"
+-- 
+2.17.1
+
 
