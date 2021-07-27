@@ -1,14 +1,14 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: kernel bug if rtnet device is accesses during unbind
-Date: Wed, 4 Aug 2021 07:42:39 +0000
-Message-ID: <DB9PR05MB7723BBD4FBAAAEAD8D4F9D60F6F19@DB9PR05MB7723.eurprd05.prod.outlook.com>
-References: <AS8PR05MB7720FBD018EBB5DED2B01962F6F09@AS8PR05MB7720.eurprd05.prod.outlook.com>
- <45907328-1596-7963-c0b7-5122d92d7881@siemens.com>
-In-Reply-To: <45907328-1596-7963-c0b7-5122d92d7881@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: Analogy usage
+References: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
+ <591b95a6-d81e-0f87-5d36-1af5d05e0688@siemens.com>
+From: Peter Laurich <Peter.Laurich@akamina.com>
+Message-ID: <4eb17090-1b81-dfd5-b384-6374efd751b4@akamina.com>
+Date: Tue, 27 Jul 2021 09:08:59 -0400
 MIME-Version: 1.0
+In-Reply-To: <591b95a6-d81e-0f87-5d36-1af5d05e0688@siemens.com>
+Content-Language: en-CA
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,59 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, ivan@rtxi.org, xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDMuIEF1Z3VzdCAyMDIxIDE4
-OjA0DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVu
-b21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1
-YmplY3Q6IFJlOiBrZXJuZWwgYnVnIGlmIHJ0bmV0IGRldmljZSBpcyBhY2Nlc3NlcyBkdXJpbmcg
-dW5iaW5kDQo+DQo+DQo+DQo+IENBVVRJT046IEV4dGVybmFsIGVtYWlsLiBEbyBub3QgY2xpY2sg
-b24gbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIHNlbmRl
-ciBhbmQgdGhhdCB0aGUgY29udGVudCBpcyBzYWZlLg0KPg0KPiBPbiAwMy4wOC4yMSAxMzoxOCwg
-TGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPiBIZWxsbywNCj4gPg0KPiA+IFRo
-ZXJlIGlzIHNvbWUgYmlnZ2VyIGtlcm5lbCBvb3BzIHdoZW4gYW4gcnRuZXQgZGV2aWNlIGlzIHVu
-Ym91bmQgZnJvbQ0KPiA+IGxpbnV4IGJ1dCBzdGlsbCBhY2Nlc3NpYmxlIHZpYSBpb2N0bC4NCj4g
-PiBFZmZlY3QgYW5kIGJhY2t0cmFjZSBkZXBlbmRzIG9uIHRpbWluZywgdXN1YWxseSB0aGUgcnRf
-aWdiIG1vZHVsZSB3aWxsDQo+ID4gbm90IGRlY3JlYXNlIGl0cyByZWZlcmVuY2UgY291bnQsIGFu
-ZCBhIGZvbGxvd2luZyBzb2Z0IHJlYm9vdCBtaWdodCBoYW5nLg0KPiA+DQo+ID4gVG8gcmVwb2R1
-Y2UsIGZvciBleGFtcGxlIHdpdGggcnRfaWdiIChkb3VidCBpdHMgZHJpdmVyIHNwZWNpZmljKToN
-Cj4gPg0KPiA+IGVjaG8gIjAwMDA6MDE6MDAuMCIgPiAvc3lzL2J1cy9wY2kvZHJpdmVycy9ydF9p
-Z2IvYmluZCAjIHJ0aWZjb25maWcNCj4gPiBoYXMgdG8gcnVuIGluIGJhY2tncm91bmQgZWNobyAi
-MDAwMDowMTowMC4wIiA+DQo+ID4gL3N5cy9idXMvcGNpL2RyaXZlcnMvcnRfaWdiL3VuYmluZCAm
-IHJ0aWZjb25maWcgcnRldGgwIHVwDQo+ID4NCj4NCj4gU28sIHJ1bm5pbmcgb25lIGFmdGVyIHRo
-ZSBvdGhlciAocnRpZmNvbmZpZyB1cCBmaXJzdCkgd2lsbCBub3QgdHJpZ2dlciB0aGlzPyBUaGVu
-IGl0DQo+IHdvdWxkIHNvdW5kcyBsaWtlIGEgcmFjZSBiZXR3ZWVuIHJ0bmV0IG9yIHRoZSBkcml2
-ZXIgcHJldmVudGluZyB0aGUgdW5iaW5kDQo+IGFuZCB0aGUgb25nb2luZyBpZnVwLg0KDQpUaGVy
-ZSBpcyBkZWZpbml0ZWx5IHNvbWUgbWlzc2luZyBzeW5jaHJvbml6YXRpb24sIGFuZCBhcmd1YWJs
-eSB0aGluZyBjb3VsZA0KQmUgaW1wcm92ZWQgaW4gdGVybXMgb2Ygc3VwcG9ydGluZyB1ZXZlbnRz
-Lg0KV2hhdCBoYXBwZW5zIGFzIGZhciBhcyBJIGNhbiB0ZWxsICh0aGUgdWRldiBleGFtcGxlIGlz
-IG1vcmUgZXhwbGljaXQpOg0KMSkgdW5iaW5kaW5nIHN0YXJ0cywgZGVhbGxvY2F0ZXMgKGF0bGVh
-c3QgcGFydCBvZikgdGhlIGluc3RhbmNlDQoyKSBhbiB1ZXZlbnQgInJlbW92ZSBydGV0aDAiIGlz
-IGNhdGNoZWQgYnkgdWRldiwgaGFuZGxlZCBieSBydW5uaW5nICdydGlmY29uZmlnIHJ0ZXRoMCB1
-cCcgKHRoaXMgd2FzIG9yaWdpbmFsbHkgYnkgYWNjaWRlbnQpDQozKSBydGlmY29uZmlnIHN0aWxs
-IGZpbmRzIHRoZSBydGV0aDAgZGV2aWNlLCBidXQgdGhlbiBhY2Nlc3NlcyBpbnZhbGlkIG1lbW9y
-eQ0KDQpJZS4gcnRpZmNvbmZpZyB3YXMgY2FsbGVkICphZnRlciogbGludXggZGlkIGJyb2FkY2Fz
-dCB0aGUgcmVtb3ZhbCBvZiBydGV0aDANCg0KVGhpcyBkb2Vzbid0IGhhcHBlbiBpZiBjb21tYW5k
-cyBhcmUgc2VudCBzZXJpYWxseSBvbiB0aGUgdGVybWluYWwgb3IgdmlhIHNjcmlwdCwNCkkgZ3Vl
-c3MgdGhlIHdyaXRlIGlzIGJsb2NraW5nIHVudGlsIHRoZSBpbnN0YW5jZSBpcyBjb21wbGV0ZWx5
-IHJlbW92ZWQuDQoNCkZZSSwgZXZlcnl0aGluZyBpcyBydW5uaW5nIG9uIGNvcmUgMCB2aWEgYWZm
-aW5pdHkgbWFzaywgYW5kIGl0cyBkZWFkIGVhc3kgdG8gcmVwcm9kdWNlLg0KDQpOb3JiZXJ0DQpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBh
-dHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGll
-bnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZv
-cm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJ
-ZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlm
-aWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJl
-dmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFp
-bCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUg
-cmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBh
-bmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVt
-Lg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNl
-bGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1l
-bnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQg
-b2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29t
-cGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46
-IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXw0K
+Good morning,
 
+We do indeed use Analogy for both data acquisition and control. In the 
+past, our hardware platforms tended to be x86-based hardware with some 
+lower-cost analogue input hardware built into the base such as the 
+Diamond Neptune. Since this platform is EOL, we have moved to lower cost 
+ARM platforms with a mPCIe interface. Most recently, we added support 
+for the ACCES I/O mPCIe-AIO16 8DI/16SE analog input channels. We are 
+using the Cannon Automata K1 right now and have used the Cannon Automata 
+A2 in the past. For the A2, we developed an Analogy driver which gave us 
+access to digital I/O, the CAN Bus as well as the real-time SERCOS III 
+communications channel for synchronous motor control. We have a K1 
+Analogy driver module that gives us access to digital I/O and CAN Bus 
+I/O. I expect that we will look at extending the K1 Analogy driver to 
+give us access to the SERCOS communications channel as well. For CAN Bus 
+and digital I/O, we considered using existing drivers for CAN Bus I/O 
+and GPIO but elected to stick with the Analogy interface instead.
+
+We have also implemented a small number of the Analogy API calls on a 
+Windows system so that we could use our higher level code (which calls 
+Analogy functions) yet still use NI's acquisition hardware and Windows 
+driver code. This worked quite well for input and buffered output since 
+the NI code and hardware could fill or empty data buffers in real time 
+and all of our code had to do was manage the buffers quickly enough; 
+this would not have worked for control where each tick must be managed 
+in real time.
+
+In short, we have embraced Analogy for our drivers and the user-space 
+threads that access the drivers.
+
+I certainly miss the support for sharing events between kernel modules 
+(Analogy drivers) and user-space threads as well as the ability to 
+exchanges messages between user-space and kernel-space with Xenomai 
+support. I used these capabilities extensively with Xenomai 2.6 and will 
+need to find a way to replace the lost direct support for these in 
+Xenomai 3.1.
+
+Peter
+
+
+On 7/26/2021 1:37 AM, Jan Kiszka via Xenomai wrote:
+> On 23.07.21 21:58, Ivan F. Valerio via Xenomai wrote:
+>> Hi everyone,
+>>
+>> My name is Ivan and I am the current (new) maintainer for the Real-Time
+>> eXperiment
+>> Interface (RTXI). This is an application that uses Xenomai to provide
+>> real-time
+>> performance for experimental setups requiring deterministic control. A
+>> number
+>> of laboratories both here in the United States and abroad use RTXI for
+>> their
+>> biological experiments. RTXI uses the Analogy modules in order to interface
+>> with a variety DAQ cards. This has allowed easy adoption of RTXI as it
+>> provides
+>> compatibility among a wide range of DAQ cards out of the box.
+>>
+>> I am new to the mailing list and while researching came across your
+>> discussion to
+>> discontinue Analogy. Removing Analogy would undoubtedly have an impact
+>> on all
+>> laboratories who use RTXI for their setups. What are the current plans for
+>> Analogy? What issues can I assist with to improve the state of this module?
+>>
+> Thanks for you offer! It's great to learn about usage this way and also
+> to hear that you would like to help improving the situation.
+>
+> As I explained in [1], we need at least some basic regular test
+> infrastructure. The other thing is to understand how Analogy is used:
+> with all its features or with specific aspects only (like Peter said he
+> is only using own, out-of-tree drivers with the framework)? The work
+> should focus on that first.
+>
+> Jan
+>
+> [1] https://xenomai.org/pipermail/xenomai/2021-July/045875.html
+>
