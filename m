@@ -1,8 +1,8 @@
 From: =?UTF-8?q?Jean-Baptiste=20Tr=C3=A9dez?=
  <jean-baptiste.tredez@ba-healthcare.com>
-Subject: [PATCH 7/7] net/drivers: fec: remove 1ms latency on frames reception
-Date: Wed, 28 Jul 2021 09:28:02 +0200
-Message-Id: <20210728072802.5816-8-jean-baptiste.tredez@ba-healthcare.com>
+Subject: [PATCH 5/7] Kconfig : enable fec for ARM64 build
+Date: Wed, 28 Jul 2021 09:28:00 +0200
+Message-Id: <20210728072802.5816-6-jean-baptiste.tredez@ba-healthcare.com>
 In-Reply-To: <20210728072802.5816-1-jean-baptiste.tredez@ba-healthcare.com>
 References: <20210728072802.5816-1-jean-baptiste.tredez@ba-healthcare.com>
 Content-Type: text/plain; charset="utf-8"
@@ -18,27 +18,24 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Arnaud Bouvet <arnaud.bouvet@ba-healthcare.com>
-
-Signed-off-by: Arnaud Bouvet <arnaud.bouvet@ba-healthcare.com>
 Signed-off-by: Jean-Baptiste Trédez <jean-baptiste.tredez@ba-healthcare.com>
 ---
- kernel/drivers/net/drivers/freescale/fec.h | 2 +-
+ kernel/drivers/net/drivers/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/drivers/net/drivers/freescale/fec.h b/kernel/drivers/net/drivers/freescale/fec.h
-index 5ab51701d..ba177fcf9 100644
---- a/kernel/drivers/net/drivers/freescale/fec.h
-+++ b/kernel/drivers/net/drivers/freescale/fec.h
-@@ -392,7 +392,7 @@ struct bufdesc_ex {
- #define FEC_ITR_ICFT(X)		(((X) & 0xff) << 20)
- #define FEC_ITR_ICTT(X)		((X) & 0xffff)
- #define FEC_ITR_ICFT_DEFAULT	200  /* Set 200 frame count threshold */
--#define FEC_ITR_ICTT_DEFAULT	1000 /* Set 1000us timer threshold */
-+#define FEC_ITR_ICTT_DEFAULT	10   /* Set 10 us timer threshold */
+diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
+index c36533479..60889aa70 100644
+--- a/kernel/drivers/net/drivers/Kconfig
++++ b/kernel/drivers/net/drivers/Kconfig
+@@ -116,7 +116,7 @@ config XENO_DRIVERS_NET_DRV_SMC91111
+     depends on XENO_DRIVERS_NET
+     tristate "SMSC LAN91C111"
  
- #define FEC_VLAN_TAG_LEN	0x04
- #define FEC_ETHTYPE_LEN		0x02
+-if ARM
++if ARM || ARM64
+ 
+ config XENO_DRIVERS_NET_DRV_AT91_ETHER
+     depends on XENO_DRIVERS_NET && SOC_AT91RM9200
 -- 
 2.17.1
 
