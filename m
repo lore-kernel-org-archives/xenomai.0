@@ -1,16 +1,10 @@
-Subject: Re: [xenomai-images][PATCH] linux-xenomai_4.4: Add machine specific
- config for beagle bone black
-References: <20210804133949.4192-1-Quirin.Gylstorff@siemens.com>
- <3bb6ac08-5f35-ddfe-1483-f44ccb038b97@siemens.com>
- <d1ab18d5-5635-0e42-4e85-d032880ff048@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6fac3b03-a3d5-5664-0534-d9a4455f2914@siemens.com>
-Date: Wed, 4 Aug 2021 17:58:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <d1ab18d5-5635-0e42-4e85-d032880ff048@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
+ debug config fragment
+Date: Tue, 27 Jul 2021 22:21:22 -0400
+Message-Id: <20210728022124.23466-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210728022124.23466-1-hongzhan.chen@intel.com>
+References: <20210728022124.23466-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,22 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 04.08.21 16:29, Gylstorff Quirin wrote:
->> But thanks for debugging this. Maybe also clarify that the board
->> generally does not boot, but sometimes it still does.
-> 
-> My target never boots with xenomai-images
-> b06f6eeef11500b6bce55a1a1e1e27e43fc3fd77.
-> 
+By default, nodbg config fragment would not be applied.
 
-This one, e.g., did so:
-https://source.denx.de/Xenomai/xenomai-images/-/jobs/303430
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ recipes-kernel/linux/linux-xenomai.inc | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Jan
-
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index 185b60b..5f639df 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -12,8 +12,10 @@
+ require recipes-kernel/linux/linux-custom.inc
+ 
+ KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
++DISTRO_NODBG ?= "0"
+ 
+ SRC_URI += "file://${KERNEL_DEFCONFIG}"
++SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
+ 
+ DEPENDS += "xenomai-kernel-source"
+ KBUILD_DEPENDS += "xenomai-kernel-source"
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
