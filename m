@@ -1,7 +1,11 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH] ci/gitlab-ci-base: Switch xenomai debug on for ci build
-Date: Wed, 28 Jul 2021 08:35:20 -0400
-Message-Id: <20210728123520.10270-1-hongzhan.chen@intel.com>
+From: "Kristiansen, Morten (INT)" <Morten.Kristiansen@Teledyne.com>
+Subject: IMX8M Nano compatibility
+Date: Wed, 28 Jul 2021 13:47:06 +0000
+Message-ID: <VI1PR04MB404687DFF801F6DFCDCF8617F3EA9@VI1PR04MB4046.eurprd04.prod.outlook.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,29 +14,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Some smokey test items depend on xenomai debug and we need to switch
-it on to help smokey test pass.
-
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index e23849d..2638dec 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -39,8 +39,8 @@ default:
-   extends: .add-proxy-config
-   stage: build
-   script:
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
-+    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
-+    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
-     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
- 
- .test:
--- 
-2.17.1
-
-
+SGkgRXZlcnlib2R5Lg0KDQpJIGhhdmUgYSBib290IHByb2JsZW0gb24gSU1YOE0gTmFuby4NCg0K
+TlhQIHByb3ZpZGUgYSBwb3J0ZWQga2VybmVsIGZvciB0aGVpciBldmFsdWF0aW9uIGJvYXJkIGJh
+c2VkIG9uIExpbnV4IDUuNC43MC4gKGh0dHBzOi8vc291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVy
+bmFsL2lteC9saW51eC1pbXgsIGJyYW5jaCBpbXhfNS40LjcwXzIuMy4wKQ0KDQpJIG1hbmFnZWQg
+dG8gbW9kaWZ5IGFwcGx5IHRoZSBpcGlwZS1jb3JlLTUuNC43Mi1hcm02NC0wLnBhdGNoIHRvIGFw
+cGx5IHRvIGtlcm5lbC4gSXQgcmVxdWlyZWQgYSBmZXcgbW9kaWZpY2F0aW9ucyBmb3IgaXJxLWlt
+eC1ncGN2Mi5jLg0KDQpUaGUgZm9sbG93aW5nIGZpbGVzIGZpbGVzIHdhcyByZW1vdmVkIGR1cmlu
+ZyB0aGUgTlhQIHBvcnQ6DQpkcml2ZXJzL2dwdS9pcHUtdjMvaXB1LXBydi5oDQpkcml2ZXJzL2dw
+dS9pcHUtdjMvaXB1LWNvbW1vbi5jDQoNCkZvciByZWZlcmVuY2UsIEnigJl2ZSBhdHRhY2hlZCBt
+eSByZXZpc2VkIHBhdGNoLg0KDQpUaGUgZW5kIHJlc3VsdCBpcyB0aGUga2VybmVsIG1vc3RseSBi
+b290cyBmaW5lLCBidXQgYWJvdXQgMSBvdXQgb2YgNSBpdCBmYWlscyB3aXRoIHRoZSBtZXNzYWdl
+IGJlbG93LiBIYXMgYW55Ym9keSBoYWQgYW55IGx1Y2sgcnVubmluZyBYZW5vbWFpIG9uIHRoZSBJ
+TVg4TSBzZXJpZXM/DQoNCkFueSBoZWxwIGlzIGhpZ2hseSBhcHByZWNpYXRlZC4g8J+Yig0KDQov
+TW9ydGVuIEtyaXN0aWFuc2VuDQoNCg0KDQpbICAgMTIuNjcyOTI2XSBpcnEgMTAzOiBub2JvZHkg
+Y2FyZWQgKHRyeSBib290aW5nIHdpdGggdGhlICJpcnFwb2xsIiBvcHRpb24pDQpbICAgMTIuNjgw
+OTM4XSBDUFU6IDAgUElEOiAwIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRlZCA1LjQuNzAtMi4z
+LjIrZzhjNzNiYzYyNWM0ZCAjMQ0KWyAgIDEyLjY4OTI0Nl0gSGFyZHdhcmUgbmFtZTogTlhQIGku
+TVg4TU5hbm8gRVZLIGJvYXJkIChEVCkNClsgICAxMi42OTUxMjBdIEktcGlwZSBkb21haW46IExp
+bnV4DQpbICAgMTIuNjk4ODg5XSBDYWxsIHRyYWNlOg0KWyAgIDEyLjcwMjI2N10gIGR1bXBfYmFj
+a3RyYWNlKzB4MC8weDE0MA0KWyAgIDEyLjcwNjY5NF0gIHNob3dfc3RhY2srMHgxNC8weDIwDQpb
+ICAgMTIuNzExMDIzXSAgZHVtcF9zdGFjaysweGU0LzB4MTJjDQpbICAgMTIuNzE1Mjc3XSAgX19y
+ZXBvcnRfYmFkX2lycSsweDQ4LzB4ZDgNClsgICAxMi43MTk4NzNdICBub3RlX2ludGVycnVwdCsw
+eDJjNC8weDM3Yw0KWyAgIDEyLjcyNDQ0OF0gIGhhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KzB4ODAv
+MHg4OA0KWyAgIDEyLjcyOTYwNF0gIGhhbmRsZV9pcnFfZXZlbnQrMHg0NC8weGQwDQpbICAgMTIu
+NzM0MjQ5XSAgaGFuZGxlX2xldmVsX2lycSsweDkwLzB4ZTgNClsgICAxMi43MzkwNThdICBnZW5l
+cmljX2hhbmRsZV9pcnErMHgyNC8weDM4DQpbICAgMTIuNzQzNzYyXSAgX19oYW5kbGVfZG9tYWlu
+X2lycSsweDYwLzB4YjgNClsgICAxMi43NDg3ODldICBfX2lwaXBlX2RvX0lSUSsweDI4LzB4MzAN
+ClsgICAxMi43NTM0MTldICBfX2lwaXBlX2RvX3N5bmNfc3RhZ2UrMHgxOTgvMHgxYzgNClsgICAx
+Mi43NTg2MjhdICBpcGlwZV91bnN0YWxsX3Jvb3QrMHg0MC8weDUwDQpbICAgMTIuNzYzMzcwXSAg
+X19kb19zb2Z0aXJxKzB4YTQvMHgyNDgNClsgICAxMi43Njc4OTZdICBpcnFfZXhpdCsweGI4LzB4
+ZDgNClsgICAxMi43NzE3MzBdICBfX2hhbmRsZV9kb21haW5faXJxKzB4NjQvMHhiOA0KWyAgIDEy
+Ljc3NjU5OF0gIF9faXBpcGVfZG9fSVJRKzB4MjgvMHgzMA0KWyAgIDEyLjc4MTA1NV0gIF9faXBp
+cGVfZG9fc3luY19zdGFnZSsweDE5OC8weDFjOA0KWyAgIDEyLjc4NjI5NV0gIGlwaXBlX3Vuc3Rh
+bGxfcm9vdCsweDQwLzB4NTANClsgICAxMi43OTEyNjNdICBjcHVpZGxlX2VudGVyX3N0YXRlKzB4
+YTQvMHgzMzANClsgICAxMi43OTYyMTNdICBjcHVpZGxlX2VudGVyKzB4MzQvMHg0OA0KWyAgIDEy
+LjgwMDY3M10gIGNhbGxfY3B1aWRsZSsweDE4LzB4MzgNClsgICAxMi44MDQ5MzldICBkb19pZGxl
+KzB4MWYwLzB4Mjg4DQpbICAgMTIuODA4OTQwXSAgY3B1X3N0YXJ0dXBfZW50cnkrMHgyMC8weDUw
+DQpbICAgMTIuODEzNjY1XSAgcmVzdF9pbml0KzB4ZDQvMHhlMA0KWyAgIDEyLjgxNzg0Ml0gIGFy
+Y2hfY2FsbF9yZXN0X2luaXQrMHhjLzB4MTQNClsgICAxMi44MjI2NTldICBzdGFydF9rZXJuZWwr
+MHg0MTAvMHg0NDQNClsgICAxMi44MjY4NTVdIGhhbmRsZXJzOg0KWyAgIDEyLjgyOTg4Ml0gWzww
+MDAwMDAwMGFiODFiNDg4Pl0gaXJxX2RlZmF1bHRfcHJpbWFyeV9oYW5kbGVyIHRocmVhZGVkIFs8
+MDAwMDAwMDAyNTQzZTYzNj5dIF90Y3BjaV9pcnENClsgICAxMi44NDAzMDldIERpc2FibGluZyBJ
+UlEgIzEwMw0KWyAgIDI0LjA5MjA3NV0gcmN1OiBJTkZPOiByY3VfcHJlZW1wdCBkZXRlY3RlZCBz
+dGFsbHMgb24gQ1BVcy90YXNrczoNClsgICAyNC4wOTgyMDldIHJjdTogICAgIDAtLi4uMDogKDUg
+dGlja3MgdGhpcyBHUCkgaWRsZT1iOGUvMC8weDMgc29mdGlycT04MC84MCBmcXM9MjYyMQ0KWyAg
+IDI0LjEwNTgwMV0gIChkZXRlY3RlZCBieSAyLCB0PTUyNTIgamlmZmllcywgZz0tOTU5LCBxPTE2
+KQ0KWyAgIDI0LjExMTMwNF0gVGFzayBkdW1wIGZvciBDUFUgMDoNClsgICAyNC4xMTQ1NTRdIHN3
+YXBwZXIvMCAgICAgICBSICBydW5uaW5nIHRhc2sgICAgICAgIDAgICAgIDAgICAgICAwIDB4MDAw
+MDAwMmENClsgICAyNC4xMjE2MTFdIENhbGwgdHJhY2U6DQpbICAgMjQuMTI0MDk5XSAgX19zd2l0
+Y2hfdG8rMHgxMDgvMHgxYzANClsgICAyNC4xMjc2OTVdICAweDE4DQoNCg0KVGVsZWR5bmUgQ29u
+ZmlkZW50aWFsOyBDb21tZXJjaWFsbHkgU2Vuc2l0aXZlIEJ1c2luZXNzIERhdGENCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IGlteC1pcGlwZS1jb3JlLTUuNC43Mi1hcm02NC0wLnBhdGNoClR5
+cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA1MTU5MDEgYnl0ZXMKRGVzYzogaW14
+LWlwaXBlLWNvcmUtNS40LjcyLWFybTY0LTAucGF0Y2gKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEwNzI4LzRmZGU3MGU1L2F0dGFjaG1l
+bnQub2JqPgo=
