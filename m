@@ -1,10 +1,7 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-image 1/2] recipes-kernel/linux: control appyling of no
- debug config fragment
-Date: Wed, 28 Jul 2021 04:21:00 -0400
-Message-Id: <20210728082101.5561-2-hongzhan.chen@intel.com>
-In-Reply-To: <20210728082101.5561-1-hongzhan.chen@intel.com>
-References: <20210728082101.5561-1-hongzhan.chen@intel.com>
+Subject: [xenomai-image 0/2] control applying of no debug config
+Date: Wed, 28 Jul 2021 04:20:59 -0400
+Message-Id: <20210728082101.5561-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +12,19 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-By default, nodbg config fragment would be applied.
+1. We apply no debug fragment by default.
+2. User may want to switch on xenomai debug explicitly.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- recipes-kernel/linux/linux-xenomai.inc | 2 ++
- 1 file changed, 2 insertions(+)
+Hongzhan Chen (2):
+  recipes-kernel/linux: control appyling of no debug config fragment
+  Add kas option for swithing on xenomai debug
 
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 185b60b..1852bf6 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -12,8 +12,10 @@
- require recipes-kernel/linux/linux-custom.inc
- 
- KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
-+XENOMAI_DEBUG ?= "0"
- 
- SRC_URI += "file://${KERNEL_DEFCONFIG}"
-+SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBUG') == '0' else ''}"
- 
- DEPENDS += "xenomai-kernel-source"
- KBUILD_DEPENDS += "xenomai-kernel-source"
+ README.md                              |  5 +++++
+ opt-debug.yml                          | 19 +++++++++++++++++++
+ recipes-kernel/linux/linux-xenomai.inc |  2 ++
+ 3 files changed, 26 insertions(+)
+ create mode 100644 opt-debug.yml
+
 -- 
 2.17.1
 
