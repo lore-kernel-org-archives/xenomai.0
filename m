@@ -1,17 +1,18 @@
-Subject: Re: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
  debug config fragment
+Date: Wed, 28 Jul 2021 06:37:30 +0000
+Message-ID: <BN9PR11MB5227090FC9FE15DE12248E07F2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210728022124.23466-1-hongzhan.chen@intel.com>
  <20210728022124.23466-2-hongzhan.chen@intel.com>
  <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
  <BN9PR11MB522761A4169EEF751D100A8BF2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <75fcd4f6-7f34-3742-be46-e465f9d0a8b7@siemens.com>
-Date: Wed, 28 Jul 2021 08:20:31 +0200
-MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB522761A4169EEF751D100A8BF2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+ <75fcd4f6-7f34-3742-be46-e465f9d0a8b7@siemens.com>
+In-Reply-To: <75fcd4f6-7f34-3742-be46-e465f9d0a8b7@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,55 +21,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 28.07.21 08:14, Chen, Hongzhan wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Wednesday, July 28, 2021 1:52 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no debug config fragment
->>
->> On 28.07.21 04:21, Hongzhan Chen via Xenomai wrote:
->>> By default, nodbg config fragment would not be applied.
->>>
->>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>> ---
->>>  recipes-kernel/linux/linux-xenomai.inc | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
->>> index 185b60b..5f639df 100644
->>> --- a/recipes-kernel/linux/linux-xenomai.inc
->>> +++ b/recipes-kernel/linux/linux-xenomai.inc
->>> @@ -12,8 +12,10 @@
->>>  require recipes-kernel/linux/linux-custom.inc
->>>  
->>>  KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
->>> +DISTRO_NODBG ?= "0"
->>  
->>  SRC_URI += "file://${KERNEL_DEFCONFIG}"
->> +SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
->>  
->>  DEPENDS += "xenomai-kernel-source"
->>  KBUILD_DEPENDS += "xenomai-kernel-source"
->>
->>
->> As discussed, let's flip the default to no-debug and enable debugging
->> via XENOMAI_DEBUG = "1", I would say.
-> 
-> If CI is using no-debug by default, some smokey tests would fail because they depends
-> on CONFIG_XENO_OPT_DEBUG*. That is what we expect?
-> 
-
-As discussed, the CI setups would need :opt-debug.yml in addition. They
-already have some special option to support LAVA needs.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgSnVseSAyOCwgMjAyMSAyOjIx
+IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
+YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW3hlbm9tYWktaW1hZ2UgMS8zXSByZWNpcGVz
+LWtlcm5lbC9saW51eDogY29udHJvbCBhcHB5bGluZyBvZiBubyBkZWJ1ZyBjb25maWcgZnJhZ21l
+bnQNCj4NCj5PbiAyOC4wNy4yMSAwODoxNCwgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+PiANCj4+
+IA0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4gRnJvbTogSmFuIEtpc3prYSA8
+amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4gU2VudDogV2VkbmVzZGF5LCBKdWx5IDI4LCAy
+MDIxIDE6NTIgUE0NCj4+PiBUbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwu
+Y29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPj4+IFN1YmplY3Q6IFJlOiBbeGVub21haS1pbWFn
+ZSAxLzNdIHJlY2lwZXMta2VybmVsL2xpbnV4OiBjb250cm9sIGFwcHlsaW5nIG9mIG5vIGRlYnVn
+IGNvbmZpZyBmcmFnbWVudA0KPj4+DQo+Pj4gT24gMjguMDcuMjEgMDQ6MjEsIEhvbmd6aGFuIENo
+ZW4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+Pj4+IEJ5IGRlZmF1bHQsIG5vZGJnIGNvbmZpZyBmcmFn
+bWVudCB3b3VsZCBub3QgYmUgYXBwbGllZC4NCj4+Pj4NCj4+Pj4gU2lnbmVkLW9mZi1ieTogSG9u
+Z3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgcmVj
+aXBlcy1rZXJuZWwvbGludXgvbGludXgteGVub21haS5pbmMgfCAyICsrDQo+Pj4+ICAxIGZpbGUg
+Y2hhbmdlZCwgMiBpbnNlcnRpb25zKCspDQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9yZWNpcGVz
+LWtlcm5lbC9saW51eC9saW51eC14ZW5vbWFpLmluYyBiL3JlY2lwZXMta2VybmVsL2xpbnV4L2xp
+bnV4LXhlbm9tYWkuaW5jDQo+Pj4+IGluZGV4IDE4NWI2MGIuLjVmNjM5ZGYgMTAwNjQ0DQo+Pj4+
+IC0tLSBhL3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+Pj4+ICsrKyBi
+L3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+Pj4+IEBAIC0xMiw4ICsx
+MiwxMCBAQA0KPj4+PiAgcmVxdWlyZSByZWNpcGVzLWtlcm5lbC9saW51eC9saW51eC1jdXN0b20u
+aW5jDQo+Pj4+ICANCj4+Pj4gIEtFUk5FTF9ERUZDT05GSUcgPz0gIiR7RElTVFJPX0FSQ0h9X2Rl
+ZmNvbmZpZyINCj4+Pj4gK0RJU1RST19OT0RCRyA/PSAiMCINCj4+PiAgDQo+Pj4gIFNSQ19VUkkg
+Kz0gImZpbGU6Ly8ke0tFUk5FTF9ERUZDT05GSUd9Ig0KPj4+ICtTUkNfVVJJICs9ICIke0AnZmls
+ZTovL2NvbW1vbl9ub2RiZy5jZmcnIGlmIGQuZ2V0VmFyKCdESVNUUk9fTk9EQkcnKSA9PSAnMScg
+ZWxzZSAnJ30iDQo+Pj4gIA0KPj4+ICBERVBFTkRTICs9ICJ4ZW5vbWFpLWtlcm5lbC1zb3VyY2Ui
+DQo+Pj4gIEtCVUlMRF9ERVBFTkRTICs9ICJ4ZW5vbWFpLWtlcm5lbC1zb3VyY2UiDQo+Pj4NCj4+
+PkFzIGRpc2N1c3NlZCwgbGV0J3MgZmxpcCB0aGUgZGVmYXVsdCB0byBuby1kZWJ1ZyBhbmQgZW5h
+YmxlIGRlYnVnZ2luZw0KPj4+IHZpYSBYRU5PTUFJX0RFQlVHID0gIjEiLCBJIHdvdWxkIHNheS4N
+Cj4+IA0KPj4gSWYgQ0kgaXMgdXNpbmcgbm8tZGVidWcgYnkgZGVmYXVsdCwgc29tZSBzbW9rZXkg
+dGVzdHMgd291bGQgZmFpbCBiZWNhdXNlIHRoZXkgZGVwZW5kcw0KPj4gb24gQ09ORklHX1hFTk9f
+T1BUX0RFQlVHKi4gVGhhdCBpcyB3aGF0IHdlIGV4cGVjdD8NCj4+IA0KPg0KPkFzIGRpc2N1c3Nl
+ZCwgdGhlIENJIHNldHVwcyB3b3VsZCBuZWVkIDpvcHQtZGVidWcueW1sIGluIGFkZGl0aW9uLiBU
+aGV5DQo+YWxyZWFkeSBoYXZlIHNvbWUgc3BlY2lhbCBvcHRpb24gdG8gc3VwcG9ydCBMQVZBIG5l
+ZWRzLg0KDQpPSy4gSSBtaXN1bmRlcnN0b29kIHNvbWV0aGluZyBiZWNhdXNlIEkgdGhvdWdodCB3
+ZSB3b3VsZCBzdGlsbCBrZWVwIGN1cnJlbnQgQ0kgc2V0dXBzLg0KDQo+DQo+SmFuDQo+DQo+LS0g
+DQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
+YmVkZGVkIExpbnV4DQo=
 
