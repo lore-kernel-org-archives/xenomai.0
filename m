@@ -1,12 +1,12 @@
-Subject: Re: [xenomai-image 3/3] recipes-kernel: disable more debugs for
- common nodbg fragment
+Subject: Re: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
+ debug config fragment
 References: <20210728022124.23466-1-hongzhan.chen@intel.com>
- <20210728022124.23466-4-hongzhan.chen@intel.com>
+ <20210728022124.23466-2-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b87a7aeb-2fd4-428f-1643-c87b90ac15b9@siemens.com>
-Date: Wed, 28 Jul 2021 07:52:15 +0200
+Message-ID: <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
+Date: Wed, 28 Jul 2021 07:52:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210728022124.23466-4-hongzhan.chen@intel.com>
+In-Reply-To: <20210728022124.23466-2-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -21,23 +21,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
 On 28.07.21 04:21, Hongzhan Chen via Xenomai wrote:
-> Disable more debugs for common nodbg fragment to improve performance
+> By default, nodbg config fragment would not be applied.
 > 
 > Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > ---
->  recipes-kernel/linux/files/common_nodbg.cfg | 1 +
->  1 file changed, 1 insertion(+)
+>  recipes-kernel/linux/linux-xenomai.inc | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
-> index 749799d..d7d87c5 100644
-> --- a/recipes-kernel/linux/files/common_nodbg.cfg
-> +++ b/recipes-kernel/linux/files/common_nodbg.cfg
-> @@ -1 +1,2 @@
->  # CONFIG_IPIPE_DEBUG is not set
-> +# CONFIG_XENO_OPT_DEBUG is not set
+> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+> index 185b60b..5f639df 100644
+> --- a/recipes-kernel/linux/linux-xenomai.inc
+> +++ b/recipes-kernel/linux/linux-xenomai.inc
+> @@ -12,8 +12,10 @@
+>  require recipes-kernel/linux/linux-custom.inc
+>  
+>  KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
+> +DISTRO_NODBG ?= "0"
+>  
+>  SRC_URI += "file://${KERNEL_DEFCONFIG}"
+> +SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
+>  
+>  DEPENDS += "xenomai-kernel-source"
+>  KBUILD_DEPENDS += "xenomai-kernel-source"
 > 
 
-Added this one to next already, thanks.
+As discussed, let's flip the default to no-debug and enable debugging
+via XENOMAI_DEBUG = "1", I would say.
 
 Jan
 
