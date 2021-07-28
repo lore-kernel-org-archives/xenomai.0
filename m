@@ -1,10 +1,12 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [xenomai-image PATCH v2 4/5] recipes-kernel/linux: control appyling
- of no debug config fragment
-Date: Mon, 26 Jul 2021 20:42:16 -0400
-Message-Id: <20210727004217.10892-5-hongzhan.chen@intel.com>
-In-Reply-To: <20210727004217.10892-1-hongzhan.chen@intel.com>
-References: <20210727004217.10892-1-hongzhan.chen@intel.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: reminder: Xenomai community call on Wednesday, July 28, 2021, UTC
+ 7:00 AM
+Date: Wed, 28 Jul 2021 02:24:17 +0000
+Message-ID: <BN9PR11MB522791D523E1D4DFF0F93741F2EA9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,40 +15,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-For performance or latency testing and demonstration, debug switches
-should be off but it is on by default.
+Hi all,
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- recipes-kernel/linux/linux-xenomai.inc | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 185b60b..ff54ce2 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -11,9 +11,17 @@
- 
- require recipes-kernel/linux/linux-custom.inc
- 
-+def is_nodbg_support(d):
-+    dbg_ver = d.getVar('DISTRO_NODBG') or ''
-+    return dbg_ver.startswith('YES') or dbg_ver == 'YES'
-+
- KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
-+KERNEL_NODBG_FRAGMENTS ?= "common_nodbg.cfg"
-+KERNEL_NODBG_FRAGMENTS_append = "${@'' if is_nodbg_support(d) else ';apply=no'}"
- 
--SRC_URI += "file://${KERNEL_DEFCONFIG}"
-+SRC_URI += "file://${KERNEL_DEFCONFIG} \
-+    file://${KERNEL_NODBG_FRAGMENTS} \
-+"
- 
- DEPENDS += "xenomai-kernel-source"
- KBUILD_DEPENDS += "xenomai-kernel-source"
--- 
-2.17.1
+
+We have the Xenomai community call today.
+
+
+
+Topics may include but are not limited to upstream/downstream project
+
+plans, status updates, and technical discussions. It's an open online
+
+meeting that anyone can join and ask questions.
+
+
+
+Time:
+
+Wednesday, July 28, 2021, UTC 7:00 AM
+
+Paris, France CEST 9:00 AM
+
+China CST 3:00 PM
+
+Join Zoom Meeting
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+91297279269@zoomcrc.com<mailto:91297279269@zoomcrc.com>
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+
+Regards
+
+Hongzhan Chen
 
 
