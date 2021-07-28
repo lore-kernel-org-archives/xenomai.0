@@ -1,12 +1,12 @@
-Subject: Re: [xenomai-image 1/3] recipes-kernel/linux: control appyling of no
- debug config fragment
-References: <20210728022124.23466-1-hongzhan.chen@intel.com>
- <20210728022124.23466-2-hongzhan.chen@intel.com>
+Subject: Re: Analogy usage
+References: <b6b70b3ef32940ac783748d10d5a91b2@rtxi.org>
+ <591b95a6-d81e-0f87-5d36-1af5d05e0688@siemens.com>
+ <4eb17090-1b81-dfd5-b384-6374efd751b4@akamina.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8792dbe1-a638-a1a7-f1d4-2344daae5440@siemens.com>
-Date: Wed, 28 Jul 2021 07:52:13 +0200
+Message-ID: <e2b7bc9b-f6d9-6503-66a5-34792e2f01d8@siemens.com>
+Date: Wed, 28 Jul 2021 08:11:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210728022124.23466-2-hongzhan.chen@intel.com>
+In-Reply-To: <4eb17090-1b81-dfd5-b384-6374efd751b4@akamina.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,35 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Peter Laurich <Peter.Laurich@akamina.com>, ivan@rtxi.org, xenomai@xenomai.org
 
-On 28.07.21 04:21, Hongzhan Chen via Xenomai wrote:
-> By default, nodbg config fragment would not be applied.
+On 27.07.21 15:08, Peter Laurich wrote:
+> Good morning,
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> ---
->  recipes-kernel/linux/linux-xenomai.inc | 2 ++
->  1 file changed, 2 insertions(+)
+> We do indeed use Analogy for both data acquisition and control. In the
+> past, our hardware platforms tended to be x86-based hardware with some
+> lower-cost analogue input hardware built into the base such as the
+> Diamond Neptune. Since this platform is EOL, we have moved to lower cost
+> ARM platforms with a mPCIe interface. Most recently, we added support
+> for the ACCES I/O mPCIe-AIO16 8DI/16SE analog input channels. We are
+> using the Cannon Automata K1 right now and have used the Cannon Automata
+> A2 in the past. For the A2, we developed an Analogy driver which gave us
+> access to digital I/O, the CAN Bus as well as the real-time SERCOS III
+> communications channel for synchronous motor control. We have a K1
+> Analogy driver module that gives us access to digital I/O and CAN Bus
+> I/O. I expect that we will look at extending the K1 Analogy driver to
+> give us access to the SERCOS communications channel as well. For CAN Bus
+> and digital I/O, we considered using existing drivers for CAN Bus I/O
+> and GPIO but elected to stick with the Analogy interface instead.
 > 
-> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-> index 185b60b..5f639df 100644
-> --- a/recipes-kernel/linux/linux-xenomai.inc
-> +++ b/recipes-kernel/linux/linux-xenomai.inc
-> @@ -12,8 +12,10 @@
->  require recipes-kernel/linux/linux-custom.inc
->  
->  KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
-> +DISTRO_NODBG ?= "0"
->  
->  SRC_URI += "file://${KERNEL_DEFCONFIG}"
-> +SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
->  
->  DEPENDS += "xenomai-kernel-source"
->  KBUILD_DEPENDS += "xenomai-kernel-source"
+> We have also implemented a small number of the Analogy API calls on a
+> Windows system so that we could use our higher level code (which calls
+> Analogy functions) yet still use NI's acquisition hardware and Windows
+> driver code. This worked quite well for input and buffered output since
+> the NI code and hardware could fill or empty data buffers in real time
+> and all of our code had to do was manage the buffers quickly enough;
+> this would not have worked for control where each tick must be managed
+> in real time.
 > 
+> In short, we have embraced Analogy for our drivers and the user-space
+> threads that access the drivers.
+> 
+> I certainly miss the support for sharing events between kernel modules
+> (Analogy drivers) and user-space threads as well as the ability to
+> exchanges messages between user-space and kernel-space with Xenomai
+> support. I used these capabilities extensively with Xenomai 2.6 and will
+> need to find a way to replace the lost direct support for these in
+> Xenomai 3.1.
 
-As discussed, let's flip the default to no-debug and enable debugging
-via XENOMAI_DEBUG = "1", I would say.
+Work upstream, that's all advice I can give you. You hopefully see now
+what happens when working in the shadow.
 
 Jan
 
