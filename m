@@ -1,13 +1,13 @@
-Subject: Re: IMX8M Nano compatibility
-References: <VI1PR04MB404687DFF801F6DFCDCF8617F3EA9@VI1PR04MB4046.eurprd04.prod.outlook.com>
+Subject: Re: xenomai warning after upgrade to linux 5.4.115
+References: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7e1e996a-94ac-9522-f3f8-0816c128753f@siemens.com>
-Date: Thu, 29 Jul 2021 09:39:10 +0200
+Message-ID: <c79cae1e-d905-53eb-4f23-6f9d57d2d34f@siemens.com>
+Date: Thu, 29 Jul 2021 10:02:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <VI1PR04MB404687DFF801F6DFCDCF8617F3EA9@VI1PR04MB4046.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,93 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kristiansen, Morten (INT)" <Morten.Kristiansen@Teledyne.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 28.07.21 15:47, Kristiansen, Morten (INT) via Xenomai wrote:
-> Hi Everybody.
-> 
-> I have a boot problem on IMX8M Nano.
-> 
-> NXP provide a ported kernel for their evaluation board based on Linux 5.4.70. (https://source.codeaurora.org/external/imx/linux-imx, branch imx_5.4.70_2.3.0)
+On 29.07.21 08:43, Chen, Hongzhan wrote:
+> After we upgraded our linux to 5.4.115 from 5.4.76 and rebased IPIPE patchset for xenomai 3.1.X,  there is xenomai warning
+> printed as in attached xenomai_warning_on_linux5.4.115 on some specific boards according to our validation.
+
+>From a first inspection: Linux considers its interrupts to be off around
+
+xenomai_init
+  xntimer_grab_hardware
+    ipipe_timer_start
+      smp_call_function_single
+
+But that should not be the case. The call path is valid and used for a
+long time. The issue should come from somewhere else.
+
+You you try to debug where interrupts are turned off from Linux
+perspective? Compare that to boot ups where Linux does not complain.
+
+> But I cannot reproduce the issue on same type of board like Maxtang that I have.  In addition,
+> on one specific board, we found that there is similar warning happened in smp_call_function_single  when ACPI init
+> ahead of warning happened in xenomai init as in attached ACPI_warning_and_xenomai_warning_on_linux5.4.115.
+> When we set acpi=off in cmdline for all problematic boards , warning totally disappear.  Since I cannot get the problematic board
+> to further debug, would you mind help check attached logs and kernel config and find the root cause out?
+> Thanks for your help in advance.
 > 
 
-You generally don't want to use this, you want an upstream version.
-
-> I managed to modify apply the ipipe-core-5.4.72-arm64-0.patch to apply to kernel. It required a few modifications for irq-imx-gpcv2.c.
-> 
-
-See https://xenomai.org/pipermail/xenomai/2021-July/045793.html.
+Does that other case only occur when CONFIG_IPIPE is enabled? If it also
+happens with plain Linux, we may see a mainline issue. Or firmware bugs.
 
 Jan
-
-> The following files files was removed during the NXP port:
-> drivers/gpu/ipu-v3/ipu-prv.h
-> drivers/gpu/ipu-v3/ipu-common.c
-> 
-> For reference, I’ve attached my revised patch.
-> 
-> The end result is the kernel mostly boots fine, but about 1 out of 5 it fails with the message below. Has anybody had any luck running Xenomai on the IMX8M series?
-> 
-> Any help is highly appreciated. 😊
-> 
-> /Morten Kristiansen
-> 
-> 
-> 
-> [   12.672926] irq 103: nobody cared (try booting with the "irqpoll" option)
-> [   12.680938] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.70-2.3.2+g8c73bc625c4d #1
-> [   12.689246] Hardware name: NXP i.MX8MNano EVK board (DT)
-> [   12.695120] I-pipe domain: Linux
-> [   12.698889] Call trace:
-> [   12.702267]  dump_backtrace+0x0/0x140
-> [   12.706694]  show_stack+0x14/0x20
-> [   12.711023]  dump_stack+0xe4/0x12c
-> [   12.715277]  __report_bad_irq+0x48/0xd8
-> [   12.719873]  note_interrupt+0x2c4/0x37c
-> [   12.724448]  handle_irq_event_percpu+0x80/0x88
-> [   12.729604]  handle_irq_event+0x44/0xd0
-> [   12.734249]  handle_level_irq+0x90/0xe8
-> [   12.739058]  generic_handle_irq+0x24/0x38
-> [   12.743762]  __handle_domain_irq+0x60/0xb8
-> [   12.748789]  __ipipe_do_IRQ+0x28/0x30
-> [   12.753419]  __ipipe_do_sync_stage+0x198/0x1c8
-> [   12.758628]  ipipe_unstall_root+0x40/0x50
-> [   12.763370]  __do_softirq+0xa4/0x248
-> [   12.767896]  irq_exit+0xb8/0xd8
-> [   12.771730]  __handle_domain_irq+0x64/0xb8
-> [   12.776598]  __ipipe_do_IRQ+0x28/0x30
-> [   12.781055]  __ipipe_do_sync_stage+0x198/0x1c8
-> [   12.786295]  ipipe_unstall_root+0x40/0x50
-> [   12.791263]  cpuidle_enter_state+0xa4/0x330
-> [   12.796213]  cpuidle_enter+0x34/0x48
-> [   12.800673]  call_cpuidle+0x18/0x38
-> [   12.804939]  do_idle+0x1f0/0x288
-> [   12.808940]  cpu_startup_entry+0x20/0x50
-> [   12.813665]  rest_init+0xd4/0xe0
-> [   12.817842]  arch_call_rest_init+0xc/0x14
-> [   12.822659]  start_kernel+0x410/0x444
-> [   12.826855] handlers:
-> [   12.829882] [<00000000ab81b488>] irq_default_primary_handler threaded [<000000002543e636>] _tcpci_irq
-> [   12.840309] Disabling IRQ #103
-> [   24.092075] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-> [   24.098209] rcu:     0-...0: (5 ticks this GP) idle=b8e/0/0x3 softirq=80/80 fqs=2621
-> [   24.105801]  (detected by 2, t=5252 jiffies, g=-959, q=16)
-> [   24.111304] Task dump for CPU 0:
-> [   24.114554] swapper/0       R  running task        0     0      0 0x0000002a
-> [   24.121611] Call trace:
-> [   24.124099]  __switch_to+0x108/0x1c0
-> [   24.127695]  0x18
-> 
-> 
-> Teledyne Confidential; Commercially Sensitive Business Data
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: imx-ipipe-core-5.4.72-arm64-0.patch
-> Type: application/octet-stream
-> Size: 515901 bytes
-> Desc: imx-ipipe-core-5.4.72-arm64-0.patch
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20210728/4fde70e5/attachment.obj>
-> 
 
 -- 
 Siemens AG, T RDA IOT
