@@ -1,13 +1,13 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <4ffc41e4-c59d-9886-d37d-71395c8275d8@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Thu, 29 Jul 2021 09:32:00 +0200
+Subject: Re: IMX8M Nano compatibility
+References: <VI1PR04MB404687DFF801F6DFCDCF8617F3EA9@VI1PR04MB4046.eurprd04.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7e1e996a-94ac-9522-f3f8-0816c128753f@siemens.com>
+Date: Thu, 29 Jul 2021 09:39:10 +0200
 MIME-Version: 1.0
-Message-ID: <10a0-61025980-117-29fb8780@204571764>
-Subject: =?utf-8?q?Re=3A?==?utf-8?q?_=5BPATCH?==?utf-8?q?_v2=5D?= Enable
- retrieving 
- of RTNET network packet timestamp OOB using =?utf-8?q?recvmsg=28=29?=
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <VI1PR04MB404687DFF801F6DFCDCF8617F3EA9@VI1PR04MB4046.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,73 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "Kristiansen, Morten (INT)" <Morten.Kristiansen@Teledyne.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le Mardi, Juillet 27, 2021 18:44 CEST, Jan Kiszka <jan.kiszka@siemens.c=
-om> a =C3=A9crit: 
- 
-> On 27.07.21 14:13, Fran=C3=A7ois Legal wrote:
-> > Le Lundi, Juillet 26, 2021 14:01 CEST, Jan Kiszka <jan.kiszka@sieme=
-ns.com> a =C3=A9crit: 
-> >  
-> >> On 17.05.21 11:44, Fran=C3=A7ois Legal via Xenomai wrote:
-> >>> This patch enables retrieving, in realtime application, of RTNET =
-enabled adapters packet timestamps.
-> >>> It uses the linux semantic SO=5FTIMESTAMPNS, and the linux code t=
-o put the timestamp in the control=5Fmsg structure.
-> >>>
-> >>> I tested this patch with af=5Fpacket sockets only. UDP  & TCP mig=
-ht be a little bit trickier as many fragment/segments get reassembled i=
-n a single recvmsg. I believe the linux code I used to put the timestam=
-ps in the control structure should be OK though.
-> >>
-> >> One of my question on v1 is still open: How does Linux handle stam=
-ping
-> >> the context of fragmented UDP and TCP packets? And given that you =
-enable
-> >> it for those protocols as well, we should likely test that too.
-> > 
-> > I thought I already gave an answer to this. Sorry.
-> > Linux does not handle time stamping of UDP and TCP as far as I unde=
-rstand.
+On 28.07.21 15:47, Kristiansen, Morten (INT) via Xenomai wrote:
+> Hi Everybody.
 > 
-> Does Linux return an error when you try to enable this for UDP or TCP=
-
-> sockets?
-
-Alright so I rechecked everything again. Linux does not return an error=
- when requesting timestamping for UDP or TCP (or any other kind of sock=
-et it seems).
-
-Despite my previous assertion, timestamping is supported for UDP  and i=
-f I understood the code correctly, only one timestamp is returned in an=
-y case (the time stamp of the last received datagram). This is done in =
-reassembly queues, where the queue always keep the timestamp of the las=
-t received datagram, and when doing the reassembly, this last timestamp=
- is reported to the re created skb.
-
-For TCP it is definitely not supported.
-
-So I should modify the patch to make it comply with what linux does I g=
-uess ?
-
+> I have a boot problem on IMX8M Nano.
 > 
-> > I certainly plan to use the UDP timestamping feature at some point =
-in the future, but maybe I can exclude UDP and TCP for the moment, and =
-stick to af=5Fpacket which has be tested by myself. I'll resubmit anoth=
-er patch with (at least) udp support whenever I need it and have time t=
-o test it.
-> > 
-> > What do you think ?
+> NXP provide a ported kernel for their evaluation board based on Linux 5.4.70. (https://source.codeaurora.org/external/imx/linux-imx, branch imx_5.4.70_2.3.0)
 > 
-> We need at least a plan how to evolve that interface. Actually doing
-> that can then happen in steps, yes.
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
 
+You generally don't want to use this, you want an upstream version.
+
+> I managed to modify apply the ipipe-core-5.4.72-arm64-0.patch to apply to kernel. It required a few modifications for irq-imx-gpcv2.c.
+> 
+
+See https://xenomai.org/pipermail/xenomai/2021-July/045793.html.
+
+Jan
+
+> The following files files was removed during the NXP port:
+> drivers/gpu/ipu-v3/ipu-prv.h
+> drivers/gpu/ipu-v3/ipu-common.c
+> 
+> For reference, I’ve attached my revised patch.
+> 
+> The end result is the kernel mostly boots fine, but about 1 out of 5 it fails with the message below. Has anybody had any luck running Xenomai on the IMX8M series?
+> 
+> Any help is highly appreciated. 😊
+> 
+> /Morten Kristiansen
+> 
+> 
+> 
+> [   12.672926] irq 103: nobody cared (try booting with the "irqpoll" option)
+> [   12.680938] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.70-2.3.2+g8c73bc625c4d #1
+> [   12.689246] Hardware name: NXP i.MX8MNano EVK board (DT)
+> [   12.695120] I-pipe domain: Linux
+> [   12.698889] Call trace:
+> [   12.702267]  dump_backtrace+0x0/0x140
+> [   12.706694]  show_stack+0x14/0x20
+> [   12.711023]  dump_stack+0xe4/0x12c
+> [   12.715277]  __report_bad_irq+0x48/0xd8
+> [   12.719873]  note_interrupt+0x2c4/0x37c
+> [   12.724448]  handle_irq_event_percpu+0x80/0x88
+> [   12.729604]  handle_irq_event+0x44/0xd0
+> [   12.734249]  handle_level_irq+0x90/0xe8
+> [   12.739058]  generic_handle_irq+0x24/0x38
+> [   12.743762]  __handle_domain_irq+0x60/0xb8
+> [   12.748789]  __ipipe_do_IRQ+0x28/0x30
+> [   12.753419]  __ipipe_do_sync_stage+0x198/0x1c8
+> [   12.758628]  ipipe_unstall_root+0x40/0x50
+> [   12.763370]  __do_softirq+0xa4/0x248
+> [   12.767896]  irq_exit+0xb8/0xd8
+> [   12.771730]  __handle_domain_irq+0x64/0xb8
+> [   12.776598]  __ipipe_do_IRQ+0x28/0x30
+> [   12.781055]  __ipipe_do_sync_stage+0x198/0x1c8
+> [   12.786295]  ipipe_unstall_root+0x40/0x50
+> [   12.791263]  cpuidle_enter_state+0xa4/0x330
+> [   12.796213]  cpuidle_enter+0x34/0x48
+> [   12.800673]  call_cpuidle+0x18/0x38
+> [   12.804939]  do_idle+0x1f0/0x288
+> [   12.808940]  cpu_startup_entry+0x20/0x50
+> [   12.813665]  rest_init+0xd4/0xe0
+> [   12.817842]  arch_call_rest_init+0xc/0x14
+> [   12.822659]  start_kernel+0x410/0x444
+> [   12.826855] handlers:
+> [   12.829882] [<00000000ab81b488>] irq_default_primary_handler threaded [<000000002543e636>] _tcpci_irq
+> [   12.840309] Disabling IRQ #103
+> [   24.092075] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [   24.098209] rcu:     0-...0: (5 ticks this GP) idle=b8e/0/0x3 softirq=80/80 fqs=2621
+> [   24.105801]  (detected by 2, t=5252 jiffies, g=-959, q=16)
+> [   24.111304] Task dump for CPU 0:
+> [   24.114554] swapper/0       R  running task        0     0      0 0x0000002a
+> [   24.121611] Call trace:
+> [   24.124099]  __switch_to+0x108/0x1c0
+> [   24.127695]  0x18
+> 
+> 
+> Teledyne Confidential; Commercially Sensitive Business Data
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: imx-ipipe-core-5.4.72-arm64-0.patch
+> Type: application/octet-stream
+> Size: 515901 bytes
+> Desc: imx-ipipe-core-5.4.72-arm64-0.patch
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20210728/4fde70e5/attachment.obj>
+> 
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
