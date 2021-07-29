@@ -1,17 +1,17 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH] cobalt/posix/mutex: Harmonize pthread_mutex_timedlock()
  and sem_timedwait()
-Date: Thu, 29 Jul 2021 16:22:25 +0000
-Message-ID: <7d60072faa0e9f1d38b3047d92a672c502bc7d2a.camel@siemens.com>
 References: <20210729144707.58398-1-florian.bezdeka@siemens.com>
  <87k0l95fdy.fsf@xenomai.org>
  <b98d9a35-a57e-6850-db78-78f82e7031a3@siemens.com>
-In-Reply-To: <b98d9a35-a57e-6850-db78-78f82e7031a3@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <603EDD846CB6E54DA7F95B084497F185@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <7d60072faa0e9f1d38b3047d92a672c502bc7d2a.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <046b0330-607f-4ec9-0a64-5f640747e05a@siemens.com>
+Date: Thu, 29 Jul 2021 19:29:58 +0200
 MIME-Version: 1.0
+In-Reply-To: <7d60072faa0e9f1d38b3047d92a672c502bc7d2a.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,106 +20,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-T24gVGh1LCAyMDIxLTA3LTI5IGF0IDE3OjQ1ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAyOS4wNy4yMSAxNzowNiwgUGhpbGlwcGUgR2VydW0gd3JvdGU6DQo+ID4gDQo+ID4gRmxvcmlh
-biBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyaXRlczoNCj4gPiANCj4g
-PiA+IEFjY29yZGluZyB0byB0aGUgUE9TSVggc3BlYyB0aGUgdmFsdWUgb2YgdGhlIHRpbWVvdXQg
-cGFyYW1ldGVyIG5lZWRzDQo+ID4gPiBub3QgdG8gYmUgdmFsaWRhdGVkIGlmIHRoZSBtdXRleC9z
-ZW1hcGhvcmUgY291bGQgYmUgdGFrZW4gaW1tZWRpYXRlbHkuDQo+ID4gPiANCj4gPiA+IFdoaWxl
-IHRoZSBpbXBsZW1lbnRhdGlvbiBvZiB0aGUgc2VtYXBob3JlIHRpbWVkd2FpdCAoc2VtX3RpbWVk
-d2FpdCgpKQ0KPiA+ID4gYWxsb3dlZCBhbiBpbnZhbGlkIHRpbWVvdXQgcHRocmVhZF9tdXRleF90
-aW1lZGxvY2soKSB3YXMgZmFpbGluZyB3aXRoDQo+ID4gPiAtRUZBVUxUIGluIGNhc2UgdGhlIG11
-dGV4IGNvdWxkIGJlIHRha2VuIGltbWVkaWF0ZWx5Lg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2Zm
-LWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4gPiA+
-IC0tLQ0KPiA+ID4gDQo+ID4gPiBUaGlzIHdhcyBkZXRlY3RlZCB3aGlsZSBwcmVwYXJpbmcgeTIw
-Mzggc3R1ZmYuIE5vdCBzdXJlIGlmIHRoYXQgc2hvdWxkDQo+ID4gPiBnbyBpbnRvIDMuMi4gQ29t
-bWVudHMgd2VsY29tZS4uLg0KPiA+ID4gDQo+ID4gDQo+ID4gdXBzaWRlczogc2F2ZSBhIGZldyBj
-eWNsZXMgaW4gdGhlIG5vbi1jb250ZW5kZWQgY2FzZSBieSBub3QgY29weWluZyBpbg0KPiA+IHRo
-ZSB0aW1lb3V0IGZyb20gdXNlcmxhbmQgdXNlbGVzc2x5ICsgbWlnaHQgaGVscCBwYXNzaW5nIHNv
-bWUgcGlja3kNCj4gPiBQT1NJWCBjb21wbGlhbmNlIHRlc3RzLg0KPiA+IA0KPiA+IGRvd25zaWRl
-OiBhZGRzIGFuIGV4dHJhIGF0b21pYyBvcCBpbiB0aGUgY29udGVuZGVkIGNhc2UuDQo+ID4gDQo+
-IA0KPiBIb3cgZG8gd2UgY29tcGFyZSB0byBsaWJjIGltcGxlbWVudGF0aW9ucyBoZXJlPw0KDQpJ
-IGNoYW5nZWQgdGhlIHZhbGlkYXRpb24gZG9uZSBvbiBjb2JhbHQgc2lkZSwgbm90IGxpYmNvYmFs
-dC4gU28gd2hhdA0KZXhhY3RseSBkbyB5b3UgbWVhbj8NCg0KQ2FsbGluZyBwdGhyZWFkX211dGV4
-X3RpbWVkbG9jaygpIG9uIGEgbXV0ZXggbm90IHlldCB0YWtlbiB3aXRoIGFuDQppbnZhbGlkIC8g
-TlVMTCBhcmd1bWVudCBmb3IgYWJzdGltZSBkb2VzIG5vdCByZXBvcnQgYW55IGVycm9yLiBUaGUg
-Y29kZQ0KYmVsb3cgd2FzIHRlc3RlZCBvbiBteSBsb2NhbCBnbGliYyAyLjMyOg0KDQojaW5jbHVk
-ZSA8cHRocmVhZC5oPg0KDQppbnQgbWFpbihpbnQgYXJnYywgY2hhciAqKmFyZ3YpDQp7DQoJcHRo
-cmVhZF9tdXRleF90IG11dGV4Ow0KCWludCByZXQ7DQoNCglyZXQgPSBwdGhyZWFkX211dGV4X2lu
-aXQoJm11dGV4LCBOVUxMKTsJDQoJaWYgKHJldCkNCgkJcmV0dXJuIHJldDsNCg0KCXJldCA9IHB0
-aHJlYWRfbXV0ZXhfdGltZWRsb2NrKCZtdXRleCwgKHZvaWQgKikgMHhkZWFkYmVlZik7DQoJaWYg
-KHJldCkNCgkJcmV0dXJuIHJldDsNCg0KCS8vIEEgc2Vjb25kIGNhbGwgd2l0aCBpbnZhbGlkIHRp
-bWVvdXQgd291bGQgZGVsaXZlciBhIHNlZ2ZhdWx0DQoNCglyZXQgPSBwdGhyZWFkX211dGV4X3Vu
-bG9jaygmbXV0ZXgpOw0KCWlmIChyZXQpDQoJCXJldHVybiByZXQ7DQoNCglyZXQgPSBwdGhyZWFk
-X211dGV4X2Rlc3Ryb3koJm11dGV4KTsNCglpZiAocmV0KQ0KCQlyZXR1cm4gcmV0Ow0KDQoJcmV0
-dXJuIDA7DQp9DQoNCj4gDQo+IEphbg0KPiANCj4gPiA+IENDZWQgUGhpbGlwcGUgYmVjYXVzZSBo
-ZSB3YXMgYWxyZWFkeSBpbnZvbHZlZCBzb21lIChsb25nKSB0aW1lIGFnby4NCj4gPiA+IA0KPiA+
-IA0KPiA+IFRoZSBwYXRjaCBsb29rcyBnb29kLg0KPiA+IA0KPiA+ID4gUmVnYXJkcywNCj4gPiA+
-IEZsb3JpYW4NCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiDCoGtlcm5lbC9jb2JhbHQvcG9zaXgvbXV0
-ZXguYyAgICAgICAgICAgICAgICB8ICA1ICsrDQo+ID4gPiDCoHRlc3RzdWl0ZS9zbW9rZXkvcG9z
-aXgtbXV0ZXgvcG9zaXgtbXV0ZXguYyB8IDYwICsrKysrKysrKysrKysrKysrKysrKysNCj4gPiA+
-IMKgMiBmaWxlcyBjaGFuZ2VkLCA2NSBpbnNlcnRpb25zKCspDQo+ID4gPiANCj4gPiA+IGRpZmYg
-LS1naXQgYS9rZXJuZWwvY29iYWx0L3Bvc2l4L211dGV4LmMgYi9rZXJuZWwvY29iYWx0L3Bvc2l4
-L211dGV4LmMNCj4gPiA+IGluZGV4IDcwZmU3OTYwYS4uMDE0Nzg5NzhlIDEwMDY0NA0KPiA+ID4g
-LS0tIGEva2VybmVsL2NvYmFsdC9wb3NpeC9tdXRleC5jDQo+ID4gPiArKysgYi9rZXJuZWwvY29i
-YWx0L3Bvc2l4L211dGV4LmMNCj4gPiA+IEBAIC0xNjcsNiArMTY3LDExIEBAIHJlZG86DQo+ID4g
-PiDCoAl4bnRocmVhZF9jb21taXRfY2VpbGluZyhjdXJyKTsNCj4gPiA+IMKgDQo+ID4gPiANCj4g
-PiA+IA0KPiA+ID4gDQo+ID4gPiDCoAlpZiAoeG5zeW5jaF9vd25lcl9jaGVjaygmbXV0ZXgtPnN5
-bmNoYmFzZSwgY3VycikpIHsNCj4gPiA+ICsJCS8qIENoZWNrIGlmIHdlIGNhbiB0YWtlIHRoZSBt
-dXRleCBpbW1lZGlhdGVseSAqLw0KPiA+ID4gKwkJcmV0ID0geG5zeW5jaF90cnlfYWNxdWlyZSgm
-bXV0ZXgtPnN5bmNoYmFzZSk7DQo+ID4gPiArCQlpZiAocmV0ICE9IC1FQlVTWSkNCj4gPiA+ICsJ
-CQlnb3RvIG91dDsNCj4gPiA+ICsNCj4gPiA+IMKgCQlpZiAoZmV0Y2hfdGltZW91dCkgew0KPiA+
-ID4gwqAJCQl4bmxvY2tfcHV0X2lycXJlc3RvcmUoJm5rbG9jaywgcyk7DQo+ID4gPiDCoAkJCXJl
-dCA9IGZldGNoX3RpbWVvdXQoJnRzLCB1X3RzKTsNCj4gPiA+IGRpZmYgLS1naXQgYS90ZXN0c3Vp
-dGUvc21va2V5L3Bvc2l4LW11dGV4L3Bvc2l4LW11dGV4LmMgYi90ZXN0c3VpdGUvc21va2V5L3Bv
-c2l4LW11dGV4L3Bvc2l4LW11dGV4LmMNCj4gPiA+IGluZGV4IGU1NzkzYzQyYy4uNGFhZDI0OTY0
-IDEwMDY0NA0KPiA+ID4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1tdXRleC9wb3NpeC1t
-dXRleC5jDQo+ID4gPiArKysgYi90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LW11dGV4L3Bvc2l4LW11
-dGV4LmMNCj4gPiA+IEBAIC0xMDAyLDYgKzEwMDIsNjUgQEAgc3RhdGljIGludCBwcm90ZWN0X2hh
-bmRvdmVyKHZvaWQpDQo+ID4gPiDCoAlyZXR1cm4gMDsNCj4gPiA+IMKgfQ0KPiA+ID4gwqANCj4g
-PiA+IA0KPiA+ID4gDQo+ID4gPiANCj4gPiA+ICtzdGF0aWMgdm9pZCAqbXV0ZXhfdGltZWRfbG9j
-a2VyX2ludl90aW1lb3V0KHZvaWQgKmFyZykNCj4gPiA+ICt7DQo+ID4gPiArCXN0cnVjdCBsb2Nr
-ZXJfY29udGV4dCAqcCA9IGFyZzsNCj4gPiA+ICsJaW50IHJldDsNCj4gPiA+ICsNCj4gPiA+ICsJ
-aWYgKF9fRihyZXQsIHB0aHJlYWRfbXV0ZXhfdGltZWRsb2NrKHAtPm11dGV4LCAodm9pZCAqKSAw
-eGRlYWRiZWVmKSkgJiYNCj4gPiA+ICsJICAgIF9fVGFzc2VydChyZXQgPT0gLUVGQVVMVCkpDQo+
-ID4gPiArCQlyZXR1cm4gKHZvaWQgKikxOw0KPiA+ID4gKw0KPiA+ID4gKwlyZXR1cm4gTlVMTDsN
-Cj4gPiA+ICt9DQo+ID4gPiArDQo+ID4gPiArc3RhdGljIGludCBjaGVja190aW1lZGxvY2tfYWJz
-dGltZV92YWxpZGF0aW9uKHZvaWQpDQo+ID4gPiArew0KPiA+ID4gKwlzdHJ1Y3QgbG9ja2VyX2Nv
-bnRleHQgYXJnczsNCj4gPiA+ICsJcHRocmVhZF9tdXRleF90IG11dGV4Ow0KPiA+ID4gKwlwdGhy
-ZWFkX3QgdGlkOw0KPiA+ID4gKwl2b2lkICpzdGF0dXM7DQo+ID4gPiArCWludCByZXQ7DQo+ID4g
-PiArDQo+ID4gPiArCWlmICghX19UKHJldCwgcHRocmVhZF9tdXRleF9pbml0KCZtdXRleCwgTlVM
-TCkpKQ0KPiA+ID4gKwkJcmV0dXJuIHJldDsNCj4gPiA+ICsNCj4gPiA+ICsJLyoNCj4gPiA+ICsJ
-ICogV2UgZG9uJ3Qgb3duIHRoZSBtdXRleCB5ZXQsIHNvIG5vIG5lZWQgdG8gdmFsaWRhdGUgdGhl
-IHRpbWVvdXQgYXMNCj4gPiA+ICsJICogdGhlIG11dGV4IGNhbiBiZSBsb2NrZWQgaW1tZWRpYXRl
-bHkuDQo+ID4gPiArCSAqDQo+ID4gPiArCSAqIFRoZSBzZWNvbmQgcGFyYW1ldGVyIG9mIHBodHJl
-YWRfbXV0ZXhfdGltZWRsb2NrKCkgaXMgZmxhZ2dlZCBhcw0KPiA+ID4gKwkgKiBfX25vbm51bGwg
-c28gd2UgdGFrZSBhbiBpbnZhbGlkIGFkZHJlc3MgaW5zdGVhZCBvZiBOVUxMLg0KPiA+ID4gKwkg
-Ki8NCj4gPiA+ICsJaWYgKCFfX1QocmV0LCBwdGhyZWFkX211dGV4X3RpbWVkbG9jaygmbXV0ZXgs
-ICh2b2lkICopIDB4ZGVhZGJlZWYpKSkNCj4gPiA+ICsJCXJldHVybiByZXQ7DQo+ID4gPiArDQo+
-ID4gPiArCS8qDQo+ID4gPiArCSAqIENyZWF0ZSBhIHNlY29uZCB0aHJlYWQgd2hpY2ggd2lsbCBo
-YXZlIHRvIHdhaXQgYW5kIHRoZXJlZm9yZSB3aWxsDQo+ID4gPiArCSAqIHZhbGlkYXRlIHRoZSAo
-aW52YWxpZCkgdGltZW91dA0KPiA+ID4gKwkgKi8NCj4gPiA+ICsJYXJncy5tdXRleCA9ICZtdXRl
-eDsNCj4gPiA+ICsJcmV0ID0gY3JlYXRlX3RocmVhZCgmdGlkLCBTQ0hFRF9GSUZPLCBUSFJFQURf
-UFJJT19MT1csDQo+ID4gPiArCQkJICAgIG11dGV4X3RpbWVkX2xvY2tlcl9pbnZfdGltZW91dCwg
-JmFyZ3MpOw0KPiA+ID4gKw0KPiA+ID4gKwlpZiAocmV0KQ0KPiA+ID4gKwkJcmV0dXJuIHJldDsN
-Cj4gPiA+ICsNCj4gPiA+ICsJaWYgKCFfX1QocmV0LCBwdGhyZWFkX2pvaW4odGlkLCAmc3RhdHVz
-KSkpDQo+ID4gPiArCQlyZXR1cm4gcmV0Ow0KPiA+ID4gKw0KPiA+ID4gKwlpZiAoIV9fVChyZXQs
-IHB0aHJlYWRfbXV0ZXhfdW5sb2NrKCZtdXRleCkpKQ0KPiA+ID4gKwkJcmV0dXJuIHJldDsNCj4g
-PiA+ICsNCj4gPiA+ICsJaWYgKCFfX1QocmV0LCBwdGhyZWFkX211dGV4X2Rlc3Ryb3koJm11dGV4
-KSkpDQo+ID4gPiArCQlyZXR1cm4gcmV0Ow0KPiA+ID4gKw0KPiA+ID4gKwlpZiAoIV9fRmFzc2Vy
-dChzdGF0dXMgPT0gTlVMTCkpDQo+ID4gPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiA+ICsNCj4g
-PiA+ICsJcmV0dXJuIDA7DQo+ID4gPiArfQ0KPiA+ID4gKw0KPiA+ID4gwqAvKiBEZXRlY3Qgb2J2
-aW91c2x5IHdyb25nIGV4ZWN1dGlvbiB0aW1lcy4gKi8NCj4gPiA+IMKgc3RhdGljIGludCBjaGVj
-a190aW1lX2xpbWl0KGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAqc3RhcnQsDQo+ID4gPiDCoAkJCSAg
-ICB4bnRpY2tzX3QgbGltaXRfbnMpDQo+ID4gPiBAQCAtMTA2NSw2ICsxMTI0LDcgQEAgc3RhdGlj
-IGludCBydW5fcG9zaXhfbXV0ZXgoc3RydWN0IHNtb2tleV90ZXN0ICp0LCBpbnQgYXJnYywgY2hh
-ciAqY29uc3QgYXJndltdKQ0KPiA+ID4gwqAJZG9fdGVzdChwcm90ZWN0X2R5bmFtaWMsIE1BWF8x
-MDBfTVMpOw0KPiA+ID4gwqAJZG9fdGVzdChwcm90ZWN0X3RyeWxvY2ssIE1BWF8xMDBfTVMpOw0K
-PiA+ID4gwqAJZG9fdGVzdChwcm90ZWN0X2hhbmRvdmVyLCBNQVhfMTAwX01TKTsNCj4gPiA+ICsJ
-ZG9fdGVzdChjaGVja190aW1lZGxvY2tfYWJzdGltZV92YWxpZGF0aW9uLCBNQVhfMTAwX01TKTsN
-Cj4gPiA+IMKgDQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiDCoAlyZXR1cm4gMDsNCj4g
-PiA+IMKgfQ0KPiA+IA0KPiA+IA0KPiANCg0K
+On 29.07.21 18:22, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-07-29 at 17:45 +0200, Jan Kiszka wrote:
+>> On 29.07.21 17:06, Philippe Gerum wrote:
+>>>
+>>> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>>>
+>>>> According to the POSIX spec the value of the timeout parameter needs
+>>>> not to be validated if the mutex/semaphore could be taken immediately.
+>>>>
+>>>> While the implementation of the semaphore timedwait (sem_timedwait())
+>>>> allowed an invalid timeout pthread_mutex_timedlock() was failing with
+>>>> -EFAULT in case the mutex could be taken immediately.
+>>>>
+>>>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>>>> ---
+>>>>
+>>>> This was detected while preparing y2038 stuff. Not sure if that should
+>>>> go into 3.2. Comments welcome...
+>>>>
+>>>
+>>> upsides: save a few cycles in the non-contended case by not copying in
+>>> the timeout from userland uselessly + might help passing some picky
+>>> POSIX compliance tests.
+>>>
+>>> downside: adds an extra atomic op in the contended case.
+>>>
+>>
+>> How do we compare to libc implementations here?
+> 
+> I changed the validation done on cobalt side, not libcobalt. So what
+> exactly do you mean?
+> 
+
+Indeed, I was looking for the fast or almost fast paths in userspace.
+
+But now I'm confused: The uncontended case is generally not supposed to
+trigger a syscall. That is always the slow path anyway, e.g. because ned
+to migrated first (likely how you were able to trigger the issue?).
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
