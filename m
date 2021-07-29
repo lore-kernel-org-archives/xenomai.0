@@ -1,11 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: xenomai warning after upgrade to linux 5.4.115
-Date: Thu, 29 Jul 2021 06:43:19 +0000
-Message-ID: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Language: en-US
-MIME-Version: 1.0
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <4ffc41e4-c59d-9886-d37d-71395c8275d8@siemens.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Thu, 29 Jul 2021 09:32:00 +0200
+MIME-Version: 1.0
+Message-ID: <10a0-61025980-117-29fb8780@204571764>
+Subject: =?utf-8?q?Re=3A?==?utf-8?q?_=5BPATCH?==?utf-8?q?_v2=5D?= Enable
+ retrieving 
+ of RTNET network packet timestamp OOB using =?utf-8?q?recvmsg=28=29?=
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-QWZ0ZXIgd2UgdXBncmFkZWQgb3VyIGxpbnV4IHRvIDUuNC4xMTUgZnJvbSA1LjQuNzYgYW5kIHJl
-YmFzZWQgSVBJUEUgcGF0Y2hzZXQgZm9yIHhlbm9tYWkgMy4xLlgsICB0aGVyZSBpcyB4ZW5vbWFp
-IHdhcm5pbmcKcHJpbnRlZCBhcyBpbiBhdHRhY2hlZCB4ZW5vbWFpX3dhcm5pbmdfb25fbGludXg1
-LjQuMTE1IG9uIHNvbWUgc3BlY2lmaWMgYm9hcmRzIGFjY29yZGluZyB0byBvdXIgdmFsaWRhdGlv
-bi4KQnV0IEkgY2Fubm90IHJlcHJvZHVjZSB0aGUgaXNzdWUgb24gc2FtZSB0eXBlIG9mIGJvYXJk
-IGxpa2UgTWF4dGFuZyB0aGF0IEkgaGF2ZS4gIEluIGFkZGl0aW9uLApvbiBvbmUgc3BlY2lmaWMg
-Ym9hcmQsIHdlIGZvdW5kIHRoYXQgdGhlcmUgaXMgc2ltaWxhciB3YXJuaW5nIGhhcHBlbmVkIGlu
-IHNtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZSAgd2hlbiBBQ1BJIGluaXQKYWhlYWQgb2Ygd2Fybmlu
-ZyBoYXBwZW5lZCBpbiB4ZW5vbWFpIGluaXQgYXMgaW4gYXR0YWNoZWQgQUNQSV93YXJuaW5nX2Fu
-ZF94ZW5vbWFpX3dhcm5pbmdfb25fbGludXg1LjQuMTE1LgpXaGVuIHdlIHNldCBhY3BpPW9mZiBp
-biBjbWRsaW5lIGZvciBhbGwgcHJvYmxlbWF0aWMgYm9hcmRzICwgd2FybmluZyB0b3RhbGx5IGRp
-c2FwcGVhci4gIFNpbmNlIEkgY2Fubm90IGdldCB0aGUgcHJvYmxlbWF0aWMgYm9hcmQKdG8gZnVy
-dGhlciBkZWJ1Zywgd291bGQgeW91IG1pbmQgaGVscCBjaGVjayBhdHRhY2hlZCBsb2dzIGFuZCBr
-ZXJuZWwgY29uZmlnIGFuZCBmaW5kIHRoZSByb290IGNhdXNlIG91dD8KVGhhbmtzIGZvciB5b3Vy
-IGhlbHAgaW4gYWR2YW5jZS4KClJlZ2FyZHMKCkhvbmd6aGFuIENoZW4KCi0tLS0tLS0tLS0tLS0t
-IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnVi
-YmVkLi4uCk5hbWU6IHhlbm9tYWlfd2FybmluZ19vbl9saW51eDUuNC4xMTUKVHlwZTogYXBwbGlj
-YXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDM5MTk1IGJ5dGVzCkRlc2M6IHhlbm9tYWlfd2Fybmlu
-Z19vbl9saW51eDUuNC4xMTUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpL2F0dGFjaG1lbnRzLzIwMjEwNzI5LzI5MzY2MjhjL2F0dGFjaG1lbnQub2JqPgotLS0tLS0t
-LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
-cyBzY3J1YmJlZC4uLgpOYW1lOiBBQ1BJX3dhcm5pbmdfYW5kX3hlbm9tYWlfd2FybmluZ19vbl9s
-aW51eDUuNC4xMTUKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDM1MjE3IGJ5
-dGVzCkRlc2M6IEFDUElfd2FybmluZ19hbmRfeGVub21haV93YXJuaW5nX29uX2xpbnV4NS40LjEx
-NQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAyMTA3MjkvMjkzNjYyOGMvYXR0YWNobWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogbGludXgta2VybmVsc3JjLmNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1z
-dHJlYW0KU2l6ZTogMTk1MTM5IGJ5dGVzCkRlc2M6IGxpbnV4LWtlcm5lbHNyYy5jb25maWcKVVJM
-OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjEw
-NzI5LzI5MzY2MjhjL2F0dGFjaG1lbnQtMDAwMi5vYmo+Cg==
+Le Mardi, Juillet 27, 2021 18:44 CEST, Jan Kiszka <jan.kiszka@siemens.c=
+om> a =C3=A9crit: 
+ 
+> On 27.07.21 14:13, Fran=C3=A7ois Legal wrote:
+> > Le Lundi, Juillet 26, 2021 14:01 CEST, Jan Kiszka <jan.kiszka@sieme=
+ns.com> a =C3=A9crit: 
+> >  
+> >> On 17.05.21 11:44, Fran=C3=A7ois Legal via Xenomai wrote:
+> >>> This patch enables retrieving, in realtime application, of RTNET =
+enabled adapters packet timestamps.
+> >>> It uses the linux semantic SO=5FTIMESTAMPNS, and the linux code t=
+o put the timestamp in the control=5Fmsg structure.
+> >>>
+> >>> I tested this patch with af=5Fpacket sockets only. UDP  & TCP mig=
+ht be a little bit trickier as many fragment/segments get reassembled i=
+n a single recvmsg. I believe the linux code I used to put the timestam=
+ps in the control structure should be OK though.
+> >>
+> >> One of my question on v1 is still open: How does Linux handle stam=
+ping
+> >> the context of fragmented UDP and TCP packets? And given that you =
+enable
+> >> it for those protocols as well, we should likely test that too.
+> > 
+> > I thought I already gave an answer to this. Sorry.
+> > Linux does not handle time stamping of UDP and TCP as far as I unde=
+rstand.
+> 
+> Does Linux return an error when you try to enable this for UDP or TCP=
+
+> sockets?
+
+Alright so I rechecked everything again. Linux does not return an error=
+ when requesting timestamping for UDP or TCP (or any other kind of sock=
+et it seems).
+
+Despite my previous assertion, timestamping is supported for UDP  and i=
+f I understood the code correctly, only one timestamp is returned in an=
+y case (the time stamp of the last received datagram). This is done in =
+reassembly queues, where the queue always keep the timestamp of the las=
+t received datagram, and when doing the reassembly, this last timestamp=
+ is reported to the re created skb.
+
+For TCP it is definitely not supported.
+
+So I should modify the patch to make it comply with what linux does I g=
+uess ?
+
+> 
+> > I certainly plan to use the UDP timestamping feature at some point =
+in the future, but maybe I can exclude UDP and TCP for the moment, and =
+stick to af=5Fpacket which has be tested by myself. I'll resubmit anoth=
+er patch with (at least) udp support whenever I need it and have time t=
+o test it.
+> > 
+> > What do you think ?
+> 
+> We need at least a plan how to evolve that interface. Actually doing
+> that can then happen in steps, yes.
+> 
+> Jan
+> 
+> -- 
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+
+
