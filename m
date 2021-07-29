@@ -1,10 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 2/2] cobalt/posix/mutex: Harmonize pthread_mutex_timedlock()
- and sem_timedwait()
-Date: Thu, 29 Jul 2021 16:40:25 +0200
-Message-Id: <20210729144025.56162-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/2] cobalt/posix/mutex: Harmonize
+ pthread_mutex_timedlock() and sem_timedwait()
+Date: Thu, 29 Jul 2021 14:42:06 +0000
+Message-ID: <2abeaa04270b186bf39a9f7c3be5d10849548bdd.camel@siemens.com>
+References: <20210729144025.56162-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20210729144025.56162-1-florian.bezdeka@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3719FD79F968E340A36C5170D441639C@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,52 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-According to the POSIX spec the value of the timeout parameter needs
-not to be validated if the mutex/semaphore could be taken immediately.
-
-While the implementation of the semaphore timedwait (sem_timedwait())
-allowed an invalid timeout pthread_mutex_timedlock() was failing with
--EFAULT in case the mutex could be taken immediately.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
-
-This was detected while preparing y2038 stuff. Not sure if that should
-go into 3.2. Comments welcome...
-
-CCed Philippe because he was already involved some (long) time ago.
-
-Regards,
-Florian
-
- testsuite/smokey/posix-mutex/posix-mutex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 0f4dbe739..4aad24964 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -1007,7 +1007,7 @@ static void *mutex_timed_locker_inv_timeout(void *arg)
- 	struct locker_context *p = arg;
- 	int ret;
- 
--	if (__F(ret, pthread_mutex_timedlock(p->mutex, (void*) 0xdeadbeef)) &&
-+	if (__F(ret, pthread_mutex_timedlock(p->mutex, (void *) 0xdeadbeef)) &&
- 	    __Tassert(ret == -EFAULT))
- 		return (void *)1;
- 
-@@ -1032,7 +1032,7 @@ static int check_timedlock_abstime_validation(void)
- 	 * The second parameter of phtread_mutex_timedlock() is flagged as
- 	 * __nonnull so we take an invalid address instead of NULL.
- 	 */
--	if (!__T(ret, pthread_mutex_timedlock(&mutex, (void*) 0xdeadbeef)))
-+	if (!__T(ret, pthread_mutex_timedlock(&mutex, (void *) 0xdeadbeef)))
- 		return ret;
- 
- 	/*
--- 
-2.30.2
-
+UGxlYXNlIGlnbm9yZSB0aGlzIG9uZS4uLiBMb2NhbCB0b29saW5nIGJ1Zy4NCg0KT24gVGh1LCAy
+MDIxLTA3LTI5IGF0IDE2OjQwICswMjAwLCBGbG9yaWFuIEJlemRla2Egd3JvdGU6DQo+IEFjY29y
+ZGluZyB0byB0aGUgUE9TSVggc3BlYyB0aGUgdmFsdWUgb2YgdGhlIHRpbWVvdXQgcGFyYW1ldGVy
+IG5lZWRzDQo+IG5vdCB0byBiZSB2YWxpZGF0ZWQgaWYgdGhlIG11dGV4L3NlbWFwaG9yZSBjb3Vs
+ZCBiZSB0YWtlbiBpbW1lZGlhdGVseS4NCj4gDQo+IFdoaWxlIHRoZSBpbXBsZW1lbnRhdGlvbiBv
+ZiB0aGUgc2VtYXBob3JlIHRpbWVkd2FpdCAoc2VtX3RpbWVkd2FpdCgpKQ0KPiBhbGxvd2VkIGFu
+IGludmFsaWQgdGltZW91dCBwdGhyZWFkX211dGV4X3RpbWVkbG9jaygpIHdhcyBmYWlsaW5nIHdp
+dGgNCj4gLUVGQVVMVCBpbiBjYXNlIHRoZSBtdXRleCBjb3VsZCBiZSB0YWtlbiBpbW1lZGlhdGVs
+eS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWth
+QHNpZW1lbnMuY29tPg0KPiAtLS0NCj4gDQo+IFRoaXMgd2FzIGRldGVjdGVkIHdoaWxlIHByZXBh
+cmluZyB5MjAzOCBzdHVmZi4gTm90IHN1cmUgaWYgdGhhdCBzaG91bGQNCj4gZ28gaW50byAzLjIu
+IENvbW1lbnRzIHdlbGNvbWUuLi4NCj4gDQo+IENDZWQgUGhpbGlwcGUgYmVjYXVzZSBoZSB3YXMg
+YWxyZWFkeSBpbnZvbHZlZCBzb21lIChsb25nKSB0aW1lIGFnby4NCj4gDQo+IFJlZ2FyZHMsDQo+
+IEZsb3JpYW4NCj4gDQo+IMKgdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1tdXRleC9wb3NpeC1tdXRl
+eC5jIHwgNCArKy0tDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
+dGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LW11dGV4
+L3Bvc2l4LW11dGV4LmMgYi90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LW11dGV4L3Bvc2l4LW11dGV4
+LmMNCj4gaW5kZXggMGY0ZGJlNzM5Li40YWFkMjQ5NjQgMTAwNjQ0DQo+IC0tLSBhL3Rlc3RzdWl0
+ZS9zbW9rZXkvcG9zaXgtbXV0ZXgvcG9zaXgtbXV0ZXguYw0KPiArKysgYi90ZXN0c3VpdGUvc21v
+a2V5L3Bvc2l4LW11dGV4L3Bvc2l4LW11dGV4LmMNCj4gQEAgLTEwMDcsNyArMTAwNyw3IEBAIHN0
+YXRpYyB2b2lkICptdXRleF90aW1lZF9sb2NrZXJfaW52X3RpbWVvdXQodm9pZCAqYXJnKQ0KPiDC
+oAlzdHJ1Y3QgbG9ja2VyX2NvbnRleHQgKnAgPSBhcmc7DQo+IMKgCWludCByZXQ7DQo+IMKgDQo+
+IA0KPiAtCWlmIChfX0YocmV0LCBwdGhyZWFkX211dGV4X3RpbWVkbG9jayhwLT5tdXRleCwgKHZv
+aWQqKSAweGRlYWRiZWVmKSkgJiYNCj4gKwlpZiAoX19GKHJldCwgcHRocmVhZF9tdXRleF90aW1l
+ZGxvY2socC0+bXV0ZXgsICh2b2lkICopIDB4ZGVhZGJlZWYpKSAmJg0KPiDCoAkgICAgX19UYXNz
+ZXJ0KHJldCA9PSAtRUZBVUxUKSkNCj4gwqAJCXJldHVybiAodm9pZCAqKTE7DQo+IMKgDQo+IA0K
+PiBAQCAtMTAzMiw3ICsxMDMyLDcgQEAgc3RhdGljIGludCBjaGVja190aW1lZGxvY2tfYWJzdGlt
+ZV92YWxpZGF0aW9uKHZvaWQpDQo+IMKgCSAqIFRoZSBzZWNvbmQgcGFyYW1ldGVyIG9mIHBodHJl
+YWRfbXV0ZXhfdGltZWRsb2NrKCkgaXMgZmxhZ2dlZCBhcw0KPiDCoAkgKiBfX25vbm51bGwgc28g
+d2UgdGFrZSBhbiBpbnZhbGlkIGFkZHJlc3MgaW5zdGVhZCBvZiBOVUxMLg0KPiDCoAkgKi8NCj4g
+LQlpZiAoIV9fVChyZXQsIHB0aHJlYWRfbXV0ZXhfdGltZWRsb2NrKCZtdXRleCwgKHZvaWQqKSAw
+eGRlYWRiZWVmKSkpDQo+ICsJaWYgKCFfX1QocmV0LCBwdGhyZWFkX211dGV4X3RpbWVkbG9jaygm
+bXV0ZXgsICh2b2lkICopIDB4ZGVhZGJlZWYpKSkNCj4gwqAJCXJldHVybiByZXQ7DQo+IMKgDQo+
+IA0KPiDCoAkvKg0KDQo=
 
