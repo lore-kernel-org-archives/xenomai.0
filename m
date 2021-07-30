@@ -1,7 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v3 1/5] smokey: posix_mutex: Fix mutex/smokey_barrier leak
-Date: Fri, 30 Jul 2021 15:58:52 +0200
-Message-Id: <20210730135856.12958-2-florian.bezdeka@siemens.com>
+Subject: [PATCH v3 4/5] y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+Date: Fri, 30 Jul 2021 15:58:55 +0200
+Message-Id: <20210730135856.12958-5-florian.bezdeka@siemens.com>
 In-Reply-To: <20210730135856.12958-1-florian.bezdeka@siemens.com>
 References: <20210730135856.12958-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -17,29 +17,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The mutex of the smokey_barrier used inside protect_handover() was
-never destroyed. This had side effects when trying to extend the test
-suite with an additional function that had a mutex located on the same
-address than the never cleaned up smokey_barrier lock.
+From: Song Chen <chensong_2000@189.cn>
 
+In case the libc in use reports a 64 bit time_t dispacht
+mutex_timedlock to the kernel entry point that accepts it.
+
+Signed-off-by: Song Chen <chensong_2000@189.cn>
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/smokey/posix-mutex/posix-mutex.c | 2 ++
- 1 file changed, 2 insertions(+)
+ lib/cobalt/mutex.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 9a55d0973..e5793c42c 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -997,6 +997,8 @@ static int protect_handover(void)
- 	if (!__T(ret, pthread_mutex_destroy(&mutex)))
- 		return ret;
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index 29236c75a..73e45a1c4 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -479,7 +479,11 @@ slow_path:
+ 	}
  
-+	smokey_barrier_destroy(&barrier);
-+
- 	return 0;
- }
+ 	do {
++#ifdef __USE_TIME_BITS64
++		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock64, _mutex, to);
++#else
+ 		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock, _mutex, to);
++#endif
+ 	} while (ret == -EINTR);
  
+ 	if (ret == 0)
 -- 
 2.30.2
 
