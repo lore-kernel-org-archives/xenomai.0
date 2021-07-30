@@ -1,21 +1,19 @@
-Date: Tue, 27 Jul 2021 10:00:18 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: sched: Unexpected reschedule of offline CPU#2!
-Message-ID: <20210727100018.19d61165@md1za8fc.ad001.siemens.net>
-In-Reply-To: <alpine.DEB.2.21.1908172219470.1923@nanos.tec.linutronix.de>
-References: <20190727164450.GA11726@roeck-us.net>
- <20190729093545.GV31381@hirez.programming.kicks-ass.net>
- <alpine.DEB.2.21.1907291156170.1791@nanos.tec.linutronix.de>
- <20190729101349.GX31381@hirez.programming.kicks-ass.net>
- <alpine.DEB.2.21.1907291235580.1791@nanos.tec.linutronix.de>
- <20190729104745.GA31398@hirez.programming.kicks-ass.net>
- <20190729205059.GA1127@roeck-us.net>
- <alpine.DEB.2.21.1908161217380.1873@nanos.tec.linutronix.de>
- <20190816193208.GA29478@roeck-us.net>
- <alpine.DEB.2.21.1908172219470.1923@nanos.tec.linutronix.de>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] cobalt/posix/mutex: Harmonize pthread_mutex_timedlock()
+ and sem_timedwait()
+Date: Fri, 30 Jul 2021 07:14:45 +0000
+Message-ID: <27cab8ba0a03e759cc5c378c11a2ba0d59da4176.camel@siemens.com>
+References: <20210729144707.58398-1-florian.bezdeka@siemens.com>
+ <87k0l95fdy.fsf@xenomai.org>
+ <b98d9a35-a57e-6850-db78-78f82e7031a3@siemens.com>
+ <7d60072faa0e9f1d38b3047d92a672c502bc7d2a.camel@siemens.com>
+ <046b0330-607f-4ec9-0a64-5f640747e05a@siemens.com>
+In-Reply-To: <046b0330-607f-4ec9-0a64-5f640747e05a@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F4623D6355357C4CBBA34B46B0F746CC@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,48 +22,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Guenter Roeck <linux@roeck-us.net>, Peter Zijlstra <peterz@infradead.org>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-Was this ever resolved and if so can someone please point me to the
-patches? I started digging a bit but could not yet find how that
-continued.
-
-I am seeing similar or maybe the same problem on 4.19.192 with the
-ipipe patch from the xenomai project applied.
-
-regards,
-Henning
-
-Am Sat, 17 Aug 2019 22:21:48 +0200
-schrieb Thomas Gleixner <tglx@linutronix.de>:
-
-> On Fri, 16 Aug 2019, Guenter Roeck wrote:
-> > On Fri, Aug 16, 2019 at 12:22:22PM +0200, Thomas Gleixner wrote:  
-> > > diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-> > > index 75fea0d48c0e..625627b1457c 100644
-> > > --- a/arch/x86/kernel/process.c
-> > > +++ b/arch/x86/kernel/process.c
-> > > @@ -601,6 +601,7 @@ void stop_this_cpu(void *dummy)
-> > >  	/*
-> > >  	 * Remove this CPU:
-> > >  	 */
-> > > +	set_cpu_active(smp_processor_id(), false);
-> > >  	set_cpu_online(smp_processor_id(), false);
-> > >  	disable_local_APIC();
-> > >  	mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
-> > >   
-> > No luck. The problem is still seen with this patch applied on top of
-> > the mainline kernel (commit a69e90512d9def6).  
-> 
-> Yeah, was a bit too naive ....
-> 
-> We actually need to do the full cpuhotplug dance for a regular
-> reboot. In the panic case, there is nothing we can do about. I'll
-> have a look tomorrow.
-> 
-> Thanks,
-> 
-> 	tglx
-
+T24gVGh1LCAyMDIxLTA3LTI5IGF0IDE5OjI5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyOS4wNy4yMSAxODoyMiwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gT24gVGh1LCAyMDIxLTA3LTI5IGF0IDE3OjQ1ICswMjAwLCBKYW4gS2lzemthIHdy
+b3RlOg0KPiA+ID4gT24gMjkuMDcuMjEgMTc6MDYsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOg0KPiA+
+ID4gPiANCj4gPiA+ID4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5j
+b20+IHdyaXRlczoNCj4gPiA+ID4gDQo+ID4gPiA+ID4gQWNjb3JkaW5nIHRvIHRoZSBQT1NJWCBz
+cGVjIHRoZSB2YWx1ZSBvZiB0aGUgdGltZW91dCBwYXJhbWV0ZXIgbmVlZHMNCj4gPiA+ID4gPiBu
+b3QgdG8gYmUgdmFsaWRhdGVkIGlmIHRoZSBtdXRleC9zZW1hcGhvcmUgY291bGQgYmUgdGFrZW4g
+aW1tZWRpYXRlbHkuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gV2hpbGUgdGhlIGltcGxlbWVudGF0
+aW9uIG9mIHRoZSBzZW1hcGhvcmUgdGltZWR3YWl0IChzZW1fdGltZWR3YWl0KCkpDQo+ID4gPiA+
+ID4gYWxsb3dlZCBhbiBpbnZhbGlkIHRpbWVvdXQgcHRocmVhZF9tdXRleF90aW1lZGxvY2soKSB3
+YXMgZmFpbGluZyB3aXRoDQo+ID4gPiA+ID4gLUVGQVVMVCBpbiBjYXNlIHRoZSBtdXRleCBjb3Vs
+ZCBiZSB0YWtlbiBpbW1lZGlhdGVseS4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBTaWduZWQtb2Zm
+LWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4gPiA+
+ID4gPiAtLS0NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBUaGlzIHdhcyBkZXRlY3RlZCB3aGlsZSBw
+cmVwYXJpbmcgeTIwMzggc3R1ZmYuIE5vdCBzdXJlIGlmIHRoYXQgc2hvdWxkDQo+ID4gPiA+ID4g
+Z28gaW50byAzLjIuIENvbW1lbnRzIHdlbGNvbWUuLi4NCj4gPiA+ID4gPiANCj4gPiA+ID4gDQo+
+ID4gPiA+IHVwc2lkZXM6IHNhdmUgYSBmZXcgY3ljbGVzIGluIHRoZSBub24tY29udGVuZGVkIGNh
+c2UgYnkgbm90IGNvcHlpbmcgaW4NCj4gPiA+ID4gdGhlIHRpbWVvdXQgZnJvbSB1c2VybGFuZCB1
+c2VsZXNzbHkgKyBtaWdodCBoZWxwIHBhc3Npbmcgc29tZSBwaWNreQ0KPiA+ID4gPiBQT1NJWCBj
+b21wbGlhbmNlIHRlc3RzLg0KPiA+ID4gPiANCj4gPiA+ID4gZG93bnNpZGU6IGFkZHMgYW4gZXh0
+cmEgYXRvbWljIG9wIGluIHRoZSBjb250ZW5kZWQgY2FzZS4NCj4gPiA+ID4gDQo+ID4gPiANCj4g
+PiA+IEhvdyBkbyB3ZSBjb21wYXJlIHRvIGxpYmMgaW1wbGVtZW50YXRpb25zIGhlcmU/DQo+ID4g
+DQo+ID4gSSBjaGFuZ2VkIHRoZSB2YWxpZGF0aW9uIGRvbmUgb24gY29iYWx0IHNpZGUsIG5vdCBs
+aWJjb2JhbHQuIFNvIHdoYXQNCj4gPiBleGFjdGx5IGRvIHlvdSBtZWFuPw0KPiA+IA0KPiANCj4g
+SW5kZWVkLCBJIHdhcyBsb29raW5nIGZvciB0aGUgZmFzdCBvciBhbG1vc3QgZmFzdCBwYXRocyBp
+biB1c2Vyc3BhY2UuDQo+IA0KPiBCdXQgbm93IEknbSBjb25mdXNlZDogVGhlIHVuY29udGVuZGVk
+IGNhc2UgaXMgZ2VuZXJhbGx5IG5vdCBzdXBwb3NlZCB0bw0KPiB0cmlnZ2VyIGEgc3lzY2FsbC4g
+VGhhdCBpcyBhbHdheXMgdGhlIHNsb3cgcGF0aCBhbnl3YXksIGUuZy4gYmVjYXVzZSBuZWQNCj4g
+dG8gbWlncmF0ZWQgZmlyc3QgKGxpa2VseSBob3cgeW91IHdlcmUgYWJsZSB0byB0cmlnZ2VyIHRo
+ZSBpc3N1ZT8pLg0KDQpUaGUgZmFzdC1wYXRoIHdhcyBhbHdheXMgZmluZSwgdGhhdCBpcyByaWdo
+dC4gQnV0IHBsZWFzZSBub3RlIHRoYXQNCmRlcGVuZGluZyBvbiB0aGUga2VybmVsIGNvbmZpZ3Vy
+YXRpb24gKGVzcGVjaWFsbHkgd2l0aA0KQ09ORklHX1hFTk9fT1BUX0RFQlVHX01VVEVYX1NMRUVQ
+IGVuYWJsZWQpIHdlIHdpbGwgYWx3YXlzIGJlIGZvcmNlZA0KaW50byB0aGUgc2xvdy1wYXRoLg0K
+DQpTbyB3ZSBoYWQgYW5vdGhlciBpbWJhbGFuY2UgZGVwZW5kaW5nIG9uIHRoZSBrZXJuZWwgY29u
+ZmlndXJhdGlvbi4NCg0KPiANCj4gSmFuDQo+IA0KDQo=
 
