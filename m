@@ -1,19 +1,19 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH] cobalt/posix/mutex: Harmonize pthread_mutex_timedlock()
  and sem_timedwait()
-Date: Fri, 30 Jul 2021 07:14:45 +0000
-Message-ID: <27cab8ba0a03e759cc5c378c11a2ba0d59da4176.camel@siemens.com>
 References: <20210729144707.58398-1-florian.bezdeka@siemens.com>
  <87k0l95fdy.fsf@xenomai.org>
  <b98d9a35-a57e-6850-db78-78f82e7031a3@siemens.com>
  <7d60072faa0e9f1d38b3047d92a672c502bc7d2a.camel@siemens.com>
  <046b0330-607f-4ec9-0a64-5f640747e05a@siemens.com>
-In-Reply-To: <046b0330-607f-4ec9-0a64-5f640747e05a@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F4623D6355357C4CBBA34B46B0F746CC@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <27cab8ba0a03e759cc5c378c11a2ba0d59da4176.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f1bb7231-92cc-d488-da90-80bdc09a5892@siemens.com>
+Date: Fri, 30 Jul 2021 10:13:28 +0200
 MIME-Version: 1.0
+In-Reply-To: <27cab8ba0a03e759cc5c378c11a2ba0d59da4176.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,43 +22,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-T24gVGh1LCAyMDIxLTA3LTI5IGF0IDE5OjI5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAyOS4wNy4yMSAxODoyMiwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
-dGU6DQo+ID4gT24gVGh1LCAyMDIxLTA3LTI5IGF0IDE3OjQ1ICswMjAwLCBKYW4gS2lzemthIHdy
-b3RlOg0KPiA+ID4gT24gMjkuMDcuMjEgMTc6MDYsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOg0KPiA+
-ID4gPiANCj4gPiA+ID4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5j
-b20+IHdyaXRlczoNCj4gPiA+ID4gDQo+ID4gPiA+ID4gQWNjb3JkaW5nIHRvIHRoZSBQT1NJWCBz
-cGVjIHRoZSB2YWx1ZSBvZiB0aGUgdGltZW91dCBwYXJhbWV0ZXIgbmVlZHMNCj4gPiA+ID4gPiBu
-b3QgdG8gYmUgdmFsaWRhdGVkIGlmIHRoZSBtdXRleC9zZW1hcGhvcmUgY291bGQgYmUgdGFrZW4g
-aW1tZWRpYXRlbHkuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gV2hpbGUgdGhlIGltcGxlbWVudGF0
-aW9uIG9mIHRoZSBzZW1hcGhvcmUgdGltZWR3YWl0IChzZW1fdGltZWR3YWl0KCkpDQo+ID4gPiA+
-ID4gYWxsb3dlZCBhbiBpbnZhbGlkIHRpbWVvdXQgcHRocmVhZF9tdXRleF90aW1lZGxvY2soKSB3
-YXMgZmFpbGluZyB3aXRoDQo+ID4gPiA+ID4gLUVGQVVMVCBpbiBjYXNlIHRoZSBtdXRleCBjb3Vs
-ZCBiZSB0YWtlbiBpbW1lZGlhdGVseS4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBTaWduZWQtb2Zm
-LWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4gPiA+
-ID4gPiAtLS0NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBUaGlzIHdhcyBkZXRlY3RlZCB3aGlsZSBw
-cmVwYXJpbmcgeTIwMzggc3R1ZmYuIE5vdCBzdXJlIGlmIHRoYXQgc2hvdWxkDQo+ID4gPiA+ID4g
-Z28gaW50byAzLjIuIENvbW1lbnRzIHdlbGNvbWUuLi4NCj4gPiA+ID4gPiANCj4gPiA+ID4gDQo+
-ID4gPiA+IHVwc2lkZXM6IHNhdmUgYSBmZXcgY3ljbGVzIGluIHRoZSBub24tY29udGVuZGVkIGNh
-c2UgYnkgbm90IGNvcHlpbmcgaW4NCj4gPiA+ID4gdGhlIHRpbWVvdXQgZnJvbSB1c2VybGFuZCB1
-c2VsZXNzbHkgKyBtaWdodCBoZWxwIHBhc3Npbmcgc29tZSBwaWNreQ0KPiA+ID4gPiBQT1NJWCBj
-b21wbGlhbmNlIHRlc3RzLg0KPiA+ID4gPiANCj4gPiA+ID4gZG93bnNpZGU6IGFkZHMgYW4gZXh0
-cmEgYXRvbWljIG9wIGluIHRoZSBjb250ZW5kZWQgY2FzZS4NCj4gPiA+ID4gDQo+ID4gPiANCj4g
-PiA+IEhvdyBkbyB3ZSBjb21wYXJlIHRvIGxpYmMgaW1wbGVtZW50YXRpb25zIGhlcmU/DQo+ID4g
-DQo+ID4gSSBjaGFuZ2VkIHRoZSB2YWxpZGF0aW9uIGRvbmUgb24gY29iYWx0IHNpZGUsIG5vdCBs
-aWJjb2JhbHQuIFNvIHdoYXQNCj4gPiBleGFjdGx5IGRvIHlvdSBtZWFuPw0KPiA+IA0KPiANCj4g
-SW5kZWVkLCBJIHdhcyBsb29raW5nIGZvciB0aGUgZmFzdCBvciBhbG1vc3QgZmFzdCBwYXRocyBp
-biB1c2Vyc3BhY2UuDQo+IA0KPiBCdXQgbm93IEknbSBjb25mdXNlZDogVGhlIHVuY29udGVuZGVk
-IGNhc2UgaXMgZ2VuZXJhbGx5IG5vdCBzdXBwb3NlZCB0bw0KPiB0cmlnZ2VyIGEgc3lzY2FsbC4g
-VGhhdCBpcyBhbHdheXMgdGhlIHNsb3cgcGF0aCBhbnl3YXksIGUuZy4gYmVjYXVzZSBuZWQNCj4g
-dG8gbWlncmF0ZWQgZmlyc3QgKGxpa2VseSBob3cgeW91IHdlcmUgYWJsZSB0byB0cmlnZ2VyIHRo
-ZSBpc3N1ZT8pLg0KDQpUaGUgZmFzdC1wYXRoIHdhcyBhbHdheXMgZmluZSwgdGhhdCBpcyByaWdo
-dC4gQnV0IHBsZWFzZSBub3RlIHRoYXQNCmRlcGVuZGluZyBvbiB0aGUga2VybmVsIGNvbmZpZ3Vy
-YXRpb24gKGVzcGVjaWFsbHkgd2l0aA0KQ09ORklHX1hFTk9fT1BUX0RFQlVHX01VVEVYX1NMRUVQ
-IGVuYWJsZWQpIHdlIHdpbGwgYWx3YXlzIGJlIGZvcmNlZA0KaW50byB0aGUgc2xvdy1wYXRoLg0K
-DQpTbyB3ZSBoYWQgYW5vdGhlciBpbWJhbGFuY2UgZGVwZW5kaW5nIG9uIHRoZSBrZXJuZWwgY29u
-ZmlndXJhdGlvbi4NCg0KPiANCj4gSmFuDQo+IA0KDQo=
+On 30.07.21 09:14, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-07-29 at 19:29 +0200, Jan Kiszka wrote:
+>> On 29.07.21 18:22, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+>>> On Thu, 2021-07-29 at 17:45 +0200, Jan Kiszka wrote:
+>>>> On 29.07.21 17:06, Philippe Gerum wrote:
+>>>>>
+>>>>> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>>>>>
+>>>>>> According to the POSIX spec the value of the timeout parameter needs
+>>>>>> not to be validated if the mutex/semaphore could be taken immediately.
+>>>>>>
+>>>>>> While the implementation of the semaphore timedwait (sem_timedwait())
+>>>>>> allowed an invalid timeout pthread_mutex_timedlock() was failing with
+>>>>>> -EFAULT in case the mutex could be taken immediately.
+>>>>>>
+>>>>>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>>>>>> ---
+>>>>>>
+>>>>>> This was detected while preparing y2038 stuff. Not sure if that should
+>>>>>> go into 3.2. Comments welcome...
+>>>>>>
+>>>>>
+>>>>> upsides: save a few cycles in the non-contended case by not copying in
+>>>>> the timeout from userland uselessly + might help passing some picky
+>>>>> POSIX compliance tests.
+>>>>>
+>>>>> downside: adds an extra atomic op in the contended case.
+>>>>>
+>>>>
+>>>> How do we compare to libc implementations here?
+>>>
+>>> I changed the validation done on cobalt side, not libcobalt. So what
+>>> exactly do you mean?
+>>>
+>>
+>> Indeed, I was looking for the fast or almost fast paths in userspace.
+>>
+>> But now I'm confused: The uncontended case is generally not supposed to
+>> trigger a syscall. That is always the slow path anyway, e.g. because ned
+>> to migrated first (likely how you were able to trigger the issue?).
+> 
+> The fast-path was always fine, that is right. But please note that
+> depending on the kernel configuration (especially with
+> CONFIG_XENO_OPT_DEBUG_MUTEX_SLEEP enabled) we will always be forced
+> into the slow-path.
+> 
+> So we had another imbalance depending on the kernel configuration.
+> 
+
+OK, I just wanted to understand whether that single atomic more is an
+issue - it's not at all, we are slow already at that point.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
