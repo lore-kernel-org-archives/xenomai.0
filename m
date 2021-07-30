@@ -1,7 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 1/5] smokey: posix_mutex: Fix mutex/smokey_barrier leak
-Date: Fri, 30 Jul 2021 13:38:15 +0200
-Message-Id: <20210730113819.250804-2-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 3/5] y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+Date: Fri, 30 Jul 2021 13:38:17 +0200
+Message-Id: <20210730113819.250804-4-florian.bezdeka@siemens.com>
 In-Reply-To: <20210730113819.250804-1-florian.bezdeka@siemens.com>
 References: <20210730113819.250804-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -17,29 +17,146 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The mutex of the smokey_barrier used inside protect_handover() was
-never destroyed. This had side effects when trying to extend the test
-suite with an additional function that had a mutex located on the same
-address than the never cleaned up smokey_barrier lock.
+From: Song Chen <chensong_2000@189.cn>
 
+Add a syscall specific for mutex_timedlock with 64bit time_t.
+
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+[Florian: Rearranged code, coding style fixes]
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/smokey/posix-mutex/posix-mutex.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/cobalt/uapi/syscall.h   |  1 +
+ kernel/cobalt/posix/mutex.c     | 23 ++++++++++++++++++++++-
+ kernel/cobalt/posix/mutex.h     |  7 +++++++
+ kernel/cobalt/posix/syscall32.c |  7 +++++++
+ kernel/cobalt/posix/syscall32.h |  4 ++++
+ 5 files changed, 41 insertions(+), 1 deletion(-)
 
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 9a55d0973..e5793c42c 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -997,6 +997,8 @@ static int protect_handover(void)
- 	if (!__T(ret, pthread_mutex_destroy(&mutex)))
- 		return ret;
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index a2795a364..6fe57c7e8 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -128,6 +128,7 @@
+ #define sc_cobalt_clock_nanosleep64		105
+ #define sc_cobalt_clock_getres64		106
+ #define sc_cobalt_clock_adjtime64		107
++#define sc_cobalt_mutex_timedlock64		108
  
-+	smokey_barrier_destroy(&barrier);
-+
- 	return 0;
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
+ 
+diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
+index 01478978e..0f1c01851 100644
+--- a/kernel/cobalt/posix/mutex.c
++++ b/kernel/cobalt/posix/mutex.c
+@@ -21,6 +21,7 @@
+ #include "mutex.h"
+ #include "cond.h"
+ #include "clock.h"
++#include <cobalt/kernel/time.h>
+ 
+ static int cobalt_mutex_init_inner(struct cobalt_mutex_shadow *shadow,
+ 				   struct cobalt_mutex *mutex,
+@@ -76,7 +77,7 @@ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
+ 	int ret;
+ 
+ 	if (ts) {
+-		if (ts->tv_nsec >= ONE_BILLION)
++		if (!timespec64_valid(ts))
+ 			return -EINVAL;
+ 		ret = xnsynch_acquire(&mutex->synchbase, ts2ns(ts) + 1, XN_REALTIME);
+ 	} else
+@@ -357,6 +358,19 @@ static inline int mutex_fetch_timeout(struct timespec64 *ts,
+ 	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
  }
  
++static inline int mutex_fetch_timeout64(struct timespec64 *ts,
++					const void __user *u_ts)
++{
++	return u_ts == NULL ? -EFAULT : cobalt_get_timespec64(ts, u_ts);
++}
++
++int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
++			       const void __user *u_ts)
++{
++	return __cobalt_mutex_timedlock_break(u_mx, u_ts,
++					      mutex_fetch_timeout64);
++}
++
+ COBALT_SYSCALL(mutex_timedlock, primary,
+ 	       (struct cobalt_mutex_shadow __user *u_mx,
+ 		const struct __user_old_timespec __user *u_ts))
+@@ -364,6 +378,13 @@ COBALT_SYSCALL(mutex_timedlock, primary,
+ 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, mutex_fetch_timeout);
+ }
+ 
++COBALT_SYSCALL(mutex_timedlock64, primary,
++	       (struct cobalt_mutex_shadow __user *u_mx,
++		const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_mutex_timedlock64(u_mx, u_ts);
++}
++
+ COBALT_SYSCALL(mutex_unlock, nonrestartable,
+ 	       (struct cobalt_mutex_shadow __user *u_mx))
+ {
+diff --git a/kernel/cobalt/posix/mutex.h b/kernel/cobalt/posix/mutex.h
+index d76f2a9ea..d7d43219e 100644
+--- a/kernel/cobalt/posix/mutex.h
++++ b/kernel/cobalt/posix/mutex.h
+@@ -40,6 +40,9 @@ int __cobalt_mutex_timedlock_break(struct cobalt_mutex_shadow __user *u_mx,
+ 				   int (*fetch_timeout)(struct timespec64 *ts,
+ 							const void __user *u_ts));
+ 
++int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
++				   const void __user *u_ts);
++
+ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
+ 				     struct cobalt_mutex *mutex,
+ 				     const struct timespec64 *ts);
+@@ -64,6 +67,10 @@ COBALT_SYSCALL_DECL(mutex_timedlock,
+ 		    (struct cobalt_mutex_shadow __user *u_mx,
+ 		     const struct __user_old_timespec __user *u_ts));
+ 
++COBALT_SYSCALL(mutex_timedlock64, primary,
++	       (struct cobalt_mutex_shadow __user *u_mx,
++		const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL_DECL(mutex_unlock,
+ 		    (struct cobalt_mutex_shadow __user *u_mx));
+ 
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index a37478f3f..bd30decce 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -267,6 +267,13 @@ COBALT_SYSCALL32emu(mutex_timedlock, primary,
+ 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, sys32_fetch_timeout);
+ }
+ 
++COBALT_SYSCALL32emu(mutex_timedlock64, primary,
++		    (struct cobalt_mutex_shadow __user *u_mx,
++		     const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_mutex_timedlock64(u_mx, u_ts);
++}
++
+ COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
+ 		    (struct cobalt_cond_shadow __user *u_cnd,
+ 		     struct cobalt_mutex_shadow __user *u_mx,
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 64f6e4931..d464d967f 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -98,6 +98,10 @@ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
+ 			 (struct cobalt_mutex_shadow __user *u_mx,
+ 			  const struct old_timespec32 __user *u_ts));
+ 
++COBALT_SYSCALL32emu_DECL(mutex_timedlock64,
++			 (struct cobalt_mutex_shadow __user *u_mx,
++			  const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
+ 			 (struct cobalt_cond_shadow __user *u_cnd,
+ 			  struct cobalt_mutex_shadow __user *u_mx,
 -- 
 2.30.2
 
