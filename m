@@ -1,23 +1,12 @@
-Subject: Re: sched: Unexpected reschedule of offline CPU#2!
-References: <20190727164450.GA11726@roeck-us.net>
- <20190729093545.GV31381@hirez.programming.kicks-ass.net>
- <alpine.DEB.2.21.1907291156170.1791@nanos.tec.linutronix.de>
- <20190729101349.GX31381@hirez.programming.kicks-ass.net>
- <alpine.DEB.2.21.1907291235580.1791@nanos.tec.linutronix.de>
- <20190729104745.GA31398@hirez.programming.kicks-ass.net>
- <20190729205059.GA1127@roeck-us.net>
- <alpine.DEB.2.21.1908161217380.1873@nanos.tec.linutronix.de>
- <20190816193208.GA29478@roeck-us.net>
- <alpine.DEB.2.21.1908172219470.1923@nanos.tec.linutronix.de>
- <20210727100018.19d61165@md1za8fc.ad001.siemens.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <745f219e-1593-4fbd-fa7f-1719ef6f444d@siemens.com>
-Date: Tue, 27 Jul 2021 10:46:06 +0200
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v3 3/5] y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+Date: Fri, 30 Jul 2021 15:58:54 +0200
+Message-Id: <20210730135856.12958-4-florian.bezdeka@siemens.com>
+In-Reply-To: <20210730135856.12958-1-florian.bezdeka@siemens.com>
+References: <20210730135856.12958-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <20210727100018.19d61165@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,70 +15,164 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>, x86@kernel.org, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Guenter Roeck <linux@roeck-us.net>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-[Henning, don't top-post ;)]
+From: Song Chen <chensong_2000@189.cn>
 
-On 27.07.21 10:00, Henning Schild via Xenomai wrote:
-> Was this ever resolved and if so can someone please point me to the
-> patches? I started digging a bit but could not yet find how that
-> continued.
-> 
-> I am seeing similar or maybe the same problem on 4.19.192 with the
-> ipipe patch from the xenomai project applied.
-> 
+Add a syscall specific for mutex_timedlock with 64bit time_t.
 
-Before blaming the usual suspects, I have a general ordering question on 
-mainline below.
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+[Florian: Rearranged code, coding style fixes, tracing]
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ include/cobalt/uapi/syscall.h      |  1 +
+ kernel/cobalt/posix/mutex.c        | 23 ++++++++++++++++++++++-
+ kernel/cobalt/posix/mutex.h        |  7 +++++++
+ kernel/cobalt/posix/syscall32.c    |  7 +++++++
+ kernel/cobalt/posix/syscall32.h    |  4 ++++
+ kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+ 6 files changed, 43 insertions(+), 2 deletions(-)
 
-> regards,
-> Henning
-> 
-> Am Sat, 17 Aug 2019 22:21:48 +0200
-> schrieb Thomas Gleixner <tglx@linutronix.de>:
-> 
->> On Fri, 16 Aug 2019, Guenter Roeck wrote:
->>> On Fri, Aug 16, 2019 at 12:22:22PM +0200, Thomas Gleixner wrote:  
->>>> diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
->>>> index 75fea0d48c0e..625627b1457c 100644
->>>> --- a/arch/x86/kernel/process.c
->>>> +++ b/arch/x86/kernel/process.c
->>>> @@ -601,6 +601,7 @@ void stop_this_cpu(void *dummy)
->>>>  	/*
->>>>  	 * Remove this CPU:
->>>>  	 */
->>>> +	set_cpu_active(smp_processor_id(), false);
->>>>  	set_cpu_online(smp_processor_id(), false);
->>>>  	disable_local_APIC();
->>>>  	mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
->>>>   
->>> No luck. The problem is still seen with this patch applied on top of
->>> the mainline kernel (commit a69e90512d9def6).  
->>
->> Yeah, was a bit too naive ....
->>
->> We actually need to do the full cpuhotplug dance for a regular
->> reboot. In the panic case, there is nothing we can do about. I'll
->> have a look tomorrow.
->>
-
-What is supposed to prevent the following in mainline:
-
-CPU 0                   CPU 1                      CPU 2
-
-native_stop_other_cpus                             <INTERRUPT>
-  send_IPI_allbutself                              ...
-                        <INTERRUPT>
-                        sysvec_reboot
-                          stop_this_cpu
-                            set_cpu_online(false)
-                                                   native_smp_send_reschedule(1)
-                                                     if (cpu_is_offline(1)) ...
-
-Jan
-
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index a2795a364..6fe57c7e8 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -128,6 +128,7 @@
+ #define sc_cobalt_clock_nanosleep64		105
+ #define sc_cobalt_clock_getres64		106
+ #define sc_cobalt_clock_adjtime64		107
++#define sc_cobalt_mutex_timedlock64		108
+ 
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
+ 
+diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
+index 01478978e..0f1c01851 100644
+--- a/kernel/cobalt/posix/mutex.c
++++ b/kernel/cobalt/posix/mutex.c
+@@ -21,6 +21,7 @@
+ #include "mutex.h"
+ #include "cond.h"
+ #include "clock.h"
++#include <cobalt/kernel/time.h>
+ 
+ static int cobalt_mutex_init_inner(struct cobalt_mutex_shadow *shadow,
+ 				   struct cobalt_mutex *mutex,
+@@ -76,7 +77,7 @@ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
+ 	int ret;
+ 
+ 	if (ts) {
+-		if (ts->tv_nsec >= ONE_BILLION)
++		if (!timespec64_valid(ts))
+ 			return -EINVAL;
+ 		ret = xnsynch_acquire(&mutex->synchbase, ts2ns(ts) + 1, XN_REALTIME);
+ 	} else
+@@ -357,6 +358,19 @@ static inline int mutex_fetch_timeout(struct timespec64 *ts,
+ 	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
+ }
+ 
++static inline int mutex_fetch_timeout64(struct timespec64 *ts,
++					const void __user *u_ts)
++{
++	return u_ts == NULL ? -EFAULT : cobalt_get_timespec64(ts, u_ts);
++}
++
++int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
++			       const void __user *u_ts)
++{
++	return __cobalt_mutex_timedlock_break(u_mx, u_ts,
++					      mutex_fetch_timeout64);
++}
++
+ COBALT_SYSCALL(mutex_timedlock, primary,
+ 	       (struct cobalt_mutex_shadow __user *u_mx,
+ 		const struct __user_old_timespec __user *u_ts))
+@@ -364,6 +378,13 @@ COBALT_SYSCALL(mutex_timedlock, primary,
+ 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, mutex_fetch_timeout);
+ }
+ 
++COBALT_SYSCALL(mutex_timedlock64, primary,
++	       (struct cobalt_mutex_shadow __user *u_mx,
++		const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_mutex_timedlock64(u_mx, u_ts);
++}
++
+ COBALT_SYSCALL(mutex_unlock, nonrestartable,
+ 	       (struct cobalt_mutex_shadow __user *u_mx))
+ {
+diff --git a/kernel/cobalt/posix/mutex.h b/kernel/cobalt/posix/mutex.h
+index d76f2a9ea..d7d43219e 100644
+--- a/kernel/cobalt/posix/mutex.h
++++ b/kernel/cobalt/posix/mutex.h
+@@ -40,6 +40,9 @@ int __cobalt_mutex_timedlock_break(struct cobalt_mutex_shadow __user *u_mx,
+ 				   int (*fetch_timeout)(struct timespec64 *ts,
+ 							const void __user *u_ts));
+ 
++int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
++				   const void __user *u_ts);
++
+ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
+ 				     struct cobalt_mutex *mutex,
+ 				     const struct timespec64 *ts);
+@@ -64,6 +67,10 @@ COBALT_SYSCALL_DECL(mutex_timedlock,
+ 		    (struct cobalt_mutex_shadow __user *u_mx,
+ 		     const struct __user_old_timespec __user *u_ts));
+ 
++COBALT_SYSCALL(mutex_timedlock64, primary,
++	       (struct cobalt_mutex_shadow __user *u_mx,
++		const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL_DECL(mutex_unlock,
+ 		    (struct cobalt_mutex_shadow __user *u_mx));
+ 
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index a37478f3f..bd30decce 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -267,6 +267,13 @@ COBALT_SYSCALL32emu(mutex_timedlock, primary,
+ 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, sys32_fetch_timeout);
+ }
+ 
++COBALT_SYSCALL32emu(mutex_timedlock64, primary,
++		    (struct cobalt_mutex_shadow __user *u_mx,
++		     const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_mutex_timedlock64(u_mx, u_ts);
++}
++
+ COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
+ 		    (struct cobalt_cond_shadow __user *u_cnd,
+ 		     struct cobalt_mutex_shadow __user *u_mx,
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 64f6e4931..d464d967f 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -98,6 +98,10 @@ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
+ 			 (struct cobalt_mutex_shadow __user *u_mx,
+ 			  const struct old_timespec32 __user *u_ts));
+ 
++COBALT_SYSCALL32emu_DECL(mutex_timedlock64,
++			 (struct cobalt_mutex_shadow __user *u_mx,
++			  const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
+ 			 (struct cobalt_cond_shadow __user *u_cnd,
+ 			  struct cobalt_mutex_shadow __user *u_mx,
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index d994007bb..715cc4f80 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -160,7 +160,8 @@
+ 		__cobalt_symbolic_syscall(clock_settime64),		\
+ 		__cobalt_symbolic_syscall(clock_nanosleep64),		\
+ 		__cobalt_symbolic_syscall(clock_getres64),		\
+-		__cobalt_symbolic_syscall(clock_adjtime64))
++		__cobalt_symbolic_syscall(clock_adjtime64))		\
++		__cobalt_symbolic_syscall(mutex_timedlock64)
+ 
+ DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+ 	TP_PROTO(unsigned int nr),
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.30.2
+
 
