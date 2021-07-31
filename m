@@ -1,13 +1,10 @@
-Subject: Re: Xenomai and Linux SCHED_FIFO threads Question
-References: <CAM4LU5+rSBmK1h_4BdPq4b6iYFO8WA2BocvFYA79EY+NJ2y33Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8802ca9d-7fd7-c37a-78ea-5c6eaa9bf07c@siemens.com>
-Date: Fri, 30 Jul 2021 19:06:28 +0200
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v4 0/5] y2038: Add mutex_timedlock64() support 
+Date: Sat, 31 Jul 2021 09:08:21 +0200
+Message-Id: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <CAM4LU5+rSBmK1h_4BdPq4b6iYFO8WA2BocvFYA79EY+NJ2y33Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +13,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Rajesh Venkataraman <rajesh_venkataraman@trimble.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 30.07.21 18:02, Rajesh Venkataraman via Xenomai wrote:
-> Hello,
->    We are trying to move our embedded real time application from RTOS to
-> Linux. So we first ported our RTOS application to a RT-Linux. In RT-Linux
-> we have cpu isolation and run our main realtime interrupt as a  pthread
-> with highest priority on the isolated core. Rest of the application on
-> other cores. We are observing that the execution time(Interrupt Service
-> Routine duration) of the realtime interrupt is longer than running on a
-> traditional RTOS. So we are trying to put just this real time interrupt
-> service routine thread into Xenomai. In the RT linux Application we have
-> set the scheduling policy for a number of threads to SCHED_FIFO(Including
-> the Realtime Interrupt Service thread). Is it possible to run just the
-> realtime interrupt service routine thread under Xenomai and run the other
-> SCHED_FIFO thread under linux? or do we lose the Linux SCHED_FIFO once we
-> include Xenomai?
-> 
+Hi!
 
-Nope, you can always call __STD(pthread_create) etc. if you want to get
-the normal Linux service.
+This series is based on the series posted by Song some time ago. The
+testing part has been heavily reworked. Details are mentioned in the 
+description of the last patch.
 
-But keep in mind that you will need Xenomai threads in order to
-synchronize with you interrupt thread via sleeping lock (e.g.
-pthread-mutexes). If you want to avoid such dependency, you will have to
-use lock-less synchronization for shared data.
+@Jan: Patch 1 and 2 are re-sends. They are not directly related to the 
+y2038 stuff but the testsuite might fail if they are not applied.
 
-Jan
+Testing was done on x86 only so far, internal CI is still running but no
+problems expected.
+
+Best regards,   
+Florian
+
+Changes in v4:
+  - Fixed trace integration
+    (squashed into patch 3 from Song)
+
+Changes in v3:
+  - Added the new syscall to the tracing infrastructure
+    (squashed into patch 3 from Song)
+ 
+Florian Bezdeka (3):
+  smokey: posix_mutex: Fix mutex/smokey_barrier leak
+  cobalt/posix/mutex: Harmonize pthread_mutex_timedlock() and
+    sem_timedwait()
+  y2038: testsuite/smokey/y2038: Adding test cases for
+    mutex_timedlock64()
+
+Song Chen (2):
+  y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+  y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+
+ include/cobalt/uapi/syscall.h              |   1 +
+ kernel/cobalt/posix/mutex.c                |  28 ++-
+ kernel/cobalt/posix/mutex.h                |   7 +
+ kernel/cobalt/posix/syscall32.c            |   7 +
+ kernel/cobalt/posix/syscall32.h            |   4 +
+ kernel/cobalt/trace/cobalt-posix.h         |   4 +-
+ lib/cobalt/mutex.c                         |   4 +
+ testsuite/smokey/posix-mutex/posix-mutex.c |  62 +++++++
+ testsuite/smokey/y2038/syscall-tests.c     | 187 +++++++++++++++++++++
+ 9 files changed, 302 insertions(+), 2 deletions(-)
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.30.2
+
 
