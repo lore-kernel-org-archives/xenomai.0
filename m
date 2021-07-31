@@ -1,15 +1,12 @@
-Subject: Re: [xenomai-image PATCH v2 4/5] recipes-kernel/linux: control
- appyling of no debug config fragment
-References: <20210727004217.10892-1-hongzhan.chen@intel.com>
- <20210727004217.10892-5-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <88fd782a-8fa8-36df-33ca-d36f714a91bb@siemens.com>
-Date: Tue, 27 Jul 2021 12:49:05 +0200
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v4 4/5] y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+Date: Sat, 31 Jul 2021 09:08:25 +0200
+Message-Id: <20210731070826.67908-5-florian.bezdeka@siemens.com>
+In-Reply-To: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+References: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <20210727004217.10892-5-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,53 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 27.07.21 02:42, Hongzhan Chen via Xenomai wrote:
-> For performance or latency testing and demonstration, debug switches
-> should be off but it is on by default.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> ---
->  recipes-kernel/linux/linux-xenomai.inc | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-> index 185b60b..ff54ce2 100644
-> --- a/recipes-kernel/linux/linux-xenomai.inc
-> +++ b/recipes-kernel/linux/linux-xenomai.inc
-> @@ -11,9 +11,17 @@
->  
->  require recipes-kernel/linux/linux-custom.inc
->  
-> +def is_nodbg_support(d):
-> +    dbg_ver = d.getVar('DISTRO_NODBG') or ''
-> +    return dbg_ver.startswith('YES') or dbg_ver == 'YES'
-> +
->  KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
-> +KERNEL_NODBG_FRAGMENTS ?= "common_nodbg.cfg"
-> +KERNEL_NODBG_FRAGMENTS_append = "${@'' if is_nodbg_support(d) else ';apply=no'}"
->  
-> -SRC_URI += "file://${KERNEL_DEFCONFIG}"
-> +SRC_URI += "file://${KERNEL_DEFCONFIG} \
-> +    file://${KERNEL_NODBG_FRAGMENTS} \
-> +"
->  
->  DEPENDS += "xenomai-kernel-source"
->  KBUILD_DEPENDS += "xenomai-kernel-source"
-> 
+From: Song Chen <chensong_2000@189.cn>
 
-How about
+In case the libc in use reports a 64 bit time_t dispacht
+mutex_timedlock to the kernel entry point that accepts it.
 
-DISTRO_NODBG ?= "0"
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/mutex.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('DISTRO_NODBG') == '1' else ''}"
-
-?
-
-Jan
-
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index 29236c75a..73e45a1c4 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -479,7 +479,11 @@ slow_path:
+ 	}
+ 
+ 	do {
++#ifdef __USE_TIME_BITS64
++		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock64, _mutex, to);
++#else
+ 		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock, _mutex, to);
++#endif
+ 	} while (ret == -EINTR);
+ 
+ 	if (ret == 0)
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.30.2
+
 
