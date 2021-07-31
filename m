@@ -1,7 +1,9 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v4 0/5] y2038: Add mutex_timedlock64() support 
-Date: Sat, 31 Jul 2021 09:08:21 +0200
-Message-Id: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v4 1/5] smokey: posix_mutex: Fix mutex/smokey_barrier leak
+Date: Sat, 31 Jul 2021 09:08:22 +0200
+Message-Id: <20210731070826.67908-2-florian.bezdeka@siemens.com>
+In-Reply-To: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+References: <20210731070826.67908-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,51 +17,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi!
+The mutex of the smokey_barrier used inside protect_handover() was
+never destroyed. This had side effects when trying to extend the test
+suite with an additional function that had a mutex located on the same
+address than the never cleaned up smokey_barrier lock.
 
-This series is based on the series posted by Song some time ago. The
-testing part has been heavily reworked. Details are mentioned in the 
-description of the last patch.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ testsuite/smokey/posix-mutex/posix-mutex.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-@Jan: Patch 1 and 2 are re-sends. They are not directly related to the 
-y2038 stuff but the testsuite might fail if they are not applied.
-
-Testing was done on x86 only so far, internal CI is still running but no
-problems expected.
-
-Best regards,   
-Florian
-
-Changes in v4:
-  - Fixed trace integration
-    (squashed into patch 3 from Song)
-
-Changes in v3:
-  - Added the new syscall to the tracing infrastructure
-    (squashed into patch 3 from Song)
+diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
+index 9a55d0973..e5793c42c 100644
+--- a/testsuite/smokey/posix-mutex/posix-mutex.c
++++ b/testsuite/smokey/posix-mutex/posix-mutex.c
+@@ -997,6 +997,8 @@ static int protect_handover(void)
+ 	if (!__T(ret, pthread_mutex_destroy(&mutex)))
+ 		return ret;
  
-Florian Bezdeka (3):
-  smokey: posix_mutex: Fix mutex/smokey_barrier leak
-  cobalt/posix/mutex: Harmonize pthread_mutex_timedlock() and
-    sem_timedwait()
-  y2038: testsuite/smokey/y2038: Adding test cases for
-    mutex_timedlock64()
-
-Song Chen (2):
-  y2038: cobalt/posix/mutex: Adding mutex_timedlock64
-  y2038: lib/cobalt/mutex: dispatch mutex_timedlock
-
- include/cobalt/uapi/syscall.h              |   1 +
- kernel/cobalt/posix/mutex.c                |  28 ++-
- kernel/cobalt/posix/mutex.h                |   7 +
- kernel/cobalt/posix/syscall32.c            |   7 +
- kernel/cobalt/posix/syscall32.h            |   4 +
- kernel/cobalt/trace/cobalt-posix.h         |   4 +-
- lib/cobalt/mutex.c                         |   4 +
- testsuite/smokey/posix-mutex/posix-mutex.c |  62 +++++++
- testsuite/smokey/y2038/syscall-tests.c     | 187 +++++++++++++++++++++
- 9 files changed, 302 insertions(+), 2 deletions(-)
-
++	smokey_barrier_destroy(&barrier);
++
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
