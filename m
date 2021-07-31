@@ -1,7 +1,9 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 0/5] y2038: Adding support for mq_timed{send,recv}64
-Date: Sat, 31 Jul 2021 09:19:37 +0200
-Message-Id: <20210731071942.69806-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 2/5] y2038: lib/cobalt/mqueue: dispatch mq_timedsend
+Date: Sat, 31 Jul 2021 09:19:39 +0200
+Message-Id: <20210731071942.69806-3-florian.bezdeka@siemens.com>
+In-Reply-To: <20210731071942.69806-1-florian.bezdeka@siemens.com>
+References: <20210731071942.69806-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,44 +17,36 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+From: Song Chen <chensong_2000@189.cn>
 
-this is kind of a re-send of the patch series originall published by
-Song. There were some things that had to be addressed:
+Dispatch mq_timesend to the 64bit aware syscall if libc reports
+time64_t support.
 
- - Code formattings
- - Copy paste errors in the test suite
- - Failing / incomplete tests, missing test cleanups
- - Incorrect compat syscall declerations
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+[Florian: Rephrase commit message]
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/mq.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-@Song: Especially the missing test cleanups and the incorrect compat
-syscall declerations made me unhappy. Did you really test that once?
-Please make sure to send properly tested patches. There are many
-pitfalls in the game which makes the review process time consuming,
-especially when I have to assume that it was not tested till now.
-
-Best regards,
-Florian
-
-Florian Bezdeka (1):
-  y2038: testsuite/smokey/y2038: Adding tests for mq_timed{send,recv}64
-
-Song Chen (4):
-  y2038: cobalt/posix/mqueue: Adding mq_timedsend64
-  y2038: lib/cobalt/mqueue: dispatch mq_timedsend
-  y2038: cobalt/posix/muqueue: Adding mq_timedreceive64
-  y2038: lib/cobalt/mqueue: dispatch mq_timedreceive
-
- include/cobalt/uapi/syscall.h          |   2 +
- kernel/cobalt/posix/mqueue.c           |  49 ++++++-
- kernel/cobalt/posix/mqueue.h           |  18 +++
- kernel/cobalt/posix/syscall32.c        |  16 +++
- kernel/cobalt/posix/syscall32.h        |  10 ++
- kernel/cobalt/trace/cobalt-posix.h     |   4 +-
- lib/cobalt/mq.c                        |  10 ++
- testsuite/smokey/y2038/syscall-tests.c | 177 ++++++++++++++++++++++++-
- 8 files changed, 283 insertions(+), 3 deletions(-)
-
+diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
+index 471d9b39e..59e46f2e2 100644
+--- a/lib/cobalt/mq.c
++++ b/lib/cobalt/mq.c
+@@ -332,8 +332,13 @@ COBALT_IMPL(int, mq_send, (mqd_t q, const char *buffer, size_t len, unsigned pri
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
++#ifdef __USE_TIME_BITS64
++	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend64,
++			       q, buffer, len, prio, NULL);
++#else
+ 	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend,
+ 			       q, buffer, len, prio, NULL);
++#endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
 -- 
 2.30.2
 
