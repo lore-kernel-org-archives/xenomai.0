@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.198-cip54-arm64-11 released
-Message-Id: <E1mA3iH-0002bc-RC@xenomai.org>
-Date: Sun, 01 Aug 2021 07:08:37 +0200
+Subject: [I-PIPE] ipipe-core-5.4.135-arm64-3 released
+Message-Id: <E1mA3jc-0002vD-P3@xenomai.org>
+Date: Sun, 01 Aug 2021 07:10:00 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.198-cip54-arm64-11.patch
+Download URL: https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.135-arm64-3.patch
 
 Repository: https://git.xenomai.org/ipipe-arm64
-Release tag: ipipe-core-4.19.198-cip54-arm64-11
+Release tag: ipipe-core-5.4.135-arm64-3
 
