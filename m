@@ -1,10 +1,10 @@
-Subject: Re: [PATCH v4 0/5] y2038: Add mutex_timedlock64() support
-References: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] ci/gitlab-ci-base: Switch xenomai debug on for ci build
+References: <20210728123520.10270-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8be8e4fa-33a4-1c01-786c-a1184f59106c@siemens.com>
-Date: Mon, 2 Aug 2021 10:28:01 +0200
+Message-ID: <e3f901e6-a3f2-46d1-7df7-ab6cc295c031@siemens.com>
+Date: Mon, 2 Aug 2021 10:30:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210731070826.67908-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20210728123520.10270-1-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,56 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On 31.07.21 09:08, Florian Bezdeka wrote:
-> Hi!
+On 28.07.21 14:35, Hongzhan Chen via Xenomai wrote:
+> Some smokey test items depend on xenomai debug and we need to switch
+> it on to help smokey test pass.
 > 
-> This series is based on the series posted by Song some time ago. The
-> testing part has been heavily reworked. Details are mentioned in the 
-> description of the last patch.
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
-> @Jan: Patch 1 and 2 are re-sends. They are not directly related to the 
-> y2038 stuff but the testsuite might fail if they are not applied.
-> 
-> Testing was done on x86 only so far, internal CI is still running but no
-> problems expected.
-> 
-> Best regards,   
-> Florian
-> 
-> Changes in v4:
->   - Fixed trace integration
->     (squashed into patch 3 from Song)
-> 
-> Changes in v3:
->   - Added the new syscall to the tracing infrastructure
->     (squashed into patch 3 from Song)
+> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+> index e23849d..2638dec 100644
+> --- a/ci/gitlab-ci-base.yml
+> +++ b/ci/gitlab-ci-base.yml
+> @@ -39,8 +39,8 @@ default:
+>    extends: .add-proxy-config
+>    stage: build
+>    script:
+> -    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}"
+> -    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
+> +    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
+> +    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
+>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
 >  
-> Florian Bezdeka (3):
->   smokey: posix_mutex: Fix mutex/smokey_barrier leak
->   cobalt/posix/mutex: Harmonize pthread_mutex_timedlock() and
->     sem_timedwait()
->   y2038: testsuite/smokey/y2038: Adding test cases for
->     mutex_timedlock64()
-> 
-> Song Chen (2):
->   y2038: cobalt/posix/mutex: Adding mutex_timedlock64
->   y2038: lib/cobalt/mutex: dispatch mutex_timedlock
-> 
->  include/cobalt/uapi/syscall.h              |   1 +
->  kernel/cobalt/posix/mutex.c                |  28 ++-
->  kernel/cobalt/posix/mutex.h                |   7 +
->  kernel/cobalt/posix/syscall32.c            |   7 +
->  kernel/cobalt/posix/syscall32.h            |   4 +
->  kernel/cobalt/trace/cobalt-posix.h         |   4 +-
->  lib/cobalt/mutex.c                         |   4 +
->  testsuite/smokey/posix-mutex/posix-mutex.c |  62 +++++++
->  testsuite/smokey/y2038/syscall-tests.c     | 187 +++++++++++++++++++++
->  9 files changed, 302 insertions(+), 2 deletions(-)
+>  .test:
 > 
 
-Thanks, remaing 3 also applied.
+Thanks, applied, just in different order (patch 2, this one, patch 1 -
+ensures bisectability).
 
 Jan
 
