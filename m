@@ -1,16 +1,17 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [xenomai-image PATCH v2 5/5] Add kas option for swithing off debug
-Date: Tue, 27 Jul 2021 12:29:45 +0000
-Message-ID: <4402980fadbce80fec4ceedd50db00a09f4e98da.camel@siemens.com>
-References: <20210727004217.10892-1-hongzhan.chen@intel.com>
- <20210727004217.10892-6-hongzhan.chen@intel.com>
- <4a7e2141-9889-d024-bd1d-abc36d70fb31@siemens.com>
-In-Reply-To: <4a7e2141-9889-d024-bd1d-abc36d70fb31@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <58E27FC4D005FA48BFA18217C557F057@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: about RTnet* smokey test skipped issue on Qemu
+References: <BN9PR11MB5227AA25E0CD6ACB67B8CE8EF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <769057a8-3bfe-efcd-0975-a94734846dc3@siemens.com>
+ <BN9PR11MB5227EDF8B90BDC8D4B49004DF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <f200cbdd-2fce-6880-6af5-ffe538757377@siemens.com>
+ <BN9PR11MB5227BD5D858C80FEFA2C83C4F2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e5ba9f9a-381e-de69-1c4d-54f2ec971cf8@siemens.com>
+Date: Tue, 3 Aug 2021 10:00:15 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB5227BD5D858C80FEFA2C83C4F2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,34 +20,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "hongzhan.chen@intel.com" <hongzhan.chen@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVHVlLCAyMDIxLTA3LTI3IGF0IDEyOjUxICswMjAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
-IHdyb3RlOg0KPiBPbiAyNy4wNy4yMSAwMjo0MiwgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3
-cm90ZToNCj4gPiBGb3IgcGVyZm9ybWFuY2Ugb3IgbGF0ZW5jeSB0ZXN0aW5nIGFuZCBkZW1vbnN0
-cmF0aW9uLCBkZWJ1ZyBzd2l0Y2hlcw0KPiA+IHNob3VsZCBiZSBvZmYgYnV0IGl0IGlzIG9uIGJ5
-IGRlZmF1bHQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3po
-YW4uY2hlbkBpbnRlbC5jb20+DQo+ID4gLS0tDQo+ID4gwqBvcHQtc2V0LW5vZGJnLnltbCB8IDIw
-ICsrKysrKysrKysrKysrKysrKysrDQo+ID4gwqAxIGZpbGUgY2hhbmdlZCwgMjAgaW5zZXJ0aW9u
-cygrKQ0KPiA+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IG9wdC1zZXQtbm9kYmcueW1sDQo+ID4gDQo+
-ID4gZGlmZiAtLWdpdCBhL29wdC1zZXQtbm9kYmcueW1sIGIvb3B0LXNldC1ub2RiZy55bWwNCj4g
-PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLjE2YTJmZWMNCj4gPiAt
-LS0gL2Rldi9udWxsDQo+ID4gKysrIGIvb3B0LXNldC1ub2RiZy55bWwNCj4gPiBAQCAtMCwwICsx
-LDIwIEBADQo+ID4gKyMNCj4gPiArIyBYZW5vbWFpIFJlYWwtVGltZSBTeXN0ZW0NCj4gPiArIw0K
-PiA+ICsjIENvcHlyaWdodCAoQykgMjAyMSBJbnRlbCBDb3Jwb3JhdGlvbg0KPiA+ICsjDQo+ID4g
-KyMgQXV0aG9yczoNCj4gPiArIyAgSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
-b20+DQo+ID4gKyMNCj4gPiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogTUlUDQo+ID4gKyMN
-Cj4gPiArDQo+ID4gK2hlYWRlcjoNCj4gPiArICB2ZXJzaW9uOiAxMA0KPiA+ICsNCj4gPiArIyB0
-byB1c2Uga2VybmVsIGNvbmZpZyBmcmFnbWVudHMgZm9yIGRpc2FibGluZyBkYmcgYW5kDQo+ID4g
-KyMgaW1wcm92aW5nIHBlcmZvcm1hbmNlDQo+ID4gKw0KPiA+ICtsb2NhbF9jb25mX2hlYWRlcjoN
-Cj4gPiArICBkaXN0cm8tbm9kYmc6IHwNCj4gPiArICAgIERJU1RST19OT0RCRyA9ICJZRVMiDQo+
-ID4gDQo+IA0KPiBXZSB0ZW5kIHRvIHVzZSAiMCIgLyAiMSIgZm9yIGJpdGJha2UgYm9vbGVhbiB2
-YXJzLg0KPiANCj4gRnVydGhlcm1vcmUsIEkgd29uZGVyIGlmIHdlIHNob3VsZG4ndCBzd2l0Y2gg
-ZGVmYXVsdCB0byBuby1kZWJ1ZyBhbmQNCj4gZXhwbGljaXRseSB0dXJuIGRlYnVnZ2luZyBvbiBp
-biBvdXIgQ0kvdGVzdGluZy4NCg0KSSB0aG91Z2h0IHRoZSBzYW1lLiBJbWFnZXMgZ2VuZXJhdGVk
-IGJ5IHhlbm9tYWktaW1hZ2VzIGFyZSBvZnRlbiB1c2VkDQphcyByZWZlcmVuY2UgaW1hZ2VzLCBz
-byBJIGFzc3VtZSB0aGV5IHNob3VsZCBiZSAicHJvZHVjdGlvbiByZWFkeSIgYnkNCmRlZmF1bHQg
-YW5kIENJIGNvdWxkIGVuYWJsZSBkZWJ1ZyBidWlsZHMuDQoNCj4gDQo+IEluIGFueSBjYXNlLCBz
-b21lIHNob3J0IGhpbnQgb24gdGhpcyBjb250cm9sIGluIHRoZSBSRUFETUUgd291bGQgYmUgZ29v
-ZC4NCj4gDQo+IEphbg0KPiANCg0K
+On 03.08.21 09:53, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, August 3, 2021 3:40 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: about RTnet* smokey test skipped issue on Qemu
+>>
+>> On 03.08.21 08:46, Chen, Hongzhan wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Tuesday, August 3, 2021 12:59 PM
+>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>> Subject: Re: about RTnet* smokey test skipped issue on Qemu
+>>>>
+>>>> On 03.08.21 06:31, Chen, Hongzhan wrote:
+>>>>> Firstly, I found that all smokey tests including RTnet* pass on bare
+>>>>> metal x86 platform
+>>>>> but three RTnet* related test items  are skipped on Qemu.  After further
+>>>>> debug, actually there is
+>>>>> no supported rtnet device found on Qemu with current network setting
+>>>>> when xenomai image
+>>>>> is running over even we already enable all supported rtnet devices on
+>>>>> xenomai so that
+>>>>> the test is skipped on qemu.
+>>>>>
+>>>>> After I replace virtio-net-pci with e1000 device like [1] patch ,
+>>>>> rt_e1000 and rtnet modules
+>>>>> would be automatically loaded by udevd so that rtnet* test item can go
+>>>>> on without test skipped issue.
+>>>>
+>>>> By default, we are only doing loopback tests in smokey, nothing that
+>>>> requires a real NIC driver to be loaded. These are the modules loaded
+>>>> during a test with udp:
+>>>>
+>>>> Module                  Size  Used by
+>>>> rtudp                  24576  0
+>>>> rtipv4                 49152  1 rtudp
+>>>> rt_loopback            16384  1
+>>>> rtnet                  81920  3 rtipv4,rtudp,rt_loopback
+>>>>
+>>>> You can set the rtnet_driver and rtnet_interface parameters to switch to
+>>>> real NICs, but that is not happening during a default xeno-test run.
+>>>
+>  > The problem is that rtnet module is not loaded individually by current system but because
+>> RT NIC device driver module depend on it and then rtnet module will be loaded when specific
+>> RT NIC device driver module is modprobed after triggered by udev service. That means
+>> We have to add and modify something to explicitly load rtnet module by default when system bootup 
+>> if we do not want to depends on real NIC in our case. For example we may add corresponding *.conf  
+>> like [3] to make  rtnet load automatically when system bootup in our case?
+>>
+>>
+>> RTnet and udp/rtpacket/loopback etc. modules are loaded by the test
+>> cases. See testsuite/smokey/net_common/setup.c.
+> 
+> Actually ,rtnet should be loaded before smokey_net_setup run or else  err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
+>                         &net_config, sizeof(net_config)); would return -EINVAL directly in smokey_net_setup and there is no chance to go ahead because no cobalt_add_config_chain was called at that time if rtnet module was not loaded but it is only called by rtnet_corectl_register per my understanding.
+
+OK, now I understand (and was able reproduce).
+
+Two options to solve that:
+
+ - add loading of the rtnet module to setup.c
+ - make the rtnet core a built-in
+
+I'm leaning towards the first option.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
