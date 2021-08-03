@@ -1,15 +1,16 @@
-Subject: Re: about RTnet* smokey test skipped issue on Qemu
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: about RTnet* smokey test skipped issue on Qemu
+Date: Tue, 3 Aug 2021 07:53:25 +0000
+Message-ID: <BN9PR11MB5227BD5D858C80FEFA2C83C4F2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <BN9PR11MB5227AA25E0CD6ACB67B8CE8EF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
  <769057a8-3bfe-efcd-0975-a94734846dc3@siemens.com>
  <BN9PR11MB5227EDF8B90BDC8D4B49004DF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f200cbdd-2fce-6880-6af5-ffe538757377@siemens.com>
-Date: Tue, 3 Aug 2021 09:40:11 +0200
-MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227EDF8B90BDC8D4B49004DF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+ <f200cbdd-2fce-6880-6af5-ffe538757377@siemens.com>
+In-Reply-To: <f200cbdd-2fce-6880-6af5-ffe538757377@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.08.21 08:46, Chen, Hongzhan wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Tuesday, August 3, 2021 12:59 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: about RTnet* smokey test skipped issue on Qemu
->>
->> On 03.08.21 06:31, Chen, Hongzhan wrote:
->>> Firstly, I found that all smokey tests including RTnet* pass on bare
->>> metal x86 platform
->>> but three RTnet* related test items  are skipped on Qemu.  After further
->>> debug, actually there is
->>> no supported rtnet device found on Qemu with current network setting
->>> when xenomai image
->>> is running over even we already enable all supported rtnet devices on
->>> xenomai so that
->>> the test is skipped on qemu.
->>>
->>> After I replace virtio-net-pci with e1000 device like [1] patch ,
->>> rt_e1000 and rtnet modules
->>> would be automatically loaded by udevd so that rtnet* test item can go
->>> on without test skipped issue.
->>
->> By default, we are only doing loopback tests in smokey, nothing that
->> requires a real NIC driver to be loaded. These are the modules loaded
->> during a test with udp:
->>
->> Module                  Size  Used by
->> rtudp                  24576  0
->> rtipv4                 49152  1 rtudp
->> rt_loopback            16384  1
->> rtnet                  81920  3 rtipv4,rtudp,rt_loopback
->>
->> You can set the rtnet_driver and rtnet_interface parameters to switch to
->> real NICs, but that is not happening during a default xeno-test run.
-> 
-> The problem is that rtnet module is not loaded individually by current system but because
-> RT NIC device driver module depend on it and then rtnet module will be loaded when specific
-> RT NIC device driver module is modprobed after triggered by udev service. That means
-> We have to add and modify something to explicitly load rtnet module by default when system bootup 
-> if we do not want to depends on real NIC in our case. For example we may add corresponding *.conf  
-> like [3] to make  rtnet load automatically when system bootup in our case?
-> 
-
-RTnet and udp/rtpacket/loopback etc. modules are loaded by the test
-cases. See testsuite/smokey/net_common/setup.c.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIEF1Z3VzdCAzLCAyMDIxIDM6NDAg
+UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
+aUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBhYm91dCBSVG5ldCogc21va2V5IHRlc3Qgc2tp
+cHBlZCBpc3N1ZSBvbiBRZW11DQo+DQo+T24gMDMuMDguMjEgMDg6NDYsIENoZW4sIEhvbmd6aGFu
+IHdyb3RlOg0KPj4gDQo+PiANCj4+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4+IEZy
+b206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0KPj4+IFNlbnQ6IFR1ZXNk
+YXksIEF1Z3VzdCAzLCAyMDIxIDEyOjU5IFBNDQo+Pj4gVG86IENoZW4sIEhvbmd6aGFuIDxob25n
+emhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4+PiBTdWJqZWN0OiBS
+ZTogYWJvdXQgUlRuZXQqIHNtb2tleSB0ZXN0IHNraXBwZWQgaXNzdWUgb24gUWVtdQ0KPj4+DQo+
+Pj4gT24gMDMuMDguMjEgMDY6MzEsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4+PiBGaXJzdGx5
+LCBJIGZvdW5kIHRoYXQgYWxsIHNtb2tleSB0ZXN0cyBpbmNsdWRpbmcgUlRuZXQqIHBhc3Mgb24g
+YmFyZQ0KPj4+PiBtZXRhbCB4ODYgcGxhdGZvcm0NCj4+Pj4gYnV0IHRocmVlIFJUbmV0KiByZWxh
+dGVkIHRlc3QgaXRlbXMgIGFyZSBza2lwcGVkIG9uIFFlbXUuICBBZnRlciBmdXJ0aGVyDQo+Pj4+
+IGRlYnVnLCBhY3R1YWxseSB0aGVyZSBpcw0KPj4+PiBubyBzdXBwb3J0ZWQgcnRuZXQgZGV2aWNl
+IGZvdW5kIG9uIFFlbXUgd2l0aCBjdXJyZW50IG5ldHdvcmsgc2V0dGluZw0KPj4+PiB3aGVuIHhl
+bm9tYWkgaW1hZ2UNCj4+Pj4gaXMgcnVubmluZyBvdmVyIGV2ZW4gd2UgYWxyZWFkeSBlbmFibGUg
+YWxsIHN1cHBvcnRlZCBydG5ldCBkZXZpY2VzIG9uDQo+Pj4+IHhlbm9tYWkgc28gdGhhdA0KPj4+
+PiB0aGUgdGVzdCBpcyBza2lwcGVkIG9uIHFlbXUuDQo+Pj4+DQo+Pj4+IEFmdGVyIEkgcmVwbGFj
+ZSB2aXJ0aW8tbmV0LXBjaSB3aXRoIGUxMDAwIGRldmljZSBsaWtlIFsxXSBwYXRjaCAsDQo+Pj4+
+IHJ0X2UxMDAwIGFuZCBydG5ldCBtb2R1bGVzDQo+Pj4+IHdvdWxkIGJlIGF1dG9tYXRpY2FsbHkg
+bG9hZGVkIGJ5IHVkZXZkIHNvIHRoYXQgcnRuZXQqIHRlc3QgaXRlbSBjYW4gZ28NCj4+Pj4gb24g
+d2l0aG91dCB0ZXN0IHNraXBwZWQgaXNzdWUuDQo+Pj4NCj4+PiBCeSBkZWZhdWx0LCB3ZSBhcmUg
+b25seSBkb2luZyBsb29wYmFjayB0ZXN0cyBpbiBzbW9rZXksIG5vdGhpbmcgdGhhdA0KPj4+IHJl
+cXVpcmVzIGEgcmVhbCBOSUMgZHJpdmVyIHRvIGJlIGxvYWRlZC4gVGhlc2UgYXJlIHRoZSBtb2R1
+bGVzIGxvYWRlZA0KPj4+IGR1cmluZyBhIHRlc3Qgd2l0aCB1ZHA6DQo+Pj4NCj4+PiBNb2R1bGUg
+ICAgICAgICAgICAgICAgICBTaXplICBVc2VkIGJ5DQo+Pj4gcnR1ZHAgICAgICAgICAgICAgICAg
+ICAyNDU3NiAgMA0KPj4+IHJ0aXB2NCAgICAgICAgICAgICAgICAgNDkxNTIgIDEgcnR1ZHANCj4+
+PiBydF9sb29wYmFjayAgICAgICAgICAgIDE2Mzg0ICAxDQo+Pj4gcnRuZXQgICAgICAgICAgICAg
+ICAgICA4MTkyMCAgMyBydGlwdjQscnR1ZHAscnRfbG9vcGJhY2sNCj4+Pg0KPj4+IFlvdSBjYW4g
+c2V0IHRoZSBydG5ldF9kcml2ZXIgYW5kIHJ0bmV0X2ludGVyZmFjZSBwYXJhbWV0ZXJzIHRvIHN3
+aXRjaCB0bw0KPj4+IHJlYWwgTklDcywgYnV0IHRoYXQgaXMgbm90IGhhcHBlbmluZyBkdXJpbmcg
+YSBkZWZhdWx0IHhlbm8tdGVzdCBydW4uDQo+PiANCiA+IFRoZSBwcm9ibGVtIGlzIHRoYXQgcnRu
+ZXQgbW9kdWxlIGlzIG5vdCBsb2FkZWQgaW5kaXZpZHVhbGx5IGJ5IGN1cnJlbnQgc3lzdGVtIGJ1
+dCBiZWNhdXNlDQo+IFJUIE5JQyBkZXZpY2UgZHJpdmVyIG1vZHVsZSBkZXBlbmQgb24gaXQgYW5k
+IHRoZW4gcnRuZXQgbW9kdWxlIHdpbGwgYmUgbG9hZGVkIHdoZW4gc3BlY2lmaWMNCj4gUlQgTklD
+IGRldmljZSBkcml2ZXIgbW9kdWxlIGlzIG1vZHByb2JlZCBhZnRlciB0cmlnZ2VyZWQgYnkgdWRl
+diBzZXJ2aWNlLiBUaGF0IG1lYW5zDQo+IFdlIGhhdmUgdG8gYWRkIGFuZCBtb2RpZnkgc29tZXRo
+aW5nIHRvIGV4cGxpY2l0bHkgbG9hZCBydG5ldCBtb2R1bGUgYnkgZGVmYXVsdCB3aGVuIHN5c3Rl
+bSBib290dXAgDQo+IGlmIHdlIGRvIG5vdCB3YW50IHRvIGRlcGVuZHMgb24gcmVhbCBOSUMgaW4g
+b3VyIGNhc2UuIEZvciBleGFtcGxlIHdlIG1heSBhZGQgY29ycmVzcG9uZGluZyAqLmNvbmYgIA0K
+PiBsaWtlIFszXSB0byBtYWtlICBydG5ldCBsb2FkIGF1dG9tYXRpY2FsbHkgd2hlbiBzeXN0ZW0g
+Ym9vdHVwIGluIG91ciBjYXNlPw0KPiANCj4NCj5SVG5ldCBhbmQgdWRwL3J0cGFja2V0L2xvb3Bi
+YWNrIGV0Yy4gbW9kdWxlcyBhcmUgbG9hZGVkIGJ5IHRoZSB0ZXN0DQo+Y2FzZXMuIFNlZSB0ZXN0
+c3VpdGUvc21va2V5L25ldF9jb21tb24vc2V0dXAuYy4NCg0KQWN0dWFsbHkgLHJ0bmV0IHNob3Vs
+ZCBiZSBsb2FkZWQgYmVmb3JlIHNtb2tleV9uZXRfc2V0dXAgcnVuIG9yIGVsc2UgIGVyciA9IGNv
+YmFsdF9jb3JlY3RsKF9DQ19DT0JBTFRfR0VUX05FVF9DT05GSUcsDQogICAgICAgICAgICAgICAg
+ICAgICAgICAmbmV0X2NvbmZpZywgc2l6ZW9mKG5ldF9jb25maWcpKTsgd291bGQgcmV0dXJuIC1F
+SU5WQUwgZGlyZWN0bHkgaW4gc21va2V5X25ldF9zZXR1cCBhbmQgdGhlcmUgaXMgbm8gY2hhbmNl
+IHRvIGdvIGFoZWFkIGJlY2F1c2Ugbm8gY29iYWx0X2FkZF9jb25maWdfY2hhaW4gd2FzIGNhbGxl
+ZCBhdCB0aGF0IHRpbWUgaWYgcnRuZXQgbW9kdWxlIHdhcyBub3QgbG9hZGVkIGJ1dCBpdCBpcyBv
+bmx5IGNhbGxlZCBieSBydG5ldF9jb3JlY3RsX3JlZ2lzdGVyIHBlciBteSB1bmRlcnN0YW5kaW5n
+Lg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5z
+IEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGlu
+dXgNCg0KDQo=
 
