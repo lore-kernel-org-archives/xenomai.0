@@ -1,15 +1,12 @@
-Subject: Re: about RTnet* smokey test skipped issue on Qemu
-References: <BN9PR11MB5227AA25E0CD6ACB67B8CE8EF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
- <769057a8-3bfe-efcd-0975-a94734846dc3@siemens.com>
- <BN9PR11MB5227EDF8B90BDC8D4B49004DF2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
- <f200cbdd-2fce-6880-6af5-ffe538757377@siemens.com>
- <BN9PR11MB5227BD5D858C80FEFA2C83C4F2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
+Subject: Re: xenomai warning after upgrade to linux 5.4.115
+References: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <c79cae1e-d905-53eb-4f23-6f9d57d2d34f@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e5ba9f9a-381e-de69-1c4d-54f2ec971cf8@siemens.com>
-Date: Tue, 3 Aug 2021 10:00:15 +0200
+Message-ID: <4bd7748b-8944-fa68-7130-74cc00055b64@siemens.com>
+Date: Tue, 3 Aug 2021 11:37:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227BD5D858C80FEFA2C83C4F2F09@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <c79cae1e-d905-53eb-4f23-6f9d57d2d34f@siemens.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,75 +19,39 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.08.21 09:53, Chen, Hongzhan wrote:
+On 29.07.21 10:02, Jan Kiszka via Xenomai wrote:
+> On 29.07.21 08:43, Chen, Hongzhan wrote:
+>> After we upgraded our linux to 5.4.115 from 5.4.76 and rebased IPIPE patchset for xenomai 3.1.X,  there is xenomai warning
+>> printed as in attached xenomai_warning_on_linux5.4.115 on some specific boards according to our validation.
 > 
+> From a first inspection: Linux considers its interrupts to be off around
 > 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Tuesday, August 3, 2021 3:40 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: about RTnet* smokey test skipped issue on Qemu
->>
->> On 03.08.21 08:46, Chen, Hongzhan wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
->>>> Sent: Tuesday, August 3, 2021 12:59 PM
->>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->>>> Subject: Re: about RTnet* smokey test skipped issue on Qemu
->>>>
->>>> On 03.08.21 06:31, Chen, Hongzhan wrote:
->>>>> Firstly, I found that all smokey tests including RTnet* pass on bare
->>>>> metal x86 platform
->>>>> but three RTnet* related test items  are skipped on Qemu.  After further
->>>>> debug, actually there is
->>>>> no supported rtnet device found on Qemu with current network setting
->>>>> when xenomai image
->>>>> is running over even we already enable all supported rtnet devices on
->>>>> xenomai so that
->>>>> the test is skipped on qemu.
->>>>>
->>>>> After I replace virtio-net-pci with e1000 device like [1] patch ,
->>>>> rt_e1000 and rtnet modules
->>>>> would be automatically loaded by udevd so that rtnet* test item can go
->>>>> on without test skipped issue.
->>>>
->>>> By default, we are only doing loopback tests in smokey, nothing that
->>>> requires a real NIC driver to be loaded. These are the modules loaded
->>>> during a test with udp:
->>>>
->>>> Module                  Size  Used by
->>>> rtudp                  24576  0
->>>> rtipv4                 49152  1 rtudp
->>>> rt_loopback            16384  1
->>>> rtnet                  81920  3 rtipv4,rtudp,rt_loopback
->>>>
->>>> You can set the rtnet_driver and rtnet_interface parameters to switch to
->>>> real NICs, but that is not happening during a default xeno-test run.
->>>
->  > The problem is that rtnet module is not loaded individually by current system but because
->> RT NIC device driver module depend on it and then rtnet module will be loaded when specific
->> RT NIC device driver module is modprobed after triggered by udev service. That means
->> We have to add and modify something to explicitly load rtnet module by default when system bootup 
->> if we do not want to depends on real NIC in our case. For example we may add corresponding *.conf  
->> like [3] to make  rtnet load automatically when system bootup in our case?
->>
->>
->> RTnet and udp/rtpacket/loopback etc. modules are loaded by the test
->> cases. See testsuite/smokey/net_common/setup.c.
+> xenomai_init
+>   xntimer_grab_hardware
+>     ipipe_timer_start
+>       smp_call_function_single
 > 
-> Actually ,rtnet should be loaded before smokey_net_setup run or else  err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
->                         &net_config, sizeof(net_config)); would return -EINVAL directly in smokey_net_setup and there is no chance to go ahead because no cobalt_add_config_chain was called at that time if rtnet module was not loaded but it is only called by rtnet_corectl_register per my understanding.
+> But that should not be the case. The call path is valid and used for a
+> long time. The issue should come from somewhere else.
+> 
+> You you try to debug where interrupts are turned off from Linux
+> perspective? Compare that to boot ups where Linux does not complain.
+> 
+>> But I cannot reproduce the issue on same type of board like Maxtang that I have.  In addition,
+>> on one specific board, we found that there is similar warning happened in smp_call_function_single  when ACPI init
+>> ahead of warning happened in xenomai init as in attached ACPI_warning_and_xenomai_warning_on_linux5.4.115.
+>> When we set acpi=off in cmdline for all problematic boards , warning totally disappear.  Since I cannot get the problematic board
+>> to further debug, would you mind help check attached logs and kernel config and find the root cause out?
+>> Thanks for your help in advance.
+>>
+> 
+> Does that other case only occur when CONFIG_IPIPE is enabled? If it also
+> happens with plain Linux, we may see a mainline issue. Or firmware bugs.
+> 
+> Jan
+> 
 
-OK, now I understand (and was able reproduce).
-
-Two options to solve that:
-
- - add loading of the rtnet module to setup.c
- - make the rtnet core a built-in
-
-I'm leaning towards the first option.
+Any news on this issue?
 
 Jan
 
