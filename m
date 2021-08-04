@@ -1,10 +1,16 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error in
- vm mode
-Date: Tue,  3 Aug 2021 22:47:14 -0400
-Message-Id: <20210804024714.665-2-hongzhan.chen@intel.com>
-In-Reply-To: <20210804024714.665-1-hongzhan.chen@intel.com>
-References: <20210804024714.665-1-hongzhan.chen@intel.com>
+Subject: Re: xenomai warning after upgrade to linux 5.4.115
+References: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <c79cae1e-d905-53eb-4f23-6f9d57d2d34f@siemens.com>
+ <4bd7748b-8944-fa68-7130-74cc00055b64@siemens.com>
+ <BN9PR11MB52273B17E519A34EE80FEC8BF2F19@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c684c788-0b63-25be-0d98-c8cdb6bf068b@siemens.com>
+Date: Wed, 4 Aug 2021 08:47:58 +0200
+MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB52273B17E519A34EE80FEC8BF2F19@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,41 +19,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-In vm mode, skip late packet error in functional test to avoid
-test failure.
+On 04.08.21 02:32, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, August 3, 2021 5:37 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: xenomai warning after upgrade to linux 5.4.115
+>>
+>> On 29.07.21 10:02, Jan Kiszka via Xenomai wrote:
+>>> On 29.07.21 08:43, Chen, Hongzhan wrote:
+>>>> After we upgraded our linux to 5.4.115 from 5.4.76 and rebased IPIPE patchset for xenomai 3.1.X,  there is xenomai warning
+>>>> printed as in attached xenomai_warning_on_linux5.4.115 on some specific boards according to our validation.
+>>>
+>>> From a first inspection: Linux considers its interrupts to be off around
+>>>
+>>> xenomai_init
+>>>   xntimer_grab_hardware
+>>>     ipipe_timer_start
+>>>       smp_call_function_single
+>>>
+>>> But that should not be the case. The call path is valid and used for a
+>>> long time. The issue should come from somewhere else.
+>>>
+>>> You you try to debug where interrupts are turned off from Linux
+>>> perspective? Compare that to boot ups where Linux does not complain.
+>>>
+>>>> But I cannot reproduce the issue on same type of board like Maxtang that I have.  In addition,
+>>>> on one specific board, we found that there is similar warning happened in smp_call_function_single  when ACPI init
+>>>> ahead of warning happened in xenomai init as in attached ACPI_warning_and_xenomai_warning_on_linux5.4.115.
+>>>> When we set acpi=off in cmdline for all problematic boards , warning totally disappear.  Since I cannot get the problematic board
+>>>> to further debug, would you mind help check attached logs and kernel config and find the root cause out?
+>>>> Thanks for your help in advance.
+>>>
+>>>
+>>> Does that other case only occur when CONFIG_IPIPE is enabled? If it also
+>>> happens with plain Linux, we may see a mainline issue. Or firmware bugs.
+>>>
+>>> Jan
+>>>
+>>
+>> Any news on this issue?
+> 
+> Finally , we found there is missing code in our split patches.
+> 
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+Means, your kernel was missing something that the official I-pipe
+patches have?
 
-diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
-index d13d72918..752ea55ed 100644
---- a/testsuite/smokey/net_common/client.c
-+++ b/testsuite/smokey/net_common/client.c
-@@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
- 		} while (err != -ETIMEDOUT);
- 	}
- 
--	if (glost || glate)
-+	if (glost || (!smokey_on_vm && glate))
- 		fprintf(stderr, "RTnet %s test failed", client->name);
- 	if (glost) {
- 		if (glost == limit)
-@@ -214,11 +214,11 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
- 			fprintf(stderr, ", %Lu packets lost (%g %%)",
- 				glost, 100.0 * glost / limit);
- 	}
--	if (glate)
-+	if (!smokey_on_vm && glate)
- 		fprintf(stderr, ", %Lu overruns", glate);
- 	if (glost || glate)
- 		fputc('\n', stderr);
--	err = glost || glate ? -EPROTO : 0;
-+	err = glost || (!smokey_on_vm && glate) ? -EPROTO : 0;
- 
-   err:
- 	sock = smokey_check_errno(__RT(close(sock)));
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
