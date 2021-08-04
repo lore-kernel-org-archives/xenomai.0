@@ -1,12 +1,14 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/4] arm64: irq_pipeline: fix unbalanced RCU entry/exit on
- fault
-Date: Wed,  4 Aug 2021 19:47:11 +0200
-Message-Id: <20210804174711.4021807-4-rpm@xenomai.org>
-In-Reply-To: <20210804174711.4021807-1-rpm@xenomai.org>
-References: <20210804174711.4021807-1-rpm@xenomai.org>
+Subject: Re: [PATCH v2 1/1] license: summarize the licensing terms
+References: <20210804073546.3372409-1-rpm@xenomai.org>
+ <20210804073546.3372409-2-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4c1efa86-f999-7d72-1fbc-1ee5f8d7c870@siemens.com>
+Date: Wed, 4 Aug 2021 22:47:57 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210804073546.3372409-2-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 04.08.21 09:35, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  COPYING | 45 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 COPYING
+> 
+> diff --git a/COPYING b/COPYING
+> new file mode 100644
+> index 000000000..839938c62
+> --- /dev/null
+> +++ b/COPYING
+> @@ -0,0 +1,45 @@
+> +
+> +Xenomai 3 Licensing terms
+> +=========================
+> +
+> +Xenomai 3 is composed of a number of libraries, user-space application
+> +programs, and kernel code. This file summarizes the licenses used for
+> +the libraries and kernel code (aka 'Cobalt core'). Please refer to the
+> +COPYING file in the corresponding directory for details. The licensing
+> +terms of each application program shipped with Xenomai 3 is stated in
+> +the corresponding source code.
+> +
+> +====================================================================
+> +  User space interface    |        SPDX identifier [1]
+> +====================================================================
+> +                          |
+> +  alchemy                 |     LGPL-2.1-or-later
+> +  boilerplate             |     LGPL-2.1-or-later, some MIT portions
+> +  boilerplate/iniparser   |     MIT
+> +  cobalt                  |     LGPL-2.1-or-later
+> +  copperplate             |     LGPL-2.1-or-later
+> +  psos                    |     LGPL-2.1-or-later
+> +  smokey                  |     LGPL-2.1-or-later
 
-We may switch in-band as a result of handling a trap. If we were
-running out-of-band on kernel entry, we must not perform the RCU exit
-upon leaving the exception since we did not enter RCU in the first
-place.
+smokey has "some MIT portions" as well (network tests).
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- arch/arm64/kernel/entry-common.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+> +  trank                   |     LGPL-2.1-or-later
+> +  vxworks                 |     LGPL-2.1-or-later
+> +  include                 |     LGPL-2.1-or-later with exception [2]
+> +------------------------------------------------------------------- 
+> +
+> +==================================================================
+> +     Cobalt core          |        SPDX identifier
+> +==================================================================
+> +                          |
+> +  kernel/cobalt           |     GPL-2.0-or-later
+> +  kernel/cobalt/posix     |     GPL-2.0-or-later
+> +  kernel/cobalt/rtdm      |     GPL-2.0-or-later
+> +  include/cobalt/kernel   |     GPL-2.0-or-later with exception [2]
 
-diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
-index 0df59c02dcc07de..0d9fe3d59fc97ec 100644
---- a/arch/arm64/kernel/entry-common.c
-+++ b/arch/arm64/kernel/entry-common.c
-@@ -43,9 +43,17 @@ static void noinstr __enter_from_kernel_mode(struct pt_regs *regs)
- static void noinstr enter_from_kernel_mode(struct pt_regs *regs)
- {
- #ifdef CONFIG_IRQ_PIPELINE
-+	/*
-+	 * CAUTION: we may switch in-band as a result of handling a
-+	 * trap, so if we are running out-of-band, we must make sure
-+	 * not to perform the RCU exit since we did not enter it in
-+	 * the first place.
-+	 */
- 	regs->oob_on_entry = running_oob();
--	if (regs->oob_on_entry)
-+	if (regs->oob_on_entry) {
-+		regs->exit_rcu = false;
- 		return;
-+	}
- 
- 	/*
- 	 * We trapped from kernel space running in-band, we need to
+Analogously to that, we have a few RTnet header under a similar
+exceptions: include/rtdm/net.h, include/rtdm/uapi/net.h,
+kernel/drivers/net/stack/include/rtmac.h.
+
+> +------------------------------------------------------------------  
+> +
+> +Please note that the Linux licensing rules apply to the Xenomai kernel
+> +code once compiled in the Linux kernel. These rules can be found at:
+> +https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
+> +
+> +[1] See https://spdx.org/licenses
+> +
+> +[2] The exception grants additional permission to use the header files
+> +    in user-space application programs. See include/COPYING.
+> 
+
+I just browsed a report from a commercial license scanner for Xenomai
+3.0.11. Only those minor deviations above, rest is in line (minus a few
+mis-classifications the scanner and/or the operators produced...).
+
+Jan
+
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
