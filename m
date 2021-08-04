@@ -1,8 +1,10 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 1/2] testsuite/smokey: net: load rtnet module if it has not
- been loaded
-Date: Tue,  3 Aug 2021 22:47:13 -0400
-Message-Id: <20210804024714.665-1-hongzhan.chen@intel.com>
+Subject: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error in
+ vm mode
+Date: Tue,  3 Aug 2021 22:47:14 -0400
+Message-Id: <20210804024714.665-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210804024714.665-1-hongzhan.chen@intel.com>
+References: <20210804024714.665-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +15,38 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Before checking net config, rtnet should be ready.
+In vm mode, skip late packet error in functional test to avoid
+test failure.
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-index 1badabdfb..719d8175f 100644
---- a/testsuite/smokey/net_common/setup.c
-+++ b/testsuite/smokey/net_common/setup.c
-@@ -408,6 +408,14 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
- 	struct sockaddr_in *in_peer = vpeer;
- 	struct sockaddr *peer = vpeer;
+diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
+index d13d72918..752ea55ed 100644
+--- a/testsuite/smokey/net_common/client.c
++++ b/testsuite/smokey/net_common/client.c
+@@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+ 		} while (err != -ETIMEDOUT);
+ 	}
  
-+	err = access("/dev/rtnet", F_OK);
-+	if (err) {
-+		/* device does not exist and load rtnet*/
-+		err = smokey_net_modprobe(MODID_RTNET);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
- 			&net_config, sizeof(net_config));
- 	if (err == -EINVAL)
+-	if (glost || glate)
++	if (glost || (!smokey_on_vm && glate))
+ 		fprintf(stderr, "RTnet %s test failed", client->name);
+ 	if (glost) {
+ 		if (glost == limit)
+@@ -214,11 +214,11 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+ 			fprintf(stderr, ", %Lu packets lost (%g %%)",
+ 				glost, 100.0 * glost / limit);
+ 	}
+-	if (glate)
++	if (!smokey_on_vm && glate)
+ 		fprintf(stderr, ", %Lu overruns", glate);
+ 	if (glost || glate)
+ 		fputc('\n', stderr);
+-	err = glost || glate ? -EPROTO : 0;
++	err = glost || (!smokey_on_vm && glate) ? -EPROTO : 0;
+ 
+   err:
+ 	sock = smokey_check_errno(__RT(close(sock)));
 -- 
 2.17.1
 
