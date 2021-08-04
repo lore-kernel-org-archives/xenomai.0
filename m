@@ -1,11 +1,17 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 1/1] license: summarize the licensing terms
-Date: Wed,  4 Aug 2021 09:35:46 +0200
-Message-Id: <20210804073546.3372409-2-rpm@xenomai.org>
-In-Reply-To: <20210804073546.3372409-1-rpm@xenomai.org>
-References: <20210804073546.3372409-1-rpm@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: xenomai warning after upgrade to linux 5.4.115
+Date: Wed, 4 Aug 2021 07:42:26 +0000
+Message-ID: <BN9PR11MB52275A292BC901B7C095DDA6F2F19@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <BN9PR11MB52270515FDDDB8D6AFD37F6FF2EB9@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <c79cae1e-d905-53eb-4f23-6f9d57d2d34f@siemens.com>
+ <4bd7748b-8944-fa68-7130-74cc00055b64@siemens.com>
+ <BN9PR11MB52273B17E519A34EE80FEC8BF2F19@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <c684c788-0b63-25be-0d98-c8cdb6bf068b@siemens.com>
+In-Reply-To: <c684c788-0b63-25be-0d98-c8cdb6bf068b@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,68 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- COPYING | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
- create mode 100644 COPYING
-
-diff --git a/COPYING b/COPYING
-new file mode 100644
-index 000000000..839938c62
---- /dev/null
-+++ b/COPYING
-@@ -0,0 +1,45 @@
-+
-+Xenomai 3 Licensing terms
-+=========================
-+
-+Xenomai 3 is composed of a number of libraries, user-space application
-+programs, and kernel code. This file summarizes the licenses used for
-+the libraries and kernel code (aka 'Cobalt core'). Please refer to the
-+COPYING file in the corresponding directory for details. The licensing
-+terms of each application program shipped with Xenomai 3 is stated in
-+the corresponding source code.
-+
-+====================================================================
-+  User space interface    |        SPDX identifier [1]
-+====================================================================
-+                          |
-+  alchemy                 |     LGPL-2.1-or-later
-+  boilerplate             |     LGPL-2.1-or-later, some MIT portions
-+  boilerplate/iniparser   |     MIT
-+  cobalt                  |     LGPL-2.1-or-later
-+  copperplate             |     LGPL-2.1-or-later
-+  psos                    |     LGPL-2.1-or-later
-+  smokey                  |     LGPL-2.1-or-later
-+  trank                   |     LGPL-2.1-or-later
-+  vxworks                 |     LGPL-2.1-or-later
-+  include                 |     LGPL-2.1-or-later with exception [2]
-+------------------------------------------------------------------- 
-+
-+==================================================================
-+     Cobalt core          |        SPDX identifier
-+==================================================================
-+                          |
-+  kernel/cobalt           |     GPL-2.0-or-later
-+  kernel/cobalt/posix     |     GPL-2.0-or-later
-+  kernel/cobalt/rtdm      |     GPL-2.0-or-later
-+  include/cobalt/kernel   |     GPL-2.0-or-later with exception [2]
-+------------------------------------------------------------------  
-+
-+Please note that the Linux licensing rules apply to the Xenomai kernel
-+code once compiled in the Linux kernel. These rules can be found at:
-+https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
-+
-+[1] See https://spdx.org/licenses
-+
-+[2] The exception grants additional permission to use the header files
-+    in user-space application programs. See include/COPYING.
--- 
-2.31.1
-
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDQsIDIwMjEgMjo0
+OCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IHhlbm9tYWkgd2FybmluZyBhZnRlciB1cGdy
+YWRlIHRvIGxpbnV4IDUuNC4xMTUNCj4NCj5PbiAwNC4wOC4yMSAwMjozMiwgQ2hlbiwgSG9uZ3po
+YW4gd3JvdGU6DQo+PiANCj4+IA0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4g
+RnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4gU2VudDogVHVl
+c2RheSwgQXVndXN0IDMsIDIwMjEgNTozNyBQTQ0KPj4+IFRvOiBDaGVuLCBIb25nemhhbiA8aG9u
+Z3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4gU3ViamVjdDog
+UmU6IHhlbm9tYWkgd2FybmluZyBhZnRlciB1cGdyYWRlIHRvIGxpbnV4IDUuNC4xMTUNCj4+Pg0K
+Pj4+IE9uIDI5LjA3LjIxIDEwOjAyLCBKYW4gS2lzemthIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+
+PiBPbiAyOS4wNy4yMSAwODo0MywgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+Pj4+PiBBZnRlciB3
+ZSB1cGdyYWRlZCBvdXIgbGludXggdG8gNS40LjExNSBmcm9tIDUuNC43NiBhbmQgcmViYXNlZCBJ
+UElQRSBwYXRjaHNldCBmb3IgeGVub21haSAzLjEuWCwgIHRoZXJlIGlzIHhlbm9tYWkgd2Fybmlu
+Zw0KPj4+Pj4gcHJpbnRlZCBhcyBpbiBhdHRhY2hlZCB4ZW5vbWFpX3dhcm5pbmdfb25fbGludXg1
+LjQuMTE1IG9uIHNvbWUgc3BlY2lmaWMgYm9hcmRzIGFjY29yZGluZyB0byBvdXIgdmFsaWRhdGlv
+bi4NCj4+Pj4NCj4+Pj4gRnJvbSBhIGZpcnN0IGluc3BlY3Rpb246IExpbnV4IGNvbnNpZGVycyBp
+dHMgaW50ZXJydXB0cyB0byBiZSBvZmYgYXJvdW5kDQo+Pj4+DQo+Pj4+IHhlbm9tYWlfaW5pdA0K
+Pj4+PiAgIHhudGltZXJfZ3JhYl9oYXJkd2FyZQ0KPj4+PiAgICAgaXBpcGVfdGltZXJfc3RhcnQN
+Cj4+Pj4gICAgICAgc21wX2NhbGxfZnVuY3Rpb25fc2luZ2xlDQo+Pj4+DQo+Pj4+IEJ1dCB0aGF0
+IHNob3VsZCBub3QgYmUgdGhlIGNhc2UuIFRoZSBjYWxsIHBhdGggaXMgdmFsaWQgYW5kIHVzZWQg
+Zm9yIGENCj4+Pj4gbG9uZyB0aW1lLiBUaGUgaXNzdWUgc2hvdWxkIGNvbWUgZnJvbSBzb21ld2hl
+cmUgZWxzZS4NCj4+Pj4NCj4+Pj4gWW91IHlvdSB0cnkgdG8gZGVidWcgd2hlcmUgaW50ZXJydXB0
+cyBhcmUgdHVybmVkIG9mZiBmcm9tIExpbnV4DQo+Pj4+IHBlcnNwZWN0aXZlPyBDb21wYXJlIHRo
+YXQgdG8gYm9vdCB1cHMgd2hlcmUgTGludXggZG9lcyBub3QgY29tcGxhaW4uDQo+Pj4+DQo+Pj4+
+PiBCdXQgSSBjYW5ub3QgcmVwcm9kdWNlIHRoZSBpc3N1ZSBvbiBzYW1lIHR5cGUgb2YgYm9hcmQg
+bGlrZSBNYXh0YW5nIHRoYXQgSSBoYXZlLiAgSW4gYWRkaXRpb24sDQo+Pj4+PiBvbiBvbmUgc3Bl
+Y2lmaWMgYm9hcmQsIHdlIGZvdW5kIHRoYXQgdGhlcmUgaXMgc2ltaWxhciB3YXJuaW5nIGhhcHBl
+bmVkIGluIHNtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZSAgd2hlbiBBQ1BJIGluaXQNCj4+Pj4+IGFo
+ZWFkIG9mIHdhcm5pbmcgaGFwcGVuZWQgaW4geGVub21haSBpbml0IGFzIGluIGF0dGFjaGVkIEFD
+UElfd2FybmluZ19hbmRfeGVub21haV93YXJuaW5nX29uX2xpbnV4NS40LjExNS4NCj4+Pj4+IFdo
+ZW4gd2Ugc2V0IGFjcGk9b2ZmIGluIGNtZGxpbmUgZm9yIGFsbCBwcm9ibGVtYXRpYyBib2FyZHMg
+LCB3YXJuaW5nIHRvdGFsbHkgZGlzYXBwZWFyLiAgU2luY2UgSSBjYW5ub3QgZ2V0IHRoZSBwcm9i
+bGVtYXRpYyBib2FyZA0KPj4+Pj4gdG8gZnVydGhlciBkZWJ1Zywgd291bGQgeW91IG1pbmQgaGVs
+cCBjaGVjayBhdHRhY2hlZCBsb2dzIGFuZCBrZXJuZWwgY29uZmlnIGFuZCBmaW5kIHRoZSByb290
+IGNhdXNlIG91dD8NCj4+Pj4+IFRoYW5rcyBmb3IgeW91ciBoZWxwIGluIGFkdmFuY2UuDQo+Pj4+
+DQo+Pj4+DQo+Pj4+IERvZXMgdGhhdCBvdGhlciBjYXNlIG9ubHkgb2NjdXIgd2hlbiBDT05GSUdf
+SVBJUEUgaXMgZW5hYmxlZD8gSWYgaXQgYWxzbw0KPj4+PiBoYXBwZW5zIHdpdGggcGxhaW4gTGlu
+dXgsIHdlIG1heSBzZWUgYSBtYWlubGluZSBpc3N1ZS4gT3IgZmlybXdhcmUgYnVncy4NCj4+Pj4N
+Cj4+Pj4gSmFuDQo+Pj4+DQo+Pj4NCj4+PiBBbnkgbmV3cyBvbiB0aGlzIGlzc3VlPw0KPj4gDQo+
+PiBGaW5hbGx5ICwgd2UgZm91bmQgdGhlcmUgaXMgbWlzc2luZyBjb2RlIGluIG91ciBzcGxpdCBw
+YXRjaGVzLg0KPj4gDQo+DQo+TWVhbnMsIHlvdXIga2VybmVsIHdhcyBtaXNzaW5nIHNvbWV0aGlu
+ZyB0aGF0IHRoZSBvZmZpY2lhbCBJLXBpcGUNCj5wYXRjaGVzIGhhdmU/DQoNClllcy4gT3VyIHJl
+YmFzZWQgSVBJUEUgcGF0Y2hzZXQgbWlzcyBvbmUgbGluZSBvZiBjb2RlIGZvciB4MmFwaWNfY2x1
+c3Rlci5jLg0KDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29y
+cG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
 
