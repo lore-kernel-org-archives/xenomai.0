@@ -1,11 +1,12 @@
-Subject: Re: [PATCH 1/2] testsuite/smokey: net: load rtnet module if it has
- not been loaded
+Subject: Re: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error
+ in vm mode
 References: <20210804024714.665-1-hongzhan.chen@intel.com>
+ <20210804024714.665-2-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6600245f-5b05-6ed1-6a53-78551ac29f52@siemens.com>
-Date: Wed, 4 Aug 2021 12:17:48 +0200
+Message-ID: <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
+Date: Wed, 4 Aug 2021 12:20:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210804024714.665-1-hongzhan.chen@intel.com>
+In-Reply-To: <20210804024714.665-2-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,33 +21,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
 On 04.08.21 04:47, Hongzhan Chen via Xenomai wrote:
-> Before checking net config, rtnet should be ready.
+> In vm mode, skip late packet error in functional test to avoid
+> test failure.
 > 
 > Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
-> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-> index 1badabdfb..719d8175f 100644
-> --- a/testsuite/smokey/net_common/setup.c
-> +++ b/testsuite/smokey/net_common/setup.c
-> @@ -408,6 +408,14 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
->  	struct sockaddr_in *in_peer = vpeer;
->  	struct sockaddr *peer = vpeer;
+> diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
+> index d13d72918..752ea55ed 100644
+> --- a/testsuite/smokey/net_common/client.c
+> +++ b/testsuite/smokey/net_common/client.c
+> @@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>  		} while (err != -ETIMEDOUT);
+>  	}
 >  
-> +	err = access("/dev/rtnet", F_OK);
+> -	if (glost || glate)
+> +	if (glost || (!smokey_on_vm && glate))
+>  		fprintf(stderr, "RTnet %s test failed", client->name);
+>  	if (glost) {
+>  		if (glost == limit)
+> @@ -214,11 +214,11 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>  			fprintf(stderr, ", %Lu packets lost (%g %%)",
+>  				glost, 100.0 * glost / limit);
+>  	}
+> -	if (glate)
+> +	if (!smokey_on_vm && glate)
+>  		fprintf(stderr, ", %Lu overruns", glate);
 
-Not needed. smokey_net_modprobe() checks /proc/modules and loads only if
-the module is missing.
+I think we can keep this report, just not mark the test failed in case
+of smokey_on_vm.
 
-> +	if (err) {
-> +		/* device does not exist and load rtnet*/
-> +		err = smokey_net_modprobe(MODID_RTNET);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +
->  	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
->  			&net_config, sizeof(net_config));
->  	if (err == -EINVAL)
+>  	if (glost || glate)
+>  		fputc('\n', stderr);
+> -	err = glost || glate ? -EPROTO : 0;
+> +	err = glost || (!smokey_on_vm && glate) ? -EPROTO : 0;
+>  
+>    err:
+>  	sock = smokey_check_errno(__RT(close(sock)));
 > 
 
 Jan
