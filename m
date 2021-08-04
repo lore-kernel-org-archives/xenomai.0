@@ -1,7 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/4] dovetail: detect context switch from the pipeline entry
-Date: Wed,  4 Aug 2021 19:47:10 +0200
-Message-Id: <20210804174711.4021807-3-rpm@xenomai.org>
+Subject: [PATCH 4/4] arm64: irq_pipeline: fix unbalanced RCU entry/exit on
+ fault
+Date: Wed,  4 Aug 2021 19:47:11 +0200
+Message-Id: <20210804174711.4021807-4-rpm@xenomai.org>
 In-Reply-To: <20210804174711.4021807-1-rpm@xenomai.org>
 References: <20210804174711.4021807-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,30 +19,39 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-We may not do out-of-band context switch from a pipeline entry. The
-companion core has to wait until irq_exit_pipeline() notifies it about
-leaving the pipeline, at which point rescheduling is legit.
-
-Add a debug assertion (CONFIG_DEBUG_DOVETAIL) to catch invalid calls.
+We may switch in-band as a result of handling a trap. If we were
+running out-of-band on kernel entry, we must not perform the RCU exit
+upon leaving the exception since we did not enter RCU in the first
+place.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/sched/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/kernel/entry-common.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 40a82d0eb32114a..b22319e459e6a85 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8602,6 +8602,8 @@ bool dovetail_context_switch(struct dovetail_altsched_context *out,
- 	struct mm_struct *prev_mm, *next_mm;
- 	bool inband_tail = false;
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index 0df59c02dcc07de..0d9fe3d59fc97ec 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -43,9 +43,17 @@ static void noinstr __enter_from_kernel_mode(struct pt_regs *regs)
+ static void noinstr enter_from_kernel_mode(struct pt_regs *regs)
+ {
+ #ifdef CONFIG_IRQ_PIPELINE
++	/*
++	 * CAUTION: we may switch in-band as a result of handling a
++	 * trap, so if we are running out-of-band, we must make sure
++	 * not to perform the RCU exit since we did not enter it in
++	 * the first place.
++	 */
+ 	regs->oob_on_entry = running_oob();
+-	if (regs->oob_on_entry)
++	if (regs->oob_on_entry) {
++		regs->exit_rcu = false;
+ 		return;
++	}
  
-+	WARN_ON_ONCE(dovetail_debug() && on_pipeline_entry());
-+
- 	if (leave_inband) {
- 		struct task_struct *tsk = current;
- 		/*
+ 	/*
+ 	 * We trapped from kernel space running in-band, we need to
 -- 
 2.31.1
 
