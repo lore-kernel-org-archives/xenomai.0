@@ -1,17 +1,18 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
+Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
  been loaded
-Date: Thu, 5 Aug 2021 05:32:43 +0000
-Message-ID: <BN9PR11MB5227CFF815BBC2B2AF0960C2F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210805031327.10873-1-hongzhan.chen@intel.com>
  <06d98602-f257-518c-aac2-8f4378ac14bc@siemens.com>
  <BN9PR11MB52272A299B7F24DF94834D48F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
  <97312076-7eb1-3e71-8f82-30ee716407b1@siemens.com>
-In-Reply-To: <97312076-7eb1-3e71-8f82-30ee716407b1@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN9PR11MB5227CFF815BBC2B2AF0960C2F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0709204c-66d0-e232-b4f4-19c7a332e4b4@siemens.com>
+Date: Thu, 5 Aug 2021 07:50:15 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB5227CFF815BBC2B2AF0960C2F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,75 +21,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBBdWd1c3QgNSwgMjAyMSAxOjI2
-IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIFYyXSB0ZXN0c3VpdGUvc21va2V5
-OiBuZXQ6IGxvYWQgcnRuZXQgbW9kdWxlIGlmIGl0IGhhcyBub3QgYmVlbiBsb2FkZWQNCj4NCj5P
-biAwNS4wOC4yMSAwNzoyMSwgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+PiANCj4+IA0KPj4+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4gDQo+Pj4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCA1LCAyMDIxIDE6MDEg
-UE0NCj4+PiBUbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVu
-b21haUB4ZW5vbWFpLm9yZw0KPj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjJdIHRlc3RzdWl0ZS9z
-bW9rZXk6IG5ldDogbG9hZCBydG5ldCBtb2R1bGUgaWYgaXQgaGFzIG5vdCBiZWVuIGxvYWRlZA0K
-Pj4+DQo+Pj4gT24gMDUuMDguMjEgMDU6MTMsIEhvbmd6aGFuIENoZW4gdmlhIFhlbm9tYWkgd3Jv
-dGU6DQo+Pj4+IEJlZm9yZSBjaGVja2luZyBuZXQgY29uZmlnLCBydG5ldCBzaG91bGQgYmUgcmVh
-ZHkuDQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYtYnk6IEhvbmd6aGFuIENoZW4gPGhvbmd6aGFuLmNo
-ZW5AaW50ZWwuY29tPg0KPj4+Pg0KPj4+PiBkaWZmIC0tZ2l0IGEvdGVzdHN1aXRlL3Ntb2tleS9u
-ZXRfY29tbW9uL3NldHVwLmMgYi90ZXN0c3VpdGUvc21va2V5L25ldF9jb21tb24vc2V0dXAuYw0K
-Pj4+PiBpbmRleCAxYmFkYWJkZmIuLmEwNTEyYjAwZCAxMDA2NDQNCj4+Pj4gLS0tIGEvdGVzdHN1
-aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMNCj4+Pj4gKysrIGIvdGVzdHN1aXRlL3Ntb2tl
-eS9uZXRfY29tbW9uL3NldHVwLmMNCj4+Pj4gQEAgLTQwOCw2ICs0MDgsMTAgQEAgaW50IHNtb2tl
-eV9uZXRfc2V0dXAoY29uc3QgY2hhciAqZHJpdmVyLCBjb25zdCBjaGFyICppbnRmLCBpbnQgdGVz
-dGVkX2NvbmZpZywNCj4+Pj4gIAlzdHJ1Y3Qgc29ja2FkZHJfaW4gKmluX3BlZXIgPSB2cGVlcjsN
-Cj4+Pj4gIAlzdHJ1Y3Qgc29ja2FkZHIgKnBlZXIgPSB2cGVlcjsNCj4+Pj4gIA0KPj4+PiArCWVy
-ciA9IHNtb2tleV9uZXRfbW9kcHJvYmUoTU9ESURfUlRORVQpOw0KPj4+PiArCWlmIChlcnIgPCAw
-KQ0KPj4+PiArCQlyZXR1cm4gZXJyOw0KPj4+PiArDQo+Pj4+ICAJZXJyID0gY29iYWx0X2NvcmVj
-dGwoX0NDX0NPQkFMVF9HRVRfTkVUX0NPTkZJRywNCj4+Pj4gIAkJCSZuZXRfY29uZmlnLCBzaXpl
-b2YobmV0X2NvbmZpZykpOw0KPj4+PiAgCWlmIChlcnIgPT0gLUVJTlZBTCkNCj4+Pj4NCj4+Pg0K
-Pj4+IFNvcnJ5LCBvbmx5IHJlYWxpemVkIG5vdzogVGhlIGNoZWNrcyB0aGF0IGNvbWUgcmlnaHQg
-YWZ0ZXIgdGhpcyBzaG91bGQNCj4+PiBub3QgYmUgYWZmZWN0ZWQgYnkgcnRuZXQgYmVpbmcgbG9h
-ZGVkIG9yIG5vdCB5ZXQuIEkgdGhpbmsgdGhleSBjaGVjaw0KPj4gDQo+PiBOby4gQWN0dWFsbHks
-IGl0IHdvdWxkIGJlIGFmZmVjdGVkLiBJZiBydG5ldCBpcyBub3QgbG9hZGVkIGFuZCBpbml0ZWQg
-YmVmb3JlIGNvYmFsdF9jb3JlY3RsIGlzIGNhbGxlZCwgaXQgd291bGQgDQo+PiBub3QgY2FsbCBy
-dG5ldF9jb3JlY3RsX3JlZ2lzdGVyIHRvIGNvYmFsdF9hZGRfY29uZmlnX2NoYWluIGFuZCBjb25m
-aWdfbm90aWZpZXJfbGlzdCB3b3VsZA0KPj4gYmUgZW1wdHkuICBBbmQgdGhlbiBjb2JhbHRfY29y
-ZWN0bCAtPmRvX2NvbmZfb3B0aW9uIHdvdWxkIHJldHVybiAtRUlOVkFMIGJlY2F1c2UgYmxvY2tp
-bmdfbm90aWZpZXJfY2FsbF9jaGFpbiByZXR1cm4gTk9USUZZX0RPTkUuDQo+PiBJbiBzbW9rZXlf
-bmV0X3NldHVwLCBpdCB3b3VsZCByZXR1cm4gLUVOT1NZUyBiZWNhdXNlICBjb2JhbHRfY29yZWN0
-bCByZXR1cm4gLUVJTlZBTC4gDQo+PiANCj4NCj5PSywgY2F0Y2gyMi4gQnV0IHdlIG11c3Qgbm90
-IGZhaWwgdGhlIHRlc3QgaWYgUlRuZXQgaXMgbm90IGNvbmZpZ3VyZWQNCg0KSSBkbyBub3Qga25v
-dyB3aGF0IFJUbmV0IGNvbmZpZyB5b3UgYXJlIHRhbGtpbmcgYWJvdXQuIEFjdHVhbGx5ICBjb2Jh
-bHRfY29yZWN0bChfQ0NfQ09CQUxUX0dFVF9ORVRfQ09ORklHIGlzIGp1c3QgY2hlY2tpbmcgeGVu
-b21haSBrZXJuZWwgY29uZmlnLg0KDQpzdGF0aWMgaW50IHJ0bmV0X2NvcmVjdGxfY2FsbChzdHJ1
-Y3Qgbm90aWZpZXJfYmxvY2sgKnNlbGYsIHVuc2lnbmVkIGxvbmcgYXJnLA0KCQkJICAgICAgdm9p
-ZCAqY29va2llKQ0KCQkJDQp7DQoJc3RydWN0IGNvYmFsdF9jb25maWdfdmVjdG9yICp2ZWMgPSBj
-b29raWU7DQoJaW50IHJldCA9IDA7DQoNCglpZiAoYXJnICE9IF9DQ19DT0JBTFRfR0VUX05FVF9D
-T05GSUcpDQoJCXJldHVybiBOT1RJRllfRE9ORTsNCg0KCWlmICh2ZWMtPnVfYnVmc3ogPCBzaXpl
-b2YocmV0KSkNCgkJcmV0dXJuIG5vdGlmaWVyX2Zyb21fZXJybm8oLUVJTlZBTCk7DQoNCglpZiAo
-SVNfRU5BQkxFRChDT05GSUdfWEVOT19EUklWRVJTX05FVCkpDQoJCXJldCB8PSBfQ0NfQ09CQUxU
-X05FVDsNCglpZiAoSVNfRU5BQkxFRChDT05GSUdfWEVOT19EUklWRVJTX05FVF9FVEhfUF9BTEwp
-KQ0KCQlyZXQgfD0gX0NDX0NPQkFMVF9ORVRfRVRIX1BfQUxMOw0KCWlmIChJU19FTkFCTEVEKENP
-TkZJR19YRU5PX0RSSVZFUlNfTkVUX1JUSVBWNCkpDQoJCXJldCB8PSBfQ0NfQ09CQUxUX05FVF9J
-UFY0Ow0KCWlmIChJU19FTkFCTEVEKENPTkZJR19YRU5PX0RSSVZFUlNfTkVUX1JUSVBWNF9JQ01Q
-KSkNCgkJcmV0IHw9IF9DQ19DT0JBTFRfTkVUX0lDTVA7DQoJaWYgKElTX0VOQUJMRUQoQ09ORklH
-X1hFTk9fRFJJVkVSU19ORVRfUlRJUFY0X05FVFJPVVRJTkcpKQ0KCQlyZXQgfD0gX0NDX0NPQkFM
-VF9ORVRfTkVUUk9VVElORzsNCglpZiAoSVNfRU5BQkxFRChDT05GSUdfWEVOT19EUklWRVJTX05F
-VF9SVElQVjRfUk9VVEUpKQ0KCQlyZXQgfD0gX0NDX0NPQkFMVF9ORVRfUk9VVEVSOw0KCWlmIChJ
-U19FTkFCTEVEKENPTkZJR19YRU5PX0RSSVZFUlNfTkVUX1JUSVBWNF9VRFApKQ0KCQlyZXQgfD0g
-X0NDX0NPQkFMVF9ORVRfVURQOw0KCWlmIChJU19FTkFCTEVEKENPTkZJR19YRU5PX0RSSVZFUlNf
-TkVUX1JUUEFDS0VUKSkNCgkJcmV0IHw9IF9DQ19DT0JBTFRfTkVUX0FGX1BBQ0tFVDsNCglpZiAo
-SVNfRU5BQkxFRChDT05GSUdfWEVOT19EUklWRVJTX05FVF9URE1BKSkNCgkJcmV0IHw9IF9DQ19D
-T0JBTFRfTkVUX1RETUE7DQoJaWYgKElTX0VOQUJMRUQoQ09ORklHX1hFTk9fRFJJVkVSU19ORVRf
-Tk9NQUMpKQ0KCQlyZXQgfD0gX0NDX0NPQkFMVF9ORVRfTk9NQUM7DQoJaWYgKElTX0VOQUJMRUQo
-Q09ORklHX1hFTk9fRFJJVkVSU19ORVRfUlRDRkcpKQ0KCQlyZXQgfD0gX0NDX0NPQkFMVF9ORVRf
-Q0ZHOw0KCWlmIChJU19FTkFCTEVEKENPTkZJR19YRU5PX0RSSVZFUlNfTkVUX0FERE9OX1JUQ0FQ
-KSkNCgkJcmV0IHw9IF9DQ19DT0JBTFRfTkVUX0NBUDsNCglpZiAoSVNfRU5BQkxFRChDT05GSUdf
-WEVOT19EUklWRVJTX05FVF9BRERPTl9QUk9YWSkpDQoJCXJldCB8PSBfQ0NfQ09CQUxUX05FVF9Q
-Uk9YWTsNCg0KCXJldCA9IGNvYmFsdF9jb3B5X3RvX3VzZXIodmVjLT51X2J1ZiwgJnJldCwgc2l6
-ZW9mKHJldCkpOw0KDQo+YW5kLCB0aHVzLCBjYW5ub3QgYmUgbG9hZGVkLg0KPg0KPkphbg0KDQot
-LSANClNpZW1lbnMgQUcsIFQgUkRBIElPVA0KQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQo=
+On 05.08.21 07:32, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Thursday, August 5, 2021 1:26 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded
+>>
+>> On 05.08.21 07:21, Chen, Hongzhan wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Thursday, August 5, 2021 1:01 PM
+>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded
+>>>>
+>>>> On 05.08.21 05:13, Hongzhan Chen via Xenomai wrote:
+>>>>> Before checking net config, rtnet should be ready.
+>>>>>
+>>>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>>>
+>>>>> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
+>>>>> index 1badabdfb..a0512b00d 100644
+>>>>> --- a/testsuite/smokey/net_common/setup.c
+>>>>> +++ b/testsuite/smokey/net_common/setup.c
+>>>>> @@ -408,6 +408,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
+>>>>>  	struct sockaddr_in *in_peer = vpeer;
+>>>>>  	struct sockaddr *peer = vpeer;
+>>>>>  
+>>>>> +	err = smokey_net_modprobe(MODID_RTNET);
+>>>>> +	if (err < 0)
+>>>>> +		return err;
+>>>>> +
+>>>>>  	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
+>>>>>  			&net_config, sizeof(net_config));
+>>>>>  	if (err == -EINVAL)
+>>>>>
+>>>>
+>>>> Sorry, only realized now: The checks that come right after this should
+>>>> not be affected by rtnet being loaded or not yet. I think they check
+>>>
+>>> No. Actually, it would be affected. If rtnet is not loaded and inited before cobalt_corectl is called, it would 
+>>> not call rtnet_corectl_register to cobalt_add_config_chain and config_notifier_list would
+>>> be empty.  And then cobalt_corectl ->do_conf_option would return -EINVAL because blocking_notifier_call_chain return NOTIFY_DONE.
+>>> In smokey_net_setup, it would return -ENOSYS because  cobalt_corectl return -EINVAL. 
+>>>
+>>
+>> OK, catch22. But we must not fail the test if RTnet is not configured
+> 
+> I do not know what RTnet config you are talking about. Actually  cobalt_corectl(_CC_COBALT_GET_NET_CONFIG is just checking xenomai kernel config.
+> 
+> static int rtnet_corectl_call(struct notifier_block *self, unsigned long arg,
+> 			      void *cookie)
+> 			
+> {
+> 	struct cobalt_config_vector *vec = cookie;
+> 	int ret = 0;
+> 
+> 	if (arg != _CC_COBALT_GET_NET_CONFIG)
+> 		return NOTIFY_DONE;
+> 
+> 	if (vec->u_bufsz < sizeof(ret))
+> 		return notifier_from_errno(-EINVAL);
+> 
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET))
+> 		ret |= _CC_COBALT_NET;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ETH_P_ALL))
+> 		ret |= _CC_COBALT_NET_ETH_P_ALL;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4))
+> 		ret |= _CC_COBALT_NET_IPV4;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP))
+> 		ret |= _CC_COBALT_NET_ICMP;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING))
+> 		ret |= _CC_COBALT_NET_NETROUTING;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTE))
+> 		ret |= _CC_COBALT_NET_ROUTER;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP))
+> 		ret |= _CC_COBALT_NET_UDP;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTPACKET))
+> 		ret |= _CC_COBALT_NET_AF_PACKET;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_TDMA))
+> 		ret |= _CC_COBALT_NET_TDMA;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_NOMAC))
+> 		ret |= _CC_COBALT_NET_NOMAC;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTCFG))
+> 		ret |= _CC_COBALT_NET_CFG;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP))
+> 		ret |= _CC_COBALT_NET_CAP;
+> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ADDON_PROXY))
+> 		ret |= _CC_COBALT_NET_PROXY;
+> 
+> 	ret = cobalt_copy_to_user(vec->u_buf, &ret, sizeof(ret));
+> 
+>> and, thus, cannot be loaded.
+>>
+>> Jan
+> 
+
+
+CONFIG_XENO_DRIVERS_NET=n, smokey --run=<rtnet-test> => skipped (no
+kernel support). That would be the expected result. I'm afraid that the
+new modprobe will fail with something != ENOSYS, thus will not give us
+such a result. Please check.
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
