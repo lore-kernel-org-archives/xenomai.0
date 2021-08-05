@@ -1,11 +1,14 @@
-Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
- been loaded
-References: <20210805031327.10873-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error
+ in vm mode
+References: <20210804024714.665-1-hongzhan.chen@intel.com>
+ <20210804024714.665-2-hongzhan.chen@intel.com>
+ <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
+ <BN9PR11MB5227C79511DAA168FD36270EF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <06d98602-f257-518c-aac2-8f4378ac14bc@siemens.com>
-Date: Thu, 5 Aug 2021 07:00:38 +0200
+Message-ID: <04498083-5659-5a4b-abfe-2d96da8b359c@siemens.com>
+Date: Thu, 5 Aug 2021 07:01:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210805031327.10873-1-hongzhan.chen@intel.com>
+In-Reply-To: <BN9PR11MB5227C79511DAA168FD36270EF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,35 +20,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05.08.21 05:13, Hongzhan Chen via Xenomai wrote:
-> Before checking net config, rtnet should be ready.
+On 05.08.21 02:39, Chen, Hongzhan wrote:
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
-> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-> index 1badabdfb..a0512b00d 100644
-> --- a/testsuite/smokey/net_common/setup.c
-> +++ b/testsuite/smokey/net_common/setup.c
-> @@ -408,6 +408,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
->  	struct sockaddr_in *in_peer = vpeer;
->  	struct sockaddr *peer = vpeer;
->  
-> +	err = smokey_net_modprobe(MODID_RTNET);
-> +	if (err < 0)
-> +		return err;
-> +
->  	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
->  			&net_config, sizeof(net_config));
->  	if (err == -EINVAL)
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Wednesday, August 4, 2021 6:20 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error in vm mode
+>>
+>> On 04.08.21 04:47, Hongzhan Chen via Xenomai wrote:
+>>> In vm mode, skip late packet error in functional test to avoid
+>>> test failure.
+>>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>
+>>> diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
+>>> index d13d72918..752ea55ed 100644
+>>> --- a/testsuite/smokey/net_common/client.c
+>>> +++ b/testsuite/smokey/net_common/client.c
+>>> @@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>>>  		} while (err != -ETIMEDOUT);
+>>>  	}
+>>>  
+>>> -	if (glost || glate)
+>>> +	if (glost || (!smokey_on_vm && glate))
+>>>  		fprintf(stderr, "RTnet %s test failed", client->name);
+>>>  	if (glost) {
+>>>  		if (glost == limit)
+>>> @@ -214,11 +214,11 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>>>  			fprintf(stderr, ", %Lu packets lost (%g %%)",
+>>>  				glost, 100.0 * glost / limit);
+>>>  	}
+>>> -	if (glate)
+>>> +	if (!smokey_on_vm && glate)
+>>>  		fprintf(stderr, ", %Lu overruns", glate);
+>>
+>> I think we can keep this report, just not mark the test failed in case
+>> of smokey_on_vm.
+> 
+> But this string printed out here looks like ugly  in case of smokey_on_vm., do we need to change something ?
+> How about :
+> 
+> if (!smokey_on_vm && glate)
+>           fprintf(stderr, "there is %Lu overruns", glate);
+> else if (glate)
+>          fprintf(stderr, ", %Lu overruns", glate);
 > 
 
-Sorry, only realized now: The checks that come right after this should
-not be affected by rtnet being loaded or not yet. I think they check
-whether it is configured and could be loaded. If we try to load when it
-is not configured, the test case will fail rather than be skipped.
-Please check and reorder the modprobe accordingly.
+Hmm, what is the difference?
 
 Jan
 
