@@ -1,16 +1,8 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error
- in vm mode
-Date: Thu, 5 Aug 2021 00:39:18 +0000
-Message-ID: <BN9PR11MB5227C79511DAA168FD36270EF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210804024714.665-1-hongzhan.chen@intel.com>
- <20210804024714.665-2-hongzhan.chen@intel.com>
- <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
-In-Reply-To: <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
+ been loaded
+Date: Wed,  4 Aug 2021 23:13:27 -0400
+Message-Id: <20210805031327.10873-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +11,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDQsIDIwMjEgNjoy
-MCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCAyLzJdIHRlc3RzdWl0ZS9zbW9r
-ZXk6IG5ldF9jbGllbnQ6IHNraXAgbGF0ZSBwYWNrZXQgZXJyb3IgaW4gdm0gbW9kZQ0KPg0KPk9u
-IDA0LjA4LjIxIDA0OjQ3LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gSW4g
-dm0gbW9kZSwgc2tpcCBsYXRlIHBhY2tldCBlcnJvciBpbiBmdW5jdGlvbmFsIHRlc3QgdG8gYXZv
-aWQNCj4+IHRlc3QgZmFpbHVyZS4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hl
-biA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiANCj4+IGRpZmYgLS1naXQgYS90ZXN0c3Vp
-dGUvc21va2V5L25ldF9jb21tb24vY2xpZW50LmMgYi90ZXN0c3VpdGUvc21va2V5L25ldF9jb21t
-b24vY2xpZW50LmMNCj4+IGluZGV4IGQxM2Q3MjkxOC4uNzUyZWE1NWVkIDEwMDY0NA0KPj4gLS0t
-IGEvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL2NsaWVudC5jDQo+PiArKysgYi90ZXN0c3Vp
-dGUvc21va2V5L25ldF9jb21tb24vY2xpZW50LmMNCj4+IEBAIC0yMDQsNyArMjA0LDcgQEAgc3Rh
-dGljIGludCBzbW9rZXlfbmV0X2NsaWVudF9sb29wKHN0cnVjdCBzbW9rZXlfbmV0X2NsaWVudCAq
-Y2xpZW50KQ0KPj4gIAkJfSB3aGlsZSAoZXJyICE9IC1FVElNRURPVVQpOw0KPj4gIAl9DQo+PiAg
-DQo+PiAtCWlmIChnbG9zdCB8fCBnbGF0ZSkNCj4+ICsJaWYgKGdsb3N0IHx8ICghc21va2V5X29u
-X3ZtICYmIGdsYXRlKSkNCj4+ICAJCWZwcmludGYoc3RkZXJyLCAiUlRuZXQgJXMgdGVzdCBmYWls
-ZWQiLCBjbGllbnQtPm5hbWUpOw0KPj4gIAlpZiAoZ2xvc3QpIHsNCj4+ICAJCWlmIChnbG9zdCA9
-PSBsaW1pdCkNCj4+IEBAIC0yMTQsMTEgKzIxNCwxMSBAQCBzdGF0aWMgaW50IHNtb2tleV9uZXRf
-Y2xpZW50X2xvb3Aoc3RydWN0IHNtb2tleV9uZXRfY2xpZW50ICpjbGllbnQpDQo+PiAgCQkJZnBy
-aW50ZihzdGRlcnIsICIsICVMdSBwYWNrZXRzIGxvc3QgKCVnICUlKSIsDQo+PiAgCQkJCWdsb3N0
-LCAxMDAuMCAqIGdsb3N0IC8gbGltaXQpOw0KPj4gIAl9DQo+PiAtCWlmIChnbGF0ZSkNCj4+ICsJ
-aWYgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpDQo+PiAgCQlmcHJpbnRmKHN0ZGVyciwgIiwgJUx1
-IG92ZXJydW5zIiwgZ2xhdGUpOw0KPg0KPkkgdGhpbmsgd2UgY2FuIGtlZXAgdGhpcyByZXBvcnQs
-IGp1c3Qgbm90IG1hcmsgdGhlIHRlc3QgZmFpbGVkIGluIGNhc2UNCj5vZiBzbW9rZXlfb25fdm0u
-DQoNCkJ1dCB0aGlzIHN0cmluZyBwcmludGVkIG91dCBoZXJlIGxvb2tzIGxpa2UgdWdseSAgaW4g
-Y2FzZSBvZiBzbW9rZXlfb25fdm0uLCBkbyB3ZSBuZWVkIHRvIGNoYW5nZSBzb21ldGhpbmcgPw0K
-SG93IGFib3V0IDoNCg0KaWYgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpDQogICAgICAgICAgZnBy
-aW50ZihzdGRlcnIsICJ0aGVyZSBpcyAlTHUgb3ZlcnJ1bnMiLCBnbGF0ZSk7DQplbHNlIGlmIChn
-bGF0ZSkNCiAgICAgICAgIGZwcmludGYoc3RkZXJyLCAiLCAlTHUgb3ZlcnJ1bnMiLCBnbGF0ZSk7
-DQoNCj4NCj4+ICAJaWYgKGdsb3N0IHx8IGdsYXRlKQ0KPj4gIAkJZnB1dGMoJ1xuJywgc3RkZXJy
-KTsNCj4+IC0JZXJyID0gZ2xvc3QgfHwgZ2xhdGUgPyAtRVBST1RPIDogMDsNCj4+ICsJZXJyID0g
-Z2xvc3QgfHwgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpID8gLUVQUk9UTyA6IDA7DQo+PiAgDQo+
-PiAgICBlcnI6DQo+PiAgCXNvY2sgPSBzbW9rZXlfY2hlY2tfZXJybm8oX19SVChjbG9zZShzb2Nr
-KSkpOw0KPj4gDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29y
-cG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+Before checking net config, rtnet should be ready.
+
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+
+diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
+index 1badabdfb..a0512b00d 100644
+--- a/testsuite/smokey/net_common/setup.c
++++ b/testsuite/smokey/net_common/setup.c
+@@ -408,6 +408,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
+ 	struct sockaddr_in *in_peer = vpeer;
+ 	struct sockaddr *peer = vpeer;
+ 
++	err = smokey_net_modprobe(MODID_RTNET);
++	if (err < 0)
++		return err;
++
+ 	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
+ 			&net_config, sizeof(net_config));
+ 	if (err == -EINVAL)
+-- 
+2.17.1
+
 
