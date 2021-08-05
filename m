@@ -1,16 +1,10 @@
-Subject: Re: [PATCH v2 1/1] license: summarize the licensing terms
-References: <20210804073546.3372409-1-rpm@xenomai.org>
- <20210804073546.3372409-2-rpm@xenomai.org>
- <4c1efa86-f999-7d72-1fbc-1ee5f8d7c870@siemens.com>
- <877dh05p8t.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <decced27-65aa-5867-f384-d61200345d01@siemens.com>
-Date: Thu, 5 Aug 2021 10:18:39 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2] linux-xenomai_4.4: Add machine specific
+ config for beagle bone black
+Date: Thu,  5 Aug 2021 14:29:22 +0200
+Message-Id: <20210805122922.31963-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <877dh05p8t.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,130 +13,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-On 05.08.21 09:23, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 04.08.21 09:35, Philippe Gerum via Xenomai wrote:
->>> From: Philippe Gerum <rpm@xenomai.org>
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>  COPYING | 45 +++++++++++++++++++++++++++++++++++++++++++++
->>>  1 file changed, 45 insertions(+)
->>>  create mode 100644 COPYING
->>>
->>> diff --git a/COPYING b/COPYING
->>> new file mode 100644
->>> index 000000000..839938c62
->>> --- /dev/null
->>> +++ b/COPYING
->>> @@ -0,0 +1,45 @@
->>> +
->>> +Xenomai 3 Licensing terms
->>> +=========================
->>> +
->>> +Xenomai 3 is composed of a number of libraries, user-space application
->>> +programs, and kernel code. This file summarizes the licenses used for
->>> +the libraries and kernel code (aka 'Cobalt core'). Please refer to the
->>> +COPYING file in the corresponding directory for details. The licensing
->>> +terms of each application program shipped with Xenomai 3 is stated in
->>> +the corresponding source code.
->>> +
->>> +====================================================================
->>> +  User space interface    |        SPDX identifier [1]
->>> +====================================================================
->>> +                          |
->>> +  alchemy                 |     LGPL-2.1-or-later
->>> +  boilerplate             |     LGPL-2.1-or-later, some MIT portions
->>> +  boilerplate/iniparser   |     MIT
->>> +  cobalt                  |     LGPL-2.1-or-later
->>> +  copperplate             |     LGPL-2.1-or-later
->>> +  psos                    |     LGPL-2.1-or-later
->>> +  smokey                  |     LGPL-2.1-or-later
->>
->> smokey has "some MIT portions" as well (network tests).
->>
-> 
-> Granted, however this summary exclusively refers to the libraries in
-> this case, i.e. libsmokey. I published that one under
-> LGPLv2.1-or-later. The smokey-based tests are referred to as
-> "application programs", which are not covered in detail by the summary
-> since they are not part of any application interface.
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
->From that perspective, you are right. Maybe add a general disclaimer,
-not only regrading [2], that files may contain further license
-information, and this is not a 100% complete listing.
+The beagle bone black does most[1] of the time not boot ipipe 4.4 + xenomai 3.0.x if
+the following kernel configuration elements are active:
+ - CONFIG_RAW_PRINTK
+ - CONFIG_DEBUG_LL
+ - CONFIG_IPIPE_DEBUG
+ - CONFIG_XENO_OPT_DEBUG
 
-> 
->>> +  trank                   |     LGPL-2.1-or-later
->>> +  vxworks                 |     LGPL-2.1-or-later
->>> +  include                 |     LGPL-2.1-or-later with exception [2]
->>> +------------------------------------------------------------------- 
->>> +
->>> +==================================================================
->>> +     Cobalt core          |        SPDX identifier
->>> +==================================================================
->>> +                          |
->>> +  kernel/cobalt           |     GPL-2.0-or-later
->>> +  kernel/cobalt/posix     |     GPL-2.0-or-later
->>> +  kernel/cobalt/rtdm      |     GPL-2.0-or-later
->>> +  include/cobalt/kernel   |     GPL-2.0-or-later with exception [2]
->>
->> Analogously to that, we have a few RTnet header under a similar
->> exceptions: include/rtdm/net.h, include/rtdm/uapi/net.h,
->> kernel/drivers/net/stack/include/rtmac.h.
->>
-> 
-> Also, the project name mentioned is RTnet in these files, Xenomai should
-> at least be referred to as well.
-> 
-> - the clause in include/rtdm/net.h seems in line with the general
->   exception clause applicable to all other user interface headers.
+Last message in U-boot is:
+```
+Starting kernel ...
+```
 
-Yeah, we should change the project reference, explain in the commit log
-that the RTnet project was merged into the Xenomai one. That reduces
-exception variations, even if just by name.
+4.19 and newer are not impacted.
 
-> 
-> - kernel/drivers/net/stack/include/rtmac.h should probably move to
->   include/rtdm/uapi, so that it appears clearly as covered by the
->   Xenomai and Linux-syscall exceptions.
+[1]: The CI build boots around 1 out 4. See https://source.denx.de/Xenomai/xenomai-images/-/jobs/303430
 
-Agreed. I don't recall anymore what happened with any applications that
-were using those IOCTLs. They once existed, as demos at least, but
-possibly they weren't carried over when RTnet was merged. Those would
-have complained about the strange header location and missing deployment
-of rtmac.h...
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+Changes V2:
+ - replace defconfig with partial config
+ - adapt commit message for sporatic CI boots
 
-> 
->>> +------------------------------------------------------------------  
->>> +
->>> +Please note that the Linux licensing rules apply to the Xenomai kernel
->>> +code once compiled in the Linux kernel. These rules can be found at:
->>> +https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
->>> +
->>> +[1] See https://spdx.org/licenses
->>> +
->>> +[2] The exception grants additional permission to use the header files
->>> +    in user-space application programs. See include/COPYING.
->>>
->>
->> I just browsed a report from a commercial license scanner for Xenomai
->> 3.0.11. Only those minor deviations above, rest is in line (minus a few
->> mis-classifications the scanner and/or the operators produced...).
->>
-> 
-> Ok.
-> 
+ recipes-kernel/linux/files/bbb_4.4.cfg    | 4 ++++
+ recipes-kernel/linux/linux-xenomai_4.4.bb | 1 +
+ 2 files changed, 5 insertions(+)
+ create mode 100644 recipes-kernel/linux/files/bbb_4.4.cfg
 
-Jan
-
+diff --git a/recipes-kernel/linux/files/bbb_4.4.cfg b/recipes-kernel/linux/files/bbb_4.4.cfg
+new file mode 100644
+index 0000000..4628f44
+--- /dev/null
++++ b/recipes-kernel/linux/files/bbb_4.4.cfg
+@@ -0,0 +1,4 @@
++# CONFIG_RAW_PRINTK is not set
++# CONFIG_DEBUG_LL is not set
++# CONFIG_IPIPE_DEBUG is not set
++# CONFIG_XENO_OPT_DEBUG is not set
+diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
+index 2a1137c..42c6d83 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.4.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
+@@ -16,6 +16,7 @@ SRCREV_amd64 ?= "ipipe-core-4.4.268-cip57-x86-28"
+ PV_amd64 = "4.4.268+"
+ 
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
++SRC_URI_append_armhf = " ${@ 'file://bbb_4.4.cfg' if d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
+ SRCREV_armhf ?= "ipipe-core-4.4.268-cip57-arm-13"
+ PV_armhf = "4.4.268+"
+ 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
