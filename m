@@ -1,17 +1,13 @@
-Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
- been loaded
-References: <20210805031327.10873-1-hongzhan.chen@intel.com>
- <06d98602-f257-518c-aac2-8f4378ac14bc@siemens.com>
- <BN9PR11MB52272A299B7F24DF94834D48F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
- <97312076-7eb1-3e71-8f82-30ee716407b1@siemens.com>
- <BN9PR11MB5227CFF815BBC2B2AF0960C2F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
- <0709204c-66d0-e232-b4f4-19c7a332e4b4@siemens.com>
- <BN9PR11MB5227584467D8527D0CB456EFF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v2 1/1] license: summarize the licensing terms
+References: <20210804073546.3372409-1-rpm@xenomai.org>
+ <20210804073546.3372409-2-rpm@xenomai.org>
+ <4c1efa86-f999-7d72-1fbc-1ee5f8d7c870@siemens.com>
+ <877dh05p8t.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <310aea0a-60d2-8aa8-9fc3-2f0d8030ddb3@siemens.com>
-Date: Thu, 5 Aug 2021 10:10:48 +0200
+Message-ID: <decced27-65aa-5867-f384-d61200345d01@siemens.com>
+Date: Thu, 5 Aug 2021 10:18:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5227584467D8527D0CB456EFF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+In-Reply-To: <877dh05p8t.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -23,126 +19,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 05.08.21 08:12, Chen, Hongzhan wrote:
->                                                                                                                                                    
->                                                                                                                                                    
->> -----Original Message-----                                                                                                                         
->> From: Jan Kiszka <jan.kiszka@siemens.com>                                                                                                          
->> Sent: Thursday, August 5, 2021 1:50 PM                                                                                                             
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org                                                                                  
->> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded                                                         
->>                                                                                                                                                   
->> On 05.08.21 07:32, Chen, Hongzhan wrote:                                                                                                           
->>>                                                                                                                                                  
->>>                                                                                                                                                  
->>>> -----Original Message-----                                                                                                                      
->>>> From: Jan Kiszka <jan.kiszka@siemens.com>                                                                                                       
->>>> Sent: Thursday, August 5, 2021 1:26 PM                                                                                                          
->>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org                                                                               
->>>> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded                                                      
->>>>                                                                                                                                                 
->>>> On 05.08.21 07:21, Chen, Hongzhan wrote:                                                                                                        
->>>>>                                                                                                                                                
->>>>>                                                                                                                                                
->>>>>> -----Original Message-----                                                                                                                    
->>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>                                                                                                     
->>>>>> Sent: Thursday, August 5, 2021 1:01 PM                                                                                                        
->>>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org                                                                             
->>>>>> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded                                                    
->>>>>>                                                                                                                                               
->>>>>> On 05.08.21 05:13, Hongzhan Chen via Xenomai wrote:                                                                                           
->>>>>>> Before checking net config, rtnet should be ready.                                                                                           
->>>>>>>                                                                                                                                              
->>>>>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>                                                                                       
->>>>>>>                                                                                                                                              
->>>>>>> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c                                                       
->>>>>>> index 1badabdfb..a0512b00d 100644                                                                                                            
->>>>>>> --- a/testsuite/smokey/net_common/setup.c                                                                                                    
->>>>>>> +++ b/testsuite/smokey/net_common/setup.c                                                                                                    
->>>>>>> @@ -408,6 +408,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,                                           
->>>>>>>  	struct sockaddr_in *in_peer = vpeer;                                                                                                       
->>>>>>>  	struct sockaddr *peer = vpeer;                                                                                                             
->>>>>>>                                                                                                                                              
->>>>>>> +	err = smokey_net_modprobe(MODID_RTNET);                                                                                                    
->>>>>>> +	if (err < 0)                                                                                                                               
->>>>>>> +		return err;                                                                                                                              
->>>>>>> +                                                                                                                                            
->>>>>>>  	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,                                                                                            
->>>>>>>  			&net_config, sizeof(net_config));                                                                                                      
->>>>>>>  	if (err == -EINVAL)                                                                                                                        
->>>>>>>                                                                                                                                              
->>>>>>                                                                                                                                               
->>>>>> Sorry, only realized now: The checks that come right after this should                                                                        
->>>>>> not be affected by rtnet being loaded or not yet. I think they check                                                                          
->>>>>                                                                                                                                                
->>>>> No. Actually, it would be affected. If rtnet is not loaded and inited before cobalt_corectl is called, it would                                
->>>>> not call rtnet_corectl_register to cobalt_add_config_chain and config_notifier_list would                                                      
->>>>> be empty.  And then cobalt_corectl ->do_conf_option would return -EINVAL because blocking_notifier_call_chain return NOTIFY_DONE.              
->>>>> In smokey_net_setup, it would return -ENOSYS because  cobalt_corectl return -EINVAL.                                                           
->>>>>                                                                                                                                                
->>>>                                                                                                                                                 
->>>> OK, catch22. But we must not fail the test if RTnet is not configured                                                                           
->>>                                                                                                                                                  
->>> I do not know what RTnet config you are talking about. Actually  cobalt_corectl(_CC_COBALT_GET_NET_CONFIG is just checking xenomai kernel config.
->>>                                                                                                                                                  
->>> static int rtnet_corectl_call(struct notifier_block *self, unsigned long arg,                                                                    
->>> 			      void *cookie)                                                                                                                        
->>> 			                                                                                                                                           
->>> {                                                                                                                                                
->>> 	struct cobalt_config_vector *vec = cookie;                                                                                                     
->>> 	int ret = 0;                                                                                                                                   
->>>                                                                                                                                                  
->>> 	if (arg != _CC_COBALT_GET_NET_CONFIG)                                                                                                          
->>> 		return NOTIFY_DONE;                                                                                                                          
->>>                                                                                                                                                  
->>> 	if (vec->u_bufsz < sizeof(ret))                                                                                                                
->>> 		return notifier_from_errno(-EINVAL);                                                                                                         
->>>                                                                                                                                                  
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET))                                                                                                       
->>> 		ret |= _CC_COBALT_NET;                                                                                                                       
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ETH_P_ALL))                                                                                             
->>> 		ret |= _CC_COBALT_NET_ETH_P_ALL;                                                                                                             
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4))                                                                                                
->>> 		ret |= _CC_COBALT_NET_IPV4;                                                                                                                  
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP))                                                                                           
->>> 		ret |= _CC_COBALT_NET_ICMP;                                                                                                                  
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING))                                                                                     
->>> 		ret |= _CC_COBALT_NET_NETROUTING;                                                                                                            
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_ROUTE))                                                                                          
->>> 		ret |= _CC_COBALT_NET_ROUTER;                                                                                                                
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP))                                                                                            
->>> 		ret |= _CC_COBALT_NET_UDP;                                                                                                                   
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTPACKET))                                                                                              
->>> 		ret |= _CC_COBALT_NET_AF_PACKET;                                                                                                             
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_TDMA))                                                                                                  
->>> 		ret |= _CC_COBALT_NET_TDMA;                                                                                                                  
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_NOMAC))                                                                                                 
->>> 		ret |= _CC_COBALT_NET_NOMAC;                                                                                                                 
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTCFG))                                                                                                 
->>> 		ret |= _CC_COBALT_NET_CFG;                                                                                                                   
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP))                                                                                           
->>> 		ret |= _CC_COBALT_NET_CAP;                                                                                                                   
->>> 	if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_ADDON_PROXY))                                                                                           
->>> 		ret |= _CC_COBALT_NET_PROXY;                                                                                                                 
->>>                                                                                                                                                  
->>> 	ret = cobalt_copy_to_user(vec->u_buf, &ret, sizeof(ret));                                                                                      
->>>                                                                                                                                                  
->>>> and, thus, cannot be loaded.                                                                                                                    
->>>>                                                                                                                                                 
->>>> Jan                                                                                                                                             
->>>                                                                                                                                                  
->>                                                                                                                                                   
->>                                                                                                                                                   
->> CONFIG_XENO_DRIVERS_NET=n, smokey --run=<rtnet-test> => skipped (no
+On 05.08.21 09:23, Philippe Gerum wrote:
 > 
-> In this case, we may check if rtnet.ko already exist in fs with calling modinfo.
-> If it really exist , that means that rtnet already is enabled and then we call
-> smokey_net_modprobe to load rtnet module and setup go on. If it does not exist, we can return
-> - ENOSYS directly.  How do you think?
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 04.08.21 09:35, Philippe Gerum via Xenomai wrote:
+>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>> ---
+>>>  COPYING | 45 +++++++++++++++++++++++++++++++++++++++++++++
+>>>  1 file changed, 45 insertions(+)
+>>>  create mode 100644 COPYING
+>>>
+>>> diff --git a/COPYING b/COPYING
+>>> new file mode 100644
+>>> index 000000000..839938c62
+>>> --- /dev/null
+>>> +++ b/COPYING
+>>> @@ -0,0 +1,45 @@
+>>> +
+>>> +Xenomai 3 Licensing terms
+>>> +=========================
+>>> +
+>>> +Xenomai 3 is composed of a number of libraries, user-space application
+>>> +programs, and kernel code. This file summarizes the licenses used for
+>>> +the libraries and kernel code (aka 'Cobalt core'). Please refer to the
+>>> +COPYING file in the corresponding directory for details. The licensing
+>>> +terms of each application program shipped with Xenomai 3 is stated in
+>>> +the corresponding source code.
+>>> +
+>>> +====================================================================
+>>> +  User space interface    |        SPDX identifier [1]
+>>> +====================================================================
+>>> +                          |
+>>> +  alchemy                 |     LGPL-2.1-or-later
+>>> +  boilerplate             |     LGPL-2.1-or-later, some MIT portions
+>>> +  boilerplate/iniparser   |     MIT
+>>> +  cobalt                  |     LGPL-2.1-or-later
+>>> +  copperplate             |     LGPL-2.1-or-later
+>>> +  psos                    |     LGPL-2.1-or-later
+>>> +  smokey                  |     LGPL-2.1-or-later
+>>
+>> smokey has "some MIT portions" as well (network tests).
+>>
+> 
+> Granted, however this summary exclusively refers to the libraries in
+> this case, i.e. libsmokey. I published that one under
+> LGPLv2.1-or-later. The smokey-based tests are referred to as
+> "application programs", which are not covered in detail by the summary
+> since they are not part of any application interface.
+> 
 
-Just translate any "rtnet.ko not found" error into ENOSYS, I would say.
+>From that perspective, you are right. Maybe add a general disclaimer,
+not only regrading [2], that files may contain further license
+information, and this is not a 100% complete listing.
+
+> 
+>>> +  trank                   |     LGPL-2.1-or-later
+>>> +  vxworks                 |     LGPL-2.1-or-later
+>>> +  include                 |     LGPL-2.1-or-later with exception [2]
+>>> +------------------------------------------------------------------- 
+>>> +
+>>> +==================================================================
+>>> +     Cobalt core          |        SPDX identifier
+>>> +==================================================================
+>>> +                          |
+>>> +  kernel/cobalt           |     GPL-2.0-or-later
+>>> +  kernel/cobalt/posix     |     GPL-2.0-or-later
+>>> +  kernel/cobalt/rtdm      |     GPL-2.0-or-later
+>>> +  include/cobalt/kernel   |     GPL-2.0-or-later with exception [2]
+>>
+>> Analogously to that, we have a few RTnet header under a similar
+>> exceptions: include/rtdm/net.h, include/rtdm/uapi/net.h,
+>> kernel/drivers/net/stack/include/rtmac.h.
+>>
+> 
+> Also, the project name mentioned is RTnet in these files, Xenomai should
+> at least be referred to as well.
+> 
+> - the clause in include/rtdm/net.h seems in line with the general
+>   exception clause applicable to all other user interface headers.
+
+Yeah, we should change the project reference, explain in the commit log
+that the RTnet project was merged into the Xenomai one. That reduces
+exception variations, even if just by name.
+
+> 
+> - kernel/drivers/net/stack/include/rtmac.h should probably move to
+>   include/rtdm/uapi, so that it appears clearly as covered by the
+>   Xenomai and Linux-syscall exceptions.
+
+Agreed. I don't recall anymore what happened with any applications that
+were using those IOCTLs. They once existed, as demos at least, but
+possibly they weren't carried over when RTnet was merged. Those would
+have complained about the strange header location and missing deployment
+of rtmac.h...
+
+> 
+>>> +------------------------------------------------------------------  
+>>> +
+>>> +Please note that the Linux licensing rules apply to the Xenomai kernel
+>>> +code once compiled in the Linux kernel. These rules can be found at:
+>>> +https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
+>>> +
+>>> +[1] See https://spdx.org/licenses
+>>> +
+>>> +[2] The exception grants additional permission to use the header files
+>>> +    in user-space application programs. See include/COPYING.
+>>>
+>>
+>> I just browsed a report from a commercial license scanner for Xenomai
+>> 3.0.11. Only those minor deviations above, rest is in line (minus a few
+>> mis-classifications the scanner and/or the operators produced...).
+>>
+> 
+> Ok.
+> 
 
 Jan
 
