@@ -1,14 +1,16 @@
-Subject: Re: [PATCH v2 1/1] license: summarize the licensing terms
-References: <20210804073546.3372409-1-rpm@xenomai.org>
- <20210804073546.3372409-2-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4c1efa86-f999-7d72-1fbc-1ee5f8d7c870@siemens.com>
-Date: Wed, 4 Aug 2021 22:47:57 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210804073546.3372409-2-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error
+ in vm mode
+Date: Thu, 5 Aug 2021 00:39:18 +0000
+Message-ID: <BN9PR11MB5227C79511DAA168FD36270EF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+References: <20210804024714.665-1-hongzhan.chen@intel.com>
+ <20210804024714.665-2-hongzhan.chen@intel.com>
+ <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
+In-Reply-To: <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,85 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04.08.21 09:35, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  COPYING | 45 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
->  create mode 100644 COPYING
-> 
-> diff --git a/COPYING b/COPYING
-> new file mode 100644
-> index 000000000..839938c62
-> --- /dev/null
-> +++ b/COPYING
-> @@ -0,0 +1,45 @@
-> +
-> +Xenomai 3 Licensing terms
-> +=========================
-> +
-> +Xenomai 3 is composed of a number of libraries, user-space application
-> +programs, and kernel code. This file summarizes the licenses used for
-> +the libraries and kernel code (aka 'Cobalt core'). Please refer to the
-> +COPYING file in the corresponding directory for details. The licensing
-> +terms of each application program shipped with Xenomai 3 is stated in
-> +the corresponding source code.
-> +
-> +====================================================================
-> +  User space interface    |        SPDX identifier [1]
-> +====================================================================
-> +                          |
-> +  alchemy                 |     LGPL-2.1-or-later
-> +  boilerplate             |     LGPL-2.1-or-later, some MIT portions
-> +  boilerplate/iniparser   |     MIT
-> +  cobalt                  |     LGPL-2.1-or-later
-> +  copperplate             |     LGPL-2.1-or-later
-> +  psos                    |     LGPL-2.1-or-later
-> +  smokey                  |     LGPL-2.1-or-later
-
-smokey has "some MIT portions" as well (network tests).
-
-> +  trank                   |     LGPL-2.1-or-later
-> +  vxworks                 |     LGPL-2.1-or-later
-> +  include                 |     LGPL-2.1-or-later with exception [2]
-> +------------------------------------------------------------------- 
-> +
-> +==================================================================
-> +     Cobalt core          |        SPDX identifier
-> +==================================================================
-> +                          |
-> +  kernel/cobalt           |     GPL-2.0-or-later
-> +  kernel/cobalt/posix     |     GPL-2.0-or-later
-> +  kernel/cobalt/rtdm      |     GPL-2.0-or-later
-> +  include/cobalt/kernel   |     GPL-2.0-or-later with exception [2]
-
-Analogously to that, we have a few RTnet header under a similar
-exceptions: include/rtdm/net.h, include/rtdm/uapi/net.h,
-kernel/drivers/net/stack/include/rtmac.h.
-
-> +------------------------------------------------------------------  
-> +
-> +Please note that the Linux licensing rules apply to the Xenomai kernel
-> +code once compiled in the Linux kernel. These rules can be found at:
-> +https://www.kernel.org/doc/html/latest/process/license-rules.html#kernel-licensing
-> +
-> +[1] See https://spdx.org/licenses
-> +
-> +[2] The exception grants additional permission to use the header files
-> +    in user-space application programs. See include/COPYING.
-> 
-
-I just browsed a report from a commercial license scanner for Xenomai
-3.0.11. Only those minor deviations above, rest is in line (minus a few
-mis-classifications the scanner and/or the operators produced...).
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDQsIDIwMjEgNjoy
+MCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCAyLzJdIHRlc3RzdWl0ZS9zbW9r
+ZXk6IG5ldF9jbGllbnQ6IHNraXAgbGF0ZSBwYWNrZXQgZXJyb3IgaW4gdm0gbW9kZQ0KPg0KPk9u
+IDA0LjA4LjIxIDA0OjQ3LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gSW4g
+dm0gbW9kZSwgc2tpcCBsYXRlIHBhY2tldCBlcnJvciBpbiBmdW5jdGlvbmFsIHRlc3QgdG8gYXZv
+aWQNCj4+IHRlc3QgZmFpbHVyZS4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hl
+biA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiANCj4+IGRpZmYgLS1naXQgYS90ZXN0c3Vp
+dGUvc21va2V5L25ldF9jb21tb24vY2xpZW50LmMgYi90ZXN0c3VpdGUvc21va2V5L25ldF9jb21t
+b24vY2xpZW50LmMNCj4+IGluZGV4IGQxM2Q3MjkxOC4uNzUyZWE1NWVkIDEwMDY0NA0KPj4gLS0t
+IGEvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL2NsaWVudC5jDQo+PiArKysgYi90ZXN0c3Vp
+dGUvc21va2V5L25ldF9jb21tb24vY2xpZW50LmMNCj4+IEBAIC0yMDQsNyArMjA0LDcgQEAgc3Rh
+dGljIGludCBzbW9rZXlfbmV0X2NsaWVudF9sb29wKHN0cnVjdCBzbW9rZXlfbmV0X2NsaWVudCAq
+Y2xpZW50KQ0KPj4gIAkJfSB3aGlsZSAoZXJyICE9IC1FVElNRURPVVQpOw0KPj4gIAl9DQo+PiAg
+DQo+PiAtCWlmIChnbG9zdCB8fCBnbGF0ZSkNCj4+ICsJaWYgKGdsb3N0IHx8ICghc21va2V5X29u
+X3ZtICYmIGdsYXRlKSkNCj4+ICAJCWZwcmludGYoc3RkZXJyLCAiUlRuZXQgJXMgdGVzdCBmYWls
+ZWQiLCBjbGllbnQtPm5hbWUpOw0KPj4gIAlpZiAoZ2xvc3QpIHsNCj4+ICAJCWlmIChnbG9zdCA9
+PSBsaW1pdCkNCj4+IEBAIC0yMTQsMTEgKzIxNCwxMSBAQCBzdGF0aWMgaW50IHNtb2tleV9uZXRf
+Y2xpZW50X2xvb3Aoc3RydWN0IHNtb2tleV9uZXRfY2xpZW50ICpjbGllbnQpDQo+PiAgCQkJZnBy
+aW50ZihzdGRlcnIsICIsICVMdSBwYWNrZXRzIGxvc3QgKCVnICUlKSIsDQo+PiAgCQkJCWdsb3N0
+LCAxMDAuMCAqIGdsb3N0IC8gbGltaXQpOw0KPj4gIAl9DQo+PiAtCWlmIChnbGF0ZSkNCj4+ICsJ
+aWYgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpDQo+PiAgCQlmcHJpbnRmKHN0ZGVyciwgIiwgJUx1
+IG92ZXJydW5zIiwgZ2xhdGUpOw0KPg0KPkkgdGhpbmsgd2UgY2FuIGtlZXAgdGhpcyByZXBvcnQs
+IGp1c3Qgbm90IG1hcmsgdGhlIHRlc3QgZmFpbGVkIGluIGNhc2UNCj5vZiBzbW9rZXlfb25fdm0u
+DQoNCkJ1dCB0aGlzIHN0cmluZyBwcmludGVkIG91dCBoZXJlIGxvb2tzIGxpa2UgdWdseSAgaW4g
+Y2FzZSBvZiBzbW9rZXlfb25fdm0uLCBkbyB3ZSBuZWVkIHRvIGNoYW5nZSBzb21ldGhpbmcgPw0K
+SG93IGFib3V0IDoNCg0KaWYgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpDQogICAgICAgICAgZnBy
+aW50ZihzdGRlcnIsICJ0aGVyZSBpcyAlTHUgb3ZlcnJ1bnMiLCBnbGF0ZSk7DQplbHNlIGlmIChn
+bGF0ZSkNCiAgICAgICAgIGZwcmludGYoc3RkZXJyLCAiLCAlTHUgb3ZlcnJ1bnMiLCBnbGF0ZSk7
+DQoNCj4NCj4+ICAJaWYgKGdsb3N0IHx8IGdsYXRlKQ0KPj4gIAkJZnB1dGMoJ1xuJywgc3RkZXJy
+KTsNCj4+IC0JZXJyID0gZ2xvc3QgfHwgZ2xhdGUgPyAtRVBST1RPIDogMDsNCj4+ICsJZXJyID0g
+Z2xvc3QgfHwgKCFzbW9rZXlfb25fdm0gJiYgZ2xhdGUpID8gLUVQUk9UTyA6IDA7DQo+PiAgDQo+
+PiAgICBlcnI6DQo+PiAgCXNvY2sgPSBzbW9rZXlfY2hlY2tfZXJybm8oX19SVChjbG9zZShzb2Nr
+KSkpOw0KPj4gDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29y
+cG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
 
