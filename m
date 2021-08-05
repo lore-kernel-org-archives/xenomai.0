@@ -1,15 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
+Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not
  been loaded
-Date: Thu, 5 Aug 2021 05:21:48 +0000
-Message-ID: <BN9PR11MB52272A299B7F24DF94834D48F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210805031327.10873-1-hongzhan.chen@intel.com>
  <06d98602-f257-518c-aac2-8f4378ac14bc@siemens.com>
-In-Reply-To: <06d98602-f257-518c-aac2-8f4378ac14bc@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN9PR11MB52272A299B7F24DF94834D48F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <97312076-7eb1-3e71-8f82-30ee716407b1@siemens.com>
+Date: Thu, 5 Aug 2021 07:25:53 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB52272A299B7F24DF94834D48F2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +19,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBBdWd1c3QgNSwgMjAyMSAxOjAx
-IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIFYyXSB0ZXN0c3VpdGUvc21va2V5
-OiBuZXQ6IGxvYWQgcnRuZXQgbW9kdWxlIGlmIGl0IGhhcyBub3QgYmVlbiBsb2FkZWQNCj4NCj5P
-biAwNS4wOC4yMSAwNToxMywgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+IEJl
-Zm9yZSBjaGVja2luZyBuZXQgY29uZmlnLCBydG5ldCBzaG91bGQgYmUgcmVhZHkuDQo+PiANCj4+
-IFNpZ25lZC1vZmYtYnk6IEhvbmd6aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0K
-Pj4gDQo+PiBkaWZmIC0tZ2l0IGEvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMg
-Yi90ZXN0c3VpdGUvc21va2V5L25ldF9jb21tb24vc2V0dXAuYw0KPj4gaW5kZXggMWJhZGFiZGZi
-Li5hMDUxMmIwMGQgMTAwNjQ0DQo+PiAtLS0gYS90ZXN0c3VpdGUvc21va2V5L25ldF9jb21tb24v
-c2V0dXAuYw0KPj4gKysrIGIvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMNCj4+
-IEBAIC00MDgsNiArNDA4LDEwIEBAIGludCBzbW9rZXlfbmV0X3NldHVwKGNvbnN0IGNoYXIgKmRy
-aXZlciwgY29uc3QgY2hhciAqaW50ZiwgaW50IHRlc3RlZF9jb25maWcsDQo+PiAgCXN0cnVjdCBz
-b2NrYWRkcl9pbiAqaW5fcGVlciA9IHZwZWVyOw0KPj4gIAlzdHJ1Y3Qgc29ja2FkZHIgKnBlZXIg
-PSB2cGVlcjsNCj4+ICANCj4+ICsJZXJyID0gc21va2V5X25ldF9tb2Rwcm9iZShNT0RJRF9SVE5F
-VCk7DQo+PiArCWlmIChlcnIgPCAwKQ0KPj4gKwkJcmV0dXJuIGVycjsNCj4+ICsNCj4+ICAJZXJy
-ID0gY29iYWx0X2NvcmVjdGwoX0NDX0NPQkFMVF9HRVRfTkVUX0NPTkZJRywNCj4+ICAJCQkmbmV0
-X2NvbmZpZywgc2l6ZW9mKG5ldF9jb25maWcpKTsNCj4+ICAJaWYgKGVyciA9PSAtRUlOVkFMKQ0K
-Pj4gDQo+DQo+U29ycnksIG9ubHkgcmVhbGl6ZWQgbm93OiBUaGUgY2hlY2tzIHRoYXQgY29tZSBy
-aWdodCBhZnRlciB0aGlzIHNob3VsZA0KPm5vdCBiZSBhZmZlY3RlZCBieSBydG5ldCBiZWluZyBs
-b2FkZWQgb3Igbm90IHlldC4gSSB0aGluayB0aGV5IGNoZWNrDQoNCk5vLiBBY3R1YWxseSwgaXQg
-d291bGQgYmUgYWZmZWN0ZWQuIElmIHJ0bmV0IGlzIG5vdCBsb2FkZWQgYW5kIGluaXRlZCBiZWZv
-cmUgY29iYWx0X2NvcmVjdGwgaXMgY2FsbGVkLCBpdCB3b3VsZCANCm5vdCBjYWxsIHJ0bmV0X2Nv
-cmVjdGxfcmVnaXN0ZXIgdG8gY29iYWx0X2FkZF9jb25maWdfY2hhaW4gYW5kIGNvbmZpZ19ub3Rp
-Zmllcl9saXN0IHdvdWxkDQpiZSBlbXB0eS4gIEFuZCB0aGVuIGNvYmFsdF9jb3JlY3RsIC0+ZG9f
-Y29uZl9vcHRpb24gd291bGQgcmV0dXJuIC1FSU5WQUwgYmVjYXVzZSBibG9ja2luZ19ub3RpZmll
-cl9jYWxsX2NoYWluIHJldHVybiBOT1RJRllfRE9ORS4NCkluIHNtb2tleV9uZXRfc2V0dXAsIGl0
-IHdvdWxkIHJldHVybiAtRU5PU1lTIGJlY2F1c2UgIGNvYmFsdF9jb3JlY3RsIHJldHVybiAtRUlO
-VkFMLiANCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj53aGV0aGVyIGl0IGlzIGNvbmZp
-Z3VyZWQgYW5kIGNvdWxkIGJlIGxvYWRlZC4gSWYgd2UgdHJ5IHRvIGxvYWQgd2hlbiBpdA0KPmlz
-IG5vdCBjb25maWd1cmVkLCB0aGUgdGVzdCBjYXNlIHdpbGwgZmFpbCByYXRoZXIgdGhhbiBiZSBz
-a2lwcGVkLg0KPlBsZWFzZSBjaGVjayBhbmQgcmVvcmRlciB0aGUgbW9kcHJvYmUgYWNjb3JkaW5n
-bHkuDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRl
-IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 05.08.21 07:21, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Thursday, August 5, 2021 1:01 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH V2] testsuite/smokey: net: load rtnet module if it has not been loaded
+>>
+>> On 05.08.21 05:13, Hongzhan Chen via Xenomai wrote:
+>>> Before checking net config, rtnet should be ready.
+>>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>
+>>> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
+>>> index 1badabdfb..a0512b00d 100644
+>>> --- a/testsuite/smokey/net_common/setup.c
+>>> +++ b/testsuite/smokey/net_common/setup.c
+>>> @@ -408,6 +408,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
+>>>  	struct sockaddr_in *in_peer = vpeer;
+>>>  	struct sockaddr *peer = vpeer;
+>>>  
+>>> +	err = smokey_net_modprobe(MODID_RTNET);
+>>> +	if (err < 0)
+>>> +		return err;
+>>> +
+>>>  	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
+>>>  			&net_config, sizeof(net_config));
+>>>  	if (err == -EINVAL)
+>>>
+>>
+>> Sorry, only realized now: The checks that come right after this should
+>> not be affected by rtnet being loaded or not yet. I think they check
+> 
+> No. Actually, it would be affected. If rtnet is not loaded and inited before cobalt_corectl is called, it would 
+> not call rtnet_corectl_register to cobalt_add_config_chain and config_notifier_list would
+> be empty.  And then cobalt_corectl ->do_conf_option would return -EINVAL because blocking_notifier_call_chain return NOTIFY_DONE.
+> In smokey_net_setup, it would return -ENOSYS because  cobalt_corectl return -EINVAL. 
+> 
+
+OK, catch22. But we must not fail the test if RTnet is not configured
+and, thus, cannot be loaded.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
