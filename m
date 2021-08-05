@@ -1,10 +1,11 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v3 0/5] y2038: Adding support for mq_timed{send,recv}64
-Date: Tue, 10 Aug 2021 12:24:46 +0200
-Message-Id: <20210810102451.49642-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 MIME-Version: 1.0
+Date: Thu, 05 Aug 2021 17:15:53 +0200
+Subject: =?utf-8?q?=5BPatch=5D?= Allow selection of timestamp source for GPIO 
+ timestamps
+Message-ID: <1202-610c0080-1db-1ab27320@266372836>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +16,73 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+This patch allows to select which time source (monotonic/realtime) is u=
+sed to timestamp GPIO events.
+The time source used to be monotonic which is the opposite of what othe=
+r drivers do. Now default changed to realtime, plus new API added to go=
+ back to monotonic.
 
-this is kind of a re-send of the patch series originall published by
-Song. There were some things that had to be addressed:
 
- - Code formattings
- - Copy paste errors in the test suite
- - Failing / incomplete tests, missing test cleanups
- - Incorrect compat syscall declerations
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+---
 
-@Song: Especially the missing test cleanups and the incorrect compat
-syscall declerations made me unhappy. Did you really test that once?
-Please make sure to send properly tested patches. There are many
-pitfalls in the game which makes the review process time consuming,
-especially when I have to assume that it was not tested till now.
-
-Changes in v3:
-  - Patch 3: Fix timespec validation
-  - Patch 5: Fix tests for mq_timedreceive64()
-  - Patch 5: Fixed typos
-
-Florian Bezdeka (1):
-  y2038: testsuite/smokey/y2038: Adding tests for mq_timed{send,recv}64
-
-Song Chen (4):
-  y2038: cobalt/posix/mqueue: Adding mq_timedsend64
-  y2038: lib/cobalt/mqueue: dispatch mq_timedsend
-  y2038: cobalt/posix/muqueue: Adding mq_timedreceive64
-  y2038: lib/cobalt/mqueue: dispatch mq_timedreceive
-
- include/cobalt/uapi/syscall.h          |   2 +
- kernel/cobalt/posix/mqueue.c           |  51 ++++++-
- kernel/cobalt/posix/mqueue.h           |  18 +++
- kernel/cobalt/posix/syscall32.c        |  16 +++
- kernel/cobalt/posix/syscall32.h        |  10 ++
- kernel/cobalt/trace/cobalt-posix.h     |   4 +-
- lib/cobalt/mq.c                        |  10 ++
- testsuite/smokey/y2038/syscall-tests.c | 190 ++++++++++++++++++++++++-
- 8 files changed, 297 insertions(+), 4 deletions(-)
-
--- 
-2.30.2
+diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+index 2839f7d51..f8a93b7f7 100644
+--- a/include/rtdm/uapi/gpio.h
++++ b/include/rtdm/uapi/gpio.h
+@@ -30,6 +30,8 @@ struct rtdm=5Fgpio=5Freadout {
+ #define GPIO=5FRTIOC=5FREQS		=5FIO(RTDM=5FCLASS=5FGPIO, 4)
+ #define GPIO=5FRTIOC=5FRELS		=5FIO(RTDM=5FCLASS=5FGPIO, 5)
+ #define GPIO=5FRTIOC=5FTS		=5FIOR(RTDM=5FCLASS=5FGPIO, 7, int)
++#define GPIO=5FRTIOC=5FTS=5FREAL  =5FIOR(RTDM=5FCLASS=5FGPIO, 8, int)
++#define GPIO=5FRTIOC=5FTS=5FMONO  =5FIOR(RTDM=5FCLASS=5FGPIO, 9, int)
+ 
+ #define GPIO=5FTRIGGER=5FNONE		0x0 /* unspecified */
+ #define GPIO=5FTRIGGER=5FEDGE=5FRISING	0x1
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio=
+-core.c
+index bc283064b..3eaf425c6 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -36,13 +36,15 @@ static LIST=5FHEAD(rtdm=5Fgpio=5Fchips);
+ 
+ static DEFINE=5FMUTEX(chip=5Flock);
+ 
++static nanosecs=5Fabs=5Ft (*timestamp=5Fget=5Ffunc=5Fptr)(void) =3D rt=
+dm=5Fclock=5Fread;
++
+ static int gpio=5Fpin=5Finterrupt(rtdm=5Firq=5Ft *irqh)
+ {
+ 	struct rtdm=5Fgpio=5Fpin *pin;
+ 
+ 	pin =3D rtdm=5Firq=5Fget=5Farg(irqh, struct rtdm=5Fgpio=5Fpin);
+ 
+-	pin->timestamp =3D rtdm=5Fclock=5Fread=5Fmonotonic();
++	pin->timestamp =3D timestamp=5Fget=5Ffunc=5Fptr();
+ 	rtdm=5Fevent=5Fsignal(&pin->event);
+ 
+ 	return RTDM=5FIRQ=5FHANDLED;
+@@ -192,9 +194,18 @@ static int gpio=5Fpin=5Fioctl=5Fnrt(struct rtdm=5F=
+fd *fd,
+ 		chan->requested =3D false;
+ 		break;
+ 	case GPIO=5FRTIOC=5FTS:
++	case GPIO=5FRTIOC=5FTS=5FREAL:
++		ret =3D rtdm=5Fsafe=5Fcopy=5Ffrom=5Fuser(fd, &val, arg, sizeof(val))=
+;
++		if (ret)
++			return ret;
++		timestamp=5Fget=5Ffunc=5Fptr =3D rtdm=5Fclock=5Fread;
++		chan->want=5Ftimestamp =3D !!val;
++		break;
++	case GPIO=5FRTIOC=5FTS=5FMONO:
+ 		ret =3D rtdm=5Fsafe=5Fcopy=5Ffrom=5Fuser(fd, &val, arg, sizeof(val))=
+;
+ 		if (ret)
+ 			return ret;
++		timestamp=5Fget=5Ffunc=5Fptr =3D rtdm=5Fclock=5Fread=5Fmonotonic;
+ 		chan->want=5Ftimestamp =3D !!val;
+ 		break;
+ 	default:
 
 
