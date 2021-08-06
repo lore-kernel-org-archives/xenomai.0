@@ -1,12 +1,8 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v5 4/5] y2038: lib/cobalt/mutex: dispatch mutex_timedlock
-Date: Tue, 10 Aug 2021 12:23:43 +0200
-Message-Id: <20210810102344.49471-5-florian.bezdeka@siemens.com>
-In-Reply-To: <20210810102344.49471-1-florian.bezdeka@siemens.com>
-References: <20210810102344.49471-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH] testsuite/smokey: net: load rtnet module if it has not been
+ loaded
+Date: Fri,  6 Aug 2021 01:56:20 -0400
+Message-Id: <20210806055620.27190-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,35 +13,87 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Song Chen <chensong_2000@189.cn>
+Before checking net config, rtnet should be ready.
 
-In case the libc in use reports a 64 bit time_t dispacht
-mutex_timedlock to the kernel entry point that accepts it.
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/cobalt/mutex.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
-index 29236c75a..73e45a1c4 100644
---- a/lib/cobalt/mutex.c
-+++ b/lib/cobalt/mutex.c
-@@ -479,7 +479,11 @@ slow_path:
- 	}
+diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
+index 1badabdfb..bdae10bfb 100644
+--- a/testsuite/smokey/net_common/setup.c
++++ b/testsuite/smokey/net_common/setup.c
+@@ -138,6 +138,56 @@ static int do_down(const char *intf)
+ 	return 0;
+ }
  
- 	do {
-+#ifdef __USE_TIME_BITS64
-+		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock64, _mutex, to);
-+#else
- 		ret = XENOMAI_SYSCALL2(sc_cobalt_mutex_timedlock, _mutex, to);
-+#endif
- 	} while (ret == -EINTR);
++static int smokey_net_modinfo(int modid)
++{
++	struct module *m = modules + modid;
++	char buffer[128];
++	int err;
++
++	if (modid < 0)
++		return -EINVAL;
++
++	smokey_trace("%s module: modinfoing", m->name);
++	err = smokey_check_errno(
++		snprintf(buffer, sizeof(buffer), "modinfo %s", m->name));
++	if (err < 0)
++		return err;
++
++	err = smokey_check_errno(system(buffer));
++	if (err < 0)
++		return err;
++
++	if (!WIFEXITED(err)) {
++		smokey_warning("%s: abnormal exit", buffer);
++		return -EINVAL;
++	}
++
++	if (WEXITSTATUS(err) != 0) {
++		/* double check if there is 'module not found' error,
++		 * translate it into -ENOSYS
++		 */
++		err = smokey_check_errno(
++			snprintf(buffer, sizeof(buffer),
++				"modinfo %s 2>&1 | grep '%s not found'",
++				m->name, m->name));
++		if (err < 0)
++			return err;
++
++		err = smokey_check_errno(system(buffer));
++		if (err < 0)
++			return err;
++
++		if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
++			smokey_warning("%s: abnormal exit", buffer);
++			return -EINVAL;
++		}
++
++		return -ENOSYS;
++	}
++
++	return err;
++}
++
+ static int smokey_net_modprobe(int modid)
+ {
+ 	struct module *m = modules + modid;
+@@ -408,6 +458,14 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
+ 	struct sockaddr_in *in_peer = vpeer;
+ 	struct sockaddr *peer = vpeer;
  
- 	if (ret == 0)
++	err = smokey_net_modinfo(MODID_RTNET);
++	if (err < 0)
++		return err;
++
++	err = smokey_net_modprobe(MODID_RTNET);
++	if (err < 0)
++		return err;
++
+ 	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
+ 			&net_config, sizeof(net_config));
+ 	if (err == -EINVAL)
 -- 
-2.30.2
+2.17.1
 
 
