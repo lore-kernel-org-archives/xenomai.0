@@ -1,11 +1,10 @@
-Subject: Re: [PATCH v2,2/2] Add --disable-{demo,testsuite} options
-References: <20210813150432.3215777-1-fontaine.fabrice@gmail.com>
- <20210813150432.3215777-2-fontaine.fabrice@gmail.com>
+Subject: Re: [xenomai-images][RFC][PATCH] ci: Switch to Google nameserver
+References: <b8d43c93-6780-6087-4a7b-cce4fc815f22@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9dddf4cd-0540-7b3a-d4d4-6afa7a6c1bad@siemens.com>
-Date: Mon, 16 Aug 2021 11:29:17 +0200
+Message-ID: <3bbba763-c423-e206-aea1-037b47395da3@siemens.com>
+Date: Fri, 6 Aug 2021 10:50:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210813150432.3215777-2-fontaine.fabrice@gmail.com>
+In-Reply-To: <b8d43c93-6780-6087-4a7b-cce4fc815f22@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,68 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fabrice Fontaine <fontaine.fabrice@gmail.com>, xenomai@xenomai.org
+To: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 13.08.21 17:04, Fabrice Fontaine via Xenomai wrote:
-> Allow the user to disable demo and testsuite to decrease compilation
-> time and save disk space.
+On 02.08.21 17:43, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+> This is a temporary hack: Our AWS runners see a lot of DNS errors for
+> deb.debian.org. Let's see if they are less with this server.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  Makefile.am  | 12 ++++++++++--
->  configure.ac | 12 ++++++++++++
->  2 files changed, 22 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Makefile.am b/Makefile.am
-> index 891e53f66..604644277 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -6,9 +6,17 @@ SUBDIRS = 		\
->  	config		\
->  	include		\
->  	scripts		\
-> -	testsuite	\
-> -	utils		\
-> +	utils
-> +
-> +if XENO_ENABLE_DEMO
-> +SUBDIRS += 		\
->  	demo
-> +endif
-> +
-> +if XENO_ENABLE_TESTSUITE
-> +SUBDIRS += 		\
-> +	testsuite
-> +endif
->  
->  EXTRA_DIST = kernel debian
->  
-> diff --git a/configure.ac b/configure.ac
-> index bd5fd5ba9..29dfd16e5 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -200,6 +200,18 @@ test \! x$debug_mode = x && AC_DEFINE(CONFIG_XENO_DEBUG,1,[config])
->  AM_CONDITIONAL(XENO_DEBUG_FULL,[test x$debug_mode = xfull])
->  test x$debug_mode = xfull && AC_DEFINE(CONFIG_XENO_DEBUG_FULL,1,[config])
->  
-> +dnl Demo (default: on)
-> +
-> +AC_ARG_ENABLE(demo,
-> +	AS_HELP_STRING([--disable-demo], [Disable demo]))
-> +AM_CONDITIONAL(XENO_ENABLE_DEMO,[test x$enable_demo != xno])
-> +
-> +dnl Testsuite (default: on)
-> +
-> +AC_ARG_ENABLE(testsuite,
-> +	AS_HELP_STRING([--disable-testsuite], [Disable testsuite]))
-> +AM_CONDITIONAL(XENO_ENABLE_TESTSUITE,[test x$enable_testsuite != xno])
-> +
->  dnl Low resolution clock (default: off)
->  
->  unset lores_clock
+> Seems to work, though only one run passed so far. Go this way for now?
+> 
+>  ci/gitlab-ci-base.yml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+> index 2638dec..ce9c800 100644
+> --- a/ci/gitlab-ci-base.yml
+> +++ b/ci/gitlab-ci-base.yml
+> @@ -39,6 +39,7 @@ default:
+>    extends: .add-proxy-config
+>    stage: build
+>    script:
+> +    - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
+>      - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
+>      - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
+>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
 > 
 
-Thanks, applied this one, with minor tuning of --disable-demo help.
+Seems you found the reason in our AWS setup. I'm dropping this from next
+again to confirm that we are safe.
 
 Jan
 
