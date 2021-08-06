@@ -1,14 +1,14 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: cobalt_assert_nrt should use __cobalt_pthread_kill
-Date: Thu, 19 Aug 2021 15:24:34 +0000
-Message-ID: <DB9PR05MB7723D7FEF361FED17FE59FD6F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
-References: <DB9PR05MB77239BFB7BA2E64E825FF123F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
- <cdab0109-de16-94ac-8dbf-3730ca7e46f2@siemens.com>
-In-Reply-To: <cdab0109-de16-94ac-8dbf-3730ca7e46f2@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: Arm userland not building with gcc-9 and later
+References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+ <874kc267pa.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0aadf91d-5269-3e1b-13c4-7d79fbc0d335@siemens.com>
+Date: Fri, 6 Aug 2021 15:14:00 +0200
 MIME-Version: 1.0
+In-Reply-To: <874kc267pa.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRG9ubmVyc3RhZywgMTkuIEF1Z3VzdCAyMDIx
-IDEyOjU0DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
-WGVub21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
-IFN1YmplY3Q6IFJlOiBjb2JhbHRfYXNzZXJ0X25ydCBzaG91bGQgdXNlIF9fY29iYWx0X3B0aHJl
-YWRfa2lsbA0KPg0KPg0KPg0KPiBDQVVUSU9OOiBFeHRlcm5hbCBlbWFpbC4gRG8gbm90IGNsaWNr
-IG9uIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBzZW5k
-ZXIgYW5kIHRoYXQgdGhlIGNvbnRlbnQgaXMgc2FmZS4NCj4NCj4gT24gMTkuMDguMjEgMTE6NTYs
-IExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBJ
-IGhhdmUgc29tZSBzbWFsbCBzbGlnaHQgaXNzdWUgd2l0aCB0aGUgY29iYWx0X2Fzc2VydF9ucnQg
-ZnVuY3Rpb24sDQo+ID4gaW5jYXNlIGEgdmlvbGF0aW9uIGlzIGRldGVjdGVkIHRoZSB0aHJlYWQg
-c2hvdWxkIGdldCBhIHNpZ25hbCwgYnV0IHRoZQ0KPiA+IGltcGxlbWVudGF0aW9uIHdpbGwgaW1w
-bGljaXRseSBnZXQgYSBzaWduYWwgZHVyaW5nIHRoZSBleGVjdXRpb24gb2YNCj4gcHRocmVhZF9r
-aWxsLCBzZWU6DQo+ID4NCj4gPg0KPiA+ICMwICBnZXRwaWQgKCkgYXQgLi4vc3lzZGVwcy91bml4
-L3N5c2NhbGwtdGVtcGxhdGUuUzo2MA0KPiA+ICMxICAweDAwMDA3ZmMxZGM0ZmEwZDYgaW4gX19w
-dGhyZWFkX2tpbGwgKHRocmVhZGlkPTxvcHRpbWl6ZWQgb3V0PiwNCj4gPiBzaWdubz0yNCkgYXQg
-Li4vc3lzZGVwcy91bml4L3N5c3YvbGludXgvcHRocmVhZF9raWxsLmM6NTMNCj4gPiAjMiAgMHgw
-MDAwN2ZjMWRjOGIyNDcwIGluIGNhbGxBc3NlcnRGdW5jdGlvbiAoKSBhdA0KPiA+IC9ob21lL2xh
-bm8vZ2l0L3ByZWxvYWRfY2hlY2tlcnMvc3JjL3BjaGVja2VyLmg6MTk5DQo+ID4gIzMgIG1hbGxv
-YyAoKSBhdA0KPiA+IC9ob21lL2xhbm8vZ2l0L3ByZWxvYWRfY2hlY2tlcnMvc3JjL3BjaGVja2Vy
-X2hlYXBfZ2xpYmMuYzoyMjANCj4gPiAjNCA8YWN0dWFsIGluc3RydW1lbnRlZCBmdW5jdGlvbj4N
-Cj4gPg0KPiA+IFlvdSBzZWUsIHRoZSBzaWduYWwgc2hvdWxkIGhhcHBlbiB3aXRoIHRoZSBwYyBv
-ZiAjMiwgbm90IGZyb20gdGhlDQo+IGltcGxlbWVudGF0aW9uIG9mIGdsaWJjIChvciB3aGF0ZXZl
-ciBjIGxpYnJhcnkpLg0KPiA+IFNvIHRoZSBmdW5jdGlvbiBzaG91bGQgYmUgY2hhbmdlZCB0bzoN
-Cj4gPg0KPiA+IHZvaWQgY29iYWx0X2Fzc2VydF9ucnQodm9pZCkNCj4gPiB7DQo+ID4gICAgICAg
-ICAgICAgaWYgKGNvYmFsdF9zaG91bGRfd2FybigpKQ0KPiA+ICAgICAgICAgICAgICAgICAgICAg
-ICAgIF9fY29iYWx0X3B0aHJlYWRfa2lsbChwdGhyZWFkX3NlbGYoKSwNCj4gPiBTSUdERUJVRyk7
-IH0NCj4gPg0KPiA+IChvciBldmVuIHJlcGxhY2VkIHdpdGggdGhlIHJhdyBzeXNjYWxsID8pDQo+
-ID4NCj4NCj4gSG1tLCB0aGF0J3Mgc2ltaWxhciB0byBhbiBhc3NlcnQgY2F1c2luZyBhIGxlbmd0
-aHkgdHJhY2UsIG5vdCBmYWlsaW5nIGRpcmVjdGx5IGF0DQo+IHRoZSBwbGFjZSB3aGVyZSB0aGUg
-YXNzZXJ0IHdhcyByYWlzZWQ6DQo+DQo+ICMwICAweDAwMDA3ZmZmZjdhMzkxOGIgaW4gcmFpc2Ug
-KCkgZnJvbSAvbGliNjQvbGliYy5zby42DQo+ICMxICAweDAwMDA3ZmZmZjdhM2E1ODUgaW4gYWJv
-cnQgKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQo+ICMyICAweDAwMDA3ZmZmZjdhMzE4NWEgaW4g
-X19hc3NlcnRfZmFpbF9iYXNlICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KPiAjMyAgMHgwMDAw
-N2ZmZmY3YTMxOGQyIGluIF9fYXNzZXJ0X2ZhaWwgKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQo+
-ICM0ICAweDAwMDAwMDAwMDA0MDA1MjQgaW4gbWFpbiAoKSBhdCBhc3NlcnQuYzo1DQo+DQo+IFdo
-YXQgaXMgeW91ciBwcmFjdGljYWwgcHJvYmxlbSB3aXRoIHRoZSBjdXJyZW50IGltcGxlbWVudGF0
-aW9uPyBEbyB5b3UNCj4gZXhwZWN0IGEgc3BlY2lmaWMgU0lHREVCVUcgcmVhc29uPw0KDQpBIGJl
-dHRlciBzdGFja3RyYWNlLiAoSSBhY3R1YWxseSBjdXQgdGhlIHRyYWNlIGluIHRoZSBzaWduYWwg
-aGFuZGxlciBpbiBjYXNlIG9mIGhpdHRpbmcgYW4gX19hc3NlcnRfZmFpbCkNCkJUVywgX19jb2Jh
-bHRfcHRocmVhZF9raWxsKHB0aHJlYWRfc2VsZigpLCBTSUdERUJVRykgZG9lc27igJl0IHNlZW0g
-dG8gZG8gYSB0aGluZywgZG9lc27igJl0IGhhbmRsZSBTSUdERUJVRz8NCg0KTm9yYmVydA0KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0
-YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
-cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3Jt
-YXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYg
-eW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmll
-ZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZp
-ZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwg
-YW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJl
-Y2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5k
-IGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4N
-Cg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxs
-c2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5z
-aXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9m
-IHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBh
-bnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBB
-VFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCg==
+On 06.08.21 15:09, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> Hi all,
+>>
+>> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
+>> I picked arm as first target, but that apparently starts to break with
+>> gcc-9 or newer (tried 9.2 and 10.2):
+>>
+>> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
+>>   CC       libarch_la-features.lo
+>> features.c: In function 'cobalt_arch_check_features':
+>> features.c:82:1: error: r7 cannot be used in 'asm' here
+>>    82 | }
+>>       | ^
+>>
+>> That seems to be related to passing the syscall number via r7 on ARM. Is
+>> our ABI soon no longer compilable, or can we fix this?
+>>
+>> Jan
+> 
+> r7 may be used as a scratch register by gcc in some
+> cases. -fomit-frame-pointer for debug builds may help (i.e. when the
+> optimizer is switched off).
+> 
+
+Good hint. I had --enable-debug=full set, and it builds without it (and
+now reports other issues that Debian's gcc-10 sees).
+
+But how to resolve this properly?
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
