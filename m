@@ -1,15 +1,13 @@
-References: <60deb062-29ca-da10-10d5-2f6e61dcca67@siemens.com>
- <b58a6e58-e38e-fbc5-801a-83c430ed1bbf@siemens.com>
- <87eeb24pun.fsf@xenomai.org>
- <5eb010c1-91f6-74e3-da86-f1446cdb8b2b@siemens.com>
- <2b23ddd5-77f4-2099-70ac-338949d64934@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] cobalt/arch/arm: arith: Avoid r7 usage in helpers
-In-reply-to: <2b23ddd5-77f4-2099-70ac-338949d64934@siemens.com>
-Date: Mon, 09 Aug 2021 18:58:29 +0200
-Message-ID: <87bl664ksq.fsf@xenomai.org>
+Subject: Re: [Patch] Allow selection of timestamp source for GPIO timestamps
+References: <1202-610c0080-1db-1ab27320@266372836>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7c7d51d6-b118-4eba-6dff-59dec1f613b7@siemens.com>
+Date: Fri, 6 Aug 2021 07:54:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1202-610c0080-1db-1ab27320@266372836>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,72 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
 
+Please tag the patch with the subsystem, in this case "drivers/gpio:".
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+On 05.08.21 17:15, François Legal via Xenomai wrote:
+> This patch allows to select which time source (monotonic/realtime) is used to timestamp GPIO events.
+> The time source used to be monotonic which is the opposite of what other drivers do. Now default changed to realtime, plus new API added to go back to monotonic.
+> 
+> 
+> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+> ---
+> 
+> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+> index 2839f7d51..f8a93b7f7 100644
+> --- a/include/rtdm/uapi/gpio.h
+> +++ b/include/rtdm/uapi/gpio.h
+> @@ -30,6 +30,8 @@ struct rtdm_gpio_readout {
+>  #define GPIO_RTIOC_REQS		_IO(RTDM_CLASS_GPIO, 4)
+>  #define GPIO_RTIOC_RELS		_IO(RTDM_CLASS_GPIO, 5)
+>  #define GPIO_RTIOC_TS		_IOR(RTDM_CLASS_GPIO, 7, int)
+> +#define GPIO_RTIOC_TS_REAL  _IOR(RTDM_CLASS_GPIO, 8, int)
+> +#define GPIO_RTIOC_TS_MONO  _IOR(RTDM_CLASS_GPIO, 9, int)
 
-> On 09.08.21 17:11, Jan Kiszka via Xenomai wrote:
->> On 09.08.21 17:09, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 07.08.21 17:52, Jan Kiszka via Xenomai wrote:
->>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>
->>>>> Since gcc-9, direct usage of r7 is in conflict with compiler
->>>>> allocations. Skip it.
->>>>>
->>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>> ---
->>>>>  .../arch/arm/include/asm/xenomai/uapi/arith.h      | 14 +++++++-------
->>>>>  1 file changed, 7 insertions(+), 7 deletions(-)
->>>>>
->>>>> diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/arith.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/arith.h
->>>>> index cf897b44fa..4d3ae65411 100644
->>>>> --- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/arith.h
->>>>> +++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/arith.h
->>>>> @@ -79,9 +79,9 @@ mach_arm_nodiv_ullimd(const unsigned long long op,
->>>>>  	register unsigned frach __asm__ ("r3");
->>>>>  	register unsigned integ __asm__("r4") = rhs_integ;
->>>>>  	register unsigned opl __asm__ ("r6");
->>>>> -	register unsigned oph __asm__ ("r7");
->>>>> -	register unsigned tl __asm__("r8");
->>>>> -	register unsigned th __asm__("r9");
->>>>> +	register unsigned oph __asm__ ("r8");
->>>>> +	register unsigned tl __asm__("r9");
->>>>> +	register unsigned th __asm__("r10");
->>>>>  
->>>>>  	xnarch_u64tou32(op, oph, opl);
->>>>>  	xnarch_u64tou32(frac, frach, fracl);
->>>>> @@ -109,10 +109,10 @@ mach_arm_nodiv_llimd(const long long op,
->>>>>  	register unsigned frach __asm__ ("r3");
->>>>>  	register unsigned integ __asm__("r4") = rhs_integ;
->>>>>  	register unsigned opl __asm__ ("r6");
->>>>> -	register unsigned oph __asm__ ("r7");
->>>>> -	register unsigned tl __asm__("r8");
->>>>> -	register unsigned th __asm__("r9");
->>>>> -	register unsigned s __asm__("r10");
->>>>> +	register unsigned oph __asm__ ("r8");
->>>>> +	register unsigned tl __asm__("r9");
->>>>> +	register unsigned th __asm__("r10");
->>>>> +	register unsigned s __asm__("r11");
->>>>
->>>> Florian just pointed out that r11 is the frame pointer. Not many options
->>>> remaining - ideas?
->>>
->>> Try r12(ip) adding it to the clobber list.
->>>
->> 
->> Yeah, just had the same idea while browsing the ABI...
->> 
->
-> ...but clobbering doesn't work and should not be needed - s is already
-> specified as output.
+Only one of them needs to be a new define, the other can be an alias (or
+GPIO_RTIOC_TS can be that).
 
-Makes sense.
+>  
+>  #define GPIO_TRIGGER_NONE		0x0 /* unspecified */
+>  #define GPIO_TRIGGER_EDGE_RISING	0x1
+> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+> index bc283064b..3eaf425c6 100644
+> --- a/kernel/drivers/gpio/gpio-core.c
+> +++ b/kernel/drivers/gpio/gpio-core.c
+> @@ -36,13 +36,15 @@ static LIST_HEAD(rtdm_gpio_chips);
+>  
+>  static DEFINE_MUTEX(chip_lock);
+>  
+> +static nanosecs_abs_t (*timestamp_get_func_ptr)(void) = rtdm_clock_read;
+> +
+
+This must be controlled per device instance, not globally for all GPIO
+devices.
+
+>  static int gpio_pin_interrupt(rtdm_irq_t *irqh)
+>  {
+>  	struct rtdm_gpio_pin *pin;
+>  
+>  	pin = rtdm_irq_get_arg(irqh, struct rtdm_gpio_pin);
+>  
+> -	pin->timestamp = rtdm_clock_read_monotonic();
+> +	pin->timestamp = timestamp_get_func_ptr();
+>  	rtdm_event_signal(&pin->event);
+>  
+>  	return RTDM_IRQ_HANDLED;
+> @@ -192,9 +194,18 @@ static int gpio_pin_ioctl_nrt(struct rtdm_fd *fd,
+>  		chan->requested = false;
+>  		break;
+>  	case GPIO_RTIOC_TS:
+> +	case GPIO_RTIOC_TS_REAL:
+
+This changes the default of GPIO_RTIOC_TS in way that does not allow to
+back-port the patch to stable.
+
+> +		ret = rtdm_safe_copy_from_user(fd, &val, arg, sizeof(val));
+> +		if (ret)
+> +			return ret;
+> +		timestamp_get_func_ptr = rtdm_clock_read;
+> +		chan->want_timestamp = !!val;
+> +		break;
+> +	case GPIO_RTIOC_TS_MONO:
+>  		ret = rtdm_safe_copy_from_user(fd, &val, arg, sizeof(val));
+>  		if (ret)
+>  			return ret;
+> +		timestamp_get_func_ptr = rtdm_clock_read_monotonic;
+>  		chan->want_timestamp = !!val;
+>  		break;
+>  	default:
+> 
+> 
+
+Thanks for the patch, but some bits still need tuning.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
