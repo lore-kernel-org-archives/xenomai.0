@@ -1,10 +1,18 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 0/3] y2038: Adding monitor_wait64()
-Date: Wed, 11 Aug 2021 10:11:17 +0200
-Message-Id: <20210811081120.18402-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error
+ in vm mode
+References: <20210804024714.665-1-hongzhan.chen@intel.com>
+ <20210804024714.665-2-hongzhan.chen@intel.com>
+ <28fa1684-0e42-0879-234e-7eec12badf8c@siemens.com>
+ <BN9PR11MB5227C79511DAA168FD36270EF2F29@BN9PR11MB5227.namprd11.prod.outlook.com>
+ <04498083-5659-5a4b-abfe-2d96da8b359c@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <55e8bcef-496d-0e06-8f37-fb4a723d6eed@siemens.com>
+Date: Fri, 6 Aug 2021 09:41:56 +0200
 MIME-Version: 1.0
+In-Reply-To: <04498083-5659-5a4b-abfe-2d96da8b359c@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +21,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi!
+On 05.08.21 07:01, Jan Kiszka via Xenomai wrote:
+> On 05.08.21 02:39, Chen, Hongzhan wrote:
+>>
+>>
+>>> -----Original Message-----
+>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>> Sent: Wednesday, August 4, 2021 6:20 PM
+>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>> Subject: Re: [PATCH 2/2] testsuite/smokey: net_client: skip late packet error in vm mode
+>>>
+>>> On 04.08.21 04:47, Hongzhan Chen via Xenomai wrote:
+>>>> In vm mode, skip late packet error in functional test to avoid
+>>>> test failure.
+>>>>
+>>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>>
+>>>> diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
+>>>> index d13d72918..752ea55ed 100644
+>>>> --- a/testsuite/smokey/net_common/client.c
+>>>> +++ b/testsuite/smokey/net_common/client.c
+>>>> @@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>>>>  		} while (err != -ETIMEDOUT);
+>>>>  	}
+>>>>  
+>>>> -	if (glost || glate)
+>>>> +	if (glost || (!smokey_on_vm && glate))
+>>>>  		fprintf(stderr, "RTnet %s test failed", client->name);
+>>>>  	if (glost) {
+>>>>  		if (glost == limit)
+>>>> @@ -214,11 +214,11 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
+>>>>  			fprintf(stderr, ", %Lu packets lost (%g %%)",
+>>>>  				glost, 100.0 * glost / limit);
+>>>>  	}
+>>>> -	if (glate)
+>>>> +	if (!smokey_on_vm && glate)
+>>>>  		fprintf(stderr, ", %Lu overruns", glate);
+>>>
+>>> I think we can keep this report, just not mark the test failed in case
+>>> of smokey_on_vm.
+>>
+>> But this string printed out here looks like ugly  in case of smokey_on_vm., do we need to change something ?
+>> How about :
+>>
+>> if (!smokey_on_vm && glate)
+>>           fprintf(stderr, "there is %Lu overruns", glate);
+>> else if (glate)
+>>          fprintf(stderr, ", %Lu overruns", glate);
+>>
+> 
+> Hmm, what is the difference?
+> 
 
-Just another y2038 related syscall, once again based on v1 sent out by
-Song and rebased to current next.
+OK, sorry, now I see the relevance. Applied this one.
 
-Best regards,
-Florian
-
-Florian Bezdeka (2):
-  y2038: cobalt/posix/monitor: Adding monitor_wait64
-  y2038: testsuite/smokey/y2038: Adding testcases for monitor_wait64()
-
-Song Chen (1):
-  y2038: lib/cobalt/internal: dispatch monitor_wait
-
- include/cobalt/uapi/syscall.h          |  1 +
- kernel/cobalt/posix/monitor.c          | 32 ++++++++++-
- kernel/cobalt/posix/monitor.h          | 10 ++++
- kernel/cobalt/posix/syscall32.c        |  8 +++
- kernel/cobalt/posix/syscall32.h        |  6 ++
- kernel/cobalt/trace/cobalt-posix.h     |  3 +-
- lib/cobalt/internal.c                  |  8 ++-
- testsuite/smokey/y2038/syscall-tests.c | 78 +++++++++++++++++++++++++-
- 8 files changed, 141 insertions(+), 5 deletions(-)
+Thanks,
+Jan
 
 -- 
-2.30.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
