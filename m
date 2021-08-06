@@ -1,13 +1,17 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 3/7] cobalt/posix/process: Adding a xnptree for exporting
- registry entries
-Date: Wed, 25 Aug 2021 12:32:26 +0200
-Message-Id: <20210825103230.27274-4-florian.bezdeka@siemens.com>
-In-Reply-To: <20210825103230.27274-1-florian.bezdeka@siemens.com>
-References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: Arm userland not building with gcc-9 and later
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+ <874kc267pa.fsf@xenomai.org>
+ <0aadf91d-5269-3e1b-13c4-7d79fbc0d335@siemens.com>
+ <871r7666js.fsf@xenomai.org>
+ <2ed731b6-7501-989c-6c1a-8a5569bb0cae@siemens.com>
+Message-ID: <8fa1cd5f-337c-9f5c-1a3e-f20978b66ed0@siemens.com>
+Date: Fri, 6 Aug 2021 19:12:39 +0200
 MIME-Version: 1.0
+In-Reply-To: <2ed731b6-7501-989c-6c1a-8a5569bb0cae@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-Will be used later for exporting registry entries, namely named
-semaphores as well as mqueues to
-/proc/xenomai/registry/posix/{mqueue,sem}
+On 06.08.21 18:16, Jan Kiszka wrote:
+> On 06.08.21 15:34, Philippe Gerum wrote:
+>>
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>
+>>> On 06.08.21 15:09, Philippe Gerum wrote:
+>>>>
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> Hi all,
+>>>>>
+>>>>> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
+>>>>> I picked arm as first target, but that apparently starts to break with
+>>>>> gcc-9 or newer (tried 9.2 and 10.2):
+>>>>>
+>>>>> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
+>>>>>   CC       libarch_la-features.lo
+>>>>> features.c: In function 'cobalt_arch_check_features':
+>>>>> features.c:82:1: error: r7 cannot be used in 'asm' here
+>>>>>    82 | }
+>>>>>       | ^
+>>>>>
+>>>>> That seems to be related to passing the syscall number via r7 on ARM. Is
+>>>>> our ABI soon no longer compilable, or can we fix this?
+>>>>>
+>>>>> Jan
+>>>>
+>>>> r7 may be used as a scratch register by gcc in some
+>>>> cases. -fomit-frame-pointer for debug builds may help (i.e. when the
+>>>> optimizer is switched off).
+>>>>
+>>>
+>>> Good hint. I had --enable-debug=full set, and it builds without it (and
+>>> now reports other issues that Debian's gcc-10 sees).
+>>>
+>>> But how to resolve this properly?
+>>>
+>>> Jan
+>>
+>> XENOMAI_SYSCALL2(sc_cobalt_archcall) in features.c is likely the issue.
+>>
+>> Either move those bits into some new syscall wrapper which would live in
+>> lib/cobalt/internal.c, where there is no register allocation conflict so
+>> far. Or discourage gcc from using r7 as a scratch register in
+>> arm/features.c entirely? e.g.:
+>>
+>> diff --git a/lib/cobalt/arch/arm/Makefile.am b/lib/cobalt/arch/arm/Makefile.am
+>> index a5095be3d..d5e542ebe 100644
+>> --- a/lib/cobalt/arch/arm/Makefile.am
+>> +++ b/lib/cobalt/arch/arm/Makefile.am
+>> @@ -6,6 +6,7 @@ libarch_la_SOURCES = features.c
+>>  
+>>  libarch_la_CPPFLAGS =			\
+>>  	@XENO_COBALT_CFLAGS@ 		\
+>> +	-fomit-frame-pointer		\
+>>  	-I$(srcdir)/../..		\
+>>  	-I$(top_srcdir)/include/cobalt	\
+>>  	-I$(top_srcdir)/include
+>>
+> 
+> -fomit-frame-pointer does not help with -O0. It even keeps the problem
+> alive with -O2.
+> 
+> Looks like arm needs a non-unlined helper function for syscalls, to be safe.
+> 
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- kernel/cobalt/posix/internal.h | 2 ++
- kernel/cobalt/posix/process.c  | 2 ++
- 2 files changed, 4 insertions(+)
+What might be cheaper, a call-out to a helper or some push/pop around
+the syscall like below? But I suspect the helper will do push/pop as well...
 
-diff --git a/kernel/cobalt/posix/internal.h b/kernel/cobalt/posix/internal.h
-index 15dfc3454..8b134d0a7 100644
---- a/kernel/cobalt/posix/internal.h
-+++ b/kernel/cobalt/posix/internal.h
-@@ -47,6 +47,8 @@
- 
- #define cobalt_mark_deleted(t) ((t)->magic = ~(t)->magic)
- 
-+extern struct xnptree posix_ptree;
-+
- static inline xnhandle_t cobalt_get_handle_from_user(xnhandle_t *u_h)
- {
- 	xnhandle_t handle;
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 1f059ad83..87b4893b3 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -83,6 +83,8 @@ static struct xnsynch yield_sync;
- 
- LIST_HEAD(cobalt_global_thread_list);
- 
-+DEFINE_XNPTREE(posix_ptree, "posix");
-+
- struct cobalt_resources cobalt_global_resources = {
- 	.condq = LIST_HEAD_INIT(cobalt_global_resources.condq),
- 	.mutexq = LIST_HEAD_INIT(cobalt_global_resources.mutexq),
+#define __SYS_CALLOP "push {r7}; mov %%r7,%[__r7]; swi\t0; pop {r7}"
+
+Jan
+
 -- 
-2.30.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
