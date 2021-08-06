@@ -1,15 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [RFC PATCH 0/4] Export mqueues to procfs
-Date: Wed, 18 Aug 2021 12:02:34 +0000
-Message-ID: <f39f1a03038611bae129ba76e14fcc8a75847634.camel@siemens.com>
-References: <20210818112407.12264-1-florian.bezdeka@siemens.com>
- <88684359-fe65-3f5a-362c-a5dd30584860@siemens.com>
-In-Reply-To: <88684359-fe65-3f5a-362c-a5dd30584860@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <ECF3DEF32F083246946C51E1EEE35145@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Arm userland not building with gcc-9 and later
+In-reply-to: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+Date: Fri, 06 Aug 2021 15:09:21 +0200
+Message-ID: <874kc267pa.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-T24gV2VkLCAyMDIxLTA4LTE4IGF0IDEzOjQxICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxOC4wOC4yMSAxMzoyNCwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEhpLA0KPiA+IA0K
-PiA+IHRoaXMgaXMgYW5vdGhlciB0cnkgdG8gbWFrZSByZWdpc3RlcmVkIG1xdWV1ZXMgdmlzaWJs
-ZS4gVGhpcyB0aW1lIGJ5DQo+ID4gZXhwb3J0aW5nIHRoZW0gdG8gdGhlIHByb2NmcywgbmFtZWx5
-IHRvDQo+ID4gL3Byb2MveGVub21haS9yZWdpc3RyeS9tcXVldWUvPG5hbWU+DQo+ID4gDQo+ID4g
-TGV0IG1lIGtub3cgd2hhdCB5b3UgdGhpbmsuLi4gDQo+ID4gDQo+ID4gSSBoYWQgdG8gcmV3b3Jr
-IHRoZSBleGlzdGluZyBleHBvcnQgbWFjaGluZXJ5IGEgYml0IHRvIGdldCByaWQgb2YgdGhlIHNv
-DQo+ID4gY2FsbGVkICJyb290IiBkaXJlY3Rvcnkgd2hpY2ggaXMgbm9ybWFsbHkgY3JlYXRlZC4g
-U2VlIHBhdGNoDQo+ID4gZGVzY3JpcHRpb25zIGZvciBkZXRhaWxzLg0KPiA+IA0KPiA+IEJlc3Qg
-cmVnYXJkcywNCj4gPiBGbG9yaWFuDQo+ID4gDQo+ID4gRmxvcmlhbiBCZXpkZWthICg0KToNCj4g
-PiAgIGNvYmFsdC9yZWdpc3RyeTogTWFrZSB0aGUgcm9vdCBkaXJlY3RvcnkgZm9yIHByb2MgZXhw
-b3J0cyBvcHRpb25hbA0KPiA+ICAgY29iYWx0L3JlZ2lzdHJ5OiBTaGFyZSB4bnJlZ2lzdHJ5X3Zm
-cmVnX29wcyB3aXRoIG90aGVyIGNvbXBpbGUgdW5pdHMNCj4gPiAgIGNvYmFsdC9yZWdpc3RyeTog
-SW5pdGlhbGl6ZSByZWZjbnQgb2YgZXhwb3J0ZWQgdmlydHVhbCBwcm9jIGZpbGVzDQo+ID4gICBj
-b2JhbHQvbXF1ZXVlOiBFeHBvcnQgY3JlYXRlZCBtcXVldWVzIHRvIHByb2Nmcw0KPiA+IA0KPiA+
-ICBpbmNsdWRlL2NvYmFsdC9rZXJuZWwvcmVnaXN0cnkuaCB8ICAyICsrDQo+ID4gIGtlcm5lbC9j
-b2JhbHQvcG9zaXgvbXF1ZXVlLmMgICAgIHwgMzUgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKy0NCj4gPiAga2VybmVsL2NvYmFsdC9yZWdpc3RyeS5jICAgICAgICAgfCAxMyArKysrKyst
-LS0tLS0NCj4gPiAgMyBmaWxlcyBjaGFuZ2VkLCA0MyBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9u
-cygtKQ0KPiA+IA0KPiANCj4gV2lsbCBoYXZlIGEgbG9vay4NCj4gDQo+IFdlIGxpa2VseSB0aGVu
-IGFsc28gd2FudCB0aGUgc2FtZSBmb3IgcHNoYXJlZCBzZW1hcGhvcmVzLCByaWdodD8NCj4gQW55
-dGhpbmcgZWxzZSB0aGF0IGNvdWxkIGdldCBhIG5hbWUgKHdoaWNoIG1heSBjb2xsaWRlIG9yIGJl
-Y29tZSBvcnBoYW5lZCk/DQoNClllcywgdG8gYmUgY29tcGxldGUgd2Ugc2hvdWxkIGRvIHRoZSBz
-YW1lIGZvciBzaGFyZWQgc2VtYXBob3Jlcy7CoA0KDQpUaGUgcHJldmlvdXNseSBzdWJtaXR0ZWQg
-ImR1bXAgcGF0Y2giIGhhbmRsZWQgYWxsIHJlZ2lzdGVyZWQgdHlwZXMNCihtcXVldWUsIHNlbWFw
-aG9yZSwgLi4uKSB0aGUgc2FtZSB3YXkuIEJ1dCB0aGVyZSB3YXMgbm8gdHlwZQ0KaW5mb3JtYXRp
-b24gYXZhaWxhYmxlLiBUaGUgcmVnaXN0cnkgaG9sZHMgdGhlIGtleXMgb25seS4NCg0KPiANCj4g
-SmFuDQo+IA0KDQo=
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> Hi all,
+>
+> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
+> I picked arm as first target, but that apparently starts to break with
+> gcc-9 or newer (tried 9.2 and 10.2):
+>
+> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
+>   CC       libarch_la-features.lo
+> features.c: In function 'cobalt_arch_check_features':
+> features.c:82:1: error: r7 cannot be used in 'asm' here
+>    82 | }
+>       | ^
+>
+> That seems to be related to passing the syscall number via r7 on ARM. Is
+> our ABI soon no longer compilable, or can we fix this?
+>
+> Jan
+
+r7 may be used as a scratch register by gcc in some
+cases. -fomit-frame-pointer for debug builds may help (i.e. when the
+optimizer is switched off).
+
+-- 
+Philippe.
 
