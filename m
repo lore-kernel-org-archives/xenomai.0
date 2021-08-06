@@ -1,10 +1,8 @@
-Subject: Re: [PATCH] cobalt/posix/sem: Pull xnregistry_remove out of nklock
-References: <33aedba3-088f-db8d-66e4-36515cf644f7@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3446dbf8-69b3-cee3-3fd3-fa03bd2bee4d@siemens.com>
-Date: Wed, 25 Aug 2021 14:29:53 +0200
+Subject: [PATCH] build: Disable -Wformat-truncation
+Message-ID: <ba35be04-cea2-bc1b-07b6-938af921b35a@siemens.com>
+Date: Fri, 6 Aug 2021 19:18:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <33aedba3-088f-db8d-66e4-36515cf644f7@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,46 +16,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-On 25.08.21 14:06, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Neither needed nor correct for named semaphores where xnregistry_remove
-> will trigger a flush_work when running over the secondary domain.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  kernel/cobalt/posix/sem.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-> index b6709e6927..6fb4dc2c2a 100644
-> --- a/kernel/cobalt/posix/sem.c
-> +++ b/kernel/cobalt/posix/sem.c
-> @@ -94,7 +94,6 @@ int __cobalt_sem_destroy(xnhandle_t handle)
->  	}
->  
->  	cobalt_mark_deleted(sem);
-> -	xnregistry_remove(sem->resnode.handle);
->  	if (!sem->pathname)
->  		cobalt_del_resource(&sem->resnode);
->  	if (xnsynch_destroy(&sem->synchbase) == XNSYNCH_RESCHED) {
-> @@ -104,6 +103,7 @@ int __cobalt_sem_destroy(xnhandle_t handle)
->  
->  	xnlock_put_irqrestore(&nklock, s);
->  
-> +	xnregistry_remove(sem->resnode.handle);
->  	if (sem->pathname)
->  		putname(sem->pathname);
->  
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Will go in before Florian's registry patches as those surface this
-hidden issue. Previously, sems had no entry in proc, thus couldn't
-trigger this problem.
+This is default-on in Debian 11 and triggers in heapobj_pkg_init_shared
+or heapobj_bind_session without adding value - we truncate for good
+reasons.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ configure.ac | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/configure.ac b/configure.ac
+index bd5fd5ba9a..b6742c4b92 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -692,7 +692,8 @@ fi
+ dnl Internal CFLAGS and LDFLAGS, may be enhanced per-arch below
+ XENO_USER_CFLAGS="$XENO_USER_APP_CFLAGS -pipe -fstrict-aliasing \
+ -Wall -Wstrict-prototypes -Wmissing-prototypes -Wno-long-long \
+--Wno-unused-parameter -Werror -Wformat-security -D__XENO__ -D__IN_XENO__"
++-Wno-unused-parameter -Wno-format-truncation -Werror -Wformat-security \
++-D__XENO__ -D__IN_XENO__"
+ if test x$want_fortify = xyes -a x$debug_mode != xfull; then
+    XENO_USER_CFLAGS="$XENO_USER_CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
+ fi
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
