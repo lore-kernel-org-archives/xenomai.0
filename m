@@ -1,9 +1,10 @@
-References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+References: <3cdc2c82-44ca-02a7-3585-e40547dcd588@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Arm userland not building with gcc-9 and later
-In-reply-to: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
-Date: Sat, 07 Aug 2021 19:00:45 +0200
-Message-ID: <87y29d42bm.fsf@xenomai.org>
+Subject: Re: [PATCH] lib/cobalt: arm: Account for register allocation clash
+ gcc 9+
+In-reply-to: <3cdc2c82-44ca-02a7-3585-e40547dcd588@siemens.com>
+Date: Sat, 07 Aug 2021 19:20:36 +0200
+Message-ID: <87v94h41ej.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,35 +21,57 @@ Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> Hi all,
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
-> I picked arm as first target, but that apparently starts to break with
-> gcc-9 or newer (tried 9.2 and 10.2):
+> Modern gcc can claim r7 for own purposes, denying the syscall code to
+> assign it directly. Work around this by saving/restoring it around the
+> syscall.
 >
-> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
->   CC       libarch_la-features.lo
-> features.c: In function 'cobalt_arch_check_features':
-> features.c:82:1: error: r7 cannot be used in 'asm' here
->    82 | }
->       | ^
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  lib/cobalt/arch/arm/include/asm/xenomai/syscall.h | 13 ++++---------
+>  1 file changed, 4 insertions(+), 9 deletions(-)
 >
-> That seems to be related to passing the syscall number via r7 on ARM. Is
-> our ABI soon no longer compilable, or can we fix this?
->
+> diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+> index 8f48eb16f2..0941e6c845 100644
+> --- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+> +++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+> @@ -89,15 +89,11 @@
+>  #define __sys1(x)	__sys2(x)
+>  
+>  #ifdef __ARM_EABI__
+> -#define __SYS_REG , "r7"
+> -#define __SYS_REG_DECL register unsigned long __r7 __asm__ ("r7")
+> -#define __SYS_REG_SET __r7 = XENO_ARM_SYSCALL
+> -#define __SYS_REG_INPUT ,"r" (__r7)
+> -#define __SYS_CALLOP "swi\t0"
+> +#define __SYS_REG_DECL unsigned long __r7 = XENO_ARM_SYSCALL
+> +#define __SYS_REG_INPUT , [__r7] "r" (__r7)
+> +#define __SYS_CALLOP "push {r7}; mov %%r7,%[__r7]; swi\t0; pop {r7}"
+>  #else
+> -#define __SYS_REG
+>  #define __SYS_REG_DECL
+> -#define __SYS_REG_SET
+>  #define __SYS_REG_INPUT
+>  #define __NR_OABI_SYSCALL_BASE	0x900000
+>  #define __SYS_CALLOP "swi\t" __sys1(__NR_OABI_SYSCALL_BASE + XENO_ARM_SYSCALL) ""
+> @@ -109,9 +105,8 @@
+>  		__SYS_REG_DECL;						\
+>  		LOADARGS_##nr(__xn_syscode(op), args);			\
+>  		__asm__ __volatile__ ("" : /* */ : /* */ :		\
+> -				      CLOBBER_REGS_##nr __SYS_REG);	\
+> +				      CLOBBER_REGS_##nr);		\
+>  		LOADREGS_##nr;						\
+> -		__SYS_REG_SET;						\
+>  		__asm__ __volatile__ (					\
+>  			__SYS_CALLOP					\
+>  			: "=r" (__r0)					\
 
-Just tried to reproduce this issue with the latest stable (10.3-2021.07)
-from ARM [1], and a fairly recent linaro snapshot (11.0.1-2021.03) [2],
-to no avail. I tried with --enable-debug=symbols, --disable-debug,
---enable-debug=full, no issue so far.
-
-Can you please share you configure settings?
-
-[1]
-https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf.tar.xz
-
-[2]
-https://snapshots.linaro.org/gnu-toolchain/11.0-2021.03-1/arm-linux-gnueabihf/gcc-linaro-11.0.1-2021.03-aarch64_arm-linux-gnueabihf.tar.xz
+Mm, this does indeed look like a workaround more than a fix. Eventually,
+we may be better off providing out-of-line syscall wrappers directly
+written in asm, or as naked C routines with bells and suspenders
+(no_instrument and the like) including the code produced by the
+XENOMAI_SYSCALL macro exclusively.
 
 -- 
 Philippe.
