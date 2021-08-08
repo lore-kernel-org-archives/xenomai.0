@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/2] drivers/net: udp, packet: Respect msg_namelen when
- filling msg_name
-Message-ID: <1dd874eb-abf1-81f2-d705-8b049a398082@siemens.com>
-Date: Sun, 8 Aug 2021 19:19:15 +0200
+Subject: [PATCH 1/2] drivers/net: udp, packet: Fix returning of msg_namelen
+ and msg_flags from recvmsg
+Message-ID: <31c54628-280a-c423-4fdc-a9e92257dffe@siemens.com>
+Date: Sun, 8 Aug 2021 19:19:13 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -19,70 +19,87 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-We must not write more than what was allocated and reported via
-msg_namelen by userspace. We may truncate, though, then reporting what
-would have been written if there had been enough space.
+The msg struct passed to the recvmsg handler for udp and packet sockets
+is not located in userspace. Therefore, we must not use rtnet_put_arg to
+update its content, it may fail on some archs, namely arm and arm64.
+Just assign, the syscall entry function will take care of copying it
+back.
 
+Fixes: 25a53f5cd352 ("rtnet: udp: Remove duplicate copy_from/to_user")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/stack/ipv4/udp/udp.c     | 12 +++++++++---
- kernel/drivers/net/stack/packet/af_packet.c | 11 ++++++++---
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ kernel/drivers/net/stack/ipv4/udp/udp.c     | 12 ++----------
+ kernel/drivers/net/stack/packet/af_packet.c | 13 +++----------
+ 2 files changed, 5 insertions(+), 20 deletions(-)
 
 diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-index bceb6b5132..db7a902c35 100644
+index 6fe1aeb12e..bceb6b5132 100644
 --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
 +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-@@ -441,12 +441,18 @@ ssize_t rt_udp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
- 		sin.sin_family = AF_INET;
- 		sin.sin_port = uh->source;
- 		sin.sin_addr.s_addr = skb->nh.iph->saddr;
--		ret = rtnet_put_arg(fd, msg->msg_name, &sin, sizeof(sin));
-+
-+		if (msg->msg_namelen < 0) {
-+			ret = -EINVAL;
-+			goto fail;
-+		}
-+		namelen = min(sizeof(sin), (size_t)msg->msg_namelen);
-+
-+		ret = rtnet_put_arg(fd, msg->msg_name, &sin, namelen);
- 		if (ret)
+@@ -446,10 +446,7 @@ ssize_t rt_udp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
  			goto fail;
  
--		namelen = sizeof(sin);
--		msg->msg_namelen = namelen;
-+		msg->msg_namelen = sizeof(sin);
+ 		namelen = sizeof(sin);
+-		ret = rtnet_put_arg(fd, &msg->msg_namelen, &namelen,
+-				    sizeof(namelen));
+-		if (ret)
+-			goto fail;
++		msg->msg_namelen = namelen;
  	}
  
  	data_len = ntohs(uh->len) - sizeof(struct udphdr);
+@@ -489,12 +486,7 @@ ssize_t rt_udp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
+ 	if (data_len > 0)
+ 		flags |= MSG_TRUNC;
+ 
+-	if (flags != msg->msg_flags) {
+-		ret = rtnet_put_arg(fd, &msg->msg_flags, &flags,
+-				    sizeof(flags));
+-		if (ret)
+-			goto fail;
+-	}
++	msg->msg_flags = flags;
+ out:
+ 	if ((msg_flags & MSG_PEEK) == 0)
+ 		kfree_rtskb(first_skb);
 diff --git a/kernel/drivers/net/stack/packet/af_packet.c b/kernel/drivers/net/stack/packet/af_packet.c
-index 0d5ecd6a7d..b55235ec19 100644
+index 8a8072c640..0d5ecd6a7d 100644
 --- a/kernel/drivers/net/stack/packet/af_packet.c
 +++ b/kernel/drivers/net/stack/packet/af_packet.c
-@@ -347,15 +347,20 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
- 		sll.sll_pkttype = rtskb->pkt_type;
- 		sll.sll_ifindex = rtdev->ifindex;
- 
-+		if (msg->msg_namelen < 0) {
-+			ret = -EINVAL;
-+			goto fail;
-+		}
-+		namelen = min(sizeof(sll), (size_t)msg->msg_namelen);
-+
- 		/* Ethernet specific - we rather need some parse handler here */
- 		memcpy(sll.sll_addr, rtskb->mac.ethernet->h_source, ETH_ALEN);
- 		sll.sll_halen = ETH_ALEN;
--		ret = rtnet_put_arg(fd, msg->msg_name, &sll, sizeof(sll));
-+		ret = rtnet_put_arg(fd, msg->msg_name, &sll, namelen);
- 		if (ret)
+@@ -302,7 +302,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
+ 	size_t copy_len;
+ 	struct rtskb *rtskb;
+ 	struct sockaddr_ll sll;
+-	int ret, flags;
++	int ret;
+ 	nanosecs_rel_t timeout = sock->timeout;
+ 	socklen_t namelen;
+ 	struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+@@ -355,10 +355,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
  			goto fail;
  
--		namelen = sizeof(sll);
--		msg->msg_namelen = namelen;
-+		msg->msg_namelen = sizeof(sll);
+ 		namelen = sizeof(sll);
+-		ret = rtnet_put_arg(fd, &msg->msg_namelen, &namelen,
+-				    sizeof(namelen));
+-		if (ret)
+-			goto fail;
++		msg->msg_namelen = namelen;
  	}
  
  	/* Include the header in raw delivery */
+@@ -375,11 +372,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
+ 
+ 	if (copy_len > len) {
+ 		copy_len = len;
+-		flags = msg->msg_flags | MSG_TRUNC;
+-		ret = rtnet_put_arg(fd, &msg->msg_flags, &flags,
+-				    sizeof(flags));
+-		if (ret)
+-			goto fail;
++		msg->msg_flags |= MSG_TRUNC;
+ 	}
+ 
+ 	copy_len = rtnet_write_to_iov(fd, iov, msg->msg_iovlen, rtskb->data,
 -- 
 2.31.1
 
