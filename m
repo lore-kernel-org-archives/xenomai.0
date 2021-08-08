@@ -1,14 +1,13 @@
-Subject: Re: Arm userland not building with gcc-9 and later
-References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
- <87y29d42bm.fsf@xenomai.org>
+Subject: Re: [PATCH v3] cobalt: Sort out virtual vs. real pids
+References: <3e3762cd-fdf6-af27-a4de-c063d0676cda@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b8fd767c-9adc-4fba-ac5c-cdafb8f03e0b@siemens.com>
-Date: Sun, 8 Aug 2021 18:55:53 +0200
+Message-ID: <604c7b9e-b667-b330-c738-2c105e445503@siemens.com>
+Date: Sun, 8 Aug 2021 19:01:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <87y29d42bm.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <3e3762cd-fdf6-af27-a4de-c063d0676cda@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +16,357 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
+To: Xenomai <xenomai@xenomai.org>
+Cc: Marco Barletta <barlettamarco8@gmail.com>, MONTET Julien <julien.montet@reseau.eseo.fr>
 
-On 07.08.21 19:00, Philippe Gerum wrote:
+On 02.08.21 18:56, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Make sure that we consider all pids taken from or sent to userspace via
+> syscalls as virtual. That means converting them to global pids before
+> processing them or converting them back to virtual pids in the caller's
+> namespace before reporting them. We also need to switch thread hashing
+> from vpids to real pids.
 > 
->> Hi all,
->>
->> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
->> I picked arm as first target, but that apparently starts to break with
->> gcc-9 or newer (tried 9.2 and 10.2):
->>
->> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
->>   CC       libarch_la-features.lo
->> features.c: In function 'cobalt_arch_check_features':
->> features.c:82:1: error: r7 cannot be used in 'asm' here
->>    82 | }
->>       | ^
->>
->> That seems to be related to passing the syscall number via r7 on ARM. Is
->> our ABI soon no longer compilable, or can we fix this?
->>
+> Not converted is the procfs interface as this one continues to provide
+> only a global view on cobalt objects and associated pids.
 > 
-> Just tried to reproduce this issue with the latest stable (10.3-2021.07)
-> from ARM [1], and a fairly recent linaro snapshot (11.0.1-2021.03) [2],
-> to no avail. I tried with --enable-debug=symbols, --disable-debug,
-> --enable-debug=full, no issue so far.
+> A few syscall tracepoints that report the vpid as passed down from
+> userspace get adjusted in their output so that it is clear that no
+> global pid is shown.
 > 
-> Can you please share you configure settings?
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> Changes in v3:
+>  - handle process-local thread lookups correctly (hopefully)
+> 
+> This is in next for a while and ran several test cycles. Even if we 
+> should have remaining issues under pid namespaces, we should not have 
+> regressions in the normal cases.
+> 
+>  include/cobalt/kernel/thread.h     |  2 ++
+>  kernel/cobalt/posix/event.c        |  2 +-
+>  kernel/cobalt/posix/mqueue.c       |  2 +-
+>  kernel/cobalt/posix/process.c      | 14 ++++++++++++++
+>  kernel/cobalt/posix/process.h      |  2 ++
+>  kernel/cobalt/posix/sched.c        | 10 ++++++----
+>  kernel/cobalt/posix/sem.c          |  2 +-
+>  kernel/cobalt/posix/signal.c       | 10 ++++++----
+>  kernel/cobalt/posix/thread.c       | 18 ++++++++++--------
+>  kernel/cobalt/posix/thread.h       |  2 +-
+>  kernel/cobalt/thread.c             | 10 ++++++++++
+>  kernel/cobalt/trace/cobalt-posix.h |  4 ++--
+>  12 files changed, 56 insertions(+), 22 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+> index b79cb84296..4c8a0b9f2a 100644
+> --- a/include/cobalt/kernel/thread.h
+> +++ b/include/cobalt/kernel/thread.h
+> @@ -450,6 +450,8 @@ char *xnthread_format_status(unsigned long status,
+>  
+>  pid_t xnthread_host_pid(struct xnthread *thread);
+>  
+> +pid_t xnthread_host_vpid(struct xnthread *thread);
+> +
+>  int xnthread_set_clock(struct xnthread *thread,
+>  		       struct xnclock *newclock);
+>  
+> diff --git a/kernel/cobalt/posix/event.c b/kernel/cobalt/posix/event.c
+> index 3712154f53..5871106301 100644
+> --- a/kernel/cobalt/posix/event.c
+> +++ b/kernel/cobalt/posix/event.c
+> @@ -352,7 +352,7 @@ COBALT_SYSCALL(event_inquire, current,
+>  		xnsynch_for_each_sleeper(thread, &event->synch) {
+>  			if (nrwait >= nrpids)
+>  				break;
+> -			t[nrwait++] = xnthread_host_pid(thread);
+> +			t[nrwait++] = xnthread_host_vpid(thread);
+>  		}
+>  	}
+>  
+> diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+> index dd8acd55b0..fcde87a077 100644
+> --- a/kernel/cobalt/posix/mqueue.c
+> +++ b/kernel/cobalt/posix/mqueue.c
+> @@ -720,7 +720,7 @@ mq_notify(struct cobalt_mqd *mqd, unsigned index, const struct sigevent *evp)
+>  		 * receiver's namespaces. We pass the receiver's creds
+>  		 * into the init namespace instead.
+>  		 */
+> -		mq->si.si_pid = task_pid_nr(current);
+> +		mq->si.si_pid = task_pid_vnr(current);
+>  		mq->si.si_uid = get_current_uuid();
+>  	}
+>  
+> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+> index 1f059ad830..98b7df33fb 100644
+> --- a/kernel/cobalt/posix/process.c
+> +++ b/kernel/cobalt/posix/process.c
+> @@ -975,6 +975,20 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm)
+>  	return KEVENT_PROPAGATE;
+>  }
+>  
+> +pid_t cobalt_vpid2pid_nr(pid_t vpid)
+> +{
+> +	struct pid *pid;
+> +	pid_t nr = -1;
+> +
+> +	rcu_read_lock();
 
-I'm on ARM gcc 10.3-2021.07 as well. Debian's gcc from bullseye show 
-this, too.
+This is not a good idea, at least for I-pipe which is not RCU-compatible
+(Dovetail just gained that).
 
-./configure --host=arm-none-linux-gnueabihf --enable-debug=full
-
-on master. And that results in
-
-  CC       libarch_la-features.lo
-../../../../../lib/cobalt/arch/arm/features.c: In function ‘cobalt_arch_check_features’:
-../../../../../lib/cobalt/arch/arm/features.c:82:1: error: r7 cannot be used in ‘asm’ here
-   82 | }
-      | ^
+I think we need to rest this approach for now, either under I-pipe
+gained support for RCU read-side access or we switched to Dovetail
+completely. Pulling it from next.
 
 Jan
+
+> +	pid = find_vpid(vpid);
+> +	if (pid)
+> +		nr = pid_nr(pid);
+> +	rcu_read_unlock();
+> +
+> +	return nr;
+> +}
+> +
+>  static int attach_process(struct cobalt_process *process)
+>  {
+>  	struct cobalt_ppd *p = &process->sys_ppd;
+> diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
+> index 279707a680..46dff43b7a 100644
+> --- a/kernel/cobalt/posix/process.h
+> +++ b/kernel/cobalt/posix/process.h
+> @@ -175,4 +175,6 @@ int cobalt_handle_cleanup_event(struct mm_struct *mm);
+>  
+>  int cobalt_handle_user_return(struct task_struct *task);
+>  
+> +pid_t cobalt_vpid2pid_nr(pid_t vpid);
+> +
+>  #endif /* !_COBALT_POSIX_PROCESS_H */
+> diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
+> index 4fd9c2b46e..26259fbd3f 100644
+> --- a/kernel/cobalt/posix/sched.c
+> +++ b/kernel/cobalt/posix/sched.c
+> @@ -736,7 +736,7 @@ COBALT_SYSCALL(sched_weightprio, current,
+>  	return __cobalt_sched_weightprio(policy, &param_ex);
+>  }
+>  
+> -int cobalt_sched_setscheduler_ex(pid_t pid,
+> +int cobalt_sched_setscheduler_ex(pid_t vpid,
+>  				 int policy,
+>  				 const struct sched_param_ex *param_ex,
+>  				 __u32 __user *u_winoff,
+> @@ -747,9 +747,11 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
+>  	int ret, promoted = 0;
+>  	spl_t s;
+>  
+> -	trace_cobalt_sched_setscheduler(pid, policy, param_ex);
+> +	trace_cobalt_sched_setscheduler(vpid, policy, param_ex);
+> +
+> +	if (vpid) {
+> +		pid_t pid = cobalt_vpid2pid_nr(vpid);
+>  
+> -	if (pid) {
+>  		xnlock_get_irqsave(&nklock, s);
+>  		thread = cobalt_thread_find(pid);
+>  		xnlock_put_irqrestore(&nklock, s);
+> @@ -757,7 +759,7 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
+>  		thread = cobalt_current_thread();
+>  
+>  	if (thread == NULL) {
+> -		if (u_winoff == NULL || pid != task_pid_vnr(current))
+> +		if (u_winoff == NULL || vpid != task_pid_vnr(current))
+>  			return -ESRCH;
+>  			
+>  		thread = cobalt_thread_shadow(&hkey, u_winoff);
+> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+> index 72b20c78d2..030ce8ffed 100644
+> --- a/kernel/cobalt/posix/sem.c
+> +++ b/kernel/cobalt/posix/sem.c
+> @@ -602,7 +602,7 @@ COBALT_SYSCALL(sem_inquire, current,
+>  		xnsynch_for_each_sleeper(thread, &sem->synchbase) {
+>  			if (nrwait >= nrpids)
+>  				break;
+> -			t[nrwait++] = xnthread_host_pid(thread);
+> +			t[nrwait++] = xnthread_host_vpid(thread);
+>  		}
+>  	}
+>  
+> diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
+> index 0b43b5fcfa..c2c9c092c4 100644
+> --- a/kernel/cobalt/posix/signal.c
+> +++ b/kernel/cobalt/posix/signal.c
+> @@ -510,7 +510,7 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
+>  			sigp->si.si_signo = sig;
+>  			sigp->si.si_errno = 0;
+>  			sigp->si.si_code = SI_USER;
+> -			sigp->si.si_pid = task_pid_nr(current);
+> +			sigp->si.si_pid = task_pid_vnr(current);
+>  			sigp->si.si_uid = get_current_uuid();
+>  			if (cobalt_signal_send(thread, sigp, group) <= 0)
+>  				cobalt_signal_free(sigp);
+> @@ -525,8 +525,9 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
+>  	return ret;
+>  }
+>  
+> -COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
+> +COBALT_SYSCALL(kill, conforming, (pid_t vpid, int sig))
+>  {
+> +	pid_t pid = cobalt_vpid2pid_nr(vpid);
+>  	struct cobalt_thread *thread;
+>  	int ret;
+>  	spl_t s;
+> @@ -544,8 +545,9 @@ COBALT_SYSCALL(kill, conforming, (pid_t pid, int sig))
+>  	return ret;
+>  }
+>  
+> -int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
+> +int __cobalt_sigqueue(pid_t vpid, int sig, const union sigval *value)
+>  {
+> +	pid_t pid = cobalt_vpid2pid_nr(vpid);
+>  	struct cobalt_sigpending *sigp;
+>  	struct cobalt_thread *thread;
+>  	int ret = 0;
+> @@ -569,7 +571,7 @@ int __cobalt_sigqueue(pid_t pid, int sig, const union sigval *value)
+>  			sigp->si.si_signo = sig;
+>  			sigp->si.si_errno = 0;
+>  			sigp->si.si_code = SI_QUEUE;
+> -			sigp->si.si_pid = task_pid_nr(current);
+> +			sigp->si.si_pid = task_pid_vnr(current);
+>  			sigp->si.si_uid = get_current_uuid();
+>  			sigp->si.si_value = *value;
+>  			if (cobalt_signal_send(thread, sigp, 1) <= 0)
+> diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+> index cdeb66d4f3..6a79fecb5c 100644
+> --- a/kernel/cobalt/posix/thread.c
+> +++ b/kernel/cobalt/posix/thread.c
+> @@ -176,11 +176,11 @@ struct cobalt_thread *cobalt_thread_find(pid_t pid) /* nklocked, IRQs off */
+>  }
+>  EXPORT_SYMBOL_GPL(cobalt_thread_find);
+>  
+> -struct cobalt_thread *cobalt_thread_find_local(pid_t pid) /* nklocked, IRQs off */
+> +struct cobalt_thread *cobalt_thread_find_local(pid_t vpid) /* nklocked, IRQs off */
+>  {
+>  	struct cobalt_thread *thread;
+>  
+> -	thread = cobalt_thread_find(pid);
+> +	thread = cobalt_thread_find(cobalt_vpid2pid_nr(vpid));
+>  	if (thread == NULL || thread->hkey.mm != current->mm)
+>  		return NULL;
+>  
+> @@ -624,7 +624,7 @@ int __cobalt_thread_create(unsigned long pth, int policy,
+>  		return ret;
+>  	}
+>  
+> -	if (!thread_hash(&hkey, thread, task_pid_vnr(p))) {
+> +	if (!thread_hash(&hkey, thread, task_pid_nr(p))) {
+>  		ret = -EAGAIN;
+>  		goto fail;
+>  	}
+> @@ -682,7 +682,7 @@ cobalt_thread_shadow(struct cobalt_local_hkey *hkey,
+>  		return ERR_PTR(ret);
+>  	}
+>  
+> -	if (!thread_hash(hkey, thread, task_pid_vnr(current))) {
+> +	if (!thread_hash(hkey, thread, task_pid_nr(current))) {
+>  		ret = -EAGAIN;
+>  		goto fail;
+>  	}
+> @@ -819,7 +819,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
+>  	if (thread == NULL)
+>  		pid = -ESRCH;
+>  	else
+> -		pid = xnthread_host_pid(&thread->threadbase);
+> +		pid = xnthread_host_vpid(&thread->threadbase);
+>  
+>  	xnlock_put_irqrestore(&nklock, s);
+>  
+> @@ -827,7 +827,7 @@ COBALT_SYSCALL(thread_getpid, current, (unsigned long pth))
+>  }
+>  
+>  COBALT_SYSCALL(thread_getstat, current,
+> -	       (pid_t pid, struct cobalt_threadstat __user *u_stat))
+> +	       (pid_t vpid, struct cobalt_threadstat __user *u_stat))
+>  {
+>  	struct cobalt_threadstat stat;
+>  	struct cobalt_thread *p;
+> @@ -835,14 +835,16 @@ COBALT_SYSCALL(thread_getstat, current,
+>  	xnticks_t xtime;
+>  	spl_t s;
+>  
+> -	trace_cobalt_pthread_stat(pid);
+> +	trace_cobalt_pthread_stat(vpid);
+>  
+> -	if (pid == 0) {
+> +	if (vpid == 0) {
+>  		thread = xnthread_current();
+>  		if (thread == NULL)
+>  			return -EPERM;
+>  		xnlock_get_irqsave(&nklock, s);
+>  	} else {
+> +		pid_t pid = cobalt_vpid2pid_nr(vpid);
+> +
+>  		xnlock_get_irqsave(&nklock, s);
+>  		p = cobalt_thread_find(pid);
+>  		if (p == NULL) {
+> diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
+> index 51be372a7a..66e3a88223 100644
+> --- a/kernel/cobalt/posix/thread.h
+> +++ b/kernel/cobalt/posix/thread.h
+> @@ -146,7 +146,7 @@ int cobalt_thread_setschedprio(unsigned long pth,
+>  
+>  struct cobalt_thread *cobalt_thread_find(pid_t pid);
+>  
+> -struct cobalt_thread *cobalt_thread_find_local(pid_t pid);
+> +struct cobalt_thread *cobalt_thread_find_local(pid_t vpid);
+>  
+>  struct cobalt_thread *cobalt_thread_lookup(unsigned long pth);
+>  
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index 2c1ec6d3a4..9a97213fbe 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -388,6 +388,16 @@ pid_t xnthread_host_pid(struct xnthread *thread)
+>  	return task_pid_nr(xnthread_host_task(thread));
+>  }
+>  
+> +pid_t xnthread_host_vpid(struct xnthread *thread)
+> +{
+> +	if (xnthread_test_state(thread, XNROOT))
+> +		return 0;
+> +	if (!xnthread_host_task(thread))
+> +		return -1;
+> +
+> +	return task_pid_vnr(xnthread_host_task(thread));
+> +}
+> +
+>  int xnthread_set_clock(struct xnthread *thread, struct xnclock *newclock)
+>  {
+>  	spl_t s;
+> diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+> index 3df9295541..d994007bba 100644
+> --- a/kernel/cobalt/trace/cobalt-posix.h
+> +++ b/kernel/cobalt/trace/cobalt-posix.h
+> @@ -252,7 +252,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_scheduler,
+>  		memcpy(__get_dynamic_array(param_ex), param_ex, sizeof(*param_ex));
+>  	),
+>  
+> -	TP_printk("pid=%d policy=%s param={ %s }",
+> +	TP_printk("vpid=%d policy=%s param={ %s }",
+>  		  __entry->pid,
+>  		  cobalt_print_sched_policy(__entry->policy),
+>  		  __parse_sched_params(__entry->policy,
+> @@ -369,7 +369,7 @@ DECLARE_EVENT_CLASS(cobalt_posix_pid,
+>  	TP_fast_assign(
+>  		__entry->pid = pid;
+>  	),
+> -	TP_printk("pid=%d", __entry->pid)
+> +	TP_printk("vpid=%d", __entry->pid)
+>  );
+>  
+>  DEFINE_EVENT(cobalt_posix_pid, cobalt_pthread_stat,
+> 
 
 -- 
 Siemens AG, T RDA IOT
