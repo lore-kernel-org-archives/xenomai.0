@@ -1,8 +1,14 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH v2] testsuite/smokey: net_client: skip late packet error in vm
- mode
-Date: Thu,  5 Aug 2021 20:11:23 -0400
-Message-Id: <20210806001123.7331-1-hongzhan.chen@intel.com>
+References: <79e94bdb-b97c-6f65-c3e7-1a62793855e9@siemens.com>
+ <87y29d42bm.fsf@xenomai.org>
+ <b8fd767c-9adc-4fba-ac5c-cdafb8f03e0b@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Arm userland not building with gcc-9 and later
+In-reply-to: <b8fd767c-9adc-4fba-ac5c-cdafb8f03e0b@siemens.com>
+Date: Sun, 08 Aug 2021 19:21:47 +0200
+Message-ID: <87pmun4ztg.fsf@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,39 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-In vm mode, skip late packet error in functional test to avoid
-test failure.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- testsuite/smokey/net_common/client.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
-index d13d72918..02a9e7e6d 100644
---- a/testsuite/smokey/net_common/client.c
-+++ b/testsuite/smokey/net_common/client.c
-@@ -204,7 +204,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
- 		} while (err != -ETIMEDOUT);
- 	}
- 
--	if (glost || glate)
-+	if (glost || (!smokey_on_vm && glate))
- 		fprintf(stderr, "RTnet %s test failed", client->name);
- 	if (glost) {
- 		if (glost == limit)
-@@ -218,7 +218,7 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
- 		fprintf(stderr, ", %Lu overruns", glate);
- 	if (glost || glate)
- 		fputc('\n', stderr);
--	err = glost || glate ? -EPROTO : 0;
-+	err = glost || (!smokey_on_vm && glate) ? -EPROTO : 0;
- 
-   err:
- 	sock = smokey_check_errno(__RT(close(sock)));
--- 
-2.17.1
+> On 07.08.21 19:00, Philippe Gerum wrote:
+>>=20
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>=20
+>>> Hi all,
+>>>
+>>> just wanted to debug the RTnet issues we now see in CI on arm and arm64.
+>>> I picked arm as first target, but that apparently starts to break with
+>>> gcc-9 or newer (tried 9.2 and 10.2):
+>>>
+>>> make[5]: Entering directory '/xenomai/lib/cobalt/arch/arm'
+>>>   CC       libarch_la-features.lo
+>>> features.c: In function 'cobalt_arch_check_features':
+>>> features.c:82:1: error: r7 cannot be used in 'asm' here
+>>>    82 | }
+>>>       | ^
+>>>
+>>> That seems to be related to passing the syscall number via r7 on ARM. Is
+>>> our ABI soon no longer compilable, or can we fix this?
+>>>
+>>=20
+>> Just tried to reproduce this issue with the latest stable (10.3-2021.07)
+>> from ARM [1], and a fairly recent linaro snapshot (11.0.1-2021.03) [2],
+>> to no avail. I tried with --enable-debug=3Dsymbols, --disable-debug,
+>> --enable-debug=3Dfull, no issue so far.
+>>=20
+>> Can you please share you configure settings?
+>
+> I'm on ARM gcc 10.3-2021.07 as well. Debian's gcc from bullseye show=20
+> this, too.
+>
+> ./configure --host=3Darm-none-linux-gnueabihf --enable-debug=3Dfull
+>
+> on master. And that results in
+>
+>   CC       libarch_la-features.lo
+> ../../../../../lib/cobalt/arch/arm/features.c: In function =E2=80=98cobal=
+t_arch_check_features=E2=80=99:
+> ../../../../../lib/cobalt/arch/arm/features.c:82:1: error: r7 cannot be u=
+sed in =E2=80=98asm=E2=80=99 here
+>    82 | }
+>       | ^
+>
 
+Confirmed, found it. next is fine with this compiler, which is the
+version I tested. However, building stable and master does break.
+
+--=20
+Philippe.
 
