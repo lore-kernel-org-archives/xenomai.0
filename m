@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] testsuite/smokey: y2038: Fix evaluation of pthread_join result
-Message-ID: <ff6fb552-1773-59ed-8c34-1d443ad56016@siemens.com>
-Date: Mon, 9 Aug 2021 09:15:41 +0200
+Subject: arm64: More syscall corruptions
+Message-ID: <2ef3a424-7085-73da-2eb0-5e450d8fa827@siemens.com>
+Date: Mon, 9 Aug 2021 09:41:59 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -14,33 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi all,
 
-The status value is the pointer, not where the pointer points to.
+the failing y2038 testcase we see in CI [1] is caused by another problem 
+of our syscall wrappers, this time on arm64:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+        /* Timeout is never read by the kernel, so NULL should be OK */
+        ret = XENOMAI_SYSCALL5(sc_nr, mq, msg, strlen(msg), 0, NULL);
+    235c:       b940dfe0        ldr     w0, [sp, #220]
+    2360:       32040000        orr     w0, w0, #0x10000000
+    2364:       2a0003e8        mov     w8, w0
+--> w8 holds the syscall number
+    2368:       b980d3e0        ldrsw   x0, [sp, #208]
+    236c:       910043e0        add     x0, sp, #0x10
+    2370:       aa0003e1        mov     x1, x0
+    2374:       910043e0        add     x0, sp, #0x10
+    2378:       94000000        bl      0 <strlen>
+                        2378: R_AARCH64_CALL26  strlen
+--> w8 is clobbered
+    237c:       aa0003e2        mov     x2, x0
+    2380:       d2800003        mov     x3, #0x0                        // #0
+    2384:       d2800004        mov     x4, #0x0                        // #0
+    2388:       d4000001        svc     #0x0
 
-Not yet resolving the unexpected assertion, though.
+The problem is that w8/r8 is the "Indirect result location register", 
+thus can be overwritten when calling a function - and that's what strlen 
+does.
 
- testsuite/smokey/y2038/syscall-tests.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What are we missing in our syscall black magic to prevent this? Or this 
+this the final call to move the wrapper into am out-of-line function?
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 90bfe28d48..afbe8d42a6 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -150,7 +150,7 @@ static int run_thread(void *(*thread)(void *), void *arg, int exp_result)
- 	if (!__T(ret, pthread_join(tid, &status)))
- 		return ret;
- 
--	res = *((long *) status);
-+	res = (long)status;
- 
- 	return (res == exp_result) ? 0 : ret;
- }
+Jan
+
 -- 
-2.31.1
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
