@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] customizations: Fix runtime dependencies
-Message-ID: <9ed08d45-d672-ddc6-3b42-41f6ae0029ca@siemens.com>
-Date: Mon, 9 Aug 2021 08:04:57 +0200
+Subject: [PATCH] testsuite/smokey: y2038: Fix evaluation of pthread_join result
+Message-ID: <ff6fb552-1773-59ed-8c34-1d443ad56016@siemens.com>
+Date: Mon, 9 Aug 2021 09:15:41 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,36 +18,29 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-We modify sshd_config, so we need the server to be installed already.
-passwd is no longer needed, though.
+The status value is the pointer, not where the pointer points to.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- recipes-core/customizations/customizations.bb | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/recipes-core/customizations/customizations.bb b/recipes-core/customizations/customizations.bb
-index e35c0a5..0faaff8 100644
---- a/recipes-core/customizations/customizations.bb
-+++ b/recipes-core/customizations/customizations.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2018
-+# Copyright (c) Siemens AG, 2018-2021
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -18,7 +18,7 @@ SRC_URI = " \
-     file://ethernet \
-     file://99-silent-printk.conf"
+Not yet resolving the unexpected assertion, though.
+
+ testsuite/smokey/y2038/syscall-tests.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 90bfe28d48..afbe8d42a6 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -150,7 +150,7 @@ static int run_thread(void *(*thread)(void *), void *arg, int exp_result)
+ 	if (!__T(ret, pthread_join(tid, &status)))
+ 		return ret;
  
--DEBIAN_DEPENDS = "passwd"
-+DEBIAN_DEPENDS = "openssh-server"
+-	res = *((long *) status);
++	res = (long)status;
  
- do_install() {
- 	install -v -d ${D}/etc/network/interfaces.d
+ 	return (res == exp_result) ? 0 : ret;
+ }
 -- 
 2.31.1
 
