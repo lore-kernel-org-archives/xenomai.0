@@ -1,12 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] testsuite/smokey: net: Ignore late or lost packets when
- running in VM
-Message-ID: <ccc448d1-deb7-8c67-96b7-535e5b8b0176@siemens.com>
-Date: Tue, 10 Aug 2021 12:17:27 +0200
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v5 0/5] y2038: Add mutex_timedlock64() support
+Date: Tue, 10 Aug 2021 12:23:39 +0200
+Message-Id: <20210810102344.49471-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi!
 
-Do not fail the test if packets arrive late or are lost due to the
-delays a VM, specifically an emulator like QEMU, may bring. Only if all
-packets are lost, something is wrong and should be reported.
+This series is based on the series posted by Song some time ago. The
+testing part has been heavily reworked. Details are mentioned in the 
+description of the last patch.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+@Jan: Patch 1 and 2 are re-sends. They are not directly related to the 
+y2038 stuff but the testsuite might fail if they are not applied.
 
-This now replaces "testsuite/smokey: net_client: skip late packet error 
-in vm mode" in next.
+Testing was done on x86 only so far, internal CI is still running but no
+problems expected.
 
- testsuite/smokey/net_common/client.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Best regards,   
+Florian
 
-diff --git a/testsuite/smokey/net_common/client.c b/testsuite/smokey/net_common/client.c
-index d13d72918a..914bda4a49 100644
---- a/testsuite/smokey/net_common/client.c
-+++ b/testsuite/smokey/net_common/client.c
-@@ -204,6 +204,12 @@ static int smokey_net_client_loop(struct smokey_net_client *client)
- 		} while (err != -ETIMEDOUT);
- 	}
- 
-+	if (smokey_on_vm) {
-+		glate = 0; /* ignore late arrivals */
-+		if (glost != limit)
-+			glost = 0; /* ignore some lost packets, not all */
-+	}
-+
- 	if (glost || glate)
- 		fprintf(stderr, "RTnet %s test failed", client->name);
- 	if (glost) {
+Changes in v5:
+  - Patch 5: Integrated fixes already made by Jan on next 
+  - Patch 5: Fix typo
+
+Changes in v4:
+  - Fixed trace integration
+    (squashed into patch 3 from Song)
+
+Changes in v3:
+  - Added the new syscall to the tracing infrastructure
+    (squashed into patch 3 from Song)
+
+Florian Bezdeka (3):
+  smokey: posix_mutex: Fix mutex/smokey_barrier leak
+  cobalt/posix/mutex: Harmonize pthread_mutex_timedlock() and
+    sem_timedwait()
+  y2038: testsuite/smokey/y2038: Adding test cases for
+    mutex_timedlock64()
+
+Song Chen (2):
+  y2038: cobalt/posix/mutex: Adding mutex_timedlock64
+  y2038: lib/cobalt/mutex: dispatch mutex_timedlock
+
+ include/cobalt/uapi/syscall.h              |   1 +
+ kernel/cobalt/posix/mutex.c                |  28 ++-
+ kernel/cobalt/posix/mutex.h                |   7 +
+ kernel/cobalt/posix/syscall32.c            |   7 +
+ kernel/cobalt/posix/syscall32.h            |   4 +
+ kernel/cobalt/trace/cobalt-posix.h         |   4 +-
+ lib/cobalt/mutex.c                         |   4 +
+ testsuite/smokey/posix-mutex/posix-mutex.c |  62 +++++++
+ testsuite/smokey/y2038/syscall-tests.c     | 188 +++++++++++++++++++++
+ 9 files changed, 303 insertions(+), 2 deletions(-)
+
 -- 
-2.31.1
+2.30.2
+
 
