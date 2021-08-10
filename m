@@ -1,13 +1,9 @@
-Subject: Re: [PATCH v2 0/3] y2038: sigtimedwait64
-References: <20210810152711.227714-1-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1b033e10-ff40-4cf7-def8-2130d7acc16b@siemens.com>
-Date: Tue, 10 Aug 2021 18:46:21 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [Xenomai 4] Heads up
+Date: Tue, 10 Aug 2021 20:21:59 +0200
+Message-ID: <87y299tb20.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20210810152711.227714-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +12,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10.08.21 17:27, Florian Bezdeka wrote:
-> Hi!
-> 
-> Here comes the next y2038 related syscall implementation. Once again
-> based on v1 sent out by Song. I had to rework the patches a bit, mostly
-> to stay POSIX compatible (EAGAIN vs. ETIMEOUT) and necessary test
-> adjustments and improvements.
-> 
-> Best regards,
-> Florian
-> 
-> Florian Bezdeka (1):
->   y2038: testsuite/smokey/y2038: Adding tests for sigtimedwait64
-> 
-> Song Chen (2):
->   y2038: cobalt/posix/signal: Adding sigtimedwait64
->   y2038: lib/cobalt/signal: dispatch sigtimedwait
-> 
->  include/cobalt/uapi/syscall.h          |  1 +
->  kernel/cobalt/posix/signal.c           | 21 ++++++-
->  kernel/cobalt/posix/signal.h           |  5 ++
->  kernel/cobalt/posix/syscall32.c        | 21 +++++++
->  kernel/cobalt/posix/syscall32.h        |  5 ++
->  kernel/cobalt/trace/cobalt-posix.h     |  4 +-
->  lib/cobalt/signal.c                    |  4 ++
->  testsuite/smokey/y2038/syscall-tests.c | 80 ++++++++++++++++++++++++++
->  8 files changed, 137 insertions(+), 4 deletions(-)
-> 
 
-Thanks, applied to next.
+I won't join the Xenomai meeting this week, so this is the latest news
+from Dovetail and Xenomai 4:
 
-Jan
+Dovetail runs on top of v5.14-rc5 (arm, arm64 and x86_64), the code is
+visible from the v5.14-dovetail-rebase branch at [1].  As usual, I'm
+testing Dovetail with the EVL core (Xenomai 4). The current code is
+available at [2] branch v5.14-evl-rebase.
+
+In addition, several important updates went to the stable Dovetail
+(v5.10.y) tree (i.e. RCU NMI in the pipeline entry). There is no kernel
+interface change which might affect Xenomai3/Cobalt 3.2 though.
+
+With respect to Xenomai 4, progress was made with the network
+(mini-)stack based on the EVL core. The most important aspect is that
+EVL is now able to leverage the common socket interface, for adding new
+network protocols or extending existing ones. This is still WIP, but we
+are getting closer to something usable, and EVL gained a socket
+interface in the process for dealing with real-time protocols.
+
+In a nutshell, the basic idea is to create an out-of-band data path
+traversing the regular network stack which EVL and the applications can
+connect to. This means that a netdev can accept in-band and out-of-band
+traffic, ethtool is still available to configure the ethernet devices
+shared with EVL etc. (as a bonus, there is no need for any proxy in
+order to share a single NIC between the out-of-band and in-band network
+stacks). There is work ahead, and this is fun stuff.
+
+[1] git@source.denx.de:Xenomai/linux-dovetail.git
+[2] git@source.denx.de:Xenomai/xenomai4/linux-evl.git
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
