@@ -1,7 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v5 3/5] y2038: cobalt/posix/mutex: Adding mutex_timedlock64
-Date: Tue, 10 Aug 2021 12:23:42 +0200
-Message-Id: <20210810102344.49471-4-florian.bezdeka@siemens.com>
+Subject: [PATCH v5 5/5] y2038: testsuite/smokey/y2038: Adding test cases for
+ mutex_timedlock64()
+Date: Tue, 10 Aug 2021 12:23:44 +0200
+Message-Id: <20210810102344.49471-6-florian.bezdeka@siemens.com>
 In-Reply-To: <20210810102344.49471-1-florian.bezdeka@siemens.com>
 References: <20210810102344.49471-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -17,163 +18,239 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Song Chen <chensong_2000@189.cn>
+This patch was based on the patch sent out by Song and reworked.
+Especially
+  - switched from CLOCK_MONOTONIC to CLOCK_REALTIME
+    According to POSIX this service is based on CLOCK_REALTIME
 
-Add a syscall specific for mutex_timedlock with 64bit time_t.
+  - Fixed some mutex leaks / missing pthread_mutex_destroy()
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-[Florian: Rearranged code, coding style fixes, tracing]
+  - Removed some magic numbers used for making sure the syscall does
+    not return too early
+
+  - Fixed several mutex deadlocks. Once mutex_timedlock() was
+    successful following calls will deadlock (as long as no special
+    DEADLOCK mutex is being used)
+
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+[Jan: resolve compiler warning about uninitialized t1, fix join result evaluation]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/uapi/syscall.h      |  1 +
- kernel/cobalt/posix/mutex.c        | 23 ++++++++++++++++++++++-
- kernel/cobalt/posix/mutex.h        |  7 +++++++
- kernel/cobalt/posix/syscall32.c    |  7 +++++++
- kernel/cobalt/posix/syscall32.h    |  4 ++++
- kernel/cobalt/trace/cobalt-posix.h |  4 +++-
- 6 files changed, 44 insertions(+), 2 deletions(-)
+ testsuite/smokey/y2038/syscall-tests.c | 188 +++++++++++++++++++++++++
+ 1 file changed, 188 insertions(+)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index a2795a364..6fe57c7e8 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -128,6 +128,7 @@
- #define sc_cobalt_clock_nanosleep64		105
- #define sc_cobalt_clock_getres64		106
- #define sc_cobalt_clock_adjtime64		107
-+#define sc_cobalt_mutex_timedlock64		108
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/mutex.c b/kernel/cobalt/posix/mutex.c
-index 01478978e..0f1c01851 100644
---- a/kernel/cobalt/posix/mutex.c
-+++ b/kernel/cobalt/posix/mutex.c
-@@ -21,6 +21,7 @@
- #include "mutex.h"
- #include "cond.h"
- #include "clock.h"
-+#include <cobalt/kernel/time.h>
- 
- static int cobalt_mutex_init_inner(struct cobalt_mutex_shadow *shadow,
- 				   struct cobalt_mutex *mutex,
-@@ -76,7 +77,7 @@ int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
- 	int ret;
- 
- 	if (ts) {
--		if (ts->tv_nsec >= ONE_BILLION)
-+		if (!timespec64_valid(ts))
- 			return -EINVAL;
- 		ret = xnsynch_acquire(&mutex->synchbase, ts2ns(ts) + 1, XN_REALTIME);
- 	} else
-@@ -357,6 +358,19 @@ static inline int mutex_fetch_timeout(struct timespec64 *ts,
- 	return u_ts == NULL ? -EFAULT : cobalt_get_u_timespec(ts, u_ts);
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 08506d086..628fe852f 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -115,6 +115,45 @@ static inline bool ts_less(const struct xn_timespec64 *a,
+ 	return false;
  }
  
-+static inline int mutex_fetch_timeout64(struct timespec64 *ts,
-+					const void __user *u_ts)
++/**
++ * Simple helper data structure for holding a thread context
++ */
++struct thread_context {
++	int sc_nr;
++	pthread_mutex_t *mutex;
++	struct xn_timespec64 *ts;
++	bool timedwait_timecheck;
++};
++
++/**
++ * Start the supplied function inside a separate thread, wait for completion
++ * and check the thread return value.
++ *
++ * @param thread The thread entry point
++ * @param arg The thread arguments
++ * @param exp_result The expected return value
++ *
++ * @return 0 if the thread reported @exp_result as return value, the thread's
++ * return value otherwise
++ */
++static int run_thread(void *(*thread)(void *), void *arg, int exp_result)
 +{
-+	return u_ts == NULL ? -EFAULT : cobalt_get_timespec64(ts, u_ts);
++	pthread_t tid;
++	void *status;
++	long res;
++	int ret;
++
++	if (!__T(ret, pthread_create(&tid, NULL, thread, arg)))
++		return ret;
++
++	if (!__T(ret, pthread_join(tid, &status)))
++		return ret;
++
++	res = (long)status;
++
++	return (res == exp_result) ? 0 : ret;
 +}
 +
-+int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
-+			       const void __user *u_ts)
-+{
-+	return __cobalt_mutex_timedlock_break(u_mx, u_ts,
-+					      mutex_fetch_timeout64);
-+}
-+
- COBALT_SYSCALL(mutex_timedlock, primary,
- 	       (struct cobalt_mutex_shadow __user *u_mx,
- 		const struct __user_old_timespec __user *u_ts))
-@@ -364,6 +378,13 @@ COBALT_SYSCALL(mutex_timedlock, primary,
- 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, mutex_fetch_timeout);
- }
- 
-+COBALT_SYSCALL(mutex_timedlock64, primary,
-+	       (struct cobalt_mutex_shadow __user *u_mx,
-+		const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_mutex_timedlock64(u_mx, u_ts);
-+}
-+
- COBALT_SYSCALL(mutex_unlock, nonrestartable,
- 	       (struct cobalt_mutex_shadow __user *u_mx))
+ static int test_sc_cobalt_sem_timedwait64(void)
  {
-diff --git a/kernel/cobalt/posix/mutex.h b/kernel/cobalt/posix/mutex.h
-index d76f2a9ea..d7d43219e 100644
---- a/kernel/cobalt/posix/mutex.h
-+++ b/kernel/cobalt/posix/mutex.h
-@@ -40,6 +40,9 @@ int __cobalt_mutex_timedlock_break(struct cobalt_mutex_shadow __user *u_mx,
- 				   int (*fetch_timeout)(struct timespec64 *ts,
- 							const void __user *u_ts));
- 
-+int __cobalt_mutex_timedlock64(struct cobalt_mutex_shadow __user *u_mx,
-+				   const void __user *u_ts);
-+
- int __cobalt_mutex_acquire_unchecked(struct xnthread *cur,
- 				     struct cobalt_mutex *mutex,
- 				     const struct timespec64 *ts);
-@@ -64,6 +67,10 @@ COBALT_SYSCALL_DECL(mutex_timedlock,
- 		    (struct cobalt_mutex_shadow __user *u_mx,
- 		     const struct __user_old_timespec __user *u_ts));
- 
-+COBALT_SYSCALL(mutex_timedlock64, primary,
-+	       (struct cobalt_mutex_shadow __user *u_mx,
-+		const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL_DECL(mutex_unlock,
- 		    (struct cobalt_mutex_shadow __user *u_mx));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index a37478f3f..bd30decce 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -267,6 +267,13 @@ COBALT_SYSCALL32emu(mutex_timedlock, primary,
- 	return __cobalt_mutex_timedlock_break(u_mx, u_ts, sys32_fetch_timeout);
+ 	int ret;
+@@ -404,6 +443,151 @@ static int test_sc_cobalt_clock_adjtime64(void)
+ 	return 0;
  }
  
-+COBALT_SYSCALL32emu(mutex_timedlock64, primary,
-+		    (struct cobalt_mutex_shadow __user *u_mx,
-+		     const struct __kernel_timespec __user *u_ts))
++static void *timedlock64_thread(void *arg)
 +{
-+	return __cobalt_mutex_timedlock64(u_mx, u_ts);
++	struct thread_context *ctx = (struct thread_context *) arg;
++	struct xn_timespec64 t1 = {}; /* silence compiler warning */
++	struct xn_timespec64 t2;
++	struct timespec ts_nat;
++	int ret;
++
++	if (ctx->timedwait_timecheck) {
++		if (!__T(ret, clock_gettime(CLOCK_REALTIME, &ts_nat)))
++			return (void *)(long)ret;
++
++		t1.tv_sec = ts_nat.tv_sec;
++		t1.tv_nsec = ts_nat.tv_nsec;
++		ts_add_ns(&t1, ctx->ts->tv_nsec);
++		ts_add_ns(&t1, ctx->ts->tv_sec * NSEC_PER_SEC);
++	}
++
++	ret = XENOMAI_SYSCALL2(ctx->sc_nr, ctx->mutex, (void *) ctx->ts);
++	if (ret)
++		return (void *)(long)ret;
++
++	if (ctx->timedwait_timecheck) {
++		if (!__T(ret, clock_gettime(CLOCK_REALTIME, &ts_nat)))
++			return (void *)(long)ret;
++
++		t2.tv_sec = ts_nat.tv_sec;
++		t2.tv_nsec = ts_nat.tv_nsec;
++
++		if (ts_less(&t2, &t1))
++			smokey_warning("mutex_timedlock64 returned too early!\n"
++				       "Expected wakeup at: %lld sec %lld nsec\n"
++				       "Back at           : %lld sec %lld nsec\n",
++				       t1.tv_sec, t1.tv_nsec, t2.tv_sec,
++				       t2.tv_nsec);
++	}
++
++	return (void *)(long)pthread_mutex_unlock(ctx->mutex);
 +}
 +
- COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 64f6e4931..d464d967f 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -98,6 +98,10 @@ COBALT_SYSCALL32emu_DECL(mutex_timedlock,
- 			 (struct cobalt_mutex_shadow __user *u_mx,
- 			  const struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(mutex_timedlock64,
-+			 (struct cobalt_mutex_shadow __user *u_mx,
-+			  const struct __kernel_timespec __user *u_ts));
++static int test_sc_cobalt_mutex_timedlock64(void)
++{
++	int ret;
++	pthread_mutex_t mutex;
++	int sc_nr = sc_cobalt_mutex_timedlock64;
++	struct xn_timespec64 ts64;
++	struct thread_context ctx = {0};
 +
- COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
- 			 (struct cobalt_cond_shadow __user *u_cnd,
- 			  struct cobalt_mutex_shadow __user *u_mx,
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 3df929554..71c5116fb 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -160,7 +160,9 @@
- 		__cobalt_symbolic_syscall(clock_settime64),		\
- 		__cobalt_symbolic_syscall(clock_nanosleep64),		\
- 		__cobalt_symbolic_syscall(clock_getres64),		\
--		__cobalt_symbolic_syscall(clock_adjtime64))
-+		__cobalt_symbolic_syscall(clock_adjtime64),		\
-+		__cobalt_symbolic_syscall(mutex_timedlock64))
++	ret = pthread_mutex_init(&mutex, NULL);
 +
++	/* Make sure we don't crash because of NULL pointers */
++	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
++	if (ret == -ENOSYS) {
++		smokey_note("mutex_timedlock64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -EINVAL))
++		return ret ? ret : -EINVAL;
++
++	/*
++	 * mutex can be taken immediately, no need to validate
++	 * NULL should be allowed
++	 */
++	ret = XENOMAI_SYSCALL2(sc_nr, &mutex, NULL);
++	if (!smokey_assert(!ret))
++		return ret;
++
++	if (!__T(ret, pthread_mutex_unlock(&mutex)))
++		return ret;
++
++	/*
++	 * mutex can be taken immediately, no need to validate
++	 * an invalid address should be allowed
++	 */
++	ret = XENOMAI_SYSCALL2(sc_nr, &mutex, 0xdeadbeef);
++	if (!smokey_assert(!ret))
++		return ret;
++
++	/*
++	 * mutex still locked, second thread has to fail with -EINVAL when
++	 * submitting NULL as timeout
++	 */
++	ctx.sc_nr = sc_nr;
++	ctx.mutex = &mutex;
++	ctx.ts = NULL;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, -EINVAL)))
++		return ret;
++
++	/*
++	 * mutex still locked, second thread has to fail with -EFAULT when
++	 * submitting an invalid address as timeout
++	 */
++	ctx.ts = (void *) 0xdeadbeef;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, -EFAULT)))
++		return ret;
++
++	/*
++	 * mutex still locked, second thread has to fail with -EFAULT when
++	 * submitting an invalid timeout (while the address is valid)
++	 */
++	ts64.tv_sec = -1;
++	ctx.ts = &ts64;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, -EFAULT)))
++		return ret;
++
++	/*
++	 * mutex still locked, second thread has to fail with -ETIMEOUT when
++	 * submitting a valid timeout
++	 */
++	ts64.tv_sec = 0;
++	ts64.tv_nsec = 500;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, -ETIMEDOUT)))
++		return ret;
++
++	if (!__T(ret, pthread_mutex_unlock(&mutex)))
++		return ret;
++
++	/* mutex available, second thread should be able to lock and unlock */
++	ts64.tv_sec = 0;
++	ts64.tv_nsec = 500;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, 0)))
++		return ret;
++
++	/*
++	 * Locking the mutex here so the second thread has to deliver -ETIMEOUT.
++	 * Timechecks will now be enabled to make sure we don't give up to early
++	 */
++	if (!__T(ret, pthread_mutex_lock(&mutex)))
++		return ret;
++
++	ts64.tv_sec = 0;
++	ts64.tv_nsec = 500;
++	ctx.timedwait_timecheck = true;
++	if (!__T(ret, run_thread(timedlock64_thread, &ctx, -ETIMEDOUT)))
++		return ret;
++
++	if (!__T(ret, pthread_mutex_unlock(&mutex)))
++		return ret;
++
++	if (!__T(ret, pthread_mutex_destroy(&mutex)))
++		return ret;
++
++	return 0;
++}
++
+ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	int ret;
+@@ -432,5 +616,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
  
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
- 	TP_PROTO(unsigned int nr),
++	ret = test_sc_cobalt_mutex_timedlock64();
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
 -- 
 2.30.2
 
