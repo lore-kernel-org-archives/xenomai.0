@@ -1,12 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] testsuite/smokey: net: Load rtnet module if missing
-Date: Fri, 6 Aug 2021 07:48:51 +0000
-Message-ID: <BN9PR11MB5227FDD6E5FD7AEB0008D67EF2F39@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <166cb503-258c-ddde-1143-4fd43c954c4f@siemens.com>
-In-Reply-To: <166cb503-258c-ddde-1143-4fd43c954c4f@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v2 2/3] y2038: lib/cobalt/internal: dispatch monitor_wait
+Date: Wed, 11 Aug 2021 15:36:49 +0200
+Message-Id: <20210811133651.42582-5-florian.bezdeka@siemens.com>
+In-Reply-To: <20210811133651.42582-1-florian.bezdeka@siemens.com>
+References: <20210811133651.42582-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,64 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgQXVndXN0IDYsIDIwMjEgMzozOCBQ
-TQ0KPlRvOiBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPkNjOiBDaGVuLCBIb25nemhh
-biA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+U3ViamVjdDogW1BBVENIXSB0ZXN0c3VpdGUv
-c21va2V5OiBuZXQ6IExvYWQgcnRuZXQgbW9kdWxlIGlmIG1pc3NpbmcNCj4NCj5Gcm9tOiBKYW4g
-S2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPg0KPlRoaXMgYWxsb3dzIHRvIHJ1biBS
-VG5ldCB0ZXN0cyBpZiB0aGUgY29yZSBpcyBidWlsdCBhcyBtb2R1bGUgYnV0IG5vdA0KPnlldCBs
-b2FkZWQgYXQgdGhlIHN0YXJ0IG9mIHRoZSB0ZXN0Lg0KPg0KPkZvciB0aGF0LCBzaWxlbmNlIGVy
-cm9yIHJlcG9ydHMgb2YgJ21vZHByb2JlIHJ0bmV0Jy4NCj4NCj5TaWduZWQtb2ZmLWJ5OiBKYW4g
-S2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPi0tLQ0KPg0KPlRoaXMgc2hvdWxkIGRv
-IHRoZSB0cmljayBhcyB3ZWxsLCBqdXN0IGEgYml0IHNpbXBsZXIuDQo+DQo+IHRlc3RzdWl0ZS9z
-bW9rZXkvbmV0X2NvbW1vbi9zZXR1cC5jIHwgMjIgKysrKysrKysrKysrKysrLS0tLS0tLQ0KPiAx
-IGZpbGUgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkNCj4NCj5kaWZm
-IC0tZ2l0IGEvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMgYi90ZXN0c3VpdGUv
-c21va2V5L25ldF9jb21tb24vc2V0dXAuYw0KPmluZGV4IDFiYWRhYmRmYjQuLjQ0YTBjYjI0Yjkg
-MTAwNjQ0DQo+LS0tIGEvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMNCj4rKysg
-Yi90ZXN0c3VpdGUvc21va2V5L25ldF9jb21tb24vc2V0dXAuYw0KPkBAIC0xMzgsNyArMTM4LDcg
-QEAgc3RhdGljIGludCBkb19kb3duKGNvbnN0IGNoYXIgKmludGYpDQo+IAlyZXR1cm4gMDsNCj4g
-fQ0KPiANCj4tc3RhdGljIGludCBzbW9rZXlfbmV0X21vZHByb2JlKGludCBtb2RpZCkNCj4rc3Rh
-dGljIGludCBzbW9rZXlfbmV0X21vZHByb2JlKGludCBtb2RpZCwgYm9vbCBzaWxlbnQpDQo+IHsN
-Cj4gCXN0cnVjdCBtb2R1bGUgKm0gPSBtb2R1bGVzICsgbW9kaWQ7DQo+IAljaGFyIGJ1ZmZlclsx
-MjhdOw0KPkBAIC0xNjgsNyArMTY4LDggQEAgc3RhdGljIGludCBzbW9rZXlfbmV0X21vZHByb2Jl
-KGludCBtb2RpZCkNCj4gCXNtb2tleV90cmFjZSgiJXMgbW9kdWxlIG5vdCB0aGVyZTogbW9kcHJv
-YmluZyIsIG0tPm5hbWUpOw0KPiANCj4gCWVyciA9IHNtb2tleV9jaGVja19lcnJubygNCj4tCQlz
-bnByaW50ZihidWZmZXIsIHNpemVvZihidWZmZXIpLCAibW9kcHJvYmUgJXMiLCBtLT5uYW1lKSk7
-DQo+KwkJc25wcmludGYoYnVmZmVyLCBzaXplb2YoYnVmZmVyKSwgIm1vZHByb2JlICVzICVzIiwg
-bS0+bmFtZSwNCj4rCQkJIHNpbGVudCA/ICIyPi9kZXYvbnVsbCIgOiAiIikpOw0KPiAJaWYgKGVy
-ciA8IDApDQo+IAkJcmV0dXJuIGVycjsNCj4gDQo+QEAgLTE3Nyw3ICsxNzgsOCBAQCBzdGF0aWMg
-aW50IHNtb2tleV9uZXRfbW9kcHJvYmUoaW50IG1vZGlkKQ0KPiAJCXJldHVybiBlcnI7DQo+IA0K
-PiAJaWYgKCFXSUZFWElURUQoZXJyKSB8fCBXRVhJVFNUQVRVUyhlcnIpICE9IDApIHsNCj4tCQlz
-bW9rZXlfd2FybmluZygiJXM6IGFibm9ybWFsIGV4aXQiLCBidWZmZXIpOw0KPisJCWlmICghc2ls
-ZW50KQ0KPisJCQlzbW9rZXlfd2FybmluZygiJXM6IGFibm9ybWFsIGV4aXQiLCBidWZmZXIpOw0K
-PiAJCXJldHVybiAtRUlOVkFMOw0KPiAJfQ0KPiANCj5AQCAtMjI0LDcgKzIyNiw3IEBAIHN0YXRp
-YyBpbnQgc21va2V5X25ldF9zZXR1cF9ydGNmZ19jbGllbnQoY29uc3QgY2hhciAqaW50ZiwgaW50
-IG5ldF9jb25maWcpDQo+IAlpZiAoKG5ldF9jb25maWcgJiBfQ0NfQ09CQUxUX05FVF9DRkcpID09
-IDApDQo+IAkJcmV0dXJuIC1FTk9TWVM7DQo+IA0KPi0JZXJyID0gc21va2V5X25ldF9tb2Rwcm9i
-ZShNT0RJRF9DRkcpOw0KPisJZXJyID0gc21va2V5X25ldF9tb2Rwcm9iZShNT0RJRF9DRkcsIGZh
-bHNlKTsNCj4gCWlmIChlcnIgPCAwKQ0KPiAJCXJldHVybiBlcnI7DQo+IA0KPkBAIC00MDgsNiAr
-NDEwLDEyIEBAIGludCBzbW9rZXlfbmV0X3NldHVwKGNvbnN0IGNoYXIgKmRyaXZlciwgY29uc3Qg
-Y2hhciAqaW50ZiwgaW50IHRlc3RlZF9jb25maWcsDQo+IAlzdHJ1Y3Qgc29ja2FkZHJfaW4gKmlu
-X3BlZXIgPSB2cGVlcjsNCj4gCXN0cnVjdCBzb2NrYWRkciAqcGVlciA9IHZwZWVyOw0KPiANCj4r
-CS8qDQo+KwkgKiBNYWluIG1vZHVsZSBuZWVkcyB0byBiZSBsb2FkZWQgaW4gb3JkZXIgdG8gdXNl
-DQo+KwkgKiBfQ0NfQ09CQUxUX0dFVF9ORVRfQ09ORklHLg0KPisJICovDQo+KwlzbW9rZXlfbmV0
-X21vZHByb2JlKE1PRElEX1JUTkVULCB0cnVlKTsNCg0KICAgICBubyBuZWVkIHRvIGNoZWNrIHJl
-dHVybiB2YWx1ZT8NCg0KICAgIFJlZ2FyZHMNCiAgICBIb25nemhhbiBDaGVuDQo+Kw0KPiAJZXJy
-ID0gY29iYWx0X2NvcmVjdGwoX0NDX0NPQkFMVF9HRVRfTkVUX0NPTkZJRywNCj4gCQkJJm5ldF9j
-b25maWcsIHNpemVvZihuZXRfY29uZmlnKSk7DQo+IAlpZiAoZXJyID09IC1FSU5WQUwpDQo+QEAg
-LTQyMywxNSArNDMxLDE1IEBAIGludCBzbW9rZXlfbmV0X3NldHVwKGNvbnN0IGNoYXIgKmRyaXZl
-ciwgY29uc3QgY2hhciAqaW50ZiwgaW50IHRlc3RlZF9jb25maWcsDQo+IAkJcmV0dXJuIC1FTk9T
-WVM7DQo+IA0KPiAJbW9kdWxlc1tNT0RJRF9EUklWRVJdLm5hbWUgPSBkcml2ZXI7DQo+LQllcnIg
-PSBzbW9rZXlfbmV0X21vZHByb2JlKE1PRElEX0RSSVZFUik7DQo+KwllcnIgPSBzbW9rZXlfbmV0
-X21vZHByb2JlKE1PRElEX0RSSVZFUiwgZmFsc2UpOw0KPiAJaWYgKGVyciA8IDApDQo+IAkJcmV0
-dXJuIGVycjsNCj4gDQo+LQllcnIgPSBzbW9rZXlfbmV0X21vZHByb2JlKE1PRElEX0lQVjQpOw0K
-PisJZXJyID0gc21va2V5X25ldF9tb2Rwcm9iZShNT0RJRF9JUFY0LCBmYWxzZSk7DQo+IAlpZiAo
-ZXJyIDwgMCkNCj4gCQlyZXR1cm4gZXJyOw0KPiANCj4tCWVyciA9IHNtb2tleV9uZXRfbW9kcHJv
-YmUob3B0aW9uX3RvX21vZGlkKHRlc3RlZF9jb25maWcpKTsNCj4rCWVyciA9IHNtb2tleV9uZXRf
-bW9kcHJvYmUob3B0aW9uX3RvX21vZGlkKHRlc3RlZF9jb25maWcpLCBmYWxzZSk7DQo+IAlpZiAo
-ZXJyIDwgMCkNCj4gCQlyZXR1cm4gZXJyOw0KPiANCj4tLSANCj4yLjMxLjENCg0K
+From: Song Chen <chensong_2000@189.cn>
+
+If sizeof time_t bigger than 4, which means glibc supports
+64bit timespec, go to monitor_wait64.
+
+otherwise, go to original monitor_wait.
+
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+[Florian: Fix warnings reported by checkpatch.pl, coding style]
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/internal.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
+index 42b60c35b..75933a830 100644
+--- a/lib/cobalt/internal.c
++++ b/lib/cobalt/internal.c
+@@ -258,8 +258,12 @@ int cobalt_monitor_wait(cobalt_monitor_t *mon, int event,
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	ret = XENOMAI_SYSCALL4(sc_cobalt_monitor_wait,
+-			       mon, event, ts, &opret);
++#ifdef __USE_TIME_BITS64
++	ret = XENOMAI_SYSCALL4(sc_cobalt_monitor_wait64, mon, event, ts,
++			       &opret);
++#else
++	ret = XENOMAI_SYSCALL4(sc_cobalt_monitor_wait, mon, event, ts, &opret);
++#endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+-- 
+2.30.2
+
 
