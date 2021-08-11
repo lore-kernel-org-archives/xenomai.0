@@ -1,9 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v3 2/3] y2038: lib/cobalt/internal: dispatch event_wait
-Date: Wed, 11 Aug 2021 15:50:25 +0200
-Message-Id: <20210811135026.44400-3-florian.bezdeka@siemens.com>
-In-Reply-To: <20210811135026.44400-1-florian.bezdeka@siemens.com>
-References: <20210811135026.44400-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v3 0/3] y2038: Adding event_wait64()
+Date: Wed, 11 Aug 2021 15:50:23 +0200
+Message-Id: <20210811135026.44400-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -17,37 +15,44 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Song Chen <chensong_2000@189.cn>
+Hi!
 
-If sizeof time_t bigger than 4, which means glibc supports
-64bit timespec, go to event_wait64.
+Just another y2038 related syscall, once again based on v1 sent out by
+Song and rebased to current next with some code- and test-cleanups applied.
 
-otherwise, go to original event_wait.
+@Song:
+This one was the last one in my inbox. Please make sure that all
+following patches are based on next. IIRC there are 3 or 4 syscalls
+remaining. We should take care of [1] as well. We need something in the CI 
+that tests the full implementation, i.e. including the glibc wrappers (proper
+syscall delegation). Recent glibc should allow us to use 64bit time_t.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- lib/cobalt/internal.c | 5 +++++
- 1 file changed, 5 insertions(+)
+[1]: https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
 
-diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
-index 75933a830..bf1e940b7 100644
---- a/lib/cobalt/internal.c
-+++ b/lib/cobalt/internal.c
-@@ -483,8 +483,13 @@ int cobalt_event_wait(cobalt_event_t *event,
- 
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
- 
-+#ifdef __USE_TIME_BITS64
-+	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait64,
-+			       event, bits, bits_r, mode, timeout);
-+#else
- 	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait,
- 			       event, bits, bits_r, mode, timeout);
-+#endif
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
+Best regards,
+Florian
+
+Changes in v3:
+  - None. git send-mail folded two different series together. Resending
+    to allow maintainers to pick this series at once. Sorry for that.
+
+Florian Bezdeka (1):
+  y2038: testsuite/smokey/y2038: Adding tests for event_wait64
+
+Song Chen (2):
+  y2038: cobalt/posix/event: Adding event_wait64
+  y2038: lib/cobalt/internal: dispatch event_wait
+
+ include/cobalt/uapi/syscall.h          |  1 +
+ kernel/cobalt/posix/event.c            | 34 ++++++++++-
+ kernel/cobalt/posix/event.h            | 12 ++++
+ kernel/cobalt/posix/syscall32.c        |  9 +++
+ kernel/cobalt/posix/syscall32.h        |  7 +++
+ kernel/cobalt/trace/cobalt-posix.h     |  3 +-
+ lib/cobalt/internal.c                  |  5 ++
+ testsuite/smokey/y2038/syscall-tests.c | 78 +++++++++++++++++++++++---
+ 8 files changed, 136 insertions(+), 13 deletions(-)
+
 -- 
 2.30.2
 
