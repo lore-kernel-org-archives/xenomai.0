@@ -1,12 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: reminder: Xenomai community call on Wednesday, Aug 11, 2021, UTC 7:00
- AM
-Date: Wed, 11 Aug 2021 05:05:31 +0000
-Message-ID: <BN9PR11MB52270D8A692A9C00FA34B745F2F89@BN9PR11MB5227.namprd11.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: [Xenomai 4] Heads up
+References: <87y299tb20.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3d37d434-6193-9841-ad34-278979019165@siemens.com>
+Date: Wed, 11 Aug 2021 09:58:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87y299tb20.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,81 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Hi all,
+On 10.08.21 20:21, Philippe Gerum via Xenomai wrote:
+> 
+> I won't join the Xenomai meeting this week, so this is the latest news
+> from Dovetail and Xenomai 4:
+> 
+> Dovetail runs on top of v5.14-rc5 (arm, arm64 and x86_64), the code is
+> visible from the v5.14-dovetail-rebase branch at [1].  As usual, I'm
+> testing Dovetail with the EVL core (Xenomai 4). The current code is
+> available at [2] branch v5.14-evl-rebase.
+> 
+> In addition, several important updates went to the stable Dovetail
+> (v5.10.y) tree (i.e. RCU NMI in the pipeline entry). There is no kernel
+> interface change which might affect Xenomai3/Cobalt 3.2 though.
+> 
+> With respect to Xenomai 4, progress was made with the network
+> (mini-)stack based on the EVL core. The most important aspect is that
+> EVL is now able to leverage the common socket interface, for adding new
+> network protocols or extending existing ones. This is still WIP, but we
+> are getting closer to something usable, and EVL gained a socket
+> interface in the process for dealing with real-time protocols.
+> 
+> In a nutshell, the basic idea is to create an out-of-band data path
+> traversing the regular network stack which EVL and the applications can
+> connect to. This means that a netdev can accept in-band and out-of-band
+> traffic, ethtool is still available to configure the ethernet devices
+> shared with EVL etc. (as a bonus, there is no need for any proxy in
+> order to share a single NIC between the out-of-band and in-band network
+> stacks). There is work ahead, and this is fun stuff.
+> 
+> [1] git@source.denx.de:Xenomai/linux-dovetail.git
+> [2] git@source.denx.de:Xenomai/xenomai4/linux-evl.git
+> 
 
+Surely interesting work. Three even more interesting aspects still needs
+to be seen, though:
 
+ - How will driver conversions look like in practice (lock and interrupt
+   conversions, prioritization of data paths over control paths, turning
+   off throughput favoring features)?
 
-We have the Xenomai community call today.
+ - How to provide zero copy (not available with RTnet either, yes, but
+   needed for lowest-latency traffic in the future)?
 
+ - How to make buffer allocation similarly deterministic as with rtskbs
+   (e.g. an evl_net_dev_alloc_skb that needs no timeout but uses a
+   per-socket pool again)?
 
+Jan
 
-Topics may include but are not limited to upstream/downstream project
-
-plans, status updates, and technical discussions. It's an open online
-
-meeting that anyone can join and ask questions.
-
-
-
-Time:
-
-Wednesday, Aug 11, 2021, UTC 7:00 AM
-
-Paris, France CEST 9:00 AM
-
-China CST 3:00 PM
-
-Join Zoom Meeting
-https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
-Or
-https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
-36e48b68e
-
-Meeting ID: 912 9727 9269
-Passcode: 367528
-One tap mobile
-+12532158782,,91297279269# US (Tacoma)
-+13462487799,,91297279269# US (Houston)
-
-Dial by your location
-        +1 253 215 8782 US (Tacoma)
-        +1 346 248 7799 US (Houston)
-        +1 669 900 9128 US (San Jose)
-        +1 301 715 8592 US (Washington DC)
-        +1 312 626 6799 US (Chicago)
-        +1 646 558 8656 US (New York)
-Meeting ID: 912 9727 9269
-Find your local number: https://intel.zoom.us/u/aTEA37i5G
-
-Join by SIP
-91297279269@zoomcrc.com<mailto:91297279269@zoomcrc.com>
-
-Join by H.323
-162.255.37.11 (US West)
-162.255.36.11 (US East)
-115.114.131.7 (India Mumbai)
-115.114.115.7 (India Hyderabad)
-213.19.144.110 (Amsterdam Netherlands)
-213.244.140.110 (Germany)
-103.122.166.55 (Australia Sydney)
-103.122.167.55 (Australia Melbourne)
-209.9.211.110 (Hong Kong SAR)
-149.137.40.110 (Singapore)
-64.211.144.160 (Brazil)
-149.137.68.253 (Mexico)
-69.174.57.160 (Canada Toronto)
-65.39.152.160 (Canada Vancouver)
-207.226.132.110 (Japan Tokyo)
-149.137.24.110 (Japan Osaka)
-Meeting ID: 912 9727 9269
-Passcode: 367528
-
-
-
-Regards
-
-Hongzhan Chen
-
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
