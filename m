@@ -1,8 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 3/3] y2038: testsuite/smokey/y2038: Adding tests for
- event_wait64
-Date: Wed, 11 Aug 2021 15:36:51 +0200
-Message-Id: <20210811133651.42582-7-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 1/3] y2038: cobalt/posix/event: Adding event_wait64
+Date: Wed, 11 Aug 2021 15:36:46 +0200
+Message-Id: <20210811133651.42582-2-florian.bezdeka@siemens.com>
 In-Reply-To: <20210811133651.42582-1-florian.bezdeka@siemens.com>
 References: <20210811133651.42582-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,121 +17,190 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Based on the tests provided by Song, slightly adjusted, #includes
-cleaned up and making sure all resources used during tests have been
-cleaned up as well.
+From: Song Chen <chensong_2000@189.cn>
 
+Add a syscall specific for event_wait with 64bit time_t.
+
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+[Florian: Tracing, reformatting/rebasing]
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/smokey/y2038/syscall-tests.c | 80 +++++++++++++++++++++++---
- 1 file changed, 71 insertions(+), 9 deletions(-)
+ include/cobalt/uapi/syscall.h      |  1 +
+ kernel/cobalt/posix/event.c        | 34 +++++++++++++++++++++++++++---
+ kernel/cobalt/posix/event.h        | 12 +++++++++++
+ kernel/cobalt/posix/syscall32.c    |  9 ++++++++
+ kernel/cobalt/posix/syscall32.h    |  7 ++++++
+ kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+ 6 files changed, 62 insertions(+), 4 deletions(-)
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 839a50e07..7add1c454 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -10,17 +10,8 @@
-  * Released under the terms of GPLv2.
-  */
- #include <asm/xenomai/syscall.h>
--#include <cobalt/uapi/syscall.h>
- #include <smokey/smokey.h>
--#include <semaphore.h>
--#include <unistd.h>
--#include <stdint.h>
--#include <stdbool.h>
--#include <errno.h>
- #include <mqueue.h>
--#include <signal.h>
--#include <cobalt/uapi/monitor.h>
--#include <sys/cobalt.h>
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index e49110f5d..16edce15d 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -133,6 +133,7 @@
+ #define sc_cobalt_mq_timedreceive64		110
+ #define sc_cobalt_sigtimedwait64		111
+ #define sc_cobalt_monitor_wait64		112
++#define sc_cobalt_event_wait64			113
  
- smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
  
-@@ -916,6 +907,73 @@ static int test_sc_cobalt_monitor_wait64(void)
- 	return 0;
+diff --git a/kernel/cobalt/posix/event.c b/kernel/cobalt/posix/event.c
+index 3712154f5..052c68605 100644
+--- a/kernel/cobalt/posix/event.c
++++ b/kernel/cobalt/posix/event.c
+@@ -20,6 +20,7 @@
+ #include "clock.h"
+ #include "event.h"
+ #include <trace/events/cobalt-posix.h>
++#include <cobalt/kernel/time.h>
+ 
+ /*
+  * Cobalt event notification services
+@@ -119,9 +120,9 @@ int __cobalt_event_wait(struct cobalt_event_shadow __user *u_event,
+ 	handle = cobalt_get_handle_from_user(&u_event->handle);
+ 
+ 	if (ts) {
+-		if ((unsigned long)ts->tv_nsec >= ONE_BILLION)
++		if (!timespec64_valid(ts))
+ 			return -EINVAL;
+-	
++
+ 		timeout = ts2ns(ts);
+ 		if (timeout) {
+ 			timeout++;
+@@ -189,6 +190,24 @@ out:
+ 	return ret;
  }
  
-+static int test_sc_cobalt_event_wait64(void)
++int __cobalt_event_wait64(struct cobalt_event_shadow __user *u_event,
++			  unsigned int bits,
++			  unsigned int __user *u_bits_r,
++			  int mode, const struct __kernel_timespec __user *u_ts)
 +{
++	struct timespec64 ts, *tsp = NULL;
 +	int ret;
-+	int sc_nr = sc_cobalt_event_wait64;
-+	struct xn_timespec64 t1, t2;
-+	struct timespec ts_nat;
-+	struct cobalt_event_shadow evt;
-+	unsigned int flags;
 +
-+	ret = cobalt_event_init(&evt, 0, COBALT_EVENT_FIFO);
-+	if (ret)
-+		return -errno;
-+
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = XENOMAI_SYSCALL5(sc_nr, NULL, NULL, NULL, NULL, NULL);
-+	if (ret == -ENOSYS) {
-+		smokey_note("event_wait64: skipped. (no kernel support)");
-+		return 0; // Not implemented, nothing to test, success
++	if (u_ts) {
++		tsp = &ts;
++		ret = cobalt_get_timespec64(&ts, u_ts);
++		if (ret)
++			return ret;
 +	}
-+	if (!smokey_assert(ret == -EINVAL))
-+		return ret ? ret : -EINVAL;
 +
-+	/* Providing an invalid address has to deliver EFAULT */
-+	ret = XENOMAI_SYSCALL5(sc_nr, &evt, 0x1, &flags, 0,
-+			       (void *)0xdeadbeefUL);
-+	if (!smokey_assert(ret == -EFAULT))
-+		return ret ? ret : -EINVAL;
-+
-+	/* providing an invalid timeout has to deliver EINVAL */
-+	t1.tv_sec = -1;
-+	ret = XENOMAI_SYSCALL5(sc_nr, &evt, 0x1, &flags, 0, &t1);
-+	if (!smokey_assert(ret == -EINVAL))
-+		return ret ? ret : -EINVAL;
-+
-+	/*
-+	 * Providing a valid timeout, waiting for it to time out and check
-+	 * that we didn't come back to early.
-+	 */
-+	ret = clock_gettime(CLOCK_REALTIME, &ts_nat);
-+	if (ret)
-+		return -errno;
-+
-+	t1.tv_sec = 0;
-+	t1.tv_nsec = 500000;
-+
-+	ret = XENOMAI_SYSCALL5(sc_nr, &evt, 0x1, &flags, 0, &t1);
-+	if (!smokey_assert(ret == -ETIMEDOUT))
-+		return ret;
-+
-+	ret = clock_gettime(CLOCK_REALTIME, &ts_nat);
-+	if (ret)
-+		return -errno;
-+
-+	t2.tv_sec = ts_nat.tv_sec;
-+	t2.tv_nsec = ts_nat.tv_nsec;
-+
-+	if (ts_less(&t2, &t1))
-+		smokey_warning("event_wait64 returned too early!\n"
-+			       "Expected wakeup at: %lld sec %lld nsec\n"
-+			       "Back at           : %lld sec %lld nsec\n",
-+			       t1.tv_sec, t1.tv_nsec, t2.tv_sec, t2.tv_nsec);
-+
-+	cobalt_event_destroy(&evt);
-+
-+	return 0;
++	return __cobalt_event_wait(u_event, bits, u_bits_r, mode, tsp);
 +}
 +
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
-@@ -964,5 +1022,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
+ COBALT_SYSCALL(event_wait, primary,
+ 	       (struct cobalt_event_shadow __user *u_event,
+ 		unsigned int bits,
+@@ -208,6 +227,15 @@ COBALT_SYSCALL(event_wait, primary,
+ 	return __cobalt_event_wait(u_event, bits, u_bits_r, mode, tsp);
+ }
  
-+	ret = test_sc_cobalt_event_wait64();
-+	if (ret)
-+		return ret;
++COBALT_SYSCALL(event_wait64, primary,
++	       (struct cobalt_event_shadow __user *u_event,
++		unsigned int bits,
++		unsigned int __user *u_bits_r,
++		int mode, const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_event_wait64(u_event, bits, u_bits_r, mode, u_ts);
++}
++
+ COBALT_SYSCALL(event_sync, current,
+ 	       (struct cobalt_event_shadow __user *u_event))
+ {
+@@ -278,7 +306,7 @@ COBALT_SYSCALL(event_destroy, current,
+ 	}
+ 
+ 	cobalt_event_reclaim(&event->resnode, s); /* drops lock */
+-	
 +
  	return 0;
  }
+ 
+diff --git a/kernel/cobalt/posix/event.h b/kernel/cobalt/posix/event.h
+index ef592f72c..919774c9a 100644
+--- a/kernel/cobalt/posix/event.h
++++ b/kernel/cobalt/posix/event.h
+@@ -41,6 +41,11 @@ int __cobalt_event_wait(struct cobalt_event_shadow __user *u_event,
+ 			unsigned int __user *u_bits_r,
+ 			int mode, const struct timespec64 *ts);
+ 
++int __cobalt_event_wait64(struct cobalt_event_shadow __user *u_event,
++			  unsigned int bits, unsigned int __user *u_bits_r,
++			  int mode,
++			  const struct __kernel_timespec __user *u_ts);
++
+ COBALT_SYSCALL_DECL(event_init,
+ 		    (struct cobalt_event_shadow __user *u_evtsh,
+ 		     unsigned int value,
+@@ -53,6 +58,13 @@ COBALT_SYSCALL_DECL(event_wait,
+ 		     int mode,
+ 		     const struct __user_old_timespec __user *u_ts));
+ 
++COBALT_SYSCALL_DECL(event_wait64,
++		    (struct cobalt_event_shadow __user *u_evtsh,
++		     unsigned int bits,
++		     unsigned int __user *u_bits_r,
++		     int mode,
++		     const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL_DECL(event_sync,
+ 		    (struct cobalt_event_shadow __user *u_evtsh));
+ 
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index e6c9831b9..2d88fac83 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -795,6 +795,15 @@ COBALT_SYSCALL32emu(event_wait, primary,
+ 	return __cobalt_event_wait(u_event, bits, u_bits_r, mode, tsp);
+ }
+ 
++COBALT_SYSCALL32emu(event_wait64, primary,
++		    (struct cobalt_event_shadow __user *u_event,
++		     unsigned int bits,
++		     unsigned int __user *u_bits_r,
++		     int mode, const struct __kernel_timespec __user *u_ts))
++{
++	return __cobalt_event_wait64(u_event, bits, u_bits_r, mode, u_ts);
++}
++
+ COBALT_SYSCALL32emu(select, primary,
+ 		    (int nfds,
+ 		     compat_fd_set __user *u_rfds,
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index a2ef67808..3eb66571b 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -230,6 +230,13 @@ COBALT_SYSCALL32emu_DECL(event_wait,
+ 			  unsigned int __user *u_bits_r,
+ 			  int mode, const struct old_timespec32 __user *u_ts));
+ 
++COBALT_SYSCALL32emu_DECL(event_wait64,
++			 (struct cobalt_event_shadow __user *u_event,
++			  unsigned int bits,
++			  unsigned int __user *u_bits_r,
++			  int mode,
++			  const struct __kernel_timespec __user *u_ts));
++
+ COBALT_SYSCALL32emu_DECL(select,
+ 			 (int nfds,
+ 			  compat_fd_set __user *u_rfds,
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index 221e25037..45e3cbcf7 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -165,7 +165,8 @@
+ 		__cobalt_symbolic_syscall(mq_timedsend64),  		\
+ 		__cobalt_symbolic_syscall(mq_timedreceive64),		\
+ 		__cobalt_symbolic_syscall(sigtimedwait64),		\
+-		__cobalt_symbolic_syscall(monitor_wait64))
++		__cobalt_symbolic_syscall(monitor_wait64),		\
++		__cobalt_symbolic_syscall(event_wait64))
+ 
+ DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+ 	TP_PROTO(unsigned int nr),
 -- 
 2.30.2
 
