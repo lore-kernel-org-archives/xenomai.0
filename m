@@ -1,11 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] ci: Make default s3 fetch URL zone-independent
-Message-ID: <928769ee-1d38-3a15-839b-4e612004ab6d@siemens.com>
-Date: Wed, 11 Aug 2021 15:31:41 +0200
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v2 0/3] y2038: Adding event_wait64()
+Date: Wed, 11 Aug 2021 15:36:45 +0200
+Message-Id: <20210811133651.42582-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,31 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi!
 
-No need to encode the European zone here into the default, let AWS sort
-this out.
+Just another y2038 related syscall, once again based on v1 sent out by
+Song and rebased to current next with some code- and test-cleanups applied.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- scripts/run-lava-tests.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+@Song:
+This one was the last one in my inbox. Please make sure that all
+following patches are based on next. IIRC there are 3 or 4 syscalls
+remaining. We should take care of [1] as well. We need something in the CI 
+that tests the full implementation, i.e. including the glibc wrappers (proper
+syscall delegation). Recent glibc should allow us to use 64bit time_t.
 
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index b1b51bb..dde542c 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -16,7 +16,7 @@ if [ -z "${TARGET}" ]; then
- fi
- 
- # S3 artifacts
--artifact_url="${LAVA_ARTIFACTS_URL:-https://xenomai-images-artifacts.s3.eu-central-1.amazonaws.com/artifacts}"
-+artifact_url="${LAVA_ARTIFACTS_URL:-https://xenomai-images-artifacts.s3.amazonaws.com/artifacts}"
- # public master
- lava_master_uri="${LAVA_MASTER_URL:-https://lava.xenomai.org}"
- 
+[1]: https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
+
+Best regards,
+Florian
+
+Florian Bezdeka (1):
+  y2038: testsuite/smokey/y2038: Adding tests for event_wait64
+
+Song Chen (2):
+  y2038: cobalt/posix/event: Adding event_wait64
+  y2038: lib/cobalt/internal: dispatch event_wait
+
+ include/cobalt/uapi/syscall.h          |  1 +
+ kernel/cobalt/posix/event.c            | 34 ++++++++++-
+ kernel/cobalt/posix/event.h            | 12 ++++
+ kernel/cobalt/posix/syscall32.c        |  9 +++
+ kernel/cobalt/posix/syscall32.h        |  7 +++
+ kernel/cobalt/trace/cobalt-posix.h     |  3 +-
+ lib/cobalt/internal.c                  |  5 ++
+ testsuite/smokey/y2038/syscall-tests.c | 78 +++++++++++++++++++++++---
+ 8 files changed, 136 insertions(+), 13 deletions(-)
+
 -- 
-2.31.1
+2.30.2
+
 
