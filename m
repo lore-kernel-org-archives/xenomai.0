@@ -1,15 +1,14 @@
-Subject: Re: cannot link 32 bit app
-References: <CA+K1mPGzpiNwXuu2xM0d0Gy472kUs64kLp9e3GypTFgGyEc1bw@mail.gmail.com>
- <e3581d25-c6ba-433b-a51d-4fb29e1852aa@siemens.com>
- <CA+K1mPE+PpFiTTj=YqXJ1fdSEBC1Weye-z1dpEPEkJmHUFSZ8w@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <10a4b294-5749-2b80-193d-8d04fdb41553@siemens.com>
-Date: Thu, 12 Aug 2021 08:04:48 +0200
+Sender: chensong_2000@189.cn
+Subject: Re: [PATCH v3 0/5] y2038: Adding support for mq_timed{send,recv}64
+References: <20210810102451.49642-1-florian.bezdeka@siemens.com>
+From: "chensong_2000@189.cn" <chensong_2000@189.cn>
+Message-ID: <d5688bef-5be8-9915-439d-691b64cbc70c@189.cn>
+Date: Thu, 12 Aug 2021 14:52:46 +0800
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPE+PpFiTTj=YqXJ1fdSEBC1Weye-z1dpEPEkJmHUFSZ8w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210810102451.49642-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="gbk"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,99 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 12.08.21 07:50, C Smith wrote:
-> Hi Jan,Thanks for your prompt reply.  I reduced my very large app to
-> about 200 lines, it only starts one periodic process. but I still get
-> this error during linkage:
-> 
-> /usr/xenomai/lib/xenomai/bootstrap.o: In function `xenomai_main':
-> /usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94: multiple
-> definition of `xenomai_main'
-> /usr/xenomai/lib/xenomai/bootstrap.o:/usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94:
-> first defined here
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): multiple definition
-> of `xenomai_auto_bootstrap'
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): first defined here
-> /usr/xenomai/lib/xenomai/bootstrap.o: In function `xenomai_main':
-> /usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94: multiple
-> definition of `xenomai_main'
-> /usr/xenomai/lib/xenomai/bootstrap.o:/usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94:
-> first defined here
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): multiple definition
-> of `xenomai_auto_bootstrap'
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): first defined here
-> /usr/xenomai/lib/xenomai/bootstrap.o: In function `xenomai_main':
-> /usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94: multiple
-> definition of `xenomai_main'
-> /usr/xenomai/lib/xenomai/bootstrap.o:/usr/src/xenomai-3.1/lib/boilerplate/init/bootstrap.c:94:
-> first defined here
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): multiple definition
-> of `xenomai_auto_bootstrap'
-> /usr/xenomai/lib/xenomai/bootstrap.o:(.rodata+0x0): first defined here
-> collect2: error: ld returned 1 exit status
-> make[1]: *** [<builtin>: myapp] Error 1
-> 
-> I had used your advice to get the compiler args in my Makefile with:
-> /usr/xenomai/bin/xeno-config --skin=native --cflags --ldflags
-> The resulting command line is:
-> 
-> gcc -g3 -m32 -I/usr/xenomai/include/trank -D__XENO_COMPAT__
-> -I/usr/xenomai/include/cobalt
-> -I/usr/xenomai/include -m32 -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE
-> -D_REENTRANT -fasynchronous-unwind-tables
-> -D__COBALT__ -I/usr/xenomai/include/alchemy -I/usr/xenomai/include/rtdm
-> -Wl,--no-as-needed -ltrank
-> -Wl,@/usr/xenomai/lib/modechk.wrappers -lalchemy -lcopperplate
-> /usr/xenomai/lib/xenomai/bootstrap.o
-> -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
-> -L/usr/xenomai/lib -lcobalt -lmodechk
-> -lpthread -lrt -m32   -lfuse -pthread -I/usr/include/libxml2 -I"SOEM/"
-> -I"SOEM/osal" -I"SOEM/oshw/linux"
-> -I"SOEM/soem" -I"../include/nanopb"    -Xlinker -rpath -Xlinker
-> /usr/xenomai/lib  myapp.c ../include/myapp.h
-> ../include/dia_dev_myapp.h ../include/crc_table.h ../include/dacdefs.h
-> ../include/version.h
-> ../include/canopen_drives.h ../include/adcdefs.h
-> ../include/myapp_version.h ../include/canodefs.h
-> ../include/preproc_myapp.h ../include/myapp_mem_manager_data.h
-> ../include/comm_dta_myapp.h ../include/comproto.h
-> ../modules/rtdinsync.h quad.o dac.o adc.o SOEM/lib/linux/liboshw.a
-> SOEM/lib/linux/libosal.a SOEM/lib/linux/libsoem.a
-> ../include/nanopb/nanopb.a  -Wl,--no-as-needed -ltrank
-> -Wl,@/usr/xenomai/lib/modechk.wrappers -lalchemy -lcopperplate
-> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main
-> -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
-> -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt -m32   -lfuse
-> -pthread  -Wl,--no-as-needed
-> -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/xenomai/lib/modechk.wrappers
-> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main
-> -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
-> -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt -m32   -lfuse
-> -pthread  -Wl,--no-as-needed
-> -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/xenomai/lib/modechk.wrappers
-> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main
-> -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
-> -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt -m32   -lfuse
-> -pthread  -lxml2 -lz -llzma -lm
-> -ldl -L"SOEM/lib/linux" -Wl,--start-group -loshw -losal -lsoem
-> -Wl,--end-group -lm -o myapp
-> 
-> What is going wrong with the linkage?  Thanks, C Smith
-> 
-
-Something is broken in your makefile. If you look at the end of the
-resulting gcc call above, you see e.g. bootstrap.o being listed multiple
-times (which explains the error, obviously). This is not coming from
-xeno-config. So check your local setup, or just do
-
-gcc $(xeno-config ...) -o my-app my-app.c -I my-includes
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+CgrU2iAyMDIxLzgvMTAgz8LO5zY6MjQsIEZsb3JpYW4gQmV6ZGVrYSDQtLXAOgo+IEhpIGFsbCwK
+PiAKPiB0aGlzIGlzIGtpbmQgb2YgYSByZS1zZW5kIG9mIHRoZSBwYXRjaCBzZXJpZXMgb3JpZ2lu
+YWxsIHB1Ymxpc2hlZCBieQo+IFNvbmcuIFRoZXJlIHdlcmUgc29tZSB0aGluZ3MgdGhhdCBoYWQg
+dG8gYmUgYWRkcmVzc2VkOgo+IAo+ICAgLSBDb2RlIGZvcm1hdHRpbmdzCj4gICAtIENvcHkgcGFz
+dGUgZXJyb3JzIGluIHRoZSB0ZXN0IHN1aXRlCj4gICAtIEZhaWxpbmcgLyBpbmNvbXBsZXRlIHRl
+c3RzLCBtaXNzaW5nIHRlc3QgY2xlYW51cHMKPiAgIC0gSW5jb3JyZWN0IGNvbXBhdCBzeXNjYWxs
+IGRlY2xlcmF0aW9ucwo+IAo+IEBTb25nOiBFc3BlY2lhbGx5IHRoZSBtaXNzaW5nIHRlc3QgY2xl
+YW51cHMgYW5kIHRoZSBpbmNvcnJlY3QgY29tcGF0Cj4gc3lzY2FsbCBkZWNsZXJhdGlvbnMgbWFk
+ZSBtZSB1bmhhcHB5LiBEaWQgeW91IHJlYWxseSB0ZXN0IHRoYXQgb25jZT8KPiBQbGVhc2UgbWFr
+ZSBzdXJlIHRvIHNlbmQgcHJvcGVybHkgdGVzdGVkIHBhdGNoZXMuIFRoZXJlIGFyZSBtYW55Cj4g
+cGl0ZmFsbHMgaW4gdGhlIGdhbWUgd2hpY2ggbWFrZXMgdGhlIHJldmlldyBwcm9jZXNzIHRpbWUg
+Y29uc3VtaW5nLAo+IGVzcGVjaWFsbHkgd2hlbiBJIGhhdmUgdG8gYXNzdW1lIHRoYXQgaXQgd2Fz
+IG5vdCB0ZXN0ZWQgdGlsbCBub3cKCmhpIEZsb3JpYW4sCgpTb3JyeSBhYm91dCB0aGF0LgoKSW4g
+Z2VuZXJhbCwgZWFjaCBwYXRjaCBoYXMgYmVlbiBidWlsdCBjb3JyZWN0bHkgYW5kIHBhc3NlZCAi
+c3VkbyAKLi90ZXN0c3VpdGUvc21va2V5L3Ntb2tleSAtLXJ1bj0yNyIgYW5kIGNoZWNrcGF0Y2gu
+IEkgYWxzbyBmb2xsb3dlZCB5b3VyIApjb21tZW50cyBvciB5b3VyIG1vZGlmaWNhdGlvbiBpbiB0
+aGUgbmV4dCB2ZXJzaW9uIG9yIG5leHQgcGF0Y2gsIGV2ZW4gaW4gCmNvbW1pdCBtZXNzYWdlLgoK
+VGhlcmUgbWlnaHQgYmUgc29tZXRoaW5nIGdvaW5nIHdyb25nIGFuZCBpIGNhbid0IHJlY2FsbCB3
+aGljaCBhbmQgd2h5LCAKYnV0IGl0IHdvbid0IGhhcHBlbiBhZ2Fpbi4KClNvcnJ5IGFnYWluLgoK
+L1NvbmcKPiAKPiBDaGFuZ2VzIGluIHYzOgo+ICAgIC0gUGF0Y2ggMzogRml4IHRpbWVzcGVjIHZh
+bGlkYXRpb24KPiAgICAtIFBhdGNoIDU6IEZpeCB0ZXN0cyBmb3IgbXFfdGltZWRyZWNlaXZlNjQo
+KQo+ICAgIC0gUGF0Y2ggNTogRml4ZWQgdHlwb3MKPiAKPiBGbG9yaWFuIEJlemRla2EgKDEpOgo+
+ICAgIHkyMDM4OiB0ZXN0c3VpdGUvc21va2V5L3kyMDM4OiBBZGRpbmcgdGVzdHMgZm9yIG1xX3Rp
+bWVke3NlbmQscmVjdn02NAo+IAo+IFNvbmcgQ2hlbiAoNCk6Cj4gICAgeTIwMzg6IGNvYmFsdC9w
+b3NpeC9tcXVldWU6IEFkZGluZyBtcV90aW1lZHNlbmQ2NAo+ICAgIHkyMDM4OiBsaWIvY29iYWx0
+L21xdWV1ZTogZGlzcGF0Y2ggbXFfdGltZWRzZW5kCj4gICAgeTIwMzg6IGNvYmFsdC9wb3NpeC9t
+dXF1ZXVlOiBBZGRpbmcgbXFfdGltZWRyZWNlaXZlNjQKPiAgICB5MjAzODogbGliL2NvYmFsdC9t
+cXVldWU6IGRpc3BhdGNoIG1xX3RpbWVkcmVjZWl2ZQo+IAo+ICAgaW5jbHVkZS9jb2JhbHQvdWFw
+aS9zeXNjYWxsLmggICAgICAgICAgfCAgIDIgKwo+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9tcXVl
+dWUuYyAgICAgICAgICAgfCAgNTEgKysrKysrLQo+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9tcXVl
+dWUuaCAgICAgICAgICAgfCAgMTggKysrCj4gICBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwz
+Mi5jICAgICAgICB8ICAxNiArKysKPiAgIGtlcm5lbC9jb2JhbHQvcG9zaXgvc3lzY2FsbDMyLmgg
+ICAgICAgIHwgIDEwICsrCj4gICBrZXJuZWwvY29iYWx0L3RyYWNlL2NvYmFsdC1wb3NpeC5oICAg
+ICB8ICAgNCArLQo+ICAgbGliL2NvYmFsdC9tcS5jICAgICAgICAgICAgICAgICAgICAgICAgfCAg
+MTAgKysKPiAgIHRlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgMTkwICsr
+KysrKysrKysrKysrKysrKysrKysrKy0KPiAgIDggZmlsZXMgY2hhbmdlZCwgMjk3IGluc2VydGlv
+bnMoKyksIDQgZGVsZXRpb25zKC0pCj4gCgo=
