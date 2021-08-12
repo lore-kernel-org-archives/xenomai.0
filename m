@@ -1,12 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: posix_select seems to leak a registry element
-Date: Thu, 12 Aug 2021 12:39:28 +0000
-Message-ID: <6dc0aceae6cd5bc5898d898f6f3d7132497d5535.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <32D0DBC6952AC14591916B9492AA0D7B@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: posix_select seems to leak a registry element
+References: <6dc0aceae6cd5bc5898d898f6f3d7132497d5535.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c366b71b-4926-a60c-02c1-d49ddd30956d@siemens.com>
+Date: Thu, 12 Aug 2021 14:45:50 +0200
 MIME-Version: 1.0
+In-Reply-To: <6dc0aceae6cd5bc5898d898f6f3d7132497d5535.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgYWxsLA0KDQpJIGp1c3Qgbm90aWNlZCB0aGF0IHRoZSBwb3NpeF9zZWxlY3QgdGVzdCBvZiBz
-bW9rZXkgaXMgbGVha2luZyBvbmUNCnJlZ2lzdHJ5IGVsZW1lbnQ6DQoNCiQgY2F0IC9wcm9jL3hl
-bm9tYWkvcmVnaXN0cnkvdXNhZ2UNCjgvNTEyDQoNCiQgPHBhdGg+L3Ntb2tleSAtLXJ1bj1wb3Np
-eF9zZWxlY3QNCnBvc2l4X3NlbGVjdCBPSw0KDQokIGNhdCAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5
-L3VzYWdlDQo5LzUxMg0KDQpUaGUgZm9sbG93aW5nIGRpZmYgd291bGQgZml4IHRoYXQsIGJ1dCBJ
-IGFzc3VtZSB0aGUgcmVzb3VyY2UgY2xlYW51cA0Kc2hvdWxkIGhhcHBlbiBvbiBwcm9jZXNzL3Rh
-c2sgZXhpdCBhbnl3YXkuIEZvciBzb21lIHJlYXNvbiBpdCBkb2VzIG5vdC4NCkFueSBpZGVhcyB3
-aGVyZSB0byBsb29rIGF0PyBXaGVyZSAoY29kZSBsb2NhdGlvbikgc2hvdWxkIHRoZSBjbGVhbnVw
-DQp0YWtlIHBsYWNlPw0KDQpkaWZmIC0tZ2l0IGEvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1zZWxl
-Y3QvcG9zaXgtc2VsZWN0LmMNCmIvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1zZWxlY3QvcG9zaXgt
-c2VsZWN0LmMNCmluZGV4IGU5YmY5MzhiMy4uMGE1OWU0OTY4IDEwMDY0NA0KLS0tIGEvdGVzdHN1
-aXRlL3Ntb2tleS9wb3NpeC1zZWxlY3QvcG9zaXgtc2VsZWN0LmMNCisrKyBiL3Rlc3RzdWl0ZS9z
-bW9rZXkvcG9zaXgtc2VsZWN0L3Bvc2l4LXNlbGVjdC5jDQpAQCAtMTM4LDYgKzEzOCw4IEBAIHN0
-YXRpYyBpbnQgcnVuX3Bvc2l4X3NlbGVjdChzdHJ1Y3Qgc21va2V5X3Rlc3QgKnQsDQppbnQgYXJn
-YywgY2hhciAqY29uc3QgYXJndltdKQ0KIAl1c2xlZXAoMzAwMDAwKTsNCiAJc21wX3JtYigpOw0K
-IAlyZXQgPSB0ZXN0X3N0YXR1czsNCisNCisJbXFfdW5saW5rKCIvc2VsZWN0X3Rlc3RfbXEiKTsN
-CiBvdXQ6DQogCXB0aHJlYWRfam9pbih0Y2IsIE5VTEwpOw0KDQoNCg0KVGhhbmtzIQ0KRmxvcmlh
-bg0KDQotLSANClNpZW1lbnMgQUcsIFQgUkRBIElPVA0KQ29ycG9yYXRlIENvbXBldGVuY2UgQ2Vu
-dGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 12.08.21 14:39, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> Hi all,
+> 
+> I just noticed that the posix_select test of smokey is leaking one
+> registry element:
+> 
+> $ cat /proc/xenomai/registry/usage
+> 8/512
+> 
+> $ <path>/smokey --run=posix_select
+> posix_select OK
+> 
+> $ cat /proc/xenomai/registry/usage
+> 9/512
+> 
+> The following diff would fix that, but I assume the resource cleanup
+> should happen on process/task exit anyway. For some reason it does not.
+> Any ideas where to look at? Where (code location) should the cleanup
+> take place?
+> 
+> diff --git a/testsuite/smokey/posix-select/posix-select.c
+> b/testsuite/smokey/posix-select/posix-select.c
+> index e9bf938b3..0a59e4968 100644
+> --- a/testsuite/smokey/posix-select/posix-select.c
+> +++ b/testsuite/smokey/posix-select/posix-select.c
+> @@ -138,6 +138,8 @@ static int run_posix_select(struct smokey_test *t,
+> int argc, char *const argv[])
+>         usleep(300000);
+>         smp_rmb();
+>         ret = test_status;
+> +
+> +       mq_unlink("/select_test_mq");
+>  out:
+>         pthread_join(tcb, NULL);
+> 
+
+The change is likely correct. I'm now wondering if we are cleaning up a
+process-shared resource here that the core may not be able to simply
+destroy when the creator terminates. Needs to be checked if that is the
+case or if we are truly leaking via the kernel as well.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
