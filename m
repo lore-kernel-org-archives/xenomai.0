@@ -1,15 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: posix_select seems to leak a registry element
-Date: Thu, 12 Aug 2021 14:39:09 +0000
-Message-ID: <334aebe1aeb84533a3308b3c19f5ceda096c45ec.camel@siemens.com>
 References: <6dc0aceae6cd5bc5898d898f6f3d7132497d5535.camel@siemens.com>
  <c366b71b-4926-a60c-02c1-d49ddd30956d@siemens.com>
-In-Reply-To: <c366b71b-4926-a60c-02c1-d49ddd30956d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BD5CE70CFEB32548B0A21D1C83C7EBCD@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <334aebe1aeb84533a3308b3c19f5ceda096c45ec.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7d8df8c7-648c-6824-746b-07ea9f681b7a@siemens.com>
+Date: Thu, 12 Aug 2021 16:48:16 +0200
 MIME-Version: 1.0
+In-Reply-To: <334aebe1aeb84533a3308b3c19f5ceda096c45ec.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,44 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTA4LTEyIGF0IDE0OjQ1ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMi4wOC4yMSAxNDozOSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
-dGU6DQo+ID4gSGkgYWxsLA0KPiA+IA0KPiA+IEkganVzdCBub3RpY2VkIHRoYXQgdGhlIHBvc2l4
-X3NlbGVjdCB0ZXN0IG9mIHNtb2tleSBpcyBsZWFraW5nIG9uZQ0KPiA+IHJlZ2lzdHJ5IGVsZW1l
-bnQ6DQo+ID4gDQo+ID4gJCBjYXQgL3Byb2MveGVub21haS9yZWdpc3RyeS91c2FnZQ0KPiA+IDgv
-NTEyDQo+ID4gDQo+ID4gJCA8cGF0aD4vc21va2V5IC0tcnVuPXBvc2l4X3NlbGVjdA0KPiA+IHBv
-c2l4X3NlbGVjdCBPSw0KPiA+IA0KPiA+ICQgY2F0IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvdXNh
-Z2UNCj4gPiA5LzUxMg0KPiA+IA0KPiA+IFRoZSBmb2xsb3dpbmcgZGlmZiB3b3VsZCBmaXggdGhh
-dCwgYnV0IEkgYXNzdW1lIHRoZSByZXNvdXJjZSBjbGVhbnVwDQo+ID4gc2hvdWxkIGhhcHBlbiBv
-biBwcm9jZXNzL3Rhc2sgZXhpdCBhbnl3YXkuIEZvciBzb21lIHJlYXNvbiBpdCBkb2VzIG5vdC4N
-Cj4gPiBBbnkgaWRlYXMgd2hlcmUgdG8gbG9vayBhdD8gV2hlcmUgKGNvZGUgbG9jYXRpb24pIHNo
-b3VsZCB0aGUgY2xlYW51cA0KPiA+IHRha2UgcGxhY2U/DQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBh
-L3Rlc3RzdWl0ZS9zbW9rZXkvcG9zaXgtc2VsZWN0L3Bvc2l4LXNlbGVjdC5jDQo+ID4gYi90ZXN0
-c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVjdC9wb3NpeC1zZWxlY3QuYw0KPiA+IGluZGV4IGU5YmY5
-MzhiMy4uMGE1OWU0OTY4IDEwMDY0NA0KPiA+IC0tLSBhL3Rlc3RzdWl0ZS9zbW9rZXkvcG9zaXgt
-c2VsZWN0L3Bvc2l4LXNlbGVjdC5jDQo+ID4gKysrIGIvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1z
-ZWxlY3QvcG9zaXgtc2VsZWN0LmMNCj4gPiBAQCAtMTM4LDYgKzEzOCw4IEBAIHN0YXRpYyBpbnQg
-cnVuX3Bvc2l4X3NlbGVjdChzdHJ1Y3Qgc21va2V5X3Rlc3QgKnQsDQo+ID4gaW50IGFyZ2MsIGNo
-YXIgKmNvbnN0IGFyZ3ZbXSkNCj4gPiAgICAgICAgIHVzbGVlcCgzMDAwMDApOw0KPiA+ICAgICAg
-ICAgc21wX3JtYigpOw0KPiA+ICAgICAgICAgcmV0ID0gdGVzdF9zdGF0dXM7DQo+ID4gKw0KPiA+
-ICsgICAgICAgbXFfdW5saW5rKCIvc2VsZWN0X3Rlc3RfbXEiKTsNCj4gPiAgb3V0Og0KPiA+ICAg
-ICAgICAgcHRocmVhZF9qb2luKHRjYiwgTlVMTCk7DQo+ID4gDQo+IA0KPiBUaGUgY2hhbmdlIGlz
-IGxpa2VseSBjb3JyZWN0LiBJJ20gbm93IHdvbmRlcmluZyBpZiB3ZSBhcmUgY2xlYW5pbmcgdXAg
-YQ0KPiBwcm9jZXNzLXNoYXJlZCByZXNvdXJjZSBoZXJlIHRoYXQgdGhlIGNvcmUgbWF5IG5vdCBi
-ZSBhYmxlIHRvIHNpbXBseQ0KPiBkZXN0cm95IHdoZW4gdGhlIGNyZWF0b3IgdGVybWluYXRlcy4g
-TmVlZHMgdG8gYmUgY2hlY2tlZCBpZiB0aGF0IGlzIHRoZQ0KPiBjYXNlIG9yIGlmIHdlIGFyZSB0
-cnVseSBsZWFraW5nIHZpYSB0aGUga2VybmVsIGFzIHdlbGwuDQoNCkp1c3QgbGVhcm5lZCB0aGF0
-IG1lc3NhZ2UgcXVldWVzIGhhdmUga2VybmVsIHBlcnNpc3RlbmNlLsKgDQpUYWtlbiBmcm9tIFsx
-XToNCg0KUGVyc2lzdGVuY2UNCiAgICAgICBQT1NJWCBtZXNzYWdlIHF1ZXVlcyBoYXZlIGtlcm5l
-bCBwZXJzaXN0ZW5jZTogaWYgbm90IHJlbW92ZWQgYnkNCiAgICAgICBtcV91bmxpbmsoMyksIGEg
-bWVzc2FnZSBxdWV1ZSB3aWxsIGV4aXN0IHVudGlsIHRoZSBzeXN0ZW0gaXMgc2h1dA0KICAgICAg
-IGRvd24uDQoNCkkgd2lsbCBzZW5kIHRoZSBkaWZmIG1lbnRpb25lZCBhYm92ZSBhcyBwcm9wZXIg
-cGF0Y2guIFRoaXMgd2F5IHNtb2tleQ0Kd2lsbCBoZWxwIHVzIGRldGVjdGluZyBzdWNoIGxlYWtz
-IGFuZCB3ZSBkb24ndCBoYXZlIGZhbHNlIHBvc2l0aXZlcw0KaW5zaWRlIHRoZSB0ZXN0IHN1aXRl
-Lg0KDQpCdHc6IFNvbWUgb2YgdGhlIHRlc3RzIHdlcmUgc2tpcHBlZCBoZXJlIGJlY2F1c2Ugb2Yg
-Im5vIGtlcm5lbA0Kc3VwcG9ydCIuIFRoZXJlIG1pZ2h0IGJlIG1vcmUuLi4NCg0KWzFdIGh0dHBz
-Oi8vbWFuNy5vcmcvbGludXgvbWFuLXBhZ2VzL21hbjcvbXFfb3ZlcnZpZXcuNy5odG1sDQoNCkZs
-b3JpYW4NCg0KPiANCj4gSmFuDQo+IA0KDQo=
+On 12.08.21 16:39, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-08-12 at 14:45 +0200, Jan Kiszka wrote:
+>> On 12.08.21 14:39, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+>>> Hi all,
+>>>
+>>> I just noticed that the posix_select test of smokey is leaking one
+>>> registry element:
+>>>
+>>> $ cat /proc/xenomai/registry/usage
+>>> 8/512
+>>>
+>>> $ <path>/smokey --run=posix_select
+>>> posix_select OK
+>>>
+>>> $ cat /proc/xenomai/registry/usage
+>>> 9/512
+>>>
+>>> The following diff would fix that, but I assume the resource cleanup
+>>> should happen on process/task exit anyway. For some reason it does not.
+>>> Any ideas where to look at? Where (code location) should the cleanup
+>>> take place?
+>>>
+>>> diff --git a/testsuite/smokey/posix-select/posix-select.c
+>>> b/testsuite/smokey/posix-select/posix-select.c
+>>> index e9bf938b3..0a59e4968 100644
+>>> --- a/testsuite/smokey/posix-select/posix-select.c
+>>> +++ b/testsuite/smokey/posix-select/posix-select.c
+>>> @@ -138,6 +138,8 @@ static int run_posix_select(struct smokey_test *t,
+>>> int argc, char *const argv[])
+>>>         usleep(300000);
+>>>         smp_rmb();
+>>>         ret = test_status;
+>>> +
+>>> +       mq_unlink("/select_test_mq");
+>>>  out:
+>>>         pthread_join(tcb, NULL);
+>>>
+>>
+>> The change is likely correct. I'm now wondering if we are cleaning up a
+>> process-shared resource here that the core may not be able to simply
+>> destroy when the creator terminates. Needs to be checked if that is the
+>> case or if we are truly leaking via the kernel as well.
+> 
+> Just learned that message queues have kernel persistence.
+> Taken from [1]:
+> 
+> Persistence
+>        POSIX message queues have kernel persistence: if not removed by
+>        mq_unlink(3), a message queue will exist until the system is shut
+>        down.
+> 
+> I will send the diff mentioned above as proper patch. This way smokey
+> will help us detecting such leaks and we don't have false positives
+> inside the test suite.
+> 
+
+TIA!
+
+> Btw: Some of the tests were skipped here because of "no kernel
+> support". There might be more...
+> 
+
+That should no longer be the case with xenomai-images (except for the
+cpu-affinity test on dual or single-core targets).
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
