@@ -1,7 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v4 3/5] y2038: cobalt/posix/muqueue: Adding mq_timedreceive64
-Date: Thu, 12 Aug 2021 18:28:10 +0200
-Message-Id: <20210812162810.54580-1-florian.bezdeka@siemens.com>
+Subject: [PATCH] testsuite/smokey: Fixing a registry leak of the posix_select
+ test
+Date: Thu, 12 Aug 2021 18:38:22 +0200
+Message-Id: <20210812163822.55293-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,173 +16,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Song Chen <chensong_2000@189.cn>
+According to POSIX message queues have kernel persistence, which means
+they are not cleaned up until the next reboot.
 
-Add a syscall specific for mq_timedreceive64 with 64bit time_t.
+The test has a mq_unlink() as "precondition", so it will clean up
+failed test runs silently but /proc/xenomai/registry/usage will still
+report a "leak" once the test has completed.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
-[Florian:
-  - Reformat commit msg
-  - relocate code
-  - tracing
-  - fix syscall declarations
-]
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
+ testsuite/smokey/posix-select/posix-select.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-@Jan: This should replace 76607e1a7237 in next. Other patches of the
-same series were not affected.
-
-Changes in v4:
-  - Fixed COBALT_SYSCALL vs. COBALT_SYSCALL_DECL
-
- include/cobalt/uapi/syscall.h      |  1 +
- kernel/cobalt/posix/mqueue.c       | 28 +++++++++++++++++++++++++++-
- kernel/cobalt/posix/mqueue.h       | 10 ++++++++++
- kernel/cobalt/posix/syscall32.c    |  8 ++++++++
- kernel/cobalt/posix/syscall32.h    |  5 +++++
- kernel/cobalt/trace/cobalt-posix.h |  3 ++-
- 6 files changed, 53 insertions(+), 2 deletions(-)
-
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 464e170cc..c27d6d044 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -130,6 +130,7 @@
- #define sc_cobalt_clock_adjtime64		107
- #define sc_cobalt_mutex_timedlock64		108
- #define sc_cobalt_mq_timedsend64		109
-+#define sc_cobalt_mq_timedreceive64		110
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index a1828919c..ebe7cf7b0 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -629,7 +629,7 @@ redo:
- 		ret = fetch_timeout(&ts, u_ts);
- 		if (ret)
- 			return ERR_PTR(ret);
--		if (ts.tv_nsec >= ONE_BILLION)
-+		if (!timespec64_valid(&ts))
- 			return ERR_PTR(-EINVAL);
- 		to = ts2ns(&ts) + 1;
- 		tmode = XN_REALTIME;
-@@ -1013,6 +1013,24 @@ fail:
- 	return ret;
- }
- 
-+int __cobalt_mq_timedreceive64(mqd_t uqd, void __user *u_buf,
-+			       ssize_t __user *u_len,
-+			       unsigned int __user *u_prio,
-+			       const void __user *u_ts)
-+{
-+	ssize_t len;
-+	int ret;
+diff --git a/testsuite/smokey/posix-select/posix-select.c b/testsuite/smokey/posix-select/posix-select.c
+index e9bf938b3..0a59e4968 100644
+--- a/testsuite/smokey/posix-select/posix-select.c
++++ b/testsuite/smokey/posix-select/posix-select.c
+@@ -138,6 +138,8 @@ static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
+ 	usleep(300000);
+ 	smp_rmb();
+ 	ret = test_status;
 +
-+	ret = cobalt_copy_from_user(&len, u_len, sizeof(len));
-+	if (ret)
-+		return ret;
-+
-+	ret = __cobalt_mq_timedreceive(uqd, u_buf, &len, u_prio, u_ts,
-+				       u_ts ? mq_fetch_timeout64 : NULL);
-+
-+	return ret ?: cobalt_copy_to_user(u_len, &len, sizeof(*u_len));
-+}
-+
- COBALT_SYSCALL(mq_timedreceive, primary,
- 	       (mqd_t uqd, void __user *u_buf,
- 		ssize_t __user *u_len,
-@@ -1031,3 +1049,11 @@ COBALT_SYSCALL(mq_timedreceive, primary,
- 
- 	return ret ?: cobalt_copy_to_user(u_len, &len, sizeof(*u_len));
- }
-+
-+COBALT_SYSCALL(mq_timedreceive64, primary,
-+	       (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
-+		unsigned int __user *u_prio,
-+		const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_mq_timedreceive64(uqd, u_buf, u_len, u_prio, u_ts);
-+}
-diff --git a/kernel/cobalt/posix/mqueue.h b/kernel/cobalt/posix/mqueue.h
-index f16774a3b..b4b263158 100644
---- a/kernel/cobalt/posix/mqueue.h
-+++ b/kernel/cobalt/posix/mqueue.h
-@@ -50,6 +50,11 @@ int __cobalt_mq_timedreceive(mqd_t uqd, void __user *u_buf,
- 			     int (*fetch_timeout)(struct timespec64 *ts,
- 						  const void __user *u_ts));
- 
-+int __cobalt_mq_timedreceive64(mqd_t uqd, void __user *u_buf,
-+			       ssize_t __user *u_len,
-+			       unsigned int __user *u_prio,
-+			       const void __user *u_ts);
-+
- int __cobalt_mq_notify(mqd_t fd, const struct sigevent *evp);
- 
- COBALT_SYSCALL_DECL(mq_open,
-@@ -76,6 +81,11 @@ COBALT_SYSCALL_DECL(mq_timedreceive,
- 		     unsigned int __user *u_prio,
- 		     const struct __user_old_timespec __user *u_ts));
- 
-+COBALT_SYSCALL_DECL(mq_timedreceive64,
-+		    (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
-+		     unsigned int __user *u_prio,
-+		     const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL_DECL(mq_notify,
- 		    (mqd_t fd, const struct sigevent *__user evp));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index d3f87c246..d52be0207 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -354,6 +354,14 @@ COBALT_SYSCALL32emu(mq_timedreceive, primary,
- 	return ret ?: cobalt_copy_to_user(u_len, &clen, sizeof(*u_len));
- }
- 
-+COBALT_SYSCALL32emu(mq_timedreceive64, primary,
-+		    (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
-+		     unsigned int __user *u_prio,
-+		     const struct __kernel_timespec __user *u_ts))
-+{
-+	return __cobalt_mq_timedreceive64(uqd, u_buf, u_len, u_prio, u_ts);
-+}
-+
- static inline int mq_fetch_timeout(struct timespec64 *ts,
- 				   const void __user *u_ts)
- {
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 0e552202e..006054e85 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -132,6 +132,11 @@ COBALT_SYSCALL32emu_DECL(mq_timedreceive,
- 			  unsigned int __user *u_prio,
- 			  const struct old_timespec32 __user *u_ts));
- 
-+COBALT_SYSCALL32emu_DECL(mq_timedreceive64,
-+			 (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
-+			  unsigned int __user *u_prio,
-+			  const struct __kernel_timespec __user *u_ts));
-+
- COBALT_SYSCALL32emu_DECL(mq_notify,
- 			 (mqd_t fd, const struct compat_sigevent *__user u_cev));
- 
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index d67a6ce09..b046c8a0e 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -162,7 +162,8 @@
- 		__cobalt_symbolic_syscall(clock_getres64),		\
- 		__cobalt_symbolic_syscall(clock_adjtime64),		\
- 		__cobalt_symbolic_syscall(mutex_timedlock64),		\
--		__cobalt_symbolic_syscall(mq_timedsend64))
-+		__cobalt_symbolic_syscall(mq_timedsend64),  		\
-+		__cobalt_symbolic_syscall(mq_timedreceive64))
- 
- 
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
++	mq_unlink("/select_test_mq");
+ out:
+ 	pthread_join(tcb, NULL);
+ 	
 -- 
 2.30.2
 
