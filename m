@@ -1,14 +1,10 @@
-Sender: chensong_2000@189.cn
-Subject: Re: [PATCH v2 0/3] y2038: Adding event_wait64()
-References: <20210811133651.42582-1-florian.bezdeka@siemens.com>
-From: "chensong_2000@189.cn" <chensong_2000@189.cn>
-Message-ID: <a7d9a5dd-a301-c1c2-55f2-249f210f988c@189.cn>
-Date: Thu, 12 Aug 2021 15:02:58 +0800
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v4 0/3] y2038: Adding event_wait64()
+Date: Thu, 12 Aug 2021 09:09:41 +0200
+Message-Id: <20210812070944.13793-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-In-Reply-To: <20210811133651.42582-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset="gbk"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-CgrU2iAyMDIxLzgvMTEgz8LO5zk6MzYsIEZsb3JpYW4gQmV6ZGVrYSDQtLXAOgo+IEhpIQo+IAo+
-IEp1c3QgYW5vdGhlciB5MjAzOCByZWxhdGVkIHN5c2NhbGwsIG9uY2UgYWdhaW4gYmFzZWQgb24g
-djEgc2VudCBvdXQgYnkKPiBTb25nIGFuZCByZWJhc2VkIHRvIGN1cnJlbnQgbmV4dCB3aXRoIHNv
-bWUgY29kZS0gYW5kIHRlc3QtY2xlYW51cHMgYXBwbGllZC4KPiAKPiBAU29uZzoKPiBUaGlzIG9u
-ZSB3YXMgdGhlIGxhc3Qgb25lIGluIG15IGluYm94LiBQbGVhc2UgbWFrZSBzdXJlIHRoYXQgYWxs
-Cj4gZm9sbG93aW5nIHBhdGNoZXMgYXJlIGJhc2VkIG9uIG5leHQuIElJUkMgdGhlcmUgYXJlIDMg
-b3IgNCBzeXNjYWxscwo+IHJlbWFpbmluZy4gV2Ugc2hvdWxkIHRha2UgY2FyZSBvZiBbMV0gYXMg
-d2VsbC4gV2UgbmVlZCBzb21ldGhpbmcgaW4gdGhlIENJCj4gdGhhdCB0ZXN0cyB0aGUgZnVsbCBp
-bXBsZW1lbnRhdGlvbiwgaS5lLiBpbmNsdWRpbmcgdGhlIGdsaWJjIHdyYXBwZXJzIChwcm9wZXIK
-PiBzeXNjYWxsIGRlbGVnYXRpb24pLiBSZWNlbnQgZ2xpYmMgc2hvdWxkIGFsbG93IHVzIHRvIHVz
-ZSA2NGJpdCB0aW1lX3QuCgpoaSBGbG9yaWFuLAoKVGhlcmUgYXJlIGxlZnQgaW4gaW1wbGVtZW50
-YXRpb246CgoxLCBjb2JhbHRfdGhyZWFkX3NldHNjaGVkcGFyYW1fZXgKMiwgY29iYWx0X3RocmVh
-ZF9nZXRzY2hlZHBhcmFtX2V4Cgp0aG9zZSAyIGFyZSBhIGxpdHRsZSBiaXQgdHJpY2t5LCBpJ20g
-d29ya2luZyBvbiBpdC4KCjMsIHJlY3ZtbXNnICh3YWl0aW5nIHRvIHN1Ym1pdCkgYnV0IHdpbGwg
-ZG91YmxlIGNoZWNrIHRvIGtlZXAgYWxpZ25lZCAKd2l0aCB5b3VyIG1vZGlmaWNhdGlvbi4KCjQs
-IGNvbmRfd2FpdF9wcm9sb2d1ZSAoaGF2ZW4ndCBzdGFydGVkIHlldCkKCkkgd2lsbCBzdWJtaXQg
-cGF0Y2hlcyBhYm91dCB0aGVtIGFuZCBwbGVhc2UgZmVlbCBmcmVlIHRvIHJlamVjdCBpZiB5b3Ug
-CnRoaW5rIHNvbWV0aGluZyB3cm9uZy4KCkJSCgpTb25nCgo+IAo+IFsxXTogaHR0cHM6Ly9naXRs
-YWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMjEKPiAKPiBCZXN0
-IHJlZ2FyZHMsCj4gRmxvcmlhbgo+IAo+IEZsb3JpYW4gQmV6ZGVrYSAoMSk6Cj4gICAgeTIwMzg6
-IHRlc3RzdWl0ZS9zbW9rZXkveTIwMzg6IEFkZGluZyB0ZXN0cyBmb3IgZXZlbnRfd2FpdDY0Cj4g
-Cj4gU29uZyBDaGVuICgyKToKPiAgICB5MjAzODogY29iYWx0L3Bvc2l4L2V2ZW50OiBBZGRpbmcg
-ZXZlbnRfd2FpdDY0Cj4gICAgeTIwMzg6IGxpYi9jb2JhbHQvaW50ZXJuYWw6IGRpc3BhdGNoIGV2
-ZW50X3dhaXQKPiAKPiAgIGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgICAgICAgIHwg
-IDEgKwo+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9ldmVudC5jICAgICAgICAgICAgfCAzNCArKysr
-KysrKysrLQo+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9ldmVudC5oICAgICAgICAgICAgfCAxMiAr
-KysrCj4gICBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jICAgICAgICB8ICA5ICsrKwo+
-ICAga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCAgICAgICAgfCAgNyArKysKPiAgIGtl
-cm5lbC9jb2JhbHQvdHJhY2UvY29iYWx0LXBvc2l4LmggICAgIHwgIDMgKy0KPiAgIGxpYi9jb2Jh
-bHQvaW50ZXJuYWwuYyAgICAgICAgICAgICAgICAgIHwgIDUgKysKPiAgIHRlc3RzdWl0ZS9zbW9r
-ZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgNzggKysrKysrKysrKysrKysrKysrKysrKystLS0K
-PiAgIDggZmlsZXMgY2hhbmdlZCwgMTM2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQo+
-IAoK
+Hi!
+
+Just another y2038 related syscall, once again based on v1 sent out by
+Song and rebased to current next with some code- and test-cleanups applied.
+
+@Song:
+This one was the last one in my inbox. Please make sure that all
+following patches are based on next. IIRC there are 3 or 4 syscalls
+remaining. We should take care of [1] as well. We need something in the CI
+that tests the full implementation, i.e. including the glibc wrappers
+(proper syscall delegation). According to the changelog [2] of recent 
+glibc we should be able to use 64bit time_t.
+
+[1]: https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
+[2]: https://sourceware.org/pipermail/libc-alpha/2021-August/129718.html
+
+Best regards,
+Florian
+
+Changes in v4:
+  - Rework Patch 3. See commit message for details.
+    Mostly test improvements.
+
+Changes in v3:
+  - None. git send-mail folded two different series together. Resending
+    to allow maintainers to pick this series at once. Sorry for that.
+ 
+
+
+Florian Bezdeka (1):
+  y2038: testsuite/smokey/y2038: Adding tests for event_wait64
+
+Song Chen (2):
+  y2038: cobalt/posix/event: Adding event_wait64
+  y2038: lib/cobalt/internal: dispatch event_wait
+
+ include/cobalt/uapi/syscall.h          |  1 +
+ kernel/cobalt/posix/event.c            | 34 ++++++++-
+ kernel/cobalt/posix/event.h            | 12 ++++
+ kernel/cobalt/posix/syscall32.c        |  9 +++
+ kernel/cobalt/posix/syscall32.h        |  7 ++
+ kernel/cobalt/trace/cobalt-posix.h     |  3 +-
+ lib/cobalt/internal.c                  |  5 ++
+ testsuite/smokey/y2038/syscall-tests.c | 95 +++++++++++++++++++++++---
+ 8 files changed, 153 insertions(+), 13 deletions(-)
+
+-- 
+2.30.2
+
+
