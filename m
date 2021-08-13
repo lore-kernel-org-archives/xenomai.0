@@ -1,13 +1,11 @@
-Subject: Re: [PATCH] Add --disable-{demo,testsuite} options
-References: <20210813081254.1904938-1-fontaine.fabrice@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <86057dfa-d2ed-1932-db29-4608edb08865@siemens.com>
-Date: Fri, 13 Aug 2021 10:54:30 +0200
+Subject: [xenomai-images][PATCH v2] ci: Add default for S3_BUCKET_URL
+Message-ID: <7895bdb4-c7fa-6d04-9d22-11f95c197a8d@siemens.com>
+Date: Fri, 13 Aug 2021 12:10:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210813081254.1904938-1-fontaine.fabrice@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +14,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fabrice Fontaine <fontaine.fabrice@gmail.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 13.08.21 10:12, Fabrice Fontaine via Xenomai wrote:
-> Allow the user to disable demo and testsuite to avoid the following
-> build failures on arc and riscv32:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Are you working on ports to those archs? Or is xenomai userland just
-prematurely built for those in buildroot?
+This corresponds to the default for LAVA_ARTIFACTS_URL.
 
-> 
-> latency.c: In function 'display':
-> latency.c:326:21: error: format '%ld' expects argument of type 'long int', but argument 2 has type 'time_t' {aka 'long long int'} [-Werror=format=]
->   326 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
->       |                 ~~~~^
->       |                     |
->       |                     long int
->       |                 %.2lld
->   327 |          "priority %d)\n", dt / 3600,
->       |                            ~~~~~~~~~
->       |                               |
->       |                               time_t {aka long long int}
-> 
-> altency.c: In function ‘display’:
-> altency.c:262:21: error: format ‘%ld’ expects argument of type ‘long int’, but argument 2 has type ‘time_t’ {aka ‘long long int’} [-Werror=format=]
->   262 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
->       |                 ~~~~^
->       |                     |
->       |                     long int
->       |                 %.2lld
->   263 |          "priority %d)\n", dt / 3600,
->       |                            ~~~~~~~~~
->       |                               |
->       |                               time_t {aka long long int}
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-How about fixing those issues instead?
+Changes in v2:
+ - reorder to fix failing consistency check before default was assigned
 
-Jan
+ scripts/deploy_to_aws.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/scripts/deploy_to_aws.sh b/scripts/deploy_to_aws.sh
+index 9864cc1..e7c22f0 100755
+--- a/scripts/deploy_to_aws.sh
++++ b/scripts/deploy_to_aws.sh
+@@ -18,13 +18,13 @@ if [ -z "${target}" ]; then
+ fi
+ images_dir=build/tmp/deploy/images
+ 
+-if [ -z "${S3_BUCKET_URL}" ] || [ -z "${AWS_ACCESS_KEY_ID}" ]  || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
++destination="${S3_BUCKET_URL:-s3://xenomai-images-artifacts/artifacts}"
++
++if [ -z "${destination}" ] || [ -z "${AWS_ACCESS_KEY_ID}" ]  || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+     echo "environment not available or incomplete - do not deploy"
+     exit 0
+ fi
+ 
+-destination="${S3_BUCKET_URL}"
+-
+ aws_args="--acl=public-read"
+ 
+ isar_base_name="${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${target}"
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
