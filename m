@@ -1,15 +1,10 @@
-Subject: Re: [PATCH v4 3/5] y2038: cobalt/posix/muqueue: Adding
- mq_timedreceive64
-References: <20210812162810.54580-1-florian.bezdeka@siemens.com>
- <cd623527-ddb0-281c-2981-59001bdb3a3c@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <794b6e9e-be08-6bea-ada6-cab40da8a460@siemens.com>
-Date: Fri, 13 Aug 2021 09:17:36 +0200
+From: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+Subject: [PATCH] Add --disable-{demo,testsuite} options
+Date: Fri, 13 Aug 2021 10:12:54 +0200
+Message-Id: <20210813081254.1904938-1-fontaine.fabrice@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cd623527-ddb0-281c-2981-59001bdb3a3c@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,201 +13,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Fabrice Fontaine <fontaine.fabrice@gmail.com>
 
-On 13.08.21 08:53, Jan Kiszka via Xenomai wrote:
-> On 12.08.21 18:28, Florian Bezdeka wrote:
->> From: Song Chen <chensong_2000@189.cn>
->>
->> Add a syscall specific for mq_timedreceive64 with 64bit time_t.
->>
->> Signed-off-by: Song Chen <chensong_2000@189.cn>
->> [Florian:
->>   - Reformat commit msg
->>   - relocate code
->>   - tracing
->>   - fix syscall declarations
->> ]
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
->>
->> @Jan: This should replace 76607e1a7237 in next. Other patches of the
->> same series were not affected.
->>
->> Changes in v4:
->>   - Fixed COBALT_SYSCALL vs. COBALT_SYSCALL_DECL
->>
->>  include/cobalt/uapi/syscall.h      |  1 +
->>  kernel/cobalt/posix/mqueue.c       | 28 +++++++++++++++++++++++++++-
->>  kernel/cobalt/posix/mqueue.h       | 10 ++++++++++
->>  kernel/cobalt/posix/syscall32.c    |  8 ++++++++
->>  kernel/cobalt/posix/syscall32.h    |  5 +++++
->>  kernel/cobalt/trace/cobalt-posix.h |  3 ++-
->>  6 files changed, 53 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
->> index 464e170cc..c27d6d044 100644
->> --- a/include/cobalt/uapi/syscall.h
->> +++ b/include/cobalt/uapi/syscall.h
->> @@ -130,6 +130,7 @@
->>  #define sc_cobalt_clock_adjtime64		107
->>  #define sc_cobalt_mutex_timedlock64		108
->>  #define sc_cobalt_mq_timedsend64		109
->> +#define sc_cobalt_mq_timedreceive64		110
->>  
->>  #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
->>  
->> diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
->> index a1828919c..ebe7cf7b0 100644
->> --- a/kernel/cobalt/posix/mqueue.c
->> +++ b/kernel/cobalt/posix/mqueue.c
->> @@ -629,7 +629,7 @@ redo:
->>  		ret = fetch_timeout(&ts, u_ts);
->>  		if (ret)
->>  			return ERR_PTR(ret);
->> -		if (ts.tv_nsec >= ONE_BILLION)
->> +		if (!timespec64_valid(&ts))
->>  			return ERR_PTR(-EINVAL);
->>  		to = ts2ns(&ts) + 1;
->>  		tmode = XN_REALTIME;
->> @@ -1013,6 +1013,24 @@ fail:
->>  	return ret;
->>  }
->>  
->> +int __cobalt_mq_timedreceive64(mqd_t uqd, void __user *u_buf,
->> +			       ssize_t __user *u_len,
->> +			       unsigned int __user *u_prio,
->> +			       const void __user *u_ts)
->> +{
->> +	ssize_t len;
->> +	int ret;
->> +
->> +	ret = cobalt_copy_from_user(&len, u_len, sizeof(len));
->> +	if (ret)
->> +		return ret;
->> +
->> +	ret = __cobalt_mq_timedreceive(uqd, u_buf, &len, u_prio, u_ts,
->> +				       u_ts ? mq_fetch_timeout64 : NULL);
->> +
->> +	return ret ?: cobalt_copy_to_user(u_len, &len, sizeof(*u_len));
->> +}
->> +
->>  COBALT_SYSCALL(mq_timedreceive, primary,
->>  	       (mqd_t uqd, void __user *u_buf,
->>  		ssize_t __user *u_len,
->> @@ -1031,3 +1049,11 @@ COBALT_SYSCALL(mq_timedreceive, primary,
->>  
->>  	return ret ?: cobalt_copy_to_user(u_len, &len, sizeof(*u_len));
->>  }
->> +
->> +COBALT_SYSCALL(mq_timedreceive64, primary,
->> +	       (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
->> +		unsigned int __user *u_prio,
->> +		const struct __kernel_timespec __user *u_ts))
->> +{
->> +	return __cobalt_mq_timedreceive64(uqd, u_buf, u_len, u_prio, u_ts);
->> +}
->> diff --git a/kernel/cobalt/posix/mqueue.h b/kernel/cobalt/posix/mqueue.h
->> index f16774a3b..b4b263158 100644
->> --- a/kernel/cobalt/posix/mqueue.h
->> +++ b/kernel/cobalt/posix/mqueue.h
->> @@ -50,6 +50,11 @@ int __cobalt_mq_timedreceive(mqd_t uqd, void __user *u_buf,
->>  			     int (*fetch_timeout)(struct timespec64 *ts,
->>  						  const void __user *u_ts));
->>  
->> +int __cobalt_mq_timedreceive64(mqd_t uqd, void __user *u_buf,
->> +			       ssize_t __user *u_len,
->> +			       unsigned int __user *u_prio,
->> +			       const void __user *u_ts);
->> +
->>  int __cobalt_mq_notify(mqd_t fd, const struct sigevent *evp);
->>  
->>  COBALT_SYSCALL_DECL(mq_open,
->> @@ -76,6 +81,11 @@ COBALT_SYSCALL_DECL(mq_timedreceive,
->>  		     unsigned int __user *u_prio,
->>  		     const struct __user_old_timespec __user *u_ts));
->>  
->> +COBALT_SYSCALL_DECL(mq_timedreceive64,
->> +		    (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
->> +		     unsigned int __user *u_prio,
->> +		     const struct __kernel_timespec __user *u_ts));
->> +
->>  COBALT_SYSCALL_DECL(mq_notify,
->>  		    (mqd_t fd, const struct sigevent *__user evp));
->>  
->> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
->> index d3f87c246..d52be0207 100644
->> --- a/kernel/cobalt/posix/syscall32.c
->> +++ b/kernel/cobalt/posix/syscall32.c
->> @@ -354,6 +354,14 @@ COBALT_SYSCALL32emu(mq_timedreceive, primary,
->>  	return ret ?: cobalt_copy_to_user(u_len, &clen, sizeof(*u_len));
->>  }
->>  
->> +COBALT_SYSCALL32emu(mq_timedreceive64, primary,
->> +		    (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
->> +		     unsigned int __user *u_prio,
->> +		     const struct __kernel_timespec __user *u_ts))
->> +{
->> +	return __cobalt_mq_timedreceive64(uqd, u_buf, u_len, u_prio, u_ts);
->> +}
->> +
->>  static inline int mq_fetch_timeout(struct timespec64 *ts,
->>  				   const void __user *u_ts)
->>  {
->> diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
->> index 0e552202e..006054e85 100644
->> --- a/kernel/cobalt/posix/syscall32.h
->> +++ b/kernel/cobalt/posix/syscall32.h
->> @@ -132,6 +132,11 @@ COBALT_SYSCALL32emu_DECL(mq_timedreceive,
->>  			  unsigned int __user *u_prio,
->>  			  const struct old_timespec32 __user *u_ts));
->>  
->> +COBALT_SYSCALL32emu_DECL(mq_timedreceive64,
->> +			 (mqd_t uqd, void __user *u_buf, ssize_t __user *u_len,
->> +			  unsigned int __user *u_prio,
->> +			  const struct __kernel_timespec __user *u_ts));
->> +
->>  COBALT_SYSCALL32emu_DECL(mq_notify,
->>  			 (mqd_t fd, const struct compat_sigevent *__user u_cev));
->>  
->> diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
->> index d67a6ce09..b046c8a0e 100644
->> --- a/kernel/cobalt/trace/cobalt-posix.h
->> +++ b/kernel/cobalt/trace/cobalt-posix.h
->> @@ -162,7 +162,8 @@
->>  		__cobalt_symbolic_syscall(clock_getres64),		\
->>  		__cobalt_symbolic_syscall(clock_adjtime64),		\
->>  		__cobalt_symbolic_syscall(mutex_timedlock64),		\
->> -		__cobalt_symbolic_syscall(mq_timedsend64))
->> +		__cobalt_symbolic_syscall(mq_timedsend64),  		\
->> +		__cobalt_symbolic_syscall(mq_timedreceive64))
->>  
->>  
->>  DECLARE_EVENT_CLASS(cobalt_syscall_entry,
->>
-> 
-> Thanks, replaced in next. I've used that chance to convert the muqueue
-> to an mqueue. ;)
-> 
-> Doing a scan for this error pattern, I also found
-> 
-> COBALT_SYSCALL(mutex_timedlock64, primary,
-> 	       (struct cobalt_mutex_shadow __user *u_mx,
-> 		const struct __kernel_timespec __user *u_ts));
-> 
-> in kernel/cobalt/posix/mutex.h. Could you update
-> 
-> "y2038: cobalt/posix/mutex: Adding mutex_timedlock64"
-> 
-> as well?
-> 
+Allow the user to disable demo and testsuite to avoid the following
+build failures on arc and riscv32:
 
-Looking at the diff, it's really just macro, so I already fixed this up
-myself.
+latency.c: In function 'display':
+latency.c:326:21: error: format '%ld' expects argument of type 'long int', but argument 2 has type 'time_t' {aka 'long long int'} [-Werror=format=]
+  326 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
+      |                 ~~~~^
+      |                     |
+      |                     long int
+      |                 %.2lld
+  327 |          "priority %d)\n", dt / 3600,
+      |                            ~~~~~~~~~
+      |                               |
+      |                               time_t {aka long long int}
 
-Jan
+altency.c: In function ‘display’:
+altency.c:262:21: error: format ‘%ld’ expects argument of type ‘long int’, but argument 2 has type ‘time_t’ {aka ‘long long int’} [-Werror=format=]
+  262 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
+      |                 ~~~~^
+      |                     |
+      |                     long int
+      |                 %.2lld
+  263 |          "priority %d)\n", dt / 3600,
+      |                            ~~~~~~~~~
+      |                               |
+      |                               time_t {aka long long int}
 
+Fixes:
+ - http://autobuild.buildroot.org/results/448efe22e8fe058a1b354a3c124874e30b9ce138
+
+Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+---
+ Makefile.am  | 12 ++++++++++--
+ configure.ac | 12 ++++++++++++
+ 2 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 891e53f66..604644277 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -6,9 +6,17 @@ SUBDIRS = 		\
+ 	config		\
+ 	include		\
+ 	scripts		\
+-	testsuite	\
+-	utils		\
++	utils
++
++if XENO_ENABLE_DEMO
++SUBDIRS += 		\
+ 	demo
++endif
++
++if XENO_ENABLE_TESTSUITE
++SUBDIRS += 		\
++	testsuite
++endif
+ 
+ EXTRA_DIST = kernel debian
+ 
+diff --git a/configure.ac b/configure.ac
+index bd5fd5ba9..29dfd16e5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -200,6 +200,18 @@ test \! x$debug_mode = x && AC_DEFINE(CONFIG_XENO_DEBUG,1,[config])
+ AM_CONDITIONAL(XENO_DEBUG_FULL,[test x$debug_mode = xfull])
+ test x$debug_mode = xfull && AC_DEFINE(CONFIG_XENO_DEBUG_FULL,1,[config])
+ 
++dnl Demo (default: on)
++
++AC_ARG_ENABLE(demo,
++	AS_HELP_STRING([--disable-demo], [Disable demo]))
++AM_CONDITIONAL(XENO_ENABLE_DEMO,[test x$enable_demo != xno])
++
++dnl Testsuite (default: on)
++
++AC_ARG_ENABLE(testsuite,
++	AS_HELP_STRING([--disable-testsuite], [Disable testsuite]))
++AM_CONDITIONAL(XENO_ENABLE_TESTSUITE,[test x$enable_testsuite != xno])
++
+ dnl Low resolution clock (default: off)
+ 
+ unset lores_clock
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.30.2
+
 
