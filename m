@@ -1,9 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH] linux-xenomai: Add tracing support to arm64
-Date: Fri, 13 Aug 2021 13:36:44 +0200
-Message-Id: <20210813113644.49755-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] testsuite/smokey: Fixing a registry leak of the
+ posix_select test
+Date: Fri, 13 Aug 2021 13:03:51 +0000
+Message-ID: <e3d9945508442b17a07706a096ffd0ee429c1b1d.camel@siemens.com>
+References: <20210812163822.55293-1-florian.bezdeka@siemens.com>
+ <36d9bb86-b497-d8dc-b57a-f30bb13f1683@siemens.com>
+In-Reply-To: <36d9bb86-b497-d8dc-b57a-f30bb13f1683@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <45D4053398631240A41C5713BC85BEDF@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,34 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-The tracing support was disabled on arm64 but enabled on all other
-targets we support. Taking the trace configuration from armhf to be able
-to trace on arm64 as well.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- recipes-kernel/linux/files/arm64_defconfig | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
-index a010c30..9bacb82 100644
---- a/recipes-kernel/linux/files/arm64_defconfig
-+++ b/recipes-kernel/linux/files/arm64_defconfig
-@@ -6000,7 +6000,10 @@ CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
- CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
- CONFIG_HAVE_C_RECORDMCOUNT=y
- CONFIG_TRACING_SUPPORT=y
--# CONFIG_FTRACE is not set
-+CONFIG_EVENT_TRACING=y
-+CONFIG_CONTEXT_SWITCH_TRACER=y
-+CONFIG_TRACING=y
-+CONFIG_FTRACE=y
- # CONFIG_DMA_API_DEBUG is not set
- 
- #
--- 
-2.30.2
-
+T24gRnJpLCAyMDIxLTA4LTEzIGF0IDA4OjU5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAxMi4wOC4yMSAxODozOCwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEFjY29yZGluZyB0
+byBQT1NJWCBtZXNzYWdlIHF1ZXVlcyBoYXZlIGtlcm5lbCBwZXJzaXN0ZW5jZSwgd2hpY2ggbWVh
+bnMNCj4gPiB0aGV5IGFyZSBub3QgY2xlYW5lZCB1cCB1bnRpbCB0aGUgbmV4dCByZWJvb3QuDQo+
+ID4gDQo+ID4gVGhlIHRlc3QgaGFzIGEgbXFfdW5saW5rKCkgYXMgInByZWNvbmRpdGlvbiIsIHNv
+IGl0IHdpbGwgY2xlYW4gdXANCj4gPiBmYWlsZWQgdGVzdCBydW5zIHNpbGVudGx5IGJ1dCAvcHJv
+Yy94ZW5vbWFpL3JlZ2lzdHJ5L3VzYWdlIHdpbGwgc3RpbGwNCj4gPiByZXBvcnQgYSAibGVhayIg
+b25jZSB0aGUgdGVzdCBoYXMgY29tcGxldGVkLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEZs
+b3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KPiA+IC0tLQ0KPiA+
+ICB0ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVjdC9wb3NpeC1zZWxlY3QuYyB8IDIgKysNCj4g
+PiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQg
+YS90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVjdC9wb3NpeC1zZWxlY3QuYyBiL3Rlc3RzdWl0
+ZS9zbW9rZXkvcG9zaXgtc2VsZWN0L3Bvc2l4LXNlbGVjdC5jDQo+ID4gaW5kZXggZTliZjkzOGIz
+Li4wYTU5ZTQ5NjggMTAwNjQ0DQo+ID4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1zZWxl
+Y3QvcG9zaXgtc2VsZWN0LmMNCj4gPiArKysgYi90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVj
+dC9wb3NpeC1zZWxlY3QuYw0KPiA+IEBAIC0xMzgsNiArMTM4LDggQEAgc3RhdGljIGludCBydW5f
+cG9zaXhfc2VsZWN0KHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0
+IGFyZ3ZbXSkNCj4gPiAgCXVzbGVlcCgzMDAwMDApOw0KPiA+ICAJc21wX3JtYigpOw0KPiA+ICAJ
+cmV0ID0gdGVzdF9zdGF0dXM7DQo+ID4gKw0KPiA+ICsJbXFfdW5saW5rKCIvc2VsZWN0X3Rlc3Rf
+bXEiKTsNCj4gPiAgb3V0Og0KPiA+ICAJcHRocmVhZF9qb2luKHRjYiwgTlVMTCk7DQo+ID4gIAkN
+Cj4gPiANCj4gDQo+IFdoeSBvbmx5IGNsZWFuaW5nIHVwIG9uIHN1Y2Nlc3NmdWwgcnVucywgaWUu
+IHdoeSBkb2luZyB0aGlzIGJlZm9yZSB0aGUNCj4gIm91dDoiIGxhYmVsPw0KDQpZb3UgYXJlIHJp
+Z2h0LCB0aGF0J3Mgd3JvbmcuIEFuZCB3ZSBzaG91bGQgd2FpdCBmb3IgdGhlIHRjYiB0aHJlYWQg
+dG8NCmZpbmlzaCBhcyB3ZWxsLiBTbyBraW5kIG9mIGRvdWJsZSBmYXVsdC4gVGVzdGluZyB2Mi4u
+Lg0KDQpGbG9yaWFuDQoNCj4gDQo+IEphbg0KPiANCg0K
 
