@@ -1,11 +1,10 @@
-Subject: Re: [PATCH] testsuite/smokey: Fixing a registry leak of the
- posix_select test
-References: <20210812163822.55293-1-florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v2 0/3] y2038: Adding monitor_wait64()
+References: <20210811081120.18402-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <36d9bb86-b497-d8dc-b57a-f30bb13f1683@siemens.com>
-Date: Fri, 13 Aug 2021 08:59:53 +0200
+Message-ID: <0a3ba1e0-5432-22a2-6b70-ef186cb5a1e7@siemens.com>
+Date: Fri, 13 Aug 2021 09:09:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210812163822.55293-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20210811081120.18402-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,36 +18,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 12.08.21 18:38, Florian Bezdeka wrote:
-> According to POSIX message queues have kernel persistence, which means
-> they are not cleaned up until the next reboot.
+On 11.08.21 10:11, Florian Bezdeka wrote:
+> Hi!
 > 
-> The test has a mq_unlink() as "precondition", so it will clean up
-> failed test runs silently but /proc/xenomai/registry/usage will still
-> report a "leak" once the test has completed.
+> Just another y2038 related syscall, once again based on v1 sent out by
+> Song and rebased to current next.
 > 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  testsuite/smokey/posix-select/posix-select.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Best regards,
+> Florian
 > 
-> diff --git a/testsuite/smokey/posix-select/posix-select.c b/testsuite/smokey/posix-select/posix-select.c
-> index e9bf938b3..0a59e4968 100644
-> --- a/testsuite/smokey/posix-select/posix-select.c
-> +++ b/testsuite/smokey/posix-select/posix-select.c
-> @@ -138,6 +138,8 @@ static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
->  	usleep(300000);
->  	smp_rmb();
->  	ret = test_status;
-> +
-> +	mq_unlink("/select_test_mq");
->  out:
->  	pthread_join(tcb, NULL);
->  	
+> Florian Bezdeka (2):
+>   y2038: cobalt/posix/monitor: Adding monitor_wait64
+>   y2038: testsuite/smokey/y2038: Adding testcases for monitor_wait64()
+> 
+> Song Chen (1):
+>   y2038: lib/cobalt/internal: dispatch monitor_wait
+> 
+>  include/cobalt/uapi/syscall.h          |  1 +
+>  kernel/cobalt/posix/monitor.c          | 32 ++++++++++-
+>  kernel/cobalt/posix/monitor.h          | 10 ++++
+>  kernel/cobalt/posix/syscall32.c        |  8 +++
+>  kernel/cobalt/posix/syscall32.h        |  6 ++
+>  kernel/cobalt/trace/cobalt-posix.h     |  3 +-
+>  lib/cobalt/internal.c                  |  8 ++-
+>  testsuite/smokey/y2038/syscall-tests.c | 78 +++++++++++++++++++++++++-
+>  8 files changed, 141 insertions(+), 5 deletions(-)
 > 
 
-Why only cleaning up on successful runs, ie. why doing this before the
-"out:" label?
+Thanks, applied.
 
 Jan
 
