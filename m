@@ -1,11 +1,9 @@
-Subject: Re: [PATCH v2] testsuite/smokey: Fixing a registry leak of the
- posix_select test
-References: <20210813143354.92067-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <83242bc1-3191-1067-c485-71dad8e673d2@siemens.com>
-Date: Fri, 13 Aug 2021 16:46:08 +0200
+Subject: [PATCH] linux-xenomai: Disable I-pipe debugging on bbb also for
+ 4.4-latest
+Message-ID: <21a296a1-f797-a386-ce37-475c2bf88f75@siemens.com>
+Date: Fri, 13 Aug 2021 16:47:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210813143354.92067-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,42 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 13.08.21 16:33, Florian Bezdeka wrote:
-> According to POSIX message queues have kernel persistence, which means
-> they are not cleaned up until the next reboot.
-> 
-> The test has a mq_unlink() as "precondition", so it will clean up
-> failed test runs silently but /proc/xenomai/registry/usage will still
-> report a "leak" once the test has completed.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  testsuite/smokey/posix-select/posix-select.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/testsuite/smokey/posix-select/posix-select.c b/testsuite/smokey/posix-select/posix-select.c
-> index e9bf938b3..1484fa639 100644
-> --- a/testsuite/smokey/posix-select/posix-select.c
-> +++ b/testsuite/smokey/posix-select/posix-select.c
-> @@ -140,6 +140,8 @@ static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
->  	ret = test_status;
->  out:
->  	pthread_join(tcb, NULL);
-> -	
-> +
-> +	mq_unlink("/select_test_mq");
-> +
->  	return ret;
->  }
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, applied.
+This was missed by 1ba9500dd5.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai_latest.bb | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 09df461..836fa52 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -34,4 +34,6 @@ GIT_BRANCH_arm64 = "${@'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'i
+ SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
+ SRCREV = "${AUTOREV}"
+ 
++SRC_URI_append_armhf = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) and d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
++
+ S = "${WORKDIR}/git"
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
