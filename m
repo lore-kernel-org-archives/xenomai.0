@@ -1,15 +1,14 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] testsuite/smokey: net: Load rtnet module if missing
-Date: Fri, 6 Aug 2021 08:23:28 +0000
-Message-ID: <BN9PR11MB522789B5175C05B67B487EE2F2F39@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <166cb503-258c-ddde-1143-4fd43c954c4f@siemens.com>
- <BN9PR11MB5227FDD6E5FD7AEB0008D67EF2F39@BN9PR11MB5227.namprd11.prod.outlook.com>
- <36412ade-35dc-25f7-4b13-4ba77e2ec54d@siemens.com>
-In-Reply-To: <36412ade-35dc-25f7-4b13-4ba77e2ec54d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v2] testsuite/smokey: Fixing a registry leak of the
+ posix_select test
+References: <20210813143354.92067-1-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <83242bc1-3191-1067-c485-71dad8e673d2@siemens.com>
+Date: Fri, 13 Aug 2021 16:46:08 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210813143354.92067-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,84 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-DQoNCiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IEZyaWRheSwgQXVndXN0IDYsIDIwMjEgNDoxMiBQ
-TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyBYZW5vbWFp
-IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPlN1YmplY3Q6IFJlOiBbUEFUQ0hdIHRlc3RzdWl0ZS9z
-bW9rZXk6IG5ldDogTG9hZCBydG5ldCBtb2R1bGUgaWYgbWlzc2luZw0KPg0KPk9uIDA2LjA4LjIx
-IDA5OjQ4LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+IA0KPj4gDQo+Pj4gLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCj4+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
-Y29tPiANCj4+PiBTZW50OiBGcmlkYXksIEF1Z3VzdCA2LCAyMDIxIDM6MzggUE0NCj4+PiBUbzog
-WGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4+PiBDYzogQ2hlbiwgSG9uZ3poYW4gPGhv
-bmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4+IFN1YmplY3Q6IFtQQVRDSF0gdGVzdHN1aXRlL3Nt
-b2tleTogbmV0OiBMb2FkIHJ0bmV0IG1vZHVsZSBpZiBtaXNzaW5nDQo+Pj4NCj4+PiBGcm9tOiBK
-YW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPj4+DQo+Pj4gVGhpcyBhbGxvd3Mg
-dG8gcnVuIFJUbmV0IHRlc3RzIGlmIHRoZSBjb3JlIGlzIGJ1aWx0IGFzIG1vZHVsZSBidXQgbm90
-DQo+Pj4geWV0IGxvYWRlZCBhdCB0aGUgc3RhcnQgb2YgdGhlIHRlc3QuDQo+Pj4NCj4+PiBGb3Ig
-dGhhdCwgc2lsZW5jZSBlcnJvciByZXBvcnRzIG9mICdtb2Rwcm9iZSBydG5ldCcuDQo+Pj4NCj4+
-PiBTaWduZWQtb2ZmLWJ5OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPj4+
-IC0tLQ0KPj4+DQo+Pj4gVGhpcyBzaG91bGQgZG8gdGhlIHRyaWNrIGFzIHdlbGwsIGp1c3QgYSBi
-aXQgc2ltcGxlci4NCj4+Pg0KPj4+IHRlc3RzdWl0ZS9zbW9rZXkvbmV0X2NvbW1vbi9zZXR1cC5j
-IHwgMjIgKysrKysrKysrKysrKysrLS0tLS0tLQ0KPj4+IDEgZmlsZSBjaGFuZ2VkLCAxNSBpbnNl
-cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL3Rlc3RzdWl0
-ZS9zbW9rZXkvbmV0X2NvbW1vbi9zZXR1cC5jIGIvdGVzdHN1aXRlL3Ntb2tleS9uZXRfY29tbW9u
-L3NldHVwLmMNCj4+PiBpbmRleCAxYmFkYWJkZmI0Li40NGEwY2IyNGI5IDEwMDY0NA0KPj4+IC0t
-LSBhL3Rlc3RzdWl0ZS9zbW9rZXkvbmV0X2NvbW1vbi9zZXR1cC5jDQo+Pj4gKysrIGIvdGVzdHN1
-aXRlL3Ntb2tleS9uZXRfY29tbW9uL3NldHVwLmMNCj4+PiBAQCAtMTM4LDcgKzEzOCw3IEBAIHN0
-YXRpYyBpbnQgZG9fZG93bihjb25zdCBjaGFyICppbnRmKQ0KPj4+IAlyZXR1cm4gMDsNCj4+PiB9
-DQo+Pj4NCj4+PiAtc3RhdGljIGludCBzbW9rZXlfbmV0X21vZHByb2JlKGludCBtb2RpZCkNCj4+
-PiArc3RhdGljIGludCBzbW9rZXlfbmV0X21vZHByb2JlKGludCBtb2RpZCwgYm9vbCBzaWxlbnQp
-DQo+Pj4gew0KPj4+IAlzdHJ1Y3QgbW9kdWxlICptID0gbW9kdWxlcyArIG1vZGlkOw0KPj4+IAlj
-aGFyIGJ1ZmZlclsxMjhdOw0KPj4+IEBAIC0xNjgsNyArMTY4LDggQEAgc3RhdGljIGludCBzbW9r
-ZXlfbmV0X21vZHByb2JlKGludCBtb2RpZCkNCj4+PiAJc21va2V5X3RyYWNlKCIlcyBtb2R1bGUg
-bm90IHRoZXJlOiBtb2Rwcm9iaW5nIiwgbS0+bmFtZSk7DQo+Pj4NCj4+PiAJZXJyID0gc21va2V5
-X2NoZWNrX2Vycm5vKA0KPj4+IC0JCXNucHJpbnRmKGJ1ZmZlciwgc2l6ZW9mKGJ1ZmZlciksICJt
-b2Rwcm9iZSAlcyIsIG0tPm5hbWUpKTsNCj4+PiArCQlzbnByaW50ZihidWZmZXIsIHNpemVvZihi
-dWZmZXIpLCAibW9kcHJvYmUgJXMgJXMiLCBtLT5uYW1lLA0KPj4+ICsJCQkgc2lsZW50ID8gIjI+
-L2Rldi9udWxsIiA6ICIiKSk7DQo+Pj4gCWlmIChlcnIgPCAwKQ0KPj4+IAkJcmV0dXJuIGVycjsN
-Cj4+Pg0KPj4+IEBAIC0xNzcsNyArMTc4LDggQEAgc3RhdGljIGludCBzbW9rZXlfbmV0X21vZHBy
-b2JlKGludCBtb2RpZCkNCj4+PiAJCXJldHVybiBlcnI7DQo+Pj4NCj4+PiAJaWYgKCFXSUZFWElU
-RUQoZXJyKSB8fCBXRVhJVFNUQVRVUyhlcnIpICE9IDApIHsNCj4+PiAtCQlzbW9rZXlfd2Fybmlu
-ZygiJXM6IGFibm9ybWFsIGV4aXQiLCBidWZmZXIpOw0KPj4+ICsJCWlmICghc2lsZW50KQ0KPj4+
-ICsJCQlzbW9rZXlfd2FybmluZygiJXM6IGFibm9ybWFsIGV4aXQiLCBidWZmZXIpOw0KPj4+IAkJ
-cmV0dXJuIC1FSU5WQUw7DQo+Pj4gCX0NCj4+Pg0KPj4+IEBAIC0yMjQsNyArMjI2LDcgQEAgc3Rh
-dGljIGludCBzbW9rZXlfbmV0X3NldHVwX3J0Y2ZnX2NsaWVudChjb25zdCBjaGFyICppbnRmLCBp
-bnQgbmV0X2NvbmZpZykNCj4+PiAJaWYgKChuZXRfY29uZmlnICYgX0NDX0NPQkFMVF9ORVRfQ0ZH
-KSA9PSAwKQ0KPj4+IAkJcmV0dXJuIC1FTk9TWVM7DQo+Pj4NCj4+PiAtCWVyciA9IHNtb2tleV9u
-ZXRfbW9kcHJvYmUoTU9ESURfQ0ZHKTsNCj4+PiArCWVyciA9IHNtb2tleV9uZXRfbW9kcHJvYmUo
-TU9ESURfQ0ZHLCBmYWxzZSk7DQo+Pj4gCWlmIChlcnIgPCAwKQ0KPj4+IAkJcmV0dXJuIGVycjsN
-Cj4+Pg0KPj4+IEBAIC00MDgsNiArNDEwLDEyIEBAIGludCBzbW9rZXlfbmV0X3NldHVwKGNvbnN0
-IGNoYXIgKmRyaXZlciwgY29uc3QgY2hhciAqaW50ZiwgaW50IHRlc3RlZF9jb25maWcsDQo+Pj4g
-CXN0cnVjdCBzb2NrYWRkcl9pbiAqaW5fcGVlciA9IHZwZWVyOw0KPj4+IAlzdHJ1Y3Qgc29ja2Fk
-ZHIgKnBlZXIgPSB2cGVlcjsNCj4+Pg0KPj4+ICsJLyoNCj4+PiArCSAqIE1haW4gbW9kdWxlIG5l
-ZWRzIHRvIGJlIGxvYWRlZCBpbiBvcmRlciB0byB1c2UNCj4+PiArCSAqIF9DQ19DT0JBTFRfR0VU
-X05FVF9DT05GSUcuDQo+Pj4gKwkgKi8NCj4+PiArCXNtb2tleV9uZXRfbW9kcHJvYmUoTU9ESURf
-UlRORVQsIHRydWUpOw0KPj4gDQo+PiAgICAgIG5vIG5lZWQgdG8gY2hlY2sgcmV0dXJuIHZhbHVl
-Pw0KPj4gDQo+DQo+VGhlb3JldGljYWxseSwgd2UgY291bGQgbWlzcyB0aGUgY2FzZSB0aGF0IFJU
-bmV0IHdhcyBjb25maWd1cmVkIGJ1dCB0aGUNCg0KV2hhdCBhYm91dCBSVG5ldCBpcyBub3QgY29u
-ZmlndXJlZD8gTmV3IG1vZGluZm8gY2hlY2tpbmcgcGF0Y2ggYXMgd2UgZGlzY3Vzc2VkIHRvIHBy
-b3RlY3QgdGhpcz8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj5tb2R1bGUgY2Fubm90
-IGJlIGxvYWRlZC4gQnV0IEkgdGhpbmsgdGhpcyBpcyBuZWdsaWdpYmxlLCBhbmQgdGhlDQo+YWx0
-ZXJuYXRpdmUgaXMgcmF0aGVyIGNvbXBsZXguDQo+DQo+V2UgY291bGQgcmF0aGVyIGFkZCBhICJu
-byBrZXJuZWwgc3VwcG9ydCIgdGVzdCB0byBvdXIgbGF2YSBqb2JzIHdoZW4gYWxsDQo+ZmVhdHVy
-ZXMgYXJlIGVuYWJsZWQuIFdpbGwgYWxzbyBlbnN1cmUgdGhhdCB3ZSBkbyBub3QgZGVncmFkZSBv
-biB0aGF0IGFnYWluLg0KPg0KPkphbg0KPg0KPj4gICAgIFJlZ2FyZHMNCj4+ICAgICBIb25nemhh
-biBDaGVuDQo+Pj4gKw0KPj4+IAllcnIgPSBjb2JhbHRfY29yZWN0bChfQ0NfQ09CQUxUX0dFVF9O
-RVRfQ09ORklHLA0KPj4+IAkJCSZuZXRfY29uZmlnLCBzaXplb2YobmV0X2NvbmZpZykpOw0KPj4+
-IAlpZiAoZXJyID09IC1FSU5WQUwpDQo+Pj4gQEAgLTQyMywxNSArNDMxLDE1IEBAIGludCBzbW9r
-ZXlfbmV0X3NldHVwKGNvbnN0IGNoYXIgKmRyaXZlciwgY29uc3QgY2hhciAqaW50ZiwgaW50IHRl
-c3RlZF9jb25maWcsDQo+Pj4gCQlyZXR1cm4gLUVOT1NZUzsNCj4+Pg0KPj4+IAltb2R1bGVzW01P
-RElEX0RSSVZFUl0ubmFtZSA9IGRyaXZlcjsNCj4+PiAtCWVyciA9IHNtb2tleV9uZXRfbW9kcHJv
-YmUoTU9ESURfRFJJVkVSKTsNCj4+PiArCWVyciA9IHNtb2tleV9uZXRfbW9kcHJvYmUoTU9ESURf
-RFJJVkVSLCBmYWxzZSk7DQo+Pj4gCWlmIChlcnIgPCAwKQ0KPj4+IAkJcmV0dXJuIGVycjsNCj4+
-Pg0KPj4+IC0JZXJyID0gc21va2V5X25ldF9tb2Rwcm9iZShNT0RJRF9JUFY0KTsNCj4+PiArCWVy
-ciA9IHNtb2tleV9uZXRfbW9kcHJvYmUoTU9ESURfSVBWNCwgZmFsc2UpOw0KPj4+IAlpZiAoZXJy
-IDwgMCkNCj4+PiAJCXJldHVybiBlcnI7DQo+Pg0KPj4gLQllcnIgPSBzbW9rZXlfbmV0X21vZHBy
-b2JlKG9wdGlvbl90b19tb2RpZCh0ZXN0ZWRfY29uZmlnKSk7DQo+PiArCWVyciA9IHNtb2tleV9u
-ZXRfbW9kcHJvYmUob3B0aW9uX3RvX21vZGlkKHRlc3RlZF9jb25maWcpLCBmYWxzZSk7DQo+PiAJ
-aWYgKGVyciA8IDApDQo+PiAJCXJldHVybiBlcnI7DQo+Pg0KPj4gLS0gDQo+PiAyLjMxLjENCj4g
-DQogDQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2Ug
-Q2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 13.08.21 16:33, Florian Bezdeka wrote:
+> According to POSIX message queues have kernel persistence, which means
+> they are not cleaned up until the next reboot.
+> 
+> The test has a mq_unlink() as "precondition", so it will clean up
+> failed test runs silently but /proc/xenomai/registry/usage will still
+> report a "leak" once the test has completed.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/posix-select/posix-select.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/testsuite/smokey/posix-select/posix-select.c b/testsuite/smokey/posix-select/posix-select.c
+> index e9bf938b3..1484fa639 100644
+> --- a/testsuite/smokey/posix-select/posix-select.c
+> +++ b/testsuite/smokey/posix-select/posix-select.c
+> @@ -140,6 +140,8 @@ static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
+>  	ret = test_status;
+>  out:
+>  	pthread_join(tcb, NULL);
+> -	
+> +
+> +	mq_unlink("/select_test_mq");
+> +
+>  	return ret;
+>  }
+> 
+
+Thanks, applied.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
