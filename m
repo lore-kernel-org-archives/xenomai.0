@@ -1,16 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] testsuite/smokey: Fixing a registry leak of the
- posix_select test
-Date: Fri, 13 Aug 2021 13:03:51 +0000
-Message-ID: <e3d9945508442b17a07706a096ffd0ee429c1b1d.camel@siemens.com>
-References: <20210812163822.55293-1-florian.bezdeka@siemens.com>
- <36d9bb86-b497-d8dc-b57a-f30bb13f1683@siemens.com>
-In-Reply-To: <36d9bb86-b497-d8dc-b57a-f30bb13f1683@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <45D4053398631240A41C5713BC85BEDF@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <20210813081254.1904938-1-fontaine.fabrice@gmail.com>
+ <86057dfa-d2ed-1932-db29-4608edb08865@siemens.com>
+In-Reply-To: <86057dfa-d2ed-1932-db29-4608edb08865@siemens.com>
+From: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+Date: Fri, 13 Aug 2021 15:17:44 +0200
+Message-ID: <CAPi7W82Y3abvah-T05oFF16GB4KzFm7=zmc594h5YWyDpRsn9Q@mail.gmail.com>
+Subject: Re: [PATCH] Add --disable-{demo,testsuite} options
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,31 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-T24gRnJpLCAyMDIxLTA4LTEzIGF0IDA4OjU5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMi4wOC4yMSAxODozOCwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEFjY29yZGluZyB0
-byBQT1NJWCBtZXNzYWdlIHF1ZXVlcyBoYXZlIGtlcm5lbCBwZXJzaXN0ZW5jZSwgd2hpY2ggbWVh
-bnMNCj4gPiB0aGV5IGFyZSBub3QgY2xlYW5lZCB1cCB1bnRpbCB0aGUgbmV4dCByZWJvb3QuDQo+
-ID4gDQo+ID4gVGhlIHRlc3QgaGFzIGEgbXFfdW5saW5rKCkgYXMgInByZWNvbmRpdGlvbiIsIHNv
-IGl0IHdpbGwgY2xlYW4gdXANCj4gPiBmYWlsZWQgdGVzdCBydW5zIHNpbGVudGx5IGJ1dCAvcHJv
-Yy94ZW5vbWFpL3JlZ2lzdHJ5L3VzYWdlIHdpbGwgc3RpbGwNCj4gPiByZXBvcnQgYSAibGVhayIg
-b25jZSB0aGUgdGVzdCBoYXMgY29tcGxldGVkLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEZs
-b3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KPiA+IC0tLQ0KPiA+
-ICB0ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVjdC9wb3NpeC1zZWxlY3QuYyB8IDIgKysNCj4g
-PiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQg
-YS90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVjdC9wb3NpeC1zZWxlY3QuYyBiL3Rlc3RzdWl0
-ZS9zbW9rZXkvcG9zaXgtc2VsZWN0L3Bvc2l4LXNlbGVjdC5jDQo+ID4gaW5kZXggZTliZjkzOGIz
-Li4wYTU5ZTQ5NjggMTAwNjQ0DQo+ID4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS9wb3NpeC1zZWxl
-Y3QvcG9zaXgtc2VsZWN0LmMNCj4gPiArKysgYi90ZXN0c3VpdGUvc21va2V5L3Bvc2l4LXNlbGVj
-dC9wb3NpeC1zZWxlY3QuYw0KPiA+IEBAIC0xMzgsNiArMTM4LDggQEAgc3RhdGljIGludCBydW5f
-cG9zaXhfc2VsZWN0KHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0
-IGFyZ3ZbXSkNCj4gPiAgCXVzbGVlcCgzMDAwMDApOw0KPiA+ICAJc21wX3JtYigpOw0KPiA+ICAJ
-cmV0ID0gdGVzdF9zdGF0dXM7DQo+ID4gKw0KPiA+ICsJbXFfdW5saW5rKCIvc2VsZWN0X3Rlc3Rf
-bXEiKTsNCj4gPiAgb3V0Og0KPiA+ICAJcHRocmVhZF9qb2luKHRjYiwgTlVMTCk7DQo+ID4gIAkN
-Cj4gPiANCj4gDQo+IFdoeSBvbmx5IGNsZWFuaW5nIHVwIG9uIHN1Y2Nlc3NmdWwgcnVucywgaWUu
-IHdoeSBkb2luZyB0aGlzIGJlZm9yZSB0aGUNCj4gIm91dDoiIGxhYmVsPw0KDQpZb3UgYXJlIHJp
-Z2h0LCB0aGF0J3Mgd3JvbmcuIEFuZCB3ZSBzaG91bGQgd2FpdCBmb3IgdGhlIHRjYiB0aHJlYWQg
-dG8NCmZpbmlzaCBhcyB3ZWxsLiBTbyBraW5kIG9mIGRvdWJsZSBmYXVsdC4gVGVzdGluZyB2Mi4u
-Lg0KDQpGbG9yaWFuDQoNCj4gDQo+IEphbg0KPiANCg0K
+Le ven. 13 ao=C3=BBt 2021 =C3=A0 10:54, Jan Kiszka <jan.kiszka@siemens.com>=
+ a =C3=A9crit :
+>
+> On 13.08.21 10:12, Fabrice Fontaine via Xenomai wrote:
+> > Allow the user to disable demo and testsuite to avoid the following
+> > build failures on arc and riscv32:
+>
+> Are you working on ports to those archs? Or is xenomai userland just
+> prematurely built for those in buildroot?
+No, I'm not working on ports to those archs. I just sent this patch to
+fix buidlroot autobuilder failures. I'm not even an expert in xenomai.
+In buildroot, we allow to build xenomai userland on all architectures.
+The only requirement on the toolchain is that it must have threads,
+sync and must be uclibc or glibc:
+https://git.buildroot.net/buildroot/commit/package/xenomai/Config.in?id=3Dc=
+35f157486431eafdb8d3583fc52d8ce4c784cf3.
+In cobalt core, we're restricting the architectures to x86, powerpc and ARM=
+.
+>
+> >
+> > latency.c: In function 'display':
+> > latency.c:326:21: error: format '%ld' expects argument of type 'long in=
+t', but argument 2 has type 'time_t' {aka 'long long int'} [-Werror=3Dforma=
+t=3D]
+> >   326 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
+> >       |                 ~~~~^
+> >       |                     |
+> >       |                     long int
+> >       |                 %.2lld
+> >   327 |          "priority %d)\n", dt / 3600,
+> >       |                            ~~~~~~~~~
+> >       |                               |
+> >       |                               time_t {aka long long int}
+> >
+> > altency.c: In function =E2=80=98display=E2=80=99:
+> > altency.c:262:21: error: format =E2=80=98%ld=E2=80=99 expects argument =
+of type =E2=80=98long int=E2=80=99, but argument 2 has type =E2=80=98time_t=
+=E2=80=99 {aka =E2=80=98long long int=E2=80=99} [-Werror=3Dformat=3D]
+> >   262 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
+> >       |                 ~~~~^
+> >       |                     |
+> >       |                     long int
+> >       |                 %.2lld
+> >   263 |          "priority %d)\n", dt / 3600,
+> >       |                            ~~~~~~~~~
+> >       |                               |
+> >       |                               time_t {aka long long int}
+> >
+>
+> How about fixing those issues instead?
+Indeed, fixing those issues would be great. I'll let you handle that.
+However, I also think that disabling demo and testsuite is a nice
+addition as it will decrease compile time and save disk space.
+>
+> Jan
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+Best Regards,
+
+Fabrice
 
