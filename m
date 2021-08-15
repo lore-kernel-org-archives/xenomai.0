@@ -1,15 +1,12 @@
+References: <87y299tb20.fsf@xenomai.org>
+ <3d37d434-6193-9841-ad34-278979019165@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [Xenomai 4] Heads up
+Message-ID: <875yw8xxtc.fsf@xenomai.org>
+In-reply-to: <3d37d434-6193-9841-ad34-278979019165@siemens.com>
+Date: Sun, 15 Aug 2021 11:21:31 +0200
 MIME-Version: 1.0
-References: <20210813081254.1904938-1-fontaine.fabrice@gmail.com>
- <86057dfa-d2ed-1932-db29-4608edb08865@siemens.com>
- <CAPi7W82Y3abvah-T05oFF16GB4KzFm7=zmc594h5YWyDpRsn9Q@mail.gmail.com>
- <e09595f5-1932-c2ff-5ba4-30a3d2a54373@siemens.com>
-In-Reply-To: <e09595f5-1932-c2ff-5ba4-30a3d2a54373@siemens.com>
-From: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-Date: Fri, 13 Aug 2021 17:05:27 +0200
-Message-ID: <CAPi7W80uH1gobppRNC9+9DBSx1FGL=vLGZJOjT8xK66cvxLeBw@mail.gmail.com>
-Subject: Re: [PATCH] Add --disable-{demo,testsuite} options
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,83 +18,128 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-Le ven. 13 ao=C3=BBt 2021 =C3=A0 16:29, Jan Kiszka <jan.kiszka@siemens.com>=
- a =C3=A9crit :
->
-> On 13.08.21 15:17, Fabrice Fontaine wrote:
-> > Le ven. 13 ao=C3=BBt 2021 =C3=A0 10:54, Jan Kiszka <jan.kiszka@siemens.=
-com> a =C3=A9crit :
-> >>
-> >> On 13.08.21 10:12, Fabrice Fontaine via Xenomai wrote:
-> >>> Allow the user to disable demo and testsuite to avoid the following
-> >>> build failures on arc and riscv32:
-> >>
-> >> Are you working on ports to those archs? Or is xenomai userland just
-> >> prematurely built for those in buildroot?
-> > No, I'm not working on ports to those archs. I just sent this patch to
-> > fix buidlroot autobuilder failures. I'm not even an expert in xenomai.
-> > In buildroot, we allow to build xenomai userland on all architectures.
-> > The only requirement on the toolchain is that it must have threads,
-> > sync and must be uclibc or glibc:
-> > https://git.buildroot.net/buildroot/commit/package/xenomai/Config.in?id=
-=3Dc35f157486431eafdb8d3583fc52d8ce4c784cf3.
-> > In cobalt core, we're restricting the architectures to x86, powerpc and=
- ARM.
->
-> Ah, ok, these are mercury userland builds. Makes more sense now.
->
-> >>
-> >>>
-> >>> latency.c: In function 'display':
-> >>> latency.c:326:21: error: format '%ld' expects argument of type 'long =
-int', but argument 2 has type 'time_t' {aka 'long long int'} [-Werror=3Dfor=
-mat=3D]
-> >>>   326 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
-> >>>       |                 ~~~~^
-> >>>       |                     |
-> >>>       |                     long int
-> >>>       |                 %.2lld
-> >>>   327 |          "priority %d)\n", dt / 3600,
-> >>>       |                            ~~~~~~~~~
-> >>>       |                               |
-> >>>       |                               time_t {aka long long int}
-> >>>
-> >>> altency.c: In function =E2=80=98display=E2=80=99:
-> >>> altency.c:262:21: error: format =E2=80=98%ld=E2=80=99 expects argumen=
-t of type =E2=80=98long int=E2=80=99, but argument 2 has type =E2=80=98time=
-_t=E2=80=99 {aka =E2=80=98long long int=E2=80=99} [-Werror=3Dformat=3D]
-> >>>   262 |         ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
-> >>>       |                 ~~~~^
-> >>>       |                     |
-> >>>       |                     long int
-> >>>       |                 %.2lld
-> >>>   263 |          "priority %d)\n", dt / 3600,
-> >>>       |                            ~~~~~~~~~
-> >>>       |                               |
-> >>>       |                               time_t {aka long long int}
-> >>>
-> >>
-> >> How about fixing those issues instead?
-> > Indeed, fixing those issues would be great. I'll let you handle that.
->
-> I wouldn't mind getting patches as well. ;)
->
-> > However, I also think that disabling demo and testsuite is a nice
-> > addition as it will decrease compile time and save disk space.
->
-> I don't disagree. I just don't like merging a feature with the argument
-> "this works around a bug". If you resend with adjusted reasoning, I'm
-> fine with merging the functional changes.
-OK, I sent a new patch set.
->
-> But then I would still not use that to address the above errors...
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
-Best Regards,
 
-Fabrice
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 10.08.21 20:21, Philippe Gerum via Xenomai wrote:
+>> 
+>> I won't join the Xenomai meeting this week, so this is the latest news
+>> from Dovetail and Xenomai 4:
+>> 
+>> Dovetail runs on top of v5.14-rc5 (arm, arm64 and x86_64), the code is
+>> visible from the v5.14-dovetail-rebase branch at [1].  As usual, I'm
+>> testing Dovetail with the EVL core (Xenomai 4). The current code is
+>> available at [2] branch v5.14-evl-rebase.
+>> 
+>> In addition, several important updates went to the stable Dovetail
+>> (v5.10.y) tree (i.e. RCU NMI in the pipeline entry). There is no kernel
+>> interface change which might affect Xenomai3/Cobalt 3.2 though.
+>> 
+>> With respect to Xenomai 4, progress was made with the network
+>> (mini-)stack based on the EVL core. The most important aspect is that
+>> EVL is now able to leverage the common socket interface, for adding new
+>> network protocols or extending existing ones. This is still WIP, but we
+>> are getting closer to something usable, and EVL gained a socket
+>> interface in the process for dealing with real-time protocols.
+>> 
+>> In a nutshell, the basic idea is to create an out-of-band data path
+>> traversing the regular network stack which EVL and the applications can
+>> connect to. This means that a netdev can accept in-band and out-of-band
+>> traffic, ethtool is still available to configure the ethernet devices
+>> shared with EVL etc. (as a bonus, there is no need for any proxy in
+>> order to share a single NIC between the out-of-band and in-band network
+>> stacks). There is work ahead, and this is fun stuff.
+>> 
+>> [1] git@source.denx.de:Xenomai/linux-dovetail.git
+>> [2] git@source.denx.de:Xenomai/xenomai4/linux-evl.git
+>> 
+>
+> Surely interesting work. Three even more interesting aspects still needs
+> to be seen, though:
+>
+>  - How will driver conversions look like in practice (lock and interrupt
+>    conversions, prioritization of data paths over control paths, turning
+>    off throughput favoring features)?
+>
+
+There is no one-fits-it-all approach to this, but the idea remains the
+same for any EVL-related changes in drivers:
+
+- define clear-cut operating modes for the driver, in-band should not
+  overlap with out-of-band during time-critical operations. E.g. no
+  significant reconfiguration while out-of-band packets are in flight,
+  that would have to wait until the oob activity pauses, contention on
+  the converse path is deemed an application bug. However, mixing
+  in-band and out-of-band traffic on the same device should be possible
+  without proxying, with the software always giving precedence to the
+  latter when it comes to feeding the driver.
+
+- ensure that all code paths are categorized between in-band only,
+  out-of-band only, and shared between stages. From that point, use some
+  EVL mechanisms if/when applicable like "staxes" in order to enforce
+  basic sanity between the first two. Dovetail also has "hybrid locks",
+  which can be traversed from any stage, still abiding by the semantics
+  of the current stage (in that sense, this is distinct from "hard"
+  locks which enforce the semantics of the out-of-band stage). Of
+  course, that means that the length of the covered sections should be
+  compatible with real-time requirements.
+
+These details are only part of the solution obviously, there will be
+more issues to deal with.  However, there is at least one hurdle less:
+the mini-stack does not define its own (rt)skb type, but rather happily
+conveys all the traffic via the common sk_buff. This tends to limit the
+amount of code which needs to be adapted in a NIC driver.
+
+I'm thinking about enabling some form of out-of-band support in the
+NAPI, but this idea is still brewing, nothing concrete yet.
+
+>  - How to provide zero copy (not available with RTnet either, yes, but
+>    needed for lowest-latency traffic in the future)?
+>
+>  - How to make buffer allocation similarly deterministic as with rtskbs
+>    (e.g. an evl_net_dev_alloc_skb that needs no timeout but uses a
+>    per-socket pool again)?
+
+A "generic" per-socket pool would assume too much about the identity of
+the DMA mapping for any given socket buffer among multiple devices
+(which is the limitation rtskb_map() lives with). Since the regular way
+is to have a per-device mapping strategy, the pre-mapped buffers we need
+should be obtained from the device driver, not from the generic net
+core. In order to achieve some form of starvation prevention, I would
+rather go for limiting the amount of buffer memory consumed by a socket
+at any point in time, similarly to the sk_{r|w}mem_alloc counters of the
+regular net core.
+
+Added to that, a socket would be allowed to reserve a number of socket
+buffers from a given device pool, which corresponds to the arbitrary
+amount of memory specified for SO_SNDBUF. The mini-stack would then
+contribute the corresponding number of freshly allocated buffers to the
+proper per-device pool. Conversely, such ownership would influence the
+way out-of-band socket buffers are released after use. If some
+application needs such reserve guarantee from multiple devices, then it
+would have to use multiple sockets, which seems an acceptable
+requirement.
+
+IOW, if all sockets contribute the amount of guaranteed socket buffers
+to the buffer pool of the device they are bound to, and these socket are
+not allowed to over-consume their guaranteed amount, then we should be
+ok.
+
+A way to achieve zero-copy would involve extending this per-socket,
+per-device reserve to the RX side, and make the resulting rings
+exportable to userland with proper synchronization. In this case, the
+reserved socket buffers forming the TX/RX rings could refer to different
+segments of a single piece of kernel memory which the application would
+map. Grantedd, this looks all nice and simple in theory, the devil is
+obviously in the details in practice, but that should be doable.
+
+This said, I have a modest roadmap for the mini-stack for the time
+being, which is supporting AF_PACKET and AF_INET/IPPROTO_UDP in
+out-of-band mode end-to-end, from the application to the wire through
+the NIC driver, using common kernel/user memory transfers. No bells and
+whistles, just the basic reliable stuff my application use case
+requires.
+
+-- 
+Philippe.
 
