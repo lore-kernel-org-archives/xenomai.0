@@ -1,7 +1,10 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH RFC 0/2] Simplify detection of resource leaks 
-Date: Mon, 16 Aug 2021 18:12:12 +0200
-Message-Id: <20210816161214.62995-1-florian.bezdeka@siemens.com>
+Subject: [PATCH RFC 1/2] cobalt/registry: Add a new virtual /proc file for
+ dumping registry
+Date: Mon, 16 Aug 2021 18:12:13 +0200
+Message-Id: <20210816161214.62995-2-florian.bezdeka@siemens.com>
+In-Reply-To: <20210816161214.62995-1-florian.bezdeka@siemens.com>
+References: <20210816161214.62995-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,42 +18,94 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+Introducing /proc/xenomai/registry/dump which could be accessed by
+something like "cat" to dump the current registry. Like the "usage"
+file it is available when CONFIG_XENO_OPT_VFILE is enabled.
 
-over the last few days we had to search for and identify several
-resource leaks in one of our internal applications. Here are some patches 
-that were written to help us tracking the leaks down to the root cause.
+The main purpose of this file is providing some additional help when
+trying to find resource leaks triggered by Xenomai based applications.
 
-In our case /proc/xenomai/registry/usage reported that all available
-slots are in use but we had now clue why slots are exhausted at all.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ kernel/cobalt/registry.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-Patch 1 adds /proc/xenomai/registry/dump. That allowed us to get a
-overview of registry usage. We easily identified that the application
-was leaking message queues after looking at the output.
-
-Patch 2 adds trace events. These allowed us to identify the thread that
-was creating such queues. The inballance of registry_enter and
-registry_{unlink,remove} got visible.
-
-I would like to learn if:
- - these patches are correct (especially the first one)
- - these patches are in general interest
-
-I have backports to -stable available as well. I could send them out
-easily if -stable is of interest as well.
-
-Best regards,
-Florian
-
-Florian Bezdeka (2):
-  cobalt/registry: Add a new virtual /proc file for dumping registry
-  cobalt/registry: Adding trace events for
-    registry_{enter,unlink,remove}
-
- kernel/cobalt/registry.c          | 40 +++++++++++++++++++++++++++++++
- kernel/cobalt/trace/cobalt-core.h | 33 +++++++++++++++++++++++++
- 2 files changed, 73 insertions(+)
-
+diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+index 816102f7a..8befa795c 100644
+--- a/kernel/cobalt/registry.c
++++ b/kernel/cobalt/registry.c
+@@ -80,6 +80,23 @@ static int usage_vfile_show(struct xnvfile_regular_iterator *it, void *data)
+ 	return 0;
+ }
+ 
++static int dump_vfile_show(struct xnvfile_regular_iterator *it, void *data)
++{
++	struct xnobject *elem;
++	struct hlist_node *next;
++	int n;
++
++	xnvfile_printf(it, "nr_object_entries: %d\n", nr_object_entries);
++	xnvfile_printf(it, "obj_idx[0]: \treserved\n");
++
++	for (n = 0; n < nr_object_entries; n++)
++		hlist_for_each_entry_safe(elem, next, &object_index[n], hlink)
++			xnvfile_printf(it, "obj_idx[%d]:\tobj=%p, key=%s\n", n,
++				       elem->objaddr, elem->key ?: "(anon)");
++
++	return 0;
++}
++
+ static struct xnvfile_regular_ops usage_vfile_ops = {
+ 	.show = usage_vfile_show,
+ };
+@@ -88,6 +105,14 @@ static struct xnvfile_regular usage_vfile = {
+ 	.ops = &usage_vfile_ops,
+ };
+ 
++static struct xnvfile_regular_ops dump_vfile_ops = {
++	.show = dump_vfile_show,
++};
++
++static struct xnvfile_regular dump_vfile = {
++	.ops = &dump_vfile_ops,
++};
++
+ #endif /* CONFIG_XENO_OPT_VFILE */
+ 
+ unsigned xnregistry_hash_size(void)
+@@ -124,8 +149,16 @@ int xnregistry_init(void)
+ 		return ret;
+ 	}
+ 
++	ret = xnvfile_init_regular("dump", &dump_vfile, &registry_vfroot);
++	if (ret) {
++		xnvfile_destroy_regular(&usage_vfile);
++		xnvfile_destroy_dir(&registry_vfroot);
++		return ret;
++	}
++
+ 	proc_virq = pipeline_create_inband_sirq(registry_proc_schedule);
+ 	if (proc_virq < 0) {
++		xnvfile_destroy_regular(&dump_vfile);
+ 		xnvfile_destroy_regular(&usage_vfile);
+ 		xnvfile_destroy_dir(&registry_vfroot);
+ 		return proc_virq;
+@@ -149,6 +182,7 @@ int xnregistry_init(void)
+ 
+ 	if (object_index == NULL) {
+ #ifdef CONFIG_XENO_OPT_VFILE
++		xnvfile_destroy_regular(&dump_vfile);
+ 		xnvfile_destroy_regular(&usage_vfile);
+ 		xnvfile_destroy_dir(&registry_vfroot);
+ 		pipeline_delete_inband_sirq(proc_virq);
+@@ -199,6 +233,7 @@ void xnregistry_cleanup(void)
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 	pipeline_delete_inband_sirq(proc_virq);
+ 	flush_scheduled_work();
++	xnvfile_destroy_regular(&dump_vfile);
+ 	xnvfile_destroy_regular(&usage_vfile);
+ 	xnvfile_destroy_dir(&registry_vfroot);
+ #endif /* CONFIG_XENO_OPT_VFILE */
 -- 
 2.30.2
 
