@@ -1,9 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 0/2] Allow GPIO timestamps also via real-time clock
-Date: Mon, 16 Aug 2021 12:18:50 +0200
-Message-Id: <cover.1629109132.git.jan.kiszka@siemens.com>
-MIME-Version: 1.0
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH RFC 0/2] Simplify detection of resource leaks 
+Date: Mon, 16 Aug 2021 18:12:12 +0200
+Message-Id: <20210816161214.62995-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +15,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-As discussed, we need to add a separate control to manage whether the
-monotonic or the real-time clock should be used for GPIO timestamping.
+Hi all,
 
-Patch 1 adds this, keeping the default to monotonic. This can be added
-to 3.1.x stable as well. Patch 2 aligns the default to the rest of
-Xenomai, using real-time from now on. That's 3.2 material.
+over the last few days we had to search for and identify several
+resource leaks in one of our internal applications. Here are some patches 
+that were written to help us tracking the leaks down to the root cause.
 
-Jan
+In our case /proc/xenomai/registry/usage reported that all available
+slots are in use but we had now clue why slots are exhausted at all.
 
-Jan Kiszka (2):
-  drivers/gpio: Add support for selecting real-time clock timestamps
-  drivers/gpio: Flip default for GPIO_RTIOC_TS to real-time clock
+Patch 1 adds /proc/xenomai/registry/dump. That allowed us to get a
+overview of registry usage. We easily identified that the application
+was leaking message queues after looking at the output.
 
- include/cobalt/kernel/rtdm/gpio.h |  1 +
- include/rtdm/uapi/gpio.h          |  4 +++-
- kernel/drivers/gpio/gpio-core.c   | 14 +++++++++++---
- 3 files changed, 15 insertions(+), 4 deletions(-)
+Patch 2 adds trace events. These allowed us to identify the thread that
+was creating such queues. The inballance of registry_enter and
+registry_{unlink,remove} got visible.
+
+I would like to learn if:
+ - these patches are correct (especially the first one)
+ - these patches are in general interest
+
+I have backports to -stable available as well. I could send them out
+easily if -stable is of interest as well.
+
+Best regards,
+Florian
+
+Florian Bezdeka (2):
+  cobalt/registry: Add a new virtual /proc file for dumping registry
+  cobalt/registry: Adding trace events for
+    registry_{enter,unlink,remove}
+
+ kernel/cobalt/registry.c          | 40 +++++++++++++++++++++++++++++++
+ kernel/cobalt/trace/cobalt-core.h | 33 +++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
 
 -- 
-2.31.1
+2.30.2
 
 
