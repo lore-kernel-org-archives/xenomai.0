@@ -1,16 +1,13 @@
-Subject: Re: [PATCH RFC 2/2] cobalt/registry: Adding trace events for
- registry_{enter,unlink,remove}
-References: <20210816161214.62995-1-florian.bezdeka@siemens.com>
- <20210816161214.62995-3-florian.bezdeka@siemens.com>
- <2b74e54b-cf6d-05ce-9dde-7b15d8a6e7d5@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e8cc81df-9ca2-526f-838c-94d60ab245b9@siemens.com>
-Date: Tue, 17 Aug 2021 08:41:05 +0200
-MIME-Version: 1.0
-In-Reply-To: <2b74e54b-cf6d-05ce-9dde-7b15d8a6e7d5@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: "Reed, Scott" <sreed@moog.com>
+Subject: RE: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
+Date: Tue, 17 Aug 2021 13:36:40 +0000
+Message-ID: <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
+References: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
+In-Reply-To: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,124 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 17.08.21 08:09, Jan Kiszka via Xenomai wrote:
-> On 16.08.21 18:12, Florian Bezdeka wrote:
->> Adding the following trace events to make registry-usage traceable:
->>   - registry_enter   (object gets added to the registry)
->>   - registry_unlink  (object is made anonymous)
->>   - registry_remove  (object is removed from the registry)
->>
->> These trace events are helpful if there is a need to track down
->> resource leaks triggered by an Xenomai based application.
->>
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
->>  kernel/cobalt/registry.c          |  5 +++++
->>  kernel/cobalt/trace/cobalt-core.h | 33 +++++++++++++++++++++++++++++++
->>  2 files changed, 38 insertions(+)
->>
->> diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
->> index 8befa795c..c20c4cc1a 100644
->> --- a/kernel/cobalt/registry.c
->> +++ b/kernel/cobalt/registry.c
->> @@ -685,6 +685,7 @@ int xnregistry_enter(const char *key, void *objaddr,
->>  	nr_active_objects++;
->>  	object->objaddr = objaddr;
->>  	object->cstamp = ++next_object_stamp;
->> +	trace_cobalt_registry_enter(key, objaddr);
->>  #ifdef CONFIG_XENO_OPT_VFILE
->>  	object->pnode = NULL;
->>  #endif
->> @@ -866,6 +867,8 @@ int xnregistry_remove(xnhandle_t handle)
->>  		goto unlock_and_exit;
->>  	}
->>  
->> +	trace_cobalt_registry_remove(object->key, object->objaddr);
->> +
->>  	objaddr = object->objaddr;
->>  	object->objaddr = NULL;
->>  	object->cstamp = 0;
->> @@ -932,6 +935,8 @@ int xnregistry_unlink(const char *key)
->>  		goto unlock_and_exit;
->>  	}
->>  
->> +	trace_cobalt_registry_unlink(object->key, object->objaddr);
->> +
->>  	ret = registry_hash_remove(object);
->>  	if (ret < 0)
->>  		goto unlock_and_exit;
->> diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
->> index 88ed5700d..d98787c5a 100644
->> --- a/kernel/cobalt/trace/cobalt-core.h
->> +++ b/kernel/cobalt/trace/cobalt-core.h
->> @@ -26,6 +26,7 @@
->>  #include <linux/tracepoint.h>
->>  #include <linux/math64.h>
->>  #include <cobalt/kernel/timer.h>
->> +#include <cobalt/kernel/registry.h>
->>  #include <cobalt/uapi/kernel/types.h>
->>  
->>  struct xnsched;
->> @@ -149,6 +150,23 @@ DECLARE_EVENT_CLASS(timer_event,
->>  	TP_printk("timer=%p", __entry->timer)
->>  );
->>  
->> +DECLARE_EVENT_CLASS(registry_event,
->> +	TP_PROTO(const char *key, void *addr),
->> +	TP_ARGS(key, addr),
->> +
->> +	TP_STRUCT__entry(
->> +		__string(key, key ?: "(anon)")
->> +		__field(void *, addr)
->> +	),
->> +
->> +	TP_fast_assign(
->> +		__assign_str(key, key ?: "(anon)");
->> +		__entry->addr = addr;
->> +	),
->> +
->> +	TP_printk("key=%s, addr=%p", __get_str(key), __entry->addr)
->> +);
->> +
->>  TRACE_EVENT(cobalt_schedule,
->>  	TP_PROTO(struct xnsched *sched),
->>  	TP_ARGS(sched),
->> @@ -778,6 +796,21 @@ DEFINE_EVENT(synch_post_event, cobalt_synch_forget,
->>  	TP_ARGS(synch)
->>  );
->>  
->> +DEFINE_EVENT(registry_event, cobalt_registry_enter,
->> +	TP_PROTO(const char *key, void *addr),
->> +	TP_ARGS(key, addr)
->> +);
->> +
->> +DEFINE_EVENT(registry_event, cobalt_registry_remove,
->> +	TP_PROTO(const char *key, void *addr),
->> +	TP_ARGS(key, addr)
->> +);
->> +
->> +DEFINE_EVENT(registry_event, cobalt_registry_unlink,
->> +	TP_PROTO(const char *key, void *addr),
->> +	TP_ARGS(key, addr)
->> +);
->> +
->>  TRACE_EVENT(cobalt_tick_shot,
->>  	TP_PROTO(s64 delta),
->>  	TP_ARGS(delta),
->>
-> 
-> Thanks, applied to next.
-> 
-> Jan
-> 
-
-Fixed up a missing include in registry.c.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNClNjb3R0IFJlZWQNClNlbmlvciBTb2Z0d2FyZSBFbmdpbmVlcg0KZGlyZWN0ICs0OTcwMzE2
+MjIyNjMNCg0KTW9vZyBJbmR1c3RyaWFsIEdyb3VwDQpNb29nIEdtYkgNCkhhbm5zLUtsZW1tLVN0
+cmFzc2UgMjgNCjcxMDM0IELDtmJsaW5nZW4NCkRldXRzY2hsYW5kDQp3d3cubW9vZy5jb20vaW5k
+dXN0cmlhbA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNCg0KDQpNb29nIEdtYkgsIEhhbm5z
+LUtsZW1tLVN0cmFzc2UgMjgsIDcxMDM0IELDtmJsaW5nZW4sIERldXRzY2hsYW5kLCBIYW5kZWxz
+cmVnaXN0ZXI6IEFtdHNnZXJpY2h0IFN0dXR0Z2FydCBIUkIgMjQwMzAxLA0KR2VzY2jDpGZ0c2bD
+vGhyZXI6IFRob21hcyBDemVwcGVsLCBKb2hhbm5lcyAoUGltKSB2YW4gZGVuIERpanNzZWwNCg0K
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
+aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgUmVlZCwgU2NvdHQNCj4gdmlhIFhl
+bm9tYWkNCj4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCA1LCAyMDIxIDE5OjA5DQo+IFRvOiB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IFtFWFRFUk5BTF0gUXVlc3Rpb24gcmVnYXJkaW5n
+IFJUbmV0IEV0aGVybmV0IERyaXZlciB3aXRoIFBDSWUgTVNJDQo+IGludGVycnVwdHMNCj4NCj4g
+SGVsbG8sDQo+DQo+IEFib3V0IGEgeWVhciBhZ28sIEkgcG9ydGVkIGFuIEV0aGVybmV0IGRyaXZl
+ciB3ZSB1c2UgdG8gYmUgYW4gUlRuZXQNCj4gZHJpdmVyLiBJbiBnZW5lcmFsIGV2ZXJ5dGhpbmcg
+aXMgd29ya2luZywgYnV0IHdlIGhhdmUgcnVuIGludG8gYQ0KPiByZWNlbnQgcHJvYmxlbSB3aGlj
+aCBsb29rcyBsaWtlIGl0IG1pZ2h0IGJlIGJlaW5nIGNhdXNlZCBieSBoaWdoDQo+IEV0aGVybmV0
+IHJlY2VpdmUgaW50ZXJydXB0IGxhdGVuY2llcy4NCj4NCj4gVGhlIEV0aGVybmV0IGludGVycnVw
+dHMgY29tZSBpbiBhcyBQQ0llIE1TSSBpbnRlcnJ1cHRzIGFuZCBJDQo+IGltcGxlbWVudGVkIHRo
+ZSBwb3RlbnRpYWxseSBjcmVhdGl2ZSBidXQgYmFkIHNvbHV0aW9uIG9mDQo+IG1vZGlmeWluZyB0
+aGUgUENJZSBkcml2ZXIgdG8gZGlzdHJpYnV0ZSB0aGUgTVNJIGludGVycnVwdHMNCj4gdG8gaS1p
+cGlwZSBiZSByZXBsYWNpbmcgdGhlIGNhbGwgdG8gImdlbmVyaWNfaGFuZGxlX2lycSIgd2l0aA0K
+PiBhIGNhbGwgdG8gImlwaXBlX2hhbmRsZV9kZW11eGVkX2lycSIuDQo+DQo+IEkgYW0gdGhpbmtp
+bmcgdGhhdCB0aGlzIHdhcyBtYXliZSBub3QgdGhlIGJlc3QgYXBwcm9hY2ggYW5kIHRoZQ0KPiBj
+b3JyZWN0IHNvbHV0aW9uIHdvdWxkIGJlIHRvIG1vZGlmeSB0aGUgUENJZSBkcml2ZXIgc28gdGhh
+dCB0aGUNCj4gb3JpZ2luYWwgTVNJIGludGVycnVwdCBpcyBhbiBSVERNIGludGVycnVwdCBhcyBp
+ZiBpdCBpcyBub3QNCj4gdGhpcyBjb3VsZCBiZSBjYXVzaW5nIHRoZSBoaWdoIGludGVycnVwdCBs
+YXRlbmNpZXMuDQo+DQo+IElzIG15IHRoaW5raW5nIGluIHRoZSByaWdodCBkaXJlY3Rpb24gb3Ig
+Y29tcGxldGVseSBvZmY/DQoNCkkgZGlkIG5vdCByZWNlaXZlIGFueSBmZWVkYmFjayBmcm9tIHRo
+ZSBmb3J1bSAobWF5YmUgSSBtYWRlDQphIG1pc3Rha2UgaW4gbXkgcG9zdCBhcyBpdCB3YXMgbXkg
+Zmlyc3QgcG9zdCksIGJ1dCBpbiBjYXNlIHNvbWVvbmUNCmVsc2UgcnVucyBhY3Jvc3MgdGhpcyB0
+aHJlYWQgYW5kIGhhcyBhIHNpbWlsYXIgaXNzdWUuLi4NCg0KSSBtb2RpZmllZCB0aGUgUENJZSBk
+cml2ZXIgc28gdGhhdCB0aGUgTVNJIGludGVycnVwdCBpcyBhbg0KUlRETSBpbnRlcnJ1cHQgKGku
+ZS4gcmVnaXN0ZXJlZCBpbnRlcnJ1cHQgd2l0aCBydGRtX2lycV9yZXF1ZXN0KCkNCmFzIG9wcG9z
+ZWQgdG8gd2l0aCBkZXZtX3JlcXVlc3RfaXJxKCkpIGFuZCB0aGlzIHNvbHZlZCBteSBwcm9ibGVt
+DQpvZiBzZWVpbmcgbGF0ZW5jaWVzIChpLmUuIGRlbGF5cykgaW4gdGhlIGhhbmRsaW5nIG9mIHRo
+ZSBFdGhlcm5ldCByZWNlaXZlDQppbnRlcnJ1cHRzICh3aGljaCBhcmUgcGFja2FnZWQgaW4gdGhl
+IFBDSWUgTVNJIGludGVycnVwdCkuDQoNClNpbmNlIG15IEV0aGVybmV0IHJlY2VpdmUgaW50ZXJy
+dXB0cyAoYW5kIHRyYW5zbWl0IGludGVycnVwdHMpIGFyZSBhbHNvDQpyZWdpc3RlcmVkIGFzIFJU
+RE0gSW50ZXJydXB0cywgSSBuZWVkZWQgdG8ga2VlcCBteSBvcmlnaW5hbCBQQ0llIGRyaXZlcg0K
+bW9kaWZpY2F0aW9uIHRoYXQgTVNJIGludGVycnVwdHMgYXJlIGRpc3RyaWJ1dGVkIGluIGR3X2hh
+bmRsZV9tc2lfaXJxKCkNCnVzaW5nICJpcGlwZV9oYW5kbGVfZGVtdXhlZF9pcnEiIGluc3RlYWQg
+b2YgImdlbmVyaWNfaGFuZGxlX2lycSIuDQoNCkkgYXNzdW1lIGl0IHdvdWxkIHByb2JhYmx5IGFs
+c28gd29yayB0byByZWdpc3RlciB0aGUgRXRoZXJuZXQgaW50ZXJydXB0cw0KYXMgIm5vcm1hbCBM
+aW51eCIgaW50ZXJydXB0cyBhbmQgdGhlbiB0aGUgdGhpcyBtb2RpZmljYXRpb24gd291bGQgbm90
+DQpiZSBuZWNlc3NhcnksIGJ1dCBJIGRpZCBub3QgdmVyaWZ5IHRoaXMgYW5kIHByZWZlciB0byBo
+YXZlIHRoZSBFdGhlcm5ldA0KaW50ZXJydXB0cyBhcyBSVERNIGludGVycnVwdHMgc28gdGhlIGRy
+aXZlciBpcyBjb3JyZWN0IHdoZXRoZXIgb3Igbm90DQppdCBpcyAiYmVoaW5kIiBhbiBQQ0llIE1T
+SSBpbnRlcnJ1cHQgb3Igbm90Lg0KDQpJZiBhbnlvbmUgd291bGQgbGlrZSBtb3JlIGRldGFpbHMs
+IEkgY2FuIGdsYWRseSBwcm92aWRlIHRoZW0uDQoNClJlZ2FyZHMsDQoNClNjb3R0DQoNCj4NCj4g
+QmFja2dyb3VuZCBpbmZvcm1hdGlvbg0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQ0KPiBQcm9jZXNzb3I6IGlNeDYgUXVhZA0KPiBMaW51eCA0LjE0LjYyDQo+IFhlbm9tYWkgMy4w
+LjcNCj4NCj4gVGhhbmtzIGluIGFkdmFuY2UgZm9yIGFueSBhZHZpY2UuDQo+DQo+IFJlZ2FyZHMs
+DQo+DQo+IFNjb3R0DQoNCkhpbndlaXMgYXVmIFZlcnRyYXVsaWNoa2VpdDogRGllc2UgZWxla3Ry
+b25pc2NoIMO8YmVybWl0dGVsdGUgTmFjaHJpY2h0IGlzdCBudXIgZsO8ciBkaWUgbmF0w7xybGlj
+aGUgb2RlciBqdXJpc3Rpc2NoZSBQZXJzb24gYmVzdGltbXQsIGRpZSBhbHMgRW1wZsOkbmdlciBn
+ZW5hbm50IGlzdDsgc2llIGthbm4gdmVydHJhdWxpY2hlIEluZm9ybWF0aW9uZW4gb2RlciBCZXRy
+aWVic2dlaGVpbW5pc3NlIGVudGhhbHRlbiwgZGllIEVpZ2VudHVtIGRlcyBBYnNlbmRlcnMgc2lu
+ZC4gRsO8ciBkZW4gRmFsbCwgZGFzcyBTaWUgbmljaHQgZGVyIGdlbmFubnRlIEVtcGbDpG5nZXIg
+c2luZCwgaXN0IElobmVuIGplZGUgT2ZmZW5sZWd1bmcsIFZlcndlbmR1bmcsIFZlcnZpZWxmw6Rs
+dGlndW5nIG9kZXIgV2VpdGVybGVpdHVuZyBkZXMgSW5oYWx0cyBkaWVzZXIgSW5mb3JtYXRpb25l
+biBzdHJlbmcgdW50ZXJzYWd0LiBEYXNzZWxiZSBnaWx0IGbDvHIgYWxsZSBIYW5kbHVuZ2VuLCBk
+aWUgc2ljaCBhdWYgZGVuIEluaGFsdCBkaWVzZXIgSW5mb3JtYXRpb25lbiBncsO8bmRlbi4gRmFs
+bHMgU2llIGRpZXNlIE5hY2hyaWNodCBpcnJ0w7xtbGljaGVyd2Vpc2UgZXJoYWx0ZW4gaGFiZW4s
+IGJpdHRlbiB3aXIgU2llLCBkZW4gQWJzZW5kZXIgdW1nZWhlbmQgcGVyIEUtTWFpbCBkYXLDvGJl
+ciBpbiBLZW5udG5pcyB6dSBzZXR6ZW4gdW5kIGRpZSB1cnNwcsO8bmdsaWNoZSBOYWNocmljaHQg
+enUgbMO2c2NoZW4uIFdpciBkYW5rZW4gSWhuZW4gZsO8ciBJaHJlIEtvb3BlcmF0aW9uLg0KDQpD
+b25maWRlbnRpYWxpdHkgTm90aWNlOiBUaGlzIGVsZWN0cm9uaWMgbWFpbCB0cmFuc21pc3Npb24g
+aXMgaW50ZW5kZWQgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdo
+aWNoIGl0IGlzIGFkZHJlc3NlZCBhbmQgbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBw
+cm9wcmlldGFyeSBpbmZvcm1hdGlvbiBiZWxvbmdpbmcgdG8gdGhlIHNlbmRlci4gSWYgeW91IGFy
+ZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhh
+dCBhbnkgZGlzY2xvc3VyZSwgdXNlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24sIG9yIHRoZSB0YWtp
+bmcgb2YgYW55IGFjdGlvbiBpbiByZWxpYW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBpbmZv
+cm1hdGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlz
+IHRyYW5zbWlzc2lvbiBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0
+ZWx5IGJ5IGUtbWFpbCBhbmQgZGVsZXRlIHRoZSBvcmlnaW5hbCBtZXNzYWdlLiBUaGFuayB5b3Ug
+Zm9yIHlvdXIgY29vcGVyYXRpb24uDQo=
 
