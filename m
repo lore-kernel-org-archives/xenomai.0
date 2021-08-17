@@ -1,12 +1,12 @@
-Subject: Re: [xenomai-images][PATCH v2] linux-xenomai_4.4: Add machine
- specific config for beagle bone black
-References: <20210805122922.31963-1-Quirin.Gylstorff@siemens.com>
- <d6887aad-c990-6cde-16cd-5f24919203f7@siemens.com>
+Subject: Re: [PATCH RFC 2/2] cobalt/registry: Adding trace events for
+ registry_{enter,unlink,remove}
+References: <20210816161214.62995-1-florian.bezdeka@siemens.com>
+ <20210816161214.62995-3-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3af746fe-7fbd-c327-5974-953986d44130@siemens.com>
-Date: Fri, 6 Aug 2021 11:21:13 +0200
+Message-ID: <2b74e54b-cf6d-05ce-9dde-7b15d8a6e7d5@siemens.com>
+Date: Tue, 17 Aug 2021 08:09:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <d6887aad-c990-6cde-16cd-5f24919203f7@siemens.com>
+In-Reply-To: <20210816161214.62995-3-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,72 +18,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 05.08.21 16:41, Jan Kiszka via Xenomai wrote:
-> On 05.08.21 14:29, Q. Gylstorff wrote:
->> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>
->> The beagle bone black does most[1] of the time not boot ipipe 4.4 + xenomai 3.0.x if
->> the following kernel configuration elements are active:
->>  - CONFIG_RAW_PRINTK
->>  - CONFIG_DEBUG_LL
->>  - CONFIG_IPIPE_DEBUG
->>  - CONFIG_XENO_OPT_DEBUG
->>
->> Last message in U-boot is:
->> ```
->> Starting kernel ...
->> ```
->>
->> 4.19 and newer are not impacted.
->>
->> [1]: The CI build boots around 1 out 4. See https://source.denx.de/Xenomai/xenomai-images/-/jobs/303430
->>
->> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->> ---
->> Changes V2:
->>  - replace defconfig with partial config
->>  - adapt commit message for sporatic CI boots
->>
->>  recipes-kernel/linux/files/bbb_4.4.cfg    | 4 ++++
->>  recipes-kernel/linux/linux-xenomai_4.4.bb | 1 +
->>  2 files changed, 5 insertions(+)
->>  create mode 100644 recipes-kernel/linux/files/bbb_4.4.cfg
->>
->> diff --git a/recipes-kernel/linux/files/bbb_4.4.cfg b/recipes-kernel/linux/files/bbb_4.4.cfg
->> new file mode 100644
->> index 0000000..4628f44
->> --- /dev/null
->> +++ b/recipes-kernel/linux/files/bbb_4.4.cfg
->> @@ -0,0 +1,4 @@
->> +# CONFIG_RAW_PRINTK is not set
->> +# CONFIG_DEBUG_LL is not set
->> +# CONFIG_IPIPE_DEBUG is not set
->> +# CONFIG_XENO_OPT_DEBUG is not set
->> diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
->> index 2a1137c..42c6d83 100644
->> --- a/recipes-kernel/linux/linux-xenomai_4.4.bb
->> +++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
->> @@ -16,6 +16,7 @@ SRCREV_amd64 ?= "ipipe-core-4.4.268-cip57-x86-28"
->>  PV_amd64 = "4.4.268+"
->>  
->>  SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
->> +SRC_URI_append_armhf = " ${@ 'file://bbb_4.4.cfg' if d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
->>  SRCREV_armhf ?= "ipipe-core-4.4.268-cip57-arm-13"
->>  PV_armhf = "4.4.268+"
->>  
->>
+On 16.08.21 18:12, Florian Bezdeka wrote:
+> Adding the following trace events to make registry-usage traceable:
+>   - registry_enter   (object gets added to the registry)
+>   - registry_unlink  (object is made anonymous)
+>   - registry_remove  (object is removed from the registry)
 > 
-> Thanks, applied.
+> These trace events are helpful if there is a need to track down
+> resource leaks triggered by an Xenomai based application.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  kernel/cobalt/registry.c          |  5 +++++
+>  kernel/cobalt/trace/cobalt-core.h | 33 +++++++++++++++++++++++++++++++
+>  2 files changed, 38 insertions(+)
+> 
+> diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+> index 8befa795c..c20c4cc1a 100644
+> --- a/kernel/cobalt/registry.c
+> +++ b/kernel/cobalt/registry.c
+> @@ -685,6 +685,7 @@ int xnregistry_enter(const char *key, void *objaddr,
+>  	nr_active_objects++;
+>  	object->objaddr = objaddr;
+>  	object->cstamp = ++next_object_stamp;
+> +	trace_cobalt_registry_enter(key, objaddr);
+>  #ifdef CONFIG_XENO_OPT_VFILE
+>  	object->pnode = NULL;
+>  #endif
+> @@ -866,6 +867,8 @@ int xnregistry_remove(xnhandle_t handle)
+>  		goto unlock_and_exit;
+>  	}
+>  
+> +	trace_cobalt_registry_remove(object->key, object->objaddr);
+> +
+>  	objaddr = object->objaddr;
+>  	object->objaddr = NULL;
+>  	object->cstamp = 0;
+> @@ -932,6 +935,8 @@ int xnregistry_unlink(const char *key)
+>  		goto unlock_and_exit;
+>  	}
+>  
+> +	trace_cobalt_registry_unlink(object->key, object->objaddr);
+> +
+>  	ret = registry_hash_remove(object);
+>  	if (ret < 0)
+>  		goto unlock_and_exit;
+> diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
+> index 88ed5700d..d98787c5a 100644
+> --- a/kernel/cobalt/trace/cobalt-core.h
+> +++ b/kernel/cobalt/trace/cobalt-core.h
+> @@ -26,6 +26,7 @@
+>  #include <linux/tracepoint.h>
+>  #include <linux/math64.h>
+>  #include <cobalt/kernel/timer.h>
+> +#include <cobalt/kernel/registry.h>
+>  #include <cobalt/uapi/kernel/types.h>
+>  
+>  struct xnsched;
+> @@ -149,6 +150,23 @@ DECLARE_EVENT_CLASS(timer_event,
+>  	TP_printk("timer=%p", __entry->timer)
+>  );
+>  
+> +DECLARE_EVENT_CLASS(registry_event,
+> +	TP_PROTO(const char *key, void *addr),
+> +	TP_ARGS(key, addr),
+> +
+> +	TP_STRUCT__entry(
+> +		__string(key, key ?: "(anon)")
+> +		__field(void *, addr)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__assign_str(key, key ?: "(anon)");
+> +		__entry->addr = addr;
+> +	),
+> +
+> +	TP_printk("key=%s, addr=%p", __get_str(key), __entry->addr)
+> +);
+> +
+>  TRACE_EVENT(cobalt_schedule,
+>  	TP_PROTO(struct xnsched *sched),
+>  	TP_ARGS(sched),
+> @@ -778,6 +796,21 @@ DEFINE_EVENT(synch_post_event, cobalt_synch_forget,
+>  	TP_ARGS(synch)
+>  );
+>  
+> +DEFINE_EVENT(registry_event, cobalt_registry_enter,
+> +	TP_PROTO(const char *key, void *addr),
+> +	TP_ARGS(key, addr)
+> +);
+> +
+> +DEFINE_EVENT(registry_event, cobalt_registry_remove,
+> +	TP_PROTO(const char *key, void *addr),
+> +	TP_ARGS(key, addr)
+> +);
+> +
+> +DEFINE_EVENT(registry_event, cobalt_registry_unlink,
+> +	TP_PROTO(const char *key, void *addr),
+> +	TP_ARGS(key, addr)
+> +);
+> +
+>  TRACE_EVENT(cobalt_tick_shot,
+>  	TP_PROTO(s64 delta),
+>  	TP_ARGS(delta),
 > 
 
-Bad news: https://source.denx.de/Xenomai/xenomai-images/-/jobs/304747
-
-Possibly, non-debug only lowers the probability of a regression on armhf
-or bbb.
-
-Where you able to grab any early boot messages in the failing cases?
+Thanks, applied to next.
 
 Jan
 
