@@ -1,10 +1,13 @@
-Subject: Re: [PATCH 0/2] Allow GPIO timestamps also via real-time clock
-References: <cover.1629109132.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH RFC 2/2] cobalt/registry: Adding trace events for
+ registry_{enter,unlink,remove}
+References: <20210816161214.62995-1-florian.bezdeka@siemens.com>
+ <20210816161214.62995-3-florian.bezdeka@siemens.com>
+ <2b74e54b-cf6d-05ce-9dde-7b15d8a6e7d5@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a8dbaf64-7120-f7be-7f92-a4f95fdb30e3@siemens.com>
-Date: Tue, 17 Aug 2021 08:11:52 +0200
+Message-ID: <e8cc81df-9ca2-526f-838c-94d60ab245b9@siemens.com>
+Date: Tue, 17 Aug 2021 08:41:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <cover.1629109132.git.jan.kiszka@siemens.com>
+In-Reply-To: <2b74e54b-cf6d-05ce-9dde-7b15d8a6e7d5@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,30 +19,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, =?UTF-8?Q?Fran=c3=a7ois_LEGAL?= <francois.legal@thom.fr.eu.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 16.08.21 12:18, Jan Kiszka via Xenomai wrote:
-> As discussed, we need to add a separate control to manage whether the
-> monotonic or the real-time clock should be used for GPIO timestamping.
+On 17.08.21 08:09, Jan Kiszka via Xenomai wrote:
+> On 16.08.21 18:12, Florian Bezdeka wrote:
+>> Adding the following trace events to make registry-usage traceable:
+>>   - registry_enter   (object gets added to the registry)
+>>   - registry_unlink  (object is made anonymous)
+>>   - registry_remove  (object is removed from the registry)
+>>
+>> These trace events are helpful if there is a need to track down
+>> resource leaks triggered by an Xenomai based application.
+>>
+>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>> ---
+>>  kernel/cobalt/registry.c          |  5 +++++
+>>  kernel/cobalt/trace/cobalt-core.h | 33 +++++++++++++++++++++++++++++++
+>>  2 files changed, 38 insertions(+)
+>>
+>> diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+>> index 8befa795c..c20c4cc1a 100644
+>> --- a/kernel/cobalt/registry.c
+>> +++ b/kernel/cobalt/registry.c
+>> @@ -685,6 +685,7 @@ int xnregistry_enter(const char *key, void *objaddr,
+>>  	nr_active_objects++;
+>>  	object->objaddr = objaddr;
+>>  	object->cstamp = ++next_object_stamp;
+>> +	trace_cobalt_registry_enter(key, objaddr);
+>>  #ifdef CONFIG_XENO_OPT_VFILE
+>>  	object->pnode = NULL;
+>>  #endif
+>> @@ -866,6 +867,8 @@ int xnregistry_remove(xnhandle_t handle)
+>>  		goto unlock_and_exit;
+>>  	}
+>>  
+>> +	trace_cobalt_registry_remove(object->key, object->objaddr);
+>> +
+>>  	objaddr = object->objaddr;
+>>  	object->objaddr = NULL;
+>>  	object->cstamp = 0;
+>> @@ -932,6 +935,8 @@ int xnregistry_unlink(const char *key)
+>>  		goto unlock_and_exit;
+>>  	}
+>>  
+>> +	trace_cobalt_registry_unlink(object->key, object->objaddr);
+>> +
+>>  	ret = registry_hash_remove(object);
+>>  	if (ret < 0)
+>>  		goto unlock_and_exit;
+>> diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
+>> index 88ed5700d..d98787c5a 100644
+>> --- a/kernel/cobalt/trace/cobalt-core.h
+>> +++ b/kernel/cobalt/trace/cobalt-core.h
+>> @@ -26,6 +26,7 @@
+>>  #include <linux/tracepoint.h>
+>>  #include <linux/math64.h>
+>>  #include <cobalt/kernel/timer.h>
+>> +#include <cobalt/kernel/registry.h>
+>>  #include <cobalt/uapi/kernel/types.h>
+>>  
+>>  struct xnsched;
+>> @@ -149,6 +150,23 @@ DECLARE_EVENT_CLASS(timer_event,
+>>  	TP_printk("timer=%p", __entry->timer)
+>>  );
+>>  
+>> +DECLARE_EVENT_CLASS(registry_event,
+>> +	TP_PROTO(const char *key, void *addr),
+>> +	TP_ARGS(key, addr),
+>> +
+>> +	TP_STRUCT__entry(
+>> +		__string(key, key ?: "(anon)")
+>> +		__field(void *, addr)
+>> +	),
+>> +
+>> +	TP_fast_assign(
+>> +		__assign_str(key, key ?: "(anon)");
+>> +		__entry->addr = addr;
+>> +	),
+>> +
+>> +	TP_printk("key=%s, addr=%p", __get_str(key), __entry->addr)
+>> +);
+>> +
+>>  TRACE_EVENT(cobalt_schedule,
+>>  	TP_PROTO(struct xnsched *sched),
+>>  	TP_ARGS(sched),
+>> @@ -778,6 +796,21 @@ DEFINE_EVENT(synch_post_event, cobalt_synch_forget,
+>>  	TP_ARGS(synch)
+>>  );
+>>  
+>> +DEFINE_EVENT(registry_event, cobalt_registry_enter,
+>> +	TP_PROTO(const char *key, void *addr),
+>> +	TP_ARGS(key, addr)
+>> +);
+>> +
+>> +DEFINE_EVENT(registry_event, cobalt_registry_remove,
+>> +	TP_PROTO(const char *key, void *addr),
+>> +	TP_ARGS(key, addr)
+>> +);
+>> +
+>> +DEFINE_EVENT(registry_event, cobalt_registry_unlink,
+>> +	TP_PROTO(const char *key, void *addr),
+>> +	TP_ARGS(key, addr)
+>> +);
+>> +
+>>  TRACE_EVENT(cobalt_tick_shot,
+>>  	TP_PROTO(s64 delta),
+>>  	TP_ARGS(delta),
+>>
 > 
-> Patch 1 adds this, keeping the default to monotonic. This can be added
-> to 3.1.x stable as well. Patch 2 aligns the default to the rest of
-> Xenomai, using real-time from now on. That's 3.2 material.
+> Thanks, applied to next.
 > 
 > Jan
 > 
-> Jan Kiszka (2):
->   drivers/gpio: Add support for selecting real-time clock timestamps
->   drivers/gpio: Flip default for GPIO_RTIOC_TS to real-time clock
-> 
->  include/cobalt/kernel/rtdm/gpio.h |  1 +
->  include/rtdm/uapi/gpio.h          |  4 +++-
->  kernel/drivers/gpio/gpio-core.c   | 14 +++++++++++---
->  3 files changed, 15 insertions(+), 4 deletions(-)
-> 
 
-BTW, as I do not have a test setup for this in reach, I definitely need
-someone to test this and let us know that it works as desired.
+Fixed up a missing include in registry.c.
 
 Jan
 
