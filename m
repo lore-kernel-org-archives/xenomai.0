@@ -1,13 +1,13 @@
-From: "Reed, Scott" <sreed@moog.com>
-Subject: RE: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
-Date: Tue, 17 Aug 2021 13:36:40 +0000
-Message-ID: <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
-References: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
-In-Reply-To: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
+ <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
+In-Reply-To: <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Date: Tue, 17 Aug 2021 22:01:03 +0200
+Message-ID: <CAPRPZsBneN19U93PVT=WqWyUqwS9MJd+Yk4KBQJpi5Lh4hMBvw@mail.gmail.com>
+Subject: Re: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,84 +16,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Reed, Scott" <sreed@moog.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNClNjb3R0IFJlZWQNClNlbmlvciBTb2Z0d2FyZSBFbmdpbmVlcg0KZGlyZWN0ICs0OTcwMzE2
-MjIyNjMNCg0KTW9vZyBJbmR1c3RyaWFsIEdyb3VwDQpNb29nIEdtYkgNCkhhbm5zLUtsZW1tLVN0
-cmFzc2UgMjgNCjcxMDM0IELDtmJsaW5nZW4NCkRldXRzY2hsYW5kDQp3d3cubW9vZy5jb20vaW5k
-dXN0cmlhbA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNCg0KDQpNb29nIEdtYkgsIEhhbm5z
-LUtsZW1tLVN0cmFzc2UgMjgsIDcxMDM0IELDtmJsaW5nZW4sIERldXRzY2hsYW5kLCBIYW5kZWxz
-cmVnaXN0ZXI6IEFtdHNnZXJpY2h0IFN0dXR0Z2FydCBIUkIgMjQwMzAxLA0KR2VzY2jDpGZ0c2bD
-vGhyZXI6IFRob21hcyBDemVwcGVsLCBKb2hhbm5lcyAoUGltKSB2YW4gZGVuIERpanNzZWwNCg0K
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgUmVlZCwgU2NvdHQNCj4gdmlhIFhl
-bm9tYWkNCj4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCA1LCAyMDIxIDE5OjA5DQo+IFRvOiB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IFtFWFRFUk5BTF0gUXVlc3Rpb24gcmVnYXJkaW5n
-IFJUbmV0IEV0aGVybmV0IERyaXZlciB3aXRoIFBDSWUgTVNJDQo+IGludGVycnVwdHMNCj4NCj4g
-SGVsbG8sDQo+DQo+IEFib3V0IGEgeWVhciBhZ28sIEkgcG9ydGVkIGFuIEV0aGVybmV0IGRyaXZl
-ciB3ZSB1c2UgdG8gYmUgYW4gUlRuZXQNCj4gZHJpdmVyLiBJbiBnZW5lcmFsIGV2ZXJ5dGhpbmcg
-aXMgd29ya2luZywgYnV0IHdlIGhhdmUgcnVuIGludG8gYQ0KPiByZWNlbnQgcHJvYmxlbSB3aGlj
-aCBsb29rcyBsaWtlIGl0IG1pZ2h0IGJlIGJlaW5nIGNhdXNlZCBieSBoaWdoDQo+IEV0aGVybmV0
-IHJlY2VpdmUgaW50ZXJydXB0IGxhdGVuY2llcy4NCj4NCj4gVGhlIEV0aGVybmV0IGludGVycnVw
-dHMgY29tZSBpbiBhcyBQQ0llIE1TSSBpbnRlcnJ1cHRzIGFuZCBJDQo+IGltcGxlbWVudGVkIHRo
-ZSBwb3RlbnRpYWxseSBjcmVhdGl2ZSBidXQgYmFkIHNvbHV0aW9uIG9mDQo+IG1vZGlmeWluZyB0
-aGUgUENJZSBkcml2ZXIgdG8gZGlzdHJpYnV0ZSB0aGUgTVNJIGludGVycnVwdHMNCj4gdG8gaS1p
-cGlwZSBiZSByZXBsYWNpbmcgdGhlIGNhbGwgdG8gImdlbmVyaWNfaGFuZGxlX2lycSIgd2l0aA0K
-PiBhIGNhbGwgdG8gImlwaXBlX2hhbmRsZV9kZW11eGVkX2lycSIuDQo+DQo+IEkgYW0gdGhpbmtp
-bmcgdGhhdCB0aGlzIHdhcyBtYXliZSBub3QgdGhlIGJlc3QgYXBwcm9hY2ggYW5kIHRoZQ0KPiBj
-b3JyZWN0IHNvbHV0aW9uIHdvdWxkIGJlIHRvIG1vZGlmeSB0aGUgUENJZSBkcml2ZXIgc28gdGhh
-dCB0aGUNCj4gb3JpZ2luYWwgTVNJIGludGVycnVwdCBpcyBhbiBSVERNIGludGVycnVwdCBhcyBp
-ZiBpdCBpcyBub3QNCj4gdGhpcyBjb3VsZCBiZSBjYXVzaW5nIHRoZSBoaWdoIGludGVycnVwdCBs
-YXRlbmNpZXMuDQo+DQo+IElzIG15IHRoaW5raW5nIGluIHRoZSByaWdodCBkaXJlY3Rpb24gb3Ig
-Y29tcGxldGVseSBvZmY/DQoNCkkgZGlkIG5vdCByZWNlaXZlIGFueSBmZWVkYmFjayBmcm9tIHRo
-ZSBmb3J1bSAobWF5YmUgSSBtYWRlDQphIG1pc3Rha2UgaW4gbXkgcG9zdCBhcyBpdCB3YXMgbXkg
-Zmlyc3QgcG9zdCksIGJ1dCBpbiBjYXNlIHNvbWVvbmUNCmVsc2UgcnVucyBhY3Jvc3MgdGhpcyB0
-aHJlYWQgYW5kIGhhcyBhIHNpbWlsYXIgaXNzdWUuLi4NCg0KSSBtb2RpZmllZCB0aGUgUENJZSBk
-cml2ZXIgc28gdGhhdCB0aGUgTVNJIGludGVycnVwdCBpcyBhbg0KUlRETSBpbnRlcnJ1cHQgKGku
-ZS4gcmVnaXN0ZXJlZCBpbnRlcnJ1cHQgd2l0aCBydGRtX2lycV9yZXF1ZXN0KCkNCmFzIG9wcG9z
-ZWQgdG8gd2l0aCBkZXZtX3JlcXVlc3RfaXJxKCkpIGFuZCB0aGlzIHNvbHZlZCBteSBwcm9ibGVt
-DQpvZiBzZWVpbmcgbGF0ZW5jaWVzIChpLmUuIGRlbGF5cykgaW4gdGhlIGhhbmRsaW5nIG9mIHRo
-ZSBFdGhlcm5ldCByZWNlaXZlDQppbnRlcnJ1cHRzICh3aGljaCBhcmUgcGFja2FnZWQgaW4gdGhl
-IFBDSWUgTVNJIGludGVycnVwdCkuDQoNClNpbmNlIG15IEV0aGVybmV0IHJlY2VpdmUgaW50ZXJy
-dXB0cyAoYW5kIHRyYW5zbWl0IGludGVycnVwdHMpIGFyZSBhbHNvDQpyZWdpc3RlcmVkIGFzIFJU
-RE0gSW50ZXJydXB0cywgSSBuZWVkZWQgdG8ga2VlcCBteSBvcmlnaW5hbCBQQ0llIGRyaXZlcg0K
-bW9kaWZpY2F0aW9uIHRoYXQgTVNJIGludGVycnVwdHMgYXJlIGRpc3RyaWJ1dGVkIGluIGR3X2hh
-bmRsZV9tc2lfaXJxKCkNCnVzaW5nICJpcGlwZV9oYW5kbGVfZGVtdXhlZF9pcnEiIGluc3RlYWQg
-b2YgImdlbmVyaWNfaGFuZGxlX2lycSIuDQoNCkkgYXNzdW1lIGl0IHdvdWxkIHByb2JhYmx5IGFs
-c28gd29yayB0byByZWdpc3RlciB0aGUgRXRoZXJuZXQgaW50ZXJydXB0cw0KYXMgIm5vcm1hbCBM
-aW51eCIgaW50ZXJydXB0cyBhbmQgdGhlbiB0aGUgdGhpcyBtb2RpZmljYXRpb24gd291bGQgbm90
-DQpiZSBuZWNlc3NhcnksIGJ1dCBJIGRpZCBub3QgdmVyaWZ5IHRoaXMgYW5kIHByZWZlciB0byBo
-YXZlIHRoZSBFdGhlcm5ldA0KaW50ZXJydXB0cyBhcyBSVERNIGludGVycnVwdHMgc28gdGhlIGRy
-aXZlciBpcyBjb3JyZWN0IHdoZXRoZXIgb3Igbm90DQppdCBpcyAiYmVoaW5kIiBhbiBQQ0llIE1T
-SSBpbnRlcnJ1cHQgb3Igbm90Lg0KDQpJZiBhbnlvbmUgd291bGQgbGlrZSBtb3JlIGRldGFpbHMs
-IEkgY2FuIGdsYWRseSBwcm92aWRlIHRoZW0uDQoNClJlZ2FyZHMsDQoNClNjb3R0DQoNCj4NCj4g
-QmFja2dyb3VuZCBpbmZvcm1hdGlvbg0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LQ0KPiBQcm9jZXNzb3I6IGlNeDYgUXVhZA0KPiBMaW51eCA0LjE0LjYyDQo+IFhlbm9tYWkgMy4w
-LjcNCj4NCj4gVGhhbmtzIGluIGFkdmFuY2UgZm9yIGFueSBhZHZpY2UuDQo+DQo+IFJlZ2FyZHMs
-DQo+DQo+IFNjb3R0DQoNCkhpbndlaXMgYXVmIFZlcnRyYXVsaWNoa2VpdDogRGllc2UgZWxla3Ry
-b25pc2NoIMO8YmVybWl0dGVsdGUgTmFjaHJpY2h0IGlzdCBudXIgZsO8ciBkaWUgbmF0w7xybGlj
-aGUgb2RlciBqdXJpc3Rpc2NoZSBQZXJzb24gYmVzdGltbXQsIGRpZSBhbHMgRW1wZsOkbmdlciBn
-ZW5hbm50IGlzdDsgc2llIGthbm4gdmVydHJhdWxpY2hlIEluZm9ybWF0aW9uZW4gb2RlciBCZXRy
-aWVic2dlaGVpbW5pc3NlIGVudGhhbHRlbiwgZGllIEVpZ2VudHVtIGRlcyBBYnNlbmRlcnMgc2lu
-ZC4gRsO8ciBkZW4gRmFsbCwgZGFzcyBTaWUgbmljaHQgZGVyIGdlbmFubnRlIEVtcGbDpG5nZXIg
-c2luZCwgaXN0IElobmVuIGplZGUgT2ZmZW5sZWd1bmcsIFZlcndlbmR1bmcsIFZlcnZpZWxmw6Rs
-dGlndW5nIG9kZXIgV2VpdGVybGVpdHVuZyBkZXMgSW5oYWx0cyBkaWVzZXIgSW5mb3JtYXRpb25l
-biBzdHJlbmcgdW50ZXJzYWd0LiBEYXNzZWxiZSBnaWx0IGbDvHIgYWxsZSBIYW5kbHVuZ2VuLCBk
-aWUgc2ljaCBhdWYgZGVuIEluaGFsdCBkaWVzZXIgSW5mb3JtYXRpb25lbiBncsO8bmRlbi4gRmFs
-bHMgU2llIGRpZXNlIE5hY2hyaWNodCBpcnJ0w7xtbGljaGVyd2Vpc2UgZXJoYWx0ZW4gaGFiZW4s
-IGJpdHRlbiB3aXIgU2llLCBkZW4gQWJzZW5kZXIgdW1nZWhlbmQgcGVyIEUtTWFpbCBkYXLDvGJl
-ciBpbiBLZW5udG5pcyB6dSBzZXR6ZW4gdW5kIGRpZSB1cnNwcsO8bmdsaWNoZSBOYWNocmljaHQg
-enUgbMO2c2NoZW4uIFdpciBkYW5rZW4gSWhuZW4gZsO8ciBJaHJlIEtvb3BlcmF0aW9uLg0KDQpD
-b25maWRlbnRpYWxpdHkgTm90aWNlOiBUaGlzIGVsZWN0cm9uaWMgbWFpbCB0cmFuc21pc3Npb24g
-aXMgaW50ZW5kZWQgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdo
-aWNoIGl0IGlzIGFkZHJlc3NlZCBhbmQgbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBw
-cm9wcmlldGFyeSBpbmZvcm1hdGlvbiBiZWxvbmdpbmcgdG8gdGhlIHNlbmRlci4gSWYgeW91IGFy
-ZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhh
-dCBhbnkgZGlzY2xvc3VyZSwgdXNlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24sIG9yIHRoZSB0YWtp
-bmcgb2YgYW55IGFjdGlvbiBpbiByZWxpYW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBpbmZv
-cm1hdGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlz
-IHRyYW5zbWlzc2lvbiBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0
-ZWx5IGJ5IGUtbWFpbCBhbmQgZGVsZXRlIHRoZSBvcmlnaW5hbCBtZXNzYWdlLiBUaGFuayB5b3Ug
-Zm9yIHlvdXIgY29vcGVyYXRpb24uDQo=
+FWIW, in the past I have worked with e1000 NICs in RTnet that registered
+their MSI interrupt with the kernel.
 
+I do not recall that I had to do anything out of the ordinary.
+
+
+Op di 17 aug. 2021 om 15:37 schreef Reed, Scott via Xenomai <
+xenomai@xenomai.org>:
+
+>
+>
+> Scott Reed
+> Senior Software Engineer
+> direct +497031622263
+>
+> Moog Industrial Group
+> Moog GmbH
+> Hanns-Klemm-Strasse 28
+> 71034 B=C3=B6blingen
+> Deutschland
+> www.moog.com/industrial
+>
+>
+> _________________________________________________________________________=
+______
+>
+>
+>
+> Moog GmbH, Hanns-Klemm-Strasse 28, 71034 B=C3=B6blingen, Deutschland,
+> Handelsregister: Amtsgericht Stuttgart HRB 240301,
+> Gesch=C3=A4ftsf=C3=BChrer: Thomas Czeppel, Johannes (Pim) van den Dijssel
+>
+>
+>
+> > -----Original Message-----
+> > From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Reed, Scott
+> > via Xenomai
+> > Sent: Thursday, August 5, 2021 19:09
+> > To: xenomai@xenomai.org
+> > Subject: [EXTERNAL] Question regarding RTnet Ethernet Driver with PCIe
+> MSI
+> > interrupts
+> >
+> > Hello,
+> >
+> > About a year ago, I ported an Ethernet driver we use to be an RTnet
+> > driver. In general everything is working, but we have run into a
+> > recent problem which looks like it might be being caused by high
+> > Ethernet receive interrupt latencies.
+> >
+> > The Ethernet interrupts come in as PCIe MSI interrupts and I
+> > implemented the potentially creative but bad solution of
+> > modifying the PCIe driver to distribute the MSI interrupts
+> > to i-ipipe be replacing the call to "generic_handle_irq" with
+> > a call to "ipipe_handle_demuxed_irq".
+> >
+> > I am thinking that this was maybe not the best approach and the
+> > correct solution would be to modify the PCIe driver so that the
+> > original MSI interrupt is an RTDM interrupt as if it is not
+> > this could be causing the high interrupt latencies.
+> >
+> > Is my thinking in the right direction or completely off?
+>
+> I did not receive any feedback from the forum (maybe I made
+> a mistake in my post as it was my first post), but in case someone
+> else runs across this thread and has a similar issue...
+>
+> I modified the PCIe driver so that the MSI interrupt is an
+> RTDM interrupt (i.e. registered interrupt with rtdm_irq_request()
+> as opposed to with devm_request_irq()) and this solved my problem
+> of seeing latencies (i.e. delays) in the handling of the Ethernet receive
+> interrupts (which are packaged in the PCIe MSI interrupt).
+>
+> Since my Ethernet receive interrupts (and transmit interrupts) are also
+> registered as RTDM Interrupts, I needed to keep my original PCIe driver
+> modification that MSI interrupts are distributed in dw_handle_msi_irq()
+> using "ipipe_handle_demuxed_irq" instead of "generic_handle_irq".
+>
+> I assume it would probably also work to register the Ethernet interrupts
+> as "normal Linux" interrupts and then the this modification would not
+> be necessary, but I did not verify this and prefer to have the Ethernet
+> interrupts as RTDM interrupts so the driver is correct whether or not
+> it is "behind" an PCIe MSI interrupt or not.
+>
+> If anyone would like more details, I can gladly provide them.
+>
+> Regards,
+>
+> Scott
+>
+> >
+> > Background information
+> > --------------------------------
+> > Processor: iMx6 Quad
+> > Linux 4.14.62
+> > Xenomai 3.0.7
+> >
+> > Thanks in advance for any advice.
+> >
+> > Regards,
+> >
+> > Scott
+>
+> Hinweis auf Vertraulichkeit: Diese elektronisch =C3=BCbermittelte Nachric=
+ht ist
+> nur f=C3=BCr die nat=C3=BCrliche oder juristische Person bestimmt, die al=
+s Empf=C3=A4nger
+> genannt ist; sie kann vertrauliche Informationen oder Betriebsgeheimnisse
+> enthalten, die Eigentum des Absenders sind. F=C3=BCr den Fall, dass Sie n=
+icht
+> der genannte Empf=C3=A4nger sind, ist Ihnen jede Offenlegung, Verwendung,
+> Vervielf=C3=A4ltigung oder Weiterleitung des Inhalts dieser Informationen=
+ streng
+> untersagt. Dasselbe gilt f=C3=BCr alle Handlungen, die sich auf den Inhal=
+t
+> dieser Informationen gr=C3=BCnden. Falls Sie diese Nachricht irrt=C3=BCml=
+icherweise
+> erhalten haben, bitten wir Sie, den Absender umgehend per E-Mail dar=C3=
+=BCber in
+> Kenntnis zu setzen und die urspr=C3=BCngliche Nachricht zu l=C3=B6schen. =
+Wir danken
+> Ihnen f=C3=BCr Ihre Kooperation.
+>
+> Confidentiality Notice: This electronic mail transmission is intended for
+> the use of the individual or entity to which it is addressed and may
+> contain confidential and/or proprietary information belonging to the
+> sender. If you are not the intended recipient, you are hereby notified th=
+at
+> any disclosure, use, copying, distribution, or the taking of any action i=
+n
+> reliance on the contents of this information is strictly prohibited. If y=
+ou
+> have received this transmission in error, please notify the sender
+> immediately by e-mail and delete the original message. Thank you for your
+> cooperation.
+>
