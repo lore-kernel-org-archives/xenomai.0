@@ -1,15 +1,19 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [RFC PATCH 1/4] cobalt/registry: Make the root directory for proc
+ exports optional
+Date: Wed, 18 Aug 2021 14:11:10 +0000
+Message-ID: <935977986b5c942108ef80296d44d03ef2c7e795.camel@siemens.com>
 References: <20210818112407.12264-1-florian.bezdeka@siemens.com>
  <20210818112407.12264-2-florian.bezdeka@siemens.com>
  <87zgteyjcl.fsf@xenomai.org>
  <619aa02fb42c2d7a4d03e76be934e1aefcd77ce0.camel@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [RFC PATCH 1/4] cobalt/registry: Make the root directory for
- proc exports optional
-In-reply-to: <619aa02fb42c2d7a4d03e76be934e1aefcd77ce0.camel@siemens.com>
-Date: Wed, 18 Aug 2021 16:02:44 +0200
-Message-ID: <87tujmyhob.fsf@xenomai.org>
+ <87tujmyhob.fsf@xenomai.org>
+In-Reply-To: <87tujmyhob.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <12A2E2AA261FCC4A91461EC5EA8C8982@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,76 +22,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-
-Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
-
-> On Wed, 2021-08-18 at 15:26 +0200, Philippe Gerum wrote:
->> Florian Bezdeka via Xenomai <xenomai@xenomai.org> writes:
->> 
->> > Previously the root directory was mandatory, which means that exports
->> > to the proc file system were forced to be located in
->> > /proc/xenomai/registry/<root-dir>/<class>/<file>.
->> > 
->> > The <root-dir> virtual directory is now optional. If not supplied the
->> > root node of <class> is set to registry_vfroot, which represents
->> > /proc/xenomai/registry.
->> 
->> This is not needed. You may want to try something along these lines
->> (excerpt from the Xenomai 2 implementation the registry originates from,
->> with a few adaptations for readability, ksrc/skins/native/queue.c):
->> 
->> static DEFINE_XNPTREE(__queue_ptree, "native");
->> 
->> static struct xnpnode_snapshot __q_pnode = {
->> 	.node = {
->> 		.dirname = "queues",
->> 		.root = &__queue_ptree,
->> 		.ops = &xnregistry_vfsnap_ops,
->> 	},
->> 	.vfile = {
->> 		.privsz = sizeof(struct vfile_priv),
->> 		.datasz = sizeof(struct vfile_data),
->> 		.ops = &vfile_ops,
->> 	},
->> };
->> 
->> ...
->> 
->> xnregistry_enter(q->name, q, &q->handle, &__q_pnode.node);
->> 
->> With this, you would get the /proc/xenomai/registry/queues root
->> directory for queues created automatically, the way the registry wants
->> it to be done.
->> 
->
-> I tried exactly that, but ended up all queues to be visible in
-> /proc/xenomai/registry/native/queues/<name> which was not what I wanted
-> to achieve.
->
-> But if you tell me that there must be an additional subdirectory, I'm
-> fine with it...
->
-
-DEFINE_XNPTREE(rtipc_ptree, "rtipc") already exists in the hierarchy,
-with protocols attached underneath. The current registry still exhibits
-some Xenomai 2 legacy, which would have one root per interface (native,
-posix, vxworks etc.)
-
-So, you could either graft your mqueue hierarchy directly under the
-registry root the way your patch does, or reshuffle the whole thing a
-bit in order to account for a new set of object families, like POSIX
-(incl. mqueues), rtdm and other namespaces for some drivers if you plan
-to export more objects in the future.
-
-The point being that POSIX and RTDM for instance both implement
-semaphores and threads. So either living with /proc/registry/posix_sema4
-_and_ /proc/registry/rtdm_sema4 is ok with you, otherwise you may go for
-keeping toplevel categories so as to have /proc/registry/posix/sema4 and
-/proc/registry/rtdm/sema4.
-
--- 
-Philippe.
+T24gV2VkLCAyMDIxLTA4LTE4IGF0IDE2OjAyICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gQmV6ZGVrYSwgRmxvcmlhbiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cml0ZXM6
+DQo+IA0KPiA+IE9uIFdlZCwgMjAyMS0wOC0xOCBhdCAxNToyNiArMDIwMCwgUGhpbGlwcGUgR2Vy
+dW0gd3JvdGU6DQo+ID4gPiBGbG9yaWFuIEJlemRla2EgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVu
+b21haS5vcmc+IHdyaXRlczoNCj4gPiA+IA0KPiA+ID4gPiBQcmV2aW91c2x5IHRoZSByb290IGRp
+cmVjdG9yeSB3YXMgbWFuZGF0b3J5LCB3aGljaCBtZWFucyB0aGF0IGV4cG9ydHMNCj4gPiA+ID4g
+dG8gdGhlIHByb2MgZmlsZSBzeXN0ZW0gd2VyZSBmb3JjZWQgdG8gYmUgbG9jYXRlZCBpbg0KPiA+
+ID4gPiAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5Lzxyb290LWRpcj4vPGNsYXNzPi88ZmlsZT4uDQo+
+ID4gPiA+IA0KPiA+ID4gPiBUaGUgPHJvb3QtZGlyPiB2aXJ0dWFsIGRpcmVjdG9yeSBpcyBub3cg
+b3B0aW9uYWwuIElmIG5vdCBzdXBwbGllZCB0aGUNCj4gPiA+ID4gcm9vdCBub2RlIG9mIDxjbGFz
+cz4gaXMgc2V0IHRvIHJlZ2lzdHJ5X3Zmcm9vdCwgd2hpY2ggcmVwcmVzZW50cw0KPiA+ID4gPiAv
+cHJvYy94ZW5vbWFpL3JlZ2lzdHJ5Lg0KPiA+ID4gDQo+ID4gPiBUaGlzIGlzIG5vdCBuZWVkZWQu
+IFlvdSBtYXkgd2FudCB0byB0cnkgc29tZXRoaW5nIGFsb25nIHRoZXNlIGxpbmVzDQo+ID4gPiAo
+ZXhjZXJwdCBmcm9tIHRoZSBYZW5vbWFpIDIgaW1wbGVtZW50YXRpb24gdGhlIHJlZ2lzdHJ5IG9y
+aWdpbmF0ZXMgZnJvbSwNCj4gPiA+IHdpdGggYSBmZXcgYWRhcHRhdGlvbnMgZm9yIHJlYWRhYmls
+aXR5LCBrc3JjL3NraW5zL25hdGl2ZS9xdWV1ZS5jKToNCj4gPiA+IA0KPiA+ID4gc3RhdGljIERF
+RklORV9YTlBUUkVFKF9fcXVldWVfcHRyZWUsICJuYXRpdmUiKTsNCj4gPiA+IA0KPiA+ID4gc3Rh
+dGljIHN0cnVjdCB4bnBub2RlX3NuYXBzaG90IF9fcV9wbm9kZSA9IHsNCj4gPiA+IAkubm9kZSA9
+IHsNCj4gPiA+IAkJLmRpcm5hbWUgPSAicXVldWVzIiwNCj4gPiA+IAkJLnJvb3QgPSAmX19xdWV1
+ZV9wdHJlZSwNCj4gPiA+IAkJLm9wcyA9ICZ4bnJlZ2lzdHJ5X3Zmc25hcF9vcHMsDQo+ID4gPiAJ
+fSwNCj4gPiA+IAkudmZpbGUgPSB7DQo+ID4gPiAJCS5wcml2c3ogPSBzaXplb2Yoc3RydWN0IHZm
+aWxlX3ByaXYpLA0KPiA+ID4gCQkuZGF0YXN6ID0gc2l6ZW9mKHN0cnVjdCB2ZmlsZV9kYXRhKSwN
+Cj4gPiA+IAkJLm9wcyA9ICZ2ZmlsZV9vcHMsDQo+ID4gPiAJfSwNCj4gPiA+IH07DQo+ID4gPiAN
+Cj4gPiA+IC4uLg0KPiA+ID4gDQo+ID4gPiB4bnJlZ2lzdHJ5X2VudGVyKHEtPm5hbWUsIHEsICZx
+LT5oYW5kbGUsICZfX3FfcG5vZGUubm9kZSk7DQo+ID4gPiANCj4gPiA+IFdpdGggdGhpcywgeW91
+IHdvdWxkIGdldCB0aGUgL3Byb2MveGVub21haS9yZWdpc3RyeS9xdWV1ZXMgcm9vdA0KPiA+ID4g
+ZGlyZWN0b3J5IGZvciBxdWV1ZXMgY3JlYXRlZCBhdXRvbWF0aWNhbGx5LCB0aGUgd2F5IHRoZSBy
+ZWdpc3RyeSB3YW50cw0KPiA+ID4gaXQgdG8gYmUgZG9uZS4NCj4gPiA+IA0KPiA+IA0KPiA+IEkg
+dHJpZWQgZXhhY3RseSB0aGF0LCBidXQgZW5kZWQgdXAgYWxsIHF1ZXVlcyB0byBiZSB2aXNpYmxl
+IGluDQo+ID4gL3Byb2MveGVub21haS9yZWdpc3RyeS9uYXRpdmUvcXVldWVzLzxuYW1lPiB3aGlj
+aCB3YXMgbm90IHdoYXQgSSB3YW50ZWQNCj4gPiB0byBhY2hpZXZlLg0KPiA+IA0KPiA+IEJ1dCBp
+ZiB5b3UgdGVsbCBtZSB0aGF0IHRoZXJlIG11c3QgYmUgYW4gYWRkaXRpb25hbCBzdWJkaXJlY3Rv
+cnksIEknbQ0KPiA+IGZpbmUgd2l0aCBpdC4uLg0KPiA+IA0KPiANCj4gREVGSU5FX1hOUFRSRUUo
+cnRpcGNfcHRyZWUsICJydGlwYyIpIGFscmVhZHkgZXhpc3RzIGluIHRoZSBoaWVyYXJjaHksDQo+
+IHdpdGggcHJvdG9jb2xzIGF0dGFjaGVkIHVuZGVybmVhdGguIFRoZSBjdXJyZW50IHJlZ2lzdHJ5
+IHN0aWxsIGV4aGliaXRzDQo+IHNvbWUgWGVub21haSAyIGxlZ2FjeSwgd2hpY2ggd291bGQgaGF2
+ZSBvbmUgcm9vdCBwZXIgaW50ZXJmYWNlIChuYXRpdmUsDQo+IHBvc2l4LCB2eHdvcmtzIGV0Yy4p
+DQo+IA0KPiBTbywgeW91IGNvdWxkIGVpdGhlciBncmFmdCB5b3VyIG1xdWV1ZSBoaWVyYXJjaHkg
+ZGlyZWN0bHkgdW5kZXIgdGhlDQo+IHJlZ2lzdHJ5IHJvb3QgdGhlIHdheSB5b3VyIHBhdGNoIGRv
+ZXMsIG9yIHJlc2h1ZmZsZSB0aGUgd2hvbGUgdGhpbmcgYQ0KPiBiaXQgaW4gb3JkZXIgdG8gYWNj
+b3VudCBmb3IgYSBuZXcgc2V0IG9mIG9iamVjdCBmYW1pbGllcywgbGlrZSBQT1NJWA0KPiAoaW5j
+bC4gbXF1ZXVlcyksIHJ0ZG0gYW5kIG90aGVyIG5hbWVzcGFjZXMgZm9yIHNvbWUgZHJpdmVycyBp
+ZiB5b3UgcGxhbg0KPiB0byBleHBvcnQgbW9yZSBvYmplY3RzIGluIHRoZSBmdXR1cmUuDQo+IA0K
+PiBUaGUgcG9pbnQgYmVpbmcgdGhhdCBQT1NJWCBhbmQgUlRETSBmb3IgaW5zdGFuY2UgYm90aCBp
+bXBsZW1lbnQNCj4gc2VtYXBob3JlcyBhbmQgdGhyZWFkcy4gU28gZWl0aGVyIGxpdmluZyB3aXRo
+IC9wcm9jL3JlZ2lzdHJ5L3Bvc2l4X3NlbWE0DQo+IF9hbmRfIC9wcm9jL3JlZ2lzdHJ5L3J0ZG1f
+c2VtYTQgaXMgb2sgd2l0aCB5b3UsIG90aGVyd2lzZSB5b3UgbWF5IGdvIGZvcg0KPiBrZWVwaW5n
+IHRvcGxldmVsIGNhdGVnb3JpZXMgc28gYXMgdG8gaGF2ZSAvcHJvYy9yZWdpc3RyeS9wb3NpeC9z
+ZW1hNCBhbmQNCj4gL3Byb2MvcmVnaXN0cnkvcnRkbS9zZW1hNC4NCj4gDQoNClRoYW5rcyBhIGxv
+dCBmb3IgdGhlIGV4cGxhbmF0aW9uLiBJIHdhc24ndCBhd2FyZSB0aGF0IHJ0ZG0gaXMgcHJvdmlk
+aW5nDQppdCdzIG93biBzZW1hcGhvcmVzLiBUaGF0J3Mgbm8gcHJvYmxlbSBmb3IgdGhlIG1xdWV1
+ZXMgaW4gcGF0Y2ggNCwgYnV0DQphcyB3ZSBzdGlsbCB3b3VsZCBuZWVkIHNvbWV0aGluZyBzaW1p
+bGFyIGZvciBzZW1hcGhvcmVzIHdlIHdvdWxkIGhhdmUNCnNvbWUga2luZCBvZiBjb2xsaXNpb24u
+IA0KDQpTbyB0aGVyZSBpcyBvbmUgc2luZ2xlIHF1ZXN0aW9uIG9wZW4gZm9yIG1lOiBXaGF0IGlz
+IHRoZSBjb3JyZWN0IG5hbWUNCmZvciB0aGUgInJvb3QiIGRpcmVjdG9yeSBpbiB0aGlzIGNhc2Uu
+ICJwb3NpeCI/DQoNCkkgd2lsbCByZXNlbmQgYSB2MiB3aGljaCBzaG91bGQgY29uc2lzdCBvZiBs
+ZXNzIHBhdGNoZXMuIEF0IGxlYXN0IHBhdGNoDQoxICh0aGUgb25lIHdlIGFyZSBkaXNjdXNzaW5n
+IGhlcmUpIHNob3VsZCB2YW5pc2guDQoNClRoYW5rcyENCg0KRmxvcmlhbg0K
 
