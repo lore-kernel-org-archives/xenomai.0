@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [RFC PATCH 2/4] cobalt/registry: Share xnregistry_vfreg_ops with
- other compile units
-Date: Wed, 18 Aug 2021 13:24:05 +0200
-Message-Id: <20210818112407.12264-3-florian.bezdeka@siemens.com>
+Subject: [RFC PATCH 3/4] cobalt/registry: Initialize refcnt of exported
+ virtual proc files
+Date: Wed, 18 Aug 2021 13:24:06 +0200
+Message-Id: <20210818112407.12264-4-florian.bezdeka@siemens.com>
 In-Reply-To: <20210818112407.12264-1-florian.bezdeka@siemens.com>
 References: <20210818112407.12264-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,27 +18,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Allows re-using xnregistry_vfreg_ops. All other file options were
-already available.
+The refcnt field was never initialized and triggered a BUG() in
+vfile_regular_release (vfile.c) when closing / releasing such a virtual
+file.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/kernel/registry.h | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/cobalt/registry.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/cobalt/kernel/registry.h b/include/cobalt/kernel/registry.h
-index 624db5a78..a459da503 100644
---- a/include/cobalt/kernel/registry.h
-+++ b/include/cobalt/kernel/registry.h
-@@ -195,6 +195,8 @@ extern struct xnpnode_ops xnregistry_vfsnap_ops;
+diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+index 5cbebdc5b..476254e65 100644
+--- a/kernel/cobalt/registry.c
++++ b/kernel/cobalt/registry.c
+@@ -403,6 +403,7 @@ static int registry_export_vfreg(struct xnobject *object,
+ 	object->vfile_u.vfreg.privsz = p->vfile.privsz;
+ 	object->vfile_u.vfreg.ops = p->vfile.ops;
+ 	object->vfile_u.vfreg.entry.lockops = p->vfile.lockops;
++	object->vfile_u.vfreg.entry.refcnt = 0;
  
- extern struct xnpnode_ops xnregistry_vlink_ops;
- 
-+extern struct xnpnode_ops xnregistry_vfreg_ops;
-+
- /** @} */
- 
- #endif /* !_COBALT_KERNEL_REGISTRY_H */
+ 	ret = xnvfile_init_regular(object->key, &object->vfile_u.vfreg,
+ 				   &pnode->vdir);
 -- 
 2.30.2
 
