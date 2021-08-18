@@ -1,17 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [RFC PATCH 1/4] cobalt/registry: Make the root directory for proc
- exports optional
-Date: Wed, 18 Aug 2021 13:33:11 +0000
-Message-ID: <619aa02fb42c2d7a4d03e76be934e1aefcd77ce0.camel@siemens.com>
 References: <20210818112407.12264-1-florian.bezdeka@siemens.com>
  <20210818112407.12264-2-florian.bezdeka@siemens.com>
  <87zgteyjcl.fsf@xenomai.org>
-In-Reply-To: <87zgteyjcl.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DD2713E1E265704DB4A09112E9EAA117@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <619aa02fb42c2d7a4d03e76be934e1aefcd77ce0.camel@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [RFC PATCH 1/4] cobalt/registry: Make the root directory for
+ proc exports optional
+In-reply-to: <619aa02fb42c2d7a4d03e76be934e1aefcd77ce0.camel@siemens.com>
+Date: Wed, 18 Aug 2021 16:02:44 +0200
+Message-ID: <87tujmyhob.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-T24gV2VkLCAyMDIxLTA4LTE4IGF0IDE1OjI2ICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
-Cj4gRmxvcmlhbiBCZXpkZWthIHZpYSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3cml0
-ZXM6DQo+IA0KPiA+IFByZXZpb3VzbHkgdGhlIHJvb3QgZGlyZWN0b3J5IHdhcyBtYW5kYXRvcnks
-IHdoaWNoIG1lYW5zIHRoYXQgZXhwb3J0cw0KPiA+IHRvIHRoZSBwcm9jIGZpbGUgc3lzdGVtIHdl
-cmUgZm9yY2VkIHRvIGJlIGxvY2F0ZWQgaW4NCj4gPiAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5Lzxy
-b290LWRpcj4vPGNsYXNzPi88ZmlsZT4uDQo+ID4gDQo+ID4gVGhlIDxyb290LWRpcj4gdmlydHVh
-bCBkaXJlY3RvcnkgaXMgbm93IG9wdGlvbmFsLiBJZiBub3Qgc3VwcGxpZWQgdGhlDQo+ID4gcm9v
-dCBub2RlIG9mIDxjbGFzcz4gaXMgc2V0IHRvIHJlZ2lzdHJ5X3Zmcm9vdCwgd2hpY2ggcmVwcmVz
-ZW50cw0KPiA+IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkuDQo+IA0KPiBUaGlzIGlzIG5vdCBuZWVk
-ZWQuIFlvdSBtYXkgd2FudCB0byB0cnkgc29tZXRoaW5nIGFsb25nIHRoZXNlIGxpbmVzDQo+IChl
-eGNlcnB0IGZyb20gdGhlIFhlbm9tYWkgMiBpbXBsZW1lbnRhdGlvbiB0aGUgcmVnaXN0cnkgb3Jp
-Z2luYXRlcyBmcm9tLA0KPiB3aXRoIGEgZmV3IGFkYXB0YXRpb25zIGZvciByZWFkYWJpbGl0eSwg
-a3NyYy9za2lucy9uYXRpdmUvcXVldWUuYyk6DQo+IA0KPiBzdGF0aWMgREVGSU5FX1hOUFRSRUUo
-X19xdWV1ZV9wdHJlZSwgIm5hdGl2ZSIpOw0KPiANCj4gc3RhdGljIHN0cnVjdCB4bnBub2RlX3Nu
-YXBzaG90IF9fcV9wbm9kZSA9IHsNCj4gCS5ub2RlID0gew0KPiAJCS5kaXJuYW1lID0gInF1ZXVl
-cyIsDQo+IAkJLnJvb3QgPSAmX19xdWV1ZV9wdHJlZSwNCj4gCQkub3BzID0gJnhucmVnaXN0cnlf
-dmZzbmFwX29wcywNCj4gCX0sDQo+IAkudmZpbGUgPSB7DQo+IAkJLnByaXZzeiA9IHNpemVvZihz
-dHJ1Y3QgdmZpbGVfcHJpdiksDQo+IAkJLmRhdGFzeiA9IHNpemVvZihzdHJ1Y3QgdmZpbGVfZGF0
-YSksDQo+IAkJLm9wcyA9ICZ2ZmlsZV9vcHMsDQo+IAl9LA0KPiB9Ow0KPiANCj4gLi4uDQo+IA0K
-PiB4bnJlZ2lzdHJ5X2VudGVyKHEtPm5hbWUsIHEsICZxLT5oYW5kbGUsICZfX3FfcG5vZGUubm9k
-ZSk7DQo+IA0KPiBXaXRoIHRoaXMsIHlvdSB3b3VsZCBnZXQgdGhlIC9wcm9jL3hlbm9tYWkvcmVn
-aXN0cnkvcXVldWVzIHJvb3QNCj4gZGlyZWN0b3J5IGZvciBxdWV1ZXMgY3JlYXRlZCBhdXRvbWF0
-aWNhbGx5LCB0aGUgd2F5IHRoZSByZWdpc3RyeSB3YW50cw0KPiBpdCB0byBiZSBkb25lLg0KPiAN
-Cg0KSSB0cmllZCBleGFjdGx5IHRoYXQsIGJ1dCBlbmRlZCB1cCBhbGwgcXVldWVzIHRvIGJlIHZp
-c2libGUgaW4NCi9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvbmF0aXZlL3F1ZXVlcy88bmFtZT4gd2hp
-Y2ggd2FzIG5vdCB3aGF0IEkgd2FudGVkDQp0byBhY2hpZXZlLg0KDQpCdXQgaWYgeW91IHRlbGwg
-bWUgdGhhdCB0aGVyZSBtdXN0IGJlIGFuIGFkZGl0aW9uYWwgc3ViZGlyZWN0b3J5LCBJJ20NCmZp
-bmUgd2l0aCBpdC4uLg0KDQpGbG9yaWFuDQo=
+
+Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
+
+> On Wed, 2021-08-18 at 15:26 +0200, Philippe Gerum wrote:
+>> Florian Bezdeka via Xenomai <xenomai@xenomai.org> writes:
+>> 
+>> > Previously the root directory was mandatory, which means that exports
+>> > to the proc file system were forced to be located in
+>> > /proc/xenomai/registry/<root-dir>/<class>/<file>.
+>> > 
+>> > The <root-dir> virtual directory is now optional. If not supplied the
+>> > root node of <class> is set to registry_vfroot, which represents
+>> > /proc/xenomai/registry.
+>> 
+>> This is not needed. You may want to try something along these lines
+>> (excerpt from the Xenomai 2 implementation the registry originates from,
+>> with a few adaptations for readability, ksrc/skins/native/queue.c):
+>> 
+>> static DEFINE_XNPTREE(__queue_ptree, "native");
+>> 
+>> static struct xnpnode_snapshot __q_pnode = {
+>> 	.node = {
+>> 		.dirname = "queues",
+>> 		.root = &__queue_ptree,
+>> 		.ops = &xnregistry_vfsnap_ops,
+>> 	},
+>> 	.vfile = {
+>> 		.privsz = sizeof(struct vfile_priv),
+>> 		.datasz = sizeof(struct vfile_data),
+>> 		.ops = &vfile_ops,
+>> 	},
+>> };
+>> 
+>> ...
+>> 
+>> xnregistry_enter(q->name, q, &q->handle, &__q_pnode.node);
+>> 
+>> With this, you would get the /proc/xenomai/registry/queues root
+>> directory for queues created automatically, the way the registry wants
+>> it to be done.
+>> 
+>
+> I tried exactly that, but ended up all queues to be visible in
+> /proc/xenomai/registry/native/queues/<name> which was not what I wanted
+> to achieve.
+>
+> But if you tell me that there must be an additional subdirectory, I'm
+> fine with it...
+>
+
+DEFINE_XNPTREE(rtipc_ptree, "rtipc") already exists in the hierarchy,
+with protocols attached underneath. The current registry still exhibits
+some Xenomai 2 legacy, which would have one root per interface (native,
+posix, vxworks etc.)
+
+So, you could either graft your mqueue hierarchy directly under the
+registry root the way your patch does, or reshuffle the whole thing a
+bit in order to account for a new set of object families, like POSIX
+(incl. mqueues), rtdm and other namespaces for some drivers if you plan
+to export more objects in the future.
+
+The point being that POSIX and RTDM for instance both implement
+semaphores and threads. So either living with /proc/registry/posix_sema4
+_and_ /proc/registry/rtdm_sema4 is ok with you, otherwise you may go for
+keeping toplevel categories so as to have /proc/registry/posix/sema4 and
+/proc/registry/rtdm/sema4.
+
+-- 
+Philippe.
 
