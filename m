@@ -1,15 +1,17 @@
-Subject: Re: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
+From: "Reed, Scott" <sreed@moog.com>
+Subject: RE: [EXTERNAL] Re: Question regarding RTnet Ethernet Driver with PCIe
+ MSI interrupts
+Date: Wed, 18 Aug 2021 10:15:37 +0000
+Message-ID: <ce5d6a24e1cd46f8a8ba1e14baf599b7@debo1svwi003091.corp.mooginc.com>
 References: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
  <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
  <CAPRPZsBneN19U93PVT=WqWyUqwS9MJd+Yk4KBQJpi5Lh4hMBvw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0f0cb9dc-5ff4-58ce-ddae-b0c2f6b7abf5@siemens.com>
-Date: Wed, 18 Aug 2021 08:21:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAPRPZsBneN19U93PVT=WqWyUqwS9MJd+Yk4KBQJpi5Lh4hMBvw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+ <0f0cb9dc-5ff4-58ce-ddae-b0c2f6b7abf5@siemens.com>
+In-Reply-To: <0f0cb9dc-5ff4-58ce-ddae-b0c2f6b7abf5@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,151 +20,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, "Reed, Scott" <sreed@moog.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 17.08.21 22:01, Jeroen Van den Keybus via Xenomai wrote:
-> FWIW, in the past I have worked with e1000 NICs in RTnet that registered
-> their MSI interrupt with the kernel.
-> 
-> I do not recall that I had to do anything out of the ordinary.
-> 
-
-The main difference was likely that you were on x86 while Scott is
-dealing with an i.MX6-based SoC.
-
-I'm not familiar with the details of MSI routing on that target. If I
-quickly understand arch/arm/boot/dts/imx6qdl.dtsi correctly, all MSIs
-will be folded by the PCI host controller into a single SPI (120), the
-only interrupt source that old SoC understands. In that case, you need
-to make sure that this SPI is handled by I-pipe and, indeed, it treated
-as muxing IRQ. But I have no idea how the demuxing will happen in
-details. You likely need to study and then patch the PCI host controller
-driver.
-
-Jan
-
-> 
-> Op di 17 aug. 2021 om 15:37 schreef Reed, Scott via Xenomai <
-> xenomai@xenomai.org>:
-> 
->>
->>
->> Scott Reed
->> Senior Software Engineer
->> direct +497031622263
->>
->> Moog Industrial Group
->> Moog GmbH
->> Hanns-Klemm-Strasse 28
->> 71034 Böblingen
->> Deutschland
->> http://www.moog.com/industrial
->>
->>
->> _______________________________________________________________________________
->>
->>
->>
->> Moog GmbH, Hanns-Klemm-Strasse 28, 71034 Böblingen, Deutschland,
->> Handelsregister: Amtsgericht Stuttgart HRB 240301,
->> Geschäftsführer: Thomas Czeppel, Johannes (Pim) van den Dijssel
->>
->>
->>
->>> -----Original Message-----
->>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Reed, Scott
->>> via Xenomai
->>> Sent: Thursday, August 5, 2021 19:09
->>> To: xenomai@xenomai.org
->>> Subject: [EXTERNAL] Question regarding RTnet Ethernet Driver with PCIe
->> MSI
->>> interrupts
->>>
->>> Hello,
->>>
->>> About a year ago, I ported an Ethernet driver we use to be an RTnet
->>> driver. In general everything is working, but we have run into a
->>> recent problem which looks like it might be being caused by high
->>> Ethernet receive interrupt latencies.
->>>
->>> The Ethernet interrupts come in as PCIe MSI interrupts and I
->>> implemented the potentially creative but bad solution of
->>> modifying the PCIe driver to distribute the MSI interrupts
->>> to i-ipipe be replacing the call to "generic_handle_irq" with
->>> a call to "ipipe_handle_demuxed_irq".
->>>
->>> I am thinking that this was maybe not the best approach and the
->>> correct solution would be to modify the PCIe driver so that the
->>> original MSI interrupt is an RTDM interrupt as if it is not
->>> this could be causing the high interrupt latencies.
->>>
->>> Is my thinking in the right direction or completely off?
->>
->> I did not receive any feedback from the forum (maybe I made
->> a mistake in my post as it was my first post), but in case someone
->> else runs across this thread and has a similar issue...
->>
->> I modified the PCIe driver so that the MSI interrupt is an
->> RTDM interrupt (i.e. registered interrupt with rtdm_irq_request()
->> as opposed to with devm_request_irq()) and this solved my problem
->> of seeing latencies (i.e. delays) in the handling of the Ethernet receive
->> interrupts (which are packaged in the PCIe MSI interrupt).
->>
->> Since my Ethernet receive interrupts (and transmit interrupts) are also
->> registered as RTDM Interrupts, I needed to keep my original PCIe driver
->> modification that MSI interrupts are distributed in dw_handle_msi_irq()
->> using "ipipe_handle_demuxed_irq" instead of "generic_handle_irq".
->>
->> I assume it would probably also work to register the Ethernet interrupts
->> as "normal Linux" interrupts and then the this modification would not
->> be necessary, but I did not verify this and prefer to have the Ethernet
->> interrupts as RTDM interrupts so the driver is correct whether or not
->> it is "behind" an PCIe MSI interrupt or not.
->>
->> If anyone would like more details, I can gladly provide them.
->>
->> Regards,
->>
->> Scott
->>
->>>
->>> Background information
->>> --------------------------------
->>> Processor: iMx6 Quad
->>> Linux 4.14.62
->>> Xenomai 3.0.7
->>>
->>> Thanks in advance for any advice.
->>>
->>> Regards,
->>>
->>> Scott
->>
->> Hinweis auf Vertraulichkeit: Diese elektronisch übermittelte Nachricht ist
->> nur für die natürliche oder juristische Person bestimmt, die als Empfänger
->> genannt ist; sie kann vertrauliche Informationen oder Betriebsgeheimnisse
->> enthalten, die Eigentum des Absenders sind. Für den Fall, dass Sie nicht
->> der genannte Empfänger sind, ist Ihnen jede Offenlegung, Verwendung,
->> Vervielfältigung oder Weiterleitung des Inhalts dieser Informationen streng
->> untersagt. Dasselbe gilt für alle Handlungen, die sich auf den Inhalt
->> dieser Informationen gründen. Falls Sie diese Nachricht irrtümlicherweise
->> erhalten haben, bitten wir Sie, den Absender umgehend per E-Mail darüber in
->> Kenntnis zu setzen und die ursprüngliche Nachricht zu löschen. Wir danken
->> Ihnen für Ihre Kooperation.
->>
->> Confidentiality Notice: This electronic mail transmission is intended for
->> the use of the individual or entity to which it is addressed and may
->> contain confidential and/or proprietary information belonging to the
->> sender. If you are not the intended recipient, you are hereby notified that
->> any disclosure, use, copying, distribution, or the taking of any action in
->> reliance on the contents of this information is strictly prohibited. If you
->> have received this transmission in error, please notify the sender
->> immediately by e-mail and delete the original message. Thank you for your
->> cooperation.
->>
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIEF1Z3VzdCAxOCwgMjAyMSAwODoy
+Mg0KPiBUbzogSmVyb2VuIFZhbiBkZW4gS2V5YnVzIDxqZXJvZW4udmFuZGVua2V5YnVzQGdtYWls
+LmNvbT47IFJlZWQsDQo+IFNjb3R0IDxzcmVlZEBtb29nLmNvbT4NCj4gQ2M6IHhlbm9tYWlAeGVu
+b21haS5vcmcNCj4gU3ViamVjdDogW0VYVEVSTkFMXSBSZTogUXVlc3Rpb24gcmVnYXJkaW5nIFJU
+bmV0IEV0aGVybmV0IERyaXZlciB3aXRoIFBDSWUNCj4gTVNJIGludGVycnVwdHMNCj4NCj4gT24g
+MTcuMDguMjEgMjI6MDEsIEplcm9lbiBWYW4gZGVuIEtleWJ1cyB2aWEgWGVub21haSB3cm90ZToN
+Cj4gPiBGV0lXLCBpbiB0aGUgcGFzdCBJIGhhdmUgd29ya2VkIHdpdGggZTEwMDAgTklDcyBpbiBS
+VG5ldCB0aGF0DQo+ID4gcmVnaXN0ZXJlZCB0aGVpciBNU0kgaW50ZXJydXB0IHdpdGggdGhlIGtl
+cm5lbC4NCj4gPg0KPiA+IEkgZG8gbm90IHJlY2FsbCB0aGF0IEkgaGFkIHRvIGRvIGFueXRoaW5n
+IG91dCBvZiB0aGUgb3JkaW5hcnkuDQo+ID4NCj4NCj4gVGhlIG1haW4gZGlmZmVyZW5jZSB3YXMg
+bGlrZWx5IHRoYXQgeW91IHdlcmUgb24geDg2IHdoaWxlIFNjb3R0IGlzIGRlYWxpbmcNCj4gd2l0
+aCBhbiBpLk1YNi1iYXNlZCBTb0MuDQo+DQo+IEknbSBub3QgZmFtaWxpYXIgd2l0aCB0aGUgZGV0
+YWlscyBvZiBNU0kgcm91dGluZyBvbiB0aGF0IHRhcmdldC4gSWYgSSBxdWlja2x5DQo+IHVuZGVy
+c3RhbmQgYXJjaC9hcm0vYm9vdC9kdHMvaW14NnFkbC5kdHNpIGNvcnJlY3RseSwgYWxsIE1TSXMg
+d2lsbCBiZSBmb2xkZWQNCj4gYnkgdGhlIFBDSSBob3N0IGNvbnRyb2xsZXIgaW50byBhIHNpbmds
+ZSBTUEkgKDEyMCksIHRoZSBvbmx5IGludGVycnVwdCBzb3VyY2UNCj4gdGhhdCBvbGQgU29DIHVu
+ZGVyc3RhbmRzLiBJbiB0aGF0IGNhc2UsIHlvdSBuZWVkIHRvIG1ha2Ugc3VyZSB0aGF0IHRoaXMg
+U1BJIGlzDQo+IGhhbmRsZWQgYnkgSS1waXBlIGFuZCwgaW5kZWVkLCBpdCB0cmVhdGVkIGFzIG11
+eGluZyBJUlEuIEJ1dCBJIGhhdmUgbm8gaWRlYQ0KPiBob3cgdGhlIGRlbXV4aW5nIHdpbGwgaGFw
+cGVuIGluIGRldGFpbHMuIFlvdSBsaWtlbHkgbmVlZCB0byBzdHVkeSBhbmQgdGhlbg0KPiBwYXRj
+aCB0aGUgUENJIGhvc3QgY29udHJvbGxlciBkcml2ZXIuDQo+DQo+IEphbg0KDQpUaGF0IGlzIGNv
+cnJlY3QgdGhhdCBJIGFtIHdvcmtpbmcgd2l0aCBhbiBpTVg2LWJhc2VkIFNvQy4NCg0KRm9yIGFu
+eW9uZSB3aG8gbWlnaHQgZmFjZSBzaW1pbGFyIGlzc3VlcywgZm9yIGluZm9ybWF0aW9uIGhlcmUg
+aXMgbXkgcGF0Y2ggdG8NCnRoZSBMaW51eCA0LjE0LjYyIFBDSSBob3N0IGNvbnRyb2xsZXIgKFhl
+bm9tYWkgMy4wLjcgcGF0Y2ggYWxyZWFkeSBhcHBsaWVkKS4NCg0KUmVnYXJkcywNCg0KU2NvdHQN
+Cg0KU3ViamVjdDogW1BBVENIXSBNb2RpZnkgUENJIE1TSSBpbnRlcnJ1cHRzIGZvciBYZW5vbWFp
+IFJURE0NCg0KU2luY2Ugd2UgaGF2ZSBYZW5vbWFpIFJURE0gZHJpdmVycyB3aGljaCBhcmUgInRp
+ZWQiIHRvIFBDSSBNU0kNCmludGVycnVwdHMgKGUuZy4gQWx0ZXJhIFRTRSBkcml2ZXIpLCB3ZSBu
+ZWVkIHRvIGFsc28gbWFrZSB0aGUgUENJIE1TSQ0KaW50ZXJydXB0IGFuIFJURE0gaW50ZXJydXB0
+IHRvIGF2b2lkIGxhdGVuY3kgd2hlbiB0aGUgUENJIE1TSSBpbnRlcnJ1cHQNCmlzIHNlcnZpY2Vk
+Lg0KDQpTaW5jZSB3ZSBoYXZlIFhlbm9tYWkgUlRETSBkcml2ZXJzIHdoaWNoIGFyZSAidGllZCIg
+dG8gUENJIE1TSQ0KaW50ZXJydXB0cyAoZS5nLiBBbHRlcmEgVFNFIGRyaXZlciksIHdlIG5lZWQg
+dG8gZmlyc3QgcGFzcyB0aGUgTVNJDQppbnRlcnJ1cHQgdG8gdGhlIGktaXBpcGUgaGFuZGxlci4g
+SWYgdGhlcmUgaXMgbm90IGFuIFJURE0gZHJpdmVyIGZvcg0KdGhlIGludGVycnVwdCwgdGhlbiB0
+aGUgaS1waXBlIGhhbmRsZXIgY2FsbHMgZ2VuZXJpY19oYW5kbGVfaXJxLg0KLS0tDQogZHJpdmVy
+cy9wY2kvZHdjL3BjaS1pbXg2LmMgICAgICAgICAgICAgfCAxNyArKysrKysrKysrLS0tLS0tLQ0K
+IGRyaXZlcnMvcGNpL2R3Yy9wY2llLWRlc2lnbndhcmUtaG9zdC5jIHwgIDIgKy0NCiAyIGZpbGVz
+IGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQg
+YS9kcml2ZXJzL3BjaS9kd2MvcGNpLWlteDYuYyBiL2RyaXZlcnMvcGNpL2R3Yy9wY2ktaW14Ni5j
+DQppbmRleCBiNzM0ODM1My4uNjVlYjliYTUgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3BjaS9kd2Mv
+cGNpLWlteDYuYw0KKysrIGIvZHJpdmVycy9wY2kvZHdjL3BjaS1pbXg2LmMNCkBAIC0zMyw2ICsz
+MywxMCBAQA0KDQogI2luY2x1ZGUgInBjaWUtZGVzaWdud2FyZS5oIg0KDQorI2luY2x1ZGUgPHhl
+bm9tYWkvcnRkbS9kcml2ZXIuaD4NCisNCitzdGF0aWMgcnRkbV9pcnFfdCBwY2llX21zaV9pcnFf
+aGFuZGxlOw0KKw0KICNkZWZpbmUgdG9faW14Nl9wY2llKHgpZGV2X2dldF9kcnZkYXRhKCh4KS0+
+ZGV2KQ0KDQogZW51bSBpbXg2X3BjaWVfdmFyaWFudHMgew0KQEAgLTU0NSwxMyArNTQ5LDE0IEBA
+IHN0YXRpYyBpbnQgaW14Nl9wY2llX3dhaXRfZm9yX3NwZWVkX2NoYW5nZShzdHJ1Y3QgaW14Nl9w
+Y2llICppbXg2X3BjaWUpDQogcmV0dXJuIC1FSU5WQUw7DQogfQ0KDQotc3RhdGljIGlycXJldHVy
+bl90IGlteDZfcGNpZV9tc2lfaGFuZGxlcihpbnQgaXJxLCB2b2lkICphcmcpDQorc3RhdGljIGlu
+dCBpbXg2X3BjaWVfbXNpX2hhbmRsZXJfcnRkbShydGRtX2lycV90ICppcnFfaGFuZGxlKQ0KIHsN
+Ci1zdHJ1Y3QgaW14Nl9wY2llICppbXg2X3BjaWUgPSBhcmc7DQorc3RydWN0IGlteDZfcGNpZSAq
+aW14Nl9wY2llID0gcnRkbV9pcnFfZ2V0X2FyZyhpcnFfaGFuZGxlLCBzdHJ1Y3QgaW14Nl9wY2ll
+KTsNCiBzdHJ1Y3QgZHdfcGNpZSAqcGNpID0gaW14Nl9wY2llLT5wY2k7DQogc3RydWN0IHBjaWVf
+cG9ydCAqcHAgPSAmcGNpLT5wcDsNCg0KLXJldHVybiBkd19oYW5kbGVfbXNpX2lycShwcCk7DQor
+ZHdfaGFuZGxlX21zaV9pcnEocHApOw0KK3JldHVybiBSVERNX0lSUV9IQU5ETEVEOw0KIH0NCg0K
+IHN0YXRpYyBpbnQgaW14Nl9wY2llX2VzdGFibGlzaF9saW5rKHN0cnVjdCBpbXg2X3BjaWUgKmlt
+eDZfcGNpZSkNCkBAIC02NzgsMTAgKzY4Myw4IEBAIHN0YXRpYyBpbnQgaW14Nl9hZGRfcGNpZV9w
+b3J0KHN0cnVjdCBpbXg2X3BjaWUgKmlteDZfcGNpZSwNCiByZXR1cm4gLUVOT0RFVjsNCiB9DQoN
+Ci1yZXQgPSBkZXZtX3JlcXVlc3RfaXJxKGRldiwgcHAtPm1zaV9pcnEsDQotICAgICAgIGlteDZf
+cGNpZV9tc2lfaGFuZGxlciwNCi0gICAgICAgSVJRRl9TSEFSRUQgfCBJUlFGX05PX1RIUkVBRCwN
+Ci0gICAgICAgIm14Ni1wY2llLW1zaSIsIGlteDZfcGNpZSk7DQorcmV0ID0gcnRkbV9pcnFfcmVx
+dWVzdCgmcGNpZV9tc2lfaXJxX2hhbmRsZSwgcHAtPm1zaV9pcnEsIGlteDZfcGNpZV9tc2lfaGFu
+ZGxlcl9ydGRtLA0KK1JURE1fSVJRVFlQRV9TSEFSRUQsICJteDYtcGNpZS1tc2kiLCBpbXg2X3Bj
+aWUpOw0KIGlmIChyZXQpIHsNCiBkZXZfZXJyKGRldiwgImZhaWxlZCB0byByZXF1ZXN0IE1TSSBp
+cnFcbiIpOw0KIHJldHVybiByZXQ7DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvZHdjL3BjaWUt
+ZGVzaWdud2FyZS1ob3N0LmMgYi9kcml2ZXJzL3BjaS9kd2MvcGNpZS1kZXNpZ253YXJlLWhvc3Qu
+Yw0KaW5kZXggYTViOGRkMDcuLmQwYWYyY2ZhIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9wY2kvZHdj
+L3BjaWUtZGVzaWdud2FyZS1ob3N0LmMNCisrKyBiL2RyaXZlcnMvcGNpL2R3Yy9wY2llLWRlc2ln
+bndhcmUtaG9zdC5jDQpAQCAtNzIsNyArNzIsNyBAQCBpcnFyZXR1cm5fdCBkd19oYW5kbGVfbXNp
+X2lycShzdHJ1Y3QgcGNpZV9wb3J0ICpwcCkNCiB3aGlsZSAoKHBvcyA9IGZpbmRfbmV4dF9iaXQo
+KHVuc2lnbmVkIGxvbmcgKikgJnZhbCwgMzIsDQogICAgIHBvcykpICE9IDMyKSB7DQogaXJxID0g
+aXJxX2ZpbmRfbWFwcGluZyhwcC0+aXJxX2RvbWFpbiwgaSAqIDMyICsgcG9zKTsNCi1nZW5lcmlj
+X2hhbmRsZV9pcnEoaXJxKTsNCitpcGlwZV9oYW5kbGVfZGVtdXhlZF9pcnEoaXJxKTsNCiBkd19w
+Y2llX3dyX293bl9jb25mKHBwLCBQQ0lFX01TSV9JTlRSMF9TVEFUVVMgKyBpICogMTIsDQogICAg
+IDQsIDEgPDwgcG9zKTsNCiBwb3MrKzsNCi0tDQoyLjI1LjENCg0KPg0KPiA+DQo+ID4gT3AgZGkg
+MTcgYXVnLiAyMDIxIG9tIDE1OjM3IHNjaHJlZWYgUmVlZCwgU2NvdHQgdmlhIFhlbm9tYWkgPA0K
+PiA+IHhlbm9tYWlAeGVub21haS5vcmc+Og0KPiA+DQo+ID4+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiA+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3Jn
+PiBPbiBCZWhhbGYgT2YgUmVlZCwNCj4gU2NvdHQNCj4gPj4+IHZpYSBYZW5vbWFpDQo+ID4+PiBT
+ZW50OiBUaHVyc2RheSwgQXVndXN0IDUsIDIwMjEgMTk6MDkNCj4gPj4+IFRvOiB4ZW5vbWFpQHhl
+bm9tYWkub3JnDQo+ID4+PiBTdWJqZWN0OiBbRVhURVJOQUxdIFF1ZXN0aW9uIHJlZ2FyZGluZyBS
+VG5ldCBFdGhlcm5ldCBEcml2ZXIgd2l0aA0KPiA+Pj4gUENJZQ0KPiA+PiBNU0kNCj4gPj4+IGlu
+dGVycnVwdHMNCj4gPj4+DQo+ID4+PiBIZWxsbywNCj4gPj4+DQo+ID4+PiBBYm91dCBhIHllYXIg
+YWdvLCBJIHBvcnRlZCBhbiBFdGhlcm5ldCBkcml2ZXIgd2UgdXNlIHRvIGJlIGFuIFJUbmV0DQo+
+ID4+PiBkcml2ZXIuIEluIGdlbmVyYWwgZXZlcnl0aGluZyBpcyB3b3JraW5nLCBidXQgd2UgaGF2
+ZSBydW4gaW50byBhDQo+ID4+PiByZWNlbnQgcHJvYmxlbSB3aGljaCBsb29rcyBsaWtlIGl0IG1p
+Z2h0IGJlIGJlaW5nIGNhdXNlZCBieSBoaWdoDQo+ID4+PiBFdGhlcm5ldCByZWNlaXZlIGludGVy
+cnVwdCBsYXRlbmNpZXMuDQo+ID4+Pg0KPiA+Pj4gVGhlIEV0aGVybmV0IGludGVycnVwdHMgY29t
+ZSBpbiBhcyBQQ0llIE1TSSBpbnRlcnJ1cHRzIGFuZCBJDQo+ID4+PiBpbXBsZW1lbnRlZCB0aGUg
+cG90ZW50aWFsbHkgY3JlYXRpdmUgYnV0IGJhZCBzb2x1dGlvbiBvZiBtb2RpZnlpbmcNCj4gPj4+
+IHRoZSBQQ0llIGRyaXZlciB0byBkaXN0cmlidXRlIHRoZSBNU0kgaW50ZXJydXB0cyB0byBpLWlw
+aXBlIGJlDQo+ID4+PiByZXBsYWNpbmcgdGhlIGNhbGwgdG8gImdlbmVyaWNfaGFuZGxlX2lycSIg
+d2l0aCBhIGNhbGwgdG8NCj4gPj4+ICJpcGlwZV9oYW5kbGVfZGVtdXhlZF9pcnEiLg0KPiA+Pj4N
+Cj4gPj4+IEkgYW0gdGhpbmtpbmcgdGhhdCB0aGlzIHdhcyBtYXliZSBub3QgdGhlIGJlc3QgYXBw
+cm9hY2ggYW5kIHRoZQ0KPiA+Pj4gY29ycmVjdCBzb2x1dGlvbiB3b3VsZCBiZSB0byBtb2RpZnkg
+dGhlIFBDSWUgZHJpdmVyIHNvIHRoYXQgdGhlDQo+ID4+PiBvcmlnaW5hbCBNU0kgaW50ZXJydXB0
+IGlzIGFuIFJURE0gaW50ZXJydXB0IGFzIGlmIGl0IGlzIG5vdCB0aGlzDQo+ID4+PiBjb3VsZCBi
+ZSBjYXVzaW5nIHRoZSBoaWdoIGludGVycnVwdCBsYXRlbmNpZXMuDQo+ID4+Pg0KPiA+Pj4gSXMg
+bXkgdGhpbmtpbmcgaW4gdGhlIHJpZ2h0IGRpcmVjdGlvbiBvciBjb21wbGV0ZWx5IG9mZj8NCj4g
+Pj4NCj4gPj4gSSBkaWQgbm90IHJlY2VpdmUgYW55IGZlZWRiYWNrIGZyb20gdGhlIGZvcnVtICht
+YXliZSBJIG1hZGUgYSBtaXN0YWtlDQo+ID4+IGluIG15IHBvc3QgYXMgaXQgd2FzIG15IGZpcnN0
+IHBvc3QpLCBidXQgaW4gY2FzZSBzb21lb25lIGVsc2UgcnVucw0KPiA+PiBhY3Jvc3MgdGhpcyB0
+aHJlYWQgYW5kIGhhcyBhIHNpbWlsYXIgaXNzdWUuLi4NCj4gPj4NCj4gPj4gSSBtb2RpZmllZCB0
+aGUgUENJZSBkcml2ZXIgc28gdGhhdCB0aGUgTVNJIGludGVycnVwdCBpcyBhbiBSVERNDQo+ID4+
+IGludGVycnVwdCAoaS5lLiByZWdpc3RlcmVkIGludGVycnVwdCB3aXRoIHJ0ZG1faXJxX3JlcXVl
+c3QoKSBhcw0KPiA+PiBvcHBvc2VkIHRvIHdpdGggZGV2bV9yZXF1ZXN0X2lycSgpKSBhbmQgdGhp
+cyBzb2x2ZWQgbXkgcHJvYmxlbSBvZg0KPiA+PiBzZWVpbmcgbGF0ZW5jaWVzIChpLmUuIGRlbGF5
+cykgaW4gdGhlIGhhbmRsaW5nIG9mIHRoZSBFdGhlcm5ldA0KPiA+PiByZWNlaXZlIGludGVycnVw
+dHMgKHdoaWNoIGFyZSBwYWNrYWdlZCBpbiB0aGUgUENJZSBNU0kgaW50ZXJydXB0KS4NCj4gPj4N
+Cj4gPj4gU2luY2UgbXkgRXRoZXJuZXQgcmVjZWl2ZSBpbnRlcnJ1cHRzIChhbmQgdHJhbnNtaXQg
+aW50ZXJydXB0cykgYXJlDQo+ID4+IGFsc28gcmVnaXN0ZXJlZCBhcyBSVERNIEludGVycnVwdHMs
+IEkgbmVlZGVkIHRvIGtlZXAgbXkgb3JpZ2luYWwgUENJZQ0KPiA+PiBkcml2ZXIgbW9kaWZpY2F0
+aW9uIHRoYXQgTVNJIGludGVycnVwdHMgYXJlIGRpc3RyaWJ1dGVkIGluDQo+ID4+IGR3X2hhbmRs
+ZV9tc2lfaXJxKCkgdXNpbmcgImlwaXBlX2hhbmRsZV9kZW11eGVkX2lycSIgaW5zdGVhZCBvZg0K
+PiAiZ2VuZXJpY19oYW5kbGVfaXJxIi4NCj4gPj4NCj4gPj4gSSBhc3N1bWUgaXQgd291bGQgcHJv
+YmFibHkgYWxzbyB3b3JrIHRvIHJlZ2lzdGVyIHRoZSBFdGhlcm5ldA0KPiA+PiBpbnRlcnJ1cHRz
+IGFzICJub3JtYWwgTGludXgiIGludGVycnVwdHMgYW5kIHRoZW4gdGhlIHRoaXMNCj4gPj4gbW9k
+aWZpY2F0aW9uIHdvdWxkIG5vdCBiZSBuZWNlc3NhcnksIGJ1dCBJIGRpZCBub3QgdmVyaWZ5IHRo
+aXMgYW5kDQo+ID4+IHByZWZlciB0byBoYXZlIHRoZSBFdGhlcm5ldCBpbnRlcnJ1cHRzIGFzIFJU
+RE0gaW50ZXJydXB0cyBzbyB0aGUNCj4gPj4gZHJpdmVyIGlzIGNvcnJlY3Qgd2hldGhlciBvciBu
+b3QgaXQgaXMgImJlaGluZCIgYW4gUENJZSBNU0kgaW50ZXJydXB0IG9yIG5vdC4NCj4gPj4NCj4g
+Pj4gSWYgYW55b25lIHdvdWxkIGxpa2UgbW9yZSBkZXRhaWxzLCBJIGNhbiBnbGFkbHkgcHJvdmlk
+ZSB0aGVtLg0KPiA+Pg0KPiA+PiBSZWdhcmRzLA0KPiA+Pg0KPiA+PiBTY290dA0KPiA+Pg0KPiA+
+Pj4NCj4gPj4+IEJhY2tncm91bmQgaW5mb3JtYXRpb24NCj4gPj4+IC0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tDQo+ID4+PiBQcm9jZXNzb3I6IGlNeDYgUXVhZA0KPiA+Pj4gTGludXgg
+NC4xNC42Mg0KPiA+Pj4gWGVub21haSAzLjAuNw0KPiA+Pj4NCj4gPj4+IFRoYW5rcyBpbiBhZHZh
+bmNlIGZvciBhbnkgYWR2aWNlLg0KPiA+Pj4NCj4gPj4+IFJlZ2FyZHMsDQo+ID4+Pg0KPiA+Pj4g
+U2NvdHQNCj4gPj4NCj4gPj4NCj4NCj4gLS0NCj4gU2llbWVucyBBRywgVCBSREEgSU9UDQo+IENv
+cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KDQpIaW53ZWlzIGF1ZiBW
+ZXJ0cmF1bGljaGtlaXQ6IERpZXNlIGVsZWt0cm9uaXNjaCDDvGJlcm1pdHRlbHRlIE5hY2hyaWNo
+dCBpc3QgbnVyIGbDvHIgZGllIG5hdMO8cmxpY2hlIG9kZXIganVyaXN0aXNjaGUgUGVyc29uIGJl
+c3RpbW10LCBkaWUgYWxzIEVtcGbDpG5nZXIgZ2VuYW5udCBpc3Q7IHNpZSBrYW5uIHZlcnRyYXVs
+aWNoZSBJbmZvcm1hdGlvbmVuIG9kZXIgQmV0cmllYnNnZWhlaW1uaXNzZSBlbnRoYWx0ZW4sIGRp
+ZSBFaWdlbnR1bSBkZXMgQWJzZW5kZXJzIHNpbmQuIEbDvHIgZGVuIEZhbGwsIGRhc3MgU2llIG5p
+Y2h0IGRlciBnZW5hbm50ZSBFbXBmw6RuZ2VyIHNpbmQsIGlzdCBJaG5lbiBqZWRlIE9mZmVubGVn
+dW5nLCBWZXJ3ZW5kdW5nLCBWZXJ2aWVsZsOkbHRpZ3VuZyBvZGVyIFdlaXRlcmxlaXR1bmcgZGVz
+IEluaGFsdHMgZGllc2VyIEluZm9ybWF0aW9uZW4gc3RyZW5nIHVudGVyc2FndC4gRGFzc2VsYmUg
+Z2lsdCBmw7xyIGFsbGUgSGFuZGx1bmdlbiwgZGllIHNpY2ggYXVmIGRlbiBJbmhhbHQgZGllc2Vy
+IEluZm9ybWF0aW9uZW4gZ3LDvG5kZW4uIEZhbGxzIFNpZSBkaWVzZSBOYWNocmljaHQgaXJydMO8
+bWxpY2hlcndlaXNlIGVyaGFsdGVuIGhhYmVuLCBiaXR0ZW4gd2lyIFNpZSwgZGVuIEFic2VuZGVy
+IHVtZ2VoZW5kIHBlciBFLU1haWwgZGFyw7xiZXIgaW4gS2VubnRuaXMgenUgc2V0emVuIHVuZCBk
+aWUgdXJzcHLDvG5nbGljaGUgTmFjaHJpY2h0IHp1IGzDtnNjaGVuLiBXaXIgZGFua2VuIElobmVu
+IGbDvHIgSWhyZSBLb29wZXJhdGlvbi4NCg0KQ29uZmlkZW50aWFsaXR5IE5vdGljZTogVGhpcyBl
+bGVjdHJvbmljIG1haWwgdHJhbnNtaXNzaW9uIGlzIGludGVuZGVkIGZvciB0aGUgdXNlIG9mIHRo
+ZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aGljaCBpdCBpcyBhZGRyZXNzZWQgYW5kIG1heSBj
+b250YWluIGNvbmZpZGVudGlhbCBhbmQvb3IgcHJvcHJpZXRhcnkgaW5mb3JtYXRpb24gYmVsb25n
+aW5nIHRvIHRoZSBzZW5kZXIuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQs
+IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IGRpc2Nsb3N1cmUsIHVzZSwgY29weWlu
+ZywgZGlzdHJpYnV0aW9uLCBvciB0aGUgdGFraW5nIG9mIGFueSBhY3Rpb24gaW4gcmVsaWFuY2Ug
+b24gdGhlIGNvbnRlbnRzIG9mIHRoaXMgaW5mb3JtYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRl
+ZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyB0cmFuc21pc3Npb24gaW4gZXJyb3IsIHBsZWFz
+ZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBieSBlLW1haWwgYW5kIGRlbGV0ZSB0aGUg
+b3JpZ2luYWwgbWVzc2FnZS4gVGhhbmsgeW91IGZvciB5b3VyIGNvb3BlcmF0aW9uLg0K
 
