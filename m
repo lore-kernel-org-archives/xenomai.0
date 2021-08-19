@@ -1,15 +1,16 @@
-Subject: Re: cobalt_assert_nrt should use __cobalt_pthread_kill
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: cobalt_assert_nrt should use __cobalt_pthread_kill
+Date: Thu, 19 Aug 2021 16:54:16 +0000
+Message-ID: <DB9PR05MB7723A667EA6BF755219E741BF6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
 References: <DB9PR05MB77239BFB7BA2E64E825FF123F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
  <cdab0109-de16-94ac-8dbf-3730ca7e46f2@siemens.com>
  <DB9PR05MB7723D7FEF361FED17FE59FD6F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <af676aea-4603-8b63-c79b-287b113e2896@siemens.com>
-Date: Thu, 19 Aug 2021 17:41:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <DB9PR05MB7723D7FEF361FED17FE59FD6F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+ <af676aea-4603-8b63-c79b-287b113e2896@siemens.com>
+In-Reply-To: <af676aea-4603-8b63-c79b-287b113e2896@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,83 +19,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 19.08.21 17:24, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Donnerstag, 19. August 2021 12:54
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: cobalt_assert_nrt should use __cobalt_pthread_kill
->>
->>
->>
->> CAUTION: External email. Do not click on links or open attachments unless you
->> know the sender and that the content is safe.
->>
->> On 19.08.21 11:56, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> I have some small slight issue with the cobalt_assert_nrt function,
->>> incase a violation is detected the thread should get a signal, but the
->>> implementation will implicitly get a signal during the execution of
->> pthread_kill, see:
->>>
->>>
->>> #0  getpid () at ../sysdeps/unix/syscall-template.S:60
->>> #1  0x00007fc1dc4fa0d6 in __pthread_kill (threadid=<optimized out>,
->>> signo=24) at ../sysdeps/unix/sysv/linux/pthread_kill.c:53
->>> #2  0x00007fc1dc8b2470 in callAssertFunction () at
->>> /home/lano/git/preload_checkers/src/pchecker.h:199
->>> #3  malloc () at
->>> /home/lano/git/preload_checkers/src/pchecker_heap_glibc.c:220
->>> #4 <actual instrumented function>
->>>
->>> You see, the signal should happen with the pc of #2, not from the
->> implementation of glibc (or whatever c library).
->>> So the function should be changed to:
->>>
->>> void cobalt_assert_nrt(void)
->>> {
->>>             if (cobalt_should_warn())
->>>                         __cobalt_pthread_kill(pthread_self(),
->>> SIGDEBUG); }
->>>
->>> (or even replaced with the raw syscall ?)
->>>
->>
->> Hmm, that's similar to an assert causing a lengthy trace, not failing directly at
->> the place where the assert was raised:
->>
->> #0  0x00007ffff7a3918b in raise () from /lib64/libc.so.6
->> #1  0x00007ffff7a3a585 in abort () from /lib64/libc.so.6
->> #2  0x00007ffff7a3185a in __assert_fail_base () from /lib64/libc.so.6
->> #3  0x00007ffff7a318d2 in __assert_fail () from /lib64/libc.so.6
->> #4  0x0000000000400524 in main () at assert.c:5
->>
->> What is your practical problem with the current implementation? Do you
->> expect a specific SIGDEBUG reason?
-> 
-> A better stacktrace. (I actually cut the trace in the signal handler in case of hitting an __assert_fail)
-
-The backtrace should still point to the right function that caused the
-migration. I miss cobalt_assert_nrt() in your backtrace though, but that
-should have nothing to do with how it is implemented. Are you actually
-using cobalt_assert_nrt() from libcobalt?
-
-> BTW, __cobalt_pthread_kill(pthread_self(), SIGDEBUG) doesn’t seem to do a thing, doesn’t handle SIGDEBUG?
-> 
-
-It only triggers the signal (in one way or another...). Handling is up
-to the application. If you don't handle that, the application is
-terminated, obviously.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRG9ubmVyc3RhZywgMTkuIEF1Z3VzdCAyMDIx
+IDE3OjQyDQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
+WGVub21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
+IFN1YmplY3Q6IFJlOiBjb2JhbHRfYXNzZXJ0X25ydCBzaG91bGQgdXNlIF9fY29iYWx0X3B0aHJl
+YWRfa2lsbA0KPg0KPg0KPg0KPiBDQVVUSU9OOiBFeHRlcm5hbCBlbWFpbC4gRG8gbm90IGNsaWNr
+IG9uIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBzZW5k
+ZXIgYW5kIHRoYXQgdGhlIGNvbnRlbnQgaXMgc2FmZS4NCj4NCj4gT24gMTkuMDguMjEgMTc6MjQs
+IExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4NCj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiA+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0K
+PiA+PiBTZW50OiBEb25uZXJzdGFnLCAxOS4gQXVndXN0IDIwMjEgMTI6NTQNCj4gPj4gVG86IExh
+bmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5vbWFpDQo+ID4+ICh4
+ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gPj4gU3ViamVjdDog
+UmU6IGNvYmFsdF9hc3NlcnRfbnJ0IHNob3VsZCB1c2UgX19jb2JhbHRfcHRocmVhZF9raWxsDQo+
+ID4+DQo+ID4+DQo+ID4+DQo+ID4+IENBVVRJT046IEV4dGVybmFsIGVtYWlsLiBEbyBub3QgY2xp
+Y2sgb24gbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cw0KPiA+PiB1bmxlc3MgeW91IGtub3cgdGhl
+IHNlbmRlciBhbmQgdGhhdCB0aGUgY29udGVudCBpcyBzYWZlLg0KPiA+Pg0KPiA+PiBPbiAxOS4w
+OC4yMSAxMTo1NiwgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPj4+IEhlbGxv
+LA0KPiA+Pj4NCj4gPj4+IEkgaGF2ZSBzb21lIHNtYWxsIHNsaWdodCBpc3N1ZSB3aXRoIHRoZSBj
+b2JhbHRfYXNzZXJ0X25ydCBmdW5jdGlvbiwNCj4gPj4+IGluY2FzZSBhIHZpb2xhdGlvbiBpcyBk
+ZXRlY3RlZCB0aGUgdGhyZWFkIHNob3VsZCBnZXQgYSBzaWduYWwsIGJ1dA0KPiA+Pj4gdGhlIGlt
+cGxlbWVudGF0aW9uIHdpbGwgaW1wbGljaXRseSBnZXQgYSBzaWduYWwgZHVyaW5nIHRoZSBleGVj
+dXRpb24NCj4gPj4+IG9mDQo+ID4+IHB0aHJlYWRfa2lsbCwgc2VlOg0KPiA+Pj4NCj4gPj4+DQo+
+ID4+PiAjMCAgZ2V0cGlkICgpIGF0IC4uL3N5c2RlcHMvdW5peC9zeXNjYWxsLXRlbXBsYXRlLlM6
+NjANCj4gPj4+ICMxICAweDAwMDA3ZmMxZGM0ZmEwZDYgaW4gX19wdGhyZWFkX2tpbGwgKHRocmVh
+ZGlkPTxvcHRpbWl6ZWQgb3V0PiwNCj4gPj4+IHNpZ25vPTI0KSBhdCAuLi9zeXNkZXBzL3VuaXgv
+c3lzdi9saW51eC9wdGhyZWFkX2tpbGwuYzo1Mw0KPiA+Pj4gIzIgIDB4MDAwMDdmYzFkYzhiMjQ3
+MCBpbiBjYWxsQXNzZXJ0RnVuY3Rpb24gKCkgYXQNCj4gPj4+IC9ob21lL2xhbm8vZ2l0L3ByZWxv
+YWRfY2hlY2tlcnMvc3JjL3BjaGVja2VyLmg6MTk5DQo+ID4+PiAjMyAgbWFsbG9jICgpIGF0DQo+
+ID4+PiAvaG9tZS9sYW5vL2dpdC9wcmVsb2FkX2NoZWNrZXJzL3NyYy9wY2hlY2tlcl9oZWFwX2ds
+aWJjLmM6MjIwDQo+ID4+PiAjNCA8YWN0dWFsIGluc3RydW1lbnRlZCBmdW5jdGlvbj4NCj4gPj4+
+DQo+ID4+PiBZb3Ugc2VlLCB0aGUgc2lnbmFsIHNob3VsZCBoYXBwZW4gd2l0aCB0aGUgcGMgb2Yg
+IzIsIG5vdCBmcm9tIHRoZQ0KPiA+PiBpbXBsZW1lbnRhdGlvbiBvZiBnbGliYyAob3Igd2hhdGV2
+ZXIgYyBsaWJyYXJ5KS4NCj4gPj4+IFNvIHRoZSBmdW5jdGlvbiBzaG91bGQgYmUgY2hhbmdlZCB0
+bzoNCj4gPj4+DQo+ID4+PiB2b2lkIGNvYmFsdF9hc3NlcnRfbnJ0KHZvaWQpDQo+ID4+PiB7DQo+
+ID4+PiAgICAgICAgICAgICBpZiAoY29iYWx0X3Nob3VsZF93YXJuKCkpDQo+ID4+PiAgICAgICAg
+ICAgICAgICAgICAgICAgICBfX2NvYmFsdF9wdGhyZWFkX2tpbGwocHRocmVhZF9zZWxmKCksDQo+
+ID4+PiBTSUdERUJVRyk7IH0NCj4gPj4+DQo+ID4+PiAob3IgZXZlbiByZXBsYWNlZCB3aXRoIHRo
+ZSByYXcgc3lzY2FsbCA/KQ0KPiA+Pj4NCj4gPj4NCj4gPj4gSG1tLCB0aGF0J3Mgc2ltaWxhciB0
+byBhbiBhc3NlcnQgY2F1c2luZyBhIGxlbmd0aHkgdHJhY2UsIG5vdCBmYWlsaW5nDQo+ID4+IGRp
+cmVjdGx5IGF0IHRoZSBwbGFjZSB3aGVyZSB0aGUgYXNzZXJ0IHdhcyByYWlzZWQ6DQo+ID4+DQo+
+ID4+ICMwICAweDAwMDA3ZmZmZjdhMzkxOGIgaW4gcmFpc2UgKCkgZnJvbSAvbGliNjQvbGliYy5z
+by42DQo+ID4+ICMxICAweDAwMDA3ZmZmZjdhM2E1ODUgaW4gYWJvcnQgKCkgZnJvbSAvbGliNjQv
+bGliYy5zby42DQo+ID4+ICMyICAweDAwMDA3ZmZmZjdhMzE4NWEgaW4gX19hc3NlcnRfZmFpbF9i
+YXNlICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KPiA+PiAjMyAgMHgwMDAwN2ZmZmY3YTMxOGQy
+IGluIF9fYXNzZXJ0X2ZhaWwgKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQo+ID4+ICM0ICAweDAw
+MDAwMDAwMDA0MDA1MjQgaW4gbWFpbiAoKSBhdCBhc3NlcnQuYzo1DQo+ID4+DQo+ID4+IFdoYXQg
+aXMgeW91ciBwcmFjdGljYWwgcHJvYmxlbSB3aXRoIHRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9u
+PyBEbw0KPiA+PiB5b3UgZXhwZWN0IGEgc3BlY2lmaWMgU0lHREVCVUcgcmVhc29uPw0KPiA+DQo+
+ID4gQSBiZXR0ZXIgc3RhY2t0cmFjZS4gKEkgYWN0dWFsbHkgY3V0IHRoZSB0cmFjZSBpbiB0aGUg
+c2lnbmFsIGhhbmRsZXINCj4gPiBpbiBjYXNlIG9mIGhpdHRpbmcgYW4gX19hc3NlcnRfZmFpbCkN
+Cj4NCj4gVGhlIGJhY2t0cmFjZSBzaG91bGQgc3RpbGwgcG9pbnQgdG8gdGhlIHJpZ2h0IGZ1bmN0
+aW9uIHRoYXQgY2F1c2VkIHRoZSBtaWdyYXRpb24uDQo+IEkgbWlzcyBjb2JhbHRfYXNzZXJ0X25y
+dCgpIGluIHlvdXIgYmFja3RyYWNlIHRob3VnaCwgYnV0IHRoYXQgc2hvdWxkIGhhdmUNCj4gbm90
+aGluZyB0byBkbyB3aXRoIGhvdyBpdCBpcyBpbXBsZW1lbnRlZC4gQXJlIHlvdSBhY3R1YWxseSB1
+c2luZw0KPiBjb2JhbHRfYXNzZXJ0X25ydCgpIGZyb20gbGliY29iYWx0Pw0KDQpZZXMsIGJ1dCBJ
+IGRsc3ltIGl0Lg0KSSB3b3VsZCBwcmVmZXIgaWYgdGhlIGNvYmFsdF9hc3NlcnRfbnJ0IHdvdWxk
+IGJlIHRoZSBzdGFydCBvZiB0aGUgdHJhY2UuDQoNCj4NCj4gPiBCVFcsIF9fY29iYWx0X3B0aHJl
+YWRfa2lsbChwdGhyZWFkX3NlbGYoKSwgU0lHREVCVUcpIGRvZXNu4oCZdCBzZWVtIHRvIGRvIGEN
+Cj4gdGhpbmcsIGRvZXNu4oCZdCBoYW5kbGUgU0lHREVCVUc/DQo+ID4NCj4NCj4gSXQgb25seSB0
+cmlnZ2VycyB0aGUgc2lnbmFsIChpbiBvbmUgd2F5IG9yIGFub3RoZXIuLi4pLiBIYW5kbGluZyBp
+cyB1cCB0byB0aGUNCj4gYXBwbGljYXRpb24uIElmIHlvdSBkb24ndCBoYW5kbGUgdGhhdCwgdGhl
+IGFwcGxpY2F0aW9uIGlzIHRlcm1pbmF0ZWQsIG9idmlvdXNseS4NCg0KVGhlIGFwcGxpY2F0aW9u
+IGNvbnRpbnVlcyBydW5uaW5nLiBCdXQgSSBkaWQgbm90IHRyeSB3aXRoIF9fY29iYWx0X3B0aHJl
+YWRfa2lsbChwdGhyZWFkX3NlbGYoKSwgU0lHREVCVUcpDQpidXQgWEVOT01BSV9TWVNDQUxMMihz
+Y19jb2JhbHRfdGhyZWFkX2tpbGwsIHRocmVhZCwgc2lnKS4NCk1lYW5zIHRoZSBjb2JhbHQgc3lz
+Y2FsbCBpcyBub3QgaGFuZGxpbmcgdGhlIHNpZ25hbC4NCg0KU28gZm9yIHRvIHNhdGlzZnkgbXkg
+T0NEIHRvZ2dsaW5nIG9mZi9vbiB0aGUgbW9kZXN3aXRjaCBzaWduYWxzIHdvdWxkIGJlIGNvcnJl
+Y3QgSSBndWVzcw0KDQpwdGhyZWFkX3NldG1vZGVfbnAoUFRIUkVBRF9XQVJOU1csIDAsIE5VTEwp
+Ow0KcHRocmVhZF9raWxsKHB0aHJlYWRfc2VsZigpLCBTSUdERUJVRyk7DQpwdGhyZWFkX3NldG1v
+ZGVfbnAoMCwgUFRIUkVBRF9XQVJOU1csIE5VTEwpOw0KDQpvciBldmVuIGp1c3QgdXNpbmcgYSBs
+aW51eCBzeXNjYWxsOg0KDQpnZXRwaWQoKTsNCg0KUG9pbnQgYmVpbmcgdGhhdCByaWdodCBub3cg
+eW91IHRyYXAgYWx0ZWFzdCB0d2ljZQ0KDQpJIHdlbnQgZm9yd2FyZCBhbmQgdHJpZWQgdXNpbmcg
+YSBzaW5nbGUgbGludXggc3ljYWxsLg0KDQpTdGFja3RyYWNlIGlzIG5vdyBjbGVhbmVyOg0KDQoj
+MCAgMHgwMDAwN2ZjMzk5N2ExNzk3IGluIGNvYmFsdF9hc3NlcnRfbnJ0ICgpIGZyb20gL29wdC9o
+aXBhc2UyL2J1aWxkcm9vdC1hY3B1L3g4Nl82NC1idWlsZHJvb3QtbGludXgtZ251L3N5c3Jvb3Qv
+dXNyL3hlbm9tYWkvbGliL2xpYmNvYmFsdC5zby4yDQojMSAgMHgwMDAwN2ZjMzk5N2MwNDcwIGlu
+IGNhbGxBc3NlcnRGdW5jdGlvbiAoKSBhdCAvaG9tZS9sYW5vL2dpdC9wcmVsb2FkX2NoZWNrZXJz
+L3NyYy9wY2hlY2tlci5oOjE5OQ0KIzIgIG1hbGxvYyAoKSBhdCAvaG9tZS9sYW5vL2dpdC9wcmVs
+b2FkX2NoZWNrZXJzL3NyYy9wY2hlY2tlcl9oZWFwX2dsaWJjLmM6MjIwDQojMyAgPGluc3RydW1l
+bnRlZCBmdW5jdGlvbj4NCg0KZGlmZiAtLWdpdCBhL2xpYi9jb2JhbHQvaW50ZXJuYWwuYyBiL2xp
+Yi9jb2JhbHQvaW50ZXJuYWwuYw0KaW5kZXggMzAzZDg2Zjk5Li5hYjA4NGU5NWIgMTAwNjQ0DQot
+LS0gYS9saWIvY29iYWx0L2ludGVybmFsLmMNCisrKyBiL2xpYi9jb2JhbHQvaW50ZXJuYWwuYw0K
+QEAgLTMyLDYgKzMyLDcgQEANCiAjaW5jbHVkZSA8cHRocmVhZC5oPg0KICNpbmNsdWRlIDxhc20v
+eGVub21haS9zeXNjYWxsLmg+DQogI2luY2x1ZGUgPGNvYmFsdC9zeXMvY29iYWx0Lmg+DQorI2lu
+Y2x1ZGUgPHN5cy9zeXNjYWxsLmg+DQogI2luY2x1ZGUgImludGVybmFsLmgiDQoNCiBpbnQgY29i
+YWx0X2V4dGVuZCh1bnNpZ25lZCBpbnQgbWFnaWMpDQpAQCAtNTYzLDcgKzU2NCw3IEBAIGludCBj
+b2JhbHRfeGxhdGVfc2NoZWRwYXJhbShpbnQgcG9saWN5LA0KIHZvaWQgY29iYWx0X2Fzc2VydF9u
+cnQodm9pZCkNCiB7DQogICAgICAgIGlmIChjb2JhbHRfc2hvdWxkX3dhcm4oKSkNCi0gICAgICAg
+ICAgICAgICBwdGhyZWFkX2tpbGwocHRocmVhZF9zZWxmKCksIFNJR0RFQlVHKTsNCisgICAgICAg
+ICAgICAgICAodm9pZClET19TWVNDQUxMKFNZU19nZXRwaWQsIDApOw0KIH0NCg0KIHVuc2lnbmVk
+IGludCBjb2JhbHRfZmVhdHVyZXM7DQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkg
+Zm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4g
+cHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9y
+bWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVu
+ZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQg
+dGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBk
+aXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBp
+cyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGlu
+IGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2Ug
+YW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21i
+SA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Ru
+a3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0
+OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dl
+cmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4g
+NjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFu
+ayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
