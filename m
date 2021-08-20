@@ -1,14 +1,18 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: cobalt_assert_nrt should use __cobalt_pthread_kill
+Date: Fri, 20 Aug 2021 08:52:46 +0000
+Message-ID: <DB9PR05MB77232E640EB81444E3B2ADF0F6C19@DB9PR05MB7723.eurprd05.prod.outlook.com>
+References: <DB9PR05MB77239BFB7BA2E64E825FF123F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
+ <cdab0109-de16-94ac-8dbf-3730ca7e46f2@siemens.com>
+ <DB9PR05MB7723D7FEF361FED17FE59FD6F6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
+ <af676aea-4603-8b63-c79b-287b113e2896@siemens.com>
+ <DB9PR05MB7723A667EA6BF755219E741BF6C09@DB9PR05MB7723.eurprd05.prod.outlook.com>
+ <ef4a0fae-766a-e3af-2b7e-e1a826c528c9@siemens.com>
+In-Reply-To: <ef4a0fae-766a-e3af-2b7e-e1a826c528c9@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAHk=vNFHsSE5iaJd30tSxEDiNBD+w2hmuhnY7CD7Rz6EyjqtJg@mail.gmail.com>
- <87a6ldy49p.fsf@xenomai.org>
- <CAJte2PAC49ZBgvW_GtzBh_S77F-ehzJxZbrt8UQN-=A7OsunCA@mail.gmail.com>
-In-Reply-To: <CAJte2PAC49ZBgvW_GtzBh_S77F-ehzJxZbrt8UQN-=A7OsunCA@mail.gmail.com>
-From: Hans Petersen <hpetersenlg@googlemail.com>
-Date: Fri, 20 Aug 2021 10:11:26 +0200
-Message-ID: <CAHk=vNGKMrpfKyZOd7rYbC55bCP4Bz_jU2r1x4gMUhEyXeFZMg@mail.gmail.com>
-Subject: Re: xenomai-4 on raspberry-pi-4
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,228 +21,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Byron Jacquot <bjacquot@cardinalpeak.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi Philipe, Byron,
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgMjAuIEF1Z3VzdCAyMDIxIDA4
+OjM3DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVu
+b21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1
+YmplY3Q6IFJlOiBjb2JhbHRfYXNzZXJ0X25ydCBzaG91bGQgdXNlIF9fY29iYWx0X3B0aHJlYWRf
+a2lsbA0KPg0KPg0KPg0KPiBDQVVUSU9OOiBFeHRlcm5hbCBlbWFpbC4gRG8gbm90IGNsaWNrIG9u
+IGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBzZW5kZXIg
+YW5kIHRoYXQgdGhlIGNvbnRlbnQgaXMgc2FmZS4NCj4NCj4gT24gMTkuMDguMjEgMTg6NTQsIExh
+bmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4NCj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KPiA+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiA+
+PiBTZW50OiBEb25uZXJzdGFnLCAxOS4gQXVndXN0IDIwMjEgMTc6NDINCj4gPj4gVG86IExhbmdl
+IE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5vbWFpDQo+ID4+ICh4ZW5v
+bWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gPj4gU3ViamVjdDogUmU6
+IGNvYmFsdF9hc3NlcnRfbnJ0IHNob3VsZCB1c2UgX19jb2JhbHRfcHRocmVhZF9raWxsDQo+ID4+
+DQo+ID4+DQo+ID4+DQo+ID4+IENBVVRJT046IEV4dGVybmFsIGVtYWlsLiBEbyBub3QgY2xpY2sg
+b24gbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cw0KPiA+PiB1bmxlc3MgeW91IGtub3cgdGhlIHNl
+bmRlciBhbmQgdGhhdCB0aGUgY29udGVudCBpcyBzYWZlLg0KPiA+Pg0KPiA+PiBPbiAxOS4wOC4y
+MSAxNzoyNCwgTGFuZ2UgTm9yYmVydCB3cm90ZToNCj4gPj4+DQo+ID4+Pg0KPiA+Pj4+IC0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+Pj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3pr
+YUBzaWVtZW5zLmNvbT4NCj4gPj4+PiBTZW50OiBEb25uZXJzdGFnLCAxOS4gQXVndXN0IDIwMjEg
+MTI6NTQNCj4gPj4+PiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNv
+bT47IFhlbm9tYWkNCj4gPj4+PiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21h
+aS5vcmc+DQo+ID4+Pj4gU3ViamVjdDogUmU6IGNvYmFsdF9hc3NlcnRfbnJ0IHNob3VsZCB1c2Ug
+X19jb2JhbHRfcHRocmVhZF9raWxsDQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+Pj4gQ0FV
+VElPTjogRXh0ZXJuYWwgZW1haWwuIERvIG5vdCBjbGljayBvbiBsaW5rcyBvciBvcGVuIGF0dGFj
+aG1lbnRzDQo+ID4+Pj4gdW5sZXNzIHlvdSBrbm93IHRoZSBzZW5kZXIgYW5kIHRoYXQgdGhlIGNv
+bnRlbnQgaXMgc2FmZS4NCj4gPj4+Pg0KPiA+Pj4+IE9uIDE5LjA4LjIxIDExOjU2LCBMYW5nZSBO
+b3JiZXJ0IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+Pj4+PiBIZWxsbywNCj4gPj4+Pj4NCj4gPj4+
+Pj4gSSBoYXZlIHNvbWUgc21hbGwgc2xpZ2h0IGlzc3VlIHdpdGggdGhlIGNvYmFsdF9hc3NlcnRf
+bnJ0DQo+ID4+Pj4+IGZ1bmN0aW9uLCBpbmNhc2UgYSB2aW9sYXRpb24gaXMgZGV0ZWN0ZWQgdGhl
+IHRocmVhZCBzaG91bGQgZ2V0IGENCj4gPj4+Pj4gc2lnbmFsLCBidXQgdGhlIGltcGxlbWVudGF0
+aW9uIHdpbGwgaW1wbGljaXRseSBnZXQgYSBzaWduYWwgZHVyaW5nDQo+ID4+Pj4+IHRoZSBleGVj
+dXRpb24gb2YNCj4gPj4+PiBwdGhyZWFkX2tpbGwsIHNlZToNCj4gPj4+Pj4NCj4gPj4+Pj4NCj4g
+Pj4+Pj4gIzAgIGdldHBpZCAoKSBhdCAuLi9zeXNkZXBzL3VuaXgvc3lzY2FsbC10ZW1wbGF0ZS5T
+OjYwDQo+ID4+Pj4+ICMxICAweDAwMDA3ZmMxZGM0ZmEwZDYgaW4gX19wdGhyZWFkX2tpbGwgKHRo
+cmVhZGlkPTxvcHRpbWl6ZWQNCj4gPj4+Pj4gb3V0PiwNCj4gPj4+Pj4gc2lnbm89MjQpIGF0IC4u
+L3N5c2RlcHMvdW5peC9zeXN2L2xpbnV4L3B0aHJlYWRfa2lsbC5jOjUzDQo+ID4+Pj4+ICMyICAw
+eDAwMDA3ZmMxZGM4YjI0NzAgaW4gY2FsbEFzc2VydEZ1bmN0aW9uICgpIGF0DQo+ID4+Pj4+IC9o
+b21lL2xhbm8vZ2l0L3ByZWxvYWRfY2hlY2tlcnMvc3JjL3BjaGVja2VyLmg6MTk5DQo+ID4+Pj4+
+ICMzICBtYWxsb2MgKCkgYXQNCj4gPj4+Pj4gL2hvbWUvbGFuby9naXQvcHJlbG9hZF9jaGVja2Vy
+cy9zcmMvcGNoZWNrZXJfaGVhcF9nbGliYy5jOjIyMA0KPiA+Pj4+PiAjNCA8YWN0dWFsIGluc3Ry
+dW1lbnRlZCBmdW5jdGlvbj4NCj4gPj4+Pj4NCj4gPj4+Pj4gWW91IHNlZSwgdGhlIHNpZ25hbCBz
+aG91bGQgaGFwcGVuIHdpdGggdGhlIHBjIG9mICMyLCBub3QgZnJvbSB0aGUNCj4gPj4+PiBpbXBs
+ZW1lbnRhdGlvbiBvZiBnbGliYyAob3Igd2hhdGV2ZXIgYyBsaWJyYXJ5KS4NCj4gPj4+Pj4gU28g
+dGhlIGZ1bmN0aW9uIHNob3VsZCBiZSBjaGFuZ2VkIHRvOg0KPiA+Pj4+Pg0KPiA+Pj4+PiB2b2lk
+IGNvYmFsdF9hc3NlcnRfbnJ0KHZvaWQpDQo+ID4+Pj4+IHsNCj4gPj4+Pj4gICAgICAgICAgICAg
+aWYgKGNvYmFsdF9zaG91bGRfd2FybigpKQ0KPiA+Pj4+PiAgICAgICAgICAgICAgICAgICAgICAg
+ICBfX2NvYmFsdF9wdGhyZWFkX2tpbGwocHRocmVhZF9zZWxmKCksDQo+ID4+Pj4+IFNJR0RFQlVH
+KTsgfQ0KPiA+Pj4+Pg0KPiA+Pj4+PiAob3IgZXZlbiByZXBsYWNlZCB3aXRoIHRoZSByYXcgc3lz
+Y2FsbCA/KQ0KPiA+Pj4+Pg0KPiA+Pj4+DQo+ID4+Pj4gSG1tLCB0aGF0J3Mgc2ltaWxhciB0byBh
+biBhc3NlcnQgY2F1c2luZyBhIGxlbmd0aHkgdHJhY2UsIG5vdA0KPiA+Pj4+IGZhaWxpbmcgZGly
+ZWN0bHkgYXQgdGhlIHBsYWNlIHdoZXJlIHRoZSBhc3NlcnQgd2FzIHJhaXNlZDoNCj4gPj4+Pg0K
+PiA+Pj4+ICMwICAweDAwMDA3ZmZmZjdhMzkxOGIgaW4gcmFpc2UgKCkgZnJvbSAvbGliNjQvbGli
+Yy5zby42DQo+ID4+Pj4gIzEgIDB4MDAwMDdmZmZmN2EzYTU4NSBpbiBhYm9ydCAoKSBmcm9tIC9s
+aWI2NC9saWJjLnNvLjYNCj4gPj4+PiAjMiAgMHgwMDAwN2ZmZmY3YTMxODVhIGluIF9fYXNzZXJ0
+X2ZhaWxfYmFzZSAoKSBmcm9tDQo+ID4+Pj4gL2xpYjY0L2xpYmMuc28uNg0KPiA+Pj4+ICMzICAw
+eDAwMDA3ZmZmZjdhMzE4ZDIgaW4gX19hc3NlcnRfZmFpbCAoKSBmcm9tIC9saWI2NC9saWJjLnNv
+LjYNCj4gPj4+PiAjNCAgMHgwMDAwMDAwMDAwNDAwNTI0IGluIG1haW4gKCkgYXQgYXNzZXJ0LmM6
+NQ0KPiA+Pj4+DQo+ID4+Pj4gV2hhdCBpcyB5b3VyIHByYWN0aWNhbCBwcm9ibGVtIHdpdGggdGhl
+IGN1cnJlbnQgaW1wbGVtZW50YXRpb24/IERvDQo+ID4+Pj4geW91IGV4cGVjdCBhIHNwZWNpZmlj
+IFNJR0RFQlVHIHJlYXNvbj8NCj4gPj4+DQo+ID4+PiBBIGJldHRlciBzdGFja3RyYWNlLiAoSSBh
+Y3R1YWxseSBjdXQgdGhlIHRyYWNlIGluIHRoZSBzaWduYWwgaGFuZGxlcg0KPiA+Pj4gaW4gY2Fz
+ZSBvZiBoaXR0aW5nIGFuIF9fYXNzZXJ0X2ZhaWwpDQo+ID4+DQo+ID4+IFRoZSBiYWNrdHJhY2Ug
+c2hvdWxkIHN0aWxsIHBvaW50IHRvIHRoZSByaWdodCBmdW5jdGlvbiB0aGF0IGNhdXNlZCB0aGUN
+Cj4gbWlncmF0aW9uLg0KPiA+PiBJIG1pc3MgY29iYWx0X2Fzc2VydF9ucnQoKSBpbiB5b3VyIGJh
+Y2t0cmFjZSB0aG91Z2gsIGJ1dCB0aGF0IHNob3VsZA0KPiA+PiBoYXZlIG5vdGhpbmcgdG8gZG8g
+d2l0aCBob3cgaXQgaXMgaW1wbGVtZW50ZWQuIEFyZSB5b3UgYWN0dWFsbHkgdXNpbmcNCj4gPj4g
+Y29iYWx0X2Fzc2VydF9ucnQoKSBmcm9tIGxpYmNvYmFsdD8NCj4gPg0KPiA+IFllcywgYnV0IEkg
+ZGxzeW0gaXQuDQo+ID4gSSB3b3VsZCBwcmVmZXIgaWYgdGhlIGNvYmFsdF9hc3NlcnRfbnJ0IHdv
+dWxkIGJlIHRoZSBzdGFydCBvZiB0aGUgdHJhY2UuDQo+ID4NCj4NCj4gVGhhdCBpdCBhbHdheXMg
+ZG9lcyB1bmRlciBub3JtYWwgY29uc3RyYWludHMgLSBwbGVhc2UgY2hlY2sgeW91ciBsb2NhbCBz
+ZXR1cCwNCj4gdGhpcyBpcyBub3QgYSBnZW5lcmljIHByb2JsZW0uIEl0J3MgeW91ciBwY2hlY2tl
+ci5oOjE5OSB3aGljaCBpc3N1ZXMgdGhlIHN5c2NhbGwNCj4gZGlyZWN0bHksIHJhdGhlciB0aGFu
+IGNhbGxpbmcgY29iYWx0X2Fzc2VydF9ucnQoKS4NCj4gTWF5YmUgdGhhdCdzIGJlY2F1c2Ugb2Yg
+bGF6eSBzeW1ib2wgcmVzb2x1dGlvbj8NCg0KTm8sIHRoZSBzdGFydCBvZiB0aGUgc3RhY2t0cmFj
+ZSBpcyB0aGUgZmlyc3QgbGludXggc3lzY2FsbCByZXN1bHRpbmcgZnJvbSB0aGUgcHRocmVhZF9r
+aWxsDQpDYWxsIChnZXRwaWQoKSBpbiBteSBjYXNlKQ0KDQpHZGIgaGFzIHByb2JsZW1zIGRpc3Bs
+YXlpbmcgdGhlIGZyYW1lIGZ1bmN0aW9uLCBidXQgaXQgaXMgY29iYWx0X2Fzc2VydF9ucnQuDQpJ
+IGJlbGlldmUgdGhpcyBoYXBwZW5zIGlmIHlvdSB1c2UgJy1mbm8tcGx0Jw0KDQo+DQo+ID4+DQo+
+ID4+PiBCVFcsIF9fY29iYWx0X3B0aHJlYWRfa2lsbChwdGhyZWFkX3NlbGYoKSwgU0lHREVCVUcp
+IGRvZXNu4oCZdCBzZWVtIHRvDQo+ID4+PiBkbyBhDQo+ID4+IHRoaW5nLCBkb2VzbuKAmXQgaGFu
+ZGxlIFNJR0RFQlVHPw0KPiA+Pj4NCj4gPj4NCj4gPj4gSXQgb25seSB0cmlnZ2VycyB0aGUgc2ln
+bmFsIChpbiBvbmUgd2F5IG9yIGFub3RoZXIuLi4pLiBIYW5kbGluZyBpcw0KPiA+PiB1cCB0byB0
+aGUgYXBwbGljYXRpb24uIElmIHlvdSBkb24ndCBoYW5kbGUgdGhhdCwgdGhlIGFwcGxpY2F0aW9u
+IGlzDQo+IHRlcm1pbmF0ZWQsIG9idmlvdXNseS4NCj4gPg0KPiA+IFRoZSBhcHBsaWNhdGlvbiBj
+b250aW51ZXMgcnVubmluZy4gQnV0IEkgZGlkIG5vdCB0cnkgd2l0aA0KPiA+IF9fY29iYWx0X3B0
+aHJlYWRfa2lsbChwdGhyZWFkX3NlbGYoKSwgU0lHREVCVUcpIGJ1dA0KPiBYRU5PTUFJX1NZU0NB
+TEwyKHNjX2NvYmFsdF90aHJlYWRfa2lsbCwgdGhyZWFkLCBzaWcpLg0KPiA+IE1lYW5zIHRoZSBj
+b2JhbHQgc3lzY2FsbCBpcyBub3QgaGFuZGxpbmcgdGhlIHNpZ25hbC4NCj4NCj4gQSBzeXNjYWxs
+IGRvZXMgbm90IGhhbmRsZSBzaWduYWxzLg0KPg0KPiBCeSBjYWxsaW5nIHRoZSBjb2JhbHQgdmVy
+c2lvbiBvZiBwdGhyZWFkX2tpbGwsIHlvdSBxdWV1ZSB0aGUgc2lnbmFsIGZvcg0KPiBzeW5jaHJv
+bm91cyBSVCBwcm9jZXNzaW5nIChzaWd3YWl0KS4NCg0KSSBiZWxpZXZlIHRoaXMgZG9lcyBvbmx5
+IGhhcHBlbiBmb3IgUlQgc2lnbmFscywgdGhlIHJlc3QgZ2V0IGRlbGVnYXRlZA0KVG8gX19TVEQo
+dGhyZWFkX2tpbGwpIGluIF9fY29iYWx0X3B0aHJlYWRfa2lsbCA/DQoNCj4NCj4gPg0KPiA+IFNv
+IGZvciB0byBzYXRpc2Z5IG15IE9DRCB0b2dnbGluZyBvZmYvb24gdGhlIG1vZGVzd2l0Y2ggc2ln
+bmFscyB3b3VsZA0KPiA+IGJlIGNvcnJlY3QgSSBndWVzcw0KPiA+DQo+ID4gcHRocmVhZF9zZXRt
+b2RlX25wKFBUSFJFQURfV0FSTlNXLCAwLCBOVUxMKTsNCj4gPiBwdGhyZWFkX2tpbGwocHRocmVh
+ZF9zZWxmKCksIFNJR0RFQlVHKTsgcHRocmVhZF9zZXRtb2RlX25wKDAsDQo+ID4gUFRIUkVBRF9X
+QVJOU1csIE5VTEwpOw0KPiA+DQo+ID4gb3IgZXZlbiBqdXN0IHVzaW5nIGEgbGludXggc3lzY2Fs
+bDoNCj4gPg0KPiA+IGdldHBpZCgpOw0KPg0KPiBBIHN5c2NhbGwgd2lsbCByZW1haW4gdGhlIHNv
+dXJjZSBvZiB0aGUgc2lnbmFsLCBubyBjaGFuZ2Ugb24gdGhlIG9yaWdpbiBvZiB0aGUNCj4gYmFj
+a3RyYWNlLg0KDQpUaGUgIm9yaWdpbiIgY2hhbmdlcywgc2VlIHRoZSBwYXJ0IG9mIHRoZSBzdGFj
+a3RyYWNlIHlvdSBkaWQgbm90IHF1b3RlLg0KSSBiZWxpZXZlIHRoaXMgaXMganVzdCBzb21lIHNl
+bWFudGljL2xhbmd1YWdlIGlzc3VlIGl0aCBvcmlnaW4vc291cmNlLA0KQWZ0ZXIgdXNpbmcgdGhl
+IHJhdyBsaW51eCBnZXRwaWQgc3lzY2FsbCBJIGdldCB0aGUgZnJhbWUtaXAgZnJvbSBjb2JhbHRf
+YXNzZXJ0X25ydA0KRm9yIHRoZSBmaXJzdCBsaW5lLCBpbnN0ZWFkIG9mIHRoZSBnZXRwaWQgZnVu
+Y3Rpb24uDQoNCj4NCj4gPg0KPiA+IFBvaW50IGJlaW5nIHRoYXQgcmlnaHQgbm93IHlvdSB0cmFw
+IGFsdGVhc3QgdHdpY2UNCj4NCj4gVGhhdCBpcyBhIGRpZmZlcmVudCBwb2ludC4gU28gZmFyLCB5
+b3Ugd2VyZSBjb21wbGFpbmluZyBhYm91dCBnZXR0aW5nIGEgd3JvbmcNCj4gYmFja3RyYWNlIHdo
+aWNoIGlzIG5vdCBjYXVzZWQgYnkgdHJpZ2dlcmluZyBhIFNJR0RFQlVHIHR3aWNlLiBJZiB5b3Ug
+d2FudCB0bw0KPiBwcmV2ZW50IGEgZHVwbGljYXRlIGV2ZW50LCB0cmlnZ2VyaW5nIGEgc3lzY2Fs
+bCBvbmx5IG9yIGRpc2FibGluZyB0aGUgd2FybmluZyBmb3INCj4gdGhlIHN5c2NhbGwgaXRzZWxm
+IGNhbiBiZSBvcHRpb25zLg0KDQpXZWxsLCB0aGUgcHRocmVhZF9raWxsKHB0aHJlYWRfc2VsZigp
+LCBTSUdERUJVRykgd2lsbCBub3QgY2F1c2UgbXkgc2lnbmFsIGhhbmRsZXINCnRvIGJlIGNhbGxl
+ZCAqYnkgc2VuZGluZyBhIHNpZ25hbCouIEF0IHRoaXMgcG9pbnQgaXRzIGVuc3VyZWQgdGhhdCBQ
+VEhSRUFEX1dBUk5TVw0KaXMgZW5hYmxlZCBhbmQgdGhlIGMgbGlicmFyeSB3aWxsIHRyaWdnZXIg
+YW4gbW9kZSBzd2l0Y2ggYXQgbGVhc3Qgb25jZSAoYXRsZWFzdCAyIHRpbWVzIHdpdGggZ2xpYmMt
+Mi4yOCkNCmJlZm9yZSBzZW5kaW5nIHRoZSBzaWduYWwuDQoNCml0IHdvdWxkIGJlIG1vcmUgZGly
+ZWN0IHRvIGNhbGwgYWJvcnQoKSBpbiBjYXNlIHRoaXMgc2hvdWxkIHJlYWxseSBiZSBhICJhc3Nl
+cnQiIChubyB3YXkgb2YgcmV0dXJuaW5nKS4NCg0KT3Igc2VuZCBqdXN0IG9uZSBzaWduYWwgbGlr
+ZSB3aXRoICh2b2lkKURPX1NZU0NBTEwoU1lTX2dldHBpZCwgMCkNClRoYXQgaGFzIGp1c3Qgb25l
+IGd1YXJhbnRlZWQgbW9kZXN3aXRjaCArIHNpZ25hbCBoYW5kbGVyIGludm9jYXRpb24sDQpBbmQg
+dGhlIGZyYW1lIGlwIHBvaW50cyB0byBjb2JhbHRfYXNzZXJ0X25ydA0KDQo+IEJ1dCBJIGNvbnNp
+ZGVyIHRoaXMgcmVhbGx5IGEgbWlub3IgaXNzdWUuDQoNClllYWggSSBzYWlkIGFzIG11Y2gsIHN0
+aWxsIGxpa2UgYmV0dGVyIGRpYWdub3N0aWNzIGlmIEkgY2FuIGdldCB0aGVtLg0KDQpOb3JiZXJ0
+DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFu
+eSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNp
+cGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBp
+bmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJl
+LiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5v
+dGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55
+IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBl
+bWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhh
+dmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRl
+ciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lz
+dGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBH
+ZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZp
+cm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291
+cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8g
+Q29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1O
+ci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0K
 
-thanks for answers.
-
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
----------------
-
-Philippe:
-
-I chose Raspbian because it promised me the greatest dissemination and
-support from the community.
-
-In general, I have integrated a CM4 module into my own hardware, so I
-rely on the integration of the CM4 and the IO board on the newer
-versions.
-But first I will test the Raspi-4b.
-
-Do you have an alternative to the Raspbian OS? Don't they have the
-same problems?
-
-Next week I'll try to research the differences between the Raspbian
-and Evl-kernels.
-
-I'll keep you updated.
-
-Thanks again for your extensive support, Hans
-
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
----------------
-
-Byron:
-
-I tried this too. Unfortunately I didn't succeed.
-However, I have a Raspi-4b with a touch display.
-
-I cross compile on a debian-10 in the VMWare virtual machine.
-
-I am following the tutorial, i.e.
-
-- git clone, bcm2711_defconfig, make .... (zImage, modules, dtbs, install)
-- copy kernel (zImage), dtb-files, overlay-folder to '/ boot' on sd-card.
-- copy kernel modules to '/ lib / modules' ext4 file system on sd-card.
-- add kernel =3D zImage to 'config.txt' on sd-card.
-
-The problem is that in the evl-source tree (same as mainline) several
-things are not available at first glance:
-
-- in arch/arm/configs /; there is no bcm2711_defconfig
-- in arch/arm/dts /; there are no dts files for rpi-4 and rpi-cm4
-- in arch/arm/dts /; there is no overlay directory and no entries in
-the make files for this overlay directory
-- in driver/char; the broadcom directory does not exist
-
-The make does not create an overlay directory. So I copied the device
-tree files and the overlay directory from the Raspbian-OS into the
-/boot directory.
-
-When booting, there are various error messages and the system then hangs up=
-.
-If I delete the kernel directory in /lib/modules, the kernel boots,
-but since no modules can be loaded of course no USB, no network, etc.
-will run.
-
-However, I had similar problems with newer versions of the Raspbian OS.
-So my idea was to take the working version 5.10.52 from the Raspian
-and then install a 5.10.57 kernel with modules, since this is close to
-the version.
-
-This boots the system and works including GUI and touch.
-But there are still some error messages when booting.
-
-There are probably problems with the interrupt installation in the SPI
-device and access to the EEProm and a few others.
-I suspect that something is wrong with the device drivers.
-
-Here are a few excerpts from the reports without wanting to annoy you
-with details:
-
-[    1.196254] ------------[ cut here ]------------
-[    1.196260] WARNING: CPU: 0 PID: 1 at kernel/irq/chip.c:1149
-__irq_do_set_handler+0x98/0x204
-[    1.196264] Modules linked in:
-[    1.196273] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.57-v7l #3
-[    1.196277] Hardware name: BCM2711
-[    1.196281] IRQ stage: Linux
-
-[  OK  ] Started Forward Password R=E2=80=A6s to Plymouth Directory Watch.
-[    8.877325] 8<--- cut here ---
-[    8.877332] Unable to handle kernel NULL pointer dereference at
-virtual address 00000004
-[    8.877336] pgd =3D (ptrval)
-[    8.877341] [00000004] *pgd=3D034cd003, *pmd=3D00000000
-[    8.877354] Internal error: Oops: 206 [#1] SMP ARM
-[    8.877358] Modules linked in: dwc2(+) vc4(+) raspberrypi_hwmon
-roles i2c_bcm2835 cec drm_kms_helper spi_bcm2835 drm
-drm_panel_orientat
-   ion_quirks snd_soc_core snd_pcm_dmaengine snd_pcm snd_timer snd
-syscopyarea sysfillrect sysimgblt fb_sys_fops backlight
-uio_pdrv_genirq ui
-   o i2c_dev ip_tables x_tables ipv6
-[    8.877462] CPU: 3 PID: 156 Comm: systemd-udevd Tainted: G        W
-        5.10.57-v7l #3
-[    8.877466] Hardware name: BCM2711
-
-[[    9.937210] usb usb3: Manufacturer: Linux 5.10.57-v7l dwc2_hsotg
-  OK      9.937226] usb usb3: SerialNumber: fe980000.usb
-0m] Foun[    9.949213] brcmfmac mmc1:0001:1: Direct firmware load for
-brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt failed with error
-                                                                -2
-d device[    9.989897] hub 3-0:1.0: USB hub found
- /dev/serial1.
-[   10.002053] hub 3-0:1.0: 1 port detected
-[  OK  ] Found device /dev/ttyS0.
-[   10.212135] ------------[ cut here ]------------
-[   10.219217] WARNING: CPU: 3 PID: 275 at drivers/spi/spidev.c:945
-spidev_probe+0x108/0x1c4 [spidev]
-[   10.233106] /soc/spi@7e204000/spidev@0: buggy DT: spidev listed
-directly in DT
-[   10.243764] Modules linked in: spidev(+) joydev brcmfmac brcmutil
-sha256_generic cfg80211 rfkill raspberrypi_ts dwc2 vc4(+) raspberrypi
- _hwmon roles i2c_bcm2835 cec drm_kms_helper spi_bcm2835 drm
-drm_panel_orientation_quirks snd_soc_core snd_pcm_dmaengine snd_pcm
-snd_timer
- snd syscopyarea sysfillrect sysimgblt fb_sys_fops backlight
-uio_pdrv_genirq uio i2c_dev ip_tables x_tables ipv6
-[   10.252627] brcmfmac: brcmf_fw_alloc_request: using
-brcm/brcmfmac43455-sdio for chip BCM4345/6
-[   10.288515] CPU: 3 PID: 275 Comm: modprobe Tainted: G      D W
-   5.10.57-v7l #3
-[   10.310376] Hardware name: BCM2711
-[   10.316082] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6
-wl0: Jan  4 2021 19:56:29 version 7.45.229 (617f1f5 CY) FWID 01-2dbd9d
-                                                                  2e
-[   10.316308] IRQ stage: Linux
-
-[   10.805600] WARNING: CPU: 3 PID: 275 at drivers/spi/spidev.c:945
-spidev_probe+0x108/0x1c4 [spidev]
-[   10.805637] /soc/spi@7e204000/spidev@1: buggy DT: spidev listed
-directly in DT
-[   10.830198] Modules linked in: spidev(+) joydev brcmfmac brcmutil
-sha256_generic cfg80211 rfkill raspberrypi_ts dwc2 vc4(+) raspberrypi
- _hwmon roles i2c_bcm2835 cec drm_kms_helper spi_bcm2835 drm
-drm_panel_orientation_quirks snd_soc_core snd_pcm_dmaengine snd_pcm
-snd_timer
-snd syscopyarea sysfillrect sysimgblt fb_sys_fops backlight
-uio_pdrv_genirq uio i2c_dev ip_tables x_tables ipv6
-[   10.876236] CPU: 3 PID: 275 Comm: modprobe Tainted: G      D W
-   5.10.57-v7l #3
-[   10.886966] Hardware name: BCM2711
-
-[FAILED] Failed to start Check for Raspberry Pi EEPROM updates.
-See 'systemctl status rpi-eeprom-update.service' for details.
-
-Thanks for your advice, Hans
-
-
-
-
-Am Do., 19. Aug. 2021 um 19:54 Uhr schrieb Byron Jacquot <
-bjacquot@cardinalpeak.com>:
-
-> Hello Hans, Philippe,
->
-> I can confirm that I'm successfully running Xenomai 4 on the Pi 4.
->
-> I started with a plain Raspbian Lite on an SD card.  On target, I cloned
-> the 5.12-evl-rebase branch, built (~6 hours) and installed it.  I
-> copied the kernel and DTBs to my Boot partition, amended boot/config.txt,
-> and it runs nicely.
->
-> -Byron Jacquot
->
-> On Thu, Aug 19, 2021 at 7:04 AM Philippe Gerum via Xenomai <
-> xenomai@xenomai.org> wrote:
->
->>
->> Hans Petersen via Xenomai <xenomai@xenomai.org> writes:
->>
->> > Hi, everyone,
->> >
->> > I'm trying to get XENOMAI-4 to run on the Raspberry-PI-4.
->> >
->> > For this I downloaded the source files '*v5.10.y-evl-rebase*' and
->> compiled
->> > them with 'bcm2711_defconfig'.
->> >
->> > Unfortunately, the image does not work because many specific files,
->> such as
->> > the device tree and the broadcom drivers and serveral config-flags, ar=
-e
->> > missing in the source tree.
->> > However, these are also missing in the mainline kernel.
->> >
->>
->> Xenomai targets mainline kernels exclusively.
->>
->> > I can load a kernel version *'5.10.52*' from the *Raspbian repository*=
-.
->> >
->> > *Now my question*:
->> >
->> > Is there a possibility to patch XENOMAI4 into the Raspbian sources, or
->> any
->> > other way to install a Xenomai-4 on the Raspberry-PI-4?
->> >
->>
->> Unlike its predecessors, Xenomai 4 does not use the patch model, it is
->> directly developed into the target kernel.
->>
->> FWIW, I have been running EVL based on the mainline kernel on the rpi4
->> for more than a year now (headless system though), and this is actually
->> one of my workhorses for testing it. If you really need to run a vendor
->> kernel, then you are pretty much on your own unfortunately; you might
->> try to apply the 5.10.y..5.10.y-evl-rebase diff set to a Raspbian kernel
->> based on the same mainline version.
->>
->> --
->> Philippe.
->>
->>
