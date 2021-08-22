@@ -1,9 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Time flies
-Date: Sun, 22 Aug 2021 17:03:17 +0200
-Message-ID: <871r6ly11m.fsf@xenomai.org>
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [Xenomai 4] latest on libevl.git
+Date: Sun, 22 Aug 2021 17:14:54 +0200
+Message-Id: <20210822151454.1835255-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,15 +12,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
+41dc88a lib: add socket interface
+70a49e4 utils: ps: display WCHAN with option -w
+c5dd9ab utils: evl-trace: fix implicit enable-all command
+a1ac1ac utils: evl/test: silence pedantic warning from 'find'
+c929030 tests/fault: check uaccess fault handling
 
-Btw, Xenomai turned 20 two days ago [1]. Still lots of work ahead.
-
-Cheers,
-
-[1] https://www.mail-archive.com/rtl@fsmlabs.com/msg01156.html
-
--- 
-Philippe.
+    branch: master
+repository: git@source.denx.de:Xenomai/xenomai4/libevl.git
 
