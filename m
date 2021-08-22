@@ -1,10 +1,9 @@
-Date: Sat, 21 Aug 2021 01:14:22 +0800
-Subject: Big jitter issues every 5 seconds
-From: Ivan Jiang <jcgeforce@aliyun.com>
-Message-ID: <FE2C94EF-3136-482C-9A4A-CF252AD452F0@aliyun.com>
-Mime-version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [Xenomai 4] latest on linux-evl.git
+Date: Sun, 22 Aug 2021 16:53:25 +0200
+Message-Id: <20210822145325.1832281-1-rpm@xenomai.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +12,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-RGVhciB4ZW5vbWFpIE9uZXJzOgoKIAoKwqDCoMKgwqDCoMKgIE15IG5hbWUgaXMgSXZhbiBhbmQg
-b3VyIGNvbXBhbnkgdXNlIHhlbm9tYWkgMy4xMCBwYXRjaGVkIG9uIExpbnV4IDQuMTkuOTQgd29y
-a2VkIG9uIERhdWwgY29yZSBDb3J0ZXggQTcgODAwTUh6IENQVS4KCsKgwqDCoMKgwqDCoCBXZSB1
-c2VkIHRoaXMgc29sdXRpb24gdG8gYnVpbGQgYW4gRXRoZXJDQVQgTWFzdGVyIGNvbnRyb2xsZXIu
-CgrCoMKgwqDCoMKgwqAgV2l0aCB0aGUgaXNvbGNwdXM9MSBub2h6PW9uIG5vaHpfZnVsbD0xwqAg
-cmN1X25vY2JzPTEgdGhlIHVzZXIgc3BhY2UgbGF0ZW5jeSB3YXZlZm9ybXMgaXMgbGlrZSBiZWxv
-dzoKCiAKCsKgwqDCoMKgwqDCoCBOb3JtYWxseSBqaXR0ZXIgaXMgZnJvbSAtMTB+MTB1UyBldmVy
-eSAxbVMgcGVyaW9kLAoKwqDCoMKgwqDCoMKgIFdpdGggYSAtMzB+MzB1UyB3b3JzdCBqaXR0ZXIg
-ZXZlcnkgMjAwbVMgd2hpY2ggbWFkZSBieSBvdXIgd2lmaSBBUCBlbmFibGVkIG9uIG91ciBBNyBD
-b3JlIGJvYXJkLCB0aGlzIG9uZSBjb3VsZCBiZSBkaXNhcHBlYXJlZCBpZiB3ZSB0dXJuZWQgb2Zm
-IHRoZSBXSUZJLgoKwqDCoMKgwqDCoMKgIEJ1dCB0aGUgbW9zdCB1bmltYWdpbmFibGUgaml0dGVy
-IGlzIHVwIHRvIC01NX41NXVTIGV2ZXJ5IDVTLCB3aGljaCBjb3VsZCBub3QgZmluZCBhbnkgcmVh
-c29uLCDCoHRoYXQgd2UgY2xvc2VkIGFsbCB0aGUgcGVyaXBoZXJhbHMgb24gdGhlIGJvYXJkIGV4
-Y2VwdCB0aGUgRXRoZXJDQVQuCgrCoMKgwqDCoMKgwqAgV2hhdGV2ZXIgd2UgdHVybiBvbi9vZmYg
-dGhlIEwyIENhY2hlIG9yIGNoYW5nZSB0aGUgc2l6ZSBvZiByZWdpc3RyeSBzbG90cyBhbmQgc2l6
-ZSBvZiBzeXN0ZW0gaGVhcCAvIHByaXZhdGUgaGVhcCAvIHNoYXJlZCBoZWFwLgoKwqDCoMKgwqDC
-oMKgIE91ciBiaWdnZXN0IHByb2JsZW1zIGFyZSB3aHkgV0lGSSBjb3VsZCBpbmZsdWVudCB0aGUg
-Sml0dGVycyBhbmQgdGhlIGJpZ2dlc3Qgaml0dGVyIGV2ZXJ5IDVTIGlzIGZvcmJpZGRlbiwgd2Ug
-bXVzdCBnZXQgcmlkIG9mIHRoZW0uCgrCoMKgwqDCoMKgwqAgQ291bGQgeW91IGhlbHAgdXMgdG8g
-YW5hbHlzaXMgdGhlc2UgcXVlc3Rpb25zLgoKwqDCoMKgwqDCoMKgIFNpbmNlcmVseSB3ZSBuZWVk
-IHlvdXIgaGVscC4KCiAKCsKgwqDCoMKgwqDCoCBUaGFuayB5b3UsCgrCoMKgwqDCoMKgwqAgQlIu
-LAoKwqDCoMKgwqDCoMKgIEl2YW4KCiAKCiAKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGlt
-YWdlMDAxLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMzE5MTQ3IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMjEwODIxLzAzYTE0NjNhL2F0dGFjaG1lbnQucG5nPgo=
+7690d070591ba5a evl: add net core (EXPERIMENTAL)
+e8b67c0ab043b41 net: dovetail: enable out-of-band networking (EXPERIMENTAL)
+20a63b0c32c4a43 dovetail: add out-of-band open mode (O_OOB)
+36974690dfc80c8 evl/time: set EVL_NONBLOCK value to KTIME_MAX
+0a5aca90bcffa17 evl/wait: export wait channel of threads to /sys, ftrace
+d5acdee04de2002 evl/factory: define access check for factories
+197c77e002e7d94 evl/wait: add memory shortage as a wait abort cause
+6a63613576154e5 evl/wait: accept reason for wake up in evl_wake_up()
+
+    branch: v5.13-evl-rebase
+repository: git@source.denx.de:Xenomai/xenomai4/linux-evl.git
+
