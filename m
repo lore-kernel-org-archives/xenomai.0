@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 2/6] cobalt/registry: Initialize refcnt of exported virtual
- proc files
-Date: Mon, 23 Aug 2021 17:00:27 +0200
-Message-Id: <20210823150031.78791-3-florian.bezdeka@siemens.com>
+Subject: [PATCH 3/6] cobalt/registry: Adding a new xnptree for exporting posix
+ entries
+Date: Mon, 23 Aug 2021 17:00:28 +0200
+Message-Id: <20210823150031.78791-4-florian.bezdeka@siemens.com>
 In-Reply-To: <20210823150031.78791-1-florian.bezdeka@siemens.com>
 References: <20210823150031.78791-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,27 +18,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The refcnt field was never initialized and triggered a BUG() in
-vfile_regular_release (vfile.c) when closing / releasing such a virtual
-file.
+Will be used later for exporting named semaphores as well as mqueues
+to /proc/xenomai/registry/posix/{mqueue,sem}
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/registry.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/cobalt/registry.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
-index fa1de66c3..211e0f76f 100644
+index 211e0f76f..3c67b64e6 100644
 --- a/kernel/cobalt/registry.c
 +++ b/kernel/cobalt/registry.c
-@@ -403,6 +403,7 @@ static int registry_export_vfreg(struct xnobject *object,
- 	object->vfile_u.vfreg.privsz = p->vfile.privsz;
- 	object->vfile_u.vfreg.ops = p->vfile.ops;
- 	object->vfile_u.vfreg.entry.lockops = p->vfile.lockops;
-+	object->vfile_u.vfreg.entry.refcnt = 0;
+@@ -73,6 +73,8 @@ static int proc_virq;
  
- 	ret = xnvfile_init_regular(object->key, &object->vfile_u.vfreg,
- 				   &pnode->vdir);
+ static struct xnvfile_directory registry_vfroot;
+ 
++DEFINE_XNPTREE(posix_ptree, "posix");
++
+ static int usage_vfile_show(struct xnvfile_regular_iterator *it, void *data)
+ {
+ 	xnvfile_printf(it, "%u/%u\n",
 -- 
 2.30.2
 
