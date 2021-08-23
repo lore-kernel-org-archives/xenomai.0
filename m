@@ -1,7 +1,10 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/6] Export posix mqueues and named semaphores to procfs 
-Date: Mon, 23 Aug 2021 17:00:25 +0200
-Message-Id: <20210823150031.78791-1-florian.bezdeka@siemens.com>
+Subject: [PATCH 1/6] cobalt/registry: Share xnregistry_vfreg_ops with other
+ compile units
+Date: Mon, 23 Aug 2021 17:00:26 +0200
+Message-Id: <20210823150031.78791-2-florian.bezdeka@siemens.com>
+In-Reply-To: <20210823150031.78791-1-florian.bezdeka@siemens.com>
+References: <20210823150031.78791-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,47 +18,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+Allows re-using xnregistry_vfreg_ops. All other file options were
+already available.
 
-with this series I'm trying to care about all the feedback I got for
-RFCs I sent out some days ago. Exporting mqueues and named semaphores to
-the procfs helps to debug and identify resource leaks.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ include/cobalt/kernel/registry.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-mqueues will be exported to 
-	/proc/xenomai/registry/posix/mqueue/<name>
-
-named semaphores will be exported to 
-	/proc/xenomai/registry/posix/sem/<name>
-
-While adding the tests I noticed that the exit code of the subprocess
-started in the smokey leak test was not correctly reported to the parent
-process. That is now fixed as well. (See last patch for details)
-
-All patches compile time tested for all targets by the gitlab
-hackerspace CI pipeline. In addition manually tested on ARM64. My
-internal CI is currently out of order, so tests on real hardware were
-skipped this time.
-
-Best regards,
-Florian
-
+diff --git a/include/cobalt/kernel/registry.h b/include/cobalt/kernel/registry.h
+index 624db5a78..a459da503 100644
+--- a/include/cobalt/kernel/registry.h
++++ b/include/cobalt/kernel/registry.h
+@@ -195,6 +195,8 @@ extern struct xnpnode_ops xnregistry_vfsnap_ops;
  
-Florian Bezdeka (6):
-  cobalt/registry: Share xnregistry_vfreg_ops with other compile units
-  cobalt/registry: Initialize refcnt of exported virtual proc files
-  cobalt/registry: Adding a new xnptree for exporting posix entries
-  cobalt/posix/mqueue: Export created mqueues to procfs
-  cobalt/posix/semaphore: Export named semaphores to procfs
-  testsuite/smokey/leaks: Add export checks for mqueues and named
-    semaphores
-
- include/cobalt/kernel/registry.h |  2 +
- kernel/cobalt/posix/mqueue.c     | 38 +++++++++++++++++-
- kernel/cobalt/posix/sem.c        | 37 ++++++++++++++++-
- kernel/cobalt/registry.c         |  3 ++
- testsuite/smokey/leaks/leaks.c   | 68 +++++++++++++++++++++-----------
- 5 files changed, 123 insertions(+), 25 deletions(-)
-
+ extern struct xnpnode_ops xnregistry_vlink_ops;
+ 
++extern struct xnpnode_ops xnregistry_vfreg_ops;
++
+ /** @} */
+ 
+ #endif /* !_COBALT_KERNEL_REGISTRY_H */
 -- 
 2.30.2
 
