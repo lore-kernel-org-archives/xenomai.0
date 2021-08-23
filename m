@@ -1,12 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 6/6] testsuite/smokey/leaks: Add export checks for mqueues and
- named semaphores
-Date: Mon, 23 Aug 2021 17:00:31 +0200
-Message-Id: <20210823150031.78791-7-florian.bezdeka@siemens.com>
-In-Reply-To: <20210823150031.78791-1-florian.bezdeka@siemens.com>
-References: <20210823150031.78791-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v2 0/3] y2038: Adding event_wait64()
+Date: Mon, 23 Aug 2021 15:43:35 +0000
+Message-ID: <0628d249b88396e47ff1bf83427d889b26f48860.camel@siemens.com>
+References: <20210811133651.42582-1-florian.bezdeka@siemens.com>
+ <a7d9a5dd-a301-c1c2-55f2-249f210f988c@189.cn>
+In-Reply-To: <a7d9a5dd-a301-c1c2-55f2-249f210f988c@189.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <140172689F99BC4AA4D034ECFC22DE99@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,162 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "chensong_2000@189.cn" <chensong_2000@189.cn>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Make sure mqueues and named semaphores are exported to the procfs if
-the kernel has procfs support activated.
-
-While at it: The exit code of the child process was never correctly
-reported to the parent process. Hence, the status code check was wrong
-at all. The variable previously named subprocess_status was not shared
-between both processes.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- testsuite/smokey/leaks/leaks.c | 68 ++++++++++++++++++++++------------
- 1 file changed, 45 insertions(+), 23 deletions(-)
-
-diff --git a/testsuite/smokey/leaks/leaks.c b/testsuite/smokey/leaks/leaks.c
-index d5577d85e..433dfcc17 100644
---- a/testsuite/smokey/leaks/leaks.c
-+++ b/testsuite/smokey/leaks/leaks.c
-@@ -28,6 +28,7 @@
- #include <pthread.h>
- #include <fcntl.h>
- #include <sys/mman.h>
-+#include <sys/stat.h>
- #include <semaphore.h>
- #include <mqueue.h>
- #include <signal.h>
-@@ -71,6 +72,24 @@ const char *memdev[] = {
- 
- static int memdevfd[3];
- 
-+static int procfs_exists(const char *type, const char *name)
-+{
-+	struct stat s;
-+	char path[128];
-+	int ret;
-+
-+	/* Ignore if the kernel seems to be compiled without procfs support */
-+	if (stat("/proc/xenomai", &s) || !S_ISDIR(s.st_mode))
-+		return 0;
-+
-+	ret = snprintf(path, 128, "%s/%s/%s", "/proc/xenomai/registry/posix",
-+		       type, &name[1]);
-+	if (ret < 0)
-+		return -EINVAL;
-+
-+	return smokey_check_errno(stat(path, &s));
-+}
-+
- static unsigned long long get_used(void)
- {
- 	struct cobalt_memdev_stat statbuf;
-@@ -91,9 +110,7 @@ static void *empty(void *cookie)
- 	return cookie;
- }
- 
--static int subprocess_status;
--
--static inline void subprocess_leak(void)
-+static inline int subprocess_leak(void)
- {
- 	struct sigevent sevt;
- 	pthread_mutex_t mutex;
-@@ -105,36 +122,44 @@ static inline void subprocess_leak(void)
- 
- 	ret = smokey_check_status(pthread_create(&thread, NULL, empty, NULL));
- 	if (ret)
--		goto fail;
-+		return ret;
- 	
- 	ret = smokey_check_status(pthread_mutex_init(&mutex, NULL));
- 	if (ret)
--		goto fail;
-+		return ret;
- 	
- 	ret = smokey_check_status(pthread_cond_init(&cond, NULL));
- 	if (ret)
--		goto fail;
-+		return ret;
- 
- 	ret = smokey_check_errno(sem_init(&sem, 0, 0));
- 	if (ret)
--		goto fail;
-+		return ret;
- 
- 	ret = smokey_check_errno(-!(sem_open(SEM_NAME, O_CREAT, 0644, 1)));
- 	if (ret)
--		goto fail;
-+		return ret;
-+
-+	ret = procfs_exists("sem", SEM_NAME);
-+	if (ret)
-+		return ret;
- 
- 	sevt.sigev_notify = SIGEV_THREAD_ID;
- 	sevt.sigev_signo = SIGALRM;
- 	sevt.sigev_notify_thread_id = syscall(__NR_gettid);
- 	ret = smokey_check_errno(timer_create(CLOCK_MONOTONIC, &sevt, &tm));
- 	if (ret)
--		goto fail;
--	
-+		return ret;
-+
- 	ret = smokey_check_errno(mq_open(MQ_NAME, O_RDWR | O_CREAT, 0644, NULL));
--	if (ret >= 0)
--		return;
--fail:
--	subprocess_status = ret;
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = procfs_exists("mqueue", MQ_NAME);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
- }
- 
- static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
-@@ -143,7 +168,7 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
- 	struct sigevent sevt;
- 	pthread_mutex_t mutex;
- 	pthread_cond_t cond;
--	int fd, failed = 0, i, ret;
-+	int fd, failed = 0, i, ret, child_ret;
- 	pthread_t thread;
- 	sem_t sem, *psem;
- 	timer_t tm;
-@@ -235,11 +260,9 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
- 	child = smokey_check_errno(fork());
- 	if (child < 0)
- 		return child;
--	if (!child) {
--		subprocess_leak();
--		exit(EXIT_SUCCESS);
--	}
--	while (waitpid(child, NULL, 0) == -1 && errno == EINTR);
-+	if (!child)
-+		exit(subprocess_leak());
-+	while (waitpid(child, &child_ret, 0) == -1 && errno == EINTR);
- 	sleep(1);
- 
- 	ret = smokey_check_errno(sem_unlink(SEM_NAME));
-@@ -248,9 +271,8 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
- 	ret = smokey_check_errno(mq_unlink(MQ_NAME));
- 	if (ret)
- 		return ret;
--	if (subprocess_status)
--		return subprocess_status;
--		
-+	if (WIFEXITED(child_ret) && WEXITSTATUS(child_ret))
-+		return -WEXITSTATUS(child_ret);
- 	check_used("fork", before, failed);
- #endif
- 
--- 
-2.30.2
-
+T24gVGh1LCAyMDIxLTA4LTEyIGF0IDE1OjAyICswODAwLCBjaGVuc29uZ18yMDAwQDE4OS5jbiB3
+cm90ZToNCj4gDQo+IOWcqCAyMDIxLzgvMTEg5LiL5Y2IOTozNiwgRmxvcmlhbiBCZXpkZWthIOWG
+memBkzoNCj4gPiBIaSENCj4gPiANCj4gPiBKdXN0IGFub3RoZXIgeTIwMzggcmVsYXRlZCBzeXNj
+YWxsLCBvbmNlIGFnYWluIGJhc2VkIG9uIHYxIHNlbnQgb3V0IGJ5DQo+ID4gU29uZyBhbmQgcmVi
+YXNlZCB0byBjdXJyZW50IG5leHQgd2l0aCBzb21lIGNvZGUtIGFuZCB0ZXN0LWNsZWFudXBzIGFw
+cGxpZWQuDQo+ID4gDQo+ID4gQFNvbmc6DQo+ID4gVGhpcyBvbmUgd2FzIHRoZSBsYXN0IG9uZSBp
+biBteSBpbmJveC4gUGxlYXNlIG1ha2Ugc3VyZSB0aGF0IGFsbA0KPiA+IGZvbGxvd2luZyBwYXRj
+aGVzIGFyZSBiYXNlZCBvbiBuZXh0LiBJSVJDIHRoZXJlIGFyZSAzIG9yIDQgc3lzY2FsbHMNCj4g
+PiByZW1haW5pbmcuIFdlIHNob3VsZCB0YWtlIGNhcmUgb2YgWzFdIGFzIHdlbGwuIFdlIG5lZWQg
+c29tZXRoaW5nIGluIHRoZSBDSQ0KPiA+IHRoYXQgdGVzdHMgdGhlIGZ1bGwgaW1wbGVtZW50YXRp
+b24sIGkuZS4gaW5jbHVkaW5nIHRoZSBnbGliYyB3cmFwcGVycyAocHJvcGVyDQo+ID4gc3lzY2Fs
+bCBkZWxlZ2F0aW9uKS4gUmVjZW50IGdsaWJjIHNob3VsZCBhbGxvdyB1cyB0byB1c2UgNjRiaXQg
+dGltZV90Lg0KPiANCj4gaGkgRmxvcmlhbiwNCj4gDQo+IFRoZXJlIGFyZSBsZWZ0IGluIGltcGxl
+bWVudGF0aW9uOg0KPiANCj4gMSwgY29iYWx0X3RocmVhZF9zZXRzY2hlZHBhcmFtX2V4DQo+IDIs
+IGNvYmFsdF90aHJlYWRfZ2V0c2NoZWRwYXJhbV9leA0KPiANCj4gdGhvc2UgMiBhcmUgYSBsaXR0
+bGUgYml0IHRyaWNreSwgaSdtIHdvcmtpbmcgb24gaXQuDQo+IA0KPiAzLCByZWN2bW1zZyAod2Fp
+dGluZyB0byBzdWJtaXQpIGJ1dCB3aWxsIGRvdWJsZSBjaGVjayB0byBrZWVwIGFsaWduZWQgDQo+
+IHdpdGggeW91ciBtb2RpZmljYXRpb24uDQo+IA0KPiA0LCBjb25kX3dhaXRfcHJvbG9ndWUgKGhh
+dmVuJ3Qgc3RhcnRlZCB5ZXQpDQo+IA0KPiBJIHdpbGwgc3VibWl0IHBhdGNoZXMgYWJvdXQgdGhl
+bSBhbmQgcGxlYXNlIGZlZWwgZnJlZSB0byByZWplY3QgaWYgeW91IA0KPiB0aGluayBzb21ldGhp
+bmcgd3JvbmcuDQoNClRoZXJlIGlzIG9uZSBtb3JlIG1pc3Npbmc6DQoNCjUsIHNlbGVjdA0KDQpJ
+IHdpbGwgdXBkYXRlIHRoZSB3aWtpIHBhZ2Ugc29vbiBbMl0uIFNlbGVjdCB3YXMgYWxyZWFkeSBs
+aXN0ZWQsIGJ1dA0Kbm90IHlldCBpbXBsZW1lbnRlZC4gVGFraW5nIHNlbGVjdCBhbHJlYWR5IGlu
+dG8gYWNjb3VudCB3ZSBub3cgaGF2ZQ0KMTIvMTcgc3lzY2FsbHMgaW1wbGVtZW50ZWQsIHRoYXQg
+aXMgYXJvdW5kIDcwJS4NCg0KQmVzdCByZWdhcmRzLA0KRmxvcmlhbg0KDQpbMl0gaHR0cHM6Ly9n
+aXRsYWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS93aWtpcy95MjAzOC9ZMjAz
+OF9BZmZlY3RlZF9TeXNjYWxscw0KDQo+IA0KPiBCUg0KPiANCj4gU29uZw0KPiANCj4gPiANCj4g
+PiBbMV06IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
+bD1odHRwcyUzQSUyRiUyRmdpdGxhYi5jb20lMkZYZW5vbWFpJTJGeGVub21haS1oYWNrZXItc3Bh
+Y2UlMkYtJTJGaXNzdWVzJTJGMjEmYW1wO2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0
+MHNpZW1lbnMuY29tJTdDNzBjNzE5YTk1ZjIzNGFkOGY0NzQwOGQ5NWQ1ZjQ0NDUlN0MzOGFlM2Jj
+ZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1ZDU1YSU3QzElN0MwJTdDNjM3NjQzNDg2MDI4MTkyMTIwJTdD
+VW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJ
+aUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzEwMDAmYW1wO3NkYXRhPWZPSjByaDM4
+VUJ6TTFOQk4xRkxCanVkaWtLUjdPUWxXdjBqcExMMnZ0dVUlM0QmYW1wO3Jlc2VydmVkPTANCj4g
+PiANCj4gPiBCZXN0IHJlZ2FyZHMsDQo+ID4gRmxvcmlhbg0KPiA+IA0KPiA+IEZsb3JpYW4gQmV6
+ZGVrYSAoMSk6DQo+ID4gICAgeTIwMzg6IHRlc3RzdWl0ZS9zbW9rZXkveTIwMzg6IEFkZGluZyB0
+ZXN0cyBmb3IgZXZlbnRfd2FpdDY0DQo+ID4gDQo+ID4gU29uZyBDaGVuICgyKToNCj4gPiAgICB5
+MjAzODogY29iYWx0L3Bvc2l4L2V2ZW50OiBBZGRpbmcgZXZlbnRfd2FpdDY0DQo+ID4gICAgeTIw
+Mzg6IGxpYi9jb2JhbHQvaW50ZXJuYWw6IGRpc3BhdGNoIGV2ZW50X3dhaXQNCj4gPiANCj4gPiAg
+IGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgICAgICAgIHwgIDEgKw0KPiA+ICAga2Vy
+bmVsL2NvYmFsdC9wb3NpeC9ldmVudC5jICAgICAgICAgICAgfCAzNCArKysrKysrKysrLQ0KPiA+
+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9ldmVudC5oICAgICAgICAgICAgfCAxMiArKysrDQo+ID4g
+ICBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jICAgICAgICB8ICA5ICsrKw0KPiA+ICAg
+a2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCAgICAgICAgfCAgNyArKysNCj4gPiAgIGtl
+cm5lbC9jb2JhbHQvdHJhY2UvY29iYWx0LXBvc2l4LmggICAgIHwgIDMgKy0NCj4gPiAgIGxpYi9j
+b2JhbHQvaW50ZXJuYWwuYyAgICAgICAgICAgICAgICAgIHwgIDUgKysNCj4gPiAgIHRlc3RzdWl0
+ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgNzggKysrKysrKysrKysrKysrKysrKysr
+KystLS0NCj4gPiAgIDggZmlsZXMgY2hhbmdlZCwgMTM2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0
+aW9ucygtKQ0KPiA+IA0KDQo=
 
