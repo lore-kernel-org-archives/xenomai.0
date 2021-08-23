@@ -1,14 +1,19 @@
-Date: Mon, 23 Aug 2021 15:56:23 +0800
-Subject: Re: Big jitter issues every 5 seconds
-From: Ivan Jiang <jcgeforce@aliyun.com>
-Message-ID: <EE5664AB-92AF-4393-8959-557BA933D671@aliyun.com>
-References: <FE2C94EF-3136-482C-9A4A-CF252AD452F0@aliyun.com>
- <8cf26766-7cc1-4bf5-d92f-75f9a247da78@numalliance.com>
-In-Reply-To: <8cf26766-7cc1-4bf5-d92f-75f9a247da78@numalliance.com>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="UTF-8"
-Content-transfer-encoding: quoted-printable
+From: Scott Reed <scott.reed@arcor.de>
+Subject: Re: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
+References: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
+ <38113fb102834811a76f4dfb99d94ac2@debo1svwi003091.corp.mooginc.com>
+ <CAPRPZsBneN19U93PVT=WqWyUqwS9MJd+Yk4KBQJpi5Lh4hMBvw@mail.gmail.com>
+ <0f0cb9dc-5ff4-58ce-ddae-b0c2f6b7abf5@siemens.com>
+ <ce5d6a24e1cd46f8a8ba1e14baf599b7@debo1svwi003091.corp.mooginc.com>
+ <f38fea62-2c2a-0674-ef97-ef6af3df82a3@siemens.com>
+ <98779fb158c14f0d968be1f9441aad45@debo1svwi003091.corp.mooginc.com>
+Message-ID: <c393084a-8236-3229-3cfc-f84ad2e8f6ee@arcor.de>
+Date: Mon, 23 Aug 2021 10:59:59 +0200
+MIME-Version: 1.0
+In-Reply-To: <98779fb158c14f0d968be1f9441aad45@debo1svwi003091.corp.mooginc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,95 +22,274 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?U3TDqXBoYW5l?= Ancelot <sancelot@numalliance.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi, S.Ancelot:
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> On 18.08.21 12:15, Reed, Scott via Xenomai wrote:
+>>> -----Original Message-----
+>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> On 17.08.21 22:01, Jeroen Van den Keybus via Xenomai wrote:
+>>>> FWIW, in the past I have worked with e1000 NICs in RTnet that
+>>>> registered their MSI interrupt with the kernel.
+>>>>
+>>>> I do not recall that I had to do anything out of the ordinary.
+>>>>
+>>>
+>>> The main difference was likely that you were on x86 while Scott is dealing
+>>> with an i.MX6-based SoC.
+>>>
+>>> I'm not familiar with the details of MSI routing on that target. If I quickly
+>>> understand arch/arm/boot/dts/imx6qdl.dtsi correctly, all MSIs will be folded
+>>> by the PCI host controller into a single SPI (120), the only interrupt source
+>>> that old SoC understands. In that case, you need to make sure that this SPI is
+>>> handled by I-pipe and, indeed, it treated as muxing IRQ. But I have no idea
+>>> how the demuxing will happen in details. You likely need to study and then
+>>> patch the PCI host controller driver.
+>>>
+>>> Jan
+>>
+>> That is correct that I am working with an iMX6-based SoC.
+>>
+>> For anyone who might face similar issues, for information here is my patch to
+>> the Linux 4.14.62 PCI host controller (Xenomai 3.0.7 patch already applied).
+>>
+> 
+> Patch got mangled, as you can see below. Seems your client or server
+> decided to have tabs for lunch today.
+> 
+Sorry about that! I have incorporated your suggestions from below
+and re-posted the patch hopefully this time not mangled.
+>> Regards,
+>>
+>> Scott
+>>
+>> Subject: [PATCH] Modify PCI MSI interrupts for Xenomai RTDM
+>>
+>> Since we have Xenomai RTDM drivers which are "tied" to PCI MSI
+>> interrupts (e.g. Altera TSE driver), we need to also make the PCI MSI
+>> interrupt an RTDM interrupt to avoid latency when the PCI MSI interrupt
+>> is serviced.
+>>
+>> Since we have Xenomai RTDM drivers which are "tied" to PCI MSI
+>> interrupts (e.g. Altera TSE driver), we need to first pass the MSI
+>> interrupt to the i-ipipe handler. If there is not an RTDM driver for
+>> the interrupt, then the i-pipe handler calls generic_handle_irq.
+>> ---
+>>   drivers/pci/dwc/pci-imx6.c             | 17 ++++++++++-------
+>>   drivers/pci/dwc/pcie-designware-host.c |  2 +-
+>>   2 files changed, 11 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/pci/dwc/pci-imx6.c b/drivers/pci/dwc/pci-imx6.c
+>> index b7348353..65eb9ba5 100644
+>> --- a/drivers/pci/dwc/pci-imx6.c
+>> +++ b/drivers/pci/dwc/pci-imx6.c
+>> @@ -33,6 +33,10 @@
+>>
+>>   #include "pcie-designware.h"
+>>
+>> +#include <xenomai/rtdm/driver.h>
+>> +
+>> +static rtdm_irq_t pcie_msi_irq_handle;
+>> +
+>>   #define to_imx6_pcie(x)dev_get_drvdata((x)->dev)
+>>
+>>   enum imx6_pcie_variants {
+>> @@ -545,13 +549,14 @@ static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
+>>   return -EINVAL;
+>>   }
+>>
+>> -static irqreturn_t imx6_pcie_msi_handler(int irq, void *arg)
+>> +static int imx6_pcie_msi_handler_rtdm(rtdm_irq_t *irq_handle)
+>>   {
+>> -struct imx6_pcie *imx6_pcie = arg;
+>> +struct imx6_pcie *imx6_pcie = rtdm_irq_get_arg(irq_handle, struct imx6_pcie);
+>>   struct dw_pcie *pci = imx6_pcie->pci;
+>>   struct pcie_port *pp = &pci->pp;
+>>
+>> -return dw_handle_msi_irq(pp);
+>> +dw_handle_msi_irq(pp);
+>> +return RTDM_IRQ_HANDLED;
+> 
+> Nasty - if dw_handle_msi_irq decides to return UNHANDLED...
+> 
+Yes, I was lazy since I (incorrectly) assumed dw_handle_msi_irq always
+returns HANDLED and therefore did not process the return value.
+Is handled in new patch posted below.
+>>   }
+>>
+>>   static int imx6_pcie_establish_link(struct imx6_pcie *imx6_pcie)
+>> @@ -678,10 +683,8 @@ static int imx6_add_pcie_port(struct imx6_pcie *imx6_pcie,
+>>   return -ENODEV;
+>>   }
+>>
+>> -ret = devm_request_irq(dev, pp->msi_irq,
+>> -       imx6_pcie_msi_handler,
+>> -       IRQF_SHARED | IRQF_NO_THREAD,
+>> -       "mx6-pcie-msi", imx6_pcie);
+>> +ret = rtdm_irq_request(&pcie_msi_irq_handle, pp->msi_irq, imx6_pcie_msi_handler_rtdm,
+>> +RTDM_IRQTYPE_SHARED, "mx6-pcie-msi", imx6_pcie);
+>>   if (ret) {
+>>   dev_err(dev, "failed to request MSI irq\n");
+>>   return ret;
+>> diff --git a/drivers/pci/dwc/pcie-designware-host.c b/drivers/pci/dwc/pcie-designware-host.c
+>> index a5b8dd07..d0af2cfa 100644
+>> --- a/drivers/pci/dwc/pcie-designware-host.c
+>> +++ b/drivers/pci/dwc/pcie-designware-host.c
+>> @@ -72,7 +72,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
+>>   while ((pos = find_next_bit((unsigned long *) &val, 32,
+>>       pos)) != 32) {
+>>   irq = irq_find_mapping(pp->irq_domain, i * 32 + pos);
+>> -generic_handle_irq(irq);
+>> +ipipe_handle_demuxed_irq(irq);
+>>   dw_pcie_wr_own_conf(pp, PCIE_MSI_INTR0_STATUS + i * 12,
+>>       4, 1 << pos);
+>>   pos++;
+> 
+> This function and likely more will no run in primary domain. But, if you
+> are unlucky, it may still used Linux locking or other incompatible
+> calls. Did you check, e.g by enabling I-pipe debugging or by careful
+> code inspection, if there is no such call remaining? It's a classic if
+> that is a trigger for lockups etc.
+I assume your comment above is "will no run"->"will now run".
+Thanks for the feedback!
 
-	That's true 55us or even more jitter will not influent with EtherCAT Maste=
-r especially with DC, and we've already done with the robot control or motio=
-n control.
-	But for some enhanced implementations the control period must set to 125uS=
- or 250uS, and this big jitter must be a big problem.
-	Therefore, we are starting to use ftrace to analysis if any unrealized app=
-s in kernel.
-	Will you be pleased to give me more suggestion?
-	Thank you.
+Yes, I did run with I-pipe debugging and other debugging options enabled 
+and saw no issues. The configuration options I turned on are
+  IPIPE_DEBUG
+  IPIPE_DEBUG_CONTEXT
+  IPIPE_DEBUG_INTERNAL
+  XENO_OPT_DEBUG_COBALT
+  XENO_OPT_DEBUG_CONTEXT
 
-	BR.,
-	Ivan.
+Is this enough to be confident that there are no Linux locking or other
+incompatible calls or is a careful code inspection still necessary?
 
-=EF=BB=BF=E5=9C=A8 2021/8/23 15:25=EF=BC=8C=E2=80=9CXenomai =E4=BB=A3=E8=A1=A8 St=C3=A9phane Ancelot via Xenomai=E2=80=9D=
-<xenomai-bounces@xenomai.org =E4=BB=A3=E8=A1=A8 xenomai@xenomai.org> =E5=86=99=E5=85=A5:
+If careful code inspection is still necessary, can you give me some
+more guidance on what I should be looking for and how to generally
+mitigate problems if they exist?
 
-    Hi,
+In addition to the Ethernet Rx/Tx PCI MSI interrupts which are 
+distributed to an RTDM (RTnet) Ethernet driver, we have other PCI MSI 
+interrupts which are distributed to non-RTDM drivers. My understanding
+is that the non-RTDM based PCI MSI interrupts are handled by the
+root domain (i.e Linux kernel) and therefore do not need to be checked 
+for Linux locking or other incompatible calls. Is that correct?
 
-    I understand that you must check max jitters in your system.
+I did inspect the PCI driver code which dispatches the MSI interrupt
+and saw that dw_handle_msi_irq looks like it calls rcu_read_lock/
+rcu_read_unlock via the irq_find_mapping call. Is this problematic?
 
-    However, I have already designed ethercat master stacks.
+Thanks for your help, feedback, and guidance!
 
-    By design, having 55us or more jitter when sending the sync frame  is=20
-    not a problem for an Ethercat master system,  since the implementation=20
-    of this bus permits it.
+Regards,
 
-    Regards,
+Scott
 
-    S.Ancelot
+Updated Patch:
+Subject: [PATCH] Modify PCI MSI interrupts for Xenomai RTDM
 
-    Le 20/08/2021 =C3=A0 19:14, Ivan Jiang via Xenomai a =C3=A9crit :
-    > Dear xenomai Oners:
-    >
-    >  =20
-    >
-    >         My name is Ivan and our company use xenomai 3.10 patched on L=
-inux 4.19.94 worked on Daul core Cortex A7 800MHz CPU.
-    >
-    >         We used this solution to build an EtherCAT Master controller.
-    >
-    >         With the isolcpus=3D1 nohz=3Don nohz_full=3D1  rcu_nocbs=3D1 the user=
- space latency waveforms is like below:
-    >
-    >  =20
-    >
-    >         Normally jitter is from -10~10uS every 1mS period,
-    >
-    >         With a -30~30uS worst jitter every 200mS which made by our wi=
-fi AP enabled on our A7 Core board, this one could be disappeared if we turn=
-ed off the WIFI.
-    >
-    >         But the most unimaginable jitter is up to -55~55uS every 5S, =
-which could not find any reason,  that we closed all the peripherals on the =
-board except the EtherCAT.
-    >
-    >         Whatever we turn on/off the L2 Cache or change the size of re=
-gistry slots and size of system heap / private heap / shared heap.
-    >
-    >         Our biggest problems are why WIFI could influent the Jitters =
-and the biggest jitter every 5S is forbidden, we must get rid of them.
-    >
-    >         Could you help us to analysis these questions.
-    >
-    >         Sincerely we need your help.
-    >
-    >  =20
-    >
-    >         Thank you,
-    >
-    >         BR.,
-    >
-    >         Ivan
-    >
-    >  =20
-    >
-    >  =20
-    >
-    > -------------- next part --------------
-    > A non-text attachment was scrubbed...
-    > Name: image001.png
-    > Type: image/png
-    > Size: 319147 bytes
-    > Desc: not available
-    > URL: <http://xenomai.org/pipermail/xenomai/attachments/20210821/03a14=
-63a/attachment.png>
+Since we have Xenomai RTDM drivers which are "tied" to PCI MSI
+interrupts (e.g. Altera TSE driver), we need to also make the PCI MSI
+interrupt an RTDM interrupt to avoid latency when the PCI MSI interrupt
+is serviced.
 
+Since we have Xenomai RTDM drivers which are "tied" to PCI MSI
+interrupts (e.g. Altera TSE driver), we need to first pass the MSI
+interrupt to the i-ipipe handler. If there is not an RTDM driver for
+the interrupt, then the i-pipe handler calls generic_handle_irq.
+---
+ drivers/pci/dwc/pci-imx6.c             | 33 ++++++++++++++++++++------
+ drivers/pci/dwc/pcie-designware-host.c |  2 +-
+ 2 files changed, 27 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pci/dwc/pci-imx6.c b/drivers/pci/dwc/pci-imx6.c
+index b7348353..bd4f1d14 100644
+--- a/drivers/pci/dwc/pci-imx6.c
++++ b/drivers/pci/dwc/pci-imx6.c
+@@ -33,6 +33,10 @@
+ 
+ #include "pcie-designware.h"
+ 
++#include <xenomai/rtdm/driver.h>
++
++static rtdm_irq_t pcie_msi_irq_handle;
++
+ #define to_imx6_pcie(x)	dev_get_drvdata((x)->dev)
+ 
+ enum imx6_pcie_variants {
+@@ -545,13 +549,30 @@ static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
+ 	return -EINVAL;
+ }
+ 
+-static irqreturn_t imx6_pcie_msi_handler(int irq, void *arg)
++static int imx6_pcie_msi_handler_rtdm(rtdm_irq_t *irq_handle)
+ {
+-	struct imx6_pcie *imx6_pcie = arg;
++	struct imx6_pcie *imx6_pcie = rtdm_irq_get_arg(irq_handle, struct imx6_pcie);
+ 	struct dw_pcie *pci = imx6_pcie->pci;
+ 	struct pcie_port *pp = &pci->pp;
++	int ret = RTDM_IRQ_NONE;
++
++	switch (dw_handle_msi_irq(pp)) {
++	case IRQ_NONE:
++		ret = RTDM_IRQ_NONE;
++		break;
++	case IRQ_HANDLED:
++		ret = RTDM_IRQ_HANDLED;
++		break;
++	case IRQ_WAKE_THREAD:
++		// This return value should never occur, but to be safe map to RTDM_IRQ_NONE
++		ret = RTDM_IRQ_NONE;
++		break;
++	default:
++		ret = RTDM_IRQ_NONE;
++		break;
++	}
+ 
+-	return dw_handle_msi_irq(pp);
++	return ret;
+ }
+ 
+ static int imx6_pcie_establish_link(struct imx6_pcie *imx6_pcie)
+@@ -678,10 +699,8 @@ static int imx6_add_pcie_port(struct imx6_pcie *imx6_pcie,
+ 			return -ENODEV;
+ 		}
+ 
+-		ret = devm_request_irq(dev, pp->msi_irq,
+-				       imx6_pcie_msi_handler,
+-				       IRQF_SHARED | IRQF_NO_THREAD,
+-				       "mx6-pcie-msi", imx6_pcie);
++		ret = rtdm_irq_request(&pcie_msi_irq_handle, pp->msi_irq, imx6_pcie_msi_handler_rtdm,
++				RTDM_IRQTYPE_SHARED, "mx6-pcie-msi", imx6_pcie);
+ 		if (ret) {
+ 			dev_err(dev, "failed to request MSI irq\n");
+ 			return ret;
+diff --git a/drivers/pci/dwc/pcie-designware-host.c b/drivers/pci/dwc/pcie-designware-host.c
+index a5b8dd07..d0af2cfa 100644
+--- a/drivers/pci/dwc/pcie-designware-host.c
++++ b/drivers/pci/dwc/pcie-designware-host.c
+@@ -72,7 +72,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
+ 		while ((pos = find_next_bit((unsigned long *) &val, 32,
+ 					    pos)) != 32) {
+ 			irq = irq_find_mapping(pp->irq_domain, i * 32 + pos);
+-			generic_handle_irq(irq);
++			ipipe_handle_demuxed_irq(irq);
+ 			dw_pcie_wr_own_conf(pp, PCIE_MSI_INTR0_STATUS + i * 12,
+ 					    4, 1 << pos);
+ 			pos++;
+-- 
+2.25.1
+
+
+
+> 
+> Jan
+> 
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
 
 
