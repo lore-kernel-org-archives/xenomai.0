@@ -1,15 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2 0/3] y2038: Adding event_wait64()
-Date: Mon, 23 Aug 2021 15:43:35 +0000
-Message-ID: <0628d249b88396e47ff1bf83427d889b26f48860.camel@siemens.com>
-References: <20210811133651.42582-1-florian.bezdeka@siemens.com>
- <a7d9a5dd-a301-c1c2-55f2-249f210f988c@189.cn>
-In-Reply-To: <a7d9a5dd-a301-c1c2-55f2-249f210f988c@189.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <140172689F99BC4AA4D034ECFC22DE99@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH 3/6] cobalt/registry: Adding a new xnptree for exporting
+ posix entries
+References: <20210823150031.78791-1-florian.bezdeka@siemens.com>
+ <20210823150031.78791-4-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <748e9fd5-1e84-ac49-32aa-2a368f8a880e@siemens.com>
+Date: Tue, 24 Aug 2021 07:47:42 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210823150031.78791-4-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,57 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "chensong_2000@189.cn" <chensong_2000@189.cn>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-T24gVGh1LCAyMDIxLTA4LTEyIGF0IDE1OjAyICswODAwLCBjaGVuc29uZ18yMDAwQDE4OS5jbiB3
-cm90ZToNCj4gDQo+IOWcqCAyMDIxLzgvMTEg5LiL5Y2IOTozNiwgRmxvcmlhbiBCZXpkZWthIOWG
-memBkzoNCj4gPiBIaSENCj4gPiANCj4gPiBKdXN0IGFub3RoZXIgeTIwMzggcmVsYXRlZCBzeXNj
-YWxsLCBvbmNlIGFnYWluIGJhc2VkIG9uIHYxIHNlbnQgb3V0IGJ5DQo+ID4gU29uZyBhbmQgcmVi
-YXNlZCB0byBjdXJyZW50IG5leHQgd2l0aCBzb21lIGNvZGUtIGFuZCB0ZXN0LWNsZWFudXBzIGFw
-cGxpZWQuDQo+ID4gDQo+ID4gQFNvbmc6DQo+ID4gVGhpcyBvbmUgd2FzIHRoZSBsYXN0IG9uZSBp
-biBteSBpbmJveC4gUGxlYXNlIG1ha2Ugc3VyZSB0aGF0IGFsbA0KPiA+IGZvbGxvd2luZyBwYXRj
-aGVzIGFyZSBiYXNlZCBvbiBuZXh0LiBJSVJDIHRoZXJlIGFyZSAzIG9yIDQgc3lzY2FsbHMNCj4g
-PiByZW1haW5pbmcuIFdlIHNob3VsZCB0YWtlIGNhcmUgb2YgWzFdIGFzIHdlbGwuIFdlIG5lZWQg
-c29tZXRoaW5nIGluIHRoZSBDSQ0KPiA+IHRoYXQgdGVzdHMgdGhlIGZ1bGwgaW1wbGVtZW50YXRp
-b24sIGkuZS4gaW5jbHVkaW5nIHRoZSBnbGliYyB3cmFwcGVycyAocHJvcGVyDQo+ID4gc3lzY2Fs
-bCBkZWxlZ2F0aW9uKS4gUmVjZW50IGdsaWJjIHNob3VsZCBhbGxvdyB1cyB0byB1c2UgNjRiaXQg
-dGltZV90Lg0KPiANCj4gaGkgRmxvcmlhbiwNCj4gDQo+IFRoZXJlIGFyZSBsZWZ0IGluIGltcGxl
-bWVudGF0aW9uOg0KPiANCj4gMSwgY29iYWx0X3RocmVhZF9zZXRzY2hlZHBhcmFtX2V4DQo+IDIs
-IGNvYmFsdF90aHJlYWRfZ2V0c2NoZWRwYXJhbV9leA0KPiANCj4gdGhvc2UgMiBhcmUgYSBsaXR0
-bGUgYml0IHRyaWNreSwgaSdtIHdvcmtpbmcgb24gaXQuDQo+IA0KPiAzLCByZWN2bW1zZyAod2Fp
-dGluZyB0byBzdWJtaXQpIGJ1dCB3aWxsIGRvdWJsZSBjaGVjayB0byBrZWVwIGFsaWduZWQgDQo+
-IHdpdGggeW91ciBtb2RpZmljYXRpb24uDQo+IA0KPiA0LCBjb25kX3dhaXRfcHJvbG9ndWUgKGhh
-dmVuJ3Qgc3RhcnRlZCB5ZXQpDQo+IA0KPiBJIHdpbGwgc3VibWl0IHBhdGNoZXMgYWJvdXQgdGhl
-bSBhbmQgcGxlYXNlIGZlZWwgZnJlZSB0byByZWplY3QgaWYgeW91IA0KPiB0aGluayBzb21ldGhp
-bmcgd3JvbmcuDQoNClRoZXJlIGlzIG9uZSBtb3JlIG1pc3Npbmc6DQoNCjUsIHNlbGVjdA0KDQpJ
-IHdpbGwgdXBkYXRlIHRoZSB3aWtpIHBhZ2Ugc29vbiBbMl0uIFNlbGVjdCB3YXMgYWxyZWFkeSBs
-aXN0ZWQsIGJ1dA0Kbm90IHlldCBpbXBsZW1lbnRlZC4gVGFraW5nIHNlbGVjdCBhbHJlYWR5IGlu
-dG8gYWNjb3VudCB3ZSBub3cgaGF2ZQ0KMTIvMTcgc3lzY2FsbHMgaW1wbGVtZW50ZWQsIHRoYXQg
-aXMgYXJvdW5kIDcwJS4NCg0KQmVzdCByZWdhcmRzLA0KRmxvcmlhbg0KDQpbMl0gaHR0cHM6Ly9n
-aXRsYWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS93aWtpcy95MjAzOC9ZMjAz
-OF9BZmZlY3RlZF9TeXNjYWxscw0KDQo+IA0KPiBCUg0KPiANCj4gU29uZw0KPiANCj4gPiANCj4g
-PiBbMV06IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
-bD1odHRwcyUzQSUyRiUyRmdpdGxhYi5jb20lMkZYZW5vbWFpJTJGeGVub21haS1oYWNrZXItc3Bh
-Y2UlMkYtJTJGaXNzdWVzJTJGMjEmYW1wO2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0
-MHNpZW1lbnMuY29tJTdDNzBjNzE5YTk1ZjIzNGFkOGY0NzQwOGQ5NWQ1ZjQ0NDUlN0MzOGFlM2Jj
-ZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1ZDU1YSU3QzElN0MwJTdDNjM3NjQzNDg2MDI4MTkyMTIwJTdD
-VW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJ
-aUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzEwMDAmYW1wO3NkYXRhPWZPSjByaDM4
-VUJ6TTFOQk4xRkxCanVkaWtLUjdPUWxXdjBqcExMMnZ0dVUlM0QmYW1wO3Jlc2VydmVkPTANCj4g
-PiANCj4gPiBCZXN0IHJlZ2FyZHMsDQo+ID4gRmxvcmlhbg0KPiA+IA0KPiA+IEZsb3JpYW4gQmV6
-ZGVrYSAoMSk6DQo+ID4gICAgeTIwMzg6IHRlc3RzdWl0ZS9zbW9rZXkveTIwMzg6IEFkZGluZyB0
-ZXN0cyBmb3IgZXZlbnRfd2FpdDY0DQo+ID4gDQo+ID4gU29uZyBDaGVuICgyKToNCj4gPiAgICB5
-MjAzODogY29iYWx0L3Bvc2l4L2V2ZW50OiBBZGRpbmcgZXZlbnRfd2FpdDY0DQo+ID4gICAgeTIw
-Mzg6IGxpYi9jb2JhbHQvaW50ZXJuYWw6IGRpc3BhdGNoIGV2ZW50X3dhaXQNCj4gPiANCj4gPiAg
-IGluY2x1ZGUvY29iYWx0L3VhcGkvc3lzY2FsbC5oICAgICAgICAgIHwgIDEgKw0KPiA+ICAga2Vy
-bmVsL2NvYmFsdC9wb3NpeC9ldmVudC5jICAgICAgICAgICAgfCAzNCArKysrKysrKysrLQ0KPiA+
-ICAga2VybmVsL2NvYmFsdC9wb3NpeC9ldmVudC5oICAgICAgICAgICAgfCAxMiArKysrDQo+ID4g
-ICBrZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jICAgICAgICB8ICA5ICsrKw0KPiA+ICAg
-a2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCAgICAgICAgfCAgNyArKysNCj4gPiAgIGtl
-cm5lbC9jb2JhbHQvdHJhY2UvY29iYWx0LXBvc2l4LmggICAgIHwgIDMgKy0NCj4gPiAgIGxpYi9j
-b2JhbHQvaW50ZXJuYWwuYyAgICAgICAgICAgICAgICAgIHwgIDUgKysNCj4gPiAgIHRlc3RzdWl0
-ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgNzggKysrKysrKysrKysrKysrKysrKysr
-KystLS0NCj4gPiAgIDggZmlsZXMgY2hhbmdlZCwgMTM2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0
-aW9ucygtKQ0KPiA+IA0KDQo=
+On 23.08.21 17:00, Florian Bezdeka wrote:
+> Will be used later for exporting named semaphores as well as mqueues
+> to /proc/xenomai/registry/posix/{mqueue,sem}
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  kernel/cobalt/registry.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+> index 211e0f76f..3c67b64e6 100644
+> --- a/kernel/cobalt/registry.c
+> +++ b/kernel/cobalt/registry.c
+> @@ -73,6 +73,8 @@ static int proc_virq;
+>  
+>  static struct xnvfile_directory registry_vfroot;
+>  
+> +DEFINE_XNPTREE(posix_ptree, "posix");
+> +
+>  static int usage_vfile_show(struct xnvfile_regular_iterator *it, void *data)
+>  {
+>  	xnvfile_printf(it, "%u/%u\n",
+> 
+
+Better let kernel/cobalt/posix/process.c carry this.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
