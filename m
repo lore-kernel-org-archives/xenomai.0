@@ -1,15 +1,11 @@
-Subject: Re: [PATCH 6/6] testsuite/smokey/leaks: Add export checks for mqueues
- and named semaphores
-References: <20210823150031.78791-1-florian.bezdeka@siemens.com>
- <20210823150031.78791-7-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d8bfbb92-b5c3-eb45-c65e-1fbda7a84855@siemens.com>
-Date: Tue, 24 Aug 2021 07:48:34 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210823150031.78791-7-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date: Tue, 24 Aug 2021 20:48:06 +0800
+Subject: Can I use ftrace to analysis cobalt kernel
+From: Ivan Jiang <jcgeforce@aliyun.com>
+Message-ID: <2EEA4F9C-7739-425E-B57E-1BED69207E6B@aliyun.com>
+Mime-version: 1.0
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,170 +14,196 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 23.08.21 17:00, Florian Bezdeka wrote:
-> Make sure mqueues and named semaphores are exported to the procfs if
-> the kernel has procfs support activated.
-> 
-> While at it: The exit code of the child process was never correctly
-> reported to the parent process. Hence, the status code check was wrong
-> at all. The variable previously named subprocess_status was not shared
-> between both processes.
+Dear guys:
 
-The second part should better be separate.
+=20
 
-Jan
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Can I use ftrace to analysis the kernel with patch of ipipe.
 
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  testsuite/smokey/leaks/leaks.c | 68 ++++++++++++++++++++++------------
->  1 file changed, 45 insertions(+), 23 deletions(-)
-> 
-> diff --git a/testsuite/smokey/leaks/leaks.c b/testsuite/smokey/leaks/leaks.c
-> index d5577d85e..433dfcc17 100644
-> --- a/testsuite/smokey/leaks/leaks.c
-> +++ b/testsuite/smokey/leaks/leaks.c
-> @@ -28,6 +28,7 @@
->  #include <pthread.h>
->  #include <fcntl.h>
->  #include <sys/mman.h>
-> +#include <sys/stat.h>
->  #include <semaphore.h>
->  #include <mqueue.h>
->  #include <signal.h>
-> @@ -71,6 +72,24 @@ const char *memdev[] = {
->  
->  static int memdevfd[3];
->  
-> +static int procfs_exists(const char *type, const char *name)
-> +{
-> +	struct stat s;
-> +	char path[128];
-> +	int ret;
-> +
-> +	/* Ignore if the kernel seems to be compiled without procfs support */
-> +	if (stat("/proc/xenomai", &s) || !S_ISDIR(s.st_mode))
-> +		return 0;
-> +
-> +	ret = snprintf(path, 128, "%s/%s/%s", "/proc/xenomai/registry/posix",
-> +		       type, &name[1]);
-> +	if (ret < 0)
-> +		return -EINVAL;
-> +
-> +	return smokey_check_errno(stat(path, &s));
-> +}
-> +
->  static unsigned long long get_used(void)
->  {
->  	struct cobalt_memdev_stat statbuf;
-> @@ -91,9 +110,7 @@ static void *empty(void *cookie)
->  	return cookie;
->  }
->  
-> -static int subprocess_status;
-> -
-> -static inline void subprocess_leak(void)
-> +static inline int subprocess_leak(void)
->  {
->  	struct sigevent sevt;
->  	pthread_mutex_t mutex;
-> @@ -105,36 +122,44 @@ static inline void subprocess_leak(void)
->  
->  	ret = smokey_check_status(pthread_create(&thread, NULL, empty, NULL));
->  	if (ret)
-> -		goto fail;
-> +		return ret;
->  	
->  	ret = smokey_check_status(pthread_mutex_init(&mutex, NULL));
->  	if (ret)
-> -		goto fail;
-> +		return ret;
->  	
->  	ret = smokey_check_status(pthread_cond_init(&cond, NULL));
->  	if (ret)
-> -		goto fail;
-> +		return ret;
->  
->  	ret = smokey_check_errno(sem_init(&sem, 0, 0));
->  	if (ret)
-> -		goto fail;
-> +		return ret;
->  
->  	ret = smokey_check_errno(-!(sem_open(SEM_NAME, O_CREAT, 0644, 1)));
->  	if (ret)
-> -		goto fail;
-> +		return ret;
-> +
-> +	ret = procfs_exists("sem", SEM_NAME);
-> +	if (ret)
-> +		return ret;
->  
->  	sevt.sigev_notify = SIGEV_THREAD_ID;
->  	sevt.sigev_signo = SIGALRM;
->  	sevt.sigev_notify_thread_id = syscall(__NR_gettid);
->  	ret = smokey_check_errno(timer_create(CLOCK_MONOTONIC, &sevt, &tm));
->  	if (ret)
-> -		goto fail;
-> -	
-> +		return ret;
-> +
->  	ret = smokey_check_errno(mq_open(MQ_NAME, O_RDWR | O_CREAT, 0644, NULL));
-> -	if (ret >= 0)
-> -		return;
-> -fail:
-> -	subprocess_status = ret;
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = procfs_exists("mqueue", MQ_NAME);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
->  }
->  
->  static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
-> @@ -143,7 +168,7 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
->  	struct sigevent sevt;
->  	pthread_mutex_t mutex;
->  	pthread_cond_t cond;
-> -	int fd, failed = 0, i, ret;
-> +	int fd, failed = 0, i, ret, child_ret;
->  	pthread_t thread;
->  	sem_t sem, *psem;
->  	timer_t tm;
-> @@ -235,11 +260,9 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
->  	child = smokey_check_errno(fork());
->  	if (child < 0)
->  		return child;
-> -	if (!child) {
-> -		subprocess_leak();
-> -		exit(EXIT_SUCCESS);
-> -	}
-> -	while (waitpid(child, NULL, 0) == -1 && errno == EINTR);
-> +	if (!child)
-> +		exit(subprocess_leak());
-> +	while (waitpid(child, &child_ret, 0) == -1 && errno == EINTR);
->  	sleep(1);
->  
->  	ret = smokey_check_errno(sem_unlink(SEM_NAME));
-> @@ -248,9 +271,8 @@ static int run_leaks(struct smokey_test *t, int argc, char *const argv[])
->  	ret = smokey_check_errno(mq_unlink(MQ_NAME));
->  	if (ret)
->  		return ret;
-> -	if (subprocess_status)
-> -		return subprocess_status;
-> -		
-> +	if (WIFEXITED(child_ret) && WEXITSTATUS(child_ret))
-> +		return -WEXITSTATUS(child_ret);
->  	check_used("fork", before, failed);
->  #endif
->  
-> 
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 I find if use function_graph whe kernel will crash like below:
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 echo function_graph > current_tracer
+
+root@smarc-rzg2l:/sys/kernel/debug/tracing# [=C2=A0 377.392724] Kernel panic - =
+not syncing: kernel stack overflow
+
+[=C2=A0 377.399125] CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 4.19.140-cip33-=
+g6634f0243a91 #3
+
+[=C2=A0 377.407929] Hardware name: RZG2L Evaluation Board Kit (Discrete Power S=
+ystem Ver.) (Dual Cortex-A55) (DT)
+
+[=C2=A0 377.418424] necro domain: Linux
+
+[=C2=A0 377.422006] Call trace:
+
+[=C2=A0 377.424856]=C2=A0 dump_backtrace+0x0/0x168
+
+[=C2=A0 377.429003]=C2=A0 show_stack+0x24/0x30
+
+[=C2=A0 377.432790]=C2=A0 dump_stack+0xd0/0x110
+
+[=C2=A0 377.436660]=C2=A0 panic+0x138/0x2a8
+
+[=C2=A0 377.440157]=C2=A0 nmi_panic+0x7c/0x80
+
+[=C2=A0 377.443840]=C2=A0 handle_bad_stack+0x120/0x138
+
+[=C2=A0 377.448356]=C2=A0 __bad_stack+0x88/0x8c
+
+[=C2=A0 377.452224]=C2=A0 sched_clock+0x0/0x90
+
+[=C2=A0 377.455998]=C2=A0 function_graph_enter+0x74/0x138
+
+[=C2=A0 377.460797]=C2=A0 prepare_ftrace_return+0x28/0x50
+
+[=C2=A0 377.465593]=C2=A0 ftrace_graph_caller+0x1c/0x24
+
+[=C2=A0 377.470206]=C2=A0 ipipe_test_root+0x10/0x38
+
+[=C2=A0 377.474447]=C2=A0 preempt_schedule_notrace+0x28/0x150
+
+[=C2=A0 377.479624]=C2=A0 trace_clock_local+0x44/0x58
+
+[=C2=A0 377.484046]=C2=A0 function_graph_enter+0x74/0x138
+
+[=C2=A0 377.488839]=C2=A0 prepare_ftrace_return+0x28/0x50
+
+[=C2=A0 377.493637]=C2=A0 ftrace_graph_caller+0x1c/0x24
+
+[=C2=A0 379.179942]=C2=A0 ipipe_test_root+0x10/0x38
+
+[=C2=A0 379.184182]=C2=A0 preempt_schedule_notrace+0x28/0x150
+
+[=C2=A0 379.189343]=C2=A0 trace_clock_local+0x44/0x58
+
+[=C2=A0 379.193766]=C2=A0 function_graph_enter+0x74/0x138
+
+[=C2=A0 379.198563]=C2=A0 prepare_ftrace_return+0x28/0x50
+
+[=C2=A0 379.203358]=C2=A0 ftrace_graph_caller+0x1c/0x24
+
+[=C2=A0 379.207968]=C2=A0 ipipe_test_root+0x10/0x38
+
+[=C2=A0 379.212207]=C2=A0 preempt_schedule_notrace+0x28/0x150
+
+[=C2=A0 379.217378]=C2=A0 trace_clock_local+0x44/0x58
+
+[=C2=A0 379.221799]=C2=A0 function_graph_enter+0x74/0x138
+
+[=C2=A0 379.226593]=C2=A0 prepare_ftrace_return+0x28/0x50
+
+[=C2=A0 379.231391]=C2=A0 ftrace_graph_caller+0x1c/0x24
+
+[=C2=A0 379.236004]=C2=A0 ipipe_test_root+0x10/0x38
+
+[=C2=A0 379.240244]=C2=A0 preempt_schedule_notrace+0x28/0x150
+
+[=C2=A0 379.245415]=C2=A0 ftrace_ops_no_ops+0x1ac/0x1b0
+
+[=C2=A0 379.250025]=C2=A0 skip_ftrace_call+0x0/0x30
+
+[=C2=A0 379.254260]=C2=A0 ipipe_test_root+0x10/0x38
+
+[=C2=A0 379.258501]=C2=A0 preempt_schedule_notrace+0x28/0x150
+
+[=C2=A0 379.263670]=C2=A0 trace_clock_local+0x44/0x58
+
+[=C2=A0 379.268093]=C2=A0 ftrace_return_to_handler+0x78/0x128
+
+[=C2=A0 379.273261]=C2=A0 return_to_handler+0x1c/0x38
+
+[=C2=A0 379.277677]=C2=A0 __do_softirq+0x23c/0x3d0
+
+[=C2=A0 379.281822]=C2=A0 run_ksoftirqd+0x40/0x50
+
+[=C2=A0 379.285874]=C2=A0 kthread+0x130/0x138
+
+[=C2=A0 379.289551]=C2=A0 ret_from_fork+0x14/0x20
+
+[=C2=A0 379.293651] SMP: stopping secondary CPUs
+
+[=C2=A0 379.298123] Kernel Offset: disabled
+
+[=C2=A0 379.302072] CPU features: 0x4,22002238
+
+[=C2=A0 379.306299] Memory Limit: none
+
+[=C2=A0 379.310010] ---[ end Kernel panic - not syncing: kernel stack overflow =
+]---
+
+[=C2=A0 379.317786] Insufficient stack space to handle exception!
+
+[=C2=A0 379.317830] ESR: 0x96000047 -- DABT (current EL)
+
+[=C2=A0 379.328901] FAR: 0xffff00000805ffc0
+
+[=C2=A0 379.332867] Task stack:=C2=A0=C2=A0=C2=A0=C2=A0 [0xffff000008060000..0xffff000008064000=
+]
+
+[=C2=A0 379.339903] IRQ stack:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 [0xffff000008000000..0xffff00000800400=
+0]
+
+[=C2=A0 379.346945] Overflow stack: [0xffff80007ff95290..0xffff80007ff96290]
+
+[=C2=A0 379.353984] CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 4.19.140-cip33-=
+g6634f0243a91 #3
+
+[=C2=A0 379.362818] Hardware name: RZG2L Evaluation Board Kit (Discrete Power S=
+ystem Ver.) (Dual Cortex-A55) (DT)
+
+[=C2=A0 379.373333] necro domain: Linux
+
+[=C2=A0 379.376921] pstate: 00c00005 (nzcv daif +PAN +UAO)
+
+[=C2=A0 379.382282] pc : sched_clock+0x0/0x90
+
+[=C2=A0 379.386428] lr : trace_clock_local+0x20/0x58
+
+[=C2=A0 379.391227] sp : ffff000008060000
+
+[=C2=A0 379.394995] x29: ffff000008060000 x28: ffff0000095b60c0=20
+
+[=C2=A0 379.400978] x27: ffff00000959c000 x26: 0000000000000100=20
+
+[=C2=A0 379.406958] x25: 0000000000000040 x24: ffff0000095b6110=20
+
+[=C2=A0 379.412940] x23: ffff0000095b9b38 x22: ffff000008df9b70=20
+
+[=C2=A0 379.418923] x21: ffff0000081c03d4 x20: ffff0000095b9748=20
+
+[=C2=A0 379.424904] x19: ffff80007dbe6e00 x18: 0000000000000000=20
+
+[=C2=A0 379.430885] x17: 0000000000000000 x16: 0000000000000000=20
+
+[=C2=A0 379.436869] x15: 0000000000000000 x14: 0000000000000000=20
+
+[=C2=A0 379.442852] x13: 0000000000000000 x12: 0000000000000000=20
+
+[=C2=A0 379.448839] x11: 0000000000000000 x10: 0000000000000f90=20
+
+[=C2=A0 379.454822] x9 : ffff80007d806400 x8 : 0000000000000018=20
+
+[=C2=A0 379.460805] x7 : ffff8000776d0fa0 x6 : 0000000015d5de14=20
+
+[=C2=A0 379.466793] x5 : 00ffffffffffffff x4 : 0000000000000000=20
+
+[=C2=A0 379.472781] x3 : 0000000000000000 x2 : 0000000000000041=20
+
+[=C2=A0 379.478757] x1 : ffff0000081c03d4 x0 : 0000000000000001
+
+=20
+
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 I was wondering if there=E2=80=99s some option I should use differen=
+t from normal linux.
+
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Thank you.
+
+=20
+
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BR.,
+
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Ivan
 
