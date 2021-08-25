@@ -1,12 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: reminder: Xenomai community call on Wednesday, Aug 25, 2021, UTC 7:00
- AM
-Date: Wed, 25 Aug 2021 06:07:00 +0000
-Message-ID: <BN9PR11MB52278147FCAFB81C20E861DDF2C69@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Neeraj Agrawal <Neeraj.Agrawal@Renishaw.com>
+Subject: CPU core reservation and Latency setting via config
+Date: Wed, 25 Aug 2021 08:16:26 +0000
+Message-ID: <VI1PR0402MB355162B4233519B0D3D0D451FEC69@VI1PR0402MB3551.eurprd04.prod.outlook.com>
 Content-Language: en-US
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,70 +14,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,=20
+Hello,
+Seeking advice on two separate issues. One of them may be just the document=
+ation.
 
-We have the Xenomai community call today.
+Setup is:
+                Building via buildroot
+                [Xenomai] Cobalt v3.0.10 is running over qemu with 2 CPUs.
+                Linux version 4.14.111.
+                bootargs: isolcpus=3D1 processor.max_cstate=3D0 intel_idle.=
+max_cstate=3D0 nosoftlockup=3D0 rcu_nocbs=3D1 irqaffinity=3D0 tsc=3Dreliabl=
+e .....
 
-Topics may include but are not limited to upstream/downstream project=20
-plans, status updates, and technical discussions. It's an open online=20
-meeting that anyone can join and ask questions.
+Issue 1\ Latency setting:
+Referring to https://xenomai.org/documentation/xenomai-3/html/man1/autotune=
+/index.html
+-enabling CONFIG_XENO_OPT_AUTOTUNE does create entry as '/dev/rtdm/autotune=
+' in target.
+-setting XENO_OPT_TIMING_SCHEDLAT does NOT reflect in '/proc/xenomai/clock/=
+coreclk'
+-enabling BR2_PACKAGE_XENOMAI_ANALOGY does build autotune application, but =
+running it on target also does NOT reflect XENO_OPT_TIMING_SCHEDLAT setting=
+ in '/proc/xenomai/clock/coreclk'
 
-Time:
-Wednesday, Aug 25, 2021, UTC 7:00 AM
-Paris, France CEST 9:00 AM
-China CST 3:00 PM
+Is my expectation correct that statically defined gravity values should ref=
+lect in coreclk?
+-If so, how could it be achieved?
+-If not, then how to verify if the values are set/used correctly?
 
-Join Zoom Meeting=20
-https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
-Or
-https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
-36e48b68e
 
-Meeting ID: 912 9727 9269
-Passcode: 367528
-One tap mobile
-+12532158782,,91297279269# US (Tacoma)
-+13462487799,,91297279269# US (Houston)
+Issue 2\ CPU cores distribution:
+If bootargs have both ("isolcpus=3D1 maxcpus=3D1"), ie:
+                isolcpus=3D1 maxcpus=3D1 processor.max_cstate=3D0 intel_idl=
+e.max_cstate=3D0 nosoftlockup=3D0 rcu_nocbs=3D1 irqaffinity=3D0 tsc=3Drelia=
+ble .....
+Then i get a boot time crash. [Could not collect the log, but crash indicat=
+e somewhere in i-pipe]
+Idea behind this is to force Linux to use 1st CPU, there by leaving 2nd CPU=
+ dedicated for Xenomai. Either of the entry alone works (but not together).
+[Also tried xenomai.supported_cpus=3D0x02 without success].
 
-Dial by your location
-        +1 253 215 8782 US (Tacoma)
-        +1 346 248 7799 US (Houston)
-        +1 669 900 9128 US (San Jose)
-        +1 301 715 8592 US (Washington DC)
-        +1 312 626 6799 US (Chicago)
-        +1 646 558 8656 US (New York)
-Meeting ID: 912 9727 9269
-Find your local number: https://intel.zoom.us/u/aTEA37i5G
-
-Join by SIP
-91297279269@zoomcrc.com
-
-Join by H.323
-162.255.37.11 (US West)
-162.255.36.11 (US East)
-115.114.131.7 (India Mumbai)
-115.114.115.7 (India Hyderabad)
-213.19.144.110 (Amsterdam Netherlands)
-213.244.140.110 (Germany)
-103.122.166.55 (Australia Sydney)
-103.122.167.55 (Australia Melbourne)
-209.9.211.110 (Hong Kong SAR)
-149.137.40.110 (Singapore)
-64.211.144.160 (Brazil)
-149.137.68.253 (Mexico)
-69.174.57.160 (Canada Toronto)
-65.39.152.160 (Canada Vancouver)
-207.226.132.110 (Japan Tokyo)
-149.137.24.110 (Japan Osaka)
-Meeting ID: 912 9727 9269
-Passcode: 367528
+Any advice whether it is feasible to boot Xenomai with both these bootargs =
+on my setup?
+If so, where i could look into for bootup crash?
 
 
 Regards
+Neeraj
 
-Hongzhan Chen
+---------------------------------------------------------------------------=
+------------------------------------------------------------
+This email and any attachments are confidential and are for the use of the
+addressee only. If you are not the addressee, you must not use or disclose =
+the
+contents to any other person. Please immediately notify the sender and
+delete the email. Statements and opinions expressed here may not
+represent those of the company. Email correspondence is monitored by
+the company. This information may be subject to export control
+regulation. You are obliged to comply with such regulations.
+Our data privacy notice<http://www.renishaw.com/privacy> sets out how any p=
+ersonal data that we collect about you will be handled.
 
-
-
+Renishaw plc (company number 1106260), Renishaw UK Sales Limited (company n=
+umber 1418812),
+and Wotton Travel Limited (company number 01973158) are companies registere=
+d in England
+and Wales with a registered office at New Mills, Wotton-under-Edge, Glouces=
+tershire, GL12 8JR, United Kingdom.
+Renishaw Neuro Solutions Limited (company number 10375761) is a company reg=
+istered in England and Wales
+with a registered office at Charfield Road, Wotton-under-Edge, Gloucestersh=
+ire, GL12 8SP, United Kingdom.
+Telephone +44 1453 524524
+---------------------------------------------------------------------------=
+------------------------------------------------------------
