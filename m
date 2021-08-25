@@ -1,10 +1,12 @@
-From: "Reed, Scott" <sreed@moog.com>
-Subject: Question regarding RTnet Ethernet Driver with PCIe MSI interrupts
-Date: Thu, 5 Aug 2021 17:09:07 +0000
-Message-ID: <3ea6dbbecbdf44ceab12d6ffed5d0eba@debo1svwi003091.corp.mooginc.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH v2 5/7] cobalt/posix/semaphore: Export named semaphores to
+ procfs
+Date: Wed, 25 Aug 2021 12:32:28 +0200
+Message-Id: <20210825103230.27274-6-florian.bezdeka@siemens.com>
+In-Reply-To: <20210825103230.27274-1-florian.bezdeka@siemens.com>
+References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,48 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGVsbG8sDQoNCkFib3V0IGEgeWVhciBhZ28sIEkgcG9ydGVkIGFuIEV0aGVybmV0IGRyaXZlciB3
-ZSB1c2UgdG8gYmUgYW4gUlRuZXQNCmRyaXZlci4gSW4gZ2VuZXJhbCBldmVyeXRoaW5nIGlzIHdv
-cmtpbmcsIGJ1dCB3ZSBoYXZlIHJ1biBpbnRvIGENCnJlY2VudCBwcm9ibGVtIHdoaWNoIGxvb2tz
-IGxpa2UgaXQgbWlnaHQgYmUgYmVpbmcgY2F1c2VkIGJ5IGhpZ2gNCkV0aGVybmV0IHJlY2VpdmUg
-aW50ZXJydXB0IGxhdGVuY2llcy4NCg0KVGhlIEV0aGVybmV0IGludGVycnVwdHMgY29tZSBpbiBh
-cyBQQ0llIE1TSSBpbnRlcnJ1cHRzIGFuZCBJDQppbXBsZW1lbnRlZCB0aGUgcG90ZW50aWFsbHkg
-Y3JlYXRpdmUgYnV0IGJhZCBzb2x1dGlvbiBvZg0KbW9kaWZ5aW5nIHRoZSBQQ0llIGRyaXZlciB0
-byBkaXN0cmlidXRlIHRoZSBNU0kgaW50ZXJydXB0cw0KdG8gaS1pcGlwZSBiZSByZXBsYWNpbmcg
-dGhlIGNhbGwgdG8gImdlbmVyaWNfaGFuZGxlX2lycSIgd2l0aA0KYSBjYWxsIHRvICJpcGlwZV9o
-YW5kbGVfZGVtdXhlZF9pcnEiLg0KDQpJIGFtIHRoaW5raW5nIHRoYXQgdGhpcyB3YXMgbWF5YmUg
-bm90IHRoZSBiZXN0IGFwcHJvYWNoIGFuZCB0aGUNCmNvcnJlY3Qgc29sdXRpb24gd291bGQgYmUg
-dG8gbW9kaWZ5IHRoZSBQQ0llIGRyaXZlciBzbyB0aGF0IHRoZQ0Kb3JpZ2luYWwgTVNJIGludGVy
-cnVwdCBpcyBhbiBSVERNIGludGVycnVwdCBhcyBpZiBpdCBpcyBub3QNCnRoaXMgY291bGQgYmUg
-Y2F1c2luZyB0aGUgaGlnaCBpbnRlcnJ1cHQgbGF0ZW5jaWVzLg0KDQpJcyBteSB0aGlua2luZyBp
-biB0aGUgcmlnaHQgZGlyZWN0aW9uIG9yIGNvbXBsZXRlbHkgb2ZmPw0KDQpCYWNrZ3JvdW5kIGlu
-Zm9ybWF0aW9uDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KUHJvY2Vzc29yOiBp
-Lk1YIDYgUXVhZA0KTGludXggNC4xNC42Mg0KWGVub21haSAzLjAuNw0KDQpUaGFua3MgaW4gYWR2
-YW5jZSBmb3IgYW55IGFkdmljZS4NCg0KUmVnYXJkcywNCg0KU2NvdHQNCg0KDQoNCkhpbndlaXMg
-YXVmIFZlcnRyYXVsaWNoa2VpdDogRGllc2UgZWxla3Ryb25pc2NoIMO8YmVybWl0dGVsdGUgTmFj
-aHJpY2h0IGlzdCBudXIgZsO8ciBkaWUgbmF0w7xybGljaGUgb2RlciBqdXJpc3Rpc2NoZSBQZXJz
-b24gYmVzdGltbXQsIGRpZSBhbHMgRW1wZsOkbmdlciBnZW5hbm50IGlzdDsgc2llIGthbm4gdmVy
-dHJhdWxpY2hlIEluZm9ybWF0aW9uZW4gb2RlciBCZXRyaWVic2dlaGVpbW5pc3NlIGVudGhhbHRl
-biwgZGllIEVpZ2VudHVtIGRlcyBBYnNlbmRlcnMgc2luZC4gRsO8ciBkZW4gRmFsbCwgZGFzcyBT
-aWUgbmljaHQgZGVyIGdlbmFubnRlIEVtcGbDpG5nZXIgc2luZCwgaXN0IElobmVuIGplZGUgT2Zm
-ZW5sZWd1bmcsIFZlcndlbmR1bmcsIFZlcnZpZWxmw6RsdGlndW5nIG9kZXIgV2VpdGVybGVpdHVu
-ZyBkZXMgSW5oYWx0cyBkaWVzZXIgSW5mb3JtYXRpb25lbiBzdHJlbmcgdW50ZXJzYWd0LiBEYXNz
-ZWxiZSBnaWx0IGbDvHIgYWxsZSBIYW5kbHVuZ2VuLCBkaWUgc2ljaCBhdWYgZGVuIEluaGFsdCBk
-aWVzZXIgSW5mb3JtYXRpb25lbiBncsO8bmRlbi4gRmFsbHMgU2llIGRpZXNlIE5hY2hyaWNodCBp
-cnJ0w7xtbGljaGVyd2Vpc2UgZXJoYWx0ZW4gaGFiZW4sIGJpdHRlbiB3aXIgU2llLCBkZW4gQWJz
-ZW5kZXIgdW1nZWhlbmQgcGVyIEUtTWFpbCBkYXLDvGJlciBpbiBLZW5udG5pcyB6dSBzZXR6ZW4g
-dW5kIGRpZSB1cnNwcsO8bmdsaWNoZSBOYWNocmljaHQgenUgbMO2c2NoZW4uIFdpciBkYW5rZW4g
-SWhuZW4gZsO8ciBJaHJlIEtvb3BlcmF0aW9uLg0KDQpDb25maWRlbnRpYWxpdHkgTm90aWNlOiBU
-aGlzIGVsZWN0cm9uaWMgbWFpbCB0cmFuc21pc3Npb24gaXMgaW50ZW5kZWQgZm9yIHRoZSB1c2Ug
-b2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdoaWNoIGl0IGlzIGFkZHJlc3NlZCBhbmQg
-bWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBwcm9wcmlldGFyeSBpbmZvcm1hdGlvbiBi
-ZWxvbmdpbmcgdG8gdGhlIHNlbmRlci4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lw
-aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgZGlzY2xvc3VyZSwgdXNlLCBj
-b3B5aW5nLCBkaXN0cmlidXRpb24sIG9yIHRoZSB0YWtpbmcgb2YgYW55IGFjdGlvbiBpbiByZWxp
-YW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBpbmZvcm1hdGlvbiBpcyBzdHJpY3RseSBwcm9o
-aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIHRyYW5zbWlzc2lvbiBpbiBlcnJvciwg
-cGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5IGJ5IGUtbWFpbCBhbmQgZGVsZXRl
-IHRoZSBvcmlnaW5hbCBtZXNzYWdlLiBUaGFuayB5b3UgZm9yIHlvdXIgY29vcGVyYXRpb24uDQo=
+Exporting named semaphores to /proc/xenomai/registry/posix/sem helps
+to identify resource leaks by making registered semaphores visible. The
+content of all created virtual files is empty. Removal of such files is
+not possible and reports "operation not supported".
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ kernel/cobalt/posix/sem.c | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+index 72b20c78d..b6709e692 100644
+--- a/kernel/cobalt/posix/sem.c
++++ b/kernel/cobalt/posix/sem.c
+@@ -26,6 +26,38 @@
+ #include "sem.h"
+ #include <trace/events/cobalt-posix.h>
+ 
++#ifdef CONFIG_XENO_OPT_VFILE
++
++static int sem_vfile_show(struct xnvfile_regular_iterator *it, void *data)
++{
++	return 0;
++}
++
++static struct xnvfile_regular_ops sem_vfile_ops = {
++	.show = sem_vfile_show,
++};
++
++static struct xnpnode_regular __sem_pnode = {
++	.node = {
++		.dirname = "sem",
++		.root = &posix_ptree,
++		.ops = &xnregistry_vfreg_ops,
++	},
++	.vfile = {
++		.ops = &sem_vfile_ops,
++	},
++};
++
++#else /* !CONFIG_XENO_OPT_VFILE */
++
++static struct xnpnode_link __sem_pnode = {
++	.node = {
++		.dirname = "sem",
++	}
++};
++
++#endif /* !CONFIG_XENO_OPT_VFILE */
++
+ static inline struct cobalt_resources *sem_kqueue(struct cobalt_sem *sem)
+ {
+ 	int pshared = !!(sem->flags & SEM_PSHARED);
+@@ -134,7 +166,8 @@ __cobalt_sem_init(const char *name, struct cobalt_sem_shadow *sm,
+ 		goto err_lock_put;
+ 	}
+ 
+-	ret = xnregistry_enter(name ?: "", sem, &sem->resnode.handle, NULL);
++	ret = xnregistry_enter(name ?: "", sem, &sem->resnode.handle,
++			       name ? &__sem_pnode.node : NULL);
+ 	if (ret < 0)
+ 		goto err_lock_put;
+ 
+-- 
+2.30.2
+
 
