@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 2/7] cobalt/registry: Initialize refcnt of exported virtual
- proc files
-Date: Wed, 25 Aug 2021 12:32:25 +0200
-Message-Id: <20210825103230.27274-3-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 7/7] testsuite/smokey/leaks: Adding checks for procfs
+ exports
+Date: Wed, 25 Aug 2021 12:32:30 +0200
+Message-Id: <20210825103230.27274-8-florian.bezdeka@siemens.com>
 In-Reply-To: <20210825103230.27274-1-florian.bezdeka@siemens.com>
 References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,27 +18,73 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The refcnt field was never initialized and triggered a BUG() in
-vfile_regular_release (vfile.c) when closing / releasing such a virtual
-file.
+Make sure that named semaphores as well as mqueues are exported to the
+procfs.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/registry.c | 1 +
- 1 file changed, 1 insertion(+)
+ testsuite/smokey/leaks/leaks.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
-index fa1de66c3..211e0f76f 100644
---- a/kernel/cobalt/registry.c
-+++ b/kernel/cobalt/registry.c
-@@ -403,6 +403,7 @@ static int registry_export_vfreg(struct xnobject *object,
- 	object->vfile_u.vfreg.privsz = p->vfile.privsz;
- 	object->vfile_u.vfreg.ops = p->vfile.ops;
- 	object->vfile_u.vfreg.entry.lockops = p->vfile.lockops;
-+	object->vfile_u.vfreg.entry.refcnt = 0;
+diff --git a/testsuite/smokey/leaks/leaks.c b/testsuite/smokey/leaks/leaks.c
+index bbe5fc3ad..b867bc727 100644
+--- a/testsuite/smokey/leaks/leaks.c
++++ b/testsuite/smokey/leaks/leaks.c
+@@ -28,6 +28,7 @@
+ #include <pthread.h>
+ #include <fcntl.h>
+ #include <sys/mman.h>
++#include <sys/stat.h>
+ #include <semaphore.h>
+ #include <mqueue.h>
+ #include <signal.h>
+@@ -71,6 +72,24 @@ const char *memdev[] = {
  
- 	ret = xnvfile_init_regular(object->key, &object->vfile_u.vfreg,
- 				   &pnode->vdir);
+ static int memdevfd[3];
+ 
++static int procfs_exists(const char *type, const char *name)
++{
++	struct stat s;
++	char path[128];
++	int ret;
++
++	/* Ignore if the kernel seems to be compiled without procfs support */
++	if (stat("/proc/xenomai", &s) || !S_ISDIR(s.st_mode))
++		return 0;
++
++	ret = snprintf(path, 128, "%s/%s/%s", "/proc/xenomai/registry/posix",
++		       type, &name[1]);
++	if (ret < 0)
++		return -EINVAL;
++
++	return smokey_check_errno(stat(path, &s));
++}
++
+ static unsigned long long get_used(void)
+ {
+ 	struct cobalt_memdev_stat statbuf;
+@@ -121,6 +140,10 @@ static inline int subprocess_leak(void)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = procfs_exists("sem", SEM_NAME);
++	if (ret)
++		return ret;
++
+ 	sevt.sigev_notify = SIGEV_THREAD_ID;
+ 	sevt.sigev_signo = SIGALRM;
+ 	sevt.sigev_notify_thread_id = syscall(__NR_gettid);
+@@ -132,6 +155,10 @@ static inline int subprocess_leak(void)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = procfs_exists("mqueue", MQ_NAME);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
