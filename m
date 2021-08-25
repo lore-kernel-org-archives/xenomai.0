@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 5/7] cobalt/posix/semaphore: Export named semaphores to
- procfs
-Date: Wed, 25 Aug 2021 12:32:28 +0200
-Message-Id: <20210825103230.27274-6-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 2/7] cobalt/registry: Initialize refcnt of exported virtual
+ proc files
+Date: Wed, 25 Aug 2021 12:32:25 +0200
+Message-Id: <20210825103230.27274-3-florian.bezdeka@siemens.com>
 In-Reply-To: <20210825103230.27274-1-florian.bezdeka@siemens.com>
 References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,69 +18,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Exporting named semaphores to /proc/xenomai/registry/posix/sem helps
-to identify resource leaks by making registered semaphores visible. The
-content of all created virtual files is empty. Removal of such files is
-not possible and reports "operation not supported".
+The refcnt field was never initialized and triggered a BUG() in
+vfile_regular_release (vfile.c) when closing / releasing such a virtual
+file.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/sem.c | 35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+ kernel/cobalt/registry.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index 72b20c78d..b6709e692 100644
---- a/kernel/cobalt/posix/sem.c
-+++ b/kernel/cobalt/posix/sem.c
-@@ -26,6 +26,38 @@
- #include "sem.h"
- #include <trace/events/cobalt-posix.h>
+diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+index fa1de66c3..211e0f76f 100644
+--- a/kernel/cobalt/registry.c
++++ b/kernel/cobalt/registry.c
+@@ -403,6 +403,7 @@ static int registry_export_vfreg(struct xnobject *object,
+ 	object->vfile_u.vfreg.privsz = p->vfile.privsz;
+ 	object->vfile_u.vfreg.ops = p->vfile.ops;
+ 	object->vfile_u.vfreg.entry.lockops = p->vfile.lockops;
++	object->vfile_u.vfreg.entry.refcnt = 0;
  
-+#ifdef CONFIG_XENO_OPT_VFILE
-+
-+static int sem_vfile_show(struct xnvfile_regular_iterator *it, void *data)
-+{
-+	return 0;
-+}
-+
-+static struct xnvfile_regular_ops sem_vfile_ops = {
-+	.show = sem_vfile_show,
-+};
-+
-+static struct xnpnode_regular __sem_pnode = {
-+	.node = {
-+		.dirname = "sem",
-+		.root = &posix_ptree,
-+		.ops = &xnregistry_vfreg_ops,
-+	},
-+	.vfile = {
-+		.ops = &sem_vfile_ops,
-+	},
-+};
-+
-+#else /* !CONFIG_XENO_OPT_VFILE */
-+
-+static struct xnpnode_link __sem_pnode = {
-+	.node = {
-+		.dirname = "sem",
-+	}
-+};
-+
-+#endif /* !CONFIG_XENO_OPT_VFILE */
-+
- static inline struct cobalt_resources *sem_kqueue(struct cobalt_sem *sem)
- {
- 	int pshared = !!(sem->flags & SEM_PSHARED);
-@@ -134,7 +166,8 @@ __cobalt_sem_init(const char *name, struct cobalt_sem_shadow *sm,
- 		goto err_lock_put;
- 	}
- 
--	ret = xnregistry_enter(name ?: "", sem, &sem->resnode.handle, NULL);
-+	ret = xnregistry_enter(name ?: "", sem, &sem->resnode.handle,
-+			       name ? &__sem_pnode.node : NULL);
- 	if (ret < 0)
- 		goto err_lock_put;
- 
+ 	ret = xnvfile_init_regular(object->key, &object->vfile_u.vfreg,
+ 				   &pnode->vdir);
 -- 
 2.30.2
 
