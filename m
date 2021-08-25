@@ -1,8 +1,12 @@
+Subject: Re: [PATCH v2 7/7] testsuite/smokey/leaks: Adding checks for procfs
+ exports
+References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
+ <20210825103230.27274-8-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] build: Disable -Wformat-truncation
-Message-ID: <ba35be04-cea2-bc1b-07b6-938af921b35a@siemens.com>
-Date: Fri, 6 Aug 2021 19:18:53 +0200
+Message-ID: <a9920045-bdac-2be6-7f23-8ce003ae0d2e@siemens.com>
+Date: Wed, 25 Aug 2021 17:09:03 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210825103230.27274-8-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,33 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 25.08.21 12:32, Florian Bezdeka wrote:
+> Make sure that named semaphores as well as mqueues are exported to the
+> procfs.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/leaks/leaks.c | 27 +++++++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
+> diff --git a/testsuite/smokey/leaks/leaks.c b/testsuite/smokey/leaks/leaks.c
+> index bbe5fc3ad..b867bc727 100644
+> --- a/testsuite/smokey/leaks/leaks.c
+> +++ b/testsuite/smokey/leaks/leaks.c
+> @@ -28,6 +28,7 @@
+>  #include <pthread.h>
+>  #include <fcntl.h>
+>  #include <sys/mman.h>
+> +#include <sys/stat.h>
+>  #include <semaphore.h>
+>  #include <mqueue.h>
+>  #include <signal.h>
+> @@ -71,6 +72,24 @@ const char *memdev[] = {
+>  
+>  static int memdevfd[3];
+>  
+> +static int procfs_exists(const char *type, const char *name)
+> +{
+> +	struct stat s;
+> +	char path[128];
+> +	int ret;
+> +
+> +	/* Ignore if the kernel seems to be compiled without procfs support */
+> +	if (stat("/proc/xenomai", &s) || !S_ISDIR(s.st_mode))
+> +		return 0;
+> +
+> +	ret = snprintf(path, 128, "%s/%s/%s", "/proc/xenomai/registry/posix",
+> +		       type, &name[1]);
+> +	if (ret < 0)
+> +		return -EINVAL;
+> +
+> +	return smokey_check_errno(stat(path, &s));
+> +}
+> +
+>  static unsigned long long get_used(void)
+>  {
+>  	struct cobalt_memdev_stat statbuf;
+> @@ -121,6 +140,10 @@ static inline int subprocess_leak(void)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = procfs_exists("sem", SEM_NAME);
+> +	if (ret)
+> +		return ret;
+> +
 
-This is default-on in Debian 11 and triggers in heapobj_pkg_init_shared
-or heapobj_bind_session without adding value - we truncate for good
-reasons.
+This comes too fast for the registry, see failing tests in CI, e.g.
+https://source.denx.de/Xenomai/xenomai-images/-/jobs/313503. The
+registration with /proc seems to happen asynchronously. If I add a
+usleep(100000) to procfs_exists(), the tests seem to pass.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- configure.ac | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Jan
 
-diff --git a/configure.ac b/configure.ac
-index bd5fd5ba9a..b6742c4b92 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -692,7 +692,8 @@ fi
- dnl Internal CFLAGS and LDFLAGS, may be enhanced per-arch below
- XENO_USER_CFLAGS="$XENO_USER_APP_CFLAGS -pipe -fstrict-aliasing \
- -Wall -Wstrict-prototypes -Wmissing-prototypes -Wno-long-long \
---Wno-unused-parameter -Werror -Wformat-security -D__XENO__ -D__IN_XENO__"
-+-Wno-unused-parameter -Wno-format-truncation -Werror -Wformat-security \
-+-D__XENO__ -D__IN_XENO__"
- if test x$want_fortify = xyes -a x$debug_mode != xfull; then
-    XENO_USER_CFLAGS="$XENO_USER_CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
- fi
+>  	sevt.sigev_notify = SIGEV_THREAD_ID;
+>  	sevt.sigev_signo = SIGALRM;
+>  	sevt.sigev_notify_thread_id = syscall(__NR_gettid);
+> @@ -132,6 +155,10 @@ static inline int subprocess_leak(void)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	ret = procfs_exists("mqueue", MQ_NAME);
+> +	if (ret)
+> +		return ret;
+> +
+>  	return 0;
+>  }
+>  
+> 
+
 -- 
-2.31.1
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
