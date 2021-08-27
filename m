@@ -1,19 +1,10 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: autotune inside qemu: early shot and segfault
-Date: Fri, 27 Aug 2021 15:03:42 +0000
-Message-ID: <0f05dc7062bbcea2d7bcad043bf0df851f16c8ac.camel@siemens.com>
-References: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
- <fee7159e-85d5-bffc-fd89-79050166d080@siemens.com>
- <6c8843f98aea5786d95f57d46cbaf0f2ec267951.camel@siemens.com>
- <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
- <09ace02a61b9e1c30e4c6dab4170a115e064576a.camel@siemens.com>
- <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
- <20210827143109.GC6676@csclub.uwaterloo.ca>
-In-Reply-To: <20210827143109.GC6676@csclub.uwaterloo.ca>
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Xenomai Community Call Minutes - Auguest 25, 2021
+Date: Fri, 27 Aug 2021 08:01:56 +0000
+Message-ID: <CO6PR11MB5649E0AA874F302DF9E03A71BAC89@CO6PR11MB5649.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2744F8A11734934382745356F30A2EF3@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -23,42 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "lsorense@csclub.uwaterloo.ca" <lsorense@csclub.uwaterloo.ca>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gRnJpLCAyMDIxLTA4LTI3IGF0IDEwOjMxIC0wNDAwLCBMZW5uYXJ0IFNvcmVuc2VuIHdyb3Rl
-Og0KPiBPbiBGcmksIEF1ZyAyNywgMjAyMSBhdCAwMjoxNToyOVBNICswMjAwLCBKYW4gS2lzemth
-IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IE9uIDI3LjA4LjIxIDEzOjM5LCBCZXpkZWthLCBGbG9y
-aWFuIChUIFJEQSBJT1QgU0VTLURFKSB3cm90ZToNCj4gPiA+IFdvdywgb25jZSBjb3JlZHVtcGN0
-bCB3YXMgaW5zdGFsbGVkIEkgZ290Og0KPiA+ID4gDQo+ID4gPiBTdGFjayB0cmFjZSBvZiB0aHJl
-YWQgMzEyOg0KPiA+ID4gICAgICAgICAgICAgICAgICMwICAweDAwMDAwMDAwYjZmNTBkYWEgX1Vu
-d2luZF9WUlNfUG9wIChsaWJnY2Nfcy5zby4xKQ0KPiA+ID4gDQo+ID4gPiBDb21waWxlciBpc3N1
-ZT8gSSdtIGN1cnJlbnRseSB1c2luZw0KPiA+ID4gZ2NjIHZlcnNpb24gMTAuMi4xIDIwMjEwMTEw
-IChEZWJpYW4gMTAuMi4xLTYpDQo+ID4gPiANCj4gPiANCj4gPiBXYWl0OiBZb3UgaGF2ZSBhIERl
-YmlhbiAxMCB3aGVyZSAoZ2NjIGlzIGdjYy04KSwgYnV0IGZvciB0aGlzIHRlc3QgeW91DQo+ID4g
-YnVpbHQgYXV0b3R1bmUgKG9ubHkgdGhhdD8pIHdpdGggZ2NjLTEwPw0KPiANCj4gRGViaWFuIDEx
-IHVzZXMgZ2NjIDEwLjIuMS4gIFRoZSB2ZXJzaW9uIHNheXMgIkRlYmlhbiAxMC4yLjEtNikgbWVh
-bmluZw0KPiBnY2MgdmVyc2lvbiBpcyBkZWJpYW4gcGFja2FnZSB2ZXJzaW9uIDEwLjIuMS02LiAg
-SXQgd291bGQgY2VydGFpbmx5IGJlDQo+IERlYmlhbiAxMS4NCj4gDQoNClRoZXJlIGlzIG5vIG1p
-eCBiZXR3ZWVuIERlYmlhbiAxMCBhbmQgMTEuIEl0J3MgMTEuIEFsd2F5cy4gSSB1cGRhdGVkDQp4
-ZW5vbWFpLWltYWdlcyBsb2NhbGx5IHRvIGJlIGJhc2VkIG9uIERlYmlhbiAxMSBhbHJlYWR5LiBU
-aGF0J3Mgd2VyZQ0KZ2NjIDEwIGNvbWVzIGludG8gdGhlIGdhbWUuDQoNCkkgd2FzIGFibGUgdG8g
-bmFycm93IHRoaXMgcHJvYmxlbSBkb3duIHRvIGEgZm9yd2FyZGVkIGRpcmVjdG9yeSBmcm9tDQp0
-aGUgaG9zdCB0byB0aGUgcWVtdSBndWVzdC4gRm9yIHBlcmZvcm1hbmNlIHJlYXNvbnMgSSBjcm9z
-cy1jb21waWxlZA0KYWxsIFhlbm9tYWkgY29tcG9uZW50cyBvbiB0aGUgaG9zdCBhbmQgZm9yd2Fy
-ZWQgaXQgaW50byB0aGUgZ3Vlc3QuIFRoYXQNCndvcmtlZCBmaW5lIHVwIHRvIG5vdywgYnV0IHNl
-ZW1zIHRvIGhhdmUgdGhpcyBzaWRlIGVmZmVjdC4gKFRoZQ0Kc2VnZmF1bHQgaGFwcGVucyB3aGVu
-ZXZlciBJIGdldCBvdmVyIHRoZSAia2VybmVsIGdyYXZpdHkgc3RhZ2UiLiBTZWUNCmJlbG93LikN
-Cg0KT25lIHByb2JsZW0gcmVtYWluaW5nOg0KOTklIG9mIGF1dG90dW5lIHJ1bnMgYXJlIGZhaWxp
-bmcgaW4gdGhlICJrZXJuZWwgZ3Jhdml0eSIgc3RhZ2Ugd2l0aA0KIlJlc291cmNlIHRlbXBvcmFy
-aWx5IHVuYXZhaWxhYmxlIi4gVGhhdCBjYW4gYmUgc2VlbiBpbiBDSSBydW5zIGFzDQp3ZWxsLiBJ
-dCBkb2VzIG5vdCBtYXR0ZXIgaWYgaXBpcGUgb3IgZG92ZXRhaWwgaXMgcnVubmluZyBpbiB0aGUg
-a2VybmVsLg0KDQpMaW1pdGluZyB0aGUgbnVtYmVyIG9mIENQVXMgb2YgdGhlIHFlbXUgZ3Vlc3Qg
-dG8gIjEiIGZpeGVzIHRoaXMNCnByb2JsZW0uDQoNCkluIG11bHRpLUNQVSBzZXR1cHMgZG1lc2cg
-Y29tcGxhaW5zIGFib3V0IGFuIGVhcmx5IHNob3Q6DQoNClsgICA5Mi44MDA3ODFdIFtYZW5vbWFp
-XSBhdXRvdHVuZShpcnFoYW5kKSBzdGFydGVkDQpbICAxMDIuNDk5NDk0XSBbWGVub21haV0gYXV0
-b3R1bmUoa3RocmVhZCkgc3RhcnRlZA0KWyAgMTA4LjYyMzg5OF0gW1hlbm9tYWldIGF1dG90dW5l
-KGt0aHJlYWQpIGZhaWxlZCB3aXRoIGVhcmx5IHNob3QgKDgyNzI1MSBucykNClsgIDEwOC42NDY3
-OTVdIFtYZW5vbWFpXSBhdXRvdHVuZSBmaW5pc2hlZCBbMGkvNTAwMGsvNTAwMHVdDQoNCkFueSBp
-ZGVhcz8NCg0K
+Attendees:
+
+Jan Kiszka, Florian Bezdeka, Hongzhan Chen,=20
+Hao Li, Jianbo Cao, Bryan Cheng, Rick Wang
+
+
+*Community update
+
+- Xenomai Chinese community=20
+  Forum: https://bbs.csdn.net/forums/Xenomai
+  Mirror: https://gitee.com/xenomai
+
+- Xenomai 3.2:
+  1. GPIO timestamp issue - Hongzhan to test.=20
+  2. Cobalt/registry - Florian to submit patch.
+  3. No fail reported for kernel regression testing with Debian 11.
+ =20
+
+
+Thanks,
+Rick
 
