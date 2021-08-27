@@ -1,12 +1,20 @@
-References: <87r1efj8mq.fsf@xenomai.org> <10a0-6128f200-125-29fb8780@204573282>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Doing DMA from peripheral to userland memory
-In-reply-to: <10a0-6128f200-125-29fb8780@204573282>
-Date: Fri, 27 Aug 2021 16:36:28 +0200
-Message-ID: <87o89jj6oj.fsf@xenomai.org>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: autotune inside qemu: early shot and segfault
+Date: Fri, 27 Aug 2021 15:03:42 +0000
+Message-ID: <0f05dc7062bbcea2d7bcad043bf0df851f16c8ac.camel@siemens.com>
+References: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
+ <fee7159e-85d5-bffc-fd89-79050166d080@siemens.com>
+ <6c8843f98aea5786d95f57d46cbaf0f2ec267951.camel@siemens.com>
+ <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
+ <09ace02a61b9e1c30e4c6dab4170a115e064576a.camel@siemens.com>
+ <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
+ <20210827143109.GC6676@csclub.uwaterloo.ca>
+In-Reply-To: <20210827143109.GC6676@csclub.uwaterloo.ca>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2744F8A11734934382745356F30A2EF3@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,88 +23,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?Q?Fran=C3=A7ois?= Legal <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "lsorense@csclub.uwaterloo.ca" <lsorense@csclub.uwaterloo.ca>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
-
-> Le Vendredi, Ao=C3=BBt 27, 2021 15:54 CEST, Philippe Gerum <rpm@xenomai.o=
-rg> a =C3=A9crit:=20
->=20=20
->>=20
->> Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
->>=20
->> > Le Vendredi, Ao=C3=BBt 27, 2021 15:01 CEST, Philippe Gerum <rpm@xenoma=
-i.org> a =C3=A9crit:=20
->> >=20=20
->> >>=20
->> >> Fran=C3=A7ois Legal via Xenomai <xenomai@xenomai.org> writes:
->> >>=20
->> >> > Hello,
->> >> >
->> >> > working on a zynq7000 target (arm cortex a9), we have a peripheral =
-that generates loads of data (many kbytes per ms).
->> >> >
->> >> > We would like to move that data, directly from the peripheral memor=
-y (the OCM of the SoC) directly to our RT application user memory using DMA.
->> >> >
->> >> > For one part of the data, we would like the DMA to de interlace tha=
-t data while moving it. We figured out, the PL330 peripheral on the SoC sho=
-uld be able to do it, however, we would like, as much as possible, to retai=
-n the use of one or two channels of the PL330 to plain linux non RT use (vi=
-a dmaengine).
->> >> >
->> >> > My first attempt would be to enhance the dmaengine API to add RT AP=
-I, then implement the RT API calls in the PL330 driver.
->> >> >
->> >> > What do you think of this approach, and is it achievable at all (DM=
-A directly to user land memory and/or having DMA channels exploited by xeno=
-mai and other by linux) ?
->> >> >
->> >> > Thanks in advance
->> >> >
->> >> > Fran=C3=A7ois
->> >>=20
->> >> As a starting point, you may want to have a look at this document:
->> >> https://evlproject.org/core/oob-drivers/dma/
->> >>=20
->> >> This is part of the EVL core documentation, but this is actually a
->> >> Dovetail feature.
->> >>=20
->> >
->> > Well, that's quite what I want to do, so this is very good news that i=
-t is already available in the future. However, I need it through the ipipe =
-right now, but I guess the process stays the same (through patching the dma=
-engine API and the DMA engine driver).
->> >
->> > I would guess the modifications to the DMA engine driver would be then=
- easily ported to dovetail ?
->> >
->>=20
->> Since they should follow the same pattern used for the controllers
->> Dovetail currently supports, I think so. You should be able to simplify
->> the code when porting it Dovetail actually.
->>=20
->
-> That's what I thought. Thanks a lot.
->
-> So now, regarding the "to userland memory" aspect. I guess I will somehow=
- have to, in order to make this happen, change the PTE flags to make these =
-pages non cacheable (using dma_map_page maybe), but I wonder if I have to m=
-ap the userland pages to kernel space and whether or not I have to pin the =
-userland pages in memory (I believe mlockall in the userland process does t=
-hat already) ?
->
-
-The out-of-band SPI support available from EVL illustrates a possible
-implementation. This code [2] implements what is described in this page
-[1].
-
-[1] https://evlproject.org/core/oob-drivers/spi/
-[2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/0969ccef9a5318=
-244e484e847dab52999f6fec5c/drivers/spi/spi.c#L4259
-
---=20
-Philippe.
+T24gRnJpLCAyMDIxLTA4LTI3IGF0IDEwOjMxIC0wNDAwLCBMZW5uYXJ0IFNvcmVuc2VuIHdyb3Rl
+Og0KPiBPbiBGcmksIEF1ZyAyNywgMjAyMSBhdCAwMjoxNToyOVBNICswMjAwLCBKYW4gS2lzemth
+IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IE9uIDI3LjA4LjIxIDEzOjM5LCBCZXpkZWthLCBGbG9y
+aWFuIChUIFJEQSBJT1QgU0VTLURFKSB3cm90ZToNCj4gPiA+IFdvdywgb25jZSBjb3JlZHVtcGN0
+bCB3YXMgaW5zdGFsbGVkIEkgZ290Og0KPiA+ID4gDQo+ID4gPiBTdGFjayB0cmFjZSBvZiB0aHJl
+YWQgMzEyOg0KPiA+ID4gICAgICAgICAgICAgICAgICMwICAweDAwMDAwMDAwYjZmNTBkYWEgX1Vu
+d2luZF9WUlNfUG9wIChsaWJnY2Nfcy5zby4xKQ0KPiA+ID4gDQo+ID4gPiBDb21waWxlciBpc3N1
+ZT8gSSdtIGN1cnJlbnRseSB1c2luZw0KPiA+ID4gZ2NjIHZlcnNpb24gMTAuMi4xIDIwMjEwMTEw
+IChEZWJpYW4gMTAuMi4xLTYpDQo+ID4gPiANCj4gPiANCj4gPiBXYWl0OiBZb3UgaGF2ZSBhIERl
+YmlhbiAxMCB3aGVyZSAoZ2NjIGlzIGdjYy04KSwgYnV0IGZvciB0aGlzIHRlc3QgeW91DQo+ID4g
+YnVpbHQgYXV0b3R1bmUgKG9ubHkgdGhhdD8pIHdpdGggZ2NjLTEwPw0KPiANCj4gRGViaWFuIDEx
+IHVzZXMgZ2NjIDEwLjIuMS4gIFRoZSB2ZXJzaW9uIHNheXMgIkRlYmlhbiAxMC4yLjEtNikgbWVh
+bmluZw0KPiBnY2MgdmVyc2lvbiBpcyBkZWJpYW4gcGFja2FnZSB2ZXJzaW9uIDEwLjIuMS02LiAg
+SXQgd291bGQgY2VydGFpbmx5IGJlDQo+IERlYmlhbiAxMS4NCj4gDQoNClRoZXJlIGlzIG5vIG1p
+eCBiZXR3ZWVuIERlYmlhbiAxMCBhbmQgMTEuIEl0J3MgMTEuIEFsd2F5cy4gSSB1cGRhdGVkDQp4
+ZW5vbWFpLWltYWdlcyBsb2NhbGx5IHRvIGJlIGJhc2VkIG9uIERlYmlhbiAxMSBhbHJlYWR5LiBU
+aGF0J3Mgd2VyZQ0KZ2NjIDEwIGNvbWVzIGludG8gdGhlIGdhbWUuDQoNCkkgd2FzIGFibGUgdG8g
+bmFycm93IHRoaXMgcHJvYmxlbSBkb3duIHRvIGEgZm9yd2FyZGVkIGRpcmVjdG9yeSBmcm9tDQp0
+aGUgaG9zdCB0byB0aGUgcWVtdSBndWVzdC4gRm9yIHBlcmZvcm1hbmNlIHJlYXNvbnMgSSBjcm9z
+cy1jb21waWxlZA0KYWxsIFhlbm9tYWkgY29tcG9uZW50cyBvbiB0aGUgaG9zdCBhbmQgZm9yd2Fy
+ZWQgaXQgaW50byB0aGUgZ3Vlc3QuIFRoYXQNCndvcmtlZCBmaW5lIHVwIHRvIG5vdywgYnV0IHNl
+ZW1zIHRvIGhhdmUgdGhpcyBzaWRlIGVmZmVjdC4gKFRoZQ0Kc2VnZmF1bHQgaGFwcGVucyB3aGVu
+ZXZlciBJIGdldCBvdmVyIHRoZSAia2VybmVsIGdyYXZpdHkgc3RhZ2UiLiBTZWUNCmJlbG93LikN
+Cg0KT25lIHByb2JsZW0gcmVtYWluaW5nOg0KOTklIG9mIGF1dG90dW5lIHJ1bnMgYXJlIGZhaWxp
+bmcgaW4gdGhlICJrZXJuZWwgZ3Jhdml0eSIgc3RhZ2Ugd2l0aA0KIlJlc291cmNlIHRlbXBvcmFy
+aWx5IHVuYXZhaWxhYmxlIi4gVGhhdCBjYW4gYmUgc2VlbiBpbiBDSSBydW5zIGFzDQp3ZWxsLiBJ
+dCBkb2VzIG5vdCBtYXR0ZXIgaWYgaXBpcGUgb3IgZG92ZXRhaWwgaXMgcnVubmluZyBpbiB0aGUg
+a2VybmVsLg0KDQpMaW1pdGluZyB0aGUgbnVtYmVyIG9mIENQVXMgb2YgdGhlIHFlbXUgZ3Vlc3Qg
+dG8gIjEiIGZpeGVzIHRoaXMNCnByb2JsZW0uDQoNCkluIG11bHRpLUNQVSBzZXR1cHMgZG1lc2cg
+Y29tcGxhaW5zIGFib3V0IGFuIGVhcmx5IHNob3Q6DQoNClsgICA5Mi44MDA3ODFdIFtYZW5vbWFp
+XSBhdXRvdHVuZShpcnFoYW5kKSBzdGFydGVkDQpbICAxMDIuNDk5NDk0XSBbWGVub21haV0gYXV0
+b3R1bmUoa3RocmVhZCkgc3RhcnRlZA0KWyAgMTA4LjYyMzg5OF0gW1hlbm9tYWldIGF1dG90dW5l
+KGt0aHJlYWQpIGZhaWxlZCB3aXRoIGVhcmx5IHNob3QgKDgyNzI1MSBucykNClsgIDEwOC42NDY3
+OTVdIFtYZW5vbWFpXSBhdXRvdHVuZSBmaW5pc2hlZCBbMGkvNTAwMGsvNTAwMHVdDQoNCkFueSBp
+ZGVhcz8NCg0K
 
