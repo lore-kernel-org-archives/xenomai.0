@@ -1,17 +1,10 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 0/3] add support for cherryview gpio controller driver
-Date: Tue, 31 Aug 2021 06:36:13 +0000
-Message-ID: <DM4PR11MB52321F602C87ED02E60DA4CAF2CC9@DM4PR11MB5232.namprd11.prod.outlook.com>
-References: <20210830064527.18206-1-hongzhan.chen@intel.com>
- <bdf39dd6-fc39-e4b7-3159-87bc86269014@siemens.com>
- <BN9PR11MB5227ED7950F164C1235697D1F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
- <4ca7072b-b386-25b7-3a01-8a3baea1290c@siemens.com>
- <DM4PR11MB523278B30AD2E7F021AF7D1AF2CC9@DM4PR11MB5232.namprd11.prod.outlook.com>
- <6dbc0237-c348-f787-775c-aa83b64782cd@siemens.com>
-In-Reply-To: <6dbc0237-c348-f787-775c-aa83b64782cd@siemens.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: autotune inside qemu: early shot and segfault
+Message-ID: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
+Date: Fri, 27 Aug 2021 11:57:43 +0200
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -21,68 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiANCj4+PiBTZW50OiBUdWVzZGF5LCBBdWd1c3QgMzEsIDIwMjEg
-MTo1OSBQTQ0KPj4+IFRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+
-OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4gU3ViamVjdDogUmU6IFtQQVRDSCAwLzNdIGFkZCBz
-dXBwb3J0IGZvciBjaGVycnl2aWV3IGdwaW8gY29udHJvbGxlciBkcml2ZXINCj4+Pg0KPj4+IE9u
-IDMxLjA4LjIxIDAzOjM1LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+Pj4+DQo+Pj4+Pg0KPj4+
-Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+Pj4+IEZyb206IEphbiBLaXN6a2EgPGph
-bi5raXN6a2FAc2llbWVucy5jb20+IA0KPj4+Pj4gU2VudDogTW9uZGF5LCBBdWd1c3QgMzAsIDIw
-MjEgMzozNyBQTQ0KPj4+Pj4gVG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVs
-LmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4+Pj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMC8z
-XSBhZGQgc3VwcG9ydCBmb3IgY2hlcnJ5dmlldyBncGlvIGNvbnRyb2xsZXIgZHJpdmVyDQo+Pj4+
-Pg0KPj4+Pj4gT24gMzAuMDguMjEgMDg6NDUsIEhvbmd6aGFuIENoZW4gdmlhIFhlbm9tYWkgd3Jv
-dGU6DQo+Pj4+Pj4gMS4gbW92ZSBvdXQgb2YgT0YgY29uZmlnIGNvbmRpdGlvbmFsIGNvbXBpbGF0
-aW9uIHNvIHRoYXQgbm9uLU9GIHBsYXRmb3JtDQo+Pj4+Pj4gICBjYWxsIHNhbWUgQVBJIHRvIHJl
-bW92ZSBydGRtIGdwaW8gY2hpcCBkZXZpY2UuDQo+Pj4+Pj4gMi4gSW50cm9kdWNlIGhlbHBlciB0
-byBmaW5kIGdwaW9jaGlwIGFzIHJlZmVycmluZyB0byBwYWlyIG9mIA0KPj4+Pj4+ICAgIHJ0ZG1f
-Z3Bpb2NoaXBfc2Nhbl9vZiBhbmQgcnRkbV9ncGlvY2hpcF9zY2FuX2FycmF5X29mLiANCj4+Pj4+
-PiAzLiBBZGQgSW50ZWwgQ2hlcnJ5dmlldyBwaW5jdHJsIGRyaXZlciBiYXNlZCBvbiBvbiAxIGFu
-ZCAyLg0KPj4+Pj4+DQo+Pj4+Pg0KPj4+Pj4gTG9va3MgZ29vZCwgZXhjZXB0IGZvciB0aGF0IG5h
-bWluZyBpc3N1ZS4NCj4+Pj4+DQo+Pj4+Pj4gSSBhbHNvIGRpZCBmb2xsb3dpbmcgdGVzdHMgd2l0
-aCB0aGlzIHBhdGNoc2V0Og0KPj4+Pj4+IDEuIHJ1biAvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0
-ZS9ncGlvYmVuY2ggLWkgMzM0IC1pIDMzNSAtYyBJTlQzM0ZGOjAyDQo+Pj4+Pj4gICAgdG8gdmFs
-aWRhdGUgcGF0Y2ggOWFmZWE1ZmYyZDdiYTk3ZGI5NmIyMmEwMDVhOWE3ZmNmNWYyZDg5MiB3aGVu
-DQo+Pj4+Pj4gICAgc2V0dGluZyBHUElPX1JUSU9DX1RTDQo+Pj4+Pj4gMi4gYXBwbHkgZm9sbG93
-aW5nIHBhdGNoLCBhbmQgcmVydW4gMS4NCj4+Pj4+Pg0KPj4+Pj4+IGluZGV4IGY4M2Q3Njg5Zi4u
-NTBhZmJkNDE4IDEwMDY0NA0KPj4+Pj4+IC0tLSBhL3Rlc3RzdWl0ZS9ncGlvYmVuY2gvZ3Bpb2Jl
-bmNoLmMNCj4+Pj4+PiArKysgYi90ZXN0c3VpdGUvZ3Bpb2JlbmNoL2dwaW9iZW5jaC5jDQo+Pj4+
-Pj4gQEAgLTYxOSw3ICs2MTksNyBAQCBpbnQgbWFpbihpbnQgYXJnYywgY2hhciAqKmFyZ3YpDQo+
-Pj4+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgZ290byBvdXQ7DQo+Pj4+Pj4gICAgICAgICAg
-ICAgICAgIH0NCj4+Pj4+Pg0KPj4+Pj4+IC0gICAgICAgICAgICAgICByZXQgPSBpb2N0bCh0aS5m
-ZF9kZXZfaW50ciwgR1BJT19SVElPQ19UUywgJnZhbHVlKTsNCj4+Pj4+PiArICAgICAgICAgICAg
-ICAgcmV0ID0gaW9jdGwodGkuZmRfZGV2X2ludHIsIEdQSU9fUlRJT0NfVFNfTU9OTywgJnZhbHVl
-KTsNCj4+Pj4+PiAgICAgICAgICAgICAgICAgaWYgKHJldCkgew0KPj4+Pj4+ICAgICAgICAgICAg
-ICAgICAgICAgICAgIHByaW50ZigiaW9jdGwgZ3BpbyBwb3J0IHRzLCBmYWlsZWRcbiIpOw0KPj4+
-Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gb3V0Ow0KPj4+Pj4+DQo+Pj4+Pj4gSGFy
-ZHdhcmUgZW52Og0KPj4+Pj4+IDEuIFJvY2sgUEkgWCBWMS40Lg0KPj4+Pj4+IDIuIEdQSU8gbG9v
-cGJhY2sgY29ubmVjdGlvbiBiZXR3ZWVuIEdQSU8gMzM0IGFuZCAzMzUuDQo+Pj4+Pj4gIA0KPj4+
-Pj4NCj4+Pj4+IERpZCB5b3UgY2hlY2sgaWYgdGltZXN0YW1wcyBhcmUgYXMgZXhwZWN0ZWQgKGRp
-ZmZlcmVudCk/DQo+Pj4+DQo+Pj4+IEFjY29yZGluZyB0byBvdXRwdXQgb2YgZ3Bpb2JlbmNoLCB0
-aGUgaW5uZXIgQXZnIExhdGVuY3kgd291bGQgYmUgdmFyeSBsYXJnZSBsaWtlICggMjgxNDM3Ny4w
-MDAwMCkgYWZ0ZXIgc3dpdGNoIHRvIE1PTk8uDQo+Pj4+IEJ1dCBpdCBpcyBvbmx5IGFib3V0ICAx
-Ni44Nzk5OTcgd2hlbiB3ZSBzZXQgUkVBTFRJTUUuIA0KPj4+Pg0KPj4+DQo+Pj4gZ3Bpb2JlbmNo
-IHRha2VzIHRpbWVzdGFtcHMgZnJvbSBDTE9DS19NT05PVE9OSUMgKHNlZSBjbG9ja19nZXR0aW1l
-DQo+Pj4gY2FsbHMpKS4gSWYgeW91IGNvbXBhcmUgdGhlbSB0byBSRUFMVElNRSwgdGhhdCB3aWxs
-IGdpdmUgYW4gb2Zmc2V0LiBCdXQNCj4+PiB5b3UgcmVwb3J0IGp1c3QgdGhlIG9wcG9zaXRlLCB0
-aGlzIGNvbmZ1c2VzIG1lIG5vdy4uLg0KPj4gDQo+PiBUaGUgdGVzdCBpcyBydW5uaW5nIG9uIGRv
-dmV0YWlsIGJhc2VkIDUuMTAuDQo+PiANCj4NCj5JIG1pc3NlZCBvbmUgY2FzZSBpbiBncGlvX3Bp
-bl9pbnRlcnJ1cHQgd2hlcmUgSSBuZWVkIHRvIGNoZWNrDQo+bW9ub3RvbmljX3RpbWVzdGFtcCAt
-IGJ1dCwgYWdhaW4sIG1vbm8gaXMgd2hhdCBzaG91bGQgcmVtYWluIGZpbmUsDQo+R1BJT19SVElP
-Q19UU19SRUFMIChvciBHUElPX1JUSU9DX1RTLCB0aGUgZGVmYXVsdCkgc2hvdWxkIGdpdmUgYSBk
-ZWx0YS4NCg0KSSBmb3VuZCB0aGVyZSBpcyBvbmUgb2J2aW91cyBnYXAgZm9yIG15IGNvbXBhcmlz
-b24gdGVzdC4NCg0KRm9yIFJFQUxURUlNICwgaXQgdG90YWxseSBydW4gOTk5OTk5IGxpa2UgWzFd
-IHRpbGwgdGVzdCBub3JtYWxseSBleGl0LiBCdXQgZm9yIE1PTk8sIEkgZm9yY2UgdG8gcXVpdCBk
-dXJpbmcgcnVubmluZw0KYmVjYXVzZSBpdCBtYXkgdGFrZSBzZXZlcmFsIGhvdXJzIHRvIGZpbmlz
-aCBhbmQgSSBjYW4gbm90IHdhaXQgbGlrZSBbMl0uIExldCBtZSByZXJ1biB0ZXN0IGFuZCB3YWl0
-IHRpbGwgaXQgbm9ybWFsbHkgZXhpdCBhbmQgDQpnZXQgcmVzdWx0IHRvIGNoZWNrLg0KDQpbMV06
-DQojIFRvdGFsOiAwMDA5OTk5OTkNCiMgTWluIExhdGVuY2llczogMDAwMTMNCiMgQXZnIExhdGVu
-Y2llczogMTYuODc5OTk3DQojIE1heCBMYXRlbmNpZXM6IDAwMDQzDQpbMl06DQojIFRvdGFsOiAw
-MDAwODM5ODgNCiMgTWluIExhdGVuY2llczogMDAwMTINCiMgQXZnIExhdGVuY2llczogMjgxNDM3
-Ny4wMDAwMDANCiMgTWF4IExhdGVuY2llczogMDAwNDENCg0KDQoNCj4NCj5KYW4NCj4NCj4tLSAN
-Cj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1i
-ZWRkZWQgTGludXgNCg==
+Hi all,
+
+first issue:
+
+maybe someone can explain what's going on here. I'm running autotune 
+inside qemu (ARM) on an x86_64 host and get the error below. The 
+kernel in use is 4.19 (ipipe) build with current "next" branch.
+
+root@demo:~# autotune2 
+== auto-tuning started, period=1000000 ns (may take a while)
+irq gravity... 0 ns
+kernel gravity... autotune: tuning failed (kernel): Resource temporarily unavailable
+
+dmesg tells me
+
+[   92.800781] [Xenomai] autotune(irqhand) started
+[  102.499494] [Xenomai] autotune(kthread) started
+[  108.623898] [Xenomai] autotune(kthread) failed with early shot (827251 ns)
+[  108.646795] [Xenomai] autotune finished [0i/5000k/5000u]
+
+
+Any idea why / how this early shot can happen? I'm unable to 
+reproduce it on a real hardware like the beagle bone black. 
+I wonder why it seems to work in the CI setup...
+
+
+
+Second issue: From time to time autotune produces a segfault:
+
+root@demo:~# autotune 
+== auto-tuning started, period=1000000 ns (may take a while)
+irq gravity... 1984 ns
+kernel gravity... 10912ns
+user gravity... Segmentation fault
+
+I haven't seen the segfault with a dovetail enabled kernel yet.
+So it might be ipipe related...
+
+I was able to reproduce once with gdb attached. We seem to crash 
+in rtmd.c line 170 (do_ioctl, XENOMAI_SYSCALL3()). GDB was 
+unable to present a backtrace. ("previous frame identical to this 
+frame (corrupt stack?")
+
+
+TIA,
+Florian
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
