@@ -1,11 +1,19 @@
-References: <003a01d7a10d$9268d6b0$b73a8410$@ecler.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Using oob GPIO on RPi4B and evl_poll
-In-reply-to: <003a01d7a10d$9268d6b0$b73a8410$@ecler.com>
-Date: Sat, 04 Sep 2021 09:36:58 +0200
-Message-ID: <87sfyk7pwl.fsf@xenomai.org>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: autotune inside qemu: early shot and segfault
+Date: Fri, 27 Aug 2021 12:32:44 +0000
+Message-ID: <3b5fd6873f71d2e206021651be1574e3526551aa.camel@siemens.com>
+References: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
+ <fee7159e-85d5-bffc-fd89-79050166d080@siemens.com>
+ <6c8843f98aea5786d95f57d46cbaf0f2ec267951.camel@siemens.com>
+ <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
+ <09ace02a61b9e1c30e4c6dab4170a115e064576a.camel@siemens.com>
+ <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
+In-Reply-To: <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <387F58391AB20242889FC4A23EF9F04D@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,69 +22,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: j.villena@ecler.com
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-
-j.villena--- via Xenomai <xenomai@xenomai.org> writes:
-
-> Hi all,
->
->  
->
-> I am using the EVL Raspberry-PI-4 GPIO driver in oob mode for waiting for 4
-> GPI signals changes by monitoring raising and falling edges continuously.
->
->  
->
-> The first version uses 4 diferent oob threads and it works as expected when
-> waiting forever in oob_read on each thread.
->
->  
->
-> To optimize resources, I want to avoid to use the 4 threads approach, and I
-> want to create only one thread to handle all GPI functionality. Thus I have
-> added polling capabilities with evl_poll and related API to GPIO file
-> descriptors in only one thread.
->
->  
->
-> At first it seems to work, but when I added another file descriptor to the
-> same polliing set (from an event flag group) the program freezes, and system
-> becomes unstable.
->
->  
->
-> Then I noticed that in the "Polling file descriptors
-> <https://evlproject.org/core/user-api/poll/> " section of the EVL online
-> documentation, the GPIO real-time I/O driver is not listed in the
-> enumeration of pollable elements.
->
->  
->
-> Is this true and the cause of the wrong behavior when using polled wait? If
-> yes, could it be easily fixed?
->
-
-The documentation only mentions EVL elements directly available from
-user-space as individual resources, however this does not preclude other
-resources created by drivers to be polled as well, which is the case for
-GPIO lines. IOW, GPIO lines can be polled with evl_poll(), along with
-any data source/sink which invokes evl_signal_poll_events() in the
-kernel-side implementation.
-
-A couple of questions:
-
-- is there any message on the kernel console when the issue happens?
-
-- does the system freeze entirely? If so, did you enable
-  CONFIG_EVL_WATCHDOG to catch runaway threads?
-
-Can you share a simple test code illustrating the issue? I would
-definitely have a look at it.
-
-[1] https://evlproject.org/core/build-steps/#core-kconfig
-
--- 
-Philippe.
+T24gRnJpLCAyMDIxLTA4LTI3IGF0IDE0OjE1ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyNy4wOC4yMSAxMzozOSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gT24gRnJpLCAyMDIxLTA4LTI3IGF0IDEyOjIzICswMjAwLCBKYW4gS2lzemthIHdy
+b3RlOg0KPiA+ID4gT24gMjcuMDguMjEgMTI6MjIsIEJlemRla2EsIEZsb3JpYW4gKFQgUkRBIElP
+VCBTRVMtREUpIHdyb3RlOg0KPiA+ID4gPiBPbiBGcmksIDIwMjEtMDgtMjcgYXQgMTI6MDMgKzAy
+MDAsIEphbiBLaXN6a2Egd3JvdGU6DQo+ID4gPiA+ID4gT24gMjcuMDguMjEgMTE6NTcsIEZsb3Jp
+YW4gQmV6ZGVrYSB3cm90ZToNCj4gPiA+ID4gPiA+IEhpIGFsbCwNCj4gPiA+ID4gPiA+IA0KPiA+
+ID4gPiA+ID4gZmlyc3QgaXNzdWU6DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IG1heWJlIHNv
+bWVvbmUgY2FuIGV4cGxhaW4gd2hhdCdzIGdvaW5nIG9uIGhlcmUuIEknbSBydW5uaW5nIGF1dG90
+dW5lDQo+ID4gPiA+ID4gPiBpbnNpZGUgcWVtdSAoQVJNKSBvbiBhbiB4ODZfNjQgaG9zdCBhbmQg
+Z2V0IHRoZSBlcnJvciBiZWxvdy4gVGhlDQo+ID4gPiA+ID4gPiBrZXJuZWwgaW4gdXNlIGlzIDQu
+MTkgKGlwaXBlKSBidWlsZCB3aXRoIGN1cnJlbnQgIm5leHQiIGJyYW5jaC4NCj4gPiA+ID4gPiA+
+IA0KPiA+ID4gPiA+ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lMg0KPiA+ID4gPiA+ID4gPT0gYXV0
+by10dW5pbmcgc3RhcnRlZCwgcGVyaW9kPTEwMDAwMDAgbnMgKG1heSB0YWtlIGEgd2hpbGUpDQo+
+ID4gPiA+ID4gPiBpcnEgZ3Jhdml0eS4uLiAwIG5zDQo+ID4gPiA+ID4gPiBrZXJuZWwgZ3Jhdml0
+eS4uLiBhdXRvdHVuZTogdHVuaW5nIGZhaWxlZCAoa2VybmVsKTogUmVzb3VyY2UgdGVtcG9yYXJp
+bHkgdW5hdmFpbGFibGUNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gZG1lc2cgdGVsbHMgbWUN
+Cj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gWyAgIDkyLjgwMDc4MV0gW1hlbm9tYWldIGF1dG90
+dW5lKGlycWhhbmQpIHN0YXJ0ZWQNCj4gPiA+ID4gPiA+IFsgIDEwMi40OTk0OTRdIFtYZW5vbWFp
+XSBhdXRvdHVuZShrdGhyZWFkKSBzdGFydGVkDQo+ID4gPiA+ID4gPiBbICAxMDguNjIzODk4XSBb
+WGVub21haV0gYXV0b3R1bmUoa3RocmVhZCkgZmFpbGVkIHdpdGggZWFybHkgc2hvdCAoODI3MjUx
+IG5zKQ0KPiA+ID4gPiA+ID4gWyAgMTA4LjY0Njc5NV0gW1hlbm9tYWldIGF1dG90dW5lIGZpbmlz
+aGVkIFswaS81MDAway81MDAwdV0NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+
+ID4gPiBBbnkgaWRlYSB3aHkgLyBob3cgdGhpcyBlYXJseSBzaG90IGNhbiBoYXBwZW4/IEknbSB1
+bmFibGUgdG8NCj4gPiA+ID4gPiA+IHJlcHJvZHVjZSBpdCBvbiBhIHJlYWwgaGFyZHdhcmUgbGlr
+ZSB0aGUgYmVhZ2xlIGJvbmUgYmxhY2suDQo+ID4gPiA+ID4gPiBJIHdvbmRlciB3aHkgaXQgc2Vl
+bXMgdG8gd29yayBpbiB0aGUgQ0kgc2V0dXAuLi4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
+DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFNlY29uZCBpc3N1ZTogRnJvbSB0aW1lIHRvIHRp
+bWUgYXV0b3R1bmUgcHJvZHVjZXMgYSBzZWdmYXVsdDoNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+
+ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lDQo+ID4gPiA+ID4gPiA9PSBhdXRvLXR1bmluZyBzdGFy
+dGVkLCBwZXJpb2Q9MTAwMDAwMCBucyAobWF5IHRha2UgYSB3aGlsZSkNCj4gPiA+ID4gPiA+IGly
+cSBncmF2aXR5Li4uIDE5ODQgbnMNCj4gPiA+ID4gPiA+IGtlcm5lbCBncmF2aXR5Li4uIDEwOTEy
+bnMNCj4gPiA+ID4gPiA+IHVzZXIgZ3Jhdml0eS4uLiBTZWdtZW50YXRpb24gZmF1bHQNCj4gPiA+
+ID4gPiA+IA0KPiA+ID4gPiA+ID4gSSBoYXZlbid0IHNlZW4gdGhlIHNlZ2ZhdWx0IHdpdGggYSBk
+b3ZldGFpbCBlbmFibGVkIGtlcm5lbCB5ZXQuDQo+ID4gPiA+ID4gPiBTbyBpdCBtaWdodCBiZSBp
+cGlwZSByZWxhdGVkLi4uDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IEkgd2FzIGFibGUgdG8g
+cmVwcm9kdWNlIG9uY2Ugd2l0aCBnZGIgYXR0YWNoZWQuIFdlIHNlZW0gdG8gY3Jhc2gNCj4gPiA+
+ID4gPiA+IGluIHJ0bWQuYyBsaW5lIDE3MCAoZG9faW9jdGwsIFhFTk9NQUlfU1lTQ0FMTDMoKSku
+IEdEQiB3YXMNCj4gPiA+ID4gPiA+IHVuYWJsZSB0byBwcmVzZW50IGEgYmFja3RyYWNlLiAoInBy
+ZXZpb3VzIGZyYW1lIGlkZW50aWNhbCB0byB0aGlzDQo+ID4gPiA+ID4gPiBmcmFtZSAoY29ycnVw
+dCBzdGFjaz8iKQ0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gRG9lcyBjb3Jl
+Y3RsIHByb3ZpZGUgc29tZSBoaW50cz8gSXMgdGhlIGtlcm5lbCByZXBvcnRpbmcgYSB1c2Vyc3Bh
+Y2Ugb3INCj4gPiA+ID4gPiBhIGtlcm5lbCBzcGFjZSBmYXVsdD8NCj4gPiA+ID4gDQo+ID4gPiA+
+IGRtZXNnIGRvZXNuJ3QgbGlzdCBhIHNlZ2ZhdWx0IGF0IGFsbC4uLiBXcm9uZyByb3V0ZWQgc2ln
+bmFsPyBJJ20gZ29pbmcNCj4gPiA+ID4gdG8gcGxheSB3aXRoIGNvcmVjdGwsIGJ1dCB0aGVyZSB3
+YXMgbm90aGluZyBpbnRlcmVzdGluZyBzbyBmYXIuDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiBJ
+IG1lYW50IGNvcmVkdW1wY3RsIGJ0dy4sIGp1c3QgdG8gYmUgY2xlYXIuDQo+ID4gDQo+ID4gV293
+LCBvbmNlIGNvcmVkdW1wY3RsIHdhcyBpbnN0YWxsZWQgSSBnb3Q6DQo+ID4gDQo+ID4gU3RhY2sg
+dHJhY2Ugb2YgdGhyZWFkIDMxMjoNCj4gPiAgICAgICAgICAgICAgICAgIzAgIDB4MDAwMDAwMDBi
+NmY1MGRhYSBfVW53aW5kX1ZSU19Qb3AgKGxpYmdjY19zLnNvLjEpDQo+ID4gDQo+ID4gQ29tcGls
+ZXIgaXNzdWU/IEknbSBjdXJyZW50bHkgdXNpbmcNCj4gPiBnY2MgdmVyc2lvbiAxMC4yLjEgMjAy
+MTAxMTAgKERlYmlhbiAxMC4yLjEtNikNCj4gPiANCj4gDQo+IFdhaXQ6IFlvdSBoYXZlIGEgRGVi
+aWFuIDEwIHdoZXJlIChnY2MgaXMgZ2NjLTgpLCBidXQgZm9yIHRoaXMgdGVzdCB5b3UNCj4gYnVp
+bHQgYXV0b3R1bmUgKG9ubHkgdGhhdD8pIHdpdGggZ2NjLTEwPw0KDQpJdCBoYXBwZW5zIHdpdGgg
+YSAxOjEgeGVub21haS1pbWFnZXMgYnVpbGQgYXMgd2VsbC4NCg0KPiANCj4gSmFuDQo+IA0KDQo=
 
