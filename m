@@ -1,11 +1,17 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Enable gpiolib
-Message-ID: <39c6020f-5738-5e75-962b-4bd21e5e8ce7@siemens.com>
-Date: Wed, 1 Sep 2021 14:41:08 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: autotune inside qemu: early shot and segfault
+Date: Fri, 27 Aug 2021 11:39:01 +0000
+Message-ID: <09ace02a61b9e1c30e4c6dab4170a115e064576a.camel@siemens.com>
+References: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
+ <fee7159e-85d5-bffc-fd89-79050166d080@siemens.com>
+ <6c8843f98aea5786d95f57d46cbaf0f2ec267951.camel@siemens.com>
+ <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
+In-Reply-To: <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3B6CB858D8B9A54392222F6C4B0F3358@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,30 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-This ensures that Xenomai GPIO drivers are built. It's a dependency of
-XENO_DRIVERS_GPIO that is not automatically enabled.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .gitlab-ci.yml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 68785f657c..88c4c37ba8 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -153,6 +153,7 @@ variables:
-     - ./scripts/config -e XENO_DRIVERS_ANALOGY_S526
-     - ./scripts/config -e XENO_DRIVERS_RTIPC
-     - ./scripts/config -e XENO_DRIVERS_UDD
-+    - ./scripts/config -e GPIOLIB
-     - ./scripts/config -e XENO_DRIVERS_GPIO
-     - ./scripts/config -e XENO_DRIVERS_GPIO_BCM2835
-     - ./scripts/config -e XENO_DRIVERS_GPIO_MXC
--- 
-2.31.1
+T24gRnJpLCAyMDIxLTA4LTI3IGF0IDEyOjIzICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyNy4wOC4yMSAxMjoyMiwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gT24gRnJpLCAyMDIxLTA4LTI3IGF0IDEyOjAzICswMjAwLCBKYW4gS2lzemthIHdy
+b3RlOg0KPiA+ID4gT24gMjcuMDguMjEgMTE6NTcsIEZsb3JpYW4gQmV6ZGVrYSB3cm90ZToNCj4g
+PiA+ID4gSGkgYWxsLA0KPiA+ID4gPiANCj4gPiA+ID4gZmlyc3QgaXNzdWU6DQo+ID4gPiA+IA0K
+PiA+ID4gPiBtYXliZSBzb21lb25lIGNhbiBleHBsYWluIHdoYXQncyBnb2luZyBvbiBoZXJlLiBJ
+J20gcnVubmluZyBhdXRvdHVuZQ0KPiA+ID4gPiBpbnNpZGUgcWVtdSAoQVJNKSBvbiBhbiB4ODZf
+NjQgaG9zdCBhbmQgZ2V0IHRoZSBlcnJvciBiZWxvdy4gVGhlDQo+ID4gPiA+IGtlcm5lbCBpbiB1
+c2UgaXMgNC4xOSAoaXBpcGUpIGJ1aWxkIHdpdGggY3VycmVudCAibmV4dCIgYnJhbmNoLg0KPiA+
+ID4gPiANCj4gPiA+ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lMg0KPiA+ID4gPiA9PSBhdXRvLXR1
+bmluZyBzdGFydGVkLCBwZXJpb2Q9MTAwMDAwMCBucyAobWF5IHRha2UgYSB3aGlsZSkNCj4gPiA+
+ID4gaXJxIGdyYXZpdHkuLi4gMCBucw0KPiA+ID4gPiBrZXJuZWwgZ3Jhdml0eS4uLiBhdXRvdHVu
+ZTogdHVuaW5nIGZhaWxlZCAoa2VybmVsKTogUmVzb3VyY2UgdGVtcG9yYXJpbHkgdW5hdmFpbGFi
+bGUNCj4gPiA+ID4gDQo+ID4gPiA+IGRtZXNnIHRlbGxzIG1lDQo+ID4gPiA+IA0KPiA+ID4gPiBb
+ICAgOTIuODAwNzgxXSBbWGVub21haV0gYXV0b3R1bmUoaXJxaGFuZCkgc3RhcnRlZA0KPiA+ID4g
+PiBbICAxMDIuNDk5NDk0XSBbWGVub21haV0gYXV0b3R1bmUoa3RocmVhZCkgc3RhcnRlZA0KPiA+
+ID4gPiBbICAxMDguNjIzODk4XSBbWGVub21haV0gYXV0b3R1bmUoa3RocmVhZCkgZmFpbGVkIHdp
+dGggZWFybHkgc2hvdCAoODI3MjUxIG5zKQ0KPiA+ID4gPiBbICAxMDguNjQ2Nzk1XSBbWGVub21h
+aV0gYXV0b3R1bmUgZmluaXNoZWQgWzBpLzUwMDBrLzUwMDB1XQ0KPiA+ID4gPiANCj4gPiA+ID4g
+DQo+ID4gPiA+IEFueSBpZGVhIHdoeSAvIGhvdyB0aGlzIGVhcmx5IHNob3QgY2FuIGhhcHBlbj8g
+SSdtIHVuYWJsZSB0bw0KPiA+ID4gPiByZXByb2R1Y2UgaXQgb24gYSByZWFsIGhhcmR3YXJlIGxp
+a2UgdGhlIGJlYWdsZSBib25lIGJsYWNrLg0KPiA+ID4gPiBJIHdvbmRlciB3aHkgaXQgc2VlbXMg
+dG8gd29yayBpbiB0aGUgQ0kgc2V0dXAuLi4NCj4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4gPiAN
+Cj4gPiA+ID4gU2Vjb25kIGlzc3VlOiBGcm9tIHRpbWUgdG8gdGltZSBhdXRvdHVuZSBwcm9kdWNl
+cyBhIHNlZ2ZhdWx0Og0KPiA+ID4gPiANCj4gPiA+ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lDQo+
+ID4gPiA+ID09IGF1dG8tdHVuaW5nIHN0YXJ0ZWQsIHBlcmlvZD0xMDAwMDAwIG5zIChtYXkgdGFr
+ZSBhIHdoaWxlKQ0KPiA+ID4gPiBpcnEgZ3Jhdml0eS4uLiAxOTg0IG5zDQo+ID4gPiA+IGtlcm5l
+bCBncmF2aXR5Li4uIDEwOTEybnMNCj4gPiA+ID4gdXNlciBncmF2aXR5Li4uIFNlZ21lbnRhdGlv
+biBmYXVsdA0KPiA+ID4gPiANCj4gPiA+ID4gSSBoYXZlbid0IHNlZW4gdGhlIHNlZ2ZhdWx0IHdp
+dGggYSBkb3ZldGFpbCBlbmFibGVkIGtlcm5lbCB5ZXQuDQo+ID4gPiA+IFNvIGl0IG1pZ2h0IGJl
+IGlwaXBlIHJlbGF0ZWQuLi4NCj4gPiA+ID4gDQo+ID4gPiA+IEkgd2FzIGFibGUgdG8gcmVwcm9k
+dWNlIG9uY2Ugd2l0aCBnZGIgYXR0YWNoZWQuIFdlIHNlZW0gdG8gY3Jhc2gNCj4gPiA+ID4gaW4g
+cnRtZC5jIGxpbmUgMTcwIChkb19pb2N0bCwgWEVOT01BSV9TWVNDQUxMMygpKS4gR0RCIHdhcw0K
+PiA+ID4gPiB1bmFibGUgdG8gcHJlc2VudCBhIGJhY2t0cmFjZS4gKCJwcmV2aW91cyBmcmFtZSBp
+ZGVudGljYWwgdG8gdGhpcw0KPiA+ID4gPiBmcmFtZSAoY29ycnVwdCBzdGFjaz8iKQ0KPiA+ID4g
+PiANCj4gPiA+IA0KPiA+ID4gRG9lcyBjb3JlY3RsIHByb3ZpZGUgc29tZSBoaW50cz8gSXMgdGhl
+IGtlcm5lbCByZXBvcnRpbmcgYSB1c2Vyc3BhY2Ugb3INCj4gPiA+IGEga2VybmVsIHNwYWNlIGZh
+dWx0Pw0KPiA+IA0KPiA+IGRtZXNnIGRvZXNuJ3QgbGlzdCBhIHNlZ2ZhdWx0IGF0IGFsbC4uLiBX
+cm9uZyByb3V0ZWQgc2lnbmFsPyBJJ20gZ29pbmcNCj4gPiB0byBwbGF5IHdpdGggY29yZWN0bCwg
+YnV0IHRoZXJlIHdhcyBub3RoaW5nIGludGVyZXN0aW5nIHNvIGZhci4NCj4gPiANCj4gDQo+IEkg
+bWVhbnQgY29yZWR1bXBjdGwgYnR3LiwganVzdCB0byBiZSBjbGVhci4NCg0KV293LCBvbmNlIGNv
+cmVkdW1wY3RsIHdhcyBpbnN0YWxsZWQgSSBnb3Q6DQoNClN0YWNrIHRyYWNlIG9mIHRocmVhZCAz
+MTI6DQogICAgICAgICAgICAgICAgIzAgIDB4MDAwMDAwMDBiNmY1MGRhYSBfVW53aW5kX1ZSU19Q
+b3AgKGxpYmdjY19zLnNvLjEpDQoNCkNvbXBpbGVyIGlzc3VlPyBJJ20gY3VycmVudGx5IHVzaW5n
+DQpnY2MgdmVyc2lvbiAxMC4yLjEgMjAyMTAxMTAgKERlYmlhbiAxMC4yLjEtNikNCg0KPiANCj4g
+SmFuDQo+IA0KDQo=
 
