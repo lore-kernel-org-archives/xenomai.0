@@ -1,14 +1,16 @@
-References: <003a01d7a10d$9268d6b0$b73a8410$@ecler.com>
- <87sfyk7pwl.fsf@xenomai.org> <001701d7a241$8f019ae0$ad04d0a0$@ecler.com>
- <87mtor6mi7.fsf@xenomai.org> <000001d7a816$334d9bb0$99e8d310$@ecler.com>
- <000e01d7a875$15c08ee0$4141aca0$@ecler.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Using oob GPIO on RPi4B and evl_poll
-In-reply-to: <000e01d7a875$15c08ee0$4141aca0$@ecler.com>
-Date: Mon, 20 Sep 2021 08:57:51 +0200
-Message-ID: <87ee9j20pc.fsf@xenomai.org>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] y2038: testsuite/smokey/y2038: Run tests on y2038 safe
+ kernels only
+Date: Fri, 27 Aug 2021 13:35:21 +0000
+Message-ID: <cf97f7bc3bcd64d31ec44db63a637bf987165e12.camel@siemens.com>
+References: <20210827100243.22612-1-florian.bezdeka@siemens.com>
+ <77ebef55-ad96-c5ba-0abc-9f497dd2bd64@siemens.com>
+In-Reply-To: <77ebef55-ad96-c5ba-0abc-9f497dd2bd64@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C46916F3E10A3B4B8896DB2D628D70B0@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: j.villena@ecler.com
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-
-j.villena--- via Xenomai <xenomai@xenomai.org> writes:
-
-> Sorry Philippe, I have found another evl_poll related issue, similar to the
-> previous one. This time, a system crash happens when waiting in evl_poll for
-> more than 3 file descriptors.
->
-> This is a simple program to force the wrong behavior:
-> https://www.dropbox.com/s/bq7lng7dgvknypv/evl_poll_test2.c?dl=0
->
-> It's very similar to the other sent previously, but not using any GPIO
-> related functionality. The only objects which file descriptors are used in
-> evl_poll are evl_flags. The program works as expected using a value of
-> kFlagsCount < 4. From 4 upwards the kernel freezes.
->
-> The kernel console output using kFlagsCount > 3 is:
->
-
-<snip>
-
-Once again your test program made a difference by illustrating the issue
-clearly, thanks for this. The bug was related to the previous one, same
-root cause which I eventually fixed for good with [1].
-
-libevl r27 is out [2] with one test case more covering this (poll-many).
-
-[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/ccfed6556c7adf47a8e61febb681735f3b2710bc
-[2] https://source.denx.de/Xenomai/xenomai4/libevl/-/tree/r27
-
--- 
-Philippe.
+T24gRnJpLCAyMDIxLTA4LTI3IGF0IDE0OjU3ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyNy4wOC4yMSAxMjowMiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEVzcGVjaWFsbHkg
+NC4xOSBpcyBub3QgMjAzOCBzYWZlIGFuZCAzMiBiaXQga2VybmVscyBkbyBub3QgaGF2ZQ0KPiA+
+IENPTkZJR182NEJJVF9USU1FIHNldCwgd2hpY2ggZW5kcyB1cCBpbiBfX2tlcm5lbF90aW1lc3Bl
+YyBiZWluZyBkZWZpbmVkDQo+ID4gaW4gYSBub24geTIwMzggc2FmZSB3YXkuDQo+ID4gDQo+ID4g
+Y29iYWx0X2dldF90aW1lc3BlYzY0IHdpbGwgY29weSB0aGUgdXBwZXIgYnl0ZXMgb2YgdGhlIHNl
+YyBmaWVsZCBpbnRvDQo+ID4gdGhlIG5zZWMgZmllbGQsIHdoaWNoIGlzIGFsd2F5cyB6ZXJvLg0K
+PiA+IA0KPiA+IFRlc3RpbmcgeTIwMzggc3lzY2FsbHMgb24gYSBub24geTIwMzggc2FmZSBrZXJu
+ZWwgZG9lc24ndCBtYWtlIHNlbnNlLA0KPiA+IGhlbmNlIGxpbWl0aW5nIHRoZSB0ZXN0IHJ1bnMg
+dG8ga2VybmVscyB3aXRoIDIwMzggc3VwcG9ydC4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBG
+bG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4gPiAtLS0NCj4g
+PiAgdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMgfCAyNyArKysrKysrKysr
+KysrKysrKysrKysrKysrKw0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMjcgaW5zZXJ0aW9ucygrKQ0K
+PiA+IA0KPiA+IGRpZmYgLS1naXQgYS90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVz
+dHMuYyBiL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jDQo+ID4gaW5kZXgg
+OGFmZWRkN2QxLi5jMjNhNTRmNWQgMTAwNjQ0DQo+ID4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS95
+MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4gPiArKysgYi90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5
+c2NhbGwtdGVzdHMuYw0KPiA+IEBAIC0xMSw2ICsxMSw3IEBADQo+ID4gICAqLw0KPiA+ICAjaW5j
+bHVkZSA8YXNtL3hlbm9tYWkvc3lzY2FsbC5oPg0KPiA+ICAjaW5jbHVkZSA8c21va2V5L3Ntb2tl
+eS5oPg0KPiA+ICsjaW5jbHVkZSA8c3lzL3V0c25hbWUuaD4NCj4gPiAgI2luY2x1ZGUgPG1xdWV1
+ZS5oPg0KPiA+ICANCj4gPiAgc21va2V5X3Rlc3RfcGx1Z2luKHkyMDM4LCBTTU9LRVlfTk9BUkdT
+LCAiVmFsaWRhdGUgY29ycmVjdCB5MjAzOCBzdXBwb3J0Iik7DQo+ID4gQEAgLTk4OSwxMCArOTkw
+LDM2IEBAIHN0YXRpYyBpbnQgdGVzdF9zY19jb2JhbHRfZXZlbnRfd2FpdDY0KHZvaWQpDQo+ID4g
+IAlyZXR1cm4gMDsNCj4gPiAgfQ0KPiA+ICANCj4gPiArc3RhdGljIGludCBjaGVja19rZXJuZWxf
+dmVyc2lvbih2b2lkKQ0KPiA+ICt7DQo+ID4gKwlpbnQgcmV0LCBtYWpvciwgbWlub3I7DQo+ID4g
+KwlzdHJ1Y3QgdXRzbmFtZSB1dHM7DQo+ID4gKw0KPiA+ICsJcmV0ID0gc21va2V5X2NoZWNrX2Vy
+cm5vKHVuYW1lKCZ1dHMpKTsNCj4gPiArCWlmIChyZXQpDQo+ID4gKwkJcmV0dXJuIHJldDsNCj4g
+PiArDQo+ID4gKwlyZXQgPSBzc2NhbmYodXRzLnJlbGVhc2UsICIlZC4lZCIsICZtYWpvciwgJm1p
+bm9yKTsNCj4gPiArCWlmICghc21va2V5X2Fzc2VydChyZXQgPT0gMikpDQo+ID4gKwkJcmV0dXJu
+IC1FSU5WQUw7DQo+ID4gKw0KPiA+ICsJLyogV2UgbmVlZCBhIGtlcm5lbCB3aXRoIHkyMDM4IHN1
+cHBvcnQsIDUuNCBvbndhcmRzICovDQo+ID4gKwlpZiAoIShtYWpvciA+IDUgfHwgKG1ham9yID09
+IDUgJiYgbWlub3IgPj0gNCkpKSB7DQo+ID4gKwkJc21va2V5X25vdGUoInkyMDM4OiBza2lwcGVk
+LiAobm8geTIwMzggc2FmZSBrZXJuZWwpIik7DQo+ID4gKwkJcmV0dXJuIDE7DQo+ID4gKwl9DQo+
+ID4gKw0KPiA+ICsJcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgcnVu
+X3kyMDM4KHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3Zb
+XSkNCj4gPiAgew0KPiA+ICAJaW50IHJldDsNCj4gPiAgDQo+ID4gKwlyZXQgPSBjaGVja19rZXJu
+ZWxfdmVyc2lvbigpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiArCQlyZXR1cm4gKHJldCA8IDApID8g
+cmV0IDogMDsgLyogc2tpcCBpZiBubyB5MjAzOCBzYWZlIGtlcm5lbCAqLw0KPiA+ICsNCj4gPiAg
+CXJldCA9IHRlc3Rfc2NfY29iYWx0X3NlbV90aW1lZHdhaXQ2NCgpOw0KPiA+ICAJaWYgKHJldCkN
+Cj4gPiAgCQlyZXR1cm4gcmV0Ow0KPiA+IA0KPiANCj4gT0ssIHdpbGwgYXBwbHkuIEJ1dCBJJ20g
+YWxzbyBleHBlY3RlZCBhIHBhdGNoIHRoYXQgbWFrZXMgdGhlIHRlc3QgY2FzZQ0KPiBmYWlsIGlu
+IGNhc2VzIG9mIGVhcmx5IHNob3RzLiBXZSBvbmx5IG5vdGljZWQgdGhpcyBpc3N1ZSBiZWNhdXNl
+IHlvdQ0KPiByZWFkIHRoZSBsb2dzIG9mIHN1Y2Nlc3NmdWwgcnVucy4NCg0KV2hlbiB3ZSBzdGFy
+dGVkIHdlIHNhdyBhIGxvdCBvZiBzdWNoIHdhcm5pbmdzLCBlc3BlY2lhbGx5IG9uIHZpcnR1YWwN
+CnRhcmdldHMgYW5kIGRlY2lkZWQgbm90IHRvIGZhaWwgdGhlIHRlc3RzIGluIHN1Y2ggY2FzZXMu
+IEhvcGVmdWxseSBhbGwNCm9mIHN1Y2ggcHJvYmxlbXMgYXJlIG5vdyBzb2x2ZWQgLyBjb21wbGV0
+ZWx5IHVuZGVyc3Rvb2QsIHNvIHdlIGNvdWxkDQptb3ZlIGZvcndhcmQgYW5kIG5vdyBmYWlsIGlm
+IHN1Y2ggYSBlYXJseSBzaG90IGhhcHBlbnMuDQoNCldlIHdpbGwgdGFrZSBjYXJlIG9mIHRoZSAi
+bWlncmF0aW9uIiBmcm9tIHdhcm5pbmcgdG8gZXJyb3IuDQoNCj4gDQo+IEphbg0KPiANCg0K
 
