@@ -1,12 +1,9 @@
-References: <20210918010850.23821-1-hongzhan.chen@intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] recipes-kernel: disable more debugs that influence
- latency performance
-In-reply-to: <20210918010850.23821-1-hongzhan.chen@intel.com>
-Date: Sat, 18 Sep 2021 10:10:36 +0200
-Message-ID: <87h7ei1eyr.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+From: Rajesh Venkataraman <rajesh_venkataraman@trimble.com>
+Date: Thu, 26 Aug 2021 18:15:15 -0700
+Message-ID: <CAM4LU5LF4ShOpV9no1z884nvx4ezBO7zCnQZVxnJinow1K+Bfw@mail.gmail.com>
+Subject: pthread_getcpuclockid() and clock_gettime() with Xenomai pthread
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hi,
+   For the linux pthreads we have used pthread_getcpuclockid() to get the
+threads cpu time clock. Then periodically we do a clock_gettime() on this
+timer to get all threads run time. Then do clock_gettime( CLOCK_MONOTONIC,
+&ts ) to get the total system. Using the individual thread run time and
+total run time, we calculate the percentage of CPU utilization for each
+thread. Now we have moved the realtime thread to xenomai user space.
+The clock_gettime() on a xenomai user thread returns an error.   How do we
+calculate what percentage of the CPU is utilized by the xenomai thread in
+our Application?
 
-Hongzhan Chen via Xenomai <xenomai@xenomai.org> writes:
+  We also get the idle time of the CPU from the /proc/stat and calculate
+the reserve percentage based on the total system time. Does linux idle time
+also include xenomai run time?
 
-> For dovetail-based xenomai, max lat may drop from 203.800 us
-> to 9.807 us in 10 hours stressed latency test on Maxtang 8565U board
-> with lava test.
->
-> diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
-> index d7d87c5..29b3522 100644
-> --- a/recipes-kernel/linux/files/common_nodbg.cfg
-> +++ b/recipes-kernel/linux/files/common_nodbg.cfg
-> @@ -1,2 +1,9 @@
->  # CONFIG_IPIPE_DEBUG is not set
->  # CONFIG_XENO_OPT_DEBUG is not set
-> +# CONFIG_PROVE_LOCKING is not set
-> +# CONFIG_DEBUG_RT_MUTEXES is not set
-> +# CONFIG_DEBUG_SPINLOCK is not set
-> +# CONFIG_DEBUG_MUTEXES is not set
-> +# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-> +# CONFIG_DEBUG_RWSEMS is not set
-> +# CONFIG_DEBUG_LOCK_ALLOC is not set
+  Is this correct method for calculating the CPU utilization percentage per
+thread in a system/application with xenomai and linux pthreads running in a
+single process?
 
-Maybe it's time to backport the evl-check utility [1] from xenomai4 to
-xenomai3, this is a very simple kconfig checker which helps in detecting
-problematic settings. One just feeds it with a set of constraints like
-[2] in order to perform such detection. FWIW, this command is documented
-here.
-
-[1] https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/utils/evl-check.c
-[2]
-https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/utils/kconf-checklist.evl
-[3] https://evlproject.org/core/commands/#evl-check-command
-
--- 
-Philippe.
-
+Rajesh
