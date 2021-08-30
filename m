@@ -1,7 +1,10 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 0/3] add support for cherryview gpio controller driver
-Date: Mon, 30 Aug 2021 02:45:24 -0400
-Message-Id: <20210830064527.18206-1-hongzhan.chen@intel.com>
+Subject: [PATCH 1/3] drivers/gpio: core: move out of OF config conditional
+ compilation
+Date: Mon, 30 Aug 2021 02:45:25 -0400
+Message-Id: <20210830064527.18206-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210830064527.18206-1-hongzhan.chen@intel.com>
+References: <20210830064527.18206-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,49 +15,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-1. move out of OF config conditional compilation so that non-OF platform
-  call same API to remove rtdm gpio chip device.
-2. Introduce helper to find gpiochip as referring to pair of 
-   rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
-3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+The api would be called by both non-OF and OF platform to remove rtdm
+gpiochip device.
 
-I also did following tests with this patchset:
-1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
-   to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
-   setting GPIO_RTIOC_TS
-2. apply following patch, and rerun 1.
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ include/cobalt/kernel/rtdm/gpio.h | 3 +--
+ kernel/drivers/gpio/gpio-core.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-index f83d7689f..50afbd418 100644
---- a/testsuite/gpiobench/gpiobench.c
-+++ b/testsuite/gpiobench/gpiobench.c
-@@ -619,7 +619,7 @@ int main(int argc, char **argv)
-                        goto out;
-                }
-
--               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
-+               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
-                if (ret) {
-                        printf("ioctl gpio port ts, failed\n");
-                        goto out;
-
-Hardware env:
-1. Rock PI X V1.4.
-2. GPIO loopback connection between GPIO 334 and 335.
+diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+index 72cc3a035..c307b1572 100644
+--- a/include/cobalt/kernel/rtdm/gpio.h
++++ b/include/cobalt/kernel/rtdm/gpio.h
+@@ -70,9 +70,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from,
+ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+ 				const char *compat[],
+ 				int nentries, int type);
++#endif
  
-
-Hongzhan Chen (3):
-  drivers/gpio: core: move out of OF config conditional compilation
-  drivers/gpio: core: Introduce helper to find gpiochip
-  driver/gpio: Add Intel Cherryview pinctrl driver
-
- include/cobalt/kernel/rtdm/gpio.h     | 10 ++++--
- kernel/drivers/gpio/Kconfig           |  7 ++++
- kernel/drivers/gpio/Makefile          |  2 ++
- kernel/drivers/gpio/gpio-cherryview.c | 42 ++++++++++++++++++++++++
- kernel/drivers/gpio/gpio-core.c       | 46 +++++++++++++++++++++++++--
- 5 files changed, 103 insertions(+), 4 deletions(-)
- create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
-
+ void rtdm_gpiochip_remove_of(int type);
+ 
+-#endif
+-
+ #endif /* !_COBALT_RTDM_GPIO_H */
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 06a19b33a..ddda62b24 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -626,6 +626,8 @@ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+ }
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_scan_array_of);
+ 
++#endif /* CONFIG_OF */
++
+ void rtdm_gpiochip_remove_of(int type)
+ {
+ 	struct rtdm_gpio_chip *rgc, *n;
+@@ -644,5 +646,3 @@ void rtdm_gpiochip_remove_of(int type)
+ 	mutex_unlock(&chip_lock);
+ }
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove_of);
+-
+-#endif /* CONFIG_OF */
 -- 
 2.17.1
 
