@@ -1,12 +1,7 @@
-MIME-Version: 1.0
-References: <CAM4LU5LF4ShOpV9no1z884nvx4ezBO7zCnQZVxnJinow1K+Bfw@mail.gmail.com>
- <d581fd9a-c0ac-57d1-ce0d-018ae661981a@siemens.com>
-In-Reply-To: <d581fd9a-c0ac-57d1-ce0d-018ae661981a@siemens.com>
-From: Rajesh Venkataraman <rajesh_venkataraman@trimble.com>
-Date: Sun, 29 Aug 2021 22:12:56 -0700
-Message-ID: <CAM4LU5KMy77MgW+as0FT0b=RtcbVKpauWw2ZwWa09WhPumE3Bw@mail.gmail.com>
-Subject: Re: pthread_getcpuclockid() and clock_gettime() with Xenomai pthread
-Content-Type: text/plain; charset="UTF-8"
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH 0/3] add support for cherryview gpio controller driver
+Date: Mon, 30 Aug 2021 02:45:24 -0400
+Message-Id: <20210830064527.18206-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,66 +10,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Jan,
-   We are currently getting the total system time and all linux pthread run
-time using the clock_gettime(). Then we are getting the linux idle time
-from /proc/stat. We are getting the xenomai thread times and total xenomai
-time from /proc/xenomai/sched/acct. Subtract the total xenomai time from
-linux ide. Then calculate as a percentage individual thread CPU utilization
-and reserve percentage. We can do this in a Linux thread, but it would be
-nice if we had a single interface/api for getting the per thread CPU
-utilization for the whole system(Linux and Xenomai).
+1. move out of OF config conditional compilation so that non-OF platform
+  call same API to remove rtdm gpio chip device.
+2. Introduce helper to find gpiochip as referring to pair of 
+   rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
+3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
 
-Rajesh
+I also did following tests with this patchset:
+1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
+   to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
+   setting GPIO_RTIOC_TS
+2. apply following patch, and rerun 1.
+
+index f83d7689f..50afbd418 100644
+--- a/testsuite/gpiobench/gpiobench.c
++++ b/testsuite/gpiobench/gpiobench.c
+@@ -619,7 +619,7 @@ int main(int argc, char **argv)
+                        goto out;
+                }
+
+-               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
++               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
+                if (ret) {
+                        printf("ioctl gpio port ts, failed\n");
+                        goto out;
+
+Hardware env:
+1. Rock PI X V1.4.
+2. GPIO loopback connection between GPIO 334 and 335.
+ 
+
+Hongzhan Chen (3):
+  drivers/gpio: core: move out of OF config conditional compilation
+  drivers/gpio: core: Introduce helper to find gpiochip
+  driver/gpio: Add Intel Cherryview pinctrl driver
+
+ include/cobalt/kernel/rtdm/gpio.h     | 10 ++++--
+ kernel/drivers/gpio/Kconfig           |  7 ++++
+ kernel/drivers/gpio/Makefile          |  2 ++
+ kernel/drivers/gpio/gpio-cherryview.c | 42 ++++++++++++++++++++++++
+ kernel/drivers/gpio/gpio-core.c       | 46 +++++++++++++++++++++++++--
+ 5 files changed, 103 insertions(+), 4 deletions(-)
+ create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
+
+-- 
+2.17.1
 
 
-On Fri, Aug 27, 2021 at 5:40 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-
-> On 27.08.21 03:15, Rajesh Venkataraman via Xenomai wrote:
-> > Hi,
-> >    For the linux pthreads we have used pthread_getcpuclockid() to get the
-> > threads cpu time clock. Then periodically we do a clock_gettime() on this
-> > timer to get all threads run time. Then do clock_gettime(
-> CLOCK_MONOTONIC,
-> > &ts ) to get the total system. Using the individual thread run time and
-> > total run time, we calculate the percentage of CPU utilization for each
-> > thread. Now we have moved the realtime thread to xenomai user space.
-> > The clock_gettime() on a xenomai user thread returns an error.   How do
-> we
-> > calculate what percentage of the CPU is utilized by the xenomai thread in
-> > our Application?
-> >
-> >   We also get the idle time of the CPU from the /proc/stat and calculate
-> > the reserve percentage based on the total system time. Does linux idle
-> time
-> > also include xenomai run time?
-> >
-> >   Is this correct method for calculating the CPU utilization percentage
-> per
-> > thread in a system/application with xenomai and linux pthreads running
-> in a
-> > single process?
-> >
->
-> Xenomai does not support pthread_getcpuclockid for reading the consumed
-> time of a thread. There are stats under /proc/xenomai/sched/acct, rtps
-> uses them, but reading those require switching to Linux (if that is an
-> issue for your use case). And there is an internal cobalt_thread_stat()
-> syscall already, used only by some non-posix skins so far.
->
-> I'm sitting on non-upstream changes to export the CPU usage of thread to
-> userland without leaving RT, actually even without issuing a syscall.
-> But those need rework in order to attach to some posix interface.
->
-> What are your requirements on a statistic interface? Who is going to
-> monitor who, and under which constraints?
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
