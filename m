@@ -1,9 +1,15 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 3/3] driver/gpio: Add Intel Cherryview pinctrl driver
-Date: Mon, 30 Aug 2021 02:45:27 -0400
-Message-Id: <20210830064527.18206-4-hongzhan.chen@intel.com>
-In-Reply-To: <20210830064527.18206-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH 1/3] drivers/gpio: core: move out of OF config conditional
+ compilation
 References: <20210830064527.18206-1-hongzhan.chen@intel.com>
+ <20210830064527.18206-2-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <72808c4a-ac0e-1f6b-36b3-83ccb60cf4ea@siemens.com>
+Date: Mon, 30 Aug 2021 09:34:38 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210830064527.18206-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,102 +18,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-Add support for Intel Cherryview pin controller driver
+On 30.08.21 08:45, Hongzhan Chen via Xenomai wrote:
+> The api would be called by both non-OF and OF platform to remove rtdm
+> gpiochip device.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  include/cobalt/kernel/rtdm/gpio.h | 3 +--
+>  kernel/drivers/gpio/gpio-core.c   | 4 ++--
+>  2 files changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+> index 72cc3a035..c307b1572 100644
+> --- a/include/cobalt/kernel/rtdm/gpio.h
+> +++ b/include/cobalt/kernel/rtdm/gpio.h
+> @@ -70,9 +70,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from,
+>  int rtdm_gpiochip_scan_array_of(struct device_node *from,
+>  				const char *compat[],
+>  				int nentries, int type);
+> +#endif
+>  
+>  void rtdm_gpiochip_remove_of(int type);
+>  
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- kernel/drivers/gpio/Kconfig           |  7 +++++
- kernel/drivers/gpio/Makefile          |  2 ++
- kernel/drivers/gpio/gpio-cherryview.c | 42 +++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+)
- create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
+But, when we call this for ACPI platforms as well, is _of still the
+right name?
 
-diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-index 44f41688c..c257444f0 100644
---- a/kernel/drivers/gpio/Kconfig
-+++ b/kernel/drivers/gpio/Kconfig
-@@ -57,6 +57,13 @@ config XENO_DRIVERS_GPIO_OMAP
- 	Enables support for the GPIO controller available from
- 	OMAP family SOC.
- 
-+config XENO_DRIVERS_GPIO_CHERRYVIEW
-+	depends on PINCTRL_CHERRYVIEW
-+	tristate "Support for Cherryview GPIOs"
-+	help
-+
-+	Enables support for the Intel Cherryview GPIO controller
-+
- config XENO_DRIVERS_GPIO_DEBUG
-        bool "Enable GPIO core debugging features"
- 
-diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-index 7bcf59949..e534eab93 100644
---- a/kernel/drivers/gpio/Makefile
-+++ b/kernel/drivers/gpio/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
- 
- xeno-gpio-bcm2835-y := gpio-bcm2835.o
-@@ -14,3 +15,4 @@ xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
- xeno-gpio-zynq7000-y := gpio-zynq7000.o
- xeno-gpio-xilinx-y := gpio-xilinx.o
- xeno-gpio-omap-y := gpio-omap.o
-+xeno-gpio-cherryview-y := gpio-cherryview.o
-diff --git a/kernel/drivers/gpio/gpio-cherryview.c b/kernel/drivers/gpio/gpio-cherryview.c
-new file mode 100644
-index 000000000..ac7136325
---- /dev/null
-+++ b/kernel/drivers/gpio/gpio-cherryview.c
-@@ -0,0 +1,42 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * @note Copyright (C) 2021 Hongzhan Chen <hongzhan.chen@intel.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+#include <linux/module.h>
-+#include <rtdm/gpio.h>
-+
-+#define RTDM_SUBCLASS_CHERRYVIEW  7
-+
-+static const char *compat_array[] = {
-+	"INT33FF:00",
-+	"INT33FF:01",
-+	"INT33FF:02",
-+	"INT33FF:03",
-+};
-+
-+static int __init cherryview_gpio_init(void)
-+{
-+	return rtdm_gpiochip_array_find(NULL, compat_array,
-+					ARRAY_SIZE(compat_array),
-+					RTDM_SUBCLASS_CHERRYVIEW);
-+}
-+module_init(cherryview_gpio_init);
-+
-+static void __exit cherryview_gpio_exit(void)
-+{
-+	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_CHERRYVIEW);
-+}
-+module_exit(cherryview_gpio_exit);
-+
-+MODULE_LICENSE("GPL");
+> -#endif
+> -
+>  #endif /* !_COBALT_RTDM_GPIO_H */
+> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+> index 06a19b33a..ddda62b24 100644
+> --- a/kernel/drivers/gpio/gpio-core.c
+> +++ b/kernel/drivers/gpio/gpio-core.c
+> @@ -626,6 +626,8 @@ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+>  }
+>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_scan_array_of);
+>  
+> +#endif /* CONFIG_OF */
+> +
+>  void rtdm_gpiochip_remove_of(int type)
+>  {
+>  	struct rtdm_gpio_chip *rgc, *n;
+> @@ -644,5 +646,3 @@ void rtdm_gpiochip_remove_of(int type)
+>  	mutex_unlock(&chip_lock);
+>  }
+>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove_of);
+> -
+> -#endif /* CONFIG_OF */
+> 
+
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
