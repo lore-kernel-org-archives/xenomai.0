@@ -1,8 +1,7 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 1/3] drivers/gpio: core: move out of OF config conditional
- compilation
-Date: Mon, 30 Aug 2021 02:45:25 -0400
-Message-Id: <20210830064527.18206-2-hongzhan.chen@intel.com>
+Subject: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
+Date: Mon, 30 Aug 2021 02:45:26 -0400
+Message-Id: <20210830064527.18206-3-hongzhan.chen@intel.com>
 In-Reply-To: <20210830064527.18206-1-hongzhan.chen@intel.com>
 References: <20210830064527.18206-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,49 +14,85 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The api would be called by both non-OF and OF platform to remove rtdm
-gpiochip device.
+To find gpiochip for non-OF platforms like x86
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 ---
- include/cobalt/kernel/rtdm/gpio.h | 3 +--
- kernel/drivers/gpio/gpio-core.c   | 4 ++--
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ include/cobalt/kernel/rtdm/gpio.h |  7 ++++++
+ kernel/drivers/gpio/gpio-core.c   | 42 +++++++++++++++++++++++++++++++
+ 2 files changed, 49 insertions(+)
 
 diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
-index 72cc3a035..c307b1572 100644
+index c307b1572..07093e0be 100644
 --- a/include/cobalt/kernel/rtdm/gpio.h
 +++ b/include/cobalt/kernel/rtdm/gpio.h
-@@ -70,9 +70,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from,
- int rtdm_gpiochip_scan_array_of(struct device_node *from,
- 				const char *compat[],
- 				int nentries, int type);
-+#endif
+@@ -62,6 +62,13 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+ 			     unsigned int offset);
  
- void rtdm_gpiochip_remove_of(int type);
++int rtdm_gpiochip_find(struct device_node *from,
++			  const char *label, int type);
++
++int rtdm_gpiochip_array_find(struct device_node *from,
++				const char *compat[],
++				int nentries, int type);
++
+ #ifdef CONFIG_OF
  
--#endif
--
- #endif /* !_COBALT_RTDM_GPIO_H */
+ int rtdm_gpiochip_scan_of(struct device_node *from,
 diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index 06a19b33a..ddda62b24 100644
+index ddda62b24..6bcf04ea3 100644
 --- a/kernel/drivers/gpio/gpio-core.c
 +++ b/kernel/drivers/gpio/gpio-core.c
-@@ -626,6 +626,8 @@ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+@@ -528,6 +528,48 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
  }
- EXPORT_SYMBOL_GPL(rtdm_gpiochip_scan_array_of);
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
  
-+#endif /* CONFIG_OF */
++int rtdm_gpiochip_find(struct device_node *from, const char *label,
++			  int type)
++{
++	struct rtdm_gpio_chip *rgc;
++	struct gpio_chip *chip;
++	int ret = -ENODEV;
 +
- void rtdm_gpiochip_remove_of(int type)
- {
- 	struct rtdm_gpio_chip *rgc, *n;
-@@ -644,5 +646,3 @@ void rtdm_gpiochip_remove_of(int type)
- 	mutex_unlock(&chip_lock);
- }
- EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove_of);
--
--#endif /* CONFIG_OF */
++	if (!rtdm_available())
++		return -ENOSYS;
++
++	chip = find_chip_by_name(label);
++	if (chip == NULL)
++		return ret;
++
++	ret = 0;
++	rgc = rtdm_gpiochip_alloc(chip, type);
++	if (IS_ERR(rgc))
++		ret = PTR_ERR(rgc);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
++
++int rtdm_gpiochip_array_find(struct device_node *from,
++				const char *compat[],
++				int nentries, int type)
++{
++	int ret = -ENODEV, _ret, n;
++
++	for (n = 0; n < nentries; n++) {
++		_ret = rtdm_gpiochip_find(from, compat[n], type);
++		if (_ret) {
++			if (_ret != -ENODEV)
++				return _ret;
++		} else
++			ret = 0;
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
++
+ #ifdef CONFIG_OF
+ 
+ #include <linux/of_platform.h>
 -- 
 2.17.1
 
