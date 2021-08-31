@@ -1,17 +1,9 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2 7/7] testsuite/smokey/leaks: Adding checks for procfs
- exports
-Date: Wed, 25 Aug 2021 15:25:24 +0000
-Message-ID: <5c7af9e4908af5063169a1987336f964ec36f640.camel@siemens.com>
-References: <20210825103230.27274-1-florian.bezdeka@siemens.com>
- <20210825103230.27274-8-florian.bezdeka@siemens.com>
- <a9920045-bdac-2be6-7f23-8ce003ae0d2e@siemens.com>
-In-Reply-To: <a9920045-bdac-2be6-7f23-8ce003ae0d2e@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <48E076641D6AA942B5433140ECD40907@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [Xenomai 4] v5.13-evl2-rebase released
+Date: Tue, 31 Aug 2021 10:45:53 +0200
+Message-ID: <87mtoym27y.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,51 +12,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: xenomai@xenomai.org
 
-T24gV2VkLCAyMDIxLTA4LTI1IGF0IDE3OjA5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAyNS4wOC4yMSAxMjozMiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IE1ha2Ugc3VyZSB0
-aGF0IG5hbWVkIHNlbWFwaG9yZXMgYXMgd2VsbCBhcyBtcXVldWVzIGFyZSBleHBvcnRlZCB0byB0
-aGUNCj4gPiBwcm9jZnMuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogRmxvcmlhbiBCZXpkZWth
-IDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gLS0tDQo+ID4gIHRlc3RzdWl0ZS9z
-bW9rZXkvbGVha3MvbGVha3MuYyB8IDI3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+
-ICAxIGZpbGUgY2hhbmdlZCwgMjcgaW5zZXJ0aW9ucygrKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQg
-YS90ZXN0c3VpdGUvc21va2V5L2xlYWtzL2xlYWtzLmMgYi90ZXN0c3VpdGUvc21va2V5L2xlYWtz
-L2xlYWtzLmMNCj4gPiBpbmRleCBiYmU1ZmMzYWQuLmI4NjdiYzcyNyAxMDA2NDQNCj4gPiAtLS0g
-YS90ZXN0c3VpdGUvc21va2V5L2xlYWtzL2xlYWtzLmMNCj4gPiArKysgYi90ZXN0c3VpdGUvc21v
-a2V5L2xlYWtzL2xlYWtzLmMNCj4gPiBAQCAtMjgsNiArMjgsNyBAQA0KPiA+ICAjaW5jbHVkZSA8
-cHRocmVhZC5oPg0KPiA+ICAjaW5jbHVkZSA8ZmNudGwuaD4NCj4gPiAgI2luY2x1ZGUgPHN5cy9t
-bWFuLmg+DQo+ID4gKyNpbmNsdWRlIDxzeXMvc3RhdC5oPg0KPiA+ICAjaW5jbHVkZSA8c2VtYXBo
-b3JlLmg+DQo+ID4gICNpbmNsdWRlIDxtcXVldWUuaD4NCj4gPiAgI2luY2x1ZGUgPHNpZ25hbC5o
-Pg0KPiA+IEBAIC03MSw2ICs3MiwyNCBAQCBjb25zdCBjaGFyICptZW1kZXZbXSA9IHsNCj4gPiAg
-DQo+ID4gIHN0YXRpYyBpbnQgbWVtZGV2ZmRbM107DQo+ID4gIA0KPiA+ICtzdGF0aWMgaW50IHBy
-b2Nmc19leGlzdHMoY29uc3QgY2hhciAqdHlwZSwgY29uc3QgY2hhciAqbmFtZSkNCj4gPiArew0K
-PiA+ICsJc3RydWN0IHN0YXQgczsNCj4gPiArCWNoYXIgcGF0aFsxMjhdOw0KPiA+ICsJaW50IHJl
-dDsNCj4gPiArDQo+ID4gKwkvKiBJZ25vcmUgaWYgdGhlIGtlcm5lbCBzZWVtcyB0byBiZSBjb21w
-aWxlZCB3aXRob3V0IHByb2NmcyBzdXBwb3J0ICovDQo+ID4gKwlpZiAoc3RhdCgiL3Byb2MveGVu
-b21haSIsICZzKSB8fCAhU19JU0RJUihzLnN0X21vZGUpKQ0KPiA+ICsJCXJldHVybiAwOw0KPiA+
-ICsNCj4gPiArCXJldCA9IHNucHJpbnRmKHBhdGgsIDEyOCwgIiVzLyVzLyVzIiwgIi9wcm9jL3hl
-bm9tYWkvcmVnaXN0cnkvcG9zaXgiLA0KPiA+ICsJCSAgICAgICB0eXBlLCAmbmFtZVsxXSk7DQo+
-ID4gKwlpZiAocmV0IDwgMCkNCj4gPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiArDQo+ID4gKwly
-ZXR1cm4gc21va2V5X2NoZWNrX2Vycm5vKHN0YXQocGF0aCwgJnMpKTsNCj4gPiArfQ0KPiA+ICsN
-Cj4gPiAgc3RhdGljIHVuc2lnbmVkIGxvbmcgbG9uZyBnZXRfdXNlZCh2b2lkKQ0KPiA+ICB7DQo+
-ID4gIAlzdHJ1Y3QgY29iYWx0X21lbWRldl9zdGF0IHN0YXRidWY7DQo+ID4gQEAgLTEyMSw2ICsx
-NDAsMTAgQEAgc3RhdGljIGlubGluZSBpbnQgc3VicHJvY2Vzc19sZWFrKHZvaWQpDQo+ID4gIAlp
-ZiAocmV0KQ0KPiA+ICAJCXJldHVybiByZXQ7DQo+ID4gIA0KPiA+ICsJcmV0ID0gcHJvY2ZzX2V4
-aXN0cygic2VtIiwgU0VNX05BTUUpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiArCQlyZXR1cm4gcmV0
-Ow0KPiA+ICsNCj4gDQo+IFRoaXMgY29tZXMgdG9vIGZhc3QgZm9yIHRoZSByZWdpc3RyeSwgc2Vl
-IGZhaWxpbmcgdGVzdHMgaW4gQ0ksIGUuZy4NCj4gaHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5v
-bWFpL3hlbm9tYWktaW1hZ2VzLy0vam9icy8zMTM1MDMuIFRoZQ0KPiByZWdpc3RyYXRpb24gd2l0
-aCAvcHJvYyBzZWVtcyB0byBoYXBwZW4gYXN5bmNocm9ub3VzbHkuIElmIEkgYWRkIGENCj4gdXNs
-ZWVwKDEwMDAwMCkgdG8gcHJvY2ZzX2V4aXN0cygpLCB0aGUgdGVzdHMgc2VlbSB0byBwYXNzLg0K
-DQpBQ0sgdGhhdCdzIGEgcmFjZS4gVGhlIGV4cG9ydCBpdHNlbGYgaXMgZGVsZWdhdGVkIHRvIExp
-bnV4LCB0aGF0J3MgdGhlDQpyb290IGNhdXNlLiBMZXQncyB0cnkgdGhlIHVzbGVlcCgpLiBJIGRv
-bid0IGhhdmUgYSBiZXR0ZXIgaWRlYSByaWdodA0Kbm93Lg0KDQo+IA0KPiBKYW4NCj4gDQo+ID4g
-IAlzZXZ0LnNpZ2V2X25vdGlmeSA9IFNJR0VWX1RIUkVBRF9JRDsNCj4gPiAgCXNldnQuc2lnZXZf
-c2lnbm8gPSBTSUdBTFJNOw0KPiA+ICAJc2V2dC5zaWdldl9ub3RpZnlfdGhyZWFkX2lkID0gc3lz
-Y2FsbChfX05SX2dldHRpZCk7DQo+ID4gQEAgLTEzMiw2ICsxNTUsMTAgQEAgc3RhdGljIGlubGlu
-ZSBpbnQgc3VicHJvY2Vzc19sZWFrKHZvaWQpDQo+ID4gIAlpZiAocmV0IDwgMCkNCj4gPiAgCQly
-ZXR1cm4gcmV0Ow0KPiA+ICANCj4gPiArCXJldCA9IHByb2Nmc19leGlzdHMoIm1xdWV1ZSIsIE1R
-X05BTUUpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiArCQlyZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiAg
-CXJldHVybiAwOw0KPiA+ICB9DQo+ID4gIA0KPiA+IA0KPiANCg0K
+
+At git@source.denx.de:Xenomai/xenomai4/linux-evl.git, branch v5.13-evl-rebase
+
+-- 
+Philippe.
 
