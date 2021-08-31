@@ -3,8 +3,8 @@ References: <87sfyqm2jc.fsf@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: [Dovetail] v5.10.61-rebase released
 In-reply-to: <c6fc5181-8bdf-251f-6674-82a25c5baeb3@siemens.com>
-Date: Tue, 31 Aug 2021 17:56:25 +0200
-Message-ID: <87eea9mwuu.fsf@xenomai.org>
+Date: Tue, 31 Aug 2021 18:10:17 +0200
+Message-ID: <87bl5dmw7q.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -30,13 +30,15 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 > release, rather a rebase + new patches.
 >
 > Philippe, are you still tagging as well, just forgetting to push? Or
+> should I tag on the merging branch automatically (after a test run passed)?
+>
 
-This is intended. I did not decide to tag the Dovetail tree yet. Since I
-have been issuing a single rebase push per upstream version so far,
-please consider this a release for now.
+Maybe you were referring to this tag which was indeed missing?
+v5.10.61-dovetail-rebase.
 
-I may change this policy in a near future though. When this happens,
-Dovetail patches corresponding to these tags will be issued too.
+Just fixed it, sorry for this. However, the naming policy may change as
+I just mentioned, as I will likely have to issue multiple Dovetail
+releases per upstream release at some point.
 
 -- 
 Philippe.
