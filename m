@@ -1,11 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: autotune inside qemu: early shot and segfault
-Message-ID: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
-Date: Fri, 27 Aug 2021 11:57:43 +0200
+Subject: Re: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
+References: <20210831050736.5371-1-hongzhan.chen@intel.com>
+ <20210831050736.5371-3-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
+Date: Tue, 31 Aug 2021 08:47:46 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210831050736.5371-3-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +17,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-Hi all,
+On 31.08.21 07:07, Hongzhan Chen via Xenomai wrote:
+> To find gpiochip for non-OF platforms like x86
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  include/cobalt/kernel/rtdm/gpio.h |  7 ++++++
+>  kernel/drivers/gpio/gpio-core.c   | 42 +++++++++++++++++++++++++++++++
+>  2 files changed, 49 insertions(+)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+> index 29f26d6c6..98279e242 100644
+> --- a/include/cobalt/kernel/rtdm/gpio.h
+> +++ b/include/cobalt/kernel/rtdm/gpio.h
+> @@ -62,6 +62,13 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+>  int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+>  			     unsigned int offset);
+>  
+> +int rtdm_gpiochip_find(struct device_node *from,
+> +			  const char *label, int type);
+> +
+> +int rtdm_gpiochip_array_find(struct device_node *from,
+> +				const char *compat[],
+> +				int nentries, int type);
+> +
+>  #ifdef CONFIG_OF
+>  
+>  int rtdm_gpiochip_scan_of(struct device_node *from,
+> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+> index ccda67bd1..ce80e8d73 100644
+> --- a/kernel/drivers/gpio/gpio-core.c
+> +++ b/kernel/drivers/gpio/gpio-core.c
+> @@ -528,6 +528,48 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+>  }
+>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
+>  
+> +int rtdm_gpiochip_find(struct device_node *from, const char *label,
+> +			  int type)
+> +{
+> +	struct rtdm_gpio_chip *rgc;
+> +	struct gpio_chip *chip;
+> +	int ret = -ENODEV;
+> +
+> +	if (!rtdm_available())
+> +		return -ENOSYS;
+> +
+> +	chip = find_chip_by_name(label);
+> +	if (chip == NULL)
+> +		return ret;
+> +
+> +	ret = 0;
+> +	rgc = rtdm_gpiochip_alloc(chip, type);
+> +	if (IS_ERR(rgc))
+> +		ret = PTR_ERR(rgc);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
+> +
+> +int rtdm_gpiochip_array_find(struct device_node *from,
+> +				const char *compat[],
 
-first issue:
+Is "compat" the right argument name here? We are searching by name
+(label), no?
 
-maybe someone can explain what's going on here. I'm running autotune 
-inside qemu (ARM) on an x86_64 host and get the error below. The 
-kernel in use is 4.19 (ipipe) build with current "next" branch.
+Jan
 
-root@demo:~# autotune2 
-== auto-tuning started, period=1000000 ns (may take a while)
-irq gravity... 0 ns
-kernel gravity... autotune: tuning failed (kernel): Resource temporarily unavailable
-
-dmesg tells me
-
-[   92.800781] [Xenomai] autotune(irqhand) started
-[  102.499494] [Xenomai] autotune(kthread) started
-[  108.623898] [Xenomai] autotune(kthread) failed with early shot (827251 ns)
-[  108.646795] [Xenomai] autotune finished [0i/5000k/5000u]
-
-
-Any idea why / how this early shot can happen? I'm unable to 
-reproduce it on a real hardware like the beagle bone black. 
-I wonder why it seems to work in the CI setup...
-
-
-
-Second issue: From time to time autotune produces a segfault:
-
-root@demo:~# autotune 
-== auto-tuning started, period=1000000 ns (may take a while)
-irq gravity... 1984 ns
-kernel gravity... 10912ns
-user gravity... Segmentation fault
-
-I haven't seen the segfault with a dovetail enabled kernel yet.
-So it might be ipipe related...
-
-I was able to reproduce once with gdb attached. We seem to crash 
-in rtmd.c line 170 (do_ioctl, XENOMAI_SYSCALL3()). GDB was 
-unable to present a backtrace. ("previous frame identical to this 
-frame (corrupt stack?")
-
-
-TIA,
-Florian
+> +				int nentries, int type)
+> +{
+> +	int ret = -ENODEV, _ret, n;
+> +
+> +	for (n = 0; n < nentries; n++) {
+> +		_ret = rtdm_gpiochip_find(from, compat[n], type);
+> +		if (_ret) {
+> +			if (_ret != -ENODEV)
+> +				return _ret;
+> +		} else
+> +			ret = 0;
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
+> +
+>  #ifdef CONFIG_OF
+>  
+>  #include <linux/of_platform.h>
+> 
 
 -- 
 Siemens AG, T RDA IOT
