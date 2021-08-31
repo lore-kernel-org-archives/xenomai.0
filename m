@@ -1,14 +1,15 @@
-Subject: Re: [PATCH 3/3] driver/gpio: Add Intel Cherryview pinctrl driver
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
+Date: Tue, 31 Aug 2021 07:07:18 +0000
+Message-ID: <BN9PR11MB5227700E4BDB4B840D9AB353F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
 References: <20210831050736.5371-1-hongzhan.chen@intel.com>
- <20210831050736.5371-4-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1fc883c1-5f95-4c71-5424-4d38079c4f60@siemens.com>
-Date: Tue, 31 Aug 2021 08:51:43 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210831050736.5371-4-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset=utf-8
+ <20210831050736.5371-3-hongzhan.chen@intel.com>
+ <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
+In-Reply-To: <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,110 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 31.08.21 07:07, Hongzhan Chen via Xenomai wrote:
-> Add support for Intel Cherryview pin controller driver
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> ---
->  kernel/drivers/gpio/Kconfig           |  7 +++++
->  kernel/drivers/gpio/Makefile          |  2 ++
->  kernel/drivers/gpio/gpio-cherryview.c | 42 +++++++++++++++++++++++++++
->  3 files changed, 51 insertions(+)
->  create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
-> 
-> diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-> index 44f41688c..c257444f0 100644
-> --- a/kernel/drivers/gpio/Kconfig
-> +++ b/kernel/drivers/gpio/Kconfig
-> @@ -57,6 +57,13 @@ config XENO_DRIVERS_GPIO_OMAP
->  	Enables support for the GPIO controller available from
->  	OMAP family SOC.
->  
-> +config XENO_DRIVERS_GPIO_CHERRYVIEW
-> +	depends on PINCTRL_CHERRYVIEW
-> +	tristate "Support for Cherryview GPIOs"
-> +	help
-> +
-> +	Enables support for the Intel Cherryview GPIO controller
-> +
->  config XENO_DRIVERS_GPIO_DEBUG
->         bool "Enable GPIO core debugging features"
->  
-> diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-> index 7bcf59949..e534eab93 100644
-> --- a/kernel/drivers/gpio/Makefile
-> +++ b/kernel/drivers/gpio/Makefile
-> @@ -6,6 +6,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
-> +obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
->  
->  xeno-gpio-bcm2835-y := gpio-bcm2835.o
-> @@ -14,3 +15,4 @@ xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
->  xeno-gpio-zynq7000-y := gpio-zynq7000.o
->  xeno-gpio-xilinx-y := gpio-xilinx.o
->  xeno-gpio-omap-y := gpio-omap.o
-> +xeno-gpio-cherryview-y := gpio-cherryview.o
-> diff --git a/kernel/drivers/gpio/gpio-cherryview.c b/kernel/drivers/gpio/gpio-cherryview.c
-> new file mode 100644
-> index 000000000..524199fe9
-> --- /dev/null
-> +++ b/kernel/drivers/gpio/gpio-cherryview.c
-> @@ -0,0 +1,42 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * @note Copyright (C) 2021 Hongzhan Chen <hongzhan.chen@intel.com>
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation; either version 2 of the
-> + * License, or (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + */
-> +#include <linux/module.h>
-> +#include <rtdm/gpio.h>
-> +
-> +#define RTDM_SUBCLASS_CHERRYVIEW  7
-> +
-> +static const char *compat_array[] = {
-
-Again naming: 'compat'? Or rather 'label'?
-
-> +	"INT33FF:00",
-> +	"INT33FF:01",
-> +	"INT33FF:02",
-> +	"INT33FF:03",
-> +};
-> +
-> +static int __init cherryview_gpio_init(void)
-> +{
-> +	return rtdm_gpiochip_array_find(NULL, compat_array,
-> +					ARRAY_SIZE(compat_array),
-> +					RTDM_SUBCLASS_CHERRYVIEW);
-> +}
-> +module_init(cherryview_gpio_init);
-> +
-> +static void __exit cherryview_gpio_exit(void)
-> +{
-> +	rtdm_gpiochip_remove(RTDM_SUBCLASS_CHERRYVIEW);
-> +}
-> +module_exit(cherryview_gpio_exit);
-> +
-> +MODULE_LICENSE("GPL");
-> 
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIEF1Z3VzdCAzMSwgMjAyMSAyOjQ4
+IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
+YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDIvM10gZHJpdmVycy9ncGlvOiBj
+b3JlOiBJbnRyb2R1Y2UgaGVscGVyIHRvIGZpbmQgZ3Bpb2NoaXANCj4NCj5PbiAzMS4wOC4yMSAw
+NzowNywgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+IFRvIGZpbmQgZ3Bpb2No
+aXAgZm9yIG5vbi1PRiBwbGF0Zm9ybXMgbGlrZSB4ODYNCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTog
+SG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICBpbmNs
+dWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmggfCAgNyArKysrKysNCj4+ICBrZXJuZWwvZHJp
+dmVycy9ncGlvL2dwaW8tY29yZS5jICAgfCA0MiArKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrDQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCA0OSBpbnNlcnRpb25zKCspDQo+PiANCj4+IGRpZmYg
+LS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmggYi9pbmNsdWRlL2NvYmFs
+dC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IGluZGV4IDI5ZjI2ZDZjNi4uOTgyNzllMjQyIDEwMDY0
+NA0KPj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0vZ3Bpby5oDQo+PiArKysgYi9p
+bmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IEBAIC02Miw2ICs2MiwxMyBAQCBp
+bnQgcnRkbV9ncGlvY2hpcF9hZGRfYnlfbmFtZShzdHJ1Y3QgcnRkbV9ncGlvX2NoaXAgKnJnYywN
+Cj4+ICBpbnQgcnRkbV9ncGlvY2hpcF9wb3N0X2V2ZW50KHN0cnVjdCBydGRtX2dwaW9fY2hpcCAq
+cmdjLA0KPj4gIAkJCSAgICAgdW5zaWduZWQgaW50IG9mZnNldCk7DQo+PiAgDQo+PiAraW50IHJ0
+ZG1fZ3Bpb2NoaXBfZmluZChzdHJ1Y3QgZGV2aWNlX25vZGUgKmZyb20sDQo+PiArCQkJICBjb25z
+dCBjaGFyICpsYWJlbCwgaW50IHR5cGUpOw0KPj4gKw0KPj4gK2ludCBydGRtX2dwaW9jaGlwX2Fy
+cmF5X2ZpbmQoc3RydWN0IGRldmljZV9ub2RlICpmcm9tLA0KPj4gKwkJCQljb25zdCBjaGFyICpj
+b21wYXRbXSwNCj4+ICsJCQkJaW50IG5lbnRyaWVzLCBpbnQgdHlwZSk7DQo+PiArDQo+PiAgI2lm
+ZGVmIENPTkZJR19PRg0KPj4gIA0KPj4gIGludCBydGRtX2dwaW9jaGlwX3NjYW5fb2Yoc3RydWN0
+IGRldmljZV9ub2RlICpmcm9tLA0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL2dwaW8v
+Z3Bpby1jb3JlLmMgYi9rZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jDQo+PiBpbmRleCBj
+Y2RhNjdiZDEuLmNlODBlOGQ3MyAxMDA2NDQNCj4+IC0tLSBhL2tlcm5lbC9kcml2ZXJzL2dwaW8v
+Z3Bpby1jb3JlLmMNCj4+ICsrKyBiL2tlcm5lbC9kcml2ZXJzL2dwaW8vZ3Bpby1jb3JlLmMNCj4+
+IEBAIC01MjgsNiArNTI4LDQ4IEBAIGludCBydGRtX2dwaW9jaGlwX2FkZF9ieV9uYW1lKHN0cnVj
+dCBydGRtX2dwaW9fY2hpcCAqcmdjLA0KPj4gIH0NCj4+ICBFWFBPUlRfU1lNQk9MX0dQTChydGRt
+X2dwaW9jaGlwX2FkZF9ieV9uYW1lKTsNCj4+ICANCj4+ICtpbnQgcnRkbV9ncGlvY2hpcF9maW5k
+KHN0cnVjdCBkZXZpY2Vfbm9kZSAqZnJvbSwgY29uc3QgY2hhciAqbGFiZWwsDQo+PiArCQkJICBp
+bnQgdHlwZSkNCj4+ICt7DQo+PiArCXN0cnVjdCBydGRtX2dwaW9fY2hpcCAqcmdjOw0KPj4gKwlz
+dHJ1Y3QgZ3Bpb19jaGlwICpjaGlwOw0KPj4gKwlpbnQgcmV0ID0gLUVOT0RFVjsNCj4+ICsNCj4+
+ICsJaWYgKCFydGRtX2F2YWlsYWJsZSgpKQ0KPj4gKwkJcmV0dXJuIC1FTk9TWVM7DQo+PiArDQo+
+PiArCWNoaXAgPSBmaW5kX2NoaXBfYnlfbmFtZShsYWJlbCk7DQo+PiArCWlmIChjaGlwID09IE5V
+TEwpDQo+PiArCQlyZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKwlyZXQgPSAwOw0KPj4gKwlyZ2MgPSBy
+dGRtX2dwaW9jaGlwX2FsbG9jKGNoaXAsIHR5cGUpOw0KPj4gKwlpZiAoSVNfRVJSKHJnYykpDQo+
+PiArCQlyZXQgPSBQVFJfRVJSKHJnYyk7DQo+PiArDQo+PiArCXJldHVybiByZXQ7DQo+PiArfQ0K
+Pj4gK0VYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fZ3Bpb2NoaXBfZmluZCk7DQo+PiArDQo+PiAraW50
+IHJ0ZG1fZ3Bpb2NoaXBfYXJyYXlfZmluZChzdHJ1Y3QgZGV2aWNlX25vZGUgKmZyb20sDQo+PiAr
+CQkJCWNvbnN0IGNoYXIgKmNvbXBhdFtdLA0KPg0KPklzICJjb21wYXQiIHRoZSByaWdodCBhcmd1
+bWVudCBuYW1lIGhlcmU/IFdlIGFyZSBzZWFyY2hpbmcgYnkgbmFtZQ0KPihsYWJlbCksIG5vPw0K
+DQpZZXMgLCBpdCBpcyBsYWJlbC4gTGV0IG1lIG1vZGlmeSBpdC4gU28gcGF0Y2ggMS8zIGlzIGFj
+Y2VwdGVkID8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBjaGVuDQo+DQo+SmFuDQo+DQo+PiArCQkJ
+CWludCBuZW50cmllcywgaW50IHR5cGUpDQo+PiArew0KPj4gKwlpbnQgcmV0ID0gLUVOT0RFViwg
+X3JldCwgbjsNCj4+ICsNCj4+ICsJZm9yIChuID0gMDsgbiA8IG5lbnRyaWVzOyBuKyspIHsNCj4+
+ICsJCV9yZXQgPSBydGRtX2dwaW9jaGlwX2ZpbmQoZnJvbSwgY29tcGF0W25dLCB0eXBlKTsNCj4+
+ICsJCWlmIChfcmV0KSB7DQo+PiArCQkJaWYgKF9yZXQgIT0gLUVOT0RFVikNCj4+ICsJCQkJcmV0
+dXJuIF9yZXQ7DQo+PiArCQl9IGVsc2UNCj4+ICsJCQlyZXQgPSAwOw0KPj4gKwl9DQo+PiArDQo+
+PiArCXJldHVybiByZXQ7DQo+PiArfQ0KPj4gK0VYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fZ3Bpb2No
+aXBfYXJyYXlfZmluZCk7DQo+PiArDQo+PiAgI2lmZGVmIENPTkZJR19PRg0KPj4gIA0KPj4gICNp
+bmNsdWRlIDxsaW51eC9vZl9wbGF0Zm9ybS5oPg0KPj4gDQo+DQo+LS0gDQo+U2llbWVucyBBRywg
+VCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+
+DQo+DQo=
 
