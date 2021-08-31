@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [Dovetail] v5.10.61-rebase released
-Date: Tue, 31 Aug 2021 10:39:03 +0200
-Message-ID: <87sfyqm2jc.fsf@xenomai.org>
+Subject: [Xenomai 4] v5.10.61-rebase released
+Date: Tue, 31 Aug 2021 10:42:30 +0200
+Message-ID: <87pmtum2dl.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,7 +15,7 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 
-At git@source.denx.de:Xenomai/linux-dovetail.git, branch v5.10.y-rebase
+At git@source.denx.de:Xenomai/xenomai4/linux-evl.git, branch v5.10.y-evl-rebase
 
 -- 
 Philippe.
