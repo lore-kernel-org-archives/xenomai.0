@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/5] perf beauty: dovetail: declare oob socket class
-Date: Tue, 31 Aug 2021 10:27:08 +0200
-Message-Id: <20210831082709.1296249-5-rpm@xenomai.org>
+Subject: [PATCH 5/5] net: dovetail: fix NULL reference in socket release
+Date: Tue, 31 Aug 2021 10:27:09 +0200
+Message-Id: <20210831082709.1296249-6-rpm@xenomai.org>
 In-Reply-To: <20210831082709.1296249-1-rpm@xenomai.org>
 References: <20210831082709.1296249-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,26 +18,28 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
+sock_oob_capable() might be called for a socket for which no
+protocol-agnostic area is allocated yet. Be careful when dereferencing
+this field.
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- tools/perf/trace/beauty/include/linux/socket.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/trace/beauty/include/linux/socket.h b/tools/perf/trace/beauty/include/linux/socket.h
-index 9aa530d497da8f7..93b104ee264f47d 100644
---- a/tools/perf/trace/beauty/include/linux/socket.h
-+++ b/tools/perf/trace/beauty/include/linux/socket.h
-@@ -223,8 +223,9 @@ struct ucred {
- 				 * reuses AF_INET address family
- 				 */
- #define AF_XDP		44	/* XDP sockets			*/
-+#define AF_OOB		45	/* Out-of-band domain sockets */
+diff --git a/net/socket.c b/net/socket.c
+index c673cea523eb78f..cfd99bcb6072caf 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -145,7 +145,7 @@ static void sock_show_fdinfo(struct seq_file *m, struct file *f)
  
--#define AF_MAX		45	/* For now.. */
-+#define AF_MAX		46	/* For now.. */
+ static inline bool sock_oob_capable(struct socket *sock)
+ {
+-	return !!sock->sk->oob_data;
++	return sock->sk && sock->sk->oob_data;
+ }
  
- /* Protocol families, same as address families. */
- #define PF_UNSPEC	AF_UNSPEC
+ int __weak sock_oob_attach(struct socket *sock)
 -- 
 2.31.1
 
