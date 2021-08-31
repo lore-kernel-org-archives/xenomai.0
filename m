@@ -1,8 +1,7 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 1/3] drivers/gpio: core: Move out of OF config conditional
- compilation
-Date: Tue, 31 Aug 2021 01:07:34 -0400
-Message-Id: <20210831050736.5371-2-hongzhan.chen@intel.com>
+Subject: [PATCH 3/3] driver/gpio: Add Intel Cherryview pinctrl driver
+Date: Tue, 31 Aug 2021 01:07:36 -0400
+Message-Id: <20210831050736.5371-4-hongzhan.chen@intel.com>
 In-Reply-To: <20210831050736.5371-1-hongzhan.chen@intel.com>
 References: <20210831050736.5371-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,138 +14,99 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Rename interface name because it is undependent of OF platform and
-non-OF platform would also call it to remove rtdm gpio chip device.
+Add support for Intel Cherryview pin controller driver
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 ---
- include/cobalt/kernel/rtdm/gpio.h   | 5 ++---
- kernel/drivers/gpio/gpio-bcm2835.c  | 2 +-
- kernel/drivers/gpio/gpio-core.c     | 8 ++++----
- kernel/drivers/gpio/gpio-mxc.c      | 2 +-
- kernel/drivers/gpio/gpio-omap.c     | 2 +-
- kernel/drivers/gpio/gpio-sun8i-h3.c | 2 +-
- kernel/drivers/gpio/gpio-xilinx.c   | 2 +-
- kernel/drivers/gpio/gpio-zynq7000.c | 2 +-
- 8 files changed, 12 insertions(+), 13 deletions(-)
+ kernel/drivers/gpio/Kconfig           |  7 +++++
+ kernel/drivers/gpio/Makefile          |  2 ++
+ kernel/drivers/gpio/gpio-cherryview.c | 42 +++++++++++++++++++++++++++
+ 3 files changed, 51 insertions(+)
+ create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
 
-diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
-index 72cc3a035..29f26d6c6 100644
---- a/include/cobalt/kernel/rtdm/gpio.h
-+++ b/include/cobalt/kernel/rtdm/gpio.h
-@@ -70,9 +70,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from,
- int rtdm_gpiochip_scan_array_of(struct device_node *from,
- 				const char *compat[],
- 				int nentries, int type);
--
--void rtdm_gpiochip_remove_of(int type);
--
- #endif
+diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+index 44f41688c..c257444f0 100644
+--- a/kernel/drivers/gpio/Kconfig
++++ b/kernel/drivers/gpio/Kconfig
+@@ -57,6 +57,13 @@ config XENO_DRIVERS_GPIO_OMAP
+ 	Enables support for the GPIO controller available from
+ 	OMAP family SOC.
  
-+void rtdm_gpiochip_remove(int type);
++config XENO_DRIVERS_GPIO_CHERRYVIEW
++	depends on PINCTRL_CHERRYVIEW
++	tristate "Support for Cherryview GPIOs"
++	help
 +
- #endif /* !_COBALT_RTDM_GPIO_H */
-diff --git a/kernel/drivers/gpio/gpio-bcm2835.c b/kernel/drivers/gpio/gpio-bcm2835.c
-index f30d6b591..a0c17f875 100644
---- a/kernel/drivers/gpio/gpio-bcm2835.c
-+++ b/kernel/drivers/gpio/gpio-bcm2835.c
-@@ -29,7 +29,7 @@ module_init(bcm2835_gpio_init);
- 
- static void __exit bcm2835_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_BCM2835);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_BCM2835);
- }
- module_exit(bcm2835_gpio_exit);
- 
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index 06a19b33a..ccda67bd1 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -626,7 +626,9 @@ int rtdm_gpiochip_scan_array_of(struct device_node *from,
- }
- EXPORT_SYMBOL_GPL(rtdm_gpiochip_scan_array_of);
- 
--void rtdm_gpiochip_remove_of(int type)
-+#endif /* CONFIG_OF */
++	Enables support for the Intel Cherryview GPIO controller
 +
-+void rtdm_gpiochip_remove(int type)
- {
- 	struct rtdm_gpio_chip *rgc, *n;
+ config XENO_DRIVERS_GPIO_DEBUG
+        bool "Enable GPIO core debugging features"
  
-@@ -643,6 +645,4 @@ void rtdm_gpiochip_remove_of(int type)
+diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+index 7bcf59949..e534eab93 100644
+--- a/kernel/drivers/gpio/Makefile
++++ b/kernel/drivers/gpio/Makefile
+@@ -6,6 +6,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
  
- 	mutex_unlock(&chip_lock);
- }
--EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove_of);
--
--#endif /* CONFIG_OF */
-+EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove);
-diff --git a/kernel/drivers/gpio/gpio-mxc.c b/kernel/drivers/gpio/gpio-mxc.c
-index 7b28111f6..99162e5f8 100644
---- a/kernel/drivers/gpio/gpio-mxc.c
-+++ b/kernel/drivers/gpio/gpio-mxc.c
-@@ -35,7 +35,7 @@ module_init(mxc_gpio_init);
- 
- static void __exit mxc_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_MXC);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_MXC);
- }
- module_exit(mxc_gpio_exit);
- 
-diff --git a/kernel/drivers/gpio/gpio-omap.c b/kernel/drivers/gpio/gpio-omap.c
-index 5f10278f3..848d84694 100644
---- a/kernel/drivers/gpio/gpio-omap.c
-+++ b/kernel/drivers/gpio/gpio-omap.c
-@@ -36,7 +36,7 @@ module_init(omap_gpio_init);
- 
- static void __exit omap_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_OMAP);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_OMAP);
- }
- module_exit(omap_gpio_exit);
- 
-diff --git a/kernel/drivers/gpio/gpio-sun8i-h3.c b/kernel/drivers/gpio/gpio-sun8i-h3.c
-index 94303dd00..0dcfe8c00 100644
---- a/kernel/drivers/gpio/gpio-sun8i-h3.c
-+++ b/kernel/drivers/gpio/gpio-sun8i-h3.c
-@@ -36,7 +36,7 @@ module_init(h3_gpio_init);
- 
- static void __exit h3_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_H3);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_H3);
- }
- module_exit(h3_gpio_exit);
- 
-diff --git a/kernel/drivers/gpio/gpio-xilinx.c b/kernel/drivers/gpio/gpio-xilinx.c
-index e982f5fa4..05bf870df 100644
---- a/kernel/drivers/gpio/gpio-xilinx.c
-+++ b/kernel/drivers/gpio/gpio-xilinx.c
-@@ -32,7 +32,7 @@ module_init(xilinx_gpio_init);
- 
- static void __exit xilinx_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_XILINX);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_XILINX);
- }
- module_exit(xilinx_gpio_exit);
- 
-diff --git a/kernel/drivers/gpio/gpio-zynq7000.c b/kernel/drivers/gpio/gpio-zynq7000.c
-index 070db3fe4..5a6f2b83d 100644
---- a/kernel/drivers/gpio/gpio-zynq7000.c
-+++ b/kernel/drivers/gpio/gpio-zynq7000.c
-@@ -32,7 +32,7 @@ module_init(zynq7000_gpio_init);
- 
- static void __exit zynq7000_gpio_exit(void)
- {
--	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_ZYNQ7000);
-+	rtdm_gpiochip_remove(RTDM_SUBCLASS_ZYNQ7000);
- }
- module_exit(zynq7000_gpio_exit);
- 
+ xeno-gpio-bcm2835-y := gpio-bcm2835.o
+@@ -14,3 +15,4 @@ xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
+ xeno-gpio-zynq7000-y := gpio-zynq7000.o
+ xeno-gpio-xilinx-y := gpio-xilinx.o
+ xeno-gpio-omap-y := gpio-omap.o
++xeno-gpio-cherryview-y := gpio-cherryview.o
+diff --git a/kernel/drivers/gpio/gpio-cherryview.c b/kernel/drivers/gpio/gpio-cherryview.c
+new file mode 100644
+index 000000000..524199fe9
+--- /dev/null
++++ b/kernel/drivers/gpio/gpio-cherryview.c
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * @note Copyright (C) 2021 Hongzhan Chen <hongzhan.chen@intel.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++#include <linux/module.h>
++#include <rtdm/gpio.h>
++
++#define RTDM_SUBCLASS_CHERRYVIEW  7
++
++static const char *compat_array[] = {
++	"INT33FF:00",
++	"INT33FF:01",
++	"INT33FF:02",
++	"INT33FF:03",
++};
++
++static int __init cherryview_gpio_init(void)
++{
++	return rtdm_gpiochip_array_find(NULL, compat_array,
++					ARRAY_SIZE(compat_array),
++					RTDM_SUBCLASS_CHERRYVIEW);
++}
++module_init(cherryview_gpio_init);
++
++static void __exit cherryview_gpio_exit(void)
++{
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_CHERRYVIEW);
++}
++module_exit(cherryview_gpio_exit);
++
++MODULE_LICENSE("GPL");
 -- 
 2.17.1
 
