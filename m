@@ -1,7 +1,10 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH V2 0/3] add support for cherryview gpio controller driver
-Date: Tue, 31 Aug 2021 01:07:33 -0400
-Message-Id: <20210831050736.5371-1-hongzhan.chen@intel.com>
+Subject: [PATCH 1/3] drivers/gpio: core: Move out of OF config conditional
+ compilation
+Date: Tue, 31 Aug 2021 01:07:34 -0400
+Message-Id: <20210831050736.5371-2-hongzhan.chen@intel.com>
+In-Reply-To: <20210831050736.5371-1-hongzhan.chen@intel.com>
+References: <20210831050736.5371-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,68 +15,138 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-1. move out of OF config conditional compilation so that non-OF platform
-  call same API to remove rtdm gpio chip device and remove _of for api
-  name.
-2. Introduce helper to find gpiochip as referring to pair of 
-   rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
-3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+Rename interface name because it is undependent of OF platform and
+non-OF platform would also call it to remove rtdm gpio chip device.
 
-I also did following tests with this patchset:
-1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
-   to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
-   setting GPIO_RTIOC_TS
-2. apply following patch, and rerun 1.
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ include/cobalt/kernel/rtdm/gpio.h   | 5 ++---
+ kernel/drivers/gpio/gpio-bcm2835.c  | 2 +-
+ kernel/drivers/gpio/gpio-core.c     | 8 ++++----
+ kernel/drivers/gpio/gpio-mxc.c      | 2 +-
+ kernel/drivers/gpio/gpio-omap.c     | 2 +-
+ kernel/drivers/gpio/gpio-sun8i-h3.c | 2 +-
+ kernel/drivers/gpio/gpio-xilinx.c   | 2 +-
+ kernel/drivers/gpio/gpio-zynq7000.c | 2 +-
+ 8 files changed, 12 insertions(+), 13 deletions(-)
 
-index f83d7689f..50afbd418 100644
---- a/testsuite/gpiobench/gpiobench.c
-+++ b/testsuite/gpiobench/gpiobench.c
-@@ -619,7 +619,7 @@ int main(int argc, char **argv)
-                        goto out;
-                }
-
--               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
-+               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
-                if (ret) {
-                        printf("ioctl gpio port ts, failed\n");
-                        goto out;
-
-3. test result for inner related output:
-   REALTIME clock:
-	# Total: 000999999
-	# Min Latencies: 00013
-	# Avg Latencies: 16.879997
-	# Max Latencies: 00043
-
-   MONO clock:
-	# Total: 000083988
-	# Min Latencies: 00012
-	# Avg Latencies: 2814377.000000
-	# Max Latencies: 00041
-
-Hardware env:
-1. Rock PI X V1.4.
-2. GPIO loopback connection between GPIO 334 and 335.
-
-Hongzhan Chen (3):
-  drivers/gpio: core: Move out of OF config conditional compilation
-  drivers/gpio: core: Introduce helper to find gpiochip
-  driver/gpio: Add Intel Cherryview pinctrl driver
-
- include/cobalt/kernel/rtdm/gpio.h     | 12 +++++--
- kernel/drivers/gpio/Kconfig           |  7 ++++
- kernel/drivers/gpio/Makefile          |  2 ++
- kernel/drivers/gpio/gpio-bcm2835.c    |  2 +-
- kernel/drivers/gpio/gpio-cherryview.c | 42 ++++++++++++++++++++++
- kernel/drivers/gpio/gpio-core.c       | 50 ++++++++++++++++++++++++---
- kernel/drivers/gpio/gpio-mxc.c        |  2 +-
- kernel/drivers/gpio/gpio-omap.c       |  2 +-
- kernel/drivers/gpio/gpio-sun8i-h3.c   |  2 +-
- kernel/drivers/gpio/gpio-xilinx.c     |  2 +-
- kernel/drivers/gpio/gpio-zynq7000.c   |  2 +-
- 11 files changed, 112 insertions(+), 13 deletions(-)
- create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
-
+diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+index 72cc3a035..29f26d6c6 100644
+--- a/include/cobalt/kernel/rtdm/gpio.h
++++ b/include/cobalt/kernel/rtdm/gpio.h
+@@ -70,9 +70,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from,
+ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+ 				const char *compat[],
+ 				int nentries, int type);
+-
+-void rtdm_gpiochip_remove_of(int type);
+-
+ #endif
+ 
++void rtdm_gpiochip_remove(int type);
++
+ #endif /* !_COBALT_RTDM_GPIO_H */
+diff --git a/kernel/drivers/gpio/gpio-bcm2835.c b/kernel/drivers/gpio/gpio-bcm2835.c
+index f30d6b591..a0c17f875 100644
+--- a/kernel/drivers/gpio/gpio-bcm2835.c
++++ b/kernel/drivers/gpio/gpio-bcm2835.c
+@@ -29,7 +29,7 @@ module_init(bcm2835_gpio_init);
+ 
+ static void __exit bcm2835_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_BCM2835);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_BCM2835);
+ }
+ module_exit(bcm2835_gpio_exit);
+ 
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 06a19b33a..ccda67bd1 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -626,7 +626,9 @@ int rtdm_gpiochip_scan_array_of(struct device_node *from,
+ }
+ EXPORT_SYMBOL_GPL(rtdm_gpiochip_scan_array_of);
+ 
+-void rtdm_gpiochip_remove_of(int type)
++#endif /* CONFIG_OF */
++
++void rtdm_gpiochip_remove(int type)
+ {
+ 	struct rtdm_gpio_chip *rgc, *n;
+ 
+@@ -643,6 +645,4 @@ void rtdm_gpiochip_remove_of(int type)
+ 
+ 	mutex_unlock(&chip_lock);
+ }
+-EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove_of);
+-
+-#endif /* CONFIG_OF */
++EXPORT_SYMBOL_GPL(rtdm_gpiochip_remove);
+diff --git a/kernel/drivers/gpio/gpio-mxc.c b/kernel/drivers/gpio/gpio-mxc.c
+index 7b28111f6..99162e5f8 100644
+--- a/kernel/drivers/gpio/gpio-mxc.c
++++ b/kernel/drivers/gpio/gpio-mxc.c
+@@ -35,7 +35,7 @@ module_init(mxc_gpio_init);
+ 
+ static void __exit mxc_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_MXC);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_MXC);
+ }
+ module_exit(mxc_gpio_exit);
+ 
+diff --git a/kernel/drivers/gpio/gpio-omap.c b/kernel/drivers/gpio/gpio-omap.c
+index 5f10278f3..848d84694 100644
+--- a/kernel/drivers/gpio/gpio-omap.c
++++ b/kernel/drivers/gpio/gpio-omap.c
+@@ -36,7 +36,7 @@ module_init(omap_gpio_init);
+ 
+ static void __exit omap_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_OMAP);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_OMAP);
+ }
+ module_exit(omap_gpio_exit);
+ 
+diff --git a/kernel/drivers/gpio/gpio-sun8i-h3.c b/kernel/drivers/gpio/gpio-sun8i-h3.c
+index 94303dd00..0dcfe8c00 100644
+--- a/kernel/drivers/gpio/gpio-sun8i-h3.c
++++ b/kernel/drivers/gpio/gpio-sun8i-h3.c
+@@ -36,7 +36,7 @@ module_init(h3_gpio_init);
+ 
+ static void __exit h3_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_H3);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_H3);
+ }
+ module_exit(h3_gpio_exit);
+ 
+diff --git a/kernel/drivers/gpio/gpio-xilinx.c b/kernel/drivers/gpio/gpio-xilinx.c
+index e982f5fa4..05bf870df 100644
+--- a/kernel/drivers/gpio/gpio-xilinx.c
++++ b/kernel/drivers/gpio/gpio-xilinx.c
+@@ -32,7 +32,7 @@ module_init(xilinx_gpio_init);
+ 
+ static void __exit xilinx_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_XILINX);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_XILINX);
+ }
+ module_exit(xilinx_gpio_exit);
+ 
+diff --git a/kernel/drivers/gpio/gpio-zynq7000.c b/kernel/drivers/gpio/gpio-zynq7000.c
+index 070db3fe4..5a6f2b83d 100644
+--- a/kernel/drivers/gpio/gpio-zynq7000.c
++++ b/kernel/drivers/gpio/gpio-zynq7000.c
+@@ -32,7 +32,7 @@ module_init(zynq7000_gpio_init);
+ 
+ static void __exit zynq7000_gpio_exit(void)
+ {
+-	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_ZYNQ7000);
++	rtdm_gpiochip_remove(RTDM_SUBCLASS_ZYNQ7000);
+ }
+ module_exit(zynq7000_gpio_exit);
+ 
 -- 
 2.17.1
 
