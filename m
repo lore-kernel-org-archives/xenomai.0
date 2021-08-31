@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/5] selinux: dovetail: declare oob socket class
-Date: Tue, 31 Aug 2021 10:27:07 +0200
-Message-Id: <20210831082709.1296249-4-rpm@xenomai.org>
+Subject: [PATCH 4/5] perf beauty: dovetail: declare oob socket class
+Date: Tue, 31 Aug 2021 10:27:08 +0200
+Message-Id: <20210831082709.1296249-5-rpm@xenomai.org>
 In-Reply-To: <20210831082709.1296249-1-rpm@xenomai.org>
 References: <20210831082709.1296249-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -20,46 +20,24 @@ From: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- security/selinux/hooks.c            | 4 +++-
- security/selinux/include/classmap.h | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ tools/perf/trace/beauty/include/linux/socket.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 227eb896796377b..548faa1cf744c01 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -1271,7 +1271,9 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
- 			return SECCLASS_SMC_SOCKET;
- 		case PF_XDP:
- 			return SECCLASS_XDP_SOCKET;
--#if PF_MAX > 45
-+		case PF_OOB:
-+			return SECCLASS_OOB_SOCKET;
-+#if PF_MAX > 46
- #error New address family defined, please update this function.
- #endif
- 		}
-diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
-index b9fdba2ff41637c..a16df4cf674f874 100644
---- a/security/selinux/include/classmap.h
-+++ b/security/selinux/include/classmap.h
-@@ -246,6 +246,8 @@ struct security_class_mapping secclass_map[] = {
- 	    NULL } },
- 	{ "xdp_socket",
- 	  { COMMON_SOCK_PERMS, NULL } },
-+	{ "oob_socket",
-+	  { COMMON_SOCK_PERMS, NULL } },
- 	{ "perf_event",
- 	  { "open", "cpu", "kernel", "tracepoint", "read", "write", NULL } },
- 	{ "lockdown",
-@@ -253,6 +255,6 @@ struct security_class_mapping secclass_map[] = {
- 	{ NULL }
-   };
+diff --git a/tools/perf/trace/beauty/include/linux/socket.h b/tools/perf/trace/beauty/include/linux/socket.h
+index 9aa530d497da8f7..93b104ee264f47d 100644
+--- a/tools/perf/trace/beauty/include/linux/socket.h
++++ b/tools/perf/trace/beauty/include/linux/socket.h
+@@ -223,8 +223,9 @@ struct ucred {
+ 				 * reuses AF_INET address family
+ 				 */
+ #define AF_XDP		44	/* XDP sockets			*/
++#define AF_OOB		45	/* Out-of-band domain sockets */
  
--#if PF_MAX > 45
-+#if PF_MAX > 46
- #error New address family defined, please update secclass_map.
- #endif
+-#define AF_MAX		45	/* For now.. */
++#define AF_MAX		46	/* For now.. */
+ 
+ /* Protocol families, same as address families. */
+ #define PF_UNSPEC	AF_UNSPEC
 -- 
 2.31.1
 
