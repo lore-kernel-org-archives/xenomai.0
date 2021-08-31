@@ -1,12 +1,13 @@
+Subject: Re: [PATCH V2 0/3] add support for cherryview gpio controller driver
+References: <20210831050736.5371-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 3/3] drivers/gpio: Flip default for GPIO_RTIOC_TS to
- real-time clock
-Date: Tue, 31 Aug 2021 09:15:08 +0200
-Message-Id: <91dc10af05ef13c1a78ba4d30fbaf96eaa3f2703.1630394108.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1630394108.git.jan.kiszka@siemens.com>
-References: <cover.1630394108.git.jan.kiszka@siemens.com>
+Message-ID: <7a9dbf0d-2270-4beb-1680-c48a3686b88b@siemens.com>
+Date: Tue, 31 Aug 2021 09:15:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210831050736.5371-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +16,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 31.08.21 07:07, Hongzhan Chen via Xenomai wrote:
+> 1. move out of OF config conditional compilation so that non-OF platform
+>   call same API to remove rtdm gpio chip device and remove _of for api
+>   name.
+> 2. Introduce helper to find gpiochip as referring to pair of 
+>    rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
+> 3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+> 
+> I also did following tests with this patchset:
+> 1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
+>    to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
+>    setting GPIO_RTIOC_TS
+> 2. apply following patch, and rerun 1.
+> 
+> index f83d7689f..50afbd418 100644
+> --- a/testsuite/gpiobench/gpiobench.c
+> +++ b/testsuite/gpiobench/gpiobench.c
+> @@ -619,7 +619,7 @@ int main(int argc, char **argv)
+>                         goto out;
+>                 }
+> 
+> -               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
+> +               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
+>                 if (ret) {
+>                         printf("ioctl gpio port ts, failed\n");
+>                         goto out;
+> 
+> 3. test result for inner related output:
+>    REALTIME clock:
+> 	# Total: 000999999
+> 	# Min Latencies: 00013
+> 	# Avg Latencies: 16.879997
+> 	# Max Latencies: 00043
+> 
+>    MONO clock:
+> 	# Total: 000083988
+> 	# Min Latencies: 00012
+> 	# Avg Latencies: 2814377.000000
+> 	# Max Latencies: 00041
+> 
+> Hardware env:
+> 1. Rock PI X V1.4.
+> 2. GPIO loopback connection between GPIO 334 and 335.
+> 
+> Hongzhan Chen (3):
+>   drivers/gpio: core: Move out of OF config conditional compilation
+>   drivers/gpio: core: Introduce helper to find gpiochip
+>   driver/gpio: Add Intel Cherryview pinctrl driver
+> 
+>  include/cobalt/kernel/rtdm/gpio.h     | 12 +++++--
+>  kernel/drivers/gpio/Kconfig           |  7 ++++
+>  kernel/drivers/gpio/Makefile          |  2 ++
+>  kernel/drivers/gpio/gpio-bcm2835.c    |  2 +-
+>  kernel/drivers/gpio/gpio-cherryview.c | 42 ++++++++++++++++++++++
+>  kernel/drivers/gpio/gpio-core.c       | 50 ++++++++++++++++++++++++---
+>  kernel/drivers/gpio/gpio-mxc.c        |  2 +-
+>  kernel/drivers/gpio/gpio-omap.c       |  2 +-
+>  kernel/drivers/gpio/gpio-sun8i-h3.c   |  2 +-
+>  kernel/drivers/gpio/gpio-xilinx.c     |  2 +-
+>  kernel/drivers/gpio/gpio-zynq7000.c   |  2 +-
+>  11 files changed, 112 insertions(+), 13 deletions(-)
+>  create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
+> 
 
-This is in line with other drivers and should avoid surprises like [1]
-in the future.
+All three merged, with slight modifications as discussed.
 
-[1] https://xenomai.org/pipermail/xenomai/2021-June/045661.html
+Thanks,
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/rtdm/uapi/gpio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
-index fb84274453..82612a53d3 100644
---- a/include/rtdm/uapi/gpio.h
-+++ b/include/rtdm/uapi/gpio.h
-@@ -30,8 +30,8 @@ struct rtdm_gpio_readout {
- #define GPIO_RTIOC_REQS		_IO(RTDM_CLASS_GPIO, 4)
- #define GPIO_RTIOC_RELS		_IO(RTDM_CLASS_GPIO, 5)
- #define GPIO_RTIOC_TS_MONO	_IOR(RTDM_CLASS_GPIO, 7, int)
--#define GPIO_RTIOC_TS		GPIO_RTIOC_TS_MONO
- #define GPIO_RTIOC_TS_REAL	_IOR(RTDM_CLASS_GPIO, 8, int)
-+#define GPIO_RTIOC_TS		GPIO_RTIOC_TS_REAL
- 
- #define GPIO_TRIGGER_NONE		0x0 /* unspecified */
- #define GPIO_TRIGGER_EDGE_RISING	0x1
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
