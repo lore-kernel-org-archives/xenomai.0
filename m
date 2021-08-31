@@ -1,14 +1,7 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 0/3] add support for cherryview gpio controller driver
-Date: Tue, 31 Aug 2021 01:35:39 +0000
-Message-ID: <BN9PR11MB5227ED7950F164C1235697D1F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
-References: <20210830064527.18206-1-hongzhan.chen@intel.com>
- <bdf39dd6-fc39-e4b7-3159-87bc86269014@siemens.com>
-In-Reply-To: <bdf39dd6-fc39-e4b7-3159-87bc86269014@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH V2 0/3] add support for cherryview gpio controller driver
+Date: Tue, 31 Aug 2021 01:07:33 -0400
+Message-Id: <20210831050736.5371-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +10,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Pg0KPg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+U2VudDogTW9uZGF5LCBBdWd1c3QgMzAsIDIwMjEgMzoz
-NyBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCAwLzNdIGFkZCBzdXBwb3J0IGZv
-ciBjaGVycnl2aWV3IGdwaW8gY29udHJvbGxlciBkcml2ZXINCj4NCj5PbiAzMC4wOC4yMSAwODo0
-NSwgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+IDEuIG1vdmUgb3V0IG9mIE9G
-IGNvbmZpZyBjb25kaXRpb25hbCBjb21waWxhdGlvbiBzbyB0aGF0IG5vbi1PRiBwbGF0Zm9ybQ0K
-Pj4gICBjYWxsIHNhbWUgQVBJIHRvIHJlbW92ZSBydGRtIGdwaW8gY2hpcCBkZXZpY2UuDQo+PiAy
-LiBJbnRyb2R1Y2UgaGVscGVyIHRvIGZpbmQgZ3Bpb2NoaXAgYXMgcmVmZXJyaW5nIHRvIHBhaXIg
-b2YgDQo+PiAgICBydGRtX2dwaW9jaGlwX3NjYW5fb2YgYW5kIHJ0ZG1fZ3Bpb2NoaXBfc2Nhbl9h
-cnJheV9vZi4gDQo+PiAzLiBBZGQgSW50ZWwgQ2hlcnJ5dmlldyBwaW5jdHJsIGRyaXZlciBiYXNl
-ZCBvbiBvbiAxIGFuZCAyLg0KPj4gDQo+DQo+TG9va3MgZ29vZCwgZXhjZXB0IGZvciB0aGF0IG5h
-bWluZyBpc3N1ZS4NCj4NCj4+IEkgYWxzbyBkaWQgZm9sbG93aW5nIHRlc3RzIHdpdGggdGhpcyBw
-YXRjaHNldDoNCj4+IDEuIHJ1biAvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9ncGlvYmVuY2gg
-LWkgMzM0IC1pIDMzNSAtYyBJTlQzM0ZGOjAyDQo+PiAgICB0byB2YWxpZGF0ZSBwYXRjaCA5YWZl
-YTVmZjJkN2JhOTdkYjk2YjIyYTAwNWE5YTdmY2Y1ZjJkODkyIHdoZW4NCj4+ICAgIHNldHRpbmcg
-R1BJT19SVElPQ19UUw0KPj4gMi4gYXBwbHkgZm9sbG93aW5nIHBhdGNoLCBhbmQgcmVydW4gMS4N
-Cj4+IA0KPj4gaW5kZXggZjgzZDc2ODlmLi41MGFmYmQ0MTggMTAwNjQ0DQo+PiAtLS0gYS90ZXN0
-c3VpdGUvZ3Bpb2JlbmNoL2dwaW9iZW5jaC5jDQo+PiArKysgYi90ZXN0c3VpdGUvZ3Bpb2JlbmNo
-L2dwaW9iZW5jaC5jDQo+PiBAQCAtNjE5LDcgKzYxOSw3IEBAIGludCBtYWluKGludCBhcmdjLCBj
-aGFyICoqYXJndikNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gb3V0Ow0KPj4gICAg
-ICAgICAgICAgICAgIH0NCj4+IA0KPj4gLSAgICAgICAgICAgICAgIHJldCA9IGlvY3RsKHRpLmZk
-X2Rldl9pbnRyLCBHUElPX1JUSU9DX1RTLCAmdmFsdWUpOw0KPj4gKyAgICAgICAgICAgICAgIHJl
-dCA9IGlvY3RsKHRpLmZkX2Rldl9pbnRyLCBHUElPX1JUSU9DX1RTX01PTk8sICZ2YWx1ZSk7DQo+
-PiAgICAgICAgICAgICAgICAgaWYgKHJldCkgew0KPj4gICAgICAgICAgICAgICAgICAgICAgICAg
-cHJpbnRmKCJpb2N0bCBncGlvIHBvcnQgdHMsIGZhaWxlZFxuIik7DQo+PiAgICAgICAgICAgICAg
-ICAgICAgICAgICBnb3RvIG91dDsNCj4+IA0KPj4gSGFyZHdhcmUgZW52Og0KPj4gMS4gUm9jayBQ
-SSBYIFYxLjQuDQo+PiAyLiBHUElPIGxvb3BiYWNrIGNvbm5lY3Rpb24gYmV0d2VlbiBHUElPIDMz
-NCBhbmQgMzM1Lg0KPj4gIA0KPg0KPkRpZCB5b3UgY2hlY2sgaWYgdGltZXN0YW1wcyBhcmUgYXMg
-ZXhwZWN0ZWQgKGRpZmZlcmVudCk/DQoNCkFjY29yZGluZyB0byBvdXRwdXQgb2YgZ3Bpb2JlbmNo
-LCB0aGUgaW5uZXIgQXZnIExhdGVuY3kgd291bGQgYmUgdmFyeSBsYXJnZSBsaWtlICggMjgxNDM3
-Ny4wMDAwMCkgYWZ0ZXIgc3dpdGNoIHRvIE1PTk8uDQpCdXQgaXQgaXMgb25seSBhYm91dCAgMTYu
-ODc5OTk3IHdoZW4gd2Ugc2V0IFJFQUxUSU1FLiANCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVu
-DQo+DQo+VGhhbmtzLA0KPkphbg0KPg0KPi0tIA0KPlNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNv
-cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
+1. move out of OF config conditional compilation so that non-OF platform
+  call same API to remove rtdm gpio chip device and remove _of for api
+  name.
+2. Introduce helper to find gpiochip as referring to pair of 
+   rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
+3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+
+I also did following tests with this patchset:
+1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
+   to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
+   setting GPIO_RTIOC_TS
+2. apply following patch, and rerun 1.
+
+index f83d7689f..50afbd418 100644
+--- a/testsuite/gpiobench/gpiobench.c
++++ b/testsuite/gpiobench/gpiobench.c
+@@ -619,7 +619,7 @@ int main(int argc, char **argv)
+                        goto out;
+                }
+
+-               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
++               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
+                if (ret) {
+                        printf("ioctl gpio port ts, failed\n");
+                        goto out;
+
+3. test result for inner related output:
+   REALTIME clock:
+	# Total: 000999999
+	# Min Latencies: 00013
+	# Avg Latencies: 16.879997
+	# Max Latencies: 00043
+
+   MONO clock:
+	# Total: 000083988
+	# Min Latencies: 00012
+	# Avg Latencies: 2814377.000000
+	# Max Latencies: 00041
+
+Hardware env:
+1. Rock PI X V1.4.
+2. GPIO loopback connection between GPIO 334 and 335.
+
+Hongzhan Chen (3):
+  drivers/gpio: core: Move out of OF config conditional compilation
+  drivers/gpio: core: Introduce helper to find gpiochip
+  driver/gpio: Add Intel Cherryview pinctrl driver
+
+ include/cobalt/kernel/rtdm/gpio.h     | 12 +++++--
+ kernel/drivers/gpio/Kconfig           |  7 ++++
+ kernel/drivers/gpio/Makefile          |  2 ++
+ kernel/drivers/gpio/gpio-bcm2835.c    |  2 +-
+ kernel/drivers/gpio/gpio-cherryview.c | 42 ++++++++++++++++++++++
+ kernel/drivers/gpio/gpio-core.c       | 50 ++++++++++++++++++++++++---
+ kernel/drivers/gpio/gpio-mxc.c        |  2 +-
+ kernel/drivers/gpio/gpio-omap.c       |  2 +-
+ kernel/drivers/gpio/gpio-sun8i-h3.c   |  2 +-
+ kernel/drivers/gpio/gpio-xilinx.c     |  2 +-
+ kernel/drivers/gpio/gpio-zynq7000.c   |  2 +-
+ 11 files changed, 112 insertions(+), 13 deletions(-)
+ create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
+
+-- 
+2.17.1
+
 
