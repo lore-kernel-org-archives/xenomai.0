@@ -1,11 +1,11 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] y2038: testsuite/smokey/y2038: Run tests on y2038 safe
- kernels only
-Date: Fri, 27 Aug 2021 12:02:43 +0200
-Message-Id: <20210827100243.22612-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/5] dovetail: add out-of-band open mode (O_OOB)
+Date: Tue, 31 Aug 2021 10:27:05 +0200
+Message-Id: <20210831082709.1296249-2-rpm@xenomai.org>
+In-Reply-To: <20210831082709.1296249-1-rpm@xenomai.org>
+References: <20210831082709.1296249-1-rpm@xenomai.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +16,66 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Especially 4.19 is not 2038 safe and 32 bit kernels do not have
-CONFIG_64BIT_TIME set, which ends up in __kernel_timespec being defined
-in a non y2038 safe way.
+From: Philippe Gerum <rpm@xenomai.org>
 
-cobalt_get_timespec64 will copy the upper bytes of the sec field into
-the nsec field, which is always zero.
+We need a specific open mode denoting a user request for enabling
+out-of-band capabilities (if supported). This enables regular in-band
+drivers to be extended with such capabilities, turning them on upon
+user request for the files they manage.
 
-Testing y2038 syscalls on a non y2038 safe kernel doesn't make sense,
-hence limiting the test runs to kernels with 2038 support.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- testsuite/smokey/y2038/syscall-tests.c | 27 ++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ fs/fcntl.c                       | 2 +-
+ include/linux/fcntl.h            | 2 +-
+ include/uapi/asm-generic/fcntl.h | 8 ++++++++
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 8afedd7d1..c23a54f5d 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -11,6 +11,7 @@
-  */
- #include <asm/xenomai/syscall.h>
- #include <smokey/smokey.h>
-+#include <sys/utsname.h>
- #include <mqueue.h>
+diff --git a/fs/fcntl.c b/fs/fcntl.c
+index 05b36b28f2e87fb..6bf8e931cfd394e 100644
+--- a/fs/fcntl.c
++++ b/fs/fcntl.c
+@@ -1035,7 +1035,7 @@ static int __init fcntl_init(void)
+ 	 * Exceptions: O_NONBLOCK is a two bit define on parisc; O_NDELAY
+ 	 * is defined as O_NONBLOCK on some platforms and not on others.
+ 	 */
+-	BUILD_BUG_ON(21 - 1 /* for O_RDONLY being 0 */ !=
++	BUILD_BUG_ON(22 - 1 /* for O_RDONLY being 0 */ !=
+ 		HWEIGHT32(
+ 			(VALID_OPEN_FLAGS & ~(O_NONBLOCK | O_NDELAY)) |
+ 			__FMODE_EXEC | __FMODE_NONOTIFY));
+diff --git a/include/linux/fcntl.h b/include/linux/fcntl.h
+index 921e750843e660c..1866384312f6daf 100644
+--- a/include/linux/fcntl.h
++++ b/include/linux/fcntl.h
+@@ -10,7 +10,7 @@
+ 	(O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC | \
+ 	 O_APPEND | O_NDELAY | O_NONBLOCK | __O_SYNC | O_DSYNC | \
+ 	 FASYNC	| O_DIRECT | O_LARGEFILE | O_DIRECTORY | O_NOFOLLOW | \
+-	 O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE)
++	 O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE | O_OOB)
  
- smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
-@@ -989,10 +990,36 @@ static int test_sc_cobalt_event_wait64(void)
- 	return 0;
- }
+ /* List of all valid flags for the how->upgrade_mask argument: */
+ #define VALID_UPGRADE_FLAGS \
+diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
+index 9dc0bf0c5a6ee89..346529426f91720 100644
+--- a/include/uapi/asm-generic/fcntl.h
++++ b/include/uapi/asm-generic/fcntl.h
+@@ -89,6 +89,14 @@
+ #define __O_TMPFILE	020000000
+ #endif
  
-+static int check_kernel_version(void)
-+{
-+	int ret, major, minor;
-+	struct utsname uts;
++/*
++ * Tells the open call that out-of-band operations should be enabled
++ * for the file (if supported).
++ */
++#ifndef O_OOB
++#define O_OOB		010000000000
++#endif
 +
-+	ret = smokey_check_errno(uname(&uts));
-+	if (ret)
-+		return ret;
-+
-+	ret = sscanf(uts.release, "%d.%d", &major, &minor);
-+	if (!smokey_assert(ret == 2))
-+		return -EINVAL;
-+
-+	/* We need a kernel with y2038 support, 5.4 onwards */
-+	if (!(major > 5 || (major == 5 && minor >= 4))) {
-+		smokey_note("y2038: skipped. (no y2038 safe kernel)");
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
- static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
- 
-+	ret = check_kernel_version();
-+	if (ret)
-+		return (ret < 0) ? ret : 0; /* skip if no y2038 safe kernel */
-+
- 	ret = test_sc_cobalt_sem_timedwait64();
- 	if (ret)
- 		return ret;
+ /* a horrid kludge trying to make sure that this will fail on old kernels */
+ #define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
+ #define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)      
 -- 
-2.30.2
+2.31.1
 
 
