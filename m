@@ -1,15 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
-Date: Tue, 31 Aug 2021 07:07:18 +0000
-Message-ID: <BN9PR11MB5227700E4BDB4B840D9AB353F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Subject: Re: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
 References: <20210831050736.5371-1-hongzhan.chen@intel.com>
  <20210831050736.5371-3-hongzhan.chen@intel.com>
  <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
-In-Reply-To: <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN9PR11MB5227700E4BDB4B840D9AB353F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3005778f-3d0b-bd98-6b46-fd020fd9868c@siemens.com>
+Date: Tue, 31 Aug 2021 09:14:19 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB5227700E4BDB4B840D9AB353F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +19,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIEF1Z3VzdCAzMSwgMjAyMSAyOjQ4
-IFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDIvM10gZHJpdmVycy9ncGlvOiBj
-b3JlOiBJbnRyb2R1Y2UgaGVscGVyIHRvIGZpbmQgZ3Bpb2NoaXANCj4NCj5PbiAzMS4wOC4yMSAw
-NzowNywgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+IFRvIGZpbmQgZ3Bpb2No
-aXAgZm9yIG5vbi1PRiBwbGF0Zm9ybXMgbGlrZSB4ODYNCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTog
-SG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICBpbmNs
-dWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmggfCAgNyArKysrKysNCj4+ICBrZXJuZWwvZHJp
-dmVycy9ncGlvL2dwaW8tY29yZS5jICAgfCA0MiArKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrDQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCA0OSBpbnNlcnRpb25zKCspDQo+PiANCj4+IGRpZmYg
-LS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmggYi9pbmNsdWRlL2NvYmFs
-dC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IGluZGV4IDI5ZjI2ZDZjNi4uOTgyNzllMjQyIDEwMDY0
-NA0KPj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0vZ3Bpby5oDQo+PiArKysgYi9p
-bmNsdWRlL2NvYmFsdC9rZXJuZWwvcnRkbS9ncGlvLmgNCj4+IEBAIC02Miw2ICs2MiwxMyBAQCBp
-bnQgcnRkbV9ncGlvY2hpcF9hZGRfYnlfbmFtZShzdHJ1Y3QgcnRkbV9ncGlvX2NoaXAgKnJnYywN
-Cj4+ICBpbnQgcnRkbV9ncGlvY2hpcF9wb3N0X2V2ZW50KHN0cnVjdCBydGRtX2dwaW9fY2hpcCAq
-cmdjLA0KPj4gIAkJCSAgICAgdW5zaWduZWQgaW50IG9mZnNldCk7DQo+PiAgDQo+PiAraW50IHJ0
-ZG1fZ3Bpb2NoaXBfZmluZChzdHJ1Y3QgZGV2aWNlX25vZGUgKmZyb20sDQo+PiArCQkJICBjb25z
-dCBjaGFyICpsYWJlbCwgaW50IHR5cGUpOw0KPj4gKw0KPj4gK2ludCBydGRtX2dwaW9jaGlwX2Fy
-cmF5X2ZpbmQoc3RydWN0IGRldmljZV9ub2RlICpmcm9tLA0KPj4gKwkJCQljb25zdCBjaGFyICpj
-b21wYXRbXSwNCj4+ICsJCQkJaW50IG5lbnRyaWVzLCBpbnQgdHlwZSk7DQo+PiArDQo+PiAgI2lm
-ZGVmIENPTkZJR19PRg0KPj4gIA0KPj4gIGludCBydGRtX2dwaW9jaGlwX3NjYW5fb2Yoc3RydWN0
-IGRldmljZV9ub2RlICpmcm9tLA0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL2dwaW8v
-Z3Bpby1jb3JlLmMgYi9rZXJuZWwvZHJpdmVycy9ncGlvL2dwaW8tY29yZS5jDQo+PiBpbmRleCBj
-Y2RhNjdiZDEuLmNlODBlOGQ3MyAxMDA2NDQNCj4+IC0tLSBhL2tlcm5lbC9kcml2ZXJzL2dwaW8v
-Z3Bpby1jb3JlLmMNCj4+ICsrKyBiL2tlcm5lbC9kcml2ZXJzL2dwaW8vZ3Bpby1jb3JlLmMNCj4+
-IEBAIC01MjgsNiArNTI4LDQ4IEBAIGludCBydGRtX2dwaW9jaGlwX2FkZF9ieV9uYW1lKHN0cnVj
-dCBydGRtX2dwaW9fY2hpcCAqcmdjLA0KPj4gIH0NCj4+ICBFWFBPUlRfU1lNQk9MX0dQTChydGRt
-X2dwaW9jaGlwX2FkZF9ieV9uYW1lKTsNCj4+ICANCj4+ICtpbnQgcnRkbV9ncGlvY2hpcF9maW5k
-KHN0cnVjdCBkZXZpY2Vfbm9kZSAqZnJvbSwgY29uc3QgY2hhciAqbGFiZWwsDQo+PiArCQkJICBp
-bnQgdHlwZSkNCj4+ICt7DQo+PiArCXN0cnVjdCBydGRtX2dwaW9fY2hpcCAqcmdjOw0KPj4gKwlz
-dHJ1Y3QgZ3Bpb19jaGlwICpjaGlwOw0KPj4gKwlpbnQgcmV0ID0gLUVOT0RFVjsNCj4+ICsNCj4+
-ICsJaWYgKCFydGRtX2F2YWlsYWJsZSgpKQ0KPj4gKwkJcmV0dXJuIC1FTk9TWVM7DQo+PiArDQo+
-PiArCWNoaXAgPSBmaW5kX2NoaXBfYnlfbmFtZShsYWJlbCk7DQo+PiArCWlmIChjaGlwID09IE5V
-TEwpDQo+PiArCQlyZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKwlyZXQgPSAwOw0KPj4gKwlyZ2MgPSBy
-dGRtX2dwaW9jaGlwX2FsbG9jKGNoaXAsIHR5cGUpOw0KPj4gKwlpZiAoSVNfRVJSKHJnYykpDQo+
-PiArCQlyZXQgPSBQVFJfRVJSKHJnYyk7DQo+PiArDQo+PiArCXJldHVybiByZXQ7DQo+PiArfQ0K
-Pj4gK0VYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fZ3Bpb2NoaXBfZmluZCk7DQo+PiArDQo+PiAraW50
-IHJ0ZG1fZ3Bpb2NoaXBfYXJyYXlfZmluZChzdHJ1Y3QgZGV2aWNlX25vZGUgKmZyb20sDQo+PiAr
-CQkJCWNvbnN0IGNoYXIgKmNvbXBhdFtdLA0KPg0KPklzICJjb21wYXQiIHRoZSByaWdodCBhcmd1
-bWVudCBuYW1lIGhlcmU/IFdlIGFyZSBzZWFyY2hpbmcgYnkgbmFtZQ0KPihsYWJlbCksIG5vPw0K
-DQpZZXMgLCBpdCBpcyBsYWJlbC4gTGV0IG1lIG1vZGlmeSBpdC4gU28gcGF0Y2ggMS8zIGlzIGFj
-Y2VwdGVkID8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBjaGVuDQo+DQo+SmFuDQo+DQo+PiArCQkJ
-CWludCBuZW50cmllcywgaW50IHR5cGUpDQo+PiArew0KPj4gKwlpbnQgcmV0ID0gLUVOT0RFViwg
-X3JldCwgbjsNCj4+ICsNCj4+ICsJZm9yIChuID0gMDsgbiA8IG5lbnRyaWVzOyBuKyspIHsNCj4+
-ICsJCV9yZXQgPSBydGRtX2dwaW9jaGlwX2ZpbmQoZnJvbSwgY29tcGF0W25dLCB0eXBlKTsNCj4+
-ICsJCWlmIChfcmV0KSB7DQo+PiArCQkJaWYgKF9yZXQgIT0gLUVOT0RFVikNCj4+ICsJCQkJcmV0
-dXJuIF9yZXQ7DQo+PiArCQl9IGVsc2UNCj4+ICsJCQlyZXQgPSAwOw0KPj4gKwl9DQo+PiArDQo+
-PiArCXJldHVybiByZXQ7DQo+PiArfQ0KPj4gK0VYUE9SVF9TWU1CT0xfR1BMKHJ0ZG1fZ3Bpb2No
-aXBfYXJyYXlfZmluZCk7DQo+PiArDQo+PiAgI2lmZGVmIENPTkZJR19PRg0KPj4gIA0KPj4gICNp
-bmNsdWRlIDxsaW51eC9vZl9wbGF0Zm9ybS5oPg0KPj4gDQo+DQo+LS0gDQo+U2llbWVucyBBRywg
-VCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+
-DQo+DQo=
+On 31.08.21 09:07, Chen, Hongzhan wrote:
+> 
+> 
+>  -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, August 31, 2021 2:48 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
+>>
+>> On 31.08.21 07:07, Hongzhan Chen via Xenomai wrote:
+>>> To find gpiochip for non-OF platforms like x86
+>>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>> ---
+>>>  include/cobalt/kernel/rtdm/gpio.h |  7 ++++++
+>>>  kernel/drivers/gpio/gpio-core.c   | 42 +++++++++++++++++++++++++++++++
+>>>  2 files changed, 49 insertions(+)
+>>>
+>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+>>> index 29f26d6c6..98279e242 100644
+>>> --- a/include/cobalt/kernel/rtdm/gpio.h
+>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
+>>> @@ -62,6 +62,13 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+>>>  int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+>>>  			     unsigned int offset);
+>>>  
+>>> +int rtdm_gpiochip_find(struct device_node *from,
+>>> +			  const char *label, int type);
+>>> +
+>>> +int rtdm_gpiochip_array_find(struct device_node *from,
+>>> +				const char *compat[],
+>>> +				int nentries, int type);
+>>> +
+>>>  #ifdef CONFIG_OF
+>>>  
+>>>  int rtdm_gpiochip_scan_of(struct device_node *from,
+>>> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+>>> index ccda67bd1..ce80e8d73 100644
+>>> --- a/kernel/drivers/gpio/gpio-core.c
+>>> +++ b/kernel/drivers/gpio/gpio-core.c
+>>> @@ -528,6 +528,48 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
+>>>  
+>>> +int rtdm_gpiochip_find(struct device_node *from, const char *label,
+>>> +			  int type)
+>>> +{
+>>> +	struct rtdm_gpio_chip *rgc;
+>>> +	struct gpio_chip *chip;
+>>> +	int ret = -ENODEV;
+>>> +
+>>> +	if (!rtdm_available())
+>>> +		return -ENOSYS;
+>>> +
+>>> +	chip = find_chip_by_name(label);
+>>> +	if (chip == NULL)
+>>> +		return ret;
+>>> +
+>>> +	ret = 0;
+>>> +	rgc = rtdm_gpiochip_alloc(chip, type);
+>>> +	if (IS_ERR(rgc))
+>>> +		ret = PTR_ERR(rgc);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
+>>> +
+>>> +int rtdm_gpiochip_array_find(struct device_node *from,
+>>> +				const char *compat[],
+>>
+>> Is "compat" the right argument name here? We are searching by name
+>> (label), no?
+> 
+> Yes , it is label. Let me modify it. So patch 1/3 is accepted ?
+> 
+
+Already done that locally while merging. Also just renamed compat_array
+to label_array in patch 3. Let me push this then.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
