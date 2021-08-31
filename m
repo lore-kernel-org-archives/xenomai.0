@@ -1,9 +1,15 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
-Date: Tue, 31 Aug 2021 01:07:35 -0400
-Message-Id: <20210831050736.5371-3-hongzhan.chen@intel.com>
-In-Reply-To: <20210831050736.5371-1-hongzhan.chen@intel.com>
-References: <20210831050736.5371-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+References: <20210830064527.18206-1-hongzhan.chen@intel.com>
+ <bdf39dd6-fc39-e4b7-3159-87bc86269014@siemens.com>
+ <BN9PR11MB5227ED7950F164C1235697D1F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4ca7072b-b386-25b7-3a01-8a3baea1290c@siemens.com>
+Date: Tue, 31 Aug 2021 07:58:37 +0200
+MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB5227ED7950F164C1235697D1F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,88 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-To find gpiochip for non-OF platforms like x86
+On 31.08.21 03:35, Chen, Hongzhan wrote:
+>>
+>>
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Monday, August 30, 2021 3:37 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+>>
+>> On 30.08.21 08:45, Hongzhan Chen via Xenomai wrote:
+>>> 1. move out of OF config conditional compilation so that non-OF platform
+>>>   call same API to remove rtdm gpio chip device.
+>>> 2. Introduce helper to find gpiochip as referring to pair of 
+>>>    rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
+>>> 3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+>>>
+>>
+>> Looks good, except for that naming issue.
+>>
+>>> I also did following tests with this patchset:
+>>> 1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
+>>>    to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
+>>>    setting GPIO_RTIOC_TS
+>>> 2. apply following patch, and rerun 1.
+>>>
+>>> index f83d7689f..50afbd418 100644
+>>> --- a/testsuite/gpiobench/gpiobench.c
+>>> +++ b/testsuite/gpiobench/gpiobench.c
+>>> @@ -619,7 +619,7 @@ int main(int argc, char **argv)
+>>>                         goto out;
+>>>                 }
+>>>
+>>> -               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
+>>> +               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
+>>>                 if (ret) {
+>>>                         printf("ioctl gpio port ts, failed\n");
+>>>                         goto out;
+>>>
+>>> Hardware env:
+>>> 1. Rock PI X V1.4.
+>>> 2. GPIO loopback connection between GPIO 334 and 335.
+>>>  
+>>
+>> Did you check if timestamps are as expected (different)?
+> 
+> According to output of gpiobench, the inner Avg Latency would be vary large like ( 2814377.00000) after switch to MONO.
+> But it is only about  16.879997 when we set REALTIME. 
+> 
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- include/cobalt/kernel/rtdm/gpio.h |  7 ++++++
- kernel/drivers/gpio/gpio-core.c   | 42 +++++++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
+gpiobench takes timestamps from CLOCK_MONOTONIC (see clock_gettime
+calls)). If you compare them to REALTIME, that will give an offset. But
+you report just the opposite, this confuses me now...
 
-diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
-index 29f26d6c6..98279e242 100644
---- a/include/cobalt/kernel/rtdm/gpio.h
-+++ b/include/cobalt/kernel/rtdm/gpio.h
-@@ -62,6 +62,13 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
- int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
- 			     unsigned int offset);
- 
-+int rtdm_gpiochip_find(struct device_node *from,
-+			  const char *label, int type);
-+
-+int rtdm_gpiochip_array_find(struct device_node *from,
-+				const char *compat[],
-+				int nentries, int type);
-+
- #ifdef CONFIG_OF
- 
- int rtdm_gpiochip_scan_of(struct device_node *from,
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index ccda67bd1..ce80e8d73 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -528,6 +528,48 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
- }
- EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
- 
-+int rtdm_gpiochip_find(struct device_node *from, const char *label,
-+			  int type)
-+{
-+	struct rtdm_gpio_chip *rgc;
-+	struct gpio_chip *chip;
-+	int ret = -ENODEV;
-+
-+	if (!rtdm_available())
-+		return -ENOSYS;
-+
-+	chip = find_chip_by_name(label);
-+	if (chip == NULL)
-+		return ret;
-+
-+	ret = 0;
-+	rgc = rtdm_gpiochip_alloc(chip, type);
-+	if (IS_ERR(rgc))
-+		ret = PTR_ERR(rgc);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
-+
-+int rtdm_gpiochip_array_find(struct device_node *from,
-+				const char *compat[],
-+				int nentries, int type)
-+{
-+	int ret = -ENODEV, _ret, n;
-+
-+	for (n = 0; n < nentries; n++) {
-+		_ret = rtdm_gpiochip_find(from, compat[n], type);
-+		if (_ret) {
-+			if (_ret != -ENODEV)
-+				return _ret;
-+		} else
-+			ret = 0;
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
-+
- #ifdef CONFIG_OF
- 
- #include <linux/of_platform.h>
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
