@@ -1,11 +1,11 @@
-Subject: Re: [PATCH 2/3] drivers/gpio: core: Introduce helper to find gpiochip
+Subject: Re: [PATCH 3/3] driver/gpio: Add Intel Cherryview pinctrl driver
 References: <20210831050736.5371-1-hongzhan.chen@intel.com>
- <20210831050736.5371-3-hongzhan.chen@intel.com>
+ <20210831050736.5371-4-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <aa94a2a6-9660-3e56-5e4c-b74b9a35ed95@siemens.com>
-Date: Tue, 31 Aug 2021 08:47:46 +0200
+Message-ID: <1fc883c1-5f95-4c71-5424-4d38079c4f60@siemens.com>
+Date: Tue, 31 Aug 2021 08:51:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210831050736.5371-3-hongzhan.chen@intel.com>
+In-Reply-To: <20210831050736.5371-4-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,92 +20,105 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
 On 31.08.21 07:07, Hongzhan Chen via Xenomai wrote:
-> To find gpiochip for non-OF platforms like x86
+> Add support for Intel Cherryview pin controller driver
 > 
 > Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > ---
->  include/cobalt/kernel/rtdm/gpio.h |  7 ++++++
->  kernel/drivers/gpio/gpio-core.c   | 42 +++++++++++++++++++++++++++++++
->  2 files changed, 49 insertions(+)
+>  kernel/drivers/gpio/Kconfig           |  7 +++++
+>  kernel/drivers/gpio/Makefile          |  2 ++
+>  kernel/drivers/gpio/gpio-cherryview.c | 42 +++++++++++++++++++++++++++
+>  3 files changed, 51 insertions(+)
+>  create mode 100644 kernel/drivers/gpio/gpio-cherryview.c
 > 
-> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
-> index 29f26d6c6..98279e242 100644
-> --- a/include/cobalt/kernel/rtdm/gpio.h
-> +++ b/include/cobalt/kernel/rtdm/gpio.h
-> @@ -62,6 +62,13 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
->  int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
->  			     unsigned int offset);
+> diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+> index 44f41688c..c257444f0 100644
+> --- a/kernel/drivers/gpio/Kconfig
+> +++ b/kernel/drivers/gpio/Kconfig
+> @@ -57,6 +57,13 @@ config XENO_DRIVERS_GPIO_OMAP
+>  	Enables support for the GPIO controller available from
+>  	OMAP family SOC.
 >  
-> +int rtdm_gpiochip_find(struct device_node *from,
-> +			  const char *label, int type);
+> +config XENO_DRIVERS_GPIO_CHERRYVIEW
+> +	depends on PINCTRL_CHERRYVIEW
+> +	tristate "Support for Cherryview GPIOs"
+> +	help
 > +
-> +int rtdm_gpiochip_array_find(struct device_node *from,
-> +				const char *compat[],
-> +				int nentries, int type);
+> +	Enables support for the Intel Cherryview GPIO controller
 > +
->  #ifdef CONFIG_OF
+>  config XENO_DRIVERS_GPIO_DEBUG
+>         bool "Enable GPIO core debugging features"
 >  
->  int rtdm_gpiochip_scan_of(struct device_node *from,
-> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-> index ccda67bd1..ce80e8d73 100644
-> --- a/kernel/drivers/gpio/gpio-core.c
-> +++ b/kernel/drivers/gpio/gpio-core.c
-> @@ -528,6 +528,48 @@ int rtdm_gpiochip_add_by_name(struct rtdm_gpio_chip *rgc,
->  }
->  EXPORT_SYMBOL_GPL(rtdm_gpiochip_add_by_name);
+> diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+> index 7bcf59949..e534eab93 100644
+> --- a/kernel/drivers/gpio/Makefile
+> +++ b/kernel/drivers/gpio/Makefile
+> @@ -6,6 +6,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
+>  obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
+>  obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
+>  obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
+> +obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
+>  obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
 >  
-> +int rtdm_gpiochip_find(struct device_node *from, const char *label,
-> +			  int type)
-> +{
-> +	struct rtdm_gpio_chip *rgc;
-> +	struct gpio_chip *chip;
-> +	int ret = -ENODEV;
+>  xeno-gpio-bcm2835-y := gpio-bcm2835.o
+> @@ -14,3 +15,4 @@ xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
+>  xeno-gpio-zynq7000-y := gpio-zynq7000.o
+>  xeno-gpio-xilinx-y := gpio-xilinx.o
+>  xeno-gpio-omap-y := gpio-omap.o
+> +xeno-gpio-cherryview-y := gpio-cherryview.o
+> diff --git a/kernel/drivers/gpio/gpio-cherryview.c b/kernel/drivers/gpio/gpio-cherryview.c
+> new file mode 100644
+> index 000000000..524199fe9
+> --- /dev/null
+> +++ b/kernel/drivers/gpio/gpio-cherryview.c
+> @@ -0,0 +1,42 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * @note Copyright (C) 2021 Hongzhan Chen <hongzhan.chen@intel.com>
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License as
+> + * published by the Free Software Foundation; either version 2 of the
+> + * License, or (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +#include <linux/module.h>
+> +#include <rtdm/gpio.h>
 > +
-> +	if (!rtdm_available())
-> +		return -ENOSYS;
+> +#define RTDM_SUBCLASS_CHERRYVIEW  7
 > +
-> +	chip = find_chip_by_name(label);
-> +	if (chip == NULL)
-> +		return ret;
-> +
-> +	ret = 0;
-> +	rgc = rtdm_gpiochip_alloc(chip, type);
-> +	if (IS_ERR(rgc))
-> +		ret = PTR_ERR(rgc);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_find);
-> +
-> +int rtdm_gpiochip_array_find(struct device_node *from,
-> +				const char *compat[],
+> +static const char *compat_array[] = {
 
-Is "compat" the right argument name here? We are searching by name
-(label), no?
+Again naming: 'compat'? Or rather 'label'?
+
+> +	"INT33FF:00",
+> +	"INT33FF:01",
+> +	"INT33FF:02",
+> +	"INT33FF:03",
+> +};
+> +
+> +static int __init cherryview_gpio_init(void)
+> +{
+> +	return rtdm_gpiochip_array_find(NULL, compat_array,
+> +					ARRAY_SIZE(compat_array),
+> +					RTDM_SUBCLASS_CHERRYVIEW);
+> +}
+> +module_init(cherryview_gpio_init);
+> +
+> +static void __exit cherryview_gpio_exit(void)
+> +{
+> +	rtdm_gpiochip_remove(RTDM_SUBCLASS_CHERRYVIEW);
+> +}
+> +module_exit(cherryview_gpio_exit);
+> +
+> +MODULE_LICENSE("GPL");
+> 
 
 Jan
-
-> +				int nentries, int type)
-> +{
-> +	int ret = -ENODEV, _ret, n;
-> +
-> +	for (n = 0; n < nentries; n++) {
-> +		_ret = rtdm_gpiochip_find(from, compat[n], type);
-> +		if (_ret) {
-> +			if (_ret != -ENODEV)
-> +				return _ret;
-> +		} else
-> +			ret = 0;
-> +	}
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(rtdm_gpiochip_array_find);
-> +
->  #ifdef CONFIG_OF
->  
->  #include <linux/of_platform.h>
-> 
 
 -- 
 Siemens AG, T RDA IOT
