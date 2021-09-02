@@ -1,7 +1,4 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 0/3] add support for cherryview gpio controller driver
-Date: Thu, 2 Sep 2021 06:24:50 +0000
-Message-ID: <BN9PR11MB52278E5292B1591028AABCD6F2CE9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
 References: <20210830064527.18206-1-hongzhan.chen@intel.com>
  <bdf39dd6-fc39-e4b7-3159-87bc86269014@siemens.com>
  <BN9PR11MB5227ED7950F164C1235697D1F2CC9@BN9PR11MB5227.namprd11.prod.outlook.com>
@@ -12,11 +9,15 @@ References: <20210830064527.18206-1-hongzhan.chen@intel.com>
  <5c2282c2-dbd3-016b-21f0-678428ad0164@siemens.com>
  <BN9PR11MB5227FA9FD23E06310D287422F2CE9@BN9PR11MB5227.namprd11.prod.outlook.com>
  <10a67496-523f-05f4-1a17-b690f28b4c56@siemens.com>
-In-Reply-To: <10a67496-523f-05f4-1a17-b690f28b4c56@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN9PR11MB52278E5292B1591028AABCD6F2CE9@BN9PR11MB5227.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <65c64cf8-3a00-def1-4029-177ba3f0a7d9@siemens.com>
+Date: Thu, 2 Sep 2021 08:44:17 +0200
 MIME-Version: 1.0
+In-Reply-To: <BN9PR11MB52278E5292B1591028AABCD6F2CE9@BN9PR11MB5227.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,101 +26,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBTZXB0ZW1iZXIgMiwgMjAyMSAy
-OjExIFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhl
-bm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDAvM10gYWRkIHN1cHBvcnQg
-Zm9yIGNoZXJyeXZpZXcgZ3BpbyBjb250cm9sbGVyIGRyaXZlcg0KPg0KPk9uIDAyLjA5LjIxIDAy
-OjQyLCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+IA0KPj4gDQo+Pj4gLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCj4+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29t
-PiANCj4+PiBTZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAxLCAyMDIxIDEwOjI3IFBNDQo+Pj4g
-VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVu
-b21haS5vcmcNCj4+PiBTdWJqZWN0OiBSZTogW1BBVENIIDAvM10gYWRkIHN1cHBvcnQgZm9yIGNo
-ZXJyeXZpZXcgZ3BpbyBjb250cm9sbGVyIGRyaXZlcg0KPj4+DQo+Pj4gT24gMzEuMDguMjEgMDg6
-MzYsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
-LS0tDQo+Pj4+Pj4+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0K
-Pj4+Pj4+PiBTZW50OiBUdWVzZGF5LCBBdWd1c3QgMzEsIDIwMjEgMTo1OSBQTQ0KPj4+Pj4+PiBU
-bzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4ZW5v
-bWFpLm9yZw0KPj4+Pj4+PiBTdWJqZWN0OiBSZTogW1BBVENIIDAvM10gYWRkIHN1cHBvcnQgZm9y
-IGNoZXJyeXZpZXcgZ3BpbyBjb250cm9sbGVyIGRyaXZlcg0KPj4+Pj4+Pg0KPj4+Pj4+PiBPbiAz
-MS4wOC4yMSAwMzozNSwgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+
-Pg0KPj4+Pj4+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4+Pj4+Pj4gRnJvbTog
-SmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4+Pj4+Pj4gU2VudDogTW9u
-ZGF5LCBBdWd1c3QgMzAsIDIwMjEgMzozNyBQTQ0KPj4+Pj4+Pj4+IFRvOiBDaGVuLCBIb25nemhh
-biA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4+Pj4+
-Pj4gU3ViamVjdDogUmU6IFtQQVRDSCAwLzNdIGFkZCBzdXBwb3J0IGZvciBjaGVycnl2aWV3IGdw
-aW8gY29udHJvbGxlciBkcml2ZXINCj4+Pj4+Pj4+Pg0KPj4+Pj4+Pj4+IE9uIDMwLjA4LjIxIDA4
-OjQ1LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+Pj4+Pj4+PiAxLiBtb3Zl
-IG91dCBvZiBPRiBjb25maWcgY29uZGl0aW9uYWwgY29tcGlsYXRpb24gc28gdGhhdCBub24tT0Yg
-cGxhdGZvcm0NCj4+Pj4+Pj4+Pj4gICBjYWxsIHNhbWUgQVBJIHRvIHJlbW92ZSBydGRtIGdwaW8g
-Y2hpcCBkZXZpY2UuDQo+Pj4+Pj4+Pj4+IDIuIEludHJvZHVjZSBoZWxwZXIgdG8gZmluZCBncGlv
-Y2hpcCBhcyByZWZlcnJpbmcgdG8gcGFpciBvZiANCj4+Pj4+Pj4+Pj4gICAgcnRkbV9ncGlvY2hp
-cF9zY2FuX29mIGFuZCBydGRtX2dwaW9jaGlwX3NjYW5fYXJyYXlfb2YuIA0KPj4+Pj4+Pj4+PiAz
-LiBBZGQgSW50ZWwgQ2hlcnJ5dmlldyBwaW5jdHJsIGRyaXZlciBiYXNlZCBvbiBvbiAxIGFuZCAy
-Lg0KPj4+Pj4+Pj4+Pg0KPj4+Pj4+Pj4+DQo+Pj4+Pj4+Pj4gTG9va3MgZ29vZCwgZXhjZXB0IGZv
-ciB0aGF0IG5hbWluZyBpc3N1ZS4NCj4+Pj4+Pj4+Pg0KPj4+Pj4+Pj4+PiBJIGFsc28gZGlkIGZv
-bGxvd2luZyB0ZXN0cyB3aXRoIHRoaXMgcGF0Y2hzZXQ6DQo+Pj4+Pj4+Pj4+IDEuIHJ1biAvdXNy
-L2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9ncGlvYmVuY2ggLWkgMzM0IC1pIDMzNSAtYyBJTlQzM0ZG
-OjAyDQo+Pj4+Pj4+Pj4+ICAgIHRvIHZhbGlkYXRlIHBhdGNoIDlhZmVhNWZmMmQ3YmE5N2RiOTZi
-MjJhMDA1YTlhN2ZjZjVmMmQ4OTIgd2hlbg0KPj4+Pj4+Pj4+PiAgICBzZXR0aW5nIEdQSU9fUlRJ
-T0NfVFMNCj4+Pj4+Pj4+Pj4gMi4gYXBwbHkgZm9sbG93aW5nIHBhdGNoLCBhbmQgcmVydW4gMS4N
-Cj4+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+Pj4gaW5kZXggZjgzZDc2ODlmLi41MGFmYmQ0MTggMTAwNjQ0
-DQo+Pj4+Pj4+Pj4+IC0tLSBhL3Rlc3RzdWl0ZS9ncGlvYmVuY2gvZ3Bpb2JlbmNoLmMNCj4+Pj4+
-Pj4+Pj4gKysrIGIvdGVzdHN1aXRlL2dwaW9iZW5jaC9ncGlvYmVuY2guYw0KPj4+Pj4+Pj4+PiBA
-QCAtNjE5LDcgKzYxOSw3IEBAIGludCBtYWluKGludCBhcmdjLCBjaGFyICoqYXJndikNCj4+Pj4+
-Pj4+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgZ290byBvdXQ7DQo+Pj4+Pj4+Pj4+ICAgICAg
-ICAgICAgICAgICB9DQo+Pj4+Pj4+Pj4+DQo+Pj4+Pj4+Pj4+IC0gICAgICAgICAgICAgICByZXQg
-PSBpb2N0bCh0aS5mZF9kZXZfaW50ciwgR1BJT19SVElPQ19UUywgJnZhbHVlKTsNCj4+Pj4+Pj4+
-Pj4gKyAgICAgICAgICAgICAgIHJldCA9IGlvY3RsKHRpLmZkX2Rldl9pbnRyLCBHUElPX1JUSU9D
-X1RTX01PTk8sICZ2YWx1ZSk7DQo+Pj4+Pj4+Pj4+ICAgICAgICAgICAgICAgICBpZiAocmV0KSB7
-DQo+Pj4+Pj4+Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgIHByaW50ZigiaW9jdGwgZ3BpbyBw
-b3J0IHRzLCBmYWlsZWRcbiIpOw0KPj4+Pj4+Pj4+PiAgICAgICAgICAgICAgICAgICAgICAgICBn
-b3RvIG91dDsNCj4+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+Pj4gSGFyZHdhcmUgZW52Og0KPj4+Pj4+Pj4+
-PiAxLiBSb2NrIFBJIFggVjEuNC4NCj4+Pj4+Pj4+Pj4gMi4gR1BJTyBsb29wYmFjayBjb25uZWN0
-aW9uIGJldHdlZW4gR1BJTyAzMzQgYW5kIDMzNS4NCj4+Pj4+Pj4+Pj4gIA0KPj4+Pj4+Pj4+DQo+
-Pj4+Pj4+Pj4gRGlkIHlvdSBjaGVjayBpZiB0aW1lc3RhbXBzIGFyZSBhcyBleHBlY3RlZCAoZGlm
-ZmVyZW50KT8NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBBY2NvcmRpbmcgdG8gb3V0cHV0IG9mIGdwaW9i
-ZW5jaCwgdGhlIGlubmVyIEF2ZyBMYXRlbmN5IHdvdWxkIGJlIHZhcnkgbGFyZ2UgbGlrZSAoIDI4
-MTQzNzcuMDAwMDApIGFmdGVyIHN3aXRjaCB0byBNT05PLg0KPj4+Pj4+Pj4gQnV0IGl0IGlzIG9u
-bHkgYWJvdXQgIDE2Ljg3OTk5NyB3aGVuIHdlIHNldCBSRUFMVElNRS4gDQo+Pj4+Pj4+Pg0KPj4+
-Pj4+Pg0KPj4+Pj4+PiBncGlvYmVuY2ggdGFrZXMgdGltZXN0YW1wcyBmcm9tIENMT0NLX01PTk9U
-T05JQyAoc2VlIGNsb2NrX2dldHRpbWUNCj4+Pj4+Pj4gY2FsbHMpKS4gSWYgeW91IGNvbXBhcmUg
-dGhlbSB0byBSRUFMVElNRSwgdGhhdCB3aWxsIGdpdmUgYW4gb2Zmc2V0LiBCdXQNCj4+Pj4+Pj4g
-eW91IHJlcG9ydCBqdXN0IHRoZSBvcHBvc2l0ZSwgdGhpcyBjb25mdXNlcyBtZSBub3cuLi4NCj4+
-Pj4+Pg0KPj4+Pj4+IFRoZSB0ZXN0IGlzIHJ1bm5pbmcgb24gZG92ZXRhaWwgYmFzZWQgNS4xMC4N
-Cj4+Pj4+Pg0KPj4+Pj4NCj4+Pj4+IEkgbWlzc2VkIG9uZSBjYXNlIGluIGdwaW9fcGluX2ludGVy
-cnVwdCB3aGVyZSBJIG5lZWQgdG8gY2hlY2sNCj4+Pj4+IG1vbm90b25pY190aW1lc3RhbXAgLSBi
-dXQsIGFnYWluLCBtb25vIGlzIHdoYXQgc2hvdWxkIHJlbWFpbiBmaW5lLA0KPj4+Pj4gR1BJT19S
-VElPQ19UU19SRUFMIChvciBHUElPX1JUSU9DX1RTLCB0aGUgZGVmYXVsdCkgc2hvdWxkIGdpdmUg
-YSBkZWx0YS4NCj4+Pj4NCj4+Pj4gSSBmb3VuZCB0aGVyZSBpcyBvbmUgb2J2aW91cyBnYXAgZm9y
-IG15IGNvbXBhcmlzb24gdGVzdC4NCj4+Pj4NCj4+Pj4gRm9yIFJFQUxURUlNICwgaXQgdG90YWxs
-eSBydW4gOTk5OTk5IGxpa2UgWzFdIHRpbGwgdGVzdCBub3JtYWxseSBleGl0LiBCdXQgZm9yIE1P
-Tk8sIEkgZm9yY2UgdG8gcXVpdCBkdXJpbmcgcnVubmluZw0KPj4+PiBiZWNhdXNlIGl0IG1heSB0
-YWtlIHNldmVyYWwgaG91cnMgdG8gZmluaXNoIGFuZCBJIGNhbiBub3Qgd2FpdCBsaWtlIFsyXS4g
-TGV0IG1lIHJlcnVuIHRlc3QgYW5kIHdhaXQgdGlsbCBpdCBub3JtYWxseSBleGl0IGFuZCANCj4+
-Pj4gZ2V0IHJlc3VsdCB0byBjaGVjay4NCj4+Pj4NCj4+Pj4gWzFdOg0KPj4+PiAjIFRvdGFsOiAw
-MDA5OTk5OTkNCj4+Pj4gIyBNaW4gTGF0ZW5jaWVzOiAwMDAxMw0KPj4+PiAjIEF2ZyBMYXRlbmNp
-ZXM6IDE2Ljg3OTk5Nw0KPj4+PiAjIE1heCBMYXRlbmNpZXM6IDAwMDQzDQo+Pj4+IFsyXToNCj4+
-Pj4gIyBUb3RhbDogMDAwMDgzOTg4DQo+Pj4+ICMgTWluIExhdGVuY2llczogMDAwMTINCj4+Pj4g
-IyBBdmcgTGF0ZW5jaWVzOiAyODE0Mzc3LjAwMDAwMA0KPj4+PiAjIE1heCBMYXRlbmNpZXM6IDAw
-MDQxDQo+Pj4+DQo+Pj4NCj4+PiBXZXJlIHlvdSBhYmxlIHRvIHJlc29sdmUgdGhpcyBteXN0ZXJ5
-IG92ZXIgbGF0ZXN0IG5leHQ/DQo+PiANCj4+IFllcy4gRmlyc3RseSAsIEkgYW0gZG9pbmcgY29t
-cGxldGUgdGVzdCB3aXRoIHBhc3NpbmcgTU9OTyBvciBSRUFMVElNRSB0byBjaGVjayBpZiB0aGlz
-IG15c3RlcnkgbGFyZ2UgQVZHIGxhdGVuY3kgDQo+PiBzdGlsbCBoYXBwZW4gdGlsbCBncGlvYmVu
-Y2ggbm9ybWFsbHkgZXhpdCBhbmQgZG8gY29tcGFyaXNvbiB0ZXN0IGJhc2VkIG9uIHVwZGF0ZWQg
-bmV4dCBjb2RlLiBBbmQgdGhlbiBmaWd1cmUgb3V0IA0KPj4gd2h5IGl0IGhhcHBlbiB3aGVuIGdw
-aW9iZW5jaCBpcyBpbnRlcnJ1cHRlZCBkdXJpbmcgcnVubmluZyBhbmQgZml4IGl0IGlmIGl0IGlz
-IHByb2JsZW0gY2F1c2VkIGJ5IHRpbWVzdGFtcC4NCj4+IA0KPg0KPlNvLCB5b3UgV0lMTCBkbyB0
-aGlzLCByaWdodD8gSSdtIGFza2luZyBiZWNhdXNlIHRoaXMgaXMgYmxvY2tpbmcgLXJjMSwNCj5h
-bmQgSSBjYW4ndCB0ZXN0IGhlcmUuDQoNClllcy4gSSBhbHJlYWR5IGZvdW5kIHRoZSByb290IGNh
-dXNlLiBJdCBpcyBjYXVzZWQgYnkgZ3Bpb2JlbmNoIGl0c2VsZi4gQmVjYXVzZSANCkl0IGRvIG5v
-dCBleGVjdXRlICJ0aS50cy5pbm5lcl9hdmcgLz0gKHRpLnRvdGFsX2N5Y2xlcyAqIDIpIHdoZW4g
-SSB1c2UgQ3RybCtDIHRvIGZvcmNlIHRoZSBncGlvYmVuY2ggdG8gcXVpdCBhbmQgaW5uZXJfYXZn
-IGtlZXANCmFsbCBzdW0gb2YgbGF0ZW5jeSBzbyB0aGF0IGl0IGlzIHZlcnkgbGFyZ2UgbnVtYmVy
-LiBJIHdpbGwgc3VibWl0IHBhdGNoIHRvIHJldmlldyBhZnRlciBJIHZhbGlkYXRlIGl0Lg0KDQpS
-ZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KPg0KPkphbg0KPg0KPi0tIA0KPlNpZW1lbnMgQUcs
-IFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
-Pg0K
+On 02.09.21 08:24, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Thursday, September 2, 2021 2:11 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+>>
+>> On 02.09.21 02:42, Chen, Hongzhan wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Wednesday, September 1, 2021 10:27 PM
+>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>> Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+>>>>
+>>>> On 31.08.21 08:36, Chen, Hongzhan wrote:
+>>>>>>> -----Original Message-----
+>>>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>>>>>> Sent: Tuesday, August 31, 2021 1:59 PM
+>>>>>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>>>>>> Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+>>>>>>>>
+>>>>>>>> On 31.08.21 03:35, Chen, Hongzhan wrote:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> -----Original Message-----
+>>>>>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>>>>>>>> Sent: Monday, August 30, 2021 3:37 PM
+>>>>>>>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>>>>>>>> Subject: Re: [PATCH 0/3] add support for cherryview gpio controller driver
+>>>>>>>>>>
+>>>>>>>>>> On 30.08.21 08:45, Hongzhan Chen via Xenomai wrote:
+>>>>>>>>>>> 1. move out of OF config conditional compilation so that non-OF platform
+>>>>>>>>>>>   call same API to remove rtdm gpio chip device.
+>>>>>>>>>>> 2. Introduce helper to find gpiochip as referring to pair of 
+>>>>>>>>>>>    rtdm_gpiochip_scan_of and rtdm_gpiochip_scan_array_of. 
+>>>>>>>>>>> 3. Add Intel Cherryview pinctrl driver based on on 1 and 2.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Looks good, except for that naming issue.
+>>>>>>>>>>
+>>>>>>>>>>> I also did following tests with this patchset:
+>>>>>>>>>>> 1. run /usr/lib/xenomai/testsuite/gpiobench -i 334 -i 335 -c INT33FF:02
+>>>>>>>>>>>    to validate patch 9afea5ff2d7ba97db96b22a005a9a7fcf5f2d892 when
+>>>>>>>>>>>    setting GPIO_RTIOC_TS
+>>>>>>>>>>> 2. apply following patch, and rerun 1.
+>>>>>>>>>>>
+>>>>>>>>>>> index f83d7689f..50afbd418 100644
+>>>>>>>>>>> --- a/testsuite/gpiobench/gpiobench.c
+>>>>>>>>>>> +++ b/testsuite/gpiobench/gpiobench.c
+>>>>>>>>>>> @@ -619,7 +619,7 @@ int main(int argc, char **argv)
+>>>>>>>>>>>                         goto out;
+>>>>>>>>>>>                 }
+>>>>>>>>>>>
+>>>>>>>>>>> -               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS, &value);
+>>>>>>>>>>> +               ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
+>>>>>>>>>>>                 if (ret) {
+>>>>>>>>>>>                         printf("ioctl gpio port ts, failed\n");
+>>>>>>>>>>>                         goto out;
+>>>>>>>>>>>
+>>>>>>>>>>> Hardware env:
+>>>>>>>>>>> 1. Rock PI X V1.4.
+>>>>>>>>>>> 2. GPIO loopback connection between GPIO 334 and 335.
+>>>>>>>>>>>  
+>>>>>>>>>>
+>>>>>>>>>> Did you check if timestamps are as expected (different)?
+>>>>>>>>>
+>>>>>>>>> According to output of gpiobench, the inner Avg Latency would be vary large like ( 2814377.00000) after switch to MONO.
+>>>>>>>>> But it is only about  16.879997 when we set REALTIME. 
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> gpiobench takes timestamps from CLOCK_MONOTONIC (see clock_gettime
+>>>>>>>> calls)). If you compare them to REALTIME, that will give an offset. But
+>>>>>>>> you report just the opposite, this confuses me now...
+>>>>>>>
+>>>>>>> The test is running on dovetail based 5.10.
+>>>>>>>
+>>>>>>
+>>>>>> I missed one case in gpio_pin_interrupt where I need to check
+>>>>>> monotonic_timestamp - but, again, mono is what should remain fine,
+>>>>>> GPIO_RTIOC_TS_REAL (or GPIO_RTIOC_TS, the default) should give a delta.
+>>>>>
+>>>>> I found there is one obvious gap for my comparison test.
+>>>>>
+>>>>> For REALTEIM , it totally run 999999 like [1] till test normally exit. But for MONO, I force to quit during running
+>>>>> because it may take several hours to finish and I can not wait like [2]. Let me rerun test and wait till it normally exit and 
+>>>>> get result to check.
+>>>>>
+>>>>> [1]:
+>>>>> # Total: 000999999
+>>>>> # Min Latencies: 00013
+>>>>> # Avg Latencies: 16.879997
+>>>>> # Max Latencies: 00043
+>>>>> [2]:
+>>>>> # Total: 000083988
+>>>>> # Min Latencies: 00012
+>>>>> # Avg Latencies: 2814377.000000
+>>>>> # Max Latencies: 00041
+>>>>>
+>>>>
+>>>> Were you able to resolve this mystery over latest next?
+>>>
+>>> Yes. Firstly , I am doing complete test with passing MONO or REALTIME to check if this mystery large AVG latency 
+>>> still happen till gpiobench normally exit and do comparison test based on updated next code. And then figure out 
+>>> why it happen when gpiobench is interrupted during running and fix it if it is problem caused by timestamp.
+>>>
+>>
+>> So, you WILL do this, right? I'm asking because this is blocking -rc1,
+>> and I can't test here.
+> 
+> Yes. I already found the root cause. It is caused by gpiobench itself. Because 
+> It do not execute "ti.ts.inner_avg /= (ti.total_cycles * 2) when I use Ctrl+C to force the gpiobench to quit and inner_avg keep
+> all sum of latency so that it is very large number. I will submit patch to review after I validate it.
+> 
+
+Ah, perfect, TIA!
+
+Jan
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
