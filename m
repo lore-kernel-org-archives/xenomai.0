@@ -1,12 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: IRQ_PIPELINE: TSC marked as unstable
-Date: Fri, 3 Sep 2021 08:06:42 +0000
-Message-ID: <8527a092ed7e2665d92a787e4f3eabf5b0987a55.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6DF613F6D92B0540A3C45D112C6521D6@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <8527a092ed7e2665d92a787e4f3eabf5b0987a55.camel@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: IRQ_PIPELINE: TSC marked as unstable
+In-reply-to: <8527a092ed7e2665d92a787e4f3eabf5b0987a55.camel@siemens.com>
+Date: Fri, 03 Sep 2021 10:33:07 +0200
+Message-ID: <87y28e6ou4.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +14,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-SGkgYWxsLA0KDQpJJ20gYWJsZSB0byByZXByb2R1Y2UgdGhlIGZvbGxvd2luZyBvbiB0d28gZGlm
-ZmVyZW50IHBsYXRmb3JtcyBub3csIHNvDQpJIGFzc3VtZSBpdCdzIGEgSVJRX1BJUEVMSU5FIGdl
-bmVyaWMgaXNzdWU6DQoNClBsYXRmb3JtIEEpOg0KSW50ZWwoUikgWGVvbihSKSBDUFUgRC0xNTE4
-IEAgMi4yMEdIeg0KMSBTb2NrZXQsIDQgQ29yZXMsIDEgdGhyZWFkIHBlciBjb3JlDQoNClBsYXRm
-b3JtIEIpOg0KSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjYyMCAwIEAgMi4wMEdIeg0KMiBTb2Nr
-ZXRzLCA2IGNvcmVzIHBlciBzb2NrZXQsIDIgdGhyZWFkcyBwZXIgY29yZQ0KKDIgTlVNQSBub2Rl
-cykNCg0KDQpQbGF0Zm9ybSBBKSByZXBvcnRzIHRoZSBUU0MgYmVpbmcgdW5zdGFibGUgZHVyaW5n
-IHRoZSBib290IHBoYXNlLA0KcGxhdGZvcm0gQikgcmVwb3J0cyB0aGUgVFNDIGFzIHVuc3RhYmxl
-IHdoZW4gcnVubmluZyBzdHJlc3MgdGVzdHM6DQoNClRha2VuIGZyb20gYSBCKSBiYXNlZCBzeXN0
-ZW06DQoNCls1NzYxNS42NzExMTRdIGNsb2Nrc291cmNlOiB0aW1la2VlcGluZyB3YXRjaGRvZyBv
-biBDUFUxNzogTWFya2luZyBjbG9ja3NvdXJjZSAndHNjJyBhcyB1bnN0YWJsZSBiZWNhdXNlIHRo
-ZSBza2V3IGlzIHRvbyBsYXJnZToNCls1NzYxNS43MzgyNjldIGNsb2Nrc291cmNlOiAgICAgICAg
-ICAgICAgICAgICAgICAgJ2hwZXQnIHdkX25vdzogMTJmODVlZDAgd2RfbGFzdDogMmM1ZWFiN2Ig
-bWFzazogZmZmZmZmZmYNCls1NzYxNS43OTQ0ODldIGNsb2Nrc291cmNlOiAgICAgICAgICAgICAg
-ICAgICAgICAgJ3RzYycgY3Nfbm93OiA2OGUyOTljMzcwOGMgY3NfbGFzdDogNjg2NGM2ZWEzOTcw
-IG1hc2s6IGZmZmZmZmZmZmZmZmZmZmYNCls1NzYxNS44NTg1NTJdIHRzYzogTWFya2luZyBUU0Mg
-dW5zdGFibGUgZHVlIHRvIGNsb2Nrc291cmNlIHdhdGNoZG9nDQpbNTc2MTUuODU4NTgyXSBUU0Mg
-Zm91bmQgdW5zdGFibGUgYWZ0ZXIgYm9vdCwgbW9zdCBsaWtlbHkgZHVlIHRvIGJyb2tlbiBCSU9T
-LiBVc2UgJ3RzYz11bnN0YWJsZScuDQpbNTc2MTUuOTEwMTM4XSBzY2hlZF9jbG9jazogTWFya2lu
-ZyB1bnN0YWJsZSAoNTc2MTUxMDQzNzU3NzMsIDc0OTg5MTE1Nik8LSg1NzYxNjA3MjU1MzQ4OCwg
-LTIxMzk3MzU1NCkNCls1NzYxNS45MDU5ODNdIGNsb2Nrc291cmNlOiBDaGVja2luZyBjbG9ja3Nv
-dXJjZSB0c2Mgc3luY2hyb25pemF0aW9uIGZyb20gQ1BVIDE1Lg0KWzU3NjE1Ljk0OTYyNl0gY2xv
-Y2tzb3VyY2U6IE92ZXJyaWRlIGNsb2Nrc291cmNlIHRzYyBpcyB1bnN0YWJsZSBhbmQgbm90IEhS
-VCBjb21wYXRpYmxlIC0gY2Fubm90IHN3aXRjaCB3aGlsZSBpbiBIUlQvTk9IWiBtb2RlDQpbNTc2
-MTYuMDE2MzQzXSBjbG9ja3NvdXJjZTogU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UgaHBldA0KDQpU
-aGUgY2xvY2tzb3VyY2Ugd2F0Y2hkb2cgaXMgbWlncmF0ZWQgYmV0d2VlbiBDUFVzIHRvIG1ha2Ug
-c3VyZSB0aGUgVFNDDQppcyBzeW5jaHJvbml6ZWQgYmV0d2VlbiBjb3Jlcy4gRm9yIG1lIGl0IGxv
-b2tzIGxpa2UgYSBsYXRlIGRlbGl2ZXJ5IG9mDQp0aGUgd2F0Y2hkb2cgdGltZXIuDQoNCkF2YWls
-YWJsZSB3b3JrYXJvdW5kKHMpOg0KLSBBZGQgInRzYz1yZWxpYWJsZSIgdG8gdGhlIGtlcm5lbCBj
-bWRsaW5lIGFyZ3MNCi0gQXQgbGVhc3QgZm9yIEEpIGJhc2VkIHN5c3RlbXMgaXQgaGVscGVkIHRv
-IGFwcGx5IHRoZSBmb2xsb3dpbmcgZGlmZiB0byB0aGUga2VybmVsDQogIGNvbmZpZ3VyYXRpb24u
-IEkgZG8gbm90IGNvbnNpZGVyIHRoYXQgYXMgInNvbHV0aW9uIiBmb3Igbm93Lg0KDQotQ09ORklH
-X0haXzEwMD15DQorQ09ORklHX0haXzEwMDA9eQ0KDQoNCkFzIHNvb24gYXMgSSBkaXNhYmxlIENP
-TkZJR19JUlFfUElQRUxJTkUgdGhlIHByb2JsZW0gaXMgZ29uZS4NCg0KSSBhbHJlYWR5IHRyaWVk
-IHRlc3Rpbmcgd2l0aCBDT05GSUdfREVCVUdfSVJRX1BJUEVMSU5FIGVuYWJsZWQsIGJ1dA0KdGhh
-dCBkaWRuJ3QgaGVscCBzbyBmYXIuDQoNCkFueSBhZHZpc2UgaG93IHRvIGRlYnVnIHRoYXQ/DQoN
-CkJlc3QgcmVnYXJkcywNCkZsb3JpYW4NCg0KLS0gDQpTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCkNv
-cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
+
+Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
+
+> Hi all,
+>
+> I'm able to reproduce the following on two different platforms now, so
+> I assume it's a IRQ_PIPELINE generic issue:
+>
+> Platform A):
+> Intel(R) Xeon(R) CPU D-1518 @ 2.20GHz
+> 1 Socket, 4 Cores, 1 thread per core
+>
+> Platform B):
+> Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
+> 2 Sockets, 6 cores per socket, 2 threads per core
+> (2 NUMA nodes)
+>
+>
+> Platform A) reports the TSC being unstable during the boot phase,
+> platform B) reports the TSC as unstable when running stress tests:
+>
+> Taken from a B) based system:
+>
+> [57615.671114] clocksource: timekeeping watchdog on CPU17: Marking clocksource 'tsc' as unstable because the skew is too large:
+> [57615.738269] clocksource:                       'hpet' wd_now: 12f85ed0 wd_last: 2c5eab7b mask: ffffffff
+> [57615.794489] clocksource:                       'tsc' cs_now: 68e299c3708c cs_last: 6864c6ea3970 mask: ffffffffffffffff
+> [57615.858552] tsc: Marking TSC unstable due to clocksource watchdog
+> [57615.858582] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
+> [57615.910138] sched_clock: Marking unstable (57615104375773, 749891156)<-(57616072553488, -213973554)
+> [57615.905983] clocksource: Checking clocksource tsc synchronization from CPU 15.
+> [57615.949626] clocksource: Override clocksource tsc is unstable and not HRT compatible - cannot switch while in HRT/NOHZ mode
+> [57616.016343] clocksource: Switched to clocksource hpet
+>
+> The clocksource watchdog is migrated between CPUs to make sure the TSC
+> is synchronized between cores. For me it looks like a late delivery of
+> the watchdog timer.
+>
+> Available workaround(s):
+> - Add "tsc=reliable" to the kernel cmdline args
+> - At least for A) based systems it helped to apply the following diff to the kernel
+>   configuration. I do not consider that as "solution" for now.
+>
+> -CONFIG_HZ_100=y
+> +CONFIG_HZ_1000=y
+>
+>
+> As soon as I disable CONFIG_IRQ_PIPELINE the problem is gone.
+>
+> I already tried testing with CONFIG_DEBUG_IRQ_PIPELINE enabled, but
+> that didn't help so far.
+>
+> Any advise how to debug that?
+>
+> Best regards,
+> Florian
+
+Could this be related [1] (HPET stanza)?
+
+[1] https://evlproject.org/core/caveat/#x86-caveat
+
+-- 
+Philippe.
 
