@@ -1,14 +1,12 @@
-Subject: Re: [PATCH] testsuite/gpiobench: Provide choice to switch clock for
- getting timestamp
-References: <20210903043305.17533-1-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4bd20804-cb82-665a-9078-70e91f9e88bd@siemens.com>
-Date: Fri, 3 Sep 2021 09:08:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210903043305.17533-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: IRQ_PIPELINE: TSC marked as unstable
+Date: Fri, 3 Sep 2021 08:06:42 +0000
+Message-ID: <8527a092ed7e2665d92a787e4f3eabf5b0987a55.camel@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6DF613F6D92B0540A3C45D112C6521D6@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,113 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.09.21 06:33, Hongzhan Chen via Xenomai wrote:
-> Provide choices to switch clock between MONO and REALTIME for getting
-> different timestamp since gpio driver already provide choosable service.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
-> index 0f099b0e8..04c694639 100644
-> --- a/testsuite/gpiobench/gpiobench.c
-> +++ b/testsuite/gpiobench/gpiobench.c
-> @@ -85,6 +85,7 @@ struct test_info {
->  	unsigned long total_cycles;
->  	unsigned long max_histogram;
->  	int mode;
-> +	int clockid;
->  	int prio;
->  	int quiet;
->  	int tracelimit;
-> @@ -121,7 +122,10 @@ static void display_help(void)
->  	       "                            must be specified\n"
->  	       "-m       --testmode         0 is loopback mode\n"
->  	       "                            1 is react mode which works with a latency box,\n"
-> -	       "                            default=0\n\n"
-> +	       "                            default=0\n"
-> +	       "-k       --clockid          0 is CLOCK_REALTIME\n"
-> +	       "                            1 is CLOCK_MONOTONIC,\n"
-> +	       "                            default=1\n\n"
->  
->  	       "e.g.     gpiobench -o 20 -i 21 -c pinctrl-bcm2835\n"
->  		);
-> @@ -130,7 +134,7 @@ static void display_help(void)
->  static void process_options(int argc, char *argv[])
->  {
->  	int c = 0;
-> -	static const char optstring[] = "h:p:m:l:c:b:i:o:q";
-> +	static const char optstring[] = "h:p:m:l:c:b:i:o:k:q";
->  
->  	struct option long_options[] = {
->  		{ "bracetrace", required_argument, 0, 'b'},
-> @@ -142,6 +146,7 @@ static void process_options(int argc, char *argv[])
->  		{ "intr", required_argument, 0, 'i'},
->  		{ "pinctrl", required_argument, 0, 'c'},
->  		{ "testmode", required_argument, 0, 'm'},
-> +		{ "clockid", required_argument, 0, 'k'},
->  		{ 0, 0, 0, 0},
->  	};
->  
-> @@ -185,6 +190,11 @@ static void process_options(int argc, char *argv[])
->  				MODE_REACT ? MODE_REACT : MODE_LOOPBACK;
->  			break;
->  
-> +		case 'k':
-> +			ti.clockid = atoi(optarg) >= CLOCK_MONOTONIC ?
-> +				CLOCK_MONOTONIC : CLOCK_REALTIME;
-> +			break;
-> +
->  		default:
->  			display_help();
->  			exit(2);
-> @@ -291,7 +301,7 @@ static int rw_gpio(int value, int index)
->  	struct rtdm_gpio_readout rdo;
->  	long long gpio_write, gpio_read, inner_diff, outer_diff;
->  
-> -	clock_gettime(CLOCK_MONOTONIC, &timestamp);
-> +	clock_gettime(ti.clockid, &timestamp);
->  	gpio_write = calc_us(timestamp);
->  
->  	ret = write(ti.fd_dev_out, &value, sizeof(value));
-> @@ -306,7 +316,7 @@ static int rw_gpio(int value, int index)
->  		return ret;
->  	}
->  
-> -	clock_gettime(CLOCK_MONOTONIC, &timestamp);
-> +	clock_gettime(ti.clockid, &timestamp);
->  	gpio_read = calc_us(timestamp);
->  
->  	inner_diff = (rdo.timestamp - gpio_write) / 1000;
-> @@ -472,6 +482,7 @@ static void init_ti(void)
->  	ti.gpio_out = -1;
->  	ti.gpio_intr = -1;
->  	ti.mode = MODE_LOOPBACK;
-> +	ti.clockid = CLOCK_MONOTONIC;
->  
->  	ti.ts.inner_min = ti.ts.outer_min = DEFAULT_LIMIT;
->  	ti.ts.inner_max = ti.ts.outer_max = 0;
-> @@ -632,7 +643,9 @@ int main(int argc, char **argv)
->  			goto out;
->  		}
->  
-> -		ret = ioctl(ti.fd_dev_intr, GPIO_RTIOC_TS_MONO, &value);
-> +		ret = ioctl(ti.fd_dev_intr,
-> +			ti.clockid == CLOCK_MONOTONIC ?
-> +			GPIO_RTIOC_TS_MONO : GPIO_RTIOC_TS_REAL, &value);
->  		if (ret) {
->  			printf("ioctl gpio port ts, failed\n");
->  			goto out;
-> 
-
-Merged to next, thanks.
-
-May I assume that both modes work fine now?
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+SGkgYWxsLA0KDQpJJ20gYWJsZSB0byByZXByb2R1Y2UgdGhlIGZvbGxvd2luZyBvbiB0d28gZGlm
+ZmVyZW50IHBsYXRmb3JtcyBub3csIHNvDQpJIGFzc3VtZSBpdCdzIGEgSVJRX1BJUEVMSU5FIGdl
+bmVyaWMgaXNzdWU6DQoNClBsYXRmb3JtIEEpOg0KSW50ZWwoUikgWGVvbihSKSBDUFUgRC0xNTE4
+IEAgMi4yMEdIeg0KMSBTb2NrZXQsIDQgQ29yZXMsIDEgdGhyZWFkIHBlciBjb3JlDQoNClBsYXRm
+b3JtIEIpOg0KSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjYyMCAwIEAgMi4wMEdIeg0KMiBTb2Nr
+ZXRzLCA2IGNvcmVzIHBlciBzb2NrZXQsIDIgdGhyZWFkcyBwZXIgY29yZQ0KKDIgTlVNQSBub2Rl
+cykNCg0KDQpQbGF0Zm9ybSBBKSByZXBvcnRzIHRoZSBUU0MgYmVpbmcgdW5zdGFibGUgZHVyaW5n
+IHRoZSBib290IHBoYXNlLA0KcGxhdGZvcm0gQikgcmVwb3J0cyB0aGUgVFNDIGFzIHVuc3RhYmxl
+IHdoZW4gcnVubmluZyBzdHJlc3MgdGVzdHM6DQoNClRha2VuIGZyb20gYSBCKSBiYXNlZCBzeXN0
+ZW06DQoNCls1NzYxNS42NzExMTRdIGNsb2Nrc291cmNlOiB0aW1la2VlcGluZyB3YXRjaGRvZyBv
+biBDUFUxNzogTWFya2luZyBjbG9ja3NvdXJjZSAndHNjJyBhcyB1bnN0YWJsZSBiZWNhdXNlIHRo
+ZSBza2V3IGlzIHRvbyBsYXJnZToNCls1NzYxNS43MzgyNjldIGNsb2Nrc291cmNlOiAgICAgICAg
+ICAgICAgICAgICAgICAgJ2hwZXQnIHdkX25vdzogMTJmODVlZDAgd2RfbGFzdDogMmM1ZWFiN2Ig
+bWFzazogZmZmZmZmZmYNCls1NzYxNS43OTQ0ODldIGNsb2Nrc291cmNlOiAgICAgICAgICAgICAg
+ICAgICAgICAgJ3RzYycgY3Nfbm93OiA2OGUyOTljMzcwOGMgY3NfbGFzdDogNjg2NGM2ZWEzOTcw
+IG1hc2s6IGZmZmZmZmZmZmZmZmZmZmYNCls1NzYxNS44NTg1NTJdIHRzYzogTWFya2luZyBUU0Mg
+dW5zdGFibGUgZHVlIHRvIGNsb2Nrc291cmNlIHdhdGNoZG9nDQpbNTc2MTUuODU4NTgyXSBUU0Mg
+Zm91bmQgdW5zdGFibGUgYWZ0ZXIgYm9vdCwgbW9zdCBsaWtlbHkgZHVlIHRvIGJyb2tlbiBCSU9T
+LiBVc2UgJ3RzYz11bnN0YWJsZScuDQpbNTc2MTUuOTEwMTM4XSBzY2hlZF9jbG9jazogTWFya2lu
+ZyB1bnN0YWJsZSAoNTc2MTUxMDQzNzU3NzMsIDc0OTg5MTE1Nik8LSg1NzYxNjA3MjU1MzQ4OCwg
+LTIxMzk3MzU1NCkNCls1NzYxNS45MDU5ODNdIGNsb2Nrc291cmNlOiBDaGVja2luZyBjbG9ja3Nv
+dXJjZSB0c2Mgc3luY2hyb25pemF0aW9uIGZyb20gQ1BVIDE1Lg0KWzU3NjE1Ljk0OTYyNl0gY2xv
+Y2tzb3VyY2U6IE92ZXJyaWRlIGNsb2Nrc291cmNlIHRzYyBpcyB1bnN0YWJsZSBhbmQgbm90IEhS
+VCBjb21wYXRpYmxlIC0gY2Fubm90IHN3aXRjaCB3aGlsZSBpbiBIUlQvTk9IWiBtb2RlDQpbNTc2
+MTYuMDE2MzQzXSBjbG9ja3NvdXJjZTogU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UgaHBldA0KDQpU
+aGUgY2xvY2tzb3VyY2Ugd2F0Y2hkb2cgaXMgbWlncmF0ZWQgYmV0d2VlbiBDUFVzIHRvIG1ha2Ug
+c3VyZSB0aGUgVFNDDQppcyBzeW5jaHJvbml6ZWQgYmV0d2VlbiBjb3Jlcy4gRm9yIG1lIGl0IGxv
+b2tzIGxpa2UgYSBsYXRlIGRlbGl2ZXJ5IG9mDQp0aGUgd2F0Y2hkb2cgdGltZXIuDQoNCkF2YWls
+YWJsZSB3b3JrYXJvdW5kKHMpOg0KLSBBZGQgInRzYz1yZWxpYWJsZSIgdG8gdGhlIGtlcm5lbCBj
+bWRsaW5lIGFyZ3MNCi0gQXQgbGVhc3QgZm9yIEEpIGJhc2VkIHN5c3RlbXMgaXQgaGVscGVkIHRv
+IGFwcGx5IHRoZSBmb2xsb3dpbmcgZGlmZiB0byB0aGUga2VybmVsDQogIGNvbmZpZ3VyYXRpb24u
+IEkgZG8gbm90IGNvbnNpZGVyIHRoYXQgYXMgInNvbHV0aW9uIiBmb3Igbm93Lg0KDQotQ09ORklH
+X0haXzEwMD15DQorQ09ORklHX0haXzEwMDA9eQ0KDQoNCkFzIHNvb24gYXMgSSBkaXNhYmxlIENP
+TkZJR19JUlFfUElQRUxJTkUgdGhlIHByb2JsZW0gaXMgZ29uZS4NCg0KSSBhbHJlYWR5IHRyaWVk
+IHRlc3Rpbmcgd2l0aCBDT05GSUdfREVCVUdfSVJRX1BJUEVMSU5FIGVuYWJsZWQsIGJ1dA0KdGhh
+dCBkaWRuJ3QgaGVscCBzbyBmYXIuDQoNCkFueSBhZHZpc2UgaG93IHRvIGRlYnVnIHRoYXQ/DQoN
+CkJlc3QgcmVnYXJkcywNCkZsb3JpYW4NCg0KLS0gDQpTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCkNv
+cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
