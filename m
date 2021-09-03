@@ -1,12 +1,15 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: IRQ_PIPELINE: TSC marked as unstable
+Date: Fri, 3 Sep 2021 08:44:09 +0000
+Message-ID: <2b1b45a91143f29cccb30e4470113d755ad84b74.camel@siemens.com>
 References: <8527a092ed7e2665d92a787e4f3eabf5b0987a55.camel@siemens.com>
  <87y28e6ou4.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: IRQ_PIPELINE: TSC marked as unstable
-In-reply-to: <87y28e6ou4.fsf@xenomai.org>
-Date: Fri, 03 Sep 2021 10:41:23 +0200
-Message-ID: <87v93i6ogc.fsf@xenomai.org>
+In-Reply-To: <87y28e6ou4.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8C1CEF718D49B64B8D180301A5A2F14A@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,76 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
->
->> Hi all,
->>
->> I'm able to reproduce the following on two different platforms now, so
->> I assume it's a IRQ_PIPELINE generic issue:
->>
->> Platform A):
->> Intel(R) Xeon(R) CPU D-1518 @ 2.20GHz
->> 1 Socket, 4 Cores, 1 thread per core
->>
->> Platform B):
->> Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
->> 2 Sockets, 6 cores per socket, 2 threads per core
->> (2 NUMA nodes)
->>
->>
->> Platform A) reports the TSC being unstable during the boot phase,
->> platform B) reports the TSC as unstable when running stress tests:
->>
->> Taken from a B) based system:
->>
->> [57615.671114] clocksource: timekeeping watchdog on CPU17: Marking clocksource 'tsc' as unstable because the skew is too large:
->> [57615.738269] clocksource:                       'hpet' wd_now: 12f85ed0 wd_last: 2c5eab7b mask: ffffffff
->> [57615.794489] clocksource:                       'tsc' cs_now: 68e299c3708c cs_last: 6864c6ea3970 mask: ffffffffffffffff
->> [57615.858552] tsc: Marking TSC unstable due to clocksource watchdog
->> [57615.858582] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
->> [57615.910138] sched_clock: Marking unstable (57615104375773, 749891156)<-(57616072553488, -213973554)
->> [57615.905983] clocksource: Checking clocksource tsc synchronization from CPU 15.
->> [57615.949626] clocksource: Override clocksource tsc is unstable and not HRT compatible - cannot switch while in HRT/NOHZ mode
->> [57616.016343] clocksource: Switched to clocksource hpet
->>
->> The clocksource watchdog is migrated between CPUs to make sure the TSC
->> is synchronized between cores. For me it looks like a late delivery of
->> the watchdog timer.
->>
->> Available workaround(s):
->> - Add "tsc=reliable" to the kernel cmdline args
->> - At least for A) based systems it helped to apply the following diff to the kernel
->>   configuration. I do not consider that as "solution" for now.
->>
->> -CONFIG_HZ_100=y
->> +CONFIG_HZ_1000=y
->>
->>
->> As soon as I disable CONFIG_IRQ_PIPELINE the problem is gone.
->>
->> I already tried testing with CONFIG_DEBUG_IRQ_PIPELINE enabled, but
->> that didn't help so far.
->>
->> Any advise how to debug that?
->>
->> Best regards,
->> Florian
->
-> Could this be related [1] (HPET stanza)?
->
-> [1] https://evlproject.org/core/caveat/#x86-caveat
-
-
-Not directly, you do have HPET enabled and the refined source is not
-involved. Did you try enabling the Dovetail torture tests, particularly
-on the machine that has the issue at boot time?
-
--- 
-Philippe.
+T24gRnJpLCAyMDIxLTA5LTAzIGF0IDEwOjMzICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
+Cj4gQmV6ZGVrYSwgRmxvcmlhbiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cml0ZXM6
+DQo+IA0KPiA+IEhpIGFsbCwNCj4gPiANCj4gPiBJJ20gYWJsZSB0byByZXByb2R1Y2UgdGhlIGZv
+bGxvd2luZyBvbiB0d28gZGlmZmVyZW50IHBsYXRmb3JtcyBub3csIHNvDQo+ID4gSSBhc3N1bWUg
+aXQncyBhIElSUV9QSVBFTElORSBnZW5lcmljIGlzc3VlOg0KPiA+IA0KPiA+IFBsYXRmb3JtIEEp
+Og0KPiA+IEludGVsKFIpIFhlb24oUikgQ1BVIEQtMTUxOCBAIDIuMjBHSHoNCj4gPiAxIFNvY2tl
+dCwgNCBDb3JlcywgMSB0aHJlYWQgcGVyIGNvcmUNCj4gPiANCj4gPiBQbGF0Zm9ybSBCKToNCj4g
+PiBJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjIwIDAgQCAyLjAwR0h6DQo+ID4gMiBTb2NrZXRz
+LCA2IGNvcmVzIHBlciBzb2NrZXQsIDIgdGhyZWFkcyBwZXIgY29yZQ0KPiA+ICgyIE5VTUEgbm9k
+ZXMpDQo+ID4gDQo+ID4gDQo+ID4gUGxhdGZvcm0gQSkgcmVwb3J0cyB0aGUgVFNDIGJlaW5nIHVu
+c3RhYmxlIGR1cmluZyB0aGUgYm9vdCBwaGFzZSwNCj4gPiBwbGF0Zm9ybSBCKSByZXBvcnRzIHRo
+ZSBUU0MgYXMgdW5zdGFibGUgd2hlbiBydW5uaW5nIHN0cmVzcyB0ZXN0czoNCj4gPiANCj4gPiBU
+YWtlbiBmcm9tIGEgQikgYmFzZWQgc3lzdGVtOg0KPiA+IA0KPiA+IFs1NzYxNS42NzExMTRdIGNs
+b2Nrc291cmNlOiB0aW1la2VlcGluZyB3YXRjaGRvZyBvbiBDUFUxNzogTWFya2luZyBjbG9ja3Nv
+dXJjZSAndHNjJyBhcyB1bnN0YWJsZSBiZWNhdXNlIHRoZSBza2V3IGlzIHRvbyBsYXJnZToNCj4g
+PiBbNTc2MTUuNzM4MjY5XSBjbG9ja3NvdXJjZTogICAgICAgICAgICAgICAgICAgICAgICdocGV0
+JyB3ZF9ub3c6IDEyZjg1ZWQwIHdkX2xhc3Q6IDJjNWVhYjdiIG1hc2s6IGZmZmZmZmZmDQo+ID4g
+WzU3NjE1Ljc5NDQ4OV0gY2xvY2tzb3VyY2U6ICAgICAgICAgICAgICAgICAgICAgICAndHNjJyBj
+c19ub3c6IDY4ZTI5OWMzNzA4YyBjc19sYXN0OiA2ODY0YzZlYTM5NzAgbWFzazogZmZmZmZmZmZm
+ZmZmZmZmZg0KPiA+IFs1NzYxNS44NTg1NTJdIHRzYzogTWFya2luZyBUU0MgdW5zdGFibGUgZHVl
+IHRvIGNsb2Nrc291cmNlIHdhdGNoZG9nDQo+ID4gWzU3NjE1Ljg1ODU4Ml0gVFNDIGZvdW5kIHVu
+c3RhYmxlIGFmdGVyIGJvb3QsIG1vc3QgbGlrZWx5IGR1ZSB0byBicm9rZW4gQklPUy4gVXNlICd0
+c2M9dW5zdGFibGUnLg0KPiA+IFs1NzYxNS45MTAxMzhdIHNjaGVkX2Nsb2NrOiBNYXJraW5nIHVu
+c3RhYmxlICg1NzYxNTEwNDM3NTc3MywgNzQ5ODkxMTU2KTwtKDU3NjE2MDcyNTUzNDg4LCAtMjEz
+OTczNTU0KQ0KPiA+IFs1NzYxNS45MDU5ODNdIGNsb2Nrc291cmNlOiBDaGVja2luZyBjbG9ja3Nv
+dXJjZSB0c2Mgc3luY2hyb25pemF0aW9uIGZyb20gQ1BVIDE1Lg0KPiA+IFs1NzYxNS45NDk2MjZd
+IGNsb2Nrc291cmNlOiBPdmVycmlkZSBjbG9ja3NvdXJjZSB0c2MgaXMgdW5zdGFibGUgYW5kIG5v
+dCBIUlQgY29tcGF0aWJsZSAtIGNhbm5vdCBzd2l0Y2ggd2hpbGUgaW4gSFJUL05PSFogbW9kZQ0K
+PiA+IFs1NzYxNi4wMTYzNDNdIGNsb2Nrc291cmNlOiBTd2l0Y2hlZCB0byBjbG9ja3NvdXJjZSBo
+cGV0DQo+ID4gDQo+ID4gVGhlIGNsb2Nrc291cmNlIHdhdGNoZG9nIGlzIG1pZ3JhdGVkIGJldHdl
+ZW4gQ1BVcyB0byBtYWtlIHN1cmUgdGhlIFRTQw0KPiA+IGlzIHN5bmNocm9uaXplZCBiZXR3ZWVu
+IGNvcmVzLiBGb3IgbWUgaXQgbG9va3MgbGlrZSBhIGxhdGUgZGVsaXZlcnkgb2YNCj4gPiB0aGUg
+d2F0Y2hkb2cgdGltZXIuDQo+ID4gDQo+ID4gQXZhaWxhYmxlIHdvcmthcm91bmQocyk6DQo+ID4g
+LSBBZGQgInRzYz1yZWxpYWJsZSIgdG8gdGhlIGtlcm5lbCBjbWRsaW5lIGFyZ3MNCj4gPiAtIEF0
+IGxlYXN0IGZvciBBKSBiYXNlZCBzeXN0ZW1zIGl0IGhlbHBlZCB0byBhcHBseSB0aGUgZm9sbG93
+aW5nIGRpZmYgdG8gdGhlIGtlcm5lbA0KPiA+ICAgY29uZmlndXJhdGlvbi4gSSBkbyBub3QgY29u
+c2lkZXIgdGhhdCBhcyAic29sdXRpb24iIGZvciBub3cuDQo+ID4gDQo+ID4gLUNPTkZJR19IWl8x
+MDA9eQ0KPiA+ICtDT05GSUdfSFpfMTAwMD15DQo+ID4gDQo+ID4gDQo+ID4gQXMgc29vbiBhcyBJ
+IGRpc2FibGUgQ09ORklHX0lSUV9QSVBFTElORSB0aGUgcHJvYmxlbSBpcyBnb25lLg0KPiA+IA0K
+PiA+IEkgYWxyZWFkeSB0cmllZCB0ZXN0aW5nIHdpdGggQ09ORklHX0RFQlVHX0lSUV9QSVBFTElO
+RSBlbmFibGVkLCBidXQNCj4gPiB0aGF0IGRpZG4ndCBoZWxwIHNvIGZhci4NCj4gPiANCj4gPiBB
+bnkgYWR2aXNlIGhvdyB0byBkZWJ1ZyB0aGF0Pw0KPiA+IA0KPiA+IEJlc3QgcmVnYXJkcywNCj4g
+PiBGbG9yaWFuDQo+IA0KPiBDb3VsZCB0aGlzIGJlIHJlbGF0ZWQgWzFdIChIUEVUIHN0YW56YSk/
+DQo+IA0KPiBbMV0gaHR0cHM6Ly9ldmxwcm9qZWN0Lm9yZy9jb3JlL2NhdmVhdC8jeDg2LWNhdmVh
+dA0KPiANCg0KSW4gdGhlIEEpIHNjZW5hcmlvIGl0IGNvdWxkIGJlIHJlbGF0ZWQuIEhQRVQgaXMg
+ZGlzYWJsZWQgLyBub3QNCmF2YWlsYWJsZSB0aGVyZS4gVGhhbmtzIGZvciB0aGUgaGludCHCoA0K
+DQpXaXRoIEIpIHdlIGhhdmUgSFBFVCBlbmFibGVkIGFuZCBpdCBuZXZlciBoYXBwZW5kIHdoZW4g
+SVJRX1BJUEVMSU5FIHdhcw0Kbm90IGNvbXBpbGVkIGluLg0KDQo=
 
