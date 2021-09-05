@@ -1,19 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: autotune inside qemu: early shot and segfault
-Date: Fri, 27 Aug 2021 12:32:44 +0000
-Message-ID: <3b5fd6873f71d2e206021651be1574e3526551aa.camel@siemens.com>
-References: <42504023-fcfb-7f38-e806-0c41793adb9d@siemens.com>
- <fee7159e-85d5-bffc-fd89-79050166d080@siemens.com>
- <6c8843f98aea5786d95f57d46cbaf0f2ec267951.camel@siemens.com>
- <da4bf683-2a3d-5e32-e4aa-bd9ecef0a605@siemens.com>
- <09ace02a61b9e1c30e4c6dab4170a115e064576a.camel@siemens.com>
- <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
-In-Reply-To: <6a53e808-af45-e68b-ca8e-e210d7af8391@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <387F58391AB20242889FC4A23EF9F04D@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: <j.villena@ecler.com>
+References: <003a01d7a10d$9268d6b0$b73a8410$@ecler.com>
+ <87sfyk7pwl.fsf@xenomai.org>
+In-Reply-To: <87sfyk7pwl.fsf@xenomai.org>
+Subject: RE: Using oob GPIO on RPi4B and evl_poll
+Date: Sun, 5 Sep 2021 12:34:07 +0200
+Message-ID: <001701d7a241$8f019ae0$ad04d0a0$@ecler.com>
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Language: es
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,61 +18,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: xenomai@xenomai.org
 
-T24gRnJpLCAyMDIxLTA4LTI3IGF0IDE0OjE1ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAyNy4wOC4yMSAxMzozOSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
-dGU6DQo+ID4gT24gRnJpLCAyMDIxLTA4LTI3IGF0IDEyOjIzICswMjAwLCBKYW4gS2lzemthIHdy
-b3RlOg0KPiA+ID4gT24gMjcuMDguMjEgMTI6MjIsIEJlemRla2EsIEZsb3JpYW4gKFQgUkRBIElP
-VCBTRVMtREUpIHdyb3RlOg0KPiA+ID4gPiBPbiBGcmksIDIwMjEtMDgtMjcgYXQgMTI6MDMgKzAy
-MDAsIEphbiBLaXN6a2Egd3JvdGU6DQo+ID4gPiA+ID4gT24gMjcuMDguMjEgMTE6NTcsIEZsb3Jp
-YW4gQmV6ZGVrYSB3cm90ZToNCj4gPiA+ID4gPiA+IEhpIGFsbCwNCj4gPiA+ID4gPiA+IA0KPiA+
-ID4gPiA+ID4gZmlyc3QgaXNzdWU6DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IG1heWJlIHNv
-bWVvbmUgY2FuIGV4cGxhaW4gd2hhdCdzIGdvaW5nIG9uIGhlcmUuIEknbSBydW5uaW5nIGF1dG90
-dW5lDQo+ID4gPiA+ID4gPiBpbnNpZGUgcWVtdSAoQVJNKSBvbiBhbiB4ODZfNjQgaG9zdCBhbmQg
-Z2V0IHRoZSBlcnJvciBiZWxvdy4gVGhlDQo+ID4gPiA+ID4gPiBrZXJuZWwgaW4gdXNlIGlzIDQu
-MTkgKGlwaXBlKSBidWlsZCB3aXRoIGN1cnJlbnQgIm5leHQiIGJyYW5jaC4NCj4gPiA+ID4gPiA+
-IA0KPiA+ID4gPiA+ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lMg0KPiA+ID4gPiA+ID4gPT0gYXV0
-by10dW5pbmcgc3RhcnRlZCwgcGVyaW9kPTEwMDAwMDAgbnMgKG1heSB0YWtlIGEgd2hpbGUpDQo+
-ID4gPiA+ID4gPiBpcnEgZ3Jhdml0eS4uLiAwIG5zDQo+ID4gPiA+ID4gPiBrZXJuZWwgZ3Jhdml0
-eS4uLiBhdXRvdHVuZTogdHVuaW5nIGZhaWxlZCAoa2VybmVsKTogUmVzb3VyY2UgdGVtcG9yYXJp
-bHkgdW5hdmFpbGFibGUNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gZG1lc2cgdGVsbHMgbWUN
-Cj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gWyAgIDkyLjgwMDc4MV0gW1hlbm9tYWldIGF1dG90
-dW5lKGlycWhhbmQpIHN0YXJ0ZWQNCj4gPiA+ID4gPiA+IFsgIDEwMi40OTk0OTRdIFtYZW5vbWFp
-XSBhdXRvdHVuZShrdGhyZWFkKSBzdGFydGVkDQo+ID4gPiA+ID4gPiBbICAxMDguNjIzODk4XSBb
-WGVub21haV0gYXV0b3R1bmUoa3RocmVhZCkgZmFpbGVkIHdpdGggZWFybHkgc2hvdCAoODI3MjUx
-IG5zKQ0KPiA+ID4gPiA+ID4gWyAgMTA4LjY0Njc5NV0gW1hlbm9tYWldIGF1dG90dW5lIGZpbmlz
-aGVkIFswaS81MDAway81MDAwdV0NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+
-ID4gPiBBbnkgaWRlYSB3aHkgLyBob3cgdGhpcyBlYXJseSBzaG90IGNhbiBoYXBwZW4/IEknbSB1
-bmFibGUgdG8NCj4gPiA+ID4gPiA+IHJlcHJvZHVjZSBpdCBvbiBhIHJlYWwgaGFyZHdhcmUgbGlr
-ZSB0aGUgYmVhZ2xlIGJvbmUgYmxhY2suDQo+ID4gPiA+ID4gPiBJIHdvbmRlciB3aHkgaXQgc2Vl
-bXMgdG8gd29yayBpbiB0aGUgQ0kgc2V0dXAuLi4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
-DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFNlY29uZCBpc3N1ZTogRnJvbSB0aW1lIHRvIHRp
-bWUgYXV0b3R1bmUgcHJvZHVjZXMgYSBzZWdmYXVsdDoNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+
-ID4gcm9vdEBkZW1vOn4jIGF1dG90dW5lDQo+ID4gPiA+ID4gPiA9PSBhdXRvLXR1bmluZyBzdGFy
-dGVkLCBwZXJpb2Q9MTAwMDAwMCBucyAobWF5IHRha2UgYSB3aGlsZSkNCj4gPiA+ID4gPiA+IGly
-cSBncmF2aXR5Li4uIDE5ODQgbnMNCj4gPiA+ID4gPiA+IGtlcm5lbCBncmF2aXR5Li4uIDEwOTEy
-bnMNCj4gPiA+ID4gPiA+IHVzZXIgZ3Jhdml0eS4uLiBTZWdtZW50YXRpb24gZmF1bHQNCj4gPiA+
-ID4gPiA+IA0KPiA+ID4gPiA+ID4gSSBoYXZlbid0IHNlZW4gdGhlIHNlZ2ZhdWx0IHdpdGggYSBk
-b3ZldGFpbCBlbmFibGVkIGtlcm5lbCB5ZXQuDQo+ID4gPiA+ID4gPiBTbyBpdCBtaWdodCBiZSBp
-cGlwZSByZWxhdGVkLi4uDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IEkgd2FzIGFibGUgdG8g
-cmVwcm9kdWNlIG9uY2Ugd2l0aCBnZGIgYXR0YWNoZWQuIFdlIHNlZW0gdG8gY3Jhc2gNCj4gPiA+
-ID4gPiA+IGluIHJ0bWQuYyBsaW5lIDE3MCAoZG9faW9jdGwsIFhFTk9NQUlfU1lTQ0FMTDMoKSku
-IEdEQiB3YXMNCj4gPiA+ID4gPiA+IHVuYWJsZSB0byBwcmVzZW50IGEgYmFja3RyYWNlLiAoInBy
-ZXZpb3VzIGZyYW1lIGlkZW50aWNhbCB0byB0aGlzDQo+ID4gPiA+ID4gPiBmcmFtZSAoY29ycnVw
-dCBzdGFjaz8iKQ0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gRG9lcyBjb3Jl
-Y3RsIHByb3ZpZGUgc29tZSBoaW50cz8gSXMgdGhlIGtlcm5lbCByZXBvcnRpbmcgYSB1c2Vyc3Bh
-Y2Ugb3INCj4gPiA+ID4gPiBhIGtlcm5lbCBzcGFjZSBmYXVsdD8NCj4gPiA+ID4gDQo+ID4gPiA+
-IGRtZXNnIGRvZXNuJ3QgbGlzdCBhIHNlZ2ZhdWx0IGF0IGFsbC4uLiBXcm9uZyByb3V0ZWQgc2ln
-bmFsPyBJJ20gZ29pbmcNCj4gPiA+ID4gdG8gcGxheSB3aXRoIGNvcmVjdGwsIGJ1dCB0aGVyZSB3
-YXMgbm90aGluZyBpbnRlcmVzdGluZyBzbyBmYXIuDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiBJ
-IG1lYW50IGNvcmVkdW1wY3RsIGJ0dy4sIGp1c3QgdG8gYmUgY2xlYXIuDQo+ID4gDQo+ID4gV293
-LCBvbmNlIGNvcmVkdW1wY3RsIHdhcyBpbnN0YWxsZWQgSSBnb3Q6DQo+ID4gDQo+ID4gU3RhY2sg
-dHJhY2Ugb2YgdGhyZWFkIDMxMjoNCj4gPiAgICAgICAgICAgICAgICAgIzAgIDB4MDAwMDAwMDBi
-NmY1MGRhYSBfVW53aW5kX1ZSU19Qb3AgKGxpYmdjY19zLnNvLjEpDQo+ID4gDQo+ID4gQ29tcGls
-ZXIgaXNzdWU/IEknbSBjdXJyZW50bHkgdXNpbmcNCj4gPiBnY2MgdmVyc2lvbiAxMC4yLjEgMjAy
-MTAxMTAgKERlYmlhbiAxMC4yLjEtNikNCj4gPiANCj4gDQo+IFdhaXQ6IFlvdSBoYXZlIGEgRGVi
-aWFuIDEwIHdoZXJlIChnY2MgaXMgZ2NjLTgpLCBidXQgZm9yIHRoaXMgdGVzdCB5b3UNCj4gYnVp
-bHQgYXV0b3R1bmUgKG9ubHkgdGhhdD8pIHdpdGggZ2NjLTEwPw0KDQpJdCBoYXBwZW5zIHdpdGgg
-YSAxOjEgeGVub21haS1pbWFnZXMgYnVpbGQgYXMgd2VsbC4NCg0KPiANCj4gSmFuDQo+IA0KDQo=
+> 
+> j.villena--- via Xenomai <xenomai@xenomai.org> writes:
+> 
+> > Hi all,
+> >
+> >
+> >
+> > I am using the EVL Raspberry-PI-4 GPIO driver in oob mode for waiting
+> > for 4 GPI signals changes by monitoring raising and falling edges
+> continuously.
+> >
+> >
+> >
+> > The first version uses 4 diferent oob threads and it works as expected
+> > when waiting forever in oob_read on each thread.
+> >
+> >
+> >
+> > To optimize resources, I want to avoid to use the 4 threads approach,
+> > and I want to create only one thread to handle all GPI functionality.
+> > Thus I have added polling capabilities with evl_poll and related API
+> > to GPIO file descriptors in only one thread.
+> >
+> >
+> >
+> > At first it seems to work, but when I added another file descriptor to
+> > the same polliing set (from an event flag group) the program freezes,
+> > and system becomes unstable.
+> >
+> >
+> >
+> > Then I noticed that in the "Polling file descriptors
+> > <https://evlproject.org/core/user-api/poll/> " section of the EVL
+> > online documentation, the GPIO real-time I/O driver is not listed in
+> > the enumeration of pollable elements.
+> >
+> >
+> >
+> > Is this true and the cause of the wrong behavior when using polled
+> > wait? If yes, could it be easily fixed?
+> >
+> 
+> The documentation only mentions EVL elements directly available from user-
+> space as individual resources, however this does not preclude other
+> resources created by drivers to be polled as well, which is the case for
+GPIO
+> lines. IOW, GPIO lines can be polled with evl_poll(), along with any data
+> source/sink which invokes evl_signal_poll_events() in the kernel-side
+> implementation.
+> 
+> A couple of questions:
+> 
+> - is there any message on the kernel console when the issue happens?
+> 
+> - does the system freeze entirely? If so, did you enable
+>   CONFIG_EVL_WATCHDOG to catch runaway threads?
+> 
+> Can you share a simple test code illustrating the issue? I would
+definitely
+> have a look at it.
+> 
+> [1] https://evlproject.org/core/build-steps/#core-kconfig
+> 
+> --
+> Philippe.
+
+Well, I have created a simple program to force the wrong behaviour. It is at
+https://www.dropbox.com/s/3vmp6e4o15c55tg/evl_poll_test.c?dl=0
+
+The program creates two threads (threadA and threadB). ThreadA creates a
+timer and signals a global evl_flag once per second in an endless loop.
+ThreadB configures a pin of the Raspberry Pi 4 (CM4 really) as GPI, with a
+GPIOEVENT when signal changes (any edge), and a pollset to wait from the
+global evl_flag or any GPI event configured. Then, in other endless loop,
+ThreadB waits for any poll event and then writes some messages in the
+console.
+
+In this situation, all works as expected until I force a change in the GPI
+signal, then the system freezes and the kernel console shows this output:
+
+[   28.954083] Unable to handle kernel paging request at virtual address
+dead000000000108
+[   28.954086] Mem abort info:
+[   28.954087]   ESR = 0x96000044
+[   28.954089]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   28.954090]   SET = 0, FnV = 0
+[   28.954091]   EA = 0, S1PTW = 0
+[   28.954092] Data abort info:
+[   28.954093]   ISV = 0, ISS = 0x00000044
+[   28.954094]   CM = 0, WnR = 1
+[   28.954096] [dead000000000108] address between user and kernel address
+ranges
+[   28.954097] Internal error: Oops: 96000044 [#1] PREEMPT SMP
+[   28.954099] Modules linked in:
+[   28.954103] CPU: 2 PID: 297 Comm: threadB:-1 Not tainted 5.10.59 #1
+[   28.954104] Hardware name: Raspberry Pi Compute Module 4 (DT)
+[   28.954105] IRQ stage: EVL
+[   28.954106] pstate: 80000085 (Nzcv daIf -PAN -UAO -TCO BTYPE=--)
+[   28.954108] pc : evl_ignore_fd+0x58/0x1f0
+[   28.954109] lr : evl_ignore_fd+0x28/0x1f0
+[   28.954110] sp : ffffffc011fb3be0
+[   28.954111] x29: ffffffc011fb3be0 x28: ffffff804214d400
+[   28.954114] x27: ffffffc0119dcab0 x26: dead000000000100
+[   28.954117] x25: dead000000000122 x24: 0000000000000001
+[   28.954120] x23: 0000000000000000 x22: 0000000000000000
+[   28.954122] x21: 0000000000000000 x20: ffffffc01117f000
+[   28.954125] x19: ffffffc0119dcb90 x18: 0000000000000000
+[   28.954128] x17: 0000000000000000 x16: 0000000000000000
+[   28.954130] x15: 0000000000000000 x14: 0000000000000000
+[   28.954133] x13: 0000000000000000 x12: 0000000000000000
+[   28.954135] x11: 0000000000000000 x10: 0000000000000000
+[   28.954138] x9 : ffffffc010194c40 x8 : 0000000000000001
+[   28.954140] x7 : 0000007ff7d65568 x6 : ffffff804214d1b8
+[   28.954143] x5 : 0000007ff7d65578 x4 : ffffffc01117f7b8
+[   28.954146] x3 : 0000000000000000 x2 : 0000000000000001
+[   28.954149] x1 : dead000000000100 x0 : dead000000000122
+[   28.954151] Call trace:
+[   28.954152]  evl_ignore_fd+0x58/0x1f0
+[   28.954154]  wait_events+0x2ec/0x4cc
+[   28.954155]  poll_oob_ioctl+0xf8/0x530
+[   28.954156]  EVL_ioctl+0x58/0xec
+[   28.954157]  do_oob_syscall+0x118/0x380
+[   28.954158]  handle_oob_syscall+0x28/0xe0
+[   28.954159]  pipeline_syscall+0x8c/0x130
+[   28.954160]  el0_svc_common.constprop.0+0x58/0x250
+[   28.954161]  do_el0_svc+0x30/0xa0
+[   28.954162]  el0_svc+0x20/0x30
+[   28.954164]  el0_sync_handler+0x1a4/0x1b0
+[   28.954165]  el0_sync+0x180/0x1c0
+[   28.954166] Code: 88e47c02 2a0403e0 35000320 a9400261 (f9000420)
+[   28.954167] ---[ end trace eb485c9145b7c640 ]---
+[   28.954169] note: threadB:-1[297] exited with preempt_count 33554434
+
+However, using only the global flag event, or only the GPI event, all work
+fine. Is the mix of both types of file descriptors in the polling loop what
+seems to corrupt something.
+
+Thanks.
+
+
 
