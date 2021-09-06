@@ -1,12 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: irq pipeline: Netdev watchdog triggered
-Date: Mon, 6 Sep 2021 12:58:12 +0000
-Message-ID: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9F321AEDB741854F8F49F7BBD1365667@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: irq pipeline: Netdev watchdog triggered
+References: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0bd9927a-8c31-bd87-2e15-6a9b90bce6c9@siemens.com>
+Date: Mon, 6 Sep 2021 15:31:56 +0200
 MIME-Version: 1.0
+In-Reply-To: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,78 +16,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksDQoNCmhlcmUgaXMgYW5vdGhlciBJUlFfUElQRUxJTkUgcHJvYmxlbSB3ZSdyZSBmYWNpbmcg
-b24gb24gb2Ygb3VyIHF1aXRlDQpiaWcgWGVub21haSBtYWNoaW5lczogDQoNClBsYXRmb3JtOg0K
-SW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjYyMCAwIEAgMi4wMEdIeg0KMiBTb2NrZXRzLCA2IGNv
-cmVzIHBlciBzb2NrZXQsIDIgdGhyZWFkcyBwZXIgY29yZQ0KKDIgTlVNQSBub2RlcykNCg0KQXMg
-c29vbiBhcyB3ZSBlbmFibGUgQ09ORklHX0lSUV9QSVBFTElORSB0aGUgbmV0ZGV2IHdhdGNoZG9n
-IHRyaWdnZXJzLg0KVGhlcmUgaXMgbm8gc3BlY2lmaWMgbG9hZCBvbiB0aGUgc3lzdGVtLiBJbiBt
-b3N0IGNhc2VzIHRoZSB3YXRjaGRvZw0KdHJpZ2dlcnMgcmlnaHQgYWZ0ZXIgYm9vdGluZyB1cC4g
-VGhlcmUgaXMgbm8geGVub21haSB0YXNrIHJ1bm5pbmcgd2hlbg0KdGhlIGNyYXNoIGhhcHBlbnMu
-DQoNClRoZSBwcm9ibGVtIHdhcyBkZXRlY3RlZCBkdXJpbmcgcmVib290IHRlc3RzLiBEaXNhYmxp
-bmcNCkNPTkZJR19JUlFfUElQRUxJTkUgaGVscGVkLiBXZSBkaWRuJ3QgcnVuIGludG8gYSBwcm9i
-bGVtIGZvciA+NDAwDQpyZWJvb3RzLg0KDQpBbnkgYWR2aXNlIGhvdyB0byBkZWJ1ZyB0aGF0PyBE
-b3ZldGFpbCB0b3J0dXJlIHRlc3RzIGhhdmUgYWxyZWFkeSBiZWVuDQpydW4gYW5kIHRoZXJlIHdh
-cyBubyBlcnJvciByZXBvcnRlZC4gQ09ORklHX0RFQlVHX0lSUV9QSVBFTElORSBpcw0KZW5hYmxl
-ZCBhcyB3ZWxsIGFuZCBkaWQgbm90IGhlbHAgc28gZmFyLg0KDQpUaGUgc3RhY2t0cmFjZSBmb2xs
-b3dzIGJ1dCBJIGd1ZXNzIGl0J3Mgbm90IHJlYWxseSBoZWxwZnVsOg0KDQotLS0tLS0tLS0tLS1b
-IGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NClsgICA0Mi4xMTQxNTFdIE5FVERFViBXQVRDSERPRzog
-ZW5wN3MwZjAgKGlnYik6IHRyYW5zbWl0IHF1ZXVlIDUgdGltZWQgb3V0DQpbICAgNDIuMTE0MTcz
-XSBXQVJOSU5HOiBDUFU6IDAgUElEOiAwIGF0IG5ldC9zY2hlZC9zY2hfZ2VuZXJpYy5jOjQ2NyBk
-ZXZfd2F0Y2hkb2crMHgyMDUvMHgyMTANClsgICA0Mi4xNjM1OTNdIE1vZHVsZXMgbGlua2VkIGlu
-OiBvdmVybGF5IHg4Nl9wa2dfdGVtcF90aGVybWFsIGludGVsX3Bvd2VyY2xhbXAgY29yZXRlbXAg
-Y3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgbWVpX21lIGlUQ09fd2R0IGlUQ09fdmVuZG9y
-X3N1cHBvcnQgbWVpIGhlZCBpcG1pX3NpIGlwbWlfZGV2aW50ZiBpcG1pX21zZ2hhbmRsZXIgbXNy
-IGZ1c2UgY29uZmlnZnMgaXBfdGFibGVzIHhfdGFibGVzIGlwdjYgYXV0b2ZzNCByYWlkMTAgcmFp
-ZDQ1NiBhc3luY19yYWlkNl9yZWNvdiBhc3luY19tZW1jcHkgYXN5bmNfcHEgYXN5bmNfeG9yIHhv
-ciBhc3luY190eCBoaWRfZ2VuZXJpYyB1c2JoaWQgaGlkIHJhaWQ2X3BxIGxpYmNyYzMyYyByYWlk
-MSByYWlkMCBtdWx0aXBhdGggbGluZWFyIGxwY19pY2ggYWhjaSBpMmNfaTgwMSB4aGNpX3BjaSBp
-MmNfc21idXMgbWZkX2NvcmUgbGliYWhjaSBtcHQzc2FzIGlnYiBpMmNfYWxnb19iaXQgcmFpZF9j
-bGFzcyB4aGNpX2hjZCBzY3NpX3RyYW5zcG9ydF9zYXMNClsgICA0Mi40MzUxOTFdIENQVTogMCBQ
-SUQ6IDAgQ29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIDUuMTAuNjEtZG92ZXRhaWxkYmctbm94
-ZW5vLXBpcGVkYmctMCAjMQ0KWyAgIDQyLjQ4NjE5OF0gSGFyZHdhcmUgbmFtZTogU2llbWVucyA8
-Li4uc25pcC4uLj4sIEJJT1MgczIuMGFfTTEgMDgvMDIvMjAxNg0KWyAgIDQyLjU0NjA1MF0gSVJR
-IHN0YWdlOiBMaW51eA0KWyAgIDQyLjU2MzI2M10gUklQOiAwMDEwOmRldl93YXRjaGRvZysweDIw
-NS8weDIxMA0KWyAgIDQyLjU4OTgzN10gQ29kZTogOTEgMjYgZmUgZmYgZWIgYjEgNGMgODkgZWYg
-YzYgMDUgOWUgMWQgYjcgMDAgMDEgZTggOTAgODYgZmIgZmYgNDQgODkgZTEgNGMgODkgZWUgNDgg
-YzcgYzcgNDggNDEgZGUgYjcgNDggODkgYzIgZTggOGEgYzEgMGEgMDAgPDBmPiAwYiBlYiA5MiAw
-ZiAxZiA4MCAwMCAwMCAwMCAwMCAwZiAxZiA0NCAwMCAwMCBmMCA4MCBhNyBkOCAwMCAwMA0KWyAg
-IDQyLjcwMjIwNV0gUlNQOiAwMDE4OmZmZmY5ZmY0YzAwMDNlYzAgRUZMQUdTOiAwMDAxMDI4Mg0K
-WyAgIDQyLjczMzQ1OV0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjkzMGNjNDI0Mzhj
-MCBSQ1g6IDQwMDAwMDAwMDAwMDAwMDINClsgICA0Mi43NzYxNDhdIFJEWDogNDAwMDAwMDAwMDAw
-MDAwNCBSU0k6IDAwMDAwMDAwMDAwMDAwMDAgUkRJOiBmZmZmZmZmZmI3MGNiODI0DQpbICAgNDIu
-ODE4ODQxXSBSQlA6IGZmZmY5MzBjYzdlOTAzYjggUjA4OiAwMDAwMDAwMDAwMDdkYWVlIFIwOTog
-ZmZmZjlmZjRjMDAwM2NjOA0KWyAgIDQyLjg2MTUzMV0gUjEwOiAwMDAwMDAwMGZmZmZlMDAwIFIx
-MTogM2ZmZmZmZmZmZmZmZmZmZiBSMTI6IDAwMDAwMDAwMDAwMDAwMDYNClsgICA0Mi45MDQyMjRd
-IFIxMzogZmZmZjkzMGNjN2U5MDAwMCBSMTQ6IGZmZmZmZmZmYjc2ODY4NjAgUjE1OiBmZmZmOWZm
-NGMwMDAzZjE4DQpbICAgNDIuOTQ2OTE2XSBGUzogIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6
-ZmZmZjkzMWJmZjgwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpbICAgNDIuOTk1
-MzI4XSBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpb
-ICAgNDMuMDI5NzAwXSBDUjI6IDAwMDAwMGMwMDBlNTAwMDAgQ1IzOiAwMDAwMDAwMTA1N2NhMDAx
-IENSNDogMDAwMDAwMDAwMDE3MDZmMA0KWyAgIDQzLjA3MjM5MV0gRFIwOiAwMDAwMDAwMDAwMDAw
-MDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAwMDANClsgICA0My4x
-MTUwODJdIERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAw
-MDAwMDAwMDAwMDAwNDAwDQpbICAgNDMuMTU3Nzc0XSBDYWxsIFRyYWNlOg0KWyAgIDQzLjE3MjM4
-OF0gIDxJUlE+DQpbICAgNDMuMTg0NDAwXSAgPyBwZmlmb19mYXN0X2RlcXVldWUrMHgxZTAvMHgx
-ZTANClsgICA0My4yMTA0NTNdICBjYWxsX3RpbWVyX2ZuKzB4MmIvMHgxMDANClsgICA0My4yMzIz
-NDRdICBfX3J1bl90aW1lcnMucGFydC4wKzB4MWQ5LzB4MjUwDQpbICAgNDMuMjU3ODc5XSAgPyBr
-dGltZV9nZXQrMHgzNS8weDkwDQpbICAgNDMuMjc4MjA1XSAgcnVuX3RpbWVyX3NvZnRpcnErMHgy
-Ni8weDUwDQpbICAgNDMuMzAxNjYxXSAgX19kb19zb2Z0aXJxKzB4MTA1LzB4MzBiDQpbICAgNDMu
-MzIzNTUwXSAgYXNtX2NhbGxfaXJxX29uX3N0YWNrKzB4Zi8weDIwDQpbICAgNDMuMzQ4NTYyXSAg
-PC9JUlE+DQpbICAgNDMuMzYxMDk5XSAgZG9fc29mdGlycV9vd25fc3RhY2srMHgzNy8weDQwDQpb
-ICAgNDMuMzg2MTA4XSAgaXJxX2V4aXRfcmN1KzB4YWEvMHhlMA0KWyAgIDQzLjQwNjk2MF0gIGFy
-Y2hfZG9fSVJRX3BpcGVsaW5lZCsweDc4LzB4MTMwDQpbICAgNDMuNDMzMDEyXSAgc3luY19jdXJy
-ZW50X2lycV9zdGFnZSsweDE3Ny8weDI1MA0KWyAgIDQzLjQ2MDEwMF0gIF9faW5iYW5kX2lycV9l
-bmFibGUrMHg0Yy8weDUwDQpbICAgNDMuNDg0NTkzXSAgY3B1aWRsZV9lbnRlcl9zdGF0ZSsweDEw
-MC8weDNhMA0KWyAgIDQzLjUxMDEyNV0gIGNwdWlkbGVfZW50ZXIrMHgyOS8weDQwDQpbICAgNDMu
-NTMxNDk4XSAgZG9faWRsZSsweDFlYi8weDIzMA0KWyAgIDQzLjU1MDc4N10gIGNwdV9zdGFydHVw
-X2VudHJ5KzB4MTkvMHgyMA0KWyAgIDQzLjU3NDI0MV0gIHN0YXJ0X2tlcm5lbCsweDU2ZC8weDU5
-MA0KWyAgIDQzLjU5NjEzNF0gIHNlY29uZGFyeV9zdGFydHVwXzY0X25vX3ZlcmlmeSsweGIwLzB4
-YmINClsgICA0My42MjYzNDNdIC0tLVsgZW5kIHRyYWNlIGIyMTkyNThmY2U4ZGM3NjEgXS0tLQ0K
-WyAgIDQzLjY1NDA5NV0gaWdiIDAwMDA6MDc6MDAuMCBlbnA3czBmMDogUmVzZXQgYWRhcHRlcg0K
-WyAgIDQ2LjA5MDk0OF0gaWdiIDAwMDA6MDc6MDAuMDogZXhjZWVkIG1heCAyIHNlY29uZA0KDQpC
-ZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQoNCi0tIA0KU2llbWVucyBBRywgVCBSREEgSU9UDQpDb3Jw
-b3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+On 06.09.21 14:58, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> Hi,
+> 
+> here is another IRQ_PIPELINE problem we're facing on on of our quite
+> big Xenomai machines:
+> 
+> Platform:
+> Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
+> 2 Sockets, 6 cores per socket, 2 threads per core
+> (2 NUMA nodes)
+> 
+> As soon as we enable CONFIG_IRQ_PIPELINE the netdev watchdog triggers.
+> There is no specific load on the system. In most cases the watchdog
+> triggers right after booting up. There is no xenomai task running when
+> the crash happens.
+> 
+> The problem was detected during reboot tests. Disabling
+> CONFIG_IRQ_PIPELINE helped. We didn't run into a problem for >400
+> reboots.
+> 
+> Any advise how to debug that? Dovetail torture tests have already been
+> run and there was no error reported. CONFIG_DEBUG_IRQ_PIPELINE is
+> enabled as well and did not help so far.
+> 
+> The stacktrace follows but I guess it's not really helpful:
+> 
+> ------------[ cut here ]------------
+> [   42.114151] NETDEV WATCHDOG: enp7s0f0 (igb): transmit queue 5 timed out
+> [   42.114173] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:467 dev_watchdog+0x205/0x210
+> [   42.163593] Modules linked in: overlay x86_pkg_temp_thermal intel_powerclamp coretemp crct10dif_pclmul crc32_pclmul mei_me iTCO_wdt iTCO_vendor_support mei hed ipmi_si ipmi_devintf ipmi_msghandler msr fuse configfs ip_tables x_tables ipv6 autofs4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor xor async_tx hid_generic usbhid hid raid6_pq libcrc32c raid1 raid0 multipath linear lpc_ich ahci i2c_i801 xhci_pci i2c_smbus mfd_core libahci mpt3sas igb i2c_algo_bit raid_class xhci_hcd scsi_transport_sas
+> [   42.435191] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.61-dovetaildbg-noxeno-pipedbg-0 #1
+> [   42.486198] Hardware name: Siemens <...snip...>, BIOS s2.0a_M1 08/02/2016
+> [   42.546050] IRQ stage: Linux
+> [   42.563263] RIP: 0010:dev_watchdog+0x205/0x210
+> [   42.589837] Code: 91 26 fe ff eb b1 4c 89 ef c6 05 9e 1d b7 00 01 e8 90 86 fb ff 44 89 e1 4c 89 ee 48 c7 c7 48 41 de b7 48 89 c2 e8 8a c1 0a 00 <0f> 0b eb 92 0f 1f 80 00 00 00 00 0f 1f 44 00 00 f0 80 a7 d8 00 00
+> [   42.702205] RSP: 0018:ffff9ff4c0003ec0 EFLAGS: 00010282
+> [   42.733459] RAX: 0000000000000000 RBX: ffff930cc42438c0 RCX: 4000000000000002
+> [   42.776148] RDX: 4000000000000004 RSI: 0000000000000000 RDI: ffffffffb70cb824
+> [   42.818841] RBP: ffff930cc7e903b8 R08: 000000000007daee R09: ffff9ff4c0003cc8
+> [   42.861531] R10: 00000000ffffe000 R11: 3fffffffffffffff R12: 0000000000000006
+> [   42.904224] R13: ffff930cc7e90000 R14: ffffffffb7686860 R15: ffff9ff4c0003f18
+> [   42.946916] FS:  0000000000000000(0000) GS:ffff931bff800000(0000) knlGS:0000000000000000
+> [   42.995328] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   43.029700] CR2: 000000c000e50000 CR3: 00000001057ca001 CR4: 00000000001706f0
+> [   43.072391] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   43.115082] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   43.157774] Call Trace:
+> [   43.172388]  <IRQ>
+> [   43.184400]  ? pfifo_fast_dequeue+0x1e0/0x1e0
+> [   43.210453]  call_timer_fn+0x2b/0x100
+> [   43.232344]  __run_timers.part.0+0x1d9/0x250
+> [   43.257879]  ? ktime_get+0x35/0x90
+> [   43.278205]  run_timer_softirq+0x26/0x50
+> [   43.301661]  __do_softirq+0x105/0x30b
+> [   43.323550]  asm_call_irq_on_stack+0xf/0x20
+> [   43.348562]  </IRQ>
+> [   43.361099]  do_softirq_own_stack+0x37/0x40
+> [   43.386108]  irq_exit_rcu+0xaa/0xe0
+> [   43.406960]  arch_do_IRQ_pipelined+0x78/0x130
+> [   43.433012]  sync_current_irq_stage+0x177/0x250
+> [   43.460100]  __inband_irq_enable+0x4c/0x50
+> [   43.484593]  cpuidle_enter_state+0x100/0x3a0
+> [   43.510125]  cpuidle_enter+0x29/0x40
+> [   43.531498]  do_idle+0x1eb/0x230
+> [   43.550787]  cpu_startup_entry+0x19/0x20
+> [   43.574241]  start_kernel+0x56d/0x590
+> [   43.596134]  secondary_startup_64_no_verify+0xb0/0xbb
+> [   43.626343] ---[ end trace b219258fce8dc761 ]---
+> [   43.654095] igb 0000:07:00.0 enp7s0f0: Reset adapter
+> [   46.090948] igb 0000:07:00.0: exceed max 2 second
+> 
+
+This is just the warning from the NIC watchdog handler. What we still
+need to find out is the health of other NIC interrupts around this
+event. Also if other interrupts are possibly affected as well or just
+one or more of the device.
+
+BTW, can we recover the device by ifdown/up? Or by driver unbind/bind?
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
