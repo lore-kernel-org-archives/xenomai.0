@@ -1,13 +1,11 @@
-Subject: Re: irq pipeline: Netdev watchdog triggered
 References: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0bd9927a-8c31-bd87-2e15-6a9b90bce6c9@siemens.com>
-Date: Mon, 6 Sep 2021 15:31:56 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: irq pipeline: Netdev watchdog triggered
+In-reply-to: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
+Date: Mon, 06 Sep 2021 16:56:40 +0200
+Message-ID: <87sfyhiwgn.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 06.09.21 14:58, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+
+Bezdeka, Florian <florian.bezdeka@siemens.com> writes:
+
 > Hi,
-> 
+>
 > here is another IRQ_PIPELINE problem we're facing on on of our quite
-> big Xenomai machines:
-> 
+> big Xenomai machines: 
+>
 > Platform:
 > Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
 > 2 Sockets, 6 cores per socket, 2 threads per core
 > (2 NUMA nodes)
-> 
+>
 > As soon as we enable CONFIG_IRQ_PIPELINE the netdev watchdog triggers.
 > There is no specific load on the system. In most cases the watchdog
 > triggers right after booting up. There is no xenomai task running when
 > the crash happens.
-> 
+>
 > The problem was detected during reboot tests. Disabling
 > CONFIG_IRQ_PIPELINE helped. We didn't run into a problem for >400
 > reboots.
-> 
+>
 > Any advise how to debug that? Dovetail torture tests have already been
 > run and there was no error reported. CONFIG_DEBUG_IRQ_PIPELINE is
 > enabled as well and did not help so far.
-> 
+>
 > The stacktrace follows but I guess it's not really helpful:
-> 
+>
 > ------------[ cut here ]------------
 > [   42.114151] NETDEV WATCHDOG: enp7s0f0 (igb): transmit queue 5 timed out
 > [   42.114173] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:467 dev_watchdog+0x205/0x210
@@ -88,18 +89,16 @@ On 06.09.21 14:58, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
 > [   43.626343] ---[ end trace b219258fce8dc761 ]---
 > [   43.654095] igb 0000:07:00.0 enp7s0f0: Reset adapter
 > [   46.090948] igb 0000:07:00.0: exceed max 2 second
-> 
+>
 
-This is just the warning from the NIC watchdog handler. What we still
-need to find out is the health of other NIC interrupts around this
-event. Also if other interrupts are possibly affected as well or just
-one or more of the device.
+Might be an interrupt stuck in the in-band log of the pipeline, in which
+case the CPU would go idle without synchronizing the log, leaving a
+pending IRQ unhandled until the next exit from the idle state. I wonder
+if the unstable TSC issue might not be another symptom of that kind of
+cause.
 
-BTW, can we recover the device by ifdown/up? Or by driver unbind/bind?
-
-Jan
+Do you see any change when booting with idle=poll?
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
