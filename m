@@ -1,14 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 3/3] y2038: testsuite/smokey/y2038: testcase for recvmmsg64
-Date: Tue, 7 Sep 2021 07:52:38 +0000
-Message-ID: <e37df1b8758551b27ff5aade217b398cefe7aeb7.camel@siemens.com>
-References: <1630998441-20041-1-git-send-email-chensong_2000@189.cn>
-In-Reply-To: <1630998441-20041-1-git-send-email-chensong_2000@189.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7B87D99A6E6D79428AB8AB18EF5C6541@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: (rt_)printf and virtual memory
+Message-ID: <cf751850-8771-6120-e615-1fb80566a9a5@tin.it>
+Date: Tue, 7 Sep 2021 11:21:29 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Language: it-IT
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,99 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
+To: xenomai@xenomai.org
 
-SGkgU29uZyENCg0KT24gVHVlLCAyMDIxLTA5LTA3IGF0IDE1OjA3ICswODAwLCBTb25nIENoZW4g
-d3JvdGU6DQo+IEV4dGVuZGluZyB0aGUgdGVzdCBzdWl0ZSBmb3IgcmVjdm1tc2c2NCB0ZXN0Lg0K
-PiANCj4gU2lnbmVkLW9mZi1ieTogU29uZyBDaGVuIDxjaGVuc29uZ18yMDAwQDE4OS5jbj4NCj4g
-LS0tDQo+ICB0ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMuYyB8IDEzNSArKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxMzUgaW5z
-ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL3Rlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lz
-Y2FsbC10ZXN0cy5jIGIvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4g
-aW5kZXggOGFmZWRkNy4uN2I2ODAyMSAxMDA2NDQNCj4gLS0tIGEvdGVzdHN1aXRlL3Ntb2tleS95
-MjAzOC9zeXNjYWxsLXRlc3RzLmMNCj4gKysrIGIvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNj
-YWxsLXRlc3RzLmMNCj4gQEAgLTEyLDYgKzEyLDcgQEANCj4gICNpbmNsdWRlIDxhc20veGVub21h
-aS9zeXNjYWxsLmg+DQo+ICAjaW5jbHVkZSA8c21va2V5L3Ntb2tleS5oPg0KPiAgI2luY2x1ZGUg
-PG1xdWV1ZS5oPg0KPiArI2luY2x1ZGUgPHJ0ZG0vaXBjLmg+DQo+ICANCj4gIHNtb2tleV90ZXN0
-X3BsdWdpbih5MjAzOCwgU01PS0VZX05PQVJHUywgIlZhbGlkYXRlIGNvcnJlY3QgeTIwMzggc3Vw
-cG9ydCIpOw0KPiAgDQo+IEBAIC05ODksNiArOTkwLDEzNiBAQCBzdGF0aWMgaW50IHRlc3Rfc2Nf
-Y29iYWx0X2V2ZW50X3dhaXQ2NCh2b2lkKQ0KPiAgCXJldHVybiAwOw0KPiAgfQ0KPiAgDQo+ICtz
-dGF0aWMgaW50IHRlc3Rfc2NfY29iYWx0X3JlY3ZtbXNnNjQodm9pZCkNCj4gK3sNCj4gKwlpbnQg
-cmV0ID0gMDsNCj4gKwlpbnQgc29ja2ZkOw0KPiArCWludCBzY19uciA9IHNjX2NvYmFsdF9yZWN2
-bW1zZzY0Ow0KPiArCWxvbmcgZGF0YTsNCj4gKwlzdHJ1Y3QgeG5fdGltZXNwZWM2NCB0czY0LCB0
-c193dTsNCj4gKwlzdHJ1Y3QgdGltZXNwZWMgdHNfbmF0Ow0KPiArCXN0cnVjdCBydGlwY19wb3J0
-X2xhYmVsIHBsYWJlbDsNCj4gKwlzdHJ1Y3Qgc29ja2FkZHJfaXBjIHNhZGRyOw0KPiArDQo+ICsJ
-c3RydWN0IGlvdmVjIGlvdiA9IHsNCj4gKwkJLmlvdl9iYXNlID0gJmRhdGEsDQo+ICsJCS5pb3Zf
-bGVuID0gc2l6ZW9mKGRhdGEpLA0KPiArCX07DQo+ICsJc3RydWN0IG1zZ2hkciBtc2cgPSB7DQo+
-ICsJCS5tc2dfbmFtZSA9IE5VTEwsDQo+ICsJCS5tc2dfbmFtZWxlbiA9IDAsDQo+ICsJCS5tc2df
-aW92ID0gJmlvdiwNCj4gKwkJLm1zZ19pb3ZsZW4gPSAxLA0KPiArCQkubXNnX2NvbnRyb2wgPSBO
-VUxMLA0KPiArCQkubXNnX2NvbnRyb2xsZW4gPSAwLA0KPiArCX07DQo+ICsNCj4gKwlzb2NrZmQg
-PSBzb2NrZXQoQUZfUlRJUEMsIFNPQ0tfREdSQU0sIElQQ1BST1RPX1hERFApOw0KPiArCWlmIChz
-b2NrZmQgPD0gMCkNCj4gKwkJcmV0dXJuIC1lcnJubzsNCj4gKw0KPiArCXN0cmNweShwbGFiZWwu
-bGFiZWwsICJ5MjAzODpyZWN2bW1zZzY0Iik7DQo+ICsJcmV0ID0gc2V0c29ja29wdChzb2NrZmQs
-IFNPTF9YRERQLCBYRERQX0xBQkVMLCAmcGxhYmVsLCBzaXplb2YocGxhYmVsKSk7DQo+ICsJaWYg
-KHJldCkgew0KPiArCQlyZXQgPSAtZXJybm87DQo+ICsJCWdvdG8gb3V0Ow0KPiArCX0NCg0KTG9v
-a3MgbGlrZSBzbW9rZXlfY2hlY2tfZXJybm8oKSBjb3VsZCBiZSB1c2VkIGZvciB0aGUgc2V0c29j
-a29wdCgpIGNhbGwNCmFuZCBmb3Igc2ltaWxhciBjYWxscyBsaWtlIGJpbmQoKSBiZWxvdyBhbmQg
-c29ja2V0KCkgYWJvdmUuDQoNCj4gKw0KPiArCW1lbXNldCgmc2FkZHIsIDAsIHNpemVvZihzYWRk
-cikpOw0KPiArCXNhZGRyLnNpcGNfZmFtaWx5ID0gQUZfUlRJUEM7DQo+ICsJc2FkZHIuc2lwY19w
-b3J0ID0gLTE7DQo+ICsJcmV0ID0gYmluZChzb2NrZmQsIChzdHJ1Y3Qgc29ja2FkZHIgKikmc2Fk
-ZHIsIHNpemVvZihzYWRkcikpOw0KPiArCWlmIChyZXQpIHsNCj4gKwkJcmV0ID0gLWVycm5vOw0K
-PiArCQlnb3RvIG91dDsNCj4gKwl9DQo+ICsNCj4gKwkvKiBNYWtlIHN1cmUgd2UgZG9uJ3QgY3Jh
-c2ggYmVjYXVzZSBvZiBOVUxMIHBvaW50ZXJzICovDQo+ICsJcmV0ID0gWEVOT01BSV9TWVNDQUxM
-NShzY19uciwgTlVMTCwgTlVMTCwgTlVMTCwgTlVMTCwgTlVMTCk7DQo+ICsJaWYgKHJldCA9PSAt
-RU5PU1lTKSB7DQo+ICsJCXNtb2tleV9ub3RlKCJyZWN2bW1zZzY0OiBza2lwcGVkLiAobm8ga2Vy
-bmVsIHN1cHBvcnQpIik7DQo+ICsJCWdvdG8gb3V0OyAvLyBOb3QgaW1wbGVtZW50ZWQsIG5vdGhp
-bmcgdG8gdGVzdCwgc3VjY2Vzcw0KPiArCX0NCj4gKwlpZiAoIXNtb2tleV9hc3NlcnQocmV0ID09
-IC1FQURWKSkgew0KPiArCQlyZXQgPSByZXQgPyByZXQgOiAtRUlOVkFMOw0KPiArCQlnb3RvIG91
-dDsNCj4gKwl9DQo+ICsNCj4gKwkvKiBQcm92aWRpbmcgYW4gaW52YWxpZCBhZGRyZXNzIGhhcyB0
-byBkZWxpdmVyIEVGQVVMVCAqLw0KPiArCXJldCA9IFhFTk9NQUlfU1lTQ0FMTDUoc2NfbnIsIHNv
-Y2tmZCwgJm1zZywgc2l6ZW9mKG1zZyksDQo+ICsJCQkJMCwgKHZvaWQgKikweGRlYWRiZWVmVUwp
-Ow0KPiArCWlmICghc21va2V5X2Fzc2VydChyZXQgPT0gLUVGQVVMVCkpIHsNCj4gKwkJcmV0ID0g
-cmV0ID8gcmV0IDogLUVJTlZBTDsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiArDQo+ICsJLyoN
-Cj4gKwkgKiBwcm92aWRpbmcgYW4gaW52YWxpZCB0aW1lb3V0IGhhcyB0byBkZWxpdmVyIEVJTlZB
-TA0KPiArCSAqLw0KPiArCXRzNjQudHZfc2VjID0gLTE7DQo+ICsJcmV0ID0gWEVOT01BSV9TWVND
-QUxMNShzY19uciwgc29ja2ZkLCAmbXNnLCBzaXplb2YobXNnKSwgMCwgJnRzNjQpOw0KPiArCWlm
-ICghc21va2V5X2Fzc2VydChyZXQgPT0gLUVJTlZBTCkpIHsNCj4gKwkJcmV0ID0gcmV0ID8gcmV0
-IDogLUVJTlZBTDsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiArDQo+ICsJLyoNCj4gKwkgKiBw
-cm92aWRpbmcgYSB6ZXJvIHRpbWVvdXQsDQo+ICsJICogc2hvdWxkIGNvbWUgYmFjayBpbW1lZGlh
-dGVseSB3aXRoIEVXT1VMREJMT0NLDQo+ICsJICovDQo+ICsJdHM2NC50dl9zZWMgPSAwOw0KPiAr
-CXRzNjQudHZfbnNlYyA9IDA7DQo+ICsJcmV0ID0gWEVOT01BSV9TWVNDQUxMNShzY19uciwgc29j
-a2ZkLCAmbXNnLCBzaXplb2YobXNnKSwgMCwgJnRzNjQpOw0KPiArCWlmICghc21va2V5X2Fzc2Vy
-dChyZXQgPT0gLUVXT1VMREJMT0NLKSkgew0KPiArCQlyZXQgPSByZXQgPyByZXQgOiAtRUlOVkFM
-Ow0KPiArCQlnb3RvIG91dDsNCj4gKwl9IGVsc2UNCj4gKwkJcmV0ID0gMDsNCg0KQ2FuJ3Qgd2Ug
-cmVtb3ZlIHRoZSBlbHNlIGJyYW5jaCBoZXJlIChhbmQgaW4gc2ltaWxhciB0ZXN0cyBiZWxvdyk/
-IElmwqANCnJldCA9PSAtRVdPVUxEQkxPQ0sgaXQgd2lsbCBiZSBvdmVyd3JpdHRlbiBiZWxvdywg
-c28gbm8gbmVlZCB0byByZXNldA0KaXQsIHJpZ2h0Pw0KDQo+ICsNCj4gKwkvKg0KPiArCSAqIFBy
-b3ZpZGluZyBhIHZhbGlkIHRpbWVvdXQsIHdhaXRpbmcgZm9yIGl0IHRvIHRpbWUgb3V0IGFuZCBj
-aGVjaw0KPiArCSAqIHRoYXQgd2UgZGlkbid0IGNvbWUgYmFjayB0byBlYXJseS4NCj4gKwkgKi8N
-Cj4gKwlyZXQgPSBjbG9ja19nZXR0aW1lKENMT0NLX1JFQUxUSU1FLCAmdHNfbmF0KTsNCj4gKwlp
-ZiAocmV0KSB7DQo+ICsJCXJldCA9IHJldCA/IHJldCA6IC1FSU5WQUw7DQo+ICsJCWdvdG8gb3V0
-Ow0KPiArCX0NCj4gKw0KPiArCXRzNjQudHZfc2VjID0gMDsNCj4gKwl0czY0LnR2X25zZWMgPSA1
-MDAwMDA7DQo+ICsNCj4gKwlyZXQgPSBYRU5PTUFJX1NZU0NBTEw1KHNjX25yLCBzb2NrZmQsICZt
-c2csIHNpemVvZihtc2cpLCAwLCAmdHM2NCk7DQo+ICsJaWYgKCFzbW9rZXlfYXNzZXJ0KHJldCA9
-PSAtRVRJTUVET1VUKSkgew0KPiArCQlyZXQgPSByZXQgPyByZXQgOiAtRUlOVkFMOw0KPiArCQln
-b3RvIG91dDsNCj4gKwl9IGVsc2UNCj4gKwkJcmV0ID0gMDsNCg0KVW5uZWNlc3NhcnkgZWxzZSBi
-cmFuY2g/DQoNCj4gKw0KPiArCXRzNjQudHZfc2VjID0gdHNfbmF0LnR2X3NlYzsNCj4gKwl0czY0
-LnR2X25zZWMgPSB0c19uYXQudHZfbnNlYzsNCj4gKw0KPiArCXJldCA9IGNsb2NrX2dldHRpbWUo
-Q0xPQ0tfUkVBTFRJTUUsICZ0c19uYXQpOw0KPiArCWlmIChyZXQpIHsNCj4gKwkJcmV0ID0gcmV0
-ID8gcmV0IDogLUVJTlZBTDsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiArDQo+ICsJdHNfd3Uu
-dHZfc2VjID0gdHNfbmF0LnR2X3NlYzsNCj4gKwl0c193dS50dl9uc2VjID0gdHNfbmF0LnR2X25z
-ZWM7DQo+ICsNCj4gKwlpZiAodHNfbGVzcygmdHNfd3UsICZ0czY0KSkNCj4gKwkJc21va2V5X3dh
-cm5pbmcoImV2ZW50X3dhaXQ2NCByZXR1cm5lZCB0byBlYXJseSFcbiINCj4gKwkJCSAgICAgICAi
-RXhwZWN0ZWQgd2FrZXVwIGF0OiAlbGxkIHNlYyAlbGxkIG5zZWNcbiINCj4gKwkJCSAgICAgICAi
-QmFjayBhdCAgICAgICAgICAgOiAlbGxkIHNlYyAlbGxkIG5zZWNcbiIsDQo+ICsJCQkgICAgICAg
-dHM2NC50dl9zZWMsIHRzNjQudHZfbnNlYywgdHNfd3UudHZfc2VjLA0KPiArCQkJICAgICAgIHRz
-X3d1LnR2X25zZWMpOw0KDQpOb3BlLCBpdCdzIG5vdCBldmVudF93YWl0NjQgdGhhdCByZXR1cm5l
-ZCB0byBlYXJseS4gQ29weSBwYXN0ZSBlcnJvci4uLg0KDQpJIHJlbmFtZWQgdHNfd3UgdG8gdDIg
-aW4gc2ltaWxhciB0ZXN0cy4gSSBmb3Jnb3QgYWJvdXQgdGhlICJ3YWtldXAiDQptZWFuaW5nIG9m
-ICJ3dSIgc29tZSB0aW1lIGFnbyBhbmQgZGVjaWRlZCB0aGF0IHQxIGFuZCB0MiBhcmUNCnN1ZmZp
-Y2llbnQuDQoNCj4gKw0KPiArb3V0Og0KPiArCWNsb3NlKHNvY2tmZCk7DQo+ICsJcmV0dXJuIHJl
-dDsNCj4gK30NCj4gKw0KPiAgc3RhdGljIGludCBydW5feTIwMzgoc3RydWN0IHNtb2tleV90ZXN0
-ICp0LCBpbnQgYXJnYywgY2hhciAqY29uc3QgYXJndltdKQ0KPiAgew0KPiAgCWludCByZXQ7DQo+
-IEBAIC0xMDQxLDUgKzExNzIsOSBAQCBzdGF0aWMgaW50IHJ1bl95MjAzOChzdHJ1Y3Qgc21va2V5
-X3Rlc3QgKnQsIGludCBhcmdjLCBjaGFyICpjb25zdCBhcmd2W10pDQo+ICAJaWYgKHJldCkNCj4g
-IAkJcmV0dXJuIHJldDsNCj4gIA0KPiArCXJldCA9IHRlc3Rfc2NfY29iYWx0X3JlY3ZtbXNnNjQo
-KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICAJcmV0dXJuIDA7DQo+
-ICB9DQoNCg==
+Hi all,
+
+consider the simple code attached.
+
+I'm using Xenomai 3.1 on a x86_64 CPU, 2GB RAM.
+
+I compile and link the code using "xeno-config --skin=alchemy --cflags" 
+and "xeno-config --skin=alchemy --ldflags"
+
+* Scenario 1)
+   #define printf rt_printf commented out (use printf for prints)
+
+   Changing the NUM_TASKS value, in top command I see these results:
+
+   - NUM_TASKS 2
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80068   4%   0% ./test
+
+   - NUM_TASKS 4
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80204   4%   0% ./test
+
+   - NUM_TASKS 5
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80272   4%   0% ./test
+
+   - NUM_TASKS 6
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80340   4%   0% ./test
+
+Virtual memory size increases in a linear way.
+
+
+* Scenario 2)
+   #define printf rt_printf not commented (use rt_printf for prints)
+
+   Changing the NUM_TASKS value, in top command I see these results:
+
+   - NUM_TASKS 2
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80068   4%   0% ./test
+
+   - NUM_TASKS 4
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S    80204   4%   0% ./test
+
+   - NUM_TASKS 5
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S     142M   4%   0% ./test
+
+   - NUM_TASKS 6
+
+     PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+     496   480 root     S     206M   4%   0% ./test
+
+
+Starting from a number of tasks > 4, the VMEM got a jump and then 
+increases very rapidly.
+
+Is it normal? Or I'm misusing the rt_printf?
+
+Thanks in advance, regards
+
+---
+Mauro S.
 
