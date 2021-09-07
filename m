@@ -1,7 +1,9 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] dovetail: enabling Valgrind for applications
-Date: Tue,  7 Sep 2021 19:55:02 +0200
-Message-Id: <20210907175503.289178-1-rpm@xenomai.org>
+Subject: [PATCH] dovetail: add prctl() call form
+Date: Tue,  7 Sep 2021 19:55:03 +0200
+Message-Id: <20210907175503.289178-2-rpm@xenomai.org>
+In-Reply-To: <20210907175503.289178-1-rpm@xenomai.org>
+References: <20210907175503.289178-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,47 +16,109 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-As discussed a few weeks ago on a community meeting, enabling Valgrind
-for dual kernel applications is a desirable feature, despite the
-obvious slowdown. In some (desperate) cases, speed and/or latency is
-not the issue at hand, rampant memory corruption is.
+From: Philippe Gerum <rpm@xenomai.org>
 
-For this, the way syscalls are issued to the real-time core needs to
-be revisited.  The following trivial patch just does that (see details
-from the log).
+The syscall form used for issuing requests to the companion core is
+based on ORing __OOB_SYSCALL_BIT to the syscall register for tagging
+an out-of-band syscall, which is outside of the valid in-band range
+for syscall numbers.
 
-There are two parts to address the issue:
+Unfortunately, this method has a major drawback: tools like Valgrind
+which track system calls issued by applications may choke on
+out-of-band system calls since these do not belong to the common set
+it recognizes. Although adding syscall wrappers to Valgrind might be a
+solution, this would not be the most practical one for dual kernel
+syscall interfaces. The most practical approach would be to piggyback
+on an existing system call which Valgrind (and others) already
+recognizes.
 
-- make Dovetail recognize a new call form which does not cause a stock
-  Valgrind engine to choke, passing it to the real-time core.
+To this end, we provide another option for issuing out-of-band
+syscalls to the companion core, based on the [kitchen-sink] prctl(2)
+call. The prctl() syscall is unconditionally routed to the core for
+inspection, along with any syscall which bears the __OOB_SYSCALL_BIT
+tag as previously.
 
-- make the the real-time core recognize the new call form and deal
-  with the request as expected.
+According to this scheme, the core should figure out whether it should
+handle the current prctl() request, or leave it to the in-band kernel
+(i.e. propagation status set to zero). To fit in the prctl()
+signature, the core would typically use the prctl() @option argument
+to encode its own syscall number, which would leave enough room for up
+to 4 arguments to the corresponding request.
 
-This has been done and lightly tested on the EVL/x86 core at the
-moment, so far so good. I believe this feature should make it in EVL
-master fairly soon now.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/dovetail.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
-Bonus, the older call form is still supported (i.e. @nr |
-__OOB_SYSCALL_BIT directly in the syscall register), the prcrl() form
-is a mere addition.
-
-NOTE: the single patch which enables the feature in Dovetail should
-have no impact whatsoever on the current Cobalt implementation. The
-latter would receive all prctl() calls - which are seldomly used
-syscalls - before telling Dovetail to propagate them to the in-band
-kernel as usual.
-
-The main issue to address in order to enable this feature in Cobalt
-would be to shrink the argument list of existing XENOMAI_SYSCALL5()
-requests to XENOMAI_SYSCALL4() or lower, since the new call form is
-limited to @nr + 4 args. This is only about 13 distinct syscalls to
-convert.
-
-If you have suggestions to lift this limitation using a different
-request vector which would have the same properties than prctl() wrt
-Valgrind and still non-confusing, please chime in.
-
-[1] https://source.denx.de/Xenomai/xenomai4/libevl/-/commits/wip/prctl/
+diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+index b68cfb10093db0e..92fc8e2e1b4a818 100644
+--- a/kernel/dovetail.c
++++ b/kernel/dovetail.c
+@@ -72,7 +72,7 @@ void __weak handle_oob_syscall(struct pt_regs *regs)
+ int __weak handle_pipelined_syscall(struct irq_stage *stage,
+ 				    struct pt_regs *regs)
+ {
+-	return 0;
++	return 0;	/* i.e. propagate to in-band handler. */
+ }
+ 
+ void __weak handle_oob_mayday(struct pt_regs *regs)
+@@ -166,6 +166,19 @@ int __pipeline_syscall(struct pt_regs *regs)
+ 	return ret;
+ }
+ 
++static inline bool maybe_oob_syscall(unsigned int nr, struct pt_regs *regs)
++{
++	/*
++	 * Check whether the companion core might be interested in
++	 * @nr. Hand the request to the core if __OOB_SYSCALL_BIT is
++	 * set in @nr, or this is a prctl() request into which an oob
++	 * syscall might be folded. If the prctl() call ends up being
++	 * a regular in-band request, the core should tell us to
++	 * propagate it to the in-band handler eventually.
++	 */
++	return (nr & __OOB_SYSCALL_BIT) || nr == __NR_prctl;
++}
++
+ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
+ {
+ 	struct thread_info *ti = current_thread_info();
+@@ -175,11 +188,12 @@ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
+ 	WARN_ON_ONCE(dovetail_debug() && hard_irqs_disabled());
+ 
+ 	/*
+-	 * If __OOB_SYSCALL_BIT is set into the syscall number and we
+-	 * are running out-of-band, pass the request directly to the
+-	 * companion core by calling the oob syscall handler.
++	 * If the syscall signature belongs to the out-of-band syscall
++	 * set and we are running out-of-band, pass the request
++	 * directly to the companion core by calling the oob syscall
++	 * handler.
+ 	 *
+-	 * Otherwise, if __OOB_SYSCALL_BIT is set or alternate
++	 * Otherwise, if this is an out-of-band syscall or alternate
+ 	 * scheduling is enabled for the caller, propagate the syscall
+ 	 * through the pipeline stages, so that:
+ 	 *
+@@ -203,7 +217,7 @@ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
+ 	 * after exiting to user.
+ 	 */
+ 
+-	if ((nr & __OOB_SYSCALL_BIT) && (local_flags & _TLF_OOB)) {
++	if ((local_flags & _TLF_OOB) && maybe_oob_syscall(nr, regs)) {
+ 		handle_oob_syscall(regs);
+ 		local_flags = READ_ONCE(ti_local_flags(ti));
+ 		if (local_flags & _TLF_OOB) {
+@@ -216,7 +230,7 @@ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
+ 		}
+ 	}
+ 
+-	if ((local_flags & _TLF_DOVETAIL) || (nr & __OOB_SYSCALL_BIT)) {
++	if ((local_flags & _TLF_DOVETAIL) || maybe_oob_syscall(nr, regs)) {
+ 		ret = __pipeline_syscall(regs);
+ 		local_flags = READ_ONCE(ti_local_flags(ti));
+ 		if (local_flags & _TLF_OOB)
+-- 
+2.31.1
 
 
