@@ -1,14 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: An error occures when installing Xenomai libraries and tools
-Date: Thu, 9 Sep 2021 06:55:27 +0000
-Message-ID: <7a7726f326ca90ea2f1935d125bbc2ea6b33e456.camel@siemens.com>
 References: <tencent_50AA14110C851A8B665FF603EA5F8400F009@qq.com>
-In-Reply-To: <tencent_50AA14110C851A8B665FF603EA5F8400F009@qq.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <21D8D13F565A5E4085D31E316CCD74B8@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <7a7726f326ca90ea2f1935d125bbc2ea6b33e456.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f743f17c-77f5-6d41-85cb-c176669bc757@siemens.com>
+Date: Thu, 9 Sep 2021 09:00:40 +0200
 MIME-Version: 1.0
+In-Reply-To: <7a7726f326ca90ea2f1935d125bbc2ea6b33e456.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rany97@qq.com" <rany97@qq.com>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "rany97@qq.com" <rany97@qq.com>
 
-T24gVGh1LCAyMDIxLTA5LTA5IGF0IDExOjQzICswODAwLCByYW55OTcgdmlhIFhlbm9tYWkgd3Jv
-dGU6DQo+IEhpLA0KPiANCj4gDQo+IFdoZW4gSSBydW4gInN1ZG8gbWFrZSBpbnN0YWxsIiB0byBp
-bnN0YWxsIFhlbm9tYWkgbGlicmFyaWVzIGFuZCB0b29scywgZ2NjIHJlcG9ydHMgYW4gZXJyb3Ig
-cG9zdGVkIGJlbG93Og0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAvaG9tZS9yYW55L2J1aWxkX3J0b3MveGVu
-b21haS9zcmMveGVub21haS0zLjEvbGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIu
-YzogSW4gZnVuY3Rpb24g4oCYaW5pcGFyc2VyX2xvYWTigJk6DQo+IC9ob21lL3JhbnkvYnVpbGRf
-cnRvcy94ZW5vbWFpL3NyYy94ZW5vbWFpLTMuMS9saWIvYm9pbGVycGxhdGUvaW5pcGFyc2VyL2lu
-aXBhcnNlci5jOjYxNjoxMzogZXJyb3I6IOKAmHNwcmludGbigJkgYXJndW1lbnRzIDMsIDQgbWF5
-IG92ZXJsYXAgZGVzdGluYXRpb24gb2JqZWN0IOKAmGJ1ZuKAmSBbLVdlcnJvcj1yZXN0cmljdF0N
-Cj4gJm5ic3A7IDYxNiB8Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
-Jm5ic3A7c3ByaW50Zih0bXAsICIlczolcyIsIHNlY3Rpb24sIGtleSk7DQo+ICZuYnNwOyAmbmJz
-cDsgJm5ic3A7IHwmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
-cDtefn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fg0KPiBjYzE6IGFsbCB3YXJuaW5n
-cyBiZWluZyB0cmVhdGVkIGFzIGVycm9ycw0KPiANCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBTaGFsbCBJIGln
-bm9yZSBpdD8NCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gU29tZSBpbmZvIGxvc3QgaW4gbGFzdCBtYWls
-Og0KPiBnY2MgMTAuMi4xDQo+IExpbnV4IGRlYmlhbiA1LjEwLjAtOC1hbWQ2NCAjMSBTTVAgRGVi
-aWFuIDUuMTAuNDYtNCAoMjAyMS0wOC0wMykgeDg2XzY0IEdOVS9MaW51eA0KPiBYZW5vbWFpIDMu
-MQ0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tDQoNCkkgaGF2ZSB0aGUgc2FtZSBzZXR1cCBoZXJlLCBhbmQgdGhlcmUg
-aXMgbm8gc3VjaCB3YXJuaW5nLiBUaGVyZSBpcyBubw0Kc3ByaW50ZiBpbiBpbmlwYXJzZXIuYzo2
-MTYuIEFyZSB5b3Ugc3VyZSBpdCdzIFhlbm9tYWkgMy4xIHlvdSdyZQ0KbG9va2luZyBhdD8NCg0K
-U29tZSB0aW1lIGFnbyBJIGhhZCB0byB1cGRhdGUgdGhlIGluaXBhcnNlciAoZnJvbSBpdHMgdXBz
-dHJlYW0gc291cmNlKQ0KdG8gZ2V0IHJpZCBvZiBzdWNoIGNvbXBpbGVyIHdhcm5pbmdzLg0KDQo+
-IA0KPiANCj4gVGhhbmtzLA0KPiBSLg0KDQo=
+On 09.09.21 08:55, Bezdeka, Florian via Xenomai wrote:
+> On Thu, 2021-09-09 at 11:43 +0800, rany97 via Xenomai wrote:
+>> Hi,
+>>
+>>
+>> When I run "sudo make install" to install Xenomai libraries and tools, gcc reports an error posted below:
+>> --------------------------------------------------------------------
+>> /home/rany/build_rtos/xenomai/src/xenomai-3.1/lib/boilerplate/iniparser/iniparser.c: In function ‘iniparser_load’:
+>> /home/rany/build_rtos/xenomai/src/xenomai-3.1/lib/boilerplate/iniparser/iniparser.c:616:13: error: ‘sprintf’ arguments 3, 4 may overlap destination object ‘buf’ [-Werror=restrict]
+>> &nbsp; 616 |&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;sprintf(tmp, "%s:%s", section, key);
+>> &nbsp; &nbsp; &nbsp; |&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> cc1: all warnings being treated as errors
+>>
+>> -------------------------------------------------------------------
+>> Shall I ignore it?
+>>
+>> -------------------------------------------------------------------
+>> Some info lost in last mail:
+>> gcc 10.2.1
+>> Linux debian 5.10.0-8-amd64 #1 SMP Debian 5.10.46-4 (2021-08-03) x86_64 GNU/Linux
+>> Xenomai 3.1
+>> -------------------------------------------------------------------
+> 
+> I have the same setup here, and there is no such warning. There is no
+> sprintf in iniparser.c:616. Are you sure it's Xenomai 3.1 you're
+> looking at?
+> 
+> Some time ago I had to update the iniparser (from its upstream source)
+> to get rid of such compiler warnings.
+> 
+
+That fix was merged into master and stable/v3.1.x long ago. You just
+need to use the latest stable release.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
