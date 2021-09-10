@@ -1,11 +1,17 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Xenomai Community Call Minutes - September 8, 2021
-Date: Fri, 10 Sep 2021 03:07:08 +0000
-Message-ID: <CO6PR11MB5649D49F10D38A691DF02E14BAD69@CO6PR11MB5649.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8miBBbiBlcnJvciBvY2N1cmVzIHdoZW4gaW5zdGFs?=
+ =?UTF-8?Q?ling_Xenomai_libraries_and_tools?=
+References: <tencent_50AA14110C851A8B665FF603EA5F8400F009@qq.com>
+ <7a7726f326ca90ea2f1935d125bbc2ea6b33e456.camel@siemens.com>
+ <f743f17c-77f5-6d41-85cb-c176669bc757@siemens.com>
+ <tencent_AE5768182F4ED1D330ACB178F6665FBB3E05@qq.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ccdf198a-15f8-5023-e8dc-d3c7e8d98c9b@siemens.com>
+Date: Fri, 10 Sep 2021 07:58:19 +0200
 MIME-Version: 1.0
+In-Reply-To: <tencent_AE5768182F4ED1D330ACB178F6665FBB3E05@qq.com>
+Content-Type: text/plain; charset="gb18030"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,29 +20,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: rany97 <rany97@qq.com>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Attendees:
-Jan Kiszka, Philippe, Florian Bezdeka, Hongzhan Chen,=20
-Hao Li, Jianbo Cao, Rick Wang
-
-
-*Community update
-
-- Xenomai 3.2-rc1 released. Call for testing!
-  1. GPIO timestamp issue resolved.=20
-  2. Some issues reported in mailing list.
-  3. Observation on performance regression. Tracing on spikes.
-     Investigating functions, kernel configs, debug switches, SMIs, etc.
-
-- Xenomai + KVM
-  1. It's OK to make RT workload running on native Xenomai. Non-RT workload=
-=20
-     running inside KVM guest OS.
-  2. Can't enable Xenomai in KVM guest OS.
- =20
-
-
-Thanks,
-Rick
-
+T24gMTAuMDkuMjEgMDM6MDgsIHJhbnk5NyB3cm90ZToKPiBTb3JyeSBmb3Igbm90IHJlcGx5aW5n
+IHByb3Blcmx5Lgo+IEkgZ290IFhlbm9tYWkKPiBmcm9tgTCEMmh0dHBzOi8veGVub21haS5vcmcv
+ZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL3hlbm9tYWktMy4xLnRhci5iejIuCj4gPGh0dHBzOi8v
+eGVub21haS5vcmcvZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL3hlbm9tYWktMy4xLnRhci5iejI+
+Cj4gVGhlIHByb2JsZW0gaGF2ZSBiZWVuIHNvbHZlZCBieSB1c2luZyB4ZW5vbWFpLXN0YWJsZS0z
+LjEueCBnb3QKPiBmcm9tgTCEMmh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS94ZW5vbWFp
+Ly0vdHJlZS9zdGFibGUvdjMuMS54Cj4gPGh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS94
+ZW5vbWFpLy0vdHJlZS9zdGFibGUvdjMuMS54PjxodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9t
+YWkveGVub21haS8tL3RyZWUvc3RhYmxlL3YzLjEueD4KPiBCdXQgbmV3IGVycm9ycyBoYXBwZW5l
+ZCwgdGhleSBzZWVtcyBzaW1pbGFyOgo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiAvaG9tZS9yYW55L2J1
+aWxkX3J0b3MveGVub21haS9zcmMveGVub21haS1zdGFibGUtdjMuMS54L2xpYi9jb3BwZXJwbGF0
+ZS9oZWFwb2JqLXBzaGFyZWQuYzoKPiBJbiBmdW5jdGlvbiChrmhlYXBvYmpfcGtnX2luaXRfc2hh
+cmVkoa86Cj4gL2hvbWUvcmFueS9idWlsZF9ydG9zL3hlbm9tYWkvc3JjL3hlbm9tYWktc3RhYmxl
+LXYzLjEueC9saWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmM6ODU5OjExOgo+IGVycm9y
+OiChriVzoa8gZGlyZWN0aXZlIG91dHB1dCBtYXkgYmUgdHJ1bmNhdGVkIHdyaXRpbmcgdXAgdG8g
+Mjg3IGJ5dGVzCj4gaW50byBhIHJlZ2lvbiBvZiBzaXplIDI1MCBbLVdlcnJvcj1mb3JtYXQtdHJ1
+bmNhdGlvbj1dCj4ggTCEMiA4NTkgfIEwhDIggTCEMiAiL3hlbm86JXMiLCBob2JqLT5uYW1lKTsK
+PiCBMIQyIIEwhDIggTCEMiB8gTCEMiCBMIQyIIEwhDIggTCEMiCBMIQyIIEwhDJefgo+IC4uLi4u
+Lgo+IC4uLi4uLgo+IC9ob21lL3JhbnkvYnVpbGRfcnRvcy94ZW5vbWFpL3NyYy94ZW5vbWFpLXN0
+YWJsZS12My4xLngvbGliL2NvcHBlcnBsYXRlL2hlYXBvYmotcHNoYXJlZC5jOgo+IEluIGZ1bmN0
+aW9uIKGuaGVhcG9ial9iaW5kX3Nlc3Npb26hrzoKPiAvaG9tZS9yYW55L2J1aWxkX3J0b3MveGVu
+b21haS9zcmMveGVub21haS1zdGFibGUtdjMuMS54L2xpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBz
+aGFyZWQuYzo5ODc6MTE6Cj4gZXJyb3I6IKGuJXOhryBkaXJlY3RpdmUgb3V0cHV0IG1heSBiZSB0
+cnVuY2F0ZWQgd3JpdGluZyB1cCB0byAyODcgYnl0ZXMKPiBpbnRvIGEgcmVnaW9uIG9mIHNpemUg
+MjUwIFstV2Vycm9yPWZvcm1hdC10cnVuY2F0aW9uPV0KPiCBMIQyIDk4NyB8gTCEMiCBMIQyICIv
+eGVubzolcyIsIGhvYmotPm5hbWUpOwo+IIEwhDIggTCEMiCBMIQyIHyBMIQyIIEwhDIggTCEMiCB
+MIQyIIEwhDIggTCEMl5+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gCgpHb29kIHBvaW50ICwgRmxvcmlh
+biBzaG91bGQgaGF2ZSBzZWVuIHRoYXQgYXMgd2VsbCBhbHJlYWR5OgpXZSBuZWVkIHRvIG1lcmdl
+Cmh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS94ZW5vbWFpLy0vY29tbWl0LzZmZmY1MjM2
+MjM5YTc1MmVhMDMyOGU2YmZlZTFiCmludG8gc3RhYmxlIDMuMSBhcyB3ZWxsLiBXaWxsIGRvLAoK
+SmFuCgotLSAKU2llbWVucyBBRywgVCBSREEgSU9UCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRl
+ciBFbWJlZGRlZCBMaW51eAoK
