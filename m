@@ -1,19 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: =?utf-8?B?UmU6IOWbnuWkje+8miBBbiBlcnJvciBvY2N1cmVzIHdoZW4gaW5zdGFsbGlu?=
- =?utf-8?Q?g_Xenomai_libraries_and_tools?=
-Date: Fri, 10 Sep 2021 07:04:12 +0000
-Message-ID: <c1feed9dc79f7eaea2ee50b314f12771106a415f.camel@siemens.com>
-References: <tencent_50AA14110C851A8B665FF603EA5F8400F009@qq.com>
- <7a7726f326ca90ea2f1935d125bbc2ea6b33e456.camel@siemens.com>
- <f743f17c-77f5-6d41-85cb-c176669bc757@siemens.com>
- <tencent_AE5768182F4ED1D330ACB178F6665FBB3E05@qq.com>
- <ccdf198a-15f8-5023-e8dc-d3c7e8d98c9b@siemens.com>
-In-Reply-To: <ccdf198a-15f8-5023-e8dc-d3c7e8d98c9b@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6434948E3A8E7941B203E91DC674D0B2@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH stable/v3.1.x] ci: Drop 4.14 from target list
+Message-ID: <8a29fa02-b025-0426-befa-ecc6be7a9ed2@siemens.com>
+Date: Fri, 10 Sep 2021 10:25:10 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,43 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "rany97@qq.com" <rany97@qq.com>
+To: Xenomai <xenomai@xenomai.org>
 
-T24gRnJpLCAyMDIxLTA5LTEwIGF0IDA3OjU4ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMC4wOS4yMSAwMzowOCwgcmFueTk3IHdyb3RlOg0KPiA+IFNvcnJ5IGZvciBub3QgcmVwbHlp
-bmcgcHJvcGVybHkuDQo+ID4gSSBnb3QgWGVub21haQ0KPiA+IGZyb23CoGh0dHBzOi8veGVub21h
-aS5vcmcvZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL3hlbm9tYWktMy4xLnRhci5iejIuDQo+ID4g
-PGh0dHBzOi8veGVub21haS5vcmcvZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL3hlbm9tYWktMy4x
-LnRhci5iejI+DQo+ID4gVGhlIHByb2JsZW0gaGF2ZSBiZWVuIHNvbHZlZCBieSB1c2luZyB4ZW5v
-bWFpLXN0YWJsZS0zLjEueCBnb3QNCj4gPiBmcm9twqBodHRwczovL3NvdXJjZS5kZW54LmRlL1hl
-bm9tYWkveGVub21haS8tL3RyZWUvc3RhYmxlL3YzLjEueA0KPiA+IDxodHRwczovL3NvdXJjZS5k
-ZW54LmRlL1hlbm9tYWkveGVub21haS8tL3RyZWUvc3RhYmxlL3YzLjEueD48aHR0cHM6Ly9zb3Vy
-Y2UuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvLS90cmVlL3N0YWJsZS92My4xLng+DQo+ID4gQnV0
-IG5ldyBlcnJvcnMgaGFwcGVuZWQsIHRoZXkgc2VlbXMgc2ltaWxhcjoNCj4gPiAtLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tDQo+ID4gL2hvbWUvcmFueS9idWlsZF9ydG9zL3hlbm9tYWkvc3JjL3hlbm9tYWktc3Rh
-YmxlLXYzLjEueC9saWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmM6DQo+ID4gSW4gZnVu
-Y3Rpb24g4oCYaGVhcG9ial9wa2dfaW5pdF9zaGFyZWTigJk6DQo+ID4gL2hvbWUvcmFueS9idWls
-ZF9ydG9zL3hlbm9tYWkvc3JjL3hlbm9tYWktc3RhYmxlLXYzLjEueC9saWIvY29wcGVycGxhdGUv
-aGVhcG9iai1wc2hhcmVkLmM6ODU5OjExOg0KPiA+IGVycm9yOiDigJglc+KAmSBkaXJlY3RpdmUg
-b3V0cHV0IG1heSBiZSB0cnVuY2F0ZWQgd3JpdGluZyB1cCB0byAyODcgYnl0ZXMNCj4gPiBpbnRv
-IGEgcmVnaW9uIG9mIHNpemUgMjUwIFstV2Vycm9yPWZvcm1hdC10cnVuY2F0aW9uPV0NCj4gPiDC
-oCA4NTkgfMKgIMKgICIveGVubzolcyIsIGhvYmotPm5hbWUpOw0KPiA+IMKgIMKgIMKgIHzCoCDC
-oCDCoCDCoCDCoCDCoF5+DQo+ID4gLi4uLi4uDQo+ID4gLi4uLi4uDQo+ID4gL2hvbWUvcmFueS9i
-dWlsZF9ydG9zL3hlbm9tYWkvc3JjL3hlbm9tYWktc3RhYmxlLXYzLjEueC9saWIvY29wcGVycGxh
-dGUvaGVhcG9iai1wc2hhcmVkLmM6DQo+ID4gSW4gZnVuY3Rpb24g4oCYaGVhcG9ial9iaW5kX3Nl
-c3Npb27igJk6DQo+ID4gL2hvbWUvcmFueS9idWlsZF9ydG9zL3hlbm9tYWkvc3JjL3hlbm9tYWkt
-c3RhYmxlLXYzLjEueC9saWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmM6OTg3OjExOg0K
-PiA+IGVycm9yOiDigJglc+KAmSBkaXJlY3RpdmUgb3V0cHV0IG1heSBiZSB0cnVuY2F0ZWQgd3Jp
-dGluZyB1cCB0byAyODcgYnl0ZXMNCj4gPiBpbnRvIGEgcmVnaW9uIG9mIHNpemUgMjUwIFstV2Vy
-cm9yPWZvcm1hdC10cnVuY2F0aW9uPV0NCj4gPiDCoCA5ODcgfMKgIMKgICIveGVubzolcyIsIGhv
-YmotPm5hbWUpOw0KPiA+IMKgIMKgIMKgIHzCoCDCoCDCoCDCoCDCoCDCoF5+DQo+ID4gLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tDQo+ID4gDQo+IA0KPiBHb29kIHBvaW50ICwgRmxvcmlhbiBzaG91bGQgaGF2ZSBz
-ZWVuIHRoYXQgYXMgd2VsbCBhbHJlYWR5Og0KPiBXZSBuZWVkIHRvIG1lcmdlDQo+IGh0dHBzOi8v
-c291cmNlLmRlbnguZGUvWGVub21haS94ZW5vbWFpLy0vY29tbWl0LzZmZmY1MjM2MjM5YTc1MmVh
-MDMyOGU2YmZlZTFiDQo+IGludG8gc3RhYmxlIDMuMSBhcyB3ZWxsLiBXaWxsIGRvLA0KDQpJJ20g
-Y3VycmVudGx5IGZhY2luZyBzb21lIHRlc3QgZmFpbHVyZXMgKGxpa2VseSBzd2l0Y2h0ZXN0KSB3
-aXRoIHRoZQ0KbmV3IGNvbXBpbGVyLCBidXQgbm8gYnVpbGQgZmFpbHVyZSBzbyBmYXIuLi4gDQoN
-Cj4gDQo+IEphbg0KPiANCg0K
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+This kernel is no longer maintained and will not survive the switch to
+gcc-10.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .gitlab-ci.yml | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 6b77c4ee64..7b99547cdc 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -233,14 +233,6 @@ x86-4.19-cip-release:
+     IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
+     KERNEL_DEFCONFIG: x86_64_defconfig
+ 
+-x86-4.14-release:
+-  extends: .build
+-  variables:
+-    ARCH: x86
+-    IPIPE_REV: ipipe-core-4.14..*-x86-.*
+-    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
+-    KERNEL_DEFCONFIG: x86_64_defconfig
+-
+ x86-4.4-cip-head:
+   extends: .build
+   variables:
+-- 
+2.31.1
 
