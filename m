@@ -1,11 +1,9 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH stable/v3.1.x] ci: Drop 4.14 from target list
-Message-ID: <8a29fa02-b025-0426-befa-ecc6be7a9ed2@siemens.com>
-Date: Fri, 10 Sep 2021 10:25:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Byron Jacquot <bjacquot@cardinalpeak.com>
+Date: Fri, 10 Sep 2021 14:37:14 -0600
+Message-ID: <CAJte2PCq9wdgeN8AA=dfRxewhe+61UgRY=ecqG-y_wXXQ+0c2w@mail.gmail.com>
+Subject: EVL Semaphore Open Question
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +12,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hello Everyone,
 
-This kernel is no longer maintained and will not survive the switch to
-gcc-10.
+I'm working on growing some EVL proof-of-concept applications to come
+closer to the end application.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .gitlab-ci.yml | 8 --------
- 1 file changed, 8 deletions(-)
+I want to build a multicore processing pipeline by connecting out-of-band
+threads with semaphores.  The EVL Function Index [1] marks the semaphore
+creation & open functions as being available for in-band calls.
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 6b77c4ee64..7b99547cdc 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -233,14 +233,6 @@ x86-4.19-cip-release:
-     IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
--x86-4.14-release:
--  extends: .build
--  variables:
--    ARCH: x86
--    IPIPE_REV: ipipe-core-4.14..*-x86-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
--    KERNEL_DEFCONFIG: x86_64_defconfig
--
- x86-4.4-cip-head:
-   extends: .build
-   variables:
--- 
-2.31.1
+It appears that I'm unable to call them in-band - evl_new_sem() returns "No
+such device or address."  evl_open_sem() segfaults.
 
+As a workaround, the creating thread (an in-band management thread that
+ideally creates and manages the OOB resources) can temporarily attach to
+EVL, do the creation operation, then detach.
+
+Do I understand the information in the function index correctly?  Is there
+a recommended best practice for managing EVL resources from an in-band
+thread?
+
+I can cut code down to a brief example if that would help.
+
+[1]https://evlproject.org/core/user-api/function_index/
+
+Thank you,
+
+Byron Jacquot
