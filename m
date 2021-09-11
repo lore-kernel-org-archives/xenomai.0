@@ -1,7 +1,9 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH] arm: ipipe: omap-gpio: Fix interrupts delivering
-Date: Sat, 11 Sep 2021 11:41:54 +0200
-Message-Id: <20210911094154.31110-1-dariobin@libero.it>
+MIME-Version: 1.0
+From: Marco Barletta <barlettamarco8@gmail.com>
+Date: Sat, 11 Sep 2021 19:46:05 +0200
+Message-ID: <CAK6DXL1OLq6eTfnGp9AMsLVo664+tE2KO=_Uq+GVKpxPamcMxw@mail.gmail.com>
+Subject: setup RTnet
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,43 +13,19 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: greg@embeddedgreg.com, jan.kiszka@siemens.com, Dario Binacchi <dariobin@libero.it>
 
-If you set the irq trigger as edge rising or falling the interrupts are
-no longer delivered to the upper layers. The gpiokeys driver, for
-example, no longer detects the change in the state of the pins mapped
-to the buttons.
+Hi everyone;
+I was trying to setup RTnet but I found some problems. After removing
+non-rt e1000e module and loading rt one, when I run rtnet start I got the
+same output as
+https://www.mail-archive.com/xenomai@xenomai.org/msg18342.html. I know this
+is a known issue since the rt_e1000e doesn't work very well with i219-V
+Intel ethernet controller, and I checked out patches in
+https://www.mail-archive.com/xenomai@xenomai.org/msg16000.html. Anyway I
+experienced some compile time issues with Xenomai 3.1, Linux 5.4.77. Do you
+have an updated version tested toward this kernel version? On gitlab I see
+the driver still doesn't support the controller.
+Thank you very much for the effort.
 
-Fixes: c041e938312b ("arm: ipipe: Fix up the omap-gpio driver to deliver interrupts properly to the pipeline")
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
- drivers/gpio/gpio-omap.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
-index c8192c82d2b1..ae527d65bfc2 100644
---- a/drivers/gpio/gpio-omap.c
-+++ b/drivers/gpio/gpio-omap.c
-@@ -577,9 +577,6 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
- 	}
- 	raw_spin_unlock_irqrestore(&bank->lock, flags);
- 
--#ifdef CONFIG_IPIPE
--	irq_set_handler_locked(d, handle_level_irq);
--#else
- 	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
- 		irq_set_handler_locked(d, handle_level_irq);
- 	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
-@@ -590,7 +587,7 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
- 		 * So just use handle_simple_irq.
- 		 */
- 		irq_set_handler_locked(d, handle_simple_irq);
--#endif
-+
- 	return 0;
- 
- error:
 -- 
-2.17.1
-
-
+Marco Barletta
