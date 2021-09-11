@@ -1,11 +1,7 @@
-References: <CAJte2PCq9wdgeN8AA=dfRxewhe+61UgRY=ecqG-y_wXXQ+0c2w@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: EVL Semaphore Open Question
-In-reply-to: <CAJte2PCq9wdgeN8AA=dfRxewhe+61UgRY=ecqG-y_wXXQ+0c2w@mail.gmail.com>
-Date: Sat, 11 Sep 2021 09:30:54 +0200
-Message-ID: <87k0jnh8lt.fsf@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain
+From: Dario Binacchi <dariobin@libero.it>
+Subject: [PATCH] arm: ipipe: omap-gpio: Fix interrupts delivering
+Date: Sat, 11 Sep 2021 11:41:54 +0200
+Message-Id: <20210911094154.31110-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +10,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Byron Jacquot <bjacquot@cardinalpeak.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: greg@embeddedgreg.com, jan.kiszka@siemens.com, Dario Binacchi <dariobin@libero.it>
 
+If you set the irq trigger as edge rising or falling the interrupts are
+no longer delivered to the upper layers. The gpiokeys driver, for
+example, no longer detects the change in the state of the pins mapped
+to the buttons.
 
-Byron Jacquot via Xenomai <xenomai@xenomai.org> writes:
+Fixes: c041e938312b ("arm: ipipe: Fix up the omap-gpio driver to deliver interrupts properly to the pipeline")
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+---
+ drivers/gpio/gpio-omap.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-> Hello Everyone,
->
-> I'm working on growing some EVL proof-of-concept applications to come
-> closer to the end application.
->
-> I want to build a multicore processing pipeline by connecting out-of-band
-> threads with semaphores.  The EVL Function Index [1] marks the semaphore
-> creation & open functions as being available for in-band calls.
->
-> It appears that I'm unable to call them in-band - evl_new_sem() returns "No
-> such device or address."  evl_open_sem() segfaults.
-
-evl_new_sem() can definitely be called from the in-band context, this is
-actually the recommended way. You may want to have a look at [1], this
-is an example from the test suite.
-
-As documented at [2], all these services require a preliminary call to
-evl_init() in order to attach the application process to the
-core. -ENXIO is the sign that this call did not happen before
-evl_new_sem() was issued. The -ENXIO error code for evl_new_sem() is
-documented at [3].
-
-evl_open_sem() gives access to an existing semaphore, local or created
-by a remote process. It should have detected the lack of evl_init()
-call, and returned -ENXIO as well; this is going to be fixed and
-available from r27.
-
-You may want to have a look at the test suite in tests/ for examples of
-API usage. How to run these examples is documented at [4].
-
->
-> As a workaround, the creating thread (an in-band management thread that
-> ideally creates and manages the OOB resources) can temporarily attach to
-> EVL, do the creation operation, then detach.
->
-> Do I understand the information in the function index correctly?  Is there
-> a recommended best practice for managing EVL resources from an in-band
-> thread?
->
-> I can cut code down to a brief example if that would help.
->
-> [1]https://evlproject.org/core/user-api/function_index/
->
-> Thank you,
->
-> Byron Jacquot
-
-[1] https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/tests/sem-wait.c
-[2] https://evlproject.org/core/user-api/init/
-[3] https://evlproject.org/core/user-api/semaphore/#semaphore-services
-[4] https://evlproject.org/core/testing/
-
+diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
+index c8192c82d2b1..ae527d65bfc2 100644
+--- a/drivers/gpio/gpio-omap.c
++++ b/drivers/gpio/gpio-omap.c
+@@ -577,9 +577,6 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
+ 	}
+ 	raw_spin_unlock_irqrestore(&bank->lock, flags);
+ 
+-#ifdef CONFIG_IPIPE
+-	irq_set_handler_locked(d, handle_level_irq);
+-#else
+ 	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+ 		irq_set_handler_locked(d, handle_level_irq);
+ 	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+@@ -590,7 +587,7 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
+ 		 * So just use handle_simple_irq.
+ 		 */
+ 		irq_set_handler_locked(d, handle_simple_irq);
+-#endif
++
+ 	return 0;
+ 
+ error:
 -- 
-Philippe.
+2.17.1
+
 
