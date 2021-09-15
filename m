@@ -1,8 +1,10 @@
+Subject: Re: [PATCH] ci: Drop resource_group from qemu targets
+References: <76f49db6-307b-5f9d-a7f6-c93ea4990f99@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Drop resource_group from qemu targets
-Message-ID: <76f49db6-307b-5f9d-a7f6-c93ea4990f99@siemens.com>
-Date: Wed, 15 Sep 2021 07:55:35 +0200
+Message-ID: <f8405350-4c84-b7ee-e0cf-f896481e47fe@siemens.com>
+Date: Wed, 15 Sep 2021 07:57:55 +0200
 MIME-Version: 1.0
+In-Reply-To: <76f49db6-307b-5f9d-a7f6-c93ea4990f99@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,47 +18,53 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Should have been tagged "[xenomai-images]" as well...
 
-We now have 4 available, so the risk having to wait for a free one is
-significantly reduced.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-Thanks for making this possible, Hongzhan!
-
- ci/gitlab-ci-base.yml | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 13d37b0..8a1dbfb 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -68,7 +68,6 @@ default:
- 
- .lava-test:qemu-amd64:
-   extends: .test
--  resource_group: board-qemu
-   variables:
-     TARGET: qemu-amd64
- 
-@@ -80,7 +79,6 @@ default:
- 
- .lava-test:qemu-armhf:
-   extends: .test
--  resource_group: board-qemu
-   variables:
-     TARGET: qemu-armhf
- 
-@@ -92,7 +90,6 @@ default:
- 
- .lava-test:qemu-arm64:
-   extends: .test
--  resource_group: board-qemu
-   variables:
-     TARGET: qemu-arm64
- 
+On 15.09.21 07:55, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> We now have 4 available, so the risk having to wait for a free one is
+> significantly reduced.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> Thanks for making this possible, Hongzhan!
+> 
+>  ci/gitlab-ci-base.yml | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+> index 13d37b0..8a1dbfb 100644
+> --- a/ci/gitlab-ci-base.yml
+> +++ b/ci/gitlab-ci-base.yml
+> @@ -68,7 +68,6 @@ default:
+>  
+>  .lava-test:qemu-amd64:
+>    extends: .test
+> -  resource_group: board-qemu
+>    variables:
+>      TARGET: qemu-amd64
+>  
+> @@ -80,7 +79,6 @@ default:
+>  
+>  .lava-test:qemu-armhf:
+>    extends: .test
+> -  resource_group: board-qemu
+>    variables:
+>      TARGET: qemu-armhf
+>  
+> @@ -92,7 +90,6 @@ default:
+>  
+>  .lava-test:qemu-arm64:
+>    extends: .test
+> -  resource_group: board-qemu
+>    variables:
+>      TARGET: qemu-arm64
+>  
+> 
+-
 -- 
-2.31.1
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
