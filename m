@@ -1,8 +1,8 @@
 MIME-Version: 1.0
-From: Rajesh Venkataraman <rajesh_venkataraman@trimble.com>
-Date: Thu, 26 Aug 2021 18:15:15 -0700
-Message-ID: <CAM4LU5LF4ShOpV9no1z884nvx4ezBO7zCnQZVxnJinow1K+Bfw@mail.gmail.com>
-Subject: pthread_getcpuclockid() and clock_gettime() with Xenomai pthread
+From: Marco Barletta <barlettamarco8@gmail.com>
+Date: Sat, 18 Sep 2021 16:55:35 +0200
+Message-ID: <CAK6DXL2cWYOuFMHkm6tdzxcRzKehgnKyzTF1iid63QOVBQgLNw@mail.gmail.com>
+Subject: RTnet failed setup
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,23 +14,69 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
-   For the linux pthreads we have used pthread_getcpuclockid() to get the
-threads cpu time clock. Then periodically we do a clock_gettime() on this
-timer to get all threads run time. Then do clock_gettime( CLOCK_MONOTONIC,
-&ts ) to get the total system. Using the individual thread run time and
-total run time, we calculate the percentage of CPU utilization for each
-thread. Now we have moved the realtime thread to xenomai user space.
-The clock_gettime() on a xenomai user thread returns an error.   How do we
-calculate what percentage of the CPU is utilized by the xenomai thread in
-our Application?
+Hi everyone;
+since my NIC is not supported by rt_e1000e I wanted to test the RTnet setup
+on a couple of VMs talking to each other. I created a NAT network (
+10.0.2.0/24) and I attached the two VMs on it. Emulated controller is a
+Intel 82540EM with e1000. The test with the loopback device works fine,
+but when I try to make the multi node test something fails. The rteth0
+device is correctly brought up on both the VMs, however the rtnet start
+command stucks at  "waiting for slaves..." master side and "searching for
+master" on slave side. Obviously they can't exchange packets but I don't
+know why. In dmesg I get
+[ 1652.922885] RTnet: registered rteth0
+[ 1652.922888] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network
+Connection
+[ 1652.930730] rt_loopback: initializing loopback interface...
+[ 1652.930764] RTnet: registered rtlo
+[ 1652.935057] RTcfg: init real-time configuration distribution protocol
+[ 1652.938784] RTmac: init realtime media access control
+[ 1652.942199] RTmac/TDMA: init time division multiple access control
+mechanism
+[ 1654.983533] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps Full
+Duplex
+[ 1730.758684] TDMA: Failed to transmit sync frame!
+[ 1730.758848] TDMA: Failed to transmit sync frame!
+[ 1805.723757] TDMA: Failed to transmit sync frame!
+[ 1805.723774] TDMA: Failed to transmit sync frame!
+[ 1805.723777] TDMA: Failed to transmit sync frame!
+[ 1805.723779] TDMA: Failed to transmit sync frame!
+[ 1805.723781] TDMA: Failed to transmit sync frame!
+[ 1805.723783] TDMA: Failed to transmit sync frame!
+[ 1805.723785] TDMA: Failed to transmit sync frame!
 
-  We also get the idle time of the CPU from the /proc/stat and calculate
-the reserve percentage based on the total system time. Does linux idle time
-also include xenomai run time?
+and on the other side I noticed in dmesg
+[ 1625.966260] RTnet: dropping packet in rtnetif_rx()
+[ 1625.966262] RTnet: dropping packet in rtnetif_rx()
+[ 1625.966263] RTnet: dropping packet in rtnetif_rx()
+[ 1625.966265] RTnet: dropping packet in rtnetif_rx()
 
-  Is this correct method for calculating the CPU utilization percentage per
-thread in a system/application with xenomai and linux pthreads running in a
-single process?
+If I try a manual rtping after the rtroute I get "ioctl: Resource
+temporarily unavailable" and in dmesg
+[   72.314451] hard_start_xmit returned -11.
+Can someone help me to understand what is going on?
 
-Rajesh
+rtconf files are:
+
+RT_DRIVER="rt_e1000"
+RT_DRIVER_OPTIONS=""
+REBIND_RT_NICS="0000:00:03.0"
+IPADDR="10.0.2.4"
+NETMASK="255.255.255.0"
+RT_LOOPBACK="yes"
+RT_PROTOCOLS="udp packet"
+RTCAP="no"
+STAGE_2_SRC=""
+STAGE_2_DST=""
+STAGE_2_CMDS=""
+TDMA_MODE="master"
+TDMA_SLAVES="10.0.2.15"
+TDMA_CYCLE="5000"
+TDMA_OFFSET="200"
+
+for master and the same with slave instead of master and ipaddr=10.0.2.15
+for slave. VMs run Linux mint 20.1 5.4.77 patched with 3.1
+Thank you for helping.
+
+-- 
+Marco Barletta
