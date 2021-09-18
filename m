@@ -1,13 +1,8 @@
-Subject: Re: [PATCH] ci: Drop resource_group from qemu targets
-References: <76f49db6-307b-5f9d-a7f6-c93ea4990f99@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f8405350-4c84-b7ee-e0cf-f896481e47fe@siemens.com>
-Date: Wed, 15 Sep 2021 07:57:55 +0200
-MIME-Version: 1.0
-In-Reply-To: <76f49db6-307b-5f9d-a7f6-c93ea4990f99@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH] recipes-kernel: disable more debugs that influence latency
+ performance
+Date: Fri, 17 Sep 2021 21:08:50 -0400
+Message-Id: <20210918010850.23821-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +11,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Should have been tagged "[xenomai-images]" as well...
+For dovetail-based xenomai, max lat may drop from 203.800 us
+to 9.807 us in 10 hours stressed latency test on Maxtang 8565U board
+with lava test.
 
-On 15.09.21 07:55, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> We now have 4 available, so the risk having to wait for a free one is
-> significantly reduced.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> Thanks for making this possible, Hongzhan!
-> 
->  ci/gitlab-ci-base.yml | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-> index 13d37b0..8a1dbfb 100644
-> --- a/ci/gitlab-ci-base.yml
-> +++ b/ci/gitlab-ci-base.yml
-> @@ -68,7 +68,6 @@ default:
->  
->  .lava-test:qemu-amd64:
->    extends: .test
-> -  resource_group: board-qemu
->    variables:
->      TARGET: qemu-amd64
->  
-> @@ -80,7 +79,6 @@ default:
->  
->  .lava-test:qemu-armhf:
->    extends: .test
-> -  resource_group: board-qemu
->    variables:
->      TARGET: qemu-armhf
->  
-> @@ -92,7 +90,6 @@ default:
->  
->  .lava-test:qemu-arm64:
->    extends: .test
-> -  resource_group: board-qemu
->    variables:
->      TARGET: qemu-arm64
->  
-> 
--
+diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
+index d7d87c5..29b3522 100644
+--- a/recipes-kernel/linux/files/common_nodbg.cfg
++++ b/recipes-kernel/linux/files/common_nodbg.cfg
+@@ -1,2 +1,9 @@
+ # CONFIG_IPIPE_DEBUG is not set
+ # CONFIG_XENO_OPT_DEBUG is not set
++# CONFIG_PROVE_LOCKING is not set
++# CONFIG_DEBUG_RT_MUTEXES is not set
++# CONFIG_DEBUG_SPINLOCK is not set
++# CONFIG_DEBUG_MUTEXES is not set
++# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
++# CONFIG_DEBUG_RWSEMS is not set
++# CONFIG_DEBUG_LOCK_ALLOC is not set
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
