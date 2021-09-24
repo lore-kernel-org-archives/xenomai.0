@@ -1,10 +1,11 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <87v93rjb2o.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Date: Fri, 27 Aug 2021 15:44:42 +0200
+References: <CAJPpvEO8X-uHq7+6rzoyGQD2sYBHhesywwq-VZ4Vzrrwo=6OXw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: problem compiling EVL kernel with CONFIG_X86_UV set
+In-reply-to: <CAJPpvEO8X-uHq7+6rzoyGQD2sYBHhesywwq-VZ4Vzrrwo=6OXw@mail.gmail.com>
+Date: Fri, 24 Sep 2021 17:21:11 +0200
+Message-ID: <8735pu0zko.fsf@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <1202-6128ec80-1e5-1ab27320@266372968>
-Subject: =?utf-8?q?Re=3A?= Doing DMA from peripheral to userland memory
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,59 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Andrew Tannenbaum <atannbis@gmail.com>
 Cc: xenomai@xenomai.org
 
-Le Vendredi, Ao=C3=BBt 27, 2021 15:01 CEST, Philippe Gerum <rpm@xenomai=
-.org> a =C3=A9crit: 
- 
-> 
-> Fran=C3=A7ois Legal via Xenomai <xenomai@xenomai.org> writes:
-> 
-> > Hello,
-> >
-> > working on a zynq7000 target (arm cortex a9), we have a peripheral =
-that generates loads of data (many kbytes per ms).
-> >
-> > We would like to move that data, directly from the peripheral memor=
-y (the OCM of the SoC) directly to our RT application user memory using=
- DMA.
-> >
-> > For one part of the data, we would like the DMA to de interlace tha=
-t data while moving it. We figured out, the PL330 peripheral on the SoC=
- should be able to do it, however, we would like, as much as possible, =
-to retain the use of one or two channels of the PL330 to plain linux no=
-n RT use (via dmaengine).
-> >
-> > My first attempt would be to enhance the dmaengine API to add RT AP=
-I, then implement the RT API calls in the PL330 driver.
-> >
-> > What do you think of this approach, and is it achievable at all (DM=
-A directly to user land memory and/or having DMA channels exploited by =
-xenomai and other by linux) ?
-> >
-> > Thanks in advance
-> >
-> > Fran=C3=A7ois
-> 
-> As a starting point, you may want to have a look at this document:
-> https://evlproject.org/core/oob-drivers/dma/
-> 
-> This is part of the EVL core documentation, but this is actually a
-> Dovetail feature.
-> 
 
-Well, that's quite what I want to do, so this is very good news that it=
- is already available in the future. However, I need it through the ipi=
-pe right now, but I guess the process stays the same (through patching =
-the dmaengine API and the DMA engine driver).
+Andrew Tannenbaum via Xenomai <xenomai@xenomai.org> writes:
 
-I would guess the modifications to the DMA engine driver would be then =
-easily ported to dovetail ?
+> I am just starting to work with EVL/Xenomai 4.  (I have worked with Xenom=
+ai
+> 2 and 3 in the past.)
+> I cloned the linux-evl repo from LTS latest, my git HEAD is 105f39131e8a.
+> I am compiling on (and for) an Intel i5-10400 with Ubuntu Studio 20.04
+> distro installed,
+> and I started with a /boot/config file that came with the distro kernel as
+> the basis for my EVL Linux kernel .config.
+>
+> I ran into a compile error:
+>
+> # make modules
+> arch/x86/kernel/irq_pipeline.c: In function =E2=80=98do_sysvec_inband=E2=
+=80=99:
+> arch/x86/kernel/irq_pipeline.c:117:3: error: implicit declaration of
+> function =E2=80=98__sysvec_uv_bau_message=E2=80=99 [-Werror=3Dimplicit-fu=
+nction-declaration]
+>   117 |   __sysvec_uv_bau_message(regs);
+>       |   ^~~~~~~~~~~~~~~~~~~~~~~
+> cc1: some warnings being treated as errors
+> etc.
+>
+> I looked in irq_pipeline.c and saw that __sysvec_uv_bau_message is
+> referenced inside #ifdef CONFIG_X86_UV.
+> Which is SGI Ultraviolet, a NUMA server setting that I don't need.
+> CONFIG_X86_UV is turned on in the distro kernel, so my EVL config inherit=
+ed
+> this setting.
+> I was able to compile the EVL distro patched kernel after I
+> turned CONFIG_X86_UV off.
+> I think I tried EVL-patched 5.10.61 and 5.14.0 and both showed a similar
+> compile error.
+>
 
-Fran=C3=A7ois 
+Fixed, thanks.
 
-> -- 
-> Philippe.
-
+--=20
+Philippe.
 
