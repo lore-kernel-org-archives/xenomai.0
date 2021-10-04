@@ -1,15 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v4 3/3] y2038: testsuite/smokey/y2038: testcase for
- recvmmsg64
-Date: Fri, 1 Oct 2021 10:19:16 +0000
-Message-ID: <b5501ff95bb255403420e0c81bf12a165198f348.camel@siemens.com>
-References: <1632968555-18852-1-git-send-email-chensong_2000@189.cn>
-In-Reply-To: <1632968555-18852-1-git-send-email-chensong_2000@189.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C8447FB505FC5A46B87EB979DD0A66CB@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <20210926100716.32080-1-dariobin@libero.it>
+ <CALLqZ8SjgvN8zsA22f04-_gj8N_pzSuTaKDiT8ufTHpJ6UDm+Q@mail.gmail.com>
+In-Reply-To: <CALLqZ8SjgvN8zsA22f04-_gj8N_pzSuTaKDiT8ufTHpJ6UDm+Q@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Sun, 3 Oct 2021 20:27:24 -0400
+Message-ID: <CALLqZ8RGB8-dd0o54EyMyA=a0BuZdJXTHDE7HDR0YJic+eLn+w@mail.gmail.com>
+Subject: Re: [RESEND PATCH] arm: ipipe: omap-gpio: Fix interrupts delivering
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,21 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
+To: Dario Binacchi <dariobin@libero.it>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgU29uZyENCg0KT24gVGh1LCAyMDIxLTA5LTMwIGF0IDEwOjIyICswODAwLCBTb25nIENoZW4g
-d3JvdGU6DQo+IEV4dGVuZGluZyB0aGUgdGVzdCBzdWl0ZSBmb3IgcmVjdm1tc2c2NCB0ZXN0Lg0K
-PiANCj4gU2lnbmVkLW9mZi1ieTogU29uZyBDaGVuIDxjaGVuc29uZ18yMDAwQDE4OS5jbj4NCj4g
-DQo+IC0tLQ0KPiB2MjoNCj4gMSwgcmVuYW1lIHZhcmlhYmxlcw0KPiAyLCByZW1vdmUgdW5uZWNl
-c3NhcnkgYnJhbmNoZXMNCj4gMywgY2FsbCBzbW9rZXlfY2hlY2tfZXJybm8NCj4gDQo+IHY0Og0K
-PiAxLCBjYWxsIHNtb2tleV9jaGVja19lcnJubyBpbiBtb3JlIHNjZW5hcmlvcw0KPiAtLS0NCj4g
-IHRlc3RzdWl0ZS9zbW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgMTI5ICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDEyOSBpbnNlcnRpb25z
-KCspDQo+IA0KW3NuaXBdDQoNClRoZSBwcm9ibGVtIHdpdGggdjQgd2FzIHRoYXQgaXQgZGlkIG5v
-dCBhcHBseSBvbiB0b3Agb2YgbmV4dC4gQXMgSSdtDQp0aGUgb25lIHdobyBpbnRyb2R1Y2VkIHRo
-ZSBjb25mbGljdHMgaW4gdGhlIG5leHQgYnJhbmNoIEkgZml4ZWQgdGhpcyB1cA0KZHVyaW5nIHBy
-ZS1tZXJnZSB3aXRoIHNvbWUgbWlub3Igc3R5bGUgZml4ZXMgb24gdG9wLg0KDQpQbGVhc2UgbWFr
-ZSBzdXJlIHRvIHNlbmQgcGF0Y2hlcyBiYXNlZCBvbiBtYXN0ZXIvbmV4dC4NCg0KTm8gZnVydGhl
-ciBhY3Rpb24gcmVxdWlyZWQgb24geW91ciBzaWRlLiBJIHdpbGwgcGFzcyB0aGlzIHNlcmllcyBu
-b3cgdG8NCnNvbWUgaW50ZXJuYWwgQ0kgdGVzdHMuIA0KDQpSZWdhcmRzLCANCkZsb3JpYW4NCg==
+On Sun, Sep 26, 2021 at 7:59 AM Greg Gallagher <greg@embeddedgreg.com>
+wrote:
 
+>
+>
+> On Sun, Sep 26, 2021 at 6:07 AM Dario Binacchi <dariobin@libero.it> wrote=
+:
+>
+>> If you set the irq trigger as edge rising or falling the interrupts are
+>> no longer delivered to the upper layers. The gpiokeys driver, for
+>> example, no longer detects the change in the state of the pins mapped
+>> to the buttons.
+>>
+>> Fixes: c041e938312b ("arm: ipipe: Fix up the omap-gpio driver to deliver
+>> interrupts properly to the pipeline")
+>> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+>> ---
+>>  drivers/gpio/gpio-omap.c | 5 +----
+>>  1 file changed, 1 insertion(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
+>> index c8192c82d2b1..ae527d65bfc2 100644
+>> --- a/drivers/gpio/gpio-omap.c
+>> +++ b/drivers/gpio/gpio-omap.c
+>> @@ -577,9 +577,6 @@ static int omap_gpio_irq_type(struct irq_data *d,
+>> unsigned type)
+>>         }
+>>         raw_spin_unlock_irqrestore(&bank->lock, flags);
+>>
+>> -#ifdef CONFIG_IPIPE
+>> -       irq_set_handler_locked(d, handle_level_irq);
+>> -#else
+>>         if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+>>                 irq_set_handler_locked(d, handle_level_irq);
+>>         else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+>> @@ -590,7 +587,7 @@ static int omap_gpio_irq_type(struct irq_data *d,
+>> unsigned type)
+>>                  * So just use handle_simple_irq.
+>>                  */
+>>                 irq_set_handler_locked(d, handle_simple_irq);
+>> -#endif
+>> +
+>>         return 0;
+>>
+>>  error:
+>> --
+>> 2.17.1
+>
+>
+> Thanks, applying to 5.4 and 4.19. I=E2=80=99ll have a. Updated release th=
+is week.
+>
+> Thanks
+>
+> Greg
+>
+>>
+>>
+>> Applied to master, starting the 4.19 and 5.4 update.
+
+Thanks
+
+-Greg
