@@ -1,13 +1,15 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v4 3/3] y2038: testsuite/smokey/y2038: testcase for
+ recvmmsg64
+Date: Mon, 4 Oct 2021 14:55:34 +0000
+Message-ID: <80d0fdeee2466c59e16b43ad7295301090cd3c60.camel@siemens.com>
+References: <1632968555-18852-1-git-send-email-chensong_2000@189.cn>
+In-Reply-To: <1632968555-18852-1-git-send-email-chensong_2000@189.cn>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2CEFEC5013BFE146B21F5AA0D602CF97@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20210926100716.32080-1-dariobin@libero.it>
- <CALLqZ8SjgvN8zsA22f04-_gj8N_pzSuTaKDiT8ufTHpJ6UDm+Q@mail.gmail.com>
-In-Reply-To: <CALLqZ8SjgvN8zsA22f04-_gj8N_pzSuTaKDiT8ufTHpJ6UDm+Q@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sun, 3 Oct 2021 20:27:24 -0400
-Message-ID: <CALLqZ8RGB8-dd0o54EyMyA=a0BuZdJXTHDE7HDR0YJic+eLn+w@mail.gmail.com>
-Subject: Re: [RESEND PATCH] arm: ipipe: omap-gpio: Fix interrupts delivering
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +18,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dario Binacchi <dariobin@libero.it>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong_2000@189.cn" <chensong_2000@189.cn>
 
-On Sun, Sep 26, 2021 at 7:59 AM Greg Gallagher <greg@embeddedgreg.com>
-wrote:
+T24gVGh1LCAyMDIxLTA5LTMwIGF0IDEwOjIyICswODAwLCBTb25nIENoZW4gd3JvdGU6DQo+IEV4
+dGVuZGluZyB0aGUgdGVzdCBzdWl0ZSBmb3IgcmVjdm1tc2c2NCB0ZXN0Lg0KPiANCj4gU2lnbmVk
+LW9mZi1ieTogU29uZyBDaGVuIDxjaGVuc29uZ18yMDAwQDE4OS5jbj4NCj4gDQo+IC0tLQ0KPiB2
+MjoNCj4gMSwgcmVuYW1lIHZhcmlhYmxlcw0KPiAyLCByZW1vdmUgdW5uZWNlc3NhcnkgYnJhbmNo
+ZXMNCj4gMywgY2FsbCBzbW9rZXlfY2hlY2tfZXJybm8NCj4gDQo+IHY0Og0KPiAxLCBjYWxsIHNt
+b2tleV9jaGVja19lcnJubyBpbiBtb3JlIHNjZW5hcmlvcw0KPiAtLS0NCj4gIHRlc3RzdWl0ZS9z
+bW9rZXkveTIwMzgvc3lzY2FsbC10ZXN0cy5jIHwgMTI5ICsrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDEyOSBpbnNlcnRpb25zKCspDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvdGVzdHN1aXRlL3Ntb2tleS95MjAzOC9zeXNjYWxsLXRlc3RzLmMgYi90ZXN0
+c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMuYw0KPiBpbmRleCA4YWZlZGQ3Li5iMDY0
+NDBlIDEwMDY0NA0KPiAtLS0gYS90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMu
+Yw0KPiArKysgYi90ZXN0c3VpdGUvc21va2V5L3kyMDM4L3N5c2NhbGwtdGVzdHMuYw0KPiBAQCAt
+MTIsNiArMTIsNyBAQA0KPiAgI2luY2x1ZGUgPGFzbS94ZW5vbWFpL3N5c2NhbGwuaD4NCj4gICNp
+bmNsdWRlIDxzbW9rZXkvc21va2V5Lmg+DQo+ICAjaW5jbHVkZSA8bXF1ZXVlLmg+DQo+ICsjaW5j
+bHVkZSA8cnRkbS9pcGMuaD4NCj4gIA0KPiAgc21va2V5X3Rlc3RfcGx1Z2luKHkyMDM4LCBTTU9L
+RVlfTk9BUkdTLCAiVmFsaWRhdGUgY29ycmVjdCB5MjAzOCBzdXBwb3J0Iik7DQo+ICANCj4gQEAg
+LTk4OSw2ICs5OTAsMTMwIEBAIHN0YXRpYyBpbnQgdGVzdF9zY19jb2JhbHRfZXZlbnRfd2FpdDY0
+KHZvaWQpDQo+ICAJcmV0dXJuIDA7DQo+ICB9DQo+ICANCj4gK3N0YXRpYyBpbnQgdGVzdF9zY19j
+b2JhbHRfcmVjdm1tc2c2NCh2b2lkKQ0KPiArew0KPiArCWludCByZXQgPSAwOw0KPiArCWludCBz
+b2NrZmQ7DQo+ICsJaW50IHNjX25yID0gc2NfY29iYWx0X3JlY3ZtbXNnNjQ7DQo+ICsJbG9uZyBk
+YXRhOw0KPiArCXN0cnVjdCB4bl90aW1lc3BlYzY0IHQxLCB0MjsNCj4gKwlzdHJ1Y3QgdGltZXNw
+ZWMgdHNfbmF0Ow0KPiArCXN0cnVjdCBydGlwY19wb3J0X2xhYmVsIHBsYWJlbDsNCj4gKwlzdHJ1
+Y3Qgc29ja2FkZHJfaXBjIHNhZGRyOw0KPiArDQo+ICsJc3RydWN0IGlvdmVjIGlvdiA9IHsNCj4g
+KwkJLmlvdl9iYXNlID0gJmRhdGEsDQo+ICsJCS5pb3ZfbGVuID0gc2l6ZW9mKGRhdGEpLA0KPiAr
+CX07DQo+ICsJc3RydWN0IG1zZ2hkciBtc2cgPSB7DQo+ICsJCS5tc2dfbmFtZSA9IE5VTEwsDQo+
+ICsJCS5tc2dfbmFtZWxlbiA9IDAsDQo+ICsJCS5tc2dfaW92ID0gJmlvdiwNCj4gKwkJLm1zZ19p
+b3ZsZW4gPSAxLA0KPiArCQkubXNnX2NvbnRyb2wgPSBOVUxMLA0KPiArCQkubXNnX2NvbnRyb2xs
+ZW4gPSAwLA0KPiArCX07DQo+ICsNCj4gKwlzb2NrZmQgPSBzbW9rZXlfY2hlY2tfZXJybm8oc29j
+a2V0KEFGX1JUSVBDLA0KPiArCQkJCQlTT0NLX0RHUkFNLCBJUENQUk9UT19YRERQKSk7DQo+ICsJ
+aWYgKHNvY2tmZCA8PSAwKQ0KPiArCQlyZXR1cm4gLWVycm5vOw0KPiArDQo+ICsJc3RyY3B5KHBs
+YWJlbC5sYWJlbCwgInkyMDM4OnJlY3ZtbXNnNjQiKTsNCj4gKwlyZXQgPSBzbW9rZXlfY2hlY2tf
+ZXJybm8oc2V0c29ja29wdChzb2NrZmQsIFNPTF9YRERQLA0KPiArCQkJCQlYRERQX0xBQkVMLCAm
+cGxhYmVsLCBzaXplb2YocGxhYmVsKSkpOw0KPiArCWlmIChyZXQpDQo+ICsJCWdvdG8gb3V0Ow0K
+PiArDQo+ICsJbWVtc2V0KCZzYWRkciwgMCwgc2l6ZW9mKHNhZGRyKSk7DQo+ICsJc2FkZHIuc2lw
+Y19mYW1pbHkgPSBBRl9SVElQQzsNCj4gKwlzYWRkci5zaXBjX3BvcnQgPSAtMTsNCj4gKwlyZXQg
+PSBzbW9rZXlfY2hlY2tfZXJybm8oYmluZChzb2NrZmQsIChzdHJ1Y3Qgc29ja2FkZHIgKikmc2Fk
+ZHIsDQo+ICsJCQkJCXNpemVvZihzYWRkcikpKTsNCj4gKwlpZiAocmV0KQ0KPiArCQlnb3RvIG91
+dDsNCj4gKw0KPiArCS8qIE1ha2Ugc3VyZSB3ZSBkb24ndCBjcmFzaCBiZWNhdXNlIG9mIE5VTEwg
+cG9pbnRlcnMgKi8NCj4gKwlyZXQgPSBYRU5PTUFJX1NZU0NBTEw1KHNjX25yLCBOVUxMLCBOVUxM
+LCBOVUxMLCBOVUxMLCBOVUxMKTsNCj4gKwlpZiAocmV0ID09IC1FTk9TWVMpIHsNCj4gKwkJc21v
+a2V5X25vdGUoInJlY3ZtbXNnNjQ6IHNraXBwZWQuIChubyBrZXJuZWwgc3VwcG9ydCkiKTsNCj4g
+KwkJZ290byBvdXQ7IC8vIE5vdCBpbXBsZW1lbnRlZCwgbm90aGluZyB0byB0ZXN0LCBzdWNjZXNz
+DQo+ICsJfQ0KPiArCWlmICghc21va2V5X2Fzc2VydChyZXQgPT0gLUVBRFYpKSB7DQo+ICsJCXJl
+dCA9IHJldCA/IHJldCA6IC1FSU5WQUw7DQo+ICsJCWdvdG8gb3V0Ow0KPiArCX0NCj4gKw0KPiAr
+CS8qIFByb3ZpZGluZyBhbiBpbnZhbGlkIGFkZHJlc3MgaGFzIHRvIGRlbGl2ZXIgRUZBVUxUICov
+DQo+ICsJcmV0ID0gWEVOT01BSV9TWVNDQUxMNShzY19uciwgc29ja2ZkLCAmbXNnLCBzaXplb2Yo
+bXNnKSwNCj4gKwkJCQkwLCAodm9pZCAqKTB4ZGVhZGJlZWZVTCk7DQo+ICsJaWYgKCFzbW9rZXlf
+YXNzZXJ0KHJldCA9PSAtRUZBVUxUKSkgew0KPiArCQlyZXQgPSByZXQgPyByZXQgOiAtRUlOVkFM
+Ow0KPiArCQlnb3RvIG91dDsNCj4gKwl9DQo+ICsNCj4gKwkvKg0KPiArCSAqIHByb3ZpZGluZyBh
+biBpbnZhbGlkIHRpbWVvdXQgaGFzIHRvIGRlbGl2ZXIgRUlOVkFMDQo+ICsJICovDQo+ICsJdDEu
+dHZfc2VjID0gLTE7DQo+ICsJcmV0ID0gWEVOT01BSV9TWVNDQUxMNShzY19uciwgc29ja2ZkLCAm
+bXNnLCBzaXplb2YobXNnKSwgMCwgJnQxKTsNCj4gKwlpZiAoIXNtb2tleV9hc3NlcnQocmV0ID09
+IC1FSU5WQUwpKSB7DQo+ICsJCXJldCA9IHJldCA/IHJldCA6IC1FSU5WQUw7DQo+ICsJCWdvdG8g
+b3V0Ow0KPiArCX0NCj4gKw0KPiArCS8qDQo+ICsJICogcHJvdmlkaW5nIGEgemVybyB0aW1lb3V0
+LA0KPiArCSAqIHNob3VsZCBjb21lIGJhY2sgaW1tZWRpYXRlbHkgd2l0aCBFV09VTERCTE9DSw0K
+PiArCSAqLw0KPiArCXQxLnR2X3NlYyA9IDA7DQo+ICsJdDEudHZfbnNlYyA9IDA7DQo+ICsJcmV0
+ID0gWEVOT01BSV9TWVNDQUxMNShzY19uciwgc29ja2ZkLCAmbXNnLCBzaXplb2YobXNnKSwgMCwg
+JnQxKTsNCj4gKwlpZiAoIXNtb2tleV9hc3NlcnQocmV0ID09IC1FV09VTERCTE9DSykpIHsNCj4g
+KwkJcmV0ID0gcmV0ID8gcmV0IDogLUVJTlZBTDsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiAr
+DQo+ICsJLyoNCj4gKwkgKiBQcm92aWRpbmcgYSB2YWxpZCB0aW1lb3V0LCB3YWl0aW5nIGZvciBp
+dCB0byB0aW1lIG91dCBhbmQgY2hlY2sNCj4gKwkgKiB0aGF0IHdlIGRpZG4ndCBjb21lIGJhY2sg
+dG8gZWFybHkuDQo+ICsJICovDQo+ICsJcmV0ID0gc21va2V5X2NoZWNrX2Vycm5vKGNsb2NrX2dl
+dHRpbWUoQ0xPQ0tfUkVBTFRJTUUsICZ0c19uYXQpKTsNCj4gKwlpZiAocmV0KQ0KPiArCQlnb3Rv
+IG91dDsNCg0KU29uZywgaXMgQ0xPQ0tfUkVBTFRJTUUgcmVhbGx5IHRoZSByaWdodCBjbG9jayB0
+byB1c2UgaGVyZT8gDQoNCl9fcnRkbV9mZF9yZWN2bW1zZyBoYXPCoA0KCXRpbWVvdXQgKz0geG5j
+bG9ja19yZWFkX21vbm90b25pYygmbmtjbG9jayk7DQoNCmluIGNhc2UgYSB0aW1lb3V0IGlzIHN1
+cHBsaWVkLg0KDQpMb29rcyBsaWtlIHlvdSBjb21wYXJlIENMT0NLX1JFQUxUSU1FIHdpdGggQ0xP
+Q0tfTU9OT1RPTklDIGhlcmUuDQoNCkxldCBtZSBjaGVjayBpZiB0aGUgc2FtZSBhcHBsaWVzIHRv
+IHNlbmQgdGVzdHMgaW4NCnRlc3Rfc2NfY29iYWx0X21xX3RpbWVkc2VuZDY0Lg0KDQoNCj4gKw0K
+PiArCXQxLnR2X3NlYyA9IDA7DQo+ICsJdDEudHZfbnNlYyA9IDUwMDAwMDsNCj4gKw0KPiArCXJl
+dCA9IFhFTk9NQUlfU1lTQ0FMTDUoc2NfbnIsIHNvY2tmZCwgJm1zZywgc2l6ZW9mKG1zZyksIDAs
+ICZ0MSk7DQo+ICsJaWYgKCFzbW9rZXlfYXNzZXJ0KHJldCA9PSAtRVRJTUVET1VUKSkgew0KPiAr
+CQlyZXQgPSByZXQgPyByZXQgOiAtRUlOVkFMOw0KPiArCQlnb3RvIG91dDsNCj4gKwl9DQo+ICsN
+Cj4gKwl0MS50dl9zZWMgPSB0c19uYXQudHZfc2VjOw0KPiArCXQxLnR2X25zZWMgPSB0c19uYXQu
+dHZfbnNlYzsNCj4gKw0KPiArCXJldCA9IHNtb2tleV9jaGVja19lcnJubyhjbG9ja19nZXR0aW1l
+KENMT0NLX1JFQUxUSU1FLCAmdHNfbmF0KSk7DQo+ICsJaWYgKHJldCkNCj4gKwkJZ290byBvdXQ7
+DQo+ICsNCj4gKwl0Mi50dl9zZWMgPSB0c19uYXQudHZfc2VjOw0KPiArCXQyLnR2X25zZWMgPSB0
+c19uYXQudHZfbnNlYzsNCj4gKw0KPiArCWlmICh0c19sZXNzKCZ0MiwgJnQxKSkNCj4gKwkJc21v
+a2V5X3dhcm5pbmcoInJlY3ZtbXNnNjQgcmV0dXJuZWQgdG8gZWFybHkhXG4iDQo+ICsJCQkgICAg
+ICAgIkV4cGVjdGVkIHdha2V1cCBhdDogJWxsZCBzZWMgJWxsZCBuc2VjXG4iDQo+ICsJCQkgICAg
+ICAgIkJhY2sgYXQgICAgICAgICAgIDogJWxsZCBzZWMgJWxsZCBuc2VjXG4iLA0KPiArCQkJICAg
+ICAgIHQxLnR2X3NlYywgdDEudHZfbnNlYywgdDIudHZfc2VjLCB0Mi50dl9uc2VjKTsNCj4gKw0K
+PiArCXJldCA9IDA7DQo+ICsNCj4gK291dDoNCj4gKwljbG9zZShzb2NrZmQpOw0KPiArCXJldHVy
+biByZXQ7DQo+ICt9DQo+ICsNCj4gIHN0YXRpYyBpbnQgcnVuX3kyMDM4KHN0cnVjdCBzbW9rZXlf
+dGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3ZbXSkNCj4gIHsNCj4gIAlpbnQgcmV0
+Ow0KPiBAQCAtMTA0MSw1ICsxMTY2LDkgQEAgc3RhdGljIGludCBydW5feTIwMzgoc3RydWN0IHNt
+b2tleV90ZXN0ICp0LCBpbnQgYXJnYywgY2hhciAqY29uc3QgYXJndltdKQ0KPiAgCWlmIChyZXQp
+DQo+ICAJCXJldHVybiByZXQ7DQo+ICANCj4gKwlyZXQgPSB0ZXN0X3NjX2NvYmFsdF9yZWN2bW1z
+ZzY0KCk7DQo+ICsJaWYgKHJldCkNCj4gKwkJcmV0dXJuIHJldDsNCj4gKw0KPiAgCXJldHVybiAw
+Ow0KPiAgfQ0KDQo=
 
->
->
-> On Sun, Sep 26, 2021 at 6:07 AM Dario Binacchi <dariobin@libero.it> wrote=
-:
->
->> If you set the irq trigger as edge rising or falling the interrupts are
->> no longer delivered to the upper layers. The gpiokeys driver, for
->> example, no longer detects the change in the state of the pins mapped
->> to the buttons.
->>
->> Fixes: c041e938312b ("arm: ipipe: Fix up the omap-gpio driver to deliver
->> interrupts properly to the pipeline")
->> Signed-off-by: Dario Binacchi <dariobin@libero.it>
->> ---
->>  drivers/gpio/gpio-omap.c | 5 +----
->>  1 file changed, 1 insertion(+), 4 deletions(-)
->>
->> diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
->> index c8192c82d2b1..ae527d65bfc2 100644
->> --- a/drivers/gpio/gpio-omap.c
->> +++ b/drivers/gpio/gpio-omap.c
->> @@ -577,9 +577,6 @@ static int omap_gpio_irq_type(struct irq_data *d,
->> unsigned type)
->>         }
->>         raw_spin_unlock_irqrestore(&bank->lock, flags);
->>
->> -#ifdef CONFIG_IPIPE
->> -       irq_set_handler_locked(d, handle_level_irq);
->> -#else
->>         if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
->>                 irq_set_handler_locked(d, handle_level_irq);
->>         else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
->> @@ -590,7 +587,7 @@ static int omap_gpio_irq_type(struct irq_data *d,
->> unsigned type)
->>                  * So just use handle_simple_irq.
->>                  */
->>                 irq_set_handler_locked(d, handle_simple_irq);
->> -#endif
->> +
->>         return 0;
->>
->>  error:
->> --
->> 2.17.1
->
->
-> Thanks, applying to 5.4 and 4.19. I=E2=80=99ll have a. Updated release th=
-is week.
->
-> Thanks
->
-> Greg
->
->>
->>
->> Applied to master, starting the 4.19 and 5.4 update.
-
-Thanks
-
--Greg
