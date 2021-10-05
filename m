@@ -1,13 +1,17 @@
-Subject: Re: [Next][PATCH] utils: add kernel .config check utility
-References: <20210924032341.17190-1-hongzhan.chen@intel.com>
+Subject: Re: "switchtest" problem with recent 5.10 dovetail and distro-like
+ kernel config
+References: <20210922122519.73e772a3@md1za8fc.ad001.siemens.net>
+ <877df823dq.fsf@xenomai.org>
+ <20210922162154.495db035@md1za8fc.ad001.siemens.net>
+ <20210924153120.649e583f@md1za8fc.ad001.siemens.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <51bb4747-d129-f588-57c2-e6472463e5a9@siemens.com>
-Date: Tue, 5 Oct 2021 16:27:22 +0200
+Message-ID: <f0ddf0d1-aede-4bd6-3fc3-3b8b1f8e42d8@siemens.com>
+Date: Tue, 5 Oct 2021 16:29:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210924032341.17190-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210924153120.649e583f@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,632 +20,183 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Henning Schild via Xenomai <xenomai@xenomai.org>
 
-On 24.09.21 05:23, Hongzhan Chen via Xenomai wrote:
-> To check a kernel configuration for common issues which may increase
-> latency.
+On 24.09.21 15:31, Henning Schild via Xenomai wrote:
+> Am Wed, 22 Sep 2021 16:21:54 +0200
+> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>> Am Wed, 22 Sep 2021 14:36:49 +0200
+>> schrieb Philippe Gerum <rpm@xenomai.org>:
+>>
+>>> Henning Schild via Xenomai <xenomai@xenomai.org> writes:
+>>>   
+>>>> Hi,
+>>>>
+>>>> getting sick of maintaining a "small" kernel config i wanted to
+>>>> switch to a config derived from the debian11 5.10 kernel.
+>>>> Basically that config plus the few switches coming in with
+>>>> dovetail.
+>>>>
+>>>> That passed all tests in qemu but on a real machine (big xeon with
+>>>> raid0) the "switchtest" has an issue.
+>>>>
+>>>> # /lib/xenomai/testsuite/switchtest 
+>>>> == Testing FPU check routines...
+>>>> r0: 1 != 2
+>>>> r1: 1 != 2
+>>>> r2: 1 != 2
+>>>> r3: 1 != 2
+>>>> r4: 1 != 2
+>>>> r5: 1 != 2
+>>>> r6: 1 != 2
+>>>> r7: 1 != 2
+>>>> ymm0: 1/1 != 2/2
+>>>> ymm1: 1/1 != 2/2
+>>>> ymm2: 1/1 != 2/2
+>>>> ymm3: 1/1 != 2/2
+>>>> ymm4: 1/1 != 2/2
+>>>> ymm5: 1/1 != 2/2
+>>>> ymm6: 1/1 != 2/2
+>>>> ymm7: 1/1 != 2/2
+>>>> == FPU check routines: OK.
+>>>> == Threads: ... a lot of threads ...
+>>>> 30-16 rtuo_ufpp30-17 rtuo_ufpp30-18 rtuo_ufps30-19 rtuo_ufps30-20
+>>>> rtuo_ufpp_ufps30-21 rtuo_ufpp_ufps30-22 sleeper_ufpthread_create:
+>>>> Resource temporarily unavailable ps31-0 rtk31-1 rtk31-2 rtk_fp31-3
+>>>> rtk_fp31-4 rtk_fp_ufpp31-5 rtk_fp_ufpp31-6 rtup31-7 rtup31-8
+>>>> rtup_ufpp31-9 rtup_ufpp31-10 rtus
+>>>>
+>>>> followed by only 0s
+>>>>
+>>>> RTH|---------cpu|ctx switches|-------total
+>>>> RTD|           0|           0|           0
+>>>> RTD|           1|           0|           0
+>>>> RTD|           2|           0|           0
+>>>> RTD|           3|           0|           0
+>>>> RTD|           4|           0|           0
+>>>> RTD|           5|           0|           0
+>>>> RTD|           6|           0|           0
+>>>>
+>>>> So it gets a 
+>>>>
+>>>> sleeper_ufpthread_create: Resource temporarily unavailable
+>>>>
+>>>> but swallows that and keeps going. I think there might be a first
+>>>> issue with that error return not being dealt with.
+>>>>
+>>>> A second run get the "switchtest" stuck after crtl+c while the
+>>>> kernel starts complaining.
+>>>>
+>>>> [ 1229.072052] list_del corruption. prev->next should be
+>>>> ffffb24e46fb0548, but was ffffffff9a7356b0 [ 1229.072053]
+>>>> ------------[ cut here ]------------ [ 1229.072054] kernel BUG at
+>>>> lib/list_debug.c:51! [ 1229.072054] invalid opcode: 0000 [#1] SMP
+>>>> PTI IRQ_PIPELINE [ 1229.072054] CPU: 31 PID: 1857 Comm: switchtest
+>>>> Tainted: G            E     5.10.61-xenomai-1 #1 [ 1229.072055]
+>>>> Hardware name: secret [ 1229.072055] IRQ stage: Linux
+>>>> [ 1229.072055] RIP: 0010:__list_del_entry_valid.cold+0x31/0x47
+>>>> [ 1229.072056] Code: 99 32 9a e8 5f 0d ff ff 0f 0b 48 c7 c7 00 9a
+>>>> 32 9a e8 51 0d ff ff 0f 0b 48 89 b [ 1229.072057] RSP:
+>>>> 0018:ffffb24e4b5f7e30 EFLAGS: 00010046 [ 1229.072061] RAX:
+>>>> 0000000000000057 RBX: ffffb24e46fb04b0 RCX: 0000000000000000 [
+>>>> 1229.072062] RDX: 0000000000000000 RSI: ffffa10e9fd9bba0 RDI:
+>>>> ffffa10e9fd97b68 [ 1229.072064] RBP: 0000000000000000 R08:
+>>>> 0000000000000001 R09: 000000000000000f [ 1229.072066] R10:
+>>>> 000000000000000f R11: ffffa10e9fd97bd6 R12: 0000000000000000 [
+>>>> 1229.072069] R13: ffffa0ff488c7380 R14: 0000000000000000 R15:
+>>>> 0000000000000000 [ 1229.072072] FS:  00007f57e687bb80(0000)
+>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [ 1229.072074]
+>>>> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033 [ 1229.072076]
+>>>> CR2: 000055921bfa921c CR3: 00000001062fe002 CR4: 00000000001706e0
+>>>> [ 1229.072078] Call Trace: [ 1229.072080]
+>>>> xntimer_destroy+0x81/0x150 [ 1229.072082]
+>>>> __xnthread_cleanup+0x1e/0x2a0 [ 1229.072084]
+>>>> cobalt_handle_taskexit_event+0x1d/0x40 [ 1229.072086]
+>>>> do_exit+0xe1/0xab0 [ 1229.072088]  ?
+>>>> signal_wake_up_state+0x23/0x40 [ 1229.072090]
+>>>> do_group_exit+0x33/0xa0 [ 1229.072092]
+>>>> __x64_sys_exit_group+0x14/0x20 [ 1229.072111]
+>>>> do_syscall_64+0x3f/0x90 [ 1229.072113]
+>>>> entry_SYSCALL_64_after_hwframe+0x44/0xa9 [ 1229.072115] RIP:
+>>>> 0033:0x7f57e6948699 [ 1229.072117] Code: 00 4c 8b 05 f9 27 0f 00
+>>>> be e7 00 00 00 ba 3c 00 00 00 eb 12 0f 1f 44 00 00 89 0 [
+>>>> 1229.072119] RSP: 002b:00007ffcfbda0078 EFLAGS: 00000246
+>>>> ORIG_RAX: 00000000000000e7 [ 1229.072128] RAX: ffffffffffffffda
+>>>> RBX: 00007f57e6a3d610 RCX: 00007f57e6948699 [ 1229.072130] RDX:
+>>>> 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000001 [
+>>>> 1229.072132] RBP: 0000000000000001 R08: ffffffffffffff70 R09:
+>>>> 0000000000000001 [ 1229.072134] R10: 0000000000000005 R11:
+>>>> 0000000000000246 R12: 00007f57e6a3d610 [ 1229.072136] R13:
+>>>> 0000000000000002 R14: 00007f57e6a3dae8 R15: 0000000000000000 [
+>>>> 1229.072138] Modules linked in: md4(E) sha512_ssse3(E)
+>>>> sha512_generic(E) cmac(E) nls_utf8(E) cifs) [ 1229.072169]
+>>>> mei(E) soundcore(E) sysimgblt(E) sg(E) evdev(E) ioatdma(E)
+>>>> joydev(E) watchdog(E) ac) [ 1229.072185] ---[ end trace
+>>>> a1d1ac68468e74f0 ]--- [ 1229.072186] RIP:
+>>>> 0010:__list_del_entry_valid.cold+0x31/0x47 [ 1229.072187] Code:
+>>>> 99 32 9a e8 5f 0d ff ff 0f 0b 48 c7 c7 00 9a 32 9a e8 51 0d ff ff
+>>>> 0f 0b 48 89 b [ 1229.072187] RSP: 0018:ffffb24e4b5f7e30 EFLAGS:
+>>>> 00010046 [ 1229.072188] RAX: 0000000000000057 RBX:
+>>>> ffffb24e46fb04b0 RCX: 0000000000000000 [ 1229.072188] RDX:
+>>>> 0000000000000000 RSI: ffffa10e9fd9bba0 RDI: ffffa10e9fd97b68 [
+>>>> 1229.072189] RBP: 0000000000000000 R08: 0000000000000001 R09:
+>>>> 000000000000000f [ 1229.072189] R10: 000000000000000f R11:
+>>>> ffffa10e9fd97bd6 R12: 0000000000000000 [ 1229.072190] R13:
+>>>> ffffa0ff488c7380 R14: 0000000000000000 R15: 0000000000000000 [
+>>>> 1229.072190] FS:  00007f57e687bb80(0000)
+>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [ 1229.072190]
+>>>> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033 [ 1229.072191]
+>>>> CR2: 000055921bfa921c CR3: 00000001062fe002 CR4: 00000000001706e0
+>>>> [ 1229.072191] Fixing recursive fault but reboot is needed!
+>>>>
+>>>> I will look into that eventually. For now i just wanted to share
+>>>> what i have so far, maybe someone knows what is going on or can
+>>>> give a hint. function tracing was way too verbose to find the
+>>>> rootcause of that EBUSY.
+>>>>    
+>>>
+>>> EAGAIN, switchtest triggers this when many CPUs are available but
+>>> the system heap is too small (not enough space there to create
+>>> thread TCBs and other core objects). Normally, switchtest exits
+>>> properly after a while.  
+>>
+>> Ok maybe that changed kernel config did shrink the available heap,
+>> thanks for the hint.
+>>
+>> If it is an EAGAIN because of too little resources, maybe it should
+>> keep trying with less and less CPUs. And spit a warning like "could
+>> only run on 20 out of 32 cores".
+>> At least that would be my first idea for a patch in case it is that.
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 480a94768..2bf8eece3 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1017,6 +1017,7 @@ AC_CONFIG_FILES([ \
->  	utils/net/rtnet \
->  	utils/net/rtnet.conf \
->  	utils/net/Makefile \
-> +	utils/chkkconf/Makefile \
->  	demo/Makefile \
->  	demo/posix/Makefile \
->  	demo/posix/cyclictest/Makefile \
-> diff --git a/doc/asciidoc/Makefile.am b/doc/asciidoc/Makefile.am
-> index 8e33c7281..2bacb7c10 100644
-> --- a/doc/asciidoc/Makefile.am
-> +++ b/doc/asciidoc/Makefile.am
-> @@ -7,6 +7,7 @@ HTML_DOCS = 					\
->  	html/asciidoc-icons			\
->  	html/asciidoc-icons/callouts		\
->  	html/man1/autotune			\
-> +	html/man1/chkkconf			\
->  	html/man1/clocktest			\
->  	html/man1/corectl			\
->  	html/man1/dohell			\
-> @@ -36,6 +37,7 @@ TXT_DOCS =				\
->  
->  MAN1_DOCS = 			\
->  	man1/autotune.1		\
-> +	man1/chkkconf.1 	\
->  	man1/clocktest.1 	\
->  	man1/corectl.1	 	\
->  	man1/cyclictest.1 	\
-> diff --git a/doc/asciidoc/man1/chkkconf.adoc b/doc/asciidoc/man1/chkkconf.adoc
-> new file mode 100644
-> index 000000000..46debae63
-> --- /dev/null
-> +++ b/doc/asciidoc/man1/chkkconf.adoc
-> @@ -0,0 +1,106 @@
-> +// ** The above line should force tbl to be a preprocessor **
-> +// Man page for corectl
-> +//
-
-I think we have...
-
-> +// Copyright (C) 2015 Philippe Gerum <rpm@xenomai.org>
-> +//
-> +// You may distribute under the terms of the GNU General Public
-> +// License as specified in the file COPYING that comes with the
-> +// Xenomai distribution.
-> +//
-> +//
-> +AUTOTUNE(1)
-
-...a couple of copy&paste mistakes here. In fact, in-tree
-doc/asciidoc/man1/corectl.adoc has a similiar problem.
-
-> +==========
-> +:doctype: manpage
-> +:revdate: 2021/09/23
-> +:man source: Xenomai
-> +:man version: {xenover}
-> +:man manual: Xenomai Manual
-> +
-> +NAME
-> +----
-> +chkkconf - Check kernel .config
-> +
-> +SYNOPSIS
-> +---------
-> +*chkkconf* [ options ]
-> +
-> +DESCRIPTION
-> +------------
-> +*chkkconf* is a utility to check kernel .config for common issues
-> +which may increase latency.
-
-I think the tool itself is not limited to latency checks per se. It's
-the default check list that makes Xenomai/Dovetail-specific latency
-checks, right?
-
-As the tool has a Xenomai list built in, it would be good to mention
-that in the documentation. Alternatively, we could define and install
-some default checklist file under a neutral name and make that
-Xenomai-specific in the context of the installation via Xenomai.
-
-> +
-> +OPTIONS
-> +--------
-> +*chkkconf* accepts the following options:
-> +
-> +*--file*:: Specify a regular .config file. If none is specified,
-> +the command defaults to reading /proc/config.gz on the current
-> +machine. If this fails because any of CONFIG_IKCONFIG or
-> +CONFIG_IKCONFIG_PROC was disabled in the running kernel, the
-> +command fails.
-> +
-> +*--check-list*:: Specify a file that contains a series of single-line
-> +assertions which are tested against the contents of the kernel
-> +configuration. Each assertion follows the BNF-like syntax below:
-> +
-> +- assertion   : expr conditions
-> +            | "!" expr conditions
-> +
-> +- expr        : symbol /* matches =y and =m */
-> +            | symbol "=" tristate
-> +
-> +- tristate  : "y"
-> +          | "m"
-> +          | "n"
-> +
-> +- conditions  : dependency
-> +            | dependency arch
-> +
-> +- dependency  : "if" symbol       /* true if set as y/m */
-> +
-> +- arch        : "on" cputype
-> +
-> +- cputype     : $(uname -m)
-> +
-> +For instance:
-> +
-> +- CONFIG_FOO must be set whenever CONFIG_BAR is unset can be written as
-> +CONFIG_FOO if !CONFIG_BAR.
-> +
-> +- CONFIG_FOO must not be set can be written as !CONFIG_FOO, or
-> +conversely CONFIG_FOO=n.
-> +
-> +- CONFIG_FOO must be built as module on aarch32 or aarch64 can be
-> +written as CONFIG_FOO=m on aarch.
-> +
-> +- CONFIG_FOO must not be built-in on aarch64 if CONFIG_BAR is set can be
-> +written as !CONFIG_FOO=y if CONFIG_BAR on aarch.
-> +
-> +Assertions in the check list may apply to a particular CPU architecture.
-> +Normally, the command should be able to figure out which architecture
-> +the kernel configuration file applies to by inspecting the first lines,
-> +looking for the “Linux/” pattern. However, you might have to specify
-> +this information manually to the command using the -a option if the file
-> +referred to by the -f option does not contain such information.
-> +The architecture name (cputype) should match the output of $(uname -m)
-> +or some abbreviated portion of it. However, arm64 and arm are automatically
-> +translated to aarch64 and aarch32 when found in an assertion or passed to
-> +the -a option.
-> +
-> +*--arch*:: Specify CPU architecture that you want to check for.
-> +
-> +*--hash-size*:: Set the hash table size.
-> +
-> +*--quiet*:: Suppress output.
-> +
-> +*--help*::
-> +Display a short help.
-> +
-> +VERSIONS
-> +--------
-> +*chkkconf* appeared in Xenomai 3.2 for checking kernel .config.
-> +
-> +AUTHOR
-> +-------
-> +*chkkconf* was written by Philippe Gerum <rpm@xenomai.org> and ported
-> +by Hongzhan Chen <hongzhan.chen@intel.com> from xenomai4.
-> diff --git a/utils/Makefile.am b/utils/Makefile.am
-> index 81dbfda7c..4de6434a9 100644
-> --- a/utils/Makefile.am
-> +++ b/utils/Makefile.am
-> @@ -2,3 +2,4 @@ SUBDIRS = hdb
->  if XENO_COBALT
->  SUBDIRS += analogy autotune can net ps slackspot corectl
->  endif
-> +SUBDIRS += chkkconf
-> diff --git a/utils/chkkconf/Makefile.am b/utils/chkkconf/Makefile.am
-> new file mode 100644
-> index 000000000..81fe8e982
-> --- /dev/null
-> +++ b/utils/chkkconf/Makefile.am
-> @@ -0,0 +1,19 @@
-> +
-> +data_DATA = kconf-checklist.xeno
-> +
-> +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-> +
-> +sbin_PROGRAMS = chkkconf
-> +
-> +chkkconf_SOURCES = checkconfig.c
-> +
-> +chkkconf_CPPFLAGS = 		\
-> +	$(XENO_USER_CFLAGS)	\
-> +	-I$(top_srcdir)/include
-> +
-> +chkkconf_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
-> +
-> +chkkconf_LDADD =					\
-> +	 @XENO_CORE_LDADD@			\
-> +	 @XENO_USER_LDADD@			\
-> +	-lpthread -lrt
-> diff --git a/utils/chkkconf/checkconfig.c b/utils/chkkconf/checkconfig.c
-> new file mode 100644
-> index 000000000..bce87f8b3
-> --- /dev/null
-> +++ b/utils/chkkconf/checkconfig.c
-> @@ -0,0 +1,356 @@
-> +/*
-> + * SPDX-License-Identifier: MIT
-> + *
-> + * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
-> + */
-> +
-> +#include <unistd.h>
-> +#include <getopt.h>
-> +#include <stdbool.h>
-> +#include <ctype.h>
-> +#include <stdlib.h>
-> +#include <stdio.h>
-> +#include <string.h>
-> +#include <search.h>
-> +#include <error.h>
-> +#include <errno.h>
-> +#include <sys/utsname.h>
-> +
-> +#define DEFAULT_KCONFIG    "/proc/config.gz"
-> +#define DEFAULT_CHECKLIST  "/usr/xenomai/share/kconf-checklist.xeno"
-> +
-> +#define short_optlist "@hqf:L:a:H:"
-> +
-> +static int hash_size = 16384;
-> +
-> +static bool quiet;
-> +
-> +static const struct option options[] = {
-> +	{
-> +		.name = "file",
-> +		.has_arg = required_argument,
-> +		.val = 'f',
-> +	},
-> +	{
-> +		.name = "check-list",
-> +		.has_arg = required_argument,
-> +		.val = 'L',
-> +	},
-> +	{
-> +		.name = "arch",
-> +		.has_arg = required_argument,
-> +		.val = 'a',
-> +	},
-> +	{
-> +		.name = "hash-size",
-> +		.has_arg = required_argument,
-> +		.val = 'H',
-> +	},
-> +	{
-> +		.name = "quiet",
-> +		.has_arg = no_argument,
-> +		.val = 'q',
-> +	},
-> +	{
-> +		.name = "help",
-> +		.has_arg = no_argument,
-> +		.val = 'h',
-> +	},
-> +	{ /* Sentinel */ }
-> +};
-> +
-> +static char *hash_config(FILE *kconfp)
-> +{
-> +	char buf[BUFSIZ], *sym, *val, *arch = NULL;
-> +	ENTRY entry, *e;
-> +	int ret;
-> +
-> +	ret = hcreate(hash_size);
-> +	if (!ret)
-> +		error(1, errno, "hcreate(%d)", hash_size);
-> +
-> +	while (fgets(buf, sizeof(buf), kconfp)) {
-> +		if (*buf == '#') {
-> +			sscanf(buf, "# Linux/%m[^ ]", &arch);
-> +			continue;
-> +		}
-> +		ret = sscanf(buf, "%m[^=]=%ms\n", &sym, &val);
-> +		if (ret != 2)
-> +			continue;
-> +		if (strncmp(sym, "CONFIG_", 7))
-> +			continue;
-> +		if (strcmp(val, "y") && strcmp(val, "m"))
-> +			continue;
-> +		entry.key = sym;
-> +		entry.data = NULL;
-> +		e = hsearch(entry, FIND);
-> +		if (e)
-> +			continue; /* uhh? */
-> +		entry.data = val;
-> +		if (!hsearch(entry, ENTER))
-> +			error(1, ENOMEM, "h-table full -- try -H");
-> +	}
-> +
-> +	return arch;
-> +}
-> +
-> +static char *next_token(char **next)
-> +{
-> +	char *p = *next, *s;
-> +
-> +	for (;;) {
-> +		if (!*p) {
-> +			*next = p;
-> +			return strdup("");
-> +		}
-> +		if (!isspace(*p))
-> +			break;
-> +		p++;
-> +	}
-> +
-> +	s = p;
-> +
-> +	if (!isalnum(*p) && *p != '_') {
-> +		*next = p + 1;
-> +		return strndup(s, 1);
-> +	}
-> +
-> +	do {
-> +		if (!isalnum(*p) && *p != '_') {
-> +			*next = p;
-> +			return strndup(s, p - s);
-> +		}
-> +	} while (*++p);
-> +
-> +	*next = p;
-> +
-> +	return strdup(s);
-> +}
-> +
-> +static const char *get_arch_alias(const char *arch)
-> +{
-> +	if (!strcmp(arch, "arm64"))
-> +		return "aarch64";
-> +
-> +	if (!strcmp(arch, "arm"))
-> +		return "aarch32";
-> +
-> +	return arch;
-> +}
-> +
-> +static int apply_checklist(FILE *checkfp, const char *cpuarch)
-> +{
-> +	char buf[BUFSIZ], *token, *next, *sym, *val;
-> +	int lineno = 0, failed = 0;
-> +	bool not, notcond;
-> +	const char *arch;
-> +	ENTRY entry, *e;
-> +
-> +	while (fgets(buf, sizeof(buf), checkfp)) {
-> +		lineno++;
-> +		next = buf;
-> +
-> +		token = next_token(&next);
-> +		if (!*token || !strcmp(token, "#")) {
-> +			free(token);
-> +			continue;
-> +		}
-> +
-> +		not = *token == '!';
-> +		if (not) {
-> +			free(token);
-> +			token = next_token(&next);
-> +		}
-> +
-> +		sym = token;
-> +		if (strncmp(sym, "CONFIG_", 7))
-> +			error(1, EINVAL,
-> +				"invalid check list symbol '%s' at line %d",
-> +				sym, lineno);
-> +
-> +		token = next_token(&next);
-> +		val = NULL;
-> +		if (*token == '=') {
-> +			free(token);
-> +			val = next_token(&next);
-> +			token = next_token(&next);
-> +		}
-> +
-> +		if (!strcmp(token, "if")) {
-> +			free(token);
-> +			token = next_token(&next);
-> +			notcond = *token == '!';
-> +			if (notcond) {
-> +				free(token);
-> +				token = next_token(&next);
-> +			}
-> +			if (strncmp(token, "CONFIG_", 7))
-> +				error(1, EINVAL,
-> +					"invalid condition symbol '%s' at line %d",
-> +					token, lineno);
-> +			entry.key = token;
-> +			entry.data = NULL;
-> +			e = hsearch(entry, FIND);
-> +			free(token);
-> +			if (!((e && !notcond) || (!e && notcond)))
-> +				continue;
-> +			token = next_token(&next);
-> +		}
-> +
-> +		if (!strcmp(token, "on")) {
-> +			free(token);
-> +			token = next_token(&next);
-> +			arch = get_arch_alias(token);
-> +			if (strncmp(cpuarch, arch, strlen(arch))) {
-> +				free(token);
-> +				continue;
-> +			}
-> +		}
-> +
-> +		free(token);
-> +
-> +		entry.key = sym;
-> +		entry.data = NULL;
-> +		e = hsearch(entry, FIND);
-> +
-> +		if (val && !strcmp(val, "n"))
-> +			not = !not;
-> +
-> +		if (e && (not || (val && strcmp(val, e->data)))) {
-> +			if (!quiet)
-> +				printf("%s=%s\n", sym, (const char *)e->data);
-> +			failed++;
-> +		} else if (!e && !not) {
-> +			if (!quiet)
-> +				printf("%s=n\n", sym);
-> +			failed++;
-> +		}
-> +
-> +		free(sym);
-> +		if (val)
-> +			free(val);
-> +	}
-> +
-> +	return failed;
-> +}
-> +
-> +static void usage(char *arg0)
-> +{
-> +	fprintf(stderr, "usage: %s [options]:\n", basename(arg0));
-> +	fprintf(stderr, "-f --file=<.config>     Kconfig file to check [=/proc/config.gz]\n");
-> +	fprintf(stderr, "-L --check-list=<file>  configuration check list [=$datarootdir/kconf-checklist.xeno]\n");
-> +	fprintf(stderr, "-a --arch=<cpuarch>     CPU architecture assumed\n");
-> +	fprintf(stderr, "-H --hash-size=<N>      set the hash table size [=16384]\n");
-> +	fprintf(stderr, "-q --quiet              suppress output\n");
-> +	fprintf(stderr, "-h --help               this help\n");
-> +}
-> +
-> +int main(int argc, char *const argv[])
-> +{
-> +	const char *kconfig = DEFAULT_KCONFIG, *check_list = NULL,
-> +		*defarch, *arch = NULL, *p;
-> +	FILE *kconfp, *checkfp;
-> +	struct utsname ubuf;
-> +	int c, ret;
-> +	char *cmd;
-> +
-> +	opterr = 0;
-> +
-> +	for (;;) {
-> +		c = getopt_long(argc, argv, short_optlist, options, NULL);
-> +		if (c == EOF)
-> +			break;
-> +
-> +		switch (c) {
-> +		case 0:
-> +			break;
-> +		case 'f':
-> +			kconfig = optarg;
-> +			break;
-> +		case 'L':
-> +			check_list = optarg;
-> +			break;
-> +		case 'a':
-> +			arch = optarg;
-> +			break;
-> +		case 'H':
-> +			hash_size = atoi(optarg);
-> +			if (hash_size < 16384)
-> +				hash_size = 16384;
-> +			break;
-> +		case 'q':
-> +			quiet = true;
-> +			break;
-> +		case 'h':
-> +			usage(argv[0]);
-> +			return 0;
-> +		case '@':
-> +			printf("check kernel configuration\n");
-> +			return 0;
-> +		default:
-> +			usage(argv[0]);
-> +			return 1;
-> +		}
-> +	}
-> +
-> +	if (optind < argc) {
-> +		usage(argv[0]);
-> +		return 1;
-> +	}
-> +
-> +	/*
-> +	 * We may be given a gzipped input file. Finding gunzip on a
-> +	 * minimalist rootfs (e.g. busybox) may be more likely than
-> +	 * having the zlib development files available from a common
-> +	 * cross-toolchain. So go for popen-ing gunzip on the target
-> +	 * instead of depending on libz on the development host.
-> +	 */
-> +	if (!strcmp(kconfig, "-")) {
-> +		kconfp = stdin;
-> +	} else {
-> +		p = strstr(kconfig, ".gz");
-> +		if (!p || strcmp(p, ".gz")) {
-> +			kconfp = fopen(kconfig, "r");
-> +		} else {
-> +			if (access(kconfig, R_OK))
-> +				error(1, errno, "cannot access %s%s",
-> +					kconfig,
-> +					strcmp(kconfig, DEFAULT_KCONFIG) ? "" :
-> +					"\n(you need CONFIG_IKCONFIG_PROC enabled)");
-> +			ret = asprintf(&cmd, "gunzip -c %s", kconfig);
-> +			if (ret < 0)
-> +				error(1, ENOMEM, "asprintf()");
-> +			kconfp = popen(cmd, "r");
-> +			free(cmd);
-> +		}
-> +		if (kconfp == NULL)
-> +			error(1, errno, "cannot open %s for reading", kconfig);
-> +	}
-> +
-> +	defarch = hash_config(kconfp);
-> +
-> +	if (check_list == NULL)
-> +		check_list = DEFAULT_CHECKLIST;
-> +
-> +	if (access(check_list, R_OK))
-> +		error(1, errno, "cannot access %s", check_list);
-> +
-> +	checkfp = fopen(check_list, "r");
-> +	if (checkfp == NULL)
-> +		error(1, errno, "cannot open %s for reading", check_list);
-> +
-> +	if (arch == NULL) {
-> +		if (defarch) {
-> +			arch = get_arch_alias(defarch);
-> +		} else {
-> +			ret = uname(&ubuf);
-> +			if (ret)
-> +				error(1, errno, "utsname()");
-> +			arch = ubuf.machine;
-> +		}
-> +	} else {
-> +		arch = get_arch_alias(arch);
-> +	}
-> +
-> +	return apply_checklist(checkfp, arch);
-> +}
-> diff --git a/utils/chkkconf/kconf-checklist.xeno b/utils/chkkconf/kconf-checklist.xeno
-> new file mode 100644
-> index 000000000..0f7071309
-> --- /dev/null
-> +++ b/utils/chkkconf/kconf-checklist.xeno
-> @@ -0,0 +1,50 @@
-> +# Kconfig check list for dovetail-based xenomai
-> +#
-> +# This file contains assertions testing a set of configuration
-> +# settings from a kernel .config file, which are fed to evl-check.
-> +# Any failed assertion is reported.
-> +#
-> +#
-> +# check_list  : assertion
-> +# 	      | check_list assertion
-> +#
-> +# assertion   : expr conditions
-> +# 	      | "!" expr conditions
-> +#
-> +# expr	    : symbol /* matches =y and =m */
-> +# 	    | symbol "=" tristate
-> +#
-> +# tristate  : "y"
-> +# 	    | "m"
-> +# 	    | "n"
-> +#
-> +# conditions  : dependency
-> +# 	      | dependency arch
-> +#
-> +# dependency  : "if" symbol	/* true if set as y/m */
-> +#
-> +# arch	    : "on" cputype
-> +#
-> +# cputype   : $(uname -m)
-> +#
-> +# <arch> should match $(uname -m) or some abbreviated portion
-> +# of it.
-> +#
-> +# e.g.
-> +# "CONFIG_FOO must be set whenever CONFIG_BAR is UNset"
-> +# translates to: CONFIG_FOO if !CONFIG_BAR
-> +# "CONFIG_FOO must not be set"
-> +# translates to: !CONFIG_FOO, or conversely CONFIG_FOO=n
-> +# "CONFIG_FOO must be built as module on aarch32 or aarch64"
-> +# translates to: CONFIG_FOO=m on aarch
-> +
-> +CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y if CONFIG_CPU_FREQ
-> +CONFIG_DEBUG_HARD_LOCKS=n
-> +CONFIG_ACPI_PROCESSOR_IDLE=n
-> +CONFIG_LOCKDEP=n
-> +CONFIG_DEBUG_LIST=n
-> +CONFIG_DEBUG_VM=n
-> +CONFIG_DEBUG_PER_CPU_MAPS=n
-> +CONFIG_KASAN=n
-> +CONFIG_DEBUG_ENTRY=n
-> +CONFIG_FTRACE=n
+> The test runs just fine when reducing the number of cores to run on. In
+> fact it was one too many ;)
+> 
+> good
+> ./switchtest -T 5 --cpu-affinity=0-30
+> bad (where affinity includes all cpus)
+> ./switchtest -T 5 --cpu-affinity=0-31
+> 
+>>> The kernel splat looks like some issue on the error path which might
+>>> not have been observed yet (maybe triggered by ^C while switchtest
+>>> was unwinding).  
+>>
+>> I saw exactly that in probably three attempts. First switchtest killed
+>> with ctrl+c when the 0s come ... never any fun kernel message. But
+>> always fun kernel message when the second run was interrupted. So i
+>> would be tempted to call that reproducible and not a one-time bad
+>> timing.
+> 
+> But when running the bad case two times in a row, it will always
+> 
+> kernel BUG at lib/list_debug.c:51!
+> 
+> Even when none of the two runs was interrupted by ctrl+c.
 > 
 
-Does this already reflect everything we have in our Kconfig menus so far?
-
-That said, this is sure a valuable addition!
+So, the main issue was solved by increasing resources, but we still have
+a problem with handling errors gracefully - is that the correct summary
+of this issue? Or where are we standing with this?
 
 Jan
 
