@@ -1,12 +1,13 @@
+Subject: Re: rt_pipe_read(): timeout does not expire
+References: <25ffc50c-94ab-d09a-fd2c-e2d04f18a185@tin.it>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d10d2469-b6fe-87ea-7506-cf43f75d8023@siemens.com>
+Date: Tue, 5 Oct 2021 18:00:30 +0200
 MIME-Version: 1.0
-References: <CAK6DXL2cWYOuFMHkm6tdzxcRzKehgnKyzTF1iid63QOVBQgLNw@mail.gmail.com>
- <31054073-d935-3218-9985-9b68aac0ebf7@siemens.com>
-In-Reply-To: <31054073-d935-3218-9985-9b68aac0ebf7@siemens.com>
-From: Marco Barletta <barlettamarco8@gmail.com>
-Date: Tue, 5 Oct 2021 17:33:07 +0200
-Message-ID: <CAK6DXL385hOFto37fCFNmYyU7kDqWVoK970p5z6Fp3P9zi4w1Q@mail.gmail.com>
-Subject: Re: RTnet failed setup
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <25ffc50c-94ab-d09a-fd2c-e2d04f18a185@tin.it>
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,112 +16,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "Mauro S." <mau.salvi@tin.it>, xenomai@xenomai.org
 
-I changed my setup to avoid time problems: I went bare metal with two
-machines with e1000e driver (I217-LM controller) with linux 5.4.77, xenomai
-3.1.1. I managed to got a RTcfg handshake between the two machines, however
-I got that after the "ready" packet from both master and slave, no more
-sync frame are received and after 30-40 seconds it starts logging "failed
-to transmit sync frame", because of full rtskbs. It seems buffers become
-full of sync packet never transmitted. It also seems to detect a connection
-dead (anyway no connection dead packet is detected in wireshark) end in
-wireshark there is no heartbeat packet. May be a related problem that after
-the ready stage the TX IRQ come disabled? I tried also with a e100 card and
-with the e100 as master the handshake is not completed, while with the card
-as a slave I see an arp reply packet that I couldn't see with the e1000e.
-Anyaway after the ready in both cases no packet is received. I saw on the
-mailing list someone had a similar problems with RTAI a few years ago, but
-the resolution was not clear. Moreover I sometime can read that the slave
-receives a wrong version RTmac packet (0x2 expected 0x0, or viceversa).
-You will encounter similar mails from mine in the mailing list, just trash
-it, this is the up to date state.
-Thanks a lot for helping
+On 25.09.21 18:20, Mauro S. via Xenomai wrote:
+> Hi all,
+>=20
+> I'm using Xenomai 3.1.1 in cobalt mode, on x84_64.
+>=20
+> Please consider the attached simple test code.
+>=20
+> When I start the application, I never see the "Pipe task running" printf.
+>=20
+> When I close application (ctrl+c), rt_pipe_join() on pipe task hangs.
+>=20
+> Analyzing the code with gdb, the timeout in tv structure inside
+> rt_pipe_read_timed() is the following
+>=20
+> (gdb) thread 13
+> [Switching to thread 13 (Thread 0x7ffff7189700 (LWP 528))]
+> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
+> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
+> 250=A0=A0=A0 rtdm.c: No such file or directory.
+> (gdb) bt
+> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
+> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
+> #1=A0 0x00007ffff7f89e11 in __cobalt_recvfrom (fd=3D3,
+> buf=3Dbuf@entry=3D0x7ffff7188d60, len=3Dlen@entry=3D4, flags=3D0,
+> from=3Dfrom@entry=3D0x0,
+> =A0=A0=A0 fromlen=3Dfromlen@entry=3D0x0) at rtdm.c:343
+> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
+> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
+> =A0=A0=A0 at pipe.c:423
+> #3=A0 0x00005555555555c0 in rt_pipe_read (pipe=3D0x555555558150 <MyPipe>,
+> buf=3D0x7ffff7188d60, size=3D4, timeout=3D500000)
+> =A0=A0=A0 at
+> /opt/smitec/3.1.5_SDK/sysroots/corei7-64-poky-linux/usr/include/xenomai/a=
+lchemy/pipe.h:72
+>=20
+> #4=A0 0x00005555555556d4 in MyPipeFun (arg=3D0x0) at test_resume_pipe.c:55
+> #5=A0 0x00007ffff7fc196a in task_entry (arg=3D0x7ffff732ddc8) at task.c:2=
+37
+> #6=A0 task_entry (arg=3D0x7ffff732ddc8) at task.c:219
+> #7=A0 0x00007ffff7faaca9 in thread_trampoline
+> (arg=3Darg@entry=3D0x7fffffffe9c0) at internal.c:251
+> #8=A0 0x00007ffff7f8b93e in cobalt_thread_trampoline (p=3D0x7fffffffe820)=
+ at
+> thread.c:123
+> #9=A0 0x00007ffff7f58ea4 in start_thread (arg=3D<optimized out>) at
+> pthread_create.c:477
+> #10 0x00007ffff7e7edcf in clone () at
+> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+> (gdb) frame 2
+> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
+> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
+> =A0=A0=A0 at pipe.c:423
+> 423=A0=A0=A0 pipe.c: No such file or directory.
+> (gdb) print tv
+> $1 =3D {tv_sec =3D 1438, tv_usec =3D 783700}
+>=20
+> It seems a value related to uptime (system was up by about 24 minutes,
+> 1440 seconds, when debugging).
 
-Il giorno mar 5 ott 2021 alle ore 16:15 Jan Kiszka <jan.kiszka@siemens.com>
-ha scritto:
+Right, Xenomai's CLOCK_REALTIME starts at system boot, not at the epoch.
+That's at least true for I-pipe deployments.
 
-> On 18.09.21 16:55, Marco Barletta via Xenomai wrote:
-> > Hi everyone;
-> > since my NIC is not supported by rt_e1000e I wanted to test the RTnet
-> setup
-> > on a couple of VMs talking to each other. I created a NAT network (
-> > 10.0.2.0/24) and I attached the two VMs on it. Emulated controller is a
-> > Intel 82540EM with e1000. The test with the loopback device works fine,
-> > but when I try to make the multi node test something fails. The rteth0
-> > device is correctly brought up on both the VMs, however the rtnet start
-> > command stucks at  "waiting for slaves..." master side and "searching for
-> > master" on slave side. Obviously they can't exchange packets but I don't
-> > know why. In dmesg I get
-> > [ 1652.922885] RTnet: registered rteth0
-> > [ 1652.922888] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network
-> > Connection
-> > [ 1652.930730] rt_loopback: initializing loopback interface...
-> > [ 1652.930764] RTnet: registered rtlo
-> > [ 1652.935057] RTcfg: init real-time configuration distribution protocol
-> > [ 1652.938784] RTmac: init realtime media access control
-> > [ 1652.942199] RTmac/TDMA: init time division multiple access control
-> > mechanism
-> > [ 1654.983533] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
-> Full
-> > Duplex
-> > [ 1730.758684] TDMA: Failed to transmit sync frame!
-> > [ 1730.758848] TDMA: Failed to transmit sync frame!
-> > [ 1805.723757] TDMA: Failed to transmit sync frame!
-> > [ 1805.723774] TDMA: Failed to transmit sync frame!
-> > [ 1805.723777] TDMA: Failed to transmit sync frame!
-> > [ 1805.723779] TDMA: Failed to transmit sync frame!
-> > [ 1805.723781] TDMA: Failed to transmit sync frame!
-> > [ 1805.723783] TDMA: Failed to transmit sync frame!
-> > [ 1805.723785] TDMA: Failed to transmit sync frame!
-> >
-> > and on the other side I noticed in dmesg
-> > [ 1625.966260] RTnet: dropping packet in rtnetif_rx()
-> > [ 1625.966262] RTnet: dropping packet in rtnetif_rx()
-> > [ 1625.966263] RTnet: dropping packet in rtnetif_rx()
-> > [ 1625.966265] RTnet: dropping packet in rtnetif_rx()
-> >
-> > If I try a manual rtping after the rtroute I get "ioctl: Resource
-> > temporarily unavailable" and in dmesg
-> > [   72.314451] hard_start_xmit returned -11.
-> > Can someone help me to understand what is going on?
-> >
->
-> A common cause for such an error pattern is that the (TX) IRQ is not
-> working, thus packets are not released after submission. Check that
-> first. What's your Xenomai/kernel version?
->
-> Jan
->
-> > rtconf files are:
-> >
-> > RT_DRIVER="rt_e1000"
-> > RT_DRIVER_OPTIONS=""
-> > REBIND_RT_NICS="0000:00:03.0"
-> > IPADDR="10.0.2.4"
-> > NETMASK="255.255.255.0"
-> > RT_LOOPBACK="yes"
-> > RT_PROTOCOLS="udp packet"
-> > RTCAP="no"
-> > STAGE_2_SRC=""
-> > STAGE_2_DST=""
-> > STAGE_2_CMDS=""
-> > TDMA_MODE="master"
-> > TDMA_SLAVES="10.0.2.15"
-> > TDMA_CYCLE="5000"
-> > TDMA_OFFSET="200"
-> >
-> > for master and the same with slave instead of master and ipaddr=10.0.2.15
-> > for slave. VMs run Linux mint 20.1 5.4.77 patched with 3.1
-> > Thank you for helping.
-> >
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
+>=20
+> The API documentation says that rt_pipe_read() accepts "a delay
+> expressed in clock ticks". In Xenomai code, rt_pipe_read() becomes
+> rt_pipe_read_timed(), that accepts "An absolute date expressed in clock
+> ticks", with a note saying "abs_timeout is interpreted as a multiple of
+> the Alchemy clock resolution" (I dont' understand this latter sentence).
+>=20
 
+The Alchemy clock may not simply tick in single nanoseconds but may have
+a courser resolution. That's why there is rt_timer_ns2ticks which you
+are already using.
 
--- 
-Marco Barletta
+> If I'm not wrong, the "absolute date" would be a date expressed in
+> seconds after the epoch. Could the alchemy_rel_timeout() call in
+> include/alchemy/pipe.h calculate a wrong timeout?
+> Otherwise, what could be the problem?
+
+Cannot say yet, but I can confirm seeing the issue (too long timeout) as
+well. Did you try to debug further already?
+
+I'm also seeing lots of warnings with -Wconversion that are caused by
+Xenomai. Adding an issue to our backlog.
+
+Jan
+
+--=20
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
