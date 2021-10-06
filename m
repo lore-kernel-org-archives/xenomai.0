@@ -1,13 +1,15 @@
-Subject: Re: timer.h in rtdm module
-References: <CA+K1mPG_JcR26PUBNrB9_g9q1ifCJYJmDu6eJ-E+e6Y-6iAnXw@mail.gmail.com>
+Subject: Re: rt_pipe_read(): timeout does not expire
+References: <25ffc50c-94ab-d09a-fd2c-e2d04f18a185@tin.it>
+ <d10d2469-b6fe-87ea-7506-cf43f75d8023@siemens.com>
+ <c76efd4f-af8a-c7a7-054f-bf47cc358f6c@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d319441e-7fac-b61e-501c-f24b81ab2d6d@siemens.com>
-Date: Wed, 6 Oct 2021 12:25:21 +0200
+Message-ID: <f4c9ce98-3ce9-84aa-eb02-eebf3f76d716@siemens.com>
+Date: Wed, 6 Oct 2021 12:26:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPG_JcR26PUBNrB9_g9q1ifCJYJmDu6eJ-E+e6Y-6iAnXw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <c76efd4f-af8a-c7a7-054f-bf47cc358f6c@siemens.com>
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +18,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: "Mauro S." <mau.salvi@tin.it>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-On 06.10.21 09:40, C Smith via Xenomai wrote:
-> I have a legacy RTDM driver I am trying to port from Xenomai 2.6 to 3.1. I
-> am attempting to include the /usr/xenomai/include/trank headers. My app
-> uses some Alchemy API as well as RTDM API. In particular, rt_timer_read()
-> seems to require Alchemy. But when my code does
-> #include <native/timer.h>
-> I get this compiler error:
-> In file included from /home/csmith/src/app3-prog/modules/myapp.c:19:
-> /usr/xenomai/include/trank/native/timer.h:21:10: fatal error: errno.h: No
-> such file or directory
-> 
-> I compiled with make V=1 and I will show you the whole gcc command line
-> (sorry it's long):
-> 
-> gcc -Wp,-MD,/home/csmith/src/app3-prog/ecl/modules/.myapp.o.d  -nostdinc
-> -isystem /usr/lib/gcc/x86_64-redhat-linux/8/include -I./arch/x86/include
+On 06.10.21 09:00, Jan Kiszka via Xenomai wrote:
+> On 05.10.21 18:00, Jan Kiszka via Xenomai wrote:
+>> On 25.09.21 18:20, Mauro S. via Xenomai wrote:
+>>> Hi all,
+>>>
+>>> I'm using Xenomai 3.1.1 in cobalt mode, on x84_64.
+>>>
+>>> Please consider the attached simple test code.
+>>>
+>>> When I start the application, I never see the "Pipe task running" print=
+f.
+>>>
+>>> When I close application (ctrl+c), rt_pipe_join() on pipe task hangs.
+>>>
+>>> Analyzing the code with gdb, the timeout in tv structure inside
+>>> rt_pipe_read_timed() is the following
+>>>
+>>> (gdb) thread 13
+>>> [Switching to thread 13 (Thread 0x7ffff7189700 (LWP 528))]
+>>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
+>>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
+>>> 250=A0=A0=A0 rtdm.c: No such file or directory.
+>>> (gdb) bt
+>>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
+>>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
+>>> #1=A0 0x00007ffff7f89e11 in __cobalt_recvfrom (fd=3D3,
+>>> buf=3Dbuf@entry=3D0x7ffff7188d60, len=3Dlen@entry=3D4, flags=3D0,
+>>> from=3Dfrom@entry=3D0x0,
+>>> =A0=A0=A0 fromlen=3Dfromlen@entry=3D0x0) at rtdm.c:343
+>>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
+>>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
+>>> =A0=A0=A0 at pipe.c:423
+>>> #3=A0 0x00005555555555c0 in rt_pipe_read (pipe=3D0x555555558150 <MyPipe=
+>,
+>>> buf=3D0x7ffff7188d60, size=3D4, timeout=3D500000)
+>>> =A0=A0=A0 at
+>>> /opt/smitec/3.1.5_SDK/sysroots/corei7-64-poky-linux/usr/include/xenomai=
+/alchemy/pipe.h:72
+>>>
+>>> #4=A0 0x00005555555556d4 in MyPipeFun (arg=3D0x0) at test_resume_pipe.c=
+:55
+>>> #5=A0 0x00007ffff7fc196a in task_entry (arg=3D0x7ffff732ddc8) at task.c=
+:237
+>>> #6=A0 task_entry (arg=3D0x7ffff732ddc8) at task.c:219
+>>> #7=A0 0x00007ffff7faaca9 in thread_trampoline
+>>> (arg=3Darg@entry=3D0x7fffffffe9c0) at internal.c:251
+>>> #8=A0 0x00007ffff7f8b93e in cobalt_thread_trampoline (p=3D0x7fffffffe82=
+0) at
+>>> thread.c:123
+>>> #9=A0 0x00007ffff7f58ea4 in start_thread (arg=3D<optimized out>) at
+>>> pthread_create.c:477
+>>> #10 0x00007ffff7e7edcf in clone () at
+>>> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+>>> (gdb) frame 2
+>>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
+>>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
+>>> =A0=A0=A0 at pipe.c:423
+>>> 423=A0=A0=A0 pipe.c: No such file or directory.
+>>> (gdb) print tv
+>>> $1 =3D {tv_sec =3D 1438, tv_usec =3D 783700}
+>>>
+>>> It seems a value related to uptime (system was up by about 24 minutes,
+>>> 1440 seconds, when debugging).
+>>
+>> Right, Xenomai's CLOCK_REALTIME starts at system boot, not at the epoch.
+>> That's at least true for I-pipe deployments.
+>>
+>>>
+>>> The API documentation says that rt_pipe_read() accepts "a delay
+>>> expressed in clock ticks". In Xenomai code, rt_pipe_read() becomes
+>>> rt_pipe_read_timed(), that accepts "An absolute date expressed in clock
+>>> ticks", with a note saying "abs_timeout is interpreted as a multiple of
+>>> the Alchemy clock resolution" (I dont' understand this latter sentence).
+>>>
+>>
+>> The Alchemy clock may not simply tick in single nanoseconds but may have
+>> a courser resolution. That's why there is rt_timer_ns2ticks which you
+>> are already using.
+>>
+>>> If I'm not wrong, the "absolute date" would be a date expressed in
+>>> seconds after the epoch. Could the alchemy_rel_timeout() call in
+>>> include/alchemy/pipe.h calculate a wrong timeout?
+>>> Otherwise, what could be the problem?
+>>
+>> Cannot say yet, but I can confirm seeing the issue (too long timeout) as
+>> well. Did you try to debug further already?
+>>
+>=20
+> Looks like rt_pipe_read_timed is wrong: SO_RCVTIMEO takes a relative
+> timeout to my reading of the man page and the code, but
+> rt_pipe_read_timed passed down an absolute value. This confuses me
+> because the function was like this for ages, so I might misread
+> something ATM. Philippe?
+>=20
 
-errno.h is expected under the system headers path, which you overwrite
-to /usr/lib/gcc/x86_64-redhat-linux/8/include. Apparently, it's missing
-there.
+It is definitely broken in alchemy, I've created
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/30 to track the
+to-dos. Any helping hand welcome.
 
 Jan
 
-> -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi
-> -I./arch/x86/include/generated/uapi -I./include/uapi
-> -I./include/generated/uapi -include ./include/linux/kconfig.h -include
-> ./include/linux/compiler_types.h -D__KERNEL__ -Wall -Wundef
-> -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common
-> -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security
-> -std=gnu89 -fno-PIE -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64
-> -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387
-> -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone
-> -mcmodel=kernel -funit-at-a-time -DCONFIG_AS_CFI=1
-> -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1
-> -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1
-> -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_AVX512=1
-> -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare
-> -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern
-> -mindirect-branch-register -fno-jump-tables -Iarch/x86/xenomai/include
-> -Iinclude/xenomai -fno-delete-null-pointer-checks -Wno-frame-address
-> -Wno-format-truncation -Wno-format-overflow -Wno-int-in-bool-context -O2
-> --param=allow-store-data-races=0 -Wframe-larger-than=2048
-> -fstack-protector-strong -Wno-unused-but-set-variable
-> -Wno-unused-const-variable -fno-omit-frame-pointer
-> -fno-optimize-sibling-calls -fno-var-tracking-assignments -g -pg -mfentry
-> -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign
-> -Wno-stringop-truncation -fno-strict-overflow -fno-merge-all-constants
-> -fmerge-constants -fno-stack-check -fconserve-stack -Werror=implicit-int
-> -Werror=strict-prototypes -Werror=date-time
-> -Werror=incompatible-pointer-types -Werror=designated-init
-> -fmacro-prefix-map=./= -fcf-protection=none -Wno-packed-not-aligned
-> -I/lib/modules/4.19.89xeno3.1-i64x8632/build/include/xenomai
-> -I/lib/modules/4.19.89xeno3.1-i64x8632/build/include/xenomai/posix
-> -I/home/csmith/src/app3-prog -I/usr/xenomai/include/trank
-> -I/usr/xenomai/include -D__XENO_COMPAT__  -DMODULE
->  -DKBUILD_BASENAME='"myapp"' -DKBUILD_MODNAME='"myapp"' -c -o
-> /home/csmith/src/app3-prog/modules/myapp.o
-> /home/csmith/src/app3-prog/modules/myapp.c
-> 
-> How can I compile with the "trank" to get native/timer.h and
-> rt_timer_read() ?
-> 
-> thanks, -C Smith
-> 
-
--- 
+--=20
 Siemens AG, T RDA IOT
 Corporate Competence Center Embedded Linux
 
