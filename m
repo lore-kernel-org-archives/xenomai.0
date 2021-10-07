@@ -1,19 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for
- CI builds
-Date: Wed, 10 Nov 2021 14:02:54 +0000
-Message-ID: <c4245d02266352e04b7e6c433ae630389eb4416c.camel@siemens.com>
-References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
- <20211013121732.140595-4-florian.bezdeka@siemens.com>
- <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
- <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
- <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
-In-Reply-To: <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <30B72B6DC38C7545B84CA4B43FF57A16@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] Bump ABI revisions
+Message-ID: <8adb41e5-0f68-e0c6-f305-889aac9cbde6@siemens.com>
+Date: Thu, 7 Oct 2021 11:11:09 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,62 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTExLTEwIGF0IDE0OjQyICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMC4xMS4yMSAxNDoyMywgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
-dGU6DQo+ID4gT24gV2VkLCAyMDIxLTEwLTEzIGF0IDE0OjIyICswMjAwLCBKYW4gS2lzemthIHdy
-b3RlOg0KPiA+ID4gT24gMTMuMTAuMjEgMTQ6MTcsIEZsb3JpYW4gQmV6ZGVrYSB3cm90ZToNCj4g
-PiA+ID4gRm9yIG5vdyB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBkZW1vIGFuZCB0aGUgImNp
-IGltYWdlIiBpcyB0aGUNCj4gPiA+ID4gcmVtb3ZlZCBzc2hkLXJlZ2VuLWtleXMuIFRoYXQgcmVk
-dWNlcyB0aGUgKGZpcnN0KSBib290IHRpbWUgZXNwZWNpYWxseQ0KPiA+ID4gPiBvbiBsb3cgZW5k
-IENJIGhhcmR3YXJlLiBIZWxwcyB0byBzdGF5IHdpdGhpbiBMQVZBIHRpbWVvdXRzLg0KPiA+ID4g
-PiANCj4gPiA+ID4gQ0kgYnVpbGRzIHdpbGwgbm93IHVzZSB0aGF0IGZpbGUuDQo+ID4gPiA+IA0K
-PiA+ID4gDQo+ID4gPiBUb28gbWFueSBvcHRpb25zLiBDYW4ndCB3ZSBjb25zb2xpZGF0ZSBvdmVy
-IGEgc2luZ2xlIENJL0NUIHRoaW5nIHRoYXQNCj4gPiA+IGFsc28gaW5jbHVkZXMgdGhlIGNoYW5n
-ZXMgZm9yIGNpLWJvYXJkPw0KPiA+IA0KPiA+IEl0IGhhcyBiZWVuIGEgd2hpbGUsIGJ1dCBjb21p
-bmcgYmFjayB0byB0aGlzIG5vdy4uLg0KPiA+IA0KPiA+IEkgYWdyZWUsIHdlIGhhdmUgYSBsb3Qg
-b2Ygc3VjaCBvcHRpb24gZmlsZXMsIGJ1dCBhZnRlciBjaGVja2luZyB0aGVtDQo+ID4gYWxsIGFn
-YWluOiBUaGV5IGFsbCBoYXZlIGEgdW5pcXVlIHB1cnBvc2UuDQo+IA0KPiBGb3IgdXNlcnM/IEkg
-ZG91YnQgdGhhdC4gV2UgaGF2ZQ0KPiANCj4gLSBvcHQtZXh0NC1nei55bWw6IEl0IGVuYWJsZXMg
-UUVNVSB0YXJnZXRzLCBhbmQgb25seSB0aG9zZSwgdG8gYmUNCj4gICBjb21wYXRpYmxlIHdpdGgg
-dGhlIExBVkEgdGVzdCBzZXR1cCBieSBjb21wcmVzc2luZyBpdHMgZXh0NCBpbWFnZXMNCg0KSXQn
-cyB0aGUgZ2l0bGFiLWNpIGNvbmZpZyB0aGF0IGxpbWl0cyBpdCB0byBxZW11IHRhcmdldHMgY3Vy
-cmVudGx5LiBCdXQNCnRoYXQgY291bGQgZXZvbHZlIHdpdGggbmV3IHRhcmdldHMgYmVpbmcgYWRk
-ZWQuIA0KDQo+IA0KPiAtIG9wdC1sYXZhLXRlc3QueW1sOiBJdCBzd2l0Y2hlcyB3aWMtYmFzZWQg
-dGFyZ2V0cywgYW5kIHRoYXQgYXJlIG9ubHkNCj4gICB0aGUgcGh5c2ljYWwgb25lcywgdG8gdGFy
-YmFsbHMgLSBhZ2FpbiBmb3IgTEFWQSBwdXJwb3Nlcw0KPiANCg0KVGhpcyBvbmUgd2FzIHJlbmFt
-ZWQgaW4gb25lIG9mIHRoZSBwcmV2aW91cyBwYXRjaGVzIHRvIG9wdC1jaS1ib2FyZC55bWwNCnRv
-IG1ha2Ugc3VyZSB0aGF0IHRoaXMgb25lIGlzIHVzZWZ1bCBmb3IgcmVhbCBDSSB0YXJnZXRzIChv
-bmx5KS4gSXQncw0KdXAgdG8gdGhlIENJIGNvbmZpZ3VyYXRpb24gdG8gYWRkIGl0IHRvIHRoZSBs
-aXN0IG9mIHVzZWQgb3B0aW9ucyBmb3INCm5ldyBidWlsZC90ZXN0IHRhc2tzLg0KDQo+IC0gb3B0
-LWNpLnltbDogUmVtb3ZlcyBwYWNrYWdlcywgbm90IHJlbGV2YW50IGZvciB0aGUgYWJvdmUgaW1h
-Z2VzLCBhbmQNCj4gICBvbmx5IHRob3NlDQoNClRoYXQncyB0aGUgbmV3IG9uZSBpbnRyb2R1Y2Vk
-IGhlcmUuIENvbGxlY3Rpbmcgb25seSBDSSBzcGVjaWZpYyB0aGluZ3MuDQpOb3RoaW5nIGVsc2Uu
-DQoNCj4gDQo+IEkgcmVhbGx5IHNlZSBubyBzZXBhcmF0ZSBwdXJwb3NlcywganVzdCBzZXBhcmF0
-ZSBmaWxlcy4gVGhhdCBpcyBsaWtlbHkNCj4gb25seSBmb3IgdGVjaG5pY2FsIHJlYXNvbnMuDQo+
-IA0KPiA+IA0KPiA+IFdlIGRvbid0IGhhdmUgYSBzaW5nbGUgQ0kvQ1Qgb3B0aW9uIGZpbGUgYmVj
-YXVzZSB0aGUgcWVtdSB0ZXN0IHRhcmdldHMNCj4gPiBhcmUgZGlmZmVyZW50IGluIGNvbXBhcmlz
-b24gdG8gdGhlIHJlYWwgYm9hcmQgdGFyZ2V0cy4gV2UgZG8gbm90IGJvb3QNCj4gPiB1cCBhICJk
-aXNrIi93aWMgaW1hZ2UsIHdlIHBhc3MgYSBrZXJuZWwgaW1hZ2UgdG8gcWVtdS4NCj4gPiANCj4g
-PiBXaXRob3V0IGludHJvZHVjaW5nIG9wdC1jaS55bWwgSSB3b3VsZCBoYXZlIHRvIHNwcmVhZCB0
-aGUgY2kNCj4gPiBvcHRpbWl6YXRpb25zIGludG8gc2V2ZXJhbCBib2FyZCBzcGVjaWZpYyBjb25m
-aWdzLCB3aGljaCB3b3VsZCBlbmFibGUNCj4gPiB0aGUgY2kgb3B0aW1pemF0aW9uIGZvciAicmVh
-bCBib2FyZCBidWlsZHMiIGFzIHdlbGwuIFRoYXQgaXMgbm90IHdoYXQNCj4gPiB3ZSB3YW50Lg0K
-PiA+IA0KPiA+IEZ1cnRoZXIgaWRlYXM/DQo+ID4gDQo+ID4gV2hhdCBhYm91dCBpbnRyb2R1Y2lu
-ZyBhIGNpIGltYWdlPyBEb2VzIHRoYXQgbWFrZSBzZW5zZT8gVGhlIGNvbnRlbnQNCj4gPiB3b3Vs
-ZCBuZWFybHkgYmUgdGhlIHNhbWUgYXMgd2l0aGluIG9wdC1jaS55bWwgbm93Lg0KPiANCj4gQW4g
-aW1hZ2UgYWxvbmUgd291bGQgbm90IGNvbnNvbGlkYXRlIHRob3NlIGNoYW5nZXMgYWJvdmUgaW50
-byBhIHNpbmdsZQ0KPiBvbmUgdGhhdCBjYW4gYmUgY29udHJvbGxlZCBmcm9tIGEgc2luZ2xlIG9w
-dC1jaS55bWwgZmlsZS4NCj4gDQo+IFdlIGxpa2VseSBuZWVkIGEgQ0lfQlVJTEQgYml0YmFrZSB2
-YXJpYWJsZSB0aGF0IGNvbnRyb2xzIHdpdGggYml0YmFrZQ0KPiBsb2dpYyB0aGUgY2hhbmdlcyBu
-ZWVkZWQgZm9yIENJLCB3aXRoIGJpdGJha2UgY29uZGl0aW9uYWxzLg0KDQpDdXJyZW50bHkgd2Ug
-Y2FuIGRlZmluZSBuZXcgQ0kgdGFza3Mvam9icyBieSBqdXN0IGFkZGluZyB0aGVtIHRvIHRoZQ0K
-KGdpdGxhYikgQ0kgY29uZmlnLCBzZWxlY3RpbmcgdGhlIHJpZ2h0IG9wdGlvbiBmaWxlcyBmb3Ig
-ZWFjaCB0YXNrLiBBcw0Kd2UgaGF2ZSBhdCBsZWFzdCBib2FyZCBzcGVjaWZpYyBhZGp1c3RtZW50
-czogV291bGRuJ3QgdGhhdCBtZWFuIHRoYXQNCmFkZGluZyBuZXcgdGFyZ2V0cyB3b3VsZCByZXF1
-aXJlIHJlY2lwZSAvIGJpdGJha2UgYWRqdXN0bWVudHM/DQoNClB1cnBvc2Ugb2YgdGhpcyBzZXJp
-ZXMgd2FzIG1vdmluZyB1cCB0byBEZWJpYW4gMTEuIE1heWJlIHdlIGNvdWxkIGF2b2lkDQp0aGlz
-IHF1aXRlIGJpZyByZWZhY3RvcmluZyBoZXJlIGJ5IGp1c3QgcmVtb3ZpbmcgdGhlIENJIG9wdGlt
-aXphdGlvbnMNCmFnYWluLCBhbmQgcG9zdHBvbmUgdGhhdD8NCg0KPiANCj4gSmFuDQo+IA0KDQo=
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+The introduction of dovetail support with the change in the realtime
+clock semantics and related interface changes (vDSO usage) is an ABI
+change that needs a revision bump.
+
+Strictly spoken, PowerPC is only theoretically affected as it lacks
+dovetail support, but it's simpler to bump than to safely exclude all
+possibly side effects even on this arch.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h     | 2 +-
+ kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h   | 2 +-
+ kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h | 2 +-
+ kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h     | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
+index c3c777cb93..43b7afb107 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
+@@ -22,7 +22,7 @@
+ #define _COBALT_ARM_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   17UL
++#define XENOMAI_ABI_REV   18UL
+ 
+ #define XENOMAI_FEAT_DEP (__xn_feat_generic_mask)
+ 
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
+index 74423f68bc..b98a963924 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
+@@ -22,7 +22,7 @@
+ #define _COBALT_ARM64_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   1UL
++#define XENOMAI_ABI_REV   2UL
+ 
+ #define XENOMAI_FEAT_DEP (__xn_feat_generic_mask)
+ 
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
+index f6e67d884b..ed54882105 100644
+--- a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
+@@ -19,7 +19,7 @@
+ #define _COBALT_POWERPC_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   17UL
++#define XENOMAI_ABI_REV   18UL
+ 
+ #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
+ 
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
+index 67c7625f86..65f8164a02 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
+@@ -19,7 +19,7 @@
+ #define _COBALT_X86_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   17UL
++#define XENOMAI_ABI_REV   18UL
+ 
+ #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
+ 
+-- 
+2.31.1
 
