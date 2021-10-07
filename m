@@ -1,17 +1,24 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: irq pipeline: Netdev watchdog triggered
-Date: Thu, 7 Oct 2021 14:50:25 +0000
-Message-ID: <d6a5684bcd34c51da551f15409a58ccd2783dbcc.camel@siemens.com>
-References: <e28cb7b73db9bfe4faa08f3c6468a59ed578a366.camel@siemens.com>
- <87sfyhiwgn.fsf@xenomai.org>
- <283717e4400fce5376df6e92339e8fdd41f634ea.camel@siemens.com>
- <87lf49issc.fsf@xenomai.org>
-In-Reply-To: <87lf49issc.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <56790133F533EC4E92AC674203ACDAE2@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: "switchtest" problem with recent 5.10 dovetail and distro-like
+ kernel config
+References: <20210922122519.73e772a3@md1za8fc.ad001.siemens.net>
+ <877df823dq.fsf@xenomai.org>
+ <20210922162154.495db035@md1za8fc.ad001.siemens.net>
+ <20210924153120.649e583f@md1za8fc.ad001.siemens.net>
+ <f0ddf0d1-aede-4bd6-3fc3-3b8b1f8e42d8@siemens.com>
+ <e88ca8e92a00bb649e1718ce0bf86d897e074ea8.camel@siemens.com>
+ <20211005171806.770f8ca3@md1za8fc.ad001.siemens.net>
+ <62d55224-0228-e8af-f88c-f2e1aa9d62a4@siemens.com>
+ <a8597dc99f9b62ee561c2115b453825a0834949f.camel@siemens.com>
+ <c2dca85df221c32b0685b33e554eec375cac4357.camel@siemens.com>
+ <20211007152924.684c74f4@md1za8fc.ad001.siemens.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <cbaa8fa6-b276-4762-f73f-aad2bd8a7c6d@siemens.com>
+Date: Thu, 7 Oct 2021 19:28:36 +0200
 MIME-Version: 1.0
+In-Reply-To: <20211007152924.684c74f4@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,273 +27,276 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Henning Schild <henning.schild@siemens.com>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gTW9uLCAyMDIxLTA5LTA2IGF0IDE4OjE2ICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToN
-Cj4gQmV6ZGVrYSwgRmxvcmlhbiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cml0ZXM6
-DQo+IA0KPiA+IE9uIE1vbiwgMjAyMS0wOS0wNiBhdCAxNjo1NiArMDIwMCwgUGhpbGlwcGUgR2Vy
-dW0gd3JvdGU6DQo+ID4gPiBCZXpkZWthLCBGbG9yaWFuIDxmbG9yaWFuLmJlemRla2FAc2llbWVu
-cy5jb20+IHdyaXRlczoNCj4gPiA+IA0KPiA+ID4gPiBIaSwNCj4gPiA+ID4gDQo+ID4gPiA+IGhl
-cmUgaXMgYW5vdGhlciBJUlFfUElQRUxJTkUgcHJvYmxlbSB3ZSdyZSBmYWNpbmcgb24gb24gb2Yg
-b3VyIHF1aXRlDQo+ID4gPiA+IGJpZyBYZW5vbWFpIG1hY2hpbmVzOiANCj4gPiA+ID4gDQo+ID4g
-PiA+IFBsYXRmb3JtOg0KPiA+ID4gPiBJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjIwIDAgQCAy
-LjAwR0h6DQo+ID4gPiA+IDIgU29ja2V0cywgNiBjb3JlcyBwZXIgc29ja2V0LCAyIHRocmVhZHMg
-cGVyIGNvcmUNCj4gPiA+ID4gKDIgTlVNQSBub2RlcykNCj4gPiA+ID4gDQo+ID4gPiA+IEFzIHNv
-b24gYXMgd2UgZW5hYmxlIENPTkZJR19JUlFfUElQRUxJTkUgdGhlIG5ldGRldiB3YXRjaGRvZyB0
-cmlnZ2Vycy4NCj4gPiA+ID4gVGhlcmUgaXMgbm8gc3BlY2lmaWMgbG9hZCBvbiB0aGUgc3lzdGVt
-LiBJbiBtb3N0IGNhc2VzIHRoZSB3YXRjaGRvZw0KPiA+ID4gPiB0cmlnZ2VycyByaWdodCBhZnRl
-ciBib290aW5nIHVwLiBUaGVyZSBpcyBubyB4ZW5vbWFpIHRhc2sgcnVubmluZyB3aGVuDQo+ID4g
-PiA+IHRoZSBjcmFzaCBoYXBwZW5zLg0KPiA+ID4gPiANCj4gPiA+ID4gVGhlIHByb2JsZW0gd2Fz
-IGRldGVjdGVkIGR1cmluZyByZWJvb3QgdGVzdHMuIERpc2FibGluZw0KPiA+ID4gPiBDT05GSUdf
-SVJRX1BJUEVMSU5FIGhlbHBlZC4gV2UgZGlkbid0IHJ1biBpbnRvIGEgcHJvYmxlbSBmb3IgPjQw
-MA0KPiA+ID4gPiByZWJvb3RzLg0KPiA+ID4gPiANCj4gPiA+ID4gQW55IGFkdmlzZSBob3cgdG8g
-ZGVidWcgdGhhdD8gRG92ZXRhaWwgdG9ydHVyZSB0ZXN0cyBoYXZlIGFscmVhZHkgYmVlbg0KPiA+
-ID4gPiBydW4gYW5kIHRoZXJlIHdhcyBubyBlcnJvciByZXBvcnRlZC4gQ09ORklHX0RFQlVHX0lS
-UV9QSVBFTElORSBpcw0KPiA+ID4gPiBlbmFibGVkIGFzIHdlbGwgYW5kIGRpZCBub3QgaGVscCBz
-byBmYXIuDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGUgc3RhY2t0cmFjZSBmb2xsb3dzIGJ1dCBJIGd1
-ZXNzIGl0J3Mgbm90IHJlYWxseSBoZWxwZnVsOg0KPiA+ID4gPiANCj4gPiA+ID4gLS0tLS0tLS0t
-LS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tDQo+ID4gPiA+IFsgICA0Mi4xMTQxNTFdIE5FVERF
-ViBXQVRDSERPRzogZW5wN3MwZjAgKGlnYik6IHRyYW5zbWl0IHF1ZXVlIDUgdGltZWQgb3V0DQo+
-ID4gPiA+IFsgICA0Mi4xMTQxNzNdIFdBUk5JTkc6IENQVTogMCBQSUQ6IDAgYXQgbmV0L3NjaGVk
-L3NjaF9nZW5lcmljLmM6NDY3IGRldl93YXRjaGRvZysweDIwNS8weDIxMA0KPiA+ID4gPiBbICAg
-NDIuMTYzNTkzXSBNb2R1bGVzIGxpbmtlZCBpbjogb3ZlcmxheSB4ODZfcGtnX3RlbXBfdGhlcm1h
-bCBpbnRlbF9wb3dlcmNsYW1wIGNvcmV0ZW1wIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNsbXVs
-IG1laV9tZSBpVENPX3dkdCBpVENPX3ZlbmRvcl9zdXBwb3J0IG1laSBoZWQgaXBtaV9zaSBpcG1p
-X2RldmludGYgaXBtaV9tc2doYW5kbGVyIG1zciBmdXNlIGNvbmZpZ2ZzIGlwX3RhYmxlcyB4X3Rh
-YmxlcyBpcHY2IGF1dG9mczQgcmFpZDEwIHJhaWQ0NTYgYXN5bmNfcmFpZDZfcmVjb3YgYXN5bmNf
-bWVtY3B5IGFzeW5jX3BxIGFzeW5jX3hvciB4b3IgYXN5bmNfdHggaGlkX2dlbmVyaWMgdXNiaGlk
-IGhpZCByYWlkNl9wcSBsaWJjcmMzMmMgcmFpZDEgcmFpZDAgbXVsdGlwYXRoIGxpbmVhciBscGNf
-aWNoIGFoY2kgaTJjX2k4MDEgeGhjaV9wY2kgaTJjX3NtYnVzIG1mZF9jb3JlIGxpYmFoY2kgbXB0
-M3NhcyBpZ2IgaTJjX2FsZ29fYml0IHJhaWRfY2xhc3MgeGhjaV9oY2Qgc2NzaV90cmFuc3BvcnRf
-c2FzDQo+ID4gPiA+IFsgICA0Mi40MzUxOTFdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlci8w
-IE5vdCB0YWludGVkIDUuMTAuNjEtZG92ZXRhaWxkYmctbm94ZW5vLXBpcGVkYmctMCAjMQ0KPiA+
-ID4gPiBbICAgNDIuNDg2MTk4XSBIYXJkd2FyZSBuYW1lOiBTaWVtZW5zIDwuLi5zbmlwLi4uPiwg
-QklPUyBzMi4wYV9NMSAwOC8wMi8yMDE2DQo+ID4gPiA+IFsgICA0Mi41NDYwNTBdIElSUSBzdGFn
-ZTogTGludXgNCj4gPiA+ID4gWyAgIDQyLjU2MzI2M10gUklQOiAwMDEwOmRldl93YXRjaGRvZysw
-eDIwNS8weDIxMA0KPiA+ID4gPiBbICAgNDIuNTg5ODM3XSBDb2RlOiA5MSAyNiBmZSBmZiBlYiBi
-MSA0YyA4OSBlZiBjNiAwNSA5ZSAxZCBiNyAwMCAwMSBlOCA5MCA4NiBmYiBmZiA0NCA4OSBlMSA0
-YyA4OSBlZSA0OCBjNyBjNyA0OCA0MSBkZSBiNyA0OCA4OSBjMiBlOCA4YSBjMSAwYSAwMCA8MGY+
-IDBiIGViIDkyIDBmIDFmIDgwIDAwIDAwIDAwIDAwIDBmIDFmIDQ0IDAwIDAwIGYwIDgwIGE3IGQ4
-IDAwIDAwDQo+ID4gPiA+IFsgICA0Mi43MDIyMDVdIFJTUDogMDAxODpmZmZmOWZmNGMwMDAzZWMw
-IEVGTEFHUzogMDAwMTAyODINCj4gPiA+ID4gWyAgIDQyLjczMzQ1OV0gUkFYOiAwMDAwMDAwMDAw
-MDAwMDAwIFJCWDogZmZmZjkzMGNjNDI0MzhjMCBSQ1g6IDQwMDAwMDAwMDAwMDAwMDINCj4gPiA+
-ID4gWyAgIDQyLjc3NjE0OF0gUkRYOiA0MDAwMDAwMDAwMDAwMDA0IFJTSTogMDAwMDAwMDAwMDAw
-MDAwMCBSREk6IGZmZmZmZmZmYjcwY2I4MjQNCj4gPiA+ID4gWyAgIDQyLjgxODg0MV0gUkJQOiBm
-ZmZmOTMwY2M3ZTkwM2I4IFIwODogMDAwMDAwMDAwMDA3ZGFlZSBSMDk6IGZmZmY5ZmY0YzAwMDNj
-YzgNCj4gPiA+ID4gWyAgIDQyLjg2MTUzMV0gUjEwOiAwMDAwMDAwMGZmZmZlMDAwIFIxMTogM2Zm
-ZmZmZmZmZmZmZmZmZiBSMTI6IDAwMDAwMDAwMDAwMDAwMDYNCj4gPiA+ID4gWyAgIDQyLjkwNDIy
-NF0gUjEzOiBmZmZmOTMwY2M3ZTkwMDAwIFIxNDogZmZmZmZmZmZiNzY4Njg2MCBSMTU6IGZmZmY5
-ZmY0YzAwMDNmMTgNCj4gPiA+ID4gWyAgIDQyLjk0NjkxNl0gRlM6ICAwMDAwMDAwMDAwMDAwMDAw
-KDAwMDApIEdTOmZmZmY5MzFiZmY4MDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0K
-PiA+ID4gPiBbICAgNDIuOTk1MzI4XSBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAw
-MDAwMDAwMDgwMDUwMDMzDQo+ID4gPiA+IFsgICA0My4wMjk3MDBdIENSMjogMDAwMDAwYzAwMGU1
-MDAwMCBDUjM6IDAwMDAwMDAxMDU3Y2EwMDEgQ1I0OiAwMDAwMDAwMDAwMTcwNmYwDQo+ID4gPiA+
-IFsgICA0My4wNzIzOTFdIERSMDogMDAwMDAwMDAwMDAwMDAwMCBEUjE6IDAwMDAwMDAwMDAwMDAw
-MDAgRFIyOiAwMDAwMDAwMDAwMDAwMDAwDQo+ID4gPiA+IFsgICA0My4xMTUwODJdIERSMzogMDAw
-MDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAw
-DQo+ID4gPiA+IFsgICA0My4xNTc3NzRdIENhbGwgVHJhY2U6DQo+ID4gPiA+IFsgICA0My4xNzIz
-ODhdICA8SVJRPg0KPiA+ID4gPiBbICAgNDMuMTg0NDAwXSAgPyBwZmlmb19mYXN0X2RlcXVldWUr
-MHgxZTAvMHgxZTANCj4gPiA+ID4gWyAgIDQzLjIxMDQ1M10gIGNhbGxfdGltZXJfZm4rMHgyYi8w
-eDEwMA0KPiA+ID4gPiBbICAgNDMuMjMyMzQ0XSAgX19ydW5fdGltZXJzLnBhcnQuMCsweDFkOS8w
-eDI1MA0KPiA+ID4gPiBbICAgNDMuMjU3ODc5XSAgPyBrdGltZV9nZXQrMHgzNS8weDkwDQo+ID4g
-PiA+IFsgICA0My4yNzgyMDVdICBydW5fdGltZXJfc29mdGlycSsweDI2LzB4NTANCj4gPiA+ID4g
-WyAgIDQzLjMwMTY2MV0gIF9fZG9fc29mdGlycSsweDEwNS8weDMwYg0KPiA+ID4gPiBbICAgNDMu
-MzIzNTUwXSAgYXNtX2NhbGxfaXJxX29uX3N0YWNrKzB4Zi8weDIwDQo+ID4gPiA+IFsgICA0My4z
-NDg1NjJdICA8L0lSUT4NCj4gPiA+ID4gWyAgIDQzLjM2MTA5OV0gIGRvX3NvZnRpcnFfb3duX3N0
-YWNrKzB4MzcvMHg0MA0KPiA+ID4gPiBbICAgNDMuMzg2MTA4XSAgaXJxX2V4aXRfcmN1KzB4YWEv
-MHhlMA0KPiA+ID4gPiBbICAgNDMuNDA2OTYwXSAgYXJjaF9kb19JUlFfcGlwZWxpbmVkKzB4Nzgv
-MHgxMzANCj4gPiA+ID4gWyAgIDQzLjQzMzAxMl0gIHN5bmNfY3VycmVudF9pcnFfc3RhZ2UrMHgx
-NzcvMHgyNTANCj4gPiA+ID4gWyAgIDQzLjQ2MDEwMF0gIF9faW5iYW5kX2lycV9lbmFibGUrMHg0
-Yy8weDUwDQo+ID4gPiA+IFsgICA0My40ODQ1OTNdICBjcHVpZGxlX2VudGVyX3N0YXRlKzB4MTAw
-LzB4M2EwDQo+ID4gPiA+IFsgICA0My41MTAxMjVdICBjcHVpZGxlX2VudGVyKzB4MjkvMHg0MA0K
-PiA+ID4gPiBbICAgNDMuNTMxNDk4XSAgZG9faWRsZSsweDFlYi8weDIzMA0KPiA+ID4gPiBbICAg
-NDMuNTUwNzg3XSAgY3B1X3N0YXJ0dXBfZW50cnkrMHgxOS8weDIwDQo+ID4gPiA+IFsgICA0My41
-NzQyNDFdICBzdGFydF9rZXJuZWwrMHg1NmQvMHg1OTANCj4gPiA+ID4gWyAgIDQzLjU5NjEzNF0g
-IHNlY29uZGFyeV9zdGFydHVwXzY0X25vX3ZlcmlmeSsweGIwLzB4YmINCj4gPiA+ID4gWyAgIDQz
-LjYyNjM0M10gLS0tWyBlbmQgdHJhY2UgYjIxOTI1OGZjZThkYzc2MSBdLS0tDQo+ID4gPiA+IFsg
-ICA0My42NTQwOTVdIGlnYiAwMDAwOjA3OjAwLjAgZW5wN3MwZjA6IFJlc2V0IGFkYXB0ZXINCj4g
-PiA+ID4gWyAgIDQ2LjA5MDk0OF0gaWdiIDAwMDA6MDc6MDAuMDogZXhjZWVkIG1heCAyIHNlY29u
-ZA0KPiA+ID4gPiANCj4gPiA+IA0KPiA+ID4gTWlnaHQgYmUgYW4gaW50ZXJydXB0IHN0dWNrIGlu
-IHRoZSBpbi1iYW5kIGxvZyBvZiB0aGUgcGlwZWxpbmUsIGluIHdoaWNoDQo+ID4gPiBjYXNlIHRo
-ZSBDUFUgd291bGQgZ28gaWRsZSB3aXRob3V0IHN5bmNocm9uaXppbmcgdGhlIGxvZywgbGVhdmlu
-ZyBhDQo+ID4gPiBwZW5kaW5nIElSUSB1bmhhbmRsZWQgdW50aWwgdGhlIG5leHQgZXhpdCBmcm9t
-IHRoZSBpZGxlIHN0YXRlLiBJIHdvbmRlcg0KPiA+ID4gaWYgdGhlIHVuc3RhYmxlIFRTQyBpc3N1
-ZSBtaWdodCBub3QgYmUgYW5vdGhlciBzeW1wdG9tIG9mIHRoYXQga2luZCBvZg0KPiA+ID4gY2F1
-c2UuDQo+ID4gPiANCj4gPiA+IERvIHlvdSBzZWUgYW55IGNoYW5nZSB3aGVuIGJvb3Rpbmcgd2l0
-aCBpZGxlPXBvbGw/DQo+ID4gPiANCj4gPiANCj4gPiBUaGUgY2FsbCBzdGFjayBsb29rcyBkaWZm
-ZXJlbnQgd2l0aCBpZGxlPXBvbGwsIGFzIGV4cGVjdGVkOg0KPiA+IA0KPiA+IFsgICA0OC43NTIz
-MzVdIFdBUk5JTkc6IENQVTogMCBQSUQ6IDAgYXQgbmV0L3NjaGVkL3NjaF9nZW5lcmljLmM6NDY3
-IGRldl93YXRjaGRvZysweDIwNS8weDIxMA0KPiA+IFsgICA0OC44MDE3NjldIE1vZHVsZXMgbGlu
-a2VkIGluOiBzaGE1MTJfc3NzZTMgc2hhNTEyX2dlbmVyaWMgY21hYyBzaGEyNTZfc3NzZTMgc2hh
-MjU2X2dlbmVyaWMgbGlic2hhMjU2IGhtYWMgbmxzX2NwNDM3IGNpZnMgbGliZGVzIGxpYmFyYzQg
-eHRfY29ubnRyYWNrIHh0X01BU1FVRVJBREUgeGZybV91c2VyIHhmcm1fYWxnbyB4dF9hZGRydHlw
-ZSBpcHRhYmxlX2ZpbHRlciBpcHRhYmxlX25hdCBuZl9uYXQgbmZfY29ubiAgICAgICAgICAgICAg
-ICB0cmFjayBuZl9kZWZyYWdfaXB2NiBuZl9kZWZyYWdfaXB2NCBicl9uZXRmaWx0ZXIgYnJpZGdl
-IHN0cCBsbGMgb3ZlcmxheSB4ODZfcGtnX3RlbXBfdGhlcm1hbCBpbnRlbF9wb3dlcmNsYW1wIGNv
-cmV0ZW1wIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNsbXVsIG1laV9tZSBpVENPX3dkdCBpVENP
-X3ZlbmRvcl9zdXBwb3J0IG1laSBoZWQgaXBtaV9zaSBpcG1pX2RldmludGYgaXBtaV9tc2doYW5k
-bGVyIG1zciBmdXNlIGNvbmZpZ2ZzIGlwX3RhYmxlcyB4X3RhYmxlcyBpcHY2IGF1dG9mczQgaGlk
-X2dlbmVyaWMgdXNiaGlkIGhpZCByYWlkMTAgcmFpZDQ1NiBhc3luY19yYWlkNl9yZWNvdiBhc3lu
-Y19tZW1jcHkgYXN5bmNfcHEgYXN5bmNfeG9yIHhvciBhc3luY190eCByYWlkNl9wcSBsaWJjcmMz
-MmMgcmFpZDEgcmFpZDAgbXVsdGlwYXRoIGxpbmVhciBpMmNfaTgwMSBscGNfaWNoIGkyY19zbWJ1
-cyBhaGNpIGlnYiBtZmRfY29yZSB4aGNpX3BjaSBsaWJhaGNpIG1wdDNzYXMgaTJjX2FsZ29fYml0
-IHJhaWRfY2xhc3MgeGhjaV9oY2Qgc2NzaV90cmFuc3BvcnRfc2FzDQo+ID4gWyAgIDQ5LjIxMzcw
-Nl0gQ1BVOiAwIFBJRDogMCBDb21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgNS4xMC41My14ZW5v
-bWFpLTAgIzENCj4gPiBbICAgNDkuMjU0ODQzXSBIYXJkd2FyZSBuYW1lOiBTaWVtZW5zIDwuLi5z
-bmlwLi4uPiwgQklPUyBzMi4wYV9NMSAwOC8wMi8yMDE2DQo+ID4gWyAgIDQ5LjMxNDY5NF0gSVJR
-IHN0YWdlOiBMaW51eA0KPiA+IFsgICA0OS4zMzE5MDddIFJJUDogMDAxMDpkZXZfd2F0Y2hkb2cr
-MHgyMDUvMHgyMTANCj4gPiBbICAgNDkuMzU4NDc3XSBDb2RlOiBiMSAyNiBmZSBmZiBlYiBiMSA0
-YyA4OSBlZiBjNiAwNSBmYiAyMyBiNCAwMCAwMSBlOCBkMCA4NyBmYiBmZiA0NCA4OSBlMSA0YyA4
-OSBlZSA0OCBjNyBjNyAxOCAwOSBkZiBiOSA0OCA4OSBjMiBlOCBjMyBjMSAwYSAwMCA8MGY+IDBi
-IGViIDkyIDBmIDFmIDgwIDAwIDAwIDAwIDAwIDBmIDFmIDQ0IDAwIDAwIGYwIDgwIGE3IGQ4IDAw
-IDAwDQo+ID4gWyAgIDQ5LjQ3MDg0OV0gUlNQOiAwMDE4OmZmZmZhMDQxYzAwMDNlYzAgRUZMQUdT
-OiAwMDAxMDI4Mg0KPiA+IFsgICA0OS40NzA4NTFdIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6
-IGZmZmY5MGNhNDNlZGI4YzAgUkNYOiBmZmZmOTBjOWZmODE3OTQ4DQo+ID4gWyAgIDQ5LjQ3MDg1
-Ml0gUkRYOiAwMDAwMDAwMGZmZmZmZmQ4IFJTSTogMDAwMDAwMDAwMDAwMDAyNyBSREk6IGZmZmY5
-MGM5ZmY4MTc5NDANCj4gPiBbICAgNDkuNDcwODU0XSBSQlA6IGZmZmY5MGJhYzc2ZTAzYjggUjA4
-OiBmZmZmZmZmZmJhMTM5ZTI4IFIwOTogMDAwMDAwMDAwMDAwOWZmYg0KPiA+IFsgICA0OS40NzA4
-NTddIFIxMDogMDAwMDAwMDBmZmZmZTAwMCBSMTE6IDNmZmZmZmZmZmZmZmZmZmYgUjEyOiAwMDAw
-MDAwMDAwMDAwMDAyDQo+ID4gWyAgIDQ5LjY3Mjg2MF0gUjEzOiBmZmZmOTBiYWM3NmUwMDAwIFIx
-NDogZmZmZmZmZmZiOTZjYTdhMCBSMTU6IGZmZmZhMDQxYzAwMDNmMTgNCj4gPiBbICAgNDkuNzIz
-ODc3XSBGUzogIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmZmZjkwYzlmZjgwMDAwMCgwMDAw
-KSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQo+ID4gWyAgIDQ5Ljc4MDYwNl0gQ1M6ICAwMDEwIERT
-OiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KPiA+IFsgICA0OS44MjMzMDJd
-IENSMjogMDAwMDdmOTY0NjZmNzA0OCBDUjM6IDAwMDAwMDEwODdhNjAwMDYgQ1I0OiAwMDAwMDAw
-MDAwMTcwNmYwDQo+ID4gWyAgIDQ5Ljg2ODU5MV0gRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTog
-MDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAwMDANCj4gPiBbICAgNDkuOTExMjg0
-XSBEUjM6IDAwMDAwMDAwMDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmUwZmYwIERSNzogMDAwMDAw
-MDAwMDAwMDQwMA0KPiA+IFsgICA0OS45NTM5NzddIENhbGwgVHJhY2U6DQo+ID4gWyAgIDQ5Ljk2
-ODU5M10gIDxJUlE+DQo+ID4gWyAgIDQ5Ljk4MDU5N10gID8gcGZpZm9fZmFzdF9kZXF1ZXVlKzB4
-MWUwLzB4MWUwDQo+ID4gWyAgIDUwLjAwNjY1NF0gIGNhbGxfdGltZXJfZm4rMHgyYi8weDEwMA0K
-PiA+IFsgICA1MC4wMjg1NDRdICBfX3J1bl90aW1lcnMucGFydC4wKzB4MWQ5LzB4MjUwDQo+ID4g
-WyAgIDUwLjA1NDA3OF0gID8gcHJveHlfc2V0X25leHRfa3RpbWUrMHgxNTUvMHgxODANCj4gPiBb
-ICAgNTAuMDgxMTYzXSAgcnVuX3RpbWVyX3NvZnRpcnErMHgyNi8weDUwDQo+ID4gWyAgIDUwLjEw
-NDYyMF0gIF9fZG9fc29mdGlycSsweDEwNS8weDMwYg0KPiA+IFsgICA1MC4xMjY1MTJdICBhc21f
-Y2FsbF9pcnFfb25fc3RhY2srMHhmLzB4MjANCj4gPiBbICAgNTAuMTUxNTE4XSAgPC9JUlE+DQo+
-ID4gWyAgIDUwLjE2NDA1OV0gIGRvX3NvZnRpcnFfb3duX3N0YWNrKzB4MzcvMHg0MA0KPiA+IFsg
-ICA1MC4xODkwNjddICBpcnFfZXhpdF9yY3UrMHhhYS8weGUwDQo+ID4gWyAgIDUwLjIwOTkyMF0g
-IGFyY2hfZG9fSVJRX3BpcGVsaW5lZCsweGJmLzB4MTMwDQo+ID4gWyAgIDUwLjIzNTk3NF0gIHN5
-bmNfY3VycmVudF9pcnFfc3RhZ2UrMHgxNTcvMHgxZjANCj4gPiBbICAgNTAuMjYzMDYxXSAgaGFu
-ZGxlX2lycV9waXBlbGluZWRfZmluaXNoKzB4OGIvMHgxOTANCj4gPiBbICAgNTAuMjkyMjQwXSAg
-YXJjaF9waXBlbGluZV9lbnRyeSsweGIwLzB4MTAwDQo+ID4gWyAgIDUwLjMxNzI0N10gIGFzbV9z
-eXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQrMHhmLzB4MjANCj4gPiBbICAgNTAuMzQ3NDU5XSBS
-SVA6IDAwMTA6Y3B1X2lkbGVfcG9sbC5pc3JhLjArMHg0Ni8weGUwDQo+ID4gWyAgIDUwLjM3NzE0
-N10gQ29kZTogNDAgM2EgOTkgZmYgZTggOGIgN2MgOTIgZmYgZTggMDYgMmIgOTkgZmYgNjUgNDgg
-OGIgMWMgMjUgYzAgNmMgMDEgMDAgZTggYzggYmUgOTEgZmYgNDggOGIgMDMgYTggMDggICAgICAg
-ICAgICAgICAgIDc0IDBiIGViIDFjIGYzIDkwIDQ4IDhiIDAzIDxhOD4gMDggNzUgMTMgOGIgMDUg
-ZTAgMzUgYTcgMDAgODUgYzAgNzUgZWQgZTggMDcgNjEgOTQgZmYgODUgYzAgNzUNCj4gPiBbICAg
-NTAuNDg5NTE4XSBSU1A6IDAwMTg6ZmZmZmZmZmZiYTAwM2ViOCBFRkxBR1M6IDAwMDAwMjAyDQo+
-ID4gWyAgIDUwLjUyMDc2N10gUkFYOiAwMDAwMDAwMDAwMjA0MDAwIFJCWDogZmZmZmZmZmZiYTAx
-MTk0MCBSQ1g6IDAwMDAwMDAwMDAwMDAwMWYNCj4gPiBbICAgNTAuNTYzNDYzXSBSRFg6IDAwMDAw
-MDAwMWJiYjRkNWEgUlNJOiAwMDAwMDAwMDAwMDAwMDAwIFJESTogZmZmZmZmZmZiOTdhZmVmYQ0K
-PiA+IFsgICA1MC42MDYxNTRdIFJCUDogMDAwMDAwMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMWJi
-YjRkNWEgUjA5OiAwMDAwMDAwMDAwMDAwMDAwDQo+ID4gWyAgIDUwLjY0ODg0MF0gUjEwOiAwMDAw
-MDAwMDAwMDAxNDAwIFIxMTogMDAwMDAwMDAwMDAwMDAwMCBSMTI6IDAwMDAwMDAwMDAwMDAwYWMN
-Cj4gPiBbICAgNTAuNjkxNTM3XSBSMTM6IGZmZmZmZmZmYmE2MTUwYTAgUjE0OiAwMDAwMDAwMDAw
-MDAwMDAxIFIxNTogMDAwMDAwMDAwMDAwMDAwOA0KPiA+IFsgICA1MC43MzQyMjZdICA/IGNwdV9p
-ZGxlX3BvbGwuaXNyYS4wKzB4MmEvMHhlMA0KPiA+IFsgICA1MC43NjAyNzhdICA/IGNwdV9pZGxl
-X3BvbGwuaXNyYS4wKzB4MzgvMHhlMA0KPiA+IFsgICA1MC43ODYzMzZdICBkb19pZGxlKzB4N2Uv
-MHgyMDANCj4gPiANCj4gPiBXaGVyZSB3b3VsZCBiZSB0aGUgcmlnaHQgcGxhY2UgdG8gYWRkIGEg
-d2FybmluZyB3aGVuIG9uZSBvZiB0aGUgQ1BVcw0KPiA+IHRyaWVzIHRvIGVudGVyIHRoZSBpZGxl
-IHN0YXRlIHdpdGggcGVuZGluZyBJUlFzPw0KPiANCj4gU29tZXRoaW5nIGxpa2UgdGhpczoNCj4g
-DQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lycV9waXBlbGluZS5oIGIvaW5jbHVkZS9s
-aW51eC9pcnFfcGlwZWxpbmUuaA0KPiBpbmRleCBjYmViMDEwOWZhN2ZmNDcuLjE3NDM2ZTEwZTYy
-MDA3MiAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9pcnFfcGlwZWxpbmUuaA0KPiArKysg
-Yi9pbmNsdWRlL2xpbnV4L2lycV9waXBlbGluZS5oDQo+IEBAIC04OCw2ICs4OCw4IEBAIGludCBo
-YW5kbGVfaXJxX3BpcGVsaW5lZChzdHJ1Y3QgcHRfcmVncyAqcmVncyk7DQo+ICANCj4gIHZvaWQg
-c3luY19pbmJhbmRfaXJxcyh2b2lkKTsNCj4gIA0KPiArYm9vbCBpcnFfaXNfcGVuZGluZyh2b2lk
-KTsNCj4gKw0KPiAgZXh0ZXJuIHN0cnVjdCBpcnFfZG9tYWluICpzeW50aGV0aWNfaXJxX2RvbWFp
-bjsNCj4gIA0KPiAgI2Vsc2UgLyogIUNPTkZJR19JUlFfUElQRUxJTkUgKi8NCj4gQEAgLTEzNCw2
-ICsxMzYsMTEgQEAgc3RhdGljIGlubGluZSBib29sIGluYmFuZF9pcnFfcGVuZGluZyh2b2lkKQ0K
-PiAgDQo+ICBzdGF0aWMgaW5saW5lIHZvaWQgc3luY19pbmJhbmRfaXJxcyh2b2lkKSB7IH0NCj4g
-IA0KPiArc3RhdGljIGlubGluZSBib29sIGlycV9pc19wZW5kaW5nKHZvaWQpDQo+ICt7DQo+ICsJ
-cmV0dXJuIGZhbHNlOw0KPiArfQ0KPiArDQo+ICAjZW5kaWYgLyogIUNPTkZJR19JUlFfUElQRUxJ
-TkUgKi8NCj4gIA0KPiAgI2lmICFkZWZpbmVkKENPTkZJR19JUlFfUElQRUxJTkUpIHx8ICFkZWZp
-bmVkKENPTkZJR19TUEFSU0VfSVJRKQ0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2lycS9waXBlbGlu
-ZS5jIGIva2VybmVsL2lycS9waXBlbGluZS5jDQo+IGluZGV4IGM0OTc0YThkNzI0NGRlYy4uMTE2
-MjE0NjkwZDQ3Y2RhIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvaXJxL3BpcGVsaW5lLmMNCj4gKysr
-IGIva2VybmVsL2lycS9waXBlbGluZS5jDQo+IEBAIC0xNTc1LDYgKzE1NzUsMTggQEAgYm9vbCBp
-cnFfY3B1aWRsZV9lbnRlcihzdHJ1Y3QgY3B1aWRsZV9kZXZpY2UgKmRldiwNCj4gIAlyZXR1cm4g
-aXJxX2NwdWlkbGVfY29udHJvbChkZXYsIHN0YXRlKTsNCj4gIH0NCj4gIA0KPiArYm9vbCBpcnFf
-aXNfcGVuZGluZyh2b2lkKQ0KPiArew0KPiArCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ICsJYm9v
-bCByZXQ7DQo+ICsNCj4gKwlmbGFncyA9IGhhcmRfbG9jYWxfaXJxX3NhdmUoKTsNCj4gKwlyZXQg
-PSBpbmJhbmRfaXJxX3BlbmRpbmcoKTsNCj4gKwloYXJkX2xvY2FsX2lycV9yZXN0b3JlKGZsYWdz
-KTsNCj4gKw0KPiArCXJldHVybiByZXQ7DQo+ICt9DQo+ICsNCj4gIHN0YXRpYyB1bnNpZ25lZCBp
-bnQgaW5iYW5kX3dvcmtfc2lycTsNCj4gIA0KPiAgc3RhdGljIGlycXJldHVybl90IGluYmFuZF93
-b3JrX2ludGVycnVwdChpbnQgc2lycSwgdm9pZCAqZGV2X2lkKQ0KPiBkaWZmIC0tZ2l0IGEva2Vy
-bmVsL3NjaGVkL2lkbGUuYyBiL2tlcm5lbC9zY2hlZC9pZGxlLmMNCj4gaW5kZXggZThiYjU0ZWVi
-MGM5OGFmLi43MDJlMDgxNDMxMDg4ODEgMTAwNjQ0DQo+IC0tLSBhL2tlcm5lbC9zY2hlZC9pZGxl
-LmMNCj4gKysrIGIva2VybmVsL3NjaGVkL2lkbGUuYw0KPiBAQCAtMTE1LDYgKzExNSw3IEBAIHZv
-aWQgX19jcHVpZGxlIGRlZmF1bHRfaWRsZV9jYWxsKHZvaWQpDQo+ICAJCXJjdV9pZGxlX2VudGVy
-KCk7DQo+ICAJCWxvY2tkZXBfaGFyZGlycXNfb24oX1RISVNfSVBfKTsNCj4gIA0KPiArCQlXQVJO
-X09OX09OQ0UoaXJxX2lzX3BlbmRpbmcoKSk7DQo+ICAJCWFyY2hfY3B1X2lkbGUoKTsNCj4gIA0K
-PiAgCQkvKg0KPiBAQCAtMjUyLDYgKzI1Myw3IEBAIHN0YXRpYyB2b2lkIGNwdWlkbGVfaWRsZV9j
-YWxsKHZvaWQpDQo+ICAJfQ0KPiAgDQo+ICBleGl0X2lkbGU6DQo+ICsJV0FSTl9PTl9PTkNFKGly
-cV9pc19wZW5kaW5nKCkpOw0KPiAgCV9fY3VycmVudF9zZXRfcG9sbGluZygpOw0KPiAgDQo+ICAJ
-LyoNCg0KVGhlIHNpdHVhdGlvbiBjaGFuZ2VkIGEgYml0IHNpbmNlIGxhc3QgdGltZS4gV2UgcmVi
-YXNlZCB0aGUga2VybmVsDQpjb25maWd1cmF0aW9uIHRvIHRoZSBEZWJpYW4gY29uZmlnIGFuZCBh
-ZGRlZCBvdXIgWGVub21haSBzcGVjaWZpY3Mgb24NCnRvcC4NCg0KVGhlIGlzc3VlIGlzIG5vIGxv
-bmdlciByZXByb2R1Y2libGUgb24gdGhlIHNhbWUgbWFjaGluZSwgYnV0IEkgc3RpbGwNCmhhdmUg
-b25lIG1hY2hpbmUgaW4gb3VyIGxhYiB3aGljaCBzaG93cyB0aGlzIGlzc3VlLiBJdCBjYW4gYmUN
-CnJlcHJvZHVjZWQgZWFzaWx5LiBUaGUgbWFjaGluZSBzaG93cyB0aGUgV0FSTklORyBiZWxvdyB3
-aGlsZSBib290aW5nDQp1cC4gSW4gOTklIG9mIHRoZSB0aW1lIHRoZSBtYWNoaW5lIGhhbmdzIGFu
-ZCBpcyB1bnVzYWJsZSAoZXZlbiBubw0Kc2VyaWFsIGNvbm5lY3Rpb24gd29ya2luZyksIHNvbWV0
-aW1lcyBpdCByZWNvdmVycyBhbmQgaWdiIGRyaXZlciBpcw0KYWJsZSB0byByZXNldCB0aGUgZGV2
-aWNlLg0KDQpJIHBhdGNoZWQgdGhlIGtlcm5lbCB3aXRoIHRoZSBzdWdnZXN0aW9ucyBhYm92ZSwg
-YnV0IHRoZSBXQVJOX09OX09OQ0UNCmFjdHVhbGx5IG5ldmVyIHRyaWdnZXJlZC4NCg0KQWRkaW5n
-IGlkbGU9cG9sbCB0byB0aGUga2VybmVsIGNtZGxpbmUgaGVscGVkIHRoaXMgdGltZS4gVGhlIGlz
-c3VlIGRpZA0Kbm90IGNvbWUgYmFjayB1bnRpbCBub3cuDQoNCkFzIHRoZSBtYWNoaW5lIGlzIG5v
-cm1hbGx5IGRlYWQgdHJhY2luZyBkb2Vzbid0IGhlbHAgaGVyZS4gQW55IGZ1cnRoZXINCmlkZWFz
-Pw0KDQpbICAgMzAuMDE5NTI0XSAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0N
-ClsgICAzMC4wNDcyMDhdIFdBUk5JTkc6IENQVTogNiBQSUQ6IDAgYXQgbmV0L3NjaGVkL3NjaF9n
-ZW5lcmljLmM6NDY3IGRldl93YXRjaGRvZysweDI0ZC8weDI2MA0KWyAgIDMwLjA5NjcwOF0gTW9k
-dWxlcyBsaW5rZWQgaW46IG5sc191dGY4KEUpIGNpZnMoRSkgbGliYXJjNChFKSBkbnNfcmVzb2x2
-ZXIoRSkgZnNjYWNoZShFKSBsaWJkZXMoRSkgeHRfY29ubnRyYWNrKEUpIHh0X01BU1FVRVJBREUo
-RSkgbmZfY29ubnRyYWNrX25ldGxpbmsoRSkgbmZuZXRsaW5rKEUpIHhmcm1fdXNlcihFKSB4ZnJt
-X2FsZ28oRSkgeHRfYWRkcnR5cGUoRSkgaXB0YWJsZV9maWx0ZXIoRSkgaXB0YWJsZV9uYXQoRSkg
-bmZfbmF0KEUpIG5mX2Nvbm50cmFjayhFKSkNClsgICAzMC4wOTY4OTVdICBpcF90YWJsZXMoRSkg
-eF90YWJsZXMoRSkgYXV0b2ZzNChFKSBleHQ0KEUpIGNyYzE2KEUpIG1iY2FjaGUoRSkgamJkMihF
-KSByYWlkMTAoRSkgcmFpZDQ1NihFKSBhc3luY19yYWlkNl9yZWNvdihFKSBhc3luY19tZW1jcHko
-RSkgYXN5bmNfcHEoRSkgYXN5bmNfeG9yKEUpIGFzeW5jX3R4KEUpIHhvcihFKSByYWlkNl9wcShF
-KSBsaWJjcmMzMmMoRSkgY3JjMzJjX2dlbmVyaWMoRSkgcmFpZDEoRSkgbXVsdGlwYXRoKEUpIGxp
-bmVhcihFKSByYWlkMCgpDQpbICAgMzAuOTU2NzU2XSBDUFU6IDYgUElEOiAwIENvbW06IHN3YXBw
-ZXIvNiBUYWludGVkOiBHICAgICAgICAgICAgRSAgICAgNS4xMC42MS14ZW5vbWFpLTEtb3JpZyAj
-MQ0KWyAgIDMxLjAwODg1M10gSGFyZHdhcmUgbmFtZTogU3VwZXJtaWNybyBYOURSMy1GL1g5RFIz
-LUYsIEJJT1MgMi4wIDAyLzIwLzIwMTMNClsgICAzMS4wNTAwMzhdIElSUSBzdGFnZTogTGludXgN
-ClsgICAzMS4wNjczMDldIFJJUDogMDAxMDpkZXZfd2F0Y2hkb2crMHgyNGQvMHgyNjANClsgICAz
-MS4wOTM5MzJdIENvZGU6IDI5IGNiIGZkIGZmIGViIGE5IDRjIDg5IGY3IGM2IDA1IGI3IGJjIGVm
-IDAwIDAxIGU4IDg4IGEwIGZhIGZmIDQ0IDg5IGU5IDRjIDg5IGY2IDQ4IGM3IGM3IDI4IDI0IDk3
-IGI2IDQ4IDg5IGMyIGU4IDJkIDFjIDE0IDAwIDwwZj4gMGIgZWIgOGEgNjYgNjYgMmUgMGYgMWYg
-ODQgMDAgMDAgMDAgMDAgMDAgMGYgMWYgNDAgMDAgNjYgNjYgNjYNClsgICAzMS4yMDYzNTJdIFJT
-UDogMDAxODpmZmZmYmE2Y2MxYjY4ZWIwIEVGTEFHUzogMDAwMTAyODINClsgICAzMS4yMzc2NTld
-IFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY5MzkwYzE4ZDc4YzAgUkNYOiBmZmZmOTM5
-NDM3ODRjODAwDQpbICAgMzEuMjgwNDAzXSBSRFg6IGZmZmY5Mzk0Mzc4NGM4MDAgUlNJOiAwMDAw
-MDAwMDAwMDAwMDAwIFJESTogMDAwMDAwMDAwMDAwMDAwNg0KWyAgIDMxLjMyMzE0Nl0gUkJQOiBm
-ZmZmOTM5MGM2YzM0M2RjIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IGZmZmZiYTZjYzFiNjhj
-YjgNClsgICAzMS4zNjU4OTFdIFIxMDogMDAwMDAwMDAwMDAwMDA0MCBSMTE6IGZmZmY5Mzk0M2Zm
-ODgyMjggUjEyOiBmZmZmOTM5MGM2YzM0NDgwDQpbICAgMzEuNDA4NjM2XSBSMTM6IDAwMDAwMDAw
-MDAwMDAwMDUgUjE0OiBmZmZmOTM5MGM2YzM0MDAwIFIxNTogZmZmZjkzOTBjMThkNzk0MA0KWyAg
-IDMxLjQ1MTM4Ml0gRlM6ICAwMDAwMDAwMDAwMDAwMDAwKDAwMDApIEdTOmZmZmY5Mzk0Mzc4MDAw
-MDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0KWyAgIDMxLjQ5OTg0Nl0gQ1M6ICAwMDEw
-IERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KWyAgIDMxLjUzNDI3MV0g
-Q1IyOiAwMDAwMDAwMDAwNDViM2MwIENSMzogMDAwMDAwMDFmMDgwYTAwMyBDUjQ6IDAwMDAwMDAw
-MDAwNjA2ZTANClsgICAzMS41NzcwMTVdIENhbGwgVHJhY2U6DQpbICAgMzEuNTkxNjgzXSAgPElS
-UT4NClsgICAzMS42MDM3NDhdICA/IHBmaWZvX2Zhc3RfZW5xdWV1ZSsweDE1MC8weDE1MA0KWyAg
-IDMxLjYyOTg0OV0gID8gcGZpZm9fZmFzdF9lbnF1ZXVlKzB4MTUwLzB4MTUwDQpbICAgMzEuNjU1
-OTU2XSAgY2FsbF90aW1lcl9mbisweDI5LzB4ZjANClsgICAzMS42NzczNzhdICBfX3J1bl90aW1l
-cnMucGFydC4wKzB4MWRkLzB4MjUwDQpbICAgMzEuNzAyOTY3XSAgPyBwcm94eV9zZXRfbmV4dF9r
-dGltZSsweGUwLzB4MTEwDQpbICAgMzEuNzI5NTg3XSAgcnVuX3RpbWVyX3NvZnRpcnErMHgyNi8w
-eDUwDQpbICAgMzEuNzUzMDk3XSAgX19kb19zb2Z0aXJxKzB4YzMvMHgyNzENClsgICAzMS43NzQ1
-MTVdICBhc21fY2FsbF9pcnFfb25fc3RhY2srMHgxMi8weDIwDQpbICAgMzEuODAwMDk5XSAgPC9J
-UlE+DQpbICAgMzEuODEyNjkyXSAgZG9fc29mdGlycV9vd25fc3RhY2srMHgzNy8weDQwDQpbICAg
-MzEuODM3NzU0XSAgaXJxX2V4aXRfcmN1KzB4OGMvMHhjMA0KWyAgIDMxLjg1ODY1OF0gIGFyY2hf
-ZG9fSVJRX3BpcGVsaW5lZCsweGMyLzB4MTQwDQpbICAgMzEuODg0NzYwXSAgc3luY19jdXJyZW50
-X2lycV9zdGFnZSsweDFiOS8weDI2MA0KWyAgIDMxLjkxMTkwM10gIGluYmFuZF9pcnFfZW5hYmxl
-KzB4NDIvMHg1MA0KWyAgIDMxLjkzNTQxMV0gIGNwdWlkbGVfZW50ZXJfc3RhdGUrMHhlNC8weDM3
-MA0KWyAgIDMxLjk2MDQ3Ml0gIGNwdWlkbGVfZW50ZXIrMHgyOS8weDQwDQpbICAgMzEuOTgxOTAw
-XSAgZG9faWRsZSsweDFlOC8weDJhMA0KWyAgIDMyLjAwMTI0MV0gIGNwdV9zdGFydHVwX2VudHJ5
-KzB4MTkvMHgyMA0KWyAgIDMyLjAyNDc0Nl0gIHNlY29uZGFyeV9zdGFydHVwXzY0X25vX3Zlcmlm
-eSsweGIwLzB4YmINClsgICAzMi4wNTUwMDhdIC0tLVsgZW5kIHRyYWNlIGZhNTE1NmY1YWM2MjQ3
-MjIgXS0tLQ0KDQo=
+On 07.10.21 15:29, Henning Schild wrote:
+> Am Thu, 7 Oct 2021 10:55:38 +0200
+> schrieb "Bezdeka, Florian (T RDA IOT SES-DE)"
+> <florian.bezdeka@siemens.com>:
+> 
+>> On Thu, 2021-10-07 at 08:53 +0000, Bezdeka, Florian via Xenomai wrote:
+>>> On Thu, 2021-10-07 at 10:37 +0200, Jan Kiszka wrote:  
+>>>> On 05.10.21 17:18, Henning Schild wrote:  
+>>>>> Am Tue, 5 Oct 2021 16:38:12 +0200
+>>>>> schrieb "Bezdeka, Florian (T RDA IOT SES-DE)"
+>>>>> <florian.bezdeka@siemens.com>:
+>>>>>  
+>>>>>> On Tue, 2021-10-05 at 16:29 +0200, Jan Kiszka via Xenomai
+>>>>>> wrote:  
+>>>>>>> On 24.09.21 15:31, Henning Schild via Xenomai wrote:  
+>>>>>>>> Am Wed, 22 Sep 2021 16:21:54 +0200
+>>>>>>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+>>>>>>>>  
+>>>>>>>>> Am Wed, 22 Sep 2021 14:36:49 +0200
+>>>>>>>>> schrieb Philippe Gerum <rpm@xenomai.org>:
+>>>>>>>>>  
+>>>>>>>>>> Henning Schild via Xenomai <xenomai@xenomai.org>
+>>>>>>>>>> writes: 
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>> getting sick of maintaining a "small" kernel config
+>>>>>>>>>>> i wanted to switch to a config derived from the
+>>>>>>>>>>> debian11 5.10 kernel. Basically that config plus
+>>>>>>>>>>> the few switches coming in with dovetail.
+>>>>>>>>>>>
+>>>>>>>>>>> That passed all tests in qemu but on a real machine
+>>>>>>>>>>> (big xeon with raid0) the "switchtest" has an issue.
+>>>>>>>>>>>
+>>>>>>>>>>> # /lib/xenomai/testsuite/switchtest
+>>>>>>>>>>> == Testing FPU check routines...
+>>>>>>>>>>> r0: 1 != 2
+>>>>>>>>>>> r1: 1 != 2
+>>>>>>>>>>> r2: 1 != 2
+>>>>>>>>>>> r3: 1 != 2
+>>>>>>>>>>> r4: 1 != 2
+>>>>>>>>>>> r5: 1 != 2
+>>>>>>>>>>> r6: 1 != 2
+>>>>>>>>>>> r7: 1 != 2
+>>>>>>>>>>> ymm0: 1/1 != 2/2
+>>>>>>>>>>> ymm1: 1/1 != 2/2
+>>>>>>>>>>> ymm2: 1/1 != 2/2
+>>>>>>>>>>> ymm3: 1/1 != 2/2
+>>>>>>>>>>> ymm4: 1/1 != 2/2
+>>>>>>>>>>> ymm5: 1/1 != 2/2
+>>>>>>>>>>> ymm6: 1/1 != 2/2
+>>>>>>>>>>> ymm7: 1/1 != 2/2
+>>>>>>>>>>> == FPU check routines: OK.
+>>>>>>>>>>> == Threads: ... a lot of threads ...
+>>>>>>>>>>> 30-16 rtuo_ufpp30-17 rtuo_ufpp30-18 rtuo_ufps30-19
+>>>>>>>>>>> rtuo_ufps30-20 rtuo_ufpp_ufps30-21
+>>>>>>>>>>> rtuo_ufpp_ufps30-22 sleeper_ufpthread_create:
+>>>>>>>>>>> Resource temporarily unavailable ps31-0 rtk31-1
+>>>>>>>>>>> rtk31-2 rtk_fp31-3 rtk_fp31-4 rtk_fp_ufpp31-5
+>>>>>>>>>>> rtk_fp_ufpp31-6 rtup31-7 rtup31-8 rtup_ufpp31-9
+>>>>>>>>>>> rtup_ufpp31-10 rtus
+>>>>>>>>>>>
+>>>>>>>>>>> followed by only 0s
+>>>>>>>>>>>
+>>>>>>>>>>> RTH|---------cpu|ctx switches|-------total
+>>>>>>>>>>> RTD|           0|           0|           0
+>>>>>>>>>>> RTD|           1|           0|           0
+>>>>>>>>>>> RTD|           2|           0|           0
+>>>>>>>>>>> RTD|           3|           0|           0
+>>>>>>>>>>> RTD|           4|           0|           0
+>>>>>>>>>>> RTD|           5|           0|           0
+>>>>>>>>>>> RTD|           6|           0|           0
+>>>>>>>>>>>
+>>>>>>>>>>> So it gets a
+>>>>>>>>>>>
+>>>>>>>>>>> sleeper_ufpthread_create: Resource temporarily
+>>>>>>>>>>> unavailable
+>>>>>>>>>>>
+>>>>>>>>>>> but swallows that and keeps going. I think there
+>>>>>>>>>>> might be a first issue with that error return not
+>>>>>>>>>>> being dealt with.
+>>>>>>>>>>>
+>>>>>>>>>>> A second run get the "switchtest" stuck after
+>>>>>>>>>>> crtl+c while the kernel starts complaining.
+>>>>>>>>>>>
+>>>>>>>>>>> [ 1229.072052] list_del corruption. prev->next
+>>>>>>>>>>> should be ffffb24e46fb0548, but was
+>>>>>>>>>>> ffffffff9a7356b0 [ 1229.072053] ------------[ cut
+>>>>>>>>>>> here ]------------ [ 1229.072054] kernel BUG at
+>>>>>>>>>>> lib/list_debug.c:51! [ 1229.072054] invalid opcode:
+>>>>>>>>>>> 0000 [#1] SMP PTI IRQ_PIPELINE [ 1229.072054] CPU:
+>>>>>>>>>>> 31 PID: 1857 Comm: switchtest Tainted: G
+>>>>>>>>>>> E 5.10.61-xenomai-1 #1 [ 1229.072055] Hardware
+>>>>>>>>>>> name: secret [ 1229.072055] IRQ stage: Linux [
+>>>>>>>>>>> 1229.072055] RIP:
+>>>>>>>>>>> 0010:__list_del_entry_valid.cold+0x31/0x47 [
+>>>>>>>>>>> 1229.072056] Code: 99 32 9a e8 5f 0d ff ff 0f 0b 48
+>>>>>>>>>>> c7 c7 00 9a 32 9a e8 51 0d ff ff 0f 0b 48 89 b [
+>>>>>>>>>>> 1229.072057] RSP: 0018:ffffb24e4b5f7e30 EFLAGS:
+>>>>>>>>>>> 00010046 [ 1229.072061] RAX: 0000000000000057 RBX:
+>>>>>>>>>>> ffffb24e46fb04b0 RCX: 0000000000000000 [
+>>>>>>>>>>> 1229.072062] RDX: 0000000000000000 RSI:
+>>>>>>>>>>> ffffa10e9fd9bba0 RDI: ffffa10e9fd97b68 [
+>>>>>>>>>>> 1229.072064] RBP: 0000000000000000 R08:
+>>>>>>>>>>> 0000000000000001 R09: 000000000000000f [
+>>>>>>>>>>> 1229.072066] R10: 000000000000000f R11:
+>>>>>>>>>>> ffffa10e9fd97bd6 R12: 0000000000000000 [
+>>>>>>>>>>> 1229.072069] R13: ffffa0ff488c7380 R14:
+>>>>>>>>>>> 0000000000000000 R15: 0000000000000000 [
+>>>>>>>>>>> 1229.072072] FS:  00007f57e687bb80(0000)
+>>>>>>>>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [
+>>>>>>>>>>> 1229.072074] CS: 0010 DS: 0000 ES: 0000 CR0:
+>>>>>>>>>>> 0000000080050033 [ 1229.072076] CR2:
+>>>>>>>>>>> 000055921bfa921c CR3: 00000001062fe002 CR4:
+>>>>>>>>>>> 00000000001706e0 [ 1229.072078] Call Trace: [
+>>>>>>>>>>> 1229.072080] xntimer_destroy+0x81/0x150 [
+>>>>>>>>>>> 1229.072082] __xnthread_cleanup+0x1e/0x2a0 [
+>>>>>>>>>>> 1229.072084] cobalt_handle_taskexit_event+0x1d/0x40
+>>>>>>>>>>> [ 1229.072086] do_exit+0xe1/0xab0 [ 1229.072088]  ?
+>>>>>>>>>>> signal_wake_up_state+0x23/0x40 [ 1229.072090]
+>>>>>>>>>>> do_group_exit+0x33/0xa0 [ 1229.072092]
+>>>>>>>>>>> __x64_sys_exit_group+0x14/0x20 [ 1229.072111]
+>>>>>>>>>>> do_syscall_64+0x3f/0x90 [ 1229.072113]
+>>>>>>>>>>> entry_SYSCALL_64_after_hwframe+0x44/0xa9 [
+>>>>>>>>>>> 1229.072115] RIP: 0033:0x7f57e6948699 [
+>>>>>>>>>>> 1229.072117] Code: 00 4c 8b 05 f9 27 0f 00 be e7 00
+>>>>>>>>>>> 00 00 ba 3c 00 00 00 eb 12 0f 1f 44 00 00 89 0 [
+>>>>>>>>>>> 1229.072119] RSP: 002b:00007ffcfbda0078 EFLAGS:
+>>>>>>>>>>> 00000246 ORIG_RAX: 00000000000000e7 [ 1229.072128]
+>>>>>>>>>>> RAX: ffffffffffffffda RBX: 00007f57e6a3d610 RCX:
+>>>>>>>>>>> 00007f57e6948699 [ 1229.072130] RDX:
+>>>>>>>>>>> 000000000000003c RSI: 00000000000000e7 RDI:
+>>>>>>>>>>> 0000000000000001 [ 1229.072132] RBP:
+>>>>>>>>>>> 0000000000000001 R08: ffffffffffffff70 R09:
+>>>>>>>>>>> 0000000000000001 [ 1229.072134] R10:
+>>>>>>>>>>> 0000000000000005 R11: 0000000000000246 R12:
+>>>>>>>>>>> 00007f57e6a3d610 [ 1229.072136] R13:
+>>>>>>>>>>> 0000000000000002 R14: 00007f57e6a3dae8 R15:
+>>>>>>>>>>> 0000000000000000 [ 1229.072138] Modules linked in:
+>>>>>>>>>>> md4(E) sha512_ssse3(E) sha512_generic(E) cmac(E)
+>>>>>>>>>>> nls_utf8(E) cifs) [ 1229.072169] mei(E)
+>>>>>>>>>>> soundcore(E) sysimgblt(E) sg(E) evdev(E) ioatdma(E)
+>>>>>>>>>>> joydev(E) watchdog(E) ac) [ 1229.072185] ---[ end
+>>>>>>>>>>> trace a1d1ac68468e74f0 ]--- [ 1229.072186] RIP:
+>>>>>>>>>>> 0010:__list_del_entry_valid.cold+0x31/0x47 [
+>>>>>>>>>>> 1229.072187] Code: 99 32 9a e8 5f 0d ff ff 0f 0b 48
+>>>>>>>>>>> c7 c7 00 9a 32 9a e8 51 0d ff ff 0f 0b 48 89 b [
+>>>>>>>>>>> 1229.072187] RSP: 0018:ffffb24e4b5f7e30 EFLAGS:
+>>>>>>>>>>> 00010046 [ 1229.072188] RAX: 0000000000000057 RBX:
+>>>>>>>>>>> ffffb24e46fb04b0 RCX: 0000000000000000 [
+>>>>>>>>>>> 1229.072188] RDX: 0000000000000000 RSI:
+>>>>>>>>>>> ffffa10e9fd9bba0 RDI: ffffa10e9fd97b68 [
+>>>>>>>>>>> 1229.072189] RBP: 0000000000000000 R08:
+>>>>>>>>>>> 0000000000000001 R09: 000000000000000f [
+>>>>>>>>>>> 1229.072189] R10: 000000000000000f R11:
+>>>>>>>>>>> ffffa10e9fd97bd6 R12: 0000000000000000 [
+>>>>>>>>>>> 1229.072190] R13: ffffa0ff488c7380 R14:
+>>>>>>>>>>> 0000000000000000 R15: 0000000000000000 [
+>>>>>>>>>>> 1229.072190] FS:  00007f57e687bb80(0000)
+>>>>>>>>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [
+>>>>>>>>>>> 1229.072190] CS: 0010 DS: 0000 ES: 0000 CR0:
+>>>>>>>>>>> 0000000080050033 [ 1229.072191] CR2:
+>>>>>>>>>>> 000055921bfa921c CR3: 00000001062fe002 CR4:
+>>>>>>>>>>> 00000000001706e0 [ 1229.072191] Fixing recursive
+>>>>>>>>>>> fault but reboot is needed!
+>>>>>>>>>>>
+>>>>>>>>>>> I will look into that eventually. For now i just
+>>>>>>>>>>> wanted to share what i have so far, maybe someone
+>>>>>>>>>>> knows what is going on or can give a hint. function
+>>>>>>>>>>> tracing was way too verbose to find the rootcause
+>>>>>>>>>>> of that EBUSY. 
+>>>>>>>>>>
+>>>>>>>>>> EAGAIN, switchtest triggers this when many CPUs are
+>>>>>>>>>> available but the system heap is too small (not
+>>>>>>>>>> enough space there to create thread TCBs and other
+>>>>>>>>>> core objects). Normally, switchtest exits properly
+>>>>>>>>>> after a while.  
+>>>>>>>>>
+>>>>>>>>> Ok maybe that changed kernel config did shrink the
+>>>>>>>>> available heap, thanks for the hint.
+>>>>>>>>>
+>>>>>>>>> If it is an EAGAIN because of too little resources,
+>>>>>>>>> maybe it should keep trying with less and less CPUs.
+>>>>>>>>> And spit a warning like "could only run on 20 out of 32
+>>>>>>>>> cores". At least that would be my first idea for a
+>>>>>>>>> patch in case it is that.  
+>>>>>>>>
+>>>>>>>> The test runs just fine when reducing the number of cores
+>>>>>>>> to run on. In fact it was one too many ;)
+>>>>>>>>
+>>>>>>>> good
+>>>>>>>> ./switchtest -T 5 --cpu-affinity=0-30
+>>>>>>>> bad (where affinity includes all cpus)
+>>>>>>>> ./switchtest -T 5 --cpu-affinity=0-31
+>>>>>>>>  
+>>>>>>>>>> The kernel splat looks like some issue on the error
+>>>>>>>>>> path which might not have been observed yet (maybe
+>>>>>>>>>> triggered by ^C while switchtest was unwinding).  
+>>>>>>>>>
+>>>>>>>>> I saw exactly that in probably three attempts. First
+>>>>>>>>> switchtest killed with ctrl+c when the 0s come ...
+>>>>>>>>> never any fun kernel message. But always fun kernel
+>>>>>>>>> message when the second run was interrupted. So i would
+>>>>>>>>> be tempted to call that reproducible and not a one-time
+>>>>>>>>> bad timing.  
+>>>>>>>>
+>>>>>>>> But when running the bad case two times in a row, it will
+>>>>>>>> always
+>>>>>>>>
+>>>>>>>> kernel BUG at lib/list_debug.c:51!
+>>>>>>>>
+>>>>>>>> Even when none of the two runs was interrupted by ctrl+c.
+>>>>>>>>  
+>>>>>>>
+>>>>>>> So, the main issue was solved by increasing resources, but
+>>>>>>> we still have a problem with handling errors gracefully -
+>>>>>>> is that the correct summary of this issue? Or where are we
+>>>>>>> standing with this?  
+>>>>>
+>>>>> By reducing the number of threads, but yes that issue was
+>>>>> "worked around". The crash is something that was found as well
+>>>>> and is still open, in fact pretty easy to reproduce.
+>>>>>  
+>>>>
+>>>> How can I reproduce that?  
+>>>
+>>> I tried it again on the system that Henning was using when reporting
+>>> the problem. We increased CONFIG_XENO_OPT_DEBUG from 512 to 4096 in
+>>> the meantime.
+>>>
+>>> Taken while switchtest is running on that system:
+>>>
+>>> # cat /proc/xenomai/registry/usage
+>>> 523/4096
+>>>
+>>> So with the old 512 slots we would run into a exhaustion on such a
+>>> big system. IMHO that should be the root cause.
+>>>
+>>> Configuration problem, no bug.  
+>>
+>> Correction: Maybe we have a problem in one of the error handling
+>> pathes in switchtest?
+> 
+> There is a bug. The switchtest starts running will all 0 even though it
+> failed to claim the ressources it needs ... maybe that is still OK. Not
+> sure what the return value was in that case ... but should not be 0.
+
+The return value is non-zero, at least that is fine.
+
+I think the issue of some thread starting to run is simply that there is
+no common kick-off after all threads have been created but rather an
+immediate start of each new thread - not really an issue.
+
+> 
+> The real problem is the BUG_ON on the second run. Probably some
+> leftovers from the first run that "failed" and did not clean up
+> properly.
+> 
+> But i personally see it as very low prio, which is also why i did not
+> do anything about it yet. It is a bug that gets triggered by an
+> artificial test that is "unusually stressy", and it can be worked
+> around by making that test less stressy or increasing the slot nr.
+
+That real bug is fixed now - fortunately as it was not a switchtest problem.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
