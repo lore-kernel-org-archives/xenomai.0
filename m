@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/posix/thread: Properly discard xnthread on
- registration error
-Message-ID: <a9a6f864-4c7c-48b2-773f-92a53e172e0d@siemens.com>
-Date: Thu, 7 Oct 2021 15:56:13 +0200
+Subject: [PATCH] drivers/testing/switchtest: Properly clean up xnthread on
+ error
+Message-ID: <6f7e5329-69ef-4a7c-7227-c49a5c7a8a23@siemens.com>
+Date: Thu, 7 Oct 2021 16:12:24 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -19,28 +19,26 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This left timers and possibly other resources registers while freeing
-the object. The resulting crash was easily triggerable by creating
-threads until the registry was full.
+Analogously to dfb55d64fc0d.
 
-Reported-by: Henning Schild <henning.schild@siemens.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/posix/thread.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/drivers/testing/switchtest.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index cdeb66d4f3..94a6e394e1 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -399,6 +399,7 @@ static int pthread_create(struct cobalt_thread **thread_p,
- 	if (ret) {
- 		xnsynch_destroy(&thread->monitor_synch);
- 		xnsynch_destroy(&thread->sigwait);
-+		__xnthread_discard(&thread->threadbase);
- 		xnfree(thread);
- 		return ret;
- 	}
+diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
+index 8224974e5c..6f8a9fcaa3 100644
+--- a/kernel/drivers/testing/switchtest.c
++++ b/kernel/drivers/testing/switchtest.c
+@@ -504,6 +504,8 @@ static int rtswitch_create_ktask(struct rtswitch_context *ctx,
+ 		sattr.entry = rtswitch_ktask;
+ 		sattr.cookie = &arg;
+ 		err = xnthread_start(&task->ktask, &sattr);
++		if (err)
++			__xnthread_discard(&task->ktask);
+ 	} else
+ 		/*
+ 		 * In order to avoid calling xnthread_cancel() for an
 -- 
 2.31.1
 
