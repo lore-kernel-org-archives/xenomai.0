@@ -1,15 +1,14 @@
-Subject: Re: [PATCH] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash
- with seccomp
-References: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
- <576b4524874fd0ce2afa5abc8e428b9484d6f55c.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <da004f16-4588-5fcc-7c49-c74adc6117ac@siemens.com>
-Date: Fri, 12 Nov 2021 09:32:39 +0100
-MIME-Version: 1.0
-In-Reply-To: <576b4524874fd0ce2afa5abc8e428b9484d6f55c.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+Subject: Re: RTNET i.mx6 raw packets
+References: <freemail.20211001100323.12881.1@fmxmldata07.freemail.hu>
+ <c75ef515-77a1-9d9f-deaa-fe13fe3239e7@siemens.com>
+From: Jean-Baptiste Tredez <jean-baptiste.tredez@ba-healthcare.com>
+Message-ID: <d075a68d-5acf-811d-2272-107bf94cfcc3@ba-healthcare.com>
+Date: Thu, 7 Oct 2021 14:54:56 +0200
+In-Reply-To: <c75ef515-77a1-9d9f-deaa-fe13fe3239e7@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,54 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "andouyuuta@yamaha-motor.co.jp" <andouyuuta@yamaha-motor.co.jp>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Paal Tamas <paal_to@freemail.hu>, xenomai@xenomai.org
 
-On 12.11.21 09:29, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> On Thu, 2021-11-11 at 19:57 +0100, Jan Kiszka via Xenomai wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->>
->> __secure_computing, called by syscall_trace_enter, returns -1 when a
->> call should be skipped. We must avoid that this is interpreted as
->> EXIT_SYSCALL_OOB in the dovetail case.
->>
->> Fixes, e.g., crashes of Chrome in sandbox mode.
->>
->> Reported-by: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>
->> "Fixes" is my observation - Yuta-san, please confirm also for your setup.
->>
->>  include/linux/entry-common.h | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
->> index 2a08b00632b9..43cf846111d9 100644
->> --- a/include/linux/entry-common.h
->> +++ b/include/linux/entry-common.h
->> @@ -66,8 +66,8 @@
->>   * Status codes of syscall entry when Dovetail is enabled. Must not
->>   * conflict with valid syscall numbers.
-> 
-> Maybe extend this comment why -1 can not be used here?
-> 
+We are working on a new patch for mainline kernel 5.10 + xenomai 
+(previous patch was based on nxp kernel 5.4 + xenomai 3.1).
 
-Good point.
+This work is under test. I hope to send a new proposal by the end of the 
+month.
 
-Jan
+Jean-Baptiste
 
->>   */
->> -#define EXIT_SYSCALL_OOB     (-1)
->> -#define EXIT_SYSCALL_TAIL    (-2)
->> +#define EXIT_SYSCALL_OOB     (-2)
->> +#define EXIT_SYSCALL_TAIL    (-3)
->>
->>  /**
->>   * arch_check_user_regs - Architecture specific sanity check for user mode regs
-> 
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Le 07/10/2021 à 10:12, Jan Kiszka a écrit :
+> On 01.10.21 10:03, Paal Tamas via Xenomai wrote:
+>> Dear All, I would like to use RTNET with raw packets on the fec interface of my i.mx6 CPU. The purpose of the whole thing is to use the Soem ECAT master.
+>> I am lost. I need your help. Xenomai_3.1, kernel 4.14.78.I am using this rtnet fec patch:
+>> https://xenomai.org/pipermail/xenomai/2019-March/040580.html The fec interface is eth0.
+> There was a proposal to merge that change
+> (https://xenomai.org/pipermail/xenomai/2021-July/046000.html), and I
+> almost did but had to revert it again due to build issues
+> (https://xenomai.org/pipermail/xenomai/2021-August/046088.html). Any
+> news on this, Jean-Baptiste?
+>
+> Jan
+>
 
