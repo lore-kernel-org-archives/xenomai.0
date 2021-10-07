@@ -1,15 +1,20 @@
-Subject: Re: rt_pipe_read(): timeout does not expire
-References: <25ffc50c-94ab-d09a-fd2c-e2d04f18a185@tin.it>
- <d10d2469-b6fe-87ea-7506-cf43f75d8023@siemens.com>
- <c76efd4f-af8a-c7a7-054f-bf47cc358f6c@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f4c9ce98-3ce9-84aa-eb02-eebf3f76d716@siemens.com>
-Date: Wed, 6 Oct 2021 12:26:16 +0200
+Date: Thu, 7 Oct 2021 15:17:35 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: "switchtest" problem with recent 5.10 dovetail and distro-like
+ kernel config
+Message-ID: <20211007151735.04ea3c52@md1za8fc.ad001.siemens.net>
+In-Reply-To: <62d55224-0228-e8af-f88c-f2e1aa9d62a4@siemens.com>
+References: <20210922122519.73e772a3@md1za8fc.ad001.siemens.net>
+ <877df823dq.fsf@xenomai.org>
+ <20210922162154.495db035@md1za8fc.ad001.siemens.net>
+ <20210924153120.649e583f@md1za8fc.ad001.siemens.net>
+ <f0ddf0d1-aede-4bd6-3fc3-3b8b1f8e42d8@siemens.com>
+ <e88ca8e92a00bb649e1718ce0bf86d897e074ea8.camel@siemens.com>
+ <20211005171806.770f8ca3@md1za8fc.ad001.siemens.net>
+ <62d55224-0228-e8af-f88c-f2e1aa9d62a4@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <c76efd4f-af8a-c7a7-054f-bf47cc358f6c@siemens.com>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,110 +23,241 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Mauro S." <mau.salvi@tin.it>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.10.21 09:00, Jan Kiszka via Xenomai wrote:
-> On 05.10.21 18:00, Jan Kiszka via Xenomai wrote:
->> On 25.09.21 18:20, Mauro S. via Xenomai wrote:
->>> Hi all,
->>>
->>> I'm using Xenomai 3.1.1 in cobalt mode, on x84_64.
->>>
->>> Please consider the attached simple test code.
->>>
->>> When I start the application, I never see the "Pipe task running" print=
-f.
->>>
->>> When I close application (ctrl+c), rt_pipe_join() on pipe task hangs.
->>>
->>> Analyzing the code with gdb, the timeout in tv structure inside
->>> rt_pipe_read_timed() is the following
->>>
->>> (gdb) thread 13
->>> [Switching to thread 13 (Thread 0x7ffff7189700 (LWP 528))]
->>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
->>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
->>> 250=A0=A0=A0 rtdm.c: No such file or directory.
->>> (gdb) bt
->>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
->>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:250
->>> #1=A0 0x00007ffff7f89e11 in __cobalt_recvfrom (fd=3D3,
->>> buf=3Dbuf@entry=3D0x7ffff7188d60, len=3Dlen@entry=3D4, flags=3D0,
->>> from=3Dfrom@entry=3D0x0,
->>> =A0=A0=A0 fromlen=3Dfromlen@entry=3D0x0) at rtdm.c:343
->>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
->>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
->>> =A0=A0=A0 at pipe.c:423
->>> #3=A0 0x00005555555555c0 in rt_pipe_read (pipe=3D0x555555558150 <MyPipe=
->,
->>> buf=3D0x7ffff7188d60, size=3D4, timeout=3D500000)
->>> =A0=A0=A0 at
->>> /opt/smitec/3.1.5_SDK/sysroots/corei7-64-poky-linux/usr/include/xenomai=
-/alchemy/pipe.h:72
->>>
->>> #4=A0 0x00005555555556d4 in MyPipeFun (arg=3D0x0) at test_resume_pipe.c=
-:55
->>> #5=A0 0x00007ffff7fc196a in task_entry (arg=3D0x7ffff732ddc8) at task.c=
-:237
->>> #6=A0 task_entry (arg=3D0x7ffff732ddc8) at task.c:219
->>> #7=A0 0x00007ffff7faaca9 in thread_trampoline
->>> (arg=3Darg@entry=3D0x7fffffffe9c0) at internal.c:251
->>> #8=A0 0x00007ffff7f8b93e in cobalt_thread_trampoline (p=3D0x7fffffffe82=
-0) at
->>> thread.c:123
->>> #9=A0 0x00007ffff7f58ea4 in start_thread (arg=3D<optimized out>) at
->>> pthread_create.c:477
->>> #10 0x00007ffff7e7edcf in clone () at
->>> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
->>> (gdb) frame 2
->>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
->>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
->>> =A0=A0=A0 at pipe.c:423
->>> 423=A0=A0=A0 pipe.c: No such file or directory.
->>> (gdb) print tv
->>> $1 =3D {tv_sec =3D 1438, tv_usec =3D 783700}
->>>
->>> It seems a value related to uptime (system was up by about 24 minutes,
->>> 1440 seconds, when debugging).
->>
->> Right, Xenomai's CLOCK_REALTIME starts at system boot, not at the epoch.
->> That's at least true for I-pipe deployments.
->>
->>>
->>> The API documentation says that rt_pipe_read() accepts "a delay
->>> expressed in clock ticks". In Xenomai code, rt_pipe_read() becomes
->>> rt_pipe_read_timed(), that accepts "An absolute date expressed in clock
->>> ticks", with a note saying "abs_timeout is interpreted as a multiple of
->>> the Alchemy clock resolution" (I dont' understand this latter sentence).
->>>
->>
->> The Alchemy clock may not simply tick in single nanoseconds but may have
->> a courser resolution. That's why there is rt_timer_ns2ticks which you
->> are already using.
->>
->>> If I'm not wrong, the "absolute date" would be a date expressed in
->>> seconds after the epoch. Could the alchemy_rel_timeout() call in
->>> include/alchemy/pipe.h calculate a wrong timeout?
->>> Otherwise, what could be the problem?
->>
->> Cannot say yet, but I can confirm seeing the issue (too long timeout) as
->> well. Did you try to debug further already?
->>
->=20
-> Looks like rt_pipe_read_timed is wrong: SO_RCVTIMEO takes a relative
-> timeout to my reading of the man page and the code, but
-> rt_pipe_read_timed passed down an absolute value. This confuses me
-> because the function was like this for ages, so I might misread
-> something ATM. Philippe?
->=20
+Am Thu, 7 Oct 2021 10:37:19 +0200
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-It is definitely broken in alchemy, I've created
-https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/30 to track the
-to-dos. Any helping hand welcome.
+> On 05.10.21 17:18, Henning Schild wrote:
+> > Am Tue, 5 Oct 2021 16:38:12 +0200
+> > schrieb "Bezdeka, Florian (T RDA IOT SES-DE)"
+> > <florian.bezdeka@siemens.com>:
+> >   
+> >> On Tue, 2021-10-05 at 16:29 +0200, Jan Kiszka via Xenomai wrote:  
+> >>> On 24.09.21 15:31, Henning Schild via Xenomai wrote:    
+> >>>> Am Wed, 22 Sep 2021 16:21:54 +0200
+> >>>> schrieb Henning Schild via Xenomai <xenomai@xenomai.org>:
+> >>>>    
+> >>>>> Am Wed, 22 Sep 2021 14:36:49 +0200
+> >>>>> schrieb Philippe Gerum <rpm@xenomai.org>:
+> >>>>>    
+> >>>>>> Henning Schild via Xenomai <xenomai@xenomai.org> writes:
+> >>>>>>    
+> >>>>>>> Hi,
+> >>>>>>>
+> >>>>>>> getting sick of maintaining a "small" kernel config i
+> >>>>>>> wanted to switch to a config derived from the debian11 5.10
+> >>>>>>> kernel. Basically that config plus the few switches coming
+> >>>>>>> in with dovetail.
+> >>>>>>>
+> >>>>>>> That passed all tests in qemu but on a real machine (big
+> >>>>>>> xeon with raid0) the "switchtest" has an issue.
+> >>>>>>>
+> >>>>>>> # /lib/xenomai/testsuite/switchtest
+> >>>>>>> == Testing FPU check routines...
+> >>>>>>> r0: 1 != 2
+> >>>>>>> r1: 1 != 2
+> >>>>>>> r2: 1 != 2
+> >>>>>>> r3: 1 != 2
+> >>>>>>> r4: 1 != 2
+> >>>>>>> r5: 1 != 2
+> >>>>>>> r6: 1 != 2
+> >>>>>>> r7: 1 != 2
+> >>>>>>> ymm0: 1/1 != 2/2
+> >>>>>>> ymm1: 1/1 != 2/2
+> >>>>>>> ymm2: 1/1 != 2/2
+> >>>>>>> ymm3: 1/1 != 2/2
+> >>>>>>> ymm4: 1/1 != 2/2
+> >>>>>>> ymm5: 1/1 != 2/2
+> >>>>>>> ymm6: 1/1 != 2/2
+> >>>>>>> ymm7: 1/1 != 2/2
+> >>>>>>> == FPU check routines: OK.
+> >>>>>>> == Threads: ... a lot of threads ...
+> >>>>>>> 30-16 rtuo_ufpp30-17 rtuo_ufpp30-18 rtuo_ufps30-19
+> >>>>>>> rtuo_ufps30-20 rtuo_ufpp_ufps30-21 rtuo_ufpp_ufps30-22
+> >>>>>>> sleeper_ufpthread_create: Resource temporarily unavailable
+> >>>>>>> ps31-0 rtk31-1 rtk31-2 rtk_fp31-3 rtk_fp31-4
+> >>>>>>> rtk_fp_ufpp31-5 rtk_fp_ufpp31-6 rtup31-7 rtup31-8
+> >>>>>>> rtup_ufpp31-9 rtup_ufpp31-10 rtus
+> >>>>>>>
+> >>>>>>> followed by only 0s
+> >>>>>>>
+> >>>>>>> RTH|---------cpu|ctx switches|-------total
+> >>>>>>> RTD|           0|           0|           0
+> >>>>>>> RTD|           1|           0|           0
+> >>>>>>> RTD|           2|           0|           0
+> >>>>>>> RTD|           3|           0|           0
+> >>>>>>> RTD|           4|           0|           0
+> >>>>>>> RTD|           5|           0|           0
+> >>>>>>> RTD|           6|           0|           0
+> >>>>>>>
+> >>>>>>> So it gets a
+> >>>>>>>
+> >>>>>>> sleeper_ufpthread_create: Resource temporarily unavailable
+> >>>>>>>
+> >>>>>>> but swallows that and keeps going. I think there might be a
+> >>>>>>> first issue with that error return not being dealt with.
+> >>>>>>>
+> >>>>>>> A second run get the "switchtest" stuck after crtl+c while
+> >>>>>>> the kernel starts complaining.
+> >>>>>>>
+> >>>>>>> [ 1229.072052] list_del corruption. prev->next should be
+> >>>>>>> ffffb24e46fb0548, but was ffffffff9a7356b0 [ 1229.072053]
+> >>>>>>> ------------[ cut here ]------------ [ 1229.072054] kernel
+> >>>>>>> BUG at lib/list_debug.c:51! [ 1229.072054] invalid opcode:
+> >>>>>>> 0000 [#1] SMP PTI IRQ_PIPELINE [ 1229.072054] CPU: 31 PID:
+> >>>>>>> 1857 Comm: switchtest Tainted: G            E
+> >>>>>>> 5.10.61-xenomai-1 #1 [ 1229.072055] Hardware name: secret [
+> >>>>>>> 1229.072055] IRQ stage: Linux [ 1229.072055] RIP:
+> >>>>>>> 0010:__list_del_entry_valid.cold+0x31/0x47 [ 1229.072056]
+> >>>>>>> Code: 99 32 9a e8 5f 0d ff ff 0f 0b 48 c7 c7 00 9a 32 9a e8
+> >>>>>>> 51 0d ff ff 0f 0b 48 89 b [ 1229.072057] RSP:
+> >>>>>>> 0018:ffffb24e4b5f7e30 EFLAGS: 00010046 [ 1229.072061] RAX:
+> >>>>>>> 0000000000000057 RBX: ffffb24e46fb04b0 RCX:
+> >>>>>>> 0000000000000000 [ 1229.072062] RDX: 0000000000000000 RSI:
+> >>>>>>> ffffa10e9fd9bba0 RDI: ffffa10e9fd97b68 [ 1229.072064] RBP:
+> >>>>>>> 0000000000000000 R08: 0000000000000001 R09:
+> >>>>>>> 000000000000000f [ 1229.072066] R10: 000000000000000f R11:
+> >>>>>>> ffffa10e9fd97bd6 R12: 0000000000000000 [ 1229.072069] R13:
+> >>>>>>> ffffa0ff488c7380 R14: 0000000000000000 R15:
+> >>>>>>> 0000000000000000 [ 1229.072072] FS:  00007f57e687bb80(0000)
+> >>>>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [
+> >>>>>>> 1229.072074] CS: 0010 DS: 0000 ES: 0000 CR0:
+> >>>>>>> 0000000080050033 [ 1229.072076] CR2: 000055921bfa921c CR3:
+> >>>>>>> 00000001062fe002 CR4: 00000000001706e0 [ 1229.072078] Call
+> >>>>>>> Trace: [ 1229.072080] xntimer_destroy+0x81/0x150 [
+> >>>>>>> 1229.072082] __xnthread_cleanup+0x1e/0x2a0 [ 1229.072084]
+> >>>>>>> cobalt_handle_taskexit_event+0x1d/0x40 [ 1229.072086]
+> >>>>>>> do_exit+0xe1/0xab0 [ 1229.072088]  ?
+> >>>>>>> signal_wake_up_state+0x23/0x40 [ 1229.072090]
+> >>>>>>> do_group_exit+0x33/0xa0 [ 1229.072092]
+> >>>>>>> __x64_sys_exit_group+0x14/0x20 [ 1229.072111]
+> >>>>>>> do_syscall_64+0x3f/0x90 [ 1229.072113]
+> >>>>>>> entry_SYSCALL_64_after_hwframe+0x44/0xa9 [ 1229.072115]
+> >>>>>>> RIP: 0033:0x7f57e6948699 [ 1229.072117] Code: 00 4c 8b 05
+> >>>>>>> f9 27 0f 00 be e7 00 00 00 ba 3c 00 00 00 eb 12 0f 1f 44 00
+> >>>>>>> 00 89 0 [ 1229.072119] RSP: 002b:00007ffcfbda0078 EFLAGS:
+> >>>>>>> 00000246 ORIG_RAX: 00000000000000e7 [ 1229.072128] RAX:
+> >>>>>>> ffffffffffffffda RBX: 00007f57e6a3d610 RCX:
+> >>>>>>> 00007f57e6948699 [ 1229.072130] RDX: 000000000000003c RSI:
+> >>>>>>> 00000000000000e7 RDI: 0000000000000001 [ 1229.072132] RBP:
+> >>>>>>> 0000000000000001 R08: ffffffffffffff70 R09:
+> >>>>>>> 0000000000000001 [ 1229.072134] R10: 0000000000000005 R11:
+> >>>>>>> 0000000000000246 R12: 00007f57e6a3d610 [ 1229.072136] R13:
+> >>>>>>> 0000000000000002 R14: 00007f57e6a3dae8 R15:
+> >>>>>>> 0000000000000000 [ 1229.072138] Modules linked in: md4(E)
+> >>>>>>> sha512_ssse3(E) sha512_generic(E) cmac(E) nls_utf8(E) cifs)
+> >>>>>>> [ 1229.072169] mei(E) soundcore(E) sysimgblt(E) sg(E)
+> >>>>>>> evdev(E) ioatdma(E) joydev(E) watchdog(E) ac) [
+> >>>>>>> 1229.072185] ---[ end trace a1d1ac68468e74f0 ]--- [
+> >>>>>>> 1229.072186] RIP:
+> >>>>>>> 0010:__list_del_entry_valid.cold+0x31/0x47 [ 1229.072187]
+> >>>>>>> Code: 99 32 9a e8 5f 0d ff ff 0f 0b 48 c7 c7 00 9a 32 9a e8
+> >>>>>>> 51 0d ff ff 0f 0b 48 89 b [ 1229.072187] RSP:
+> >>>>>>> 0018:ffffb24e4b5f7e30 EFLAGS: 00010046 [ 1229.072188] RAX:
+> >>>>>>> 0000000000000057 RBX: ffffb24e46fb04b0 RCX:
+> >>>>>>> 0000000000000000 [ 1229.072188] RDX: 0000000000000000 RSI:
+> >>>>>>> ffffa10e9fd9bba0 RDI: ffffa10e9fd97b68 [ 1229.072189] RBP:
+> >>>>>>> 0000000000000000 R08: 0000000000000001 R09:
+> >>>>>>> 000000000000000f [ 1229.072189] R10: 000000000000000f R11:
+> >>>>>>> ffffa10e9fd97bd6 R12: 0000000000000000 [ 1229.072190] R13:
+> >>>>>>> ffffa0ff488c7380 R14: 0000000000000000 R15:
+> >>>>>>> 0000000000000000 [ 1229.072190] FS:  00007f57e687bb80(0000)
+> >>>>>>> GS:ffffa10e9fd80000(0000) knlGS:0000000000000000 [
+> >>>>>>> 1229.072190] CS: 0010 DS: 0000 ES: 0000 CR0:
+> >>>>>>> 0000000080050033 [ 1229.072191] CR2: 000055921bfa921c CR3:
+> >>>>>>> 00000001062fe002 CR4: 00000000001706e0 [ 1229.072191]
+> >>>>>>> Fixing recursive fault but reboot is needed!
+> >>>>>>>
+> >>>>>>> I will look into that eventually. For now i just wanted to
+> >>>>>>> share what i have so far, maybe someone knows what is going
+> >>>>>>> on or can give a hint. function tracing was way too verbose
+> >>>>>>> to find the rootcause of that EBUSY.
+> >>>>>>>    
+> >>>>>>
+> >>>>>> EAGAIN, switchtest triggers this when many CPUs are available
+> >>>>>> but the system heap is too small (not enough space there to
+> >>>>>> create thread TCBs and other core objects). Normally,
+> >>>>>> switchtest exits properly after a while.    
+> >>>>>
+> >>>>> Ok maybe that changed kernel config did shrink the available
+> >>>>> heap, thanks for the hint.
+> >>>>>
+> >>>>> If it is an EAGAIN because of too little resources, maybe it
+> >>>>> should keep trying with less and less CPUs. And spit a warning
+> >>>>> like "could only run on 20 out of 32 cores".
+> >>>>> At least that would be my first idea for a patch in case it is
+> >>>>> that.    
+> >>>>
+> >>>> The test runs just fine when reducing the number of cores to run
+> >>>> on. In fact it was one too many ;)
+> >>>>
+> >>>> good
+> >>>> ./switchtest -T 5 --cpu-affinity=0-30
+> >>>> bad (where affinity includes all cpus)
+> >>>> ./switchtest -T 5 --cpu-affinity=0-31
+> >>>>    
+> >>>>>> The kernel splat looks like some issue on the error path
+> >>>>>> which might not have been observed yet (maybe triggered by ^C
+> >>>>>> while switchtest was unwinding).    
+> >>>>>
+> >>>>> I saw exactly that in probably three attempts. First switchtest
+> >>>>> killed with ctrl+c when the 0s come ... never any fun kernel
+> >>>>> message. But always fun kernel message when the second run was
+> >>>>> interrupted. So i would be tempted to call that reproducible
+> >>>>> and not a one-time bad timing.    
+> >>>>
+> >>>> But when running the bad case two times in a row, it will always
+> >>>>
+> >>>> kernel BUG at lib/list_debug.c:51!
+> >>>>
+> >>>> Even when none of the two runs was interrupted by ctrl+c.
+> >>>>    
+> >>>
+> >>> So, the main issue was solved by increasing resources, but we
+> >>> still have a problem with handling errors gracefully - is that the
+> >>> correct summary of this issue? Or where are we standing with
+> >>> this?    
+> > 
+> > By reducing the number of threads, but yes that issue was "worked
+> > around". The crash is something that was found as well and is still
+> > open, in fact pretty easy to reproduce.
+> >   
+> 
+> How can I reproduce that?
 
-Jan
+I could give access to a machine within Siemens that is "affected". You
+seem to need high core counts and low CONFIG_XENO_OPT_REGISTRY_NRSLOTS
 
---=20
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+with 32 cores and CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512 you will hit it,
+but not with 31 cores
+
+Not sure how things scale but my guess is that you can see it in qemu
+with 4 cores if you go down to or below 64 SLOTS.
+
+Henning
+
+> Jan
+> 
+> >> Might that be related to a registry slot exhaustion? On the
+> >> affected system we changed CONFIG_XENO_OPT_DEBUG from 4096 back to
+> >> its default (512). Just an idea... ctrl+c might skip the resource
+> >> cleanup.  
+> > 
+> > I have no which ressource was exhausted. We could just try that
+> > kernel with the bigger registry and compare with the smaller one.
+> > Thanks for the hint.
+> > 
+> > Henning
+> >    
+> >> Looking into /proc/xenomai/registry/usage might help in such case.
+> >>  
+> >>>
+> >>> Jan
+> >>>    
+> >>  
+> >   
+> 
+
 
