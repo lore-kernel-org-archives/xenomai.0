@@ -1,11 +1,15 @@
-Date: Tue, 2 Nov 2021 10:14:15 +0000 (UTC)
-From: zared kamal <zaredkam@yahoo.fr>
-Message-ID: <1105631186.5343574.1635848055546@mail.yahoo.com>
-Subject: error: make menuconfig to configure Xenomai cobalt
+Subject: Re: [PATCH] cobalt/arch/arm: fptest: Add missing SIMD register
+ clobbering
+References: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
+ <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
+Date: Thu, 7 Oct 2021 09:58:05 +0200
 MIME-Version: 1.0
-References: <1105631186.5343574.1635848055546.ref@mail.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,20 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-dear sir,i try to execute make menuconfig to install nano kernel xenomai wi=
-th Linux_5.4 kernel, but i get the following error:
-scripts/kconfig/mconf=C2=A0 Kconfig
-init/Kconfig:2254: can't open file "arch/$SRCARCH/xenomai/Kconfig"
-scripts/kconfig/Makefile:33: recipe for target 'menuconfig' failed
-make[1]: *** [menuconfig] Error 1
-Makefile:590: recipe for target 'menuconfig' failed
-make: *** [menuconfig] Error 2
+On 06.10.21 23:01, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Wed, 2021-10-06 at 17:19 +0200, Jan Kiszka wrote:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> This caused troubles with modern gcc that starts to use those regs for
+>> other purposes. Seen with gcc-10 on Debian 11 e.g.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>  kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h | 7 ++++++-
+>>  1 file changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
+>> index b81d109933..d5c2c7515b 100644
+>> --- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
+>> +++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
+>> @@ -32,7 +32,12 @@ static inline void fp_regs_set(int features, unsigned int val)
+>>               /* vldm %0!, {d0-d15},
+>>                  AKA fldmiax %0!, {d0-d15} */
+>>               __asm__ __volatile__("ldc p11, cr0, [%0],#32*4":
+>> -                                  "=r"(i): "0"(&e[0]): "memory");
+>> +                                  "=r"(i)
+>> +                                  : "0"(&e[0])
+>> +                                  : "d0", "d1", "d2", "d3", "d4", "d5",
+>> +                                    "d6", "d7", "d8", "d9", "d10", "d11",
+>> +                                    "d12", "d13", "d14", "d15",
+>> +                                    "memory");
+>>       }
+>>  }
+>>
+> 
+> Is that already applied to next? That should be one of the last missing
+> pieces for porting xenomai-images to Debian 11.
 
-many thanksBest regards
-Zared Kamal
-D=C3=A9partement de G=C3=A9nie Electrique,Laboratoire Signaux Syst=C3=A8mes=
- & Composants=C2=A0Facult=C3=A9 des Sciences & Techniques,=C2=A0BP 2202, 30=
-000 F=C3=A8s=C2=A0=C2=A0 http://www.fstusmba.ac.ma/e-mail kamal.zared@usmba=
-.ac.ma, zaredkam@yahoo.fr
+It's in next, right.
+
+> 
+> The last unclear topic (AFAIR) is the ssh-key regeneration taking too
+> long for some reason on ARM and Debian 11, but that should be a Debian
+> specific issue and is hopefully not related to Xenomai itself.
+> 
+
+Right, now I recall. Interestingly, this does not show up on ARM (in
+QEMU) with the already ported jailhouse-images.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
