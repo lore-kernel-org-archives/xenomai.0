@@ -1,16 +1,17 @@
-Subject: Re: rt_pipe_read(): timeout does not expire
-References: <25ffc50c-94ab-d09a-fd2c-e2d04f18a185@tin.it>
- <d10d2469-b6fe-87ea-7506-cf43f75d8023@siemens.com>
- <c76efd4f-af8a-c7a7-054f-bf47cc358f6c@siemens.com>
- <f4c9ce98-3ce9-84aa-eb02-eebf3f76d716@siemens.com>
-From: "Mauro S." <mau.salvi@tin.it>
-Message-ID: <fa58c202-fc36-669a-46ba-6325b08673c4@tin.it>
-Date: Wed, 6 Oct 2021 13:30:37 +0200
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] cobalt/arch/arm: fptest: Add missing SIMD register
+ clobbering
+Date: Fri, 8 Oct 2021 06:46:33 +0000
+Message-ID: <8d5e712dea74cc209a2b164b3db18175433db9c9.camel@siemens.com>
+References: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
+ <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
+ <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
+In-Reply-To: <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <14D2D9B33A514F4F9E62E4D3F7106191@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <f4c9ce98-3ce9-84aa-eb02-eebf3f76d716@siemens.com>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Language: it-IT
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,121 +20,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-Il 06/10/21 12:26, Jan Kiszka ha scritto:
-> On 06.10.21 09:00, Jan Kiszka via Xenomai wrote:
->> On 05.10.21 18:00, Jan Kiszka via Xenomai wrote:
->>> On 25.09.21 18:20, Mauro S. via Xenomai wrote:
->>>> Hi all,
->>>>
->>>> I'm using Xenomai 3.1.1 in cobalt mode, on x84_64.
->>>>
->>>> Please consider the attached simple test code.
->>>>
->>>> When I start the application, I never see the "Pipe task running" prin=
-tf.
->>>>
->>>> When I close application (ctrl+c), rt_pipe_join() on pipe task hangs.
->>>>
->>>> Analyzing the code with gdb, the timeout in tv structure inside
->>>> rt_pipe_read_timed() is the following
->>>>
->>>> (gdb) thread 13
->>>> [Switching to thread 13 (Thread 0x7ffff7189700 (LWP 528))]
->>>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
->>>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:2=
-50
->>>> 250=A0=A0=A0 rtdm.c: No such file or directory.
->>>> (gdb) bt
->>>> #0=A0 0x00007ffff7f89471 in do_recvmsg (fd=3Dfd@entry=3D3,
->>>> msg=3Dmsg@entry=3D0x7ffff7188c40, flags=3Dflags@entry=3D0) at rtdm.c:2=
-50
->>>> #1=A0 0x00007ffff7f89e11 in __cobalt_recvfrom (fd=3D3,
->>>> buf=3Dbuf@entry=3D0x7ffff7188d60, len=3Dlen@entry=3D4, flags=3D0,
->>>> from=3Dfrom@entry=3D0x0,
->>>>  =A0=A0=A0 fromlen=3Dfromlen@entry=3D0x0) at rtdm.c:343
->>>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
->>>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
->>>>  =A0=A0=A0 at pipe.c:423
->>>> #3=A0 0x00005555555555c0 in rt_pipe_read (pipe=3D0x555555558150 <MyPip=
-e>,
->>>> buf=3D0x7ffff7188d60, size=3D4, timeout=3D500000)
->>>>  =A0=A0=A0 at
->>>> /opt/smitec/3.1.5_SDK/sysroots/corei7-64-poky-linux/usr/include/xenoma=
-i/alchemy/pipe.h:72
->>>>
->>>> #4=A0 0x00005555555556d4 in MyPipeFun (arg=3D0x0) at test_resume_pipe.=
-c:55
->>>> #5=A0 0x00007ffff7fc196a in task_entry (arg=3D0x7ffff732ddc8) at task.=
-c:237
->>>> #6=A0 task_entry (arg=3D0x7ffff732ddc8) at task.c:219
->>>> #7=A0 0x00007ffff7faaca9 in thread_trampoline
->>>> (arg=3Darg@entry=3D0x7fffffffe9c0) at internal.c:251
->>>> #8=A0 0x00007ffff7f8b93e in cobalt_thread_trampoline (p=3D0x7fffffffe8=
-20) at
->>>> thread.c:123
->>>> #9=A0 0x00007ffff7f58ea4 in start_thread (arg=3D<optimized out>) at
->>>> pthread_create.c:477
->>>> #10 0x00007ffff7e7edcf in clone () at
->>>> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
->>>> (gdb) frame 2
->>>> #2=A0 0x00007ffff7fc38ab in rt_pipe_read_timed (pipe=3D<optimized out>,
->>>> buf=3D0x7ffff7188d60, size=3D4, abs_timeout=3D<optimized out>)
->>>>  =A0=A0=A0 at pipe.c:423
->>>> 423=A0=A0=A0 pipe.c: No such file or directory.
->>>> (gdb) print tv
->>>> $1 =3D {tv_sec =3D 1438, tv_usec =3D 783700}
->>>>
->>>> It seems a value related to uptime (system was up by about 24 minutes,
->>>> 1440 seconds, when debugging).
->>>
->>> Right, Xenomai's CLOCK_REALTIME starts at system boot, not at the epoch.
->>> That's at least true for I-pipe deployments.
->>>
->>>>
->>>> The API documentation says that rt_pipe_read() accepts "a delay
->>>> expressed in clock ticks". In Xenomai code, rt_pipe_read() becomes
->>>> rt_pipe_read_timed(), that accepts "An absolute date expressed in clock
->>>> ticks", with a note saying "abs_timeout is interpreted as a multiple of
->>>> the Alchemy clock resolution" (I dont' understand this latter sentence=
-).
->>>>
->>>
->>> The Alchemy clock may not simply tick in single nanoseconds but may have
->>> a courser resolution. That's why there is rt_timer_ns2ticks which you
->>> are already using.
->>>
->>>> If I'm not wrong, the "absolute date" would be a date expressed in
->>>> seconds after the epoch. Could the alchemy_rel_timeout() call in
->>>> include/alchemy/pipe.h calculate a wrong timeout?
->>>> Otherwise, what could be the problem?
->>>
->>> Cannot say yet, but I can confirm seeing the issue (too long timeout) as
->>> well. Did you try to debug further already?
->>>
->>
->> Looks like rt_pipe_read_timed is wrong: SO_RCVTIMEO takes a relative
->> timeout to my reading of the man page and the code, but
->> rt_pipe_read_timed passed down an absolute value. This confuses me
->> because the function was like this for ages, so I might misread
->> something ATM. Philippe?
->>
->=20
-> It is definitely broken in alchemy, I've created
-> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/30 to track the
-> to-dos. Any helping hand welcome.
->=20
-> Jan
->=20
-
-
-Hi Jan,
-
-sorry for the delay.
-
-Thank you for your explanations and your analysis.
-
-Mauro
+T24gVGh1LCAyMDIxLTEwLTA3IGF0IDA5OjU4ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwNi4xMC4yMSAyMzowMSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gT24gV2VkLCAyMDIxLTEwLTA2IGF0IDE3OjE5ICswMjAwLCBKYW4gS2lzemthIHdy
+b3RlOg0KPiA+ID4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4g
+PiA+IA0KPiA+ID4gVGhpcyBjYXVzZWQgdHJvdWJsZXMgd2l0aCBtb2Rlcm4gZ2NjIHRoYXQgc3Rh
+cnRzIHRvIHVzZSB0aG9zZSByZWdzIGZvcg0KPiA+ID4gb3RoZXIgcHVycG9zZXMuIFNlZW4gd2l0
+aCBnY2MtMTAgb24gRGViaWFuIDExIGUuZy4NCj4gPiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTog
+SmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gIGtl
+cm5lbC9jb2JhbHQvYXJjaC9hcm0vaW5jbHVkZS9hc20veGVub21haS91YXBpL2ZwdGVzdC5oIHwg
+NyArKysrKystDQo+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMSBkZWxl
+dGlvbigtKQ0KPiA+ID4gDQo+ID4gPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9hcmNoL2Fy
+bS9pbmNsdWRlL2FzbS94ZW5vbWFpL3VhcGkvZnB0ZXN0LmggYi9rZXJuZWwvY29iYWx0L2FyY2gv
+YXJtL2luY2x1ZGUvYXNtL3hlbm9tYWkvdWFwaS9mcHRlc3QuaA0KPiA+ID4gaW5kZXggYjgxZDEw
+OTkzMy4uZDVjMmM3NTE1YiAxMDA2NDQNCj4gPiA+IC0tLSBhL2tlcm5lbC9jb2JhbHQvYXJjaC9h
+cm0vaW5jbHVkZS9hc20veGVub21haS91YXBpL2ZwdGVzdC5oDQo+ID4gPiArKysgYi9rZXJuZWwv
+Y29iYWx0L2FyY2gvYXJtL2luY2x1ZGUvYXNtL3hlbm9tYWkvdWFwaS9mcHRlc3QuaA0KPiA+ID4g
+QEAgLTMyLDcgKzMyLDEyIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBmcF9yZWdzX3NldChpbnQgZmVh
+dHVyZXMsIHVuc2lnbmVkIGludCB2YWwpDQo+ID4gPiAgICAgICAgICAgICAgIC8qIHZsZG0gJTAh
+LCB7ZDAtZDE1fSwNCj4gPiA+ICAgICAgICAgICAgICAgICAgQUtBIGZsZG1pYXggJTAhLCB7ZDAt
+ZDE1fSAqLw0KPiA+ID4gICAgICAgICAgICAgICBfX2FzbV9fIF9fdm9sYXRpbGVfXygibGRjIHAx
+MSwgY3IwLCBbJTBdLCMzMio0IjoNCj4gPiA+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIj1yIihpKTogIjAiKCZlWzBdKTogIm1lbW9yeSIpOw0KPiA+ID4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAiPXIiKGkpDQo+ID4gPiArICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIDogIjAiKCZlWzBdKQ0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICA6ICJkMCIsICJkMSIsICJkMiIsICJkMyIsICJkNCIsICJkNSIsDQo+ID4g
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImQ2IiwgImQ3IiwgImQ4Iiwg
+ImQ5IiwgImQxMCIsICJkMTEiLA0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICJkMTIiLCAiZDEzIiwgImQxNCIsICJkMTUiLA0KPiA+ID4gKyAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICJtZW1vcnkiKTsNCj4gPiA+ICAgICAgIH0NCj4gPiA+ICB9
+DQo+ID4gPiANCj4gPiANCj4gPiBJcyB0aGF0IGFscmVhZHkgYXBwbGllZCB0byBuZXh0PyBUaGF0
+IHNob3VsZCBiZSBvbmUgb2YgdGhlIGxhc3QgbWlzc2luZw0KPiA+IHBpZWNlcyBmb3IgcG9ydGlu
+ZyB4ZW5vbWFpLWltYWdlcyB0byBEZWJpYW4gMTEuDQo+IA0KPiBJdCdzIGluIG5leHQsIHJpZ2h0
+Lg0KDQpDdXJyZW50IENJIHNob3dzIG1lIHRoYXQgdGhpcyBvbmUgcXVhbGlmaWVzIGZvciBzdGFi
+bGUgYXMgd2VsbC4NCkJ1aWxkaW5nIHN0YWJsZSB3aXRoIGEgcmVjZW50IGdjYyBicmluZ3MgdXAg
+dGhlIHNhbWUgaXNzdWUuDQoNCj4gDQo+ID4gDQo+ID4gVGhlIGxhc3QgdW5jbGVhciB0b3BpYyAo
+QUZBSVIpIGlzIHRoZSBzc2gta2V5IHJlZ2VuZXJhdGlvbiB0YWtpbmcgdG9vDQo+ID4gbG9uZyBm
+b3Igc29tZSByZWFzb24gb24gQVJNIGFuZCBEZWJpYW4gMTEsIGJ1dCB0aGF0IHNob3VsZCBiZSBh
+IERlYmlhbg0KPiA+IHNwZWNpZmljIGlzc3VlIGFuZCBpcyBob3BlZnVsbHkgbm90IHJlbGF0ZWQg
+dG8gWGVub21haSBpdHNlbGYuDQo+ID4gDQo+IA0KPiBSaWdodCwgbm93IEkgcmVjYWxsLiBJbnRl
+cmVzdGluZ2x5LCB0aGlzIGRvZXMgbm90IHNob3cgdXAgb24gQVJNIChpbg0KPiBRRU1VKSB3aXRo
+IHRoZSBhbHJlYWR5IHBvcnRlZCBqYWlsaG91c2UtaW1hZ2VzLg0KPiANCj4gSmFuDQo+IA0KDQo=
 
