@@ -1,7 +1,8 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.207-cip58-x86-20 released
-Message-Id: <E1mYYxc-0004QB-4r@xenomai.org>
-Date: Thu, 07 Oct 2021 21:21:44 +0200
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [xenomai-images][PATCH] recipes-kernel: Disable more debugs that
+ influence latency performance
+Date: Thu,  7 Oct 2021 22:40:47 -0400
+Message-Id: <20211008024047.24581-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +13,26 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.19.207-cip58-x86-20.patch
+For dovetail-based Xenomai, some debugs may increase latency and
+need to disable them for better latency performance.
 
-Repository: https://git.xenomai.org/ipipe-x86
-Release tag: ipipe-core-4.19.207-cip58-x86-20
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+
+diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
+index d7d87c5..a57463b 100644
+--- a/recipes-kernel/linux/files/common_nodbg.cfg
++++ b/recipes-kernel/linux/files/common_nodbg.cfg
+@@ -1,2 +1,9 @@
+ # CONFIG_IPIPE_DEBUG is not set
+ # CONFIG_XENO_OPT_DEBUG is not set
++# CONFIG_DEBUG_VM is not set
++# CONFIG_DEBUG_LIST is not set
++# CONFIG_BUG_ON_DATA_CORRUPTION is not set
++# CONFIG_FTRACE is not set
++# CONFIG_PROVE_LOCKING is not set
++# CONFIG_DEBUG_LOCK_ALLOC is not set
++# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+-- 
+2.17.1
+
 
