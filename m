@@ -1,17 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] cobalt/arch/arm: fptest: Add missing SIMD register
- clobbering
-Date: Fri, 8 Oct 2021 06:46:33 +0000
-Message-ID: <8d5e712dea74cc209a2b164b3db18175433db9c9.camel@siemens.com>
-References: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
- <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
- <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
-In-Reply-To: <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <14D2D9B33A514F4F9E62E4D3F7106191@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [xenomai-images][PATCH] recipes-kernel: Disable more debugs that
+ influence latency performance
+References: <20211008024047.24581-1-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c9428eb4-de20-fcdc-bed5-07e42aa2960d@siemens.com>
+Date: Fri, 8 Oct 2021 10:10:05 +0200
 MIME-Version: 1.0
+In-Reply-To: <20211008024047.24581-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,47 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-T24gVGh1LCAyMDIxLTEwLTA3IGF0IDA5OjU4ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwNi4xMC4yMSAyMzowMSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
-dGU6DQo+ID4gT24gV2VkLCAyMDIxLTEwLTA2IGF0IDE3OjE5ICswMjAwLCBKYW4gS2lzemthIHdy
-b3RlOg0KPiA+ID4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4g
-PiA+IA0KPiA+ID4gVGhpcyBjYXVzZWQgdHJvdWJsZXMgd2l0aCBtb2Rlcm4gZ2NjIHRoYXQgc3Rh
-cnRzIHRvIHVzZSB0aG9zZSByZWdzIGZvcg0KPiA+ID4gb3RoZXIgcHVycG9zZXMuIFNlZW4gd2l0
-aCBnY2MtMTAgb24gRGViaWFuIDExIGUuZy4NCj4gPiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTog
-SmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gIGtl
-cm5lbC9jb2JhbHQvYXJjaC9hcm0vaW5jbHVkZS9hc20veGVub21haS91YXBpL2ZwdGVzdC5oIHwg
-NyArKysrKystDQo+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMSBkZWxl
-dGlvbigtKQ0KPiA+ID4gDQo+ID4gPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9hcmNoL2Fy
-bS9pbmNsdWRlL2FzbS94ZW5vbWFpL3VhcGkvZnB0ZXN0LmggYi9rZXJuZWwvY29iYWx0L2FyY2gv
-YXJtL2luY2x1ZGUvYXNtL3hlbm9tYWkvdWFwaS9mcHRlc3QuaA0KPiA+ID4gaW5kZXggYjgxZDEw
-OTkzMy4uZDVjMmM3NTE1YiAxMDA2NDQNCj4gPiA+IC0tLSBhL2tlcm5lbC9jb2JhbHQvYXJjaC9h
-cm0vaW5jbHVkZS9hc20veGVub21haS91YXBpL2ZwdGVzdC5oDQo+ID4gPiArKysgYi9rZXJuZWwv
-Y29iYWx0L2FyY2gvYXJtL2luY2x1ZGUvYXNtL3hlbm9tYWkvdWFwaS9mcHRlc3QuaA0KPiA+ID4g
-QEAgLTMyLDcgKzMyLDEyIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBmcF9yZWdzX3NldChpbnQgZmVh
-dHVyZXMsIHVuc2lnbmVkIGludCB2YWwpDQo+ID4gPiAgICAgICAgICAgICAgIC8qIHZsZG0gJTAh
-LCB7ZDAtZDE1fSwNCj4gPiA+ICAgICAgICAgICAgICAgICAgQUtBIGZsZG1pYXggJTAhLCB7ZDAt
-ZDE1fSAqLw0KPiA+ID4gICAgICAgICAgICAgICBfX2FzbV9fIF9fdm9sYXRpbGVfXygibGRjIHAx
-MSwgY3IwLCBbJTBdLCMzMio0IjoNCj4gPiA+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIj1yIihpKTogIjAiKCZlWzBdKTogIm1lbW9yeSIpOw0KPiA+ID4gKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAiPXIiKGkpDQo+ID4gPiArICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIDogIjAiKCZlWzBdKQ0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICA6ICJkMCIsICJkMSIsICJkMiIsICJkMyIsICJkNCIsICJkNSIsDQo+ID4g
-PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImQ2IiwgImQ3IiwgImQ4Iiwg
-ImQ5IiwgImQxMCIsICJkMTEiLA0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICJkMTIiLCAiZDEzIiwgImQxNCIsICJkMTUiLA0KPiA+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICJtZW1vcnkiKTsNCj4gPiA+ICAgICAgIH0NCj4gPiA+ICB9
-DQo+ID4gPiANCj4gPiANCj4gPiBJcyB0aGF0IGFscmVhZHkgYXBwbGllZCB0byBuZXh0PyBUaGF0
-IHNob3VsZCBiZSBvbmUgb2YgdGhlIGxhc3QgbWlzc2luZw0KPiA+IHBpZWNlcyBmb3IgcG9ydGlu
-ZyB4ZW5vbWFpLWltYWdlcyB0byBEZWJpYW4gMTEuDQo+IA0KPiBJdCdzIGluIG5leHQsIHJpZ2h0
-Lg0KDQpDdXJyZW50IENJIHNob3dzIG1lIHRoYXQgdGhpcyBvbmUgcXVhbGlmaWVzIGZvciBzdGFi
-bGUgYXMgd2VsbC4NCkJ1aWxkaW5nIHN0YWJsZSB3aXRoIGEgcmVjZW50IGdjYyBicmluZ3MgdXAg
-dGhlIHNhbWUgaXNzdWUuDQoNCj4gDQo+ID4gDQo+ID4gVGhlIGxhc3QgdW5jbGVhciB0b3BpYyAo
-QUZBSVIpIGlzIHRoZSBzc2gta2V5IHJlZ2VuZXJhdGlvbiB0YWtpbmcgdG9vDQo+ID4gbG9uZyBm
-b3Igc29tZSByZWFzb24gb24gQVJNIGFuZCBEZWJpYW4gMTEsIGJ1dCB0aGF0IHNob3VsZCBiZSBh
-IERlYmlhbg0KPiA+IHNwZWNpZmljIGlzc3VlIGFuZCBpcyBob3BlZnVsbHkgbm90IHJlbGF0ZWQg
-dG8gWGVub21haSBpdHNlbGYuDQo+ID4gDQo+IA0KPiBSaWdodCwgbm93IEkgcmVjYWxsLiBJbnRl
-cmVzdGluZ2x5LCB0aGlzIGRvZXMgbm90IHNob3cgdXAgb24gQVJNIChpbg0KPiBRRU1VKSB3aXRo
-IHRoZSBhbHJlYWR5IHBvcnRlZCBqYWlsaG91c2UtaW1hZ2VzLg0KPiANCj4gSmFuDQo+IA0KDQo=
+On 08.10.21 04:40, Hongzhan Chen via Xenomai wrote:
+> For dovetail-based Xenomai, some debugs may increase latency and
+> need to disable them for better latency performance.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> 
+> diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
+> index d7d87c5..a57463b 100644
+> --- a/recipes-kernel/linux/files/common_nodbg.cfg
+> +++ b/recipes-kernel/linux/files/common_nodbg.cfg
+> @@ -1,2 +1,9 @@
+>  # CONFIG_IPIPE_DEBUG is not set
+>  # CONFIG_XENO_OPT_DEBUG is not set
+> +# CONFIG_DEBUG_VM is not set
+> +# CONFIG_DEBUG_LIST is not set
+> +# CONFIG_BUG_ON_DATA_CORRUPTION is not set
+> +# CONFIG_FTRACE is not set
+> +# CONFIG_PROVE_LOCKING is not set
+> +# CONFIG_DEBUG_LOCK_ALLOC is not set
+> +# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+> 
+
+Thanks, applied.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
