@@ -1,9 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/4] lib/alchemy/testsuite: Fix pipe-1 test case
-Date: Tue, 12 Oct 2021 20:19:18 +0200
-Message-Id: <b1d53838d917b934c6ad11a3e1f33c07d2445c8b.1634062760.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1634062760.git.jan.kiszka@siemens.com>
-References: <cover.1634062760.git.jan.kiszka@siemens.com>
+Subject: [PATCH 0/4] Alchemy fixes around timeouts
+Date: Tue, 12 Oct 2021 20:19:16 +0200
+Message-Id: <cover.1634062760.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,28 +14,30 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+See patches for details
 
-A missing initialization led to early termination and crashes.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/alchemy/testsuite/pipe-1.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Jan Kiszka (4):
+  lib/alchemy: Fix rt_pipe_read* with timeouts
+  lib/alchemy/testsuite: Fix pipe-1 test case
+  lib/alchemy/testsuite: Extend pipe-1 test by timeout checks
+  lib/alchemy: Fix/clarify documentation of *_timed functions regarding
+    abs_timeout
 
-diff --git a/lib/alchemy/testsuite/pipe-1.c b/lib/alchemy/testsuite/pipe-1.c
-index 7272079eec..3f821efe41 100644
---- a/lib/alchemy/testsuite/pipe-1.c
-+++ b/lib/alchemy/testsuite/pipe-1.c
-@@ -23,7 +23,7 @@ struct pipe_message {
- static void realtime_task(void *arg)
- {
- 	struct pipe_message m;
--	int ret, seq;
-+	int ret, seq = 0;
- 
- 	traceobj_enter(&trobj);
- 
+ include/alchemy/pipe.h         |  8 +----
+ lib/alchemy/buffer.c           | 28 ++++++----------
+ lib/alchemy/cond.c             | 14 +++-----
+ lib/alchemy/event.c            | 16 ++++-----
+ lib/alchemy/heap.c             | 16 ++++-----
+ lib/alchemy/mutex.c            | 12 +++----
+ lib/alchemy/pipe.c             | 61 +++++++++++++++++++++++++++-------
+ lib/alchemy/queue.c            | 32 +++++++-----------
+ lib/alchemy/sem.c              | 16 ++++-----
+ lib/alchemy/task.c             | 27 ++++++---------
+ lib/alchemy/testsuite/pipe-1.c | 35 ++++++++++++++++++-
+ 11 files changed, 143 insertions(+), 122 deletions(-)
+
 -- 
 2.31.1
 
