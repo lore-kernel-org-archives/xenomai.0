@@ -1,12 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH 5/6] xenomai-demo: Switch to Debian bullseye
-Date: Wed, 13 Oct 2021 09:18:23 +0200
-Message-Id: <20211013071824.9394-6-florian.bezdeka@siemens.com>
-In-Reply-To: <20211013071824.9394-1-florian.bezdeka@siemens.com>
+Subject: Re: [xenomai-images][PATCH 1/6] ci: Introduce kas option file for CI
+ builds
 References: <20211013071824.9394-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+ <20211013071824.9394-2-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <527dc285-07c7-1035-1240-d8f52bfbe412@siemens.com>
+Date: Wed, 13 Oct 2021 09:26:53 +0200
 MIME-Version: 1.0
+In-Reply-To: <20211013071824.9394-2-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-Switching from Debian buster to Debian bullseye as base for or xenomai-demo
-distribution.
+On 13.10.21 09:18, Florian Bezdeka via Xenomai wrote:
+> For now the difference between the demo and the "ci image" is:
+>  - Removed sshd-regen-keys: Reduces the (first) boot time especially on
+>    low end CI hardware. Helps to stay within LAVA timeouts.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- conf/distro/xenomai-demo.conf | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+opt-lava-test.yml?
 
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index 1c9209d..4794584 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -9,12 +9,12 @@
- # SPDX-License-Identifier: MIT
- #
- 
--require conf/distro/debian-buster.conf
-+require conf/distro/debian-bullseye.conf
- 
- PREFERRED_VERSION_xenomai ?= "3.1%"
- include conf/distro/include/xenomai-version.inc
- 
--HOST_DISTRO ?= "debian-buster"
-+HOST_DISTRO ?= "debian-bullseye"
- 
- KERNEL_NAME = "xenomai"
- 
+> 
+>  - Removed expand-on-first-boot: Doesn't make much sense on CI runs as
+>    we don't really use the filesystem. Helps to reduce the first boot
+>    time a bit.
+
+That should rather be attached to the image format. If building lava
+(opt-lava-test.yml) or qemu (opt-ext4-gz.yml), it does not make sense
+and should go.
+
+Jan
+
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
