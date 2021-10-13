@@ -1,5 +1,5 @@
-Message-ID: <df64fe08-f1f6-b3ac-3509-4f27b1d21b56@siemens.com>
-Date: Wed, 13 Oct 2021 10:07:06 +0200
+Message-ID: <5f09d517-3d9f-aa01-0193-5757e6e9a40a@siemens.com>
+Date: Wed, 13 Oct 2021 10:07:23 +0200
 Subject: Re: [xenomai-images][PATCH 1/6] ci: Introduce kas option file for CI
  builds
 Content-Language: en-US
@@ -57,8 +57,4 @@ opt-test.yml.
 > 
 > 
 
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
 
