@@ -1,7 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 0/9] Enable support for kernel 5.15
-Date: Wed, 13 Oct 2021 13:55:44 +0200
-Message-Id: <cover.1634126152.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/9] cobalt: Use linux/stdarg.h
+Date: Wed, 13 Oct 2021 13:55:47 +0200
+Message-Id: <aa746e3dcc9a835022acd6667f1e7ca381d8b0e9.1634126152.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1634126152.git.jan.kiszka@siemens.com>
+References: <cover.1634126152.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,84 +16,121 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Most of these are harmless conversions with backward-compatible
-wrappings. Only the last patch is a bit hairy as I'm unsure whether the
-new detection mechanism for vDSO VMAs is truly reliable. Therefore, this
-patch is not (yet?) targeting next, thus 3.2-rc2.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+Required with kernel 5.15 to avoid duplicate includes. Provide a stub
+for older kernels that continues to use the toolchain header.
 
-
-CC: Philippe Gerum <rpm@xenomai.org>
-
-Jan Kiszka (9):
-  cobalt/dovetail: Use IRQ_WORK_INIT to please 5.11+
-  cobalt: Use close_fd for kernel 5.14+
-  cobalt: Use linux/stdarg.h
-  cobalt/posix: Add required FORCE makefile rule
-  cobalt/thread: Switch to MAX_RT_PRIO
-  cobalt: Use fallthrough key word rather than comments
-  drivers/can: Drop MODULE_SUPPORTED_DEVICE
-  drivers/net/e1000e: Add missing ethtool.h include
-  cobalt/debug: Detect vDSO via absence of vm_file
-
- .../kernel/dovetail/pipeline/inband_work.h    |  6 +-----
- kernel/cobalt/debug.c                         | 12 +++++------
- kernel/cobalt/heap.c                          |  2 +-
- .../include/asm-generic/xenomai/wrappers.h    | 19 ++++++++++++++++++
- kernel/cobalt/include/linux/stdarg.h          |  1 +
- kernel/cobalt/posix/Makefile                  |  4 ++--
- kernel/cobalt/posix/compat.c                  |  2 +-
- kernel/cobalt/posix/mqueue.c                  |  2 +-
- kernel/cobalt/posix/process.c                 |  2 +-
- kernel/cobalt/posix/sched.c                   |  6 +++---
- kernel/cobalt/posix/signal.c                  |  2 +-
- kernel/cobalt/posix/signal.h                  |  2 +-
- kernel/cobalt/posix/thread.h                  |  2 +-
- kernel/cobalt/rtdm/core.c                     |  4 ++--
- kernel/cobalt/rtdm/fd.c                       |  2 +-
- kernel/cobalt/synch.c                         |  2 +-
- kernel/cobalt/thread.c                        |  4 ++--
- kernel/cobalt/timer.c                         |  2 +-
- kernel/cobalt/vfile.c                         |  2 +-
- .../analogy/national_instruments/mio_common.c |  2 +-
- .../drivers/can/peak_canfd/rtcan_peak_canfd.c |  2 +-
- .../can/peak_canfd/rtcan_peak_pciefd.c        |  3 +--
- kernel/drivers/can/rtcan_flexcan.c            |  2 +-
- kernel/drivers/can/rtcan_raw_dev.c            |  2 +-
- kernel/drivers/can/sja1000/rtcan_adv_pci.c    |  1 -
- kernel/drivers/can/sja1000/rtcan_ems_pci.c    |  1 -
- kernel/drivers/can/sja1000/rtcan_esd_pci.c    |  2 --
- kernel/drivers/can/sja1000/rtcan_isa.c        |  1 -
- kernel/drivers/can/sja1000/rtcan_ixxat_pci.c  |  1 -
- kernel/drivers/can/sja1000/rtcan_mem.c        |  1 -
- kernel/drivers/can/sja1000/rtcan_peak_dng.c   |  1 -
- kernel/drivers/can/sja1000/rtcan_peak_pci.c   | 11 +++++-----
- kernel/drivers/can/sja1000/rtcan_plx_pci.c    |  7 -------
- kernel/drivers/can/sja1000/rtcan_sja1000.c    |  1 -
- kernel/drivers/ipc/bufp.c                     |  2 +-
- kernel/drivers/ipc/iddp.c                     |  2 +-
- kernel/drivers/ipc/xddp.c                     |  2 +-
- kernel/drivers/net/drivers/e1000/e1000_hw.c   | 20 +++++++++----------
- kernel/drivers/net/drivers/e1000/e1000_main.c |  2 +-
- kernel/drivers/net/drivers/e1000e/82571.c     |  4 ++--
- kernel/drivers/net/drivers/e1000e/e1000.h     |  1 +
- kernel/drivers/net/drivers/e1000e/ich8lan.c   |  8 ++++----
- kernel/drivers/net/drivers/e1000e/netdev.c    |  4 ++--
- .../experimental/e1000/e1000_ethtool.c        |  4 ++--
- .../drivers/experimental/e1000/e1000_main.c   | 10 +++++-----
- .../drivers/experimental/e1000/e1000_param.c  |  2 +-
- kernel/drivers/net/drivers/igb/e1000_82575.c  |  4 ++--
- kernel/drivers/net/drivers/igb/e1000_nvm.c    |  2 +-
- kernel/drivers/net/drivers/igb/e1000_phy.c    |  4 ++--
- kernel/drivers/net/drivers/igb/igb_main.c     | 10 +++++-----
- kernel/drivers/net/stack/ipv4/udp/udp.c       |  2 +-
- kernel/drivers/net/stack/packet/af_packet.c   |  2 +-
- kernel/drivers/testing/switchtest.c           |  2 +-
- scripts/prepare-kernel.sh                     |  1 +
- 54 files changed, 101 insertions(+), 103 deletions(-)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/heap.c                 | 2 +-
+ kernel/cobalt/include/linux/stdarg.h | 1 +
+ kernel/cobalt/posix/mqueue.c         | 2 +-
+ kernel/cobalt/posix/process.c        | 2 +-
+ kernel/cobalt/posix/thread.h         | 2 +-
+ kernel/cobalt/synch.c                | 2 +-
+ kernel/cobalt/vfile.c                | 2 +-
+ scripts/prepare-kernel.sh            | 1 +
+ 8 files changed, 8 insertions(+), 6 deletions(-)
  create mode 100644 kernel/cobalt/include/linux/stdarg.h
 
+diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+index d3f43729e1..f106d5d071 100644
+--- a/kernel/cobalt/heap.c
++++ b/kernel/cobalt/heap.c
+@@ -16,7 +16,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+  * 02111-1307, USA.
+  */
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/vmalloc.h>
+ #include <linux/slab.h>
+ #include <linux/kernel.h>
+diff --git a/kernel/cobalt/include/linux/stdarg.h b/kernel/cobalt/include/linux/stdarg.h
+new file mode 100644
+index 0000000000..38ade6d9f5
+--- /dev/null
++++ b/kernel/cobalt/include/linux/stdarg.h
+@@ -0,0 +1 @@
++#include <stdarg.h>
+diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+index 9075c80be9..d93c0bdf6d 100644
+--- a/kernel/cobalt/posix/mqueue.c
++++ b/kernel/cobalt/posix/mqueue.c
+@@ -16,7 +16,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/slab.h>
+ #include <linux/mm.h>
+ #include <linux/sched.h>
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 87b4893b30..935007f821 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -21,7 +21,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+  * 02111-1307, USA.
+  */
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/unistd.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
+diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
+index 51be372a7a..0959ff6d72 100644
+--- a/kernel/cobalt/posix/thread.h
++++ b/kernel/cobalt/posix/thread.h
+@@ -18,7 +18,7 @@
+ #ifndef _COBALT_POSIX_THREAD_H
+ #define _COBALT_POSIX_THREAD_H
+ 
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/types.h>
+ #include <linux/time.h>
+ #include <linux/signal.h>
+diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+index 911bc83f60..6e50e537fa 100644
+--- a/kernel/cobalt/synch.c
++++ b/kernel/cobalt/synch.c
+@@ -16,7 +16,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+  * 02111-1307, USA.
+  */
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/signal.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/synch.h>
+diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
+index fae0cc3773..a0ec5cad1c 100644
+--- a/kernel/cobalt/vfile.c
++++ b/kernel/cobalt/vfile.c
+@@ -15,7 +15,7 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include <linux/ctype.h>
+ #include <linux/uaccess.h>
+ #include <linux/module.h>
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 9ee1b3d650..64e2484e16 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -453,6 +453,7 @@ patch_link r n include/cobalt/kernel/$pipeline_type/pipeline include/xenomai/pip
+ patch_link r n include/cobalt/uapi include/xenomai/cobalt/uapi
+ patch_link r n include/rtdm/uapi include/xenomai/rtdm/uapi
+ patch_link n version.h include/xenomai include/xenomai
++patch_link n stdarg.h kernel/cobalt/include/linux include/xenomai/linux
+ 
+ if test "x$output_patch" != "x"; then
+     if test x$verbose = x1; then
 -- 
 2.31.1
 
