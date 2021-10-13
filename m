@@ -1,13 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] utils: add kernel config check utility
-Date: Wed, 13 Oct 2021 06:37:10 +0000
-Message-ID: <MN2PR11MB4285CE379492F67A33051244F2B79@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20211013005800.648-1-hongzhan.chen@intel.com>
- <cca07570-af0f-dbbb-4da7-d41cb621fb51@siemens.com>
-In-Reply-To: <cca07570-af0f-dbbb-4da7-d41cb621fb51@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH 0/6] Update to Debian 11 
+Date: Wed, 13 Oct 2021 09:18:18 +0200
+Message-Id: <20211013071824.9394-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,23 +13,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGkgSmFuDQoNCkkgcmVzZW50IHRoZSBmaXJzdCB2ZXJzaW9uIGJlY2F1c2UgSSBoYWQgbm90IHJl
-Y2VpdmVkIHlvdXIgcmVtYXJrIGVtYWlsIGluIG15IG91dGxvb2sgc28gSSB0aG91Z2h0IHRoYXQg
-aXQgbWF5IGJlIGZsb29kZWQgc29tZWhvdy4gSSBhbHJlYWR5IGZpbmQgdGhhdA0KeW91IHJlbWFy
-a3MgaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIxLU9jdG9iZXIvMDQ2
-NTU5Lmh0bWwgbm93Lg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+
-IA0KU2VudDogV2VkbmVzZGF5LCBPY3RvYmVyIDEzLCAyMDIxIDI6MjkgUE0NClRvOiBDaGVuLCBI
-b25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpT
-dWJqZWN0OiBSZTogW1BBVENIXSB1dGlsczogYWRkIGtlcm5lbCBjb25maWcgY2hlY2sgdXRpbGl0
-eQ0KDQpPbiAxMy4xMC4yMSAwMjo1OCwgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToN
-Cj4gVG8gY2hlY2sgYSBrZXJuZWwgY29uZmlndXJhdGlvbiBmb3IgY29tbW9uIGlzc3VlcyB3aGlj
-aCBtYXkgaW5jcmVhc2UNCj4gbGF0ZW5jeSBmb3IgZG92ZXRhaWwtYmFzZWQgbGludXguDQo+IA0K
-PiBTaWduZWQtb2ZmLWJ5OiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4N
-Cj4gDQoNCklzIHRoaXMgYSB2MiBvciByZXNlbmQ/IEknbSBhc2tpbmcgYXMgc2V2ZXJhbCBvZiBt
-eSByZW1hcmtzIGFwcGVhciB0byBiZQ0KdW5hZGRyZXNzZWQuDQoNCkphbg0KDQotLSANClNpZW1l
-bnMgQUcsIFQgUkRBIElPVA0KQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
-bnV4DQo=
+Hi all,
+
+with this series the Xenomai demo image will be based on Debian 11.
+
+All Debian 11 related topics that had to be adressed are now merged to
+the Xenomai next branch. The stable branches have not yet been updated
+so CI will report some failures for such branches.
+
+Patch 4 made it to the list but has not been applied to next yet. That's
+why I resend it, integrated into this series at the right place.
+
+The Xenomai LAVA instance has been down while working on this topic. The
+job submission to LAVA failed, but the test jobs where still marked as
+successful. That is now fixed as well.
+
+Best regards,
+Florian
+
+Florian Bezdeka (5):
+  ci: Introduce kas option file for CI builds
+  kas: Integrate opt-debug.yml into opt-ci.yml
+  demo-image: Fix sshd-regen-keys problems on arm / qemu
+  xenomai-demo: Switch to Debian bullseye
+  ci: Fail test job when an error occurred during lava job submission
+
+Jan Kiszka (1):
+  linux-xenomai: arm: Enable CONFIG_ARM_MODULE_PLTS
+
+ ci/gitlab-ci-base.yml                         |  4 +-
+ conf/distro/xenomai-demo.conf                 |  4 +-
+ ...Start-key-generation-after-entropy-s.patch | 40 +++++++++++++++++++
+ ...Fix-some-systemd-obsolete-warnings-a.patch | 34 ++++++++++++++++
+ isar-patches/series                           |  2 +
+ kas.yml                                       |  4 ++
+ opt-ci.yml                                    | 21 ++++++++++
+ recipes-kernel/linux/files/armhf_defconfig    |  1 -
+ scripts/run-lava-tests.sh                     |  1 +
+ 9 files changed, 106 insertions(+), 5 deletions(-)
+ create mode 100644 isar-patches/0001-sshd-regen-keys-Start-key-generation-after-entropy-s.patch
+ create mode 100644 isar-patches/0002-sshd-regen-keys-Fix-some-systemd-obsolete-warnings-a.patch
+ create mode 100644 isar-patches/series
+ create mode 100644 opt-ci.yml
+
+-- 
+2.31.1
+
 
