@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 8/8] ci: Fail test job when an error
- occurred during lava job submission
-Date: Wed, 13 Oct 2021 14:17:32 +0200
-Message-Id: <20211013121732.140595-9-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v2 4/8] kas: Integrate opt-debug.yml into
+ opt-ci.yml
+Date: Wed, 13 Oct 2021 14:17:28 +0200
+Message-Id: <20211013121732.140595-5-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,35 +18,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-It can happen that the LAVA job submission fails. If so, the CI job
-should be marked as failed. Previously we had something like the
-following in the log, but the job was still marked as "OK".
-
-Log:
-connect to lava server: https://lava.xenomai.org
-Deploy artifacts from 'https://xenomai-images-artifacts.s3.amazonaws.com/artifacts'
-submit lava job
-<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
-<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
-scripts/run-lava-tests.sh: 56: [: Illegal number:
+Whenever the kas option file opt-ci.yml is used we want the same build
+options as the CI does, which includes setting the debug options.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- scripts/run-lava-tests.sh | 1 +
- 1 file changed, 1 insertion(+)
+ ci/gitlab-ci-base.yml | 4 ++--
+ opt-ci.yml            | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index dde542c..de63b28 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -9,6 +9,7 @@
- #
- # SPDX-License-Identifier: MIT
- #
-+set -e
- TARGET=$1
- if [ -z "${TARGET}" ]; then
-     echo "no target was given"
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index f7cdea5..cb2f23b 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -39,8 +39,8 @@ default:
+   stage: build
+   script:
+     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
+-    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
+-    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
++    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
++    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
+     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+ 
+ .test:
+diff --git a/opt-ci.yml b/opt-ci.yml
+index 08400cc..7429a3a 100644
+--- a/opt-ci.yml
++++ b/opt-ci.yml
+@@ -11,6 +11,8 @@
+ 
+ header:
+   version: 10
++  includes:
++    - opt-debug.yml
+ 
+ local_conf_header:
+   xenomai-ci: |
 -- 
 2.31.1
 
