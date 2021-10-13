@@ -1,7 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 7/8] xenomai-demo: Switch to Debian bullseye
-Date: Wed, 13 Oct 2021 14:17:31 +0200
-Message-Id: <20211013121732.140595-8-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v2 8/8] ci: Fail test job when an error
+ occurred during lava job submission
+Date: Wed, 13 Oct 2021 14:17:32 +0200
+Message-Id: <20211013121732.140595-9-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -17,33 +18,35 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Switching from Debian buster to Debian bullseye as base for or xenomai-demo
-distribution.
+It can happen that the LAVA job submission fails. If so, the CI job
+should be marked as failed. Previously we had something like the
+following in the log, but the job was still marked as "OK".
+
+Log:
+connect to lava server: https://lava.xenomai.org
+Deploy artifacts from 'https://xenomai-images-artifacts.s3.amazonaws.com/artifacts'
+submit lava job
+<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
+<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
+scripts/run-lava-tests.sh: 56: [: Illegal number:
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- conf/distro/xenomai-demo.conf | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/run-lava-tests.sh | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index 1c9209d..4794584 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -9,12 +9,12 @@
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index dde542c..de63b28 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -9,6 +9,7 @@
+ #
  # SPDX-License-Identifier: MIT
  #
- 
--require conf/distro/debian-buster.conf
-+require conf/distro/debian-bullseye.conf
- 
- PREFERRED_VERSION_xenomai ?= "3.1%"
- include conf/distro/include/xenomai-version.inc
- 
--HOST_DISTRO ?= "debian-buster"
-+HOST_DISTRO ?= "debian-bullseye"
- 
- KERNEL_NAME = "xenomai"
- 
++set -e
+ TARGET=$1
+ if [ -z "${TARGET}" ]; then
+     echo "no target was given"
 -- 
 2.31.1
 
