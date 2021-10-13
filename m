@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 1/8] kas: Rename opt-lava-test.yml to
- opt-ci-board.yml
-Date: Wed, 13 Oct 2021 14:17:25 +0200
-Message-Id: <20211013121732.140595-2-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v2 2/8] ci: Disable partition expanding for
+ all real test boards
+Date: Wed, 13 Oct 2021 14:17:26 +0200
+Message-Id: <20211013121732.140595-3-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,52 +18,30 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This kas option file is used for real test / ci boards only. The
-previous name indicated that it is used for all ci tests including
-virtual devices like (qemu).
+Trying to expand the partition during first boot doesn't make sense
+as we use NFS for deployment. Removing it helps to reduce the first boot
+time a bit.
+
+It is disabled on all qemu machines in the machine config, as we can
+handle all qemu machines at once there. For real boards we want it to
+stay, but not when building for CI tests.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- ci/gitlab-ci-base.yml                 | 6 +++---
- opt-lava-test.yml => opt-ci-board.yml | 0
- 2 files changed, 3 insertions(+), 3 deletions(-)
- rename opt-lava-test.yml => opt-ci-board.yml (100%)
+ opt-ci-board.yml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 8a1dbfb..3ea2467 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -97,7 +97,7 @@ default:
-   extends: .build
-   variables:
-     TARGET: hikey
--    BUILD_OPTIONS: ":opt-lava-test.yml"
-+    BUILD_OPTIONS: ":opt-ci-board.yml"
- 
- .lava-test:hikey:
-   extends: .test
-@@ -109,7 +109,7 @@ default:
-   extends: .build
-   variables:
-     TARGET: beagle-bone-black
--    BUILD_OPTIONS: ":opt-lava-test.yml"
-+    BUILD_OPTIONS: ":opt-ci-board.yml"
- 
- .lava-test:beagle-bone-black:
-   extends: .test
-@@ -121,7 +121,7 @@ default:
-   extends: .build
-   variables:
-     TARGET: x86-64-efi
--    BUILD_OPTIONS: ":opt-lava-test.yml"
-+    BUILD_OPTIONS: ":opt-ci-board.yml"
- 
- .lava-test:x86-64-efi:
-   extends: .test
-diff --git a/opt-lava-test.yml b/opt-ci-board.yml
-similarity index 100%
-rename from opt-lava-test.yml
-rename to opt-ci-board.yml
+diff --git a/opt-ci-board.yml b/opt-ci-board.yml
+index 9c33da6..d894fe7 100644
+--- a/opt-ci-board.yml
++++ b/opt-ci-board.yml
+@@ -18,3 +18,5 @@ header:
+ local_conf_header:
+   image-type: |
+     IMAGE_TYPE = "targz-img"
++  xenomai-ci: |
++    IMAGE_INSTALL_remove += "expand-on-first-boot"
+\ No newline at end of file
 -- 
 2.31.1
 
