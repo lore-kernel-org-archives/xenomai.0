@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 2/8] ci: Disable partition expanding for
- all real test boards
-Date: Wed, 13 Oct 2021 14:17:26 +0200
-Message-Id: <20211013121732.140595-3-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for CI
+ builds
+Date: Wed, 13 Oct 2021 14:17:27 +0200
+Message-Id: <20211013121732.140595-4-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,29 +18,58 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Trying to expand the partition during first boot doesn't make sense
-as we use NFS for deployment. Removing it helps to reduce the first boot
-time a bit.
+For now the difference between the demo and the "ci image" is the
+removed sshd-regen-keys. That reduces the (first) boot time especially
+on low end CI hardware. Helps to stay within LAVA timeouts.
 
-It is disabled on all qemu machines in the machine config, as we can
-handle all qemu machines at once there. For real boards we want it to
-stay, but not when building for CI tests.
+CI builds will now use that file.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- opt-ci-board.yml | 2 ++
- 1 file changed, 2 insertions(+)
+ ci/gitlab-ci-base.yml |  4 ++--
+ opt-ci.yml            | 18 ++++++++++++++++++
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+ create mode 100644 opt-ci.yml
 
-diff --git a/opt-ci-board.yml b/opt-ci-board.yml
-index 9c33da6..d894fe7 100644
---- a/opt-ci-board.yml
-+++ b/opt-ci-board.yml
-@@ -18,3 +18,5 @@ header:
- local_conf_header:
-   image-type: |
-     IMAGE_TYPE = "targz-img"
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 3ea2467..f7cdea5 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -39,8 +39,8 @@ default:
+   stage: build
+   script:
+     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
+-    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
+-    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
++    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
++    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
+     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+ 
+ .test:
+diff --git a/opt-ci.yml b/opt-ci.yml
+new file mode 100644
+index 0000000..08400cc
+--- /dev/null
++++ b/opt-ci.yml
+@@ -0,0 +1,18 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2021
++#
++# Authors:
++#  Florian Bezdeka <florian.bezdeka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 10
++
++local_conf_header:
 +  xenomai-ci: |
-+    IMAGE_INSTALL_remove += "expand-on-first-boot"
++    ROOTFS_POSTPROCESS_COMMAND_remove = "image_postprocess_sshd_key_regen"
++    IMAGE_INSTALL_remove += "sshd-regen-keys"
 \ No newline at end of file
 -- 
 2.31.1
