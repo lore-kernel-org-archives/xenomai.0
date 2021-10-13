@@ -1,7 +1,10 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH 0/6] Update to Debian 11 
-Date: Wed, 13 Oct 2021 09:18:18 +0200
-Message-Id: <20211013071824.9394-1-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH 2/6] kas: Integrate opt-debug.yml into
+ opt-ci.yml
+Date: Wed, 13 Oct 2021 09:18:20 +0200
+Message-Id: <20211013071824.9394-3-florian.bezdeka@siemens.com>
+In-Reply-To: <20211013071824.9394-1-florian.bezdeka@siemens.com>
+References: <20211013071824.9394-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,49 +18,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+Whenever the kas option file opt-ci.yml is used we want the same build
+options as the CI does, which includes setting the debug options.
 
-with this series the Xenomai demo image will be based on Debian 11.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ ci/gitlab-ci-base.yml | 4 ++--
+ opt-ci.yml            | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-All Debian 11 related topics that had to be adressed are now merged to
-the Xenomai next branch. The stable branches have not yet been updated
-so CI will report some failures for such branches.
-
-Patch 4 made it to the list but has not been applied to next yet. That's
-why I resend it, integrated into this series at the right place.
-
-The Xenomai LAVA instance has been down while working on this topic. The
-job submission to LAVA failed, but the test jobs where still marked as
-successful. That is now fixed as well.
-
-Best regards,
-Florian
-
-Florian Bezdeka (5):
-  ci: Introduce kas option file for CI builds
-  kas: Integrate opt-debug.yml into opt-ci.yml
-  demo-image: Fix sshd-regen-keys problems on arm / qemu
-  xenomai-demo: Switch to Debian bullseye
-  ci: Fail test job when an error occurred during lava job submission
-
-Jan Kiszka (1):
-  linux-xenomai: arm: Enable CONFIG_ARM_MODULE_PLTS
-
- ci/gitlab-ci-base.yml                         |  4 +-
- conf/distro/xenomai-demo.conf                 |  4 +-
- ...Start-key-generation-after-entropy-s.patch | 40 +++++++++++++++++++
- ...Fix-some-systemd-obsolete-warnings-a.patch | 34 ++++++++++++++++
- isar-patches/series                           |  2 +
- kas.yml                                       |  4 ++
- opt-ci.yml                                    | 21 ++++++++++
- recipes-kernel/linux/files/armhf_defconfig    |  1 -
- scripts/run-lava-tests.sh                     |  1 +
- 9 files changed, 106 insertions(+), 5 deletions(-)
- create mode 100644 isar-patches/0001-sshd-regen-keys-Start-key-generation-after-entropy-s.patch
- create mode 100644 isar-patches/0002-sshd-regen-keys-Fix-some-systemd-obsolete-warnings-a.patch
- create mode 100644 isar-patches/series
- create mode 100644 opt-ci.yml
-
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 26c3f60..3378fcf 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -39,8 +39,8 @@ default:
+   stage: build
+   script:
+     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
+-    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
+-    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
++    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
++    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
+     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+ 
+ .test:
+diff --git a/opt-ci.yml b/opt-ci.yml
+index 6766cb0..663a908 100644
+--- a/opt-ci.yml
++++ b/opt-ci.yml
+@@ -11,6 +11,8 @@
+ 
+ header:
+   version: 10
++  includes:
++    - opt-debug.yml
+ 
+ local_conf_header:
+   xenomai-ci: |
 -- 
 2.31.1
 
