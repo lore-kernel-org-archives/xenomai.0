@@ -1,13 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 4/8] kas: Integrate opt-debug.yml into
- opt-ci.yml
-Date: Wed, 13 Oct 2021 14:17:28 +0200
-Message-Id: <20211013121732.140595-5-florian.bezdeka@siemens.com>
-In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
+Subject: Re: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for
+ CI builds
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+ <20211013121732.140595-4-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
+Date: Wed, 13 Oct 2021 14:22:10 +0200
 MIME-Version: 1.0
+In-Reply-To: <20211013121732.140595-4-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +18,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-Whenever the kas option file opt-ci.yml is used we want the same build
-options as the CI does, which includes setting the debug options.
+On 13.10.21 14:17, Florian Bezdeka wrote:
+> For now the difference between the demo and the "ci image" is the
+> removed sshd-regen-keys. That reduces the (first) boot time especially
+> on low end CI hardware. Helps to stay within LAVA timeouts.
+> 
+> CI builds will now use that file.
+> 
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- ci/gitlab-ci-base.yml | 4 ++--
- opt-ci.yml            | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+Too many options. Can't we consolidate over a single CI/CT thing that
+also includes the changes for ci-board?
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index f7cdea5..cb2f23b 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -39,8 +39,8 @@ default:
-   stage: build
-   script:
-     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
-+    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
-+    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
-     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
- 
- .test:
-diff --git a/opt-ci.yml b/opt-ci.yml
-index 08400cc..7429a3a 100644
---- a/opt-ci.yml
-+++ b/opt-ci.yml
-@@ -11,6 +11,8 @@
- 
- header:
-   version: 10
-+  includes:
-+    - opt-debug.yml
- 
- local_conf_header:
-   xenomai-ci: |
+Jan
+
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
