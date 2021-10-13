@@ -1,8 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v2 6/8] linux-xenomai: arm: Enable
- CONFIG_ARM_MODULE_PLTS
-Date: Wed, 13 Oct 2021 14:17:30 +0200
-Message-Id: <20211013121732.140595-7-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v2 7/8] xenomai-demo: Switch to Debian bullseye
+Date: Wed, 13 Oct 2021 14:17:31 +0200
+Message-Id: <20211013121732.140595-8-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,30 +17,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Switching from Debian buster to Debian bullseye as base for or xenomai-demo
+distribution.
 
-No reason to turn this off, in fact, we have to turn it on with
-bullseye's gcc-10 and debug options enabled to avoid relocation
-range problems when loading modules.
-
-Reported-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- recipes-kernel/linux/files/armhf_defconfig | 1 -
- 1 file changed, 1 deletion(-)
+ conf/distro/xenomai-demo.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
-index ef4981d..eda674c 100644
---- a/recipes-kernel/linux/files/armhf_defconfig
-+++ b/recipes-kernel/linux/files/armhf_defconfig
-@@ -1112,7 +1112,6 @@ CONFIG_HIGHPTE=y
- CONFIG_CPU_SW_DOMAIN_PAN=y
- CONFIG_HW_PERF_EVENTS=y
- CONFIG_ARCH_WANT_GENERAL_HUGETLB=y
--# CONFIG_ARM_MODULE_PLTS is not set
- CONFIG_FLATMEM=y
- CONFIG_FLAT_NODE_MEM_MAP=y
- CONFIG_HAVE_MEMBLOCK=y
+diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
+index 1c9209d..4794584 100644
+--- a/conf/distro/xenomai-demo.conf
++++ b/conf/distro/xenomai-demo.conf
+@@ -9,12 +9,12 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require conf/distro/debian-buster.conf
++require conf/distro/debian-bullseye.conf
+ 
+ PREFERRED_VERSION_xenomai ?= "3.1%"
+ include conf/distro/include/xenomai-version.inc
+ 
+-HOST_DISTRO ?= "debian-buster"
++HOST_DISTRO ?= "debian-bullseye"
+ 
+ KERNEL_NAME = "xenomai"
+ 
 -- 
 2.31.1
 
