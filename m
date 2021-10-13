@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH 1/6] ci: Introduce kas option file for CI
- builds
-Date: Wed, 13 Oct 2021 09:18:19 +0200
-Message-Id: <20211013071824.9394-2-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH 6/6] ci: Fail test job when an error occurred
+ during lava job submission
+Date: Wed, 13 Oct 2021 09:18:24 +0200
+Message-Id: <20211013071824.9394-7-florian.bezdeka@siemens.com>
 In-Reply-To: <20211013071824.9394-1-florian.bezdeka@siemens.com>
 References: <20211013071824.9394-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,64 +18,35 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-For now the difference between the demo and the "ci image" is:
- - Removed sshd-regen-keys: Reduces the (first) boot time especially on
-   low end CI hardware. Helps to stay within LAVA timeouts.
+It can happen that the LAVA job submission fails. If so, the CI job
+should be marked as failed. Previously we had something like the
+following in the log, but the job was still marked as "OK".
 
- - Removed expand-on-first-boot: Doesn't make much sense on CI runs as
-   we don't really use the filesystem. Helps to reduce the first boot
-   time a bit.
-
-CI builds will now use that file.
+Log:
+connect to lava server: https://lava.xenomai.org
+Deploy artifacts from 'https://xenomai-images-artifacts.s3.amazonaws.com/artifacts'
+submit lava job
+<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
+<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
+scripts/run-lava-tests.sh: 56: [: Illegal number:
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- ci/gitlab-ci-base.yml |  4 ++--
- opt-ci.yml            | 19 +++++++++++++++++++
- 2 files changed, 21 insertions(+), 2 deletions(-)
- create mode 100644 opt-ci.yml
+ scripts/run-lava-tests.sh | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 8a1dbfb..26c3f60 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -39,8 +39,8 @@ default:
-   stage: build
-   script:
-     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
-+    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
-+    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
-     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
- 
- .test:
-diff --git a/opt-ci.yml b/opt-ci.yml
-new file mode 100644
-index 0000000..6766cb0
---- /dev/null
-+++ b/opt-ci.yml
-@@ -0,0 +1,19 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2021
-+#
-+# Authors:
-+#  Florian Bezdeka <florian.bezdeka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 10
-+
-+local_conf_header:
-+  xenomai-ci: |
-+    ROOTFS_POSTPROCESS_COMMAND_remove = "image_postprocess_sshd_key_regen"
-+    IMAGE_INSTALL_remove += "sshd-regen-keys"
-+    IMAGE_INSTALL_remove += "expand-on-first-boot"
-\ No newline at end of file
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index dde542c..de63b28 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -9,6 +9,7 @@
+ #
+ # SPDX-License-Identifier: MIT
+ #
++set -e
+ TARGET=$1
+ if [ -z "${TARGET}" ]; then
+     echo "no target was given"
 -- 
 2.31.1
 
