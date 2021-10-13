@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/9] cobalt: Use close_fd for kernel 5.14+
-Date: Wed, 13 Oct 2021 13:55:46 +0200
-Message-Id: <5b4020692086af9bf8a760eda8a5b625992023cc.1634126152.git.jan.kiszka@siemens.com>
+Subject: [PATCH 5/9] cobalt/thread: Switch to MAX_RT_PRIO
+Date: Wed, 13 Oct 2021 13:55:49 +0200
+Message-Id: <527a4f0274527f0246a7d7842f1c4c788a05313c.1634126152.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1634126152.git.jan.kiszka@siemens.com>
 References: <cover.1634126152.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -18,63 +18,28 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Wrap it on __close_fd for older kernels.
+Identical to MAX_USER_RT_PRIO which was removed in 5.12.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 ++++
- kernel/cobalt/rtdm/core.c                            | 4 ++--
- kernel/cobalt/rtdm/fd.c                              | 2 +-
- 3 files changed, 7 insertions(+), 3 deletions(-)
+ kernel/cobalt/thread.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index d3423016e9..cb3f2b242f 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -238,4 +238,8 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- }
- #endif
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,14,0)
-+#define close_fd(__ufd)	__close_fd(current->files, __ufd)
-+#endif
-+
- #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
-diff --git a/kernel/cobalt/rtdm/core.c b/kernel/cobalt/rtdm/core.c
-index 2e5aeb44e2..dcced045df 100644
---- a/kernel/cobalt/rtdm/core.c
-+++ b/kernel/cobalt/rtdm/core.c
-@@ -66,7 +66,7 @@ int __rtdm_anon_getfd(const char *name, int flags)
- 
- void __rtdm_anon_putfd(int ufd)
- {
--	__close_fd(current->files, ufd);
-+	close_fd(ufd);
- }
- 
- static int create_instance(int ufd, struct rtdm_device *dev,
-@@ -247,7 +247,7 @@ int __rtdm_dev_socket(int protocol_family, int socket_type,
- fail_socket:
- 	cleanup_instance(dev, context);
- fail_create:
--	__close_fd(current->files, ufd);
-+	close_fd(ufd);
- fail_getfd:
- 	__rtdm_put_device(dev);
- 
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index c314d9f650..bbeea06ae9 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -902,7 +902,7 @@ eadv:
- 	 * rtdm_fd are still pending.
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 2c1ec6d3a4..2e1667d197 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2008,8 +2008,8 @@ void __xnthread_propagate_schedparam(struct xnthread *curr)
  	 */
- 	__fd_close(ppd, idx, s);
--	__close_fd(current->files, ufd);
-+	close_fd(ufd);
+ 	if (xnthread_test_state(curr, XNWEAK) && kprio == 0)
+ 		kpolicy = SCHED_NORMAL;
+-	else if (kprio >= MAX_USER_RT_PRIO)
+-		kprio = MAX_USER_RT_PRIO - 1;
++	else if (kprio >= MAX_RT_PRIO)
++		kprio = MAX_RT_PRIO - 1;
  
- 	return 0;
- }
+ 	if (p->policy != kpolicy || (kprio > 0 && p->rt_priority != kprio)) {
+ 		param.sched_priority = kprio;
 -- 
 2.31.1
 
