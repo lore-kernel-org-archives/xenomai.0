@@ -1,13 +1,9 @@
-Subject: Re: [ANNOUNCE] Xenomai v3.2-rc2 available
-References: <b975707c-61a7-4859-0291-accc7c6a04de@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <00bee36d-d0be-abd3-8c76-bb97a9e52868@siemens.com>
-Date: Tue, 19 Oct 2021 18:33:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <b975707c-61a7-4859-0291-accc7c6a04de@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: C Smith <csmithquestions@gmail.com>
+Date: Tue, 19 Oct 2021 22:49:14 -0700
+Message-ID: <CA+K1mPHJGftXH0ujmAyUryBpR3iC7kAeLU0oi3cHBfhF4Gn9iQ@mail.gmail.com>
+Subject: which mmap API
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +12,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Xenomai List <xenomai@xenomai.org>
 
-On 19.10.21 18:26, Jan Kiszka via Xenomai wrote:
-> Hi all,
-> 
-> a second release candidate for 3.2 is available now.
-> 
-> https://source.denx.de/Xenomai/xenomai/-/archive/v3.1-rc2/xenomai-v3.1-rc2.tar.bz2
-> https://source.denx.de/Xenomai/xenomai/commits/v3.1-rc2
+I recently got a Xenomai 3.1 shared memory .mmap op to work but I don't see
+any mmap examples in the Xemomai documentation (please publish one). I have
+a question as to why I had to do it a certain way. Here is the
+(abbreviated) code I used:
 
-Gmbl, this should have become
+typedef struct {         // shared struct
+   int data[PAGE_SIZE*4];
+} shm_test_t;
 
-https://source.denx.de/Xenomai/xenomai/-/archive/v3.2-rc2/xenomai-v3.2-rc2.tar.bz2
-https://source.denx.de/Xenomai/xenomai/commits/v3.2-rc2
+shm_test_t *shm_test_p = 0;    // create a driver struct to share
+shm_test_p = kmalloc(sizeof(shm_test_t) + RTDM_MAX_DEVNAME_LEN,
+GFP_KERNEL);
 
-after copy&pasting.
+static struct rtdm_driver device_tmpl = {
+   .profile_info        =
+RTDM_PROFILE_INFO(mydev_,RTDM_CLASS_EXPERIMENTAL,0,999),
+   .device_flags = RTDM_NAMED_DEVICE | RTDM_EXCLUSIVE,
+   .device_count        = MAX_DEVICES,
+   .context_size = sizeof(struct mydev_context),
+   .ops = {
+      .open = mydev_open,
+      .close        = mydev_close,
+      .read_nrt         = mydev_read,
+      .ioctl_rt   = mydev_ioctl,
+      .ioctl_nrt = mydev_ioctl,
+      .mmap             = mydev_mmap,
+   },
+};
 
-Jan
+// device initialization
+dev = kmalloc(sizeof(struct rtdm_device) + RTDM_MAX_DEVNAME_LEN,
+GFP_KERNEL);
+dev->driver = &device_tmpl;
+dev->label = "mydev%d";
+name = (char *)(dev + 1);
+ksformat(name, RTDM_MAX_DEVNAME_LEN, dev->label, i);
+err = rtdm_dev_register(dev);
 
-> 
-> It primarily consists of bug fixes (as it should be) but also includes 
-> another y2038 conversion that is orthogonal to existing APIs, thus 
-> harmless, as we well as most compile fixes to build against 5.15 
-> kernels. You just need to turn off CONFIG_XENO_OPT_DEBUG_TRACE_RELAX for 
-> the time being if you want to try that combination (still experimental). 
-> rc2 also brings the ABI revision bump that was forgotten for rc1 
-> (actually even much earlier).
-> 
-> All changes since 3.2-rc1:
-> 
-> Jan Kiszka (24):
->       cobalt/posix/io: Privatize some select helpers
->       doc: Fix copy&paste mistake in corectl man page
->       cobalt/arch/arm: fptest: Add missing SIMD register clobbering
->       Bump ABI revisions
->       cobalt/posix/thread: Properly discard xnthread on registration error
->       drivers/testing/switchtest: Properly clean up xnthread on error
->       cobalt/sched: Save one cpumask stack variable in affinity_vfile_store
->       lib/alchemy: Fix rt_pipe_read* with timeouts
->       lib/alchemy/testsuite: Fix pipe-1 test case
->       lib/alchemy/testsuite: Extend pipe-1 test by timeout checks
->       lib/alchemy: Fix/clarify documentation of *_timed functions regarding abs_timeout
->       cobalt/dovetail: Use IRQ_WORK_INIT to please 5.11+
->       cobalt: Use close_fd for kernel 5.14+
->       cobalt: Use linux/stdarg.h
->       cobalt/posix: Add required FORCE makefile rule
->       cobalt/thread: Switch to MAX_RT_PRIO
->       cobalt: Use fallthrough key word rather than comments
->       drivers/can: Drop MODULE_SUPPORTED_DEVICE
->       drivers/net/e1000e: Add missing ethtool.h include
->       lib/{cobalt,copperplate}: Use valid addresses for pthread_setspecific
->       testsuite/latency: Use corresponding pclose for popen
->       lib/boilerplate: Convert pthread_mutexattr_setrobust_np stub into inline function
->       lib: Switch to pthread_mutexattr_setrobust
->       config: Bump version number
-> 
-> Song Chen (3):
->       y2038: cobalt/posix/io: Adding recvmmsg64
->       y2038: lib/cobalt/rtdm: dispatch recvmmg
->       y2038: testsuite/smokey/y2038: testcase for recvmmsg64
-> 
-> Please continue with testing and reporting, then we can soon finalize 
-> this major release!
-> 
-> Jan
-> 
+// .mmap op handler
+int mydev_mmap(struct rtdm_fd *fd, struct vm_area_struct *vma)
+{
+    rtdm_mmap_kmem(vma, shm_test_p);   // do the address conversion
+}
 
+That works.  I can share the shm_test_t struct between my rtdm driver and
+userspace.
+In userspace I do:
+mydev_fd = open("/dev/rtdm/mydev0", O_RDWR);  // linked against Xeno3.1
+posix wrappers
+shmem_data_p = (shm_test_t *)
+mmap(0,sizeof(shm_test_t),PROT_READ|PROT_WRITE,MAP_SHARED,mydev_fd,0);
+
+That works, but why don't I need rtdm_mmap_to_user() in the .mmap op
+handler? If rtdm_mmap_kmem() does the job then why does rtdm_mmap_to_user()
+exist?
+
+thanks, -C Smith
