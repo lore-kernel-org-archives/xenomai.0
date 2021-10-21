@@ -1,14 +1,16 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH] testsuite/xeno-test: Restore timesyncd running state on
  smokey failure
+Date: Thu, 21 Oct 2021 12:18:03 +0000
+Message-ID: <6f3ceac348b11114fe267b3cf1c5e229a4d83b69.camel@siemens.com>
 References: <20211021115508.36110-1-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <851fd680-a5e7-6755-a66c-bffc2c31c71d@siemens.com>
-Date: Thu, 21 Oct 2021 14:15:36 +0200
-MIME-Version: 1.0
-In-Reply-To: <20211021115508.36110-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
+ <851fd680-a5e7-6755-a66c-bffc2c31c71d@siemens.com>
+In-Reply-To: <851fd680-a5e7-6755-a66c-bffc2c31c71d@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1DEB5A141AEB5548950847F29C007DAF@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,75 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 21.10.21 13:55, Florian Bezdeka wrote:
-> We stop systemd-timesyncd before running the smokey testsuite and start
-> it again once the smokey tests are complete. As xeno-test has a "set -e"
-> we will stop the execution on the first error. So if smokey reports an
-> error systemd-timesyncd is not started again. We don't properly restore
-> the system state in this case.
-> 
-> Install a bash trap to make sure that we restart the service in all
-> cases if it was running on script entry.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  testsuite/xeno-test/xeno-test.in | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
-> 
-> diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
-> index 95bf59606..cfa28df18 100644
-> --- a/testsuite/xeno-test/xeno-test.in
-> +++ b/testsuite/xeno-test/xeno-test.in
-> @@ -39,9 +39,19 @@ timer irq latency.
->  EOF
->  }
->  
-> +start_timesyncd()
-> +{
-> +    if $timesyncd_was_running; then
-> +        systemctl start systemd-timesyncd
-> +        timesyncd_was_running=false
-> +    fi
-
-Plus "trap - EXIT" here? Or at least after explicit start_timesyncd below.
-
-Jan
-
-> +}
-> +trap start_timesyncd EXIT
-> +
->  keep_going=
->  run_on_vm=
->  rt_load=false
-> +timesyncd_was_running=false
->  
->  while :; do
->      case "$1" in
-> @@ -82,17 +92,14 @@ echo 0 > /proc/xenomai/latency || :
->  
->  testdir=@testdir@
->  
-> -timesyncd_running=false
->  if which systemctl > /dev/null && systemctl is-active --quiet systemd-timesyncd; then
-> -    timesyncd_running=true
-> +    timesyncd_was_running=true
->      systemctl stop systemd-timesyncd
->  fi
->  
->  $testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
->  
-> -if $timesyncd_running; then
-> -    systemctl start systemd-timesyncd
-> -fi
-> +start_timesyncd
->  
->  $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
->  $testdir/switchtest -T 30
-> 
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gVGh1LCAyMDIxLTEwLTIxIGF0IDE0OjE1ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyMS4xMC4yMSAxMzo1NSwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IFdlIHN0b3Agc3lz
+dGVtZC10aW1lc3luY2QgYmVmb3JlIHJ1bm5pbmcgdGhlIHNtb2tleSB0ZXN0c3VpdGUgYW5kIHN0
+YXJ0DQo+ID4gaXQgYWdhaW4gb25jZSB0aGUgc21va2V5IHRlc3RzIGFyZSBjb21wbGV0ZS4gQXMg
+eGVuby10ZXN0IGhhcyBhICJzZXQgLWUiDQo+ID4gd2Ugd2lsbCBzdG9wIHRoZSBleGVjdXRpb24g
+b24gdGhlIGZpcnN0IGVycm9yLiBTbyBpZiBzbW9rZXkgcmVwb3J0cyBhbg0KPiA+IGVycm9yIHN5
+c3RlbWQtdGltZXN5bmNkIGlzIG5vdCBzdGFydGVkIGFnYWluLiBXZSBkb24ndCBwcm9wZXJseSBy
+ZXN0b3JlDQo+ID4gdGhlIHN5c3RlbSBzdGF0ZSBpbiB0aGlzIGNhc2UuDQo+ID4gDQo+ID4gSW5z
+dGFsbCBhIGJhc2ggdHJhcCB0byBtYWtlIHN1cmUgdGhhdCB3ZSByZXN0YXJ0IHRoZSBzZXJ2aWNl
+IGluIGFsbA0KPiA+IGNhc2VzIGlmIGl0IHdhcyBydW5uaW5nIG9uIHNjcmlwdCBlbnRyeS4NCj4g
+PiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBz
+aWVtZW5zLmNvbT4NCj4gPiAtLS0NCj4gPiAgdGVzdHN1aXRlL3hlbm8tdGVzdC94ZW5vLXRlc3Qu
+aW4gfCAxNyArKysrKysrKysrKystLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0
+aW9ucygrKSwgNSBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvdGVzdHN1aXRl
+L3hlbm8tdGVzdC94ZW5vLXRlc3QuaW4gYi90ZXN0c3VpdGUveGVuby10ZXN0L3hlbm8tdGVzdC5p
+bg0KPiA+IGluZGV4IDk1YmY1OTYwNi4uY2ZhMjhkZjE4IDEwMDY0NA0KPiA+IC0tLSBhL3Rlc3Rz
+dWl0ZS94ZW5vLXRlc3QveGVuby10ZXN0LmluDQo+ID4gKysrIGIvdGVzdHN1aXRlL3hlbm8tdGVz
+dC94ZW5vLXRlc3QuaW4NCj4gPiBAQCAtMzksOSArMzksMTkgQEAgdGltZXIgaXJxIGxhdGVuY3ku
+DQo+ID4gIEVPRg0KPiA+ICB9DQo+ID4gIA0KPiA+ICtzdGFydF90aW1lc3luY2QoKQ0KPiA+ICt7
+DQo+ID4gKyAgICBpZiAkdGltZXN5bmNkX3dhc19ydW5uaW5nOyB0aGVuDQo+ID4gKyAgICAgICAg
+c3lzdGVtY3RsIHN0YXJ0IHN5c3RlbWQtdGltZXN5bmNkDQo+ID4gKyAgICAgICAgdGltZXN5bmNk
+X3dhc19ydW5uaW5nPWZhbHNlDQo+ID4gKyAgICBmaQ0KPiANCj4gUGx1cyAidHJhcCAtIEVYSVQi
+IGhlcmU/IE9yIGF0IGxlYXN0IGFmdGVyIGV4cGxpY2l0IHN0YXJ0X3RpbWVzeW5jZCBiZWxvdy4N
+Cg0KV2Ugc2V0IHRpbWVzeW5jZF93YXNfcnVubmluZyB0byBmYWxzZSBvbmNlIHRoZSBzZXJ2aWNl
+IGhhcyBiZWVuDQpzdGFydGVkLiBTbyBldmVuIGlmIGNhbGxlZCB0d2ljZSAob24gdGVzdCBzdWl0
+ZSBzdWNjZXNzKSBldmVyeXRoaW5nIGlzDQpmaW5lLiBFdmVuIGlmIGNhbGxlZCB0d2ljZSwgc3Rh
+cnRpbmcgYW4gYWxyZWFkeSBydW5uaW5nIHNlcnZpY2UgaXMgYQ0KTk9PUC4NCg0KPiANCj4gSmFu
+DQo+IA0KPiA+ICt9DQo+ID4gK3RyYXAgc3RhcnRfdGltZXN5bmNkIEVYSVQNCj4gPiArDQo+ID4g
+IGtlZXBfZ29pbmc9DQo+ID4gIHJ1bl9vbl92bT0NCj4gPiAgcnRfbG9hZD1mYWxzZQ0KPiA+ICt0
+aW1lc3luY2Rfd2FzX3J1bm5pbmc9ZmFsc2UNCj4gPiAgDQo+ID4gIHdoaWxlIDo7IGRvDQo+ID4g
+ICAgICBjYXNlICIkMSIgaW4NCj4gPiBAQCAtODIsMTcgKzkyLDE0IEBAIGVjaG8gMCA+IC9wcm9j
+L3hlbm9tYWkvbGF0ZW5jeSB8fCA6DQo+ID4gIA0KPiA+ICB0ZXN0ZGlyPUB0ZXN0ZGlyQA0KPiA+
+ICANCj4gPiAtdGltZXN5bmNkX3J1bm5pbmc9ZmFsc2UNCj4gPiAgaWYgd2hpY2ggc3lzdGVtY3Rs
+ID4gL2Rldi9udWxsICYmIHN5c3RlbWN0bCBpcy1hY3RpdmUgLS1xdWlldCBzeXN0ZW1kLXRpbWVz
+eW5jZDsgdGhlbg0KPiA+IC0gICAgdGltZXN5bmNkX3J1bm5pbmc9dHJ1ZQ0KPiA+ICsgICAgdGlt
+ZXN5bmNkX3dhc19ydW5uaW5nPXRydWUNCj4gPiAgICAgIHN5c3RlbWN0bCBzdG9wIHN5c3RlbWQt
+dGltZXN5bmNkDQo+ID4gIGZpDQo+ID4gIA0KPiA+ICAkdGVzdGRpci9zbW9rZXkgLS1ydW4gJHJ1
+bl9vbl92bSAka2VlcF9nb2luZyByYW5kb21fYWxsb2Nfcm91bmRzPTY0IHBhdHRlcm5fY2hlY2tf
+cm91bmRzPTY0DQo+ID4gIA0KPiA+IC1pZiAkdGltZXN5bmNkX3J1bm5pbmc7IHRoZW4NCj4gPiAt
+ICAgIHN5c3RlbWN0bCBzdGFydCBzeXN0ZW1kLXRpbWVzeW5jZA0KPiA+IC1maQ0KPiA+ICtzdGFy
+dF90aW1lc3luY2QNCj4gPiAgDQo+ID4gICR0ZXN0ZGlyL2Nsb2NrdGVzdCAtRCAtVCAzMCAtQyBD
+TE9DS19IT1NUX1JFQUxUSU1FIHx8ICR0ZXN0ZGlyL2Nsb2NrdGVzdCAtVCAzMA0KPiA+ICAkdGVz
+dGRpci9zd2l0Y2h0ZXN0IC1UIDMwDQo+ID4gDQo+IA0KDQo=
 
