@@ -1,10 +1,11 @@
-Subject: Re: [PATCH v3] utils: add kernel config check utility
-References: <20211020080656.739-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH] y2038: testsuite/smokey: Skip recvmmsg64 test if kernel
+ support is missing
+References: <20211020125240.52313-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8143c260-1611-d68a-ae08-705c6a927576@siemens.com>
-Date: Thu, 21 Oct 2021 18:37:16 +0200
+Message-ID: <dd01b44f-8f87-461d-62a5-6dbc4f404176@siemens.com>
+Date: Thu, 21 Oct 2021 18:37:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <20211020080656.739-1-hongzhan.chen@intel.com>
+In-Reply-To: <20211020125240.52313-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,52 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 20.10.21 10:06, Hongzhan Chen wrote:
-> diff --git a/utils/chkkconf/Makefile.am b/utils/chkkconf/Makefile.am
-> new file mode 100644
-> index 000000000..3befee7f1
-> --- /dev/null
-> +++ b/utils/chkkconf/Makefile.am
-> @@ -0,0 +1,20 @@
-> +
-> +data_DATA = kconf-checklist
-> +
-> +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-> +
-> +sbin_PROGRAMS = chkkconf
-> +
-> +chkkconf_SOURCES = checkconfig.c
-> +
-> +chkkconf_CPPFLAGS = 		\
-> +	$(XENO_USER_CFLAGS)	\
-> +	-I$(top_srcdir)/include \
+On 20.10.21 14:52, Florian Bezdeka wrote:
+> It might happen that the kernel does not support the combination of
+> address family and protocol we use for this test. Skip the test and
+> simulate success in such cases.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/y2038/syscall-tests.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> index f025fd55d..a1a5d12f6 100644
+> --- a/testsuite/smokey/y2038/syscall-tests.c
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -1016,6 +1016,10 @@ static int test_sc_cobalt_recvmmsg64(void)
+>  	};
+>  
+>  	sock = smokey_check_errno(socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP));
+> +	if (sock == -EAFNOSUPPORT) {
+> +		smokey_note("recvmmsg64: skipped. (no kernel support)");
+> +		return 0;
+> +	}
+>  	if (sock < 0)
+>  		return sock;
+>  
+> 
 
-Both not needed, see below.
+Thanks, applied.
 
-> +	-DTESTDIR=\"$(datadir)\" -D_GNU_SOURCE
-
-Renaming this to "DATADIR", to be consistent.
-
-> +
-> +chkkconf_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
-> +
-
-Unneeded - no Xenomai program. And dropping that actually obsoletes
-application_usage(), get_program_name etc. Sorry, didn't realized before.
-
-> +chkkconf_LDADD =					\
-> +	 @XENO_CORE_LDADD@			\
-> +	 @XENO_USER_LDADD@			\
-> +	-lpthread -lrt
-
-Not needed anymore.
-
-I've applied the patch with those changes (and related ones in the
-source code). Please double check.
-
-Thanks,
 Jan
 
 -- 
