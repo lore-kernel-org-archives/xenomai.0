@@ -1,13 +1,15 @@
-MIME-Version: 1.0
+Subject: Re: which mmap API
 References: <CA+K1mPHJGftXH0ujmAyUryBpR3iC7kAeLU0oi3cHBfhF4Gn9iQ@mail.gmail.com>
  <f8927397-95d4-3866-9327-84b29fe237c2@siemens.com>
-In-Reply-To: <f8927397-95d4-3866-9327-84b29fe237c2@siemens.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Thu, 28 Oct 2021 00:30:45 -0700
-Message-ID: <CA+K1mPH3UE1y0r3u6sE7HuB5wtUWMg6rFZqZ5_ehyAQmGpdTHg@mail.gmail.com>
-Subject: Re: which mmap API
+ <CA+K1mPH3UE1y0r3u6sE7HuB5wtUWMg6rFZqZ5_ehyAQmGpdTHg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <798bf1ee-ceb0-fd16-3dbb-96640e1293e5@siemens.com>
+Date: Thu, 28 Oct 2021 09:55:09 +0200
+MIME-Version: 1.0
+In-Reply-To: <CA+K1mPH3UE1y0r3u6sE7HuB5wtUWMg6rFZqZ5_ehyAQmGpdTHg@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +18,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: C Smith <csmithquestions@gmail.com>
 Cc: Xenomai List <xenomai@xenomai.org>
 
-T0sgdGhhbmtzLiBJIGFtIGF0dGFjaGluZyBhIHByb3Bvc2VkIHBhdGNoIGZvciB0aGUgZG9jcy4g
-SSd2ZSB0cmllZCB0byB1c2UKdGhlIHN5bnRheCBvZiB0aGUgTGludXggRGV2aWNlIERyaXZlcnMg
-Ym9vay4KSSB3aWxsIHNvb24gc3VibWl0IGEgbW9yZSBjb21wbGV0ZSBwYWlyIG9mIHRlc3QgYXBw
-cyBmb3IgdXNpbmcgbW1hcCgpLAp3aGljaCBJIGFzc3VtZSB3b3VsZCBlbmQgdXAgaW4geGVub21h
-aS0zLngvZGVtby9jb2JhbHQvLgoKdGhhbmtzLAotQyBTbWl0aAoKT24gVGh1LCBPY3QgMjEsIDIw
-MjEgYXQgODoyMyBBTSBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiB3cm90ZToK
-Cj4gT24gMjAuMTAuMjEgMDc6NDksIEMgU21pdGggdmlhIFhlbm9tYWkgd3JvdGU6Cj4gPiBJIHJl
-Y2VudGx5IGdvdCBhIFhlbm9tYWkgMy4xIHNoYXJlZCBtZW1vcnkgLm1tYXAgb3AgdG8gd29yayBi
-dXQgSSBkb24ndAo+IHNlZQo+ID4gYW55IG1tYXAgZXhhbXBsZXMgaW4gdGhlIFhlbW9tYWkgZG9j
-dW1lbnRhdGlvbiAocGxlYXNlIHB1Ymxpc2ggb25lKS4gSQo+IGhhdmUKPiA+IGEgcXVlc3Rpb24g
-YXMgdG8gd2h5IEkgaGFkIHRvIGRvIGl0IGEgY2VydGFpbiB3YXkuIEhlcmUgaXMgdGhlCj4gPiAo
-YWJicmV2aWF0ZWQpIGNvZGUgSSB1c2VkOgo+ID4KPiA+IHR5cGVkZWYgc3RydWN0IHsgICAgICAg
-ICAvLyBzaGFyZWQgc3RydWN0Cj4gPiAgICBpbnQgZGF0YVtQQUdFX1NJWkUqNF07Cj4gPiB9IHNo
-bV90ZXN0X3Q7Cj4gPgo+ID4gc2htX3Rlc3RfdCAqc2htX3Rlc3RfcCA9IDA7ICAgIC8vIGNyZWF0
-ZSBhIGRyaXZlciBzdHJ1Y3QgdG8gc2hhcmUKPiA+IHNobV90ZXN0X3AgPSBrbWFsbG9jKHNpemVv
-ZihzaG1fdGVzdF90KSArIFJURE1fTUFYX0RFVk5BTUVfTEVOLAo+ID4gR0ZQX0tFUk5FTCk7Cj4g
-Pgo+ID4gc3RhdGljIHN0cnVjdCBydGRtX2RyaXZlciBkZXZpY2VfdG1wbCA9IHsKPiA+ICAgIC5w
-cm9maWxlX2luZm8gICAgICAgID0KPiA+IFJURE1fUFJPRklMRV9JTkZPKG15ZGV2XyxSVERNX0NM
-QVNTX0VYUEVSSU1FTlRBTCwwLDk5OSksCj4gPiAgICAuZGV2aWNlX2ZsYWdzID0gUlRETV9OQU1F
-RF9ERVZJQ0UgfCBSVERNX0VYQ0xVU0lWRSwKPiA+ICAgIC5kZXZpY2VfY291bnQgICAgICAgID0g
-TUFYX0RFVklDRVMsCj4gPiAgICAuY29udGV4dF9zaXplID0gc2l6ZW9mKHN0cnVjdCBteWRldl9j
-b250ZXh0KSwKPiA+ICAgIC5vcHMgPSB7Cj4gPiAgICAgICAub3BlbiA9IG15ZGV2X29wZW4sCj4g
-PiAgICAgICAuY2xvc2UgICAgICAgID0gbXlkZXZfY2xvc2UsCj4gPiAgICAgICAucmVhZF9ucnQg
-ICAgICAgICA9IG15ZGV2X3JlYWQsCj4gPiAgICAgICAuaW9jdGxfcnQgICA9IG15ZGV2X2lvY3Rs
-LAo+ID4gICAgICAgLmlvY3RsX25ydCA9IG15ZGV2X2lvY3RsLAo+ID4gICAgICAgLm1tYXAgICAg
-ICAgICAgICAgPSBteWRldl9tbWFwLAo+ID4gICAgfSwKPiA+IH07Cj4gPgo+ID4gLy8gZGV2aWNl
-IGluaXRpYWxpemF0aW9uCj4gPiBkZXYgPSBrbWFsbG9jKHNpemVvZihzdHJ1Y3QgcnRkbV9kZXZp
-Y2UpICsgUlRETV9NQVhfREVWTkFNRV9MRU4sCj4gPiBHRlBfS0VSTkVMKTsKPiA+IGRldi0+ZHJp
-dmVyID0gJmRldmljZV90bXBsOwo+ID4gZGV2LT5sYWJlbCA9ICJteWRldiVkIjsKPiA+IG5hbWUg
-PSAoY2hhciAqKShkZXYgKyAxKTsKPiA+IGtzZm9ybWF0KG5hbWUsIFJURE1fTUFYX0RFVk5BTUVf
-TEVOLCBkZXYtPmxhYmVsLCBpKTsKPiA+IGVyciA9IHJ0ZG1fZGV2X3JlZ2lzdGVyKGRldik7Cj4g
-Pgo+ID4gLy8gLm1tYXAgb3AgaGFuZGxlcgo+ID4gaW50IG15ZGV2X21tYXAoc3RydWN0IHJ0ZG1f
-ZmQgKmZkLCBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSkKPiA+IHsKPiA+ICAgICBydGRtX21t
-YXBfa21lbSh2bWEsIHNobV90ZXN0X3ApOyAgIC8vIGRvIHRoZSBhZGRyZXNzIGNvbnZlcnNpb24K
-PiA+IH0KPiA+Cj4gPiBUaGF0IHdvcmtzLiAgSSBjYW4gc2hhcmUgdGhlIHNobV90ZXN0X3Qgc3Ry
-dWN0IGJldHdlZW4gbXkgcnRkbSBkcml2ZXIgYW5kCj4gPiB1c2Vyc3BhY2UuCj4gPiBJbiB1c2Vy
-c3BhY2UgSSBkbzoKPiA+IG15ZGV2X2ZkID0gb3BlbigiL2Rldi9ydGRtL215ZGV2MCIsIE9fUkRX
-Uik7ICAvLyBsaW5rZWQgYWdhaW5zdCBYZW5vMy4xCj4gPiBwb3NpeCB3cmFwcGVycwo+ID4gc2ht
-ZW1fZGF0YV9wID0gKHNobV90ZXN0X3QgKikKPiA+IG1tYXAoMCxzaXplb2Yoc2htX3Rlc3RfdCks
-UFJPVF9SRUFEfFBST1RfV1JJVEUsTUFQX1NIQVJFRCxteWRldl9mZCwwKTsKPiA+Cj4gPiBUaGF0
-IHdvcmtzLCBidXQgd2h5IGRvbid0IEkgbmVlZCBydGRtX21tYXBfdG9fdXNlcigpIGluIHRoZSAu
-bW1hcCBvcAo+ID4gaGFuZGxlcj8gSWYgcnRkbV9tbWFwX2ttZW0oKSBkb2VzIHRoZSBqb2IgdGhl
-biB3aHkgZG9lcwo+IHJ0ZG1fbW1hcF90b191c2VyKCkKPiA+IGV4aXN0Pwo+Cj4gcnRkbV9tbWFw
-X3RvX3VzZXIgaXMgb25seSBmb3Jlc2VlbiBmb3IgY2FzZXMgb3V0c2lkZSBvZiBhbiBtbWFwIGhh
-bmRsZXIsCj4gdHlwaWNhbGx5IGluIHNvbWUgc3BlY2lmaWMgaW9jdGwgKHNlZSBlLmcuCj4ga2Vy
-bmVsL2RyaXZlcnMvYW5hbG9neS9idWZmZXIuYykuIE1vc3QgY2FzZXMgYSBiZXR0ZXIgYW5kIG1v
-cmUKPiBjb25zaXN0ZW50bHkgaGFuZGxlZCB2aWEgbW1hcCBoYW5kbGVyIGFuZCwgdGh1cywgbW1h
-cCgpIHN5c2NhbGxzLiBXZSBjYW4KPiBpbXByb3ZlIHRoZSBkb2N1bWVudGF0aW9uIG9uIHRoaXMg
-Y2FzZXMuIEZvciBydGRtX21tYXBfe2ssdixpb31tZW0sIHRoZQo+IHNpdHVhdGlvbiBzaG91bGQg
-YmUgYmV0dGVyIGFscmVhZHkuCj4KPiBJbiBhbnkgY2FzZSwgcGF0Y2hlcyB3ZWxjb21lLgo+Cj4g
-SmFuCj4KPiAtLQo+IFNpZW1lbnMgQUcsIFQgUkRBIElPVAo+IENvcnBvcmF0ZSBDb21wZXRlbmNl
-IENlbnRlciBFbWJlZGRlZCBMaW51eAo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
-LS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IG1tYXAt
-ZG9jLXBhdGNoLXhlbm8zLjEuMS5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMjA5OCBi
-eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMTAyOC83Y2RhMGVmNS9hdHRhY2htZW50LmJpbj4K
+On 28.10.21 09:30, C Smith wrote:
+> OK thanks. I am attaching a proposed patch for the docs. I've tried to
+> use the syntax of the Linux Device Drivers book.
+
+Thanks, looks good, but we need that as proper patch (subject, brief
+body and at least a signed-of-by). See CONTRIBUTING.md.
+
+> I will soon submit a more complete pair of test apps for using mmap(),
+> which I assume would end up in xenomai-3.x/demo/cobalt/.
+
+demo/posix/cobalt, yes, probably.
+
+Jan
+
+> 
+> thanks,
+> -C Smith
+> 
+> On Thu, Oct 21, 2021 at 8:23 AM Jan Kiszka <jan.kiszka@siemens.com
+> <mailto:jan.kiszka@siemens.com>> wrote:
+> 
+>     On 20.10.21 07:49, C Smith via Xenomai wrote:
+>     > I recently got a Xenomai 3.1 shared memory .mmap op to work but I
+>     don't see
+>     > any mmap examples in the Xemomai documentation (please publish
+>     one). I have
+>     > a question as to why I had to do it a certain way. Here is the
+>     > (abbreviated) code I used:
+>     >
+>     > typedef struct {         // shared struct
+>     >    int data[PAGE_SIZE*4];
+>     > } shm_test_t;
+>     >
+>     > shm_test_t *shm_test_p = 0;    // create a driver struct to share
+>     > shm_test_p = kmalloc(sizeof(shm_test_t) + RTDM_MAX_DEVNAME_LEN,
+>     > GFP_KERNEL);
+>     >
+>     > static struct rtdm_driver device_tmpl = {
+>     >    .profile_info        =
+>     > RTDM_PROFILE_INFO(mydev_,RTDM_CLASS_EXPERIMENTAL,0,999),
+>     >    .device_flags = RTDM_NAMED_DEVICE | RTDM_EXCLUSIVE,
+>     >    .device_count        = MAX_DEVICES,
+>     >    .context_size = sizeof(struct mydev_context),
+>     >    .ops = {
+>     >       .open = mydev_open,
+>     >       .close        = mydev_close,
+>     >       .read_nrt         = mydev_read,
+>     >       .ioctl_rt   = mydev_ioctl,
+>     >       .ioctl_nrt = mydev_ioctl,
+>     >       .mmap             = mydev_mmap,
+>     >    },
+>     > };
+>     >
+>     > // device initialization
+>     > dev = kmalloc(sizeof(struct rtdm_device) + RTDM_MAX_DEVNAME_LEN,
+>     > GFP_KERNEL);
+>     > dev->driver = &device_tmpl;
+>     > dev->label = "mydev%d";
+>     > name = (char *)(dev + 1);
+>     > ksformat(name, RTDM_MAX_DEVNAME_LEN, dev->label, i);
+>     > err = rtdm_dev_register(dev);
+>     >
+>     > // .mmap op handler
+>     > int mydev_mmap(struct rtdm_fd *fd, struct vm_area_struct *vma)
+>     > {
+>     >     rtdm_mmap_kmem(vma, shm_test_p);   // do the address conversion
+>     > }
+>     >
+>     > That works.  I can share the shm_test_t struct between my rtdm
+>     driver and
+>     > userspace.
+>     > In userspace I do:
+>     > mydev_fd = open("/dev/rtdm/mydev0", O_RDWR);  // linked against
+>     Xeno3.1
+>     > posix wrappers
+>     > shmem_data_p = (shm_test_t *)
+>     > mmap(0,sizeof(shm_test_t),PROT_READ|PROT_WRITE,MAP_SHARED,mydev_fd,0);
+>     >
+>     > That works, but why don't I need rtdm_mmap_to_user() in the .mmap op
+>     > handler? If rtdm_mmap_kmem() does the job then why does
+>     rtdm_mmap_to_user()
+>     > exist?
+> 
+>     rtdm_mmap_to_user is only foreseen for cases outside of an mmap handler,
+>     typically in some specific ioctl (see e.g.
+>     kernel/drivers/analogy/buffer.c). Most cases a better and more
+>     consistently handled via mmap handler and, thus, mmap() syscalls. We can
+>     improve the documentation on this cases. For rtdm_mmap_{k,v,io}mem, the
+>     situation should be better already.
+> 
+>     In any case, patches welcome.
+> 
+>     Jan
+> 
+>     -- 
+>     Siemens AG, T RDA IOT
+>     Corporate Competence Center Embedded Linux
+> 
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
