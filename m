@@ -1,13 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: [dovetail][RFC PATCH 0/5] Investigation summary TSC unsable, netdev
- watchdog
-Date: Tue, 2 Nov 2021 16:08:29 +0000
-Message-ID: <a9dee4bb0f429c78aba035d5d17bfe34768c43e7.camel@siemens.com>
-References: <e80e70eee168f5fd048e7c6aa570c7271a6b0594.camel@siemens.com>
-Content-Language: en-US
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [dovetail][RFC PATCH 1/5] net/sched/sch_generic: Measure the time
+ between watchdog runs
+Date: Tue,  2 Nov 2021 17:09:51 +0100
+Message-Id: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +14,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGksIA0KDQp3aXRoIHRoaXMgc2VyaWVzIEknbSB0cnlpbmcgdG8gc3VtbWFyaXplIHNvbWUgYW5h
-bHlzaXMgZG9uZSBvbiB0aGUNCm1hY2hpbmUgdGhhdCBpcyBzdGlsbCBhZmZlY3RlZCBieSBzb21l
-IHRpbWluZyBpc3N1ZXMuIFNlZSBbMV0gZm9yIHRoZQ0Kb2xkIHBvc3RpbmdzIChpbmNsdWRpbmcg
-aGFyZHdhcmUgZGVzY3JpcHRpb24pLg0KDQpJIHRyaWVkIHRvIHNwbGl0IHRoZSBpbXBvcnRhbnQg
-dGhpbmdzIGZyb20gdGhlIG5lY2Vzc2FyeSBpbmZyYXN0cnVjdHVyZQ0KcHJlcGFyYXRpb24uIFRo
-aXMgc2hvdWxkIGFsbG93IHVzIHRvIGZvY3VzIG9uIHRoZSByZWxldmFudCBwYXJ0cy4NCg0KVGhl
-IGZvbGxvd2luZyBrZXJuZWwgdmVyc2lvbnMgaGF2ZSBiZWVuIHRlc3RlZDoNCiAtIDUuMTAuNjEt
-ZG92ZXRhaWwgIHRoZSBiYXNlIHZlcnNpb24gZm9yIHRoaXMgc2VyaWVzDQogLSA1LjEwLjcwLWRv
-dmV0YWlsICBzZWUgNS4xNS1yYzINCiAtIDUuMTUtcmMyLWRvdmV0YWlsIG5vIHByb2JsZW0gZHVy
-aW5nIHN5c3RlbSBib290LCBidXQgc2ltaWxhciANCiAgICAgICAgICAgICAgICAgICAgIHByb2Js
-ZW0gd2hlbiBzaHV0dGluZyBkb3duDQoNCkF0dGFjaGVkIHRvIHRoaXMgY292ZXJsZXR0ZXI6DQog
-LSBBbiBvdXRwdXQgb2YgdGhlIG1vZGlmaWVkIC9wcm9jL2ludGVycnVwdHMgZmlsZQ0KIC0gQW4g
-b3V0cHV0IG9mIHRoZSBuZXcgL3Byb2MvaW50ZXJydXB0X2xvZ190aW1lcw0KDQpFYWNoIG9mIHRo
-ZSBmb2xsb3dpbmcgcGF0Y2hlcyBob2xkcyBhZGRpdGlvbmFsIGluZm9ybWF0aW9uIGFib3V0IA0K
-dGhpbmdzIHRoYXQgSSBub3RpY2VkIHdoZW4gbG9va2luZyBhdCB0aGUgcmVzdWx0cy4NCg0KVGhp
-cyBpc3N1ZSBpcyByZWFsbHkgaGFyZCB0byB0cmFjayBkb3duLiBXaGVuIEkgZG8gb25lIG9mIHRo
-ZSBmb2xsb3dpbmcNCnRoZSBwcm9ibGVtIGlzICJnb25lIjoNCg0KIC0gU2V0IENPTkZJR19IWiB0
-byAxMDAwLCBtYWtlcyB0aGUgcHJvYmxlbSBzZWVuIGR1cmluZyBib290IGdvIGF3YXksDQogICBi
-dXQgdGhlIHN5c3RlbSBmcmVlemVzIGR1cmluZyByZWJvb3Qvc2h1dGRvd24uIFdlJ3JlIHVzaW5n
-IGEgRGViaWFuIA0KICAgYmFzZWQga2VybmVsIGNvbmZpZ3VyYXRpb24uIENPTkZJR19IWiBpcyBz
-ZXQgdG8gMjUwIHBlciBkZWZhdWx0Lg0KDQogLSBFbmFibGUgdHJhY2luZyAoZXZlbiB3aXRoIGEg
-bWluaW1hbCBmaWx0ZXIpOiBQcm9ibGVtIGdvbmUNCg0KIC0gSW5zdHJ1bWVudGluZyB0aGUgSVJR
-IHBpcGVsaW5lIGNvZGUgd2l0aCBwcmludGsoKSBtYWtlcyB0aGUgcHJvYmxlbQ0KICAgZ28gYXdh
-eS4gU28gYWNjb3VudGluZyBjYW4gYmUgZG9uZSBidXQgcHJpbnRpbmcgdGhlIHJlc3VsdHMgaGFz
-IHRvIGJlDQogICBkb25lIHNvbWVob3cgaW4gdXNlcnNwYWNlLiBCdXQuLi4NCg0KIC0gT25jZSB0
-aGUgbmV0ZGV2IHdhdGNoZG9nIHRyaWdnZXJlZCBJIGhhdmUgb25seSBhIGZldyBzZWNvbmRzIGxl
-ZnQNCiAgIGJlZm9yZSB0aGUgc3lzdGVtIGlzIHVudXNhYmxlLiBOZXR3b3JrIGFzIHdlbGwgYXMg
-c2VyaWFsIGNvbm5lY3Rpb24NCiAgIGFyZSBubyBsb25nZXIgdXNhYmxlLg0KDQogLSBCb290aW5n
-IHNlcnZlciBjbGFzcyBoYXJkd2FyZSB0YWtlcyBzZXJ2ZXJhbCBtaW51dGVzLi4uDQoNCiAtIEJv
-b3Rpbmcgd2l0aCBpZGxlPXBvbGwgbWFrZXMgdGhlIHByb2JsZW0gZ28gYXdheSwgc2VlIG5vdGVz
-IGluIHBhdGNoDQogICA0DQoNCiAtIEJvb3Rpbmcgd2l0aCBtYXhjcHVzPTEgbWFrZXMgdGhlIHBy
-b2JsZW0gZ28gYXdheQ0KDQpbMV0gaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS8yMDIxLVNlcHRlbWJlci8wNDY0NDkuaHRtbA0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQoN
-CkZsb3JpYW4gQmV6ZGVrYSAoNSk6DQogIG5ldC9zY2hlZC9zY2hfZ2VuZXJpYzogTWVhc3VyZSB0
-aGUgdGltZSBiZXR3ZWVuIHdhdGNoZG9nIHJ1bnMNCiAga2VybmVsL2lycS9pcnFkZXNjOiBFeHRl
-bmQgc3RydWN0IGlycV9kZXNjIHdpdGggYSBmZXcgY3B1IHNwZWNpZmljDQogICAgbWVtYmVycw0K
-ICBrZXJuZWwvaXJxL3BpcGVsaW5lOiBJbnN0cnVtZW50IGlycV9wb3N0X3N0YWdlIGFuZCBwdWxs
-X25leHRfaXJxDQogIGtlcm5lbC9pcnEvcHJvYzogSW50ZWdyYXRlIHBvc3QvcHVsbC9tZXJnZSBj
-b3VudGVycyBpbnRvDQogICAgL3Byb2MvaW50ZXJydXB0cw0KICBrZXJuZWwvaXJxL3Byb2M6IElt
-cGxlbWVudCAvcHJvYy9pbnRlcnJ1cHRfbG9nX3RpbWVzDQoNCiBmcy9wcm9jL2ludGVycnVwdHMu
-YyAgICAgIHwgIDggKysrKysNCiBpbmNsdWRlL2xpbnV4L2ludGVycnVwdC5oIHwgIDEgKw0KIGlu
-Y2x1ZGUvbGludXgvaXJxZGVzYy5oICAgfCAxMSArKysrKysNCiBrZXJuZWwvaXJxL2lycWRlc2Mu
-YyAgICAgIHwgMjQgKysrKysrKysrKystLQ0KIGtlcm5lbC9pcnEvcGlwZWxpbmUuYyAgICAgfCAz
-NCArKysrKysrKysrKysrKysrKysNCiBrZXJuZWwvaXJxL3Byb2MuYyAgICAgICAgIHwgNzMgKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tDQogbmV0L3NjaGVkL3NjaF9nZW5l
-cmljLmMgICB8IDIxICsrKysrKysrKysrDQogNyBmaWxlcyBjaGFuZ2VkLCAxNjYgaW5zZXJ0aW9u
-cygrKSwgNiBkZWxldGlvbnMoLSkNCg0KLS0gDQoyLjMwLjINCg0KDQoNCi0tLS0tLS0tLS0tLS0t
-IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNp
-ZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBwcm9jX2ludGVycnVwdF9sb2dfdGltZXMu
-dHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDIxMTEwMi85YWQ1NDRmYy9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4dCBw
-YXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRl
-eHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHByb2NfaW50ZXJydXB0cy50eHQKVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjExMTAyLzlhZDU0
-NGZjL2F0dGFjaG1lbnQtMDAwMS50eHQ+Cg==
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+
+The output looks like that:
+
+[36452.934159] dev_watchdog: cpu(6) jiffies(4331120128) jd(5072) ct(36452934152782) ctd(5119999)
+[36458.054164] dev_watchdog: cpu(6) jiffies(4331125248) jd(5120) ct(36458054156389) ctd(5120003)
+[36464.198155] dev_watchdog: cpu(6) jiffies(4331131392) jd(6144) ct(36464198148371) ctd(6143991)
+[36469.830161] dev_watchdog: cpu(6) jiffies(4331137024) jd(5584) ct(36469830153958) ctd(5632005)
+[36474.950166] dev_watchdog: cpu(6) jiffies(4331142144) jd(5105) ct(36474950159329) ctd(5120005)                              
+[36480.070154] dev_watchdog: cpu(6) jiffies(4331147264) jd(5120) ct(36480070147773) ctd(5119988)
+[36486.214156] dev_watchdog: cpu(6) jiffies(4331153408) jd(6097) ct(36486214149032) ctd(6144001)                                 
+[36491.846164] dev_watchdog: cpu(6) jiffies(4331159040) jd(5632) ct(36491846157376) ctd(5632008)
+
+The timer seems quite unstable on that machine. Even with
+CONFIG_IRQ_PIPELINE=n the values are the same.
+
+Is there a mistake in the time measurement code?
+
+The timeout configured by that timer is 5*HZ, so 5 seconds. According to
+the values above I see up to 6,14 seconds... 
+
+Both systems I saw similar problems on are using jiffies for time
+calculations. The global variable "jiffies" is incremented by the timer
+interrupt. So I started thinking of delayed timer IRQs or timer IRQs
+that are "merged" when being posted into the IRQ log. Merging should not
+be a problem for real device IRQs, but timer IRQs might be "counting".
+
+ net/sched/sch_generic.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 05aa2571a409..2e7d823a6fb4 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -439,6 +439,20 @@ static void dev_watchdog(struct timer_list *t)
+ {
+ 	struct net_device *dev = from_timer(dev, t, watchdog_timer);
+ 
++	static unsigned long jiffies_prev = 0;
++	unsigned long jiffies_diff = jiffies - jiffies_prev;
++
++	static u64 core_time_prev = 0;
++	u64 core_time = local_clock();
++	u64 core_time_diff = (core_time - core_time_prev) / 1000; /* in us */
++
++	printk("dev_watchdog: cpu(%d) jiffies(%lu) jd(%lu) ct(%llu) ctd(%llu)\n",
++	       smp_processor_id(), jiffies, jiffies_diff, core_time,
++	       core_time_diff);
++
++	jiffies_prev = jiffies;
++	core_time_prev = core_time;
++
+ 	netif_tx_lock(dev);
+ 	if (!qdisc_tx_is_noop(dev)) {
+ 		if (netif_device_present(dev) &&
+@@ -464,6 +478,13 @@ static void dev_watchdog(struct timer_list *t)
+ 
+ 			if (some_queue_timedout) {
+ 				trace_net_dev_xmit_timeout(dev, i);
++
++				printk("dev_watchdog: trigger: cpu(%d) jiffies(%lu) to(%lu) diff(%lu)\n",
++				       smp_processor_id(), jiffies,
++				       trans_start + dev->watchdog_timeo,
++				       jiffies - (trans_start +
++						  dev->watchdog_timeo));
++
+ 				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
+ 				       dev->name, netdev_drivername(dev), i);
+ 				dev->netdev_ops->ndo_tx_timeout(dev, i);
+-- 
+2.30.2
+
+
