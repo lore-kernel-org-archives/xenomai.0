@@ -1,15 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] cobalt/arch/arm: fptest: Add missing SIMD register
- clobbering
-Date: Wed, 6 Oct 2021 21:01:05 +0000
-Message-ID: <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
-References: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
-In-Reply-To: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <60D572F8325D8F4991ACCA9270EE3F66@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Date: Tue, 2 Nov 2021 10:14:15 +0000 (UTC)
+From: zared kamal <zaredkam@yahoo.fr>
+Message-ID: <1105631186.5343574.1635848055546@mail.yahoo.com>
+Subject: error: make menuconfig to configure Xenomai cobalt
 MIME-Version: 1.0
+References: <1105631186.5343574.1635848055546.ref@mail.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTEwLTA2IGF0IDE3OjE5ICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBG
-cm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiANCj4gVGhpcyBjYXVz
-ZWQgdHJvdWJsZXMgd2l0aCBtb2Rlcm4gZ2NjIHRoYXQgc3RhcnRzIHRvIHVzZSB0aG9zZSByZWdz
-IGZvcg0KPiBvdGhlciBwdXJwb3Nlcy4gU2VlbiB3aXRoIGdjYy0xMCBvbiBEZWJpYW4gMTEgZS5n
-Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNv
-bT4NCj4gLS0tDQo+ICBrZXJuZWwvY29iYWx0L2FyY2gvYXJtL2luY2x1ZGUvYXNtL3hlbm9tYWkv
-dWFwaS9mcHRlc3QuaCB8IDcgKysrKysrLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9u
-cygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvYXJj
-aC9hcm0vaW5jbHVkZS9hc20veGVub21haS91YXBpL2ZwdGVzdC5oIGIva2VybmVsL2NvYmFsdC9h
-cmNoL2FybS9pbmNsdWRlL2FzbS94ZW5vbWFpL3VhcGkvZnB0ZXN0LmgNCj4gaW5kZXggYjgxZDEw
-OTkzMy4uZDVjMmM3NTE1YiAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFsdC9hcmNoL2FybS9p
-bmNsdWRlL2FzbS94ZW5vbWFpL3VhcGkvZnB0ZXN0LmgNCj4gKysrIGIva2VybmVsL2NvYmFsdC9h
-cmNoL2FybS9pbmNsdWRlL2FzbS94ZW5vbWFpL3VhcGkvZnB0ZXN0LmgNCj4gQEAgLTMyLDcgKzMy
-LDEyIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBmcF9yZWdzX3NldChpbnQgZmVhdHVyZXMsIHVuc2ln
-bmVkIGludCB2YWwpDQo+ICAJCS8qIHZsZG0gJTAhLCB7ZDAtZDE1fSwNCj4gIAkJICAgQUtBIGZs
-ZG1pYXggJTAhLCB7ZDAtZDE1fSAqLw0KPiAgCQlfX2FzbV9fIF9fdm9sYXRpbGVfXygibGRjIHAx
-MSwgY3IwLCBbJTBdLCMzMio0IjoNCj4gLQkJCQkgICAgICI9ciIoaSk6ICIwIigmZVswXSk6ICJt
-ZW1vcnkiKTsNCj4gKwkJCQkgICAgICI9ciIoaSkNCj4gKwkJCQkgICAgIDogIjAiKCZlWzBdKQ0K
-PiArCQkJCSAgICAgOiAiZDAiLCAiZDEiLCAiZDIiLCAiZDMiLCAiZDQiLCAiZDUiLA0KPiArCQkJ
-CSAgICAgICAiZDYiLCAiZDciLCAiZDgiLCAiZDkiLCAiZDEwIiwgImQxMSIsDQo+ICsJCQkJICAg
-ICAgICJkMTIiLCAiZDEzIiwgImQxNCIsICJkMTUiLA0KPiArCQkJCSAgICAgICAibWVtb3J5Iik7
-DQo+ICAJfQ0KPiAgfQ0KPiAgDQoNCklzIHRoYXQgYWxyZWFkeSBhcHBsaWVkIHRvIG5leHQ/IFRo
-YXQgc2hvdWxkIGJlIG9uZSBvZiB0aGUgbGFzdCBtaXNzaW5nDQpwaWVjZXMgZm9yIHBvcnRpbmcg
-eGVub21haS1pbWFnZXMgdG8gRGViaWFuIDExLiANCg0KVGhlIGxhc3QgdW5jbGVhciB0b3BpYyAo
-QUZBSVIpIGlzIHRoZSBzc2gta2V5IHJlZ2VuZXJhdGlvbiB0YWtpbmcgdG9vDQpsb25nIGZvciBz
-b21lIHJlYXNvbiBvbiBBUk0gYW5kIERlYmlhbiAxMSwgYnV0IHRoYXQgc2hvdWxkIGJlIGEgRGVi
-aWFuDQpzcGVjaWZpYyBpc3N1ZSBhbmQgaXMgaG9wZWZ1bGx5IG5vdCByZWxhdGVkIHRvIFhlbm9t
-YWkgaXRzZWxmLg0K
+dear sir,i try to execute make menuconfig to install nano kernel xenomai wi=
+th Linux_5.4 kernel, but i get the following error:
+scripts/kconfig/mconf=C2=A0 Kconfig
+init/Kconfig:2254: can't open file "arch/$SRCARCH/xenomai/Kconfig"
+scripts/kconfig/Makefile:33: recipe for target 'menuconfig' failed
+make[1]: *** [menuconfig] Error 1
+Makefile:590: recipe for target 'menuconfig' failed
+make: *** [menuconfig] Error 2
 
+many thanksBest regards
+Zared Kamal
+D=C3=A9partement de G=C3=A9nie Electrique,Laboratoire Signaux Syst=C3=A8mes=
+ & Composants=C2=A0Facult=C3=A9 des Sciences & Techniques,=C2=A0BP 2202, 30=
+000 F=C3=A8s=C2=A0=C2=A0 http://www.fstusmba.ac.ma/e-mail kamal.zared@usmba=
+.ac.ma, zaredkam@yahoo.fr
