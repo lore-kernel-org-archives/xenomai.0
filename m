@@ -1,14 +1,9 @@
-Subject: Re: error: make menuconfig to configure Xenomai cobalt
-References: <1105631186.5343574.1635848055546.ref@mail.yahoo.com>
- <1105631186.5343574.1635848055546@mail.yahoo.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7823954f-00ae-dad8-1f2d-571bc10264d1@siemens.com>
-Date: Tue, 2 Nov 2021 17:27:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <1105631186.5343574.1635848055546@mail.yahoo.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: C Smith <csmithquestions@gmail.com>
+Date: Tue, 2 Nov 2021 11:57:32 -0700
+Message-ID: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
+Subject: rtcansend 32-bit
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +12,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: zared kamal <zaredkam@yahoo.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai List <xenomai@xenomai.org>
 
-On 02.11.21 11:14, zared kamal via Xenomai wrote:
-> dear sir,i try to execute make menuconfig to install nano kernel xenomai with Linux_5.4 kernel, but i get the following error:
-> scripts/kconfig/mconf  Kconfig
-> init/Kconfig:2254: can't open file "arch/$SRCARCH/xenomai/Kconfig"
-> scripts/kconfig/Makefile:33: recipe for target 'menuconfig' failed
-> make[1]: *** [menuconfig] Error 1
-> Makefile:590: recipe for target 'menuconfig' failed
-> make: *** [menuconfig] Error 2
-> 
+I ran into a problem wherein my real-time Xenomai 32-bit app
+fails on the socket operations of the 64-bit CAN driver.
+My real-time userspace app is Cobalt x86, compiled -m32.
 
-You didn't share the Xenomai version you are using. I suspect you are on
-3.0.x, and that version does not support kernel 5.4. From Xenomai 3.1
-onward, there is no "$SRCARCH" anymore.
+When I try the Xenomai rtcansend.c sample app compiled 32-bit, I get the
+same error :
 
-Jan
+[root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 --verbose
+--identifier=0x123 0xde 0xad
+send: Message too long
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Looking at rtcansend.c. The call to sendto is failing and returns 'Message
+too long' here:
+ret = sendto(s, (void *)&frame, sizeof(can_frame_t), 0,
+(struct sockaddr *)&to_addr, sizeof(to_addr));
 
+Here is how I configured Xenomai for 32-bit when I built it:
+./configure --host=i686-linux CFLAGS="-m32 -D_FILE_OFFSET_BITS=64"
+LDFLAGS=-m32 host_alias=i686-linux
+
+But note that if I compile both Xenomai and rtcansend.c 64-bit, everything
+works fine.
+
+So how can 32-bit Xeno apps use the 64-bit CAN driver ?
+
+thanks,
+-C Smith
