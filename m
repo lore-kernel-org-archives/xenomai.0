@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [dovetail][RFC PATCH 5/5] kernel/irq/proc: Implement
- /proc/interrupt_log_times
-Date: Tue,  2 Nov 2021 17:09:55 +0100
-Message-Id: <20211102160955.3067995-5-florian.bezdeka@siemens.com>
+Subject: [dovetail][RFC PATCH 2/5] kernel/irq/irqdesc: Extend struct irq_desc
+ with a few cpu specific members
+Date: Tue,  2 Nov 2021 17:09:52 +0100
+Message-Id: <20211102160955.3067995-2-florian.bezdeka@siemens.com>
 In-Reply-To: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
 References: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,128 +18,108 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Show the maximum time an interrupt stayed in the IRQ log on each CPU.
-Heavily inspired by show_interrupts().
-
-Both logs (inband as well as out of band) are taken into account and
-are visible now.
+Extend the struct and make sure all members are initialized / cleaned
+up properly. All new members will be used by the following patches.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
+ include/linux/irqdesc.h | 11 +++++++++++
+ kernel/irq/irqdesc.c    | 24 ++++++++++++++++++++++--
+ 2 files changed, 33 insertions(+), 2 deletions(-)
 
-The coverletter has an example of how this file looks like on the
-affected machine.
-
-Especially the timing values for the "Out-of-band LAPIC timer interrupt" 
-IRQ have significant values. I already tried to trace that, but as
-already written in the cover-letter: The problem disappears once tracing
-is enabled.
-
-Any ideas?
-
- fs/proc/interrupts.c      |  8 ++++++
- include/linux/interrupt.h |  1 +
- kernel/irq/proc.c         | 53 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 62 insertions(+)
-
-diff --git a/fs/proc/interrupts.c b/fs/proc/interrupts.c
-index cb0edc7cbf09..4d075b1b5e18 100644
---- a/fs/proc/interrupts.c
-+++ b/fs/proc/interrupts.c
-@@ -34,9 +34,17 @@ static const struct seq_operations int_seq_ops = {
- 	.show  = show_interrupts
- };
+diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
+index f134909335c8..3b8dc874c225 100644
+--- a/include/linux/irqdesc.h
++++ b/include/linux/irqdesc.h
+@@ -17,6 +17,15 @@ struct irq_desc;
+ struct irq_domain;
+ struct pt_regs;
  
-+static const struct seq_operations int_logtime_seq_ops = {
-+	.start = int_seq_start,
-+	.next  = int_seq_next,
-+	.stop  = int_seq_stop,
-+	.show  = show_pipeline_log_times
++struct pipe_stats {
++	u64 		post_time;
++	u64 		pull_time;
++	u64 		max_log_time;
++	unsigned int 	post_cnt;
++	unsigned int 	pull_cnt;
++	unsigned int 	post_merge_cnt;
 +};
 +
- static int __init proc_interrupts_init(void)
- {
- 	proc_create_seq("interrupts", 0, NULL, &int_seq_ops);
-+	proc_create_seq("interrupt_log_times", 0, NULL, &int_logtime_seq_ops);
- 	return 0;
- }
- fs_initcall(proc_interrupts_init);
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index 0c6656b32278..f6a7a7bae593 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -809,6 +809,7 @@ u64 irq_timings_next_event(u64 now);
+ /**
+  * struct irq_desc - interrupt descriptor
+  * @irq_common_data:	per irq and chip data passed down to chip functions
+@@ -102,6 +111,8 @@ struct irq_desc {
+ 	int			parent_irq;
+ 	struct module		*owner;
+ 	const char		*name;
++	struct pipe_stats __percpu 	*oob_stats;
++	struct pipe_stats __percpu	*ib_stats;
+ } ____cacheline_internodealigned_in_smp;
  
- struct seq_file;
- int show_interrupts(struct seq_file *p, void *v);
-+int show_pipeline_log_times(struct seq_file *p, void *v);
- int arch_show_interrupts(struct seq_file *p, int prec);
- 
- extern int early_irq_init(void);
-diff --git a/kernel/irq/proc.c b/kernel/irq/proc.c
-index 13ddb3d28e9c..43c59bd043fc 100644
---- a/kernel/irq/proc.c
-+++ b/kernel/irq/proc.c
-@@ -457,6 +457,59 @@ int __weak arch_show_interrupts(struct seq_file *p, int prec)
- # define ACTUAL_NR_IRQS nr_irqs
+ #ifdef CONFIG_SPARSE_IRQ
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 47c70b48b8df..7bb2f065ba27 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -101,6 +101,16 @@ static inline void
+ desc_smp_init(struct irq_desc *desc, int node, const struct cpumask *affinity) { }
  #endif
  
-+int show_pipeline_log_times(struct seq_file *p, void *v)
++static void desc_pipe_stats_init(struct pipe_stats *ps)
 +{
-+	int i = *(loff_t *) v, cpu;
-+	unsigned long flags, any_count = 0;
-+	struct irqaction *action;
-+	struct irq_desc *desc;
-+	struct pipe_stats *oob_stats, *ib_stats;
-+
-+	if (i > ACTUAL_NR_IRQS)
-+		return 0;
-+
-+	rcu_read_lock();
-+	desc = irq_to_desc(i);
-+	if (!desc || irq_settings_is_hidden(desc))
-+		goto out;
-+
-+	if (desc->ib_stats && desc->oob_stats)
-+		for_each_online_cpu(cpu) {
-+			ib_stats = per_cpu_ptr(desc->ib_stats, cpu);
-+			oob_stats = per_cpu_ptr(desc->oob_stats, cpu);
-+
-+			any_count |= ib_stats->max_log_time;
-+			any_count |= oob_stats->max_log_time;
-+		}
-+
-+	if ((!desc->action || irq_desc_is_chained(desc)) && !any_count)
-+		goto out;
-+
-+	seq_printf(p, "IRQ %6d: ", i);
-+	for_each_online_cpu(cpu) {
-+		ib_stats = per_cpu_ptr(desc->ib_stats, cpu);
-+		oob_stats = per_cpu_ptr(desc->oob_stats, cpu);
-+		seq_printf(p, "%6llu/%-2llu ",
-+			   ib_stats ? ib_stats->max_log_time / 1000 : 0,
-+			   oob_stats ? oob_stats->max_log_time / 1000 : 0);
-+	}
-+
-+
-+	raw_spin_lock_irqsave(&desc->lock, flags);
-+	action = desc->action;
-+	if (action) {
-+		seq_printf(p, " %s", action->name);
-+		while ((action = action->next) != NULL)
-+			seq_printf(p, ", %s", action->name);
-+	}
-+	raw_spin_unlock_irqrestore(&desc->lock, flags);
-+	seq_putc(p, '\n');
-+out:
-+	rcu_read_unlock();
-+
-+	return 0;
++	ps->post_time = 0;
++	ps->pull_time = 0;
++	ps->max_log_time = 0;
++	ps->post_cnt = 0;
++	ps->pull_cnt = 0;
++	ps->post_merge_cnt = 0;
 +}
 +
- int show_interrupts(struct seq_file *p, void *v)
+ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
+ 			      const struct cpumask *affinity, struct module *owner)
  {
- 	static int prec;
+@@ -123,8 +133,11 @@ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
+ 	desc->tot_count = 0;
+ 	desc->name = NULL;
+ 	desc->owner = owner;
+-	for_each_possible_cpu(cpu)
++	for_each_possible_cpu(cpu) {
+ 		*per_cpu_ptr(desc->kstat_irqs, cpu) = 0;
++		desc_pipe_stats_init(per_cpu_ptr(desc->ib_stats, cpu));
++		desc_pipe_stats_init(per_cpu_ptr(desc->oob_stats, cpu));
++	}
+ 	desc_smp_init(desc, node, affinity);
+ }
+ 
+@@ -396,7 +409,10 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
+ 		return NULL;
+ 	/* allocate based on nr_cpu_ids */
+ 	desc->kstat_irqs = alloc_percpu(unsigned int);
+-	if (!desc->kstat_irqs)
++	desc->oob_stats = alloc_percpu(struct pipe_stats);
++	desc->ib_stats = alloc_percpu(struct pipe_stats);
++
++	if (!desc->kstat_irqs || !desc->oob_stats || !desc->ib_stats)
+ 		goto err_desc;
+ 
+ 	if (alloc_masks(desc, node))
+@@ -415,6 +431,8 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
+ 
+ err_kstat:
+ 	free_percpu(desc->kstat_irqs);
++	free_percpu(desc->oob_stats);
++	free_percpu(desc->ib_stats);
+ err_desc:
+ 	kfree(desc);
+ 	return NULL;
+@@ -426,6 +444,8 @@ static void irq_kobj_release(struct kobject *kobj)
+ 
+ 	free_masks(desc);
+ 	free_percpu(desc->kstat_irqs);
++	free_percpu(desc->oob_stats);
++	free_percpu(desc->ib_stats);
+ 	kfree(desc);
+ }
+ 
 -- 
 2.30.2
 
