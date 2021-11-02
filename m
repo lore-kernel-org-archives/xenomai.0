@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [dovetail][RFC PATCH 2/5] kernel/irq/irqdesc: Extend struct irq_desc
- with a few cpu specific members
-Date: Tue,  2 Nov 2021 17:09:52 +0100
-Message-Id: <20211102160955.3067995-2-florian.bezdeka@siemens.com>
+Subject: [dovetail][RFC PATCH 3/5] kernel/irq/pipeline: Instrument
+ irq_post_stage and pull_next_irq
+Date: Tue,  2 Nov 2021 17:09:53 +0100
+Message-Id: <20211102160955.3067995-3-florian.bezdeka@siemens.com>
 In-Reply-To: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
 References: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,106 +18,88 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Extend the struct and make sure all members are initialized / cleaned
-up properly. All new members will be used by the following patches.
+ - Remember how often an IRQ was posted into and pulled from the IRQ log
+ - Measure the time between push and pull
+ - Count how often we merge IRQs
+   (multiple post events before pulling again)
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/linux/irqdesc.h | 11 +++++++++++
- kernel/irq/irqdesc.c    | 24 ++++++++++++++++++++++--
- 2 files changed, 33 insertions(+), 2 deletions(-)
+ kernel/irq/pipeline.c | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index f134909335c8..3b8dc874c225 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -17,6 +17,15 @@ struct irq_desc;
- struct irq_domain;
- struct pt_regs;
+diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
+index f64d731e8db1..7fcc03b74459 100644
+--- a/kernel/irq/pipeline.c
++++ b/kernel/irq/pipeline.c
+@@ -592,10 +592,18 @@ static inline bool irq_post_check(struct irq_stage *stage, unsigned int irq)
  
-+struct pipe_stats {
-+	u64 		post_time;
-+	u64 		pull_time;
-+	u64 		max_log_time;
-+	unsigned int 	post_cnt;
-+	unsigned int 	pull_cnt;
-+	unsigned int 	post_merge_cnt;
-+};
-+
- /**
-  * struct irq_desc - interrupt descriptor
-  * @irq_common_data:	per irq and chip data passed down to chip functions
-@@ -102,6 +111,8 @@ struct irq_desc {
- 	int			parent_irq;
- 	struct module		*owner;
- 	const char		*name;
-+	struct pipe_stats __percpu 	*oob_stats;
-+	struct pipe_stats __percpu	*ib_stats;
- } ____cacheline_internodealigned_in_smp;
+ #if __IRQ_STAGE_MAP_LEVELS == 4
  
- #ifdef CONFIG_SPARSE_IRQ
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 47c70b48b8df..7bb2f065ba27 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -101,6 +101,16 @@ static inline void
- desc_smp_init(struct irq_desc *desc, int node, const struct cpumask *affinity) { }
- #endif
- 
-+static void desc_pipe_stats_init(struct pipe_stats *ps)
++static inline struct pipe_stats __percpu *get_stage_stats(struct irq_stage *s,
++							  struct irq_desc *desc)
 +{
-+	ps->post_time = 0;
-+	ps->pull_time = 0;
-+	ps->max_log_time = 0;
-+	ps->post_cnt = 0;
-+	ps->pull_cnt = 0;
-+	ps->post_merge_cnt = 0;
++	return this_cpu_ptr(s->index == 0 ? desc->ib_stats : desc->oob_stats);
 +}
 +
- static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
- 			      const struct cpumask *affinity, struct module *owner)
+ /* Must be called hard irqs off. */
+ void irq_post_stage(struct irq_stage *stage, unsigned int irq)
  {
-@@ -123,8 +133,11 @@ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
- 	desc->tot_count = 0;
- 	desc->name = NULL;
- 	desc->owner = owner;
--	for_each_possible_cpu(cpu)
-+	for_each_possible_cpu(cpu) {
- 		*per_cpu_ptr(desc->kstat_irqs, cpu) = 0;
-+		desc_pipe_stats_init(per_cpu_ptr(desc->ib_stats, cpu));
-+		desc_pipe_stats_init(per_cpu_ptr(desc->oob_stats, cpu));
-+	}
- 	desc_smp_init(desc, node, affinity);
- }
+ 	struct irq_stage_data *p = this_staged(stage);
++	struct irq_desc *desc = irq_to_cached_desc(irq);
++	struct pipe_stats __percpu *stats = get_stage_stats(stage, desc);
+ 	int l0b, l1b, l2b;
  
-@@ -396,7 +409,10 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
- 		return NULL;
- 	/* allocate based on nr_cpu_ids */
- 	desc->kstat_irqs = alloc_percpu(unsigned int);
--	if (!desc->kstat_irqs)
-+	desc->oob_stats = alloc_percpu(struct pipe_stats);
-+	desc->ib_stats = alloc_percpu(struct pipe_stats);
+ 	if (irq_post_check(stage, irq))
+@@ -605,10 +613,20 @@ void irq_post_stage(struct irq_stage *stage, unsigned int irq)
+ 	l1b = irq / (BITS_PER_LONG * BITS_PER_LONG);
+ 	l2b = irq / BITS_PER_LONG;
+ 
++	if (test_bit(irq, p->log.map->flat)
++	    && test_bit(l2b, p->log.map->index_2)
++	    && test_bit(l1b, p->log.map->index_1)
++	    && test_bit(l0b, &p->log.index_0))
++		stats->post_merge_cnt++;
++	else
++		stats->post_time = local_clock();
 +
-+	if (!desc->kstat_irqs || !desc->oob_stats || !desc->ib_stats)
- 		goto err_desc;
+ 	__set_bit(irq, p->log.map->flat);
+ 	__set_bit(l2b, p->log.map->index_2);
+ 	__set_bit(l1b, p->log.map->index_1);
+ 	__set_bit(l0b, &p->log.index_0);
++
++	stats->post_cnt++;
+ }
+ EXPORT_SYMBOL_GPL(irq_post_stage);
  
- 	if (alloc_masks(desc, node))
-@@ -415,6 +431,8 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
+@@ -619,6 +637,9 @@ EXPORT_SYMBOL_GPL(irq_post_stage);
+ static inline int pull_next_irq(struct irq_stage_data *p)
+ {
+ 	unsigned long l0m, l1m, l2m, l3m;
++	struct irq_desc *desc;
++	struct pipe_stats __percpu *stats;
++	u64 core_time, max_log_time, diff;
+ 	int l0b, l1b, l2b, l3b;
+ 	unsigned int irq;
  
- err_kstat:
- 	free_percpu(desc->kstat_irqs);
-+	free_percpu(desc->oob_stats);
-+	free_percpu(desc->ib_stats);
- err_desc:
- 	kfree(desc);
- 	return NULL;
-@@ -426,6 +444,8 @@ static void irq_kobj_release(struct kobject *kobj)
+@@ -660,6 +681,19 @@ static inline int pull_next_irq(struct irq_stage_data *p)
+ 		}
+ 	}
  
- 	free_masks(desc);
- 	free_percpu(desc->kstat_irqs);
-+	free_percpu(desc->oob_stats);
-+	free_percpu(desc->ib_stats);
- 	kfree(desc);
++	desc = irq_to_cached_desc(irq);
++	stats = get_stage_stats(p->stage, desc);
++
++	core_time = local_clock();
++	stats->pull_time = core_time;
++	stats->pull_cnt++;
++
++	max_log_time = stats->max_log_time;
++	diff = core_time - stats->post_time;
++
++	if (diff > max_log_time)
++		stats->max_log_time = diff;
++
+ 	return irq;
  }
  
 -- 
