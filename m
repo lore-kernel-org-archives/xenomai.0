@@ -1,15 +1,13 @@
-Subject: Re: [PATCH] cobalt/arch/arm: fptest: Add missing SIMD register
- clobbering
-References: <30a64188-e09e-d63d-dfcc-a678f72e15ac@siemens.com>
- <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0572db5d-3360-45be-b328-2809a389a43a@siemens.com>
-Date: Thu, 7 Oct 2021 09:58:05 +0200
-MIME-Version: 1.0
-In-Reply-To: <ca45521bd820453d37d0be78263f199eb369eabe.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: [dovetail][RFC PATCH 0/5] Investigation summary TSC unsable, netdev
+ watchdog
+Date: Tue, 2 Nov 2021 16:08:29 +0000
+Message-ID: <a9dee4bb0f429c78aba035d5d17bfe34768c43e7.camel@siemens.com>
+References: <e80e70eee168f5fd048e7c6aa570c7271a6b0594.camel@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.10.21 23:01, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> On Wed, 2021-10-06 at 17:19 +0200, Jan Kiszka wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->>
->> This caused troubles with modern gcc that starts to use those regs for
->> other purposes. Seen with gcc-10 on Debian 11 e.g.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>  kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h | 7 ++++++-
->>  1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
->> index b81d109933..d5c2c7515b 100644
->> --- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
->> +++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/fptest.h
->> @@ -32,7 +32,12 @@ static inline void fp_regs_set(int features, unsigned int val)
->>               /* vldm %0!, {d0-d15},
->>                  AKA fldmiax %0!, {d0-d15} */
->>               __asm__ __volatile__("ldc p11, cr0, [%0],#32*4":
->> -                                  "=r"(i): "0"(&e[0]): "memory");
->> +                                  "=r"(i)
->> +                                  : "0"(&e[0])
->> +                                  : "d0", "d1", "d2", "d3", "d4", "d5",
->> +                                    "d6", "d7", "d8", "d9", "d10", "d11",
->> +                                    "d12", "d13", "d14", "d15",
->> +                                    "memory");
->>       }
->>  }
->>
-> 
-> Is that already applied to next? That should be one of the last missing
-> pieces for porting xenomai-images to Debian 11.
-
-It's in next, right.
-
-> 
-> The last unclear topic (AFAIR) is the ssh-key regeneration taking too
-> long for some reason on ARM and Debian 11, but that should be a Debian
-> specific issue and is hopefully not related to Xenomai itself.
-> 
-
-Right, now I recall. Interestingly, this does not show up on ARM (in
-QEMU) with the already ported jailhouse-images.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SGksIA0KDQp3aXRoIHRoaXMgc2VyaWVzIEknbSB0cnlpbmcgdG8gc3VtbWFyaXplIHNvbWUgYW5h
+bHlzaXMgZG9uZSBvbiB0aGUNCm1hY2hpbmUgdGhhdCBpcyBzdGlsbCBhZmZlY3RlZCBieSBzb21l
+IHRpbWluZyBpc3N1ZXMuIFNlZSBbMV0gZm9yIHRoZQ0Kb2xkIHBvc3RpbmdzIChpbmNsdWRpbmcg
+aGFyZHdhcmUgZGVzY3JpcHRpb24pLg0KDQpJIHRyaWVkIHRvIHNwbGl0IHRoZSBpbXBvcnRhbnQg
+dGhpbmdzIGZyb20gdGhlIG5lY2Vzc2FyeSBpbmZyYXN0cnVjdHVyZQ0KcHJlcGFyYXRpb24uIFRo
+aXMgc2hvdWxkIGFsbG93IHVzIHRvIGZvY3VzIG9uIHRoZSByZWxldmFudCBwYXJ0cy4NCg0KVGhl
+IGZvbGxvd2luZyBrZXJuZWwgdmVyc2lvbnMgaGF2ZSBiZWVuIHRlc3RlZDoNCiAtIDUuMTAuNjEt
+ZG92ZXRhaWwgIHRoZSBiYXNlIHZlcnNpb24gZm9yIHRoaXMgc2VyaWVzDQogLSA1LjEwLjcwLWRv
+dmV0YWlsICBzZWUgNS4xNS1yYzINCiAtIDUuMTUtcmMyLWRvdmV0YWlsIG5vIHByb2JsZW0gZHVy
+aW5nIHN5c3RlbSBib290LCBidXQgc2ltaWxhciANCiAgICAgICAgICAgICAgICAgICAgIHByb2Js
+ZW0gd2hlbiBzaHV0dGluZyBkb3duDQoNCkF0dGFjaGVkIHRvIHRoaXMgY292ZXJsZXR0ZXI6DQog
+LSBBbiBvdXRwdXQgb2YgdGhlIG1vZGlmaWVkIC9wcm9jL2ludGVycnVwdHMgZmlsZQ0KIC0gQW4g
+b3V0cHV0IG9mIHRoZSBuZXcgL3Byb2MvaW50ZXJydXB0X2xvZ190aW1lcw0KDQpFYWNoIG9mIHRo
+ZSBmb2xsb3dpbmcgcGF0Y2hlcyBob2xkcyBhZGRpdGlvbmFsIGluZm9ybWF0aW9uIGFib3V0IA0K
+dGhpbmdzIHRoYXQgSSBub3RpY2VkIHdoZW4gbG9va2luZyBhdCB0aGUgcmVzdWx0cy4NCg0KVGhp
+cyBpc3N1ZSBpcyByZWFsbHkgaGFyZCB0byB0cmFjayBkb3duLiBXaGVuIEkgZG8gb25lIG9mIHRo
+ZSBmb2xsb3dpbmcNCnRoZSBwcm9ibGVtIGlzICJnb25lIjoNCg0KIC0gU2V0IENPTkZJR19IWiB0
+byAxMDAwLCBtYWtlcyB0aGUgcHJvYmxlbSBzZWVuIGR1cmluZyBib290IGdvIGF3YXksDQogICBi
+dXQgdGhlIHN5c3RlbSBmcmVlemVzIGR1cmluZyByZWJvb3Qvc2h1dGRvd24uIFdlJ3JlIHVzaW5n
+IGEgRGViaWFuIA0KICAgYmFzZWQga2VybmVsIGNvbmZpZ3VyYXRpb24uIENPTkZJR19IWiBpcyBz
+ZXQgdG8gMjUwIHBlciBkZWZhdWx0Lg0KDQogLSBFbmFibGUgdHJhY2luZyAoZXZlbiB3aXRoIGEg
+bWluaW1hbCBmaWx0ZXIpOiBQcm9ibGVtIGdvbmUNCg0KIC0gSW5zdHJ1bWVudGluZyB0aGUgSVJR
+IHBpcGVsaW5lIGNvZGUgd2l0aCBwcmludGsoKSBtYWtlcyB0aGUgcHJvYmxlbQ0KICAgZ28gYXdh
+eS4gU28gYWNjb3VudGluZyBjYW4gYmUgZG9uZSBidXQgcHJpbnRpbmcgdGhlIHJlc3VsdHMgaGFz
+IHRvIGJlDQogICBkb25lIHNvbWVob3cgaW4gdXNlcnNwYWNlLiBCdXQuLi4NCg0KIC0gT25jZSB0
+aGUgbmV0ZGV2IHdhdGNoZG9nIHRyaWdnZXJlZCBJIGhhdmUgb25seSBhIGZldyBzZWNvbmRzIGxl
+ZnQNCiAgIGJlZm9yZSB0aGUgc3lzdGVtIGlzIHVudXNhYmxlLiBOZXR3b3JrIGFzIHdlbGwgYXMg
+c2VyaWFsIGNvbm5lY3Rpb24NCiAgIGFyZSBubyBsb25nZXIgdXNhYmxlLg0KDQogLSBCb290aW5n
+IHNlcnZlciBjbGFzcyBoYXJkd2FyZSB0YWtlcyBzZXJ2ZXJhbCBtaW51dGVzLi4uDQoNCiAtIEJv
+b3Rpbmcgd2l0aCBpZGxlPXBvbGwgbWFrZXMgdGhlIHByb2JsZW0gZ28gYXdheSwgc2VlIG5vdGVz
+IGluIHBhdGNoDQogICA0DQoNCiAtIEJvb3Rpbmcgd2l0aCBtYXhjcHVzPTEgbWFrZXMgdGhlIHBy
+b2JsZW0gZ28gYXdheQ0KDQpbMV0gaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS8yMDIxLVNlcHRlbWJlci8wNDY0NDkuaHRtbA0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQoN
+CkZsb3JpYW4gQmV6ZGVrYSAoNSk6DQogIG5ldC9zY2hlZC9zY2hfZ2VuZXJpYzogTWVhc3VyZSB0
+aGUgdGltZSBiZXR3ZWVuIHdhdGNoZG9nIHJ1bnMNCiAga2VybmVsL2lycS9pcnFkZXNjOiBFeHRl
+bmQgc3RydWN0IGlycV9kZXNjIHdpdGggYSBmZXcgY3B1IHNwZWNpZmljDQogICAgbWVtYmVycw0K
+ICBrZXJuZWwvaXJxL3BpcGVsaW5lOiBJbnN0cnVtZW50IGlycV9wb3N0X3N0YWdlIGFuZCBwdWxs
+X25leHRfaXJxDQogIGtlcm5lbC9pcnEvcHJvYzogSW50ZWdyYXRlIHBvc3QvcHVsbC9tZXJnZSBj
+b3VudGVycyBpbnRvDQogICAgL3Byb2MvaW50ZXJydXB0cw0KICBrZXJuZWwvaXJxL3Byb2M6IElt
+cGxlbWVudCAvcHJvYy9pbnRlcnJ1cHRfbG9nX3RpbWVzDQoNCiBmcy9wcm9jL2ludGVycnVwdHMu
+YyAgICAgIHwgIDggKysrKysNCiBpbmNsdWRlL2xpbnV4L2ludGVycnVwdC5oIHwgIDEgKw0KIGlu
+Y2x1ZGUvbGludXgvaXJxZGVzYy5oICAgfCAxMSArKysrKysNCiBrZXJuZWwvaXJxL2lycWRlc2Mu
+YyAgICAgIHwgMjQgKysrKysrKysrKystLQ0KIGtlcm5lbC9pcnEvcGlwZWxpbmUuYyAgICAgfCAz
+NCArKysrKysrKysrKysrKysrKysNCiBrZXJuZWwvaXJxL3Byb2MuYyAgICAgICAgIHwgNzMgKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tDQogbmV0L3NjaGVkL3NjaF9nZW5l
+cmljLmMgICB8IDIxICsrKysrKysrKysrDQogNyBmaWxlcyBjaGFuZ2VkLCAxNjYgaW5zZXJ0aW9u
+cygrKSwgNiBkZWxldGlvbnMoLSkNCg0KLS0gDQoyLjMwLjINCg0KDQoNCi0tLS0tLS0tLS0tLS0t
+IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNp
+ZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBwcm9jX2ludGVycnVwdF9sb2dfdGltZXMu
+dHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDIxMTEwMi85YWQ1NDRmYy9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4dCBw
+YXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRl
+eHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHByb2NfaW50ZXJydXB0cy50eHQKVVJMOiA8aHR0cDov
+L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjExMTAyLzlhZDU0
+NGZjL2F0dGFjaG1lbnQtMDAwMS50eHQ+Cg==
