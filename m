@@ -1,13 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [dovetail][RFC PATCH 4/5] kernel/irq/proc: Integrate post/pull/merge
- counters into /proc/interrupts
-Date: Tue,  2 Nov 2021 17:09:54 +0100
-Message-Id: <20211102160955.3067995-4-florian.bezdeka@siemens.com>
-In-Reply-To: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
-References: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: error: make menuconfig to configure Xenomai cobalt
+References: <1105631186.5343574.1635848055546.ref@mail.yahoo.com>
+ <1105631186.5343574.1635848055546@mail.yahoo.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7823954f-00ae-dad8-1f2d-571bc10264d1@siemens.com>
+Date: Tue, 2 Nov 2021 17:27:27 +0100
 MIME-Version: 1.0
+In-Reply-To: <1105631186.5343574.1635848055546@mail.yahoo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,78 +17,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: zared kamal <zaredkam@yahoo.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-For each CPU the following IRQ information will be shown:
-  - inband post counter
-  - inband pull counter
-  - inband merge counter
-  - Linux accounting (unmodified)
-  - out of band post counter
-  - out of band pull counter
-  - out of band merge counter
+On 02.11.21 11:14, zared kamal via Xenomai wrote:
+> dear sir,i try to execute make menuconfig to install nano kernel xenomai with Linux_5.4 kernel, but i get the following error:
+> scripts/kconfig/mconf  Kconfig
+> init/Kconfig:2254: can't open file "arch/$SRCARCH/xenomai/Kconfig"
+> scripts/kconfig/Makefile:33: recipe for target 'menuconfig' failed
+> make[1]: *** [menuconfig] Error 1
+> Makefile:590: recipe for target 'menuconfig' failed
+> make: *** [menuconfig] Error 2
+> 
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
+You didn't share the Xenomai version you are using. I suspect you are on
+3.0.x, and that version does not support kernel 5.4. From Xenomai 3.1
+onward, there is no "$SRCARCH" anymore.
 
-The cover letter has an example attached. As expected the out-of-band
-values are always 0. Only IRQ 61 was merged once.
+Jan
 
-When booting up with idle=poll the problem is gone, but I can see that many
-timer IRQs (IRQ0) are merged.
-
-The number of "Local timer interrupts" matches the number of 
-"Out-of-band LAPIC timer interrupt"
-
- kernel/irq/proc.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/irq/proc.c b/kernel/irq/proc.c
-index 210c5009d7a9..13ddb3d28e9c 100644
---- a/kernel/irq/proc.c
-+++ b/kernel/irq/proc.c
-@@ -465,6 +465,7 @@ int show_interrupts(struct seq_file *p, void *v)
- 	int i = *(loff_t *) v, j;
- 	struct irqaction *action;
- 	struct irq_desc *desc;
-+	struct pipe_stats *oob_stats, *ib_stats;
- 
- 	if (i > ACTUAL_NR_IRQS)
- 		return 0;
-@@ -479,7 +480,7 @@ int show_interrupts(struct seq_file *p, void *v)
- 
- 		seq_printf(p, "%*s", prec + 8, "");
- 		for_each_online_cpu(j)
--			seq_printf(p, "CPU%-8d", j);
-+			seq_printf(p, "CPU%-12d", j);
- 		seq_putc(p, '\n');
- 	}
- 
-@@ -496,9 +497,20 @@ int show_interrupts(struct seq_file *p, void *v)
- 		goto outsparse;
- 
- 	seq_printf(p, "%*d: ", prec, i);
--	for_each_online_cpu(j)
--		seq_printf(p, "%10u ", desc->kstat_irqs ?
--					*per_cpu_ptr(desc->kstat_irqs, j) : 0);
-+	for_each_online_cpu(j) {
-+		ib_stats = per_cpu_ptr(desc->ib_stats, j);
-+		oob_stats = per_cpu_ptr(desc->oob_stats, j);
-+		seq_printf(p, "%u/%u/%u-%u-%u/%u/%u  ",
-+			   ib_stats ? ib_stats->post_cnt : 0,
-+			   ib_stats ? ib_stats->pull_cnt : 0,
-+			   ib_stats ? ib_stats->post_merge_cnt : 0,
-+			   desc->kstat_irqs ?
-+				   *per_cpu_ptr(desc->kstat_irqs, j) :
-+					 0,
-+			   oob_stats ? oob_stats->post_cnt : 0,
-+			   oob_stats ? oob_stats->pull_cnt : 0,
-+			   oob_stats ? oob_stats->post_merge_cnt : 0);
-+	}
- 
- 	raw_spin_lock_irqsave(&desc->lock, flags);
- 	if (desc->irq_data.chip) {
 -- 
-2.30.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
