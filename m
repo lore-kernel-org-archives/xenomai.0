@@ -1,8 +1,10 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [dovetail][RFC PATCH 1/5] net/sched/sch_generic: Measure the time
- between watchdog runs
-Date: Tue,  2 Nov 2021 17:09:51 +0100
-Message-Id: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
+Subject: [dovetail][RFC PATCH 5/5] kernel/irq/proc: Implement
+ /proc/interrupt_log_times
+Date: Tue,  2 Nov 2021 17:09:55 +0100
+Message-Id: <20211102160955.3067995-5-florian.bezdeka@siemens.com>
+In-Reply-To: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
+References: <20211102160955.3067995-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -16,76 +18,128 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Show the maximum time an interrupt stayed in the IRQ log on each CPU.
+Heavily inspired by show_interrupts().
+
+Both logs (inband as well as out of band) are taken into account and
+are visible now.
+
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
 
-The output looks like that:
+The coverletter has an example of how this file looks like on the
+affected machine.
 
-[36452.934159] dev_watchdog: cpu(6) jiffies(4331120128) jd(5072) ct(36452934152782) ctd(5119999)
-[36458.054164] dev_watchdog: cpu(6) jiffies(4331125248) jd(5120) ct(36458054156389) ctd(5120003)
-[36464.198155] dev_watchdog: cpu(6) jiffies(4331131392) jd(6144) ct(36464198148371) ctd(6143991)
-[36469.830161] dev_watchdog: cpu(6) jiffies(4331137024) jd(5584) ct(36469830153958) ctd(5632005)
-[36474.950166] dev_watchdog: cpu(6) jiffies(4331142144) jd(5105) ct(36474950159329) ctd(5120005)                              
-[36480.070154] dev_watchdog: cpu(6) jiffies(4331147264) jd(5120) ct(36480070147773) ctd(5119988)
-[36486.214156] dev_watchdog: cpu(6) jiffies(4331153408) jd(6097) ct(36486214149032) ctd(6144001)                                 
-[36491.846164] dev_watchdog: cpu(6) jiffies(4331159040) jd(5632) ct(36491846157376) ctd(5632008)
+Especially the timing values for the "Out-of-band LAPIC timer interrupt" 
+IRQ have significant values. I already tried to trace that, but as
+already written in the cover-letter: The problem disappears once tracing
+is enabled.
 
-The timer seems quite unstable on that machine. Even with
-CONFIG_IRQ_PIPELINE=n the values are the same.
+Any ideas?
 
-Is there a mistake in the time measurement code?
+ fs/proc/interrupts.c      |  8 ++++++
+ include/linux/interrupt.h |  1 +
+ kernel/irq/proc.c         | 53 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+)
 
-The timeout configured by that timer is 5*HZ, so 5 seconds. According to
-the values above I see up to 6,14 seconds... 
-
-Both systems I saw similar problems on are using jiffies for time
-calculations. The global variable "jiffies" is incremented by the timer
-interrupt. So I started thinking of delayed timer IRQs or timer IRQs
-that are "merged" when being posted into the IRQ log. Merging should not
-be a problem for real device IRQs, but timer IRQs might be "counting".
-
- net/sched/sch_generic.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 05aa2571a409..2e7d823a6fb4 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -439,6 +439,20 @@ static void dev_watchdog(struct timer_list *t)
+diff --git a/fs/proc/interrupts.c b/fs/proc/interrupts.c
+index cb0edc7cbf09..4d075b1b5e18 100644
+--- a/fs/proc/interrupts.c
++++ b/fs/proc/interrupts.c
+@@ -34,9 +34,17 @@ static const struct seq_operations int_seq_ops = {
+ 	.show  = show_interrupts
+ };
+ 
++static const struct seq_operations int_logtime_seq_ops = {
++	.start = int_seq_start,
++	.next  = int_seq_next,
++	.stop  = int_seq_stop,
++	.show  = show_pipeline_log_times
++};
++
+ static int __init proc_interrupts_init(void)
  {
- 	struct net_device *dev = from_timer(dev, t, watchdog_timer);
+ 	proc_create_seq("interrupts", 0, NULL, &int_seq_ops);
++	proc_create_seq("interrupt_log_times", 0, NULL, &int_logtime_seq_ops);
+ 	return 0;
+ }
+ fs_initcall(proc_interrupts_init);
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index 0c6656b32278..f6a7a7bae593 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -809,6 +809,7 @@ u64 irq_timings_next_event(u64 now);
  
-+	static unsigned long jiffies_prev = 0;
-+	unsigned long jiffies_diff = jiffies - jiffies_prev;
-+
-+	static u64 core_time_prev = 0;
-+	u64 core_time = local_clock();
-+	u64 core_time_diff = (core_time - core_time_prev) / 1000; /* in us */
-+
-+	printk("dev_watchdog: cpu(%d) jiffies(%lu) jd(%lu) ct(%llu) ctd(%llu)\n",
-+	       smp_processor_id(), jiffies, jiffies_diff, core_time,
-+	       core_time_diff);
-+
-+	jiffies_prev = jiffies;
-+	core_time_prev = core_time;
-+
- 	netif_tx_lock(dev);
- 	if (!qdisc_tx_is_noop(dev)) {
- 		if (netif_device_present(dev) &&
-@@ -464,6 +478,13 @@ static void dev_watchdog(struct timer_list *t)
+ struct seq_file;
+ int show_interrupts(struct seq_file *p, void *v);
++int show_pipeline_log_times(struct seq_file *p, void *v);
+ int arch_show_interrupts(struct seq_file *p, int prec);
  
- 			if (some_queue_timedout) {
- 				trace_net_dev_xmit_timeout(dev, i);
+ extern int early_irq_init(void);
+diff --git a/kernel/irq/proc.c b/kernel/irq/proc.c
+index 13ddb3d28e9c..43c59bd043fc 100644
+--- a/kernel/irq/proc.c
++++ b/kernel/irq/proc.c
+@@ -457,6 +457,59 @@ int __weak arch_show_interrupts(struct seq_file *p, int prec)
+ # define ACTUAL_NR_IRQS nr_irqs
+ #endif
+ 
++int show_pipeline_log_times(struct seq_file *p, void *v)
++{
++	int i = *(loff_t *) v, cpu;
++	unsigned long flags, any_count = 0;
++	struct irqaction *action;
++	struct irq_desc *desc;
++	struct pipe_stats *oob_stats, *ib_stats;
 +
-+				printk("dev_watchdog: trigger: cpu(%d) jiffies(%lu) to(%lu) diff(%lu)\n",
-+				       smp_processor_id(), jiffies,
-+				       trans_start + dev->watchdog_timeo,
-+				       jiffies - (trans_start +
-+						  dev->watchdog_timeo));
++	if (i > ACTUAL_NR_IRQS)
++		return 0;
 +
- 				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
- 				       dev->name, netdev_drivername(dev), i);
- 				dev->netdev_ops->ndo_tx_timeout(dev, i);
++	rcu_read_lock();
++	desc = irq_to_desc(i);
++	if (!desc || irq_settings_is_hidden(desc))
++		goto out;
++
++	if (desc->ib_stats && desc->oob_stats)
++		for_each_online_cpu(cpu) {
++			ib_stats = per_cpu_ptr(desc->ib_stats, cpu);
++			oob_stats = per_cpu_ptr(desc->oob_stats, cpu);
++
++			any_count |= ib_stats->max_log_time;
++			any_count |= oob_stats->max_log_time;
++		}
++
++	if ((!desc->action || irq_desc_is_chained(desc)) && !any_count)
++		goto out;
++
++	seq_printf(p, "IRQ %6d: ", i);
++	for_each_online_cpu(cpu) {
++		ib_stats = per_cpu_ptr(desc->ib_stats, cpu);
++		oob_stats = per_cpu_ptr(desc->oob_stats, cpu);
++		seq_printf(p, "%6llu/%-2llu ",
++			   ib_stats ? ib_stats->max_log_time / 1000 : 0,
++			   oob_stats ? oob_stats->max_log_time / 1000 : 0);
++	}
++
++
++	raw_spin_lock_irqsave(&desc->lock, flags);
++	action = desc->action;
++	if (action) {
++		seq_printf(p, " %s", action->name);
++		while ((action = action->next) != NULL)
++			seq_printf(p, ", %s", action->name);
++	}
++	raw_spin_unlock_irqrestore(&desc->lock, flags);
++	seq_putc(p, '\n');
++out:
++	rcu_read_unlock();
++
++	return 0;
++}
++
+ int show_interrupts(struct seq_file *p, void *v)
+ {
+ 	static int prec;
 -- 
 2.30.2
 
