@@ -1,16 +1,18 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: rtcansend 32-bit
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Wed, 3 Nov 2021 11:09:38 +0000
+Message-ID: <03214e1aeb2ad8c681e63a01fd6051ec3c309aec.camel@siemens.com>
 References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
  <9a0553a5-aa37-a089-54e8-45a59ebf1095@siemens.com>
  <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
  <87ba187f-5e89-a0f3-10f6-fc14eb5efe21@siemens.com>
-Message-ID: <93290885-9113-dd98-b1df-550604fc6fff@siemens.com>
-Date: Wed, 3 Nov 2021 11:46:47 +0100
-MIME-Version: 1.0
-In-Reply-To: <87ba187f-5e89-a0f3-10f6-fc14eb5efe21@siemens.com>
-Content-Type: text/plain; charset=utf-8
+ <93290885-9113-dd98-b1df-550604fc6fff@siemens.com>
+In-Reply-To: <93290885-9113-dd98-b1df-550604fc6fff@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FDFF86642C56D3448D9CE63EF8632F47@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,57 +21,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "csmithquestions@gmail.com" <csmithquestions@gmail.com>
 
-On 03.11.21 07:59, Jan Kiszka wrote:
-> On 02.11.21 23:57, C Smith via Xenomai wrote:
->> I added some printf/printk to rtcansend.c as well as rtcan_raw.c:
->>
->> rtcan_raw.c:
->>     /* Check size of buffer */
->>     if (iov->iov_len != sizeof(can_frame_t)) {
->>             printk("rtcan_raw.c, 850: sizeof(can_frame_t): %ld\n",
->>                    sizeof(can_frame_t));
->>                 printk("rtcan_raw.c, 852: iov->iov_len: %ld\n",
->> iov->iov_len);
->>             return -EMSGSIZE;
->>     }
->>
->> when running rtcansend (32-bit compile, which fails with EMSGSIZE):
->>         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
->>         sizeof(can_frame_t): 16
->>         send: Message too long
->>
->>         [root@pc can]# dmesg
->>         [11275.197125] rtcan_raw.c, 850: sizeof(can_frame_t): 16
->>         [11275.197133] rtcan_raw.c, 852: iov->iov_len: 34494267600
->>
->> when running rtcansend (64-bit compile, sends out can msg OK):
->>         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
->>         sizeof(can_frame_t): 16
->>
->>         [root@pc can]# dmesg
->>         [12476.571032] rtcan_raw.c, 850: sizeof(can_frame_t): 16
->>         [12476.571040] rtcan_raw.c, 852: iov->iov_len: 16
->>
->> It looks like the struct user_msghdr *msg passed into rtcan_raw_sendmsg()
->> is corrupt.
->> I'm using Xenomai 3.1, with kernel 4.19.989 x86_64
->> -C Smith
-> 
-> OK, my guess was wrong. Let me see where we corrupt this.
-> 
-> Brings https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21 into
-> memory...
-> 
-
-Found it: We are lacking use of rtdm_get_iovec in rtcan - in contrast to
-RTnet (see e.g. rt_packet_sendmsg). Would you feel like looking into
-such a change?
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTExLTAzIGF0IDExOjQ2ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
+IHdyb3RlOg0KPiBPbiAwMy4xMS4yMSAwNzo1OSwgSmFuIEtpc3prYSB3cm90ZToNCj4gPiBPbiAw
+Mi4xMS4yMSAyMzo1NywgQyBTbWl0aCB2aWEgWGVub21haSB3cm90ZToNCj4gPiA+IEkgYWRkZWQg
+c29tZSBwcmludGYvcHJpbnRrIHRvIHJ0Y2Fuc2VuZC5jIGFzIHdlbGwgYXMgcnRjYW5fcmF3LmM6
+DQo+ID4gPiANCj4gPiA+IHJ0Y2FuX3Jhdy5jOg0KPiA+ID4gICAgIC8qIENoZWNrIHNpemUgb2Yg
+YnVmZmVyICovDQo+ID4gPiAgICAgaWYgKGlvdi0+aW92X2xlbiAhPSBzaXplb2YoY2FuX2ZyYW1l
+X3QpKSB7DQo+ID4gPiAgICAgICAgICAgICBwcmludGsoInJ0Y2FuX3Jhdy5jLCA4NTA6IHNpemVv
+ZihjYW5fZnJhbWVfdCk6ICVsZFxuIiwNCj4gPiA+ICAgICAgICAgICAgICAgICAgICBzaXplb2Yo
+Y2FuX2ZyYW1lX3QpKTsNCj4gPiA+ICAgICAgICAgICAgICAgICBwcmludGsoInJ0Y2FuX3Jhdy5j
+LCA4NTI6IGlvdi0+aW92X2xlbjogJWxkXG4iLA0KPiA+ID4gaW92LT5pb3ZfbGVuKTsNCj4gPiA+
+ICAgICAgICAgICAgIHJldHVybiAtRU1TR1NJWkU7DQo+ID4gPiAgICAgfQ0KPiA+ID4gDQo+ID4g
+PiB3aGVuIHJ1bm5pbmcgcnRjYW5zZW5kICgzMi1iaXQgY29tcGlsZSwgd2hpY2ggZmFpbHMgd2l0
+aCBFTVNHU0laRSk6DQo+ID4gPiAgICAgICAgIFtyb290QHBjIGNhbl0jIC91c3IveGVub21haS9i
+aW4vcnRjYW5zZW5kIHJ0Y2FuMCAtcyAweGRlIDB4YWQNCj4gPiA+ICAgICAgICAgc2l6ZW9mKGNh
+bl9mcmFtZV90KTogMTYNCj4gPiA+ICAgICAgICAgc2VuZDogTWVzc2FnZSB0b28gbG9uZw0KPiA+
+ID4gDQo+ID4gPiAgICAgICAgIFtyb290QHBjIGNhbl0jIGRtZXNnDQo+ID4gPiAgICAgICAgIFsx
+MTI3NS4xOTcxMjVdIHJ0Y2FuX3Jhdy5jLCA4NTA6IHNpemVvZihjYW5fZnJhbWVfdCk6IDE2DQo+
+ID4gPiAgICAgICAgIFsxMTI3NS4xOTcxMzNdIHJ0Y2FuX3Jhdy5jLCA4NTI6IGlvdi0+aW92X2xl
+bjogMzQ0OTQyNjc2MDANCj4gPiA+IA0KPiA+ID4gd2hlbiBydW5uaW5nIHJ0Y2Fuc2VuZCAoNjQt
+Yml0IGNvbXBpbGUsIHNlbmRzIG91dCBjYW4gbXNnIE9LKToNCj4gPiA+ICAgICAgICAgW3Jvb3RA
+cGMgY2FuXSMgL3Vzci94ZW5vbWFpL2Jpbi9ydGNhbnNlbmQgcnRjYW4wIC1zIDB4ZGUgMHhhZA0K
+PiA+ID4gICAgICAgICBzaXplb2YoY2FuX2ZyYW1lX3QpOiAxNg0KPiA+ID4gDQo+ID4gPiAgICAg
+ICAgIFtyb290QHBjIGNhbl0jIGRtZXNnDQo+ID4gPiAgICAgICAgIFsxMjQ3Ni41NzEwMzJdIHJ0
+Y2FuX3Jhdy5jLCA4NTA6IHNpemVvZihjYW5fZnJhbWVfdCk6IDE2DQo+ID4gPiAgICAgICAgIFsx
+MjQ3Ni41NzEwNDBdIHJ0Y2FuX3Jhdy5jLCA4NTI6IGlvdi0+aW92X2xlbjogMTYNCj4gPiA+IA0K
+PiA+ID4gSXQgbG9va3MgbGlrZSB0aGUgc3RydWN0IHVzZXJfbXNnaGRyICptc2cgcGFzc2VkIGlu
+dG8gcnRjYW5fcmF3X3NlbmRtc2coKQ0KPiA+ID4gaXMgY29ycnVwdC4NCj4gPiA+IEknbSB1c2lu
+ZyBYZW5vbWFpIDMuMSwgd2l0aCBrZXJuZWwgNC4xOS45ODkgeDg2XzY0DQo+ID4gPiAtQyBTbWl0
+aA0KPiA+IA0KPiA+IE9LLCBteSBndWVzcyB3YXMgd3JvbmcuIExldCBtZSBzZWUgd2hlcmUgd2Ug
+Y29ycnVwdCB0aGlzLg0KPiA+IA0KPiA+IEJyaW5ncyBodHRwczovL2dpdGxhYi5jb20vWGVub21h
+aS94ZW5vbWFpLWhhY2tlci1zcGFjZS8tL2lzc3Vlcy8yMSBpbnRvDQo+ID4gbWVtb3J5Li4uDQo+
+ID4gDQo+IA0KPiBGb3VuZCBpdDogV2UgYXJlIGxhY2tpbmcgdXNlIG9mIHJ0ZG1fZ2V0X2lvdmVj
+IGluIHJ0Y2FuIC0gaW4gY29udHJhc3QgdG8NCj4gUlRuZXQgKHNlZSBlLmcuIHJ0X3BhY2tldF9z
+ZW5kbXNnKS4gV291bGQgeW91IGZlZWwgbGlrZSBsb29raW5nIGludG8NCj4gc3VjaCBhIGNoYW5n
+ZT8NCg0KSnVzdCBhIG5vdGU6IHJ0Y2FuX3Jhd19zZW5kbXNnKCkgYW5kIHJ0Y2FuX3Jhd19yZWN2
+bXNnKCkgYXJlIGJvdGgNCmFmZmVjdGVkLiBCb3RoIHNob3VsZCBiZSB1c2luZyBydGRtX2dldF9p
+b3ZlYygpLg0KDQo+IA0KPiBKYW4NCj4gDQoNCg==
 
