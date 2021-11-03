@@ -1,15 +1,11 @@
-Subject: Re: rtcansend 32-bit
-References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
- <9a0553a5-aa37-a089-54e8-45a59ebf1095@siemens.com>
- <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <87ba187f-5e89-a0f3-10f6-fc14eb5efe21@siemens.com>
-Date: Wed, 3 Nov 2021 07:59:43 +0100
+Date: Wed, 3 Nov 2021 08:45:29 +0000 (UTC)
+From: zared kamal <zaredkam@yahoo.fr>
+Message-ID: <2092994816.180587.1635929129115@mail.yahoo.com>
+Subject: cc1: error: code model kernel does not support PIC mode
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <2092994816.180587.1635929129115.ref@mail.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,51 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.11.21 23:57, C Smith via Xenomai wrote:
-> I added some printf/printk to rtcansend.c as well as rtcan_raw.c:
-> 
-> rtcan_raw.c:
->     /* Check size of buffer */
->     if (iov->iov_len != sizeof(can_frame_t)) {
->             printk("rtcan_raw.c, 850: sizeof(can_frame_t): %ld\n",
->                    sizeof(can_frame_t));
->                 printk("rtcan_raw.c, 852: iov->iov_len: %ld\n",
-> iov->iov_len);
->             return -EMSGSIZE;
->     }
-> 
-> when running rtcansend (32-bit compile, which fails with EMSGSIZE):
->         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
->         sizeof(can_frame_t): 16
->         send: Message too long
-> 
->         [root@pc can]# dmesg
->         [11275.197125] rtcan_raw.c, 850: sizeof(can_frame_t): 16
->         [11275.197133] rtcan_raw.c, 852: iov->iov_len: 34494267600
-> 
-> when running rtcansend (64-bit compile, sends out can msg OK):
->         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
->         sizeof(can_frame_t): 16
-> 
->         [root@pc can]# dmesg
->         [12476.571032] rtcan_raw.c, 850: sizeof(can_frame_t): 16
->         [12476.571040] rtcan_raw.c, 852: iov->iov_len: 16
-> 
-> It looks like the struct user_msghdr *msg passed into rtcan_raw_sendmsg()
-> is corrupt.
-> I'm using Xenomai 3.1, with kernel 4.19.989 x86_64
-> -C Smith
+dear sir,sources:=20
+xenomai 3.0.8
+linux-4.1.18ipipe-4.1.18
+i try to compile the kernel with command make && make moules_install instal=
+lbut i get the error=20
+[sudo] password for sicom3:=20
+=C2=A0 CHK=C2=A0=C2=A0=C2=A0=C2=A0 include/config/kernel.release
+=C2=A0 CHK=C2=A0=C2=A0=C2=A0=C2=A0 include/generated/uapi/linux/version.h
+=C2=A0 CHK=C2=A0=C2=A0=C2=A0=C2=A0 include/generated/utsrelease.h
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/bounds.s
+cc1: error: code model kernel does not support PIC mode
+Kbuild:43: recipe for target 'kernel/bounds.s' failed
+make[1]: *** [kernel/bounds.s] Error 1
+Makefile:990: recipe for target 'prepare0' failed
+make: *** [prepare0] Error 2
 
-OK, my guess was wrong. Let me see where we corrupt this.
-
-Brings https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21 into
-memory...
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+many thanks for your helpbest regards
+Zared Kamal
+D=C3=A9partement de G=C3=A9nie Electrique,Laboratoire Signaux Syst=C3=A8mes=
+ & Composants=C2=A0Facult=C3=A9 des Sciences & Techniques,=C2=A0BP 2202, 30=
+000 F=C3=A8s=C2=A0=C2=A0 http://www.fstusmba.ac.ma/e-mail kamal.zared@usmba=
+.ac.ma, zaredkam@yahoo.fr
