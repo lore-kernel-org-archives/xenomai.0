@@ -1,10 +1,12 @@
-Subject: Re: RTNET i.mx6 raw packets
-References: <freemail.20211001100323.12881.1@fmxmldata07.freemail.hu>
+Subject: Re: rtcansend 32-bit
+References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
+ <9a0553a5-aa37-a089-54e8-45a59ebf1095@siemens.com>
+ <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c75ef515-77a1-9d9f-deaa-fe13fe3239e7@siemens.com>
-Date: Thu, 7 Oct 2021 10:12:11 +0200
+Message-ID: <87ba187f-5e89-a0f3-10f6-fc14eb5efe21@siemens.com>
+Date: Wed, 3 Nov 2021 07:59:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <freemail.20211001100323.12881.1@fmxmldata07.freemail.hu>
+In-Reply-To: <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,18 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paal Tamas <paal_to@freemail.hu>, xenomai@xenomai.org, =?UTF-8?Q?Jean-Baptiste_Tr=c3=a9dez?= <jean-baptiste.tredez@ba-healthcare.com>
+To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
 
-On 01.10.21 10:03, Paal Tamas via Xenomai wrote:
-> Dear All, I would like to use RTNET with raw packets on the fec interface of my i.mx6 CPU. The purpose of the whole thing is to use the Soem ECAT master.
-> I am lost. I need your help. Xenomai_3.1, kernel 4.14.78.I am using this rtnet fec patch:
-> https://xenomai.org/pipermail/xenomai/2019-March/040580.html The fec interface is eth0.
+On 02.11.21 23:57, C Smith via Xenomai wrote:
+> I added some printf/printk to rtcansend.c as well as rtcan_raw.c:
+> 
+> rtcan_raw.c:
+>     /* Check size of buffer */
+>     if (iov->iov_len != sizeof(can_frame_t)) {
+>             printk("rtcan_raw.c, 850: sizeof(can_frame_t): %ld\n",
+>                    sizeof(can_frame_t));
+>                 printk("rtcan_raw.c, 852: iov->iov_len: %ld\n",
+> iov->iov_len);
+>             return -EMSGSIZE;
+>     }
+> 
+> when running rtcansend (32-bit compile, which fails with EMSGSIZE):
+>         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
+>         sizeof(can_frame_t): 16
+>         send: Message too long
+> 
+>         [root@pc can]# dmesg
+>         [11275.197125] rtcan_raw.c, 850: sizeof(can_frame_t): 16
+>         [11275.197133] rtcan_raw.c, 852: iov->iov_len: 34494267600
+> 
+> when running rtcansend (64-bit compile, sends out can msg OK):
+>         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde 0xad
+>         sizeof(can_frame_t): 16
+> 
+>         [root@pc can]# dmesg
+>         [12476.571032] rtcan_raw.c, 850: sizeof(can_frame_t): 16
+>         [12476.571040] rtcan_raw.c, 852: iov->iov_len: 16
+> 
+> It looks like the struct user_msghdr *msg passed into rtcan_raw_sendmsg()
+> is corrupt.
+> I'm using Xenomai 3.1, with kernel 4.19.989 x86_64
+> -C Smith
 
-There was a proposal to merge that change
-(https://xenomai.org/pipermail/xenomai/2021-July/046000.html), and I
-almost did but had to revert it again due to build issues
-(https://xenomai.org/pipermail/xenomai/2021-August/046088.html). Any
-news on this, Jean-Baptiste?
+OK, my guess was wrong. Let me see where we corrupt this.
+
+Brings https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21 into
+memory...
 
 Jan
 
