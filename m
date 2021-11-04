@@ -1,16 +1,20 @@
-MIME-Version: 1.0
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: rtcansend 32-bit
+Date: Thu, 4 Nov 2021 08:05:36 +0000
+Message-ID: <8ba75fe52f21b3dc56d261e22282f7ef8bc5b050.camel@siemens.com>
 References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
  <9a0553a5-aa37-a089-54e8-45a59ebf1095@siemens.com>
  <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
  <87ba187f-5e89-a0f3-10f6-fc14eb5efe21@siemens.com>
  <93290885-9113-dd98-b1df-550604fc6fff@siemens.com>
  <03214e1aeb2ad8c681e63a01fd6051ec3c309aec.camel@siemens.com>
-In-Reply-To: <03214e1aeb2ad8c681e63a01fd6051ec3c309aec.camel@siemens.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Wed, 3 Nov 2021 23:49:42 -0700
-Message-ID: <CA+K1mPGzCcaxm4qT4vF5kkk2yc5c8mTxq1mJ1Wp6UW6H2ftmuw@mail.gmail.com>
-Subject: Re: rtcansend 32-bit
-Content-Type: text/plain; charset="UTF-8"
+ <CA+K1mPGzCcaxm4qT4vF5kkk2yc5c8mTxq1mJ1Wp6UW6H2ftmuw@mail.gmail.com>
+In-Reply-To: <CA+K1mPGzCcaxm4qT4vF5kkk2yc5c8mTxq1mJ1Wp6UW6H2ftmuw@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <586C0B4F4229504EAF732047EA1A4E3D@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,116 +23,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "csmithquestions@gmail.com" <csmithquestions@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-I was able to make the CAN transmit work successfully from my 32 bit
-compile of rtcansend.c, by adding rtdm_get_iovec() to the code. I'll submit
-a patch once both transmit  and receive are working, but I'm still having
-trouble receiving data in the rtcanrecv app. I added rtdm_get_iovec() to
-rtcan_raw_recvmsg() so that may ultimately work but the driver is already
-giving up during the bind. I get this error:
+T24gV2VkLCAyMDIxLTExLTAzIGF0IDIzOjQ5IC0wNzAwLCBDIFNtaXRoIHdyb3RlOg0KPiBJIHdh
+cyBhYmxlIHRvIG1ha2UgdGhlIENBTiB0cmFuc21pdCB3b3JrIHN1Y2Nlc3NmdWxseSBmcm9tIG15
+IDMyIGJpdA0KPiBjb21waWxlIG9mIHJ0Y2Fuc2VuZC5jLCBieSBhZGRpbmcgcnRkbV9nZXRfaW92
+ZWMoKSB0byB0aGUgY29kZS4gSSdsbA0KPiBzdWJtaXQgYSBwYXRjaCBvbmNlIGJvdGggdHJhbnNt
+aXQgwqBhbmQgcmVjZWl2ZSBhcmUgd29ya2luZywgYnV0IEknbQ0KPiBzdGlsbCBoYXZpbmcgdHJv
+dWJsZSByZWNlaXZpbmcgZGF0YSBpbiB0aGUgcnRjYW5yZWN2IGFwcC4gSSBhZGRlZA0KPiBydGRt
+X2dldF9pb3ZlYygpIHRvIHJ0Y2FuX3Jhd19yZWN2bXNnKCkgc28gdGhhdCBtYXkgdWx0aW1hdGVs
+eSB3b3JrDQo+IGJ1dCB0aGUgZHJpdmVyIGlzIGFscmVhZHkgZ2l2aW5nIHVwIGR1cmluZyB0aGUg
+YmluZC4gSSBnZXQgdGhpcw0KPiBlcnJvcjoNCj4gDQo+IFtyb290QHBjIGNhbl0jIC91c3IveGVu
+b21haS9iaW4vcnRjYW5yZWN2IHJ0Y2FuMCAtdg0KPiBpbnRlcmZhY2UgcnRjYW4wDQo+IHM9Mywg
+aWZyX25hbWU9cnRjYW4wDQo+IGJpbmQ6IEludmFsaWQgYXJndW1lbnQNCj4gQ2xlYW5pbmcgdXAu
+Li4NCj4gDQo+IEhlcmUncyB0aGUgaW9jdGwgd2l0aCBleHRyYSBwcmludGsoKXMsIHdoaWNoIGV4
+ZWN1dGVzIGR1cmluZyB0aGUNCj4gYmluZDoNCj4gDQo+IGludCBydGNhbl9yYXdfaW9jdGwoc3Ry
+dWN0IHJ0ZG1fZmQgKmZkLHVuc2lnbmVkIGludCByZXF1ZXN0LCB2b2lkDQo+ICphcmcpDQo+IHsN
+Cj4gwqAgwqAgaW50IHJldCA9IDA7DQo+IA0KPiDCoCDCoCBzd2l0Y2ggKHJlcXVlc3QpIHsNCj4g
+wqAgwqAgQ09NUEFUX0NBU0UoX1JUSU9DX0JJTkQpOiB7DQo+IMKgc3RydWN0IF9ydGRtX3NldHNv
+Y2thZGRyX2FyZ3MgKnNldGFkZHIsIHNldGFkZHJfYnVmOw0KPiDCoHN0cnVjdCBzb2NrYWRkcl9j
+YW4gKnNvY2thZGRyLCBzb2NrYWRkcl9idWY7DQo+IA0KPiDCoGlmIChydGRtX2ZkX2lzX3VzZXIo
+ZmQpKSB7DQo+IMKgwqAgwqAvKiBDb3B5IGFyZ3VtZW50IHN0cnVjdHVyZSBmcm9tIHVzZXJzcGFj
+ZSAqLw0KPiDCoHByaW50aygicnRjYW5fcmF3LmMsIDQyMTogcnRjYW5fcmF3X2lvY3RsXG4iKTsN
+Cj4gDQo+IMKgaWYgKHJ0ZG1fc2FmZV9jb3B5X2Zyb21fdXNlcihmZCwgJnNldGFkZHJfYnVmLCBh
+cmcsDQo+IMKgwqAgwqBzaXplb2Yoc3RydWN0IF9ydGRtX3NldHNvY2thZGRyX2FyZ3MpKSkNCj4g
+wqByZXR1cm4gLUVGQVVMVDsNCg0KVGhhdCBzaG91bGQgYmUgdGhlIHNvdXJjZSBvZiB5b3VyIHBy
+b2JsZW0uIEl0IGxvb2tzIGxpa2UgcnRjYW4gbmV2ZXINCmhhZCBhIGNvbXBhdCBpbnRlcmZhY2Uu
+IChKYW4gc2hvdWxkIGNvbmZpcm0gZmlyc3QuLi4pDQoNCllvdSBoYXZlIGEgNjQgYml0IGtlcm5l
+bCwgc28gdGhlIHBvaW50ZXIgd2lkdGggKGluIHN0cnVjdA0KX3J0ZG1fc2V0c29ja2FkZHJfYXJn
+cykgaXMgY29uc2lkZXJlZCB0byBiZSA4IGJ5dGVzIGJ1dCB1c2Vyc3BhY2Ugb25seQ0KcHJvdmlk
+ZWQgNC4NCg0KVGhlIGNvcHkgb3BlcmF0aW9uIHN0aWxsIHN1Y2NlZWRzLCBidXQgcmVhZGluZyBm
+cm9tIHRoaXMgc3RydWN0IGlzIG5vdw0KYnJva2VuIGJlY2F1c2Ugb2Ygd3Jvbmcgb2Zmc2V0cy4N
+Cg0KUmVhZGluZyBzdHJ1Y3QgX3J0ZG1fc2V0c29ja2FkZHJfYXJncyBoYXMgYmUgd3JhcHBlZCBp
+bnRvIGEgaGVscGVyDQpzaW1pbGFyIHRvIHJ0ZG1fZ2V0X2lvdmVjKCkuDQoNCj4gDQo+IMKgwqAg
+wqBzZXRhZGRyID0gJnNldGFkZHJfYnVmOw0KPiDCoHByaW50aygicnRjYW5fcmF3LmMsIDQyNzog
+cnRjYW5fcmF3X2lvY3RsXG4iKTsNCj4gwqBwcmludGsoInJ0Y2FuX3Jhdy5jLCA0Mjg6IHNldGFk
+ZHItPmFkZHJsZW46ICVkXG4iLCBzZXRhZGRyLQ0KPiA+YWRkcmxlbik7DQo+IA0KPiDCoMKgIMKg
+LyogQ2hlY2sgc2l6ZSAqLw0KPiDCoMKgIMKgaWYgKHNldGFkZHItPmFkZHJsZW4gIT0gc2l6ZW9m
+KHN0cnVjdCBzb2NrYWRkcl9jYW4pKQ0KPiDCoHJldHVybiAtRUlOVkFMOw0KPiANCj4gVGhlIHJl
+c3VsdGFudCBwcmludCBzdGF0ZW1lbnRzIGluIGRtZXNnIDoNCj4gWzI3MTc3LjQ4MDk4MF0gcnRj
+YW5fcmF3LmMsIDQyMTogcnRjYW5fcmF3X2lvY3RsDQo+IFsyNzE3Ny40ODA5ODddIHJ0Y2FuX3Jh
+dy5jLCA0Mjc6IHJ0Y2FuX3Jhd19pb2N0bA0KPiBbMjcxNzcuNDgwOTk0XSBydGNhbl9yYXcuYywg
+NDI4OiBzZXRhZGRyLT5hZGRybGVuOiAtNjA4NDM2MA0KPiANCj4gRG8geW91IGhhdmUgYW55IGlk
+ZWEgd2h5IGFkZHJsZW4gaXMgY29ycnVwdCA/DQo+IFRoYW5rcywgLUMgU21pdGgNCj4gDQo+IE9u
+IFdlZCwgTm92IDMsIDIwMjEgYXQgNDowOSBBTSBCZXpkZWthLCBGbG9yaWFuDQo+IDxmbG9yaWFu
+LmJlemRla2FAc2llbWVucy5jb20+IHdyb3RlOg0KPiA+IE9uIFdlZCwgMjAyMS0xMS0wMyBhdCAx
+MTo0NiArMDEwMCwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90ZToNCj4gPiA+IE9uIDAzLjEx
+LjIxIDA3OjU5LCBKYW4gS2lzemthIHdyb3RlOg0KPiA+ID4gPiBPbiAwMi4xMS4yMSAyMzo1Nywg
+QyBTbWl0aCB2aWEgWGVub21haSB3cm90ZToNCj4gPiA+ID4gPiBJIGFkZGVkIHNvbWUgcHJpbnRm
+L3ByaW50ayB0byBydGNhbnNlbmQuYyBhcyB3ZWxsIGFzDQo+ID4gcnRjYW5fcmF3LmM6DQo+ID4g
+PiA+ID4gDQo+ID4gPiA+ID4gcnRjYW5fcmF3LmM6DQo+ID4gPiA+ID4gwqAgwqAgwqAvKiBDaGVj
+ayBzaXplIG9mIGJ1ZmZlciAqLw0KPiA+ID4gPiA+IMKgIMKgIMKgaWYgKGlvdi0+aW92X2xlbiAh
+PSBzaXplb2YoY2FuX2ZyYW1lX3QpKSB7DQo+ID4gPiA+ID4gwqAgwqAgwqAgwqAgwqAgwqAgwqBw
+cmludGsoInJ0Y2FuX3Jhdy5jLCA4NTA6IHNpemVvZihjYW5fZnJhbWVfdCk6DQo+ID4gJWxkXG4i
+LA0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHNpemVvZihjYW5fZnJh
+bWVfdCkpOw0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgcHJpbnRrKCJydGNh
+bl9yYXcuYywgODUyOiBpb3YtPmlvdl9sZW46DQo+ID4gPiA+ID4gJWxkXG4iLA0KPiA+ID4gPiA+
+IGlvdi0+aW92X2xlbik7DQo+ID4gPiA+ID4gwqAgwqAgwqAgwqAgwqAgwqAgwqByZXR1cm4gLUVN
+U0dTSVpFOw0KPiA+ID4gPiA+IMKgIMKgIMKgfQ0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IHdoZW4g
+cnVubmluZyBydGNhbnNlbmQgKDMyLWJpdCBjb21waWxlLCB3aGljaCBmYWlscyB3aXRoDQo+ID4g
+RU1TR1NJWkUpOg0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgW3Jvb3RAcGMgY2FuXSMgL3Vzci94
+ZW5vbWFpL2Jpbi9ydGNhbnNlbmQgcnRjYW4wIC1zDQo+ID4gMHhkZSAweGFkDQo+ID4gPiA+ID4g
+wqAgwqAgwqAgwqAgwqBzaXplb2YoY2FuX2ZyYW1lX3QpOiAxNg0KPiA+ID4gPiA+IMKgIMKgIMKg
+IMKgIMKgc2VuZDogTWVzc2FnZSB0b28gbG9uZw0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IMKgIMKg
+IMKgIMKgIMKgW3Jvb3RAcGMgY2FuXSMgZG1lc2cNCj4gPiA+ID4gPiDCoCDCoCDCoCDCoCDCoFsx
+MTI3NS4xOTcxMjVdIHJ0Y2FuX3Jhdy5jLCA4NTA6DQo+ID4gPiA+ID4gc2l6ZW9mKGNhbl9mcmFt
+ZV90KToNCj4gPiAxNg0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgWzExMjc1LjE5NzEzM10gcnRj
+YW5fcmF3LmMsIDg1MjogaW92LT5pb3ZfbGVuOg0KPiA+IDM0NDk0MjY3NjAwDQo+ID4gPiA+ID4g
+DQo+ID4gPiA+ID4gd2hlbiBydW5uaW5nIHJ0Y2Fuc2VuZCAoNjQtYml0IGNvbXBpbGUsIHNlbmRz
+IG91dCBjYW4gbXNnDQo+ID4gPiA+ID4gT0spOg0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgW3Jv
+b3RAcGMgY2FuXSMgL3Vzci94ZW5vbWFpL2Jpbi9ydGNhbnNlbmQgcnRjYW4wIC1zDQo+ID4gMHhk
+ZSAweGFkDQo+ID4gPiA+ID4gwqAgwqAgwqAgwqAgwqBzaXplb2YoY2FuX2ZyYW1lX3QpOiAxNg0K
+PiA+ID4gPiA+IA0KPiA+ID4gPiA+IMKgIMKgIMKgIMKgIMKgW3Jvb3RAcGMgY2FuXSMgZG1lc2cN
+Cj4gPiA+ID4gPiDCoCDCoCDCoCDCoCDCoFsxMjQ3Ni41NzEwMzJdIHJ0Y2FuX3Jhdy5jLCA4NTA6
+DQo+ID4gPiA+ID4gc2l6ZW9mKGNhbl9mcmFtZV90KToNCj4gPiAxNg0KPiA+ID4gPiA+IMKgIMKg
+IMKgIMKgIMKgWzEyNDc2LjU3MTA0MF0gcnRjYW5fcmF3LmMsIDg1MjogaW92LT5pb3ZfbGVuOiAx
+Ng0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IEl0IGxvb2tzIGxpa2UgdGhlIHN0cnVjdCB1c2VyX21z
+Z2hkciAqbXNnIHBhc3NlZCBpbnRvDQo+ID4gcnRjYW5fcmF3X3NlbmRtc2coKQ0KPiA+ID4gPiA+
+IGlzIGNvcnJ1cHQuDQo+ID4gPiA+ID4gSSdtIHVzaW5nIFhlbm9tYWkgMy4xLCB3aXRoIGtlcm5l
+bCA0LjE5Ljk4OSB4ODZfNjQNCj4gPiA+ID4gPiAtQyBTbWl0aA0KPiA+ID4gPiANCj4gPiA+ID4g
+T0ssIG15IGd1ZXNzIHdhcyB3cm9uZy4gTGV0IG1lIHNlZSB3aGVyZSB3ZSBjb3JydXB0IHRoaXMu
+DQo+ID4gPiA+IA0KPiA+ID4gPiBCcmluZ3MNCj4gPiBodHRwczovL2dpdGxhYi5jb20vWGVub21h
+aS94ZW5vbWFpLWhhY2tlci1zcGFjZS8tL2lzc3Vlcy8yMSBpbnRvDQo+ID4gPiA+IG1lbW9yeS4u
+Lg0KPiA+ID4gPiANCj4gPiA+IA0KPiA+ID4gRm91bmQgaXQ6IFdlIGFyZSBsYWNraW5nIHVzZSBv
+ZiBydGRtX2dldF9pb3ZlYyBpbiBydGNhbiAtIGluDQo+ID4gY29udHJhc3QgdG8NCj4gPiA+IFJU
+bmV0IChzZWUgZS5nLiBydF9wYWNrZXRfc2VuZG1zZykuIFdvdWxkIHlvdSBmZWVsIGxpa2UgbG9v
+a2luZw0KPiA+IGludG8NCj4gPiA+IHN1Y2ggYSBjaGFuZ2U/DQo+ID4gDQo+ID4gSnVzdCBhIG5v
+dGU6IHJ0Y2FuX3Jhd19zZW5kbXNnKCkgYW5kIHJ0Y2FuX3Jhd19yZWN2bXNnKCkgYXJlIGJvdGgN
+Cj4gPiBhZmZlY3RlZC4gQm90aCBzaG91bGQgYmUgdXNpbmcgcnRkbV9nZXRfaW92ZWMoKS4NCj4g
+PiANCj4gPiA+IA0KPiA+ID4gSmFuDQo+ID4gPiANCj4gPiANCg0K
 
-[root@pc can]# /usr/xenomai/bin/rtcanrecv rtcan0 -v
-interface rtcan0
-s=3, ifr_name=rtcan0
-bind: Invalid argument
-Cleaning up...
-
-Here's the ioctl with extra printk()s, which executes during the bind:
-
-int rtcan_raw_ioctl(struct rtdm_fd *fd,unsigned int request, void *arg)
-{
-    int ret = 0;
-
-    switch (request) {
-    COMPAT_CASE(_RTIOC_BIND): {
-struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
-struct sockaddr_can *sockaddr, sockaddr_buf;
-
-if (rtdm_fd_is_user(fd)) {
-   /* Copy argument structure from userspace */
-printk("rtcan_raw.c, 421: rtcan_raw_ioctl\n");
-
-if (rtdm_safe_copy_from_user(fd, &setaddr_buf, arg,
-   sizeof(struct _rtdm_setsockaddr_args)))
-return -EFAULT;
-
-   setaddr = &setaddr_buf;
-printk("rtcan_raw.c, 427: rtcan_raw_ioctl\n");
-printk("rtcan_raw.c, 428: setaddr->addrlen: %d\n", setaddr->addrlen);
-
-   /* Check size */
-   if (setaddr->addrlen != sizeof(struct sockaddr_can))
-return -EINVAL;
-
-The resultant print statements in dmesg :
-[27177.480980] rtcan_raw.c, 421: rtcan_raw_ioctl
-[27177.480987] rtcan_raw.c, 427: rtcan_raw_ioctl
-[27177.480994] rtcan_raw.c, 428: setaddr->addrlen: -6084360
-
-Do you have any idea why addrlen is corrupt ?
-Thanks, -C Smith
-
-On Wed, Nov 3, 2021 at 4:09 AM Bezdeka, Florian <florian.bezdeka@siemens.com>
-wrote:
-
-> On Wed, 2021-11-03 at 11:46 +0100, Jan Kiszka via Xenomai wrote:
-> > On 03.11.21 07:59, Jan Kiszka wrote:
-> > > On 02.11.21 23:57, C Smith via Xenomai wrote:
-> > > > I added some printf/printk to rtcansend.c as well as rtcan_raw.c:
-> > > >
-> > > > rtcan_raw.c:
-> > > >     /* Check size of buffer */
-> > > >     if (iov->iov_len != sizeof(can_frame_t)) {
-> > > >             printk("rtcan_raw.c, 850: sizeof(can_frame_t): %ld\n",
-> > > >                    sizeof(can_frame_t));
-> > > >                 printk("rtcan_raw.c, 852: iov->iov_len: %ld\n",
-> > > > iov->iov_len);
-> > > >             return -EMSGSIZE;
-> > > >     }
-> > > >
-> > > > when running rtcansend (32-bit compile, which fails with EMSGSIZE):
-> > > >         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde
-> 0xad
-> > > >         sizeof(can_frame_t): 16
-> > > >         send: Message too long
-> > > >
-> > > >         [root@pc can]# dmesg
-> > > >         [11275.197125] rtcan_raw.c, 850: sizeof(can_frame_t): 16
-> > > >         [11275.197133] rtcan_raw.c, 852: iov->iov_len: 34494267600
-> > > >
-> > > > when running rtcansend (64-bit compile, sends out can msg OK):
-> > > >         [root@pc can]# /usr/xenomai/bin/rtcansend rtcan0 -s 0xde
-> 0xad
-> > > >         sizeof(can_frame_t): 16
-> > > >
-> > > >         [root@pc can]# dmesg
-> > > >         [12476.571032] rtcan_raw.c, 850: sizeof(can_frame_t): 16
-> > > >         [12476.571040] rtcan_raw.c, 852: iov->iov_len: 16
-> > > >
-> > > > It looks like the struct user_msghdr *msg passed into
-> rtcan_raw_sendmsg()
-> > > > is corrupt.
-> > > > I'm using Xenomai 3.1, with kernel 4.19.989 x86_64
-> > > > -C Smith
-> > >
-> > > OK, my guess was wrong. Let me see where we corrupt this.
-> > >
-> > > Brings https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
-> into
-> > > memory...
-> > >
-> >
-> > Found it: We are lacking use of rtdm_get_iovec in rtcan - in contrast to
-> > RTnet (see e.g. rt_packet_sendmsg). Would you feel like looking into
-> > such a change?
->
-> Just a note: rtcan_raw_sendmsg() and rtcan_raw_recvmsg() are both
-> affected. Both should be using rtdm_get_iovec().
->
-> >
-> > Jan
-> >
->
->
