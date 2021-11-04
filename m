@@ -1,12 +1,11 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Content-Type: text/plain;
-	charset=utf-8
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Xenomai Community Call Minutes - November 3, 2021
+Date: Thu, 4 Nov 2021 14:20:48 +0000
+Message-ID: <CO6PR11MB56495E8FF6E07BBDA99AF05BBA8D9@CO6PR11MB5649.namprd11.prod.outlook.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: [EVL][dovetail] Minimum requirements for network communication for
- RPi 4B and amd64
-Message-Id: <388405AD-717D-45F2-8504-515F3BE70117@gmail.com>
-Date: Thu, 4 Nov 2021 11:43:36 +0300
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Greetings Xenomai community,
+Attendees:
+Jan Kiszka, Florian Bezdeka, Hongzhan Chen, Hao Li, Jianbo Cao, Rick Wang
 
-For the past year I have been using EVL to develop some real-time apps =
-utilizing fast data acquisition through SPI interfaces on RPi 4B. I then =
-send the collected data through mainline network stack to a amd64 =
-machine running Xenomai 3.1. The data I=E2=80=99m sending is sensitive =
-and cannot afford packet drops. By that I mean even if I use UDP I would =
-have to wait for next successful packet to continue. So in that case, I =
-guess, TCP without Nagle=E2=80=99s algorithm should be enough.
 
-What I want to ask is how would one achieve a bare minimum but real-time =
-communication between two devices over network. I can convert my other =
-Xenomai client to EVL. Any improvements over mainline network stack =
-would be enough I believe.
+*Community update
 
-Thanks for your time,
-Deniz.=
+No blocking issue reported for Xenomai 3.2 RC2. Plan to formal release
+this week.
+    user header issue - Jan would fix it.
+    Stability issue on server system - Hongzhan Chen and Hao Li to test.
 
+Investigating Intel TCC [1] for real-time performance optimization.
+
+[1] https://www.intel.com/content/www/us/en/design/technologies-and-topics/=
+iot/real-time.html
+
+
+Thanks,
+Rick
