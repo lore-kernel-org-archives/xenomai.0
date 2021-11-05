@@ -1,4 +1,7 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: rtcansend 32-bit
+Date: Fri, 5 Nov 2021 08:25:11 +0000
+Message-ID: <695bc5e8457585912d080386b4a1c39e5330b7b5.camel@siemens.com>
 References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
  <9a0553a5-aa37-a089-54e8-45a59ebf1095@siemens.com>
  <CA+K1mPE4d9qQ2-tT+rDGBR4v__vzrXu2736+JFADco8a6Y7xLQ@mail.gmail.com>
@@ -8,14 +11,13 @@ References: <CA+K1mPGLQ5-B-qrTasdwc_G38cr6T78V0Nip3bEkdD89761ukA@mail.gmail.com>
  <CA+K1mPGzCcaxm4qT4vF5kkk2yc5c8mTxq1mJ1Wp6UW6H2ftmuw@mail.gmail.com>
  <8ba75fe52f21b3dc56d261e22282f7ef8bc5b050.camel@siemens.com>
  <CA+K1mPFkjVhKh_28+k7GowYs3mWvHnKiYhPnj4sVb2O0CHbSgg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6e3838fd-7257-2bb6-8eb7-98d569209406@siemens.com>
-Date: Fri, 5 Nov 2021 09:14:31 +0100
-MIME-Version: 1.0
-In-Reply-To: <CA+K1mPFkjVhKh_28+k7GowYs3mWvHnKiYhPnj4sVb2O0CHbSgg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+ <6e3838fd-7257-2bb6-8eb7-98d569209406@siemens.com>
+In-Reply-To: <6e3838fd-7257-2bb6-8eb7-98d569209406@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <843C843F7549CF4CB53751499AC27744@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,237 +26,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "csmithquestions@gmail.com" <csmithquestions@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05.11.21 08:09, C Smith wrote:
-> Please review and accept this patch, which allows 32 bit apps to send
-> and receive CAN. It is tested successfully with 32bit and 64bit compiles
-> of utils/can/rtcansend.c / and rtcanrecv.c. The compat interface is now
-> implemented, rtdm_get_iovec() is used and the get_sockaddr() methodology
-> from the xddp sockets code was emulated to get the CAN receive to work.
-
-Please write a commit message in a way that it motivates the change. Any
-introductory words can go into a cover letter or...
-
-> 
-> Signed-off-by: C Smith <csmithquestions@gmail.com
-> <mailto:csmithquestions@gmail.com>>
-> ---
-
-...after this separator.
-
->  kernel/drivers/can/rtcan_internal.h |   3 +
->  kernel/drivers/can/rtcan_raw.c      | 111
-> ++++++++++++++++++++++++------------
->  2 files changed, 76 insertions(+), 38 deletions(-)
-> 
-
-Not sure what the baseline was or if something was mangled, but the
-patch does not apply on top of master/next.
-
-> diff --git a/kernel/drivers/can/rtcan_internal.h
-> b/kernel/drivers/can/rtcan_internal.h
-> index b290005..03febef 100644
-> --- a/kernel/drivers/can/rtcan_internal.h
-> +++ b/kernel/drivers/can/rtcan_internal.h
-> @@ -28,6 +28,7 @@
->  
->  #include <linux/module.h>
->  #include <rtdm/driver.h>
-> +#include <rtdm/compat.h>
->  
->  #ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG
->  #define RTCAN_ASSERT(expr, func) \
-> @@ -58,4 +59,6 @@
->  #define rtcandev_err(dev, fmt, args...) \
->   printk(KERN_ERR "%s: " fmt, (dev)->name, ##args)
->  
-> +#define COMPAT_CASE(__op) case __op __COMPAT_CASE(__op  ## _COMPAT)
-> +
-
-Why redefing this? It's part of rtdm/compat.h already, isn't it?
-
->  #endif /* __RTCAN_INTERNAL_H_ */
-> diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-> index 693b927..6e8ebe6 100644
-> --- a/kernel/drivers/can/rtcan_raw.c
-> +++ b/kernel/drivers/can/rtcan_raw.c
-> @@ -215,6 +215,58 @@ EXPORT_SYMBOL_GPL(rtcan_loopback);
->  #endif /* CONFIG_XENO_DRIVERS_CAN_LOOPBACK */
->  
->  
-> +int rtcan_get_sockaddr(struct rtdm_fd *fd, struct sockaddr_can **saddrp,
-> +       const void *arg)
-> +{
-> +    struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
-> +    int ret = 0;
-> +    
-> +    if (!rtdm_fd_is_user(fd)) {
-> +        setaddr = (struct _rtdm_setsockaddr_args *)arg;
-> +        *saddrp = (struct sockaddr_can *)setaddr->addr;
-> +    }
-> +
-> +#ifdef CONFIG_XENO_ARCH_SYS3264
-> +    if (rtdm_fd_is_compat(fd)) {
-> +        struct compat_rtdm_setsockaddr_args csetaddr_buff;
-> +
-> +        /* Copy argument structure from userspace */
-> +        ret = rtdm_safe_copy_from_user(fd, &csetaddr_buff,
-> +                        arg, sizeof(csetaddr_buff));
-> +        if (ret)
-> +            return ret;
-> +
-> +        /* Check size */
-> +        if (csetaddr_buff.addrlen != sizeof(**saddrp))
-
-Below you use sizeof(sockaddr_can). For consistency reasons, both tests
-should use the same pattern.
-
-> +            return -EINVAL;
-> +
-> +        return rtdm_safe_copy_from_user(fd, *saddrp,
-> +                        compat_ptr(csetaddr_buff.addr),
-> +                        sizeof(struct sockaddr_can));
-> +        *saddrp = NULL;
-> +        return 0;
-> +    }
-> +#endif
-> +
-> +    if (rtdm_safe_copy_from_user(fd, &setaddr_buf, arg,
-> +                sizeof(struct _rtdm_setsockaddr_args)))
-> +        return -EFAULT;
-> +
-> +    setaddr = &setaddr_buf;
-> +
-> +    /* Check size */
-> +    if (setaddr->addrlen != sizeof(struct sockaddr_can))
-> +        return -EINVAL;
-> +
-> +    return rtdm_safe_copy_from_user(fd, *saddrp,
-> +                    setaddr->addr,
-> +                    sizeof(struct sockaddr_can));
-> +
-> +    *saddrp = NULL;
-> +    return 0;
-> +}
-> +
-> +
->  int rtcan_raw_socket(struct rtdm_fd *fd, int protocol)
->  {
->      /* Only protocol CAN_RAW is supported */
-> @@ -408,46 +460,21 @@ static int rtcan_raw_setsockopt(struct rtdm_fd *fd,
->  int rtcan_raw_ioctl(struct rtdm_fd *fd,
->      unsigned int request, void *arg)
->  {
-> +    struct sockaddr_can saddr, *saddrp = &saddr;
->      int ret = 0;
->  
->      switch (request) {
-> -    case _RTIOC_BIND: {
-> - struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
-> - struct sockaddr_can *sockaddr, sockaddr_buf;
-> -
-> - if (rtdm_fd_is_user(fd)) {
-> -    /* Copy argument structure from userspace */
-> -    if (!rtdm_read_user_ok(fd, arg,
-> -   sizeof(struct _rtdm_setsockaddr_args)) ||
-> - rtdm_copy_from_user(fd, &setaddr_buf, arg,
-> -    sizeof(struct _rtdm_setsockaddr_args)))
-> - return -EFAULT;
->  
-> -    setaddr = &setaddr_buf;
-> +    COMPAT_CASE(_RTIOC_BIND):
-> +        ret = rtcan_get_sockaddr(fd, &saddrp, arg);
-> + if (ret)
-> + return ret;
-> +        if (saddrp == NULL)
-> + return -EFAULT;
-> +    ret = rtcan_raw_bind(fd, saddrp);
-> +    break;
-
-Seeing this weird indention (even when ignoring the legacy original
-indention of the target file before the change), I suspect the patch was
-mangled by your email client.
-
->  
-> -    /* Check size */
-> -    if (setaddr->addrlen != sizeof(struct sockaddr_can))
-> - return -EINVAL;
-> -
-> -    /* Copy argument structure from userspace */
-> -    if (!rtdm_read_user_ok(fd, arg,
-> -   sizeof(struct sockaddr_can)) ||
-> - rtdm_copy_from_user(fd, &sockaddr_buf, setaddr->addr,
-> -    sizeof(struct sockaddr_can)))
-> - return -EFAULT;
-> -    sockaddr = &sockaddr_buf;
-> - } else {
-> -    setaddr = (struct _rtdm_setsockaddr_args *)arg;
-> -    sockaddr = (struct sockaddr_can *)setaddr->addr;
-> - }
-> -
-> - /* Now, all required data are in kernel space */
-> - ret = rtcan_raw_bind(fd, sockaddr);
-> -
-> - break;
-> -    }
-> -
-> -    case _RTIOC_SETSOCKOPT: {
-> +    COMPAT_CASE(_RTIOC_SETSOCKOPT): {
->   struct _rtdm_setsockopt_args *setopt;
->   struct _rtdm_setsockopt_args setopt_buf;
->  
-> @@ -532,7 +559,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
->      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
->      struct sockaddr_can scan;
->      nanosecs_rel_t timeout;
-> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
-> + struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
->      struct iovec iov_buf;
->      can_frame_t frame;
->      nanosecs_abs_t timestamp = 0;
-> @@ -584,6 +611,10 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
->   iov = &iov_buf;
->      }
->  
-> + ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
-> + if (ret)
-> + return ret;
-> +
->      /* Check size of buffer */
->      if (iov->iov_len < sizeof(can_frame_t))
->   return -EMSGSIZE;
-> @@ -768,7 +799,7 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
->      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
->      struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
->      struct sockaddr_can scan_buf;
-> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
-> + struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
->      struct iovec iov_buf;
->      can_frame_t *frame;
->      can_frame_t frame_buf;
-> @@ -841,8 +872,12 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
->   iov = &iov_buf;
->      }
->  
-> + ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
-> + if (ret)
-> + return ret;
-> +
->      /* Check size of buffer */
-> -    if (iov->iov_len != sizeof(can_frame_t))
-> +    if (iov->iov_len != sizeof(can_frame_t))
->   return -EMSGSIZE;
->  
->      frame = (can_frame_t *)iov->iov_base;
-> -- 
-> 2.1.0
-
-Thanks,
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gRnJpLCAyMDIxLTExLTA1IGF0IDA5OjE0ICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwNS4xMS4yMSAwODowOSwgQyBTbWl0aCB3cm90ZToNCj4gPiBQbGVhc2UgcmV2aWV3IGFuZCBh
+Y2NlcHQgdGhpcyBwYXRjaCwgd2hpY2ggYWxsb3dzIDMyIGJpdCBhcHBzIHRvIHNlbmQNCj4gPiBh
+bmQgcmVjZWl2ZSBDQU4uIEl0IGlzIHRlc3RlZCBzdWNjZXNzZnVsbHkgd2l0aCAzMmJpdCBhbmQg
+NjRiaXQgY29tcGlsZXMNCj4gPiBvZiB1dGlscy9jYW4vcnRjYW5zZW5kLmMgLyBhbmQgcnRjYW5y
+ZWN2LmMuIFRoZSBjb21wYXQgaW50ZXJmYWNlIGlzIG5vdw0KPiA+IGltcGxlbWVudGVkLCBydGRt
+X2dldF9pb3ZlYygpIGlzIHVzZWQgYW5kIHRoZSBnZXRfc29ja2FkZHIoKSBtZXRob2RvbG9neQ0K
+PiA+IGZyb20gdGhlIHhkZHAgc29ja2V0cyBjb2RlIHdhcyBlbXVsYXRlZCB0byBnZXQgdGhlIENB
+TiByZWNlaXZlIHRvIHdvcmsuDQo+IA0KPiBQbGVhc2Ugd3JpdGUgYSBjb21taXQgbWVzc2FnZSBp
+biBhIHdheSB0aGF0IGl0IG1vdGl2YXRlcyB0aGUgY2hhbmdlLiBBbnkNCj4gaW50cm9kdWN0b3J5
+IHdvcmRzIGNhbiBnbyBpbnRvIGEgY292ZXIgbGV0dGVyIG9yLi4uDQo+IA0KPiA+IA0KPiA+IFNp
+Z25lZC1vZmYtYnk6IEMgU21pdGggPGNzbWl0aHF1ZXN0aW9uc0BnbWFpbC5jb20NCj4gPiA8bWFp
+bHRvOmNzbWl0aHF1ZXN0aW9uc0BnbWFpbC5jb20+Pg0KPiA+IC0tLQ0KPiANCj4gLi4uYWZ0ZXIg
+dGhpcyBzZXBhcmF0b3IuDQo+IA0KPiA+IMKga2VybmVsL2RyaXZlcnMvY2FuL3J0Y2FuX2ludGVy
+bmFsLmggfCDCoCAzICsNCj4gPiDCoGtlcm5lbC9kcml2ZXJzL2Nhbi9ydGNhbl9yYXcuYyDCoCDC
+oCDCoHwgMTExDQo+ID4gKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tDQo+ID4g
+wqAyIGZpbGVzIGNoYW5nZWQsIDc2IGluc2VydGlvbnMoKyksIDM4IGRlbGV0aW9ucygtKQ0KPiA+
+IA0KPiANCj4gTm90IHN1cmUgd2hhdCB0aGUgYmFzZWxpbmUgd2FzIG9yIGlmIHNvbWV0aGluZyB3
+YXMgbWFuZ2xlZCwgYnV0IHRoZQ0KPiBwYXRjaCBkb2VzIG5vdCBhcHBseSBvbiB0b3Agb2YgbWFz
+dGVyL25leHQuDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9rZXJuZWwvZHJpdmVycy9jYW4vcnRjYW5f
+aW50ZXJuYWwuaA0KPiA+IGIva2VybmVsL2RyaXZlcnMvY2FuL3J0Y2FuX2ludGVybmFsLmgNCj4g
+PiBpbmRleCBiMjkwMDA1Li4wM2ZlYmVmIDEwMDY0NA0KPiA+IC0tLSBhL2tlcm5lbC9kcml2ZXJz
+L2Nhbi9ydGNhbl9pbnRlcm5hbC5oDQo+ID4gKysrIGIva2VybmVsL2RyaXZlcnMvY2FuL3J0Y2Fu
+X2ludGVybmFsLmgNCj4gPiBAQCAtMjgsNiArMjgsNyBAQA0KPiA+IMKgDQo+ID4gwqAjaW5jbHVk
+ZSA8bGludXgvbW9kdWxlLmg+DQo+ID4gwqAjaW5jbHVkZSA8cnRkbS9kcml2ZXIuaD4NCj4gPiAr
+I2luY2x1ZGUgPHJ0ZG0vY29tcGF0Lmg+DQo+ID4gwqANCj4gPiDCoCNpZmRlZiBDT05GSUdfWEVO
+T19EUklWRVJTX0NBTl9ERUJVRw0KPiA+IMKgI2RlZmluZSBSVENBTl9BU1NFUlQoZXhwciwgZnVu
+YykgXA0KPiA+IEBAIC01OCw0ICs1OSw2IEBADQo+ID4gwqAjZGVmaW5lIHJ0Y2FuZGV2X2Vycihk
+ZXYsIGZtdCwgYXJncy4uLikgXA0KPiA+IMKgIHByaW50ayhLRVJOX0VSUiAiJXM6ICIgZm10LCAo
+ZGV2KS0+bmFtZSwgIyNhcmdzKQ0KPiA+IMKgDQo+ID4gKyNkZWZpbmUgQ09NUEFUX0NBU0UoX19v
+cCkgY2FzZSBfX29wIF9fQ09NUEFUX0NBU0UoX19vcCDCoCMjIF9DT01QQVQpDQo+ID4gKw0KPiAN
+Cj4gV2h5IHJlZGVmaW5nIHRoaXM/IEl0J3MgcGFydCBvZiBydGRtL2NvbXBhdC5oIGFscmVhZHks
+IGlzbid0IGl0Pw0KPiANCj4gPiDCoCNlbmRpZiAvKiBfX1JUQ0FOX0lOVEVSTkFMX0hfICovDQo+
+ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL2Nhbi9ydGNhbl9yYXcuYyBiL2tlcm5lbC9k
+cml2ZXJzL2Nhbi9ydGNhbl9yYXcuYw0KPiA+IGluZGV4IDY5M2I5MjcuLjZlOGViZTYgMTAwNjQ0
+DQo+ID4gLS0tIGEva2VybmVsL2RyaXZlcnMvY2FuL3J0Y2FuX3Jhdy5jDQo+ID4gKysrIGIva2Vy
+bmVsL2RyaXZlcnMvY2FuL3J0Y2FuX3Jhdy5jDQo+ID4gQEAgLTIxNSw2ICsyMTUsNTggQEAgRVhQ
+T1JUX1NZTUJPTF9HUEwocnRjYW5fbG9vcGJhY2spOw0KPiA+IMKgI2VuZGlmIC8qIENPTkZJR19Y
+RU5PX0RSSVZFUlNfQ0FOX0xPT1BCQUNLICovDQo+ID4gwqANCj4gPiDCoA0KPiA+ICtpbnQgcnRj
+YW5fZ2V0X3NvY2thZGRyKHN0cnVjdCBydGRtX2ZkICpmZCwgc3RydWN0IHNvY2thZGRyX2NhbiAq
+KnNhZGRycCwNCj4gPiArIMKgIMKgIMKgIGNvbnN0IHZvaWQgKmFyZykNCj4gPiArew0KPiA+ICsg
+wqAgwqBzdHJ1Y3QgX3J0ZG1fc2V0c29ja2FkZHJfYXJncyAqc2V0YWRkciwgc2V0YWRkcl9idWY7
+DQo+ID4gKyDCoCDCoGludCByZXQgPSAwOw0KPiA+ICsgwqAgwqANCj4gPiArIMKgIMKgaWYgKCFy
+dGRtX2ZkX2lzX3VzZXIoZmQpKSB7DQo+ID4gKyDCoCDCoCDCoCDCoHNldGFkZHIgPSAoc3RydWN0
+IF9ydGRtX3NldHNvY2thZGRyX2FyZ3MgKilhcmc7DQo+ID4gKyDCoCDCoCDCoCDCoCpzYWRkcnAg
+PSAoc3RydWN0IHNvY2thZGRyX2NhbiAqKXNldGFkZHItPmFkZHI7DQo+ID4gKyDCoCDCoH0NCj4g
+PiArDQo+ID4gKyNpZmRlZiBDT05GSUdfWEVOT19BUkNIX1NZUzMyNjQNCj4gPiArIMKgIMKgaWYg
+KHJ0ZG1fZmRfaXNfY29tcGF0KGZkKSkgew0KPiA+ICsgwqAgwqAgwqAgwqBzdHJ1Y3QgY29tcGF0
+X3J0ZG1fc2V0c29ja2FkZHJfYXJncyBjc2V0YWRkcl9idWZmOw0KPiA+ICsNCj4gPiArIMKgIMKg
+IMKgIMKgLyogQ29weSBhcmd1bWVudCBzdHJ1Y3R1cmUgZnJvbSB1c2Vyc3BhY2UgKi8NCj4gPiAr
+IMKgIMKgIMKgIMKgcmV0ID0gcnRkbV9zYWZlX2NvcHlfZnJvbV91c2VyKGZkLCAmY3NldGFkZHJf
+YnVmZiwNCj4gPiArIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgYXJnLCBzaXpl
+b2YoY3NldGFkZHJfYnVmZikpOw0KPiA+ICsgwqAgwqAgwqAgwqBpZiAocmV0KQ0KPiA+ICsgwqAg
+wqAgwqAgwqAgwqAgwqByZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiArIMKgIMKgIMKgIMKgLyogQ2hl
+Y2sgc2l6ZSAqLw0KPiA+ICsgwqAgwqAgwqAgwqBpZiAoY3NldGFkZHJfYnVmZi5hZGRybGVuICE9
+IHNpemVvZigqKnNhZGRycCkpDQo+IA0KPiBCZWxvdyB5b3UgdXNlIHNpemVvZihzb2NrYWRkcl9j
+YW4pLiBGb3IgY29uc2lzdGVuY3kgcmVhc29ucywgYm90aCB0ZXN0cw0KPiBzaG91bGQgdXNlIHRo
+ZSBzYW1lIHBhdHRlcm4uDQo+IA0KPiA+ICsgwqAgwqAgwqAgwqAgwqAgwqByZXR1cm4gLUVJTlZB
+TDsNCj4gPiArDQo+ID4gKyDCoCDCoCDCoCDCoHJldHVybiBydGRtX3NhZmVfY29weV9mcm9tX3Vz
+ZXIoZmQsICpzYWRkcnAsDQo+ID4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oGNvbXBhdF9wdHIoY3NldGFkZHJfYnVmZi5hZGRyKSwNCj4gPiArIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgc2l6ZW9mKHN0cnVjdCBzb2NrYWRkcl9jYW4pKTsNCj4gPiArIMKg
+IMKgIMKgIMKgKnNhZGRycCA9IE5VTEw7DQo+ID4gKyDCoCDCoCDCoCDCoHJldHVybiAwOw0KDQpE
+ZWFkIGNvZGUuIFRoZSBsYXN0IHR3byBsaW5lcyB3aWxsIG5ldmVyIGJlIGV4ZWN1dGVkLg0KDQo+
+ID4gKyDCoCDCoH0NCj4gPiArI2VuZGlmDQo+ID4gKw0KPiA+ICsgwqAgwqBpZiAocnRkbV9zYWZl
+X2NvcHlfZnJvbV91c2VyKGZkLCAmc2V0YWRkcl9idWYsIGFyZywNCj4gPiArIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgc2l6ZW9mKHN0cnVjdCBfcnRkbV9zZXRzb2NrYWRkcl9hcmdzKSkpDQo+ID4g
+KyDCoCDCoCDCoCDCoHJldHVybiAtRUZBVUxUOw0KPiA+ICsNCj4gPiArIMKgIMKgc2V0YWRkciA9
+ICZzZXRhZGRyX2J1ZjsNCj4gPiArDQo+ID4gKyDCoCDCoC8qIENoZWNrIHNpemUgKi8NCj4gPiAr
+IMKgIMKgaWYgKHNldGFkZHItPmFkZHJsZW4gIT0gc2l6ZW9mKHN0cnVjdCBzb2NrYWRkcl9jYW4p
+KQ0KPiA+ICsgwqAgwqAgwqAgwqByZXR1cm4gLUVJTlZBTDsNCj4gPiArDQo+ID4gKyDCoCDCoHJl
+dHVybiBydGRtX3NhZmVfY29weV9mcm9tX3VzZXIoZmQsICpzYWRkcnAsDQo+ID4gKyDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoHNldGFkZHItPmFkZHIsDQo+ID4gKyDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoHNpemVvZihzdHJ1Y3Qgc29ja2FkZHJfY2FuKSk7DQo+ID4gKw0KPiA+
+ICsgwqAgwqAqc2FkZHJwID0gTlVMTDsNCj4gPiArIMKgIMKgcmV0dXJuIDA7DQoNCkRlYWQgY29k
+ZS4gDQoNCj4gPiArfQ0KPiA+ICsNCj4gPiArDQo+ID4gwqBpbnQgcnRjYW5fcmF3X3NvY2tldChz
+dHJ1Y3QgcnRkbV9mZCAqZmQsIGludCBwcm90b2NvbCkNCj4gPiDCoHsNCj4gPiDCoCDCoCDCoC8q
+IE9ubHkgcHJvdG9jb2wgQ0FOX1JBVyBpcyBzdXBwb3J0ZWQgKi8NCj4gPiBAQCAtNDA4LDQ2ICs0
+NjAsMjEgQEAgc3RhdGljIGludCBydGNhbl9yYXdfc2V0c29ja29wdChzdHJ1Y3QgcnRkbV9mZCAq
+ZmQsDQo+ID4gwqBpbnQgcnRjYW5fcmF3X2lvY3RsKHN0cnVjdCBydGRtX2ZkICpmZCwNCj4gPiDC
+oCDCoCDCoHVuc2lnbmVkIGludCByZXF1ZXN0LCB2b2lkICphcmcpDQo+ID4gwqB7DQo+ID4gKyDC
+oCDCoHN0cnVjdCBzb2NrYWRkcl9jYW4gc2FkZHIsICpzYWRkcnAgPSAmc2FkZHI7DQo+ID4gwqAg
+wqAgwqBpbnQgcmV0ID0gMDsNCj4gPiDCoA0KPiA+IMKgIMKgIMKgc3dpdGNoIChyZXF1ZXN0KSB7
+DQo+ID4gLSDCoCDCoGNhc2UgX1JUSU9DX0JJTkQ6IHsNCj4gPiAtIHN0cnVjdCBfcnRkbV9zZXRz
+b2NrYWRkcl9hcmdzICpzZXRhZGRyLCBzZXRhZGRyX2J1ZjsNCj4gPiAtIHN0cnVjdCBzb2NrYWRk
+cl9jYW4gKnNvY2thZGRyLCBzb2NrYWRkcl9idWY7DQo+ID4gLQ0KPiA+IC0gaWYgKHJ0ZG1fZmRf
+aXNfdXNlcihmZCkpIHsNCj4gPiAtIMKgIMKgLyogQ29weSBhcmd1bWVudCBzdHJ1Y3R1cmUgZnJv
+bSB1c2Vyc3BhY2UgKi8NCj4gPiAtIMKgIMKgaWYgKCFydGRtX3JlYWRfdXNlcl9vayhmZCwgYXJn
+LA0KPiA+IC0gwqAgc2l6ZW9mKHN0cnVjdCBfcnRkbV9zZXRzb2NrYWRkcl9hcmdzKSkgfHwNCj4g
+PiAtIHJ0ZG1fY29weV9mcm9tX3VzZXIoZmQsICZzZXRhZGRyX2J1ZiwgYXJnLA0KPiA+IC0gwqAg
+wqBzaXplb2Yoc3RydWN0IF9ydGRtX3NldHNvY2thZGRyX2FyZ3MpKSkNCj4gPiAtIHJldHVybiAt
+RUZBVUxUOw0KPiA+IMKgDQo+ID4gLSDCoCDCoHNldGFkZHIgPSAmc2V0YWRkcl9idWY7DQo+ID4g
+KyDCoCDCoENPTVBBVF9DQVNFKF9SVElPQ19CSU5EKToNCj4gPiArIMKgIMKgIMKgIMKgcmV0ID0g
+cnRjYW5fZ2V0X3NvY2thZGRyKGZkLCAmc2FkZHJwLCBhcmcpOw0KPiA+ICsgaWYgKHJldCkNCj4g
+PiArIHJldHVybiByZXQ7DQo+ID4gKyDCoCDCoCDCoCDCoGlmIChzYWRkcnAgPT0gTlVMTCkNCj4g
+PiArIHJldHVybiAtRUZBVUxUOw0KPiA+ICsgwqAgwqByZXQgPSBydGNhbl9yYXdfYmluZChmZCwg
+c2FkZHJwKTsNCj4gPiArIMKgIMKgYnJlYWs7DQo+IA0KPiBTZWVpbmcgdGhpcyB3ZWlyZCBpbmRl
+bnRpb24gKGV2ZW4gd2hlbiBpZ25vcmluZyB0aGUgbGVnYWN5IG9yaWdpbmFsDQo+IGluZGVudGlv
+biBvZiB0aGUgdGFyZ2V0IGZpbGUgYmVmb3JlIHRoZSBjaGFuZ2UpLCBJIHN1c3BlY3QgdGhlIHBh
+dGNoIHdhcw0KPiBtYW5nbGVkIGJ5IHlvdXIgZW1haWwgY2xpZW50Lg0KPiANCj4gPiDCoA0KPiA+
+IC0gwqAgwqAvKiBDaGVjayBzaXplICovDQo+ID4gLSDCoCDCoGlmIChzZXRhZGRyLT5hZGRybGVu
+ICE9IHNpemVvZihzdHJ1Y3Qgc29ja2FkZHJfY2FuKSkNCj4gPiAtIHJldHVybiAtRUlOVkFMOw0K
+PiA+IC0NCj4gPiAtIMKgIMKgLyogQ29weSBhcmd1bWVudCBzdHJ1Y3R1cmUgZnJvbSB1c2Vyc3Bh
+Y2UgKi8NCj4gPiAtIMKgIMKgaWYgKCFydGRtX3JlYWRfdXNlcl9vayhmZCwgYXJnLA0KPiA+IC0g
+wqAgc2l6ZW9mKHN0cnVjdCBzb2NrYWRkcl9jYW4pKSB8fA0KPiA+IC0gcnRkbV9jb3B5X2Zyb21f
+dXNlcihmZCwgJnNvY2thZGRyX2J1Ziwgc2V0YWRkci0+YWRkciwNCj4gPiAtIMKgIMKgc2l6ZW9m
+KHN0cnVjdCBzb2NrYWRkcl9jYW4pKSkNCj4gPiAtIHJldHVybiAtRUZBVUxUOw0KPiA+IC0gwqAg
+wqBzb2NrYWRkciA9ICZzb2NrYWRkcl9idWY7DQo+ID4gLSB9IGVsc2Ugew0KPiA+IC0gwqAgwqBz
+ZXRhZGRyID0gKHN0cnVjdCBfcnRkbV9zZXRzb2NrYWRkcl9hcmdzICopYXJnOw0KPiA+IC0gwqAg
+wqBzb2NrYWRkciA9IChzdHJ1Y3Qgc29ja2FkZHJfY2FuICopc2V0YWRkci0+YWRkcjsNCj4gPiAt
+IH0NCj4gPiAtDQo+ID4gLSAvKiBOb3csIGFsbCByZXF1aXJlZCBkYXRhIGFyZSBpbiBrZXJuZWwg
+c3BhY2UgKi8NCj4gPiAtIHJldCA9IHJ0Y2FuX3Jhd19iaW5kKGZkLCBzb2NrYWRkcik7DQo+ID4g
+LQ0KPiA+IC0gYnJlYWs7DQo+ID4gLSDCoCDCoH0NCj4gPiAtDQo+ID4gLSDCoCDCoGNhc2UgX1JU
+SU9DX1NFVFNPQ0tPUFQ6IHsNCj4gPiArIMKgIMKgQ09NUEFUX0NBU0UoX1JUSU9DX1NFVFNPQ0tP
+UFQpOiB7DQo+ID4gwqAgc3RydWN0IF9ydGRtX3NldHNvY2tvcHRfYXJncyAqc2V0b3B0Ow0KPiA+
+IMKgIHN0cnVjdCBfcnRkbV9zZXRzb2Nrb3B0X2FyZ3Mgc2V0b3B0X2J1ZjsNCj4gPiDCoA0KPiA+
+IEBAIC01MzIsNyArNTU5LDcgQEAgc3NpemVfdCBydGNhbl9yYXdfcmVjdm1zZyhzdHJ1Y3QgcnRk
+bV9mZCAqZmQsDQo+ID4gwqAgwqAgwqBzdHJ1Y3QgcnRjYW5fc29ja2V0ICpzb2NrID0gcnRkbV9m
+ZF90b19wcml2YXRlKGZkKTsNCj4gPiDCoCDCoCDCoHN0cnVjdCBzb2NrYWRkcl9jYW4gc2NhbjsN
+Cj4gPiDCoCDCoCDCoG5hbm9zZWNzX3JlbF90IHRpbWVvdXQ7DQo+ID4gLSDCoCDCoHN0cnVjdCBp
+b3ZlYyAqaW92ID0gKHN0cnVjdCBpb3ZlYyAqKW1zZy0+bXNnX2lvdjsNCj4gPiArIHN0cnVjdCBp
+b3ZlYyBpb3ZfZmFzdFtSVERNX0lPVl9GQVNUTUFYXSwgKmlvdjsNCj4gPiDCoCDCoCDCoHN0cnVj
+dCBpb3ZlYyBpb3ZfYnVmOw0KPiA+IMKgIMKgIMKgY2FuX2ZyYW1lX3QgZnJhbWU7DQo+ID4gwqAg
+wqAgwqBuYW5vc2Vjc19hYnNfdCB0aW1lc3RhbXAgPSAwOw0KPiA+IEBAIC01ODQsNiArNjExLDEw
+IEBAIHNzaXplX3QgcnRjYW5fcmF3X3JlY3Ztc2coc3RydWN0IHJ0ZG1fZmQgKmZkLA0KPiA+IMKg
+IGlvdiA9ICZpb3ZfYnVmOw0KPiA+IMKgIMKgIMKgfQ0KPiA+IMKgDQo+ID4gKyByZXQgPSBydGRt
+X2dldF9pb3ZlYyhmZCwgJmlvdiwgbXNnLCBpb3ZfZmFzdCk7DQo+ID4gKyBpZiAocmV0KQ0KPiA+
+ICsgcmV0dXJuIHJldDsNCj4gPiArDQo+ID4gwqAgwqAgwqAvKiBDaGVjayBzaXplIG9mIGJ1ZmZl
+ciAqLw0KPiA+IMKgIMKgIMKgaWYgKGlvdi0+aW92X2xlbiA8IHNpemVvZihjYW5fZnJhbWVfdCkp
+DQo+ID4gwqAgcmV0dXJuIC1FTVNHU0laRTsNCj4gPiBAQCAtNzY4LDcgKzc5OSw3IEBAIHNzaXpl
+X3QgcnRjYW5fcmF3X3NlbmRtc2coc3RydWN0IHJ0ZG1fZmQgKmZkLA0KPiA+IMKgIMKgIMKgc3Ry
+dWN0IHJ0Y2FuX3NvY2tldCAqc29jayA9IHJ0ZG1fZmRfdG9fcHJpdmF0ZShmZCk7DQo+ID4gwqAg
+wqAgwqBzdHJ1Y3Qgc29ja2FkZHJfY2FuICpzY2FuID0gKHN0cnVjdCBzb2NrYWRkcl9jYW4gKilt
+c2ctPm1zZ19uYW1lOw0KPiA+IMKgIMKgIMKgc3RydWN0IHNvY2thZGRyX2NhbiBzY2FuX2J1ZjsN
+Cj4gPiAtIMKgIMKgc3RydWN0IGlvdmVjICppb3YgPSAoc3RydWN0IGlvdmVjICopbXNnLT5tc2df
+aW92Ow0KPiA+ICsgc3RydWN0IGlvdmVjIGlvdl9mYXN0W1JURE1fSU9WX0ZBU1RNQVhdLCAqaW92
+Ow0KPiA+IMKgIMKgIMKgc3RydWN0IGlvdmVjIGlvdl9idWY7DQo+ID4gwqAgwqAgwqBjYW5fZnJh
+bWVfdCAqZnJhbWU7DQo+ID4gwqAgwqAgwqBjYW5fZnJhbWVfdCBmcmFtZV9idWY7DQo+ID4gQEAg
+LTg0MSw4ICs4NzIsMTIgQEAgc3NpemVfdCBydGNhbl9yYXdfc2VuZG1zZyhzdHJ1Y3QgcnRkbV9m
+ZCAqZmQsDQo+ID4gwqAgaW92ID0gJmlvdl9idWY7DQo+ID4gwqAgwqAgwqB9DQo+ID4gwqANCj4g
+PiArIHJldCA9IHJ0ZG1fZ2V0X2lvdmVjKGZkLCAmaW92LCBtc2csIGlvdl9mYXN0KTsNCj4gPiAr
+IGlmIChyZXQpDQo+ID4gKyByZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiDCoCDCoCDCoC8qIENoZWNr
+IHNpemUgb2YgYnVmZmVyICovDQo+ID4gLSDCoCDCoGlmIChpb3YtPmlvdl9sZW4gIT0gc2l6ZW9m
+KGNhbl9mcmFtZV90KSkNCj4gPiArIMKgIMKgaWYgKGlvdi0+aW92X2xlbiAhPSBzaXplb2YoY2Fu
+X2ZyYW1lX3QpKQ0KPiA+IMKgIHJldHVybiAtRU1TR1NJWkU7DQo+ID4gwqANCj4gPiDCoCDCoCDC
+oGZyYW1lID0gKGNhbl9mcmFtZV90ICopaW92LT5pb3ZfYmFzZTsNCj4gPiAtLSANCj4gPiAyLjEu
+MA0KPiANCj4gVGhhbmtzLA0KPiBKYW4NCj4gDQoNCg==
 
