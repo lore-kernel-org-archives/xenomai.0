@@ -1,7 +1,11 @@
-From: C Smith <csmithquestions@gmail.com>
-Subject: [PATCH 1/1] drivers/can: 32-bit userspace app support for rtcan
-Date: Fri,  5 Nov 2021 12:59:01 -0700
-Message-Id: <1636142341-2168-1-git-send-email-csmithquestions@gmail.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [dovetail][PATCH] x86: pipeline: Fix vector stall after vector error
+ handling
+Date: Mon,  8 Nov 2021 07:00:11 +0100
+Message-Id: <20211108060011.612786-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,181 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, rpm@xenomai.org
 
-Signed-off-by: C Smith <csmithquestions@gmail.com>
+Whenever an IRQ was handled for a vector being NULL or in one of the
+error states the interrupt was not acknowledged at the APIC. That can
+happen if a vector is cleaned up by one of the device drivers while
+there is still one IRQ in flight.
+
+This has two effects:
+  - If the affected vector is re-assigned later, it does not work, the
+    IRQ never makes its way to the CPU
+  - Interrupts with lower priority are no longer delivered to the CPU
+
+The problem was observed on a quite big Intel XEON machine where some
+vectors / irqs were temporary used and cleaned up and re-assigned
+later.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/can/rtcan_internal.h |   1 +
- kernel/drivers/can/rtcan_raw.c      | 102 +++++++++++++++++++++++-------------
- 2 files changed, 67 insertions(+), 36 deletions(-)
+ arch/x86/kernel/irq_pipeline.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/drivers/can/rtcan_internal.h b/kernel/drivers/can/rtcan_internal.h
-index b290005..d1f9d31 100644
---- a/kernel/drivers/can/rtcan_internal.h
-+++ b/kernel/drivers/can/rtcan_internal.h
-@@ -28,6 +28,7 @@
- 
- #include <linux/module.h>
- #include <rtdm/driver.h>
-+#include <rtdm/compat.h>
- 
- #ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG
- #define RTCAN_ASSERT(expr, func) \
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index 693b927..88a179f 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -215,6 +215,53 @@ EXPORT_SYMBOL_GPL(rtcan_loopback);
- #endif /* CONFIG_XENO_DRIVERS_CAN_LOOPBACK */
- 
- 
-+int rtcan_get_sockaddr(struct rtdm_fd *fd, struct sockaddr_can **saddrp,
-+		       const void *arg)
-+{
-+    struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
-+    int ret = 0;
+diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+index 48d9959bc11a..63de68141b21 100644
+--- a/arch/x86/kernel/irq_pipeline.c
++++ b/arch/x86/kernel/irq_pipeline.c
+@@ -239,6 +239,8 @@ void arch_handle_irq(struct pt_regs *regs, u8 vector, bool irq_movable)
+ 	} else {
+ 		desc = __this_cpu_read(vector_irq[vector]);
+ 		if (unlikely(IS_ERR_OR_NULL(desc))) {
++			__ack_APIC_irq();
 +
-+    if (!rtdm_fd_is_user(fd)) {
-+        setaddr = (struct _rtdm_setsockaddr_args *)arg;
-+        *saddrp = (struct sockaddr_can *)setaddr->addr;
-+    }
-+
-+#ifdef CONFIG_XENO_ARCH_SYS3264
-+    if (rtdm_fd_is_compat(fd)) {
-+        struct compat_rtdm_setsockaddr_args csetaddr_buff;
-+
-+        /* Copy argument structure from userspace */
-+        ret = rtdm_safe_copy_from_user(fd, &csetaddr_buff,
-+                        arg, sizeof(csetaddr_buff));
-+        if (ret)
-+            return ret;
-+
-+        /* Check size */
-+        if (csetaddr_buff.addrlen != sizeof(struct sockaddr_can))
-+            return -EINVAL;
-+
-+        return rtdm_safe_copy_from_user(fd, *saddrp,
-+                        compat_ptr(csetaddr_buff.addr),
-+                        sizeof(struct sockaddr_can));
-+    }
-+#endif
-+
-+    if (rtdm_safe_copy_from_user(fd, &setaddr_buf, arg,
-+                sizeof(struct _rtdm_setsockaddr_args)))
-+        return -EFAULT;
-+
-+    setaddr = &setaddr_buf;
-+
-+    /* Check size */
-+    if (setaddr->addrlen != sizeof(struct sockaddr_can))
-+        return -EINVAL;
-+
-+    return rtdm_safe_copy_from_user(fd, *saddrp,
-+                    setaddr->addr,
-+                    sizeof(struct sockaddr_can));
-+}
-+
-+
- int rtcan_raw_socket(struct rtdm_fd *fd, int protocol)
- {
-     /* Only protocol CAN_RAW is supported */
-@@ -408,46 +455,21 @@ static int rtcan_raw_setsockopt(struct rtdm_fd *fd,
- int rtcan_raw_ioctl(struct rtdm_fd *fd,
- 		    unsigned int request, void *arg)
- {
-+    struct sockaddr_can saddr, *saddrp = &saddr;
-     int ret = 0;
- 
-     switch (request) {
--    case _RTIOC_BIND: {
--	struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
--	struct sockaddr_can *sockaddr, sockaddr_buf;
--
--	if (rtdm_fd_is_user(fd)) {
--	    /* Copy argument structure from userspace */
--	    if (!rtdm_read_user_ok(fd, arg,
--				   sizeof(struct _rtdm_setsockaddr_args)) ||
--		rtdm_copy_from_user(fd, &setaddr_buf, arg,
--				    sizeof(struct _rtdm_setsockaddr_args)))
--		return -EFAULT;
--
--	    setaddr = &setaddr_buf;
--
--	    /* Check size */
--	    if (setaddr->addrlen != sizeof(struct sockaddr_can))
--		return -EINVAL;
--
--	    /* Copy argument structure from userspace */
--	    if (!rtdm_read_user_ok(fd, arg,
--				   sizeof(struct sockaddr_can)) ||
--		rtdm_copy_from_user(fd, &sockaddr_buf, setaddr->addr,
--				    sizeof(struct sockaddr_can)))
--		return -EFAULT;
--	    sockaddr = &sockaddr_buf;
--	} else {
--	    setaddr = (struct _rtdm_setsockaddr_args *)arg;
--	    sockaddr = (struct sockaddr_can *)setaddr->addr;
--	}
--
--	/* Now, all required data are in kernel space */
--	ret = rtcan_raw_bind(fd, sockaddr);
- 
-+    COMPAT_CASE(_RTIOC_BIND):
-+        ret = rtcan_get_sockaddr(fd, &saddrp, arg);
-+	if (ret)
-+	    return ret;
-+        if (saddrp == NULL)
-+	    return -EFAULT;
-+	ret = rtcan_raw_bind(fd, saddrp);
- 	break;
--    }
- 
--    case _RTIOC_SETSOCKOPT: {
-+    COMPAT_CASE(_RTIOC_SETSOCKOPT): {
- 	struct _rtdm_setsockopt_args *setopt;
- 	struct _rtdm_setsockopt_args setopt_buf;
- 
-@@ -532,7 +554,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
-     struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-     struct sockaddr_can scan;
-     nanosecs_rel_t timeout;
--    struct iovec *iov = (struct iovec *)msg->msg_iov;
-+    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
-     struct iovec iov_buf;
-     can_frame_t frame;
-     nanosecs_abs_t timestamp = 0;
-@@ -584,6 +606,10 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
- 	iov = &iov_buf;
-     }
- 
-+    ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
-+    if (ret)
-+        return ret;
-+
-     /* Check size of buffer */
-     if (iov->iov_len < sizeof(can_frame_t))
- 	return -EMSGSIZE;
-@@ -768,7 +794,7 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-     struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-     struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
-     struct sockaddr_can scan_buf;
--    struct iovec *iov = (struct iovec *)msg->msg_iov;
-+    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
-     struct iovec iov_buf;
-     can_frame_t *frame;
-     can_frame_t frame_buf;
-@@ -841,6 +867,10 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 	iov = &iov_buf;
-     }
- 
-+    ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
-+    if (ret)
-+        return ret;
-+
-     /* Check size of buffer */
-     if (iov->iov_len != sizeof(can_frame_t))
- 	return -EMSGSIZE;
+ 			if (desc == VECTOR_UNUSED) {
+ 				pr_emerg_ratelimited("%s: %d.%u No irq handler for vector\n",
+ 						__func__, smp_processor_id(),
 -- 
-2.1.0
+2.30.2
 
 
