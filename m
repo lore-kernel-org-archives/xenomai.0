@@ -1,11 +1,11 @@
-Date: Mon, 8 Nov 2021 13:05:14 +0100 (CET)
-From: Paal Tamas <paal_to@freemail.hu>
-Subject: Re: RTNET i.mx6 raw packets
-In-Reply-To: <d075a68d-5acf-811d-2272-107bf94cfcc3@ba-healthcare.com>
-Message-ID: <freemail.20211108130514.39067.1@fmxmldata00.freemail.hu>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [ANNOUNCE] Xenomai v3.2 has been released!
+Message-ID: <a014822d-0408-df1a-811c-01e7176a7aa5@siemens.com>
+Date: Mon, 8 Nov 2021 13:37:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +14,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Dear Jean-Baptiste and Jan,  Do you have any update on this topic?  Are you=
- sure that the issue I detected and described in my original mail (trying t=
-o use RAW_SOCKET via the fec in my i.mx6 using the mentioned xenomai patch,=
- while PING is working when the UDP layer is loaded) is the cause of the ac=
-tual fec driver implemention?I would be satisfied with that implemention if=
- we could make it work somehow.  Thank you vey much again,Tamas=20
-Jean-Baptiste Tredez <jean-baptiste.tredez@ba-healthcare.com> =C3=ADrta:
->We are working on a new patch for mainline kernel 5.10 + xenomai=20
->(previous patch was based on nxp kernel 5.4 + xenomai 3.1).
->
->This work is under test. I hope to send a new proposal by the end of the=
-=20
->month.
->
->Jean-Baptiste
->
->Le 07/10/2021 =C3=A0 10:12, Jan Kiszka a =C3=A9crit :
->> On 01.10.21 10:03, Paal Tamas via Xenomai wrote:
->>> Dear All, I would like to use RTNET with raw packets on the fec interfa=
-ce of my i.mx6 CPU. The purpose of the whole thing is to use the Soem ECAT =
-master.
->>> I am lost. I need your help. Xenomai_3.1, kernel 4.14.78.I am using thi=
-s rtnet fec patch:
->>> https://xenomai.org/pipermail/xenomai/2019-March/040580.html The fec in=
-terface is eth0.
->> There was a proposal to merge that change
->> (https://xenomai.org/pipermail/xenomai/2021-July/046000.html), and I
->> almost did but had to revert it again due to build issues
->> (https://xenomai.org/pipermail/xenomai/2021-August/046088.html). Any
->> news on this, Jean-Baptiste?
->>
->> Jan
->
+Hi all,
+
+after a longer (or careful) -rc phase, 3.2 is now officially "done".
+
+https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.2/xenomai-v3.2.tar.bz2
+
+The highlight of this release is surely the enabling of Dovetail
+support, thus adding support for newer kernels. Dovetail almost feels
+like I-pipe to the end user at this point, maybe except that the clocks
+of Linux and Xenomai are now in sync and interrupts are now all tracked
+in /proc/interrupts. Performance appear comparable to us, in
+micro-benchmarks sometimes even faster with Dovetail. But your mileage
+may vary. So please test and share your impressions!
+
+Let me try to summarize all the changes:
+
+366 commits, 483 files changed, 13836 insertions(+), 5559 deletions(-)
+ - support for Dovetail kernel patch
+ - production support up to kernel 5.10
+ - experimental support for kernel 5.15
+ - I-pipe support tested against 4.19 and 5.4
+ - support for recent gcc and glibc 
+ - y2038-enabling of our kernel ABI, almost done, just few calls
+   remaining
+ - add kernel config check utility
+ - gpio: use real-time clock timestamps by default
+ - RTDM gpio drivers for OMAP, ZynqMP and Intel Cherryview
+ - Add support of PEAK PCAN-PCIe FD cards family
+ - dropped x32 ABI support
+ - improved compat support (32-bit userland on 64-bit kernels)
+ - various fixes, specifically (but not only) for the testsuite
+
+Thanks a lot to all the contributors!
+
+Jan Kiszka <jan.kiszka@siemens.com> (135)
+Philippe Gerum <rpm@xenomai.org> (122)
+Florian Bezdeka <florian.bezdeka@siemens.com> (29)
+Hongzhan Chen <hongzhan.chen@intel.com> (20)
+Song Chen <chensong_2000@189.cn> (17)
+chensong <chensong@tj.kylinos.cn> (12)
+Vitaly Chikunov <vt@altlinux.org> (5)
+François LEGAL <devel@thom.fr.eu.org> (4)
+Fino Meng <fino.meng@linux.intel.com> (3)
+Quirin Gylstorff <quirin.gylstorff@siemens.com> (3)
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> (2)
+Greg Gallagher <greg@embeddedgreg.com> (2)
+Fabrice Fontaine <fontaine.fabrice@gmail.com> (1)
+Greg Gallagher via Xenomai <xenomai@xenomai.org> (1)
+Jan Leupold <leupold@rsi-elektrotechnik.de> (1)
+Joshua Karch <jkarch48@hotmail.com> (1)
+Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> (1)
+Matúš Olekšák <oleksak.matus@gmail.com> (1)
+Norbert Lange <nolange79@gmail.com> (1)
+Pintu Kumar <pintu@codeaurora.org> (1)
+Ronny Meeus <ronny.meeus@gmail.com> (1)
+Stephane Grosjean <s.grosjean@peak-system.com> (1)
+Stephen Freyder <steve@freyder.net> (1)
+Wolfgang Grandegger <wg@grandegger.com> (1)
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
+
