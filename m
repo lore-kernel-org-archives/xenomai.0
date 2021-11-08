@@ -1,11 +1,13 @@
-References: <879cd51a-f969-8710-0089-3871654aa2e3@siemens.com>
+References: <388405AD-717D-45F2-8504-515F3BE70117@gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Minor dovetail x86 oddity
-Date: Mon, 08 Nov 2021 08:58:09 +0100
-In-reply-to: <879cd51a-f969-8710-0089-3871654aa2e3@siemens.com>
-Message-ID: <87cznbt6vm.fsf@xenomai.org>
+Subject: Re: [EVL][dovetail] Minimum requirements for network communication
+ for RPi 4B and amd64
+Date: Mon, 08 Nov 2021 08:59:58 +0100
+In-reply-to: <388405AD-717D-45F2-8504-515F3BE70117@gmail.com>
+Message-ID: <878rxzt578.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>, "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>
+To: Deniz =?utf-8?Q?U=C4=9Fur?= <deniz343@gmail.com>
+Cc: xenomai@xenomai.org
 
 
-Hi Jan,
+Deniz U=C4=9Fur via Xenomai <xenomai@xenomai.org> writes:
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Greetings Xenomai community,
+>
+> For the past year I have been using EVL to develop some real-time apps
+> utilizing fast data acquisition through SPI interfaces on RPi 4B. I
+> then send the collected data through mainline network stack to a amd64
+> machine running Xenomai 3.1. The data I=E2=80=99m sending is sensitive and
+> cannot afford packet drops. By that I mean even if I use UDP I would
+> have to wait for next successful packet to continue.
 
-> Hi Philippe,
->
-> in this code
->
-> (arch/x86/kernel/apic/vector.c)
-> #ifdef CONFIG_SMP
->
-> static struct irq_desc *__setup_vector_irq(int vector)
-> {
-> 	int isairq = vector - ISA_IRQ_VECTOR(0);
->
-> 	/* Copy the cleanup vector if irqs are pipelined. */
-> 	if (IS_ENABLED(CONFIG_SMP) &&
-> 		vector == IRQ_MOVE_CLEANUP_VECTOR)
-> 		return irq_to_desc(IRQ_MOVE_CLEANUP_VECTOR); /* 1:1 mapping */
->
-> should it be "IS_ENABLED(CONFIG_IRQ_PIPELINE)"? Would only affect 
-> !CONFIG_IRQ_PIPELINE in practice then, I suppose.
->
-> Jan
+Providing a basic sliding window mechanism between UDP/packet peers may
+be an option.
 
-Correct, the current conditional is definitely wrong. Thanks for
-reviewing.
+> So in that case,
+> I guess, TCP without Nagle=E2=80=99s algorithm should be enough.
+>
 
--- 
+TCP with real-time capabilities would require to set limits on the time
+spent in recovery and retransmissions by construction, turning off
+packet coalescence may not be enough. With the current networking stack,
+this is more of a design issue than an implementation problem.
+
+> What I want to ask is how would one achieve a bare minimum but real-time =
+communication between two devices over network. I can convert my other Xeno=
+mai client to EVL. Any improvements over mainline network stack would be en=
+ough I believe.
+>
+
+As Paul McKenney put it once, "(hard) real-time is the start of a
+conversation rather than a complete requirement.". What would be the
+requirements in terms of expected bandwidth, worst case latency, jitter,
+packet ordering guarantee ?
+
+--=20
 Philippe.
 
