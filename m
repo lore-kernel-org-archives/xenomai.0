@@ -1,23 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: "switchtest" problem with recent 5.10 dovetail and distro-like
- kernel config
-Date: Thu, 7 Oct 2021 08:55:38 +0000
-Message-ID: <c2dca85df221c32b0685b33e554eec375cac4357.camel@siemens.com>
-References: <20210922122519.73e772a3@md1za8fc.ad001.siemens.net>
- <877df823dq.fsf@xenomai.org>
- <20210922162154.495db035@md1za8fc.ad001.siemens.net>
- <20210924153120.649e583f@md1za8fc.ad001.siemens.net>
- <f0ddf0d1-aede-4bd6-3fc3-3b8b1f8e42d8@siemens.com>
- <e88ca8e92a00bb649e1718ce0bf86d897e074ea8.camel@siemens.com>
- <20211005171806.770f8ca3@md1za8fc.ad001.siemens.net>
- <62d55224-0228-e8af-f88c-f2e1aa9d62a4@siemens.com>
- <a8597dc99f9b62ee561c2115b453825a0834949f.camel@siemens.com>
-In-Reply-To: <a8597dc99f9b62ee561c2115b453825a0834949f.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <EBD20BC1A4E8AD42900D752BD60F481F@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <5283f8ff-33bf-910d-25b5-044ea6a963ae@siemens.com>
+ <87a6iepm0x.fsf@xenomai.org>
+ <f636f600-cf0f-54fd-149d-003fc2d10c28@siemens.com>
+ <871r3ppq5w.fsf@xenomai.org>
+ <dba3602a-a80f-7628-6166-2e7bda09d177@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: dovetail: add prctl() call form
+Date: Tue, 09 Nov 2021 14:35:26 +0100
+In-reply-to: <dba3602a-a80f-7628-6166-2e7bda09d177@siemens.com>
+Message-ID: <87k0hhdwkn.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,223 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "henning.schild@siemens.com" <henning.schild@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIxLTEwLTA3IGF0IDA4OjUzICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBPbiBUaHUsIDIwMjEtMTAtMDcgYXQgMTA6MzcgKzAyMDAsIEphbiBL
-aXN6a2Egd3JvdGU6DQo+ID4gT24gMDUuMTAuMjEgMTc6MTgsIEhlbm5pbmcgU2NoaWxkIHdyb3Rl
-Og0KPiA+ID4gQW0gVHVlLCA1IE9jdCAyMDIxIDE2OjM4OjEyICswMjAwDQo+ID4gPiBzY2hyaWVi
-ICJCZXpkZWthLCBGbG9yaWFuIChUIFJEQSBJT1QgU0VTLURFKSINCj4gPiA+IDxmbG9yaWFuLmJl
-emRla2FAc2llbWVucy5jb20+Og0KPiA+ID4gDQo+ID4gPiA+IE9uIFR1ZSwgMjAyMS0xMC0wNSBh
-dCAxNjoyOSArMDIwMCwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3cm90ZToNCj4gPiA+ID4gPiBP
-biAyNC4wOS4yMSAxNTozMSwgSGVubmluZyBTY2hpbGQgdmlhIFhlbm9tYWkgd3JvdGU6ICANCj4g
-PiA+ID4gPiA+IEFtIFdlZCwgMjIgU2VwIDIwMjEgMTY6MjE6NTQgKzAyMDANCj4gPiA+ID4gPiA+
-IHNjaHJpZWIgSGVubmluZyBTY2hpbGQgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+
-Og0KPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiBBbSBXZWQsIDIyIFNlcCAyMDIxIDE0OjM2
-OjQ5ICswMjAwDQo+ID4gPiA+ID4gPiA+IHNjaHJpZWIgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5v
-bWFpLm9yZz46DQo+ID4gPiA+ID4gPiA+ICANCj4gPiA+ID4gPiA+ID4gPiBIZW5uaW5nIFNjaGls
-ZCB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4gd3JpdGVzOg0KPiA+ID4gPiA+ID4g
-PiA+ICANCj4gPiA+ID4gPiA+ID4gPiA+IEhpLA0KPiA+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+
-ID4gPiA+ID4gPiBnZXR0aW5nIHNpY2sgb2YgbWFpbnRhaW5pbmcgYSAic21hbGwiIGtlcm5lbCBj
-b25maWcgaQ0KPiA+ID4gPiA+ID4gPiA+ID4gd2FudGVkIHRvIHN3aXRjaCB0byBhIGNvbmZpZyBk
-ZXJpdmVkIGZyb20gdGhlIGRlYmlhbjExIDUuMTANCj4gPiA+ID4gPiA+ID4gPiA+IGtlcm5lbC4g
-QmFzaWNhbGx5IHRoYXQgY29uZmlnIHBsdXMgdGhlIGZldyBzd2l0Y2hlcyBjb21pbmcNCj4gPiA+
-ID4gPiA+ID4gPiA+IGluIHdpdGggZG92ZXRhaWwuDQo+ID4gPiA+ID4gPiA+ID4gPiANCj4gPiA+
-ID4gPiA+ID4gPiA+IFRoYXQgcGFzc2VkIGFsbCB0ZXN0cyBpbiBxZW11IGJ1dCBvbiBhIHJlYWwg
-bWFjaGluZSAoYmlnDQo+ID4gPiA+ID4gPiA+ID4gPiB4ZW9uIHdpdGggcmFpZDApIHRoZSAic3dp
-dGNodGVzdCIgaGFzIGFuIGlzc3VlLg0KPiA+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+
-ID4gPiAjIC9saWIveGVub21haS90ZXN0c3VpdGUvc3dpdGNodGVzdA0KPiA+ID4gPiA+ID4gPiA+
-ID4gPT0gVGVzdGluZyBGUFUgY2hlY2sgcm91dGluZXMuLi4NCj4gPiA+ID4gPiA+ID4gPiA+IHIw
-OiAxICE9IDINCj4gPiA+ID4gPiA+ID4gPiA+IHIxOiAxICE9IDINCj4gPiA+ID4gPiA+ID4gPiA+
-IHIyOiAxICE9IDINCj4gPiA+ID4gPiA+ID4gPiA+IHIzOiAxICE9IDINCj4gPiA+ID4gPiA+ID4g
-PiA+IHI0OiAxICE9IDINCj4gPiA+ID4gPiA+ID4gPiA+IHI1OiAxICE9IDINCj4gPiA+ID4gPiA+
-ID4gPiA+IHI2OiAxICE9IDINCj4gPiA+ID4gPiA+ID4gPiA+IHI3OiAxICE9IDINCj4gPiA+ID4g
-PiA+ID4gPiA+IHltbTA6IDEvMSAhPSAyLzINCj4gPiA+ID4gPiA+ID4gPiA+IHltbTE6IDEvMSAh
-PSAyLzINCj4gPiA+ID4gPiA+ID4gPiA+IHltbTI6IDEvMSAhPSAyLzINCj4gPiA+ID4gPiA+ID4g
-PiA+IHltbTM6IDEvMSAhPSAyLzINCj4gPiA+ID4gPiA+ID4gPiA+IHltbTQ6IDEvMSAhPSAyLzIN
-Cj4gPiA+ID4gPiA+ID4gPiA+IHltbTU6IDEvMSAhPSAyLzINCj4gPiA+ID4gPiA+ID4gPiA+IHlt
-bTY6IDEvMSAhPSAyLzINCj4gPiA+ID4gPiA+ID4gPiA+IHltbTc6IDEvMSAhPSAyLzINCj4gPiA+
-ID4gPiA+ID4gPiA+ID09IEZQVSBjaGVjayByb3V0aW5lczogT0suDQo+ID4gPiA+ID4gPiA+ID4g
-PiA9PSBUaHJlYWRzOiAuLi4gYSBsb3Qgb2YgdGhyZWFkcyAuLi4NCj4gPiA+ID4gPiA+ID4gPiA+
-IDMwLTE2IHJ0dW9fdWZwcDMwLTE3IHJ0dW9fdWZwcDMwLTE4IHJ0dW9fdWZwczMwLTE5DQo+ID4g
-PiA+ID4gPiA+ID4gPiBydHVvX3VmcHMzMC0yMCBydHVvX3VmcHBfdWZwczMwLTIxIHJ0dW9fdWZw
-cF91ZnBzMzAtMjINCj4gPiA+ID4gPiA+ID4gPiA+IHNsZWVwZXJfdWZwdGhyZWFkX2NyZWF0ZTog
-UmVzb3VyY2UgdGVtcG9yYXJpbHkgdW5hdmFpbGFibGUNCj4gPiA+ID4gPiA+ID4gPiA+IHBzMzEt
-MCBydGszMS0xIHJ0azMxLTIgcnRrX2ZwMzEtMyBydGtfZnAzMS00DQo+ID4gPiA+ID4gPiA+ID4g
-PiBydGtfZnBfdWZwcDMxLTUgcnRrX2ZwX3VmcHAzMS02IHJ0dXAzMS03IHJ0dXAzMS04DQo+ID4g
-PiA+ID4gPiA+ID4gPiBydHVwX3VmcHAzMS05IHJ0dXBfdWZwcDMxLTEwIHJ0dXMNCj4gPiA+ID4g
-PiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiA+ID4gZm9sbG93ZWQgYnkgb25seSAwcw0KPiA+ID4g
-PiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gPiBSVEh8LS0tLS0tLS0tY3B1fGN0eCBzd2l0
-Y2hlc3wtLS0tLS0tdG90YWwNCj4gPiA+ID4gPiA+ID4gPiA+IFJURHwgICAgICAgICAgIDB8ICAg
-ICAgICAgICAwfCAgICAgICAgICAgMA0KPiA+ID4gPiA+ID4gPiA+ID4gUlREfCAgICAgICAgICAg
-MXwgICAgICAgICAgIDB8ICAgICAgICAgICAwDQo+ID4gPiA+ID4gPiA+ID4gPiBSVER8ICAgICAg
-ICAgICAyfCAgICAgICAgICAgMHwgICAgICAgICAgIDANCj4gPiA+ID4gPiA+ID4gPiA+IFJURHwg
-ICAgICAgICAgIDN8ICAgICAgICAgICAwfCAgICAgICAgICAgMA0KPiA+ID4gPiA+ID4gPiA+ID4g
-UlREfCAgICAgICAgICAgNHwgICAgICAgICAgIDB8ICAgICAgICAgICAwDQo+ID4gPiA+ID4gPiA+
-ID4gPiBSVER8ICAgICAgICAgICA1fCAgICAgICAgICAgMHwgICAgICAgICAgIDANCj4gPiA+ID4g
-PiA+ID4gPiA+IFJURHwgICAgICAgICAgIDZ8ICAgICAgICAgICAwfCAgICAgICAgICAgMA0KPiA+
-ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gPiBTbyBpdCBnZXRzIGENCj4gPiA+ID4g
-PiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiA+ID4gc2xlZXBlcl91ZnB0aHJlYWRfY3JlYXRlOiBS
-ZXNvdXJjZSB0ZW1wb3JhcmlseSB1bmF2YWlsYWJsZQ0KPiA+ID4gPiA+ID4gPiA+ID4gDQo+ID4g
-PiA+ID4gPiA+ID4gPiBidXQgc3dhbGxvd3MgdGhhdCBhbmQga2VlcHMgZ29pbmcuIEkgdGhpbmsg
-dGhlcmUgbWlnaHQgYmUgYQ0KPiA+ID4gPiA+ID4gPiA+ID4gZmlyc3QgaXNzdWUgd2l0aCB0aGF0
-IGVycm9yIHJldHVybiBub3QgYmVpbmcgZGVhbHQgd2l0aC4NCj4gPiA+ID4gPiA+ID4gPiA+IA0K
-PiA+ID4gPiA+ID4gPiA+ID4gQSBzZWNvbmQgcnVuIGdldCB0aGUgInN3aXRjaHRlc3QiIHN0dWNr
-IGFmdGVyIGNydGwrYyB3aGlsZQ0KPiA+ID4gPiA+ID4gPiA+ID4gdGhlIGtlcm5lbCBzdGFydHMg
-Y29tcGxhaW5pbmcuDQo+ID4gPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiA+IFsgMTIy
-OS4wNzIwNTJdIGxpc3RfZGVsIGNvcnJ1cHRpb24uIHByZXYtPm5leHQgc2hvdWxkIGJlDQo+ID4g
-PiA+ID4gPiA+ID4gPiBmZmZmYjI0ZTQ2ZmIwNTQ4LCBidXQgd2FzIGZmZmZmZmZmOWE3MzU2YjAg
-WyAxMjI5LjA3MjA1M10NCj4gPiA+ID4gPiA+ID4gPiA+IC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUg
-XS0tLS0tLS0tLS0tLSBbIDEyMjkuMDcyMDU0XSBrZXJuZWwNCj4gPiA+ID4gPiA+ID4gPiA+IEJV
-RyBhdCBsaWIvbGlzdF9kZWJ1Zy5jOjUxISBbIDEyMjkuMDcyMDU0XSBpbnZhbGlkIG9wY29kZToN
-Cj4gPiA+ID4gPiA+ID4gPiA+IDAwMDAgWyMxXSBTTVAgUFRJIElSUV9QSVBFTElORSBbIDEyMjku
-MDcyMDU0XSBDUFU6IDMxIFBJRDoNCj4gPiA+ID4gPiA+ID4gPiA+IDE4NTcgQ29tbTogc3dpdGNo
-dGVzdCBUYWludGVkOiBHICAgICAgICAgICAgRQ0KPiA+ID4gPiA+ID4gPiA+ID4gNS4xMC42MS14
-ZW5vbWFpLTEgIzEgWyAxMjI5LjA3MjA1NV0gSGFyZHdhcmUgbmFtZTogc2VjcmV0IFsNCj4gPiA+
-ID4gPiA+ID4gPiA+IDEyMjkuMDcyMDU1XSBJUlEgc3RhZ2U6IExpbnV4IFsgMTIyOS4wNzIwNTVd
-IFJJUDoNCj4gPiA+ID4gPiA+ID4gPiA+IDAwMTA6X19saXN0X2RlbF9lbnRyeV92YWxpZC5jb2xk
-KzB4MzEvMHg0NyBbIDEyMjkuMDcyMDU2XQ0KPiA+ID4gPiA+ID4gPiA+ID4gQ29kZTogOTkgMzIg
-OWEgZTggNWYgMGQgZmYgZmYgMGYgMGIgNDggYzcgYzcgMDAgOWEgMzIgOWEgZTgNCj4gPiA+ID4g
-PiA+ID4gPiA+IDUxIDBkIGZmIGZmIDBmIDBiIDQ4IDg5IGIgWyAxMjI5LjA3MjA1N10gUlNQOg0K
-PiA+ID4gPiA+ID4gPiA+ID4gMDAxODpmZmZmYjI0ZTRiNWY3ZTMwIEVGTEFHUzogMDAwMTAwNDYg
-WyAxMjI5LjA3MjA2MV0gUkFYOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAwMDA1NyBS
-Qlg6IGZmZmZiMjRlNDZmYjA0YjAgUkNYOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAw
-MDAwMCBbIDEyMjkuMDcyMDYyXSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOg0KPiA+ID4gPiA+
-ID4gPiA+ID4gZmZmZmExMGU5ZmQ5YmJhMCBSREk6IGZmZmZhMTBlOWZkOTdiNjggWyAxMjI5LjA3
-MjA2NF0gUkJQOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAwMDAwMCBSMDg6IDAwMDAw
-MDAwMDAwMDAwMDEgUjA5Og0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAwMDAwZiBbIDEy
-MjkuMDcyMDY2XSBSMTA6IDAwMDAwMDAwMDAwMDAwMGYgUjExOg0KPiA+ID4gPiA+ID4gPiA+ID4g
-ZmZmZmExMGU5ZmQ5N2JkNiBSMTI6IDAwMDAwMDAwMDAwMDAwMDAgWyAxMjI5LjA3MjA2OV0gUjEz
-Og0KPiA+ID4gPiA+ID4gPiA+ID4gZmZmZmEwZmY0ODhjNzM4MCBSMTQ6IDAwMDAwMDAwMDAwMDAw
-MDAgUjE1Og0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAwMDAwMCBbIDEyMjkuMDcyMDcy
-XSBGUzogIDAwMDA3ZjU3ZTY4N2JiODAoMDAwMCkNCj4gPiA+ID4gPiA+ID4gPiA+IEdTOmZmZmZh
-MTBlOWZkODAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMCBbDQo+ID4gPiA+ID4gPiA+
-ID4gPiAxMjI5LjA3MjA3NF0gQ1M6IDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOg0KPiA+ID4g
-PiA+ID4gPiA+ID4gMDAwMDAwMDA4MDA1MDAzMyBbIDEyMjkuMDcyMDc2XSBDUjI6IDAwMDA1NTky
-MWJmYTkyMWMgQ1IzOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDEwNjJmZTAwMiBDUjQ6IDAw
-MDAwMDAwMDAxNzA2ZTAgWyAxMjI5LjA3MjA3OF0gQ2FsbA0KPiA+ID4gPiA+ID4gPiA+ID4gVHJh
-Y2U6IFsgMTIyOS4wNzIwODBdIHhudGltZXJfZGVzdHJveSsweDgxLzB4MTUwIFsNCj4gPiA+ID4g
-PiA+ID4gPiA+IDEyMjkuMDcyMDgyXSBfX3hudGhyZWFkX2NsZWFudXArMHgxZS8weDJhMCBbIDEy
-MjkuMDcyMDg0XQ0KPiA+ID4gPiA+ID4gPiA+ID4gY29iYWx0X2hhbmRsZV90YXNrZXhpdF9ldmVu
-dCsweDFkLzB4NDAgWyAxMjI5LjA3MjA4Nl0NCj4gPiA+ID4gPiA+ID4gPiA+IGRvX2V4aXQrMHhl
-MS8weGFiMCBbIDEyMjkuMDcyMDg4XSAgPw0KPiA+ID4gPiA+ID4gPiA+ID4gc2lnbmFsX3dha2Vf
-dXBfc3RhdGUrMHgyMy8weDQwIFsgMTIyOS4wNzIwOTBdDQo+ID4gPiA+ID4gPiA+ID4gPiBkb19n
-cm91cF9leGl0KzB4MzMvMHhhMCBbIDEyMjkuMDcyMDkyXQ0KPiA+ID4gPiA+ID4gPiA+ID4gX194
-NjRfc3lzX2V4aXRfZ3JvdXArMHgxNC8weDIwIFsgMTIyOS4wNzIxMTFdDQo+ID4gPiA+ID4gPiA+
-ID4gPiBkb19zeXNjYWxsXzY0KzB4M2YvMHg5MCBbIDEyMjkuMDcyMTEzXQ0KPiA+ID4gPiA+ID4g
-PiA+ID4gZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOSBbIDEyMjkuMDcy
-MTE1XQ0KPiA+ID4gPiA+ID4gPiA+ID4gUklQOiAwMDMzOjB4N2Y1N2U2OTQ4Njk5IFsgMTIyOS4w
-NzIxMTddIENvZGU6IDAwIDRjIDhiIDA1DQo+ID4gPiA+ID4gPiA+ID4gPiBmOSAyNyAwZiAwMCBi
-ZSBlNyAwMCAwMCAwMCBiYSAzYyAwMCAwMCAwMCBlYiAxMiAwZiAxZiA0NCAwMA0KPiA+ID4gPiA+
-ID4gPiA+ID4gMDAgODkgMCBbIDEyMjkuMDcyMTE5XSBSU1A6IDAwMmI6MDAwMDdmZmNmYmRhMDA3
-OCBFRkxBR1M6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDI0NiBPUklHX1JBWDogMDAwMDAwMDAw
-MDAwMDBlNyBbIDEyMjkuMDcyMTI4XSBSQVg6DQo+ID4gPiA+ID4gPiA+ID4gPiBmZmZmZmZmZmZm
-ZmZmZmRhIFJCWDogMDAwMDdmNTdlNmEzZDYxMCBSQ1g6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAw
-N2Y1N2U2OTQ4Njk5IFsgMTIyOS4wNzIxMzBdIFJEWDogMDAwMDAwMDAwMDAwMDAzYyBSU0k6DQo+
-ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDAwMDAwMDAwMGU3IFJESTogMDAwMDAwMDAwMDAwMDAwMSBb
-IDEyMjkuMDcyMTMyXSBSQlA6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDAwMDAwMDAwMDAxIFIw
-ODogZmZmZmZmZmZmZmZmZmY3MCBSMDk6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDAwMDAwMDAw
-MDAxIFsgMTIyOS4wNzIxMzRdIFIxMDogMDAwMDAwMDAwMDAwMDAwNSBSMTE6DQo+ID4gPiA+ID4g
-PiA+ID4gPiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDdmNTdlNmEzZDYxMCBbIDEyMjkuMDcy
-MTM2XSBSMTM6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDAwMDAwMDAwMDAyIFIxNDogMDAwMDdm
-NTdlNmEzZGFlOCBSMTU6DQo+ID4gPiA+ID4gPiA+ID4gPiAwMDAwMDAwMDAwMDAwMDAwIFsgMTIy
-OS4wNzIxMzhdIE1vZHVsZXMgbGlua2VkIGluOiBtZDQoRSkNCj4gPiA+ID4gPiA+ID4gPiA+IHNo
-YTUxMl9zc3NlMyhFKSBzaGE1MTJfZ2VuZXJpYyhFKSBjbWFjKEUpIG5sc191dGY4KEUpIGNpZnMp
-DQo+ID4gPiA+ID4gPiA+ID4gPiBbIDEyMjkuMDcyMTY5XSBtZWkoRSkgc291bmRjb3JlKEUpIHN5
-c2ltZ2JsdChFKSBzZyhFKQ0KPiA+ID4gPiA+ID4gPiA+ID4gZXZkZXYoRSkgaW9hdGRtYShFKSBq
-b3lkZXYoRSkgd2F0Y2hkb2coRSkgYWMpIFsNCj4gPiA+ID4gPiA+ID4gPiA+IDEyMjkuMDcyMTg1
-XSAtLS1bIGVuZCB0cmFjZSBhMWQxYWM2ODQ2OGU3NGYwIF0tLS0gWw0KPiA+ID4gPiA+ID4gPiA+
-ID4gMTIyOS4wNzIxODZdIFJJUDoNCj4gPiA+ID4gPiA+ID4gPiA+IDAwMTA6X19saXN0X2RlbF9l
-bnRyeV92YWxpZC5jb2xkKzB4MzEvMHg0NyBbIDEyMjkuMDcyMTg3XQ0KPiA+ID4gPiA+ID4gPiA+
-ID4gQ29kZTogOTkgMzIgOWEgZTggNWYgMGQgZmYgZmYgMGYgMGIgNDggYzcgYzcgMDAgOWEgMzIg
-OWEgZTgNCj4gPiA+ID4gPiA+ID4gPiA+IDUxIDBkIGZmIGZmIDBmIDBiIDQ4IDg5IGIgWyAxMjI5
-LjA3MjE4N10gUlNQOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAxODpmZmZmYjI0ZTRiNWY3ZTMwIEVG
-TEFHUzogMDAwMTAwNDYgWyAxMjI5LjA3MjE4OF0gUkFYOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAw
-MDAwMDAwMDAwMDA1NyBSQlg6IGZmZmZiMjRlNDZmYjA0YjAgUkNYOg0KPiA+ID4gPiA+ID4gPiA+
-ID4gMDAwMDAwMDAwMDAwMDAwMCBbIDEyMjkuMDcyMTg4XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAg
-UlNJOg0KPiA+ID4gPiA+ID4gPiA+ID4gZmZmZmExMGU5ZmQ5YmJhMCBSREk6IGZmZmZhMTBlOWZk
-OTdiNjggWyAxMjI5LjA3MjE4OV0gUkJQOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAw
-MDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDEgUjA5Og0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAw
-MDAwMDAwMDAwZiBbIDEyMjkuMDcyMTg5XSBSMTA6IDAwMDAwMDAwMDAwMDAwMGYgUjExOg0KPiA+
-ID4gPiA+ID4gPiA+ID4gZmZmZmExMGU5ZmQ5N2JkNiBSMTI6IDAwMDAwMDAwMDAwMDAwMDAgWyAx
-MjI5LjA3MjE5MF0gUjEzOg0KPiA+ID4gPiA+ID4gPiA+ID4gZmZmZmEwZmY0ODhjNzM4MCBSMTQ6
-IDAwMDAwMDAwMDAwMDAwMDAgUjE1Og0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDAwMDAwMDAw
-MCBbIDEyMjkuMDcyMTkwXSBGUzogIDAwMDA3ZjU3ZTY4N2JiODAoMDAwMCkNCj4gPiA+ID4gPiA+
-ID4gPiA+IEdTOmZmZmZhMTBlOWZkODAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMCBb
-DQo+ID4gPiA+ID4gPiA+ID4gPiAxMjI5LjA3MjE5MF0gQ1M6IDAwMTAgRFM6IDAwMDAgRVM6IDAw
-MDAgQ1IwOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDA4MDA1MDAzMyBbIDEyMjkuMDcyMTkx
-XSBDUjI6IDAwMDA1NTkyMWJmYTkyMWMgQ1IzOg0KPiA+ID4gPiA+ID4gPiA+ID4gMDAwMDAwMDEw
-NjJmZTAwMiBDUjQ6IDAwMDAwMDAwMDAxNzA2ZTAgWyAxMjI5LjA3MjE5MV0NCj4gPiA+ID4gPiA+
-ID4gPiA+IEZpeGluZyByZWN1cnNpdmUgZmF1bHQgYnV0IHJlYm9vdCBpcyBuZWVkZWQhDQo+ID4g
-PiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiA+IEkgd2lsbCBsb29rIGludG8gdGhhdCBl
-dmVudHVhbGx5LiBGb3Igbm93IGkganVzdCB3YW50ZWQgdG8NCj4gPiA+ID4gPiA+ID4gPiA+IHNo
-YXJlIHdoYXQgaSBoYXZlIHNvIGZhciwgbWF5YmUgc29tZW9uZSBrbm93cyB3aGF0IGlzIGdvaW5n
-DQo+ID4gPiA+ID4gPiA+ID4gPiBvbiBvciBjYW4gZ2l2ZSBhIGhpbnQuIGZ1bmN0aW9uIHRyYWNp
-bmcgd2FzIHdheSB0b28gdmVyYm9zZQ0KPiA+ID4gPiA+ID4gPiA+ID4gdG8gZmluZCB0aGUgcm9v
-dGNhdXNlIG9mIHRoYXQgRUJVU1kuDQo+ID4gPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+ID4gPiA+
-ID4gDQo+ID4gPiA+ID4gPiA+ID4gRUFHQUlOLCBzd2l0Y2h0ZXN0IHRyaWdnZXJzIHRoaXMgd2hl
-biBtYW55IENQVXMgYXJlIGF2YWlsYWJsZQ0KPiA+ID4gPiA+ID4gPiA+IGJ1dCB0aGUgc3lzdGVt
-IGhlYXAgaXMgdG9vIHNtYWxsIChub3QgZW5vdWdoIHNwYWNlIHRoZXJlIHRvDQo+ID4gPiA+ID4g
-PiA+ID4gY3JlYXRlIHRocmVhZCBUQ0JzIGFuZCBvdGhlciBjb3JlIG9iamVjdHMpLiBOb3JtYWxs
-eSwNCj4gPiA+ID4gPiA+ID4gPiBzd2l0Y2h0ZXN0IGV4aXRzIHByb3Blcmx5IGFmdGVyIGEgd2hp
-bGUuICANCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IE9rIG1heWJlIHRoYXQgY2hhbmdl
-ZCBrZXJuZWwgY29uZmlnIGRpZCBzaHJpbmsgdGhlIGF2YWlsYWJsZQ0KPiA+ID4gPiA+ID4gPiBo
-ZWFwLCB0aGFua3MgZm9yIHRoZSBoaW50Lg0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4g
-SWYgaXQgaXMgYW4gRUFHQUlOIGJlY2F1c2Ugb2YgdG9vIGxpdHRsZSByZXNvdXJjZXMsIG1heWJl
-IGl0DQo+ID4gPiA+ID4gPiA+IHNob3VsZCBrZWVwIHRyeWluZyB3aXRoIGxlc3MgYW5kIGxlc3Mg
-Q1BVcy4gQW5kIHNwaXQgYSB3YXJuaW5nDQo+ID4gPiA+ID4gPiA+IGxpa2UgImNvdWxkIG9ubHkg
-cnVuIG9uIDIwIG91dCBvZiAzMiBjb3JlcyIuDQo+ID4gPiA+ID4gPiA+IEF0IGxlYXN0IHRoYXQg
-d291bGQgYmUgbXkgZmlyc3QgaWRlYSBmb3IgYSBwYXRjaCBpbiBjYXNlIGl0IGlzDQo+ID4gPiA+
-ID4gPiA+IHRoYXQuICANCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gVGhlIHRlc3QgcnVucyBq
-dXN0IGZpbmUgd2hlbiByZWR1Y2luZyB0aGUgbnVtYmVyIG9mIGNvcmVzIHRvIHJ1bg0KPiA+ID4g
-PiA+ID4gb24uIEluIGZhY3QgaXQgd2FzIG9uZSB0b28gbWFueSA7KQ0KPiA+ID4gPiA+ID4gDQo+
-ID4gPiA+ID4gPiBnb29kDQo+ID4gPiA+ID4gPiAuL3N3aXRjaHRlc3QgLVQgNSAtLWNwdS1hZmZp
-bml0eT0wLTMwDQo+ID4gPiA+ID4gPiBiYWQgKHdoZXJlIGFmZmluaXR5IGluY2x1ZGVzIGFsbCBj
-cHVzKQ0KPiA+ID4gPiA+ID4gLi9zd2l0Y2h0ZXN0IC1UIDUgLS1jcHUtYWZmaW5pdHk9MC0zMQ0K
-PiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiA+IFRoZSBrZXJuZWwgc3BsYXQgbG9va3MgbGlr
-ZSBzb21lIGlzc3VlIG9uIHRoZSBlcnJvciBwYXRoDQo+ID4gPiA+ID4gPiA+ID4gd2hpY2ggbWln
-aHQgbm90IGhhdmUgYmVlbiBvYnNlcnZlZCB5ZXQgKG1heWJlIHRyaWdnZXJlZCBieSBeQw0KPiA+
-ID4gPiA+ID4gPiA+IHdoaWxlIHN3aXRjaHRlc3Qgd2FzIHVud2luZGluZykuICANCj4gPiA+ID4g
-PiA+ID4gDQo+ID4gPiA+ID4gPiA+IEkgc2F3IGV4YWN0bHkgdGhhdCBpbiBwcm9iYWJseSB0aHJl
-ZSBhdHRlbXB0cy4gRmlyc3Qgc3dpdGNodGVzdA0KPiA+ID4gPiA+ID4gPiBraWxsZWQgd2l0aCBj
-dHJsK2Mgd2hlbiB0aGUgMHMgY29tZSAuLi4gbmV2ZXIgYW55IGZ1biBrZXJuZWwNCj4gPiA+ID4g
-PiA+ID4gbWVzc2FnZS4gQnV0IGFsd2F5cyBmdW4ga2VybmVsIG1lc3NhZ2Ugd2hlbiB0aGUgc2Vj
-b25kIHJ1biB3YXMNCj4gPiA+ID4gPiA+ID4gaW50ZXJydXB0ZWQuIFNvIGkgd291bGQgYmUgdGVt
-cHRlZCB0byBjYWxsIHRoYXQgcmVwcm9kdWNpYmxlDQo+ID4gPiA+ID4gPiA+IGFuZCBub3QgYSBv
-bmUtdGltZSBiYWQgdGltaW5nLiAgDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IEJ1dCB3aGVu
-IHJ1bm5pbmcgdGhlIGJhZCBjYXNlIHR3byB0aW1lcyBpbiBhIHJvdywgaXQgd2lsbCBhbHdheXMN
-Cj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4ga2VybmVsIEJVRyBhdCBsaWIvbGlzdF9kZWJ1Zy5j
-OjUxIQ0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBFdmVuIHdoZW4gbm9uZSBvZiB0aGUgdHdv
-IHJ1bnMgd2FzIGludGVycnVwdGVkIGJ5IGN0cmwrYy4NCj4gPiA+ID4gPiA+ICANCj4gPiA+ID4g
-PiANCj4gPiA+ID4gPiBTbywgdGhlIG1haW4gaXNzdWUgd2FzIHNvbHZlZCBieSBpbmNyZWFzaW5n
-IHJlc291cmNlcywgYnV0IHdlIHN0aWxsDQo+ID4gPiA+ID4gaGF2ZSBhIHByb2JsZW0gd2l0aCBo
-YW5kbGluZyBlcnJvcnMgZ3JhY2VmdWxseSAtIGlzIHRoYXQgdGhlDQo+ID4gPiA+ID4gY29ycmVj
-dCBzdW1tYXJ5IG9mIHRoaXMgaXNzdWU/IE9yIHdoZXJlIGFyZSB3ZSBzdGFuZGluZyB3aXRoIHRo
-aXM/ICANCj4gPiA+IA0KPiA+ID4gQnkgcmVkdWNpbmcgdGhlIG51bWJlciBvZiB0aHJlYWRzLCBi
-dXQgeWVzIHRoYXQgaXNzdWUgd2FzICJ3b3JrZWQNCj4gPiA+IGFyb3VuZCIuIFRoZSBjcmFzaCBp
-cyBzb21ldGhpbmcgdGhhdCB3YXMgZm91bmQgYXMgd2VsbCBhbmQgaXMgc3RpbGwNCj4gPiA+IG9w
-ZW4sIGluIGZhY3QgcHJldHR5IGVhc3kgdG8gcmVwcm9kdWNlLg0KPiA+ID4gDQo+ID4gDQo+ID4g
-SG93IGNhbiBJIHJlcHJvZHVjZSB0aGF0Pw0KPiANCj4gSSB0cmllZCBpdCBhZ2FpbiBvbiB0aGUg
-c3lzdGVtIHRoYXQgSGVubmluZyB3YXMgdXNpbmcgd2hlbiByZXBvcnRpbmcNCj4gdGhlIHByb2Js
-ZW0uIFdlIGluY3JlYXNlZCBDT05GSUdfWEVOT19PUFRfREVCVUcgZnJvbSA1MTIgdG8gNDA5NiBp
-biB0aGUNCj4gbWVhbnRpbWUuIA0KPiANCj4gVGFrZW4gd2hpbGUgc3dpdGNodGVzdCBpcyBydW5u
-aW5nIG9uIHRoYXQgc3lzdGVtOg0KPiANCj4gIyBjYXQgL3Byb2MveGVub21haS9yZWdpc3RyeS91
-c2FnZSANCj4gNTIzLzQwOTYNCj4gDQo+IFNvIHdpdGggdGhlIG9sZCA1MTIgc2xvdHMgd2Ugd291
-bGQgcnVuIGludG8gYSBleGhhdXN0aW9uIG9uIHN1Y2ggYSBiaWcNCj4gc3lzdGVtLiBJTUhPIHRo
-YXQgc2hvdWxkIGJlIHRoZSByb290IGNhdXNlLg0KPiANCj4gQ29uZmlndXJhdGlvbiBwcm9ibGVt
-LCBubyBidWcuDQoNCkNvcnJlY3Rpb246IE1heWJlIHdlIGhhdmUgYSBwcm9ibGVtIGluIG9uZSBv
-ZiB0aGUgZXJyb3IgaGFuZGxpbmcgcGF0aGVzDQppbiBzd2l0Y2h0ZXN0Pw0KDQo+IA0KPiBIZW5u
-aW5nLCBwbGVhc2UgY29ycmVjdCBtZSBpZiB5b3UgZGlzYWdyZWUuDQo+IA0KPiA+IA0KPiA+IEph
-bg0KPiA+IA0KPiA+ID4gPiBNaWdodCB0aGF0IGJlIHJlbGF0ZWQgdG8gYSByZWdpc3RyeSBzbG90
-IGV4aGF1c3Rpb24/IE9uIHRoZSBhZmZlY3RlZA0KPiA+ID4gPiBzeXN0ZW0gd2UgY2hhbmdlZCBD
-T05GSUdfWEVOT19PUFRfREVCVUcgZnJvbSA0MDk2IGJhY2sgdG8gaXRzIGRlZmF1bHQNCj4gPiA+
-ID4gKDUxMikuIEp1c3QgYW4gaWRlYS4uLiBjdHJsK2MgbWlnaHQgc2tpcCB0aGUgcmVzb3VyY2Ug
-Y2xlYW51cC4NCj4gPiA+IA0KPiA+ID4gSSBoYXZlIG5vIHdoaWNoIHJlc3NvdXJjZSB3YXMgZXho
-YXVzdGVkLiBXZSBjb3VsZCBqdXN0IHRyeSB0aGF0IGtlcm5lbA0KPiA+ID4gd2l0aCB0aGUgYmln
-Z2VyIHJlZ2lzdHJ5IGFuZCBjb21wYXJlIHdpdGggdGhlIHNtYWxsZXIgb25lLiBUaGFua3MgZm9y
-DQo+ID4gPiB0aGUgaGludC4NCj4gPiA+IA0KPiA+ID4gSGVubmluZw0KPiA+ID4gIA0KPiA+ID4g
-PiBMb29raW5nIGludG8gL3Byb2MveGVub21haS9yZWdpc3RyeS91c2FnZSBtaWdodCBoZWxwIGlu
-IHN1Y2ggY2FzZS4NCj4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gSmFuDQo+ID4gPiA+
-ID4gIA0KPiA+ID4gPiANCj4gPiA+IA0KPiA+IA0KPiANCg0K
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 09.11.21 11:23, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> On 08.11.21 18:57, Philippe Gerum wrote:
+>>>>
+>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>>
+>>>>> Hi Philippe,
+>>>>>
+>>>>> this dovetail commit makes the pipeline go red, crashing the kernels
+>>>>> (e.g. [1][2]). I hope this is something we can quickly fix in dovetail,
+>>>>> maybe via a config option?
+>>>>>
+>>>>> Jan
+>>>>>
+>>>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/348118#L966
+>>>>> [2] https://source.denx.de/Xenomai/xenomai-images/-/jobs/348121#L1429
+>>>>
+>>>> Cobalt needs some update to cope with this now. I'll send a fix either
+>>>> way (dovetail or xenomai) tomorrow morning.
+>>>
+>>> This should be fixed in dovetail - API breakage. We can update Xenomai
+>>> later, along with enabling this feature again.
+>>>
+>> 
+>> We now have a change in the Dovetail tree which handles the fact that
+>> some Dovetail-based core might lag behind a bit API-wise regarding the
+>> new prctl-based call form. Since this simplifies the handling for any
+>> companion core in that particular case, this seems legitimate to add
+>> it. Tested on kvm-x86, -aarch64, and i.MX6-sabre with both Cobalt and
+>> EVL cores. Both test suites run properly, so far so good.
+>
+> I'm not against this change, but activating it is no Xenomai 3.2
+> material as it will break the ABI.
+
+No, the ABI has never been affected by this series, the old call form
+Cobalt uses is still supported, the new prctl() call form is a mere
+addition, not a replacement. The problem did only affect the kernel
+interface between the pipeline core and Cobalt, which is strictly a
+kernel API issue, not revealed by my tests mainly with Xenomai4/EVL
+unfortunately.
+
+> In addition, 3.2 was just released
+> and works fine with v5.10.76-dovetail. The next dovetail release should
+> not change this needlessly.
+>
+
+To clarify what might be a misunderstanding: the Dovetail releases
+content and schedule are not defined by Xenomai3. Besides, I don't think
+that Valgrind support for real-time applications should be seen as
+useless, the fact that Xenomai3 does not leverage this feature (yet?) is
+no reason to keep it out from the upstream Dovetail tree.
+
+> Again, just make it a feature and let the user/core enable it. Then we
+> can fork out stable-3.2 and let master gain this feature. All good.
+>
+>> 
+>> However, please note that kernel API stability is not guaranteed by
+>> Dovetail in general in the upstream tree. The reasons not to guarantee
+>> that are well known and documented. I'll do my very best not to break it
+>> mindlessly, I can make it easier to cope with such changes with config
+>> switches, but do not expect it to be stable over time. Any change which
+>> may introduce such breakage will be pushed to the mailing list first.
+>> 
+>
+> It's fine to make changes to newer kernels, but please refrain from
+> applying them to stable trees that Xenomai officially supports. That
+> would only enforce the creation of a stable dovetail branch, just for
+> Xenomai 3.x...
+>
+
+This is the way to go actually. Just like Xenomai4 is maintained in its
+own kernel tree not to constrain other Dovetail users, Xenomai3 should
+have its own kernel tree as well, cherry-picking the changes from some
+upstream Dovetail branch as one sees fit.
+
+The upstream Dovetail tree cannot be constrained by the release schedule
+of its users. Because Dovetail -stable means "current Dovetail feature
+set over the linux-stable tree", not "Dovetail core in feature freeze",
+moving this branch [1] to a separate, Xenomai3-specific Dovetail tree
+makes sense.
+
+[1] https://source.denx.de/Xenomai/linux-dovetail/-/tree/v5.10.y-dovetail
+
+-- 
+Philippe.
 
