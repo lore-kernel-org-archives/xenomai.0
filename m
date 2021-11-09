@@ -1,15 +1,8 @@
-Subject: Re: dovetail: add prctl() call form
-References: <5283f8ff-33bf-910d-25b5-044ea6a963ae@siemens.com>
- <87a6iepm0x.fsf@xenomai.org>
- <f636f600-cf0f-54fd-149d-003fc2d10c28@siemens.com>
- <871r3ppq5w.fsf@xenomai.org>
- <dba3602a-a80f-7628-6166-2e7bda09d177@siemens.com>
- <87k0hhdwkn.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5fae03f0-0129-05b6-fcce-0be07707a501@siemens.com>
-Date: Tue, 9 Nov 2021 19:27:44 +0100
+Subject: [linux-dovetail][PATCH] dovetail: Make syscall hook configurable
+Message-ID: <295f1454-5ffd-78e3-94af-0af5c04228fc@siemens.com>
+Date: Tue, 9 Nov 2021 20:00:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <87k0hhdwkn.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -24,74 +17,103 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 09.11.21 14:35, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 09.11.21 11:23, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 08.11.21 18:57, Philippe Gerum wrote:
->>>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> Hi Philippe,
->>>>>>
->>>>>> this dovetail commit makes the pipeline go red, crashing the kernels
->>>>>> (e.g. [1][2]). I hope this is something we can quickly fix in dovetail,
->>>>>> maybe via a config option?
->>>>>>
->>>>>> Jan
->>>>>>
->>>>>> [1] https://source.denx.de/Xenomai/xenomai-images/-/jobs/348118#L966
->>>>>> [2] https://source.denx.de/Xenomai/xenomai-images/-/jobs/348121#L1429
->>>>>
->>>>> Cobalt needs some update to cope with this now. I'll send a fix either
->>>>> way (dovetail or xenomai) tomorrow morning.
->>>>
->>>> This should be fixed in dovetail - API breakage. We can update Xenomai
->>>> later, along with enabling this feature again.
->>>>
->>>
->>> We now have a change in the Dovetail tree which handles the fact that
->>> some Dovetail-based core might lag behind a bit API-wise regarding the
->>> new prctl-based call form. Since this simplifies the handling for any
->>> companion core in that particular case, this seems legitimate to add
->>> it. Tested on kvm-x86, -aarch64, and i.MX6-sabre with both Cobalt and
->>> EVL cores. Both test suites run properly, so far so good.
->>
->> I'm not against this change, but activating it is no Xenomai 3.2
->> material as it will break the ABI.
-> 
-> No, the ABI has never been affected by this series, the old call form
-> Cobalt uses is still supported, the new prctl() call form is a mere
-> addition, not a replacement. The problem did only affect the kernel
-> interface between the pipeline core and Cobalt, which is strictly a
-> kernel API issue, not revealed by my tests mainly with Xenomai4/EVL
-> unfortunately.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The whole purpose of having this addition is using it. And that does
-make a lot of sense, as you described. So the plan is to activate AND
-use this feature in Xenomai 3.3 - with the aforementioned impact on the ABI.
+Avoid breaking existing companion cores by enabling prctl hooks
+unconditionally. Rather request converted cores to select
+DOVETAIL_USE_PRCTL_SYSCALL which automatically turns off the then no
+longer needed DOVETAIL_USE_SYSCALL_BIT (unless a core actually selects 
+both).
 
-Xenomai 3.2 will continue to use the old syscall range extension scheme,
-thus as no need and no desire to enable reporting of prctl calls to the
-core. Therefore, Dovetail should continue to refrain from doing that for
-Xenomai 3.2. The easiest way to achieve that is making the extension
-build-time configurable. Other cores can then still enable it for their
-*use*, and the fresh Xenomai 3.2 release will not break over the next
-dovetail patch revision (which is urgently needed do to the apic-ack fix).
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Makes sense?
+This fixes the breakage of Xenomai 3.2 over 5.10.y-dovetail[-rebase] and 
+also 5.15.y-dovetail-rebase.
 
-I really like to avoid avoid diverging developments again, but stability
-trumps features and would enforce this if we cannot find a better solution.
+ arch/arm/kernel/entry-common.S | 10 +++++++++-
+ kernel/Kconfig.dovetail        |  7 +++++++
+ kernel/dovetail.c              | 10 +++++++++-
+ 3 files changed, 25 insertions(+), 2 deletions(-)
 
-Thanks,
-Jan
-
+diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
+index 6d9719622daf..fa5aaf5dcb2b 100644
+--- a/arch/arm/kernel/entry-common.S
++++ b/arch/arm/kernel/entry-common.S
+@@ -259,12 +259,18 @@ local_restart:
+ 	add	scno, scno, #__OOB_SYSCALL_BIT	@ force in oob marker
+ 	b	fastcall_try
+ 1:
+-#endif	
++#endif
++#ifdef DOVETAIL_USE_PRCTL_SYSCALL
+ 	cmp	scno, #__NR_prctl
+ 	beq	fastcall_try
++#endif
++#ifdef DOVETAIL_USE_SYSCALL_BIT
+ 	ldr	r0, =#__OOB_SYSCALL_BIT
+ 	ands	r0, scno, r0
+ 	beq	slow_path
++#else
++	b	slow_path
++#endif
+ fastcall_try:
+ 	tst	r10, #_TLF_OOB
+ 	beq	slow_path
+@@ -285,8 +291,10 @@ fastcall_exit_check:
+ slow_path:
+ 	tst	r10, #_TLF_DOVETAIL
+ 	bne	pipeline_syscall
++#ifdef DOVETAIL_USE_PRCTL_SYSCALL
+ 	cmp	scno, #__NR_prctl
+ 	beq	pipeline_syscall
++#endif
+ 	ands	r0, scno, r0
+ 	beq	root_syscall
+ pipeline_syscall:
+diff --git a/kernel/Kconfig.dovetail b/kernel/Kconfig.dovetail
+index a21377296c18..debbf2fb8104 100644
+--- a/kernel/Kconfig.dovetail
++++ b/kernel/Kconfig.dovetail
+@@ -17,3 +17,10 @@ config DOVETAIL
+ 	  Activate this option if you want to enable the interface for
+ 	  running a secondary kernel side-by-side with Linux (aka
+ 	  "dual kernel" configuration).
++
++config DOVETAIL_USE_PRCTL_SYSCALL
++	bool
++
++config DOVETAIL_USE_SYSCALL_BIT
++	bool
++	default y if !DOVETAIL_USE_PRCTL_SYSCALL
+diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+index a59a21ac1303..8d918db92bc8 100644
+--- a/kernel/dovetail.c
++++ b/kernel/dovetail.c
+@@ -168,6 +168,8 @@ int __pipeline_syscall(struct pt_regs *regs)
+ 
+ static inline bool maybe_oob_syscall(unsigned int nr, struct pt_regs *regs)
+ {
++	bool result = false;
++
+ 	/*
+ 	 * Check whether the companion core might be interested in
+ 	 * @nr. Hand the request to the core if __OOB_SYSCALL_BIT is
+@@ -176,7 +178,13 @@ static inline bool maybe_oob_syscall(unsigned int nr, struct pt_regs *regs)
+ 	 * a regular in-band request, the core should tell us to
+ 	 * propagate it to the in-band handler eventually.
+ 	 */
+-	return nr == __NR_prctl || (nr & __OOB_SYSCALL_BIT);
++#ifdef DOVETAIL_USE_PRCTL_SYSCALL
++	result ||= nr == __NR_prctl;
++#endif
++#ifdef DOVETAIL_USE_SYSCALL_BIT
++	result ||= nr & __OOB_SYSCALL_BIT;
++#endif
++	return result;
+ }
+ 
+ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
