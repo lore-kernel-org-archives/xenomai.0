@@ -1,17 +1,17 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for
  CI builds
-Date: Wed, 10 Nov 2021 13:23:38 +0000
-Message-ID: <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
  <20211013121732.140595-4-florian.bezdeka@siemens.com>
  <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
-In-Reply-To: <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <40F27CA974CAD84AB1CD393127093892@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
+Date: Wed, 10 Nov 2021 14:42:35 +0100
 MIME-Version: 1.0
+In-Reply-To: <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,28 +20,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCAyMDIxLTEwLTEzIGF0IDE0OjIyICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMy4xMC4yMSAxNDoxNywgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEZvciBub3cgdGhl
-IGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgZGVtbyBhbmQgdGhlICJjaSBpbWFnZSIgaXMgdGhlDQo+
-ID4gcmVtb3ZlZCBzc2hkLXJlZ2VuLWtleXMuIFRoYXQgcmVkdWNlcyB0aGUgKGZpcnN0KSBib290
-IHRpbWUgZXNwZWNpYWxseQ0KPiA+IG9uIGxvdyBlbmQgQ0kgaGFyZHdhcmUuIEhlbHBzIHRvIHN0
-YXkgd2l0aGluIExBVkEgdGltZW91dHMuDQo+ID4gDQo+ID4gQ0kgYnVpbGRzIHdpbGwgbm93IHVz
-ZSB0aGF0IGZpbGUuDQo+ID4gDQo+IA0KPiBUb28gbWFueSBvcHRpb25zLiBDYW4ndCB3ZSBjb25z
-b2xpZGF0ZSBvdmVyIGEgc2luZ2xlIENJL0NUIHRoaW5nIHRoYXQNCj4gYWxzbyBpbmNsdWRlcyB0
-aGUgY2hhbmdlcyBmb3IgY2ktYm9hcmQ/DQoNCkl0IGhhcyBiZWVuIGEgd2hpbGUsIGJ1dCBjb21p
-bmcgYmFjayB0byB0aGlzIG5vdy4uLg0KDQpJIGFncmVlLCB3ZSBoYXZlIGEgbG90IG9mIHN1Y2gg
-b3B0aW9uIGZpbGVzLCBidXQgYWZ0ZXIgY2hlY2tpbmcgdGhlbQ0KYWxsIGFnYWluOiBUaGV5IGFs
-bCBoYXZlIGEgdW5pcXVlIHB1cnBvc2UuDQoNCldlIGRvbid0IGhhdmUgYSBzaW5nbGUgQ0kvQ1Qg
-b3B0aW9uIGZpbGUgYmVjYXVzZSB0aGUgcWVtdSB0ZXN0IHRhcmdldHMNCmFyZSBkaWZmZXJlbnQg
-aW4gY29tcGFyaXNvbiB0byB0aGUgcmVhbCBib2FyZCB0YXJnZXRzLiBXZSBkbyBub3QgYm9vdA0K
-dXAgYSAiZGlzayIvd2ljIGltYWdlLCB3ZSBwYXNzIGEga2VybmVsIGltYWdlIHRvIHFlbXUuDQoN
-CldpdGhvdXQgaW50cm9kdWNpbmcgb3B0LWNpLnltbCBJIHdvdWxkIGhhdmUgdG8gc3ByZWFkIHRo
-ZSBjaQ0Kb3B0aW1pemF0aW9ucyBpbnRvIHNldmVyYWwgYm9hcmQgc3BlY2lmaWMgY29uZmlncywg
-d2hpY2ggd291bGQgZW5hYmxlDQp0aGUgY2kgb3B0aW1pemF0aW9uIGZvciAicmVhbCBib2FyZCBi
-dWlsZHMiIGFzIHdlbGwuIFRoYXQgaXMgbm90IHdoYXQNCndlIHdhbnQuDQoNCkZ1cnRoZXIgaWRl
-YXM/DQoNCldoYXQgYWJvdXQgaW50cm9kdWNpbmcgYSBjaSBpbWFnZT8gRG9lcyB0aGF0IG1ha2Ug
-c2Vuc2U/IFRoZSBjb250ZW50DQp3b3VsZCBuZWFybHkgYmUgdGhlIHNhbWUgYXMgd2l0aGluIG9w
-dC1jaS55bWwgbm93Lg0KDQo+IA0KPiBKYW4NCj4gDQoNCg==
+On 10.11.21 14:23, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Wed, 2021-10-13 at 14:22 +0200, Jan Kiszka wrote:
+>> On 13.10.21 14:17, Florian Bezdeka wrote:
+>>> For now the difference between the demo and the "ci image" is the
+>>> removed sshd-regen-keys. That reduces the (first) boot time especially
+>>> on low end CI hardware. Helps to stay within LAVA timeouts.
+>>>
+>>> CI builds will now use that file.
+>>>
+>>
+>> Too many options. Can't we consolidate over a single CI/CT thing that
+>> also includes the changes for ci-board?
+> 
+> It has been a while, but coming back to this now...
+> 
+> I agree, we have a lot of such option files, but after checking them
+> all again: They all have a unique purpose.
+
+For users? I doubt that. We have
+
+- opt-ext4-gz.yml: It enables QEMU targets, and only those, to be
+  compatible with the LAVA test setup by compressing its ext4 images
+
+- opt-lava-test.yml: It switches wic-based targets, and that are only
+  the physical ones, to tarballs - again for LAVA purposes
+
+- opt-ci.yml: Removes packages, not relevant for the above images, and
+  only those
+
+I really see no separate purposes, just separate files. That is likely
+only for technical reasons.
+
+> 
+> We don't have a single CI/CT option file because the qemu test targets
+> are different in comparison to the real board targets. We do not boot
+> up a "disk"/wic image, we pass a kernel image to qemu.
+> 
+> Without introducing opt-ci.yml I would have to spread the ci
+> optimizations into several board specific configs, which would enable
+> the ci optimization for "real board builds" as well. That is not what
+> we want.
+> 
+> Further ideas?
+> 
+> What about introducing a ci image? Does that make sense? The content
+> would nearly be the same as within opt-ci.yml now.
+
+An image alone would not consolidate those changes above into a single
+one that can be controlled from a single opt-ci.yml file.
+
+We likely need a CI_BUILD bitbake variable that controls with bitbake
+logic the changes needed for CI, with bitbake conditionals.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
