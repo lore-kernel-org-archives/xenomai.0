@@ -1,16 +1,17 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Message-Id: <CD8ABA7C-A5F0-4D81-A31B-9B410793607A@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [EVL][dovetail] Minimum requirements for network communication
- for RPi 4B and amd64
-Date: Wed, 10 Nov 2021 16:00:14 +0300
-In-Reply-To: <87lf1wb7re.fsf@xenomai.org>
-References: <388405AD-717D-45F2-8504-515F3BE70117@gmail.com>
- <878rxzt578.fsf@xenomai.org> <1FAA0481-E7A9-4B32-B817-3B77D71D5323@gmail.com>
- <87lf1wb7re.fsf@xenomai.org>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for
+ CI builds
+Date: Wed, 10 Nov 2021 13:23:38 +0000
+Message-ID: <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
+References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
+ <20211013121732.140595-4-florian.bezdeka@siemens.com>
+ <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
+In-Reply-To: <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <40F27CA974CAD84AB1CD393127093892@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,134 +20,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-> 200-300 microseconds latency worst case is demanding, this is in the
-> same ballpark than the figures I obtained with RTnet/Xenomai3.1 =
-between
-> two mid-range SoCs (x86_64 and i.MX6Q) attached to a dedicated switch,
-> over a 100Mbit link.
-
-I assume this is only the communication latency and nothing else. As I =
-have to=20
-read SPI which takes 50-60 us, this measurements would be higher I =
-guess.
-
-> Going for a kernel bypass on the rpi4 by coupling DPDK and EVL would =
-at
-> the very least require a DPDK-enabled GENET driver, which does not =
-seem
-> to exist.
-
-That would=E2=80=99ve been splendid to be honest. I didn=E2=80=99t knew =
-DPDK till now but
-the premise sounds quite good.
-
-> Another option would be to check whether you could work directly at
-> packet level for now on the rpi4, based on the EVL networking
-> layer. This is experimental WIP, but this is readily capable of
-> exchanging raw packets between peers. See [1].
-
-If I understand correctly, EVL=E2=80=99s networking layer doesn=E2=80=99t =
-support TCP/UDP
-at the moment and I would have to implement the sliding window myself
-with raw packets. Correct?
-
-=E2=80=94
-
-To sum up, we don=E2=80=99t have many options considering RPi 4 with =
-kernel bypassing.
-
-> I don't think the common linux stack is an option with such =
-requirement
-> under load, especially since you would have to channel the network
-> traffic
-
-
-Along with that, EVL=E2=80=99s net stack not creating any improvement =
-for this kind of load.
-Considering these, 200-300 us is demanding but it=E2=80=99s as high as =
-it gets at the moment.
-
-> On 10 Nov 2021, at 12:48, Philippe Gerum <rpm@xenomai.org> wrote:
->=20
->=20
-> Deniz U=C4=9Fur <deniz343@gmail.com <mailto:deniz343@gmail.com>> =
-writes:
->=20
->>> Providing a basic sliding window mechanism between UDP/packet peers =
-may
->>> be an option.
->>=20
->> How so? Wouldn=E2=80=99t that introduce out-of-order packets?
->>=20
->=20
-> The recipient could stage the packets forming the current window,
-> reordering them on the fly based on some sequence number in those
-> datagrams (assuming you do trust the mac-level checksum), until that
-> window is deemed complete, at which point the window could be
-> acknowledged to the peer and released to the application in the same
-> move. The main issue would be to decide about when a window =
-transmission
-> is complete, depending on whether the peer is supposed to send data
-> continuously or not. If not, then this becomes a bit trickier.
->=20
->>> As Paul McKenney put it once, "(hard) real-time is the start of a
->>> conversation rather than a complete requirement.=E2=80=9D
->>=20
->> I agree, as with all things any improvement over mainline should be =
-incremental.
->>=20
->>> What would be the
->>> requirements in terms of expected bandwidth, worst case latency, =
-jitter,
->>> packet ordering guarantee ?
->>=20
->> Well, my application reads encoder data and transmits it to a host
->> computer for further calculations. Therefore, packet ordering must be
->> inline with how the data is read. Each packet consists of ~100 bytes
->> and I use 4 clients to send data. Worst case latency shouldn=E2=80=99t =
-be
->> higher than 0.2-0.3 ms, because that is my sampling time for each
->> client. I have no constraints on jitter, as I=E2=80=99m happy with =
-the jitter
->> I=E2=80=99m currently measuring (which is less than 5%).
->>=20
->> What can you recommend me with these in mind?
->>=20
->=20
-> 200-300 microseconds latency worst case is demanding, this is in the
-> same ballpark than the figures I obtained with RTnet/Xenomai3.1 =
-between
-> two mid-range SoCs (x86_64 and i.MX6Q) attached to a dedicated switch,
-> over a 100Mbit link.
->=20
-> I don't think the common linux stack is an option with such =
-requirement
-> under load, especially since you would have to channel the network
-> traffic from your real-time task(s) to the regular stack via an EVL
-> proxy element (or anything more complex that would fit) before it can
-> reach the wire.
->=20
-> Going for a kernel bypass on the rpi4 by coupling DPDK and EVL would =
-at
-> the very least require a DPDK-enabled GENET driver, which does not =
-seem
-> to exist.
->=20
-> Another option would be to check whether you could work directly at
-> packet level for now on the rpi4, based on the EVL networking
-> layer. This is experimental WIP, but this is readily capable of
-> exchanging raw packets between peers. See [1].
->=20
-> [1]
-> =
-https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/tidbits/oob-n=
-et-icmp.c =
-<https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/tidbits/oob-=
-net-icmp.c>
->=20
-> --=20
-> Philippe.
+T24gV2VkLCAyMDIxLTEwLTEzIGF0IDE0OjIyICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAxMy4xMC4yMSAxNDoxNywgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IEZvciBub3cgdGhl
+IGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgZGVtbyBhbmQgdGhlICJjaSBpbWFnZSIgaXMgdGhlDQo+
+ID4gcmVtb3ZlZCBzc2hkLXJlZ2VuLWtleXMuIFRoYXQgcmVkdWNlcyB0aGUgKGZpcnN0KSBib290
+IHRpbWUgZXNwZWNpYWxseQ0KPiA+IG9uIGxvdyBlbmQgQ0kgaGFyZHdhcmUuIEhlbHBzIHRvIHN0
+YXkgd2l0aGluIExBVkEgdGltZW91dHMuDQo+ID4gDQo+ID4gQ0kgYnVpbGRzIHdpbGwgbm93IHVz
+ZSB0aGF0IGZpbGUuDQo+ID4gDQo+IA0KPiBUb28gbWFueSBvcHRpb25zLiBDYW4ndCB3ZSBjb25z
+b2xpZGF0ZSBvdmVyIGEgc2luZ2xlIENJL0NUIHRoaW5nIHRoYXQNCj4gYWxzbyBpbmNsdWRlcyB0
+aGUgY2hhbmdlcyBmb3IgY2ktYm9hcmQ/DQoNCkl0IGhhcyBiZWVuIGEgd2hpbGUsIGJ1dCBjb21p
+bmcgYmFjayB0byB0aGlzIG5vdy4uLg0KDQpJIGFncmVlLCB3ZSBoYXZlIGEgbG90IG9mIHN1Y2gg
+b3B0aW9uIGZpbGVzLCBidXQgYWZ0ZXIgY2hlY2tpbmcgdGhlbQ0KYWxsIGFnYWluOiBUaGV5IGFs
+bCBoYXZlIGEgdW5pcXVlIHB1cnBvc2UuDQoNCldlIGRvbid0IGhhdmUgYSBzaW5nbGUgQ0kvQ1Qg
+b3B0aW9uIGZpbGUgYmVjYXVzZSB0aGUgcWVtdSB0ZXN0IHRhcmdldHMNCmFyZSBkaWZmZXJlbnQg
+aW4gY29tcGFyaXNvbiB0byB0aGUgcmVhbCBib2FyZCB0YXJnZXRzLiBXZSBkbyBub3QgYm9vdA0K
+dXAgYSAiZGlzayIvd2ljIGltYWdlLCB3ZSBwYXNzIGEga2VybmVsIGltYWdlIHRvIHFlbXUuDQoN
+CldpdGhvdXQgaW50cm9kdWNpbmcgb3B0LWNpLnltbCBJIHdvdWxkIGhhdmUgdG8gc3ByZWFkIHRo
+ZSBjaQ0Kb3B0aW1pemF0aW9ucyBpbnRvIHNldmVyYWwgYm9hcmQgc3BlY2lmaWMgY29uZmlncywg
+d2hpY2ggd291bGQgZW5hYmxlDQp0aGUgY2kgb3B0aW1pemF0aW9uIGZvciAicmVhbCBib2FyZCBi
+dWlsZHMiIGFzIHdlbGwuIFRoYXQgaXMgbm90IHdoYXQNCndlIHdhbnQuDQoNCkZ1cnRoZXIgaWRl
+YXM/DQoNCldoYXQgYWJvdXQgaW50cm9kdWNpbmcgYSBjaSBpbWFnZT8gRG9lcyB0aGF0IG1ha2Ug
+c2Vuc2U/IFRoZSBjb250ZW50DQp3b3VsZCBuZWFybHkgYmUgdGhlIHNhbWUgYXMgd2l0aGluIG9w
+dC1jaS55bWwgbm93Lg0KDQo+IA0KPiBKYW4NCj4gDQoNCg==
 
