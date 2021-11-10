@@ -1,17 +1,19 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images][PATCH v2 3/8] kas: Introduce kas option file for
  CI builds
+Date: Wed, 10 Nov 2021 14:02:54 +0000
+Message-ID: <c4245d02266352e04b7e6c433ae630389eb4416c.camel@siemens.com>
 References: <20211013121732.140595-1-florian.bezdeka@siemens.com>
  <20211013121732.140595-4-florian.bezdeka@siemens.com>
  <4904b421-4c6a-91d7-5ff0-14066517ab04@siemens.com>
  <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
-Date: Wed, 10 Nov 2021 14:42:35 +0100
-MIME-Version: 1.0
-In-Reply-To: <4f247c90da63fb084b9f95ecbc4c1c4d6443f010.camel@siemens.com>
-Content-Type: text/plain; charset=utf-8
+ <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
+In-Reply-To: <b6743cba-3df1-ba91-4f0c-e5defe1f33c0@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <30B72B6DC38C7545B84CA4B43FF57A16@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,64 +22,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 10.11.21 14:23, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> On Wed, 2021-10-13 at 14:22 +0200, Jan Kiszka wrote:
->> On 13.10.21 14:17, Florian Bezdeka wrote:
->>> For now the difference between the demo and the "ci image" is the
->>> removed sshd-regen-keys. That reduces the (first) boot time especially
->>> on low end CI hardware. Helps to stay within LAVA timeouts.
->>>
->>> CI builds will now use that file.
->>>
->>
->> Too many options. Can't we consolidate over a single CI/CT thing that
->> also includes the changes for ci-board?
-> 
-> It has been a while, but coming back to this now...
-> 
-> I agree, we have a lot of such option files, but after checking them
-> all again: They all have a unique purpose.
-
-For users? I doubt that. We have
-
-- opt-ext4-gz.yml: It enables QEMU targets, and only those, to be
-  compatible with the LAVA test setup by compressing its ext4 images
-
-- opt-lava-test.yml: It switches wic-based targets, and that are only
-  the physical ones, to tarballs - again for LAVA purposes
-
-- opt-ci.yml: Removes packages, not relevant for the above images, and
-  only those
-
-I really see no separate purposes, just separate files. That is likely
-only for technical reasons.
-
-> 
-> We don't have a single CI/CT option file because the qemu test targets
-> are different in comparison to the real board targets. We do not boot
-> up a "disk"/wic image, we pass a kernel image to qemu.
-> 
-> Without introducing opt-ci.yml I would have to spread the ci
-> optimizations into several board specific configs, which would enable
-> the ci optimization for "real board builds" as well. That is not what
-> we want.
-> 
-> Further ideas?
-> 
-> What about introducing a ci image? Does that make sense? The content
-> would nearly be the same as within opt-ci.yml now.
-
-An image alone would not consolidate those changes above into a single
-one that can be controlled from a single opt-ci.yml file.
-
-We likely need a CI_BUILD bitbake variable that controls with bitbake
-logic the changes needed for CI, with bitbake conditionals.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gV2VkLCAyMDIxLTExLTEwIGF0IDE0OjQyICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAxMC4xMS4yMSAxNDoyMywgQmV6ZGVrYSwgRmxvcmlhbiAoVCBSREEgSU9UIFNFUy1ERSkgd3Jv
+dGU6DQo+ID4gT24gV2VkLCAyMDIxLTEwLTEzIGF0IDE0OjIyICswMjAwLCBKYW4gS2lzemthIHdy
+b3RlOg0KPiA+ID4gT24gMTMuMTAuMjEgMTQ6MTcsIEZsb3JpYW4gQmV6ZGVrYSB3cm90ZToNCj4g
+PiA+ID4gRm9yIG5vdyB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBkZW1vIGFuZCB0aGUgImNp
+IGltYWdlIiBpcyB0aGUNCj4gPiA+ID4gcmVtb3ZlZCBzc2hkLXJlZ2VuLWtleXMuIFRoYXQgcmVk
+dWNlcyB0aGUgKGZpcnN0KSBib290IHRpbWUgZXNwZWNpYWxseQ0KPiA+ID4gPiBvbiBsb3cgZW5k
+IENJIGhhcmR3YXJlLiBIZWxwcyB0byBzdGF5IHdpdGhpbiBMQVZBIHRpbWVvdXRzLg0KPiA+ID4g
+PiANCj4gPiA+ID4gQ0kgYnVpbGRzIHdpbGwgbm93IHVzZSB0aGF0IGZpbGUuDQo+ID4gPiA+IA0K
+PiA+ID4gDQo+ID4gPiBUb28gbWFueSBvcHRpb25zLiBDYW4ndCB3ZSBjb25zb2xpZGF0ZSBvdmVy
+IGEgc2luZ2xlIENJL0NUIHRoaW5nIHRoYXQNCj4gPiA+IGFsc28gaW5jbHVkZXMgdGhlIGNoYW5n
+ZXMgZm9yIGNpLWJvYXJkPw0KPiA+IA0KPiA+IEl0IGhhcyBiZWVuIGEgd2hpbGUsIGJ1dCBjb21p
+bmcgYmFjayB0byB0aGlzIG5vdy4uLg0KPiA+IA0KPiA+IEkgYWdyZWUsIHdlIGhhdmUgYSBsb3Qg
+b2Ygc3VjaCBvcHRpb24gZmlsZXMsIGJ1dCBhZnRlciBjaGVja2luZyB0aGVtDQo+ID4gYWxsIGFn
+YWluOiBUaGV5IGFsbCBoYXZlIGEgdW5pcXVlIHB1cnBvc2UuDQo+IA0KPiBGb3IgdXNlcnM/IEkg
+ZG91YnQgdGhhdC4gV2UgaGF2ZQ0KPiANCj4gLSBvcHQtZXh0NC1nei55bWw6IEl0IGVuYWJsZXMg
+UUVNVSB0YXJnZXRzLCBhbmQgb25seSB0aG9zZSwgdG8gYmUNCj4gICBjb21wYXRpYmxlIHdpdGgg
+dGhlIExBVkEgdGVzdCBzZXR1cCBieSBjb21wcmVzc2luZyBpdHMgZXh0NCBpbWFnZXMNCg0KSXQn
+cyB0aGUgZ2l0bGFiLWNpIGNvbmZpZyB0aGF0IGxpbWl0cyBpdCB0byBxZW11IHRhcmdldHMgY3Vy
+cmVudGx5LiBCdXQNCnRoYXQgY291bGQgZXZvbHZlIHdpdGggbmV3IHRhcmdldHMgYmVpbmcgYWRk
+ZWQuIA0KDQo+IA0KPiAtIG9wdC1sYXZhLXRlc3QueW1sOiBJdCBzd2l0Y2hlcyB3aWMtYmFzZWQg
+dGFyZ2V0cywgYW5kIHRoYXQgYXJlIG9ubHkNCj4gICB0aGUgcGh5c2ljYWwgb25lcywgdG8gdGFy
+YmFsbHMgLSBhZ2FpbiBmb3IgTEFWQSBwdXJwb3Nlcw0KPiANCg0KVGhpcyBvbmUgd2FzIHJlbmFt
+ZWQgaW4gb25lIG9mIHRoZSBwcmV2aW91cyBwYXRjaGVzIHRvIG9wdC1jaS1ib2FyZC55bWwNCnRv
+IG1ha2Ugc3VyZSB0aGF0IHRoaXMgb25lIGlzIHVzZWZ1bCBmb3IgcmVhbCBDSSB0YXJnZXRzIChv
+bmx5KS4gSXQncw0KdXAgdG8gdGhlIENJIGNvbmZpZ3VyYXRpb24gdG8gYWRkIGl0IHRvIHRoZSBs
+aXN0IG9mIHVzZWQgb3B0aW9ucyBmb3INCm5ldyBidWlsZC90ZXN0IHRhc2tzLg0KDQo+IC0gb3B0
+LWNpLnltbDogUmVtb3ZlcyBwYWNrYWdlcywgbm90IHJlbGV2YW50IGZvciB0aGUgYWJvdmUgaW1h
+Z2VzLCBhbmQNCj4gICBvbmx5IHRob3NlDQoNClRoYXQncyB0aGUgbmV3IG9uZSBpbnRyb2R1Y2Vk
+IGhlcmUuIENvbGxlY3Rpbmcgb25seSBDSSBzcGVjaWZpYyB0aGluZ3MuDQpOb3RoaW5nIGVsc2Uu
+DQoNCj4gDQo+IEkgcmVhbGx5IHNlZSBubyBzZXBhcmF0ZSBwdXJwb3NlcywganVzdCBzZXBhcmF0
+ZSBmaWxlcy4gVGhhdCBpcyBsaWtlbHkNCj4gb25seSBmb3IgdGVjaG5pY2FsIHJlYXNvbnMuDQo+
+IA0KPiA+IA0KPiA+IFdlIGRvbid0IGhhdmUgYSBzaW5nbGUgQ0kvQ1Qgb3B0aW9uIGZpbGUgYmVj
+YXVzZSB0aGUgcWVtdSB0ZXN0IHRhcmdldHMNCj4gPiBhcmUgZGlmZmVyZW50IGluIGNvbXBhcmlz
+b24gdG8gdGhlIHJlYWwgYm9hcmQgdGFyZ2V0cy4gV2UgZG8gbm90IGJvb3QNCj4gPiB1cCBhICJk
+aXNrIi93aWMgaW1hZ2UsIHdlIHBhc3MgYSBrZXJuZWwgaW1hZ2UgdG8gcWVtdS4NCj4gPiANCj4g
+PiBXaXRob3V0IGludHJvZHVjaW5nIG9wdC1jaS55bWwgSSB3b3VsZCBoYXZlIHRvIHNwcmVhZCB0
+aGUgY2kNCj4gPiBvcHRpbWl6YXRpb25zIGludG8gc2V2ZXJhbCBib2FyZCBzcGVjaWZpYyBjb25m
+aWdzLCB3aGljaCB3b3VsZCBlbmFibGUNCj4gPiB0aGUgY2kgb3B0aW1pemF0aW9uIGZvciAicmVh
+bCBib2FyZCBidWlsZHMiIGFzIHdlbGwuIFRoYXQgaXMgbm90IHdoYXQNCj4gPiB3ZSB3YW50Lg0K
+PiA+IA0KPiA+IEZ1cnRoZXIgaWRlYXM/DQo+ID4gDQo+ID4gV2hhdCBhYm91dCBpbnRyb2R1Y2lu
+ZyBhIGNpIGltYWdlPyBEb2VzIHRoYXQgbWFrZSBzZW5zZT8gVGhlIGNvbnRlbnQNCj4gPiB3b3Vs
+ZCBuZWFybHkgYmUgdGhlIHNhbWUgYXMgd2l0aGluIG9wdC1jaS55bWwgbm93Lg0KPiANCj4gQW4g
+aW1hZ2UgYWxvbmUgd291bGQgbm90IGNvbnNvbGlkYXRlIHRob3NlIGNoYW5nZXMgYWJvdmUgaW50
+byBhIHNpbmdsZQ0KPiBvbmUgdGhhdCBjYW4gYmUgY29udHJvbGxlZCBmcm9tIGEgc2luZ2xlIG9w
+dC1jaS55bWwgZmlsZS4NCj4gDQo+IFdlIGxpa2VseSBuZWVkIGEgQ0lfQlVJTEQgYml0YmFrZSB2
+YXJpYWJsZSB0aGF0IGNvbnRyb2xzIHdpdGggYml0YmFrZQ0KPiBsb2dpYyB0aGUgY2hhbmdlcyBu
+ZWVkZWQgZm9yIENJLCB3aXRoIGJpdGJha2UgY29uZGl0aW9uYWxzLg0KDQpDdXJyZW50bHkgd2Ug
+Y2FuIGRlZmluZSBuZXcgQ0kgdGFza3Mvam9icyBieSBqdXN0IGFkZGluZyB0aGVtIHRvIHRoZQ0K
+KGdpdGxhYikgQ0kgY29uZmlnLCBzZWxlY3RpbmcgdGhlIHJpZ2h0IG9wdGlvbiBmaWxlcyBmb3Ig
+ZWFjaCB0YXNrLiBBcw0Kd2UgaGF2ZSBhdCBsZWFzdCBib2FyZCBzcGVjaWZpYyBhZGp1c3RtZW50
+czogV291bGRuJ3QgdGhhdCBtZWFuIHRoYXQNCmFkZGluZyBuZXcgdGFyZ2V0cyB3b3VsZCByZXF1
+aXJlIHJlY2lwZSAvIGJpdGJha2UgYWRqdXN0bWVudHM/DQoNClB1cnBvc2Ugb2YgdGhpcyBzZXJp
+ZXMgd2FzIG1vdmluZyB1cCB0byBEZWJpYW4gMTEuIE1heWJlIHdlIGNvdWxkIGF2b2lkDQp0aGlz
+IHF1aXRlIGJpZyByZWZhY3RvcmluZyBoZXJlIGJ5IGp1c3QgcmVtb3ZpbmcgdGhlIENJIG9wdGlt
+aXphdGlvbnMNCmFnYWluLCBhbmQgcG9zdHBvbmUgdGhhdD8NCg0KPiANCj4gSmFuDQo+IA0KDQo=
 
