@@ -1,15 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: Trying Xenomai3.2 and has some web browser problem
-Date: Thu, 11 Nov 2021 09:08:46 +0000
-Message-ID: <6bd9fd83a953df456c4864fdf030eb918cf6e644.camel@siemens.com>
+From: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
+Subject: RE: Trying Xenomai3.2 and has some web browser problem
+Date: Thu, 11 Nov 2021 10:58:50 +0000
+Message-ID: <TY2PR04MB38382DD227A50372A8E60025AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
 References: <TY2PR04MB3838919175C4210652E4FCD4AA939@TY2PR04MB3838.apcprd04.prod.outlook.com>
  <ae935e63-ad36-7d98-da3a-7046948ab38a@siemens.com>
  <TY2PR04MB3838BC44901BBCE5A33A14A8AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
-In-Reply-To: <TY2PR04MB3838BC44901BBCE5A33A14A8AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1359ECC7EE4DDD43BF5F30919DD458B5@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <6bd9fd83a953df456c4864fdf030eb918cf6e644.camel@siemens.com>
+In-Reply-To: <6bd9fd83a953df456c4864fdf030eb918cf6e644.camel@siemens.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,107 +19,233 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "andouyuuta@yamaha-motor.co.jp" <andouyuuta@yamaha-motor.co.jp>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-T24gVGh1LCAyMDIxLTExLTExIGF0IDA0OjQ2ICswMDAwLCBBbmRvIFl1dGEgdmlhIFhlbm9tYWkg
-d3JvdGU6DQo+IEhlbGxvIEphbg0KPiANCj4gVGhhbmtzIGZvciB0aGUgcmVwbHkuDQo+IA0KPiA+
-IHg4Nj8NCj4gDQo+IFNvcnJ5IEkgZm9yZ290IHRvIHdyaXRlIHRoZSBDUFUgaW5mby4NCj4gTXkg
-Q1BVIGlzIHg4Nl82NCgxMXRoIEdlbiBJbnRlbCBpNSkNCj4gDQo+ID4gQ2FuIHlvdSBnZW5lcmF0
-ZSBhIHRyYWNlIChzdHJhY2Ugb3IgbWF5YmUgZXZlbiBrZXJuZWwgZXZlbnQgdHJhY2UpIG9mIGJv
-dGggZ29vZCBhbiBiYWQgY2FzZXM/IFRvIHNlZSB3aGVyZSB0aGUgYmVoYXZpb3VyIGRpdmVyZ2Vz
-Lg0KPiA+IE9yIGlzIHRoZXJlIHNvbWV0aGluZyB0aGF0IHJlcHJvZHVjZXMgdGhpcyB3aXRob3V0
-IHJlcXVpcmluZyBhIGZ1bGwgVUkgZm9yIHRoZSBicm93c2VyPw0KPiANCj4gWWVzLCBJIGZvdW5k
-IHRoYXQgdGhlIHNhbWUgcGhlbm9tZW5vbiBvY2N1cnMgd2hlbiBJIHNwZWNpZnkgIi0tZGlzYWJs
-ZS1ncHUiIGluIGhlYWRsZXNzIG1vZGUgY2hyb21lLg0KPiANCj4gVGhlcmUgYXJlIHRoZSBjb21t
-YW5kIHRvIHJlcHJvZHVjZS4NCj4gMSBjaHJvbWUgLS1oZWFkbGVzcyAtLWRpc2FibGUtZ3B1IGh0
-dHBzOi8vd3d3Lmdvb2dsZS5jb20gKGluIGRvdmV0YWlsIGJyb3dzZXIgY3Jhc2gsIGluIGdlbmVy
-aWMgd29ya3MgcHJvcGVybHkpDQo+IDIgY2hyb21lIC0taGVhZGxlc3MgLS1kaXNhYmxlLWdwdSAt
-LWRpc2FibGUtc2VjY29tcC1maWx0ZXItc2FuZGJveCBodHRwczovL3d3dy5nb29nbGUuY29tIChk
-aXNhYmxlIHNhbmRib3gsIHRoaXMgd29ya3MgaW4gYm90aCBkb3ZldGFpbCBhbmQgZ2VuZXJpYyBi
-dXQgdW5zYWZlKQ0KPiANCj4gQXR0YWNoZWQgZmlsZXMgYXJlIHRoZSByZXN1bHRzIG9mIHN0cmFj
-ZSBhbmQga2VybmVsIGV2ZW50IHRyYWNlIGluIGhlYWRsZXNzIG1vZGUgYWJvdmUuDQo+IFRoZXkg
-YXJlIGdlbmVyaWMsIGRvdmV0YWlsIHdpdGggc2FuZGJveCBlbmFibGVkLCBhbmQgZG92ZXRhaWwg
-d2l0aCBzYW5kYm94IGRpc2FibGVkLg0KDQpTYW5kYm94IGVuYWJsZWQ6DQpzdGF0KCIvc3lzL2Zz
-L2Nncm91cC9jcHVzZXQvY2hyb21lIiwgMHg3ZjkwNjhhOTg3YzApID0gLTEgRU5PU1lTIChGdW5j
-dGlvbiBub3QgaW1wbGVtZW50ZWQpDQoNClNhbmRib3ggZGlzYWJsZWQ6DQpzdGF0KCIvc3lzL2Zz
-L2Nncm91cC9jcHVzZXQvY2hyb21lIiwgMHg3ZjllM2EwM2E3YzApID0gLTEgRU5PRU5UIChObyBz
-dWNoIGZpbGUgb3IgZGlyZWN0b3J5KQ0KDQpZb3UgaGF2ZSB1cGRhdGVkIHRoZSBrZXJuZWwsIGJ1
-dCBkaWQgeW91IHVwZGF0ZSB5b3VyIGxpYnNlY2NvbXANCnNlY3VyaXR5IHByb2ZpbGUgYXMgd2Vs
-bD8gKElPVzogSGF2ZSB5b3UgdXBkYXRlZCB5b3VyIHVzZXJzcGFjZSBhcw0Kd2VsbD8pDQoNCkkg
-a25vdyBhYm91dCBzb21lIHByb2JsZW1zIGluIHRoZSBwYXN0IHdoZXJlIHNpbWlsYXIgYWZmZWN0
-cyB3ZXJlDQpvYnNlcnZlZCB3aGVuIHVzaW5nIHN5c2NhbGxzIHRoYXQgd2VyZSBub3Qga25vd24g
-dG8gdGhlIHNlY3VyaXR5DQpwcm9maWxlIGluIHVzZS4gVGhlIHN0YXQgY2FsbCBpcyBub3QgbmV3
-LCBidXQgRU5PU1lTIGlzIHVuZXhwZWN0ZWQuDQoNCj4gDQo+IFl1dGEgQW5kbw0KPiANCj4gLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBz
-aWVtZW5zLmNvbT4gDQo+IFNlbnQ6IFdlZG5lc2RheSwgTm92ZW1iZXIgMTAsIDIwMjEgODoxNiBQ
-TQ0KPiBUbzogQW5kbyBZdXRhIDxhbmRvdXl1dXRhQHlhbWFoYS1tb3Rvci5jby5qcD47IHhlbm9t
-YWlAeGVub21haS5vcmcNCj4gU3ViamVjdDogUmU6IFRyeWluZyBYZW5vbWFpMy4yIGFuZCBoYXMg
-c29tZSB3ZWIgYnJvd3NlciBwcm9ibGVtDQo+IA0KPiBPbiAxMC4xMS4yMSAwNzozMywgQW5kbyBZ
-dXRhIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IEhlbGxvDQo+ID4gDQo+ID4gV2UgYXJlIG5vdyB0
-ZXN0aW5nIHhlbm9tYWkzLjIgd2l0aCBkb3ZldGFpbCBjb3JlKGtlcm5lbCB2ZXI1LjEwLjcwKQ0K
-PiANCj4geDg2Pw0KPiANCj4gPiBUaGUga2VybmVsIGJ1aWxkIHdhcyBzdWNjZXNzZnVsIHdpdGgg
-c29tZSBtb2RpZmljYXRpb25zIHRvIHRoZSBpcGlwZSBjb25maWd1cmF0aW9uIHdlIGhhZCBiZWVu
-IHVzaW5nLg0KPiA+IEJ1aWxkaW5nIG91ciBhcHBsaWNhdGlvbiB3YXMgYWxzbyBzdWNjZXNzZnVs
-IHdpdGhvdXQgYW55IHByb2JsZW1zLCBqdXN0IGJ5IHNsaWdodGx5IGNoYW5naW5nIHRoZSBmbGFn
-cyBpbiBjbWFrZS4NCj4gPiBTbyBvdXIgYXBwbGljYXRpb24gaXMgd29ya2luZyB3ZWxsLCBleGNl
-cHQgZm9yIG9uZSB0aGluZy4NCj4gPiANCj4gPiBXaGVuIHVzaW5nIHhlbm9tYWkgMy4xIHdpdGgg
-aXBpcGUgcGF0Y2ggNS40Ljc3LCB0aGVyZSB3YXMgbm8gcHJvYmxlbSwgDQo+ID4gYnV0IHdoZW4g
-dXNpbmcgNS4xMC43MCBkb3ZldGFpbCwgdGhlIHdlYiBicm93c2VyIHN0YXJ0ZWQgdG8gY3Jhc2gu
-DQo+ID4gDQo+ID4gRmlyZWZveCBkaWRuJ3Qgd29yayBhdCBhbGwuDQo+ID4gV2hlbiB1c2luZyBH
-b29nbGUgQ2hyb21lIGFuZCBjaHJvbWl1bSwgc29tZSBwYWdlcyBkb24ndCBjcmFzaCBhbmQgDQo+
-ID4gc29tZSwgaW4gcGFydGljdWxhciwgdmlkZW8gc2l0ZXMgbGlrZSB5b3V0dWJlIGFuZCBzaXRl
-cyB0aGF0IHJlcXVpcmUgbG9naW4gc3VjaCBhcyBnaXRodWIgZGlkLg0KPiA+IA0KPiA+IEF0dGFj
-aGVkIGJlbG93IGFyZSB0aGUgcmVzdWx0cyBvZiBzdHJhY2Ugd2hlbiB1c2luZyBjaHJvbWUuDQo+
-ID4gVGhlIHByb2JsZW0gc2VlbXMgdG8gYmUgYXJvdW5kIHNlY2NvbXAuDQo+ID4gDQo+ID4gSWYg
-d2UgZm9sbG93IHRoaXMgDQo+ID4gd2ViKGh0dHBzOi8vanBuMDEuc2FmZWxpbmtzLnByb3RlY3Rp
-b24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUyRiUyRg0KPiA+IGNocm9taXVtLmdvb2dsZXNv
-dXJjZS5jb20lMkZjaHJvbWl1bSUyRnNyYyUyRiUyQiUyRnJlZnMlMkZoZWFkcyUyRm1haW4NCj4g
-PiAlMkZkb2NzJTJGbGludXglMkZzYW5kYm94aW5nLm1kJmFtcDtkYXRhPTA0JTdDMDElN0NhbmRv
-dXl1dXRhJTQweWFtYWhhDQo+ID4gLW1vdG9yLmNvLmpwJTdDOWQ2NjY2MjliNjZkNDFjMWNhZDkw
-OGQ5YTQzYjcwYjQlN0M3NjY4NGE2N2Q4MTY0M2NlOTNmOQ0KPiA+IDI5YjZmNzJmODIzZiU3QzEl
-N0MwJTdDNjM3NzIxMzk3NDY3OTI5NjQ1JTdDVW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5SlcNCj4g
-PiBJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJ
-Nk1uMCUzRCU3QzEwMDAmDQo+ID4gYW1wO3NkYXRhPUIwJTJCcUlDOE1WTEJjJTJGeGRxa0NXbWIy
-c2tVNk5ETHYyNzkzRkZ2UVRaR0xRJTNEJmFtcDtyZXNlcg0KPiA+IHZlZD0wKSBhbmQgc3BlY2lm
-eSAtLWRpc2FibGUtc2VjY29tcC1maWx0ZXItc2FuZGJveCwgdGhlIGNyYXNoIHdhcyANCj4gPiBh
-cHBhcmVudGx5IGF2b2lkZWQuDQo+ID4gSG93ZXZlciwgdGhpcyBvcHRpb24gZGlzYWJsZXMgc2Fu
-ZGJveCwgd2hpY2ggY2F1c2VzIGEgc2VjdXJpdHkgcHJvYmxlbS4NCj4gPiBUaGVyZWZvcmUsIHdl
-IGRvIG5vdCB3YW50IHRvIGRpc2FibGUgc2FuZGJveCBpZiBwb3NzaWJsZS4NCj4gPiANCj4gPiBU
-aGlzIGJyb3dzZXIgY3Jhc2ggZG9lcyBub3Qgb2NjdXIgb24gdGhlIHNhbWUgNS4xMC43MCBrZXJu
-ZWwgdW5sZXNzIHdlIA0KPiA+IGVuYWJsZSB0aGUgZG92ZXRhaWwgcmVhbHRpbWUga2VybmVsLCBz
-byBJdCBzZWVtcyB0byBiZSBhbiBpc3N1ZSB3aXRoIGEgc3lzdGVtIGNhbGwgcmVsYXRlZCB0byBk
-b3ZldGFpbCdzIHNlY2NvbXAuDQo+ID4gSXMgdGhlcmUgYW55IHdheSB0byBzb2x2ZSB0aGlzIHBy
-b2JsZW0/DQo+ID4gDQo+ID4gVGhlIHN0cmFjZSByZXN1bHRzIGFyZSBhcyBmb2xsb3dzDQo+ID4g
-DQo+IA0KPiBDYW4geW91IGdlbmVyYXRlIGEgdHJhY2UgKHN0cmFjZSBvciBtYXliZSBldmVuIGtl
-cm5lbCBldmVudCB0cmFjZSkgb2YgYm90aCBnb29kIGFuIGJhZCBjYXNlcz8gVG8gc2VlIHdoZXJl
-IHRoZSBiZWhhdmlvdXIgZGl2ZXJnZXMuDQo+IA0KPiBPciBpcyB0aGVyZSBzb21ldGhpbmcgdGhh
-dCByZXByb2R1Y2VzIHRoaXMgd2l0aG91dCByZXF1aXJpbmcgYSBmdWxsIFVJIGZvciB0aGUgYnJv
-d3Nlcj8NCj4gDQo+IFRoYW5rcyBmb3IgcmVwb3J0aW5nIQ0KPiANCj4gSmFuDQo+IA0KPiAtLQ0K
-PiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQo+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQ0K
-PiBBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4u
-Lg0KPiBOYW1lOiBnZW5lcmljX2tlcm5lbF9ldmVudF90cmFjZS50eHQNCj4gVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjExMTExL2U3MmZm
-OTkzL2F0dGFjaG1lbnQudHh0Pg0KPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0NCj4gQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4NCj4gTmFtZTogZ2VuZXJpY19zdHJhY2UudHh0DQo+IFVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMTExMS9lNzJmZjk5My9h
-dHRhY2htZW50LTAwMDEudHh0Pg0KPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0NCj4gQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4NCj4gTmFtZTogZG92ZXRhaWxfa2VybmVsX2V2ZW50X3RyYWNlLnR4dA0KPiBVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTEx
-MTEvZTcyZmY5OTMvYXR0YWNobWVudC0wMDAyLnR4dD4NCj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBw
-YXJ0IC0tLS0tLS0tLS0tLS0tDQo+IEFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVk
-IHRleHQgd2FzIHNjcnViYmVkLi4uDQo+IE5hbWU6IGRvdmV0YWlsX2tlcm5lbF9ldmVudF90cmFj
-ZV9kaXNhYmxlX3NhbmRib3gudHh0DQo+IFVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMTExMS9lNzJmZjk5My9hdHRhY2htZW50LTAwMDMu
-dHh0Pg0KPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0NCj4gQW4gZW1i
-ZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4NCj4gTmFt
-ZTogZG92ZXRhaWxfc3RyYWNlLnR4dA0KPiBVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTExMTEvZTcyZmY5OTMvYXR0YWNobWVudC0wMDA0
-LnR4dD4NCj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tDQo+IEFuIGVt
-YmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQgd2FzIHNjcnViYmVkLi4uDQo+IE5h
-bWU6IGRvdmV0YWlsX3N0cmFjZV9kaXNhYmxlX3NhbmRib3gudHh0DQo+IFVSTDogPGh0dHA6Ly94
-ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIxMTExMS9lNzJmZjk5
-My9hdHRhY2htZW50LTAwMDUudHh0Pg0KDQo=
+Hello
+
+>Sandbox enabled:
+>stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9068a987c0) =3D -1 ENOSYS (Functi=
+on not implemented)
+>Sandbox disabled:
+>stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9e3a03a7c0) =3D -1 ENOENT (No suc=
+h file or directory)
+>You have updated the kernel, but did you update your libseccomp security p=
+rofile as well? (IOW: Have you updated your userspace as well?)
+>I know about some problems in the past where similar affects were observed=
+ when using syscalls that were not known to the security profile in use. Th=
+e stat call is not new, but ENOSYS is unexpected.
+
+Yes I checked. My seccomp version is 2.5.1-1ubuntu1~18.04.1.
+Is there anything else I need to do to update the security profile of libse=
+ccomp?
+
+Yuta Ando
+
+-----Original Message-----
+From: Bezdeka, Florian <florian.bezdeka@siemens.com>=20
+Sent: Thursday, November 11, 2021 6:09 PM
+To: xenomai@xenomai.org; Ando Yuta <andouyuuta@yamaha-motor.co.jp>; jan.kis=
+zka@siemens.com
+Subject: Re: Trying Xenomai3.2 and has some web browser problem
+
+On Thu, 2021-11-11 at 04:46 +0000, Ando Yuta via Xenomai wrote:
+> Hello Jan
+>=20
+> Thanks for the reply.
+>=20
+> > x86?
+>=20
+> Sorry I forgot to write the CPU info.
+> My CPU is x86_64(11th Gen Intel i5)
+>=20
+> > Can you generate a trace (strace or maybe even kernel event trace) of b=
+oth good an bad cases? To see where the behaviour diverges.
+> > Or is there something that reproduces this without requiring a full UI =
+for the browser?
+>=20
+> Yes, I found that the same phenomenon occurs when I specify "--disable-gp=
+u" in headless mode chrome.
+>=20
+> There are the command to reproduce.
+> 1 chrome --headless --disable-gpu=20
+> https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.
+> google.com%2F&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7C42b
+> 7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7C1%7
+> C0%7C637722185358222963%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLC
+> JQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3Dd5K%2BuP
+> 31DcmB3cCvYv8aHIjEHYCaj6%2FFKczgq5qTM2I%3D&amp;reserved=3D0 (in dovetail=
+=20
+> browser crash, in generic works properly)
+> 2 chrome --headless --disable-gpu --disable-seccomp-filter-sandbox=20
+> https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.
+> google.com%2F&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7C42b
+> 7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7C1%7
+> C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLC
+> JQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DFeCuoU%2
+> BojmsoaLbDIO2Q%2BovZ88u1A5JPfql9RtXu8nc%3D&amp;reserved=3D0 (disable=20
+> sandbox, this works in both dovetail and generic but unsafe)
+>=20
+> Attached files are the results of strace and kernel event trace in headle=
+ss mode above.
+> They are generic, dovetail with sandbox enabled, and dovetail with sandbo=
+x disabled.
+
+Sandbox enabled:
+stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9068a987c0) =3D -1 ENOSYS (Functio=
+n not implemented)
+
+Sandbox disabled:
+stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9e3a03a7c0) =3D -1 ENOENT (No such=
+ file or directory)
+
+You have updated the kernel, but did you update your libseccomp security pr=
+ofile as well? (IOW: Have you updated your userspace as
+well?)
+
+I know about some problems in the past where similar affects were observed =
+when using syscalls that were not known to the security profile in use. The=
+ stat call is not new, but ENOSYS is unexpected.
+
+>=20
+> Yuta Ando
+>=20
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> Sent: Wednesday, November 10, 2021 8:16 PM
+> To: Ando Yuta <andouyuuta@yamaha-motor.co.jp>; xenomai@xenomai.org
+> Subject: Re: Trying Xenomai3.2 and has some web browser problem
+>=20
+> On 10.11.21 07:33, Ando Yuta via Xenomai wrote:
+> > Hello
+> >=20
+> > We are now testing xenomai3.2 with dovetail core(kernel ver5.10.70)
+>=20
+> x86?
+>=20
+> > The kernel build was successful with some modifications to the ipipe co=
+nfiguration we had been using.
+> > Building our application was also successful without any problems, just=
+ by slightly changing the flags in cmake.
+> > So our application is working well, except for one thing.
+> >=20
+> > When using xenomai 3.1 with ipipe patch 5.4.77, there was no=20
+> > problem, but when using 5.10.70 dovetail, the web browser started to cr=
+ash.
+> >=20
+> > Firefox didn't work at all.
+> > When using Google Chrome and chromium, some pages don't crash and=20
+> > some, in particular, video sites like youtube and sites that require lo=
+gin such as github did.
+> >=20
+> > Attached below are the results of strace when using chrome.
+> > The problem seems to be around seccomp.
+> >=20
+> > If we follow this
+> > web(https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%
+> > 2F=20
+> > chromium.googlesource.com%2Fchromium%2Fsrc%2F%2B%2Frefs%2Fheads%2Fma
+> > in=20
+> > %2Fdocs%2Flinux%2Fsandboxing.md&amp;data=3D04%7C01%7Candouyuuta%40yama
+> > ha
+> > -motor.co.jp%7C9d666629b66d41c1cad908d9a43b70b4%7C76684a67d81643ce93
+> > f9=20
+> > 29b6f72f823f%7C1%7C0%7C637721397467929645%7CUnknown%7CTWFpbGZsb3d8ey
+> > JW=20
+> > IjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C100
+> > 0&=20
+> > amp;sdata=3DB0%2BqIC8MVLBc%2FxdqkCWmb2skU6NDLv2793FFvQTZGLQ%3D&amp;res
+> > er
+> > ved=3D0) and specify --disable-seccomp-filter-sandbox, the crash was=20
+> > apparently avoided.
+> > However, this option disables sandbox, which causes a security problem.
+> > Therefore, we do not want to disable sandbox if possible.
+> >=20
+> > This browser crash does not occur on the same 5.10.70 kernel unless=20
+> > we enable the dovetail realtime kernel, so It seems to be an issue with=
+ a system call related to dovetail's seccomp.
+> > Is there any way to solve this problem?
+> >=20
+> > The strace results are as follows
+> >=20
+>=20
+> Can you generate a trace (strace or maybe even kernel event trace) of bot=
+h good an bad cases? To see where the behaviour diverges.
+>=20
+> Or is there something that reproduces this without requiring a full UI fo=
+r the browser?
+>=20
+> Thanks for reporting!
+>=20
+> Jan
+>=20
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: generic_kernel_event_trace.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7C42b7
+> cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7C1%7C
+> 0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJ
+> QIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DWIBfYVivj
+> d5t7BbAqPDxfnwCzcvNIwNhHisrC%2Fe4n%2Bs%3D&amp;reserved=3D0>
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: generic_strace.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment-0001.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7
+> C42b7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7
+> C1%7C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DjWYe
+> qJfFZtSexiqlg5qTANWUptrCcVckGK4wyvBFNug%3D&amp;reserved=3D0>
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: dovetail_kernel_event_trace.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment-0002.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7
+> C42b7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7
+> C1%7C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DyxRN
+> KP5dzcjpnJYBxZohT7iXIXKsayKQXAA6zZHg3tU%3D&amp;reserved=3D0>
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: dovetail_kernel_event_trace_disable_sandbox.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment-0003.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7
+> C42b7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7
+> C1%7C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DR0nq
+> dSH8z9T2FPTv5fEN1zq7%2BWSv0Gw2tEzWjNKnGcc%3D&amp;reserved=3D0>
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: dovetail_strace.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment-0004.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7
+> C42b7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7
+> C1%7C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3D%2Bj
+> 4eeKTcAZIphWYiJ406bnhYRQsrsSdgtRQJdqo2Bok%3D&amp;reserved=3D0>
+> -------------- next part -------------- An embedded and=20
+> charset-unspecified text was scrubbed...
+> Name: dovetail_strace_disable_sandbox.txt
+> URL:=20
+> <https://jpn01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fxeno
+> mai.org%2Fpipermail%2Fxenomai%2Fattachments%2F20211111%2Fe72ff993%2Fat
+> tachment-0005.txt&amp;data=3D04%7C01%7Candouyuuta%40yamaha-motor.co.jp%7
+> C42b7cfc69345461303a108d9a4f2e22f%7C76684a67d81643ce93f929b6f72f823f%7
+> C1%7C0%7C637722185358232954%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DYX9A
+> 86Uza%2Bk8bcsuuZHQm9yDy5upAfj6l%2FnqvWy2W0I%3D&amp;reserved=3D0>
+
 
