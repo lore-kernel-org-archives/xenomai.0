@@ -1,17 +1,14 @@
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [EVL][dovetail] Minimum requirements for network communication
- for RPi 4B and amd64
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-In-Reply-To: <878rxw853j.fsf@xenomai.org>
-Date: Wed, 10 Nov 2021 19:05:44 +0300
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <F6826A33-917C-4A1E-BD28-2FDF2BC2FAA2@gmail.com>
-References: <388405AD-717D-45F2-8504-515F3BE70117@gmail.com>
- <878rxzt578.fsf@xenomai.org> <1FAA0481-E7A9-4B32-B817-3B77D71D5323@gmail.com>
- <87lf1wb7re.fsf@xenomai.org> <CD8ABA7C-A5F0-4D81-A31B-9B410793607A@gmail.com>
- <878rxw853j.fsf@xenomai.org>
+From: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
+Subject: RE: Trying Xenomai3.2 and has some web browser problem
+Date: Thu, 11 Nov 2021 04:46:18 +0000
+Message-ID: <TY2PR04MB3838BC44901BBCE5A33A14A8AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
+References: <TY2PR04MB3838919175C4210652E4FCD4AA939@TY2PR04MB3838.apcprd04.prod.outlook.com>
+ <ae935e63-ad36-7d98-da3a-7046948ab38a@siemens.com>
+In-Reply-To: <ae935e63-ad36-7d98-da3a-7046948ab38a@siemens.com>
+Content-Language: ja-JP
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,102 +17,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Once the full, end-to-end oob chain between the app and the wire =
-including
-> the driver is enabled, we should get interesting figures (bypassing =
-the
-> softirq context entirely). Forward looking statement, I agree. Working
-> on it.
-
-Looking forward to this. If I can be any help with this I=E2=80=99d be =
-glad to do it.
-
-Thanks for the recommendations by the way, I will try to make my current =
-setup
-little bit better with what=E2=80=99s available to me via EVL.
-
-> On 10 Nov 2021, at 16:57, Philippe Gerum <rpm@xenomai.org> wrote:
->=20
->=20
-> Deniz U=C4=9Fur <deniz343@gmail.com> writes:
->=20
->> 200-300 microseconds latency worst case is demanding, this is in the
->> same ballpark than the figures I obtained with RTnet/Xenomai3.1 =
-between
->> two mid-range SoCs (x86_64 and i.MX6Q) attached to a dedicated =
-switch,
->> over a 100Mbit link.
->>=20
->> I assume this is only the communication latency and nothing else. As =
-I have to=20
->> read SPI which takes 50-60 us, this measurements would be higher I
->> guess.
->=20
-> Correct.
->=20
->>=20
->> Going for a kernel bypass on the rpi4 by coupling DPDK and EVL would =
-at
->> the very least require a DPDK-enabled GENET driver, which does not =
-seem
->> to exist.
->>=20
->> That would=E2=80=99ve been splendid to be honest. I didn=E2=80=99t =
-knew DPDK till now but
->> the premise sounds quite good.
->>=20
->=20
-> I'm not a DPDK expert, but there are folks on this list with =
-significant
-> knowledge about DPDK who might want to discuss this.
->=20
->> Another option would be to check whether you could work directly at
->> packet level for now on the rpi4, based on the EVL networking
->> layer. This is experimental WIP, but this is readily capable of
->> exchanging raw packets between peers. See [1].
->>=20
->> If I understand correctly, EVL=E2=80=99s networking layer doesn=E2=80=99=
-t support TCP/UDP
->> at the moment and I would have to implement the sliding window myself
->> with raw packets. Correct?
->>=20
->=20
-> Correct. In userland, which would make things easier.
->=20
->> =E2=80=94
->>=20
->> To sum up, we don=E2=80=99t have many options considering RPi 4 with =
-kernel bypassing.
->>=20
->> I don't think the common linux stack is an option with such =
-requirement
->> under load, especially since you would have to channel the network
->> traffic
->>=20
->> Along with that, EVL=E2=80=99s net stack not creating any improvement =
-for this
->> kind of load.
->=20
-> Mm, not sure. Even in the case EVL reuses the regular NIC drivers, I =
-can
-> already see latency improvements here (pi2 and bbb -> x86 Soc), =
-because
-> the traffic is directly injected to the driver from the TX softirq
-> context, bypassing the delays induced by the regular net stack. Once =
-the
-> full, end-to-end oob chain between the app and the wire including the
-> driver is enabled, we should get interesting figures (bypassing the
-> softirq context entirely). Forward looking statement, I agree. Working
-> on it.
->=20
->> Considering these, 200-300 us is demanding but it=E2=80=99s as high =
-as it gets at the moment.
->>=20
->=20
-> --=20
-> Philippe.
-
-
+SGVsbG8gSmFuCgpUaGFua3MgZm9yIHRoZSByZXBseS4KCj54ODY/CgpTb3JyeSBJIGZvcmdvdCB0
+byB3cml0ZSB0aGUgQ1BVIGluZm8uCk15IENQVSBpcyB4ODZfNjQoMTF0aCBHZW4gSW50ZWwgaTUp
+Cgo+Q2FuIHlvdSBnZW5lcmF0ZSBhIHRyYWNlIChzdHJhY2Ugb3IgbWF5YmUgZXZlbiBrZXJuZWwg
+ZXZlbnQgdHJhY2UpIG9mIGJvdGggZ29vZCBhbiBiYWQgY2FzZXM/IFRvIHNlZSB3aGVyZSB0aGUg
+YmVoYXZpb3VyIGRpdmVyZ2VzLgo+T3IgaXMgdGhlcmUgc29tZXRoaW5nIHRoYXQgcmVwcm9kdWNl
+cyB0aGlzIHdpdGhvdXQgcmVxdWlyaW5nIGEgZnVsbCBVSSBmb3IgdGhlIGJyb3dzZXI/CgpZZXMs
+IEkgZm91bmQgdGhhdCB0aGUgc2FtZSBwaGVub21lbm9uIG9jY3VycyB3aGVuIEkgc3BlY2lmeSAi
+LS1kaXNhYmxlLWdwdSIgaW4gaGVhZGxlc3MgbW9kZSBjaHJvbWUuCgpUaGVyZSBhcmUgdGhlIGNv
+bW1hbmQgdG8gcmVwcm9kdWNlLgoxIGNocm9tZSAtLWhlYWRsZXNzIC0tZGlzYWJsZS1ncHUgaHR0
+cHM6Ly93d3cuZ29vZ2xlLmNvbSAoaW4gZG92ZXRhaWwgYnJvd3NlciBjcmFzaCwgaW4gZ2VuZXJp
+YyB3b3JrcyBwcm9wZXJseSkKMiBjaHJvbWUgLS1oZWFkbGVzcyAtLWRpc2FibGUtZ3B1IC0tZGlz
+YWJsZS1zZWNjb21wLWZpbHRlci1zYW5kYm94IGh0dHBzOi8vd3d3Lmdvb2dsZS5jb20gKGRpc2Fi
+bGUgc2FuZGJveCwgdGhpcyB3b3JrcyBpbiBib3RoIGRvdmV0YWlsIGFuZCBnZW5lcmljIGJ1dCB1
+bnNhZmUpCgpBdHRhY2hlZCBmaWxlcyBhcmUgdGhlIHJlc3VsdHMgb2Ygc3RyYWNlIGFuZCBrZXJu
+ZWwgZXZlbnQgdHJhY2UgaW4gaGVhZGxlc3MgbW9kZSBhYm92ZS4KVGhleSBhcmUgZ2VuZXJpYywg
+ZG92ZXRhaWwgd2l0aCBzYW5kYm94IGVuYWJsZWQsIGFuZCBkb3ZldGFpbCB3aXRoIHNhbmRib3gg
+ZGlzYWJsZWQuCgpZdXRhIEFuZG8KCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCkZyb206IEph
+biBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IApTZW50OiBXZWRuZXNkYXksIE5vdmVt
+YmVyIDEwLCAyMDIxIDg6MTYgUE0KVG86IEFuZG8gWXV0YSA8YW5kb3V5dXV0YUB5YW1haGEtbW90
+b3IuY28uanA+OyB4ZW5vbWFpQHhlbm9tYWkub3JnClN1YmplY3Q6IFJlOiBUcnlpbmcgWGVub21h
+aTMuMiBhbmQgaGFzIHNvbWUgd2ViIGJyb3dzZXIgcHJvYmxlbQoKT24gMTAuMTEuMjEgMDc6MzMs
+IEFuZG8gWXV0YSB2aWEgWGVub21haSB3cm90ZToKPiBIZWxsbwo+IAo+IFdlIGFyZSBub3cgdGVz
+dGluZyB4ZW5vbWFpMy4yIHdpdGggZG92ZXRhaWwgY29yZShrZXJuZWwgdmVyNS4xMC43MCkKCng4
+Nj8KCj4gVGhlIGtlcm5lbCBidWlsZCB3YXMgc3VjY2Vzc2Z1bCB3aXRoIHNvbWUgbW9kaWZpY2F0
+aW9ucyB0byB0aGUgaXBpcGUgY29uZmlndXJhdGlvbiB3ZSBoYWQgYmVlbiB1c2luZy4KPiBCdWls
+ZGluZyBvdXIgYXBwbGljYXRpb24gd2FzIGFsc28gc3VjY2Vzc2Z1bCB3aXRob3V0IGFueSBwcm9i
+bGVtcywganVzdCBieSBzbGlnaHRseSBjaGFuZ2luZyB0aGUgZmxhZ3MgaW4gY21ha2UuCj4gU28g
+b3VyIGFwcGxpY2F0aW9uIGlzIHdvcmtpbmcgd2VsbCwgZXhjZXB0IGZvciBvbmUgdGhpbmcuCj4g
+Cj4gV2hlbiB1c2luZyB4ZW5vbWFpIDMuMSB3aXRoIGlwaXBlIHBhdGNoIDUuNC43NywgdGhlcmUg
+d2FzIG5vIHByb2JsZW0sIAo+IGJ1dCB3aGVuIHVzaW5nIDUuMTAuNzAgZG92ZXRhaWwsIHRoZSB3
+ZWIgYnJvd3NlciBzdGFydGVkIHRvIGNyYXNoLgo+IAo+IEZpcmVmb3ggZGlkbid0IHdvcmsgYXQg
+YWxsLgo+IFdoZW4gdXNpbmcgR29vZ2xlIENocm9tZSBhbmQgY2hyb21pdW0sIHNvbWUgcGFnZXMg
+ZG9uJ3QgY3Jhc2ggYW5kIAo+IHNvbWUsIGluIHBhcnRpY3VsYXIsIHZpZGVvIHNpdGVzIGxpa2Ug
+eW91dHViZSBhbmQgc2l0ZXMgdGhhdCByZXF1aXJlIGxvZ2luIHN1Y2ggYXMgZ2l0aHViIGRpZC4K
+PiAKPiBBdHRhY2hlZCBiZWxvdyBhcmUgdGhlIHJlc3VsdHMgb2Ygc3RyYWNlIHdoZW4gdXNpbmcg
+Y2hyb21lLgo+IFRoZSBwcm9ibGVtIHNlZW1zIHRvIGJlIGFyb3VuZCBzZWNjb21wLgo+IAo+IElm
+IHdlIGZvbGxvdyB0aGlzIAo+IHdlYihodHRwczovL2pwbjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9u
+Lm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkYKPiBjaHJvbWl1bS5nb29nbGVzb3VyY2Uu
+Y29tJTJGY2hyb21pdW0lMkZzcmMlMkYlMkIlMkZyZWZzJTJGaGVhZHMlMkZtYWluCj4gJTJGZG9j
+cyUyRmxpbnV4JTJGc2FuZGJveGluZy5tZCZhbXA7ZGF0YT0wNCU3QzAxJTdDYW5kb3V5dXV0YSU0
+MHlhbWFoYQo+IC1tb3Rvci5jby5qcCU3QzlkNjY2NjI5YjY2ZDQxYzFjYWQ5MDhkOWE0M2I3MGI0
+JTdDNzY2ODRhNjdkODE2NDNjZTkzZjkKPiAyOWI2ZjcyZjgyM2YlN0MxJTdDMCU3QzYzNzcyMTM5
+NzQ2NzkyOTY0NSU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXCj4gSWpvaU1DNHdMakF3TURB
+aUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MxMDAwJgo+
+IGFtcDtzZGF0YT1CMCUyQnFJQzhNVkxCYyUyRnhkcWtDV21iMnNrVTZOREx2Mjc5M0ZGdlFUWkdM
+USUzRCZhbXA7cmVzZXIKPiB2ZWQ9MCkgYW5kIHNwZWNpZnkgLS1kaXNhYmxlLXNlY2NvbXAtZmls
+dGVyLXNhbmRib3gsIHRoZSBjcmFzaCB3YXMgCj4gYXBwYXJlbnRseSBhdm9pZGVkLgo+IEhvd2V2
+ZXIsIHRoaXMgb3B0aW9uIGRpc2FibGVzIHNhbmRib3gsIHdoaWNoIGNhdXNlcyBhIHNlY3VyaXR5
+IHByb2JsZW0uCj4gVGhlcmVmb3JlLCB3ZSBkbyBub3Qgd2FudCB0byBkaXNhYmxlIHNhbmRib3gg
+aWYgcG9zc2libGUuCj4gCj4gVGhpcyBicm93c2VyIGNyYXNoIGRvZXMgbm90IG9jY3VyIG9uIHRo
+ZSBzYW1lIDUuMTAuNzAga2VybmVsIHVubGVzcyB3ZSAKPiBlbmFibGUgdGhlIGRvdmV0YWlsIHJl
+YWx0aW1lIGtlcm5lbCwgc28gSXQgc2VlbXMgdG8gYmUgYW4gaXNzdWUgd2l0aCBhIHN5c3RlbSBj
+YWxsIHJlbGF0ZWQgdG8gZG92ZXRhaWwncyBzZWNjb21wLgo+IElzIHRoZXJlIGFueSB3YXkgdG8g
+c29sdmUgdGhpcyBwcm9ibGVtPwo+IAo+IFRoZSBzdHJhY2UgcmVzdWx0cyBhcmUgYXMgZm9sbG93
+cwo+IAoKQ2FuIHlvdSBnZW5lcmF0ZSBhIHRyYWNlIChzdHJhY2Ugb3IgbWF5YmUgZXZlbiBrZXJu
+ZWwgZXZlbnQgdHJhY2UpIG9mIGJvdGggZ29vZCBhbiBiYWQgY2FzZXM/IFRvIHNlZSB3aGVyZSB0
+aGUgYmVoYXZpb3VyIGRpdmVyZ2VzLgoKT3IgaXMgdGhlcmUgc29tZXRoaW5nIHRoYXQgcmVwcm9k
+dWNlcyB0aGlzIHdpdGhvdXQgcmVxdWlyaW5nIGEgZnVsbCBVSSBmb3IgdGhlIGJyb3dzZXI/CgpU
+aGFua3MgZm9yIHJlcG9ydGluZyEKCkphbgoKLS0KU2llbWVucyBBRywgVCBSREEgSU9UCkNvcnBv
+cmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBuZXh0
+IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQg
+dGV4dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZ2VuZXJpY19rZXJuZWxfZXZlbnRfdHJhY2UudHh0
+ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDIxMTExMS9lNzJmZjk5My9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQg
+d2FzIHNjcnViYmVkLi4uCk5hbWU6IGdlbmVyaWNfc3RyYWNlLnR4dApVUkw6IDxodHRwOi8veGVu
+b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTExMTEvZTcyZmY5OTMv
+YXR0YWNobWVudC0wMDAxLnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
+LS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQgd2FzIHNjcnViYmVk
+Li4uCk5hbWU6IGRvdmV0YWlsX2tlcm5lbF9ldmVudF90cmFjZS50eHQKVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjExMTExL2U3MmZmOTkz
+L2F0dGFjaG1lbnQtMDAwMi50eHQ+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJl
+ZC4uLgpOYW1lOiBkb3ZldGFpbF9rZXJuZWxfZXZlbnRfdHJhY2VfZGlzYWJsZV9zYW5kYm94LnR4
+dApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAyMTExMTEvZTcyZmY5OTMvYXR0YWNobWVudC0wMDAzLnR4dD4KLS0tLS0tLS0tLS0tLS0gbmV4
+dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVk
+IHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGRvdmV0YWlsX3N0cmFjZS50eHQKVVJMOiA8aHR0
+cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjExMTExL2U3
+MmZmOTkzL2F0dGFjaG1lbnQtMDAwNC50eHQ+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
+LS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBkb3ZldGFpbF9zdHJhY2VfZGlzYWJsZV9zYW5kYm94LnR4dApVUkw6
+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTEx
+MTEvZTcyZmY5OTMvYXR0YWNobWVudC0wMDA1LnR4dD4K
