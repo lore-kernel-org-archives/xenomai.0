@@ -1,18 +1,19 @@
-From: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
-Subject: RE: Trying Xenomai3.2 and has some web browser problem
-Date: Thu, 11 Nov 2021 11:30:26 +0000
-Message-ID: <TY2PR04MB3838FDC0FB744785FE7DCA30AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
+Subject: Re: Trying Xenomai3.2 and has some web browser problem
 References: <TY2PR04MB3838919175C4210652E4FCD4AA939@TY2PR04MB3838.apcprd04.prod.outlook.com>
  <ae935e63-ad36-7d98-da3a-7046948ab38a@siemens.com>
  <TY2PR04MB3838BC44901BBCE5A33A14A8AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
  <6bd9fd83a953df456c4864fdf030eb918cf6e644.camel@siemens.com>
  <TY2PR04MB38382DD227A50372A8E60025AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
  <7c06251b-ea57-fef3-ddb5-c6c1771dc680@siemens.com>
-In-Reply-To: <7c06251b-ea57-fef3-ddb5-c6c1771dc680@siemens.com>
-Content-Language: ja-JP
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <TY2PR04MB3838FDC0FB744785FE7DCA30AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <546568f6-3391-d890-16ba-7cc16f348202@siemens.com>
+Date: Thu, 11 Nov 2021 19:03:06 +0100
 MIME-Version: 1.0
+In-Reply-To: <TY2PR04MB3838FDC0FB744785FE7DCA30AA949@TY2PR04MB3838.apcprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,35 +22,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ando Yuta <andouyuuta@yamaha-motor.co.jp>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gSmFuDQoNCj4gSSdtIHN0YXJ0aW5nIHRvIHJlcHJvZHVjZSwgYW5kIHRoZXJlIGlzIHNv
-bWUgYmVoYXZpb3JhbCBkaWZmZXJlbmNlIG9uDQo+IDUuMTAgd2l0aCB2cy4gd2l0aG91dCBEb3Zl
-dGFpbC9YZW5vbWFpLiBJJ20gbm93IHRyeWluZyB0byBuYXJyb3cgdGhpcyBkb3duLCB3aWxsIGtl
-ZXAgeW91IHBvc3RlZC4NCg0KVGhhbmsgeW91Lg0KV2UgYXJlIHdhaXRpbmcgZm9yIHlvdXIgZml4
-IGFzIHdlIGNvbnRpbnVlIHRlc3RpbmcgeGVub21haSAzLjIuDQoNCll1dGEgQW5kbw0KDQotLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVt
-ZW5zLmNvbT4gDQpTZW50OiBUaHVyc2RheSwgTm92ZW1iZXIgMTEsIDIwMjEgODowMyBQTQ0KVG86
-IEFuZG8gWXV0YSA8YW5kb3V5dXV0YUB5YW1haGEtbW90b3IuY28uanA+OyBCZXpkZWthLCBGbG9y
-aWFuIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpT
-dWJqZWN0OiBSZTogVHJ5aW5nIFhlbm9tYWkzLjIgYW5kIGhhcyBzb21lIHdlYiBicm93c2VyIHBy
-b2JsZW0NCg0KT24gMTEuMTEuMjEgMTE6NTgsIEFuZG8gWXV0YSB3cm90ZToNCj4gSGVsbG8NCj4g
-DQo+PiBTYW5kYm94IGVuYWJsZWQ6DQo+PiBzdGF0KCIvc3lzL2ZzL2Nncm91cC9jcHVzZXQvY2hy
-b21lIiwgMHg3ZjkwNjhhOTg3YzApID0gLTEgRU5PU1lTIA0KPj4gKEZ1bmN0aW9uIG5vdCBpbXBs
-ZW1lbnRlZCkgU2FuZGJveCBkaXNhYmxlZDoNCj4+IHN0YXQoIi9zeXMvZnMvY2dyb3VwL2NwdXNl
-dC9jaHJvbWUiLCAweDdmOWUzYTAzYTdjMCkgPSAtMSBFTk9FTlQgKE5vIA0KPj4gc3VjaCBmaWxl
-IG9yIGRpcmVjdG9yeSkgWW91IGhhdmUgdXBkYXRlZCB0aGUga2VybmVsLCBidXQgZGlkIHlvdSAN
-Cj4+IHVwZGF0ZSB5b3VyIGxpYnNlY2NvbXAgc2VjdXJpdHkgcHJvZmlsZSBhcyB3ZWxsPyAoSU9X
-OiBIYXZlIHlvdSB1cGRhdGVkIHlvdXIgdXNlcnNwYWNlIGFzIHdlbGw/KSBJIGtub3cgYWJvdXQg
-c29tZSBwcm9ibGVtcyBpbiB0aGUgcGFzdCB3aGVyZSBzaW1pbGFyIGFmZmVjdHMgd2VyZSBvYnNl
-cnZlZCB3aGVuIHVzaW5nIHN5c2NhbGxzIHRoYXQgd2VyZSBub3Qga25vd24gdG8gdGhlIHNlY3Vy
-aXR5IHByb2ZpbGUgaW4gdXNlLiBUaGUgc3RhdCBjYWxsIGlzIG5vdCBuZXcsIGJ1dCBFTk9TWVMg
-aXMgdW5leHBlY3RlZC4NCj4gDQo+IFllcyBJIGNoZWNrZWQuIE15IHNlY2NvbXAgdmVyc2lvbiBp
-cyAyLjUuMS0xdWJ1bnR1MX4xOC4wNC4xLg0KPiBJcyB0aGVyZSBhbnl0aGluZyBlbHNlIEkgbmVl
-ZCB0byBkbyB0byB1cGRhdGUgdGhlIHNlY3VyaXR5IHByb2ZpbGUgb2YgbGlic2VjY29tcD8NCj4g
-DQoNCkknbSBzdGFydGluZyB0byByZXByb2R1Y2UsIGFuZCB0aGVyZSBpcyBzb21lIGJlaGF2aW9y
-YWwgZGlmZmVyZW5jZSBvbg0KNS4xMCB3aXRoIHZzLiB3aXRob3V0IERvdmV0YWlsL1hlbm9tYWku
-IEknbSBub3cgdHJ5aW5nIHRvIG5hcnJvdyB0aGlzIGRvd24sIHdpbGwga2VlcCB5b3UgcG9zdGVk
-Lg0KDQpUaGFua3Mgc28gZmFyLA0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCkNv
-cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
+On 11.11.21 12:30, Ando Yuta wrote:
+> Hello Jan
+> 
+>> I'm starting to reproduce, and there is some behavioral difference on
+>> 5.10 with vs. without Dovetail/Xenomai. I'm now trying to narrow this down, will keep you posted.
+> 
+> Thank you.
+> We are waiting for your fix as we continue testing xenomai 3.2.
+> 
+> Yuta Ando
+> 
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com> 
+> Sent: Thursday, November 11, 2021 8:03 PM
+> To: Ando Yuta <andouyuuta@yamaha-motor.co.jp>; Bezdeka, Florian <florian.bezdeka@siemens.com>; xenomai@xenomai.org
+> Subject: Re: Trying Xenomai3.2 and has some web browser problem
+> 
+> On 11.11.21 11:58, Ando Yuta wrote:
+>> Hello
+>>
+>>> Sandbox enabled:
+>>> stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9068a987c0) = -1 ENOSYS 
+>>> (Function not implemented) Sandbox disabled:
+>>> stat("/sys/fs/cgroup/cpuset/chrome", 0x7f9e3a03a7c0) = -1 ENOENT (No 
+>>> such file or directory) You have updated the kernel, but did you 
+>>> update your libseccomp security profile as well? (IOW: Have you updated your userspace as well?) I know about some problems in the past where similar affects were observed when using syscalls that were not known to the security profile in use. The stat call is not new, but ENOSYS is unexpected.
+>>
+>> Yes I checked. My seccomp version is 2.5.1-1ubuntu1~18.04.1.
+>> Is there anything else I need to do to update the security profile of libseccomp?
+>>
+> 
+> I'm starting to reproduce, and there is some behavioral difference on
+> 5.10 with vs. without Dovetail/Xenomai. I'm now trying to narrow this down, will keep you posted.
+> 
+
+This seems to resolve the issue:
+
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index ac53de5717bd..ecf68779d9fb 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -76,8 +76,8 @@
+  * Status codes of syscall entry when Dovetail is enabled. Must not
+  * conflict with valid syscall numbers.
+  */
+-#define EXIT_SYSCALL_OOB	(-1)
+-#define EXIT_SYSCALL_TAIL	(-2)
++#define EXIT_SYSCALL_OOB	(-2)
++#define EXIT_SYSCALL_TAIL	(-3)
+ 
+ /**
+  * arch_check_user_regs - Architecture specific sanity check for user mode regs
+
+
+Proper patch with explanation will follow later.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
