@@ -1,12 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash with
- seccomp
-Message-ID: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
-Date: Thu, 11 Nov 2021 19:57:09 +0100
+From: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
+Subject: RE: [PATCH] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash
+ with seccomp
+Date: Fri, 12 Nov 2021 01:45:30 +0000
+Message-ID: <TY2PR04MB3838A4E6F05C09E1F2BA9BCEAA959@TY2PR04MB3838.apcprd04.prod.outlook.com>
+References: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
+In-Reply-To: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>, Ando Yuta <andouyuuta@yamaha-motor.co.jp>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-__secure_computing, called by syscall_trace_enter, returns -1 when a
-call should be skipped. We must avoid that this is interpreted as
-EXIT_SYSCALL_OOB in the dovetail case.
-
-Fixes, e.g., crashes of Chrome in sandbox mode.
-
-Reported-by: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-"Fixes" is my observation - Yuta-san, please confirm also for your setup.
-
- include/linux/entry-common.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 2a08b00632b9..43cf846111d9 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -66,8 +66,8 @@
-  * Status codes of syscall entry when Dovetail is enabled. Must not
-  * conflict with valid syscall numbers.
-  */
--#define EXIT_SYSCALL_OOB	(-1)
--#define EXIT_SYSCALL_TAIL	(-2)
-+#define EXIT_SYSCALL_OOB	(-2)
-+#define EXIT_SYSCALL_TAIL	(-3)
- 
- /**
-  * arch_check_user_regs - Architecture specific sanity check for user mode regs
--- 
-2.31.1
+SGkgSmFuLXNhbg0KDQpUaGFua3MgZm9yIHRoZSBmaXguDQpJIGNoZWNrZWQsIGFuZCB0aGUgYnJv
+d3NlciBub3cgd29ya3MgZmluZSB3aXRoIHhlbm9tYWkzLjIgZG92ZXRhaWwuDQoNClRoYW5rIHlv
+dSBmb3IgeW91ciBxdWljayByZXNwb25zZS4NCkl0IHdhcyB2ZXJ5IGhlbHBmdWwuDQoNCll1dGEg
+QW5kbw0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4gDQpTZW50OiBGcmlkYXksIE5vdmVtYmVyIDEyLCAyMDIxIDM6
+NTcgQU0NClRvOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KQ2M6IFhlbm9tYWkg
+PHhlbm9tYWlAeGVub21haS5vcmc+OyBBbmRvIFl1dGEgPGFuZG91eXV1dGFAeWFtYWhhLW1vdG9y
+LmNvLmpwPg0KU3ViamVjdDogW1BBVENIXSBkb3ZldGFpbDogQWRqdXN0IEVYSVRfU1lTQ0FMTF8q
+IHZhbHVlcyB0byBhdm9pZCBjbGFzaCB3aXRoIHNlY2NvbXANCg0KRnJvbTogSmFuIEtpc3prYSA8
+amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCg0KX19zZWN1cmVfY29tcHV0aW5nLCBjYWxsZWQgYnkg
+c3lzY2FsbF90cmFjZV9lbnRlciwgcmV0dXJucyAtMSB3aGVuIGEgY2FsbCBzaG91bGQgYmUgc2tp
+cHBlZC4gV2UgbXVzdCBhdm9pZCB0aGF0IHRoaXMgaXMgaW50ZXJwcmV0ZWQgYXMgRVhJVF9TWVND
+QUxMX09PQiBpbiB0aGUgZG92ZXRhaWwgY2FzZS4NCg0KRml4ZXMsIGUuZy4sIGNyYXNoZXMgb2Yg
+Q2hyb21lIGluIHNhbmRib3ggbW9kZS4NCg0KUmVwb3J0ZWQtYnk6IEFuZG8gWXV0YSA8YW5kb3V5
+dXV0YUB5YW1haGEtbW90b3IuY28uanA+DQpTaWduZWQtb2ZmLWJ5OiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPg0KLS0tDQoNCiJGaXhlcyIgaXMgbXkgb2JzZXJ2YXRpb24gLSBZ
+dXRhLXNhbiwgcGxlYXNlIGNvbmZpcm0gYWxzbyBmb3IgeW91ciBzZXR1cC4NCg0KIGluY2x1ZGUv
+bGludXgvZW50cnktY29tbW9uLmggfCA0ICsrLS0NCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRp
+b25zKCspLCAyIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9lbnRy
+eS1jb21tb24uaCBiL2luY2x1ZGUvbGludXgvZW50cnktY29tbW9uLmggaW5kZXggMmEwOGIwMDYz
+MmI5Li40M2NmODQ2MTExZDkgMTAwNjQ0DQotLS0gYS9pbmNsdWRlL2xpbnV4L2VudHJ5LWNvbW1v
+bi5oDQorKysgYi9pbmNsdWRlL2xpbnV4L2VudHJ5LWNvbW1vbi5oDQpAQCAtNjYsOCArNjYsOCBA
+QA0KICAqIFN0YXR1cyBjb2RlcyBvZiBzeXNjYWxsIGVudHJ5IHdoZW4gRG92ZXRhaWwgaXMgZW5h
+YmxlZC4gTXVzdCBub3QNCiAgKiBjb25mbGljdCB3aXRoIHZhbGlkIHN5c2NhbGwgbnVtYmVycy4N
+CiAgKi8NCi0jZGVmaW5lIEVYSVRfU1lTQ0FMTF9PT0IJKC0xKQ0KLSNkZWZpbmUgRVhJVF9TWVND
+QUxMX1RBSUwJKC0yKQ0KKyNkZWZpbmUgRVhJVF9TWVNDQUxMX09PQgkoLTIpDQorI2RlZmluZSBF
+WElUX1NZU0NBTExfVEFJTAkoLTMpDQogDQogLyoqDQogICogYXJjaF9jaGVja191c2VyX3JlZ3Mg
+LSBBcmNoaXRlY3R1cmUgc3BlY2lmaWMgc2FuaXR5IGNoZWNrIGZvciB1c2VyIG1vZGUgcmVncw0K
+LS0NCjIuMzEuMQ0K
 
