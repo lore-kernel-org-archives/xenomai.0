@@ -1,15 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash
  with seccomp
-Date: Fri, 12 Nov 2021 08:29:18 +0000
-Message-ID: <576b4524874fd0ce2afa5abc8e428b9484d6f55c.camel@siemens.com>
 References: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
-In-Reply-To: <35bbd40e-b5ea-a2e4-c01b-282850b84eee@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <66B90E7467B92B45831322433DCDDAA9@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <576b4524874fd0ce2afa5abc8e428b9484d6f55c.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <da004f16-4588-5fcc-7c49-c74adc6117ac@siemens.com>
+Date: Fri, 12 Nov 2021 09:32:39 +0100
 MIME-Version: 1.0
+In-Reply-To: <576b4524874fd0ce2afa5abc8e428b9484d6f55c.camel@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "andouyuuta@yamaha-motor.co.jp" <andouyuuta@yamaha-motor.co.jp>
 
-T24gVGh1LCAyMDIxLTExLTExIGF0IDE5OjU3ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
-IHdyb3RlOg0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiAN
-Cj4gX19zZWN1cmVfY29tcHV0aW5nLCBjYWxsZWQgYnkgc3lzY2FsbF90cmFjZV9lbnRlciwgcmV0
-dXJucyAtMSB3aGVuIGENCj4gY2FsbCBzaG91bGQgYmUgc2tpcHBlZC4gV2UgbXVzdCBhdm9pZCB0
-aGF0IHRoaXMgaXMgaW50ZXJwcmV0ZWQgYXMNCj4gRVhJVF9TWVNDQUxMX09PQiBpbiB0aGUgZG92
-ZXRhaWwgY2FzZS4NCj4gDQo+IEZpeGVzLCBlLmcuLCBjcmFzaGVzIG9mIENocm9tZSBpbiBzYW5k
-Ym94IG1vZGUuDQo+IA0KPiBSZXBvcnRlZC1ieTogQW5kbyBZdXRhIDxhbmRvdXl1dXRhQHlhbWFo
-YS1tb3Rvci5jby5qcD4NCj4gU2lnbmVkLW9mZi1ieTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBz
-aWVtZW5zLmNvbT4NCj4gLS0tDQo+IA0KPiAiRml4ZXMiIGlzIG15IG9ic2VydmF0aW9uIC0gWXV0
-YS1zYW4sIHBsZWFzZSBjb25maXJtIGFsc28gZm9yIHlvdXIgc2V0dXAuDQo+IA0KPiAgaW5jbHVk
-ZS9saW51eC9lbnRyeS1jb21tb24uaCB8IDQgKystLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5z
-ZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xp
-bnV4L2VudHJ5LWNvbW1vbi5oIGIvaW5jbHVkZS9saW51eC9lbnRyeS1jb21tb24uaA0KPiBpbmRl
-eCAyYTA4YjAwNjMyYjkuLjQzY2Y4NDYxMTFkOSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51
-eC9lbnRyeS1jb21tb24uaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L2VudHJ5LWNvbW1vbi5oDQo+
-IEBAIC02Niw4ICs2Niw4IEBADQo+ICAgKiBTdGF0dXMgY29kZXMgb2Ygc3lzY2FsbCBlbnRyeSB3
-aGVuIERvdmV0YWlsIGlzIGVuYWJsZWQuIE11c3Qgbm90DQo+ICAgKiBjb25mbGljdCB3aXRoIHZh
-bGlkIHN5c2NhbGwgbnVtYmVycy4NCg0KTWF5YmUgZXh0ZW5kIHRoaXMgY29tbWVudCB3aHkgLTEg
-Y2FuIG5vdCBiZSB1c2VkIGhlcmU/DQoNCj4gICAqLw0KPiAtI2RlZmluZSBFWElUX1NZU0NBTExf
-T09CCSgtMSkNCj4gLSNkZWZpbmUgRVhJVF9TWVNDQUxMX1RBSUwJKC0yKQ0KPiArI2RlZmluZSBF
-WElUX1NZU0NBTExfT09CCSgtMikNCj4gKyNkZWZpbmUgRVhJVF9TWVNDQUxMX1RBSUwJKC0zKQ0K
-PiAgDQo+ICAvKioNCj4gICAqIGFyY2hfY2hlY2tfdXNlcl9yZWdzIC0gQXJjaGl0ZWN0dXJlIHNw
-ZWNpZmljIHNhbml0eSBjaGVjayBmb3IgdXNlciBtb2RlIHJlZ3MNCg0K
+On 12.11.21 09:29, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
+> On Thu, 2021-11-11 at 19:57 +0100, Jan Kiszka via Xenomai wrote:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> __secure_computing, called by syscall_trace_enter, returns -1 when a
+>> call should be skipped. We must avoid that this is interpreted as
+>> EXIT_SYSCALL_OOB in the dovetail case.
+>>
+>> Fixes, e.g., crashes of Chrome in sandbox mode.
+>>
+>> Reported-by: Ando Yuta <andouyuuta@yamaha-motor.co.jp>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> "Fixes" is my observation - Yuta-san, please confirm also for your setup.
+>>
+>>  include/linux/entry-common.h | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>> index 2a08b00632b9..43cf846111d9 100644
+>> --- a/include/linux/entry-common.h
+>> +++ b/include/linux/entry-common.h
+>> @@ -66,8 +66,8 @@
+>>   * Status codes of syscall entry when Dovetail is enabled. Must not
+>>   * conflict with valid syscall numbers.
+> 
+> Maybe extend this comment why -1 can not be used here?
+> 
+
+Good point.
+
+Jan
+
+>>   */
+>> -#define EXIT_SYSCALL_OOB     (-1)
+>> -#define EXIT_SYSCALL_TAIL    (-2)
+>> +#define EXIT_SYSCALL_OOB     (-2)
+>> +#define EXIT_SYSCALL_TAIL    (-3)
+>>
+>>  /**
+>>   * arch_check_user_regs - Architecture specific sanity check for user mode regs
+> 
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
