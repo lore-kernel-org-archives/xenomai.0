@@ -1,14 +1,12 @@
-Subject: Re: RTNET i.mx6 raw packets
-References: <freemail.20211001100323.12881.1@fmxmldata07.freemail.hu>
- <c75ef515-77a1-9d9f-deaa-fe13fe3239e7@siemens.com>
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@ba-healthcare.com>
-Message-ID: <d075a68d-5acf-811d-2272-107bf94cfcc3@ba-healthcare.com>
-Date: Thu, 7 Oct 2021 14:54:56 +0200
-In-Reply-To: <c75ef515-77a1-9d9f-deaa-fe13fe3239e7@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash with
+ seccomp
+Message-ID: <fbe65e53-a837-9c38-5ce3-bf26d773fe6e@siemens.com>
+Date: Fri, 12 Nov 2021 09:34:09 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,27 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Paal Tamas <paal_to@freemail.hu>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-We are working on a new patch for mainline kernel 5.10 + xenomai 
-(previous patch was based on nxp kernel 5.4 + xenomai 3.1).
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This work is under test. I hope to send a new proposal by the end of the 
-month.
+__secure_computing, called by syscall_trace_enter, returns -1 when a
+call should be skipped. We must avoid that this is interpreted as
+EXIT_SYSCALL_OOB in the dovetail case.
 
-Jean-Baptiste
+Fixes, e.g., crashes of Chrome in sandbox mode.
 
-Le 07/10/2021 à 10:12, Jan Kiszka a écrit :
-> On 01.10.21 10:03, Paal Tamas via Xenomai wrote:
->> Dear All, I would like to use RTNET with raw packets on the fec interface of my i.mx6 CPU. The purpose of the whole thing is to use the Soem ECAT master.
->> I am lost. I need your help. Xenomai_3.1, kernel 4.14.78.I am using this rtnet fec patch:
->> https://xenomai.org/pipermail/xenomai/2019-March/040580.html The fec interface is eth0.
-> There was a proposal to merge that change
-> (https://xenomai.org/pipermail/xenomai/2021-July/046000.html), and I
-> almost did but had to revert it again due to build issues
-> (https://xenomai.org/pipermail/xenomai/2021-August/046088.html). Any
-> news on this, Jean-Baptiste?
->
-> Jan
->
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/entry-common.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index 2a08b00632b9..26a89e869f3c 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -64,10 +64,11 @@
+ 
+ /*
+  * Status codes of syscall entry when Dovetail is enabled. Must not
+- * conflict with valid syscall numbers.
++ * conflict with valid syscall numbers. And with -1 which seccomp uses
++ * to skip an syscall.
+  */
+-#define EXIT_SYSCALL_OOB	(-1)
+-#define EXIT_SYSCALL_TAIL	(-2)
++#define EXIT_SYSCALL_OOB	(-2)
++#define EXIT_SYSCALL_TAIL	(-3)
+ 
+ /**
+  * arch_check_user_regs - Architecture specific sanity check for user mode regs
+-- 
+2.31.1
 
