@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2] dovetail: Adjust EXIT_SYSCALL_* values to avoid clash with
- seccomp
-Message-ID: <fbe65e53-a837-9c38-5ce3-bf26d773fe6e@siemens.com>
-Date: Fri, 12 Nov 2021 09:34:09 +0100
+Subject: [ANNOUNCE] Xenomai 3.1.2 released
+Message-ID: <4d0a4fd3-baa3-0e84-acaa-f33092e3ecda@siemens.com>
+Date: Fri, 12 Nov 2021 16:20:40 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -15,41 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Changes since 3.1.1:
 
-__secure_computing, called by syscall_trace_enter, returns -1 when a
-call should be skipped. We must avoid that this is interpreted as
-EXIT_SYSCALL_OOB in the dovetail case.
+Jan Kiszka (22):
+      drivers/ipc: bufp: Add missing initialization of rdsem/wrsem
+      cobalt/rtdm/fd: Fix default handler setups
+      cobalt/select: Add proper handling of EADV
+      cobalt/kevent: ipipe: Check for FPU events before debug events
+      testsuite/smokey: rtdm: Give delayed close more time for running in QEMU
+      testsuite/smokey: posix-mutex: Expand mutex holding time when running in VM
+      drivers/gpio: Add support for selecting real-time clock timestamps
+      build: Disable -Wformat-truncation
+      ci: Drop 4.14 from target list
+      ci: Switch to bullseye and gcc-10
+      ci: Add 32-bit x86 compat userland build
+      ci: Enable gpiolib
+      doc: Fix copy&paste mistake in corectl man page
+      cobalt/arch/arm: fptest: Add missing SIMD register clobbering
+      cobalt/posix/thread: Properly discard xnthread on registration error
+      drivers/testing/switchtest: Properly clean up xnthread on error
+      lib/alchemy: Fix rt_pipe_read* with timeouts
+      lib/alchemy/testsuite: Fix pipe-1 test case
+      lib/alchemy/testsuite: Extend pipe-1 test by timeout checks
+      lib/alchemy: Fix/clarify documentation of *_timed functions regarding abs_timeout
+      testsuite/latency: Use corresponding pclose for popen
+      config: Bump version number
 
-Fixes, e.g., crashes of Chrome in sandbox mode.
+Richard Weinberger (1):
+      kernel: syscall: Correctly check for x32
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/linux/entry-common.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Wolfgang Grandegger (1):
+      cobalt/rtdm: fix memory leak in rtdm_irq_free()
 
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 2a08b00632b9..26a89e869f3c 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -64,10 +64,11 @@
- 
- /*
-  * Status codes of syscall entry when Dovetail is enabled. Must not
-- * conflict with valid syscall numbers.
-+ * conflict with valid syscall numbers. And with -1 which seccomp uses
-+ * to skip an syscall.
-  */
--#define EXIT_SYSCALL_OOB	(-1)
--#define EXIT_SYSCALL_TAIL	(-2)
-+#define EXIT_SYSCALL_OOB	(-2)
-+#define EXIT_SYSCALL_TAIL	(-3)
- 
- /**
-  * arch_check_user_regs - Architecture specific sanity check for user mode regs
+Download available under
+https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1.2/xenomai-v3.1.2.tar.bz2
+
+Thanks to all contributors!
+
+Jan
+
 -- 
-2.31.1
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
