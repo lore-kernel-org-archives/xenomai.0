@@ -1,13 +1,12 @@
-Date: Sat, 27 Nov 2021 16:50:23 +0100 (CET)
-From: Dario Binacchi <dariobin@libero.it>
-Message-ID: <12883241.564980.1638028223215@mail1.libero.it>
-In-Reply-To: <23c7f9a2-6a27-fc52-5502-154cdc1f2cf6@siemens.com>
-References: <20211124234648.7428-1-dariobin@libero.it>
- <20211124234648.7428-4-dariobin@libero.it>
- <23c7f9a2-6a27-fc52-5502-154cdc1f2cf6@siemens.com>
-Subject: Re: [PATCH 5/6] drivers/can: fix updating of tx_count statistics
+Subject: Re: native message queue API in rtdm
+References: <CA+K1mPFKAZUUwv_rA1msEThhBQa8oVrPLMkc2fYkorW=zcQ+3w@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <83795136-096b-6618-599b-9e5ce7af6284@siemens.com>
+Date: Sun, 14 Nov 2021 20:59:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CA+K1mPFKAZUUwv_rA1msEThhBQa8oVrPLMkc2fYkorW=zcQ+3w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,82 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
 
-Hi Jan,
-
-> Il 25/11/2021 11:28 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
+On 13.11.21 08:49, C Smith via Xenomai wrote:
+> Can I call rt_queue_create() and rt_queue_read() from an rtdm kernel module ?
+> This used to work OK in Xenomai 2 but now in Xeno3.1 when I attempt to
+> #include <native/queue.h> in my rtdm code I get this error:
+> In file included from /usr/xenomai/include/alchemy/queue.h:21,
+>                  from /usr/xenomai/include/trank/native/queue.h:21,
+>                  from /home/csmith/src/my_app.c:16:
+> /usr/lib/gcc/x86_64-redhat-linux/8/include/stdint.h:9:26: error: no
+> include path in which to search for stdint.h
+>  # include_next <stdint.h>
 > 
->  
-> On 25.11.21 00:46, Dario Binacchi wrote:
-> > As in the Linux kernel, the counter is updated only after the message
-> > has been really transmitted.
-> > 
-> > Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> > ---
-> > 
-> >  kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
-> >  kernel/drivers/can/rtcan_flexcan.c         | 1 +
-> >  kernel/drivers/can/rtcan_raw.c             | 1 -
-> >  kernel/drivers/can/rtcan_virt.c            | 1 +
-> >  kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
-> >  5 files changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
-> > index 387e27cc0..da573aba6 100644
-> > --- a/kernel/drivers/can/mscan/rtcan_mscan.c
-> > +++ b/kernel/drivers/can/mscan/rtcan_mscan.c
-> > @@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
-> >  		out_8(&regs->cantier, 0);
-> >  		/* Wake up a sender */
-> >  		rtdm_sem_up(&dev->tx_sem);
-> > +		dev->tx_count++;
-> >  
-> >  		if (rtcan_loopback_pending(dev)) {
-> >  
-> > diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-> > index 7569d16f7..3348e8ce0 100644
-> > --- a/kernel/drivers/can/rtcan_flexcan.c
-> > +++ b/kernel/drivers/can/rtcan_flexcan.c
-> > @@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
-> >  			      &priv->tx_mb->can_ctrl);
-> >  		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
-> >  		rtdm_sem_up(&dev->tx_sem);
-> > +		dev->tx_count++;
-> >  		if (rtcan_loopback_pending(dev))
-> >  			rtcan_loopback(dev);
-> >  		handled = RTDM_IRQ_HANDLED;
-> > diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-> > index b17c1709d..dffc6e837 100644
-> > --- a/kernel/drivers/can/rtcan_raw.c
-> > +++ b/kernel/drivers/can/rtcan_raw.c
-> > @@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
-> >  	goto send_out2;
-> >      }
-> >  
-> > -    dev->tx_count++;
-> >      ret = dev->hard_start_xmit(dev, frame);
-> 
-> Can we solve this generically, without having to touch every driver?
 
-IMHO I think not.
+The in-kernel skin APIs (except for RTDM, obviously) where deprecated
+with Xenomai 3.0. Drivers should use RTDM services and interfaces in
+order to provide services to applications.
 
-> 
-> Should the counter only be updated when hard_start_xmit returns 0?
+Jan
 
-We are not sure if the message was transmitted. It may still be in the 
-transmission FIFO.
-The hard_start_xmit() of the C_CAN/D_CAN driver, returns 0 if it succeeded 
-in inserting the message into the transmit FIFO.
-
-Thanks and regards,
-Dario
-
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
