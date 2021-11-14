@@ -1,12 +1,10 @@
-Date: Thu, 18 Nov 2021 00:09:14 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: l2reflect - network-based I/O latency benchmark
-Message-ID: <20211118000914.677d12a2@md1za8fc.ad001.siemens.net>
-In-Reply-To: <ab49288f-2a12-4549-a335-5329a22d1585@siemens.com>
-References: <ab49288f-2a12-4549-a335-5329a22d1585@siemens.com>
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH] cobalt/syscall: dovetail: enable propagation from
+ handle_oob_syscall()
+Date: Sun, 14 Nov 2021 11:03:48 +0100
+Message-Id: <20211114100348.1235576-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka via Xenomai <xenomai@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Moessbauer, Felix (CT RDA IOT
- SES-DE)" <felix.moessbauer@siemens.com>
+To: xenomai@xenomai.org
 
-Am Wed, 24 Mar 2021 12:11:27 +0100
-schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+From: Philippe Gerum <rpm@xenomai.org>
 
-> Hi all,
-> 
-> as we discussed today in the community call how to use a network link
-> to benchmark Xenomai I/O, here is the link to our work for a different
-> activity that we shared with the dpdk community:
-> 
-> http://mails.dpdk.org/archives/dev/2020-September/181035.html
-> 
-> Being DPDK, this comes without interrupts, but that might be
-> extensible. There are minor updates available internally, so let us
-> know if interest is concrete, then we can refresh this.
+Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
+propagation status just like handle_pipelined_syscall(), with the same
+semantics. This is a requirement for properly handling our syscall
+format and the new prctl-based one concurrently. Fix up the signature
+accordingly.  This status is ignored on earlier Dovetail releases.
 
-In fact the version posted there has interrupts if one wants. We
-started off with polling only but decided to add interrupts for the
-mainlining.
-We hope to eventually succeed with mainline. More stakeholders asking
-for a "cyclictest" for ethernet I/O could help.
-There is not much internal stuff we did not yet publish, a bit of
-advanced tracing which can be regarded optional for the first round.
-And a bit of linux-bridge support which so far did not result in
-promising results (low latency) and will need more investigation.
+In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
+enabling our current syscall format, which defaults to y at the
+moment.  Force it on regardless to allow for detection when this call
+format is eventually deprecated upstream.
 
-All the internal bits can be shared any time but simply did not yet
-work well enough to propose them for mainline.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/cobalt/dovetail/syscall.c | 5 ++---
+ scripts/Kconfig.frag             | 1 +
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Henning
-
-> Jan
-> 
+diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
+index cec6c0244..440c069d5 100644
+--- a/kernel/cobalt/dovetail/syscall.c
++++ b/kernel/cobalt/dovetail/syscall.c
+@@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
+ 	return handle_head_syscall(stage == &inband_stage, regs);
+ }
+ 
+-void handle_oob_syscall(struct pt_regs *regs)
++int handle_oob_syscall(struct pt_regs *regs)
+ {
+-	int ret = handle_head_syscall(false, regs);
+-	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
++	return handle_head_syscall(false, regs);
+ }
+diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
+index dd91dc6c9..792128663 100644
+--- a/scripts/Kconfig.frag
++++ b/scripts/Kconfig.frag
+@@ -4,6 +4,7 @@ menuconfig XENOMAI
+ 	select IPIPE if HAVE_IPIPE_SUPPORT
+ 	select IPIPE_WANT_APIREV_2 if IPIPE
+ 	select DOVETAIL if HAVE_DOVETAIL
++	select DOVETAIL_LEGACY_SYSCALL_RANGE if HAVE_DOVETAIL
+ 	default y
+ 	help
+ 	  Xenomai's Cobalt core is a real-time extension to the Linux
+-- 
+2.31.1
 
 
