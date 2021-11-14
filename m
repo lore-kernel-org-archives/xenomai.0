@@ -1,9 +1,7 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH 5/6] drivers/can: fix updating of tx_count statistics
-Date: Thu, 25 Nov 2021 00:46:47 +0100
-Message-Id: <20211124234648.7428-4-dariobin@libero.it>
-In-Reply-To: <20211124234648.7428-1-dariobin@libero.it>
-References: <20211124234648.7428-1-dariobin@libero.it>
+From: xenomai@xenomai.org
+Subject: [DOVETAIL] 5.10.76-dovetail3 released
+Message-Id: <E1mmHcr-0002kL-K3@xenomai.org>
+Date: Sun, 14 Nov 2021 16:41:01 +0100
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,82 +11,9 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, Dario Binacchi <dariobin@libero.it>, Jan Kiszka <jan.kiszka@siemens.com>, Socketcan-users@lists.berlios.de, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian.Smolorz@stud.uni-hannover.de
 
-As in the Linux kernel, the counter is updated only after the message
-has been really transmitted.
+Download URL: https://xenomai.org/downloads/dovetail/patch-5.10.76-dovetail3.patch
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
-
- kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
- kernel/drivers/can/rtcan_flexcan.c         | 1 +
- kernel/drivers/can/rtcan_raw.c             | 1 -
- kernel/drivers/can/rtcan_virt.c            | 1 +
- kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
- 5 files changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
-index 387e27cc0..da573aba6 100644
---- a/kernel/drivers/can/mscan/rtcan_mscan.c
-+++ b/kernel/drivers/can/mscan/rtcan_mscan.c
-@@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
- 		out_8(&regs->cantier, 0);
- 		/* Wake up a sender */
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 
- 		if (rtcan_loopback_pending(dev)) {
- 
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index 7569d16f7..3348e8ce0 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 			      &priv->tx_mb->can_ctrl);
- 		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 		if (rtcan_loopback_pending(dev))
- 			rtcan_loopback(dev);
- 		handled = RTDM_IRQ_HANDLED;
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index b17c1709d..dffc6e837 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
- 	goto send_out2;
-     }
- 
--    dev->tx_count++;
-     ret = dev->hard_start_xmit(dev, frame);
- 
-     /* Return number of bytes sent upon successful completion */
-diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
-index c86c17fc3..2dc743031 100644
---- a/kernel/drivers/can/rtcan_virt.c
-+++ b/kernel/drivers/can/rtcan_virt.c
-@@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
- 
- 	/* we can transmit immediately again */
- 	rtdm_sem_up(&tx_dev->tx_sem);
-+	dev->tx_count++;
- 
- 	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
- 
-diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-index bd6c0ba5c..0f49551f9 100644
---- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
-+++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-@@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
- 	if (irq_source & SJA_IR_TI) {
- 	    /* Wake up a sender */
- 	    rtdm_sem_up(&dev->tx_sem);
-+	    dev->tx_count++;
- 
- 	    if (rtcan_loopback_pending(dev)) {
- 
--- 
-2.17.1
-
+Repository: https://git.xenomai.org/linux-dovetail
+Release tag: v5.10.76-dovetail3-rebase
 
