@@ -1,8 +1,18 @@
-From: csmith <csmithquestions@gmail.com>
-Subject: [PATCH 1/1] kernel/cobalt/rtdm: Further documentation for
- rtdm_mmap_kmem/vmem/iomem() and rtdm_mmap_to_user()
-Date: Fri, 12 Nov 2021 16:33:14 -0800
-Message-Id: <20211113003314.8758-1-csmithquestions@gmail.com>
+Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
+ handle_oob_syscall()
+References: <20211114100348.1235576-1-rpm@xenomai.org>
+ <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
+ <878rxponoo.fsf@xenomai.org>
+ <784a15c5-fd74-77d5-f42f-82e20173f53f@siemens.com>
+ <874k8dokxg.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ac3df9c9-7196-6001-cfae-9be391ac4118@siemens.com>
+Date: Mon, 15 Nov 2021 11:56:16 +0100
+MIME-Version: 1.0
+In-Reply-To: <874k8dokxg.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,62 +21,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-kernel/cobalt/rtdm: Further documentation for rtdm_mmap_kmem/vmem/iomem() 
-Signed-off-by: csmith <csmithquestions@gmail.com>
----
- kernel/cobalt/rtdm/drvlib.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+On 15.11.21 09:56, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 15.11.21 08:57, Philippe Gerum wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
+>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>
+>>>>> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
+>>>>> propagation status just like handle_pipelined_syscall(), with the same
+>>>>> semantics. This is a requirement for properly handling our syscall
+>>>>> format and the new prctl-based one concurrently. Fix up the signature
+>>>>> accordingly.  This status is ignored on earlier Dovetail releases.
+>>>>>
+>>>>> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
+>>>>> enabling our current syscall format, which defaults to y at the
+>>>>> moment.  Force it on regardless to allow for detection when this call
+>>>>> format is eventually deprecated upstream.
+>>>>>
+>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>>> ---
+>>>>>  kernel/cobalt/dovetail/syscall.c | 5 ++---
+>>>>>  scripts/Kconfig.frag             | 1 +
+>>>>>  2 files changed, 3 insertions(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
+>>>>> index cec6c0244..440c069d5 100644
+>>>>> --- a/kernel/cobalt/dovetail/syscall.c
+>>>>> +++ b/kernel/cobalt/dovetail/syscall.c
+>>>>> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
+>>>>>  	return handle_head_syscall(stage == &inband_stage, regs);
+>>>>>  }
+>>>>>  
+>>>>> -void handle_oob_syscall(struct pt_regs *regs)
+>>>>> +int handle_oob_syscall(struct pt_regs *regs)
+>>>>>  {
+>>>>> -	int ret = handle_head_syscall(false, regs);
+>>>>> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
+>>>>> +	return handle_head_syscall(false, regs);
+>>>>>  }
+>>>>
+>>>> This unfortunately makes the Xenomai 3.2 release incompatible with
+>>>> latest stable Dovetail. I would now have to hectically roll out 3.2.1
+>>>> and cross fingers that people will use it. Better than before, but still
+>>>> not smooth.
+>>>
+>>> Did you try this patch? What went wrong?
+>>>
+>>
+>> The patch passed testing and is not the issue. That is in the fact that
+>> we must update to callback in order to have stable syscall processing
+>> again because 3.2 would return random codes for it and can fail subtly.
+>>
+> 
+> Do you have a failure scenario in mind?
+> 
 
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 7b7b0830c..56da04bf8 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -1973,6 +1973,10 @@ int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
-  * vmalloc(). To map physical I/O memory to user-space use
-  * rtdm_iomap_to_user() instead.
-  *
-+ * @note This service is provided only for use in .ioctl operation handlers. 
-+ * Otherwise RTDM drivers implementing a .mmap operation should use 
-+ * rtdm_mmap_kmem(), rtdm_mmap_vmem(), or rtdm_mmap_iomem().
-+ * 
-  * @note RTDM supports two models for unmapping the memory area:
-  * - manual unmapping via rtdm_munmap(), which may be issued from a
-  * driver in response to an IOCTL call, or by a call to the regular
-@@ -2084,7 +2088,7 @@ EXPORT_SYMBOL_GPL(rtdm_iomap_to_user);
- /**
-  * Map a kernel logical memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-  * driver, for mapping a virtual memory area with a direct physical
-  * mapping over the user address space referred to by @a vma.
-  *
-@@ -2107,10 +2111,10 @@ int rtdm_mmap_kmem(struct vm_area_struct *vma, void *va)
- EXPORT_SYMBOL_GPL(rtdm_mmap_kmem);
- 
- /**
-- * Map a virtual memory range to a virtual user area.
-+ * Map a driver's kernel virtual memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-- * driver, for mapping a purely virtual memory area over the user
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-+ * driver, for mapping a purely virtual kernel memory area over the user
-  * address space referred to by @a vma.
-  *
-  * @param[in] vma The VMA descriptor to receive the mapping.
-@@ -2138,7 +2142,7 @@ EXPORT_SYMBOL_GPL(rtdm_mmap_vmem);
- /**
-  * Map an I/O memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-  * driver, for mapping an I/O memory area over the user address space
-  * referred to by @a vma.
-  *
+Xenomai 3.2 could return random results from handle_oob_syscall - as it
+is marked as 'void' -, causing the core to do the wrong thing like
+taking the long exit path for a handled oob call.
+
+Jan
+
 -- 
-2.17.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
