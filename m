@@ -1,15 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: questions about comments on
- https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
-Date: Mon, 13 Dec 2021 01:38:21 +0000
-Message-ID: <MN2PR11MB4285BDFDBBA5193F5586B42AF2749@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
- <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
-In-Reply-To: <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
-Content-Language: en-US
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v3 3/8] ci/kas: Disable partition expanding
+ during first boot
+Date: Mon, 15 Nov 2021 11:13:41 +0100
+Message-Id: <20211115101346.3566075-4-florian.bezdeka@siemens.com>
+In-Reply-To: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
+References: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Cgo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6
-a2FAc2llbWVucy5jb20+IAo+U2VudDogVGh1cnNkYXksIERlY2VtYmVyIDksIDIwMjEgNTozNSBQ
-TQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlA
-eGVub21haS5vcmcKPlN1YmplY3Q6IFJlOiBxdWVzdGlvbnMgYWJvdXQgY29tbWVudHMgb24gaHR0
-cHM6Ly9naXRsYWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMzMK
-Pgo+T24gMDcuMTIuMjEgMDQ6MTEsIENoZW4sIEhvbmd6aGFuIHdyb3RlOgo+PiBIaSBKYW4KPj4g
-Cj4+IEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91dCBjb21tZW50cyBvbiAgaHR0cHM6Ly9naXRs
-YWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMzMgYW5kIG5lZWQg
-eW91ciBoZWxwIHRvIGNvbW1lbnQgbW9yZS4KPj4gCj4+IDEuIEkgZG8gbm90IHF1aXRlIHVuZGVy
-c3RhbmQgdGhlIHJlcXVpcmVtZW50ICJ2aXN1YWxpemUgdGFzayBzd2l0Y2hlcyBjb3JyZWN0bHkg
-aW4gS2VybmVsc2hhcmsgKGNvbG9yIGluIENQVSBiYXIgaXMgbm90IHVwZGF0aW5nIG9uIGNvYmFs
-dF9zd2l0Y2hfY29udGV4dCkiLgo+PiAKPj4gV2hlbiBJIGNsaWNrIHRoZSBjb2JhbHRfc3dpdGNo
-X2NvbnRleHQgZXZlbnQgbGlzdGVkIGluIHRoZSBldmVudCB0YWJsZSBvbiB0aGUgc2Vjb25kIGhh
-bGYgaW4gdGhlIGtlcm5lbHNoYXJrLCBhY3R1YWxseSBjb2xvciBpbiBjcHUgYmFyIGlzIHVwZGF0
-aW5nIHRvIAo+PiBncmVlbiBiZWNhdXNlIHRoZXJlIGlzIGxvbmcgZ3JlZW4gdmVydGljYWwgIGxp
-bmUgdG8gbWFyayBmb2N1c2VkIGV2ZW50IGxpa2UgYXR0YWNoZWQgcGljdHVyZS4gIEluIGFkZGl0
-aW9uICwgSW4gc3BpdGUgb2YgZm9jdXNlZCB0aGluZywgIGNvbG9ycyBtYWlubHkgCj4+IGNoYW5n
-ZSBkZXBlbmRpbmcgb24gd2hhdCB0YXNrIGlzIHJ1bm5pbmcgZm9yIGNwdSBwbG90cyBpbiBrZXJu
-ZWxzaGFyay4gd2hlbiBjb2JhbHRfc3dpdGNoX2NvbnRleHQgaXMgdHJhY2VkLCBpdCBzdGlsbCBi
-ZSBpbiB0aGUgcHJldiBjb250ZXh0IGFuZCBpdHMgCj4+IGNvbG9yIGlzIHNhbWUgd2l0aCB0YXNr
-IHByZXYgaW4ga2VybmVsc2hhcmsuIERvIHdlIHdhbnQgdG8gdXBkYXRlIGNvbG9yIG9mICBjb2Jh
-bHRfc3dpdGNoX2NvbnRleHQgIHRvIHNwZWNpZmljIGNvbG9yIGRpZmZlcmVudCBmcm9tIGFsbCB0
-YXNrcyBldmVuIGlmIHRoZXJlIGlzIG5vIAo+PiBmb2N1c2VkIHRoaW5nPyAgV2hhdCByZXN1bHQg
-ZG8gd2UgbmVlZCB0byBhY2hpZXZlIHdoZW4gdGhlcmUgaXMgY29iYWx0X3N3aXRjaF9jb250ZXh0
-LCBDb3VsZCB5b3UgYmUgbW9yZSBzcGVjaWZpYz8KPj4gCj4KPkkgYXNzdW1lIHRoaXMgb25lIGlz
-IHJlc29sdmVkIG5vdywgYXQgbGVhc3QgcmVnYXJkaW5nIHdoYXQgdGhlIGdvYWwKPndvdWxkIGJl
-Lgo+Cj4+IDIuIFJlZ2FyZGluZyAgdGhlIHJlcXVpcmVtZW50ICIgdmlzdWFsaXplIFJUL05vbi1S
-VCAob3V0LW9mLWJhbmQvaW4tYmFuZCkgc3RhdGUgaW4gQ1BVIGJhcikiLAo+PiAgICAgMi4xLiBE
-byB3ZSBuZWVkIHRvIGRpZmZlcmVudGlhdGUgc3RhdGUgIHJ1bm5pbmcgYSBMaW51eCB0YXNrIG91
-dC1vZi1iYW5kIGFuZCBydW5uaW5nIHdoYXRldmVyIGNvZGUgZnJvbSB0aGUgb3V0LW9mLWJhbmQg
-ZXhlY3V0aW9uIHN0YWdlIGFzIGRlc2NyaWJlZCBpbiAKPj4gICAgICAgICAgICAgICIgV2hhdCB5
-b3UgcmVhbGx5IG5lZWQgdG8ga25vdyBhdCB0aGlzIHBvaW50IiBvZiAgaHR0cHM6Ly9ldmxwcm9q
-ZWN0Lm9yZy9kb3ZldGFpbC9hbHRzY2hlZC8/Cj4+ICAgICAyLjIgV2hhdCBzdGF0ZSBkbyB3ZSB3
-YW50IHRvIHNob3cgIGluIENQVSBiYXI/IERpZmZlcmVudCBjb2xvciBjb3ZlcmluZyB0aGUgc2l6
-ZSBvZiAgUlQvTm9uLVJUIHN0YXRlIG90aGVyIHRoYW4gYWxsIHRhc2tzIGFuZCBDUFVzPyAgSWYg
-c28sIHdlIG1heSBhc2sgZm9yIGEgcGx1Z2luCj4+ICAgICAgICAgICBpbiBrZXJuZWxzaGFyayAs
-IHdoaWNoIHdvdWxkIHJhaXNlIHNpbWlsYXIgcXVlc3Rpb24gYXMgeW91IG1lbnRpb25lZCBpbiBj
-b21tZW50cy4KPgo+SSBzdXNwZWN0IGl0IHdvdWxkIGJlIGJlc3QgdG8gZGVjb3VwbGUgdG8gc3Rh
-Z2Ugc3RhdGUgKGluLWJhbmQsIG9vYikKPmZyb20gdGhlIGN1cnJlbnQgdGFzaywgbWF5YmUgYnkg
-YWRkaW5nIGFub3RoZXIgYmFyIHVuZGVybmVhdGggdGhlIHRhc2sKPmJhciBmb3IgZWFjaCBDUFUg
-dGhhdCBzaG93cyB0aGlzIHN0YXRlLgoKV2hhdCBhYm91dCBwYWludGluZyBhIGhvbGxvdyBibHVl
-IGJveCB1bmRlciB0aGUgYmFzZWxpbmUgb2YgY29ycmVzcG9uZGluZyB0YXNrIAp0byBtYXJrIHJ1
-bm5pbmcgaW4gT09CIHN0YXRlLCBzdGFydGluZyBmcm9tIGZpcnN0IGNvYmFsdF9zd2l0Y2hfY29u
-dGV4dCBzd2l0Y2hpbmcKdGFzayBpbiAgdG8gbmV4dCBjb2JhbHRfc3dpdGNoX2NvbnRleHQgc3dp
-dGNoaW5nIGl0IG91dCBsaWtlIGF0dGFjaGVkIHBpYz8KCj4KPkluIGZhY3QsIHZpc3VhbGl6aW5n
-IHRoZSBkb3ZldGFpbCBzdGF0ZSBjb3VsZCBiZSBzZWVuIGFzIGFub3RoZXIgdXNlCj5jYXNlIGZv
-ciB2aXN1YWxpemluZyB0aGluZ3MgbGlrZSBpbnRlcnJ1cHQgbWFza3Mgb2YgcHJlZW1wdGlvbiBs
-b2Nrcwo+dGhhdCBMaW51eCB1cHN0cmVhbSBoYXMuIE1heWJlIHRoZXJlIGFyZSBhbHJlYWR5IGlk
-ZWFzIG9yIGV2ZW4gYml0cyB0bwo+bWFrZSB0aGF0IHBvc3NpYmxlLCBhbmQgd291bGQgY291bGQg
-cmUtdXNlZCB0aGVtLiBPciB3ZSBjb3VsZCBzZWxsIG91cgo+ZGVtYW5kIHZpYSBlbmFibGluZyB0
-aG9zZSBvdGhlciBzY2VuYXJpb3MgYXMgd2VsbC4uLgo+Cj5KYW4KPgo+LS0gCj5TaWVtZW5zIEFH
-LCBUIFJEQSBJT1QKPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
-ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBJTUdfNDk2MC5KUEcKVHlwZTogaW1hZ2UvanBlZwpT
-aXplOiA1MjkyOTM4IGJ5dGVzCkRlc2M6IElNR180OTYwLkpQRwpVUkw6IDxodHRwOi8veGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTEyMTMvNGFhODk0MTYvYXR0
-YWNobWVudC5qcGU+Cg==
+Trying to expand the partition during first boot doesn't make sense
+as we use NFS for deployment. Removing it helps to reduce the first boot
+time a bit.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ opt-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/opt-ci.yml b/opt-ci.yml
+index 9df02d0..4d1ab60 100644
+--- a/opt-ci.yml
++++ b/opt-ci.yml
+@@ -27,5 +27,6 @@ repos:
+ 
+ local_conf_header:
+   xenomai-ci: |
++    IMAGE_INSTALL_remove += "expand-on-first-boot"
+     IMAGE_TYPE = "${@ 'ext4-img' if d.getVar('MACHINE', True).startswith('qemu') else 'targz-img' }"
+     COMPRESS = "${@ 'gz' if d.getVar('MACHINE', True).startswith('qemu') else '' }"
+\ No newline at end of file
+-- 
+2.30.2
+
+
