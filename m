@@ -1,15 +1,12 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
- cobalt context switch event
-Date: Tue, 14 Dec 2021 06:44:27 +0000
-Message-ID: <MN2PR11MB42851F06D18E71D4A540AA47F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20211214031537.14914-1-hongzhan.chen@intel.com>
- <20211214031537.14914-2-hongzhan.chen@intel.com>
- <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
-In-Reply-To: <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH v3 5/8] ci/kas: Skip ssh key regeneration for
+ all ci targets
+Date: Mon, 15 Nov 2021 11:13:43 +0100
+Message-Id: <20211115101346.3566075-6-florian.bezdeka@siemens.com>
+In-Reply-To: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
+References: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,37 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Pg0KPg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+U2VudDogVHVlc2RheSwgRGVjZW1iZXIgMTQsIDIwMjEg
-MjozOCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4
-ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggMS8yXSBrZXJuZWwt
-c2hhcms6IGFkZCBwbHVnaW4gZm9yIGhhbmRsaW5nIHhlbm9tYWkgY29iYWx0IGNvbnRleHQgc3dp
-dGNoIGV2ZW50DQo+DQo+T24gMTQuMTIuMjEgMDQ6MTUsIEhvbmd6aGFuIENoZW4gd3JvdGU6DQo+
-PiBGb3IgWGVub21haS1jb2JhbHQgZW5hYmxlZCBzeXN0ZW0sIGNvYmFsdF9zd2l0Y2hfY29udGV4
-dCBtZWFucyB0aGF0IHRoZXJlDQo+PiBpcyBjb250ZXh0IHN3aXRjaCBpbiBjb21wYW5pb24gY29y
-ZShyZWFsdGltZSBjb3JlKSwgd2hpY2ggd2UgbWF5IG5lZWQNCj4+IHRvIGRvIHNwZWNpYWwgdHJl
-YXRtZW50IGFuZCB0YWtlIGNvcnJlY3QgYWN0aW9uIGFzIG1haW4ga2VybmVsIHNjaGVkX3N3aXRj
-aC4NCj4+IFdlIG5lZWQgdG8gdXBkYXRlIGNwdSBiYXIgcmVnYXJkaW5nIGNvYmFsdF9zd2l0Y2hf
-Y29udGV4dCBldmVudCB0byBjb3JyZWN0DQo+PiBjb2xvciBhcyBzd2l0Y2hpbmctaW4gdGFzay4N
-Cj4NCj5JdCdzIHRyaWNrZXIuLi4gSSBoYXZlIHRyYWNlIHdpdGggdGhlIGZvbGxvd2luZyBzZXF1
-ZW5jZSBoZXJlOg0KPg0KPiAgICAgICAgICAgICBnZGItODk4ICAgWzAwMF0gICA3NTMuOTQ0MTM3
-OiBjb2JhbHRfc3dpdGNoX2NvbnRleHQ6IHByZXZfbmFtZT1ST09ULzAgcHJldl9waWQ9MCBwcmV2
-X3ByaW89LTEgcHJldl9zdGF0ZT0weDIxODAwOCA9PT4gbmV4dF9uYW1lPXB0aGVscGVyIG5leHRf
-cGlkPTkxMiBuZXh0X3ByaW89Mw0KPiAgICAgICAgICAgICBnZGItODk4ICAgWzAwMF0gICA3NTMu
-OTQ0MTQyOiBjb2JhbHRfdGltZXJfc3RhcnQ6ICAgdGltZXI9MHhlZjdlODIwMChbd2F0Y2hkb2dd
-KSB2YWx1ZT00MDAwMDAwMDAwIGludGVydmFsPTAgbW9kZT0weDANCj4gICAgICAgIHB0aGVscGVy
-LTkxMiAgIFswMDBdICAgNzUzLjk0NDE3MjogY29iYWx0X3NoYWRvd19oYXJkZW5lZDogc3RhdGU9
-MHgyNDA4NDAgaW5mbz0weDANCj4NCj5Zb3VyIHBsdWdpbiBjb3JyZWN0bHkgc3dpdGNoZXMgY29s
-b3JzIG9uIGNvYmFsdF9zd2l0Y2hfY29udGV4dCwgYnV0IHRoYXQNCj5jb2JhbHRfdGltZXJfc3Rh
-cnQgaXMgc3RpbGwgcnVubmluZyB1bmRlciB0aGUgcHJldmlvdXMgcGlkLCBjYXVzaW5nIGENCj5j
-b2xvciBzd2l0Y2gtYmFjayBhbmQgdGhhbiBmb3J0aCBvbiBjb2JhbHRfc2hhZG93X2hhcmRlbmVk
-LiBXZSBuZWVkIHRvDQo+dW5kZXJzdGFuZCB3aHkgYW5kIHBvc3NpYmx5IGZpeCB0aGF0IG9yIHJl
-dGhpbmsgdGhlIHZpc3VhbGl6YXRpb24uDQoNCllvdSBuZWVkIHRvIGNsaWNrIG1lbnUgUGxvdHMt
-PnRhc2tzIGFuZCB0aGVuIHNlbGVjdCBSVCB0YXNrcyBhbmQgdGhlbiBhcHBseS4gSXQgd291bGQg
-dGlnZ2VyIHBsdWdpbiBzaGFwZSB0byByZWRyYXcNCmFuZCB0aGVuIHRoZSBpc3N1ZSB5b3Ugb2Jz
-ZXJ2ZWQgd291bGQgYmUgZml4ZWQgYnkgcGx1Z2luLiANCg0KPg0KPkphbg0KPg0KPi0tIA0KPlNp
-ZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRl
-ZCBMaW51eA0K
+To minimize CI build time, the ssh-regen part will be skipped on all
+ci / test targets.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ opt-ci.yml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/opt-ci.yml b/opt-ci.yml
+index 4d1ab60..f90277a 100644
+--- a/opt-ci.yml
++++ b/opt-ci.yml
+@@ -27,6 +27,8 @@ repos:
+ 
+ local_conf_header:
+   xenomai-ci: |
++    ROOTFS_POSTPROCESS_COMMAND_remove = "image_postprocess_sshd_key_regen"
++    IMAGE_INSTALL_remove += "sshd-regen-keys"
+     IMAGE_INSTALL_remove += "expand-on-first-boot"
+     IMAGE_TYPE = "${@ 'ext4-img' if d.getVar('MACHINE', True).startswith('qemu') else 'targz-img' }"
+     COMPRESS = "${@ 'gz' if d.getVar('MACHINE', True).startswith('qemu') else '' }"
+\ No newline at end of file
+-- 
+2.30.2
+
 
