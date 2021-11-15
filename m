@@ -1,16 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return
- -ENOSYS for unportable features
-Date: Tue, 30 Nov 2021 01:07:22 +0000
-Message-ID: <MN2PR11MB42857E2B441D4866E383F83FF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20211129010357.20263-1-hongzhan.chen@intel.com>
- <20211129010357.20263-2-hongzhan.chen@intel.com>
- <b5228039-7729-0921-ea49-ab00a1b12dc8@siemens.com>
-In-Reply-To: <b5228039-7729-0921-ea49-ab00a1b12dc8@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <20211114100348.1235576-1-rpm@xenomai.org>
+ <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
+ handle_oob_syscall()
+Date: Mon, 15 Nov 2021 08:57:55 +0100
+In-reply-to: <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
+Message-ID: <878rxponoo.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,55 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IE1vbmRheSwgTm92ZW1iZXIgMjksIDIwMjEgMzo1
-OCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCB2MiAyLzJdIGNvYmFsdC90cmFj
-ZTogZG92ZXRhaWw6IHJlbW92ZSBUT0RPIGFuZCByZXR1cm4gLUVOT1NZUyBmb3IgdW5wb3J0YWJs
-ZSBmZWF0dXJlcw0KPg0KPk9uIDI5LjExLjIxIDAyOjAzLCBIb25nemhhbiBDaGVuIHZpYSBYZW5v
-bWFpIHdyb3RlOg0KPj4gU29tZSBvZiB0aGUgZmVhdHVyZXMgYXJlIHVucG9ydGFibGUgYmVjYXVz
-ZSBmdHJhY2UgZG9lcyBub3QNCj4+IHByb3ZpZGUgZXF1aXZhbGVudCBmdW5jdGlvbmFsaXR5IHRv
-IHRoZSBpcGlwZSB0cmFjZXIgKG5hbWVseSBkb3VibGUNCj4+IGJ1ZmZlcmluZyBzbyB0aGF0IHlv
-dSBjYW4gY29udGludWUgdG8gcmVjb3JkIGluIGZsaWdodC1yZWNvcmRlciBtb2RlDQo+PiB3aGls
-ZSBhIHByZXZpb3VzIHJlY29yZGluZyByZW1haW5zIGF2YWlsYWJsZSkuDQo+PiANCj4+IFdlIHJl
-bW92ZSBUT0RPcyB0byBwYXNzIGFsbHllc2NvbmZpZyBtYWtlLg0KPj4gDQo+PiBTaWduZWQtb2Zm
-LWJ5OiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+IC0tLQ0KPj4g
-IGluY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS90cmFjZS5oIHwgMTUgKysr
-KystLS0tLS0tLS0tDQo+PiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgMTAgZGVs
-ZXRpb25zKC0pDQo+PiANCj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92
-ZXRhaWwvcGlwZWxpbmUvdHJhY2UuaCBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9w
-aXBlbGluZS90cmFjZS5oDQo+PiBpbmRleCA0NzkxOTFlMGUuLmM3ZGYzYmU3OSAxMDA2NDQNCj4+
-IC0tLSBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS90cmFjZS5oDQo+
-PiArKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvdHJhY2UuaA0K
-Pj4gQEAgLTI3LDIwICsyNywxNyBAQA0KPj4gIA0KPj4gIHN0YXRpYyBpbmxpbmUgaW50IHhudHJh
-Y2VfbWF4X2JlZ2luKHVuc2lnbmVkIGxvbmcgdikNCj4+ICB7DQo+PiAtCVRPRE8oKTsNCj4+IC0J
-cmV0dXJuIDA7DQo+PiArCXJldHVybiAtRU5PU1lTOw0KPj4gIH0NCj4+ICANCj4+ICBzdGF0aWMg
-aW5saW5lIGludCB4bnRyYWNlX21heF9lbmQodW5zaWduZWQgbG9uZyB2KQ0KPj4gIHsNCj4+IC0J
-VE9ETygpOw0KPj4gLQlyZXR1cm4gMDsNCj4+ICsJcmV0dXJuIC1FTk9TWVM7DQo+PiAgfQ0KPj4g
-IA0KPj4gIHN0YXRpYyBpbmxpbmUgaW50IHhudHJhY2VfbWF4X3Jlc2V0KHZvaWQpDQo+PiAgew0K
-Pj4gLQlUT0RPKCk7DQo+PiAtCXJldHVybiAwOw0KPj4gKwlyZXR1cm4gLUVOT1NZUzsNCj4+ICB9
-DQo+PiAgDQo+PiAgc3RhdGljIGlubGluZSBpbnQgeG50cmFjZV91c2VyX3N0YXJ0KHZvaWQpDQo+
-PiBAQCAtOTYsMTQgKzkzLDEyIEBAIHN0YXRpYyBpbmxpbmUgaW50IHhudHJhY2VfdGljayh1bnNp
-Z25lZCBsb25nIGRlbGF5X3RpY2tzKSAvKiBucyAqLw0KPj4gIA0KPj4gIHN0YXRpYyBpbmxpbmUg
-aW50IHhudHJhY2VfcGFuaWNfZnJlZXplKHZvaWQpDQo+PiAgew0KPj4gLQlUT0RPKCk7DQo+PiAt
-CXJldHVybiAwOw0KPj4gKwlyZXR1cm4gLUVOT1NZUzsNCj4+ICB9DQo+PiAgDQo+PiAgc3RhdGlj
-IGlubGluZSBpbnQgeG50cmFjZV9wYW5pY19kdW1wKHZvaWQpDQo+PiAgew0KPj4gLQlUT0RPKCk7
-DQo+PiAtCXJldHVybiAwOw0KPj4gKwlyZXR1cm4gLUVOT1NZUzsNCj4+ICB9DQo+PiAgDQo+DQo+
-TG9va2luZyBhdCB0aGVzZSB0d28gcGFuaWMgImFic3RyYWN0aW9ucyI6IFRoZXkgYXJlIG9ubHkg
-Y2FsbGVkIGJ5DQo+ZG92ZXRhaWwtc3BlY2lmaWMgaGFuZGxlX29vYl90cmFwX2VudHJ5LiBUaGVy
-ZSwgd2Ugc2hvdWxkIHJhdGhlciB1c2UNCj5rZXJuZWwgbmF0aXZlIHRyYWNpbmcgZnVuY3Rpb25z
-IHRvIHN0b3AgYW5kIGR1bXAgYSB0cmFjZS4NCg0KSSBmb3VuZCB0aGF0IGluIEVWTCBpbXBsZW1l
-bnRhdGlvbiBvZiAgaGFuZGxlX29vYl90cmFwX2VudHJ5ICxlc3BlY2lhbGx5IA0KZm9yIG5vdGVf
-dHJhcCBpbXBsZW1lbnRhdGlvbiAsIGl0IGhhdmUgbm90IGltcGxlbWVudGVkIHN0b3AgYW5kIGR1
-bXANCmEgdHJhY2UgYW5kIGp1c3QgdHJ5IHRvIHByaW50ayB3YXJuaW5nIChwbGVhc2UgcmVmZXIg
-dG8ga2VybmVsL2V2bC90aHJlYWQuYyBvZiBldmwgYnJhbmNoKS4NCmhhbmRsZV9vb2JfdHJhcF9l
-bnRyeSB3b3VsZCB0cnkgdG8gZGVtb3RlIGN1cnJlbnQgc3RhZ2UgYW5kIGxlYXZlIGluLWJhbmQg
-dG8gaGFuZGxlDQpmb2xsb3dpbmcgdGhpbmcuIElmIHdlIGRvIG5hdGl2ZSB0aGluZyBoZXJlLCBp
-cyB0aGVyZSBkdXBsaWNhdGVkIHRoaW5nIGhhcHBlbj8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBD
-aGVuDQoNCg0KPg0KPkFuZCBmb3IgSS1waXBlLCB3ZSBjYW4gZm9sZCB0aGUgdHdvIGFic3RyYWN0
-aW9ucyBpbnRvIGhhbmRsZV9leGNlcHRpb24oKQ0KPnRoZXJlIGFzIHdlbGwuDQo+DQo+SmFuDQo+
-DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2Vu
-dGVyIEVtYmVkZGVkIExpbnV4DQo+DQo+DQo+DQo+DQo=
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> 
+>> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
+>> propagation status just like handle_pipelined_syscall(), with the same
+>> semantics. This is a requirement for properly handling our syscall
+>> format and the new prctl-based one concurrently. Fix up the signature
+>> accordingly.  This status is ignored on earlier Dovetail releases.
+>> 
+>> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
+>> enabling our current syscall format, which defaults to y at the
+>> moment.  Force it on regardless to allow for detection when this call
+>> format is eventually deprecated upstream.
+>> 
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>  kernel/cobalt/dovetail/syscall.c | 5 ++---
+>>  scripts/Kconfig.frag             | 1 +
+>>  2 files changed, 3 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
+>> index cec6c0244..440c069d5 100644
+>> --- a/kernel/cobalt/dovetail/syscall.c
+>> +++ b/kernel/cobalt/dovetail/syscall.c
+>> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
+>>  	return handle_head_syscall(stage == &inband_stage, regs);
+>>  }
+>>  
+>> -void handle_oob_syscall(struct pt_regs *regs)
+>> +int handle_oob_syscall(struct pt_regs *regs)
+>>  {
+>> -	int ret = handle_head_syscall(false, regs);
+>> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
+>> +	return handle_head_syscall(false, regs);
+>>  }
+>
+> This unfortunately makes the Xenomai 3.2 release incompatible with
+> latest stable Dovetail. I would now have to hectically roll out 3.2.1
+> and cross fingers that people will use it. Better than before, but still
+> not smooth.
+
+Did you try this patch? What went wrong?
+
+-- 
+Philippe.
 
