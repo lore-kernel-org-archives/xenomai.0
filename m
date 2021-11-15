@@ -1,12 +1,16 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <CALLqZ8SFtM6Z-7n-DU-Z_XT7QnT7zGAy0mJCndavAo8s-k8fKQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Tue, 30 Nov 2021 18:13:23 +0100
+Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
+ handle_oob_syscall()
+References: <20211114100348.1235576-1-rpm@xenomai.org>
+ <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
+ <878rxponoo.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <784a15c5-fd74-77d5-f42f-82e20173f53f@siemens.com>
+Date: Mon, 15 Nov 2021 09:01:59 +0100
 MIME-Version: 1.0
-Message-ID: <d25-61a65b80-2f-1ed4ee4@258913550>
-Subject: =?utf-8?q?Re=3A?= IRQ not raised switching from =?utf-8?q?4=2E4=2Ex?=
- to =?utf-8?q?4=2E19=2Ex?=
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <878rxponoo.fsf@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,93 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Le Mardi, Novembre 30, 2021 16:32 CET, Greg Gallagher <greg@embeddedgre=
-g.com> a =C3=A9crit: 
- 
-> On Tue, Nov 30, 2021 at 9:59 AM Fran=C3=A7ois Legal via Xenomai <
-> xenomai@xenomai.org> wrote:
+On 15.11.21 08:57, Philippe Gerum wrote:
 > 
-> > So I guess I have the beginning of the explanation.
-> > By checking the GIC registers more thoroughly, I found out the trig=
-ger
-> > type was not set properly (my device uses edge interrupts, and GIC =
-was
-> > setup with level interrupts)
-> > What's not clear is that the interrupt trigger type is set, if I
-> > understand correctly, when one calls platform=5Fget=5Firq (if IRQ f=
-lags are set
-> > in the DT, they are setup at that moment).
-> > That seems to work OK for linux interrupts, but somehow, these flag=
-s get
-> > reset for xenomai interrupts (and that did not seem to be the case =
-earlier).
-> > Still digging there to find out what's going on.
-> >
-> > I found out that rtdm=5Firq=5Frequest can have RTDM=5FIRQTYPE=5FEDG=
-E as flag
-> > argument, but I'm still not sure how this flag gets handed to ipipe=
- and
-> > then to the GIC.
-> >
-> > Still searching
-> >
-> > Fran=C3=A7ois
-> >
-> > Le Mardi, Novembre 30, 2021 14:28 CET, Fran=C3=A7ois Legal via Xeno=
-mai <
-> > xenomai@xenomai.org> a =C3=A9crit:
-> >
-> > > Hello,
-> > >
-> > > I'm experiencing a weird issue while transitioning Xenomai 3.1 fr=
-om
-> > linux 4.4 to 4.19.
-> > > Platform is Zynq 7000 ARM Cortex A9.
-> > > Using the exact same hardware, porting a network device driver, t=
-he
-> > interrupts that should trigger whenever a packet is sent or receive=
-d do not
-> > grif any more. I can see the network packets being sent & received =
-by
-> > devmem'ing to the device memory and buffers, but no interrupt ever =
-happens.
-> > >
-> > > I checked the various GIC registers, and everything seems to be O=
-K.
-> > >
-> > > Any idea ?
-> > >
-> > > Thanks in advance
-> > >
-> > > Fran=C3=A7ois
-> > >
-> >
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
 > 
-> Hi Francois,
->    I can help and take a look later tonight if you still are having i=
-ssues.
+>> On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
+>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
+>>> propagation status just like handle_pipelined_syscall(), with the same
+>>> semantics. This is a requirement for properly handling our syscall
+>>> format and the new prctl-based one concurrently. Fix up the signature
+>>> accordingly.  This status is ignored on earlier Dovetail releases.
+>>>
+>>> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
+>>> enabling our current syscall format, which defaults to y at the
+>>> moment.  Force it on regardless to allow for detection when this call
+>>> format is eventually deprecated upstream.
+>>>
+>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>> ---
+>>>  kernel/cobalt/dovetail/syscall.c | 5 ++---
+>>>  scripts/Kconfig.frag             | 1 +
+>>>  2 files changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
+>>> index cec6c0244..440c069d5 100644
+>>> --- a/kernel/cobalt/dovetail/syscall.c
+>>> +++ b/kernel/cobalt/dovetail/syscall.c
+>>> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
+>>>  	return handle_head_syscall(stage == &inband_stage, regs);
+>>>  }
+>>>  
+>>> -void handle_oob_syscall(struct pt_regs *regs)
+>>> +int handle_oob_syscall(struct pt_regs *regs)
+>>>  {
+>>> -	int ret = handle_head_syscall(false, regs);
+>>> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
+>>> +	return handle_head_syscall(false, regs);
+>>>  }
+>>
+>> This unfortunately makes the Xenomai 3.2 release incompatible with
+>> latest stable Dovetail. I would now have to hectically roll out 3.2.1
+>> and cross fingers that people will use it. Better than before, but still
+>> not smooth.
 > 
-> Thanks
-> 
-> Greg
+> Did you try this patch? What went wrong?
 > 
 
-Well, I've been digging this for some hours now, and I still can't  fin=
-d the bottom of it. What I can tell, is that regular linux IRQ request =
-calls request=5Fthreaded=5Firq which in turns will call something ... t=
-hat calls =5F=5Firq=5Fset=5Ftrigger, which in turns calls the correspon=
-ding chip (the GIC here) routine to setup level/edge interrupts.
+The patch passed testing and is not the issue. That is in the fact that
+we must update to callback in order to have stable syscall processing
+again because 3.2 would return random codes for it and can fail subtly.
 
-I can't find where that could be in ipipe.
+Jan
 
-Fran=C3=A7ois
-
-> >
-> >
-> >
-> >
-
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
