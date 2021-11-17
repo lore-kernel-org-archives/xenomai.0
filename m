@@ -1,18 +1,12 @@
-Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
- handle_oob_syscall()
-References: <20211114100348.1235576-1-rpm@xenomai.org>
- <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
- <878rxponoo.fsf@xenomai.org>
- <784a15c5-fd74-77d5-f42f-82e20173f53f@siemens.com>
- <874k8dokxg.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ac3df9c9-7196-6001-cfae-9be391ac4118@siemens.com>
-Date: Mon, 15 Nov 2021 11:56:16 +0100
-MIME-Version: 1.0
-In-Reply-To: <874k8dokxg.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: reminder: Xenomai community call on Wednesday, Nov 17, 2021, UTC 7:00
+ AM
+Date: Wed, 17 Nov 2021 04:42:35 +0000
+Message-ID: <MN2PR11MB42857DED923D79254598539BF29A9@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,76 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 15.11.21 09:56, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> On 15.11.21 08:57, Philippe Gerum wrote:
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
->>>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>>
->>>>> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
->>>>> propagation status just like handle_pipelined_syscall(), with the same
->>>>> semantics. This is a requirement for properly handling our syscall
->>>>> format and the new prctl-based one concurrently. Fix up the signature
->>>>> accordingly.  This status is ignored on earlier Dovetail releases.
->>>>>
->>>>> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
->>>>> enabling our current syscall format, which defaults to y at the
->>>>> moment.  Force it on regardless to allow for detection when this call
->>>>> format is eventually deprecated upstream.
->>>>>
->>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>>> ---
->>>>>  kernel/cobalt/dovetail/syscall.c | 5 ++---
->>>>>  scripts/Kconfig.frag             | 1 +
->>>>>  2 files changed, 3 insertions(+), 3 deletions(-)
->>>>>
->>>>> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
->>>>> index cec6c0244..440c069d5 100644
->>>>> --- a/kernel/cobalt/dovetail/syscall.c
->>>>> +++ b/kernel/cobalt/dovetail/syscall.c
->>>>> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
->>>>>  	return handle_head_syscall(stage == &inband_stage, regs);
->>>>>  }
->>>>>  
->>>>> -void handle_oob_syscall(struct pt_regs *regs)
->>>>> +int handle_oob_syscall(struct pt_regs *regs)
->>>>>  {
->>>>> -	int ret = handle_head_syscall(false, regs);
->>>>> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
->>>>> +	return handle_head_syscall(false, regs);
->>>>>  }
->>>>
->>>> This unfortunately makes the Xenomai 3.2 release incompatible with
->>>> latest stable Dovetail. I would now have to hectically roll out 3.2.1
->>>> and cross fingers that people will use it. Better than before, but still
->>>> not smooth.
->>>
->>> Did you try this patch? What went wrong?
->>>
->>
->> The patch passed testing and is not the issue. That is in the fact that
->> we must update to callback in order to have stable syscall processing
->> again because 3.2 would return random codes for it and can fail subtly.
->>
-> 
-> Do you have a failure scenario in mind?
-> 
+We have the Xenomai community call today.
 
-Xenomai 3.2 could return random results from handle_oob_syscall - as it
-is marked as 'void' -, causing the core to do the wrong thing like
-taking the long exit path for a handled oob call.
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
 
-Jan
+Time:
+Wednesday, Nov 17, 2021, UTC 7:00 AM
+Paris, France CEST 8:00 AM
+China CST 3:00 PM
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
+
 
