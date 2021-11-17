@@ -1,12 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/2] ARM: dovetail: make legacy and prctl-based syscalls
- coexist transparently
-Date: Sat, 13 Nov 2021 19:34:07 +0100
-Message-Id: <20211113183407.1115539-2-rpm@xenomai.org>
-In-Reply-To: <20211113183407.1115539-1-rpm@xenomai.org>
-References: <20211113183407.1115539-1-rpm@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: compile error about TODO after make 
+Date: Wed, 17 Nov 2021 08:33:59 +0000
+Message-ID: <MN2PR11MB428569A16DE7BAB22F23FC9EF29A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,82 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-From: Philippe Gerum <rpm@xenomai.org>
+Hi Jan
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- arch/arm/Kconfig               |  1 +
- arch/arm/kernel/entry-common.S | 25 +++++++++++++++++--------
- 2 files changed, 18 insertions(+), 8 deletions(-)
+Internally , we try to do some basic validation for linux_dovetail branch. =
+One of test is to
+pass build after make allyesconfig. But it would fail because of enabled CO=
+NFIG_XENO_TODO.=20
+There is still something NTD in  include/cobalt/kernel/dovetail/pipeline/tr=
+ace.h and=20
+include/cobalt/kernel/dovetail/pipeline/clock.h related to this config. I a=
+m tying to=20
+look into TODO in include/cobalt/kernel/dovetail/pipeline/clock.h but I do =
+not know how to fix
+TODO in include/cobalt/kernel/dovetail/pipeline/trace.h. Could you suggest =
+something about
+fixing them?
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index cc2033a29e198bc..44b86d35d9e51af 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -238,6 +238,7 @@ config ARCH_MTD_XIP
- # Limited I-pipe compat (syscall routing only).
- config IPIPE_COMPAT
- 	bool
-+	select DOVETAIL_LEGACY_SYSCALL_RANGE
- 
- config ARM_PATCH_PHYS_VIRT
- 	bool "Patch physical to virtual translations at runtime" if EMBEDDED
-diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
-index 48d93a2d9b6290b..2a75de1254fa2ae 100644
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -270,14 +270,15 @@ local_restart:
- 	b	fastcall_try
- 1:
- #endif	
--	cmp	scno, #__NR_prctl
--	bne	fastcall_not_prctl
--	ldr	r0, [sp, #S_OLD_R0]
--	tst	r10, #__OOB_SYSCALL_BIT
--	bne	fastcall_try
--fastcall_not_prctl:
-+#ifdef CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE
- 	ldr	r0, =#__OOB_SYSCALL_BIT
- 	ands	r0, scno, r0
-+	bne	fastcall_try
-+#endif
-+	cmp	scno, #__NR_prctl
-+	bne	slow_path
-+	ldr	r0, [sp, #S_OLD_R0]
-+	tst	r0, #__OOB_SYSCALL_BIT
- 	beq	slow_path
- fastcall_try:
- 	tst	r10, #_TLF_OOB
-@@ -285,6 +286,8 @@ fastcall_try:
- 	mov	r0, sp				@ regs
- 	bl	handle_oob_syscall
- 	ldr	r10, [tsk, #TI_LOCAL_FLAGS]
-+	tst	r0, r0
-+	beq	slow_path
- 	tst	r10, #_TLF_OOB
- 	bne	fastcall_exit_check		@ check for MAYDAY
- 	bl	sync_inband_irqs
-@@ -299,9 +302,15 @@ fastcall_exit_check:
- slow_path:
- 	tst	r10, #_TLF_DOVETAIL
- 	bne	pipeline_syscall
--	cmp	scno, #__NR_prctl
--	beq	pipeline_syscall
-+#ifdef CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE
-+	ldr	r0, =#__OOB_SYSCALL_BIT
- 	ands	r0, scno, r0
-+	bne	pipeline_syscall
-+#endif	
-+	cmp	scno, #__NR_prctl
-+	bne	root_syscall
-+	ldr	r0, [sp, #S_OLD_R0]
-+	tst	r0, #__OOB_SYSCALL_BIT
- 	beq	root_syscall
- pipeline_syscall:
- 	mov	r0, sp				@ regs
--- 
-2.31.1
+
+Regards
+
+Hongzhan Chen
 
 
