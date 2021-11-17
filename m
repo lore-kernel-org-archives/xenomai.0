@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 1/4] xenomai: Add 3.2.1 and update other
- stable versions
-Date: Wed, 17 Nov 2021 19:34:16 +0100
-Message-Id: <61f1c50c18284eb30540658cf17879c8f0dbb2c5.1637174059.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 3/4] linux-xenomai: Update to latest releases
+Date: Wed, 17 Nov 2021 19:34:18 +0100
+Message-Id: <f8d95226b02aa296997157966507c94e67f2c38b.1637174059.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1637174059.git.jan.kiszka@siemens.com>
 References: <cover.1637174059.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,150 +18,117 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This adds 3.2.1 as new default and bumps older stable options to 3.1.2
-and 3.0.12, respectively.
-
-Updating Xenomai releases also requires updating the mapping function in
-xenomai-version.inc - which was forgotten too often. Set a link via a
-comment at this chance.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- conf/distro/include/xenomai-version.inc       | 21 ++++++++++++++-----
- conf/distro/xenomai-demo.conf                 |  4 ++--
- opt-xenomai-3.2.x.yml                         | 17 +++++++++++++++
- .../{xenomai_3.0.11.bb => xenomai_3.0.12.bb}  |  2 ++
- .../{xenomai_3.1.1.bb => xenomai_3.1.2.bb}    |  2 ++
- .../{xenomai_3.1.1.bb => xenomai_3.2.1.bb}    |  4 +++-
- 6 files changed, 42 insertions(+), 8 deletions(-)
- create mode 100644 opt-xenomai-3.2.x.yml
- rename recipes-xenomai/xenomai/{xenomai_3.0.11.bb => xenomai_3.0.12.bb} (79%)
- copy recipes-xenomai/xenomai/{xenomai_3.1.1.bb => xenomai_3.1.2.bb} (79%)
- rename recipes-xenomai/xenomai/{xenomai_3.1.1.bb => xenomai_3.2.1.bb} (73%)
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 14 +++++++-------
+ recipes-kernel/linux/linux-xenomai_4.4.bb  | 10 +++++-----
+ recipes-kernel/linux/linux-xenomai_5.10.bb |  4 ++--
+ recipes-kernel/linux/linux-xenomai_5.4.bb  | 12 ++++++------
+ 4 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
-index 24e0dd6..e8e819b 100644
---- a/conf/distro/include/xenomai-version.inc
-+++ b/conf/distro/include/xenomai-version.inc
-@@ -9,9 +9,20 @@
- # SPDX-License-Identifier: MIT
- #
- 
--XENOMAI_DEFAULT_KERNEL_VERSION = "5.4%"
--XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.10"
-+XENOMAI_DEFAULT_KERNEL_VERSION = "5.10%"
-+
-+XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.12"
- XENOMAI_3_0_KERNEL_VERSION = "4.4%"
--# if PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
--# XENOMAI_3_0_KERNEL_VERSION
--PREFERRED_VERSION_linux-xenomai ?= "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_3_0_VERSION_LIST}','${XENOMAI_3_0_KERNEL_VERSION}','${XENOMAI_DEFAULT_KERNEL_VERSION}',d) }"
-+
-+XENOMAI_3_1_VERSION_LIST = "3.1 3.1% 3.1.% 3.1.2"
-+XENOMAI_3_1_KERNEL_VERSION = "5.4%"
-+
-+# If PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
-+# XENOMAI_3_0_KERNEL_VERSION. Same for XENOMAI_3_1_VERSION_LIST.
-+PREFERRED_VERSION_linux-xenomai ?= \
-+    "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
-+        '${XENOMAI_3_0_VERSION_LIST}', '${XENOMAI_3_0_KERNEL_VERSION}', \
-+        bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
-+            '${XENOMAI_3_1_VERSION_LIST}', '${XENOMAI_3_1_KERNEL_VERSION}', \
-+            '${XENOMAI_DEFAULT_KERNEL_VERSION}', d), \
-+        d)}"
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index 4794584..10c37e1 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+index ef67067..5b12ce4 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.19.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
 @@ -1,7 +1,7 @@
  #
  # Xenomai Real-Time System
  #
--# Copyright (c) Siemens AG, 2018
+-# Copyright (c) Siemens AG, 2019
++# Copyright (c) Siemens AG, 2019-2021
+ #
+ # Authors:
+ #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+@@ -12,15 +12,15 @@
+ require recipes-kernel/linux/linux-xenomai.inc
+ 
+ SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "ipipe-core-4.19.192-cip50-x86-18"
+-PV_amd64 ?= "4.19.192+"
++SRCREV_amd64 ?= "ipipe-core-4.19.207-cip58-x86-20"
++PV_amd64 ?= "4.19.207+"
+ 
+ SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
+-SRCREV_arm64 ?= "ipipe-core-4.19.190-cip49-arm64-10"
+-PV_arm64 ?= "4.19.190+"
++SRCREV_arm64 ?= "ipipe-core-4.19.209-cip59-arm64-12"
++PV_arm64 ?= "4.19.209+"
+ 
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
+-SRCREV_armhf ?= "ipipe-core-4.19.190-cip49-arm-15"
+-PV_armhf ?= "4.19.190+"
++SRCREV_armhf ?= "ipipe-core-4.19.207-cip58-arm16"
++PV_armhf ?= "4.19.207+"
+ 
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
+index 42c6d83..a5cce7d 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.4.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
+@@ -1,7 +1,7 @@
+ #
+ # Xenomai Real-Time System
+ #
+-# Copyright (c) Siemens AG, 2018-2020
 +# Copyright (c) Siemens AG, 2018-2021
  #
  # Authors:
  #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -11,7 +11,7 @@
+@@ -12,12 +12,12 @@
+ require recipes-kernel/linux/linux-xenomai.inc
  
- require conf/distro/debian-bullseye.conf
+ SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "ipipe-core-4.4.268-cip57-x86-28"
+-PV_amd64 = "4.4.268+"
++SRCREV_amd64 ?= "ipipe-core-4.4.285-cip63-x86-30"
++PV_amd64 = "4.4.285+"
  
--PREFERRED_VERSION_xenomai ?= "3.1%"
-+PREFERRED_VERSION_xenomai ?= "3.2%"
- include conf/distro/include/xenomai-version.inc
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
+ SRC_URI_append_armhf = " ${@ 'file://bbb_4.4.cfg' if d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
+-SRCREV_armhf ?= "ipipe-core-4.4.268-cip57-arm-13"
+-PV_armhf = "4.4.268+"
++SRCREV_armhf ?= "ipipe-core-4.4.285-cip63-arm-15"
++PV_armhf = "4.4.285+"
  
- HOST_DISTRO ?= "debian-bullseye"
-diff --git a/opt-xenomai-3.2.x.yml b/opt-xenomai-3.2.x.yml
-new file mode 100644
-index 0000000..1abcef9
---- /dev/null
-+++ b/opt-xenomai-3.2.x.yml
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2021
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 10
-+
-+local_conf_header:
-+  xenomai-3-2-x: |
-+    PREFERRED_VERSION_xenomai = "stable-3.2.x"
-diff --git a/recipes-xenomai/xenomai/xenomai_3.0.11.bb b/recipes-xenomai/xenomai/xenomai_3.0.12.bb
-similarity index 79%
-rename from recipes-xenomai/xenomai/xenomai_3.0.11.bb
-rename to recipes-xenomai/xenomai/xenomai_3.0.12.bb
-index b21b763..afc1920 100644
---- a/recipes-xenomai/xenomai/xenomai_3.0.11.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.0.12.bb
-@@ -11,6 +11,8 @@
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_5.10.bb b/recipes-kernel/linux/linux-xenomai_5.10.bb
+index afc129c..0e8b414 100644
+--- a/recipes-kernel/linux/linux-xenomai_5.10.bb
++++ b/recipes-kernel/linux/linux-xenomai_5.10.bb
+@@ -12,7 +12,7 @@
+ require recipes-kernel/linux/linux-xenomai.inc
  
- require xenomai.inc
+ SRC_URI += "git://source.denx.de/xenomai/linux-dovetail.git;protocol=https;nobranch=1"
+-SRCREV = "v5.10.61-dovetail"
+-PV = "5.10.61+"
++SRCREV = "v5.10.76-dovetail3"
++PV = "5.10.76+"
  
-+# Note: When updating PV, also update conf/distro/include/xenomai-version.inc!
-+
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.0.x;tag=v${PV} \
-     "
-diff --git a/recipes-xenomai/xenomai/xenomai_3.1.1.bb b/recipes-xenomai/xenomai/xenomai_3.1.2.bb
-similarity index 79%
-copy from recipes-xenomai/xenomai/xenomai_3.1.1.bb
-copy to recipes-xenomai/xenomai/xenomai_3.1.2.bb
-index 5a3c41d..e501e41 100644
---- a/recipes-xenomai/xenomai/xenomai_3.1.1.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.1.2.bb
-@@ -11,6 +11,8 @@
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_5.4.bb b/recipes-kernel/linux/linux-xenomai_5.4.bb
+index 9f070cf..f19dcd6 100644
+--- a/recipes-kernel/linux/linux-xenomai_5.4.bb
++++ b/recipes-kernel/linux/linux-xenomai_5.4.bb
+@@ -12,15 +12,15 @@
+ require recipes-kernel/linux/linux-xenomai.inc
  
- require xenomai.inc
+ SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "ipipe-core-5.4.124-x86-5"
+-PV_amd64 ?= "5.4.124+"
++SRCREV_amd64 ?= "ipipe-core-5.4.151-x86-7"
++PV_amd64 ?= "5.4.151+"
  
-+# Note: When updating PV, also update conf/distro/include/xenomai-version.inc!
-+
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.1.x;tag=v${PV}"
+ SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
+-SRCREV_arm64 ?= "ipipe-core-5.4.119-arm64-2"
+-PV_arm64 ?= "5.4.119+"
++SRCREV_arm64 ?= "ipipe-core-5.4.152-arm64-3"
++PV_arm64 ?= "5.4.152+"
  
-diff --git a/recipes-xenomai/xenomai/xenomai_3.1.1.bb b/recipes-xenomai/xenomai/xenomai_3.2.1.bb
-similarity index 73%
-rename from recipes-xenomai/xenomai/xenomai_3.1.1.bb
-rename to recipes-xenomai/xenomai/xenomai_3.2.1.bb
-index 5a3c41d..e99d7fe 100644
---- a/recipes-xenomai/xenomai/xenomai_3.1.1.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.2.1.bb
-@@ -11,7 +11,9 @@
- 
- require xenomai.inc
- 
-+# Note: When updating PV, also update conf/distro/include/xenomai-version.inc!
-+
- SRC_URI = " \
--    git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.1.x;tag=v${PV}"
-+    git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=master;tag=v${PV}"
+ SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
+-SRCREV_armhf ?= "ipipe-core-5.4.119-arm-2"
+-PV_armhf ?= "5.4.119+"
++SRCREV_armhf ?= "ipipe-core-5.4.151-arm-4"
++PV_armhf ?= "5.4.151+"
  
  S = "${WORKDIR}/git"
 -- 
