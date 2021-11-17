@@ -1,7 +1,10 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 0/4] Version updates, kas menu support
-Date: Wed, 17 Nov 2021 19:34:15 +0100
-Message-Id: <cover.1637174059.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 2/4] xenomai-version.inc: Add stable-head
+ versions as well
+Date: Wed, 17 Nov 2021 19:34:17 +0100
+Message-Id: <bf26cd85f121635333e57700ce5c976cc5b44a0f.1637174059.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1637174059.git.jan.kiszka@siemens.com>
+References: <cover.1637174059.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,36 +17,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Heading towards a release as well...
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+This ensures the right version selection when using
+opt-xenomai-3.X.x.yml, i.e. selecting the head of the respective stable
+branches.
 
-Jan Kiszka (4):
-  xenomai: Add 3.2.1 and update other stable versions
-  xenomai-version.inc: Add stable-head versions as well
-  linux-xenomai: Update to latest releases
-  Add kas menu support
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ conf/distro/include/xenomai-version.inc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- .gitignore                                    |   1 +
- Kconfig                                       | 148 ++++++++++++++++++
- README.md                                     |  20 ++-
- conf/distro/include/xenomai-version.inc       |  21 ++-
- conf/distro/xenomai-demo.conf                 |   4 +-
- opt-xenomai-3.2.x.yml                         |  17 ++
- recipes-kernel/linux/linux-xenomai_4.19.bb    |  14 +-
- recipes-kernel/linux/linux-xenomai_4.4.bb     |  10 +-
- recipes-kernel/linux/linux-xenomai_5.10.bb    |   4 +-
- recipes-kernel/linux/linux-xenomai_5.4.bb     |  12 +-
- .../{xenomai_3.0.11.bb => xenomai_3.0.12.bb}  |   2 +
- .../{xenomai_3.1.1.bb => xenomai_3.1.2.bb}    |   2 +
- .../{xenomai_3.1.1.bb => xenomai_3.2.1.bb}    |   4 +-
- 13 files changed, 220 insertions(+), 39 deletions(-)
- create mode 100644 Kconfig
- create mode 100644 opt-xenomai-3.2.x.yml
- rename recipes-xenomai/xenomai/{xenomai_3.0.11.bb => xenomai_3.0.12.bb} (79%)
- copy recipes-xenomai/xenomai/{xenomai_3.1.1.bb => xenomai_3.1.2.bb} (79%)
- rename recipes-xenomai/xenomai/{xenomai_3.1.1.bb => xenomai_3.2.1.bb} (73%)
-
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index e8e819b..dc34415 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
+@@ -11,10 +11,10 @@
+ 
+ XENOMAI_DEFAULT_KERNEL_VERSION = "5.10%"
+ 
+-XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.12"
++XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.12 stable-3.0.x"
+ XENOMAI_3_0_KERNEL_VERSION = "4.4%"
+ 
+-XENOMAI_3_1_VERSION_LIST = "3.1 3.1% 3.1.% 3.1.2"
++XENOMAI_3_1_VERSION_LIST = "3.1 3.1% 3.1.% 3.1.2 stable-3.1.x"
+ XENOMAI_3_1_KERNEL_VERSION = "5.4%"
+ 
+ # If PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
 -- 
 2.31.1
 
