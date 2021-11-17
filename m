@@ -1,10 +1,10 @@
-Subject: Re: compile error about TODO after make
-References: <MN2PR11MB428569A16DE7BAB22F23FC9EF29A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Subject: Re: [xenomai-images][PATCH v3 0/8] Update to Debian 11
+References: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <44630db5-a750-1d64-af47-af372ccd8e87@siemens.com>
-Date: Wed, 17 Nov 2021 09:50:28 +0100
+Message-ID: <f42abf2d-b83d-2d83-102f-258daac5337b@siemens.com>
+Date: Wed, 17 Nov 2021 19:10:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <MN2PR11MB428569A16DE7BAB22F23FC9EF29A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,33 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 17.11.21 09:33, Chen, Hongzhan wrote:
-> Hi Jan
+On 15.11.21 11:13, Florian Bezdeka wrote:
+> Hi all,
 > 
-> Internally , we try to do some basic validation for linux_dovetail branch. One of test is to
-> pass build after make allyesconfig. But it would fail because of enabled CONFIG_XENO_TODO. 
-> There is still something NTD in  include/cobalt/kernel/dovetail/pipeline/trace.h and 
-> include/cobalt/kernel/dovetail/pipeline/clock.h related to this config. I am tying to 
-> look into TODO in include/cobalt/kernel/dovetail/pipeline/clock.h but I do not know how to fix
-> TODO in include/cobalt/kernel/dovetail/pipeline/trace.h. Could you suggest something about
-> fixing them?
+> with this series the Xenomai demo image will be based on Debian 11.
+> 
+> All Debian 11 related topics that had to be adressed are now merged to
+> all Xenomai branches, stable branches included. CI runs were successfully
+> tested against all branches.
+> 
+> Patch 7 made it to the list but has not been applied to next yet. That's
+> why I resend it, integrated into this series at the right place.
+> 
+> The Xenomai LAVA instance has been down while working on this topic. The
+> job submission to LAVA failed, but the test jobs where still marked as
+> successful. That is now fixed as well.
+> 
+> Best regards,
+> Florian
+> 
+> Changes since v2:
+>  - Updated ISAR to latest version, allows removal of downstream patches
+>  - Adjust CI scripts related to ISAR upstream changes
+>  - Patches reordered (removed ISAR patches)
+>  - Moved all CI related kas configs to opt-ci.yml
+> 
+> Changes since v1:
+>  - Renamed opt-lava-test.yml to opt-ci-board.yml
+>  - Moved removal of expand-on-first-boot from opt-ci.yml to opt-ci-board.yml
+> 
+> Florian Bezdeka (7):
+>   ci/kas: Consolidate kas option files, introduce opt-ci.yml
+>   ci/kas: Integrate opt-debug.yml into opt-ci.yml
+>   ci/kas: Disable partition expanding during first boot
+>   isar: Update ISAR to current next
+>   ci/kas: Skip ssh key regeneration for all ci targets
+>   ci: Fail test job when an error occurred during lava job submission
+>   xenomai-demo: Switch to Debian bullseye
+> 
+> Jan Kiszka (1):
+>   linux-xenomai: arm: Enable CONFIG_ARM_MODULE_PLTS
+> 
+>  ci/gitlab-ci-base.yml                      | 10 ++-----
+>  conf/distro/xenomai-demo.conf              |  4 +--
+>  conf/machine/beagle-bone-black.conf        |  2 +-
+>  conf/machine/hikey.conf                    |  2 +-
+>  kas.yml                                    |  2 +-
+>  opt-ci.yml                                 | 34 ++++++++++++++++++++++
+>  opt-ext4-gz.yml                            | 24 ---------------
+>  opt-lava-test.yml                          | 20 -------------
+>  recipes-kernel/linux/files/armhf_defconfig |  1 -
+>  scripts/deploy_to_aws.sh                   | 11 ++++++-
+>  scripts/run-lava-tests.sh                  |  1 +
+>  start-qemu.sh                              |  5 +++-
+>  tests/jobs/xenomai-hikey.yml               |  2 +-
+>  tests/jobs/xenomai-qemu-arm64.yml          |  2 +-
+>  14 files changed, 58 insertions(+), 62 deletions(-)
+>  create mode 100644 opt-ci.yml
+>  delete mode 100644 opt-ext4-gz.yml
+>  delete mode 100644 opt-lava-test.yml
 > 
 
-Oh, we missed some conversions...
-
-Some of the features in trace.h are unportable because ftrace does not
-provide equivalent functionality to the ipipe tracer (namely double
-buffering so that you can continue to record in flight-recorder mode
-while a previous recording remains available). We should likely return
--ENOSYS then. xntrace_user_stop is widely similar to
-xntrace_user_freeze, namely trace_cobalt_trigger("user-freeze"), and
-that could be improved.
-
-For 3.3, dropping the related syscall is the better way - unless it
-still contains something that ftrace APIs do not provide AND that can be
-mapped on a kernel service.
+Thanks, applied.
 
 Jan
 
