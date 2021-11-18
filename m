@@ -1,10 +1,8 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] cobalt/syscall: dovetail: enable propagation from
- handle_oob_syscall()
-Date: Sun, 14 Nov 2021 11:03:48 +0100
-Message-Id: <20211114100348.1235576-1-rpm@xenomai.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Konstantin Smola <ksmola51@gmail.com>
+Subject: [PATCH 1/1] Documentation improvements for rtdm_mmap_to_user(),
+ rtdm_mmap_vmem(), rtdm_mmap_kmem(), rtdm_mmap_iomem()
+Date: Wed, 17 Nov 2021 17:14:42 -0800
+Message-Id: <20211118011442.13232-1-ksmola51@gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +12,63 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: Konstantin Smola <ksmola51@gmail.com>
 
-From: Philippe Gerum <rpm@xenomai.org>
-
-Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
-propagation status just like handle_pipelined_syscall(), with the same
-semantics. This is a requirement for properly handling our syscall
-format and the new prctl-based one concurrently. Fix up the signature
-accordingly.  This status is ignored on earlier Dovetail releases.
-
-In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
-enabling our current syscall format, which defaults to y at the
-moment.  Force it on regardless to allow for detection when this call
-format is eventually deprecated upstream.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+kernel/cobalt/rtdm: Documentation improvements for rtdm_mmap_to_user(), rtdm_mmap_vmem(), 
+ rtdm_mmap_kmem(), rtdm_mmap_iomem()
+Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
 ---
- kernel/cobalt/dovetail/syscall.c | 5 ++---
- scripts/Kconfig.frag             | 1 +
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ kernel/cobalt/rtdm/drvlib.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
-index cec6c0244..440c069d5 100644
---- a/kernel/cobalt/dovetail/syscall.c
-+++ b/kernel/cobalt/dovetail/syscall.c
-@@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
- 	return handle_head_syscall(stage == &inband_stage, regs);
- }
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 7b7b0830c..4ebcd3b0d 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -1973,6 +1973,10 @@ int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
+  * vmalloc(). To map physical I/O memory to user-space use
+  * rtdm_iomap_to_user() instead.
+  *
++ * @note This service is provided only for use in .ioctl operation handlers. 
++ * Otherwise RTDM drivers implementing a .mmap operation should use 
++ * rtdm_mmap_kmem(), rtdm_mmap_vmem(), or rtdm_mmap_iomem().
++ *
+  * @note RTDM supports two models for unmapping the memory area:
+  * - manual unmapping via rtdm_munmap(), which may be issued from a
+  * driver in response to an IOCTL call, or by a call to the regular
+@@ -2084,7 +2088,7 @@ EXPORT_SYMBOL_GPL(rtdm_iomap_to_user);
+ /**
+  * Map a kernel logical memory range to a virtual user area.
+  *
+- * This routine is commonly used from a ->mmap() handler of a RTDM
++ * This routine is commonly used from a .mmap operation handler of a RTDM
+  * driver, for mapping a virtual memory area with a direct physical
+  * mapping over the user address space referred to by @a vma.
+  *
+@@ -2107,10 +2111,10 @@ int rtdm_mmap_kmem(struct vm_area_struct *vma, void *va)
+ EXPORT_SYMBOL_GPL(rtdm_mmap_kmem);
  
--void handle_oob_syscall(struct pt_regs *regs)
-+int handle_oob_syscall(struct pt_regs *regs)
- {
--	int ret = handle_head_syscall(false, regs);
--	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
-+	return handle_head_syscall(false, regs);
- }
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index dd91dc6c9..792128663 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -4,6 +4,7 @@ menuconfig XENOMAI
- 	select IPIPE if HAVE_IPIPE_SUPPORT
- 	select IPIPE_WANT_APIREV_2 if IPIPE
- 	select DOVETAIL if HAVE_DOVETAIL
-+	select DOVETAIL_LEGACY_SYSCALL_RANGE if HAVE_DOVETAIL
- 	default y
- 	help
- 	  Xenomai's Cobalt core is a real-time extension to the Linux
+ /**
+- * Map a virtual memory range to a virtual user area.
++ * Map a kernel virtual memory range to a virtual user area.
+  *
+- * This routine is commonly used from a ->mmap() handler of a RTDM
+- * driver, for mapping a purely virtual memory area over the user
++ * This routine is commonly used from a .mmap operation handler of a RTDM
++ * driver, for mapping a kernel virtual memory area over the user
+  * address space referred to by @a vma.
+  *
+  * @param[in] vma The VMA descriptor to receive the mapping.
+@@ -2138,7 +2142,7 @@ EXPORT_SYMBOL_GPL(rtdm_mmap_vmem);
+ /**
+  * Map an I/O memory range to a virtual user area.
+  *
+- * This routine is commonly used from a ->mmap() handler of a RTDM
++ * This routine is commonly used from a .mmap operation handler of a RTDM
+  * driver, for mapping an I/O memory area over the user address space
+  * referred to by @a vma.
+  *
 -- 
-2.31.1
+2.17.2
 
 
