@@ -1,8 +1,9 @@
-From: Konstantin Smola <ksmola51@gmail.com>
-Subject: [PATCH 1/1] Documentation improvements for rtdm_mmap_to_user(),
- rtdm_mmap_vmem(), rtdm_mmap_kmem(), rtdm_mmap_iomem()
-Date: Wed, 17 Nov 2021 17:14:42 -0800
-Message-Id: <20211118011442.13232-1-ksmola51@gmail.com>
+MIME-Version: 1.0
+From: C Smith <csmithquestions@gmail.com>
+Date: Sat, 20 Nov 2021 00:10:49 -0800
+Message-ID: <CA+K1mPFYLvrxSSnFqZ8DAbaCbDRX47OfAmgKQBJBwAdC3=6JsA@mail.gmail.com>
+Subject: posix blocking in gdb
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,64 +12,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Konstantin Smola <ksmola51@gmail.com>
+To: Xenomai List <xenomai@xenomai.org>
 
-kernel/cobalt/rtdm: Documentation improvements for rtdm_mmap_to_user(), rtdm_mmap_vmem(), 
- rtdm_mmap_kmem(), rtdm_mmap_iomem()
-Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
----
- kernel/cobalt/rtdm/drvlib.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+I am debugging a Cobalt userspace real time app (using posix/alchemy
+skins) on Xenomai 3.1, X86 platform. I have a problem with my process
+blocking when I am single-stepping in gdb (although the process does
+not block when it is run full speed). This happens with ioctl(),
+write() or read() of a rtdm device.
 
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 7b7b0830c..4ebcd3b0d 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -1973,6 +1973,10 @@ int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
-  * vmalloc(). To map physical I/O memory to user-space use
-  * rtdm_iomap_to_user() instead.
-  *
-+ * @note This service is provided only for use in .ioctl operation handlers. 
-+ * Otherwise RTDM drivers implementing a .mmap operation should use 
-+ * rtdm_mmap_kmem(), rtdm_mmap_vmem(), or rtdm_mmap_iomem().
-+ *
-  * @note RTDM supports two models for unmapping the memory area:
-  * - manual unmapping via rtdm_munmap(), which may be issued from a
-  * driver in response to an IOCTL call, or by a call to the regular
-@@ -2084,7 +2088,7 @@ EXPORT_SYMBOL_GPL(rtdm_iomap_to_user);
- /**
-  * Map a kernel logical memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-  * driver, for mapping a virtual memory area with a direct physical
-  * mapping over the user address space referred to by @a vma.
-  *
-@@ -2107,10 +2111,10 @@ int rtdm_mmap_kmem(struct vm_area_struct *vma, void *va)
- EXPORT_SYMBOL_GPL(rtdm_mmap_kmem);
- 
- /**
-- * Map a virtual memory range to a virtual user area.
-+ * Map a kernel virtual memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-- * driver, for mapping a purely virtual memory area over the user
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-+ * driver, for mapping a kernel virtual memory area over the user
-  * address space referred to by @a vma.
-  *
-  * @param[in] vma The VMA descriptor to receive the mapping.
-@@ -2138,7 +2142,7 @@ EXPORT_SYMBOL_GPL(rtdm_mmap_vmem);
- /**
-  * Map an I/O memory range to a virtual user area.
-  *
-- * This routine is commonly used from a ->mmap() handler of a RTDM
-+ * This routine is commonly used from a .mmap operation handler of a RTDM
-  * driver, for mapping an I/O memory area over the user address space
-  * referred to by @a vma.
-  *
--- 
-2.17.2
+If the code does an ioctl() for instance, this is invoked:
+in rtdm.c
+COBALT_IMPL(int, ioctl, (int fd, unsigned int request, ...))
+   ret = do_ioctl(fd, request, arg);
+which calls
+ static int do_ioctl(int fd, unsigned int request, void *arg)
+   ret = XENOMAI_SYSCALL3(sc_cobalt_ioctl, fd, request, arg);
 
+ and my process blocks on the call to XENOMAI_SYSCALL3() so I cannot
+step over this code. If I interrupt gdb, it says:
+  0xf7fceb69 in __kernel_vsyscall ()Which basically means my process
+was blocked.
+
+I imagine the problem is caused by a difference between
+primary/secondary modes and their ability to access the Cobalt posix
+wrappers? The problem is that I need to step over
+read()/write()/ioctl() while in gdb. Is there any way to do so ?
+
+thanks, -C Smith
 
