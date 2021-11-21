@@ -1,13 +1,11 @@
-Subject: Re: posix blocking in gdb
-References: <CA+K1mPFYLvrxSSnFqZ8DAbaCbDRX47OfAmgKQBJBwAdC3=6JsA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9b2b71f5-2a6d-b9ad-c739-8fd57fdaac2b@siemens.com>
-Date: Sun, 21 Nov 2021 08:41:48 +0100
+Date: Sun, 21 Nov 2021 11:58:33 +0000 (UTC)
+From: zared kamal <zaredkam@yahoo.fr>
+Message-ID: <397361391.4928176.1637495913018@mail.yahoo.com>
+Subject: error: Building the x86 libraries (32/64bit)
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPFYLvrxSSnFqZ8DAbaCbDRX47OfAmgKQBJBwAdC3=6JsA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <397361391.4928176.1637495913018.ref@mail.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: Philippe Gerum via Xenomai <xenomai@xenomai.org>
 
-On 20.11.21 09:10, C Smith via Xenomai wrote:
-> I am debugging a Cobalt userspace real time app (using posix/alchemy
-> skins) on Xenomai 3.1, X86 platform. I have a problem with my process
-> blocking when I am single-stepping in gdb (although the process does
-> not block when it is run full speed). This happens with ioctl(),
-> write() or read() of a rtdm device.
-> 
-> If the code does an ioctl() for instance, this is invoked:
-> in rtdm.c
-> COBALT_IMPL(int, ioctl, (int fd, unsigned int request, ...))
->    ret = do_ioctl(fd, request, arg);
-> which calls
->  static int do_ioctl(int fd, unsigned int request, void *arg)
->    ret = XENOMAI_SYSCALL3(sc_cobalt_ioctl, fd, request, arg);
-> 
->  and my process blocks on the call to XENOMAI_SYSCALL3() so I cannot
-> step over this code. If I interrupt gdb, it says:
->   0xf7fceb69 in __kernel_vsyscall ()Which basically means my process
-> was blocked.
-> 
-> I imagine the problem is caused by a difference between
-> primary/secondary modes and their ability to access the Cobalt posix
-> wrappers? The problem is that I need to step over
-> read()/write()/ioctl() while in gdb. Is there any way to do so ?
-> 
+Dear sir,I try to build libraries for Xenomai kernel 3.1 installtion.
+configuartion:linux kernel 4.9.90xenomai 3.1
 
-Debugging, including single stepping, is supposed to work under Xenomai
-as well (that's why there is smokey's gdb test).
+with command:=20
+sicom3@sicom3-VirtualBox:/usr/src/xenomai-3.1$ ./configure --with-core=3Dco=
+balt --enable-smp --enable-pshared=C2=A0 --host=3Di686-linux CFLAGS=3D"-m32=
+ -O2" LDFLAGS=3D"-m32"
 
-Could you trace (trace-cmd record -e "cobalt*" -e sched -e signal) the
-problematic sequence? Do you see the issue also with in-tree drivers
-backing those read/write/ioctl requests?
+i have a message error:checking whether we build for Cobalt or Mercury core=
+... cobalt
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... i686-pc-linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking for i686-linux-gcc... no
+checking for gcc... gcc
+checking whether the C compiler works... no
+configure: error: in `/usr/src/xenomai-3.1':
+configure: error: C compiler cannot create executables
+See `config.log' for more details
+can help me please.
+many thanks
+best regards
 
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+Zared Kamal
+D=C3=A9partement de G=C3=A9nie Electrique,Laboratoire Signaux Syst=C3=A8mes=
+ & Composants=C2=A0Facult=C3=A9 des Sciences & Techniques,=C2=A0BP 2202, 30=
+000 F=C3=A8s=C2=A0=C2=A0 http://www.fstusmba.ac.ma/e-mail kamal.zared@usmba=
+.ac.ma, zaredkam@yahoo.fr
