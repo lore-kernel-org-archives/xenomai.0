@@ -1,11 +1,15 @@
-Date: Sun, 21 Nov 2021 11:58:33 +0000 (UTC)
-From: zared kamal <zaredkam@yahoo.fr>
-Message-ID: <397361391.4928176.1637495913018@mail.yahoo.com>
-Subject: error: Building the x86 libraries (32/64bit)
-MIME-Version: 1.0
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: error: Building the x86 libraries (32/64bit)
+Date: Mon, 22 Nov 2021 08:40:52 +0000
+Message-ID: <b6ad09f4910dbfe0f978573940035489cb33942f.camel@siemens.com>
 References: <397361391.4928176.1637495913018.ref@mail.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+ <397361391.4928176.1637495913018@mail.yahoo.com>
+In-Reply-To: <397361391.4928176.1637495913018@mail.yahoo.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9004B82179E7DA41BE8CC94BA825C75E@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,33 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum via Xenomai <xenomai@xenomai.org>
+To: "zaredkam@yahoo.fr" <zaredkam@yahoo.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear sir,I try to build libraries for Xenomai kernel 3.1 installtion.
-configuartion:linux kernel 4.9.90xenomai 3.1
+T24gU3VuLCAyMDIxLTExLTIxIGF0IDExOjU4ICswMDAwLCB6YXJlZCBrYW1hbCB2aWEgWGVub21h
+aSB3cm90ZToNCj4gRGVhciBzaXIsSSB0cnkgdG8gYnVpbGQgbGlicmFyaWVzIGZvciBYZW5vbWFp
+IGtlcm5lbCAzLjEgaW5zdGFsbHRpb24uDQo+IGNvbmZpZ3VhcnRpb246bGludXgga2VybmVsIDQu
+OS45MHhlbm9tYWkgMy4xDQo+IA0KPiB3aXRoIGNvbW1hbmQ6IA0KPiBzaWNvbTNAc2ljb20zLVZp
+cnR1YWxCb3g6L3Vzci9zcmMveGVub21haS0zLjEkIC4vY29uZmlndXJlIC0td2l0aC1jb3JlPWNv
+YmFsdCAtLWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZMKgIC0taG9zdD1pNjg2LWxpbnV4IENG
+TEFHUz0iLW0zMiAtTzIiIExERkxBR1M9Ii1tMzIiDQo+IA0KPiBpIGhhdmUgYSBtZXNzYWdlIGVy
+cm9yOmNoZWNraW5nIHdoZXRoZXIgd2UgYnVpbGQgZm9yIENvYmFsdCBvciBNZXJjdXJ5IGNvcmUu
+Li4gY29iYWx0DQo+IGNoZWNraW5nIGJ1aWxkIHN5c3RlbSB0eXBlLi4uIHg4Nl82NC1wYy1saW51
+eC1nbnUNCj4gY2hlY2tpbmcgaG9zdCBzeXN0ZW0gdHlwZS4uLiBpNjg2LXBjLWxpbnV4LWdudQ0K
+PiBjaGVja2luZyBmb3IgYSBCU0QtY29tcGF0aWJsZSBpbnN0YWxsLi4uIC91c3IvYmluL2luc3Rh
+bGwgLWMNCj4gY2hlY2tpbmcgZm9yIGk2ODYtbGludXgtZ2NjLi4uIG5vDQo+IGNoZWNraW5nIGZv
+ciBnY2MuLi4gZ2NjDQo+IGNoZWNraW5nIHdoZXRoZXIgdGhlIEMgY29tcGlsZXIgd29ya3MuLi4g
+bm8NCj4gY29uZmlndXJlOiBlcnJvcjogaW4gYC91c3Ivc3JjL3hlbm9tYWktMy4xJzoNCj4gY29u
+ZmlndXJlOiBlcnJvcjogQyBjb21waWxlciBjYW5ub3QgY3JlYXRlIGV4ZWN1dGFibGVzDQo+IFNl
+ZSBgY29uZmlnLmxvZycgZm9yIG1vcmUgZGV0YWlscw0KDQpIYXZlIHlvdSBsb29rZWQgaW50byBj
+b25maWcubG9nPyBJIGd1ZXNzIHlvdXIgY29tcGlsZXIgaXMgbm90IGFibGUgdG8NCmNyZWF0ZSAz
+MiBiaXQgYmluYXJpZXMuIE1ha2Ugc3VyZSB5b3UgaW5zdGFsbGVkIGFsbCB0aGUgMzIgYml0IGds
+aWJjDQpzdHVmZi4NCg0KPiBjYW4gaGVscCBtZSBwbGVhc2UuDQo+IG1hbnkgdGhhbmtzDQo+IGJl
+c3QgcmVnYXJkcw0KPiANCj4gWmFyZWQgS2FtYWwNCj4gRMOpcGFydGVtZW50IGRlIEfDqW5pZSBF
+bGVjdHJpcXVlLExhYm9yYXRvaXJlIFNpZ25hdXggU3lzdMOobWVzICYgQ29tcG9zYW50c8KgRmFj
+dWx0w6kgZGVzIFNjaWVuY2VzICYgVGVjaG5pcXVlcyzCoEJQIDIyMDIsIDMwMDAwIEbDqHPCoMKg
+IGh0dHA6Ly93d3cuZnN0dXNtYmEuYWMubWEvZS1tYWlsIGthbWFsLnphcmVkQHVzbWJhLmFjLm1h
+LCB6YXJlZGthbUB5YWhvby5mcg0KDQo=
 
-with command:=20
-sicom3@sicom3-VirtualBox:/usr/src/xenomai-3.1$ ./configure --with-core=3Dco=
-balt --enable-smp --enable-pshared=C2=A0 --host=3Di686-linux CFLAGS=3D"-m32=
- -O2" LDFLAGS=3D"-m32"
-
-i have a message error:checking whether we build for Cobalt or Mercury core=
-... cobalt
-checking build system type... x86_64-pc-linux-gnu
-checking host system type... i686-pc-linux-gnu
-checking for a BSD-compatible install... /usr/bin/install -c
-checking for i686-linux-gcc... no
-checking for gcc... gcc
-checking whether the C compiler works... no
-configure: error: in `/usr/src/xenomai-3.1':
-configure: error: C compiler cannot create executables
-See `config.log' for more details
-can help me please.
-many thanks
-best regards
-
-Zared Kamal
-D=C3=A9partement de G=C3=A9nie Electrique,Laboratoire Signaux Syst=C3=A8mes=
- & Composants=C2=A0Facult=C3=A9 des Sciences & Techniques,=C2=A0BP 2202, 30=
-000 F=C3=A8s=C2=A0=C2=A0 http://www.fstusmba.ac.ma/e-mail kamal.zared@usmba=
-.ac.ma, zaredkam@yahoo.fr
