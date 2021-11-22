@@ -1,15 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: error: Building the x86 libraries (32/64bit)
-Date: Mon, 22 Nov 2021 08:40:52 +0000
-Message-ID: <b6ad09f4910dbfe0f978573940035489cb33942f.camel@siemens.com>
-References: <397361391.4928176.1637495913018.ref@mail.yahoo.com>
- <397361391.4928176.1637495913018@mail.yahoo.com>
-In-Reply-To: <397361391.4928176.1637495913018@mail.yahoo.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9004B82179E7DA41BE8CC94BA825C75E@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH 1/1] Documentation improvements for rtdm_mmap_to_user(),
+ rtdm_mmap_vmem(), rtdm_mmap_kmem(), rtdm_mmap_iomem()
+References: <20211118011442.13232-1-ksmola51@gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5fa93ceb-426d-501f-205c-0e99c570a19b@siemens.com>
+Date: Mon, 22 Nov 2021 14:33:14 +0100
 MIME-Version: 1.0
+In-Reply-To: <20211118011442.13232-1-ksmola51@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +17,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "zaredkam@yahoo.fr" <zaredkam@yahoo.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Konstantin Smola <ksmola51@gmail.com>, xenomai@xenomai.org
 
-T24gU3VuLCAyMDIxLTExLTIxIGF0IDExOjU4ICswMDAwLCB6YXJlZCBrYW1hbCB2aWEgWGVub21h
-aSB3cm90ZToNCj4gRGVhciBzaXIsSSB0cnkgdG8gYnVpbGQgbGlicmFyaWVzIGZvciBYZW5vbWFp
-IGtlcm5lbCAzLjEgaW5zdGFsbHRpb24uDQo+IGNvbmZpZ3VhcnRpb246bGludXgga2VybmVsIDQu
-OS45MHhlbm9tYWkgMy4xDQo+IA0KPiB3aXRoIGNvbW1hbmQ6IA0KPiBzaWNvbTNAc2ljb20zLVZp
-cnR1YWxCb3g6L3Vzci9zcmMveGVub21haS0zLjEkIC4vY29uZmlndXJlIC0td2l0aC1jb3JlPWNv
-YmFsdCAtLWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZMKgIC0taG9zdD1pNjg2LWxpbnV4IENG
-TEFHUz0iLW0zMiAtTzIiIExERkxBR1M9Ii1tMzIiDQo+IA0KPiBpIGhhdmUgYSBtZXNzYWdlIGVy
-cm9yOmNoZWNraW5nIHdoZXRoZXIgd2UgYnVpbGQgZm9yIENvYmFsdCBvciBNZXJjdXJ5IGNvcmUu
-Li4gY29iYWx0DQo+IGNoZWNraW5nIGJ1aWxkIHN5c3RlbSB0eXBlLi4uIHg4Nl82NC1wYy1saW51
-eC1nbnUNCj4gY2hlY2tpbmcgaG9zdCBzeXN0ZW0gdHlwZS4uLiBpNjg2LXBjLWxpbnV4LWdudQ0K
-PiBjaGVja2luZyBmb3IgYSBCU0QtY29tcGF0aWJsZSBpbnN0YWxsLi4uIC91c3IvYmluL2luc3Rh
-bGwgLWMNCj4gY2hlY2tpbmcgZm9yIGk2ODYtbGludXgtZ2NjLi4uIG5vDQo+IGNoZWNraW5nIGZv
-ciBnY2MuLi4gZ2NjDQo+IGNoZWNraW5nIHdoZXRoZXIgdGhlIEMgY29tcGlsZXIgd29ya3MuLi4g
-bm8NCj4gY29uZmlndXJlOiBlcnJvcjogaW4gYC91c3Ivc3JjL3hlbm9tYWktMy4xJzoNCj4gY29u
-ZmlndXJlOiBlcnJvcjogQyBjb21waWxlciBjYW5ub3QgY3JlYXRlIGV4ZWN1dGFibGVzDQo+IFNl
-ZSBgY29uZmlnLmxvZycgZm9yIG1vcmUgZGV0YWlscw0KDQpIYXZlIHlvdSBsb29rZWQgaW50byBj
-b25maWcubG9nPyBJIGd1ZXNzIHlvdXIgY29tcGlsZXIgaXMgbm90IGFibGUgdG8NCmNyZWF0ZSAz
-MiBiaXQgYmluYXJpZXMuIE1ha2Ugc3VyZSB5b3UgaW5zdGFsbGVkIGFsbCB0aGUgMzIgYml0IGds
-aWJjDQpzdHVmZi4NCg0KPiBjYW4gaGVscCBtZSBwbGVhc2UuDQo+IG1hbnkgdGhhbmtzDQo+IGJl
-c3QgcmVnYXJkcw0KPiANCj4gWmFyZWQgS2FtYWwNCj4gRMOpcGFydGVtZW50IGRlIEfDqW5pZSBF
-bGVjdHJpcXVlLExhYm9yYXRvaXJlIFNpZ25hdXggU3lzdMOobWVzICYgQ29tcG9zYW50c8KgRmFj
-dWx0w6kgZGVzIFNjaWVuY2VzICYgVGVjaG5pcXVlcyzCoEJQIDIyMDIsIDMwMDAwIEbDqHPCoMKg
-IGh0dHA6Ly93d3cuZnN0dXNtYmEuYWMubWEvZS1tYWlsIGthbWFsLnphcmVkQHVzbWJhLmFjLm1h
-LCB6YXJlZGthbUB5YWhvby5mcg0KDQo=
+On 18.11.21 02:14, Konstantin Smola via Xenomai wrote:
+> kernel/cobalt/rtdm: Documentation improvements for rtdm_mmap_to_user(), rtdm_mmap_vmem(), 
+>  rtdm_mmap_kmem(), rtdm_mmap_iomem()
+> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
+> ---
+>  kernel/cobalt/rtdm/drvlib.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index 7b7b0830c..4ebcd3b0d 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -1973,6 +1973,10 @@ int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
+>   * vmalloc(). To map physical I/O memory to user-space use
+>   * rtdm_iomap_to_user() instead.
+>   *
+> + * @note This service is provided only for use in .ioctl operation handlers. 
+> + * Otherwise RTDM drivers implementing a .mmap operation should use 
+> + * rtdm_mmap_kmem(), rtdm_mmap_vmem(), or rtdm_mmap_iomem().
+> + *
+>   * @note RTDM supports two models for unmapping the memory area:
+>   * - manual unmapping via rtdm_munmap(), which may be issued from a
+>   * driver in response to an IOCTL call, or by a call to the regular
+> @@ -2084,7 +2088,7 @@ EXPORT_SYMBOL_GPL(rtdm_iomap_to_user);
+>  /**
+>   * Map a kernel logical memory range to a virtual user area.
+>   *
+> - * This routine is commonly used from a ->mmap() handler of a RTDM
+> + * This routine is commonly used from a .mmap operation handler of a RTDM
+>   * driver, for mapping a virtual memory area with a direct physical
+>   * mapping over the user address space referred to by @a vma.
+>   *
+> @@ -2107,10 +2111,10 @@ int rtdm_mmap_kmem(struct vm_area_struct *vma, void *va)
+>  EXPORT_SYMBOL_GPL(rtdm_mmap_kmem);
+>  
+>  /**
+> - * Map a virtual memory range to a virtual user area.
+> + * Map a kernel virtual memory range to a virtual user area.
+>   *
+> - * This routine is commonly used from a ->mmap() handler of a RTDM
+> - * driver, for mapping a purely virtual memory area over the user
+> + * This routine is commonly used from a .mmap operation handler of a RTDM
+> + * driver, for mapping a kernel virtual memory area over the user
+>   * address space referred to by @a vma.
+>   *
+>   * @param[in] vma The VMA descriptor to receive the mapping.
+> @@ -2138,7 +2142,7 @@ EXPORT_SYMBOL_GPL(rtdm_mmap_vmem);
+>  /**
+>   * Map an I/O memory range to a virtual user area.
+>   *
+> - * This routine is commonly used from a ->mmap() handler of a RTDM
+> + * This routine is commonly used from a .mmap operation handler of a RTDM
+>   * driver, for mapping an I/O memory area over the user address space
+>   * referred to by @a vma.
+>   *
+> 
+
+Thanks, applied (with whitespace fixes).
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
