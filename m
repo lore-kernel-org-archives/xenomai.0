@@ -1,10 +1,11 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 2/2] cobalt/trace: dovetail: remove TODO and return -ENOSYS
- for unportable features
-Date: Tue, 23 Nov 2021 20:40:58 -0500
-Message-Id: <20211124014058.12195-3-hongzhan.chen@intel.com>
-In-Reply-To: <20211124014058.12195-1-hongzhan.chen@intel.com>
-References: <20211124014058.12195-1-hongzhan.chen@intel.com>
+From: "Godbille, Clement" <Clement.Godbille2@leoni.com>
+Subject: Regarding the development of an OOB compatible driver
+Date: Wed, 24 Nov 2021 15:16:31 +0000
+Message-ID: <AM6PR08MB3416EA59643AC0D3AD2C4155B2619@AM6PR08MB3416.eurprd08.prod.outlook.com>
+Content-Language: fr-FR
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,73 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Some of the features are unportable because ftrace does not
-provide equivalent functionality to the ipipe tracer (namely double
-buffering so that you can continue to record in flight-recorder mode
-while a previous recording remains available).
+Dear Mr. Gerum,
 
-We remove TODO to pass allyesconfig make.
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- .../cobalt/kernel/dovetail/pipeline/trace.h    | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
-index 68b5fdb23..1a2e86cc1 100644
---- a/include/cobalt/kernel/dovetail/pipeline/trace.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
-@@ -27,26 +27,22 @@
- 
- static inline int xntrace_max_begin(unsigned long v)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline int xntrace_max_end(unsigned long v)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline int xntrace_max_reset(void)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline int xntrace_user_start(void)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline int xntrace_user_stop(unsigned long v)
-@@ -96,14 +92,12 @@ static inline int xntrace_tick(unsigned long delay_ticks) /* ns */
- 
- static inline int xntrace_panic_freeze(void)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline int xntrace_panic_dump(void)
- {
--	TODO();
--	return 0;
-+	return -ENOSYS;
- }
- 
- static inline bool xntrace_enabled(void)
--- 
-2.17.1
+Thank you very much for your return. I have a better understanding of how t=
+he OOB interruption pipeline is organized.
 
+
+
+Thus, I have tried to adapt my UART driver to work correctly during the OOB=
+ stage. I handled carefully all the existing locks and unlocks, and I am tr=
+ying to adapt all remaining code called by my interruption to an OOB contex=
+t. However, I reached kernel methods which are protected by a call to the "=
+check_inband_stage" method (for instance, __kmalloc or __wake_up_common).
+
+
+
+I understand that I should not touch those methods (I wouldn't dare). But I=
+ don't know if there are any OOB compatible to those methods.
+
+
+
+The documentation page which could relate to this topic is under constructi=
+on (the kernel function index). Do you have other sources of information, m=
+ethod or examples on how to deal with this case to make it OOB compliant ?
+
+
+
+Thank you for your time and best regards.
+
+
+
+Cl=E9ment GODBILLE
+
+Software engineer
+
+Business Unit Robotic Solutions
+
+LEONI CIA Cable Systems S.A.S.
+
+1, Avenue Louis Pasteur
+
+28630 Gellainville
+
+France
+
+RCS Chartres B 330 388 356
+
+TVA : FR 68 330 388 356
+
+President : Peter GERSTENBERGER
+
+General Manager : Claude BURLOT
 
