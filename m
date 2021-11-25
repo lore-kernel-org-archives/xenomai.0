@@ -1,9 +1,15 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH 4/6] drivers/can: add a minimal support to ethtool API
-Date: Thu, 25 Nov 2021 00:46:46 +0100
-Message-Id: <20211125004644.4.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
-In-Reply-To: <20211124234648.7428-1-dariobin@libero.it>
-References: <20211124234648.7428-1-dariobin@libero.it>
+Subject: Re: [PATCH 1/2] cobalt/trace: dovetail: improve xntrace_user_stop to
+ replace TODO
+References: <20211124014058.12195-1-hongzhan.chen@intel.com>
+ <20211124014058.12195-2-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <72ea04cc-7b15-9dc1-f657-32e434819e18@siemens.com>
+Date: Thu, 25 Nov 2021 11:03:31 +0100
+MIME-Version: 1.0
+In-Reply-To: <20211124014058.12195-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,212 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, Dario Binacchi <dariobin@libero.it>, Jan Kiszka <jan.kiszka@siemens.com>, Socketcan-users@lists.berlios.de, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian.Smolorz@stud.uni-hannover.de
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-Like in the Linux kernel, the API allows to get/set device controller
-parameters.
-For now it only supports:
- - ETHTOOL_GDRVINFO: get general driver and device information
- - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
+On 24.11.21 02:40, Hongzhan Chen via Xenomai wrote:
+> xntrace_user_stop is widely similar to xntrace_user_freeze, call
+> trace_cobalt_trigger to improve it.
+> 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  include/cobalt/kernel/dovetail/pipeline/trace.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
+> index 513d9b48b..68b5fdb23 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/trace.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
+> @@ -51,7 +51,8 @@ static inline int xntrace_user_start(void)
+>  
+>  static inline int xntrace_user_stop(unsigned long v)
+>  {
+> -	TODO();
+> +	trace_cobalt_trace_longval(0, v);
+> +	trace_cobalt_trigger("user-stop");
+>  	return 0;
+>  }
+>  
+> 
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
+Let's also make xntrace_user_start visible -
+trace_cobalt_trigger("user-start") - and let it return 0 so that
+user_stop is not "unbalanced".
 
- kernel/drivers/can/Makefile        |  2 +-
- kernel/drivers/can/rtcan_dev.h     |  4 +-
- kernel/drivers/can/rtcan_ethtool.c | 75 ++++++++++++++++++++++++++++++
- kernel/drivers/can/rtcan_ethtool.h | 24 ++++++++++
- kernel/drivers/can/rtcan_raw_dev.c | 20 ++++++++
- 5 files changed, 123 insertions(+), 2 deletions(-)
- create mode 100644 kernel/drivers/can/rtcan_ethtool.c
- create mode 100644 kernel/drivers/can/rtcan_ethtool.h
+Rest looks good.
 
-diff --git a/kernel/drivers/can/Makefile b/kernel/drivers/can/Makefile
-index f78f6afdf..65761a010 100644
---- a/kernel/drivers/can/Makefile
-+++ b/kernel/drivers/can/Makefile
-@@ -5,6 +5,6 @@ obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o mscan/ sja1000/ peak_canfd/
- obj-$(CONFIG_XENO_DRIVERS_CAN_FLEXCAN) += xeno_can_flexcan.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_VIRT) += xeno_can_virt.o
- 
--xeno_can-y := rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o
-+xeno_can-y := rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o rtcan_ethtool.o
- xeno_can_virt-y := rtcan_virt.o
- xeno_can_flexcan-y := rtcan_flexcan.o
-diff --git a/kernel/drivers/can/rtcan_dev.h b/kernel/drivers/can/rtcan_dev.h
-index 3642e92f0..cc081f6e8 100644
---- a/kernel/drivers/can/rtcan_dev.h
-+++ b/kernel/drivers/can/rtcan_dev.h
-@@ -34,7 +34,7 @@
- #include <linux/semaphore.h>
- 
- #include "rtcan_list.h"
--
-+#include "rtcan_ethtool.h"
- 
- /* Number of MSCAN devices the driver can handle */
- #define RTCAN_MAX_DEVICES    CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES
-@@ -137,6 +137,8 @@ struct rtcan_device {
-     void                (*do_enable_bus_err)(struct rtcan_device *dev);
- #endif
- 
-+    const struct rtcan_ethtool_ops *ethtool_ops;
-+
-     /* Reception list head. This list contains all filters which have been
-      * registered via a bind call. */
-     struct rtcan_recv               *recv_list;
-diff --git a/kernel/drivers/can/rtcan_ethtool.c b/kernel/drivers/can/rtcan_ethtool.c
-new file mode 100644
-index 000000000..cfcf77ac3
---- /dev/null
-+++ b/kernel/drivers/can/rtcan_ethtool.c
-@@ -0,0 +1,75 @@
-+#include "rtcan_dev.h"
-+
-+static int rtcan_ethtool_drvinfo(struct rtdm_fd *fd, struct rtcan_device *dev,
-+				 void __user *useraddr)
-+{
-+	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_drvinfo info = {.cmd = ETHTOOL_GDRVINFO };
-+
-+	if (!ops->get_drvinfo)
-+		return -EOPNOTSUPP;
-+
-+	ops->get_drvinfo(dev, &info);
-+
-+	if (!rtdm_fd_is_user(fd) ||
-+	    rtdm_copy_to_user(fd, useraddr, &info, sizeof(info)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
-+static int rtcan_ethtool_get_ringparam(struct rtdm_fd *fd,
-+				       struct rtcan_device *dev,
-+				       void __user *useraddr)
-+{
-+	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_ringparam ringparam = { .cmd = ETHTOOL_GRINGPARAM };
-+
-+	if (!ops->get_ringparam)
-+		return -EOPNOTSUPP;
-+
-+	ops->get_ringparam(dev, &ringparam);
-+
-+	if (!rtdm_fd_is_user(fd) ||
-+	    rtdm_copy_to_user(fd, useraddr, &ringparam, sizeof(ringparam)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
-+int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
-+		  struct ifreq *ifr)
-+{
-+	void __user *useraddr = ifr->ifr_data;
-+	u32 ethcmd;
-+	int rc;
-+
-+	if (!dev->ethtool_ops)
-+		return -EOPNOTSUPP;
-+
-+	if (!rtdm_read_user_ok(fd, useraddr, sizeof(ethcmd)) ||
-+	    rtdm_copy_from_user(fd, &ethcmd, useraddr, sizeof(ethcmd)))
-+		return -EFAULT;
-+
-+	if (dev->ethtool_ops->begin) {
-+		rc = dev->ethtool_ops->begin(dev);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	switch (ethcmd) {
-+	case ETHTOOL_GDRVINFO:
-+		rc = rtcan_ethtool_drvinfo(fd, dev, useraddr);
-+		break;
-+	case ETHTOOL_GRINGPARAM:
-+		rc = rtcan_ethtool_get_ringparam(fd, dev, useraddr);
-+		break;
-+	default:
-+		rc = -EOPNOTSUPP;
-+	}
-+
-+	if (dev->ethtool_ops->complete)
-+		dev->ethtool_ops->complete(dev);
-+
-+	return rc;
-+}
-diff --git a/kernel/drivers/can/rtcan_ethtool.h b/kernel/drivers/can/rtcan_ethtool.h
-new file mode 100644
-index 000000000..b01090fd3
---- /dev/null
-+++ b/kernel/drivers/can/rtcan_ethtool.h
-@@ -0,0 +1,24 @@
-+#ifndef __RTCAN_ETHTOOL_H_
-+#define __RTCAN_ETHTOOL_H_
-+
-+#ifdef __KERNEL__
-+
-+#include <linux/ethtool.h>
-+
-+struct rtcan_device;
-+
-+struct rtcan_ethtool_ops {
-+	int (*begin)(struct rtcan_device *dev);
-+	int (*complete)(struct rtcan_device *dev);
-+	void (*get_drvinfo)(struct rtcan_device *dev,
-+			     struct ethtool_drvinfo *info);
-+	void (*get_ringparam)(struct rtcan_device *dev,
-+			      struct ethtool_ringparam *ring);
-+};
-+
-+int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
-+		  struct ifreq *ifr);
-+
-+#endif /* __KERNEL__ */
-+
-+#endif /* __RTCAN_ETHTOOL_H_ */
-diff --git a/kernel/drivers/can/rtcan_raw_dev.c b/kernel/drivers/can/rtcan_raw_dev.c
-index d1ff640e3..d418c481f 100644
---- a/kernel/drivers/can/rtcan_raw_dev.c
-+++ b/kernel/drivers/can/rtcan_raw_dev.c
-@@ -354,6 +354,7 @@ static inline int rtcan_raw_ioctl_dev_set(struct rtcan_device *dev,
- int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
- {
-     struct can_ifreq *ifr;
-+    struct ifreq *ifreq;
-     int ret = 0, get = 0;
-     union {
- 	    /*
-@@ -414,7 +415,26 @@ int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
- 		rtcan_dev_dereference(dev);
- 	}
- 	break;
-+    case SIOCETHTOOL:
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy struct can_ifreq from userspace */
-+	    if (!rtdm_read_user_ok(fd, arg, sizeof(*ifreq)) ||
-+		rtdm_copy_from_user(fd, &ifr_buf, arg, sizeof(*ifreq)))
-+		return -EFAULT;
-+
-+	    ifreq = &ifr_buf.ifr_legacy;
-+	} else {
-+	    ifreq = (struct ifreq *)arg;
-+	}
- 
-+	/* Get interface index and data */
-+	dev = rtcan_dev_get_by_name(ifreq->ifr_name);
-+	if (dev == NULL)
-+	    return -ENODEV;
-+
-+	ret = rtcan_ethtool(fd, dev, ifreq);
-+	rtcan_dev_dereference(dev);
-+	break;
-     default:
- 	ret = -EOPNOTSUPP;
- 	break;
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
