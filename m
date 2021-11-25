@@ -1,11 +1,11 @@
-Subject: Re: [PATCH 4/6] drivers/can: add a minimal support to ethtool API
+Subject: Re: [PATCH 1/6] drivers/can: add multi message support to sendmsg
 References: <20211124234648.7428-1-dariobin@libero.it>
- <20211125004644.4.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
+ <20211125004644.1.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <13bfd3b6-94bd-6e60-3978-4683f8aebc87@siemens.com>
-Date: Thu, 25 Nov 2021 11:26:41 +0100
+Message-ID: <fa1059c4-3ee9-64d4-5884-737489404827@siemens.com>
+Date: Thu, 25 Nov 2021 11:26:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211125004644.4.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
+In-Reply-To: <20211125004644.1.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -21,17 +21,24 @@ To: Dario Binacchi <dariobin@libero.it>, xenomai@xenomai.org
 Cc: Philippe Gerum <rpm@xenomai.org>, Socketcan-users@lists.berlios.de, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian.Smolorz@stud.uni-hannover.de
 
 On 25.11.21 00:46, Dario Binacchi wrote:
-> Like in the Linux kernel, the API allows to get/set device controller
-> parameters.
-> For now it only supports:
->  - ETHTOOL_GDRVINFO: get general driver and device information
->  - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
+> The `user_msghdr' structure is designed to send multiple messages as
+> well, so rtcan_raw_sendmsg() can also send multiple messages. This
+> avoids having to add the sendmmsg system call which requires more
+> extensive Xenomai changes.
+> 
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> ---
+> 
+>  kernel/drivers/can/rtcan_raw.c | 239 ++++++++++++++++++---------------
+>  1 file changed, 128 insertions(+), 111 deletions(-)
 > 
 
-What will be the use case? IIUC, only the c_can driver will implement
-the required callbacks, right? Does it need this interface in order to
-become operational? Is it a useful debug features? Or what is this for,
-practically?
+Thanks for your contribution!
+
+rtcan is currently not covered by our testsuite. Before touching this
+generic code, I would like to use the chance and add a simple can-virt
+testcase to smokey (analogously to the rtnet test) so that this change
+is covered as well.
 
 Jan
 
