@@ -1,13 +1,13 @@
-Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
- handle_oob_syscall()
-References: <20211114100348.1235576-1-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
-Date: Sun, 14 Nov 2021 20:39:15 +0100
+Date: Sat, 27 Nov 2021 16:38:57 +0100 (CET)
+From: Dario Binacchi <dariobin@libero.it>
+Message-ID: <1195732259.564856.1638027537471@mail1.libero.it>
+In-Reply-To: <13bfd3b6-94bd-6e60-3978-4683f8aebc87@siemens.com>
+References: <20211124234648.7428-1-dariobin@libero.it>
+ <20211125004644.4.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
+ <13bfd3b6-94bd-6e60-3978-4683f8aebc87@siemens.com>
+Subject: Re: [PATCH 4/6] drivers/can: add a minimal support to ethtool API
 MIME-Version: 1.0
-In-Reply-To: <20211114100348.1235576-1-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,66 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Cc: Philippe Gerum <rpm@xenomai.org>, Socketcan-users@lists.berlios.de, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian.Smolorz@stud.uni-hannover.de
 
-On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+Hi Jan,
+
+> Il 25/11/2021 11:26 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
 > 
-> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
-> propagation status just like handle_pipelined_syscall(), with the same
-> semantics. This is a requirement for properly handling our syscall
-> format and the new prctl-based one concurrently. Fix up the signature
-> accordingly.  This status is ignored on earlier Dovetail releases.
-> 
-> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
-> enabling our current syscall format, which defaults to y at the
-> moment.  Force it on regardless to allow for detection when this call
-> format is eventually deprecated upstream.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/cobalt/dovetail/syscall.c | 5 ++---
->  scripts/Kconfig.frag             | 1 +
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
-> index cec6c0244..440c069d5 100644
-> --- a/kernel/cobalt/dovetail/syscall.c
-> +++ b/kernel/cobalt/dovetail/syscall.c
-> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
->  	return handle_head_syscall(stage == &inband_stage, regs);
->  }
 >  
-> -void handle_oob_syscall(struct pt_regs *regs)
-> +int handle_oob_syscall(struct pt_regs *regs)
->  {
-> -	int ret = handle_head_syscall(false, regs);
-> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
-> +	return handle_head_syscall(false, regs);
->  }
-
-This unfortunately makes the Xenomai 3.2 release incompatible with
-latest stable Dovetail. I would now have to hectically roll out 3.2.1
-and cross fingers that people will use it. Better than before, but still
-not smooth.
-
-Jan
-
-> diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-> index dd91dc6c9..792128663 100644
-> --- a/scripts/Kconfig.frag
-> +++ b/scripts/Kconfig.frag
-> @@ -4,6 +4,7 @@ menuconfig XENOMAI
->  	select IPIPE if HAVE_IPIPE_SUPPORT
->  	select IPIPE_WANT_APIREV_2 if IPIPE
->  	select DOVETAIL if HAVE_DOVETAIL
-> +	select DOVETAIL_LEGACY_SYSCALL_RANGE if HAVE_DOVETAIL
->  	default y
->  	help
->  	  Xenomai's Cobalt core is a real-time extension to the Linux
+> On 25.11.21 00:46, Dario Binacchi wrote:
+> > Like in the Linux kernel, the API allows to get/set device controller
+> > parameters.
+> > For now it only supports:
+> >  - ETHTOOL_GDRVINFO: get general driver and device information
+> >  - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
+> > 
 > 
+> What will be the use case? IIUC, only the c_can driver will implement
+> the required callbacks, right? 
+Yes, for now.
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+> Does it need this interface in order to become operational? 
+No, the driver is fully operational even without this interface.
+I think that 2722ac986e93 ("can: c_can: add ethtool support") was the
+first commit applied to the Linux Kernel adding ethtool support for
+CAN devices.
+
+> Is it a useful debug features? Or what is this for, practically?
+It allows the userspace to know the number of message objects managed by
+the controller (32 or 64) and how many of them are used for reception/transmission.
+If I know the TX FIFO depth I know how many messages I can send before the 
+sendmsg returns error for FIFO full.
+
+Thanks and regards,
+Dario
+
+> 
+> Jan
+> 
+> -- 
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
 
