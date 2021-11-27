@@ -1,11 +1,11 @@
-Date: Sat, 27 Nov 2021 16:38:57 +0100 (CET)
+Date: Sat, 27 Nov 2021 16:50:23 +0100 (CET)
 From: Dario Binacchi <dariobin@libero.it>
-Message-ID: <1195732259.564856.1638027537471@mail1.libero.it>
-In-Reply-To: <13bfd3b6-94bd-6e60-3978-4683f8aebc87@siemens.com>
+Message-ID: <12883241.564980.1638028223215@mail1.libero.it>
+In-Reply-To: <23c7f9a2-6a27-fc52-5502-154cdc1f2cf6@siemens.com>
 References: <20211124234648.7428-1-dariobin@libero.it>
- <20211125004644.4.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
- <13bfd3b6-94bd-6e60-3978-4683f8aebc87@siemens.com>
-Subject: Re: [PATCH 4/6] drivers/can: add a minimal support to ethtool API
+ <20211124234648.7428-4-dariobin@libero.it>
+ <23c7f9a2-6a27-fc52-5502-154cdc1f2cf6@siemens.com>
+Subject: Re: [PATCH 5/6] drivers/can: fix updating of tx_count statistics
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
@@ -18,36 +18,73 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, Socketcan-users@lists.berlios.de, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian.Smolorz@stud.uni-hannover.de
+Cc: Philippe Gerum <rpm@xenomai.org>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
 
 Hi Jan,
 
-> Il 25/11/2021 11:26 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
+> Il 25/11/2021 11:28 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
 > 
 >  
 > On 25.11.21 00:46, Dario Binacchi wrote:
-> > Like in the Linux kernel, the API allows to get/set device controller
-> > parameters.
-> > For now it only supports:
-> >  - ETHTOOL_GDRVINFO: get general driver and device information
-> >  - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
+> > As in the Linux kernel, the counter is updated only after the message
+> > has been really transmitted.
 > > 
+> > Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> > ---
+> > 
+> >  kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
+> >  kernel/drivers/can/rtcan_flexcan.c         | 1 +
+> >  kernel/drivers/can/rtcan_raw.c             | 1 -
+> >  kernel/drivers/can/rtcan_virt.c            | 1 +
+> >  kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
+> >  5 files changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
+> > index 387e27cc0..da573aba6 100644
+> > --- a/kernel/drivers/can/mscan/rtcan_mscan.c
+> > +++ b/kernel/drivers/can/mscan/rtcan_mscan.c
+> > @@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
+> >  		out_8(&regs->cantier, 0);
+> >  		/* Wake up a sender */
+> >  		rtdm_sem_up(&dev->tx_sem);
+> > +		dev->tx_count++;
+> >  
+> >  		if (rtcan_loopback_pending(dev)) {
+> >  
+> > diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
+> > index 7569d16f7..3348e8ce0 100644
+> > --- a/kernel/drivers/can/rtcan_flexcan.c
+> > +++ b/kernel/drivers/can/rtcan_flexcan.c
+> > @@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
+> >  			      &priv->tx_mb->can_ctrl);
+> >  		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
+> >  		rtdm_sem_up(&dev->tx_sem);
+> > +		dev->tx_count++;
+> >  		if (rtcan_loopback_pending(dev))
+> >  			rtcan_loopback(dev);
+> >  		handled = RTDM_IRQ_HANDLED;
+> > diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+> > index b17c1709d..dffc6e837 100644
+> > --- a/kernel/drivers/can/rtcan_raw.c
+> > +++ b/kernel/drivers/can/rtcan_raw.c
+> > @@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
+> >  	goto send_out2;
+> >      }
+> >  
+> > -    dev->tx_count++;
+> >      ret = dev->hard_start_xmit(dev, frame);
 > 
-> What will be the use case? IIUC, only the c_can driver will implement
-> the required callbacks, right? 
-Yes, for now.
+> Can we solve this generically, without having to touch every driver?
 
-> Does it need this interface in order to become operational? 
-No, the driver is fully operational even without this interface.
-I think that 2722ac986e93 ("can: c_can: add ethtool support") was the
-first commit applied to the Linux Kernel adding ethtool support for
-CAN devices.
+IMHO I think not.
 
-> Is it a useful debug features? Or what is this for, practically?
-It allows the userspace to know the number of message objects managed by
-the controller (32 or 64) and how many of them are used for reception/transmission.
-If I know the TX FIFO depth I know how many messages I can send before the 
-sendmsg returns error for FIFO full.
+> 
+> Should the counter only be updated when hard_start_xmit returns 0?
+
+We are not sure if the message was transmitted. It may still be in the 
+transmission FIFO.
+The hard_start_xmit() of the C_CAN/D_CAN driver, returns 0 if it succeeded 
+in inserting the message into the transmit FIFO.
 
 Thanks and regards,
 Dario
