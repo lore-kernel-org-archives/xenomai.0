@@ -1,7 +1,9 @@
 From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v2 0/6] drivers/can: add support for Bosch C_CAN controller
-Date: Mon, 29 Nov 2021 23:07:44 +0100
-Message-Id: <20211129220750.10362-1-dariobin@libero.it>
+Subject: [PATCH v2 1/6] drivers/can: add multi message support to sendmsg
+Date: Mon, 29 Nov 2021 23:07:45 +0100
+Message-Id: <20211129230612.v2.1.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
+In-Reply-To: <20211129220750.10362-1-dariobin@libero.it>
+References: <20211129220750.10362-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,90 +15,296 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
 
+The `user_msghdr' structure is designed to send multiple messages as
+well, so rtcan_raw_sendmsg() can also send multiple messages. This
+avoids having to add the sendmmsg system call which requires more
+extensive Xenomai changes.
 
-The series was created to optimize the use of the C_CAN controller
-(maximum number of message objects, use of FIFO, ...) to get the
-best possible RX/TX throughput from hardware.
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+---
 
-To emphasize the purpose of the series I also added the patch
-which adds multi-message support to `sendmsg ', rather than'
-submitting it separately. In fact, it too has contributed to
-increasing transmission throughput.
+(no changes since v1)
 
-The patches prior to the one adding the BOSCH C_CAN controller driver,
-are a backporting of commits from the linux kernel that also impacted
-on the driver itself and I found it necessary to add to the series.
+ kernel/drivers/can/rtcan_raw.c | 239 ++++++++++++++++++---------------
+ 1 file changed, 128 insertions(+), 111 deletions(-)
 
-The latest patch, as described in its commit, modified Stephen
-Battazzo's patch [1] with bug fixes, backporting of commits from the
-linux kernel, extension of message objects to 64 and improvements in
-FIFO handling. This series was in fact preceded by the creation of
-patches which I sent to the Linux kernel and which were then accepted:
-
-387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
-28e86e9ab522 ("can: c_can: support tx ring algorithm")
-a54cdbba9dee ("can: c_can: exit c_can_do_tx() early if no frames have been sent")
-5064e40596f4 ("can: c_can: remove struct c_can_priv::priv field")
-06fc143b2ede dt-bindings: net: can: c_can: convert to json-schema
-132f2d45fb23 ("can: c_can: add support to 64 message objects")
-13831ce69c77 ("can: c_can: prepare to up the message objects number")
-fcbded019855 ("can: c_can: use 32-bit write to set arbitration register")
-eddf67115040 ("can: c_can: add a comment about IF_RX interface's use")
-c8a6b44388cb ("can: c_can: fix indentation")
-f65735c203d5 ("can: c_can: remove unused code")
-
-The patch was tested on a custom board mounting an AM335x SOC.
-
-PCI support has not been developed.
-
-[1] http://xenomai.org/pipermail/xenomai/2015-July/034690.html
-
-Changes in v2:
-- Expand the commit message to better describe the added API.
-- Drop 'default n' Kconfig
-- Enable the driver for Xenomai CI builds
-- Drop commented code
-- Drop power managemet (pm) code
-
-Dario Binacchi (6):
-  drivers/can: add multi message support to sendmsg
-  drivers/can: add CAN_ERR_CRTL_ACTIVE info status
-  drivers/can: add len field to can frame structures
-  drivers/can: add a minimal support to ethtool API
-  drivers/can: fix updating of tx_count statistics
-  drivers/can: add support for Bosch C_CAN controller
-
- .gitlab-ci.yml                                |    2 +
- include/rtdm/uapi/can.h                       |    6 +-
- kernel/drivers/can/Kconfig                    |    1 +
- kernel/drivers/can/Makefile                   |    4 +-
- kernel/drivers/can/README                     |    1 +
- kernel/drivers/can/c_can/Kconfig              |   15 +
- kernel/drivers/can/c_can/Makefile             |    8 +
- kernel/drivers/can/c_can/rtcan_c_can.c        | 1298 +++++++++++++++++
- kernel/drivers/can/c_can/rtcan_c_can.h        |  255 ++++
- .../drivers/can/c_can/rtcan_c_can_ethtool.c   |   47 +
- .../drivers/can/c_can/rtcan_c_can_platform.c  |  461 ++++++
- kernel/drivers/can/mscan/rtcan_mscan.c        |    1 +
- kernel/drivers/can/rtcan_dev.h                |    4 +-
- kernel/drivers/can/rtcan_ethtool.c            |   75 +
- kernel/drivers/can/rtcan_ethtool.h            |   24 +
- kernel/drivers/can/rtcan_flexcan.c            |    1 +
- kernel/drivers/can/rtcan_raw.c                |  240 +--
- kernel/drivers/can/rtcan_raw_dev.c            |   20 +
- kernel/drivers/can/rtcan_socket.h             |    5 +-
- kernel/drivers/can/rtcan_virt.c               |    1 +
- kernel/drivers/can/sja1000/rtcan_sja1000.c    |    1 +
- 21 files changed, 2353 insertions(+), 117 deletions(-)
- create mode 100644 kernel/drivers/can/c_can/Kconfig
- create mode 100644 kernel/drivers/can/c_can/Makefile
- create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.c
- create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.h
- create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_ethtool.c
- create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_platform.c
- create mode 100644 kernel/drivers/can/rtcan_ethtool.c
- create mode 100644 kernel/drivers/can/rtcan_ethtool.h
-
+diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+index 693b927fe..b17c1709d 100644
+--- a/kernel/drivers/can/rtcan_raw.c
++++ b/kernel/drivers/can/rtcan_raw.c
+@@ -762,113 +762,13 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
+ }
+ 
+ 
+-ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+-			  const struct user_msghdr *msg, int flags)
++static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket *sock,
++				   can_frame_t *frame, nanosecs_rel_t timeout)
+ {
+-    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
+-    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
+-    struct sockaddr_can scan_buf;
+-    struct iovec *iov = (struct iovec *)msg->msg_iov;
+-    struct iovec iov_buf;
+-    can_frame_t *frame;
+-    can_frame_t frame_buf;
+-    rtdm_lockctx_t lock_ctx;
+-    nanosecs_rel_t timeout = 0;
+     struct tx_wait_queue tx_wait;
+-    struct rtcan_device *dev;
+-    int ifindex = 0;
+-    int ret  = 0;
++    rtdm_lockctx_t lock_ctx;
+     spl_t s;
+-
+-
+-    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
+-	return -EOPNOTSUPP;
+-
+-    /* Only MSG_DONTWAIT is a valid flag. */
+-    if (flags & ~MSG_DONTWAIT)
+-	return -EINVAL;
+-
+-    /* Check msg_iovlen, only one buffer allowed */
+-    if (msg->msg_iovlen != 1)
+-	return -EMSGSIZE;
+-
+-    if (scan == NULL) {
+-	/* No socket address. Will use bound interface for sending */
+-
+-	if (msg->msg_namelen != 0)
+-	    return -EINVAL;
+-
+-
+-	/* We only want a consistent value here, a spin lock would be
+-	 * overkill. Nevertheless, the binding could change till we have
+-	 * the chance to send. Blame the user, though. */
+-	ifindex = atomic_read(&sock->ifindex);
+-
+-	if (!ifindex)
+-	    /* Socket isn't bound or bound to all interfaces. Go out. */
+-	    return -ENXIO;
+-    } else {
+-	/* Socket address given */
+-	if (msg->msg_namelen < sizeof(struct sockaddr_can))
+-	    return -EINVAL;
+-
+-	if (rtdm_fd_is_user(fd)) {
+-	    /* Copy socket address from userspace */
+-	    if (!rtdm_read_user_ok(fd, msg->msg_name,
+-				   sizeof(struct sockaddr_can)) ||
+-		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
+-				    sizeof(struct sockaddr_can)))
+-		return -EFAULT;
+-
+-	    scan = &scan_buf;
+-	}
+-
+-	/* Check address family */
+-	if (scan->can_family != AF_CAN)
+-	    return -EINVAL;
+-
+-	ifindex = scan->can_ifindex;
+-    }
+-
+-    if (rtdm_fd_is_user(fd)) {
+-	/* Copy IO vector from userspace */
+-	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
+-			     sizeof(struct iovec)) ||
+-	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
+-				sizeof(struct iovec)))
+-	    return -EFAULT;
+-
+-	iov = &iov_buf;
+-    }
+-
+-    /* Check size of buffer */
+-    if (iov->iov_len != sizeof(can_frame_t))
+-	return -EMSGSIZE;
+-
+-    frame = (can_frame_t *)iov->iov_base;
+-
+-    if (rtdm_fd_is_user(fd)) {
+-	/* Copy CAN frame from userspace */
+-	if (!rtdm_read_user_ok(fd, iov->iov_base,
+-			       sizeof(can_frame_t)) ||
+-	    rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
+-				sizeof(can_frame_t)))
+-	    return -EFAULT;
+-
+-	frame = &frame_buf;
+-    }
+-
+-    /* Adjust iovec in the common way */
+-    iov->iov_base += sizeof(can_frame_t);
+-    iov->iov_len -= sizeof(can_frame_t);
+-    /* ... and copy it back to userspace if necessary */
+-    if (rtdm_fd_is_user(fd)) {
+-	if (rtdm_copy_to_user(fd, msg->msg_iov, iov,
+-			      sizeof(struct iovec)))
+-	    return -EFAULT;
+-    }
+-
+-    /* At last, we've got the frame ... */
++    int ret = 0;
+ 
+     /* Check if DLC between 0 and 15 */
+     if (frame->can_dlc > 15)
+@@ -881,11 +781,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+ 	    return -EINVAL;
+     }
+ 
+-    if ((dev = rtcan_dev_get_by_index(ifindex)) == NULL)
+-	return -ENXIO;
+-
+-    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
+-
+     tx_wait.rt_task = rtdm_task_current();
+ 
+     /* Register the task at the socket's TX wait queue and decrement
+@@ -931,7 +826,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+ 
+     /* We got access */
+ 
+-
+     /* Push message onto stack for loopback when TX done */
+     if (rtcan_loopback_enabled(sock))
+ 	rtcan_tx_push(dev, sock, frame);
+@@ -960,10 +854,133 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+  send_out2:
+     rtdm_lock_put_irqrestore(&dev->device_lock, lock_ctx);
+  send_out1:
+-    rtcan_dev_dereference(dev);
+     return ret;
+ }
+ 
++ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
++			  const struct user_msghdr *msg, int flags)
++{
++    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
++    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
++    struct sockaddr_can scan_buf;
++    struct iovec *iov = (struct iovec *)msg->msg_iov;
++    struct iovec iov_buf;
++    can_frame_t *frame;
++    can_frame_t frame_buf;
++    nanosecs_rel_t timeout;
++    struct rtcan_device *dev;
++    int ret = 0, ifindex = 0, i = 0, n, sent = 0;
++
++    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
++	return -EOPNOTSUPP;
++
++    /* Only MSG_DONTWAIT is a valid flag. */
++    if (flags & ~MSG_DONTWAIT)
++	return -EINVAL;
++
++    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
++
++    if (scan == NULL) {
++	/* No socket address. Will use bound interface for sending */
++	if (msg->msg_namelen != 0)
++	    return -EINVAL;
++
++
++	/* We only want a consistent value here, a spin lock would be
++	 * overkill. Nevertheless, the binding could change till we have
++	 * the chance to send. Blame the user, though. */
++	ifindex = atomic_read(&sock->ifindex);
++	if (!ifindex)
++	    /* Socket isn't bound or bound to all interfaces. Go out. */
++	    return -ENXIO;
++    } else {
++	/* Socket address given */
++	if (msg->msg_namelen < sizeof(struct sockaddr_can))
++	    return -EINVAL;
++
++	if (rtdm_fd_is_user(fd)) {
++	    /* Copy socket address from userspace */
++	    if (!rtdm_read_user_ok(fd, msg->msg_name,
++				   sizeof(struct sockaddr_can)) ||
++		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
++				    sizeof(struct sockaddr_can)))
++		return -EFAULT;
++
++	    scan = &scan_buf;
++	}
++
++	/* Check address family */
++	if (scan->can_family != AF_CAN)
++	    return -EINVAL;
++
++	ifindex = scan->can_ifindex;
++    }
++
++    dev = rtcan_dev_get_by_index(ifindex);
++    if (!dev)
++	return -ENXIO;
++
++    if (rtdm_fd_is_user(fd)) {
++
++	/* Copy IO vector from userspace */
++	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
++			     sizeof(struct iovec)) ||
++	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
++				sizeof(struct iovec))) {
++	    ret = -EFAULT;
++	    goto finally;
++	}
++
++	iov = &iov_buf;
++    }
++
++    n = msg->msg_iovlen;
++    while (i < n) {
++	if (iov->iov_len < sizeof(can_frame_t)) {
++	    ret = -EMSGSIZE;
++	    goto finally;
++	}
++
++	frame = (can_frame_t *)iov->iov_base;
++
++	if (rtdm_fd_is_user(fd)) {
++	    /* Copy CAN frame from userspace */
++	    if (!rtdm_read_user_ok(fd, iov->iov_base, sizeof(can_frame_t)) ||
++		rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
++				    sizeof(can_frame_t))) {
++	        ret = -EFAULT;
++	        goto finally;
++	    }
++
++	    frame = &frame_buf;
++	}
++
++	iov->iov_base += sizeof(can_frame_t);
++	iov->iov_len -= sizeof(can_frame_t);
++
++	ret = __rtcan_raw_sendmsg(dev, sock, frame, timeout);
++	if (ret < 0)
++	    goto finally;
++
++	sent += ret;
++    }
++
++    /* copy it back to userspace if necessary */
++    if (rtdm_fd_is_user(fd)) {
++	if (rtdm_copy_to_user(fd, msg->msg_iov, iov, sizeof(struct iovec))) {
++	    ret = -EFAULT;
++	    goto finally;
++	}
++    }
++
++finally:
++    rtcan_dev_dereference(dev);
++
++    if (sent > 0)
++	    return sent;
++
++    return ret;
++}
+ 
+ static struct rtdm_driver rtcan_driver = {
+ 	.profile_info		= RTDM_PROFILE_INFO(rtcan,
 -- 
 2.17.1
 
