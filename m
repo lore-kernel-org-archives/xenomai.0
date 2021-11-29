@@ -1,8 +1,10 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH v2 1/2] cobalt/trace: dovetail: improve xntrace_user_stop and
- xntrace_user_start
-Date: Sun, 28 Nov 2021 20:03:56 -0500
-Message-Id: <20211129010357.20263-1-hongzhan.chen@intel.com>
+Subject: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return -ENOSYS
+ for unportable features
+Date: Sun, 28 Nov 2021 20:03:57 -0500
+Message-Id: <20211129010357.20263-2-hongzhan.chen@intel.com>
+In-Reply-To: <20211129010357.20263-1-hongzhan.chen@intel.com>
+References: <20211129010357.20263-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,36 +15,63 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-xntrace_user_stop is widely similar to xntrace_user_freeze, call
-trace_cobalt_trigger to improve it and also make xntrace_user_start visible
-to balance them.
+Some of the features are unportable because ftrace does not
+provide equivalent functionality to the ipipe tracer (namely double
+buffering so that you can continue to record in flight-recorder mode
+while a previous recording remains available).
+
+We remove TODOs to pass allyesconfig make.
 
 Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 ---
- include/cobalt/kernel/dovetail/pipeline/trace.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/cobalt/kernel/dovetail/pipeline/trace.h | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
 diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
-index 513d9b48b..479191e0e 100644
+index 479191e0e..c7df3be79 100644
 --- a/include/cobalt/kernel/dovetail/pipeline/trace.h
 +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
-@@ -45,13 +45,14 @@ static inline int xntrace_max_reset(void)
+@@ -27,20 +27,17 @@
+ 
+ static inline int xntrace_max_begin(unsigned long v)
+ {
+-	TODO();
+-	return 0;
++	return -ENOSYS;
+ }
+ 
+ static inline int xntrace_max_end(unsigned long v)
+ {
+-	TODO();
+-	return 0;
++	return -ENOSYS;
+ }
+ 
+ static inline int xntrace_max_reset(void)
+ {
+-	TODO();
+-	return 0;
++	return -ENOSYS;
+ }
  
  static inline int xntrace_user_start(void)
+@@ -96,14 +93,12 @@ static inline int xntrace_tick(unsigned long delay_ticks) /* ns */
+ 
+ static inline int xntrace_panic_freeze(void)
  {
 -	TODO();
-+	trace_cobalt_trigger("user-start");
- 	return 0;
+-	return 0;
++	return -ENOSYS;
  }
  
- static inline int xntrace_user_stop(unsigned long v)
+ static inline int xntrace_panic_dump(void)
  {
 -	TODO();
-+	trace_cobalt_trace_longval(0, v);
-+	trace_cobalt_trigger("user-stop");
- 	return 0;
+-	return 0;
++	return -ENOSYS;
  }
  
+ static inline bool xntrace_enabled(void)
 -- 
 2.17.1
 
