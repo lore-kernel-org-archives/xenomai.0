@@ -1,14 +1,7 @@
-Subject: Re: [PATCH 1/1] kernel/cobalt/rtdm: Further documentation for
- rtdm_mmap_kmem/vmem/iomem() and rtdm_mmap_to_user()
-References: <20211113003314.8758-1-csmithquestions@gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7709ec6f-0d3e-e84a-96a0-7345dfe8a2ee@siemens.com>
-Date: Sun, 14 Nov 2021 21:11:35 +0100
-MIME-Version: 1.0
-In-Reply-To: <20211113003314.8758-1-csmithquestions@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Dario Binacchi <dariobin@libero.it>
+Subject: [PATCH v2 0/6] drivers/can: add support for Bosch C_CAN controller
+Date: Mon, 29 Nov 2021 23:07:44 +0100
+Message-Id: <20211129220750.10362-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,85 +10,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: csmith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
 
-On 13.11.21 01:33, csmith via Xenomai wrote:
-> kernel/cobalt/rtdm: Further documentation for rtdm_mmap_kmem/vmem/iomem() 
-> Signed-off-by: csmith <csmithquestions@gmail.com>
 
-For legal reasons (same as in
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#developer-s-certificate-of-origin-1-1),
-we need a real name here.
+The series was created to optimize the use of the C_CAN controller
+(maximum number of message objects, use of FIFO, ...) to get the
+best possible RX/TX throughput from hardware.
 
-> ---
->  kernel/cobalt/rtdm/drvlib.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
-> 
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index 7b7b0830c..56da04bf8 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -1973,6 +1973,10 @@ int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
->   * vmalloc(). To map physical I/O memory to user-space use
->   * rtdm_iomap_to_user() instead.
->   *
-> + * @note This service is provided only for use in .ioctl operation handlers. 
-> + * Otherwise RTDM drivers implementing a .mmap operation should use 
-> + * rtdm_mmap_kmem(), rtdm_mmap_vmem(), or rtdm_mmap_iomem().
-> + * 
+To emphasize the purpose of the series I also added the patch
+which adds multi-message support to `sendmsg ', rather than'
+submitting it separately. In fact, it too has contributed to
+increasing transmission throughput.
 
-3 trailing whitespaces, says git.
+The patches prior to the one adding the BOSCH C_CAN controller driver,
+are a backporting of commits from the linux kernel that also impacted
+on the driver itself and I found it necessary to add to the series.
 
->   * @note RTDM supports two models for unmapping the memory area:
->   * - manual unmapping via rtdm_munmap(), which may be issued from a
->   * driver in response to an IOCTL call, or by a call to the regular
-> @@ -2084,7 +2088,7 @@ EXPORT_SYMBOL_GPL(rtdm_iomap_to_user);
->  /**
->   * Map a kernel logical memory range to a virtual user area.
->   *
-> - * This routine is commonly used from a ->mmap() handler of a RTDM
-> + * This routine is commonly used from a .mmap operation handler of a RTDM
->   * driver, for mapping a virtual memory area with a direct physical
->   * mapping over the user address space referred to by @a vma.
->   *
-> @@ -2107,10 +2111,10 @@ int rtdm_mmap_kmem(struct vm_area_struct *vma, void *va)
->  EXPORT_SYMBOL_GPL(rtdm_mmap_kmem);
->  
->  /**
-> - * Map a virtual memory range to a virtual user area.
-> + * Map a driver's kernel virtual memory range to a virtual user area.
+The latest patch, as described in its commit, modified Stephen
+Battazzo's patch [1] with bug fixes, backporting of commits from the
+linux kernel, extension of message objects to 64 and improvements in
+FIFO handling. This series was in fact preceded by the creation of
+patches which I sent to the Linux kernel and which were then accepted:
 
-Drop "driver's" - the driver has no private view on the kernel virtual
-memory.
+387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
+28e86e9ab522 ("can: c_can: support tx ring algorithm")
+a54cdbba9dee ("can: c_can: exit c_can_do_tx() early if no frames have been sent")
+5064e40596f4 ("can: c_can: remove struct c_can_priv::priv field")
+06fc143b2ede dt-bindings: net: can: c_can: convert to json-schema
+132f2d45fb23 ("can: c_can: add support to 64 message objects")
+13831ce69c77 ("can: c_can: prepare to up the message objects number")
+fcbded019855 ("can: c_can: use 32-bit write to set arbitration register")
+eddf67115040 ("can: c_can: add a comment about IF_RX interface's use")
+c8a6b44388cb ("can: c_can: fix indentation")
+f65735c203d5 ("can: c_can: remove unused code")
 
->   *
-> - * This routine is commonly used from a ->mmap() handler of a RTDM
-> - * driver, for mapping a purely virtual memory area over the user
-> + * This routine is commonly used from a .mmap operation handler of a RTDM
-> + * driver, for mapping a purely virtual kernel memory area over the user
+The patch was tested on a custom board mounting an AM335x SOC.
 
-"kernel virtual"
+PCI support has not been developed.
 
->   * address space referred to by @a vma.
->   *
->   * @param[in] vma The VMA descriptor to receive the mapping.
-> @@ -2138,7 +2142,7 @@ EXPORT_SYMBOL_GPL(rtdm_mmap_vmem);
->  /**
->   * Map an I/O memory range to a virtual user area.
->   *
-> - * This routine is commonly used from a ->mmap() handler of a RTDM
-> + * This routine is commonly used from a .mmap operation handler of a RTDM
->   * driver, for mapping an I/O memory area over the user address space
->   * referred to by @a vma.
->   *
-> 
+[1] http://xenomai.org/pipermail/xenomai/2015-July/034690.html
 
-Looks good otherwise.
+Changes in v2:
+- Expand the commit message to better describe the added API.
+- Drop 'default n' Kconfig
+- Enable the driver for Xenomai CI builds
+- Drop commented code
+- Drop power managemet (pm) code
 
-Thanks!
-Jan
+Dario Binacchi (6):
+  drivers/can: add multi message support to sendmsg
+  drivers/can: add CAN_ERR_CRTL_ACTIVE info status
+  drivers/can: add len field to can frame structures
+  drivers/can: add a minimal support to ethtool API
+  drivers/can: fix updating of tx_count statistics
+  drivers/can: add support for Bosch C_CAN controller
+
+ .gitlab-ci.yml                                |    2 +
+ include/rtdm/uapi/can.h                       |    6 +-
+ kernel/drivers/can/Kconfig                    |    1 +
+ kernel/drivers/can/Makefile                   |    4 +-
+ kernel/drivers/can/README                     |    1 +
+ kernel/drivers/can/c_can/Kconfig              |   15 +
+ kernel/drivers/can/c_can/Makefile             |    8 +
+ kernel/drivers/can/c_can/rtcan_c_can.c        | 1298 +++++++++++++++++
+ kernel/drivers/can/c_can/rtcan_c_can.h        |  255 ++++
+ .../drivers/can/c_can/rtcan_c_can_ethtool.c   |   47 +
+ .../drivers/can/c_can/rtcan_c_can_platform.c  |  461 ++++++
+ kernel/drivers/can/mscan/rtcan_mscan.c        |    1 +
+ kernel/drivers/can/rtcan_dev.h                |    4 +-
+ kernel/drivers/can/rtcan_ethtool.c            |   75 +
+ kernel/drivers/can/rtcan_ethtool.h            |   24 +
+ kernel/drivers/can/rtcan_flexcan.c            |    1 +
+ kernel/drivers/can/rtcan_raw.c                |  240 +--
+ kernel/drivers/can/rtcan_raw_dev.c            |   20 +
+ kernel/drivers/can/rtcan_socket.h             |    5 +-
+ kernel/drivers/can/rtcan_virt.c               |    1 +
+ kernel/drivers/can/sja1000/rtcan_sja1000.c    |    1 +
+ 21 files changed, 2353 insertions(+), 117 deletions(-)
+ create mode 100644 kernel/drivers/can/c_can/Kconfig
+ create mode 100644 kernel/drivers/can/c_can/Makefile
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.c
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.h
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_ethtool.c
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_platform.c
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.c
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.h
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
