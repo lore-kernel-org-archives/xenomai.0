@@ -1,14 +1,11 @@
-Subject: Re: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return
- -ENOSYS for unportable features
-References: <20211129010357.20263-1-hongzhan.chen@intel.com>
- <20211129010357.20263-2-hongzhan.chen@intel.com>
- <b5228039-7729-0921-ea49-ab00a1b12dc8@siemens.com>
- <MN2PR11MB42857E2B441D4866E383F83FF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
+Subject: Re: [PATCH] cobalt/dovetail: Resolve pipeline_clock_name TODO
+References: <7724f1f3-85b7-4dcf-2993-d70ac49d5345@siemens.com>
+ <MN2PR11MB428568233A7AABDF916DE243F2679@MN2PR11MB4285.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b7edb7c9-bbaf-a73d-daf0-7320c8cadecd@siemens.com>
-Date: Tue, 30 Nov 2021 07:41:22 +0100
+Message-ID: <c7886d5c-2839-71a0-a5cd-d1a02fd6150e@siemens.com>
+Date: Tue, 30 Nov 2021 07:46:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <MN2PR11MB42857E2B441D4866E383F83FF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB428568233A7AABDF916DE243F2679@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,89 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Xenomai <xenomai@xenomai.org>
 
-On 30.11.21 02:07, Chen, Hongzhan wrote:
+On 30.11.21 01:47, Chen, Hongzhan wrote:
+> Hi Jan
 > 
+> What about following patch? Try to get clocksource name via sys fs.
 > 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Monday, November 29, 2021 3:58 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return -ENOSYS for unportable features
->>
->> On 29.11.21 02:03, Hongzhan Chen via Xenomai wrote:
->>> Some of the features are unportable because ftrace does not
->>> provide equivalent functionality to the ipipe tracer (namely double
->>> buffering so that you can continue to record in flight-recorder mode
->>> while a previous recording remains available).
->>>
->>> We remove TODOs to pass allyesconfig make.
->>>
->>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>> ---
->>>  include/cobalt/kernel/dovetail/pipeline/trace.h | 15 +++++----------
->>>  1 file changed, 5 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
->>> index 479191e0e..c7df3be79 100644
->>> --- a/include/cobalt/kernel/dovetail/pipeline/trace.h
->>> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
->>> @@ -27,20 +27,17 @@
->>>  
->>>  static inline int xntrace_max_begin(unsigned long v)
->>>  {
->>> -	TODO();
->>> -	return 0;
->>> +	return -ENOSYS;
->>>  }
->>>  
->>>  static inline int xntrace_max_end(unsigned long v)
->>>  {
->>> -	TODO();
->>> -	return 0;
->>> +	return -ENOSYS;
->>>  }
->>>  
->>>  static inline int xntrace_max_reset(void)
->>>  {
->>> -	TODO();
->>> -	return 0;
->>> +	return -ENOSYS;
->>>  }
->>>  
->>>  static inline int xntrace_user_start(void)
->>> @@ -96,14 +93,12 @@ static inline int xntrace_tick(unsigned long delay_ticks) /* ns */
->>>  
->>>  static inline int xntrace_panic_freeze(void)
->>>  {
->>> -	TODO();
->>> -	return 0;
->>> +	return -ENOSYS;
->>>  }
->>>  
->>>  static inline int xntrace_panic_dump(void)
->>>  {
->>> -	TODO();
->>> -	return 0;
->>> +	return -ENOSYS;
->>>  }
->>>  
->>
->> Looking at these two panic "abstractions": They are only called by
->> dovetail-specific handle_oob_trap_entry. There, we should rather use
->> kernel native tracing functions to stop and dump a trace.
+> From aa6fdc59a22f9b1ddca145c72a75f2aa1f776e85 Mon Sep 17 00:00:00 2001
+> From: Hongzhan Chen <hongzhan.chen@intel.com>
+> Date: Wed, 24 Nov 2021 02:08:27 -0500
+> Subject: [PATCH] cobalt/clock: dovetail: get current clocksource name via sys
+>  fs
 > 
-> I found that in EVL implementation of  handle_oob_trap_entry ,especially 
-> for note_trap implementation , it have not implemented stop and dump
-> a trace and just try to printk warning (please refer to kernel/evl/thread.c of evl branch).
-> handle_oob_trap_entry would try to demote current stage and leave in-band to handle
-> following thing. If we do native thing here, is there duplicated thing happen?
+> Dovetail share the same clocksource that in-band is using. We try
+> to get the name of current clocksource under sys filesystem.
 > 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> 
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
+> index d8c94ab43..ffe4ad083 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/clock.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
+> @@ -7,11 +7,14 @@
+> 
+>  #include <cobalt/uapi/kernel/types.h>
+>  #include <cobalt/kernel/assert.h>
+> +#include <linux/fs.h>
+>  #include <linux/ktime.h>
+>  #include <linux/errno.h>
+> 
+>  struct timespec64;
+> 
+> +#define SYS_CUR_CLOCKSOURCE "/sys/devices/system/clocksource/clocksource0/current_clocksource"
+> +
+>  static inline u64 pipeline_read_cycle_counter(void)
+>  {
+>         /*
+> @@ -41,7 +44,25 @@ const char *pipeline_timer_name(void);
+>  static inline const char *pipeline_clock_name(void)
+>  {
+>         /* Return the name of the current clock source. */
+> -       TODO();
+> +       struct file *curs;
+> +       static loff_t pos;
+> +       long r;
+> +
+> +       curs = filp_open(SYS_CUR_CLOCKSOURCE, O_RDONLY, 0);
+> +       if (IS_ERR(curs))
+> +               goto RTN_UNKNOWN;
+> +
+> +       memset(cobalt_pipeline.clocksource_name, 0, CLOCKSOURCE_NAME_MAXLEN);
+> +       pos = 0;
+> +       r = kernel_read(curs, cobalt_pipeline.clocksource_name, CLOCKSOURCE_NAME_MAXLEN - 1 , &pos);
+> +       filp_close(curs, NULL);
+> +
+> +
+> +       if (r < 0)
+> +               goto RTN_UNKNOWN;
+> +
+> +       return cobalt_pipeline.clocksource_name;
+> +
+> +RTN_UNKNOWN:
 
-This is targeting a real error case: fault in kernel space when
-debugging is on. But if we really oops, ftrace_dump_on_panic may just do
-the job. So, yes, we could also simply drop this.
+I considered this briefly as well, but this is rather ugly (even when
+using kernel_read_file_from_path), and you can simply get the
+information from that original path as well - and that reliably, because
+userspace knows better of there is sysfs under /sys or elsewhere.
+
+Once we remove I-pipe support, we will also simply drop this entry in
+/proc, thus the need for this abstraction.
 
 Jan
 
