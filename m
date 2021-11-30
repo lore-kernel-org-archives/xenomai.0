@@ -1,18 +1,19 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return
+Subject: Re: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return
  -ENOSYS for unportable features
-Date: Tue, 30 Nov 2021 06:56:18 +0000
-Message-ID: <MN2PR11MB4285C95D3CDB8C3809DCFDCCF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20211129010357.20263-1-hongzhan.chen@intel.com>
  <20211129010357.20263-2-hongzhan.chen@intel.com>
  <b5228039-7729-0921-ea49-ab00a1b12dc8@siemens.com>
  <MN2PR11MB42857E2B441D4866E383F83FF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
  <b7edb7c9-bbaf-a73d-daf0-7320c8cadecd@siemens.com>
-In-Reply-To: <b7edb7c9-bbaf-a73d-daf0-7320c8cadecd@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <MN2PR11MB4285C95D3CDB8C3809DCFDCCF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <583b6013-ac11-4625-1dad-33740ea678d7@siemens.com>
+Date: Tue, 30 Nov 2021 08:11:24 +0100
 MIME-Version: 1.0
+In-Reply-To: <MN2PR11MB4285C95D3CDB8C3809DCFDCCF2679@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,68 +22,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIE5vdmVtYmVyIDMwLCAyMDIxIDI6
-NDEgUE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVu
-b21haUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMi8yXSBjb2JhbHQvdHJh
-Y2U6IGRvdmV0YWlsOiByZW1vdmUgVE9ETyBhbmQgcmV0dXJuIC1FTk9TWVMgZm9yIHVucG9ydGFi
-bGUgZmVhdHVyZXMNCj4NCj5PbiAzMC4xMS4yMSAwMjowNywgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6
-DQo+PiANCj4+IA0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4gRnJvbTogSmFu
-IEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4gU2VudDogTW9uZGF5LCBOb3Zl
-bWJlciAyOSwgMjAyMSAzOjU4IFBNDQo+Pj4gVG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5j
-aGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4+PiBTdWJqZWN0OiBSZTogW1BB
-VENIIHYyIDIvMl0gY29iYWx0L3RyYWNlOiBkb3ZldGFpbDogcmVtb3ZlIFRPRE8gYW5kIHJldHVy
-biAtRU5PU1lTIGZvciB1bnBvcnRhYmxlIGZlYXR1cmVzDQo+Pj4NCj4+PiBPbiAyOS4xMS4yMSAw
-MjowMywgSG9uZ3poYW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+Pj4gU29tZSBvZiB0aGUg
-ZmVhdHVyZXMgYXJlIHVucG9ydGFibGUgYmVjYXVzZSBmdHJhY2UgZG9lcyBub3QNCj4+Pj4gcHJv
-dmlkZSBlcXVpdmFsZW50IGZ1bmN0aW9uYWxpdHkgdG8gdGhlIGlwaXBlIHRyYWNlciAobmFtZWx5
-IGRvdWJsZQ0KPj4+PiBidWZmZXJpbmcgc28gdGhhdCB5b3UgY2FuIGNvbnRpbnVlIHRvIHJlY29y
-ZCBpbiBmbGlnaHQtcmVjb3JkZXIgbW9kZQ0KPj4+PiB3aGlsZSBhIHByZXZpb3VzIHJlY29yZGlu
-ZyByZW1haW5zIGF2YWlsYWJsZSkuDQo+Pj4+DQo+Pj4+IFdlIHJlbW92ZSBUT0RPcyB0byBwYXNz
-IGFsbHllc2NvbmZpZyBtYWtlLg0KPj4+Pg0KPj4+PiBTaWduZWQtb2ZmLWJ5OiBIb25nemhhbiBD
-aGVuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+Pj4gLS0tDQo+Pj4+ICBpbmNsdWRlL2Nv
-YmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvdHJhY2UuaCB8IDE1ICsrKysrLS0tLS0tLS0t
-LQ0KPj4+PiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRpb25zKC0p
-DQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwv
-cGlwZWxpbmUvdHJhY2UuaCBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGlu
-ZS90cmFjZS5oDQo+Pj4+IGluZGV4IDQ3OTE5MWUwZS4uYzdkZjNiZTc5IDEwMDY0NA0KPj4+PiAt
-LS0gYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvdHJhY2UuaA0KPj4+
-PiArKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvdHJhY2UuaA0K
-Pj4+PiBAQCAtMjcsMjAgKzI3LDE3IEBADQo+Pj4+ICANCj4+Pj4gIHN0YXRpYyBpbmxpbmUgaW50
-IHhudHJhY2VfbWF4X2JlZ2luKHVuc2lnbmVkIGxvbmcgdikNCj4+Pj4gIHsNCj4+Pj4gLQlUT0RP
-KCk7DQo+Pj4+IC0JcmV0dXJuIDA7DQo+Pj4+ICsJcmV0dXJuIC1FTk9TWVM7DQo+Pj4+ICB9DQo+
-Pj4+ICANCj4+Pj4gIHN0YXRpYyBpbmxpbmUgaW50IHhudHJhY2VfbWF4X2VuZCh1bnNpZ25lZCBs
-b25nIHYpDQo+Pj4+ICB7DQo+Pj4+IC0JVE9ETygpOw0KPj4+PiAtCXJldHVybiAwOw0KPj4+PiAr
-CXJldHVybiAtRU5PU1lTOw0KPj4+PiAgfQ0KPj4+PiAgDQo+Pj4+ICBzdGF0aWMgaW5saW5lIGlu
-dCB4bnRyYWNlX21heF9yZXNldCh2b2lkKQ0KPj4+PiAgew0KPj4+PiAtCVRPRE8oKTsNCj4+Pj4g
-LQlyZXR1cm4gMDsNCj4+Pj4gKwlyZXR1cm4gLUVOT1NZUzsNCj4+Pj4gIH0NCj4+Pj4gIA0KPj4+
-PiAgc3RhdGljIGlubGluZSBpbnQgeG50cmFjZV91c2VyX3N0YXJ0KHZvaWQpDQo+Pj4+IEBAIC05
-NiwxNCArOTMsMTIgQEAgc3RhdGljIGlubGluZSBpbnQgeG50cmFjZV90aWNrKHVuc2lnbmVkIGxv
-bmcgZGVsYXlfdGlja3MpIC8qIG5zICovDQo+Pj4+ICANCj4+Pj4gIHN0YXRpYyBpbmxpbmUgaW50
-IHhudHJhY2VfcGFuaWNfZnJlZXplKHZvaWQpDQo+Pj4+ICB7DQo+Pj4+IC0JVE9ETygpOw0KPj4+
-PiAtCXJldHVybiAwOw0KPj4+PiArCXJldHVybiAtRU5PU1lTOw0KPj4+PiAgfQ0KPj4+PiAgDQo+
-Pj4+ICBzdGF0aWMgaW5saW5lIGludCB4bnRyYWNlX3BhbmljX2R1bXAodm9pZCkNCj4+Pj4gIHsN
-Cj4+Pj4gLQlUT0RPKCk7DQo+Pj4+IC0JcmV0dXJuIDA7DQo+Pj4+ICsJcmV0dXJuIC1FTk9TWVM7
-DQo+Pj4+ICB9DQo+Pj4+ICANCj4+Pg0KPj4+IExvb2tpbmcgYXQgdGhlc2UgdHdvIHBhbmljICJh
-YnN0cmFjdGlvbnMiOiBUaGV5IGFyZSBvbmx5IGNhbGxlZCBieQ0KPj4+IGRvdmV0YWlsLXNwZWNp
-ZmljIGhhbmRsZV9vb2JfdHJhcF9lbnRyeS4gVGhlcmUsIHdlIHNob3VsZCByYXRoZXIgdXNlDQo+
-Pj4ga2VybmVsIG5hdGl2ZSB0cmFjaW5nIGZ1bmN0aW9ucyB0byBzdG9wIGFuZCBkdW1wIGEgdHJh
-Y2UuDQo+PiANCj4+IEkgZm91bmQgdGhhdCBpbiBFVkwgaW1wbGVtZW50YXRpb24gb2YgIGhhbmRs
-ZV9vb2JfdHJhcF9lbnRyeSAsZXNwZWNpYWxseSANCj4+IGZvciBub3RlX3RyYXAgaW1wbGVtZW50
-YXRpb24gLCBpdCBoYXZlIG5vdCBpbXBsZW1lbnRlZCBzdG9wIGFuZCBkdW1wDQo+PiBhIHRyYWNl
-IGFuZCBqdXN0IHRyeSB0byBwcmludGsgd2FybmluZyAocGxlYXNlIHJlZmVyIHRvIGtlcm5lbC9l
-dmwvdGhyZWFkLmMgb2YgZXZsIGJyYW5jaCkuDQo+PiBoYW5kbGVfb29iX3RyYXBfZW50cnkgd291
-bGQgdHJ5IHRvIGRlbW90ZSBjdXJyZW50IHN0YWdlIGFuZCBsZWF2ZSBpbi1iYW5kIHRvIGhhbmRs
-ZQ0KPj4gZm9sbG93aW5nIHRoaW5nLiBJZiB3ZSBkbyBuYXRpdmUgdGhpbmcgaGVyZSwgaXMgdGhl
-cmUgZHVwbGljYXRlZCB0aGluZyBoYXBwZW4/DQo+PiANCj4NCj5UaGlzIGlzIHRhcmdldGluZyBh
-IHJlYWwgZXJyb3IgY2FzZTogZmF1bHQgaW4ga2VybmVsIHNwYWNlIHdoZW4NCj5kZWJ1Z2dpbmcg
-aXMgb24uIEJ1dCBpZiB3ZSByZWFsbHkgb29wcywgZnRyYWNlX2R1bXBfb25fcGFuaWMgbWF5IGp1
-c3QgZG8NCj50aGUgam9iLiBTbywgeWVzLCB3ZSBjb3VsZCBhbHNvIHNpbXBseSBkcm9wIHRoaXMu
-DQoNClNvIHRoZXJlIGlzIG5vIG5lZWQgdG8gZG8gZnVydGhlciBtb2RpZmljYXRpb24gZm9yIHhu
-dHJhY2VfcGFuaWNfZnJlZXplIGFuZCB4bnRyYWNlX3BhbmljX2R1bXAgYmFzZWQgDQpvbiB0aGlz
-IHBhdGNoPyBXb3VsZCB5b3UgYXBwbHkgaXQ/DQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0K
-DQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVCBSREEgSU9UDQo+Q29ycG9yYXRlIENv
-bXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+DQo+DQo+DQo+DQo=
+On 30.11.21 07:56, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, November 30, 2021 2:41 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return -ENOSYS for unportable features
+>>
+>> On 30.11.21 02:07, Chen, Hongzhan wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Monday, November 29, 2021 3:58 PM
+>>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>>> Subject: Re: [PATCH v2 2/2] cobalt/trace: dovetail: remove TODO and return -ENOSYS for unportable features
+>>>>
+>>>> On 29.11.21 02:03, Hongzhan Chen via Xenomai wrote:
+>>>>> Some of the features are unportable because ftrace does not
+>>>>> provide equivalent functionality to the ipipe tracer (namely double
+>>>>> buffering so that you can continue to record in flight-recorder mode
+>>>>> while a previous recording remains available).
+>>>>>
+>>>>> We remove TODOs to pass allyesconfig make.
+>>>>>
+>>>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>>> ---
+>>>>>  include/cobalt/kernel/dovetail/pipeline/trace.h | 15 +++++----------
+>>>>>  1 file changed, 5 insertions(+), 10 deletions(-)
+>>>>>
+>>>>> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
+>>>>> index 479191e0e..c7df3be79 100644
+>>>>> --- a/include/cobalt/kernel/dovetail/pipeline/trace.h
+>>>>> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
+>>>>> @@ -27,20 +27,17 @@
+>>>>>  
+>>>>>  static inline int xntrace_max_begin(unsigned long v)
+>>>>>  {
+>>>>> -	TODO();
+>>>>> -	return 0;
+>>>>> +	return -ENOSYS;
+>>>>>  }
+>>>>>  
+>>>>>  static inline int xntrace_max_end(unsigned long v)
+>>>>>  {
+>>>>> -	TODO();
+>>>>> -	return 0;
+>>>>> +	return -ENOSYS;
+>>>>>  }
+>>>>>  
+>>>>>  static inline int xntrace_max_reset(void)
+>>>>>  {
+>>>>> -	TODO();
+>>>>> -	return 0;
+>>>>> +	return -ENOSYS;
+>>>>>  }
+>>>>>  
+>>>>>  static inline int xntrace_user_start(void)
+>>>>> @@ -96,14 +93,12 @@ static inline int xntrace_tick(unsigned long delay_ticks) /* ns */
+>>>>>  
+>>>>>  static inline int xntrace_panic_freeze(void)
+>>>>>  {
+>>>>> -	TODO();
+>>>>> -	return 0;
+>>>>> +	return -ENOSYS;
+>>>>>  }
+>>>>>  
+>>>>>  static inline int xntrace_panic_dump(void)
+>>>>>  {
+>>>>> -	TODO();
+>>>>> -	return 0;
+>>>>> +	return -ENOSYS;
+>>>>>  }
+>>>>>  
+>>>>
+>>>> Looking at these two panic "abstractions": They are only called by
+>>>> dovetail-specific handle_oob_trap_entry. There, we should rather use
+>>>> kernel native tracing functions to stop and dump a trace.
+>>>
+>>> I found that in EVL implementation of  handle_oob_trap_entry ,especially 
+>>> for note_trap implementation , it have not implemented stop and dump
+>>> a trace and just try to printk warning (please refer to kernel/evl/thread.c of evl branch).
+>>> handle_oob_trap_entry would try to demote current stage and leave in-band to handle
+>>> following thing. If we do native thing here, is there duplicated thing happen?
+>>>
+>>
+>> This is targeting a real error case: fault in kernel space when
+>> debugging is on. But if we really oops, ftrace_dump_on_panic may just do
+>> the job. So, yes, we could also simply drop this.
+> 
+> So there is no need to do further modification for xntrace_panic_freeze and xntrace_panic_dump based 
+> on this patch? Would you apply it?
+> 
+
+If you drop those calls from dovetail, yes.
+
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
