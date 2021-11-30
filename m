@@ -1,9 +1,13 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v2 3/6] drivers/can: add len field to can frame structures
-Date: Mon, 29 Nov 2021 23:07:47 +0100
-Message-Id: <20211129220750.10362-3-dariobin@libero.it>
-In-Reply-To: <20211129220750.10362-1-dariobin@libero.it>
-References: <20211129220750.10362-1-dariobin@libero.it>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH] cobalt/dovetail: Resolve pipeline_clock_name TODO
+Date: Tue, 30 Nov 2021 00:47:19 +0000
+Message-ID: <MN2PR11MB428568233A7AABDF916DE243F2679@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <7724f1f3-85b7-4dcf-2993-d70ac49d5345@siemens.com>
+In-Reply-To: <7724f1f3-85b7-4dcf-2993-d70ac49d5345@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,54 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-As mentioned in Linux, can_dlc is a misleading name that suggests a code
-instead of a length. Adding the len field can_dlc becomes deprecated too.
-
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
-
-(no changes since v1)
-
- include/rtdm/uapi/can.h           | 5 ++++-
- kernel/drivers/can/rtcan_socket.h | 5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/include/rtdm/uapi/can.h b/include/rtdm/uapi/can.h
-index 1c35a9b9d..0a74c764c 100644
---- a/include/rtdm/uapi/can.h
-+++ b/include/rtdm/uapi/can.h
-@@ -318,7 +318,10 @@ typedef struct can_frame {
- 	can_id_t can_id;
- 
- 	/** Size of the payload in bytes */
--	uint8_t can_dlc;
-+	union {
-+		uint8_t can_dlc;
-+		uint8_t len;
-+	};
- 
- 	/** Payload data bytes */
- 	uint8_t data[8] __attribute__ ((aligned(8)));
-diff --git a/kernel/drivers/can/rtcan_socket.h b/kernel/drivers/can/rtcan_socket.h
-index cf4422a1b..35ce13c3c 100644
---- a/kernel/drivers/can/rtcan_socket.h
-+++ b/kernel/drivers/can/rtcan_socket.h
-@@ -76,7 +76,10 @@ struct rtcan_rb_frame {
-     /* DLC (between 0 and 15) and mark if frame has got a timestamp. The
-      * existence of a timestamp is indicated by the RTCAN_HAS_TIMESTAMP
-      * bit. */
--    unsigned char       can_dlc;
-+    union {
-+        unsigned char   can_dlc;
-+        unsigned char   len;
-+    };
- 
-     /* Data bytes */
-     uint8_t             data[8];
--- 
-2.17.1
-
+SGkgSmFuDQoNCldoYXQgYWJvdXQgZm9sbG93aW5nIHBhdGNoPyBUcnkgdG8gZ2V0IGNsb2Nrc291
+cmNlIG5hbWUgdmlhIHN5cyBmcy4NCg0KRnJvbSBhYTZmZGM1OWEyMmY5YjFkZGNhMTQ1YzcyYTc1
+ZjJhYTFmNzc2ZTg1IE1vbiBTZXAgMTcgMDA6MDA6MDAgMjAwMQ0KRnJvbTogSG9uZ3poYW4gQ2hl
+biA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQpEYXRlOiBXZWQsIDI0IE5vdiAyMDIxIDAyOjA4
+OjI3IC0wNTAwDQpTdWJqZWN0OiBbUEFUQ0hdIGNvYmFsdC9jbG9jazogZG92ZXRhaWw6IGdldCBj
+dXJyZW50IGNsb2Nrc291cmNlIG5hbWUgdmlhIHN5cw0KIGZzDQoNCkRvdmV0YWlsIHNoYXJlIHRo
+ZSBzYW1lIGNsb2Nrc291cmNlIHRoYXQgaW4tYmFuZCBpcyB1c2luZy4gV2UgdHJ5DQp0byBnZXQg
+dGhlIG5hbWUgb2YgY3VycmVudCBjbG9ja3NvdXJjZSB1bmRlciBzeXMgZmlsZXN5c3RlbS4NCg0K
+U2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQoN
+CmRpZmYgLS1naXQgYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvY2xv
+Y2suaCBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS9jbG9jay5oDQpp
+bmRleCBkOGM5NGFiNDMuLmZmZTRhZDA4MyAxMDA2NDQNCi0tLSBhL2luY2x1ZGUvY29iYWx0L2tl
+cm5lbC9kb3ZldGFpbC9waXBlbGluZS9jbG9jay5oDQorKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJu
+ZWwvZG92ZXRhaWwvcGlwZWxpbmUvY2xvY2suaA0KQEAgLTcsMTEgKzcsMTQgQEANCg0KICNpbmNs
+dWRlIDxjb2JhbHQvdWFwaS9rZXJuZWwvdHlwZXMuaD4NCiAjaW5jbHVkZSA8Y29iYWx0L2tlcm5l
+bC9hc3NlcnQuaD4NCisjaW5jbHVkZSA8bGludXgvZnMuaD4NCiAjaW5jbHVkZSA8bGludXgva3Rp
+bWUuaD4NCiAjaW5jbHVkZSA8bGludXgvZXJybm8uaD4NCg0KIHN0cnVjdCB0aW1lc3BlYzY0Ow0K
+DQorI2RlZmluZSBTWVNfQ1VSX0NMT0NLU09VUkNFICIvc3lzL2RldmljZXMvc3lzdGVtL2Nsb2Nr
+c291cmNlL2Nsb2Nrc291cmNlMC9jdXJyZW50X2Nsb2Nrc291cmNlIg0KKw0KIHN0YXRpYyBpbmxp
+bmUgdTY0IHBpcGVsaW5lX3JlYWRfY3ljbGVfY291bnRlcih2b2lkKQ0KIHsNCiAgICAgICAgLyoN
+CkBAIC00MSw3ICs0NCwyNSBAQCBjb25zdCBjaGFyICpwaXBlbGluZV90aW1lcl9uYW1lKHZvaWQp
+Ow0KIHN0YXRpYyBpbmxpbmUgY29uc3QgY2hhciAqcGlwZWxpbmVfY2xvY2tfbmFtZSh2b2lkKQ0K
+IHsNCiAgICAgICAgLyogUmV0dXJuIHRoZSBuYW1lIG9mIHRoZSBjdXJyZW50IGNsb2NrIHNvdXJj
+ZS4gKi8NCi0gICAgICAgVE9ETygpOw0KKyAgICAgICBzdHJ1Y3QgZmlsZSAqY3VyczsNCisgICAg
+ICAgc3RhdGljIGxvZmZfdCBwb3M7DQorICAgICAgIGxvbmcgcjsNCisNCisgICAgICAgY3VycyA9
+IGZpbHBfb3BlbihTWVNfQ1VSX0NMT0NLU09VUkNFLCBPX1JET05MWSwgMCk7DQorICAgICAgIGlm
+IChJU19FUlIoY3VycykpDQorICAgICAgICAgICAgICAgZ290byBSVE5fVU5LTk9XTjsNCisNCisg
+ICAgICAgbWVtc2V0KGNvYmFsdF9waXBlbGluZS5jbG9ja3NvdXJjZV9uYW1lLCAwLCBDTE9DS1NP
+VVJDRV9OQU1FX01BWExFTik7DQorICAgICAgIHBvcyA9IDA7DQorICAgICAgIHIgPSBrZXJuZWxf
+cmVhZChjdXJzLCBjb2JhbHRfcGlwZWxpbmUuY2xvY2tzb3VyY2VfbmFtZSwgQ0xPQ0tTT1VSQ0Vf
+TkFNRV9NQVhMRU4gLSAxICwgJnBvcyk7DQorICAgICAgIGZpbHBfY2xvc2UoY3VycywgTlVMTCk7
+DQorDQorDQorICAgICAgIGlmIChyIDwgMCkNCisgICAgICAgICAgICAgICBnb3RvIFJUTl9VTktO
+T1dOOw0KKw0KKyAgICAgICByZXR1cm4gY29iYWx0X3BpcGVsaW5lLmNsb2Nrc291cmNlX25hbWU7
+DQorDQorUlROX1VOS05PV046DQoNCiAgICAgICAgcmV0dXJuICI/IjsNCiB9DQpkaWZmIC0tZ2l0
+IGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3BpcGVsaW5lL21hY2hpbmUuaCBiL2lu
+Y2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS9tYWNoaW5lLmgNCmluZGV4IDRm
+M2RkOTVlMC4uNzlmODI2YmRmIDEwMDY0NA0KLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2Rv
+dmV0YWlsL3BpcGVsaW5lL21hY2hpbmUuaA0KKysrIGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL2Rv
+dmV0YWlsL3BpcGVsaW5lL21hY2hpbmUuaA0KQEAgLTM0LDEwICszNCwxMiBAQCBzdHJ1Y3QgY29i
+YWx0X21hY2hpbmVfY3B1ZGF0YSB7DQoNCiBERUNMQVJFX1BFUl9DUFUoc3RydWN0IGNvYmFsdF9t
+YWNoaW5lX2NwdWRhdGEsIGNvYmFsdF9tYWNoaW5lX2NwdWRhdGEpOw0KDQorI2RlZmluZSBDTE9D
+S1NPVVJDRV9OQU1FX01BWExFTiAzMg0KIHN0cnVjdCBjb2JhbHRfcGlwZWxpbmUgew0KICNpZmRl
+ZiBDT05GSUdfU01QDQogICAgICAgIGNwdW1hc2tfdCBzdXBwb3J0ZWRfY3B1czsNCiAjZW5kaWYN
+CisgICAgICAgY2hhciBjbG9ja3NvdXJjZV9uYW1lW0NMT0NLU09VUkNFX05BTUVfTUFYTEVOXTsN
+CiB9Ow0KDQogaW50IHBpcGVsaW5lX2luaXQodm9pZCk7DQotLQ0KMi4xNy4xDQoNCg0KDQpSZWdh
+cmRzDQoNCkhvbmd6aGFuIENoZW4NCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBK
+YW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiANClNlbnQ6IE1vbmRheSwgTm92ZW1i
+ZXIgMjksIDIwMjEgNjowMyBQTQ0KVG86IFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+DQpD
+YzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgUGhpbGlwcGUgR2Vy
+dW0gPHJwbUB4ZW5vbWFpLm9yZz4NClN1YmplY3Q6IFtQQVRDSF0gY29iYWx0L2RvdmV0YWlsOiBS
+ZXNvbHZlIHBpcGVsaW5lX2Nsb2NrX25hbWUgVE9ETw0KDQpGcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPg0KDQpXZSBkb24ndCBoYXZlIGFjY2VzcyB0byB0aGUga2VybmVs
+J3MgY3Vycl9jbG9ja3NvdXJjZSB2YXJpYWJsZSwgc28ganVzdA0KbWFrZSBhIGdlbmVyYWwgc3Rh
+dGVtZW50Lg0KDQpTaWduZWQtb2ZmLWJ5OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPg0KLS0tDQogaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3BpcGVsaW5lL2Nsb2Nr
+LmggfCA1ICstLS0tDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCA0IGRlbGV0aW9u
+cygtKQ0KDQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3BpcGVs
+aW5lL2Nsb2NrLmggYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvY2xv
+Y2suaA0KaW5kZXggZDhjOTRhYjQzNS4uY2RiMGRhYzRmZSAxMDA2NDQNCi0tLSBhL2luY2x1ZGUv
+Y29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS9jbG9jay5oDQorKysgYi9pbmNsdWRlL2Nv
+YmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUvY2xvY2suaA0KQEAgLTQwLDEwICs0MCw3IEBA
+IGNvbnN0IGNoYXIgKnBpcGVsaW5lX3RpbWVyX25hbWUodm9pZCk7DQogDQogc3RhdGljIGlubGlu
+ZSBjb25zdCBjaGFyICpwaXBlbGluZV9jbG9ja19uYW1lKHZvaWQpDQogew0KLQkvKiBSZXR1cm4g
+dGhlIG5hbWUgb2YgdGhlIGN1cnJlbnQgY2xvY2sgc291cmNlLiAqLw0KLQlUT0RPKCk7DQotDQot
+CXJldHVybiAiPyI7DQorCXJldHVybiAiPExpbnV4IGNsb2Nrc291cmNlPiI7DQogfQ0KIA0KIHN0
+YXRpYyBpbmxpbmUgaW50IHBpcGVsaW5lX2dldF9ob3N0X3RpbWUoc3RydWN0IHRpbWVzcGVjNjQg
+KnRwKQ0KLS0gDQoyLjMxLjENCg==
 
