@@ -1,11 +1,9 @@
-Subject: Re: [PATCH] cobalt/dovetail: Resolve pipeline_clock_name TODO
-References: <7724f1f3-85b7-4dcf-2993-d70ac49d5345@siemens.com>
- <MN2PR11MB428568233A7AABDF916DE243F2679@MN2PR11MB4285.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c7886d5c-2839-71a0-a5cd-d1a02fd6150e@siemens.com>
-Date: Tue, 30 Nov 2021 07:46:02 +0100
+Subject: [xenomai-images][PATCH] linux-xenomai: Define default GIT_REPO/BRANCH
+ in latest recipe
+Message-ID: <5db209a2-9676-37c4-21cb-06c11471512a@siemens.com>
+Date: Tue, 30 Nov 2021 07:52:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <MN2PR11MB428568233A7AABDF916DE243F2679@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,80 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 30.11.21 01:47, Chen, Hongzhan wrote:
-> Hi Jan
-> 
-> What about following patch? Try to get clocksource name via sys fs.
-> 
-> From aa6fdc59a22f9b1ddca145c72a75f2aa1f776e85 Mon Sep 17 00:00:00 2001
-> From: Hongzhan Chen <hongzhan.chen@intel.com>
-> Date: Wed, 24 Nov 2021 02:08:27 -0500
-> Subject: [PATCH] cobalt/clock: dovetail: get current clocksource name via sys
->  fs
-> 
-> Dovetail share the same clocksource that in-band is using. We try
-> to get the name of current clocksource under sys filesystem.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> index d8c94ab43..ffe4ad083 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/clock.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> @@ -7,11 +7,14 @@
-> 
->  #include <cobalt/uapi/kernel/types.h>
->  #include <cobalt/kernel/assert.h>
-> +#include <linux/fs.h>
->  #include <linux/ktime.h>
->  #include <linux/errno.h>
-> 
->  struct timespec64;
-> 
-> +#define SYS_CUR_CLOCKSOURCE "/sys/devices/system/clocksource/clocksource0/current_clocksource"
-> +
->  static inline u64 pipeline_read_cycle_counter(void)
->  {
->         /*
-> @@ -41,7 +44,25 @@ const char *pipeline_timer_name(void);
->  static inline const char *pipeline_clock_name(void)
->  {
->         /* Return the name of the current clock source. */
-> -       TODO();
-> +       struct file *curs;
-> +       static loff_t pos;
-> +       long r;
-> +
-> +       curs = filp_open(SYS_CUR_CLOCKSOURCE, O_RDONLY, 0);
-> +       if (IS_ERR(curs))
-> +               goto RTN_UNKNOWN;
-> +
-> +       memset(cobalt_pipeline.clocksource_name, 0, CLOCKSOURCE_NAME_MAXLEN);
-> +       pos = 0;
-> +       r = kernel_read(curs, cobalt_pipeline.clocksource_name, CLOCKSOURCE_NAME_MAXLEN - 1 , &pos);
-> +       filp_close(curs, NULL);
-> +
-> +
-> +       if (r < 0)
-> +               goto RTN_UNKNOWN;
-> +
-> +       return cobalt_pipeline.clocksource_name;
-> +
-> +RTN_UNKNOWN:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I considered this briefly as well, but this is rather ugly (even when
-using kernel_read_file_from_path), and you can simply get the
-information from that original path as well - and that reliably, because
-userspace knows better of there is sysfs under /sys or elsewhere.
+This allows to build the layer against i386 DISTRO_ARCH.
 
-Once we remove I-pipe support, we will also simply drop this entry in
-/proc, thus the need for this abstraction.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai_latest.bb | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Jan
-
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 836fa52..05946f7 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -22,8 +22,9 @@ def is_kernel(d, ver):
+     linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
+     return linux_ver.startswith(ver)
+ 
+-GIT_REPO_amd64 = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
+-GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
++# default: amd64 or i386
++GIT_REPO = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
++GIT_BRANCH = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
+ 
+ GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
+ GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
