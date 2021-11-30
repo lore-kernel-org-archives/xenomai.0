@@ -1,11 +1,8 @@
-Subject: Re: [PATCH 2/2] cobalt/trace: dovetail: drop unnecessary helpers
-References: <20211130073140.14252-1-hongzhan.chen@intel.com>
- <20211130073140.14252-2-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <77fb1a9a-c2fe-9654-8e7d-511d10fc3614@siemens.com>
-Date: Tue, 30 Nov 2021 09:20:13 +0100
+Subject: [xenomai-images][PATCH] Update consistently to kas 2.6.3
+Message-ID: <fce457c2-93ba-df58-a1e9-514dd14ac3f6@siemens.com>
+Date: Tue, 30 Nov 2021 09:29:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211130073140.14252-2-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,63 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 30.11.21 08:31, Hongzhan Chen via Xenomai wrote:
-> For dovetail-based, handle_oob_trap_entry would try to demote oob
-> stage and leave in-band to do panic thing when fault happen.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/trace.h b/include/cobalt/kernel/dovetail/pipeline/trace.h
-> index 7147ab183..306dd549a 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/trace.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/trace.h
-> @@ -91,18 +91,6 @@ static inline int xntrace_tick(unsigned long delay_ticks) /* ns */
->  	return 0;
->  }
->  
-> -static inline int xntrace_panic_freeze(void)
-> -{
-> -	TODO();
-> -	return 0;
-> -}
-> -
-> -static inline int xntrace_panic_dump(void)
-> -{
-> -	TODO();
-> -	return 0;
-> -}
-> -
->  static inline bool xntrace_enabled(void)
->  {
->  	return IS_ENABLED(CONFIG_DOVETAIL_TRACE);
-> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-> index 648929756..4da4f51b7 100644
-> --- a/kernel/cobalt/dovetail/kevents.c
-> +++ b/kernel/cobalt/dovetail/kevents.c
-> @@ -64,14 +64,12 @@ void handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
->  	 */
->  #if defined(CONFIG_XENO_OPT_DEBUG_COBALT) || defined(CONFIG_XENO_OPT_DEBUG_USER)
->  	if (!user_mode(regs)) {
-> -		xntrace_panic_freeze();
->  		printk(XENO_WARNING
->  		       "switching %s to secondary mode after exception #%u in "
->  		       "kernel-space at 0x%lx (pid %d)\n", thread->name,
->  		       trapnr,
->  		       xnarch_fault_pc(regs),
->  		       xnthread_host_pid(thread));
-> -		xntrace_panic_dump();
->  	} else if (xnarch_fault_notify(trapnr)) /* Don't report debug traps */
->  		printk(XENO_WARNING
->  		       "switching %s to secondary mode after exception #%u from "
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-thanks, both applied.
+CI was forgotten by 7c87984cc408, and the new stable version provides a
+few minor fixes.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ README.md             | 2 +-
+ ci/gitlab-ci-base.yml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/README.md b/README.md
+index 77296dc..b38e131 100644
+--- a/README.md
++++ b/README.md
+@@ -13,7 +13,7 @@ from scratch.
+ 
+ Install `kas-container` from the [kas project](https://github.com/siemens/kas):
+ 
+-    wget https://raw.githubusercontent.com/siemens/kas/2.6.2/kas-container -P ~/bin/
++    wget https://raw.githubusercontent.com/siemens/kas/2.6.3/kas-container -P ~/bin/
+     chmod a+x ~/bin/kas-container
+ 
+ Furthermore, install docker and make sure you have required permissions to
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 82d5dac..367085d 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -24,7 +24,7 @@ variables:
+   LAVA_TESTS_ENABLED: "true"
+ 
+ default:
+-  image: ghcr.io/siemens/kas/kas-isar:2.4
++  image: ghcr.io/siemens/kas/kas-isar:2.6.3
+ 
+ .add-proxy-config:
+   before_script:
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.31.1
 
