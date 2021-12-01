@@ -1,10 +1,11 @@
-Subject: Re: [PATCH] Revert "cobalt/assert: pipeline: add TODO() marker"
-References: <20211201011312.32144-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH 1/1] drivers/can: 32-bit userspace app support for rtcan
+References: <1636142341-2168-1-git-send-email-csmithquestions@gmail.com>
+ <7d694dfa-2128-86ee-d9bc-76625c86e85f@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <053b15a0-0f05-6a1e-6c56-21854b78eb9d@siemens.com>
-Date: Wed, 1 Dec 2021 07:02:28 +0100
+Message-ID: <95f7fedc-a140-1706-e3a6-63fcf24bb138@siemens.com>
+Date: Wed, 1 Dec 2021 07:11:19 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211201011312.32144-1-hongzhan.chen@intel.com>
+In-Reply-To: <7d694dfa-2128-86ee-d9bc-76625c86e85f@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,45 +17,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-On 01.12.21 02:13, Hongzhan Chen via Xenomai wrote:
-> This reverts commit 5c9cbcfce83083d9ea280f3b9143525cacfecfc8.
+On 08.11.21 11:29, Jan Kiszka via Xenomai wrote:
+> Commit message is missing.
 > 
-> We revert this because we fixed all related TODOs.
+> On 05.11.21 20:59, C Smith via Xenomai wrote:
+>> Signed-off-by: C Smith <csmithquestions@gmail.com>
+>> ---
+>>  kernel/drivers/can/rtcan_internal.h |   1 +
+>>  kernel/drivers/can/rtcan_raw.c      | 102 +++++++++++++++++++++++-------------
+>>  2 files changed, 67 insertions(+), 36 deletions(-)
+>>
+>> diff --git a/kernel/drivers/can/rtcan_internal.h b/kernel/drivers/can/rtcan_internal.h
+>> index b290005..d1f9d31 100644
+>> --- a/kernel/drivers/can/rtcan_internal.h
+>> +++ b/kernel/drivers/can/rtcan_internal.h
+>> @@ -28,6 +28,7 @@
+>>  
+>>  #include <linux/module.h>
+>>  #include <rtdm/driver.h>
+>> +#include <rtdm/compat.h>
+>>  
+>>  #ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG
+>>  #define RTCAN_ASSERT(expr, func) \
+>> diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+>> index 693b927..88a179f 100644
+>> --- a/kernel/drivers/can/rtcan_raw.c
+>> +++ b/kernel/drivers/can/rtcan_raw.c
+>> @@ -215,6 +215,53 @@ EXPORT_SYMBOL_GPL(rtcan_loopback);
+>>  #endif /* CONFIG_XENO_DRIVERS_CAN_LOOPBACK */
+>>  
+>>  
+>> +int rtcan_get_sockaddr(struct rtdm_fd *fd, struct sockaddr_can **saddrp,
+>> +		       const void *arg)
+>> +{
+>> +    struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
+>> +    int ret = 0;
+>> +
+>> +    if (!rtdm_fd_is_user(fd)) {
+>> +        setaddr = (struct _rtdm_setsockaddr_args *)arg;
+>> +        *saddrp = (struct sockaddr_can *)setaddr->addr;
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> In the !is_user case...
 > 
-> diff --git a/include/cobalt/kernel/assert.h b/include/cobalt/kernel/assert.h
-> index abe044100..98218ce6c 100644
-> --- a/include/cobalt/kernel/assert.h
-> +++ b/include/cobalt/kernel/assert.h
-> @@ -55,8 +55,6 @@
->  	do { } while (0)
->  #endif
->  
-> -#define TODO()    BUILD_BUG_ON(IS_ENABLED(CONFIG_XENO_TODO))
-> -
->  #define primary_mode_only()	XENO_BUG_ON(CONTEXT, is_secondary_domain())
->  #define secondary_mode_only()	XENO_BUG_ON(CONTEXT, !is_secondary_domain())
->  #define interrupt_only()	XENO_BUG_ON(CONTEXT, !xnsched_interrupt_p())
-> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
-> index 88953ff24..3233de1b1 100644
-> --- a/kernel/cobalt/Kconfig
-> +++ b/kernel/cobalt/Kconfig
-> @@ -487,9 +487,3 @@ config XENO_OPT_WATCHDOG_TIMEOUT
->  	  Watchdog timeout value (in seconds).
->  
->  endif # XENO_OPT_DEBUG
-> -
-> -config XENO_TODO
-> -	bool "Reveal TODO places"
-> -	help
-> -	  This option causes a build time assertion to trigger
-> -	  when the TODO() marker is found in the compiled code.
+>> +    }
+>> +
+>> +#ifdef CONFIG_XENO_ARCH_SYS3264
+>> +    if (rtdm_fd_is_compat(fd)) {
+>> +        struct compat_rtdm_setsockaddr_args csetaddr_buff;
+>> +
+>> +        /* Copy argument structure from userspace */
+>> +        ret = rtdm_safe_copy_from_user(fd, &csetaddr_buff,
+>> +                        arg, sizeof(csetaddr_buff));
+>> +        if (ret)
+>> +            return ret;
+>> +
+>> +        /* Check size */
+>> +        if (csetaddr_buff.addrlen != sizeof(struct sockaddr_can))
+>> +            return -EINVAL;
+>> +
+>> +        return rtdm_safe_copy_from_user(fd, *saddrp,
+>> +                        compat_ptr(csetaddr_buff.addr),
+>> +                        sizeof(struct sockaddr_can));
+>> +    }
+>> +#endif
+>> +
+>> +    if (rtdm_safe_copy_from_user(fd, &setaddr_buf, arg,
+>> +                sizeof(struct _rtdm_setsockaddr_args)))
+>> +        return -EFAULT;
+>> +
+>> +    setaddr = &setaddr_buf;
+> 
+> ...this whole block must not be taken. See old code.
+> 
+>> +
+>> +    /* Check size */
+>> +    if (setaddr->addrlen != sizeof(struct sockaddr_can))
+>> +        return -EINVAL;
+>> +
+>> +    return rtdm_safe_copy_from_user(fd, *saddrp,
+>> +                    setaddr->addr,
+>> +                    sizeof(struct sockaddr_can));
+>> +}
+>> +
+>> +
+>>  int rtcan_raw_socket(struct rtdm_fd *fd, int protocol)
+>>  {
+>>      /* Only protocol CAN_RAW is supported */
+>> @@ -408,46 +455,21 @@ static int rtcan_raw_setsockopt(struct rtdm_fd *fd,
+>>  int rtcan_raw_ioctl(struct rtdm_fd *fd,
+>>  		    unsigned int request, void *arg)
+>>  {
+>> +    struct sockaddr_can saddr, *saddrp = &saddr;
+>>      int ret = 0;
+>>  
+>>      switch (request) {
+>> -    case _RTIOC_BIND: {
+>> -	struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
+>> -	struct sockaddr_can *sockaddr, sockaddr_buf;
+>> -
+>> -	if (rtdm_fd_is_user(fd)) {
+>> -	    /* Copy argument structure from userspace */
+>> -	    if (!rtdm_read_user_ok(fd, arg,
+>> -				   sizeof(struct _rtdm_setsockaddr_args)) ||
+>> -		rtdm_copy_from_user(fd, &setaddr_buf, arg,
+>> -				    sizeof(struct _rtdm_setsockaddr_args)))
+>> -		return -EFAULT;
+>> -
+>> -	    setaddr = &setaddr_buf;
+>> -
+>> -	    /* Check size */
+>> -	    if (setaddr->addrlen != sizeof(struct sockaddr_can))
+>> -		return -EINVAL;
+>> -
+>> -	    /* Copy argument structure from userspace */
+>> -	    if (!rtdm_read_user_ok(fd, arg,
+>> -				   sizeof(struct sockaddr_can)) ||
+>> -		rtdm_copy_from_user(fd, &sockaddr_buf, setaddr->addr,
+>> -				    sizeof(struct sockaddr_can)))
+>> -		return -EFAULT;
+>> -	    sockaddr = &sockaddr_buf;
+>> -	} else {
+>> -	    setaddr = (struct _rtdm_setsockaddr_args *)arg;
+>> -	    sockaddr = (struct sockaddr_can *)setaddr->addr;
+>> -	}
+>> -
+>> -	/* Now, all required data are in kernel space */
+>> -	ret = rtcan_raw_bind(fd, sockaddr);
+>>  
+>> +    COMPAT_CASE(_RTIOC_BIND):
+>> +        ret = rtcan_get_sockaddr(fd, &saddrp, arg);
+>> +	if (ret)
+>> +	    return ret;
+>> +        if (saddrp == NULL)
+>> +	    return -EFAULT;
+> 
+> Wrong indentions, mixing spaced and tabs. Let's not make things worse
+> than they are (the file needs a mass-conversion to kernel style at some
+> point).
+> 
+>> +	ret = rtcan_raw_bind(fd, saddrp);
+>>  	break;
+>> -    }
+>>  
+>> -    case _RTIOC_SETSOCKOPT: {
+>> +    COMPAT_CASE(_RTIOC_SETSOCKOPT): {
+>>  	struct _rtdm_setsockopt_args *setopt;
+>>  	struct _rtdm_setsockopt_args setopt_buf;
+>>  
+>> @@ -532,7 +554,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
+>>      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
+>>      struct sockaddr_can scan;
+>>      nanosecs_rel_t timeout;
+>> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
+>> +    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>>      struct iovec iov_buf;
+>>      can_frame_t frame;
+>>      nanosecs_abs_t timestamp = 0;
+>> @@ -584,6 +606,10 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
+>>  	iov = &iov_buf;
+>>      }
+>>  
+>> +    ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>>      /* Check size of buffer */
+>>      if (iov->iov_len < sizeof(can_frame_t))
+>>  	return -EMSGSIZE;
+>> @@ -768,7 +794,7 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+>>      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
+>>      struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
+>>      struct sockaddr_can scan_buf;
+>> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
+>> +    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>>      struct iovec iov_buf;
+>>      can_frame_t *frame;
+>>      can_frame_t frame_buf;
+>> @@ -841,6 +867,10 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+>>  	iov = &iov_buf;
+>>      }
+>>  
+>> +    ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>>      /* Check size of buffer */
+>>      if (iov->iov_len != sizeof(can_frame_t))
+>>  	return -EMSGSIZE;
+>>
+> 
+> We can sort this out and merge after the 3.2 release, possibly also
+> backporting things to 3.1.
+> 
+> Jan
 > 
 
-thanks, applied
+Ping on this - just remembered as I was looking at the other CAN patches.
 
 Jan
 
