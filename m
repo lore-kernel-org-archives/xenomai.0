@@ -1,15 +1,11 @@
-Date: Wed, 1 Dec 2021 22:27:20 +0100 (CET)
-From: Dario Binacchi <dariobin@libero.it>
-Message-ID: <135487822.38999.1638394040551@mail1.libero.it>
-In-Reply-To: <c57719f6-e76e-1b84-a721-cc485fb31aba@siemens.com>
-References: <20211129220750.10362-1-dariobin@libero.it>
- <20211129230612.v2.1.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
- <254dca53-ff41-9542-868a-c800fc27efe6@siemens.com>
- <c57719f6-e76e-1b84-a721-cc485fb31aba@siemens.com>
-Subject: Re: [PATCH v2 1/6] drivers/can: add multi message support to sendmsg
+From: Yann Le Chevoir <yann.lechevoir@cae.com>
+Subject: rtnet rt_igb I210 not working with ARM
+Date: Thu, 2 Dec 2021 14:35:03 +0000
+Message-ID: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,339 +14,182 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, C Smith <csmithquestions@gmail.com>
-Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Jan,
+Hello,
 
-> Il 01/12/2021 07:15 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
-> 
->  
-> On 30.11.21 09:33, Jan Kiszka via Xenomai wrote:
-> > On 29.11.21 23:07, Dario Binacchi wrote:
-> >> The `user_msghdr' structure is designed to send multiple messages as
-> >> well, so rtcan_raw_sendmsg() can also send multiple messages. This
-> >> avoids having to add the sendmmsg system call which requires more
-> >> extensive Xenomai changes.
-> >>
-> >> Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> >> ---
-> >>
-> >> (no changes since v1)
-> >>
-> > 
-> > I asked for testing the changes also smokey (via rtcan_virt). How about
-> > that?
-> > 
-> 
-> Adding C Smith: There is also the series that fixes compat support for
-> RTCAN [1], switching to rtdm helper to access iov structs. Please align
-> your activities so that we get the best of all.
-> 
+I have an issue with rt_igb not working with an Intel I210 on ARM (see
+system configuration below).
+With Wireshark, looks like rtping is sending garbage on the network (see
+below).
+I notice there is no interrupt in /proc/xenomai/irq (see below).
+Looks like other people got issues with I210 in the past but I am not sure
+if they were similar and I am not able to find any conclusion.
 
-Ok, I'll do it
+Below, I show you how I am inserting the kernel module + how I am able to
+have it working with igb (no realtime) and rt_fec (different driver for the
+other Ethernet controller on the same board).
 
-> And I can only stress my point above that we need at least basic testing
-> for CAN along this.
-> 
+What can I do to solve this issue?
+Is there anything else I can try to give you more data?
 
-I agree with you. I already have a draft that I have to test first and I 
-hope to submit it this weekend.
+Thanks for your help,
 
-Thanks and regards
-Dario
+Yann
 
-> Thanks,
-> Jan
-> 
-> [1] https://xenomai.org/pipermail/xenomai/2021-November/046722.html
-> 
-> > Jan
-> > 
-> >>  kernel/drivers/can/rtcan_raw.c | 239 ++++++++++++++++++---------------
-> >>  1 file changed, 128 insertions(+), 111 deletions(-)
-> >>
-> >> diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-> >> index 693b927fe..b17c1709d 100644
-> >> --- a/kernel/drivers/can/rtcan_raw.c
-> >> +++ b/kernel/drivers/can/rtcan_raw.c
-> >> @@ -762,113 +762,13 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
-> >>  }
-> >>  
-> >>  
-> >> -ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-> >> -			  const struct user_msghdr *msg, int flags)
-> >> +static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket *sock,
-> >> +				   can_frame_t *frame, nanosecs_rel_t timeout)
-> >>  {
-> >> -    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-> >> -    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
-> >> -    struct sockaddr_can scan_buf;
-> >> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
-> >> -    struct iovec iov_buf;
-> >> -    can_frame_t *frame;
-> >> -    can_frame_t frame_buf;
-> >> -    rtdm_lockctx_t lock_ctx;
-> >> -    nanosecs_rel_t timeout = 0;
-> >>      struct tx_wait_queue tx_wait;
-> >> -    struct rtcan_device *dev;
-> >> -    int ifindex = 0;
-> >> -    int ret  = 0;
-> >> +    rtdm_lockctx_t lock_ctx;
-> >>      spl_t s;
-> >> -
-> >> -
-> >> -    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
-> >> -	return -EOPNOTSUPP;
-> >> -
-> >> -    /* Only MSG_DONTWAIT is a valid flag. */
-> >> -    if (flags & ~MSG_DONTWAIT)
-> >> -	return -EINVAL;
-> >> -
-> >> -    /* Check msg_iovlen, only one buffer allowed */
-> >> -    if (msg->msg_iovlen != 1)
-> >> -	return -EMSGSIZE;
-> >> -
-> >> -    if (scan == NULL) {
-> >> -	/* No socket address. Will use bound interface for sending */
-> >> -
-> >> -	if (msg->msg_namelen != 0)
-> >> -	    return -EINVAL;
-> >> -
-> >> -
-> >> -	/* We only want a consistent value here, a spin lock would be
-> >> -	 * overkill. Nevertheless, the binding could change till we have
-> >> -	 * the chance to send. Blame the user, though. */
-> >> -	ifindex = atomic_read(&sock->ifindex);
-> >> -
-> >> -	if (!ifindex)
-> >> -	    /* Socket isn't bound or bound to all interfaces. Go out. */
-> >> -	    return -ENXIO;
-> >> -    } else {
-> >> -	/* Socket address given */
-> >> -	if (msg->msg_namelen < sizeof(struct sockaddr_can))
-> >> -	    return -EINVAL;
-> >> -
-> >> -	if (rtdm_fd_is_user(fd)) {
-> >> -	    /* Copy socket address from userspace */
-> >> -	    if (!rtdm_read_user_ok(fd, msg->msg_name,
-> >> -				   sizeof(struct sockaddr_can)) ||
-> >> -		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
-> >> -				    sizeof(struct sockaddr_can)))
-> >> -		return -EFAULT;
-> >> -
-> >> -	    scan = &scan_buf;
-> >> -	}
-> >> -
-> >> -	/* Check address family */
-> >> -	if (scan->can_family != AF_CAN)
-> >> -	    return -EINVAL;
-> >> -
-> >> -	ifindex = scan->can_ifindex;
-> >> -    }
-> >> -
-> >> -    if (rtdm_fd_is_user(fd)) {
-> >> -	/* Copy IO vector from userspace */
-> >> -	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
-> >> -			     sizeof(struct iovec)) ||
-> >> -	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
-> >> -				sizeof(struct iovec)))
-> >> -	    return -EFAULT;
-> >> -
-> >> -	iov = &iov_buf;
-> >> -    }
-> >> -
-> >> -    /* Check size of buffer */
-> >> -    if (iov->iov_len != sizeof(can_frame_t))
-> >> -	return -EMSGSIZE;
-> >> -
-> >> -    frame = (can_frame_t *)iov->iov_base;
-> >> -
-> >> -    if (rtdm_fd_is_user(fd)) {
-> >> -	/* Copy CAN frame from userspace */
-> >> -	if (!rtdm_read_user_ok(fd, iov->iov_base,
-> >> -			       sizeof(can_frame_t)) ||
-> >> -	    rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
-> >> -				sizeof(can_frame_t)))
-> >> -	    return -EFAULT;
-> >> -
-> >> -	frame = &frame_buf;
-> >> -    }
-> >> -
-> >> -    /* Adjust iovec in the common way */
-> >> -    iov->iov_base += sizeof(can_frame_t);
-> >> -    iov->iov_len -= sizeof(can_frame_t);
-> >> -    /* ... and copy it back to userspace if necessary */
-> >> -    if (rtdm_fd_is_user(fd)) {
-> >> -	if (rtdm_copy_to_user(fd, msg->msg_iov, iov,
-> >> -			      sizeof(struct iovec)))
-> >> -	    return -EFAULT;
-> >> -    }
-> >> -
-> >> -    /* At last, we've got the frame ... */
-> >> +    int ret = 0;
-> >>  
-> >>      /* Check if DLC between 0 and 15 */
-> >>      if (frame->can_dlc > 15)
-> >> @@ -881,11 +781,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-> >>  	    return -EINVAL;
-> >>      }
-> >>  
-> >> -    if ((dev = rtcan_dev_get_by_index(ifindex)) == NULL)
-> >> -	return -ENXIO;
-> >> -
-> >> -    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
-> >> -
-> >>      tx_wait.rt_task = rtdm_task_current();
-> >>  
-> >>      /* Register the task at the socket's TX wait queue and decrement
-> >> @@ -931,7 +826,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-> >>  
-> >>      /* We got access */
-> >>  
-> >> -
-> >>      /* Push message onto stack for loopback when TX done */
-> >>      if (rtcan_loopback_enabled(sock))
-> >>  	rtcan_tx_push(dev, sock, frame);
-> >> @@ -960,10 +854,133 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-> >>   send_out2:
-> >>      rtdm_lock_put_irqrestore(&dev->device_lock, lock_ctx);
-> >>   send_out1:
-> >> -    rtcan_dev_dereference(dev);
-> >>      return ret;
-> >>  }
-> >>  
-> >> +ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-> >> +			  const struct user_msghdr *msg, int flags)
-> >> +{
-> >> +    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-> >> +    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
-> >> +    struct sockaddr_can scan_buf;
-> >> +    struct iovec *iov = (struct iovec *)msg->msg_iov;
-> >> +    struct iovec iov_buf;
-> >> +    can_frame_t *frame;
-> >> +    can_frame_t frame_buf;
-> >> +    nanosecs_rel_t timeout;
-> >> +    struct rtcan_device *dev;
-> >> +    int ret = 0, ifindex = 0, i = 0, n, sent = 0;
-> >> +
-> >> +    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
-> >> +	return -EOPNOTSUPP;
-> >> +
-> >> +    /* Only MSG_DONTWAIT is a valid flag. */
-> >> +    if (flags & ~MSG_DONTWAIT)
-> >> +	return -EINVAL;
-> >> +
-> >> +    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
-> >> +
-> >> +    if (scan == NULL) {
-> >> +	/* No socket address. Will use bound interface for sending */
-> >> +	if (msg->msg_namelen != 0)
-> >> +	    return -EINVAL;
-> >> +
-> >> +
-> >> +	/* We only want a consistent value here, a spin lock would be
-> >> +	 * overkill. Nevertheless, the binding could change till we have
-> >> +	 * the chance to send. Blame the user, though. */
-> >> +	ifindex = atomic_read(&sock->ifindex);
-> >> +	if (!ifindex)
-> >> +	    /* Socket isn't bound or bound to all interfaces. Go out. */
-> >> +	    return -ENXIO;
-> >> +    } else {
-> >> +	/* Socket address given */
-> >> +	if (msg->msg_namelen < sizeof(struct sockaddr_can))
-> >> +	    return -EINVAL;
-> >> +
-> >> +	if (rtdm_fd_is_user(fd)) {
-> >> +	    /* Copy socket address from userspace */
-> >> +	    if (!rtdm_read_user_ok(fd, msg->msg_name,
-> >> +				   sizeof(struct sockaddr_can)) ||
-> >> +		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
-> >> +				    sizeof(struct sockaddr_can)))
-> >> +		return -EFAULT;
-> >> +
-> >> +	    scan = &scan_buf;
-> >> +	}
-> >> +
-> >> +	/* Check address family */
-> >> +	if (scan->can_family != AF_CAN)
-> >> +	    return -EINVAL;
-> >> +
-> >> +	ifindex = scan->can_ifindex;
-> >> +    }
-> >> +
-> >> +    dev = rtcan_dev_get_by_index(ifindex);
-> >> +    if (!dev)
-> >> +	return -ENXIO;
-> >> +
-> >> +    if (rtdm_fd_is_user(fd)) {
-> >> +
-> >> +	/* Copy IO vector from userspace */
-> >> +	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
-> >> +			     sizeof(struct iovec)) ||
-> >> +	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
-> >> +				sizeof(struct iovec))) {
-> >> +	    ret = -EFAULT;
-> >> +	    goto finally;
-> >> +	}
-> >> +
-> >> +	iov = &iov_buf;
-> >> +    }
-> >> +
-> >> +    n = msg->msg_iovlen;
-> >> +    while (i < n) {
-> >> +	if (iov->iov_len < sizeof(can_frame_t)) {
-> >> +	    ret = -EMSGSIZE;
-> >> +	    goto finally;
-> >> +	}
-> >> +
-> >> +	frame = (can_frame_t *)iov->iov_base;
-> >> +
-> >> +	if (rtdm_fd_is_user(fd)) {
-> >> +	    /* Copy CAN frame from userspace */
-> >> +	    if (!rtdm_read_user_ok(fd, iov->iov_base, sizeof(can_frame_t)) ||
-> >> +		rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
-> >> +				    sizeof(can_frame_t))) {
-> >> +	        ret = -EFAULT;
-> >> +	        goto finally;
-> >> +	    }
-> >> +
-> >> +	    frame = &frame_buf;
-> >> +	}
-> >> +
-> >> +	iov->iov_base += sizeof(can_frame_t);
-> >> +	iov->iov_len -= sizeof(can_frame_t);
-> >> +
-> >> +	ret = __rtcan_raw_sendmsg(dev, sock, frame, timeout);
-> >> +	if (ret < 0)
-> >> +	    goto finally;
-> >> +
-> >> +	sent += ret;
-> >> +    }
-> >> +
-> >> +    /* copy it back to userspace if necessary */
-> >> +    if (rtdm_fd_is_user(fd)) {
-> >> +	if (rtdm_copy_to_user(fd, msg->msg_iov, iov, sizeof(struct iovec))) {
-> >> +	    ret = -EFAULT;
-> >> +	    goto finally;
-> >> +	}
-> >> +    }
-> >> +
-> >> +finally:
-> >> +    rtcan_dev_dereference(dev);
-> >> +
-> >> +    if (sent > 0)
-> >> +	    return sent;
-> >> +
-> >> +    return ret;
-> >> +}
-> >>  
-> >>  static struct rtdm_driver rtcan_driver = {
-> >>  	.profile_info		= RTDM_PROFILE_INFO(rtcan,
-> >>
-> > 
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+########################
+# System configuration #
+########################
+ARM cortexa9t2hf, quad core, 32bits.
+Custom board inspired from an i.MX6Q SABRE Lite.
+Two Ethernet controllers: Freescale FEC + Intel I210 on the PCIe bus.
+Kernel: Freescale/linux-fslc v4.9.67
+(https://github.com/Freescale/linux-fslc/tree/953c6e30c9701fda69ef08e2476c5=
+41dc4fb1453)
+Xenomai: v3.0.9 and/or v3.0.12 (same results).
+I-pipe: based on ipipe-core-4.9.51-arm-4.patch. It is slightly different
+        for gpc.c to applied on Freescale/linux-fslc v4.9.67.
+/proc/cmdline does not seem relevant:
+    "console=3Dttymxc1,115200 earlyprintk=3Dserial,ttymxc1,115200
+    root=3DPARTUUID=3D0002973b-03 rootwait ro ldo_active=3Don
+    video=3Dmxcfb0:dev=3Dhdmi,if=3DRGB24,bpp=3D32"
+
+#####################################################################
+# Wireshark trace when 10.0.0.1 (rtnet + rt_igb) tries to ping      #
+# 10.0.0.10 (Windows)                                               #
+# Note: there is no traffic when 10.0.0.1 does not do the rtping    #
+#       all the trace is generated during the rtping (some seconds) #
+#####################################################################
+
+No.     Time           Source                Destination           Protocol=
+ Length Info
+      1 0.000000000    00.00.00              00.00.00              FC      =
+ 98     Unknown frame
+      2 5.000397000    39.15.80              00.00.00              FC      =
+ 98     Unknown frame
+      3 6.000411000    80:e3:f5:a8:88:e3     61:bf:b8:f1:61:bf     0xf5a8  =
+ 98     Ethernet II
+      4 12.000545000   1e:14:21:27:1e:14     XagylCom_14:11:27     0x3127  =
+ 98     Ethernet II
+      5 13.000501000   01:d8:fb:4f:01:dc     fb:4f:01:ec:fb:4f     0xfb4f  =
+ 98     Ethernet II
+      6 15.000537000   ImcNetwo_05:5c:ed     7a:e5:38:39:81:00     0x4358  =
+ 98     Ethernet II
+      7 16.000589000   05:4f:6e:65:49:46     Nadatel_64:09:00      LLC     =
+ 98     U F, func=3DUA; DSAP 0x6c Group, SSAP 0x64 Response
+      8 17.000552000   ad:00:07:74:69:6d     69:64:05:00:00:03     0x656f  =
+ 98     Ethernet II
+
+#################################################
+# /proc/xenomai/irq after performing the rtping #
+#################################################
+
+# cat /proc/xenomai/irq
+  IRQ       CPU0        CPU1        CPU2        CPU3
+   16:    865166      741239     1388290     2146141         [timer/0]
+  301:         0           0           0           0         rteth0
+ 1032:         0           0           0           0         [sync]
+ 1033:         0           1           1           1         [timer-ipi]
+ 1034:         0           1           2           1         [reschedule]
+ 1035:         0           0           0           0         [virtual]
+ 1039:         1           0          31           0         [virtual]
+
+######################################################################
+# Interruptions are well bound to rt_igb. I insured that igb was not #
+# loaded at boot time.                                               #
+######################################################################
+
+# ls /sys/bus/pci/drivers/rt_igb/
+0000:01:00.0  bind  module  new_id  remove_id  uevent  unbind
+
+##################################
+# Inserting the module:          #
+# rtnet + rt_igb, *not* working  #
+##################################
+
+# modprobe rt_igb
+    *** RTnet for Xenomai v3.0.9 ***
+    RTnet: initialising real-time networking
+    rt_igb: Intel(R) Gigabit Ethernet Network Driver - version 5.2.18-k
+    rt_igb: Copyright (c) 2007-2014 Intel Corporation.
+    rt_igb 0000:01:00.0: enabling device (0140 -> 0142)
+    RTnet: registered rteth0
+    rt_igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+    rt_igb 0000:01:00.0: rteth0: (PCIe:2.5Gb/s:Width x1) 00:50:64:00:d5:10
+    rt_igb 0000:01:00.0: rteth0: PBA No: FFFFFF-0FF
+    rt_igb 0000:01:00.0: Using MSI interrupts. 1 rx queue(s), 1 tx queue(s)
+# modprobe rtudp
+# modprobe rtpacket
+# lsmod
+    Module                  Size  Used by
+    rtpacket                9111  0
+    rtudp                  14160  0
+    rtipv4                 31184  1 rtudp
+    rt_igb                 84337  0
+    rtnet                  52246  4 rt_igb,rtipv4,rtpacket,rtudp
+    (fec                    40019  0) <-- Other NIC (see below)
+# rtifconfig rteth0 up 10.0.0.1
+    rt_igb: rteth0: igb: rteth0 NIC Link is Up 100 Mbps Full Duplex,
+	                                             Flow Control: RX/TX
+# rtroute add 10.0.0.10 FF:FF:FF:FF:FF:FF dev rteth0
+# rtping 10.0.0.10
+    Real-time PING 10.0.0.10 56(84) bytes of data.
+    ... (*not* working) ^C
+    --- 10.0.0.10 rtping statistics ---
+    5 packets transmitted, 0 received, 100% packet loss
+    worst case rtt =3D 0.0 us
+
+
+#############################################
+# Inserting the module:                     #
+# igb (no rt), same Xenomai kernel, working #
+#############################################
+
+# modprobe igb
+    igb: Intel(R) Gigabit Ethernet Network Driver - version 5.4.0-k
+    igb: Copyright (c) 2007-2014 Intel Corporation.
+    igb 0000:01:00.0: enabling device (0140 -> 0142)
+    pps pps1: new PPS source ptp1
+    igb 0000:01:00.0: added PHC on eth1
+    igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+    igb 0000:01:00.0: eth1: (PCIe:2.5Gb/s:Width x1) 00:50:64:00:d5:10
+    igb 0000:01:00.0: eth1: PBA No: FFFFFF-0FF
+    igb 0000:01:00.0: Using MSI interrupts. 1 rx queue(s), 1 tx queue(s)
+# lsmod
+    Module                  Size  Used by
+    igb                   145781  0
+    (fec                    40019  0) <-- Other NIC (see below)
+# ifconfig eth1 up 10.0.0.1
+    IPv6: ADDRCONF(NETDEV_UP): eth1: link is not ready
+    8021q: adding VLAN 0 to HW filter on device eth1
+    igb 0000:01:00.0 eth1: igb: eth1 NIC Link is Up 100 Mbps Full Duplex,
+	                                                  Flow Control: RX/TX
+    IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+# ping 10.0.0.10
+    ... (working)
+
+
+########################################################
+# Inserting the module:                                #
+# rtnet + rt_fec (second Ethernet controller), working #
+########################################################
+
+# modprobe rt_fec
+    ...
+    RTnet: registered rteth0
+# modprobe rtudp
+# modprobe rtpacket
+# lsmod
+    Module                  Size  Used by
+    rtpacket                9111  0
+    rtudp                  14160  0
+    rtipv4                 31184  1 rtudp
+    rt_fec                 15832  1
+    rtnet                  52182  4 rtipv4,rtpacket,rt_fec,rtudp
+# rtifconfig rteth0 up 10.0.0.1
+    Generic PHY 2188000.ethernet-1:10: attached PHY driver [Generic PHY]
+	                    (mii_bus:phy_addr=3D2188000.ethernet-1:10, irq=3D-1)
+# rtroute add 10.0.0.10 FF:FF:FF:FF:FF:FF dev rteth0
+# rtping 10.0.0.10
+    ... (working)
 
