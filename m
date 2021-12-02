@@ -1,13 +1,14 @@
-Subject: Re: rtnet rt_igb I210 not working with ARM
+From: Yann Le Chevoir <yann.lechevoir@cae.com>
+Subject: RE: rtnet rt_igb I210 not working with ARM
+Date: Thu, 2 Dec 2021 19:42:50 +0000
+Message-ID: <AS8PR09MB5354826819F0D47E90802FC181699@AS8PR09MB5354.eurprd09.prod.outlook.com>
 References: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
-Date: Thu, 2 Dec 2021 19:25:23 +0100
-MIME-Version: 1.0
-In-Reply-To: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
+In-Reply-To: <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
+Content-Language: fr-FR
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yann Le Chevoir <yann.lechevoir@cae.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.12.21 15:35, Yann Le Chevoir via Xenomai wrote:
-> Hello,
-> 
-> I have an issue with rt_igb not working with an Intel I210 on ARM (see
-> system configuration below).
-> With Wireshark, looks like rtping is sending garbage on the network (see
-> below).
-> I notice there is no interrupt in /proc/xenomai/irq (see below).
-> Looks like other people got issues with I210 in the past but I am not sure
-> if they were similar and I am not able to find any conclusion.
-> 
-> Below, I show you how I am inserting the kernel module + how I am able to
-> have it working with igb (no realtime) and rt_fec (different driver for the
-> other Ethernet controller on the same board).
-> 
-> What can I do to solve this issue?
-> Is there anything else I can try to give you more data?
-> 
-
-Could you check if that card works in a standard PC (x86-64) with RTnet?
-Could you also check if latest 3.2.1 makes any difference? Not all fixes
-on RTnet have been backported to very-old-stable.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+PiA+IEhlbGxvLA0KPiA+DQo+ID4gSSBoYXZlIGFuIGlzc3VlIHdpdGggcnRfaWdiIG5vdCB3b3Jr
+aW5nIHdpdGggYW4gSW50ZWwgSTIxMCBvbiBBUk0gKHNlZQ0KPiA+IHN5c3RlbSBjb25maWd1cmF0
+aW9uIGJlbG93KS4NCj4gPiBXaXRoIFdpcmVzaGFyaywgbG9va3MgbGlrZSBydHBpbmcgaXMgc2Vu
+ZGluZyBnYXJiYWdlIG9uIHRoZSBuZXR3b3JrDQo+ID4gKHNlZSBiZWxvdykuDQo+ID4gSSBub3Rp
+Y2UgdGhlcmUgaXMgbm8gaW50ZXJydXB0IGluIC9wcm9jL3hlbm9tYWkvaXJxIChzZWUgYmVsb3cp
+Lg0KPiA+IExvb2tzIGxpa2Ugb3RoZXIgcGVvcGxlIGdvdCBpc3N1ZXMgd2l0aCBJMjEwIGluIHRo
+ZSBwYXN0IGJ1dCBJIGFtIG5vdA0KPiA+IHN1cmUgaWYgdGhleSB3ZXJlIHNpbWlsYXIgYW5kIEkg
+YW0gbm90IGFibGUgdG8gZmluZCBhbnkgY29uY2x1c2lvbi4NCj4gPg0KPiA+IEJlbG93LCBJIHNo
+b3cgeW91IGhvdyBJIGFtIGluc2VydGluZyB0aGUga2VybmVsIG1vZHVsZSArIGhvdyBJIGFtIGFi
+bGUNCj4gPiB0byBoYXZlIGl0IHdvcmtpbmcgd2l0aCBpZ2IgKG5vIHJlYWx0aW1lKSBhbmQgcnRf
+ZmVjIChkaWZmZXJlbnQgZHJpdmVyDQo+ID4gZm9yIHRoZSBvdGhlciBFdGhlcm5ldCBjb250cm9s
+bGVyIG9uIHRoZSBzYW1lIGJvYXJkKS4NCj4gPg0KPiA+IFdoYXQgY2FuIEkgZG8gdG8gc29sdmUg
+dGhpcyBpc3N1ZT8NCj4gPiBJcyB0aGVyZSBhbnl0aGluZyBlbHNlIEkgY2FuIHRyeSB0byBnaXZl
+IHlvdSBtb3JlIGRhdGE/DQo+ID4NCj4gDQo+IENvdWxkIHlvdSBjaGVjayBpZiB0aGF0IGNhcmQg
+d29ya3MgaW4gYSBzdGFuZGFyZCBQQyAoeDg2LTY0KSB3aXRoIFJUbmV0Pw0KPiBDb3VsZCB5b3Ug
+YWxzbyBjaGVjayBpZiBsYXRlc3QgMy4yLjEgbWFrZXMgYW55IGRpZmZlcmVuY2U/IE5vdCBhbGwg
+Zml4ZXMgb24NCj4gUlRuZXQgaGF2ZSBiZWVuIGJhY2twb3J0ZWQgdG8gdmVyeS1vbGQtc3RhYmxl
+Lg0KPiANCj4gSmFuDQo+IA0KDQoNClRoYW5rcyBKYW4sDQoNClRlc3RpbmcgaXQgaW4gYSB4ODYt
+NjQgbWF5IGJlIGRpZmZpY3VsdCBiZWNhdXNlIHRoZSBFdGhlcm5ldCBjaGlwIGlzIHNvbGRlcmVk
+IG9uIG91ciBib2FyZCwgdGhhdCdzIG5vdCBhbiBleHRlcm5hbCBjYXJkIHdpdGggYSBQQ0llIGNv
+bm5lY3Rvci4gIEkgd2lsbCBjaGVjayBpZiB3ZSBjYW4gZG8gc29tZXRoaW5nLg0KSSB3aWxsIGdp
+dmUgYSBuZXcgdHJ5IHdpdGggdmVyc2lvbiAzLjIuMS4gSSBhbHJlYWR5IHRyaWVkIChhbmQgZGlk
+IG5vdCBtZW50aW9uIHRvIG5vdCBjb25mdXNlIGFueW9uZSkgYmVmb3JlIHRvIHNlbmQgbXkgcXVl
+c3Rpb24gYnV0IGl0IHdhcyBub3QgY29tcGlsaW5nLiBJIHdpbGwgaW52ZXN0aWdhdGUgdGhlIGNv
+bXBpbGF0aW9uIGlzc3VlIGlzIHRoYXQncyB3aGF0IHlvdSBzdWdnZXN0LiBBbmQgY29tZSBiYWNr
+IHRvIHlvdS4NCg0KVGhhbmtzLA0KDQpZYW5uDQoNCg==
 
