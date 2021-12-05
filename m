@@ -1,10 +1,9 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/2] dovetail: make legacy and prctl-based syscalls coexist
- transparently
-Date: Sat, 13 Nov 2021 19:34:06 +0100
-Message-Id: <20211113183407.1115539-1-rpm@xenomai.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Dario Binacchi <dariobin@libero.it>
+Subject: [PATCH v3 5/7] drivers/can: add a minimal support to ethtool API
+Date: Sun,  5 Dec 2021 21:45:16 +0100
+Message-Id: <20211205214446.v3.5.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
+In-Reply-To: <20211205204518.13259-1-dariobin@libero.it>
+References: <20211205204518.13259-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,123 +13,225 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>
 
-From: Philippe Gerum <rpm@xenomai.org>
+Like in the Linux kernel, the API allows to get/set device controller
+parameters.
+For now it only supports:
+ - ETHTOOL_GDRVINFO: get general driver and device information
+ - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
 
-These changes aim at enabling support for both the legacy and
-prctl-based syscall formats by the same kernel, without affecting the
-syscall handling logic in the companion cores which still depend on
-the former. CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE should be turned on
-by such cores in order to enable the legacy call format.
+It allows the userspace to know the number of messages managed by the
+controller and how many of them are used for reception/transmission.
+This information allows you to know the maximum number of messages that
+sendmsg() can transmit without returning a full FIFO error.
 
-If CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is set, we assume the
-companion core may not handle the new prctl-based call format, but
-expects the __OOB_SYSCALL_BIT to be set directly into the syscall code
-register instead, defining its own syscall range.
+Application programs are expected to use the new API directly via IOCTL,
+since, unlike the Linux Kernel, there is currently no userspace
+application like ethtool in Xenomai.
 
-In this case, prctl() requests with an oob signature might be received
-by the oob syscall handler, but these should always be handled from
-the in-band stage, regardless of the call arguments. To this end, the
-oob syscall handler is allowed to ask for the request to be propagated
-to the peer in-band handler, which would then decide to either handle
-the request locally, or pass it down in turn to the regular syscall
-handler. This is a rare case, when prctl-based syscalls are not
-accepted by the companion core, but some application would issue
-prctl() calls matching the oob signature (i.e. prctl(option |
-__OOB_SYSCALL_BIT, ...)), denoting either a misconfiguration, or a
-broken application.
-
-If CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is unset, every oob syscall
-must be folded into a prctl() request, with the __OOB_SYSCALL_BIT set
-into the option argument.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
 ---
- kernel/Kconfig.dovetail |  4 ++++
- kernel/dovetail.c       | 40 +++++++++++++++++++++++++---------------
- 2 files changed, 29 insertions(+), 15 deletions(-)
 
-diff --git a/kernel/Kconfig.dovetail b/kernel/Kconfig.dovetail
-index a21377296c188be..c9ec30d1b4a4d39 100644
---- a/kernel/Kconfig.dovetail
-+++ b/kernel/Kconfig.dovetail
-@@ -17,3 +17,7 @@ config DOVETAIL
- 	  Activate this option if you want to enable the interface for
- 	  running a secondary kernel side-by-side with Linux (aka
- 	  "dual kernel" configuration).
+(no changes since v2)
+
+Changes in v2:
+- Expand the commit message to better describe the added API.
+
+ kernel/drivers/can/Makefile        |  2 +-
+ kernel/drivers/can/rtcan_dev.h     |  4 +-
+ kernel/drivers/can/rtcan_ethtool.c | 75 ++++++++++++++++++++++++++++++
+ kernel/drivers/can/rtcan_ethtool.h | 24 ++++++++++
+ kernel/drivers/can/rtcan_raw_dev.c | 20 ++++++++
+ 5 files changed, 123 insertions(+), 2 deletions(-)
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.c
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.h
+
+diff --git a/kernel/drivers/can/Makefile b/kernel/drivers/can/Makefile
+index f78f6afdf..65761a010 100644
+--- a/kernel/drivers/can/Makefile
++++ b/kernel/drivers/can/Makefile
+@@ -5,6 +5,6 @@ obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o mscan/ sja1000/ peak_canfd/
+ obj-$(CONFIG_XENO_DRIVERS_CAN_FLEXCAN) += xeno_can_flexcan.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_VIRT) += xeno_can_virt.o
+ 
+-xeno_can-y := rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o
++xeno_can-y := rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o rtcan_ethtool.o
+ xeno_can_virt-y := rtcan_virt.o
+ xeno_can_flexcan-y := rtcan_flexcan.o
+diff --git a/kernel/drivers/can/rtcan_dev.h b/kernel/drivers/can/rtcan_dev.h
+index 3642e92f0..cc081f6e8 100644
+--- a/kernel/drivers/can/rtcan_dev.h
++++ b/kernel/drivers/can/rtcan_dev.h
+@@ -34,7 +34,7 @@
+ #include <linux/semaphore.h>
+ 
+ #include "rtcan_list.h"
+-
++#include "rtcan_ethtool.h"
+ 
+ /* Number of MSCAN devices the driver can handle */
+ #define RTCAN_MAX_DEVICES    CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES
+@@ -137,6 +137,8 @@ struct rtcan_device {
+     void                (*do_enable_bus_err)(struct rtcan_device *dev);
+ #endif
+ 
++    const struct rtcan_ethtool_ops *ethtool_ops;
 +
-+config DOVETAIL_LEGACY_SYSCALL_RANGE
-+       depends on DOVETAIL
-+       def_bool y
-diff --git a/kernel/dovetail.c b/kernel/dovetail.c
-index 92af8d1e10b0c21..4df6b23cdb4f78c 100644
---- a/kernel/dovetail.c
-+++ b/kernel/dovetail.c
-@@ -65,8 +65,9 @@ void dovetail_stop_altsched(void)
- }
- EXPORT_SYMBOL_GPL(dovetail_stop_altsched);
- 
--void __weak handle_oob_syscall(struct pt_regs *regs)
-+int __weak handle_oob_syscall(struct pt_regs *regs)
- {
+     /* Reception list head. This list contains all filters which have been
+      * registered via a bind call. */
+     struct rtcan_recv               *recv_list;
+diff --git a/kernel/drivers/can/rtcan_ethtool.c b/kernel/drivers/can/rtcan_ethtool.c
+new file mode 100644
+index 000000000..cfcf77ac3
+--- /dev/null
++++ b/kernel/drivers/can/rtcan_ethtool.c
+@@ -0,0 +1,75 @@
++#include "rtcan_dev.h"
++
++static int rtcan_ethtool_drvinfo(struct rtdm_fd *fd, struct rtcan_device *dev,
++				 void __user *useraddr)
++{
++	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
++	struct ethtool_drvinfo info = {.cmd = ETHTOOL_GDRVINFO };
++
++	if (!ops->get_drvinfo)
++		return -EOPNOTSUPP;
++
++	ops->get_drvinfo(dev, &info);
++
++	if (!rtdm_fd_is_user(fd) ||
++	    rtdm_copy_to_user(fd, useraddr, &info, sizeof(info)))
++		return -EFAULT;
++
 +	return 0;
- }
- 
- int __weak handle_pipelined_syscall(struct irq_stage *stage,
-@@ -169,13 +170,18 @@ int __pipeline_syscall(struct pt_regs *regs)
- static inline bool maybe_oob_syscall(unsigned int nr, struct pt_regs *regs)
- {
- 	/*
--	 * Check whether the companion core might be interested in
--	 * @nr. Hand the request to the core if __OOB_SYSCALL_BIT is
--	 * set in @nr, or this is a prctl() request into which an oob
--	 * syscall might be folded.
-+	 * Check whether the companion core might be interested in the
-+	 * syscall call. If the old syscall form is handled, pass the
-+	 * request to the core if __OOB_SYSCALL_BIT is set in
-+	 * @nr. Otherwise, only check whether an oob syscall is folded
-+	 * into a prctl() request.
- 	 */
--	return (nr & __OOB_SYSCALL_BIT) ||
--		(nr == __NR_prctl && syscall_get_arg0(regs) & __OOB_SYSCALL_BIT);
-+	if (IS_ENABLED(CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE)) {
-+		if (nr & __OOB_SYSCALL_BIT)
-+			return true;
++}
++
++static int rtcan_ethtool_get_ringparam(struct rtdm_fd *fd,
++				       struct rtcan_device *dev,
++				       void __user *useraddr)
++{
++	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
++	struct ethtool_ringparam ringparam = { .cmd = ETHTOOL_GRINGPARAM };
++
++	if (!ops->get_ringparam)
++		return -EOPNOTSUPP;
++
++	ops->get_ringparam(dev, &ringparam);
++
++	if (!rtdm_fd_is_user(fd) ||
++	    rtdm_copy_to_user(fd, useraddr, &ringparam, sizeof(ringparam)))
++		return -EFAULT;
++
++	return 0;
++}
++
++int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
++		  struct ifreq *ifr)
++{
++	void __user *useraddr = ifr->ifr_data;
++	u32 ethcmd;
++	int rc;
++
++	if (!dev->ethtool_ops)
++		return -EOPNOTSUPP;
++
++	if (!rtdm_read_user_ok(fd, useraddr, sizeof(ethcmd)) ||
++	    rtdm_copy_from_user(fd, &ethcmd, useraddr, sizeof(ethcmd)))
++		return -EFAULT;
++
++	if (dev->ethtool_ops->begin) {
++		rc = dev->ethtool_ops->begin(dev);
++		if (rc < 0)
++			return rc;
 +	}
 +
-+	return nr == __NR_prctl && syscall_get_arg0(regs) & __OOB_SYSCALL_BIT;
- }
- 
- int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
-@@ -217,15 +223,19 @@ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
- 	 */
- 
- 	if ((local_flags & _TLF_OOB) && maybe_oob_syscall(nr, regs)) {
--		handle_oob_syscall(regs);
-+		ret = handle_oob_syscall(regs);
-+		if (!IS_ENABLED(CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE))
-+			WARN_ON_ONCE(dovetail_debug() && !ret);
- 		local_flags = READ_ONCE(ti_local_flags(ti));
--		if (local_flags & _TLF_OOB) {
--			if (test_ti_thread_flag(ti, TIF_MAYDAY))
--				dovetail_call_mayday(regs);
--			return 1; /* don't pass down, no tail work. */
--		} else {
--			WARN_ON_ONCE(dovetail_debug() && irqs_disabled());
--			return -1; /* don't pass down, do tail work. */
-+		if (likely(ret)) {
-+			if (local_flags & _TLF_OOB) {
-+				if (test_ti_thread_flag(ti, TIF_MAYDAY))
-+					dovetail_call_mayday(regs);
-+				return 1; /* don't pass down, no tail work. */
-+			} else {
-+				WARN_ON_ONCE(dovetail_debug() && irqs_disabled());
-+				return -1; /* don't pass down, do tail work. */
-+			}
- 		}
++	switch (ethcmd) {
++	case ETHTOOL_GDRVINFO:
++		rc = rtcan_ethtool_drvinfo(fd, dev, useraddr);
++		break;
++	case ETHTOOL_GRINGPARAM:
++		rc = rtcan_ethtool_get_ringparam(fd, dev, useraddr);
++		break;
++	default:
++		rc = -EOPNOTSUPP;
++	}
++
++	if (dev->ethtool_ops->complete)
++		dev->ethtool_ops->complete(dev);
++
++	return rc;
++}
+diff --git a/kernel/drivers/can/rtcan_ethtool.h b/kernel/drivers/can/rtcan_ethtool.h
+new file mode 100644
+index 000000000..b01090fd3
+--- /dev/null
++++ b/kernel/drivers/can/rtcan_ethtool.h
+@@ -0,0 +1,24 @@
++#ifndef __RTCAN_ETHTOOL_H_
++#define __RTCAN_ETHTOOL_H_
++
++#ifdef __KERNEL__
++
++#include <linux/ethtool.h>
++
++struct rtcan_device;
++
++struct rtcan_ethtool_ops {
++	int (*begin)(struct rtcan_device *dev);
++	int (*complete)(struct rtcan_device *dev);
++	void (*get_drvinfo)(struct rtcan_device *dev,
++			     struct ethtool_drvinfo *info);
++	void (*get_ringparam)(struct rtcan_device *dev,
++			      struct ethtool_ringparam *ring);
++};
++
++int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
++		  struct ifreq *ifr);
++
++#endif /* __KERNEL__ */
++
++#endif /* __RTCAN_ETHTOOL_H_ */
+diff --git a/kernel/drivers/can/rtcan_raw_dev.c b/kernel/drivers/can/rtcan_raw_dev.c
+index d1ff640e3..d418c481f 100644
+--- a/kernel/drivers/can/rtcan_raw_dev.c
++++ b/kernel/drivers/can/rtcan_raw_dev.c
+@@ -354,6 +354,7 @@ static inline int rtcan_raw_ioctl_dev_set(struct rtcan_device *dev,
+ int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
+ {
+     struct can_ifreq *ifr;
++    struct ifreq *ifreq;
+     int ret = 0, get = 0;
+     union {
+ 	    /*
+@@ -414,7 +415,26 @@ int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
+ 		rtcan_dev_dereference(dev);
  	}
+ 	break;
++    case SIOCETHTOOL:
++	if (rtdm_fd_is_user(fd)) {
++	    /* Copy struct can_ifreq from userspace */
++	    if (!rtdm_read_user_ok(fd, arg, sizeof(*ifreq)) ||
++		rtdm_copy_from_user(fd, &ifr_buf, arg, sizeof(*ifreq)))
++		return -EFAULT;
++
++	    ifreq = &ifr_buf.ifr_legacy;
++	} else {
++	    ifreq = (struct ifreq *)arg;
++	}
  
++	/* Get interface index and data */
++	dev = rtcan_dev_get_by_name(ifreq->ifr_name);
++	if (dev == NULL)
++	    return -ENODEV;
++
++	ret = rtcan_ethtool(fd, dev, ifreq);
++	rtcan_dev_dereference(dev);
++	break;
+     default:
+ 	ret = -EOPNOTSUPP;
+ 	break;
 -- 
-2.31.1
+2.17.1
 
 
