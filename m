@@ -1,9 +1,7 @@
 From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v3 6/7] drivers/can: fix updating of tx_count statistics
-Date: Sun,  5 Dec 2021 21:45:17 +0100
-Message-Id: <20211205204518.13259-5-dariobin@libero.it>
-In-Reply-To: <20211205204518.13259-1-dariobin@libero.it>
-References: <20211205204518.13259-1-dariobin@libero.it>
+Subject: [PATCH v3 0/7] drivers/can: add support for Bosch C_CAN controller
+Date: Sun,  5 Dec 2021 21:45:11 +0100
+Message-Id: <20211205204518.13259-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,81 +13,100 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>
 
-As in the Linux kernel, the counter is updated only after the message
-has been really transmitted.
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
+The series was created to optimize the use of the C_CAN controller
+(maximum number of message objects, use of FIFO, ...) to get the
+best possible RX/TX throughput from hardware.
 
-(no changes since v1)
+To emphasize the purpose of the series I also added the patch
+which adds multi-message support to `sendmsg ', rather than'
+submitting it separately. In fact, it too has contributed to
+increasing transmission throughput.
 
- kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
- kernel/drivers/can/rtcan_flexcan.c         | 1 +
- kernel/drivers/can/rtcan_raw.c             | 1 -
- kernel/drivers/can/rtcan_virt.c            | 1 +
- kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
- 5 files changed, 4 insertions(+), 1 deletion(-)
+The patches prior to the one adding the BOSCH C_CAN controller driver,
+are a backporting of commits from the linux kernel that also impacted
+on the driver itself and I found it necessary to add to the series.
 
-diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
-index 387e27cc0..da573aba6 100644
---- a/kernel/drivers/can/mscan/rtcan_mscan.c
-+++ b/kernel/drivers/can/mscan/rtcan_mscan.c
-@@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
- 		out_8(&regs->cantier, 0);
- 		/* Wake up a sender */
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 
- 		if (rtcan_loopback_pending(dev)) {
- 
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index 7569d16f7..3348e8ce0 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 			      &priv->tx_mb->can_ctrl);
- 		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 		if (rtcan_loopback_pending(dev))
- 			rtcan_loopback(dev);
- 		handled = RTDM_IRQ_HANDLED;
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index b17c1709d..dffc6e837 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
- 	goto send_out2;
-     }
- 
--    dev->tx_count++;
-     ret = dev->hard_start_xmit(dev, frame);
- 
-     /* Return number of bytes sent upon successful completion */
-diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
-index c86c17fc3..28e06a9d6 100644
---- a/kernel/drivers/can/rtcan_virt.c
-+++ b/kernel/drivers/can/rtcan_virt.c
-@@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
- 
- 	/* we can transmit immediately again */
- 	rtdm_sem_up(&tx_dev->tx_sem);
-+	tx_dev->tx_count++;
- 
- 	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
- 
-diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-index bd6c0ba5c..0f49551f9 100644
---- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
-+++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-@@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
- 	if (irq_source & SJA_IR_TI) {
- 	    /* Wake up a sender */
- 	    rtdm_sem_up(&dev->tx_sem);
-+	    dev->tx_count++;
- 
- 	    if (rtcan_loopback_pending(dev)) {
- 
+The latest patch, as described in its commit, modified Stephen
+Battazzo's patch [1] with bug fixes, backporting of commits from the
+linux kernel, extension of message objects to 64 and improvements in
+FIFO handling. This series was in fact preceded by the creation of
+patches which I sent to the Linux kernel and which were then accepted:
+
+387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
+28e86e9ab522 ("can: c_can: support tx ring algorithm")
+a54cdbba9dee ("can: c_can: exit c_can_do_tx() early if no frames have been sent")
+5064e40596f4 ("can: c_can: remove struct c_can_priv::priv field")
+06fc143b2ede dt-bindings: net: can: c_can: convert to json-schema
+132f2d45fb23 ("can: c_can: add support to 64 message objects")
+13831ce69c77 ("can: c_can: prepare to up the message objects number")
+fcbded019855 ("can: c_can: use 32-bit write to set arbitration register")
+eddf67115040 ("can: c_can: add a comment about IF_RX interface's use")
+c8a6b44388cb ("can: c_can: fix indentation")
+f65735c203d5 ("can: c_can: remove unused code")
+
+The patch was tested on a custom board mounting an AM335x SOC.
+
+PCI support has not been developed.
+
+[1] http://xenomai.org/pipermail/xenomai/2015-July/034690.html
+
+Changes in v3:
+- Add virtual CAN testsuite
+
+Changes in v2:
+- Expand the commit message to better describe the added API.
+- Drop 'default n' Kconfig
+- Enable the driver for Xenomai CI builds
+- Drop commented code
+- Drop power managemet (pm) code
+
+Dario Binacchi (7):
+  testsuite/smokey: add virtual CAN testsuite
+  drivers/can: add multi message support to sendmsg
+  drivers/can: add CAN_ERR_CRTL_ACTIVE info status
+  drivers/can: add len field to can frame structures
+  drivers/can: add a minimal support to ethtool API
+  drivers/can: fix updating of tx_count statistics
+  drivers/can: add support for Bosch C_CAN controller
+
+ .gitlab-ci.yml                                |    2 +
+ configure.ac                                  |    1 +
+ include/rtdm/uapi/can.h                       |    6 +-
+ kernel/drivers/can/Kconfig                    |    1 +
+ kernel/drivers/can/Makefile                   |    4 +-
+ kernel/drivers/can/README                     |    1 +
+ kernel/drivers/can/c_can/Kconfig              |   15 +
+ kernel/drivers/can/c_can/Makefile             |    8 +
+ kernel/drivers/can/c_can/rtcan_c_can.c        | 1298 +++++++++++++++++
+ kernel/drivers/can/c_can/rtcan_c_can.h        |  255 ++++
+ .../drivers/can/c_can/rtcan_c_can_ethtool.c   |   47 +
+ .../drivers/can/c_can/rtcan_c_can_platform.c  |  461 ++++++
+ kernel/drivers/can/mscan/rtcan_mscan.c        |    1 +
+ kernel/drivers/can/rtcan_dev.h                |    4 +-
+ kernel/drivers/can/rtcan_ethtool.c            |   75 +
+ kernel/drivers/can/rtcan_ethtool.h            |   24 +
+ kernel/drivers/can/rtcan_flexcan.c            |    1 +
+ kernel/drivers/can/rtcan_raw.c                |  240 +--
+ kernel/drivers/can/rtcan_raw_dev.c            |   20 +
+ kernel/drivers/can/rtcan_socket.h             |    5 +-
+ kernel/drivers/can/rtcan_virt.c               |    1 +
+ kernel/drivers/can/sja1000/rtcan_sja1000.c    |    1 +
+ testsuite/smokey/Makefile.am                  |    2 +
+ testsuite/smokey/can-virt/Makefile.am         |    8 +
+ testsuite/smokey/can-virt/virt.c              |  295 ++++
+ 25 files changed, 2659 insertions(+), 117 deletions(-)
+ create mode 100644 kernel/drivers/can/c_can/Kconfig
+ create mode 100644 kernel/drivers/can/c_can/Makefile
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.c
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.h
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_ethtool.c
+ create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_platform.c
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.c
+ create mode 100644 kernel/drivers/can/rtcan_ethtool.h
+ create mode 100644 testsuite/smokey/can-virt/Makefile.am
+ create mode 100644 testsuite/smokey/can-virt/virt.c
+
 -- 
 2.17.1
 
