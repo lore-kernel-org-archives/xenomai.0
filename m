@@ -1,15 +1,9 @@
-References: <20211114100348.1235576-1-rpm@xenomai.org>
- <53f5238c-4227-a4f3-c9c4-993768d0b4f0@siemens.com>
- <878rxponoo.fsf@xenomai.org>
- <784a15c5-fd74-77d5-f42f-82e20173f53f@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] cobalt/syscall: dovetail: enable propagation from
- handle_oob_syscall()
-Date: Mon, 15 Nov 2021 09:56:51 +0100
-In-reply-to: <784a15c5-fd74-77d5-f42f-82e20173f53f@siemens.com>
-Message-ID: <874k8dokxg.fsf@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain
+From: Dario Binacchi <dariobin@libero.it>
+Subject: [PATCH v3 6/7] drivers/can: fix updating of tx_count statistics
+Date: Sun,  5 Dec 2021 21:45:17 +0100
+Message-Id: <20211205204518.13259-5-dariobin@libero.it>
+In-Reply-To: <20211205204518.13259-1-dariobin@libero.it>
+References: <20211205204518.13259-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,67 +12,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>
 
+As in the Linux kernel, the counter is updated only after the message
+has been really transmitted.
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+---
 
-> On 15.11.21 08:57, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 14.11.21 11:03, Philippe Gerum via Xenomai wrote:
->>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>
->>>> Since release v5.10.76-dovetail3, handle_oob_syscall() should return a
->>>> propagation status just like handle_pipelined_syscall(), with the same
->>>> semantics. This is a requirement for properly handling our syscall
->>>> format and the new prctl-based one concurrently. Fix up the signature
->>>> accordingly.  This status is ignored on earlier Dovetail releases.
->>>>
->>>> In addition, CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE is checked for
->>>> enabling our current syscall format, which defaults to y at the
->>>> moment.  Force it on regardless to allow for detection when this call
->>>> format is eventually deprecated upstream.
->>>>
->>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>> ---
->>>>  kernel/cobalt/dovetail/syscall.c | 5 ++---
->>>>  scripts/Kconfig.frag             | 1 +
->>>>  2 files changed, 3 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
->>>> index cec6c0244..440c069d5 100644
->>>> --- a/kernel/cobalt/dovetail/syscall.c
->>>> +++ b/kernel/cobalt/dovetail/syscall.c
->>>> @@ -19,8 +19,7 @@ int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
->>>>  	return handle_head_syscall(stage == &inband_stage, regs);
->>>>  }
->>>>  
->>>> -void handle_oob_syscall(struct pt_regs *regs)
->>>> +int handle_oob_syscall(struct pt_regs *regs)
->>>>  {
->>>> -	int ret = handle_head_syscall(false, regs);
->>>> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
->>>> +	return handle_head_syscall(false, regs);
->>>>  }
->>>
->>> This unfortunately makes the Xenomai 3.2 release incompatible with
->>> latest stable Dovetail. I would now have to hectically roll out 3.2.1
->>> and cross fingers that people will use it. Better than before, but still
->>> not smooth.
->> 
->> Did you try this patch? What went wrong?
->> 
->
-> The patch passed testing and is not the issue. That is in the fact that
-> we must update to callback in order to have stable syscall processing
-> again because 3.2 would return random codes for it and can fail subtly.
->
+(no changes since v1)
 
-Do you have a failure scenario in mind?
+ kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
+ kernel/drivers/can/rtcan_flexcan.c         | 1 +
+ kernel/drivers/can/rtcan_raw.c             | 1 -
+ kernel/drivers/can/rtcan_virt.c            | 1 +
+ kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
+ 5 files changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
+index 387e27cc0..da573aba6 100644
+--- a/kernel/drivers/can/mscan/rtcan_mscan.c
++++ b/kernel/drivers/can/mscan/rtcan_mscan.c
+@@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
+ 		out_8(&regs->cantier, 0);
+ 		/* Wake up a sender */
+ 		rtdm_sem_up(&dev->tx_sem);
++		dev->tx_count++;
+ 
+ 		if (rtcan_loopback_pending(dev)) {
+ 
+diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
+index 7569d16f7..3348e8ce0 100644
+--- a/kernel/drivers/can/rtcan_flexcan.c
++++ b/kernel/drivers/can/rtcan_flexcan.c
+@@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
+ 			      &priv->tx_mb->can_ctrl);
+ 		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
+ 		rtdm_sem_up(&dev->tx_sem);
++		dev->tx_count++;
+ 		if (rtcan_loopback_pending(dev))
+ 			rtcan_loopback(dev);
+ 		handled = RTDM_IRQ_HANDLED;
+diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+index b17c1709d..dffc6e837 100644
+--- a/kernel/drivers/can/rtcan_raw.c
++++ b/kernel/drivers/can/rtcan_raw.c
+@@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
+ 	goto send_out2;
+     }
+ 
+-    dev->tx_count++;
+     ret = dev->hard_start_xmit(dev, frame);
+ 
+     /* Return number of bytes sent upon successful completion */
+diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
+index c86c17fc3..28e06a9d6 100644
+--- a/kernel/drivers/can/rtcan_virt.c
++++ b/kernel/drivers/can/rtcan_virt.c
+@@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
+ 
+ 	/* we can transmit immediately again */
+ 	rtdm_sem_up(&tx_dev->tx_sem);
++	tx_dev->tx_count++;
+ 
+ 	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
+ 
+diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+index bd6c0ba5c..0f49551f9 100644
+--- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
++++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+@@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
+ 	if (irq_source & SJA_IR_TI) {
+ 	    /* Wake up a sender */
+ 	    rtdm_sem_up(&dev->tx_sem);
++	    dev->tx_count++;
+ 
+ 	    if (rtcan_loopback_pending(dev)) {
+ 
 -- 
-Philippe.
+2.17.1
+
 
