@@ -1,9 +1,12 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v3 4/7] drivers/can: add len field to can frame structures
-Date: Sun,  5 Dec 2021 21:45:15 +0100
-Message-Id: <20211205204518.13259-4-dariobin@libero.it>
-In-Reply-To: <20211205204518.13259-1-dariobin@libero.it>
-References: <20211205204518.13259-1-dariobin@libero.it>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: questions about comments on
+ https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
+Date: Tue, 7 Dec 2021 03:11:21 +0000
+Message-ID: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,54 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Michael Trimarchi <michael@amarulasolutions.com>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, Wolfgang Grandegger <wg@grandegger.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-As mentioned in Linux, can_dlc is a misleading name that suggests a code
-instead of a length. Adding the len field can_dlc becomes deprecated too.
-
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
-
-(no changes since v1)
-
- include/rtdm/uapi/can.h           | 5 ++++-
- kernel/drivers/can/rtcan_socket.h | 5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/include/rtdm/uapi/can.h b/include/rtdm/uapi/can.h
-index 1c35a9b9d..0a74c764c 100644
---- a/include/rtdm/uapi/can.h
-+++ b/include/rtdm/uapi/can.h
-@@ -318,7 +318,10 @@ typedef struct can_frame {
- 	can_id_t can_id;
- 
- 	/** Size of the payload in bytes */
--	uint8_t can_dlc;
-+	union {
-+		uint8_t can_dlc;
-+		uint8_t len;
-+	};
- 
- 	/** Payload data bytes */
- 	uint8_t data[8] __attribute__ ((aligned(8)));
-diff --git a/kernel/drivers/can/rtcan_socket.h b/kernel/drivers/can/rtcan_socket.h
-index cf4422a1b..35ce13c3c 100644
---- a/kernel/drivers/can/rtcan_socket.h
-+++ b/kernel/drivers/can/rtcan_socket.h
-@@ -76,7 +76,10 @@ struct rtcan_rb_frame {
-     /* DLC (between 0 and 15) and mark if frame has got a timestamp. The
-      * existence of a timestamp is indicated by the RTCAN_HAS_TIMESTAMP
-      * bit. */
--    unsigned char       can_dlc;
-+    union {
-+        unsigned char   can_dlc;
-+        unsigned char   len;
-+    };
- 
-     /* Data bytes */
-     uint8_t             data[8];
--- 
-2.17.1
-
-
+SGkgSmFuCgpJIGhhdmUgc29tZSBxdWVzdGlvbnMgYWJvdXQgY29tbWVudHMgb24gIGh0dHBzOi8v
+Z2l0bGFiLmNvbS9YZW5vbWFpL3hlbm9tYWktaGFja2VyLXNwYWNlLy0vaXNzdWVzLzMzIGFuZCBu
+ZWVkIHlvdXIgaGVscCB0byBjb21tZW50IG1vcmUuCgoxLiBJIGRvIG5vdCBxdWl0ZSB1bmRlcnN0
+YW5kIHRoZSByZXF1aXJlbWVudCAidmlzdWFsaXplIHRhc2sgc3dpdGNoZXMgY29ycmVjdGx5IGlu
+IEtlcm5lbHNoYXJrIChjb2xvciBpbiBDUFUgYmFyIGlzIG5vdCB1cGRhdGluZyBvbiBjb2JhbHRf
+c3dpdGNoX2NvbnRleHQpIi4KCldoZW4gSSBjbGljayB0aGUgY29iYWx0X3N3aXRjaF9jb250ZXh0
+IGV2ZW50IGxpc3RlZCBpbiB0aGUgZXZlbnQgdGFibGUgb24gdGhlIHNlY29uZCBoYWxmIGluIHRo
+ZSBrZXJuZWxzaGFyaywgYWN0dWFsbHkgY29sb3IgaW4gY3B1IGJhciBpcyB1cGRhdGluZyB0byAK
+Z3JlZW4gYmVjYXVzZSB0aGVyZSBpcyBsb25nIGdyZWVuIHZlcnRpY2FsICBsaW5lIHRvIG1hcmsg
+Zm9jdXNlZCBldmVudCBsaWtlIGF0dGFjaGVkIHBpY3R1cmUuICBJbiBhZGRpdGlvbiAsIEluIHNw
+aXRlIG9mIGZvY3VzZWQgdGhpbmcsICBjb2xvcnMgbWFpbmx5IApjaGFuZ2UgZGVwZW5kaW5nIG9u
+IHdoYXQgdGFzayBpcyBydW5uaW5nIGZvciBjcHUgcGxvdHMgaW4ga2VybmVsc2hhcmsuIHdoZW4g
+Y29iYWx0X3N3aXRjaF9jb250ZXh0IGlzIHRyYWNlZCwgaXQgc3RpbGwgYmUgaW4gdGhlIHByZXYg
+Y29udGV4dCBhbmQgaXRzIApjb2xvciBpcyBzYW1lIHdpdGggdGFzayBwcmV2IGluIGtlcm5lbHNo
+YXJrLiBEbyB3ZSB3YW50IHRvIHVwZGF0ZSBjb2xvciBvZiAgY29iYWx0X3N3aXRjaF9jb250ZXh0
+ICB0byBzcGVjaWZpYyBjb2xvciBkaWZmZXJlbnQgZnJvbSBhbGwgdGFza3MgZXZlbiBpZiB0aGVy
+ZSBpcyBubyAKZm9jdXNlZCB0aGluZz8gIFdoYXQgcmVzdWx0IGRvIHdlIG5lZWQgdG8gYWNoaWV2
+ZSB3aGVuIHRoZXJlIGlzIGNvYmFsdF9zd2l0Y2hfY29udGV4dCwgQ291bGQgeW91IGJlIG1vcmUg
+c3BlY2lmaWM/CgoyLiBSZWdhcmRpbmcgIHRoZSByZXF1aXJlbWVudCAiIHZpc3VhbGl6ZSBSVC9O
+b24tUlQgKG91dC1vZi1iYW5kL2luLWJhbmQpIHN0YXRlIGluIENQVSBiYXIpIiwKICAgIDIuMS4g
+RG8gd2UgbmVlZCB0byBkaWZmZXJlbnRpYXRlIHN0YXRlICBydW5uaW5nIGEgTGludXggdGFzayBv
+dXQtb2YtYmFuZCBhbmQgcnVubmluZyB3aGF0ZXZlciBjb2RlIGZyb20gdGhlIG91dC1vZi1iYW5k
+IGV4ZWN1dGlvbiBzdGFnZSBhcyBkZXNjcmliZWQgaW4gCiAgICAgICAgICAgICAiIFdoYXQgeW91
+IHJlYWxseSBuZWVkIHRvIGtub3cgYXQgdGhpcyBwb2ludCIgb2YgIGh0dHBzOi8vZXZscHJvamVj
+dC5vcmcvZG92ZXRhaWwvYWx0c2NoZWQvPwogICAgMi4yIFdoYXQgc3RhdGUgZG8gd2Ugd2FudCB0
+byBzaG93ICBpbiBDUFUgYmFyPyBEaWZmZXJlbnQgY29sb3IgY292ZXJpbmcgdGhlIHNpemUgb2Yg
+IFJUL05vbi1SVCBzdGF0ZSBvdGhlciB0aGFuIGFsbCB0YXNrcyBhbmQgQ1BVcz8gIElmIHNvLCB3
+ZSBtYXkgYXNrIGZvciBhIHBsdWdpbgogICAgICAgICAgaW4ga2VybmVsc2hhcmsgLCB3aGljaCB3
+b3VsZCByYWlzZSBzaW1pbGFyIHF1ZXN0aW9uIGFzIHlvdSBtZW50aW9uZWQgaW4gY29tbWVudHMu
+CgpGb3IgdGhlIG90aGVyIHR3byBhc3BlY3RzLCBJIHN0aWxsIG5lZWQgbW9yZSB0aW1lIHRvIGRv
+IHJlc2VhcmNoLiAKICAKClJlZ2FyZHMKCkhvbmd6aGFuIENoZW4KCi0tLS0tLS0tLS0tLS0tIG5l
+eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
+Li4uCk5hbWU6IElNR180OTQxLkpQRwpUeXBlOiBpbWFnZS9qcGVnClNpemU6IDUyNDMzOTIgYnl0
+ZXMKRGVzYzogSU1HXzQ5NDEuSlBHClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDIxMTIwNy80MjkxYjExNy9hdHRhY2htZW50LmpwZT4K
