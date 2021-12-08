@@ -1,17 +1,14 @@
-Subject: Re: [PATCH] net/drivers: fec: Update fec driver for xenomai 3 + linux
- kernel 5.10 and add I.MX8 support
-References: <20211126080247.3392-1-jean-baptiste.tredez@ba-healthcare.com>
- <9c940d0d-8be1-9a37-4c7c-060a00716ed1@siemens.com>
- <f27da059-677e-60d7-cd92-ace953b0fdcf@siemens.com>
- <58af3705-b52e-7b51-1d63-f30ac56f8f11@siemens.com>
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@ba-healthcare.com>
-Message-ID: <a1476131-3678-66a3-82da-9ab5ae02540b@ba-healthcare.com>
-Date: Tue, 7 Dec 2021 18:39:08 +0100
-In-Reply-To: <58af3705-b52e-7b51-1d63-f30ac56f8f11@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: questions about comments on
+ https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
+Date: Wed, 8 Dec 2021 05:44:26 +0000
+Message-ID: <MN2PR11MB428537A90BEDD278DC5E0176F26F9@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+In-Reply-To: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
 Content-Language: en-US
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,49 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
 
-Le 03/12/2021 à 12:29, Florian Bezdeka a écrit :
-> On 03.12.21 12:12, Jan Kiszka via Xenomai wrote:
->> On 01.12.21 20:04, Jan Kiszka via Xenomai wrote:
->>> On 26.11.21 09:02, Jean-Baptiste Trédez via Xenomai wrote:
->>>> Current fec driver does not build on xenomai 3 and on recent kernel (ex : 5.10). Fec driver was completely rewritten on mainline kernel.
->>>> This work remove old fec driver, port driver from mainline linux 5.10 to xenomai 3.x and add I.MX8 support.
->>>>
->>>> Tested on i.MX8Q target
->>>>
->>> Thanks for the contribution! I assume you also tested this driver with
->>> debug options on to catch any potential locking issues (sorry, TL;DR -
->>> with "R" = "review")?
-The driver was mostly tested with user application and latency check. 
-Some tests were done with debug options. Did you think of a particular 
-debug option ?
->>> Can we also make add this driver to our CI build (.gitlab-ci.yml)? Which
->>> options need to be on in addition to make it compile?
->>>
->> It turns out that all needed switches were already set - and... the
->> build fails for 5.4:
->>
->> https://gitlab.com/Xenomai/xenomai-hacker-space/-/jobs/1846388391
-> Taken from the job log:
 >
-> drivers/xenomai/net/drivers/freescale/fec_main.c:737:10: error: void
-> value not ignored as it ought to be
->    737 |  hdr_len = tso_start(skb, &tso);
+>-----Original Message-----
+>From: Chen, Hongzhan
+>Sent: Tuesday, December 7, 2021 11:11 AM
+>To: xenomai@xenomai.org<mailto:xenomai@xenomai.org>; Jan Kiszka jan.kiszka=
+@siemens.com<mailto:jan.kiszka@siemens.com>
+>Subject: questions about comments on https://gitlab.com/Xenomai/xenomai-ha=
+cker-space/-/issues/33
 >
-> I guess there is more work to do. The return type of tso_start for
-> example changed in Linux 5.9 from void to int. So we have to deal with
-> different Linux versions.
+>Hi Jan
 >
-I can send a new patch to fix build errors for 5.4.
->> Could you have a look and fix this up?
->>
->> Also, it looks like we do not build for 4.19
->> (https://gitlab.com/Xenomai/xenomai-hacker-space/-/jobs/1846388392). If
->> that kernel had no support for the target SoC, then this is fine, though.
->>
->> Thanks,
->> Jan
->>
+>I have some questions about comments on  https://gitlab.com/Xenomai/xenoma=
+i-hacker-space/-/issues/33 and need your help to comment more.
+>
+>1. I do not quite understand the requirement "visualize task switches corr=
+ectly in Kernelshark (color in CPU bar is not updating on cobalt_switch_con=
+text)".
+>
+>When I click the cobalt_switch_context event listed in the event table on =
+the second half in the kernelshark, actually color in cpu bar is updating t=
+o
+>green because there is long green vertical  line to mark focused event lik=
+e attached picture.  In addition , In spite of focused thing,  colors mainl=
+y
+>change depending on what task is running for cpu plots in kernelshark. whe=
+n cobalt_switch_context is traced, it still be in the prev context and its
+>color is same with task prev in kernelshark. Do we want to update color of=
+  cobalt_switch_context  to specific color different from all tasks even if=
+ there is no
+>focused thing?  What result do we need to achieve when there is cobalt_swi=
+tch_context, Could you be more specific?
 
+After I understand what does means about sched_switch in kernelshark, I gue=
+ss that we need to use cobalt_switch_context as dividing line for RT/non-RT=
+ tasks similar with sched_switch after we use xenomai.
+
+Regards
+
+Hongzhan Chen
+
+>
+>2. Regarding  the requirement " visualize RT/Non-RT (out-of-band/in-band) =
+state in CPU bar)",
+>    2.1. Do we need to differentiate state  running a Linux task out-of-ba=
+nd and running whatever code from the out-of-band execution stage as descri=
+bed in
+>             " What you really need to know at this point" of  https://evl=
+project.org/dovetail/altsched/?
+>    2.2 What state do we want to show  in CPU bar? Different color coverin=
+g the size of  RT/Non-RT state other than all tasks and CPUs?  If so, we ma=
+y ask for a plugin
+>          in kernelshark , which would raise similar question as you menti=
+oned in comments.
+>
+>For the other two aspects, I still need more time to do research.
+>
+>
+>Regards
+>
+>Hongzhan Chen
