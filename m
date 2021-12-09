@@ -1,12 +1,12 @@
-Subject: Re: questions about comments on
- https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
-References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+Subject: Re: [xenomai-images] [PATCH 1/1] Changes to support sbuild-based Isar
+References: <20211209073619.17698-1-ubely@ilbers.de>
+ <20211209073619.17698-2-ubely@ilbers.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
-Date: Thu, 9 Dec 2021 10:34:50 +0100
+Message-ID: <094d5cdf-0528-009b-28ba-0241116f3d86@siemens.com>
+Date: Thu, 9 Dec 2021 10:35:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20211209073619.17698-2-ubely@ilbers.de>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,40 +17,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Uladzimir Bely <ubely@ilbers.de>, xenomai@xenomai.org
 
-On 07.12.21 04:11, Chen, Hongzhan wrote:
-> Hi Jan
+On 09.12.21 08:36, Uladzimir Bely via Xenomai wrote:
+> These patch is required to build Isar from 'ubely/sbuild' branch,
+> e.g. refspec: 37a71e72c7b8e9ae7e9f6a402ecdc6ff66eab8c4
 > 
-> I have some questions about comments on  https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33 and need your help to comment more.
+> Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
+> ---
+>  recipes-kernel/linux/linux-xenomai.inc | 14 ++++++++------
+>  recipes-xenomai/xenomai/xenomai.inc    |  4 +---
+>  2 files changed, 9 insertions(+), 9 deletions(-)
 > 
-> 1. I do not quite understand the requirement "visualize task switches correctly in Kernelshark (color in CPU bar is not updating on cobalt_switch_context)".
-> 
-> When I click the cobalt_switch_context event listed in the event table on the second half in the kernelshark, actually color in cpu bar is updating to 
-> green because there is long green vertical  line to mark focused event like attached picture.  In addition , In spite of focused thing,  colors mainly 
-> change depending on what task is running for cpu plots in kernelshark. when cobalt_switch_context is traced, it still be in the prev context and its 
-> color is same with task prev in kernelshark. Do we want to update color of  cobalt_switch_context  to specific color different from all tasks even if there is no 
-> focused thing?  What result do we need to achieve when there is cobalt_switch_context, Could you be more specific?
-> 
+> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+> index 1852bf6..d68c7a1 100644
+> --- a/recipes-kernel/linux/linux-xenomai.inc
+> +++ b/recipes-kernel/linux/linux-xenomai.inc
+> @@ -28,7 +28,7 @@ def get_commit(d):
+>  
+>  LINUX_COMMIT ?= "${@get_commit(d)}"
+>  
+> -dpkg_runbuild_prepend() {
+> +dpkg_configure_kernel_append() {
+>  	case ${DISTRO_ARCH} in
+>  	armhf)
+>  		ARCH=arm
+> @@ -46,9 +46,11 @@ dpkg_runbuild_prepend() {
+>  	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
+>  			 ${PV} ${LINUX_COMMIT})
+>  
+> -	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
+> -		--linux=${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=$ARCH \
+> -		--outpatch=${WORKDIR}/xenomai-kernel.patch
+> -	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
+> -		-p1 -i ${WORKDIR}/xenomai-kernel.patch
+> +    SBUILD_PREBUILD="${SBUILD_PREBUILD} &&                          \
+> +        touch /home/builder/${PN}/file.touch &&                     \
+> +        /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh    \
+> +            --linux=%p --arch=${ARCH}                               \
+> +            --outpatch=/home/builder/${PN}/xenomai-kernel.patch &&  \
+> +        patch -d %p -p1 -i /home/builder/${PN}/xenomai-kernel.patch \
+> +    "
 
-I assume this one is resolved now, at least regarding what the goal
-would be.
+Inconsistent indention.
 
-> 2. Regarding  the requirement " visualize RT/Non-RT (out-of-band/in-band) state in CPU bar)",
->     2.1. Do we need to differentiate state  running a Linux task out-of-band and running whatever code from the out-of-band execution stage as described in 
->              " What you really need to know at this point" of  https://evlproject.org/dovetail/altsched/?
->     2.2 What state do we want to show  in CPU bar? Different color covering the size of  RT/Non-RT state other than all tasks and CPUs?  If so, we may ask for a plugin
->           in kernelshark , which would raise similar question as you mentioned in comments.
+>  }
+> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+> index 8f13767..454dd7b 100644
+> --- a/recipes-xenomai/xenomai/xenomai.inc
+> +++ b/recipes-xenomai/xenomai/xenomai.inc
+> @@ -41,7 +41,5 @@ do_prepare_build() {
+>  dpkg_runbuild_prepend() {
+>      bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
+>                       ${PV} ${COMMIT})
+> -
+> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
+> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
+> +    SBUILD_PREBUILD="cd %p; scripts/bootstrap"
 
-I suspect it would be best to decouple to stage state (in-band, oob)
-from the current task, maybe by adding another bar underneath the task
-bar for each CPU that shows this state.
-
-In fact, visualizing the dovetail state could be seen as another use
-case for visualizing things like interrupt masks of preemption locks
-that Linux upstream has. Maybe there are already ideas or even bits to
-make that possible, and would could re-used them. Or we could sell our
-demand via enabling those other scenarios as well...
+Could we rather provide an abstract interface to users, not carrying
+SBUILD in its name? I'm concerned that the current will make it hard to
+switch builders in the future if we may have to.
 
 Jan
 
