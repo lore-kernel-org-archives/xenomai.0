@@ -1,17 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+From: Uladzimir Bely <ubely@ilbers.de>
 Subject: Re: [xenomai-images] [PATCH 1/1] Changes to support sbuild-based Isar
-Date: Thu, 9 Dec 2021 09:48:18 +0000
-Message-ID: <31e359cdfa8e1b2c4005a1c04b36c282fb1b1acd.camel@siemens.com>
+Date: Thu, 09 Dec 2021 13:11:46 +0300
+Message-ID: <2120415.hkbZ0PkbqX@hp>
+In-Reply-To: <a76324c5f3ce543c2e3626cb2b2a2adda8f55089.camel@siemens.com>
 References: <20211209073619.17698-1-ubely@ilbers.de>
  <20211209073619.17698-2-ubely@ilbers.de>
  <a76324c5f3ce543c2e3626cb2b2a2adda8f55089.camel@siemens.com>
- <16727ccf69ad0ae4fe3765fb6189de3bffea4f48.camel@siemens.com>
-In-Reply-To: <16727ccf69ad0ae4fe3765fb6189de3bffea4f48.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5CC49F61B17B2A4689810A31F39EC4DE@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,64 +17,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "ubely@ilbers.de" <ubely@ilbers.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 
-T24gVGh1LCAyMDIxLTEyLTA5IGF0IDA5OjQzICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBPbiBUaHUsIDIwMjEtMTItMDkgYXQgMDk6NDIgKzAwMDAsIEJlemRl
-a2EsIEZsb3JpYW4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gT24gVGh1LCAyMDIxLTEyLTA5IGF0
-IDA4OjM2ICswMTAwLCBVbGFkemltaXIgQmVseSB2aWEgWGVub21haSB3cm90ZToNCj4gPiA+IFRo
-ZXNlIHBhdGNoIGlzIHJlcXVpcmVkIHRvIGJ1aWxkIElzYXIgZnJvbSAndWJlbHkvc2J1aWxkJyBi
-cmFuY2gsDQo+ID4gPiBlLmcuIHJlZnNwZWM6IDM3YTcxZTcyYzdiOGU5YWU3ZTlmNmE0MDJlY2Rj
-NmZmNjZlYWI4YzQNCj4gPiANCj4gPiBXZSdyZSB1c2luZyB0aGF0LCBzbyB3aHkgZG8gd2UgbmVl
-ZCB0byBwYXRjaD8gSXMgdGhhdCByZWxhdGVkIHRvIHRoZQ0KPiAgICAgICAgXi0gbm90DQoNClRo
-ZSBjb3ZlciBsZXR0ZXIgKHdoaWNoIG1hZGUgaXQgaW50byBteSBqdW5rIGZvbGRlcikgZXhwbGFp
-bnMgdGhhdC4gSQ0KZmVhciB0aGF0IFNCVUlMRCBzdHVmZiBpcyBnb2luZyB0byBicmVhayBuZWFy
-bHkgYWxsIGRvd25zdHJlYW0gbGF5ZXJzDQp3aGVuIHhlbm9tYWktaW1hZ2VzIGlzIGFmZmVjdGVk
-IGFzIHdlbGwuIFNvIHRoZSBxdWVzdGlvbiBvZiAibm8gd2F5IHRvDQpwcmV2ZW50IGRvd25zdHJl
-YW0gbGF5ZXJzIHRvIGJyZWFrPyIgc3RpbGwgc3RhbmRzLg0KDQo+IA0KPiA+IG5ldyBTQlVJTEQg
-ZmVhdHVyZSBpbiBJU0FSPyBObyB3YXkgdG8gaGFuZGxlIHRoYXQgd2l0aG91dCBicmVha2luZyBt
-YW55DQo+ID4gZG93bnN0cmVhbSBsYXllcnM/DQo+ID4gDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1v
-ZmYtYnk6IFVsYWR6aW1pciBCZWx5IDx1YmVseUBpbGJlcnMuZGU+DQo+ID4gPiAtLS0NCj4gPiA+
-ICByZWNpcGVzLWtlcm5lbC9saW51eC9saW51eC14ZW5vbWFpLmluYyB8IDE0ICsrKysrKysrLS0t
-LS0tDQo+ID4gPiAgcmVjaXBlcy14ZW5vbWFpL3hlbm9tYWkveGVub21haS5pbmMgICAgfCAgNCAr
-LS0tDQo+ID4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25z
-KC0pDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1naXQgYS9yZWNpcGVzLWtlcm5lbC9saW51eC9saW51
-eC14ZW5vbWFpLmluYyBiL3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+
-ID4gPiBpbmRleCAxODUyYmY2Li5kNjhjN2ExIDEwMDY0NA0KPiA+ID4gLS0tIGEvcmVjaXBlcy1r
-ZXJuZWwvbGludXgvbGludXgteGVub21haS5pbmMNCj4gPiA+ICsrKyBiL3JlY2lwZXMta2VybmVs
-L2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+ID4gPiBAQCAtMjgsNyArMjgsNyBAQCBkZWYgZ2V0
-X2NvbW1pdChkKToNCj4gPiA+ICANCj4gPiA+ICBMSU5VWF9DT01NSVQgPz0gIiR7QGdldF9jb21t
-aXQoZCl9Ig0KPiA+ID4gIA0KPiA+ID4gLWRwa2dfcnVuYnVpbGRfcHJlcGVuZCgpIHsNCj4gPiA+
-ICtkcGtnX2NvbmZpZ3VyZV9rZXJuZWxfYXBwZW5kKCkgew0KPiA+ID4gIAljYXNlICR7RElTVFJP
-X0FSQ0h9IGluDQo+ID4gPiAgCWFybWhmKQ0KPiA+ID4gIAkJQVJDSD1hcm0NCj4gPiA+IEBAIC00
-Niw5ICs0NiwxMSBAQCBkcGtnX3J1bmJ1aWxkX3ByZXBlbmQoKSB7DQo+ID4gPiAgCWJicGxhaW4g
-JChwcmludGYgImxpbnV4LXhlbm9tYWktJXM6IEJ1aWxkaW5nIHJldmlzaW9uICUuMjBzXG4iIFwN
-Cj4gPiA+ICAJCQkgJHtQVn0gJHtMSU5VWF9DT01NSVR9KQ0KPiA+ID4gIA0KPiA+ID4gLQkke0JV
-SUxEQ0hST09UX0RJUn0vdXNyL3NyYy94ZW5vbWFpLWtlcm5lbC1zb3VyY2Uvc2NyaXB0cy9wcmVw
-YXJlLWtlcm5lbC5zaCBcDQo+ID4gPiAtCQktLWxpbnV4PSR7QlVJTERDSFJPT1RfRElSfS8ke1BQ
-fS8ke1BQU30gLS1hcmNoPSRBUkNIIFwNCj4gPiA+IC0JCS0tb3V0cGF0Y2g9JHtXT1JLRElSfS94
-ZW5vbWFpLWtlcm5lbC5wYXRjaA0KPiA+ID4gLQlwYXRjaCAtZCAke0JVSUxEQ0hST09UX0RJUn0v
-JHtQUH0vJHtQUFN9IFwNCj4gPiA+IC0JCS1wMSAtaSAke1dPUktESVJ9L3hlbm9tYWkta2VybmVs
-LnBhdGNoDQo+ID4gPiArICAgIFNCVUlMRF9QUkVCVUlMRD0iJHtTQlVJTERfUFJFQlVJTER9ICYm
-ICAgICAgICAgICAgICAgICAgICAgICAgICBcDQo+ID4gPiArICAgICAgICB0b3VjaCAvaG9tZS9i
-dWlsZGVyLyR7UE59L2ZpbGUudG91Y2ggJiYgICAgICAgICAgICAgICAgICAgICBcDQo+ID4gDQo+
-ID4gV2hlcmUgZG9lcyB0aGlzIHBhdGhzIGNvbWUgZnJvbT8gTG9va3Mga2FzIG9yIGV2ZW4ga2Fz
-LWNvbnRhaW5lcg0KPiA+IHJlbGF0ZWQuDQo+ID4gDQo+ID4gPiArICAgICAgICAvdXNyL3NyYy94
-ZW5vbWFpLWtlcm5lbC1zb3VyY2Uvc2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaCAgICBcDQo+ID4g
-PiArICAgICAgICAgICAgLS1saW51eD0lcCAtLWFyY2g9JHtBUkNIfSAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBcDQo+ID4gPiArICAgICAgICAgICAgLS1vdXRwYXRjaD0vaG9tZS9idWls
-ZGVyLyR7UE59L3hlbm9tYWkta2VybmVsLnBhdGNoICYmICBcDQo+ID4gPiArICAgICAgICBwYXRj
-aCAtZCAlcCAtcDEgLWkgL2hvbWUvYnVpbGRlci8ke1BOfS94ZW5vbWFpLWtlcm5lbC5wYXRjaCBc
-DQo+ID4gPiArICAgICINCj4gPiA+ICB9DQo+ID4gPiBkaWZmIC0tZ2l0IGEvcmVjaXBlcy14ZW5v
-bWFpL3hlbm9tYWkveGVub21haS5pbmMgYi9yZWNpcGVzLXhlbm9tYWkveGVub21haS94ZW5vbWFp
-LmluYw0KPiA+ID4gaW5kZXggOGYxMzc2Ny4uNDU0ZGQ3YiAxMDA2NDQNCj4gPiA+IC0tLSBhL3Jl
-Y2lwZXMteGVub21haS94ZW5vbWFpL3hlbm9tYWkuaW5jDQo+ID4gPiArKysgYi9yZWNpcGVzLXhl
-bm9tYWkveGVub21haS94ZW5vbWFpLmluYw0KPiA+ID4gQEAgLTQxLDcgKzQxLDUgQEAgZG9fcHJl
-cGFyZV9idWlsZCgpIHsNCj4gPiA+ICBkcGtnX3J1bmJ1aWxkX3ByZXBlbmQoKSB7DQo+ID4gPiAg
-ICAgIGJicGxhaW4gJChwcmludGYgInhlbm9tYWktJXM6IEJ1aWxkaW5nIHJldmlzaW9uICUuMjBz
-XG4iIFwNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAke1BWfSAke0NPTU1JVH0pDQo+ID4g
-PiAtDQo+ID4gPiAtICAgIHN1ZG8gY2hyb290IC0tdXNlcnNwZWM9JCggaWQgLXUgKTokKCBpZCAt
-ZyApICR7QlVJTERDSFJPT1RfRElSfSBcDQo+ID4gPiAtICAgICAgICBzaCAtYyAiY2QgJHtQUH0v
-JHtQUFN9OyBzY3JpcHRzL2Jvb3RzdHJhcCINCj4gPiA+ICsgICAgU0JVSUxEX1BSRUJVSUxEPSJj
-ZCAlcDsgc2NyaXB0cy9ib290c3RyYXAiDQo+ID4gPiAgfQ0KPiA+IA0KPiANCg0K
+In mail from =D1=87=D0=B5=D1=82=D0=B2=D0=B5=D1=80=D0=B3, 9 =D0=B4=D0=B5=D0=
+=BA=D0=B0=D0=B1=D1=80=D1=8F 2021 =D0=B3. 12:42:44 +03 user Bezdeka, Florian=
+=20
+wrote:
+> On Thu, 2021-12-09 at 08:36 +0100, Uladzimir Bely via Xenomai wrote:
+>=20
+> > These patch is required to build Isar from 'ubely/sbuild' branch,
+> > e.g. refspec: 37a71e72c7b8e9ae7e9f6a402ecdc6ff66eab8c4
+>=20
+>=20
+> We're using that, so why do we need to patch? Is that related to the
+> new SBUILD feature in ISAR? No way to handle that without breaking many
+> downstream layers?
+>=20
+>=20
+> >=20
+> > Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
+> > ---
+> >=20
+> >  recipes-kernel/linux/linux-xenomai.inc | 14 ++++++++------
+> >  recipes-xenomai/xenomai/xenomai.inc    |  4 +---
+> >  2 files changed, 9 insertions(+), 9 deletions(-)
+> >=20
+> >=20
+> > diff --git a/recipes-kernel/linux/linux-xenomai.inc
+> > b/recipes-kernel/linux/linux-xenomai.inc
+ index 1852bf6..d68c7a1 100644
+> > --- a/recipes-kernel/linux/linux-xenomai.inc
+> > +++ b/recipes-kernel/linux/linux-xenomai.inc
+> > @@ -28,7 +28,7 @@ def get_commit(d):
+> >=20
+> > =20
+> >  LINUX_COMMIT ?=3D "${@get_commit(d)}"
+> > =20
+> >=20
+> > -dpkg_runbuild_prepend() {
+> > +dpkg_configure_kernel_append() {
+> >=20
+> >  	case ${DISTRO_ARCH} in
+> >  	armhf)
+> >  =09
+> >  		ARCH=3Darm
+> >=20
+> > @@ -46,9 +46,11 @@ dpkg_runbuild_prepend() {
+> >=20
+> >  	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
+> >  =09
+> >  			 ${PV} ${LINUX_COMMIT})
+> > =20
+> > =20
+> >=20
+> > -	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-
+kernel.
+> > sh \
+ -		--linux=3D${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=3D$ARCH \
+> > -		--outpatch=3D${WORKDIR}/xenomai-kernel.patch
+> > -	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
+> > -		-p1 -i ${WORKDIR}/xenomai-kernel.patch
+> > +    SBUILD_PREBUILD=3D"${SBUILD_PREBUILD} &&                          \
+> > +        touch /home/builder/${PN}/file.touch &&                     \
+>=20
+>=20
+> Where does this paths come from? Looks kas or even kas-container
+> related.
+>=20
+
+It's coming from current 'sbuild' series.
+
+The problem here is the following. We are building 'linux-xenomai` here and=
+=20
+relay on some '${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/
+prepare-kernel.sh' script that is not a part of 'linux-xenomai' recipe.=20
+Buildchroot allows to do do that because it doesn't provide 'clean room' bu=
+ild=20
+environment, so it is already 'polluted' by previously installed packages.=
+=20
+That's why we have this prepare-kernel.sh preinstalled and can run at any=20
+moment.
+
+With sbuild, package is compiled in clean environment, so we can't directly=
+=20
+reuse files belonging to other packages. To do that, we use SBUILD_PREBUILD=
+=20
+variable to keep command that should be passed later to sbuild compilation.=
+=20
+So, sbuild internally first install dependencies in clean environment and=20
+executes this command at some internal stage.
+
+>=20
+> > +        /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh    \
+> > +            --linux=3D%p --arch=3D${ARCH}                             =
+  \
+> > +            --outpatch=3D/home/builder/${PN}/xenomai-kernel.patch &&  \
+> > +        patch -d %p -p1 -i /home/builder/${PN}/xenomai-kernel.patch \
+> > +    "
+> >=20
+> >  }
+> >=20
+> > diff --git a/recipes-xenomai/xenomai/xenomai.inc
+> > b/recipes-xenomai/xenomai/xenomai.inc
+ index 8f13767..454dd7b 100644
+> > --- a/recipes-xenomai/xenomai/xenomai.inc
+> > +++ b/recipes-xenomai/xenomai/xenomai.inc
+> > @@ -41,7 +41,5 @@ do_prepare_build() {
+> >=20
+> >  dpkg_runbuild_prepend() {
+> > =20
+> >      bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
+> >     =20
+> >                       ${PV} ${COMMIT})
+> >=20
+> > -
+> > -    sudo chroot --userspec=3D$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
+> > -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
+> > +    SBUILD_PREBUILD=3D"cd %p; scripts/bootstrap"
+> >=20
+> >  }
+>=20
+>=20
+
+
+=2D-=20
+Uladzimir Bely
+Promwad Ltd.
+External service provider of ilbers GmbH
+Maria-Merian-Str. 8
+85521 Ottobrunn, Germany
++49 (89) 122 67 24-0
+Commercial register Munich, HRB 214197
+General Manager: Baurzhan Ismagulov
+
+
 
