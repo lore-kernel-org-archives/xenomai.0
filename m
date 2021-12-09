@@ -1,14 +1,15 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [xenomai-images] [PATCH 1/1] Changes to support sbuild-based Isar
+Date: Thu, 9 Dec 2021 09:42:44 +0000
+Message-ID: <a76324c5f3ce543c2e3626cb2b2a2adda8f55089.camel@siemens.com>
 References: <20211209073619.17698-1-ubely@ilbers.de>
  <20211209073619.17698-2-ubely@ilbers.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <094d5cdf-0528-009b-28ba-0241116f3d86@siemens.com>
-Date: Thu, 9 Dec 2021 10:35:16 +0100
-MIME-Version: 1.0
 In-Reply-To: <20211209073619.17698-2-ubely@ilbers.de>
-Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <83A9E522B194E94BBB632921541405B8@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,71 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Uladzimir Bely <ubely@ilbers.de>, xenomai@xenomai.org
+To: "ubely@ilbers.de" <ubely@ilbers.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09.12.21 08:36, Uladzimir Bely via Xenomai wrote:
-> These patch is required to build Isar from 'ubely/sbuild' branch,
-> e.g. refspec: 37a71e72c7b8e9ae7e9f6a402ecdc6ff66eab8c4
-> 
-> Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
-> ---
->  recipes-kernel/linux/linux-xenomai.inc | 14 ++++++++------
->  recipes-xenomai/xenomai/xenomai.inc    |  4 +---
->  2 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-> index 1852bf6..d68c7a1 100644
-> --- a/recipes-kernel/linux/linux-xenomai.inc
-> +++ b/recipes-kernel/linux/linux-xenomai.inc
-> @@ -28,7 +28,7 @@ def get_commit(d):
->  
->  LINUX_COMMIT ?= "${@get_commit(d)}"
->  
-> -dpkg_runbuild_prepend() {
-> +dpkg_configure_kernel_append() {
->  	case ${DISTRO_ARCH} in
->  	armhf)
->  		ARCH=arm
-> @@ -46,9 +46,11 @@ dpkg_runbuild_prepend() {
->  	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
->  			 ${PV} ${LINUX_COMMIT})
->  
-> -	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
-> -		--linux=${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=$ARCH \
-> -		--outpatch=${WORKDIR}/xenomai-kernel.patch
-> -	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
-> -		-p1 -i ${WORKDIR}/xenomai-kernel.patch
-> +    SBUILD_PREBUILD="${SBUILD_PREBUILD} &&                          \
-> +        touch /home/builder/${PN}/file.touch &&                     \
-> +        /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh    \
-> +            --linux=%p --arch=${ARCH}                               \
-> +            --outpatch=/home/builder/${PN}/xenomai-kernel.patch &&  \
-> +        patch -d %p -p1 -i /home/builder/${PN}/xenomai-kernel.patch \
-> +    "
-
-Inconsistent indention.
-
->  }
-> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-> index 8f13767..454dd7b 100644
-> --- a/recipes-xenomai/xenomai/xenomai.inc
-> +++ b/recipes-xenomai/xenomai/xenomai.inc
-> @@ -41,7 +41,5 @@ do_prepare_build() {
->  dpkg_runbuild_prepend() {
->      bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
->                       ${PV} ${COMMIT})
-> -
-> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
-> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
-> +    SBUILD_PREBUILD="cd %p; scripts/bootstrap"
-
-Could we rather provide an abstract interface to users, not carrying
-SBUILD in its name? I'm concerned that the current will make it hard to
-switch builders in the future if we may have to.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+T24gVGh1LCAyMDIxLTEyLTA5IGF0IDA4OjM2ICswMTAwLCBVbGFkemltaXIgQmVseSB2aWEgWGVu
+b21haSB3cm90ZToNCj4gVGhlc2UgcGF0Y2ggaXMgcmVxdWlyZWQgdG8gYnVpbGQgSXNhciBmcm9t
+ICd1YmVseS9zYnVpbGQnIGJyYW5jaCwNCj4gZS5nLiByZWZzcGVjOiAzN2E3MWU3MmM3YjhlOWFl
+N2U5ZjZhNDAyZWNkYzZmZjY2ZWFiOGM0DQoNCldlJ3JlIHVzaW5nIHRoYXQsIHNvIHdoeSBkbyB3
+ZSBuZWVkIHRvIHBhdGNoPyBJcyB0aGF0IHJlbGF0ZWQgdG8gdGhlDQpuZXcgU0JVSUxEIGZlYXR1
+cmUgaW4gSVNBUj8gTm8gd2F5IHRvIGhhbmRsZSB0aGF0IHdpdGhvdXQgYnJlYWtpbmcgbWFueQ0K
+ZG93bnN0cmVhbSBsYXllcnM/DQoNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFVsYWR6aW1pciBCZWx5
+IDx1YmVseUBpbGJlcnMuZGU+DQo+IC0tLQ0KPiAgcmVjaXBlcy1rZXJuZWwvbGludXgvbGludXgt
+eGVub21haS5pbmMgfCAxNCArKysrKysrKy0tLS0tLQ0KPiAgcmVjaXBlcy14ZW5vbWFpL3hlbm9t
+YWkveGVub21haS5pbmMgICAgfCAgNCArLS0tDQo+ICAyIGZpbGVzIGNoYW5nZWQsIDkgaW5zZXJ0
+aW9ucygrKSwgOSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9yZWNpcGVzLWtlcm5l
+bC9saW51eC9saW51eC14ZW5vbWFpLmluYyBiL3JlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LXhl
+bm9tYWkuaW5jDQo+IGluZGV4IDE4NTJiZjYuLmQ2OGM3YTEgMTAwNjQ0DQo+IC0tLSBhL3JlY2lw
+ZXMta2VybmVsL2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+ICsrKyBiL3JlY2lwZXMta2VybmVs
+L2xpbnV4L2xpbnV4LXhlbm9tYWkuaW5jDQo+IEBAIC0yOCw3ICsyOCw3IEBAIGRlZiBnZXRfY29t
+bWl0KGQpOg0KPiAgDQo+ICBMSU5VWF9DT01NSVQgPz0gIiR7QGdldF9jb21taXQoZCl9Ig0KPiAg
+DQo+IC1kcGtnX3J1bmJ1aWxkX3ByZXBlbmQoKSB7DQo+ICtkcGtnX2NvbmZpZ3VyZV9rZXJuZWxf
+YXBwZW5kKCkgew0KPiAgCWNhc2UgJHtESVNUUk9fQVJDSH0gaW4NCj4gIAlhcm1oZikNCj4gIAkJ
+QVJDSD1hcm0NCj4gQEAgLTQ2LDkgKzQ2LDExIEBAIGRwa2dfcnVuYnVpbGRfcHJlcGVuZCgpIHsN
+Cj4gIAliYnBsYWluICQocHJpbnRmICJsaW51eC14ZW5vbWFpLSVzOiBCdWlsZGluZyByZXZpc2lv
+biAlLjIwc1xuIiBcDQo+ICAJCQkgJHtQVn0gJHtMSU5VWF9DT01NSVR9KQ0KPiAgDQo+IC0JJHtC
+VUlMRENIUk9PVF9ESVJ9L3Vzci9zcmMveGVub21haS1rZXJuZWwtc291cmNlL3NjcmlwdHMvcHJl
+cGFyZS1rZXJuZWwuc2ggXA0KPiAtCQktLWxpbnV4PSR7QlVJTERDSFJPT1RfRElSfS8ke1BQfS8k
+e1BQU30gLS1hcmNoPSRBUkNIIFwNCj4gLQkJLS1vdXRwYXRjaD0ke1dPUktESVJ9L3hlbm9tYWkt
+a2VybmVsLnBhdGNoDQo+IC0JcGF0Y2ggLWQgJHtCVUlMRENIUk9PVF9ESVJ9LyR7UFB9LyR7UFBT
+fSBcDQo+IC0JCS1wMSAtaSAke1dPUktESVJ9L3hlbm9tYWkta2VybmVsLnBhdGNoDQo+ICsgICAg
+U0JVSUxEX1BSRUJVSUxEPSIke1NCVUlMRF9QUkVCVUlMRH0gJiYgICAgICAgICAgICAgICAgICAg
+ICAgICAgIFwNCj4gKyAgICAgICAgdG91Y2ggL2hvbWUvYnVpbGRlci8ke1BOfS9maWxlLnRvdWNo
+ICYmICAgICAgICAgICAgICAgICAgICAgXA0KDQpXaGVyZSBkb2VzIHRoaXMgcGF0aHMgY29tZSBm
+cm9tPyBMb29rcyBrYXMgb3IgZXZlbiBrYXMtY29udGFpbmVyDQpyZWxhdGVkLg0KDQo+ICsgICAg
+ICAgIC91c3Ivc3JjL3hlbm9tYWkta2VybmVsLXNvdXJjZS9zY3JpcHRzL3ByZXBhcmUta2VybmVs
+LnNoICAgIFwNCj4gKyAgICAgICAgICAgIC0tbGludXg9JXAgLS1hcmNoPSR7QVJDSH0gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgXA0KPiArICAgICAgICAgICAgLS1vdXRwYXRjaD0vaG9t
+ZS9idWlsZGVyLyR7UE59L3hlbm9tYWkta2VybmVsLnBhdGNoICYmICBcDQo+ICsgICAgICAgIHBh
+dGNoIC1kICVwIC1wMSAtaSAvaG9tZS9idWlsZGVyLyR7UE59L3hlbm9tYWkta2VybmVsLnBhdGNo
+IFwNCj4gKyAgICAiDQo+ICB9DQo+IGRpZmYgLS1naXQgYS9yZWNpcGVzLXhlbm9tYWkveGVub21h
+aS94ZW5vbWFpLmluYyBiL3JlY2lwZXMteGVub21haS94ZW5vbWFpL3hlbm9tYWkuaW5jDQo+IGlu
+ZGV4IDhmMTM3NjcuLjQ1NGRkN2IgMTAwNjQ0DQo+IC0tLSBhL3JlY2lwZXMteGVub21haS94ZW5v
+bWFpL3hlbm9tYWkuaW5jDQo+ICsrKyBiL3JlY2lwZXMteGVub21haS94ZW5vbWFpL3hlbm9tYWku
+aW5jDQo+IEBAIC00MSw3ICs0MSw1IEBAIGRvX3ByZXBhcmVfYnVpbGQoKSB7DQo+ICBkcGtnX3J1
+bmJ1aWxkX3ByZXBlbmQoKSB7DQo+ICAgICAgYmJwbGFpbiAkKHByaW50ZiAieGVub21haS0lczog
+QnVpbGRpbmcgcmV2aXNpb24gJS4yMHNcbiIgXA0KPiAgICAgICAgICAgICAgICAgICAgICAgJHtQ
+Vn0gJHtDT01NSVR9KQ0KPiAtDQo+IC0gICAgc3VkbyBjaHJvb3QgLS11c2Vyc3BlYz0kKCBpZCAt
+dSApOiQoIGlkIC1nICkgJHtCVUlMRENIUk9PVF9ESVJ9IFwNCj4gLSAgICAgICAgc2ggLWMgImNk
+ICR7UFB9LyR7UFBTfTsgc2NyaXB0cy9ib290c3RyYXAiDQo+ICsgICAgU0JVSUxEX1BSRUJVSUxE
+PSJjZCAlcDsgc2NyaXB0cy9ib290c3RyYXAiDQo+ICB9DQoNCg==
 
