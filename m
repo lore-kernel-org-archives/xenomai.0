@@ -1,7 +1,7 @@
 From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v4 7/8] drivers/can: fix updating of tx_count statistics
-Date: Sun, 12 Dec 2021 12:56:10 +0100
-Message-Id: <20211212115611.3036-6-dariobin@libero.it>
+Subject: [PATCH v4 2/8] testsuite/smokey: add virtual CAN testsuite
+Date: Sun, 12 Dec 2021 12:56:05 +0100
+Message-Id: <20211212115611.3036-3-dariobin@libero.it>
 In-Reply-To: <20211212115611.3036-1-dariobin@libero.it>
 References: <20211212115611.3036-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,81 +15,439 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Dario Binacchi <dariobin@libero.it>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
 
-As in the Linux kernel, the counter is updated only after the message
-has been really transmitted.
+Add a minimal test for the virtual CAN driver, checking that sent
+messages are received correctly.
+
+The timeout on read operations has been wired to 1 s in order not to
+fail the test in case the verbose option is enabled.
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
 ---
 
-(no changes since v1)
+Changes in v4:
+- Load/unload the CAN drivers modules before/after running the test.
+- Add setup/teardown function
 
- kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
- kernel/drivers/can/rtcan_flexcan.c         | 1 +
- kernel/drivers/can/rtcan_raw.c             | 1 -
- kernel/drivers/can/rtcan_virt.c            | 1 +
- kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
- 5 files changed, 4 insertions(+), 1 deletion(-)
+Changes in v3:
+- Add the patch to the series.
 
-diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
-index 387e27cc0..da573aba6 100644
---- a/kernel/drivers/can/mscan/rtcan_mscan.c
-+++ b/kernel/drivers/can/mscan/rtcan_mscan.c
-@@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
- 		out_8(&regs->cantier, 0);
- 		/* Wake up a sender */
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 
- 		if (rtcan_loopback_pending(dev)) {
- 
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index 7569d16f7..3348e8ce0 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 			      &priv->tx_mb->can_ctrl);
- 		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
- 		rtdm_sem_up(&dev->tx_sem);
-+		dev->tx_count++;
- 		if (rtcan_loopback_pending(dev))
- 			rtcan_loopback(dev);
- 		handled = RTDM_IRQ_HANDLED;
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index b17c1709d..dffc6e837 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
- 	goto send_out2;
-     }
- 
--    dev->tx_count++;
-     ret = dev->hard_start_xmit(dev, frame);
- 
-     /* Return number of bytes sent upon successful completion */
-diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
-index c86c17fc3..28e06a9d6 100644
---- a/kernel/drivers/can/rtcan_virt.c
-+++ b/kernel/drivers/can/rtcan_virt.c
-@@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
- 
- 	/* we can transmit immediately again */
- 	rtdm_sem_up(&tx_dev->tx_sem);
-+	tx_dev->tx_count++;
- 
- 	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
- 
-diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-index bd6c0ba5c..0f49551f9 100644
---- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
-+++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
-@@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
- 	if (irq_source & SJA_IR_TI) {
- 	    /* Wake up a sender */
- 	    rtdm_sem_up(&dev->tx_sem);
-+	    dev->tx_count++;
- 
- 	    if (rtcan_loopback_pending(dev)) {
- 
+ configure.ac                          |   1 +
+ testsuite/smokey/Makefile.am          |   2 +
+ testsuite/smokey/can-virt/Makefile.am |   8 +
+ testsuite/smokey/can-virt/virt.c      | 356 ++++++++++++++++++++++++++
+ 4 files changed, 367 insertions(+)
+ create mode 100644 testsuite/smokey/can-virt/Makefile.am
+ create mode 100644 testsuite/smokey/can-virt/virt.c
+
+diff --git a/configure.ac b/configure.ac
+index e7a170161..2d6b6e443 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1005,6 +1005,7 @@ AC_CONFIG_FILES([ \
+ 	testsuite/smokey/cpu-affinity/Makefile \
+ 	testsuite/smokey/gdb/Makefile \
+ 	testsuite/smokey/y2038/Makefile \
++	testsuite/smokey/can-virt/Makefile
+ 	testsuite/clocktest/Makefile \
+ 	testsuite/xeno-test/Makefile \
+ 	utils/Makefile \
+diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
+index 56c873026..638c6e7f6 100644
+--- a/testsuite/smokey/Makefile.am
++++ b/testsuite/smokey/Makefile.am
+@@ -12,6 +12,7 @@ smokey_SOURCES = main.c
+ COBALT_SUBDIRS = 	\
+ 	arith 		\
+ 	bufp		\
++	can-virt	\
+ 	cpu-affinity	\
+ 	fpu-stress	\
+ 	gdb		\
+@@ -49,6 +50,7 @@ MERCURY_SUBDIRS =	\
+ DIST_SUBDIRS = 		\
+ 	arith 		\
+ 	bufp		\
++	can-virt	\
+ 	cpu-affinity	\
+ 	dlopen		\
+ 	fpu-stress	\
+diff --git a/testsuite/smokey/can-virt/Makefile.am b/testsuite/smokey/can-virt/Makefile.am
+new file mode 100644
+index 000000000..b7cf5ec99
+--- /dev/null
++++ b/testsuite/smokey/can-virt/Makefile.am
+@@ -0,0 +1,8 @@
++noinst_LIBRARIES = libcan-virt.a
++
++libcan_virt_a_SOURCES = \
++	virt.c
++
++libcan_virt_a_CPPFLAGS = \
++	@XENO_USER_CFLAGS@ \
++	-I$(top_srcdir)/include
+diff --git a/testsuite/smokey/can-virt/virt.c b/testsuite/smokey/can-virt/virt.c
+new file mode 100644
+index 000000000..1796e730b
+--- /dev/null
++++ b/testsuite/smokey/can-virt/virt.c
+@@ -0,0 +1,356 @@
++/*
++ * rtcan-virt test
++ *
++ * Copyright (C) 2021 Dario Binacchi <dariobin@libero.it>
++ *
++ * SPDX-License-Identifier: MIT
++ */
++
++#include <pthread.h>
++#include <rtdm/can.h>
++#include <sys/cobalt.h>
++#include <sys/ioctl.h>
++#include <sys/socket.h>
++#include <smokey/smokey.h>
++#include <stdbool.h>
++
++#define CAN_MOD                        "xeno_can"
++#define CAN_VIRT_MOD                   "xeno_can_virt"
++
++struct smokey_can_virt_ctx {
++	int s;
++	unsigned int baud;
++	unsigned int id;
++	unsigned int cnt;
++	unsigned int cnt_limit;
++	bool recv_run;
++	pthread_cond_t recv_run_cond;
++	pthread_mutex_t recv_run_mutex;
++	const char *recv_ifname;
++	nanosecs_rel_t recv_timeout;
++	const char *send_ifname;
++};
++
++smokey_test_plugin(can_virt, SMOKEY_NOARGS,
++	"Check rtcan-virt driver"
++);
++
++static void can_virt_trace_frame(bool send, struct can_frame *frame)
++{
++	char buf[128];
++	int i, len = 0, n = sizeof(buf);
++
++	if (!frame || smokey_verbose_mode <= 1)
++		return;
++
++	len += snprintf(buf, n, "%s, id: %d, dlc: %d, data:",
++			send ? "send" : "recv", frame->can_id, frame->can_dlc);
++	n = sizeof(buf) - len;
++	for (i = 0; i < frame->can_dlc; i++) {
++		len += snprintf(buf + len, n, " %02x", frame->data[i]);
++		n = sizeof(buf) - len;
++	}
++
++	smokey_trace("%s", buf);
++}
++
++static int can_virt_send(struct smokey_can_virt_ctx *ctx)
++{
++	struct can_ifreq ifr;
++	struct sockaddr_can to_addr;
++	struct can_frame frame = {0};
++	int ret;
++
++	namecpy(ifr.ifr_name, ctx->send_ifname);
++	ret = smokey_check_errno(__RT(ioctl(ctx->s, SIOCGIFINDEX, &ifr)));
++	if (ret < 0)
++		goto finally;
++
++	memset(&to_addr, 0, sizeof(to_addr));
++	to_addr.can_ifindex = ifr.ifr_ifindex;
++	to_addr.can_family = AF_CAN;
++
++	frame.can_id = ctx->id;
++	frame.can_dlc = sizeof(ctx->cnt);
++	memcpy(&frame.data[0], &ctx->cnt, sizeof(ctx->cnt));
++	can_virt_trace_frame(true, &frame);
++	ret = smokey_check_errno(__RT(sendto(ctx->s, (void *)&frame,
++					     sizeof(can_frame_t), 0,
++					     (struct sockaddr *)&to_addr,
++					     sizeof(to_addr))));
++	if (ret < 0)
++		goto finally;
++
++	ret = 0;
++finally:
++	return ret;
++}
++
++static int can_virt_recv(struct smokey_can_virt_ctx *ctx)
++{
++	struct can_ifreq ifr;
++	struct sockaddr_can addr;
++	socklen_t addrlen = sizeof(addr);
++	struct sockaddr_can recv_addr;
++	struct can_frame frame;
++	unsigned int cnt;
++	int ret;
++
++	namecpy(ifr.ifr_name, ctx->recv_ifname);
++	ret = smokey_check_errno(__RT(ioctl(ctx->s, SIOCGIFINDEX, &ifr)));
++	if (ret < 0)
++		return ret;
++
++	recv_addr.can_family = AF_CAN;
++	recv_addr.can_ifindex = ifr.ifr_ifindex;
++	ret = smokey_check_errno(__RT(bind(ctx->s,
++					   (struct sockaddr *)&recv_addr,
++					   sizeof(struct sockaddr_can))));
++	if (ret < 0)
++		return ret;
++
++	ret = smokey_check_errno(__RT(ioctl(ctx->s, RTCAN_RTIOC_RCV_TIMEOUT,
++					   &ctx->recv_timeout)));
++	if (ret < 0)
++		return ret;
++
++	ret = smokey_check_errno(__RT(recvfrom(ctx->s, (void *)&frame,
++					       sizeof(can_frame_t), 0,
++					       (struct sockaddr *)&addr,
++					       &addrlen)));
++	if (ret < 0)
++		return ret;
++
++	can_virt_trace_frame(false, &frame);
++
++	if (!smokey_assert(frame.can_dlc == sizeof(ctx->cnt)))
++		return -EINVAL;
++
++	if (!smokey_assert(frame.can_id == ctx->id))
++		return -EINVAL;
++
++	memcpy(&cnt, &frame.data[0], sizeof(cnt));
++	if (!smokey_assert(cnt == ctx->cnt))
++		return -EINVAL;
++
++	return 0;
++}
++
++static void *recv_task(void *cookie)
++{
++	struct smokey_can_virt_ctx *ctx = (struct smokey_can_virt_ctx *)cookie;
++	struct sched_param prio;
++	int ret;
++
++	pthread_mutex_lock(&ctx->recv_run_mutex);
++	prio.sched_priority = 22;
++	ret = smokey_check_status(pthread_setschedparam(pthread_self(),
++							SCHED_FIFO, &prio));
++	ctx->recv_run = true;
++	pthread_cond_signal(&ctx->recv_run_cond);
++	pthread_mutex_unlock(&ctx->recv_run_mutex);
++
++	if (ret < 0)
++		goto finally;
++
++	for (;;) {
++		ret = can_virt_recv(ctx);
++		if (ret)
++			break;
++
++		if (ctx->cnt == ctx->cnt_limit)
++			break;
++	}
++
++finally:
++	ctx->recv_run = false;
++	pthread_exit((void *)(long)ret);
++}
++
++
++static void *loop_task(void *cookie)
++{
++	struct smokey_can_virt_ctx *ctx = (struct smokey_can_virt_ctx *)cookie;
++	struct timespec ts;
++	struct sched_param prio;
++	pthread_t tid;
++	void *tstatus;
++	int ret;
++
++	prio.sched_priority = 20;
++	ret = smokey_check_status(pthread_setschedparam(pthread_self(),
++							SCHED_FIFO, &prio));
++	if (ret < 0)
++		pthread_exit((void *)(long)ret);
++
++	pthread_mutex_lock(&ctx->recv_run_mutex);
++	ret = smokey_check_status(__RT(pthread_create(&tid, NULL, recv_task,
++						      ctx)));
++	if (ret < 0)
++		pthread_exit((void *)(long)ret);
++
++	clock_gettime(CLOCK_REALTIME, &ts);
++	ts.tv_sec += 1;
++	ret = smokey_check_status(pthread_cond_timedwait(&ctx->recv_run_cond,
++							 &ctx->recv_run_mutex,
++							 &ts));
++	if (ret < 0)
++		goto finally;
++
++	smokey_trace("recv task started");
++	for (; ctx->recv_run && ctx->cnt <= ctx->cnt_limit; ctx->cnt++) {
++		ret = can_virt_send(ctx);
++		if (ret)
++			goto finally;
++	}
++
++finally:
++	pthread_join(tid, &tstatus);
++	if (!ret)
++		ret = (int)(long)tstatus;
++
++	pthread_exit((void *)(long)ret);
++}
++
++static int can_virt_config(int s, const char *ifname, int baudrate, int mode)
++{
++	struct can_ifreq ifr;
++	int ret;
++
++	namecpy(ifr.ifr_name, ifname);
++	ret = smokey_check_errno(__RT(ioctl(s, SIOCGIFINDEX, &ifr)));
++	if (ret < 0)
++		return ret;
++
++	if (baudrate > 0) {
++		ifr.ifr_ifru.baudrate = baudrate;
++		ret = smokey_check_errno(__RT(ioctl(s, SIOCSCANBAUDRATE,
++						    &ifr)));
++		if (ret < 0)
++			return ret;
++	}
++
++	if (mode >= 0) {
++		ifr.ifr_ifru.mode = mode;
++		ret = smokey_check_errno(__RT(ioctl(s, SIOCSCANMODE, &ifr)));
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int can_virt_teardown(struct smokey_can_virt_ctx *ctx)
++{
++	int ret = 0, r;
++
++	r = can_virt_config(ctx->s, ctx->send_ifname, -1, CAN_MODE_STOP);
++	if (ret == 0)
++		ret = r;
++
++	smokey_trace("config: ifname: %s, mode: down", ctx->send_ifname);
++
++	r = can_virt_config(ctx->s, ctx->recv_ifname, -1, CAN_MODE_STOP);
++	if (ret == 0)
++		ret = r;
++
++	smokey_trace("config: ifname: %s, mode: down", ctx->recv_ifname);
++
++	__RT(close(ctx->s));
++	r = smokey_rmmod(CAN_VIRT_MOD);
++	if (ret == 0)
++		ret = r;
++
++	r = smokey_rmmod(CAN_MOD);
++	if (ret == 0)
++		ret = r;
++
++	pthread_cond_destroy(&ctx->recv_run_cond);
++	pthread_mutex_destroy(&ctx->recv_run_mutex);
++	return ret;
++}
++
++static int can_virt_setup(struct smokey_can_virt_ctx *ctx)
++{
++	int ret;
++
++	pthread_mutex_init(&ctx->recv_run_mutex, NULL);
++	pthread_cond_init(&ctx->recv_run_cond, NULL);
++
++	ret = smokey_modprobe(CAN_MOD, true);
++	if (ret < 0)
++		return ret;
++
++	ret = smokey_modprobe(CAN_VIRT_MOD, true);
++	if (ret < 0)
++		goto modprobe_err;
++
++	ret = smokey_check_errno(__RT(socket(PF_CAN, SOCK_RAW, CAN_RAW)));
++	if (ret < 0)
++		goto sock_err;
++
++	ctx->s = ret;
++
++	ret = can_virt_config(ctx->s, ctx->recv_ifname, ctx->baud,
++			      CAN_MODE_START);
++	if (ret)
++		goto recv_cfg_err;
++
++	smokey_trace("config: ifname: %s, baud: %d, mode: up", ctx->recv_ifname,
++		     ctx->baud);
++
++	ret = can_virt_config(ctx->s, ctx->send_ifname, ctx->baud,
++			      CAN_MODE_START);
++	if (ret)
++		goto send_cfg_err;
++
++	smokey_trace("config: ifname: %s, baud: %d, mode: up", ctx->send_ifname,
++		     ctx->baud);
++
++	return 0;
++
++send_cfg_err:
++	can_virt_config(ctx->s, ctx->send_ifname, -1, CAN_MODE_STOP);
++recv_cfg_err:
++	__RT(close(ctx->s));
++sock_err:
++	smokey_rmmod(CAN_VIRT_MOD);
++modprobe_err:
++	smokey_rmmod(CAN_MOD);
++	pthread_mutex_destroy(&ctx->recv_run_mutex);
++	pthread_cond_destroy(&ctx->recv_run_cond);
++	return ret;
++}
++
++static int run_can_virt(struct smokey_test *t, int argc, char *const argv[])
++{
++	struct smokey_can_virt_ctx ctx = {
++		.baud = 1250000,
++		.id = 19,
++		.cnt = 1,
++		.cnt_limit = 1000,
++		.recv_ifname = "rtcan0",
++		.recv_timeout = 1000000000, /* 1 s */
++		.send_ifname = "rtcan1",
++	};
++	pthread_t tid;
++	void *status;
++	int ret, r;
++
++	ret = can_virt_setup(&ctx);
++	if (ret < 0)
++		return ret;
++
++	ret = smokey_check_status(__RT(pthread_create(&tid, NULL, loop_task,
++						      &ctx)));
++	if (ret == 0) {
++		pthread_join(tid, &status);
++		ret = (int)(long)status;
++	}
++
++	r = can_virt_teardown(&ctx);
++	if (ret == 0)
++		ret = r;
++
++	return ret;
++}
 -- 
 2.17.1
 
