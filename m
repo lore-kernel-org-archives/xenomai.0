@@ -1,7 +1,7 @@
 From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v4 1/8] lib/smokey: add smokey_{modprobe,rmmod} helpers
-Date: Sun, 12 Dec 2021 12:56:04 +0100
-Message-Id: <20211212115611.3036-2-dariobin@libero.it>
+Subject: [PATCH v4 7/8] drivers/can: fix updating of tx_count statistics
+Date: Sun, 12 Dec 2021 12:56:10 +0100
+Message-Id: <20211212115611.3036-6-dariobin@libero.it>
 In-Reply-To: <20211212115611.3036-1-dariobin@libero.it>
 References: <20211212115611.3036-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,242 +15,81 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Dario Binacchi <dariobin@libero.it>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
 
-Both functions, implemented and used for the net, are general purpose
-and therefore can be useful in other parts of the application with the
-application of minimal changes.
+As in the Linux kernel, the counter is updated only after the message
+has been really transmitted.
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
-
 ---
 
-Changes in v4:
-- Add the patch to the series.
+(no changes since v1)
 
- include/smokey/smokey.h             |  6 +-
- lib/smokey/helpers.c                | 99 +++++++++++++++++++++++++++++
- testsuite/smokey/net_common/setup.c | 68 +-------------------
- 3 files changed, 106 insertions(+), 67 deletions(-)
+ kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
+ kernel/drivers/can/rtcan_flexcan.c         | 1 +
+ kernel/drivers/can/rtcan_raw.c             | 1 -
+ kernel/drivers/can/rtcan_virt.c            | 1 +
+ kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
+ 5 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/smokey/smokey.h b/include/smokey/smokey.h
-index 185fd3a8b..0ac1e8df4 100644
---- a/include/smokey/smokey.h
-+++ b/include/smokey/smokey.h
-@@ -254,7 +254,11 @@ int smokey_barrier_timedwait(struct smokey_barrier *b,
- void smokey_barrier_release(struct smokey_barrier *b);
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
+index 387e27cc0..da573aba6 100644
+--- a/kernel/drivers/can/mscan/rtcan_mscan.c
++++ b/kernel/drivers/can/mscan/rtcan_mscan.c
+@@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
+ 		out_8(&regs->cantier, 0);
+ 		/* Wake up a sender */
+ 		rtdm_sem_up(&dev->tx_sem);
++		dev->tx_count++;
  
- int smokey_fork_exec(const char *path, const char *arg);
--	
-+
-+int smokey_modprobe(const char *name, bool silent);
-+
-+int smokey_rmmod(const char *name);
-+
- #ifdef __cplusplus
- }
- #endif
-diff --git a/lib/smokey/helpers.c b/lib/smokey/helpers.c
-index da84c863c..dc0bb5d0c 100644
---- a/lib/smokey/helpers.c
-+++ b/lib/smokey/helpers.c
-@@ -292,3 +292,102 @@ int smokey_fork_exec(const char *path, const char *arg)
- 	return 1;
+ 		if (rtcan_loopback_pending(dev)) {
  
- }
-+
-+#define SMOKEY_MOD_NUM       32
-+static char *smokey_modules[SMOKEY_MOD_NUM];
-+
-+int smokey_modprobe(const char *name, bool silent)
-+{
-+	char buffer[128];
-+	int err, len, i, midx = -1;
-+	FILE *fp;
-+
-+	fp = fopen("/proc/modules", "r");
-+	if (fp == NULL)
-+		return -errno;
-+
-+	len = strlen(name);
-+
-+	while (fgets(buffer, sizeof(buffer), fp)) {
-+		if (strncmp(buffer, name, len) == 0 &&
-+		    len < sizeof(buffer) && buffer[len] == ' ') {
-+			smokey_trace("%s module already loaded", name);
-+			fclose(fp);
-+			return 0;
-+		}
-+	}
-+
-+	fclose(fp);
-+
-+	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
-+		if (!smokey_modules[i]) {
-+			midx = i;
-+			break;
-+		}
-+	}
-+
-+	if (midx < 0)
-+		return -EFAULT;
-+
-+	smokey_trace("%s module not there: modprobing", name);
-+
-+	err = smokey_check_errno(
-+		snprintf(buffer, sizeof(buffer), "modprobe %s %s", name,
-+			 silent ? "2>/dev/null" : ""));
-+	if (err < 0)
-+		return err;
-+
-+	err = smokey_check_errno(system(buffer));
-+	if (err < 0)
-+		return err;
-+
-+	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
-+		if (!silent)
-+			smokey_warning("%s: abnormal exit", buffer);
-+		return -EINVAL;
-+	}
-+
-+	smokey_modules[midx] = strdup(name);
-+	return 0;
-+}
-+
-+int smokey_rmmod(const char *name)
-+{
-+	char buffer[128];
-+	int i, midx = -1, err;
-+
-+	if (!name)
-+		return -EINVAL;
-+
-+	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
-+		if (smokey_modules[i] && !strcmp(smokey_modules[i], name)) {
-+			midx = i;
-+			break;
-+		}
-+	}
-+
-+	if (midx < 0) {
-+		smokey_trace("%s module was there on entry, keeping it", name);
-+		return 0;
-+	}
-+
-+	smokey_trace("unloading %s module", name);
-+
-+	err = smokey_check_errno(
-+		snprintf(buffer, sizeof(buffer), "rmmod %s", name));
-+	if (err < 0)
-+		return err;
-+
-+	err = smokey_check_errno(system(buffer));
-+	if (err < 0)
-+		return err;
-+
-+	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
-+		smokey_warning("%s: abnormal exit", buffer);
-+		return -EINVAL;
-+	}
-+
-+	free(smokey_modules[midx]);
-+
-+	return err;
-+}
-diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-index 44a0cb24b..f97c14823 100644
---- a/testsuite/smokey/net_common/setup.c
-+++ b/testsuite/smokey/net_common/setup.c
-@@ -28,7 +28,6 @@
- struct module {
- 	int option;
- 	const char *name;
--	bool loaded;
- };
+diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
+index 7569d16f7..3348e8ce0 100644
+--- a/kernel/drivers/can/rtcan_flexcan.c
++++ b/kernel/drivers/can/rtcan_flexcan.c
+@@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
+ 			      &priv->tx_mb->can_ctrl);
+ 		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
+ 		rtdm_sem_up(&dev->tx_sem);
++		dev->tx_count++;
+ 		if (rtcan_loopback_pending(dev))
+ 			rtcan_loopback(dev);
+ 		handled = RTDM_IRQ_HANDLED;
+diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+index b17c1709d..dffc6e837 100644
+--- a/kernel/drivers/can/rtcan_raw.c
++++ b/kernel/drivers/can/rtcan_raw.c
+@@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
+ 	goto send_out2;
+     }
  
- #define TIMEOUT 10
-@@ -141,81 +140,18 @@ static int do_down(const char *intf)
- static int smokey_net_modprobe(int modid, bool silent)
- {
- 	struct module *m = modules + modid;
--	char buffer[128];
--	int err, len;
--	FILE *fp;
+-    dev->tx_count++;
+     ret = dev->hard_start_xmit(dev, frame);
  
- 	if (modid < 0)
- 		return -EINVAL;
+     /* Return number of bytes sent upon successful completion */
+diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
+index c86c17fc3..28e06a9d6 100644
+--- a/kernel/drivers/can/rtcan_virt.c
++++ b/kernel/drivers/can/rtcan_virt.c
+@@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
  
--	fp = fopen("/proc/modules", "r");
--	if (fp == NULL)
--		return -errno;
--
--	len = strlen(m->name);
--
--	while (fgets(buffer, sizeof(buffer), fp)) {
--		if (strncmp(buffer, m->name, len) == 0 &&
--		    len < sizeof(buffer) && buffer[len] == ' ') {
--			smokey_trace("%s module already loaded", m->name);
--			fclose(fp);
--			return 0;
--		}
--	}
--
--	fclose(fp);
--
--	smokey_trace("%s module not there: modprobing", m->name);
--
--	err = smokey_check_errno(
--		snprintf(buffer, sizeof(buffer), "modprobe %s %s", m->name,
--			 silent ? "2>/dev/null" : ""));
--	if (err < 0)
--		return err;
--
--	err = smokey_check_errno(system(buffer));
--	if (err < 0)
--		return err;
--
--	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
--		if (!silent)
--			smokey_warning("%s: abnormal exit", buffer);
--		return -EINVAL;
--	}
--
--	m->loaded = true;
--
--	return err;
-+	return smokey_modprobe(m->name, silent);
- }
+ 	/* we can transmit immediately again */
+ 	rtdm_sem_up(&tx_dev->tx_sem);
++	tx_dev->tx_count++;
  
- static int smokey_net_rmmod(int modid)
- {
- 	struct module *m = modules + modid;
--	char buffer[128];
--	int err;
--
--	if (!m->loaded) {
--		smokey_trace("%s module was there on entry, keeping it", m->name);
--		return 0;
--	}
+ 	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
  
--	smokey_trace("unloading %s module", m->name);
--
--	err = smokey_check_errno(
--		snprintf(buffer, sizeof(buffer), "rmmod %s", m->name));
--	if (err < 0)
--		return err;
--
--	err = smokey_check_errno(system(buffer));
--	if (err < 0)
--		return err;
--
--	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
--		smokey_warning("%s: abnormal exit", buffer);
--		return -EINVAL;
--	}
--
--	return err;
-+	return smokey_rmmod(m->name);
- }
+diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+index bd6c0ba5c..0f49551f9 100644
+--- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
++++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+@@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
+ 	if (irq_source & SJA_IR_TI) {
+ 	    /* Wake up a sender */
+ 	    rtdm_sem_up(&dev->tx_sem);
++	    dev->tx_count++;
  
- static int smokey_net_setup_rtcfg_client(const char *intf, int net_config)
+ 	    if (rtcan_loopback_pending(dev)) {
+ 
 -- 
 2.17.1
 
