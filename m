@@ -1,14 +1,11 @@
-Subject: Re: questions about comments on
- https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
-References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
- <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
- <MN2PR11MB4285BDFDBBA5193F5586B42AF2749@MN2PR11MB4285.namprd11.prod.outlook.com>
- <MN2PR11MB4285148014996C770370B416F2749@MN2PR11MB4285.namprd11.prod.outlook.com>
+Subject: Re: [RFC PATCH V2] kernel-shark: add plugin for handling xenomai
+ cobalt context switch event
+References: <20211213015502.32635-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5960f5c9-256a-44c8-f13b-87c0cd24f7b3@siemens.com>
-Date: Mon, 13 Dec 2021 08:48:26 +0100
+Message-ID: <4cfd0b3a-c0ea-90ce-2398-c0e71693ccfd@siemens.com>
+Date: Mon, 13 Dec 2021 08:49:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <MN2PR11MB4285148014996C770370B416F2749@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <20211213015502.32635-1-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,57 +17,224 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On 13.12.21 03:37, Chen, Hongzhan wrote:
+On 13.12.21 02:55, Hongzhan Chen wrote:
+> For Xenomai-cobalt enabled system, cobalt_switch_context means that there
+> is context switch in companion core(realtime core), which we may need
+> to do special treatment and take correct action as main kernel sched_switch.
+> We need to update cpu bar regarding cobalt_switch_context event to correct
+> color as switching-in task.
 > 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
+> diff --git a/src/libkshark-tepdata.c b/src/libkshark-tepdata.c
+> index 9740ed9..e933b39 100644
+> --- a/src/libkshark-tepdata.c
+> +++ b/src/libkshark-tepdata.c
+> @@ -1208,6 +1208,7 @@ static void kshark_tep_init_methods(struct kshark_generic_stream_interface *inte
+>  /** A list of built in default plugins for FTRACE (trace-cmd) data. */
+>  const char *tep_plugin_names[] = {
+>  	"sched_events",
+> +	"xenomai_cobalt_switch_events",
+>  	"missed_events",
+>  	"kvm_combo",
+>  };
+> diff --git a/src/plugins/CMakeLists.txt b/src/plugins/CMakeLists.txt
+> index 3e170fa..276eaaa 100644
+> --- a/src/plugins/CMakeLists.txt
+> +++ b/src/plugins/CMakeLists.txt
+> @@ -44,6 +44,10 @@ if (Qt5Widgets_FOUND AND TT_FONT_FILE)
+>                       SOURCE sched_events.c SchedEvents.cpp)
+>      list(APPEND PLUGIN_LIST "sched_events")
 >  
->>> -----Original Message-----
->>> From: Jan Kiszka <jan.kiszka@siemens.com> 
->>> Sent: Thursday, December 9, 2021 5:35 PM
->>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->>> Subject: Re: questions about comments on https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
->>>
->>> On 07.12.21 04:11, Chen, Hongzhan wrote:
->>>> Hi Jan
->>>>
->>>> I have some questions about comments on  https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33 and need your help to comment more.
->>>>
->>>> 1. I do not quite understand the requirement "visualize task switches correctly in Kernelshark (color in CPU bar is not updating on cobalt_switch_context)".
->>>>
->>>> When I click the cobalt_switch_context event listed in the event table on the second half in the kernelshark, actually color in cpu bar is updating to 
->>>> green because there is long green vertical  line to mark focused event like attached picture.  In addition , In spite of focused thing,  colors mainly 
->>>> change depending on what task is running for cpu plots in kernelshark. when cobalt_switch_context is traced, it still be in the prev context and its 
->>>> color is same with task prev in kernelshark. Do we want to update color of  cobalt_switch_context  to specific color different from all tasks even if there is no 
->>>> focused thing?  What result do we need to achieve when there is cobalt_switch_context, Could you be more specific?
->>>>
->>>
->>> I assume this one is resolved now, at least regarding what the goal
->>> would be.
->>>
->>>> 2. Regarding  the requirement " visualize RT/Non-RT (out-of-band/in-band) state in CPU bar)",
->>>>     2.1. Do we need to differentiate state  running a Linux task out-of-band and running whatever code from the out-of-band execution stage as described in 
->>>>              " What you really need to know at this point" of  https://evlproject.org/dovetail/altsched/?
->>>>     2.2 What state do we want to show  in CPU bar? Different color covering the size of  RT/Non-RT state other than all tasks and CPUs?  If so, we may ask for a plugin
->>>>           in kernelshark , which would raise similar question as you mentioned in comments.
->>>
->>> I suspect it would be best to decouple to stage state (in-band, oob)
->> >from the current task, maybe by adding another bar underneath the task
->  >bar for each CPU that shows this state.
->>
->> What about painting a hollow blue box under the baseline of corresponding task 
->> to mark running in OOB state, starting from first cobalt_switch_context switching
->> task in  to next cobalt_switch_context switching it out like attached pic?
-> 
-> The hollow box is commonly used in task plot such as hollow green box for wake up latency
-> as described in page 15 of [1].
+> +    BUILD_GUI_PLUGIN(NAME xenomai_cobalt_switch_events
+> +                     SOURCE xenomai_cobalt_switch_events.c)
+> +    list(APPEND PLUGIN_LIST "xenomai_cobalt_switch_events")
+> +
+>      BUILD_GUI_PLUGIN(NAME event_field_plot
+>                       MOC EventFieldDialog.hpp
+>                       SOURCE event_field_plot.c EventFieldDialog.cpp EventFieldPlot.cpp)
+> diff --git a/src/plugins/xenomai_cobalt_switch_events.c b/src/plugins/xenomai_cobalt_switch_events.c
+> new file mode 100644
+> index 0000000..4639d24
+> --- /dev/null
+> +++ b/src/plugins/xenomai_cobalt_switch_events.c
+> @@ -0,0 +1,116 @@
+> +// SPDX-License-Identifier: LGPL-2.1
+> +
+> +/*
+> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen <hongzhan.chen@intel.com>
+> + */
+> +
+> +/**
+> + *  @file    xenomai_cobalt_switch_events.c
+> + *  @brief   handle xenomai cobalt switch context event
+> + */
+> +
+> +// C
+> +#include <stdlib.h>
+> +#include <stdio.h>
+> +
+> +// trace-cmd
+> +#include <trace-cmd.h>
+> +
+> +// KernelShark
+> +#include "plugins/xenomai_cobalt_switch_events.h"
+> +#include "libkshark-tepdata.h"
+> +
+> +/** Plugin context instance. */
+> +
+> +static void cobalt_free_context(struct plugin_cobalt_context *plugin_ctx)
+> +{
+> +	return;
+> +}
+> +
+> +/** A general purpose macro is used to define plugin context. */
+> +KS_DEFINE_PLUGIN_CONTEXT(struct plugin_cobalt_context, cobalt_free_context);
+> +
+> +static bool plugin_cobalt_init_context(struct kshark_data_stream *stream,
+> +				      struct plugin_cobalt_context *plugin_ctx)
+> +{
+> +	struct tep_event *event;
+> +
+> +	if (!kshark_is_tep(stream))
+> +		return false;
+> +
+> +	plugin_ctx->tep = kshark_get_tep(stream);
+> +
+> +	event = tep_find_event_by_name(plugin_ctx->tep,
+> +					"cobalt_core", "cobalt_switch_context");
+> +	if (!event)
+> +		return false;
+> +
+> +	plugin_ctx->cobalt_switch_event = event;
+> +	plugin_ctx->cobalt_switch_next_field =
+> +		tep_find_any_field(event, "next_pid");
+> +
+> +	plugin_ctx->cobalt_switch_prev_state_field =
+> +		tep_find_field(event, "prev_state");
+> +
+> +	return true;
+> +}
+> +
+> +static void plugin_cobalt_switch_action(struct kshark_data_stream *stream,
+> +				      void *rec, struct kshark_entry *entry)
+> +{
+> +	struct tep_record *record = (struct tep_record *) rec;
+> +	struct plugin_cobalt_context *plugin_ctx;
+> +	unsigned long long next_pid;
+> +	int ret;
+> +
+> +	plugin_ctx = __get_context(stream->stream_id);
+> +	if (!plugin_ctx)
+> +		return;
+> +
+> +	ret = tep_read_number_field(plugin_ctx->cobalt_switch_next_field,
+> +				    record->data, &next_pid);
+> +
+> +	if (ret == 0 && next_pid >= 0)
+> +		entry->pid = next_pid;
+> +}
+> +
+> +/** Load this plugin. */
+> +int KSHARK_PLOT_PLUGIN_INITIALIZER(struct kshark_data_stream *stream)
+> +{
+> +	struct plugin_cobalt_context *plugin_ctx;
+> +
+> +	plugin_ctx = __init(stream->stream_id);
+> +	if (!plugin_ctx || !plugin_cobalt_init_context(stream, plugin_ctx)) {
+> +		__close(stream->stream_id);
+> +		return 0;
+> +	}
+> +
+> +	if (plugin_ctx->cobalt_switch_event) {
+> +		kshark_register_event_handler(stream,
+> +						plugin_ctx->cobalt_switch_event->id,
+> +						plugin_cobalt_switch_action);
+> +	}
+> +
+> +	return 1;
+> +}
+> +
+> +/** Unload this plugin. */
+> +int KSHARK_PLOT_PLUGIN_DEINITIALIZER(struct kshark_data_stream *stream)
+> +{
+> +	struct plugin_cobalt_context *plugin_ctx = __get_context(stream->stream_id);
+> +	int ret = 0;
+> +
+> +	if (plugin_ctx) {
+> +		if (plugin_ctx->cobalt_switch_event) {
+> +			kshark_unregister_event_handler(stream,
+> +							plugin_ctx->cobalt_switch_event->id,
+> +							plugin_cobalt_switch_action);
+> +		}
+> +
+> +		ret = 1;
+> +	}
+> +
+> +	__close(stream->stream_id);
+> +
+> +	return ret;
+> +}
+> diff --git a/src/plugins/xenomai_cobalt_switch_events.h b/src/plugins/xenomai_cobalt_switch_events.h
+> new file mode 100644
+> index 0000000..4a3bc66
+> --- /dev/null
+> +++ b/src/plugins/xenomai_cobalt_switch_events.h
+> @@ -0,0 +1,45 @@
+> +/* SPDX-License-Identifier: LGPL-2.1 */
+> +
+> +/*
+> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen<hongzhan.chen@intel.com>
+> + */
+> +
+> +/**
+> + *  @file    xenomai_cobalt_switch_events.h
+> + *  @brief   Plugin for xenomai cobalt switch context event
+> + */
+> +
+> +#ifndef _KS_PLUGIN_SHED_H
+> +#define _KS_PLUGIN_SHED_H
+> +
+> +// KernelShark
+> +#include "libkshark.h"
+> +#include "libkshark-plugin.h"
+> +
+> +#ifdef __cplusplus
+> +extern "C" {
+> +#endif
+> +
+> +/** Structure representing a plugin-specific context. */
+> +struct plugin_cobalt_context {
+> +	/** Page event used to parse the page. */
+> +	struct tep_handle	*tep;
+> +
+> +	/** Pointer to the cobalt_switch_event object. */
+> +	struct tep_event	*cobalt_switch_event;
+> +
+> +	 /** Pointer to the cobalt_switch_next_field format descriptor. */
+> +	struct tep_format_field *cobalt_switch_next_field;
+> +
+> +	/** Pointer to the cobalt_switch_prev_state_field format descriptor. */
+> +	struct tep_format_field *cobalt_switch_prev_state_field;
+> +
+> +};
+> +
+> +KS_DECLARE_PLUGIN_CONTEXT_METHODS(struct plugin_cobalt_context)
+> +
+> +#ifdef __cplusplus
+> +}
+> +#endif
+> +
+> +#endif
 > 
 
-Then we only need to find a pattern that cannot be confused with
-existing plots.
+Ah, that looks way more self-contained!
 
-Can that plotting be provided by a custom plugin?
+But plugins have to be built in-tree of Kernelshark? Or does the new
+architecture allow to build them against a "kernelshark-devel" package
+as well?
 
 Jan
 
