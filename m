@@ -1,9 +1,15 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v4 3/8] drivers/can: add multi message support to sendmsg
-Date: Sun, 12 Dec 2021 12:56:06 +0100
-Message-Id: <20211212121556.v4.3.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
-In-Reply-To: <20211212115611.3036-1-dariobin@libero.it>
-References: <20211212115611.3036-1-dariobin@libero.it>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: questions about comments on
+ https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
+Date: Mon, 13 Dec 2021 01:38:21 +0000
+Message-ID: <MN2PR11MB4285BDFDBBA5193F5586B42AF2749@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+ <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
+In-Reply-To: <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,300 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Dario Binacchi <dariobin@libero.it>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-The `user_msghdr' structure is designed to send multiple messages as
-well, so rtcan_raw_sendmsg() can also send multiple messages. This
-avoids having to add the sendmmsg system call which requires more
-extensive Xenomai changes.
-
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
-
-(no changes since v1)
-
- kernel/drivers/can/rtcan_raw.c | 239 ++++++++++++++++++---------------
- 1 file changed, 128 insertions(+), 111 deletions(-)
-
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index 693b927fe..b17c1709d 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -762,113 +762,13 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
- }
- 
- 
--ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
--			  const struct user_msghdr *msg, int flags)
-+static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket *sock,
-+				   can_frame_t *frame, nanosecs_rel_t timeout)
- {
--    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
--    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
--    struct sockaddr_can scan_buf;
--    struct iovec *iov = (struct iovec *)msg->msg_iov;
--    struct iovec iov_buf;
--    can_frame_t *frame;
--    can_frame_t frame_buf;
--    rtdm_lockctx_t lock_ctx;
--    nanosecs_rel_t timeout = 0;
-     struct tx_wait_queue tx_wait;
--    struct rtcan_device *dev;
--    int ifindex = 0;
--    int ret  = 0;
-+    rtdm_lockctx_t lock_ctx;
-     spl_t s;
--
--
--    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
--	return -EOPNOTSUPP;
--
--    /* Only MSG_DONTWAIT is a valid flag. */
--    if (flags & ~MSG_DONTWAIT)
--	return -EINVAL;
--
--    /* Check msg_iovlen, only one buffer allowed */
--    if (msg->msg_iovlen != 1)
--	return -EMSGSIZE;
--
--    if (scan == NULL) {
--	/* No socket address. Will use bound interface for sending */
--
--	if (msg->msg_namelen != 0)
--	    return -EINVAL;
--
--
--	/* We only want a consistent value here, a spin lock would be
--	 * overkill. Nevertheless, the binding could change till we have
--	 * the chance to send. Blame the user, though. */
--	ifindex = atomic_read(&sock->ifindex);
--
--	if (!ifindex)
--	    /* Socket isn't bound or bound to all interfaces. Go out. */
--	    return -ENXIO;
--    } else {
--	/* Socket address given */
--	if (msg->msg_namelen < sizeof(struct sockaddr_can))
--	    return -EINVAL;
--
--	if (rtdm_fd_is_user(fd)) {
--	    /* Copy socket address from userspace */
--	    if (!rtdm_read_user_ok(fd, msg->msg_name,
--				   sizeof(struct sockaddr_can)) ||
--		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
--				    sizeof(struct sockaddr_can)))
--		return -EFAULT;
--
--	    scan = &scan_buf;
--	}
--
--	/* Check address family */
--	if (scan->can_family != AF_CAN)
--	    return -EINVAL;
--
--	ifindex = scan->can_ifindex;
--    }
--
--    if (rtdm_fd_is_user(fd)) {
--	/* Copy IO vector from userspace */
--	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
--			     sizeof(struct iovec)) ||
--	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
--				sizeof(struct iovec)))
--	    return -EFAULT;
--
--	iov = &iov_buf;
--    }
--
--    /* Check size of buffer */
--    if (iov->iov_len != sizeof(can_frame_t))
--	return -EMSGSIZE;
--
--    frame = (can_frame_t *)iov->iov_base;
--
--    if (rtdm_fd_is_user(fd)) {
--	/* Copy CAN frame from userspace */
--	if (!rtdm_read_user_ok(fd, iov->iov_base,
--			       sizeof(can_frame_t)) ||
--	    rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
--				sizeof(can_frame_t)))
--	    return -EFAULT;
--
--	frame = &frame_buf;
--    }
--
--    /* Adjust iovec in the common way */
--    iov->iov_base += sizeof(can_frame_t);
--    iov->iov_len -= sizeof(can_frame_t);
--    /* ... and copy it back to userspace if necessary */
--    if (rtdm_fd_is_user(fd)) {
--	if (rtdm_copy_to_user(fd, msg->msg_iov, iov,
--			      sizeof(struct iovec)))
--	    return -EFAULT;
--    }
--
--    /* At last, we've got the frame ... */
-+    int ret = 0;
- 
-     /* Check if DLC between 0 and 15 */
-     if (frame->can_dlc > 15)
-@@ -881,11 +781,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 	    return -EINVAL;
-     }
- 
--    if ((dev = rtcan_dev_get_by_index(ifindex)) == NULL)
--	return -ENXIO;
--
--    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
--
-     tx_wait.rt_task = rtdm_task_current();
- 
-     /* Register the task at the socket's TX wait queue and decrement
-@@ -931,7 +826,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 
-     /* We got access */
- 
--
-     /* Push message onto stack for loopback when TX done */
-     if (rtcan_loopback_enabled(sock))
- 	rtcan_tx_push(dev, sock, frame);
-@@ -960,10 +854,133 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-  send_out2:
-     rtdm_lock_put_irqrestore(&dev->device_lock, lock_ctx);
-  send_out1:
--    rtcan_dev_dereference(dev);
-     return ret;
- }
- 
-+ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-+			  const struct user_msghdr *msg, int flags)
-+{
-+    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-+    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
-+    struct sockaddr_can scan_buf;
-+    struct iovec *iov = (struct iovec *)msg->msg_iov;
-+    struct iovec iov_buf;
-+    can_frame_t *frame;
-+    can_frame_t frame_buf;
-+    nanosecs_rel_t timeout;
-+    struct rtcan_device *dev;
-+    int ret = 0, ifindex = 0, i = 0, n, sent = 0;
-+
-+    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
-+	return -EOPNOTSUPP;
-+
-+    /* Only MSG_DONTWAIT is a valid flag. */
-+    if (flags & ~MSG_DONTWAIT)
-+	return -EINVAL;
-+
-+    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
-+
-+    if (scan == NULL) {
-+	/* No socket address. Will use bound interface for sending */
-+	if (msg->msg_namelen != 0)
-+	    return -EINVAL;
-+
-+
-+	/* We only want a consistent value here, a spin lock would be
-+	 * overkill. Nevertheless, the binding could change till we have
-+	 * the chance to send. Blame the user, though. */
-+	ifindex = atomic_read(&sock->ifindex);
-+	if (!ifindex)
-+	    /* Socket isn't bound or bound to all interfaces. Go out. */
-+	    return -ENXIO;
-+    } else {
-+	/* Socket address given */
-+	if (msg->msg_namelen < sizeof(struct sockaddr_can))
-+	    return -EINVAL;
-+
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy socket address from userspace */
-+	    if (!rtdm_read_user_ok(fd, msg->msg_name,
-+				   sizeof(struct sockaddr_can)) ||
-+		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
-+				    sizeof(struct sockaddr_can)))
-+		return -EFAULT;
-+
-+	    scan = &scan_buf;
-+	}
-+
-+	/* Check address family */
-+	if (scan->can_family != AF_CAN)
-+	    return -EINVAL;
-+
-+	ifindex = scan->can_ifindex;
-+    }
-+
-+    dev = rtcan_dev_get_by_index(ifindex);
-+    if (!dev)
-+	return -ENXIO;
-+
-+    if (rtdm_fd_is_user(fd)) {
-+
-+	/* Copy IO vector from userspace */
-+	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
-+			     sizeof(struct iovec)) ||
-+	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
-+				sizeof(struct iovec))) {
-+	    ret = -EFAULT;
-+	    goto finally;
-+	}
-+
-+	iov = &iov_buf;
-+    }
-+
-+    n = msg->msg_iovlen;
-+    while (i < n) {
-+	if (iov->iov_len < sizeof(can_frame_t)) {
-+	    ret = -EMSGSIZE;
-+	    goto finally;
-+	}
-+
-+	frame = (can_frame_t *)iov->iov_base;
-+
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy CAN frame from userspace */
-+	    if (!rtdm_read_user_ok(fd, iov->iov_base, sizeof(can_frame_t)) ||
-+		rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
-+				    sizeof(can_frame_t))) {
-+	        ret = -EFAULT;
-+	        goto finally;
-+	    }
-+
-+	    frame = &frame_buf;
-+	}
-+
-+	iov->iov_base += sizeof(can_frame_t);
-+	iov->iov_len -= sizeof(can_frame_t);
-+
-+	ret = __rtcan_raw_sendmsg(dev, sock, frame, timeout);
-+	if (ret < 0)
-+	    goto finally;
-+
-+	sent += ret;
-+    }
-+
-+    /* copy it back to userspace if necessary */
-+    if (rtdm_fd_is_user(fd)) {
-+	if (rtdm_copy_to_user(fd, msg->msg_iov, iov, sizeof(struct iovec))) {
-+	    ret = -EFAULT;
-+	    goto finally;
-+	}
-+    }
-+
-+finally:
-+    rtcan_dev_dereference(dev);
-+
-+    if (sent > 0)
-+	    return sent;
-+
-+    return ret;
-+}
- 
- static struct rtdm_driver rtcan_driver = {
- 	.profile_info		= RTDM_PROFILE_INFO(rtcan,
--- 
-2.17.1
-
-
+Cgo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6
+a2FAc2llbWVucy5jb20+IAo+U2VudDogVGh1cnNkYXksIERlY2VtYmVyIDksIDIwMjEgNTozNSBQ
+TQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlA
+eGVub21haS5vcmcKPlN1YmplY3Q6IFJlOiBxdWVzdGlvbnMgYWJvdXQgY29tbWVudHMgb24gaHR0
+cHM6Ly9naXRsYWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMzMK
+Pgo+T24gMDcuMTIuMjEgMDQ6MTEsIENoZW4sIEhvbmd6aGFuIHdyb3RlOgo+PiBIaSBKYW4KPj4g
+Cj4+IEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91dCBjb21tZW50cyBvbiAgaHR0cHM6Ly9naXRs
+YWIuY29tL1hlbm9tYWkveGVub21haS1oYWNrZXItc3BhY2UvLS9pc3N1ZXMvMzMgYW5kIG5lZWQg
+eW91ciBoZWxwIHRvIGNvbW1lbnQgbW9yZS4KPj4gCj4+IDEuIEkgZG8gbm90IHF1aXRlIHVuZGVy
+c3RhbmQgdGhlIHJlcXVpcmVtZW50ICJ2aXN1YWxpemUgdGFzayBzd2l0Y2hlcyBjb3JyZWN0bHkg
+aW4gS2VybmVsc2hhcmsgKGNvbG9yIGluIENQVSBiYXIgaXMgbm90IHVwZGF0aW5nIG9uIGNvYmFs
+dF9zd2l0Y2hfY29udGV4dCkiLgo+PiAKPj4gV2hlbiBJIGNsaWNrIHRoZSBjb2JhbHRfc3dpdGNo
+X2NvbnRleHQgZXZlbnQgbGlzdGVkIGluIHRoZSBldmVudCB0YWJsZSBvbiB0aGUgc2Vjb25kIGhh
+bGYgaW4gdGhlIGtlcm5lbHNoYXJrLCBhY3R1YWxseSBjb2xvciBpbiBjcHUgYmFyIGlzIHVwZGF0
+aW5nIHRvIAo+PiBncmVlbiBiZWNhdXNlIHRoZXJlIGlzIGxvbmcgZ3JlZW4gdmVydGljYWwgIGxp
+bmUgdG8gbWFyayBmb2N1c2VkIGV2ZW50IGxpa2UgYXR0YWNoZWQgcGljdHVyZS4gIEluIGFkZGl0
+aW9uICwgSW4gc3BpdGUgb2YgZm9jdXNlZCB0aGluZywgIGNvbG9ycyBtYWlubHkgCj4+IGNoYW5n
+ZSBkZXBlbmRpbmcgb24gd2hhdCB0YXNrIGlzIHJ1bm5pbmcgZm9yIGNwdSBwbG90cyBpbiBrZXJu
+ZWxzaGFyay4gd2hlbiBjb2JhbHRfc3dpdGNoX2NvbnRleHQgaXMgdHJhY2VkLCBpdCBzdGlsbCBi
+ZSBpbiB0aGUgcHJldiBjb250ZXh0IGFuZCBpdHMgCj4+IGNvbG9yIGlzIHNhbWUgd2l0aCB0YXNr
+IHByZXYgaW4ga2VybmVsc2hhcmsuIERvIHdlIHdhbnQgdG8gdXBkYXRlIGNvbG9yIG9mICBjb2Jh
+bHRfc3dpdGNoX2NvbnRleHQgIHRvIHNwZWNpZmljIGNvbG9yIGRpZmZlcmVudCBmcm9tIGFsbCB0
+YXNrcyBldmVuIGlmIHRoZXJlIGlzIG5vIAo+PiBmb2N1c2VkIHRoaW5nPyAgV2hhdCByZXN1bHQg
+ZG8gd2UgbmVlZCB0byBhY2hpZXZlIHdoZW4gdGhlcmUgaXMgY29iYWx0X3N3aXRjaF9jb250ZXh0
+LCBDb3VsZCB5b3UgYmUgbW9yZSBzcGVjaWZpYz8KPj4gCj4KPkkgYXNzdW1lIHRoaXMgb25lIGlz
+IHJlc29sdmVkIG5vdywgYXQgbGVhc3QgcmVnYXJkaW5nIHdoYXQgdGhlIGdvYWwKPndvdWxkIGJl
+Lgo+Cj4+IDIuIFJlZ2FyZGluZyAgdGhlIHJlcXVpcmVtZW50ICIgdmlzdWFsaXplIFJUL05vbi1S
+VCAob3V0LW9mLWJhbmQvaW4tYmFuZCkgc3RhdGUgaW4gQ1BVIGJhcikiLAo+PiAgICAgMi4xLiBE
+byB3ZSBuZWVkIHRvIGRpZmZlcmVudGlhdGUgc3RhdGUgIHJ1bm5pbmcgYSBMaW51eCB0YXNrIG91
+dC1vZi1iYW5kIGFuZCBydW5uaW5nIHdoYXRldmVyIGNvZGUgZnJvbSB0aGUgb3V0LW9mLWJhbmQg
+ZXhlY3V0aW9uIHN0YWdlIGFzIGRlc2NyaWJlZCBpbiAKPj4gICAgICAgICAgICAgICIgV2hhdCB5
+b3UgcmVhbGx5IG5lZWQgdG8ga25vdyBhdCB0aGlzIHBvaW50IiBvZiAgaHR0cHM6Ly9ldmxwcm9q
+ZWN0Lm9yZy9kb3ZldGFpbC9hbHRzY2hlZC8/Cj4+ICAgICAyLjIgV2hhdCBzdGF0ZSBkbyB3ZSB3
+YW50IHRvIHNob3cgIGluIENQVSBiYXI/IERpZmZlcmVudCBjb2xvciBjb3ZlcmluZyB0aGUgc2l6
+ZSBvZiAgUlQvTm9uLVJUIHN0YXRlIG90aGVyIHRoYW4gYWxsIHRhc2tzIGFuZCBDUFVzPyAgSWYg
+c28sIHdlIG1heSBhc2sgZm9yIGEgcGx1Z2luCj4+ICAgICAgICAgICBpbiBrZXJuZWxzaGFyayAs
+IHdoaWNoIHdvdWxkIHJhaXNlIHNpbWlsYXIgcXVlc3Rpb24gYXMgeW91IG1lbnRpb25lZCBpbiBj
+b21tZW50cy4KPgo+SSBzdXNwZWN0IGl0IHdvdWxkIGJlIGJlc3QgdG8gZGVjb3VwbGUgdG8gc3Rh
+Z2Ugc3RhdGUgKGluLWJhbmQsIG9vYikKPmZyb20gdGhlIGN1cnJlbnQgdGFzaywgbWF5YmUgYnkg
+YWRkaW5nIGFub3RoZXIgYmFyIHVuZGVybmVhdGggdGhlIHRhc2sKPmJhciBmb3IgZWFjaCBDUFUg
+dGhhdCBzaG93cyB0aGlzIHN0YXRlLgoKV2hhdCBhYm91dCBwYWludGluZyBhIGhvbGxvdyBibHVl
+IGJveCB1bmRlciB0aGUgYmFzZWxpbmUgb2YgY29ycmVzcG9uZGluZyB0YXNrIAp0byBtYXJrIHJ1
+bm5pbmcgaW4gT09CIHN0YXRlLCBzdGFydGluZyBmcm9tIGZpcnN0IGNvYmFsdF9zd2l0Y2hfY29u
+dGV4dCBzd2l0Y2hpbmcKdGFzayBpbiAgdG8gbmV4dCBjb2JhbHRfc3dpdGNoX2NvbnRleHQgc3dp
+dGNoaW5nIGl0IG91dCBsaWtlIGF0dGFjaGVkIHBpYz8KCj4KPkluIGZhY3QsIHZpc3VhbGl6aW5n
+IHRoZSBkb3ZldGFpbCBzdGF0ZSBjb3VsZCBiZSBzZWVuIGFzIGFub3RoZXIgdXNlCj5jYXNlIGZv
+ciB2aXN1YWxpemluZyB0aGluZ3MgbGlrZSBpbnRlcnJ1cHQgbWFza3Mgb2YgcHJlZW1wdGlvbiBs
+b2Nrcwo+dGhhdCBMaW51eCB1cHN0cmVhbSBoYXMuIE1heWJlIHRoZXJlIGFyZSBhbHJlYWR5IGlk
+ZWFzIG9yIGV2ZW4gYml0cyB0bwo+bWFrZSB0aGF0IHBvc3NpYmxlLCBhbmQgd291bGQgY291bGQg
+cmUtdXNlZCB0aGVtLiBPciB3ZSBjb3VsZCBzZWxsIG91cgo+ZGVtYW5kIHZpYSBlbmFibGluZyB0
+aG9zZSBvdGhlciBzY2VuYXJpb3MgYXMgd2VsbC4uLgo+Cj5KYW4KPgo+LS0gCj5TaWVtZW5zIEFH
+LCBUIFJEQSBJT1QKPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
+ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBJTUdfNDk2MC5KUEcKVHlwZTogaW1hZ2UvanBlZwpT
+aXplOiA1MjkyOTM4IGJ5dGVzCkRlc2M6IElNR180OTYwLkpQRwpVUkw6IDxodHRwOi8veGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMTEyMTMvNGFhODk0MTYvYXR0
+YWNobWVudC5qcGU+Cg==
