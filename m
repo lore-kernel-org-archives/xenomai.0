@@ -1,11 +1,10 @@
-Subject: Re: [RFC PATCH V2] kernel-shark: add plugin for handling xenomai
- cobalt context switch event
-References: <20211213015502.32635-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH v4 0/8] drivers/can: add support for Bosch C_CAN controller
+References: <20211212115611.3036-1-dariobin@libero.it>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4cfd0b3a-c0ea-90ce-2398-c0e71693ccfd@siemens.com>
-Date: Mon, 13 Dec 2021 08:49:56 +0100
+Message-ID: <bb5be4c7-6482-ac78-017f-6a49d9ae6148@siemens.com>
+Date: Mon, 13 Dec 2021 08:57:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211213015502.32635-1-hongzhan.chen@intel.com>
+In-Reply-To: <20211212115611.3036-1-dariobin@libero.it>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,224 +16,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: Dario Binacchi <dariobin@libero.it>, xenomai@xenomai.org
+Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
 
-On 13.12.21 02:55, Hongzhan Chen wrote:
-> For Xenomai-cobalt enabled system, cobalt_switch_context means that there
-> is context switch in companion core(realtime core), which we may need
-> to do special treatment and take correct action as main kernel sched_switch.
-> We need to update cpu bar regarding cobalt_switch_context event to correct
-> color as switching-in task.
+On 12.12.21 12:56, Dario Binacchi wrote:
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> The series was created to optimize the use of the C_CAN controller
+> (maximum number of message objects, use of FIFO, ...) to get the
+> best possible RX/TX throughput from hardware.
 > 
-> diff --git a/src/libkshark-tepdata.c b/src/libkshark-tepdata.c
-> index 9740ed9..e933b39 100644
-> --- a/src/libkshark-tepdata.c
-> +++ b/src/libkshark-tepdata.c
-> @@ -1208,6 +1208,7 @@ static void kshark_tep_init_methods(struct kshark_generic_stream_interface *inte
->  /** A list of built in default plugins for FTRACE (trace-cmd) data. */
->  const char *tep_plugin_names[] = {
->  	"sched_events",
-> +	"xenomai_cobalt_switch_events",
->  	"missed_events",
->  	"kvm_combo",
->  };
-> diff --git a/src/plugins/CMakeLists.txt b/src/plugins/CMakeLists.txt
-> index 3e170fa..276eaaa 100644
-> --- a/src/plugins/CMakeLists.txt
-> +++ b/src/plugins/CMakeLists.txt
-> @@ -44,6 +44,10 @@ if (Qt5Widgets_FOUND AND TT_FONT_FILE)
->                       SOURCE sched_events.c SchedEvents.cpp)
->      list(APPEND PLUGIN_LIST "sched_events")
->  
-> +    BUILD_GUI_PLUGIN(NAME xenomai_cobalt_switch_events
-> +                     SOURCE xenomai_cobalt_switch_events.c)
-> +    list(APPEND PLUGIN_LIST "xenomai_cobalt_switch_events")
-> +
->      BUILD_GUI_PLUGIN(NAME event_field_plot
->                       MOC EventFieldDialog.hpp
->                       SOURCE event_field_plot.c EventFieldDialog.cpp EventFieldPlot.cpp)
-> diff --git a/src/plugins/xenomai_cobalt_switch_events.c b/src/plugins/xenomai_cobalt_switch_events.c
-> new file mode 100644
-> index 0000000..4639d24
-> --- /dev/null
-> +++ b/src/plugins/xenomai_cobalt_switch_events.c
-> @@ -0,0 +1,116 @@
-> +// SPDX-License-Identifier: LGPL-2.1
-> +
-> +/*
-> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen <hongzhan.chen@intel.com>
-> + */
-> +
-> +/**
-> + *  @file    xenomai_cobalt_switch_events.c
-> + *  @brief   handle xenomai cobalt switch context event
-> + */
-> +
-> +// C
-> +#include <stdlib.h>
-> +#include <stdio.h>
-> +
-> +// trace-cmd
-> +#include <trace-cmd.h>
-> +
-> +// KernelShark
-> +#include "plugins/xenomai_cobalt_switch_events.h"
-> +#include "libkshark-tepdata.h"
-> +
-> +/** Plugin context instance. */
-> +
-> +static void cobalt_free_context(struct plugin_cobalt_context *plugin_ctx)
-> +{
-> +	return;
-> +}
-> +
-> +/** A general purpose macro is used to define plugin context. */
-> +KS_DEFINE_PLUGIN_CONTEXT(struct plugin_cobalt_context, cobalt_free_context);
-> +
-> +static bool plugin_cobalt_init_context(struct kshark_data_stream *stream,
-> +				      struct plugin_cobalt_context *plugin_ctx)
-> +{
-> +	struct tep_event *event;
-> +
-> +	if (!kshark_is_tep(stream))
-> +		return false;
-> +
-> +	plugin_ctx->tep = kshark_get_tep(stream);
-> +
-> +	event = tep_find_event_by_name(plugin_ctx->tep,
-> +					"cobalt_core", "cobalt_switch_context");
-> +	if (!event)
-> +		return false;
-> +
-> +	plugin_ctx->cobalt_switch_event = event;
-> +	plugin_ctx->cobalt_switch_next_field =
-> +		tep_find_any_field(event, "next_pid");
-> +
-> +	plugin_ctx->cobalt_switch_prev_state_field =
-> +		tep_find_field(event, "prev_state");
-> +
-> +	return true;
-> +}
-> +
-> +static void plugin_cobalt_switch_action(struct kshark_data_stream *stream,
-> +				      void *rec, struct kshark_entry *entry)
-> +{
-> +	struct tep_record *record = (struct tep_record *) rec;
-> +	struct plugin_cobalt_context *plugin_ctx;
-> +	unsigned long long next_pid;
-> +	int ret;
-> +
-> +	plugin_ctx = __get_context(stream->stream_id);
-> +	if (!plugin_ctx)
-> +		return;
-> +
-> +	ret = tep_read_number_field(plugin_ctx->cobalt_switch_next_field,
-> +				    record->data, &next_pid);
-> +
-> +	if (ret == 0 && next_pid >= 0)
-> +		entry->pid = next_pid;
-> +}
-> +
-> +/** Load this plugin. */
-> +int KSHARK_PLOT_PLUGIN_INITIALIZER(struct kshark_data_stream *stream)
-> +{
-> +	struct plugin_cobalt_context *plugin_ctx;
-> +
-> +	plugin_ctx = __init(stream->stream_id);
-> +	if (!plugin_ctx || !plugin_cobalt_init_context(stream, plugin_ctx)) {
-> +		__close(stream->stream_id);
-> +		return 0;
-> +	}
-> +
-> +	if (plugin_ctx->cobalt_switch_event) {
-> +		kshark_register_event_handler(stream,
-> +						plugin_ctx->cobalt_switch_event->id,
-> +						plugin_cobalt_switch_action);
-> +	}
-> +
-> +	return 1;
-> +}
-> +
-> +/** Unload this plugin. */
-> +int KSHARK_PLOT_PLUGIN_DEINITIALIZER(struct kshark_data_stream *stream)
-> +{
-> +	struct plugin_cobalt_context *plugin_ctx = __get_context(stream->stream_id);
-> +	int ret = 0;
-> +
-> +	if (plugin_ctx) {
-> +		if (plugin_ctx->cobalt_switch_event) {
-> +			kshark_unregister_event_handler(stream,
-> +							plugin_ctx->cobalt_switch_event->id,
-> +							plugin_cobalt_switch_action);
-> +		}
-> +
-> +		ret = 1;
-> +	}
-> +
-> +	__close(stream->stream_id);
-> +
-> +	return ret;
-> +}
-> diff --git a/src/plugins/xenomai_cobalt_switch_events.h b/src/plugins/xenomai_cobalt_switch_events.h
-> new file mode 100644
-> index 0000000..4a3bc66
-> --- /dev/null
-> +++ b/src/plugins/xenomai_cobalt_switch_events.h
-> @@ -0,0 +1,45 @@
-> +/* SPDX-License-Identifier: LGPL-2.1 */
-> +
-> +/*
-> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen<hongzhan.chen@intel.com>
-> + */
-> +
-> +/**
-> + *  @file    xenomai_cobalt_switch_events.h
-> + *  @brief   Plugin for xenomai cobalt switch context event
-> + */
-> +
-> +#ifndef _KS_PLUGIN_SHED_H
-> +#define _KS_PLUGIN_SHED_H
-> +
-> +// KernelShark
-> +#include "libkshark.h"
-> +#include "libkshark-plugin.h"
-> +
-> +#ifdef __cplusplus
-> +extern "C" {
-> +#endif
-> +
-> +/** Structure representing a plugin-specific context. */
-> +struct plugin_cobalt_context {
-> +	/** Page event used to parse the page. */
-> +	struct tep_handle	*tep;
-> +
-> +	/** Pointer to the cobalt_switch_event object. */
-> +	struct tep_event	*cobalt_switch_event;
-> +
-> +	 /** Pointer to the cobalt_switch_next_field format descriptor. */
-> +	struct tep_format_field *cobalt_switch_next_field;
-> +
-> +	/** Pointer to the cobalt_switch_prev_state_field format descriptor. */
-> +	struct tep_format_field *cobalt_switch_prev_state_field;
-> +
-> +};
-> +
-> +KS_DECLARE_PLUGIN_CONTEXT_METHODS(struct plugin_cobalt_context)
-> +
-> +#ifdef __cplusplus
-> +}
-> +#endif
-> +
-> +#endif
+> To emphasize the purpose of the series I also added the patch
+> which adds multi-message support to `sendmsg ', rather than'
+> submitting it separately. In fact, it too has contributed to
+> increasing transmission throughput.
+> 
+> The patches prior to the one adding the BOSCH C_CAN controller driver,
+> are a backporting of commits from the linux kernel that also impacted
+> on the driver itself and I found it necessary to add to the series.
+> 
+> The latest patch, as described in its commit, modified Stephen
+> Battazzo's patch [1] with bug fixes, backporting of commits from the
+> linux kernel, extension of message objects to 64 and improvements in
+> FIFO handling. This series was in fact preceded by the creation of
+> patches which I sent to the Linux kernel and which were then accepted:
+> 
+> 387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
+> 28e86e9ab522 ("can: c_can: support tx ring algorithm")
+> a54cdbba9dee ("can: c_can: exit c_can_do_tx() early if no frames have been sent")
+> 5064e40596f4 ("can: c_can: remove struct c_can_priv::priv field")
+> 06fc143b2ede dt-bindings: net: can: c_can: convert to json-schema
+> 132f2d45fb23 ("can: c_can: add support to 64 message objects")
+> 13831ce69c77 ("can: c_can: prepare to up the message objects number")
+> fcbded019855 ("can: c_can: use 32-bit write to set arbitration register")
+> eddf67115040 ("can: c_can: add a comment about IF_RX interface's use")
+> c8a6b44388cb ("can: c_can: fix indentation")
+> f65735c203d5 ("can: c_can: remove unused code")
+> 
+> The patch was tested on a custom board mounting an AM335x SOC.
+> 
+> PCI support has not been developed.
+> 
+> [1] http://xenomai.org/pipermail/xenomai/2015-July/034690.html
+> 
+> Changes in v4:
+> - Add the patch to the series.
+> - Load/unload the CAN drivers modules before/after running the test.
+> - Add setup/teardown function
+> 
+> Changes in v3:
+> - Add the patch to the series.
+> - Add virtual CAN testsuite
+> 
+> Changes in v2:
+> - Expand the commit message to better describe the added API.
+> - Drop 'default n' Kconfig
+> - Enable the driver for Xenomai CI builds
+> - Drop commented code
+> - Drop power managemet (pm) code
+> 
+> Dario Binacchi (8):
+>   lib/smokey: add smokey_{modprobe,rmmod} helpers
+>   testsuite/smokey: add virtual CAN testsuite
+>   drivers/can: add multi message support to sendmsg
+>   drivers/can: add CAN_ERR_CRTL_ACTIVE info status
+>   drivers/can: add len field to can frame structures
+>   drivers/can: add a minimal support to ethtool API
+>   drivers/can: fix updating of tx_count statistics
+>   drivers/can: add support for Bosch C_CAN controller
+> 
+>  .gitlab-ci.yml                                |    2 +
+>  configure.ac                                  |    1 +
+>  include/rtdm/uapi/can.h                       |    6 +-
+>  include/smokey/smokey.h                       |    6 +-
+>  kernel/drivers/can/Kconfig                    |    1 +
+>  kernel/drivers/can/Makefile                   |    4 +-
+>  kernel/drivers/can/README                     |    1 +
+>  kernel/drivers/can/c_can/Kconfig              |   15 +
+>  kernel/drivers/can/c_can/Makefile             |    8 +
+>  kernel/drivers/can/c_can/rtcan_c_can.c        | 1298 +++++++++++++++++
+>  kernel/drivers/can/c_can/rtcan_c_can.h        |  255 ++++
+>  .../drivers/can/c_can/rtcan_c_can_ethtool.c   |   47 +
+>  .../drivers/can/c_can/rtcan_c_can_platform.c  |  461 ++++++
+>  kernel/drivers/can/mscan/rtcan_mscan.c        |    1 +
+>  kernel/drivers/can/rtcan_dev.h                |    4 +-
+>  kernel/drivers/can/rtcan_ethtool.c            |   75 +
+>  kernel/drivers/can/rtcan_ethtool.h            |   24 +
+>  kernel/drivers/can/rtcan_flexcan.c            |    1 +
+>  kernel/drivers/can/rtcan_raw.c                |  240 +--
+>  kernel/drivers/can/rtcan_raw_dev.c            |   20 +
+>  kernel/drivers/can/rtcan_socket.h             |    5 +-
+>  kernel/drivers/can/rtcan_virt.c               |    1 +
+>  kernel/drivers/can/sja1000/rtcan_sja1000.c    |    1 +
+>  lib/smokey/helpers.c                          |   99 ++
+>  testsuite/smokey/Makefile.am                  |    2 +
+>  testsuite/smokey/can-virt/Makefile.am         |    8 +
+>  testsuite/smokey/can-virt/virt.c              |  356 +++++
+>  testsuite/smokey/net_common/setup.c           |   68 +-
+>  28 files changed, 2826 insertions(+), 184 deletions(-)
+>  create mode 100644 kernel/drivers/can/c_can/Kconfig
+>  create mode 100644 kernel/drivers/can/c_can/Makefile
+>  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.c
+>  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.h
+>  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_ethtool.c
+>  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_platform.c
+>  create mode 100644 kernel/drivers/can/rtcan_ethtool.c
+>  create mode 100644 kernel/drivers/can/rtcan_ethtool.h
+>  create mode 100644 testsuite/smokey/can-virt/Makefile.am
+>  create mode 100644 testsuite/smokey/can-virt/virt.c
 > 
 
-Ah, that looks way more self-contained!
-
-But plugins have to be built in-tree of Kernelshark? Or does the new
-architecture allow to build them against a "kernelshark-devel" package
-as well?
+Thanks, applied to next.
 
 Jan
 
