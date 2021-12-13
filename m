@@ -1,15 +1,17 @@
-Subject: Re: [xenomai-images] [PATCH 1/1] Changes to support sbuild-based Isar
-References: <20211209073619.17698-1-ubely@ilbers.de>
- <20211209073619.17698-2-ubely@ilbers.de>
- <094d5cdf-0528-009b-28ba-0241116f3d86@siemens.com> <5330380.rdbgypaU67@hp>
+Subject: Re: questions about comments on
+ https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
+References: <BY5PR11MB4276970F873C8A411A7D555EF26E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+ <24acf7bd-1e34-a094-7853-9ad1602d8ddf@siemens.com>
+ <MN2PR11MB4285BDFDBBA5193F5586B42AF2749@MN2PR11MB4285.namprd11.prod.outlook.com>
+ <MN2PR11MB4285148014996C770370B416F2749@MN2PR11MB4285.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <be988d7f-a605-45e7-e0cc-af88c9d74dcc@siemens.com>
-Date: Mon, 13 Dec 2021 08:44:59 +0100
+Message-ID: <5960f5c9-256a-44c8-f13b-87c0cd24f7b3@siemens.com>
+Date: Mon, 13 Dec 2021 08:48:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <5330380.rdbgypaU67@hp>
+In-Reply-To: <MN2PR11MB4285148014996C770370B416F2749@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,71 +20,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Uladzimir Bely <ubely@ilbers.de>, xenomai@xenomai.org, Baurzhan Ismagulov <ibr@ilbers.de>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 13.12.21 06:41, Uladzimir Bely wrote:
-> In mail from четверг, 9 декабря 2021 г. 12:35:16 +03 user Jan Kiszka wrote:
->> On 09.12.21 08:36, Uladzimir Bely via Xenomai wrote:
+On 13.12.21 03:37, Chen, Hongzhan wrote:
+> 
+> 
+>  
+>>> -----Original Message-----
+>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>> Sent: Thursday, December 9, 2021 5:35 PM
+>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>>> Subject: Re: questions about comments on https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33
 >>>
->>> diff --git a/recipes-xenomai/xenomai/xenomai.inc
->>> b/recipes-xenomai/xenomai/xenomai.inc index 8f13767..454dd7b 100644
->>> --- a/recipes-xenomai/xenomai/xenomai.inc
->>> +++ b/recipes-xenomai/xenomai/xenomai.inc
->>> @@ -41,7 +41,5 @@ do_prepare_build() {
+>>> On 07.12.21 04:11, Chen, Hongzhan wrote:
+>>>> Hi Jan
+>>>>
+>>>> I have some questions about comments on  https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33 and need your help to comment more.
+>>>>
+>>>> 1. I do not quite understand the requirement "visualize task switches correctly in Kernelshark (color in CPU bar is not updating on cobalt_switch_context)".
+>>>>
+>>>> When I click the cobalt_switch_context event listed in the event table on the second half in the kernelshark, actually color in cpu bar is updating to 
+>>>> green because there is long green vertical  line to mark focused event like attached picture.  In addition , In spite of focused thing,  colors mainly 
+>>>> change depending on what task is running for cpu plots in kernelshark. when cobalt_switch_context is traced, it still be in the prev context and its 
+>>>> color is same with task prev in kernelshark. Do we want to update color of  cobalt_switch_context  to specific color different from all tasks even if there is no 
+>>>> focused thing?  What result do we need to achieve when there is cobalt_switch_context, Could you be more specific?
+>>>>
 >>>
->>>  dpkg_runbuild_prepend() {
->>>  
->>>      bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
->>>      
->>>                       ${PV} ${COMMIT})
+>>> I assume this one is resolved now, at least regarding what the goal
+>>> would be.
 >>>
->>> -
->>> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
->>> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
->>> +    SBUILD_PREBUILD="cd %p; scripts/bootstrap"
+>>>> 2. Regarding  the requirement " visualize RT/Non-RT (out-of-band/in-band) state in CPU bar)",
+>>>>     2.1. Do we need to differentiate state  running a Linux task out-of-band and running whatever code from the out-of-band execution stage as described in 
+>>>>              " What you really need to know at this point" of  https://evlproject.org/dovetail/altsched/?
+>>>>     2.2 What state do we want to show  in CPU bar? Different color covering the size of  RT/Non-RT state other than all tasks and CPUs?  If so, we may ask for a plugin
+>>>>           in kernelshark , which would raise similar question as you mentioned in comments.
+>>>
+>>> I suspect it would be best to decouple to stage state (in-band, oob)
+>> >from the current task, maybe by adding another bar underneath the task
+>  >bar for each CPU that shows this state.
 >>
->> Could we rather provide an abstract interface to users, not carrying
->> SBUILD in its name? I'm concerned that the current will make it hard to
->> switch builders in the future if we may have to.
->>
->> Jan
+>> What about painting a hollow blue box under the baseline of corresponding task 
+>> to mark running in OOB state, starting from first cobalt_switch_context switching
+>> task in  to next cobalt_switch_context switching it out like attached pic?
 > 
-> Hello.
+> The hollow box is commonly used in task plot such as hollow green box for wake up latency
+> as described in page 15 of [1].
 > 
-> With current approach it doesn't look easy enough. With buildchroot, it's 
-> possible to do anything we want in 'dpkg_runbuild_prepend' or 'prepare_build' 
-> task. When the actual build is started, all preparations are here and can be 
-> used.
-> 
-> Sbuild is an isolated environment, so similar things can only be somehow 
-> passed to the build environment. Here we use SBUILD_PREBUILD to do it, so all 
-> preparations are 'postponed' until real build starts and all dependencies 
-> installed.
-> 
-> If we want to unify the approach, we have 2 possible ways:
-> 1) use something like SBUILD_PREBUILD (we can call it BUILD_PREBUILD) - so, 
-> the preparations won't be done in some prebuild tasks, but they will be 
-> postponed (with buildchroot, too) and executed during the actual build.
-> 2) place the stuff into debian/rules, using patches or somehow else. So, the 
-> preparations will be done in Debian style at the correct time.
 
-The latter is likely better than adding an Isar-specific interface.
-However, we may need to add hooks to complex Isar-provided rules like in
-the kernel case. You don't want to fork them, just to add a statement.
+Then we only need to find a pattern that cannot be confused with
+existing plots.
 
-> 
-> Q:
-> Also, there is a question regarding 'xenomai.inc' quoted above. Why 'scripts/
-> bootstrap' is executed manually here, before the build? There is `bootstrap` 
-> make target that does exactly the same, but at the build stage.
-> I'm simply removing 'dpkg_runbuild_prepend()' from xenomai.inc and it is still 
-> working for me.
+Can that plotting be provided by a custom plugin?
 
-Indeed, I probably missed that back then when adding the recipe - or
-something broke things that was fixed meanwhile. Feel free to propose a
-patch that removes the bootstrap call.
-
-Thanks,
 Jan
 
 -- 
