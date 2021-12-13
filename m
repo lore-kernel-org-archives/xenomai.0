@@ -1,13 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v3 1/8] ci/kas: Consolidate kas option files,
- introduce opt-ci.yml
-Date: Mon, 15 Nov 2021 11:13:39 +0100
-Message-Id: <20211115101346.3566075-2-florian.bezdeka@siemens.com>
-In-Reply-To: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
-References: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [PATCH v4 7/8] drivers/can: fix updating of tx_count statistics
+References: <20211212115611.3036-1-dariobin@libero.it>
+ <20211212115611.3036-6-dariobin@libero.it>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <67fcc697-1a8f-646b-6877-836dce689ece@siemens.com>
+Date: Mon, 13 Dec 2021 13:13:20 +0100
 MIME-Version: 1.0
+In-Reply-To: <20211212115611.3036-6-dariobin@libero.it>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,184 +17,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Dario Binacchi <dariobin@libero.it>, xenomai@xenomai.org
+Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
 
-Integrate opt-lava-test.yml and opt-ext4-gz.yml into opt-ci.yml.
+On 12.12.21 12:56, Dario Binacchi wrote:
+> As in the Linux kernel, the counter is updated only after the message
+> has been really transmitted.
+> 
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> ---
+> 
+> (no changes since v1)
+> 
+>  kernel/drivers/can/mscan/rtcan_mscan.c     | 1 +
+>  kernel/drivers/can/rtcan_flexcan.c         | 1 +
+>  kernel/drivers/can/rtcan_raw.c             | 1 -
+>  kernel/drivers/can/rtcan_virt.c            | 1 +
+>  kernel/drivers/can/sja1000/rtcan_sja1000.c | 1 +
+>  5 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
+> index 387e27cc0..da573aba6 100644
+> --- a/kernel/drivers/can/mscan/rtcan_mscan.c
+> +++ b/kernel/drivers/can/mscan/rtcan_mscan.c
+> @@ -217,6 +217,7 @@ static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
+>  		out_8(&regs->cantier, 0);
+>  		/* Wake up a sender */
+>  		rtdm_sem_up(&dev->tx_sem);
+> +		dev->tx_count++;
+>  
+>  		if (rtcan_loopback_pending(dev)) {
+>  
+> diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
+> index 7569d16f7..3348e8ce0 100644
+> --- a/kernel/drivers/can/rtcan_flexcan.c
+> +++ b/kernel/drivers/can/rtcan_flexcan.c
+> @@ -897,6 +897,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
+>  			      &priv->tx_mb->can_ctrl);
+>  		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
+>  		rtdm_sem_up(&dev->tx_sem);
+> +		dev->tx_count++;
+>  		if (rtcan_loopback_pending(dev))
+>  			rtcan_loopback(dev);
+>  		handled = RTDM_IRQ_HANDLED;
+> diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+> index b17c1709d..dffc6e837 100644
+> --- a/kernel/drivers/can/rtcan_raw.c
+> +++ b/kernel/drivers/can/rtcan_raw.c
+> @@ -844,7 +844,6 @@ static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket
+>  	goto send_out2;
+>      }
+>  
+> -    dev->tx_count++;
+>      ret = dev->hard_start_xmit(dev, frame);
+>  
+>      /* Return number of bytes sent upon successful completion */
+> diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
+> index c86c17fc3..28e06a9d6 100644
+> --- a/kernel/drivers/can/rtcan_virt.c
+> +++ b/kernel/drivers/can/rtcan_virt.c
+> @@ -56,6 +56,7 @@ static int rtcan_virt_start_xmit(struct rtcan_device *tx_dev,
+>  
+>  	/* we can transmit immediately again */
+>  	rtdm_sem_up(&tx_dev->tx_sem);
+> +	tx_dev->tx_count++;
+>  
+>  	skb.rb_frame_size = EMPTY_RB_FRAME_SIZE;
+>  
+> diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+> index bd6c0ba5c..0f49551f9 100644
+> --- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
+> +++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+> @@ -326,6 +326,7 @@ static int rtcan_sja_interrupt(rtdm_irq_t *irq_handle)
+>  	if (irq_source & SJA_IR_TI) {
+>  	    /* Wake up a sender */
+>  	    rtdm_sem_up(&dev->tx_sem);
+> +	    dev->tx_count++;
+>  
+>  	    if (rtcan_loopback_pending(dev)) {
+>  
+> 
 
-opt-ci.yml now holds all CI specific options:
-  - IMAGE_TYPE adjustments to fulfill LAVA needs
-  - COMPRESS for virtual qemu targets
+I'll keep this fix in next and will later on propagate it to stable. So
+you can drop it from v5.
 
-CI configuration has been cleaned up. We only need opt-ci.yml,
-all board related BUILD_OPTIONS have been removed.
+Thanks,
+Jan
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- ci/gitlab-ci-base.yml | 10 ++--------
- opt-ci.yml            | 29 +++++++++++++++++++++++++++++
- opt-ext4-gz.yml       | 24 ------------------------
- opt-lava-test.yml     | 20 --------------------
- 4 files changed, 31 insertions(+), 52 deletions(-)
- create mode 100644 opt-ci.yml
- delete mode 100644 opt-ext4-gz.yml
- delete mode 100644 opt-lava-test.yml
-
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 8a1dbfb..231b9ca 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -39,8 +39,8 @@ default:
-   stage: build
-   script:
-     - sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
--    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml"
--    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml
-+    - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml"
-+    - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-debug.yml:opt-ci.yml
-     - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
- 
- .test:
-@@ -64,7 +64,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: qemu-amd64
--    BUILD_OPTIONS: ":opt-ext4-gz.yml"
- 
- .lava-test:qemu-amd64:
-   extends: .test
-@@ -75,7 +74,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: qemu-armhf
--    BUILD_OPTIONS: ":opt-ext4-gz.yml"
- 
- .lava-test:qemu-armhf:
-   extends: .test
-@@ -86,7 +84,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: qemu-arm64
--    BUILD_OPTIONS: ":opt-ext4-gz.yml"
- 
- .lava-test:qemu-arm64:
-   extends: .test
-@@ -97,7 +94,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: hikey
--    BUILD_OPTIONS: ":opt-lava-test.yml"
- 
- .lava-test:hikey:
-   extends: .test
-@@ -109,7 +105,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: beagle-bone-black
--    BUILD_OPTIONS: ":opt-lava-test.yml"
- 
- .lava-test:beagle-bone-black:
-   extends: .test
-@@ -121,7 +116,6 @@ default:
-   extends: .build
-   variables:
-     TARGET: x86-64-efi
--    BUILD_OPTIONS: ":opt-lava-test.yml"
- 
- .lava-test:x86-64-efi:
-   extends: .test
-diff --git a/opt-ci.yml b/opt-ci.yml
-new file mode 100644
-index 0000000..7f8d715
---- /dev/null
-+++ b/opt-ci.yml
-@@ -0,0 +1,29 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2021
-+#
-+# Authors:
-+#  Florian Bezdeka <florian.bezdeka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 10
-+
-+repos:
-+  isar:
-+    patches:
-+      01-compress-ext4:
-+        path: isar-patches/0001-classes-ext4.img-Compress.patch
-+        repo: xenomai
-+
-+# LAVA uses nfs to deploy the image to real boards. For this we need a tarball
-+# instead of full disk/wic image
-+# For qemu we need a compressed ext4-img
-+
-+local_conf_header:
-+  xenomai-ci: |
-+    IMAGE_TYPE = "${@ 'ext4-img' if d.getVar('MACHINE', True).startswith('qemu') else 'targz-img' }"
-+    COMPRESS = "${@ 'gz' if d.getVar('MACHINE', True).startswith('qemu') else '' }"
-\ No newline at end of file
-diff --git a/opt-ext4-gz.yml b/opt-ext4-gz.yml
-deleted file mode 100644
-index 409bf62..0000000
---- a/opt-ext4-gz.yml
-+++ /dev/null
-@@ -1,24 +0,0 @@
--#
--# Xenomai Real-Time System
--#
--# Copyright (c) Siemens AG, 2018
--#
--# Authors:
--#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
--#
--# SPDX-License-Identifier: MIT
--#
--
--header:
--  version: 10
--
--repos:
--  isar:
--    patches:
--      01-compress-ext4:
--        path: isar-patches/0001-classes-ext4.img-Compress.patch
--        repo: xenomai
--
--local_conf_header:
--  compress: |
--    COMPRESS = "gz"
-diff --git a/opt-lava-test.yml b/opt-lava-test.yml
-deleted file mode 100644
-index 9c33da6..0000000
---- a/opt-lava-test.yml
-+++ /dev/null
-@@ -1,20 +0,0 @@
--#
--# Xenomai Real-Time System
--#
--# Copyright (c) Siemens AG, 2019
--#
--# Authors:
--#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
--#
--# SPDX-License-Identifier: MIT
--#
--
--header:
--  version: 10
--
--# lava uses nfs to deploy the image. For this we need a tarball instead of
--# full image
--
--local_conf_header:
--  image-type: |
--    IMAGE_TYPE = "targz-img"
 -- 
-2.30.2
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
