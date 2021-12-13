@@ -1,10 +1,11 @@
-Subject: Re: [PATCH v4 0/8] drivers/can: add support for Bosch C_CAN controller
+Subject: Re: [PATCH v4 1/8] lib/smokey: add smokey_{modprobe,rmmod} helpers
 References: <20211212115611.3036-1-dariobin@libero.it>
+ <20211212115611.3036-2-dariobin@libero.it>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bb5be4c7-6482-ac78-017f-6a49d9ae6148@siemens.com>
-Date: Mon, 13 Dec 2021 08:57:46 +0100
+Message-ID: <a7f52d5d-92b4-60a9-8373-13ee105089f7@siemens.com>
+Date: Mon, 13 Dec 2021 11:43:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211212115611.3036-1-dariobin@libero.it>
+In-Reply-To: <20211212115611.3036-2-dariobin@libero.it>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,112 +21,230 @@ To: Dario Binacchi <dariobin@libero.it>, xenomai@xenomai.org
 Cc: Michael Trimarchi <michael@amarulasolutions.com>, Wolfgang Grandegger <wg@grandegger.com>, Philippe Gerum <rpm@xenomai.org>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
 
 On 12.12.21 12:56, Dario Binacchi wrote:
+> Both functions, implemented and used for the net, are general purpose
+> and therefore can be useful in other parts of the application with the
+> application of minimal changes.
 > 
-> The series was created to optimize the use of the C_CAN controller
-> (maximum number of message objects, use of FIFO, ...) to get the
-> best possible RX/TX throughput from hardware.
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
 > 
-> To emphasize the purpose of the series I also added the patch
-> which adds multi-message support to `sendmsg ', rather than'
-> submitting it separately. In fact, it too has contributed to
-> increasing transmission throughput.
-> 
-> The patches prior to the one adding the BOSCH C_CAN controller driver,
-> are a backporting of commits from the linux kernel that also impacted
-> on the driver itself and I found it necessary to add to the series.
-> 
-> The latest patch, as described in its commit, modified Stephen
-> Battazzo's patch [1] with bug fixes, backporting of commits from the
-> linux kernel, extension of message objects to 64 and improvements in
-> FIFO handling. This series was in fact preceded by the creation of
-> patches which I sent to the Linux kernel and which were then accepted:
-> 
-> 387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
-> 28e86e9ab522 ("can: c_can: support tx ring algorithm")
-> a54cdbba9dee ("can: c_can: exit c_can_do_tx() early if no frames have been sent")
-> 5064e40596f4 ("can: c_can: remove struct c_can_priv::priv field")
-> 06fc143b2ede dt-bindings: net: can: c_can: convert to json-schema
-> 132f2d45fb23 ("can: c_can: add support to 64 message objects")
-> 13831ce69c77 ("can: c_can: prepare to up the message objects number")
-> fcbded019855 ("can: c_can: use 32-bit write to set arbitration register")
-> eddf67115040 ("can: c_can: add a comment about IF_RX interface's use")
-> c8a6b44388cb ("can: c_can: fix indentation")
-> f65735c203d5 ("can: c_can: remove unused code")
-> 
-> The patch was tested on a custom board mounting an AM335x SOC.
-> 
-> PCI support has not been developed.
-> 
-> [1] http://xenomai.org/pipermail/xenomai/2015-July/034690.html
+> ---
 > 
 > Changes in v4:
 > - Add the patch to the series.
-> - Load/unload the CAN drivers modules before/after running the test.
-> - Add setup/teardown function
 > 
-> Changes in v3:
-> - Add the patch to the series.
-> - Add virtual CAN testsuite
+>  include/smokey/smokey.h             |  6 +-
+>  lib/smokey/helpers.c                | 99 +++++++++++++++++++++++++++++
+>  testsuite/smokey/net_common/setup.c | 68 +-------------------
+>  3 files changed, 106 insertions(+), 67 deletions(-)
 > 
-> Changes in v2:
-> - Expand the commit message to better describe the added API.
-> - Drop 'default n' Kconfig
-> - Enable the driver for Xenomai CI builds
-> - Drop commented code
-> - Drop power managemet (pm) code
-> 
-> Dario Binacchi (8):
->   lib/smokey: add smokey_{modprobe,rmmod} helpers
->   testsuite/smokey: add virtual CAN testsuite
->   drivers/can: add multi message support to sendmsg
->   drivers/can: add CAN_ERR_CRTL_ACTIVE info status
->   drivers/can: add len field to can frame structures
->   drivers/can: add a minimal support to ethtool API
->   drivers/can: fix updating of tx_count statistics
->   drivers/can: add support for Bosch C_CAN controller
-> 
->  .gitlab-ci.yml                                |    2 +
->  configure.ac                                  |    1 +
->  include/rtdm/uapi/can.h                       |    6 +-
->  include/smokey/smokey.h                       |    6 +-
->  kernel/drivers/can/Kconfig                    |    1 +
->  kernel/drivers/can/Makefile                   |    4 +-
->  kernel/drivers/can/README                     |    1 +
->  kernel/drivers/can/c_can/Kconfig              |   15 +
->  kernel/drivers/can/c_can/Makefile             |    8 +
->  kernel/drivers/can/c_can/rtcan_c_can.c        | 1298 +++++++++++++++++
->  kernel/drivers/can/c_can/rtcan_c_can.h        |  255 ++++
->  .../drivers/can/c_can/rtcan_c_can_ethtool.c   |   47 +
->  .../drivers/can/c_can/rtcan_c_can_platform.c  |  461 ++++++
->  kernel/drivers/can/mscan/rtcan_mscan.c        |    1 +
->  kernel/drivers/can/rtcan_dev.h                |    4 +-
->  kernel/drivers/can/rtcan_ethtool.c            |   75 +
->  kernel/drivers/can/rtcan_ethtool.h            |   24 +
->  kernel/drivers/can/rtcan_flexcan.c            |    1 +
->  kernel/drivers/can/rtcan_raw.c                |  240 +--
->  kernel/drivers/can/rtcan_raw_dev.c            |   20 +
->  kernel/drivers/can/rtcan_socket.h             |    5 +-
->  kernel/drivers/can/rtcan_virt.c               |    1 +
->  kernel/drivers/can/sja1000/rtcan_sja1000.c    |    1 +
->  lib/smokey/helpers.c                          |   99 ++
->  testsuite/smokey/Makefile.am                  |    2 +
->  testsuite/smokey/can-virt/Makefile.am         |    8 +
->  testsuite/smokey/can-virt/virt.c              |  356 +++++
->  testsuite/smokey/net_common/setup.c           |   68 +-
->  28 files changed, 2826 insertions(+), 184 deletions(-)
->  create mode 100644 kernel/drivers/can/c_can/Kconfig
->  create mode 100644 kernel/drivers/can/c_can/Makefile
->  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.c
->  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can.h
->  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_ethtool.c
->  create mode 100644 kernel/drivers/can/c_can/rtcan_c_can_platform.c
->  create mode 100644 kernel/drivers/can/rtcan_ethtool.c
->  create mode 100644 kernel/drivers/can/rtcan_ethtool.h
->  create mode 100644 testsuite/smokey/can-virt/Makefile.am
->  create mode 100644 testsuite/smokey/can-virt/virt.c
-> 
+> diff --git a/include/smokey/smokey.h b/include/smokey/smokey.h
+> index 185fd3a8b..0ac1e8df4 100644
+> --- a/include/smokey/smokey.h
+> +++ b/include/smokey/smokey.h
+> @@ -254,7 +254,11 @@ int smokey_barrier_timedwait(struct smokey_barrier *b,
+>  void smokey_barrier_release(struct smokey_barrier *b);
+>  
+>  int smokey_fork_exec(const char *path, const char *arg);
+> -	
+> +
+> +int smokey_modprobe(const char *name, bool silent);
+> +
+> +int smokey_rmmod(const char *name);
+> +
+>  #ifdef __cplusplus
+>  }
+>  #endif
+> diff --git a/lib/smokey/helpers.c b/lib/smokey/helpers.c
+> index da84c863c..dc0bb5d0c 100644
+> --- a/lib/smokey/helpers.c
+> +++ b/lib/smokey/helpers.c
+> @@ -292,3 +292,102 @@ int smokey_fork_exec(const char *path, const char *arg)
+>  	return 1;
+>  
+>  }
+> +
+> +#define SMOKEY_MOD_NUM       32
+> +static char *smokey_modules[SMOKEY_MOD_NUM];
+> +
+> +int smokey_modprobe(const char *name, bool silent)
+> +{
+> +	char buffer[128];
+> +	int err, len, i, midx = -1;
+> +	FILE *fp;
+> +
+> +	fp = fopen("/proc/modules", "r");
+> +	if (fp == NULL)
+> +		return -errno;
+> +
+> +	len = strlen(name);
+> +
+> +	while (fgets(buffer, sizeof(buffer), fp)) {
+> +		if (strncmp(buffer, name, len) == 0 &&
+> +		    len < sizeof(buffer) && buffer[len] == ' ') {
+> +			smokey_trace("%s module already loaded", name);
+> +			fclose(fp);
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	fclose(fp);
+> +
+> +	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
+> +		if (!smokey_modules[i]) {
+> +			midx = i;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (midx < 0)
+> +		return -EFAULT;
+> +
+> +	smokey_trace("%s module not there: modprobing", name);
+> +
+> +	err = smokey_check_errno(
+> +		snprintf(buffer, sizeof(buffer), "modprobe %s %s", name,
+> +			 silent ? "2>/dev/null" : ""));
+> +	if (err < 0)
+> +		return err;
+> +
+> +	err = smokey_check_errno(system(buffer));
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
+> +		if (!silent)
+> +			smokey_warning("%s: abnormal exit", buffer);
+> +		return -EINVAL;
+> +	}
+> +
+> +	smokey_modules[midx] = strdup(name);
+> +	return 0;
+> +}
+> +
+> +int smokey_rmmod(const char *name)
+> +{
+> +	char buffer[128];
+> +	int i, midx = -1, err;
+> +
+> +	if (!name)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
+> +		if (smokey_modules[i] && !strcmp(smokey_modules[i], name)) {
+> +			midx = i;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (midx < 0) {
+> +		smokey_trace("%s module was there on entry, keeping it", name);
+> +		return 0;
+> +	}
+> +
+> +	smokey_trace("unloading %s module", name);
+> +
+> +	err = smokey_check_errno(
+> +		snprintf(buffer, sizeof(buffer), "rmmod %s", name));
+> +	if (err < 0)
+> +		return err;
+> +
+> +	err = smokey_check_errno(system(buffer));
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
+> +		smokey_warning("%s: abnormal exit", buffer);
+> +		return -EINVAL;
+> +	}
+> +
+> +	free(smokey_modules[midx]);
+> +
+> +	return err;
+> +}
+> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
+> index 44a0cb24b..f97c14823 100644
+> --- a/testsuite/smokey/net_common/setup.c
+> +++ b/testsuite/smokey/net_common/setup.c
+> @@ -28,7 +28,6 @@
+>  struct module {
+>  	int option;
+>  	const char *name;
+> -	bool loaded;
+>  };
+>  
+>  #define TIMEOUT 10
+> @@ -141,81 +140,18 @@ static int do_down(const char *intf)
+>  static int smokey_net_modprobe(int modid, bool silent)
+>  {
+>  	struct module *m = modules + modid;
+> -	char buffer[128];
+> -	int err, len;
+> -	FILE *fp;
+>  
+>  	if (modid < 0)
+>  		return -EINVAL;
+>  
+> -	fp = fopen("/proc/modules", "r");
+> -	if (fp == NULL)
+> -		return -errno;
+> -
+> -	len = strlen(m->name);
+> -
+> -	while (fgets(buffer, sizeof(buffer), fp)) {
+> -		if (strncmp(buffer, m->name, len) == 0 &&
+> -		    len < sizeof(buffer) && buffer[len] == ' ') {
+> -			smokey_trace("%s module already loaded", m->name);
+> -			fclose(fp);
+> -			return 0;
+> -		}
+> -	}
+> -
+> -	fclose(fp);
+> -
+> -	smokey_trace("%s module not there: modprobing", m->name);
+> -
+> -	err = smokey_check_errno(
+> -		snprintf(buffer, sizeof(buffer), "modprobe %s %s", m->name,
+> -			 silent ? "2>/dev/null" : ""));
+> -	if (err < 0)
+> -		return err;
+> -
+> -	err = smokey_check_errno(system(buffer));
+> -	if (err < 0)
+> -		return err;
+> -
+> -	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
+> -		if (!silent)
+> -			smokey_warning("%s: abnormal exit", buffer);
+> -		return -EINVAL;
+> -	}
+> -
+> -	m->loaded = true;
+> -
+> -	return err;
+> +	return smokey_modprobe(m->name, silent);
+>  }
+>  
+>  static int smokey_net_rmmod(int modid)
+>  {
+>  	struct module *m = modules + modid;
+> -	char buffer[128];
+> -	int err;
+> -
+> -	if (!m->loaded) {
+> -		smokey_trace("%s module was there on entry, keeping it", m->name);
+> -		return 0;
+> -	}
 
-Thanks, applied to next.
+Reverting the series again: You broke the handling of already loaded (or
+built-in) modules, also for the rtnet tests.
+
+With CAN, you now get e.g.
+
+2021-12-13T09:36:48 rmmod: ERROR: Module xeno_can_virt is builtin.
+2021-12-13T09:36:48 helpers.c:386, rmmod xeno_can_virt: abnormal exit
+2021-12-13T09:36:48 rmmod: ERROR: Module xeno_can is builtin.
+2021-12-13T09:36:48 helpers.c:386, rmmod xeno_can: abnormal exit
 
 Jan
 
