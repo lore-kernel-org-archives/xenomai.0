@@ -1,15 +1,16 @@
-Subject: Re: [RFC PATCH 2/2] kernelshark: shape blue hollow box to show OOB
- state of task
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
+ cobalt context switch event
+Date: Tue, 14 Dec 2021 06:44:27 +0000
+Message-ID: <MN2PR11MB42851F06D18E71D4A540AA47F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20211214031537.14914-1-hongzhan.chen@intel.com>
- <20211214031537.14914-3-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d2948da4-7e34-5225-6f1d-7fabdf7b6174@siemens.com>
-Date: Tue, 14 Dec 2021 07:40:16 +0100
-MIME-Version: 1.0
-In-Reply-To: <20211214031537.14914-3-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="utf-8"
+ <20211214031537.14914-2-hongzhan.chen@intel.com>
+ <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
+In-Reply-To: <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,22 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.12.21 04:15, Hongzhan Chen wrote:
-> 1. store cobalt_switch_contexts event to data container.
-> 2. show blue hollow box to mark out-of-band state under the
->    basedline of task plot according to cobalt_switch_context
->    events.
-> 3. clickable cobalt_switch_context plugin shapes.
-> 
-
-How do I activate this? I have the plugin built and apparently loaded,
-but I'm not seeing that new boxes in the CPU or task plots.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Pg0KPg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+U2VudDogVHVlc2RheSwgRGVjZW1iZXIgMTQsIDIwMjEg
+MjozOCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4
+ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggMS8yXSBrZXJuZWwt
+c2hhcms6IGFkZCBwbHVnaW4gZm9yIGhhbmRsaW5nIHhlbm9tYWkgY29iYWx0IGNvbnRleHQgc3dp
+dGNoIGV2ZW50DQo+DQo+T24gMTQuMTIuMjEgMDQ6MTUsIEhvbmd6aGFuIENoZW4gd3JvdGU6DQo+
+PiBGb3IgWGVub21haS1jb2JhbHQgZW5hYmxlZCBzeXN0ZW0sIGNvYmFsdF9zd2l0Y2hfY29udGV4
+dCBtZWFucyB0aGF0IHRoZXJlDQo+PiBpcyBjb250ZXh0IHN3aXRjaCBpbiBjb21wYW5pb24gY29y
+ZShyZWFsdGltZSBjb3JlKSwgd2hpY2ggd2UgbWF5IG5lZWQNCj4+IHRvIGRvIHNwZWNpYWwgdHJl
+YXRtZW50IGFuZCB0YWtlIGNvcnJlY3QgYWN0aW9uIGFzIG1haW4ga2VybmVsIHNjaGVkX3N3aXRj
+aC4NCj4+IFdlIG5lZWQgdG8gdXBkYXRlIGNwdSBiYXIgcmVnYXJkaW5nIGNvYmFsdF9zd2l0Y2hf
+Y29udGV4dCBldmVudCB0byBjb3JyZWN0DQo+PiBjb2xvciBhcyBzd2l0Y2hpbmctaW4gdGFzay4N
+Cj4NCj5JdCdzIHRyaWNrZXIuLi4gSSBoYXZlIHRyYWNlIHdpdGggdGhlIGZvbGxvd2luZyBzZXF1
+ZW5jZSBoZXJlOg0KPg0KPiAgICAgICAgICAgICBnZGItODk4ICAgWzAwMF0gICA3NTMuOTQ0MTM3
+OiBjb2JhbHRfc3dpdGNoX2NvbnRleHQ6IHByZXZfbmFtZT1ST09ULzAgcHJldl9waWQ9MCBwcmV2
+X3ByaW89LTEgcHJldl9zdGF0ZT0weDIxODAwOCA9PT4gbmV4dF9uYW1lPXB0aGVscGVyIG5leHRf
+cGlkPTkxMiBuZXh0X3ByaW89Mw0KPiAgICAgICAgICAgICBnZGItODk4ICAgWzAwMF0gICA3NTMu
+OTQ0MTQyOiBjb2JhbHRfdGltZXJfc3RhcnQ6ICAgdGltZXI9MHhlZjdlODIwMChbd2F0Y2hkb2dd
+KSB2YWx1ZT00MDAwMDAwMDAwIGludGVydmFsPTAgbW9kZT0weDANCj4gICAgICAgIHB0aGVscGVy
+LTkxMiAgIFswMDBdICAgNzUzLjk0NDE3MjogY29iYWx0X3NoYWRvd19oYXJkZW5lZDogc3RhdGU9
+MHgyNDA4NDAgaW5mbz0weDANCj4NCj5Zb3VyIHBsdWdpbiBjb3JyZWN0bHkgc3dpdGNoZXMgY29s
+b3JzIG9uIGNvYmFsdF9zd2l0Y2hfY29udGV4dCwgYnV0IHRoYXQNCj5jb2JhbHRfdGltZXJfc3Rh
+cnQgaXMgc3RpbGwgcnVubmluZyB1bmRlciB0aGUgcHJldmlvdXMgcGlkLCBjYXVzaW5nIGENCj5j
+b2xvciBzd2l0Y2gtYmFjayBhbmQgdGhhbiBmb3J0aCBvbiBjb2JhbHRfc2hhZG93X2hhcmRlbmVk
+LiBXZSBuZWVkIHRvDQo+dW5kZXJzdGFuZCB3aHkgYW5kIHBvc3NpYmx5IGZpeCB0aGF0IG9yIHJl
+dGhpbmsgdGhlIHZpc3VhbGl6YXRpb24uDQoNCllvdSBuZWVkIHRvIGNsaWNrIG1lbnUgUGxvdHMt
+PnRhc2tzIGFuZCB0aGVuIHNlbGVjdCBSVCB0YXNrcyBhbmQgdGhlbiBhcHBseS4gSXQgd291bGQg
+dGlnZ2VyIHBsdWdpbiBzaGFwZSB0byByZWRyYXcNCmFuZCB0aGVuIHRoZSBpc3N1ZSB5b3Ugb2Jz
+ZXJ2ZWQgd291bGQgYmUgZml4ZWQgYnkgcGx1Z2luLiANCg0KPg0KPkphbg0KPg0KPi0tIA0KPlNp
+ZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRl
+ZCBMaW51eA0K
 
