@@ -1,18 +1,19 @@
-Subject: Re: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
  cobalt context switch event
+Date: Tue, 14 Dec 2021 07:14:12 +0000
+Message-ID: <MN2PR11MB4285CF265BD595000EF87617F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20211214031537.14914-1-hongzhan.chen@intel.com>
  <20211214031537.14914-2-hongzhan.chen@intel.com>
  <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
  <MN2PR11MB42851F06D18E71D4A540AA47F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
  <7fea2c2d-648b-236a-e027-ca89bcc3b384@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a9090b11-5ec4-f443-dc77-8cff66db33c3@siemens.com>
-Date: Tue, 14 Dec 2021 08:02:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <7fea2c2d-648b-236a-e027-ca89bcc3b384@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+ <a9090b11-5ec4-f443-dc77-8cff66db33c3@siemens.com>
+In-Reply-To: <a9090b11-5ec4-f443-dc77-8cff66db33c3@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,67 +22,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.12.21 07:49, Jan Kiszka via Xenomai wrote:
-> On 14.12.21 07:44, Chen, Hongzhan wrote:
->>>
->>>
->>> -----Original Message-----
->>> From: Jan Kiszka <jan.kiszka@siemens.com> 
->>> Sent: Tuesday, December 14, 2021 2:38 PM
->>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->>> Subject: Re: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai cobalt context switch event
->>>
->>> On 14.12.21 04:15, Hongzhan Chen wrote:
->>>> For Xenomai-cobalt enabled system, cobalt_switch_context means that there
->>>> is context switch in companion core(realtime core), which we may need
->>>> to do special treatment and take correct action as main kernel sched_switch.
->>>> We need to update cpu bar regarding cobalt_switch_context event to correct
->>>> color as switching-in task.
->>>
->>> It's tricker... I have trace with the following sequence here:
->>>
->>>             gdb-898   [000]   753.944137: cobalt_switch_context: prev_name=ROOT/0 prev_pid=0 prev_prio=-1 prev_state=0x218008 ==> next_name=pthelper next_pid=912 next_prio=3
->>>             gdb-898   [000]   753.944142: cobalt_timer_start:   timer=0xef7e8200([watchdog]) value=4000000000 interval=0 mode=0x0
->>>        pthelper-912   [000]   753.944172: cobalt_shadow_hardened: state=0x240840 info=0x0
->>>
->>> Your plugin correctly switches colors on cobalt_switch_context, but that
->>> cobalt_timer_start is still running under the previous pid, causing a
->>> color switch-back and than forth on cobalt_shadow_hardened. We need to
->>> understand why and possibly fix that or rethink the visualization.
->>
->> You need to click menu Plots->tasks and then select RT tasks and then apply. It would tigger plugin shape to redraw
->> and then the issue you observed would be fixed by plugin. 
-> 
-> OK, now I also see that blue "OOB" box under the RT task.
-> 
-> But the that does not affect the CPU graph, it continues to jump back
-> and forth. And it has no RT mode visualization.
-
-Correction: The CPU graph is fine now as well. Still confusing that you
-have to enable task plots first, but that might be a generic KernelShark
-issue.
-
-> 
-> BTW, is that blue hollow box exclusive for our plugin? Or can this be
-> customized? Is it explained somewhere in Kernelshark what hollow boxes mean?
-> 
-
-Some visualization issue:
-
-        pthelper-912   [000]   753.948271: cobalt_schedule:      status=0x10000000
-        pthelper-912   [000]   753.948275: cobalt_switch_context: prev_name=pthelper prev_pid=912 prev_prio=3 prev_state=0xa40042 ==> next_name=hi-thread next_pid=913 next_prio=2
-       hi-thread-913   [000]   753.948285: cobalt_shadow_hardened: state=0x240040 info=0x0
-       hi-thread-913   [000]   753.948423: cobalt_thread_fault:  ip=0xb6e34e20 type=0x8
-       hi-thread-913   [000]   753.948737: cobalt_shadow_gorelax: reason=syscall
-
-In this case, the task plot of hi-thread-919 does no show the blue box 
-between hardened and fault.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQogDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBUdWVzZGF5LCBEZWNlbWJlciAxNCwgMjAyMSAz
+OjAyIFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhl
+bm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1JGQyBQQVRDSCAxLzJdIGtlcm5lbC1z
+aGFyazogYWRkIHBsdWdpbiBmb3IgaGFuZGxpbmcgeGVub21haSBjb2JhbHQgY29udGV4dCBzd2l0
+Y2ggZXZlbnQNCj4NCj5PbiAxNC4xMi4yMSAwNzo0OSwgSmFuIEtpc3prYSB2aWEgWGVub21haSB3
+cm90ZToNCj4+IE9uIDE0LjEyLjIxIDA3OjQ0LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+Pj4N
+Cj4+Pj4NCj4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+Pj4gRnJvbTogSmFuIEtp
+c3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4+IFNlbnQ6IFR1ZXNkYXksIERlY2Vt
+YmVyIDE0LCAyMDIxIDI6MzggUE0NCj4+Pj4gVG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5j
+aGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4+Pj4gU3ViamVjdDogUmU6IFtS
+RkMgUEFUQ0ggMS8yXSBrZXJuZWwtc2hhcms6IGFkZCBwbHVnaW4gZm9yIGhhbmRsaW5nIHhlbm9t
+YWkgY29iYWx0IGNvbnRleHQgc3dpdGNoIGV2ZW50DQo+Pj4+DQo+Pj4+IE9uIDE0LjEyLjIxIDA0
+OjE1LCBIb25nemhhbiBDaGVuIHdyb3RlOg0KPj4+Pj4gRm9yIFhlbm9tYWktY29iYWx0IGVuYWJs
+ZWQgc3lzdGVtLCBjb2JhbHRfc3dpdGNoX2NvbnRleHQgbWVhbnMgdGhhdCB0aGVyZQ0KPj4+Pj4g
+aXMgY29udGV4dCBzd2l0Y2ggaW4gY29tcGFuaW9uIGNvcmUocmVhbHRpbWUgY29yZSksIHdoaWNo
+IHdlIG1heSBuZWVkDQo+Pj4+PiB0byBkbyBzcGVjaWFsIHRyZWF0bWVudCBhbmQgdGFrZSBjb3Jy
+ZWN0IGFjdGlvbiBhcyBtYWluIGtlcm5lbCBzY2hlZF9zd2l0Y2guDQo+Pj4+PiBXZSBuZWVkIHRv
+IHVwZGF0ZSBjcHUgYmFyIHJlZ2FyZGluZyBjb2JhbHRfc3dpdGNoX2NvbnRleHQgZXZlbnQgdG8g
+Y29ycmVjdA0KPj4+Pj4gY29sb3IgYXMgc3dpdGNoaW5nLWluIHRhc2suDQo+Pj4+DQo+Pj4+IEl0
+J3MgdHJpY2tlci4uLiBJIGhhdmUgdHJhY2Ugd2l0aCB0aGUgZm9sbG93aW5nIHNlcXVlbmNlIGhl
+cmU6DQo+Pj4+DQo+Pj4+ICAgICAgICAgICAgIGdkYi04OTggICBbMDAwXSAgIDc1My45NDQxMzc6
+IGNvYmFsdF9zd2l0Y2hfY29udGV4dDogcHJldl9uYW1lPVJPT1QvMCBwcmV2X3BpZD0wIHByZXZf
+cHJpbz0tMSBwcmV2X3N0YXRlPTB4MjE4MDA4ID09PiBuZXh0X25hbWU9cHRoZWxwZXIgbmV4dF9w
+aWQ9OTEyIG5leHRfcHJpbz0zDQo+Pj4+ICAgICAgICAgICAgIGdkYi04OTggICBbMDAwXSAgIDc1
+My45NDQxNDI6IGNvYmFsdF90aW1lcl9zdGFydDogICB0aW1lcj0weGVmN2U4MjAwKFt3YXRjaGRv
+Z10pIHZhbHVlPTQwMDAwMDAwMDAgaW50ZXJ2YWw9MCBtb2RlPTB4MA0KPj4+PiAgICAgICAgcHRo
+ZWxwZXItOTEyICAgWzAwMF0gICA3NTMuOTQ0MTcyOiBjb2JhbHRfc2hhZG93X2hhcmRlbmVkOiBz
+dGF0ZT0weDI0MDg0MCBpbmZvPTB4MA0KPj4+Pg0KPj4+PiBZb3VyIHBsdWdpbiBjb3JyZWN0bHkg
+c3dpdGNoZXMgY29sb3JzIG9uIGNvYmFsdF9zd2l0Y2hfY29udGV4dCwgYnV0IHRoYXQNCj4+Pj4g
+Y29iYWx0X3RpbWVyX3N0YXJ0IGlzIHN0aWxsIHJ1bm5pbmcgdW5kZXIgdGhlIHByZXZpb3VzIHBp
+ZCwgY2F1c2luZyBhDQo+Pj4+IGNvbG9yIHN3aXRjaC1iYWNrIGFuZCB0aGFuIGZvcnRoIG9uIGNv
+YmFsdF9zaGFkb3dfaGFyZGVuZWQuIFdlIG5lZWQgdG8NCj4+Pj4gdW5kZXJzdGFuZCB3aHkgYW5k
+IHBvc3NpYmx5IGZpeCB0aGF0IG9yIHJldGhpbmsgdGhlIHZpc3VhbGl6YXRpb24uDQo+Pj4NCj4+
+PiBZb3UgbmVlZCB0byBjbGljayBtZW51IFBsb3RzLT50YXNrcyBhbmQgdGhlbiBzZWxlY3QgUlQg
+dGFza3MgYW5kIHRoZW4gYXBwbHkuIEl0IHdvdWxkIHRpZ2dlciBwbHVnaW4gc2hhcGUgdG8gcmVk
+cmF3DQo+Pj4gYW5kIHRoZW4gdGhlIGlzc3VlIHlvdSBvYnNlcnZlZCB3b3VsZCBiZSBmaXhlZCBi
+eSBwbHVnaW4uIA0KPj4gDQo+PiBPSywgbm93IEkgYWxzbyBzZWUgdGhhdCBibHVlICJPT0IiIGJv
+eCB1bmRlciB0aGUgUlQgdGFzay4NCj4+IA0KPj4gQnV0IHRoZSB0aGF0IGRvZXMgbm90IGFmZmVj
+dCB0aGUgQ1BVIGdyYXBoLCBpdCBjb250aW51ZXMgdG8ganVtcCBiYWNrDQo+PiBhbmQgZm9ydGgu
+IEFuZCBpdCBoYXMgbm8gUlQgbW9kZSB2aXN1YWxpemF0aW9uLg0KPg0KPkNvcnJlY3Rpb246IFRo
+ZSBDUFUgZ3JhcGggaXMgZmluZSBub3cgYXMgd2VsbC4gU3RpbGwgY29uZnVzaW5nIHRoYXQgeW91
+DQo+aGF2ZSB0byBlbmFibGUgdGFzayBwbG90cyBmaXJzdCwgYnV0IHRoYXQgbWlnaHQgYmUgYSBn
+ZW5lcmljIEtlcm5lbFNoYXJrDQo+aXNzdWUuDQoNClllcywgdGhpcyBpcyBrZXJuZWxzaGFyayBp
+c3N1ZS4gS2VybmVsIHNoYXJrIGhhdmUgdG8gZGVwZW5kIG9uIHJlZHJhdyBvZiBwbHVnaW4gYWZ0
+ZXIgYWN0aXZhdGlvbg0KdG8gY29ycmVjdCB0aGVtLg0KDQo+DQo+PiANCj4+IEJUVywgaXMgdGhh
+dCBibHVlIGhvbGxvdyBib3ggZXhjbHVzaXZlIGZvciBvdXIgcGx1Z2luPyBPciBjYW4gdGhpcyBi
+ZQ0KPj4gY3VzdG9taXplZD8gSXMgaXQgZXhwbGFpbmVkIHNvbWV3aGVyZSBpbiBLZXJuZWxzaGFy
+ayB3aGF0IGhvbGxvdyBib3hlcyBtZWFuPw0KPj4gDQo+DQo+U29tZSB2aXN1YWxpemF0aW9uIGlz
+c3VlOg0KPg0KPiAgICAgICAgcHRoZWxwZXItOTEyICAgWzAwMF0gICA3NTMuOTQ4MjcxOiBjb2Jh
+bHRfc2NoZWR1bGU6ICAgICAgc3RhdHVzPTB4MTAwMDAwMDANCj4gICAgICAgIHB0aGVscGVyLTkx
+MiAgIFswMDBdICAgNzUzLjk0ODI3NTogY29iYWx0X3N3aXRjaF9jb250ZXh0OiBwcmV2X25hbWU9
+cHRoZWxwZXIgcHJldl9waWQ9OTEyIHByZXZfcHJpbz0zIHByZXZfc3RhdGU9MHhhNDAwNDIgPT0+
+IG5leHRfbmFtZT1oaS10aHJlYWQgbmV4dF9waWQ9OTEzIG5leHRfcHJpbz0yDQo+ICAgICAgIGhp
+LXRocmVhZC05MTMgICBbMDAwXSAgIDc1My45NDgyODU6IGNvYmFsdF9zaGFkb3dfaGFyZGVuZWQ6
+IHN0YXRlPTB4MjQwMDQwIGluZm89MHgwDQo+ICAgICAgIGhpLXRocmVhZC05MTMgICBbMDAwXSAg
+IDc1My45NDg0MjM6IGNvYmFsdF90aHJlYWRfZmF1bHQ6ICBpcD0weGI2ZTM0ZTIwIHR5cGU9MHg4
+DQo+ICAgICAgIGhpLXRocmVhZC05MTMgICBbMDAwXSAgIDc1My45NDg3Mzc6IGNvYmFsdF9zaGFk
+b3dfZ29yZWxheDogcmVhc29uPXN5c2NhbGwNCj4NCj5JbiB0aGlzIGNhc2UsIHRoZSB0YXNrIHBs
+b3Qgb2YgaGktdGhyZWFkLTkxOSBkb2VzIG5vIHNob3cgdGhlIGJsdWUgYm94IA0KPmJldHdlZW4g
+aGFyZGVuZWQgYW5kIGZhdWx0Lg0KDQpDb3VsZCB5b3Ugem9vbSBvdXQgKGNsaWNrICItIiBpbiB0
+aGUgdG9wIGxlZnQgYnV0dG9uKSB0byBjaGVjayBpZiBibHVlIGJveCB3b3VsZCBiZSByZXNob3dp
+bmc/DQpDb3VsZCB5b3UgcGFzdGUgbW9yZSB0cmFpbGluZyBsb2cgaW4geW91ciBsb2cgdG8gY2hl
+Y2sgaWYgdGhlcmUgYW5vdGhlciBjb2JhbHRfc3dpdGNoX2NvbnRleHQuIEN1cnJlbnQgbG9naWMg
+aXMgY3JlYXRlIGhvbGxvdyBib3ggYmV0d2VlbiB0d28gY29iYWx0X3N3aXRjaF9jb250ZXh0LiBJ
+ZiB0aGVyZSBpcyBvbmx5IGNvYmFsdCBzd2l0Y2hfY29udGV4dCBldmVudCBtYXRjaGluZywgaXQg
+d291bGQgbm90IGNyZWF0ZSBob2xsb3cgYm94IGNvcnJlY3RseS4NCg0KUmVnYXJkcw0KDQpIb25n
+emhhbiBDaGVuDQoNCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5D
+b3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
