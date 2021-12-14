@@ -1,15 +1,15 @@
-Date: Mon, 13 Dec 2021 22:36:44 +0100 (CET)
-From: Dario Binacchi <dariobin@libero.it>
-Message-ID: <98350690.146797.1639431404063@mail1.libero.it>
-In-Reply-To: <f679f55b-1dc5-9efd-d9aa-30cb613a33b1@siemens.com>
-References: <20211212115611.3036-1-dariobin@libero.it>
- <20211212115611.3036-2-dariobin@libero.it>
- <a7f52d5d-92b4-60a9-8373-13ee105089f7@siemens.com>
- <f679f55b-1dc5-9efd-d9aa-30cb613a33b1@siemens.com>
-Subject: Re: [PATCH v4 1/8] lib/smokey: add smokey_{modprobe,rmmod} helpers
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [RFC PATCH V2] kernel-shark: add plugin for handling xenomai
+ cobalt context switch event
+Date: Tue, 14 Dec 2021 02:33:33 +0000
+Message-ID: <MN2PR11MB42855A3D1C286B176E06FB0AF2759@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20211213015502.32635-1-hongzhan.chen@intel.com>
+ <4cfd0b3a-c0ea-90ce-2398-c0e71693ccfd@siemens.com>
+In-Reply-To: <4cfd0b3a-c0ea-90ce-2398-c0e71693ccfd@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,265 +18,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-Cc: "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>, Gianluca Falavigna <gianluca.falavigna@inwind.it>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Jan,
-
-> Il 13/12/2021 13:11 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
-> 
->  
-> On 13.12.21 11:43, Jan Kiszka via Xenomai wrote:
-> > On 12.12.21 12:56, Dario Binacchi wrote:
-> >> Both functions, implemented and used for the net, are general purpose
-> >> and therefore can be useful in other parts of the application with the
-> >> application of minimal changes.
-> >>
-> >> Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> >>
-> >> ---
-> >>
-> >> Changes in v4:
-> >> - Add the patch to the series.
-> >>
-> >>  include/smokey/smokey.h             |  6 +-
-> >>  lib/smokey/helpers.c                | 99 +++++++++++++++++++++++++++++
-> >>  testsuite/smokey/net_common/setup.c | 68 +-------------------
-> >>  3 files changed, 106 insertions(+), 67 deletions(-)
-> >>
-> >> diff --git a/include/smokey/smokey.h b/include/smokey/smokey.h
-> >> index 185fd3a8b..0ac1e8df4 100644
-> >> --- a/include/smokey/smokey.h
-> >> +++ b/include/smokey/smokey.h
-> >> @@ -254,7 +254,11 @@ int smokey_barrier_timedwait(struct smokey_barrier *b,
-> >>  void smokey_barrier_release(struct smokey_barrier *b);
-> >>  
-> >>  int smokey_fork_exec(const char *path, const char *arg);
-> >> -	
-> >> +
-> >> +int smokey_modprobe(const char *name, bool silent);
-> >> +
-> >> +int smokey_rmmod(const char *name);
-> >> +
-> >>  #ifdef __cplusplus
-> >>  }
-> >>  #endif
-> >> diff --git a/lib/smokey/helpers.c b/lib/smokey/helpers.c
-> >> index da84c863c..dc0bb5d0c 100644
-> >> --- a/lib/smokey/helpers.c
-> >> +++ b/lib/smokey/helpers.c
-> >> @@ -292,3 +292,102 @@ int smokey_fork_exec(const char *path, const char *arg)
-> >>  	return 1;
-> >>  
-> >>  }
-> >> +
-> >> +#define SMOKEY_MOD_NUM       32
-> >> +static char *smokey_modules[SMOKEY_MOD_NUM];
-> >> +
-> >> +int smokey_modprobe(const char *name, bool silent)
-> >> +{
-> >> +	char buffer[128];
-> >> +	int err, len, i, midx = -1;
-> >> +	FILE *fp;
-> >> +
-> >> +	fp = fopen("/proc/modules", "r");
-> >> +	if (fp == NULL)
-> >> +		return -errno;
-> >> +
-> >> +	len = strlen(name);
-> >> +
-> >> +	while (fgets(buffer, sizeof(buffer), fp)) {
-> >> +		if (strncmp(buffer, name, len) == 0 &&
-> >> +		    len < sizeof(buffer) && buffer[len] == ' ') {
-> >> +			smokey_trace("%s module already loaded", name);
-> >> +			fclose(fp);
-> >> +			return 0;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	fclose(fp);
-> >> +
-> >> +	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
-> >> +		if (!smokey_modules[i]) {
-> >> +			midx = i;
-> >> +			break;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	if (midx < 0)
-> >> +		return -EFAULT;
-> >> +
-> >> +	smokey_trace("%s module not there: modprobing", name);
-> >> +
-> >> +	err = smokey_check_errno(
-> >> +		snprintf(buffer, sizeof(buffer), "modprobe %s %s", name,
-> >> +			 silent ? "2>/dev/null" : ""));
-> >> +	if (err < 0)
-> >> +		return err;
-> >> +
-> >> +	err = smokey_check_errno(system(buffer));
-> >> +	if (err < 0)
-> >> +		return err;
-> >> +
-> >> +	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
-> >> +		if (!silent)
-> >> +			smokey_warning("%s: abnormal exit", buffer);
-> >> +		return -EINVAL;
-> >> +	}
-> >> +
-> >> +	smokey_modules[midx] = strdup(name);
-> >> +	return 0;
-> >> +}
-> >> +
-> >> +int smokey_rmmod(const char *name)
-> >> +{
-> >> +	char buffer[128];
-> >> +	int i, midx = -1, err;
-> >> +
-> >> +	if (!name)
-> >> +		return -EINVAL;
-> >> +
-> >> +	for (i = 0; i < SMOKEY_MOD_NUM; i++) {
-> >> +		if (smokey_modules[i] && !strcmp(smokey_modules[i], name)) {
-> >> +			midx = i;
-> >> +			break;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	if (midx < 0) {
-> >> +		smokey_trace("%s module was there on entry, keeping it", name);
-> >> +		return 0;
-> >> +	}
-> >> +
-> >> +	smokey_trace("unloading %s module", name);
-> >> +
-> >> +	err = smokey_check_errno(
-> >> +		snprintf(buffer, sizeof(buffer), "rmmod %s", name));
-> >> +	if (err < 0)
-> >> +		return err;
-> >> +
-> >> +	err = smokey_check_errno(system(buffer));
-> >> +	if (err < 0)
-> >> +		return err;
-> >> +
-> >> +	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
-> >> +		smokey_warning("%s: abnormal exit", buffer);
-> >> +		return -EINVAL;
-> >> +	}
-> >> +
-> >> +	free(smokey_modules[midx]);
-> >> +
-> >> +	return err;
-> >> +}
-> >> diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-> >> index 44a0cb24b..f97c14823 100644
-> >> --- a/testsuite/smokey/net_common/setup.c
-> >> +++ b/testsuite/smokey/net_common/setup.c
-> >> @@ -28,7 +28,6 @@
-> >>  struct module {
-> >>  	int option;
-> >>  	const char *name;
-> >> -	bool loaded;
-> >>  };
-> >>  
-> >>  #define TIMEOUT 10
-> >> @@ -141,81 +140,18 @@ static int do_down(const char *intf)
-> >>  static int smokey_net_modprobe(int modid, bool silent)
-> >>  {
-> >>  	struct module *m = modules + modid;
-> >> -	char buffer[128];
-> >> -	int err, len;
-> >> -	FILE *fp;
-> >>  
-> >>  	if (modid < 0)
-> >>  		return -EINVAL;
-> >>  
-> >> -	fp = fopen("/proc/modules", "r");
-> >> -	if (fp == NULL)
-> >> -		return -errno;
-> >> -
-> >> -	len = strlen(m->name);
-> >> -
-> >> -	while (fgets(buffer, sizeof(buffer), fp)) {
-> >> -		if (strncmp(buffer, m->name, len) == 0 &&
-> >> -		    len < sizeof(buffer) && buffer[len] == ' ') {
-> >> -			smokey_trace("%s module already loaded", m->name);
-> >> -			fclose(fp);
-> >> -			return 0;
-> >> -		}
-> >> -	}
-> >> -
-> >> -	fclose(fp);
-> >> -
-> >> -	smokey_trace("%s module not there: modprobing", m->name);
-> >> -
-> >> -	err = smokey_check_errno(
-> >> -		snprintf(buffer, sizeof(buffer), "modprobe %s %s", m->name,
-> >> -			 silent ? "2>/dev/null" : ""));
-> >> -	if (err < 0)
-> >> -		return err;
-> >> -
-> >> -	err = smokey_check_errno(system(buffer));
-> >> -	if (err < 0)
-> >> -		return err;
-> >> -
-> >> -	if (!WIFEXITED(err) || WEXITSTATUS(err) != 0) {
-> >> -		if (!silent)
-> >> -			smokey_warning("%s: abnormal exit", buffer);
-> >> -		return -EINVAL;
-> >> -	}
-> >> -
-> >> -	m->loaded = true;
-> >> -
-> >> -	return err;
-> >> +	return smokey_modprobe(m->name, silent);
-> >>  }
-> >>  
-> >>  static int smokey_net_rmmod(int modid)
-> >>  {
-> >>  	struct module *m = modules + modid;
-> >> -	char buffer[128];
-> >> -	int err;
-> >> -
-> >> -	if (!m->loaded) {
-> >> -		smokey_trace("%s module was there on entry, keeping it", m->name);
-> >> -		return 0;
-> >> -	}
-> > 
-> > Reverting the series again: You broke the handling of already loaded (or
-> > built-in) modules, also for the rtnet tests.
-> > 
-> > With CAN, you now get e.g.
-> > 
-> > 2021-12-13T09:36:48 rmmod: ERROR: Module xeno_can_virt is builtin.
-> > 2021-12-13T09:36:48 helpers.c:386, rmmod xeno_can_virt: abnormal exit
-> > 2021-12-13T09:36:48 rmmod: ERROR: Module xeno_can is builtin.
-> > 2021-12-13T09:36:48 helpers.c:386, rmmod xeno_can: abnormal exit
-> > 
-> 
-> Strangely, I'm getting the error that already modprobe fails in another
-> setup (qemu-arm64 of xenomai-images) if those things are built-in.
-> 
-The smokey_net_modprobe() will not call the modprobe command if it finds 
-the module in /proc/modules, but in case of a builtin mnodule, the modprobe
-will be called and it will fail (this was the behaviour even before my change). 
-In fact, the return value of smokey_net_modprobe(MODID_RTNET, true); in 
-testsuite/smokey/net_common/setup.c is not checked. 
-IMHO I can call smokey_modprobe(CAN_MOD, true); and smokey_modprobe(CAN_VIRT_MOD, true); 
-without checking the return value.
-
-> And please make sure we simply skip the test if the feature is not
-> configured. Might require some _CC_COBALT_GET_CAN_CONFIG (analogously to
-> _CC_COBALT_GET_NET_CONFIG and kernel/drivers/net/stack/corectl.c).
-
-Ok, I'll do it.
-
-Thanks and regards,
-Dario
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IE1vbmRheSwgRGVjZW1iZXIgMTMsIDIwMjEgMzo1
+MCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggVjJdIGtlcm5lbC1zaGFy
+azogYWRkIHBsdWdpbiBmb3IgaGFuZGxpbmcgeGVub21haSBjb2JhbHQgY29udGV4dCBzd2l0Y2gg
+ZXZlbnQNCj4NCj5PbiAxMy4xMi4yMSAwMjo1NSwgSG9uZ3poYW4gQ2hlbiB3cm90ZToNCj4+IEZv
+ciBYZW5vbWFpLWNvYmFsdCBlbmFibGVkIHN5c3RlbSwgY29iYWx0X3N3aXRjaF9jb250ZXh0IG1l
+YW5zIHRoYXQgdGhlcmUNCj4+IGlzIGNvbnRleHQgc3dpdGNoIGluIGNvbXBhbmlvbiBjb3JlKHJl
+YWx0aW1lIGNvcmUpLCB3aGljaCB3ZSBtYXkgbmVlZA0KPj4gdG8gZG8gc3BlY2lhbCB0cmVhdG1l
+bnQgYW5kIHRha2UgY29ycmVjdCBhY3Rpb24gYXMgbWFpbiBrZXJuZWwgc2NoZWRfc3dpdGNoLg0K
+Pj4gV2UgbmVlZCB0byB1cGRhdGUgY3B1IGJhciByZWdhcmRpbmcgY29iYWx0X3N3aXRjaF9jb250
+ZXh0IGV2ZW50IHRvIGNvcnJlY3QNCj4+IGNvbG9yIGFzIHN3aXRjaGluZy1pbiB0YXNrLg0KPj4g
+DQo+PiBTaWduZWQtb2ZmLWJ5OiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGludGVsLmNv
+bT4NCj4+IA0KPj4gZGlmZiAtLWdpdCBhL3NyYy9saWJrc2hhcmstdGVwZGF0YS5jIGIvc3JjL2xp
+YmtzaGFyay10ZXBkYXRhLmMNCj4+IGluZGV4IDk3NDBlZDkuLmU5MzNiMzkgMTAwNjQ0DQo+PiAt
+LS0gYS9zcmMvbGlia3NoYXJrLXRlcGRhdGEuYw0KPj4gKysrIGIvc3JjL2xpYmtzaGFyay10ZXBk
+YXRhLmMNCj4+IEBAIC0xMjA4LDYgKzEyMDgsNyBAQCBzdGF0aWMgdm9pZCBrc2hhcmtfdGVwX2lu
+aXRfbWV0aG9kcyhzdHJ1Y3Qga3NoYXJrX2dlbmVyaWNfc3RyZWFtX2ludGVyZmFjZSAqaW50ZQ0K
+Pj4gIC8qKiBBIGxpc3Qgb2YgYnVpbHQgaW4gZGVmYXVsdCBwbHVnaW5zIGZvciBGVFJBQ0UgKHRy
+YWNlLWNtZCkgZGF0YS4gKi8NCj4+ICBjb25zdCBjaGFyICp0ZXBfcGx1Z2luX25hbWVzW10gPSB7
+DQo+PiAgCSJzY2hlZF9ldmVudHMiLA0KPj4gKwkieGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50
+cyIsDQo+PiAgCSJtaXNzZWRfZXZlbnRzIiwNCj4+ICAJImt2bV9jb21ibyIsDQo+PiAgfTsNCj4+
+IGRpZmYgLS1naXQgYS9zcmMvcGx1Z2lucy9DTWFrZUxpc3RzLnR4dCBiL3NyYy9wbHVnaW5zL0NN
+YWtlTGlzdHMudHh0DQo+PiBpbmRleCAzZTE3MGZhLi4yNzZlYWFhIDEwMDY0NA0KPj4gLS0tIGEv
+c3JjL3BsdWdpbnMvQ01ha2VMaXN0cy50eHQNCj4+ICsrKyBiL3NyYy9wbHVnaW5zL0NNYWtlTGlz
+dHMudHh0DQo+PiBAQCAtNDQsNiArNDQsMTAgQEAgaWYgKFF0NVdpZGdldHNfRk9VTkQgQU5EIFRU
+X0ZPTlRfRklMRSkNCj4+ICAgICAgICAgICAgICAgICAgICAgICBTT1VSQ0Ugc2NoZWRfZXZlbnRz
+LmMgU2NoZWRFdmVudHMuY3BwKQ0KPj4gICAgICBsaXN0KEFQUEVORCBQTFVHSU5fTElTVCAic2No
+ZWRfZXZlbnRzIikNCj4+ICANCj4+ICsgICAgQlVJTERfR1VJX1BMVUdJTihOQU1FIHhlbm9tYWlf
+Y29iYWx0X3N3aXRjaF9ldmVudHMNCj4+ICsgICAgICAgICAgICAgICAgICAgICBTT1VSQ0UgeGVu
+b21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5jKQ0KPj4gKyAgICBsaXN0KEFQUEVORCBQTFVHSU5f
+TElTVCAieGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cyIpDQo+PiArDQo+PiAgICAgIEJVSUxE
+X0dVSV9QTFVHSU4oTkFNRSBldmVudF9maWVsZF9wbG90DQo+PiAgICAgICAgICAgICAgICAgICAg
+ICAgTU9DIEV2ZW50RmllbGREaWFsb2cuaHBwDQo+PiAgICAgICAgICAgICAgICAgICAgICAgU09V
+UkNFIGV2ZW50X2ZpZWxkX3Bsb3QuYyBFdmVudEZpZWxkRGlhbG9nLmNwcCBFdmVudEZpZWxkUGxv
+dC5jcHApDQo+PiBkaWZmIC0tZ2l0IGEvc3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNo
+X2V2ZW50cy5jIGIvc3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5jDQo+
+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPj4gaW5kZXggMDAwMDAwMC4uNDYzOWQyNA0KPj4gLS0t
+IC9kZXYvbnVsbA0KPj4gKysrIGIvc3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNoX2V2
+ZW50cy5jDQo+PiBAQCAtMCwwICsxLDExNiBAQA0KPj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlm
+aWVyOiBMR1BMLTIuMQ0KPj4gKw0KPj4gKy8qDQo+PiArICogQ29weXJpZ2h0IChDKSAyMDIxIElu
+dGVsIEluYywgSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiArICov
+DQo+PiArDQo+PiArLyoqDQo+PiArICogIEBmaWxlICAgIHhlbm9tYWlfY29iYWx0X3N3aXRjaF9l
+dmVudHMuYw0KPj4gKyAqICBAYnJpZWYgICBoYW5kbGUgeGVub21haSBjb2JhbHQgc3dpdGNoIGNv
+bnRleHQgZXZlbnQNCj4+ICsgKi8NCj4+ICsNCj4+ICsvLyBDDQo+PiArI2luY2x1ZGUgPHN0ZGxp
+Yi5oPg0KPj4gKyNpbmNsdWRlIDxzdGRpby5oPg0KPj4gKw0KPj4gKy8vIHRyYWNlLWNtZA0KPj4g
+KyNpbmNsdWRlIDx0cmFjZS1jbWQuaD4NCj4+ICsNCj4+ICsvLyBLZXJuZWxTaGFyaw0KPj4gKyNp
+bmNsdWRlICJwbHVnaW5zL3hlbm9tYWlfY29iYWx0X3N3aXRjaF9ldmVudHMuaCINCj4+ICsjaW5j
+bHVkZSAibGlia3NoYXJrLXRlcGRhdGEuaCINCj4+ICsNCj4+ICsvKiogUGx1Z2luIGNvbnRleHQg
+aW5zdGFuY2UuICovDQo+PiArDQo+PiArc3RhdGljIHZvaWQgY29iYWx0X2ZyZWVfY29udGV4dChz
+dHJ1Y3QgcGx1Z2luX2NvYmFsdF9jb250ZXh0ICpwbHVnaW5fY3R4KQ0KPj4gK3sNCj4+ICsJcmV0
+dXJuOw0KPj4gK30NCj4+ICsNCj4+ICsvKiogQSBnZW5lcmFsIHB1cnBvc2UgbWFjcm8gaXMgdXNl
+ZCB0byBkZWZpbmUgcGx1Z2luIGNvbnRleHQuICovDQo+PiArS1NfREVGSU5FX1BMVUdJTl9DT05U
+RVhUKHN0cnVjdCBwbHVnaW5fY29iYWx0X2NvbnRleHQsIGNvYmFsdF9mcmVlX2NvbnRleHQpOw0K
+Pj4gKw0KPj4gK3N0YXRpYyBib29sIHBsdWdpbl9jb2JhbHRfaW5pdF9jb250ZXh0KHN0cnVjdCBr
+c2hhcmtfZGF0YV9zdHJlYW0gKnN0cmVhbSwNCj4+ICsJCQkJICAgICAgc3RydWN0IHBsdWdpbl9j
+b2JhbHRfY29udGV4dCAqcGx1Z2luX2N0eCkNCj4+ICt7DQo+PiArCXN0cnVjdCB0ZXBfZXZlbnQg
+KmV2ZW50Ow0KPj4gKw0KPj4gKwlpZiAoIWtzaGFya19pc190ZXAoc3RyZWFtKSkNCj4+ICsJCXJl
+dHVybiBmYWxzZTsNCj4+ICsNCj4+ICsJcGx1Z2luX2N0eC0+dGVwID0ga3NoYXJrX2dldF90ZXAo
+c3RyZWFtKTsNCj4+ICsNCj4+ICsJZXZlbnQgPSB0ZXBfZmluZF9ldmVudF9ieV9uYW1lKHBsdWdp
+bl9jdHgtPnRlcCwNCj4+ICsJCQkJCSJjb2JhbHRfY29yZSIsICJjb2JhbHRfc3dpdGNoX2NvbnRl
+eHQiKTsNCj4+ICsJaWYgKCFldmVudCkNCj4+ICsJCXJldHVybiBmYWxzZTsNCj4+ICsNCj4+ICsJ
+cGx1Z2luX2N0eC0+Y29iYWx0X3N3aXRjaF9ldmVudCA9IGV2ZW50Ow0KPj4gKwlwbHVnaW5fY3R4
+LT5jb2JhbHRfc3dpdGNoX25leHRfZmllbGQgPQ0KPj4gKwkJdGVwX2ZpbmRfYW55X2ZpZWxkKGV2
+ZW50LCAibmV4dF9waWQiKTsNCj4+ICsNCj4+ICsJcGx1Z2luX2N0eC0+Y29iYWx0X3N3aXRjaF9w
+cmV2X3N0YXRlX2ZpZWxkID0NCj4+ICsJCXRlcF9maW5kX2ZpZWxkKGV2ZW50LCAicHJldl9zdGF0
+ZSIpOw0KPj4gKw0KPj4gKwlyZXR1cm4gdHJ1ZTsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGljIHZv
+aWQgcGx1Z2luX2NvYmFsdF9zd2l0Y2hfYWN0aW9uKHN0cnVjdCBrc2hhcmtfZGF0YV9zdHJlYW0g
+KnN0cmVhbSwNCj4+ICsJCQkJICAgICAgdm9pZCAqcmVjLCBzdHJ1Y3Qga3NoYXJrX2VudHJ5ICpl
+bnRyeSkNCj4+ICt7DQo+PiArCXN0cnVjdCB0ZXBfcmVjb3JkICpyZWNvcmQgPSAoc3RydWN0IHRl
+cF9yZWNvcmQgKikgcmVjOw0KPj4gKwlzdHJ1Y3QgcGx1Z2luX2NvYmFsdF9jb250ZXh0ICpwbHVn
+aW5fY3R4Ow0KPj4gKwl1bnNpZ25lZCBsb25nIGxvbmcgbmV4dF9waWQ7DQo+PiArCWludCByZXQ7
+DQo+PiArDQo+PiArCXBsdWdpbl9jdHggPSBfX2dldF9jb250ZXh0KHN0cmVhbS0+c3RyZWFtX2lk
+KTsNCj4+ICsJaWYgKCFwbHVnaW5fY3R4KQ0KPj4gKwkJcmV0dXJuOw0KPj4gKw0KPj4gKwlyZXQg
+PSB0ZXBfcmVhZF9udW1iZXJfZmllbGQocGx1Z2luX2N0eC0+Y29iYWx0X3N3aXRjaF9uZXh0X2Zp
+ZWxkLA0KPj4gKwkJCQkgICAgcmVjb3JkLT5kYXRhLCAmbmV4dF9waWQpOw0KPj4gKw0KPj4gKwlp
+ZiAocmV0ID09IDAgJiYgbmV4dF9waWQgPj0gMCkNCj4+ICsJCWVudHJ5LT5waWQgPSBuZXh0X3Bp
+ZDsNCj4+ICt9DQo+PiArDQo+PiArLyoqIExvYWQgdGhpcyBwbHVnaW4uICovDQo+PiAraW50IEtT
+SEFSS19QTE9UX1BMVUdJTl9JTklUSUFMSVpFUihzdHJ1Y3Qga3NoYXJrX2RhdGFfc3RyZWFtICpz
+dHJlYW0pDQo+PiArew0KPj4gKwlzdHJ1Y3QgcGx1Z2luX2NvYmFsdF9jb250ZXh0ICpwbHVnaW5f
+Y3R4Ow0KPj4gKw0KPj4gKwlwbHVnaW5fY3R4ID0gX19pbml0KHN0cmVhbS0+c3RyZWFtX2lkKTsN
+Cj4+ICsJaWYgKCFwbHVnaW5fY3R4IHx8ICFwbHVnaW5fY29iYWx0X2luaXRfY29udGV4dChzdHJl
+YW0sIHBsdWdpbl9jdHgpKSB7DQo+PiArCQlfX2Nsb3NlKHN0cmVhbS0+c3RyZWFtX2lkKTsNCj4+
+ICsJCXJldHVybiAwOw0KPj4gKwl9DQo+PiArDQo+PiArCWlmIChwbHVnaW5fY3R4LT5jb2JhbHRf
+c3dpdGNoX2V2ZW50KSB7DQo+PiArCQlrc2hhcmtfcmVnaXN0ZXJfZXZlbnRfaGFuZGxlcihzdHJl
+YW0sDQo+PiArCQkJCQkJcGx1Z2luX2N0eC0+Y29iYWx0X3N3aXRjaF9ldmVudC0+aWQsDQo+PiAr
+CQkJCQkJcGx1Z2luX2NvYmFsdF9zd2l0Y2hfYWN0aW9uKTsNCj4+ICsJfQ0KPj4gKw0KPj4gKwly
+ZXR1cm4gMTsNCj4+ICt9DQo+PiArDQo+PiArLyoqIFVubG9hZCB0aGlzIHBsdWdpbi4gKi8NCj4+
+ICtpbnQgS1NIQVJLX1BMT1RfUExVR0lOX0RFSU5JVElBTElaRVIoc3RydWN0IGtzaGFya19kYXRh
+X3N0cmVhbSAqc3RyZWFtKQ0KPj4gK3sNCj4+ICsJc3RydWN0IHBsdWdpbl9jb2JhbHRfY29udGV4
+dCAqcGx1Z2luX2N0eCA9IF9fZ2V0X2NvbnRleHQoc3RyZWFtLT5zdHJlYW1faWQpOw0KPj4gKwlp
+bnQgcmV0ID0gMDsNCj4+ICsNCj4+ICsJaWYgKHBsdWdpbl9jdHgpIHsNCj4+ICsJCWlmIChwbHVn
+aW5fY3R4LT5jb2JhbHRfc3dpdGNoX2V2ZW50KSB7DQo+PiArCQkJa3NoYXJrX3VucmVnaXN0ZXJf
+ZXZlbnRfaGFuZGxlcihzdHJlYW0sDQo+PiArCQkJCQkJCXBsdWdpbl9jdHgtPmNvYmFsdF9zd2l0
+Y2hfZXZlbnQtPmlkLA0KPj4gKwkJCQkJCQlwbHVnaW5fY29iYWx0X3N3aXRjaF9hY3Rpb24pOw0K
+Pj4gKwkJfQ0KPj4gKw0KPj4gKwkJcmV0ID0gMTsNCj4+ICsJfQ0KPj4gKw0KPj4gKwlfX2Nsb3Nl
+KHN0cmVhbS0+c3RyZWFtX2lkKTsNCj4+ICsNCj4+ICsJcmV0dXJuIHJldDsNCj4+ICt9DQo+PiBk
+aWZmIC0tZ2l0IGEvc3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5oIGIv
+c3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5oDQo+PiBuZXcgZmlsZSBt
+b2RlIDEwMDY0NA0KPj4gaW5kZXggMDAwMDAwMC4uNGEzYmM2Ng0KPj4gLS0tIC9kZXYvbnVsbA0K
+Pj4gKysrIGIvc3JjL3BsdWdpbnMveGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5oDQo+PiBA
+QCAtMCwwICsxLDQ1IEBADQo+PiArLyogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IExHUEwtMi4x
+ICovDQo+PiArDQo+PiArLyoNCj4+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMjEgSW50ZWwgSW5jLCBI
+b25nemhhbiBDaGVuPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4gKyAqLw0KPj4gKw0KPj4g
+Ky8qKg0KPj4gKyAqICBAZmlsZSAgICB4ZW5vbWFpX2NvYmFsdF9zd2l0Y2hfZXZlbnRzLmgNCj4+
+ICsgKiAgQGJyaWVmICAgUGx1Z2luIGZvciB4ZW5vbWFpIGNvYmFsdCBzd2l0Y2ggY29udGV4dCBl
+dmVudA0KPj4gKyAqLw0KPj4gKw0KPj4gKyNpZm5kZWYgX0tTX1BMVUdJTl9TSEVEX0gNCj4+ICsj
+ZGVmaW5lIF9LU19QTFVHSU5fU0hFRF9IDQo+PiArDQo+PiArLy8gS2VybmVsU2hhcmsNCj4+ICsj
+aW5jbHVkZSAibGlia3NoYXJrLmgiDQo+PiArI2luY2x1ZGUgImxpYmtzaGFyay1wbHVnaW4uaCIN
+Cj4+ICsNCj4+ICsjaWZkZWYgX19jcGx1c3BsdXMNCj4+ICtleHRlcm4gIkMiIHsNCj4+ICsjZW5k
+aWYNCj4+ICsNCj4+ICsvKiogU3RydWN0dXJlIHJlcHJlc2VudGluZyBhIHBsdWdpbi1zcGVjaWZp
+YyBjb250ZXh0LiAqLw0KPj4gK3N0cnVjdCBwbHVnaW5fY29iYWx0X2NvbnRleHQgew0KPj4gKwkv
+KiogUGFnZSBldmVudCB1c2VkIHRvIHBhcnNlIHRoZSBwYWdlLiAqLw0KPj4gKwlzdHJ1Y3QgdGVw
+X2hhbmRsZQkqdGVwOw0KPj4gKw0KPj4gKwkvKiogUG9pbnRlciB0byB0aGUgY29iYWx0X3N3aXRj
+aF9ldmVudCBvYmplY3QuICovDQo+PiArCXN0cnVjdCB0ZXBfZXZlbnQJKmNvYmFsdF9zd2l0Y2hf
+ZXZlbnQ7DQo+PiArDQo+PiArCSAvKiogUG9pbnRlciB0byB0aGUgY29iYWx0X3N3aXRjaF9uZXh0
+X2ZpZWxkIGZvcm1hdCBkZXNjcmlwdG9yLiAqLw0KPj4gKwlzdHJ1Y3QgdGVwX2Zvcm1hdF9maWVs
+ZCAqY29iYWx0X3N3aXRjaF9uZXh0X2ZpZWxkOw0KPj4gKw0KPj4gKwkvKiogUG9pbnRlciB0byB0
+aGUgY29iYWx0X3N3aXRjaF9wcmV2X3N0YXRlX2ZpZWxkIGZvcm1hdCBkZXNjcmlwdG9yLiAqLw0K
+Pj4gKwlzdHJ1Y3QgdGVwX2Zvcm1hdF9maWVsZCAqY29iYWx0X3N3aXRjaF9wcmV2X3N0YXRlX2Zp
+ZWxkOw0KPj4gKw0KPj4gK307DQo+PiArDQo+PiArS1NfREVDTEFSRV9QTFVHSU5fQ09OVEVYVF9N
+RVRIT0RTKHN0cnVjdCBwbHVnaW5fY29iYWx0X2NvbnRleHQpDQo+PiArDQo+PiArI2lmZGVmIF9f
+Y3BsdXNwbHVzDQo+PiArfQ0KPj4gKyNlbmRpZg0KPj4gKw0KPj4gKyNlbmRpZg0KPj4gDQo+DQo+
+QWgsIHRoYXQgbG9va3Mgd2F5IG1vcmUgc2VsZi1jb250YWluZWQhDQo+DQo+QnV0IHBsdWdpbnMg
+aGF2ZSB0byBiZSBidWlsdCBpbi10cmVlIG9mIEtlcm5lbHNoYXJrPyBPciBkb2VzIHRoZSBuZXcN
+Cj5hcmNoaXRlY3R1cmUgYWxsb3cgdG8gYnVpbGQgdGhlbSBhZ2FpbnN0IGEgImtlcm5lbHNoYXJr
+LWRldmVsIiBwYWNrYWdlDQo+YXMgd2VsbD8NCg0KQ3VycmVudCBwYXRjaCBpcyBidWlsdCBpbi10
+cmVlIG9mIGtlcm5lbHNoYXJrLiBJbiByZWFkbWUgb2Yga2VybmVsc2hhcmssIGl0IGp1c3QNCmRl
+c2NyaWJlIGhvdyB0byBidWlsZCAgYW5kIGluc3RhbGwga2VybmVsc2hhcmstZGV2ZWwgcGFja2Fn
+ZSwgYnV0IEkgZG8gbm90IGZpbmQNCmhvdyB0byBidWlsZCBwbHVnaW4gYWdhaW5zdCBhIGtlcm5l
+bHNoYXJrLWRldmVsIHBhY2thZ2UuDQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0KPg0KPkph
+bg0KPg0KPi0tIA0KPlNpZW1lbnMgQUcsIFQgUkRBIElPVA0KPkNvcnBvcmF0ZSBDb21wZXRlbmNl
+IENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
