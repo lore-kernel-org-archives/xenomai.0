@@ -1,12 +1,12 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH v3 6/8] ci: Fail test job when an error
- occurred during lava job submission
-Date: Mon, 15 Nov 2021 11:13:44 +0100
-Message-Id: <20211115101346.3566075-7-florian.bezdeka@siemens.com>
-In-Reply-To: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
-References: <20211115101346.3566075-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [PATCH] cobalt/thread: Export __xnthread_discard
+Date: Wed, 15 Dec 2021 13:31:54 +0000
+Message-ID: <DB9PR05MB7723FB2D4EF96175C1621121F6769@DB9PR05MB7723.eurprd05.prod.outlook.com>
+References: <ca133718-14d9-d542-7880-9f3a9eb3ff30@siemens.com>
+In-Reply-To: <ca133718-14d9-d542-7880-9f3a9eb3ff30@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,38 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-It can happen that the LAVA job submission fails. If so, the CI job
-should be marked as failed. Previously we had something like the
-following in the log, but the job was still marked as "OK".
-
-Log:
-connect to lava server: https://lava.xenomai.org
-Deploy artifacts from 'https://xenomai-images-artifacts.s3.amazonaws.com/artifacts'
-submit lava job
-<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
-<ProtocolError for https://[snip]/RPC2: 500 HTTPSConnectionPool(host='lava.xenomai.org', port=443): Read timed out. (read timeout=20.0)>
-scripts/run-lava-tests.sh: 56: [: Illegal number:
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- scripts/run-lava-tests.sh | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index dde542c..de63b28 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -9,6 +9,7 @@
- #
- # SPDX-License-Identifier: MIT
- #
-+set -e
- TARGET=$1
- if [ -z "${TARGET}" ]; then
-     echo "no target was given"
--- 
-2.30.2
-
+VGhhdCB0YWtlcyBjYXJlIG9mIHRoZSBpc3N1ZSwgdGhhbmtzIGZvciB0aGUgcXVpY2sgaGVscC4N
+Cg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBNaXR0d29jaCwgMTUuIERlemVtYmVyIDIwMjEg
+MTM6NTcNCj4gVG86IFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IENjOiBMYW5nZSBO
+b3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPg0KPiBTdWJqZWN0OiBbUEFUQ0hdIGNv
+YmFsdC90aHJlYWQ6IEV4cG9ydCBfX3hudGhyZWFkX2Rpc2NhcmQNCj4NCj4NCj4NCj4gQ0FVVElP
+TjogRXh0ZXJuYWwgZW1haWwuIERvIG5vdCBjbGljayBvbiBsaW5rcyBvciBvcGVuIGF0dGFjaG1l
+bnRzIHVubGVzcyB5b3UNCj4ga25vdyB0aGUgc2VuZGVyIGFuZCB0aGF0IHRoZSBjb250ZW50IGlz
+IHNhZmUuDQo+DQo+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+
+DQo+IEl0J3MgbmVlZGVkIHNpbmNlIGY0ZGFjNTNjMDRhZSBieSBzd2l0Y2h0ZXN0LCBhbmQgdGhh
+dCBjb3VsZCBiZSBjb21waWxlZA0KPiBhcyBtb2R1bGUuDQo+DQo+IFJlcG9ydGVkLWJ5OiBMYW5n
+ZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBK
+YW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiAtLS0NCj4gIGtlcm5lbC9jb2Jh
+bHQvdGhyZWFkLmMgfCAxICsNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPg0K
+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC90aHJlYWQuYyBiL2tlcm5lbC9jb2JhbHQvdGhy
+ZWFkLmMNCj4gaW5kZXggMmUxNjY3ZDE5Ny4uZGViYzUwNzdiMSAxMDA2NDQNCj4gLS0tIGEva2Vy
+bmVsL2NvYmFsdC90aHJlYWQuYw0KPiArKysgYi9rZXJuZWwvY29iYWx0L3RocmVhZC5jDQo+IEBA
+IC01NTMsNiArNTUzLDcgQEAgdm9pZCBfX3hudGhyZWFkX2Rpc2NhcmQoc3RydWN0IHhudGhyZWFk
+ICp0aHJlYWQpDQo+ICAgICAgICAgeG50aHJlYWRfZGVyZWdpc3Rlcih0aHJlYWQpOw0KPiAgICAg
+ICAgIHhubG9ja19wdXRfaXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4gIH0NCj4gK0VYUE9SVF9T
+WU1CT0xfR1BMKF9feG50aHJlYWRfZGlzY2FyZCk7DQo+DQo+ICAvKioNCj4gICAqIEBmbiB2b2lk
+IHhudGhyZWFkX2luaXQoc3RydWN0IHhudGhyZWFkICp0aHJlYWQsY29uc3Qgc3RydWN0DQo+IHhu
+dGhyZWFkX2luaXRfYXR0ciAqYXR0cixzdHJ1Y3QgeG5zY2hlZF9jbGFzcyAqc2NoZWRfY2xhc3Ms
+Y29uc3QgdW5pb24NCj4geG5zY2hlZF9wb2xpY3lfcGFyYW0gKnNjaGVkX3BhcmFtKQ0KPiAtLQ0K
+PiAyLjMxLjENCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2Fn
+ZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVu
+ZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlk
+ZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRp
+c2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBo
+ZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQg
+dGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBv
+ZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJ
+ZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0
+aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20g
+eW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2Fs
+IGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRp
+b24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJp
+Y2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNo
+bnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcN
+Cg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fDQo=
 
