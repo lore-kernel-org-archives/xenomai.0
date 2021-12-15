@@ -1,22 +1,11 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
- cobalt context switch event
-Date: Wed, 15 Dec 2021 02:43:39 +0000
-Message-ID: <MN2PR11MB4285D36887A70A94BD3A241AF2769@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20211214031537.14914-1-hongzhan.chen@intel.com>
- <20211214031537.14914-2-hongzhan.chen@intel.com>
- <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
- <MN2PR11MB42851F06D18E71D4A540AA47F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
- <7fea2c2d-648b-236a-e027-ca89bcc3b384@siemens.com>
- <a9090b11-5ec4-f443-dc77-8cff66db33c3@siemens.com>
- <MN2PR11MB4285CF265BD595000EF87617F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
- <47ea721c-ec86-b979-51c6-3221eb95ef27@siemens.com>
- <MN2PR11MB42858DB94A373346DFEE65ADF2759@MN2PR11MB4285.namprd11.prod.outlook.com>
- <4c75fe1d-cfeb-65e1-46d2-9d4324f90aaf@siemens.com>
-In-Reply-To: <4c75fe1d-cfeb-65e1-46d2-9d4324f90aaf@siemens.com>
+Subject: reminder: Xenomai community call on Wednesday, Dec 15, 2021, UTC 7:00
+ AM
+Date: Wed, 15 Dec 2021 05:05:03 +0000
+Message-ID: <MN2PR11MB428523D1BE7D9E3D1ABB7C43F2769@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -26,46 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIERlY2VtYmVyIDE0LCAyMDIxIDM6
-NTEgUE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVu
-b21haUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIDEvMl0ga2VybmVsLXNo
-YXJrOiBhZGQgcGx1Z2luIGZvciBoYW5kbGluZyB4ZW5vbWFpIGNvYmFsdCBjb250ZXh0IHN3aXRj
-aCBldmVudA0KPg0KPk9uIDE0LjEyLjIxIDA4OjQ2LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+
-IA0KPj4+Pj4+DQo+Pj4+Pj4gQlRXLCBpcyB0aGF0IGJsdWUgaG9sbG93IGJveCBleGNsdXNpdmUg
-Zm9yIG91ciBwbHVnaW4/IE9yIGNhbiB0aGlzIGJlDQo+Pj4+Pj4gY3VzdG9taXplZD8gSXMgaXQg
-ZXhwbGFpbmVkIHNvbWV3aGVyZSBpbiBLZXJuZWxzaGFyayB3aGF0IGhvbGxvdyBib3hlcyBtZWFu
-Pw0KPj4+Pj4+DQo+Pj4+Pg0KPj4+Pj4gU29tZSB2aXN1YWxpemF0aW9uIGlzc3VlOg0KPj4+Pj4N
-Cj4+Pj4+ICAgICAgICBwdGhlbHBlci05MTIgICBbMDAwXSAgIDc1My45NDgyNzE6IGNvYmFsdF9z
-Y2hlZHVsZTogICAgICBzdGF0dXM9MHgxMDAwMDAwMA0KPj4+Pj4gICAgICAgIHB0aGVscGVyLTkx
-MiAgIFswMDBdICAgNzUzLjk0ODI3NTogY29iYWx0X3N3aXRjaF9jb250ZXh0OiBwcmV2X25hbWU9
-cHRoZWxwZXIgcHJldl9waWQ9OTEyIHByZXZfcHJpbz0zIHByZXZfc3RhdGU9MHhhNDAwNDIgPT0+
-IG5leHRfbmFtZT1oaS10aHJlYWQgbmV4dF9waWQ9OTEzIG5leHRfcHJpbz0yDQo+Pj4+PiAgICAg
-ICBoaS10aHJlYWQtOTEzICAgWzAwMF0gICA3NTMuOTQ4Mjg1OiBjb2JhbHRfc2hhZG93X2hhcmRl
-bmVkOiBzdGF0ZT0weDI0MDA0MCBpbmZvPTB4MA0KPj4+Pj4gICAgICAgaGktdGhyZWFkLTkxMyAg
-IFswMDBdICAgNzUzLjk0ODQyMzogY29iYWx0X3RocmVhZF9mYXVsdDogIGlwPTB4YjZlMzRlMjAg
-dHlwZT0weDgNCj4+Pj4+ICAgICAgIGhpLXRocmVhZC05MTMgICBbMDAwXSAgIDc1My45NDg3Mzc6
-IGNvYmFsdF9zaGFkb3dfZ29yZWxheDogcmVhc29uPXN5c2NhbGwNCj4+Pj4+DQo+Pj4+PiBJbiB0
-aGlzIGNhc2UsIHRoZSB0YXNrIHBsb3Qgb2YgaGktdGhyZWFkLTkxOSBkb2VzIG5vIHNob3cgdGhl
-IGJsdWUgYm94IA0KPj4+Pj4gYmV0d2VlbiBoYXJkZW5lZCBhbmQgZmF1bHQuDQo+Pj4+DQo+Pj4+
-IENvdWxkIHlvdSB6b29tIG91dCAoY2xpY2sgIi0iIGluIHRoZSB0b3AgbGVmdCBidXR0b24pIHRv
-IGNoZWNrIGlmIGJsdWUgYm94IHdvdWxkIGJlIHJlc2hvd2luZz8NCj4+Pj4gQ291bGQgeW91IHBh
-c3RlIG1vcmUgdHJhaWxpbmcgbG9nIGluIHlvdXIgbG9nIHRvIGNoZWNrIGlmIHRoZXJlIGFub3Ro
-ZXIgY29iYWx0X3N3aXRjaF9jb250ZXh0LiBDdXJyZW50IGxvZ2ljIGlzIGNyZWF0ZSBob2xsb3cg
-Ym94IGJldHdlZW4gdHdvIGNvYmFsdF9zd2l0Y2hfY29udGV4dC4gSWYgdGhlcmUgaXMgb25seSBj
-b2JhbHQgc3dpdGNoX2NvbnRleHQgZXZlbnQgbWF0Y2hpbmcsIGl0IHdvdWxkIG5vdCBjcmVhdGUg
-aG9sbG93IGJveCBjb3JyZWN0bHkuDQo+Pj4+DQo+Pj4NCj4+PiBZZWFoLCB0aGUgcHJvYmxlbSBp
-cyBpbmRlZWQgdGhhdCB0aGUgYmFyIGlzIG9ubHkgZHJhd24gaWYgYmVnIEFORCBlbmQNCj4+PiBw
-b2ludHMgYXJlIHZpc2libGUgLSB0aGF0IGlzIHN1cmUgbm90IHVzZWZ1bC4gRG9lcyB0aGUgZHJh
-d2luZyBjb25jZXB0DQo+Pj4gb2Yga2VybmVsc2hhcmsgaW1wb3NlcyB0aGlzIGxpbWl0YXRpb24/
-DQo+PiANCj4+IFRoaXMgc2hvdWxkIGJlIGNvbW1vbiBpc3N1ZSBpbiBrZXJuZWxzaGFyay4gSSBh
-bHNvIG9ic2VydmVkIHNhbWUgDQo+PiBpc3N1ZSBvbiBob2xsb3cgcmVkIGJveCBmb3IgcHJlZW1w
-dCBsYXRlbmN5IGltcGxlbWVudGF0aW9uLg0KPj4gDQo+DQo+T2ssIGFub3RoZXIgdG9waWMgdG8g
-ZGlzY3VzcyB3aXRoIHRoZWlyIGNvbW11bml0eSA6KQ0KDQpJdCBpcyBPSyB0byBzdWJtaXQgdGhp
-cyBwYXRjaCBzZXQgdG8ga2VybmVsLXNoYXJrIGNvbW11bml0eSB0byByZXZpZXcgaWYgaXQgbWVl
-dCBvdXIgcmVxdWlyZW1lbnQ/IPCfmIoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj4N
-Cj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0
-ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+We have the Xenomai community call today.
+
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
+
+Time:
+Wednesday, Dec 15, 2021, UTC 7:00 AM
+Paris, France CEST 8:00 AM
+China CST 3:00 PM
+
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
 
