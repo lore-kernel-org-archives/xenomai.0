@@ -1,11 +1,10 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] lib/cobalt: x86: Fix include guard names
-Message-ID: <4abfdacb-93ef-221f-dbec-9d0d1899bb26@siemens.com>
-Date: Wed, 15 Dec 2021 18:29:50 +0100
+Subject: [PATCH 0/4] Drop PowerPC architecture
+Date: Wed, 15 Dec 2021 19:04:21 +0100
+Message-ID: <cover.1639591464.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +13,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Steven Seeger <steven.seeger@flightsystems.net>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Citing patch 1:
 
-Once derived from PowerPC, apparently.
+While this architecture served well in many use cases over a long time,
+it's time is over, new chip chips are no longer being released.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/cobalt/arch/x86/include/asm/xenomai/syscall.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+As Xenomai is moving its core completely over Dovetail, there is no
+support in Dovetail for PowerPC and that is not going to change, it's
+time to drop this arch from the core in order to move forward.
 
-diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
-index 2e02b9983b..79bf17ee75 100644
---- a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
-+++ b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
-@@ -15,8 +15,8 @@
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
--#ifndef _LIB_COBALT_POWERPC_SYSCALL_H
--#define _LIB_COBALT_POWERPC_SYSCALL_H
-+#ifndef _LIB_COBALT_X86_SYSCALL_H
-+#define _LIB_COBALT_X86_SYSCALL_H
- 
- #include <xeno_config.h>
- #include <cobalt/uapi/syscall.h>
-@@ -213,4 +213,4 @@ asm (".L__X'%ebx = 1\n\t"
- #define XENOMAI_SYSCALL4(op,a1,a2,a3,a4)	XENOMAI_DO_SYSCALL(4,op,a1,a2,a3,a4)
- #define XENOMAI_SYSCALL5(op,a1,a2,a3,a4,a5)	XENOMAI_DO_SYSCALL(5,op,a1,a2,a3,a4,a5)
- 
--#endif /* !_LIB_COBALT_POWERPC_SYSCALL_H */
-+#endif /* !_LIB_COBALT_X86_SYSCALL_H */
+Jan
+
+
+CC: Steven Seeger <steven.seeger@flightsystems.net>
+
+Jan Kiszka (4):
+  Drop PowerPC architecture support
+  drivers/net: Drop PowerPC-related drivers
+  drivers/can: Drop MSCAN driver
+  drivers/can/rtcan_flexcan: Drop PowerPC bits
+
+ .gitlab-ci.yml                                |   27 +-
+ configure.ac                                  |    9 -
+ debian/control                                |    6 +-
+ doc/asciidoc/README.INSTALL.adoc              |   50 +-
+ doc/asciidoc/man1/xeno-config.adoc            |    2 +-
+ kernel/cobalt/arch/powerpc/Kconfig            |    8 -
+ .../powerpc/include/asm/xenomai/uapi/arith.h  |   34 -
+ .../include/asm/xenomai/uapi/features.h       |   40 -
+ .../powerpc/include/asm/xenomai/uapi/fptest.h |  127 -
+ .../include/asm/xenomai/uapi/syscall.h        |   23 -
+ kernel/cobalt/arch/powerpc/ipipe/Makefile     |    8 -
+ kernel/cobalt/arch/powerpc/ipipe/README       |    3 -
+ kernel/cobalt/arch/powerpc/ipipe/fpu.S        |   87 -
+ .../ipipe/include/asm/xenomai/calibration.h   |  106 -
+ .../ipipe/include/asm/xenomai/features.h      |   27 -
+ .../ipipe/include/asm/xenomai/fptest.h        |   58 -
+ .../ipipe/include/asm/xenomai/machine.h       |   39 -
+ .../ipipe/include/asm/xenomai/syscall.h       |   83 -
+ .../ipipe/include/asm/xenomai/syscall32.h     |   24 -
+ .../ipipe/include/asm/xenomai/thread.h        |   92 -
+ .../ipipe/include/asm/xenomai/wrappers.h      |   24 -
+ kernel/cobalt/arch/powerpc/ipipe/machine.c    |   67 -
+ kernel/cobalt/arch/powerpc/ipipe/thread.c     |  174 --
+ kernel/drivers/can/Kconfig                    |    1 -
+ kernel/drivers/can/Makefile                   |    2 +-
+ kernel/drivers/can/mscan/Kconfig              |    8 -
+ kernel/drivers/can/mscan/Makefile             |    6 -
+ kernel/drivers/can/mscan/rtcan_mscan.c        |  798 ------
+ kernel/drivers/can/mscan/rtcan_mscan.h        |   38 -
+ .../drivers/can/mscan/rtcan_mscan_mpc5xxx.c   |  392 ---
+ kernel/drivers/can/mscan/rtcan_mscan_proc.c   |  151 --
+ kernel/drivers/can/mscan/rtcan_mscan_regs.h   |  226 --
+ kernel/drivers/can/rtcan_flexcan.c            |  189 +-
+ kernel/drivers/net/drivers/Kconfig            |   27 -
+ kernel/drivers/net/drivers/Makefile           |   14 -
+ .../drivers/net/drivers/mpc52xx_fec/Makefile  |    5 -
+ kernel/drivers/net/drivers/mpc52xx_fec/README |   67 -
+ .../mpc52xx_fec/linuxppc_2_4_devel-fec.patch  |   61 -
+ .../net/drivers/mpc52xx_fec/mpc52xx_fec.c     | 1985 --------------
+ .../net/drivers/mpc52xx_fec/rt_mpc52xx_fec.h  |  428 ---
+ kernel/drivers/net/drivers/mpc8260_fcc_enet.c | 2235 ----------------
+ kernel/drivers/net/drivers/mpc8xx_enet.c      | 1073 --------
+ kernel/drivers/net/drivers/mpc8xx_fec.c       | 2341 -----------------
+ lib/cobalt/arch/Makefile.am                   |    2 +-
+ lib/cobalt/arch/powerpc/Makefile.am           |   13 -
+ lib/cobalt/arch/powerpc/features.c            |   24 -
+ lib/cobalt/arch/powerpc/include/Makefile.am   |    2 -
+ .../arch/powerpc/include/asm/Makefile.am      |    2 -
+ .../powerpc/include/asm/xenomai/Makefile.am   |    5 -
+ .../powerpc/include/asm/xenomai/features.h    |   30 -
+ .../powerpc/include/asm/xenomai/syscall.h     |   82 -
+ .../arch/powerpc/include/asm/xenomai/time.h   |   16 -
+ .../arch/powerpc/include/asm/xenomai/tsc.h    |   38 -
+ scripts/prepare-kernel.sh                     |    3 -
+ 54 files changed, 100 insertions(+), 11282 deletions(-)
+ delete mode 100644 kernel/cobalt/arch/powerpc/Kconfig
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/arith.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/fptest.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/syscall.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/Makefile
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/README
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/fpu.S
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/calibration.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/features.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/fptest.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/machine.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/syscall32.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/thread.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/wrappers.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/machine.c
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/thread.c
+ delete mode 100644 kernel/drivers/can/mscan/Kconfig
+ delete mode 100644 kernel/drivers/can/mscan/Makefile
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.h
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_proc.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_regs.h
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/Makefile
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/README
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/linuxppc_2_4_devel-fec.patch
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/mpc52xx_fec.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/rt_mpc52xx_fec.h
+ delete mode 100644 kernel/drivers/net/drivers/mpc8260_fcc_enet.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc8xx_enet.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc8xx_fec.c
+ delete mode 100644 lib/cobalt/arch/powerpc/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/features.c
+ delete mode 100644 lib/cobalt/arch/powerpc/include/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/features.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/syscall.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/time.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/tsc.h
+
 -- 
 2.31.1
+
 
