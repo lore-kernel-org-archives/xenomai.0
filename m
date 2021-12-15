@@ -1,5 +1,8 @@
-Subject: Re: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [RFC PATCH 1/2] kernel-shark: add plugin for handling xenomai
  cobalt context switch event
+Date: Wed, 15 Dec 2021 02:43:39 +0000
+Message-ID: <MN2PR11MB4285D36887A70A94BD3A241AF2769@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20211214031537.14914-1-hongzhan.chen@intel.com>
  <20211214031537.14914-2-hongzhan.chen@intel.com>
  <86f411ed-5725-74cd-a5ab-e1f0c3902120@siemens.com>
@@ -9,14 +12,12 @@ References: <20211214031537.14914-1-hongzhan.chen@intel.com>
  <MN2PR11MB4285CF265BD595000EF87617F2759@MN2PR11MB4285.namprd11.prod.outlook.com>
  <47ea721c-ec86-b979-51c6-3221eb95ef27@siemens.com>
  <MN2PR11MB42858DB94A373346DFEE65ADF2759@MN2PR11MB4285.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4c75fe1d-cfeb-65e1-46d2-9d4324f90aaf@siemens.com>
-Date: Tue, 14 Dec 2021 08:50:54 +0100
-MIME-Version: 1.0
-In-Reply-To: <MN2PR11MB42858DB94A373346DFEE65ADF2759@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+ <4c75fe1d-cfeb-65e1-46d2-9d4324f90aaf@siemens.com>
+In-Reply-To: <4c75fe1d-cfeb-65e1-46d2-9d4324f90aaf@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,43 +26,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.12.21 08:46, Chen, Hongzhan wrote:
-> 
->>>>>
->>>>> BTW, is that blue hollow box exclusive for our plugin? Or can this be
->>>>> customized? Is it explained somewhere in Kernelshark what hollow boxes mean?
->>>>>
->>>>
->>>> Some visualization issue:
->>>>
->>>>        pthelper-912   [000]   753.948271: cobalt_schedule:      status=0x10000000
->>>>        pthelper-912   [000]   753.948275: cobalt_switch_context: prev_name=pthelper prev_pid=912 prev_prio=3 prev_state=0xa40042 ==> next_name=hi-thread next_pid=913 next_prio=2
->>>>       hi-thread-913   [000]   753.948285: cobalt_shadow_hardened: state=0x240040 info=0x0
->>>>       hi-thread-913   [000]   753.948423: cobalt_thread_fault:  ip=0xb6e34e20 type=0x8
->>>>       hi-thread-913   [000]   753.948737: cobalt_shadow_gorelax: reason=syscall
->>>>
->>>> In this case, the task plot of hi-thread-919 does no show the blue box 
->>>> between hardened and fault.
->>>
->>> Could you zoom out (click "-" in the top left button) to check if blue box would be reshowing?
->>> Could you paste more trailing log in your log to check if there another cobalt_switch_context. Current logic is create hollow box between two cobalt_switch_context. If there is only cobalt switch_context event matching, it would not create hollow box correctly.
->>>
->>
->> Yeah, the problem is indeed that the bar is only drawn if beg AND end
->> points are visible - that is sure not useful. Does the drawing concept
->> of kernelshark imposes this limitation?
-> 
-> This should be common issue in kernelshark. I also observed same 
-> issue on hollow red box for preempt latency implementation.
-> 
-
-Ok, another topic to discuss with their community :)
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIERlY2VtYmVyIDE0LCAyMDIxIDM6
+NTEgUE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVu
+b21haUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIDEvMl0ga2VybmVsLXNo
+YXJrOiBhZGQgcGx1Z2luIGZvciBoYW5kbGluZyB4ZW5vbWFpIGNvYmFsdCBjb250ZXh0IHN3aXRj
+aCBldmVudA0KPg0KPk9uIDE0LjEyLjIxIDA4OjQ2LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+
+IA0KPj4+Pj4+DQo+Pj4+Pj4gQlRXLCBpcyB0aGF0IGJsdWUgaG9sbG93IGJveCBleGNsdXNpdmUg
+Zm9yIG91ciBwbHVnaW4/IE9yIGNhbiB0aGlzIGJlDQo+Pj4+Pj4gY3VzdG9taXplZD8gSXMgaXQg
+ZXhwbGFpbmVkIHNvbWV3aGVyZSBpbiBLZXJuZWxzaGFyayB3aGF0IGhvbGxvdyBib3hlcyBtZWFu
+Pw0KPj4+Pj4+DQo+Pj4+Pg0KPj4+Pj4gU29tZSB2aXN1YWxpemF0aW9uIGlzc3VlOg0KPj4+Pj4N
+Cj4+Pj4+ICAgICAgICBwdGhlbHBlci05MTIgICBbMDAwXSAgIDc1My45NDgyNzE6IGNvYmFsdF9z
+Y2hlZHVsZTogICAgICBzdGF0dXM9MHgxMDAwMDAwMA0KPj4+Pj4gICAgICAgIHB0aGVscGVyLTkx
+MiAgIFswMDBdICAgNzUzLjk0ODI3NTogY29iYWx0X3N3aXRjaF9jb250ZXh0OiBwcmV2X25hbWU9
+cHRoZWxwZXIgcHJldl9waWQ9OTEyIHByZXZfcHJpbz0zIHByZXZfc3RhdGU9MHhhNDAwNDIgPT0+
+IG5leHRfbmFtZT1oaS10aHJlYWQgbmV4dF9waWQ9OTEzIG5leHRfcHJpbz0yDQo+Pj4+PiAgICAg
+ICBoaS10aHJlYWQtOTEzICAgWzAwMF0gICA3NTMuOTQ4Mjg1OiBjb2JhbHRfc2hhZG93X2hhcmRl
+bmVkOiBzdGF0ZT0weDI0MDA0MCBpbmZvPTB4MA0KPj4+Pj4gICAgICAgaGktdGhyZWFkLTkxMyAg
+IFswMDBdICAgNzUzLjk0ODQyMzogY29iYWx0X3RocmVhZF9mYXVsdDogIGlwPTB4YjZlMzRlMjAg
+dHlwZT0weDgNCj4+Pj4+ICAgICAgIGhpLXRocmVhZC05MTMgICBbMDAwXSAgIDc1My45NDg3Mzc6
+IGNvYmFsdF9zaGFkb3dfZ29yZWxheDogcmVhc29uPXN5c2NhbGwNCj4+Pj4+DQo+Pj4+PiBJbiB0
+aGlzIGNhc2UsIHRoZSB0YXNrIHBsb3Qgb2YgaGktdGhyZWFkLTkxOSBkb2VzIG5vIHNob3cgdGhl
+IGJsdWUgYm94IA0KPj4+Pj4gYmV0d2VlbiBoYXJkZW5lZCBhbmQgZmF1bHQuDQo+Pj4+DQo+Pj4+
+IENvdWxkIHlvdSB6b29tIG91dCAoY2xpY2sgIi0iIGluIHRoZSB0b3AgbGVmdCBidXR0b24pIHRv
+IGNoZWNrIGlmIGJsdWUgYm94IHdvdWxkIGJlIHJlc2hvd2luZz8NCj4+Pj4gQ291bGQgeW91IHBh
+c3RlIG1vcmUgdHJhaWxpbmcgbG9nIGluIHlvdXIgbG9nIHRvIGNoZWNrIGlmIHRoZXJlIGFub3Ro
+ZXIgY29iYWx0X3N3aXRjaF9jb250ZXh0LiBDdXJyZW50IGxvZ2ljIGlzIGNyZWF0ZSBob2xsb3cg
+Ym94IGJldHdlZW4gdHdvIGNvYmFsdF9zd2l0Y2hfY29udGV4dC4gSWYgdGhlcmUgaXMgb25seSBj
+b2JhbHQgc3dpdGNoX2NvbnRleHQgZXZlbnQgbWF0Y2hpbmcsIGl0IHdvdWxkIG5vdCBjcmVhdGUg
+aG9sbG93IGJveCBjb3JyZWN0bHkuDQo+Pj4+DQo+Pj4NCj4+PiBZZWFoLCB0aGUgcHJvYmxlbSBp
+cyBpbmRlZWQgdGhhdCB0aGUgYmFyIGlzIG9ubHkgZHJhd24gaWYgYmVnIEFORCBlbmQNCj4+PiBw
+b2ludHMgYXJlIHZpc2libGUgLSB0aGF0IGlzIHN1cmUgbm90IHVzZWZ1bC4gRG9lcyB0aGUgZHJh
+d2luZyBjb25jZXB0DQo+Pj4gb2Yga2VybmVsc2hhcmsgaW1wb3NlcyB0aGlzIGxpbWl0YXRpb24/
+DQo+PiANCj4+IFRoaXMgc2hvdWxkIGJlIGNvbW1vbiBpc3N1ZSBpbiBrZXJuZWxzaGFyay4gSSBh
+bHNvIG9ic2VydmVkIHNhbWUgDQo+PiBpc3N1ZSBvbiBob2xsb3cgcmVkIGJveCBmb3IgcHJlZW1w
+dCBsYXRlbmN5IGltcGxlbWVudGF0aW9uLg0KPj4gDQo+DQo+T2ssIGFub3RoZXIgdG9waWMgdG8g
+ZGlzY3VzcyB3aXRoIHRoZWlyIGNvbW11bml0eSA6KQ0KDQpJdCBpcyBPSyB0byBzdWJtaXQgdGhp
+cyBwYXRjaCBzZXQgdG8ga2VybmVsLXNoYXJrIGNvbW11bml0eSB0byByZXZpZXcgaWYgaXQgbWVl
+dCBvdXIgcmVxdWlyZW1lbnQ/IPCfmIoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj4N
+Cj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5Db3Jwb3JhdGUgQ29tcGV0
+ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
