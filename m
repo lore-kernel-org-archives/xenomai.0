@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: stable/v3.2.x started, future of other stable branches
-Message-ID: <aa070ad1-89ca-f8eb-3b88-b3c2e7d11b87@siemens.com>
-Date: Wed, 15 Dec 2021 11:48:38 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: Build failure branch 3.1.x
+Date: Wed, 15 Dec 2021 12:28:16 +0000
+Message-ID: <DB9PR05MB77232783D5FBE504E69B2341F6769@DB9PR05MB7723.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,35 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi all,
+Hello,
 
-in order to permit ABI/API breaking changes in next/master, I've just
-started the stable/v3.2.x based on current master. On xenomai-images
-side, CI/CT has been updated as well to account for that [1].
+rebuilding from the 3.1.x branch yields an error:
 
-As already indicated in [1], one change planed for master is to drop
-I-pipe support, thus kernels < 5.10. Therefore, CI for master is already
-limited to that scope.
+ERROR: "__xnthread_discard" [drivers/xenomai/testing/xeno_switchtest.ko] un=
+defined!
 
-Now the question is how to continue with stable maintenance. I do have
-users on 3.0.x, thus I plan to keep that alive (though it is definitely
-calming down now). For 3.1.x, I'm lacking a feeling how the userbase is
-and how motivated that base is to consume stable updates vs. to move
-forward to 3.2.x. Any indications on that will help to decide about that
-branch. Without any feedback, I would push out yet another 3.2 release
-early next year and then close the branch.
+xeno_switchtest can't be compiled as module because of this (works as built=
+-in)
 
-With that, I wish you already happy vacations (those who plan to) - I'll
-be offline from next week on and will be back in January.
+Mit besten Gr=FC=DFen / Kind regards
 
-Jan
+NORBERT LANGE
 
-[1]
-https://source.denx.de/Xenomai/xenomai-images/-/commit/beea63dd69ab6cf762f8d52748677d8e6be30be3
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+________________________________
 
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
