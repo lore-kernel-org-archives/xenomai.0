@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] xeno-config: Fix reporting of system information on Dovetail
- kernels
-Message-ID: <af8b3ec5-edbf-b0c3-a46a-4e858905d419@siemens.com>
-Date: Wed, 15 Dec 2021 18:29:01 +0100
+Subject: [PATCH] lib/cobalt: x86: Fix include guard names
+Message-ID: <4abfdacb-93ef-221f-dbec-9d0d1899bb26@siemens.com>
+Date: Wed, 15 Dec 2021 18:29:50 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
@@ -19,41 +18,34 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Presence of /proc/ipipe is no longer a precondition for Xenomai.
+Once derived from PowerPC, apparently.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- scripts/xeno-config-cobalt.in | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ lib/cobalt/arch/x86/include/asm/xenomai/syscall.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
-index cd55ad82c7..9f60e90bb3 100644
---- a/scripts/xeno-config-cobalt.in
-+++ b/scripts/xeno-config-cobalt.in
-@@ -73,17 +73,15 @@ dump_info ()
- 	test x"$_version" = x || version="$_version"
-     fi
-     echo "Xenomai version: ${version}"
-+    uname -a 2>/dev/null || echo "Cannot determine system information (uname?)"
-+    echo "Kernel parameters: `cat /proc/cmdline`"
-     if test -r /proc/ipipe/version; then
--	uname -a 2>/dev/null || echo "Cannot determine system information (uname?)"
--	echo "Kernel parameters: `cat /proc/cmdline`"
- 	echo "I-pipe release #`cat /proc/ipipe/version` detected"
--	if test -r /proc/xenomai/version; then
--	    echo "Cobalt core `cat /proc/xenomai/version` detected"
--	else
--	    echo "Cobalt core disabled on this system"
--	fi
-+    fi
-+    if test -r /proc/xenomai/version; then
-+	echo "Cobalt core `cat /proc/xenomai/version` detected"
-     else
--	    echo "Cobalt core is NOT present on this system"
-+	echo "Cobalt core disabled or not present on this system"
-     fi
-     echo "Compiler: @XENO_BUILD_COMPILER@"
-     eval echo "Build args: @XENO_BUILD_ARGS@"
+diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
+index 2e02b9983b..79bf17ee75 100644
+--- a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
+@@ -15,8 +15,8 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+-#ifndef _LIB_COBALT_POWERPC_SYSCALL_H
+-#define _LIB_COBALT_POWERPC_SYSCALL_H
++#ifndef _LIB_COBALT_X86_SYSCALL_H
++#define _LIB_COBALT_X86_SYSCALL_H
+ 
+ #include <xeno_config.h>
+ #include <cobalt/uapi/syscall.h>
+@@ -213,4 +213,4 @@ asm (".L__X'%ebx = 1\n\t"
+ #define XENOMAI_SYSCALL4(op,a1,a2,a3,a4)	XENOMAI_DO_SYSCALL(4,op,a1,a2,a3,a4)
+ #define XENOMAI_SYSCALL5(op,a1,a2,a3,a4,a5)	XENOMAI_DO_SYSCALL(5,op,a1,a2,a3,a4,a5)
+ 
+-#endif /* !_LIB_COBALT_POWERPC_SYSCALL_H */
++#endif /* !_LIB_COBALT_X86_SYSCALL_H */
 -- 
 2.31.1
 
