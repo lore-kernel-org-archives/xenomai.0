@@ -1,9 +1,13 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v5 4/8] drivers/can: add multi message support to sendmsg
-Date: Sun, 19 Dec 2021 10:38:04 +0100
-Message-Id: <20211219103605.v5.4.Ib16491ef1950ca5ad44805af98a594a9e0622729@changeid>
-In-Reply-To: <20211219093809.21765-1-dariobin@libero.it>
-References: <20211219093809.21765-1-dariobin@libero.it>
+From: steven.seeger flightsystems.net <steven.seeger@flightsystems.net>
+Subject: Re: [PATCH 0/4] Drop PowerPC architecture
+Date: Wed, 15 Dec 2021 19:25:38 +0000
+Message-ID: <DM6PR05MB45062ED506E7DA3747B05977F7769@DM6PR05MB4506.namprd05.prod.outlook.com>
+References: <cover.1639591464.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1639591464.git.jan.kiszka@siemens.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,300 +16,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Wolfgang Grandegger <wg@grandegger.com>, Michael Trimarchi <michael@amarulasolutions.com>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Philippe Gerum <rpm@xenomai.org>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-The `user_msghdr' structure is designed to send multiple messages as
-well, so rtcan_raw_sendmsg() can also send multiple messages. This
-avoids having to add the sendmmsg system call which requires more
-extensive Xenomai changes.
+Really sad to see it go but my career hasn't allowed for me to continue sup=
+port and I'm also now doing all arm and x86 like everyone else. Hopefully i=
+ can contribute in these areas someday.
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
----
+Steven
+________________________________
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Sent: Wednesday, December 15, 2021 1:04:21 PM
+To: xenomai@xenomai.org <xenomai@xenomai.org>
+Cc: steven.seeger flightsystems.net <steven.seeger@flightsystems.net>
+Subject: [PATCH 0/4] Drop PowerPC architecture
 
-(no changes since v1)
+Citing patch 1:
 
- kernel/drivers/can/rtcan_raw.c | 239 ++++++++++++++++++---------------
- 1 file changed, 128 insertions(+), 111 deletions(-)
+While this architecture served well in many use cases over a long time,
+it's time is over, new chip chips are no longer being released.
 
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index 693b927fe..b17c1709d 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -762,113 +762,13 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
- }
- 
- 
--ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
--			  const struct user_msghdr *msg, int flags)
-+static ssize_t __rtcan_raw_sendmsg(struct rtcan_device *dev, struct rtcan_socket *sock,
-+				   can_frame_t *frame, nanosecs_rel_t timeout)
- {
--    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
--    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
--    struct sockaddr_can scan_buf;
--    struct iovec *iov = (struct iovec *)msg->msg_iov;
--    struct iovec iov_buf;
--    can_frame_t *frame;
--    can_frame_t frame_buf;
--    rtdm_lockctx_t lock_ctx;
--    nanosecs_rel_t timeout = 0;
-     struct tx_wait_queue tx_wait;
--    struct rtcan_device *dev;
--    int ifindex = 0;
--    int ret  = 0;
-+    rtdm_lockctx_t lock_ctx;
-     spl_t s;
--
--
--    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
--	return -EOPNOTSUPP;
--
--    /* Only MSG_DONTWAIT is a valid flag. */
--    if (flags & ~MSG_DONTWAIT)
--	return -EINVAL;
--
--    /* Check msg_iovlen, only one buffer allowed */
--    if (msg->msg_iovlen != 1)
--	return -EMSGSIZE;
--
--    if (scan == NULL) {
--	/* No socket address. Will use bound interface for sending */
--
--	if (msg->msg_namelen != 0)
--	    return -EINVAL;
--
--
--	/* We only want a consistent value here, a spin lock would be
--	 * overkill. Nevertheless, the binding could change till we have
--	 * the chance to send. Blame the user, though. */
--	ifindex = atomic_read(&sock->ifindex);
--
--	if (!ifindex)
--	    /* Socket isn't bound or bound to all interfaces. Go out. */
--	    return -ENXIO;
--    } else {
--	/* Socket address given */
--	if (msg->msg_namelen < sizeof(struct sockaddr_can))
--	    return -EINVAL;
--
--	if (rtdm_fd_is_user(fd)) {
--	    /* Copy socket address from userspace */
--	    if (!rtdm_read_user_ok(fd, msg->msg_name,
--				   sizeof(struct sockaddr_can)) ||
--		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
--				    sizeof(struct sockaddr_can)))
--		return -EFAULT;
--
--	    scan = &scan_buf;
--	}
--
--	/* Check address family */
--	if (scan->can_family != AF_CAN)
--	    return -EINVAL;
--
--	ifindex = scan->can_ifindex;
--    }
--
--    if (rtdm_fd_is_user(fd)) {
--	/* Copy IO vector from userspace */
--	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
--			     sizeof(struct iovec)) ||
--	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
--				sizeof(struct iovec)))
--	    return -EFAULT;
--
--	iov = &iov_buf;
--    }
--
--    /* Check size of buffer */
--    if (iov->iov_len != sizeof(can_frame_t))
--	return -EMSGSIZE;
--
--    frame = (can_frame_t *)iov->iov_base;
--
--    if (rtdm_fd_is_user(fd)) {
--	/* Copy CAN frame from userspace */
--	if (!rtdm_read_user_ok(fd, iov->iov_base,
--			       sizeof(can_frame_t)) ||
--	    rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
--				sizeof(can_frame_t)))
--	    return -EFAULT;
--
--	frame = &frame_buf;
--    }
--
--    /* Adjust iovec in the common way */
--    iov->iov_base += sizeof(can_frame_t);
--    iov->iov_len -= sizeof(can_frame_t);
--    /* ... and copy it back to userspace if necessary */
--    if (rtdm_fd_is_user(fd)) {
--	if (rtdm_copy_to_user(fd, msg->msg_iov, iov,
--			      sizeof(struct iovec)))
--	    return -EFAULT;
--    }
--
--    /* At last, we've got the frame ... */
-+    int ret = 0;
- 
-     /* Check if DLC between 0 and 15 */
-     if (frame->can_dlc > 15)
-@@ -881,11 +781,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 	    return -EINVAL;
-     }
- 
--    if ((dev = rtcan_dev_get_by_index(ifindex)) == NULL)
--	return -ENXIO;
--
--    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
--
-     tx_wait.rt_task = rtdm_task_current();
- 
-     /* Register the task at the socket's TX wait queue and decrement
-@@ -931,7 +826,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 
-     /* We got access */
- 
--
-     /* Push message onto stack for loopback when TX done */
-     if (rtcan_loopback_enabled(sock))
- 	rtcan_tx_push(dev, sock, frame);
-@@ -960,10 +854,133 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-  send_out2:
-     rtdm_lock_put_irqrestore(&dev->device_lock, lock_ctx);
-  send_out1:
--    rtcan_dev_dereference(dev);
-     return ret;
- }
- 
-+ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
-+			  const struct user_msghdr *msg, int flags)
-+{
-+    struct rtcan_socket *sock = rtdm_fd_to_private(fd);
-+    struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
-+    struct sockaddr_can scan_buf;
-+    struct iovec *iov = (struct iovec *)msg->msg_iov;
-+    struct iovec iov_buf;
-+    can_frame_t *frame;
-+    can_frame_t frame_buf;
-+    nanosecs_rel_t timeout;
-+    struct rtcan_device *dev;
-+    int ret = 0, ifindex = 0, i = 0, n, sent = 0;
-+
-+    if (flags & MSG_OOB)   /* Mirror BSD error message compatibility */
-+	return -EOPNOTSUPP;
-+
-+    /* Only MSG_DONTWAIT is a valid flag. */
-+    if (flags & ~MSG_DONTWAIT)
-+	return -EINVAL;
-+
-+    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
-+
-+    if (scan == NULL) {
-+	/* No socket address. Will use bound interface for sending */
-+	if (msg->msg_namelen != 0)
-+	    return -EINVAL;
-+
-+
-+	/* We only want a consistent value here, a spin lock would be
-+	 * overkill. Nevertheless, the binding could change till we have
-+	 * the chance to send. Blame the user, though. */
-+	ifindex = atomic_read(&sock->ifindex);
-+	if (!ifindex)
-+	    /* Socket isn't bound or bound to all interfaces. Go out. */
-+	    return -ENXIO;
-+    } else {
-+	/* Socket address given */
-+	if (msg->msg_namelen < sizeof(struct sockaddr_can))
-+	    return -EINVAL;
-+
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy socket address from userspace */
-+	    if (!rtdm_read_user_ok(fd, msg->msg_name,
-+				   sizeof(struct sockaddr_can)) ||
-+		rtdm_copy_from_user(fd, &scan_buf, msg->msg_name,
-+				    sizeof(struct sockaddr_can)))
-+		return -EFAULT;
-+
-+	    scan = &scan_buf;
-+	}
-+
-+	/* Check address family */
-+	if (scan->can_family != AF_CAN)
-+	    return -EINVAL;
-+
-+	ifindex = scan->can_ifindex;
-+    }
-+
-+    dev = rtcan_dev_get_by_index(ifindex);
-+    if (!dev)
-+	return -ENXIO;
-+
-+    if (rtdm_fd_is_user(fd)) {
-+
-+	/* Copy IO vector from userspace */
-+	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
-+			     sizeof(struct iovec)) ||
-+	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
-+				sizeof(struct iovec))) {
-+	    ret = -EFAULT;
-+	    goto finally;
-+	}
-+
-+	iov = &iov_buf;
-+    }
-+
-+    n = msg->msg_iovlen;
-+    while (i < n) {
-+	if (iov->iov_len < sizeof(can_frame_t)) {
-+	    ret = -EMSGSIZE;
-+	    goto finally;
-+	}
-+
-+	frame = (can_frame_t *)iov->iov_base;
-+
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy CAN frame from userspace */
-+	    if (!rtdm_read_user_ok(fd, iov->iov_base, sizeof(can_frame_t)) ||
-+		rtdm_copy_from_user(fd, &frame_buf, iov->iov_base,
-+				    sizeof(can_frame_t))) {
-+	        ret = -EFAULT;
-+	        goto finally;
-+	    }
-+
-+	    frame = &frame_buf;
-+	}
-+
-+	iov->iov_base += sizeof(can_frame_t);
-+	iov->iov_len -= sizeof(can_frame_t);
-+
-+	ret = __rtcan_raw_sendmsg(dev, sock, frame, timeout);
-+	if (ret < 0)
-+	    goto finally;
-+
-+	sent += ret;
-+    }
-+
-+    /* copy it back to userspace if necessary */
-+    if (rtdm_fd_is_user(fd)) {
-+	if (rtdm_copy_to_user(fd, msg->msg_iov, iov, sizeof(struct iovec))) {
-+	    ret = -EFAULT;
-+	    goto finally;
-+	}
-+    }
-+
-+finally:
-+    rtcan_dev_dereference(dev);
-+
-+    if (sent > 0)
-+	    return sent;
-+
-+    return ret;
-+}
- 
- static struct rtdm_driver rtcan_driver = {
- 	.profile_info		= RTDM_PROFILE_INFO(rtcan,
--- 
-2.17.1
+As Xenomai is moving its core completely over Dovetail, there is no
+support in Dovetail for PowerPC and that is not going to change, it's
+time to drop this arch from the core in order to move forward.
 
+Jan
+
+
+CC: Steven Seeger <steven.seeger@flightsystems.net>
+
+Jan Kiszka (4):
+  Drop PowerPC architecture support
+  drivers/net: Drop PowerPC-related drivers
+  drivers/can: Drop MSCAN driver
+  drivers/can/rtcan_flexcan: Drop PowerPC bits
+
+ .gitlab-ci.yml                                |   27 +-
+ configure.ac                                  |    9 -
+ debian/control                                |    6 +-
+ doc/asciidoc/README.INSTALL.adoc              |   50 +-
+ doc/asciidoc/man1/xeno-config.adoc            |    2 +-
+ kernel/cobalt/arch/powerpc/Kconfig            |    8 -
+ .../powerpc/include/asm/xenomai/uapi/arith.h  |   34 -
+ .../include/asm/xenomai/uapi/features.h       |   40 -
+ .../powerpc/include/asm/xenomai/uapi/fptest.h |  127 -
+ .../include/asm/xenomai/uapi/syscall.h        |   23 -
+ kernel/cobalt/arch/powerpc/ipipe/Makefile     |    8 -
+ kernel/cobalt/arch/powerpc/ipipe/README       |    3 -
+ kernel/cobalt/arch/powerpc/ipipe/fpu.S        |   87 -
+ .../ipipe/include/asm/xenomai/calibration.h   |  106 -
+ .../ipipe/include/asm/xenomai/features.h      |   27 -
+ .../ipipe/include/asm/xenomai/fptest.h        |   58 -
+ .../ipipe/include/asm/xenomai/machine.h       |   39 -
+ .../ipipe/include/asm/xenomai/syscall.h       |   83 -
+ .../ipipe/include/asm/xenomai/syscall32.h     |   24 -
+ .../ipipe/include/asm/xenomai/thread.h        |   92 -
+ .../ipipe/include/asm/xenomai/wrappers.h      |   24 -
+ kernel/cobalt/arch/powerpc/ipipe/machine.c    |   67 -
+ kernel/cobalt/arch/powerpc/ipipe/thread.c     |  174 --
+ kernel/drivers/can/Kconfig                    |    1 -
+ kernel/drivers/can/Makefile                   |    2 +-
+ kernel/drivers/can/mscan/Kconfig              |    8 -
+ kernel/drivers/can/mscan/Makefile             |    6 -
+ kernel/drivers/can/mscan/rtcan_mscan.c        |  798 ------
+ kernel/drivers/can/mscan/rtcan_mscan.h        |   38 -
+ .../drivers/can/mscan/rtcan_mscan_mpc5xxx.c   |  392 ---
+ kernel/drivers/can/mscan/rtcan_mscan_proc.c   |  151 --
+ kernel/drivers/can/mscan/rtcan_mscan_regs.h   |  226 --
+ kernel/drivers/can/rtcan_flexcan.c            |  189 +-
+ kernel/drivers/net/drivers/Kconfig            |   27 -
+ kernel/drivers/net/drivers/Makefile           |   14 -
+ .../drivers/net/drivers/mpc52xx_fec/Makefile  |    5 -
+ kernel/drivers/net/drivers/mpc52xx_fec/README |   67 -
+ .../mpc52xx_fec/linuxppc_2_4_devel-fec.patch  |   61 -
+ .../net/drivers/mpc52xx_fec/mpc52xx_fec.c     | 1985 --------------
+ .../net/drivers/mpc52xx_fec/rt_mpc52xx_fec.h  |  428 ---
+ kernel/drivers/net/drivers/mpc8260_fcc_enet.c | 2235 ----------------
+ kernel/drivers/net/drivers/mpc8xx_enet.c      | 1073 --------
+ kernel/drivers/net/drivers/mpc8xx_fec.c       | 2341 -----------------
+ lib/cobalt/arch/Makefile.am                   |    2 +-
+ lib/cobalt/arch/powerpc/Makefile.am           |   13 -
+ lib/cobalt/arch/powerpc/features.c            |   24 -
+ lib/cobalt/arch/powerpc/include/Makefile.am   |    2 -
+ .../arch/powerpc/include/asm/Makefile.am      |    2 -
+ .../powerpc/include/asm/xenomai/Makefile.am   |    5 -
+ .../powerpc/include/asm/xenomai/features.h    |   30 -
+ .../powerpc/include/asm/xenomai/syscall.h     |   82 -
+ .../arch/powerpc/include/asm/xenomai/time.h   |   16 -
+ .../arch/powerpc/include/asm/xenomai/tsc.h    |   38 -
+ scripts/prepare-kernel.sh                     |    3 -
+ 54 files changed, 100 insertions(+), 11282 deletions(-)
+ delete mode 100644 kernel/cobalt/arch/powerpc/Kconfig
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/ari=
+th.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/fea=
+tures.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/fpt=
+est.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/sys=
+call.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/Makefile
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/README
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/fpu.S
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/ca=
+libration.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/fe=
+atures.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/fp=
+test.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/ma=
+chine.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/sy=
+scall.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/sy=
+scall32.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/th=
+read.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/include/asm/xenomai/wr=
+appers.h
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/machine.c
+ delete mode 100644 kernel/cobalt/arch/powerpc/ipipe/thread.c
+ delete mode 100644 kernel/drivers/can/mscan/Kconfig
+ delete mode 100644 kernel/drivers/can/mscan/Makefile
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.h
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_proc.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_regs.h
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/Makefile
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/README
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/linuxppc_2_4_dev=
+el-fec.patch
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/mpc52xx_fec.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc52xx_fec/rt_mpc52xx_fec.h
+ delete mode 100644 kernel/drivers/net/drivers/mpc8260_fcc_enet.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc8xx_enet.c
+ delete mode 100644 kernel/drivers/net/drivers/mpc8xx_fec.c
+ delete mode 100644 lib/cobalt/arch/powerpc/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/features.c
+ delete mode 100644 lib/cobalt/arch/powerpc/include/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/Makefile.am
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/features.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/syscall.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/time.h
+ delete mode 100644 lib/cobalt/arch/powerpc/include/asm/xenomai/tsc.h
+
+--
+2.31.1
 
