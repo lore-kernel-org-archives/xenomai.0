@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 4/4] drivers/can/rtcan_flexcan: Drop PowerPC bits
-Date: Wed, 15 Dec 2021 19:04:25 +0100
-Message-ID: <6fb0764201d91ae67ecdd8ee1aeb7149396d33a6.1639591464.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/4] drivers/can: Drop MSCAN driver
+Date: Wed, 15 Dec 2021 19:04:24 +0100
+Message-ID: <b2467daae00957d7b70c03c103b35c44afea55d1.1639591464.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1639591464.git.jan.kiszka@siemens.com>
 References: <cover.1639591464.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,504 +19,1714 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Remove the flexcan_read/write abstraction, now that PowerPC is gone.
+This was for PowerPC SoCs but support for this arch is gone now.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/can/rtcan_flexcan.c | 189 +++++++++++++----------------
- 1 file changed, 81 insertions(+), 108 deletions(-)
+ kernel/drivers/can/Kconfig                    |   1 -
+ kernel/drivers/can/Makefile                   |   2 +-
+ kernel/drivers/can/mscan/Kconfig              |   8 -
+ kernel/drivers/can/mscan/Makefile             |   6 -
+ kernel/drivers/can/mscan/rtcan_mscan.c        | 798 ------------------
+ kernel/drivers/can/mscan/rtcan_mscan.h        |  38 -
+ .../drivers/can/mscan/rtcan_mscan_mpc5xxx.c   | 392 ---------
+ kernel/drivers/can/mscan/rtcan_mscan_proc.c   | 151 ----
+ kernel/drivers/can/mscan/rtcan_mscan_regs.h   | 226 -----
+ 9 files changed, 1 insertion(+), 1621 deletions(-)
+ delete mode 100644 kernel/drivers/can/mscan/Kconfig
+ delete mode 100644 kernel/drivers/can/mscan/Makefile
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan.h
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_proc.c
+ delete mode 100644 kernel/drivers/can/mscan/rtcan_mscan_regs.h
 
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index 3348e8ce0a..edaaad7031 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -335,39 +335,12 @@ static const struct can_bittiming_const flexcan_bittiming_const = {
- 	.brp_inc = 1,
- };
+diff --git a/kernel/drivers/can/Kconfig b/kernel/drivers/can/Kconfig
+index 1c055494d6..db8fb60ce0 100644
+--- a/kernel/drivers/can/Kconfig
++++ b/kernel/drivers/can/Kconfig
+@@ -85,7 +85,6 @@ config XENO_DRIVERS_CAN_FLEXCAN
  
--/* Abstract off the read/write for arm versus ppc. This
-- * assumes that PPC uses big-endian registers and everything
-- * else uses little-endian registers, independent of CPU
-- * endianness.
+ 	Say Y here if you want to support for Freescale FlexCAN.
+ 
+-source "drivers/xenomai/can/mscan/Kconfig"
+ source "drivers/xenomai/can/peak_canfd/Kconfig"
+ source "drivers/xenomai/can/sja1000/Kconfig"
+ 
+diff --git a/kernel/drivers/can/Makefile b/kernel/drivers/can/Makefile
+index f78f6afdf6..7816e8c153 100644
+--- a/kernel/drivers/can/Makefile
++++ b/kernel/drivers/can/Makefile
+@@ -1,7 +1,7 @@
+ 
+ ccflags-y += -I$(srctree)/drivers/xenomai/can
+ 
+-obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o mscan/ sja1000/ peak_canfd/
++obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o sja1000/ peak_canfd/
+ obj-$(CONFIG_XENO_DRIVERS_CAN_FLEXCAN) += xeno_can_flexcan.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_VIRT) += xeno_can_virt.o
+ 
+diff --git a/kernel/drivers/can/mscan/Kconfig b/kernel/drivers/can/mscan/Kconfig
+deleted file mode 100644
+index dfbf5af2dd..0000000000
+--- a/kernel/drivers/can/mscan/Kconfig
++++ /dev/null
+@@ -1,8 +0,0 @@
+-config XENO_DRIVERS_CAN_MSCAN
+-	depends on XENO_DRIVERS_CAN && (PPC_MPC52xx || PPC_MPC512x)
+-	tristate "MSCAN driver for MPC52xx and MPC512x"
+-	default n
+-	help
+-
+-	This driver is for the MSCAN on the MPC5200 and MPC512x processor
+-	from Freescale.
+diff --git a/kernel/drivers/can/mscan/Makefile b/kernel/drivers/can/mscan/Makefile
+deleted file mode 100644
+index 0f157e9ec1..0000000000
+--- a/kernel/drivers/can/mscan/Makefile
++++ /dev/null
+@@ -1,6 +0,0 @@
+-
+-ccflags-y += -I$(srctree)/drivers/xenomai/can -I$(srctree)/drivers/xenomai/can/mscan
+-
+-obj-$(CONFIG_XENO_DRIVERS_CAN_MSCAN) += xeno_can_mscan.o
+-
+-xeno_can_mscan-y := rtcan_mscan.o rtcan_mscan_proc.o rtcan_mscan_mpc5xxx.o
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan.c b/kernel/drivers/can/mscan/rtcan_mscan.c
+deleted file mode 100644
+index da573aba6f..0000000000
+--- a/kernel/drivers/can/mscan/rtcan_mscan.c
++++ /dev/null
+@@ -1,798 +0,0 @@
+-/*
+- * Copyright (C) 2006-2010 Wolfgang Grandegger <wg@grandegger.com>
+- *
+- * Copyright (C) 2005, 2006 Sebastian Smolorz
+- *                          <Sebastian.Smolorz@stud.uni-hannover.de>
+- *
+- * Derived from the PCAN project file driver/src/pcan_mpc5200.c:
+- *
+- * Copyright (c) 2003 Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+- *
+- * Copyright (c) 2005 Felix Daners, Plugit AG, felix.daners@plugit.ch
+- *
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software Foundation,
+- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 - */
--#if defined(CONFIG_PPC)
--static inline u32 flexcan_read(void __iomem *addr)
--{
--	return in_be32(addr);
--}
 -
--static inline void flexcan_write(u32 val, void __iomem *addr)
--{
--	out_be32(addr, val);
--}
--#else
--static inline u32 flexcan_read(void __iomem *addr)
--{
--	return readl(addr);
--}
+-#include <linux/module.h>
+-#include <linux/ioport.h>
+-#include <linux/delay.h>
 -
--static inline void flexcan_write(u32 val, void __iomem *addr)
--{
--	writel(val, addr);
--}
+-#include <rtdm/driver.h>
+-
+-/* CAN device profile */
+-#include <rtdm/can.h>
+-#include "rtcan_dev.h"
+-#include "rtcan_raw.h"
+-#include "rtcan_internal.h"
+-#include "rtcan_mscan_regs.h"
+-#include "rtcan_mscan.h"
+-
+-#define MSCAN_SET_MODE_RETRIES	255
+-
+-#ifndef CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD
+-static struct can_bittiming_const mscan_bittiming_const = {
+-	.name = "mscan",
+-	.tseg1_min = 4,
+-	.tseg1_max = 16,
+-	.tseg2_min = 2,
+-	.tseg2_max = 8,
+-	.sjw_max = 4,
+-	.brp_min = 1,
+-	.brp_max = 64,
+-	.brp_inc = 1,
+-};
 -#endif
 -
- static inline void flexcan_error_irq_enable(const struct flexcan_priv *priv)
- {
- 	struct flexcan_regs __iomem *regs = priv->regs;
- 	u32 reg_ctrl = (priv->reg_ctrl_default | FLEXCAN_CTRL_ERR_MSK);
- 
--	flexcan_write(reg_ctrl, &regs->ctrl);
-+	writel(reg_ctrl, &regs->ctrl);
- }
- 
- static inline void flexcan_error_irq_disable(const struct flexcan_priv *priv)
-@@ -375,7 +348,7 @@ static inline void flexcan_error_irq_disable(const struct flexcan_priv *priv)
- 	struct flexcan_regs __iomem *regs = priv->regs;
- 	u32 reg_ctrl = (priv->reg_ctrl_default & ~FLEXCAN_CTRL_ERR_MSK);
- 
--	flexcan_write(reg_ctrl, &regs->ctrl);
-+	writel(reg_ctrl, &regs->ctrl);
- }
- 
- static inline int flexcan_transceiver_enable(const struct flexcan_priv *priv)
-@@ -400,14 +373,14 @@ static int flexcan_chip_enable(struct flexcan_priv *priv)
- 	unsigned int timeout = FLEXCAN_TIMEOUT_US / 10;
- 	u32 reg;
- 
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	reg &= ~FLEXCAN_MCR_MDIS;
--	flexcan_write(reg, &regs->mcr);
-+	writel(reg, &regs->mcr);
- 
--	while (timeout-- && (flexcan_read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+	while (timeout-- && (readl(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
- 		udelay(10);
- 
--	if (flexcan_read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
-+	if (readl(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
- 		return -ETIMEDOUT;
- 
- 	return 0;
-@@ -419,14 +392,14 @@ static int flexcan_chip_disable(struct flexcan_priv *priv)
- 	unsigned int timeout = FLEXCAN_TIMEOUT_US / 10;
- 	u32 reg;
- 
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	reg |= FLEXCAN_MCR_MDIS;
--	flexcan_write(reg, &regs->mcr);
-+	writel(reg, &regs->mcr);
- 
--	while (timeout-- && !(flexcan_read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+	while (timeout-- && !(readl(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
- 		udelay(10);
- 
--	if (!(flexcan_read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+	if (!(readl(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
- 		return -ETIMEDOUT;
- 
- 	return 0;
-@@ -439,14 +412,14 @@ static int flexcan_chip_freeze(struct rtcan_device *dev)
- 	unsigned int timeout = 1000 * 1000 * 10 / dev->baudrate;
- 	u32 reg;
- 
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	reg |= FLEXCAN_MCR_HALT;
--	flexcan_write(reg, &regs->mcr);
-+	writel(reg, &regs->mcr);
- 
--	while (timeout-- && !(flexcan_read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
-+	while (timeout-- && !(readl(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
- 		udelay(100);
- 
--	if (!(flexcan_read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
-+	if (!(readl(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
- 		return -ETIMEDOUT;
- 
- 	return 0;
-@@ -458,14 +431,14 @@ static int flexcan_chip_unfreeze(struct flexcan_priv *priv)
- 	unsigned int timeout = FLEXCAN_TIMEOUT_US / 10;
- 	u32 reg;
- 
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	reg &= ~FLEXCAN_MCR_HALT;
--	flexcan_write(reg, &regs->mcr);
-+	writel(reg, &regs->mcr);
- 
--	while (timeout-- && (flexcan_read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
-+	while (timeout-- && (readl(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
- 		udelay(10);
- 
--	if (flexcan_read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK)
-+	if (readl(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK)
- 		return -ETIMEDOUT;
- 
- 	return 0;
-@@ -476,11 +449,11 @@ static int flexcan_chip_softreset(struct flexcan_priv *priv)
- 	struct flexcan_regs __iomem *regs = priv->regs;
- 	unsigned int timeout = FLEXCAN_TIMEOUT_US / 10;
- 
--	flexcan_write(FLEXCAN_MCR_SOFTRST, &regs->mcr);
--	while (timeout-- && (flexcan_read(&regs->mcr) & FLEXCAN_MCR_SOFTRST))
-+	writel(FLEXCAN_MCR_SOFTRST, &regs->mcr);
-+	while (timeout-- && (readl(&regs->mcr) & FLEXCAN_MCR_SOFTRST))
- 		udelay(10);
- 
--	if (flexcan_read(&regs->mcr) & FLEXCAN_MCR_SOFTRST)
-+	if (readl(&regs->mcr) & FLEXCAN_MCR_SOFTRST)
- 		return -ETIMEDOUT;
- 
- 	return 0;
-@@ -507,22 +480,22 @@ static int flexcan_start_xmit(struct rtcan_device *dev, struct can_frame *cf)
- 
- 	if (cf->can_dlc > 0) {
- 		data = be32_to_cpup((__be32 *)&cf->data[0]);
--		flexcan_write(data, &priv->tx_mb->data[0]);
-+		writel(data, &priv->tx_mb->data[0]);
- 	}
- 	if (cf->can_dlc > 4) {
- 		data = be32_to_cpup((__be32 *)&cf->data[4]);
--		flexcan_write(data, &priv->tx_mb->data[1]);
-+		writel(data, &priv->tx_mb->data[1]);
- 	}
- 
--	flexcan_write(can_id, &priv->tx_mb->can_id);
--	flexcan_write(ctrl, &priv->tx_mb->can_ctrl);
-+	writel(can_id, &priv->tx_mb->can_id);
-+	writel(ctrl, &priv->tx_mb->can_ctrl);
- 
- 	/* Errata ERR005829 step8:
- 	 * Write twice INACTIVE(0x8) code to first MB.
- 	 */
--	flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
-+	writel(FLEXCAN_MB_CODE_TX_INACTIVE,
- 		      &priv->tx_mb_reserved->can_ctrl);
--	flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
-+	writel(FLEXCAN_MB_CODE_TX_INACTIVE,
- 		      &priv->tx_mb_reserved->can_ctrl);
- 
- 	return 0;
-@@ -659,7 +632,7 @@ static bool flexcan_irq_state(struct rtcan_device *dev, u32 reg_esr,
- 	u32 reg;
- 	int flt;
- 
--	reg = flexcan_read(&regs->ecr);
-+	reg = readl(&regs->ecr);
- 	bec.txerr = (reg >> 0) & 0xff;
- 	bec.rxerr = (reg >> 8) & 0xff;
- 
-@@ -697,7 +670,7 @@ static unsigned int flexcan_mailbox_read(struct rtcan_device *dev,
- 
- 	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
- 		do {
--			reg_ctrl = flexcan_read(&mb->can_ctrl);
-+			reg_ctrl = readl(&mb->can_ctrl);
- 		} while (reg_ctrl & FLEXCAN_MB_CODE_RX_BUSY_BIT);
- 
- 		/* is this MB empty? */
-@@ -706,18 +679,18 @@ static unsigned int flexcan_mailbox_read(struct rtcan_device *dev,
- 		    (code != FLEXCAN_MB_CODE_RX_OVERRUN))
- 			return 0;
- 	} else {
--		reg_iflag1 = flexcan_read(&regs->iflag1);
-+		reg_iflag1 = readl(&regs->iflag1);
- 		if (!(reg_iflag1 & FLEXCAN_IFLAG_RX_FIFO_AVAILABLE))
- 			return 0;
- 
--		reg_ctrl = flexcan_read(&mb->can_ctrl);
-+		reg_ctrl = readl(&mb->can_ctrl);
- 	}
- 
- 	/* increase timstamp to full 32 bit */
- 	*timestamp = reg_ctrl << 16;
- 
- 	cf->can_dlc = get_can_dlc((reg_ctrl >> 16) & 0xf);
--	reg_id = flexcan_read(&mb->can_id);
-+	reg_id = readl(&mb->can_id);
- 	if (reg_ctrl & FLEXCAN_MB_CNT_IDE)
- 		cf->can_id = ((reg_id >> 0) & CAN_EFF_MASK) | CAN_EFF_FLAG;
- 	else
-@@ -730,8 +703,8 @@ static unsigned int flexcan_mailbox_read(struct rtcan_device *dev,
- 	else
- 		skb->rb_frame_size += cf->can_dlc;
- 
--	put_unaligned_be32(flexcan_read(&mb->data[0]), cf->data + 0);
--	put_unaligned_be32(flexcan_read(&mb->data[1]), cf->data + 4);
-+	put_unaligned_be32(readl(&mb->data[0]), cf->data + 0);
-+	put_unaligned_be32(readl(&mb->data[1]), cf->data + 4);
- 
- 	cf->can_ifindex = dev->ifindex;
- 
-@@ -739,12 +712,12 @@ static unsigned int flexcan_mailbox_read(struct rtcan_device *dev,
- 	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
- 		/* Clear IRQ */
- 		if (n < 32)
--			flexcan_write(BIT(n), &regs->iflag1);
-+			writel(BIT(n), &regs->iflag1);
- 		else
--			flexcan_write(BIT(n - 32), &regs->iflag2);
-+			writel(BIT(n - 32), &regs->iflag2);
- 	} else {
--		flexcan_write(FLEXCAN_IFLAG_RX_FIFO_AVAILABLE, &regs->iflag1);
--		flexcan_read(&regs->timer);
-+		writel(FLEXCAN_IFLAG_RX_FIFO_AVAILABLE, &regs->iflag1);
-+		readl(&regs->timer);
- 	}
- 
- 	return 1;
-@@ -831,8 +804,8 @@ static inline u64 flexcan_read_reg_iflag_rx(struct flexcan_priv *priv)
- 	struct flexcan_regs __iomem *regs = priv->regs;
- 	u32 iflag1, iflag2;
- 
--	iflag2 = flexcan_read(&regs->iflag2) & priv->reg_imask2_default;
--	iflag1 = flexcan_read(&regs->iflag1) & priv->reg_imask1_default &
-+	iflag2 = readl(&regs->iflag2) & priv->reg_imask2_default;
-+	iflag1 = readl(&regs->iflag1) & priv->reg_imask1_default &
- 		~FLEXCAN_IFLAG_MB(priv->tx_mb_idx);
- 
- 	return (u64)iflag2 << 32 | iflag1;
-@@ -857,7 +830,7 @@ static int flexcan_do_rx(struct rtcan_device *dev, u32 reg_iflag1)
- 		}
- 	} else {
- 		if (reg_iflag1 & FLEXCAN_IFLAG_RX_FIFO_OVERFLOW) {
--			flexcan_write(FLEXCAN_IFLAG_RX_FIFO_OVERFLOW, &regs->iflag1);
-+			writel(FLEXCAN_IFLAG_RX_FIFO_OVERFLOW, &regs->iflag1);
- 			init_err_skb(&skb);
- 			cf->can_id |= CAN_ERR_CRTL;
- 			cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
-@@ -884,7 +857,7 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 	rtdm_lock_get(&rtcan_recv_list_lock);
- 	rtdm_lock_get(&rtcan_socket_lock);
- 
--	reg_iflag1 = flexcan_read(&regs->iflag1);
-+	reg_iflag1 = readl(&regs->iflag1);
- 
- 	/* reception interrupt */
- 	if (flexcan_do_rx(dev, reg_iflag1))
-@@ -893,9 +866,9 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 	/* transmission complete interrupt */
- 	if (reg_iflag1 & FLEXCAN_IFLAG_MB(priv->tx_mb_idx)) {
- 		/* after sending a RTR frame MB is in RX mode */
--		flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
-+		writel(FLEXCAN_MB_CODE_TX_INACTIVE,
- 			      &priv->tx_mb->can_ctrl);
--		flexcan_write(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
-+		writel(FLEXCAN_IFLAG_MB(priv->tx_mb_idx), &regs->iflag1);
- 		rtdm_sem_up(&dev->tx_sem);
- 		dev->tx_count++;
- 		if (rtcan_loopback_pending(dev))
-@@ -903,11 +876,11 @@ static int flexcan_irq(rtdm_irq_t *irq_handle)
- 		handled = RTDM_IRQ_HANDLED;
- 	}
- 
--	reg_esr = flexcan_read(&regs->esr);
-+	reg_esr = readl(&regs->esr);
- 
- 	/* ACK all bus error and state change IRQ sources */
- 	if (reg_esr & FLEXCAN_ESR_ALL_INT) {
--		flexcan_write(reg_esr & FLEXCAN_ESR_ALL_INT, &regs->esr);
-+		writel(reg_esr & FLEXCAN_ESR_ALL_INT, &regs->esr);
- 		handled = RTDM_IRQ_HANDLED;
- 	}
- 
-@@ -946,7 +919,7 @@ static void flexcan_set_bittiming(struct rtcan_device *dev)
- 	struct flexcan_regs __iomem *regs = priv->regs;
- 	u32 reg;
- 
--	reg = flexcan_read(&regs->ctrl);
-+	reg = readl(&regs->ctrl);
- 	reg &= ~(FLEXCAN_CTRL_PRESDIV(0xff) |
- 		 FLEXCAN_CTRL_RJW(0x3) |
- 		 FLEXCAN_CTRL_PSEG1(0x7) |
-@@ -970,11 +943,11 @@ static void flexcan_set_bittiming(struct rtcan_device *dev)
- 		reg |= FLEXCAN_CTRL_SMP;
- 
- 	rtcandev_dbg(dev, "writing ctrl=0x%08x\n", reg);
--	flexcan_write(reg, &regs->ctrl);
-+	writel(reg, &regs->ctrl);
- 
- 	/* print chip status */
- 	rtcandev_dbg(dev, "%s: mcr=0x%08x ctrl=0x%08x\n", __func__,
--		   flexcan_read(&regs->mcr), flexcan_read(&regs->ctrl));
-+		   readl(&regs->mcr), readl(&regs->ctrl));
- }
- 
- /* flexcan_chip_start
-@@ -1021,7 +994,7 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 	 * choose format C
- 	 * set max mailbox number
- 	 */
--	reg_mcr = flexcan_read(&regs->mcr);
-+	reg_mcr = readl(&regs->mcr);
- 	reg_mcr &= ~FLEXCAN_MCR_MAXMB(0xff);
- 	reg_mcr |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_HALT | FLEXCAN_MCR_SUPV |
- 		FLEXCAN_MCR_WRN_EN | FLEXCAN_MCR_SRX_DIS | FLEXCAN_MCR_IRMQ |
-@@ -1035,7 +1008,7 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 			FLEXCAN_MCR_MAXMB(priv->tx_mb_idx);
- 	}
- 	rtcandev_dbg(dev, "%s: writing mcr=0x%08x", __func__, reg_mcr);
--	flexcan_write(reg_mcr, &regs->mcr);
-+	writel(reg_mcr, &regs->mcr);
- 
- 	/* CTRL
- 	 *
-@@ -1048,7 +1021,7 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 	 * enable bus off interrupt
- 	 * (== FLEXCAN_CTRL_ERR_STATE)
- 	 */
--	reg_ctrl = flexcan_read(&regs->ctrl);
-+	reg_ctrl = readl(&regs->ctrl);
- 	reg_ctrl &= ~FLEXCAN_CTRL_TSYN;
- 	reg_ctrl |= FLEXCAN_CTRL_BOFF_REC | FLEXCAN_CTRL_LBUF |
- 		FLEXCAN_CTRL_ERR_STATE;
-@@ -1067,45 +1040,45 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 	/* leave interrupts disabled for now */
- 	reg_ctrl &= ~FLEXCAN_CTRL_ERR_ALL;
- 	rtcandev_dbg(dev, "%s: writing ctrl=0x%08x", __func__, reg_ctrl);
--	flexcan_write(reg_ctrl, &regs->ctrl);
-+	writel(reg_ctrl, &regs->ctrl);
- 
- 	if ((priv->devtype_data->quirks & FLEXCAN_QUIRK_ENABLE_EACEN_RRS)) {
--		reg_ctrl2 = flexcan_read(&regs->ctrl2);
-+		reg_ctrl2 = readl(&regs->ctrl2);
- 		reg_ctrl2 |= FLEXCAN_CTRL2_EACEN | FLEXCAN_CTRL2_RRS;
--		flexcan_write(reg_ctrl2, &regs->ctrl2);
-+		writel(reg_ctrl2, &regs->ctrl2);
- 	}
- 
- 	/* clear and invalidate all mailboxes first */
- 	for (i = priv->tx_mb_idx; i < ARRAY_SIZE(regs->mb); i++) {
--		flexcan_write(FLEXCAN_MB_CODE_RX_INACTIVE,
-+		writel(FLEXCAN_MB_CODE_RX_INACTIVE,
- 			      &regs->mb[i].can_ctrl);
- 	}
- 
- 	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
- 		for (i = priv->mb_first; i <= priv->mb_last; i++)
--			flexcan_write(FLEXCAN_MB_CODE_RX_EMPTY,
-+			writel(FLEXCAN_MB_CODE_RX_EMPTY,
- 				      &regs->mb[i].can_ctrl);
- 	}
- 
- 	/* Errata ERR005829: mark first TX mailbox as INACTIVE */
--	flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
-+	writel(FLEXCAN_MB_CODE_TX_INACTIVE,
- 		      &priv->tx_mb_reserved->can_ctrl);
- 
- 	/* mark TX mailbox as INACTIVE */
--	flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
-+	writel(FLEXCAN_MB_CODE_TX_INACTIVE,
- 		      &priv->tx_mb->can_ctrl);
- 
- 	/* acceptance mask/acceptance code (accept everything) */
--	flexcan_write(0x0, &regs->rxgmask);
--	flexcan_write(0x0, &regs->rx14mask);
--	flexcan_write(0x0, &regs->rx15mask);
-+	writel(0x0, &regs->rxgmask);
-+	writel(0x0, &regs->rx14mask);
-+	writel(0x0, &regs->rx15mask);
- 
- 	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_RXFG)
--		flexcan_write(0x0, &regs->rxfgmask);
-+		writel(0x0, &regs->rxfgmask);
- 
- 	/* clear acceptance filters */
- 	for (i = 0; i < ARRAY_SIZE(regs->mb); i++)
--		flexcan_write(0, &regs->rximr[i]);
-+		writel(0, &regs->rximr[i]);
- 
- 	/* On Vybrid, disable memory error detection interrupts
- 	 * and freeze mode.
-@@ -1118,16 +1091,16 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 		 * and Correction of Memory Errors" to write to
- 		 * MECR register
- 		 */
--		reg_ctrl2 = flexcan_read(&regs->ctrl2);
-+		reg_ctrl2 = readl(&regs->ctrl2);
- 		reg_ctrl2 |= FLEXCAN_CTRL2_ECRWRE;
--		flexcan_write(reg_ctrl2, &regs->ctrl2);
-+		writel(reg_ctrl2, &regs->ctrl2);
- 
--		reg_mecr = flexcan_read(&regs->mecr);
-+		reg_mecr = readl(&regs->mecr);
- 		reg_mecr &= ~FLEXCAN_MECR_ECRWRDIS;
--		flexcan_write(reg_mecr, &regs->mecr);
-+		writel(reg_mecr, &regs->mecr);
- 		reg_mecr &= ~(FLEXCAN_MECR_NCEFAFRZ | FLEXCAN_MECR_HANCEI_MSK |
- 			      FLEXCAN_MECR_FANCEI_MSK);
--		flexcan_write(reg_mecr, &regs->mecr);
-+		writel(reg_mecr, &regs->mecr);
- 	}
- 
- 	err = flexcan_transceiver_enable(priv);
-@@ -1143,14 +1116,14 @@ static int flexcan_chip_start(struct rtcan_device *dev)
- 
- 	/* enable interrupts atomically */
- 	rtdm_irq_disable(&dev->irq_handle);
--	flexcan_write(priv->reg_ctrl_default, &regs->ctrl);
--	flexcan_write(priv->reg_imask1_default, &regs->imask1);
--	flexcan_write(priv->reg_imask2_default, &regs->imask2);
-+	writel(priv->reg_ctrl_default, &regs->ctrl);
-+	writel(priv->reg_imask1_default, &regs->imask1);
-+	writel(priv->reg_imask2_default, &regs->imask2);
- 	rtdm_irq_enable(&dev->irq_handle);
- 
- 	/* print chip status */
- 	rtcandev_dbg(dev, "%s: reading mcr=0x%08x ctrl=0x%08x\n", __func__,
--		   flexcan_read(&regs->mcr), flexcan_read(&regs->ctrl));
-+		   readl(&regs->mcr), readl(&regs->ctrl));
- 
- 	return 0;
- 
-@@ -1180,9 +1153,9 @@ static void flexcan_chip_stop(struct rtcan_device *dev)
- 	flexcan_chip_disable(priv);
- 
- 	/* Disable all interrupts */
--	flexcan_write(0, &regs->imask2);
--	flexcan_write(0, &regs->imask1);
--	flexcan_write(priv->reg_ctrl_default & ~FLEXCAN_CTRL_ERR_ALL,
-+	writel(0, &regs->imask2);
-+	writel(0, &regs->imask1);
-+	writel(priv->reg_ctrl_default & ~FLEXCAN_CTRL_ERR_ALL,
- 		      &regs->ctrl);
- 
- 	flexcan_transceiver_disable(priv);
-@@ -1312,26 +1285,26 @@ static int register_flexcandev(struct rtcan_device *dev)
- 	err = flexcan_chip_disable(priv);
- 	if (err)
- 		goto out_disable_per;
--	reg = flexcan_read(&regs->ctrl);
-+	reg = readl(&regs->ctrl);
- 	reg |= FLEXCAN_CTRL_CLK_SRC;
--	flexcan_write(reg, &regs->ctrl);
-+	writel(reg, &regs->ctrl);
- 
- 	err = flexcan_chip_enable(priv);
- 	if (err)
- 		goto out_chip_disable;
- 
- 	/* set freeze, halt and activate FIFO, restrict register access */
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	reg |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_HALT |
- 		FLEXCAN_MCR_FEN | FLEXCAN_MCR_SUPV;
--	flexcan_write(reg, &regs->mcr);
-+	writel(reg, &regs->mcr);
- 
- 	/* Currently we only support newer versions of this core
- 	 * featuring a RX hardware FIFO (although this driver doesn't
- 	 * make use of it on some cores). Older cores, found on some
- 	 * Coldfire derivates are not tested.
- 	 */
--	reg = flexcan_read(&regs->mcr);
-+	reg = readl(&regs->mcr);
- 	if (!(reg & FLEXCAN_MCR_FEN)) {
- 		rtcandev_err(dev, "Could not enable RX FIFO, unsupported core\n");
- 		err = -ENODEV;
+-/**
+- *  Reception Interrupt handler
+- *
+- *  Inline function first called within @ref rtcan_mscan_interrupt when an RX
+- *  interrupt was detected. Here the HW registers are read out and composed
+- *  to a struct rtcan_skb.
+- *
+- *  @param[out] skb  Pointer to an instance of struct rtcan_skb which will be
+- *                   filled with received CAN message
+- *  @param[in]  dev  Device ID
+- */
+-static inline void rtcan_mscan_rx_interrupt(struct rtcan_device *dev,
+-					    struct rtcan_skb *skb)
+-{
+-	int i;
+-	unsigned char size;
+-	struct rtcan_rb_frame *frame = &skb->rb_frame;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	skb->rb_frame_size = EMPTY_RB_FRAME_SIZE;
+-
+-	frame->can_dlc = in_8(&regs->canrxfg.dlr) & 0x0F;
+-
+-	/* If DLC exceeds 8 bytes adjust it to 8 (for the payload size) */
+-	size = (frame->can_dlc > 8) ? 8 : frame->can_dlc;
+-
+-	if (in_8(&regs->canrxfg.idr[1]) & MSCAN_BUF_EXTENDED) {
+-		frame->can_id = ((in_8(&regs->canrxfg.idr[0]) << 21) |
+-				 ((in_8(&regs->canrxfg.idr[1]) & 0xE0) << 13) |
+-				 ((in_8(&regs->canrxfg.idr[1]) & 0x07) << 15) |
+-				 (in_8(&regs->canrxfg.idr[4]) << 7) |
+-				 (in_8(&regs->canrxfg.idr[5]) >> 1));
+-
+-		frame->can_id |= CAN_EFF_FLAG;
+-
+-		if ((in_8(&regs->canrxfg.idr[5]) & MSCAN_BUF_EXT_RTR)) {
+-			frame->can_id |= CAN_RTR_FLAG;
+-		} else {
+-			for (i = 0; i < size; i++)
+-				frame->data[i] =
+-					in_8(&regs->canrxfg.dsr[i +
+-								(i / 2) * 2]);
+-			skb->rb_frame_size += size;
+-		}
+-
+-	} else {
+-		frame->can_id = ((in_8(&regs->canrxfg.idr[0]) << 3) |
+-				 (in_8(&regs->canrxfg.idr[1]) >> 5));
+-
+-		if ((in_8(&regs->canrxfg.idr[1]) & MSCAN_BUF_STD_RTR)) {
+-			frame->can_id |= CAN_RTR_FLAG;
+-		} else {
+-			for (i = 0; i < size; i++)
+-				frame->data[i] =
+-					in_8(&regs->canrxfg.dsr[i +
+-								(i / 2) * 2]);
+-			skb->rb_frame_size += size;
+-		}
+-	}
+-
+-
+-	/* Store the interface index */
+-	frame->can_ifindex = dev->ifindex;
+-}
+-
+-static can_state_t mscan_stat_map[4] = {
+-	CAN_STATE_ACTIVE,
+-	CAN_STATE_BUS_WARNING,
+-	CAN_STATE_BUS_PASSIVE,
+-	CAN_STATE_BUS_OFF
+-};
+-
+-static inline void rtcan_mscan_err_interrupt(struct rtcan_device *dev,
+-					     struct rtcan_skb *skb,
+-					     int r_status)
+-{
+-	u8 rstat, tstat;
+-	struct rtcan_rb_frame *frame = &skb->rb_frame;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + CAN_ERR_DLC;
+-
+-	frame->can_id = CAN_ERR_FLAG;
+-	frame->can_dlc = CAN_ERR_DLC;
+-
+-	memset(&frame->data[0], 0, frame->can_dlc);
+-
+-	if ((r_status & MSCAN_OVRIF)) {
+-		frame->can_id |= CAN_ERR_CRTL;
+-		frame->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
+-
+-	} else if ((r_status & (MSCAN_CSCIF))) {
+-
+-		rstat = (r_status & (MSCAN_TSTAT0 |
+-				     MSCAN_TSTAT1)) >> 2 & 0x3;
+-		tstat = (r_status & (MSCAN_RSTAT0 |
+-				     MSCAN_RSTAT1)) >> 4 & 0x3;
+-		dev->state = mscan_stat_map[max(rstat, tstat)];
+-
+-		switch (dev->state) {
+-		case CAN_STATE_BUS_OFF:
+-			/* Bus-off condition */
+-			frame->can_id |= CAN_ERR_BUSOFF;
+-			dev->state = CAN_STATE_BUS_OFF;
+-			/* Disable receiver interrupts */
+-			out_8(&regs->canrier, 0);
+-			/* Wake up waiting senders */
+-			rtdm_sem_destroy(&dev->tx_sem);
+-			break;
+-
+-		case CAN_STATE_BUS_PASSIVE:
+-			frame->can_id |= CAN_ERR_CRTL;
+-			if (tstat > rstat)
+-				frame->data[1] = CAN_ERR_CRTL_TX_PASSIVE;
+-			else
+-				frame->data[1] = CAN_ERR_CRTL_RX_PASSIVE;
+-			break;
+-
+-		case CAN_STATE_BUS_WARNING:
+-			frame->can_id |= CAN_ERR_CRTL;
+-			if (tstat > rstat)
+-				frame->data[1] = CAN_ERR_CRTL_TX_WARNING;
+-			else
+-				frame->data[1] = CAN_ERR_CRTL_RX_WARNING;
+-			break;
+-
+-		default:
+-			break;
+-
+-		}
+-	}
+-	/* Store the interface index */
+-	frame->can_ifindex = dev->ifindex;
+-}
+-
+-/** Interrupt handler */
+-static int rtcan_mscan_interrupt(rtdm_irq_t *irq_handle)
+-{
+-	struct rtcan_skb skb;
+-	struct rtcan_device *dev;
+-	struct mscan_regs *regs;
+-	u8 canrflg;
+-	int recv_lock_free = 1;
+-	int ret = RTDM_IRQ_NONE;
+-
+-
+-	dev = (struct rtcan_device *)rtdm_irq_get_arg(irq_handle, void);
+-	regs = (struct mscan_regs *)dev->base_addr;
+-
+-	rtdm_lock_get(&dev->device_lock);
+-
+-	canrflg = in_8(&regs->canrflg);
+-
+-	ret = RTDM_IRQ_HANDLED;
+-
+-	/* Transmit Interrupt? */
+-	if ((in_8(&regs->cantier) & MSCAN_TXIE0) &&
+-	    (in_8(&regs->cantflg) & MSCAN_TXE0)) {
+-		out_8(&regs->cantier, 0);
+-		/* Wake up a sender */
+-		rtdm_sem_up(&dev->tx_sem);
+-		dev->tx_count++;
+-
+-		if (rtcan_loopback_pending(dev)) {
+-
+-			if (recv_lock_free) {
+-				recv_lock_free = 0;
+-				rtdm_lock_get(&rtcan_recv_list_lock);
+-				rtdm_lock_get(&rtcan_socket_lock);
+-			}
+-
+-			rtcan_loopback(dev);
+-		}
+-	}
+-
+-	/* Wakeup interrupt?  */
+-	if ((canrflg & MSCAN_WUPIF)) {
+-		rtdm_printk("WUPIF interrupt\n");
+-	}
+-
+-	/* Receive Interrupt? */
+-	if ((canrflg & MSCAN_RXF)) {
+-
+-		/* Read out HW registers */
+-		rtcan_mscan_rx_interrupt(dev, &skb);
+-
+-		/* Take more locks. Ensure that they are taken and
+-		 * released only once in the IRQ handler. */
+-		/* WARNING: Nested locks are dangerous! But they are
+-		 * nested only in this routine so a deadlock should
+-		 * not be possible. */
+-		if (recv_lock_free) {
+-			recv_lock_free = 0;
+-			rtdm_lock_get(&rtcan_recv_list_lock);
+-			rtdm_lock_get(&rtcan_socket_lock);
+-		}
+-
+-		/* Pass received frame out to the sockets */
+-		rtcan_rcv(dev, &skb);
+-	}
+-
+-	/* Error Interrupt? */
+-	if ((canrflg & (MSCAN_CSCIF | MSCAN_OVRIF))) {
+-		/* Check error condition and fill error frame */
+-		rtcan_mscan_err_interrupt(dev, &skb, canrflg);
+-
+-		if (recv_lock_free) {
+-			recv_lock_free = 0;
+-			rtdm_lock_get(&rtcan_recv_list_lock);
+-			rtdm_lock_get(&rtcan_socket_lock);
+-		}
+-
+-		/* Pass error frame out to the sockets */
+-		rtcan_rcv(dev, &skb);
+-	}
+-
+-	/* Acknowledge the handled interrupt within the controller.
+-	 * Only do so for the receiver interrupts.
+-	 */
+-	if (canrflg)
+-		out_8(&regs->canrflg, canrflg);
+-
+-	if (!recv_lock_free) {
+-		rtdm_lock_put(&rtcan_socket_lock);
+-		rtdm_lock_put(&rtcan_recv_list_lock);
+-	}
+-	rtdm_lock_put(&dev->device_lock);
+-
+-	return ret;
+-}
+-
+-/**
+- *   Set controller into reset mode. Called from @ref rtcan_mscan_ioctl
+- *   (main usage), init_module and cleanup_module.
+- *
+- *   @param dev_id   Device ID
+- *   @param lock_ctx Pointer to saved IRQ context (if stored before calling
+- *                   this function). Only evaluated if @c locked is true.
+- *   @param locked   Boolean value indicating if function was called in an
+- *                   spin locked and IRQ disabled context
+- *
+- *   @return 0 on success, otherwise:
+- *   - -EAGAIN: Reset mode bit could not be verified after setting it.
+- *              See also note.
+- *
+- *   @note According to the MSCAN specification, it is necessary to check
+- *   the reset mode bit in PeliCAN mode after having set it. So we do. But if
+- *   using a ISA card like the PHYTEC eNET card this should not be necessary
+- *   because the CAN controller clock of this card (16 MHz) is twice as high
+- *   as the ISA bus clock.
+- */
+-static int rtcan_mscan_mode_stop(struct rtcan_device *dev,
+-				 rtdm_lockctx_t *lock_ctx)
+-{
+-	int ret = 0;
+-	int rinit = 0;
+-	can_state_t state;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-	u8 reg;
+-
+-	state = dev->state;
+-	/* If controller is not operating anyway, go out */
+-	if (!CAN_STATE_OPERATING(state))
+-		goto out;
+-
+-	/* Switch to sleep mode */
+-	setbits8(&regs->canctl0, MSCAN_SLPRQ);
+-	reg = in_8(&regs->canctl1);
+-	while (!(reg & MSCAN_SLPAK) &&
+-	        (rinit < MSCAN_SET_MODE_RETRIES)) {
+-		if (likely(lock_ctx != NULL))
+-			rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
+-		/* Busy sleep 1 microsecond */
+-		rtdm_task_busy_sleep(1000);
+-		if (likely(lock_ctx != NULL))
+-			rtdm_lock_get_irqsave(&dev->device_lock, *lock_ctx);
+-		rinit++;
+-		reg = in_8(&regs->canctl1);
+-	}
+-	/*
+-	 * The mscan controller will fail to enter sleep mode,
+-	 * while there are irregular activities on bus, like
+-	 * somebody keeps retransmitting. This behavior is
+-	 * undocumented and seems to differ between mscan built
+-	 * in mpc5200b and mpc5200. We proceed in that case,
+-	 * since otherwise the slprq will be kept set and the
+-	 * controller will get stuck. NOTE: INITRQ or CSWAI
+-	 * will abort all active transmit actions, if still
+-	 * any, at once.
+-	 */
+-	if (rinit >= MSCAN_SET_MODE_RETRIES)
+-		rtdm_printk("rtcan_mscan: device failed to enter sleep mode. "
+-				"We proceed anyhow.\n");
+-	else
+-		dev->state = CAN_STATE_SLEEPING;
+-
+-	rinit = 0;
+-	setbits8(&regs->canctl0, MSCAN_INITRQ);
+-
+-	reg = in_8(&regs->canctl1);
+-	while (!(reg & MSCAN_INITAK) &&
+-	        (rinit < MSCAN_SET_MODE_RETRIES)) {
+-		if (likely(lock_ctx != NULL))
+-			rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
+-		/* Busy sleep 1 microsecond */
+-		rtdm_task_busy_sleep(1000);
+-		if (likely(lock_ctx != NULL))
+-			rtdm_lock_get_irqsave(&dev->device_lock, *lock_ctx);
+-		rinit++;
+-		reg = in_8(&regs->canctl1);
+-	}
+-	if (rinit >= MSCAN_SET_MODE_RETRIES)
+-		ret = -ENODEV;
+-
+-	/* Volatile state could have changed while we slept busy. */
+-	dev->state = CAN_STATE_STOPPED;
+-	/* Wake up waiting senders */
+-	rtdm_sem_destroy(&dev->tx_sem);
+-
+-out:
+-	return ret;
+-}
+-
+-/**
+- *   Set controller into operating mode.
+- *
+- *   Called from @ref rtcan_mscan_ioctl in spin locked and IRQ disabled
+- *   context.
+- *
+- *   @param dev_id   Device ID
+- *   @param lock_ctx Pointer to saved IRQ context (only used when coming
+- *                   from @ref CAN_STATE_SLEEPING, see also note)
+- *
+- *   @return 0 on success, otherwise:
+- *   - -EINVAL: No Baud rate set before request to set start mode
+- *
+- *   @note If coming from @c CAN_STATE_SLEEPING, the controller must wait
+- *         some time to avoid bus errors. Measured on an PHYTEC eNET card,
+- *         this time was 110 microseconds.
+- */
+-static int rtcan_mscan_mode_start(struct rtcan_device *dev,
+-				  rtdm_lockctx_t *lock_ctx)
+-{
+-	int ret = 0, retries = 0;
+-	can_state_t state;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	/* We won't forget that state in the device structure is volatile and
+-	 * access to it will not be optimized by the compiler. So ... */
+-	state = dev->state;
+-
+-	switch (state) {
+-	case CAN_STATE_ACTIVE:
+-	case CAN_STATE_BUS_WARNING:
+-	case CAN_STATE_BUS_PASSIVE:
+-		break;
+-
+-	case CAN_STATE_SLEEPING:
+-	case CAN_STATE_STOPPED:
+-		/* Set error active state */
+-		state = CAN_STATE_ACTIVE;
+-		/* Set up sender "mutex" */
+-		rtdm_sem_init(&dev->tx_sem, 1);
+-
+-		if ((dev->ctrl_mode & CAN_CTRLMODE_LISTENONLY)) {
+-			setbits8(&regs->canctl1, MSCAN_LISTEN);
+-		} else {
+-			clrbits8(&regs->canctl1, MSCAN_LISTEN);
+-		}
+-		if ((dev->ctrl_mode & CAN_CTRLMODE_LOOPBACK)) {
+-			setbits8(&regs->canctl1, MSCAN_LOOPB);
+-		} else {
+-			clrbits8(&regs->canctl1, MSCAN_LOOPB);
+-		}
+-
+-		/* Switch to normal mode */
+-		clrbits8(&regs->canctl0, MSCAN_INITRQ);
+-		clrbits8(&regs->canctl0, MSCAN_SLPRQ);
+-		while ((in_8(&regs->canctl1) & MSCAN_INITAK) ||
+-		       (in_8(&regs->canctl1) & MSCAN_SLPAK)) {
+-			if (likely(lock_ctx != NULL))
+-				rtdm_lock_put_irqrestore(&dev->device_lock,
+-							 *lock_ctx);
+-			/* Busy sleep 1 microsecond */
+-			rtdm_task_busy_sleep(1000);
+-			if (likely(lock_ctx != NULL))
+-				rtdm_lock_get_irqsave(&dev->device_lock,
+-						      *lock_ctx);
+-			retries++;
+-		}
+-		/* Enable interrupts */
+-		setbits8(&regs->canrier, MSCAN_RIER);
+-
+-		break;
+-
+-	case CAN_STATE_BUS_OFF:
+-		/* Trigger bus-off recovery */
+-		out_8(&regs->canrier, MSCAN_RIER);
+-		/* Set up sender "mutex" */
+-		rtdm_sem_init(&dev->tx_sem, 1);
+-		/* Set error active state */
+-		state = CAN_STATE_ACTIVE;
+-
+-		break;
+-
+-	default:
+-		/* Never reached, but we don't want nasty compiler warnings */
+-		break;
+-	}
+-	/* Store new state in device structure (or old state) */
+-	dev->state = state;
+-
+-	return ret;
+-}
+-
+-static int rtcan_mscan_set_bit_time(struct rtcan_device *dev,
+-				    struct can_bittime *bit_time,
+-				    rtdm_lockctx_t *lock_ctx)
+-{
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-	u8 btr0, btr1;
+-
+-	switch (bit_time->type) {
+-	case CAN_BITTIME_BTR:
+-		btr0 = bit_time->btr.btr0;
+-		btr1 = bit_time->btr.btr1;
+-		break;
+-
+-	case CAN_BITTIME_STD:
+-		btr0 = (BTR0_SET_BRP(bit_time->std.brp) |
+-			BTR0_SET_SJW(bit_time->std.sjw));
+-		btr1 = (BTR1_SET_TSEG1(bit_time->std.prop_seg +
+-				       bit_time->std.phase_seg1) |
+-			BTR1_SET_TSEG2(bit_time->std.phase_seg2) |
+-			BTR1_SET_SAM(bit_time->std.sam));
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	out_8(&regs->canbtr0, btr0);
+-	out_8(&regs->canbtr1, btr1);
+-
+-	rtdm_printk("%s: btr0=0x%02x btr1=0x%02x\n", dev->name, btr0, btr1);
+-
+-	return 0;
+-}
+-
+-static int rtcan_mscan_set_mode(struct rtcan_device *dev,
+-				can_mode_t mode,
+-				rtdm_lockctx_t *lock_ctx)
+-{
+-	int ret = 0, retries = 0;
+-	can_state_t state;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	switch (mode) {
+-
+-	case CAN_MODE_STOP:
+-		ret = rtcan_mscan_mode_stop(dev, lock_ctx);
+-		break;
+-
+-	case CAN_MODE_START:
+-		ret = rtcan_mscan_mode_start(dev, lock_ctx);
+-		break;
+-
+-	case CAN_MODE_SLEEP:
+-
+-		state = dev->state;
+-
+-		/* Controller must operate, otherwise go out */
+-		if (!CAN_STATE_OPERATING(state)) {
+-			ret = -ENETDOWN;
+-			goto mode_sleep_out;
+-		}
+-
+-		/* Is controller sleeping yet? If yes, go out */
+-		if (state == CAN_STATE_SLEEPING)
+-			goto mode_sleep_out;
+-
+-		/* Remember into which state to return when we
+-		 * wake up */
+-		dev->state_before_sleep = state;
+-		state = CAN_STATE_SLEEPING;
+-
+-		/* Let's take a nap. (Now I REALLY understand
+-		 * the meaning of interrupts ...) */
+-		out_8(&regs->canrier, 0);
+-		out_8(&regs->cantier, 0);
+-		setbits8(&regs->canctl0,
+-			 MSCAN_SLPRQ /*| MSCAN_INITRQ*/ | MSCAN_WUPE);
+-		while (!(in_8(&regs->canctl1) & MSCAN_SLPAK)) {
+-			rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
+-			/* Busy sleep 1 microsecond */
+-			rtdm_task_busy_sleep(1000);
+-			rtdm_lock_get_irqsave(&dev->device_lock, *lock_ctx);
+-			if (retries++ >= 1000)
+-				break;
+-		}
+-		rtdm_printk("Fallen asleep after %d tries.\n", retries);
+-		clrbits8(&regs->canctl0, MSCAN_INITRQ);
+-		while ((in_8(&regs->canctl1) & MSCAN_INITAK)) {
+-			rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
+-			/* Busy sleep 1 microsecond */
+-			rtdm_task_busy_sleep(1000);
+-			rtdm_lock_get_irqsave(&dev->device_lock, *lock_ctx);
+-			if (retries++ >= 1000)
+-				break;
+-		}
+-		rtdm_printk("Back to normal after %d tries.\n", retries);
+-		out_8(&regs->canrier, MSCAN_WUPIE);
+-
+-	mode_sleep_out:
+-		dev->state = state;
+-		break;
+-
+-	default:
+-		ret = -EOPNOTSUPP;
+-	}
+-
+-	return ret;
+-}
+-
+-/**
+- *  Start a transmission to a MSCAN
+- *
+- *  Inline function called within @ref rtcan_mscan_sendmsg.
+- *  This is the completion of a send call when hardware access is granted.
+- *  Spinlock is taken before calling this function.
+- *
+- *  @param[in] frame  Pointer to CAN frame which is about to be sent
+- *  @param[in] dev Device ID
+- */
+-static int rtcan_mscan_start_xmit(struct rtcan_device *dev, can_frame_t *frame)
+-{
+-	int             i, id;
+-	/* "Real" size of the payload */
+-	unsigned char   size;
+-	/* Content of frame information register */
+-	unsigned char   dlc;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	/* Is TX buffer empty? */
+-	if (!(in_8(&regs->cantflg) & MSCAN_TXE0)) {
+-		rtdm_printk("rtcan_mscan_start_xmit: TX buffer not empty");
+-		return -EIO;
+-	}
+-	/* Select the buffer we've found. */
+-	out_8(&regs->cantbsel, MSCAN_TXE0);
+-
+-	/* Get DLC and ID */
+-	dlc = frame->can_dlc;
+-
+-	/* If DLC exceeds 8 bytes adjust it to 8 (for the payload) */
+-	size = (dlc > 8) ? 8 : dlc;
+-
+-	id = frame->can_id;
+-	if (frame->can_id & CAN_EFF_FLAG) {
+-		out_8(&regs->cantxfg.idr[0], (id & 0x1fe00000) >> 21);
+-		out_8(&regs->cantxfg.idr[1], ((id & 0x001c0000) >> 13) |
+-		      ((id & 0x00038000) >> 15) |
+-		      0x18); /* set SRR and IDE bits */
+-
+-		out_8(&regs->cantxfg.idr[4], (id & 0x00007f80) >> 7);
+-		out_8(&regs->cantxfg.idr[5], (id & 0x0000007f) << 1);
+-
+-		/* RTR? */
+-		if (frame->can_id & CAN_RTR_FLAG)
+-			setbits8(&regs->cantxfg.idr[5], 0x1);
+-		else {
+-			clrbits8(&regs->cantxfg.idr[5], 0x1);
+-			/* No RTR, write data bytes */
+-			for (i = 0; i < size; i++)
+-				out_8(&regs->cantxfg.dsr[i + (i / 2) * 2],
+-				      frame->data[i]);
+-		}
+-
+-	} else {
+-		/* Send standard frame */
+-
+-		out_8(&regs->cantxfg.idr[0], (id & 0x000007f8) >> 3);
+-		out_8(&regs->cantxfg.idr[1], (id & 0x00000007) << 5);
+-
+-		/* RTR? */
+-		if (frame->can_id & CAN_RTR_FLAG)
+-			setbits8(&regs->cantxfg.idr[1], 0x10);
+-		else {
+-			clrbits8(&regs->cantxfg.idr[1], 0x10);
+-			/* No RTR, write data bytes */
+-			for (i = 0; i < size; i++)
+-				out_8(&regs->cantxfg.dsr[i + (i / 2) * 2],
+-				      frame->data[i]);
+-		}
+-	}
+-
+-	out_8(&regs->cantxfg.dlr, frame->can_dlc);
+-	out_8(&regs->cantxfg.tbpr, 0);	/* all messages have the same prio */
+-
+-	/* Trigger transmission. */
+-	out_8(&regs->cantflg, MSCAN_TXE0);
+-
+-	/* Enable interrupt. */
+-	setbits8(&regs->cantier, MSCAN_TXIE0);
+-
+-	return 0;
+-}
+-
+-/**
+- *  MSCAN Chip configuration
+- *
+- *  Called during @ref init_module. Here, the configuration registers which
+- *  must be set only once are written with the right values. The controller
+- *  is left in reset mode and goes into operating mode not until the IOCTL
+- *  for starting it is triggered.
+- *
+- *  @param[in] dev Device ID of the controller to be configured
+- */
+-static inline void __init mscan_chip_config(struct mscan_regs *regs,
+-					    int mscan_clksrc)
+-{
+-	/* Choose IP bus as clock source.
+-	 */
+-	if (mscan_clksrc)
+-		setbits8(&regs->canctl1, MSCAN_CLKSRC);
+-	clrbits8(&regs->canctl1, MSCAN_LISTEN);
+-
+-	/* Configure MSCAN to accept all incoming messages.
+-	 */
+-	out_8(&regs->canidar0, 0x00);
+-	out_8(&regs->canidar1, 0x00);
+-	out_8(&regs->canidar2, 0x00);
+-	out_8(&regs->canidar3, 0x00);
+-	out_8(&regs->canidmr0, 0xFF);
+-	out_8(&regs->canidmr1, 0xFF);
+-	out_8(&regs->canidmr2, 0xFF);
+-	out_8(&regs->canidmr3, 0xFF);
+-	out_8(&regs->canidar4, 0x00);
+-	out_8(&regs->canidar5, 0x00);
+-	out_8(&regs->canidar6, 0x00);
+-	out_8(&regs->canidar7, 0x00);
+-	out_8(&regs->canidmr4, 0xFF);
+-	out_8(&regs->canidmr5, 0xFF);
+-	out_8(&regs->canidmr6, 0xFF);
+-	out_8(&regs->canidmr7, 0xFF);
+-	clrbits8(&regs->canidac, MSCAN_IDAM0 | MSCAN_IDAM1);
+-}
+-
+-/**
+- *  MSCAN Chip registration
+- *
+- *  Called during @ref init_module.
+- *
+- *  @param[in] dev Device ID of the controller to be registered
+- *  @param[in] mscan_clksrc clock source to be used
+- */
+-int rtcan_mscan_register(struct rtcan_device *dev, int irq, int mscan_clksrc)
+-{
+-	int ret;
+-	struct mscan_regs *regs;
+-
+-	regs = (struct mscan_regs *)dev->base_addr;
+-
+-	/* Enable MSCAN module. */
+-	setbits8(&regs->canctl1, MSCAN_CANE);
+-	udelay(100);
+-
+-	/* Set dummy state for following call */
+-	dev->state = CAN_STATE_ACTIVE;
+-
+-	/* Enter reset mode */
+-	rtcan_mscan_mode_stop(dev, NULL);
+-
+-	/* Give device an interface name (so that programs using this driver
+-	   don't need to know the device ID) */
+-
+-	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
+-
+-	dev->hard_start_xmit = rtcan_mscan_start_xmit;
+-	dev->do_set_mode = rtcan_mscan_set_mode;
+-	dev->do_set_bit_time = rtcan_mscan_set_bit_time;
+-#ifndef CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD
+-	dev->bittiming_const = &mscan_bittiming_const;
+-#endif
+-
+-	/* Register IRQ handler and pass device structure as arg */
+-	ret = rtdm_irq_request(&dev->irq_handle, irq, rtcan_mscan_interrupt,
+-			       0, RTCAN_DRV_NAME, (void *)dev);
+-	if (ret) {
+-		printk("ERROR! rtdm_irq_request for IRQ %d failed\n", irq);
+-		goto out_can_disable;
+-	}
+-
+-	mscan_chip_config(regs, mscan_clksrc);
+-
+-	/* Register RTDM device */
+-	ret = rtcan_dev_register(dev);
+-	if (ret) {
+-		printk(KERN_ERR
+-		       "ERROR while trying to register RTCAN device!\n");
+-		goto out_irq_free;
+-	}
+-
+-	rtcan_mscan_create_proc(dev);
+-
+-	return 0;
+-
+-out_irq_free:
+-	rtdm_irq_free(&dev->irq_handle);
+-
+-out_can_disable:
+-	/* Disable MSCAN module. */
+-	clrbits8(&regs->canctl1, MSCAN_CANE);
+-
+-	return ret;
+-}
+-
+-/**
+- *  MSCAN Chip deregistration
+- *
+- *  Called during @ref cleanup_module
+- *
+- *  @param[in] dev Device ID of the controller to be registered
+- */
+-int rtcan_mscan_unregister(struct rtcan_device *dev)
+-{
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-
+-	printk("Unregistering %s device %s\n", RTCAN_DRV_NAME, dev->name);
+-
+-	rtcan_mscan_mode_stop(dev, NULL);
+-	rtdm_irq_free(&dev->irq_handle);
+-	rtcan_mscan_remove_proc(dev);
+-	rtcan_dev_unregister(dev);
+-
+-	/* Disable MSCAN module. */
+-	clrbits8(&regs->canctl1, MSCAN_CANE);
+-
+-	return 0;
+-}
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan.h b/kernel/drivers/can/mscan/rtcan_mscan.h
+deleted file mode 100644
+index 654a0f574c..0000000000
+--- a/kernel/drivers/can/mscan/rtcan_mscan.h
++++ /dev/null
+@@ -1,38 +0,0 @@
+-/*
+- * Copyright (C) 2009 Wolfgang Grandegger <wg@denx.de>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software Foundation,
+- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+- */
+-
+-#ifndef __RTCAN_MSCAN_H_
+-#define __RTCAN_MSCAN_H_
+-
+-#define RTCAN_DEV_NAME    "rtcan%d"
+-#define RTCAN_DRV_NAME    "rtcan_mscan"
+-
+-/* MSCAN type variants */
+-enum {
+-	MSCAN_TYPE_MPC5200,
+-	MSCAN_TYPE_MPC5121
+-};
+-
+-extern int rtcan_mscan_register(struct rtcan_device *dev, int irq,
+-				       int mscan_clksrc);
+-extern int rtcan_mscan_unregister(struct rtcan_device *dev);
+-
+-extern int rtcan_mscan_create_proc(struct rtcan_device* dev);
+-extern void rtcan_mscan_remove_proc(struct rtcan_device* dev);
+-
+-#endif /* __RTCAN_MSCAN_H_ */
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c b/kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
+deleted file mode 100644
+index de08d94542..0000000000
+--- a/kernel/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
++++ /dev/null
+@@ -1,392 +0,0 @@
+-/*
+- * CAN bus driver for the Freescale MPC5xxx embedded CPU.
+- *
+- * Copyright (C) 2004-2005 Andrey Volkov <avolkov@varma-el.com>,
+- *                         Varma Electronics Oy
+- * Copyright (C) 2008-2010 Wolfgang Grandegger <wg@grandegger.com>
+- * Copyright (C) 2009 Wolfram Sang, Pengutronix <w.sang@pengutronix.de>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the version 2 of the GNU General Public License
+- * as published by the Free Software Foundation
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/interrupt.h>
+-#include <linux/platform_device.h>
+-#include <linux/netdevice.h>
+-#include <linux/of_platform.h>
+-#include <sysdev/fsl_soc.h>
+-#include <linux/clk.h>
+-#include <linux/io.h>
+-#include <asm/mpc52xx.h>
+-
+-#include "rtcan_dev.h"
+-#include "rtcan_mscan_regs.h"
+-#include "rtcan_mscan.h"
+-
+-#define of_device platform_device
+-#define of_platform_driver platform_driver
+-#define of_register_platform_driver platform_driver_register
+-#define of_unregister_platform_driver platform_driver_unregister
+-
+-static char mscan_ctrl_name_mpc5200[] = "MSCAN-MPC5200";
+-static char mscan_ctrl_name_mpc512x[] = "MSCAN-MPC512x";
+-static char mscan_board_name[] = "unkown";
+-
+-struct mpc5xxx_can_data {
+-	unsigned int type;
+-	u32 (*get_clock)(struct of_device *ofdev, const char *clock_name,
+-			 int *mscan_clksrc);
+-};
+-
+-#ifdef CONFIG_PPC_MPC52xx
+-static struct of_device_id mpc52xx_cdm_ids[] = {
+-	{ .compatible = "fsl,mpc5200-cdm", },
+-	{}
+-};
+-
+-static u32 mpc52xx_can_get_clock(struct of_device *ofdev,
+-				 const char *clock_name,
+-				 int *mscan_clksrc)
+-{
+-	unsigned int pvr;
+-	struct mpc52xx_cdm  __iomem *cdm;
+-	struct device_node *np_cdm;
+-	unsigned int freq;
+-	u32 val;
+-
+-	pvr = mfspr(SPRN_PVR);
+-
+-	/*
+-	 * Either the oscillator clock (SYS_XTAL_IN) or the IP bus clock
+-	 * (IP_CLK) can be selected as MSCAN clock source. According to
+-	 * the MPC5200 user's manual, the oscillator clock is the better
+-	 * choice as it has less jitter. For this reason, it is selected
+-	 * by default. Unfortunately, it can not be selected for the old
+-	 * MPC5200 Rev. A chips due to a hardware bug (check errata).
+-	 */
+-	if (clock_name && strcmp(clock_name, "ip") == 0)
+-		*mscan_clksrc = MSCAN_CLKSRC_BUS;
+-	else
+-		*mscan_clksrc = MSCAN_CLKSRC_XTAL;
+-
+-	freq = mpc5xxx_get_bus_frequency(mpc5xxx_get_of_node(ofdev));
+-	if (!freq)
+-		return 0;
+-
+-	if (*mscan_clksrc == MSCAN_CLKSRC_BUS || pvr == 0x80822011)
+-		return freq;
+-
+-	/* Determine SYS_XTAL_IN frequency from the clock domain settings */
+-	np_cdm = of_find_matching_node(NULL, mpc52xx_cdm_ids);
+-	if (!np_cdm) {
+-		dev_err(&ofdev->dev, "can't get clock node!\n");
+-		return 0;
+-	}
+-	cdm = of_iomap(np_cdm, 0);
+-
+-	if (in_8(&cdm->ipb_clk_sel) & 0x1)
+-		freq *= 2;
+-	val = in_be32(&cdm->rstcfg);
+-
+-	freq *= (val & (1 << 5)) ? 8 : 4;
+-	freq /= (val & (1 << 6)) ? 12 : 16;
+-
+-	of_node_put(np_cdm);
+-	iounmap(cdm);
+-
+-	return freq;
+-}
+-#else /* !CONFIG_PPC_MPC5200 */
+-static u32 mpc52xx_can_get_clock(struct of_device *ofdev,
+-				 const char *clock_name,
+-				 int *mscan_clksrc)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_PPC_MPC52xx */
+-
+-#ifdef CONFIG_PPC_MPC512x
+-struct mpc512x_clockctl {
+-	u32 spmr;		/* System PLL Mode Reg */
+-	u32 sccr[2];		/* System Clk Ctrl Reg 1 & 2 */
+-	u32 scfr1;		/* System Clk Freq Reg 1 */
+-	u32 scfr2;		/* System Clk Freq Reg 2 */
+-	u32 reserved;
+-	u32 bcr;		/* Bread Crumb Reg */
+-	u32 pccr[12];		/* PSC Clk Ctrl Reg 0-11 */
+-	u32 spccr;		/* SPDIF Clk Ctrl Reg */
+-	u32 cccr;		/* CFM Clk Ctrl Reg */
+-	u32 dccr;		/* DIU Clk Cnfg Reg */
+-	u32 mccr[4];		/* MSCAN Clk Ctrl Reg 1-3 */
+-};
+-
+-static struct of_device_id mpc512x_clock_ids[] = {
+-	{ .compatible = "fsl,mpc5121-clock", },
+-	{}
+-};
+-
+-static u32 mpc512x_can_get_clock(struct of_device *ofdev,
+-				 const char *clock_name,
+-				 int *mscan_clksrc)
+-{
+-	struct mpc512x_clockctl __iomem *clockctl;
+-	struct device_node *np_clock;
+-	struct clk *sys_clk, *ref_clk;
+-	int plen, clockidx, clocksrc = -1;
+-	u32 sys_freq, val, clockdiv = 1, freq = 0;
+-	const u32 *pval;
+-
+-	np_clock = of_find_matching_node(NULL, mpc512x_clock_ids);
+-	if (!np_clock) {
+-		dev_err(&ofdev->dev, "couldn't find clock node\n");
+-		return -ENODEV;
+-	}
+-	clockctl = of_iomap(np_clock, 0);
+-	if (!clockctl) {
+-		dev_err(&ofdev->dev, "couldn't map clock registers\n");
+-		return 0;
+-	}
+-
+-	/* Determine the MSCAN device index from the physical address */
+-	pval = of_get_property(mpc5xxx_get_of_node(ofdev), "reg", &plen);
+-	BUG_ON(!pval || plen < sizeof(*pval));
+-	clockidx = (*pval & 0x80) ? 1 : 0;
+-	if (*pval & 0x2000)
+-		clockidx += 2;
+-
+-	/*
+-	 * Clock source and divider selection: 3 different clock sources
+-	 * can be selected: "ip", "ref" or "sys". For the latter two, a
+-	 * clock divider can be defined as well. If the clock source is
+-	 * not specified by the device tree, we first try to find an
+-	 * optimal CAN source clock based on the system clock. If that
+-	 * is not posslible, the reference clock will be used.
+-	 */
+-	if (clock_name && !strcmp(clock_name, "ip")) {
+-		*mscan_clksrc = MSCAN_CLKSRC_IPS;
+-		freq = mpc5xxx_get_bus_frequency(mpc5xxx_get_of_node(ofdev));
+-	} else {
+-		*mscan_clksrc = MSCAN_CLKSRC_BUS;
+-
+-		pval = of_get_property(mpc5xxx_get_of_node(ofdev),
+-				       "fsl,mscan-clock-divider", &plen);
+-		if (pval && plen == sizeof(*pval))
+-			clockdiv = *pval;
+-		if (!clockdiv)
+-			clockdiv = 1;
+-
+-		if (!clock_name || !strcmp(clock_name, "sys")) {
+-			sys_clk = clk_get(&ofdev->dev, "sys_clk");
+-			if (!sys_clk) {
+-				dev_err(&ofdev->dev, "couldn't get sys_clk\n");
+-				goto exit_unmap;
+-			}
+-			/* Get and round up/down sys clock rate */
+-			sys_freq = 1000000 *
+-				((clk_get_rate(sys_clk) + 499999) / 1000000);
+-
+-			if (!clock_name) {
+-				/* A multiple of 16 MHz would be optimal */
+-				if ((sys_freq % 16000000) == 0) {
+-					clocksrc = 0;
+-					clockdiv = sys_freq / 16000000;
+-					freq = sys_freq / clockdiv;
+-				}
+-			} else {
+-				clocksrc = 0;
+-				freq = sys_freq / clockdiv;
+-			}
+-		}
+-
+-		if (clocksrc < 0) {
+-			ref_clk = clk_get(&ofdev->dev, "ref_clk");
+-			if (!ref_clk) {
+-				dev_err(&ofdev->dev, "couldn't get ref_clk\n");
+-				goto exit_unmap;
+-			}
+-			clocksrc = 1;
+-			freq = clk_get_rate(ref_clk) / clockdiv;
+-		}
+-	}
+-
+-	/* Disable clock */
+-	out_be32(&clockctl->mccr[clockidx], 0x0);
+-	if (clocksrc >= 0) {
+-		/* Set source and divider */
+-		val = (clocksrc << 14) | ((clockdiv - 1) << 17);
+-		out_be32(&clockctl->mccr[clockidx], val);
+-		/* Enable clock */
+-		out_be32(&clockctl->mccr[clockidx], val | 0x10000);
+-	}
+-
+-	/* Enable MSCAN clock domain */
+-	val = in_be32(&clockctl->sccr[1]);
+-	if (!(val & (1 << 25)))
+-		out_be32(&clockctl->sccr[1], val | (1 << 25));
+-
+-	dev_dbg(&ofdev->dev, "using '%s' with frequency divider %d\n",
+-		*mscan_clksrc == MSCAN_CLKSRC_IPS ? "ips_clk" :
+-		clocksrc == 1 ? "ref_clk" : "sys_clk", clockdiv);
+-
+-exit_unmap:
+-	of_node_put(np_clock);
+-	iounmap(clockctl);
+-
+-	return freq;
+-}
+-#else /* !CONFIG_PPC_MPC512x */
+-static u32 mpc512x_can_get_clock(struct of_device *ofdev,
+-				 const char *clock_name,
+-				 int *mscan_clksrc)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_PPC_MPC512x */
+-
+-static struct of_device_id mpc5xxx_can_table[];
+-static int mpc5xxx_can_probe(struct of_device *ofdev)
+-{
+-	struct device_node *np = mpc5xxx_get_of_node(ofdev);
+-	struct mpc5xxx_can_data *data;
+-	struct rtcan_device *dev;
+-	void __iomem *base;
+-	const char *clock_name = NULL;
+-	int irq, mscan_clksrc = 0;
+-	int err = -ENOMEM;
+-
+-	const struct of_device_id *id;
+-
+-	id = of_match_device(mpc5xxx_can_table, &ofdev->dev);
+-	if (!id)
+-		return -EINVAL;
+-
+-	data = (struct mpc5xxx_can_data *)id->data;
+-
+-	base = of_iomap(np, 0);
+-	if (!base) {
+-		dev_err(&ofdev->dev, "couldn't ioremap\n");
+-		return err;
+-	}
+-
+-	irq = irq_of_parse_and_map(np, 0);
+-	if (!irq) {
+-		dev_err(&ofdev->dev, "no irq found\n");
+-		err = -ENODEV;
+-		goto exit_unmap_mem;
+-	}
+-
+-	dev = rtcan_dev_alloc(0, 0);
+-	if (!dev)
+-		goto exit_dispose_irq;
+-
+-	clock_name = of_get_property(np, "fsl,mscan-clock-source", NULL);
+-
+-	BUG_ON(!data);
+-	dev->can_sys_clock = data->get_clock(ofdev, clock_name,
+-					     &mscan_clksrc);
+-	if (!dev->can_sys_clock) {
+-		dev_err(&ofdev->dev, "couldn't get MSCAN clock properties\n");
+-		goto exit_free_mscan;
+-	}
+-
+-	if (data->type == MSCAN_TYPE_MPC5121)
+-		dev->ctrl_name = mscan_ctrl_name_mpc512x;
+-	else
+-		dev->ctrl_name = mscan_ctrl_name_mpc5200;
+-	dev->board_name = mscan_board_name;
+-	dev->base_addr = (unsigned long)base;
+-
+-	err = rtcan_mscan_register(dev, irq, mscan_clksrc);
+-	if (err) {
+-		dev_err(&ofdev->dev, "registering %s failed (err=%d)\n",
+-			RTCAN_DRV_NAME, err);
+-		goto exit_free_mscan;
+-	}
+-
+-	dev_set_drvdata(&ofdev->dev, dev);
+-
+-	dev_info(&ofdev->dev, "MSCAN at 0x%p, irq %d, clock %d Hz\n",
+-		 base, irq, dev->can_sys_clock);
+-
+-	return 0;
+-
+-exit_free_mscan:
+-	rtcan_dev_free(dev);
+-exit_dispose_irq:
+-	irq_dispose_mapping(irq);
+-exit_unmap_mem:
+-	iounmap(base);
+-
+-	return err;
+-}
+-
+-static int mpc5xxx_can_remove(struct of_device *ofdev)
+-{
+-	struct rtcan_device *dev = dev_get_drvdata(&ofdev->dev);
+-
+-	dev_set_drvdata(&ofdev->dev, NULL);
+-
+-	rtcan_mscan_unregister(dev);
+-	iounmap((void *)dev->base_addr);
+-	rtcan_dev_free(dev);
+-
+-	return 0;
+-}
+-
+-static struct mpc5xxx_can_data mpc5200_can_data = {
+-	.type = MSCAN_TYPE_MPC5200,
+-	.get_clock = mpc52xx_can_get_clock,
+-};
+-
+-static struct mpc5xxx_can_data mpc5121_can_data = {
+-	.type = MSCAN_TYPE_MPC5121,
+-	.get_clock = mpc512x_can_get_clock,
+-};
+-
+-static struct of_device_id mpc5xxx_can_table[] = {
+-	{ .compatible = "fsl,mpc5200-mscan", .data = &mpc5200_can_data, },
+-	/* Note that only MPC5121 Rev. 2 (and later) is supported */
+-	{ .compatible = "fsl,mpc5121-mscan", .data = &mpc5121_can_data, },
+-	{},
+-};
+-
+-static struct of_platform_driver mpc5xxx_can_driver = {
+-	.driver = {
+-		.owner = THIS_MODULE,
+-		.name = RTCAN_DRV_NAME,
+-		.of_match_table = mpc5xxx_can_table,
+-	},
+-	.probe = mpc5xxx_can_probe,
+-	.remove = mpc5xxx_can_remove,
+-};
+-
+-static int __init mpc5xxx_can_init(void)
+-{
+-	if (!rtdm_available())
+-		return -ENOSYS;
+-
+-	return of_register_platform_driver(&mpc5xxx_can_driver);
+-}
+-module_init(mpc5xxx_can_init);
+-
+-static void __exit mpc5xxx_can_exit(void)
+-{
+-	return of_unregister_platform_driver(&mpc5xxx_can_driver);
+-};
+-module_exit(mpc5xxx_can_exit);
+-
+-MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
+-MODULE_DESCRIPTION("RT-Socket-CAN driver for MPC5200 and MPC521x");
+-MODULE_LICENSE("GPL v2");
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan_proc.c b/kernel/drivers/can/mscan/rtcan_mscan_proc.c
+deleted file mode 100644
+index 91f8f84ccd..0000000000
+--- a/kernel/drivers/can/mscan/rtcan_mscan_proc.c
++++ /dev/null
+@@ -1,151 +0,0 @@
+-/*
+- * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
+- *
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software Foundation,
+- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+- */
+-
+-#include <linux/module.h>
+-#include <linux/ioport.h>
+-#include <linux/delay.h>
+-
+-#include <rtdm/driver.h>
+-
+-/* CAN device profile */
+-#include "rtcan_dev.h"
+-#include "rtcan_internal.h"
+-#include "rtcan_mscan_regs.h"
+-
+-#define MSCAN_REG_ARGS(reg) \
+-	"%-8s 0x%02x\n", #reg, (int)(in_8(&regs->reg)) & 0xff
+-
+-#ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG
+-
+-static int rtcan_mscan_proc_regs(struct seq_file *p, void *data)
+-{
+-	struct rtcan_device *dev = (struct rtcan_device *)data;
+-	struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
+-#ifdef MPC5xxx_GPIO
+-	struct mpc5xxx_gpio *gpio = (struct mpc5xxx_gpio *)MPC5xxx_GPIO;
+-	u32 port_config;
+-#endif
+-	u8 canctl0, canctl1;
+-
+-	seq_printf(p, "MSCAN registers at %p\n", regs);
+-
+-	canctl0 = in_8(&regs->canctl0);
+-	seq_printf(p, "canctl0  0x%02x%s%s%s%s%s%s%s%s\n",
+-		   canctl0,
+-		   (canctl0 & MSCAN_RXFRM) ? " rxfrm" :"",
+-		   (canctl0 & MSCAN_RXACT) ? " rxact" :"",
+-		   (canctl0 & MSCAN_CSWAI) ? " cswai" :"",
+-		   (canctl0 & MSCAN_SYNCH) ? " synch" :"",
+-		   (canctl0 & MSCAN_TIME)  ? " time"  :"",
+-		   (canctl0 & MSCAN_WUPE)  ? " wupe"  :"",
+-		   (canctl0 & MSCAN_SLPRQ) ? " slprq" :"",
+-		   (canctl0 & MSCAN_INITRQ)? " initrq":"" );
+-	canctl1 = in_8(&regs->canctl1);
+-	seq_printf(p, "canctl1  0x%02x%s%s%s%s%s%s%s\n",
+-		   canctl1,
+-		   (canctl1 & MSCAN_CANE)  ? " cane"  :"",
+-		   (canctl1 & MSCAN_CLKSRC)? " clksrc":"",
+-		   (canctl1 & MSCAN_LOOPB) ? " loopb" :"",
+-		   (canctl1 & MSCAN_LISTEN)? " listen":"",
+-		   (canctl1 & MSCAN_WUPM)  ? " wump"  :"",
+-		   (canctl1 & MSCAN_SLPAK) ? " slpak" :"",
+-		   (canctl1 & MSCAN_INITAK)? " initak":"");
+-	seq_printf(p, MSCAN_REG_ARGS(canbtr0 ));
+-	seq_printf(p, MSCAN_REG_ARGS(canbtr1 ));
+-	seq_printf(p, MSCAN_REG_ARGS(canrflg ));
+-	seq_printf(p, MSCAN_REG_ARGS(canrier ));
+-	seq_printf(p, MSCAN_REG_ARGS(cantflg ));
+-	seq_printf(p, MSCAN_REG_ARGS(cantier ));
+-	seq_printf(p, MSCAN_REG_ARGS(cantarq ));
+-	seq_printf(p, MSCAN_REG_ARGS(cantaak ));
+-	seq_printf(p, MSCAN_REG_ARGS(cantbsel));
+-	seq_printf(p, MSCAN_REG_ARGS(canidac ));
+-	seq_printf(p, MSCAN_REG_ARGS(canrxerr));
+-	seq_printf(p, MSCAN_REG_ARGS(cantxerr));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar0));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar1));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar2));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar3));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr0));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr1));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr2));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr3));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar4));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar5));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar6));
+-	seq_printf(p, MSCAN_REG_ARGS(canidar7));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr4));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr5));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr6));
+-	seq_printf(p, MSCAN_REG_ARGS(canidmr7));
+-
+-#ifdef MPC5xxx_GPIO
+-	seq_printf(p, "GPIO registers\n");
+-	port_config = in_be32(&gpio->port_config);
+-	seq_printf(p, "port_config 0x%08x %s\n", port_config,
+-		   (port_config & 0x10000000 ?
+-			"CAN1 on I2C1, CAN2 on TMR0/1 pins" :
+-			(port_config & 0x70) == 0x10 ?
+-				"CAN1/2 on PSC2 pins" :
+-				"MSCAN1/2 not routed"));
+-#endif
+-
+-	return 0;
+-}
+-
+-static int rtcan_mscan_proc_regs_open(struct inode *inode, struct file *file)
+-{
+-	return single_open(file, rtcan_mscan_proc_regs, PDE_DATA(inode));
+-}
+-
+-static const DEFINE_PROC_OPS(rtcan_mscan_proc_regs_ops,
+-			rtcan_mscan_proc_regs_open,
+-			single_elease,
+-			seq_read,
+-			NULL);
+-
+-int rtcan_mscan_create_proc(struct rtcan_device* dev)
+-{
+-	if (!dev->proc_root)
+-		return -EINVAL;
+-
+-	proc_create_data("registers", S_IFREG | S_IRUGO | S_IWUSR,
+-			 dev->proc_root, &rtcan_mscan_proc_regs_ops, dev);
+-	return 0;
+-}
+-
+-void rtcan_mscan_remove_proc(struct rtcan_device* dev)
+-{
+-	if (!dev->proc_root)
+-		return;
+-
+-	remove_proc_entry("registers", dev->proc_root);
+-}
+-
+-#else /* !CONFIG_XENO_DRIVERS_CAN_DEBUG */
+-
+-void rtcan_mscan_remove_proc(struct rtcan_device* dev)
+-{
+-}
+-
+-int rtcan_mscan_create_proc(struct rtcan_device* dev)
+-{
+-	return 0;
+-}
+-#endif	/* CONFIG_XENO_DRIVERS_CAN_DEBUG */
+diff --git a/kernel/drivers/can/mscan/rtcan_mscan_regs.h b/kernel/drivers/can/mscan/rtcan_mscan_regs.h
+deleted file mode 100644
+index 11b85a9c74..0000000000
+--- a/kernel/drivers/can/mscan/rtcan_mscan_regs.h
++++ /dev/null
+@@ -1,226 +0,0 @@
+-/*
+- * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
+- *
+- * Based on linux-2.4.25/include/asm-ppc/mpc5xxx.h
+- * Prototypes, etc. for the Motorola MPC5xxx embedded cpu chips
+- *
+- * Author: Dale Farnsworth <dfarnsworth@mvista.com>
+- *
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software Foundation,
+- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+- */
+-
+-#ifndef __RTCAN_MSCAN_REGS_H_
+-#define __RTCAN_MSCAN_REGS_H_
+-
+-#include <linux/version.h>
+-#include <linux/of_platform.h>
+-#include <asm/mpc52xx.h>
+-
+-static inline void __iomem *mpc5xxx_gpio_find_and_map(void)
+-{
+-	struct device_node *ofn;
+-	ofn = of_find_compatible_node(NULL, NULL, "mpc5200-gpio");
+-	if (!ofn)
+-		ofn = of_find_compatible_node(NULL, NULL, "fsl,mpc5200-gpio");
+-	return ofn ? of_iomap(ofn, 0) : NULL;
+-}
+-
+-#define MPC5xxx_GPIO	mpc5xxx_gpio_find_and_map()
+-#define mpc5xxx_gpio	mpc52xx_gpio
+-
+-#define mpc5xxx_get_of_node(ofdev) (ofdev)->dev.of_node
+-
+-#define MSCAN_CAN1_ADDR	(MSCAN_MBAR + 0x0900) /* MSCAN Module 1 */
+-#define MSCAN_CAN2_ADDR	(MSCAN_MBAR + 0x0980) /* MSCAN Module 2 */
+-#define MSCAN_SIZE	0x80
+-
+-/* MSCAN control register 0 (CANCTL0) bits */
+-#define MSCAN_RXFRM	0x80
+-#define MSCAN_RXACT	0x40
+-#define MSCAN_CSWAI	0x20
+-#define MSCAN_SYNCH	0x10
+-#define MSCAN_TIME	0x08
+-#define MSCAN_WUPE	0x04
+-#define MSCAN_SLPRQ	0x02
+-#define MSCAN_INITRQ	0x01
+-
+-/* MSCAN control register 1 (CANCTL1) bits */
+-#define MSCAN_CANE	0x80
+-#define MSCAN_CLKSRC	0x40
+-#define MSCAN_LOOPB	0x20
+-#define MSCAN_LISTEN	0x10
+-#define MSCAN_WUPM	0x04
+-#define MSCAN_SLPAK	0x02
+-#define MSCAN_INITAK	0x01
+-
+-/* MSCAN receiver flag register (CANRFLG) bits */
+-#define MSCAN_WUPIF	0x80
+-#define MSCAN_CSCIF	0x40
+-#define MSCAN_RSTAT1	0x20
+-#define MSCAN_RSTAT0	0x10
+-#define MSCAN_TSTAT1	0x08
+-#define MSCAN_TSTAT0	0x04
+-#define MSCAN_OVRIF	0x02
+-#define MSCAN_RXF	0x01
+-
+-/* MSCAN receiver interrupt enable register (CANRIER) bits */
+-#define MSCAN_WUPIE	0x80
+-#define MSCAN_CSCIE	0x40
+-#define MSCAN_RSTATE1	0x20
+-#define MSCAN_RSTATE0	0x10
+-#define MSCAN_TSTATE1	0x08
+-#define MSCAN_TSTATE0	0x04
+-#define MSCAN_OVRIE	0x02
+-#define MSCAN_RXFIE	0x01
+-
+-/* MSCAN transmitter flag register (CANTFLG) bits */
+-#define MSCAN_TXE2	0x04
+-#define MSCAN_TXE1	0x02
+-#define MSCAN_TXE0	0x01
+-#define MSCAN_TXE	(MSCAN_TXE2 | MSCAN_TXE1 | MSCAN_TXE0)
+-
+-/* MSCAN transmitter interrupt enable register (CANTIER) bits */
+-#define MSCAN_TXIE2	0x04
+-#define MSCAN_TXIE1	0x02
+-#define MSCAN_TXIE0	0x01
+-#define MSCAN_TXIE	(MSCAN_TXIE2 | MSCAN_TXIE1 | MSCAN_TXIE0)
+-
+-/* MSCAN transmitter message abort request (CANTARQ) bits */
+-#define MSCAN_ABTRQ2	0x04
+-#define MSCAN_ABTRQ1	0x02
+-#define MSCAN_ABTRQ0	0x01
+-
+-/* MSCAN transmitter message abort ack (CANTAAK) bits */
+-#define MSCAN_ABTAK2	0x04
+-#define MSCAN_ABTAK1	0x02
+-#define MSCAN_ABTAK0	0x01
+-
+-/* MSCAN transmit buffer selection (CANTBSEL) bits */
+-#define MSCAN_TX2	0x04
+-#define MSCAN_TX1	0x02
+-#define MSCAN_TX0	0x01
+-
+-/* MSCAN ID acceptance control register (CANIDAC) bits */
+-#define MSCAN_IDAM1	0x20
+-#define MSCAN_IDAM0	0x10
+-#define MSCAN_IDHIT2	0x04
+-#define MSCAN_IDHIT1	0x02
+-#define MSCAN_IDHIT0	0x01
+-
+-struct mscan_msgbuf {
+-	volatile u8  idr[0x8];		/* 0x00 */
+-	volatile u8  dsr[0x10];		/* 0x08 */
+-	volatile u8  dlr;		/* 0x18 */
+-	volatile u8  tbpr;		/* 0x19 */	/* This register is not applicable for receive buffers */
+-	volatile u16 rsrv1;		/* 0x1A */
+-	volatile u8  tsrh;		/* 0x1C */
+-	volatile u8  tsrl;		/* 0x1D */
+-	volatile u16 rsrv2;		/* 0x1E */
+-};
+-
+-struct mscan_regs {
+-	volatile u8  canctl0;		/* MSCAN + 0x00 */
+-	volatile u8  canctl1;		/* MSCAN + 0x01 */
+-	volatile u16 rsrv1;		/* MSCAN + 0x02 */
+-	volatile u8  canbtr0;		/* MSCAN + 0x04 */
+-	volatile u8  canbtr1;		/* MSCAN + 0x05 */
+-	volatile u16 rsrv2;		/* MSCAN + 0x06 */
+-	volatile u8  canrflg;		/* MSCAN + 0x08 */
+-	volatile u8  canrier;		/* MSCAN + 0x09 */
+-	volatile u16 rsrv3;		/* MSCAN + 0x0A */
+-	volatile u8  cantflg;		/* MSCAN + 0x0C */
+-	volatile u8  cantier;		/* MSCAN + 0x0D */
+-	volatile u16 rsrv4;		/* MSCAN + 0x0E */
+-	volatile u8  cantarq;		/* MSCAN + 0x10 */
+-	volatile u8  cantaak;		/* MSCAN + 0x11 */
+-	volatile u16 rsrv5;		/* MSCAN + 0x12 */
+-	volatile u8  cantbsel;		/* MSCAN + 0x14 */
+-	volatile u8  canidac;		/* MSCAN + 0x15 */
+-	volatile u16 rsrv6[3];		/* MSCAN + 0x16 */
+-	volatile u8  canrxerr;		/* MSCAN + 0x1C */
+-	volatile u8  cantxerr;		/* MSCAN + 0x1D */
+-	volatile u16 rsrv7;		/* MSCAN + 0x1E */
+-	volatile u8  canidar0;		/* MSCAN + 0x20 */
+-	volatile u8  canidar1;		/* MSCAN + 0x21 */
+-	volatile u16 rsrv8;		/* MSCAN + 0x22 */
+-	volatile u8  canidar2;		/* MSCAN + 0x24 */
+-	volatile u8  canidar3;		/* MSCAN + 0x25 */
+-	volatile u16 rsrv9;		/* MSCAN + 0x26 */
+-	volatile u8  canidmr0;		/* MSCAN + 0x28 */
+-	volatile u8  canidmr1;		/* MSCAN + 0x29 */
+-	volatile u16 rsrv10;		/* MSCAN + 0x2A */
+-	volatile u8  canidmr2;		/* MSCAN + 0x2C */
+-	volatile u8  canidmr3;		/* MSCAN + 0x2D */
+-	volatile u16 rsrv11;		/* MSCAN + 0x2E */
+-	volatile u8  canidar4;		/* MSCAN + 0x30 */
+-	volatile u8  canidar5;		/* MSCAN + 0x31 */
+-	volatile u16 rsrv12;		/* MSCAN + 0x32 */
+-	volatile u8  canidar6;		/* MSCAN + 0x34 */
+-	volatile u8  canidar7;		/* MSCAN + 0x35 */
+-	volatile u16 rsrv13;		/* MSCAN + 0x36 */
+-	volatile u8  canidmr4;		/* MSCAN + 0x38 */
+-	volatile u8  canidmr5;		/* MSCAN + 0x39 */
+-	volatile u16 rsrv14;		/* MSCAN + 0x3A */
+-	volatile u8  canidmr6;		/* MSCAN + 0x3C */
+-	volatile u8  canidmr7;		/* MSCAN + 0x3D */
+-	volatile u16 rsrv15;		/* MSCAN + 0x3E */
+-
+-	struct mscan_msgbuf canrxfg;	/* MSCAN + 0x40 */    /* Foreground receive buffer */
+-	struct mscan_msgbuf cantxfg;	/* MSCAN + 0x60 */    /* Foreground transmit buffer */
+-};
+-
+-/* Clock source selection
+- */
+-#define MSCAN_CLKSRC_BUS	0
+-#define MSCAN_CLKSRC_XTAL	MSCAN_CLKSRC
+-#define MSCAN_CLKSRC_IPS	MSCAN_CLKSRC
+-
+-/* Message type access macros.
+- */
+-#define MSCAN_BUF_STD_RTR	0x10
+-#define MSCAN_BUF_EXT_RTR	0x01
+-#define MSCAN_BUF_EXTENDED	0x08
+-
+-#define MSCAN_IDAM1		0x20
+-/* Value for the interrupt enable register */
+-#define MSCAN_RIER		(MSCAN_OVRIE |		\
+-				 MSCAN_RXFIE |		\
+-				 MSCAN_WUPIF |		\
+-				 MSCAN_CSCIE |		\
+-				 MSCAN_RSTATE0 |	\
+-				 MSCAN_RSTATE1 |	\
+-				 MSCAN_TSTATE0 |	\
+-				 MSCAN_TSTATE1)
+-
+-#define BTR0_BRP_MASK		0x3f
+-#define BTR0_SJW_SHIFT		6
+-#define BTR0_SJW_MASK		(0x3 << BTR0_SJW_SHIFT)
+-
+-#define BTR1_TSEG1_MASK		0xf
+-#define BTR1_TSEG2_SHIFT	4
+-#define BTR1_TSEG2_MASK		(0x7 << BTR1_TSEG2_SHIFT)
+-#define BTR1_SAM_SHIFT		7
+-
+-#define BTR0_SET_BRP(brp)	(((brp) - 1) & BTR0_BRP_MASK)
+-#define BTR0_SET_SJW(sjw)	((((sjw) - 1) << BTR0_SJW_SHIFT) & \
+-				 BTR0_SJW_MASK)
+-
+-#define BTR1_SET_TSEG1(tseg1)	(((tseg1) - 1) & BTR1_TSEG1_MASK)
+-#define BTR1_SET_TSEG2(tseg2)	((((tseg2) - 1) << BTR1_TSEG2_SHIFT) & \
+-				 BTR1_TSEG2_MASK)
+-#define BTR1_SET_SAM(sam)	(((sam) & 1) << BTR1_SAM_SHIFT)
+-
+-#endif /* __RTCAN_MSCAN_REGS_H_ */
 -- 
 2.31.1
 
