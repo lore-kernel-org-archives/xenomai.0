@@ -1,13 +1,9 @@
-Message-ID: <97759673-71e3-fc0c-804c-aadeaa8de4ae@siemens.com>
-Date: Tue, 28 Dec 2021 09:50:01 +0100
-Subject: Re: v5.15-dovetail-rebase compilation fails
-Content-Language: en-US
-References: <1478129695.36513090.1640631058240.JavaMail.zimbra@telenet.be>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-In-Reply-To: <1478129695.36513090.1640631058240.JavaMail.zimbra@telenet.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
+From: C Smith <csmithquestions@gmail.com>
+Date: Wed, 15 Dec 2021 23:37:00 -0800
+Message-ID: <CA+K1mPHJgjwb7NOM2xL62bmuwGix7LEYoa3Ars8ig9Kr9K1AfQ@mail.gmail.com>
+Subject: common clocks RTDM/user-RT
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +12,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: g.strobbe@telenet.be, xenomai <xenomai@xenomai.org>
+To: Xenomai List <xenomai@xenomai.org>
 
-On 27.12.21 19:50, G.Strobbe via Xenomai wrote:
-> Hi all,
-> 
-> The compilation of file xenomai/kernel/cobalt/debug.c 
-> in branch v5.15-dovetail-rebase failed.
-> The problem is that since kernel vanilla v15.5 
-> include/linux/mm.h no longer defines VM_DENYWRITE
-> 
-> It is still used in xndebug_trace_relax()
-> 
-> 		/*
-> 		 * Hack. Unlike DSOs, executables and interpreters
-> 		 * (e.g. dynamic linkers) are protected against write
-> 		 * attempts. Use this to determine when $pc should be
-> 		 * fixed up by subtracting the mapping base address in
-> 		 * the DSO case.
-> 		 */
-> 		if (!(vma->vm_flags & VM_DENYWRITE))
-> 			pc -= vma->vm_start;
+I'm porting a real time userspace (Cobalt) app from Xenomai 2.6 to
+Xeno 3.1 (on x86). The goal is to see how much time has passed since
+the last char was received from the 16550A serial driver.
 
-Thanks for reporting that. Adding Jan and Philippe to CC, seems the 
-"migration" to 5.15 is not fully done yet.
+In Xenomai 2, my RT userspace app was able via ioctl to read the
+timestamp the 16550A serial driver provides
+(rx_event.rxpend_timestamp) and compare it to a timestamp from
+rt_timer_read() in the userspace app.
 
-As a temporary workaround you could set CONFIG_XENO_OPT_DEBUG (or more
-specific CONFIG_XENO_OPT_DEBUG_TRACE_RELAX) to "n" in your kernel 
-configuration.
+In Xenomai 3 however, this comparison is no longer valid. They are
+both nanosecond timers but can't be directly compared because the RTDM
+timer has a large offset compared to rt_timer_read().
 
-For Jan and Philippe:
+Is there a way of accessing the RTDM timer and getting a timestamp
+from within my realtime userspace app which would match the serial
+driver's timestamp?
 
-The following commits might be relevant:
-fe69d560b5bd ("kernel/fork: always deny write access to current MM exe_file")
-8d0920bde5eb ("mm: remove VM_DENYWRITE")
-592ca09be833 ("fs: update documentation of get_write_access() and friends")
+thanks, -C Smith
 
-While looking at 592ca09be833 I wonder if we would have to migrate
-to something like inode_is_open_for_write(). Any comments / ideas?
-
-HTH, 
-Florian
-
-> 
-> Best regards,
-> 
-> Gino 
-> 			
-> 
-
+PS: I'll respond about the CAN patch and a few other things in other threads.
 
