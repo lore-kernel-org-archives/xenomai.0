@@ -1,13 +1,13 @@
+Subject: Re: [PATCH 1/1] Added verbosity to serial driver.
+References: <20211216074829.32236-1-ksmola51@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 3/6] drivers/net: fec: Account for changes of get/set_coalesce
- ethtool callbacks in 5.15
-Date: Fri, 7 Jan 2022 12:35:32 +0100
-Message-ID: <961e1d8ef82d0b206f3f1ea895e6b1a46dec794e.1641555334.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1641555334.git.jan.kiszka@siemens.com>
-References: <cover.1641555334.git.jan.kiszka@siemens.com>
+Message-ID: <e5126b04-5f04-57bc-8450-e519e251b9a6@siemens.com>
+Date: Thu, 16 Dec 2021 09:57:01 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <20211216074829.32236-1-ksmola51@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Konstantin Smola <ksmola51@gmail.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 16.12.21 08:48, Konstantin Smola via Xenomai wrote:
+> kernel/drivers/serial: Added verbosity to serial driver.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/net/drivers/freescale/fec_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Thanks for your patch. However, the commit log should motivate why we
+want to merge this change.
 
-diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
-index 0192a09970..be0ed0c51e 100644
---- a/kernel/drivers/net/drivers/freescale/fec_main.c
-+++ b/kernel/drivers/net/drivers/freescale/fec_main.c
-@@ -2171,7 +2171,13 @@ static void fec_enet_itr_coal_set(struct net_device *ndev)
- }
- 
- static int
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-+fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
-+		      struct kernel_ethtool_coalesce *kernel_coal,
-+		      struct netlink_ext_ack *extack)
-+#else
- fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
-+#endif
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 
-@@ -2188,7 +2194,13 @@ fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
- }
- 
- static int
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-+fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
-+		      struct kernel_ethtool_coalesce *kernel_coal,
-+		      struct netlink_ext_ack *extack)
-+#else
- fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
-+#endif
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct device *dev = &fep->pdev->dev;
-@@ -2240,7 +2252,11 @@ static void fec_enet_itr_coal_init(struct net_device *ndev)
- 	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
- 	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-+	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
-+#else
- 	fec_enet_set_coalesce(ndev, &ec);
-+#endif
- }
- 
- static int fec_enet_get_tunable(struct net_device *netdev,
+Jan
+
+> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
+> ---
+>  kernel/drivers/serial/16550A.c | 20 +++++++++++++++++---
+>  1 file changed, 17 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/drivers/serial/16550A.c b/kernel/drivers/serial/16550A.c
+> index c9274fb19..9881ba66c 100644
+> --- a/kernel/drivers/serial/16550A.c
+> +++ b/kernel/drivers/serial/16550A.c
+> @@ -25,12 +25,21 @@
+>  #include <rtdm/serial.h>
+>  #include <rtdm/driver.h>
+>  
+> -MODULE_DESCRIPTION("RTDM-based driver for 16550A UARTs");
+> -MODULE_AUTHOR("Jan Kiszka <jan.kiszka@web.de>");
+> -MODULE_VERSION("1.5.2");
+> +
+> +#define MOD_DESCR "RTDM-based driver for 16550A UARTs"
+> +static char mod_descr[64] = MOD_DESCR;
+> +#define MOD_AUTH "Jan Kiszka <jan.kiszka@web.de>"
+> +static char mod_auth[64]=MOD_AUTH;
+> +#define MOD_VER "1.5.2"
+> +static char mod_ver[32]=MOD_VER;
+> +
+> +MODULE_DESCRIPTION(MOD_DESCR);
+> +MODULE_AUTHOR(MOD_AUTH);
+> +MODULE_VERSION(MOD_VER);
+>  MODULE_LICENSE("GPL");
+>  
+>  #define RT_16550_DRIVER_NAME	"xeno_16550A"
+> +static char mod_name[64]=RT_16550_DRIVER_NAME;
+>  
+>  #define MAX_DEVICES		8
+>  
+> @@ -1106,6 +1115,8 @@ int __init rt_16550_init(void)
+>  	if (!rtdm_available())
+>  		return -ENODEV;
+>  
+> +	rtdm_printk("%s: %s rev %s, %s\n", mod_name, mod_descr, mod_ver, mod_auth);
+> +
+>  	rt_16550_pnp_init();
+>  	rt_16550_pci_init();
+>  
+> @@ -1128,6 +1139,8 @@ int __init rt_16550_init(void)
+>  		name = (char *)(dev + 1);
+>  		ksformat(name, RTDM_MAX_DEVNAME_LEN, dev->label, i);
+>  
+> +		rtdm_printk("%s: %s io=0x%x irq=%d\n", mod_name, name, (unsigned)rt_16550_base_addr(i),irq[i]);
+> +
+>  		err = rt_16550_init_io(i, name);
+>  		if (err)
+>  			goto kfree_out;
+> @@ -1182,6 +1195,7 @@ void rt_16550_exit(void)
+>  
+>  	rt_16550_pci_cleanup();
+>  	rt_16550_pnp_cleanup();
+> +	rtdm_printk("%s: Unloaded.\n", mod_name);
+>  }
+>  
+>  module_init(rt_16550_init);
+> 
+
 -- 
-2.31.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
