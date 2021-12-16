@@ -1,10 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 4/8] ci: Drop no longer user
- TARGET_EXTENSION variable
-Date: Fri, 7 Jan 2022 16:02:59 +0100
-Message-ID: <26931a66cf444cb9cf0d97600f3fa88dc88ad4bc.1641567783.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
-References: <cover.1641567783.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/5] cobalt: Drop vmalloc_kernel wrapper
+Date: Thu, 16 Dec 2021 16:48:23 +0100
+Message-ID: <cd9f423f0f18a474b0db843c4cbecd498dffe14a.1639669704.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1639669704.git.jan.kiszka@siemens.com>
+References: <cover.1639669704.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -20,38 +19,71 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Was obsoleted by d3a501ebfe2c.
+vmalloc_kernel() without extra flags is just vmalloc. And for requesting
+__GFP_ZERO, there vzalloc since 2.6.37.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/gitlab-ci-base.yml | 2 +-
- tests/README.md       | 1 -
- 2 files changed, 1 insertion(+), 2 deletions(-)
+ kernel/cobalt/heap.c                                 |  2 +-
+ kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 12 ------------
+ kernel/cobalt/posix/memory.c                         |  2 +-
+ 3 files changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index cdf20e5..057b9dd 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -50,7 +50,7 @@ default:
-     - scripts/install-lavacli.sh
-     - scripts/run-lava-tests.sh ${TARGET}
-   variables:
--    BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
-+    BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}"
-   artifacts:
-     when: always
-     reports:
-diff --git a/tests/README.md b/tests/README.md
-index 24ffb81..5779e9b 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -111,7 +111,6 @@ The following variables are used and set by the ci system:
- - General build settings
-   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
-   - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
--  - `TARGET_EXTENSION`: Extension of the build job name
+diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+index f106d5d071..28fe78a78e 100644
+--- a/kernel/cobalt/heap.c
++++ b/kernel/cobalt/heap.c
+@@ -850,7 +850,7 @@ void *xnheap_vmalloc(size_t size)
+ 	 * software on a 32bit system had to be wrong in the first
+ 	 * place anyway.
+ 	 */
+-	return vmalloc_kernel(size, 0);
++	return vmalloc(size);
+ }
+ EXPORT_SYMBOL_GPL(xnheap_vmalloc);
  
- ## LAVA Template variable
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index 87ceeda800..414469c3a5 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -197,12 +197,6 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ }
+ #endif
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
+-#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags, PAGE_KERNEL)
+-#else
+-#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
+-#endif
+-
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,7,0)
+ #define pci_aer_clear_nonfatal_status	pci_cleanup_aer_uncorrect_error_status
+ #define old_timespec32    compat_timespec
+@@ -210,12 +204,6 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define old_timeval32     compat_timeval
+ #endif
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
+-#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags, PAGE_KERNEL)
+-#else
+-#define vmalloc_kernel(__size, __flags)	__vmalloc(__size, GFP_KERNEL|__flags)
+-#endif
+-
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,9,0)
+ #define read_file_from_kernel(__file, __buf, __buf_size, __file_size, __id) \
+ 	({								\
+diff --git a/kernel/cobalt/posix/memory.c b/kernel/cobalt/posix/memory.c
+index fc88e264c6..25cc784ea9 100644
+--- a/kernel/cobalt/posix/memory.c
++++ b/kernel/cobalt/posix/memory.c
+@@ -324,7 +324,7 @@ int cobalt_umm_init(struct cobalt_umm *umm, u32 size,
+ 	BUG_ON(xnarch_cache_aliasing());
+ 
+ 	size = PAGE_ALIGN(size);
+-	basemem = vmalloc_kernel(size, __GFP_ZERO);
++	basemem = vzalloc(size);
+ 	if (basemem == NULL)
+ 		return -ENOMEM;
  
 -- 
 2.31.1
