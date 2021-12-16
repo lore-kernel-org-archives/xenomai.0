@@ -1,9 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 3/8] ci: Drop JOB_TEMPLATE_PATH variable
-Date: Fri, 7 Jan 2022 16:02:58 +0100
-Message-ID: <e106154ed8c230594e003457d114afc29a7a377e.1641567783.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
-References: <cover.1641567783.git.jan.kiszka@siemens.com>
+Subject: [PATCH 1/5] ci: Drop builds for kernels older than 5.10
+Date: Thu, 16 Dec 2021 16:48:21 +0100
+Message-ID: <72680925e637c673754563d9100362794b045534.1639669704.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1639669704.git.jan.kiszka@siemens.com>
+References: <cover.1639669704.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -19,44 +19,92 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-That's an interface without a real use case. Dropping it makes live
-easier for users that want to understand the setup.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- scripts/run-lava-tests.sh | 3 +--
- tests/README.md           | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ .gitlab-ci.yml | 56 --------------------------------------------------
+ 1 file changed, 56 deletions(-)
 
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index c090d83..30a853f 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -32,11 +32,10 @@ export DEPLOY_URL
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 76daad792e..e4f35f2c45 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -187,22 +187,6 @@ arm-5.10-head:
+     PIPELINE_KERNEL: ${DOVETAIL_URL}
+     KERNEL_DEFCONFIG: multi_v7_defconfig
  
- echo "Deploy artifacts from '${artifact_url}'"
+-arm-5.4-release:
+-  extends: .build
+-  variables:
+-    ARCH: arm
+-    PIPELINE_REV: ipipe-core-5.4..*-arm-.*
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
+-    KERNEL_DEFCONFIG: multi_v7_defconfig
+-
+-arm-4.19-release:
+-  extends: .build
+-  variables:
+-    ARCH: arm
+-    PIPELINE_REV: ipipe-core-4.19..*-arm-.*
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
+-    KERNEL_DEFCONFIG: multi_v7_defconfig
+-
+ arm64-5.10-head:
+   extends: .build
+   variables:
+@@ -211,22 +195,6 @@ arm64-5.10-head:
+     PIPELINE_KERNEL: ${DOVETAIL_URL}
+     KERNEL_DEFCONFIG: defconfig
  
--job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
- tmp_dir=$(mktemp -d)
- template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+-arm64-5.4-release:
+-  extends: .build
+-  variables:
+-    ARCH: arm64
+-    PIPELINE_REV: ipipe-core-5.4..*-arm64-.*
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
+-    KERNEL_DEFCONFIG: defconfig
+-
+-arm64-4.19-cip-release:
+-  extends: .build
+-  variables:
+-    ARCH: arm64
+-    PIPELINE_REV: ipipe-core-4.19..*cip.*-arm64-.*
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
+-    KERNEL_DEFCONFIG: defconfig
+-
+ x86-5.10-head:
+   extends: .build
+   variables:
+@@ -235,30 +203,6 @@ x86-5.10-head:
+     PIPELINE_KERNEL: ${DOVETAIL_URL}
+     KERNEL_DEFCONFIG: x86_64_defconfig
  
--cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
-+cat "tests/jobs/xenomai-${TARGET}.yml" | envsubst > "$template"
- 
- echo "submit lava job"
- 
-diff --git a/tests/README.md b/tests/README.md
-index 3e17271..24ffb81 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -111,7 +111,6 @@ The following variables are used and set by the ci system:
- - General build settings
-   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
-   - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
--  - `JOB_TEMPLATE_PATH`: Path to the test templates - Default tests/jobs/xenomai
-   - `TARGET_EXTENSION`: Extension of the build job name
- 
- ## LAVA Template variable
+-x86-5.4-head:
+-  extends: .build
+-  variables:
+-    ARCH: x86
+-    PIPELINE_REV: ipipe-x86-5.4.y
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+-    KERNEL_DEFCONFIG: x86_64_defconfig
+-
+-x86-4.19-cip-head:
+-  extends: .build
+-  variables:
+-    ARCH: x86
+-    PIPELINE_REV: ipipe-x86-4.19.y-cip
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+-    KERNEL_DEFCONFIG: x86_64_defconfig
+-
+-x86-4.19-cip-release:
+-  extends: .build
+-  variables:
+-    ARCH: x86
+-    PIPELINE_REV: ipipe-core-4.19..*cip.*-x86-.*
+-    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
+-    KERNEL_DEFCONFIG: x86_64_defconfig
+-
+ i386-userland:
+   extends: .build
+   variables:
 -- 
 2.31.1
 
