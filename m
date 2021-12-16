@@ -1,14 +1,11 @@
-Message-ID: <d0a16015-46ad-efd7-e886-b3304726a9d0@siemens.com>
-Date: Mon, 3 Jan 2022 17:34:14 +0100
-Subject: Re: [PATCH 9/9] cobalt/debug: Detect vDSO via absence of vm_file
-Content-Language: en-US
-References: <cover.1634126152.git.jan.kiszka@siemens.com>
- <24c44d412bea623b3815e0b82428c7201e46a6b0.1634126152.git.jan.kiszka@siemens.com>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-In-Reply-To: <24c44d412bea623b3815e0b82428c7201e46a6b0.1634126152.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
+References: <aa070ad1-89ca-f8eb-3b88-b3c2e7d11b87@siemens.com>
+In-Reply-To: <aa070ad1-89ca-f8eb-3b88-b3c2e7d11b87@siemens.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Thu, 16 Dec 2021 00:47:49 -0800
+Message-ID: <CA+K1mPGWep5ceZmry1cdhNv9z3ftqWo+HSN-70i1NaPe4E_1ig@mail.gmail.com>
+Subject: Re: stable/v3.2.x started, future of other stable branches
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai List <xenomai@xenomai.org>
 
-On 13.10.21 13:55, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> VM_DENYWRITE was removed in 5.15, so we need a different criteria.
-> Absence of a file-backing seems to be a good one.
+It is very important to our project that 3.1 be maintained, as we are
+still in the stage of testing our porting effort from 2.6 to 3.1.
+Thank you for 3.1!  Ideally a stable branch like 3.1 should get
+bugfixes (but no new features) for at least the first year of its
+successor (3.2) so as to insure that the successor itself becomes
+stable during that period.  The most reliable place to develop is on a
+stable branch, getting bugfixes. That is crucial to the success of
+development, a product using Xenomai, and its users.
 
-Bringing this one up, because we recently had a "report" on the ML
-regarding VM_DENYWRITE.
+-C Smith
 
-I scanned the ld (dynamic loader) sources today. I was interested if
-there is any magic involved when mapping DSOs to the vma of the process.
-AFAICT there is none. I would expect the vma to be file-backed
-(=vma->vm_file =! NULL), so not sure if that is going to work.
-
-Btw: Subject talks about vDSO, which is not what we are looking at here.
-
-Just to make sure I got all that right: We need a way to figure out if
-the reason for the thread relax was caused by the executable itself, or
-any of it's dependencies, right?
-
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  kernel/cobalt/debug.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
-> index a6e2cc42d3..0521fca45d 100644
-> --- a/kernel/cobalt/debug.c
-> +++ b/kernel/cobalt/debug.c
-> @@ -249,13 +249,12 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
->  			continue;
->  
->  		/*
-> -		 * Hack. Unlike DSOs, executables and interpreters
-> -		 * (e.g. dynamic linkers) are protected against write
-> -		 * attempts. Use this to determine when $pc should be
-> -		 * fixed up by subtracting the mapping base address in
-> -		 * the DSO case.
-> +		 * DSOs are not file-backed. Use this to determine when $pc
-> +		 * should be fixed up by subtracting the mapping base address
-> +		 * in the DSO case.
->  		 */
-> -		if (!(vma->vm_flags & VM_DENYWRITE))
-> +		file = vma->vm_file;
-> +		if (file == NULL)
->  			pc -= vma->vm_start;
->  
->  		spot.backtrace[depth].pc = pc;
-> @@ -265,7 +264,6 @@ void xndebug_trace_relax(int nr, unsigned long *backtrace,
->  		 * record the PC value, which may still give some hint
->  		 * downstream.
->  		 */
-> -		file = vma->vm_file;
->  		if (file == NULL)
->  			goto next_frame;
->  
-
+On Wed, Dec 15, 2021 at 2:48 AM Jan Kiszka via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+> Hi all,
+>
+> in order to permit ABI/API breaking changes in next/master, I've just
+> started the stable/v3.2.x based on current master. On xenomai-images
+> side, CI/CT has been updated as well to account for that [1].
+>
+> As already indicated in [1], one change planed for master is to drop
+> I-pipe support, thus kernels < 5.10. Therefore, CI for master is already
+> limited to that scope.
+>
+> Now the question is how to continue with stable maintenance. I do have
+> users on 3.0.x, thus I plan to keep that alive (though it is definitely
+> calming down now). For 3.1.x, I'm lacking a feeling how the userbase is
+> and how motivated that base is to consume stable updates vs. to move
+> forward to 3.2.x. Any indications on that will help to decide about that
+> branch. Without any feedback, I would push out yet another 3.2 release
+> early next year and then close the branch.
+>
+> With that, I wish you already happy vacations (those who plan to) - I'll
+> be offline from next week on and will be back in January.
+>
+> Jan
+>
+> [1]
+> https://source.denx.de/Xenomai/xenomai-images/-/commit/beea63dd69ab6cf762f8d52748677d8e6be30be3
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
 
