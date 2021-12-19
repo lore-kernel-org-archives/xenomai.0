@@ -1,7 +1,7 @@
 From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v5 7/8] drivers/can: add a minimal support to ethtool API
-Date: Sun, 19 Dec 2021 10:38:07 +0100
-Message-Id: <20211219103605.v5.7.Ia5c620cabdfdf1d9fb20719eddce89c52aa4af62@changeid>
+Subject: [PATCH v5 1/8] drivers/can: add corectl to retrieve configuration
+Date: Sun, 19 Dec 2021 10:38:01 +0100
+Message-Id: <20211219093809.21765-2-dariobin@libero.it>
 In-Reply-To: <20211219093809.21765-1-dariobin@libero.it>
 References: <20211219093809.21765-1-dariobin@libero.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,222 +15,128 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Wolfgang Grandegger <wg@grandegger.com>, Michael Trimarchi <michael@amarulasolutions.com>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Philippe Gerum <rpm@xenomai.org>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
 
-Like in the Linux kernel, the API allows to get/set device controller
-parameters.
-For now it only supports:
- - ETHTOOL_GDRVINFO: get general driver and device information
- - ETHTOOL_GRINGPARAM: get RX/TX ring parameters
-
-It allows the userspace to know the number of messages managed by the
-controller and how many of them are used for reception/transmission.
-This information allows you to know the maximum number of messages that
-sendmsg() can transmit without returning a full FIFO error.
-
-Application programs are expected to use the new API directly via IOCTL,
-since, unlike the Linux Kernel, there is currently no userspace
-application like ethtool in Xenomai.
-
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
 ---
 
-(no changes since v2)
+Changes in v5:
+- Add the patch to the series.
 
-Changes in v2:
-- Expand the commit message to better describe the added API.
+ include/cobalt/uapi/corectl.h     |  2 ++
+ kernel/drivers/can/Makefile       |  4 +--
+ kernel/drivers/can/corectl.c      | 41 +++++++++++++++++++++++++++++++
+ kernel/drivers/can/rtcan_module.c |  6 +++++
+ 4 files changed, 51 insertions(+), 2 deletions(-)
+ create mode 100644 kernel/drivers/can/corectl.c
 
- kernel/drivers/can/Makefile        |  2 +-
- kernel/drivers/can/rtcan_dev.h     |  4 +-
- kernel/drivers/can/rtcan_ethtool.c | 75 ++++++++++++++++++++++++++++++
- kernel/drivers/can/rtcan_ethtool.h | 24 ++++++++++
- kernel/drivers/can/rtcan_raw_dev.c | 20 ++++++++
- 5 files changed, 123 insertions(+), 2 deletions(-)
- create mode 100644 kernel/drivers/can/rtcan_ethtool.c
- create mode 100644 kernel/drivers/can/rtcan_ethtool.h
-
+diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
+index 98d989d63..412684626 100644
+--- a/include/cobalt/uapi/corectl.h
++++ b/include/cobalt/uapi/corectl.h
+@@ -62,6 +62,8 @@
+ #   define _CC_COBALT_NET_CAP		0x00000800
+ #   define _CC_COBALT_NET_PROXY		0x00001000
+ 
++#define _CC_COBALT_GET_CAN_CONFIG	10
++#   define _CC_COBALT_CAN		0x00000001
+ 
+ enum cobalt_run_states {
+ 	COBALT_STATE_DISABLED,
 diff --git a/kernel/drivers/can/Makefile b/kernel/drivers/can/Makefile
-index 339a1c99f..0987a22a0 100644
+index f78f6afdf..339a1c99f 100644
 --- a/kernel/drivers/can/Makefile
 +++ b/kernel/drivers/can/Makefile
-@@ -5,6 +5,6 @@ obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o mscan/ sja1000/ peak_canfd/
+@@ -1,10 +1,10 @@
+ 
+-ccflags-y += -I$(srctree)/drivers/xenomai/can
++ccflags-y += -I$(srctree)/drivers/xenomai/can -I$(srctree)/kernel/
+ 
+ obj-$(CONFIG_XENO_DRIVERS_CAN) += xeno_can.o mscan/ sja1000/ peak_canfd/
  obj-$(CONFIG_XENO_DRIVERS_CAN_FLEXCAN) += xeno_can_flexcan.o
  obj-$(CONFIG_XENO_DRIVERS_CAN_VIRT) += xeno_can_virt.o
  
--xeno_can-y := corectl.o rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o
-+xeno_can-y := corectl.o rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o rtcan_ethtool.o
+-xeno_can-y := rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o
++xeno_can-y := corectl.o rtcan_dev.o rtcan_socket.o rtcan_module.o rtcan_raw.o rtcan_raw_dev.o rtcan_raw_filter.o
  xeno_can_virt-y := rtcan_virt.o
  xeno_can_flexcan-y := rtcan_flexcan.o
-diff --git a/kernel/drivers/can/rtcan_dev.h b/kernel/drivers/can/rtcan_dev.h
-index 3642e92f0..cc081f6e8 100644
---- a/kernel/drivers/can/rtcan_dev.h
-+++ b/kernel/drivers/can/rtcan_dev.h
-@@ -34,7 +34,7 @@
- #include <linux/semaphore.h>
- 
- #include "rtcan_list.h"
--
-+#include "rtcan_ethtool.h"
- 
- /* Number of MSCAN devices the driver can handle */
- #define RTCAN_MAX_DEVICES    CONFIG_XENO_DRIVERS_CAN_MAX_DEVICES
-@@ -137,6 +137,8 @@ struct rtcan_device {
-     void                (*do_enable_bus_err)(struct rtcan_device *dev);
- #endif
- 
-+    const struct rtcan_ethtool_ops *ethtool_ops;
-+
-     /* Reception list head. This list contains all filters which have been
-      * registered via a bind call. */
-     struct rtcan_recv               *recv_list;
-diff --git a/kernel/drivers/can/rtcan_ethtool.c b/kernel/drivers/can/rtcan_ethtool.c
+diff --git a/kernel/drivers/can/corectl.c b/kernel/drivers/can/corectl.c
 new file mode 100644
-index 000000000..cfcf77ac3
+index 000000000..317e1f82f
 --- /dev/null
-+++ b/kernel/drivers/can/rtcan_ethtool.c
-@@ -0,0 +1,75 @@
-+#include "rtcan_dev.h"
++++ b/kernel/drivers/can/corectl.c
+@@ -0,0 +1,41 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright 2021, Dario Binacchi <dariobin@libero.it>
++ */
 +
-+static int rtcan_ethtool_drvinfo(struct rtdm_fd *fd, struct rtcan_device *dev,
-+				 void __user *useraddr)
++#include <asm/xenomai/syscall.h>
++#include <xenomai/posix/corectl.h>
++
++static int rtcan_corectl_call(struct notifier_block *self, unsigned long arg,
++			      void *cookie)
 +{
-+	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_drvinfo info = {.cmd = ETHTOOL_GDRVINFO };
++	struct cobalt_config_vector *vec = cookie;
++	int ret = 0;
 +
-+	if (!ops->get_drvinfo)
-+		return -EOPNOTSUPP;
++	if (arg != _CC_COBALT_GET_CAN_CONFIG)
++		return NOTIFY_DONE;
 +
-+	ops->get_drvinfo(dev, &info);
++	if (vec->u_bufsz < sizeof(ret))
++		return notifier_from_errno(-EINVAL);
 +
-+	if (!rtdm_fd_is_user(fd) ||
-+	    rtdm_copy_to_user(fd, useraddr, &info, sizeof(info)))
-+		return -EFAULT;
++	if (IS_ENABLED(CONFIG_XENO_DRIVERS_CAN))
++		ret |= _CC_COBALT_CAN;
 +
-+	return 0;
++	ret = cobalt_copy_to_user(vec->u_buf, &ret, sizeof(ret));
++
++	return ret ? notifier_from_errno(-EFAULT) : NOTIFY_STOP;
 +}
 +
-+static int rtcan_ethtool_get_ringparam(struct rtdm_fd *fd,
-+				       struct rtcan_device *dev,
-+				       void __user *useraddr)
-+{
-+	const struct rtcan_ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_ringparam ringparam = { .cmd = ETHTOOL_GRINGPARAM };
-+
-+	if (!ops->get_ringparam)
-+		return -EOPNOTSUPP;
-+
-+	ops->get_ringparam(dev, &ringparam);
-+
-+	if (!rtdm_fd_is_user(fd) ||
-+	    rtdm_copy_to_user(fd, useraddr, &ringparam, sizeof(ringparam)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
-+int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
-+		  struct ifreq *ifr)
-+{
-+	void __user *useraddr = ifr->ifr_data;
-+	u32 ethcmd;
-+	int rc;
-+
-+	if (!dev->ethtool_ops)
-+		return -EOPNOTSUPP;
-+
-+	if (!rtdm_read_user_ok(fd, useraddr, sizeof(ethcmd)) ||
-+	    rtdm_copy_from_user(fd, &ethcmd, useraddr, sizeof(ethcmd)))
-+		return -EFAULT;
-+
-+	if (dev->ethtool_ops->begin) {
-+		rc = dev->ethtool_ops->begin(dev);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	switch (ethcmd) {
-+	case ETHTOOL_GDRVINFO:
-+		rc = rtcan_ethtool_drvinfo(fd, dev, useraddr);
-+		break;
-+	case ETHTOOL_GRINGPARAM:
-+		rc = rtcan_ethtool_get_ringparam(fd, dev, useraddr);
-+		break;
-+	default:
-+		rc = -EOPNOTSUPP;
-+	}
-+
-+	if (dev->ethtool_ops->complete)
-+		dev->ethtool_ops->complete(dev);
-+
-+	return rc;
-+}
-diff --git a/kernel/drivers/can/rtcan_ethtool.h b/kernel/drivers/can/rtcan_ethtool.h
-new file mode 100644
-index 000000000..b01090fd3
---- /dev/null
-+++ b/kernel/drivers/can/rtcan_ethtool.h
-@@ -0,0 +1,24 @@
-+#ifndef __RTCAN_ETHTOOL_H_
-+#define __RTCAN_ETHTOOL_H_
-+
-+#ifdef __KERNEL__
-+
-+#include <linux/ethtool.h>
-+
-+struct rtcan_device;
-+
-+struct rtcan_ethtool_ops {
-+	int (*begin)(struct rtcan_device *dev);
-+	int (*complete)(struct rtcan_device *dev);
-+	void (*get_drvinfo)(struct rtcan_device *dev,
-+			     struct ethtool_drvinfo *info);
-+	void (*get_ringparam)(struct rtcan_device *dev,
-+			      struct ethtool_ringparam *ring);
++static struct notifier_block rtcan_corectl_notifier = {
++	.notifier_call = rtcan_corectl_call,
 +};
 +
-+int rtcan_ethtool(struct rtdm_fd *fd, struct rtcan_device *dev,
-+		  struct ifreq *ifr);
++void rtcan_corectl_register(void)
++{
++	cobalt_add_config_chain(&rtcan_corectl_notifier);
++}
 +
-+#endif /* __KERNEL__ */
-+
-+#endif /* __RTCAN_ETHTOOL_H_ */
-diff --git a/kernel/drivers/can/rtcan_raw_dev.c b/kernel/drivers/can/rtcan_raw_dev.c
-index d1ff640e3..d418c481f 100644
---- a/kernel/drivers/can/rtcan_raw_dev.c
-+++ b/kernel/drivers/can/rtcan_raw_dev.c
-@@ -354,6 +354,7 @@ static inline int rtcan_raw_ioctl_dev_set(struct rtcan_device *dev,
- int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
- {
-     struct can_ifreq *ifr;
-+    struct ifreq *ifreq;
-     int ret = 0, get = 0;
-     union {
- 	    /*
-@@ -414,7 +415,26 @@ int rtcan_raw_ioctl_dev(struct rtdm_fd *fd, int request, void *arg)
- 		rtcan_dev_dereference(dev);
- 	}
- 	break;
-+    case SIOCETHTOOL:
-+	if (rtdm_fd_is_user(fd)) {
-+	    /* Copy struct can_ifreq from userspace */
-+	    if (!rtdm_read_user_ok(fd, arg, sizeof(*ifreq)) ||
-+		rtdm_copy_from_user(fd, &ifr_buf, arg, sizeof(*ifreq)))
-+		return -EFAULT;
-+
-+	    ifreq = &ifr_buf.ifr_legacy;
-+	} else {
-+	    ifreq = (struct ifreq *)arg;
-+	}
++void rtcan_corectl_unregister(void)
++{
++	cobalt_remove_config_chain(&rtcan_corectl_notifier);
++}
+diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
+index 3d07eaed9..94b8c6412 100644
+--- a/kernel/drivers/can/rtcan_module.c
++++ b/kernel/drivers/can/rtcan_module.c
+@@ -35,6 +35,8 @@
  
-+	/* Get interface index and data */
-+	dev = rtcan_dev_get_by_name(ifreq->ifr_name);
-+	if (dev == NULL)
-+	    return -ENODEV;
+ MODULE_LICENSE("GPL");
+ 
++void rtcan_corectl_register(void);
++void rtcan_corectl_unregister(void);
+ 
+ const char rtcan_rtdm_provider_name[] =
+     "(C) 2006 RT-Socket-CAN Development Team";
+@@ -419,6 +421,8 @@ int __init rtcan_init(void)
+ 	goto out;
+ #endif
+ 
++    rtcan_corectl_register();
 +
-+	ret = rtcan_ethtool(fd, dev, ifreq);
-+	rtcan_dev_dereference(dev);
-+	break;
-     default:
- 	ret = -EOPNOTSUPP;
- 	break;
+  out:
+     return err;
+ }
+@@ -426,6 +430,8 @@ int __init rtcan_init(void)
+ 
+ void __exit rtcan_exit(void)
+ {
++    rtcan_corectl_unregister();
++
+     rtcan_raw_proto_unregister();
+ #ifdef CONFIG_PROC_FS
+     rtcan_proc_unregister();
 -- 
 2.17.1
 
