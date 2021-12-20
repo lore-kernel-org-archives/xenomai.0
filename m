@@ -1,13 +1,12 @@
 From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 0/5] Remove support for I-pipe / kernels < 5.10
-Date: Mon, 20 Dec 2021 11:38:05 +0000
-Message-ID: <9a3df16fa80213febc33322e801c9a880b39296d.camel@siemens.com>
-References: <cover.1639669704.git.jan.kiszka@siemens.com>
- <192a9f2a4ddc1659d6e26d529ccd8674b7ec2d2b.camel@siemens.com>
-In-Reply-To: <192a9f2a4ddc1659d6e26d529ccd8674b7ec2d2b.camel@siemens.com>
+Subject: Re: [PATCH 0/4] Drop PowerPC architecture
+Date: Mon, 20 Dec 2021 11:39:20 +0000
+Message-ID: <c5979297367aadeda165ce3949310ed705fb45e7.camel@siemens.com>
+References: <cover.1639591464.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1639591464.git.jan.kiszka@siemens.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <6EB5E72A7EB78C41BA049BCB160997EA@EURPRD10.PROD.OUTLOOK.COM>
+Content-ID: <51F47D3FCBB7A149B4617154E3E2EEA0@EURPRD10.PROD.OUTLOOK.COM>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,23 +18,17 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "steven.seeger@flightsystems.net" <steven.seeger@flightsystems.net>
 
-T24gTW9uLCAyMDIxLTEyLTIwIGF0IDExOjM3ICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBPbiBUaHUsIDIwMjEtMTItMTYgYXQgMTY6NDggKzAxMDAsIEphbiBL
-aXN6a2EgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gTW92ZSBmb3J3YXJkIGFuZCBjdXQgb2ZmIHRo
-ZSByb3BlcyB0aGF0IGJpbmRzIHVzIHRvIEktcGlwZSBrZXJuZWxzLCB0aHVzDQo+ID4gYW55dGhp
-bmcgb2xkZXIgdGhhbiA1LjEwLg0KPiA+IA0KPiA+IFRoaXMgc2VyaWVzIHByaW1hcmlseSByZW1v
-dmVzIG5vIGxvbmdlciB1c2VkIGZpbGVzIGFuZCBrZXJuZWwgdmVyc2lvbg0KPiA+IHdyYXBwaW5n
-cy4gSXQgZG9lcyBub3QgeWV0IGZvbGQgZG92ZXRhaWwgY29kZSBpbnRvIHRoZSBwaXBlbGluZQ0K
-PiA+IGFic3RyYWN0aW9ucyBvbmNlIGVzdGFibGlzaGVkIHRvIHdvcmsgd2l0aCBib3RoIHBhdGNo
-ZXMuIFRoYXQgY2FuIGJlDQo+ID4gZG9uZSBsYXRlci4NCj4gPiANCj4gPiBKYW4NCj4gPiANCj4g
-PiBKYW4gS2lzemthICg1KToNCj4gPiDCoCBjaTogRHJvcCBidWlsZHMgZm9yIGtlcm5lbHMgb2xk
-ZXIgdGhhbiA1LjEwDQo+ID4gwqAgY29iYWx0OiBEcm9wIHN1cHBvcnQgZm9yIEktcGlwZSBiYXNl
-ZCBrZXJuZWxzDQo+ID4gwqAgY29iYWx0OiBEcm9wIHZtYWxsb2Nfa2VybmVsIHdyYXBwZXINCj4g
-PiDCoCBjb2JhbHQ6IERyb3Agd3JhcHBpbmdzIGZvciBrZXJuZWxzIDwgNS4xMA0KPiA+IMKgIGNv
-YmFsdDogRm9sZCBkb3ZldGFpbCBkaXJlY3RvcnkgaW4gYXJjaC1zcGVjaWZpYyBzZWN0aW9ucw0K
-PiANCj4gTEdUTS4gSW4gY2FzZSB3ZSBtYWludGFpbiBhIGxpc3Qgb2Ygc3VwcG9ydGVkIGFyY2hp
-dGVjdHVyZXMgKHdpa2k/KSB3ZQ0KPiBzaG91bGQgdXBkYXRlIHRoYXQgbGlzdCBhY2NvcmRpbmds
-eS4NCj4gDQo+IEZsb3JpYW4NCg0KUmVwbGllZCB0byB0aGUgd3Jvbmcgc2VyaWVzLi4uIFNvcnJ5
-LiBJZ25vcmUgaXQuDQo=
+T24gV2VkLCAyMDIxLTEyLTE1IGF0IDE5OjA0ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
+IHdyb3RlOg0KPiBDaXRpbmcgcGF0Y2ggMToNCj4gDQo+IFdoaWxlIHRoaXMgYXJjaGl0ZWN0dXJl
+IHNlcnZlZCB3ZWxsIGluIG1hbnkgdXNlIGNhc2VzIG92ZXIgYSBsb25nIHRpbWUsDQo+IGl0J3Mg
+dGltZSBpcyBvdmVyLCBuZXcgY2hpcCBjaGlwcyBhcmUgbm8gbG9uZ2VyIGJlaW5nIHJlbGVhc2Vk
+Lg0KPiANCj4gQXMgWGVub21haSBpcyBtb3ZpbmcgaXRzIGNvcmUgY29tcGxldGVseSBvdmVyIERv
+dmV0YWlsLCB0aGVyZSBpcyBubw0KPiBzdXBwb3J0IGluIERvdmV0YWlsIGZvciBQb3dlclBDIGFu
+ZCB0aGF0IGlzIG5vdCBnb2luZyB0byBjaGFuZ2UsIGl0J3MNCj4gdGltZSB0byBkcm9wIHRoaXMg
+YXJjaCBmcm9tIHRoZSBjb3JlIGluIG9yZGVyIHRvIG1vdmUgZm9yd2FyZC4NCj4gDQo+IEphbg0K
+DQoNCkxHVE0uIEluIGNhc2Ugd2UgbWFpbnRhaW4gYSBsaXN0IG9mIHN1cHBvcnRlZCBhcmNoaXRl
+Y3R1cmVzICh3aWtpPykgd2UNCnNob3VsZCB1cGRhdGUgdGhhdCBsaXN0IGFjY29yZGluZ2x5Lg0K
+DQpGbG9yaWFuDQo=
 
