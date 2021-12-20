@@ -1,12 +1,12 @@
 From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 1/1] Examples demonstrating .mmap() in RTDM driver
-Date: Mon, 20 Dec 2021 11:34:10 +0000
-Message-ID: <42e197d4b23feae90c591217e4dc0e1dca731dd9.camel@siemens.com>
-References: <20211220071310.116526-1-ksmola51@gmail.com>
-In-Reply-To: <20211220071310.116526-1-ksmola51@gmail.com>
+Subject: Re: [PATCH 0/5] Remove support for I-pipe / kernels < 5.10
+Date: Mon, 20 Dec 2021 11:37:02 +0000
+Message-ID: <192a9f2a4ddc1659d6e26d529ccd8674b7ec2d2b.camel@siemens.com>
+References: <cover.1639669704.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1639669704.git.jan.kiszka@siemens.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <3EFD13D83609CF4E86FF9332076EDBEA@EURPRD10.PROD.OUTLOOK.COM>
+Content-ID: <77436E4C0DF88D4097DF7321708A7888@EURPRD10.PROD.OUTLOOK.COM>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,20 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "ksmola51@gmail.com" <ksmola51@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-SGkgS29uc3RhbnRpbiwNCg0KT24gU3VuLCAyMDIxLTEyLTE5IGF0IDIzOjEzIC0wODAwLCBLb25z
-dGFudGluIFNtb2xhIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiArI2lmbmRlZiBQQUdFX1NJWkUNCj4g
-KyNkZWZpbmUgUEFHRV9TSVpFIDQwOTYNCj4gKyNlbmRpZg0KPiArDQo+ICt0eXBlZGVmIHN0cnVj
-dCB7CQkvKiBtZW1vcnkgdG8gc2hhcmUgKi8NCj4gKwlpbnQgZGF0YVtQQUdFX1NJWkUgKiAxMDBd
-Ow0KPiArCWRvdWJsZSBkdmFsOw0KPiArfSBzaG1fdGVzdF9sYXlvdXRfdDsNCg0KSG0uLi4NCg0K
-Rmlyc3Qgb2YgYWxsLCB0aGVyZSBpcyBubyBndWFyYW50ZWUgZm9yIDRrIHBhZ2VzLiBJIHdvdWxk
-IHByZWZlciB1c2luZw0Kc3lzY29uZihfU0NfUEFHRVNJWkUpIGZvciBmZXRjaGluZyB0aGUgcGFn
-ZSBzaXplLg0KDQpTZWNvbmQsIFBBR0VfU0laRSAqIDEwMCBtYWtlcyAxMDAgcGFnZXMsIGJ1dCBh
-cyBhcnJheSBzaXplIG9mIGludCBpdA0Kd2lsbCBiZSBzaXplb2YoaW50KSpQQUdFX1NJWkUqMTAw
-LCBub3Qgc3VyZSBpZiB0aGF0IGlzIHdoYXQgeW91IHdhbnQNCmZvciBhbiBleGFtcGxlLg0KDQpB
-dCBmaXJzdCBnbGFuY2UgaXQgbG9va3MgbGlrZSBkYXRhIHNob3VsZCBiZSB2b2lkKiBhbmQgcHJl
-LWZpeGVkIHdpdGggYQ0KbmV3IG1lbWJlciBuYW1lZCAic2l6ZSIgb2YgdHlwZSBzaXplX3QuIEkg
-ZGlkIG5vdCByZXZpZXcgdGhlIHJlbWFpbmluZw0KcGFydHMgaW4gZGV0YWlsLCBzbyBJIG1pZ2h0
-IG1pc3Mgc29tZXRoaW5nLg0K
+T24gVGh1LCAyMDIxLTEyLTE2IGF0IDE2OjQ4ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
+IHdyb3RlOg0KPiBNb3ZlIGZvcndhcmQgYW5kIGN1dCBvZmYgdGhlIHJvcGVzIHRoYXQgYmluZHMg
+dXMgdG8gSS1waXBlIGtlcm5lbHMsIHRodXMNCj4gYW55dGhpbmcgb2xkZXIgdGhhbiA1LjEwLg0K
+PiANCj4gVGhpcyBzZXJpZXMgcHJpbWFyaWx5IHJlbW92ZXMgbm8gbG9uZ2VyIHVzZWQgZmlsZXMg
+YW5kIGtlcm5lbCB2ZXJzaW9uDQo+IHdyYXBwaW5ncy4gSXQgZG9lcyBub3QgeWV0IGZvbGQgZG92
+ZXRhaWwgY29kZSBpbnRvIHRoZSBwaXBlbGluZQ0KPiBhYnN0cmFjdGlvbnMgb25jZSBlc3RhYmxp
+c2hlZCB0byB3b3JrIHdpdGggYm90aCBwYXRjaGVzLiBUaGF0IGNhbiBiZQ0KPiBkb25lIGxhdGVy
+Lg0KPiANCj4gSmFuDQo+IA0KPiBKYW4gS2lzemthICg1KToNCj4gwqAgY2k6IERyb3AgYnVpbGRz
+IGZvciBrZXJuZWxzIG9sZGVyIHRoYW4gNS4xMA0KPiDCoCBjb2JhbHQ6IERyb3Agc3VwcG9ydCBm
+b3IgSS1waXBlIGJhc2VkIGtlcm5lbHMNCj4gwqAgY29iYWx0OiBEcm9wIHZtYWxsb2Nfa2VybmVs
+IHdyYXBwZXINCj4gwqAgY29iYWx0OiBEcm9wIHdyYXBwaW5ncyBmb3Iga2VybmVscyA8IDUuMTAN
+Cj4gwqAgY29iYWx0OiBGb2xkIGRvdmV0YWlsIGRpcmVjdG9yeSBpbiBhcmNoLXNwZWNpZmljIHNl
+Y3Rpb25zDQoNCkxHVE0uIEluIGNhc2Ugd2UgbWFpbnRhaW4gYSBsaXN0IG9mIHN1cHBvcnRlZCBh
+cmNoaXRlY3R1cmVzICh3aWtpPykgd2UNCnNob3VsZCB1cGRhdGUgdGhhdCBsaXN0IGFjY29yZGlu
+Z2x5Lg0KDQpGbG9yaWFuDQo=
 
