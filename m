@@ -1,9 +1,9 @@
-From: Dario Binacchi <dariobin@libero.it>
-Subject: [PATCH v5 3/8] testsuite/smokey: add virtual CAN testsuite
-Date: Sun, 19 Dec 2021 10:38:03 +0100
-Message-Id: <20211219093809.21765-4-dariobin@libero.it>
-In-Reply-To: <20211219093809.21765-1-dariobin@libero.it>
-References: <20211219093809.21765-1-dariobin@libero.it>
+From: Konstantin Smola <ksmola51@gmail.com>
+Subject: [PATCH 1/1] Examples demonstrating .mmap() in RTDM driver 
+Date: Sun, 19 Dec 2021 23:13:10 -0800
+Message-Id: <20211220071310.116526-1-ksmola51@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,462 +13,346 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: Wolfgang Grandegger <wg@grandegger.com>, Michael Trimarchi <michael@amarulasolutions.com>, Jan Kiszka <jan.kiszka@siemens.com>, Dario Binacchi <dariobin@libero.it>, Philippe Gerum <rpm@xenomai.org>, Gianluca Falavigna <gianluca.falavigna@inwind.it>, "Stephen J . Battazzo" <stephen.j.battazzo@nasa.gov>
+Cc: Konstantin Smola <ksmola51@gmail.com>
 
-Add a minimal test for the virtual CAN driver, checking that sent
-messages are received correctly.
-
-The timeout on read operations has been wired to 1 s in order not to
-fail the test in case the verbose option is enabled.
-
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
-
+demo/posix/cobalt: Examples demonstrating how to mmap() RTDM driver kernel space memory for use in a userspace app. No Makefiles provided.
+Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
 ---
+ demo/posix/cobalt/xmmap.h        |  29 +++++
+ demo/posix/cobalt/xmmap_module.c | 206 +++++++++++++++++++++++++++++++
+ demo/posix/cobalt/xmmap_user.c   |  73 +++++++++++
+ 3 files changed, 308 insertions(+)
+ create mode 100644 demo/posix/cobalt/xmmap.h
+ create mode 100644 demo/posix/cobalt/xmmap_module.c
+ create mode 100644 demo/posix/cobalt/xmmap_user.c
 
-Changes in v5:
-- Check _CC_COBALT_GET_CAN_CONFIG through cobalt_corectl call.
-- Don't check modprobe return code. In case the modules are builtin the
-  test would be improperly terminated with an error, since the modprobe
-  does not check if a module is builtin.
-
-Changes in v4:
-- Load/unload the CAN drivers modules before/after running the test.
-- Add setup/teardown function.
-
-Changes in v3:
-- Add the patch to the series.
-
- configure.ac                          |   1 +
- testsuite/smokey/Makefile.am          |   2 +
- testsuite/smokey/can-virt/Makefile.am |   8 +
- testsuite/smokey/can-virt/virt.c      | 370 ++++++++++++++++++++++++++
- 4 files changed, 381 insertions(+)
- create mode 100644 testsuite/smokey/can-virt/Makefile.am
- create mode 100644 testsuite/smokey/can-virt/virt.c
-
-diff --git a/configure.ac b/configure.ac
-index e7a170161..2d6b6e443 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1005,6 +1005,7 @@ AC_CONFIG_FILES([ \
- 	testsuite/smokey/cpu-affinity/Makefile \
- 	testsuite/smokey/gdb/Makefile \
- 	testsuite/smokey/y2038/Makefile \
-+	testsuite/smokey/can-virt/Makefile
- 	testsuite/clocktest/Makefile \
- 	testsuite/xeno-test/Makefile \
- 	utils/Makefile \
-diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index 56c873026..638c6e7f6 100644
---- a/testsuite/smokey/Makefile.am
-+++ b/testsuite/smokey/Makefile.am
-@@ -12,6 +12,7 @@ smokey_SOURCES = main.c
- COBALT_SUBDIRS = 	\
- 	arith 		\
- 	bufp		\
-+	can-virt	\
- 	cpu-affinity	\
- 	fpu-stress	\
- 	gdb		\
-@@ -49,6 +50,7 @@ MERCURY_SUBDIRS =	\
- DIST_SUBDIRS = 		\
- 	arith 		\
- 	bufp		\
-+	can-virt	\
- 	cpu-affinity	\
- 	dlopen		\
- 	fpu-stress	\
-diff --git a/testsuite/smokey/can-virt/Makefile.am b/testsuite/smokey/can-virt/Makefile.am
+diff --git a/demo/posix/cobalt/xmmap.h b/demo/posix/cobalt/xmmap.h
 new file mode 100644
-index 000000000..b7cf5ec99
+index 000000000..db857313e
 --- /dev/null
-+++ b/testsuite/smokey/can-virt/Makefile.am
-@@ -0,0 +1,8 @@
-+noinst_LIBRARIES = libcan-virt.a
-+
-+libcan_virt_a_SOURCES = \
-+	virt.c
-+
-+libcan_virt_a_CPPFLAGS = \
-+	@XENO_USER_CFLAGS@ \
-+	-I$(top_srcdir)/include
-diff --git a/testsuite/smokey/can-virt/virt.c b/testsuite/smokey/can-virt/virt.c
-new file mode 100644
-index 000000000..520594465
---- /dev/null
-+++ b/testsuite/smokey/can-virt/virt.c
-@@ -0,0 +1,370 @@
++++ b/demo/posix/cobalt/xmmap.h
+@@ -0,0 +1,29 @@
 +/*
-+ * rtcan-virt test
++ * xmmap.h - common shareed memory layout for mmap file ops
 + *
-+ * Copyright (C) 2021 Dario Binacchi <dariobin@libero.it>
++ * Copyright (c) 2021 Konstantin Smola <k@smo.la>
 + *
-+ * SPDX-License-Identifier: MIT
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ */
++ 
++#ifndef PAGE_SIZE
++#define PAGE_SIZE 4096
++#endif
++
++typedef struct {		/* memory to share */
++	int data[PAGE_SIZE * 100];
++	double dval;
++} shm_test_layout_t;
+diff --git a/demo/posix/cobalt/xmmap_module.c b/demo/posix/cobalt/xmmap_module.c
+new file mode 100644
+index 000000000..bc2472743
+--- /dev/null
++++ b/demo/posix/cobalt/xmmap_module.c
+@@ -0,0 +1,206 @@
++/*
++ * xmmap_module.c - This Xenomai-3 rtdm kernel module creates shared memory
++ * and implements a .mmap file operation which a user-space app (xmmap_user.c) 
++ * can access
++ *
++ * Copyright (c) 2021 Konstantin Smola <k@smo.la>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
 + */
 +
-+#include <pthread.h>
-+#include <rtdm/can.h>
-+#include <sys/cobalt.h>
-+#include <sys/ioctl.h>
-+#include <sys/socket.h>
-+#include <smokey/smokey.h>
-+#include <stdbool.h>
++#include <linux/module.h>
++#include <rtdm/driver.h>
++#include <linux/version.h>
 +
-+#define CAN_MOD                        "xeno_can"
-+#define CAN_VIRT_MOD                   "xeno_can_virt"
++#include "xmmap.h"   /* common memory layout definition, etc */
 +
-+struct smokey_can_virt_ctx {
-+	int s;
-+	unsigned int baud;
-+	unsigned int id;
-+	unsigned int cnt;
-+	unsigned int cnt_limit;
-+	bool recv_run;
-+	pthread_cond_t recv_run_cond;
-+	pthread_mutex_t recv_run_mutex;
-+	const char *recv_ifname;
-+	nanosecs_rel_t recv_timeout;
-+	const char *send_ifname;
++#define DEVICE_NAME "xenomai_mmap_test"
++#define MAX_DEVICES 1
++
++/* prototypes */
++void xmmap_exit(void);
++int xmmap_init(void);
++int Initialize(void);
++void Cleanup(void);
++ssize_t xmmap_module_read(struct rtdm_fd *fd, void *buf, size_t nbyte);
++int xmmap_module_open(struct rtdm_fd *fd, int oflags);
++void xmmap_module_close(struct rtdm_fd *fd);
++ssize_t xmmap_module_write(struct rtdm_fd *fd, const void *user_space_buffer, size_t nbyte);
++int xmmap_module_ioctl(struct rtdm_fd *fd, unsigned int request, void *arg);
++int xmmap_module_mmap(struct rtdm_fd *fd, struct vm_area_struct *vma);
++
++struct rtdm_device *dev;
++
++shm_test_layout_t *xmmap_shared_area_p = NULL;	/* will point to Xenomai shared memory area */
++
++void *module_user_area;		// userspace start address
++
++MODULE_LICENSE("GPL");		// Include this, throws a message about tainting the kernel without it
++MODULE_AUTHOR("Xenomai_user");
++
++int shm_size;			// for module main shared memory segment
++
++typedef struct custom_config {
++	int flag1;
++} custom_config_t;
++
++struct xmmap_module_context {
++	rtdm_lock_t lock;
++	custom_config_t config;
 +};
 +
-+smokey_test_plugin(can_virt, SMOKEY_NOARGS,
-+	"Check rtcan-virt driver"
-+);
++static struct rtdm_driver module_tmpl = {
++	.profile_info = RTDM_PROFILE_INFO(xmmap_fake, RTDM_CLASS_EXPERIMENTAL, 0, 999),
++	.device_flags = RTDM_NAMED_DEVICE,
++	.device_count = MAX_DEVICES,
++	.context_size = sizeof(struct xmmap_module_context),
++	.ops = {
++		.open = xmmap_module_open,
++		.close = xmmap_module_close,
++		.read_nrt = xmmap_module_read,
++		.write_rt = xmmap_module_write,	// if this was .write_nrt, userland calls to write() resolved to stub not xmmap_module_write()
++		.ioctl_rt = xmmap_module_ioctl,
++		.ioctl_nrt = xmmap_module_ioctl,
++		.mmap = xmmap_module_mmap,
++		},
++};
 +
-+static void can_virt_trace_frame(bool send, struct can_frame *frame)
++ssize_t xmmap_module_read(struct rtdm_fd *fd, void *buf, size_t nbyte)
 +{
-+	char buf[128];
-+	int i, len = 0, n = sizeof(buf);
-+
-+	if (!frame || smokey_verbose_mode <= 1)
-+		return;
-+
-+	len += snprintf(buf, n, "%s, id: %d, dlc: %d, data:",
-+			send ? "send" : "recv", frame->can_id, frame->can_dlc);
-+	n = sizeof(buf) - len;
-+	for (i = 0; i < frame->can_dlc; i++) {
-+		len += snprintf(buf + len, n, " %02x", frame->data[i]);
-+		n = sizeof(buf) - len;
-+	}
-+
-+	smokey_trace("%s", buf);
++	return 0;
 +}
 +
-+static int can_virt_send(struct smokey_can_virt_ctx *ctx)
++ssize_t xmmap_module_write(struct rtdm_fd * fd, const void *user_space_buffer, size_t nbyte)
 +{
-+	struct can_ifreq ifr;
-+	struct sockaddr_can to_addr;
-+	struct can_frame frame = {0};
-+	int ret;
-+
-+	namecpy(ifr.ifr_name, ctx->send_ifname);
-+	ret = smokey_check_errno(__RT(ioctl(ctx->s, SIOCGIFINDEX, &ifr)));
-+	if (ret < 0)
-+		goto finally;
-+
-+	memset(&to_addr, 0, sizeof(to_addr));
-+	to_addr.can_ifindex = ifr.ifr_ifindex;
-+	to_addr.can_family = AF_CAN;
-+
-+	frame.can_id = ctx->id;
-+	frame.can_dlc = sizeof(ctx->cnt);
-+	memcpy(&frame.data[0], &ctx->cnt, sizeof(ctx->cnt));
-+	can_virt_trace_frame(true, &frame);
-+	ret = smokey_check_errno(__RT(sendto(ctx->s, (void *)&frame,
-+					     sizeof(can_frame_t), 0,
-+					     (struct sockaddr *)&to_addr,
-+					     sizeof(to_addr))));
-+	if (ret < 0)
-+		goto finally;
-+
-+	ret = 0;
-+finally:
-+	return ret;
++	return 0;
 +}
 +
-+static int can_virt_recv(struct smokey_can_virt_ctx *ctx)
++int xmmap_module_open(struct rtdm_fd *fd, int oflags)	// new XENO3.1
 +{
-+	struct can_ifreq ifr;
-+	struct sockaddr_can addr;
-+	socklen_t addrlen = sizeof(addr);
-+	struct sockaddr_can recv_addr;
-+	struct can_frame frame;
-+	unsigned int cnt;
++	return 0;
++}
++
++void xmmap_module_close(struct rtdm_fd *fd)
++{
++	return;
++}
++
++int xmmap_module_ioctl(struct rtdm_fd *fd, unsigned int request, void *arg)
++{
++	return 0;
++}
++
++/* The mmap() operation handler which shares a vmalloc'd kernelspace address with a userspace process */
++int xmmap_module_mmap(struct rtdm_fd *fd, struct vm_area_struct *vma)
++{
 +	int ret;
 +
-+	namecpy(ifr.ifr_name, ctx->recv_ifname);
-+	ret = smokey_check_errno(__RT(ioctl(ctx->s, SIOCGIFINDEX, &ifr)));
-+	if (ret < 0)
-+		return ret;
++	rtdm_printk("xmmap module: xmmap_module_mmap() vma_start: %ld vma_end: %ld vma_size: %ld", vma->vm_start, vma->vm_end, (vma->vm_end - vma->vm_start));
 +
-+	recv_addr.can_family = AF_CAN;
-+	recv_addr.can_ifindex = ifr.ifr_ifindex;
-+	ret = smokey_check_errno(__RT(bind(ctx->s,
-+					   (struct sockaddr *)&recv_addr,
-+					   sizeof(struct sockaddr_can))));
-+	if (ret < 0)
-+		return ret;
++	module_user_area = (void *)vma->vm_start;
 +
-+	ret = smokey_check_errno(__RT(ioctl(ctx->s, RTCAN_RTIOC_RCV_TIMEOUT,
-+					   &ctx->recv_timeout)));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = smokey_check_errno(__RT(recvfrom(ctx->s, (void *)&frame,
-+					       sizeof(can_frame_t), 0,
-+					       (struct sockaddr *)&addr,
-+					       &addrlen)));
-+	if (ret < 0)
-+		return ret;
-+
-+	can_virt_trace_frame(false, &frame);
-+
-+	if (!smokey_assert(frame.can_dlc == sizeof(ctx->cnt)))
-+		return -EINVAL;
-+
-+	if (!smokey_assert(frame.can_id == ctx->id))
-+		return -EINVAL;
-+
-+	memcpy(&cnt, &frame.data[0], sizeof(cnt));
-+	if (!smokey_assert(cnt == ctx->cnt))
-+		return -EINVAL;
++	// do the address conversion from kernelspace virt mem to userspace.
++	ret = rtdm_mmap_vmem(vma, xmmap_shared_area_p);
++	// Could also do rtdm_mmap_kmem(vma, shm_test_p)
++	if (ret == 0)		// success
++	{
++		rtdm_printk("xmmap module: mmap of xmmap shared area successful.\n");
++	} else
++		printk("xmmap module: Failed to rtdm_mmap_vmem()\n");
 +
 +	return 0;
 +}
 +
-+static void *recv_task(void *cookie)
++int __init xmmap_init(void)
 +{
-+	struct smokey_can_virt_ctx *ctx = (struct smokey_can_virt_ctx *)cookie;
-+	struct sched_param prio;
-+	int ret;
++	int err;
++	char *name;
++	int rem;
 +
-+	pthread_mutex_lock(&ctx->recv_run_mutex);
-+	prio.sched_priority = 22;
-+	ret = smokey_check_status(pthread_setschedparam(pthread_self(),
-+							SCHED_FIFO, &prio));
-+	ctx->recv_run = true;
-+	pthread_cond_signal(&ctx->recv_run_cond);
-+	pthread_mutex_unlock(&ctx->recv_run_mutex);
++	rtdm_printk("xmmap module: Initializing xmmap module\n");
++	rtdm_printk("xmmap module: raw shared struct size: %ld\n", sizeof(shm_test_layout_t));
 +
-+	if (ret < 0)
-+		goto finally;
++	shm_size = (sizeof(shm_test_layout_t) / PAGE_SIZE);
++	rem = (sizeof(shm_test_layout_t) % PAGE_SIZE);
++	if (rem)
++		shm_size += 1;
++	if (shm_size < 2)	// xenomai has a minimum requirement of 2 pages for mappable heaps...
++		shm_size = 2;	// ... and PAGE_SIZE is 4096
++	shm_size *= PAGE_SIZE;	//This was necessary in native skin calls, unclear whether necassry in POSIX
 +
-+	for (;;) {
-+		ret = can_virt_recv(ctx);
-+		if (ret)
-+			break;
++	rtdm_printk("xmmap module: shared memory size will be: %d\n", shm_size);
 +
-+		if (ctx->cnt == ctx->cnt_limit)
-+			break;
++	// allocate mem to share. (could also do kmalloc() here)
++	xmmap_shared_area_p = (shm_test_layout_t *) vmalloc(shm_size + RTDM_MAX_DEVNAME_LEN);
++
++	rtdm_printk("xmmap module: shared memory address: %p\n", xmmap_shared_area_p);
++	if (xmmap_shared_area_p) {
++		xmmap_shared_area_p->data[0] = 'x';	// Initialize some shared data
++		xmmap_shared_area_p->data[1] = 'e';
++		xmmap_shared_area_p->data[2] = 'n';
++		xmmap_shared_area_p->data[3] = 'o';
++		xmmap_shared_area_p->dval = 123.456;
++	} else {
++		rtdm_printk("Failed to allocate shared mem!\n");	// in Cobalt kernel can't get errno
++		return -1;
 +	}
 +
-+finally:
-+	ctx->recv_run = false;
-+	pthread_exit((void *)(long)ret);
-+}
-+
-+
-+static void *loop_task(void *cookie)
-+{
-+	struct smokey_can_virt_ctx *ctx = (struct smokey_can_virt_ctx *)cookie;
-+	struct timespec ts;
-+	struct sched_param prio;
-+	pthread_t tid;
-+	void *tstatus;
-+	int ret;
-+
-+	prio.sched_priority = 20;
-+	ret = smokey_check_status(pthread_setschedparam(pthread_self(),
-+							SCHED_FIFO, &prio));
-+	if (ret < 0)
-+		pthread_exit((void *)(long)ret);
-+
-+	pthread_mutex_lock(&ctx->recv_run_mutex);
-+	ret = smokey_check_status(__RT(pthread_create(&tid, NULL, recv_task,
-+						      ctx)));
-+	if (ret < 0)
-+		pthread_exit((void *)(long)ret);
-+
-+	clock_gettime(CLOCK_REALTIME, &ts);
-+	ts.tv_sec += 1;
-+	ret = smokey_check_status(pthread_cond_timedwait(&ctx->recv_run_cond,
-+							 &ctx->recv_run_mutex,
-+							 &ts));
-+	if (ret < 0)
-+		goto finally;
-+
-+	smokey_trace("recv task started");
-+	for (; ctx->recv_run && ctx->cnt <= ctx->cnt_limit; ctx->cnt++) {
-+		ret = can_virt_send(ctx);
-+		if (ret)
-+			goto finally;
++	dev = kmalloc(sizeof(struct rtdm_device) + RTDM_MAX_DEVNAME_LEN, GFP_KERNEL);
++	if (!dev) {
++		rtdm_printk("xmmap module: Problem allocating a device !");
++		xmmap_exit();
 +	}
 +
-+finally:
-+	pthread_join(tid, &tstatus);
-+	if (!ret)
-+		ret = (int)(long)tstatus;
-+
-+	pthread_exit((void *)(long)ret);
-+}
-+
-+static int can_virt_config(int s, const char *ifname, int baudrate, int mode)
-+{
-+	struct can_ifreq ifr;
-+	int ret;
-+
-+	namecpy(ifr.ifr_name, ifname);
-+	ret = smokey_check_errno(__RT(ioctl(s, SIOCGIFINDEX, &ifr)));
-+	if (ret < 0)
-+		return ret;
-+
-+	if (baudrate > 0) {
-+		ifr.ifr_ifru.baudrate = baudrate;
-+		ret = smokey_check_errno(__RT(ioctl(s, SIOCSCANBAUDRATE,
-+						    &ifr)));
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (mode >= 0) {
-+		ifr.ifr_ifru.mode = mode;
-+		ret = smokey_check_errno(__RT(ioctl(s, SIOCSCANMODE, &ifr)));
-+		if (ret < 0)
-+			return ret;
-+	}
++	dev->driver = &module_tmpl;
++	dev->label = "xeno_mmap%d";	// will show up as /dev/rtdm/xeno_mmap0
++	name = (char *)(dev + 1);
++	ksformat(name, RTDM_MAX_DEVNAME_LEN, dev->label, 0);
++	err = rtdm_dev_register(dev);
++	if (err != 0) {
++		rtdm_printk("xmmap module: Problem with device registration, returned: %d\n", err);
++		return err;
++	} else
++		rtdm_printk("xmmap module: device0 registration OK, returned: %d\n", err);
 +
 +	return 0;
 +}
 +
-+static int can_virt_teardown(struct smokey_can_virt_ctx *ctx)
++void xmmap_exit(void)
 +{
-+	int ret = 0, r;
++	int err;
 +
-+	r = can_virt_config(ctx->s, ctx->send_ifname, -1, CAN_MODE_STOP);
-+	if (ret == 0)
-+		ret = r;
++	rtdm_printk("xmmap module: exiting...\n");
 +
-+	smokey_trace("config: ifname: %s, mode: down", ctx->send_ifname);
++	if (xmmap_shared_area_p) {
++		rtdm_printk("xmmap module: unmapping module shared memory at %p of size: %d\n", xmmap_shared_area_p,
++			    shm_size);
++		err = rtdm_munmap(module_user_area, shm_size);	// undo the mmap, freeing user shmem 
++		if (err != 0)
++			rtdm_printk("xmmap module: warning, module shm munmap returned: %d\n", err);
++		vfree(xmmap_shared_area_p);	// if using vmalloc
++	}
 +
-+	r = can_virt_config(ctx->s, ctx->recv_ifname, -1, CAN_MODE_STOP);
-+	if (ret == 0)
-+		ret = r;
++	rtdm_printk("xmmap module: Unloading Xenomai xmmap-module device...\n");
++	if (dev) {
++		rtdm_dev_unregister(dev);
++		kfree(dev);
++	}
 +
-+	smokey_trace("config: ifname: %s, mode: down", ctx->recv_ifname);
-+
-+	__RT(close(ctx->s));
-+	r = smokey_rmmod(CAN_VIRT_MOD);
-+	if (ret == 0)
-+		ret = r;
-+
-+	r = smokey_rmmod(CAN_MOD);
-+	if (ret == 0)
-+		ret = r;
-+
-+	pthread_cond_destroy(&ctx->recv_run_cond);
-+	pthread_mutex_destroy(&ctx->recv_run_mutex);
-+	return ret;
++	rtdm_printk("xmmap module: Unloaded\n");
 +}
 +
-+static int can_virt_setup(struct smokey_can_virt_ctx *ctx)
++module_init(xmmap_init);
++module_exit(xmmap_exit);
+diff --git a/demo/posix/cobalt/xmmap_user.c b/demo/posix/cobalt/xmmap_user.c
+new file mode 100644
+index 000000000..c7d4774c1
+--- /dev/null
++++ b/demo/posix/cobalt/xmmap_user.c
+@@ -0,0 +1,73 @@
++/*
++ * xmmap_user.c - This Xenomai-3.x userspace app is linked to rtdm and 
++ * using mmap() can view shared memory created by the kernel module xmmap_module.c
++ *
++ * Copyright (c) 2021 Konstantin Smola <k@smo.la>
++ * 
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ * compile this way: gcc -g -Wall -I.. -Wl,--no-as-needed
++ * -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/xenomai/lib/modechk.wrappers 
++ * /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
++ * -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt -lfuse -pthread -o xmmap_user xmmap_user.c 
++ */
++
++#include <sys/mman.h>
++#include <stdio.h>
++#include <unistd.h>
++
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++
++#include "xmmap.h"   /* common memory layout definition, etc */
++
++int main()
 +{
-+	int cfg, ret;
++	int xmmap_fd = -1;
 +
-+	pthread_mutex_init(&ctx->recv_run_mutex, NULL);
-+	pthread_cond_init(&ctx->recv_run_cond, NULL);
++	shm_test_layout_t *xmmap_shmem_data_p;
++	size_t _shmem_size;
 +
-+	/*
-+	 * Main module needs to be loaded in order to use
-+	 * _CC_COBALT_GET_CAN_CONFIG.
-+	 */
-+	smokey_modprobe(CAN_MOD, true);
++	_shmem_size = sizeof(shm_test_layout_t);
 +
-+	ret = cobalt_corectl(_CC_COBALT_GET_CAN_CONFIG, &cfg, sizeof(cfg));
-+	if (ret == -EINVAL) {
-+		ret = -ENOSYS;
-+		goto corectl_err;
++	printf("Original raw size of shmem segment is: %lu \n", (long unsigned)_shmem_size);
++
++	xmmap_fd = open("/dev/rtdm/xeno_mmap0", O_RDWR);
++
++	if (xmmap_fd > 0) {
++		printf("Opened device OK. file descriptor is: %d\n", xmmap_fd);
++		printf("Attempting to mmap() the fd...\n");
++		xmmap_shmem_data_p =
++		    (shm_test_layout_t *) mmap(0, _shmem_size, PROT_READ | PROT_WRITE, MAP_SHARED, xmmap_fd, 0);
++		if (xmmap_shmem_data_p == MAP_FAILED) {
++			perror("mmap failed. Size of shared memory wrong or improper permissions");
++		} else {
++			printf("Shared memory address is : %p\n", xmmap_shmem_data_p);
++			printf("Shared memory 0: %c\n", (char)xmmap_shmem_data_p->data[0]);
++			printf("Shared memory 1: %c\n", (char)xmmap_shmem_data_p->data[1]);
++			printf("Shared memory 2: %c\n", (char)xmmap_shmem_data_p->data[2]);
++			printf("Shared memory 3: %c\n", (char)xmmap_shmem_data_p->data[3]);
++			printf("Shared float value: %f\n", xmmap_shmem_data_p->dval);
++		}
++	} else {
++		perror("Failed to get a file descriptor");
 +	}
 +
-+	if (ret < 0)
-+		goto corectl_err;
-+
-+	if ((cfg & _CC_COBALT_CAN) == 0) {
-+		ret = -ENOSYS;
-+		goto corectl_err;
-+	}
-+
-+	smokey_modprobe(CAN_VIRT_MOD, true);
-+
-+	ret = smokey_check_errno(__RT(socket(PF_CAN, SOCK_RAW, CAN_RAW)));
-+	if (ret < 0)
-+		goto sock_err;
-+
-+	ctx->s = ret;
-+
-+	ret = can_virt_config(ctx->s, ctx->recv_ifname, ctx->baud,
-+			      CAN_MODE_START);
-+	if (ret)
-+		goto recv_cfg_err;
-+
-+	smokey_trace("config: ifname: %s, baud: %d, mode: up", ctx->recv_ifname,
-+		     ctx->baud);
-+
-+	ret = can_virt_config(ctx->s, ctx->send_ifname, ctx->baud,
-+			      CAN_MODE_START);
-+	if (ret)
-+		goto send_cfg_err;
-+
-+	smokey_trace("config: ifname: %s, baud: %d, mode: up", ctx->send_ifname,
-+		     ctx->baud);
++	if (xmmap_fd > 0)
++		close(xmmap_fd);
 +
 +	return 0;
-+
-+send_cfg_err:
-+	can_virt_config(ctx->s, ctx->send_ifname, -1, CAN_MODE_STOP);
-+recv_cfg_err:
-+	__RT(close(ctx->s));
-+sock_err:
-+	smokey_rmmod(CAN_VIRT_MOD);
-+corectl_err:
-+	smokey_rmmod(CAN_MOD);
-+	pthread_mutex_destroy(&ctx->recv_run_mutex);
-+	pthread_cond_destroy(&ctx->recv_run_cond);
-+	return ret;
-+}
-+
-+static int run_can_virt(struct smokey_test *t, int argc, char *const argv[])
-+{
-+	struct smokey_can_virt_ctx ctx = {
-+		.baud = 1250000,
-+		.id = 19,
-+		.cnt = 1,
-+		.cnt_limit = 1000,
-+		.recv_ifname = "rtcan0",
-+		.recv_timeout = 1000000000, /* 1 s */
-+		.send_ifname = "rtcan1",
-+	};
-+	pthread_t tid;
-+	void *status;
-+	int ret, r;
-+
-+	ret = can_virt_setup(&ctx);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = smokey_check_status(__RT(pthread_create(&tid, NULL, loop_task,
-+						      &ctx)));
-+	if (ret == 0) {
-+		pthread_join(tid, &status);
-+		ret = (int)(long)status;
-+	}
-+
-+	r = can_virt_teardown(&ctx);
-+	if (ret == 0)
-+		ret = r;
-+
-+	return ret;
 +}
 -- 
-2.17.1
+2.27.0
 
 
