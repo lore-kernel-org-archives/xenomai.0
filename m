@@ -1,14 +1,10 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 0/4] Drop PowerPC architecture
-Date: Mon, 20 Dec 2021 11:39:20 +0000
-Message-ID: <c5979297367aadeda165ce3949310ed705fb45e7.camel@siemens.com>
-References: <cover.1639591464.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1639591464.git.jan.kiszka@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <51F47D3FCBB7A149B4617154E3E2EEA0@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: Jiayu Cao <bitterblossom5486@gmail.com>
+Date: Tue, 21 Dec 2021 12:02:02 +0800
+Message-ID: <CAFV-vNBrxyj2XJ2=M3w7ZtiyqmL+SZ_H0ma8JOeyJ+7m+jvnDw@mail.gmail.com>
+Subject: 'make bzImage' compile error at x86_64 platform: FAILED unresolved
+ symbol udp_sock
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "steven.seeger@flightsystems.net" <steven.seeger@flightsystems.net>
+To: xenomai@xenomai.org
 
-T24gV2VkLCAyMDIxLTEyLTE1IGF0IDE5OjA0ICswMTAwLCBKYW4gS2lzemthIHZpYSBYZW5vbWFp
-IHdyb3RlOg0KPiBDaXRpbmcgcGF0Y2ggMToNCj4gDQo+IFdoaWxlIHRoaXMgYXJjaGl0ZWN0dXJl
-IHNlcnZlZCB3ZWxsIGluIG1hbnkgdXNlIGNhc2VzIG92ZXIgYSBsb25nIHRpbWUsDQo+IGl0J3Mg
-dGltZSBpcyBvdmVyLCBuZXcgY2hpcCBjaGlwcyBhcmUgbm8gbG9uZ2VyIGJlaW5nIHJlbGVhc2Vk
-Lg0KPiANCj4gQXMgWGVub21haSBpcyBtb3ZpbmcgaXRzIGNvcmUgY29tcGxldGVseSBvdmVyIERv
-dmV0YWlsLCB0aGVyZSBpcyBubw0KPiBzdXBwb3J0IGluIERvdmV0YWlsIGZvciBQb3dlclBDIGFu
-ZCB0aGF0IGlzIG5vdCBnb2luZyB0byBjaGFuZ2UsIGl0J3MNCj4gdGltZSB0byBkcm9wIHRoaXMg
-YXJjaCBmcm9tIHRoZSBjb3JlIGluIG9yZGVyIHRvIG1vdmUgZm9yd2FyZC4NCj4gDQo+IEphbg0K
-DQoNCkxHVE0uIEluIGNhc2Ugd2UgbWFpbnRhaW4gYSBsaXN0IG9mIHN1cHBvcnRlZCBhcmNoaXRl
-Y3R1cmVzICh3aWtpPykgd2UNCnNob3VsZCB1cGRhdGUgdGhhdCBsaXN0IGFjY29yZGluZ2x5Lg0K
-DQpGbG9yaWFuDQo=
+Hi Xenomai development group:
 
+I am working on Xenomai 3.2.1 and Ubuntu 20.04 OS.
+I am trying to build a kernel image based on the linux-oem-5.10.0-1044.46
+kernel, which is a Ubuntu kernel and the mainline base version is *Linux
+5.10.46*. The kernel's source code folder path is ~/linux-oem-5.10-5.10.0/.
+Then I extracted the Dovetail patch to linux-oem-5.10-5.10.0/ folder ,
+which version is *patch-5.10.46-dovetail1.patch.bz2*. Then I typed the
+following commands:
+```
+cd linux-oem-5.10-5.10.0/
+
+~/Downloads/xenomai-v3.2.1/scripts/prepare-kernel.sh --arch=x86_64
+--dovetail=patch-5.10.46-dovetail1.patch
+
+make menuconfig
+# I did no extra configuration in the kernel configuration and just save a
+.config file.
+# Actually I've tried to compile the image multiple times with different
+configurations, but I got the same error each time.
+
+make bzImage
+# Got error here
+```
+
+And the error log is:
+```
+  LD      .tmp_vmlinux.btf
+  BTF     .btf.vmlinux.bin.o
+  LD      .tmp_vmlinux.kallsyms1
+  KSYMS   .tmp_vmlinux.kallsyms1.S
+  AS      .tmp_vmlinux.kallsyms1.S
+  LD      .tmp_vmlinux.kallsyms2
+  KSYMS   .tmp_vmlinux.kallsyms2.S
+  AS      .tmp_vmlinux.kallsyms2.S
+  LD      vmlinux
+  BTFIDS  vmlinux
+FAILED unresolved symbol udp_sock
+make: *** [Makefile:1205: vmlinux] Error 255
+```
+The purely Linux kernel without Dovetail patch could be compiled
+successfully, thus I tried to compare the* .config* file under these two
+situations (success and failed) with 'meld' tool.
+However, I only watched some modifications about the XEN virtual machine.
+I also googled it but cannot figure out any related solutions.
+
+Could you provide some solutions for me? Thanks for your help!
+
+Sincerely,
+Jiayu.
