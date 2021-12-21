@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-References: <CAFV-vNBrxyj2XJ2=M3w7ZtiyqmL+SZ_H0ma8JOeyJ+7m+jvnDw@mail.gmail.com>
-In-Reply-To: <CAFV-vNBrxyj2XJ2=M3w7ZtiyqmL+SZ_H0ma8JOeyJ+7m+jvnDw@mail.gmail.com>
-From: Jiayu Cao <bitterblossom5486@gmail.com>
-Date: Tue, 21 Dec 2021 16:36:25 +0800
-Message-ID: <CAFV-vNC36t-NaByyEJcnR_4EVKzuS-BG8O+Tha=aJf2TTN6nGQ@mail.gmail.com>
-Subject: Re: 'make bzImage' compile error at x86_64 platform: FAILED
- unresolved symbol udp_sock
+References: <20211220071310.116526-1-ksmola51@gmail.com>
+ <42e197d4b23feae90c591217e4dc0e1dca731dd9.camel@siemens.com>
+In-Reply-To: <42e197d4b23feae90c591217e4dc0e1dca731dd9.camel@siemens.com>
+From: k smo <ksmola51@gmail.com>
+Date: Tue, 21 Dec 2021 00:43:38 -0800
+Message-ID: <CAC2JQegXmrgGm5eZwktV5-fp9+xwF=2ZfCGTbbXOT+NwLeqVMg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] Examples demonstrating .mmap() in RTDM driver
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +15,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I downloaded linux-dovetail source code from
-https://source.denx.de/Xenomai/linux-dovetail, then I got the same problem
-too. I compiled the kernel image on the ubuntu20 virtual machine. So I
-guess it might be the issue of OS version or VM?
+Actually I'll avoid the PAGE_SIZE issue since there isn't a need for the
+userspace app to know anything about kernel pages in order to use mmap.
+Since this is a demo, we'll put various types of data in the shared struct.
+Here are highlights from the revised code:
 
-Jiayu Cao <bitterblossom5486@gmail.com> =E4=BA=8E2021=E5=B9=B412=E6=9C=8821=
-=E6=97=A5=E5=91=A8=E4=BA=8C 12:02=E5=86=99=E9=81=93=EF=BC=9A
+typedef struct {        /* memory to share */
+       char name[32];
+       int data[4096];
+       double dval;
+} shm_test_layout_t;
 
-> Hi Xenomai development group:
+The kernel module does:
+
+shm_size = (sizeof(shm_test_layout_t) / PAGE_SIZE);
+rem = (sizeof(shm_test_layout_t) % PAGE_SIZE);
+if (rem)
+      shm_size += 1;
+if (shm_size < 2)       // xenomai has a minimum requirement of 2 pages for
+mappable heaps...
+      shm_size = 2;
+shm_size *= PAGE_SIZE;
+rtdm_printk("xmmap module: shared memory size will be: %d\n", shm_size);
+
+shm_test_layout_t *xmmap_shared_area_p = NULL;
+xmmap_shared_area_p = (shm_test_layout_t *) vmalloc(shm_size +
+RTDM_MAX_DEVNAME_LEN);
+
+The module initilizes the string, integers and the double.
+Then once module it is loaded we see this in dmesg:
+
+[454162.232511] xmmap module: Initializing xmmap module
+[454162.232515] xmmap module: raw shared struct size: 16424
+[454162.232517] xmmap module: shared memory size will be: 20480
+[454162.232531] xmmap module: shared memory address: 00000000ca8d562b
+[454162.232588] xmmap module: device0 registration OK, returned: 0
+
+The userspace app does:
+
+_shmem_size = sizeof(shm_test_layout_t);
+xmmap_fd = open("/dev/rtdm/xeno_mmap0", O_RDWR);
+if (xmmap_fd > 0) {
+               xmmap_shmem_data_p =
+                   (shm_test_layout_t *) mmap(0, _shmem_size, PROT_READ |
+PROT_WRITE, MAP_SHARED, xmmap_fd, 0);
+
+Running the userspace app:
+ ./xmmap_user
+Original raw size of shmem segment is: 16424
+Opened device OK. file descriptor is: 3
+Attempting to mmap() the fd...
+Shared memory address is : 0xf7f67000
+Shared string: xeno
+Shared integers: 100,101,102,103
+Shared float: 123.456000
+
+Above in the prints you see that the userspace app gets the exact same
+sizeof() struct, but the
+userspace app does not care that the module has rounded up the size of the
+allocated memory.
+
+-Konstantin
+
+On Mon, Dec 20, 2021 at 3:34 AM Bezdeka, Florian <
+florian.bezdeka@siemens.com> wrote:
+
+> Hi Konstantin,
 >
-> I am working on Xenomai 3.2.1 and Ubuntu 20.04 OS.
-> I am trying to build a kernel image based on the linux-oem-5.10.0-1044.46
-> kernel, which is a Ubuntu kernel and the mainline base version is *Linux
-> 5.10.46*. The kernel's source code folder path
-> is ~/linux-oem-5.10-5.10.0/.
-> Then I extracted the Dovetail patch to linux-oem-5.10-5.10.0/ folder ,
-> which version is *patch-5.10.46-dovetail1.patch.bz2*. Then I typed the
-> following commands:
-> ```
-> cd linux-oem-5.10-5.10.0/
+> On Sun, 2021-12-19 at 23:13 -0800, Konstantin Smola via Xenomai wrote:
+> > +#ifndef PAGE_SIZE
+> > +#define PAGE_SIZE 4096
+> > +#endif
+> > +
+> > +typedef struct {             /* memory to share */
+> > +     int data[PAGE_SIZE * 100];
+> > +     double dval;
+> > +} shm_test_layout_t;
 >
-> ~/Downloads/xenomai-v3.2.1/scripts/prepare-kernel.sh --arch=3Dx86_64
-> --dovetail=3Dpatch-5.10.46-dovetail1.patch
+> Hm...
 >
-> make menuconfig
-> # I did no extra configuration in the kernel configuration and just save =
-a
-> .config file.
-> # Actually I've tried to compile the image multiple times with different
-> configurations, but I got the same error each time.
+> First of all, there is no guarantee for 4k pages. I would prefer using
+> sysconf(_SC_PAGESIZE) for fetching the page size.
 >
-> make bzImage
-> # Got error here
-> ```
+> Second, PAGE_SIZE * 100 makes 100 pages, but as array size of int it
+> will be sizeof(int)*PAGE_SIZE*100, not sure if that is what you want
+> for an example.
 >
-> And the error log is:
-> ```
->   LD      .tmp_vmlinux.btf
->   BTF     .btf.vmlinux.bin.o
->   LD      .tmp_vmlinux.kallsyms1
->   KSYMS   .tmp_vmlinux.kallsyms1.S
->   AS      .tmp_vmlinux.kallsyms1.S
->   LD      .tmp_vmlinux.kallsyms2
->   KSYMS   .tmp_vmlinux.kallsyms2.S
->   AS      .tmp_vmlinux.kallsyms2.S
->   LD      vmlinux
->   BTFIDS  vmlinux
-> FAILED unresolved symbol udp_sock
-> make: *** [Makefile:1205: vmlinux] Error 255
-> ```
-> The purely Linux kernel without Dovetail patch could be compiled
-> successfully, thus I tried to compare the* .config* file under these two
-> situations (success and failed) with 'meld' tool.
-> However, I only watched some modifications about the XEN virtual machine.
-> I also googled it but cannot figure out any related solutions.
->
-> Could you provide some solutions for me? Thanks for your help!
->
-> Sincerely,
-> Jiayu.
+> At first glance it looks like data should be void* and pre-fixed with a
+> new member named "size" of type size_t. I did not review the remaining
+> parts in detail, so I might miss something.
 >
