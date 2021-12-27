@@ -1,12 +1,10 @@
+Date: Mon, 27 Dec 2021 19:50:58 +0100 (CET)
+From: g.strobbe@telenet.be
+Message-ID: <1478129695.36513090.1640631058240.JavaMail.zimbra@telenet.be>
+Subject: v5.15-dovetail-rebase compilation fails
 MIME-Version: 1.0
-References: <CAKcohPwzA9Vx7iN6t_jazRSdvZFsvxktKH+OYfzFjtHEsHkZHw@mail.gmail.com>
-In-Reply-To: <CAKcohPwzA9Vx7iN6t_jazRSdvZFsvxktKH+OYfzFjtHEsHkZHw@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sun, 26 Dec 2021 00:08:23 -0500
-Message-ID: <CALLqZ8S5JjKuJNOz_OdNDeo90aU00DXi13RLwnUsy27hrz_zyw@mail.gmail.com>
-Subject: Re: spi-bcm2835 for rtdm
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yunjie Gu <yunjie.gu1@gmail.com>
-Cc: rpm@xenomai.org, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On Sat, Dec 25, 2021 at 5:35 AM Yunjie Gu via Xenomai <xenomai@xenomai.org>
-wrote:
+Hi all,
 
-> Hi Everyone,
->
-> I'm trying to use rtdm spi on raspberry pi, and I find something confusin=
-g.
-> I could see there are two spi-bcm2835.c files in the kernel source (after
-> xenomai patching), one with rtdm, and one native. But these two drivers u=
-se
-> the same .compatible =3D "brcm,bcm2835-spi", which means the device-tree
-> cannot distinguish them. Does this mean I have to manually disable the
-> native spi driver in Kconfig to avoid binding conflicts if I want to use
-> the rtdm one?
->
-> Best Regards,
-> Yunjie
+The compilation of file xenomai/kernel/cobalt/debug.c 
+in branch v5.15-dovetail-rebase failed.
+The problem is that since kernel vanilla v15.5 
+include/linux/mm.h no longer defines VM_DENYWRITE
 
+It is still used in xndebug_trace_relax()
 
-Yes, the native driver needs to be disabled. I usually unbind the native
-driver manually when doing development.  I=E2=80=99ve never tried the metho=
-d you
-described above but I can=E2=80=99t see why it wouldn=E2=80=99t work.
+		/*
+		 * Hack. Unlike DSOs, executables and interpreters
+		 * (e.g. dynamic linkers) are protected against write
+		 * attempts. Use this to determine when $pc should be
+		 * fixed up by subtracting the mapping base address in
+		 * the DSO case.
+		 */
+		if (!(vma->vm_flags & VM_DENYWRITE))
+			pc -= vma->vm_start;
 
-Thanks
+Best regards,
 
-Greg
+Gino 
+			
 
->
->
