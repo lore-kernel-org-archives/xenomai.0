@@ -1,17 +1,10 @@
-Message-ID: <ea9148eb-8594-88ec-ef49-6e78f311f67c@siemens.com>
-Date: Mon, 3 Jan 2022 07:49:47 +0100
 MIME-Version: 1.0
-Subject: Re: Debugging kernel paging request oops
-Content-Language: en-US
-References: <CAPMj8MvTHmgqABPTdvsiN8F5m6j4Sa0EA7iBUjT2hYikyQaY_w@mail.gmail.com>
- <8f9d3ba7-e8b0-c302-b6cc-b8795efe1de0@siemens.com>
- <CAPMj8Mt+6gHSCpfAXHqBkjD4zbfCZV4sKo=u+-jJb3TLN4q4xw@mail.gmail.com>
- <1f4be821-5f99-339e-4599-532c1a9ed35b@siemens.com>
- <CAPMj8MvKEuKBycqiy79i44RGn7o8-mSz0xdyzNx3Cfy9eekGFg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAPMj8MvKEuKBycqiy79i44RGn7o8-mSz0xdyzNx3Cfy9eekGFg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: C Smith <csmithquestions@gmail.com>
+Date: Sun, 2 Jan 2022 23:29:26 -0800
+Message-ID: <CA+K1mPGZ3iwY=FKu8ds-6w+JHxFOOurwGvf-1Je1LKqkFemSLw@mail.gmail.com>
+Subject: x86 kernel Oops in Xeno-3.1/3.2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,130 +13,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sam Daniel <daniel.jacob.samuel@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai List <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-On 21.12.21 06:38, Sam Daniel wrote:
-> On Thu, Dec 16, 2021 at 1:06 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>
->> On 16.12.21 09:49, Sam Daniel wrote:
->>> On Thu, Dec 16, 2021 at 12:42 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>
->>>> On 16.12.21 06:35, Sam Daniel via Xenomai wrote:
->>>>> Hello. I am running on a Xilinx ZCU102 (ARM64, Cortex A53) development
->>>>> board and I've written a lot of userspace software against the POSIX skin
->>>>> of Cobalt 3.1.
->>>>>
->>>>> For context, I have set isolcpus=1,2,3 as kernel boot args. I only run my
->>>>> Xenomai tasks on CPUs 1,2,3. I know that despite isolcpus, the Linux kernel
->>>>> will still run a few kthreads on those cores. I am worried that the cause
->>>>> of my issues might be my Xenomai tasks completely starving those Linux
->>>>> kthreads.
->>>>
->>>> That is likely if your task actually dominates those isolated cores
->>>> (100% CPU usage). The Xenomai watchdog can catch such bugs and resolve
->>>> the lockup by kicking the CPU hog out of RT mode. Then you can analyze
->>>> why the task was not sleeping from time to time.
->>>>
->>>> Jan
->>>>
->>>> --
->>>> Siemens AG, T RDA IOT
->>>> Corporate Competence Center Embedded Linux
->>>
->>> I have CONFIG_XENO_OPT_WATCHDOG=y and CONFIG_XENO_OPT_DEBUG=y set but
->>> don't get any Xenomai/watchdog related output when this kernel oops
->>> occurs.
->>>
->>
->> OK, then your task should release the core from time to time, and we
->> have a different kind of crash.
->>
->> What is your kernel version? Where did the patch come from?
->>
->> Also, your trace of the crash is unfortunately filled with printing the
->> oops, likely not with the actual problem. Do you have a backtrace as
->> well? Can you make the trace longer [1]?
->>
->> Jan
->>
->> [1] https://source.denx.de/Xenomai/xenomai/-/wikis/Using_The_I_Pipe_Tracer
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
-> 
-> # xeno-config --info
-> Xenomai version: Xenomai/cobalt v3.1
-> Linux tonka 4.19.55 #1 SMP PREEMPT Mon Dec 20 22:10:45 UTC 2021
-> aarch64 GNU/Linux
-> Kernel parameters: root=/dev/mmcblk0p2 rw rootwait rootfstype=ext4
-> isolcpus=1,2,3
-> I-pipe release #4 detected
-> Cobalt core 3.1 detected
-> Compiler: gcc version 8.2.0 (GCC)
-> Build args: CFLAGS=-mtune=cortex-a53 LDFLAGS=-mtune=cortex-a53
-> --with-core=cobalt --build=i686-pc-linux-gnu --host=aarch64-linux-gnu
-> --enable-pshared --enable-smp CC=aarch64-linux-gnu-gcc
-> LD=aarch64-linux-gnu-ld build_alias=i686-pc-linux-gnu
-> host_alias=aarch64-linux-gnu
-> 
-> I used ipipe-core-4.19.55-arm64-4.patch.
-> 
-> The overall heritage of my Linux kernel is a bit ugly: I started with
-> Xilinx's fork of the 4.19.0 kernel (because I am using a ZCU102 dev
-> kit); then patched it from mainline Linux up to 4.19.55; and finally
-> applied Cobalt/I-Pipe to the kernel.
-
-I'm happily using mainline 5.10 and now also 5.15 on the Ultra96 boards.
-Maybe 5.15 is still missing a few downstream features, but if you could
-rebase your workload over that and over Xenomai 3.2.1, we would have a
-cleaner baseline to debug.
-
-> 
-> My application workload is heavy: 40 different periodic tasks, tick
-> rates between 10 and 100ms. I have never seen these crashes happen
-> spontaneously during runtime. But I can somewhat reliably reproduce
-> them by starting, stopping, and restarting my application software.
-> 
-
-Can you also trigger this issue by running Xenomai's switchtest for a
-while? Or anything else from the Xenomai testsuite?
-
-> I have noticed a few commonalities in the crashes:
-> * "Unable to handle kernel paging request at virtual address: <address>"
-> * "address between user and kernel address ranges"
-> * "I-pipe domain: Linux"
-> * "Call trace" of 1-2 lines that points to ___xnsched_run
-> 
-> This is one that I have not seen before:
-> [ 8373.909772] [Xenomai] lock 00000000916ccdbc already unlocked on CPU #2
-> [ 8373.909772]           last owner =
-> kernel/xenomai/posix/process.c:1242 (handle_schedule_event(), CPU #-2)
-> [ 8373.926249] Call trace:
-> [ 8373.928800]  dump_backtrace+0x0/0x170
-> [ 8373.932592]  show_stack+0x24/0x30
-> [ 8373.936028]  xnlock_dbg_release+0x13c/0x1c0
-> [ 8373.940352]  ___xnlock_put+0x3c/0x60
-> [ 8373.944053]  xnregistry_bind+0x1a4/0x260
-> [ 8373.948109]  iddp_ioctl+0xa9c/0xd50
-> [ 8373.951727]  rtipc_ioctl+0x3c/0x50
-> [ 8373.955253]  rtdm_fd_ioctl+0x100/0x2c0
-> [ 8373.959129]  CoBaLt_ioctl+0x34/0x50
-> [ 8373.962747]  handle_head_syscall+0xf4/0x440
-> [ 8373.967069]  ipipe_fastcall_hook+0x28/0x40
-> [ 8373.971305]  ipipe_handle_syscall+0x7c/0x110
-> [ 8373.975712]  el0_svc_common+0x68/0x1b0
-> [ 8373.979593]  el0_svc_handler+0x74/0x90
-> [ 8373.983469]  el0_svc+0x8/0x18
-> [ 8373.990486] ------------[ cut here ]------------
-
-Is that the only error reported in that case? Never seen such a pattern
-before...
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+SSBoYXZlIGJlZW4gZ2V0dGluZyBrZXJuZWwgT29wc2VzIHdpdGggeDg2IFhlbm9tYWkgMy4xIChh
+bmQgMy4yLjEpLgpJbiBudW1lcm91cyB0ZXN0cywgSSBjYW4ndCBrZWVwIGEgY29tcHV0ZXIgcnVu
+bmluZyBmb3IgbW9yZSB0aGFuIGEgZGF5CmJlZm9yZSB0aGUgY29tcHV0ZXIgaGFyZC1sb2NrcyAo
+bm8ga2JkL21vdXNlL3BpbmcpLiBGcmVxdWVudGx5IHRoZQprZXJuZWwgT29wc2VzIHdpdGhpbiA0
+LTYgaG91cnMuIEkgaGF2ZSB0cmllZCAyIGlkZW50aWNhbCBtb3RoZXJib2FyZHMsCmNoYW5nZWQg
+UkFNLCBhbmQgdHJpZWQgYW5vdGhlciBtYW51ZmFjdHVyZXIncyBtb3RoZXJib2FyZCBvbiBhIDNy
+ZApjb21wdXRlci4KCiogQ2FuIHNvbWVvbmUgc3VwcGx5IG1lIHdpdGggYSBrbm93biBzdWNjZXNz
+ZnVsIHg2OCBrZXJuZWwgNC4xOS44OQpjb25maWcgc28gSSBjYW4gY29tcGFyZSBhbmQgdHJ5IHRo
+b3NlIHNldHRpbmdzPyBJIHdpbGwgYXR0YWNoIG15Cmtlcm5lbCBjb25maWcgdG8gdGhpcyBlbWFp
+bCwgaW4gaG9wZXMgc29tZW9uZSBjYW4gc2VlIHNvbWV0aGluZyB3cm9uZwp3aXRoIHRoZW0uCgpT
+cGVjczogIEludGVsIGk1LTQ1OTAgQ1BVLCBBZHZhbnRlY2ggbW90aGVyYm9hcmQgd2l0aCBRODcg
+aW50ZWwKY2hpcHNldCwgOEcgUkFNLCBNb3hhIDQtcG9ydCBQQ0kgY2FyZCB3LyAxNjc1MCBVQVJU
+cywgMiBtb3RoZXJib2FyZAoxNjU1MCBVQVJUUyAoaW4gSVNBIG1lbW9yeSByYW5nZSksIFBlYWsg
+UENJIENBTiBjYXJkLCBYZW5vbWFpIDMuMQooYWxzbyB4ZW5vIDMuMi4xKSwgRGlzdHJvOiBSSEVM
+OCwgd2l0aCB4ZW5vbWFpIGlwaXBlLXBhdGNoZWQgNC4xOS44OQprZXJuZWwgZnJvbSBrZXJuZWwu
+b3JnIHNvdXJjZS4KClNvbWV0aW1lcyBvbnNjcmVlbiAoaW4gYSB0ZXh0IHRlcm1pbmFsKSBJIGdl
+dCB0aGlzIE9vcHM6CgprZXJuZWwgdHJpZWQgdG8gZXhlY3V0ZSBOWC1wcm90ZWN0ZWQgcGFnZSAt
+IGV4cGxvaXQgYXR0ZW1wdD8gKHVpZDogMTAwMCkKQlVHOiB1bmFibGUgdG8gaGFuZGxlIGtlcm5l
+bCBwYWdpbmcgcmVxdWVzdCBhdCAuLi4KUEdEIC4uLiBQNEQgLi4uIFBVRCAuLiBQSEQgLi4uCk9v
+cHM6IDAwMTEgWyMxXSBTTVAgUFRJCkNQVTogMSBQMUQ6IDM1MzkgQ29tbTogZ3VpIFRhaW50ZWQ6
+IEcgT0UgNC4xOS44OXhlbm8zLjEtaTY0eDM4MzIgIzIKSGFyZHdhcmUgbmFtZTogVG8gYmUgZmls
+bGVkIGJ5IE8uRS5NLiBUbyBiZSBmaWxsZWQgYnkgTy5FLk0uL1NIQVJLQkFZLApCSU9TIDQuNi41
+IDA4LzI5LzIwMTcKSS1waXBlIGRvbWFpbjogTGludXgKUklQOiAuLi4gOiAuLi4KQ29kZTogQmFk
+IFJJUCB2YWx1ZS4KCldoaWNoIG1lYW5zIHRoZSBJbnN0cnVjdGlvbiBQb2ludGVyIGlzIGluIGEg
+RGF0YSBhcmVhLiBUaGF0IGlzIGJhZCwKYW5kIEkgdGhpbmsgaXQgaXMgY2F1c2VkIGJ5IENvYmFs
+dCBjb2RlIG5vdCByZXN0b3JpbmcgdGhlCnN0YWNrL3JlZ2lzdGVycyBjb3JyZWN0bHkgZHVyaW5n
+IGEgY29udGV4dCBzd2l0Y2guCk90aGVyIHRpbWVzIEkgZ2V0IDoKCktlcm5lbCBQYW5pYyAtIG5v
+dCBzeW5jaW5nOiBzdGFjay1wcm90ZWN0b3I6IEtlcm5lbCBzdGFjayBpcyBjb3JydXB0ZWQKaW46
+IF9feG5zY2hlZF9ydW4ucGFydC42MyBoIC0KQ1BVOiAxIFBJRDogMjQwOSBDb21tOiBhcHBucnRC
+IFRhaW50ZWQ6IEcgT0UgNC4xOS44OU5lbjAzLjEtaTY0eDg2MzIgIzIKSGFyZHdhcmUgbmFtZTog
+VG8gYmUgZmlsbGVkIGJ5IDAuRS5NLiBUbyBiZSBmaWxsZWQgYnkgT0VNLCBCSU9TIDQuNi41IDA0
+LzIzLzIwMjEKSS1waXBlIGRvbWFpbjogTGludXgKQ2FsbCBUcmFjZToKPElSUT4KZHVtcF9zdGFj
+ays4eDk1Lzh4bmEKcGFuaWMrOHhlwqdsOHgyNDYKPyBfX194bnNjaGVkX3J1bi5wYXJ0LjYzKzh4
+NWM0Lzh4NGQwCl9fc3RhY2tfY2hoa19mYWlsKzh4MTl4OHgyOApfX194bnNjaGVkX3J1bi5wYXJ0
+LjYzKzh4wqdjNC9CeMKnZDgKPyByZWxlYXNlX2lvYXBpY19pcnErOHgzZi84eDU4Cj8gX19pcGlw
+ZV9lbmRfZmFzdGVvaV9pcnErQk5aWi84eDM4CnhuaW50cjtlZGdlX3ZlY19oYW5kbGVyK0JYQklB
+Lzh4NTU4Cl9faXBpcGVfZG9fc3luY19waXBlbGluZSs4eFMvYW5hCmRpc3BhdGNoX2lycV9oZWFk
+Kzh4ZTYvQngxMTgKX19pcGlwZV9kaXNwYXRjaF9pcnErYXgxYmMvQngxZTgKX19pcGlwZV9oYW5k
+bGVfaXJxKzh4MTk4L3gyMDgKPyBjb21tb25faW50ZXJydXB0Kzh4Zi9CeDJjCjwvSVJRPgoKVGhl
+IGFjY29tcGFueWluZyBzdGFjayB0cmFjZSBzZWVtcyB0byBpbXBsaWNhdGUgYW4gaXBpcGUgaW50
+ZXJydXB0CmhhbmRsZXIgYXMgY2F1c2luZyB0aGUgcHJvYmxlbS4gSSdtIHVzaW5nIHhlbm9fMTY1
+NTBBLmtvIGludGVycnVwdHMgb24KYW4gaXNvbGF0ZWQgaW50ZXJydXB0IGxldmVsIChJUlEgMTgp
+LgoKSW50ZXJlc3RpbmdseSwgdGhlIENvYmFsdCBzY2hlZHVsZXIgYW5kIG15IFJUIHVzZXJzcGFj
+ZSBhcHAgYXJlIHN0aWxsCnJ1bm5pbmcgYWZ0ZXIgdGhpcywgZXZlbiB0aG91Z2ggdGhlIExpbnV4
+IGtlcm5lbCBpcyBoYWx0ZWQuIEkgcHJvdmVkCnRoaXMgb24gYW4gb3NjaWxsb3Njb3BlOiBJIGNh
+biBzZWUgc2VyaWFsIHBhY2tldHMgZ29pbmcgaW50byBhbmQgb3V0Cm9mIHRoZSBzZXJpYWwgcG9y
+dHMgYXQgdGhlIGV4cGVjdGVkIHBlcmlvZGljIHRpbWUgYmFzZS4KCihOb3RlIHRoYXQgdGhlIHRl
+eHQgb2YgdGhlc2Uga2VybmVsIGZhdWx0cyBhYm92ZSBpcyByZWNvbnN0cnVjdGVkIHdpdGgKT0NS
+IHNvIHNvbWUgYWRkcmVzc2VzIGFyZSBub3QgY29tcGxldGUuIFRoZSBjb21wdXRlciBpcyBoYXJk
+LWxvY2tlZCBpbgphIHRleHQgdGVybWluYWwgd2hlbiB0aGVzZSBoYXBwZW4uIEkgY2FuIHN1cHBs
+eSB0aGUgZnVsbCBKUEcgcGljdHVyZXMKb3IgcmUtdHlwZSBhZGRyZXNzZXMgaWYgeW91IGxpa2Uu
+KQoKVGhlIGFwcGxpY2F0aW9uIHNjZW5hcmlvIHdoaWNoIGNhdXNlcyB0aGUgYWJvdmUgcHJvYmxl
+bXM6ICBUaGUgcHJpbWFyeQphcHAsIOKAnGFwcHJ0MuKAnSwgaXMgYSAzMi1iaXQgdXNlcnNwYWNl
+IGFwcCAoY29tcGlsZWQgLW0zMikgcnVubmluZyBvbgpDUFUgY29yZSAxIChieSBmaXhlZCBhZmZp
+bml0eSksIG9uIDY0IGJpdCBYZW5vbWFpIDMuMSB3aXRoIGlwaXBlIHBhdGNoCmFwcGxpZWQgZm9y
+IHg4NiBrZXJuZWwgNC4xOS44OS4gSXQgaGFzIHNoYXJlZCBtZW1vcnkgdmlhIG1tYXAoKSB3aXRo
+CmFuIFJURE0gbW9kdWxlICjigJxtb2RydDHigJ0pIGJ1dCBub3RoaW5nIGlzIGhhcHBlbmluZyBp
+biDigJxtb2RydDHigJ0gYXQKcHJlc2VudCwgbm8gaW50ZXJydXB0cyBldGMuIFRoZXJlIGFyZSBh
+bHNvIHR3byBub24tUlQgdXNlcnNwYWNlIGxpbnV4CmFwcHMgd2hpY2ggaGF2ZSBhdHRhY2hlZCB0
+byB0aGUgc2FtZSBzaGFyZWQgbWVtb3J5IHZpYSBtbWFwKCkgYnV0CnRob3NlIGFyZSBkb2luZyBu
+b3RoaW5nIG11Y2ggZHVyaW5nIHRoZXNlIHRlc3RzLiBJIGhhdmUgYXR0YWNoZWQKc2V2ZXJhbCAo
+MS02KSBSUzIzMiBzZXJpYWwgZGV2aWNlcyBhbmQgb25lIENBTiBkZXZpY2UgYWxsCmNvbW11bmlj
+YXRpbmcgd2l0aCDigJxhcHBydDLigJ0uCgpUaGUgc3lzdGVtIGRvZXMgbm90IGZhdWx0IChmb3Ig
+NDgrIGhvdXJzKSB3aGVuIG5vIHBlcmlwaGVyYWwKY29ubmVjdGlvbnMgYXJlIHByZXNlbnQgKFNl
+cmlhbC9DQU4pLiBUaGUgZmF1bHRzIGhhcHBlbiB3aXRoIFNlcmlhbAp0cmFmZmljLCB3aGV0aGVy
+IHRoZSBDQU4gZGV2aWNlIGlzIGF0dGFjaGVkIG9yIG5vdC4gVGhlIENBTiBkZXZpY2UKYWxvbmUg
+d2l0aCBubyBTZXJpYWwgZG9lcyBub3QgY2F1c2UgdGhlIGZhdWx0ICh0ZXN0ZWQgZm9yIDQ4KyBo
+b3VycyksCmFuZCB0aGUgZmF1bHQgaGFzIGFsc28gaGFwcGVuZWQgd2hlbiB0aGUgbW90aGVyYm9h
+cmQgc2VyaWFsIHBvcnRzIHdlcmUKdXNlZCwgc28gdGhlIFBDSSBNb3hhIGNvZGUgaXMgbm90IGlt
+cGxpY2F0ZWQuCgpOb3RlIHRoYXQgaW4gb3JkZXIgdG8gZ2V0IDMyLWJpdCB1c2Vyc3BhY2Ugc3Vw
+cG9ydCB0byBmdWxseSB3b3JrIEkgaGFkCnRvIG1hbnVhbGx5IHBhdGNoIHRoZSAxNjU1MEEuYyBz
+ZXJpYWwgZHJpdmVyIHdpdGggdGhlIDMyIGJpdArigJxjb21wYXRpYmlsaXR54oCdIHBhdGNoIGZy
+b20gdGhlIHhlbm9tYWkgbWFpbGluZyBsaXN0LiBUaGF0IHdvcmtzIE9LIGFuZApteSBhcHBzIGNh
+biBjb21tdW5pY2F0ZSBmaW5lIGZvciBob3Vycy4gVGhlIHNlcmlhbCBwYWNrZXRzIGluIG15CmFw
+cGxpY2F0aW9ucyBoYXZlIENSQyBjaGVja3Mgc28gd2Uga25vdyBpZiBkYXRhIGV2ZXIgZ2V0cyBj
+b3JydXB0ZWQuCgpOb3RlIHRoYXQgbXkgYXBwcyBoYXZlIGJlZW4gcnVubmluZyBPSyAzMi1iaXQg
+b24gWGVub21haSB2Mi42IGZvciB0d28KeWVhcnMuIEFsc28gSSByYW4gbXkgYXBwcyBjb21waWxl
+ZCBhcyA2NCBiaXQgb24gWGVub21haSB2My4wLjEyIGFuZApkaWQgbm90IGdldCBhbnkgZmF1bHRz
+IGluIGEgdGVzdCBsYXN0aW5nIDIxKyBob3VycyAoc2VyaWFsIGRyaXZlcgpvbmx5LCBubyBDQU4p
+LgoKU2luY2UgSSBpbWFnaW5lIFhlbm9tYWkgZGV2ZWxvcGVycyBwcmVmZXIgdG8gZGVidWcgb24g
+cmVjZW50IGJ1aWxkcywgSQphbHNvIHRlc3RlZCB0aGlzIG9uIFhlbm9tYWkgMy4yLjEgYW5kIEkg
+cmVjb21waWxlZCBteSBhcHBzIDY0IGJpdC4gIEkKc3RpbGwgZ2V0IGtlcm5lbCBPb3BzZXMgd2l0
+aCBYZW5vIDMuMi4xIDoKCmtlcm5lbCB0cmllZCB0byBleGVjdXRlIE5YLXByb3RlY3RlZCBwYWdl
+IC0gZXhwbG9pdCBhdHRlbXB0PyAodWlkOiAxMDAwKQpCVUc6IHVuYWJsZSB0byBoYW5kbGUga2Vy
+bmVsIHBhZ2luZyByZXF1ZXN0IGF0IC4uLgpQR0QgLi4uIFA0RCAuLi4gUFVEIC4uLiBQTUQgLi4u
+Ck9vcHM6IDAwMTEgWyMxXSBTTVAgUFRJCkNQVTogMSBQMUQ6IDM1MzkgQ29tbTogYXBwbnJ0QSBU
+YWludGVkOiBHIE9FIDQuMTkuODl4ZW5vMy4xLWk2NHgzODMyICMyCkhhcmR3YXJlIG5hbWU6IFRv
+IGJlIGZpbGxlZCBieSBPLkUuTS4gVG8gYmUgZmlsbGVkIGJ5IE8uRS5NLi9TSEFSS0JBWSwKQklP
+UyA0LjYuNSAwOC8yOS8yMDE3CkktcGlwZSBkb21haW46IExpbnV4ClJJUDog4oCmIDogLi4uCkNv
+ZGU6IEJhZCBSSVAgdmFsdWUuCuKApgoKKiBJcyB0aGVyZSBzb21lIHdheSB0byBpbnN0cnVtZW50
+IHRoZSBDb2JhbHQga2VybmVsIHRvIGRlYnVnIHRoaXMgPyBJdApzZWVtcyBpbXBvc3NpYmxlIHRv
+IGdldCBhbnkgZGVidWcgZGF0YSBmcm9tIC9wcm9jL3hlbm9tYWkgYmVjYXVzZSB0aGUKTGludXgg
+a2VybmVsIGlzIE9vcHNlZC4KCkEgZGVidWdnaW5nIHByb2JsZW06ICBvY2Nhc2lvbmFsbHkgd2l0
+aCBteSBhcHBzIGNvbXBpbGVkIDY0IGJpdCBvbgpYZW5vIDMuMSBvciAzLjIgdGhlIHRlc3RzIHJ1
+biAyNCsgaG91cnMgT0sgKGJ1dCB3b3VsZCBmYXVsdApldmVudHVhbGx5LCBvciBpbiBhbm90aGVy
+IHRlc3QpLiBTbyBJIGdldCAnZmFsc2UgcG9zaXRpdmVzJyBhbmQgaXQKdGFrZXMgd2Vla3MgdG8g
+bWFrZSBwcm9ncmVzcy4gIEl0IGlzIGVhc2llc3QgdG8gZ2VuZXJhdGUgYSBrZXJuZWwgT29wcwpy
+YXBpZGx5IG9uIFhlbm8gMy4xIHdpdGggbXkgYXBwcyBjb21waWxlZCAzMiBiaXQuIFNvIHRvIGV4
+cGVkaXRlIHRoZQp0ZXN0aW5nIHByb2Nlc3MgbWF5IEkgcHJvcG9zZSB0byBrZWVwIGNvbXBpbGlu
+ZyAzMiBiaXQgYW5kIHdlCmluc3RydW1lbnQgWGVuby0zLjEgKGs0LjE5Ljg5KSwgYW5kIHVsdGlt
+YXRlbHkgcG9ydCB0aGUgZml4IHRvCnhlbm8tMy4yIChrNC4xOS44OSk/CgpUaGFua3MuICAtQyBT
+bWl0aAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
+dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWdfNC4xOS44OS0yMDIxMTIwNgpU
+eXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTkwMTEzIGJ5dGVzCkRlc2M6IG5v
+dCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
+dGFjaG1lbnRzLzIwMjIwMTAyL2M2ZWU1MmRmL2F0dGFjaG1lbnQub2JqPgo=
