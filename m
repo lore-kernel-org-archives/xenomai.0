@@ -1,8 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 2/7] cobalt: posix/cond: Add missing __user annotation to user
- provided ptr
-Date: Wed,  5 Jan 2022 15:06:45 +0100
-Message-Id: <20220105140650.1033850-3-florian.bezdeka@siemens.com>
+Subject: [PATCH 5/7] y2038: testsuite/smokey/y2038: Adding tests for
+ cond_wait_prologue64
+Date: Wed,  5 Jan 2022 15:06:48 +0100
+Message-Id: <20220105140650.1033850-6-florian.bezdeka@siemens.com>
 In-Reply-To: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
 References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -18,138 +18,128 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Like all other pointers in the cond_wait_prologue interface the error
-pointer is user-provided and should be annotated accordingly.
+Extending the smokey testsuite to do some tests for the recently added
+cond_wait_prologue64 syscall.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/cond.c      | 8 ++++----
- kernel/cobalt/posix/cond.h      | 8 ++++----
- kernel/cobalt/posix/syscall32.c | 4 ++--
- kernel/cobalt/posix/syscall32.h | 4 ++--
- 4 files changed, 12 insertions(+), 12 deletions(-)
+ testsuite/smokey/y2038/syscall-tests.c | 97 ++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
 
-diff --git a/kernel/cobalt/posix/cond.c b/kernel/cobalt/posix/cond.c
-index 28400505f..e3a95ff83 100644
---- a/kernel/cobalt/posix/cond.c
-+++ b/kernel/cobalt/posix/cond.c
-@@ -285,7 +285,7 @@ static inline int cond_fetch_timeout64(struct timespec64 *ts,
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index a1a5d12f6..874decc2a 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -1116,6 +1116,99 @@ out:
+ 	return ret;
+ }
  
- int __cobalt_cond_wait_prologue(struct cobalt_cond_shadow __user *u_cnd,
- 				struct cobalt_mutex_shadow __user *u_mx,
--				int *u_err,
-+				int __user *u_err,
- 				void __user *u_ts,
- 				int (*fetch_timeout)(struct timespec64 *ts,
- 						     const void __user *u_ts))
-@@ -351,7 +351,7 @@ int __cobalt_cond_wait_prologue(struct cobalt_cond_shadow __user *u_cnd,
++static int test_sc_cobalt_cond_wait_prologue(void)
++{
++	int ret = 0;
++	int err = 0;
++	int sc_nr = sc_cobalt_cond_wait_prologue64;
++	pthread_mutex_t m;
++	pthread_cond_t c;
++	pthread_condattr_t attr;
++	struct xn_timespec64 t1, t2;
++	struct timespec ts_nat;
++
++	if (!__T(ret, pthread_mutex_init(&m, NULL)))
++		return ret;
++
++	if (!__T(ret, pthread_condattr_init(&attr)))
++		goto out_mutex;
++
++	if (!__T(ret, pthread_cond_init(&c, &attr)))
++		goto out_cond_attr;
++
++	/* Make sure we don't crash because of NULL pointers */
++	ret = XENOMAI_SYSCALL5(sc_nr, NULL, NULL, NULL, NULL, NULL);
++	if (ret == -ENOSYS) {
++		smokey_note(
++			"cond_wait_prologue64: skipped. (no kernel support)");
++		return 0; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -EINVAL))
++		return ret ? ret : -EINVAL;
++
++	/* Timed, but no timeout supplied, should deliver EFAULT */
++	ret = XENOMAI_SYSCALL5(sc_nr, &c, &m, &err, 1 /* timed */, NULL);
++	if (!smokey_assert(ret == -EFAULT)) {
++		ret = ret ? ret : -EINVAL;
++		goto out;
++	}
++
++	/* Timed and invalid timeout supplied, should deliver EINVAL */
++	t1.tv_sec = -1;
++	t1.tv_nsec = 0;
++	ret = XENOMAI_SYSCALL5(sc_nr, &c, &m, &err, 1 /* timed */, &t1);
++	if (!smokey_assert(ret == -EINVAL)) {
++		ret = ret ? ret : -EINVAL;
++		goto out;
++	}
++
++	/*
++	 * Providing a valid timeout, waiting for it to time out and check
++	 * that we didn't come back to early.
++	 */
++	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts_nat));
++	if (ret)
++		goto out;
++
++	t1.tv_sec = 0;
++	t1.tv_nsec = 500000;
++
++	if (!__T(ret, pthread_mutex_lock(&m)))
++		goto out;
++
++	ret = XENOMAI_SYSCALL5(sc_nr, &c, &m, &err, 1 /* timed */, &t1);
++	if (!smokey_assert(ret == -ETIMEDOUT)) {
++		ret = ret ? ret : -EINVAL;
++		goto out;
++	}
++
++	t1.tv_sec = ts_nat.tv_sec;
++	t1.tv_nsec = ts_nat.tv_nsec;
++
++	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts_nat));
++	if (ret)
++		goto out;
++
++	t2.tv_sec = ts_nat.tv_sec;
++	t2.tv_nsec = ts_nat.tv_nsec;
++
++	if (ts_less(&t2, &t1))
++		smokey_warning("cond_wait_prologue64 returned to early!\n"
++			       "Expected wakeup at: %lld sec %lld nsec\n"
++			       "Back at           : %lld sec %lld nsec\n",
++			       t1.tv_sec, t1.tv_nsec, t2.tv_sec, t2.tv_nsec);
++
++	pthread_mutex_unlock(&m);
++
++out:
++	pthread_cond_destroy(&c);
++out_cond_attr:
++	pthread_condattr_destroy(&attr);
++out_mutex:
++	pthread_mutex_destroy(&m);
++
++	return ret;
++}
  
- int __cobalt_cond_wait_prologue64(struct cobalt_cond_shadow __user *u_cnd,
- 				  struct cobalt_mutex_shadow __user *u_mx,
--				  int *u_err, unsigned int timed,
-+				  int __user *u_err, unsigned int timed,
- 				  void __user *u_ts)
+ static int check_kernel_version(void)
  {
- 	return __cobalt_cond_wait_prologue(u_cnd, u_mx, u_err, u_ts,
-@@ -362,7 +362,7 @@ int __cobalt_cond_wait_prologue64(struct cobalt_cond_shadow __user *u_cnd,
- COBALT_SYSCALL(cond_wait_prologue, nonrestartable,
- 	       (struct cobalt_cond_shadow __user *u_cnd,
- 		struct cobalt_mutex_shadow __user *u_mx,
--		int *u_err,
-+		int __user *u_err,
- 		unsigned int timed,
- 		struct __user_old_timespec __user *u_ts))
- {
-@@ -373,7 +373,7 @@ COBALT_SYSCALL(cond_wait_prologue, nonrestartable,
- COBALT_SYSCALL(cond_wait_prologue64, nonrestartable,
- 	       (struct cobalt_cond_shadow __user *u_cnd,
- 		struct cobalt_mutex_shadow __user *u_mx,
--		int *u_err,
-+		int __user *u_err,
- 		unsigned int timed,
- 		struct __kernel_timespec __user *u_ts))
- {
-diff --git a/kernel/cobalt/posix/cond.h b/kernel/cobalt/posix/cond.h
-index b087b189e..1fd4256ce 100644
---- a/kernel/cobalt/posix/cond.h
-+++ b/kernel/cobalt/posix/cond.h
-@@ -41,14 +41,14 @@ struct cobalt_cond {
+@@ -1199,5 +1292,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
  
- int __cobalt_cond_wait_prologue(struct cobalt_cond_shadow __user *u_cnd,
- 				struct cobalt_mutex_shadow __user *u_mx,
--				int *u_err,
-+				int __user *u_err,
- 				void __user *u_ts,
- 				int (*fetch_timeout)(struct timespec64 *ts,
- 						     const void __user *u_ts));
- 
- int __cobalt_cond_wait_prologue64(struct cobalt_cond_shadow __user *u_cnd,
- 				  struct cobalt_mutex_shadow __user *u_mx,
--				  int *u_err, unsigned int timed,
-+				  int __user *u_err, unsigned int timed,
- 				  void __user *u_ts);
- 
- COBALT_SYSCALL_DECL(cond_init,
-@@ -61,14 +61,14 @@ COBALT_SYSCALL_DECL(cond_destroy,
- COBALT_SYSCALL_DECL(cond_wait_prologue,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
--		     int *u_err,
-+		     int __user *u_err,
- 		     unsigned int timed,
- 		     struct __user_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(cond_wait_prologue64,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
--		     int *u_err,
-+		     int __user *u_err,
- 		     unsigned int timed,
- 		     struct __kernel_timespec __user *u_ts));
- 
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index fbd2b7f79..a6cf218ea 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -278,7 +278,7 @@ COBALT_SYSCALL32emu(mutex_timedlock64, primary,
- COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
--		     int *u_err,
-+		     int __user *u_err,
- 		     unsigned int timed,
- 		     struct old_timespec32 __user *u_ts))
- {
-@@ -289,7 +289,7 @@ COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
- COBALT_SYSCALL32emu(cond_wait_prologue64, nonrestartable,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     struct cobalt_mutex_shadow __user *u_mx,
--		     int *u_err,
-+		     int __user *u_err,
- 		     unsigned int timed,
- 		     struct __kernel_timespec __user *u_ts))
- {
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index cdaa903ea..a64d100e7 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -105,14 +105,14 @@ COBALT_SYSCALL32emu_DECL(mutex_timedlock64,
- COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
- 			 (struct cobalt_cond_shadow __user *u_cnd,
- 			  struct cobalt_mutex_shadow __user *u_mx,
--			  int *u_err,
-+			  int __user *u_err,
- 			  unsigned int timed,
- 			  struct old_timespec32 __user *u_ts));
- 
- COBALT_SYSCALL32emu_DECL(cond_wait_prologue64,
- 			 (struct cobalt_cond_shadow __user *u_cnd,
- 			  struct cobalt_mutex_shadow __user *u_mx,
--			  int *u_err,
-+			  int __user *u_err,
- 			  unsigned int timed,
- 			  struct __kernel_timespec __user *u_ts));
- 
++	ret = test_sc_cobalt_cond_wait_prologue();
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
 -- 
 2.30.2
 
