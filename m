@@ -1,15 +1,17 @@
-Message-ID: <e5af2c61-57be-55c6-4c03-e9b4670fa5fb@siemens.com>
-Date: Wed, 5 Jan 2022 15:58:42 +0100
-MIME-Version: 1.0
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH 0/7] y2038: cond_wait_prologue64 and related fixes
-Content-Language: en-US
+Date: Wed, 5 Jan 2022 15:08:36 +0000
+Message-ID: <034ac263dbb354ed8af7b575b0e884d97f8968c8.camel@siemens.com>
 References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
  <13d8cb9c-591d-481a-73b6-623b892deea0@siemens.com>
  <c53158602ef5d92c35dade7e66e34fcbafaa333c.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <c53158602ef5d92c35dade7e66e34fcbafaa333c.camel@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <e5af2c61-57be-55c6-4c03-e9b4670fa5fb@siemens.com>
+In-Reply-To: <e5af2c61-57be-55c6-4c03-e9b4670fa5fb@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D48C49F225962342B943CBB2870D19EC@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,38 +20,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T CED SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 05.01.22 15:56, Bezdeka, Florian (T CED SES-DE) wrote:
-> On Wed, 2022-01-05 at 15:43 +0100, Jan Kiszka wrote:
->> On 05.01.22 15:06, Florian Bezdeka wrote:
->>> Hi all,
->>>
->>> this is the last missing POSIX related y2038 affected syscall in
->>> Xenomai. With this applied we have two Xenomai specific syscalls
->>> missing:
->>>
->>>   - sc_cobalt_thread_setschedparam_ex
->>>   - sc_cobalt_thread_getschedparam_ex
->>>
->>> While adding tests for the introduced cond_wait_prologue64 I hit a
->>> kernel OOPS due to insuficient validation of user provided pointers.
->>> That has been addressed as well.
->>
->> Thanks for both! Is it possibly to move the fixes the front? That would
->> also ensure that I can easily pick them into stable.
-> 
-> Yes. Patch 4 and 7 could be moved to the front easily. Do you want me
-> to split patch 2 into the y2038 and non y2038 part, or does that not
-> qualify for stable at all?
-
-Can I reorder things myself, or does patch 4 break (patch 7 does not,
-already checked)? Then I just change the application order while doing
-git am.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+T24gV2VkLCAyMDIyLTAxLTA1IGF0IDE1OjU4ICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwNS4wMS4yMiAxNTo1NiwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBDRUQgU0VTLURFKSB3cm90ZToN
+Cj4gPiBPbiBXZWQsIDIwMjItMDEtMDUgYXQgMTU6NDMgKzAxMDAsIEphbiBLaXN6a2Egd3JvdGU6
+DQo+ID4gPiBPbiAwNS4wMS4yMiAxNTowNiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+ID4g
+PiBIaSBhbGwsDQo+ID4gPiA+IA0KPiA+ID4gPiB0aGlzIGlzIHRoZSBsYXN0IG1pc3NpbmcgUE9T
+SVggcmVsYXRlZCB5MjAzOCBhZmZlY3RlZCBzeXNjYWxsIGluDQo+ID4gPiA+IFhlbm9tYWkuIFdp
+dGggdGhpcyBhcHBsaWVkIHdlIGhhdmUgdHdvIFhlbm9tYWkgc3BlY2lmaWMgc3lzY2FsbHMNCj4g
+PiA+ID4gbWlzc2luZzoNCj4gPiA+ID4gDQo+ID4gPiA+ICAgLSBzY19jb2JhbHRfdGhyZWFkX3Nl
+dHNjaGVkcGFyYW1fZXgNCj4gPiA+ID4gICAtIHNjX2NvYmFsdF90aHJlYWRfZ2V0c2NoZWRwYXJh
+bV9leA0KPiA+ID4gPiANCj4gPiA+ID4gV2hpbGUgYWRkaW5nIHRlc3RzIGZvciB0aGUgaW50cm9k
+dWNlZCBjb25kX3dhaXRfcHJvbG9ndWU2NCBJIGhpdCBhDQo+ID4gPiA+IGtlcm5lbCBPT1BTIGR1
+ZSB0byBpbnN1ZmljaWVudCB2YWxpZGF0aW9uIG9mIHVzZXIgcHJvdmlkZWQgcG9pbnRlcnMuDQo+
+ID4gPiA+IFRoYXQgaGFzIGJlZW4gYWRkcmVzc2VkIGFzIHdlbGwuDQo+ID4gPiANCj4gPiA+IFRo
+YW5rcyBmb3IgYm90aCEgSXMgaXQgcG9zc2libHkgdG8gbW92ZSB0aGUgZml4ZXMgdGhlIGZyb250
+PyBUaGF0IHdvdWxkDQo+ID4gPiBhbHNvIGVuc3VyZSB0aGF0IEkgY2FuIGVhc2lseSBwaWNrIHRo
+ZW0gaW50byBzdGFibGUuDQo+ID4gDQo+ID4gWWVzLiBQYXRjaCA0IGFuZCA3IGNvdWxkIGJlIG1v
+dmVkIHRvIHRoZSBmcm9udCBlYXNpbHkuIERvIHlvdSB3YW50IG1lDQo+ID4gdG8gc3BsaXQgcGF0
+Y2ggMiBpbnRvIHRoZSB5MjAzOCBhbmQgbm9uIHkyMDM4IHBhcnQsIG9yIGRvZXMgdGhhdCBub3QN
+Cj4gPiBxdWFsaWZ5IGZvciBzdGFibGUgYXQgYWxsPw0KPiANCj4gQ2FuIEkgcmVvcmRlciB0aGlu
+Z3MgbXlzZWxmLCBvciBkb2VzIHBhdGNoIDQgYnJlYWsgKHBhdGNoIDcgZG9lcyBub3QsDQo+IGFs
+cmVhZHkgY2hlY2tlZCk/IFRoZW4gSSBqdXN0IGNoYW5nZSB0aGUgYXBwbGljYXRpb24gb3JkZXIg
+d2hpbGUgZG9pbmcNCj4gZ2l0IGFtLg0KDQpObyBicmVha2FnZSBleHBlY3RlZC4gVGhlIG9ubHkg
+InByb2JsZW1hdGljIiBvbmUgd291bGQgYmUgcGF0Y2ggMiBhcyBpdA0KdG91Y2hlcyB5MjAzOCBh
+cyB3ZWxsIGFzIG5vbi15MjAzOCBzeXNjYWxsIGRlZmluaXRpb25zLiBMZXQgbWUga25vdyBpZg0K
+SSBzaG91bGQgc3BsaXQgdGhhdCBpbnRvIHR3byBwYXJ0cyAod2hpY2ggd291bGQgYWxsb3cgdGhl
+IG5vbiB5MjAzOA0KcmVsYXRlZCBjbGVhbnVwIHRvIGJlIGFwcGxpZWQgdG8gc3RhYmxlIHNlcGFy
+YXRlbHkpDQoNCj4gDQo+IEphbg0KPiANCg0K
 
