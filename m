@@ -1,13 +1,13 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 6/7] y2038: testsuite/smokey/y2038: Add a missing error
- handling path
-Date: Wed,  5 Jan 2022 15:06:49 +0100
-Message-Id: <20220105140650.1033850-7-florian.bezdeka@siemens.com>
-In-Reply-To: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
-References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Message-ID: <13d8cb9c-591d-481a-73b6-623b892deea0@siemens.com>
+Date: Wed, 5 Jan 2022 15:43:26 +0100
 MIME-Version: 1.0
+Subject: Re: [PATCH 0/7] y2038: cond_wait_prologue64 and related fixes
+Content-Language: en-US
+References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-Initialization of the mutex used for mutex_timedlock64 tests could fail.
-We have to abort the test in this case.
+On 05.01.22 15:06, Florian Bezdeka wrote:
+> Hi all,
+> 
+> this is the last missing POSIX related y2038 affected syscall in
+> Xenomai. With this applied we have two Xenomai specific syscalls
+> missing:
+> 
+>   - sc_cobalt_thread_setschedparam_ex
+>   - sc_cobalt_thread_getschedparam_ex
+> 
+> While adding tests for the introduced cond_wait_prologue64 I hit a
+> kernel OOPS due to insuficient validation of user provided pointers.
+> That has been addressed as well.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- testsuite/smokey/y2038/syscall-tests.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks for both! Is it possibly to move the fixes the front? That would
+also ensure that I can easily pick them into stable.
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 874decc2a..2f4041e51 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -489,7 +489,8 @@ static int test_sc_cobalt_mutex_timedlock64(void)
- 	struct xn_timespec64 ts64;
- 	struct thread_context ctx = {0};
- 
--	ret = pthread_mutex_init(&mutex, NULL);
-+	if (!__T(ret, pthread_mutex_init(&mutex, NULL)))
-+		return ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+Thanks,
+Jan
+
 -- 
-2.30.2
-
+Siemens AG, Technology
+Competence Center Embedded Linux
 
