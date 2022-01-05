@@ -1,12 +1,12 @@
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 3/7] y2038: lib/cobalt: Dispatch cond_wait_prologue
+Date: Wed,  5 Jan 2022 15:06:46 +0100
+Message-Id: <20220105140650.1033850-4-florian.bezdeka@siemens.com>
+In-Reply-To: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
+References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-References: <CAPMj8MvTHmgqABPTdvsiN8F5m6j4Sa0EA7iBUjT2hYikyQaY_w@mail.gmail.com>
- <8f9d3ba7-e8b0-c302-b6cc-b8795efe1de0@siemens.com>
-In-Reply-To: <8f9d3ba7-e8b0-c302-b6cc-b8795efe1de0@siemens.com>
-From: Sam Daniel <daniel.jacob.samuel@gmail.com>
-Date: Thu, 16 Dec 2021 00:49:44 -0800
-Message-ID: <CAPMj8Mt+6gHSCpfAXHqBkjD4zbfCZV4sKo=u+-jJb3TLN4q4xw@mail.gmail.com>
-Subject: Re: Debugging kernel paging request oops
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, Dec 16, 2021 at 12:42 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 16.12.21 06:35, Sam Daniel via Xenomai wrote:
-> > Hello. I am running on a Xilinx ZCU102 (ARM64, Cortex A53) development
-> > board and I've written a lot of userspace software against the POSIX skin
-> > of Cobalt 3.1.
-> >
-> > For context, I have set isolcpus=1,2,3 as kernel boot args. I only run my
-> > Xenomai tasks on CPUs 1,2,3. I know that despite isolcpus, the Linux kernel
-> > will still run a few kthreads on those cores. I am worried that the cause
-> > of my issues might be my Xenomai tasks completely starving those Linux
-> > kthreads.
->
-> That is likely if your task actually dominates those isolated cores
-> (100% CPU usage). The Xenomai watchdog can catch such bugs and resolve
-> the lockup by kicking the CPU hog out of RT mode. Then you can analyze
-> why the task was not sleeping from time to time.
->
-> Jan
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+It libc reports time64_t support, cond_wait_prologue is now dispatched
+to the time64_t based syscall.
 
-I have CONFIG_XENO_OPT_WATCHDOG=y and CONFIG_XENO_OPT_DEBUG=y set but
-don't get any Xenomai/watchdog related output when this kernel oops
-occurs.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/cond.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index 1bf5c74b3..35b367a73 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -227,6 +227,20 @@ static void __pthread_cond_cleanup(void *data)
+ 	c->mutex->lockcnt = c->count;
+ }
+ 
++static inline int do_sc_cond_wait_prologue(struct cobalt_cond_shadow *cnd,
++					   struct cobalt_mutex_shadow *mx,
++					   int *err, int timed,
++					   const struct timespec *abstime)
++{
++#ifdef __USE_TIME_BITS64
++	long sc_nr = sc_cobalt_cond_wait_prologue64;
++#else
++	long sc_nr = sc_cobalt_cond_wait_prologue;
++#endif
++
++	return XENOMAI_SYSCALL5(sc_nr, cnd, mx, err, timed, abstime);
++}
++
+ /**
+  * Wait on a condition variable.
+  *
+@@ -310,8 +324,7 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	err = XENOMAI_SYSCALL5(sc_cobalt_cond_wait_prologue,
+-			       _cnd, _mx, &c.err, 0, NULL);
++	err = do_sc_cond_wait_prologue(_cnd, _mx, &c.err, 0, NULL);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+@@ -399,8 +412,8 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	err = XENOMAI_SYSCALL5(sc_cobalt_cond_wait_prologue,
+-			       _cnd, _mx, &c.err, 1, abstime);
++	err = do_sc_cond_wait_prologue(_cnd, _mx, &c.err, 1, abstime);
++
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+ 	pthread_cleanup_pop(0);
+-- 
+2.30.2
+
 
