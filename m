@@ -1,7 +1,8 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 7/7] cobalt: Protect __xn_get_user() by access_ok()
-Date: Wed,  5 Jan 2022 15:06:50 +0100
-Message-Id: <20220105140650.1033850-8-florian.bezdeka@siemens.com>
+Subject: [PATCH 6/7] y2038: testsuite/smokey/y2038: Add a missing error
+ handling path
+Date: Wed,  5 Jan 2022 15:06:49 +0100
+Message-Id: <20220105140650.1033850-7-florian.bezdeka@siemens.com>
 In-Reply-To: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
 References: <20220105140650.1033850-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
@@ -17,60 +18,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-According to the doctype provided by __get_user (which is used by the
-__xn_get_user() macro) each call should be protected by access_ok().
-We missed such a protection at some places.
+Initialization of the mutex used for mutex_timedlock64 tests could fail.
+We have to abort the test in this case.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/internal.h  | 4 ++++
- kernel/cobalt/posix/nsem.c      | 3 ++-
- kernel/cobalt/posix/syscall32.c | 3 ++-
- 3 files changed, 8 insertions(+), 2 deletions(-)
+ testsuite/smokey/y2038/syscall-tests.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/cobalt/posix/internal.h b/kernel/cobalt/posix/internal.h
-index 8b134d0a7..36fbc9eb5 100644
---- a/kernel/cobalt/posix/internal.h
-+++ b/kernel/cobalt/posix/internal.h
-@@ -52,6 +52,10 @@ extern struct xnptree posix_ptree;
- static inline xnhandle_t cobalt_get_handle_from_user(xnhandle_t *u_h)
- {
- 	xnhandle_t handle;
-+
-+	if (unlikely(!access_ok(u_h, sizeof(*u_h))))
-+		return 0;
-+
- 	return __xn_get_user(handle, u_h) ? 0 : handle;
- }
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 874decc2a..2f4041e51 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -489,7 +489,8 @@ static int test_sc_cobalt_mutex_timedlock64(void)
+ 	struct xn_timespec64 ts64;
+ 	struct thread_context ctx = {0};
  
-diff --git a/kernel/cobalt/posix/nsem.c b/kernel/cobalt/posix/nsem.c
-index 89cf62b6f..a6481c092 100644
---- a/kernel/cobalt/posix/nsem.c
-+++ b/kernel/cobalt/posix/nsem.c
-@@ -222,7 +222,8 @@ COBALT_SYSCALL(sem_open, lostage,
- {
- 	struct cobalt_sem_shadow __user *usm;
+-	ret = pthread_mutex_init(&mutex, NULL);
++	if (!__T(ret, pthread_mutex_init(&mutex, NULL)))
++		return ret;
  
--	if (__xn_get_user(usm, u_addrp))
-+	if (!access_ok(u_addrp, sizeof(*u_addrp)) ||
-+	    __xn_get_user(usm, u_addrp))
- 		return -EFAULT;
- 
- 	usm = __cobalt_sem_open(usm, u_name, oflags, mode, value);
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index a6cf218ea..0c3f50a81 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -113,7 +113,8 @@ COBALT_SYSCALL32emu(sem_open, lostage,
- 	struct cobalt_sem_shadow __user *usm;
- 	compat_uptr_t cusm;
- 
--	if (__xn_get_user(cusm, u_addrp))
-+	if (!access_ok(u_addrp, sizeof(*u_addrp)) ||
-+	    __xn_get_user(cusm, u_addrp))
- 		return -EFAULT;
- 
- 	usm = __cobalt_sem_open(compat_ptr(cusm), u_name, oflags, mode, value);
+ 	/* Make sure we don't crash because of NULL pointers */
+ 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
 -- 
 2.30.2
 
