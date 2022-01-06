@@ -1,14 +1,15 @@
-From: Yann Le Chevoir <yann.lechevoir@cae.com>
-Subject: RE: rtnet rt_igb I210 not working with ARM
-Date: Wed, 5 Jan 2022 23:39:07 +0000
-Message-ID: <AS8PR09MB535414BA830FF82F9D26320B814B9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+Message-ID: <512ba0a9-fa7b-acd8-6dc6-a3032481934e@siemens.com>
+Date: Thu, 6 Jan 2022 09:18:58 +0100
+MIME-Version: 1.0
+Subject: Re: rtnet rt_igb I210 not working with ARM
+Content-Language: en-US
 References: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
  <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
-In-Reply-To: <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <AS8PR09MB535414BA830FF82F9D26320B814B9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <AS8PR09MB535414BA830FF82F9D26320B814B9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,105 +18,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Yann Le Chevoir <yann.lechevoir@cae.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiA+IEhlbGxvLA0KPiA+DQo+ID4gSSBoYXZlIGFuIGlzc3VlIHdpdGggcnRfaWdiIG5vdCB3b3Jr
-aW5nIHdpdGggYW4gSW50ZWwgSTIxMCBvbiBBUk0gKHNlZQ0KPiA+IHN5c3RlbSBjb25maWd1cmF0
-aW9uIGJlbG93KS4NCj4gPiBXaXRoIFdpcmVzaGFyaywgbG9va3MgbGlrZSBydHBpbmcgaXMgc2Vu
-ZGluZyBnYXJiYWdlIG9uIHRoZSBuZXR3b3JrDQo+ID4gKHNlZSBiZWxvdykuDQo+ID4gSSBub3Rp
-Y2UgdGhlcmUgaXMgbm8gaW50ZXJydXB0IGluIC9wcm9jL3hlbm9tYWkvaXJxIChzZWUgYmVsb3cp
-Lg0KPiA+IExvb2tzIGxpa2Ugb3RoZXIgcGVvcGxlIGdvdCBpc3N1ZXMgd2l0aCBJMjEwIGluIHRo
-ZSBwYXN0IGJ1dCBJIGFtIG5vdA0KPiA+IHN1cmUgaWYgdGhleSB3ZXJlIHNpbWlsYXIgYW5kIEkg
-YW0gbm90IGFibGUgdG8gZmluZCBhbnkgY29uY2x1c2lvbi4NCj4gPg0KPiA+IEJlbG93LCBJIHNo
-b3cgeW91IGhvdyBJIGFtIGluc2VydGluZyB0aGUga2VybmVsIG1vZHVsZSArIGhvdyBJIGFtIGFi
-bGUNCj4gPiB0byBoYXZlIGl0IHdvcmtpbmcgd2l0aCBpZ2IgKG5vIHJlYWx0aW1lKSBhbmQgcnRf
-ZmVjIChkaWZmZXJlbnQgZHJpdmVyDQo+ID4gZm9yIHRoZSBvdGhlciBFdGhlcm5ldCBjb250cm9s
-bGVyIG9uIHRoZSBzYW1lIGJvYXJkKS4NCj4gPg0KPiA+IFdoYXQgY2FuIEkgZG8gdG8gc29sdmUg
-dGhpcyBpc3N1ZT8NCj4gPiBJcyB0aGVyZSBhbnl0aGluZyBlbHNlIEkgY2FuIHRyeSB0byBnaXZl
-IHlvdSBtb3JlIGRhdGE/DQo+ID4NCj4gDQo+IENvdWxkIHlvdSBjaGVjayBpZiB0aGF0IGNhcmQg
-d29ya3MgaW4gYSBzdGFuZGFyZCBQQyAoeDg2LTY0KSB3aXRoIFJUbmV0Pw0KPiBDb3VsZCB5b3Ug
-YWxzbyBjaGVjayBpZiBsYXRlc3QgMy4yLjEgbWFrZXMgYW55IGRpZmZlcmVuY2U/IE5vdCBhbGwg
-Zml4ZXMgb24NCj4gUlRuZXQgaGF2ZSBiZWVuIGJhY2twb3J0ZWQgdG8gdmVyeS1vbGQtc3RhYmxl
-Lg0KPiANCj4gSmFuDQoNCkhlbGxvIEphbiwgYWxsLA0KDQpIYXBweSBuZXcgeWVhciENCg0KU29y
-cnkgZm9yIHRoZSBkZWxheSwgSSBuZWVkZWQgdG8gdXBkYXRlIG15IExpbnV4IGtlcm5lbA0KKEZy
-ZWVzY2FsZS9saW51eC1mc2xjKSBmcm9tIHZlcnNpb24gNC45LjY3IHRvIHZlcnNpb24gNS40LjE0
-NyB0byBiZSBhYmxlDQp0byBjb21waWxlIFhlbm9tYWkgMy4yLjEuIEkgYW0gc3RpbGwgdXNpbmcg
-SS1waXBlLCBub3QgRG92ZXRhaWwsIHJpZ2h0Pw0KSSBub3RpY2UgdGhhdCB0aGUgdHlwZSBvZiBp
-bnRlcnJ1cHRpb24gY2hhbmdlZCBzaW5jZSB0aGUgcHJldmlvdXMgdmVyc2lvbjoNCndlIG5vdyBo
-YXZlICJVc2luZyBNU0ktWCBpbnRlcnJ1cHRzIiBpbnN0ZWFkIG9mICJVc2luZyBNU0kgaW50ZXJy
-dXB0cyIuDQpBbmQgdGhlcmUgaXMgdGhpcyBuZXcgZXJyb3I6ICJFcnJvciAyIGdldHRpbmcgaW50
-ZXJydXB0IiB3aGljaCBwcmV2ZW50cyB0bw0KaGF2ZSBydGV0aDAgY29uZmlndXJlZCAoc2VlIGJl
-bG93KS4gVGhhdCdzIGRpZmZlcmVudCBmcm9tIGxhc3QgdGltZS4NCkkgbm90aWNlIHRoYXQgdGhl
-IGRyaXZlciBpZ2IgaXRzZWxmIGRvZXMgbm90IHdvcmsgd2l0aCB0aGUgbmV3IFhlbm9tYWkNCmtl
-cm5lbCAoc2VlIGJlbG93KS4gVGhhdCdzIGFsc28gZGlmZmVyZW50IGZyb20gbGFzdCB0aW1lLiBJ
-IGNvbmZpcm1lZCB0aGF0DQppdCB3b3JrcyB3aXRoIHRoZSBub24teGVub21haSBrZXJuZWwgdGhv
-dWdoIChzYW1lIGtlcm5lbCA1LjQuMTQ3IHdpdGhvdXQNCnRoZSBJLXBpcGUgcGF0Y2gpLg0KTm90
-ZTogdG8gaGF2ZSB0aGUgZHJpdmVyIGlnYiB3b3JraW5nIHdpdGggdGhlIFhlbm9tYWkga2VybmVs
-LCBJIGNhbiB1c2UNCnRoZSBsZWdhY3kgaW50ZXJydXB0cyAoInBjaT1ub21zaSIgb24gdGhlIGtl
-cm5lbCBjb21tYW5kIGxpbmUpLg0KRG9lcyB0aGlzICJlcnJvciAyIiBzb3VuZCBmYW1pbGlhcj8g
-SXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIGNhbiB0cnk/DQoNCkkgZGlkIG5vdCB0cnkgd2l0aCBh
-IHN0YW5kYXJkIHg4Ni02NCBQQyB5ZXQuIERvIHlvdSB0aGluayBpdCBtYXkgc3RpbGwNCmhlbHA/
-IEkgaGF2ZSB0aGUgZmVlbGluZyB0aGF0IHRoaXMgaXJxIGlzc3VlIGlzIHZlcnkgc3BlY2lmaWMg
-dG8gbXkgYXJtDQpTT0MuDQoNClRoYW5rcyBmb3IgeW91ciBoZWxwIQ0KDQpZYW5uDQoNCg0KIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KIyBJbnNlcnRp
-bmcgdGhlIHJ0X2lnYiBtb2R1bGUgd2l0aCBYZW5vbWFpIDMuMjogIw0KIyBXZSBoYXZlIHRoZSBl
-cnJvciAiRXJyb3IgMiBnZXR0aW5nIGludGVycnVwdCIgIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KDQojIG1vZHByb2JlIHJ0X2lnYg0KICAgICoq
-KiBSVG5ldCBmb3IgWGVub21haSB2My4yLjEgKioqDQogICAgUlRuZXQ6IGluaXRpYWxpc2luZyBy
-ZWFsLXRpbWUgbmV0d29ya2luZw0KICAgIHJ0X2lnYjogSW50ZWwoUikgR2lnYWJpdCBFdGhlcm5l
-dCBOZXR3b3JrIERyaXZlciAtIHZlcnNpb24gNS4yLjE4LWsNCiAgICBydF9pZ2I6IENvcHlyaWdo
-dCAoYykgMjAwNy0yMDE0IEludGVsIENvcnBvcmF0aW9uLg0KICAgIHJ0X2lnYiAwMDAwOjAxOjAw
-LjA6IGVuYWJsaW5nIGRldmljZSAoMDE0MCAtPiAwMTQyKQ0KICAgIFJUbmV0OiByZWdpc3RlcmVk
-IHJ0ZXRoMA0KICAgIHJ0X2lnYiAwMDAwOjAxOjAwLjA6IEludGVsKFIpIEdpZ2FiaXQgRXRoZXJu
-ZXQgTmV0d29yayBDb25uZWN0aW9uDQogICAgcnRfaWdiIDAwMDA6MDE6MDAuMDogcnRldGgwOiAo
-UENJZToyLjVHYi9zOldpZHRoIHgxKSAwMDo1MDo2NDowMDpkNToxMA0KICAgIHJ0X2lnYiAwMDAw
-OjAxOjAwLjA6IHJ0ZXRoMDogUEJBIE5vOiBGRkZGRkYtMEZGDQogICAgcnRfaWdiIDAwMDA6MDE6
-MDAuMDogVXNpbmcgTVNJLVggaW50ZXJydXB0cy4gMSByeCBxdWV1ZShzKSwgMSB0eCBxdWV1ZShz
-KQ0KIyBtb2Rwcm9iZSBydHVkcA0KIyBtb2Rwcm9iZSBydHBhY2tldA0KIyBydGlmY29uZmlnIHJ0
-ZXRoMCB1cCAxMC4wLjAuMQ0KICAgIHJ0X2lnYiAwMDAwOjAxOjAwLjA6IEVycm9yIDIgZ2V0dGlu
-ZyBpbnRlcnJ1cHQNCg0KDQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIw0KIyBJbnNlcnRpbmcgdGhlIGlnYiAobm8gcnQpIG1vZHVsZSB3aXRo
-IFhlbm9tYWkgMy4yOiAgICMNCiMgV2UgaGF2ZSB0aGUga2VybmVsIHRyYWNlICsgdGhlIGNvbnNv
-bGUgaGFuZ3MgICAgICAgICAjDQojIChJIHVuZGVyc3RhbmQgdGhhdCBpcnEgd2VyZSBub3QgZGlz
-YWJsZWQgLSBub3Qgc3VyZSkgIw0KIyBOb3RlOiB3aXRoICJwY2k9bm9tc2kiLCBpZ2Igd29ya3Mu
-IHJ0X2lnYiBkb2VzIG5vdCAgICMNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjDQoNCiMgbW9kcHJvYmUgaWdiDQogICAgaWdiOiBJbnRlbChS
-KSBHaWdhYml0IEV0aGVybmV0IE5ldHdvcmsgRHJpdmVyIC0gdmVyc2lvbiA1LjYuMC1rDQogICAg
-aWdiOiBDb3B5cmlnaHQgKGMpIDIwMDctMjAxNCBJbnRlbCBDb3Jwb3JhdGlvbi4NCiAgICBpZ2Ig
-MDAwMDowMTowMC4wOiBlbmFibGluZyBkZXZpY2UgKDAxNDAgLT4gMDE0MikNCiAgICBwcHMgcHBz
-MDogbmV3IFBQUyBzb3VyY2UgcHRwMA0KICAgIGlnYiAwMDAwOjAxOjAwLjA6IGFkZGVkIFBIQyBv
-biBldGgwDQogICAgaWdiIDAwMDA6MDE6MDAuMDogSW50ZWwoUikgR2lnYWJpdCBFdGhlcm5ldCBO
-ZXR3b3JrIENvbm5lY3Rpb24NCiAgICBpZ2IgMDAwMDowMTowMC4wOiBldGgwOiAoUENJZToyLjVH
-Yi9zOldpZHRoIHgxKSAwMDo1MDo2NDowMDpkNToxMA0KICAgIGlnYiAwMDAwOjAxOjAwLjA6IGV0
-aDA6IFBCQSBObzogRkZGRkZGLTBGRg0KICAgIGlnYiAwMDAwOjAxOjAwLjA6IFVzaW5nIE1TSS1Y
-IGludGVycnVwdHMuIDQgcnggcXVldWUocyksIDQgdHggcXVldWUocykNCiMgaWZjb25maWcgZXRo
-MCB1cCAxMC4wLjAuMQ0KICAgIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0K
-ICAgIFdBUk5JTkc6IENQVTogMCBQSUQ6IDMyIGF0IGtlcm5lbC9pcnEvaGFuZGxlLmM6MTUzIF9f
-aGFuZGxlX2lycV9ldmVudF9wZXJjcHUrMHgxMmMvMHgxMzANCiAgICBpcnEgMzAzIGhhbmRsZXIg
-aWdiX21zaXhfcmluZysweDAvMHgzOCBbaWdiXSBlbmFibGVkIGludGVycnVwdHMNCiAgICAuLi4N
-CiAgICBJLXBpcGUgZG9tYWluOiBMaW51eA0KICAgIFdvcmtxdWV1ZTogZXZlbnRzIGlnYl93YXRj
-aGRvZ190YXNrIFtpZ2JdDQoJLi4uDQogICAgWzw4MGJjYTBlND5dICh3YXJuX3Nsb3dwYXRoX2Zt
-dCkgZnJvbSBbPDgwMTc2NTgwPl0gKF9faGFuZGxlX2lycV9ldmVudF9wZXJjcHUrMHgxMmMvMHgx
-MzApDQogICAgWzw4MDE3NjU4MD5dIChfX2hhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KSBmcm9tIFs8
-ODAxNzY1YjA+XSAoaGFuZGxlX2lycV9ldmVudF9wZXJjcHUrMHgyYy8weDgwKQ0KICAgIFs8ODAx
-NzY1YjA+XSAoaGFuZGxlX2lycV9ldmVudF9wZXJjcHUpIGZyb20gWzw4MDE3NjYzYz5dIChoYW5k
-bGVfaXJxX2V2ZW50KzB4MzgvMHg1YykNCiAgICBbPDgwMTc2NjNjPl0gKGhhbmRsZV9pcnFfZXZl
-bnQpIGZyb20gWzw4MDE3YjZhND5dIChoYW5kbGVfZWRnZV9pcnErMHhhYy8weDIwMCkNCiAgICBb
-PDgwMTdiNmE0Pl0gKGhhbmRsZV9lZGdlX2lycSkgZnJvbSBbPDgwMTc1NmM4Pl0gKGdlbmVyaWNf
-aGFuZGxlX2lycSsweDI0LzB4MzQpDQogICAgWzw4MDE3NTZjOD5dIChnZW5lcmljX2hhbmRsZV9p
-cnEpIGZyb20gWzw4MDUwNGIxND5dIChkd19oYW5kbGVfbXNpX2lycSsweDg4LzB4ZGMpDQogICAg
-Wzw4MDUwNGIxND5dIChkd19oYW5kbGVfbXNpX2lycSkgZnJvbSBbPDgwNTA0YjhjPl0gKGR3X2No
-YWluZWRfbXNpX2lzcisweDI0LzB4NzApDQogICAgWzw4MDUwNGI4Yz5dIChkd19jaGFpbmVkX21z
-aV9pc3IpIGZyb20gWzw4MDFjNGI1ND5dIChfX2lwaXBlX2Rpc3BhdGNoX2lycSsweDg0LzB4MWYw
-KQ0KICAgIFs8ODAxYzRiNTQ+XSAoX19pcGlwZV9kaXNwYXRjaF9pcnEpIGZyb20gWzw4MDExNGM4
-ND5dIChfX2lwaXBlX2dyYWJfaXJxKzB4NjQvMHg3YykNCiAgICBbPDgwMTE0Yzg0Pl0gKF9faXBp
-cGVfZ3JhYl9pcnEpIGZyb20gWzw4MDRjOGJiND5dIChnaWNfaGFuZGxlX2lycSsweDRjLzB4OTAp
-DQogICAgWzw4MDRjOGJiND5dIChnaWNfaGFuZGxlX2lycSkgZnJvbSBbPDgwMTAxYjhjPl0gKF9f
-aXJxX3N2YysweDZjLzB4OTApDQogICAgWzw4MDEwMWI4Yz5dIChfX2lycV9zdmMpIGZyb20gWzw3
-ZjAwNjkxMD5dIChpZ2JfcmQzMisweDIwLzB4YjAgW2lnYl0pDQogICAgWzw3ZjAwNjkxMD5dIChp
-Z2JfcmQzMiBbaWdiXSkgZnJvbSBbPDdmMDIxNDBjPl0gKGlnYl9wdHBfcnhfaGFuZysweDFjLzB4
-YTggW2lnYl0pDQogICAgWzw3ZjAyMTQwYz5dIChpZ2JfcHRwX3J4X2hhbmcgW2lnYl0pIGZyb20g
-Wzw3ZjAwZGY2Yz5dIChpZ2Jfd2F0Y2hkb2dfdGFzaysweDFhOC8weDcyYyBbaWdiXSkNCiAgICBb
-PDdmMDBkZjZjPl0gKGlnYl93YXRjaGRvZ190YXNrIFtpZ2JdKSBmcm9tIFs8ODAxNDc2NzA+XSAo
-cHJvY2Vzc19vbmVfd29yaysweDIwNC8weDQ1OCkNCiAgICAuLi4NCg0K
+On 06.01.22 00:39, Yann Le Chevoir via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I have an issue with rt_igb not working with an Intel I210 on ARM (see
+>>> system configuration below).
+>>> With Wireshark, looks like rtping is sending garbage on the network
+>>> (see below).
+>>> I notice there is no interrupt in /proc/xenomai/irq (see below).
+>>> Looks like other people got issues with I210 in the past but I am not
+>>> sure if they were similar and I am not able to find any conclusion.
+>>>
+>>> Below, I show you how I am inserting the kernel module + how I am able
+>>> to have it working with igb (no realtime) and rt_fec (different driver
+>>> for the other Ethernet controller on the same board).
+>>>
+>>> What can I do to solve this issue?
+>>> Is there anything else I can try to give you more data?
+>>>
+>>
+>> Could you check if that card works in a standard PC (x86-64) with RTnet?
+>> Could you also check if latest 3.2.1 makes any difference? Not all fixes on
+>> RTnet have been backported to very-old-stable.
+>>
+>> Jan
+> 
+> Hello Jan, all,
+> 
+> Happy new year!
+> 
+> Sorry for the delay, I needed to update my Linux kernel
+> (Freescale/linux-fslc) from version 4.9.67 to version 5.4.147 to be able
+> to compile Xenomai 3.2.1. I am still using I-pipe, not Dovetail, right?
+
+Yes, everything up to and including 5.4 is I-pipe, 5.10 and later is
+dovetail.
+
+> I notice that the type of interruption changed since the previous version:
+> we now have "Using MSI-X interrupts" instead of "Using MSI interrupts".
+
+Maybe the host controller of your SoC gained MSI-X support betwen 4.9
+and 5.4? Then both the standard driver and rt_igb would try to use that
+instead (MSI is legacy).
+
+> And there is this new error: "Error 2 getting interrupt" which prevents to
+> have rteth0 configured (see below). That's different from last time.
+> I notice that the driver igb itself does not work with the new Xenomai
+> kernel (see below). That's also different from last time. I confirmed that
+> it works with the non-xenomai kernel though (same kernel 5.4.147 without
+> the I-pipe patch).
+
+5.4.147 - that is no official ipipe-arm release. Did you integrate the
+patch yourself base on which I-pipe core revision? And how about
+ipipe-core-5.4.151-arm-4?
+
+> Note: to have the driver igb working with the Xenomai kernel, I can use
+> the legacy interrupts ("pci=nomsi" on the kernel command line).
+> Does this "error 2" sound familiar? Is there anything else I can try?
+
+ENOENT - you could try search the code for sources of this error code.
+But it may also come from the PCI or MSI core.
+
+> 
+> I did not try with a standard x86-64 PC yet. Do you think it may still
+> help? I have the feeling that this irq issue is very specific to my arm
+> SOC.
+
+Not unlikely. I'm afraid there is no way around digging for the source
+of the error code. That can help to understand better what goes wrong
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
