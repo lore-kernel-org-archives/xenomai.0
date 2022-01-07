@@ -1,7 +1,6 @@
-Message-ID: <b05e766b-a77f-4479-315d-ddf1b210c5e1@siemens.com>
-Date: Fri, 7 Jan 2022 15:11:39 +0100
+Message-ID: <d7f8bc1c-abba-d066-70f1-c77afea4a1ad@siemens.com>
+Date: Fri, 7 Jan 2022 15:27:23 +0100
 MIME-Version: 1.0
-Subject: Re: [xenomai-images][PATCH v3 2/5] ci: Refactor inclusions
 Content-Language: en-US
 References: <cover.1641556862.git.jan.kiszka@siemens.com>
  <ae2031500a2efb199421d138cba5cfd65f50dfff.1641556862.git.jan.kiszka@siemens.com>
@@ -11,9 +10,10 @@ References: <cover.1641556862.git.jan.kiszka@siemens.com>
  <357b459d-87d6-f1c8-8157-5817c76dd636@siemens.com>
  <9d5acd62-8b3e-9369-ce5c-0b75bc39830d@siemens.com>
  <02626fc3-8c01-195f-a498-6e10c2b5641c@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Subject: Re: [xenomai-images][PATCH v3 2/5] ci: Refactor inclusions
 In-Reply-To: <02626fc3-8c01-195f-a498-6e10c2b5641c@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -23,9 +23,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 07.01.22 15:09, Jan Kiszka via Xenomai wrote:
+
+
+On 1/7/22 15:09, Jan Kiszka wrote:
 > On 07.01.22 14:58, Jan Kiszka via Xenomai wrote:
 >> On 07.01.22 14:49, Jan Kiszka via Xenomai wrote:
 >>> On 07.01.22 14:41, Gylstorff Quirin wrote:
@@ -51,31 +53,31 @@ On 07.01.22 15:09, Jan Kiszka via Xenomai wrote:
 >>>>>>>
 >>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 >>>>>>> ---
->>>>>>>    ci/gitlab-ci-base.yml                         |  3 +-
->>>>>>>    ..._4_19_xenomai_next.yml => kernel_4_19.yml} | 32 +++----
->>>>>>>    ..._5_10_xenomai_next.yml => kernel_5_10.yml} | 32 +++----
->>>>>>>    ...el_5_4_xenomai_next.yml => kernel_5_4.yml} | 32 +++----
->>>>>>>    ci/xenomai_3_0_x.yml                          | 23 ++---
->>>>>>>    ci/xenomai_3_1_x.yml                          | 91
+>>>>>>>     ci/gitlab-ci-base.yml                         |  3 +-
+>>>>>>>     ..._4_19_xenomai_next.yml => kernel_4_19.yml} | 32 +++----
+>>>>>>>     ..._5_10_xenomai_next.yml => kernel_5_10.yml} | 32 +++----
+>>>>>>>     ...el_5_4_xenomai_next.yml => kernel_5_4.yml} | 32 +++----
+>>>>>>>     ci/xenomai_3_0_x.yml                          | 23 ++---
+>>>>>>>     ci/xenomai_3_1_x.yml                          | 91
 >>>>>>> ++-----------------
->>>>>>>    ci/xenomai_next.yml                           | 13 ++-
->>>>>>>    7 files changed, 64 insertions(+), 162 deletions(-)
->>>>>>>    rename ci/{kernel_4_19_xenomai_next.yml => kernel_4_19.yml} (71%)
->>>>>>>    rename ci/{kernel_5_10_xenomai_next.yml => kernel_5_10.yml} (71%)
->>>>>>>    rename ci/{kernel_5_4_xenomai_next.yml => kernel_5_4.yml} (71%)
+>>>>>>>     ci/xenomai_next.yml                           | 13 ++-
+>>>>>>>     7 files changed, 64 insertions(+), 162 deletions(-)
+>>>>>>>     rename ci/{kernel_4_19_xenomai_next.yml => kernel_4_19.yml} (71%)
+>>>>>>>     rename ci/{kernel_5_10_xenomai_next.yml => kernel_5_10.yml} (71%)
+>>>>>>>     rename ci/{kernel_5_4_xenomai_next.yml => kernel_5_4.yml} (71%)
 >>>>>>>
 >>>>>>> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
 >>>>>>> index 367085d..27271ce 100644
 >>>>>>> --- a/ci/gitlab-ci-base.yml
 >>>>>>> +++ b/ci/gitlab-ci-base.yml
 >>>>>>> @@ -18,10 +18,11 @@ variables:
->>>>>>>      https_proxy: "$HTTPS_PROXY"
->>>>>>>      ftp_proxy: "$FTP_PROXY"
->>>>>>>      no_proxy: "$NO_PROXY"
+>>>>>>>       https_proxy: "$HTTPS_PROXY"
+>>>>>>>       ftp_proxy: "$FTP_PROXY"
+>>>>>>>       no_proxy: "$NO_PROXY"
 >>>>>>> -  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
->>>>>>>      ISAR_IMAGE: demo-image
->>>>>>>      ISAR_DISTRIBUTION: xenomai-demo
->>>>>>>      LAVA_TESTS_ENABLED: "true"
+>>>>>>>       ISAR_IMAGE: demo-image
+>>>>>>>       ISAR_DISTRIBUTION: xenomai-demo
+>>>>>>>       LAVA_TESTS_ENABLED: "true"
 >>>>>>> +  DEPLOY_DIR_EXTENSION: "${BUILD_IDENTIFIER}"
 >>>>>>> +  BUILD_IDENTIFIER:
 >>>>>>> "xenomai-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
@@ -101,18 +103,29 @@ On 07.01.22 15:09, Jan Kiszka via Xenomai wrote:
 >>
 > 
 > Missing:
->  - CI_PIPELINE_ID (probably auto-set by gitlab)
->  - ISAR_IMAGE
->  - ISAR_DISTRIBUTION
->  - S3_BUCKET_URL
->  - AWS_*
+>   - CI_PIPELINE_ID (probably auto-set by gitlab)
+Yeah this is a gitlab variable
+>   - ISAR_IMAGE
+This is mentioned in section `LAVA Template variable`
+>   - ISAR_DISTRIBUTION
+This is mentioned in section `LAVA Template variable`
+>   - S3_BUCKET_URL >   - AWS_*
 
-- USE_S3_BUCKET
-
+These are missing
 > 
 > Why is JOB_TEMPLATE_PATH configurable (use case)?
+
+The intention was to allow URLs to test new Templates.
+
 > What is the use case for TARGET_EXTENSION?
+
+The original use case was to to add additional kas options over the run 
+pipeline button, e.g. DEBUG build.
+
 > 
 > Jan
 > 
+
+Quirin
+
 
