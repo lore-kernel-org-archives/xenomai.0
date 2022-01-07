@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v3 2/5] ci: Refactor inclusions
-Date: Fri, 7 Jan 2022 13:00:59 +0100
-Message-ID: <ae2031500a2efb199421d138cba5cfd65f50dfff.1641556862.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v3 5/5] linux-xenomai: Refactor latest recipe
+Date: Fri, 7 Jan 2022 13:01:02 +0100
+Message-ID: <325a74f29dbc873738930925b76f484b4f3c56c3.1641556862.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1641556862.git.jan.kiszka@siemens.com>
 References: <cover.1641556862.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,552 +19,68 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This makes the inclusion structure more regular and reduces duplications
-by re-using the kernel_<version>.yml files for 3.1 and next. The trick
-is that we pull common variables to additional top-level 'variables:'
-blocks and only set what differes in the job-specific 'variables:'.
+Prepare for adding more dovetail kernel version and reformat the lengthy
+GIT_REPO and GIT_BRANCH inline-python statements. Should also improve
+readability.
 
-DEPLOY_DIR_EXTENSION is now identical to BUILD_IDENTIFIER, and the
-latter is derived from the XENOMAI_VERSION and KERNEL_VERSION. Only
-those version variables are set at xenomai_<version>.yml and kernel-
-specific job level, respectively.
+is_kernel() does not have to use startswith because we always compare
+exact version strings.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/gitlab-ci-base.yml                         |  3 +-
- ..._4_19_xenomai_next.yml => kernel_4_19.yml} | 32 +++----
- ..._5_10_xenomai_next.yml => kernel_5_10.yml} | 32 +++----
- ...el_5_4_xenomai_next.yml => kernel_5_4.yml} | 32 +++----
- ci/xenomai_3_0_x.yml                          | 23 ++---
- ci/xenomai_3_1_x.yml                          | 91 ++-----------------
- ci/xenomai_next.yml                           | 13 ++-
- 7 files changed, 64 insertions(+), 162 deletions(-)
- rename ci/{kernel_4_19_xenomai_next.yml => kernel_4_19.yml} (71%)
- rename ci/{kernel_5_10_xenomai_next.yml => kernel_5_10.yml} (71%)
- rename ci/{kernel_5_4_xenomai_next.yml => kernel_5_4.yml} (71%)
+ recipes-kernel/linux/linux-xenomai_latest.bb | 37 +++++++++++++++-----
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 367085d..27271ce 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -18,10 +18,11 @@ variables:
-   https_proxy: "$HTTPS_PROXY"
-   ftp_proxy: "$FTP_PROXY"
-   no_proxy: "$NO_PROXY"
--  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
-   ISAR_IMAGE: demo-image
-   ISAR_DISTRIBUTION: xenomai-demo
-   LAVA_TESTS_ENABLED: "true"
-+  DEPLOY_DIR_EXTENSION: "${BUILD_IDENTIFIER}"
-+  BUILD_IDENTIFIER: "xenomai-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 05946f7..bc5379e 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -20,17 +20,36 @@ def is_xeno_3_0(d):
  
- default:
-   image: ghcr.io/siemens/kas/kas-isar:2.6.3
-diff --git a/ci/kernel_4_19_xenomai_next.yml b/ci/kernel_4_19.yml
-similarity index 71%
-rename from ci/kernel_4_19_xenomai_next.yml
-rename to ci/kernel_4_19.yml
-index 6ae2c35..c55b26a 100644
---- a/ci/kernel_4_19_xenomai_next.yml
-+++ b/ci/kernel_4_19.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2020
-+# Copyright (c) Siemens AG, 2019 - 2022
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -13,76 +13,70 @@ build-4.19:qemu-amd64:
-   extends: .build:qemu-amd64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
+ def is_kernel(d, ver):
+     linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
+-    return linux_ver.startswith(ver)
++    return linux_ver == ver
  
- lava-test-4.19:qemu-amd64:
-   needs: [ "build-4.19:qemu-amd64" ]
-   extends: .lava-test:qemu-amd64
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- build-4.19:qemu-armhf:
-   extends: .build:qemu-armhf
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- lava-test-4.19:qemu-armhf:
-   needs: [ "build-4.19:qemu-armhf" ]
-   extends: .lava-test:qemu-armhf
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- build-4.19:qemu-arm64:
-   extends: .build:qemu-arm64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- lava-test-4.19:qemu-arm64:
-   needs: [ "build-4.19:qemu-arm64" ]
-   extends: .lava-test:qemu-arm64
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- build-4.19:hikey:
-   extends: .build:hikey
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- lava-test-4.19:hikey:
-   needs: [ "build-4.19:hikey" ]
-   extends: .lava-test:hikey
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- build-4.19:beagle-bone-black:
-   extends: .build:beagle-bone-black
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- lava-test-4.19:beagle-bone-black:
-   needs: [ "build-4.19:beagle-bone-black" ]
-   extends: .lava-test:beagle-bone-black
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- build-4.19:x86-64-efi:
-   extends: .build:x86-64-efi
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--    DEPLOY_DIR_EXTENSION: "4.19"
-+    KERNEL_VERSION: "4.19"
- 
- lava-test-4.19:x86-64-efi:
-   needs: [ "build-4.19:x86-64-efi" ]
-   extends: .lava-test:x86-64-efi
-   variables:
--    DEPLOY_DIR_EXTENSION: "4.19"
--    BUILD_IDENTIFIER: "4.19"
-+    KERNEL_VERSION: "4.19"
-diff --git a/ci/kernel_5_10_xenomai_next.yml b/ci/kernel_5_10.yml
-similarity index 71%
-rename from ci/kernel_5_10_xenomai_next.yml
-rename to ci/kernel_5_10.yml
-index 80bcf87..1c30617 100644
---- a/ci/kernel_5_10_xenomai_next.yml
-+++ b/ci/kernel_5_10.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2021
-+# Copyright (c) Siemens AG, 2019 - 2022
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -13,76 +13,70 @@ build-5.10:qemu-amd64:
-   extends: .build:qemu-amd64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:qemu-amd64:
-   needs: [ "build-5.10:qemu-amd64" ]
-   extends: .lava-test:qemu-amd64
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- build-5.10:qemu-armhf:
-   extends: .build:qemu-armhf
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:qemu-armhf:
-   needs: [ "build-5.10:qemu-armhf" ]
-   extends: .lava-test:qemu-armhf
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- build-5.10:qemu-arm64:
-   extends: .build:qemu-arm64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:qemu-arm64:
-   needs: [ "build-5.10:qemu-arm64" ]
-   extends: .lava-test:qemu-arm64
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- build-5.10:hikey:
-   extends: .build:hikey
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:hikey:
-   needs: [ "build-5.10:hikey" ]
-   extends: .lava-test:hikey
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- build-5.10:beagle-bone-black:
-   extends: .build:beagle-bone-black
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:beagle-bone-black:
-   needs: [ "build-5.10:beagle-bone-black" ]
-   extends: .lava-test:beagle-bone-black
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- build-5.10:x86-64-efi:
-   extends: .build:x86-64-efi
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.10.yml"
--    DEPLOY_DIR_EXTENSION: "5.10"
-+    KERNEL_VERSION: "5.10"
- 
- lava-test-5.10:x86-64-efi:
-   needs: [ "build-5.10:x86-64-efi" ]
-   extends: .lava-test:x86-64-efi
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.10"
--    BUILD_IDENTIFIER: "5.10"
-+    KERNEL_VERSION: "5.10"
-diff --git a/ci/kernel_5_4_xenomai_next.yml b/ci/kernel_5_4.yml
-similarity index 71%
-rename from ci/kernel_5_4_xenomai_next.yml
-rename to ci/kernel_5_4.yml
-index 6b2708f..f80b653 100644
---- a/ci/kernel_5_4_xenomai_next.yml
-+++ b/ci/kernel_5_4.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2020
-+# Copyright (c) Siemens AG, 2019 - 2022
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -13,76 +13,70 @@ build-5.4:qemu-amd64:
-   extends: .build:qemu-amd64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:qemu-amd64:
-   needs: [ "build-5.4:qemu-amd64" ]
-   extends: .lava-test:qemu-amd64
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- build-5.4:qemu-armhf:
-   extends: .build:qemu-armhf
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:qemu-armhf:
-   needs: [ "build-5.4:qemu-armhf" ]
-   extends: .lava-test:qemu-armhf
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- build-5.4:qemu-arm64:
-   extends: .build:qemu-arm64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:qemu-arm64:
-   needs: [ "build-5.4:qemu-arm64" ]
-   extends: .lava-test:qemu-arm64
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- build-5.4:hikey:
-   extends: .build:hikey
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:hikey:
-   needs: [ "build-5.4:hikey" ]
-   extends: .lava-test:hikey
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- build-5.4:beagle-bone-black:
-   extends: .build:beagle-bone-black
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:beagle-bone-black:
-   needs: [ "build-5.4:beagle-bone-black" ]
-   extends: .lava-test:beagle-bone-black
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- build-5.4:x86-64-efi:
-   extends: .build:x86-64-efi
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
--    DEPLOY_DIR_EXTENSION: "5.4"
-+    KERNEL_VERSION: "5.4"
- 
- lava-test-5.4:x86-64-efi:
-   needs: [ "build-5.4:x86-64-efi" ]
-   extends: .lava-test:x86-64-efi
-   variables:
--    DEPLOY_DIR_EXTENSION: "5.4"
--    BUILD_IDENTIFIER: "5.4"
-+    KERNEL_VERSION: "5.4"
-diff --git a/ci/xenomai_3_0_x.yml b/ci/xenomai_3_0_x.yml
-index cedd2e0..5d3ddee 100644
---- a/ci/xenomai_3_0_x.yml
-+++ b/ci/xenomai_3_0_x.yml
-@@ -1,40 +1,33 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2020
-+# Copyright (c) Siemens AG, 2019 - 2022
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
- #
- # SPDX-License-Identifier: MIT
- #
+ # default: amd64 or i386
+-GIT_REPO = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
+-GIT_BRANCH = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
+-
+-GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
+-GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
+-
+-GIT_REPO_arm64 = "${@'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm64.git'}"
+-GIT_BRANCH_arm64 = "${@'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
++GIT_REPO = "${@ \
++    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
++    else 'git://github.com/xenomai-ci/ipipe-x86.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH = "${@ \
++    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
++    else 'ipipe-x86-4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
 +
- include:
-   - local: '/ci/gitlab-ci-base.yml'
- 
-+variables:
-+  XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
-+  LINUX_BUILD_OPTION: ":opt-linux-latest-4.4.yml"
-+  XENOMAI_VERSION: "3.0.x"
-+  KERNEL_VERSION: "4.4"
++GIT_REPO_armhf = "${@ \
++    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
++    else 'git://github.com/xenomai-ci/ipipe-arm.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH_armhf = "${@ \
++    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
++    else 'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
 +
- build-4.4:beagle-bone-black:
-   extends: .build:beagle-bone-black
--  variables:
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.4.yml"
--    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
++GIT_REPO_arm64 = "${@ \
++    'git://github.com/xenomai-ci/ipipe-arm64.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH_arm64 = "${@ \
++    'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
  
- lava-test-4.4:beagle-bone-black:
-   needs: [ "build-4.4:beagle-bone-black" ]
-   extends: .lava-test:beagle-bone-black
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
--    BUILD_IDENTIFIER: "4.4"
- 
- build-4.4:x86-64-efi:
-   extends: .build:x86-64-efi
--  variables:
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.4.yml"
--    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
- 
- lava-test-4.4:x86-64-efi:
-   needs: [ "build-4.4:x86-64-efi" ]
-   extends: .lava-test:x86-64-efi
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
--    BUILD_IDENTIFIER: "4.4"
-diff --git a/ci/xenomai_3_1_x.yml b/ci/xenomai_3_1_x.yml
-index 1e0961f..b6f0010 100644
---- a/ci/xenomai_3_1_x.yml
-+++ b/ci/xenomai_3_1_x.yml
-@@ -1,97 +1,18 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2020
-+# Copyright (c) Siemens AG, 2020-2022
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
- #
- # SPDX-License-Identifier: MIT
- #
-+
- include:
-   - local: '/ci/gitlab-ci-base.yml'
-+  - local: '/ci/kernel_4_19.yml'
- 
--
--build-4.19:qemu-amd64:
--  extends: .build:qemu-amd64
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:qemu-amd64:
--  needs: [ "build-4.19:qemu-amd64" ]
--  extends: .lava-test:qemu-amd64
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
--
--build-4.19:qemu-armhf:
--  extends: .build:qemu-armhf
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:qemu-armhf:
--  needs: [ "build-4.19:qemu-armhf" ]
--  extends: .lava-test:qemu-armhf
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
--
--build-4.19:qemu-arm64:
--  extends: .build:qemu-arm64
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:qemu-arm64:
--  needs: [ "build-4.19:qemu-arm64" ]
--  extends: .lava-test:qemu-arm64
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
--
--build-4.19:hikey:
--  extends: .build:hikey
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:hikey:
--  needs: [ "build-4.19:hikey" ]
--  extends: .lava-test:hikey
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
--
--build-4.19:beagle-bone-black:
--  extends: .build:beagle-bone-black
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:beagle-bone-black:
--  needs: [ "build-4.19:beagle-bone-black" ]
--  extends: .lava-test:beagle-bone-black
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
--
--build-4.19:x86-64-efi:
--  extends: .build:x86-64-efi
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
--    LINUX_BUILD_OPTION: ":opt-linux-latest-4.19.yml"
--
--lava-test-4.19:x86-64-efi:
--  needs: [ "build-4.19:x86-64-efi" ]
--  extends: .lava-test:x86-64-efi
--  variables:
--    DEPLOY_DIR_EXTENSION: "xenomai-3.1.x"
--    BUILD_IDENTIFIER: "4.19"
-+variables:
-+  XENOMAI_BUILD_OPTION: ":opt-xenomai-3.1.x.yml"
-+  XENOMAI_VERSION: "3.1.x"
-diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
-index b13dfa8..91275ae 100644
---- a/ci/xenomai_next.yml
-+++ b/ci/xenomai_next.yml
-@@ -1,15 +1,20 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2021
-+# Copyright (c) Siemens AG, 2019 - 2022
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
- #
- # SPDX-License-Identifier: MIT
- #
-+
- include:
-   - local: '/ci/gitlab-ci-base.yml'
--  - local: '/ci/kernel_4_19_xenomai_next.yml'
--  - local: '/ci/kernel_5_4_xenomai_next.yml'
--  - local: '/ci/kernel_5_10_xenomai_next.yml'
-+  - local: '/ci/kernel_4_19.yml'
-+  - local: '/ci/kernel_5_4.yml'
-+  - local: '/ci/kernel_5_10.yml'
-+
-+variables:
-+  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
-+  XENOMAI_VERSION: "next"
+ SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
+ SRCREV = "${AUTOREV}"
 -- 
 2.31.1
 
