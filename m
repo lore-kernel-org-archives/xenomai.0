@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 5/6] ci: Add 5.15 kernel
-Date: Fri, 7 Jan 2022 12:35:34 +0100
-Message-ID: <01bfbe81d6425af9715ba0e789c53996b2732d55.1641555334.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/6] drivers/net: fec: Account for changes of get/set_coalesce
+ ethtool callbacks in 5.15
+Date: Fri, 7 Jan 2022 12:35:32 +0100
+Message-ID: <961e1d8ef82d0b206f3f1ea895e6b1a46dec794e.1641555334.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1641555334.git.jan.kiszka@siemens.com>
 References: <cover.1641555334.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -21,58 +22,53 @@ From: Jan Kiszka <jan.kiszka@siemens.com>
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ kernel/drivers/net/drivers/freescale/fec_main.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 859a12b89b..8a9a631d41 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -178,6 +178,14 @@ variables:
-     paths:
-       - .ccache
+diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
+index 0192a09970..be0ed0c51e 100644
+--- a/kernel/drivers/net/drivers/freescale/fec_main.c
++++ b/kernel/drivers/net/drivers/freescale/fec_main.c
+@@ -2171,7 +2171,13 @@ static void fec_enet_itr_coal_set(struct net_device *ndev)
+ }
  
-+arm-5.15-head:
-+  extends: .build
-+  variables:
-+    ARCH: arm
-+    PIPELINE_REV: v5.15.y-dovetail-rebase
-+    PIPELINE_KERNEL: ${DOVETAIL_URL}
-+    KERNEL_DEFCONFIG: multi_v7_defconfig
-+
- arm-5.10-head:
-   extends: .build
-   variables:
-@@ -186,6 +194,14 @@ arm-5.10-head:
-     PIPELINE_KERNEL: ${DOVETAIL_URL}
-     KERNEL_DEFCONFIG: multi_v7_defconfig
+ static int
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
++		      struct kernel_ethtool_coalesce *kernel_coal,
++		      struct netlink_ext_ack *extack)
++#else
+ fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
++#endif
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
  
-+arm64-5.15-head:
-+  extends: .build
-+  variables:
-+    ARCH: arm64
-+    PIPELINE_REV: v5.15.y-dovetail-rebase
-+    PIPELINE_KERNEL: ${DOVETAIL_URL}
-+    KERNEL_DEFCONFIG: defconfig
-+
- arm64-5.10-head:
-   extends: .build
-   variables:
-@@ -194,6 +210,14 @@ arm64-5.10-head:
-     PIPELINE_KERNEL: ${DOVETAIL_URL}
-     KERNEL_DEFCONFIG: defconfig
+@@ -2188,7 +2194,13 @@ fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
+ }
  
-+x86-5.15-head:
-+  extends: .build
-+  variables:
-+    ARCH: x86
-+    PIPELINE_REV: v5.15.y-dovetail-rebase
-+    PIPELINE_KERNEL: ${DOVETAIL_URL}
-+    KERNEL_DEFCONFIG: x86_64_defconfig
-+
- x86-5.10-head:
-   extends: .build
-   variables:
+ static int
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
++		      struct kernel_ethtool_coalesce *kernel_coal,
++		      struct netlink_ext_ack *extack)
++#else
+ fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
++#endif
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct device *dev = &fep->pdev->dev;
+@@ -2240,7 +2252,11 @@ static void fec_enet_itr_coal_init(struct net_device *ndev)
+ 	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
+ 	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
++#else
+ 	fec_enet_set_coalesce(ndev, &ec);
++#endif
+ }
+ 
+ static int fec_enet_get_tunable(struct net_device *netdev,
 -- 
 2.31.1
 
