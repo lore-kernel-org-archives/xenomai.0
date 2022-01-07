@@ -1,9 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/5] ci: Drop builds for kernels older than 5.10
-Date: Thu, 16 Dec 2021 16:48:21 +0100
-Message-ID: <72680925e637c673754563d9100362794b045534.1639669704.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1639669704.git.jan.kiszka@siemens.com>
-References: <cover.1639669704.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v4 8/8] linux-xenomai: Refactor latest recipe
+Date: Fri, 7 Jan 2022 16:03:03 +0100
+Message-ID: <31dbd5ef4fa257040322111e7f51f1411181f602.1641567783.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
+References: <cover.1641567783.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -19,92 +19,68 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Prepare for adding more dovetail kernel version and reformat the lengthy
+GIT_REPO and GIT_BRANCH inline-python statements. Should also improve
+readability.
+
+is_kernel() does not have to use startswith because we always compare
+exact version strings.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml | 56 --------------------------------------------------
- 1 file changed, 56 deletions(-)
+ recipes-kernel/linux/linux-xenomai_latest.bb | 37 +++++++++++++++-----
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 76daad792e..e4f35f2c45 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -187,22 +187,6 @@ arm-5.10-head:
-     PIPELINE_KERNEL: ${DOVETAIL_URL}
-     KERNEL_DEFCONFIG: multi_v7_defconfig
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 05946f7..bc5379e 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -20,17 +20,36 @@ def is_xeno_3_0(d):
  
--arm-5.4-release:
--  extends: .build
--  variables:
--    ARCH: arm
--    PIPELINE_REV: ipipe-core-5.4..*-arm-.*
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
--    KERNEL_DEFCONFIG: multi_v7_defconfig
--
--arm-4.19-release:
--  extends: .build
--  variables:
--    ARCH: arm
--    PIPELINE_REV: ipipe-core-4.19..*-arm-.*
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm.git
--    KERNEL_DEFCONFIG: multi_v7_defconfig
--
- arm64-5.10-head:
-   extends: .build
-   variables:
-@@ -211,22 +195,6 @@ arm64-5.10-head:
-     PIPELINE_KERNEL: ${DOVETAIL_URL}
-     KERNEL_DEFCONFIG: defconfig
+ def is_kernel(d, ver):
+     linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
+-    return linux_ver.startswith(ver)
++    return linux_ver == ver
  
--arm64-5.4-release:
--  extends: .build
--  variables:
--    ARCH: arm64
--    PIPELINE_REV: ipipe-core-5.4..*-arm64-.*
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
--    KERNEL_DEFCONFIG: defconfig
+ # default: amd64 or i386
+-GIT_REPO = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
+-GIT_BRANCH = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
 -
--arm64-4.19-cip-release:
--  extends: .build
--  variables:
--    ARCH: arm64
--    PIPELINE_REV: ipipe-core-4.19..*cip.*-arm64-.*
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-arm64.git
--    KERNEL_DEFCONFIG: defconfig
+-GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
+-GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
 -
- x86-5.10-head:
-   extends: .build
-   variables:
-@@ -235,30 +203,6 @@ x86-5.10-head:
-     PIPELINE_KERNEL: ${DOVETAIL_URL}
-     KERNEL_DEFCONFIG: x86_64_defconfig
+-GIT_REPO_arm64 = "${@'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm64.git'}"
+-GIT_BRANCH_arm64 = "${@'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
++GIT_REPO = "${@ \
++    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
++    else 'git://github.com/xenomai-ci/ipipe-x86.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH = "${@ \
++    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
++    else 'ipipe-x86-4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
++
++GIT_REPO_armhf = "${@ \
++    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
++    else 'git://github.com/xenomai-ci/ipipe-arm.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH_armhf = "${@ \
++    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
++    else 'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
++
++GIT_REPO_arm64 = "${@ \
++    'git://github.com/xenomai-ci/ipipe-arm64.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
++    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
++GIT_BRANCH_arm64 = "${@ \
++    'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
++    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
++    else 'v5.10.y-dovetail-rebase' }"
  
--x86-5.4-head:
--  extends: .build
--  variables:
--    ARCH: x86
--    PIPELINE_REV: ipipe-x86-5.4.y
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
--    KERNEL_DEFCONFIG: x86_64_defconfig
--
--x86-4.19-cip-head:
--  extends: .build
--  variables:
--    ARCH: x86
--    PIPELINE_REV: ipipe-x86-4.19.y-cip
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
--    KERNEL_DEFCONFIG: x86_64_defconfig
--
--x86-4.19-cip-release:
--  extends: .build
--  variables:
--    ARCH: x86
--    PIPELINE_REV: ipipe-core-4.19..*cip.*-x86-.*
--    PIPELINE_KERNEL: ${IPIPE_URL}/ipipe-x86.git
--    KERNEL_DEFCONFIG: x86_64_defconfig
--
- i386-userland:
-   extends: .build
-   variables:
+ SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
+ SRCREV = "${AUTOREV}"
 -- 
 2.31.1
 
