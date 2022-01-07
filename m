@@ -1,8 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 0/8] Update CI and kconfig for next and
- stable/3.2.x
-Date: Fri, 7 Jan 2022 16:02:55 +0100
-Message-ID: <cover.1641567783.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v4 3/8] ci: Drop JOB_TEMPLATE_PATH variable
+Date: Fri, 7 Jan 2022 16:02:58 +0100
+Message-ID: <e106154ed8c230594e003457d114afc29a7a377e.1641567783.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
+References: <cover.1641567783.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -16,55 +17,46 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Changes in v4:
- - clean up CI variable interface and documentation
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This accounts for change in Xenomai next as well as the fork-off of
-stable/3.2.x. And it simplifies our gitlab-ci configuration as bit.
+That's an interface without a real use case. Dropping it makes live
+easier for users that want to understand the setup.
 
-This is "v3" because of patch 3 which was still broken and required the
-other 2 in order to actually achieve the goal.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ scripts/run-lava-tests.sh | 3 +--
+ tests/README.md           | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-There is also 5.15 enabling in next already, but that will likely need
-an update once the pending mm-issue is understood and resolved.
-
-Jan
-
-Jan Kiszka (8):
-  xenomai: Unify stable recipes, add link for 3.2.x
-  ci: Refactor inclusions
-  ci: Drop JOB_TEMPLATE_PATH variable
-  ci: Drop no longer user TARGET_EXTENSION variable
-  ci: Update README.md regarding CI variables
-  ci: Add 3.2.x stable, confine next
-  Kconfig: Add entry for 3.2.x head
-  linux-xenomai: Refactor latest recipe
-
- .gitlab-ci.yml                                |  6 ++
- Kconfig                                       |  8 +-
- ci/gitlab-ci-base.yml                         |  4 +-
- ..._4_19_xenomai_next.yml => kernel_4_19.yml} | 32 +++----
- ..._5_10_xenomai_next.yml => kernel_5_10.yml} | 32 +++----
- ...el_5_4_xenomai_next.yml => kernel_5_4.yml} | 32 +++----
- ci/xenomai_3_0_x.yml                          | 23 ++---
- ci/xenomai_3_1_x.yml                          | 91 ++-----------------
- ci/xenomai_3_2_x.yml                          | 20 ++++
- ci/xenomai_next.yml                           | 11 ++-
- recipes-kernel/linux/linux-xenomai_latest.bb  | 37 ++++++--
- .../xenomai/xenomai_stable-3.0.x.bb           |  7 +-
- .../xenomai/xenomai_stable-3.1.x.bb           | 22 +----
- .../xenomai/xenomai_stable-3.2.x.bb           |  1 +
- scripts/deploy_to_aws.sh                      |  2 +-
- scripts/run-lava-tests.sh                     |  5 +-
- tests/README.md                               | 19 ++--
- 17 files changed, 142 insertions(+), 210 deletions(-)
- rename ci/{kernel_4_19_xenomai_next.yml => kernel_4_19.yml} (71%)
- rename ci/{kernel_5_10_xenomai_next.yml => kernel_5_10.yml} (71%)
- rename ci/{kernel_5_4_xenomai_next.yml => kernel_5_4.yml} (71%)
- create mode 100644 ci/xenomai_3_2_x.yml
- mode change 100644 => 120000 recipes-xenomai/xenomai/xenomai_stable-3.1.x.bb
- create mode 120000 recipes-xenomai/xenomai/xenomai_stable-3.2.x.bb
-
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index c090d83..30a853f 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -32,11 +32,10 @@ export DEPLOY_URL
+ 
+ echo "Deploy artifacts from '${artifact_url}'"
+ 
+-job_template_path="${JOB_TEMPLATE_PATH:-tests/jobs/xenomai}"
+ tmp_dir=$(mktemp -d)
+ template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+ 
+-cat "${job_template_path}-${TARGET}.yml" | envsubst > "$template"
++cat "tests/jobs/xenomai-${TARGET}.yml" | envsubst > "$template"
+ 
+ echo "submit lava job"
+ 
+diff --git a/tests/README.md b/tests/README.md
+index 3e17271..24ffb81 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -111,7 +111,6 @@ The following variables are used and set by the ci system:
+ - General build settings
+   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
+   - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
+-  - `JOB_TEMPLATE_PATH`: Path to the test templates - Default tests/jobs/xenomai
+   - `TARGET_EXTENSION`: Extension of the build job name
+ 
+ ## LAVA Template variable
 -- 
 2.31.1
 
