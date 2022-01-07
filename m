@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 8/8] linux-xenomai: Refactor latest recipe
-Date: Fri, 7 Jan 2022 16:03:03 +0100
-Message-ID: <31dbd5ef4fa257040322111e7f51f1411181f602.1641567783.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v4 5/8] ci: Update README.md regarding CI
+ variables
+Date: Fri, 7 Jan 2022 16:03:00 +0100
+Message-ID: <42919d0f2714acc3c24e23ef90a1a0a8f03a01a2.1641567783.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
 References: <cover.1641567783.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,68 +20,53 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Prepare for adding more dovetail kernel version and reformat the lengthy
-GIT_REPO and GIT_BRANCH inline-python statements. Should also improve
-readability.
+Some were undocumented, DEPLOY_DIR_EXTENSION is now history and was
+actually never an external interface.
 
-is_kernel() does not have to use startswith because we always compare
-exact version strings.
+Reindent the LAVA settings section at this chance.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- recipes-kernel/linux/linux-xenomai_latest.bb | 37 +++++++++++++++-----
- 1 file changed, 28 insertions(+), 9 deletions(-)
+ tests/README.md | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 05946f7..bc5379e 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -20,17 +20,36 @@ def is_xeno_3_0(d):
+diff --git a/tests/README.md b/tests/README.md
+index 5779e9b..0767192 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -96,21 +96,26 @@ the [Custom CI configuration path](https://code.siemens.com/help/ci/pipelines/se
+ ## CI Variables
  
- def is_kernel(d, ver):
-     linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
--    return linux_ver.startswith(ver)
-+    return linux_ver == ver
+ The following variables are used and set by the ci system:
+-- proxy settings:
++- Proxy settings:
+   - `HTTP_PROXY`    : http proxy
+   - `HTTPS_PROXY`   : https proxy
+   - `FTP_PROXY`     : ftp proxy
+   - `NO_PROXY`      : no proxy
  
- # default: amd64 or i386
--GIT_REPO = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-x86.git'}"
--GIT_BRANCH = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') else 'ipipe-x86-4.19.y-cip'}"
--
--GIT_REPO_armhf = "${@'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) else 'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm.git'}"
--GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
--
--GIT_REPO_arm64 = "${@'git://source.denx.de/xenomai/linux-dovetail.git' if is_kernel(d, '5.10') else 'git://github.com/xenomai-ci/ipipe-arm64.git'}"
--GIT_BRANCH_arm64 = "${@'v5.10.y-dovetail-rebase' if is_kernel(d, '5.10') else 'ipipe/5.4.y' if is_kernel(d, '5.4') else 'ipipe/4.19.y-cip'}"
-+GIT_REPO = "${@ \
-+    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
-+    else 'git://github.com/xenomai-ci/ipipe-x86.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
-+    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
-+GIT_BRANCH = "${@ \
-+    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
-+    else 'ipipe-x86-4.19.y-cip' if is_kernel(d, '4.19') \
-+    else 'ipipe-x86-5.4.y' if is_kernel(d, '5.4') \
-+    else 'v5.10.y-dovetail-rebase' }"
+ - LAVA settings:
+-  - `LAVA_MASTER_ACCOUNT`  : lava master account name to register lavacli for test execution
+-  - `LAVA_MASTER_TOKEN`    : token to connect with the lava master
+-  - `LAVA_ARTIFACTS_URL` : optional variable where to get the artifacts for testing
++  - `LAVA_MASTER_ACCOUNT`: lava master account name to register lavacli for test execution
++  - `LAVA_MASTER_TOKEN`: token to connect with the lava master
++  - `LAVA_ARTIFACTS_URL`: optional variable where to get the artifacts for testing
+   - `LAVA_MASTER_URL`: URL to the LAVA Master
+ 
+-- General build settings
++- Image deployment settings:
++  - `USE_S3_BUCKET`: Set to `1` in order to upload build artifacts to AWS S3
++  - `AWS_ACCESS_KEY_ID`: Key ID to use for uploading
++  - `AWS_SECRET_ACCESS_KEY`: Secret access key for uploading
++  - `S3_BUCKET_URL`: S3 URL where to place the artifacts (synchronize with `LAVA_ARTIFACTS_URL`)
 +
-+GIT_REPO_armhf = "${@ \
-+    'git://github.com/xenomai-ci/ipipe.git' if is_xeno_3_0(d) \
-+    else 'git://github.com/xenomai-ci/ipipe-arm.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
-+    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
-+GIT_BRANCH_armhf = "${@ \
-+    'ipipe-4.4.y-cip' if is_xeno_3_0(d) \
-+    else 'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
-+    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
-+    else 'v5.10.y-dovetail-rebase' }"
-+
-+GIT_REPO_arm64 = "${@ \
-+    'git://github.com/xenomai-ci/ipipe-arm64.git' if is_kernel(d, '4.19') or is_kernel(d, '5.4') \
-+    else 'git://source.denx.de/xenomai/linux-dovetail.git' }"
-+GIT_BRANCH_arm64 = "${@ \
-+    'ipipe/4.19.y-cip' if is_kernel(d, '4.19') \
-+    else 'ipipe/5.4.y' if is_kernel(d, '5.4') \
-+    else 'v5.10.y-dovetail-rebase' }"
++- Build settings:
+   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
+-  - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
  
- SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
- SRCREV = "${AUTOREV}"
+ ## LAVA Template variable
+ 
 -- 
 2.31.1
 
