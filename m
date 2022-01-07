@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 7/8] Kconfig: Add entry for 3.2.x head
-Date: Fri, 7 Jan 2022 16:03:02 +0100
-Message-ID: <1527356eb04aa7248b3253b6938654341f9ac7f1.1641567783.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v4 6/8] ci: Add 3.2.x stable, confine next
+Date: Fri, 7 Jan 2022 16:03:01 +0100
+Message-ID: <f7056d1a16b0ed0cebaa555b09172c6b0f23dcdf.1641567783.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
 References: <cover.1641567783.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,47 +19,64 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Open up the building & testing for stable/v3.2.x by moving current
+'next' rules over. As the next Xenomai release dropped support for
+I-pipe kernels, drop anything but 5.10 from the related CI rules for the
+development head. That also avoids increasing the CI load too much.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- Kconfig | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .gitlab-ci.yml                             | 6 ++++++
+ ci/{xenomai_next.yml => xenomai_3_2_x.yml} | 4 ++--
+ ci/xenomai_next.yml                        | 2 --
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+ copy ci/{xenomai_next.yml => xenomai_3_2_x.yml} (81%)
 
-diff --git a/Kconfig b/Kconfig
-index 8337d3f..df47058 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -63,6 +63,9 @@ choice
- config XENOMAI_LATEST
- 	bool "Head of next branch"
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index c1eb0b3..58398fc 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -32,6 +32,12 @@ stable/v3.1.x:
+     include:
+       - local: '/ci/xenomai_3_1_x.yml'
  
-+config XENOMAI_3_2_LATEST
-+	bool "Head of stable/v3.2.x branch"
++stable/v3.2.x:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/xenomai_3_2_x.yml'
 +
- config XENOMAI_3_2
- 	bool "Latest 3.2.x release"
+ next:
+   extends: .parent
+   trigger:
+diff --git a/ci/xenomai_next.yml b/ci/xenomai_3_2_x.yml
+similarity index 81%
+copy from ci/xenomai_next.yml
+copy to ci/xenomai_3_2_x.yml
+index 91275ae..7ca77a3 100644
+--- a/ci/xenomai_next.yml
++++ b/ci/xenomai_3_2_x.yml
+@@ -16,5 +16,5 @@ include:
+   - local: '/ci/kernel_5_10.yml'
  
-@@ -78,6 +81,7 @@ endchoice
- config KAS_INCLUDE_XENOMAI
- 	string
- 	default "opt-xenomai-next.yml" if XENOMAI_LATEST
-+	default "opt-xenomai-3.2.x.yml" if XENOMAI_3_2_LATEST
- 	default "opt-xenomai-3.1.x.yml" if XENOMAI_3_1_LATEST
- 	default "opt-xenomai-3.0.x.yml" if XENOMAI_3_0_LATEST
+ variables:
+-  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
+-  XENOMAI_VERSION: "next"
++  XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml"
++  XENOMAI_VERSION: "3.2.x"
+diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
+index 91275ae..adb5990 100644
+--- a/ci/xenomai_next.yml
++++ b/ci/xenomai_next.yml
+@@ -11,8 +11,6 @@
  
-@@ -87,11 +91,11 @@ choice
+ include:
+   - local: '/ci/gitlab-ci-base.yml'
+-  - local: '/ci/kernel_4_19.yml'
+-  - local: '/ci/kernel_5_4.yml'
+   - local: '/ci/kernel_5_10.yml'
  
- config KERNEL_5_10_LATEST
- 	bool "Head of 5.10 Dovetail branch"
--	depends on XENOMAI_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_10
- 	bool "Latest 5.10 Dovetail version"
--	depends on XENOMAI_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_4_LATEST
- 	bool "Head of 5.4 I-pipe branch"
+ variables:
 -- 
 2.31.1
 
