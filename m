@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH v4 6/8] ci: Add 3.2.x stable, confine next
-Date: Fri, 7 Jan 2022 16:03:01 +0100
-Message-ID: <f7056d1a16b0ed0cebaa555b09172c6b0f23dcdf.1641567783.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v4 4/8] ci: Drop no longer user
+ TARGET_EXTENSION variable
+Date: Fri, 7 Jan 2022 16:02:59 +0100
+Message-ID: <26931a66cf444cb9cf0d97600f3fa88dc88ad4bc.1641567783.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1641567783.git.jan.kiszka@siemens.com>
 References: <cover.1641567783.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,64 +20,39 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Open up the building & testing for stable/v3.2.x by moving current
-'next' rules over. As the next Xenomai release dropped support for
-I-pipe kernels, drop anything but 5.10 from the related CI rules for the
-development head. That also avoids increasing the CI load too much.
+Was obsoleted by d3a501ebfe2c.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml                             | 6 ++++++
- ci/{xenomai_next.yml => xenomai_3_2_x.yml} | 4 ++--
- ci/xenomai_next.yml                        | 2 --
- 3 files changed, 8 insertions(+), 4 deletions(-)
- copy ci/{xenomai_next.yml => xenomai_3_2_x.yml} (81%)
+ ci/gitlab-ci-base.yml | 2 +-
+ tests/README.md       | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index c1eb0b3..58398fc 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -32,6 +32,12 @@ stable/v3.1.x:
-     include:
-       - local: '/ci/xenomai_3_1_x.yml'
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index cdf20e5..057b9dd 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -50,7 +50,7 @@ default:
+     - scripts/install-lavacli.sh
+     - scripts/run-lava-tests.sh ${TARGET}
+   variables:
+-    BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}${TARGET_EXTENSION}"
++    BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:${TARGET}"
+   artifacts:
+     when: always
+     reports:
+diff --git a/tests/README.md b/tests/README.md
+index 24ffb81..5779e9b 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -111,7 +111,6 @@ The following variables are used and set by the ci system:
+ - General build settings
+   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
+   - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
+-  - `TARGET_EXTENSION`: Extension of the build job name
  
-+stable/v3.2.x:
-+  extends: .parent
-+  trigger:
-+    include:
-+      - local: '/ci/xenomai_3_2_x.yml'
-+
- next:
-   extends: .parent
-   trigger:
-diff --git a/ci/xenomai_next.yml b/ci/xenomai_3_2_x.yml
-similarity index 81%
-copy from ci/xenomai_next.yml
-copy to ci/xenomai_3_2_x.yml
-index 91275ae..7ca77a3 100644
---- a/ci/xenomai_next.yml
-+++ b/ci/xenomai_3_2_x.yml
-@@ -16,5 +16,5 @@ include:
-   - local: '/ci/kernel_5_10.yml'
+ ## LAVA Template variable
  
- variables:
--  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
--  XENOMAI_VERSION: "next"
-+  XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml"
-+  XENOMAI_VERSION: "3.2.x"
-diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
-index 91275ae..adb5990 100644
---- a/ci/xenomai_next.yml
-+++ b/ci/xenomai_next.yml
-@@ -11,8 +11,6 @@
- 
- include:
-   - local: '/ci/gitlab-ci-base.yml'
--  - local: '/ci/kernel_4_19.yml'
--  - local: '/ci/kernel_5_4.yml'
-   - local: '/ci/kernel_5_10.yml'
- 
- variables:
 -- 
 2.31.1
 
