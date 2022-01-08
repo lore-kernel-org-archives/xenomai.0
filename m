@@ -3,9 +3,9 @@ References: <de71569b-291a-afad-14f1-6f876b9cffde@siemens.com>
  <87a6g6s0d6.fsf@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: mm problems with 5.15.9-dovetail1
-Date: Sat, 08 Jan 2022 16:45:45 +0100
+Date: Sat, 08 Jan 2022 16:49:18 +0100
 In-reply-to: <87a6g6s0d6.fsf@xenomai.org>
-Message-ID: <875yqurzyn.fsf@xenomai.org>
+Message-ID: <87y23qqlbk.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,10 +16,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
 
-Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+Philippe Gerum <rpm@xenomai.org> writes:
 
 > Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
 >
@@ -45,9 +46,11 @@ Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
 >> posix_fork is triggering the bug. The logic disabling COW for dovetailed
 >> tasks breaks with Cobalt over 5.15, but does not with EVL which explains
 >> why I did not notice earlier. Working on this.
+>
+> Can you confirm this helps on your end?
+>
 
-This bug was introduced in Dovetail for kernel v5.13, so it has no
-impact on xenomai3 users who run v5.10.y.
+Nope, that fix is broken. Please ignore.
 
 -- 
 Philippe.
