@@ -1,15 +1,12 @@
-Message-ID: <fd064603-1ccc-5062-dbbe-e8f30377429a@siemens.com>
-Date: Sat, 8 Jan 2022 10:56:27 +0100
+References: <de71569b-291a-afad-14f1-6f876b9cffde@siemens.com>
+ <87y23s3byb.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: mm problems with 5.15.9-dovetail1
+Date: Sat, 08 Jan 2022 16:21:24 +0100
+In-reply-to: <87y23s3byb.fsf@xenomai.org>
+Message-ID: <87ee5is12i.fsf@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [xenomai-images][PATCH v4 0/8] Update CI and kconfig for next and
- stable/3.2.x
-Content-Language: en-US
-References: <cover.1641567783.git.jan.kiszka@siemens.com>
- <f132c881df231c0f13da4809c2d356b332873486.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <f132c881df231c0f13da4809c2d356b332873486.camel@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T CED SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 07.01.22 18:43, Bezdeka, Florian (T CED SES-DE) wrote:
-> On Fri, 2022-01-07 at 16:02 +0100, Jan Kiszka via Xenomai wrote:
->> Changes in v4:
->>  - clean up CI variable interface and documentation
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Hi,
+>
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>
+>> Hi Philippe,
 >>
->> This accounts for change in Xenomai next as well as the fork-off of
->> stable/3.2.x. And it simplifies our gitlab-ci configuration as bit.
-> 
-> Can we simplify conf/distro/include/xenomai-version.inc now as well?
-> 
+>> seems we have some issue with the new 5.15 dovetail kernel, see e.g.
+>>
+>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/371693
+>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/371694
+>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/371695
+>> (kernel BUG at mm/rmap.c:1049!)
+>>
+>> Or are there changes needed on Xenomai side?
+>
+> Nope. Plain bug I'd say. I'll have look at this in a couple of days.
 
-We cannot simplify it as long as we support 3.0 and 3.1 with the
-recipes. We actually need to expand it when adding 5.15 kernel support
-so that 3.2 picks 5.10 and head 5.15.
-
-Jan
+posix_fork is triggering the bug. The logic disabling COW for dovetailed
+tasks breaks with Cobalt over 5.15, but does not with EVL which explains
+why I did not notice earlier. Working on this.
 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Philippe.
 
