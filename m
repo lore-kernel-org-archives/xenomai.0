@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] dovetail: mm: fix logic of COW-disabling check
-Date: Mon, 10 Jan 2022 08:55:45 +0100
-Message-Id: <20220110075545.912566-1-rpm@xenomai.org>
+Subject: [PATCH v5] dovetail: mm: fix logic of COW-disabling check
+Date: Mon, 10 Jan 2022 08:56:24 +0100
+Message-Id: <20220110075624.912660-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
