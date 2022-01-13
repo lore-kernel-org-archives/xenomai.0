@@ -1,11 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: Xenomai Community Call Minutes - Jan 12, 2022
-Date: Thu, 13 Jan 2022 00:32:57 +0000
-Message-ID: <MN2PR11MB4285D644B3D734F3E8E62CF6F2539@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+From: Arturo Laurenzi <arturo.laurenzi@gmail.com>
+Date: Thu, 13 Jan 2022 16:30:57 +0100
+Message-ID: <CAMMcbao8aCNnDqfQXBzRCKJD31eMX_rcsPymA+pgRRG6xTHCog@mail.gmail.com>
+Subject: Cobalt over dovetail implementation status
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +12,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hi all,
+in our lab we're relying on Xenomai 3.1 + RTnet in order to control our
+robotic platforms, which are seen as a network of EtherCat slaves.
+I'd like to know more about the implementation status of Xenomai (cobalt)
+over Dovetail, which to my understanding will be the only way to use > 5.4
+kernel versions.
 
-Attendees:
-Jan Kiszka,  Rick Wang, Florian Bezdeka, Jianbo Cao, Qiang Zhang, Hongzhan =
-Chen
+We mostly use the Posix API (thread, mutex, condvar), timers, IDDP, XDDP,
+shared memory, and RTnet.
 
+Is Dovetail already feature-complete w.r.t. Ipipe?
 
-*Community update:
+Is RTnet available?
 
-1.	5.15 Linux related bug fixing
-2.	xenomai 3.3 ongoing - drop and adjust some APIs and remove IPIPE.
-3.	kernel-shark  bug fixing - ongoing.
-4.	Can driver and corresponding smoke test updating.
-5.	new bug reported on xenomai 3.2 - IPIPE base.
-6. 	Xenomai community conference in PRC - rough target early Q2
-=09
+How to migrate from an Ipipe kernel .config to a Dovetail counterpart?
 
-Regards
-
-Hongzhan Chen
-
+Thank you very much,
+Arturo
