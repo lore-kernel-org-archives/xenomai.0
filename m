@@ -1,7 +1,7 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] lib: Fix fallback signature of pthread_mutexattr_setrobust
-Date: Mon, 17 Jan 2022 17:52:34 +0100
-Message-Id: <20220117165234.387081-1-florian.bezdeka@siemens.com>
+Subject: [PATCH] cobalt: Fix resource leak of cobalt_monitor
+Date: Mon, 17 Jan 2022 17:53:41 +0100
+Message-Id: <20220117165341.387782-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -15,35 +15,50 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Detected when trying to compile Xenomai on a 32bit system using latest
-glibc release (2.34) without running autoreconf to regenerate
-xeno_config.h.
+We have a test within the smokey testsuite which actually does
+something like
 
-The signature of _setrobust was mixed with the signature of _getrobust.
+   cobalt_monitor_init()
+   cobalt_monitor_wait()
+       cobalt_monitor_enter()
+         -> timeout
+       cobalt_monitor_exit()
+   cobalt_monitor_destroy()
 
-Updates https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/31
+If the posix_mutex tests were run right after this scenario the mutex
+tests failed. The wrong mutex state was caused by the monitor in the
+previous test not being cleaned up properly.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/boilerplate/libc.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/include/boilerplate/libc.h b/include/boilerplate/libc.h
-index 797e377a2..071cdf321 100644
---- a/include/boilerplate/libc.h
-+++ b/include/boilerplate/libc.h
-@@ -247,9 +247,8 @@ __weak int shm_unlink(const char *name)
- #ifdef HAVE_PTHREAD_MUTEXATTR_SETROBUST_NP
- #define pthread_mutexattr_setrobust	pthread_mutexattr_setrobust_np
- #else
--static inline
--int pthread_mutexattr_setrobust(const pthread_mutexattr_t *attr,
--				int *robustness)
-+inline int pthread_mutexattr_setrobust(pthread_mutexattr_t *attr,
-+				       int robustness)
- {
- 	return ENOSYS;
- }
+I'm not 100% sure about this fix. Maybe we should move it into
+cobalt_monitor_reclaim, maybe I'm using the monitor in a wrong way
+inside the y2038 tests. Everything is possible...
+
+@Philippe: It would be very nice if you could have a look as well.
+Thanks!
+
+I triggered a CI run on all of our supported platforms. Looks good so far and
+the testsuite does no longer fail in the compat case as well. The compat tests
+were manually run. 64 bit kernel but 32 bit userland.
+
+
+ kernel/cobalt/posix/monitor.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/cobalt/posix/monitor.c b/kernel/cobalt/posix/monitor.c
+index 91396955c..c266b8b3b 100644
+--- a/kernel/cobalt/posix/monitor.c
++++ b/kernel/cobalt/posix/monitor.c
+@@ -425,6 +425,7 @@ COBALT_SYSCALL(monitor_destroy, primary,
+ 		goto fail;
+ 	}
+ 
++	xnsynch_release(&mon->gate, curr);
+ 	cobalt_monitor_reclaim(&mon->resnode, s); /* drops lock */
+ 
+ 	xnsched_run();
 -- 
 2.30.2
 
