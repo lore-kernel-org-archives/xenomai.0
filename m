@@ -1,10 +1,8 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] cobalt: Fix resource leak of cobalt_monitor
-Date: Mon, 17 Jan 2022 17:53:41 +0100
-Message-Id: <20220117165341.387782-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH] libtraceevent: Add new xenomai plugin to print param_ex
+ correctly
+Date: Mon, 17 Jan 2022 21:47:46 -0500
+Message-Id: <20220118024746.23951-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,53 +11,234 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-We have a test within the smokey testsuite which actually does
-something like
+For cobalt thread, there is special struct param_ex data stored in
+data record, we need to parse and print its content out correctly
+to hint user.
 
-   cobalt_monitor_init()
-   cobalt_monitor_wait()
-       cobalt_monitor_enter()
-         -> timeout
-       cobalt_monitor_exit()
-   cobalt_monitor_destroy()
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-If the posix_mutex tests were run right after this scenario the mutex
-tests failed. The wrong mutex state was caused by the monitor in the
-previous test not being cleaned up properly.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
-
-I'm not 100% sure about this fix. Maybe we should move it into
-cobalt_monitor_reclaim, maybe I'm using the monitor in a wrong way
-inside the y2038 tests. Everything is possible...
-
-@Philippe: It would be very nice if you could have a look as well.
-Thanks!
-
-I triggered a CI run on all of our supported platforms. Looks good so far and
-the testsuite does no longer fail in the compat case as well. The compat tests
-were manually run. 64 bit kernel but 32 bit userland.
-
-
- kernel/cobalt/posix/monitor.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/cobalt/posix/monitor.c b/kernel/cobalt/posix/monitor.c
-index 91396955c..c266b8b3b 100644
---- a/kernel/cobalt/posix/monitor.c
-+++ b/kernel/cobalt/posix/monitor.c
-@@ -425,6 +425,7 @@ COBALT_SYSCALL(monitor_destroy, primary,
- 		goto fail;
- 	}
- 
-+	xnsynch_release(&mon->gate, curr);
- 	cobalt_monitor_reclaim(&mon->resnode, s); /* drops lock */
- 
- 	xnsched_run();
+diff --git a/plugins/Makefile b/plugins/Makefile
+index 4c8cb17..dda584f 100644
+--- a/plugins/Makefile
++++ b/plugins/Makefile
+@@ -95,6 +95,7 @@ PLUGINS += plugin_sched_switch.so
+ PLUGINS += plugin_function.so
+ PLUGINS += plugin_futex.so
+ PLUGINS += plugin_xen.so
++PLUGINS += plugin_xenomai_schedparams.so
+ PLUGINS += plugin_scsi.so
+ PLUGINS += plugin_cfg80211.so
+ PLUGINS += plugin_tlb.so
+diff --git a/plugins/plugin_xenomai_schedparams.c b/plugins/plugin_xenomai_schedparams.c
+new file mode 100644
+index 0000000..28d7583
+--- /dev/null
++++ b/plugins/plugin_xenomai_schedparams.c
+@@ -0,0 +1,201 @@
++// SPDX-License-Identifier: LGPL-2.1
++/*
++ * Copyright (C) 2021 Intel Inc, Hongzhan Chen <hongzhan.chen@intel.com>
++ */
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <linux/sched.h>
++
++#include "event-parse.h"
++#include "trace-seq.h"
++
++
++#define SCHED_SPORADIC		10
++#define SCHED_TP		11
++#define SCHED_QUOTA		12
++
++#define SCHED_COBALT		42
++#define SCHED_WEAK		43
++
++struct __sched_ss_param {
++	int __sched_low_priority;
++	struct timespec __sched_repl_period;
++	struct timespec __sched_init_budget;
++	int __sched_max_repl;
++};
++
++struct __sched_rr_param {
++	struct timespec __sched_rr_quantum;
++};
++
++struct __sched_tp_param {
++	int __sched_partition;
++};
++
++struct __sched_quota_param {
++	int __sched_group;
++};
++
++struct sched_param_ex {
++	int sched_priority;
++	union {
++		struct __sched_ss_param ss;
++		struct __sched_rr_param rr;
++		struct __sched_tp_param tp;
++		struct __sched_quota_param quota;
++	} sched_u;
++};
++
++#define sched_quota_group	sched_u.quota.__sched_group
++#define sched_tp_partition	sched_u.tp.__sched_partition
++#define sched_ss_low_priority	sched_u.ss.__sched_low_priority
++#define sched_ss_repl_period	sched_u.ss.__sched_repl_period
++#define sched_ss_init_budget	sched_u.ss.__sched_init_budget
++#define sched_ss_max_repl	sched_u.ss.__sched_max_repl
++
++static void write_policy(struct trace_seq *p, int policy)
++{
++	trace_seq_printf(p, "policy=");
++
++	switch (policy) {
++	case SCHED_QUOTA:
++		trace_seq_printf(p, "quota ");
++		break;
++	case SCHED_TP:
++		trace_seq_printf(p, "tp ");
++		break;
++	case SCHED_NORMAL:
++		trace_seq_printf(p, "normal ");
++		break;
++	case SCHED_SPORADIC:
++		trace_seq_printf(p, "sporadic ");
++		break;
++	case SCHED_RR:
++		trace_seq_printf(p, "rr ");
++		break;
++	case SCHED_FIFO:
++		trace_seq_printf(p, "fifo ");
++		break;
++	case SCHED_COBALT:
++		trace_seq_printf(p, "cobalt ");
++		break;
++	case SCHED_WEAK:
++		trace_seq_printf(p, "weak ");
++		break;
++	default:
++		trace_seq_printf(p, "unknown ");
++		break;
++	}
++}
++
++/* save param */
++static void write_param(struct tep_format_field *field,
++				struct tep_record *record,
++				struct trace_seq *p, int policy)
++{
++	int offset;
++	struct sched_param_ex *params;
++
++	offset = field->offset;
++
++	if (!strncmp(field->type, "__data_loc", 10)) {
++		unsigned long long v;
++
++		if (tep_read_number_field(field, record->data, &v)) {
++			trace_seq_printf(p, "invalid_data_loc");
++			return;
++		}
++		offset = v & 0xffff;
++
++	}
++
++	params = (struct sched_param_ex *)((char *)record->data + offset);
++
++	trace_seq_printf(p, "param: { ");
++
++	switch (policy) {
++	case SCHED_QUOTA:
++		trace_seq_printf(p, "priority=%d, group=%d",
++				 params->sched_priority,
++				 params->sched_quota_group);
++		break;
++	case SCHED_TP:
++		trace_seq_printf(p, "priority=%d, partition=%d",
++				 params->sched_priority,
++				 params->sched_tp_partition);
++		break;
++	case SCHED_NORMAL:
++		break;
++	case SCHED_SPORADIC:
++		trace_seq_printf(p, "priority=%d, low_priority=%d, ",
++				 params->sched_priority,
++				 params->sched_ss_low_priority);
++
++		trace_seq_printf(p, "budget=(%ld.%09ld), period=(%ld.%09ld), "
++				 params->sched_ss_init_budget.tv_sec,
++				 params->sched_ss_init_budget.tv_nsec);
++
++		trace_seq_printf(p, "maxrepl=%d",
++				 params->sched_ss_max_repl);
++		break;
++	case SCHED_RR:
++	case SCHED_FIFO:
++	case SCHED_COBALT:
++	case SCHED_WEAK:
++	default:
++		trace_seq_printf(p, "priority=%d", params->sched_priority);
++		break;
++	}
++	trace_seq_printf(p, " }");
++	trace_seq_putc(p, '\0');
++
++}
++
++static int cobalt_schedparam_handler(struct trace_seq *s,
++				struct tep_record *record,
++				struct tep_event *event, void *context)
++{
++	struct tep_format_field *field;
++	unsigned long long val;
++
++	if (tep_get_field_val(s, event, "pth", record, &val, 1))
++		return trace_seq_putc(s, '!');
++	trace_seq_puts(s, "pth: ");
++	trace_seq_printf(s, "0x%08llx ", val);
++
++	if (tep_get_field_val(s, event, "policy", record, &val, 1) == 0)
++		write_policy(s, val);
++
++	field = tep_find_field(event, "param_ex");
++	if (field)
++		write_param(field, record, s, val);
++
++	return 0;
++}
++
++int TEP_PLUGIN_LOADER(struct tep_handle *tep)
++{
++	tep_register_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_setschedparam",
++					cobalt_schedparam_handler, NULL);
++
++	tep_register_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_getschedparam",
++					cobalt_schedparam_handler, NULL);
++
++	tep_register_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_create",
++					cobalt_schedparam_handler, NULL);
++
++	return 0;
++}
++
++void TEP_PLUGIN_UNLOADER(struct tep_handle *tep)
++{
++	tep_unregister_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_setschedparam",
++					cobalt_schedparam_handler, NULL);
++
++	tep_unregister_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_getschedparam",
++					cobalt_schedparam_handler, NULL);
++
++	tep_unregister_event_handler(tep, -1, "cobalt_posix", "cobalt_pthread_create",
++					cobalt_schedparam_handler, NULL);
++}
 -- 
-2.30.2
+2.17.1
 
 
