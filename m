@@ -1,7 +1,10 @@
 From: Uladzimir Bely <ubely@ilbers.de>
-Subject: [xenomai-images] [PATCH v2 0/2] Upcoming sbuild in Isar support
-Date: Tue, 18 Jan 2022 11:51:26 +0100
-Message-Id: <20220118105128.3007-1-ubely@ilbers.de>
+Subject: [xenomai-images] [PATCH v2 2/2] linux-xenomai: handle xenomai-kernel
+ patch in Debian way
+Date: Tue, 18 Jan 2022 11:51:28 +0100
+Message-Id: <20220118105128.3007-3-ubely@ilbers.de>
+In-Reply-To: <20220118105128.3007-1-ubely@ilbers.de>
+References: <20220118105128.3007-1-ubely@ilbers.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,25 +17,39 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, ubely@ilbers.de
 
-There is 'sbuild' patchset under development in Isar and it requires
-some changes in the downstream.
+This change moves generating xenomai-kernel.patch and applying it
+from the recipe into a build script in 'debian/' subdirectory.
 
-This patchset makes 'xenomai-images' compatible with it without breaking
-compatibility with current 'next' branch of Isar.
+This makes linux-xenomai recipe buildchroot-independent and
+allows to use it with any build system (e.g. sbuild).
 
-Changes since v1:
-- Removed bootstrap for xenomai recipe since it's done in debian/rules
-- Kernel patching is done in Debian way, so should be compatible with
-any build system. Both buildchroot and sbuild were tested.
-
-Uladzimir Bely (2):
-  xenomai: remove bootstrap task from dpkg_runbuild_prepend
-  linux-xenomai: handle xenomai-kernel patch in Debian way
-
+Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
+---
  recipes-kernel/linux/linux-xenomai.inc | 13 ++++++++-----
- recipes-xenomai/xenomai/xenomai.inc    | 17 -----------------
- 2 files changed, 8 insertions(+), 22 deletions(-)
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index 7dba96e..bd7db7d 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -49,9 +49,12 @@ dpkg_runbuild_prepend() {
+ 	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
+ 			 ${PV} ${LINUX_COMMIT})
+ 
+-	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
+-		--linux=${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=$ARCH \
+-		--outpatch=${WORKDIR}/xenomai-kernel.patch
+-	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
+-		-p1 -i ${WORKDIR}/xenomai-kernel.patch
++	if ! grep -q "prepare-kernel.sh" ${S}/debian/isar/build; then
++		cat << EOF | sed -i '/^do_build/ r /dev/stdin' ${S}/debian/isar/build
++    /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \\
++        --linux=. --arch=$ARCH \\
++        --outpatch=../xenomai-kernel.patch
++    patch -d . -p1 -i ../xenomai-kernel.patch
++EOF
++	fi
+ }
 -- 
 2.20.1
 
