@@ -1,10 +1,7 @@
 From: Uladzimir Bely <ubely@ilbers.de>
-Subject: [xenomai-images] [PATCH v2 1/2] xenomai: remove bootstrap task from
- dpkg_runbuild_prepend
-Date: Tue, 18 Jan 2022 11:51:27 +0100
-Message-Id: <20220118105128.3007-2-ubely@ilbers.de>
-In-Reply-To: <20220118105128.3007-1-ubely@ilbers.de>
-References: <20220118105128.3007-1-ubely@ilbers.de>
+Subject: [xenomai-images] [PATCH v2 0/2] Upcoming sbuild in Isar support
+Date: Tue, 18 Jan 2022 11:51:26 +0100
+Message-Id: <20220118105128.3007-1-ubely@ilbers.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,46 +14,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, ubely@ilbers.de
 
-This looks unneeded while bootstrapping is done in the same way
-in debian/rules file before the build.
+There is 'sbuild' patchset under development in Isar and it requires
+some changes in the downstream.
 
-Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
----
- recipes-xenomai/xenomai/xenomai.inc | 17 -----------------
- 1 file changed, 17 deletions(-)
+This patchset makes 'xenomai-images' compatible with it without breaking
+compatibility with current 'next' branch of Isar.
 
-diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-index fe84883..b8ec5bd 100644
---- a/recipes-xenomai/xenomai/xenomai.inc
-+++ b/recipes-xenomai/xenomai/xenomai.inc
-@@ -13,15 +13,6 @@ inherit dpkg
- 
- PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1 libxenomai-dev libxenomai1-dbgsym"
- 
--# use bitbake get_srcrev to get the current commit id
--def get_commit(d):
--    try:
--        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
--    except bb.fetch2.FetchError:
--        return ""
--
--COMMIT="${@get_commit(d)}"
--
- do_prepare_build() {
-     # Xenomai currently does not maintain its changelog, plus we want the
-     # actual package version in there.
-@@ -31,11 +22,3 @@ do_prepare_build() {
-     # package version more freely.
-     rm -f ${S}/debian/source/format
- }
--
--dpkg_runbuild_prepend() {
--    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
--                     ${PV} ${COMMIT})
--
--    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
--        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
--}
+Changes since v1:
+- Removed bootstrap for xenomai recipe since it's done in debian/rules
+- Kernel patching is done in Debian way, so should be compatible with
+any build system. Both buildchroot and sbuild were tested.
+
+Uladzimir Bely (2):
+  xenomai: remove bootstrap task from dpkg_runbuild_prepend
+  linux-xenomai: handle xenomai-kernel patch in Debian way
+
+ recipes-kernel/linux/linux-xenomai.inc | 13 ++++++++-----
+ recipes-xenomai/xenomai/xenomai.inc    | 17 -----------------
+ 2 files changed, 8 insertions(+), 22 deletions(-)
+
 -- 
 2.20.1
 
