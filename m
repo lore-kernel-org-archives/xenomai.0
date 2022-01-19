@@ -1,10 +1,11 @@
-From: "Olsen, Niels (INT)" <Niels.Olsen@Teledyne.com>
-Subject: Issue with driver-to-driver services
-Date: Wed, 19 Jan 2022 13:28:38 +0000
-Message-ID: <VI1PR04MB6272E4729403931D1F856C1493599@VI1PR04MB6272.eurprd04.prod.outlook.com>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Dovetail 5.10 - Xenomai huge page support
+Date: Wed, 19 Jan 2022 13:35:22 +0000
+Message-ID: <a92cf71bb68a9e0701fcd6de46055eb7f584136a.camel@siemens.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B807ADB19DBFE14AA8D94C61923EC44A@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,43 +17,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-We are having issues with a Xenomai driver module for a UART chip. The UART
-chip is connected to our i.MX8MN SOC via ECSPI, and I have a Xenomai SPI
-driver for i.MX ECSPI. The stock NXP 'spi-imx' driver is configured out of
-the kernel.
-
-The Xenomai SPI driver initializes successfully, and after boot there is a
-slave device node available in
-
-  /dev/rtdm/spi1/slave1.0
-
-When I modprobe the UART driver, its module_init routine opens the SPI
-device like this:
-
-  fd =3D rtdm_open("/dev/rtdm/spi1/slave1.0", O_RDWR);
-
-which succeeds.
-
-But when the module init routine then tries to initialize the UART device
-through SPI, the rtdm_ioctl()/rtdm_read()/rtdm_write() calls fail. I have
-traced the cause to be that 'ipipe_root_p' is true. In cobalt/rtdm/fd.c,
-the service routines for ioctl/read/write check 'ipipe_root_p', and when
-true, calls the non-realtime driver ops.
-
-So, it seems that when loading a realtime driver module with modprobe,
-the init routine is not executing in realtime mode.
-
-Is there something special we need to do in the module init routine, in
-order to switch to realtime mode?
-
-Environment:
- - i.MX8MN eval board
- - MAX14830 Quad UART eval board
- - NXP BSP 2.3.3, kernel 5.4.70
- - Xenomai 3.1.1
-
-TIA,
-Niels
-
-Teledyne Confidential; Commercially Sensitive Business Data
+SGkgYWxsLA0KDQphZnRlciBtaWdyYXRpbmcgZnJvbSA0LjE5LWlwaXBlIHRvIDUuMTAtZG92ZXRh
+aWwgaW50ZXJuYWwgdXNlcnMgYXJlDQpyZXBvcnRpbmcgdGhhdCB0aGV5IHJlY2VpdmUgc3BvcmFk
+aWMgU0lHWENQVXMuIFRoZSByZXBvcnRlZCByZWFzb24gaXMNCiJwYWdlX2ZhdWx0X3VzZXIiLsKg
+DQoNCkFmdGVyIGRpc2FibGluZyB0aGUgaHVnZSBwYWdlIHN1cHBvcnQgaW4gNS4xMCB0aGUgaXNz
+dWUgdmFuaXNoZWQuIFRlc3RzDQphcmUgc3RpbGwgcnVubmluZywgYnV0IHdlIGFyZSBvcHRpbWlz
+dGljIHRoYXQgd2UgZm91bmQgdGhlIHJvb3QgY2F1c2UuDQoNCkFyZSB0aGVyZSBhbnkga25vd24g
+bGltaXRhdGlvbnMgdG8gdGhlIGh1Z2UgcGFnZSBzdXBwb3J0IGluIFhlbm9tYWkgLw0KRG92ZXRh
+aWw/IE15IHVuZGVyc3RhbmRpbmcgaXMgdGhhdCBodWdlIHBhZ2VzIGFyZSBzdXBwb3J0ZWQgYnkg
+WGVub21haSwNCnNvIGFueSBpZGVhcyB3aGVyZSB0byBsb29rIGF0Pw0KDQpCZXN0IHJlZ2FyZHMs
+DQpGbG9yaWFuDQo=
 
