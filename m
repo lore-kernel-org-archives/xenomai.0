@@ -1,12 +1,15 @@
-From: Uladzimir Bely <ubely@ilbers.de>
-Subject: [xenomai-images] [PATCH v2 2/2] linux-xenomai: handle xenomai-kernel
- patch in Debian way
-Date: Tue, 18 Jan 2022 11:51:28 +0100
-Message-Id: <20220118105128.3007-3-ubely@ilbers.de>
-In-Reply-To: <20220118105128.3007-1-ubely@ilbers.de>
-References: <20220118105128.3007-1-ubely@ilbers.de>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH] libtraceevent: Add new xenomai plugin to print param_ex
+ correctly
+Date: Wed, 19 Jan 2022 01:25:28 +0000
+Message-ID: <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220118024746.23951-1-hongzhan.chen@intel.com>
+ <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
+In-Reply-To: <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, ubely@ilbers.de
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-This change moves generating xenomai-kernel.patch and applying it
-from the recipe into a build script in 'debian/' subdirectory.
-
-This makes linux-xenomai recipe buildchroot-independent and
-allows to use it with any build system (e.g. sbuild).
-
-Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
----
- recipes-kernel/linux/linux-xenomai.inc | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 7dba96e..bd7db7d 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -49,9 +49,12 @@ dpkg_runbuild_prepend() {
- 	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
- 			 ${PV} ${LINUX_COMMIT})
- 
--	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
--		--linux=${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=$ARCH \
--		--outpatch=${WORKDIR}/xenomai-kernel.patch
--	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
--		-p1 -i ${WORKDIR}/xenomai-kernel.patch
-+	if ! grep -q "prepare-kernel.sh" ${S}/debian/isar/build; then
-+		cat << EOF | sed -i '/^do_build/ r /dev/stdin' ${S}/debian/isar/build
-+    /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \\
-+        --linux=. --arch=$ARCH \\
-+        --outpatch=../xenomai-kernel.patch
-+    patch -d . -p1 -i ../xenomai-kernel.patch
-+EOF
-+	fi
- }
--- 
-2.20.1
-
+DQoNCj4NCj4+ICsvKg0KPj4gKyAqIENvcHlyaWdodCAoQykgMjAyMSBJbnRlbCBJbmMsIEhvbmd6
+aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4gKyAqLw0KPj4gKyNpbmNsdWRl
+IDxzdGRpby5oPg0KPj4gKyNpbmNsdWRlIDxzdGRsaWIuaD4NCj4+ICsjaW5jbHVkZSA8c3RyaW5n
+Lmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3NjaGVkLmg+DQo+PiArDQo+PiArI2luY2x1ZGUgImV2
+ZW50LXBhcnNlLmgiDQo+PiArI2luY2x1ZGUgInRyYWNlLXNlcS5oIg0KPj4gKw0KPj4gKw0KPj4g
+KyNkZWZpbmUgU0NIRURfU1BPUkFESUMJCTEwDQo+PiArI2RlZmluZSBTQ0hFRF9UUAkJMTENCj4+
+ICsjZGVmaW5lIFNDSEVEX1FVT1RBCQkxMg0KPj4gKw0KPj4gKyNkZWZpbmUgU0NIRURfQ09CQUxU
+CQk0Mg0KPj4gKyNkZWZpbmUgU0NIRURfV0VBSwkJNDMNCj4+ICsNCj4+ICtzdHJ1Y3QgX19zY2hl
+ZF9zc19wYXJhbSB7DQo+PiArCWludCBfX3NjaGVkX2xvd19wcmlvcml0eTsNCj4+ICsJc3RydWN0
+IHRpbWVzcGVjIF9fc2NoZWRfcmVwbF9wZXJpb2Q7DQo+PiArCXN0cnVjdCB0aW1lc3BlYyBfX3Nj
+aGVkX2luaXRfYnVkZ2V0Ow0KPj4gKwlpbnQgX19zY2hlZF9tYXhfcmVwbDsNCj4+ICt9Ow0KPj4g
+Kw0KPj4gK3N0cnVjdCBfX3NjaGVkX3JyX3BhcmFtIHsNCj4+ICsJc3RydWN0IHRpbWVzcGVjIF9f
+c2NoZWRfcnJfcXVhbnR1bTsNCj4+ICt9Ow0KPj4gKw0KPj4gK3N0cnVjdCBfX3NjaGVkX3RwX3Bh
+cmFtIHsNCj4+ICsJaW50IF9fc2NoZWRfcGFydGl0aW9uOw0KPj4gK307DQo+PiArDQo+PiArc3Ry
+dWN0IF9fc2NoZWRfcXVvdGFfcGFyYW0gew0KPj4gKwlpbnQgX19zY2hlZF9ncm91cDsNCj4+ICt9
+Ow0KPj4gKw0KPj4gK3N0cnVjdCBzY2hlZF9wYXJhbV9leCB7DQo+PiArCWludCBzY2hlZF9wcmlv
+cml0eTsNCj4+ICsJdW5pb24gew0KPj4gKwkJc3RydWN0IF9fc2NoZWRfc3NfcGFyYW0gc3M7DQo+
+PiArCQlzdHJ1Y3QgX19zY2hlZF9ycl9wYXJhbSBycjsNCj4+ICsJCXN0cnVjdCBfX3NjaGVkX3Rw
+X3BhcmFtIHRwOw0KPj4gKwkJc3RydWN0IF9fc2NoZWRfcXVvdGFfcGFyYW0gcXVvdGE7DQo+PiAr
+CX0gc2NoZWRfdTsNCj4+ICt9Ow0KPg0KPkxvb2tzIGxpa2UgYSBjb2RlIGR1cGxpY2F0aW9uLiBF
+dmVyeXRoaW5nIGFyb3VuZCBzY2hlZF9wYXJhbV9leCBpcw0KPnN0aWxsIHkyMDM4IGFmZmVjdGVk
+IGFuZCBtaWdodCBuZWVkIHRvIGNoYW5nZSB3aXRoaW4gdGhlIFhlbm9tYWkNCj5jb2RlYmFzZS4g
+Tm90IHN1cmUgaWYgaXQgaXMgcmVhbGx5IGEgZ29vZCBpZGVhIHRvIGR1cGxpY2F0ZSBzdWNoDQo+
+YWZmZWN0ZWQgdHlwZSBkZWZpbml0aW9ucy4NCj4NCj5CdHc6IFRoaXMgcGF0Y2ggaXMgbm90IHRh
+cmdldGluZyB0aGUgeGVub21haSBjb2RlIGJhc2UsIHJpZ2h0PyAgDQoNCk5vLHRoZSBwYXRjaCBp
+cyBub3QgZm9yIHhlbm9tYWkgaXRzZWxmIGJ1dCBmb3IgbGlidHJhY2VldmVudCB3aGljaCBpcyBw
+dXJlIGxpbnV4IHVzZXINCnNwYWNlIGxpYiB1c2VkIGJ5IGtlcm5lbC1zaGFyayBvciB0cmFjZS1j
+bWQuIEJ1dCBhY2NvcmRpbmcgdG8gSmFuLCB3ZSBuZWVkIHRvIG1haW50YWluDQp0aGVtIGluIHhl
+bm9tYWkgdHJlZS4gQmFzaWNhbGx5ICwgd2Ugd2lsbCBjcmVhdGUgbmV3IGNvcnJlc3BvZGluZyBm
+b2xkZXIgc3VjaA0KYXMgbGlidHJhY2VldmVudCBvciBrZXJuZWwtc2hhcmsgdW5kZXIgeGVub21h
+aSB0cmVlIGFuZCBhbHNvIHJlbGF0ZWQgZG9jdW1lbnRzIA0KdG8gdGVsbCB1c2VyIGhvdyB0byB1
+c2UgdGhlbSB3aXRoIGxpYnRyYWNlZXZlbnQgb3Iga2VybmVsLXNoYXJrIGJ1dCBpdCB3b3VsZCBu
+b3QgY29tcGlsZSANCnRvZ2V0aGVyIHdpdGggeGVub21haS4gDQpJdCBpcyB0byBmaXggcGFydCBv
+ZiBpc3N1ZSBodHRwczovL2dpdGxhYi5jb20vWGVub21haS94ZW5vbWFpLWhhY2tlci1zcGFjZS8t
+L2lzc3Vlcy8zMy4NCg0KeW91IGFyZSByaWdodCB0aGF0IHdlIGhhZCBiZXR0ZXIgbm90IHRvIGR1
+cGxpY2F0ZSB0aGVtIGJ1dCBJIGNhbiBub3QgZmluZCBhIGJldHRlciB3YXkgDQp0byBzaGFyZSB0
+aGVtIGJldHdlZW4geGVub21haSBrZXJuZWwgYW5kIExpbnV4IHVzZXJzcGFjZSB1bmRlciBjdXJy
+ZW50IHNpdHVhdGlvbi4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQogICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgDQoNCg0K
 
