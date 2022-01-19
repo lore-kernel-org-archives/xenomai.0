@@ -1,15 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] libtraceevent: Add new xenomai plugin to print param_ex
- correctly
-Date: Wed, 19 Jan 2022 01:25:28 +0000
-Message-ID: <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20220118024746.23951-1-hongzhan.chen@intel.com>
- <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
-In-Reply-To: <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Zqiang <qiang1.zhang@intel.com>
+Subject: [PATCH] cobalt: Fix pid issues when running in child pid namespace
+Date: Wed, 19 Jan 2022 21:31:54 +0800
+Message-Id: <20220119133154.4122157-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +12,307 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-DQoNCj4NCj4+ICsvKg0KPj4gKyAqIENvcHlyaWdodCAoQykgMjAyMSBJbnRlbCBJbmMsIEhvbmd6
-aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4gKyAqLw0KPj4gKyNpbmNsdWRl
-IDxzdGRpby5oPg0KPj4gKyNpbmNsdWRlIDxzdGRsaWIuaD4NCj4+ICsjaW5jbHVkZSA8c3RyaW5n
-Lmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3NjaGVkLmg+DQo+PiArDQo+PiArI2luY2x1ZGUgImV2
-ZW50LXBhcnNlLmgiDQo+PiArI2luY2x1ZGUgInRyYWNlLXNlcS5oIg0KPj4gKw0KPj4gKw0KPj4g
-KyNkZWZpbmUgU0NIRURfU1BPUkFESUMJCTEwDQo+PiArI2RlZmluZSBTQ0hFRF9UUAkJMTENCj4+
-ICsjZGVmaW5lIFNDSEVEX1FVT1RBCQkxMg0KPj4gKw0KPj4gKyNkZWZpbmUgU0NIRURfQ09CQUxU
-CQk0Mg0KPj4gKyNkZWZpbmUgU0NIRURfV0VBSwkJNDMNCj4+ICsNCj4+ICtzdHJ1Y3QgX19zY2hl
-ZF9zc19wYXJhbSB7DQo+PiArCWludCBfX3NjaGVkX2xvd19wcmlvcml0eTsNCj4+ICsJc3RydWN0
-IHRpbWVzcGVjIF9fc2NoZWRfcmVwbF9wZXJpb2Q7DQo+PiArCXN0cnVjdCB0aW1lc3BlYyBfX3Nj
-aGVkX2luaXRfYnVkZ2V0Ow0KPj4gKwlpbnQgX19zY2hlZF9tYXhfcmVwbDsNCj4+ICt9Ow0KPj4g
-Kw0KPj4gK3N0cnVjdCBfX3NjaGVkX3JyX3BhcmFtIHsNCj4+ICsJc3RydWN0IHRpbWVzcGVjIF9f
-c2NoZWRfcnJfcXVhbnR1bTsNCj4+ICt9Ow0KPj4gKw0KPj4gK3N0cnVjdCBfX3NjaGVkX3RwX3Bh
-cmFtIHsNCj4+ICsJaW50IF9fc2NoZWRfcGFydGl0aW9uOw0KPj4gK307DQo+PiArDQo+PiArc3Ry
-dWN0IF9fc2NoZWRfcXVvdGFfcGFyYW0gew0KPj4gKwlpbnQgX19zY2hlZF9ncm91cDsNCj4+ICt9
-Ow0KPj4gKw0KPj4gK3N0cnVjdCBzY2hlZF9wYXJhbV9leCB7DQo+PiArCWludCBzY2hlZF9wcmlv
-cml0eTsNCj4+ICsJdW5pb24gew0KPj4gKwkJc3RydWN0IF9fc2NoZWRfc3NfcGFyYW0gc3M7DQo+
-PiArCQlzdHJ1Y3QgX19zY2hlZF9ycl9wYXJhbSBycjsNCj4+ICsJCXN0cnVjdCBfX3NjaGVkX3Rw
-X3BhcmFtIHRwOw0KPj4gKwkJc3RydWN0IF9fc2NoZWRfcXVvdGFfcGFyYW0gcXVvdGE7DQo+PiAr
-CX0gc2NoZWRfdTsNCj4+ICt9Ow0KPg0KPkxvb2tzIGxpa2UgYSBjb2RlIGR1cGxpY2F0aW9uLiBF
-dmVyeXRoaW5nIGFyb3VuZCBzY2hlZF9wYXJhbV9leCBpcw0KPnN0aWxsIHkyMDM4IGFmZmVjdGVk
-IGFuZCBtaWdodCBuZWVkIHRvIGNoYW5nZSB3aXRoaW4gdGhlIFhlbm9tYWkNCj5jb2RlYmFzZS4g
-Tm90IHN1cmUgaWYgaXQgaXMgcmVhbGx5IGEgZ29vZCBpZGVhIHRvIGR1cGxpY2F0ZSBzdWNoDQo+
-YWZmZWN0ZWQgdHlwZSBkZWZpbml0aW9ucy4NCj4NCj5CdHc6IFRoaXMgcGF0Y2ggaXMgbm90IHRh
-cmdldGluZyB0aGUgeGVub21haSBjb2RlIGJhc2UsIHJpZ2h0PyAgDQoNCk5vLHRoZSBwYXRjaCBp
-cyBub3QgZm9yIHhlbm9tYWkgaXRzZWxmIGJ1dCBmb3IgbGlidHJhY2VldmVudCB3aGljaCBpcyBw
-dXJlIGxpbnV4IHVzZXINCnNwYWNlIGxpYiB1c2VkIGJ5IGtlcm5lbC1zaGFyayBvciB0cmFjZS1j
-bWQuIEJ1dCBhY2NvcmRpbmcgdG8gSmFuLCB3ZSBuZWVkIHRvIG1haW50YWluDQp0aGVtIGluIHhl
-bm9tYWkgdHJlZS4gQmFzaWNhbGx5ICwgd2Ugd2lsbCBjcmVhdGUgbmV3IGNvcnJlc3BvZGluZyBm
-b2xkZXIgc3VjaA0KYXMgbGlidHJhY2VldmVudCBvciBrZXJuZWwtc2hhcmsgdW5kZXIgeGVub21h
-aSB0cmVlIGFuZCBhbHNvIHJlbGF0ZWQgZG9jdW1lbnRzIA0KdG8gdGVsbCB1c2VyIGhvdyB0byB1
-c2UgdGhlbSB3aXRoIGxpYnRyYWNlZXZlbnQgb3Iga2VybmVsLXNoYXJrIGJ1dCBpdCB3b3VsZCBu
-b3QgY29tcGlsZSANCnRvZ2V0aGVyIHdpdGggeGVub21haS4gDQpJdCBpcyB0byBmaXggcGFydCBv
-ZiBpc3N1ZSBodHRwczovL2dpdGxhYi5jb20vWGVub21haS94ZW5vbWFpLWhhY2tlci1zcGFjZS8t
-L2lzc3Vlcy8zMy4NCg0KeW91IGFyZSByaWdodCB0aGF0IHdlIGhhZCBiZXR0ZXIgbm90IHRvIGR1
-cGxpY2F0ZSB0aGVtIGJ1dCBJIGNhbiBub3QgZmluZCBhIGJldHRlciB3YXkgDQp0byBzaGFyZSB0
-aGVtIGJldHdlZW4geGVub21haSBrZXJuZWwgYW5kIExpbnV4IHVzZXJzcGFjZSB1bmRlciBjdXJy
-ZW50IHNpdHVhdGlvbi4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQogICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgDQoNCg0K
+The Xenomai does not yet support the concept of namespaces,
+and the same task has different pids in its own pid namespace
+and parent pid namespace. however, when the task running in a
+child pid namespace, we only recorded the relationship between
+thread and child pid. so can't use other pid to find thread.
+
+To fix it, when the thread is created, record all pid in
+different namespaces.
+
+Updates: https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/19
+
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ kernel/cobalt/posix/thread.c | 107 ++++++++++++++++++++++++++++-------
+ kernel/cobalt/posix/thread.h |   7 +++
+ kernel/cobalt/posix/timer.c  |  15 ++++-
+ kernel/cobalt/posix/timer.h  |   2 +
+ 4 files changed, 108 insertions(+), 23 deletions(-)
+
+diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+index 94a6e394e..c09c3d907 100644
+--- a/kernel/cobalt/posix/thread.c
++++ b/kernel/cobalt/posix/thread.c
+@@ -55,39 +55,79 @@ static struct local_thread_hash *local_index[PTHREAD_HSLOTS];
+ 
+ static struct global_thread_hash *global_index[PTHREAD_HSLOTS];
+ 
++static inline int thread_pid_init(struct cobalt_thread *thread)
++{
++	struct task_struct *tsk = current;
++	struct pid *pid;
++	int index;
++	int ret = 0;
++
++	pid = get_task_pid(tsk, PIDTYPE_PID);
++	thread->level = pid->level;
++	thread->pid = xnmalloc((thread->level + 1) * sizeof(pid_t));
++	if (thread->pid == NULL) {
++		put_pid(pid);
++		ret = -EINVAL;
++		goto err;
++	}
++	thread->ns = xnmalloc((thread->level + 1) * sizeof(struct pid_namespcae *));
++	if (thread->ns == NULL) {
++		xnfree(thread->pid);
++		put_pid(pid);
++		ret = -EINVAL;
++		goto err;
++	}
++	for (index = 0; index <= thread->level; index++) {
++		thread->pid[index] = pid->numbers[index].nr;
++		thread->ns[index] = pid->numbers[index].ns;
++	}
++	put_pid(pid);
++err:
++	return ret;
++}
++
+ static inline struct local_thread_hash *
+ thread_hash(const struct cobalt_local_hkey *hkey,
+-	    struct cobalt_thread *thread, pid_t pid)
++	    struct cobalt_thread *thread)
+ {
+ 	struct global_thread_hash **ghead, *gslot;
+ 	struct local_thread_hash **lhead, *lslot;
+ 	u32 hash;
+ 	void *p;
+ 	spl_t s;
++	int index;
++	pid_t pid;
+ 
+-	p = xnmalloc(sizeof(*lslot) + sizeof(*gslot));
++	p = xnmalloc(sizeof(*lslot) + (thread->level + 1) * sizeof(*gslot));
+ 	if (p == NULL)
+ 		return NULL;
+ 
+ 	lslot = p;
+ 	lslot->hkey = *hkey;
+ 	lslot->thread = thread;
+-	lslot->pid = pid;
++	lslot->pid = thread->pid[thread->level];
+ 	hash = jhash2((u32 *)&lslot->hkey,
+ 		      sizeof(lslot->hkey) / sizeof(u32), 0);
+ 	lhead = &local_index[hash & (PTHREAD_HSLOTS - 1)];
+ 
+ 	gslot = p + sizeof(*lslot);
+-	gslot->pid = pid;
+-	gslot->thread = thread;
+-	hash = jhash2((u32 *)&pid, sizeof(pid) / sizeof(u32), 0);
+-	ghead = &global_index[hash & (PTHREAD_HSLOTS - 1)];
++	for (index = 0; index <= thread->level; index++) {
++		pid = thread->pid[index];
++		gslot->pid = pid;
++		gslot->thread = thread;
++		hash = jhash2((u32 *)&pid, sizeof(pid) / sizeof(u32), 0);
++		ghead = &global_index[hash & (PTHREAD_HSLOTS - 1)];
++
++		xnlock_get_irqsave(&nklock, s);
++		gslot->next = *ghead;
++		*ghead = gslot;
++		xnlock_put_irqrestore(&nklock, s);
++		gslot++;
++	}
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 	lslot->next = *lhead;
+ 	*lhead = lslot;
+-	gslot->next = *ghead;
+-	*ghead = gslot;
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	return lslot;
+@@ -100,6 +140,8 @@ static inline void thread_unhash(const struct cobalt_local_hkey *hkey)
+ 	pid_t pid;
+ 	u32 hash;
+ 	spl_t s;
++	struct cobalt_thread *thread;
++	int index;
+ 
+ 	hash = jhash2((u32 *) hkey, sizeof(*hkey) / sizeof(u32), 0);
+ 	ltail = &local_index[hash & (PTHREAD_HSLOTS - 1)];
+@@ -120,24 +162,31 @@ static inline void thread_unhash(const struct cobalt_local_hkey *hkey)
+ 	}
+ 
+ 	*ltail = lslot->next;
+-	pid = lslot->pid;
+-	hash = jhash2((u32 *)&pid, sizeof(pid) / sizeof(u32), 0);
+-	gtail = &global_index[hash & (PTHREAD_HSLOTS - 1)];
+-	gslot = *gtail;
+-	while (gslot && gslot->pid != pid) {
+-		gtail = &gslot->next;
++
++	thread = lslot->thread;
++	for (index = 0; index <= thread->level; index++) {
++		pid = thread->pid[index];
++		hash = jhash2((u32 *)&pid, sizeof(pid) / sizeof(u32), 0);
++		gtail = &global_index[hash & (PTHREAD_HSLOTS - 1)];
+ 		gslot = *gtail;
++		while (gslot && gslot->pid != pid) {
++			gtail = &gslot->next;
++			gslot = *gtail;
++		}
++
++		/* gslot must be found here. */
++		XENO_BUG_ON(COBALT, !(gslot && gtail));
++		*gtail = gslot->next;
+ 	}
+-	/* gslot must be found here. */
+-	XENO_BUG_ON(COBALT, !(gslot && gtail));
+-	*gtail = gslot->next;
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	xnfree(lslot);
++	xnfree(thread->pid);
++	xnfree(thread->ns);
+ }
+ 
+-static struct cobalt_thread *
++struct cobalt_thread *
+ thread_lookup(const struct cobalt_local_hkey *hkey)
+ {
+ 	struct local_thread_hash *lslot;
+@@ -160,16 +209,20 @@ thread_lookup(const struct cobalt_local_hkey *hkey)
+ 
+ 	return thread;
+ }
++EXPORT_SYMBOL_GPL(thread_lookup);
+ 
+ struct cobalt_thread *cobalt_thread_find(pid_t pid) /* nklocked, IRQs off */
+ {
+ 	struct global_thread_hash *gslot;
+ 	u32 hash;
++	struct cobalt_thread *cur_thread = cobalt_current_thread();
++	int level = cur_thread->level;
+ 
+ 	hash = jhash2((u32 *)&pid, sizeof(pid) / sizeof(u32), 0);
+ 
+ 	gslot = global_index[hash & (PTHREAD_HSLOTS - 1)];
+-	while (gslot && gslot->pid != pid)
++	while ((gslot && gslot->pid != pid) ||
++		(gslot->thread->ns[level] != cur_thread->ns[level]))
+ 		gslot = gslot->next;
+ 
+ 	return gslot ? gslot->thread : NULL;
+@@ -625,7 +678,12 @@ int __cobalt_thread_create(unsigned long pth, int policy,
+ 		return ret;
+ 	}
+ 
+-	if (!thread_hash(&hkey, thread, task_pid_vnr(p))) {
++	if (thread_pid_init(thread) != 0) {
++		ret = -EINVAL;
++		goto fail;
++	}
++
++	if (!thread_hash(&hkey, thread)) {
+ 		ret = -EAGAIN;
+ 		goto fail;
+ 	}
+@@ -683,7 +741,12 @@ cobalt_thread_shadow(struct cobalt_local_hkey *hkey,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	if (!thread_hash(hkey, thread, task_pid_vnr(current))) {
++	if (thread_pid_init(thread) != 0) {
++		ret = -EINVAL;
++		goto fail;
++	}
++
++	if (!thread_hash(hkey, thread)) {
+ 		ret = -EAGAIN;
+ 		goto fail;
+ 	}
+diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
+index 0959ff6d7..ab3cf6f5a 100644
+--- a/kernel/cobalt/posix/thread.h
++++ b/kernel/cobalt/posix/thread.h
+@@ -104,6 +104,10 @@ struct cobalt_thread {
+ 	struct list_head monitor_link;
+ 
+ 	struct cobalt_local_hkey hkey;
++
++	struct pid_namespace **ns;
++	pid_t *pid;
++	int level;
+ };
+ 
+ struct cobalt_sigwait_context {
+@@ -150,6 +154,9 @@ struct cobalt_thread *cobalt_thread_find_local(pid_t pid);
+ 
+ struct cobalt_thread *cobalt_thread_lookup(unsigned long pth);
+ 
++struct cobalt_thread *
++thread_lookup(const struct cobalt_local_hkey *hkey);
++
+ COBALT_SYSCALL_DECL(thread_create,
+ 		    (unsigned long pth, int policy,
+ 		     struct sched_param_ex __user *u_param,
+diff --git a/kernel/cobalt/posix/timer.c b/kernel/cobalt/posix/timer.c
+index a58ea99a3..34bbf0ef3 100644
+--- a/kernel/cobalt/posix/timer.c
++++ b/kernel/cobalt/posix/timer.c
+@@ -25,6 +25,17 @@
+ #include "clock.h"
+ #include "signal.h"
+ 
++int cobalt_signal_send_hkey(struct cobalt_local_hkey *hkey, struct cobalt_sigpending *sigp)
++{
++	struct cobalt_thread *thread;
++
++	thread = thread_lookup(hkey);
++	if (thread)
++		return cobalt_signal_send(thread, sigp, 0);
++
++	return -ESRCH;
++}
++
+ void cobalt_timer_handler(struct xntimer *xntimer)
+ {
+ 	struct cobalt_timer *timer;
+@@ -37,7 +48,7 @@ void cobalt_timer_handler(struct xntimer *xntimer)
+ 	 */
+ 	timer = container_of(xntimer, struct cobalt_timer, timerbase);
+ 	if (timer->sigp.si.si_signo &&
+-	    cobalt_signal_send_pid(timer->target, &timer->sigp) == -ESRCH)
++	    cobalt_signal_send_hkey(&timer->hkey, &timer->sigp) == -ESRCH)
+ 		xntimer_stop(&timer->timerbase);
+ }
+ EXPORT_SYMBOL_GPL(cobalt_timer_handler);
+@@ -183,6 +194,8 @@ static inline int timer_create(clockid_t clockid,
+ 		goto fail;
+ 	}
+ 
++	timer->hkey.u_pth = target->hkey.u_pth;
++	timer->hkey.mm = target->hkey.mm;
+ 	timer->target = xnthread_host_pid(&target->threadbase);
+ 	cc->timers[timer_id] = timer;
+ 
+diff --git a/kernel/cobalt/posix/timer.h b/kernel/cobalt/posix/timer.h
+index 3b580d470..3d3c526f3 100644
+--- a/kernel/cobalt/posix/timer.h
++++ b/kernel/cobalt/posix/timer.h
+@@ -24,6 +24,7 @@
+ #include <cobalt/kernel/timer.h>
+ #include <xenomai/posix/signal.h>
+ #include <xenomai/posix/syscall.h>
++#include <xenomai/posix/thread.h>
+ 
+ struct cobalt_timer {
+ 	struct xntimer timerbase;
+@@ -31,6 +32,7 @@ struct cobalt_timer {
+ 	int overruns;
+ 	clockid_t clockid;
+ 	pid_t target;
++	struct cobalt_local_hkey hkey;
+ 	struct cobalt_sigpending sigp;
+ 	struct cobalt_extref extref;
+ };
+-- 
+2.25.1
+
 
