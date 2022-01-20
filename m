@@ -1,4 +1,8 @@
-MIME-Version: 1.0
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: About the kernel configuration(CONFIG_CPU_FREQ and
+ CONFIG_CPU_IDLE.)
+Date: Thu, 20 Jan 2022 07:24:12 +0000
+Message-ID: <MN2PR11MB428548789A97AE5846AAE703F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <CAAvDm6YgEyJuX98RzioWFTrWdY2zGDPGdptLnL9oivVHmsCZsg@mail.gmail.com>
  <CAAvDm6aoKx65CcipLG9t4MgmzKLhzkEtzAX_z23B5VUnw7iTUg@mail.gmail.com>
  <MN2PR11MB42859CE34F2CD706F90946D4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
@@ -8,13 +12,10 @@ References: <CAAvDm6YgEyJuX98RzioWFTrWdY2zGDPGdptLnL9oivVHmsCZsg@mail.gmail.com>
  <MN2PR11MB42850F0D987538BF443EFF98F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
  <CAAvDm6ZJh_DGF07Pwsi0y8ft4Lw64sSC8kMGA0uBPzaT8h2-3Q@mail.gmail.com>
 In-Reply-To: <CAAvDm6ZJh_DGF07Pwsi0y8ft4Lw64sSC8kMGA0uBPzaT8h2-3Q@mail.gmail.com>
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Thu, 20 Jan 2022 15:12:03 +0800
-Message-ID: <CAAvDm6YCxbErHvjz-pr-u8OO1_hhqxNQ88yhUnF6sYQAXmC=_g@mail.gmail.com>
-Subject: Re: About the kernel configuration(CONFIG_CPU_FREQ and
- CONFIG_CPU_IDLE.)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,113 +24,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+To: =?utf-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->>Let us go back to what you found with disabling CPU_IDLE and CPU_FREQ. I
-do not know if you already disable C-state in BIOS.
->>But on my side, I found the similiar result with yours that cpu_freq is
-non-constant even if I disable CPUIDLE and CPUFREQ but
->>with enabling C-State in BIOS for my i7-8665U board. After I disable C
-state of BIOS , it became constant according to my test.
->
->I will disable C state in BIOS and try today.
-I can't find the suitable menu to disable C-State in BIOS indeed.
-I can see there are menus about "Deep S4/S5"=E3=80=81"PCIe ASPM Support" an=
-d
-"Native ACPI OS PCIe Support"(for details, see the image at
-https://ibb.co/jgw7b19,).
-Since there is no menu to disable C-State, I have tried to disable all
-the aforementioned menus which have some relation with power management,
-but the frequency of CPU(i.e. I7-8665U) is still not constant(seen at
-https://ibb.co/DkKZ2mZ).
+PkZyb206ID8/PyBzdW5zaGlsb25nIDxzdW5zaGlsb25nMzY5QGdtYWlsLmNvbT4gDQo+U2VudDog
+VGh1cnNkYXksIEphbnVhcnkgMjAsIDIwMjIgMjoyNSBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8
+aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+Q2M6IHhlbm9tYWlAeGVub21haS5vcmcNCj5TdWJq
+ZWN0OiBSZTogQWJvdXQgdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uKENPTkZJR19DUFVfRlJFUSBh
+bmQgQ09ORklHX0NQVV9JRExFLikNCj4NCj4+TGV0IHVzIGdvIGJhY2sgdG8gd2hhdCB5b3UgZm91
+bmQgd2l0aCBkaXNhYmxpbmcgQ1BVX0lETEUgYW5kIENQVV9GUkVRLiBJIGRvIG5vdCBrbm93IGlm
+IHlvdSBhbHJlYWR5IGRpc2FibGUgQy1zdGF0ZSBpbiBCSU9TLg0KPj5CdXQgb24gbXkgc2lkZSwg
+SSBmb3VuZCB0aGUgc2ltaWxpYXIgcmVzdWx0IHdpdGggeW91cnMgdGhhdCBjcHVfZnJlcSBpcyBu
+b24tY29uc3RhbnQgZXZlbiBpZiBJIGRpc2FibGUgQ1BVSURMRSBhbmQgQ1BVRlJFUSBidXQNCj4+
+d2l0aCBlbmFibGluZyBDLVN0YXRlIGluIEJJT1MgZm9yIG15IGk3LTg2NjVVIGJvYXJkLiBBZnRl
+ciBJIGRpc2FibGUgQyBzdGF0ZSBvZiBCSU9TICwgaXQgYmVjYW1lIGNvbnN0YW50IGFjY29yZGlu
+ZyB0byBteSB0ZXN0Lg0KPg0KPkkgd2lsbCBkaXNhYmxlIEMgc3RhdGUgaW4gQklPUyBhbmQgdHJ5
+IHRvZGF5Lg0KPg0KPj5MZXQgbWUgY29ycmVjdCBzb21ldGhpbmcgdG8gYXZvaWQgY29uZnVzaW5n
+LiAgQWN0dWFsbHkgaXQgaXMgbm90IGNvbnN0YW50IGluIG15IHRlc3QgLCB0aGUgY3B1IGZyZXEg
+aXMgYWJvdXQgMTkwME1oeiBrZWVwaW5nIHJhbmdlDQo+PmZyb20gMTg5OS4qIHRvIDE5MDAuKiBh
+bmQgaGF2aW5nIG1pbm9yIGNoYW5nZS4NCj5ZZXMsIEkgYWxzbyBub3RpY2VkIHN1Y2ggcGhlbm9t
+ZW5vbiB3aXRoIGRpZmZlcmVudCBDUFUoaS5lLiBVTk8tMjM3MkctSjAyMUFFKSBvbmUgYW5kIGEg
+aGFsZiB5ZWFycyBhZ28uDQo+Rm9yIHRoaXMgYm9hcmQgd2l0aCAgaTctODU2NVUsIEkgcmVhbGx5
+IGNhbid0IGZpZ3VyZSBvdXQgd2h5IHRoZSBmcmVxdWVuY3kgb2YgdGhlIENQVSBpcyBub3QgY29u
+c3RhbnQuDQo+VGhhbmsgeW91IHNvIG11Y2gsIHlvdSBzYXZlIG1lIGEgbG90IG9mIHRpbWUuDQoN
+CkFmdGVyIGRvIG1vcmUgdHJpYWxzIHdpdGggQ1BVX0lETEUgZW5hYmxpbmcgKyBDUFVfRlJFUSBk
+aXNhYmxpbmcgKyBDLVN0YXRlIGRpc2FibGluZyBvZiBiaW9zLCBJIGFsc28gb2JzZXJ2ZWQgdGhh
+dCBDUFUwIHdvdWxkIGRyb3AgDQp0byBsb3dlciBmcmVxIGxpa2UgMTAwME0uICBXaGVuIHdlIGVu
+YWJsZSBDUFVfSURMRSwgc3lzdGVtIGlzIHN1cHBvc2VkIHRvIHVzZSBpbnRlbF9pZGxlIGRyaXZl
+ciB3aGljaCB3b3VsZCBpZ25vcmUgQklPUyBDLVN0YXRlIHNldHRpbmcNCmFzIGRlc2NyaWJlZCBp
+biBodHRwczovL3dpa2kuYXJjaGxpbnV4Lm9yZy90aXRsZS9DUFVfZnJlcXVlbmN5X3NjYWxpbmcu
+ICBJIGFsc28gb2JzZXJ2ZWQgdGhhdCB1bmRlciB0aGVzZSBjb25kaXRpb25zIENQVTAgZnJlcXVl
+bnRseSANCmVudGVyIGludG8gQzEgc3RhdGUgd2hlbiBpdHMgZnJlcSBrZWVwcyBsb3dlciBmcmVx
+LiAgVGhhdCBtaWdodCBleHBsYWluIHBhcnRseSB3aHkgQ1BVIGhhdmUgbG93ZXIgZnJlcSBpbiBv
+dXIgY2FzZXMuIA0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCj4NCg0KDQoNCg0KDQoNCg0K
 
-On Thu, Jan 20, 2022 at 2:24 PM =E5=AD=99=E4=B8=96=E9=BE=99 sunshilong <sun=
-shilong369@gmail.com>
-wrote:
-
-> >Let us go back to what you found with disabling CPU_IDLE and CPU_FREQ. I
-> do not know if you already disable C-state in BIOS.
-> >But on my side, I found the similiar result with yours that cpu_freq is
-> non-constant even if I disable CPUIDLE and CPUFREQ but
-> >with enabling C-State in BIOS for my i7-8665U board. After I disable C
-> state of BIOS , it became constant according to my test.
->
-> I will disable C state in BIOS and try today.
->
-> >Let me correct something to avoid confusing.  Actually it is not constan=
-t
-> in my test , the cpu freq is about 1900Mhz keeping range
-> >from 1899.* to 1900.* and having minor change.
-> Yes, I also noticed such phenomenon with different CPU(i.e.
-> UNO-2372G-J021AE) one and a half years ago.
-> For this board with  i7-8565U, I really can't figure out why the
-> frequency of the CPU is not constant.
-> Thank you so much, you save me a lot of time.
->
->
-> >
->
-> On Thu, Jan 20, 2022 at 11:16 AM Chen, Hongzhan <hongzhan.chen@intel.com>
-> wrote:
->
->>
->> >
->> >From: ??? sunshilong sunshilong369@gmail.com<mailto:
->> sunshilong369@gmail.com>
->> >>Sent: Wednesday, January 19, 2022 5:01 PM
->> >>To: Chen, Hongzhan hongzhan.chen@intel.com<mailto:
->> hongzhan.chen@intel.com>
->> >>Subject: Re: About the kernel configuration(CONFIG_CPU_FREQ and
->> CONFIG_CPU_IDLE.)
->> >>
->> >>> Did you use registers for computing the current frequency?
->> >>No, by cat /proc/cpuinfo.
->> >>How to use registers for computing the current frequency? Could you
->> please explain that in more detail for me?
->> >>
->> >>>In addition, x86 systems will no longer try to export their current
->> CPU frequency to /proc/cpuinfo since
->> >>Kernel 4.13.
->> >>But it seems still work because the value of the output of `cat
->> /proc/cpuinfo | grep -i mhz` is bigger when the system is busy,i.e:
->> >
->> >Yes , the output can be trusted because there is new patch
->> 7d5905dc14a87805a59f3c5bf70173aac2bb18f8 after 4.15 to make
->> >use of APERF/MPERF again to get cpu freq.
->> >
->> >Let us go back to what you found with disabling CPU_IDLE and CPU_FREQ. =
-I
->> do not know if you already disable C-state in BIOS.
->> >But on my side, I found the similiar result with yours that cpu_freq is
->> non-constant even if I disable CPUIDLE and CPUFREQ but
->> >with enabling C-State in BIOS for my i7-8665U board. After I disable C
->> state of BIOS , it became constant according to my test.
->>
->> Let me correct something to avoid confusing.  Actually it is not constan=
-t
->> in my test , the cpu freq is about 1900Mhz keeping range
->> from 1899.* to 1900.* and having minor change.
->>
->> Regards
->>
->> Hongzhan Chen
->>
->> >Please also disable Intel(R) SpeedStep which may also be related to
->> power saving/cpu scaling.
->> >
->> >Regards
->> >
->> >Hongzhan Chen
->> >
->> >>
->> >>
->> >>The output looks like this when idle:
->> >>model name      : Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz
->> >>cpu MHz         : 799.193
->> >>
->> >>When busy:
->> >>model name      : Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz
->> >>cpu MHz         : 3600.628
->>
->
