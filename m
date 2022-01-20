@@ -1,11 +1,12 @@
-References: <20220117165341.387782-1-florian.bezdeka@siemens.com>
+References: <a92cf71bb68a9e0701fcd6de46055eb7f584136a.camel@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] cobalt: Fix resource leak of cobalt_monitor
-Date: Thu, 20 Jan 2022 09:12:05 +0100
-In-reply-to: <20220117165341.387782-1-florian.bezdeka@siemens.com>
-Message-ID: <871r12hksf.fsf@xenomai.org>
+Subject: Re: Dovetail 5.10 - Xenomai huge page support
+Date: Thu, 20 Jan 2022 09:30:07 +0100
+In-reply-to: <a92cf71bb68a9e0701fcd6de46055eb7f584136a.camel@siemens.com>
+Message-ID: <87wniug63q.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,48 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+"Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
 
-> We have a test within the smokey testsuite which actually does
-> something like
+> Hi all,
 >
->    cobalt_monitor_init()
->    cobalt_monitor_wait()
->        cobalt_monitor_enter()
->          -> timeout
->        cobalt_monitor_exit()
->    cobalt_monitor_destroy()
+> after migrating from 4.19-ipipe to 5.10-dovetail internal users are
+> reporting that they receive sporadic SIGXCPUs. The reported reason is
+> "page_fault_user".=C2=A0
 >
-> If the posix_mutex tests were run right after this scenario the mutex
-> tests failed. The wrong mutex state was caused by the monitor in the
-> previous test not being cleaned up properly.
+> After disabling the huge page support in 5.10 the issue vanished. Tests
+> are still running, but we are optimistic that we found the root cause.
 >
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->
-> I'm not 100% sure about this fix. Maybe we should move it into
-> cobalt_monitor_reclaim, maybe I'm using the monitor in a wrong way
-> inside the y2038 tests. Everything is possible...
->
-> @Philippe: It would be very nice if you could have a look as well.
-> Thanks!
+> Are there any known limitations to the huge page support in Xenomai /
+> Dovetail? My understanding is that huge pages are supported by Xenomai,
+> so any ideas where to look at?
 >
 
-Looks ok, thank you for spotting this. I think the issue your patch
-fixes caused a PI boost to linger since deleting the gate lock does not
-drop ownership - only xnsynch_release() does so - leaving the owner with
-a boosted priority unduly (*). This is likely to wreck any subsequent
-test depending on the priority scheme.
+No limitation intended or known, however the recent change in the
+Dovetail implement you mention in your next post may help addressing the
+issue indeed by disabling COW for huge pages too, which was missing so
+far.
 
-You could indeed move the release call to the reclamation routine.
-
-(*) ownership is reacquired including on a timeout condition by the call
-to monitor_enter() at the end of __cobalt_monitor_wait().
-
--- 
+--=20
 Philippe.
 
