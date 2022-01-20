@@ -1,19 +1,18 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: About the kernel configuration(CONFIG_CPU_FREQ and
- CONFIG_CPU_IDLE.)
-Date: Thu, 20 Jan 2022 03:16:36 +0000
-Message-ID: <MN2PR11MB42850F0D987538BF443EFF98F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+MIME-Version: 1.0
 References: <CAAvDm6YgEyJuX98RzioWFTrWdY2zGDPGdptLnL9oivVHmsCZsg@mail.gmail.com>
  <CAAvDm6aoKx65CcipLG9t4MgmzKLhzkEtzAX_z23B5VUnw7iTUg@mail.gmail.com>
  <MN2PR11MB42859CE34F2CD706F90946D4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
  <MN2PR11MB42857ACE5AA3060BC17341A2F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
  <CAAvDm6aRtpbcjqOuucPfxkGP=KNw+GSfTUfTu8e03=GRz4-qxA@mail.gmail.com>
  <MN2PR11MB42854BE231D5F7080F514DF0F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
-In-Reply-To: <MN2PR11MB42854BE231D5F7080F514DF0F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <MN2PR11MB42850F0D987538BF443EFF98F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB42850F0D987538BF443EFF98F25A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Thu, 20 Jan 2022 14:24:55 +0800
+Message-ID: <CAAvDm6ZJh_DGF07Pwsi0y8ft4Lw64sSC8kMGA0uBPzaT8h2-3Q@mail.gmail.com>
+Subject: Re: About the kernel configuration(CONFIG_CPU_FREQ and
+ CONFIG_CPU_IDLE.)
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,40 +21,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQo+DQo+RnJvbTogPz8/IHN1bnNoaWxvbmcgc3Vuc2hpbG9uZzM2OUBnbWFpbC5jb208bWFpbHRv
-OnN1bnNoaWxvbmczNjlAZ21haWwuY29tPg0KPj5TZW50OiBXZWRuZXNkYXksIEphbnVhcnkgMTks
-IDIwMjIgNTowMSBQTQ0KPj5UbzogQ2hlbiwgSG9uZ3poYW4gaG9uZ3poYW4uY2hlbkBpbnRlbC5j
-b208bWFpbHRvOmhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj5TdWJqZWN0OiBSZTogQWJvdXQg
-dGhlIGtlcm5lbCBjb25maWd1cmF0aW9uKENPTkZJR19DUFVfRlJFUSBhbmQgQ09ORklHX0NQVV9J
-RExFLikNCj4+DQo+Pj4gRGlkIHlvdSB1c2UgcmVnaXN0ZXJzIGZvciBjb21wdXRpbmcgdGhlIGN1
-cnJlbnQgZnJlcXVlbmN5Pw0KPj5ObywgYnkgY2F0IC9wcm9jL2NwdWluZm8uDQo+PkhvdyB0byB1
-c2UgcmVnaXN0ZXJzIGZvciBjb21wdXRpbmcgdGhlIGN1cnJlbnQgZnJlcXVlbmN5PyBDb3VsZCB5
-b3UgcGxlYXNlIGV4cGxhaW4gdGhhdCBpbiBtb3JlIGRldGFpbCBmb3IgbWU/DQo+Pg0KPj4+SW4g
-YWRkaXRpb24sIHg4NiBzeXN0ZW1zIHdpbGwgbm8gbG9uZ2VyIHRyeSB0byBleHBvcnQgdGhlaXIg
-Y3VycmVudCBDUFUgZnJlcXVlbmN5IHRvIC9wcm9jL2NwdWluZm8gc2luY2UNCj4+S2VybmVsIDQu
-MTMuDQo+PkJ1dCBpdCBzZWVtcyBzdGlsbCB3b3JrIGJlY2F1c2UgdGhlIHZhbHVlIG9mIHRoZSBv
-dXRwdXQgb2YgYGNhdCAvcHJvYy9jcHVpbmZvIHwgZ3JlcCAtaSBtaHpgIGlzIGJpZ2dlciB3aGVu
-IHRoZSBzeXN0ZW0gaXMgYnVzeSxpLmU6DQo+DQo+WWVzICwgdGhlIG91dHB1dCBjYW4gYmUgdHJ1
-c3RlZCBiZWNhdXNlIHRoZXJlIGlzIG5ldyBwYXRjaCA3ZDU5MDVkYzE0YTg3ODA1YTU5ZjNjNWJm
-NzAxNzNhYWMyYmIxOGY4IGFmdGVyIDQuMTUgdG8gbWFrZQ0KPnVzZSBvZiBBUEVSRi9NUEVSRiBh
-Z2FpbiB0byBnZXQgY3B1IGZyZXEuDQo+DQo+TGV0IHVzIGdvIGJhY2sgdG8gd2hhdCB5b3UgZm91
-bmQgd2l0aCBkaXNhYmxpbmcgQ1BVX0lETEUgYW5kIENQVV9GUkVRLiBJIGRvIG5vdCBrbm93IGlm
-IHlvdSBhbHJlYWR5IGRpc2FibGUgQy1zdGF0ZSBpbiBCSU9TLg0KPkJ1dCBvbiBteSBzaWRlLCBJ
-IGZvdW5kIHRoZSBzaW1pbGlhciByZXN1bHQgd2l0aCB5b3VycyB0aGF0IGNwdV9mcmVxIGlzIG5v
-bi1jb25zdGFudCBldmVuIGlmIEkgZGlzYWJsZSBDUFVJRExFIGFuZCBDUFVGUkVRIGJ1dA0KPndp
-dGggZW5hYmxpbmcgQy1TdGF0ZSBpbiBCSU9TIGZvciBteSBpNy04NjY1VSBib2FyZC4gQWZ0ZXIg
-SSBkaXNhYmxlIEMgc3RhdGUgb2YgQklPUyAsIGl0IGJlY2FtZSBjb25zdGFudCBhY2NvcmRpbmcg
-dG8gbXkgdGVzdC4NCg0KTGV0IG1lIGNvcnJlY3Qgc29tZXRoaW5nIHRvIGF2b2lkIGNvbmZ1c2lu
-Zy4gIEFjdHVhbGx5IGl0IGlzIG5vdCBjb25zdGFudCBpbiBteSB0ZXN0ICwgdGhlIGNwdSBmcmVx
-IGlzIGFib3V0IDE5MDBNaHoga2VlcGluZyByYW5nZSANCmZyb20gMTg5OS4qIHRvIDE5MDAuKiBh
-bmQgaGF2aW5nIG1pbm9yIGNoYW5nZS4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj5Q
-bGVhc2UgYWxzbyBkaXNhYmxlIEludGVsKFIpIFNwZWVkU3RlcCB3aGljaCBtYXkgYWxzbyBiZSBy
-ZWxhdGVkIHRvIHBvd2VyIHNhdmluZy9jcHUgc2NhbGluZy4NCj4NCj5SZWdhcmRzDQo+DQo+SG9u
-Z3poYW4gQ2hlbg0KPg0KPj4NCj4+DQo+PlRoZSBvdXRwdXQgbG9va3MgbGlrZSB0aGlzIHdoZW4g
-aWRsZToNCj4+bW9kZWwgbmFtZSAgICAgIDogSW50ZWwoUikgQ29yZShUTSkgaTctODU2NVUgQ1BV
-IEAgMS44MEdIeg0KPj5jcHUgTUh6ICAgICAgICAgOiA3OTkuMTkzDQo+Pg0KPj5XaGVuIGJ1c3k6
-DQo+Pm1vZGVsIG5hbWUgICAgICA6IEludGVsKFIpIENvcmUoVE0pIGk3LTg1NjVVIENQVSBAIDEu
-ODBHSHoNCj4+Y3B1IE1IeiAgICAgICAgIDogMzYwMC42MjgNCg==
+>Let us go back to what you found with disabling CPU_IDLE and CPU_FREQ. I
+do not know if you already disable C-state in BIOS.
+>But on my side, I found the similiar result with yours that cpu_freq is
+non-constant even if I disable CPUIDLE and CPUFREQ but
+>with enabling C-State in BIOS for my i7-8665U board. After I disable C
+state of BIOS , it became constant according to my test.
 
+I will disable C state in BIOS and try today.
+
+>Let me correct something to avoid confusing.  Actually it is not constant
+in my test , the cpu freq is about 1900Mhz keeping range
+>from 1899.* to 1900.* and having minor change.
+Yes, I also noticed such phenomenon with different CPU(i.e.
+UNO-2372G-J021AE) one and a half years ago.
+For this board with  i7-8565U, I really can't figure out why the frequency
+of the CPU is not constant.
+Thank you so much, you save me a lot of time.
+
+
+>
+
+On Thu, Jan 20, 2022 at 11:16 AM Chen, Hongzhan <hongzhan.chen@intel.com>
+wrote:
+
+>
+> >
+> >From: ??? sunshilong sunshilong369@gmail.com<mailto:
+> sunshilong369@gmail.com>
+> >>Sent: Wednesday, January 19, 2022 5:01 PM
+> >>To: Chen, Hongzhan hongzhan.chen@intel.com<mailto:
+> hongzhan.chen@intel.com>
+> >>Subject: Re: About the kernel configuration(CONFIG_CPU_FREQ and
+> CONFIG_CPU_IDLE.)
+> >>
+> >>> Did you use registers for computing the current frequency?
+> >>No, by cat /proc/cpuinfo.
+> >>How to use registers for computing the current frequency? Could you
+> please explain that in more detail for me?
+> >>
+> >>>In addition, x86 systems will no longer try to export their current CPU
+> frequency to /proc/cpuinfo since
+> >>Kernel 4.13.
+> >>But it seems still work because the value of the output of `cat
+> /proc/cpuinfo | grep -i mhz` is bigger when the system is busy,i.e:
+> >
+> >Yes , the output can be trusted because there is new patch
+> 7d5905dc14a87805a59f3c5bf70173aac2bb18f8 after 4.15 to make
+> >use of APERF/MPERF again to get cpu freq.
+> >
+> >Let us go back to what you found with disabling CPU_IDLE and CPU_FREQ. I
+> do not know if you already disable C-state in BIOS.
+> >But on my side, I found the similiar result with yours that cpu_freq is
+> non-constant even if I disable CPUIDLE and CPUFREQ but
+> >with enabling C-State in BIOS for my i7-8665U board. After I disable C
+> state of BIOS , it became constant according to my test.
+>
+> Let me correct something to avoid confusing.  Actually it is not constant
+> in my test , the cpu freq is about 1900Mhz keeping range
+> from 1899.* to 1900.* and having minor change.
+>
+> Regards
+>
+> Hongzhan Chen
+>
+> >Please also disable Intel(R) SpeedStep which may also be related to power
+> saving/cpu scaling.
+> >
+> >Regards
+> >
+> >Hongzhan Chen
+> >
+> >>
+> >>
+> >>The output looks like this when idle:
+> >>model name      : Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz
+> >>cpu MHz         : 799.193
+> >>
+> >>When busy:
+> >>model name      : Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz
+> >>cpu MHz         : 3600.628
+>
