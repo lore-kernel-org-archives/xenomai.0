@@ -1,12 +1,15 @@
-References: <CAG40PBoYx81YT02qB2mvz5jKU9Uzh4U8n57+KGpvRfioS2nmoQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: uapi/evl/net/sched.h overwriting /uapi/evl/sched.h during meson
- install
-Date: Thu, 24 Feb 2022 18:41:30 +0100
-In-reply-to: <CAG40PBoYx81YT02qB2mvz5jKU9Uzh4U8n57+KGpvRfioS2nmoQ@mail.gmail.com>
-Message-ID: <87czjcf9c4.fsf@xenomai.org>
+Message-ID: <ee4355cf-d62c-74a5-7ef3-e104f6e4f099@siemens.com>
+Date: Mon, 24 Jan 2022 18:54:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Subject: Re: [xenomai-images] [PATCH v2 1/2] xenomai: remove bootstrap task
+ from dpkg_runbuild_prepend
+Content-Language: en-US
+References: <20220118105128.3007-1-ubely@ilbers.de>
+ <20220118105128.3007-2-ubely@ilbers.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20220118105128.3007-2-ubely@ilbers.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +18,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Pettit <vendors@dysim.com>
-Cc: xenomai@xenomai.org
+To: Uladzimir Bely <ubely@ilbers.de>, xenomai@xenomai.org
 
+On 18.01.22 11:51, Uladzimir Bely via Xenomai wrote:
+> This looks unneeded while bootstrapping is done in the same way
+> in debian/rules file before the build.
+> 
+> Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
+> ---
+>   recipes-xenomai/xenomai/xenomai.inc | 17 -----------------
+>   1 file changed, 17 deletions(-)
+> 
+> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+> index fe84883..b8ec5bd 100644
+> --- a/recipes-xenomai/xenomai/xenomai.inc
+> +++ b/recipes-xenomai/xenomai/xenomai.inc
+> @@ -13,15 +13,6 @@ inherit dpkg
+>   
+>   PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1 libxenomai-dev libxenomai1-dbgsym"
+>   
+> -# use bitbake get_srcrev to get the current commit id
+> -def get_commit(d):
+> -    try:
+> -        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
+> -    except bb.fetch2.FetchError:
+> -        return ""
+> -
+> -COMMIT="${@get_commit(d)}"
+> -
+>   do_prepare_build() {
+>       # Xenomai currently does not maintain its changelog, plus we want the
+>       # actual package version in there.
+> @@ -31,11 +22,3 @@ do_prepare_build() {
+>       # package version more freely.
+>       rm -f ${S}/debian/source/format
+>   }
+> -
+> -dpkg_runbuild_prepend() {
+> -    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
+> -                     ${PV} ${COMMIT})
 
-Greg Pettit via Xenomai <xenomai@xenomai.org> writes:
+This is unrelated and must not be removed. It provides information about 
+the actually built revision when using "latest" as version.
 
-> I am setting up evl on a rpi4b using the following tags:
-> linux-evl: v5.10.89-evl1-rebase
-> libevl: r30
->
-> During the install it appears that /uabi/evl/sched.h is getting overwritten
-> by /uapi/evl/net/sched.h
-> From meson install:
-> ...
-> Installing /home/pi/build/include/uapi/evl/sched.h to
-> /usr/local/include/uapi/evl
-> ...
-> and then later in the install process...
-> ...
-> Installing /home/pi/build/include/uapi/evl/net/sched.h to
-> /usr/local/include/uapi/evl
->
+> -
+> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
+> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
+> -}
 
-Yup. Should be fixed in master by now.
+Ah, that was obsolete by [1], fortunately in all stable branches as 
+well. So this is fine indeed.
 
-> Is this expected behavior or am I doing something wrong?
+Jan
 
-Nope, I messed up during the transition to meson.
-
-> Also, thanks for
-> all the development efforts!  This is my first venture back into real time
-> linux since RTAI-3.4.
->
-
-Welcome back.
-
-Thanks for the heads up.
+[1] 
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/commit/951739291eb208076b638a06351ff9aa23c524c2
 
 -- 
-Philippe.
+Siemens AG, Technology
+Competence Center Embedded Linux
 
