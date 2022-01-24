@@ -1,13 +1,17 @@
+Message-ID: <c34f1422-26a4-19f7-1974-84abb7172469@siemens.com>
+Date: Mon, 24 Jan 2022 18:05:28 +0100
 MIME-Version: 1.0
-References: <20220210153313.2229625-1-gunter.grau@philips.com>
- <20220210153313.2229625-2-gunter.grau@philips.com>
-In-Reply-To: <20220210153313.2229625-2-gunter.grau@philips.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 10 Feb 2022 10:37:43 -0500
-Message-ID: <CALLqZ8S5fC5=FzScBqSobETZGtxUP6-=FCM=HxyTQ8Lfx-YyuQ@mail.gmail.com>
-Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 06/17] cobalt/thread: dovetail: keep hard irqs off on
+ transition to in-band
+Content-Language: en-US
+References: <cover.1623434743.git.jan.kiszka@siemens.com>
+ <98288382bd466130fedd65c653f70f90a7e5c4af.1623434743.git.jan.kiszka@siemens.com>
+ <214d1591-ea24-3020-2c51-7a2e58642136@siemens.com>
+ <87czkhcbpg.fsf@xenomai.org> <878rv5cbis.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <878rv5cbis.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,68 +20,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gunter Grau <gunter.grau@philips.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Feb 10, 2022 at 10:35 AM Gunter Grau via Xenomai <
-xenomai@xenomai.org> wrote:
+On 24.01.22 18:00, Philippe Gerum wrote:
+> 
+> Philippe Gerum <rpm@xenomai.org> writes:
+> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>
+>>> On 11.06.21 20:05, Jan Kiszka via Xenomai wrote:
+>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>> Dovetail provides a fast service to escalate the caller to
+>>>> out-of-band
+>>>> mode for executing a routine (run_oob_call()), which we use to enforce
+>>>> primary mode in ___xnsched_run() to schedule out the relaxing thread.
+>>>> Due to the way run_oob_call() works, enabling hardirqs during this
+>>>> transition can trigger a subtle bug caused by the relaxing thread to
+>>>> be switched out, as a result of taking an interrupt during the irqs on
+>>>> section, before __xnsched_run() actually runs on behalf of
+>>>> xnthread_relax() -> xnthread_suspend().
+>>>> This may lead to a breakage of the inband interrupt state, revealed
+>>>> by
+>>>> lockdep complaining about a HARDIRQ-IN-W -> HARDIRQ-ON-W situation,
+>>>> when finalize_task_switch() runs for reconciling both the in-band and
+>>>> Xenomai scheduler states.
+>>>> Re-enabling hard irqs before switching out the relaxing thread was
+>>>> throught as a mean to reduce the scope of the interrupt-free section
+>>>> while relaxing a thread with the I-pipe, which unlike Dovetail
+>>>> requires us to open code an escalation service based on triggering a
+>>>> synthetic interrupt.
+>>>> We differentiate the behavior between the I-pipe and Dovetail by
+>>>> abstracting the related bits as pipeline_leave_oob_unlock(), keeping
+>>>> the current implementation unchanged for the I-pipe.
+>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> ---
+>>>>    .../cobalt/kernel/dovetail/pipeline/sched.h   | 12 +++++++
+>>>>    include/cobalt/kernel/ipipe/pipeline/sched.h  | 20 ++++++++++++
+>>>>    kernel/cobalt/thread.c                        | 32 +++++++------------
+>>>>    3 files changed, 43 insertions(+), 21 deletions(-)
+>>>> diff --git a/include/cobalt/kernel/dovetail/pipeline/sched.h
+>>>> b/include/cobalt/kernel/dovetail/pipeline/sched.h
+>>>> index b5d6c1773..45512b983 100644
+>>>> --- a/include/cobalt/kernel/dovetail/pipeline/sched.h
+>>>> +++ b/include/cobalt/kernel/dovetail/pipeline/sched.h
+>>>
+>>> ...
+>>>
+>>>> @@ -2081,7 +2071,6 @@ void xnthread_relax(int notify, int reason)
+>>>>    	 * We disable interrupts during the migration sequence, but
+>>>>    	 * xnthread_suspend() has an interrupts-on section built in.
+>>>>    	 */
+>>>> -	splmax();
+>>>>    	trace_cobalt_lostage_request("wakeup", p);
+>>>>    	pipeline_post_inband_work(&wakework);
+>>>>    	/*
+>>>> @@ -2089,6 +2078,7 @@ void xnthread_relax(int notify, int reason)
+>>>>    	 * manipulation with handle_sigwake_event. This lock will be
+>>>>    	 * dropped by xnthread_suspend().
+>>>>    	 */
+>>>> +	splmax();
+>>>
+>>> This moves pipeline_post_inband_work() outside of the irqs-off
+>>> section, no? I think this destabilizes our migration to in-band,
+>>> allowing the injected wake-event to be consumed by Linux prior to the
+>>> oob thread suspension. I have a test here that seems to trigger this
+>>> reliably. Currently validating of moving splmax up again helps. Also
+>>>
+>>> Can you recall why you changed it this way?
+>>>
+>>
+>> The rationale was that current had to be running oob at this point in
+>> xnthread_relax(), so there would be no way for an in-band irq to be
+>> handled, causing the per-cpu work to run on the same CPU.
+>>
+>> Now, the tricky part is that this assumption might be wrong if an oob
+>> irq wakes up a thread which preempts on the same CPU, then switches back
+>> to secondary mode when it resumes. In this case, the irq work would run
+>> earlier than expected. Worth testing indeed.
 
-> The following commit in the vanilla kernel introduced
-> a check for the cached interrupt mask flag in mask_irq():
->
-> bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function calls")
->
-> This means if the flag is not serviced correctly
-> the real bit in the hardware interrupt controller may not be
-> cleared or set.
-> The __ipipe_end_level_irq() function does not follow this rule.
-> It unmasks the bit in the hardware without setting the cached flags
-> accordingly. So after the first level interrupt is finished the
-> mask cache has a wrong state. If now the next interrupt fires,
-> the mask_irq() function will not really mask the interrupt in
-> the hardware which causes a interrupt storm after reenabeling
-> the hard irqs.
-> The fix now calls unmask_irq() which is handling the cached flags
-> correctly.
->
-> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> ---
->  kernel/irq/chip.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 7c03e2931189..79a09b92a1b1 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -987,7 +987,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
->
->  void __ipipe_end_level_irq(struct irq_desc *desc)
->  {
-> -       desc->irq_data.chip->irq_unmask(&desc->irq_data);
-> +       unmask_irq(desc);
->  }
->
->  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
-> --
-> 2.25.1
->
->
-> ________________________________
-> The information contained in this message may be confidential and legally
-> protected under applicable law. The message is intended solely for the
-> addressee(s). If you are not the intended recipient, you are hereby
-> notified that any use, forwarding, dissemination, or reproduction of this
-> message is strictly prohibited and may be unlawful. If you are not the
-> intended recipient, please contact the sender by return e-mail and destro=
-y
-> all copies of the original message.
->
+Yeah, the test actually involves remote suspending. That may explain why 
+only we saw it so far with a rather special setup, luckily.
 
-I=E2=80=99ll add this to the arm/arm64 ipipe kernels this weekend.
+> 
+> As a matter of fact, EVL keeps the section atomic, Cobalt should align
+> on this:
+> 
+> void evl_switch_inband(int cause)
+>       ...
+>       hard_local_irq_disable();
+>       irq_work_queue(&curr->inband_work);
+> 
+> 
+> 
 
-Thanks
+OK, will send a patch the reverts that change above.
 
-Greg
+Thanks,
+Jan
 
->
->
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
