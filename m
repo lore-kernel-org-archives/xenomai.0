@@ -1,9 +1,14 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/3] y2038: Fixes for compat mode
-Date: Mon, 21 Feb 2022 14:25:01 +0100
-Message-Id: <20220221132504.55876-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 1/1] Added verbosity to 16550A serial driver. dmesg shows
+ the ports, irqs, baudbases.
+Date: Mon, 24 Jan 2022 07:40:18 +0000
+Message-ID: <4d3e4269cc2358f3ef0864cd08ef3402cfe1b748.camel@siemens.com>
+References: <20220123081859.3266-1-ksmola51@gmail.com>
+In-Reply-To: <20220123081859.3266-1-ksmola51@gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D907F491DCFA284BBD60E10EFD4CE3D7@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,34 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: jan.kiszka@siemens.com, johannes.lauenstein@siemens.com, Florian Bezdeka <florian.bezdeka@siemens.com>
+To: "ksmola51@gmail.com" <ksmola51@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I started testing the compat mode on a Ubuntu based system with glibc
-2.34 which supports switching to 64 bit based time_t. These are the fixes
-for problems observed while testing the kernel / cobalt part.
-
-More tests, especially for the libcobalt part will be necessary,
-especially because the way how glibc implemented the switch to 64 bit
-time_t affects the function wrapping we use.
-
-Best regards,
-Florian
-
-Florian Bezdeka (3):
-  y2038: posix/mqueue: Fix compat case for mq_timedreceive64
-  y2038: cobalt: rtdm/fd: Take care of compat mode for recvmmsg64
-  y2038: cobalt: posix/signal: Take care of compat mode for
-    sigtimedwait64
-
- .../x86/include/asm/xenomai/syscall32-table.h |  3 +++
- kernel/cobalt/posix/mqueue.c                  | 26 +++++++++----------
- kernel/cobalt/posix/mqueue.h                  |  2 +-
- kernel/cobalt/posix/syscall32.c               | 17 ++++++++++--
- kernel/cobalt/posix/syscall32.h               |  3 ++-
- 5 files changed, 34 insertions(+), 17 deletions(-)
-
--- 
-2.35.1
-
+T24gU3VuLCAyMDIyLTAxLTIzIGF0IDAwOjE4IC0wODAwLCBLb25zdGFudGluIFNtb2xhIHZpYSBY
+ZW5vbWFpIHdyb3RlOg0KPiBrZXJuZWwvZHJpdmVycy9zZXJpYWw6IEFkZGVkIHZlcmJvc2l0eSB0
+byAxNjU1MEEgc2VyaWFsIGRyaXZlci4gZG1lc2cgc2hvd3MgdGhlIHBvcnRzLCBpcnFzLCBiYXVk
+YmFzZXMuDQo+IFNpZ25lZC1vZmYtYnk6IEtvbnN0YW50aW4gU21vbGEgPGtzbW9sYTUxQGdtYWls
+LmNvbT4NCj4gLS0tDQo+ICBrZXJuZWwvZHJpdmVycy9zZXJpYWwvMTY1NTBBLmMgfCAzICsrKw0K
+PiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2tl
+cm5lbC9kcml2ZXJzL3NlcmlhbC8xNjU1MEEuYyBiL2tlcm5lbC9kcml2ZXJzL3NlcmlhbC8xNjU1
+MEEuYw0KPiBpbmRleCBjOTI3NGZiMTkuLjMyNTczN2Y2NSAxMDA2NDQNCj4gLS0tIGEva2VybmVs
+L2RyaXZlcnMvc2VyaWFsLzE2NTUwQS5jDQo+ICsrKyBiL2tlcm5lbC9kcml2ZXJzL3NlcmlhbC8x
+NjU1MEEuYw0KPiBAQCAtMzEsNiArMzEsNyBAQCBNT0RVTEVfVkVSU0lPTigiMS41LjIiKTsNCj4g
+IE1PRFVMRV9MSUNFTlNFKCJHUEwiKTsNCj4gIA0KPiAgI2RlZmluZSBSVF8xNjU1MF9EUklWRVJf
+TkFNRQkieGVub18xNjU1MEEiDQo+ICtzdGF0aWMgY2hhciBtb2RfbmFtZVs2NF09UlRfMTY1NTBf
+RFJJVkVSX05BTUU7DQoNCkhvdyBhYm91dCB1c2luZyBSVF8xNjU1MF9EUklWRVJfTkFNRSBkaXJl
+Y3RseT8NCg0KPiAgDQo+ICAjZGVmaW5lIE1BWF9ERVZJQ0VTCQk4DQo+ICANCj4gQEAgLTExMjgs
+NiArMTEyOSw4IEBAIGludCBfX2luaXQgcnRfMTY1NTBfaW5pdCh2b2lkKQ0KPiAgCQluYW1lID0g
+KGNoYXIgKikoZGV2ICsgMSk7DQo+ICAJCWtzZm9ybWF0KG5hbWUsIFJURE1fTUFYX0RFVk5BTUVf
+TEVOLCBkZXYtPmxhYmVsLCBpKTsNCj4gIA0KPiArCQlydGRtX3ByaW50aygiJXM6ICVzIGlvPTB4
+JXggaXJxPSVkIGJhdWRfYmFzZT0lZFxuIiwgbW9kX25hbWUsIG5hbWUsICh1bnNpZ25lZClydF8x
+NjU1MF9iYXNlX2FkZHIoaSksaXJxW2ldLGJhdWRfYmFzZVtpXSk7DQo+ICsNCg0KSSBndWVzcyBK
+YW4gd2lsbCBjb21tZW50IG9uIHRoYXQgYXMgd2VsbCwgbm90IHN1cmUgaWYgd2UgcmVhbGx5IG5l
+ZWQNCnN1Y2ggdmVyYm9zZSBvdXRwdXRzLiBUZWNobmljYWxseSBJIHdvbmRlciBpZiB0aGF0IGlz
+IHRoZSByaWdodA0KbG9jYXRpb24uIFRoZSBpbml0aWFsaXphdGlvbiBtaWdodCBzdGlsbCBmYWls
+IGJlbG93LiBTbyBtYXliZSBtb3ZlIGl0DQp0byB0aGUgcGxhY2Ugd2hlcmUgdGhlIGRldmljZSBp
+cyB1cCBhbmQgcnVubmluZz8NCg0KPiAgCQllcnIgPSBydF8xNjU1MF9pbml0X2lvKGksIG5hbWUp
+Ow0KPiAgCQlpZiAoZXJyKQ0KPiAgCQkJZ290byBrZnJlZV9vdXQ7DQoNCg==
 
