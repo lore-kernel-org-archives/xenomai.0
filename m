@@ -1,16 +1,12 @@
-Message-ID: <9cd1416c-e5dd-3b85-f3fb-d2425af40cf8@siemens.com>
-Date: Tue, 1 Mar 2022 09:29:42 +0100
+Message-ID: <bb0201d3-8d63-2380-2335-8e1f51428372@siemens.com>
+Date: Tue, 25 Jan 2022 17:33:42 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/4] Kernel-shark: Add xenomai_cobalt_switch_events plugin
- for kernel-shark
+Subject: Re: [PATCH] lib: Fix fallback signature of pthread_mutexattr_setrobust
 Content-Language: en-US
-References: <20220228054055.16112-1-hongzhan.chen@intel.com>
- <20220228054055.16112-3-hongzhan.chen@intel.com>
- <8d88452b-a6cc-e1d0-1091-d37690e4fe5b@siemens.com>
- <MN2PR11MB42854DEB6227FA10614603A2F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220117165234.387081-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB42854DEB6227FA10614603A2F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220117165234.387081-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,93 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
 
-On 01.03.22 08:51, Chen, Hongzhan wrote:
+On 17.01.22 17:52, Florian Bezdeka wrote:
+> Detected when trying to compile Xenomai on a 32bit system using latest
+> glibc release (2.34) without running autoreconf to regenerate
+> xeno_config.h.
 > 
+> The signature of _setrobust was mixed with the signature of _getrobust.
 > 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Tuesday, March 1, 2022 3:40 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [PATCH 2/4] Kernel-shark: Add xenomai_cobalt_switch_events plugin for kernel-shark
->>
->> On 28.02.22 06:40, Hongzhan Chen wrote:
->>> For Xenomai-cobalt enabled system, cobalt_switch_context means
->>> that there is schedule and context switch in companion core(realtime
->>> core), which we may need to do special treatment and take correct
->>> action as main kernel sched_switch to visualize out-of-band state
->>> of realtime tasks running in cobalt core. To achive our target,
->>> we implement following:
->>>
->>>   1. store corresponding cobalt_switch_context events into
->>>      container data.
->>>   2. modify pid stored in entry to be equal to next_pid to
->>>      show correct color in cpu bar when cobalt_switch_context
->>>      event happen.
->>>   3. show blue hollow box to mark out-of-band state according to
->>>      cobalt_switch_context events.
->>>   4. clickable cobalt_switch_context plugin shapes.
->>>
->>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>> ---
->>>  kernel-shark/Makefile.am                      |   6 +
->>>  .../kernelshark/CobaltSwitchEvents.cpp        | 156 ++++++++++++++++
->>>  kernel-shark/kernelshark/Makefile.am          |  18 ++
->>>  kernel-shark/kernelshark/README               |  75 ++++++++
->>>  .../xenomai_cobalt_switch_events.c            | 174 ++++++++++++++++++
->>>  .../xenomai_cobalt_switch_events.h            |  58 ++++++
->>>  6 files changed, 487 insertions(+)
->>>  create mode 100644 kernel-shark/Makefile.am
->>>  create mode 100644 kernel-shark/kernelshark/CobaltSwitchEvents.cpp
->>>  create mode 100644 kernel-shark/kernelshark/Makefile.am
->>>  create mode 100644 kernel-shark/kernelshark/README
->>>  create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.c
->>>  create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.h
->>>
->>
->> ...
->>
->>> diff --git a/kernel-shark/kernelshark/README b/kernel-shark/kernelshark/README
->>> new file mode 100644
->>> index 000000000..41a26a39a
->>> --- /dev/null
->>> +++ b/kernel-shark/kernelshark/README
->>> @@ -0,0 +1,75 @@
->>> +
->>> +What is it?
->>> +=============
->>> +
->>> +  It is Xenomai plugin for kernel-shark to visualize out-of-band state
->>> +  of realtime thread running in companion core with making use of
->>> +  cobalt_switch_context events in trace log.
->>> +
->>> +  For more introductions about kernel-shark , please refer to [1].
->>> +
->>
->> I think it's "KernelShark". Please check and then use that spelling
->> consistently if I'm right.
+> Updates https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/31
 > 
-> Actually, in kernelshark project  , they are mixing using them.
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>   include/boilerplate/libc.h | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> For example, like following commit message. There are lots  of commit messages include such name kernel-shark.
-> Or their repo name https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git
-> 
-> commit 59b5763c7c52b703e3b8e05be801f7c85365c9d3
-> Author: Yordan Karadzhov (VMware) <y.karadz@gmail.com>
-> Date:   Wed Jan 19 14:02:28 2022 +0200
-> 
->     kernel-shark: Add KsPluginsGUI.hpp/.cpp
-> 
->     Here we will place all GUI-related APIs that will be exposed to
->     the external plugins. For the moment we add only two such APIs
->     that will allow the plugins to manipulate the markers.
-> 
->     Signed-off-by: Yordan Karadzhov (VMware) <y.karadz@gmail.com>
-> 
+> diff --git a/include/boilerplate/libc.h b/include/boilerplate/libc.h
+> index 797e377a2..071cdf321 100644
+> --- a/include/boilerplate/libc.h
+> +++ b/include/boilerplate/libc.h
+> @@ -247,9 +247,8 @@ __weak int shm_unlink(const char *name)
+>   #ifdef HAVE_PTHREAD_MUTEXATTR_SETROBUST_NP
+>   #define pthread_mutexattr_setrobust	pthread_mutexattr_setrobust_np
+>   #else
+> -static inline
+> -int pthread_mutexattr_setrobust(const pthread_mutexattr_t *attr,
+> -				int *robustness)
+> +inline int pthread_mutexattr_setrobust(pthread_mutexattr_t *attr,
+> +				       int robustness)
+>   {
+>   	return ENOSYS;
+>   }
 
-Right, but website and README use "KernelShark". Maybe ask for
-clarification.
+Thanks, applied.
 
 Jan
 
