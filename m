@@ -1,14 +1,16 @@
+Message-ID: <00ea4e43-71c6-5bcd-86b5-efed9a67e2f5@siemens.com>
+Date: Tue, 25 Jan 2022 17:44:05 +0100
 MIME-Version: 1.0
-References: <CAPEvDeBTsSZRW3jBZZnwmyV4fUMNDvohGHsPxX=kj_9kRHLoHQ@mail.gmail.com>
- <48156ea9-7f01-b172-a21d-a518687bd824@siemens.com>
- <CAPEvDeALuyu-WSZEDiquDprwhpB8iXBEoKg7em2jAua+XCyx8Q@mail.gmail.com>
- <63e1d80d-2f45-7989-c8ed-736feb339261@siemens.com>
-In-Reply-To: <63e1d80d-2f45-7989-c8ed-736feb339261@siemens.com>
-From: FJKONG <bh1scw@gmail.com>
-Date: Tue, 1 Mar 2022 22:03:56 +0800
-Message-ID: <CAPEvDeC4bvskoUwYsUqyimetA1hyNVFPTeBuHPFpbofoEn7bEQ@mail.gmail.com>
-Subject: Re: Question about apply xenomai patch to RT kernel
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] libtraceevent: Add new xenomai plugin to print param_ex
+ correctly
+Content-Language: en-US
+References: <20220118024746.23951-1-hongzhan.chen@intel.com>
+ <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
+ <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,76 +19,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Mar 1, 2022 at 7:17 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On 19.01.22 02:25, Chen, Hongzhan wrote:
+> 
+> 
+>>
+>>> +/*
+>>> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen <hongzhan.chen@intel.com>
+>>> + */
+>>> +#include <stdio.h>
+>>> +#include <stdlib.h>
+>>> +#include <string.h>
+>>> +#include <linux/sched.h>
+>>> +
+>>> +#include "event-parse.h"
+>>> +#include "trace-seq.h"
+>>> +
+>>> +
+>>> +#define SCHED_SPORADIC		10
+>>> +#define SCHED_TP		11
+>>> +#define SCHED_QUOTA		12
+>>> +
+>>> +#define SCHED_COBALT		42
+>>> +#define SCHED_WEAK		43
+>>> +
+>>> +struct __sched_ss_param {
+>>> +	int __sched_low_priority;
+>>> +	struct timespec __sched_repl_period;
+>>> +	struct timespec __sched_init_budget;
+>>> +	int __sched_max_repl;
+>>> +};
+>>> +
+>>> +struct __sched_rr_param {
+>>> +	struct timespec __sched_rr_quantum;
+>>> +};
+>>> +
+>>> +struct __sched_tp_param {
+>>> +	int __sched_partition;
+>>> +};
+>>> +
+>>> +struct __sched_quota_param {
+>>> +	int __sched_group;
+>>> +};
+>>> +
+>>> +struct sched_param_ex {
+>>> +	int sched_priority;
+>>> +	union {
+>>> +		struct __sched_ss_param ss;
+>>> +		struct __sched_rr_param rr;
+>>> +		struct __sched_tp_param tp;
+>>> +		struct __sched_quota_param quota;
+>>> +	} sched_u;
+>>> +};
+>>
+>> Looks like a code duplication. Everything around sched_param_ex is
+>> still y2038 affected and might need to change within the Xenomai
+>> codebase. Not sure if it is really a good idea to duplicate such
+>> affected type definitions.
+>>
+>> Btw: This patch is not targeting the xenomai code base, right?
+> 
+> No,the patch is not for xenomai itself but for libtraceevent which is pure linux user
+> space lib used by kernel-shark or trace-cmd. But according to Jan, we need to maintain
+> them in xenomai tree. Basically , we will create new correspoding folder such
+> as libtraceevent or kernel-shark under xenomai tree and also related documents
+> to tell user how to use them with libtraceevent or kernel-shark but it would not compile
+> together with xenomai.
+> It is to fix part of issue https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33.
 
-> On 01.03.22 10:02, FJKONG wrote:
-> >
-> >
-> > On Tue, Mar 1, 2022 at 3:24 PM Jan Kiszka <jan.kiszka@siemens.com
-> > <mailto:jan.kiszka@siemens.com>> wrote:
-> >
-> >     On 01.03.22 02:23, FJKONG via Xenomai wrote:
-> >     > Hi all,
-> >     >
-> >     > I am trying to apply xenomai patch to RT kernel, but there are some
-> >     > conflicts.
-> >     > I am not sure if xenomai can works with RT kernel, or should I
-> >     remove RT
-> >     > from kernel and then apply xenomai patch.
-> >     > what is the right way to fix this?
-> >
-> >     The easiest path forward right now is likely using 5.15 (with
-> dovetail
-> >     patch), maybe even 5.16. There, the conflicts should be much smaller
-> >     than with older kernels where the remaining RT patch was much larger.
-> >     But I don't have information about recent attempts to make this
-> working,
-> >     so there might be additional issues.
-> >
-> > Thanks for replying.
-> >
-> > Here is our story: we got bsp from other company, so the kernel version
->
-> Then your bigger problem is likely not RT but those BSP bits not coming
-> from upstream, thus having questionable quality AND possible integration
-> problems with Dovetail.
->
-> Yes yes,  because I remove RT patch and then apply the dovetail patch,
-but some driver require function from RT patch.
-I will triy to get this done and test building later.
+OK, a README would be fine for the start, though I expect that we will 
+eventually be able to plug the build into the Xenomai autoconf/automake 
+as well. We do want this to be generated along the regular build, 
+provided the user installed the required dependencies and/or enabled 
+this feature. Would also ease packaging for debian, and building for 
+xenomai-image (enlightened "trace-cmd report" could work even on the 
+targets).
 
-> Can't you run your SoC from mainline? What is the actual delta to
-> mainline, 5.10 or latest master?
->
-> not try yet, but I guess that's hard because the driver and dtb.
+> 
+> you are right that we had better not to duplicate them but I can not find a better way
+> to share them between xenomai kernel and Linux userspace under current situation.
+
+Once the plugin is integrated into the Xenomai code base, including 
+existing headers should be even easier, specifically if they do not 
+belong to our devel package.
 
 Jan
->
-> > is fixed already and the RT patch is already there.
-> > I can reverse apply RT patch now,  but some driver error shows up :
-> >  "write_atomic" is not found any more.
-> > so I am stuck on this error now.
-> >
-> >     Which version did you try?
-> >
-> >
-> > I am using 5.10.41
-> >
-> > Thanks
-> > Kong
-> >
-> >
-> >     Jan
-> >
-> >     --
-> >     Siemens AG, Technology
-> >     Competence Center Embedded Linux
-> >
->
-> --
-> Siemens AG, Technology
-> Competence Center Embedded Linux
->
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
