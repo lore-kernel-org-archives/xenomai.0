@@ -1,15 +1,16 @@
-From: Uladzimir Bely <ubely@ilbers.de>
-Subject: Re: [xenomai-images] [PATCH v2 2/2] linux-xenomai: handle
- xenomai-kernel patch in Debian way
-Date: Thu, 27 Jan 2022 08:08:30 +0300
-Message-ID: <1704169.9hSmTKtgW7@home>
-In-Reply-To: <5991440c-9a6e-e460-8cbe-191113c44f12@siemens.com>
-References: <20220118105128.3007-1-ubely@ilbers.de>
- <20220118105128.3007-3-ubely@ilbers.de>
- <5991440c-9a6e-e460-8cbe-191113c44f12@siemens.com>
+From: Yann Le Chevoir <yann.lechevoir@cae.com>
+Subject: RE: rtnet rt_igb I210 not working with ARM
+Date: Fri, 28 Jan 2022 23:31:27 +0000
+Message-ID: <AS8PR09MB53547FCFB3BEC71C11C9AAC081229@AS8PR09MB5354.eurprd09.prod.outlook.com>
+References: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
+ <AS8PR09MB535414BA830FF82F9D26320B814B9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <512ba0a9-fa7b-acd8-6dc6-a3032481934e@siemens.com>
+In-Reply-To: <512ba0a9-fa7b-acd8-6dc6-a3032481934e@siemens.com>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,81 +19,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-In the email from =D0=BF=D0=BE=D0=BD=D0=B5=D0=B4=D0=B5=D0=BB=D1=8C=D0=BD=D0=
-=B8=D0=BA, 24 =D1=8F=D0=BD=D0=B2=D0=B0=D1=80=D1=8F 2022 =D0=B3. 20:56:31 +0=
-3 user Jan Kiszka=20
-wrote:
-> On 18.01.22 11:51, Uladzimir Bely via Xenomai wrote:
-> > This change moves generating xenomai-kernel.patch and applying it
-> > from the recipe into a build script in 'debian/' subdirectory.
-> >=20
-> > This makes linux-xenomai recipe buildchroot-independent and
-> > allows to use it with any build system (e.g. sbuild).
-> >=20
-> > Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
-> > ---
-> >=20
-> >   recipes-kernel/linux/linux-xenomai.inc | 13 ++++++++-----
-> >   1 file changed, 8 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/recipes-kernel/linux/linux-xenomai.inc
-> > b/recipes-kernel/linux/linux-xenomai.inc index 7dba96e..bd7db7d 100644
-> > --- a/recipes-kernel/linux/linux-xenomai.inc
-> > +++ b/recipes-kernel/linux/linux-xenomai.inc
-> > @@ -49,9 +49,12 @@ dpkg_runbuild_prepend() {
-> >=20
-> >   	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
-> >   =09
-> >   			 ${PV} ${LINUX_COMMIT})
-> >=20
-> > -	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-
-kernel.
-> > sh \ -		--linux=3D${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=3D$ARCH=20
-\
-> > -		--outpatch=3D${WORKDIR}/xenomai-kernel.patch
-> > -	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
-> > -		-p1 -i ${WORKDIR}/xenomai-kernel.patch
-> > +	if ! grep -q "prepare-kernel.sh" ${S}/debian/isar/build; then
-> > +		cat << EOF | sed -i '/^do_build/ r /dev/stdin' ${S}/
-debian/isar/build
-> > +    /usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \\
-> > +        --linux=3D. --arch=3D$ARCH \\
-> > +        --outpatch=3D../xenomai-kernel.patch
-> > +    patch -d . -p1 -i ../xenomai-kernel.patch
-> > +EOF
->=20
-> Can't we pick up ARCH from the environment of the build and use a static
-> script? This conditional patching-in is not so nice.
-
-Yes, we can do it. Instead of using $ARCH we could use \$ARCH, so the varia=
-ble=20
-will take the value not in "dpkg_runbuild", but in 'debian/isar/build', fro=
-m=20
-the environment. In this case the architecture will be calculated by simila=
-r=20
-function get_kernel_arch() from `isar/meta/recipes-kernel/linux/linux-
-custom.inc`
-
-I first wanted to do it this way, but notices, that Isar's function handles=
-=20
-more architectures than arm/arm64/x86. For example, in case of=20
-DISTRO_ARCH=3D"mipsel" function from 'linux-xenoami.ing' produces an error=
-=20
-("Unsupported architecture"), while one from 'linux-custom.inc' returns=20
-"mips".
-
-If it's not a problem, we can simplify it and remove more code.
-
->=20
-> Jan
->=20
-> > +	fi
-> >=20
-> >   }
-
-
-
-
+Pj4+PiBJIGhhdmUgYW4gaXNzdWUgd2l0aCBydF9pZ2Igbm90IHdvcmtpbmcgd2l0aCBhbiBJbnRl
+bCBJMjEwIG9uIEFSTQ0KPj4+PiAoc2VlIHN5c3RlbSBjb25maWd1cmF0aW9uIGJlbG93KS4NCj4+
+Pj4gV2l0aCBXaXJlc2hhcmssIGxvb2tzIGxpa2UgcnRwaW5nIGlzIHNlbmRpbmcgZ2FyYmFnZSBv
+biB0aGUgbmV0d29yaw0KPj4+PiAoc2VlIGJlbG93KS4NCj4+Pj4gSSBub3RpY2UgdGhlcmUgaXMg
+bm8gaW50ZXJydXB0IGluIC9wcm9jL3hlbm9tYWkvaXJxIChzZWUgYmVsb3cpLg0KPj4+PiBMb29r
+cyBsaWtlIG90aGVyIHBlb3BsZSBnb3QgaXNzdWVzIHdpdGggSTIxMCBpbiB0aGUgcGFzdCBidXQg
+SSBhbQ0KPj4+PiBub3Qgc3VyZSBpZiB0aGV5IHdlcmUgc2ltaWxhciBhbmQgSSBhbSBub3QgYWJs
+ZSB0byBmaW5kIGFueSBjb25jbHVzaW9uLg0KPj4+Pg0KPj4+PiBCZWxvdywgSSBzaG93IHlvdSBo
+b3cgSSBhbSBpbnNlcnRpbmcgdGhlIGtlcm5lbCBtb2R1bGUgKyBob3cgSSBhbQ0KPj4+PiBhYmxl
+IHRvIGhhdmUgaXQgd29ya2luZyB3aXRoIGlnYiAobm8gcmVhbHRpbWUpIGFuZCBydF9mZWMgKGRp
+ZmZlcmVudA0KPj4+PiBkcml2ZXIgZm9yIHRoZSBvdGhlciBFdGhlcm5ldCBjb250cm9sbGVyIG9u
+IHRoZSBzYW1lIGJvYXJkKS4NCj4+Pj4NCj4+Pj4gV2hhdCBjYW4gSSBkbyB0byBzb2x2ZSB0aGlz
+IGlzc3VlPw0KPj4+PiBJcyB0aGVyZSBhbnl0aGluZyBlbHNlIEkgY2FuIHRyeSB0byBnaXZlIHlv
+dSBtb3JlIGRhdGE/DQo+Pj4+DQo+Pj4gQ291bGQgeW91IGNoZWNrIGlmIHRoYXQgY2FyZCB3b3Jr
+cyBpbiBhIHN0YW5kYXJkIFBDICh4ODYtNjQpIHdpdGggUlRuZXQ/DQo+Pj4gQ291bGQgeW91IGFs
+c28gY2hlY2sgaWYgbGF0ZXN0IDMuMi4xIG1ha2VzIGFueSBkaWZmZXJlbmNlPyBOb3QgYWxsDQo+
+Pj4gZml4ZXMgb24gUlRuZXQgaGF2ZSBiZWVuIGJhY2twb3J0ZWQgdG8gdmVyeS1vbGQtc3RhYmxl
+Lg0KPj4+DQo+Pj4gSmFuDQo+Pg0KPj4gU29ycnkgZm9yIHRoZSBkZWxheSwgSSBuZWVkZWQgdG8g
+dXBkYXRlIG15IExpbnV4IGtlcm5lbA0KPj4gKEZyZWVzY2FsZS9saW51eC1mc2xjKSBmcm9tIHZl
+cnNpb24gNC45LjY3IHRvIHZlcnNpb24gNS40LjE0NyB0byBiZQ0KPj4gYWJsZSB0byBjb21waWxl
+IFhlbm9tYWkgMy4yLjEuIEkgYW0gc3RpbGwgdXNpbmcgSS1waXBlLCBub3QgRG92ZXRhaWwsIHJp
+Z2h0Pw0KPg0KPiBZZXMsIGV2ZXJ5dGhpbmcgdXAgdG8gYW5kIGluY2x1ZGluZyA1LjQgaXMgSS1w
+aXBlLCA1LjEwIGFuZCBsYXRlciBpcyBkb3ZldGFpbC4NCj4gDQo+PiBJIG5vdGljZSB0aGF0IHRo
+ZSB0eXBlIG9mIGludGVycnVwdGlvbiBjaGFuZ2VkIHNpbmNlIHRoZSBwcmV2aW91cyB2ZXJzaW9u
+Og0KPj4gd2Ugbm93IGhhdmUgIlVzaW5nIE1TSS1YIGludGVycnVwdHMiIGluc3RlYWQgb2YgIlVz
+aW5nIE1TSSBpbnRlcnJ1cHRzIi4NCj4gDQo+IE1heWJlIHRoZSBob3N0IGNvbnRyb2xsZXIgb2Yg
+eW91ciBTb0MgZ2FpbmVkIE1TSS1YIHN1cHBvcnQgYmV0d2VuIDQuOSBhbmQNCj4gNS40PyBUaGVu
+IGJvdGggdGhlIHN0YW5kYXJkIGRyaXZlciBhbmQgcnRfaWdiIHdvdWxkIHRyeSB0byB1c2UgdGhh
+dCBpbnN0ZWFkDQo+IChNU0kgaXMgbGVnYWN5KS4NCj4gDQo+PiBBbmQgdGhlcmUgaXMgdGhpcyBu
+ZXcgZXJyb3I6ICJFcnJvciAyIGdldHRpbmcgaW50ZXJydXB0IiB3aGljaA0KPj4gcHJldmVudHMg
+dG8gaGF2ZSBydGV0aDAgY29uZmlndXJlZCAoc2VlIGJlbG93KS4gVGhhdCdzIGRpZmZlcmVudCBm
+cm9tIGxhc3QNCj4gdGltZS4NCj4+IEkgbm90aWNlIHRoYXQgdGhlIGRyaXZlciBpZ2IgaXRzZWxm
+IGRvZXMgbm90IHdvcmsgd2l0aCB0aGUgbmV3IFhlbm9tYWkNCj4+IGtlcm5lbCAoc2VlIGJlbG93
+KS4gVGhhdCdzIGFsc28gZGlmZmVyZW50IGZyb20gbGFzdCB0aW1lLiBJIGNvbmZpcm1lZA0KPj4g
+dGhhdCBpdCB3b3JrcyB3aXRoIHRoZSBub24teGVub21haSBrZXJuZWwgdGhvdWdoIChzYW1lIGtl
+cm5lbCA1LjQuMTQ3DQo+PiB3aXRob3V0IHRoZSBJLXBpcGUgcGF0Y2gpLg0KPiANCj4gNS40LjE0
+NyAtIHRoYXQgaXMgbm8gb2ZmaWNpYWwgaXBpcGUtYXJtIHJlbGVhc2UuIERpZCB5b3UgaW50ZWdy
+YXRlIHRoZSBwYXRjaA0KPiB5b3Vyc2VsZiBiYXNlIG9uIHdoaWNoIEktcGlwZSBjb3JlIHJldmlz
+aW9uPyBBbmQgaG93IGFib3V0IGlwaXBlLWNvcmUtDQo+IDUuNC4xNTEtYXJtLTQ/DQoNCkhlbGxv
+IEphbiwgYWxsLA0KDQpXaGF0IEkgImFsd2F5cyIgZGlkIGZvciBrZXJuZWxzIGxpbnV4LWZzbGMt
+aW14DQogICAgNC4xLjM4IChZb2N0byBNb3J0eSksDQogICAgNC45LjY3IChZb2N0byBUaHVkKQ0K
+ICAgIGFuZCA1LjQuMTQ3IChZb2N0byBEdW5mZWxsKQ0KaXMgdGhhdCBJIHRyaWVkIHRvIGFwcGx5
+IHRoZSBjbG9zZXN0IGFybSBJLXBpcGUgcGF0Y2ggYXMgcG9zc2libGU6DQogICAgLSBHaXZlbiBh
+biBleGFtcGxlLCBJIHVzZWQgaXBpcGUtY29yZS01LjQuMTUxLWFybS00LnBhdGNoIHRvIHBhdGNo
+DQogICAgICBZb2N0byBEdW5mZWxsLg0KICAgIC0gVGhlbiwgSSBtYW51YWxseSByZXNvbHZlZCB0
+aGUgY29uZmxpY3RzLg0KICAgIC0gVGhhdCB3ZW50IHdlbGwgKGhhcHB5IHdpdGggdGhlIHBlcmZv
+cm1hbmNlcyBhbmQgdGhlIHJ0Y2FuIGRyaXZlcikuDQogICAgLSBJZGVhIHdhcyB0byBzdGF5IGFz
+IGNsb3NlIGFzIHBvc3NpYmxlIG9mIHRoZSBvZmZpY2lhbCBZb2N0byBicmFuY2gNCiAgICAgIHdl
+IGFyZSB1c2luZy4gRG9lcyB0aGF0IG1ha2Ugc2Vuc2U/DQpCeSByZWFkaW5nIHlvdXIgYW5zd2Vy
+LCBJIHdvbmRlcmVkIGlmIEkgZGlkIHJpZ2h0LiBTbyBJIGFsc28gdHJpZWQgdG8NCmNvbXBpbGUg
+dGhlIGtlcm5lbCBmcm9tIHRoZSBpcGlwZS1hcm0gcmVwbzoNCiAgICAtIEJyYW5jaCBpcGlwZS81
+LjQueS4NCiAgICAtIFRoYXQgY29tcGlsZXMgYW5kIGJvb3RzLg0KICAgIC0gQnV0LCBmb3IgdGhl
+IHJ0X2lnYiwgc2FtZSBpc3N1ZSBhcyBwcmV2aW91cyBwcm9jZWR1cmU6DQogICAgICAiRXJyb3Ig
+MiBnZXR0aW5nIGludGVycnVwdCIuDQoNCj4+IE5vdGU6IHRvIGhhdmUgdGhlIGRyaXZlciBpZ2Ig
+d29ya2luZyB3aXRoIHRoZSBYZW5vbWFpIGtlcm5lbCwgSSBjYW4NCj4+IHVzZSB0aGUgbGVnYWN5
+IGludGVycnVwdHMgKCJwY2k9bm9tc2kiIG9uIHRoZSBrZXJuZWwgY29tbWFuZCBsaW5lKS4NCj4+
+IERvZXMgdGhpcyAiZXJyb3IgMiIgc291bmQgZmFtaWxpYXI/IElzIHRoZXJlIGFueXRoaW5nIGVs
+c2UgSSBjYW4gdHJ5Pw0KPiANCj4gRU5PRU5UIC0geW91IGNvdWxkIHRyeSBzZWFyY2ggdGhlIGNv
+ZGUgZm9yIHNvdXJjZXMgb2YgdGhpcyBlcnJvciBjb2RlLg0KPiBCdXQgaXQgbWF5IGFsc28gY29t
+ZSBmcm9tIHRoZSBQQ0kgb3IgTVNJIGNvcmUuDQo+IA0KPj4NCj4+IEkgZGlkIG5vdCB0cnkgd2l0
+aCBhIHN0YW5kYXJkIHg4Ni02NCBQQyB5ZXQuIERvIHlvdSB0aGluayBpdCBtYXkgc3RpbGwNCj4+
+IGhlbHA/IEkgaGF2ZSB0aGUgZmVlbGluZyB0aGF0IHRoaXMgaXJxIGlzc3VlIGlzIHZlcnkgc3Bl
+Y2lmaWMgdG8gbXkNCj4+IGFybSBTT0MuDQo+IA0KPiBOb3QgdW5saWtlbHkuIEknbSBhZnJhaWQg
+dGhlcmUgaXMgbm8gd2F5IGFyb3VuZCBkaWdnaW5nIGZvciB0aGUgc291cmNlIG9mIHRoZQ0KPiBl
+cnJvciBjb2RlLiBUaGF0IGNhbiBoZWxwIHRvIHVuZGVyc3RhbmQgYmV0dGVyIHdoYXQgZ29lcyB3
+cm9uZw0KDQpJIHRyaWVkIHNvIG1hbnkgZGlmZmVyZW50IHZlcnNpb25zLg0KSSBmaW5hbGx5IGNh
+bWUgYmFjayB0byBteSBpbml0aWFsIHZlcnNpb246DQogICAgbGludXgtZnNsYy1pbXggNC45LjY3
+DQogICAgICArIGlwaXBlLWNvcmUtNC45LjUxLWFybS00LnBhdGNoIChhZGFwdGVkKQ0KICAgICAg
+KyBYZW5vbWFpIDMuMC45IG9yIDMuMC4xMi4NCiAgICAtIFdpdGggdGhpcyBvbmUsIGF0IGxlYXN0
+LCB0aGUgbm9uLVhlbm9tYWkgaWdiIGRyaXZlciB3b3JrcyB3aXRoIHRoZQ0KICAgICAgSS1waXBl
+IHBhdGNoLg0KICAgIC0gSSBmaWd1cmVkIG91dCB0aGF0IGJ5IGRpc2FibGluZyBNU0kgKHBjaT1u
+b21zaSksIHRoZSBpcnEgY291bnRlciBpbg0KICAgICAgL3Byb2MveGVub21haS9pcnEgc3RhcnRl
+ZCB0byBpbmNyZW1lbnQgZm9yIHJ0X2lnYi4NCiAgICAtIFRoZW4sIEkgY29uZmlybWVkIHRoYXQg
+dGhlIGJ1ZmZlcnMgKElDTVAgb3IgQVJQIGZyYW1lcykgd2VyZSBjb3JyZWN0DQogICAgICAocHJp
+bnRrIGluIHRoZSBpZ2JfbWFpbi5jIHNvdXJjZSBjb2RlKS4NCiAgICAtIEkgYWxzbyByZWFsaXpl
+ZCB0aGF0IHRoZSBSWCB3YXMgd29ya2luZy4NCiAgICAgIFRoZSBSVG5ldCBzdGFjayB3YXMgcHJl
+cGFyaW5nIGFuIEFSUCByZXNwb25zZSB0byBteSBXaW5kb3dzIHBpbmcuDQogICAgLSBPbmx5IHRo
+ZSBUWCB3YXMgbm90IGdvb2QgKGdhcmJhZ2Ugb24gV2lyZXNoYXJrKS4NCg0KSSBmaW5hbGx5IGhh
+dmUgc29tZXRoaW5nIHdvcmtpbmcgd2l0aCB0aGUgcGF0Y2ggYmVsbG93Lg0KU286DQogICAgLSBw
+Y2k9bm9tc2kgdG8gaGF2ZSB0aGUgaXJxIGNvdW50ZXIgaW5jcmVtZW50aW5nLg0KICAgIC0gZG1h
+X3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UgaW4gaWdiX3R4X21hcCB0byBoYXZlIHJ0X2lnYiBzZW5k
+aW5nDQogICAgICBnb29kIGRhdGEuDQoNCk15IHF1ZXN0aW9uczoNCldoYXQgYXJlIHlvdXIgZmVl
+bGluZyBhYm91dCB0aGF0Pw0KSXMgZG1hX3N5bmMgcmVhbC10aW1lPyBJcyBpdCBhIGdvb2QgZml4
+L3dvcmthcm91bmQ/DQpXaHkgZG8gSSBuZWVkIHRvIGFkZCBzdWNoIGEgZG1hX3N5bmMgd2l0aCBt
+eSBhcm0gU29DPw0KICAgIC0gSSBzdXNwZWN0IHRoYXQgdGhpcyBkcml2ZXIgd291bGQgd29yayBv
+biBhIHJlZ3VsYXIgeDg2Li4uDQogICAgLSBDYW4geW91IHRlbGwgaWYgaXQgd29ya3Mgb24gb3Ro
+ZXIgYXJtIFNvQz8NCkFueSBzdWdnZXN0aW9uIHRvIGRvIHdvcmsgdGhlIGRyaXZlciB3aXRoIE1T
+SSBpbnN0ZWFkIG9mIGxlZ2FjeSBpbnRlcnJ1cHRzPw0KQW55IHN1Z2dlc3Rpb24gdG8gZG8gd29y
+ayBydF9pZ2Igd2l0aCBLZXJuZWwgNS40ICsgWGVub21haSAzLjI/DQoNClRoZSBwYXRjaCAoaWdi
+X3R4X21hcCB3aXRoIFhlbm9tYWkgMy4wLjEyKToNCi0tLSBrZXJuZWwub3JpL2RyaXZlcnMvbmV0
+L2RyaXZlcnMvaWdiL2lnYl9tYWluLmMNCisrKyBrZXJuZWwvZHJpdmVycy9uZXQvZHJpdmVycy9p
+Z2IvaWdiX21haW4uYw0KQEAgLTQwOTUsNiArNDA5NSw3IEBADQogCXNpemUgPSBza2ItPmxlbjsN
+Cg0KICAgZG1hID0gcnRza2JfZGF0YV9kbWFfYWRkcihza2IsIDApOw0KKyAgZG1hX3N5bmNfc2lu
+Z2xlX2Zvcl9kZXZpY2UodHhfcmluZy0+ZGV2LCBkbWEsIHNpemUsIERNQV9CSURJUkVDVElPTkFM
+KTsNCg0KVGhhbmsgeW91LA0KDQpZYW5uDQo=
 
