@@ -1,11 +1,12 @@
-Message-ID: <c6a0fa05-8348-dfff-fc1e-938795a1f266@siemens.com>
-Date: Mon, 7 Feb 2022 08:21:58 +0100
+Message-ID: <50001721-2dfc-3508-bc48-068a9f2eaf23@siemens.com>
+Date: Mon, 7 Feb 2022 08:24:16 +0100
 MIME-Version: 1.0
-Subject: Re: UDD with shared interrupts?
+Subject: Re: Can mode switches of one thread effect realtime of other xenomai
+ threads?
 Content-Language: en-US
-References: <A9p1YZoCjJLY022S76mAXuvt70QWpXy_dZ-qDq4aUPqDLINgdbSY7qUhHeUmAa0FML6gZWvd7_q2SUQyTBNVeq2r-liU6CnL_ZrzuesB0dc=@codecraftsmen.org>
+References: <001a01d819b5$32589230$9709b690$@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <A9p1YZoCjJLY022S76mAXuvt70QWpXy_dZ-qDq4aUPqDLINgdbSY7qUhHeUmAa0FML6gZWvd7_q2SUQyTBNVeq2r-liU6CnL_ZrzuesB0dc=@codecraftsmen.org>
+In-Reply-To: <001a01d819b5$32589230$9709b690$@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,15 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <w1@codecraftsmen.org>, Xenomai <xenomai@xenomai.org>
+To: Kristian Rahbek <kri.rahbek@gmail.com>, xenomai@xenomai.org
 
-On 02.02.22 17:12, Jeff Webb via Xenomai wrote:
-> I am updating and reworking a UDD driver stub and happened to notice a difference between the UDD and UIO APIs.  It looks like udd_register_device() always passes "0" as the rtdm_irq_request() "flags" argument, whereas uio_register_device() allows flags to be passed in to request_irq().  Does this mean that shared interrupts are not currently possible with UDD drivers?  Is there a reason for this difference in the UDD and UIO APIs?
+On 04.02.22 11:51, Kristian Rahbek via Xenomai wrote:
+> Hello,
+> 
+> We are running Xenomai 3 with Cobalt kernel.
+> We have a realtime xenomai userspace application (which is driven by a RTDM), it runs with the highest priority and doesn't have any mode switches. Let's call it thread 'A'.
+> Reading the documentation it's unclear to us, if it can have any ill-effects on the realtime performance of thread A, if the process which spawns thread A has other Xenomai threads, which do have mode switches.
+> Is that the case?
+> What about separate processes with Xenomai threads, if those have switches between primary and secondary mode (MSW's), can that have any effect on the realtime performance of thread A?
 > 
 
-You can add RTDM_IRQTYPE_SHARED as flag - but note that this will only
-give you sharing between RT devices. Cross-domain sharing would break
-determinism.
+Mode switches are effectively context switches which involve a short
+uninterruptible section. But in that regard they are not worth than
+switching between two RT tasks while a third, highest prio task is
+getting ready.
 
 Jan
 
