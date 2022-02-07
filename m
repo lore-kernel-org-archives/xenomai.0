@@ -1,14 +1,14 @@
-Message-ID: <50001721-2dfc-3508-bc48-068a9f2eaf23@siemens.com>
-Date: Mon, 7 Feb 2022 08:24:16 +0100
+Date: Mon, 07 Feb 2022 15:14:19 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: Re: UDD with shared interrupts?
+Message-ID: <yf7HzSAMs1MelG2CeD900qXVYeWyihg3vs11HwH0gHG1u4kFzZJ9S3Ihr46eggA7JFYjYTlLNQED_jjfvvCePV_BmjK03xLaVvHwvY8_Alg=@codecraftsmen.org>
+In-Reply-To: <c6a0fa05-8348-dfff-fc1e-938795a1f266@siemens.com>
+References: <A9p1YZoCjJLY022S76mAXuvt70QWpXy_dZ-qDq4aUPqDLINgdbSY7qUhHeUmAa0FML6gZWvd7_q2SUQyTBNVeq2r-liU6CnL_ZrzuesB0dc=@codecraftsmen.org>
+ <c6a0fa05-8348-dfff-fc1e-938795a1f266@siemens.com>
 MIME-Version: 1.0
-Subject: Re: Can mode switches of one thread effect realtime of other xenomai
- threads?
-Content-Language: en-US
-References: <001a01d819b5$32589230$9709b690$@gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <001a01d819b5$32589230$9709b690$@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,26 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kristian Rahbek <kri.rahbek@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04.02.22 11:51, Kristian Rahbek via Xenomai wrote:
-> Hello,
-> 
-> We are running Xenomai 3 with Cobalt kernel.
-> We have a realtime xenomai userspace application (which is driven by a RTDM), it runs with the highest priority and doesn't have any mode switches. Let's call it thread 'A'.
-> Reading the documentation it's unclear to us, if it can have any ill-effects on the realtime performance of thread A, if the process which spawns thread A has other Xenomai threads, which do have mode switches.
-> Is that the case?
-> What about separate processes with Xenomai threads, if those have switches between primary and secondary mode (MSW's), can that have any effect on the realtime performance of thread A?
-> 
+------- Original Message -------
+On Monday, February 7th, 2022 at 1:21 AM, Jan Kiszka <jan.kiszka@siemens.co=
+m> wrote:
+> On 02.02.22 17:12, Jeff Webb via Xenomai wrote:
+>
+> > I am updating and reworking a UDD driver stub and happened to notice a =
+difference
+> > between the UDD and UIO APIs. It looks like udd_register_device() alway=
+s passes "0"
+> > as the rtdm_irq_request() "flags" argument, whereas uio_register_device=
+() allows
+> > flags to be passed in to request_irq(). Does this mean that shared inte=
+rrupts are
+> > not currently possible with UDD drivers? Is there a reason for this dif=
+ference in
+> > the UDD and UIO APIs?
+>
+> You can add RTDM_IRQTYPE_SHARED as flag - but note that this will only
+> give you sharing between RT devices. Cross-domain sharing would break
+> determinism.
+>
+> Jan
 
-Mode switches are effectively context switches which involve a short
-uninterruptible section. But in that regard they are not worth than
-switching between two RT tasks while a third, highest prio task is
-getting ready.
+Thanks for confirming that there is nothing preventing shared interrupts (b=
+etween real-time drivers) from working with UDD, Jan.
 
-Jan
+I think my question was not completely clear, though, so let me try again.
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+I realize that I could modify the source of udd.c to add RTDM_IRQTYPE_SHARE=
+D in place of "0" in the excerpt of udd_register_device() below:
+
+=09=09ret =3D rtdm_irq_request(&ur->irqh, udd->irq,
+=09=09=09=09       udd_irq_handler, 0,
+=09=09=09=09       dev->name, udd);
+
+I was wondering why there is not a way to pass in RTDM_IRQTYPE_SHARED to ud=
+d_register_device()?  Maybe no one has needed this yet?  I see that Linux U=
+IO's uio_info struct has an irq_flags field for passing in IRQF_SHARED, whi=
+ch is passed along to request_irq(). Would it make sense to add a similar f=
+ield to the udd_device structure for this purpose?
+
+Thanks,
+
+-Jeff
+
 
