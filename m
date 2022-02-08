@@ -1,10 +1,11 @@
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: Shared memory in evl driver
-Date: Mon, 7 Feb 2022 20:59:55 +0000
-Message-ID: <PH1P110MB1050B0A0FEC4B2688FA36C01E22C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Content-Language: en-US
+Date: Tue, 08 Feb 2022 05:06:14 +0000
+From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+Reply-To: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+Subject: [PATCH] cobalt/thread: add missing EXPORT_SYMBOL_GPL for
+ xnthread_host_pid
+Message-ID: <20220208050609.5007-1-david.oberhollenzer@sigma-star.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,17 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello,
+xnthread_host_pid was previously exposed as an inline function, and
+as such was externally available in releases up to 3.0.7.
 
-I currently have a linux driver used by my application that contains some g=
-lobal buffers that are updated based on various ioctl calls. If I add the E=
-VL ioctl file descriptor to the driver, can I access the same buffer that i=
-s referenced by the normal ioctl call? As in, can both ioctl() and oob_ioct=
-l() reference the same memory? If so, what would I need to keep in mind? Ho=
-w would mutexes work since there is an interaction between evl and non-evl =
-calls?
+Commit 2ac704fa8 moved it into thread.c, but did not export it.
+This patch adds a missing EXPORT_SYMBOL_GPL.
 
-Thanks,
-Russell
+Fixes: 2ac704fa8 ("cobalt: Never crash on reading host task pid")
+Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+---
+ kernel/cobalt/thread.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index dfaef7564..6cddf3f9f 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -388,6 +388,7 @@ pid_t xnthread_host_pid(struct xnthread *thread)
+
+ =09return task_pid_nr(xnthread_host_task(thread));
+ }
++EXPORT_SYMBOL_GPL(xnthread_host_pid);
+
+ int xnthread_set_clock(struct xnthread *thread, struct xnclock *newclock)
+ {
+--
+2.34.1
+
+
+
