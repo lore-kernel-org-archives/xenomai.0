@@ -1,11 +1,13 @@
-References: <PH1P110MB1050B0A0FEC4B2688FA36C01E22C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Shared memory in evl driver
-Date: Tue, 08 Feb 2022 11:35:32 +0100
-In-reply-to: <PH1P110MB1050B0A0FEC4B2688FA36C01E22C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87h799y69l.fsf@xenomai.org>
+Message-ID: <bc5db3f3-2a61-c593-d71d-7029afe1fe16@siemens.com>
+Date: Wed, 9 Feb 2022 18:51:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Subject: Re: Questions about Xenomai
+Content-Language: en-US
+References: <CAGjgvr_QGmQiHEXnuhZ4kbA+KsBk+qs78jJ+15Bpb6NbGqq3Lg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <CAGjgvr_QGmQiHEXnuhZ4kbA+KsBk+qs78jJ+15Bpb6NbGqq3Lg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,72 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: xenomai@xenomai.org
+To: Yucong Chen <slaoub@gmail.com>, xenomai@xenomai.org
 
+On 09.02.22 04:58, Yucong Chen wrote:
+> Hi all,
+> I have two questions for you about Xenomai. Could you spare me some time?
+> 1. Whether the Xenomai can be used for automotive and safety critical
+> systems?
 
-Russell Johnson via Xenomai <xenomai@xenomai.org> writes:
+Certifying Linux is a challenge, see e.g. https://elisa.tech/. It's not
+impossible, it's often "just" not affordable when it comes to execution
+maintenance. Xenomai adds code to the Linux system, and that will not
+immediately make such a task simpler.
 
-> Hello,
->
-> I currently have a linux driver used by my application that contains
-> some global buffers that are updated based on various ioctl calls. If
-> I add the EVL ioctl file descriptor to the driver, can I access the
-> same buffer that is referenced by the normal ioctl call? As in, can
-> both ioctl() and oob_ioctl() reference the same memory?
+> 2. What is the future of Xenomai 4 (EVL Project)?
+> Looking forward to hearing from you. Thank you in advance.
 
-Yes. EVL files are regular linux VFS files extended with oob operations.
-IOW, there is no separate "real-time file domain", there are real-time
-operations added to the common linux files.
+We cannot predict the future, so we cannot tell you what it will be. But
+the goal of the Xenomai project is to enable a smooth transition of
+Xenomai 3.x applications to a Xenomai 4.x (EVL-based) line in order to
+use the architectural benefits of EVL. That still requires changes,
+likely on both sides (less on EVL, though), so this is the more
+foreseeable part of the future.
 
-> If so, what
-> would I need to keep in mind?
-
-Nothing particular. You driver would accept both ways of accessing the
-memory from oob and inband contexts, the onus is on the implementor for
-avoiding access conflicts. In fact, the whole EVL core is based on this
-approach: each basic mechanism (thread, monitor, proxy etc.) is
-implemented as a mini linux driver, which exports a set of struct
-file_operations mixing regular/inband and oob operations.
-
-e.g. kernel/evl/proxy.c
-
-static const struct file_operations proxy_fops = {
-	.open		= evl_open_element,
-	.release	= proxy_release,
-	.oob_write	= proxy_oob_write,
-	.oob_read	= proxy_oob_read,
-	.oob_poll	= proxy_oob_poll,
-	.write		= proxy_write,
-	.read		= proxy_read,
-	.poll		= proxy_poll,
-	.mmap		= proxy_mmap,
-};
-
-As you can see, the usual ops make sense inband-wise, other oob-specific
-ones are provided in order to control the device from the real-time
-side as well.
-
-> How would mutexes work since there is an
-> interaction between evl and non-evl calls?
-
-(EVL/glibc) mutexes won't do it, since they cannot serialize
-inter-stage. If you really need to serialize access to these buffers
-from threads which belong to different stages - at the expense of a
-potential priority inversion though - I would suggest to have a look at
-the so-called EVL stage exclusion lock, aka "stax" mechanism in the
-kernel API. The doc is still WIP [1], but it gives the basic information
-already.
-
-In short, a stax allows you to temporarily exclude "the other side"
-stage-wise. Say you have an oob thread currently traversing a
-stax-guarded section of code, another oob thread would be allowed to
-enter it as well, but inband threads would have to wait until the stax
-is fully released by all oob holders. This works the converse way if the
-stax is originally grabbed by an inband thread.
-
-[1] https://evlproject.org/core/kernel-api/stax/
+Jan
 
 -- 
-Philippe.
+Siemens AG, Technology
+Competence Center Embedded Linux
 
