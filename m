@@ -1,7 +1,9 @@
 From: Gunter Grau <gunter.grau@philips.com>
-Subject: Issue with linux threaded level triggered interrupts 
-Date: Thu, 10 Feb 2022 16:33:12 +0100
-Message-Id: <20220210153313.2229625-1-gunter.grau@philips.com>
+Subject: [PATCH] ipipe: Fix ipipe level irq end
+Date: Thu, 10 Feb 2022 16:33:14 +0100
+Message-Id: <20220210153313.2229625-2-gunter.grau@philips.com>
+In-Reply-To: <20220210153313.2229625-1-gunter.grau@philips.com>
+References: <20220210153313.2229625-1-gunter.grau@philips.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
@@ -15,26 +17,44 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+The following commit in the vanilla kernel introduced
+a check for the cached interrupt mask flag in mask_irq():
 
-during our development on imx6 with kernel 5.4 and Xenomai 3.1 we discovere=
-d complete system stalls when using phylib with phy irqs level triggerd. Th=
-is irq is connected on the imx-gpio.
+bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function calls")
 
-Investigation showed that it seems to be an issue in the ipipe irq end func=
-tion for level interrupts. Please review the patch proposal.
-I am not sure if just calling unmask_irq() is ok here since this functin al=
-so does some locking. The other way would be to just call additionally the =
-irq_state_clr_masked(desc) in the level end function itself.
+This means if the flag is not serviced correctly
+the real bit in the hardware interrupt controller may not be
+cleared or set.
+The __ipipe_end_level_irq() function does not follow this rule.
+It unmasks the bit in the hardware without setting the cached flags
+accordingly. So after the first level interrupt is finished the
+mask cache has a wrong state. If now the next interrupt fires,
+the mask_irq() function will not really mask the interrupt in
+the hardware which causes a interrupt storm after reenabeling
+the hard irqs.
+The fix now calls unmask_irq() which is handling the cached flags
+correctly.
 
-The patch applies on ipipe/master in ipipe-arm.
-It looks like this is an issue in all ipipe patches, but is triggered
-by the introduction of a check in unmask_irq().
+Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+---
+ kernel/irq/chip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks in advance,
-Gunter Grau
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 7c03e2931189..79a09b92a1b1 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -987,7 +987,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
 
+ void __ipipe_end_level_irq(struct irq_desc *desc)
+ {
+-       desc->irq_data.chip->irq_unmask(&desc->irq_data);
++       unmask_irq(desc);
+ }
 
+ void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+--
+2.25.1
 
 
 ________________________________
