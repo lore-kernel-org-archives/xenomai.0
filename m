@@ -1,13 +1,14 @@
-Message-ID: <e2b5135e-fffe-8aea-8525-4a1dd798d485@siemens.com>
-Date: Thu, 10 Feb 2022 07:29:25 +0100
-MIME-Version: 1.0
-Subject: Re: DMA with EVL-attached Thread
-Content-Language: en-US
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+Subject: RE: [External] - Re: DMA with EVL-attached Thread
+Date: Thu, 10 Feb 2022 15:33:08 +0000
+Message-ID: <PH1P110MB10504449ED970CBB975537CEE22F9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 References: <PH1P110MB1050206F44482CA7558806AEE22E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <PH1P110MB1050206F44482CA7558806AEE22E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <e2b5135e-fffe-8aea-8525-4a1dd798d485@siemens.com>
+In-Reply-To: <e2b5135e-fffe-8aea-8525-4a1dd798d485@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,63 +17,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Russell Johnson <russell.johnson@kratosdefense.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10.02.22 00:00, Russell Johnson via Xenomai wrote:
-> Hello,
-> 
-> I currently have a DMA driver written based on the Linux DMA API found here: https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt. I have multiple realtime threads in my userspace app that have to make constant DMA transfers. I have not seen any issue with DMA throughput using the Linux API. The question is, do I need to re-architect the dma driver to add in the oob_ioctl() FD so that a userspace EVL attached thread can use it? If the answer is yes, I have experimented a bit with doing that and ran into an issue. I have created a userspace test app with a thread attached to EVL and attempted to allocate, write, read, and free a dma buffer from the driver I modified with the oob_ioctl() FD. Alloc, write, and read all appear to work fine. However, calling free (which boils down to the kernel call "dma_free_coherent" is throwing a warning in the console:
-> 
-> [75787.696762] ------------[ cut here ]------------
-> [75787.696763] WARNING: CPU: 9 PID: 25074 at kernel/dma/mapping.c:532 dma_free_attrs+0x40/0x90
-> [75787.696772] Modules linked in: dma_buf_mgr(OE) xfs libcrc32c sr_mod sd_mod cdrom t10_pi ast drm_vram_helper drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm_ttm_helper ttm drm ixgbe ahci libahci igb libata mdio crc32c_intel ptp pps_core i2c_algo_bit dca [last unloaded: dma_buf_mgr]
-> [75787.696793] CPU: 9 PID: 25074 Comm: test_thread:250 Tainted: G        W  OE     5.15.0evl+ #6
-> [75787.696796] Hardware name: Supermicro Super Server/X10SDV-6C-TLN4F, BIOS 1.3 02/13/2018
-> [75787.696797] IRQ stage: EVL
-> [75787.696799] RIP: 0010:dma_free_attrs+0x40/0x90
-> [75787.696802] Code: 89 fc 53 48 83 ec 08 48 8b 9f 38 02 00 00 4c 89 45 d0 48 85 db 48 0f 44 1d 4d ce 8b 01 e8 88 23 80 00 85 c0 4c 8b 45 d0 74 02 <0f> 0b 4d 85 ed 74 16 48 85 db 75 20 4c 89 f9 4c 89 ea 4c 89 f6 4c
-> [75787.696804] RSP: 0018:ffffb3fd40747d48 EFLAGS: 00010202
-> [75787.696807] RAX: 0000000000000001 RBX: 0000000000000000 RCX: 00000000798fa000
-> [75787.696809] RDX: ffff8dda798fa000 RSI: 0000000000000400 RDI: ffff8ddb01b2f0d0
-> [75787.696810] RBP: ffffb3fd40747d78 R08: 0000000000000000 R09: 00080000000000ff
-> [75787.696811] R10: 00000000807eb2a2 R11: 0000000000000033 R12: ffff8ddb01b2f0d0
-> [75787.696813] R13: ffff8dda798fa000 R14: 0000000000000400 R15: 00000000798fa000
-> [75787.696814] FS:  00007f355a0d7700(0000) GS:ffff8dde6d880000(0000) knlGS:0000000000000000
-> [75787.696816] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [75787.696818] CR2: 0000000000000000 CR3: 00000001b5448001 CR4: 00000000003706e0
-> [75787.696819] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [75787.696820] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [75787.696822] Call Trace:
-> [75787.696826]  free_dma_buf+0x5d/0xb0 [dma_buf_mgr]
-> [75787.696831]  dma_buf_mgr_oob_ioctl+0x159/0x396 [dma_buf_mgr]
-> [75787.696835]  EVL_ioctl+0x46/0xa0
-> [75787.696841]  handle_pipelined_syscall+0x181/0x2d0
-> [75787.696846]  __pipeline_syscall+0xbc/0x230
-> [75787.696851]  ? sched_clock+0x9/0x10
-> [75787.696856]  pipeline_syscall+0x34/0x100
-> [75787.696860]  syscall_enter_from_user_mode+0x39/0xf0
-> [75787.696865]  do_syscall_64+0x15/0xa0
-> [75787.696867]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [75787.696872] RIP: 0033:0x7f355b0f2f9b
-> [75787.696874] Code: Unable to access opcode bytes at RIP 0x7f355b0f2f71.
-> [75787.696875] RSP: 002b:00007f355a0d6860 EFLAGS: 00000246 ORIG_RAX: 000000000000009d
-> [75787.696877] RAX: ffffffffffffffda RBX: 00007f355a0d6900 RCX: 00007f355b0f2f9b
-> [75787.696878] RDX: 0000000040042501 RSI: 0000000000000006 RDI: 0000000010000002
-> [75787.696880] RBP: 0000000040042501 R08: 0000000000000000 R09: 0000000000020750
-> [75787.696881] R10: 00007f355a0d6900 R11: 0000000000000246 R12: 0000000000000006
-> [75787.696882] R13: 0000000000801000 R14: 0000000000000000 R15: 00007f355a0d7700
-> [75787.696884] ---[ end trace 9678e85a266ff468 ]---
-> 
-> This warning does not exist when running the same functionality from the normal ioctl() FD from a standard thread in Linux. Is what I am trying to do possible? If so, any clue on what I am seeing here?
-
-Yes, classic mistake: You are calling a Linux, in-band-only function
-(free_dma_buf) from an RT, out-of-band context. That does not work.
-Linux resource management has to happen in in-band context (standard
-ioctl handler).
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Q2FuIGEgcmVhbC10aW1lIHVzZXJzcGFjZSB0aHJlYWQgdGhhdCBoYXMgYmVlbiBhdHRhY2hlZCB0
+byBFVkwgbWFrZSBzdGFuZGFyZCBpb2N0bCgpIGNhbGxzIG9uIGEgTGludXggZHJpdmVyPyBJZiBz
+bywgd2hhdCB3b3VsZCBhbnkgZGlzYWR2YW50YWdlIGJlPw0KDQotLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQpTZW50
+OiBXZWRuZXNkYXksIEZlYnJ1YXJ5IDksIDIwMjIgMTE6MjkgUE0NClRvOiBSdXNzZWxsIEpvaG5z
+b24gPHJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZlbnNlLmNvbT47IHhlbm9tYWlAeGVub21haS5v
+cmcNClN1YmplY3Q6IFtFeHRlcm5hbF0gLSBSZTogRE1BIHdpdGggRVZMLWF0dGFjaGVkIFRocmVh
+ZA0KDQpDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBv
+cmdhbml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVz
+cyB5b3UgcmVjb2duaXplIHRoZSBzZW5kZXIgYW5kIGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZS4N
+Cg0KDQpPbiAxMC4wMi4yMiAwMDowMCwgUnVzc2VsbCBKb2huc29uIHZpYSBYZW5vbWFpIHdyb3Rl
+Og0KPiBIZWxsbywNCj4NCj4gSSBjdXJyZW50bHkgaGF2ZSBhIERNQSBkcml2ZXIgd3JpdHRlbiBi
+YXNlZCBvbiB0aGUgTGludXggRE1BIEFQSSBmb3VuZCBoZXJlOiBodHRwczovL3VybGRlZmVuc2Uu
+cHJvb2Zwb2ludC5jb20vdjIvdXJsP3U9aHR0cHMtM0FfX3d3dy5rZXJuZWwub3JnX2RvY19Eb2N1
+bWVudGF0aW9uX0RNQS0yREFQSS0yREhPV1RPLnR4dCZkPUR3SUNhUSZjPXplQ0NzNVdMYU4tSFdQ
+SHJwWHdiRm9PcWVTMEczTkgyXzJJUV9ielYxM2cmcj0tV3JsRHZITG1aQ1k3cGwtRU9JUmFKbDl1
+WnZLYkctRzhLa2tVY0lEaDJGN0pyNlNZeFNfcGRmLW9yamtFeG5JJm09VEQzbG9BQjFublptbG1U
+eGp6ekpBUHB1WC1Wd2FiYUN4a1hGXzE3c2FZMjZTN2lNbXBXQkRZazA2Q0hxN2hOdCZzPU8yUklD
+UHdUcnlrdEpmY01FUFJ4eDRTWXlqNzlUNnpDUGNodDZWVUFpa2MmZT0gLiBJIGhhdmUgbXVsdGlw
+bGUgcmVhbHRpbWUgdGhyZWFkcyBpbiBteSB1c2Vyc3BhY2UgYXBwIHRoYXQgaGF2ZSB0byBtYWtl
+IGNvbnN0YW50IERNQSB0cmFuc2ZlcnMuIEkgaGF2ZSBub3Qgc2VlbiBhbnkgaXNzdWUgd2l0aCBE
+TUEgdGhyb3VnaHB1dCB1c2luZyB0aGUgTGludXggQVBJLiBUaGUgcXVlc3Rpb24gaXMsIGRvIEkg
+bmVlZCB0byByZS1hcmNoaXRlY3QgdGhlIGRtYSBkcml2ZXIgdG8gYWRkIGluIHRoZSBvb2JfaW9j
+dGwoKSBGRCBzbyB0aGF0IGEgdXNlcnNwYWNlIEVWTCBhdHRhY2hlZCB0aHJlYWQgY2FuIHVzZSBp
+dD8gSWYgdGhlIGFuc3dlciBpcyB5ZXMsIEkgaGF2ZSBleHBlcmltZW50ZWQgYSBiaXQgd2l0aCBk
+b2luZyB0aGF0IGFuZCByYW4gaW50byBhbiBpc3N1ZS4gSSBoYXZlIGNyZWF0ZWQgYSB1c2Vyc3Bh
+Y2UgdGVzdCBhcHAgd2l0aCBhIHRocmVhZCBhdHRhY2hlZCB0byBFVkwgYW5kIGF0dGVtcHRlZCB0
+byBhbGxvY2F0ZSwgd3JpdGUsIHJlYWQsIGFuZCBmcmVlIGEgZG1hIGJ1ZmZlciBmcm9tIHRoZSBk
+cml2ZXIgSSBtb2RpZmllZCB3aXRoIHRoZSBvb2JfaW9jdGwoKSBGRC4gQWxsb2MsIHdyaXRlLCBh
+bmQgcmVhZCBhbGwgYXBwZWFyIHRvIHdvcmsgZmluZS4gSG93ZXZlciwgY2FsbGluZyBmcmVlICh3
+aGljaCBib2lscyBkb3duIHRvIHRoZSBrZXJuZWwgY2FsbCAiZG1hX2ZyZWVfY29oZXJlbnQiIGlz
+IHRocm93aW5nIGEgd2FybmluZyBpbiB0aGUgY29uc29sZToNCj4NCj4gWzc1Nzg3LjY5Njc2Ml0g
+LS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tIFs3NTc4Ny42OTY3NjNdIA0KPiBX
+QVJOSU5HOiBDUFU6IDkgUElEOiAyNTA3NCBhdCBrZXJuZWwvZG1hL21hcHBpbmcuYzo1MzIgDQo+
+IGRtYV9mcmVlX2F0dHJzKzB4NDAvMHg5MCBbNzU3ODcuNjk2NzcyXSBNb2R1bGVzIGxpbmtlZCBp
+bjogZG1hX2J1Zl9tZ3IoT0UpIHhmcyBsaWJjcmMzMmMgc3JfbW9kIHNkX21vZCBjZHJvbSB0MTBf
+cGkgYXN0IGRybV92cmFtX2hlbHBlciBkcm1fa21zX2hlbHBlciBzeXNjb3B5YXJlYSBzeXNmaWxs
+cmVjdCBzeXNpbWdibHQgZmJfc3lzX2ZvcHMgZHJtX3R0bV9oZWxwZXIgdHRtIGRybSBpeGdiZSBh
+aGNpIGxpYmFoY2kgaWdiIGxpYmF0YSBtZGlvIGNyYzMyY19pbnRlbCBwdHAgcHBzX2NvcmUgaTJj
+X2FsZ29fYml0IGRjYSBbbGFzdCB1bmxvYWRlZDogZG1hX2J1Zl9tZ3JdDQo+IFs3NTc4Ny42OTY3
+OTNdIENQVTogOSBQSUQ6IDI1MDc0IENvbW06IHRlc3RfdGhyZWFkOjI1MCBUYWludGVkOiBHICAg
+ICAgICBXICBPRSAgICAgNS4xNS4wZXZsKyAjNg0KPiBbNzU3ODcuNjk2Nzk2XSBIYXJkd2FyZSBu
+YW1lOiBTdXBlcm1pY3JvIFN1cGVyIFNlcnZlci9YMTBTRFYtNkMtVExONEYsIA0KPiBCSU9TIDEu
+MyAwMi8xMy8yMDE4IFs3NTc4Ny42OTY3OTddIElSUSBzdGFnZTogRVZMIFs3NTc4Ny42OTY3OTld
+IFJJUDogDQo+IDAwMTA6ZG1hX2ZyZWVfYXR0cnMrMHg0MC8weDkwIFs3NTc4Ny42OTY4MDJdIENv
+ZGU6IDg5IGZjIDUzIDQ4IDgzIGVjIA0KPiAwOCA0OCA4YiA5ZiAzOCAwMiAwMCAwMCA0YyA4OSA0
+NSBkMCA0OCA4NSBkYiA0OCAwZiA0NCAxZCA0ZCBjZSA4YiAwMSANCj4gZTggODggMjMgODAgMDAg
+ODUgYzAgNGMgOGIgNDUgZDAgNzQgMDIgPDBmPiAwYiA0ZCA4NSBlZCA3NCAxNiA0OCA4NSBkYiAN
+Cj4gNzUgMjAgNGMgODkgZjkgNGMgODkgZWEgNGMgODkgZjYgNGMgWzc1Nzg3LjY5NjgwNF0gUlNQ
+OiANCj4gMDAxODpmZmZmYjNmZDQwNzQ3ZDQ4IEVGTEFHUzogMDAwMTAyMDIgWzc1Nzg3LjY5Njgw
+N10gUkFYOiANCj4gMDAwMDAwMDAwMDAwMDAwMSBSQlg6IDAwMDAwMDAwMDAwMDAwMDAgUkNYOiAw
+MDAwMDAwMDc5OGZhMDAwIA0KPiBbNzU3ODcuNjk2ODA5XSBSRFg6IGZmZmY4ZGRhNzk4ZmEwMDAg
+UlNJOiAwMDAwMDAwMDAwMDAwNDAwIFJESTogDQo+IGZmZmY4ZGRiMDFiMmYwZDAgWzc1Nzg3LjY5
+NjgxMF0gUkJQOiBmZmZmYjNmZDQwNzQ3ZDc4IFIwODogDQo+IDAwMDAwMDAwMDAwMDAwMDAgUjA5
+OiAwMDA4MDAwMDAwMDAwMGZmIFs3NTc4Ny42OTY4MTFdIFIxMDogDQo+IDAwMDAwMDAwODA3ZWIy
+YTIgUjExOiAwMDAwMDAwMDAwMDAwMDMzIFIxMjogZmZmZjhkZGIwMWIyZjBkMCANCj4gWzc1Nzg3
+LjY5NjgxM10gUjEzOiBmZmZmOGRkYTc5OGZhMDAwIFIxNDogMDAwMDAwMDAwMDAwMDQwMCBSMTU6
+IA0KPiAwMDAwMDAwMDc5OGZhMDAwIFs3NTc4Ny42OTY4MTRdIEZTOiAgMDAwMDdmMzU1YTBkNzcw
+MCgwMDAwKSANCj4gR1M6ZmZmZjhkZGU2ZDg4MDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAw
+MDAwIFs3NTc4Ny42OTY4MTZdIENTOiAgDQo+IDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAw
+MDAwMDAwMDgwMDUwMDMzIFs3NTc4Ny42OTY4MThdIENSMjogMDAwMDAwMDAwMDAwMDAwMCBDUjM6
+IDAwMDAwMDAxYjU0NDgwMDEgQ1I0OiAwMDAwMDAwMDAwMzcwNmUwIFs3NTc4Ny42OTY4MTldIERS
+MDogMDAwMDAwMDAwMDAwMDAwMCBEUjE6IDAwMDAwMDAwMDAwMDAwMDAgRFIyOiAwMDAwMDAwMDAw
+MDAwMDAwIFs3NTc4Ny42OTY4MjBdIERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAw
+ZmZmZTBmZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwIFs3NTc4Ny42OTY4MjJdIENhbGwgVHJhY2U6
+DQo+IFs3NTc4Ny42OTY4MjZdICBmcmVlX2RtYV9idWYrMHg1ZC8weGIwIFtkbWFfYnVmX21ncl0g
+Wzc1Nzg3LjY5NjgzMV0gIA0KPiBkbWFfYnVmX21ncl9vb2JfaW9jdGwrMHgxNTkvMHgzOTYgW2Rt
+YV9idWZfbWdyXSBbNzU3ODcuNjk2ODM1XSAgDQo+IEVWTF9pb2N0bCsweDQ2LzB4YTAgWzc1Nzg3
+LjY5Njg0MV0gIA0KPiBoYW5kbGVfcGlwZWxpbmVkX3N5c2NhbGwrMHgxODEvMHgyZDANCj4gWzc1
+Nzg3LjY5Njg0Nl0gIF9fcGlwZWxpbmVfc3lzY2FsbCsweGJjLzB4MjMwIFs3NTc4Ny42OTY4NTFd
+ICA/IA0KPiBzY2hlZF9jbG9jaysweDkvMHgxMCBbNzU3ODcuNjk2ODU2XSAgcGlwZWxpbmVfc3lz
+Y2FsbCsweDM0LzB4MTAwIA0KPiBbNzU3ODcuNjk2ODYwXSAgc3lzY2FsbF9lbnRlcl9mcm9tX3Vz
+ZXJfbW9kZSsweDM5LzB4ZjANCj4gWzc1Nzg3LjY5Njg2NV0gIGRvX3N5c2NhbGxfNjQrMHgxNS8w
+eGEwIFs3NTc4Ny42OTY4NjddICANCj4gZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4
+NDQvMHhhZQ0KPiBbNzU3ODcuNjk2ODcyXSBSSVA6IDAwMzM6MHg3ZjM1NWIwZjJmOWIgWzc1Nzg3
+LjY5Njg3NF0gQ29kZTogVW5hYmxlIHRvIA0KPiBhY2Nlc3Mgb3Bjb2RlIGJ5dGVzIGF0IFJJUCAw
+eDdmMzU1YjBmMmY3MS4NCj4gWzc1Nzg3LjY5Njg3NV0gUlNQOiAwMDJiOjAwMDA3ZjM1NWEwZDY4
+NjAgRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogDQo+IDAwMDAwMDAwMDAwMDAwOWQgWzc1Nzg3
+LjY5Njg3N10gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogDQo+IDAwMDA3ZjM1NWEwZDY5MDAg
+UkNYOiAwMDAwN2YzNTViMGYyZjliIFs3NTc4Ny42OTY4NzhdIFJEWDogDQo+IDAwMDAwMDAwNDAw
+NDI1MDEgUlNJOiAwMDAwMDAwMDAwMDAwMDA2IFJESTogMDAwMDAwMDAxMDAwMDAwMiANCj4gWzc1
+Nzg3LjY5Njg4MF0gUkJQOiAwMDAwMDAwMDQwMDQyNTAxIFIwODogMDAwMDAwMDAwMDAwMDAwMCBS
+MDk6IA0KPiAwMDAwMDAwMDAwMDIwNzUwIFs3NTc4Ny42OTY4ODFdIFIxMDogMDAwMDdmMzU1YTBk
+NjkwMCBSMTE6IA0KPiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDAwMDAwMDAwMDAwNiBbNzU3
+ODcuNjk2ODgyXSBSMTM6IA0KPiAwMDAwMDAwMDAwODAxMDAwIFIxNDogMDAwMDAwMDAwMDAwMDAw
+MCBSMTU6IDAwMDA3ZjM1NWEwZDc3MDAgDQo+IFs3NTc4Ny42OTY4ODRdIC0tLVsgZW5kIHRyYWNl
+IDk2NzhlODVhMjY2ZmY0NjggXS0tLQ0KPg0KPiBUaGlzIHdhcm5pbmcgZG9lcyBub3QgZXhpc3Qg
+d2hlbiBydW5uaW5nIHRoZSBzYW1lIGZ1bmN0aW9uYWxpdHkgZnJvbSB0aGUgbm9ybWFsIGlvY3Rs
+KCkgRkQgZnJvbSBhIHN0YW5kYXJkIHRocmVhZCBpbiBMaW51eC4gSXMgd2hhdCBJIGFtIHRyeWlu
+ZyB0byBkbyBwb3NzaWJsZT8gSWYgc28sIGFueSBjbHVlIG9uIHdoYXQgSSBhbSBzZWVpbmcgaGVy
+ZT8NCg0KWWVzLCBjbGFzc2ljIG1pc3Rha2U6IFlvdSBhcmUgY2FsbGluZyBhIExpbnV4LCBpbi1i
+YW5kLW9ubHkgZnVuY3Rpb24NCihmcmVlX2RtYV9idWYpIGZyb20gYW4gUlQsIG91dC1vZi1iYW5k
+IGNvbnRleHQuIFRoYXQgZG9lcyBub3Qgd29yay4NCkxpbnV4IHJlc291cmNlIG1hbmFnZW1lbnQg
+aGFzIHRvIGhhcHBlbiBpbiBpbi1iYW5kIGNvbnRleHQgKHN0YW5kYXJkIGlvY3RsIGhhbmRsZXIp
+Lg0KDQpKYW4NCg0KLS0NClNpZW1lbnMgQUcsIFRlY2hub2xvZ3kNCkNvbXBldGVuY2UgQ2VudGVy
+IEVtYmVkZGVkIExpbnV4DQo=
 
