@@ -1,11 +1,11 @@
-Message-ID: <9019b798-6e7f-d60b-e2b1-5bb301725f5c@siemens.com>
-Date: Tue, 15 Feb 2022 09:23:07 +0100
+Message-ID: <0e6b06d7-3dd1-8323-2e4b-2cd59b3802f0@siemens.com>
+Date: Tue, 15 Feb 2022 09:26:06 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH] cobalt: Fix resource leak of cobalt_monitor
+Subject: Re: [PATCH 1/1] drivers/can: 32-bit userspace app support for rtcan
 Content-Language: en-US
-References: <20220117165341.387782-1-florian.bezdeka@siemens.com>
+References: <1643160758-18297-1-git-send-email-ksmola51@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220117165341.387782-1-florian.bezdeka@siemens.com>
+In-Reply-To: <1643160758-18297-1-git-send-email-ksmola51@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,56 +16,201 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+To: Konstantin Smola <ksmola51@gmail.com>, xenomai@xenomai.org
 
-On 17.01.22 17:53, Florian Bezdeka wrote:
-> We have a test within the smokey testsuite which actually does
-> something like
-> 
->    cobalt_monitor_init()
->    cobalt_monitor_wait()
->        cobalt_monitor_enter()
->          -> timeout
->        cobalt_monitor_exit()
->    cobalt_monitor_destroy()
-> 
-> If the posix_mutex tests were run right after this scenario the mutex
-> tests failed. The wrong mutex state was caused by the monitor in the
-> previous test not being cleaned up properly.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+On 26.01.22 02:32, Konstantin Smola via Xenomai wrote:
+> kernel/drivers/can: 32-bit userspace app support for rtcan
+
+Not an optimal commit message - just repeating the subject line. How
+about this?
+
+"The CAN interface was lacking 32-bit support for iovec processing on
+sendmsg/recvmsg as well as for bind and setsockopt handling."
+
+> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
 > ---
+>  kernel/drivers/can/rtcan_internal.h |   1 +
+>  kernel/drivers/can/rtcan_raw.c      | 102 +++++++++++++++++++++++-------------
+>  2 files changed, 66 insertions(+), 37 deletions(-)
 > 
-> I'm not 100% sure about this fix. Maybe we should move it into
-> cobalt_monitor_reclaim, maybe I'm using the monitor in a wrong way
-> inside the y2038 tests. Everything is possible...
-> 
-> @Philippe: It would be very nice if you could have a look as well.
-> Thanks!
-> 
-> I triggered a CI run on all of our supported platforms. Looks good so far and
-> the testsuite does no longer fail in the compat case as well. The compat tests
-> were manually run. 64 bit kernel but 32 bit userland.
-> 
-> 
->  kernel/cobalt/posix/monitor.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/cobalt/posix/monitor.c b/kernel/cobalt/posix/monitor.c
-> index 91396955c..c266b8b3b 100644
-> --- a/kernel/cobalt/posix/monitor.c
-> +++ b/kernel/cobalt/posix/monitor.c
-> @@ -425,6 +425,7 @@ COBALT_SYSCALL(monitor_destroy, primary,
->  		goto fail;
->  	}
+> diff --git a/kernel/drivers/can/rtcan_internal.h b/kernel/drivers/can/rtcan_internal.h
+> index b290005..d1f9d31 100644
+> --- a/kernel/drivers/can/rtcan_internal.h
+> +++ b/kernel/drivers/can/rtcan_internal.h
+> @@ -28,6 +28,7 @@
 >  
-> +	xnsynch_release(&mon->gate, curr);
->  	cobalt_monitor_reclaim(&mon->resnode, s); /* drops lock */
+>  #include <linux/module.h>
+>  #include <rtdm/driver.h>
+> +#include <rtdm/compat.h>
 >  
->  	xnsched_run();
+>  #ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG
+>  #define RTCAN_ASSERT(expr, func) \
+> diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
+> index dffc6e8..8aff03a 100644
+> --- a/kernel/drivers/can/rtcan_raw.c
+> +++ b/kernel/drivers/can/rtcan_raw.c
+> @@ -214,6 +214,51 @@ EXPORT_SYMBOL_GPL(rtcan_loopback);
+>  
+>  #endif /* CONFIG_XENO_DRIVERS_CAN_LOOPBACK */
+>  
+> +int rtcan_get_sockaddr(struct rtdm_fd *fd, struct sockaddr_can **saddrp,
+> +               const void *arg)
+> +{
+> +    struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
+> +    int ret = 0;
+> +
+> +    if (!rtdm_fd_is_user(fd)) {
+> +        setaddr = (struct _rtdm_setsockaddr_args *)arg;
+> +        *saddrp = (struct sockaddr_can *)setaddr->addr;
 
-Thanks, applied.
+If you take this path...
 
+> +    } else {
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +    if (rtdm_fd_is_compat(fd)) {
+> +        struct compat_rtdm_setsockaddr_args csetaddr_buff;
+> +
+> +        /* Copy argument structure from userspace */
+> +        ret = rtdm_safe_copy_from_user(fd, &csetaddr_buff,
+> +                        arg, sizeof(csetaddr_buff));
+> +        if (ret)
+> +            return ret;
+> +
+> +        /* Check size */
+> +        if (csetaddr_buff.addrlen != sizeof(struct sockaddr_can))
+> +            return -EINVAL;
+> +
+> +        return rtdm_safe_copy_from_user(fd, *saddrp,
+> +                        compat_ptr(csetaddr_buff.addr),
+> +                        sizeof(struct sockaddr_can));
+> +    }
+> +#endif
+> +
+> +    if (rtdm_safe_copy_from_user(fd, &setaddr_buf, arg,
+> +                sizeof(struct _rtdm_setsockaddr_args)))
+> +        return -EFAULT;
+> +
+> +    setaddr = &setaddr_buf;
+> +    }
+> +
+> +    /* Check size */
+> +    if (setaddr->addrlen != sizeof(struct sockaddr_can))
+> +        return -EINVAL;
+> +
+> +    return rtdm_safe_copy_from_user(fd, *saddrp,
+> +                    setaddr->addr,
+> +                    sizeof(struct sockaddr_can));
+
+...you don't need the copy, do you? In fact, it will even fail on modern
+kernels if the source is kernel memory, not user memory.
+
+> +}
+>  
+>  int rtcan_raw_socket(struct rtdm_fd *fd, int protocol)
+>  {
+> @@ -408,46 +453,21 @@ static int rtcan_raw_setsockopt(struct rtdm_fd *fd,
+>  int rtcan_raw_ioctl(struct rtdm_fd *fd,
+>  		    unsigned int request, void *arg)
+>  {
+> +    struct sockaddr_can saddr, *saddrp = &saddr;
+>      int ret = 0;
+>  
+>      switch (request) {
+> -    case _RTIOC_BIND: {
+> -	struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
+> -	struct sockaddr_can *sockaddr, sockaddr_buf;
+> -
+> -	if (rtdm_fd_is_user(fd)) {
+> -	    /* Copy argument structure from userspace */
+> -	    if (!rtdm_read_user_ok(fd, arg,
+> -				   sizeof(struct _rtdm_setsockaddr_args)) ||
+> -		rtdm_copy_from_user(fd, &setaddr_buf, arg,
+> -				    sizeof(struct _rtdm_setsockaddr_args)))
+> -		return -EFAULT;
+>  
+> -	    setaddr = &setaddr_buf;
+> +	COMPAT_CASE(_RTIOC_BIND):
+> +		ret = rtcan_get_sockaddr(fd, &saddrp, arg);
+> +		if (ret)
+> +			return ret;
+> +		if (saddrp == NULL)
+> +			return -EFAULT;
+> +		ret = rtcan_raw_bind(fd, saddrp);
+> +		break;
+>  
+> -	    /* Check size */
+> -	    if (setaddr->addrlen != sizeof(struct sockaddr_can))
+> -		return -EINVAL;
+> -
+> -	    /* Copy argument structure from userspace */
+> -	    if (!rtdm_read_user_ok(fd, arg,
+> -				   sizeof(struct sockaddr_can)) ||
+> -		rtdm_copy_from_user(fd, &sockaddr_buf, setaddr->addr,
+> -				    sizeof(struct sockaddr_can)))
+> -		return -EFAULT;
+> -	    sockaddr = &sockaddr_buf;
+> -	} else {
+> -	    setaddr = (struct _rtdm_setsockaddr_args *)arg;
+> -	    sockaddr = (struct sockaddr_can *)setaddr->addr;
+> -	}
+> -
+> -	/* Now, all required data are in kernel space */
+> -	ret = rtcan_raw_bind(fd, sockaddr);
+> -
+> -	break;
+> -    }
+> -
+> -    case _RTIOC_SETSOCKOPT: {
+> +	COMPAT_CASE(_RTIOC_SETSOCKOPT): {
+>  	struct _rtdm_setsockopt_args *setopt;
+>  	struct _rtdm_setsockopt_args setopt_buf;
+>  
+> @@ -532,7 +552,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
+>      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
+>      struct sockaddr_can scan;
+>      nanosecs_rel_t timeout;
+> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
+> +    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>      struct iovec iov_buf;
+>      can_frame_t frame;
+>      nanosecs_abs_t timestamp = 0;
+> @@ -584,6 +604,10 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
+>  	iov = &iov_buf;
+>      }
+>  
+> +	ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
+> +	if (ret)
+> +		return ret;
+> +
+>      /* Check size of buffer */
+>      if (iov->iov_len < sizeof(can_frame_t))
+>  	return -EMSGSIZE;
+> @@ -862,7 +886,7 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+>      struct rtcan_socket *sock = rtdm_fd_to_private(fd);
+>      struct sockaddr_can *scan = (struct sockaddr_can *)msg->msg_name;
+>      struct sockaddr_can scan_buf;
+> -    struct iovec *iov = (struct iovec *)msg->msg_iov;
+> +    struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>      struct iovec iov_buf;
+>      can_frame_t *frame;
+>      can_frame_t frame_buf;
+> @@ -933,6 +957,10 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
+>  	iov = &iov_buf;
+>      }
+>  
+> +	ret = rtdm_get_iovec(fd, &iov, msg, iov_fast);
+> +	if (ret)
+> +		return ret;
+> +
+>      n = msg->msg_iovlen;
+>      while (i < n) {
+>  	if (iov->iov_len < sizeof(can_frame_t)) {
+
+Indention is off, even in terms of that legacy indention format the file
+uses (needs a mass-reformatting, just like RTnet). Please make sure that
+the code is at least readable (tabs are 8 spaces).
+
+Thanks,
 Jan
 
 -- 
