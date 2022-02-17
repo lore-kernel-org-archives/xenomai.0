@@ -1,13 +1,12 @@
-Message-ID: <feefe610-fa4c-b49c-a8db-39cdeb3329a6@siemens.com>
-Date: Wed, 16 Feb 2022 22:07:15 +0100
+From: Gunter Grau <gunter.grau@philips.com>
+Subject: [PATCH] ipipe: Fix ipipe level irq end
+Date: Thu, 17 Feb 2022 09:48:30 +0100
+Message-Id: <20220217084830.712756-1-gunter.grau@philips.com>
+In-Reply-To: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
+References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
 MIME-Version: 1.0
-Subject: Re: Weird nanosleep behaviour while debugging after toolchain change
-Content-Language: en-US
-References: <d00-620c0d00-9-12ac4c80@203449265>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <d00-620c0d00-9-12ac4c80@203449265>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 15.02.22 21:28, François Legal via Xenomai wrote:
-> Hello,
-> 
-> using xenomai 3.1/linux 4.4 on arm, I'm facing a weird issue with gdb debugging.
-> I was previously using a croostool-ng generated toolchain, and had to switch to a yocto generated one.
-> 
-> The same application/kernel/xenomai user land being used, when I run the application through the debugger, the calls to nanosleep in my RT thread seem to block indefinitely unless I single step through the code. Placing a break right after a nanosleep and continuing will not trigger the break.
-> 
-> I don't know what to do to chase this.
-> 
-> While the thread is in nanosleep, I can see this in /proc/xenomai/sched :
-> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->   0  1666   rt     cobalt     60   839ms140us    w          Thread a (sem_timedwaiting. Timeout changes each time I display threads)
->   0  1667   rt     cobalt     62   -                        s          Thread b (nanosleeping)
-> 
-> CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
->   0  1666   6          42         50         0     00248046    0.0  Thread a 
->   0  1667   4          96         95         0     00640040    0.0  Thread b
-> 
-> Can anybody help ?
+The following commit in the vanilla kernel introduced
+a check for the cached interrupt mask flag in mask_irq():
 
-In such weird cases, the general recommendation is to run a system trace
-in parallel (trace-cmd record ...) and check what actually happens
-scheduling wise. That can also reveal if the expected syscalls are
-actually being issued.
+bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function calls")
 
-Jan
+This means if the flag is not serviced correctly
+the real bit in the hardware interrupt controller may not be
+cleared or set.
+The __ipipe_end_level_irq() function does not follow this rule.
+It unmasks the bit in the hardware without setting the cached flags
+accordingly. So after the first level interrupt is finished the
+mask cache has a wrong state. If now the next interrupt fires,
+the mask_irq() function will not really mask the interrupt in
+the hardware which causes a interrupt storm after reenabeling
+the hard irqs.
+The fix now also updates the shadow flag correctly.
+---
+ kernel/irq/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 7c03e2931189..ff9a8b3f33db 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
+ void __ipipe_end_level_irq(struct irq_desc *desc)
+ {
+        desc->irq_data.chip->irq_unmask(&desc->irq_data);
++       irq_state_clr_masked(desc);
+ }
+
+ void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+--
+2.25.1
+
+
+________________________________
+The information contained in this message may be confidential and legally p=
+rotected under applicable law. The message is intended solely for the addre=
+ssee(s). If you are not the intended recipient, you are hereby notified tha=
+t any use, forwarding, dissemination, or reproduction of this message is st=
+rictly prohibited and may be unlawful. If you are not the intended recipien=
+t, please contact the sender by return e-mail and destroy all copies of the=
+ original message.
 
