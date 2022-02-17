@@ -1,15 +1,16 @@
-From: "Grau, Gunter" <gunter.grau@philips.com>
-Subject: RE: [PATCH] ipipe: Fix ipipe level irq end
-Date: Thu, 17 Feb 2022 12:16:32 +0000
-Message-ID: <VI1P122MB0238CF05E4C96C17222487A1F2369@VI1P122MB0238.EURP122.PROD.OUTLOOK.COM>
+Message-ID: <4381b4bf-9283-ae39-20c6-d637ffc9bae4@siemens.com>
+Date: Thu, 17 Feb 2022 13:36:14 +0100
+MIME-Version: 1.0
+Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+Content-Language: en-US
 References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
  <20220217084830.712756-1-gunter.grau@philips.com>
  <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
-In-Reply-To: <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
-Content-Language: en-US
+ <VI1P122MB0238CF05E4C96C17222487A1F2369@VI1P122MB0238.EURP122.PROD.OUTLOOK.COM>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <VI1P122MB0238CF05E4C96C17222487A1F2369@VI1P122MB0238.EURP122.PROD.OUTLOOK.COM>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +19,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
+To: "Grau, Gunter" <gunter.grau@philips.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRG9ubmVyc3RhZywgMTcuIEZlYnJ1YXIgMjAy
-MiAxMDoxNg0KPiBUbzogR3JhdSwgR3VudGVyIDxndW50ZXIuZ3JhdUBwaGlsaXBzLmNvbT47IHhl
-bm9tYWlAeGVub21haS5vcmc7IEdyZWcNCj4gR2FsbGFnaGVyIDxncmVnQGVtYmVkZGVkZ3JlZy5j
-b20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGlwaXBlOiBGaXggaXBpcGUgbGV2ZWwgaXJxIGVu
-ZA0KPg0KPiBDYXV0aW9uOiBUaGlzIGUtbWFpbCBvcmlnaW5hdGVkIGZyb20gb3V0c2lkZSBvZiBQ
-aGlsaXBzLCBiZSBjYXJlZnVsIGZvcg0KPiBwaGlzaGluZy4NCj4NCj4NCj4gT24gMTcuMDIuMjIg
-MDk6NDgsIEd1bnRlciBHcmF1IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IFRoZSBmb2xsb3dpbmcg
-Y29tbWl0IGluIHRoZSB2YW5pbGxhIGtlcm5lbCBpbnRyb2R1Y2VkIGEgY2hlY2sgZm9yIHRoZQ0K
-PiA+IGNhY2hlZCBpbnRlcnJ1cHQgbWFzayBmbGFnIGluIG1hc2tfaXJxKCk6DQo+ID4NCj4gPiBi
-ZjIyZmY0NWJlZDYgKCJnZW5pcnE6IEF2b2lkIHVubmVjZXNzYXJ5IGxvdyBsZXZlbCBpcnEgZnVu
-Y3Rpb24NCj4gPiBjYWxscyIpDQo+ID4NCj4gPiBUaGlzIG1lYW5zIGlmIHRoZSBmbGFnIGlzIG5v
-dCBzZXJ2aWNlZCBjb3JyZWN0bHkgdGhlIHJlYWwgYml0IGluIHRoZQ0KPiA+IGhhcmR3YXJlIGlu
-dGVycnVwdCBjb250cm9sbGVyIG1heSBub3QgYmUgY2xlYXJlZCBvciBzZXQuDQo+ID4gVGhlIF9f
-aXBpcGVfZW5kX2xldmVsX2lycSgpIGZ1bmN0aW9uIGRvZXMgbm90IGZvbGxvdyB0aGlzIHJ1bGUu
-DQo+ID4gSXQgdW5tYXNrcyB0aGUgYml0IGluIHRoZSBoYXJkd2FyZSB3aXRob3V0IHNldHRpbmcg
-dGhlIGNhY2hlZCBmbGFncw0KPiA+IGFjY29yZGluZ2x5LiBTbyBhZnRlciB0aGUgZmlyc3QgbGV2
-ZWwgaW50ZXJydXB0IGlzIGZpbmlzaGVkIHRoZSBtYXNrDQo+ID4gY2FjaGUgaGFzIGEgd3Jvbmcg
-c3RhdGUuIElmIG5vdyB0aGUgbmV4dCBpbnRlcnJ1cHQgZmlyZXMsIHRoZQ0KPiA+IG1hc2tfaXJx
-KCkgZnVuY3Rpb24gd2lsbCBub3QgcmVhbGx5IG1hc2sgdGhlIGludGVycnVwdCBpbiB0aGUgaGFy
-ZHdhcmUNCj4gPiB3aGljaCBjYXVzZXMgYSBpbnRlcnJ1cHQgc3Rvcm0gYWZ0ZXIgcmVlbmFiZWxp
-bmcgdGhlIGhhcmQgaXJxcy4NCj4gPiBUaGUgZml4IG5vdyBhbHNvIHVwZGF0ZXMgdGhlIHNoYWRv
-dyBmbGFnIGNvcnJlY3RseS4NCj4gPiAtLS0NCj4gPiAga2VybmVsL2lycS9jaGlwLmMgfCAxICsN
-Cj4gPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+ID4NCj4gPiBkaWZmIC0tZ2l0
-IGEva2VybmVsL2lycS9jaGlwLmMgYi9rZXJuZWwvaXJxL2NoaXAuYyBpbmRleA0KPiA+IDdjMDNl
-MjkzMTE4OS4uZmY5YThiM2YzM2RiIDEwMDY0NA0KPiA+IC0tLSBhL2tlcm5lbC9pcnEvY2hpcC5j
-DQo+ID4gKysrIGIva2VybmVsL2lycS9jaGlwLmMNCj4gPiBAQCAtOTg4LDYgKzk4OCw3IEBAIHZv
-aWQgX19pcGlwZV9hY2tfbGV2ZWxfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gPiB2b2lk
-IF9faXBpcGVfZW5kX2xldmVsX2lycShzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MpICB7DQo+ID4gICAg
-ICAgICBkZXNjLT5pcnFfZGF0YS5jaGlwLT5pcnFfdW5tYXNrKCZkZXNjLT5pcnFfZGF0YSk7DQo+
-ID4gKyAgICAgICBpcnFfc3RhdGVfY2xyX21hc2tlZChkZXNjKTsNCj4gPiAgfQ0KPiA+DQo+ID4g
-IHZvaWQgX19pcGlwZV9hY2tfZmFzdGVvaV9pcnEoc3RydWN0IGlycV9kZXNjICpkZXNjKQ0KPiA+
-IC0tDQo+ID4gMi4yNS4xDQo+ID4NCj4NCj4gVGhhbmtzLCBhcHBsaWVkIHRvIGlwaXBlLW5vYXJj
-aC4gSSBoYWQgdG8gZG8gdGhhdCBtYW51YWxseSBhcyB5b3UgZW1haWwgY2xpZW50DQo+IG1hbmFn
-ZWQgdGhlIHBhdGNoICh0YWJzLT5zcGFjZXMsIHRyYWlsaW5nIHNwYWNlcyByZW1vdmVkKS4gVXNl
-IGdpdC1zZW5kLQ0KPiBlbWFpbCBvciBhIGNsaWVudCB0aGF0IGF2b2lkcyB0aGlzIG1hbmdsaW5n
-Lg0KPg0KPiBHcmVnLCBJIHdpbGwgYXBwbHkgdGhpcyB0byBpcGlwZS14ODYgKDQuMTktY2lwIGFu
-ZCA1LjQpLCBjb3VsZCB5b3UgZG8gdGhlIHNhbWUNCj4gZm9yIGFybSBhbmQgYXJtNjQ/DQo+DQo+
-IFRoYW5rcywNCj4gSmFuDQoNCkhpLA0KDQpUaGF04oCZcyB3ZWlyZCwgYmVjYXVzZSBJIHVzZWQg
-Z2l0IHNlbmQtZW1haWwgZm9yIHRoaXMuIE1heWJlIHNvbWV0aGluZyBpbiB0aGUgbWFpbCBzZXJ2
-ZXIgY29uZmlndXJhdGlvbi4NClNhbWUgcGF0Y2ggZm9yIGlwaXBlLWFybTY0IHdpbGwgZm9sbG93
-LCBidXQgSSBkb24ndCBrbm93IGhvdyB0byBtYWtlIGl0IGJldHRlciB0aGFuIHVzaW5nIGdpdCBz
-ZW5kLWVtYWlsIOKYuS4NCg0KVGhhbmtzIGZvciBhcHBseWluZy4NCkd1bnRlcg0KDQoNCj4NCj4g
-LS0NCj4gU2llbWVucyBBRywgVGVjaG5vbG9neQ0KPiBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRl
-ZCBMaW51eA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KVGhlIGluZm9ybWF0
-aW9uIGNvbnRhaW5lZCBpbiB0aGlzIG1lc3NhZ2UgbWF5IGJlIGNvbmZpZGVudGlhbCBhbmQgbGVn
-YWxseSBwcm90ZWN0ZWQgdW5kZXIgYXBwbGljYWJsZSBsYXcuIFRoZSBtZXNzYWdlIGlzIGludGVu
-ZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVu
-ZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBmb3J3
-YXJkaW5nLCBkaXNzZW1pbmF0aW9uLCBvciByZXByb2R1Y3Rpb24gb2YgdGhpcyBtZXNzYWdlIGlz
-IHN0cmljdGx5IHByb2hpYml0ZWQgYW5kIG1heSBiZSB1bmxhd2Z1bC4gSWYgeW91IGFyZSBub3Qg
-dGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBieSByZXR1
-cm4gZS1tYWlsIGFuZCBkZXN0cm95IGFsbCBjb3BpZXMgb2YgdGhlIG9yaWdpbmFsIG1lc3NhZ2Uu
-DQo=
+On 17.02.22 13:16, Grau, Gunter wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Donnerstag, 17. Februar 2022 10:16
+>> To: Grau, Gunter <gunter.grau@philips.com>; xenomai@xenomai.org; Greg
+>> Gallagher <greg@embeddedgreg.com>
+>> Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+>>
+>> Caution: This e-mail originated from outside of Philips, be careful for
+>> phishing.
+>>
+>>
+>> On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
+>>> The following commit in the vanilla kernel introduced a check for the
+>>> cached interrupt mask flag in mask_irq():
+>>>
+>>> bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function
+>>> calls")
+>>>
+>>> This means if the flag is not serviced correctly the real bit in the
+>>> hardware interrupt controller may not be cleared or set.
+>>> The __ipipe_end_level_irq() function does not follow this rule.
+>>> It unmasks the bit in the hardware without setting the cached flags
+>>> accordingly. So after the first level interrupt is finished the mask
+>>> cache has a wrong state. If now the next interrupt fires, the
+>>> mask_irq() function will not really mask the interrupt in the hardware
+>>> which causes a interrupt storm after reenabeling the hard irqs.
+>>> The fix now also updates the shadow flag correctly.
+>>> ---
+>>>  kernel/irq/chip.c | 1 +
+>>>  1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c index
+>>> 7c03e2931189..ff9a8b3f33db 100644
+>>> --- a/kernel/irq/chip.c
+>>> +++ b/kernel/irq/chip.c
+>>> @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
+>>> void __ipipe_end_level_irq(struct irq_desc *desc)  {
+>>>         desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>>> +       irq_state_clr_masked(desc);
+>>>  }
+>>>
+>>>  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+>>> --
+>>> 2.25.1
+>>>
+>>
+>> Thanks, applied to ipipe-noarch. I had to do that manually as you email client
+>> managed the patch (tabs->spaces, trailing spaces removed). Use git-send-
+>> email or a client that avoids this mangling.
+>>
+>> Greg, I will apply this to ipipe-x86 (4.19-cip and 5.4), could you do the same
+>> for arm and arm64?
+>>
+>> Thanks,
+>> Jan
+> 
+> Hi,
+> 
+> That’s weird, because I used git send-email for this. Maybe something in the mail server configuration.
+> Same patch for ipipe-arm64 will follow, but I don't know how to make it better than using git send-email ☹.
+> 
+
+Strange indeed. You can see what reached the list here:
+
+https://xenomai.org/pipermail/xenomai/2022-February/047217.html
+
+Maybe worth to take to your IT with this. I know from own painful
+experiences that professional mail servers trying to modify email, eg.
+to filter out information that should not leave an org, can decide to
+re-encode the content, and that rather unprofessionally.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
