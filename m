@@ -1,14 +1,17 @@
-Message-ID: <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
-Date: Thu, 17 Feb 2022 10:15:52 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: RE: [PATCH] cobalt/thread: add missing EXPORT_SYMBOL_GPL for
+ xnthread_host_pid
+Date: Thu, 17 Feb 2022 09:20:06 +0000
+Message-ID: <VI1P122MB023840B5B2840A03E6A2BFA9F2369@VI1P122MB0238.EURP122.PROD.OUTLOOK.COM>
+References: <20220208050609.5007-1-david.oberhollenzer@sigma-star.at>
+ <7eed4fdc-0e29-57c1-2c1a-545e3c490c1a@siemens.com>
+ <1f672e15-c8a4-7532-62a0-b24124f61355@sigma-star.at>
+ <49c90702-4c55-4949-6f91-bcba29f3154a@siemens.com>
+In-Reply-To: <49c90702-4c55-4949-6f91-bcba29f3154a@siemens.com>
 Content-Language: en-US
-References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
- <20220217084830.712756-1-gunter.grau@philips.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220217084830.712756-1-gunter.grau@philips.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +20,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gunter Grau <gunter.grau@philips.com>, xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
-> The following commit in the vanilla kernel introduced
-> a check for the cached interrupt mask flag in mask_irq():
-> 
-> bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function calls")
-> 
-> This means if the flag is not serviced correctly
-> the real bit in the hardware interrupt controller may not be
-> cleared or set.
-> The __ipipe_end_level_irq() function does not follow this rule.
-> It unmasks the bit in the hardware without setting the cached flags
-> accordingly. So after the first level interrupt is finished the
-> mask cache has a wrong state. If now the next interrupt fires,
-> the mask_irq() function will not really mask the interrupt in
-> the hardware which causes a interrupt storm after reenabeling
-> the hard irqs.
-> The fix now also updates the shadow flag correctly.
-> ---
->  kernel/irq/chip.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 7c03e2931189..ff9a8b3f33db 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
->  void __ipipe_end_level_irq(struct irq_desc *desc)
->  {
->         desc->irq_data.chip->irq_unmask(&desc->irq_data);
-> +       irq_state_clr_masked(desc);
->  }
-> 
->  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
-> --
-> 2.25.1
-> 
-
-Thanks, applied to ipipe-noarch. I had to do that manually as you email
-client managed the patch (tabs->spaces, trailing spaces removed). Use
-git-send-email or a client that avoids this mangling.
-
-Greg, I will apply this to ipipe-x86 (4.19-cip and 5.4), could you do
-the same for arm and arm64?
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJv
+dW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBKYW4gS2lzemthDQo+IHZpYSBYZW5vbWFp
+DQo+IFNlbnQ6IERpZW5zdGFnLCA4LiBGZWJydWFyIDIwMjIgMTE6MzkNCj4gVG86IERhdmlkIE9i
+ZXJob2xsZW56ZXIgPGRhdmlkLm9iZXJob2xsZW56ZXJAc2lnbWEtc3Rhci5hdD47DQo+IHhlbm9t
+YWlAeGVub21haS5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gY29iYWx0L3RocmVhZDogYWRk
+IG1pc3NpbmcgRVhQT1JUX1NZTUJPTF9HUEwgZm9yDQo+IHhudGhyZWFkX2hvc3RfcGlkDQo+DQo+
+IENhdXRpb246IFRoaXMgZS1tYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIFBoaWxpcHMs
+IGJlIGNhcmVmdWwgZm9yDQo+IHBoaXNoaW5nLg0KPg0KPg0KPiBPbiAwOC4wMi4yMiAwOTowOSwg
+RGF2aWQgT2JlcmhvbGxlbnplciB3cm90ZToNCj4gPiBIaSwNCj4gPg0KPiA+IE9uIDIvOC8yMiAw
+ODowNCwgSmFuIEtpc3prYSB3cm90ZToNCj4gPj4NCj4gPj4gTm8gZ2VuZXJhbCBjb25jZXJuIC0g
+YnV0IGNhbiB5b3UgaGVscCBtZSB3aGVyZSB0aGlzIGlzIHVzZWQgYnkgYQ0KPiBtb2R1bGU/DQo+
+ID4+IEluLXRyZWUgb3Igb3V0LW9mLXRyZWU/DQo+ID4+DQo+ID4NCj4gPiB0aGUgaXNzdWUgY3Jv
+cHBlZCB1cCB3aXRoIGFuIG91dC1vZi10cmVlIG1vZHVsZSBvbiBvdXIgZW5kLg0KPiA+DQo+ID4g
+V2hlbiBwb3J0aW5nIGFuIGFwcGxpY2F0aW9uICsga2VybmVsIG1vZHVsZSBmcm9tIFhlbm9tYWkg
+MiB0byAzLCBjYWxscw0KPiA+IHRvIHhudGhyZWFkX3VzZXJfcGlkIGluIHRoZSBtb2R1bGUgd2Vy
+ZSByZXBsYWNlZCB3aXRoDQo+ID4geG50aHJlYWRfaG9zdF9waWQsIGJ1dCB0aGlzIG5vdyBicmVh
+a3Mgd2l0aCBtb3JlIHJlY2VudCBYZW5vbWFpIDMNCj4gPiByZWxlYXNlcy4NCj4gPg0KPiA+IEdp
+dmVuIGhvdyB0aGUgb3JpZ2luYWwgZnVuY3Rpb24gYW5kIHRoZSByZXBsYWNlbWVudCB3ZXJlIGV4
+dGVybmFsbHkNCj4gPiBhdmFpbGFibGUsIEkgYXNzdW1lZCB0aGUgbWlzc2luZyBleHBvcnQgc3Rh
+dGVtZW50IHdhcyBhY2NpZGVudGFsIHdoZW4NCj4gPiByZW1vdmluZyB0aGUgaW5saW5lIGRlZmlu
+aXRpb24/DQo+DQo+IFRoZXJlIGlzIG5vIHByb2JsZW0gaW4gZXhwb3J0aW5nIHRoYXQgbW9kdWxl
+LiBCdXQsIGdlbmVyYWxseSwgWGVub21haQ0KPiBkcml2ZXJzIHNob3VsZCBub3QgYmUgZm9yY2Vk
+IHRvIHVzZWQgbm9uLVJURE0gQVBJcyAobWF5YmUgZXhjZXB0IGZvcg0KPiBzcGVjaWFsIGRlYnVn
+Z2luZyBwdXJwb3NlcykuIFRoYXQncyB3aHkgSSdtIGludGVyZXN0ZWQgaW4gdGhlIHVzZSBjYXNl
+LCB0cnlpbmcNCj4gdG8gdW5kZXJzdGFuZCBpZiB3ZSBtaXNzIHNvbWUgdmFsaWQgY2FzZSBpbiB0
+aGUgZXhpc3RpbmcgZHJpdmVyIEFQSXMuDQo+DQo+IEphbg0KPg0KDQpIaSwNCg0KWWVzLCB3ZSBh
+bHNvIG9ic2VydmVkIHRoZSBtaXNzaW5nIHN5bWJvbCB3aGVuIHN3aXRjaGluZyBmcm9tIFhlbm9t
+YWkgMi42IHRvIDMuMS4NCkJ1dCB5b3VyIGFyZSByaWdodCwgdGhpcyBpcyBhbHNvIG9ubHkgdXNl
+ZCBmb3IgZGVidWdnaW5nL21lYXN1cmluZyBpbiBvdXIgY2FzZS4NCg0KV2UgYWxzbyBtaXNzZWQg
+dGhlIGZ1bmN0aW9uYWxpdHkgdG8gYWRkIGhvb2tzIGluIHRoZSBudWNsZXVzIChhbHNvIGZvciBk
+ZWJ1Z2dpbmcpOg0KcnRfdGFza19hZGRfaG9vayhUX0hPT0tfU1dJVENILCA8ZnVuY3Rpb24+KSkN
+Cg0KSnVzdCBhIHF1ZXN0aW9uOiBXb3VsZCB5b3UgYWNjZXB0IGEgcGF0Y2ggdG8gYWRkIHRoaXMg
+YWdhaW4/IEhvd2V2ZXIsIHdlIHdpbGwgaGF2ZSB0byBpbnZlc3RpZ2F0ZSB0aGUgcmVhbCBuZWVk
+IGZvciBpdCBiZWZvcmUuDQoNClJlZ2FyZHMsDQpHdW50ZXINCg0KPiAtLQ0KPiBTaWVtZW5zIEFH
+LCBUZWNobm9sb2d5DQo+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg0KX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NClRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQg
+aW4gdGhpcyBtZXNzYWdlIG1heSBiZSBjb25maWRlbnRpYWwgYW5kIGxlZ2FsbHkgcHJvdGVjdGVk
+IHVuZGVyIGFwcGxpY2FibGUgbGF3LiBUaGUgbWVzc2FnZSBpcyBpbnRlbmRlZCBzb2xlbHkgZm9y
+IHRoZSBhZGRyZXNzZWUocykuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQs
+IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSwgZm9yd2FyZGluZywgZGlzc2Vt
+aW5hdGlvbiwgb3IgcmVwcm9kdWN0aW9uIG9mIHRoaXMgbWVzc2FnZSBpcyBzdHJpY3RseSBwcm9o
+aWJpdGVkIGFuZCBtYXkgYmUgdW5sYXdmdWwuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCBy
+ZWNpcGllbnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCBhbmQg
+ZGVzdHJveSBhbGwgY29waWVzIG9mIHRoZSBvcmlnaW5hbCBtZXNzYWdlLg0K
 
