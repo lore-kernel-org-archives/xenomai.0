@@ -1,11 +1,15 @@
-References: <PH1P110MB1050BF72127DFC0CE3440B64E23C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Realtime interrupt handling in driver
-Date: Wed, 23 Feb 2022 09:12:17 +0100
-In-reply-to: <PH1P110MB1050BF72127DFC0CE3440B64E23C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87h78qf0qe.fsf@xenomai.org>
+Message-ID: <cb5a9c17-e018-da8f-7a05-790900aa07f7@siemens.com>
+Date: Wed, 23 Feb 2022 13:00:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Subject: Re: [PATCH 0/2] kernel-shark related patches
+Content-Language: en-US
+References: <20220222023101.31013-1-hongzhan.chen@intel.com>
+ <15f28a0f-c4bd-b737-5ba7-0aaf3d603456@siemens.com>
+ <MN2PR11MB428537181ED4AD3AD56E27B6F23C9@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB428537181ED4AD3AD56E27B6F23C9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 23.02.22 08:04, Chen, Hongzhan wrote:
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Wednesday, February 23, 2022 2:51 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Cc: y.karadz@gmail.com
+>> Subject: Re: [PATCH 0/2] kernel-shark related patches
+>>
+>> On 22.02.22 03:30, Hongzhan Chen wrote:
+>>> 1. Add kernel-shark plugin to visualize OOB state of xenomai realtime
+>>>    thread.
+>>> 2. Add libtraceevent plugin to parse xenomai_schedparams correctly.
+>>>
+>>> With the help of Yordan Karadzhov <y.karadz@gmail.com>, we finally
+>>> create xenomai plugin and can build standalone. Thanks for his help
+>>> again.
+>>>
+>>
+>> So these build targets can basically live "anywhere" and are not
+>> connected with our autoconf/automake build system of Xenomai.
+>> Intentionally due to the more complex preparation steps?
+> 
+> The plugin actually depends on libkshark-devel and libtraceevent dev which we may have to
+> get updated kernel-shark and libtraceevent code and build and install them before build the plugins. 
+> I am wondering the better way is to integrate all these tools  with our plugin patches and maintain them
+>  in our xenomai-image?
 
-Russell Johnson via Xenomai <xenomai@xenomai.org> writes:
+Actually, xenomai-image would only be a bonus, and it will not address
+the use case of running graphical kernelshark. For now, I'm thinking of
+something like ./configure --with-kernelshark ... for the Xenomai
+userland build. That would not change what is built, just how it's
+accessible. We will still need READMEs for what is currently needed as
+special dependencies.
 
-> Hello,
->
-> In my driver that I have been converting to support OOB functionality
-> with the EVL core, I have an interrupt handler that handles all
-> interrupts from a device sitting on the PCIe bus. I was reading
-> through the information on your wiki about interrupt pipelining in
-> Dovetail. I was confused a bit on if there is work that I need to do
-> in order to get interrupts & interrupt handlers to run out-of-band
-> (and not be preempted by in-band linux processing), or if the EVL core
-> takes care of that for me?
-> If there is work I need to do with
-> interrupt config & interrupt handlers in order to make them able to
-> run out-of-band, where do I need to start?
->
-> Thanks!
->
-> Russell
-
-[1] describes the general flow, this is a bit outdated starting from the
-upcoming kernel v5.17 series [2], but the logic remains the same though.
-[3] explains why and how to fix up the irqchip handlers for IRQ
-pipelining.
-
-[1] https://evlproject.org/dovetail/porting/irqflow/
-[2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/tree/v5.17-evl-rebase
-[3] https://evlproject.org/dovetail/pipeline/irq_handling/
+Jan
 
 -- 
-Philippe.
+Siemens AG, Technology
+Competence Center Embedded Linux
 
