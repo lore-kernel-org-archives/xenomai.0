@@ -1,11 +1,11 @@
-Date: Tue, 22 Feb 2022 19:55:53 +0000
-From: Andrew <andrew.penner@protonmail.com>
-Reply-To: Andrew <andrew.penner@protonmail.com>
-Subject: Compiling xenomai-linux 5.10.83
-Message-ID: <HJ4i9nFdcaCaLnqZ6kJFqc-lsGhWGbI-ASP8PqZmkpGGD7FSSWYRIGgwLiVYMs-PiaD4SlaygjbJBCaGS8oZb3iZOS8XQzXw4kt2zzTgGyk=@protonmail.com>
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+Subject: Realtime interrupt handling in driver
+Date: Wed, 23 Feb 2022 00:10:15 +0000
+Message-ID: <PH1P110MB1050BF72127DFC0CE3440B64E23C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +16,18 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksCgpJIGFtIHRyeWluZyB0byB3b3JrIG9uIGEgcHJvamVjdCB0aGF0IGlzIGVhc2llc3QgdG8g
-YWNjb21wbGlzaCBpZiBJIGJhc2UgbXkgY2hhbmdlcyBvbiBhIHByb2R1Y3QgdGhhdCBpcyBiYXNl
-ZCBvbiB0aGUgbWFpbmxpbmUgbGludXgga2VybmVsIDUuMTAuODMuCgpJIHdpbGwgZXhwbGFpbiB0
-aGUgc3RlcHMgSSB0b29rIHRvIGdldCB0byB0aGUgdmVyc2lvbiBJIGFtIGludGVyZXN0ZWQgaW46
-CgotIEkgY2hlY2tvdXQgdGhlIHY1LjEwLnktZXZsLXJlYmFzZSBicmFuY2ggb2YgaHR0cHM6Ly9z
-b3VyY2UuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWk0L2xpbnV4LWV2bC5naXQKCi0gSSBsb29rIGlu
-IE1ha2VmaWxlIHRvIHNlZSB0aGUga2VybmVsIHZlcnNpb24gaXMgYXQgNS4xMC45OQotIEkgcnVu
-IG1ha2UgbWVudWNvbmZpZyB0byBzZWUgd2hhdCBvcHRpb25zIEkgbmVlZCB0byBzZXQgdG8gZW5h
-YmxlIHRoZSBFVkwga2VybmVsCgotIFByb2Nlc3NvciB0eXBlcyBhbmQgZmVhdHVyZXMgLS0tPiBF
-VkwgcmVhbCB0aW1lIGNvcmUKLSBJIHRoZW4gbG9vayBhdCBnaXQgbG9nIHRvIGZpbmQgdGhlIGhh
-c2gganVzdCBiZWZvcmUgdGhlIGludGVncmF0aW9uIG9mIDUuMTAuODQKCi0gZTZlZGFmMjY3Nzkz
-OWE4Y2Y1N2U5MTUyYjFhYjA3YjgwZjgzZmExMQotIEkgYXNzdW1lIHRoaXMgd291bGQgYmUgdGhl
-IGxhdGVzdCBzZXQgb2YgY2hhbmdlcyB0aGF0IGFsbG93IHhlbm9tYWkgdG8gd29yayB3aXRoIHRo
-ZSBtYWlubGluZSBrZXJuZWwgNS4xMC44MwotIEkgcnVuIG1ha2UgbWVudWNvbmZpZwoKLSBXZSBu
-byBsb25nZXIgaGF2ZSBhbnkgb3B0aW9ucyAodGhhdCBJIGNhbiBzZWUpIHRvIGNvbmZpZ3VyZSB0
-aGUgRVZMIGNvcmUKCkRvZXMgbXkgYXBwcm9hY2ggbWFrZSBzZW5zZSB0byBnZXQgdGhlIHhlbm9t
-YWkgdmVyc2lvbiB0aGF0IHdhcyBjb21wYXRpYmxlIHdpdGggdGhlIG1haW5saW5lIGtlcm5lbCA1
-LjEwLjgzPwoKSSB1bmRlcnN0YW5kIHlvdSBhcmUgYWxsIGJ1c3ksIGJ1dCBhbnkgYWR2aWNlL2Rp
-cmVjdGlvbi93ZWIgcGFnZXMgdGhhdCBkZXNjcmliZSB3aGF0IEkgbmVlZCB0byBkbyB3b3VsZCBi
-ZSBhcHByZWNpYXRlZC4KClRoYW5rcywKCkFuZHJldw==
+Hello,
+
+In my driver that I have been converting to support OOB functionality with =
+the EVL core, I have an interrupt handler that handles all interrupts from =
+a device sitting on the PCIe bus. I was reading through the information on =
+your wiki about interrupt pipelining in Dovetail. I was confused a bit on i=
+f there is work that I need to do in order to get interrupts & interrupt ha=
+ndlers to run out-of-band (and not be preempted by in-band linux processing=
+), or if the EVL core takes care of that for me? If there is work I need to=
+ do with interrupt config & interrupt handlers in order to make them able t=
+o run out-of-band, where do I need to start?
+
+Thanks!
+
+Russell
