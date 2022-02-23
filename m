@@ -1,13 +1,14 @@
-Message-ID: <15f28a0f-c4bd-b737-5ba7-0aaf3d603456@siemens.com>
-Date: Wed, 23 Feb 2022 07:51:17 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH 0/2] kernel-shark related patches
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 0/2] kernel-shark related patches
+Date: Wed, 23 Feb 2022 07:04:59 +0000
+Message-ID: <MN2PR11MB428537181ED4AD3AD56E27B6F23C9@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220222023101.31013-1-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220222023101.31013-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <15f28a0f-c4bd-b737-5ba7-0aaf3d603456@siemens.com>
+In-Reply-To: <15f28a0f-c4bd-b737-5ba7-0aaf3d603456@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
-Cc: y.karadz@gmail.com
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 22.02.22 03:30, Hongzhan Chen wrote:
-> 1. Add kernel-shark plugin to visualize OOB state of xenomai realtime
->    thread.
-> 2. Add libtraceevent plugin to parse xenomai_schedparams correctly.
-> 
-> With the help of Yordan Karadzhov <y.karadz@gmail.com>, we finally
-> create xenomai plugin and can build standalone. Thanks for his help
-> again.
-> 
-
-So these build targets can basically live "anywhere" and are not
-connected with our autoconf/automake build system of Xenomai.
-Intentionally due to the more complex preparation steps?
-
-Jan
-
-> Hongzhan Chen (2):
->   Add xenomai_cobalt_switch_events plugin for kernel-shark
->   Add xenomai_schedparams plugin for libtraceevent
-> 
->  kernel-shark/CobaltSwitchEvents.cpp         | 156 +++++++++++++++
->  kernel-shark/Makefile                       |  20 ++
->  kernel-shark/README                         |  81 ++++++++
->  kernel-shark/xenomai_cobalt_switch_events.c | 174 +++++++++++++++++
->  kernel-shark/xenomai_cobalt_switch_events.h |  58 ++++++
->  libtraceevent/Makefile                      |  31 +++
->  libtraceevent/README                        |  30 +++
->  libtraceevent/plugin_xenomai_schedparams.c  | 201 ++++++++++++++++++++
->  8 files changed, 751 insertions(+)
->  create mode 100644 kernel-shark/CobaltSwitchEvents.cpp
->  create mode 100644 kernel-shark/Makefile
->  create mode 100644 kernel-shark/README
->  create mode 100644 kernel-shark/xenomai_cobalt_switch_events.c
->  create mode 100644 kernel-shark/xenomai_cobalt_switch_events.h
->  create mode 100644 libtraceevent/Makefile
->  create mode 100644 libtraceevent/README
->  create mode 100644 libtraceevent/plugin_xenomai_schedparams.c
-> 
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPiANCj5TZW50OiBXZWRuZXNkYXksIEZlYnJ1YXJ5IDIzLCAyMDIyIDI6
+NTEgUE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVu
+b21haUB4ZW5vbWFpLm9yZw0KPkNjOiB5LmthcmFkekBnbWFpbC5jb20NCj5TdWJqZWN0OiBSZTog
+W1BBVENIIDAvMl0ga2VybmVsLXNoYXJrIHJlbGF0ZWQgcGF0Y2hlcw0KPg0KPk9uIDIyLjAyLjIy
+IDAzOjMwLCBIb25nemhhbiBDaGVuIHdyb3RlOg0KPj4gMS4gQWRkIGtlcm5lbC1zaGFyayBwbHVn
+aW4gdG8gdmlzdWFsaXplIE9PQiBzdGF0ZSBvZiB4ZW5vbWFpIHJlYWx0aW1lDQo+PiAgICB0aHJl
+YWQuDQo+PiAyLiBBZGQgbGlidHJhY2VldmVudCBwbHVnaW4gdG8gcGFyc2UgeGVub21haV9zY2hl
+ZHBhcmFtcyBjb3JyZWN0bHkuDQo+PiANCj4+IFdpdGggdGhlIGhlbHAgb2YgWW9yZGFuIEthcmFk
+emhvdiA8eS5rYXJhZHpAZ21haWwuY29tPiwgd2UgZmluYWxseQ0KPj4gY3JlYXRlIHhlbm9tYWkg
+cGx1Z2luIGFuZCBjYW4gYnVpbGQgc3RhbmRhbG9uZS4gVGhhbmtzIGZvciBoaXMgaGVscA0KPj4g
+YWdhaW4uDQo+PiANCj4NCj5TbyB0aGVzZSBidWlsZCB0YXJnZXRzIGNhbiBiYXNpY2FsbHkgbGl2
+ZSAiYW55d2hlcmUiIGFuZCBhcmUgbm90DQo+Y29ubmVjdGVkIHdpdGggb3VyIGF1dG9jb25mL2F1
+dG9tYWtlIGJ1aWxkIHN5c3RlbSBvZiBYZW5vbWFpLg0KPkludGVudGlvbmFsbHkgZHVlIHRvIHRo
+ZSBtb3JlIGNvbXBsZXggcHJlcGFyYXRpb24gc3RlcHM/DQoNClRoZSBwbHVnaW4gYWN0dWFsbHkg
+ZGVwZW5kcyBvbiBsaWJrc2hhcmstZGV2ZWwgYW5kIGxpYnRyYWNlZXZlbnQgZGV2IHdoaWNoIHdl
+IG1heSBoYXZlIHRvDQpnZXQgdXBkYXRlZCBrZXJuZWwtc2hhcmsgYW5kIGxpYnRyYWNlZXZlbnQg
+Y29kZSBhbmQgYnVpbGQgYW5kIGluc3RhbGwgdGhlbSBiZWZvcmUgYnVpbGQgdGhlIHBsdWdpbnMu
+IA0KSSBhbSB3b25kZXJpbmcgdGhlIGJldHRlciB3YXkgaXMgdG8gaW50ZWdyYXRlIGFsbCB0aGVz
+ZSB0b29scyAgd2l0aCBvdXIgcGx1Z2luIHBhdGNoZXMgYW5kIG1haW50YWluIHRoZW0NCiBpbiBv
+dXIgeGVub21haS1pbWFnZT8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj4NCj5KYW4N
+Cj4NCj4+IEhvbmd6aGFuIENoZW4gKDIpOg0KPj4gICBBZGQgeGVub21haV9jb2JhbHRfc3dpdGNo
+X2V2ZW50cyBwbHVnaW4gZm9yIGtlcm5lbC1zaGFyaw0KPj4gICBBZGQgeGVub21haV9zY2hlZHBh
+cmFtcyBwbHVnaW4gZm9yIGxpYnRyYWNlZXZlbnQNCj4+IA0KPj4gIGtlcm5lbC1zaGFyay9Db2Jh
+bHRTd2l0Y2hFdmVudHMuY3BwICAgICAgICAgfCAxNTYgKysrKysrKysrKysrKysrDQo+PiAga2Vy
+bmVsLXNoYXJrL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICB8ICAyMCArKw0KPj4gIGtl
+cm5lbC1zaGFyay9SRUFETUUgICAgICAgICAgICAgICAgICAgICAgICAgfCAgODEgKysrKysrKysN
+Cj4+ICBrZXJuZWwtc2hhcmsveGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5jIHwgMTc0ICsr
+KysrKysrKysrKysrKysrDQo+PiAga2VybmVsLXNoYXJrL3hlbm9tYWlfY29iYWx0X3N3aXRjaF9l
+dmVudHMuaCB8ICA1OCArKysrKysNCj4+ICBsaWJ0cmFjZWV2ZW50L01ha2VmaWxlICAgICAgICAg
+ICAgICAgICAgICAgIHwgIDMxICsrKw0KPj4gIGxpYnRyYWNlZXZlbnQvUkVBRE1FICAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgMzAgKysrDQo+PiAgbGlidHJhY2VldmVudC9wbHVnaW5feGVub21h
+aV9zY2hlZHBhcmFtcy5jICB8IDIwMSArKysrKysrKysrKysrKysrKysrKw0KPj4gIDggZmlsZXMg
+Y2hhbmdlZCwgNzUxIGluc2VydGlvbnMoKykNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVs
+LXNoYXJrL0NvYmFsdFN3aXRjaEV2ZW50cy5jcHANCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2Vy
+bmVsLXNoYXJrL01ha2VmaWxlDQo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGtlcm5lbC1zaGFyay9S
+RUFETUUNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVsLXNoYXJrL3hlbm9tYWlfY29iYWx0
+X3N3aXRjaF9ldmVudHMuYw0KPj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBrZXJuZWwtc2hhcmsveGVu
+b21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5oDQo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGxpYnRy
+YWNlZXZlbnQvTWFrZWZpbGUNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgbGlidHJhY2VldmVudC9S
+RUFETUUNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgbGlidHJhY2VldmVudC9wbHVnaW5feGVub21h
+aV9zY2hlZHBhcmFtcy5jDQo+PiANCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUZWNobm9sb2d5DQo+
+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
