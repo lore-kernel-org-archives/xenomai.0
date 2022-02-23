@@ -1,12 +1,11 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: Compiling xenomai-linux 5.10.83
-Date: Wed, 23 Feb 2022 03:14:48 +0000
-Message-ID: <MN2PR11MB428562F4848BE9C43AB0AF80F23C9@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <HJ4i9nFdcaCaLnqZ6kJFqc-lsGhWGbI-ASP8PqZmkpGGD7FSSWYRIGgwLiVYMs-PiaD4SlaygjbJBCaGS8oZb3iZOS8XQzXw4kt2zzTgGyk=@protonmail.com>
-In-Reply-To: <HJ4i9nFdcaCaLnqZ6kJFqc-lsGhWGbI-ASP8PqZmkpGGD7FSSWYRIGgwLiVYMs-PiaD4SlaygjbJBCaGS8oZb3iZOS8XQzXw4kt2zzTgGyk=@protonmail.com>
+Subject: reminder: Xenomai community call on Wednesday, Feb 23, 2022, UTC 7:00
+ AM
+Date: Wed, 23 Feb 2022 05:10:20 +0000
+Message-ID: <MN2PR11MB4285CB45C5AD506A096CE2B9F23C9@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,33 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andrew <andrew.penner@protonmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogWGVub21haSA8eGVub21haS1ib3Vu
-Y2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgQW5kcmV3IHZpYSBYZW5vbWFpDQo+U2VudDog
-V2VkbmVzZGF5LCBGZWJydWFyeSAyMywgMjAyMiAzOjU2IEFNDQo+VG86IHhlbm9tYWlAeGVub21h
-aS5vcmcNCj5TdWJqZWN0OiBDb21waWxpbmcgeGVub21haS1saW51eCA1LjEwLjgzDQo+DQo+SGks
-DQo+DQo+SSBhbSB0cnlpbmcgdG8gd29yayBvbiBhIHByb2plY3QgdGhhdCBpcyBlYXNpZXN0IHRv
-IGFjY29tcGxpc2ggaWYgSSBiYXNlIG15IGNoYW5nZXMgb24gYSBwcm9kdWN0IHRoYXQgaXMgYmFz
-ZWQgb24gdGhlIG1haW5saW5lIGxpbnV4IGtlcm5lbCA1LjEwLjgzLg0KPg0KPkkgd2lsbCBleHBs
-YWluIHRoZSBzdGVwcyBJIHRvb2sgdG8gZ2V0IHRvIHRoZSB2ZXJzaW9uIEkgYW0gaW50ZXJlc3Rl
-ZCBpbjoNCj4NCj4tIEkgY2hlY2tvdXQgdGhlIHY1LjEwLnktZXZsLXJlYmFzZSBicmFuY2ggb2Yg
-aHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWk0L2xpbnV4LWV2bC5naXQNCg0K
-WW91IG1heSB3YW50IHRvIGNoZWNrb3V0IHRhZyB2NS4xMC44My1ldmwxLXJlYmFzZSBiYXNlZCBv
-biB2NS4xMC55LWV2bC1yZWJhc2UgYnJhbmNoLg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4N
-Cg0KPg0KPi0gSSBsb29rIGluIE1ha2VmaWxlIHRvIHNlZSB0aGUga2VybmVsIHZlcnNpb24gaXMg
-YXQgNS4xMC45OQ0KPi0gSSBydW4gbWFrZSBtZW51Y29uZmlnIHRvIHNlZSB3aGF0IG9wdGlvbnMg
-SSBuZWVkIHRvIHNldCB0byBlbmFibGUgdGhlIEVWTCBrZXJuZWwNCj4NCj4tIFByb2Nlc3NvciB0
-eXBlcyBhbmQgZmVhdHVyZXMgLS0tPiBFVkwgcmVhbCB0aW1lIGNvcmUNCj4tIEkgdGhlbiBsb29r
-IGF0IGdpdCBsb2cgdG8gZmluZCB0aGUgaGFzaCBqdXN0IGJlZm9yZSB0aGUgaW50ZWdyYXRpb24g
-b2YgNS4xMC44NA0KPg0KPi0gZTZlZGFmMjY3NzkzOWE4Y2Y1N2U5MTUyYjFhYjA3YjgwZjgzZmEx
-MQ0KPi0gSSBhc3N1bWUgdGhpcyB3b3VsZCBiZSB0aGUgbGF0ZXN0IHNldCBvZiBjaGFuZ2VzIHRo
-YXQgYWxsb3cgeGVub21haSB0byB3b3JrIHdpdGggdGhlIG1haW5saW5lIGtlcm5lbCA1LjEwLjgz
-DQo+LSBJIHJ1biBtYWtlIG1lbnVjb25maWcNCj4NCj4tIFdlIG5vIGxvbmdlciBoYXZlIGFueSBv
-cHRpb25zICh0aGF0IEkgY2FuIHNlZSkgdG8gY29uZmlndXJlIHRoZSBFVkwgY29yZQ0KPg0KPkRv
-ZXMgbXkgYXBwcm9hY2ggbWFrZSBzZW5zZSB0byBnZXQgdGhlIHhlbm9tYWkgdmVyc2lvbiB0aGF0
-IHdhcyBjb21wYXRpYmxlIHdpdGggdGhlIG1haW5saW5lIGtlcm5lbCA1LjEwLjgzPw0KPg0KPkkg
-dW5kZXJzdGFuZCB5b3UgYXJlIGFsbCBidXN5LCBidXQgYW55IGFkdmljZS9kaXJlY3Rpb24vd2Vi
-IHBhZ2VzIHRoYXQgZGVzY3JpYmUgd2hhdCBJIG5lZWQgdG8gZG8gd291bGQgYmUgYXBwcmVjaWF0
-ZWQuDQo+DQo+VGhhbmtzLA0KPg0KPkFuZHJldw0K
+
+We have the Xenomai community call today.
+
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
+
+Time:
+Wednesday, Feb 23, 2022, UTC 7:00 AM
+Paris, France CEST 8:00 AM
+China CST 3:00 PM
+
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
+
 
