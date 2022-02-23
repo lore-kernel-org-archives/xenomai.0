@@ -1,9 +1,9 @@
-References: <HJ4i9nFdcaCaLnqZ6kJFqc-lsGhWGbI-ASP8PqZmkpGGD7FSSWYRIGgwLiVYMs-PiaD4SlaygjbJBCaGS8oZb3iZOS8XQzXw4kt2zzTgGyk=@protonmail.com>
+References: <PH1P110MB1050BF72127DFC0CE3440B64E23C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Compiling xenomai-linux 5.10.83
-Date: Wed, 23 Feb 2022 09:07:11 +0100
-In-reply-to: <HJ4i9nFdcaCaLnqZ6kJFqc-lsGhWGbI-ASP8PqZmkpGGD7FSSWYRIGgwLiVYMs-PiaD4SlaygjbJBCaGS8oZb3iZOS8XQzXw4kt2zzTgGyk=@protonmail.com>
-Message-ID: <87ley2f1f8.fsf@xenomai.org>
+Subject: Re: Realtime interrupt handling in driver
+Date: Wed, 23 Feb 2022 09:12:17 +0100
+In-reply-to: <PH1P110MB1050BF72127DFC0CE3440B64E23C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87h78qf0qe.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,45 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andrew <andrew.penner@protonmail.com>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
 Cc: xenomai@xenomai.org
 
 
-Andrew via Xenomai <xenomai@xenomai.org> writes:
+Russell Johnson via Xenomai <xenomai@xenomai.org> writes:
 
-> Hi,
+> Hello,
 >
-> I am trying to work on a project that is easiest to accomplish if I base my changes on a product that is based on the mainline linux kernel 5.10.83.
+> In my driver that I have been converting to support OOB functionality
+> with the EVL core, I have an interrupt handler that handles all
+> interrupts from a device sitting on the PCIe bus. I was reading
+> through the information on your wiki about interrupt pipelining in
+> Dovetail. I was confused a bit on if there is work that I need to do
+> in order to get interrupts & interrupt handlers to run out-of-band
+> (and not be preempted by in-band linux processing), or if the EVL core
+> takes care of that for me?
+> If there is work I need to do with
+> interrupt config & interrupt handlers in order to make them able to
+> run out-of-band, where do I need to start?
 >
-> I will explain the steps I took to get to the version I am interested in:
+> Thanks!
 >
-> - I checkout the v5.10.y-evl-rebase branch of https://source.denx.de/Xenomai/xenomai4/linux-evl.git
->
-> - I look in Makefile to see the kernel version is at 5.10.99
-> - I run make menuconfig to see what options I need to set to enable the EVL kernel
->
-> - Processor types and features ---> EVL real time core
-> - I then look at git log to find the hash just before the integration of 5.10.84
->
-> - e6edaf2677939a8cf57e9152b1ab07b80f83fa11
-> - I assume this would be the latest set of changes that allow xenomai to work with the mainline kernel 5.10.83
-> - I run make menuconfig
->
-> - We no longer have any options (that I can see) to configure the EVL core
->
-> Does my approach make sense to get the xenomai version that was compatible with the mainline kernel 5.10.83?
->
+> Russell
 
-That won't work because this is a rebase branch, meaning that EVL sits
-on top of the mainline tip, therefore #e6edaf26 is below the first
-commit introducing the EVL code.
+[1] describes the general flow, this is a bit outdated starting from the
+upcoming kernel v5.17 series [2], but the logic remains the same though.
+[3] explains why and how to fix up the irqchip handlers for IRQ
+pipelining.
 
-> I understand you are all busy, but any advice/direction/web pages that describe what I need to do would be appreciated.
->
-
-There are several ways to do this, but in your case, the easiest would
-be to check out this tag: v5.10.83-evl1-rebase. There is no additional
-EVL code between v5.10.83-evl1-rebase and v5.10.99-evl1-rebase.
+[1] https://evlproject.org/dovetail/porting/irqflow/
+[2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/tree/v5.17-evl-rebase
+[3] https://evlproject.org/dovetail/pipeline/irq_handling/
 
 -- 
 Philippe.
