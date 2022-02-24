@@ -1,11 +1,10 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: Xenomai Community Call Minutes - Feb 23, 2022
-Date: Thu, 24 Feb 2022 03:23:07 +0000
-Message-ID: <MN2PR11MB4285755BCC8B2B0CF493CF87F23D9@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+From: Greg Pettit <vendors@dysim.com>
+Date: Thu, 24 Feb 2022 11:07:11 -0500
+Message-ID: <CAG40PBoYx81YT02qB2mvz5jKU9Uzh4U8n57+KGpvRfioS2nmoQ@mail.gmail.com>
+Subject: uapi/evl/net/sched.h overwriting /uapi/evl/sched.h during meson
+ install
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Attendees:
-Jan Kiszka, Rick Wang, Florian Bezdeka, Jianbo Cao, Qiang Zhang, Li Hao, Ho=
-ngzhan Chen
+I am setting up evl on a rpi4b using the following tags:
+linux-evl: v5.10.89-evl1-rebase
+libevl: r30
 
+During the install it appears that /uabi/evl/sched.h is getting overwritten
+by /uapi/evl/net/sched.h
+>From meson install:
+...
+Installing /home/pi/build/include/uapi/evl/sched.h to
+/usr/local/include/uapi/evl
+...
+and then later in the install process...
+...
+Installing /home/pi/build/include/uapi/evl/net/sched.h to
+/usr/local/include/uapi/evl
 
-*Community update:
+Is this expected behavior or am I doing something wrong?  Also, thanks for
+all the development efforts!  This is my first venture back into real time
+linux since RTAI-3.4.
 
-       Xenomai 3.3 - ongoing with bug fixing.
-       Xenomai meetup in Q2 - preparing.
-
-Regards
-
-Hongzhan Chen
-
-
-
+Thanks,
+Greg
