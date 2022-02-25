@@ -1,15 +1,11 @@
-Message-ID: <ee4355cf-d62c-74a5-7ef3-e104f6e4f099@siemens.com>
-Date: Mon, 24 Jan 2022 18:54:15 +0100
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH] ipipe: x86: Suppress unexpected trap warning for racing APIC
+ vectors
+Date: Fri, 25 Feb 2022 09:41:43 +0100
+Message-Id: <20220225084143.3277493-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-Subject: Re: [xenomai-images] [PATCH v2 1/2] xenomai: remove bootstrap task
- from dpkg_runbuild_prepend
-Content-Language: en-US
-References: <20220118105128.3007-1-ubely@ilbers.de>
- <20220118105128.3007-2-ubely@ilbers.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220118105128.3007-2-ubely@ilbers.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,63 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Uladzimir Bely <ubely@ilbers.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 18.01.22 11:51, Uladzimir Bely via Xenomai wrote:
-> This looks unneeded while bootstrapping is done in the same way
-> in debian/rules file before the build.
-> 
-> Signed-off-by: Uladzimir Bely <ubely@ilbers.de>
-> ---
->   recipes-xenomai/xenomai/xenomai.inc | 17 -----------------
->   1 file changed, 17 deletions(-)
-> 
-> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-> index fe84883..b8ec5bd 100644
-> --- a/recipes-xenomai/xenomai/xenomai.inc
-> +++ b/recipes-xenomai/xenomai/xenomai.inc
-> @@ -13,15 +13,6 @@ inherit dpkg
->   
->   PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1 libxenomai-dev libxenomai1-dbgsym"
->   
-> -# use bitbake get_srcrev to get the current commit id
-> -def get_commit(d):
-> -    try:
-> -        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
-> -    except bb.fetch2.FetchError:
-> -        return ""
-> -
-> -COMMIT="${@get_commit(d)}"
-> -
->   do_prepare_build() {
->       # Xenomai currently does not maintain its changelog, plus we want the
->       # actual package version in there.
-> @@ -31,11 +22,3 @@ do_prepare_build() {
->       # package version more freely.
->       rm -f ${S}/debian/source/format
->   }
-> -
-> -dpkg_runbuild_prepend() {
-> -    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
-> -                     ${PV} ${COMMIT})
+It might happen that the APIC vector in flight has already been shut
+down by the device driver. In such a race it's still an unexpected
+trap, but nothing we should warn about. Checking the vector error
+state upfront avoids confusion.
 
-This is unrelated and must not be removed. It provides information about 
-the actually built revision when using "latest" as version.
+This is what do_IRQ() would do as well, in a slightly simplified way.
+Both code paths are synchronized now, including the printk rate
+limiting.
 
-> -
-> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
-> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
-> -}
+Re-setting the vector to the VECTOR_UNUSED state helps to detect
+spurious interrupts in case the vector is re-triggered several times.
 
-Ah, that was obsolete by [1], fortunately in all stable branches as 
-well. So this is fine indeed.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/x86/kernel/ipipe.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Jan
-
-[1] 
-https://gitlab.com/Xenomai/xenomai-hacker-space/-/commit/951739291eb208076b638a06351ff9aa23c524c2
-
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 81e0889a8298..63c6dc683ed3 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -471,7 +471,14 @@ static inline int __ipipe_irq_from_vector(int vector, int *irq)
+ #ifdef CONFIG_X86_LOCAL_APIC
+ 	__ack_APIC_irq();
+ #endif
+-	pr_err("unexpected IRQ trap at vector %#x\n", vector);
++
++	if (desc == VECTOR_UNUSED) {
++		pr_emerg_ratelimited("%s: %d.%d Unexpected IRQ trap\n",
++				     __func__, smp_processor_id(), vector);
++	} else {
++		__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
++	}
++
+ 	return -1;
+ }
+ 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+2.30.2
+
 
