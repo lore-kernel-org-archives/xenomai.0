@@ -1,11 +1,7 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] ipipe: x86: Suppress unexpected trap warning for racing APIC
- vectors
-Date: Fri, 25 Feb 2022 09:41:43 +0100
-Message-Id: <20220225084143.3277493-1-florian.bezdeka@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH 0/4] Add kernel-shark plug and libtraceevent plugin
+Date: Mon, 28 Feb 2022 00:40:51 -0500
+Message-Id: <20220228054055.16112-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +10,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-It might happen that the APIC vector in flight has already been shut
-down by the device driver. In such a race it's still an unexpected
-trap, but nothing we should warn about. Checking the vector error
-state upfront avoids confusion.
+1. Add kernel-shark plugin to visualize OOB state of xenomai realtime
+   thread.
+2. Add libtraceevent plugin to parse xenomai_schedparams correctly
+3. build: Add c++ build support to build kernel-shark plugin
+4. Add --with-kernelshark option to build plugins in userland.
 
-This is what do_IRQ() would do as well, in a slightly simplified way.
-Both code paths are synchronized now, including the printk rate
-limiting.
 
-Re-setting the vector to the VECTOR_UNUSED state helps to detect
-spurious interrupts in case the vector is re-triggered several times.
+Hongzhan Chen (4):
+  build: Add c++ build support
+  Kernel-shark: Add xenomai_cobalt_switch_events plugin for kernel-shark
+  Add --with-kernelshark option
+  libtraceevent: Add Add xenomai_schedparams plugin for libtraceevent
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- arch/x86/kernel/ipipe.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ Makefile.am                                   |   6 +
+ configure.ac                                  |  29 +++
+ kernel-shark/Makefile.am                      |   8 +
+ .../kernelshark/CobaltSwitchEvents.cpp        | 156 ++++++++++++++
+ kernel-shark/kernelshark/Makefile.am          |  18 ++
+ kernel-shark/kernelshark/README               |  75 +++++++
+ .../xenomai_cobalt_switch_events.c            | 174 +++++++++++++++
+ .../xenomai_cobalt_switch_events.h            |  58 +++++
+ kernel-shark/libtraceevent/Makefile.am        |  10 +
+ kernel-shark/libtraceevent/README             |  30 +++
+ .../plugin_xenomai_schedparams.c              | 201 ++++++++++++++++++
+ 11 files changed, 765 insertions(+)
+ create mode 100644 kernel-shark/Makefile.am
+ create mode 100644 kernel-shark/kernelshark/CobaltSwitchEvents.cpp
+ create mode 100644 kernel-shark/kernelshark/Makefile.am
+ create mode 100644 kernel-shark/kernelshark/README
+ create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.c
+ create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.h
+ create mode 100644 kernel-shark/libtraceevent/Makefile.am
+ create mode 100644 kernel-shark/libtraceevent/README
+ create mode 100644 kernel-shark/libtraceevent/plugin_xenomai_schedparams.c
 
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index 81e0889a8298..63c6dc683ed3 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -471,7 +471,14 @@ static inline int __ipipe_irq_from_vector(int vector, int *irq)
- #ifdef CONFIG_X86_LOCAL_APIC
- 	__ack_APIC_irq();
- #endif
--	pr_err("unexpected IRQ trap at vector %#x\n", vector);
-+
-+	if (desc == VECTOR_UNUSED) {
-+		pr_emerg_ratelimited("%s: %d.%d Unexpected IRQ trap\n",
-+				     __func__, smp_processor_id(), vector);
-+	} else {
-+		__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
-+	}
-+
- 	return -1;
- }
- 
 -- 
-2.30.2
+2.17.1
 
 
