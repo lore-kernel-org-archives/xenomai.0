@@ -1,7 +1,9 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 0/4] Add kernel-shark plug and libtraceevent plugin
-Date: Mon, 28 Feb 2022 00:40:51 -0500
-Message-Id: <20220228054055.16112-1-hongzhan.chen@intel.com>
+Subject: [PATCH 1/4] build: Add c++ build support
+Date: Mon, 28 Feb 2022 00:40:52 -0500
+Message-Id: <20220228054055.16112-2-hongzhan.chen@intel.com>
+In-Reply-To: <20220228054055.16112-1-hongzhan.chen@intel.com>
+References: <20220228054055.16112-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,41 +14,36 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-1. Add kernel-shark plugin to visualize OOB state of xenomai realtime
-   thread.
-2. Add libtraceevent plugin to parse xenomai_schedparams correctly
-3. build: Add c++ build support to build kernel-shark plugin
-4. Add --with-kernelshark option to build plugins in userland.
+Add c++ build support or use specific c++ compiler
 
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ configure.ac | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Hongzhan Chen (4):
-  build: Add c++ build support
-  Kernel-shark: Add xenomai_cobalt_switch_events plugin for kernel-shark
-  Add --with-kernelshark option
-  libtraceevent: Add Add xenomai_schedparams plugin for libtraceevent
-
- Makefile.am                                   |   6 +
- configure.ac                                  |  29 +++
- kernel-shark/Makefile.am                      |   8 +
- .../kernelshark/CobaltSwitchEvents.cpp        | 156 ++++++++++++++
- kernel-shark/kernelshark/Makefile.am          |  18 ++
- kernel-shark/kernelshark/README               |  75 +++++++
- .../xenomai_cobalt_switch_events.c            | 174 +++++++++++++++
- .../xenomai_cobalt_switch_events.h            |  58 +++++
- kernel-shark/libtraceevent/Makefile.am        |  10 +
- kernel-shark/libtraceevent/README             |  30 +++
- .../plugin_xenomai_schedparams.c              | 201 ++++++++++++++++++
- 11 files changed, 765 insertions(+)
- create mode 100644 kernel-shark/Makefile.am
- create mode 100644 kernel-shark/kernelshark/CobaltSwitchEvents.cpp
- create mode 100644 kernel-shark/kernelshark/Makefile.am
- create mode 100644 kernel-shark/kernelshark/README
- create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.c
- create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.h
- create mode 100644 kernel-shark/libtraceevent/Makefile.am
- create mode 100644 kernel-shark/libtraceevent/README
- create mode 100644 kernel-shark/libtraceevent/plugin_xenomai_schedparams.c
-
+diff --git a/configure.ac b/configure.ac
+index 0389cf008..16cffd8f8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -79,6 +79,18 @@ AC_ARG_WITH(cc,
+     ])
+ AC_PROG_CC
+ 
++AC_ARG_WITH(cxx,
++    AS_HELP_STRING([--with-cxx=compiler],[use specific C++ compiler]),
++    [
++	case "$withval" in
++	"" | y | ye | yes | n | no)
++	    AC_MSG_ERROR([You must supply an argument to --with-cxx])
++	  ;;
++	esac
++	CXX="$withval"
++    ])
++AC_PROG_CXX
++
+ # Do not let autoconf set the default value of CFLAGS
+ if $XENO_EMPTY_CFLAGS; then
+ 	CFLAGS=""
 -- 
 2.17.1
 
