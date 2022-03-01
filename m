@@ -1,15 +1,14 @@
-Message-ID: <00ea4e43-71c6-5bcd-86b5-efed9a67e2f5@siemens.com>
-Date: Tue, 25 Jan 2022 17:44:05 +0100
+Message-ID: <8a1ce332-c142-332b-3a00-b31944d0073d@siemens.com>
+Date: Tue, 1 Mar 2022 19:28:15 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH] libtraceevent: Add new xenomai plugin to print param_ex
- correctly
+Subject: Re: [PATCH 3/3] y2038: cobalt: posix/signal: Take care of compat mode
+ for sigtimedwait64
 Content-Language: en-US
-References: <20220118024746.23951-1-hongzhan.chen@intel.com>
- <865a2a7064e879af1f3db312a60e8b7009c82093.camel@siemens.com>
- <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220221132504.55876-1-florian.bezdeka@siemens.com>
+ <20220221132504.55876-4-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB4285221E304F6D183D5470E4F2599@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <20220221132504.55876-4-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,90 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
+Cc: johannes.lauenstein@siemens.com
 
-On 19.01.22 02:25, Chen, Hongzhan wrote:
+On 21.02.22 14:25, Florian Bezdeka wrote:
+> The compat syscall was previously routed to the native entrypoint.
+> While the timeout is always based on time64_t the siginfo has to be
+> handled different in compat mode.
 > 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h | 1 +
+>  1 file changed, 1 insertion(+)
 > 
->>
->>> +/*
->>> + * Copyright (C) 2021 Intel Inc, Hongzhan Chen <hongzhan.chen@intel.com>
->>> + */
->>> +#include <stdio.h>
->>> +#include <stdlib.h>
->>> +#include <string.h>
->>> +#include <linux/sched.h>
->>> +
->>> +#include "event-parse.h"
->>> +#include "trace-seq.h"
->>> +
->>> +
->>> +#define SCHED_SPORADIC		10
->>> +#define SCHED_TP		11
->>> +#define SCHED_QUOTA		12
->>> +
->>> +#define SCHED_COBALT		42
->>> +#define SCHED_WEAK		43
->>> +
->>> +struct __sched_ss_param {
->>> +	int __sched_low_priority;
->>> +	struct timespec __sched_repl_period;
->>> +	struct timespec __sched_init_budget;
->>> +	int __sched_max_repl;
->>> +};
->>> +
->>> +struct __sched_rr_param {
->>> +	struct timespec __sched_rr_quantum;
->>> +};
->>> +
->>> +struct __sched_tp_param {
->>> +	int __sched_partition;
->>> +};
->>> +
->>> +struct __sched_quota_param {
->>> +	int __sched_group;
->>> +};
->>> +
->>> +struct sched_param_ex {
->>> +	int sched_priority;
->>> +	union {
->>> +		struct __sched_ss_param ss;
->>> +		struct __sched_rr_param rr;
->>> +		struct __sched_tp_param tp;
->>> +		struct __sched_quota_param quota;
->>> +	} sched_u;
->>> +};
->>
->> Looks like a code duplication. Everything around sched_param_ex is
->> still y2038 affected and might need to change within the Xenomai
->> codebase. Not sure if it is really a good idea to duplicate such
->> affected type definitions.
->>
->> Btw: This patch is not targeting the xenomai code base, right?
-> 
-> No,the patch is not for xenomai itself but for libtraceevent which is pure linux user
-> space lib used by kernel-shark or trace-cmd. But according to Jan, we need to maintain
-> them in xenomai tree. Basically , we will create new correspoding folder such
-> as libtraceevent or kernel-shark under xenomai tree and also related documents
-> to tell user how to use them with libtraceevent or kernel-shark but it would not compile
-> together with xenomai.
-> It is to fix part of issue https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/33.
+> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
+> index 1c83ff4e3..3986b227b 100644
+> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
+> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
+> @@ -64,6 +64,7 @@ __COBALT_CALL32emu_THUNK(sendmsg)
+>  __COBALT_CALL32emu_THUNK(mmap)
+>  __COBALT_CALL32emu_THUNK(backtrace)
+>  __COBALT_CALL32emu_THUNK(mq_timedreceive64)
+> +__COBALT_CALL32emu_THUNK(sigtimedwait64)
+>  __COBALT_CALL32emu_THUNK(recvmmsg64)
+>  
+>  #endif /* !_COBALT_X86_ASM_SYSCALL32_TABLE_H */
 
-OK, a README would be fine for the start, though I expect that we will 
-eventually be able to plug the build into the Xenomai autoconf/automake 
-as well. We do want this to be generated along the regular build, 
-provided the user installed the required dependencies and/or enabled 
-this feature. Would also ease packaging for debian, and building for 
-xenomai-image (enlightened "trace-cmd report" could work even on the 
-targets).
+There are way more new 64-bit calls. Matching their original versions
+against this header, I would say we need more thunks, no?
 
-> 
-> you are right that we had better not to duplicate them but I can not find a better way
-> to share them between xenomai kernel and Linux userspace under current situation.
+for time64func in $(git grep 64, kernel/cobalt/posix/syscall32.c | \
+  sed 's/.*(\([^6]*\)64,.*/\1/'); do
+    git grep -q $time64func \
+      kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h && \
+        echo $time64func; done
 
-Once the plugin is integrated into the Xenomai code base, including 
-existing headers should be even easier, specifically if they do not 
-belong to our devel package.
+sem_timedwait
+clock_getres
+clock_gettime
+clock_settime
+clock_nanosleep
+mutex_timedlock
+cond_wait_prologue
+mq_timedsend
+mq_timedreceive
+sigtimedwait
+monitor_wait
+event_wait
+recvmmsg
+
+We now have mq_timedreceive64, sigtimedwait64 and recvmmsg64 with
+thunks. There rest is missing, no?
+
+Interestingly, we also have no thunk for old recvmmsg so far. Probably a
+bug of it own.
 
 Jan
 
