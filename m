@@ -1,11 +1,12 @@
-Message-ID: <48156ea9-7f01-b172-a21d-a518687bd824@siemens.com>
-Date: Tue, 1 Mar 2022 08:24:37 +0100
+Message-ID: <ce5b129d-0e20-160c-a8d6-acb4b96515e4@siemens.com>
+Date: Tue, 1 Mar 2022 08:30:59 +0100
 MIME-Version: 1.0
-Subject: Re: Question about apply xenomai patch to RT kernel
+Subject: Re: [PATCH 1/4] build: Add c++ build support
 Content-Language: en-US
-References: <CAPEvDeBTsSZRW3jBZZnwmyV4fUMNDvohGHsPxX=kj_9kRHLoHQ@mail.gmail.com>
+References: <20220228054055.16112-1-hongzhan.chen@intel.com>
+ <20220228054055.16112-2-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAPEvDeBTsSZRW3jBZZnwmyV4fUMNDvohGHsPxX=kj_9kRHLoHQ@mail.gmail.com>
+In-Reply-To: <20220228054055.16112-2-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,24 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: FJKONG <bh1scw@gmail.com>, xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-On 01.03.22 02:23, FJKONG via Xenomai wrote:
-> Hi all,
+On 28.02.22 06:40, Hongzhan Chen wrote:
+> Add c++ build support or use specific c++ compiler
 > 
-> I am trying to apply xenomai patch to RT kernel, but there are some
-> conflicts.
-> I am not sure if xenomai can works with RT kernel, or should I remove RT
-> from kernel and then apply xenomai patch.
-> what is the right way to fix this?
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  configure.ac | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index 0389cf008..16cffd8f8 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -79,6 +79,18 @@ AC_ARG_WITH(cc,
+>      ])
+>  AC_PROG_CC
+>  
+> +AC_ARG_WITH(cxx,
+> +    AS_HELP_STRING([--with-cxx=compiler],[use specific C++ compiler]),
+> +    [
+> +	case "$withval" in
+> +	"" | y | ye | yes | n | no)
+> +	    AC_MSG_ERROR([You must supply an argument to --with-cxx])
+> +	  ;;
+> +	esac
+> +	CXX="$withval"
+> +    ])
+> +AC_PROG_CXX
+> +
+>  # Do not let autoconf set the default value of CFLAGS
+>  if $XENO_EMPTY_CFLAGS; then
+>  	CFLAGS=""
 
-The easiest path forward right now is likely using 5.15 (with dovetail
-patch), maybe even 5.16. There, the conflicts should be much smaller
-than with older kernels where the remaining RT patch was much larger.
-But I don't have information about recent attempts to make this working,
-so there might be additional issues.
-
-Which version did you try?
+Will that make a C++ compiler mandatory for the build? Or only when
+pulling in KernelShark support?
 
 Jan
 
