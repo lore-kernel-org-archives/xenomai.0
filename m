@@ -1,11 +1,13 @@
-Message-ID: <df8bc468-69f0-2216-7ff7-6010a2a1bb6d@siemens.com>
-Date: Tue, 1 Mar 2022 19:29:30 +0100
+Message-ID: <26f1909e-abb1-5e94-2b6a-dd2d50df4675@siemens.com>
+Date: Tue, 1 Mar 2022 21:21:52 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH 0/3] y2038: Fixes for compat mode
+Subject: Re: [I-pipe 4.4] [PATCH v2 1/4] ipipe: x86: Do not call BUG() in case
+ of retriggered APIC vectors
 Content-Language: en-US
-References: <20220221132504.55876-1-florian.bezdeka@siemens.com>
+References: <20220301125302.2368068-1-florian.bezdeka@siemens.com>
+ <20220301125302.2368068-2-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220221132504.55876-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20220301125302.2368068-2-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,37 +19,106 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@xenomai.org
-Cc: johannes.lauenstein@siemens.com
 
-On 21.02.22 14:25, Florian Bezdeka wrote:
-> I started testing the compat mode on a Ubuntu based system with glibc
-> 2.34 which supports switching to 64 bit based time_t. These are the fixes
-> for problems observed while testing the kernel / cobalt part.
-> 
-> More tests, especially for the libcobalt part will be necessary,
-> especially because the way how glibc implemented the switch to 64 bit
-> time_t affects the function wrapping we use.
-> 
-> Best regards,
-> Florian
-> 
-> Florian Bezdeka (3):
->   y2038: posix/mqueue: Fix compat case for mq_timedreceive64
->   y2038: cobalt: rtdm/fd: Take care of compat mode for recvmmsg64
->   y2038: cobalt: posix/signal: Take care of compat mode for
->     sigtimedwait64
-> 
->  .../x86/include/asm/xenomai/syscall32-table.h |  3 +++
->  kernel/cobalt/posix/mqueue.c                  | 26 +++++++++----------
->  kernel/cobalt/posix/mqueue.h                  |  2 +-
->  kernel/cobalt/posix/syscall32.c               | 17 ++++++++++--
->  kernel/cobalt/posix/syscall32.h               |  3 ++-
->  5 files changed, 34 insertions(+), 17 deletions(-)
+On 01.03.22 13:52, Florian Bezdeka wrote:
+> The CPU hotplugging code might re-trigger a vector. In that case the
+> vector is in the VECTOR_RETRIGGERED state. With this patch applied ipipe
+> does no longer call BUG() for such vectors.
 > 
 
-Applied all, but we likely need more thunks, see comment on patch 3
+Doesn't this also avoids a BUG for spurious vectors (provided they can
+exist for other reasons than CPU offlining)?
 
-Thanks,
+> This is a backport from the 4.19 and 5.4 ipipe branches handling the
+> VECTOR_SHUTDOWN state. The VECTOR_SHUTDOWN case itself does not exist in
+> 4.4, but the VECTOR_RETRIGGERED case does.
+> 
+> __ipipe_handle_irq() is now synchronized with do_IRQ().
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  arch/x86/kernel/ipipe.c | 44 +++++++++++++++++++++++++++++++----------
+>  1 file changed, 34 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+> index 739b5c37ec7b..6020739256f9 100644
+> --- a/arch/x86/kernel/ipipe.c
+> +++ b/arch/x86/kernel/ipipe.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/mm.h>
+>  #include <linux/kgdb.h>
+>  #include <linux/ipipe_tickdev.h>
+> +#include <linux/ratelimit.h>
+>  #include <asm/asm-offsets.h>
+>  #include <asm/unistd.h>
+>  #include <asm/processor.h>
+> @@ -428,22 +429,44 @@ skip_kgdb:
+>  	return 0;
+>  }
+>  
+> +static inline int __ipipe_irq_from_vector(int vector, int *irq)
+> +{
+> +	struct irq_desc *desc;
+> +
+> +	if (vector >= FIRST_SYSTEM_VECTOR) {
+> +		*irq = ipipe_apic_vector_irq(vector);
+> +		return 0;
+> +	}
+> +
+> +	desc = __this_cpu_read(vector_irq[vector]);
+> +	if (likely(!IS_ERR_OR_NULL(desc))) {
+> +		*irq = irq_desc_get_irq(desc);
+> +		return 0;
+> +	}
+> +
+> +#ifdef CONFIG_X86_LOCAL_APIC
+> +	__ack_APIC_irq();
+> +#endif
+> +
+> +	if (desc == VECTOR_UNUSED) {
+> +		pr_emerg_ratelimited("%s: %d.%d Unexpected IRQ trap\n",
+> +				     __func__, smp_processor_id(), vector);
+> +	} else {
+> +		__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
+> +	}
+> +
+> +	return -1;
+> +}
+> +
+>  int __ipipe_handle_irq(struct pt_regs *regs)
+>  {
+>  	struct ipipe_percpu_data *p = __ipipe_raw_cpu_ptr(&ipipe_percpu);
+>  	int irq, vector = regs->orig_ax, flags = 0;
+>  	struct pt_regs *tick_regs;
+> -	struct irq_desc *desc;
+>  
+>  	if (likely(vector < 0)) {
+> -		vector = ~vector;
+> -		if (vector >= FIRST_SYSTEM_VECTOR)
+> -			irq = ipipe_apic_vector_irq(vector);
+> -		else {
+> -			desc = __this_cpu_read(vector_irq[vector]);
+> -			BUG_ON(IS_ERR_OR_NULL(desc));
+> -			irq = irq_desc_get_irq(desc);
+> -		}
+> +		if (__ipipe_irq_from_vector(~vector, &irq) < 0)
+> +			goto out;
+>  	} else { /* Software-generated. */
+>  		irq = vector;
+>  		flags = IPIPE_IRQF_NOACK;
+> @@ -477,7 +500,8 @@ int __ipipe_handle_irq(struct pt_regs *regs)
+>  		__ipipe_call_mayday(regs);
+>  
+>  	ipipe_trace_irqend(irq, regs);
+> -	
+> +
+> +out:
+>  	if (!__ipipe_root_p ||
+>  	    test_bit(IPIPE_STALL_FLAG, &__ipipe_root_status))
+>  		return 0;
+
+Thanks, applied.
+
 Jan
 
 -- 
