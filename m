@@ -1,8 +1,11 @@
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [I-pipe][PATCH v2 0/4] ipipe: x86: Fix IRQ migrations,
- avoid confusing kernel messages
-Date: Tue,  1 Mar 2022 13:52:58 +0100
-Message-Id: <20220301125302.2368068-1-florian.bezdeka@siemens.com>
+Subject: [I-pipe 4.19,
+ 5.4] [PATCH v2 2/4] ipipe: x86: Suppress unexpected trap warning for
+ racing APIC vectors
+Date: Tue,  1 Mar 2022 13:53:00 +0100
+Message-Id: <20220301125302.2368068-3-florian.bezdeka@siemens.com>
+In-Reply-To: <20220301125302.2368068-1-florian.bezdeka@siemens.com>
+References: <20220301125302.2368068-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 MIME-Version: 1.0
@@ -16,34 +19,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+It might happen that the APIC vector in flight has already been shut
+down by the device driver. In such a race it's still an unexpected
+trap, but nothing we should warn about. Checking the vector error
+state upfront avoids confusion.
 
-this are the results from an internal debugging session. We we're facing 
-some problems related to system tunings and some confusing kernel
-messages related to spurious IRQs.
+This is what do_IRQ() would do as well, in a slightly simplified way.
+Both code paths are synchronized now, including the printk rate
+limiting.
 
-The most important part:
-IRQ migrations were broken in 4.19 and 5.4 based branches 
+Re-setting the vector to the VECTOR_UNUSED state helps to detect
+spurious interrupts in case the vector is re-triggered several times.
 
-Patch 1 is compile tested only.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/x86/kernel/ipipe.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Changes to v1:
-  - Add Patch 1, "Backport" for ipipe 4.4 branch
-  - Add Patch 3, Fix IRQ migrations for 5.4
-  - Add Patch 4, Fix IRQ migrations for 4.19
-
-Best regards,
-Florian
-
-Florian Bezdeka (3):
-  [4.4]       ipipe: x86: Do not call BUG() in case of retriggered APIC 
-              vectors
-  [4.19, 5.4] ipipe: x86: Suppress unexpected trap warning for racing APIC 
-              vectors
-  [5.4]       ipipe: x86: Fix IRQ migrations, pending migrations were
-              never handled
-  [4.19]      ipipe: x86: Fix IRQ migrations, pending migrations were
-              never handled
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 81e0889a8298..63c6dc683ed3 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -471,7 +471,14 @@ static inline int __ipipe_irq_from_vector(int vector, int *irq)
+ #ifdef CONFIG_X86_LOCAL_APIC
+ 	__ack_APIC_irq();
+ #endif
+-	pr_err("unexpected IRQ trap at vector %#x\n", vector);
++
++	if (desc == VECTOR_UNUSED) {
++		pr_emerg_ratelimited("%s: %d.%d Unexpected IRQ trap\n",
++				     __func__, smp_processor_id(), vector);
++	} else {
++		__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
++	}
++
+ 	return -1;
+ }
+ 
 -- 
 2.30.2
 
