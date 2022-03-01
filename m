@@ -1,16 +1,17 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 4/4] libtraceevent: Add Add xenomai_schedparams plugin for
- libtraceevent
-Date: Tue, 1 Mar 2022 08:21:08 +0000
-Message-ID: <MN2PR11MB4285EF04221BF6CB43A5B212F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20220228054055.16112-1-hongzhan.chen@intel.com>
- <20220228054055.16112-5-hongzhan.chen@intel.com>
- <ec0d4873-ffbe-e679-4f1e-18ed862fcdb5@siemens.com>
-In-Reply-To: <ec0d4873-ffbe-e679-4f1e-18ed862fcdb5@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <9cd1416c-e5dd-3b85-f3fb-d2425af40cf8@siemens.com>
+Date: Tue, 1 Mar 2022 09:29:42 +0100
 MIME-Version: 1.0
+Subject: Re: [PATCH 2/4] Kernel-shark: Add xenomai_cobalt_switch_events plugin
+ for kernel-shark
+Content-Language: en-US
+References: <20220228054055.16112-1-hongzhan.chen@intel.com>
+ <20220228054055.16112-3-hongzhan.chen@intel.com>
+ <8d88452b-a6cc-e1d0-1091-d37690e4fe5b@siemens.com>
+ <MN2PR11MB42854DEB6227FA10614603A2F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB42854DEB6227FA10614603A2F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,34 +20,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQo+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiANCj5TZW50OiBUdWVzZGF5LCBNYXJjaCAxLCAyMDIyIDM6NDEg
-UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
-aUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUEFUQ0ggNC80XSBsaWJ0cmFjZWV2ZW50OiBB
-ZGQgQWRkIHhlbm9tYWlfc2NoZWRwYXJhbXMgcGx1Z2luIGZvciBsaWJ0cmFjZWV2ZW50DQo+DQo+
-T24gMjguMDIuMjIgMDY6NDAsIEhvbmd6aGFuIENoZW4gd3JvdGU6DQo+PiBGb3IgY29iYWx0IHRo
-cmVhZCwgdGhlcmUgaXMgc3BlY2lhbCBzdHJ1Y3QgcGFyYW1fZXggZGF0YSBzdG9yZWQgaW4NCj4+
-IGRhdGEgcmVjb3JkLCB3ZSBuZWVkIHRvIHBhcnNlIGFuZCBwcmludCBpdHMgY29udGVudCBvdXQg
-Y29ycmVjdGx5DQo+PiB0byBoaW50IHVzZXIgd2hlbiB1c2luZyBsaWJ0cmFjZWV2ZW50Lg0KPj4g
-DQo+DQo+V2hpbGUgbGlidHJhY2VldmVudCBjYW4gYmUgdXNlZCBhbG9uZyB3aXRoIEtlcm5lbFNo
-YXJrLCBpdCdzIG5vdCBib3VuZA0KPnRvIGl0LiBZb3UgY2FuIGFsc28gcGVyZmVjdGx5IHVzZSBp
-dCB3aXRoIHB1cmUgY29tbWFuZCBsaW5lIHRvb2xpbmcNCj4odHJhY2UtY21kKS4gVGhhdCB3b3Vs
-ZCBtYWtlIGl0IGludGVyZXN0aW5nIGZvciB5b3VyIFVJLWZyZWUgZGVtbyBpbWFnZXMNCj4oeGVu
-b21haS1pbWFnZXMpLiBTbyBJIHdvdWxkIHJlY29tbWFuZCBjb250cm9sbGluZyBpdHMgYnVpbGQN
-Cj5pbmRlcGVuZGVudGx5IG9mIEtlcm5lbFNoYXJrLg0KPg0KPj4gU2lnbmVkLW9mZi1ieTogSG9u
-Z3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiAtLS0NCj4+ICBjb25maWd1
-cmUuYWMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDEgKw0KPj4gIGtlcm5l
-bC1zaGFyay9NYWtlZmlsZS5hbSAgICAgICAgICAgICAgICAgICAgICB8ICAgNiArLQ0KPg0KPk1h
-eWJlIGNhbGwgdGhlIHRvcC1sZXZlbCBkaXJlY3RvcnkgInRyYWNpbmciIGluc3RlYWQuDQoNCkl0
-IHdhcyBzdXBwb3NlZCB0aGF0IHRoZSBidWlsZGluZyBvZiBhbGwgcGx1Z2lucyBpcyBjb250cm9s
-bGVkIGJ5IG9uZSBvcHRpb24gLS13aXRoLWtlcm5lbHNoYXJrIGluIG15IGNhc2UuIEFzIHlvdSBz
-dWdnZXN0ZWQgLGRvZXMgdGhhdCBtZWFucyB3ZSBuZWVkIHRvIGFkZCBvbmUgbW9yZSBvcHRpb24g
-bGlrZSAtLXdpdGgtbGlidHJhY2VldmVudCB0byBidWlsZCBsaWJ0cmFjZWV2ZW50IHN0YW5kYWxv
-bmUgaW5kZXBlbmRlbnQgZnJvbSBidWlsZGluZyBrZXJuZWxzaGFyayBwbHVnaW4uIE9yIHdlIHJl
-cGxhY2UgLS13aXRoLWtlcm5lbHNoYXJrIHdpdGgtIC13aXRoLXRyYWNpbmcgdG8gYnVpbGQgYWxs
-IHBsdWdpbnMgdW5kZXIgdHJhY2luZyBmb2xkZXIgd2l0aCBzb2xlIG9wdGlvbj8NCg0KUmVnYXJk
-cw0KDQpIb25nemhhbiBDaGVuDQoNCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUZWNo
-bm9sb2d5DQo+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4NCg==
+On 01.03.22 08:51, Chen, Hongzhan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, March 1, 2022 3:40 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 2/4] Kernel-shark: Add xenomai_cobalt_switch_events plugin for kernel-shark
+>>
+>> On 28.02.22 06:40, Hongzhan Chen wrote:
+>>> For Xenomai-cobalt enabled system, cobalt_switch_context means
+>>> that there is schedule and context switch in companion core(realtime
+>>> core), which we may need to do special treatment and take correct
+>>> action as main kernel sched_switch to visualize out-of-band state
+>>> of realtime tasks running in cobalt core. To achive our target,
+>>> we implement following:
+>>>
+>>>   1. store corresponding cobalt_switch_context events into
+>>>      container data.
+>>>   2. modify pid stored in entry to be equal to next_pid to
+>>>      show correct color in cpu bar when cobalt_switch_context
+>>>      event happen.
+>>>   3. show blue hollow box to mark out-of-band state according to
+>>>      cobalt_switch_context events.
+>>>   4. clickable cobalt_switch_context plugin shapes.
+>>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>> ---
+>>>  kernel-shark/Makefile.am                      |   6 +
+>>>  .../kernelshark/CobaltSwitchEvents.cpp        | 156 ++++++++++++++++
+>>>  kernel-shark/kernelshark/Makefile.am          |  18 ++
+>>>  kernel-shark/kernelshark/README               |  75 ++++++++
+>>>  .../xenomai_cobalt_switch_events.c            | 174 ++++++++++++++++++
+>>>  .../xenomai_cobalt_switch_events.h            |  58 ++++++
+>>>  6 files changed, 487 insertions(+)
+>>>  create mode 100644 kernel-shark/Makefile.am
+>>>  create mode 100644 kernel-shark/kernelshark/CobaltSwitchEvents.cpp
+>>>  create mode 100644 kernel-shark/kernelshark/Makefile.am
+>>>  create mode 100644 kernel-shark/kernelshark/README
+>>>  create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.c
+>>>  create mode 100644 kernel-shark/kernelshark/xenomai_cobalt_switch_events.h
+>>>
+>>
+>> ...
+>>
+>>> diff --git a/kernel-shark/kernelshark/README b/kernel-shark/kernelshark/README
+>>> new file mode 100644
+>>> index 000000000..41a26a39a
+>>> --- /dev/null
+>>> +++ b/kernel-shark/kernelshark/README
+>>> @@ -0,0 +1,75 @@
+>>> +
+>>> +What is it?
+>>> +=============
+>>> +
+>>> +  It is Xenomai plugin for kernel-shark to visualize out-of-band state
+>>> +  of realtime thread running in companion core with making use of
+>>> +  cobalt_switch_context events in trace log.
+>>> +
+>>> +  For more introductions about kernel-shark , please refer to [1].
+>>> +
+>>
+>> I think it's "KernelShark". Please check and then use that spelling
+>> consistently if I'm right.
+> 
+> Actually, in kernelshark project  , they are mixing using them.
+> 
+> For example, like following commit message. There are lots  of commit messages include such name kernel-shark.
+> Or their repo name https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git
+> 
+> commit 59b5763c7c52b703e3b8e05be801f7c85365c9d3
+> Author: Yordan Karadzhov (VMware) <y.karadz@gmail.com>
+> Date:   Wed Jan 19 14:02:28 2022 +0200
+> 
+>     kernel-shark: Add KsPluginsGUI.hpp/.cpp
+> 
+>     Here we will place all GUI-related APIs that will be exposed to
+>     the external plugins. For the moment we add only two such APIs
+>     that will allow the plugins to manipulate the markers.
+> 
+>     Signed-off-by: Yordan Karadzhov (VMware) <y.karadz@gmail.com>
+> 
+
+Right, but website and README use "KernelShark". Maybe ask for
+clarification.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
