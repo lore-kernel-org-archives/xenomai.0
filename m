@@ -1,15 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 1/4] build: Add c++ build support
-Date: Tue, 1 Mar 2022 11:20:34 +0000
-Message-ID: <MN2PR11MB4285FA550679ECE306769AB9F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+Message-ID: <4627a69c-b2c0-55e5-a6cf-a64967a514f3@siemens.com>
+Date: Tue, 1 Mar 2022 12:22:33 +0100
+MIME-Version: 1.0
+Subject: Re: [PATCH 1/4] build: Add c++ build support
+Content-Language: en-US
 References: <20220228054055.16112-1-hongzhan.chen@intel.com>
  <20220228054055.16112-2-hongzhan.chen@intel.com>
  <ce5b129d-0e20-160c-a8d6-acb4b96515e4@siemens.com>
-In-Reply-To: <ce5b129d-0e20-160c-a8d6-acb4b96515e4@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <MN2PR11MB4285FA550679ECE306769AB9F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB4285FA550679ECE306769AB9F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,35 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4gDQo+U2VudDogVHVlc2RheSwgTWFyY2ggMSwgMjAyMiAzOjMxIFBNDQo+
-VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVu
-b21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDEvNF0gYnVpbGQ6IEFkZCBjKysgYnVpbGQg
-c3VwcG9ydA0KPg0KPk9uIDI4LjAyLjIyIDA2OjQwLCBIb25nemhhbiBDaGVuIHdyb3RlOg0KPj4g
-QWRkIGMrKyBidWlsZCBzdXBwb3J0IG9yIHVzZSBzcGVjaWZpYyBjKysgY29tcGlsZXINCj4+IA0K
-Pj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+
-DQo+PiAtLS0NCj4+ICBjb25maWd1cmUuYWMgfCAxMiArKysrKysrKysrKysNCj4+ICAxIGZpbGUg
-Y2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKQ0KPj4gDQo+PiBkaWZmIC0tZ2l0IGEvY29uZmlndXJl
-LmFjIGIvY29uZmlndXJlLmFjDQo+PiBpbmRleCAwMzg5Y2YwMDguLjE2Y2ZmZDhmOCAxMDA2NDQN
-Cj4+IC0tLSBhL2NvbmZpZ3VyZS5hYw0KPj4gKysrIGIvY29uZmlndXJlLmFjDQo+PiBAQCAtNzks
-NiArNzksMTggQEAgQUNfQVJHX1dJVEgoY2MsDQo+PiAgICAgIF0pDQo+PiAgQUNfUFJPR19DQw0K
-Pj4gIA0KPj4gK0FDX0FSR19XSVRIKGN4eCwNCj4+ICsgICAgQVNfSEVMUF9TVFJJTkcoWy0td2l0
-aC1jeHg9Y29tcGlsZXJdLFt1c2Ugc3BlY2lmaWMgQysrIGNvbXBpbGVyXSksDQo+PiArICAgIFsN
-Cj4+ICsJY2FzZSAiJHdpdGh2YWwiIGluDQo+PiArCSIiIHwgeSB8IHllIHwgeWVzIHwgbiB8IG5v
-KQ0KPj4gKwkgICAgQUNfTVNHX0VSUk9SKFtZb3UgbXVzdCBzdXBwbHkgYW4gYXJndW1lbnQgdG8g
-LS13aXRoLWN4eF0pDQo+PiArCSAgOzsNCj4+ICsJZXNhYw0KPj4gKwlDWFg9IiR3aXRodmFsIg0K
-Pj4gKyAgICBdKQ0KPj4gK0FDX1BST0dfQ1hYDQo+PiArDQo+PiAgIyBEbyBub3QgbGV0IGF1dG9j
-b25mIHNldCB0aGUgZGVmYXVsdCB2YWx1ZSBvZiBDRkxBR1MNCj4+ICBpZiAkWEVOT19FTVBUWV9D
-RkxBR1M7IHRoZW4NCj4+ICAJQ0ZMQUdTPSIiDQo+DQo+V2lsbCB0aGF0IG1ha2UgYSBDKysgY29t
-cGlsZXIgbWFuZGF0b3J5IGZvciB0aGUgYnVpbGQ/IE9yIG9ubHkgd2hlbg0KDQpOby4gQWNjb3Jk
-aW5nIHRvIGRlc2NyaXB0aW9uIG9mIHNlY3RvciA2LjIgb2YgWzFdLCBsaWJ0b29sIHRyaWVzIHRv
-IGF1dG9tYXRpY2FsbHkgaW5mZXIgd2hhdCB0YWcgdG8gdXNlIGZyb20gDQp0aGUgY29tcGlsZXIg
-Y29tbWFuZCBiZWluZyB1c2VkIHRvIGNvbXBpbGUgb3IgbGluay4gQ0MgaXMgdGhlIGRlZmF1bHQg
-dGFnLiBJbiBvdXIgY2FzZSwgb25seSBrZXJuZWxzaGFyaw0Kd291bGQgdXNlIENYWC4NCg0KWzFd
-OiBodHRwczovL3d3dy5nbnUub3JnL3NvZnR3YXJlL2xpYnRvb2wvbWFudWFsL2xpYnRvb2wuaHRt
-bCNDXzAwMmJfMDAyYi1saWJyYXJpZXMNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQoNCj5w
-dWxsaW5nIGluIEtlcm5lbFNoYXJrIHN1cHBvcnQ/DQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVu
-cyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+DQo=
+On 01.03.22 12:20, Chen, Hongzhan wrote:
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Tuesday, March 1, 2022 3:31 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH 1/4] build: Add c++ build support
+>>
+>> On 28.02.22 06:40, Hongzhan Chen wrote:
+>>> Add c++ build support or use specific c++ compiler
+>>>
+>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>> ---
+>>>  configure.ac | 12 ++++++++++++
+>>>  1 file changed, 12 insertions(+)
+>>>
+>>> diff --git a/configure.ac b/configure.ac
+>>> index 0389cf008..16cffd8f8 100644
+>>> --- a/configure.ac
+>>> +++ b/configure.ac
+>>> @@ -79,6 +79,18 @@ AC_ARG_WITH(cc,
+>>>      ])
+>>>  AC_PROG_CC
+>>>  
+>>> +AC_ARG_WITH(cxx,
+>>> +    AS_HELP_STRING([--with-cxx=compiler],[use specific C++ compiler]),
+>>> +    [
+>>> +	case "$withval" in
+>>> +	"" | y | ye | yes | n | no)
+>>> +	    AC_MSG_ERROR([You must supply an argument to --with-cxx])
+>>> +	  ;;
+>>> +	esac
+>>> +	CXX="$withval"
+>>> +    ])
+>>> +AC_PROG_CXX
+>>> +
+>>>  # Do not let autoconf set the default value of CFLAGS
+>>>  if $XENO_EMPTY_CFLAGS; then
+>>>  	CFLAGS=""
+>>
+>> Will that make a C++ compiler mandatory for the build? Or only when
+> 
+> No. According to description of sector 6.2 of [1], libtool tries to automatically infer what tag to use from 
+> the compiler command being used to compile or link. CC is the default tag. In our case, only kernelshark
+> would use CXX.
+> 
+> [1]: https://www.gnu.org/software/libtool/manual/libtool.html#C_002b_002b-libraries
+> 
+
+Perfect, thanks for clarifying!
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
