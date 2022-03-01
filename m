@@ -1,15 +1,16 @@
-Message-ID: <ec0d4873-ffbe-e679-4f1e-18ed862fcdb5@siemens.com>
-Date: Tue, 1 Mar 2022 08:40:57 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH 4/4] libtraceevent: Add Add xenomai_schedparams plugin for
- libtraceevent
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 2/4] Kernel-shark: Add xenomai_cobalt_switch_events plugin
+ for kernel-shark
+Date: Tue, 1 Mar 2022 07:51:59 +0000
+Message-ID: <MN2PR11MB42854DEB6227FA10614603A2F2029@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220228054055.16112-1-hongzhan.chen@intel.com>
- <20220228054055.16112-5-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220228054055.16112-5-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <20220228054055.16112-3-hongzhan.chen@intel.com>
+ <8d88452b-a6cc-e1d0-1091-d37690e4fe5b@siemens.com>
+In-Reply-To: <8d88452b-a6cc-e1d0-1091-d37690e4fe5b@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +19,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 28.02.22 06:40, Hongzhan Chen wrote:
-> For cobalt thread, there is special struct param_ex data stored in
-> data record, we need to parse and print its content out correctly
-> to hint user when using libtraceevent.
-> 
-
-While libtraceevent can be used along with KernelShark, it's not bound
-to it. You can also perfectly use it with pure command line tooling
-(trace-cmd). That would make it interesting for your UI-free demo images
-(xenomai-images). So I would recommand controlling its build
-independently of KernelShark.
-
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> ---
->  configure.ac                                  |   1 +
->  kernel-shark/Makefile.am                      |   6 +-
-
-Maybe call the top-level directory "tracing" instead.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFR1ZXNkYXksIE1hcmNoIDEsIDIwMjIgMzo0MCBQ
+TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
+QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCAyLzRdIEtlcm5lbC1zaGFyazogQWRk
+IHhlbm9tYWlfY29iYWx0X3N3aXRjaF9ldmVudHMgcGx1Z2luIGZvciBrZXJuZWwtc2hhcmsNCj4N
+Cj5PbiAyOC4wMi4yMiAwNjo0MCwgSG9uZ3poYW4gQ2hlbiB3cm90ZToNCj4+IEZvciBYZW5vbWFp
+LWNvYmFsdCBlbmFibGVkIHN5c3RlbSwgY29iYWx0X3N3aXRjaF9jb250ZXh0IG1lYW5zDQo+PiB0
+aGF0IHRoZXJlIGlzIHNjaGVkdWxlIGFuZCBjb250ZXh0IHN3aXRjaCBpbiBjb21wYW5pb24gY29y
+ZShyZWFsdGltZQ0KPj4gY29yZSksIHdoaWNoIHdlIG1heSBuZWVkIHRvIGRvIHNwZWNpYWwgdHJl
+YXRtZW50IGFuZCB0YWtlIGNvcnJlY3QNCj4+IGFjdGlvbiBhcyBtYWluIGtlcm5lbCBzY2hlZF9z
+d2l0Y2ggdG8gdmlzdWFsaXplIG91dC1vZi1iYW5kIHN0YXRlDQo+PiBvZiByZWFsdGltZSB0YXNr
+cyBydW5uaW5nIGluIGNvYmFsdCBjb3JlLiBUbyBhY2hpdmUgb3VyIHRhcmdldCwNCj4+IHdlIGlt
+cGxlbWVudCBmb2xsb3dpbmc6DQo+PiANCj4+ICAgMS4gc3RvcmUgY29ycmVzcG9uZGluZyBjb2Jh
+bHRfc3dpdGNoX2NvbnRleHQgZXZlbnRzIGludG8NCj4+ICAgICAgY29udGFpbmVyIGRhdGEuDQo+
+PiAgIDIuIG1vZGlmeSBwaWQgc3RvcmVkIGluIGVudHJ5IHRvIGJlIGVxdWFsIHRvIG5leHRfcGlk
+IHRvDQo+PiAgICAgIHNob3cgY29ycmVjdCBjb2xvciBpbiBjcHUgYmFyIHdoZW4gY29iYWx0X3N3
+aXRjaF9jb250ZXh0DQo+PiAgICAgIGV2ZW50IGhhcHBlbi4NCj4+ICAgMy4gc2hvdyBibHVlIGhv
+bGxvdyBib3ggdG8gbWFyayBvdXQtb2YtYmFuZCBzdGF0ZSBhY2NvcmRpbmcgdG8NCj4+ICAgICAg
+Y29iYWx0X3N3aXRjaF9jb250ZXh0IGV2ZW50cy4NCj4+ICAgNC4gY2xpY2thYmxlIGNvYmFsdF9z
+d2l0Y2hfY29udGV4dCBwbHVnaW4gc2hhcGVzLg0KPj4gDQo+PiBTaWduZWQtb2ZmLWJ5OiBIb25n
+emhhbiBDaGVuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+IC0tLQ0KPj4gIGtlcm5lbC1z
+aGFyay9NYWtlZmlsZS5hbSAgICAgICAgICAgICAgICAgICAgICB8ICAgNiArDQo+PiAgLi4uL2tl
+cm5lbHNoYXJrL0NvYmFsdFN3aXRjaEV2ZW50cy5jcHAgICAgICAgIHwgMTU2ICsrKysrKysrKysr
+KysrKysNCj4+ICBrZXJuZWwtc2hhcmsva2VybmVsc2hhcmsvTWFrZWZpbGUuYW0gICAgICAgICAg
+fCAgMTggKysNCj4+ICBrZXJuZWwtc2hhcmsva2VybmVsc2hhcmsvUkVBRE1FICAgICAgICAgICAg
+ICAgfCAgNzUgKysrKysrKysNCj4+ICAuLi4veGVub21haV9jb2JhbHRfc3dpdGNoX2V2ZW50cy5j
+ICAgICAgICAgICAgfCAxNzQgKysrKysrKysrKysrKysrKysrDQo+PiAgLi4uL3hlbm9tYWlfY29i
+YWx0X3N3aXRjaF9ldmVudHMuaCAgICAgICAgICAgIHwgIDU4ICsrKysrKw0KPj4gIDYgZmlsZXMg
+Y2hhbmdlZCwgNDg3IGluc2VydGlvbnMoKykNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVs
+LXNoYXJrL01ha2VmaWxlLmFtDQo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGtlcm5lbC1zaGFyay9r
+ZXJuZWxzaGFyay9Db2JhbHRTd2l0Y2hFdmVudHMuY3BwDQo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0
+IGtlcm5lbC1zaGFyay9rZXJuZWxzaGFyay9NYWtlZmlsZS5hbQ0KPj4gIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBrZXJuZWwtc2hhcmsva2VybmVsc2hhcmsvUkVBRE1FDQo+PiAgY3JlYXRlIG1vZGUgMTAw
+NjQ0IGtlcm5lbC1zaGFyay9rZXJuZWxzaGFyay94ZW5vbWFpX2NvYmFsdF9zd2l0Y2hfZXZlbnRz
+LmMNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVsLXNoYXJrL2tlcm5lbHNoYXJrL3hlbm9t
+YWlfY29iYWx0X3N3aXRjaF9ldmVudHMuaA0KPj4gDQo+DQo+Li4uDQo+DQo+PiBkaWZmIC0tZ2l0
+IGEva2VybmVsLXNoYXJrL2tlcm5lbHNoYXJrL1JFQURNRSBiL2tlcm5lbC1zaGFyay9rZXJuZWxz
+aGFyay9SRUFETUUNCj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+PiBpbmRleCAwMDAwMDAwMDAu
+LjQxYTI2YTM5YQ0KPj4gLS0tIC9kZXYvbnVsbA0KPj4gKysrIGIva2VybmVsLXNoYXJrL2tlcm5l
+bHNoYXJrL1JFQURNRQ0KPj4gQEAgLTAsMCArMSw3NSBAQA0KPj4gKw0KPj4gK1doYXQgaXMgaXQ/
+DQo+PiArPT09PT09PT09PT09PQ0KPj4gKw0KPj4gKyAgSXQgaXMgWGVub21haSBwbHVnaW4gZm9y
+IGtlcm5lbC1zaGFyayB0byB2aXN1YWxpemUgb3V0LW9mLWJhbmQgc3RhdGUNCj4+ICsgIG9mIHJl
+YWx0aW1lIHRocmVhZCBydW5uaW5nIGluIGNvbXBhbmlvbiBjb3JlIHdpdGggbWFraW5nIHVzZSBv
+Zg0KPj4gKyAgY29iYWx0X3N3aXRjaF9jb250ZXh0IGV2ZW50cyBpbiB0cmFjZSBsb2cuDQo+PiAr
+DQo+PiArICBGb3IgbW9yZSBpbnRyb2R1Y3Rpb25zIGFib3V0IGtlcm5lbC1zaGFyayAsIHBsZWFz
+ZSByZWZlciB0byBbMV0uDQo+PiArDQo+DQo+SSB0aGluayBpdCdzICJLZXJuZWxTaGFyayIuIFBs
+ZWFzZSBjaGVjayBhbmQgdGhlbiB1c2UgdGhhdCBzcGVsbGluZw0KPmNvbnNpc3RlbnRseSBpZiBJ
+J20gcmlnaHQuDQoNCkFjdHVhbGx5LCBpbiBrZXJuZWxzaGFyayBwcm9qZWN0ICAsIHRoZXkgYXJl
+IG1peGluZyB1c2luZyB0aGVtLg0KDQpGb3IgZXhhbXBsZSwgbGlrZSBmb2xsb3dpbmcgY29tbWl0
+IG1lc3NhZ2UuIFRoZXJlIGFyZSBsb3RzICBvZiBjb21taXQgbWVzc2FnZXMgaW5jbHVkZSBzdWNo
+IG5hbWUga2VybmVsLXNoYXJrLg0KT3IgdGhlaXIgcmVwbyBuYW1lIGh0dHBzOi8vZ2l0Lmtlcm5l
+bC5vcmcvcHViL3NjbS91dGlscy90cmFjZS1jbWQva2VybmVsLXNoYXJrLmdpdA0KDQpjb21taXQg
+NTliNTc2M2M3YzUyYjcwM2UzYjhlMDViZTgwMWY3Yzg1MzY1YzlkMw0KQXV0aG9yOiBZb3JkYW4g
+S2FyYWR6aG92IChWTXdhcmUpIDx5LmthcmFkekBnbWFpbC5jb20+DQpEYXRlOiAgIFdlZCBKYW4g
+MTkgMTQ6MDI6MjggMjAyMiArMDIwMA0KDQogICAga2VybmVsLXNoYXJrOiBBZGQgS3NQbHVnaW5z
+R1VJLmhwcC8uY3BwDQoNCiAgICBIZXJlIHdlIHdpbGwgcGxhY2UgYWxsIEdVSS1yZWxhdGVkIEFQ
+SXMgdGhhdCB3aWxsIGJlIGV4cG9zZWQgdG8NCiAgICB0aGUgZXh0ZXJuYWwgcGx1Z2lucy4gRm9y
+IHRoZSBtb21lbnQgd2UgYWRkIG9ubHkgdHdvIHN1Y2ggQVBJcw0KICAgIHRoYXQgd2lsbCBhbGxv
+dyB0aGUgcGx1Z2lucyB0byBtYW5pcHVsYXRlIHRoZSBtYXJrZXJzLg0KDQogICAgU2lnbmVkLW9m
+Zi1ieTogWW9yZGFuIEthcmFkemhvdiAoVk13YXJlKSA8eS5rYXJhZHpAZ21haWwuY29tPg0KDQoN
+ClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0KDQoNCj4NCj5KYW4NCg0KPi0tIA0KPlNpZW1lbnMg
+QUcsIFRlY2hub2xvZ3kNCj5Db21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
