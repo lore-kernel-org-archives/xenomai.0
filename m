@@ -1,9 +1,11 @@
-From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH v2 2/3] Add --with-kernelshark option
-Date: Tue,  1 Mar 2022 21:57:20 -0500
-Message-Id: <20220302025721.9354-2-hongzhan.chen@intel.com>
-In-Reply-To: <20220302025721.9354-1-hongzhan.chen@intel.com>
-References: <20220302025721.9354-1-hongzhan.chen@intel.com>
+Message-ID: <44a716dd-c4aa-17d2-55f4-e5eaf50beb6a@siemens.com>
+Date: Wed, 2 Mar 2022 07:48:30 +0100
+MIME-Version: 1.0
+Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: ipipe-5.4: arm64 regression
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,87 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Greg Gallagher <greg@embeddedgreg.com>, Xenomai <xenomai@xenomai.org>
 
-option to build kernelshark plugin
+Hi Greg,
 
-Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
----
- Makefile.am         |  4 ++++
- configure.ac        | 16 ++++++++++++++++
- tracing/Makefile.am |  3 ++-
- 3 files changed, 22 insertions(+), 1 deletion(-)
+something is going wrong on arm64 with latest ipipe version, see e.g.
 
-diff --git a/Makefile.am b/Makefile.am
-index 604644277..bd3e4bfb1 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -18,6 +18,9 @@ SUBDIRS += 		\
- 	testsuite
- endif
- 
-+SUBDIRS +=		\
-+	tracing
-+
- EXTRA_DIST = kernel debian
- 
- DIST_SUBDIRS =		\
-@@ -26,6 +29,7 @@ DIST_SUBDIRS =		\
- 	doc		\
- 	include		\
- 	lib 		\
-+	tracing		\
- 	scripts		\
- 	testsuite	\
- 	utils
-diff --git a/configure.ac b/configure.ac
-index 16cffd8f8..b8e9ca143 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -826,6 +826,20 @@ AC_ARG_WITH(demodir,
-     ], [XENO_DEMO_DIR=$demodir])
- AC_MSG_RESULT($XENO_DEMO_DIR)
- 
-+xeno_build_kernelshark=false
-+AC_MSG_CHECKING(build kernelshark plugins)
-+AC_ARG_WITH(kernelshark,
-+    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins]),
-+    [
-+	case "$withval" in
-+	"" | y | ye | yes) xeno_build_kernelshark=true;;
-+	n | no) xeno_build_kernelshark=false;;
-+	esac
-+    ], [xeno_build_kernelshark=false])
-+AC_MSG_RESULT($xeno_build_kernelshark)
-+
-+AM_CONDITIONAL([BUILD_KERNELSHARK], [test x$xeno_build_kernelshark = xtrue])
-+
- AC_MSG_CHECKING([for test source generation])
- AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
-     [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
-@@ -943,6 +957,8 @@ AC_CONFIG_FILES([ \
- 	scripts/Makefile \
- 	scripts/xeno-config:scripts/xeno-config-$rtcore_type.in \
- 	scripts/xeno \
-+	tracing/Makefile \
-+	tracing/kernelshark/Makefile \
- 	lib/Makefile \
- 	lib/boilerplate/Makefile \
- 	lib/boilerplate/init/Makefile \
-diff --git a/tracing/Makefile.am b/tracing/Makefile.am
-index 8bdf1f906..7925ae9c6 100644
---- a/tracing/Makefile.am
-+++ b/tracing/Makefile.am
-@@ -1,6 +1,7 @@
--
-+if BUILD_KERNELSHARK
- SUBDIRS =		\
- 	kernelshark
-+endif
- 
- DIST_SUBDIRS = 		\
- 	kernelshark
+https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw
+(same thing seen on HiKey as well)
+
+Could you have a look?
+
+Thanks,
+Jan
+
 -- 
-2.17.1
-
+Siemens AG, Technology
+Competence Center Embedded Linux
 
