@@ -1,14 +1,14 @@
-Message-ID: <e99b76a3-cf44-6fdd-1e63-63c6e60b0171@siemens.com>
-Date: Tue, 25 Jan 2022 21:26:39 +0100
+Message-ID: <8b23b623-d1b2-e35e-5386-b2220e581c15@siemens.com>
+Date: Thu, 3 Mar 2022 08:00:56 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH] cobalt: Fix pid issues when running in child pid namespace
+Subject: Re: [PATCH v3] libtraceevent: Add xenomai_schedparams plugin for
+ libtraceevent
 Content-Language: en-US
-References: <20220119133154.4122157-1-qiang1.zhang@intel.com>
- <fb9acdbd-3a9b-ca15-c255-d85f0595078c@siemens.com>
- <PH0PR11MB5880EA9644EDFB9F558C0C80DA5F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+References: <20220303012031.16509-1-hongzhan.chen@intel.com>
+ <9191fe03-91df-0ff9-0dd2-33d04641374d@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <PH0PR11MB5880EA9644EDFB9F558C0C80DA5F9@PH0PR11MB5880.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <9191fe03-91df-0ff9-0dd2-33d04641374d@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,45 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zhang, Qiang1" <qiang1.zhang@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, MONTET Julien <julien.montet@reseau.eseo.fr>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, florian.bezdeka@siemens.com
 
-On 25.01.22 09:25, Zhang, Qiang1 wrote:
-> 
-> On 19.01.22 14:31, Zqiang wrote:
->> The Xenomai does not yet support the concept of namespaces, and the
->> same task has different pids in its own pid namespace and parent pid
->> namespace. however, when the task running in a child pid namespace, we
->> only recorded the relationship between thread and child pid. so can't
->> use other pid to find thread.
+On 03.03.22 07:57, Jan Kiszka via Xenomai wrote:
+> On 03.03.22 02:20, Hongzhan Chen wrote:
+>> For cobalt thread, there is special struct param_ex data stored in
+>> data record, we need to parse and print its content out correctly
+>> to hint user.
 >>
->> To fix it, when the thread is created, record all pid in different
->> namespaces.
+>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>> ---
+>>  configure.ac                                  |  17 +-
+>>  tracing/Makefile.am                           |  13 +-
+>>  tracing/libtraceevent/Makefile.am             |  11 ++
+>>  tracing/libtraceevent/README                  |  30 ++++
+>>  .../plugin_xenomai_schedparams.c              | 158 ++++++++++++++++++
+>>  5 files changed, 226 insertions(+), 3 deletions(-)
+>>  create mode 100644 tracing/libtraceevent/Makefile.am
+>>  create mode 100644 tracing/libtraceevent/README
+>>  create mode 100644 tracing/libtraceevent/plugin_xenomai_schedparams.c
 >>
->> Updates: https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/19
->>
+>> diff --git a/configure.ac b/configure.ac
+>> index b8e9ca143..5858b3b22 100644
+>> --- a/configure.ac
+>> +++ b/configure.ac
+>> @@ -829,7 +829,7 @@ AC_MSG_RESULT($XENO_DEMO_DIR)
+>>  xeno_build_kernelshark=false
+>>  AC_MSG_CHECKING(build kernelshark plugins)
+>>  AC_ARG_WITH(kernelshark,
+>> -    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins]),
+>> +    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins including libtraceevent plugin]),
 > 
->>> Can you help refreshing my memory on that and also explain why it takes a different approach than in [1]? That was reported to not work completely either, yes, but the RCU limitation is now gone with everything switched to Dovetail.
->>>
+> Try to refactor in way that you do not needlessly modify code that you
+> added in a previous patch of the same series.
 > 
-> Hi Jan
+>>      [
+>>  	case "$withval" in
+>>  	"" | y | ye | yes) xeno_build_kernelshark=true;;
+>> @@ -840,6 +840,20 @@ AC_MSG_RESULT($xeno_build_kernelshark)
+>>  
+>>  AM_CONDITIONAL([BUILD_KERNELSHARK], [test x$xeno_build_kernelshark = xtrue])
+>>  
+>> +xeno_build_libtraceevent=false
+>> +AC_MSG_CHECKING(build libtraceevent plugin)
+>> +AC_ARG_WITH(libtraceevent,
+>> +    AS_HELP_STRING([--with-libtraceevent],[build libtraceevent plugin]),
+>> +    [
+>> +	case "$withval" in
+>> +	"" | y | ye | yes) xeno_build_libtraceevent=true;;
+>> +	n | no) xeno_build_libtraceevent=false;;
+>> +	esac
+>> +    ], [xeno_build_libtraceevent=false])
+>> +AC_MSG_RESULT($xeno_build_libtraceevent)
+>> +
+>> +AM_CONDITIONAL([BUILD_LIBTRACEEVENT], [test x$xeno_build_libtraceevent = xtrue])
+>> +
+>>  AC_MSG_CHECKING([for test source generation])
+>>  AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
+>>      [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
+>> @@ -959,6 +973,7 @@ AC_CONFIG_FILES([ \
+>>  	scripts/xeno \
+>>  	tracing/Makefile \
+>>  	tracing/kernelshark/Makefile \
+>> +	tracing/libtraceevent/Makefile \
+>>  	lib/Makefile \
+>>  	lib/boilerplate/Makefile \
+>>  	lib/boilerplate/init/Makefile \
+>> diff --git a/tracing/Makefile.am b/tracing/Makefile.am
+>> index 7925ae9c6..1351a98d2 100644
+>> --- a/tracing/Makefile.am
+>> +++ b/tracing/Makefile.am
+>> @@ -1,7 +1,16 @@
+>>  if BUILD_KERNELSHARK
+>>  SUBDIRS =		\
+>> -	kernelshark
+>> +	kernelshark	\
+>> +	libtraceevent
+>> +else
+>> +
+>> +if BUILD_LIBTRACEEVENT
+>> +SUBDIRS =		\
+>> +	libtraceevent
+>> +endif
+>> +
 > 
-> This change doesn't depend on RCU, it apply to I-pipe and dovetail.
-> When switched to Dovetail, the RCU limitation is gone?
+> You want SUBDIRS += ...
+> 
+> See existing makefiles.
 > 
 
-Dovetail allows to use RCU-protected read accesses from the out-of-band 
-(RT) stage, at least in 5.15:
-
-https://source.denx.de/Xenomai/linux-dovetail/-/commit/49cad34e9c2d977a8069278393de922d40ec5d57
-
-Looking at 5.10, there might be remaining restrictions, though possibly 
-resolvable by backporting the above:
-
-https://source.denx.de/Xenomai/linux-dovetail/-/commit/f989126cca9a305a101e6ddf60a60ef062d1e7f4
-
-As current master has dropped I-pipe support and this patch will likely 
-not be a backport candiate anyway, we may exploit this property and may 
-make the pid namespace solution simpler this way.
+Oh, and I don't think that the kernelshark plugin technically depends on
+the libtraceevent one. Both can be and are controlled via configure
+independently, though you normally /want/ libtraceevent as well when
+using the kernelshark plugin.
 
 Jan
 
