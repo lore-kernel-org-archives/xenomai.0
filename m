@@ -1,14 +1,15 @@
-Message-ID: <6e6af75b-dc2e-ca94-3fba-d5c3785edf7e@siemens.com>
-Date: Thu, 3 Mar 2022 07:25:24 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH v2 2/3] Add --with-kernelshark option
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v2 2/3] Add --with-kernelshark option
+Date: Thu, 3 Mar 2022 06:30:16 +0000
+Message-ID: <MN2PR11MB428578EBDC156D45F80AC814F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220302025721.9354-1-hongzhan.chen@intel.com>
  <20220302025721.9354-2-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220302025721.9354-2-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <6e6af75b-dc2e-ca94-3fba-d5c3785edf7e@siemens.com>
+In-Reply-To: <6e6af75b-dc2e-ca94-3fba-d5c3785edf7e@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,93 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.03.22 03:57, Hongzhan Chen wrote:
-> option to build kernelshark plugin
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> ---
->  Makefile.am         |  4 ++++
->  configure.ac        | 16 ++++++++++++++++
->  tracing/Makefile.am |  3 ++-
->  3 files changed, 22 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Makefile.am b/Makefile.am
-> index 604644277..bd3e4bfb1 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -18,6 +18,9 @@ SUBDIRS += 		\
->  	testsuite
->  endif
->  
-> +SUBDIRS +=		\
-> +	tracing
-> +
->  EXTRA_DIST = kernel debian
->  
->  DIST_SUBDIRS =		\
-> @@ -26,6 +29,7 @@ DIST_SUBDIRS =		\
->  	doc		\
->  	include		\
->  	lib 		\
-> +	tracing		\
->  	scripts		\
->  	testsuite	\
->  	utils
-> diff --git a/configure.ac b/configure.ac
-> index 16cffd8f8..b8e9ca143 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -826,6 +826,20 @@ AC_ARG_WITH(demodir,
->      ], [XENO_DEMO_DIR=$demodir])
->  AC_MSG_RESULT($XENO_DEMO_DIR)
->  
-> +xeno_build_kernelshark=false
-> +AC_MSG_CHECKING(build kernelshark plugins)
-> +AC_ARG_WITH(kernelshark,
-> +    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins]),
-> +    [
-> +	case "$withval" in
-> +	"" | y | ye | yes) xeno_build_kernelshark=true;;
-> +	n | no) xeno_build_kernelshark=false;;
-> +	esac
-> +    ], [xeno_build_kernelshark=false])
-> +AC_MSG_RESULT($xeno_build_kernelshark)
-> +
-> +AM_CONDITIONAL([BUILD_KERNELSHARK], [test x$xeno_build_kernelshark = xtrue])
-> +
->  AC_MSG_CHECKING([for test source generation])
->  AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
->      [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
-> @@ -943,6 +957,8 @@ AC_CONFIG_FILES([ \
->  	scripts/Makefile \
->  	scripts/xeno-config:scripts/xeno-config-$rtcore_type.in \
->  	scripts/xeno \
-> +	tracing/Makefile \
-> +	tracing/kernelshark/Makefile \
->  	lib/Makefile \
->  	lib/boilerplate/Makefile \
->  	lib/boilerplate/init/Makefile \
-> diff --git a/tracing/Makefile.am b/tracing/Makefile.am
-> index 8bdf1f906..7925ae9c6 100644
-> --- a/tracing/Makefile.am
-> +++ b/tracing/Makefile.am
-> @@ -1,6 +1,7 @@
-> -
-> +if BUILD_KERNELSHARK
->  SUBDIRS =		\
->  	kernelshark
-> +endif
->  
->  DIST_SUBDIRS = 		\
->  	kernelshark
-
-Seems you lost the AC_PROG_CXX - things do not build now.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQoNCg0KPj4gKwl0cmFjaW5nL01ha2VmaWxlIFwNCj4+ICsJdHJhY2luZy9rZXJuZWxzaGFyay9N
+YWtlZmlsZSBcDQo+PiAgCWxpYi9NYWtlZmlsZSBcDQo+PiAgCWxpYi9ib2lsZXJwbGF0ZS9NYWtl
+ZmlsZSBcDQo+PiAgCWxpYi9ib2lsZXJwbGF0ZS9pbml0L01ha2VmaWxlIFwNCj4+IGRpZmYgLS1n
+aXQgYS90cmFjaW5nL01ha2VmaWxlLmFtIGIvdHJhY2luZy9NYWtlZmlsZS5hbQ0KPj4gaW5kZXgg
+OGJkZjFmOTA2Li43OTI1YWU5YzYgMTAwNjQ0DQo+PiAtLS0gYS90cmFjaW5nL01ha2VmaWxlLmFt
+DQo+PiArKysgYi90cmFjaW5nL01ha2VmaWxlLmFtDQo+PiBAQCAtMSw2ICsxLDcgQEANCj4+IC0N
+Cj4+ICtpZiBCVUlMRF9LRVJORUxTSEFSSw0KPj4gIFNVQkRJUlMgPQkJXA0KPj4gIAlrZXJuZWxz
+aGFyaw0KPj4gK2VuZGlmDQo+PiAgDQo+PiAgRElTVF9TVUJESVJTID0gCQlcDQo+PiAgCWtlcm5l
+bHNoYXJrDQo+DQo+U2VlbXMgeW91IGxvc3QgdGhlIEFDX1BST0dfQ1hYIC0gdGhpbmdzIGRvIG5v
+dCBidWlsZCBub3cuDQoNClNvcnJ5LCBJIGFzc3VtZWQgdGhhdCBwYXRjaCBbMV0gcGFzcyByZXZp
+ZXcgLCBzbyBJIGhhdmUgbm90IGNvbW1pdHRlZCBhZ2FpbiB0byByZXZpZXcuDQpDb3VsZCB5b3Ug
+YXBwbHkgdGhpcyBwYXRjaD8NCg0KaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS8yMDIyLUZlYnJ1YXJ5LzA0NzI2Mi5odG1sDQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0K
+DQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2Ug
+Q2VudGVyIEVtYmVkZGVkIExpbnV4DQo+DQo+DQo+DQo+DQo=
 
