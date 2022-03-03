@@ -1,15 +1,17 @@
-Message-ID: <84b6ec1c-53dc-80c3-af33-2a20a8e1d9cd@siemens.com>
-Date: Thu, 3 Mar 2022 07:44:47 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH v2 1/3] KernelShark: Add xenomai_cobalt_switch_events
- plugin for KernelShark
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v2 2/3] Add --with-kernelshark option
+Date: Thu, 3 Mar 2022 06:48:51 +0000
+Message-ID: <MN2PR11MB4285E18E7B7408E1569BA917F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220302025721.9354-1-hongzhan.chen@intel.com>
- <bfe9c9a3-b0e0-d9da-1a13-bdc8030cd742@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <bfe9c9a3-b0e0-d9da-1a13-bdc8030cd742@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <20220302025721.9354-2-hongzhan.chen@intel.com>
+ <6e6af75b-dc2e-ca94-3fba-d5c3785edf7e@siemens.com>
+ <MN2PR11MB428578EBDC156D45F80AC814F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
+ <f1820385-31df-7e26-fa33-201b298e22b9@siemens.com>
+In-Reply-To: <f1820385-31df-7e26-fa33-201b298e22b9@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,70 +20,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.03.22 07:38, Jan Kiszka via Xenomai wrote:
-> On 02.03.22 03:57, Hongzhan Chen wrote:
->> For Xenomai-cobalt enabled system, cobalt_switch_context means
->> that there is schedule and context switch in companion core(realtime
->> core), which we may need to do special treatment and take correct
->> action as main kernel sched_switch to visualize out-of-band state
->> of realtime tasks running in cobalt core. To achive our target,
->> we implement following:
->>
->>   1. store corresponding cobalt_switch_context events into
->>      container data.
->>   2. modify pid stored in entry to be equal to next_pid to
->>      show correct color in cpu bar when cobalt_switch_context
->>      event happen.
->>   3. show blue hollow box to mark out-of-band state according to
->>      cobalt_switch_context events.
->>   4. clickable cobalt_switch_context plugin shapes.
->>
->> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->> ---
->>  tracing/Makefile.am                           |   6 +
->>  tracing/kernelshark/CobaltSwitchEvents.cpp    | 156 ++++++++++++++++
->>  tracing/kernelshark/Makefile.am               |  18 ++
->>  tracing/kernelshark/README                    |  75 ++++++++
->>  .../xenomai_cobalt_switch_events.c            | 174 ++++++++++++++++++
->>  .../xenomai_cobalt_switch_events.h            |  58 ++++++
->>  6 files changed, 487 insertions(+)
->>  create mode 100644 tracing/Makefile.am
->>  create mode 100644 tracing/kernelshark/CobaltSwitchEvents.cpp
->>  create mode 100644 tracing/kernelshark/Makefile.am
->>  create mode 100644 tracing/kernelshark/README
->>  create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.c
->>  create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.h
->>
-> 
-> ...
-> 
->> diff --git a/tracing/kernelshark/Makefile.am b/tracing/kernelshark/Makefile.am
->> new file mode 100644
->> index 000000000..17c4ff217
->> --- /dev/null
->> +++ b/tracing/kernelshark/Makefile.am
->> @@ -0,0 +1,18 @@
->> +
->> +lib_LTLIBRARIES = libplugin_xenomai_cobalt_switch_events.la
->> +
->> +KS_INCLUDS         ?= /usr/local/include/kernelshark
->> +TRACECMD_INCLUDS   ?= /usr/local/include/trace-cmd
->> +TRACEFS_INCLUDS    ?= /usr/local/include/tracefs
->> +TRACEEVENR_INCLUDS ?= /usr/local/include/traceevent
-> 
-> configure.ac needs to gain a way to make this configurable (kernelshark
-> and libtraceevent folders). And then you can also drop these defaults.
-> 
-
-Use case: Local installation of self-built kernelshark/libtraceevent
-under uncommon paths. Allows to test new versions of them without
-uninstalling an existing one, maybe even a distro package.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBNYXJjaCAzLCAyMDIyIDI6Mzkg
+UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
+aUB4ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMi8zXSBBZGQgLS13aXRoLWtl
+cm5lbHNoYXJrIG9wdGlvbg0KPg0KPk9uIDAzLjAzLjIyIDA3OjMwLCBDaGVuLCBIb25nemhhbiB3
+cm90ZToNCj4+IA0KPj4gDQo+PiANCj4+Pj4gKwl0cmFjaW5nL01ha2VmaWxlIFwNCj4+Pj4gKwl0
+cmFjaW5nL2tlcm5lbHNoYXJrL01ha2VmaWxlIFwNCj4+Pj4gIAlsaWIvTWFrZWZpbGUgXA0KPj4+
+PiAgCWxpYi9ib2lsZXJwbGF0ZS9NYWtlZmlsZSBcDQo+Pj4+ICAJbGliL2JvaWxlcnBsYXRlL2lu
+aXQvTWFrZWZpbGUgXA0KPj4+PiBkaWZmIC0tZ2l0IGEvdHJhY2luZy9NYWtlZmlsZS5hbSBiL3Ry
+YWNpbmcvTWFrZWZpbGUuYW0NCj4+Pj4gaW5kZXggOGJkZjFmOTA2Li43OTI1YWU5YzYgMTAwNjQ0
+DQo+Pj4+IC0tLSBhL3RyYWNpbmcvTWFrZWZpbGUuYW0NCj4+Pj4gKysrIGIvdHJhY2luZy9NYWtl
+ZmlsZS5hbQ0KPj4+PiBAQCAtMSw2ICsxLDcgQEANCj4+Pj4gLQ0KPj4+PiAraWYgQlVJTERfS0VS
+TkVMU0hBUksNCj4+Pj4gIFNVQkRJUlMgPQkJXA0KPj4+PiAgCWtlcm5lbHNoYXJrDQo+Pj4+ICtl
+bmRpZg0KPj4+PiAgDQo+Pj4+ICBESVNUX1NVQkRJUlMgPSAJCVwNCj4+Pj4gIAlrZXJuZWxzaGFy
+aw0KPj4+DQo+Pj4gU2VlbXMgeW91IGxvc3QgdGhlIEFDX1BST0dfQ1hYIC0gdGhpbmdzIGRvIG5v
+dCBidWlsZCBub3cuDQo+PiANCj4+IFNvcnJ5LCBJIGFzc3VtZWQgdGhhdCBwYXRjaCBbMV0gcGFz
+cyByZXZpZXcgLCBzbyBJIGhhdmUgbm90IGNvbW1pdHRlZCBhZ2FpbiB0byByZXZpZXcuDQo+PiBD
+b3VsZCB5b3UgYXBwbHkgdGhpcyBwYXRjaD8NCj4+IA0KPj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS8yMDIyLUZlYnJ1YXJ5LzA0NzI2Mi5odG1sDQo+PiANCj4NCj5XaGVu
+IHNlbmRpbmcgdjQgYWZ0ZXIgbXkgcmV2aWV3IHJlbWFya3MsIHBsZWFzZSBpbmNsdWRlIGFsbCBw
+YXRjaGVzLg0KDQpJZiBpdCBhbHJlYWR5IHBhc3MgcmV2aWV3ICwgd2h5IGNhbm5vdCB3ZSBtZXJn
+ZSBpdCBhdCBmaXJzdD8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo+DQo+SmFuDQo+DQo+
+LS0gDQo+U2llbWVucyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVk
+IExpbnV4DQo+DQo=
 
