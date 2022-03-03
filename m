@@ -1,16 +1,12 @@
-Message-ID: <26d21d3f-58cd-d82a-5a00-9668ebeacc3f@siemens.com>
-Date: Thu, 3 Mar 2022 07:51:39 +0100
+Message-ID: <9191fe03-91df-0ff9-0dd2-33d04641374d@siemens.com>
+Date: Thu, 3 Mar 2022 07:57:27 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 2/3] Add --with-kernelshark option
+Subject: Re: [PATCH v3] libtraceevent: Add xenomai_schedparams plugin for
+ libtraceevent
 Content-Language: en-US
-References: <20220302025721.9354-1-hongzhan.chen@intel.com>
- <20220302025721.9354-2-hongzhan.chen@intel.com>
- <6e6af75b-dc2e-ca94-3fba-d5c3785edf7e@siemens.com>
- <MN2PR11MB428578EBDC156D45F80AC814F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
- <f1820385-31df-7e26-fa33-201b298e22b9@siemens.com>
- <MN2PR11MB4285E18E7B7408E1569BA917F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220303012031.16509-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB4285E18E7B7408E1569BA917F2049@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <20220303012031.16509-1-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,55 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, florian.bezdeka@siemens.com
 
-On 03.03.22 07:48, Chen, Hongzhan wrote:
+On 03.03.22 02:20, Hongzhan Chen wrote:
+> For cobalt thread, there is special struct param_ex data stored in
+> data record, we need to parse and print its content out correctly
+> to hint user.
 > 
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ---
+>  configure.ac                                  |  17 +-
+>  tracing/Makefile.am                           |  13 +-
+>  tracing/libtraceevent/Makefile.am             |  11 ++
+>  tracing/libtraceevent/README                  |  30 ++++
+>  .../plugin_xenomai_schedparams.c              | 158 ++++++++++++++++++
+>  5 files changed, 226 insertions(+), 3 deletions(-)
+>  create mode 100644 tracing/libtraceevent/Makefile.am
+>  create mode 100644 tracing/libtraceevent/README
+>  create mode 100644 tracing/libtraceevent/plugin_xenomai_schedparams.c
 > 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Thursday, March 3, 2022 2:39 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [PATCH v2 2/3] Add --with-kernelshark option
->>
->> On 03.03.22 07:30, Chen, Hongzhan wrote:
->>>
->>>
->>>
->>>>> +	tracing/Makefile \
->>>>> +	tracing/kernelshark/Makefile \
->>>>>  	lib/Makefile \
->>>>>  	lib/boilerplate/Makefile \
->>>>>  	lib/boilerplate/init/Makefile \
->>>>> diff --git a/tracing/Makefile.am b/tracing/Makefile.am
->>>>> index 8bdf1f906..7925ae9c6 100644
->>>>> --- a/tracing/Makefile.am
->>>>> +++ b/tracing/Makefile.am
->>>>> @@ -1,6 +1,7 @@
->>>>> -
->>>>> +if BUILD_KERNELSHARK
->>>>>  SUBDIRS =		\
->>>>>  	kernelshark
->>>>> +endif
->>>>>  
->>>>>  DIST_SUBDIRS = 		\
->>>>>  	kernelshark
->>>>
->>>> Seems you lost the AC_PROG_CXX - things do not build now.
->>>
->>> Sorry, I assumed that patch [1] pass review , so I have not committed again to review.
->>> Could you apply this patch?
->>>
->>> https://xenomai.org/pipermail/xenomai/2022-February/047262.html
->>>
->>
->> When sending v4 after my review remarks, please include all patches.
-> 
-> If it already pass review , why cannot we merge it at first?
-> 
+> diff --git a/configure.ac b/configure.ac
+> index b8e9ca143..5858b3b22 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -829,7 +829,7 @@ AC_MSG_RESULT($XENO_DEMO_DIR)
+>  xeno_build_kernelshark=false
+>  AC_MSG_CHECKING(build kernelshark plugins)
+>  AC_ARG_WITH(kernelshark,
+> -    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins]),
+> +    AS_HELP_STRING([--with-kernelshark],[build kernelshark related plugins including libtraceevent plugin]),
 
-It belongs logically to the kernelshark/libtraceevent series and is not
-needed otherwise.
+Try to refactor in way that you do not needlessly modify code that you
+added in a previous patch of the same series.
+
+>      [
+>  	case "$withval" in
+>  	"" | y | ye | yes) xeno_build_kernelshark=true;;
+> @@ -840,6 +840,20 @@ AC_MSG_RESULT($xeno_build_kernelshark)
+>  
+>  AM_CONDITIONAL([BUILD_KERNELSHARK], [test x$xeno_build_kernelshark = xtrue])
+>  
+> +xeno_build_libtraceevent=false
+> +AC_MSG_CHECKING(build libtraceevent plugin)
+> +AC_ARG_WITH(libtraceevent,
+> +    AS_HELP_STRING([--with-libtraceevent],[build libtraceevent plugin]),
+> +    [
+> +	case "$withval" in
+> +	"" | y | ye | yes) xeno_build_libtraceevent=true;;
+> +	n | no) xeno_build_libtraceevent=false;;
+> +	esac
+> +    ], [xeno_build_libtraceevent=false])
+> +AC_MSG_RESULT($xeno_build_libtraceevent)
+> +
+> +AM_CONDITIONAL([BUILD_LIBTRACEEVENT], [test x$xeno_build_libtraceevent = xtrue])
+> +
+>  AC_MSG_CHECKING([for test source generation])
+>  AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
+>      [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
+> @@ -959,6 +973,7 @@ AC_CONFIG_FILES([ \
+>  	scripts/xeno \
+>  	tracing/Makefile \
+>  	tracing/kernelshark/Makefile \
+> +	tracing/libtraceevent/Makefile \
+>  	lib/Makefile \
+>  	lib/boilerplate/Makefile \
+>  	lib/boilerplate/init/Makefile \
+> diff --git a/tracing/Makefile.am b/tracing/Makefile.am
+> index 7925ae9c6..1351a98d2 100644
+> --- a/tracing/Makefile.am
+> +++ b/tracing/Makefile.am
+> @@ -1,7 +1,16 @@
+>  if BUILD_KERNELSHARK
+>  SUBDIRS =		\
+> -	kernelshark
+> +	kernelshark	\
+> +	libtraceevent
+> +else
+> +
+> +if BUILD_LIBTRACEEVENT
+> +SUBDIRS =		\
+> +	libtraceevent
+> +endif
+> +
+
+You want SUBDIRS += ...
+
+See existing makefiles.
 
 Jan
 
