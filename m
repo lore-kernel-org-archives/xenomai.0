@@ -1,11 +1,15 @@
-From: Evan Gates <evan.gates@gmail.com>
-Subject: [PATCH v2] meson: allow use of installed uapi headers
-Date: Fri,  4 Mar 2022 12:02:05 -0700
-Message-Id: <20220304190205.24489-1-egates@cardinalpeak.com>
-In-Reply-To: <20220302233443.14696-1-egates@cardinalpeak.com>
-References: <20220302233443.14696-1-egates@cardinalpeak.com>
+Date: Fri, 4 Mar 2022 21:09:16 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <2141336610.110112.1646424555986.JavaMail.zimbra@nod.at>
+In-Reply-To: <87fsnxr3nc.fsf@xenomai.org>
+References: <1971847999.108624.1646393705887.JavaMail.zimbra@nod.at>
+ <7cc78732bf4902691e4194f52738ef1380c52ca6.camel@siemens.com>
+ <1918812394.108775.1646396125911.JavaMail.zimbra@nod.at>
+ <87fsnxr3nc.fsf@xenomai.org>
+Subject: Re: Questiion on commit: demo/cyclictest: fix time delta calculation
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,75 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-Commit c70a9d9d536aefcf6574328aaac0fcc86f9ab0f7 added a test for
-$UAPI/include/uapi/evl that was meant to ensure the given $UAPI path was
-correct.  That test meant that $UAPI had to point to a linux-evl source
-directory and could not point to installed headers in e.g. /usr/include.
-The script had previously allowed the use of installed headers, using
-the existence of $UAPI/Kbuild as an heuristic to decide whether $UAPI
-pointed to linux-evl source or to installed headers.
+Philippe,
 
-Rewrite the script to check for the existence of all three required
-directories in either location.  This allows the use of installed
-headers again.
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Philippe Gerum" <rpm@xenomai.org>
+> Florian pointed in the right direction when mentioning autotune: if the
+> core timer is not calibrated properly, Cobalt might try to compensate
+> for the basic latency of the platform too much, leading to early timer
+> shots. If such an early shot arrives and the test loop wakes up too
+> early, say in the code implementing clock_nanosleep (-n) case, 'next'
+> might actually be later in the timeline than 'now', leading to negative
+> differences in calcdiff().
 
-Fixes: c70a9d9 (build: tighten consistency check for uapi)
----
+I did some more experiments. The system was already autotuned.
+But raising the base interval from 1000 (default) to 5000 made the issue
+go away.
 
-Changes in v2:
-
-- Switch back to Kbuild heuristic in order to check/set the correct path
-for the asm directory
-
-- Add the missing directory back to the error message
-
-- Actually test with both setups, not sure how I messed that up last time
-
-
- meson/setup-uapi.sh | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/meson/setup-uapi.sh b/meson/setup-uapi.sh
-index 1b43c02..f27a07e 100644
---- a/meson/setup-uapi.sh
-+++ b/meson/setup-uapi.sh
-@@ -1,19 +1,19 @@
- #! /bin/sh
- 
--if test \! -d $UAPI/include/uapi/evl; then
--    echo "meson: path given to -Duapi does not look right ($UAPI/include/uapi/evl is missing)"
--    exit 1
-+if test -r $UAPI/Kbuild; then
-+	set \
-+		$UAPI/arch/$ARCH/include/uapi/asm \
-+		$UAPI/include/uapi/asm-generic \
-+		$UAPI/include/uapi/evl
-+else
-+	set $UAPI/asm $UAPI/asm-generic $UAPI/evl
- fi
- 
--mkdir -p $O_UAPI
--rm -f $O_UAPI/asm $O_UAPI/asm-generic $O_UAPI/evl
-+for d do
-+	test -d $d && continue
-+	echo "meson: path given to -Duapi does not look right ($d is missing)"
-+	exit 1
-+done
- 
--if test -r $UAPI/Kbuild; then
--    ln -s $UAPI/arch/$ARCH/include/uapi/asm $O_UAPI/asm
--    ln -s $UAPI/include/uapi/asm-generic $O_UAPI/asm-generic
--    ln -s $UAPI/include/uapi/evl $O_UAPI/evl
--elif test \! -L	$O_UAPI/asm; then
--    ln -s $UAPI/asm $O_UAPI/asm
--    ln -s $UAPI/asm-generic $O_UAPI/asm-generic
--    ln -s $UAPI/evl $O_UAPI/evl
--fi
-+mkdir -p $O_UAPI
-+for d do ln -sf $d $O_UAPI/; done
--- 
-2.33.0
-
+Thanks,
+//richard
 
