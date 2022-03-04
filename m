@@ -1,14 +1,16 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v3] libtraceevent: Add xenomai_schedparams plugin for
+ libtraceevent
+Date: Fri, 4 Mar 2022 03:21:29 +0000
+Message-ID: <MN2PR11MB428569D5D1A197DF1B742172F2059@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220303012031.16509-1-hongzhan.chen@intel.com>
+ <9191fe03-91df-0ff9-0dd2-33d04641374d@siemens.com>
+ <8b23b623-d1b2-e35e-5386-b2220e581c15@siemens.com>
+In-Reply-To: <8b23b623-d1b2-e35e-5386-b2220e581c15@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <44a716dd-c4aa-17d2-55f4-e5eaf50beb6a@siemens.com>
- <CALLqZ8Sx0DdA853TbhOirYAPM0siuE2eh4NzjXAtB8vxq_xNoA@mail.gmail.com>
- <6892bfa2-eeec-8820-4fe0-04db71994306@siemens.com>
-In-Reply-To: <6892bfa2-eeec-8820-4fe0-04db71994306@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 3 Mar 2022 18:45:49 -0500
-Message-ID: <CALLqZ8SCN7heaoZYmpCH7U4juOyb_sX9DwfTbLN1bzX+ve9xpA@mail.gmail.com>
-Subject: Re: ipipe-5.4: arm64 regression
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,93 +19,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 
-On Thu, Mar 3, 2022 at 1:20 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBNYXJjaCAzLCAyMDIyIDM6MDEg
+UE0NCj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21h
+aUB4ZW5vbWFpLm9yZzsgZmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tDQo+U3ViamVjdDogUmU6
+IFtQQVRDSCB2M10gbGlidHJhY2VldmVudDogQWRkIHhlbm9tYWlfc2NoZWRwYXJhbXMgcGx1Z2lu
+IGZvciBsaWJ0cmFjZWV2ZW50DQo+DQo+T24gMDMuMDMuMjIgMDc6NTcsIEphbiBLaXN6a2Egdmlh
+IFhlbm9tYWkgd3JvdGU6DQo+PiBPbiAwMy4wMy4yMiAwMjoyMCwgSG9uZ3poYW4gQ2hlbiB3cm90
+ZToNCj4+PiBGb3IgY29iYWx0IHRocmVhZCwgdGhlcmUgaXMgc3BlY2lhbCBzdHJ1Y3QgcGFyYW1f
+ZXggZGF0YSBzdG9yZWQgaW4NCj4+PiBkYXRhIHJlY29yZCwgd2UgbmVlZCB0byBwYXJzZSBhbmQg
+cHJpbnQgaXRzIGNvbnRlbnQgb3V0IGNvcnJlY3RseQ0KPj4+IHRvIGhpbnQgdXNlci4NCj4+Pg0K
+Pj4+IFNpZ25lZC1vZmYtYnk6IEhvbmd6aGFuIENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29t
+Pg0KPj4+IC0tLQ0KPj4+ICBjb25maWd1cmUuYWMgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgMTcgKy0NCj4+PiAgdHJhY2luZy9NYWtlZmlsZS5hbSAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHwgIDEzICstDQo+Pj4gIHRyYWNpbmcvbGlidHJhY2VldmVudC9NYWtlZmlsZS5h
+bSAgICAgICAgICAgICB8ICAxMSArKw0KPj4+ICB0cmFjaW5nL2xpYnRyYWNlZXZlbnQvUkVBRE1F
+ICAgICAgICAgICAgICAgICAgfCAgMzAgKysrKw0KPj4+ICAuLi4vcGx1Z2luX3hlbm9tYWlfc2No
+ZWRwYXJhbXMuYyAgICAgICAgICAgICAgfCAxNTggKysrKysrKysrKysrKysrKysrDQo+Pj4gIDUg
+ZmlsZXMgY2hhbmdlZCwgMjI2IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+Pj4gIGNy
+ZWF0ZSBtb2RlIDEwMDY0NCB0cmFjaW5nL2xpYnRyYWNlZXZlbnQvTWFrZWZpbGUuYW0NCj4+PiAg
+Y3JlYXRlIG1vZGUgMTAwNjQ0IHRyYWNpbmcvbGlidHJhY2VldmVudC9SRUFETUUNCj4+PiAgY3Jl
+YXRlIG1vZGUgMTAwNjQ0IHRyYWNpbmcvbGlidHJhY2VldmVudC9wbHVnaW5feGVub21haV9zY2hl
+ZHBhcmFtcy5jDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvY29uZmlndXJlLmFjIGIvY29uZmlndXJl
+LmFjDQo+Pj4gaW5kZXggYjhlOWNhMTQzLi41ODU4YjNiMjIgMTAwNjQ0DQo+Pj4gLS0tIGEvY29u
+ZmlndXJlLmFjDQo+Pj4gKysrIGIvY29uZmlndXJlLmFjDQo+Pj4gQEAgLTgyOSw3ICs4MjksNyBA
+QCBBQ19NU0dfUkVTVUxUKCRYRU5PX0RFTU9fRElSKQ0KPj4+ICB4ZW5vX2J1aWxkX2tlcm5lbHNo
+YXJrPWZhbHNlDQo+Pj4gIEFDX01TR19DSEVDS0lORyhidWlsZCBrZXJuZWxzaGFyayBwbHVnaW5z
+KQ0KPj4+ICBBQ19BUkdfV0lUSChrZXJuZWxzaGFyaywNCj4+PiAtICAgIEFTX0hFTFBfU1RSSU5H
+KFstLXdpdGgta2VybmVsc2hhcmtdLFtidWlsZCBrZXJuZWxzaGFyayByZWxhdGVkIHBsdWdpbnNd
+KSwNCj4+PiArICAgIEFTX0hFTFBfU1RSSU5HKFstLXdpdGgta2VybmVsc2hhcmtdLFtidWlsZCBr
+ZXJuZWxzaGFyayByZWxhdGVkIHBsdWdpbnMgaW5jbHVkaW5nIGxpYnRyYWNlZXZlbnQgcGx1Z2lu
+XSksDQo+PiANCj4+IFRyeSB0byByZWZhY3RvciBpbiB3YXkgdGhhdCB5b3UgZG8gbm90IG5lZWRs
+ZXNzbHkgbW9kaWZ5IGNvZGUgdGhhdCB5b3UNCj4+IGFkZGVkIGluIGEgcHJldmlvdXMgcGF0Y2gg
+b2YgdGhlIHNhbWUgc2VyaWVzLg0KPj4gDQo+Pj4gICAgICBbDQo+Pj4gIAljYXNlICIkd2l0aHZh
+bCIgaW4NCj4+PiAgCSIiIHwgeSB8IHllIHwgeWVzKSB4ZW5vX2J1aWxkX2tlcm5lbHNoYXJrPXRy
+dWU7Ow0KPj4+IEBAIC04NDAsNiArODQwLDIwIEBAIEFDX01TR19SRVNVTFQoJHhlbm9fYnVpbGRf
+a2VybmVsc2hhcmspDQo+Pj4gIA0KPj4+ICBBTV9DT05ESVRJT05BTChbQlVJTERfS0VSTkVMU0hB
+UktdLCBbdGVzdCB4JHhlbm9fYnVpbGRfa2VybmVsc2hhcmsgPSB4dHJ1ZV0pDQo+Pj4gIA0KPj4+
+ICt4ZW5vX2J1aWxkX2xpYnRyYWNlZXZlbnQ9ZmFsc2UNCj4+PiArQUNfTVNHX0NIRUNLSU5HKGJ1
+aWxkIGxpYnRyYWNlZXZlbnQgcGx1Z2luKQ0KPj4+ICtBQ19BUkdfV0lUSChsaWJ0cmFjZWV2ZW50
+LA0KPj4+ICsgICAgQVNfSEVMUF9TVFJJTkcoWy0td2l0aC1saWJ0cmFjZWV2ZW50XSxbYnVpbGQg
+bGlidHJhY2VldmVudCBwbHVnaW5dKSwNCj4+PiArICAgIFsNCj4+PiArCWNhc2UgIiR3aXRodmFs
+IiBpbg0KPj4+ICsJIiIgfCB5IHwgeWUgfCB5ZXMpIHhlbm9fYnVpbGRfbGlidHJhY2VldmVudD10
+cnVlOzsNCj4+PiArCW4gfCBubykgeGVub19idWlsZF9saWJ0cmFjZWV2ZW50PWZhbHNlOzsNCj4+
+PiArCWVzYWMNCj4+PiArICAgIF0sIFt4ZW5vX2J1aWxkX2xpYnRyYWNlZXZlbnQ9ZmFsc2VdKQ0K
+Pj4+ICtBQ19NU0dfUkVTVUxUKCR4ZW5vX2J1aWxkX2xpYnRyYWNlZXZlbnQpDQo+Pj4gKw0KPj4+
+ICtBTV9DT05ESVRJT05BTChbQlVJTERfTElCVFJBQ0VFVkVOVF0sIFt0ZXN0IHgkeGVub19idWls
+ZF9saWJ0cmFjZWV2ZW50ID0geHRydWVdKQ0KPj4+ICsNCj4+PiAgQUNfTVNHX0NIRUNLSU5HKFtm
+b3IgdGVzdCBzb3VyY2UgZ2VuZXJhdGlvbl0pDQo+Pj4gIEFDX1JVTl9JRkVMU0UoW0FDX0xBTkdf
+UFJPR1JBTShbWyBdXSwgW1sgXV0pXSwNCj4+PiAgICAgIFtBQ19NU0dfUkVTVUxUKG9rKV0sIFtB
+Q19NU0dfUkVTVUxUKGZhaWxlZCldLCBbQUNfTVNHX1JFU1VMVCh1bnRlc3RhYmxlKV0pDQo+Pj4g
+QEAgLTk1OSw2ICs5NzMsNyBAQCBBQ19DT05GSUdfRklMRVMoWyBcDQo+Pj4gIAlzY3JpcHRzL3hl
+bm8gXA0KPj4+ICAJdHJhY2luZy9NYWtlZmlsZSBcDQo+Pj4gIAl0cmFjaW5nL2tlcm5lbHNoYXJr
+L01ha2VmaWxlIFwNCj4+PiArCXRyYWNpbmcvbGlidHJhY2VldmVudC9NYWtlZmlsZSBcDQo+Pj4g
+IAlsaWIvTWFrZWZpbGUgXA0KPj4+ICAJbGliL2JvaWxlcnBsYXRlL01ha2VmaWxlIFwNCj4+PiAg
+CWxpYi9ib2lsZXJwbGF0ZS9pbml0L01ha2VmaWxlIFwNCj4+PiBkaWZmIC0tZ2l0IGEvdHJhY2lu
+Zy9NYWtlZmlsZS5hbSBiL3RyYWNpbmcvTWFrZWZpbGUuYW0NCj4+PiBpbmRleCA3OTI1YWU5YzYu
+LjEzNTFhOThkMiAxMDA2NDQNCj4+PiAtLS0gYS90cmFjaW5nL01ha2VmaWxlLmFtDQo+Pj4gKysr
+IGIvdHJhY2luZy9NYWtlZmlsZS5hbQ0KPj4+IEBAIC0xLDcgKzEsMTYgQEANCj4+PiAgaWYgQlVJ
+TERfS0VSTkVMU0hBUksNCj4+PiAgU1VCRElSUyA9CQlcDQo+Pj4gLQlrZXJuZWxzaGFyaw0KPj4+
+ICsJa2VybmVsc2hhcmsJXA0KPj4+ICsJbGlidHJhY2VldmVudA0KPj4+ICtlbHNlDQo+Pj4gKw0K
+Pj4+ICtpZiBCVUlMRF9MSUJUUkFDRUVWRU5UDQo+Pj4gK1NVQkRJUlMgPQkJXA0KPj4+ICsJbGli
+dHJhY2VldmVudA0KPj4+ICtlbmRpZg0KPj4+ICsNCj4+IA0KPj4gWW91IHdhbnQgU1VCRElSUyAr
+PSAuLi4NCj4+IA0KPj4gU2VlIGV4aXN0aW5nIG1ha2VmaWxlcy4NCj4+IA0KPg0KPk9oLCBhbmQg
+SSBkb24ndCB0aGluayB0aGF0IHRoZSBrZXJuZWxzaGFyayBwbHVnaW4gdGVjaG5pY2FsbHkgZGVw
+ZW5kcyBvbg0KDQpJZiB3ZSByZW1vdmUgaW5jbHVkZSBwYXRoIFRSQUNFRVZFTlJfSU5DTFVEUyA/
+PSAvdXNyL2xvY2FsL2luY2x1ZGUvdHJhY2VldmVudA0KaW4gcGx1Z2luIE1ha2VmaWxlLmFtLCBp
+dCByZXBvcnQgZm9sbG93aW5nIGVycm9yOg0KL3Vzci9sb2NhbC9pbmNsdWRlL3RyYWNlLWNtZC90
+cmFjZS1jbWQuaDo5OjEwOiBmYXRhbCBlcnJvcjogZXZlbnQtcGFyc2UuaDogTm8gc3VjaCBmaWxl
+IG9yIGRpcmVjdG9yeQ0KICAgIDkgfCAjaW5jbHVkZSAiZXZlbnQtcGFyc2UuaCIgICAgICAgDQoN
+Ckl0IGRlZmluZWx5IGRlcGVuZHMgb24gbGlidHJhY2VldmVudCBvbmUuDQoNClJlZ2FyZHMNCg0K
+SG9uZ3poYW4gQ2hlbg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICANCj50aGUgbGlidHJhY2VldmVudCBvbmUuIEJvdGggY2FuIGJl
+IGFuZCBhcmUgY29udHJvbGxlZCB2aWEgY29uZmlndXJlDQo+aW5kZXBlbmRlbnRseSwgdGhvdWdo
+IHlvdSBub3JtYWxseSAvd2FudC8gbGlidHJhY2VldmVudCBhcyB3ZWxsIHdoZW4NCj51c2luZyB0
+aGUga2VybmVsc2hhcmsgcGx1Z2luLg0KPg0KPkphbg0KPg0KPi0tIA0KPlNpZW1lbnMgQUcsIFRl
+Y2hub2xvZ3kNCj5Db21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KPg0K
 
-> On 02.03.22 16:44, Greg Gallagher wrote:
-> >
-> >
-> > On Wed, Mar 2, 2022 at 1:48 AM Jan Kiszka <jan.kiszka@siemens.com
-> > <mailto:jan.kiszka@siemens.com>> wrote:
-> >
-> >     Hi Greg,
-> >
-> >     something is going wrong on arm64 with latest ipipe version, see e.=
-g.
-> >
-> >     https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw
-> >     <https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw>
-> >     (same thing seen on HiKey as well)
-> >
-> >     Could you have a look?
-> >
-> >     Thanks,
-> >     Jan
-> >
-> >     --
-> >     Siemens AG, Technology
-> >     Competence Center Embedded Linux
-> >
-> >
-> > I'll take a look, it will be close to the end of the week but i'll aim
-> > to have it root caused by the weekend.
-> >
->
-> Just tried locally with xenomai-images and qemu-arm64 (just run smokey):
->
-> [  408.747349] Kernel panic - not syncing: kernel stack overflow
-> [  408.747591] CPU: 0 PID: 1577 Comm: systemd-journal Tainted: G        W
->        5.4.180+ #1
-> [  408.747762] Hardware name: linux,dummy-virt (DT)
-> [  408.747852] I-pipe domain: Xenomai
-> [  408.747941] Call trace:
-> ...
-> [  408.761131]  do_debug_exception+0x94/0x240
-> [  408.761255]  el1_dbg+0x18/0x8c
-> [  408.761329]  this_cpu_has_cap+0x60/0x7c
-> [  408.761423]  erratum_1418040_thread_switch+0x18/0x5c
-> [  408.761534]  __switch_to+0xf8/0x154
-> [  408.761622]  xnarch_switch_to+0x5c/0xc4
-> [  408.761711]  pipeline_switch_to+0x14/0x84
-> [  408.761803]  ___xnsched_run+0x154/0x240
-> [  408.761889]  pipeline_schedule+0x30/0x40
-> [  408.761999]  xnintr_core_clock_handler+0x250/0x260
-> [  408.762107]  dispatch_irq_head+0x84/0x120
-> [  408.762198]  __ipipe_dispatch_irq+0x19c/0x1c4
-> [  408.762293]  __ipipe_grab_irq+0x5c/0xa0
-> [  408.762377]  gic_handle_irq+0x54/0xb0
-> [  408.762457]  handle_arch_irq_pipelined+0x14/0x60
-> [  408.762557]  el0_irq_naked+0x5c/0x84
-> [  408.762905] SMP: stopping secondary CPUs
->
-> This dbg trap from erratum_1418040_thread_switch looks suspicious, and
-> if I had to bet, I would say it somehow relates to [1] which came with
-> v5.4.176. But more logical would [2] due to its switch from static to
-> dynamic cpu_has_cap - but that is already in since v5.4.80...
->
-> Jan
->
-> [1]
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/a6d588572568c7431a9a3=
-dc17f3c75962a2f070b
-> [2]
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/71eea3d3df94ccdcf3b61=
-6d27d68d6c028c1968f
->
-> --
-> Siemens AG, Technology
-> Competence Center Embedded Linux
-
-
-I just built a new image and I=E2=80=99ll have time to look into this proba=
-bly
-tomorrow.
-
-Thanks for the help :)
-
-Greg
-
->
->
