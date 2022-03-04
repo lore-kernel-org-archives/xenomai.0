@@ -1,11 +1,12 @@
-References: <20220302233443.14696-1-egates@cardinalpeak.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] meson: allow use of installed uapi headers
-Date: Fri, 04 Mar 2022 19:28:53 +0100
-In-reply-to: <20220302233443.14696-1-egates@cardinalpeak.com>
-Message-ID: <87bkylr2jm.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220302233443.14696-1-egates@cardinalpeak.com>
+ <87bkylr2jm.fsf@xenomai.org>
+In-Reply-To: <87bkylr2jm.fsf@xenomai.org>
+From: Evan Gates <evan.gates@gmail.com>
+Date: Fri, 4 Mar 2022 11:35:48 -0700
+Message-ID: <CAKvFXSDej9UuG2W52hvGJh0fy1JFNOYgz2HWaPxBAepJZF1yeA@mail.gmail.com>
+Subject: Re: [PATCH] meson: allow use of installed uapi headers
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,77 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Evan Gates <evan.gates@gmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-
-Evan Gates via Xenomai <xenomai@xenomai.org> writes:
-
-> Commit c70a9d9d536aefcf6574328aaac0fcc86f9ab0f7 added a test for
-> $UAPI/include/uapi/evl that was meant to ensure the given $UAPI path was
-> correct.  That test meant that $UAPI had to point to a linux-evl source
-> directory and could not point to installed headers in e.g. /usr/include.
-> The script had previously allowed the use of installed headers, using
-> the existence of $UAPI/Kbuild as an hueristic to decide whether $UAPI
-> pointed to linux-evl source or to installed headers.
+On Fri, Mar 4, 2022 at 11:33 AM Philippe Gerum <rpm@xenomai.org> wrote:
 >
-> Rewrite the script to check for the existence of all three required
-> directories (asm, asm-generic, evl) in two possible locations ($UAPI,
-> $UAPI/include/uapi).  This once again allows the use of installed headers,
-> and gets rid of the heuristic, instead testing for the actual directories.
+> Thanks for this patch. We still need to merge a solution for both
+> possible use cases though, as such the changes do enable back picking
+> /usr/include as the uapi path, but now breaks the setup when -Duapi
+> points at a full kernel tree.
 >
-> Fixes: c70a9d9 (build: tighten consistency check for uapi)
+> The issue is with uapi/asm, in this case, the source path is
+> $UAPI/arch/$ARCH/include/uapi/asm, not $UAPI/asm.
 
-Thanks for this patch. We still need to merge a solution for both
-possible use cases though, as such the changes do enable back picking
-/usr/include as the uapi path, but now breaks the setup when -Duapi
-points at a full kernel tree.
+Oh wow, you're absolutely right.  I'm not sure how I missed that.
+And now I'm doubting my sanity because I thought I got a build working
+pointing to the kernel tree.  I'll put together a v2.
 
-The issue is with uapi/asm, in this case, the source path is
-$UAPI/arch/$ARCH/include/uapi/asm, not $UAPI/asm.
-
-> ---
->  meson/setup-uapi.sh | 26 ++++++++++++--------------
->  1 file changed, 12 insertions(+), 14 deletions(-)
->
-> diff --git a/meson/setup-uapi.sh b/meson/setup-uapi.sh
-> index 1b43c02..bb96e86 100644
-> --- a/meson/setup-uapi.sh
-> +++ b/meson/setup-uapi.sh
-> @@ -1,19 +1,17 @@
->  #! /bin/sh
->  
-> -if test \! -d $UAPI/include/uapi/evl; then
-> -    echo "meson: path given to -Duapi does not look right ($UAPI/include/uapi/evl is missing)"
-> -    exit 1
-> -fi
-> +set evl asm asm-generic
->  
-> -mkdir -p $O_UAPI
-> -rm -f $O_UAPI/asm $O_UAPI/asm-generic $O_UAPI/evl
-> +for uapi in $UAPI/include/uapi $UAPI; do
-> +	for d do test -d $uapi/$d || continue 2; done
-> +	found=1
-> +	break
-> +done
->  
-> -if test -r $UAPI/Kbuild; then
-> -    ln -s $UAPI/arch/$ARCH/include/uapi/asm $O_UAPI/asm
-> -    ln -s $UAPI/include/uapi/asm-generic $O_UAPI/asm-generic
-> -    ln -s $UAPI/include/uapi/evl $O_UAPI/evl
-> -elif test \! -L	$O_UAPI/asm; then
-> -    ln -s $UAPI/asm $O_UAPI/asm
-> -    ln -s $UAPI/asm-generic $O_UAPI/asm-generic
-> -    ln -s $UAPI/evl $O_UAPI/evl
-> +if [ ! "$found" ]; then
-> +	echo meson: path given to -Duapi does not look right
-> +	exit 1
->  fi
-> +
-> +mkdir -p $O_UAPI
-> +for d do ln -sf $uapi/$d $O_UAPI/$d; done
-
-
--- 
-Philippe.
+Thanks,
+Evan
 
