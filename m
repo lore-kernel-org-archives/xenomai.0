@@ -1,11 +1,17 @@
-From: Evan Gates <evan.gates@gmail.com>
-Subject: [PATCH v3] meson: allow use of installed uapi headers
-Date: Mon,  7 Mar 2022 10:31:46 -0800
-Message-Id: <20220307183146.24784-1-evan.gates@gmail.com>
-In-Reply-To: <20220304190205.24489-1-egates@cardinalpeak.com>
-References: <20220304190205.24489-1-egates@cardinalpeak.com>
+Date: Mon, 7 Mar 2022 21:02:15 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <227990265.121741.1646683335765.JavaMail.zimbra@nod.at>
+In-Reply-To: <87y21novsc.fsf@xenomai.org>
+References: <1971847999.108624.1646393705887.JavaMail.zimbra@nod.at>
+ <7cc78732bf4902691e4194f52738ef1380c52ca6.camel@siemens.com>
+ <1918812394.108775.1646396125911.JavaMail.zimbra@nod.at>
+ <87fsnxr3nc.fsf@xenomai.org>
+ <2141336610.110112.1646424555986.JavaMail.zimbra@nod.at>
+ <87y21novsc.fsf@xenomai.org>
+Subject: Re: Questiion on commit: demo/cyclictest: fix time delta calculation
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,79 +20,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-Commit c70a9d9d536aefcf6574328aaac0fcc86f9ab0f7 added a test for
-$UAPI/include/uapi/evl that was meant to ensure the given $UAPI path was
-correct.  That test meant that $UAPI had to point to a linux-evl source
-directory and could not point to installed headers in e.g. /usr/include.
-The script had previously allowed the use of installed headers, using
-the existence of $UAPI/Kbuild as an heuristic to decide whether $UAPI
-pointed to linux-evl source or to installed headers.
+Philippe,
 
-Rewrite the script to check for the existence of all three required
-directories in either location.  This allows the use of installed
-headers again.
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Philippe Gerum" <rpm@xenomai.org>
+>> I did some more experiments. The system was already autotuned.
+>> But raising the base interval from 1000 (default) to 5000 made the issue
+>> go away.
+>>
+>=20
+> Does the issue persist at any freq when resetting the clock gravity for
+> user-space timers to zero instead of (or after) autotuning? e.g.
+>=20
+> $ echo "0u" > /proc/xenomai/clock/coreclck
 
-Fixes: c70a9d9 (build: tighten consistency check for uapi)
-Signed-off-by: Evan Gates <evan.gates@gmail.com>
----
+Actually with 0u I get the best results.
+Sometimes it takes up to a few minutes until I get negative values
+but with values computed autotuned the timings turn negative almost immedia=
+tely.
 
-Changes in v3:
+$ echo 6333u > /proc/xenomai/clock/coreclk # computed by autotune
+$ ./demo/posix/cyclictest/cyclictest -l10000 -m -Sp99 -i100 -n --nsecs
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 0.00 0.00 0.08 1/81 5159         =20
 
-- Add Signed-off-by trailer
+T: 0 ( 5158) P:99 I:100 C:  10000 Min:      0 Act:    2999 Avg:2147483647 M=
+ax:      -1
+T: 1 ( 5159) P:99 I:600 C:   1680 Min:    333 Act:     999 Avg:    1097 Max=
+:    8000
 
-Changes in v2:
+$ echo 0u > /proc/xenomai/clock/coreclk=20
+$ ./demo/posix/cyclictest/cyclictest -l10000 -m -Sp99 -i100 -n --nsecs
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 0.00 0.00 0.08 1/81 5176         =20
 
-- Switch back to Kbuild heuristic in order to check/set the correct path
-for the asm directory
+T: 0 ( 5175) P:99 I:100 C:  10000 Min:   6000 Act:    6667 Avg:    9236 Max=
+:   20000
+T: 1 ( 5176) P:99 I:600 C:   1667 Min:   6000 Act:   14000 Avg:    7444 Max=
+:   15333
 
-- Add the missing directory back to the error message
+Please note that -i100 and -n --nsecs makes the issue appear much faster th=
+an without.
 
-- Actually test with both setups, not sure how I messed that up last time
-
- meson/setup-uapi.sh | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/meson/setup-uapi.sh b/meson/setup-uapi.sh
-index 1b43c02..f27a07e 100644
---- a/meson/setup-uapi.sh
-+++ b/meson/setup-uapi.sh
-@@ -1,19 +1,19 @@
- #! /bin/sh
- 
--if test \! -d $UAPI/include/uapi/evl; then
--    echo "meson: path given to -Duapi does not look right ($UAPI/include/uapi/evl is missing)"
--    exit 1
-+if test -r $UAPI/Kbuild; then
-+	set \
-+		$UAPI/arch/$ARCH/include/uapi/asm \
-+		$UAPI/include/uapi/asm-generic \
-+		$UAPI/include/uapi/evl
-+else
-+	set $UAPI/asm $UAPI/asm-generic $UAPI/evl
- fi
- 
--mkdir -p $O_UAPI
--rm -f $O_UAPI/asm $O_UAPI/asm-generic $O_UAPI/evl
-+for d do
-+	test -d $d && continue
-+	echo "meson: path given to -Duapi does not look right ($d is missing)"
-+	exit 1
-+done
- 
--if test -r $UAPI/Kbuild; then
--    ln -s $UAPI/arch/$ARCH/include/uapi/asm $O_UAPI/asm
--    ln -s $UAPI/include/uapi/asm-generic $O_UAPI/asm-generic
--    ln -s $UAPI/include/uapi/evl $O_UAPI/evl
--elif test \! -L	$O_UAPI/asm; then
--    ln -s $UAPI/asm $O_UAPI/asm
--    ln -s $UAPI/asm-generic $O_UAPI/asm-generic
--    ln -s $UAPI/evl $O_UAPI/evl
--fi
-+mkdir -p $O_UAPI
-+for d do ln -sf $d $O_UAPI/; done
--- 
-2.35.1
-
+Thanks,
+//richard
 
