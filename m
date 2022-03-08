@@ -1,17 +1,16 @@
-Date: Mon, 7 Mar 2022 21:02:15 +0100 (CET)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <227990265.121741.1646683335765.JavaMail.zimbra@nod.at>
-In-Reply-To: <87y21novsc.fsf@xenomai.org>
-References: <1971847999.108624.1646393705887.JavaMail.zimbra@nod.at>
- <7cc78732bf4902691e4194f52738ef1380c52ca6.camel@siemens.com>
- <1918812394.108775.1646396125911.JavaMail.zimbra@nod.at>
- <87fsnxr3nc.fsf@xenomai.org>
- <2141336610.110112.1646424555986.JavaMail.zimbra@nod.at>
- <87y21novsc.fsf@xenomai.org>
-Subject: Re: Questiion on commit: demo/cyclictest: fix time delta calculation
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v4 3/3] libtraceevent: Add xenomai_schedparams plugin for
+ libtraceevent
+Date: Tue, 8 Mar 2022 00:06:34 +0000
+Message-ID: <MN2PR11MB4285F7C0F6FDB29141B6C78AF2099@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220304052140.17196-1-hongzhan.chen@intel.com>
+ <20220304052140.17196-3-hongzhan.chen@intel.com>
+ <e48eda27-9d11-7caf-48d3-d40b473619fa@siemens.com>
+In-Reply-To: <e48eda27-9d11-7caf-48d3-d40b473619fa@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,51 +19,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 
-Philippe,
-
------ Urspr=C3=BCngliche Mail -----
-> Von: "Philippe Gerum" <rpm@xenomai.org>
->> I did some more experiments. The system was already autotuned.
->> But raising the base interval from 1000 (default) to 5000 made the issue
->> go away.
->>
->=20
-> Does the issue persist at any freq when resetting the clock gravity for
-> user-space timers to zero instead of (or after) autotuning? e.g.
->=20
-> $ echo "0u" > /proc/xenomai/clock/coreclck
-
-Actually with 0u I get the best results.
-Sometimes it takes up to a few minutes until I get negative values
-but with values computed autotuned the timings turn negative almost immedia=
-tely.
-
-$ echo 6333u > /proc/xenomai/clock/coreclk # computed by autotune
-$ ./demo/posix/cyclictest/cyclictest -l10000 -m -Sp99 -i100 -n --nsecs
-# /dev/cpu_dma_latency set to 0us
-policy: fifo: loadavg: 0.00 0.00 0.08 1/81 5159         =20
-
-T: 0 ( 5158) P:99 I:100 C:  10000 Min:      0 Act:    2999 Avg:2147483647 M=
-ax:      -1
-T: 1 ( 5159) P:99 I:600 C:   1680 Min:    333 Act:     999 Avg:    1097 Max=
-:    8000
-
-$ echo 0u > /proc/xenomai/clock/coreclk=20
-$ ./demo/posix/cyclictest/cyclictest -l10000 -m -Sp99 -i100 -n --nsecs
-# /dev/cpu_dma_latency set to 0us
-policy: fifo: loadavg: 0.00 0.00 0.08 1/81 5176         =20
-
-T: 0 ( 5175) P:99 I:100 C:  10000 Min:   6000 Act:    6667 Avg:    9236 Max=
-:   20000
-T: 1 ( 5176) P:99 I:600 C:   1667 Min:   6000 Act:   14000 Avg:    7444 Max=
-:   15333
-
-Please note that -i100 and -n --nsecs makes the issue appear much faster th=
-an without.
-
-Thanks,
-//richard
+Pj4gKw0KPj4gKyAgUGxlYXNlIGNvcHkgYnVpbHQgbGlicGx1Z2luX3hlbm9tYWlfc2NoZWRwYXJh
+bXMuc28gdG8NCj4+ICsgIC91c3IvbG9jYWwvbGliL3RyYWNlZXZlbnQvcGx1Z2lucy8gb3INCj4+
+ICsgIC91c3IvbG9jYWwvbGliNjQvdHJhY2VldmVudC9wbHVnaW5zLyBkZXBlbmRpbmcgb24geW91
+ciBzeXN0ZW0uDQo+PiArICBXaGlsZSBsaWJ0cmFjZXZlbnQgYW5kIGl0cyBwbHVnaW5zIGlzIGlu
+c3RhbGxlZCBjb3JyZWN0bHksIHRoZSBwbHVnaW5zDQo+PiArICB3b3VsZCBiZSBsb2FkZWQgYXV0
+b21hdGljYWxseSBieSBvdGhlciBtb2R1bGUgc3VjaCBhcyBsaWJ0cmFjZWNtZCBhZnRlcg0KPj4g
+KyAgY29ycmVzcG9uZGluZyB0cmFjaW5nIHRvb2wgcnVuIHN1Y2ggYXMga2VybmVsc2hhcmsgb3Ig
+dHJhY2VjbWQuDQo+DQo+SSBzaG91bGQgdXNlIHRoZSBjaGFuZ2VzIGJlbG93IHRvIHN3aXRjaCB0
+byBwa2ctY29uZmlnIC0gdGhhdCBwZXJtaXRzDQo+Y29udHJvbCBvdmVyIHRoZSBpbnN0YWxsYXRp
+b24gcGF0aCBhcyB3ZWxsLg0KPg0KPkluIGFkZGl0aW9uLCBYZW5vbWFpIHNob3VsZCBpbnN0YWxs
+IHRoZSBwbHVnaW5zIHByb3Blcmx5LCBpbnRvIHRoZSBzYW1lIA0KPmZvbGRlcnMgYXMga2VybmVs
+c2hhcmsgYW5kIGxpYnRyYWNlZXZlbnQgdXNlLg0KDQpJcyB0aGF0IHBvc3NpYmxlIHRoYXQgaXQg
+aW5zdGFsbCBqdXN0IHRoZSBwbHVnaW4taW5zIHdoZW4gd2UgZXhlY3V0ZSBtYWtlIGluc3RhbGwg
+YWZ0ZXIgYnVpbGQgYnV0IGRvIG5vdCBpbnN0YWxsICBYZW5vbWFpIGl0c2VsZj8gQmVjYXVzZSBY
+ZW5vbWFpIG1heSBpbnN0YWxsDQpjcm9zcyBwbGF0Zm9ybSBub3QgbG9jYWwgbWFjaGluZSBhbmQg
+dGhleSBoYXZlIGRpZmZlcmVudCB0YXJnZXRzLiAgVXNlcnMgbWF5IGp1c3Qgd2FudCB0byBpbnN0
+YWxsIHBsdWdpbnMgaW50byBpdHMgaG9zdCBidXQgZG8gbm90IHdhbnQgdG8gdG91Y2ggaXRzIHRh
+cmdldCBYZW5vbWFpLiAgDQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0KPg0KPkphbg0KPg0K
 
