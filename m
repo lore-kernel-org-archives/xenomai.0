@@ -1,10 +1,16 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v5 2/3] KernelShark: Add xenomai_cobalt_switch_events
+ plugin for KernelShark
+Date: Wed, 9 Mar 2022 23:48:28 +0000
+Message-ID: <MN2PR11MB42851D37305322B24D5BE5A8F20A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <20220309023020.4883-1-hongzhan.chen@intel.com>
+ <20220309023020.4883-2-hongzhan.chen@intel.com>
+ <faacd493-a3ab-bb9b-ddaf-04760c89aeaf@siemens.com>
+In-Reply-To: <faacd493-a3ab-bb9b-ddaf-04760c89aeaf@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: Greg Pettit <vendors@dysim.com>
-Date: Wed, 9 Mar 2022 15:06:18 -0500
-Message-ID: <CAG40PBpE85EAn3N3RreYu7bmsM=StcO2Z8vDVf+3pFxQnd34Ow@mail.gmail.com>
-Subject: copy-uapi.sh appears to copy absolute path of uapi headers to install
- prefix
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 
-I am cross compiling libevl and pass -Dprefix=/usr/evl during meson
-setup.  The installed uapi headers are under /usr/evl/include as
-expected; however, the absolute meson build path precedes the uapi
-headers.
-
-For ex:
-/usr/evl/include/home/user/build/include/uapi...
-
-It appears the find command in the copy_uapi.sh script is passing the
-absolute path to cpio.  To test I ran the following copy_uapi.sh:
-
-#! /bin/sh
-# $1 = O_UAPI
-# $2 = $prefix/includedir
-
-#find -L $1/evl \! \( -name '*~' \) -type f | cpio -pduvm $DESTDIR/$2
-cp -rL $1 $DESTDIR/$2
-
-this installed the uapi in the /usr/evl/include directory:
-/usr/evl/include/uapi...
-
-Thanks,
-Greg
+Li4uDQo+PiArbGlicGx1Z2luX3hlbm9tYWlfY29iYWx0X3N3aXRjaF9ldmVudHNfbGFfQ1BQRkxB
+R1MgID0JXA0KPj4gKwkkKEtTX0lOQ0xVRFMpDQo+PiArDQo+PiAraW5zdGFsbC1saWJMVExJQlJB
+UklFUzogJChsaWJfTFRMSUJSQVJJRVMpDQo+PiArCWVjaG8gIiQoTElCVE9PTCkgJChBTV9MSUJU
+T09MRkxBR1MpICQoTElCVE9PTEZMQUdTKSAtLW1vZGU9aW5zdGFsbCBcDQo+PiArCQkkKElOU1RB
+TExfREFUQSkgJChsaWJfTFRMSUJSQVJJRVMpICAnJChLU19JTlNUQUxMRElSKS9rZXJuZWxzaGFy
+ay9wbHVnaW5zLyciOwlcDQo+PiArCSQoTElCVE9PTCkgJChBTV9MSUJUT09MRkxBR1MpICQoTElC
+VE9PTEZMQUdTKSAtLW1vZGU9aW5zdGFsbCBcDQo+PiArCQkkKElOU1RBTExfREFUQSkgJChsaWJf
+TFRMSUJSQVJJRVMpICAiJChLU19JTlNUQUxMRElSKS9rZXJuZWxzaGFyay9wbHVnaW5zLyINCj4+
+ICsNCj5XaHkgdGhhdCBlY2hvPyBhdXRvbWFrZSBzdXBwb3J0cyBWPTEgZm9yIHZlcmJvc2UgbW9k
+ZSBJSVJDLg0KDQpJIGZvdW5kIHRoZSBvdGhlciBNYWtlZmlsZSBjcmVhdGVkIGJ5IGF1dG1ha2Ug
+bGlrZSBsaWIvY29iYWx0L01ha2VmaWxlIHdvdWxkIGF1dG9tYXRpY2FsbHkgaW5zZXJ0IHN1Y2gg
+ZWNobyBsaW5lLiBCdXQgaW4gb3VyIGNhc2UsIGl0IGp1c3Qga2VlcCBvcmlnaW5hbCAgY29udGVu
+dCBvZiBpbnN0YWxsLWxpYkxUTElCUkFSSUVTOiAkKGxpYl9MVExJQlJBUklFUykgb2Yga2VybmVs
+c2hhcmsgTWFrZWZpbGUuYW0uIFNvIEkgdGhpbmsgd2UgbWF5IHJlZmVyIHRvIGl0IHRvIGluc2Vy
+dCBzdWNoIGVjaG8gbGluZSBhbGlnbmluZyB3aXRoIGl0cyBkZXNpZ24gYXMgZmFyIGFzIEkgY2Fu
+Lg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCj4NCj4+ICt1bmluc3RhbGwtbGliTFRMSUJS
+QVJJRVM6ICQobGliX0xUTElCUkFSSUVTKQ0KPj4gKwllY2hvICIkKExJQlRPT0wpICQoQU1fTElC
+VE9PTEZMQUdTKSAkKExJQlRPT0xGTEFHUykgLS1tb2RlPXVuaW5zdGFsbCAkKFJNKSAnJChLU19J
+TlNUQUxMRElSKS9rZXJuZWxzaGFyay9wbHVnaW5zLyQobGliX0xUTElCUkFSSUVTKSciOwlcDQo+
+PiArCSQoTElCVE9PTCkgJChBTV9MSUJUT09MRkxBR1MpICQoTElCVE9PTEZMQUdTKSAtLW1vZGU9
+dW5pbnN0YWxsICQoUk0pICIkKEtTX0lOU1RBTExESVIpL2tlcm5lbHNoYXJrL3BsdWdpbnMvJChs
+aWJfTFRMSUJSQVJJRVMpIg0KPg0KPlNhbWUgaGVyZS4NCj4NCj4+ICsNCj4+IGRpZmYgLS1naXQg
+YS90cmFjaW5nL2tlcm5lbHNoYXJrL1JFQURNRSBiL3RyYWNpbmcva2VybmVsc2hhcmsvUkVBRE1F
+DQo+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPj4gaW5kZXggMDAwMDAwMDAwLi5hMTgwYWE3ODcN
+Ci4uLg0K
 
