@@ -1,16 +1,17 @@
-From: "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Subject: RE: [PATCH] cobalt: Fix pid issues when running in child pid namespace
-Date: Wed, 26 Jan 2022 02:05:00 +0000
-Message-ID: <PH0PR11MB58805B3ED1A59D759F4850BADA209@PH0PR11MB5880.namprd11.prod.outlook.com>
-References: <20220119133154.4122157-1-qiang1.zhang@intel.com>
- <fb9acdbd-3a9b-ca15-c255-d85f0595078c@siemens.com>
- <PH0PR11MB5880EA9644EDFB9F558C0C80DA5F9@PH0PR11MB5880.namprd11.prod.outlook.com>
- <e99b76a3-cf44-6fdd-1e63-63c6e60b0171@siemens.com>
-In-Reply-To: <e99b76a3-cf44-6fdd-1e63-63c6e60b0171@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5a4d679a-0451-371b-05fd-d90f14ddb66a@siemens.com>
+Date: Thu, 10 Mar 2022 08:17:11 +0100
 MIME-Version: 1.0
+Subject: Re: [PATCH v5 2/3] KernelShark: Add xenomai_cobalt_switch_events
+ plugin for KernelShark
+Content-Language: en-US
+References: <20220309023020.4883-1-hongzhan.chen@intel.com>
+ <20220309023020.4883-2-hongzhan.chen@intel.com>
+ <faacd493-a3ab-bb9b-ddaf-04760c89aeaf@siemens.com>
+ <MN2PR11MB42851D37305322B24D5BE5A8F20A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB42851D37305322B24D5BE5A8F20A9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +20,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, MONTET Julien <julien.montet@reseau.eseo.fr>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 
-DQpPbiAyNS4wMS4yMiAwOToyNSwgWmhhbmcsIFFpYW5nMSB3cm90ZToNCj4gDQo+IE9uIDE5LjAx
-LjIyIDE0OjMxLCBacWlhbmcgd3JvdGU6DQo+PiBUaGUgWGVub21haSBkb2VzIG5vdCB5ZXQgc3Vw
-cG9ydCB0aGUgY29uY2VwdCBvZiBuYW1lc3BhY2VzLCBhbmQgdGhlIA0KPj4gc2FtZSB0YXNrIGhh
-cyBkaWZmZXJlbnQgcGlkcyBpbiBpdHMgb3duIHBpZCBuYW1lc3BhY2UgYW5kIHBhcmVudCBwaWQg
-DQo+PiBuYW1lc3BhY2UuIGhvd2V2ZXIsIHdoZW4gdGhlIHRhc2sgcnVubmluZyBpbiBhIGNoaWxk
-IHBpZCBuYW1lc3BhY2UsIA0KPj4gd2Ugb25seSByZWNvcmRlZCB0aGUgcmVsYXRpb25zaGlwIGJl
-dHdlZW4gdGhyZWFkIGFuZCBjaGlsZCBwaWQuIHNvIA0KPj4gY2FuJ3QgdXNlIG90aGVyIHBpZCB0
-byBmaW5kIHRocmVhZC4NCj4+DQo+PiBUbyBmaXggaXQsIHdoZW4gdGhlIHRocmVhZCBpcyBjcmVh
-dGVkLCByZWNvcmQgYWxsIHBpZCBpbiBkaWZmZXJlbnQgDQo+PiBuYW1lc3BhY2VzLg0KPj4NCj4+
-IFVwZGF0ZXM6IGh0dHBzOi8vZ2l0bGFiLmNvbS9YZW5vbWFpL3hlbm9tYWktaGFja2VyLXNwYWNl
-Ly0vaXNzdWVzLzE5DQo+Pg0KPiANCj4+PiBDYW4geW91IGhlbHAgcmVmcmVzaGluZyBteSBtZW1v
-cnkgb24gdGhhdCBhbmQgYWxzbyBleHBsYWluIHdoeSBpdCB0YWtlcyBhIGRpZmZlcmVudCBhcHBy
-b2FjaCB0aGFuIGluIFsxXT8gVGhhdCB3YXMgcmVwb3J0ZWQgdG8gbm90IHdvcmsgY29tcGxldGVs
-eSBlaXRoZXIsIHllcywgYnV0IHRoZSBSQ1UgbGltaXRhdGlvbiBpcyBub3cgZ29uZSB3aXRoIGV2
-ZXJ5dGhpbmcgc3dpdGNoZWQgdG8gRG92ZXRhaWwuDQo+Pj4NCj4gDQo+IEhpIEphbg0KPiANCj4g
-VGhpcyBjaGFuZ2UgZG9lc24ndCBkZXBlbmQgb24gUkNVLCBpdCBhcHBseSB0byBJLXBpcGUgYW5k
-IGRvdmV0YWlsLg0KPiBXaGVuIHN3aXRjaGVkIHRvIERvdmV0YWlsLCB0aGUgUkNVIGxpbWl0YXRp
-b24gaXMgZ29uZT8NCj4gDQoNCj5Eb3ZldGFpbCBhbGxvd3MgdG8gdXNlIFJDVS1wcm90ZWN0ZWQg
-cmVhZCBhY2Nlc3NlcyBmcm9tIHRoZSBvdXQtb2YtYmFuZA0KPihSVCkgc3RhZ2UsIGF0IGxlYXN0
-IGluIDUuMTU6DQo+DQo+aHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL2xpbnV4LWRvdmV0
-YWlsLy0vY29tbWl0LzQ5Y2FkMzRlOWMyZDk3N2E4MDY5Mjc4MzkzZGU5MjJkNDBlYzVkNTcNCj4N
-Cj5Mb29raW5nIGF0IDUuMTAsIHRoZXJlIG1pZ2h0IGJlIHJlbWFpbmluZyByZXN0cmljdGlvbnMs
-IHRob3VnaCBwb3NzaWJseSByZXNvbHZhYmxlIGJ5IGJhY2twb3J0aW5nIHRoZSBhYm92ZToNCj4N
-Cj5odHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkvbGludXgtZG92ZXRhaWwvLS9jb21taXQv
-Zjk4OTEyNmNjYTlhMzA1YTEwMWU2ZGRmNjBhNjBlZjA2MmQxZTdmNA0KDQpJJ3ZlIHNlZW4gdGhp
-cyBjaGFuZ2UgYmVmb3JlLCAgYnV0IEknbSBzdGlsbCBjb25mdXNlZCwgdGhpcyBwYXRjaCAgY2Fu
-IG5vdCBzb2x2ZSB0aGUgcHJvYmxlbSB3aGljaCBJIGRlc2NyaWJlZCBlYXJsaWVyLg0KDQpGb3Ig
-cHJlZW1wdGl2ZSBSQ1UsIGlmIG91ciBSQ1UgY3JpdGljYWwgcHJlZW1wdGlvbiBvY2N1cnMNCklu
-IHRoZSBMaW51eCBkb21haW4sIHdlIHdpbGwgY2FsbCAgcmN1XyBub3RlXyBjb250ZXh0XyBzd2l0
-Y2goKSAgdG8gcmVjb3JkIHRoZSBjdXJyZW50bHkgcHJlZW1wdGVkIHRhc2tzLCBiZWNhdXNlDQp0
-aGlzIHdpbGwgYWZmZWN0IHdoZXRoZXIgb3VyIGdyYWNlIHBlcmlvZCBjYW4gYmUgY29tcGxldGVs
-eSBlbmRlZC4NCmhvdyB3aWxsIGl0IGJlIGhhbmRsZWQgaW4gdGhlIHhlbm9tYWkgZG9tYWluPw0K
-DQpNYXliZSB3ZSBjYW4gYXNrIFBhdWwgRSAgb3Bpbmlvbi4NCg0KDQpUaGFua3MsDQpacWlhbmcN
-Cg0KDQo+DQo+QXMgY3VycmVudCBtYXN0ZXIgaGFzIGRyb3BwZWQgSS1waXBlIHN1cHBvcnQgYW5k
-IHRoaXMgcGF0Y2ggd2lsbCBsaWtlbHkgbm90IGJlIGEgYmFja3BvcnQgY2FuZGlhdGUgYW55d2F5
-LCB3ZSBtYXkgZXhwbG9pdCB0aGlzIHByb3BlcnR5IGFuZCBtYXkgbWFrZSB0aGUgcGlkIG5hbWVz
-cGFjZSBzb2x1dGlvbiBzaW1wbGVyIHRoaXMgd2F5Lg0KPg0KPkphbg0KPg0KPi0tDQo+U2llbWVu
-cyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 10.03.22 00:48, Chen, Hongzhan wrote:
+> ...
+>>> +libplugin_xenomai_cobalt_switch_events_la_CPPFLAGS  =	\
+>>> +	$(KS_INCLUDS)
+>>> +
+>>> +install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+>>> +	echo "$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install \
+>>> +		$(INSTALL_DATA) $(lib_LTLIBRARIES)  '$(KS_INSTALLDIR)/kernelshark/plugins/'";	\
+>>> +	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install \
+>>> +		$(INSTALL_DATA) $(lib_LTLIBRARIES)  "$(KS_INSTALLDIR)/kernelshark/plugins/"
+>>> +
+>> Why that echo? automake supports V=1 for verbose mode IIRC.
+> 
+> I found the other Makefile created by autmake like lib/cobalt/Makefile would automatically insert such echo line. But in our case, it just keep original  content of install-libLTLIBRARIES: $(lib_LTLIBRARIES) of kernelshark Makefile.am. So I think we may refer to it to insert such echo line aligning with its design as far as I can.
+> 
+
+I don't see any value in such an echo. So please align with normal
+automake patterns like Xenomai uses.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
