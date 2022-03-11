@@ -1,14 +1,14 @@
-Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
- than 4.14.62
-References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
- <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
-From: Scott Reed <scott.reed@arcor.de>
-Message-ID: <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
-Date: Fri, 11 Mar 2022 14:13:20 +0100
+Message-ID: <9b2a3fdc-ac85-bad8-e45f-e6d082c7222c@siemens.com>
+Date: Fri, 11 Mar 2022 14:30:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Subject: Re: [PATCH 2/4] build: add options to build plugins of kernelshark
+ and libtraceevent
 Content-Language: en-US
+References: <20220310081513.12314-1-hongzhan.chen@intel.com>
+ <20220310081513.12314-2-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20220310081513.12314-2-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,73 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, florian.bezdeka@siemens.com
 
-
-On 3/11/22 12:38 PM, Jan Kiszka wrote:
-> On 11.03.22 11:12, Scott Reed via Xenomai wrote:
->> Hello,
->>
->> I am seeing an apparent issue with PCIe MSI interrupts and I-pipe
->> when trying to move to a newer kernel and I-pipe patch.
->>
->> The issue is as soon as a PCIe MSI interrupt occurs, the system
->> hangs with no message output on the serial console or in
->> /var/log/messages.
->>
->> The platform I am working on is a "i.MX 6 Quad" and I am upgrading
->> from a 4.14.62 kernel and I-pipe patch with Xenomai 3.07 to 5.4.151
->> kernel and I-pipe patch with Xenomai 3.2.1.
->>
->> Our FPGA is connected to the i.MX 6 via PCIe and generates PCIe MSI
->> interrupts to the CPU from, for example, an Altera Triple-Speed MAC.
->>
->> I have stable system running for some time with Linux 4.14.62 with
->> Xenomai 3.07 although I did need to patch the PCIe driver [1]. Also
->> some time back, I tried to move to 4.14.110 with I-pipe and also
->> saw same scenario of my system hanging on the first PCIe MSI interrupt
->> so I backed out back to 4.14.62. Now I am trying to move to 5.4.151, but
->> see the same hang.
+On 10.03.22 09:15, Hongzhan Chen wrote:
+> To build plugins of kernelshark and libtraceevent, add options and
+> do necessary configuration.
 > 
-> What about 4.19.y-cip? Specifically because of
-> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b23a011ce6d72f8699c.
+> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > 
-> Actually, that commit is also missing from the last tagged 5.4 ipipe
-> version (ipipe-core-5.4.151-arm-4). So try ipipe/5.4.y head instead.
+> diff --git a/configure.ac b/configure.ac
+> index afe08b8f2..16c8788a9 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -91,6 +91,8 @@ AC_ARG_WITH(cxx,
+>      ])
+>  AC_PROG_CXX
+>  
+> +PKG_PROG_PKG_CONFIG
+> +
+>  # Do not let autoconf set the default value of CFLAGS
+>  if $XENO_EMPTY_CFLAGS; then
+>  	CFLAGS=""
+> @@ -831,6 +833,40 @@ AC_ARG_WITH(demodir,
+>      ], [XENO_DEMO_DIR=$demodir])
+>  AC_MSG_RESULT($XENO_DEMO_DIR)
+>  
+> +kernelshark_plugin=
+> +AC_MSG_CHECKING(whether KernelShark plugin should be built)
+> +AC_ARG_ENABLE(kernelshark_plugin,
+> +	AS_HELP_STRING([--enable-kernelshark-plugin], [build KernelShark plugin]),
+> +	[case "$enableval" in
+> +	y | yes) kernelshark_plugin=y ;;
+> +	/*) kernelshark_plugin=y ;;
 
-To do a quick test, I just applied the change from the commit you
-referenced above to my 5.4.151 ipipe kernel and it unfortunately did not
-help (hang still occurs with first interrupt).
+These /* matches can be dropped I think. They backdate to the time of
+accepting a path here. I'll remove them on merge.
 
-> 
->>
->> Before I dive into analyzing the hang, I wanted to ask:
->>
->> What are other people's experiences with using PCIe MSI interrupts
->> and I-pipe?
->>
->> I am thinking of trying 5.10.103 Dovetail to see if I still see
->> the problem. Would this be recommended?
-> 
-> If you can migrate your test with reasonable effort, yes, definitely.
+> +	*) unset kernelshark_plugin ;;
+> +	esac])
+> +AC_MSG_RESULT(${kernelshark_plugin:-no})
+> +AM_CONDITIONAL(XENO_KSHARK_PLUGIN, [test x$kernelshark_plugin = xy])
+> +
+> +libtraceevent_plugin=
+> +AC_MSG_CHECKING(whether libtraceevent plugin should be built)
+> +AC_ARG_ENABLE(libtraceevent_plugin,
+> +	AS_HELP_STRING([--enable-libtraceevent-plugin], [build libtraceevent plugin]),
+> +	[case "$enableval" in
+> +	y | yes) libtraceevent_plugin=y ;;
+> +	/*) libtraceevent_plugin=y ;;
+> +	*) unset libtraceevent_plugin ;;
+> +	esac])
+> +AC_MSG_RESULT(${libtraceevent_plugin:-no})
+> +AM_CONDITIONAL(XENO_LIBTRACEEVENT_PLUGIN, [test x$libtraceevent_plugin = xy])
+> +
+> +if test x$kernelshark_plugin = xy -o x$libtraceevent_plugin = xy; then
+> +	PKG_CHECK_MODULES(LIBTRACEEVENT, libtraceevent)
+> +	PKG_CHECK_VAR(XENO_LIBTRACEEVENT_INSTALLDIR, libtraceevent, libdir)
+> +fi
+> +
+> +if test x$kernelshark_plugin = xy; then
+> +	PKG_CHECK_MODULES(LIBKSHARK, libkshark)
+> +	PKG_CHECK_VAR(XENO_KSHARK_INSTALLDIR, libkshark, libdir)
+> +fi
+> +
+>  AC_MSG_CHECKING([for test source generation])
+>  AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
+>      [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
 
-I will try to migrate my test to 5.10.103 Dovetail with the hopes that
-it will not be too much effort and report back.
+Jan
 
-Thanks,
-
-Scott
-
-> 
-> Jan
-> 
->>
->> Thanks,
->>
->> Scott
->>
->> [1] https://xenomai.org/pipermail/xenomai/2021-August/046138.html
->>
->>
-> 
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
