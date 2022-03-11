@@ -1,12 +1,12 @@
-References: <20220304190205.24489-1-egates@cardinalpeak.com>
- <20220307183146.24784-1-evan.gates@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH v3] meson: allow use of installed uapi headers
-Date: Thu, 10 Mar 2022 10:50:52 +0100
-In-reply-to: <20220307183146.24784-1-evan.gates@gmail.com>
-Message-ID: <87r17af853.fsf@xenomai.org>
+From: Scott Reed <scott.reed@arcor.de>
+Subject: System hang on first PCIe MSI interrupt with I-pipe kernels newer
+ than 4.14.62
+Message-ID: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
+Date: Fri, 11 Mar 2022 11:12:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Evan Gates <evan.gates@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hello,
 
-Evan Gates via Xenomai <xenomai@xenomai.org> writes:
+I am seeing an apparent issue with PCIe MSI interrupts and I-pipe
+when trying to move to a newer kernel and I-pipe patch.
 
-> Commit c70a9d9d536aefcf6574328aaac0fcc86f9ab0f7 added a test for
-> $UAPI/include/uapi/evl that was meant to ensure the given $UAPI path was
-> correct.  That test meant that $UAPI had to point to a linux-evl source
-> directory and could not point to installed headers in e.g. /usr/include.
-> The script had previously allowed the use of installed headers, using
-> the existence of $UAPI/Kbuild as an heuristic to decide whether $UAPI
-> pointed to linux-evl source or to installed headers.
->
-> Rewrite the script to check for the existence of all three required
-> directories in either location.  This allows the use of installed
-> headers again.
+The issue is as soon as a PCIe MSI interrupt occurs, the system
+hangs with no message output on the serial console or in
+/var/log/messages.
 
-Merged, thanks.
+The platform I am working on is a "i.MX 6 Quad" and I am upgrading
+from a 4.14.62 kernel and I-pipe patch with Xenomai 3.07 to 5.4.151
+kernel and I-pipe patch with Xenomai 3.2.1.
 
--- 
-Philippe.
+Our FPGA is connected to the i.MX 6 via PCIe and generates PCIe MSI
+interrupts to the CPU from, for example, an Altera Triple-Speed MAC.
+
+I have stable system running for some time with Linux 4.14.62 with
+Xenomai 3.07 although I did need to patch the PCIe driver [1]. Also
+some time back, I tried to move to 4.14.110 with I-pipe and also
+saw same scenario of my system hanging on the first PCIe MSI interrupt
+so I backed out back to 4.14.62. Now I am trying to move to 5.4.151, but
+see the same hang.
+
+Before I dive into analyzing the hang, I wanted to ask:
+
+What are other people's experiences with using PCIe MSI interrupts
+and I-pipe?
+
+I am thinking of trying 5.10.103 Dovetail to see if I still see
+the problem. Would this be recommended?
+
+Thanks,
+
+Scott
+
+[1] https://xenomai.org/pipermail/xenomai/2021-August/046138.html
+
 
