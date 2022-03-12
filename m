@@ -1,13 +1,9 @@
-Message-ID: <9b2a3fdc-ac85-bad8-e45f-e6d082c7222c@siemens.com>
-Date: Fri, 11 Mar 2022 14:30:30 +0100
+Message-ID: <8dc07c6c-83e1-7eaa-ab27-c6e242048ef4@siemens.com>
+Date: Sat, 12 Mar 2022 14:00:17 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/4] build: add options to build plugins of kernelshark
- and libtraceevent
-Content-Language: en-US
-References: <20220310081513.12314-1-hongzhan.chen@intel.com>
- <20220310081513.12314-2-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220310081513.12314-2-hongzhan.chen@intel.com>
+Subject: [PATCH] libs: Silence installation output of libtool
+Content-Language: en-US
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,76 +14,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org, florian.bezdeka@siemens.com
+To: Xenomai <xenomai@xenomai.org>
 
-On 10.03.22 09:15, Hongzhan Chen wrote:
-> To build plugins of kernelshark and libtraceevent, add options and
-> do necessary configuration.
-> 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
-> 
-> diff --git a/configure.ac b/configure.ac
-> index afe08b8f2..16c8788a9 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -91,6 +91,8 @@ AC_ARG_WITH(cxx,
->      ])
->  AC_PROG_CXX
->  
-> +PKG_PROG_PKG_CONFIG
-> +
->  # Do not let autoconf set the default value of CFLAGS
->  if $XENO_EMPTY_CFLAGS; then
->  	CFLAGS=""
-> @@ -831,6 +833,40 @@ AC_ARG_WITH(demodir,
->      ], [XENO_DEMO_DIR=$demodir])
->  AC_MSG_RESULT($XENO_DEMO_DIR)
->  
-> +kernelshark_plugin=
-> +AC_MSG_CHECKING(whether KernelShark plugin should be built)
-> +AC_ARG_ENABLE(kernelshark_plugin,
-> +	AS_HELP_STRING([--enable-kernelshark-plugin], [build KernelShark plugin]),
-> +	[case "$enableval" in
-> +	y | yes) kernelshark_plugin=y ;;
-> +	/*) kernelshark_plugin=y ;;
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-These /* matches can be dropped I think. They backdate to the time of
-accepting a path here. I'll remove them on merge.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/alchemy/Makefile.am     | 2 ++
+ lib/analogy/Makefile.am     | 2 ++
+ lib/cobalt/Makefile.am      | 2 ++
+ lib/copperplate/Makefile.am | 2 ++
+ lib/mercury/Makefile.am     | 3 ++-
+ lib/psos/Makefile.am        | 2 ++
+ lib/smokey/Makefile.am      | 2 ++
+ lib/trank/Makefile.am       | 3 ++-
+ lib/vxworks/Makefile.am     | 2 ++
+ 9 files changed, 18 insertions(+), 2 deletions(-)
 
-> +	*) unset kernelshark_plugin ;;
-> +	esac])
-> +AC_MSG_RESULT(${kernelshark_plugin:-no})
-> +AM_CONDITIONAL(XENO_KSHARK_PLUGIN, [test x$kernelshark_plugin = xy])
-> +
-> +libtraceevent_plugin=
-> +AC_MSG_CHECKING(whether libtraceevent plugin should be built)
-> +AC_ARG_ENABLE(libtraceevent_plugin,
-> +	AS_HELP_STRING([--enable-libtraceevent-plugin], [build libtraceevent plugin]),
-> +	[case "$enableval" in
-> +	y | yes) libtraceevent_plugin=y ;;
-> +	/*) libtraceevent_plugin=y ;;
-> +	*) unset libtraceevent_plugin ;;
-> +	esac])
-> +AC_MSG_RESULT(${libtraceevent_plugin:-no})
-> +AM_CONDITIONAL(XENO_LIBTRACEEVENT_PLUGIN, [test x$libtraceevent_plugin = xy])
-> +
-> +if test x$kernelshark_plugin = xy -o x$libtraceevent_plugin = xy; then
-> +	PKG_CHECK_MODULES(LIBTRACEEVENT, libtraceevent)
-> +	PKG_CHECK_VAR(XENO_LIBTRACEEVENT_INSTALLDIR, libtraceevent, libdir)
-> +fi
-> +
-> +if test x$kernelshark_plugin = xy; then
-> +	PKG_CHECK_MODULES(LIBKSHARK, libkshark)
-> +	PKG_CHECK_VAR(XENO_KSHARK_INSTALLDIR, libkshark, libdir)
-> +fi
-> +
->  AC_MSG_CHECKING([for test source generation])
->  AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
->      [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
-
-Jan
-
+diff --git a/lib/alchemy/Makefile.am b/lib/alchemy/Makefile.am
+index d350912ffe..12f8fab536 100644
+--- a/lib/alchemy/Makefile.am
++++ b/lib/alchemy/Makefile.am
+@@ -43,6 +43,8 @@ libalchemy@CORE@_la_CPPFLAGS =				\
+ 	-I$(top_srcdir)/include				\
+ 	-I$(top_srcdir)/lib
+ 
++AM_LIBTOOLFLAGS = --silent
++
+ EXTRA_DIST = testsuite
+ 
+ SPARSE = sparse
+diff --git a/lib/analogy/Makefile.am b/lib/analogy/Makefile.am
+index 4c6f0de013..98dbfbf325 100644
+--- a/lib/analogy/Makefile.am
++++ b/lib/analogy/Makefile.am
+@@ -21,3 +21,5 @@ libanalogy_la_CPPFLAGS =		\
+ 	@XENO_USER_CFLAGS@		\
+ 	-I$(top_srcdir)/include 	\
+ 	-I$(top_srcdir)/lib/boilerplate	
++
++AM_LIBTOOLFLAGS = --silent
+diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+index b3003cd957..3159695b37 100644
+--- a/lib/cobalt/Makefile.am
++++ b/lib/cobalt/Makefile.am
+@@ -54,6 +54,8 @@ libmodechk_la_CPPFLAGS =		\
+ 	-I$(top_srcdir)/include/cobalt	\
+ 	-I$(top_srcdir)/include
+ 
++AM_LIBTOOLFLAGS = --silent
++
+ install-data-local:
+ 	$(mkinstalldirs) $(DESTDIR)$(libdir)
+ 	$(INSTALL_DATA) $(srcdir)/cobalt.wrappers $(DESTDIR)$(libdir)
+diff --git a/lib/copperplate/Makefile.am b/lib/copperplate/Makefile.am
+index 671e87d79c..c6edea9853 100644
+--- a/lib/copperplate/Makefile.am
++++ b/lib/copperplate/Makefile.am
+@@ -51,6 +51,8 @@ libcopperplate@CORE@_la_SOURCES += heapobj-malloc.c
+ endif
+ endif
+ 
++AM_LIBTOOLFLAGS = --silent
++
+ SUBDIRS = .
+ 
+ if XENO_REGISTRY
+diff --git a/lib/mercury/Makefile.am b/lib/mercury/Makefile.am
+index d2b06211fd..4866038f6d 100644
+--- a/lib/mercury/Makefile.am
++++ b/lib/mercury/Makefile.am
+@@ -1,4 +1,3 @@
+-
+ lib_LTLIBRARIES = libmercury.la
+ 
+ libmercury_la_SOURCES =
+@@ -7,3 +6,5 @@ libmercury_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0 -lpthread -lrt
+ 
+ libmercury_la_LIBADD = \
+ 	../boilerplate/libboilerplate.la
++
++AM_LIBTOOLFLAGS = --silent
+diff --git a/lib/psos/Makefile.am b/lib/psos/Makefile.am
+index f54b26001d..cbfe457adf 100644
+--- a/lib/psos/Makefile.am
++++ b/lib/psos/Makefile.am
+@@ -28,6 +28,8 @@ libpsos@CORE@_la_CPPFLAGS =					\
+ 	-I$(top_srcdir)/include				\
+ 	-I$(top_srcdir)/lib
+ 
++AM_LIBTOOLFLAGS = --silent
++
+ EXTRA_DIST = testsuite
+ 
+ SPARSE = sparse
+diff --git a/lib/smokey/Makefile.am b/lib/smokey/Makefile.am
+index 2674e32876..45fd95e5f2 100644
+--- a/lib/smokey/Makefile.am
++++ b/lib/smokey/Makefile.am
+@@ -11,3 +11,5 @@ libsmokey@CORE@_la_CPPFLAGS =			\
+ 	@XENO_USER_CFLAGS@		\
+ 	-I$(top_srcdir)/include		\
+ 	-I$(top_srcdir)/lib
++
++AM_LIBTOOLFLAGS = --silent
+diff --git a/lib/trank/Makefile.am b/lib/trank/Makefile.am
+index ec15367d36..c19dd8960c 100644
+--- a/lib/trank/Makefile.am
++++ b/lib/trank/Makefile.am
+@@ -1,4 +1,3 @@
+-
+ lib_LTLIBRARIES = libtrank@CORE@.la
+ 
+ libtrank@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+@@ -19,3 +18,5 @@ libtrank@CORE@_la_CPPFLAGS =		\
+ 	-D__XENO_COMPAT__	\
+ 	-I$(top_srcdir)/include	\
+ 	-I$(top_srcdir)/lib
++
++AM_LIBTOOLFLAGS = --silent
+diff --git a/lib/vxworks/Makefile.am b/lib/vxworks/Makefile.am
+index 37b8caf7b5..a1d0d62112 100644
+--- a/lib/vxworks/Makefile.am
++++ b/lib/vxworks/Makefile.am
+@@ -37,6 +37,8 @@ libvxworks@CORE@_la_CPPFLAGS =				\
+ 	-I$(top_srcdir)/include				\
+ 	-I$(top_srcdir)/lib
+ 
++AM_LIBTOOLFLAGS = --silent
++
+ EXTRA_DIST = testsuite
+ 
+ SPARSE = sparse
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+2.34.1
 
