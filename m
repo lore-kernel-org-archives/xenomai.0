@@ -1,18 +1,19 @@
-Message-ID: <aac7d3f9-cc31-2ece-4ae8-f298855defea@siemens.com>
-Date: Mon, 14 Mar 2022 08:50:15 +0100
-MIME-Version: 1.0
-Subject: Re: [PATCH v7 1/3] build: add options to build plugins of kernelshark
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH v7 1/3] build: add options to build plugins of kernelshark
  and libtraceevent
-Content-Language: en-US
+Date: Mon, 14 Mar 2022 08:04:55 +0000
+Message-ID: <MN2PR11MB42852C5E8CF217E824383017F20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <cover.1647090002.git.jan.kiszka@siemens.com>
  <0b26bd28e2bfca49a4e7582be9f01e74bd74c409.1647090002.git.jan.kiszka@siemens.com>
  <MN2PR11MB428509FCA6398CFBBD3BAC91F20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
  <09938899-efbb-24a8-1e5d-c80dd5b7c5fd@siemens.com>
  <MN2PR11MB4285C946D09696AD965EB58BF20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB4285C946D09696AD965EB58BF20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <aac7d3f9-cc31-2ece-4ae8-f298855defea@siemens.com>
+In-Reply-To: <aac7d3f9-cc31-2ece-4ae8-f298855defea@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,116 +22,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.03.22 07:48, Chen, Hongzhan wrote:
-> -----Original Message-----
-> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Monday, March 14, 2022 2:41 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [PATCH v7 1/3] build: add options to build plugins of kernelshark and libtraceevent
->>
->> On 14.03.22 02:27, Chen, Hongzhan wrote:
->>>>
->>>>
->>>> -----Original Message-----
->>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
->>>> Sent: Saturday, March 12, 2022 9:00 PM
->>>> To: xenomai@xenomai.org
->>>> Cc: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>> Subject: [PATCH v7 1/3] build: add options to build plugins of kernelshark and libtraceevent
->>>>
->>>> From: Hongzhan Chen <hongzhan.chen@intel.com>
->>>>
->>>> To build plugins of kernelshark and libtraceevent, add options and
->>>> do necessary configuration.
->>>>
->>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->>>> [Jan: cleaned up AC_ARG_ENABLE matches, add missing kshark dep, drop INSTALLDIRs]
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>> ---
->>>> configure.ac | 33 +++++++++++++++++++++++++++++++++
->>>> 1 file changed, 33 insertions(+)
->>>>
->>>> diff --git a/configure.ac b/configure.ac
->>>> index 16cffd8f81..ef450aa582 100644
->>>> --- a/configure.ac
->>>> +++ b/configure.ac
->>>> @@ -91,6 +91,8 @@ AC_ARG_WITH(cxx,
->>>>     ])
->>>> AC_PROG_CXX
->>>>
->>>> +PKG_PROG_PKG_CONFIG
->>>> +
->>>> # Do not let autoconf set the default value of CFLAGS
->>>> if $XENO_EMPTY_CFLAGS; then
->>>> 	CFLAGS=""
->>>> @@ -826,6 +828,37 @@ AC_ARG_WITH(demodir,
->>>>     ], [XENO_DEMO_DIR=$demodir])
->>>> AC_MSG_RESULT($XENO_DEMO_DIR)
->>>>
->>>> +kernelshark_plugin=
->>>> +AC_MSG_CHECKING(whether KernelShark plugin should be built)
->>>> +AC_ARG_ENABLE(kernelshark_plugin,
->>>> +	AS_HELP_STRING([--enable-kernelshark-plugin], [build KernelShark plugin]),
->>>> +	[case "$enableval" in
->>>> +	y | yes) kernelshark_plugin=y ;;
->>>> +	*) unset kernelshark_plugin ;;
->>>> +	esac])
->>>> +AC_MSG_RESULT(${kernelshark_plugin:-no})
->>>> +AM_CONDITIONAL(XENO_KSHARK_PLUGIN, [test x$kernelshark_plugin = xy])
->>>> +
->>>> +libtraceevent_plugin=
->>>> +AC_MSG_CHECKING(whether libtraceevent plugin should be built)
->>>> +AC_ARG_ENABLE(libtraceevent_plugin,
->>>> +	AS_HELP_STRING([--enable-libtraceevent-plugin], [build libtraceevent plugin]),
->>>> +	[case "$enableval" in
->>>> +	y | yes) libtraceevent_plugin=y ;;
->>>> +	*) unset libtraceevent_plugin ;;
->>>> +	esac])
->>>> +AC_MSG_RESULT(${libtraceevent_plugin:-no})
->>>> +AM_CONDITIONAL(XENO_LIBTRACEEVENT_PLUGIN, [test x$libtraceevent_plugin = xy])
->>>> +
->>>> +if test x$kernelshark_plugin = xy -o x$libtraceevent_plugin = xy; then
->>>> +	PKG_CHECK_MODULES(LIBTRACEEVENT, libtraceevent)
->>>> +fi
->>>> +
->>>> +if test x$kernelshark_plugin = xy; then
->>>> +	PKG_CHECK_MODULES(LIBKSHARK, libkshark)
->>>> +	PKG_CHECK_MODULES(LIBTRACEFS, libtracefs)
->>>
->>> I do not quite understand why we check LIBTRAEFS here because kernelshark depend on libtracefs 
->>> as described in [1] which should be handled by kernelshark module itself.
->>> If we have to check libtracefs, why we do not check other dependency module like libtraceevent  for kernelshark_plugin?
->>>
->>
->> Without this inclusion (and the corresponding usage of 
->> LIBTRACEFS_CFLAGS), you will get
->>
->>  CC       plugin_xenomai_cobalt_switch_events_la-xenomai_cobalt_switch_events.lo
->> In file included from ../../../tracing/kernelshark/xenomai_cobalt_switch_events.c:17:0:
->> /usr/local/include/trace-cmd/trace-cmd.h:10:10: fatal error: tracefs.h: No such file or directory
->> #include "tracefs.h"
->>          ^~~~~~~~~~~
->> compilation terminated.
->>
->> I do not have libtracefs installed via my distro, thus everything must 
->> be explored and properly appended to the search path.
-> 
-> According to my test on my platform, if we have not instaledl libtracefs, 
-> PKG_CHECK_MODULES(LIBKSHARK, libkshark) would fail at first reporting following error.
-> 
-> 
-> configure: error: Package requirements (libkshark) were not met:
-> 
-> Package 'libtracefs', required by 'libtracecmd', not found
-> 
-
-Right, but this alone does not fill and propagate LIBTRACEFS_CFLAGS.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Pk9uIDE0LjAzLjIyIDA3OjQ4LCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+IC0tLS0tT3JpZ2lu
+YWwgTWVzc2FnZS0tLS0tDQo+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPiANCj4+PiBTZW50OiBNb25kYXksIE1hcmNoIDE0LCAyMDIyIDI6NDEgUE0NCj4+PiBUbzog
+Q2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4ZW5vbWFp
+Lm9yZw0KPj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjcgMS8zXSBidWlsZDogYWRkIG9wdGlvbnMg
+dG8gYnVpbGQgcGx1Z2lucyBvZiBrZXJuZWxzaGFyayBhbmQgbGlidHJhY2VldmVudA0KPj4+DQo+
+Pj4gT24gMTQuMDMuMjIgMDI6MjcsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4+Pj4NCj4+Pj4+
+DQo+Pj4+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4+Pj4gRnJvbTogSmFuIEtpc3pr
+YSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+Pj4+PiBTZW50OiBTYXR1cmRheSwgTWFyY2gg
+MTIsIDIwMjIgOTowMCBQTQ0KPj4+Pj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcNCj4+Pj4+IENj
+OiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+Pj4+PiBTdWJqZWN0
+OiBbUEFUQ0ggdjcgMS8zXSBidWlsZDogYWRkIG9wdGlvbnMgdG8gYnVpbGQgcGx1Z2lucyBvZiBr
+ZXJuZWxzaGFyayBhbmQgbGlidHJhY2VldmVudA0KPj4+Pj4NCj4+Pj4+IEZyb206IEhvbmd6aGFu
+IENoZW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4+Pj4NCj4+Pj4+IFRvIGJ1aWxkIHBs
+dWdpbnMgb2Yga2VybmVsc2hhcmsgYW5kIGxpYnRyYWNlZXZlbnQsIGFkZCBvcHRpb25zIGFuZA0K
+Pj4+Pj4gZG8gbmVjZXNzYXJ5IGNvbmZpZ3VyYXRpb24uDQo+Pj4+Pg0KPj4+Pj4gU2lnbmVkLW9m
+Zi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+Pj4+PiBbSmFu
+OiBjbGVhbmVkIHVwIEFDX0FSR19FTkFCTEUgbWF0Y2hlcywgYWRkIG1pc3Npbmcga3NoYXJrIGRl
+cCwgZHJvcCBJTlNUQUxMRElSc10NCj4+Pj4+IFNpZ25lZC1vZmYtYnk6IEphbiBLaXN6a2EgPGph
+bi5raXN6a2FAc2llbWVucy5jb20+DQo+Pj4+PiAtLS0NCj4+Pj4+IGNvbmZpZ3VyZS5hYyB8IDMz
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPj4+Pj4gMSBmaWxlIGNoYW5nZWQs
+IDMzIGluc2VydGlvbnMoKykNCj4+Pj4+DQo+Pj4+PiBkaWZmIC0tZ2l0IGEvY29uZmlndXJlLmFj
+IGIvY29uZmlndXJlLmFjDQo+Pj4+PiBpbmRleCAxNmNmZmQ4ZjgxLi5lZjQ1MGFhNTgyIDEwMDY0
+NA0KPj4+Pj4gLS0tIGEvY29uZmlndXJlLmFjDQo+Pj4+PiArKysgYi9jb25maWd1cmUuYWMNCj4+
+Pj4+IEBAIC05MSw2ICs5MSw4IEBAIEFDX0FSR19XSVRIKGN4eCwNCj4+Pj4+ICAgICBdKQ0KPj4+
+Pj4gQUNfUFJPR19DWFgNCj4+Pj4+DQo+Pj4+PiArUEtHX1BST0dfUEtHX0NPTkZJRw0KPj4+Pj4g
+Kw0KPj4+Pj4gIyBEbyBub3QgbGV0IGF1dG9jb25mIHNldCB0aGUgZGVmYXVsdCB2YWx1ZSBvZiBD
+RkxBR1MNCj4+Pj4+IGlmICRYRU5PX0VNUFRZX0NGTEFHUzsgdGhlbg0KPj4+Pj4gCUNGTEFHUz0i
+Ig0KPj4+Pj4gQEAgLTgyNiw2ICs4MjgsMzcgQEAgQUNfQVJHX1dJVEgoZGVtb2RpciwNCj4+Pj4+
+ICAgICBdLCBbWEVOT19ERU1PX0RJUj0kZGVtb2Rpcl0pDQo+Pj4+PiBBQ19NU0dfUkVTVUxUKCRY
+RU5PX0RFTU9fRElSKQ0KPj4+Pj4NCj4+Pj4+ICtrZXJuZWxzaGFya19wbHVnaW49DQo+Pj4+PiAr
+QUNfTVNHX0NIRUNLSU5HKHdoZXRoZXIgS2VybmVsU2hhcmsgcGx1Z2luIHNob3VsZCBiZSBidWls
+dCkNCj4+Pj4+ICtBQ19BUkdfRU5BQkxFKGtlcm5lbHNoYXJrX3BsdWdpbiwNCj4+Pj4+ICsJQVNf
+SEVMUF9TVFJJTkcoWy0tZW5hYmxlLWtlcm5lbHNoYXJrLXBsdWdpbl0sIFtidWlsZCBLZXJuZWxT
+aGFyayBwbHVnaW5dKSwNCj4+Pj4+ICsJW2Nhc2UgIiRlbmFibGV2YWwiIGluDQo+Pj4+PiArCXkg
+fCB5ZXMpIGtlcm5lbHNoYXJrX3BsdWdpbj15IDs7DQo+Pj4+PiArCSopIHVuc2V0IGtlcm5lbHNo
+YXJrX3BsdWdpbiA7Ow0KPj4+Pj4gKwllc2FjXSkNCj4+Pj4+ICtBQ19NU0dfUkVTVUxUKCR7a2Vy
+bmVsc2hhcmtfcGx1Z2luOi1ub30pDQo+Pj4+PiArQU1fQ09ORElUSU9OQUwoWEVOT19LU0hBUktf
+UExVR0lOLCBbdGVzdCB4JGtlcm5lbHNoYXJrX3BsdWdpbiA9IHh5XSkNCj4+Pj4+ICsNCj4+Pj4+
+ICtsaWJ0cmFjZWV2ZW50X3BsdWdpbj0NCj4+Pj4+ICtBQ19NU0dfQ0hFQ0tJTkcod2hldGhlciBs
+aWJ0cmFjZWV2ZW50IHBsdWdpbiBzaG91bGQgYmUgYnVpbHQpDQo+Pj4+PiArQUNfQVJHX0VOQUJM
+RShsaWJ0cmFjZWV2ZW50X3BsdWdpbiwNCj4+Pj4+ICsJQVNfSEVMUF9TVFJJTkcoWy0tZW5hYmxl
+LWxpYnRyYWNlZXZlbnQtcGx1Z2luXSwgW2J1aWxkIGxpYnRyYWNlZXZlbnQgcGx1Z2luXSksDQo+
+Pj4+PiArCVtjYXNlICIkZW5hYmxldmFsIiBpbg0KPj4+Pj4gKwl5IHwgeWVzKSBsaWJ0cmFjZWV2
+ZW50X3BsdWdpbj15IDs7DQo+Pj4+PiArCSopIHVuc2V0IGxpYnRyYWNlZXZlbnRfcGx1Z2luIDs7
+DQo+Pj4+PiArCWVzYWNdKQ0KPj4+Pj4gK0FDX01TR19SRVNVTFQoJHtsaWJ0cmFjZWV2ZW50X3Bs
+dWdpbjotbm99KQ0KPj4+Pj4gK0FNX0NPTkRJVElPTkFMKFhFTk9fTElCVFJBQ0VFVkVOVF9QTFVH
+SU4sIFt0ZXN0IHgkbGlidHJhY2VldmVudF9wbHVnaW4gPSB4eV0pDQo+Pj4+PiArDQo+Pj4+PiAr
+aWYgdGVzdCB4JGtlcm5lbHNoYXJrX3BsdWdpbiA9IHh5IC1vIHgkbGlidHJhY2VldmVudF9wbHVn
+aW4gPSB4eTsgdGhlbg0KPj4+Pj4gKwlQS0dfQ0hFQ0tfTU9EVUxFUyhMSUJUUkFDRUVWRU5ULCBs
+aWJ0cmFjZWV2ZW50KQ0KPj4+Pj4gK2ZpDQo+Pj4+PiArDQo+Pj4+PiAraWYgdGVzdCB4JGtlcm5l
+bHNoYXJrX3BsdWdpbiA9IHh5OyB0aGVuDQo+Pj4+PiArCVBLR19DSEVDS19NT0RVTEVTKExJQktT
+SEFSSywgbGlia3NoYXJrKQ0KPj4+Pj4gKwlQS0dfQ0hFQ0tfTU9EVUxFUyhMSUJUUkFDRUZTLCBs
+aWJ0cmFjZWZzKQ0KPj4+Pg0KPj4+PiBJIGRvIG5vdCBxdWl0ZSB1bmRlcnN0YW5kIHdoeSB3ZSBj
+aGVjayBMSUJUUkFFRlMgaGVyZSBiZWNhdXNlIGtlcm5lbHNoYXJrIGRlcGVuZCBvbiBsaWJ0cmFj
+ZWZzIA0KPj4+PiBhcyBkZXNjcmliZWQgaW4gWzFdIHdoaWNoIHNob3VsZCBiZSBoYW5kbGVkIGJ5
+IGtlcm5lbHNoYXJrIG1vZHVsZSBpdHNlbGYuDQo+Pj4+IElmIHdlIGhhdmUgdG8gY2hlY2sgbGli
+dHJhY2Vmcywgd2h5IHdlIGRvIG5vdCBjaGVjayBvdGhlciBkZXBlbmRlbmN5IG1vZHVsZSBsaWtl
+IGxpYnRyYWNlZXZlbnQgIGZvciBrZXJuZWxzaGFya19wbHVnaW4/DQo+Pj4+DQo+Pj4NCj4+IFdp
+dGhvdXQgdGhpcyBpbmNsdXNpb24gKGFuZCB0aGUgY29ycmVzcG9uZGluZyB1c2FnZSBvZiANCj4+
+IExJQlRSQUNFRlNfQ0ZMQUdTKSwgeW91IHdpbGwgZ2V0DQo+Pg0KPj4gIENDICAgICAgIHBsdWdp
+bl94ZW5vbWFpX2NvYmFsdF9zd2l0Y2hfZXZlbnRzX2xhLXhlbm9tYWlfY29iYWx0X3N3aXRjaF9l
+dmVudHMubG8NCj4+IEluIGZpbGUgaW5jbHVkZWQgZnJvbSAuLi8uLi8uLi90cmFjaW5nL2tlcm5l
+bHNoYXJrL3hlbm9tYWlfY29iYWx0X3N3aXRjaF9ldmVudHMuYzoxNzowOg0KPj4gL3Vzci9sb2Nh
+bC9pbmNsdWRlL3RyYWNlLWNtZC90cmFjZS1jbWQuaDoxMDoxMDogZmF0YWwgZXJyb3I6IHRyYWNl
+ZnMuaDogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeQ0KPj4gI2luY2x1ZGUgInRyYWNlZnMuaCIN
+Cj4+ICAgICAgICAgIF5+fn5+fn5+fn5+DQo+PiBjb21waWxhdGlvbiB0ZXJtaW5hdGVkLg0KPj4N
+Cj4+IEkgZG8gbm90IGhhdmUgbGlidHJhY2VmcyBpbnN0YWxsZWQgdmlhIG15IGRpc3RybywgdGh1
+cyBldmVyeXRoaW5nIG11c3QgDQo+PiBiZSBleHBsb3JlZCBhbmQgcHJvcGVybHkgYXBwZW5kZWQg
+dG8gdGhlIHNlYXJjaCBwYXRoLg0KPiANCj4gQWNjb3JkaW5nIHRvIG15IHRlc3Qgb24gbXkgcGxh
+dGZvcm0sIGlmIHdlIGhhdmUgbm90IGluc3RhbGVkbCBsaWJ0cmFjZWZzLCANCj4gUEtHX0NIRUNL
+X01PRFVMRVMoTElCS1NIQVJLLCBsaWJrc2hhcmspIHdvdWxkIGZhaWwgYXQgZmlyc3QgcmVwb3J0
+aW5nIGZvbGxvd2luZyBlcnJvci4NCj4gDQo+IA0KPiBjb25maWd1cmU6IGVycm9yOiBQYWNrYWdl
+IHJlcXVpcmVtZW50cyAobGlia3NoYXJrKSB3ZXJlIG5vdCBtZXQ6DQo+IA0KPiBQYWNrYWdlICds
+aWJ0cmFjZWZzJywgcmVxdWlyZWQgYnkgJ2xpYnRyYWNlY21kJywgbm90IGZvdW5kDQo+IA0KPg0K
+PlJpZ2h0LCBidXQgdGhpcyBhbG9uZSBkb2VzIG5vdCBmaWxsIGFuZCBwcm9wYWdhdGUgTElCVFJB
+Q0VGU19DRkxBR1MuDQoNCldoeSBkbyB3ZSBuZWVkIExJQlRSQUNFRlNfQ0ZMQUdTPyBXZSBkbyBu
+b3QgdHJ5IHRvIGNvbXBpbGUgbGlidHJhY2Vmcy4gIHdoZW4gUEtHX0NIRUNLX01PRFVMRVMoTElC
+S1NIQVJLLCBsaWJrc2hhcmspIHN1Y2Nlc3NmdWxseSwgDQpMSUJLU0hBUktfQ0ZMQUdTIGFscmVh
+ZHkgaW5jbHVkZSBuZWVkZWQgdHJhY2VmcyBwYXRoIGxpa2UgZm9sbG93aW5nLiBUaGUgY2F1c2Ug
+b2YgdGhlIGlzc3VlIHlvdSBtZXQgc2hvdWxkIGJlIHRoYXQgDQpMaWJ0cmFjZWZzIGlzIG5vdCBp
+bnN0YWxsZWQgY29ycmVjdGx5IG9uIHlvdSBwbGF0Zm9ybT8gSWYgbGlidHJhY2VmcyBoYWQgbm90
+IGJlZW4gIGluc3RhbGxlZCAgd2h5IGNvbmZpZ3VyZSBzdGFnZSBkaWQgbm90IHJlcG9ydCBlcnJv
+cj8NCg0KLUkvdXNyL2xvY2FsL2luY2x1ZGUva2VybmVsc2hhcmsgLUkvdXNyL2xvY2FsL2luY2x1
+ZGUvdHJhY2UtY21kIC1JL3Vzci9sb2NhbC9pbmNsdWRlL3RyYWNlZnMgLUkvdXNyL2xvY2FsL2lu
+Y2x1ZGUvdHJhY2VldmVudCAtSS91c3IvaW5jbHVkZS9qc29uLWMNCg0KDQpSZWdhcmRzDQoNCkhv
+bmd6aGFuIENoZW4NCg0KDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVGVjaG5vbG9n
+eQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+DQo=
 
