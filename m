@@ -1,14 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
-Date: Mon, 14 Mar 2022 21:05:23 +0000
-Message-ID: <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
+Date: Mon, 14 Mar 2022 22:10:53 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <1292922167.145768.1647292253417.JavaMail.zimbra@nod.at>
+In-Reply-To: <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
 References: <20220314203841.28925-1-richard@nod.at>
-In-Reply-To: <20220314203841.28925-1-richard@nod.at>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <45233565C342E944A130BD6319CB91FD@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
+Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-SGkgUmljaGFyZCwNCg0KT24gTW9uLCAyMDIyLTAzLTE0IGF0IDIxOjM4ICswMTAwLCBSaWNoYXJk
-IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiBCSVRTX1BFUl9MT05HIGlzIHRvbyBi
-cm9hZCwgdGhlIG1heCBudW1iZXIgb2YgdXNhYmxlIGJpdHMgaXMgbGltaXRlZA0KPiBieSBucl9j
-cHVtYXNrX2JpdHMuDQoNCkkgYWdyZWUsIEJJVFNfUEVSX0xPTkcgc2VlbXMgd3JvbmcuIEJ1dCBj
-b3VsZG4ndCBpdCBiZSB0b28gc21hbGwgYXMNCndlbGw/IEl0IGRlcGVuZHMgb24gTlJfQ1BVUyB3
-aGljaCBtaWdodCBiZSA+IEJJVFNfUEVSX0xPTkcuDQoNClJlZ2FyZHMsDQpGbG9yaWFuDQoNCj4g
-Rm91bmQgd2hpbGUgZGVidWdnaW5nIGEgc3lzdGVtIHdpdGggQ09ORklHX0RFQlVHX1BFUl9DUFVf
-TUFQUyBlbmFibGVkLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogUmljaGFyZCBXZWluYmVyZ2VyIDxy
-aWNoYXJkQG5vZC5hdD4NCj4gLS0tDQo+ICBrZXJuZWwvY29iYWx0L3NjaGVkLmMgfCA0ICsrLS0N
-Cj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0K
-PiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIva2VybmVsL2NvYmFsdC9zY2hl
-ZC5jDQo+IGluZGV4IDg4YzQ5NTFlZDgxNC4uYWE2NWZkN2Y1ZDYzIDEwMDY0NA0KPiAtLS0gYS9r
-ZXJuZWwvY29iYWx0L3NjaGVkLmMNCj4gKysrIGIva2VybmVsL2NvYmFsdC9zY2hlZC5jDQo+IEBA
-IC0xMzcwLDcgKzEzNzAsNyBAQCBzdGF0aWMgaW50IGFmZmluaXR5X3ZmaWxlX3Nob3coc3RydWN0
-IHhudmZpbGVfcmVndWxhcl9pdGVyYXRvciAqaXQsDQo+ICAJdW5zaWduZWQgbG9uZyB2YWwgPSAw
-Ow0KPiAgCWludCBjcHU7DQo+ICANCj4gLQlmb3IgKGNwdSA9IDA7IGNwdSA8IEJJVFNfUEVSX0xP
-Tkc7IGNwdSsrKQ0KPiArCWZvciAoY3B1ID0gMDsgY3B1IDwgbnJfY3B1bWFza19iaXRzOyBjcHUr
-KykNCj4gIAkJaWYgKGNwdW1hc2tfdGVzdF9jcHUoY3B1LCAmY29iYWx0X2NwdV9hZmZpbml0eSkp
-DQo+ICAJCQl2YWwgfD0gKDFVTCA8PCBjcHUpOw0KPiAgDQo+IEBAIC0xMzk1LDcgKzEzOTUsNyBA
-QCBzdGF0aWMgc3NpemVfdCBhZmZpbml0eV92ZmlsZV9zdG9yZShzdHJ1Y3QgeG52ZmlsZV9pbnB1
-dCAqaW5wdXQpDQo+ICAJCWFmZmluaXR5ID0geG5zY2hlZF9yZWFsdGltZV9jcHVzOyAvKiBSZXNl
-dCB0byBkZWZhdWx0LiAqLw0KPiAgCWVsc2Ugew0KPiAgCQljcHVtYXNrX2NsZWFyKCZhZmZpbml0
-eSk7DQo+IC0JCWZvciAoY3B1ID0gMDsgY3B1IDwgQklUU19QRVJfTE9ORzsgY3B1KyssIHZhbCA+
-Pj0gMSkgew0KPiArCQlmb3IgKGNwdSA9IDA7IGNwdSA8IG5yX2NwdW1hc2tfYml0czsgY3B1Kyss
-IHZhbCA+Pj0gMSkgew0KPiAgCQkJaWYgKHZhbCAmIDEpIHsNCj4gIAkJCQkvKg0KPiAgCQkJCSAq
-IFRoZSBuZXcgZHluYW1pYyBhZmZpbml0eSBtdXN0IGJlIGEgc3RyaWN0DQoNCg==
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+> I agree, BITS_PER_LONG seems wrong. But couldn't it be too small as
+> well? It depends on NR_CPUS which might be > BITS_PER_LONG.
+
+Hmm, nr_cpumask_bits is defined as:
+
+#ifdef CONFIG_CPUMASK_OFFSTACK
+/* Assuming NR_CPUS is huge, a runtime limit is more efficient.  Also,
+ * not all bits may be allocated. */
+#define nr_cpumask_bits nr_cpu_ids
+#else
+#define nr_cpumask_bits ((unsigned int)NR_CPUS)
+#endif
+
+Where do you see a problem?
+
+Thanks,
+//richard
 
