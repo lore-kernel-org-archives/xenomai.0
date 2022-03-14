@@ -1,17 +1,18 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH v7 1/3] build: add options to build plugins of kernelshark
+Message-ID: <aac7d3f9-cc31-2ece-4ae8-f298855defea@siemens.com>
+Date: Mon, 14 Mar 2022 08:50:15 +0100
+MIME-Version: 1.0
+Subject: Re: [PATCH v7 1/3] build: add options to build plugins of kernelshark
  and libtraceevent
-Date: Mon, 14 Mar 2022 06:48:18 +0000
-Message-ID: <MN2PR11MB4285C946D09696AD965EB58BF20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Language: en-US
 References: <cover.1647090002.git.jan.kiszka@siemens.com>
  <0b26bd28e2bfca49a4e7582be9f01e74bd74c409.1647090002.git.jan.kiszka@siemens.com>
  <MN2PR11MB428509FCA6398CFBBD3BAC91F20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
  <09938899-efbb-24a8-1e5d-c80dd5b7c5fd@siemens.com>
-In-Reply-To: <09938899-efbb-24a8-1e5d-c80dd5b7c5fd@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <MN2PR11MB4285C946D09696AD965EB58BF20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <MN2PR11MB4285C946D09696AD965EB58BF20F9@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,79 +21,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FA
-c2llbWVucy5jb20+IA0KPlNlbnQ6IE1vbmRheSwgTWFyY2ggMTQsIDIwMjIgMjo0MSBQTQ0KPlRv
-OiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9t
-YWkub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCB2NyAxLzNdIGJ1aWxkOiBhZGQgb3B0aW9ucyB0
-byBidWlsZCBwbHVnaW5zIG9mIGtlcm5lbHNoYXJrIGFuZCBsaWJ0cmFjZWV2ZW50DQo+DQo+T24g
-MTQuMDMuMjIgMDI6MjcsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4+DQo+Pj4NCj4+PiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FA
-c2llbWVucy5jb20+IA0KPj4+IFNlbnQ6IFNhdHVyZGF5LCBNYXJjaCAxMiwgMjAyMiA5OjAwIFBN
-DQo+Pj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcNCj4+PiBDYzogQ2hlbiwgSG9uZ3poYW4gPGhv
-bmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPj4+IFN1YmplY3Q6IFtQQVRDSCB2NyAxLzNdIGJ1aWxk
-OiBhZGQgb3B0aW9ucyB0byBidWlsZCBwbHVnaW5zIG9mIGtlcm5lbHNoYXJrIGFuZCBsaWJ0cmFj
-ZWV2ZW50DQo+Pj4NCj4+PiBGcm9tOiBIb25nemhhbiBDaGVuIDxob25nemhhbi5jaGVuQGludGVs
-LmNvbT4NCj4+Pg0KPj4+IFRvIGJ1aWxkIHBsdWdpbnMgb2Yga2VybmVsc2hhcmsgYW5kIGxpYnRy
-YWNlZXZlbnQsIGFkZCBvcHRpb25zIGFuZA0KPj4+IGRvIG5lY2Vzc2FyeSBjb25maWd1cmF0aW9u
-Lg0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBp
-bnRlbC5jb20+DQo+Pj4gW0phbjogY2xlYW5lZCB1cCBBQ19BUkdfRU5BQkxFIG1hdGNoZXMsIGFk
-ZCBtaXNzaW5nIGtzaGFyayBkZXAsIGRyb3AgSU5TVEFMTERJUnNdDQo+Pj4gU2lnbmVkLW9mZi1i
-eTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4+PiAtLS0NCj4+PiBjb25m
-aWd1cmUuYWMgfCAzMyArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4+PiAxIGZp
-bGUgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2NvbmZp
-Z3VyZS5hYyBiL2NvbmZpZ3VyZS5hYw0KPj4+IGluZGV4IDE2Y2ZmZDhmODEuLmVmNDUwYWE1ODIg
-MTAwNjQ0DQo+Pj4gLS0tIGEvY29uZmlndXJlLmFjDQo+Pj4gKysrIGIvY29uZmlndXJlLmFjDQo+
-Pj4gQEAgLTkxLDYgKzkxLDggQEAgQUNfQVJHX1dJVEgoY3h4LA0KPj4+ICAgICBdKQ0KPj4+IEFD
-X1BST0dfQ1hYDQo+Pj4NCj4+PiArUEtHX1BST0dfUEtHX0NPTkZJRw0KPj4+ICsNCj4+PiAjIERv
-IG5vdCBsZXQgYXV0b2NvbmYgc2V0IHRoZSBkZWZhdWx0IHZhbHVlIG9mIENGTEFHUw0KPj4+IGlm
-ICRYRU5PX0VNUFRZX0NGTEFHUzsgdGhlbg0KPj4+IAlDRkxBR1M9IiINCj4+PiBAQCAtODI2LDYg
-KzgyOCwzNyBAQCBBQ19BUkdfV0lUSChkZW1vZGlyLA0KPj4+ICAgICBdLCBbWEVOT19ERU1PX0RJ
-Uj0kZGVtb2Rpcl0pDQo+Pj4gQUNfTVNHX1JFU1VMVCgkWEVOT19ERU1PX0RJUikNCj4+Pg0KPj4+
-ICtrZXJuZWxzaGFya19wbHVnaW49DQo+Pj4gK0FDX01TR19DSEVDS0lORyh3aGV0aGVyIEtlcm5l
-bFNoYXJrIHBsdWdpbiBzaG91bGQgYmUgYnVpbHQpDQo+Pj4gK0FDX0FSR19FTkFCTEUoa2VybmVs
-c2hhcmtfcGx1Z2luLA0KPj4+ICsJQVNfSEVMUF9TVFJJTkcoWy0tZW5hYmxlLWtlcm5lbHNoYXJr
-LXBsdWdpbl0sIFtidWlsZCBLZXJuZWxTaGFyayBwbHVnaW5dKSwNCj4+PiArCVtjYXNlICIkZW5h
-YmxldmFsIiBpbg0KPj4+ICsJeSB8IHllcykga2VybmVsc2hhcmtfcGx1Z2luPXkgOzsNCj4+PiAr
-CSopIHVuc2V0IGtlcm5lbHNoYXJrX3BsdWdpbiA7Ow0KPj4+ICsJZXNhY10pDQo+Pj4gK0FDX01T
-R19SRVNVTFQoJHtrZXJuZWxzaGFya19wbHVnaW46LW5vfSkNCj4+PiArQU1fQ09ORElUSU9OQUwo
-WEVOT19LU0hBUktfUExVR0lOLCBbdGVzdCB4JGtlcm5lbHNoYXJrX3BsdWdpbiA9IHh5XSkNCj4+
-PiArDQo+Pj4gK2xpYnRyYWNlZXZlbnRfcGx1Z2luPQ0KPj4+ICtBQ19NU0dfQ0hFQ0tJTkcod2hl
-dGhlciBsaWJ0cmFjZWV2ZW50IHBsdWdpbiBzaG91bGQgYmUgYnVpbHQpDQo+Pj4gK0FDX0FSR19F
-TkFCTEUobGlidHJhY2VldmVudF9wbHVnaW4sDQo+Pj4gKwlBU19IRUxQX1NUUklORyhbLS1lbmFi
-bGUtbGlidHJhY2VldmVudC1wbHVnaW5dLCBbYnVpbGQgbGlidHJhY2VldmVudCBwbHVnaW5dKSwN
-Cj4+PiArCVtjYXNlICIkZW5hYmxldmFsIiBpbg0KPj4+ICsJeSB8IHllcykgbGlidHJhY2VldmVu
-dF9wbHVnaW49eSA7Ow0KPj4+ICsJKikgdW5zZXQgbGlidHJhY2VldmVudF9wbHVnaW4gOzsNCj4+
-PiArCWVzYWNdKQ0KPj4+ICtBQ19NU0dfUkVTVUxUKCR7bGlidHJhY2VldmVudF9wbHVnaW46LW5v
-fSkNCj4+PiArQU1fQ09ORElUSU9OQUwoWEVOT19MSUJUUkFDRUVWRU5UX1BMVUdJTiwgW3Rlc3Qg
-eCRsaWJ0cmFjZWV2ZW50X3BsdWdpbiA9IHh5XSkNCj4+PiArDQo+Pj4gK2lmIHRlc3QgeCRrZXJu
-ZWxzaGFya19wbHVnaW4gPSB4eSAtbyB4JGxpYnRyYWNlZXZlbnRfcGx1Z2luID0geHk7IHRoZW4N
-Cj4+PiArCVBLR19DSEVDS19NT0RVTEVTKExJQlRSQUNFRVZFTlQsIGxpYnRyYWNlZXZlbnQpDQo+
-Pj4gK2ZpDQo+Pj4gKw0KPj4+ICtpZiB0ZXN0IHgka2VybmVsc2hhcmtfcGx1Z2luID0geHk7IHRo
-ZW4NCj4+PiArCVBLR19DSEVDS19NT0RVTEVTKExJQktTSEFSSywgbGlia3NoYXJrKQ0KPj4+ICsJ
-UEtHX0NIRUNLX01PRFVMRVMoTElCVFJBQ0VGUywgbGlidHJhY2VmcykNCj4+IA0KPj4gSSBkbyBu
-b3QgcXVpdGUgdW5kZXJzdGFuZCB3aHkgd2UgY2hlY2sgTElCVFJBRUZTIGhlcmUgYmVjYXVzZSBr
-ZXJuZWxzaGFyayBkZXBlbmQgb24gbGlidHJhY2VmcyANCj4+IGFzIGRlc2NyaWJlZCBpbiBbMV0g
-d2hpY2ggc2hvdWxkIGJlIGhhbmRsZWQgYnkga2VybmVsc2hhcmsgbW9kdWxlIGl0c2VsZi4NCj4+
-IElmIHdlIGhhdmUgdG8gY2hlY2sgbGlidHJhY2Vmcywgd2h5IHdlIGRvIG5vdCBjaGVjayBvdGhl
-ciBkZXBlbmRlbmN5IG1vZHVsZSBsaWtlIGxpYnRyYWNlZXZlbnQgIGZvciBrZXJuZWxzaGFya19w
-bHVnaW4/DQo+PiANCj4NCj5XaXRob3V0IHRoaXMgaW5jbHVzaW9uIChhbmQgdGhlIGNvcnJlc3Bv
-bmRpbmcgdXNhZ2Ugb2YgDQo+TElCVFJBQ0VGU19DRkxBR1MpLCB5b3Ugd2lsbCBnZXQNCj4NCj4g
-IENDICAgICAgIHBsdWdpbl94ZW5vbWFpX2NvYmFsdF9zd2l0Y2hfZXZlbnRzX2xhLXhlbm9tYWlf
-Y29iYWx0X3N3aXRjaF9ldmVudHMubG8NCj5JbiBmaWxlIGluY2x1ZGVkIGZyb20gLi4vLi4vLi4v
-dHJhY2luZy9rZXJuZWxzaGFyay94ZW5vbWFpX2NvYmFsdF9zd2l0Y2hfZXZlbnRzLmM6MTc6MDoN
-Cj4vdXNyL2xvY2FsL2luY2x1ZGUvdHJhY2UtY21kL3RyYWNlLWNtZC5oOjEwOjEwOiBmYXRhbCBl
-cnJvcjogdHJhY2Vmcy5oOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5DQo+ICNpbmNsdWRlICJ0
-cmFjZWZzLmgiDQo+ICAgICAgICAgIF5+fn5+fn5+fn5+DQo+Y29tcGlsYXRpb24gdGVybWluYXRl
-ZC4NCj4NCj5JIGRvIG5vdCBoYXZlIGxpYnRyYWNlZnMgaW5zdGFsbGVkIHZpYSBteSBkaXN0cm8s
-IHRodXMgZXZlcnl0aGluZyBtdXN0IA0KPmJlIGV4cGxvcmVkIGFuZCBwcm9wZXJseSBhcHBlbmRl
-ZCB0byB0aGUgc2VhcmNoIHBhdGguDQoNCkFjY29yZGluZyB0byBteSB0ZXN0IG9uIG15IHBsYXRm
-b3JtLCBpZiB3ZSBoYXZlIG5vdCBpbnN0YWxlZGwgbGlidHJhY2VmcywgDQpQS0dfQ0hFQ0tfTU9E
-VUxFUyhMSUJLU0hBUkssIGxpYmtzaGFyaykgd291bGQgZmFpbCBhdCBmaXJzdCByZXBvcnRpbmcg
-Zm9sbG93aW5nIGVycm9yLg0KDQoNCmNvbmZpZ3VyZTogZXJyb3I6IFBhY2thZ2UgcmVxdWlyZW1l
-bnRzIChsaWJrc2hhcmspIHdlcmUgbm90IG1ldDoNCg0KUGFja2FnZSAnbGlidHJhY2VmcycsIHJl
-cXVpcmVkIGJ5ICdsaWJ0cmFjZWNtZCcsIG5vdCBmb3VuZA0KDQpSZWdhcmRzDQoNCkhvbmd6aGFu
-IENoZW4NCj4NCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUZWNobm9sb2d5DQo+Q29tcGV0
-ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+On 14.03.22 07:48, Chen, Hongzhan wrote:
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Monday, March 14, 2022 2:41 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH v7 1/3] build: add options to build plugins of kernelshark and libtraceevent
+>>
+>> On 14.03.22 02:27, Chen, Hongzhan wrote:
+>>>>
+>>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>>>> Sent: Saturday, March 12, 2022 9:00 PM
+>>>> To: xenomai@xenomai.org
+>>>> Cc: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>> Subject: [PATCH v7 1/3] build: add options to build plugins of kernelshark and libtraceevent
+>>>>
+>>>> From: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>>
+>>>> To build plugins of kernelshark and libtraceevent, add options and
+>>>> do necessary configuration.
+>>>>
+>>>> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+>>>> [Jan: cleaned up AC_ARG_ENABLE matches, add missing kshark dep, drop INSTALLDIRs]
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> ---
+>>>> configure.ac | 33 +++++++++++++++++++++++++++++++++
+>>>> 1 file changed, 33 insertions(+)
+>>>>
+>>>> diff --git a/configure.ac b/configure.ac
+>>>> index 16cffd8f81..ef450aa582 100644
+>>>> --- a/configure.ac
+>>>> +++ b/configure.ac
+>>>> @@ -91,6 +91,8 @@ AC_ARG_WITH(cxx,
+>>>>     ])
+>>>> AC_PROG_CXX
+>>>>
+>>>> +PKG_PROG_PKG_CONFIG
+>>>> +
+>>>> # Do not let autoconf set the default value of CFLAGS
+>>>> if $XENO_EMPTY_CFLAGS; then
+>>>> 	CFLAGS=""
+>>>> @@ -826,6 +828,37 @@ AC_ARG_WITH(demodir,
+>>>>     ], [XENO_DEMO_DIR=$demodir])
+>>>> AC_MSG_RESULT($XENO_DEMO_DIR)
+>>>>
+>>>> +kernelshark_plugin=
+>>>> +AC_MSG_CHECKING(whether KernelShark plugin should be built)
+>>>> +AC_ARG_ENABLE(kernelshark_plugin,
+>>>> +	AS_HELP_STRING([--enable-kernelshark-plugin], [build KernelShark plugin]),
+>>>> +	[case "$enableval" in
+>>>> +	y | yes) kernelshark_plugin=y ;;
+>>>> +	*) unset kernelshark_plugin ;;
+>>>> +	esac])
+>>>> +AC_MSG_RESULT(${kernelshark_plugin:-no})
+>>>> +AM_CONDITIONAL(XENO_KSHARK_PLUGIN, [test x$kernelshark_plugin = xy])
+>>>> +
+>>>> +libtraceevent_plugin=
+>>>> +AC_MSG_CHECKING(whether libtraceevent plugin should be built)
+>>>> +AC_ARG_ENABLE(libtraceevent_plugin,
+>>>> +	AS_HELP_STRING([--enable-libtraceevent-plugin], [build libtraceevent plugin]),
+>>>> +	[case "$enableval" in
+>>>> +	y | yes) libtraceevent_plugin=y ;;
+>>>> +	*) unset libtraceevent_plugin ;;
+>>>> +	esac])
+>>>> +AC_MSG_RESULT(${libtraceevent_plugin:-no})
+>>>> +AM_CONDITIONAL(XENO_LIBTRACEEVENT_PLUGIN, [test x$libtraceevent_plugin = xy])
+>>>> +
+>>>> +if test x$kernelshark_plugin = xy -o x$libtraceevent_plugin = xy; then
+>>>> +	PKG_CHECK_MODULES(LIBTRACEEVENT, libtraceevent)
+>>>> +fi
+>>>> +
+>>>> +if test x$kernelshark_plugin = xy; then
+>>>> +	PKG_CHECK_MODULES(LIBKSHARK, libkshark)
+>>>> +	PKG_CHECK_MODULES(LIBTRACEFS, libtracefs)
+>>>
+>>> I do not quite understand why we check LIBTRAEFS here because kernelshark depend on libtracefs 
+>>> as described in [1] which should be handled by kernelshark module itself.
+>>> If we have to check libtracefs, why we do not check other dependency module like libtraceevent  for kernelshark_plugin?
+>>>
+>>
+>> Without this inclusion (and the corresponding usage of 
+>> LIBTRACEFS_CFLAGS), you will get
+>>
+>>  CC       plugin_xenomai_cobalt_switch_events_la-xenomai_cobalt_switch_events.lo
+>> In file included from ../../../tracing/kernelshark/xenomai_cobalt_switch_events.c:17:0:
+>> /usr/local/include/trace-cmd/trace-cmd.h:10:10: fatal error: tracefs.h: No such file or directory
+>> #include "tracefs.h"
+>>          ^~~~~~~~~~~
+>> compilation terminated.
+>>
+>> I do not have libtracefs installed via my distro, thus everything must 
+>> be explored and properly appended to the search path.
+> 
+> According to my test on my platform, if we have not instaledl libtracefs, 
+> PKG_CHECK_MODULES(LIBKSHARK, libkshark) would fail at first reporting following error.
+> 
+> 
+> configure: error: Package requirements (libkshark) were not met:
+> 
+> Package 'libtracefs', required by 'libtracecmd', not found
+> 
+
+Right, but this alone does not fill and propagate LIBTRACEFS_CFLAGS.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
