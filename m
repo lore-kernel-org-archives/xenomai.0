@@ -1,13 +1,15 @@
-Date: Mon, 14 Mar 2022 22:10:53 +0100 (CET)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <1292922167.145768.1647292253417.JavaMail.zimbra@nod.at>
-In-Reply-To: <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
+Date: Mon, 14 Mar 2022 21:13:20 +0000
+Message-ID: <e7429d0af3506cc26ad9e62586bdf93db8e00bf1.camel@siemens.com>
 References: <20220314203841.28925-1-richard@nod.at>
  <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
-Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
+In-Reply-To: <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <352C16C6425C9646A583A041411E9BE4@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-> I agree, BITS_PER_LONG seems wrong. But couldn't it be too small as
-> well? It depends on NR_CPUS which might be > BITS_PER_LONG.
-
-Hmm, nr_cpumask_bits is defined as:
-
-#ifdef CONFIG_CPUMASK_OFFSTACK
-/* Assuming NR_CPUS is huge, a runtime limit is more efficient.  Also,
- * not all bits may be allocated. */
-#define nr_cpumask_bits nr_cpu_ids
-#else
-#define nr_cpumask_bits ((unsigned int)NR_CPUS)
-#endif
-
-Where do you see a problem?
-
-Thanks,
-//richard
+T24gTW9uLCAyMDIyLTAzLTE0IGF0IDIxOjA1ICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
+ZW5vbWFpIHdyb3RlOg0KPiBIaSBSaWNoYXJkLA0KPiANCj4gT24gTW9uLCAyMDIyLTAzLTE0IGF0
+IDIxOjM4ICswMTAwLCBSaWNoYXJkIFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCj4gd3JvdGU6DQo+
+ID4gQklUU19QRVJfTE9ORyBpcyB0b28gYnJvYWQsIHRoZSBtYXggbnVtYmVyIG9mIHVzYWJsZSBi
+aXRzIGlzIGxpbWl0ZWQNCj4gPiBieSBucl9jcHVtYXNrX2JpdHMuDQo+IA0KPiBJIGFncmVlLCBC
+SVRTX1BFUl9MT05HIHNlZW1zIHdyb25nLiBCdXQgY291bGRuJ3QgaXQgYmUgdG9vIHNtYWxsIGFz
+DQo+IHdlbGw/IEl0IGRlcGVuZHMgb24gTlJfQ1BVUyB3aGljaCBtaWdodCBiZSA+IEJJVFNfUEVS
+X0xPTkcuDQoNClNvcnJ5IHRoYXQgd2FzIHVuY2xlYXIuIEkgYXNzdW1lIHRoYXQgdGhlIHNpemUg
+b2YgdGhlIGNwdW1hc2sgZGVwZW5kcw0Kc29tZWhvdyBvbiBOUl9DUFVTLCB3aGljaCBtaWdodCBi
+ZSA+IEJJVFNfUEVSX0xPTkcuIFNvIEJJVFNfUEVSX0xPTkcNCm1pZ2h0IGJlIHRvbyBzbWFsbCBB
+TkQgbWlnaHQgYmUgdG9vIGJyb2FkLg0KDQo+IA0KPiBSZWdhcmRzLA0KPiBGbG9yaWFuDQo+IA0K
+PiA+IEZvdW5kIHdoaWxlIGRlYnVnZ2luZyBhIHN5c3RlbSB3aXRoIENPTkZJR19ERUJVR19QRVJf
+Q1BVX01BUFMgZW5hYmxlZC4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBSaWNoYXJkIFdlaW5i
+ZXJnZXIgPHJpY2hhcmRAbm9kLmF0Pg0KPiA+IC0tLQ0KPiA+ICBrZXJuZWwvY29iYWx0L3NjaGVk
+LmMgfCA0ICsrLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
+dGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIv
+a2VybmVsL2NvYmFsdC9zY2hlZC5jDQo+ID4gaW5kZXggODhjNDk1MWVkODE0Li5hYTY1ZmQ3ZjVk
+NjMgMTAwNjQ0DQo+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9zY2hlZC5jDQo+ID4gKysrIGIva2Vy
+bmVsL2NvYmFsdC9zY2hlZC5jDQo+ID4gQEAgLTEzNzAsNyArMTM3MCw3IEBAIHN0YXRpYyBpbnQg
+YWZmaW5pdHlfdmZpbGVfc2hvdyhzdHJ1Y3QgeG52ZmlsZV9yZWd1bGFyX2l0ZXJhdG9yICppdCwN
+Cj4gPiAgCXVuc2lnbmVkIGxvbmcgdmFsID0gMDsNCj4gPiAgCWludCBjcHU7DQo+ID4gIA0KPiA+
+IC0JZm9yIChjcHUgPSAwOyBjcHUgPCBCSVRTX1BFUl9MT05HOyBjcHUrKykNCj4gPiArCWZvciAo
+Y3B1ID0gMDsgY3B1IDwgbnJfY3B1bWFza19iaXRzOyBjcHUrKykNCj4gPiAgCQlpZiAoY3B1bWFz
+a190ZXN0X2NwdShjcHUsICZjb2JhbHRfY3B1X2FmZmluaXR5KSkNCj4gPiAgCQkJdmFsIHw9ICgx
+VUwgPDwgY3B1KTsNCj4gPiAgDQo+ID4gQEAgLTEzOTUsNyArMTM5NSw3IEBAIHN0YXRpYyBzc2l6
+ZV90IGFmZmluaXR5X3ZmaWxlX3N0b3JlKHN0cnVjdCB4bnZmaWxlX2lucHV0ICppbnB1dCkNCj4g
+PiAgCQlhZmZpbml0eSA9IHhuc2NoZWRfcmVhbHRpbWVfY3B1czsgLyogUmVzZXQgdG8gZGVmYXVs
+dC4gKi8NCj4gPiAgCWVsc2Ugew0KPiA+ICAJCWNwdW1hc2tfY2xlYXIoJmFmZmluaXR5KTsNCj4g
+PiAtCQlmb3IgKGNwdSA9IDA7IGNwdSA8IEJJVFNfUEVSX0xPTkc7IGNwdSsrLCB2YWwgPj49IDEp
+IHsNCj4gPiArCQlmb3IgKGNwdSA9IDA7IGNwdSA8IG5yX2NwdW1hc2tfYml0czsgY3B1KyssIHZh
+bCA+Pj0gMSkgew0KPiA+ICAJCQlpZiAodmFsICYgMSkgew0KPiA+ICAJCQkJLyoNCj4gPiAgCQkJ
+CSAqIFRoZSBuZXcgZHluYW1pYyBhZmZpbml0eSBtdXN0IGJlIGEgc3RyaWN0DQo+IA0KDQo=
 
