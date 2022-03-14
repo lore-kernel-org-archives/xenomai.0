@@ -1,9 +1,14 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
-Date: Mon, 14 Mar 2022 21:38:41 +0100
-Message-Id: <20220314203841.28925-1-richard@nod.at>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
+Date: Mon, 14 Mar 2022 21:05:23 +0000
+Message-ID: <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
+References: <20220314203841.28925-1-richard@nod.at>
+In-Reply-To: <20220314203841.28925-1-richard@nod.at>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <45233565C342E944A130BD6319CB91FD@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,43 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Richard Weinberger <richard@nod.at>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
 
-BITS_PER_LONG is too broad, the max number of usable bits is limited
-by nr_cpumask_bits.
-Found while debugging a system with CONFIG_DEBUG_PER_CPU_MAPS enabled.
-
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- kernel/cobalt/sched.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index 88c4951ed814..aa65fd7f5d63 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -1370,7 +1370,7 @@ static int affinity_vfile_show(struct xnvfile_regul=
-ar_iterator *it,
- 	unsigned long val =3D 0;
- 	int cpu;
-=20
--	for (cpu =3D 0; cpu < BITS_PER_LONG; cpu++)
-+	for (cpu =3D 0; cpu < nr_cpumask_bits; cpu++)
- 		if (cpumask_test_cpu(cpu, &cobalt_cpu_affinity))
- 			val |=3D (1UL << cpu);
-=20
-@@ -1395,7 +1395,7 @@ static ssize_t affinity_vfile_store(struct xnvfile_=
-input *input)
- 		affinity =3D xnsched_realtime_cpus; /* Reset to default. */
- 	else {
- 		cpumask_clear(&affinity);
--		for (cpu =3D 0; cpu < BITS_PER_LONG; cpu++, val >>=3D 1) {
-+		for (cpu =3D 0; cpu < nr_cpumask_bits; cpu++, val >>=3D 1) {
- 			if (val & 1) {
- 				/*
- 				 * The new dynamic affinity must be a strict
---=20
-2.26.2
-
+SGkgUmljaGFyZCwNCg0KT24gTW9uLCAyMDIyLTAzLTE0IGF0IDIxOjM4ICswMTAwLCBSaWNoYXJk
+IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiBCSVRTX1BFUl9MT05HIGlzIHRvbyBi
+cm9hZCwgdGhlIG1heCBudW1iZXIgb2YgdXNhYmxlIGJpdHMgaXMgbGltaXRlZA0KPiBieSBucl9j
+cHVtYXNrX2JpdHMuDQoNCkkgYWdyZWUsIEJJVFNfUEVSX0xPTkcgc2VlbXMgd3JvbmcuIEJ1dCBj
+b3VsZG4ndCBpdCBiZSB0b28gc21hbGwgYXMNCndlbGw/IEl0IGRlcGVuZHMgb24gTlJfQ1BVUyB3
+aGljaCBtaWdodCBiZSA+IEJJVFNfUEVSX0xPTkcuDQoNClJlZ2FyZHMsDQpGbG9yaWFuDQoNCj4g
+Rm91bmQgd2hpbGUgZGVidWdnaW5nIGEgc3lzdGVtIHdpdGggQ09ORklHX0RFQlVHX1BFUl9DUFVf
+TUFQUyBlbmFibGVkLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogUmljaGFyZCBXZWluYmVyZ2VyIDxy
+aWNoYXJkQG5vZC5hdD4NCj4gLS0tDQo+ICBrZXJuZWwvY29iYWx0L3NjaGVkLmMgfCA0ICsrLS0N
+Cj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0K
+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIva2VybmVsL2NvYmFsdC9zY2hl
+ZC5jDQo+IGluZGV4IDg4YzQ5NTFlZDgxNC4uYWE2NWZkN2Y1ZDYzIDEwMDY0NA0KPiAtLS0gYS9r
+ZXJuZWwvY29iYWx0L3NjaGVkLmMNCj4gKysrIGIva2VybmVsL2NvYmFsdC9zY2hlZC5jDQo+IEBA
+IC0xMzcwLDcgKzEzNzAsNyBAQCBzdGF0aWMgaW50IGFmZmluaXR5X3ZmaWxlX3Nob3coc3RydWN0
+IHhudmZpbGVfcmVndWxhcl9pdGVyYXRvciAqaXQsDQo+ICAJdW5zaWduZWQgbG9uZyB2YWwgPSAw
+Ow0KPiAgCWludCBjcHU7DQo+ICANCj4gLQlmb3IgKGNwdSA9IDA7IGNwdSA8IEJJVFNfUEVSX0xP
+Tkc7IGNwdSsrKQ0KPiArCWZvciAoY3B1ID0gMDsgY3B1IDwgbnJfY3B1bWFza19iaXRzOyBjcHUr
+KykNCj4gIAkJaWYgKGNwdW1hc2tfdGVzdF9jcHUoY3B1LCAmY29iYWx0X2NwdV9hZmZpbml0eSkp
+DQo+ICAJCQl2YWwgfD0gKDFVTCA8PCBjcHUpOw0KPiAgDQo+IEBAIC0xMzk1LDcgKzEzOTUsNyBA
+QCBzdGF0aWMgc3NpemVfdCBhZmZpbml0eV92ZmlsZV9zdG9yZShzdHJ1Y3QgeG52ZmlsZV9pbnB1
+dCAqaW5wdXQpDQo+ICAJCWFmZmluaXR5ID0geG5zY2hlZF9yZWFsdGltZV9jcHVzOyAvKiBSZXNl
+dCB0byBkZWZhdWx0LiAqLw0KPiAgCWVsc2Ugew0KPiAgCQljcHVtYXNrX2NsZWFyKCZhZmZpbml0
+eSk7DQo+IC0JCWZvciAoY3B1ID0gMDsgY3B1IDwgQklUU19QRVJfTE9ORzsgY3B1KyssIHZhbCA+
+Pj0gMSkgew0KPiArCQlmb3IgKGNwdSA9IDA7IGNwdSA8IG5yX2NwdW1hc2tfYml0czsgY3B1Kyss
+IHZhbCA+Pj0gMSkgew0KPiAgCQkJaWYgKHZhbCAmIDEpIHsNCj4gIAkJCQkvKg0KPiAgCQkJCSAq
+IFRoZSBuZXcgZHluYW1pYyBhZmZpbml0eSBtdXN0IGJlIGEgc3RyaWN0DQoNCg==
 
