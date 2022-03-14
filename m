@@ -1,16 +1,16 @@
+Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
+ than 4.14.62
+References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
+ <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
+ <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
+From: Scott Reed <scott.reed@arcor.de>
+Message-ID: <b36143c7-5f21-8ca1-d3d2-023b5e0b9b8b@arcor.de>
+Date: Mon, 14 Mar 2022 18:45:25 +0100
 MIME-Version: 1.0
-References: <44a716dd-c4aa-17d2-55f4-e5eaf50beb6a@siemens.com>
- <CALLqZ8Sx0DdA853TbhOirYAPM0siuE2eh4NzjXAtB8vxq_xNoA@mail.gmail.com>
- <6892bfa2-eeec-8820-4fe0-04db71994306@siemens.com>
- <CALLqZ8SCN7heaoZYmpCH7U4juOyb_sX9DwfTbLN1bzX+ve9xpA@mail.gmail.com>
- <11285d5a-b095-6e75-eeae-73e4a94a128b@siemens.com>
-In-Reply-To: <11285d5a-b095-6e75-eeae-73e4a94a128b@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 14 Mar 2022 09:02:09 -0400
-Message-ID: <CALLqZ8SYXLe9Z1F5-rxRrZqrBgggFSdNzVu_CkmshV5MHadC1w@mail.gmail.com>
-Subject: Re: ipipe-5.4: arm64 regression
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,141 +19,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
-
-On Mon, Mar 14, 2022 at 8:33 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-
-> On 04.03.22 00:45, Greg Gallagher wrote:
-> >
-> >
-> > On Thu, Mar 3, 2022 at 1:20 PM Jan Kiszka <jan.kiszka@siemens.com
-> > <mailto:jan.kiszka@siemens.com>> wrote:
-> >
-> >     On 02.03.22 16:44, Greg Gallagher wrote:
-> >     >
-> >     >
-> >     > On Wed, Mar 2, 2022 at 1:48 AM Jan Kiszka <jan.kiszka@siemens.com
-> >     <mailto:jan.kiszka@siemens.com>
-> >     > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>>
-> >     wrote:
-> >     >
-> >     >     Hi Greg,
-> >     >
-> >     >     something is going wrong on arm64 with latest ipipe version,
-> >     see e.g.
-> >     >
-> >     >
-> >      https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw
-> >     <https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw>
-> >     >
-> >      <https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw
-> >     <https://source.denx.de/Xenomai/xenomai-images/-/jobs/398455/raw>>
-> >     >     (same thing seen on HiKey as well)
-> >     >
-> >     >     Could you have a look?
-> >     >
-> >     >     Thanks,
-> >     >     Jan
-> >     >
-> >     >     --
-> >     >     Siemens AG, Technology
-> >     >     Competence Center Embedded Linux
-> >     >
-> >     >
-> >     > I'll take a look, it will be close to the end of the week but i'l=
-l
-> aim
-> >     > to have it root caused by the weekend.
-> >     >
-> >
-> >     Just tried locally with xenomai-images and qemu-arm64 (just run
-> smokey):
-> >
-> >     [  408.747349] Kernel panic - not syncing: kernel stack overflow
-> >     [  408.747591] CPU: 0 PID: 1577 Comm: systemd-journal Tainted: G
-> >         W         5.4.180+ #1
-> >     [  408.747762] Hardware name: linux,dummy-virt (DT)
-> >     [  408.747852] I-pipe domain: Xenomai
-> >     [  408.747941] Call trace:
-> >     ...
-> >     [  408.761131]  do_debug_exception+0x94/0x240
-> >     [  408.761255]  el1_dbg+0x18/0x8c
-> >     [  408.761329]  this_cpu_has_cap+0x60/0x7c
-> >     [  408.761423]  erratum_1418040_thread_switch+0x18/0x5c
-> >     [  408.761534]  __switch_to+0xf8/0x154
-> >     [  408.761622]  xnarch_switch_to+0x5c/0xc4
-> >     [  408.761711]  pipeline_switch_to+0x14/0x84
-> >     [  408.761803]  ___xnsched_run+0x154/0x240
-> >     [  408.761889]  pipeline_schedule+0x30/0x40
-> >     [  408.761999]  xnintr_core_clock_handler+0x250/0x260
-> >     [  408.762107]  dispatch_irq_head+0x84/0x120
-> >     [  408.762198]  __ipipe_dispatch_irq+0x19c/0x1c4
-> >     [  408.762293]  __ipipe_grab_irq+0x5c/0xa0
-> >     [  408.762377]  gic_handle_irq+0x54/0xb0
-> >     [  408.762457]  handle_arch_irq_pipelined+0x14/0x60
-> >     [  408.762557]  el0_irq_naked+0x5c/0x84
-> >     [  408.762905] SMP: stopping secondary CPUs
-> >
-> >     This dbg trap from erratum_1418040_thread_switch looks suspicious,
-> and
-> >     if I had to bet, I would say it somehow relates to [1] which came
-> with
-> >     v5.4.176. But more logical would [2] due to its switch from static =
-to
-> >     dynamic cpu_has_cap - but that is already in since v5.4.80...
-> >
-> >     Jan
-> >
-> >     [1]
-> >
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/a6d588572568c7431a9a3=
-dc17f3c75962a2f070b
-> >     <
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/a6d588572568c7431a9a3=
-dc17f3c75962a2f070b
-> >
-> >     [2]
-> >
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/71eea3d3df94ccdcf3b61=
-6d27d68d6c028c1968f
-> >     <
-> https://source.denx.de/Xenomai/ipipe-arm64/-/commit/71eea3d3df94ccdcf3b61=
-6d27d68d6c028c1968f
-> >
-> >
-> >
-> >     --
-> >     Siemens AG, Technology
-> >     Competence Center Embedded Linux
-> >
-> >
-> > I just built a new image and I=E2=80=99ll have time to look into this p=
-robably
-> > tomorrow.
-> >
-> > Thanks for the help :)
-> >
->
-> Any news on this? Do you need further support?
->
-> Jan
->
-> --
-> Siemens AG, Technology
-> Competence Center Embedded Linux
-
-
-Still working on it, I=E2=80=99ve unfortunately haven=E2=80=99t had a lot o=
-f time to focus
-on this. I should have more time this week.
-
-If anyone has any ideas or patches they=E2=80=99d like me to try I can test=
- them as
-well.
-
--Greg
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
 
 
->
+On 3/11/22 2:13 PM, Scott Reed via Xenomai wrote:
+> 
+> On 3/11/22 12:38 PM, Jan Kiszka wrote:
+>> On 11.03.22 11:12, Scott Reed via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I am seeing an apparent issue with PCIe MSI interrupts and I-pipe
+>>> when trying to move to a newer kernel and I-pipe patch.
+>>>
+>>> The issue is as soon as a PCIe MSI interrupt occurs, the system
+>>> hangs with no message output on the serial console or in
+>>> /var/log/messages.
+>>>
+>>> The platform I am working on is a "i.MX 6 Quad" and I am upgrading
+>>> from a 4.14.62 kernel and I-pipe patch with Xenomai 3.07 to 5.4.151
+>>> kernel and I-pipe patch with Xenomai 3.2.1.
+>>>
+>>> Our FPGA is connected to the i.MX 6 via PCIe and generates PCIe MSI
+>>> interrupts to the CPU from, for example, an Altera Triple-Speed MAC.
+>>>
+>>> I have stable system running for some time with Linux 4.14.62 with
+>>> Xenomai 3.07 although I did need to patch the PCIe driver [1]. Also
+>>> some time back, I tried to move to 4.14.110 with I-pipe and also
+>>> saw same scenario of my system hanging on the first PCIe MSI interrupt
+>>> so I backed out back to 4.14.62. Now I am trying to move to 5.4.151, but
+>>> see the same hang.
+>>
+>> What about 4.19.y-cip? Specifically because of
+>> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b23a011ce6d72f8699c. 
+>>
+>>
+>> Actually, that commit is also missing from the last tagged 5.4 ipipe
+>> version (ipipe-core-5.4.151-arm-4). So try ipipe/5.4.y head instead.
+> 
+> To do a quick test, I just applied the change from the commit you
+> referenced above to my 5.4.151 ipipe kernel and it unfortunately did not
+> help (hang still occurs with first interrupt).
+> 
+>>
+>>>
+>>> Before I dive into analyzing the hang, I wanted to ask:
+>>>
+>>> What are other people's experiences with using PCIe MSI interrupts
+>>> and I-pipe?
+>>>
+>>> I am thinking of trying 5.10.103 Dovetail to see if I still see
+>>> the problem. Would this be recommended?
+>>
+>> If you can migrate your test with reasonable effort, yes, definitely.
+> 
+> I will try to migrate my test to 5.10.103 Dovetail with the hopes that
+> it will not be too much effort and report back.
+
+I tried to migrate my test to 5.10.103 Dovetail and failed on the first
+step, namely bringing up a standard (i.e. no Dovetail) 5.10.103 kernel
+on my platform.
+
+The kernel boots without a problem, but the FEC Ethernet port on the
+i.MX 6 is not working (cannot ping in or out).
+
+I looked at the trace with Wireshark and it looks like when pinging
+out that the ARP packet is corrupt and therefore failing. The ARP
+packet is corrupt in that it looks like various bits are flipped. For 
+example, the source MAC address should be
+   00:09:cc:02:c1:b6
+but is
+   00:01:cc:02:01:36 or
+   00:09:cc:02:c1:36
+Wireshark also complains about the Frame check sequence
+([FCS Status: Unverified]
+
+I can provide Wireshark dumps if someone is interested, but for me
+at this point I do not want to fight with getting a 5.10.x kernel
+to work as I was pretty far along moving to a 5.4.x kernel with
+ipipe before running into the original problem posted (with ipipe
+my system freezes on the first PCIe MSI interrupt. Note: without
+ipipe, I do not see any issues).
+
+As mentioned, I first saw this problem a while ago when trying
+to move from 4.14.62+ipipe to 4.14.110+ipipe and at that time
+then backed back down to 4.14.62+ipipe which works.
+
+I guess my next strategy is to try to figure out what changed
+between 4.14.62+ipipe and 4.14.110+ipipe which triggers/causes
+the hang as I hope the delta between them is not too large.
+
+If anyone has other suggestions or tips, they are more than welcome.
+
+Thanks,
+
+Scott
+
+> 
+> Thanks,
+> 
+> Scott
+> 
+>>
+>> Jan
+>>
+>>>
+>>> Thanks,
+>>>
+>>> Scott
+>>>
+>>> [1] https://xenomai.org/pipermail/xenomai/2021-August/046138.html
+>>>
+>>>
+>>
+> 
+
