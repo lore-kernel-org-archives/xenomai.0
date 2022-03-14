@@ -1,7 +1,10 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v8 0/4] Kernel-Shark and libtraceevent plugins
-Date: Mon, 14 Mar 2022 11:00:58 +0100
-Message-ID: <cover.1647252062.git.jan.kiszka@siemens.com>
+Subject: [PATCH v8 1/4] build: add options to build plugins of kernelshark and
+ libtraceevent
+Date: Mon, 14 Mar 2022 11:00:59 +0100
+Message-ID: <0ab58e474fad4d6d398e76c8b5fa19234ba41c9d.1647252062.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1647252062.git.jan.kiszka@siemens.com>
+References: <cover.1647252062.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -15,57 +18,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Changes in v8:
- - drop explicit deps again - no longer unneeded after refreshing local
-   libtracecmd installation
+From: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Changes in v7:
- - reworked installation
- - fixed build of kernelshark plugin (missing dep)
- - dropped applied first patch
+To build plugins of kernelshark and libtraceevent, add options and
+do necessary configuration.
 
-Jan
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+[Jan: cleaned up AC_ARG_ENABLE matches, drop INSTALLDIRs]
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ configure.ac | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-
-CC: Hongzhan Chen <hongzhan.chen@intel.com>
-
-Hongzhan Chen (3):
-  build: add options to build plugins of kernelshark and libtraceevent
-  KernelShark: Add xenomai_cobalt_switch_events plugin for KernelShark
-  libtraceevent: Add xenomai_schedparams plugin for libtraceevent
-
-Jan Kiszka (1):
-  libs: Silence installation output of libtool
-
- Makefile.am                                   |   4 +
- configure.ac                                  |  35 ++++
- lib/alchemy/Makefile.am                       |   2 +
- lib/analogy/Makefile.am                       |   2 +
- lib/cobalt/Makefile.am                        |   2 +
- lib/copperplate/Makefile.am                   |   2 +
- lib/mercury/Makefile.am                       |   3 +-
- lib/psos/Makefile.am                          |   2 +
- lib/smokey/Makefile.am                        |   2 +
- lib/trank/Makefile.am                         |   3 +-
- lib/vxworks/Makefile.am                       |   2 +
- tracing/Makefile.am                           |  13 ++
- tracing/README                                |  84 +++++++++
- tracing/kernelshark/CobaltSwitchEvents.cpp    | 156 ++++++++++++++++
- tracing/kernelshark/Makefile.am               |  20 ++
- .../xenomai_cobalt_switch_events.c            | 174 ++++++++++++++++++
- .../xenomai_cobalt_switch_events.h            |  58 ++++++
- tracing/libtraceevent/Makefile.am             |  19 ++
- .../plugin_xenomai_schedparams.c              | 158 ++++++++++++++++
- 19 files changed, 739 insertions(+), 2 deletions(-)
- create mode 100644 tracing/Makefile.am
- create mode 100644 tracing/README
- create mode 100644 tracing/kernelshark/CobaltSwitchEvents.cpp
- create mode 100644 tracing/kernelshark/Makefile.am
- create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.c
- create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.h
- create mode 100644 tracing/libtraceevent/Makefile.am
- create mode 100644 tracing/libtraceevent/plugin_xenomai_schedparams.c
-
+diff --git a/configure.ac b/configure.ac
+index 16cffd8f81..7387bb3560 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -91,6 +91,8 @@ AC_ARG_WITH(cxx,
+     ])
+ AC_PROG_CXX
+ 
++PKG_PROG_PKG_CONFIG
++
+ # Do not let autoconf set the default value of CFLAGS
+ if $XENO_EMPTY_CFLAGS; then
+ 	CFLAGS=""
+@@ -826,6 +828,36 @@ AC_ARG_WITH(demodir,
+     ], [XENO_DEMO_DIR=$demodir])
+ AC_MSG_RESULT($XENO_DEMO_DIR)
+ 
++kernelshark_plugin=
++AC_MSG_CHECKING(whether KernelShark plugin should be built)
++AC_ARG_ENABLE(kernelshark_plugin,
++	AS_HELP_STRING([--enable-kernelshark-plugin], [build KernelShark plugin]),
++	[case "$enableval" in
++	y | yes) kernelshark_plugin=y ;;
++	*) unset kernelshark_plugin ;;
++	esac])
++AC_MSG_RESULT(${kernelshark_plugin:-no})
++AM_CONDITIONAL(XENO_KSHARK_PLUGIN, [test x$kernelshark_plugin = xy])
++
++libtraceevent_plugin=
++AC_MSG_CHECKING(whether libtraceevent plugin should be built)
++AC_ARG_ENABLE(libtraceevent_plugin,
++	AS_HELP_STRING([--enable-libtraceevent-plugin], [build libtraceevent plugin]),
++	[case "$enableval" in
++	y | yes) libtraceevent_plugin=y ;;
++	*) unset libtraceevent_plugin ;;
++	esac])
++AC_MSG_RESULT(${libtraceevent_plugin:-no})
++AM_CONDITIONAL(XENO_LIBTRACEEVENT_PLUGIN, [test x$libtraceevent_plugin = xy])
++
++if test x$kernelshark_plugin = xy -o x$libtraceevent_plugin = xy; then
++	PKG_CHECK_MODULES(LIBTRACEEVENT, libtraceevent)
++fi
++
++if test x$kernelshark_plugin = xy; then
++	PKG_CHECK_MODULES(LIBKSHARK, libkshark)
++fi
++
+ AC_MSG_CHECKING([for test source generation])
+ AC_RUN_IFELSE([AC_LANG_PROGRAM([[ ]], [[ ]])],
+     [AC_MSG_RESULT(ok)], [AC_MSG_RESULT(failed)], [AC_MSG_RESULT(untestable)])
 -- 
 2.34.1
 
