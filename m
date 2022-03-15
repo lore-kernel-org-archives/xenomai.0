@@ -1,9 +1,12 @@
+Message-ID: <8ba9c2e5-70dc-8e81-2ebd-b038e539f954@siemens.com>
+Date: Tue, 15 Mar 2022 19:55:58 +0100
 MIME-Version: 1.0
-From: Matt Klass <Matt.Klass@telosalliance.com>
-Date: Tue, 15 Mar 2022 14:27:24 -0400
-Message-ID: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
-Subject: waitqueue vs. mutex behavior
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] arm64: ipipe: Make erratum_1418040_thread_switch compatible
+ with I-pipe
+Content-Language: en-US
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,55 +15,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Using Xenomai 3.0.10, with kernel 4.9.128-05789, on armv7, we're having
-problems with the functionality of rtdm_waitqueues. The code was written by
-a Xenomai-adept developer who has since left for greener pastures.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-We have two functions that use rtdm_waitqueue_lock/unlock on the same
-rtdm_waitqueue_t to manage access to a shared data structure. One is an
-rtdm_task_t that runs periodically every 1ms, the second is an IOCTL
-handler.
+First of all, this erratum hook is called from __switch_to, thus
+potentially also from the primary domain. Some of the functions it calls
+check if preemption was disabled under Linux - which may not be the case
+when invoked from primary domain. Rather than adding a costly check for
+ipipe_root_p to this hot-path, simply turn the check off if I-pipe is
+enabled.
 
-Problem: In some circumstances, one of the two functions will acquire the
-lock, and access the shared data structure. But before the first function
-releases the lock, the second function seems to also acquire the lock, and
-begin to access its own access of the shared data structure. The second
-function releases its lock after its work is complete, and then when the
-first function tries to release the lock, it gets an "already unlocked"
-error from Xenomai:
+As the hook can be called from primary context, we need to protect its
+setup for new execs against those contexts via hard_preempt_disable.
 
-[Xenomai] lock 80f10020 already unlocked on CPU #0
-          last owner = kernel/xenomai/sched.c:908 (___xnsched_run(), CPU #0)
-[<8010ed78>] (unwind_backtrace) from [<8010b5f0>] (show_stack+0x10/0x14)
-[<8010b5f0>] (show_stack) from [<801c8c08>] (xnlock_dbg_release+0x12c/0x138)
-[<801c8c08>] (xnlock_dbg_release) from [<801be110>] (___xnlock_put+0xc/0x38)
-[<801be110>] (___xnlock_put) from [<7f000434>]
-(myengine_rtdm_waitqueue_unlock_with_num+0xf8/0x13c [engine_rtnet])
-[<7f000434>] (myengine_rtdm_waitqueue_unlock_with_num [engine_rtnet]) from
-[<7f00ace8>] (engine_rtnet_periodic_task+0x604/0x660 [engine_rtnet])
-[<7f00ace8>] (engine_rtnet_periodic_task [engine_rtnet]) from [<801c73ac>]
-(kthread_trampoline+0x68/0xa4)
-[<801c73ac>] (kthread_trampoline) from [<80147190>] (kthread+0x108/0x110)
-[<80147190>] (kthread) from [<80107cd4>] (ret_from_fork+0x18/0x24)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
+This is for 5.4-only, older kernels do no have the erratum fix.
 
-These waitqueues were originally mutexes, and the above-mentioned adept
-committed this change to waitqueues seven years ago with the following
-comment: "Use Wait Queue instead of Mutex, because Mutex can't be called
-from the non-RT context."
+Philippe, the hardening of erratum_1418040_new_exec() could be a topic 
+for dovetail as well. preemptible() is fully oob-aware there, though.
 
-We'd expect that once one of the functions obtains the lock on the
-waitqueue, the other would be blocked until the first function releases the
-lock. It's quite possible, likely really, that we don't understand the
-differences between mutexes and waitqueues. We've looked at the online
-Xenomai documentation on waitqueues, but we have not been enlightened.
+ arch/arm64/kernel/cpu_errata.c | 3 ++-
+ arch/arm64/kernel/cpufeature.c | 3 ++-
+ arch/arm64/kernel/process.c    | 4 ++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index 1e16c4e00e771..7fd7d1c8b9fcc 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -37,7 +37,8 @@ static bool __maybe_unused
+ is_affected_midr_range_list(const struct arm64_cpu_capabilities *entry,
+ 			    int scope)
+ {
+-	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
++	WARN_ON(scope != SCOPE_LOCAL_CPU ||
++		(preemptible() && !IS_ENABLED(CONFIG_IPIPE)));
+ 	return is_midr_in_range_list(read_cpuid_id(), entry->midr_range_list);
+ }
+ 
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index acdef8d76c64d..d65287cc2148b 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -2023,7 +2023,8 @@ static void __init mark_const_caps_ready(void)
+ 
+ bool this_cpu_has_cap(unsigned int n)
+ {
+-	if (!WARN_ON(preemptible()) && n < ARM64_NCAPS) {
++	if (!WARN_ON(!IS_ENABLED(CONFIG_IPIPE) && preemptible()) &&
++	    n < ARM64_NCAPS) {
+ 		const struct arm64_cpu_capabilities *cap = cpu_hwcaps_ptrs[n];
+ 
+ 		if (cap)
+diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+index 68c078ab0250c..879ecf0237c88 100644
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -517,9 +517,9 @@ static void erratum_1418040_thread_switch(struct task_struct *next)
+ 
+ static void erratum_1418040_new_exec(void)
+ {
+-	preempt_disable();
++	unsigned long flags = hard_preempt_disable();
+ 	erratum_1418040_thread_switch(current);
+-	preempt_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
+-- 
+2.34.1
 
-Would you have any suggestions on things we should do (or not do) to figure
-out what's going on?
-
-
-Many thanks,
-Matt
