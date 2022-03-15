@@ -1,5 +1,5 @@
-Message-ID: <490a84d5-5f63-6872-b80b-c72661dc9ad8@siemens.com>
-Date: Tue, 15 Mar 2022 11:13:41 +0100
+Message-ID: <8fc10c34-6d81-96c6-27cc-4a05f657dffa@siemens.com>
+Date: Tue, 15 Mar 2022 12:08:02 +0100
 MIME-Version: 1.0
 Subject: Re: ipipe-5.4: arm64 regression
 Content-Language: en-US
@@ -167,13 +167,56 @@ On 14.03.22 14:02, Greg Gallagher wrote:
 > as well.
 > 
 
-Unrelated build warning, but somehow familiar from 4.19 or older:
+Looks like we have a bunch of new !preemtible() assertions in the
+switching path due to that erratum_1418040_thread_switch. Those
+sometimes trigger over Xenomai tasks, and that will cause the debug trap
+followed by a ride to fault recursion hell. I've hacked two away, and
+things seem to run smoothly again. Needs more careful analysis, though.
+Also that path of erratum_1418040_new_exec, if it needs hard preemption 
+off.
 
-WARNING: vmlinux.o(.text+0x94bf8c): Section mismatch in reference from the function dw_apb_clocksource_register() to the function .init.text:__ipipe_tsc_register()
-The function dw_apb_clocksource_register() references
-the function __init __ipipe_tsc_register().
-This is often because dw_apb_clocksource_register lacks a __init 
-annotation or the annotation of __ipipe_tsc_register is wrong.
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index 1e16c4e00e771..8f74d2830e1b9 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -37,7 +37,7 @@ static bool __maybe_unused
+ is_affected_midr_range_list(const struct arm64_cpu_capabilities *entry,
+ 			    int scope)
+ {
+-	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
++	WARN_ON(scope != SCOPE_LOCAL_CPU /*|| preemptible()*/);
+ 	return is_midr_in_range_list(read_cpuid_id(), entry->midr_range_list);
+ }
+ 
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index acdef8d76c64d..0d2242c0fe6b7 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -2023,7 +2023,7 @@ static void __init mark_const_caps_ready(void)
+ 
+ bool this_cpu_has_cap(unsigned int n)
+ {
+-	if (!WARN_ON(preemptible()) && n < ARM64_NCAPS) {
++	if (/*!WARN_ON(preemptible()) &&*/ n < ARM64_NCAPS) {
+ 		const struct arm64_cpu_capabilities *cap = cpu_hwcaps_ptrs[n];
+ 
+ 		if (cap)
+diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+index 68c078ab0250c..879ecf0237c88 100644
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -517,9 +517,9 @@ static void erratum_1418040_thread_switch(struct task_struct *next)
+ 
+ static void erratum_1418040_new_exec(void)
+ {
+-	preempt_disable();
++	unsigned long flags = hard_preempt_disable();
+ 	erratum_1418040_thread_switch(current);
+-	preempt_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
 
 Jan
 
