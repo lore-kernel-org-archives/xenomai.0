@@ -1,13 +1,12 @@
-Message-ID: <42e7a155-acb3-5501-c9ab-5a132d07efbd@siemens.com>
-Date: Tue, 15 Mar 2022 07:35:57 +0100
+Message-ID: <101092e1-5a8c-e1c8-294f-74bbb7c8a7b7@siemens.com>
+Date: Tue, 15 Mar 2022 07:37:13 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH] cobalt/sched: Use nr_cpumask_bits instead of BITS_PER_LONG
+Subject: Re: [PATCH v8 0/4] Kernel-Shark and libtraceevent plugins
 Content-Language: en-US
-References: <20220314203841.28925-1-richard@nod.at>
- <421920084991b71be00040eb54d09518a9fc21a9.camel@siemens.com>
- <e7429d0af3506cc26ad9e62586bdf93db8e00bf1.camel@siemens.com>
+References: <cover.1647252062.git.jan.kiszka@siemens.com>
+ <MN2PR11MB4285978C7FA1A7D44A044D90F2109@MN2PR11MB4285.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <e7429d0af3506cc26ad9e62586bdf93db8e00bf1.camel@siemens.com>
+In-Reply-To: <MN2PR11MB4285978C7FA1A7D44A044D90F2109@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,64 +17,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.03.22 22:13, Bezdeka, Florian via Xenomai wrote:
-> On Mon, 2022-03-14 at 21:05 +0000, Bezdeka, Florian via Xenomai wrote:
->> Hi Richard,
->>
->> On Mon, 2022-03-14 at 21:38 +0100, Richard Weinberger via Xenomai
->> wrote:
->>> BITS_PER_LONG is too broad, the max number of usable bits is limited
->>> by nr_cpumask_bits.
->>
->> I agree, BITS_PER_LONG seems wrong. But couldn't it be too small as
->> well? It depends on NR_CPUS which might be > BITS_PER_LONG.
-> 
-> Sorry that was unclear. I assume that the size of the cpumask depends
-> somehow on NR_CPUS, which might be > BITS_PER_LONG. So BITS_PER_LONG
-> might be too small AND might be too broad.
+On 15.03.22 02:32, Chen, Hongzhan wrote:
+> Looks good to me. Thanks for your help.
 > 
 
-Good hint, I've adjusted this on merge.
+Thanks for your effort! The last "few percentages" to get
+autoconf/automake integration were indeed tougher than I thought.
 
-Thanks,
 Jan
 
->>
->> Regards,
->> Florian
->>
->>> Found while debugging a system with CONFIG_DEBUG_PER_CPU_MAPS enabled.
->>>
->>> Signed-off-by: Richard Weinberger <richard@nod.at>
->>> ---
->>>  kernel/cobalt/sched.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
->>> index 88c4951ed814..aa65fd7f5d63 100644
->>> --- a/kernel/cobalt/sched.c
->>> +++ b/kernel/cobalt/sched.c
->>> @@ -1370,7 +1370,7 @@ static int affinity_vfile_show(struct xnvfile_regular_iterator *it,
->>>  	unsigned long val = 0;
->>>  	int cpu;
->>>  
->>> -	for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
->>> +	for (cpu = 0; cpu < nr_cpumask_bits; cpu++)
->>>  		if (cpumask_test_cpu(cpu, &cobalt_cpu_affinity))
->>>  			val |= (1UL << cpu);
->>>  
->>> @@ -1395,7 +1395,7 @@ static ssize_t affinity_vfile_store(struct xnvfile_input *input)
->>>  		affinity = xnsched_realtime_cpus; /* Reset to default. */
->>>  	else {
->>>  		cpumask_clear(&affinity);
->>> -		for (cpu = 0; cpu < BITS_PER_LONG; cpu++, val >>= 1) {
->>> +		for (cpu = 0; cpu < nr_cpumask_bits; cpu++, val >>= 1) {
->>>  			if (val & 1) {
->>>  				/*
->>>  				 * The new dynamic affinity must be a strict
->>
+> Regards
+> 
+> Hongzhan Chen
+> 
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com> 
+> Sent: Monday, March 14, 2022 6:01 PM
+> To: xenomai@xenomai.org
+> Cc: Chen, Hongzhan <hongzhan.chen@intel.com>
+> Subject: [PATCH v8 0/4] Kernel-Shark and libtraceevent plugins
+> 
+> Changes in v8:
+>  - drop explicit deps again - no longer unneeded after refreshing local
+>    libtracecmd installation
+> 
+> Changes in v7:
+>  - reworked installation
+>  - fixed build of kernelshark plugin (missing dep)
+>  - dropped applied first patch
+> 
+> Jan
+> 
+> 
+> CC: Hongzhan Chen <hongzhan.chen@intel.com>
+> 
+> Hongzhan Chen (3):
+>   build: add options to build plugins of kernelshark and libtraceevent
+>   KernelShark: Add xenomai_cobalt_switch_events plugin for KernelShark
+>   libtraceevent: Add xenomai_schedparams plugin for libtraceevent
+> 
+> Jan Kiszka (1):
+>   libs: Silence installation output of libtool
+> 
+>  Makefile.am                                   |   4 +
+>  configure.ac                                  |  35 ++++
+>  lib/alchemy/Makefile.am                       |   2 +
+>  lib/analogy/Makefile.am                       |   2 +
+>  lib/cobalt/Makefile.am                        |   2 +
+>  lib/copperplate/Makefile.am                   |   2 +
+>  lib/mercury/Makefile.am                       |   3 +-
+>  lib/psos/Makefile.am                          |   2 +
+>  lib/smokey/Makefile.am                        |   2 +
+>  lib/trank/Makefile.am                         |   3 +-
+>  lib/vxworks/Makefile.am                       |   2 +
+>  tracing/Makefile.am                           |  13 ++
+>  tracing/README                                |  84 +++++++++
+>  tracing/kernelshark/CobaltSwitchEvents.cpp    | 156 ++++++++++++++++
+>  tracing/kernelshark/Makefile.am               |  20 ++
+>  .../xenomai_cobalt_switch_events.c            | 174 ++++++++++++++++++
+>  .../xenomai_cobalt_switch_events.h            |  58 ++++++
+>  tracing/libtraceevent/Makefile.am             |  19 ++
+>  .../plugin_xenomai_schedparams.c              | 158 ++++++++++++++++
+>  19 files changed, 739 insertions(+), 2 deletions(-)
+>  create mode 100644 tracing/Makefile.am
+>  create mode 100644 tracing/README
+>  create mode 100644 tracing/kernelshark/CobaltSwitchEvents.cpp
+>  create mode 100644 tracing/kernelshark/Makefile.am
+>  create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.c
+>  create mode 100644 tracing/kernelshark/xenomai_cobalt_switch_events.h
+>  create mode 100644 tracing/libtraceevent/Makefile.am
+>  create mode 100644 tracing/libtraceevent/plugin_xenomai_schedparams.c
 > 
 
 -- 
