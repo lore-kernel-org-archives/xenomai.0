@@ -1,9 +1,8 @@
-Message-ID: <8ba9c2e5-70dc-8e81-2ebd-b038e539f954@siemens.com>
-Date: Tue, 15 Mar 2022 19:55:58 +0100
+Message-ID: <2a90b47a-43ea-5754-aed4-56966388ddc9@siemens.com>
+Date: Tue, 15 Mar 2022 20:00:23 +0100
 MIME-Version: 1.0
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] arm64: ipipe: Make erratum_1418040_thread_switch compatible
- with I-pipe
+Subject: [PATCH] arm64: ipipe: Fix section mismatch of __ipipe_tsc_register
 Content-Language: en-US
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
@@ -15,78 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Philippe Gerum <rpm@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-First of all, this erratum hook is called from __switch_to, thus
-potentially also from the primary domain. Some of the functions it calls
-check if preemption was disabled under Linux - which may not be the case
-when invoked from primary domain. Rather than adding a costly check for
-ipipe_root_p to this hot-path, simply turn the check off if I-pipe is
-enabled.
+The kernel warns:
 
-As the hook can be called from primary context, we need to protect its
-setup for new execs against those contexts via hard_preempt_disable.
+The function dw_apb_clocksource_register() references
+the function __init __ipipe_tsc_register().
+This is often because dw_apb_clocksource_register lacks a __init
+annotation or the annotation of __ipipe_tsc_register is wrong.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
 
-This is for 5.4-only, older kernels do no have the erratum fix.
+Developed for 5.4 but probably also 4.19 material.
 
-Philippe, the hardening of erratum_1418040_new_exec() could be a topic 
-for dovetail as well. preemptible() is fully oob-aware there, though.
+ arch/arm64/kernel/ipipe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- arch/arm64/kernel/cpu_errata.c | 3 ++-
- arch/arm64/kernel/cpufeature.c | 3 ++-
- arch/arm64/kernel/process.c    | 4 ++--
- 3 files changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 1e16c4e00e771..7fd7d1c8b9fcc 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -37,7 +37,8 @@ static bool __maybe_unused
- is_affected_midr_range_list(const struct arm64_cpu_capabilities *entry,
- 			    int scope)
+diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
+index 9dcb54c636395..a60787230fd84 100644
+--- a/arch/arm64/kernel/ipipe.c
++++ b/arch/arm64/kernel/ipipe.c
+@@ -228,7 +228,7 @@ void __ipipe_root_sync(void)
+ 
+ static struct __ipipe_tscinfo tsc_info;
+ 
+-void __init __ipipe_tsc_register(struct __ipipe_tscinfo *info)
++void __ipipe_tsc_register(struct __ipipe_tscinfo *info)
  {
--	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
-+	WARN_ON(scope != SCOPE_LOCAL_CPU ||
-+		(preemptible() && !IS_ENABLED(CONFIG_IPIPE)));
- 	return is_midr_in_range_list(read_cpuid_id(), entry->midr_range_list);
- }
- 
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index acdef8d76c64d..d65287cc2148b 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -2023,7 +2023,8 @@ static void __init mark_const_caps_ready(void)
- 
- bool this_cpu_has_cap(unsigned int n)
- {
--	if (!WARN_ON(preemptible()) && n < ARM64_NCAPS) {
-+	if (!WARN_ON(!IS_ENABLED(CONFIG_IPIPE) && preemptible()) &&
-+	    n < ARM64_NCAPS) {
- 		const struct arm64_cpu_capabilities *cap = cpu_hwcaps_ptrs[n];
- 
- 		if (cap)
-diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-index 68c078ab0250c..879ecf0237c88 100644
---- a/arch/arm64/kernel/process.c
-+++ b/arch/arm64/kernel/process.c
-@@ -517,9 +517,9 @@ static void erratum_1418040_thread_switch(struct task_struct *next)
- 
- static void erratum_1418040_new_exec(void)
- {
--	preempt_disable();
-+	unsigned long flags = hard_preempt_disable();
- 	erratum_1418040_thread_switch(current);
--	preempt_enable();
-+	hard_preempt_enable(flags);
- }
- 
- /*
+ 	tsc_info = *info;
+ 	__ipipe_hrclock_freq = info->freq;
 -- 
 2.34.1
+
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
