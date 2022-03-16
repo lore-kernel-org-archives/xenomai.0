@@ -1,15 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: CONFIG_NO_HZ_FULL = y but still have arch-timer on isolation CPUs
-Date: Wed, 16 Mar 2022 06:16:06 +0000
-Message-ID: <MN2PR11MB4285C119BB085CE57D6AEA3CF2119@MN2PR11MB4285.namprd11.prod.outlook.com>
+Date: Wed, 16 Mar 2022 16:02:02 +0800
+Subject: Re: CONFIG_NO_HZ_FULL = y but still have arch-timer on isolation CPUs
+From: Ivan Jiang <jcgeforce@aliyun.com>
+Message-ID: <56C9C417-F4FC-49F6-AA67-3302DDEBFEE6@aliyun.com>
 References: <16D8A720-E151-430B-AA1E-573A0F850121@aliyun.com>
  <MN2PR11MB42859CF57293F0BED314F2F6F2119@MN2PR11MB4285.namprd11.prod.outlook.com>
  <2521493B-7AD1-481A-BDB0-BC8225411986@aliyun.com>
-In-Reply-To: <2521493B-7AD1-481A-BDB0-BC8225411986@aliyun.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <MN2PR11MB4285C119BB085CE57D6AEA3CF2119@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB4285C119BB085CE57D6AEA3CF2119@MN2PR11MB4285.namprd11.prod.outlook.com>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +19,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ivan Jiang <jcgeforce@aliyun.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgSXZhbg0KDQpBY2NvcmRpbmcgdG8gdGhlIGRlc2NyaXB0aW9uICJAc2V2a28gSSBmb3VuZCB0
-aGF0IEkgZGlkbid0IG5lZWQgdGhlIG5vaHpfZnVsbD0gKEkgdGhpbmsgaXQncyByZWR1bmRhbnQg
-Z2l2ZW4gdGhlIGlzb2xjcHVzPW5vaHopIGJ1dCBJIGhhZCB0byBhZGQgdHNjPXJlbGlhYmxlLCBv
-biBDZW50T1MgOCB3aXRoIGtlcm5lbCA0LjE4LiDigJMgSm9zaHVhIENoaWEiICwgaXQgc2VlbXMg
-dGhhdCB0aGVyZSBpcyBzb2x1dGlvbiB3aXRoIDQuMTggLCB3aGljaCBzaG91bGQgIHdvcmsgd2l0
-aCA0LjE5Pw0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KDQotLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KRnJvbTogSXZhbiBKaWFuZyA8amNnZWZvcmNlQGFsaXl1bi5jb20+IA0KU2Vu
-dDogV2VkbmVzZGF5LCBNYXJjaCAxNiwgMjAyMiAxOjU1IFBNDQpUbzogQ2hlbiwgSG9uZ3poYW4g
-PGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDog
-UmU6IENPTkZJR19OT19IWl9GVUxMID0geSBidXQgc3RpbGwgaGF2ZSBhcmNoLXRpbWVyIG9uIGlz
-b2xhdGlvbiBDUFVzDQoNCkRlYXIgSG9uZ3poYW7vvJoNCg0KCU15IGtlcm5lbCBpcyA0LjE5LjE2
-NSwgaW5kZWVkIHJlbW92ZSB4ZW5vbWFpLCB0aGUgcGhlbm9tZW5vbiBpcyB0aGUgc2FtZS4NCglN
-YXliZSBpdOKAmXMgYSBidWcgaW4gdGhpcyBrZXJuZWwsIGFuZCBob3cgY2FuIEkgdHJhY2UgdGhp
-cyBidWcgaWYgaXQgaXMgZml4ZWQgaW4gc29tZSBwYXRjaD8NCglUaGFuayB5b3UuDQoNCkl2YW4N
-Cg0K77u/5ZyoIDIwMjIvMy8xNiAxMTozMO+8jOKAnENoZW4sIEhvbmd6aGFu4oCdPGhvbmd6aGFu
-LmNoZW5AaW50ZWwuY29tPiDlhpnlhaU6DQoNCiAgICBIaSBJdmFuDQoNCiAgICBIb3BlIHRoYXQg
-d2hhdCBkaXNjdXNzZWQgaW4gIGh0dHBzOi8vc3RhY2tvdmVyZmxvdy5jb20vcXVlc3Rpb25zLzYw
-MzIyMTE5L2NvbXBsZXRlbHktZWxpbWluYXRpbmctdGhlLXRpbWVyLXRpY2staW4tbW9kZXJuLWxp
-bnV4LTUtMCBtYXkgaGVscCB5b3UuDQogICAgU2VlbXMgdGhhdCB0aGVyZSBuZWVkICBkbyBtb3Jl
-IHNldHRpbmdzIGZvciBrZXJuZWwgcGFyYW1ldGVycyBwZXIgeW91ciByZXF1aXJlbWVudCBidXQg
-SSBoYXZlIG5vdCB0cmllZCBteXNlbGYuICBXaGVuIHlvdSByZW1vdmUgWGVub21haSwgIHRoZSBw
-aGVub21lbm9uIGlzIHRoZSBzYW1lPw0KDQogICAgUmVnYXJkcw0KDQogICAgSG9uZ3poYW4gQ2hl
-bg0KDQogICAgLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiAgICBGcm9tOiBYZW5vbWFpIDx4
-ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBJdmFuIEppYW5nIHZpYSBY
-ZW5vbWFpDQogICAgU2VudDogVHVlc2RheSwgTWFyY2ggMTUsIDIwMjIgMTI6MDEgUE0NCiAgICBU
-bzogeGVub21haUB4ZW5vbWFpLm9yZw0KICAgIFN1YmplY3Q6IENPTkZJR19OT19IWl9GVUxMID0g
-eSBidXQgc3RpbGwgaGF2ZSBhcmNoLXRpbWVyIG9uIGlzb2xhdGlvbiBDUFVzDQoNCiAgICBEZWFy
-IEd1eXM6DQoNCg0KDQogICAgICAgICAgIEnigJl2ZSBzZXQgdGhlIGNvbmZpZ3MgbGlrZSB0aGlz
-DQoNCiAgICAgICAgICAgQ09ORklHX05PX0haX0ZVTEwgPSB5DQoNCiAgICBDT05GSUdfUkNVX05P
-Q0JfQ1BVPXkNCg0KICAgIENPTkZJR19QUkVFTVBUPXkNCg0KICAgIENPTkZJR19DUFVfSURMRT1u
-DQoNCiAgICBDT05GSUdfQVJNX0NQVUlETEU9bg0KDQogICAgQ09ORklHX0NQVV9GUkVRPW4gDQoN
-CiAgICBBbmQgc2V0ZW52IGlzb2xjcHVzPTEgeGVub21haS5zdXBwb3J0ZWRfY3B1cz0weDAyIG5v
-aHpfZnVsbD0xICBpcnFhZmZpbml0eT0wICAgcmN1X25vY2JzPTENCg0KICAgIFRoZSBDUFUgaXMg
-Q29ydGV4LUE1NSBEdWFsIGNvcmUgYW5kIEkgdXNlIENQVSAwIGFzIExpbnV4IENQVSBhbmQgQ1BV
-MSBmb3IgaXNvbGF0aW9uIGNvcmUuDQoNCiAgICBCdXQgY2F0IC9wcm9jL2ludGVycnVwdHMgc3Rp
-bGwgdGhlIGFyY2hfdGltZXJzIGFyZSBpbmNyZWFzaW5nIHRoZSBzYW1lIHRpbWUgb24gYm90aCBD
-UFVzLg0KDQogICAgU2VlbXMgTk9fSFpfRlVMTCA9IHkgaGFzIG5vIGVmZmVjdC4NCg0KICAgIFRo
-ZSBib290IGxvZyBhcyBiZWxvdzoNCg0KICAgIFsgICAgMC4wMDAwMDBdIHJjdTogUHJlZW1wdGli
-bGUgaGllcmFyY2hpY2FsIFJDVSBpbXBsZW1lbnRhdGlvbi4NCg0KICAgIFsgICAgMC4wMDAwMDBd
-IHJjdTogICAgIFJDVSBkeW50aWNrLWlkbGUgZ3JhY2UtcGVyaW9kIGFjY2VsZXJhdGlvbiBpcyBl
-bmFibGVkLg0KDQogICAgWyAgICAwLjAwMDAwMF0gcmN1OiAgICAgUkNVIHJlc3RyaWN0aW5nIENQ
-VXMgZnJvbSBOUl9DUFVTPTggdG8gbnJfY3B1X2lkcz0yLg0KDQogICAgWyAgICAwLjAwMDAwMF0g
-cmN1OiAgICAgUkNVIHByaW9yaXR5IGJvb3N0aW5nOiBwcmlvcml0eSAxIGRlbGF5IDUwMCBtcy4N
-Cg0KICAgIFsgICAgMC4wMDAwMDBdICBUYXNrcyBSQ1UgZW5hYmxlZC4NCg0KICAgIFsgICAgMC4w
-MDAwMDBdIHJjdTogQWRqdXN0aW5nIGdlb21ldHJ5IGZvciByY3VfZmFub3V0X2xlYWY9MTYsIG5y
-X2NwdV9pZHM9Mg0KDQogICAgWyAgICAwLjAwMDAwMF0gTlJfSVJRUzogNjQsIG5yX2lycXM6IDY0
-LCBwcmVhbGxvY2F0ZWQgaXJxczogMA0KDQogICAgWyAgICAwLjAwMDAwMF0gR0lDdjM6IERpc3Ry
-aWJ1dG9yIGhhcyBubyBSYW5nZSBTZWxlY3RvciBzdXBwb3J0DQoNCiAgICBbICAgIDAuMDAwMDAw
-XSBHSUN2Mzogbm8gVkxQSSBzdXBwb3J0LCBubyBkaXJlY3QgTFBJIHN1cHBvcnQNCg0KICAgIFsg
-ICAgMC4wMDAwMDBdIEdJQ3YzOiBDUFUwOiBmb3VuZCByZWRpc3RyaWJ1dG9yIDAgcmVnaW9uIDA6
-MHgwMDAwMDAwMDExOTQwMDAwDQoNCiAgICBbICAgIDAuMDAwMDAwXSBOT19IWjogRnVsbCBkeW50
-aWNrcyBDUFVzOiAxLg0KDQogICAgWyAgICAwLjAwMDAwMF0gcmN1OiAgICAgT2ZmbG9hZCBSQ1Ug
-Y2FsbGJhY2tzIGZyb20gQ1BVczogMS4NCg0KICAgIFsgICAgMC4wMDAwMDBdIGFyY2hfdGltZXI6
-IGNwMTUgdGltZXIocykgcnVubmluZyBhdCAyNC4wME1IeiAodmlydCkuDQoNCiAgICBQbGVhc2Ug
-aGVscCBtZSB0byBhbmFseXNpcyB0aGlzIHNpdHVhdGlvbi4NCg0KDQoNCiAgICBWZXJ5IGFwcHJl
-Y2lhdGUsDQoNCiAgICBDaGVuLg0KDQoNCg0KDQoNCg0KDQoNCg0K
+Dear Hongzhan=EF=BC=9A
+
+	Seems the tsc=3Dreliable doesn't have effect.
+	BTW tsc is the clock source of x86, I was wandering if it's the same usage=
+ for ARM64?
+
+Thank you.
+Ivan
+
+=EF=BB=BF=E5=9C=A8 2022/3/16 14:16=EF=BC=8C=E2=80=9CChen, Hongzhan=E2=80=9D<hongzhan.chen@intel.com> =E5=86=99=E5=
+=85=A5:
+
+    Hi Ivan
+
+    According to the description "@sevko I found that I didn't need the noh=
+z_full=3D (I think it's redundant given the isolcpus=3Dnohz) but I had to add ts=
+c=3Dreliable, on CentOS 8 with kernel 4.18. =E2=80=93 Joshua Chia" , it seems that t=
+here is solution with 4.18 , which should  work with 4.19?
+
+    Regards
+
+    Hongzhan Chen
+
+
+    -----Original Message-----
+    From: Ivan Jiang <jcgeforce@aliyun.com>=20
+    Sent: Wednesday, March 16, 2022 1:55 PM
+    To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+    Subject: Re: CONFIG_NO_HZ_FULL =3D y but still have arch-timer on isolati=
+on CPUs
+
+    Dear Hongzhan=EF=BC=9A
+
+    	My kernel is 4.19.165, indeed remove xenomai, the phenomenon is the sa=
+me.
+    	Maybe it=E2=80=99s a bug in this kernel, and how can I trace this bug if it =
+is fixed in some patch?
+    	Thank you.
+
+    Ivan
+
+    =EF=BB=BF=E5=9C=A8 2022/3/16 11:30=EF=BC=8C=E2=80=9CChen, Hongzhan=E2=80=9D<hongzhan.chen@intel.com> =
+=E5=86=99=E5=85=A5:
+
+        Hi Ivan
+
+        Hope that what discussed in  https://stackoverflow.com/questions/60=
+322119/completely-eliminating-the-timer-tick-in-modern-linux-5-0 may help yo=
+u.
+        Seems that there need  do more settings for kernel parameters per y=
+our requirement but I have not tried myself.  When you remove Xenomai,  the =
+phenomenon is the same?
+
+        Regards
+
+        Hongzhan Chen
+
+        -----Original Message-----
+        From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Ivan Jiang=
+ via Xenomai
+        Sent: Tuesday, March 15, 2022 12:01 PM
+        To: xenomai@xenomai.org
+        Subject: CONFIG_NO_HZ_FULL =3D y but still have arch-timer on isolati=
+on CPUs
+
+        Dear Guys:
+
+
+
+               I=E2=80=99ve set the configs like this
+
+               CONFIG_NO_HZ_FULL =3D y
+
+        CONFIG_RCU_NOCB_CPU=3Dy
+
+        CONFIG_PREEMPT=3Dy
+
+        CONFIG_CPU_IDLE=3Dn
+
+        CONFIG_ARM_CPUIDLE=3Dn
+
+        CONFIG_CPU_FREQ=3Dn=20
+
+        And setenv isolcpus=3D1 xenomai.supported_cpus=3D0x02 nohz_full=3D1  irqa=
+ffinity=3D0   rcu_nocbs=3D1
+
+        The CPU is Cortex-A55 Dual core and I use CPU 0 as Linux CPU and CP=
+U1 for isolation core.
+
+        But cat /proc/interrupts still the arch_timers are increasing the s=
+ame time on both CPUs.
+
+        Seems NO_HZ_FULL =3D y has no effect.
+
+        The boot log as below:
+
+        [    0.000000] rcu: Preemptible hierarchical RCU implementation.
+
+        [    0.000000] rcu:     RCU dyntick-idle grace-period acceleration =
+is enabled.
+
+        [    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=3D8 to nr_c=
+pu_ids=3D2.
+
+        [    0.000000] rcu:     RCU priority boosting: priority 1 delay 500=
+ ms.
+
+        [    0.000000]  Tasks RCU enabled.
+
+        [    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=3D16, nr_c=
+pu_ids=3D2
+
+        [    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+
+        [    0.000000] GICv3: Distributor has no Range Selector support
+
+        [    0.000000] GICv3: no VLPI support, no direct LPI support
+
+        [    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x000000=
+0011940000
+
+        [    0.000000] NO_HZ: Full dynticks CPUs: 1.
+
+        [    0.000000] rcu:     Offload RCU callbacks from CPUs: 1.
+
+        [    0.000000] arch_timer: cp15 timer(s) running at 24.00MHz (virt)=
+.
+
+        Please help me to analysis this situation.
+
+
+
+        Very appreciate,
+
+        Chen.
+
+
+
+
+
+
+
+
+
+
+
 
