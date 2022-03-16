@@ -1,5 +1,9 @@
+Message-ID: <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
+Date: Wed, 16 Mar 2022 11:35:22 +0100
+MIME-Version: 1.0
 Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
  than 4.14.62
+Content-Language: en-US
 References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
  <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
  <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
@@ -7,13 +11,9 @@ References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
  <f6743b0c-0792-3a67-820c-e68742f3eb46@siemens.com>
  <b1311ea0-c669-1492-26b6-d7d0375f8c44@arcor.de>
  <2da03290-90d7-64d7-301a-2cad4ec21a66@arcor.de>
-From: Scott Reed <scott.reed@arcor.de>
-Message-ID: <dc855cda-109d-13a5-b941-2bbf4e1f56d3@arcor.de>
-Date: Wed, 16 Mar 2022 11:22:28 +0100
-MIME-Version: 1.0
+From: Jan Kiszka <jan.kiszka@siemens.com>
 In-Reply-To: <2da03290-90d7-64d7-301a-2cad4ec21a66@arcor.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -23,11 +23,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Scott Reed <scott.reed@arcor.de>, xenomai@xenomai.org
 
-
-
-On 3/16/22 10:58 AM, Scott Reed via Xenomai wrote:
+On 16.03.22 10:58, Scott Reed wrote:
 > 
 > 
 > On 3/15/22 9:42 AM, Scott Reed via Xenomai wrote:
@@ -60,14 +58,14 @@ On 3/16/22 10:58 AM, Scott Reed via Xenomai wrote:
 >>>>>>> I have stable system running for some time with Linux 4.14.62 with
 >>>>>>> Xenomai 3.07 although I did need to patch the PCIe driver [1]. Also
 >>>>>>> some time back, I tried to move to 4.14.110 with I-pipe and also
->>>>>>> saw same scenario of my system hanging on the first PCIe MSI 
+>>>>>>> saw same scenario of my system hanging on the first PCIe MSI
 >>>>>>> interrupt
 >>>>>>> so I backed out back to 4.14.62. Now I am trying to move to 5.4.151,
 >>>>>>> but
 >>>>>>> see the same hang.
 >>>>>>
 >>>>>> What about 4.19.y-cip? Specifically because of
->>>>>> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b23a011ce6d72f8699c. 
+>>>>>> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b23a011ce6d72f8699c.
 >>>>>>
 >>>>>>
 >>>>>>
@@ -75,7 +73,7 @@ On 3/16/22 10:58 AM, Scott Reed via Xenomai wrote:
 >>>>>> version (ipipe-core-5.4.151-arm-4). So try ipipe/5.4.y head instead.
 >>>>>
 >>>>> To do a quick test, I just applied the change from the commit you
->>>>> referenced above to my 5.4.151 ipipe kernel and it unfortunately 
+>>>>> referenced above to my 5.4.151 ipipe kernel and it unfortunately
 >>>>> did not
 >>>>> help (hang still occurs with first interrupt).
 >>>>>
@@ -151,6 +149,13 @@ On 3/16/22 10:58 AM, Scott Reed via Xenomai wrote:
 > As mentioned before, I first observed this behavior when moving from
 > 4.14.62+ipipe and 4.14.110+ipipe so I think my best bet is to dive
 > into what changed in this time frame. My goal is still to move to
+
+Yes, that might be a way now to try to find the root cause. Problem: you
+can't do bisection easily because of the merges with the I-pipe patch.
+Therefore, it can be easier to actually debug where the system hangs, on
+what. With some traces from there, it can then be simpler again to
+analyse the differences between to working and non-working 4.14 kernels.
+
 > 5.4.x+ipipe, but need to first understand what change is causing
 > my problem. I assume it is a kernel change or i-pipe change which
 > either causes the problem or triggers a problem in our system which
@@ -159,23 +164,18 @@ On 3/16/22 10:58 AM, Scott Reed via Xenomai wrote:
 > I suppose I could try the 4.14.101 kernel with the 4.14.62 ipipe
 > patch (if the patch applies cleanly) to try and determine if the
 > problematic change is in the kernel or ipipe patch.
-
-Sorry typo above 4.14.101->4.14.110. I tried applying the 4.14.62
-ipipe patch to the 4.14.110 kernel and it did not apply
-cleanly (Hunks failed). I guess not surprising, but was worth a
-quick try.
-
-Scott
 > 
 > A question in general. How "common" is it to use PCIe MSI interrupts
 > and ipipe? Are other people running systems with PCIe MSI interrupts
 > and ipipe without issues or is this simply not a typical use-case?
 > 
-> Scott
->>
->>>
->>> Jan
->>>
->>
-> 
+
+PCIe and MSI are very common and well tested - on x86, possibly also on
+arm64. It is very likely not that well on 32-bit arm, though.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
