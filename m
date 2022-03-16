@@ -1,13 +1,13 @@
-Message-ID: <9905f7c4-fcbe-a61e-1dd5-a76d8ad24075@siemens.com>
-Date: Tue, 15 Mar 2022 20:31:23 +0100
-MIME-Version: 1.0
-Subject: Re: waitqueue vs. mutex behavior
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: CONFIG_NO_HZ_FULL = y but still have arch-timer on isolation CPUs
+Date: Wed, 16 Mar 2022 03:30:32 +0000
+Message-ID: <MN2PR11MB42859CF57293F0BED314F2F6F2119@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <16D8A720-E151-430B-AA1E-573A0F850121@aliyun.com>
+In-Reply-To: <16D8A720-E151-430B-AA1E-573A0F850121@aliyun.com>
 Content-Language: en-US
-References: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,73 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matt Klass <Matt.Klass@telosalliance.com>, xenomai@xenomai.org
+To: Ivan Jiang <jcgeforce@aliyun.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 15.03.22 19:27, Matt Klass via Xenomai wrote:
-> Using Xenomai 3.0.10, with kernel 4.9.128-05789, on armv7, we're having
-> problems with the functionality of rtdm_waitqueues. The code was written by
-> a Xenomai-adept developer who has since left for greener pastures.
-> 
-> We have two functions that use rtdm_waitqueue_lock/unlock on the same
-> rtdm_waitqueue_t to manage access to a shared data structure. One is an
-> rtdm_task_t that runs periodically every 1ms, the second is an IOCTL
-> handler.
-> 
-> Problem: In some circumstances, one of the two functions will acquire the
-> lock, and access the shared data structure. But before the first function
-> releases the lock, the second function seems to also acquire the lock, and
-> begin to access its own access of the shared data structure. The second
-> function releases its lock after its work is complete, and then when the
-> first function tries to release the lock, it gets an "already unlocked"
-> error from Xenomai:
-> 
-> [Xenomai] lock 80f10020 already unlocked on CPU #0
->           last owner = kernel/xenomai/sched.c:908 (___xnsched_run(), CPU #0)
-> [<8010ed78>] (unwind_backtrace) from [<8010b5f0>] (show_stack+0x10/0x14)
-> [<8010b5f0>] (show_stack) from [<801c8c08>] (xnlock_dbg_release+0x12c/0x138)
-> [<801c8c08>] (xnlock_dbg_release) from [<801be110>] (___xnlock_put+0xc/0x38)
-> [<801be110>] (___xnlock_put) from [<7f000434>]
-> (myengine_rtdm_waitqueue_unlock_with_num+0xf8/0x13c [engine_rtnet])
-> [<7f000434>] (myengine_rtdm_waitqueue_unlock_with_num [engine_rtnet]) from
-> [<7f00ace8>] (engine_rtnet_periodic_task+0x604/0x660 [engine_rtnet])
-> [<7f00ace8>] (engine_rtnet_periodic_task [engine_rtnet]) from [<801c73ac>]
-> (kthread_trampoline+0x68/0xa4)
-> [<801c73ac>] (kthread_trampoline) from [<80147190>] (kthread+0x108/0x110)
-> [<80147190>] (kthread) from [<80107cd4>] (ret_from_fork+0x18/0x24)
-> 
-> 
-> These waitqueues were originally mutexes, and the above-mentioned adept
-> committed this change to waitqueues seven years ago with the following
-> comment: "Use Wait Queue instead of Mutex, because Mutex can't be called
-> from the non-RT context."
-> 
-> We'd expect that once one of the functions obtains the lock on the
-> waitqueue, the other would be blocked until the first function releases the
-> lock. It's quite possible, likely really, that we don't understand the
-> differences between mutexes and waitqueues. We've looked at the online
-> Xenomai documentation on waitqueues, but we have not been enlightened.
-> 
-> 
-> Would you have any suggestions on things we should do (or not do) to figure
-> out what's going on?
-> 
-
-rtdm_waitqueue_lock/unlock is surely no replacement for
-rtdm_mutex_lock/unlock to be used in non-rt contexts. It exists in order
-to prepare the caller for waiting in a queue, and that waiting shares
-the same constraint that rtdm_mutex_lock have: the caller must be RT.
-Furthermore, the lock will obviously be dropped while being blocked on
-the waitqueue.
-
-If you need synchronization between RT and non-RT contexts, you should
-use rtdm_lock_get_irqsave/put_irqrestore AND have little code in the
-critical section. Definitely not any code that could sleep, call random
-Linux functions or do even worse things. Or you need to ensure to
-promote the non-RT caller to RT on entry.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+SGkgSXZhbg0KDQpIb3BlIHRoYXQgd2hhdCBkaXNjdXNzZWQgaW4gIGh0dHBzOi8vc3RhY2tvdmVy
+Zmxvdy5jb20vcXVlc3Rpb25zLzYwMzIyMTE5L2NvbXBsZXRlbHktZWxpbWluYXRpbmctdGhlLXRp
+bWVyLXRpY2staW4tbW9kZXJuLWxpbnV4LTUtMCBtYXkgaGVscCB5b3UuDQpTZWVtcyB0aGF0IHRo
+ZXJlIG5lZWQgIGRvIG1vcmUgc2V0dGluZ3MgZm9yIGtlcm5lbCBwYXJhbWV0ZXJzIHBlciB5b3Vy
+IHJlcXVpcmVtZW50IGJ1dCBJIGhhdmUgbm90IHRyaWVkIG15c2VsZi4gIFdoZW4geW91IHJlbW92
+ZSBYZW5vbWFpLCAgdGhlIHBoZW5vbWVub24gaXMgdGhlIHNhbWU/DQoNClJlZ2FyZHMNCg0KSG9u
+Z3poYW4gQ2hlbg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogWGVub21haSA8
+eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSXZhbiBKaWFuZyB2aWEg
+WGVub21haQ0KU2VudDogVHVlc2RheSwgTWFyY2ggMTUsIDIwMjIgMTI6MDEgUE0NClRvOiB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBDT05GSUdfTk9fSFpfRlVMTCA9IHkgYnV0IHN0aWxs
+IGhhdmUgYXJjaC10aW1lciBvbiBpc29sYXRpb24gQ1BVcw0KDQpEZWFyIEd1eXM6DQoNCiANCg0K
+wqDCoMKgwqDCoMKgIEnigJl2ZSBzZXQgdGhlIGNvbmZpZ3MgbGlrZSB0aGlzDQoNCsKgwqDCoMKg
+wqDCoCBDT05GSUdfTk9fSFpfRlVMTCA9IHkNCg0KQ09ORklHX1JDVV9OT0NCX0NQVT15DQoNCkNP
+TkZJR19QUkVFTVBUPXkNCg0KQ09ORklHX0NQVV9JRExFPW4NCg0KQ09ORklHX0FSTV9DUFVJRExF
+PW4NCg0KQ09ORklHX0NQVV9GUkVRPW4gDQoNCkFuZCBzZXRlbnYgaXNvbGNwdXM9MSB4ZW5vbWFp
+LnN1cHBvcnRlZF9jcHVzPTB4MDIgbm9oel9mdWxsPTHCoCBpcnFhZmZpbml0eT0wwqDCoCByY3Vf
+bm9jYnM9MQ0KDQpUaGUgQ1BVIGlzIENvcnRleC1BNTUgRHVhbCBjb3JlIGFuZCBJIHVzZSBDUFUg
+MCBhcyBMaW51eCBDUFUgYW5kIENQVTEgZm9yIGlzb2xhdGlvbiBjb3JlLg0KDQpCdXQgY2F0IC9w
+cm9jL2ludGVycnVwdHMgc3RpbGwgdGhlIGFyY2hfdGltZXJzIGFyZSBpbmNyZWFzaW5nIHRoZSBz
+YW1lIHRpbWUgb24gYm90aCBDUFVzLg0KDQpTZWVtcyBOT19IWl9GVUxMID0geSBoYXMgbm8gZWZm
+ZWN0Lg0KDQpUaGUgYm9vdCBsb2cgYXMgYmVsb3c6DQoNClvCoMKgwqAgMC4wMDAwMDBdIHJjdTog
+UHJlZW1wdGlibGUgaGllcmFyY2hpY2FsIFJDVSBpbXBsZW1lbnRhdGlvbi4NCg0KW8KgwqDCoCAw
+LjAwMDAwMF0gcmN1OsKgwqDCoMKgIFJDVSBkeW50aWNrLWlkbGUgZ3JhY2UtcGVyaW9kIGFjY2Vs
+ZXJhdGlvbiBpcyBlbmFibGVkLg0KDQpbwqDCoMKgIDAuMDAwMDAwXSByY3U6wqDCoMKgwqAgUkNV
+IHJlc3RyaWN0aW5nIENQVXMgZnJvbSBOUl9DUFVTPTggdG8gbnJfY3B1X2lkcz0yLg0KDQpbwqDC
+oMKgIDAuMDAwMDAwXSByY3U6wqDCoMKgwqAgUkNVIHByaW9yaXR5IGJvb3N0aW5nOiBwcmlvcml0
+eSAxIGRlbGF5IDUwMCBtcy4NCg0KW8KgwqDCoCAwLjAwMDAwMF3CoCBUYXNrcyBSQ1UgZW5hYmxl
+ZC4NCg0KW8KgwqDCoCAwLjAwMDAwMF0gcmN1OiBBZGp1c3RpbmcgZ2VvbWV0cnkgZm9yIHJjdV9m
+YW5vdXRfbGVhZj0xNiwgbnJfY3B1X2lkcz0yDQoNClvCoMKgwqAgMC4wMDAwMDBdIE5SX0lSUVM6
+IDY0LCBucl9pcnFzOiA2NCwgcHJlYWxsb2NhdGVkIGlycXM6IDANCg0KW8KgwqDCoCAwLjAwMDAw
+MF0gR0lDdjM6IERpc3RyaWJ1dG9yIGhhcyBubyBSYW5nZSBTZWxlY3RvciBzdXBwb3J0DQoNClvC
+oMKgwqAgMC4wMDAwMDBdIEdJQ3YzOiBubyBWTFBJIHN1cHBvcnQsIG5vIGRpcmVjdCBMUEkgc3Vw
+cG9ydA0KDQpbwqDCoMKgIDAuMDAwMDAwXSBHSUN2MzogQ1BVMDogZm91bmQgcmVkaXN0cmlidXRv
+ciAwIHJlZ2lvbiAwOjB4MDAwMDAwMDAxMTk0MDAwMA0KDQpbwqDCoMKgIDAuMDAwMDAwXSBOT19I
+WjogRnVsbCBkeW50aWNrcyBDUFVzOiAxLg0KDQpbwqDCoMKgIDAuMDAwMDAwXSByY3U6wqDCoMKg
+wqAgT2ZmbG9hZCBSQ1UgY2FsbGJhY2tzIGZyb20gQ1BVczogMS4NCg0KW8KgwqDCoCAwLjAwMDAw
+MF0gYXJjaF90aW1lcjogY3AxNSB0aW1lcihzKSBydW5uaW5nIGF0IDI0LjAwTUh6ICh2aXJ0KS4N
+Cg0KUGxlYXNlIGhlbHAgbWUgdG8gYW5hbHlzaXMgdGhpcyBzaXR1YXRpb24uDQoNCiANCg0KVmVy
+eSBhcHByZWNpYXRlLA0KDQpDaGVuLg0KDQogDQoNCiANCg0KIA0KDQo=
 
