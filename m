@@ -1,17 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: CONFIG_NO_HZ_FULL = y but still have arch-timer on isolation CPUs
-Date: Wed, 16 Mar 2022 08:11:27 +0000
-Message-ID: <MN2PR11MB42852867ABF51A314162BE58F2119@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <16D8A720-E151-430B-AA1E-573A0F850121@aliyun.com>
- <MN2PR11MB42859CF57293F0BED314F2F6F2119@MN2PR11MB4285.namprd11.prod.outlook.com>
- <2521493B-7AD1-481A-BDB0-BC8225411986@aliyun.com>
- <MN2PR11MB4285C119BB085CE57D6AEA3CF2119@MN2PR11MB4285.namprd11.prod.outlook.com>
- <56C9C417-F4FC-49F6-AA67-3302DDEBFEE6@aliyun.com>
-In-Reply-To: <56C9C417-F4FC-49F6-AA67-3302DDEBFEE6@aliyun.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: waitqueue vs. mutex behavior
+Date: Wed, 16 Mar 2022 09:08:14 +0100
+In-reply-to: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
+Message-ID: <871qz2fem1.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,87 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ivan Jiang <jcgeforce@aliyun.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matt Klass <Matt.Klass@telosalliance.com>
+Cc: xenomai@xenomai.org
 
-SGkgSXZhbg0KDQpUaGUgZGVzY3JpcHRpb24gSSBwb3N0ZWQgZm9sbG93cyAiIEdvdCBpdCB0byB3
-b3JrLiBNeSBmaW5hbCBzZXQgb2Yga2VybmVsIHBhcmFtZXRlcnMgd2FzIGlzb2xjcHVzPW5vaHos
-ZG9tYWluLDgtMTUgbm9oel9mdWxsPTgtMTUuIE1vcmVvdmVyLCBJIHJlYWxpemVkIHRoYXQgSSB3
-YXMgcnVubmluZyBteSBwcm9ncmFtIHdpdGggRklGTyBzY2hlZHVsaW5nIHZpYSBjaHJ0IC1mIGJ1
-dCBmb3Jnb3QgdG8gc2V0IC9wcm9jL3N5cy9rZXJuZWwvc2NoZWRfcnRfcnVudGltZV91cyB0byAt
-MSwgd2hpY2ggaW50cm9kdWNlZCB2YXJpYWJpbGl0eSAocHJvYmFibHkgYmVjYXVzZSBpdCB3YXMg
-Z2V0dGluZyBwcmVlbXB0ZWQgYnkgdGhlIGtlcm5lbCkuIEJvdGggcnVubmluZyB3aXRob3V0IGNo
-cnQgLWYsIG9yIHJ1bm5pbmcgd2l0aCBpdCBidXQgc2V0dGluZyBzY2hlZF9ydF9ydW50aW1lX3Vz
-IHRvIC0xLCBmaXhlZCB0aGUgcHJvYmxlbS4g4oCTIHNldmtvIE1hciAxLCAyMDIwIGF0IDE4OjI5
-Iiwgd2hpY2ggSSBqdXN0IGxldCB5b3Uga25vdyB0aGVyZSBtYXkgaGF2ZSBzb2x1dGlvbiB3aXRo
-IDQuMTkuIFRoZXJlIGlzIG1vcmUgZGV0YWlscyBkZXNjcmliZWQgaW4gdGhlIGxpbmssIHBsZWFz
-ZSBnbyB0aHJvdWdoIGl0Lg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KDQotLS0tLU9y
-aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSXZhbiBKaWFuZyA8amNnZWZvcmNlQGFsaXl1bi5j
-b20+IA0KU2VudDogV2VkbmVzZGF5LCBNYXJjaCAxNiwgMjAyMiA0OjAyIFBNDQpUbzogQ2hlbiwg
-SG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0K
-U3ViamVjdDogUmU6IENPTkZJR19OT19IWl9GVUxMID0geSBidXQgc3RpbGwgaGF2ZSBhcmNoLXRp
-bWVyIG9uIGlzb2xhdGlvbiBDUFVzDQoNCkRlYXIgSG9uZ3poYW7vvJoNCg0KCVNlZW1zIHRoZSB0
-c2M9cmVsaWFibGUgZG9lc24ndCBoYXZlIGVmZmVjdC4NCglCVFcgdHNjIGlzIHRoZSBjbG9jayBz
-b3VyY2Ugb2YgeDg2LCBJIHdhcyB3YW5kZXJpbmcgaWYgaXQncyB0aGUgc2FtZSB1c2FnZSBmb3Ig
-QVJNNjQ/DQoNClRoYW5rIHlvdS4NCkl2YW4NCg0K77u/5ZyoIDIwMjIvMy8xNiAxNDoxNu+8jOKA
-nENoZW4sIEhvbmd6aGFu4oCdPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPiDlhpnlhaU6DQoNCiAg
-ICBIaSBJdmFuDQoNCiAgICBBY2NvcmRpbmcgdG8gdGhlIGRlc2NyaXB0aW9uICJAc2V2a28gSSBm
-b3VuZCB0aGF0IEkgZGlkbid0IG5lZWQgdGhlIG5vaHpfZnVsbD0gKEkgdGhpbmsgaXQncyByZWR1
-bmRhbnQgZ2l2ZW4gdGhlIGlzb2xjcHVzPW5vaHopIGJ1dCBJIGhhZCB0byBhZGQgdHNjPXJlbGlh
-YmxlLCBvbiBDZW50T1MgOCB3aXRoIGtlcm5lbCA0LjE4LiDigJMgSm9zaHVhIENoaWEiICwgaXQg
-c2VlbXMgdGhhdCB0aGVyZSBpcyBzb2x1dGlvbiB3aXRoIDQuMTggLCB3aGljaCBzaG91bGQgIHdv
-cmsgd2l0aCA0LjE5Pw0KDQogICAgUmVnYXJkcw0KDQogICAgSG9uZ3poYW4gQ2hlbg0KDQoNCiAg
-ICAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KICAgIEZyb206IEl2YW4gSmlhbmcgPGpjZ2Vm
-b3JjZUBhbGl5dW4uY29tPiANCiAgICBTZW50OiBXZWRuZXNkYXksIE1hcmNoIDE2LCAyMDIyIDE6
-NTUgUE0NCiAgICBUbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsg
-eGVub21haUB4ZW5vbWFpLm9yZw0KICAgIFN1YmplY3Q6IFJlOiBDT05GSUdfTk9fSFpfRlVMTCA9
-IHkgYnV0IHN0aWxsIGhhdmUgYXJjaC10aW1lciBvbiBpc29sYXRpb24gQ1BVcw0KDQogICAgRGVh
-ciBIb25nemhhbu+8mg0KDQogICAgCU15IGtlcm5lbCBpcyA0LjE5LjE2NSwgaW5kZWVkIHJlbW92
-ZSB4ZW5vbWFpLCB0aGUgcGhlbm9tZW5vbiBpcyB0aGUgc2FtZS4NCiAgICAJTWF5YmUgaXTigJlz
-IGEgYnVnIGluIHRoaXMga2VybmVsLCBhbmQgaG93IGNhbiBJIHRyYWNlIHRoaXMgYnVnIGlmIGl0
-IGlzIGZpeGVkIGluIHNvbWUgcGF0Y2g/DQogICAgCVRoYW5rIHlvdS4NCg0KICAgIEl2YW4NCg0K
-ICAgIO+7v+WcqCAyMDIyLzMvMTYgMTE6MzDvvIzigJxDaGVuLCBIb25nemhhbuKAnTxob25nemhh
-bi5jaGVuQGludGVsLmNvbT4g5YaZ5YWlOg0KDQogICAgICAgIEhpIEl2YW4NCg0KICAgICAgICBI
-b3BlIHRoYXQgd2hhdCBkaXNjdXNzZWQgaW4gIGh0dHBzOi8vc3RhY2tvdmVyZmxvdy5jb20vcXVl
-c3Rpb25zLzYwMzIyMTE5L2NvbXBsZXRlbHktZWxpbWluYXRpbmctdGhlLXRpbWVyLXRpY2staW4t
-bW9kZXJuLWxpbnV4LTUtMCBtYXkgaGVscCB5b3UuDQogICAgICAgIFNlZW1zIHRoYXQgdGhlcmUg
-bmVlZCAgZG8gbW9yZSBzZXR0aW5ncyBmb3Iga2VybmVsIHBhcmFtZXRlcnMgcGVyIHlvdXIgcmVx
-dWlyZW1lbnQgYnV0IEkgaGF2ZSBub3QgdHJpZWQgbXlzZWxmLiAgV2hlbiB5b3UgcmVtb3ZlIFhl
-bm9tYWksICB0aGUgcGhlbm9tZW5vbiBpcyB0aGUgc2FtZT8NCg0KICAgICAgICBSZWdhcmRzDQoN
-CiAgICAgICAgSG9uZ3poYW4gQ2hlbg0KDQogICAgICAgIC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
-LS0tDQogICAgICAgIEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4g
-T24gQmVoYWxmIE9mIEl2YW4gSmlhbmcgdmlhIFhlbm9tYWkNCiAgICAgICAgU2VudDogVHVlc2Rh
-eSwgTWFyY2ggMTUsIDIwMjIgMTI6MDEgUE0NCiAgICAgICAgVG86IHhlbm9tYWlAeGVub21haS5v
-cmcNCiAgICAgICAgU3ViamVjdDogQ09ORklHX05PX0haX0ZVTEwgPSB5IGJ1dCBzdGlsbCBoYXZl
-IGFyY2gtdGltZXIgb24gaXNvbGF0aW9uIENQVXMNCg0KICAgICAgICBEZWFyIEd1eXM6DQoNCg0K
-DQogICAgICAgICAgICAgICBJ4oCZdmUgc2V0IHRoZSBjb25maWdzIGxpa2UgdGhpcw0KDQogICAg
-ICAgICAgICAgICBDT05GSUdfTk9fSFpfRlVMTCA9IHkNCg0KICAgICAgICBDT05GSUdfUkNVX05P
-Q0JfQ1BVPXkNCg0KICAgICAgICBDT05GSUdfUFJFRU1QVD15DQoNCiAgICAgICAgQ09ORklHX0NQ
-VV9JRExFPW4NCg0KICAgICAgICBDT05GSUdfQVJNX0NQVUlETEU9bg0KDQogICAgICAgIENPTkZJ
-R19DUFVfRlJFUT1uIA0KDQogICAgICAgIEFuZCBzZXRlbnYgaXNvbGNwdXM9MSB4ZW5vbWFpLnN1
-cHBvcnRlZF9jcHVzPTB4MDIgbm9oel9mdWxsPTEgIGlycWFmZmluaXR5PTAgICByY3Vfbm9jYnM9
-MQ0KDQogICAgICAgIFRoZSBDUFUgaXMgQ29ydGV4LUE1NSBEdWFsIGNvcmUgYW5kIEkgdXNlIENQ
-VSAwIGFzIExpbnV4IENQVSBhbmQgQ1BVMSBmb3IgaXNvbGF0aW9uIGNvcmUuDQoNCiAgICAgICAg
-QnV0IGNhdCAvcHJvYy9pbnRlcnJ1cHRzIHN0aWxsIHRoZSBhcmNoX3RpbWVycyBhcmUgaW5jcmVh
-c2luZyB0aGUgc2FtZSB0aW1lIG9uIGJvdGggQ1BVcy4NCg0KICAgICAgICBTZWVtcyBOT19IWl9G
-VUxMID0geSBoYXMgbm8gZWZmZWN0Lg0KDQogICAgICAgIFRoZSBib290IGxvZyBhcyBiZWxvdzoN
-Cg0KICAgICAgICBbICAgIDAuMDAwMDAwXSByY3U6IFByZWVtcHRpYmxlIGhpZXJhcmNoaWNhbCBS
-Q1UgaW1wbGVtZW50YXRpb24uDQoNCiAgICAgICAgWyAgICAwLjAwMDAwMF0gcmN1OiAgICAgUkNV
-IGR5bnRpY2staWRsZSBncmFjZS1wZXJpb2QgYWNjZWxlcmF0aW9uIGlzIGVuYWJsZWQuDQoNCiAg
-ICAgICAgWyAgICAwLjAwMDAwMF0gcmN1OiAgICAgUkNVIHJlc3RyaWN0aW5nIENQVXMgZnJvbSBO
-Ul9DUFVTPTggdG8gbnJfY3B1X2lkcz0yLg0KDQogICAgICAgIFsgICAgMC4wMDAwMDBdIHJjdTog
-ICAgIFJDVSBwcmlvcml0eSBib29zdGluZzogcHJpb3JpdHkgMSBkZWxheSA1MDAgbXMuDQoNCiAg
-ICAgICAgWyAgICAwLjAwMDAwMF0gIFRhc2tzIFJDVSBlbmFibGVkLg0KDQogICAgICAgIFsgICAg
-MC4wMDAwMDBdIHJjdTogQWRqdXN0aW5nIGdlb21ldHJ5IGZvciByY3VfZmFub3V0X2xlYWY9MTYs
-IG5yX2NwdV9pZHM9Mg0KDQogICAgICAgIFsgICAgMC4wMDAwMDBdIE5SX0lSUVM6IDY0LCBucl9p
-cnFzOiA2NCwgcHJlYWxsb2NhdGVkIGlycXM6IDANCg0KICAgICAgICBbICAgIDAuMDAwMDAwXSBH
-SUN2MzogRGlzdHJpYnV0b3IgaGFzIG5vIFJhbmdlIFNlbGVjdG9yIHN1cHBvcnQNCg0KICAgICAg
-ICBbICAgIDAuMDAwMDAwXSBHSUN2Mzogbm8gVkxQSSBzdXBwb3J0LCBubyBkaXJlY3QgTFBJIHN1
-cHBvcnQNCg0KICAgICAgICBbICAgIDAuMDAwMDAwXSBHSUN2MzogQ1BVMDogZm91bmQgcmVkaXN0
-cmlidXRvciAwIHJlZ2lvbiAwOjB4MDAwMDAwMDAxMTk0MDAwMA0KDQogICAgICAgIFsgICAgMC4w
-MDAwMDBdIE5PX0haOiBGdWxsIGR5bnRpY2tzIENQVXM6IDEuDQoNCiAgICAgICAgWyAgICAwLjAw
-MDAwMF0gcmN1OiAgICAgT2ZmbG9hZCBSQ1UgY2FsbGJhY2tzIGZyb20gQ1BVczogMS4NCg0KICAg
-ICAgICBbICAgIDAuMDAwMDAwXSBhcmNoX3RpbWVyOiBjcDE1IHRpbWVyKHMpIHJ1bm5pbmcgYXQg
-MjQuMDBNSHogKHZpcnQpLg0KDQogICAgICAgIFBsZWFzZSBoZWxwIG1lIHRvIGFuYWx5c2lzIHRo
-aXMgc2l0dWF0aW9uLg0KDQoNCg0KICAgICAgICBWZXJ5IGFwcHJlY2lhdGUsDQoNCiAgICAgICAg
-Q2hlbi4NCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQo=
+
+Matt Klass via Xenomai <xenomai@xenomai.org> writes:
+
+> Using Xenomai 3.0.10, with kernel 4.9.128-05789, on armv7, we're having
+> problems with the functionality of rtdm_waitqueues. The code was written by
+> a Xenomai-adept developer who has since left for greener pastures.
+>
+> We have two functions that use rtdm_waitqueue_lock/unlock on the same
+> rtdm_waitqueue_t to manage access to a shared data structure. One is an
+> rtdm_task_t that runs periodically every 1ms, the second is an IOCTL
+> handler.
+
+Is that a RTDM non-rt ioctl() handler?
+
+>
+> Problem: In some circumstances, one of the two functions will acquire the
+> lock, and access the shared data structure. But before the first function
+> releases the lock, the second function seems to also acquire the lock, and
+> begin to access its own access of the shared data structure. The second
+> function releases its lock after its work is complete, and then when the
+> first function tries to release the lock, it gets an "already unlocked"
+> error from Xenomai:
+>
+> [Xenomai] lock 80f10020 already unlocked on CPU #0
+>           last owner = kernel/xenomai/sched.c:908 (___xnsched_run(), CPU #0)
+> [<8010ed78>] (unwind_backtrace) from [<8010b5f0>] (show_stack+0x10/0x14)
+> [<8010b5f0>] (show_stack) from [<801c8c08>] (xnlock_dbg_release+0x12c/0x138)
+> [<801c8c08>] (xnlock_dbg_release) from [<801be110>] (___xnlock_put+0xc/0x38)
+> [<801be110>] (___xnlock_put) from [<7f000434>]
+> (myengine_rtdm_waitqueue_unlock_with_num+0xf8/0x13c [engine_rtnet])
+> [<7f000434>] (myengine_rtdm_waitqueue_unlock_with_num [engine_rtnet]) from
+> [<7f00ace8>] (engine_rtnet_periodic_task+0x604/0x660 [engine_rtnet])
+> [<7f00ace8>] (engine_rtnet_periodic_task [engine_rtnet]) from [<801c73ac>]
+> (kthread_trampoline+0x68/0xa4)
+> [<801c73ac>] (kthread_trampoline) from [<80147190>] (kthread+0x108/0x110)
+> [<80147190>] (kthread) from [<80107cd4>] (ret_from_fork+0x18/0x24)
+>
+
+This is difficult to comment on this without seeing the whole code using
+the wait queue, there are several wait() calls for RTDM waitqueues. It
+is possible that the waitqueue construct may be misused.
+
+>
+> These waitqueues were originally mutexes, and the above-mentioned adept
+> committed this change to waitqueues seven years ago with the following
+> comment: "Use Wait Queue instead of Mutex, because Mutex can't be called
+> from the non-RT context."
+>
+> We'd expect that once one of the functions obtains the lock on the
+> waitqueue, the other would be blocked until the first function releases the
+> lock. It's quite possible, likely really, that we don't understand the
+> differences between mutexes and waitqueues. We've looked at the online
+> Xenomai documentation on waitqueues, but we have not been enlightened.
+>
+
+RTDM mutexes follow the common POSIX mutex semantics, with priority
+inheritance force enabled. On the other hand, waitqueues allow for any
+number of threads to wait for an arbitrary condition only known by the
+application to happen.
+
+Strictly speaking, rtdm_waitqueue_lock/unlock is supposed to bind the
+condition and the waitqueue access atomically together, in order to
+prevent wakeup signals from being missed (pretty much like the common
+POSIX mutex+condvar logic). Typically, this lock is taken by a waiter
+before it checks the condition then goes sleeping on the associated wq,
+and released atomically by the scheduler right before switching out that
+waiter as the condition is still unmet.
+
+So if this is about serializing all accesses to a user-defined shared
+memory, the wq semantics would not fit well, and waitqueue_lock/unlock
+would not serialize anything past the waitqueue handling code itself.
+
+>
+> Would you have any suggestions on things we should do (or not do) to figure
+> out what's going on?
+>
+
+If the idea is to serialize non-RT (ioctl_nrt handler?) vs RT contexts,
+then no RTDM synchronization object will do, these can only do RT/RT
+serialization.
+
+Xenomai 3 cannot do write/write serialization between non-RT and RT
+stages natively (Xenomai 4 can do so via the so-called 'stax' objects,
+but this is not going to help you ATM I guess). If this is read/write,
+and the non-RT ioctl handler is the reader, _and_ the shared data is
+fairly small, then you might resort to some kind of ad hoc sequence lock
+mechanism to implement this.
+
+-- 
+Philippe.
 
