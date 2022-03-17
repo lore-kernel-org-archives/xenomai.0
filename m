@@ -1,5 +1,4 @@
-Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
- than 4.14.62
+MIME-Version: 1.0
 References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
  <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
  <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
@@ -8,14 +7,15 @@ References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
  <b1311ea0-c669-1492-26b6-d7d0375f8c44@arcor.de>
  <2da03290-90d7-64d7-301a-2cad4ec21a66@arcor.de>
  <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
-From: Scott Reed <scott.reed@arcor.de>
-Message-ID: <49ce8d8d-9dd2-07da-f3d3-9990020f10de@arcor.de>
-Date: Thu, 17 Mar 2022 16:24:36 +0100
-MIME-Version: 1.0
-In-Reply-To: <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
-Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+ <49ce8d8d-9dd2-07da-f3d3-9990020f10de@arcor.de>
+In-Reply-To: <49ce8d8d-9dd2-07da-f3d3-9990020f10de@arcor.de>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 17 Mar 2022 11:31:19 -0400
+Message-ID: <CALLqZ8TYkRirpa5-TsFtQ-071AZ-H6Bcg3A1VEY1dn9+YDePoA@mail.gmail.com>
+Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
+ than 4.14.62
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,139 +24,234 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Scott Reed <scott.reed@arcor.de>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-CgpPbiAzLzE2LzIyIDExOjM1IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+IE9uIDE2LjAzLjIyIDEw
-OjU4LCBTY290dCBSZWVkIHdyb3RlOgo+Pgo+Pgo+PiBPbiAzLzE1LzIyIDk6NDIgQU0sIFNjb3R0
-IFJlZWQgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+Pgo+Pj4KPj4+IE9uIDMvMTUvMjIgNzozMiBBTSwg
-SmFuIEtpc3prYSB3cm90ZToKPj4+PiBPbiAxNC4wMy4yMiAxODo0NSwgU2NvdHQgUmVlZCB3cm90
-ZToKPj4+Pj4KPj4+Pj4KPj4+Pj4gT24gMy8xMS8yMiAyOjEzIFBNLCBTY290dCBSZWVkIHZpYSBY
-ZW5vbWFpIHdyb3RlOgo+Pj4+Pj4KPj4+Pj4+IE9uIDMvMTEvMjIgMTI6MzggUE0sIEphbiBLaXN6
-a2Egd3JvdGU6Cj4+Pj4+Pj4gT24gMTEuMDMuMjIgMTE6MTIsIFNjb3R0IFJlZWQgdmlhIFhlbm9t
-YWkgd3JvdGU6Cj4+Pj4+Pj4+IEhlbGxvLAo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBJIGFtIHNlZWluZyBh
-biBhcHBhcmVudCBpc3N1ZSB3aXRoIFBDSWUgTVNJIGludGVycnVwdHMgYW5kIEktcGlwZQo+Pj4+
-Pj4+PiB3aGVuIHRyeWluZyB0byBtb3ZlIHRvIGEgbmV3ZXIga2VybmVsIGFuZCBJLXBpcGUgcGF0
-Y2guCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFRoZSBpc3N1ZSBpcyBhcyBzb29uIGFzIGEgUENJZSBNU0kg
-aW50ZXJydXB0IG9jY3VycywgdGhlIHN5c3RlbQo+Pj4+Pj4+PiBoYW5ncyB3aXRoIG5vIG1lc3Nh
-Z2Ugb3V0cHV0IG9uIHRoZSBzZXJpYWwgY29uc29sZSBvciBpbgo+Pj4+Pj4+PiAvdmFyL2xvZy9t
-ZXNzYWdlcy4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIHBsYXRmb3JtIEkgYW0gd29ya2luZyBvbiBp
-cyBhICJpLk1YIDYgUXVhZCIgYW5kIEkgYW0gdXBncmFkaW5nCj4+Pj4+Pj4+IGZyb20gYSA0LjE0
-LjYyIGtlcm5lbCBhbmQgSS1waXBlIHBhdGNoIHdpdGggWGVub21haSAzLjA3IHRvIDUuNC4xNTEK
-Pj4+Pj4+Pj4ga2VybmVsIGFuZCBJLXBpcGUgcGF0Y2ggd2l0aCBYZW5vbWFpIDMuMi4xLgo+Pj4+
-Pj4+Pgo+Pj4+Pj4+PiBPdXIgRlBHQSBpcyBjb25uZWN0ZWQgdG8gdGhlIGkuTVggNiB2aWEgUENJ
-ZSBhbmQgZ2VuZXJhdGVzIFBDSWUgTVNJCj4+Pj4+Pj4+IGludGVycnVwdHMgdG8gdGhlIENQVSBm
-cm9tLCBmb3IgZXhhbXBsZSwgYW4gQWx0ZXJhIFRyaXBsZS1TcGVlZCBNQUMuCj4+Pj4+Pj4+Cj4+
-Pj4+Pj4+IEkgaGF2ZSBzdGFibGUgc3lzdGVtIHJ1bm5pbmcgZm9yIHNvbWUgdGltZSB3aXRoIExp
-bnV4IDQuMTQuNjIgd2l0aAo+Pj4+Pj4+PiBYZW5vbWFpIDMuMDcgYWx0aG91Z2ggSSBkaWQgbmVl
-ZCB0byBwYXRjaCB0aGUgUENJZSBkcml2ZXIgWzFdLiBBbHNvCj4+Pj4+Pj4+IHNvbWUgdGltZSBi
-YWNrLCBJIHRyaWVkIHRvIG1vdmUgdG8gNC4xNC4xMTAgd2l0aCBJLXBpcGUgYW5kIGFsc28KPj4+
-Pj4+Pj4gc2F3IHNhbWUgc2NlbmFyaW8gb2YgbXkgc3lzdGVtIGhhbmdpbmcgb24gdGhlIGZpcnN0
-IFBDSWUgTVNJCj4+Pj4+Pj4+IGludGVycnVwdAo+Pj4+Pj4+PiBzbyBJIGJhY2tlZCBvdXQgYmFj
-ayB0byA0LjE0LjYyLiBOb3cgSSBhbSB0cnlpbmcgdG8gbW92ZSB0byA1LjQuMTUxLAo+Pj4+Pj4+
-PiBidXQKPj4+Pj4+Pj4gc2VlIHRoZSBzYW1lIGhhbmcuCj4+Pj4+Pj4KPj4+Pj4+PiBXaGF0IGFi
-b3V0IDQuMTkueS1jaXA/IFNwZWNpZmljYWxseSBiZWNhdXNlIG9mCj4+Pj4+Pj4gaHR0cHM6Ly9z
-b3VyY2UuZGVueC5kZS9YZW5vbWFpL2lwaXBlLWFybS8tL2NvbW1pdC9hMWFhYjhiYTMwOThlNTk1
-ZjlmYThiMjNhMDExY2U2ZDcyZjg2OTljLgo+Pj4+Pj4+Cj4+Pj4+Pj4KPj4+Pj4+Pgo+Pj4+Pj4+
-IEFjdHVhbGx5LCB0aGF0IGNvbW1pdCBpcyBhbHNvIG1pc3NpbmcgZnJvbSB0aGUgbGFzdCB0YWdn
-ZWQgNS40IGlwaXBlCj4+Pj4+Pj4gdmVyc2lvbiAoaXBpcGUtY29yZS01LjQuMTUxLWFybS00KS4g
-U28gdHJ5IGlwaXBlLzUuNC55IGhlYWQgaW5zdGVhZC4KPj4+Pj4+Cj4+Pj4+PiBUbyBkbyBhIHF1
-aWNrIHRlc3QsIEkganVzdCBhcHBsaWVkIHRoZSBjaGFuZ2UgZnJvbSB0aGUgY29tbWl0IHlvdQo+
-Pj4+Pj4gcmVmZXJlbmNlZCBhYm92ZSB0byBteSA1LjQuMTUxIGlwaXBlIGtlcm5lbCBhbmQgaXQg
-dW5mb3J0dW5hdGVseQo+Pj4+Pj4gZGlkIG5vdAo+Pj4+Pj4gaGVscCAoaGFuZyBzdGlsbCBvY2N1
-cnMgd2l0aCBmaXJzdCBpbnRlcnJ1cHQpLgo+Pj4+Pj4KPj4+Pj4+Pgo+Pj4+Pj4+Pgo+Pj4+Pj4+
-PiBCZWZvcmUgSSBkaXZlIGludG8gYW5hbHl6aW5nIHRoZSBoYW5nLCBJIHdhbnRlZCB0byBhc2s6
-Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFdoYXQgYXJlIG90aGVyIHBlb3BsZSdzIGV4cGVyaWVuY2VzIHdp
-dGggdXNpbmcgUENJZSBNU0kgaW50ZXJydXB0cwo+Pj4+Pj4+PiBhbmQgSS1waXBlPwo+Pj4+Pj4+
-Pgo+Pj4+Pj4+PiBJIGFtIHRoaW5raW5nIG9mIHRyeWluZyA1LjEwLjEwMyBEb3ZldGFpbCB0byBz
-ZWUgaWYgSSBzdGlsbCBzZWUKPj4+Pj4+Pj4gdGhlIHByb2JsZW0uIFdvdWxkIHRoaXMgYmUgcmVj
-b21tZW5kZWQ/Cj4+Pj4+Pj4KPj4+Pj4+PiBJZiB5b3UgY2FuIG1pZ3JhdGUgeW91ciB0ZXN0IHdp
-dGggcmVhc29uYWJsZSBlZmZvcnQsIHllcywgZGVmaW5pdGVseS4KPj4+Pj4+Cj4+Pj4+PiBJIHdp
-bGwgdHJ5IHRvIG1pZ3JhdGUgbXkgdGVzdCB0byA1LjEwLjEwMyBEb3ZldGFpbCB3aXRoIHRoZSBo
-b3BlcyB0aGF0Cj4+Pj4+PiBpdCB3aWxsIG5vdCBiZSB0b28gbXVjaCBlZmZvcnQgYW5kIHJlcG9y
-dCBiYWNrLgo+Pj4+Pgo+Pj4+PiBJIHRyaWVkIHRvIG1pZ3JhdGUgbXkgdGVzdCB0byA1LjEwLjEw
-MyBEb3ZldGFpbCBhbmQgZmFpbGVkIG9uIHRoZSBmaXJzdAo+Pj4+PiBzdGVwLCBuYW1lbHkgYnJp
-bmdpbmcgdXAgYSBzdGFuZGFyZCAoaS5lLiBubyBEb3ZldGFpbCkgNS4xMC4xMDMga2VybmVsCj4+
-Pj4+IG9uIG15IHBsYXRmb3JtLgo+Pj4+Pgo+Pj4+PiBUaGUga2VybmVsIGJvb3RzIHdpdGhvdXQg
-YSBwcm9ibGVtLCBidXQgdGhlIEZFQyBFdGhlcm5ldCBwb3J0IG9uIHRoZQo+Pj4+PiBpLk1YIDYg
-aXMgbm90IHdvcmtpbmcgKGNhbm5vdCBwaW5nIGluIG9yIG91dCkuCj4+Pj4KPj4+PiBEbyB5b3Ug
-aGF2ZSBvciBkaWQgeW91IGhhdmUgYW55IGN1c3RvbSBwYXRjaGVzIG9uIHRvcD8KPj4+Cj4+PiBP
-bmx5IGEgcGF0Y2ggdG8gYWRkIHRoZSBkZXZpY2UgdHJlZSBpbmNsdWRlIChkdHNpKSBmb3Igb3Vy
-IGlteDYgU09DOgo+Pj4gIMKgwqDCoCDOvFE3LTk2MiAtIM68UXNldmVuIHN0YW5kYXJkIG1vZHVs
-ZSB3aXRoIE5YUCBpLk1YIDYgUHJvY2Vzc29yCj4+Pgo+Pj4+Cj4+Pj4+Cj4+Pj4+IEkgbG9va2Vk
-IGF0IHRoZSB0cmFjZSB3aXRoIFdpcmVzaGFyayBhbmQgaXQgbG9va3MgbGlrZSB3aGVuIHBpbmdp
-bmcKPj4+Pj4gb3V0IHRoYXQgdGhlIEFSUCBwYWNrZXQgaXMgY29ycnVwdCBhbmQgdGhlcmVmb3Jl
-IGZhaWxpbmcuIFRoZSBBUlAKPj4+Pj4gcGFja2V0IGlzIGNvcnJ1cHQgaW4gdGhhdCBpdCBsb29r
-cyBsaWtlIHZhcmlvdXMgYml0cyBhcmUgZmxpcHBlZC4gRm9yCj4+Pj4+IGV4YW1wbGUsIHRoZSBz
-b3VyY2UgTUFDIGFkZHJlc3Mgc2hvdWxkIGJlCj4+Pj4+ICDCoMKgIDAwOjA5OmNjOjAyOmMxOmI2
-Cj4+Pj4+IGJ1dCBpcwo+Pj4+PiAgwqDCoCAwMDowMTpjYzowMjowMTozNiBvcgo+Pj4+PiAgwqDC
-oCAwMDowOTpjYzowMjpjMTozNgo+Pj4+PiBXaXJlc2hhcmsgYWxzbyBjb21wbGFpbnMgYWJvdXQg
-dGhlIEZyYW1lIGNoZWNrIHNlcXVlbmNlCj4+Pj4+IChbRkNTIFN0YXR1czogVW52ZXJpZmllZF0K
-Pj4+Pj4KPj4+Pj4gSSBjYW4gcHJvdmlkZSBXaXJlc2hhcmsgZHVtcHMgaWYgc29tZW9uZSBpcyBp
-bnRlcmVzdGVkLCBidXQgZm9yIG1lCj4+Pj4+IGF0IHRoaXMgcG9pbnQgSSBkbyBub3Qgd2FudCB0
-byBmaWdodCB3aXRoIGdldHRpbmcgYSA1LjEwLngga2VybmVsCj4+Pj4+IHRvIHdvcmsgYXMgSSB3
-YXMgcHJldHR5IGZhciBhbG9uZyBtb3ZpbmcgdG8gYSA1LjQueCBrZXJuZWwgd2l0aAo+Pj4+PiBp
-cGlwZSBiZWZvcmUgcnVubmluZyBpbnRvIHRoZSBvcmlnaW5hbCBwcm9ibGVtIHBvc3RlZCAod2l0
-aCBpcGlwZQo+Pj4+PiBteSBzeXN0ZW0gZnJlZXplcyBvbiB0aGUgZmlyc3QgUENJZSBNU0kgaW50
-ZXJydXB0LiBOb3RlOiB3aXRob3V0Cj4+Pj4+IGlwaXBlLCBJIGRvIG5vdCBzZWUgYW55IGlzc3Vl
-cykuCj4+Pj4+Cj4+Pj4+IEFzIG1lbnRpb25lZCwgSSBmaXJzdCBzYXcgdGhpcyBwcm9ibGVtIGEg
-d2hpbGUgYWdvIHdoZW4gdHJ5aW5nCj4+Pj4+IHRvIG1vdmUgZnJvbSA0LjE0LjYyK2lwaXBlIHRv
-IDQuMTQuMTEwK2lwaXBlIGFuZCBhdCB0aGF0IHRpbWUKPj4+Pj4gdGhlbiBiYWNrZWQgYmFjayBk
-b3duIHRvIDQuMTQuNjIraXBpcGUgd2hpY2ggd29ya3MuCj4+Pj4+Cj4+Pj4+IEkgZ3Vlc3MgbXkg
-bmV4dCBzdHJhdGVneSBpcyB0byB0cnkgdG8gZmlndXJlIG91dCB3aGF0IGNoYW5nZWQKPj4+Pj4g
-YmV0d2VlbiA0LjE0LjYyK2lwaXBlIGFuZCA0LjE0LjExMCtpcGlwZSB3aGljaCB0cmlnZ2Vycy9j
-YXVzZXMKPj4+Pj4gdGhlIGhhbmcgYXMgSSBob3BlIHRoZSBkZWx0YSBiZXR3ZWVuIHRoZW0gaXMg
-bm90IHRvbyBsYXJnZS4KPj4+Pj4KPj4+Pj4gSWYgYW55b25lIGhhcyBvdGhlciBzdWdnZXN0aW9u
-cyBvciB0aXBzLCB0aGV5IGFyZSBtb3JlIHRoYW4gd2VsY29tZS4KPj4+Pgo+Pj4+IEFzIEkgd3Jv
-dGUgYmVmb3JlOiB0cnkgdGhlIGxhdGVzdCA0LjE5LWNpcC1pcGlwZSBmaXJzdC4KPj4+Cj4+PiBP
-Sy4gV2lsbCBkby4KPj4KPj4gSSB3YXMgYWJsZSB0byBydW4gbXkgdGVzdCB3aGVyZSB0aGUgc3lz
-dGVtIGhhbmdzIG9uIHRoZSBmaXJzdAo+PiBQQ0llIE1TSSBpbnRlcnJ1cHQgb24gdGhlIGxhdGVz
-dCA0LjE5LWNpcC1pcGlwZSAoNC4xOS4yMjkpIGFuZAo+PiB1bmZvcnR1bmF0ZWx5IHNlZSB0aGUg
-c2FtZSBiZWhhdmlvciAoc3lzdGVtIGhhbmdzKS4KPj4KPj4gUENJZSBNU0kgaW50ZXJydXB0cyB3
-b3JrIGFzIGV4cGVjdGVkIG9uIGEgInZhbmlsbGEiIDQuMTkuMjI5IGtlcm5lbCwKPj4gYnV0IHdo
-ZW4gSSBhZGTCoCBpcGlwZSBhbmQgWGVub21haSAzLjIuMSB0byB0aGUga2VybmVsLCB0aGVuCj4+
-IHRoZSBzeXN0ZW0gaGFuZ3Mgb24gdGhlIGZpcnN0IFBDSWUgTVNJIGludGVycnVwdC4KPj4KPj4g
-QXMgbWVudGlvbmVkIGJlZm9yZSwgSSBmaXJzdCBvYnNlcnZlZCB0aGlzIGJlaGF2aW9yIHdoZW4g
-bW92aW5nIGZyb20KPj4gNC4xNC42MitpcGlwZSBhbmQgNC4xNC4xMTAraXBpcGUgc28gSSB0aGlu
-ayBteSBiZXN0IGJldCBpcyB0byBkaXZlCj4+IGludG8gd2hhdCBjaGFuZ2VkIGluIHRoaXMgdGlt
-ZSBmcmFtZS4gTXkgZ29hbCBpcyBzdGlsbCB0byBtb3ZlIHRvCj4gCj4gWWVzLCB0aGF0IG1pZ2h0
-IGJlIGEgd2F5IG5vdyB0byB0cnkgdG8gZmluZCB0aGUgcm9vdCBjYXVzZS4gUHJvYmxlbTogeW91
-Cj4gY2FuJ3QgZG8gYmlzZWN0aW9uIGVhc2lseSBiZWNhdXNlIG9mIHRoZSBtZXJnZXMgd2l0aCB0
-aGUgSS1waXBlIHBhdGNoLgo+IFRoZXJlZm9yZSwgaXQgY2FuIGJlIGVhc2llciB0byBhY3R1YWxs
-eSBkZWJ1ZyB3aGVyZSB0aGUgc3lzdGVtIGhhbmdzLCBvbgo+IHdoYXQuIFdpdGggc29tZSB0cmFj
-ZXMgZnJvbSB0aGVyZSwgaXQgY2FuIHRoZW4gYmUgc2ltcGxlciBhZ2FpbiB0bwo+IGFuYWx5c2Ug
-dGhlIGRpZmZlcmVuY2VzIGJldHdlZW4gdG8gd29ya2luZyBhbmQgbm9uLXdvcmtpbmcgNC4xNCBr
-ZXJuZWxzLgo+IAoKSSBoYXZlIGJlZW4gYWJsZSB0byBnZXQgbXkgdGVzdCBydW5uaW5nIG9uIDQu
-MTQuMTEwK2lwaXBlIHdpdGhvdXQgdGhlCnN5c3RlbSBoYW5naW5nIG9uIHRoZSBmaXJzdCBQQ0ll
-IE1TSSBpbnRlcnJ1cHQuIEkgaGF2ZSBhdHRhY2hlZCBteQpwYXRjaCAoaG9wZWZ1bGx5IHRoZSBh
-dHRhY2htZW50IHNob3dzIHVwIGNvcnJlY3RseSwgYnV0IGlmIG5vdApwbGVhc2UgbGV0IG1lIGtu
-b3cpLgoKVGhlIGZpeCBpcyB0byByZXBsYWNlIGluIHRoZSBQQ0llIE1TSSBpbnRlcnJ1cHQgaGFu
-ZGxlciB0aGUgY2FsbAp0byBnZW5lcmljX2hhbmRsZV9pcnEoKSB3aXRoIGlwaXBlX2hhbmRsZV9k
-ZW11eGVkX2lycS4KCkFjdHVhbGx5LCBJIGhhZCBhbHJlYWR5IG1hZGUgdGhpcyBwYXRjaCBvbiBt
-eSA0LjE0LjYyIHN5c3RlbQppbiBjb21iaW5hdGlvbiB3aXRoIGEgcGF0Y2ggdG8gbWFrZSB0aGUg
-UENJZSBkcml2ZXIgYW4gUlRETQpkcml2ZXIgKHNlZSBbMV0pIHRvIGFkZHJlc3MgbGF0ZW5jeSBp
-c3N1ZXMuIEFzIHRoaXMgcGF0Y2ggd2FzIGZvcgphIGxhdGVuY3kgaXNzdWUgb24gNC4xNC42MiBh
-bmQgbm90IGEgaGFuZywgSSBkaWQgbm90IGltbWVkaWF0ZWx5CnRoaW5rIGFib3V0IHRoZSBpcGlw
-ZSBwYXJ0IG9mIHRoZSBwYXRjaCBiZWluZyB0aGUgZml4IGZvciB0aGUKaGFuZyBJIHdhcyBzZWVp
-bmcgd2hlbiBtb3ZpbmcgdG8gNC4xNC4xMTAraXBpcGUuCgpJIHdpbGwgbm93IGNoZWNrIGlmIHRo
-ZSBzYW1lL3NpbWlsYXIgcGF0Y2ggZml4ZXMgbXkgb3JpZ2luYWwKaGFuZyBvbiA1LjQuMTUxK2lw
-aXBlLgoKV291bGQgaXQgbWFrZSBzZW5zZSB0byBpbnRlZ3JhdGUgdGhpcyBwYXRjaCBpbnRvIG5l
-eHQgaXBpcGUgcmVsZWFzZT8KClNjb3R0Cgo+PiA1LjQueCtpcGlwZSwgYnV0IG5lZWQgdG8gZmly
-c3QgdW5kZXJzdGFuZCB3aGF0IGNoYW5nZSBpcyBjYXVzaW5nCj4+IG15IHByb2JsZW0uIEkgYXNz
-dW1lIGl0IGlzIGEga2VybmVsIGNoYW5nZSBvciBpLXBpcGUgY2hhbmdlIHdoaWNoCj4+IGVpdGhl
-ciBjYXVzZXMgdGhlIHByb2JsZW0gb3IgdHJpZ2dlcnMgYSBwcm9ibGVtIGluIG91ciBzeXN0ZW0g
-d2hpY2gKPj4gd2FzIGRvcm1hbnQgdXAgdW50aWwgbm93Lgo+Pgo+PiBJIHN1cHBvc2UgSSBjb3Vs
-ZCB0cnkgdGhlIDQuMTQuMTAxIGtlcm5lbCB3aXRoIHRoZSA0LjE0LjYyIGlwaXBlCj4+IHBhdGNo
-IChpZiB0aGUgcGF0Y2ggYXBwbGllcyBjbGVhbmx5KSB0byB0cnkgYW5kIGRldGVybWluZSBpZiB0
-aGUKPj4gcHJvYmxlbWF0aWMgY2hhbmdlIGlzIGluIHRoZSBrZXJuZWwgb3IgaXBpcGUgcGF0Y2gu
-Cj4+Cj4+IEEgcXVlc3Rpb24gaW4gZ2VuZXJhbC4gSG93ICJjb21tb24iIGlzIGl0IHRvIHVzZSBQ
-Q0llIE1TSSBpbnRlcnJ1cHRzCj4+IGFuZCBpcGlwZT8gQXJlIG90aGVyIHBlb3BsZSBydW5uaW5n
-IHN5c3RlbXMgd2l0aCBQQ0llIE1TSSBpbnRlcnJ1cHRzCj4+IGFuZCBpcGlwZSB3aXRob3V0IGlz
-c3VlcyBvciBpcyB0aGlzIHNpbXBseSBub3QgYSB0eXBpY2FsIHVzZS1jYXNlPwo+Pgo+IAo+IFBD
-SWUgYW5kIE1TSSBhcmUgdmVyeSBjb21tb24gYW5kIHdlbGwgdGVzdGVkIC0gb24geDg2LCBwb3Nz
-aWJseSBhbHNvIG9uCj4gYXJtNjQuIEl0IGlzIHZlcnkgbGlrZWx5IG5vdCB0aGF0IHdlbGwgb24g
-MzItYml0IGFybSwgdGhvdWdoLgo+IAo+IEphbgo+IAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
-LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
-OiAwMDAxLWlwaXBlLWFybS1GaXgtaGFuZGxpbmctb2YtUENJZS1NU0ktaW50ZXJydXB0cy5wYXRj
-aApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogOTkzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
-VVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MjIwMzE3L2M4MWZjYjBmL2F0dGFjaG1lbnQuYmluPgo=
+On Thu, Mar 17, 2022 at 11:25 AM Scott Reed via Xenomai <xenomai@xenomai.or=
+g>
+wrote:
+
+>
+>
+> On 3/16/22 11:35 AM, Jan Kiszka wrote:
+> > On 16.03.22 10:58, Scott Reed wrote:
+> >>
+> >>
+> >> On 3/15/22 9:42 AM, Scott Reed via Xenomai wrote:
+> >>>
+> >>>
+> >>> On 3/15/22 7:32 AM, Jan Kiszka wrote:
+> >>>> On 14.03.22 18:45, Scott Reed wrote:
+> >>>>>
+> >>>>>
+> >>>>> On 3/11/22 2:13 PM, Scott Reed via Xenomai wrote:
+> >>>>>>
+> >>>>>> On 3/11/22 12:38 PM, Jan Kiszka wrote:
+> >>>>>>> On 11.03.22 11:12, Scott Reed via Xenomai wrote:
+> >>>>>>>> Hello,
+> >>>>>>>>
+> >>>>>>>> I am seeing an apparent issue with PCIe MSI interrupts and I-pip=
+e
+> >>>>>>>> when trying to move to a newer kernel and I-pipe patch.
+> >>>>>>>>
+> >>>>>>>> The issue is as soon as a PCIe MSI interrupt occurs, the system
+> >>>>>>>> hangs with no message output on the serial console or in
+> >>>>>>>> /var/log/messages.
+> >>>>>>>>
+> >>>>>>>> The platform I am working on is a "i.MX 6 Quad" and I am upgradi=
+ng
+> >>>>>>>> from a 4.14.62 kernel and I-pipe patch with Xenomai 3.07 to
+> 5.4.151
+> >>>>>>>> kernel and I-pipe patch with Xenomai 3.2.1.
+> >>>>>>>>
+> >>>>>>>> Our FPGA is connected to the i.MX 6 via PCIe and generates PCIe
+> MSI
+> >>>>>>>> interrupts to the CPU from, for example, an Altera Triple-Speed
+> MAC.
+> >>>>>>>>
+> >>>>>>>> I have stable system running for some time with Linux 4.14.62 wi=
+th
+> >>>>>>>> Xenomai 3.07 although I did need to patch the PCIe driver [1].
+> Also
+> >>>>>>>> some time back, I tried to move to 4.14.110 with I-pipe and also
+> >>>>>>>> saw same scenario of my system hanging on the first PCIe MSI
+> >>>>>>>> interrupt
+> >>>>>>>> so I backed out back to 4.14.62. Now I am trying to move to
+> 5.4.151,
+> >>>>>>>> but
+> >>>>>>>> see the same hang.
+> >>>>>>>
+> >>>>>>> What about 4.19.y-cip? Specifically because of
+> >>>>>>>
+> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b2=
+3a011ce6d72f8699c
+> .
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>
+> >>>>>>> Actually, that commit is also missing from the last tagged 5.4
+> ipipe
+> >>>>>>> version (ipipe-core-5.4.151-arm-4). So try ipipe/5.4.y head
+> instead.
+> >>>>>>
+> >>>>>> To do a quick test, I just applied the change from the commit you
+> >>>>>> referenced above to my 5.4.151 ipipe kernel and it unfortunately
+> >>>>>> did not
+> >>>>>> help (hang still occurs with first interrupt).
+> >>>>>>
+> >>>>>>>
+> >>>>>>>>
+> >>>>>>>> Before I dive into analyzing the hang, I wanted to ask:
+> >>>>>>>>
+> >>>>>>>> What are other people's experiences with using PCIe MSI interrup=
+ts
+> >>>>>>>> and I-pipe?
+> >>>>>>>>
+> >>>>>>>> I am thinking of trying 5.10.103 Dovetail to see if I still see
+> >>>>>>>> the problem. Would this be recommended?
+> >>>>>>>
+> >>>>>>> If you can migrate your test with reasonable effort, yes,
+> definitely.
+> >>>>>>
+> >>>>>> I will try to migrate my test to 5.10.103 Dovetail with the hopes
+> that
+> >>>>>> it will not be too much effort and report back.
+> >>>>>
+> >>>>> I tried to migrate my test to 5.10.103 Dovetail and failed on the
+> first
+> >>>>> step, namely bringing up a standard (i.e. no Dovetail) 5.10.103
+> kernel
+> >>>>> on my platform.
+> >>>>>
+> >>>>> The kernel boots without a problem, but the FEC Ethernet port on th=
+e
+> >>>>> i.MX 6 is not working (cannot ping in or out).
+> >>>>
+> >>>> Do you have or did you have any custom patches on top?
+> >>>
+> >>> Only a patch to add the device tree include (dtsi) for our imx6 SOC:
+> >>>      =CE=BCQ7-962 - =CE=BCQseven standard module with NXP i.MX 6 Proc=
+essor
+> >>>
+> >>>>
+> >>>>>
+> >>>>> I looked at the trace with Wireshark and it looks like when pinging
+> >>>>> out that the ARP packet is corrupt and therefore failing. The ARP
+> >>>>> packet is corrupt in that it looks like various bits are flipped. F=
+or
+> >>>>> example, the source MAC address should be
+> >>>>>     00:09:cc:02:c1:b6
+> >>>>> but is
+> >>>>>     00:01:cc:02:01:36 or
+> >>>>>     00:09:cc:02:c1:36
+> >>>>> Wireshark also complains about the Frame check sequence
+> >>>>> ([FCS Status: Unverified]
+> >>>>>
+> >>>>> I can provide Wireshark dumps if someone is interested, but for me
+> >>>>> at this point I do not want to fight with getting a 5.10.x kernel
+> >>>>> to work as I was pretty far along moving to a 5.4.x kernel with
+> >>>>> ipipe before running into the original problem posted (with ipipe
+> >>>>> my system freezes on the first PCIe MSI interrupt. Note: without
+> >>>>> ipipe, I do not see any issues).
+> >>>>>
+> >>>>> As mentioned, I first saw this problem a while ago when trying
+> >>>>> to move from 4.14.62+ipipe to 4.14.110+ipipe and at that time
+> >>>>> then backed back down to 4.14.62+ipipe which works.
+> >>>>>
+> >>>>> I guess my next strategy is to try to figure out what changed
+> >>>>> between 4.14.62+ipipe and 4.14.110+ipipe which triggers/causes
+> >>>>> the hang as I hope the delta between them is not too large.
+> >>>>>
+> >>>>> If anyone has other suggestions or tips, they are more than welcome=
+.
+> >>>>
+> >>>> As I wrote before: try the latest 4.19-cip-ipipe first.
+> >>>
+> >>> OK. Will do.
+> >>
+> >> I was able to run my test where the system hangs on the first
+> >> PCIe MSI interrupt on the latest 4.19-cip-ipipe (4.19.229) and
+> >> unfortunately see the same behavior (system hangs).
+> >>
+> >> PCIe MSI interrupts work as expected on a "vanilla" 4.19.229 kernel,
+> >> but when I add  ipipe and Xenomai 3.2.1 to the kernel, then
+> >> the system hangs on the first PCIe MSI interrupt.
+> >>
+> >> As mentioned before, I first observed this behavior when moving from
+> >> 4.14.62+ipipe and 4.14.110+ipipe so I think my best bet is to dive
+> >> into what changed in this time frame. My goal is still to move to
+> >
+> > Yes, that might be a way now to try to find the root cause. Problem: yo=
+u
+> > can't do bisection easily because of the merges with the I-pipe patch.
+> > Therefore, it can be easier to actually debug where the system hangs, o=
+n
+> > what. With some traces from there, it can then be simpler again to
+> > analyse the differences between to working and non-working 4.14 kernels=
+.
+> >
+>
+> I have been able to get my test running on 4.14.110+ipipe without the
+> system hanging on the first PCIe MSI interrupt. I have attached my
+> patch (hopefully the attachment shows up correctly, but if not
+> please let me know).
+>
+> The fix is to replace in the PCIe MSI interrupt handler the call
+> to generic_handle_irq() with ipipe_handle_demuxed_irq.
+>
+> Actually, I had already made this patch on my 4.14.62 system
+> in combination with a patch to make the PCIe driver an RTDM
+> driver (see [1]) to address latency issues. As this patch was for
+> a latency issue on 4.14.62 and not a hang, I did not immediately
+> think about the ipipe part of the patch being the fix for the
+> hang I was seeing when moving to 4.14.110+ipipe.
+>
+> I will now check if the same/similar patch fixes my original
+> hang on 5.4.151+ipipe.
+>
+> Would it make sense to integrate this patch into next ipipe release?
+>
+> Scott
+>
+> >> 5.4.x+ipipe, but need to first understand what change is causing
+> >> my problem. I assume it is a kernel change or i-pipe change which
+> >> either causes the problem or triggers a problem in our system which
+> >> was dormant up until now.
+> >>
+> >> I suppose I could try the 4.14.101 kernel with the 4.14.62 ipipe
+> >> patch (if the patch applies cleanly) to try and determine if the
+> >> problematic change is in the kernel or ipipe patch.
+> >>
+> >> A question in general. How "common" is it to use PCIe MSI interrupts
+> >> and ipipe? Are other people running systems with PCIe MSI interrupts
+> >> and ipipe without issues or is this simply not a typical use-case?
+> >>
+> >
+> > PCIe and MSI are very common and well tested - on x86, possibly also on
+> > arm64. It is very likely not that well on 32-bit arm, though.
+> >
+> > Jan
+> >
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: 0001-ipipe-arm-Fix-handling-of-PCIe-MSI-interrupts.patch
+> Type: text/x-patch
+> Size: 993 bytes
+> Desc: not available
+> URL: <
+> http://xenomai.org/pipermail/xenomai/attachments/20220317/c81fcb0f/attach=
+ment.bin
+> >
+
+
+Yes, if the patch works I can integrate into the next release. I was just
+about the release the latest patch but I will wait for this to be included.
+Does it work for 4.19 as well? I=E2=80=99m thinking we should include it in
+4.19-cip as well.
+
+Thanks
+
+Greg
+
+>
+>
