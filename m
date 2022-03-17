@@ -1,12 +1,12 @@
-References: <9fd72e4545a6476983467f305b4d1a53@baumueller.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Where to start with Kernel config for Atom (64bit) Xenomai4 (evl)
-Date: Wed, 16 Mar 2022 16:01:30 +0100
-In-reply-to: <9fd72e4545a6476983467f305b4d1a53@baumueller.com>
-Message-ID: <87wngtex6d.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
+ <871qz2fem1.fsf@xenomai.org>
+In-Reply-To: <871qz2fem1.fsf@xenomai.org>
+From: Matt Klass <Matt.Klass@telosalliance.com>
+Date: Thu, 17 Mar 2022 09:02:51 -0400
+Message-ID: <CAOVUHqY9B3t9teWK9GBPeAf70M-kGsDRpK7c+vLTQfMCMs-BPQ@mail.gmail.com>
+Subject: Re: waitqueue vs. mutex behavior
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,94 +15,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Steub, Peter" <Peter.Steub@baumueller.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+Thank you Jan, Philippe. Your responses have given us a lot to look into
+and a lot to learn. We'll come back with a more detailed response once
+we've gained a little more understanding on our end.
 
-"Steub, Peter via Xenomai" <xenomai@xenomai.org> writes:
+Matt
 
-> Hi all,
->
-> I like to get evl running on a quadcore Atom box. I started with a
-> standard ubuntu 20.04 installation
-
-Which will almost never work out of the box on x86. Some options
-commonly selected there will likely cause issues with any real-time
-infrastructure.
-
-> and build a kernel from ,v5.15.y-evl-rebase' branch with evl enabled and =
-things that ,evl check -file' told me disabled.=20
-
-What do you mean? "evl check" is about verifying a configuration, not
-giving any runtime status. The output is a set of hints about kernel
-options that should appear as indicated in the submitted .config file,
-but do not.
-
-> Good news: the kernel runs and I do have a evl api.
-> Bad news: latmus tells me a worst jitter of 500=C2=B5s right away.
-
-You may want to check this [1] first. A common issue causing large
-latency peaks is with ACPI_PROCESSOR_IDLE as documented.
-
-> Also ,evl test' tells me:
-> *** stack smashing detected ***: terminated
-> Aborted (core dumped)
-> ** poll-multiple: BROKEN
-
-# gdb /usr/evl/tests/poll-multiple
-
-may help, running it then asking for a backtrace when it breaks. I could
-have a look at the backtrace output to figure out what happens, since I
-cannot reproduce this on any of my fixtures ATM, so this may depend on a
-glibc setup.
+On Wed, Mar 16, 2022 at 5:09 AM Philippe Gerum <rpm@xenomai.org> wrote:
 
 >
-> I have a Xenomai3 setup on this same machine that has a 30=C2=B5s jitter.=
-=20
+> Matt Klass via Xenomai <xenomai@xenomai.org> writes:
 >
-
-You should expect the same from EVL/x4, a bit better than x3 under SMP
-stress due to the improved locking model.
-
-> On the evlproject.org site there is a list of ports including a x86_64
-> atom with all the boxes checked. Is there anywhere more information
-> about these ports, are the .config files somewhere to be found, to be
-> used as a starting point?
-
-In short, no. But the document at [1] helps in removing known issues
-from stock kernel configurations.
-
-> I'm also interested in the Raspberry PI
-> port, but I don't like to try it all out again for myself, a
-> kernel-config or in case of the PI even a binary or a hole Image would
-> be great!
-
-Which PI? All PI kernels can be built using the default mainline config
-for the architecture at hand. This is actually the ones I'm using.
-e.g. ARCH=3Darm64 defconfig for PI3/64bit and PI4/64bit, or
-multi_v7_defconfig for 32bit (including PI0 and PI2).
-
-> Also I'm kind of lost on documentation, all I find leads back to the
-> evlproject.org main site.
-
-Everything related to EVL and xenomai4 is hosted at evlproject.org ATM.
-
-> Where can I find what to do if say "poll-multible" failed? I have the fee=
-ling I am still missing a big junk of documentation! Can anyone please poin=
-t me at it!
+> > Using Xenomai 3.0.10, with kernel 4.9.128-05789, on armv7, we're having
+> > problems with the functionality of rtdm_waitqueues. The code was written
+> by
+> > a Xenomai-adept developer who has since left for greener pastures.
+> >
+> > We have two functions that use rtdm_waitqueue_lock/unlock on the same
+> > rtdm_waitqueue_t to manage access to a shared data structure. One is an
+> > rtdm_task_t that runs periodically every 1ms, the second is an IOCTL
+> > handler.
 >
-
-This means a non-reg test fails, so either the test code itself is
-broken, or something it exercises is broken. In this case, #1 is most
-likely given the error report. What you can do is to help in
-understanding why this breaks: see above regarding the gdb command.
-
-> Thank you
+> Is that a RTDM non-rt ioctl() handler?
 >
-> Peter Steub
-
-[1] https://evlproject.org/core/caveat/
-
---=20
-Philippe.
-
+> >
+> > Problem: In some circumstances, one of the two functions will acquire the
+> > lock, and access the shared data structure. But before the first function
+> > releases the lock, the second function seems to also acquire the lock,
+> and
+> > begin to access its own access of the shared data structure. The second
+> > function releases its lock after its work is complete, and then when the
+> > first function tries to release the lock, it gets an "already unlocked"
+> > error from Xenomai:
+> >
+> > [Xenomai] lock 80f10020 already unlocked on CPU #0
+> >           last owner = kernel/xenomai/sched.c:908 (___xnsched_run(), CPU
+> #0)
+> > [<8010ed78>] (unwind_backtrace) from [<8010b5f0>] (show_stack+0x10/0x14)
+> > [<8010b5f0>] (show_stack) from [<801c8c08>]
+> (xnlock_dbg_release+0x12c/0x138)
+> > [<801c8c08>] (xnlock_dbg_release) from [<801be110>]
+> (___xnlock_put+0xc/0x38)
+> > [<801be110>] (___xnlock_put) from [<7f000434>]
+> > (myengine_rtdm_waitqueue_unlock_with_num+0xf8/0x13c [engine_rtnet])
+> > [<7f000434>] (myengine_rtdm_waitqueue_unlock_with_num [engine_rtnet])
+> from
+> > [<7f00ace8>] (engine_rtnet_periodic_task+0x604/0x660 [engine_rtnet])
+> > [<7f00ace8>] (engine_rtnet_periodic_task [engine_rtnet]) from
+> [<801c73ac>]
+> > (kthread_trampoline+0x68/0xa4)
+> > [<801c73ac>] (kthread_trampoline) from [<80147190>] (kthread+0x108/0x110)
+> > [<80147190>] (kthread) from [<80107cd4>] (ret_from_fork+0x18/0x24)
+> >
+>
+> This is difficult to comment on this without seeing the whole code using
+> the wait queue, there are several wait() calls for RTDM waitqueues. It
+> is possible that the waitqueue construct may be misused.
+>
+> >
+> > These waitqueues were originally mutexes, and the above-mentioned adept
+> > committed this change to waitqueues seven years ago with the following
+> > comment: "Use Wait Queue instead of Mutex, because Mutex can't be called
+> > from the non-RT context."
+> >
+> > We'd expect that once one of the functions obtains the lock on the
+> > waitqueue, the other would be blocked until the first function releases
+> the
+> > lock. It's quite possible, likely really, that we don't understand the
+> > differences between mutexes and waitqueues. We've looked at the online
+> > Xenomai documentation on waitqueues, but we have not been enlightened.
+> >
+>
+> RTDM mutexes follow the common POSIX mutex semantics, with priority
+> inheritance force enabled. On the other hand, waitqueues allow for any
+> number of threads to wait for an arbitrary condition only known by the
+> application to happen.
+>
+> Strictly speaking, rtdm_waitqueue_lock/unlock is supposed to bind the
+> condition and the waitqueue access atomically together, in order to
+> prevent wakeup signals from being missed (pretty much like the common
+> POSIX mutex+condvar logic). Typically, this lock is taken by a waiter
+> before it checks the condition then goes sleeping on the associated wq,
+> and released atomically by the scheduler right before switching out that
+> waiter as the condition is still unmet.
+>
+> So if this is about serializing all accesses to a user-defined shared
+> memory, the wq semantics would not fit well, and waitqueue_lock/unlock
+> would not serialize anything past the waitqueue handling code itself.
+>
+> >
+> > Would you have any suggestions on things we should do (or not do) to
+> figure
+> > out what's going on?
+> >
+>
+> If the idea is to serialize non-RT (ioctl_nrt handler?) vs RT contexts,
+> then no RTDM synchronization object will do, these can only do RT/RT
+> serialization.
+>
+> Xenomai 3 cannot do write/write serialization between non-RT and RT
+> stages natively (Xenomai 4 can do so via the so-called 'stax' objects,
+> but this is not going to help you ATM I guess). If this is read/write,
+> and the non-RT ioctl handler is the reader, _and_ the shared data is
+> fairly small, then you might resort to some kind of ad hoc sequence lock
+> mechanism to implement this.
+>
+> --
+> Philippe.
+>
