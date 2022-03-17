@@ -1,12 +1,21 @@
+Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
+ than 4.14.62
+References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
+ <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
+ <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
+ <b36143c7-5f21-8ca1-d3d2-023b5e0b9b8b@arcor.de>
+ <f6743b0c-0792-3a67-820c-e68742f3eb46@siemens.com>
+ <b1311ea0-c669-1492-26b6-d7d0375f8c44@arcor.de>
+ <2da03290-90d7-64d7-301a-2cad4ec21a66@arcor.de>
+ <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
+From: Scott Reed <scott.reed@arcor.de>
+Message-ID: <49ce8d8d-9dd2-07da-f3d3-9990020f10de@arcor.de>
+Date: Thu, 17 Mar 2022 16:24:36 +0100
 MIME-Version: 1.0
-References: <CAOVUHqZudUKeT+8=_w_5o3FSComTbAyqbsa0oDx+YHkNSP_GNw@mail.gmail.com>
- <871qz2fem1.fsf@xenomai.org>
-In-Reply-To: <871qz2fem1.fsf@xenomai.org>
-From: Matt Klass <Matt.Klass@telosalliance.com>
-Date: Thu, 17 Mar 2022 09:02:51 -0400
-Message-ID: <CAOVUHqY9B3t9teWK9GBPeAf70M-kGsDRpK7c+vLTQfMCMs-BPQ@mail.gmail.com>
-Subject: Re: waitqueue vs. mutex behavior
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,114 +24,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Thank you Jan, Philippe. Your responses have given us a lot to look into
-and a lot to learn. We'll come back with a more detailed response once
-we've gained a little more understanding on our end.
-
-Matt
-
-On Wed, Mar 16, 2022 at 5:09 AM Philippe Gerum <rpm@xenomai.org> wrote:
-
->
-> Matt Klass via Xenomai <xenomai@xenomai.org> writes:
->
-> > Using Xenomai 3.0.10, with kernel 4.9.128-05789, on armv7, we're having
-> > problems with the functionality of rtdm_waitqueues. The code was written
-> by
-> > a Xenomai-adept developer who has since left for greener pastures.
-> >
-> > We have two functions that use rtdm_waitqueue_lock/unlock on the same
-> > rtdm_waitqueue_t to manage access to a shared data structure. One is an
-> > rtdm_task_t that runs periodically every 1ms, the second is an IOCTL
-> > handler.
->
-> Is that a RTDM non-rt ioctl() handler?
->
-> >
-> > Problem: In some circumstances, one of the two functions will acquire the
-> > lock, and access the shared data structure. But before the first function
-> > releases the lock, the second function seems to also acquire the lock,
-> and
-> > begin to access its own access of the shared data structure. The second
-> > function releases its lock after its work is complete, and then when the
-> > first function tries to release the lock, it gets an "already unlocked"
-> > error from Xenomai:
-> >
-> > [Xenomai] lock 80f10020 already unlocked on CPU #0
-> >           last owner = kernel/xenomai/sched.c:908 (___xnsched_run(), CPU
-> #0)
-> > [<8010ed78>] (unwind_backtrace) from [<8010b5f0>] (show_stack+0x10/0x14)
-> > [<8010b5f0>] (show_stack) from [<801c8c08>]
-> (xnlock_dbg_release+0x12c/0x138)
-> > [<801c8c08>] (xnlock_dbg_release) from [<801be110>]
-> (___xnlock_put+0xc/0x38)
-> > [<801be110>] (___xnlock_put) from [<7f000434>]
-> > (myengine_rtdm_waitqueue_unlock_with_num+0xf8/0x13c [engine_rtnet])
-> > [<7f000434>] (myengine_rtdm_waitqueue_unlock_with_num [engine_rtnet])
-> from
-> > [<7f00ace8>] (engine_rtnet_periodic_task+0x604/0x660 [engine_rtnet])
-> > [<7f00ace8>] (engine_rtnet_periodic_task [engine_rtnet]) from
-> [<801c73ac>]
-> > (kthread_trampoline+0x68/0xa4)
-> > [<801c73ac>] (kthread_trampoline) from [<80147190>] (kthread+0x108/0x110)
-> > [<80147190>] (kthread) from [<80107cd4>] (ret_from_fork+0x18/0x24)
-> >
->
-> This is difficult to comment on this without seeing the whole code using
-> the wait queue, there are several wait() calls for RTDM waitqueues. It
-> is possible that the waitqueue construct may be misused.
->
-> >
-> > These waitqueues were originally mutexes, and the above-mentioned adept
-> > committed this change to waitqueues seven years ago with the following
-> > comment: "Use Wait Queue instead of Mutex, because Mutex can't be called
-> > from the non-RT context."
-> >
-> > We'd expect that once one of the functions obtains the lock on the
-> > waitqueue, the other would be blocked until the first function releases
-> the
-> > lock. It's quite possible, likely really, that we don't understand the
-> > differences between mutexes and waitqueues. We've looked at the online
-> > Xenomai documentation on waitqueues, but we have not been enlightened.
-> >
->
-> RTDM mutexes follow the common POSIX mutex semantics, with priority
-> inheritance force enabled. On the other hand, waitqueues allow for any
-> number of threads to wait for an arbitrary condition only known by the
-> application to happen.
->
-> Strictly speaking, rtdm_waitqueue_lock/unlock is supposed to bind the
-> condition and the waitqueue access atomically together, in order to
-> prevent wakeup signals from being missed (pretty much like the common
-> POSIX mutex+condvar logic). Typically, this lock is taken by a waiter
-> before it checks the condition then goes sleeping on the associated wq,
-> and released atomically by the scheduler right before switching out that
-> waiter as the condition is still unmet.
->
-> So if this is about serializing all accesses to a user-defined shared
-> memory, the wq semantics would not fit well, and waitqueue_lock/unlock
-> would not serialize anything past the waitqueue handling code itself.
->
-> >
-> > Would you have any suggestions on things we should do (or not do) to
-> figure
-> > out what's going on?
-> >
->
-> If the idea is to serialize non-RT (ioctl_nrt handler?) vs RT contexts,
-> then no RTDM synchronization object will do, these can only do RT/RT
-> serialization.
->
-> Xenomai 3 cannot do write/write serialization between non-RT and RT
-> stages natively (Xenomai 4 can do so via the so-called 'stax' objects,
-> but this is not going to help you ATM I guess). If this is read/write,
-> and the non-RT ioctl handler is the reader, _and_ the shared data is
-> fairly small, then you might resort to some kind of ad hoc sequence lock
-> mechanism to implement this.
->
-> --
-> Philippe.
->
+CgpPbiAzLzE2LzIyIDExOjM1IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+IE9uIDE2LjAzLjIyIDEw
+OjU4LCBTY290dCBSZWVkIHdyb3RlOgo+Pgo+Pgo+PiBPbiAzLzE1LzIyIDk6NDIgQU0sIFNjb3R0
+IFJlZWQgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+Pgo+Pj4KPj4+IE9uIDMvMTUvMjIgNzozMiBBTSwg
+SmFuIEtpc3prYSB3cm90ZToKPj4+PiBPbiAxNC4wMy4yMiAxODo0NSwgU2NvdHQgUmVlZCB3cm90
+ZToKPj4+Pj4KPj4+Pj4KPj4+Pj4gT24gMy8xMS8yMiAyOjEzIFBNLCBTY290dCBSZWVkIHZpYSBY
+ZW5vbWFpIHdyb3RlOgo+Pj4+Pj4KPj4+Pj4+IE9uIDMvMTEvMjIgMTI6MzggUE0sIEphbiBLaXN6
+a2Egd3JvdGU6Cj4+Pj4+Pj4gT24gMTEuMDMuMjIgMTE6MTIsIFNjb3R0IFJlZWQgdmlhIFhlbm9t
+YWkgd3JvdGU6Cj4+Pj4+Pj4+IEhlbGxvLAo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBJIGFtIHNlZWluZyBh
+biBhcHBhcmVudCBpc3N1ZSB3aXRoIFBDSWUgTVNJIGludGVycnVwdHMgYW5kIEktcGlwZQo+Pj4+
+Pj4+PiB3aGVuIHRyeWluZyB0byBtb3ZlIHRvIGEgbmV3ZXIga2VybmVsIGFuZCBJLXBpcGUgcGF0
+Y2guCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFRoZSBpc3N1ZSBpcyBhcyBzb29uIGFzIGEgUENJZSBNU0kg
+aW50ZXJydXB0IG9jY3VycywgdGhlIHN5c3RlbQo+Pj4+Pj4+PiBoYW5ncyB3aXRoIG5vIG1lc3Nh
+Z2Ugb3V0cHV0IG9uIHRoZSBzZXJpYWwgY29uc29sZSBvciBpbgo+Pj4+Pj4+PiAvdmFyL2xvZy9t
+ZXNzYWdlcy4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIHBsYXRmb3JtIEkgYW0gd29ya2luZyBvbiBp
+cyBhICJpLk1YIDYgUXVhZCIgYW5kIEkgYW0gdXBncmFkaW5nCj4+Pj4+Pj4+IGZyb20gYSA0LjE0
+LjYyIGtlcm5lbCBhbmQgSS1waXBlIHBhdGNoIHdpdGggWGVub21haSAzLjA3IHRvIDUuNC4xNTEK
+Pj4+Pj4+Pj4ga2VybmVsIGFuZCBJLXBpcGUgcGF0Y2ggd2l0aCBYZW5vbWFpIDMuMi4xLgo+Pj4+
+Pj4+Pgo+Pj4+Pj4+PiBPdXIgRlBHQSBpcyBjb25uZWN0ZWQgdG8gdGhlIGkuTVggNiB2aWEgUENJ
+ZSBhbmQgZ2VuZXJhdGVzIFBDSWUgTVNJCj4+Pj4+Pj4+IGludGVycnVwdHMgdG8gdGhlIENQVSBm
+cm9tLCBmb3IgZXhhbXBsZSwgYW4gQWx0ZXJhIFRyaXBsZS1TcGVlZCBNQUMuCj4+Pj4+Pj4+Cj4+
+Pj4+Pj4+IEkgaGF2ZSBzdGFibGUgc3lzdGVtIHJ1bm5pbmcgZm9yIHNvbWUgdGltZSB3aXRoIExp
+bnV4IDQuMTQuNjIgd2l0aAo+Pj4+Pj4+PiBYZW5vbWFpIDMuMDcgYWx0aG91Z2ggSSBkaWQgbmVl
+ZCB0byBwYXRjaCB0aGUgUENJZSBkcml2ZXIgWzFdLiBBbHNvCj4+Pj4+Pj4+IHNvbWUgdGltZSBi
+YWNrLCBJIHRyaWVkIHRvIG1vdmUgdG8gNC4xNC4xMTAgd2l0aCBJLXBpcGUgYW5kIGFsc28KPj4+
+Pj4+Pj4gc2F3IHNhbWUgc2NlbmFyaW8gb2YgbXkgc3lzdGVtIGhhbmdpbmcgb24gdGhlIGZpcnN0
+IFBDSWUgTVNJCj4+Pj4+Pj4+IGludGVycnVwdAo+Pj4+Pj4+PiBzbyBJIGJhY2tlZCBvdXQgYmFj
+ayB0byA0LjE0LjYyLiBOb3cgSSBhbSB0cnlpbmcgdG8gbW92ZSB0byA1LjQuMTUxLAo+Pj4+Pj4+
+PiBidXQKPj4+Pj4+Pj4gc2VlIHRoZSBzYW1lIGhhbmcuCj4+Pj4+Pj4KPj4+Pj4+PiBXaGF0IGFi
+b3V0IDQuMTkueS1jaXA/IFNwZWNpZmljYWxseSBiZWNhdXNlIG9mCj4+Pj4+Pj4gaHR0cHM6Ly9z
+b3VyY2UuZGVueC5kZS9YZW5vbWFpL2lwaXBlLWFybS8tL2NvbW1pdC9hMWFhYjhiYTMwOThlNTk1
+ZjlmYThiMjNhMDExY2U2ZDcyZjg2OTljLgo+Pj4+Pj4+Cj4+Pj4+Pj4KPj4+Pj4+Pgo+Pj4+Pj4+
+IEFjdHVhbGx5LCB0aGF0IGNvbW1pdCBpcyBhbHNvIG1pc3NpbmcgZnJvbSB0aGUgbGFzdCB0YWdn
+ZWQgNS40IGlwaXBlCj4+Pj4+Pj4gdmVyc2lvbiAoaXBpcGUtY29yZS01LjQuMTUxLWFybS00KS4g
+U28gdHJ5IGlwaXBlLzUuNC55IGhlYWQgaW5zdGVhZC4KPj4+Pj4+Cj4+Pj4+PiBUbyBkbyBhIHF1
+aWNrIHRlc3QsIEkganVzdCBhcHBsaWVkIHRoZSBjaGFuZ2UgZnJvbSB0aGUgY29tbWl0IHlvdQo+
+Pj4+Pj4gcmVmZXJlbmNlZCBhYm92ZSB0byBteSA1LjQuMTUxIGlwaXBlIGtlcm5lbCBhbmQgaXQg
+dW5mb3J0dW5hdGVseQo+Pj4+Pj4gZGlkIG5vdAo+Pj4+Pj4gaGVscCAoaGFuZyBzdGlsbCBvY2N1
+cnMgd2l0aCBmaXJzdCBpbnRlcnJ1cHQpLgo+Pj4+Pj4KPj4+Pj4+Pgo+Pj4+Pj4+Pgo+Pj4+Pj4+
+PiBCZWZvcmUgSSBkaXZlIGludG8gYW5hbHl6aW5nIHRoZSBoYW5nLCBJIHdhbnRlZCB0byBhc2s6
+Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFdoYXQgYXJlIG90aGVyIHBlb3BsZSdzIGV4cGVyaWVuY2VzIHdp
+dGggdXNpbmcgUENJZSBNU0kgaW50ZXJydXB0cwo+Pj4+Pj4+PiBhbmQgSS1waXBlPwo+Pj4+Pj4+
+Pgo+Pj4+Pj4+PiBJIGFtIHRoaW5raW5nIG9mIHRyeWluZyA1LjEwLjEwMyBEb3ZldGFpbCB0byBz
+ZWUgaWYgSSBzdGlsbCBzZWUKPj4+Pj4+Pj4gdGhlIHByb2JsZW0uIFdvdWxkIHRoaXMgYmUgcmVj
+b21tZW5kZWQ/Cj4+Pj4+Pj4KPj4+Pj4+PiBJZiB5b3UgY2FuIG1pZ3JhdGUgeW91ciB0ZXN0IHdp
+dGggcmVhc29uYWJsZSBlZmZvcnQsIHllcywgZGVmaW5pdGVseS4KPj4+Pj4+Cj4+Pj4+PiBJIHdp
+bGwgdHJ5IHRvIG1pZ3JhdGUgbXkgdGVzdCB0byA1LjEwLjEwMyBEb3ZldGFpbCB3aXRoIHRoZSBo
+b3BlcyB0aGF0Cj4+Pj4+PiBpdCB3aWxsIG5vdCBiZSB0b28gbXVjaCBlZmZvcnQgYW5kIHJlcG9y
+dCBiYWNrLgo+Pj4+Pgo+Pj4+PiBJIHRyaWVkIHRvIG1pZ3JhdGUgbXkgdGVzdCB0byA1LjEwLjEw
+MyBEb3ZldGFpbCBhbmQgZmFpbGVkIG9uIHRoZSBmaXJzdAo+Pj4+PiBzdGVwLCBuYW1lbHkgYnJp
+bmdpbmcgdXAgYSBzdGFuZGFyZCAoaS5lLiBubyBEb3ZldGFpbCkgNS4xMC4xMDMga2VybmVsCj4+
+Pj4+IG9uIG15IHBsYXRmb3JtLgo+Pj4+Pgo+Pj4+PiBUaGUga2VybmVsIGJvb3RzIHdpdGhvdXQg
+YSBwcm9ibGVtLCBidXQgdGhlIEZFQyBFdGhlcm5ldCBwb3J0IG9uIHRoZQo+Pj4+PiBpLk1YIDYg
+aXMgbm90IHdvcmtpbmcgKGNhbm5vdCBwaW5nIGluIG9yIG91dCkuCj4+Pj4KPj4+PiBEbyB5b3Ug
+aGF2ZSBvciBkaWQgeW91IGhhdmUgYW55IGN1c3RvbSBwYXRjaGVzIG9uIHRvcD8KPj4+Cj4+PiBP
+bmx5IGEgcGF0Y2ggdG8gYWRkIHRoZSBkZXZpY2UgdHJlZSBpbmNsdWRlIChkdHNpKSBmb3Igb3Vy
+IGlteDYgU09DOgo+Pj4gIMKgwqDCoCDOvFE3LTk2MiAtIM68UXNldmVuIHN0YW5kYXJkIG1vZHVs
+ZSB3aXRoIE5YUCBpLk1YIDYgUHJvY2Vzc29yCj4+Pgo+Pj4+Cj4+Pj4+Cj4+Pj4+IEkgbG9va2Vk
+IGF0IHRoZSB0cmFjZSB3aXRoIFdpcmVzaGFyayBhbmQgaXQgbG9va3MgbGlrZSB3aGVuIHBpbmdp
+bmcKPj4+Pj4gb3V0IHRoYXQgdGhlIEFSUCBwYWNrZXQgaXMgY29ycnVwdCBhbmQgdGhlcmVmb3Jl
+IGZhaWxpbmcuIFRoZSBBUlAKPj4+Pj4gcGFja2V0IGlzIGNvcnJ1cHQgaW4gdGhhdCBpdCBsb29r
+cyBsaWtlIHZhcmlvdXMgYml0cyBhcmUgZmxpcHBlZC4gRm9yCj4+Pj4+IGV4YW1wbGUsIHRoZSBz
+b3VyY2UgTUFDIGFkZHJlc3Mgc2hvdWxkIGJlCj4+Pj4+ICDCoMKgIDAwOjA5OmNjOjAyOmMxOmI2
+Cj4+Pj4+IGJ1dCBpcwo+Pj4+PiAgwqDCoCAwMDowMTpjYzowMjowMTozNiBvcgo+Pj4+PiAgwqDC
+oCAwMDowOTpjYzowMjpjMTozNgo+Pj4+PiBXaXJlc2hhcmsgYWxzbyBjb21wbGFpbnMgYWJvdXQg
+dGhlIEZyYW1lIGNoZWNrIHNlcXVlbmNlCj4+Pj4+IChbRkNTIFN0YXR1czogVW52ZXJpZmllZF0K
+Pj4+Pj4KPj4+Pj4gSSBjYW4gcHJvdmlkZSBXaXJlc2hhcmsgZHVtcHMgaWYgc29tZW9uZSBpcyBp
+bnRlcmVzdGVkLCBidXQgZm9yIG1lCj4+Pj4+IGF0IHRoaXMgcG9pbnQgSSBkbyBub3Qgd2FudCB0
+byBmaWdodCB3aXRoIGdldHRpbmcgYSA1LjEwLngga2VybmVsCj4+Pj4+IHRvIHdvcmsgYXMgSSB3
+YXMgcHJldHR5IGZhciBhbG9uZyBtb3ZpbmcgdG8gYSA1LjQueCBrZXJuZWwgd2l0aAo+Pj4+PiBp
+cGlwZSBiZWZvcmUgcnVubmluZyBpbnRvIHRoZSBvcmlnaW5hbCBwcm9ibGVtIHBvc3RlZCAod2l0
+aCBpcGlwZQo+Pj4+PiBteSBzeXN0ZW0gZnJlZXplcyBvbiB0aGUgZmlyc3QgUENJZSBNU0kgaW50
+ZXJydXB0LiBOb3RlOiB3aXRob3V0Cj4+Pj4+IGlwaXBlLCBJIGRvIG5vdCBzZWUgYW55IGlzc3Vl
+cykuCj4+Pj4+Cj4+Pj4+IEFzIG1lbnRpb25lZCwgSSBmaXJzdCBzYXcgdGhpcyBwcm9ibGVtIGEg
+d2hpbGUgYWdvIHdoZW4gdHJ5aW5nCj4+Pj4+IHRvIG1vdmUgZnJvbSA0LjE0LjYyK2lwaXBlIHRv
+IDQuMTQuMTEwK2lwaXBlIGFuZCBhdCB0aGF0IHRpbWUKPj4+Pj4gdGhlbiBiYWNrZWQgYmFjayBk
+b3duIHRvIDQuMTQuNjIraXBpcGUgd2hpY2ggd29ya3MuCj4+Pj4+Cj4+Pj4+IEkgZ3Vlc3MgbXkg
+bmV4dCBzdHJhdGVneSBpcyB0byB0cnkgdG8gZmlndXJlIG91dCB3aGF0IGNoYW5nZWQKPj4+Pj4g
+YmV0d2VlbiA0LjE0LjYyK2lwaXBlIGFuZCA0LjE0LjExMCtpcGlwZSB3aGljaCB0cmlnZ2Vycy9j
+YXVzZXMKPj4+Pj4gdGhlIGhhbmcgYXMgSSBob3BlIHRoZSBkZWx0YSBiZXR3ZWVuIHRoZW0gaXMg
+bm90IHRvbyBsYXJnZS4KPj4+Pj4KPj4+Pj4gSWYgYW55b25lIGhhcyBvdGhlciBzdWdnZXN0aW9u
+cyBvciB0aXBzLCB0aGV5IGFyZSBtb3JlIHRoYW4gd2VsY29tZS4KPj4+Pgo+Pj4+IEFzIEkgd3Jv
+dGUgYmVmb3JlOiB0cnkgdGhlIGxhdGVzdCA0LjE5LWNpcC1pcGlwZSBmaXJzdC4KPj4+Cj4+PiBP
+Sy4gV2lsbCBkby4KPj4KPj4gSSB3YXMgYWJsZSB0byBydW4gbXkgdGVzdCB3aGVyZSB0aGUgc3lz
+dGVtIGhhbmdzIG9uIHRoZSBmaXJzdAo+PiBQQ0llIE1TSSBpbnRlcnJ1cHQgb24gdGhlIGxhdGVz
+dCA0LjE5LWNpcC1pcGlwZSAoNC4xOS4yMjkpIGFuZAo+PiB1bmZvcnR1bmF0ZWx5IHNlZSB0aGUg
+c2FtZSBiZWhhdmlvciAoc3lzdGVtIGhhbmdzKS4KPj4KPj4gUENJZSBNU0kgaW50ZXJydXB0cyB3
+b3JrIGFzIGV4cGVjdGVkIG9uIGEgInZhbmlsbGEiIDQuMTkuMjI5IGtlcm5lbCwKPj4gYnV0IHdo
+ZW4gSSBhZGTCoCBpcGlwZSBhbmQgWGVub21haSAzLjIuMSB0byB0aGUga2VybmVsLCB0aGVuCj4+
+IHRoZSBzeXN0ZW0gaGFuZ3Mgb24gdGhlIGZpcnN0IFBDSWUgTVNJIGludGVycnVwdC4KPj4KPj4g
+QXMgbWVudGlvbmVkIGJlZm9yZSwgSSBmaXJzdCBvYnNlcnZlZCB0aGlzIGJlaGF2aW9yIHdoZW4g
+bW92aW5nIGZyb20KPj4gNC4xNC42MitpcGlwZSBhbmQgNC4xNC4xMTAraXBpcGUgc28gSSB0aGlu
+ayBteSBiZXN0IGJldCBpcyB0byBkaXZlCj4+IGludG8gd2hhdCBjaGFuZ2VkIGluIHRoaXMgdGlt
+ZSBmcmFtZS4gTXkgZ29hbCBpcyBzdGlsbCB0byBtb3ZlIHRvCj4gCj4gWWVzLCB0aGF0IG1pZ2h0
+IGJlIGEgd2F5IG5vdyB0byB0cnkgdG8gZmluZCB0aGUgcm9vdCBjYXVzZS4gUHJvYmxlbTogeW91
+Cj4gY2FuJ3QgZG8gYmlzZWN0aW9uIGVhc2lseSBiZWNhdXNlIG9mIHRoZSBtZXJnZXMgd2l0aCB0
+aGUgSS1waXBlIHBhdGNoLgo+IFRoZXJlZm9yZSwgaXQgY2FuIGJlIGVhc2llciB0byBhY3R1YWxs
+eSBkZWJ1ZyB3aGVyZSB0aGUgc3lzdGVtIGhhbmdzLCBvbgo+IHdoYXQuIFdpdGggc29tZSB0cmFj
+ZXMgZnJvbSB0aGVyZSwgaXQgY2FuIHRoZW4gYmUgc2ltcGxlciBhZ2FpbiB0bwo+IGFuYWx5c2Ug
+dGhlIGRpZmZlcmVuY2VzIGJldHdlZW4gdG8gd29ya2luZyBhbmQgbm9uLXdvcmtpbmcgNC4xNCBr
+ZXJuZWxzLgo+IAoKSSBoYXZlIGJlZW4gYWJsZSB0byBnZXQgbXkgdGVzdCBydW5uaW5nIG9uIDQu
+MTQuMTEwK2lwaXBlIHdpdGhvdXQgdGhlCnN5c3RlbSBoYW5naW5nIG9uIHRoZSBmaXJzdCBQQ0ll
+IE1TSSBpbnRlcnJ1cHQuIEkgaGF2ZSBhdHRhY2hlZCBteQpwYXRjaCAoaG9wZWZ1bGx5IHRoZSBh
+dHRhY2htZW50IHNob3dzIHVwIGNvcnJlY3RseSwgYnV0IGlmIG5vdApwbGVhc2UgbGV0IG1lIGtu
+b3cpLgoKVGhlIGZpeCBpcyB0byByZXBsYWNlIGluIHRoZSBQQ0llIE1TSSBpbnRlcnJ1cHQgaGFu
+ZGxlciB0aGUgY2FsbAp0byBnZW5lcmljX2hhbmRsZV9pcnEoKSB3aXRoIGlwaXBlX2hhbmRsZV9k
+ZW11eGVkX2lycS4KCkFjdHVhbGx5LCBJIGhhZCBhbHJlYWR5IG1hZGUgdGhpcyBwYXRjaCBvbiBt
+eSA0LjE0LjYyIHN5c3RlbQppbiBjb21iaW5hdGlvbiB3aXRoIGEgcGF0Y2ggdG8gbWFrZSB0aGUg
+UENJZSBkcml2ZXIgYW4gUlRETQpkcml2ZXIgKHNlZSBbMV0pIHRvIGFkZHJlc3MgbGF0ZW5jeSBp
+c3N1ZXMuIEFzIHRoaXMgcGF0Y2ggd2FzIGZvcgphIGxhdGVuY3kgaXNzdWUgb24gNC4xNC42MiBh
+bmQgbm90IGEgaGFuZywgSSBkaWQgbm90IGltbWVkaWF0ZWx5CnRoaW5rIGFib3V0IHRoZSBpcGlw
+ZSBwYXJ0IG9mIHRoZSBwYXRjaCBiZWluZyB0aGUgZml4IGZvciB0aGUKaGFuZyBJIHdhcyBzZWVp
+bmcgd2hlbiBtb3ZpbmcgdG8gNC4xNC4xMTAraXBpcGUuCgpJIHdpbGwgbm93IGNoZWNrIGlmIHRo
+ZSBzYW1lL3NpbWlsYXIgcGF0Y2ggZml4ZXMgbXkgb3JpZ2luYWwKaGFuZyBvbiA1LjQuMTUxK2lw
+aXBlLgoKV291bGQgaXQgbWFrZSBzZW5zZSB0byBpbnRlZ3JhdGUgdGhpcyBwYXRjaCBpbnRvIG5l
+eHQgaXBpcGUgcmVsZWFzZT8KClNjb3R0Cgo+PiA1LjQueCtpcGlwZSwgYnV0IG5lZWQgdG8gZmly
+c3QgdW5kZXJzdGFuZCB3aGF0IGNoYW5nZSBpcyBjYXVzaW5nCj4+IG15IHByb2JsZW0uIEkgYXNz
+dW1lIGl0IGlzIGEga2VybmVsIGNoYW5nZSBvciBpLXBpcGUgY2hhbmdlIHdoaWNoCj4+IGVpdGhl
+ciBjYXVzZXMgdGhlIHByb2JsZW0gb3IgdHJpZ2dlcnMgYSBwcm9ibGVtIGluIG91ciBzeXN0ZW0g
+d2hpY2gKPj4gd2FzIGRvcm1hbnQgdXAgdW50aWwgbm93Lgo+Pgo+PiBJIHN1cHBvc2UgSSBjb3Vs
+ZCB0cnkgdGhlIDQuMTQuMTAxIGtlcm5lbCB3aXRoIHRoZSA0LjE0LjYyIGlwaXBlCj4+IHBhdGNo
+IChpZiB0aGUgcGF0Y2ggYXBwbGllcyBjbGVhbmx5KSB0byB0cnkgYW5kIGRldGVybWluZSBpZiB0
+aGUKPj4gcHJvYmxlbWF0aWMgY2hhbmdlIGlzIGluIHRoZSBrZXJuZWwgb3IgaXBpcGUgcGF0Y2gu
+Cj4+Cj4+IEEgcXVlc3Rpb24gaW4gZ2VuZXJhbC4gSG93ICJjb21tb24iIGlzIGl0IHRvIHVzZSBQ
+Q0llIE1TSSBpbnRlcnJ1cHRzCj4+IGFuZCBpcGlwZT8gQXJlIG90aGVyIHBlb3BsZSBydW5uaW5n
+IHN5c3RlbXMgd2l0aCBQQ0llIE1TSSBpbnRlcnJ1cHRzCj4+IGFuZCBpcGlwZSB3aXRob3V0IGlz
+c3VlcyBvciBpcyB0aGlzIHNpbXBseSBub3QgYSB0eXBpY2FsIHVzZS1jYXNlPwo+Pgo+IAo+IFBD
+SWUgYW5kIE1TSSBhcmUgdmVyeSBjb21tb24gYW5kIHdlbGwgdGVzdGVkIC0gb24geDg2LCBwb3Nz
+aWJseSBhbHNvIG9uCj4gYXJtNjQuIEl0IGlzIHZlcnkgbGlrZWx5IG5vdCB0aGF0IHdlbGwgb24g
+MzItYml0IGFybSwgdGhvdWdoLgo+IAo+IEphbgo+IAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiAwMDAxLWlwaXBlLWFybS1GaXgtaGFuZGxpbmctb2YtUENJZS1NU0ktaW50ZXJydXB0cy5wYXRj
+aApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogOTkzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
+VVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
+MjIwMzE3L2M4MWZjYjBmL2F0dGFjaG1lbnQuYmluPgo=
