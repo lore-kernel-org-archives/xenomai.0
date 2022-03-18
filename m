@@ -1,24 +1,12 @@
-Subject: Re: System hang on first PCIe MSI interrupt with I-pipe kernels newer
- than 4.14.62
-References: <7dcdb005-cec4-322d-9f30-ce008fd57608@arcor.de>
- <546e60f7-e968-7715-d227-d4e5013ee676@siemens.com>
- <edcd6dfc-0a6e-6004-ef19-290a7f2465f7@arcor.de>
- <b36143c7-5f21-8ca1-d3d2-023b5e0b9b8b@arcor.de>
- <f6743b0c-0792-3a67-820c-e68742f3eb46@siemens.com>
- <b1311ea0-c669-1492-26b6-d7d0375f8c44@arcor.de>
- <2da03290-90d7-64d7-301a-2cad4ec21a66@arcor.de>
- <8ac55670-66b3-e8b3-d328-3cdead2283a7@siemens.com>
- <49ce8d8d-9dd2-07da-f3d3-9990020f10de@arcor.de>
- <07ce28cb-2317-8d4d-8d86-d44014b942ae@siemens.com>
- <75ed4888-d7d8-b777-0bf6-452cc9b156b4@arcor.de>
 From: Scott Reed <scott.reed@arcor.de>
-Message-ID: <d4b452bd-6b43-f397-9aeb-01fe27d13055@arcor.de>
-Date: Fri, 18 Mar 2022 17:47:11 +0100
+Subject: [PATCH] ipipe: noarch: Fix handling of PCIe MSI interrupts for dwc
+ PCIe controller
+Message-ID: <e8077dad-f6ae-329a-d7df-a6be28b43b76@arcor.de>
+Date: Fri, 18 Mar 2022 17:53:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <75ed4888-d7d8-b777-0bf6-452cc9b156b4@arcor.de>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,212 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>
+To: xenomai@xenomai.org
 
+Handling of PCIe MSI interrupts resulted in system
+hanging or high latencies.
 
+Fix is to replaced missed call to generic_handle_irq with
+ipipe_handle_irq().
 
-On 3/17/22 5:22 PM, Scott Reed via Xenomai wrote:
-> 
-> 
-> On 3/17/22 4:44 PM, Jan Kiszka wrote:
->> On 17.03.22 16:24, Scott Reed wrote:
->>>
->>>
->>> On 3/16/22 11:35 AM, Jan Kiszka wrote:
->>>> On 16.03.22 10:58, Scott Reed wrote:
->>>>>
->>>>>
->>>>> On 3/15/22 9:42 AM, Scott Reed via Xenomai wrote:
->>>>>>
->>>>>>
->>>>>> On 3/15/22 7:32 AM, Jan Kiszka wrote:
->>>>>>> On 14.03.22 18:45, Scott Reed wrote:
->>>>>>>>
->>>>>>>>
->>>>>>>> On 3/11/22 2:13 PM, Scott Reed via Xenomai wrote:
->>>>>>>>>
->>>>>>>>> On 3/11/22 12:38 PM, Jan Kiszka wrote:
->>>>>>>>>> On 11.03.22 11:12, Scott Reed via Xenomai wrote:
->>>>>>>>>>> Hello,
->>>>>>>>>>>
->>>>>>>>>>> I am seeing an apparent issue with PCIe MSI interrupts and I-pipe
->>>>>>>>>>> when trying to move to a newer kernel and I-pipe patch.
->>>>>>>>>>>
->>>>>>>>>>> The issue is as soon as a PCIe MSI interrupt occurs, the system
->>>>>>>>>>> hangs with no message output on the serial console or in
->>>>>>>>>>> /var/log/messages.
->>>>>>>>>>>
->>>>>>>>>>> The platform I am working on is a "i.MX 6 Quad" and I am upgrading
->>>>>>>>>>> from a 4.14.62 kernel and I-pipe patch with Xenomai 3.07 to
->>>>>>>>>>> 5.4.151
->>>>>>>>>>> kernel and I-pipe patch with Xenomai 3.2.1.
->>>>>>>>>>>
->>>>>>>>>>> Our FPGA is connected to the i.MX 6 via PCIe and generates PCIe
->>>>>>>>>>> MSI
->>>>>>>>>>> interrupts to the CPU from, for example, an Altera Triple-Speed
->>>>>>>>>>> MAC.
->>>>>>>>>>>
->>>>>>>>>>> I have stable system running for some time with Linux 4.14.62 with
->>>>>>>>>>> Xenomai 3.07 although I did need to patch the PCIe driver [1].
->>>>>>>>>>> Also
->>>>>>>>>>> some time back, I tried to move to 4.14.110 with I-pipe and also
->>>>>>>>>>> saw same scenario of my system hanging on the first PCIe MSI
->>>>>>>>>>> interrupt
->>>>>>>>>>> so I backed out back to 4.14.62. Now I am trying to move to
->>>>>>>>>>> 5.4.151,
->>>>>>>>>>> but
->>>>>>>>>>> see the same hang.
->>>>>>>>>>
->>>>>>>>>> What about 4.19.y-cip? Specifically because of
->>>>>>>>>> https://source.denx.de/Xenomai/ipipe-arm/-/commit/a1aab8ba3098e595f9fa8b23a011ce6d72f8699c.
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Actually, that commit is also missing from the last tagged 5.4
->>>>>>>>>> ipipe
->>>>>>>>>> version (ipipe-core-5.4.151-arm-4). So try ipipe/5.4.y head
->>>>>>>>>> instead.
->>>>>>>>>
->>>>>>>>> To do a quick test, I just applied the change from the commit you
->>>>>>>>> referenced above to my 5.4.151 ipipe kernel and it unfortunately
->>>>>>>>> did not
->>>>>>>>> help (hang still occurs with first interrupt).
->>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> Before I dive into analyzing the hang, I wanted to ask:
->>>>>>>>>>>
->>>>>>>>>>> What are other people's experiences with using PCIe MSI interrupts
->>>>>>>>>>> and I-pipe?
->>>>>>>>>>>
->>>>>>>>>>> I am thinking of trying 5.10.103 Dovetail to see if I still see
->>>>>>>>>>> the problem. Would this be recommended?
->>>>>>>>>>
->>>>>>>>>> If you can migrate your test with reasonable effort, yes,
->>>>>>>>>> definitely.
->>>>>>>>>
->>>>>>>>> I will try to migrate my test to 5.10.103 Dovetail with the hopes
->>>>>>>>> that
->>>>>>>>> it will not be too much effort and report back.
->>>>>>>>
->>>>>>>> I tried to migrate my test to 5.10.103 Dovetail and failed on the
->>>>>>>> first
->>>>>>>> step, namely bringing up a standard (i.e. no Dovetail) 5.10.103
->>>>>>>> kernel
->>>>>>>> on my platform.
->>>>>>>>
->>>>>>>> The kernel boots without a problem, but the FEC Ethernet port on the
->>>>>>>> i.MX 6 is not working (cannot ping in or out).
->>>>>>>
->>>>>>> Do you have or did you have any custom patches on top?
->>>>>>
->>>>>> Only a patch to add the device tree include (dtsi) for our imx6 SOC:
->>>>>>       μQ7-962 - μQseven standard module with NXP i.MX 6 Processor
->>>>>>
->>>>>>>
->>>>>>>>
->>>>>>>> I looked at the trace with Wireshark and it looks like when pinging
->>>>>>>> out that the ARP packet is corrupt and therefore failing. The ARP
->>>>>>>> packet is corrupt in that it looks like various bits are flipped. For
->>>>>>>> example, the source MAC address should be
->>>>>>>>      00:09:cc:02:c1:b6
->>>>>>>> but is
->>>>>>>>      00:01:cc:02:01:36 or
->>>>>>>>      00:09:cc:02:c1:36
->>>>>>>> Wireshark also complains about the Frame check sequence
->>>>>>>> ([FCS Status: Unverified]
->>>>>>>>
->>>>>>>> I can provide Wireshark dumps if someone is interested, but for me
->>>>>>>> at this point I do not want to fight with getting a 5.10.x kernel
->>>>>>>> to work as I was pretty far along moving to a 5.4.x kernel with
->>>>>>>> ipipe before running into the original problem posted (with ipipe
->>>>>>>> my system freezes on the first PCIe MSI interrupt. Note: without
->>>>>>>> ipipe, I do not see any issues).
->>>>>>>>
->>>>>>>> As mentioned, I first saw this problem a while ago when trying
->>>>>>>> to move from 4.14.62+ipipe to 4.14.110+ipipe and at that time
->>>>>>>> then backed back down to 4.14.62+ipipe which works.
->>>>>>>>
->>>>>>>> I guess my next strategy is to try to figure out what changed
->>>>>>>> between 4.14.62+ipipe and 4.14.110+ipipe which triggers/causes
->>>>>>>> the hang as I hope the delta between them is not too large.
->>>>>>>>
->>>>>>>> If anyone has other suggestions or tips, they are more than welcome.
->>>>>>>
->>>>>>> As I wrote before: try the latest 4.19-cip-ipipe first.
->>>>>>
->>>>>> OK. Will do.
->>>>>
->>>>> I was able to run my test where the system hangs on the first
->>>>> PCIe MSI interrupt on the latest 4.19-cip-ipipe (4.19.229) and
->>>>> unfortunately see the same behavior (system hangs).
->>>>>
->>>>> PCIe MSI interrupts work as expected on a "vanilla" 4.19.229 kernel,
->>>>> but when I add  ipipe and Xenomai 3.2.1 to the kernel, then
->>>>> the system hangs on the first PCIe MSI interrupt.
->>>>>
->>>>> As mentioned before, I first observed this behavior when moving from
->>>>> 4.14.62+ipipe and 4.14.110+ipipe so I think my best bet is to dive
->>>>> into what changed in this time frame. My goal is still to move to
->>>>
->>>> Yes, that might be a way now to try to find the root cause. Problem: you
->>>> can't do bisection easily because of the merges with the I-pipe patch.
->>>> Therefore, it can be easier to actually debug where the system hangs, on
->>>> what. With some traces from there, it can then be simpler again to
->>>> analyse the differences between to working and non-working 4.14 kernels.
->>>>
->>>
->>> I have been able to get my test running on 4.14.110+ipipe without the
->>> system hanging on the first PCIe MSI interrupt. I have attached my
->>> patch (hopefully the attachment shows up correctly, but if not
->>> please let me know).
->>>
->>> The fix is to replace in the PCIe MSI interrupt handler the call
->>> to generic_handle_irq() with ipipe_handle_demuxed_irq.
->>
->> Great to hear! Looks a lot like
->> https://source.denx.de/Xenomai/ipipe-noarch/-/commit/578e2cbf69ce8e22546423d403cda4a438d0751f
->>
->>>
->>> Actually, I had already made this patch on my 4.14.62 system
->>> in combination with a patch to make the PCIe driver an RTDM
->>> driver (see [1]) to address latency issues. As this patch was for
->>> a latency issue on 4.14.62 and not a hang, I did not immediately
->>> think about the ipipe part of the patch being the fix for the
->>> hang I was seeing when moving to 4.14.110+ipipe.
->>>
->>> I will now check if the same/similar patch fixes my original
->>> hang on 5.4.151+ipipe.
->>>
->>> Would it make sense to integrate this patch into next ipipe release?
->>>
->>
->> Yep. Please prepare an official patch once done with testing. I will add
->> it to ipipe-noarch, and then the architecture trees (relevant for arm &
->> arm64) can pick it up.
-> 
-> Will do. May take me a day or two to be able to submit an official patch
-> as it will be my first official patch.
-> 
-> I will submit (i.e. send to mailing list) the patch on ipipe-noarch:
-> ipipe/master which looks like it is currently based on 5.4.179 once
-> my testing is complete.
-> 
-> If my understanding is not correct, please let me know.
+Signed-off-by: Scott Reed <scott.reed@arcor.de>
+---
+ drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In addition to testing the patch on 4.14.110 on my system, I have also
-successfully tested the patch on 4.19.229 and 5.4.151.
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index c9fd4e4966ba..7b566da64438 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -100,7 +100,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
+ 			irq = irq_find_mapping(pp->irq_domain,
+ 					       (i * MAX_MSI_IRQS_PER_CTRL) +
+ 					       pos);
+-			generic_handle_irq(irq);
++			ipipe_handle_demuxed_irq(irq);
+ 			pos++;
+ 		}
+ 	}
+-- 
+2.25.1
 
-I will be submitting then the patch to ipipe-noarch then shortly. As
-this is the first time I am submitting an official patch, if did
-something incorrectly, please let me know.
-
-Scott
-> 
-> Scott
->>
->> Jan
->>
-> 
 
