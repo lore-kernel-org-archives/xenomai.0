@@ -1,11 +1,13 @@
-From: Scott Reed <scott.reed@arcor.de>
-Subject: [PATCH] ipipe: noarch: Fix handling of PCIe MSI interrupts for dwc
- PCIe controller
-Message-ID: <e8077dad-f6ae-329a-d7df-a6be28b43b76@arcor.de>
-Date: Fri, 18 Mar 2022 17:53:04 +0100
+Message-ID: <de83bb21-4a49-b100-3903-a9842fc84ae1@siemens.com>
+Date: Mon, 21 Mar 2022 13:43:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Subject: Re: [PATCH] ipipe: noarch: Fix handling of PCIe MSI interrupts for
+ dwc PCIe controller
 Content-Language: en-US
+References: <e8077dad-f6ae-329a-d7df-a6be28b43b76@arcor.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <e8077dad-f6ae-329a-d7df-a6be28b43b76@arcor.de>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,33 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Scott Reed <scott.reed@arcor.de>, xenomai@xenomai.org
 
-Handling of PCIe MSI interrupts resulted in system
-hanging or high latencies.
+On 18.03.22 17:53, Scott Reed wrote:
+> Handling of PCIe MSI interrupts resulted in system
+> hanging or high latencies.
+> 
+> Fix is to replaced missed call to generic_handle_irq with
+> ipipe_handle_irq().
+> 
+> Signed-off-by: Scott Reed <scott.reed@arcor.de>
+> ---
+>  drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index c9fd4e4966ba..7b566da64438 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -100,7 +100,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
+>  			irq = irq_find_mapping(pp->irq_domain,
+>  					       (i * MAX_MSI_IRQS_PER_CTRL) +
+>  					       pos);
+> -			generic_handle_irq(irq);
+> +			ipipe_handle_demuxed_irq(irq);
+>  			pos++;
+>  		}
+>  	}
 
-Fix is to replaced missed call to generic_handle_irq with
-ipipe_handle_irq().
+Thanks, applied to noarch, ipipe/master and stable/4.19.x.
 
-Signed-off-by: Scott Reed <scott.reed@arcor.de>
----
- drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Greg, you can pick up.
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index c9fd4e4966ba..7b566da64438 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -100,7 +100,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
- 			irq = irq_find_mapping(pp->irq_domain,
- 					       (i * MAX_MSI_IRQS_PER_CTRL) +
- 					       pos);
--			generic_handle_irq(irq);
-+			ipipe_handle_demuxed_irq(irq);
- 			pos++;
- 		}
- 	}
+Jan
+
 -- 
-2.25.1
-
+Siemens AG, Technology
+Competence Center Embedded Linux
 
