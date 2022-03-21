@@ -1,11 +1,10 @@
-Message-ID: <fae821de-8d44-be31-44e2-697d4c48c90c@tin.it>
-Date: Mon, 21 Mar 2022 15:27:10 +0100
-MIME-Version: 1.0
-Content-Language: it-IT
-From: "Mauro S." <mau.salvi@tin.it>
+Message-ID: <6bd0cf73.395f.17facec1472.Webtop.62@tin.it>
 Subject: [rtnet] kernel bug during slave configuration
-Content-Type: text/plain; charset=UTF-8; format=flowed
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed; delsp=no
 Content-Transfer-Encoding: 7bit
+From: Mauro <mau.salvi@tin.it>
+Date: Mon, 21 Mar 2022 15:40:27 +0100 (CET)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -131,13 +130,15 @@ RTnet: registered rteth0
 rt_igb 0000:03:00.0: Intel(R) Gigabit Ethernet Network Connection
 rt_igb 0000:03:00.0: rteth0: (PCIe:2.5Gb/s:Width x1) 00:30:d6:2b:78:c9
 rt_igb 0000:03:00.0: rteth0: PBA No: FFFFFF-0FF
-rt_igb 0000:03:00.0: Using MSI-X interrupts. 1 rx queue(s), 1 tx queue(s)
+rt_igb 0000:03:00.0: Using MSI-X interrupts. 1 rx queue(s), 1 tx 
+queue(s)
 rt_loopback: initializing loopback interface...
 RTnet: registered rtlo
 RTcfg: init real-time configuration distribution protocol
 RTmac: init realtime media access control
 RTmac/TDMA: init time division multiple access control mechanism
-udevd[401]: Error changing net interface name vnic0 to : Invalid argument
+udevd[401]: Error changing net interface name vnic0 to : Invalid 
+argument
 udevd[401]: could not rename interface '5' from 'vnic0' to '': Invalid 
 argument
 rt_igb: rteth0: igb: rteth0 NIC Link is Up 1000 Mbps Full Duplex, Flow 
@@ -159,7 +160,8 @@ RDX: 0000000000000000 RSI: ffff9df43661b4c8 RDI: 00000000ffffffff
 RBP: ffffb7dac07efc08 R08: 00000000000002b5 R09: 0000000000000101
 R10: 0000000000000001 R11: 0000000000000400 R12: ffff9df4371a38db
 R13: 0000000000000001 R14: ffff9df4371a391d R15: ffff9df43896af48
-FS:  00007fe873ae6540(0000) GS:ffff9df436600000(0000) knlGS:0000000000000000
+FS:  00007fe873ae6540(0000) GS:ffff9df436600000(0000) 
+knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
 CR2: 00007fa6254b14e0 CR3: 0000000077026000 CR4: 00000000001006f0
 Call Trace:
@@ -202,7 +204,8 @@ RDX: 0000000000000000 RSI: ffff9df43661b4c8 RDI: 00000000ffffffff
 RBP: ffffb7dac07efc08 R08: 00000000000002b5 R09: 0000000000000101
 R10: 0000000000000001 R11: 0000000000000400 R12: ffff9df4371a38db
 R13: 0000000000000001 R14: ffff9df4371a391d R15: ffff9df43896af48
-FS:  00007fe873ae6540(0000) GS:ffff9df436600000(0000) knlGS:0000000000000000
+FS:  00007fe873ae6540(0000) GS:ffff9df436600000(0000) 
+knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
 CR2: 00007fa6254b14e0 CR3: 0000000077026000 CR4: 00000000001006f0
 ------------[ cut here ]------------
