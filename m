@@ -1,11 +1,12 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
-In-Reply-To: <742b47b4-5a36-c9eb-6446-f7f74584109d@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Tue, 22 Mar 2022 23:19:25 +0100
-MIME-Version: 1.0
-Message-ID: <d01-623a4b80-2b-400dfa00@254398969>
-Subject: =?utf-8?q?Re=3A?= Bug in xenomai =?utf-8?q?3=2E2=2Ex?= on ARM
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: Reminder: Xenomai community call on Wednesday,  Mar 23, 2022, UTC
+ 7:00 AM
+Date: Wed, 23 Mar 2022 03:09:26 +0000
+Message-ID: <MN2PR11MB4285D34E787A1E260FE910BAF2189@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le Mardi, Mars 22, 2022 19:57 CET, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit: 
- 
-> On 22.03.22 18:31, Greg Gallagher via Xenomai wrote:
-> > On Tue, Mar 22, 2022 at 12:49 PM Fran=C3=A7ois Legal via Xenomai <
-> > xenomai@xenomai.org> wrote:
-> > 
-> >> Hello,
-> >>
-> >> trying to port a running Xenomai 3.1.x/Linux 4.4.x system to Xenom=
-ai
-> >> 3.2.x/Linux 4.4.x running on Zynq7000, I found a (maybe) bug in in=
-tr.c
-> >>
-> >> In xnintr=5Fattach, the call to ipipe=5Fset=5Firq=5Faffinity (when=
- in SMP) expects
-> >> a 0 return code. However, on my platform, I end up in irq=5Fgic.c =
-in
-> >> gic=5Fset=5Faffinity() which returns IRQ=5FSET=5FMASK=5FOK=5FDONE =
-(2) when everything
-> >> is fine.
-> >>
-> >> This IRQ=5FSET=5FMASK=5FOK=5FDONE does not seem very common in the=
- kernel (I could
-> >> find a few occurences, on Gic v3 so maybe AARCH64 has the same pro=
-blem,
-> >> plus some PCI devices).
-> >>
-> >> I was wondering if this was something to fix in ipipe or xenomai ?=
+We have the Xenomai community call today.
 
-> >>
-> >> Fran=C3=A7ois
-> > 
-> > 
-> > Do the newer kernels have the same return value? Do we test 3.2.x o=
-n the
-> > older kernels? Maybe just cip ?
-> > 
-> 
-> We limited testing to 4.4-cip with 3.0.x. Newer kernels require newer=
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
 
-> Xenomai, and vice versa.
-> 
-> But let's first understand if the issue if 4.4-specific.
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, Technology
-> Competence Center Embedded Linux
- 
- In 4.4, gic=5Fset=5Faffinity returns IRQ=5FSET=5FMASK=5FOK (aka 0). In=
- 4.19 is already returns IRQ=5FSET=5FMASK=5FOK=5FDONE , but in Xenomai =
-3.1.x, there were no call to ipipe=5Fset=5Firq=5Faffinity AFAIK.
+Time:
+Wednesday, Mar 23, 2022, UTC 7:00 AM
+Paris, France CEST 8:00 AM
+China CST 3:00 PM
 
-Fran=C3=A7ois
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
 
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
 
