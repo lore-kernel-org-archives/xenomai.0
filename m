@@ -1,8 +1,9 @@
 From: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH 0/1] Kernel-Shark: Add Xenomai plugin introduction in
- kernel-shark README
-Date: Fri, 25 Mar 2022 10:37:25 -0400
-Message-Id: <20220325143726.20904-1-hongzhan.chen@intel.com>
+Subject: [PATCH] kernel-shark: Add instroduction of external Xenomai plugin
+Date: Fri, 25 Mar 2022 10:37:26 -0400
+Message-Id: <20220325143726.20904-2-hongzhan.chen@intel.com>
+In-Reply-To: <20220325143726.20904-1-hongzhan.chen@intel.com>
+References: <20220325143726.20904-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,19 +14,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-As suggested by kernel-shark maintainer Yordan Karadzhov, add intruduction
-of Xenomai plugin as a reference so that others can take ideas and inspiration 
-from what we did. Please review what I descirbed is fittable before send
-to Kernel-Shark community. Do we need to add explaination why we maitain
-it in our Xenomai repo not in kernel-shark? Please suggest.
+There is external Xenomai plugin which can be built standalone
+introduced in README as a reference.
 
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-Hongzhan Chen (1):
-  kernel-shark: Add instroduction of external Xenomai plugin
-
- README | 6 ++++++
- 1 file changed, 6 insertions(+)
-
+diff --git a/README b/README
+index 37ccd95..724d4c9 100644
+--- a/README
++++ b/README
+@@ -114,6 +114,12 @@ CMake examples:
+ 
+     cmake -DCMAKE_BUILD_TYPE=Package -DCMAKE_C_FLAGS_PACKAGE="-O3 -pedantic"  ../
+ 
++External plugin example:
++------------------------------------------------------------
++    KernelShark also support standalone plugin building. There is a real example
++    under https://source.denx.de/Xenomai/xenomai/-/tree/next/tracing/kernelshark/
++    which is to visualize out-of-band state of realtime task when there is
++    cobalt context switches in Xenomai.
+ 
+ Contributions:
+ ------------------------------------------------------------
 -- 
 2.17.1
 
