@@ -1,14 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: RTNET setup issue
-Date: Tue, 29 Mar 2022 09:08:56 +0000
-Message-ID: <b1575b6a318df05c75d39502700af4775ea73b2c.camel@siemens.com>
-References: <freemail.20220324162711.86768.1@fmxmldata10.freemail.hu>
-In-Reply-To: <freemail.20220324162711.86768.1@fmxmldata10.freemail.hu>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <58EA6FC7D268734A9E0064A5E17B2FCB@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <fd32e328-0cde-b6db-bb32-3c572efa2ee4@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: dovetail-5.10: build-breakage on ARM
+Date: Tue, 29 Mar 2022 11:13:08 +0200
+In-reply-to: <fd32e328-0cde-b6db-bb32-3c572efa2ee4@siemens.com>
+Message-ID: <87mth9qfyr.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "paal_to@freemail.hu" <paal_to@freemail.hu>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIyLTAzLTI0IGF0IDE2OjI3ICswMTAwLCBQYWFsIFRhbWFzIHdyb3RlOg0KPiA+
-IEkgc3RhcnRlZCB0aGUgZGVidWcgc2Vzc2lvbiB1c2luZyB0aGUgcnRpZmNvbmZpZy5jIGZpbGUs
-IHNpbmNlIHRoZQ0KPiA+IHJ0aWZjb25maWcgY29tbWFuZCAiZmFpbHMgZmluZSIuIEkgYWRkZWQg
-c29tZSB0cmFjZSB0byB0aGUNCj4gPiBydGlmY29uZmlnLmMgKGludG8gdGhlIGRvX2Rpc3BsYXko
-KSBmdW5jdGlvbikgYW5kIHJ0bmV0X2NocmRldi5jDQo+ID4gKGludG8gdGhlIHJ0bmV0X2NvcmVf
-aW9jdGwoKSBmdW5jdGlvbikgZmlsZXMuIEluICJhbGwgNjRiaXQgbW9kZSIsDQo+ID4gd2hlbiBS
-VE5FVCB3b3JrcyBhcyBleHBlY3RlZCBJIHNlZSB0aGUgZm9sbG93aW5ncyBpbiB0aGUgdXNlciBt
-b2RlDQo+ID4gY29uc29sZSBhbmQga2VybmVsIHRyYWNlOg0KPiA+IGRvX2Rpc3BsYXkgZW50ZXIN
-Cj4gPiBkb19kaXNwbGF5OiBJT0NfUlRfSUZJTkZPPTB4YzA1MDAwODIsIHNpemVvZihydG5ldF9j
-b3JlX2NtZCk9ODANCj4gPiDCoA0KPiA+IFvCoMKgIDM2LjYxNjkxN10gcnRuZXRfY29yZV9pb2N0
-bDoNCj4gPiByZXF1ZXN0PTB4YzA1MDAwODIsc2l6ZW9mKHJ0bmV0X2NvcmVfY21kKT04MA0KPiA+
-IFvCoMKgIDM2LjYxNjkxOV0gcnRuZXRfY29yZV9pb2N0bDogSU9DX1JUX0lGSU5GTyBkZWNvZGVk
-DQo+ID4gwqANCj4gPiBUaGlzIG1lYW5zIHRoZSBpb2N0bCgpIGNhbGwgaGl0IHRoZSB0YXJnZXQg
-c3VjY2VzZnVsbHkuDQo+ID4gwqANCj4gPiBXaGVuIEkgY29tcGlsZSB0aGUgdXNlcmxhbmQgdG8g
-MzJiaXQgdGhlIHVzZXIgbW9kZSB0cmFjZSBpcyB0aGUNCj4gPiBmb2xsb3dpbmc6DQo+ID4gwqAN
-Cj4gPiBkb19kaXNwbGF5IGVudGVyDQo+ID4gZG9fZGlzcGxheTogSU9DX1JUX0lGSU5GTz0weGMw
-NTAwMDgyLCBzaXplb2YocnRuZXRfY29yZV9jbWQpPTgwDQo+ID4gZG9fZGlzcGxheTogcmV0PS0x
-DQo+ID4gaW9jdGw6IEluYXBwcm9wcmlhdGUgaW9jdGwgZm9yIGRldmljZQ0KPiA+IMKgDQo+ID4g
-YnV0IG5vdGhpbmcgYXBwZWFycyBpbiB0aGUga2VybmVsIHRyYWNlLiBUaGlzIG1lYW5zIHRvIG1l
-IHRoYXQgdGhlDQo+ID4gaW9jdGwoKSBjYWxsIGRpZCBub3QgcmVhY2ggdGhlIHJ0bmV0X2NvcmVf
-aW9jdGwoKSBmdW50aW9uLCByYXRoZXINCj4gPiBmYWlsZWQgc29tZXdoZXJlIGluIGJldHdlZW4g
-dGhlIHVzZXJzcGFjZSBhbmQgdGhhdCBrZXJuZWwgZnVuY3Rpb24NCj4gPiBjYWxsLg0KPiA+IMKg
-DQo+ID4gSSBuZWVkIHNvbWUgaGVscCBoZXJlLiBJIG5lZWQgdG8gYWRkIG1vcmUgdHJhY2VzIHRv
-IHRoZSBzeXN0ZW0sIHRvDQo+ID4gZmluZCB0aGUgcGxhY2Ugd2hlcmUgdGhlIGlvY3RsKCkgY2Fs
-bCBoaXRzIHRoZSB3YWxsLiBXaGVuIHRoZQ0KPiA+IGRvX2Rpc3BsYXkoKSBmdW5jdGlvbiBvZiBy
-dGlmY29uZmlnLmMgY2FsbHMgaW9jdGwoKSwgd2hlcmUgY2FuIEkNCj4gPiBmaW5kIHRoYXQgY2Vy
-dGFpbiBpb2N0bCgpIGZ1bmN0aW9uPyBJIGFtIGxvc3QgaW4gdGhlIGp1bmdsZSBvZg0KPiA+IG1h
-Y3Jvcy4uLg0KDQpZb3VyIG1haWwgY2xpZW50IGhhcyBhIHN0cmFuZ2UgY29uZmlndXJhdGlvbiAv
-IGNpdGF0aW9uIHN0eWxlLiBUb29rDQpzb21lIHRpbWUgdG8gcmVhbGl6ZSB0aGF0IHRoZXJlIGlz
-IGEgcXVlc3Rpb24uDQoNCldoZW5ldmVyIHlvdSBjYWxsIGlvY3RsKCkgeW91IGVuZCB1cCBpbiB0
-aGUgWGVub21haSAobGliY29iYWx0KQ0Kd3JhcHBlci4gU2VlIGxpYi9jb2JhbHQvcnRkbS5jICh+
-IGxpbmUgMTk1KS4gSWYgZG9faW9jdGwgKHdoaWNoDQp0cmlnZ2VycyB0aGUgWGVub21haSAvIFJU
-IHN5c2NhbGwpIGZhaWxzLCBpdCB3aWxsIGZhbGwgYmFjayB0byB0aGUNCkxpbnV4IC8gTk9OLVJU
-IHBhdGguIEkgZ3Vlc3MgdGhhdCBpcyB3aGVyZSB0aGUgIkluYXBwcm9wcmlhdGUgaW9jdGwgZm9y
-DQpkZXZpY2UiIGlzIGNvbWluZyBmcm9tLiBMaW51eCBzaW1wbHkgZG9lc24ndCBrbm93IHRoZSBy
-ZXF1ZXN0ZWQgY2FsbC4NCg0KSSBndWVzcyB5b3UgaGF2ZSB0byBmaWd1cmUgb3V0IHdoeSB0aGUg
-UlQgcGF0aCBmYWlscy4gVGhlIGludGVyZXN0aW5nDQplbnRyeSBwb2ludCBpbnNpZGUgdGhlIGtl
-cm5lbCBzaG91bGQgYmUgaW4ga2VybmVsL2NvYmFsdC9wb3NpeC9pby5jDQoofmxpbmUgNjMpIGNh
-bGxpbmcgcnRkbV9mZF9pb2N0bCgpIGxvY2F0ZWQgaW4ga2VybmVsL2NvYmFsdC9ydGRtL2ZkLmMu
-DQoNCnJ0ZG1fZmRfaW9jdGwoKSBtaWdodCBiYWlsIG91dCBpbiBzb21lIGVycm9yIGNvbmRpdGlv
-bnMgYmVmb3JlDQp0cmlnZ2VyaW5nIHRoZSB0cmFjZSBpbmZyYXN0cnVjdHVyZS4gVGhhdCBtaWdo
-dCBiZSB0aGUgcmVhc29uIHdoeSB5b3VyDQp0cmFjZSBkaWQgbm90IG1lbnRpb24gYW55IFJUIHN5
-c2NhbGwuDQoNCkNPTkZJR19YRU5PX0FSQ0hfU1lTMzI2NCBpcyBlbmFibGVkIG9uIHlvdXIgZW5k
-Pw0KDQpIVEgsDQpGbG9yaWFuDQoNCg0K
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> Hi Philippe,
+>
+> likely by accident: 5.10-dovetail-rebase lost disable_irq_if_pipelined /
+> enable_irq_if_pipelined macros. 5.16 was affected as well, 5.15 and 5.17
+> are not.
+>
+> Jan
+
+Fixed upstream, thanks.
+
+-- 
+Philippe.
 
