@@ -1,10 +1,17 @@
 From: Yann Le Chevoir <yann.lechevoir@cae.com>
-Subject: About previous patches to have multicast with RTnet
-Date: Tue, 29 Mar 2022 18:24:59 +0000
-Message-ID: <AS8PR09MB535430FF3FD87C8651AE8B1D811E9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+Subject: RE: rtnet rt_igb I210 not working with ARM
+Date: Tue, 29 Mar 2022 18:42:19 +0000
+Message-ID: <AS8PR09MB5354C9A2F356628F891A2A18811E9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+References: <AS8PR09MB53544DAD9617B02126202C6381699@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <ff8025f0-bdac-a99d-a69f-9fb77c824db5@siemens.com>
+ <AS8PR09MB535414BA830FF82F9D26320B814B9@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <512ba0a9-fa7b-acd8-6dc6-a3032481934e@siemens.com>
+ <AS8PR09MB53547FCFB3BEC71C11C9AAC081229@AS8PR09MB5354.eurprd09.prod.outlook.com>
+ <36cd4a03-9d83-22c6-7bc0-9490820dd123@siemens.com>
+In-Reply-To: <36cd4a03-9d83-22c6-7bc0-9490820dd123@siemens.com>
 Content-Language: fr-FR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,25 +23,46 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello Philippe, Jean-Baptiste, Jan, all,
-
-About
-https://xenomai.org/pipermail/xenomai/2019-March/040588.html
-    [PATCH 00/16] multicast, VLAN support for RTnet
-and https://xenomai.org/pipermail/xenomai/2021-May/045164.html
-    [PATCH 00/31] Update fec driver for xenomai 3 and linux kernel 5.4
-    and add I.MX8 support
-I am checking how to have multicast support with RTnet and I do not
-understand from which branch come the commits from Gilles + why they are
-not integrated to the master branch.
-I see that some commits were integrated (eb7f0dfd + ac17dceb + 04fab252)
-but that's not clear (I read CONTRIBUTING.md) why not all of them.
-Any plan to add the multicast support soon?
->From where should I start if I want to give a try with the commits from
-the "multicast, VLAN support for RTnet" thread? Should I apply the patches
-from the mailing list?
-
-Thanks for your help,
-
-Yann
+PiA+IEkgZmluYWxseSBoYXZlIHNvbWV0aGluZyB3b3JraW5nIHdpdGggdGhlIHBhdGNoIGJlbGxv
+dy4NCj4gPiBTbzoNCj4gPiAgICAgLSBwY2k9bm9tc2kgdG8gaGF2ZSB0aGUgaXJxIGNvdW50ZXIg
+aW5jcmVtZW50aW5nLg0KPiA+ICAgICAtIGRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlIGluIGln
+Yl90eF9tYXAgdG8gaGF2ZSBydF9pZ2Igc2VuZGluZw0KPiA+ICAgICAgIGdvb2QgZGF0YS4NCj4g
+Pg0KPiA+IE15IHF1ZXN0aW9uczoNCj4gPiBXaGF0IGFyZSB5b3VyIGZlZWxpbmcgYWJvdXQgdGhh
+dD8NCj4gPiBJcyBkbWFfc3luYyByZWFsLXRpbWU/IElzIGl0IGEgZ29vZCBmaXgvd29ya2Fyb3Vu
+ZD8NCj4gDQo+IEluIHRoZSBiZXN0IGNhc2UsIGl0J3MganVzdCBhIGJhcnJpZXIgKGJ1dCB0aGVy
+ZSBpcyBhbHJlYWR5IGEgd21iKCkpLiBJbiB0aGUgd29yc3QNCj4gY2FzZSwgTGludXggY29kZSBp
+cyB0cmlnZ2VyZWQgdGhhdCBhY3R1YWxseSBkb2VzIG1vcmUsIGUuZy4NCj4gYmVjYXVzZSBETUEg
+aXMgbm90IGNhY2hlLWNvaGVyZW50LiBZb3Ugd2lsbCBoYXZlIHRvIGFuYWx5emUgd2hhdCBpcyBh
+Y3R1YWxseQ0KPiBkb25lIGluIHRoYXQgZnVuY3Rpb24gb24geW91ciBwbGF0Zm9ybS4NCj4gDQo+
+ID4gV2h5IGRvIEkgbmVlZCB0byBhZGQgc3VjaCBhIGRtYV9zeW5jIHdpdGggbXkgYXJtIFNvQz8N
+Cj4gPiAgICAgLSBJIHN1c3BlY3QgdGhhdCB0aGlzIGRyaXZlciB3b3VsZCB3b3JrIG9uIGEgcmVn
+dWxhciB4ODYuLi4NCj4gPiAgICAgLSBDYW4geW91IHRlbGwgaWYgaXQgd29ya3Mgb24gb3RoZXIg
+YXJtIFNvQz8NCj4gDQo+IEkgZG9uJ3QgdGhpbmsgdGhpcyB3YXMgdHJpZWQgb24gQVJNIHNvIGZh
+ciwgYnV0IHRoZW4gdGhlIHRvcGljIHdpbGwgYWN0dWFsbHkgYmUNCj4gcmF0aGVyIFNvQy1zcGVj
+aWZpYy4NCg0KSGksDQpNYXliZSB3b3J0aCBtZW50aW9uaW5nIGZvciB0aG9zZSB3aG8gZmFjZSB0
+aGUgc2FtZSBwcm9ibGVtOg0KSSBkaWQgbm90IGdvIGRlZXBlciB3aXRoIHRoZSBETUEgeWV0LiBJ
+IHdhcyBoYXBweSB3aXRoIHRoZSB0eCBwZXJmb3JtYW5jZXMuDQpCdXQgSSBmYWNlZCBhIGRpZmZl
+cmVudCBpc3N1ZSB3aXRoIHRoZSByeCwgd2l0aCAxIHBhY2tldHMgb3ZlciA1MDAgd2hpY2ggd2Fz
+IGxvc3QgYXQgaGlnaCBmcmVxdWVuY3kuDQpJIGdvdCB0byBkbyBhIHNpbWlsYXIgcGF0Y2ggKGRt
+YV9zeW5jKSBmb3IgdGhlIHJ4LiBTZWUgYmVsb3cgKHR4ICsgcngpLiBUaGF0IHdvcmtzIGZvciBt
+ZSBhbmQgcGVyZm9ybWFuY2VzIGFyZSB2YWxpZGF0ZWQuDQoNCi0tLSBhL2tlcm5lbC9kcml2ZXJz
+L25ldC9kcml2ZXJzL2lnYi9pZ2JfbWFpbi5jDQorKysgYi9rZXJuZWwvZHJpdmVycy9uZXQvZHJp
+dmVycy9pZ2IvaWdiX21haW4uYw0KQEAgLTQxNDMsNiArNDE0Myw3IEBAIHN0YXRpYyB2b2lkIGln
+Yl90eF9tYXAoc3RydWN0IGlnYl9yaW5nICp0eF9yaW5nLA0KIAkgKiBXZSBhbHNvIG5lZWQgdGhp
+cyBtZW1vcnkgYmFycmllciB0byBtYWtlIGNlcnRhaW4gYWxsIG9mIHRoZQ0KIAkgKiBzdGF0dXMg
+Yml0cyBoYXZlIGJlZW4gdXBkYXRlZCBiZWZvcmUgbmV4dF90b193YXRjaCBpcyB3cml0dGVuLg0K
+IAkgKi8NCisJZG1hX3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UodHhfcmluZy0+ZGV2LCBkbWEsIHNp
+emUsIERNQV9UT19ERVZJQ0UpOw0KIAl3bWIoKTsNCiANCiAJaWYgKHNrYi0+eG1pdF9zdGFtcCkN
+CkBAIC00NzY0LDEzICs0NzY1LDE5IEBAIHN0YXRpYyBzdHJ1Y3QgcnRza2IgKmlnYl9mZXRjaF9y
+eF9idWZmZXIoc3RydWN0IGlnYl9yaW5nICpyeF9yaW5nLA0KIHsNCiAJc3RydWN0IGlnYl9yeF9i
+dWZmZXIgKnJ4X2J1ZmZlcjsNCiAJc3RydWN0IHJ0c2tiICpza2I7DQorCWRtYV9hZGRyX3QgZG1h
+Ow0KKwl1bnNpZ25lZCBpbnQgc2l6ZTsNCiANCiAJcnhfYnVmZmVyID0gJnJ4X3JpbmctPnJ4X2J1
+ZmZlcl9pbmZvW3J4X3JpbmctPm5leHRfdG9fY2xlYW5dOw0KIAlza2IgPSByeF9idWZmZXItPnNr
+YjsNCiAJcHJlZmV0Y2h3KHNrYi0+ZGF0YSk7DQogDQorCWRtYSA9IHJ0c2tiX2RhdGFfZG1hX2Fk
+ZHIoc2tiLCAwKTsNCisJc2l6ZSA9IGxlMTZfdG9fY3B1KHJ4X2Rlc2MtPndiLnVwcGVyLmxlbmd0
+aCk7DQorCWRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1KHJ4X3JpbmctPmRldiwgZG1hLCBzaXplLCBE
+TUFfRlJPTV9ERVZJQ0UpOw0KKw0KIAkvKiBwdWxsIHRoZSBoZWFkZXIgb2YgdGhlIHNrYiBpbiAq
+Lw0KLQlydHNrYl9wdXQoc2tiLCBsZTE2X3RvX2NwdShyeF9kZXNjLT53Yi51cHBlci5sZW5ndGgp
+KTsNCisJcnRza2JfcHV0KHNrYiwgc2l6ZSk7DQogCXJ4X2J1ZmZlci0+c2tiID0gTlVMTDsNCiAJ
+cnhfYnVmZmVyLT5kbWEgPSAwOw0K
 
