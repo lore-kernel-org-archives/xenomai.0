@@ -1,9 +1,9 @@
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH] Alchemy: Fix rt_task_unblock() for RT_MUTEX
+Date: Wed, 30 Mar 2022 22:16:14 +0200
+Message-Id: <20220330201614.31083-1-richard@nod.at>
 MIME-Version: 1.0
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 30 Mar 2022 12:14:53 +0200
-Message-ID: <CAFLxGvzNx5_mrUJiaJ717knj__vOKamhsq4Vw7kyga557v4OHA@mail.gmail.com>
-Subject: x86 port i/o broken on recent kernel
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,59 +12,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-Hi!
+Starting with Xenomai 3, RT_MUTEX is based on libcobalt's pthread mutex
+implementation.
+POSIX requires that pthread_mutex_lock() shall not return EINTR,
+this requirement breaks rt_task_unblock() if a RT_TASK blocks on
+a RT_MUTEX.
 
-The following test works fine on 5.4.180 (ipipe) but fails on 5.15.9 (dovetail).
+To restore the functionality provide a new function, pthread_mutex_lock_e=
+intr_np().
+It can get interrupted and will return EINTR to the caller.
 
-$ ./iotest
-Segmentation fault
-$ dmesg
-[Xenomai] switching iotest to secondary mode after exception #13 from
-user-space at 0x400b8d (pid 14574)
-traps: iotest[14574] general protection fault ip:400b8d
-sp:7feb57915e20 error:0 in iotest[400000+1000]
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ include/cobalt/pthread.h |  2 ++
+ lib/alchemy/mutex.c      |  2 +-
+ lib/cobalt/mutex.c       | 14 ++++++++++++--
+ 3 files changed, 15 insertions(+), 3 deletions(-)
 
-Wild guess, Linux's iopl() emulation might play a role.
-https://lwn.net/Articles/804143/
+diff --git a/include/cobalt/pthread.h b/include/cobalt/pthread.h
+index 3e9bd47053bc..2994c2467219 100644
+--- a/include/cobalt/pthread.h
++++ b/include/cobalt/pthread.h
+@@ -62,6 +62,8 @@ COBALT_DECL(int, pthread_mutex_destroy(pthread_mutex_t =
+*mutex));
+=20
+ COBALT_DECL(int, pthread_mutex_lock(pthread_mutex_t *mutex));
+=20
++COBALT_DECL(int, pthread_mutex_lock_eintr_np(pthread_mutex_t *mutex));
++
+ COBALT_DECL(int, pthread_mutex_timedlock(pthread_mutex_t *mutex,
+ 					 const struct timespec *to));
+=20
+diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
+index f8933858647a..bb97395142aa 100644
+--- a/lib/alchemy/mutex.c
++++ b/lib/alchemy/mutex.c
+@@ -327,7 +327,7 @@ int rt_mutex_acquire_timed(RT_MUTEX *mutex,
+=20
+ 	/* Slow path. */
+ 	if (abs_timeout =3D=3D NULL) {
+-		ret =3D -__RT(pthread_mutex_lock(&mcb->lock));
++		ret =3D -__RT(pthread_mutex_lock_eintr_np(&mcb->lock));
+ 		goto done;
+ 	}
+=20
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index 73e45a1c4396..2ef02a175c13 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -314,7 +314,7 @@ COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mute=
+x_t *mutex))
+  *
+  * @apitags{xthread-only, switch-primary}
+  */
+-COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
++static int __pthread_mutex_lock(pthread_mutex_t *mutex, bool want_eintr)
+ {
+ 	struct cobalt_mutex_shadow *_mutex =3D
+ 		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+@@ -373,7 +373,7 @@ slow_path:
+=20
+ 	do
+ 		ret =3D XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
+-	while (ret =3D=3D -EINTR);
++	while (ret =3D=3D -EINTR && !want_eintr);
+=20
+ 	if (ret =3D=3D 0)
+ 		_mutex->lockcnt =3D 1;
+@@ -392,6 +392,16 @@ protect:
+ 	goto fast_path;
+ }
+=20
++COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
++{
++	return __pthread_mutex_lock(mutex, false);
++}
++
++COBALT_IMPL(int, pthread_mutex_lock_eintr_np, (pthread_mutex_t *mutex))
++{
++	return __pthread_mutex_lock(mutex, true);
++}
++
+ /**
+  * Attempt, during a bounded time, to lock a mutex.
+  *
+--=20
+2.26.2
 
----8<---
-/*
-* gcc iotest.c `/usr/xenomai/bin/xeno-config --cflags --ldflags
---skin=posix` -Wall -o iotest
-*/
-
-#include <assert.h>
-#include <pthread.h>
-#include <sched.h>
-#include <sys/io.h>
-
-static void *tfn(void *d)
-{
-       struct sched_param schedp = {0};
-
-       schedp.sched_priority = 1;
-       assert(sched_setscheduler(0, SCHED_FIFO, &schedp) == 0);
-
-       outb(0xFF, 0x378);
-
-       return NULL;
-}
-
-int main(void)
-{
-       pthread_t t;
-
-       assert(iopl(3) == 0);
-       pthread_create(&t, NULL, tfn, NULL);
-       pthread_join(t, NULL);
-
-       return 0;
-}
---->8---
-
--- 
-Thanks,
-//richard
 
