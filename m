@@ -1,13 +1,9 @@
-Message-ID: <47c73276-8050-c0ce-8cd7-030f4e401aed@ba-healthcare.com>
-Date: Wed, 30 Mar 2022 09:40:46 +0200
-Subject: Re: About previous patches to have multicast with RTnet
-Content-Language: en-US
-References: <AS8PR09MB535430FF3FD87C8651AE8B1D811E9@AS8PR09MB5354.eurprd09.prod.outlook.com>
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@ba-healthcare.com>
-In-Reply-To: <AS8PR09MB535430FF3FD87C8651AE8B1D811E9@AS8PR09MB5354.eurprd09.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Wed, 30 Mar 2022 12:14:53 +0200
+Message-ID: <CAFLxGvzNx5_mrUJiaJ717knj__vOKamhsq4Vw7kyga557v4OHA@mail.gmail.com>
+Subject: x86 port i/o broken on recent kernel
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +12,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yann Le Chevoir <yann.lechevoir@cae.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hello,
+Hi!
 
-Le 29/03/2022 à 20:24, Yann Le Chevoir via Xenomai a écrit :
+The following test works fine on 5.4.180 (ipipe) but fails on 5.15.9 (dovetail).
 
-> Hello Philippe, Jean-Baptiste, Jan, all,
->
-> About
-> https://xenomai.org/pipermail/xenomai/2019-March/040588.html
->      [PATCH 00/16] multicast, VLAN support for RTnet
-> and https://xenomai.org/pipermail/xenomai/2021-May/045164.html
->      [PATCH 00/31] Update fec driver for xenomai 3 and linux kernel 5.4
->      and add I.MX8 support
-> I am checking how to have multicast support with RTnet and I do not
-> understand from which branch come the commits from Gilles + why they are
-> not integrated to the master branch.
-> I see that some commits were integrated (eb7f0dfd + ac17dceb + 04fab252)
-> but that's not clear (I read CONTRIBUTING.md) why not all of them.
+$ ./iotest
+Segmentation fault
+$ dmesg
+[Xenomai] switching iotest to secondary mode after exception #13 from
+user-space at 0x400b8d (pid 14574)
+traps: iotest[14574] general protection fault ip:400b8d
+sp:7feb57915e20 error:0 in iotest[400000+1000]
 
-Multicast commit needed some work in order to integrate them. I focused 
-on what was needed to have the fec driver working on xenomai 3 (eb7f0dfd 
-+ ac17dceb  + rewrite of the fec driver in 04fab252).
+Wild guess, Linux's iopl() emulation might play a role.
+https://lwn.net/Articles/804143/
 
-> Any plan to add the multicast support soon?
->  From where should I start if I want to give a try with the commits from
-> the "multicast, VLAN support for RTnet" thread? Should I apply the patches
-> from the mailing list?
->
-> Thanks for your help,
->
-> Yann
+---8<---
+/*
+* gcc iotest.c `/usr/xenomai/bin/xeno-config --cflags --ldflags
+--skin=posix` -Wall -o iotest
+*/
 
-Jean-Baptiste
+#include <assert.h>
+#include <pthread.h>
+#include <sched.h>
+#include <sys/io.h>
 
+static void *tfn(void *d)
+{
+       struct sched_param schedp = {0};
+
+       schedp.sched_priority = 1;
+       assert(sched_setscheduler(0, SCHED_FIFO, &schedp) == 0);
+
+       outb(0xFF, 0x378);
+
+       return NULL;
+}
+
+int main(void)
+{
+       pthread_t t;
+
+       assert(iopl(3) == 0);
+       pthread_create(&t, NULL, tfn, NULL);
+       pthread_join(t, NULL);
+
+       return 0;
+}
+--->8---
+
+-- 
+Thanks,
+//richard
 
