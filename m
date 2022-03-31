@@ -1,9 +1,14 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] Alchemy: Fix rt_task_unblock() for RT_MUTEX
-Date: Wed, 30 Mar 2022 22:16:14 +0200
-Message-Id: <20220330201614.31083-1-richard@nod.at>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] Alchemy: Fix rt_task_unblock() for RT_MUTEX
+Date: Thu, 31 Mar 2022 08:25:24 +0000
+Message-ID: <74b8e93cc14b656f6d97bff5d6ef2c2dd606f64b.camel@siemens.com>
+References: <20220330201614.31083-1-richard@nod.at>
+In-Reply-To: <20220330201614.31083-1-richard@nod.at>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6404F474767AB94888E9B7958D76AC91@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,94 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Richard Weinberger <richard@nod.at>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
 
-Starting with Xenomai 3, RT_MUTEX is based on libcobalt's pthread mutex
-implementation.
-POSIX requires that pthread_mutex_lock() shall not return EINTR,
-this requirement breaks rt_task_unblock() if a RT_TASK blocks on
-a RT_MUTEX.
-
-To restore the functionality provide a new function, pthread_mutex_lock_e=
-intr_np().
-It can get interrupted and will return EINTR to the caller.
-
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- include/cobalt/pthread.h |  2 ++
- lib/alchemy/mutex.c      |  2 +-
- lib/cobalt/mutex.c       | 14 ++++++++++++--
- 3 files changed, 15 insertions(+), 3 deletions(-)
-
-diff --git a/include/cobalt/pthread.h b/include/cobalt/pthread.h
-index 3e9bd47053bc..2994c2467219 100644
---- a/include/cobalt/pthread.h
-+++ b/include/cobalt/pthread.h
-@@ -62,6 +62,8 @@ COBALT_DECL(int, pthread_mutex_destroy(pthread_mutex_t =
-*mutex));
-=20
- COBALT_DECL(int, pthread_mutex_lock(pthread_mutex_t *mutex));
-=20
-+COBALT_DECL(int, pthread_mutex_lock_eintr_np(pthread_mutex_t *mutex));
-+
- COBALT_DECL(int, pthread_mutex_timedlock(pthread_mutex_t *mutex,
- 					 const struct timespec *to));
-=20
-diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
-index f8933858647a..bb97395142aa 100644
---- a/lib/alchemy/mutex.c
-+++ b/lib/alchemy/mutex.c
-@@ -327,7 +327,7 @@ int rt_mutex_acquire_timed(RT_MUTEX *mutex,
-=20
- 	/* Slow path. */
- 	if (abs_timeout =3D=3D NULL) {
--		ret =3D -__RT(pthread_mutex_lock(&mcb->lock));
-+		ret =3D -__RT(pthread_mutex_lock_eintr_np(&mcb->lock));
- 		goto done;
- 	}
-=20
-diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
-index 73e45a1c4396..2ef02a175c13 100644
---- a/lib/cobalt/mutex.c
-+++ b/lib/cobalt/mutex.c
-@@ -314,7 +314,7 @@ COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mute=
-x_t *mutex))
-  *
-  * @apitags{xthread-only, switch-primary}
-  */
--COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
-+static int __pthread_mutex_lock(pthread_mutex_t *mutex, bool want_eintr)
- {
- 	struct cobalt_mutex_shadow *_mutex =3D
- 		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
-@@ -373,7 +373,7 @@ slow_path:
-=20
- 	do
- 		ret =3D XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
--	while (ret =3D=3D -EINTR);
-+	while (ret =3D=3D -EINTR && !want_eintr);
-=20
- 	if (ret =3D=3D 0)
- 		_mutex->lockcnt =3D 1;
-@@ -392,6 +392,16 @@ protect:
- 	goto fast_path;
- }
-=20
-+COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
-+{
-+	return __pthread_mutex_lock(mutex, false);
-+}
-+
-+COBALT_IMPL(int, pthread_mutex_lock_eintr_np, (pthread_mutex_t *mutex))
-+{
-+	return __pthread_mutex_lock(mutex, true);
-+}
-+
- /**
-  * Attempt, during a bounded time, to lock a mutex.
-  *
---=20
-2.26.2
-
+SGkgUmljaGFyZCwNCg0KT24gV2VkLCAyMDIyLTAzLTMwIGF0IDIyOjE2ICswMjAwLCBSaWNoYXJk
+IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiBTdGFydGluZyB3aXRoIFhlbm9tYWkg
+MywgUlRfTVVURVggaXMgYmFzZWQgb24gbGliY29iYWx0J3MgcHRocmVhZCBtdXRleA0KPiBpbXBs
+ZW1lbnRhdGlvbi4NCj4gUE9TSVggcmVxdWlyZXMgdGhhdCBwdGhyZWFkX211dGV4X2xvY2soKSBz
+aGFsbCBub3QgcmV0dXJuIEVJTlRSLA0KPiB0aGlzIHJlcXVpcmVtZW50IGJyZWFrcyBydF90YXNr
+X3VuYmxvY2soKSBpZiBhIFJUX1RBU0sgYmxvY2tzIG9uDQo+IGEgUlRfTVVURVguDQo+IA0KDQpJ
+IGNhbid0IHNheSBtdWNoIGFib3V0IHRoZSBhbGNoZW15IHNraW4uIE5ldmVyIHVzZWQgdGhhdCBt
+eXNlbGYuIEhhdmUNCnlvdSBjaGVja2VkIHRoZSBoaXN0b3J5IGlmIHN1Y2ggYSBjaGFuZ2Ugd2Fz
+IC8gY291bGQgYmUgaW50ZW50aW9uYWw/DQpDQ2luZyBKYW4uLi4NCg0KVGhlIGZvbGxvd2luZyBj
+b21tZW50cyBhcmUgbW9yZSBvciBsZXNzIGltcGxlbWVudGF0aW9uIGRldGFpbHMuLi4NCg0KPiBU
+byByZXN0b3JlIHRoZSBmdW5jdGlvbmFsaXR5IHByb3ZpZGUgYSBuZXcgZnVuY3Rpb24sIHB0aHJl
+YWRfbXV0ZXhfbG9ja19laW50cl9ucCgpLg0KPiBJdCBjYW4gZ2V0IGludGVycnVwdGVkIGFuZCB3
+aWxsIHJldHVybiBFSU5UUiB0byB0aGUgY2FsbGVyLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogUmlj
+aGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkQG5vZC5hdD4NCj4gLS0tDQo+ICBpbmNsdWRlL2NvYmFs
+dC9wdGhyZWFkLmggfCAgMiArKw0KPiAgbGliL2FsY2hlbXkvbXV0ZXguYyAgICAgIHwgIDIgKy0N
+Cj4gIGxpYi9jb2JhbHQvbXV0ZXguYyAgICAgICB8IDE0ICsrKysrKysrKysrKy0tDQo+ICAzIGZp
+bGVzIGNoYW5nZWQsIDE1IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZm
+IC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQvcHRocmVhZC5oIGIvaW5jbHVkZS9jb2JhbHQvcHRocmVh
+ZC5oDQo+IGluZGV4IDNlOWJkNDcwNTNiYy4uMjk5NGMyNDY3MjE5IDEwMDY0NA0KPiAtLS0gYS9p
+bmNsdWRlL2NvYmFsdC9wdGhyZWFkLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQvcHRocmVhZC5o
+DQo+IEBAIC02Miw2ICs2Miw4IEBAIENPQkFMVF9ERUNMKGludCwgcHRocmVhZF9tdXRleF9kZXN0
+cm95KHB0aHJlYWRfbXV0ZXhfdCAqbXV0ZXgpKTsNCj4gIA0KPiAgQ09CQUxUX0RFQ0woaW50LCBw
+dGhyZWFkX211dGV4X2xvY2socHRocmVhZF9tdXRleF90ICptdXRleCkpOw0KPiAgDQo+ICtDT0JB
+TFRfREVDTChpbnQsIHB0aHJlYWRfbXV0ZXhfbG9ja19laW50cl9ucChwdGhyZWFkX211dGV4X3Qg
+Km11dGV4KSk7DQo+ICsNCg0KQ09CQUxUX0RFQ0wgc2hvdWxkIG9ubHkgYmUgbmVjZXNzYXJ5IGZv
+ciBmdW5jdGlvbnMgdGhhdCBsaXZlIGluIHRoZQ0KbGliYyBuYW1lc3BhY2UgYW5kIHRoYXQgbmVl
+ZCB0byBiZSAiaW50ZXJjZXB0ZWQiIC8gYWZmZWN0ZWQgYnkgd3JhcHBpbmcNCmF0IGxpbmtlciBs
+ZXZlbC4NCg0KWW91ciBmdW5jdGlvbiBsb29rcyBsaWJjb2JhbHQgc3BlY2lmaWMgYW5kIGFzIHN1
+Y2ggc2hvdWxkIHByb2JhYmx5IG5vdA0KbGl2ZSBpbiB0aGUgcHRocmVhZF9tdXRleF8gbmFtZXNw
+YWNlIGFuZCBnZW5lcmF0aW5nIHRoZSB3cmFwcGVycyBzZWVtcw0KdW5uZWNlc3NhcnkuDQoNCj4g
+IENPQkFMVF9ERUNMKGludCwgcHRocmVhZF9tdXRleF90aW1lZGxvY2socHRocmVhZF9tdXRleF90
+ICptdXRleCwNCj4gIAkJCQkJIGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAqdG8pKTsNCj4gIA0KPiBk
+aWZmIC0tZ2l0IGEvbGliL2FsY2hlbXkvbXV0ZXguYyBiL2xpYi9hbGNoZW15L211dGV4LmMNCj4g
+aW5kZXggZjg5MzM4NTg2NDdhLi5iYjk3Mzk1MTQyYWEgMTAwNjQ0DQo+IC0tLSBhL2xpYi9hbGNo
+ZW15L211dGV4LmMNCj4gKysrIGIvbGliL2FsY2hlbXkvbXV0ZXguYw0KPiBAQCAtMzI3LDcgKzMy
+Nyw3IEBAIGludCBydF9tdXRleF9hY3F1aXJlX3RpbWVkKFJUX01VVEVYICptdXRleCwNCj4gIA0K
+PiAgCS8qIFNsb3cgcGF0aC4gKi8NCj4gIAlpZiAoYWJzX3RpbWVvdXQgPT0gTlVMTCkgew0KPiAt
+CQlyZXQgPSAtX19SVChwdGhyZWFkX211dGV4X2xvY2soJm1jYi0+bG9jaykpOw0KPiArCQlyZXQg
+PSAtX19SVChwdGhyZWFkX211dGV4X2xvY2tfZWludHJfbnAoJm1jYi0+bG9jaykpOw0KPiAgCQln
+b3RvIGRvbmU7DQo+ICAJfQ0KPiAgDQo+IGRpZmYgLS1naXQgYS9saWIvY29iYWx0L211dGV4LmMg
+Yi9saWIvY29iYWx0L211dGV4LmMNCj4gaW5kZXggNzNlNDVhMWM0Mzk2Li4yZWYwMmExNzVjMTMg
+MTAwNjQ0DQo+IC0tLSBhL2xpYi9jb2JhbHQvbXV0ZXguYw0KPiArKysgYi9saWIvY29iYWx0L211
+dGV4LmMNCj4gQEAgLTMxNCw3ICszMTQsNyBAQCBDT0JBTFRfSU1QTChpbnQsIHB0aHJlYWRfbXV0
+ZXhfZGVzdHJveSwgKHB0aHJlYWRfbXV0ZXhfdCAqbXV0ZXgpKQ0KPiAgICoNCj4gICAqIEBhcGl0
+YWdze3h0aHJlYWQtb25seSwgc3dpdGNoLXByaW1hcnl9DQo+ICAgKi8NCj4gLUNPQkFMVF9JTVBM
+KGludCwgcHRocmVhZF9tdXRleF9sb2NrLCAocHRocmVhZF9tdXRleF90ICptdXRleCkpDQo+ICtz
+dGF0aWMgaW50IF9fcHRocmVhZF9tdXRleF9sb2NrKHB0aHJlYWRfbXV0ZXhfdCAqbXV0ZXgsIGJv
+b2wgd2FudF9laW50cikNCj4gIHsNCj4gIAlzdHJ1Y3QgY29iYWx0X211dGV4X3NoYWRvdyAqX211
+dGV4ID0NCj4gIAkJJigodW5pb24gY29iYWx0X211dGV4X3VuaW9uICopbXV0ZXgpLT5zaGFkb3df
+bXV0ZXg7DQo+IEBAIC0zNzMsNyArMzczLDcgQEAgc2xvd19wYXRoOg0KPiAgDQo+ICAJZG8NCj4g
+IAkJcmV0ID0gWEVOT01BSV9TWVNDQUxMMShzY19jb2JhbHRfbXV0ZXhfbG9jaywgX211dGV4KTsN
+Cj4gLQl3aGlsZSAocmV0ID09IC1FSU5UUik7DQo+ICsJd2hpbGUgKHJldCA9PSAtRUlOVFIgJiYg
+IXdhbnRfZWludHIpOw0KPiAgDQo+ICAJaWYgKHJldCA9PSAwKQ0KPiAgCQlfbXV0ZXgtPmxvY2tj
+bnQgPSAxOw0KPiBAQCAtMzkyLDYgKzM5MiwxNiBAQCBwcm90ZWN0Og0KPiAgCWdvdG8gZmFzdF9w
+YXRoOw0KPiAgfQ0KPiAgDQo+ICtDT0JBTFRfSU1QTChpbnQsIHB0aHJlYWRfbXV0ZXhfbG9jaywg
+KHB0aHJlYWRfbXV0ZXhfdCAqbXV0ZXgpKQ0KPiArew0KPiArCXJldHVybiBfX3B0aHJlYWRfbXV0
+ZXhfbG9jayhtdXRleCwgZmFsc2UpOw0KPiArfQ0KPiArDQoNCg0KPiArQ09CQUxUX0lNUEwoaW50
+LCBwdGhyZWFkX211dGV4X2xvY2tfZWludHJfbnAsIChwdGhyZWFkX211dGV4X3QgKm11dGV4KSkN
+Cj4gK3sNCj4gKwlyZXR1cm4gX19wdGhyZWFkX211dGV4X2xvY2sobXV0ZXgsIHRydWUpOw0KPiAr
+fQ0KDQpTYW1lIGFzIGFib3ZlLiBMb29rcyBsaWJjb2JhbHQgc3BlY2lmaWMgYW5kIHRoZSB3cmFw
+cGluZyBwYXJ0IHNlZW1zDQp1bm5lY2Vzc2FyeS4NCg0KPiArDQo+ICAvKioNCj4gICAqIEF0dGVt
+cHQsIGR1cmluZyBhIGJvdW5kZWQgdGltZSwgdG8gbG9jayBhIG11dGV4Lg0KPiAgICoNCg0K
 
