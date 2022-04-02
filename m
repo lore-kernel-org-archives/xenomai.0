@@ -1,12 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/4] x86: dovetail: reinstate I/O bitmap on out-of-band user
- entry
-Date: Sat,  2 Apr 2022 16:21:27 +0200
-Message-Id: <20220402142127.944138-4-rpm@xenomai.org>
-In-Reply-To: <20220402142127.944138-1-rpm@xenomai.org>
-References: <20220402142127.944138-1-rpm@xenomai.org>
+References: <CAFLxGvzNx5_mrUJiaJ717knj__vOKamhsq4Vw7kyga557v4OHA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: x86 port i/o broken on recent kernel
+Date: Sat, 02 Apr 2022 16:22:37 +0200
+In-reply-to: <CAFLxGvzNx5_mrUJiaJ717knj__vOKamhsq4Vw7kyga557v4OHA@mail.gmail.com>
+Message-ID: <87zgl3o95m.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,65 +14,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
 
-We have to fix up the TSS with the proper I/O bitmap settings in
-arch_dovetail_switch_finish() when the current task is about to
-re-enter user mode on the out-of-band stage, along with reloading the
-fpu context if need be.
+Richard Weinberger via Xenomai <xenomai@xenomai.org> writes:
 
-This fixes an application crash observed when a user code would rely
-on iopl() to raise the current I/O permissions, which would then
-relinquish the CPU to a task invalidating them, before the initial
-task eventually resumes in user mode on the out-of-band stage
-(typically seen during an in-band -> out-of-band stage switch).
+> Hi!
+>
+> The following test works fine on 5.4.180 (ipipe) but fails on 5.15.9 (dovetail).
+>
+> $ ./iotest
+> Segmentation fault
+> $ dmesg
+> [Xenomai] switching iotest to secondary mode after exception #13 from
+> user-space at 0x400b8d (pid 14574)
+> traps: iotest[14574] general protection fault ip:400b8d
+> sp:7feb57915e20 error:0 in iotest[400000+1000]
+>
+> Wild guess, Linux's iopl() emulation might play a role.
+> https://lwn.net/Articles/804143/
+>
+> ---8<---
+> /*
+> * gcc iotest.c `/usr/xenomai/bin/xeno-config --cflags --ldflags
+> --skin=posix` -Wall -o iotest
+> */
+>
+> #include <assert.h>
+> #include <pthread.h>
+> #include <sched.h>
+> #include <sys/io.h>
+>
+> static void *tfn(void *d)
+> {
+>        struct sched_param schedp = {0};
+>
+>        schedp.sched_priority = 1;
+>        assert(sched_setscheduler(0, SCHED_FIFO, &schedp) == 0);
+>
+>        outb(0xFF, 0x378);
+>
+>        return NULL;
+> }
+>
+> int main(void)
+> {
+>        pthread_t t;
+>
+>        assert(iopl(3) == 0);
+>        pthread_create(&t, NULL, tfn, NULL);
+>        pthread_join(t, NULL);
+>
+>        return 0;
+> }
+> --->8---
 
-See https://xenomai.org/pipermail/xenomai/2022-March/047451.html.
+Please try these patches (on top of v5.15.x). Looks good here,
+confirmation from your side would help:
 
-Reported-by: Richard Weinberger <richard.weinberger@gmail.com>
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- arch/x86/include/asm/dovetail.h | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+https://xenomai.org/pipermail/xenomai/2022-April/047465.html
+https://xenomai.org/pipermail/xenomai/2022-April/047468.html
 
-diff --git a/arch/x86/include/asm/dovetail.h b/arch/x86/include/asm/dovetail.h
-index 9cf811fe98ba..0e0f93cb53d0 100644
---- a/arch/x86/include/asm/dovetail.h
-+++ b/arch/x86/include/asm/dovetail.h
-@@ -9,6 +9,7 @@
- #if !defined(__ASSEMBLY__) && defined(CONFIG_DOVETAIL)
- 
- #include <asm/fpu/api.h>
-+#include <asm/io_bitmap.h>
- 
- static inline void arch_dovetail_exec_prepare(void)
- {
-@@ -23,13 +24,17 @@ void arch_dovetail_switch_prepare(bool leave_inband)
- }
- 
- static inline
--void arch_dovetail_switch_finish(bool enter_inband)
-+void arch_dovetail_switch_finish(bool enter_inband, unsigned int ti_work)
- {
--	if (enter_inband)
-+	if (enter_inband) {
- 		fpu__resume_inband();
--	else if (!(current->flags & PF_KTHREAD) &&
--		test_thread_flag(TIF_NEED_FPU_LOAD))
--		switch_fpu_return();
-+	} else {
-+		  if (unlikely(ti_work & _TIF_IO_BITMAP))
-+			  tss_update_io_bitmap();
-+		  if (unlikely(ti_work & _TIF_NEED_FPU_LOAD &&
-+				  !(current->flags & PF_KTHREAD)))
-+			  switch_fpu_return();
-+	}
- }
- 
- #endif
+Thanks for reporting.
+
 -- 
-2.34.1
-
+Philippe.
 
