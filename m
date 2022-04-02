@@ -1,11 +1,10 @@
 References: <20220402030919.5104-1-hongzhan.chen@intel.com>
- <20220402030919.5104-2-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [linux-dovetail PATCH 2/2] clocksource:
- GENERIC_CLOCKSOURCE_VDSO only supported on ARM
-Date: Sat, 02 Apr 2022 11:11:24 +0200
-In-reply-to: <20220402030919.5104-2-hongzhan.chen@intel.com>
-Message-ID: <878rsnq20o.fsf@xenomai.org>
+Subject: Re: [linux-dovetail PATCH 1/2] x86: fix duplication definication
+ issue in making allyesconfig
+Date: Sat, 02 Apr 2022 11:45:37 +0200
+In-reply-to: <20220402030919.5104-1-hongzhan.chen@intel.com>
+Message-ID: <874k3bpzqm.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,34 +21,50 @@ Cc: xenomai@xenomai.org
 
 Hongzhan Chen via Xenomai <xenomai@xenomai.org> writes:
 
-> Currently, GENERIC_CLOCKSOURCE_VDSO only supported well on ARM.
-> To fix build issue like following when make allyesconfig on x86 platform.
->
-> arch/x86/entry/vdso/../../../../lib/vdso/gettimeofday.c:145:14:
-> error: implicit declaration of function clock_open_device
+> When making allyesconfig, there is duplication definication issue.
+> To fix it, make them exclusive each other.
 >
 > Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 > ---
->  drivers/clocksource/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  arch/x86/kernel/irq_pipeline.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-> index 5138cd593373..1e8c1cd086d5 100644
-> --- a/drivers/clocksource/Kconfig
-> +++ b/drivers/clocksource/Kconfig
-> @@ -644,7 +644,7 @@ config CLKSRC_ST_LPC
->  	bool "Low power clocksource found in the LPC" if COMPILE_TEST
->  	select TIMER_OF if OF
->  	depends on HAS_IOMEM
-> -	select GENERIC_CLOCKSOURCE_VDSO
-> +	select GENERIC_CLOCKSOURCE_VDSO if ARM
->  	help
->  	  Enable this option to use the Low Power controller timer
->  	  as clocksource.
+> diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+> index 8daac9f78ebe..624fad67fe56 100644
+> --- a/arch/x86/kernel/irq_pipeline.c
+> +++ b/arch/x86/kernel/irq_pipeline.c
+> @@ -138,13 +138,11 @@ static void do_sysvec_inband(struct irq_desc *desc)
+>  	case HYPERV_STIMER0_VECTOR:
+>  		__sysvec_hyperv_stimer0(regs);
+>  		break;
+> -#endif
+> -#ifdef CONFIG_ACRN_GUEST
+> +#elif defined CONFIG_ACRN_GUEST
+>  	case HYPERVISOR_CALLBACK_VECTOR:
+>  		__sysvec_acrn_hv_callback(regs);
+>  		break;
+> -#endif
+> -#ifdef CONFIG_XEN_PVHVM
+> +#elif defined CONFIG_XEN_PVHVM
+>  	case HYPERVISOR_CALLBACK_VECTOR:
+>  		__sysvec_xen_hvm_callback(regs);
+>  		break;
 
-Starting from v5.17, Dovetail has generic support for clocksource access
-via the vDSO for CONFIG_ARM64 too. Which kernel release is this patch
-based on?
+There may be a broader issue in the original implementation which this
+patch only papers over.
+
+In theory, building a kernel image one could run on multiple flavors of
+HV should be possible - there seems to be no mutal exclusion in the
+Kconfig specs between XEN, ACRN and HYPERV client support - which this
+change would disable by always preferring HYPERV over ACRN when it comes
+to pipelining interrupts.
+
+However, Dovetail does not cope well with paravirtualization ATM anyway,
+which is why XEN depends on !IRQ_PIPELINE. As a result, there is no
+point in keeping the case for XEN_PVHVM around. We should have the same
+constraint on CONFIG_HYPERV, therefore the other conflicting case should
+go away, leaving ACRN_GUEST as the sole user of
+HYPERVISOR_CALLBACK_VECTOR, with no conflict anymore.
 
 -- 
 Philippe.
