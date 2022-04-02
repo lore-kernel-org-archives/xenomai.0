@@ -1,8 +1,10 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/4] sched: dovetail: pass thread-info bits to
- arch_dovetail_switch_finish()
-Date: Sat,  2 Apr 2022 16:21:24 +0200
-Message-Id: <20220402142127.944138-1-rpm@xenomai.org>
+Subject: [PATCH 2/4] ARM: dovetail: fix up arch_dovetail_switch_finish()
+ signature
+Date: Sat,  2 Apr 2022 16:21:25 +0200
+Message-Id: <20220402142127.944138-2-rpm@xenomai.org>
+In-Reply-To: <20220402142127.944138-1-rpm@xenomai.org>
+References: <20220402142127.944138-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,55 +19,25 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-The out-of-band switch tail code may need the thread-info work bits to
-reinstate the current context appropriately, pass them to
-arch_dovetail_switch_finish().
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/sched/core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm/include/asm/dovetail.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index a1159a263894..75b506bb60bb 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -10902,6 +10902,7 @@ int dovetail_leave_inband(void)
- {
- 	struct task_struct *p = current;
- 	struct irq_pipeline_data *pd;
-+	unsigned int ti_work;
- 	unsigned long flags;
+diff --git a/arch/arm/include/asm/dovetail.h b/arch/arm/include/asm/dovetail.h
+index 8f3a09391d06..ff754ff4d2db 100644
+--- a/arch/arm/include/asm/dovetail.h
++++ b/arch/arm/include/asm/dovetail.h
+@@ -25,7 +25,8 @@ static inline void arch_dovetail_exec_prepare(void)
+ static inline void arch_dovetail_switch_prepare(bool leave_inband)
+ { }
  
- 	preempt_disable();
-@@ -10930,7 +10931,8 @@ int dovetail_leave_inband(void)
- 	 * architecture-specific fixups (e.g. fpu context reload).
- 	 */
- 	if (likely(__schedule(SM_NONE))) {
--		arch_dovetail_switch_finish(false);
-+		ti_work = READ_ONCE(current_thread_info()->flags);
-+		arch_dovetail_switch_finish(false, ti_work);
- 		return 0;
- 	}
+-static inline void arch_dovetail_switch_finish(bool enter_inband)
++static inline void arch_dovetail_switch_finish(bool enter_inband,
++					       unsigned int ti_work)
+ { }
  
-@@ -10987,6 +10989,7 @@ bool dovetail_context_switch(struct dovetail_altsched_context *out,
- 	struct task_struct *next, *prev, *last;
- 	struct mm_struct *prev_mm, *next_mm;
- 	bool inband_tail = false;
-+	unsigned long ti_work;
- 
- 	WARN_ON_ONCE(dovetail_debug() && on_pipeline_entry());
- 
-@@ -11108,7 +11111,8 @@ bool dovetail_context_switch(struct dovetail_altsched_context *out,
- 		lockdep_write_irqs_state(lockdep_irqs);
- 	}
- 
--	arch_dovetail_switch_finish(leave_inband);
-+	ti_work = READ_ONCE(current_thread_info()->flags);
-+	arch_dovetail_switch_finish(leave_inband, ti_work);
- 
- 	/*
- 	 * inband_tail is true whenever we are finalizing a transition
+ #endif
 -- 
 2.34.1
 
