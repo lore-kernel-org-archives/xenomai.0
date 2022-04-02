@@ -1,16 +1,8 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] Alchemy: Fix rt_task_unblock() for RT_MUTEX
-Date: Fri, 1 Apr 2022 07:16:06 +0000
-Message-ID: <589a354736795684073a1b35b5605205e72febec.camel@siemens.com>
-References: <20220330201614.31083-1-richard@nod.at>
- <74b8e93cc14b656f6d97bff5d6ef2c2dd606f64b.camel@siemens.com>
- <637249774.202758.1648715778757.JavaMail.zimbra@nod.at>
-In-Reply-To: <637249774.202758.1648715778757.JavaMail.zimbra@nod.at>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <16F31399C2CA6441A1BC7479CF3B1C05@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [linux-dovetail PATCH 1/2] x86: fix duplication definication issue in
+ making allyesconfig
+Date: Fri,  1 Apr 2022 23:09:18 -0400
+Message-Id: <20220402030919.5104-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,51 +11,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "richard@nod.at" <richard@nod.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: xenomai@xenomai.org
 
-T24gVGh1LCAyMDIyLTAzLTMxIGF0IDEwOjM2ICswMjAwLCBSaWNoYXJkIFdlaW5iZXJnZXIgd3Jv
-dGU6DQo+IC0tLS0tIFVyc3Byw7xuZ2xpY2hlIE1haWwgLS0tLS0NCj4gPiBWb246ICJGbG9yaWFu
-IEJlemRla2EiIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gSSBjYW4ndCBzYXkg
-bXVjaCBhYm91dCB0aGUgYWxjaGVteSBza2luLiBOZXZlciB1c2VkIHRoYXQgbXlzZWxmLiBIYXZl
-DQo+ID4geW91IGNoZWNrZWQgdGhlIGhpc3RvcnkgaWYgc3VjaCBhIGNoYW5nZSB3YXMgLyBjb3Vs
-ZCBiZSBpbnRlbnRpb25hbD8NCj4gPiBDQ2luZyBKYW4uLi4NCj4gDQo+IFdlbGwsIGFuIGFwcGxp
-Y2F0aW9uIHRoYXQgcmVsaWVzIG9uIHJ0X3Rhc2tfdW5ibG9jaygpIG5vdyBubyBsb25nZXIgd29y
-a3MNCj4gd2l0aCBYZW5vbWFpIDMuIEl0IHVzZWQgdG8gd29yayB3aXRoIDIuNi4NCj4gDQo+IElu
-IDIwMTkgdGhpcyB3YXMgYnJpZWZseSBkaXNjdXNzZWQ6DQo+IGh0dHBzOi8vd3d3Lm1haWwtYXJj
-aGl2ZS5jb20veGVub21haUB4ZW5vbWFpLm9yZy9tc2cxNTk5MC5odG1sDQo+IA0KPiBGaW5hbGx5
-IEkgZm91bmQgc29tZSBjeWNsZXMgdG8gd29yayBvbiB0aGF0Lg0KPiANCj4gV2l0aCBteSBjaGFu
-Z2VzIGF0IGxlYXN0IHRoZSBhcHBsaWNhdGlvbiB3b3JrcyBhZ2FpbiBhbmQgdGhlIHRlc3RzDQo+
-IG9uIHRoZSBjdXN0b21lciBzaWRlIHBhc3MuDQoNCldlIHdvdWxkIG5lZWQgc3VjaCAvIHNpbWls
-YXIgdGVzdHMgYXMgd2VsbCBpbnNpZGUgdGhlIFhlbm9tYWkgdGVzdHN1aXRlDQp0byBtYWtlIHN1
-cmUgd2UgZG9uJ3QgYnJlYWsgaXQgYWdhaW4uDQoNCj4gIA0KPiA+IFRoZSBmb2xsb3dpbmcgY29t
-bWVudHMgYXJlIG1vcmUgb3IgbGVzcyBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLi4uDQo+ID4gDQo+
-ID4gPiBUbyByZXN0b3JlIHRoZSBmdW5jdGlvbmFsaXR5IHByb3ZpZGUgYSBuZXcgZnVuY3Rpb24s
-DQo+ID4gPiBwdGhyZWFkX211dGV4X2xvY2tfZWludHJfbnAoKS4NCj4gPiA+IEl0IGNhbiBnZXQg
-aW50ZXJydXB0ZWQgYW5kIHdpbGwgcmV0dXJuIEVJTlRSIHRvIHRoZSBjYWxsZXIuDQo+ID4gPiAN
-Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IFJpY2hhcmQgV2VpbmJlcmdlciA8cmljaGFyZEBub2QuYXQ+
-DQo+ID4gPiAtLS0NCj4gPiA+ICBpbmNsdWRlL2NvYmFsdC9wdGhyZWFkLmggfCAgMiArKw0KPiA+
-ID4gIGxpYi9hbGNoZW15L211dGV4LmMgICAgICB8ICAyICstDQo+ID4gPiAgbGliL2NvYmFsdC9t
-dXRleC5jICAgICAgIHwgMTQgKysrKysrKysrKysrLS0NCj4gPiA+ICAzIGZpbGVzIGNoYW5nZWQs
-IDE1IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1n
-aXQgYS9pbmNsdWRlL2NvYmFsdC9wdGhyZWFkLmggYi9pbmNsdWRlL2NvYmFsdC9wdGhyZWFkLmgN
-Cj4gPiA+IGluZGV4IDNlOWJkNDcwNTNiYy4uMjk5NGMyNDY3MjE5IDEwMDY0NA0KPiA+ID4gLS0t
-IGEvaW5jbHVkZS9jb2JhbHQvcHRocmVhZC5oDQo+ID4gPiArKysgYi9pbmNsdWRlL2NvYmFsdC9w
-dGhyZWFkLmgNCj4gPiA+IEBAIC02Miw2ICs2Miw4IEBAIENPQkFMVF9ERUNMKGludCwgcHRocmVh
-ZF9tdXRleF9kZXN0cm95KHB0aHJlYWRfbXV0ZXhfdA0KPiA+ID4gKm11dGV4KSk7DQo+ID4gPiAg
-DQo+ID4gPiAgQ09CQUxUX0RFQ0woaW50LCBwdGhyZWFkX211dGV4X2xvY2socHRocmVhZF9tdXRl
-eF90ICptdXRleCkpOw0KPiA+ID4gIA0KPiA+ID4gK0NPQkFMVF9ERUNMKGludCwgcHRocmVhZF9t
-dXRleF9sb2NrX2VpbnRyX25wKHB0aHJlYWRfbXV0ZXhfdCAqbXV0ZXgpKTsNCj4gPiA+ICsNCj4g
-PiANCj4gPiBDT0JBTFRfREVDTCBzaG91bGQgb25seSBiZSBuZWNlc3NhcnkgZm9yIGZ1bmN0aW9u
-cyB0aGF0IGxpdmUgaW4gdGhlDQo+ID4gbGliYyBuYW1lc3BhY2UgYW5kIHRoYXQgbmVlZCB0byBi
-ZSAiaW50ZXJjZXB0ZWQiIC8gYWZmZWN0ZWQgYnkgd3JhcHBpbmcNCj4gPiBhdCBsaW5rZXIgbGV2
-ZWwuDQo+ID4gDQo+ID4gWW91ciBmdW5jdGlvbiBsb29rcyBsaWJjb2JhbHQgc3BlY2lmaWMgYW5k
-IGFzIHN1Y2ggc2hvdWxkIHByb2JhYmx5IG5vdA0KPiA+IGxpdmUgaW4gdGhlIHB0aHJlYWRfbXV0
-ZXhfIG5hbWVzcGFjZSBhbmQgZ2VuZXJhdGluZyB0aGUgd3JhcHBlcnMgc2VlbXMNCj4gPiB1bm5l
-Y2Vzc2FyeS4NCj4gDQo+IE9rIQ0KPiANCj4gWy4uLl0NCj4gDQo+ID4gPiArQ09CQUxUX0lNUEwo
-aW50LCBwdGhyZWFkX211dGV4X2xvY2tfZWludHJfbnAsIChwdGhyZWFkX211dGV4X3QgKm11dGV4
-KSkNCj4gPiA+ICt7DQo+ID4gPiArCXJldHVybiBfX3B0aHJlYWRfbXV0ZXhfbG9jayhtdXRleCwg
-dHJ1ZSk7DQo+ID4gPiArfQ0KPiA+IA0KPiA+IFNhbWUgYXMgYWJvdmUuIExvb2tzIGxpYmNvYmFs
-dCBzcGVjaWZpYyBhbmQgdGhlIHdyYXBwaW5nIHBhcnQgc2VlbXMNCj4gPiB1bm5lY2Vzc2FyeS4N
-Cj4gDQo+IE9rLg0KPiANCj4gVGhhbmtzLA0KPiAvL3JpY2hhcmQNCg0K
+When making allyesconfig, there is duplication definication issue.
+To fix it, make them exclusive each other.
+
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+---
+ arch/x86/kernel/irq_pipeline.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+index 8daac9f78ebe..624fad67fe56 100644
+--- a/arch/x86/kernel/irq_pipeline.c
++++ b/arch/x86/kernel/irq_pipeline.c
+@@ -138,13 +138,11 @@ static void do_sysvec_inband(struct irq_desc *desc)
+ 	case HYPERV_STIMER0_VECTOR:
+ 		__sysvec_hyperv_stimer0(regs);
+ 		break;
+-#endif
+-#ifdef CONFIG_ACRN_GUEST
++#elif defined CONFIG_ACRN_GUEST
+ 	case HYPERVISOR_CALLBACK_VECTOR:
+ 		__sysvec_acrn_hv_callback(regs);
+ 		break;
+-#endif
+-#ifdef CONFIG_XEN_PVHVM
++#elif defined CONFIG_XEN_PVHVM
+ 	case HYPERVISOR_CALLBACK_VECTOR:
+ 		__sysvec_xen_hvm_callback(regs);
+ 		break;
+-- 
+2.17.1
+
 
