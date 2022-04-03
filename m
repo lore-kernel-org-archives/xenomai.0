@@ -1,9 +1,12 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] tick: irq_pipeline: fix proxying of a broadcast device
-Date: Sun,  3 Apr 2022 16:48:00 +0200
-Message-Id: <20220403144800.1776095-1-rpm@xenomai.org>
+Date: Sun, 3 Apr 2022 18:32:55 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <317493564.212576.1649003575604.JavaMail.zimbra@nod.at>
+In-Reply-To: <20220403144348.1775590-1-rpm@xenomai.org>
+References: <20220403144348.1775590-1-rpm@xenomai.org>
+Subject: Re: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,124 +15,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
 
-When a proxy device is taking control of a (real) broadcast device, we
-have to:
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Philippe Gerum" <rpm@xenomai.org>
+> An: "xenomai" <xenomai@xenomai.org>
+> CC: "Philippe Gerum" <rpm@xenomai.org>, "Richard Weinberger" <richard.wei=
+nberger@gmail.com>
+> Gesendet: Sonntag, 3. April 2022 16:43:48
+> Betreff: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
 
-- remove the real device from the clockevents_list
-- keep that device ticking, i.e. no shutdown
+> From: Philippe Gerum <rpm@xenomai.org>
+>=20
+> We have to fix up the TSS with the proper I/O bitmap settings in
+> arch_dovetail_switch_finish() when the incoming Dovetail-enabled task
+> is about to re-enter user mode.
+>=20
+> This fixes an application crash observed when such a task would rely
+> on iopl() to raise its I/O permissions then block, relinquishing the
+> CPU to another task invalidating them, before the former eventually
+> resumes in user mode.
+>=20
+> See https://xenomai.org/pipermail/xenomai/2022-March/047451.html.
+>=20
+> Reported-by: Richard Weinberger <richard.weinberger@gmail.com>
+> Tested-by: Richard Weinberger <richard.weinberger@gmail.com>
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+> arch/x86/include/asm/dovetail.h | 16 ++++++++++++----
+> 1 file changed, 12 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/x86/include/asm/dovetail.h b/arch/x86/include/asm/dovet=
+ail.h
+> index 9cf811fe98ba..940726f16f2e 100644
+> --- a/arch/x86/include/asm/dovetail.h
+> +++ b/arch/x86/include/asm/dovetail.h
+> @@ -9,6 +9,7 @@
+> #if !defined(__ASSEMBLY__) && defined(CONFIG_DOVETAIL)
+>=20
+> #include <asm/fpu/api.h>
+> +#include <asm/io_bitmap.h>
+>=20
+> static inline void arch_dovetail_exec_prepare(void)
+> {
+> @@ -25,11 +26,18 @@ void arch_dovetail_switch_prepare(bool leave_inband)
+> static inline
+> void arch_dovetail_switch_finish(bool enter_inband)
+> {
+> -=09if (enter_inband)
+> +=09unsigned int ti_work =3D READ_ONCE(current_thread_info()->flags);
+> +
+> +=09if (unlikely(ti_work & _TIF_IO_BITMAP))
+> +=09=09tss_update_io_bitmap();
+> +
+> +=09if (enter_inband) {
+> =09=09fpu__resume_inband();
+> -=09else if (!(current->flags & PF_KTHREAD) &&
+> -=09=09test_thread_flag(TIF_NEED_FPU_LOAD))
+> -=09=09switch_fpu_return();
+> +=09} else {
+> +=09=09  if (unlikely(ti_work & _TIF_NEED_FPU_LOAD &&
+> +=09=09=09=09  !(current->flags & PF_KTHREAD)))
+> +=09=09=09  switch_fpu_return();
+> +=09}
+> }
 
-Fix tick_check_new_device() accordingly.
+For the whole series:
+Reviewed-by: Richard Weinberger <richard@nod.at>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/time/clockevents.c   |  7 ++++---
- kernel/time/tick-common.c   | 21 +++++++++------------
- kernel/time/tick-internal.h |  8 ++++++++
- kernel/time/tick-proxy.c    |  2 +-
- 4 files changed, 22 insertions(+), 16 deletions(-)
+Thanks for addressing the issue so quickly. :-)
 
-diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
-index 6ecf0af02822..b1e7de5e5290 100644
---- a/kernel/time/clockevents.c
-+++ b/kernel/time/clockevents.c
-@@ -639,10 +639,11 @@ void clockevents_exchange_device(struct clock_event_device *old,
- 	if (old) {
- 		module_put(old->owner);
- 		/*
--		 * Do not move a proxy tick device to the release
--		 * list, keep it around but mark it as reserved.
-+		 * Do not move the device backing a proxy tick device
-+		 * to the release list, keep it around but mark it as
-+		 * reserved.
- 		 */
--		if (new && new->features & CLOCK_EVT_FEAT_PROXY) {
-+		if (tick_check_is_proxy(new)) {
- 			list_del(&old->list);
- 			clockevents_switch_state(old, CLOCK_EVT_STATE_RESERVED);
- 		} else {
-diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
-index 58a9933d0250..5ffdc83f4153 100644
---- a/kernel/time/tick-common.c
-+++ b/kernel/time/tick-common.c
-@@ -322,17 +322,6 @@ static bool tick_check_preferred(struct clock_event_device *curdev,
- 	       !cpumask_equal(curdev->cpumask, newdev->cpumask);
- }
- 
--static bool tick_check_is_proxy(struct clock_event_device *curdev)
--{
--	if (!irqs_pipelined())
--		return false;
--
--	/*
--	 * Never replace an active proxy except when unregistering it.
--	 */
--	return curdev && curdev->features & CLOCK_EVT_FEAT_PROXY;
--}
--
- /*
-  * Check whether the new device is a better fit than curdev. curdev
-  * can be NULL !
-@@ -340,6 +329,9 @@ static bool tick_check_is_proxy(struct clock_event_device *curdev)
- bool tick_check_replacement(struct clock_event_device *curdev,
- 			    struct clock_event_device *newdev)
- {
-+	/*
-+	 * Never replace an active proxy except when unregistering it.
-+	 */
- 	if (tick_check_is_proxy(curdev))
- 		return false;
- 
-@@ -378,7 +370,12 @@ void tick_check_new_device(struct clock_event_device *newdev)
- 	 * not give it back to the clockevents layer !
- 	 */
- 	if (tick_is_broadcast_device(curdev)) {
--		clockevents_shutdown(curdev);
-+		if (tick_check_is_proxy(newdev)) {
-+			list_del(&curdev->list);
-+			clockevents_switch_state(curdev, CLOCK_EVT_STATE_RESERVED);
-+		} else {
-+			clockevents_shutdown(curdev);
-+		}
- 		curdev = NULL;
- 	}
- 	clockevents_exchange_device(curdev, newdev);
-diff --git a/kernel/time/tick-internal.h b/kernel/time/tick-internal.h
-index 4dd811be7edd..85d8451dfee6 100644
---- a/kernel/time/tick-internal.h
-+++ b/kernel/time/tick-internal.h
-@@ -47,6 +47,14 @@ static inline void clockevent_set_state(struct clock_event_device *dev,
- 	dev->state_use_accessors = state;
- }
- 
-+static inline bool tick_check_is_proxy(struct clock_event_device *dev)
-+{
-+	if (!irqs_pipelined())
-+		return false;
-+
-+	return dev && dev->features & CLOCK_EVT_FEAT_PROXY;
-+}
-+
- extern void clockevents_shutdown(struct clock_event_device *dev);
- extern void clockevents_exchange_device(struct clock_event_device *old,
- 					struct clock_event_device *new);
-diff --git a/kernel/time/tick-proxy.c b/kernel/time/tick-proxy.c
-index 84aab8bcc660..5a877987a84e 100644
---- a/kernel/time/tick-proxy.c
-+++ b/kernel/time/tick-proxy.c
-@@ -285,7 +285,7 @@ static int enable_oob_timer(void *arg) /* hard_irqs_disabled() */
- 
- 	/*
- 	 * irq_switch_oob() grabs the IRQ descriptor lock which is
--	 * mutable, so that is fine to invoke this routine with hard
-+	 * hybrid, so that is fine to invoke this routine with hard
- 	 * IRQs off.
- 	 */
- 	irq_switch_oob(real_dev->irq, true);
--- 
-2.34.1
-
+Thanks,
+//richard
 
