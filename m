@@ -1,16 +1,11 @@
-Date: Mon, 4 Apr 2022 19:48:08 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <12728795.215964.1649094488491.JavaMail.zimbra@nod.at>
-In-Reply-To: <87ee2colqg.fsf@xenomai.org>
-References: <20220403144348.1775590-1-rpm@xenomai.org>
- <317493564.212576.1649003575604.JavaMail.zimbra@nod.at>
- <87ilrqnjdp.fsf@xenomai.org>
- <656392314.214549.1649064591209.JavaMail.zimbra@nod.at>
- <87ee2colqg.fsf@xenomai.org>
-Subject: Re: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220403144800.1776095-1-rpm@xenomai.org>
+In-Reply-To: <20220403144800.1776095-1-rpm@xenomai.org>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Mon, 4 Apr 2022 21:19:52 +0200
+Message-ID: <CAFLxGvzvAosUFxxBD24Rk92iSN=n5yw2PCYW34mE9_yvsfM7ew@mail.gmail.com>
+Subject: Re: [PATCH] tick: irq_pipeline: fix proxying of a broadcast device
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,24 +15,26 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Philippe Gerum" <rpm@xenomai.org>
-> It seems unlikely that kernel.org would consider hosting us since the
-> project does not upstream patches to the mainline kernel.
+On Sun, Apr 3, 2022 at 4:48 PM Philippe Gerum via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+> From: Philippe Gerum <rpm@xenomai.org>
+>
+> When a proxy device is taking control of a (real) broadcast device, we
+> have to:
+>
+> - remove the real device from the clockevents_list
+> - keep that device ticking, i.e. no shutdown
+>
+> Fix tick_check_new_device() accordingly.
+>
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 
-lore hosts many projects that are not directly related to the upstream
-kernel.
-e.g.
-https://lore.kernel.org/qemu-devel
-https://lore.kernel.org/u-boot
-https://lore.kernel.org/llvm
-..
-https://lore.kernel.org/dpdk-dev
-https://lore.kernel.org/selinux-refpolicy
+I'm not an expert in this area but your change makes sense to me.
 
-So, I don't see why Xenomai won't fit.
+Reviewed-by: Richard Weinberger <richard@nod.at>
 
 Thanks,
 //richard
