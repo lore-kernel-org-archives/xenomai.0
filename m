@@ -1,14 +1,14 @@
-Date: Mon, 4 Apr 2022 11:29:51 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <656392314.214549.1649064591209.JavaMail.zimbra@nod.at>
-In-Reply-To: <87ilrqnjdp.fsf@xenomai.org>
-References: <20220403144348.1775590-1-rpm@xenomai.org>
- <317493564.212576.1649003575604.JavaMail.zimbra@nod.at>
- <87ilrqnjdp.fsf@xenomai.org>
-Subject: Re: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220330201614.31083-1-richard@nod.at>
+ <74b8e93cc14b656f6d97bff5d6ef2c2dd606f64b.camel@siemens.com>
+ <637249774.202758.1648715778757.JavaMail.zimbra@nod.at>
+ <589a354736795684073a1b35b5605205e72febec.camel@siemens.com>
+In-Reply-To: <589a354736795684073a1b35b5605205e72febec.camel@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Mon, 4 Apr 2022 11:39:14 +0200
+Message-ID: <CAFLxGvyvAR5-CHPSnqt=rYEkyd=KtWGg9c69q07JjxFPKFoajg@mail.gmail.com>
+Subject: Re: [PATCH] Alchemy: Fix rt_task_unblock() for RT_MUTEX
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,34 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Cc: "richard@nod.at" <richard@nod.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Philippe Gerum" <rpm@xenomai.org>
-> These are the two remaining patches in the final series, ok for both?
->=20
-> tick: irq_pipeline: fix proxying of a broadcast device
-> x86: dovetail: reinstate I/O bitmap on user entry
+On Fri, Apr 1, 2022 at 9:16 AM Bezdeka, Florian via Xenomai
+<xenomai@xenomai.org> wrote:
+> > With my changes at least the application works again and the tests
+> > on the customer side pass.
+>
+> We would need such / similar tests as well inside the Xenomai testsuite
+> to make sure we don't break it again.
 
-I meant this patches;
-[PATCH 1/4] sched: dovetail: pass thread-info bits to arch_dovetail_switch_=
-finish()
-[PATCH 2/4] ARM: dovetail: fix up arch_dovetail_switch_finish()
-[PATCH 3/4] arm64: dovetail: fix up arch_dovetail_switch_finish()
-[PATCH 4/4] x86: dovetail: reinstate I/O bitmap on out-of-band user entry
-
-Where 4/4 got replaced by this v2 one.
-
-I didn't look into "tick: irq_pipeline: fix proxying of a broadcast device"=
- but can later today.
-
-BTW: Do you have a Patchwork instance for the Xenomai mailing list? I makes=
- dealing with patch
-series so much easier.
-
-Or even better, can we have Xenomai at lore.kernel.org? Then we can use b4.=
- :-)
+I'm a bit unsure where to place the test.
+Under testsuite/ seems to be not a single alchemy related test.
+Shall I create a new folder?
 
 Thanks,
 //richard
