@@ -1,13 +1,15 @@
+Message-ID: <498375c5-740c-23c5-0570-cf9b6b91e957@siemens.com>
+Date: Tue, 5 Apr 2022 17:29:48 +0200
 MIME-Version: 1.0
+Subject: Re: Machine freezes under Ubuntu 20.04
+Content-Language: en-US
 References: <CAMMcbao60ib7YVUDsD5FD=J7aTCzsTAsG3ggUc7vXPHvbvd5uw@mail.gmail.com>
  <8e029de8-dac5-5788-c28b-1d20736ef494@siemens.com>
-In-Reply-To: <8e029de8-dac5-5788-c28b-1d20736ef494@siemens.com>
-From: Arturo Laurenzi <arturo.laurenzi@gmail.com>
-Date: Tue, 5 Apr 2022 15:43:37 +0200
-Message-ID: <CAMMcbaoNMZWSk=UED8cCk=ToPFPeNq3Abx=KwCyPhL9Zbx9CYQ@mail.gmail.com>
-Subject: Re: Machine freezes under Ubuntu 20.04
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <CAMMcbaoNMZWSk=UED8cCk=ToPFPeNq3Abx=KwCyPhL9Zbx9CYQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <CAMMcbaoNMZWSk=UED8cCk=ToPFPeNq3Abx=KwCyPhL9Zbx9CYQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,106 +18,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Arturo Laurenzi <arturo.laurenzi@gmail.com>
 Cc: xenomai@xenomai.org
 
-PiBPbiAwNC4wNC4yMiAxNToyMSwgQXJ0dXJvIExhdXJlbnppIHZpYSBYZW5vbWFpIHdyb3RlOgoK
-PiA+Cj4gPiBSZWNlbnRseSwgd2UgaGF2ZSBzdGFydGVkIGEgdHJhbnNpdGlvbiB0b3dhcmRzIFVi
-dW50dSAyMC4wNCwgYW5kIHRoaW5ncwo+ID4gaGF2ZSBzdGFydGVkIHRvIGJyZWFrLgo+ID4KPiA+
-IFRoZSBmaXJzdCBhdHRlbXB0IHdhcyB0byBpbnN0YWxsIGtlcm5lbCA1LjQuMTUxIGFuZCBzdGlj
-ayB0byBpcGlwZS4gVW5kZXIKPiA+IHRoaXMgc2V0dXAsIHdlIGV4cGVyaWVuY2UgaXNzdWVzIGV2
-ZW4gYmVmb3JlIHN0YXJ0aW5nIG91ciBhcHBsaWNhdGlvbnMuIFdlCj4gPiBoYXZlIHNlZW4gcmFu
-ZG9tIGNyYXNoZXMgd2hpbGUgY29tcGlsaW5nIHdpdGggR0NDLCBzcG9yYWRpYyAiU3lzdGVtIFBy
-b2dyYW0KPiA+IFByb2JsZW0gRGV0ZWN0ZWQiIHBvcHVwcyBieSBVYnVudHUsIGFuZCBvdGhlcnMu
-IFdlIGV2ZW4gdHJpZWQgdG8gcmUtaW5zdGFsbAo+ID4gT1MgYW5kIGtlcm5lbCBmcm9tIHNjcmF0
-Y2ggd2l0aCBubyBsdWNrLgo+Cj4gQSByZWZlcmVuY2Ugc2V0dXAgZm9yIHRoaXMga2VybmVsIGxp
-bmUgY2FuIGJlIGZvdW5kIGluIHhlbm9tYWktaW1hZ2VzCj4gKGh0dHBzOi8vc291cmNlLmRlbngu
-ZGUvWGVub21haS94ZW5vbWFpLWltYWdlcykuIFdvdWxkIGJlIGdvb2QgdG8KPiB1bmRlcnN0YW5k
-IHdoaWNoIGRldmlhdGlvbiBmcm9tIGl0IG1ha2VzIHRoZSBkaWZmZXJlbmNlIGZvciB3aGljaAo+
-IGNvbXBvbmVudCAoc2VlIGFsc28gZnVydGhlciBxdWVzdGlvbnMgYmVsb3cpLgoKSSdtIGF0dGFj
-aGluZyB0aGUgY29uZmlnIHdlJ3JlIHVzaW5nIChmcm9tIC9ib290L2NvbmZpZy0kKHVuYW1lIC1y
-KSkuCklmIHRoYXQgbWFrZXMgc2Vuc2UsIHdlJ3JlIGdvaW5nIHRvIHRyeSB0byBjb25maWd1cmUg
-dGhlIGtlcm5lbAphY2NvcmRpbmcgdG8gdGhpcyBmaWxlCihodHRwczovL3NvdXJjZS5kZW54LmRl
-L1hlbm9tYWkveGVub21haS1pbWFnZXMvLS9ibG9iL21hc3Rlci9yZWNpcGVzLWtlcm5lbC9saW51
-eC9maWxlcy9hbWQ2NF9kZWZjb25maWcpLgpXaGF0IGtlcm5lbCB2ZXJzaW9uIGRvIHlvdSByZWNv
-bW1lbmQgdG8gdHJ5PwoKPiA+Cj4gPiBUaGUgc2Vjb25kIGF0dGVtcHQgd2FzIHRvIHN0aWNrIHRv
-IG91ciBvbGQga2VybmVsIDQuMTkuMTQwLiBBbGwgdGhlIHdlaXJkCj4gPiBpc3N1ZXMgZGlzYXBw
-ZWFyIGFuZCB0aGUgc3lzdGVtIGlzIHN0YWJsZS4gSG93ZXZlciwgd2UgYXJlIHVuYWJsZSB0byBo
-YXZlCj4gPiB0aGUgc3lzdGVtIHBhc3Mgb3VyIHN1aXRlIG9mICJzdHJlc3MgdGVzdHMiLCB3aGlj
-aCBiYXNpY2FsbHkgaW52b2x2ZSBzdGFydGluZywKPiA+IHJ1bm5pbmcsIGFuZCBraWxsaW5nIHBy
-b2Nlc3MgQiBtdWx0aXBsZSB0aW1lcyBpbiBhIGN5Y2xpYyBmYXNoaW9uLCB3aGlsZQo+ID4gcHJv
-Y2VzcyBBIHJ1bnMgaW4gdGhlIGJhY2tncm91bmQuIEFmdGVyIGEgc2hvcnQgd2hpbGUgKG1pbnV0
-ZXMpLCB0aGUgd2hvbGUKPiA+IHN5c3RlbSBqdXN0IGhhbmdzLCBmb3JjaW5nIHVzIHRvIGRvIGFu
-IGhhcmQgcmVzZXQuIE9ubHkgb25jZSwgd2UgbWFuYWdlZCB0bwo+ID4gZ2V0IHRoaXMga2VybmVs
-IG9vcHMgYWZ0ZXIgcmVib290aW5nIChqb3VybmFsY3RsIC1rIC1iIC0xIC0tbm8tcGFnZXIpLgo+
-ID4KPgo+IEZvciByZWxpYWJseSByZWNvcmRpbmcgY3Jhc2hlcywgaXQgaXMgaGlnaGx5IHJlY29t
-bWVuZGVkIHRvIHVzZSBhIFVBUlQKPiBhcyBrZXJuZWwgZGVidWcgb3V0cHV0LgoKV2lsbCBkbyBB
-U0FQIGFuZCBsZXQgeW91IGtub3cuCgo+ID4gVGhlIHRoaXJkIGF0dGVtcHQgd2FzIHRvIHRyeSBv
-dXQga2VybmVsIDUuMTAuODkgcGx1cyB0aGUgbmV3IGRvdmV0YWlsCj4gPiBwYXRjaCwgYW5kIFhl
-bm9tYWkgdjMuMi4xLiBBZ2FpbiwgYWxsIHRoZSB3ZWlyZCBpc3N1ZXMgYXJlIGdvbmUgYW5kIHRo
-ZQo+ID4gc3lzdGVtIGlzIHN0YWJsZS4gSG93ZXZlciwgd2UgYXJlIHVuYWJsZSB0byBoYXZlIHRo
-ZSBzeXN0ZW0gcGFzcyBvdXIgc3VpdGUKPiA+IG9mICJzdHJlc3MgdGVzdHMiLiBEaWZmZXJlbnRs
-eSBmcm9tIDQuMTktaXBpcGUsIHRoZSBzeXN0ZW0gcmVzaXN0cyBmb3IgYQo+ID4gbG9uZ2VyIHRp
-bWUgYmVmb3JlIGhhbmdpbmcgKGZldyBob3VycyBzb21ldGltZXMpLCBidXQgdGhpcyBhbHNvIHZh
-cmllcyBhCj4gPiBsb3QuCj4gPgo+ID4gQWZ0ZXIgc29tZSBtb3JlIGludmVzdGlnYXRpb24sIHdl
-IGZvdW5kIG91dCBzb21ldGhpbmcgaW50ZXJlc3RpbmcuIEJ5Cj4gPiByZW1vdmluZyB0aGUgY29k
-ZSB0aGF0IGludGVyYWN0cyB3aXRoIFByb2Nlc3MgQSwgUHJvY2VzcyBCIGlzIHRoZW4gYWJsZSB0
-bwo+ID4gcnVuICJmb3JldmVyIiAob3Zlcm5pZ2h0IGF0IGxlYXN0KSwgYnV0ICpvbmx5IGlmIFBy
-b2Nlc3MgQSBpcyBub3QgcnVubmluZyouCj4gPiBPdGhlcndpc2UsIHRoZSBzeXN0ZW0gd2lsbCBo
-YW5nLiBJbiBvdGhlciB3b3JkcywgdGhlIG1lcmUgcHJlc2VuY2Ugb2YKPiA+IFByb2Nlc3MgQSBp
-cyBhZmZlY3RpbmcgUHJvY2VzcyBCLCBldmVuIHRob3VnaCBib3RoIElERFAgYW5kIFpNUSBoYXZl
-IGJlZW4KPiA+IHJlbW92ZWQgZnJvbSBCIGFuZCByZXBsYWNlZCB3aXRoIGZha2UgZGF0YS4gRnVy
-dGhlcm1vcmUsIHRoZSBzeXN0ZW0gZG9lcwo+ID4gbm90IGZyZWV6ZSBpZiB3ZSBzZXQgQjEncyBz
-Y2hlZHVsaW5nIHBvbGljeSB0byBTQ0hFRF9PVEhFUi4KPgo+IERvIHlvdSBoYXZlIHRoZSBYZW5v
-bWFpIHdhdGNoZG9nIGVuYWJsZWQsIHRodXMgd2lsbCB5b3UgYmUgYWJsZSB0byB0ZWxsCj4gUlQg
-YXBwbGljYXRpb24gImhhbmdzIiAoaW5maW5pdGUgbG9vcCBhdCBoaWdoIHByaW8pIGFwYXJ0IGZy
-b20gcmVhbAo+IGhhbmdzL2NyYXNoZXM/CgpZZXMuIFdoZW4gd2UgdHJ5IGEgd2hpbGUodHJ1ZSkg
-aW5zaWRlIGEgUlQgY29udGV4dCwgd2Ugc2VlIHRoZQp3YXRjaGRvZyBraWxsaW5nIG91ciBhcHBs
-aWNhdGlvbgphcyBleHBlY3RlZC4KCgo+ID4KPiA+IEZyb20gdGhlc2UgLSByYXRoZXIgaGV1cmlz
-dGljIC0gdGVzdHMsIGl0IGxvb2tzIGxpa2UgdGhlcmUgY291bGQgYmUgc29tZQo+ID4gY291cGxp
-bmcgYmV0d2VlbiB1bnJlbGF0ZWQgcHJvY2Vzc2VzIHdoaWNoIGNhdXNlcyBzb21lIHNvcnQgb2Yg
-YnVnLCB0aGF0IGlzCj4gPiBwcm9iYWJseSByZWxhdGVkIHRvIHNvbWUgaW50ZXJhY3Rpb24gd2l0
-aCBtdXRleGVzL2NvbmR2YXJzLCB3aGVuIHRoZXNlIGFyZQo+ID4gdXNlZCBmcm9tIGEgUlQgY29u
-dGV4dC4gVGhpcyBpc3N1ZSBzaG93cyB1cCAob3IgYXQgbGVhc3Qgd2UgaGF2ZSBzZWVuIGl0KQo+
-ID4gb25seSB1bmRlciBVYnVudHUgMjAuMDQgKEdDQyA5LngpLCB3aGVyZWFzIGEgMTguMDQgYnVp
-bGQgKEdDQyA3LngpIGxvb2tzCj4gPiBmaW5lLgo+Cj4gVWJ1bnR1IHRvb2xjaGFpbnMgYXJlIGtu
-b3duIGZvciBhZ3Jlc3NpdmVseSBlbmFibGluZyBjZXJ0YWluIHNlY3VyaXR5Cj4gZmVhdHVyZXMu
-IE1heWJlIG9uZSB0aGF0IHdlIGRpZG4ndCBjaGVjayB5ZXQgZmxpcHBlZCBiZXR3ZWVuIDE4LjA0
-IGFuZAo+IDIwLjA0IC0gaWYgdGhhdCBzd2l0Y2ggaXMgb25seSBkaWZmZXJlbmNlIGJldHdlZW4g
-d29ya2luZyBhbmQKPiBub24td29ya2luZyBidWlsZHMgaW4geW91ciBjYXNlLiBHQ0MgaXRzZWxm
-IHNob3VsZCBiZSBmaW5lLCB3ZSBhcmUKPiB0ZXN0aW5nIHdpdGggZ2NjLTEwIHZpYSBEZWJpYW4g
-MTEgaW4gb3VyIENJLgo+Cj4gQ2FuIHlvdSBjaGVjayB3aGV0aGVyIHRoZSB0b29sY2hhaW4gY2hh
-bmdlIGJyZWFrcyB0aGUga2VybmVsIChrZXJuZWwKPiB3aXRoIG9sZCB0b29sY2hhaW4gcnVucyBm
-aW5lIHdpdGggdXNlcnNwYWNlIGJ1aWx0IHZpYSBuZXcgdG9vbGNoYWluKT8KCldlIGhhdmUgdHJp
-ZWQgdGhpcywgYW5kIHN0aWxsIHRoZSBzeXN0ZW0gZnJlZXplcyBhZnRlciBhIHdoaWxlLiBXZQpm
-b2xsb3dlZCB0aGUgcHJvY2VkdXJlIHRoYXQgZm9sbG93czoKIDEpIGdlbmVyYXRlIGJpbmFyaWVz
-IGZvciBvdXIgIndvcmtpbmciIGtlcm5lbCA0LjE5LjE0MC14ZW5vLWlwaXBlLTMuMQpvbiBhIFVi
-dW50dSAxOCBtYWNoaW5lIChtYWtlIGRlYi1wa2cpCiAyKSBjb3B5IHRoZSB3aG9sZSAvdXNyL3hl
-bm9tYWkgZGlyZWN0b3J5IChjb21waWxlZCB3aXRoIHRoZSAxOC4wNAp0b29sY2hhaW4pIHRvIHRo
-ZSB0ZXN0IG1hY2hpbmUgd2l0aCBVYnVudHUgMjAuMDQKIDMpIGluc3RhbGwgdGhlIGtlcm5lbCBi
-aW5hcmllcyB0byB0aGUgdGVzdCBtYWNoaW5lCiA0KSByZS1jb21waWxlIG91ciBhcHBsaWNhdGlv
-bgpJcyB0aGlzIG9rPwoKPiA+Cj4gPiBUaGUgcHVycG9zZSBvZiB0aGlzIG1lc3NhZ2UgaXMgdHdv
-Zm9sZC4KPiA+IEZpcnN0LCB0byBzZWUgaWYgdGhlc2Ugc3ltcHRvbXMgbWlnaHQgInJpbmcgYSBi
-ZWxsIiB0byBhbnlvbmUgaW4gdGhlCj4gPiBjb21tdW5pdHksIHdobyBtaWdodCBiZSBhYmxlIHRv
-IHN1Z2dlc3QgYSBmaXguCj4gPiBTZWNvbmQsIHdlJ2QgbGlrZSB0byBhc2sgd2hhdCB5b3Ugd291
-bGQgZG8gdG8gZGVidWcgdGhpcyBpc3N1ZS4gV2hpY2ggdG9vbAo+ID4gY291bGQgd2UgdXNlIHRv
-IHRyYWNlIHdoYXQncyBnb2luZyBvbiwgY29uc2lkZXJpbmcgdGhhdCB3aGF0ZXZlciB0aGUgYnVn
-Cj4gPiBpcywgaXQgbGVhZHMgdG8gYSBzdGF0ZSB3aGVyZSB0aGUgbWFjaGluZSBpcyBub3QgdXNh
-YmxlIGF0IGFsbC4gV2UgY2FuCj4gPiBzaGFyZSBvdXIgLmNvbmZpZyBmaWxlcyBpZiByZXF1aXJl
-ZCwgYW5kIHdlIGFyZSB3aWxsaW5nIHRvIHRlc3QgbW9yZQo+ID4gY29tYmluYXRpb25zIG9mIGtl
-cm5lbCBhbmQgeGVub21haSBwYXRjaCBvciBsaWJyYXJ5IHZlcnNpb25zIHVwb24geW91cgo+ID4g
-YWR2aWNlLiBBbnkgaGVscCB5b3UgY2FuIGdpdmUgdXMgaXMgZ3JlYXRseSBhcHByZWNpYXRlZC4K
-PiA+Cj4KPiBDYW4geW91IHNpbXBsaWZ5IHlvdXIgdGVzdCBjYXNlIHRvIGEgbGV2ZWwgdGhhdCBt
-YWtlcyBpdCBzaGFyYWJsZSwKPiBleGVjdXRhYmxlIGJ5IHRoaXJkIHBhcnRpZXM/IFBsZWFzZSBh
-bHNvIHNoYXJlIHlvdXIga2VybmVsIC5jb25maWcuCgpXaWxsIHRyeS4gSXQncyBub3QgZ29pbmcg
-dG8gYmUgcXVpY2sgdGhvdWdoLCBhcyBhbnkgdHJpYWwgd2UgbWFrZQpuZWVkcyBob3VycyBvZiB0
-ZXN0aW5nIHRvIHVuZGVyc3RhbmQgaWYgaXQgY2F1c2VzIGEgc3lzdGVtIGZyZWV6ZS4KCldoYXQg
-aXMgdGhlIHJlY29tbWVuZGVkIHRvIHRyYWNlL2RlYnVnIHRoaXMga2luZCBvZiBwcm9ibGVtcz8g
-SXMgdGhlcmUKYW55dGhpbmcgImZhbmNpZXIiIHRoYW4gYnJvYWRjYXN0aW5nIGtlcm5lbCBvdXRw
-dXQgb3ZlciBhIHNlcmlhbCBwb3J0PwoKCj4gSmFuCj4KPiAtLQo+IFNpZW1lbnMgQUcsIFRlY2hu
-b2xvZ3kKPiBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBjb25maWctNC4xOS4xNDAteGVuby1pcGlwZS0zLjEKVHlwZTogYXBwbGljYXRp
-b24vb2N0ZXQtc3RyZWFtClNpemU6IDk4NDIwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
-OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIw
-NDA1LzViMDJlZmRiL2F0dGFjaG1lbnQub2JqPgo=
+On 05.04.22 15:43, Arturo Laurenzi wrote:
+>> On 04.04.22 15:21, Arturo Laurenzi via Xenomai wrote:
+> 
+>>>
+>>> Recently, we have started a transition towards Ubuntu 20.04, and things
+>>> have started to break.
+>>>
+>>> The first attempt was to install kernel 5.4.151 and stick to ipipe. Under
+>>> this setup, we experience issues even before starting our applications. We
+>>> have seen random crashes while compiling with GCC, sporadic "System Program
+>>> Problem Detected" popups by Ubuntu, and others. We even tried to re-install
+>>> OS and kernel from scratch with no luck.
+>>
+>> A reference setup for this kernel line can be found in xenomai-images
+>> (https://source.denx.de/Xenomai/xenomai-images). Would be good to
+>> understand which deviation from it makes the difference for which
+>> component (see also further questions below).
+> 
+> I'm attaching the config we're using (from /boot/config-$(uname -r)).
+> If that makes sense, we're going to try to configure the kernel
+> according to this file
+> (https://source.denx.de/Xenomai/xenomai-images/-/blob/master/recipes-kernel/linux/files/amd64_defconfig).
+> What kernel version do you recommend to try?
+> 
+
+Always the latest of the individual kernel series.
+
+>>>
+>>> The second attempt was to stick to our old kernel 4.19.140. All the weird
+>>> issues disappear and the system is stable. However, we are unable to have
+>>> the system pass our suite of "stress tests", which basically involve starting,
+>>> running, and killing process B multiple times in a cyclic fashion, while
+>>> process A runs in the background. After a short while (minutes), the whole
+>>> system just hangs, forcing us to do an hard reset. Only once, we managed to
+>>> get this kernel oops after rebooting (journalctl -k -b -1 --no-pager).
+>>>
+>>
+>> For reliably recording crashes, it is highly recommended to use a UART
+>> as kernel debug output.
+> 
+> Will do ASAP and let you know.
+> 
+>>> The third attempt was to try out kernel 5.10.89 plus the new dovetail
+>>> patch, and Xenomai v3.2.1. Again, all the weird issues are gone and the
+>>> system is stable. However, we are unable to have the system pass our suite
+>>> of "stress tests". Differently from 4.19-ipipe, the system resists for a
+>>> longer time before hanging (few hours sometimes), but this also varies a
+>>> lot.
+>>>
+>>> After some more investigation, we found out something interesting. By
+>>> removing the code that interacts with Process A, Process B is then able to
+>>> run "forever" (overnight at least), but *only if Process A is not running*.
+>>> Otherwise, the system will hang. In other words, the mere presence of
+>>> Process A is affecting Process B, even though both IDDP and ZMQ have been
+>>> removed from B and replaced with fake data. Furthermore, the system does
+>>> not freeze if we set B1's scheduling policy to SCHED_OTHER.
+>>
+>> Do you have the Xenomai watchdog enabled, thus will you be able to tell
+>> RT application "hangs" (infinite loop at high prio) apart from real
+>> hangs/crashes?
+> 
+> Yes. When we try a while(true) inside a RT context, we see the
+> watchdog killing our application
+> as expected.
+> 
+> 
+>>>
+>>> From these - rather heuristic - tests, it looks like there could be some
+>>> coupling between unrelated processes which causes some sort of bug, that is
+>>> probably related to some interaction with mutexes/condvars, when these are
+>>> used from a RT context. This issue shows up (or at least we have seen it)
+>>> only under Ubuntu 20.04 (GCC 9.x), whereas a 18.04 build (GCC 7.x) looks
+>>> fine.
+>>
+>> Ubuntu toolchains are known for agressively enabling certain security
+>> features. Maybe one that we didn't check yet flipped between 18.04 and
+>> 20.04 - if that switch is only difference between working and
+>> non-working builds in your case. GCC itself should be fine, we are
+>> testing with gcc-10 via Debian 11 in our CI.
+>>
+>> Can you check whether the toolchain change breaks the kernel (kernel
+>> with old toolchain runs fine with userspace built via new toolchain)?
+> 
+> We have tried this, and still the system freezes after a while. We
+> followed the procedure that follows:
+>  1) generate binaries for our "working" kernel 4.19.140-xeno-ipipe-3.1
+> on a Ubuntu 18 machine (make deb-pkg)
+>  2) copy the whole /usr/xenomai directory (compiled with the 18.04
+> toolchain) to the test machine with Ubuntu 20.04
+>  3) install the kernel binaries to the test machine
+>  4) re-compile our application
+> Is this ok?
+> 
+
+Wait, these are three variables: kernel, Xenomai application and Ubuntu
+userspace. Does your system also break when using both kernel and
+application binaries from a Ubuntu 18 build? Or will it start to break
+once you recompile the Xenomai application with Ubuntu 20 toolchain?
+
+>>>
+>>> The purpose of this message is twofold.
+>>> First, to see if these symptoms might "ring a bell" to anyone in the
+>>> community, who might be able to suggest a fix.
+>>> Second, we'd like to ask what you would do to debug this issue. Which tool
+>>> could we use to trace what's going on, considering that whatever the bug
+>>> is, it leads to a state where the machine is not usable at all. We can
+>>> share our .config files if required, and we are willing to test more
+>>> combinations of kernel and xenomai patch or library versions upon your
+>>> advice. Any help you can give us is greatly appreciated.
+>>>
+>>
+>> Can you simplify your test case to a level that makes it sharable,
+>> executable by third parties? Please also share your kernel .config.
+> 
+> Will try. It's not going to be quick though, as any trial we make
+> needs hours of testing to understand if it causes a system freeze.
+> 
+> What is the recommended to trace/debug this kind of problems? Is there
+> anything "fancier" than broadcasting kernel output over a serial port?
+> 
+
+Hard to say in general. Full system freezes can be tricky to debug
+unless there are at least some hints provided by the kernel. That's why
+the focus is first on validating that.
+
+If you want it fancier: In the past, we used kgdb on real hardware as
+well, but that wasn't tried in a while. More reliable to debug -
+provided the issue is reproducible then - is moving everything into a
+KVM machine and debugging the guest from the host once it locked up.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
