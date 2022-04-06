@@ -1,15 +1,9 @@
-Message-ID: <0dace8c2-bbf3-ae47-c582-dda9f5a90ccf@siemens.com>
-Date: Wed, 13 Apr 2022 13:21:18 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH 5/5] drivers: ipc: enable non-blocking write from regular
- threads
-Content-Language: en-US
-References: <20220406155648.1592472-1-rpm@xenomai.org>
- <20220406155648.1592472-5-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220406155648.1592472-5-rpm@xenomai.org>
+From: Sam Daniel <daniel.jacob.samuel@gmail.com>
+Date: Wed, 6 Apr 2022 12:11:10 +0200
+Message-ID: <CAPMj8Mu4mjjwxRrYAhrAc+9UHz6Cg9s2a=LqUGE8cohmVgU4fA@mail.gmail.com>
+Subject: alchemy_init: failed to initialize Alchemy clock
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,134 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Regular threads should be allowed to write to RTIPC sockets provided
-> MSG_DONTWAIT is implicitly set for such a request. This would match
-> the existing behavior with other synchronization objects, such as
-> semaphores and events, avoiding unnecessary restrictions on usage.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/drivers/ipc/bufp.c  | 8 ++++++--
->  kernel/drivers/ipc/iddp.c  | 8 ++++++--
->  kernel/drivers/ipc/rtipc.c | 4 ++--
->  kernel/drivers/ipc/xddp.c  | 6 +++++-
->  4 files changed, 19 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
-> index fd533dba27..565409dd6f 100644
-> --- a/kernel/drivers/ipc/bufp.c
-> +++ b/kernel/drivers/ipc/bufp.c
-> @@ -655,11 +655,15 @@ static ssize_t bufp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct bufp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __bufp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __bufp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __bufp_bind_socket(struct rtipc_private *priv,
-> @@ -682,7 +686,7 @@ static int __bufp_bind_socket(struct rtipc_private *priv,
->  	    __test_and_set_bit(_BUFP_BINDING, &sk->status))
->  		ret = -EADDRINUSE;
->  	cobalt_atomic_leave(s);
-> -	
-> +
->  	if (ret)
->  		return ret;
->  
-> diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
-> index a553902326..05d0193394 100644
-> --- a/kernel/drivers/ipc/iddp.c
-> +++ b/kernel/drivers/ipc/iddp.c
-> @@ -255,7 +255,7 @@ static ssize_t __iddp_recvmsg(struct rtdm_fd *fd,
->  	}
->  
->  	/* We want to pick one buffer from the queue. */
-> -	
-> +
->  	for (;;) {
->  		ret = rtdm_sem_timeddown(&sk->insem, timeout, toseq);
->  		if (unlikely(ret)) {
-> @@ -522,11 +522,15 @@ static ssize_t iddp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct iddp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __iddp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __iddp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __iddp_bind_socket(struct rtdm_fd *fd,
-> diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
-> index 859bdab2f2..211b496ec5 100644
-> --- a/kernel/drivers/ipc/rtipc.c
-> +++ b/kernel/drivers/ipc/rtipc.c
-> @@ -428,7 +428,7 @@ static int rtipc_select(struct rtdm_fd *fd, struct xnselector *selector,
->  	struct xnselect *block;
->  	spl_t s;
->  	int ret;
-> -	
-> +
->  	if (type != XNSELECT_READ && type != XNSELECT_WRITE)
->  		return -EINVAL;
->  
-> @@ -480,7 +480,7 @@ static struct rtdm_driver rtipc_driver = {
->  		.read_rt	=	rtipc_read,
->  		.read_nrt	=	NULL,
->  		.write_rt	=	rtipc_write,
-> -		.write_nrt	=	NULL,
-> +		.write_nrt	=	rtipc_write, /* MSG_DONTWAIT. */
->  		.select		=	rtipc_select,
->  	},
->  };
-> diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
-> index ae5b720c0c..2ca0da5fd4 100644
-> --- a/kernel/drivers/ipc/xddp.c
-> +++ b/kernel/drivers/ipc/xddp.c
-> @@ -657,11 +657,15 @@ static ssize_t xddp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct xddp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __xddp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __xddp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __xddp_bind_socket(struct rtipc_private *priv,
+I recently made several config changes to my Xenomai config (trying to
+move from dev to prod, essentially) and now rtcanrecv issues this
+error:
+# rtcanrecv <bus>
+   0"006.656| WARNING: [rtcanrecv] alchemy_init: failed to initialize
+Alchemy clock (res=1 ns)
+   0"006.804| WARNING: [main] setup call alchemy failed
+   0"006.938| BUG in __xenomai_init(): [main] initialization failed, EAGAIN
 
-Picked this one as logically unrelated for next already.
+I removed several debugging options:
+CONFIG_XENO_OPT_DEBUG_USER
+CONFIG_XENO_OPT_DEBUG_LEGACY
+CONFIG_XENO_OPT_DEBUG_TRACE_RELAX
+CONFIG_IPIPE_TRACE
+(and then added Linux's CONFIG_FUNCTION_TRACER=y)
 
-Thanks,
-Jan
+And I decreased the number of pipes and registry slots:
+CONFIG_XENO_OPT_PIPE_NRDEV: 2048 -> 64
+CONFIG_XENO_OPT_REGISTRY_NRSLOTS: 4096 -> (default)
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Am I missing something obvious in my Xenomai/Linux configuration? Or
+is there a deeper issue with my configuration? or possibly even my
+custom RTCAN driver?
 
