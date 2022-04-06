@@ -1,16 +1,17 @@
-Date: Tue, 12 Apr 2022 16:05:20 +0800
-Subject: Re: rcu_preempt detected expedited stalls on CPUs/tasks
-From: Ivan Jiang <jcgeforce@aliyun.com>
-Message-ID: <8C97D14F-E3AE-45C8-9BE7-DE91A748AE10@aliyun.com>
-References: <066DE2BF-5884-4333-9E1D-5ACF7B904181@aliyun.com>
- <PH0PR11MB58801714B5C99FF4DE04C88FDAEA9@PH0PR11MB5880.namprd11.prod.outlook.com>
- <9F8BCB86-C218-4DBE-81B4-E5F5E25DC8AE@aliyun.com>
- <EAE1373F-54AB-45B1-89E1-ADBDB743EDBC@aliyun.com>
-In-Reply-To: <EAE1373F-54AB-45B1-89E1-ADBDB743EDBC@aliyun.com>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="UTF-8"
-Content-transfer-encoding: quoted-printable
+Message-ID: <a10be0d7-adaf-b589-f10f-d155a8acc522@siemens.com>
+Date: Wed, 6 Apr 2022 11:21:56 +0200
+MIME-Version: 1.0
+Subject: Re: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
+Content-Language: en-US
+References: <20220403144348.1775590-1-rpm@xenomai.org>
+ <317493564.212576.1649003575604.JavaMail.zimbra@nod.at>
+ <87ilrqnjdp.fsf@xenomai.org>
+ <656392314.214549.1649064591209.JavaMail.zimbra@nod.at>
+ <87ee2colqg.fsf@xenomai.org> <419235.1649236412@gemini.denx.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <419235.1649236412@gemini.denx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,153 +20,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zhang, Qiang1" <qiang1.zhang@intel.com>, xenomai--- via Xenomai <xenomai@xenomai.org>
-Cc: Xenomai <xenomai-bounces@xenomai.org>
+To: Wolfgang Denk <wd@denx.de>, Philippe Gerum <rpm@xenomai.org>, Philippe Gerum via Xenomai <xenomai@xenomai.org>
+Cc: Richard Weinberger <richard@nod.at>
 
-Dear Qiang,
+On 06.04.22 11:13, Wolfgang Denk via Xenomai wrote:
+> Dear Philippe,
+> 
+> In message <87ee2colqg.fsf@xenomai.org> you wrote:
+>>
+>>> BTW: Do you have a Patchwork instance for the Xenomai mailing list?
+>>
+>> Unfortunately not.
+>>
+>>> I makes dealing with patch
+>>> series so much easier.
+>>>
+>>> Or even better, can we have Xenomai at lore.kernel.org? Then we can use b=
+>> 4. :-)
+>>
+>> It seems unlikely that kernel.org would consider hosting us since the
+>> project does not upstream patches to the mainline kernel.
+> 
+> Did you try it?  I don't thhink this is a mandatory requirement.
+> For example, U-Boot also does not upstream any kernel patches.
+> 
 
-	I've found xenomai supported igb driver as RTNET, and can I use this drive=
-r instead of normal linux driver that I only use I211 for TCPIP socket.
-	Thankyou.
+I agree, we should give that a try [1]. Philippe, would you do as
+mailing list hoster or should I (and then ask you to sync with them
+regarding the archive)?
 
-Best Regards,
-Ivan
+Jan
 
-=EF=BB=BF=E5=9C=A8 2022/4/11 16:40=EF=BC=8C=E2=80=9CIvan Jiang=E2=80=9D<jcgeforce@aliyun.com> =E5=86=99=E5=85=A5:
+[1] https://korg.docs.kernel.org/lore.html
 
-    Add on=EF=BC=9A
-
-    	[  443.996057] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-    [  444.002166] rcu:     5-...0: (0 ticks this GP) idle=3D8de/1/0x40000000=
-00000000 softirq=3D722/722 fqs=3D9227 last_accelerate: fcd8/8c9e, nonlazy_posted=
-: 0, L.
-    [  444.015487] rcu:     (detected by 3, t=3D36767 jiffies, g=3D11061, q=3D792=
-)
-    [  444.021677] Task dump for CPU 5:
-    [  444.024906] kworker/5:2     R  running task        0   263     !2 0x=
-0000022a
-    [  444.031969] Workq=E2=96=92eue: events igb_watchdog_task
-    [  444.036503] Call trace:
-    [  444.038952]  __switch_to+0xe8/0x138
-    [  444.042442]  0xffff800639210000
-    [  444.045588] rcu: rcu_preempt kthread starved for 18306 jiffies! g110=
-61 f0x2 RCU_GP_WAIT_FQS(5) ->state=3D0x0 ->cpu=3D5
-    [  444.055951] rcu: RCU grace-period kthread stack dump:
-    [  444.061006] rcu_preempt     R  running task        0    10      2 0x=
-00000028
-    [  444.068066] Call trace:
-    [  444.070514]  __switch_to+0xe8/0x138
-    [  444.074006]  __schedule+0x2c0/0x828
-    [  444.077497]  schedule+0x38/0xa8
-    [  444.080641]  schedule_timeout+0x98/0x440
-    [  444.084568]  rcu_gp_kthread+0x4ac/0x8b0
-    [  444.088407]  kthread+0x12c/0x130
-    [  444.091638]  ret_from_fork+0x14/0x1c
-
-    =EF=BB=BF=E5=9C=A8 2022/4/11 16:24=EF=BC=8C=E2=80=9CXenomai =E4=BB=A3=E8=A1=A8 Ivan Jiang via Xenomai=E2=80=9D<xe=
-nomai-bounces@xenomai.org =E4=BB=A3=E8=A1=A8 xenomai@xenomai.org> =E5=86=99=E5=85=A5:
-
-        Dear Qiang=EF=BC=9A
-
-        	Another information like this:
-        	[  121.127758] rcu: INFO: rcu_preempt detected stalls on CPUs/task=
-s:
-        [  121.133887] rcu:     0-...0: (5 ticks this GP) idle=3Db5a/1/0x4000=
-000000000002 softirq=3D11605/11606 fqs=3D2336
-        [  121.143294] rcu:     (detected by 4, t=3D5255 jiffies, g=3D4137, q=3D1=
-0)
-        [  121.149225] Task dump for CPU 0:
-        [  121.152457] tcf-agent       R  running task        0   384      =
-1 0x0000020a
-        [  121.159520] Call trace:
-        [  121.161987]  __switch_to+0xe8/0x138
-        [  121.165481]  0xffff000008e4c000
-        [  220.120678] audit: type=3D1701 audit(1649325109.997:4): auid=3D42949=
-67295 uid=3D0 gid=3D0 ses=3D4294967295 pid=3D241 comm=3D"systemd-journal" exe=3D"/lib/sy=
-stemd/systemd-journald" sig=3D6 res=3D1
-        [  280.369229] systemd[1]: systemd-udevd.service: Watchdog timeout =
-(limit 3min)!
-        [  280.376682] systemd[1]: systemd-udevd.service: Killing process 2=
-55 (systemd-udevd) with signal SIGABRT.
-        [  280.386241] audit: type=3D1701 audit(1649325109.997:5): auid=3D42949=
-67295 uid=3D0 gid=3D0 ses=3D4294967295 pid=3D255 comm=3D"systemd-udevd" exe=3D"/lib/syst=
-emd/systemd-udevd" sig=3D6 res=3D1
-        [  310.369200] systemd[1]: systemd-journald.service: State 'stop-si=
-gabrt' timed out. Terminating.
-        [  370.619174] systemd[1]: systemd-udevd.service: State 'stop-sigab=
-rt' timed out. Terminating.
-        [  400.619175] systemd[1]: systemd-journald.service: State 'stop-si=
-gterm' timed out. Killing.
-        [  400.627584] systemd[1]: systemd-journald.service: Killing proces=
-s 241 (systemd-journal) with signal SIGKILL.
-
-        Thank you.
-        BR.,
-        Ivan
-
-
-        =EF=BB=BF=E5=9C=A8 2022/4/11 16:11=EF=BC=8C=E2=80=9CZhang, Qiang1=E2=80=9D<qiang1.zhang@intel.com=
-> =E5=86=99=E5=85=A5:
-
-
-                Dear xenomais=EF=BC=9A
-
-                    When I used Intel I211 Ethernet chip (pcie 2 Gigibit) m=
-et rcu error like below=EF=BC=9A
-                	rcu: INFO: rcu_preempt detected expedited stalls on CPUs/t=
-asks: { 5-... } 5335 jiffies s: 37 root: 0x20/.
-                	[  392.174721] rcu: blocking rcu_node structures:
-                	[  392.179174] Task dump for CPU 5:
-                	[  392.182411] kworker/5:2     R  running task        0   =
-263      2 0x0000022a
-                	[  392.189479] Workqueue: events igb_watchdog_task
-                	[  392.194018] Call trace:
-                	[  392.196471]  __switch_to+0xe8/0x138
-                	[  392.199961]  0xffff800639210000
-
-            Hi, Please provide full  rcu stall information, this info indic=
-ate the CPU5 can not notice rcu quiescent state,
-            This may be because the status cannot be reported in time due t=
-o disable interrupts or preemption long time etc
-             you can see Documentation/RCU/stallwarn.rst.
-
-            Thanks
-            Zqiang
-
-
-
-            		Environment like this:
-            		Cobalt 3.1 ipipe 4.19.106 or 4.19.198 ARM64
-            		Starting commands isolcpus=3D1,2 xenomai.supported_cpus=3D0x06 no=
-hz_full=3D1,2 rcu_nocbs=3D1,2 irqaffinity=3D0,3,4,5 nmi_interrupt=3D0
-            		Because I set irqaffinity on NRT cpus: CPU0 CPU3 CPU4 CPU5, s=
-o Task dump for CPU 0 3 4 5 randomly.
-            		And when the error messages appeared after 10 minutes, the sy=
-stem 's no longer responded anything and I haven't done any threads with thi=
-s Ethernet port just ping command.
-            		.config file contains such options:
-                	CONFIG_NO_HZ_FULL =3D y
-                	CONFIG_RCU_NOCB_CPU=3Dy
-                	CONFIG_PREEMPT=3Dy
-                	CONFIG_CPU_IDLE=3Dn
-                	CONFIG_ARM_CPUIDLE=3Dn
-                	CONFIG_CPU_FREQ=3Dn
-                	Could you be pleased help me what could be the problem.
-
-            		Thank you.
-
-                Best Regards=EF=BC=8C
-                Ivan
-
-
-
-
-
-
-
-
-
-
-
-
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
