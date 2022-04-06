@@ -1,15 +1,16 @@
-Message-ID: <20520308-b588-f1db-e9ff-bc65087a6fd2@siemens.com>
-Date: Wed, 13 Apr 2022 20:58:17 +0200
+References: <20220403144348.1775590-1-rpm@xenomai.org>
+ <317493564.212576.1649003575604.JavaMail.zimbra@nod.at>
+ <87ilrqnjdp.fsf@xenomai.org>
+ <656392314.214549.1649064591209.JavaMail.zimbra@nod.at>
+ <87ee2colqg.fsf@xenomai.org> <419235.1649236412@gemini.denx.de>
+ <a10be0d7-adaf-b589-f10f-d155a8acc522@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH v2] x86: dovetail: reinstate I/O bitmap on user entry
+Date: Wed, 06 Apr 2022 12:14:16 +0200
+In-reply-to: <a10be0d7-adaf-b589-f10f-d155a8acc522@siemens.com>
+Message-ID: <87r16a1pf7.fsf@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH 0/6] Revive alchemy tests
-Content-Language: en-US
-References: <20220408080401.22235-1-richard@nod.at>
- <1e9b7d24-a1db-7849-568d-36756584570a@siemens.com>
- <529434956.250361.1649859241634.JavaMail.zimbra@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <529434956.250361.1649859241634.JavaMail.zimbra@nod.at>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Wolfgang Denk <wd@denx.de>, Philippe Gerum via Xenomai <xenomai@xenomai.org>, Richard Weinberger <richard@nod.at>
 
-On 13.04.22 16:14, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
->> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
->> An: "richard" <richard@nod.at>, "xenomai" <xenomai@xenomai.org>
->> Gesendet: Mittwoch, 13. April 2022 14:56:16
->> Betreff: Re: [PATCH 0/6] Revive alchemy tests
-> 
->> On 08.04.22 10:03, Richard Weinberger via Xenomai wrote:
->>> This patch series is a first attempt to integrate the currently abandoned
->>> alchemy tests into Xenomai's test suite.
->>> Since each test assumes running as own process a test driver is needed
->>> which executes each tests separately.
->>> The driver makes use of the smokey framework.
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 06.04.22 11:13, Wolfgang Denk via Xenomai wrote:
+>> Dear Philippe,
+>> 
+>> In message <87ee2colqg.fsf@xenomai.org> you wrote:
 >>>
->>
->> A valuable step forward. Just wondering, before actually taking it, if
->> that can be a pattern for the rest as well (psos, vxworks) or if there
->> is anything that should be considered in addition to allow them
->> following later on.
-> 
-> I think the same approach will work for psos and vxworks too.
-> If you're fine with the proposed approach I'd prepare a v2 of this series
-> with psos and vxworks included.
+>>>> BTW: Do you have a Patchwork instance for the Xenomai mailing list?
+>>>
+>>> Unfortunately not.
+>>>
+>>>> I makes dealing with patch
+>>>> series so much easier.
+>>>>
+>>>> Or even better, can we have Xenomai at lore.kernel.org? Then we can use b=
+>>> 4. :-)
+>>>
+>>> It seems unlikely that kernel.org would consider hosting us since the
+>>> project does not upstream patches to the mainline kernel.
+>> 
+>> Did you try it?  I don't thhink this is a mandatory requirement.
+>> For example, U-Boot also does not upstream any kernel patches.
+>> 
+>
+> I agree, we should give that a try [1]. Philippe, would you do as
+> mailing list hoster or should I (and then ask you to sync with them
+> regarding the archive)?
+>
+> Jan
+>
+> [1] https://korg.docs.kernel.org/lore.html
 
-Thanks! Will have a look and let you know if I have remarks on details
-as well.
-
-Jan
+Ok, option #2 is fine by me. I'll provide the sanitized archive when
+asked to.
 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Philippe.
 
