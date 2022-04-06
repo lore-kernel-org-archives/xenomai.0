@@ -1,11 +1,12 @@
-References: <CAG8a9PyaFXitcmim4801QgY4azT-RWBv8XOHen-_PvzrUQrqyQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Xenomai 4 / EVL: Out-of-band access to EtherNet interface
-Date: Sat, 30 Apr 2022 09:19:57 +0200
-In-reply-to: <CAG8a9PyaFXitcmim4801QgY4azT-RWBv8XOHen-_PvzrUQrqyQ@mail.gmail.com>
-Message-ID: <878rrnypzj.fsf@xenomai.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: Reminder: Xenomai community call on Wednesday,  Apr 06, 2022, UTC
+ 7:00 AM
+Date: Wed, 6 Apr 2022 04:54:52 +0000
+Message-ID: <MN2PR11MB42855F1F0491B933BA40C254F2E79@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kevin Hall <hallsoftware@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+We have the Xenomai community call today.
+
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
+
+Time:
+Wednesday, Apr 06, 2022, UTC 7:00 AM
+Paris, France CEST 8:00 AM
+China CST 3:00 PM
+
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
 
 
-Kevin Hall via Xenomai <xenomai@xenomai.org> writes:
+Regards
 
-> Hi,
->
->
-> Is OOB I/O service a candidate for an EtherNet-based fieldbus protocol? I
-> read in a comment that it only applies to VLAN-tagged IP protocols, but I
-> don't know how old that is or if things have changed. I am able to send and
-> receive packets when using send() and recv(), but since these are not
-> out-of-band, I am often times seeing large delays in the processing of
-> data. That's why I am trying to use oob_read(...) and oob_write(...).
->
->
-> Additional Information: I am using Xenomai 5.15 with a Raspberry Pi 4. The
-> fieldbus protocol is EtherCAT (0x88a4).
->
->
-
-oob_read/write is independent from the EVL net mini-stack, this is a
-generic API for talking to oob-capable drivers. The mini-stack
-implements such a driver, which at the moment can (only) send/receive
-raw ethernet packets via common ethernet drivers.
-
-To get this done, we need a way to distinguish between regular and oob
-traffic, this is where VLAN tagging comes into play. Some VLANs can be
-assigned to oob traffic, handled by the mini-stack as such instead of
-leaving it to the regular network stack for processing (see
-evl_net_ether_accept() in kernel/evl/net/input.c which deals with
-ingress traffic).
-
--- 
-Philippe.
+Hongzhan Chen
 
