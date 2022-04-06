@@ -1,12 +1,11 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 6/9] alchemytests: Fix gcc warning in task-9
-Date: Wed, 13 Apr 2022 23:58:16 +0200
-Message-Id: <20220413215819.22954-7-richard@nod.at>
-In-Reply-To: <20220413215819.22954-1-richard@nod.at>
-References: <20220413215819.22954-1-richard@nod.at>
+References: <CAPMj8Mu4mjjwxRrYAhrAc+9UHz6Cg9s2a=LqUGE8cohmVgU4fA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: alchemy_init: failed to initialize Alchemy clock
+Date: Wed, 06 Apr 2022 15:11:00 +0200
+In-reply-to: <CAPMj8Mu4mjjwxRrYAhrAc+9UHz6Cg9s2a=LqUGE8cohmVgU4fA@mail.gmail.com>
+Message-ID: <87mtgy1hjh.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Richard Weinberger <richard@nod.at>
+To: Sam Daniel <daniel.jacob.samuel@gmail.com>
+Cc: xenomai@xenomai.org
 
-Make it static, no prototype needed anymore.
 
-Fixes:
-task-9.c:13:6: error: no previous prototype for =E2=80=98sighandler=E2=80=
-=99 [-Werror=3Dmissing-prototypes]
- void sighandler(int sig)
+Sam Daniel via Xenomai <xenomai@xenomai.org> writes:
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- testsuite/alchemytests/task-9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> I recently made several config changes to my Xenomai config (trying to
+> move from dev to prod, essentially) and now rtcanrecv issues this
+> error:
+> # rtcanrecv <bus>
+>    0"006.656| WARNING: [rtcanrecv] alchemy_init: failed to initialize
+> Alchemy clock (res=1 ns)
+>    0"006.804| WARNING: [main] setup call alchemy failed
+>    0"006.938| BUG in __xenomai_init(): [main] initialization failed, EAGAIN
+>
+> I removed several debugging options:
+> CONFIG_XENO_OPT_DEBUG_USER
+> CONFIG_XENO_OPT_DEBUG_LEGACY
+> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX
+> CONFIG_IPIPE_TRACE
+> (and then added Linux's CONFIG_FUNCTION_TRACER=y)
+>
+> And I decreased the number of pipes and registry slots:
+> CONFIG_XENO_OPT_PIPE_NRDEV: 2048 -> 64
+> CONFIG_XENO_OPT_REGISTRY_NRSLOTS: 4096 -> (default)
+>
 
-diff --git a/testsuite/alchemytests/task-9.c b/testsuite/alchemytests/tas=
-k-9.c
-index e358154c5..4b62a17be 100644
---- a/testsuite/alchemytests/task-9.c
-+++ b/testsuite/alchemytests/task-9.c
-@@ -10,7 +10,7 @@ static RT_TASK t_test;
-=20
- #define ONE_SECOND  1000000000ULL
-=20
--void sighandler(int sig)
-+static void sighandler(int sig)
- {
- 	/* nop */
- }
---=20
-2.34.1
+OPT_REGISTRY_NRSLOTS is likely the issue, your application may be
+creating lots of Cobalt core objects internally, at least more than 512
+which is the default value.
 
+-- 
+Philippe.
 
