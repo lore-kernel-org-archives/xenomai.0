@@ -1,12 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: Reminder: Xenomai community call on Wednesday,  May 03, 2022, UTC
- 7:00 AM
-Date: Tue, 3 May 2022 01:34:59 +0000
-Message-ID: <MN2PR11MB42857EC96BDA3CCB619A07DFF2C09@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH] Remove __work from PIPELINE_INBAND_WORK_INITIALIZER
+Date: Wed,  6 Apr 2022 23:06:14 +0200
+Message-Id: <20220406210614.17715-1-richard@nod.at>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,66 +12,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-We have the Xenomai community call today.
+ipipe took a copy of the queued work, __work was used to determine how mu=
+ch
+bytes had to get copied.
+With dovetail no copy as taken and the __work parameter is no longer
+useful, so we can get rid of it.
 
-Topics may include but are not limited to upstream/downstream project=20
-plans, status updates, and technical discussions. It's an open online=20
-meeting that anyone can join and ask questions.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ include/cobalt/kernel/dovetail/pipeline/inband_work.h | 2 +-
+ include/cobalt/kernel/rtdm/driver.h                   | 3 +--
+ kernel/cobalt/rtdm/drvlib.c                           | 3 +--
+ kernel/cobalt/rtdm/fd.c                               | 3 +--
+ kernel/cobalt/thread.c                                | 8 +++-----
+ kernel/drivers/udd/udd.c                              | 3 +--
+ 6 files changed, 8 insertions(+), 14 deletions(-)
 
-Time:
-Wednesday, May 03, 2022, UTC 7:00 AM
-Paris, France CEST 9:00 AM
-China CST 3:00 PM
+diff --git a/include/cobalt/kernel/dovetail/pipeline/inband_work.h b/incl=
+ude/cobalt/kernel/dovetail/pipeline/inband_work.h
+index af3d70fc6..a69bf651f 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/inband_work.h
++++ b/include/cobalt/kernel/dovetail/pipeline/inband_work.h
+@@ -17,7 +17,7 @@ struct pipeline_inband_work {
+ 	struct irq_work work;
+ };
+=20
+-#define PIPELINE_INBAND_WORK_INITIALIZER(__work, __handler)		\
++#define PIPELINE_INBAND_WORK_INITIALIZER(__handler)			\
+ 	{								\
+ 		.work =3D IRQ_WORK_INIT((void (*)(struct irq_work *))__handler), \
+ 	}
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/=
+rtdm/driver.h
+index 930da34ed..d5f3dad34 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -924,8 +924,7 @@ static inline void rtdm_nrtsig_init(rtdm_nrtsig_t *nr=
+t_sig,
+ 				    rtdm_nrtsig_handler_t handler, void *arg)
+ {
+ 	nrt_sig->inband_work =3D (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(*nrt_sig,
+-						 __rtdm_nrtsig_execute);
++		PIPELINE_INBAND_WORK_INITIALIZER(__rtdm_nrtsig_execute);
+ 	nrt_sig->handler =3D handler;
+ 	nrt_sig->arg =3D arg;
+ }
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 4ae1ed672..4eaf3a57c 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -1666,8 +1666,7 @@ static void lostage_schedule_work(struct pipeline_i=
+nband_work *inband_work)
+ static struct lostage_trigger_work {
+ 	struct pipeline_inband_work inband_work; /* Must be first. */
+ } nrt_work =3D  {
+-	.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(nrt_work,
+-							lostage_schedule_work),
++	.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(lostage_schedule_work=
+),
+ };
+=20
+ /**
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index bbeea06ae..3c26534f3 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -304,8 +304,7 @@ static void lostage_trigger_close(struct pipeline_inb=
+and_work *inband_work)
+ static struct lostage_trigger_close {
+ 	struct pipeline_inband_work inband_work; /* Must be first. */
+ } fd_closework =3D  {
+-	.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(fd_closework,
+-						lostage_trigger_close),
++	.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(lostage_trigger_close=
+),
+ };
+=20
+ static void __put_fd(struct rtdm_fd *fd, spl_t s)
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index dfaef7564..41804b24f 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -151,7 +151,7 @@ static int map_kthread(struct xnthread *thread, struc=
+t kthread_arg *ka)
+ 	trace_cobalt_lostage_request("wakeup", current);
+=20
+ 	ka->inband_work =3D (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(*ka, do_parent_wakeup);
++		PIPELINE_INBAND_WORK_INITIALIZER(do_parent_wakeup);
+ 	pipeline_post_inband_work(ka);
+=20
+ 	xnlock_get_irqsave(&nklock, s);
+@@ -2047,8 +2047,7 @@ void xnthread_relax(int notify, int reason)
+ {
+ 	struct task_struct *p =3D current;
+ 	struct lostage_wakeup wakework =3D {
+-		.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(wakework,
+-					lostage_task_wakeup),
++		.inband_work =3D PIPELINE_INBAND_WORK_INITIALIZER(lostage_task_wakeup)=
+,
+ 		.task =3D p,
+ 	};
+ 	struct xnthread *thread =3D xnthread_current();
+@@ -2393,8 +2392,7 @@ void __xnthread_signal(struct xnthread *thread, int=
+ sig, int arg)
+ 		return;
+=20
+ 	sigwork->inband_work =3D (struct pipeline_inband_work)
+-			PIPELINE_INBAND_WORK_INITIALIZER(*sigwork,
+-							 lostage_task_signal);
++			PIPELINE_INBAND_WORK_INITIALIZER(lostage_task_signal);
+ 	sigwork->task =3D xnthread_host_task(thread);
+ 	sigwork->signo =3D sig;
+ 	sigwork->sigval =3D sig =3D=3D SIGDEBUG ? arg | sigdebug_marker : arg;
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index d263afc72..958208ec7 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -552,8 +552,7 @@ static void switch_irq_line(rtdm_irq_t *irqh, int ena=
+ble, rtdm_event_t *done)
+ 		return;
+=20
+ 	rq->inband_work =3D (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(*rq,
+-					lostage_irqswitch_line);
++		PIPELINE_INBAND_WORK_INITIALIZER(lostage_irqswitch_line);
+ 	rq->irqh =3D irqh;
+ 	rq->enabled =3D enable;
+ 	rq->done =3D done;
+--=20
+2.26.2
 
-Join Zoom Meeting=20
-https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
-Or
-https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
-36e48b68e
-
-Meeting ID: 912 9727 9269
-Passcode: 367528
-One tap mobile
-+12532158782,,91297279269# US (Tacoma)
-+13462487799,,91297279269# US (Houston)
-
-Dial by your location
-        +1 253 215 8782 US (Tacoma)
-        +1 346 248 7799 US (Houston)
-        +1 669 900 9128 US (San Jose)
-        +1 301 715 8592 US (Washington DC)
-        +1 312 626 6799 US (Chicago)
-        +1 646 558 8656 US (New York)
-Meeting ID: 912 9727 9269
-Find your local number: https://intel.zoom.us/u/aTEA37i5G
-
-Join by SIP
-mailto:91297279269@zoomcrc.com
-
-Join by H.323
-162.255.37.11 (US West)
-162.255.36.11 (US East)
-115.114.131.7 (India Mumbai)
-115.114.115.7 (India Hyderabad)
-213.19.144.110 (Amsterdam Netherlands)
-213.244.140.110 (Germany)
-103.122.166.55 (Australia Sydney)
-103.122.167.55 (Australia Melbourne)
-209.9.211.110 (Hong Kong SAR)
-149.137.40.110 (Singapore)
-64.211.144.160 (Brazil)
-149.137.68.253 (Mexico)
-69.174.57.160 (Canada Toronto)
-65.39.152.160 (Canada Vancouver)
-207.226.132.110 (Japan Tokyo)
-149.137.24.110 (Japan Osaka)
-Meeting ID: 912 9727 9269
-Passcode: 367528
-
-
-Regards
-
-Hongzhan Chen
 
