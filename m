@@ -1,13 +1,13 @@
-References: <20220406155648.1592472-1-rpm@xenomai.org>
- <20220406155648.1592472-2-rpm@xenomai.org>
- <b806bd3e-594b-e4cf-2cc6-34f3c938b5f3@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 2/5] cobalt/events: add single-waiter delivery mode
-Date: Thu, 07 Apr 2022 13:26:56 +0200
-In-reply-to: <b806bd3e-594b-e4cf-2cc6-34f3c938b5f3@siemens.com>
-Message-ID: <87lewhf7k6.fsf@xenomai.org>
+Date: Wed, 06 Apr 2022 06:59:52 +0000
+From: Andrew <andrew.penner@protonmail.com>
+Reply-To: Andrew <andrew.penner@protonmail.com>
+Subject: Re: Xenomai Digest, Vol 120, Issue 10
+Message-ID: <yy4sUiHCL3NR7VvHT3eOL5pAoeIvnWaiHc6Y9-N04DPFK5UKOqCgaHps8Gwqoi3TSewVa6_TrG2KUn_ud5-2m_ItkDm446EqqF4GRAQHLnw=@protonmail.com>
+In-Reply-To: <mailman.68.1649164277.1333.xenomai@xenomai.org>
+References: <mailman.68.1649164277.1333.xenomai@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, johnashwik994 <johnashwik994@gmail.com>
 
-
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->> 
->> Allow for sending a set of event bits to the heading waiter only,
->> instead of broadcasting them to all waiters.
->> 
->> This change affects the ABI, since we add a set of operation flags to
->> the cobalt_event_sync service, to pass the new COBALT_EVENT_BCAST
->> flag. It also affects the internal API as follows:
->> 
->> - the new cobalt_event_broadcast() call behaves like
->>   cobalt_event_post() formerly did, which is broadcasting the event to
->>   all waiters atomically.
->> 
->> - the new cobalt_event_signal() call implements the single-waiter
->>   delivery mode we introduce.
->> 
->> - the former cobalt_event_post() is now a wrapper to
->>   cobalt_event_broadcast(), marked with a deprecation flag.
->
-> Strictly spoken, deprecation will come with patch 4 only.
->
-> Can we have some test cases for the new features as well? Who will use them?
->
-
-Patch #1 comes with a new test for the autoclear thingy, I'll add a test
-case for the single wakeup as well.
-
-Alchemy will use them. This interface is useful to anyone who needs the
-complete event flag group semantics without incurring the (significant)
-extra cost of a mutex+condvar combo. Typically, although the broadcast
-mode is a no-brainer, implementing the single-wakeup pattern is not
-trivial with the latter.
-
--- 
-Philippe.
-
+Mi4gUmU6IEVWTCB0ZXN0aW5nIChBc2h3aWsgSm9obikKCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLQpNZXNzYWdlOiAyCkRhdGU6IFR1ZSwgNSBBcHIgMjAyMiAxNDozNDoyMSArMDIwMApG
+cm9tOiBBc2h3aWsgSm9obiA8am9obmFzaHdpazk5NEBnbWFpbC5jb20+ClRvOiB4ZW5vbWFpQHhl
+bm9tYWkub3JnClN1YmplY3Q6IFJlOiBFVkwgdGVzdGluZwpNZXNzYWdlLUlEOgo8Q0FFU252Zk9z
+X1krcDhrVEpxSGVPQ3A4TWlyZWZfY2ErWWhHZz1NVUpWT3BuSHh5dVRBQG1haWwuZ21haWwuY29t
+PgpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9IlVURi04IgpIaSwKSSBoYXZlIHN1
+Y2Nlc3NmdWxseSBib290ZWQgdGhlIHN5c3RlbSB3aXRoIEVWTCBjb3JlIGVuYWJsZWQuIEkgcHJv
+Y2VlZCB0bwp0ZXN0IHRoZSBFVkwgYW5kIEkgcmVjZWl2ZSB0aGlzIGVycm9yIG1lc3NhZ2UuCmxp
+YmV2bC1uZXh0L3Rlc3RzL2Jhc2ljLXhidWYuYzo0MTogRkFJTEVEOiBldmxfYXR0YWNoX3RocmVh
+ZCgoMCA8PCAxNiksCiJiYXNpYy14YnVmOiVkIiwgZ2V0cGlkKCkpICg9UGVybWlzc2lvbiBkZW5p
+ZWQpCioqIGJhc2ljLXhidWY6IEJST0tFTgpJIHVzZSBsaWJlbCA6IGJyYW5jaCBuZXh0IGFuZCBs
+aW51eC1ldmwtdjUuMTUuMjktZXZsMi1yZWJhc2UuClRoYW5rIHlvdSBmb3IgeW91ciByZXBseS4K
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkhpIEpvaG4sCgpXaGVuIHRlc3RpbmcsIGFy
+ZSB5b3UgcnVubmluZyB0aGUgdGVzdCBhcyByb290PwoKSWYgeW91IGFyZSBhbmQgc3RpbGwgaGF2
+ZSB0cm91YmxlLCBjb3VsZCB5b3UgcnVuIHRoZSB0ZXN0IHZpYSBnZGIsIGFuZCBzaG93IHVzIHRo
+ZSBiYWNrdHJhY2Ugd2hlbiBpdCBjcmFzaGVzPwoKVGhhbmtzLApBbmRyZXc=
