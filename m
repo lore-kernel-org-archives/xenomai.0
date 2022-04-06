@@ -1,14 +1,15 @@
-Message-ID: <ed782d4c-544d-8d10-d53f-4c95f017ce3d@siemens.com>
-Date: Thu, 7 Apr 2022 21:33:33 +0200
-MIME-Version: 1.0
-Subject: Re: 5.10-dovetail regression?
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: Reminder: Xenomai community call on Wednesday, Apr 06, 2022, UTC
+ 7:00 AM
+Date: Wed, 6 Apr 2022 07:01:18 +0000
+Message-ID: <MN2PR11MB4285F77380538C59206308CFF2E79@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <MN2PR11MB42855F1F0491B933BA40C254F2E79@MN2PR11MB4285.namprd11.prod.outlook.com>
+ <f93c36d8b9a80b6b2d2f24b7d0017944c55db725.camel@siemens.com>
+In-Reply-To: <f93c36d8b9a80b6b2d2f24b7d0017944c55db725.camel@siemens.com>
 Content-Language: en-US
-References: <48e0fc4f-0020-907c-136e-53f01e596fda@siemens.com>
- <874k34gbk8.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <874k34gbk8.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,48 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07.04.22 17:24, Philippe Gerum wrote:
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
->> Hi Philippe,
->>
->> does this already ring some bell?
->>
->> https://source.denx.de/Xenomai/xenomai-images/-/jobs/419210
->>
->> Only triggers with qemu-amd64, not on real HW and not with 5.15.
->>
-> 
-> I could not reproduce locally, but visual inspection revealed something
-> fishy in #8e2c09ee5323. Could you try this on the failing kernel? TIA,
-> 
-> diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
-> index 2651c6cfd034..da6735d45a8a 100644
-> --- a/kernel/time/clockevents.c
-> +++ b/kernel/time/clockevents.c
-> @@ -644,8 +644,8 @@ void clockevents_exchange_device(struct clock_event_device *old,
->  		 * to the release list, keep it around but mark it as
->  		 * reserved.
->  		 */
-> +		list_del(&old->list);
->  		if (tick_check_is_proxy(new)) {
-> -			list_del(&old->list);
->  			clockevents_switch_state(old, CLOCK_EVT_STATE_RESERVED);
->  		} else {
->  			clockevents_switch_state(old, CLOCK_EVT_STATE_DETACHED);
-> 
-
-Didn't reproduce locally for me as well, though using the same image.
-But the patch helped on the CI system.
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+SGkgRmxvcmlhbiwNCg0KVGhhbmtzIGZvciB5b3VyIHJlbWluZGVyLiBJIHdpbGwgbW9kaWZ5IGl0
+IG5leHQgdGltZS4g8J+Yig0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0KLS0tLS1Pcmln
+aW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEJlemRla2EsIEZsb3JpYW4gPGZsb3JpYW4uYmV6ZGVr
+YUBzaWVtZW5zLmNvbT4gDQpTZW50OiBXZWRuZXNkYXksIEFwcmlsIDYsIDIwMjIgMjo0MiBQTQ0K
+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVu
+b21haS5vcmcNClN1YmplY3Q6IFJlOiBSZW1pbmRlcjogWGVub21haSBjb21tdW5pdHkgY2FsbCBv
+biBXZWRuZXNkYXksIEFwciAwNiwgMjAyMiwgVVRDIDc6MDAgQU0NCg0KT24gV2VkLCAyMDIyLTA0
+LTA2IGF0IDA0OjU0ICswMDAwLCBDaGVuLCBIb25nemhhbiB2aWEgWGVub21haSB3cm90ZToNCj4g
+V2UgaGF2ZSB0aGUgWGVub21haSBjb21tdW5pdHkgY2FsbCB0b2RheS4NCj4gDQo+IFRvcGljcyBt
+YXkgaW5jbHVkZSBidXQgYXJlIG5vdCBsaW1pdGVkIHRvIHVwc3RyZWFtL2Rvd25zdHJlYW0gcHJv
+amVjdCANCj4gcGxhbnMsIHN0YXR1cyB1cGRhdGVzLCBhbmQgdGVjaG5pY2FsIGRpc2N1c3Npb25z
+LiBJdCdzIGFuIG9wZW4gb25saW5lIA0KPiBtZWV0aW5nIHRoYXQgYW55b25lIGNhbiBqb2luIGFu
+ZCBhc2sgcXVlc3Rpb25zLg0KPiANCj4gVGltZToNCj4gV2VkbmVzZGF5LCBBcHIgMDYsIDIwMjIs
+IFVUQyA3OjAwIEFNDQo+IFBhcmlzLCBGcmFuY2UgQ0VTVCA4OjAwIEFNDQoNCkl0J3MgOTowMCBB
+TSBDRVNUIG5vdy4gQ2hhbmdlb3ZlciBmcm9tIHdpbnRlciB0byBzdW1tZXIgdGltZSBoYXBwZW5l
+ZA0KcmVjZW50bHkuDQoNCj4gQ2hpbmEgQ1NUIDM6MDAgUE0NCj4gDQo+IEpvaW4gWm9vbSBNZWV0
+aW5nIA0KPiBodHRwczovL2ludGVsLnpvb20udXMvai85MTI5NzI3OTI2OT9wd2Q9V21kd1MwcERP
+RFJOTVM5dFFrNTRZMWR2YkZscVVUMDkNCj4gT3INCj4gaHR0cHM6Ly9pbnRlbC56b29tLnVzL3dj
+L2pvaW4vOTEyOTcyNzkyNjk/d3BrPXdjcGs1MmE5Zjk2ZDk4OWU3ZTIwYjYyOGMyYzM2ZTQ4YjY4
+ZQ0KPiANCj4gTWVldGluZyBJRDogOTEyIDk3MjcgOTI2OQ0KPiBQYXNzY29kZTogMzY3NTI4DQo+
+IE9uZSB0YXAgbW9iaWxlDQo+ICsxMjUzMjE1ODc4MiwsOTEyOTcyNzkyNjkjIFVTIChUYWNvbWEp
+DQo+ICsxMzQ2MjQ4Nzc5OSwsOTEyOTcyNzkyNjkjIFVTIChIb3VzdG9uKQ0KPiANCj4gRGlhbCBi
+eSB5b3VyIGxvY2F0aW9uDQo+ICAgICAgICAgKzEgMjUzIDIxNSA4NzgyIFVTIChUYWNvbWEpDQo+
+ICAgICAgICAgKzEgMzQ2IDI0OCA3Nzk5IFVTIChIb3VzdG9uKQ0KPiAgICAgICAgICsxIDY2OSA5
+MDAgOTEyOCBVUyAoU2FuIEpvc2UpDQo+ICAgICAgICAgKzEgMzAxIDcxNSA4NTkyIFVTIChXYXNo
+aW5ndG9uIERDKQ0KPiAgICAgICAgICsxIDMxMiA2MjYgNjc5OSBVUyAoQ2hpY2FnbykNCj4gICAg
+ICAgICArMSA2NDYgNTU4IDg2NTYgVVMgKE5ldyBZb3JrKQ0KPiBNZWV0aW5nIElEOiA5MTIgOTcy
+NyA5MjY5DQo+IEZpbmQgeW91ciBsb2NhbCBudW1iZXI6IGh0dHBzOi8vaW50ZWwuem9vbS51cy91
+L2FURUEzN2k1Rw0KPiANCj4gSm9pbiBieSBTSVANCj4gbWFpbHRvOjkxMjk3Mjc5MjY5QHpvb21j
+cmMuY29tDQo+IA0KPiBKb2luIGJ5IEguMzIzDQo+IDE2Mi4yNTUuMzcuMTEgKFVTIFdlc3QpDQo+
+IDE2Mi4yNTUuMzYuMTEgKFVTIEVhc3QpDQo+IDExNS4xMTQuMTMxLjcgKEluZGlhIE11bWJhaSkN
+Cj4gMTE1LjExNC4xMTUuNyAoSW5kaWEgSHlkZXJhYmFkKQ0KPiAyMTMuMTkuMTQ0LjExMCAoQW1z
+dGVyZGFtIE5ldGhlcmxhbmRzKQ0KPiAyMTMuMjQ0LjE0MC4xMTAgKEdlcm1hbnkpDQo+IDEwMy4x
+MjIuMTY2LjU1IChBdXN0cmFsaWEgU3lkbmV5KQ0KPiAxMDMuMTIyLjE2Ny41NSAoQXVzdHJhbGlh
+IE1lbGJvdXJuZSkNCj4gMjA5LjkuMjExLjExMCAoSG9uZyBLb25nIFNBUikNCj4gMTQ5LjEzNy40
+MC4xMTAgKFNpbmdhcG9yZSkNCj4gNjQuMjExLjE0NC4xNjAgKEJyYXppbCkNCj4gMTQ5LjEzNy42
+OC4yNTMgKE1leGljbykNCj4gNjkuMTc0LjU3LjE2MCAoQ2FuYWRhIFRvcm9udG8pDQo+IDY1LjM5
+LjE1Mi4xNjAgKENhbmFkYSBWYW5jb3V2ZXIpDQo+IDIwNy4yMjYuMTMyLjExMCAoSmFwYW4gVG9r
+eW8pDQo+IDE0OS4xMzcuMjQuMTEwIChKYXBhbiBPc2FrYSkNCj4gTWVldGluZyBJRDogOTEyIDk3
+MjcgOTI2OQ0KPiBQYXNzY29kZTogMzY3NTI4DQo+IA0KPiANCj4gUmVnYXJkcw0KPiANCj4gSG9u
+Z3poYW4gQ2hlbg0KPiANCg0K
 
