@@ -1,14 +1,14 @@
-Date: Thu, 7 Apr 2022 19:42:23 +0200 (CEST)
-From: g.strobbe@telenet.be
-Message-ID: <1973145994.241676244.1649353343305.JavaMail.zimbra@telenet.be>
-In-Reply-To: <321714c2c878c89975aa86fa55efa27@cweb005.nm.nfra.io>
-References: <82e13dfd7e80e18e275ac95bf2edd6f2@cweb014.nm.nfra.io>
- <1106981256.238674792.1649272310869.JavaMail.zimbra@telenet.be>
- <321714c2c878c89975aa86fa55efa27@cweb005.nm.nfra.io>
-Subject: Re: rtnet i219 setup
+Message-ID: <ed782d4c-544d-8d10-d53f-4c95f017ce3d@siemens.com>
+Date: Thu, 7 Apr 2022 21:33:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: 5.10-dovetail regression?
+Content-Language: en-US
+References: <48e0fc4f-0020-907c-136e-53f01e596fda@siemens.com>
+ <874k34gbk8.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <874k34gbk8.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,86 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?67CV7J6s7ZiE?= <parkjahun42@naver.com>
-Cc: barlettamarco8 <barlettamarco8@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-SGksIAoKTXkgcGxlYXN1cmUuIAoKSSB1bmRlcnN0YW5kLiAKQnkgc3BsaXR0aW5nIHVwIGluIG11
-bHRpcGxlIHBhdGNoZXMsIEkgZm9yZ290IHRvIGluY2x1ZGUgdGhlIHByb3BlciBNYWtlZmlsZS4g
-ClNvcnJ5IGFib3V0IHRoYXQuIAoKUGxlYXNlIGZpbmQgaXQgYXR0YWNoZWQuIApBZnRlciBwYXRj
-aGluZywganVzdCBjb3B5IGl0IGluIHRoZSBwcm9wZXIgZGlyZWN0b3J5OiBkcml2ZXJzL3hlbm9t
-YWkvbmV0L2RyaXZlcnMvZTEwMDBlLyAKCllvdSB3aWxsIHNlZSwgZXRodG9vbCBpcyBub3QgY29t
-cGlsZWQgYXMgSSBuZXZlciBsb29rZWQgYXQgaXQgc28gZmFyLiAKSSBoYXZlIG5vIHVzZSBmb3Ig
-aXQuIAoKQmVzdCBSZWdhcmRzLCAKR2lubyAKCi0tLS0tIE9uIEFwciA3LCAyMDIyLCBhdCAxOjE0
-IFBNLCDrsJXsnqztmIQgPHBhcmtqYWh1bjQyQG5hdmVyLmNvbT4gd3JvdGU6IAoKCgoKClRoYW5r
-cyBmb3IgcmVzcG9uc2luZyAhIAoKSSBjb21waWxlZCB3aXRoIHY1LjE1LnktZG92ZXRhaWwgYnJh
-bmNoICYgWGVub21haSAzIG1hc3RlciBicmFuY2ggYXQga2VybmVsIDUuMTUsIGJ1dCBJIGdvdCBz
-b21lIGNvbXBpbGUgZXJyb3JzOiAKCkZpcnN0bHksIApJbiBmaWxlIGluY2x1ZGVkIGZyb20gZHJp
-dmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS84MjU3MS5jOjIwOgpkcml2ZXJzL3hlbm9t
-YWkvbmV0L2RyaXZlcnMvZTEwMDBlL2UxMDAwLmg6MjQ6MTA6IGZhdGFsIGVycm9yOiBydG5ldF9w
-b3J0Lmg6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkKICAgMjQgfCAjaW5jbHVkZSA8cnRuZXRf
-cG9ydC5oPgogICAgICB8ICAgICAgICAgIF5+fn5+fn5+fn5+fn5+CmNvbXBpbGF0aW9uIHRlcm1p
-bmF0ZWQuIAoKZXJyb3Igb2NjdXJzLCBzbyBJIGFkZGVkIApjY2ZsYWdzLXkgKz0gLUkkKHNyY3Ry
-ZWUpL2RyaXZlcnMveGVub21haS9uZXQvc3RhY2svaW5jbHVkZSAKdG8gZHJpdmVycy94ZW5vbWFp
-L25ldC9kcml2ZXJzL2UxMDAwZS9NYWtlZmlsZSwgYW5kIGVycm9yIGRpc2FwcGVhcmVkLiAKSG93
-ZXZlciwgSSBjYW4ndCBmaXggY29tcGlsZSBlcnJvciB3aXRoIGV0aHRvb2wuYy4gRXJyb3IgbWVz
-c2FnZXMgc2hvd3MgbWUgbGlrZSAKZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9l
-dGh0b29sLmM6IEluIGZ1bmN0aW9uIOKAmGUxMDAwX2dldF9saW5rX2tzZXR0aW5nc+KAmToKZHJp
-dmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6MTU4OjE0OiBlcnJvcjog
-aW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24g4oCYcG1fcnVudGltZV9zdXNwZW5kZWTi
-gJkgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCiAgMTU4IHwgIH0gZWxz
-ZSBpZiAoIXBtX3J1bnRpbWVfc3VzcGVuZGVkKG5ldGRldi0+ZGV2LnBhcmVudCkpIHsKICAgICAg
-fCAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fn4KZHJpdmVycy94ZW5vbWFpL25ldC9k
-cml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6MTU4OjQxOiBlcnJvcjog4oCYc3RydWN0IHJ0bmV0X2Rl
-dmljZeKAmSBoYXMgbm8gbWVtYmVyIG5hbWVkIOKAmGRlduKAmQogIDE1OCB8ICB9IGVsc2UgaWYg
-KCFwbV9ydW50aW1lX3N1c3BlbmRlZChuZXRkZXYtPmRldi5wYXJlbnQpKSB7CiAgICAgIHwgICAg
-ICAgIApkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzoyNzA6Mjog
-ZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmHBtX3J1bnRpbWVfZ2V0
-X3N5bmPigJkgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCiAgMjcwIHwg
-IHBtX3J1bnRpbWVfZ2V0X3N5bmMobmV0ZGV2LT5kZXYucGFyZW50KTsKICAgICAgfCAgXn5+fn5+
-fn5+fn5+fn5+fn5+fgpkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wu
-YzogSW4gZnVuY3Rpb24g4oCYZTEwMDBfZ2V0X3JpbmdwYXJhbeKAmToKZHJpdmVycy94ZW5vbWFp
-L25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6NjY1OjI4OiBlcnJvcjog4oCYc3RydWN0IGUx
-MDAwX2FkYXB0ZXLigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhyeF9yaW5nX2NvdW504oCZCiAg
-NjY1IHwgIHJpbmctPnJ4X3BlbmRpbmcgPSBhZGFwdGVyLT5yeF9yaW5nX2NvdW50OwogICAgICB8
-CiAgICAgIGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjY2Njoy
-ODogZXJyb3I6IOKAmHN0cnVjdCBlMTAwMF9hZGFwdGVy4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg
-4oCYdHhfcmluZ19jb3VudOKAmQogIDY2NiB8ICByaW5nLT50eF9wZW5kaW5nID0gYWRhcHRlci0+
-dHhfcmluZ19jb3VudDsKICAgICAgfCAKZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAw
-ZS9ldGh0b29sLmM6MjM2NDoxODogbm90ZTogKG5lYXIgaW5pdGlhbGl6YXRpb24gZm9yIOKAmGUx
-MDAwX2V0aHRvb2xfb3BzLmdldF9kcnZpbmZv4oCZKSAKZHJpdmVycy94ZW5vbWFpL25ldC9kcml2
-ZXJzL2UxMDAwZS9ldGh0b29sLmM6MjM2NToxOTogZXJyb3I6IGluaXRpYWxpemF0aW9uIG9mIOKA
-mGludCAoKikoc3RydWN0IG5ldF9kZXZpY2UgKinigJkgZnJvbSBpbmNvbXBhdGlibGUgcG9pbnRl
-ciB0eXBlIOKAmGludCAoKikoc3RydWN0IHJ0bmV0X2RldmljZSAqKeKAmSBbLVdlcnJvcj1pbmNv
-bXBhdGlibGUtcG9pbnRlci10eXBlc10gCjIzNjUgfCAgLmdldF9yZWdzX2xlbiAgPSBlMTAwMF9n
-ZXRfcmVnc19sZW4sCiAgICAgIHwgICAgICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+
-IAp0aGUgd2hvbGUgZXJyb3IgbWVzc2FnZSB0eHQgZmlsZSBpcyBhdHRhY2hlZCB0byB0aGUgbWFp
-bChTYW1lIGVycm9yIG9jY3VycyBpbiB3aG9sZSBldGh0b29sLmMpLiBJdCBzZWVtcyBydG5ldGRl
-diBzdHJ1Y3Qgbm90IG1hdGNoIHRvIGV0aHRvb2wuYyBmdW5jdGlvbnMuLi4gCkhvdyBjYW4gSSBm
-aXggaXQ/IApUaGFua3MgCgoKLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0gCkZyb206IDxnLnN0
-cm9iYmVAdGVsZW5ldC5iZT4gClRvOiAi67CV7J6s7ZiEIjxwYXJramFodW40MkBuYXZlci5jb20+
-OyA8YmFybGV0dGFtYXJjbzhAZ21haWwuY29tPjsgCkNjOiA8eGVub21haUB4ZW5vbWFpLm9yZz47
-IApTZW50OiAyMDIyLTA0LTA3ICjrqqkpIDA0OjExOjUwIChHTVQrMDk6MDApIApTdWJqZWN0OiBS
-ZTogcnRuZXQgaTIxOSBzZXR1cCAKCgotLS0tLSBPbiBBcHIgMiwgMjAyMiwgYXQgOToyNiBBTSwg
-67CV7J6s7ZiEIHZpYSBYZW5vbWFpIHhlbm9tYWlAeGVub21haS5vcmcgd3JvdGU6IAoKPiBIaSBl
-dmVyeW9uZS4gCj4gSSB3YXMgdHJ5aW5nIHRvIHNldHVwIFhlbm9tYWkgMy4yIHdpdGggcnRuZXQs
-IGJ1dCBJIHdhcyBzdHVjayBvbiBpMjE5IGRyaXZlci4gCj4gSSBoYXZlIHNhbWUgcHJvYmxlbSBh
-cyAKPiBbIGh0dHBzOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAyMC1GZWJydWFy
-eS8wNDI0MjIuaHRtbC4gfCBodHRwczovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIw
-MjAtRmVicnVhcnkvMDQyNDIyLmh0bWwuIF0gCj4gSSBmb3VuZCBpMjE5IHBhdGNoLCBidXQgaXQg
-aXMgZm9yIGtlcm5lbCA0LnguIEluIGtlcm5lbCA1LnggSSBoYXZlIGFuIGVycm9yIHNhbWUgCj4g
-YXMgaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIxLVNlcHRlbWJlci8w
-NDY1MTAuaHRtbC4gCj4gSXMgdGhlcmUgcmVjZW50IHBhdGNoIGZvciBpMjE5PyBNeSBzeXN0ZW0g
-aXMgWGVub21haSAzLjIsIExpbnV4IDUuMTEgCj4gVGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgdGhl
-IGVmZm9ydC4gCgpIaSwgCgpJIHBvcnRlZCB0aGUgZTEwMDBlIGRyaXZlciBzdGFydGluZyBmcm9t
-IHRoZSB2NS4xNS55LWRvdmV0YWlsIGJyYW5jaC4gCkl0IGZ1bmN0aW9ucyBvbiBteSBzZXR1cCwg
-YW4gSW50ZWwgTlVDIGkzIHdpdGggYW4gSW50ZWwgSTIxOS1WIEV0aGVybmV0IApjb250cm9sbGVy
-IHdpcmVkIHRvIGEgQmVja2hvZmYgSU8gaXNsYW5kLiAKSSB0ZXN0ZWQgaXQgb24gdGhlIFhlbm9t
-YWkgMyBtYXN0ZXIgYW5kIG5leHQgYnJhbmNoZXMuIAoKVGhlIHBhdGNoZXMgYXJlIG5vdCBjbGVh
-bmVkIG91dCB5ZXQuIEknbSBzcGxpdHRpbmcgdGhlbSB1cCBpbiBhbiBlZmZvcnQgdG8gbWFrZSBp
-dCAKZWFzaWVyIGZvciBzb21lb25lIHRvIGhhdmUgYSBsb29rIGF0LiAKCkkgYXR0YWNoIHRoZW0g
-YXMgdGhleSBhcmUgc28geW91IGNhbiBhbHJlYWR5IGdpdmUgdGhlbSBhIHRyeSBpZiB5b3UgbGlr
-ZS4gCgpCZXN0IFJlZ2FyZHMsIApHaW5vIAoKCgoKCgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
-dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
-bWU6IE1ha2VmaWxlClR5cGU6IHRleHQveC1tYWtlZmlsZQpTaXplOiAyNzcgYnl0ZXMKRGVzYzog
-bm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkv
-YXR0YWNobWVudHMvMjAyMjA0MDcvZjNmN2U1MDQvYXR0YWNobWVudC5iaW4+Cg==
+On 07.04.22 17:24, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> Hi Philippe,
+>>
+>> does this already ring some bell?
+>>
+>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/419210
+>>
+>> Only triggers with qemu-amd64, not on real HW and not with 5.15.
+>>
+> 
+> I could not reproduce locally, but visual inspection revealed something
+> fishy in #8e2c09ee5323. Could you try this on the failing kernel? TIA,
+> 
+> diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+> index 2651c6cfd034..da6735d45a8a 100644
+> --- a/kernel/time/clockevents.c
+> +++ b/kernel/time/clockevents.c
+> @@ -644,8 +644,8 @@ void clockevents_exchange_device(struct clock_event_device *old,
+>  		 * to the release list, keep it around but mark it as
+>  		 * reserved.
+>  		 */
+> +		list_del(&old->list);
+>  		if (tick_check_is_proxy(new)) {
+> -			list_del(&old->list);
+>  			clockevents_switch_state(old, CLOCK_EVT_STATE_RESERVED);
+>  		} else {
+>  			clockevents_switch_state(old, CLOCK_EVT_STATE_DETACHED);
+> 
+
+Didn't reproduce locally for me as well, though using the same image.
+But the patch helped on the CI system.
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
