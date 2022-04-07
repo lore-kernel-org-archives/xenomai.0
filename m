@@ -1,10 +1,11 @@
 References: <20220406155648.1592472-1-rpm@xenomai.org>
- <53b70915-2040-d2aa-3077-698fa8be01af@siemens.com>
+ <20220406155648.1592472-2-rpm@xenomai.org>
+ <b806bd3e-594b-e4cf-2cc6-34f3c938b5f3@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 1/5] cobalt/events: add auto-clear feature
-Date: Thu, 07 Apr 2022 13:16:38 +0200
-In-reply-to: <53b70915-2040-d2aa-3077-698fa8be01af@siemens.com>
-Message-ID: <87pmltf82m.fsf@xenomai.org>
+Subject: Re: [PATCH 2/5] cobalt/events: add single-waiter delivery mode
+Date: Thu, 07 Apr 2022 13:26:56 +0200
+In-reply-to: <b806bd3e-594b-e4cf-2cc6-34f3c938b5f3@siemens.com>
+Message-ID: <87lewhf7k6.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,33 +25,36 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 > On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
 >> From: Philippe Gerum <rpm@xenomai.org>
 >> 
->> The current implementation does not atomically consume+clear the event
->> set to be received by the waiter(s), which makes it useless for
->> anything but a plain one-time latch due to the race window this opens
->> with a consume[A]->signal[B]->clear[A] sequence.
+>> Allow for sending a set of event bits to the heading waiter only,
+>> instead of broadcasting them to all waiters.
 >> 
->> To address this issue, let's provide the auto-clear feature with
->> __cobalt_event_wait().
+>> This change affects the ABI, since we add a set of operation flags to
+>> the cobalt_event_sync service, to pass the new COBALT_EVENT_BCAST
+>> flag. It also affects the internal API as follows:
 >> 
->> This change affects the ABI by adding the auto-clear mode as an opt-in
->> feature, enabled by passing COBALT_EVENT_AUTOCLEAR to
->> cobalt_event_init().
+>> - the new cobalt_event_broadcast() call behaves like
+>>   cobalt_event_post() formerly did, which is broadcasting the event to
+>>   all waiters atomically.
 >> 
+>> - the new cobalt_event_signal() call implements the single-waiter
+>>   delivery mode we introduce.
+>> 
+>> - the former cobalt_event_post() is now a wrapper to
+>>   cobalt_event_broadcast(), marked with a deprecation flag.
 >
-> Makes sense, but shouldn't autoclear be rather the default then? Which
-> users are affected? None in-tree so far?
+> Strictly spoken, deprecation will come with patch 4 only.
+>
+> Can we have some test cases for the new features as well? Who will use them?
 >
 
-There is one user in copperplate:
-https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/copperplate/eventobj.c#L87
+Patch #1 comes with a new test for the autoclear thingy, I'll add a test
+case for the single wakeup as well.
 
-which indirectly affects rt_event_signal() from the alchemy API:
-https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/alchemy/event.c#L453
-
-Nobody raised the issue so far with alchemy, which is why I refrained
-from turning the autoclear mode on by default so far. This is debatable,
-since no documentation explains the limitation on usage caused by not
-having the autoclear mode set.
+Alchemy will use them. This interface is useful to anyone who needs the
+complete event flag group semantics without incurring the (significant)
+extra cost of a mutex+condvar combo. Typically, although the broadcast
+mode is a no-brainer, implementing the single-wakeup pattern is not
+trivial with the latter.
 
 -- 
 Philippe.
