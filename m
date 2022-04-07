@@ -1,11 +1,14 @@
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] Remove __work from PIPELINE_INBAND_WORK_INITIALIZER
+Date: Thu, 7 Apr 2022 08:03:12 +0000
+Message-ID: <6fabb15e3e078aae8bc23d1b4970f484e03e9943.camel@siemens.com>
+References: <20220406210614.17715-1-richard@nod.at>
+In-Reply-To: <20220406210614.17715-1-richard@nod.at>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <06972A03661B8047B66271BCF04E4699@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220413120509.5637-1-richard@nod.at>
-In-Reply-To: <20220413120509.5637-1-richard@nod.at>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 5 May 2022 22:06:32 +0200
-Message-ID: <CAFLxGvwT2cgn8vRF4HzFuJd1BvjHMueMPc4Cq3+LxNoZ3QDd7A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] debian: Remove --enable-smp
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +17,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
 
-ping? :-)
-
-On Wed, Apr 13, 2022 at 2:05 PM Richard Weinberger via Xenomai
-<xenomai@xenomai.org> wrote:
->
-> SMP is now enabled by default for all architectures.
-> No need to use --enable-smp anymore.
->
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  debian/rules | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/debian/rules b/debian/rules
-> index 3fe6bece93c9..60094734630d 100755
-> --- a/debian/rules
-> +++ b/debian/rules
-> @@ -17,7 +17,6 @@ CONFIG_OPTS = --prefix=/usr \
->              --includedir=/usr/include/xenomai \
->              --mandir=/usr/share/man \
->              --with-testdir=/usr/lib/xenomai/testsuite \
-> -            --enable-smp \
->              --enable-lazy-setsched \
->              --enable-debug=symbols \
->              --enable-dlopen-libs
-> --
-> 2.26.2
->
->
-
-
--- 
-Thanks,
-//richard
+SGkgUmljaGFyZCwNCg0KT24gV2VkLCAyMDIyLTA0LTA2IGF0IDIzOjA2ICswMjAwLCBSaWNoYXJk
+IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiBpcGlwZSB0b29rIGEgY29weSBvZiB0
+aGUgcXVldWVkIHdvcmssIF9fd29yayB3YXMgdXNlZCB0byBkZXRlcm1pbmUgaG93IG11Y2gNCj4g
+Ynl0ZXMgaGFkIHRvIGdldCBjb3BpZWQuDQo+IFdpdGggZG92ZXRhaWwgbm8gY29weSBhcyB0YWtl
+biBhbmQgdGhlIF9fd29yayBwYXJhbWV0ZXIgaXMgbm8gbG9uZ2VyDQogICAgICAgICAgICAgICAg
+ICAgICAgICBeXiBpcw0KPiB1c2VmdWwsIHNvIHdlIGNhbiBnZXQgcmlkIG9mIGl0Lg0KDQpUaGUg
+cmVzdCBMR1RNLiBDb21taXQgbWVzc2FnZSBjb3VsZCBiZSBmaXhlZCB1cCBvbiBtZXJnZSBhcyBs
+b25nIGFzIEphbg0KZG9lcyBub3QgaW5zaXN0IG9uIHNlbmRpbmcgb3V0IGEgdjIuIA0KDQpSZWdh
+cmRzLA0KRmxvcmlhbg0KDQo=
 
