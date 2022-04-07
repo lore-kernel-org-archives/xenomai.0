@@ -1,15 +1,13 @@
-Message-ID: <38bbcf6b-ca46-0f3d-ee17-88dd2880a821@siemens.com>
-Date: Thu, 7 Apr 2022 11:51:06 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH 5/5] drivers: ipc: enable non-blocking write from regular
- threads
-Content-Language: en-US
-References: <20220406155648.1592472-1-rpm@xenomai.org>
- <20220406155648.1592472-5-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220406155648.1592472-5-rpm@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Message-ID: <321714c2c878c89975aa86fa55efa27@cweb005.nm.nfra.io>
+Date: Thu, 07 Apr 2022 20:14:33 +0900
+From: =?utf-8?B?67CV7J6s7ZiE?= <parkjahun42@naver.com>
+In-Reply-To: <1106981256.238674792.1649272310869.JavaMail.zimbra@telenet.be>
+References: <82e13dfd7e80e18e275ac95bf2edd6f2@cweb014.nm.nfra.io>
+ <1106981256.238674792.1649272310869.JavaMail.zimbra@telenet.be>
+Subject: =?utf-8?B?UmU6IHJ0bmV0IGkyMTkgc2V0dXA=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,134 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: g.strobbe@telenet.be, barlettamarco8@gmail.com
+Cc: xenomai@xenomai.org
 
-On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Regular threads should be allowed to write to RTIPC sockets provided
-> MSG_DONTWAIT is implicitly set for such a request. This would match
-> the existing behavior with other synchronization objects, such as
-> semaphores and events, avoiding unnecessary restrictions on usage.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/drivers/ipc/bufp.c  | 8 ++++++--
->  kernel/drivers/ipc/iddp.c  | 8 ++++++--
->  kernel/drivers/ipc/rtipc.c | 4 ++--
->  kernel/drivers/ipc/xddp.c  | 6 +++++-
->  4 files changed, 19 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
-> index fd533dba27..565409dd6f 100644
-> --- a/kernel/drivers/ipc/bufp.c
-> +++ b/kernel/drivers/ipc/bufp.c
-> @@ -655,11 +655,15 @@ static ssize_t bufp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct bufp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __bufp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __bufp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __bufp_bind_socket(struct rtipc_private *priv,
-> @@ -682,7 +686,7 @@ static int __bufp_bind_socket(struct rtipc_private *priv,
->  	    __test_and_set_bit(_BUFP_BINDING, &sk->status))
->  		ret = -EADDRINUSE;
->  	cobalt_atomic_leave(s);
-> -	
-> +
->  	if (ret)
->  		return ret;
->  
-> diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
-> index a553902326..05d0193394 100644
-> --- a/kernel/drivers/ipc/iddp.c
-> +++ b/kernel/drivers/ipc/iddp.c
-> @@ -255,7 +255,7 @@ static ssize_t __iddp_recvmsg(struct rtdm_fd *fd,
->  	}
->  
->  	/* We want to pick one buffer from the queue. */
-> -	
-> +
->  	for (;;) {
->  		ret = rtdm_sem_timeddown(&sk->insem, timeout, toseq);
->  		if (unlikely(ret)) {
-> @@ -522,11 +522,15 @@ static ssize_t iddp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct iddp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __iddp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __iddp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __iddp_bind_socket(struct rtdm_fd *fd,
-> diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
-> index 859bdab2f2..211b496ec5 100644
-> --- a/kernel/drivers/ipc/rtipc.c
-> +++ b/kernel/drivers/ipc/rtipc.c
-> @@ -428,7 +428,7 @@ static int rtipc_select(struct rtdm_fd *fd, struct xnselector *selector,
->  	struct xnselect *block;
->  	spl_t s;
->  	int ret;
-> -	
-> +
->  	if (type != XNSELECT_READ && type != XNSELECT_WRITE)
->  		return -EINVAL;
->  
-> @@ -480,7 +480,7 @@ static struct rtdm_driver rtipc_driver = {
->  		.read_rt	=	rtipc_read,
->  		.read_nrt	=	NULL,
->  		.write_rt	=	rtipc_write,
-> -		.write_nrt	=	NULL,
-> +		.write_nrt	=	rtipc_write, /* MSG_DONTWAIT. */
->  		.select		=	rtipc_select,
->  	},
->  };
-> diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
-> index ae5b720c0c..2ca0da5fd4 100644
-> --- a/kernel/drivers/ipc/xddp.c
-> +++ b/kernel/drivers/ipc/xddp.c
-> @@ -657,11 +657,15 @@ static ssize_t xddp_write(struct rtdm_fd *fd,
->  	struct rtipc_private *priv = rtdm_fd_to_private(fd);
->  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
->  	struct xddp_socket *sk = priv->state;
-> +	int flags = 0;
->  
->  	if (sk->peer.sipc_port < 0)
->  		return -EDESTADDRREQ;
->  
-> -	return __xddp_sendmsg(fd, &iov, 1, 0, &sk->peer);
-> +	if (is_secondary_domain())
-> +		flags = MSG_DONTWAIT;
-> +
-> +	return __xddp_sendmsg(fd, &iov, 1, flags, &sk->peer);
->  }
->  
->  static int __xddp_bind_socket(struct rtipc_private *priv,
-
-Does this patch have any dependency on 1-4, or was it just bundled with
-them by chance?
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
-
+VGhhbmtzIGZvciByZXNwb25zaW5nICEKSSBjb21waWxlZCB3aXRoIHY1LjE1LnktZG92ZXRhaWwg
+YnJhbmNoICYgWGVub21haSAzIG1hc3RlciBicmFuY2ggYXQga2VybmVsIDUuMTUsIGJ1dCBJIGdv
+dCBzb21lIGNvbXBpbGUgZXJyb3JzOgogCkZpcnN0bHksIAogCkluIGZpbGUgaW5jbHVkZWQgZnJv
+bSBkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlLzgyNTcxLmM6MjA6IGRyaXZlcnMv
+eGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZTEwMDAuaDoyNDoxMDogZmF0YWwgZXJyb3I6IHJ0
+bmV0X3BvcnQuaDogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeSAyNCB8ICNpbmNsdWRlIDxydG5l
+dF9wb3J0Lmg+IHwgXn5+fn5+fn5+fn5+fn4gY29tcGlsYXRpb24gdGVybWluYXRlZC4KZXJyb3Ig
+b2NjdXJzLCBzbyBJIGFkZGVkY2NmbGFncy15ICs9IC1JJChzcmN0cmVlKS9kcml2ZXJzL3hlbm9t
+YWkvbmV0L3N0YWNrL2luY2x1ZGV0byBkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBl
+L01ha2VmaWxlLCBhbmQgZXJyb3IgZGlzYXBwZWFyZWQuSG93ZXZlciwgSSBjYW4ndCBmaXggY29t
+cGlsZSBlcnJvciB3aXRoIGV0aHRvb2wuYy4gRXJyb3IgbWVzc2FnZXMgc2hvd3MgbWUgbGlrZWRy
+aXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOiBJbiBmdW5jdGlvbiDi
+gJhlMTAwMF9nZXRfbGlua19rc2V0dGluZ3PigJk6IGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVy
+cy9lMTAwMGUvZXRodG9vbC5jOjE1ODoxNDogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9m
+IGZ1bmN0aW9uIOKAmHBtX3J1bnRpbWVfc3VzcGVuZGVk4oCZIFstV2Vycm9yPWltcGxpY2l0LWZ1
+bmN0aW9uLWRlY2xhcmF0aW9uXSAxNTggfCB9IGVsc2UgaWYgKCFwbV9ydW50aW1lX3N1c3BlbmRl
+ZChuZXRkZXYtPmRldi5wYXJlbnQpKSB7IHwgXn5+fn5+fn5+fn5+fn5+fn5+fn4gZHJpdmVycy94
+ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6MTU4OjQxOiBlcnJvcjog4oCYc3Ry
+dWN0IHJ0bmV0X2RldmljZeKAmSBoYXMgbm8gbWVtYmVyIG5hbWVkIOKAmGRlduKAmSAxNTggfCB9
+IGVsc2UgaWYgKCFwbV9ydW50aW1lX3N1c3BlbmRlZChuZXRkZXYtPmRldi5wYXJlbnQpKSB7IHwg
+ZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6MjcwOjI6IGVycm9y
+OiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhwbV9ydW50aW1lX2dldF9zeW5j
+4oCZIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXSAyNzAgfCBwbV9ydW50
+aW1lX2dldF9zeW5jKG5ldGRldi0+ZGV2LnBhcmVudCk7IHwgXn5+fn5+fn5+fn5+fn5+fn5+fiBk
+cml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzogSW4gZnVuY3Rpb24g
+4oCYZTEwMDBfZ2V0X3JpbmdwYXJhbeKAmTogZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2Ux
+MDAwZS9ldGh0b29sLmM6NjY1OjI4OiBlcnJvcjog4oCYc3RydWN0IGUxMDAwX2FkYXB0ZXLigJkg
+aGFzIG5vIG1lbWJlciBuYW1lZCDigJhyeF9yaW5nX2NvdW504oCZIDY2NSB8IHJpbmctPnJ4X3Bl
+bmRpbmcgPSBhZGFwdGVyLT5yeF9yaW5nX2NvdW50OyB8IGRyaXZlcnMveGVub21haS9uZXQvZHJp
+dmVycy9lMTAwMGUvZXRodG9vbC5jOjY2NjoyODogZXJyb3I6IOKAmHN0cnVjdCBlMTAwMF9hZGFw
+dGVy4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYdHhfcmluZ19jb3VudOKAmSA2NjYgfCByaW5n
+LT50eF9wZW5kaW5nID0gYWRhcHRlci0+dHhfcmluZ19jb3VudDsgfGRyaXZlcnMveGVub21haS9u
+ZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjIzNjQ6MTg6IG5vdGU6IChuZWFyIGluaXRpYWxp
+emF0aW9uIGZvciDigJhlMTAwMF9ldGh0b29sX29wcy5nZXRfZHJ2aW5mb+KAmSlkcml2ZXJzL3hl
+bm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzoyMzY1OjE5OiBlcnJvcjogaW5pdGlh
+bGl6YXRpb24gb2Yg4oCYaW50ICgqKShzdHJ1Y3QgbmV0X2RldmljZSAqKeKAmSBmcm9tIGluY29t
+cGF0aWJsZSBwb2ludGVyIHR5cGUg4oCYaW50ICgqKShzdHJ1Y3QgcnRuZXRfZGV2aWNlICop4oCZ
+IFstV2Vycm9yPWluY29tcGF0aWJsZS1wb2ludGVyLXR5cGVzXSAyMzY1IHwgLmdldF9yZWdzX2xl
+biA9IGUxMDAwX2dldF9yZWdzX2xlbiwgfCBefn5+fn5+fn5+fn5+fn5+fn4KdGhlIHdob2xlIGVy
+cm9yIG1lc3NhZ2UgdHh0IGZpbGUgaXMgYXR0YWNoZWQgdG8gdGhlIG1haWwoU2FtZSBlcnJvciBv
+Y2N1cnMgaW4gd2hvbGUgZXRodG9vbC5jKS4gSXQgc2VlbXMgcnRuZXRkZXYgc3RydWN0IG5vdCBt
+YXRjaCB0byBldGh0b29sLmMgZnVuY3Rpb25zLi4uSG93IGNhbiBJIGZpeCBpdD9UaGFua3MKLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KRnJvbTogPGcuc3Ryb2JiZUB0ZWxlbmV0LmJlPgpUbzog
+IuuwleyerO2YhCI8cGFya2phaHVuNDJAbmF2ZXIuY29tPjsgPGJhcmxldHRhbWFyY284QGdtYWls
+LmNvbT47CkNjOiA8eGVub21haUB4ZW5vbWFpLm9yZz47ClNlbnQ6IDIwMjItMDQtMDcgKOuqqSkg
+MDQ6MTE6NTAgKEdNVCswOTowMCkKU3ViamVjdDogUmU6IHJ0bmV0IGkyMTkgc2V0dXAKIAoKCi0t
+LS0tIE9uIEFwciAyLCAyMDIyLCBhdCA5OjI2IEFNLCDrsJXsnqztmIQgdmlhIFhlbm9tYWkgeGVu
+b21haUB4ZW5vbWFpLm9yZyB3cm90ZToKCj4gSGkgZXZlcnlvbmUuCj4gSSB3YXMgdHJ5aW5nIHRv
+IHNldHVwIFhlbm9tYWkgMy4yIHdpdGggcnRuZXQsIGJ1dCBJIHdhcyBzdHVjayBvbiBpMjE5IGRy
+aXZlci4KPiBJIGhhdmUgc2FtZSBwcm9ibGVtIGFzCj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS8yMDIwLUZlYnJ1YXJ5LzA0MjQyMi5odG1sLgo+IEkgZm91bmQgaTIxOSBw
+YXRjaCwgYnV0IGl0IGlzIGZvciBrZXJuZWwgNC54LiBJbiBrZXJuZWwgNS54IEkgaGF2ZSBhbiBl
+cnJvciBzYW1lCj4gYXMgaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIx
+LVNlcHRlbWJlci8wNDY1MTAuaHRtbC4KPiBJcyB0aGVyZSByZWNlbnQgcGF0Y2ggZm9yIGkyMTk/
+IE15IHN5c3RlbSBpcyBYZW5vbWFpIDMuMiwgTGludXggNS4xMQo+IFRoYW5rIHlvdSB2ZXJ5IG11
+Y2ggZm9yIHRoZSBlZmZvcnQuCgpIaSwKCkkgcG9ydGVkIHRoZSBlMTAwMGUgZHJpdmVyIHN0YXJ0
+aW5nIGZyb20gdGhlIHY1LjE1LnktZG92ZXRhaWwgYnJhbmNoLgpJdCBmdW5jdGlvbnMgb24gbXkg
+c2V0dXAsIGFuIEludGVsIE5VQyBpMyB3aXRoIGFuIEludGVsIEkyMTktViBFdGhlcm5ldApjb250
+cm9sbGVyIHdpcmVkIHRvIGEgQmVja2hvZmYgSU8gaXNsYW5kLgpJIHRlc3RlZCBpdCBvbiB0aGUg
+WGVub21haSAzIG1hc3RlciBhbmQgbmV4dCBicmFuY2hlcy4KClRoZSBwYXRjaGVzIGFyZSBub3Qg
+Y2xlYW5lZCBvdXQgeWV0LiAgSSdtIHNwbGl0dGluZyB0aGVtIHVwIGluIGFuIGVmZm9ydCB0byBt
+YWtlIGl0CmVhc2llciBmb3Igc29tZW9uZSB0byBoYXZlIGEgbG9vayBhdC4KCkkgYXR0YWNoIHRo
+ZW0gYXMgdGhleSBhcmUgc28geW91IGNhbiBhbHJlYWR5IGdpdmUgdGhlbSBhIHRyeSBpZiB5b3Ug
+bGlrZS4KCkJlc3QgUmVnYXJkcywKR2lubwoKCgoKCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQg
+d2FzIHNjcnViYmVkLi4uCk5hbWU6IGVycm9yX3Jhdy50eHQKVVJMOiA8aHR0cDovL3hlbm9tYWku
+b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNDA3LzUyMDAyYTEwL2F0dGFj
+aG1lbnQudHh0Pgo=
