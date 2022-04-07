@@ -1,13 +1,11 @@
-Message-ID: <63e4b7c7-bc03-6ca1-f4e1-ac8b77d8826b@siemens.com>
-Date: Thu, 5 May 2022 15:03:28 +0200
-MIME-Version: 1.0
-Subject: Re: [PATCH] utils/net/rtnet.in: fixes after shellcheck inspection
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: Xenomai Community Call Minutes - Apr 06, 2022
+Date: Thu, 7 Apr 2022 01:15:39 +0000
+Message-ID: <MN2PR11MB4285762DB50FFF2AC934F6A6F2E69@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Language: en-US
-References: <4e8c2890-bab4-ea31-4db3-0866b389db3e@tin.it>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <4e8c2890-bab4-ea31-4db3-0866b389db3e@tin.it>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Mauro S." <mau.salvi@tin.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.05.22 10:22, Mauro S. via Xenomai wrote:
-> Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
-> ---
->  utils/net/rtnet.in | 76 +++++++++++++++++++++++-----------------------
->  1 file changed, 38 insertions(+), 38 deletions(-)
-> 
-> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
-> index f81a7bb0a..06e796cd2 100644
-> --- a/utils/net/rtnet.in
-> +++ b/utils/net/rtnet.in
-> @@ -9,7 +9,7 @@ RTNETCFG="@sysconfdir@/rtnet.conf"
-> 
->  debug_func() {
->      echo "$*"
-> -    eval $*
-> +    eval "$*"
+Attendees:
 
-That may not work for all inputs as it breaks up formerly quoted
-arguments and separates them by $IFS. You rather want "$@" to preserve
-their structure.
+Jan Kiszka, Rick Wang, Richard Weinberger, Jianbo Cao, Qiang Zhang, Hongzha=
+n Chen
 
-Jan
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+
+*Community update:
+
+       Xenomai Meetup CFP discussion - Jan will announce CFP soon.
+
+       Comprehensive discussion on issues raised by Richard Weinberger rece=
+ntly
+
+  *   I/O test broken on dovetail
+  *   Mutex issue
+
+Regards
+Hongzhan Chen
 
