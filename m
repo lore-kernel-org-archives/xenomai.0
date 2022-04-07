@@ -1,15 +1,12 @@
+References: <20220406155648.1592472-1-rpm@xenomai.org>
+ <53b70915-2040-d2aa-3077-698fa8be01af@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 1/5] cobalt/events: add auto-clear feature
+Date: Thu, 07 Apr 2022 13:16:38 +0200
+In-reply-to: <53b70915-2040-d2aa-3077-698fa8be01af@siemens.com>
+Message-ID: <87pmltf82m.fsf@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <4a94597d8eec7b3d246780eaf942c381@cweb018.nm.nfra.io>
-Date: Thu, 07 Apr 2022 20:23:49 +0900
-From: =?utf-8?B?67CV7J6s7ZiE?= <parkjahun42@naver.com>
-In-Reply-To: <8ee386688ba71b7f4718a2341be90@cweb007.nm.nfra.io>
-References: <82e13dfd7e80e18e275ac95bf2edd6f2@cweb014.nm.nfra.io>
- <1106981256.238674792.1649272310869.JavaMail.zimbra@telenet.be>
- <321714c2c878c89975aa86fa55efa27@cweb005.nm.nfra.io>
- <8ee386688ba71b7f4718a2341be90@cweb007.nm.nfra.io>
-Subject: =?utf-8?B?UmU6IHJ0bmV0IGkyMTkgc2V0dXA=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,69 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: g.strobbe@telenet.be, barlettamarco8@gmail.com
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-U29ycnkgZm9yIHRoZSBsaW5lcyA6KCAsIEkgcmVzZW5kaW5nIG1haWwgYWZ0ZXIgd2FycGVlZCBs
-aW5lcywsLi4KClRoYW5rcyBmb3IgcmVzcG9uc2luZyAhCgpJIGNvbXBpbGVkIHdpdGggdjUuMTUu
-eS1kb3ZldGFpbCBicmFuY2ggJiBYZW5vbWFpIDMgbWFzdGVyIGJyYW5jaCBhdCBrZXJuZWwgNS4x
-NSwgYnV0IEkgZ290IHNvbWUgY29tcGlsZSBlcnJvcnM6CgpGaXJzdGx5LCAKCgpJbiBmaWxlIGlu
-Y2x1ZGVkIGZyb20gZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS84MjU3MS5jOjIw
-Ogpkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2UxMDAwLmg6MjQ6MTA6IGZhdGFs
-IGVycm9yOiBydG5ldF9wb3J0Lmg6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkKICAgMjQgICNp
-bmNsdWRlIDxydG5ldF9wb3J0Lmg+CiAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fgpjb21w
-aWxhdGlvbiB0ZXJtaW5hdGVkLgoKZXJyb3Igb2NjdXJzLCBzbyBJIGFkZGVkIGNjZmxhZ3MteSAr
-PSAtSSQoc3JjdHJlZSkvZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNsdWRldG8gZHJpdmVy
-cy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9NYWtlZmlsZSwKIGFuZCBlcnJvciBkaXNhcHBl
-YXJlZC4KCkhvd2V2ZXIsIEkgY2FuJ3QgZml4IGNvbXBpbGUgZXJyb3Igd2l0aCBldGh0b29sLmMu
-IEVycm9yIG1lc3NhZ2VzIHNob3dzIG1lIGxpa2UKCmRyaXZlcnMveGVub21haS9uZXQvZHJpdmVy
-cy9lMTAwMGUvZXRodG9vbC5jOiBJbiBmdW5jdGlvbiDigJhlMTAwMF9nZXRfbGlua19rc2V0dGlu
-Z3PigJk6CmRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjE1ODox
-NDogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmHBtX3J1bnRpbWVf
-c3VzcGVuZGVk4oCZIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQogIDE1
-OCAgIH0gZWxzZSBpZiAoIXBtX3J1bnRpbWVfc3VzcGVuZGVkKG5ldGRldi0+ZGV2LnBhcmVudCkp
-IHsKICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn5+fn5+fgpkcml2ZXJzL3hlbm9t
-YWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzoxNTg6NDE6IGVycm9yOiDigJhzdHJ1Y3Qg
-cnRuZXRfZGV2aWNl4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYZGV24oCZCiAgMTU4ICAgfSBl
-bHNlIGlmICghcG1fcnVudGltZV9zdXNwZW5kZWQobmV0ZGV2LT5kZXYucGFyZW50KSkgewogICAg
-ICAgICAgICAgIApkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzoy
-NzA6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmHBtX3J1bnRp
-bWVfZ2V0X3N5bmPigJkgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCiAg
-MjcwICAgcG1fcnVudGltZV9nZXRfc3luYyhuZXRkZXYtPmRldi5wYXJlbnQpOwogICAgICAgIF5+
-fn5+fn5+fn5+fn5+fn5+fn4KZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0
-b29sLmM6IEluIGZ1bmN0aW9uIOKAmGUxMDAwX2dldF9yaW5ncGFyYW3igJk6CmRyaXZlcnMveGVu
-b21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjY2NToyODogZXJyb3I6IOKAmHN0cnVj
-dCBlMTAwMF9hZGFwdGVy4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYcnhfcmluZ19jb3VudOKA
-mQogIDY2NSAgIHJpbmctPnJ4X3BlbmRpbmcgPSBhZGFwdGVyLT5yeF9yaW5nX2NvdW50OwogICAg
-ICAKICAgICAgZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzL2UxMDAwZS9ldGh0b29sLmM6NjY2
-OjI4OiBlcnJvcjog4oCYc3RydWN0IGUxMDAwX2FkYXB0ZXLigJkgaGFzIG5vIG1lbWJlciBuYW1l
-ZCDigJh0eF9yaW5nX2NvdW504oCZCiAgNjY2ICAgcmluZy0+dHhfcGVuZGluZyA9IGFkYXB0ZXIt
-PnR4X3JpbmdfY291bnQ7CiAgICAgIAoKdGhlIHdob2xlIGVycm9yIG1lc3NhZ2UgdHh0IGZpbGUg
-aXMgYXR0YWNoZWQgdG8gdGhlIG1haWwoU2FtZSBlcnJvciBvY2N1cnMgaW4gd2hvbGUgZXRodG9v
-bC5jKS4KCiBJdCBzZWVtcyBydG5ldGRldiBzdHJ1Y3Qgbm90IG1hdGNoIHRvIGV0aHRvb2wuYyBm
-dW5jdGlvbnMuLi4KSG93IGNhbiBJIGZpeCBpdD8KClRoYW5rcwoKLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0KRnJvbTogPGcuc3Ryb2JiZUB0ZWxlbmV0LmJlPiAKVG86ICLrsJXsnqztmIQiPHBh
-cmtqYWh1bjQyQG5hdmVyLmNvbT47IDxiYXJsZXR0YW1hcmNvOEBnbWFpbC5jb20+OyAKQ2M6IDx4
-ZW5vbWFpQHhlbm9tYWkub3JnPjsgClNlbnQ6IDIwMjItMDQtMDcgKOuqqSkgMDQ6MTE6NTAgKEdN
-VCswOTowMCkKU3ViamVjdDogUmU6IHJ0bmV0IGkyMTkgc2V0dXAKCgoKLS0tLS0gT24gQXByIDIs
-IDIwMjIsIGF0IDk6MjYgQU0sIOuwleyerO2YhCB2aWEgWGVub21haSB4ZW5vbWFpQHhlbm9tYWku
-b3JnIHdyb3RlOgoKPiBIaSBldmVyeW9uZS4KPiBJIHdhcyB0cnlpbmcgdG8gc2V0dXAgWGVub21h
-aSAzLjIgd2l0aCBydG5ldCwgYnV0IEkgd2FzIHN0dWNrIG9uIGkyMTkgZHJpdmVyLgo+IEkgaGF2
-ZSBzYW1lIHByb2JsZW0gYXMKPiBodHRwczovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-LzIwMjAtRmVicnVhcnkvMDQyNDIyLmh0bWwuCj4gSSBmb3VuZCBpMjE5IHBhdGNoLCBidXQgaXQg
-aXMgZm9yIGtlcm5lbCA0LnguIEluIGtlcm5lbCA1LnggSSBoYXZlIGFuIGVycm9yIHNhbWUKPiBh
-cyBodHRwczovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMjEtU2VwdGVtYmVyLzA0
-NjUxMC5odG1sLgo+IElzIHRoZXJlIHJlY2VudCBwYXRjaCBmb3IgaTIxOT8gTXkgc3lzdGVtIGlz
-IFhlbm9tYWkgMy4yLCBMaW51eCA1LjExCj4gVGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgdGhlIGVm
-Zm9ydC4KCkhpLAoKSSBwb3J0ZWQgdGhlIGUxMDAwZSBkcml2ZXIgc3RhcnRpbmcgZnJvbSB0aGUg
-djUuMTUueS1kb3ZldGFpbCBicmFuY2guCkl0IGZ1bmN0aW9ucyBvbiBteSBzZXR1cCwgYW4gSW50
-ZWwgTlVDIGkzIHdpdGggYW4gSW50ZWwgSTIxOS1WIEV0aGVybmV0CmNvbnRyb2xsZXIgd2lyZWQg
-dG8gYSBCZWNraG9mZiBJTyBpc2xhbmQuCkkgdGVzdGVkIGl0IG9uIHRoZSBYZW5vbWFpIDMgbWFz
-dGVyIGFuZCBuZXh0IGJyYW5jaGVzLgoKVGhlIHBhdGNoZXMgYXJlIG5vdCBjbGVhbmVkIG91dCB5
-ZXQuICBJJ20gc3BsaXR0aW5nIHRoZW0gdXAgaW4gYW4gZWZmb3J0IHRvIG1ha2UgaXQKZWFzaWVy
-IGZvciBzb21lb25lIHRvIGhhdmUgYSBsb29rIGF0LgoKSSBhdHRhY2ggdGhlbSBhcyB0aGV5IGFy
-ZSBzbyB5b3UgY2FuIGFscmVhZHkgZ2l2ZSB0aGVtIGEgdHJ5IGlmIHlvdSBsaWtlLgoKQmVzdCBS
-ZWdhcmRzLApHaW5vCgoKCgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
-LQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBlcnJvcl9yYXcudHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDIyMDQwNy85Mjc5OTJiNS9hdHRhY2htZW50LnR4dD4K
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> 
+>> The current implementation does not atomically consume+clear the event
+>> set to be received by the waiter(s), which makes it useless for
+>> anything but a plain one-time latch due to the race window this opens
+>> with a consume[A]->signal[B]->clear[A] sequence.
+>> 
+>> To address this issue, let's provide the auto-clear feature with
+>> __cobalt_event_wait().
+>> 
+>> This change affects the ABI by adding the auto-clear mode as an opt-in
+>> feature, enabled by passing COBALT_EVENT_AUTOCLEAR to
+>> cobalt_event_init().
+>> 
+>
+> Makes sense, but shouldn't autoclear be rather the default then? Which
+> users are affected? None in-tree so far?
+>
+
+There is one user in copperplate:
+https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/copperplate/eventobj.c#L87
+
+which indirectly affects rt_event_signal() from the alchemy API:
+https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/alchemy/event.c#L453
+
+Nobody raised the issue so far with alchemy, which is why I refrained
+from turning the autoclear mode on by default so far. This is debatable,
+since no documentation explains the limitation on usage caused by not
+having the autoclear mode set.
+
+-- 
+Philippe.
+
