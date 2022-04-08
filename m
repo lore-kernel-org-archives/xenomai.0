@@ -1,15 +1,14 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 3/6] testsuite: Add a simple test driver for alchemytests
-Date: Fri, 8 Apr 2022 09:11:16 +0000
-Message-ID: <7aa1e2f14db4438eeae8225d143c1836aee42879.camel@siemens.com>
+Date: Fri, 8 Apr 2022 11:19:51 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <405880743.228998.1649409591091.JavaMail.zimbra@nod.at>
+In-Reply-To: <7aa1e2f14db4438eeae8225d143c1836aee42879.camel@siemens.com>
 References: <20220408080401.22235-1-richard@nod.at>
  <20220408080401.22235-4-richard@nod.at>
-In-Reply-To: <20220408080401.22235-4-richard@nod.at>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DA2FB321A1C1F7499E4850D774495923@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <7aa1e2f14db4438eeae8225d143c1836aee42879.camel@siemens.com>
+Subject: Re: [PATCH 3/6] testsuite: Add a simple test driver for alchemytests
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,18 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-SGkgUmljaGFyZCwNCg0KT24gRnJpLCAyMDIyLTA0LTA4IGF0IDEwOjAzICswMjAwLCBSaWNoYXJk
-IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiArc3RhdGljIGludCBfX3J1bl9leHRw
-cm9nKHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3ZbXSkN
-Cj4gK3sNCj4gKwlpbnQgcmV0Ow0KPiArCWNoYXIgKnRzdF9wYXRoOw0KPiArDQo+ICsJcmV0ID0g
-YXNwcmludGYoJnRzdF9wYXRoLCAiJXMvJXMgLS1jcHUtYWZmaW5pdHk9MCIsIG15ZGlyLCB0LT5u
-YW1lKTsNCj4gKwlpZiAocmV0ID09IC0xKQ0KPiArCQlyZXR1cm4gLUVOT01FTTsNCg0KV2h5IGlz
-IHRoaXMgInNwZWNpYWwiIGNwdS1hZmZpbml0eSBuZWNlc3Nhcnk/IFdoYXQgd291bGQgaGFwcGVu
-IGlmIHdlDQpyZW1vdmUgdGhhdD8gQXNraW5nIGJlY2F1c2UgSSB3YW50IHRvIG1ha2Ugc3VyZSB0
-aGF0IHdlIGRvIG5vdCBtaXNzIGFueQ0KY29uY3VycmVuY3kgcHJvYmxlbXMgYnkgYWRkaW5nIHRo
-aXMgY29uc3RyYWludC4NCg0KRmxvcmlhbg0KDQo+ICsNCj4gKwlyZXQgPSBzeXN0ZW0odHN0X3Bh
-dGgpOw0KPiArCWZyZWUodHN0X3BhdGgpOw0KPiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4g
-Kw0KDQo=
+Florian,
+
+----- Urspr=C3=BCngliche Mail -----
+> Why is this "special" cpu-affinity necessary? What would happen if we
+> remove that? Asking because I want to make sure that we do not miss any
+> concurrency problems by adding this constraint.
+
+I don't know. I copied it as-is from the old Makefile.
+Without that flag most tests fail (at least on my x86 VM).
+
+So far I did only integration of the tests but no deciphering. :-)
+
+Thanks,
+//richard
 
