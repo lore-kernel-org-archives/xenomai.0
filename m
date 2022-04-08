@@ -1,7 +1,7 @@
 From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 3/6] testsuite: Add a simple test driver for alchemytests
-Date: Fri,  8 Apr 2022 10:03:58 +0200
-Message-Id: <20220408080401.22235-4-richard@nod.at>
+Subject: [PATCH 2/6] testsuite: Hook up alchemytests
+Date: Fri,  8 Apr 2022 10:03:57 +0200
+Message-Id: <20220408080401.22235-3-richard@nod.at>
 In-Reply-To: <20220408080401.22235-1-richard@nod.at>
 References: <20220408080401.22235-1-richard@nod.at>
 MIME-Version: 1.0
@@ -17,132 +17,204 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Richard Weinberger <richard@nod.at>
 
-In their current shape, every alchemy test has to be a single
-program and does not use the smokey test framework.
-
-alchemytest_driver uses smokey and runs each test as new process.
+Build them using Xenomai's build system.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- testsuite/alchemytests/Makefile.am          | 11 +++
- testsuite/alchemytests/alchemytest_driver.c | 84 +++++++++++++++++++++
- 2 files changed, 95 insertions(+)
- create mode 100644 testsuite/alchemytests/alchemytest_driver.c
+ configure.ac                       |   1 +
+ testsuite/Makefile.am              |   6 +-
+ testsuite/alchemytests/Makefile.am | 148 +++++++++++++++++++++++++++++
+ 3 files changed, 153 insertions(+), 2 deletions(-)
+ create mode 100644 testsuite/alchemytests/Makefile.am
 
+diff --git a/configure.ac b/configure.ac
+index 019453793..8fd86e5a1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1046,6 +1046,7 @@ AC_CONFIG_FILES([ \
+ 	testsuite/smokey/can/Makefile
+ 	testsuite/clocktest/Makefile \
+ 	testsuite/xeno-test/Makefile \
++	testsuite/alchemytests/Makefile \
+ 	utils/Makefile \
+ 	utils/hdb/Makefile \
+ 	utils/can/Makefile \
+diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
+index 4932f6d33..e027485fb 100644
+--- a/testsuite/Makefile.am
++++ b/testsuite/Makefile.am
+@@ -7,7 +7,8 @@ SUBDIRS +=3D 		\
+ 	gpiotest	\
+ 	spitest		\
+ 	switchtest	\
+-	xeno-test
++	xeno-test	\
++	alchemytests
+ endif
+=20
+ DIST_SUBDIRS =3D		\
+@@ -18,4 +19,5 @@ DIST_SUBDIRS =3D		\
+ 	smokey		\
+ 	spitest		\
+ 	switchtest	\
+-	xeno-test
++	xeno-test	\
++	alchemytests
 diff --git a/testsuite/alchemytests/Makefile.am b/testsuite/alchemytests/=
 Makefile.am
-index 35df0d49c..9159a0b77 100644
---- a/testsuite/alchemytests/Makefile.am
-+++ b/testsuite/alchemytests/Makefile.am
-@@ -146,3 +146,14 @@ task10_SOURCES =3D task-10.c
- task10_CPPFLAGS =3D $(alchemycppflags)
- task10_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
- task10_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
-+
-+alchemytest_driver_SOURCES =3D alchemytest_driver.c
-+alchemytest_driver_CPPFLAGS =3D			\
-+	$(XENO_USER_CFLAGS)			\
-+	-I$(top_srcdir)/include
-+alchemytest_driver_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
-+alchemytest_driver_LDADD =3D			\
-+	../../lib/smokey/libsmokey@CORE@.la	\
-+	@XENO_CORE_LDADD@		\
-+	@XENO_USER_LDADD@		\
-+	-lpthread -lrt
-diff --git a/testsuite/alchemytests/alchemytest_driver.c b/testsuite/alch=
-emytests/alchemytest_driver.c
 new file mode 100644
-index 000000000..45323507d
+index 000000000..35df0d49c
 --- /dev/null
-+++ b/testsuite/alchemytests/alchemytest_driver.c
-@@ -0,0 +1,84 @@
-+#include <error.h>
-+#include <libgen.h>
-+#include <smokey/smokey.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
++++ b/testsuite/alchemytests/Makefile.am
+@@ -0,0 +1,148 @@
++testdir =3D @XENO_TEST_DIR@
 +
-+static char *mydir;
++CCLD =3D $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
-+#define TEST(name)								   \
-+	smokey_test_plugin(name, SMOKEY_NOARGS, "Run external test");		   \
-+	static int run_##name(struct smokey_test *t, int argc, char *const argv=
-[]) \
-+	{									   \
-+		return __run_extprog(t, argc, argv);				   \
-+	}
++test_PROGRAMS =3D alchemytest_driver \
++		alarm1		   \
++		buffer1		   \
++		event1		   \
++		heap1		   \
++		heap2		   \
++		mq1		   \
++		mq2		   \
++		mq3		   \
++		mutex1		   \
++		pipe1		   \
++		sem1		   \
++		sem2		   \
++		task1		   \
++		task2		   \
++		task3		   \
++		task4		   \
++		task5		   \
++		task6		   \
++		task7		   \
++		task8		   \
++		task9		   \
++		task10
 +
-+static int __run_extprog(struct smokey_test *t, int argc, char *const ar=
-gv[])
-+{
-+	int ret;
-+	char *tst_path;
++alchemycppflags =3D 				\
++	$(XENO_USER_CFLAGS)		\
++	-I$(top_srcdir)/include
 +
-+	ret =3D asprintf(&tst_path, "%s/%s --cpu-affinity=3D0", mydir, t->name)=
-;
-+	if (ret =3D=3D -1)
-+		return -ENOMEM;
++alchemyldadd =3D 					\
++	../../lib/alchemy/libalchemy@CORE@.la		\
++	../../lib/copperplate/libcopperplate@CORE@.la	\
++	@XENO_CORE_LDADD@ 			\
++	@XENO_USER_LDADD@			\
++	-lpthread -lrt -lm
 +
-+	ret =3D system(tst_path);
-+	free(tst_path);
++alarm1_SOURCES =3D alarm-1.c
++alarm1_CPPFLAGS =3D $(alchemycppflags)
++alarm1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++alarm1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+	return ret;
-+}
++event1_SOURCES =3D event-1.c
++event1_CPPFLAGS =3D $(alchemycppflags)
++event1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++event1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+TEST(alarm1)
-+TEST(buffer1)
-+TEST(event1)
-+TEST(heap1)
-+TEST(heap2)
-+TEST(mq1)
-+TEST(mq2)
-+TEST(mq3)
-+TEST(mutex1)
-+TEST(pipe1)
-+TEST(sem1)
-+TEST(sem2)
-+TEST(task1)
-+TEST(task2)
-+TEST(task3)
-+TEST(task4)
-+TEST(task5)
-+TEST(task6)
-+TEST(task7)
-+TEST(task8)
-+TEST(task9)
-+TEST(task10)
++heap1_SOURCES =3D heap-1.c
++heap1_CPPFLAGS =3D $(alchemycppflags)
++heap1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++heap1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+int main(int argc, char *const argv[])
-+{
-+	struct smokey_test *t;
-+	int ret, fails =3D 0;
++heap2_SOURCES =3D heap-2.c
++heap2_CPPFLAGS =3D $(alchemycppflags)
++heap2_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++heap2_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+	if (argc > 0)
-+		mydir =3D dirname(argv[0]);
-+	else
-+		mydir =3D ".";
++buffer1_SOURCES =3D buffer-1.c
++buffer1_CPPFLAGS =3D $(alchemycppflags)
++buffer1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++buffer1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+	if (pvlist_empty(&smokey_test_list))
-+		return 0;
++mutex1_SOURCES =3D mutex-1.c
++mutex1_CPPFLAGS =3D $(alchemycppflags)
++mutex1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++mutex1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+	for_each_smokey_test(t) {
-+		ret =3D t->run(t, argc, argv);
-+		if (ret) {
-+			fails++;
-+			if (smokey_keep_going)
-+				continue;
-+			if (smokey_verbose_mode)
-+				error(1, -ret, "test %s failed", t->name);
-+			return 1;
-+		}
-+		smokey_note("%s OK", t->name);
-+	}
++pipe1_SOURCES =3D pipe-1.c
++pipe1_CPPFLAGS =3D $(alchemycppflags)
++pipe1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++pipe1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 +
-+	return fails !=3D 0;
-+}
++mq1_SOURCES =3D mq-1.c
++mq1_CPPFLAGS =3D $(alchemycppflags)
++mq1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++mq1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++mq2_SOURCES =3D mq-2.c
++mq2_CPPFLAGS =3D $(alchemycppflags)
++mq2_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++mq2_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++mq3_SOURCES =3D mq-3.c
++mq3_CPPFLAGS =3D $(alchemycppflags)
++mq3_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++mq3_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++sem1_SOURCES =3D sem-1.c
++sem1_CPPFLAGS =3D $(alchemycppflags)
++sem1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++sem1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++sem2_SOURCES =3D sem-2.c
++sem2_CPPFLAGS =3D $(alchemycppflags)
++sem2_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++sem2_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task1_SOURCES =3D task-1.c
++task1_CPPFLAGS =3D $(alchemycppflags)
++task1_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task2_SOURCES =3D task-2.c
++task2_CPPFLAGS =3D $(alchemycppflags)
++task2_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task2_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task3_SOURCES =3D task-3.c
++task3_CPPFLAGS =3D $(alchemycppflags)
++task3_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task3_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task4_SOURCES =3D task-4.c
++task4_CPPFLAGS =3D $(alchemycppflags)
++task4_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task4_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task5_SOURCES =3D task-5.c
++task5_CPPFLAGS =3D $(alchemycppflags)
++task5_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task5_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task6_SOURCES =3D task-6.c
++task6_CPPFLAGS =3D $(alchemycppflags)
++task6_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task6_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task7_SOURCES =3D task-7.c
++task7_CPPFLAGS =3D $(alchemycppflags)
++task7_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task7_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task8_SOURCES =3D task-8.c
++task8_CPPFLAGS =3D $(alchemycppflags)
++task8_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task8_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task9_SOURCES =3D task-9.c
++task9_CPPFLAGS =3D $(alchemycppflags)
++task9_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task9_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
++
++task10_SOURCES =3D task-10.c
++task10_CPPFLAGS =3D $(alchemycppflags)
++task10_LDADD =3D $(alchemyldadd) -lpthread -lrt -lm
++task10_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
 --=20
 2.34.1
 
