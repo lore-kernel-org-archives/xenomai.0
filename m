@@ -1,9 +1,15 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] configure.ac: Enable SMP by default
-Date: Fri,  8 Apr 2022 10:59:09 +0200
-Message-Id: <20220408085909.26395-1-richard@nod.at>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 3/6] testsuite: Add a simple test driver for alchemytests
+Date: Fri, 8 Apr 2022 09:11:16 +0000
+Message-ID: <7aa1e2f14db4438eeae8225d143c1836aee42879.camel@siemens.com>
+References: <20220408080401.22235-1-richard@nod.at>
+ <20220408080401.22235-4-richard@nod.at>
+In-Reply-To: <20220408080401.22235-4-richard@nod.at>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DA2FB321A1C1F7499E4850D774495923@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,38 +18,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Richard Weinberger <richard@nod.at>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
 
-In 2022 it is hard to find ARM or x86 systems without SMP.
-Other CPU architectures are no longer supported by Xenomai.
-So, make SMP support opt-out.
-
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- configure.ac | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/configure.ac b/configure.ac
-index 019453793..867fc4636 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -385,12 +385,9 @@ if test x$use_registry =3D xy; then
- fi
- AM_CONDITIONAL(XENO_REGISTRY,[test x$use_registry =3D xy])
-=20
--dnl SMP support (default: on for cobalt/x86, off otherwise)
-+dnl SMP support (default: on)
-=20
--CONFIG_SMP=3D
--if test $target_cpu_arch =3D x86 -a $rtcore_type =3D cobalt; then
--	CONFIG_SMP=3Dy
--fi
-+CONFIG_SMP=3Dy
- AC_MSG_CHECKING(for SMP support)
- AC_ARG_ENABLE(smp,
- 	AS_HELP_STRING([--enable-smp], [Enable SMP support]),
---=20
-2.34.1
-
+SGkgUmljaGFyZCwNCg0KT24gRnJpLCAyMDIyLTA0LTA4IGF0IDEwOjAzICswMjAwLCBSaWNoYXJk
+IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiArc3RhdGljIGludCBfX3J1bl9leHRw
+cm9nKHN0cnVjdCBzbW9rZXlfdGVzdCAqdCwgaW50IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3ZbXSkN
+Cj4gK3sNCj4gKwlpbnQgcmV0Ow0KPiArCWNoYXIgKnRzdF9wYXRoOw0KPiArDQo+ICsJcmV0ID0g
+YXNwcmludGYoJnRzdF9wYXRoLCAiJXMvJXMgLS1jcHUtYWZmaW5pdHk9MCIsIG15ZGlyLCB0LT5u
+YW1lKTsNCj4gKwlpZiAocmV0ID09IC0xKQ0KPiArCQlyZXR1cm4gLUVOT01FTTsNCg0KV2h5IGlz
+IHRoaXMgInNwZWNpYWwiIGNwdS1hZmZpbml0eSBuZWNlc3Nhcnk/IFdoYXQgd291bGQgaGFwcGVu
+IGlmIHdlDQpyZW1vdmUgdGhhdD8gQXNraW5nIGJlY2F1c2UgSSB3YW50IHRvIG1ha2Ugc3VyZSB0
+aGF0IHdlIGRvIG5vdCBtaXNzIGFueQ0KY29uY3VycmVuY3kgcHJvYmxlbXMgYnkgYWRkaW5nIHRo
+aXMgY29uc3RyYWludC4NCg0KRmxvcmlhbg0KDQo+ICsNCj4gKwlyZXQgPSBzeXN0ZW0odHN0X3Bh
+dGgpOw0KPiArCWZyZWUodHN0X3BhdGgpOw0KPiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4g
+Kw0KDQo=
 
