@@ -1,13 +1,14 @@
+Date: Fri, 8 Apr 2022 14:11:14 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <1445415573.229561.1649419874550.JavaMail.zimbra@nod.at>
+In-Reply-To: <87r167okbj.fsf@xenomai.org>
 References: <20220408080401.22235-1-richard@nod.at>
  <20220408080401.22235-4-richard@nod.at>
  <7aa1e2f14db4438eeae8225d143c1836aee42879.camel@siemens.com>
  <87v8vjonxz.fsf@xenomai.org>
  <271523130.229269.1649414962370.JavaMail.zimbra@nod.at>
-From: Philippe Gerum <rpm@xenomai.org>
+ <87r167okbj.fsf@xenomai.org>
 Subject: Re: [PATCH 3/6] testsuite: Add a simple test driver for alchemytests
-Date: Fri, 08 Apr 2022 14:01:17 +0200
-In-reply-to: <271523130.229269.1649414962370.JavaMail.zimbra@nod.at>
-Message-ID: <87r167okbj.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -19,38 +20,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai <xenomai@xenomai.org>
 
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Philippe Gerum" <rpm@xenomai.org>
+>> So the tests have assumptions about the scheduling order of threads?
+>> I always thought even with a single CPU such assumptions can break.
+>=20
+> Not if the scheduling core Xenomai provides does its job properly.
 
-Richard Weinberger <richard@nod.at> writes:
+I see.
 
-> Philippe,
->
-> ----- Urspr=C3=BCngliche Mail -----
->> Von: "Philippe Gerum" <rpm@xenomai.org>
->>> Why is this "special" cpu-affinity necessary? What would happen if we
->>> remove that? Asking because I want to make sure that we do not miss any
->>> concurrency problems by adding this constraint.
->>>
->>=20
->> The reason to pin the threads on the same CPU is to guarantee an ideal
->> execution sequence for some tests provided the scheduling policy and/or
->> the synchronization mechanisms do behave as intended. Concurrency on
->> multiple CPU would break the assumptions about that ideal sequence.
->>=20
->> For instance, you could not resort to any inter-thread synchronization
->> to prevent unwanted SMP concurrency when checking that a scheduling
->> policy is properly undergone, that would make the test irrelevant by
->> papering over local preemption issues if any.  So we pin all the threads
->> on the same CPU to exclude SMP, and only that.
->
-> So the tests have assumptions about the scheduling order of threads?
-> I always thought even with a single CPU such assumptions can break.
->
-
-Not if the scheduling core Xenomai provides does its job properly.
-
---=20
-Philippe.
+Thanks,
+//richard
 
