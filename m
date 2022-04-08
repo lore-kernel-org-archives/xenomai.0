@@ -1,10 +1,11 @@
 From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4/6] Remove old alchemy tests Makefile
-Date: Fri,  8 Apr 2022 10:03:59 +0200
-Message-Id: <20220408080401.22235-5-richard@nod.at>
+Subject: [PATCH 6/6] alchemytests: Fix gcc warning in task-9
+Date: Fri,  8 Apr 2022 10:04:01 +0200
+Message-Id: <20220408080401.22235-7-richard@nod.at>
 In-Reply-To: <20220408080401.22235-1-richard@nod.at>
 References: <20220408080401.22235-1-richard@nod.at>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,94 +18,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Richard Weinberger <richard@nod.at>
 
+Make it static, no prototype needed anymore.
+
+Fixes:
+task-9.c:13:6: error: no previous prototype for =E2=80=98sighandler=E2=80=
+=99 [-Werror=3Dmissing-prototypes]
+ void sighandler(int sig)
+
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- lib/alchemy/testsuite/Makefile | 70 ----------------------------------
- 1 file changed, 70 deletions(-)
- delete mode 100644 lib/alchemy/testsuite/Makefile
+ testsuite/alchemytests/task-9.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/alchemy/testsuite/Makefile b/lib/alchemy/testsuite/Makef=
-ile
-deleted file mode 100644
-index a831c999e..000000000
---- a/lib/alchemy/testsuite/Makefile
-+++ /dev/null
-@@ -1,70 +0,0 @@
--ifeq ($(DESTDIR),)
--XENO_CONFIG=3Dxeno-config
--else
--XENO_CONFIG=3D$(DESTDIR)/bin/xeno-config
--endif
--
--prefix :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --prefix)
--solibs :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --libdir)
--core :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --core)
--
--ifeq ($(prefix),)
--$(error Please add <xenomai-install-path>/bin to your PATH variable or s=
-pecify DESTDIR)
--endif
--
--cobalt-only :=3D pipe-1
--mercury-only :=3D
--core-specific =3D $($(core)-only)
--
--TESTS :=3D		\
--	task-1		\
--	task-2		\
--	task-3		\
--	task-4		\
--	task-5		\
--	task-6		\
--	task-7		\
--	task-8		\
--	task-9		\
--	task-10		\
--	mq-1		\
--	mq-2		\
--	mq-3		\
--	alarm-1		\
--	sem-1		\
--	sem-2		\
--	mutex-1		\
--	event-1		\
--	heap-1		\
--	heap-2		\
--	buffer-1	\
--	$(core-specific)
--
--CFLAGS :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --skin=3Dalchemy=
- --cflags) -g
--LDFLAGS :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --skin=3Dalchem=
-y --ldflags)
--CC =3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --cc)
--
--all: $(TESTS)
--
--%: %.c
--	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
--
--install: all
--	install -d $(prefix)/testsuite/alchemy
--	install -t $(prefix)/testsuite/alchemy $(TESTS)
--
--clean:
--	$(RM) $(TESTS) *~
--
--# Run the test suite. We pin all tests to CPU #0, so that SMP does not
--# alter the execution sequence we expect from them.
--test: all
--	@for t in $(TESTS); do \
--		echo -n $$t...; \
--		sudo LD_LIBRARY_PATH=3D$(solibs) $(VALGRIND) ./$$t --cpu-affinity=3D0 =
---silent && echo ok || echo BAD; \
--	done
--
--test/%: %
--	sudo LD_LIBRARY_PATH=3D$(solibs) $(VALGRIND) ./$(@F) --cpu-affinity=3D0=
- --silent && echo ok || echo BAD
--
--.PHONY: clean test
+diff --git a/testsuite/alchemytests/task-9.c b/testsuite/alchemytests/tas=
+k-9.c
+index e358154c5..4b62a17be 100644
+--- a/testsuite/alchemytests/task-9.c
++++ b/testsuite/alchemytests/task-9.c
+@@ -10,7 +10,7 @@ static RT_TASK t_test;
+=20
+ #define ONE_SECOND  1000000000ULL
+=20
+-void sighandler(int sig)
++static void sighandler(int sig)
+ {
+ 	/* nop */
+ }
 --=20
 2.34.1
 
