@@ -1,9 +1,7 @@
 From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 6/6] alchemytests: Fix gcc warning in task-9
-Date: Fri,  8 Apr 2022 10:04:01 +0200
-Message-Id: <20220408080401.22235-7-richard@nod.at>
-In-Reply-To: <20220408080401.22235-1-richard@nod.at>
-References: <20220408080401.22235-1-richard@nod.at>
+Subject: [PATCH 0/6] Revive alchemy tests
+Date: Fri,  8 Apr 2022 10:03:55 +0200
+Message-Id: <20220408080401.22235-1-richard@nod.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -18,32 +16,94 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Richard Weinberger <richard@nod.at>
 
-Make it static, no prototype needed anymore.
+This patch series is a first attempt to integrate the currently abandoned
+alchemy tests into Xenomai's test suite.
+Since each test assumes running as own process a test driver is needed
+which executes each tests separately.
+The driver makes use of the smokey framework.
 
-Fixes:
-task-9.c:13:6: error: no previous prototype for =E2=80=98sighandler=E2=80=
-=99 [-Werror=3Dmissing-prototypes]
- void sighandler(int sig)
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- testsuite/alchemytests/task-9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Richard Weinberger (6):
+  testsuite: Move alchemy tests into testsuite/
+  testsuite: Hook up alchemytests
+  testsuite: Add a simple test driver for alchemytests
+  Remove old alchemy tests Makefile
+  alchemytests: Fix gcc warning in buffer-1
+  alchemytests: Fix gcc warning in task-9
 
-diff --git a/testsuite/alchemytests/task-9.c b/testsuite/alchemytests/tas=
-k-9.c
-index e358154c5..4b62a17be 100644
---- a/testsuite/alchemytests/task-9.c
-+++ b/testsuite/alchemytests/task-9.c
-@@ -10,7 +10,7 @@ static RT_TASK t_test;
-=20
- #define ONE_SECOND  1000000000ULL
-=20
--void sighandler(int sig)
-+static void sighandler(int sig)
- {
- 	/* nop */
- }
+ configure.ac                                  |   1 +
+ lib/alchemy/testsuite/Makefile                |  70 --------
+ testsuite/Makefile.am                         |   6 +-
+ testsuite/alchemytests/Makefile.am            | 159 ++++++++++++++++++
+ .../alchemytests}/alarm-1.c                   |   0
+ testsuite/alchemytests/alchemytest_driver.c   |  84 +++++++++
+ .../alchemytests}/buffer-1.c                  |   2 +-
+ .../alchemytests}/event-1.c                   |   0
+ .../alchemytests}/heap-1.c                    |   0
+ .../alchemytests}/heap-2.c                    |   0
+ .../alchemytests}/mq-1.c                      |   0
+ .../alchemytests}/mq-2.c                      |   0
+ .../alchemytests}/mq-3.c                      |   0
+ .../alchemytests}/mutex-1.c                   |   0
+ .../alchemytests}/pipe-1.c                    |   0
+ .../alchemytests}/sem-1.c                     |   0
+ .../alchemytests}/sem-2.c                     |   0
+ .../alchemytests}/task-1.c                    |   0
+ .../alchemytests}/task-10.c                   |   0
+ .../alchemytests}/task-2.c                    |   0
+ .../alchemytests}/task-3.c                    |   0
+ .../alchemytests}/task-4.c                    |   0
+ .../alchemytests}/task-5.c                    |   0
+ .../alchemytests}/task-6.c                    |   0
+ .../alchemytests}/task-7.c                    |   0
+ .../alchemytests}/task-8.c                    |   0
+ .../alchemytests}/task-9.c                    |   2 +-
+ 27 files changed, 250 insertions(+), 74 deletions(-)
+ delete mode 100644 lib/alchemy/testsuite/Makefile
+ create mode 100644 testsuite/alchemytests/Makefile.am
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/alarm-1.c (10=
+0%)
+ create mode 100644 testsuite/alchemytests/alchemytest_driver.c
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/buffer-1.c (9=
+9%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/event-1.c (10=
+0%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-1.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-2.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-1.c (100%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-2.c (100%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-3.c (100%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mutex-1.c (10=
+0%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/pipe-1.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-1.c (100%=
+)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-2.c (100%=
+)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-1.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-10.c (10=
+0%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-2.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-3.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-4.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-5.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-6.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-7.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-8.c (100=
+%)
+ rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-9.c (97%=
+)
+
 --=20
 2.34.1
 
