@@ -1,16 +1,11 @@
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4/6] Remove old alchemy tests Makefile
+Date: Fri,  8 Apr 2022 10:03:59 +0200
+Message-Id: <20220408080401.22235-5-richard@nod.at>
+In-Reply-To: <20220408080401.22235-1-richard@nod.at>
+References: <20220408080401.22235-1-richard@nod.at>
 MIME-Version: 1.0
-Message-ID: <7e32f138ad65f915b2b8aa478fcd3@cweb006.nm.nfra.io>
-Date: Fri, 08 Apr 2022 11:54:05 +0900
-From: =?utf-8?B?SmFlIEh5dW4gUGFyaw==?= <parkjahun42@naver.com>
-In-Reply-To: <1973145994.241676244.1649353343305.JavaMail.zimbra@telenet.be>
-References: <82e13dfd7e80e18e275ac95bf2edd6f2@cweb014.nm.nfra.io>
- <1106981256.238674792.1649272310869.JavaMail.zimbra@telenet.be>
- <321714c2c878c89975aa86fa55efa27@cweb005.nm.nfra.io>
- <1973145994.241676244.1649353343305.JavaMail.zimbra@telenet.be>
-Subject: =?utf-8?B?UmU6IHJ0bmV0IGkyMTkgc2V0dXA=?=
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,94 +14,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: g.strobbe@telenet.be
-Cc: =?utf-8?B?YmFybGV0dGFtYXJjbzg=?= <barlettamarco8@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-SXQgZmluYWxseSB3b3JrcyEKCkkgbWVldCBzZXZlcmFsIGNvbXBpbGUgZXJyb3JzLiBBZnRlciBt
-b2RpZmluZyBjb2RlcywgRmluYWxseSB3b3JrcyE6CgoxLiBuZXRkZXYuYyA6ICJkbWFfZXJyb3I6
-IgoKSSBkZWxldGVkICJkbWFfZXJyb3I6IiBpbiBuZXRkZXYuYy4KCjIuIHJ0ZGV2LmggOiBQcm92
-aWRpbmctcnRuZXRkZXZfYWxsb2NfcnRza2JfaXBfYWxpZ24KCnJ0bmV0ZGV2X2FsbG9jX3J0c2ti
-X2lwX2FsaWduIGNvbXBpbGUgZXJyb3Igb2NjdXJlZC4gSSBmb3VuZCB5b3VyIHBhdGNoIGh0dHBz
-Oi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMTktSnVuZS8wNDExMTQuaHRt
-bC4KCkF0ZmVyIG1vZGlmaW5nIGNvZGUsIGl0IGZpeGVkLiAKCjMuIG5ldGRldi5jIDogX19iZTE2
-IHByb3RvY29sID0gdmxhbl9nZXRfcHJvdG9jb2woc2tiKTsKCkl0IHNlZW1zIHZhcmlhYmxlIHBy
-b3RvY29sIGlzIG5vdCB1c2VkIGl0IHRoYXQgZnVuY3Rpb24sIHNvIEkgZGVsZXRlZCBhbmQgaXQg
-d29ya3MuCgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB0aGUgZWZmb3J0LgoKLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0KRnJvbTogPGcuc3Ryb2JiZUB0ZWxlbmV0LmJlPiAKVG86ICLrsJXsnqzt
-mIQiPHBhcmtqYWh1bjQyQG5hdmVyLmNvbT47IApDYzogImJhcmxldHRhbWFyY284IjxiYXJsZXR0
-YW1hcmNvOEBnbWFpbC5jb20+OyA8eGVub21haUB4ZW5vbWFpLm9yZz47IApTZW50OiAyMDIyLTA0
-LTA4ICjquIgpIDAyOjQyOjIzIChHTVQrMDk6MDApClN1YmplY3Q6IFJlOiBydG5ldCBpMjE5IHNl
-dHVwCiAKSGksIAogCk15IHBsZWFzdXJlLgpJIHVuZGVyc3RhbmQuCkJ5IHNwbGl0dGluZyB1cCBp
-biBtdWx0aXBsZSBwYXRjaGVzLCBJIGZvcmdvdCB0byBpbmNsdWRlIHRoZSBwcm9wZXIgTWFrZWZp
-bGUuClNvcnJ5IGFib3V0IHRoYXQuCgpQbGVhc2UgZmluZCBpdCBhdHRhY2hlZC4KQWZ0ZXIgcGF0
-Y2hpbmcsIGp1c3QgY29weSBpdCBpbiB0aGUgcHJvcGVyIGRpcmVjdG9yeTogZHJpdmVycy94ZW5v
-bWFpL25ldC9kcml2ZXJzL2UxMDAwZS8KIApZb3Ugd2lsbCBzZWUsIGV0aHRvb2wgaXMgbm90IGNv
-bXBpbGVkIGFzIEkgbmV2ZXIgbG9va2VkIGF0IGl0IHNvIGZhci4KSSBoYXZlIG5vIHVzZSBmb3Ig
-aXQuIAogCkJlc3QgUmVnYXJkcywgCkdpbm8gCiAKLS0tLS0gT24gQXByIDcsIDIwMjIsIGF0IDE6
-MTQgUE0sIOuwleyerO2YhCA8cGFya2phaHVuNDJAbmF2ZXIuY29tPiB3cm90ZTogClRoYW5rcyBm
-b3IgcmVzcG9uc2luZyAhCkkgY29tcGlsZWQgd2l0aCB2NS4xNS55LWRvdmV0YWlsIGJyYW5jaCAm
-IFhlbm9tYWkgMyBtYXN0ZXIgYnJhbmNoIGF0IGtlcm5lbCA1LjE1LCBidXQgSSBnb3Qgc29tZSBj
-b21waWxlIGVycm9yczoKRmlyc3RseSwgCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBkcml2ZXJzL3hl
-bm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlLzgyNTcxLmM6MjA6ZHJpdmVycy94ZW5vbWFpL25ldC9k
-cml2ZXJzL2UxMDAwZS9lMTAwMC5oOjI0OjEwOiBmYXRhbCBlcnJvcjogcnRuZXRfcG9ydC5oOiBO
-byBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5ICAgMjQgICNpbmNsdWRlIDxydG5ldF9wb3J0Lmg+ICAg
-ICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+Y29tcGlsYXRpb24gdGVybWluYXRlZC4KZXJyb3Ig
-b2NjdXJzLCBzbyBJIGFkZGVkY2NmbGFncy15ICs9IC1JJChzcmN0cmVlKS9kcml2ZXJzL3hlbm9t
-YWkvbmV0L3N0YWNrL2luY2x1ZGV0byBkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBl
-L01ha2VmaWxlLCBhbmQgZXJyb3IgZGlzYXBwZWFyZWQuSG93ZXZlciwgSSBjYW4ndCBmaXggY29t
-cGlsZSBlcnJvciB3aXRoIGV0aHRvb2wuYy4gRXJyb3IgbWVzc2FnZXMgc2hvd3MgbWUgbGlrZWRy
-aXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOiBJbiBmdW5jdGlvbiDi
-gJhlMTAwMF9nZXRfbGlua19rc2V0dGluZ3PigJk6ZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJz
-L2UxMDAwZS9ldGh0b29sLmM6MTU4OjE0OiBlcnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2Yg
-ZnVuY3Rpb24g4oCYcG1fcnVudGltZV9zdXNwZW5kZWTigJkgWy1XZXJyb3I9aW1wbGljaXQtZnVu
-Y3Rpb24tZGVjbGFyYXRpb25dICAxNTggICB9IGVsc2UgaWYgKCFwbV9ydW50aW1lX3N1c3BlbmRl
-ZChuZXRkZXYtPmRldi5wYXJlbnQpKSB7ICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+
-fn5+fn5+fmRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjE1ODo0
-MTogZXJyb3I6IOKAmHN0cnVjdCBydG5ldF9kZXZpY2XigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDi
-gJhkZXbigJkgIDE1OCAgIH0gZWxzZSBpZiAoIXBtX3J1bnRpbWVfc3VzcGVuZGVkKG5ldGRldi0+
-ZGV2LnBhcmVudCkpIHsgICAgICAgICAgICAgIGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9l
-MTAwMGUvZXRodG9vbC5jOjI3MDoyOiBlcnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVu
-Y3Rpb24g4oCYcG1fcnVudGltZV9nZXRfc3luY+KAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlv
-bi1kZWNsYXJhdGlvbl0gIDI3MCAgIHBtX3J1bnRpbWVfZ2V0X3N5bmMobmV0ZGV2LT5kZXYucGFy
-ZW50KTsgICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5kcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZl
-cnMvZTEwMDBlL2V0aHRvb2wuYzogSW4gZnVuY3Rpb24g4oCYZTEwMDBfZ2V0X3JpbmdwYXJhbeKA
-mTpkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZlcnMvZTEwMDBlL2V0aHRvb2wuYzo2NjU6Mjg6IGVy
-cm9yOiDigJhzdHJ1Y3QgZTEwMDBfYWRhcHRlcuKAmSBoYXMgbm8gbWVtYmVyIG5hbWVkIOKAmHJ4
-X3JpbmdfY291bnTigJkgIDY2NSAgIHJpbmctPnJ4X3BlbmRpbmcgPSBhZGFwdGVyLT5yeF9yaW5n
-X2NvdW50OyAgICAgICAgICAgIGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvZXRo
-dG9vbC5jOjY2NjoyODogZXJyb3I6IOKAmHN0cnVjdCBlMTAwMF9hZGFwdGVy4oCZIGhhcyBubyBt
-ZW1iZXIgbmFtZWQg4oCYdHhfcmluZ19jb3VudOKAmSAgNjY2ICAgcmluZy0+dHhfcGVuZGluZyA9
-IGFkYXB0ZXItPnR4X3JpbmdfY291bnQ7ICAgICAgZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJz
-L2UxMDAwZS9ldGh0b29sLmM6MjM2NDoxODogbm90ZTogKG5lYXIgaW5pdGlhbGl6YXRpb24gZm9y
-IOKAmGUxMDAwX2V0aHRvb2xfb3BzLmdldF9kcnZpbmZv4oCZKWRyaXZlcnMveGVub21haS9uZXQv
-ZHJpdmVycy9lMTAwMGUvZXRodG9vbC5jOjIzNjU6MTk6IGVycm9yOiBpbml0aWFsaXphdGlvbiBv
-ZiDigJhpbnQgKCopKHN0cnVjdCBuZXRfZGV2aWNlICop4oCZIGZyb20gaW5jb21wYXRpYmxlIHBv
-aW50ZXIgdHlwZSDigJhpbnQgKCopKHN0cnVjdCBydG5ldF9kZXZpY2UgKinigJkgWy1XZXJyb3I9
-aW5jb21wYXRpYmxlLXBvaW50ZXItdHlwZXNdIDIzNjUgICAuZ2V0X3JlZ3NfbGVuICA9IGUxMDAw
-X2dldF9yZWdzX2xlbiwgICAgICAgICAgICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+
-CnRoZSB3aG9sZSBlcnJvciBtZXNzYWdlIHR4dCBmaWxlIGlzIGF0dGFjaGVkIHRvIHRoZSBtYWls
-KFNhbWUgZXJyb3Igb2NjdXJzIGluIHdob2xlIGV0aHRvb2wuYykuIEl0IHNlZW1zIHJ0bmV0ZGV2
-IHN0cnVjdCBub3QgbWF0Y2ggdG8gZXRodG9vbC5jIGZ1bmN0aW9ucy4uLkhvdyBjYW4gSSBmaXgg
-aXQ/VGhhbmtzCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCkZyb206IDxnLnN0cm9iYmVAdGVs
-ZW5ldC5iZT4gClRvOiAi67CV7J6s7ZiEIjxwYXJramFodW40MkBuYXZlci5jb20+OyA8YmFybGV0
-dGFtYXJjbzhAZ21haWwuY29tPjsgCkNjOiA8eGVub21haUB4ZW5vbWFpLm9yZz47IApTZW50OiAy
-MDIyLTA0LTA3ICjrqqkpIDA0OjExOjUwIChHTVQrMDk6MDApClN1YmplY3Q6IFJlOiBydG5ldCBp
-MjE5IHNldHVwCiAKCgotLS0tLSBPbiBBcHIgMiwgMjAyMiwgYXQgOToyNiBBTSwg67CV7J6s7ZiE
-IHZpYSBYZW5vbWFpIHhlbm9tYWlAeGVub21haS5vcmcgd3JvdGU6Cgo+IEhpIGV2ZXJ5b25lLgo+
-IEkgd2FzIHRyeWluZyB0byBzZXR1cCBYZW5vbWFpIDMuMiB3aXRoIHJ0bmV0LCBidXQgSSB3YXMg
-c3R1Y2sgb24gaTIxOSBkcml2ZXIuCj4gSSBoYXZlIHNhbWUgcHJvYmxlbSBhcwo+IGh0dHBzOi8v
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAyMC1GZWJydWFyeS8wNDI0MjIuaHRtbC4K
-PiBJIGZvdW5kIGkyMTkgcGF0Y2gsIGJ1dCBpdCBpcyBmb3Iga2VybmVsIDQueC4gSW4ga2VybmVs
-IDUueCBJIGhhdmUgYW4gZXJyb3Igc2FtZQo+IGFzIGh0dHBzOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvMjAyMS1TZXB0ZW1iZXIvMDQ2NTEwLmh0bWwuCj4gSXMgdGhlcmUgcmVjZW50
-IHBhdGNoIGZvciBpMjE5PyBNeSBzeXN0ZW0gaXMgWGVub21haSAzLjIsIExpbnV4IDUuMTEKPiBU
-aGFuayB5b3UgdmVyeSBtdWNoIGZvciB0aGUgZWZmb3J0LgoKSGksCgpJIHBvcnRlZCB0aGUgZTEw
-MDBlIGRyaXZlciBzdGFydGluZyBmcm9tIHRoZSB2NS4xNS55LWRvdmV0YWlsIGJyYW5jaC4KSXQg
-ZnVuY3Rpb25zIG9uIG15IHNldHVwLCBhbiBJbnRlbCBOVUMgaTMgd2l0aCBhbiBJbnRlbCBJMjE5
-LVYgRXRoZXJuZXQKY29udHJvbGxlciB3aXJlZCB0byBhIEJlY2tob2ZmIElPIGlzbGFuZC4KSSB0
-ZXN0ZWQgaXQgb24gdGhlIFhlbm9tYWkgMyBtYXN0ZXIgYW5kIG5leHQgYnJhbmNoZXMuCgpUaGUg
-cGF0Y2hlcyBhcmUgbm90IGNsZWFuZWQgb3V0IHlldC4gIEknbSBzcGxpdHRpbmcgdGhlbSB1cCBp
-biBhbiBlZmZvcnQgdG8gbWFrZSBpdAplYXNpZXIgZm9yIHNvbWVvbmUgdG8gaGF2ZSBhIGxvb2sg
-YXQuCgpJIGF0dGFjaCB0aGVtIGFzIHRoZXkgYXJlIHNvIHlvdSBjYW4gYWxyZWFkeSBnaXZlIHRo
-ZW0gYSB0cnkgaWYgeW91IGxpa2UuCgpCZXN0IFJlZ2FyZHMsCkdpbm8KIAoKCgoKCgoKCgoKIAo=
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ lib/alchemy/testsuite/Makefile | 70 ----------------------------------
+ 1 file changed, 70 deletions(-)
+ delete mode 100644 lib/alchemy/testsuite/Makefile
+
+diff --git a/lib/alchemy/testsuite/Makefile b/lib/alchemy/testsuite/Makef=
+ile
+deleted file mode 100644
+index a831c999e..000000000
+--- a/lib/alchemy/testsuite/Makefile
++++ /dev/null
+@@ -1,70 +0,0 @@
+-ifeq ($(DESTDIR),)
+-XENO_CONFIG=3Dxeno-config
+-else
+-XENO_CONFIG=3D$(DESTDIR)/bin/xeno-config
+-endif
+-
+-prefix :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --prefix)
+-solibs :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --libdir)
+-core :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --core)
+-
+-ifeq ($(prefix),)
+-$(error Please add <xenomai-install-path>/bin to your PATH variable or s=
+pecify DESTDIR)
+-endif
+-
+-cobalt-only :=3D pipe-1
+-mercury-only :=3D
+-core-specific =3D $($(core)-only)
+-
+-TESTS :=3D		\
+-	task-1		\
+-	task-2		\
+-	task-3		\
+-	task-4		\
+-	task-5		\
+-	task-6		\
+-	task-7		\
+-	task-8		\
+-	task-9		\
+-	task-10		\
+-	mq-1		\
+-	mq-2		\
+-	mq-3		\
+-	alarm-1		\
+-	sem-1		\
+-	sem-2		\
+-	mutex-1		\
+-	event-1		\
+-	heap-1		\
+-	heap-2		\
+-	buffer-1	\
+-	$(core-specific)
+-
+-CFLAGS :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --skin=3Dalchemy=
+ --cflags) -g
+-LDFLAGS :=3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --skin=3Dalchem=
+y --ldflags)
+-CC =3D $(shell DESTDIR=3D$(DESTDIR) $(XENO_CONFIG) --cc)
+-
+-all: $(TESTS)
+-
+-%: %.c
+-	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+-
+-install: all
+-	install -d $(prefix)/testsuite/alchemy
+-	install -t $(prefix)/testsuite/alchemy $(TESTS)
+-
+-clean:
+-	$(RM) $(TESTS) *~
+-
+-# Run the test suite. We pin all tests to CPU #0, so that SMP does not
+-# alter the execution sequence we expect from them.
+-test: all
+-	@for t in $(TESTS); do \
+-		echo -n $$t...; \
+-		sudo LD_LIBRARY_PATH=3D$(solibs) $(VALGRIND) ./$$t --cpu-affinity=3D0 =
+--silent && echo ok || echo BAD; \
+-	done
+-
+-test/%: %
+-	sudo LD_LIBRARY_PATH=3D$(solibs) $(VALGRIND) ./$(@F) --cpu-affinity=3D0=
+ --silent && echo ok || echo BAD
+-
+-.PHONY: clean test
+--=20
+2.34.1
+
 
