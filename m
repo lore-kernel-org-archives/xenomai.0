@@ -1,9 +1,7 @@
 From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 1/6] testsuite: Move alchemy tests into testsuite/
-Date: Fri,  8 Apr 2022 10:03:56 +0200
-Message-Id: <20220408080401.22235-2-richard@nod.at>
-In-Reply-To: <20220408080401.22235-1-richard@nod.at>
-References: <20220408080401.22235-1-richard@nod.at>
+Subject: [PATCH] configure.ac: Enable SMP by default
+Date: Fri,  8 Apr 2022 10:59:09 +0200
+Message-Id: <20220408085909.26395-1-richard@nod.at>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,183 +15,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Richard Weinberger <richard@nod.at>
 
-This is the very first step to have the alchemy tests embedded
-into our testsuite.
+In 2022 it is hard to find ARM or x86 systems without SMP.
+Other CPU architectures are no longer supported by Xenomai.
+So, make SMP support opt-out.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/alarm-1.c  | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/buffer-1.c | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/event-1.c  | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-1.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-2.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-1.c     | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-2.c     | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-3.c     | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mutex-1.c  | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/pipe-1.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-1.c    | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-2.c    | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-1.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-10.c  | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-2.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-3.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-4.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-5.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-6.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-7.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-8.c   | 0
- {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-9.c   | 0
- 22 files changed, 0 insertions(+), 0 deletions(-)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/alarm-1.c (10=
-0%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/buffer-1.c (1=
-00%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/event-1.c (10=
-0%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-1.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/heap-2.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-1.c (100%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-2.c (100%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mq-3.c (100%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/mutex-1.c (10=
-0%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/pipe-1.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-1.c (100%=
-)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/sem-2.c (100%=
-)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-1.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-10.c (10=
-0%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-2.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-3.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-4.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-5.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-6.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-7.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-8.c (100=
-%)
- rename {lib/alchemy/testsuite =3D> testsuite/alchemytests}/task-9.c (100=
-%)
+ configure.ac | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/lib/alchemy/testsuite/alarm-1.c b/testsuite/alchemytests/ala=
-rm-1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/alarm-1.c
-rename to testsuite/alchemytests/alarm-1.c
-diff --git a/lib/alchemy/testsuite/buffer-1.c b/testsuite/alchemytests/bu=
-ffer-1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/buffer-1.c
-rename to testsuite/alchemytests/buffer-1.c
-diff --git a/lib/alchemy/testsuite/event-1.c b/testsuite/alchemytests/eve=
-nt-1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/event-1.c
-rename to testsuite/alchemytests/event-1.c
-diff --git a/lib/alchemy/testsuite/heap-1.c b/testsuite/alchemytests/heap=
--1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/heap-1.c
-rename to testsuite/alchemytests/heap-1.c
-diff --git a/lib/alchemy/testsuite/heap-2.c b/testsuite/alchemytests/heap=
--2.c
-similarity index 100%
-rename from lib/alchemy/testsuite/heap-2.c
-rename to testsuite/alchemytests/heap-2.c
-diff --git a/lib/alchemy/testsuite/mq-1.c b/testsuite/alchemytests/mq-1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/mq-1.c
-rename to testsuite/alchemytests/mq-1.c
-diff --git a/lib/alchemy/testsuite/mq-2.c b/testsuite/alchemytests/mq-2.c
-similarity index 100%
-rename from lib/alchemy/testsuite/mq-2.c
-rename to testsuite/alchemytests/mq-2.c
-diff --git a/lib/alchemy/testsuite/mq-3.c b/testsuite/alchemytests/mq-3.c
-similarity index 100%
-rename from lib/alchemy/testsuite/mq-3.c
-rename to testsuite/alchemytests/mq-3.c
-diff --git a/lib/alchemy/testsuite/mutex-1.c b/testsuite/alchemytests/mut=
-ex-1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/mutex-1.c
-rename to testsuite/alchemytests/mutex-1.c
-diff --git a/lib/alchemy/testsuite/pipe-1.c b/testsuite/alchemytests/pipe=
--1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/pipe-1.c
-rename to testsuite/alchemytests/pipe-1.c
-diff --git a/lib/alchemy/testsuite/sem-1.c b/testsuite/alchemytests/sem-1=
-.c
-similarity index 100%
-rename from lib/alchemy/testsuite/sem-1.c
-rename to testsuite/alchemytests/sem-1.c
-diff --git a/lib/alchemy/testsuite/sem-2.c b/testsuite/alchemytests/sem-2=
-.c
-similarity index 100%
-rename from lib/alchemy/testsuite/sem-2.c
-rename to testsuite/alchemytests/sem-2.c
-diff --git a/lib/alchemy/testsuite/task-1.c b/testsuite/alchemytests/task=
--1.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-1.c
-rename to testsuite/alchemytests/task-1.c
-diff --git a/lib/alchemy/testsuite/task-10.c b/testsuite/alchemytests/tas=
-k-10.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-10.c
-rename to testsuite/alchemytests/task-10.c
-diff --git a/lib/alchemy/testsuite/task-2.c b/testsuite/alchemytests/task=
--2.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-2.c
-rename to testsuite/alchemytests/task-2.c
-diff --git a/lib/alchemy/testsuite/task-3.c b/testsuite/alchemytests/task=
--3.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-3.c
-rename to testsuite/alchemytests/task-3.c
-diff --git a/lib/alchemy/testsuite/task-4.c b/testsuite/alchemytests/task=
--4.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-4.c
-rename to testsuite/alchemytests/task-4.c
-diff --git a/lib/alchemy/testsuite/task-5.c b/testsuite/alchemytests/task=
--5.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-5.c
-rename to testsuite/alchemytests/task-5.c
-diff --git a/lib/alchemy/testsuite/task-6.c b/testsuite/alchemytests/task=
--6.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-6.c
-rename to testsuite/alchemytests/task-6.c
-diff --git a/lib/alchemy/testsuite/task-7.c b/testsuite/alchemytests/task=
--7.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-7.c
-rename to testsuite/alchemytests/task-7.c
-diff --git a/lib/alchemy/testsuite/task-8.c b/testsuite/alchemytests/task=
--8.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-8.c
-rename to testsuite/alchemytests/task-8.c
-diff --git a/lib/alchemy/testsuite/task-9.c b/testsuite/alchemytests/task=
--9.c
-similarity index 100%
-rename from lib/alchemy/testsuite/task-9.c
-rename to testsuite/alchemytests/task-9.c
+diff --git a/configure.ac b/configure.ac
+index 019453793..867fc4636 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -385,12 +385,9 @@ if test x$use_registry =3D xy; then
+ fi
+ AM_CONDITIONAL(XENO_REGISTRY,[test x$use_registry =3D xy])
+=20
+-dnl SMP support (default: on for cobalt/x86, off otherwise)
++dnl SMP support (default: on)
+=20
+-CONFIG_SMP=3D
+-if test $target_cpu_arch =3D x86 -a $rtcore_type =3D cobalt; then
+-	CONFIG_SMP=3Dy
+-fi
++CONFIG_SMP=3Dy
+ AC_MSG_CHECKING(for SMP support)
+ AC_ARG_ENABLE(smp,
+ 	AS_HELP_STRING([--enable-smp], [Enable SMP support]),
 --=20
 2.34.1
 
