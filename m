@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.229-cip67-arm-18 released
-Message-Id: <E1ndjXr-0007Kz-16@xenomai.org>
-Date: Mon, 11 Apr 2022 04:12:47 +0200
+Subject: [I-PIPE] ipipe-core-5.4.180-arm-5 released
+Message-Id: <E1ndjcj-0007dV-2V@xenomai.org>
+Date: Mon, 11 Apr 2022 04:17:49 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.19.229-cip67-arm-18.patch
+Download URL: https://xenomai.org/downloads/ipipe/v5.x/arm/ipipe-core-5.4.180-arm-5.patch
 
 Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-4.19.229-cip67-arm-18
+Release tag: ipipe-core-5.4.180-arm-5
 
