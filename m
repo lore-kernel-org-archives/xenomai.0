@@ -1,11 +1,13 @@
-Message-ID: <1a025dd2-bc2d-635d-bb33-4a9201987793@siemens.com>
-Date: Mon, 11 Apr 2022 09:39:57 +0200
-MIME-Version: 1.0
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [Call for Participation] Xenomai Community Meet-Up
+From: "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Subject: RE: rcu_preempt detected expedited stalls on CPUs/tasks
+Date: Mon, 11 Apr 2022 08:11:10 +0000
+Message-ID: <PH0PR11MB58801714B5C99FF4DE04C88FDAEA9@PH0PR11MB5880.namprd11.prod.outlook.com>
+References: <066DE2BF-5884-4333-9E1D-5ACF7B904181@aliyun.com>
+In-Reply-To: <066DE2BF-5884-4333-9E1D-5ACF7B904181@aliyun.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "Wang, Rick Y" <rick.y.wang@intel.com>
+To: Ivan Jiang <jcgeforce@aliyun.com>, xenomai--- via Xenomai <xenomai@xenomai.org>
+Cc: Xenomai <xenomai-bounces@xenomai.org>
 
-The Xenomai community is planning to hold a virtual meet-up with
-presentations and live discussions on May 25th. To accommodate for
-different time zones, the meet-up will be split into an Asian morning
-session, followed by a European one.
-
-Sessions will be recorded as well and shared afterwards. Attendance will
-be free for everyone, just a registration will be needed to join the
-platform.
-
-We are happy to already announce several speakers and topics such as
-
-- "Xenomai in Industry Control System"
-  by Yebin Liang (Han's Smart Control Technology Co., Ltd)
-
-- "Motion Control Applications for Special Effects and Entertainment"
-  by Steve Rosenbluth (Concept Overdrive Inc)
-
-- "Autonomous mobile robots in warehouses running on Xenomai"
-  by Sebastian Schmolorz (KION Mobile Automation)
-
-- "Xenomai Motion Control Solution and Tuning Based on Intel Edge
-  Controls for Industrial"
-  by Wei Zhang and Yu Yan (Intel)
-
-- "The Xenomai Project: Today and Tomorrow"
-  by Jan Kiszka (Siemens)
-
-...and more.  There are still some free slots available, and we are
-therefore looking for further talks from the community:
-
-- How are you using Xenomai?
-- Are you working on ports or extensions of it?
-- Do you have best practices to share?
-- What do you expect from Xenomai in the future?
-
-Please send your proposals consisting of a title and short abstract to 
-jan.kiszka@siemens.com and hongzhan.chen@intel.com.
-
-Important dates:
-
-- CFP closes:            Friday, April 29, 2022
-- CFP notifications:     Wednesday, May 4, 2022
-- Schedule announcement: Friday, May 6, 2022
-- Recording Due Date:    Wednesday, May 11, 2022
-- Event:                 Wednesday, May 25, 2022
-
-Looking forward to seeing you at the meet-up!
-
-Rick, Hongzhan, Jan
+DQogICAgRGVhciB4ZW5vbWFpc++8mg0KDQogICAgICAgIFdoZW4gSSB1c2VkIEludGVsIEkyMTEg
+RXRoZXJuZXQgY2hpcCAocGNpZSAyIEdpZ2liaXQpIG1ldCByY3UgZXJyb3IgbGlrZSBiZWxvd++8
+mg0KICAgIAlyY3U6IElORk86IHJjdV9wcmVlbXB0IGRldGVjdGVkIGV4cGVkaXRlZCBzdGFsbHMg
+b24gQ1BVcy90YXNrczogeyA1LS4uLiB9IDUzMzUgamlmZmllcyBzOiAzNyByb290OiAweDIwLy4N
+CiAgICAJWyAgMzkyLjE3NDcyMV0gcmN1OiBibG9ja2luZyByY3Vfbm9kZSBzdHJ1Y3R1cmVzOg0K
+ICAgIAlbICAzOTIuMTc5MTc0XSBUYXNrIGR1bXAgZm9yIENQVSA1Og0KICAgIAlbICAzOTIuMTgy
+NDExXSBrd29ya2VyLzU6MiAgICAgUiAgcnVubmluZyB0YXNrICAgICAgICAwICAgMjYzICAgICAg
+MiAweDAwMDAwMjJhDQogICAgCVsgIDM5Mi4xODk0NzldIFdvcmtxdWV1ZTogZXZlbnRzIGlnYl93
+YXRjaGRvZ190YXNrDQogICAgCVsgIDM5Mi4xOTQwMThdIENhbGwgdHJhY2U6DQogICAgCVsgIDM5
+Mi4xOTY0NzFdICBfX3N3aXRjaF90bysweGU4LzB4MTM4DQogICAgCVsgIDM5Mi4xOTk5NjFdICAw
+eGZmZmY4MDA2MzkyMTAwMDANCg0KSGksIFBsZWFzZSBwcm92aWRlIGZ1bGwgIHJjdSBzdGFsbCBp
+bmZvcm1hdGlvbiwgdGhpcyBpbmZvIGluZGljYXRlIHRoZSBDUFU1IGNhbiBub3Qgbm90aWNlIHJj
+dSBxdWllc2NlbnQgc3RhdGUsDQpUaGlzIG1heSBiZSBiZWNhdXNlIHRoZSBzdGF0dXMgY2Fubm90
+IGJlIHJlcG9ydGVkIGluIHRpbWUgZHVlIHRvIGRpc2FibGUgaW50ZXJydXB0cyBvciBwcmVlbXB0
+aW9uIGxvbmcgdGltZSBldGMNCiB5b3UgY2FuIHNlZSBEb2N1bWVudGF0aW9uL1JDVS9zdGFsbHdh
+cm4ucnN0Lg0KDQpUaGFua3MNClpxaWFuZw0KDQoNCg0KCQlFbnZpcm9ubWVudCBsaWtlIHRoaXM6
+DQoJCUNvYmFsdCAzLjEgaXBpcGUgNC4xOS4xMDYgb3IgNC4xOS4xOTggQVJNNjQNCgkJU3RhcnRp
+bmcgY29tbWFuZHMgaXNvbGNwdXM9MSwyIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MHgwNiBub2h6
+X2Z1bGw9MSwyIHJjdV9ub2Nicz0xLDIgaXJxYWZmaW5pdHk9MCwzLDQsNSBubWlfaW50ZXJydXB0
+PTANCgkJQmVjYXVzZSBJIHNldCBpcnFhZmZpbml0eSBvbiBOUlQgY3B1czogQ1BVMCBDUFUzIENQ
+VTQgQ1BVNSwgc28gVGFzayBkdW1wIGZvciBDUFUgMCAzIDQgNSByYW5kb21seS4NCgkJQW5kIHdo
+ZW4gdGhlIGVycm9yIG1lc3NhZ2VzIGFwcGVhcmVkIGFmdGVyIDEwIG1pbnV0ZXMsIHRoZSBzeXN0
+ZW0gJ3Mgbm8gbG9uZ2VyIHJlc3BvbmRlZCBhbnl0aGluZyBhbmQgSSBoYXZlbid0IGRvbmUgYW55
+IHRocmVhZHMgd2l0aCB0aGlzIEV0aGVybmV0IHBvcnQganVzdCBwaW5nIGNvbW1hbmQuDQoJCS5j
+b25maWcgZmlsZSBjb250YWlucyBzdWNoIG9wdGlvbnM6DQogICAgCUNPTkZJR19OT19IWl9GVUxM
+ID0geQ0KICAgIAlDT05GSUdfUkNVX05PQ0JfQ1BVPXkNCiAgICAJQ09ORklHX1BSRUVNUFQ9eQ0K
+ICAgIAlDT05GSUdfQ1BVX0lETEU9bg0KICAgIAlDT05GSUdfQVJNX0NQVUlETEU9bg0KICAgIAlD
+T05GSUdfQ1BVX0ZSRVE9bg0KICAgIAlDb3VsZCB5b3UgYmUgcGxlYXNlZCBoZWxwIG1lIHdoYXQg
+Y291bGQgYmUgdGhlIHByb2JsZW0uDQoJCQ0KCQlUaGFuayB5b3UuDQoNCiAgICBCZXN0IFJlZ2Fy
+ZHPvvIwNCiAgICBJdmFuCQ0KDQoNCg0KDQoNCg0KDQo=
 
