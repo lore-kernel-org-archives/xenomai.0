@@ -1,18 +1,19 @@
-From: "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Subject: RE: rcu_preempt detected expedited stalls on CPUs/tasks
-Date: Tue, 12 Apr 2022 08:46:38 +0000
-Message-ID: <PH0PR11MB5880E8E385D87E3446C32D2BDAED9@PH0PR11MB5880.namprd11.prod.outlook.com>
+Date: Tue, 12 Apr 2022 16:51:44 +0800
+Subject: Re: rcu_preempt detected expedited stalls on CPUs/tasks
+From: Ivan Jiang <jcgeforce@aliyun.com>
+Message-ID: <5AD030AA-9CE4-4901-996F-1731A0052B7F@aliyun.com>
 References: <066DE2BF-5884-4333-9E1D-5ACF7B904181@aliyun.com>
  <PH0PR11MB58801714B5C99FF4DE04C88FDAEA9@PH0PR11MB5880.namprd11.prod.outlook.com>
  <9F8BCB86-C218-4DBE-81B4-E5F5E25DC8AE@aliyun.com>
  <EAE1373F-54AB-45B1-89E1-ADBDB743EDBC@aliyun.com>
  <8C97D14F-E3AE-45C8-9BE7-DE91A748AE10@aliyun.com>
  <PH0PR11MB5880B8C6EFE5B6183EA47200DAED9@PH0PR11MB5880.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB5880B8C6EFE5B6183EA47200DAED9@PH0PR11MB5880.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <PH0PR11MB5880E8E385D87E3446C32D2BDAED9@PH0PR11MB5880.namprd11.prod.outlook.com>
+In-Reply-To: <PH0PR11MB5880E8E385D87E3446C32D2BDAED9@PH0PR11MB5880.namprd11.prod.outlook.com>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,114 +22,182 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ivan Jiang <jcgeforce@aliyun.com>, xenomai--- via Xenomai <xenomai@xenomai.org>
+To: "Zhang, Qiang1" <qiang1.zhang@intel.com>, xenomai--- via Xenomai <xenomai@xenomai.org>
 Cc: Xenomai <xenomai-bounces@xenomai.org>
 
-DQoNCkRlYXIgUWlhbmcsDQoNCglJJ3ZlIGZvdW5kIHhlbm9tYWkgc3VwcG9ydGVkIGlnYiBkcml2
-ZXIgYXMgUlRORVQsIGFuZCBjYW4gSSB1c2UgdGhpcyBkcml2ZXIgaW5zdGVhZCBvZiBub3JtYWwg
-bGludXggZHJpdmVyIHRoYXQgSSBvbmx5IHVzZSBJMjExIGZvciBUQ1BJUCBzb2NrZXQuDQoNCkkn
-bSBub3QgZmFtaWxpYXIgd2l0aCBSVE5FVCwgIGlmIHlvdXIgcHJvYmxlbSBjYW4gYmUgcmVwZWF0
-ZWQgb24gdGhlIExpbnV4IGtlcm5lbCBhbGwgdGhlIHRpbWUsIG1heWJlIHlvdSBjYW4gZW5hYmxl
-IENPTkZJR19MT0NLVVBfREVURUNUT1IgYW5kIENPTkZJR19IQVJETE9DS1VQX0RFVEVDVE9SX1BF
-UkYsIHRvIGNoZWNrIHdoZXRoZXIgIHRoZSBDUFUgd2hpY2ggaW4gIFJDVSBzdGFsbCBpbmZvIGhh
-cyBsb2NrdXAsICBvciB5b3UgY2FuICBlY2hvIDEgPiAvc3lzL2tlcm5lbC9wYW5pY19vbl9yY3Vf
-c3RhbGwgd2hlbiBSQ1Ugc3RhbGwgaGFwcGVuZWQsIHRoZSBzeXN0ZW0gd2lsbCBwYW5pYywgIHlv
-dSBjYW4gdXNlIGNyYXNoIHRvb2xzIHRvIGFuYWx5emUgdm1jb3JlIGZpbGUodGhlIHByZW1pc2Ug
-aXMgdGhhdCB5b3UgbmVlZCB0byBjb25maWd1cmUga2R1bXApLCBhbmQgdGhlbiBzZWUgd2hhdCBj
-cHU1IGlzIGRvaW5nLg0KDQpEbyB5b3UgaGF2ZSBhIHRhc2sgd2l0aCBoaWdoZXIgcmVhbC10aW1l
-IHByaW9yaXR5IHRoYXQgaGFzIGJlZW4gb2NjdXB5aW5nIGNwdTUgPw0KDQoNCg0KCVRoYW5reW91
-Lg0KDQpCZXN0IFJlZ2FyZHMsDQpJdmFuDQoNCu+7v+WcqCAyMDIyLzQvMTEgMTY6NDDvvIzigJxJ
-dmFuIEppYW5n4oCdPGpjZ2Vmb3JjZUBhbGl5dW4uY29tPiDlhpnlhaU6DQoNCiAgICBBZGQgb27v
-vJoNCg0KICAgIAlbICA0NDMuOTk2MDU3XSByY3U6IElORk86IHJjdV9wcmVlbXB0IGRldGVjdGVk
-IHN0YWxscyBvbiBDUFVzL3Rhc2tzOg0KICAgIFsgIDQ0NC4wMDIxNjZdIHJjdTogICAgIDUtLi4u
-MDogKDAgdGlja3MgdGhpcyBHUCkgaWRsZT04ZGUvMS8weDQwMDAwMDAwMDAwMDAwMDAgc29mdGly
-cT03MjIvNzIyIGZxcz05MjI3IGxhc3RfYWNjZWxlcmF0ZTogZmNkOC84YzllLCBub25sYXp5X3Bv
-c3RlZDogMCwgTC4NCiAgICBbICA0NDQuMDE1NDg3XSByY3U6ICAgICAoZGV0ZWN0ZWQgYnkgMywg
-dD0zNjc2NyBqaWZmaWVzLCBnPTExMDYxLCBxPTc5MikNCiAgICBbICA0NDQuMDIxNjc3XSBUYXNr
-IGR1bXAgZm9yIENQVSA1Og0KICAgIFsgIDQ0NC4wMjQ5MDZdIGt3b3JrZXIvNToyICAgICBSICBy
-dW5uaW5nIHRhc2sgICAgICAgIDAgICAyNjMgICAgICEyIDB4MDAwMDAyMmENCiAgICBbICA0NDQu
-MDMxOTY5XSBXb3JrceKWkmV1ZTogZXZlbnRzIGlnYl93YXRjaGRvZ190YXNrDQogICAgWyAgNDQ0
-LjAzNjUwM10gQ2FsbCB0cmFjZToNCiAgICBbICA0NDQuMDM4OTUyXSAgX19zd2l0Y2hfdG8rMHhl
-OC8weDEzOA0KICAgIFsgIDQ0NC4wNDI0NDJdICAweGZmZmY4MDA2MzkyMTAwMDANCiAgICBbICA0
-NDQuMDQ1NTg4XSByY3U6IHJjdV9wcmVlbXB0IGt0aHJlYWQgc3RhcnZlZCBmb3IgMTgzMDYgamlm
-ZmllcyEgZzExMDYxIGYweDIgUkNVX0dQX1dBSVRfRlFTKDUpIC0+c3RhdGU9MHgwIC0+Y3B1PTUN
-CiAgICBbICA0NDQuMDU1OTUxXSByY3U6IFJDVSBncmFjZS1wZXJpb2Qga3RocmVhZCBzdGFjayBk
-dW1wOg0KICAgIFsgIDQ0NC4wNjEwMDZdIHJjdV9wcmVlbXB0ICAgICBSICBydW5uaW5nIHRhc2sg
-ICAgICAgIDAgICAgMTAgICAgICAyIDB4MDAwMDAwMjgNCiAgICBbICA0NDQuMDY4MDY2XSBDYWxs
-IHRyYWNlOg0KICAgIFsgIDQ0NC4wNzA1MTRdICBfX3N3aXRjaF90bysweGU4LzB4MTM4DQogICAg
-WyAgNDQ0LjA3NDAwNl0gIF9fc2NoZWR1bGUrMHgyYzAvMHg4MjgNCiAgICBbICA0NDQuMDc3NDk3
-XSAgc2NoZWR1bGUrMHgzOC8weGE4DQogICAgWyAgNDQ0LjA4MDY0MV0gIHNjaGVkdWxlX3RpbWVv
-dXQrMHg5OC8weDQ0MA0KICAgIFsgIDQ0NC4wODQ1NjhdICByY3VfZ3Bfa3RocmVhZCsweDRhYy8w
-eDhiMA0KICAgIFsgIDQ0NC4wODg0MDddICBrdGhyZWFkKzB4MTJjLzB4MTMwDQogICAgWyAgNDQ0
-LjA5MTYzOF0gIHJldF9mcm9tX2ZvcmsrMHgxNC8weDFjDQoNCiAgICDvu7/lnKggMjAyMi80LzEx
-IDE2OjI077yM4oCcWGVub21haSDku6PooaggSXZhbiBKaWFuZyB2aWEgWGVub21haeKAnTx4ZW5v
-bWFpLWJvdW5jZXNAeGVub21haS5vcmcg5Luj6KGoIHhlbm9tYWlAeGVub21haS5vcmc+IOWGmeWF
-pToNCg0KICAgICAgICBEZWFyIFFpYW5n77yaDQoNCiAgICAgICAgCUFub3RoZXIgaW5mb3JtYXRp
-b24gbGlrZSB0aGlzOg0KICAgICAgICAJWyAgMTIxLjEyNzc1OF0gcmN1OiBJTkZPOiByY3VfcHJl
-ZW1wdCBkZXRlY3RlZCBzdGFsbHMgb24gQ1BVcy90YXNrczoNCiAgICAgICAgWyAgMTIxLjEzMzg4
-N10gcmN1OiAgICAgMC0uLi4wOiAoNSB0aWNrcyB0aGlzIEdQKSBpZGxlPWI1YS8xLzB4NDAwMDAw
-MDAwMDAwMDAwMiBzb2Z0aXJxPTExNjA1LzExNjA2IGZxcz0yMzM2DQogICAgICAgIFsgIDEyMS4x
-NDMyOTRdIHJjdTogICAgIChkZXRlY3RlZCBieSA0LCB0PTUyNTUgamlmZmllcywgZz00MTM3LCBx
-PTEwKQ0KICAgICAgICBbICAxMjEuMTQ5MjI1XSBUYXNrIGR1bXAgZm9yIENQVSAwOg0KICAgICAg
-ICBbICAxMjEuMTUyNDU3XSB0Y2YtYWdlbnQgICAgICAgUiAgcnVubmluZyB0YXNrICAgICAgICAw
-ICAgMzg0ICAgICAgMSAweDAwMDAwMjBhDQogICAgICAgIFsgIDEyMS4xNTk1MjBdIENhbGwgdHJh
-Y2U6DQogICAgICAgIFsgIDEyMS4xNjE5ODddICBfX3N3aXRjaF90bysweGU4LzB4MTM4DQogICAg
-ICAgIFsgIDEyMS4xNjU0ODFdICAweGZmZmYwMDAwMDhlNGMwMDANCiAgICAgICAgWyAgMjIwLjEy
-MDY3OF0gYXVkaXQ6IHR5cGU9MTcwMSBhdWRpdCgxNjQ5MzI1MTA5Ljk5Nzo0KTogYXVpZD00Mjk0
-OTY3Mjk1IHVpZD0wIGdpZD0wIHNlcz00Mjk0OTY3Mjk1IHBpZD0yNDEgY29tbT0ic3lzdGVtZC1q
-b3VybmFsIiBleGU9Ii9saWIvc3lzdGVtZC9zeXN0ZW1kLWpvdXJuYWxkIiBzaWc9NiByZXM9MQ0K
-ICAgICAgICBbICAyODAuMzY5MjI5XSBzeXN0ZW1kWzFdOiBzeXN0ZW1kLXVkZXZkLnNlcnZpY2U6
-IFdhdGNoZG9nIHRpbWVvdXQgKGxpbWl0IDNtaW4pIQ0KICAgICAgICBbICAyODAuMzc2NjgyXSBz
-eXN0ZW1kWzFdOiBzeXN0ZW1kLXVkZXZkLnNlcnZpY2U6IEtpbGxpbmcgcHJvY2VzcyAyNTUgKHN5
-c3RlbWQtdWRldmQpIHdpdGggc2lnbmFsIFNJR0FCUlQuDQogICAgICAgIFsgIDI4MC4zODYyNDFd
-IGF1ZGl0OiB0eXBlPTE3MDEgYXVkaXQoMTY0OTMyNTEwOS45OTc6NSk6IGF1aWQ9NDI5NDk2NzI5
-NSB1aWQ9MCBnaWQ9MCBzZXM9NDI5NDk2NzI5NSBwaWQ9MjU1IGNvbW09InN5c3RlbWQtdWRldmQi
-IGV4ZT0iL2xpYi9zeXN0ZW1kL3N5c3RlbWQtdWRldmQiIHNpZz02IHJlcz0xDQogICAgICAgIFsg
-IDMxMC4zNjkyMDBdIHN5c3RlbWRbMV06IHN5c3RlbWQtam91cm5hbGQuc2VydmljZTogU3RhdGUg
-J3N0b3Atc2lnYWJydCcgdGltZWQgb3V0LiBUZXJtaW5hdGluZy4NCiAgICAgICAgWyAgMzcwLjYx
-OTE3NF0gc3lzdGVtZFsxXTogc3lzdGVtZC11ZGV2ZC5zZXJ2aWNlOiBTdGF0ZSAnc3RvcC1zaWdh
-YnJ0JyB0aW1lZCBvdXQuIFRlcm1pbmF0aW5nLg0KICAgICAgICBbICA0MDAuNjE5MTc1XSBzeXN0
-ZW1kWzFdOiBzeXN0ZW1kLWpvdXJuYWxkLnNlcnZpY2U6IFN0YXRlICdzdG9wLXNpZ3Rlcm0nIHRp
-bWVkIG91dC4gS2lsbGluZy4NCiAgICAgICAgWyAgNDAwLjYyNzU4NF0gc3lzdGVtZFsxXTogc3lz
-dGVtZC1qb3VybmFsZC5zZXJ2aWNlOiBLaWxsaW5nIHByb2Nlc3MgMjQxIChzeXN0ZW1kLWpvdXJu
-YWwpIHdpdGggc2lnbmFsIFNJR0tJTEwuDQoNCiAgICAgICAgVGhhbmsgeW91Lg0KICAgICAgICBC
-Ui4sDQogICAgICAgIEl2YW4NCg0KDQogICAgICAgIO+7v+WcqCAyMDIyLzQvMTEgMTY6MTHvvIzi
-gJxaaGFuZywgUWlhbmcx4oCdPHFpYW5nMS56aGFuZ0BpbnRlbC5jb20+IOWGmeWFpToNCg0KDQog
-ICAgICAgICAgICAgICAgRGVhciB4ZW5vbWFpc++8mg0KDQogICAgICAgICAgICAgICAgICAgIFdo
-ZW4gSSB1c2VkIEludGVsIEkyMTEgRXRoZXJuZXQgY2hpcCAocGNpZSAyIEdpZ2liaXQpIG1ldCBy
-Y3UgZXJyb3IgbGlrZSBiZWxvd++8mg0KICAgICAgICAgICAgICAgIAlyY3U6IElORk86IHJjdV9w
-cmVlbXB0IGRldGVjdGVkIGV4cGVkaXRlZCBzdGFsbHMgb24gQ1BVcy90YXNrczogeyA1LS4uLiB9
-IDUzMzUgamlmZmllcyBzOiAzNyByb290OiAweDIwLy4NCiAgICAgICAgICAgICAgICAJWyAgMzky
-LjE3NDcyMV0gcmN1OiBibG9ja2luZyByY3Vfbm9kZSBzdHJ1Y3R1cmVzOg0KICAgICAgICAgICAg
-ICAgIAlbICAzOTIuMTc5MTc0XSBUYXNrIGR1bXAgZm9yIENQVSA1Og0KICAgICAgICAgICAgICAg
-IAlbICAzOTIuMTgyNDExXSBrd29ya2VyLzU6MiAgICAgUiAgcnVubmluZyB0YXNrICAgICAgICAw
-ICAgMjYzICAgICAgMiAweDAwMDAwMjJhDQogICAgICAgICAgICAgICAgCVsgIDM5Mi4xODk0Nzld
-IFdvcmtxdWV1ZTogZXZlbnRzIGlnYl93YXRjaGRvZ190YXNrDQogICAgICAgICAgICAgICAgCVsg
-IDM5Mi4xOTQwMThdIENhbGwgdHJhY2U6DQogICAgICAgICAgICAgICAgCVsgIDM5Mi4xOTY0NzFd
-ICBfX3N3aXRjaF90bysweGU4LzB4MTM4DQogICAgICAgICAgICAgICAgCVsgIDM5Mi4xOTk5NjFd
-ICAweGZmZmY4MDA2MzkyMTAwMDANCg0KICAgICAgICAgICAgSGksIFBsZWFzZSBwcm92aWRlIGZ1
-bGwgIHJjdSBzdGFsbCBpbmZvcm1hdGlvbiwgdGhpcyBpbmZvIGluZGljYXRlIHRoZSBDUFU1IGNh
-biBub3Qgbm90aWNlIHJjdSBxdWllc2NlbnQgc3RhdGUsDQogICAgICAgICAgICBUaGlzIG1heSBi
-ZSBiZWNhdXNlIHRoZSBzdGF0dXMgY2Fubm90IGJlIHJlcG9ydGVkIGluIHRpbWUgZHVlIHRvIGRp
-c2FibGUgaW50ZXJydXB0cyBvciBwcmVlbXB0aW9uIGxvbmcgdGltZSBldGMNCiAgICAgICAgICAg
-ICB5b3UgY2FuIHNlZSBEb2N1bWVudGF0aW9uL1JDVS9zdGFsbHdhcm4ucnN0Lg0KDQogICAgICAg
-ICAgICBUaGFua3MNCiAgICAgICAgICAgIFpxaWFuZw0KDQoNCg0KICAgICAgICAgICAgCQlFbnZp
-cm9ubWVudCBsaWtlIHRoaXM6DQogICAgICAgICAgICAJCUNvYmFsdCAzLjEgaXBpcGUgNC4xOS4x
-MDYgb3IgNC4xOS4xOTggQVJNNjQNCiAgICAgICAgICAgIAkJU3RhcnRpbmcgY29tbWFuZHMgaXNv
-bGNwdXM9MSwyIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MHgwNiBub2h6X2Z1bGw9MSwyIHJjdV9u
-b2Nicz0xLDIgaXJxYWZmaW5pdHk9MCwzLDQsNSBubWlfaW50ZXJydXB0PTANCiAgICAgICAgICAg
-IAkJQmVjYXVzZSBJIHNldCBpcnFhZmZpbml0eSBvbiBOUlQgY3B1czogQ1BVMCBDUFUzIENQVTQg
-Q1BVNSwgc28gVGFzayBkdW1wIGZvciBDUFUgMCAzIDQgNSByYW5kb21seS4NCiAgICAgICAgICAg
-IAkJQW5kIHdoZW4gdGhlIGVycm9yIG1lc3NhZ2VzIGFwcGVhcmVkIGFmdGVyIDEwIG1pbnV0ZXMs
-IHRoZSBzeXN0ZW0gJ3Mgbm8gbG9uZ2VyIHJlc3BvbmRlZCBhbnl0aGluZyBhbmQgSSBoYXZlbid0
-IGRvbmUgYW55IHRocmVhZHMgd2l0aCB0aGlzIEV0aGVybmV0IHBvcnQganVzdCBwaW5nIGNvbW1h
-bmQuDQogICAgICAgICAgICAJCS5jb25maWcgZmlsZSBjb250YWlucyBzdWNoIG9wdGlvbnM6DQog
-ICAgICAgICAgICAgICAgCUNPTkZJR19OT19IWl9GVUxMID0geQ0KICAgICAgICAgICAgICAgIAlD
-T05GSUdfUkNVX05PQ0JfQ1BVPXkNCiAgICAgICAgICAgICAgICAJQ09ORklHX1BSRUVNUFQ9eQ0K
-ICAgICAgICAgICAgICAgIAlDT05GSUdfQ1BVX0lETEU9bg0KICAgICAgICAgICAgICAgIAlDT05G
-SUdfQVJNX0NQVUlETEU9bg0KICAgICAgICAgICAgICAgIAlDT05GSUdfQ1BVX0ZSRVE9bg0KICAg
-ICAgICAgICAgICAgIAlDb3VsZCB5b3UgYmUgcGxlYXNlZCBoZWxwIG1lIHdoYXQgY291bGQgYmUg
-dGhlIHByb2JsZW0uDQoNCiAgICAgICAgICAgIAkJVGhhbmsgeW91Lg0KDQogICAgICAgICAgICAg
-ICAgQmVzdCBSZWdhcmRz77yMDQogICAgICAgICAgICAgICAgSXZhbg0KDQoNCg0KDQoNCg0KDQoN
-Cg0KDQoNCg0K
+
+=EF=BB=BF=E5=9C=A8 2022/4/12 16:46=EF=BC=8C=E2=80=9CZhang, Qiang1=E2=80=9D<qiang1.zhang@intel.com> =E5=86=99=E5=85=A5=
+:
+
+
+
+    Dear Qiang,
+
+    	I've found xenomai supported igb driver as RTNET, and can I use this d=
+river instead of normal linux driver that I only use I211 for TCPIP socket.
+
+    I'm not familiar with RTNET,  if your problem can be repeated on the Li=
+nux kernel all the time, maybe you can enable CONFIG_LOCKUP_DETECTOR and CON=
+FIG_HARDLOCKUP_DETECTOR_PERF, to check whether  the CPU which in  RCU stall =
+info has lockup,  or you can  echo 1 > /sys/kernel/panic_on_rcu_stall when R=
+CU stall happened, the system will panic,  you can use crash tools to analyz=
+e vmcore file(the premise is that you need to configure kdump), and then see=
+ what cpu5 is doing.
+
+    Do you have a task with higher real-time priority that has been occupyi=
+ng cpu5 ?
+
+ 	Qiang,
+	
+	Nothing done on NRT CPUs like 3 4 5
+	Only RT thread like EtherCAT running with high priority on the isolation C=
+PU 1.
+
+
+    	Thankyou.
+
+    Best Regards,
+    Ivan
+
+    =EF=BB=BF=E5=9C=A8 2022/4/11 16:40=EF=BC=8C=E2=80=9CIvan Jiang=E2=80=9D<jcgeforce@aliyun.com> =E5=86=99=E5=85=A5:
+
+        Add on=EF=BC=9A
+
+        	[  443.996057] rcu: INFO: rcu_preempt detected stalls on CPUs/task=
+s:
+        [  444.002166] rcu:     5-...0: (0 ticks this GP) idle=3D8de/1/0x4000=
+000000000000 softirq=3D722/722 fqs=3D9227 last_accelerate: fcd8/8c9e, nonlazy_po=
+sted: 0, L.
+        [  444.015487] rcu:     (detected by 3, t=3D36767 jiffies, g=3D11061, q=
+=3D792)
+        [  444.021677] Task dump for CPU 5:
+        [  444.024906] kworker/5:2     R  running task        0   263     !=
+2 0x0000022a
+        [  444.031969] Workq=E2=96=92eue: events igb_watchdog_task
+        [  444.036503] Call trace:
+        [  444.038952]  __switch_to+0xe8/0x138
+        [  444.042442]  0xffff800639210000
+        [  444.045588] rcu: rcu_preempt kthread starved for 18306 jiffies! =
+g11061 f0x2 RCU_GP_WAIT_FQS(5) ->state=3D0x0 ->cpu=3D5
+        [  444.055951] rcu: RCU grace-period kthread stack dump:
+        [  444.061006] rcu_preempt     R  running task        0    10      =
+2 0x00000028
+        [  444.068066] Call trace:
+        [  444.070514]  __switch_to+0xe8/0x138
+        [  444.074006]  __schedule+0x2c0/0x828
+        [  444.077497]  schedule+0x38/0xa8
+        [  444.080641]  schedule_timeout+0x98/0x440
+        [  444.084568]  rcu_gp_kthread+0x4ac/0x8b0
+        [  444.088407]  kthread+0x12c/0x130
+        [  444.091638]  ret_from_fork+0x14/0x1c
+
+        =EF=BB=BF=E5=9C=A8 2022/4/11 16:24=EF=BC=8C=E2=80=9CXenomai =E4=BB=A3=E8=A1=A8 Ivan Jiang via Xenomai=E2=80=
+=9D<xenomai-bounces@xenomai.org =E4=BB=A3=E8=A1=A8 xenomai@xenomai.org> =E5=86=99=E5=85=A5:
+
+            Dear Qiang=EF=BC=9A
+
+            	Another information like this:
+            	[  121.127758] rcu: INFO: rcu_preempt detected stalls on CPUs/=
+tasks:
+            [  121.133887] rcu:     0-...0: (5 ticks this GP) idle=3Db5a/1/0x=
+4000000000000002 softirq=3D11605/11606 fqs=3D2336
+            [  121.143294] rcu:     (detected by 4, t=3D5255 jiffies, g=3D4137,=
+ q=3D10)
+            [  121.149225] Task dump for CPU 0:
+            [  121.152457] tcf-agent       R  running task        0   384  =
+    1 0x0000020a
+            [  121.159520] Call trace:
+            [  121.161987]  __switch_to+0xe8/0x138
+            [  121.165481]  0xffff000008e4c000
+            [  220.120678] audit: type=3D1701 audit(1649325109.997:4): auid=3D4=
+294967295 uid=3D0 gid=3D0 ses=3D4294967295 pid=3D241 comm=3D"systemd-journal" exe=3D"/li=
+b/systemd/systemd-journald" sig=3D6 res=3D1
+            [  280.369229] systemd[1]: systemd-udevd.service: Watchdog time=
+out (limit 3min)!
+            [  280.376682] systemd[1]: systemd-udevd.service: Killing proce=
+ss 255 (systemd-udevd) with signal SIGABRT.
+            [  280.386241] audit: type=3D1701 audit(1649325109.997:5): auid=3D4=
+294967295 uid=3D0 gid=3D0 ses=3D4294967295 pid=3D255 comm=3D"systemd-udevd" exe=3D"/lib/=
+systemd/systemd-udevd" sig=3D6 res=3D1
+            [  310.369200] systemd[1]: systemd-journald.service: State 'sto=
+p-sigabrt' timed out. Terminating.
+            [  370.619174] systemd[1]: systemd-udevd.service: State 'stop-s=
+igabrt' timed out. Terminating.
+            [  400.619175] systemd[1]: systemd-journald.service: State 'sto=
+p-sigterm' timed out. Killing.
+            [  400.627584] systemd[1]: systemd-journald.service: Killing pr=
+ocess 241 (systemd-journal) with signal SIGKILL.
+
+            Thank you.
+            BR.,
+            Ivan
+
+
+            =EF=BB=BF=E5=9C=A8 2022/4/11 16:11=EF=BC=8C=E2=80=9CZhang, Qiang1=E2=80=9D<qiang1.zhang@intel=
+.com> =E5=86=99=E5=85=A5:
+
+
+                    Dear xenomais=EF=BC=9A
+
+                        When I used Intel I211 Ethernet chip (pcie 2 Gigibi=
+t) met rcu error like below=EF=BC=9A
+                    	rcu: INFO: rcu_preempt detected expedited stalls on CP=
+Us/tasks: { 5-... } 5335 jiffies s: 37 root: 0x20/.
+                    	[  392.174721] rcu: blocking rcu_node structures:
+                    	[  392.179174] Task dump for CPU 5:
+                    	[  392.182411] kworker/5:2     R  running task        =
+0   263      2 0x0000022a
+                    	[  392.189479] Workqueue: events igb_watchdog_task
+                    	[  392.194018] Call trace:
+                    	[  392.196471]  __switch_to+0xe8/0x138
+                    	[  392.199961]  0xffff800639210000
+
+                Hi, Please provide full  rcu stall information, this info i=
+ndicate the CPU5 can not notice rcu quiescent state,
+                This may be because the status cannot be reported in time d=
+ue to disable interrupts or preemption long time etc
+                 you can see Documentation/RCU/stallwarn.rst.
+
+                Thanks
+                Zqiang
+
+
+
+                		Environment like this:
+                		Cobalt 3.1 ipipe 4.19.106 or 4.19.198 ARM64
+                		Starting commands isolcpus=3D1,2 xenomai.supported_cpus=3D0x0=
+6 nohz_full=3D1,2 rcu_nocbs=3D1,2 irqaffinity=3D0,3,4,5 nmi_interrupt=3D0
+                		Because I set irqaffinity on NRT cpus: CPU0 CPU3 CPU4 CPU=
+5, so Task dump for CPU 0 3 4 5 randomly.
+                		And when the error messages appeared after 10 minutes, th=
+e system 's no longer responded anything and I haven't done any threads with=
+ this Ethernet port just ping command.
+                		.config file contains such options:
+                    	CONFIG_NO_HZ_FULL =3D y
+                    	CONFIG_RCU_NOCB_CPU=3Dy
+                    	CONFIG_PREEMPT=3Dy
+                    	CONFIG_CPU_IDLE=3Dn
+                    	CONFIG_ARM_CPUIDLE=3Dn
+                    	CONFIG_CPU_FREQ=3Dn
+                    	Could you be pleased help me what could be the problem=
+.
+
+                		Thank you.
+
+                    Best Regards=EF=BC=8C
+                    Ivan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
