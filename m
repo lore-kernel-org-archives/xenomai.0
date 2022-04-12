@@ -1,7 +1,7 @@
-Date: Mon, 11 Apr 2022 20:15:40 +0800
+Date: Tue, 12 Apr 2022 16:05:20 +0800
 Subject: Re: rcu_preempt detected expedited stalls on CPUs/tasks
 From: Ivan Jiang <jcgeforce@aliyun.com>
-Message-ID: <6CF246D4-2BFB-4CE1-9D58-41CAF73751FD@aliyun.com>
+Message-ID: <8C97D14F-E3AE-45C8-9BE7-DE91A748AE10@aliyun.com>
 References: <066DE2BF-5884-4333-9E1D-5ACF7B904181@aliyun.com>
  <PH0PR11MB58801714B5C99FF4DE04C88FDAEA9@PH0PR11MB5880.namprd11.prod.outlook.com>
  <9F8BCB86-C218-4DBE-81B4-E5F5E25DC8AE@aliyun.com>
@@ -22,7 +22,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: "Zhang, Qiang1" <qiang1.zhang@intel.com>, xenomai--- via Xenomai <xenomai@xenomai.org>
 Cc: Xenomai <xenomai-bounces@xenomai.org>
 
-Thank you Qiang, I' ll have a try.
+Dear Qiang,
+
+	I've found xenomai supported igb driver as RTNET, and can I use this drive=
+r instead of normal linux driver that I only use I211 for TCPIP socket.
+	Thankyou.
+
+Best Regards,
+Ivan
 
 =EF=BB=BF=E5=9C=A8 2022/4/11 16:40=EF=BC=8C=E2=80=9CIvan Jiang=E2=80=9D<jcgeforce@aliyun.com> =E5=86=99=E5=85=A5:
 
