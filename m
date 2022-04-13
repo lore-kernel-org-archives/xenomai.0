@@ -1,15 +1,11 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [linux-dovetail PATCH 2/2] clocksource: GENERIC_CLOCKSOURCE_VDSO
- only supported on ARM
-Date: Wed, 6 Apr 2022 00:32:53 +0000
-Message-ID: <MN2PR11MB42856C36CFD8CA17393DE52EF2E79@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20220402030919.5104-1-hongzhan.chen@intel.com>
- <20220402030919.5104-2-hongzhan.chen@intel.com> <878rsnq20o.fsf@xenomai.org>
-In-Reply-To: <878rsnq20o.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH 2/2] doc: Remove references to --enable-smp
+Date: Wed, 13 Apr 2022 14:05:09 +0200
+Message-Id: <20220413120509.5637-2-richard@nod.at>
+In-Reply-To: <20220413120509.5637-1-richard@nod.at>
+References: <20220413120509.5637-1-richard@nod.at>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,57 +14,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
->-----Original Message-----
->From: Philippe Gerum <rpm@xenomai.org>=20
->Sent: Saturday, April 2, 2022 5:11 PM
->To: Chen, Hongzhan <hongzhan.chen@intel.com>
->Cc: xenomai@xenomai.org
->Subject: Re: [linux-dovetail PATCH 2/2] clocksource: GENERIC_CLOCKSOURCE_V=
-DSO only supported on ARM
->
->
->Hongzhan Chen via Xenomai <xenomai@xenomai.org> writes:
->
->> Currently, GENERIC_CLOCKSOURCE_VDSO only supported well on ARM.
->> To fix build issue like following when make allyesconfig on x86 platform=
-.
->>
->> arch/x86/entry/vdso/../../../../lib/vdso/gettimeofday.c:145:14:
->> error: implicit declaration of function clock_open_device
->>
->> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->> ---
->>  drivers/clocksource/Kconfig | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
->> index 5138cd593373..1e8c1cd086d5 100644
->> --- a/drivers/clocksource/Kconfig
->> +++ b/drivers/clocksource/Kconfig
->> @@ -644,7 +644,7 @@ config CLKSRC_ST_LPC
->>  	bool "Low power clocksource found in the LPC" if COMPILE_TEST
->>  	select TIMER_OF if OF
->>  	depends on HAS_IOMEM
->> -	select GENERIC_CLOCKSOURCE_VDSO
->> +	select GENERIC_CLOCKSOURCE_VDSO if ARM
->>  	help
->>  	  Enable this option to use the Low Power controller timer
->>  	  as clocksource.
->
->Starting from v5.17, Dovetail has generic support for clocksource access
->via the vDSO for CONFIG_ARM64 too. Which kernel release is this patch
->based on?
+SMP is enabled by default, remove usage of --enable-smp
+and document how to disable SMP, if needed.
 
-Sorry, I had not described it clearly. It is based on 5.10.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ doc/asciidoc/README.INSTALL.adoc | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-Regards
+diff --git a/doc/asciidoc/README.INSTALL.adoc b/doc/asciidoc/README.INSTA=
+LL.adoc
+index c0f4c12e99b4..d2b7e6f782eb 100644
+--- a/doc/asciidoc/README.INSTALL.adoc
++++ b/doc/asciidoc/README.INSTALL.adoc
+@@ -538,9 +538,9 @@ only reason to turn this feature on would be aimed at=
+ cancelling
+ threads which run significantly long, syscall-less busy loops with no
+ explicit exit condition, which should probably be revisited anyway.
+=20
+-*--enable-smp*::
++*--disable-smp*::
+=20
+-	Turns on SMP support for Xenomai libraries.
++	Turns off SMP support for Xenomai libraries.
+=20
+ [CAUTION]
+ SMP support must be enabled in Xenomai libraries when the
+@@ -671,9 +671,6 @@ The examples in following sections use the following =
+conventions:
+  the host immediately updates the target system with the installed
+  programs and libraries.
+=20
+-CAUTION: In the examples below, make sure to add `--enable-smp` to the
+-_configure_ script options if building for a SMP-enabled kernel.
+-
+ Building the x86 libraries (32/64bit)
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=20
+@@ -683,7 +680,7 @@ typically run:
+=20
+ ------------------------------------------------------------------------=
+------
+ $ mkdir $build_root && cd $build_root
+-$ $xenomai_root/configure --with-core=3Dmercury --enable-smp --enable-ps=
+hared
++$ $xenomai_root/configure --with-core=3Dmercury --enable-pshared
+ $ make install
+ ------------------------------------------------------------------------=
+------
+=20
+@@ -692,7 +689,7 @@ same feature set, for running on x86_32 could be:
+=20
+ ------------------------------------------------------------------------=
+------
+ $ mkdir $build_root && cd $build_root
+-$ $xenomai_root/configure --with-core=3Dcobalt --enable-smp --enable-psh=
+ared \
++$ $xenomai_root/configure --with-core=3Dcobalt --enable-pshared \
+   --host=3Di686-linux CFLAGS=3D"-m32 -O2" LDFLAGS=3D"-m32"
+ $ make install
+ ------------------------------------------------------------------------=
+------
+@@ -743,10 +740,10 @@ for the supported SOCs:
+ 		gcc versions the flag for armv7
+ 		may be `-march=3Darmv7-a` or
+ 		`-march=3Darmv7a`]|
+-|imx6q	     | `-march=3Darmv7-a -mfpu=3Dvfp3` footnoteref:[armv7] | --en=
+able-smp
++|imx6q	     | `-march=3Darmv7-a -mfpu=3Dvfp3` footnoteref:[armv7] |
+ |ixp4xx      | `-march=3Darmv5 -msoft-float`         | `--enable-arm-tsc=
+=3Dixp4xx`
+ |omap3       | `-march=3Darmv7-a -mfpu=3Dvfp3` footnoteref:[armv7] |
+-|omap4       | `-march=3Darmv7-a -mfpu=3Dvfp3` footnoteref:[armv7] | --e=
+nable-smp
++|omap4       | `-march=3Darmv7-a -mfpu=3Dvfp3` footnoteref:[armv7] |
+ |orion       | `-march=3Darmv5 -mfpu=3Dvfp`            |
+ |pxa         | `-march=3Darmv5 -msoft-float`         |
+ |pxa3xx      | `-march=3Darmv5 -msoft-float`         | --enable-arm-quir=
+ks=3Dxscale3
+--=20
+2.26.2
 
-Hongzhan Chen
-
->
->--=20
->Philippe.
 
