@@ -1,13 +1,9 @@
-Message-ID: <79baf069-8bf8-ef6d-1eff-15ba2c702ba8@siemens.com>
-Date: Wed, 13 Apr 2022 13:23:01 +0200
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH 1/2] debian: Remove --enable-smp
+Date: Wed, 13 Apr 2022 14:05:08 +0200
+Message-Id: <20220413120509.5637-1-richard@nod.at>
 MIME-Version: 1.0
-Subject: Re: [PATCH] configure.ac: Enable SMP by default
-Content-Language: en-US
-References: <20220408085909.26395-1-richard@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220408085909.26395-1-richard@nod.at>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +12,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-On 08.04.22 10:59, Richard Weinberger via Xenomai wrote:
-> In 2022 it is hard to find ARM or x86 systems without SMP.
-> Other CPU architectures are no longer supported by Xenomai.
-> So, make SMP support opt-out.
-> 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  configure.ac | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index 019453793..867fc4636 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -385,12 +385,9 @@ if test x$use_registry = xy; then
->  fi
->  AM_CONDITIONAL(XENO_REGISTRY,[test x$use_registry = xy])
->  
-> -dnl SMP support (default: on for cobalt/x86, off otherwise)
-> +dnl SMP support (default: on)
->  
-> -CONFIG_SMP=
-> -if test $target_cpu_arch = x86 -a $rtcore_type = cobalt; then
-> -	CONFIG_SMP=y
-> -fi
-> +CONFIG_SMP=y
->  AC_MSG_CHECKING(for SMP support)
->  AC_ARG_ENABLE(smp,
->  	AS_HELP_STRING([--enable-smp], [Enable SMP support]),
+SMP is now enabled by default for all architectures.
+No need to use --enable-smp anymore.
 
-Thanks, applied.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ debian/rules | 1 -
+ 1 file changed, 1 deletion(-)
 
-We could now drop the explicit --enable-smp from debian/rules as well,
-but that's nothing urgent.
+diff --git a/debian/rules b/debian/rules
+index 3fe6bece93c9..60094734630d 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -17,7 +17,6 @@ CONFIG_OPTS =3D --prefix=3D/usr \
+             --includedir=3D/usr/include/xenomai \
+             --mandir=3D/usr/share/man \
+             --with-testdir=3D/usr/lib/xenomai/testsuite \
+-            --enable-smp \
+             --enable-lazy-setsched \
+             --enable-debug=3Dsymbols \
+             --enable-dlopen-libs
+--=20
+2.26.2
 
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
 
