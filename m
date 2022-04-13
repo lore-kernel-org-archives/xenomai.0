@@ -1,10 +1,16 @@
-From: Scott Reed <scott.reed@arcor.de>
-Subject: Does Xenomai 3.2.x work with 4.14.x kernels?
-Message-ID: <3e06adcf-fa06-b69c-d91e-972f283d9b08@arcor.de>
-Date: Wed, 13 Apr 2022 11:25:10 +0200
+Message-ID: <47d3b5a0-64b5-c9b9-e7af-3c48d0fefcf6@siemens.com>
+Date: Wed, 13 Apr 2022 13:20:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Subject: Re: [PATCH 1/5] cobalt/events: add auto-clear feature
 Content-Language: en-US
+References: <20220406155648.1592472-1-rpm@xenomai.org>
+ <53b70915-2040-d2aa-3077-698fa8be01af@siemens.com>
+ <87pmltf82m.fsf@xenomai.org>
+ <36839700-8ca3-48b2-476e-8723a2030560@siemens.com>
+ <87v8vkerlb.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <87v8vkerlb.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,50 +20,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 07.04.22 19:09, Philippe Gerum wrote:
+> 
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> 
+>> On 07.04.22 13:16, Philippe Gerum wrote:
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>>>
+>>>> On 06.04.22 17:56, Philippe Gerum via Xenomai wrote:
+>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>
+>>>>> The current implementation does not atomically consume+clear the event
+>>>>> set to be received by the waiter(s), which makes it useless for
+>>>>> anything but a plain one-time latch due to the race window this opens
+>>>>> with a consume[A]->signal[B]->clear[A] sequence.
+>>>>>
+>>>>> To address this issue, let's provide the auto-clear feature with
+>>>>> __cobalt_event_wait().
+>>>>>
+>>>>> This change affects the ABI by adding the auto-clear mode as an opt-in
+>>>>> feature, enabled by passing COBALT_EVENT_AUTOCLEAR to
+>>>>> cobalt_event_init().
+>>>>>
+>>>>
+>>>> Makes sense, but shouldn't autoclear be rather the default then? Which
+>>>> users are affected? None in-tree so far?
+>>>>
+>>>
+>>> There is one user in copperplate:
+>>> https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/copperplate/eventobj.c#L87
+>>>
+>>> which indirectly affects rt_event_signal() from the alchemy API:
+>>> https://source.denx.de/Xenomai/xenomai/-/blob/28158391258eea52650856bef5d3ed6ebaaf813b/lib/alchemy/event.c#L453
+>>>
+>>> Nobody raised the issue so far with alchemy, which is why I refrained
+>>> from turning the autoclear mode on by default so far. This is debatable,
+>>> since no documentation explains the limitation on usage caused by not
+>>> having the autoclear mode set.
+>>>
+>>
+>> So, the pattern via Alchemy would be
+>>
+>> Thread A		Thread B
+>>
+>> rt_event_wait()
+>> 			rt_event_signal()
+>> rt_event_clear()
+>>
+>> That would force users to perform a state check via a side-channel after
+>> clearing the event to avoid starting to waiting if the condition was met
+>> again.
+>>
+>> OK, but how could users request the new mode in rt_event_create? There
+>> is not even a EV_AUTOCLEAR flag for it. Do you have more patches pending?
+>>
+> 
+> The alternative I see is:
+> 
+> - assume that some people might be expecting the current - fragile to
+>   say the least - behavior, which means that we should add a flag to
+>   rt_event_create() in order to enable the auto-clear mode for all
+>   others.
+> 
+> - consider the current behavior as broken beyond recognition, and force
+>   in the auto-clear mode for all alchemy events, at the expense of
+>   requiring the folks who have been using a side-channel to paper over
+>   the current misdesign, to fix their stuff the right way, based on the
+>   auto-clear behavior.
+> 
+> IMHO, everyone would be better off with #2, because it would just work
+> in all cases. The side-channel would simply become a useless but
+> innocuous noise if present.
+> 
+> Which way should we go is debatable, this is why I did not issue any
+> patch changing the alchemy interface yet.
+> 
 
-I am trying to build a 4.14.110 kernel+ipipe+xenomai_3.2.7 and running into
-issues when trying to compile. Namely, the 4.14.x kernel does not seem
-to understand the "__kernel_timespec" struct.
+Let's go for option #2 then and include the alchemy changes as well.
+Will only target the next major release anyway.
 
-Is it known if Xenomai 3.2.x works with 4.14.x kernels?
+Jan
 
-Some background information
----------------------------
-Our platform is based on an ARM iMx6q.
-
-I have tried to move to a 5.4.x kernel, but ran into another issue
-in that we have an RTDM driver which uses PCI MSI interrupts and
-when I try to register the interrupt with rtdm_irq_request the
-function returns EINVAL(-22).
-
-When working with a vanilla 5.4.x kernel and non-RTDM version of
-the driver, there are no issues when registering the interrupt.
-
-I started to dive into this problem, but saw that as of kernel
-4.16, the PCI MSI interrupts for our platform have been changed
-to be handled as chained interrupts.
-
-In this forum, I have seen multiple discussions and patches regarding
-chained interrupts for X86, but not for ARM and began to think that
-maybe chained interrupt support in xenomai is not complete for ARM.
-
-Could this be the case?
-
-For this reason, I backed down to the 4.14.x kernel, but now have run
-into the compiling issue as mentioned at the start of this email.
-
-One last piece of background information, my initial motivation to move
-to a new xenomai was that we moved to GCC 10.2 (in the meantime GCC 11.1)
-and I was concerned regarding the ARM r7 register clobbering issues/patches
-posted to the forum as I am fighting against a bug in our system where 
-registers get corrupted albeit not r7 (typically r0 with a value of 
-0xFFFFFFFA (-38)). This problem seems to have come in after we upgraded
-to GCC 10.2
-
-Thanks for any help,
-
-Scott
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
