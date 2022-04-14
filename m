@@ -1,13 +1,16 @@
-Date: Thu, 14 Apr 2022 14:58:39 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <2065449276.254073.1649941119506.JavaMail.zimbra@nod.at>
-In-Reply-To: <7d2e38dc-7386-e703-2e09-572874c5e162@siemens.com>
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
+Date: Thu, 14 Apr 2022 14:15:48 +0000
+Message-ID: <ecaf916590f14dbc063015e0a9b2be614609f7a4.camel@siemens.com>
 References: <20220413215819.22954-1-richard@nod.at>
  <7d2e38dc-7386-e703-2e09-572874c5e162@siemens.com>
-Subject: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
+ <2065449276.254073.1649941119506.JavaMail.zimbra@nod.at>
+In-Reply-To: <2065449276.254073.1649941119506.JavaMail.zimbra@nod.at>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1F587A0CBEC61546A7018A5E18CF47CF@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "richard@nod.at" <richard@nod.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> An: "richard" <richard@nod.at>, "xenomai" <xenomai@xenomai.org>
-> Gesendet: Donnerstag, 14. April 2022 13:18:59
-> Betreff: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
-
-> On 13.04.22 23:58, Richard Weinberger via Xenomai wrote:
->> This patch series is a first attempt to integrate the currently abandone=
-d
->> alchemy, pSOS and VxWorks tests into Xenomai's test suite.
->> Since each test assumes running as own process a test driver is needed
->> which executes each tests separately.
->> The driver makes use of the smokey framework.
->>=20
->> Test results on a x86 VM (5.15.19, Xenomai master as of today):
->> - Alchemy:
->>   test2 fails:
->> =09[8] at task-2.c:71
->> =09[1] at task-2.c:24
->> =09[9] at task-2.c:79
->> =09[4] at task-2.c:43
->> =09[10] at task-2.c:87
->> =09[5] at task-2.c:48
->> =09[11] at task-2.c:92
->> =09[2] at task-2.c:29
->> =09[6] at task-2.c:52
->> =09   0"022.972| BUG in __traceobj_check_abort(): [FGND] wrong return st=
-atus:
->> =09=09      task-2.c:55 =3D> EINVAL (want OK)
-
-task-2 seems suffers from modern gcc, changes to safety and count are dead =
-stores.
-
-This makes the test pass here:
-
-diff --git a/testsuite/alchemytests/task-2.c b/testsuite/alchemytests/task-=
-2.c
-index e751ddd34..9d5281c75 100644
---- a/testsuite/alchemytests/task-2.c
-+++ b/testsuite/alchemytests/task-2.c
-@@ -28,8 +28,10 @@ static void background_task(void *arg)
-=20
-        traceobj_mark(&trobj, 2);
-=20
--       while (--safety > 0)
-+       while (--safety > 0) {
-+               compiler_barrier();
-                count++;
-+       }
-=20
-        traceobj_exit(&trobj);
- }
-
-...same does marking both variables as volatile.
-
-Thanks,
-//richard
+T24gVGh1LCAyMDIyLTA0LTE0IGF0IDE0OjU4ICswMjAwLCBSaWNoYXJkIFdlaW5iZXJnZXIgdmlh
+IFhlbm9tYWkNCndyb3RlOg0KPiAtLS0tLSBVcnNwcsO8bmdsaWNoZSBNYWlsIC0tLS0tDQo+ID4g
+Vm9uOiAiSmFuIEtpc3prYSIgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+ID4gQW46ICJyaWNo
+YXJkIiA8cmljaGFyZEBub2QuYXQ+LCAieGVub21haSIgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
+ID4gR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDE0LiBBcHJpbCAyMDIyIDEzOjE4OjU5DQo+ID4gQmV0
+cmVmZjogUmU6IFtQQVRDSCB2MiAwLzldIFJldml2ZSBhbGNoZW15LCBwU09TIGFuZCBWeFdvcmtz
+IHRlc3RzDQo+IA0KPiA+IE9uIDEzLjA0LjIyIDIzOjU4LCBSaWNoYXJkIFdlaW5iZXJnZXIgdmlh
+IFhlbm9tYWkgd3JvdGU6DQo+ID4gPiBUaGlzIHBhdGNoIHNlcmllcyBpcyBhIGZpcnN0IGF0dGVt
+cHQgdG8gaW50ZWdyYXRlIHRoZSBjdXJyZW50bHkgYWJhbmRvbmVkDQo+ID4gPiBhbGNoZW15LCBw
+U09TIGFuZCBWeFdvcmtzIHRlc3RzIGludG8gWGVub21haSdzIHRlc3Qgc3VpdGUuDQo+ID4gPiBT
+aW5jZSBlYWNoIHRlc3QgYXNzdW1lcyBydW5uaW5nIGFzIG93biBwcm9jZXNzIGEgdGVzdCBkcml2
+ZXIgaXMgbmVlZGVkDQo+ID4gPiB3aGljaCBleGVjdXRlcyBlYWNoIHRlc3RzIHNlcGFyYXRlbHku
+DQo+ID4gPiBUaGUgZHJpdmVyIG1ha2VzIHVzZSBvZiB0aGUgc21va2V5IGZyYW1ld29yay4NCj4g
+PiA+IA0KPiA+ID4gVGVzdCByZXN1bHRzIG9uIGEgeDg2IFZNICg1LjE1LjE5LCBYZW5vbWFpIG1h
+c3RlciBhcyBvZiB0b2RheSk6DQo+ID4gPiAtIEFsY2hlbXk6DQo+ID4gPiAgIHRlc3QyIGZhaWxz
+Og0KPiA+ID4gCVs4XSBhdCB0YXNrLTIuYzo3MQ0KPiA+ID4gCVsxXSBhdCB0YXNrLTIuYzoyNA0K
+PiA+ID4gCVs5XSBhdCB0YXNrLTIuYzo3OQ0KPiA+ID4gCVs0XSBhdCB0YXNrLTIuYzo0Mw0KPiA+
+ID4gCVsxMF0gYXQgdGFzay0yLmM6ODcNCj4gPiA+IAlbNV0gYXQgdGFzay0yLmM6NDgNCj4gPiA+
+IAlbMTFdIGF0IHRhc2stMi5jOjkyDQo+ID4gPiAJWzJdIGF0IHRhc2stMi5jOjI5DQo+ID4gPiAJ
+WzZdIGF0IHRhc2stMi5jOjUyDQo+ID4gPiAJICAgMCIwMjIuOTcyfCBCVUcgaW4gX190cmFjZW9i
+al9jaGVja19hYm9ydCgpOiBbRkdORF0gd3JvbmcgcmV0dXJuIHN0YXR1czoNCj4gPiA+IAkJICAg
+ICAgdGFzay0yLmM6NTUgPT4gRUlOVkFMICh3YW50IE9LKQ0KPiANCj4gdGFzay0yIHNlZW1zIHN1
+ZmZlcnMgZnJvbSBtb2Rlcm4gZ2NjLCBjaGFuZ2VzIHRvIHNhZmV0eSBhbmQgY291bnQgYXJlIGRl
+YWQgc3RvcmVzLg0KPiANCj4gVGhpcyBtYWtlcyB0aGUgdGVzdCBwYXNzIGhlcmU6DQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvdGVzdHN1aXRlL2FsY2hlbXl0ZXN0cy90YXNrLTIuYyBiL3Rlc3RzdWl0ZS9h
+bGNoZW15dGVzdHMvdGFzay0yLmMNCj4gaW5kZXggZTc1MWRkZDM0Li45ZDUyODFjNzUgMTAwNjQ0
+DQo+IC0tLSBhL3Rlc3RzdWl0ZS9hbGNoZW15dGVzdHMvdGFzay0yLmMNCj4gKysrIGIvdGVzdHN1
+aXRlL2FsY2hlbXl0ZXN0cy90YXNrLTIuYw0KPiBAQCAtMjgsOCArMjgsMTAgQEAgc3RhdGljIHZv
+aWQgYmFja2dyb3VuZF90YXNrKHZvaWQgKmFyZykNCj4gIA0KPiAgICAgICAgIHRyYWNlb2JqX21h
+cmsoJnRyb2JqLCAyKTsNCj4gIA0KPiAtICAgICAgIHdoaWxlICgtLXNhZmV0eSA+IDApDQo+ICsg
+ICAgICAgd2hpbGUgKC0tc2FmZXR5ID4gMCkgew0KPiArICAgICAgICAgICAgICAgY29tcGlsZXJf
+YmFycmllcigpOw0KPiAgICAgICAgICAgICAgICAgY291bnQrKzsNCj4gKyAgICAgICB9DQo+ICAN
+Cj4gICAgICAgICB0cmFjZW9ial9leGl0KCZ0cm9iaik7DQo+ICB9DQo+IA0KPiAuLi5zYW1lIGRv
+ZXMgbWFya2luZyBib3RoIHZhcmlhYmxlcyBhcyB2b2xhdGlsZS4NCg0KSSBkb24ndCBoYXZlIG11
+Y2ggY29udGV4dCBoZXJlLCBidXQgdm9sYXRpbGUgc291bmRzIGxpa2UgYSB2YWxpZA0Kc29sdXRp
+b24gKGFzc3VtaW5nIHRoYXQgc2FmZXR5IGlzIHdyaXR0ZW4gYnkgYSBkaWZmZXJlbnQgdGhyZWFk
+KQ0KDQo+IA0KPiBUaGFua3MsDQo+IC8vcmljaGFyZA0KPiANCg0K
 
