@@ -1,16 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
-Date: Thu, 14 Apr 2022 14:15:48 +0000
-Message-ID: <ecaf916590f14dbc063015e0a9b2be614609f7a4.camel@siemens.com>
+Date: Thu, 14 Apr 2022 16:19:41 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <1113877096.254279.1649945981167.JavaMail.zimbra@nod.at>
+In-Reply-To: <ecaf916590f14dbc063015e0a9b2be614609f7a4.camel@siemens.com>
 References: <20220413215819.22954-1-richard@nod.at>
  <7d2e38dc-7386-e703-2e09-572874c5e162@siemens.com>
  <2065449276.254073.1649941119506.JavaMail.zimbra@nod.at>
-In-Reply-To: <2065449276.254073.1649941119506.JavaMail.zimbra@nod.at>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1F587A0CBEC61546A7018A5E18CF47CF@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ <ecaf916590f14dbc063015e0a9b2be614609f7a4.camel@siemens.com>
+Subject: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "richard@nod.at" <richard@nod.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIyLTA0LTE0IGF0IDE0OjU4ICswMjAwLCBSaWNoYXJkIFdlaW5iZXJnZXIgdmlh
-IFhlbm9tYWkNCndyb3RlOg0KPiAtLS0tLSBVcnNwcsO8bmdsaWNoZSBNYWlsIC0tLS0tDQo+ID4g
-Vm9uOiAiSmFuIEtpc3prYSIgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+ID4gQW46ICJyaWNo
-YXJkIiA8cmljaGFyZEBub2QuYXQ+LCAieGVub21haSIgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
-ID4gR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDE0LiBBcHJpbCAyMDIyIDEzOjE4OjU5DQo+ID4gQmV0
-cmVmZjogUmU6IFtQQVRDSCB2MiAwLzldIFJldml2ZSBhbGNoZW15LCBwU09TIGFuZCBWeFdvcmtz
-IHRlc3RzDQo+IA0KPiA+IE9uIDEzLjA0LjIyIDIzOjU4LCBSaWNoYXJkIFdlaW5iZXJnZXIgdmlh
-IFhlbm9tYWkgd3JvdGU6DQo+ID4gPiBUaGlzIHBhdGNoIHNlcmllcyBpcyBhIGZpcnN0IGF0dGVt
-cHQgdG8gaW50ZWdyYXRlIHRoZSBjdXJyZW50bHkgYWJhbmRvbmVkDQo+ID4gPiBhbGNoZW15LCBw
-U09TIGFuZCBWeFdvcmtzIHRlc3RzIGludG8gWGVub21haSdzIHRlc3Qgc3VpdGUuDQo+ID4gPiBT
-aW5jZSBlYWNoIHRlc3QgYXNzdW1lcyBydW5uaW5nIGFzIG93biBwcm9jZXNzIGEgdGVzdCBkcml2
-ZXIgaXMgbmVlZGVkDQo+ID4gPiB3aGljaCBleGVjdXRlcyBlYWNoIHRlc3RzIHNlcGFyYXRlbHku
-DQo+ID4gPiBUaGUgZHJpdmVyIG1ha2VzIHVzZSBvZiB0aGUgc21va2V5IGZyYW1ld29yay4NCj4g
-PiA+IA0KPiA+ID4gVGVzdCByZXN1bHRzIG9uIGEgeDg2IFZNICg1LjE1LjE5LCBYZW5vbWFpIG1h
-c3RlciBhcyBvZiB0b2RheSk6DQo+ID4gPiAtIEFsY2hlbXk6DQo+ID4gPiAgIHRlc3QyIGZhaWxz
-Og0KPiA+ID4gCVs4XSBhdCB0YXNrLTIuYzo3MQ0KPiA+ID4gCVsxXSBhdCB0YXNrLTIuYzoyNA0K
-PiA+ID4gCVs5XSBhdCB0YXNrLTIuYzo3OQ0KPiA+ID4gCVs0XSBhdCB0YXNrLTIuYzo0Mw0KPiA+
-ID4gCVsxMF0gYXQgdGFzay0yLmM6ODcNCj4gPiA+IAlbNV0gYXQgdGFzay0yLmM6NDgNCj4gPiA+
-IAlbMTFdIGF0IHRhc2stMi5jOjkyDQo+ID4gPiAJWzJdIGF0IHRhc2stMi5jOjI5DQo+ID4gPiAJ
-WzZdIGF0IHRhc2stMi5jOjUyDQo+ID4gPiAJICAgMCIwMjIuOTcyfCBCVUcgaW4gX190cmFjZW9i
-al9jaGVja19hYm9ydCgpOiBbRkdORF0gd3JvbmcgcmV0dXJuIHN0YXR1czoNCj4gPiA+IAkJICAg
-ICAgdGFzay0yLmM6NTUgPT4gRUlOVkFMICh3YW50IE9LKQ0KPiANCj4gdGFzay0yIHNlZW1zIHN1
-ZmZlcnMgZnJvbSBtb2Rlcm4gZ2NjLCBjaGFuZ2VzIHRvIHNhZmV0eSBhbmQgY291bnQgYXJlIGRl
-YWQgc3RvcmVzLg0KPiANCj4gVGhpcyBtYWtlcyB0aGUgdGVzdCBwYXNzIGhlcmU6DQo+IA0KPiBk
-aWZmIC0tZ2l0IGEvdGVzdHN1aXRlL2FsY2hlbXl0ZXN0cy90YXNrLTIuYyBiL3Rlc3RzdWl0ZS9h
-bGNoZW15dGVzdHMvdGFzay0yLmMNCj4gaW5kZXggZTc1MWRkZDM0Li45ZDUyODFjNzUgMTAwNjQ0
-DQo+IC0tLSBhL3Rlc3RzdWl0ZS9hbGNoZW15dGVzdHMvdGFzay0yLmMNCj4gKysrIGIvdGVzdHN1
-aXRlL2FsY2hlbXl0ZXN0cy90YXNrLTIuYw0KPiBAQCAtMjgsOCArMjgsMTAgQEAgc3RhdGljIHZv
-aWQgYmFja2dyb3VuZF90YXNrKHZvaWQgKmFyZykNCj4gIA0KPiAgICAgICAgIHRyYWNlb2JqX21h
-cmsoJnRyb2JqLCAyKTsNCj4gIA0KPiAtICAgICAgIHdoaWxlICgtLXNhZmV0eSA+IDApDQo+ICsg
-ICAgICAgd2hpbGUgKC0tc2FmZXR5ID4gMCkgew0KPiArICAgICAgICAgICAgICAgY29tcGlsZXJf
-YmFycmllcigpOw0KPiAgICAgICAgICAgICAgICAgY291bnQrKzsNCj4gKyAgICAgICB9DQo+ICAN
-Cj4gICAgICAgICB0cmFjZW9ial9leGl0KCZ0cm9iaik7DQo+ICB9DQo+IA0KPiAuLi5zYW1lIGRv
-ZXMgbWFya2luZyBib3RoIHZhcmlhYmxlcyBhcyB2b2xhdGlsZS4NCg0KSSBkb24ndCBoYXZlIG11
-Y2ggY29udGV4dCBoZXJlLCBidXQgdm9sYXRpbGUgc291bmRzIGxpa2UgYSB2YWxpZA0Kc29sdXRp
-b24gKGFzc3VtaW5nIHRoYXQgc2FmZXR5IGlzIHdyaXR0ZW4gYnkgYSBkaWZmZXJlbnQgdGhyZWFk
-KQ0KDQo+IA0KPiBUaGFua3MsDQo+IC8vcmljaGFyZA0KPiANCg0K
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+>> ...same does marking both variables as volatile.
+>=20
+> I don't have much context here, but volatile sounds like a valid
+> solution (assuming that safety is written by a different thread)
+
+Both variables are written by the very same thread.
+The problem is that the don't get used later, so the compiler is free
+to remove the loop. That's why the barrier fixes the problem.
+It forces the compiler to keep the loop.
+
+Thanks,
+//richard
 
