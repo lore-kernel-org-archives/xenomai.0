@@ -1,11 +1,14 @@
-Message-ID: <7d2e38dc-7386-e703-2e09-572874c5e162@siemens.com>
-Date: Thu, 14 Apr 2022 13:18:59 +0200
+Message-ID: <a3bff109-037a-5e47-fa54-48f5a0f53045@siemens.com>
+Date: Thu, 14 Apr 2022 13:27:12 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 0/9] Revive alchemy, pSOS and VxWorks tests
+Subject: Re: [PATCH 2/6] testsuite: Hook up alchemytests
 Content-Language: en-US
-References: <20220413215819.22954-1-richard@nod.at>
+References: <20220408080401.22235-1-richard@nod.at>
+ <20220408080401.22235-3-richard@nod.at>
+ <54b7b6a9-de04-54e9-b8dc-c8053a64b060@siemens.com>
+ <CAFLxGvwxZ-Ycqa-8UXj1Kk0vHR8NqQ+5oy_8aqRGMP4zxk-GTQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220413215819.22954-1-richard@nod.at>
+In-Reply-To: <CAFLxGvwxZ-Ycqa-8UXj1Kk0vHR8NqQ+5oy_8aqRGMP4zxk-GTQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,114 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Richard Weinberger <richard@nod.at>, Xenomai <xenomai@xenomai.org>
 
-On 13.04.22 23:58, Richard Weinberger via Xenomai wrote:
-> This patch series is a first attempt to integrate the currently abandoned
-> alchemy, pSOS and VxWorks tests into Xenomai's test suite.
-> Since each test assumes running as own process a test driver is needed
-> which executes each tests separately.
-> The driver makes use of the smokey framework.
+On 14.04.22 13:17, Richard Weinberger wrote:
+> On Thu, Apr 14, 2022 at 1:12 PM Jan Kiszka via Xenomai
+> <xenomai@xenomai.org> wrote:
+>> With only up to here applied:
+>>
+>> make[2]: Entering directory 'xenomai/build/testsuite/alchemytests'
+>> make[2]: *** No rule to make target 'alchemytest_driver.c', needed by
+>> 'alchemytest_driver.o'.  Stop.
 > 
-> Test results on a x86 VM (5.15.19, Xenomai master as of today):
-> - Alchemy:
->   test2 fails:
-> 	[8] at task-2.c:71
-> 	[1] at task-2.c:24
-> 	[9] at task-2.c:79
-> 	[4] at task-2.c:43
-> 	[10] at task-2.c:87
-> 	[5] at task-2.c:48
-> 	[11] at task-2.c:92
-> 	[2] at task-2.c:29
-> 	[6] at task-2.c:52
-> 	   0"022.972| BUG in __traceobj_check_abort(): [FGND] wrong return status:
-> 		      task-2.c:55 => EINVAL (want OK)
-> 
->   task5 fails:
-> 	[9] at task-5.c:79
-> 	[1] at task-5.c:23
-> 	[10] at task-5.c:87
-> 	[3] at task-5.c:40
-> 	[11] at task-5.c:95
-> 	[4] at task-5.c:45
-> 	[5] at task-5.c:50
-> 	[6] at task-5.c:55
-> 	[2] at task-5.c:28
-> 	[7] at task-5.c:60
-> 	   0"003.160| BUG in __traceobj_check_abort(): [FGND] wrong return status:
-> 		      task-5.c:63 => EINVAL (want OK)
+> Ah, alchemytest_driver.c comes in a follow up patch.
+> Will be fixed in a later series.
 
-Seems we need to fix those at least.
+Upps, this was on v1 - but it seems v2 was not different in this regard.
 
 > 
->   If Xenomai was configured with --enable-lores-clock, tests mq1, mutex1, pip1 and sem1 fail due to:
-> 	undefined symbol: __clockobj_ticks_to_timeout
+>>> +task10_SOURCES = task-10.c
+>>> +task10_CPPFLAGS = $(alchemycppflags)
+>>> +task10_LDADD = $(alchemyldadd) -lpthread -lrt -lm
+>>> +task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
+>>
+>> Lots of repetitions. Can we use at least some macro for them, or can't
+> 
+> My automake-fu is weak. Does automake support something like that?
 
-Missing lib dependency, likely. Cannot try out myself yet as patch 2
-does not build.
+I would have to dig this up myself, but I would be surprised if there is
+nothing like that.
 
 > 
-> - pSOS (Xenomai has to be configured with --enable-lores-clock):
-
-If we add this test to smokey, and it requires lores-clock, we either
-need to enable that in debian/rules or the Debian package built in
-xenomai-images so that CI/CT will not fail. Well, it will fail so far
-due to the test case problems. But that would be next.
-
->   rn1 fails:
-> 	0"001.017| BUG in __traceobj_assert_failed(): [rn1] trace assertion failed:
-> 		rn-1.c:46 => "ret == 0"
->   task2 fails:
-> 	[8] at task-2.c:73
-> 	[1] at task-2.c:23
-> 	[9] at task-2.c:81
-> 	[4] at task-2.c:44
-> 	[10] at task-2.c:89
-> 	[5] at task-2.c:49
-> 	[11] at task-2.c:94
-> 	[2] at task-2.c:28
-> 	[3] at task-2.c:33
-> 	[6] at task-2.c:53
-> 	   0"004.756| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
-> 		      task-2.c:56 => "ret == 0"
+>> we assign CPPFLAGS, LDADD and LDFLAGS globally (in this file)?
 > 
->   task6 fails:
-> 	[9] at task-6.c:79
-> 	[1] at task-6.c:22
-> 	[10] at task-6.c:87
-> 	[3] at task-6.c:39
-> 	[11] at task-6.c:95
-> 	[4] at task-6.c:44
-> 	[5] at task-6.c:49
-> 	[6] at task-6.c:54
-> 	[2] at task-6.c:27
-> 	[7] at task-6.c:59
-> 	   0"002.870| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
-> 		      task-6.c:62 => "ret == 0 && oldprio == myprio"
-> 
->   task8 runs forever (100% CPU)
-> 
-> - VxWorks:
->   task2 fails:
-> 	[8] at task-2.c:85
-> 	[1] at task-2.c:32
-> 	[9] at task-2.c:91
-> 	[4] at task-2.c:57
-> 	[10] at task-2.c:97
-> 	[5] at task-2.c:62
-> 	[11] at task-2.c:103
-> 	[2] at task-2.c:37
-> 	[12] at task-2.c:109
-> 	[6] at task-2.c:66
-> 	   0"005.790| BUG in __traceobj_assert_failed(): [foregroundTask] trace assertion failed:
-> 		      task-2.c:69 => "ret == 0"
+> I can give this a try. So far I didn't use global variables because building
+> the tests and the test driver is slightly different and may change.
 > 
 
-So... reviving means fixing first, unfortunately. Then enable CI/CT, and
-then we can merge. The pattern looks scalable, but then we could also
-apply it stepwise: first alchemy, then vxworks and finally psos with
-that lores-clock topic.
+Ah, that is the reason.
 
 Jan
 
