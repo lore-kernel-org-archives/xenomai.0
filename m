@@ -1,14 +1,12 @@
-Message-ID: <a3bff109-037a-5e47-fa54-48f5a0f53045@siemens.com>
-Date: Thu, 14 Apr 2022 13:27:12 +0200
+Message-ID: <67b4778f-33b1-9e3c-ed94-b1ddd17c5ab6@siemens.com>
+Date: Thu, 14 Apr 2022 13:28:42 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/6] testsuite: Hook up alchemytests
+Subject: Re: [PATCH 3/9] testsuite: Add a simple test driver for alchemytests
 Content-Language: en-US
-References: <20220408080401.22235-1-richard@nod.at>
- <20220408080401.22235-3-richard@nod.at>
- <54b7b6a9-de04-54e9-b8dc-c8053a64b060@siemens.com>
- <CAFLxGvwxZ-Ycqa-8UXj1Kk0vHR8NqQ+5oy_8aqRGMP4zxk-GTQ@mail.gmail.com>
+References: <20220413215819.22954-1-richard@nod.at>
+ <20220413215819.22954-4-richard@nod.at>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAFLxGvwxZ-Ycqa-8UXj1Kk0vHR8NqQ+5oy_8aqRGMP4zxk-GTQ@mail.gmail.com>
+In-Reply-To: <20220413215819.22954-4-richard@nod.at>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,46 +17,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: Richard Weinberger <richard@nod.at>, Xenomai <xenomai@xenomai.org>
+To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
 
-On 14.04.22 13:17, Richard Weinberger wrote:
-> On Thu, Apr 14, 2022 at 1:12 PM Jan Kiszka via Xenomai
-> <xenomai@xenomai.org> wrote:
->> With only up to here applied:
->>
->> make[2]: Entering directory 'xenomai/build/testsuite/alchemytests'
->> make[2]: *** No rule to make target 'alchemytest_driver.c', needed by
->> 'alchemytest_driver.o'.  Stop.
+On 13.04.22 23:58, Richard Weinberger via Xenomai wrote:
+> In their current shape, every alchemy test has to be a single
+> program and does not use the smokey test framework.
 > 
-> Ah, alchemytest_driver.c comes in a follow up patch.
-> Will be fixed in a later series.
+> alchemytest_driver uses smokey and runs each test as new process.
 
-Upps, this was on v1 - but it seems v2 was not different in this regard.
-
-> 
->>> +task10_SOURCES = task-10.c
->>> +task10_CPPFLAGS = $(alchemycppflags)
->>> +task10_LDADD = $(alchemyldadd) -lpthread -lrt -lm
->>> +task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
->>
->> Lots of repetitions. Can we use at least some macro for them, or can't
-> 
-> My automake-fu is weak. Does automake support something like that?
-
-I would have to dig this up myself, but I would be surprised if there is
-nothing like that.
-
-> 
->> we assign CPPFLAGS, LDADD and LDFLAGS globally (in this file)?
-> 
-> I can give this a try. So far I didn't use global variables because building
-> the tests and the test driver is slightly different and may change.
-> 
-
-Ah, that is the reason.
+Maybe rather call this "wrapper" or "loader" - driver reminded my first
+of a kernel driver.
 
 Jan
+
+> 
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+>  testsuite/alchemytests/Makefile.am          | 11 +++
+>  testsuite/alchemytests/alchemytest_driver.c | 84 +++++++++++++++++++++
+>  2 files changed, 95 insertions(+)
+>  create mode 100644 testsuite/alchemytests/alchemytest_driver.c
+> 
+> diff --git a/testsuite/alchemytests/Makefile.am b/testsuite/alchemytests/Makefile.am
+> index 35df0d49c..9159a0b77 100644
+> --- a/testsuite/alchemytests/Makefile.am
+> +++ b/testsuite/alchemytests/Makefile.am
+> @@ -146,3 +146,14 @@ task10_SOURCES = task-10.c
+>  task10_CPPFLAGS = $(alchemycppflags)
+>  task10_LDADD = $(alchemyldadd) -lpthread -lrt -lm
+>  task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
+> +
+> +alchemytest_driver_SOURCES = alchemytest_driver.c
+> +alchemytest_driver_CPPFLAGS =			\
+> +	$(XENO_USER_CFLAGS)			\
+> +	-I$(top_srcdir)/include
+> +alchemytest_driver_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
+> +alchemytest_driver_LDADD =			\
+> +	../../lib/smokey/libsmokey@CORE@.la	\
+> +	@XENO_CORE_LDADD@		\
+> +	@XENO_USER_LDADD@		\
+> +	-lpthread -lrt
+> diff --git a/testsuite/alchemytests/alchemytest_driver.c b/testsuite/alchemytests/alchemytest_driver.c
+> new file mode 100644
+> index 000000000..45323507d
+> --- /dev/null
+> +++ b/testsuite/alchemytests/alchemytest_driver.c
+> @@ -0,0 +1,84 @@
+> +#include <error.h>
+> +#include <libgen.h>
+> +#include <smokey/smokey.h>
+> +#include <stdbool.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <string.h>
+> +#include <unistd.h>
+> +
+> +static char *mydir;
+> +
+> +#define TEST(name)								   \
+> +	smokey_test_plugin(name, SMOKEY_NOARGS, "Run external test");		   \
+> +	static int run_##name(struct smokey_test *t, int argc, char *const argv[]) \
+> +	{									   \
+> +		return __run_extprog(t, argc, argv);				   \
+> +	}
+> +
+> +static int __run_extprog(struct smokey_test *t, int argc, char *const argv[])
+> +{
+> +	int ret;
+> +	char *tst_path;
+> +
+> +	ret = asprintf(&tst_path, "%s/%s --cpu-affinity=0", mydir, t->name);
+> +	if (ret == -1)
+> +		return -ENOMEM;
+> +
+> +	ret = system(tst_path);
+> +	free(tst_path);
+> +
+> +	return ret;
+> +}
+> +
+> +TEST(alarm1)
+> +TEST(buffer1)
+> +TEST(event1)
+> +TEST(heap1)
+> +TEST(heap2)
+> +TEST(mq1)
+> +TEST(mq2)
+> +TEST(mq3)
+> +TEST(mutex1)
+> +TEST(pipe1)
+> +TEST(sem1)
+> +TEST(sem2)
+> +TEST(task1)
+> +TEST(task2)
+> +TEST(task3)
+> +TEST(task4)
+> +TEST(task5)
+> +TEST(task6)
+> +TEST(task7)
+> +TEST(task8)
+> +TEST(task9)
+> +TEST(task10)
+> +
+> +int main(int argc, char *const argv[])
+> +{
+> +	struct smokey_test *t;
+> +	int ret, fails = 0;
+> +
+> +	if (argc > 0)
+> +		mydir = dirname(argv[0]);
+> +	else
+> +		mydir = ".";
+> +
+> +	if (pvlist_empty(&smokey_test_list))
+> +		return 0;
+> +
+> +	for_each_smokey_test(t) {
+> +		ret = t->run(t, argc, argv);
+> +		if (ret) {
+> +			fails++;
+> +			if (smokey_keep_going)
+> +				continue;
+> +			if (smokey_verbose_mode)
+> +				error(1, -ret, "test %s failed", t->name);
+> +			return 1;
+> +		}
+> +		smokey_note("%s OK", t->name);
+> +	}
+> +
+> +	return fails != 0;
+> +}
 
 -- 
 Siemens AG, Technology
