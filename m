@@ -1,11 +1,13 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <742b47b4-5a36-c9eb-6446-f7f74584109d@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Date: Thu, 14 Apr 2022 18:37:11 +0200
 MIME-Version: 1.0
-Message-ID: <d00-62584d80-1a5-12ac4c80@96928095>
-Subject: =?utf-8?q?Re=3A?= Bug in xenomai =?utf-8?q?3=2E2=2Ex?= on ARM
-Content-Transfer-Encoding: quoted-printable
+References: <CAPEvDeA7NmYqVwMwkwTnKJAKubqdREYZo+myHxkpDADu4_-q4w@mail.gmail.com>
+ <CAFLxGvwvESJZ8kouFumFoQr3Q6mZ__GQ8rzprGPV4xZ+GzAHfw@mail.gmail.com>
+In-Reply-To: <CAFLxGvwvESJZ8kouFumFoQr3Q6mZ__GQ8rzprGPV4xZ+GzAHfw@mail.gmail.com>
+From: FanJun Kong <bh1scw@gmail.com>
+Date: Fri, 15 Apr 2022 09:11:35 +0800
+Message-ID: <CAPEvDeBYjSHmZHJbiG8KuCtcWwmpq1MgZbrf54_Qzb6iyqjtrQ@mail.gmail.com>
+Subject: Re: 'make bzImage' compile error at x86_64 platform: FAILED
+ unresolved symbol udp_sock
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,68 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Le Mardi, Mars 22, 2022 19:57 CET, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit: 
- 
-> On 22.03.22 18:31, Greg Gallagher via Xenomai wrote:
-> > On Tue, Mar 22, 2022 at 12:49 PM Fran=C3=A7ois Legal via Xenomai <
-> > xenomai@xenomai.org> wrote:
-> > 
-> >> Hello,
-> >>
-> >> trying to port a running Xenomai 3.1.x/Linux 4.4.x system to Xenom=
-ai
-> >> 3.2.x/Linux 4.4.x running on Zynq7000, I found a (maybe) bug in in=
-tr.c
-> >>
-> >> In xnintr=5Fattach, the call to ipipe=5Fset=5Firq=5Faffinity (when=
- in SMP) expects
-> >> a 0 return code. However, on my platform, I end up in irq=5Fgic.c =
-in
-> >> gic=5Fset=5Faffinity() which returns IRQ=5FSET=5FMASK=5FOK=5FDONE =
-(2) when everything
-> >> is fine.
-> >>
-> >> This IRQ=5FSET=5FMASK=5FOK=5FDONE does not seem very common in the=
- kernel (I could
-> >> find a few occurences, on Gic v3 so maybe AARCH64 has the same pro=
-blem,
-> >> plus some PCI devices).
-> >>
-> >> I was wondering if this was something to fix in ipipe or xenomai ?=
+I met some error when I was building kernel 5.10
 
-> >>
-> >> Fran=C3=A7ois
-> > 
-> > 
-> > Do the newer kernels have the same return value? Do we test 3.2.x o=
-n the
-> > older kernels? Maybe just cip ?
-> > 
-> 
-> We limited testing to 4.4-cip with 3.0.x. Newer kernels require newer=
+FAILED unresolved symbol udp_sock
+make: *** [Makefile:1179: vmlinux] Error 255
 
-> Xenomai, and vice versa.
-> 
-> But let's first understand if the issue if 4.4-specific.
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, Technology
-> Competence Center Embedded Linux
- 
-I just found out, re reading the message that I made a typo in my origi=
-nal message. I'm not trying to port the system to xenomai 3.2/linux 4.4=
- but linux 5.4
+and when I make some changes to .config, another error shows up
 
-Also, I was wondering how I could make this topic move forward.
+FAILED unresolved symbol udp6_sock
+make: *** [Makefile:1179: vmlinux] Error 255
 
-Thanks in advance
+If I disable CONFIG_NET no error any more,
 
-Fran=C3=A7ois
+and I found another bug exactly same with mine:
+https://www.mail-archive.com/xenomai@xenomai.org/msg21778.html
 
+but, when I using prepare-kernel.sh to apply patch from fresh and build all
+again, it works
 
+I found a similar bug here:
+https://www.mail-archive.com/netdev@vger.kernel.org/msg358778.html
+
+Thanks very much.
+
+Kong
+
+On Thu, Apr 14, 2022 at 6:37 PM Richard Weinberger <
+richard.weinberger@gmail.com> wrote:
+
+> On Thu, Apr 14, 2022 at 9:24 AM FanJun Kong via Xenomai
+> <xenomai@xenomai.org> wrote:
+> >
+> > Hi, developer
+> > I met this on Arm64 and I am using 5.10.89 + xenomai3.2.1
+>
+> Can you please share the full error message you get?
+> I'd like to know which function/object needs udp_sock.
+>
+> --
+> Thanks,
+> //richard
+>
