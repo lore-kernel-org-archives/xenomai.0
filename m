@@ -1,12 +1,15 @@
+Message-ID: <047a5d37-59e7-4ec0-a918-2f0ce12d738f@akamina.com>
+Date: Mon, 18 Apr 2022 19:39:30 -0400
 MIME-Version: 1.0
-References: <CAKcohPyu6ywryC6qS+6WBFxuBUnmw0sDKuN9Sqbh-O2ktxV8og@mail.gmail.com>
-In-Reply-To: <CAKcohPyu6ywryC6qS+6WBFxuBUnmw0sDKuN9Sqbh-O2ktxV8og@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 18 Apr 2022 19:25:29 -0400
-Message-ID: <CALLqZ8Teb+jn0F7NU=5yCNiJ-Yj8sEeXHmoDdOkvjOQ+2Qq47g@mail.gmail.com>
-Subject: Re: hard_preempt_disable inconsistent
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: Analogy supported DAQ
+Content-Language: en-CA
+References: <075339687d602ea1c4c7841a79dff2d4@rtxi.org>
+ <41a8bf39-676c-c28b-03a3-53788a4f7676@siemens.com>
+ <30ed23fe57ee9720ff0ab364a55c6a2a@rtxi.org>
+From: Peter Laurich <Peter.Laurich@akamina.com>
+In-Reply-To: <30ed23fe57ee9720ff0ab364a55c6a2a@rtxi.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yunjie Gu <yunjie.gu1@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Apr 18, 2022 at 7:21 PM Yunjie Gu via Xenomai <xenomai@xenomai.org>
-wrote:
+Hello Ivan,
 
-> Hi All,
+I also use Analogy and I believe that I am the user that Jan was 
+referring to.
+
+I have used some of the newer NI cards a few years ago but, at the time 
+at least, developing Analogy drivers for them was not possible since NI 
+does not make low-level hardware register information available to 
+users. Without that information, driver development was not possible. We 
+chose to use the NI development libraries at the lowest-level and map 
+those to Analogy calls so that we could reuse some of our higher-level 
+code. That seemed to work reasonably well.
+
+I have recently developed an Analogy driver for an ACCES I/O mPCIe card 
+(mPCIe-AIO16-16F) as well as one for the CAN Bus interface on an ARM 
+board that we are using. We implemented the Analogy driver for the CAN 
+Bus i/f so that our higher level software could acquire data from CAN 
+sensors in the same way that it acquires data from the analog I/O card. 
+I'd be open to sharing some of our recent driver development with you if 
+this seems helpful.
+
+Let me know if I can be of assistance.
+
+Peter
+
+On 4/15/2022 10:19 AM, Ivan F. Valerio via Xenomai wrote:
+> On 2022-04-13 11:59, Jan Kiszka wrote:
+>> On 12.04.22 18:36, Ivan F. Valerio via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I am looking to use Xenomai's analogy to connect my application to a NI
+>>> PCIe DAQ card. I found your list of supported hardware for analogy, and
+>>> the only PCIe found in your list are no longer supported by National
+>>> Instruments(PCIe-6251 & PCIe-6259). Are there any other PCIe cards
+>>> supported by Analogy? How would I go about confirming compatibility 
+>>> with
+>>> the newer NI PCIe cards?
+>>
+>> Analogy was about to be removed from Xenomai because no one was
+>> contributing updates to it in a long while, particularly -but not only-
+>> drivers. One user raised his voice that at least the core is still used
+>> (with out-of-tree drivers), so that move was postponed. In that light,
+>> it is a bit unlikely that you get much more feedback.
+>>
+>> We are surely open to new contributors "reviving" part of Analogy again,
+>> specifically /wrt to newer hardware. The first step to assess the
+>> efforts would likely be comparing older drivers and their manuals (or
+>> kernel drivers, if any) to newer one, e.g. whether the register
+>> interface is just an extension or rather something completely different.
+>>
+>> Jan
 >
-> I'm trying to use xenomai on linux 5.4. I previously used xenomai 3.0 on
-> linux 4.9 and xenomai 3.1 on linux 4.19 and both were fine. However when =
-I
-> use xenomai 3.2.1 on linux 5.4 there are errors in compile. One of the
-> errors says
-> expected expression before ')' token (__flags) =3D hard_preempt_disable()=
-;
-> for the macro below in fpsimd.c:
-> #define get_cpu_fpsimd_context(__flags) \ do { \ (__flags) =3D
-> hard_preempt_disable(); \ __get_cpu_fpsimd_context(); \ } while (0)
+> I am interested in perhaps doing an assessment and even submit patches as
+> our application depends on Analogy support however I am not familiar with
+> device driver development. Any Xenomai/Linux resources that you can point
+> me to in order to get started? Thanks.
 >
-> hard_preempt_disable is also a macro defined in preempt.h:
-> #define hard_preempt_disable() \ ({ \ unsigned long __flags__; \ __flags_=
-_
-> =3D hard_local_irq_save(); \ if (__ipipe_root_p) \ preempt_disable(); \
-> __flags__; \ })
->
-> It is clear that hard_preempt_disable() should be a function-like macro b=
-ut
-> is actually not. It seems to me that there are inconsistencies in the ipi=
-pe
-> patch I used. I used ipipe-core-5.4.72-arm64-0.patch. Anyone has a
-> suggestion on I can I resolve this issue?
->
-> Best Regards,
-> Yunjie
-
-
-Have you tried the latest patch? The mainline release doesn=E2=80=99t have =
-this
-issue. I=E2=80=99m about to release the next patch.
-
--Greg
-
->
+> -Ivan
 >
