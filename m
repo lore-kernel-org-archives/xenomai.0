@@ -1,15 +1,17 @@
+Message-ID: <d2635287-9ab0-180c-24f6-a6d5be950f0e@siemens.com>
+Date: Tue, 19 Apr 2022 12:54:54 +0200
 MIME-Version: 1.0
+Subject: Re: Machine freezes under Ubuntu 20.04
+Content-Language: en-US
 References: <CAMMcbao60ib7YVUDsD5FD=J7aTCzsTAsG3ggUc7vXPHvbvd5uw@mail.gmail.com>
  <8e029de8-dac5-5788-c28b-1d20736ef494@siemens.com>
  <CAMMcbaoNMZWSk=UED8cCk=ToPFPeNq3Abx=KwCyPhL9Zbx9CYQ@mail.gmail.com>
  <498375c5-740c-23c5-0570-cf9b6b91e957@siemens.com>
-In-Reply-To: <498375c5-740c-23c5-0570-cf9b6b91e957@siemens.com>
-From: Arturo Laurenzi <arturo.laurenzi@gmail.com>
-Date: Tue, 19 Apr 2022 12:02:04 +0200
-Message-ID: <CAMMcbapNQzaDHKEdSWJ2awZrZ3y7j23Lq1U=7k1pPwy8pz3BOA@mail.gmail.com>
-Subject: Re: Machine freezes under Ubuntu 20.04
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <CAMMcbapNQzaDHKEdSWJ2awZrZ3y7j23Lq1U=7k1pPwy8pz3BOA@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <CAMMcbapNQzaDHKEdSWJ2awZrZ3y7j23Lq1U=7k1pPwy8pz3BOA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,243 +20,217 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Arturo Laurenzi <arturo.laurenzi@gmail.com>
 Cc: xenomai@xenomai.org
 
-U29ycnkgZm9yIHRoZSBkZWxheWVkIGFuc3dlciwgaXQgdG9vayB1cyBzb21lIHRpbWUgdG8gaW5z
-dHJ1bWVudCBvdXIKc2V0dXAgZm9yIGJyb2FkY2FzdGluZyB0aGUga2VybmVsIG91dHB1dCBvdmVy
-IHNlcmlhbCwKYW5kIG5vdyB3ZSBoYXZlIHNvbWUgaW50ZXJlc3RpbmcgcmVzdWx0cy4KU2VlIGJl
-bG93LgoKPiBPbiAwNS4wNC4yMiAxNTo0MywgQXJ0dXJvIExhdXJlbnppIHdyb3RlOgo+ID4+IE9u
-IDA0LjA0LjIyIDE1OjIxLCBBcnR1cm8gTGF1cmVuemkgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gPgo+
-ID4+Pgo+ID4+PiBSZWNlbnRseSwgd2UgaGF2ZSBzdGFydGVkIGEgdHJhbnNpdGlvbiB0b3dhcmRz
-IFVidW50dSAyMC4wNCwgYW5kIHRoaW5ncwo+ID4+PiBoYXZlIHN0YXJ0ZWQgdG8gYnJlYWsuCj4g
-Pj4+Cj4gPj4+IFRoZSBmaXJzdCBhdHRlbXB0IHdhcyB0byBpbnN0YWxsIGtlcm5lbCA1LjQuMTUx
-IGFuZCBzdGljayB0byBpcGlwZS4gVW5kZXIKPiA+Pj4gdGhpcyBzZXR1cCwgd2UgZXhwZXJpZW5j
-ZSBpc3N1ZXMgZXZlbiBiZWZvcmUgc3RhcnRpbmcgb3VyIGFwcGxpY2F0aW9ucy4gV2UKPiA+Pj4g
-aGF2ZSBzZWVuIHJhbmRvbSBjcmFzaGVzIHdoaWxlIGNvbXBpbGluZyB3aXRoIEdDQywgc3BvcmFk
-aWMgIlN5c3RlbSBQcm9ncmFtCj4gPj4+IFByb2JsZW0gRGV0ZWN0ZWQiIHBvcHVwcyBieSBVYnVu
-dHUsIGFuZCBvdGhlcnMuIFdlIGV2ZW4gdHJpZWQgdG8gcmUtaW5zdGFsbAo+ID4+PiBPUyBhbmQg
-a2VybmVsIGZyb20gc2NyYXRjaCB3aXRoIG5vIGx1Y2suCj4gPj4KPiA+PiBBIHJlZmVyZW5jZSBz
-ZXR1cCBmb3IgdGhpcyBrZXJuZWwgbGluZSBjYW4gYmUgZm91bmQgaW4geGVub21haS1pbWFnZXMK
-PiA+PiAoaHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2VzKS4gV291
-bGQgYmUgZ29vZCB0bwo+ID4+IHVuZGVyc3RhbmQgd2hpY2ggZGV2aWF0aW9uIGZyb20gaXQgbWFr
-ZXMgdGhlIGRpZmZlcmVuY2UgZm9yIHdoaWNoCj4gPj4gY29tcG9uZW50IChzZWUgYWxzbyBmdXJ0
-aGVyIHF1ZXN0aW9ucyBiZWxvdykuCj4gPgo+ID4gSSdtIGF0dGFjaGluZyB0aGUgY29uZmlnIHdl
-J3JlIHVzaW5nIChmcm9tIC9ib290L2NvbmZpZy0kKHVuYW1lIC1yKSkuCj4gPiBJZiB0aGF0IG1h
-a2VzIHNlbnNlLCB3ZSdyZSBnb2luZyB0byB0cnkgdG8gY29uZmlndXJlIHRoZSBrZXJuZWwKPiA+
-IGFjY29yZGluZyB0byB0aGlzIGZpbGUKPiA+IChodHRwczovL3NvdXJjZS5kZW54LmRlL1hlbm9t
-YWkveGVub21haS1pbWFnZXMvLS9ibG9iL21hc3Rlci9yZWNpcGVzLWtlcm5lbC9saW51eC9maWxl
-cy9hbWQ2NF9kZWZjb25maWcpLgo+ID4gV2hhdCBrZXJuZWwgdmVyc2lvbiBkbyB5b3UgcmVjb21t
-ZW5kIHRvIHRyeT8KPiA+Cj4KPiBBbHdheXMgdGhlIGxhdGVzdCBvZiB0aGUgaW5kaXZpZHVhbCBr
-ZXJuZWwgc2VyaWVzLgoKV2Ugc3RpbGwgaGF2ZSB0byB0ZXN0IHRoZSByZWZlcmVuY2UgLmNvbmZp
-ZyBmaWxlLCBhcyB3ZSBnYXZlIGhpZ2hlcgpwcmlvcml0eSB0byB0aGUga2VybmVsIG91dHB1dCBv
-dmVyIHNlcmlhbCBzdHVmZi4KCj4gPj4+Cj4gPj4+IFRoZSBzZWNvbmQgYXR0ZW1wdCB3YXMgdG8g
-c3RpY2sgdG8gb3VyIG9sZCBrZXJuZWwgNC4xOS4xNDAuIEFsbCB0aGUgd2VpcmQKPiA+Pj4gaXNz
-dWVzIGRpc2FwcGVhciBhbmQgdGhlIHN5c3RlbSBpcyBzdGFibGUuIEhvd2V2ZXIsIHdlIGFyZSB1
-bmFibGUgdG8gaGF2ZQo+ID4+PiB0aGUgc3lzdGVtIHBhc3Mgb3VyIHN1aXRlIG9mICJzdHJlc3Mg
-dGVzdHMiLCB3aGljaCBiYXNpY2FsbHkgaW52b2x2ZSBzdGFydGluZywKPiA+Pj4gcnVubmluZywg
-YW5kIGtpbGxpbmcgcHJvY2VzcyBCIG11bHRpcGxlIHRpbWVzIGluIGEgY3ljbGljIGZhc2hpb24s
-IHdoaWxlCj4gPj4+IHByb2Nlc3MgQSBydW5zIGluIHRoZSBiYWNrZ3JvdW5kLiBBZnRlciBhIHNo
-b3J0IHdoaWxlIChtaW51dGVzKSwgdGhlIHdob2xlCj4gPj4+IHN5c3RlbSBqdXN0IGhhbmdzLCBm
-b3JjaW5nIHVzIHRvIGRvIGFuIGhhcmQgcmVzZXQuIE9ubHkgb25jZSwgd2UgbWFuYWdlZCB0bwo+
-ID4+PiBnZXQgdGhpcyBrZXJuZWwgb29wcyBhZnRlciByZWJvb3RpbmcgKGpvdXJuYWxjdGwgLWsg
-LWIgLTEgLS1uby1wYWdlcikuCj4gPj4+Cj4gPj4KPiA+PiBGb3IgcmVsaWFibHkgcmVjb3JkaW5n
-IGNyYXNoZXMsIGl0IGlzIGhpZ2hseSByZWNvbW1lbmRlZCB0byB1c2UgYSBVQVJUCj4gPj4gYXMg
-a2VybmVsIGRlYnVnIG91dHB1dC4KPiA+Cj4gPiBXaWxsIGRvIEFTQVAgYW5kIGxldCB5b3Uga25v
-dy4KCkRvbmUsIHNlZSBiZWxvdy4KCj4gPj4+IFRoZSB0aGlyZCBhdHRlbXB0IHdhcyB0byB0cnkg
-b3V0IGtlcm5lbCA1LjEwLjg5IHBsdXMgdGhlIG5ldyBkb3ZldGFpbAo+ID4+PiBwYXRjaCwgYW5k
-IFhlbm9tYWkgdjMuMi4xLiBBZ2FpbiwgYWxsIHRoZSB3ZWlyZCBpc3N1ZXMgYXJlIGdvbmUgYW5k
-IHRoZQo+ID4+PiBzeXN0ZW0gaXMgc3RhYmxlLiBIb3dldmVyLCB3ZSBhcmUgdW5hYmxlIHRvIGhh
-dmUgdGhlIHN5c3RlbSBwYXNzIG91ciBzdWl0ZQo+ID4+PiBvZiAic3RyZXNzIHRlc3RzIi4gRGlm
-ZmVyZW50bHkgZnJvbSA0LjE5LWlwaXBlLCB0aGUgc3lzdGVtIHJlc2lzdHMgZm9yIGEKPiA+Pj4g
-bG9uZ2VyIHRpbWUgYmVmb3JlIGhhbmdpbmcgKGZldyBob3VycyBzb21ldGltZXMpLCBidXQgdGhp
-cyBhbHNvIHZhcmllcyBhCj4gPj4+IGxvdC4KPiA+Pj4KPiA+Pj4gQWZ0ZXIgc29tZSBtb3JlIGlu
-dmVzdGlnYXRpb24sIHdlIGZvdW5kIG91dCBzb21ldGhpbmcgaW50ZXJlc3RpbmcuIEJ5Cj4gPj4+
-IHJlbW92aW5nIHRoZSBjb2RlIHRoYXQgaW50ZXJhY3RzIHdpdGggUHJvY2VzcyBBLCBQcm9jZXNz
-IEIgaXMgdGhlbiBhYmxlIHRvCj4gPj4+IHJ1biAiZm9yZXZlciIgKG92ZXJuaWdodCBhdCBsZWFz
-dCksIGJ1dCAqb25seSBpZiBQcm9jZXNzIEEgaXMgbm90IHJ1bm5pbmcqLgo+ID4+PiBPdGhlcndp
-c2UsIHRoZSBzeXN0ZW0gd2lsbCBoYW5nLiBJbiBvdGhlciB3b3JkcywgdGhlIG1lcmUgcHJlc2Vu
-Y2Ugb2YKPiA+Pj4gUHJvY2VzcyBBIGlzIGFmZmVjdGluZyBQcm9jZXNzIEIsIGV2ZW4gdGhvdWdo
-IGJvdGggSUREUCBhbmQgWk1RIGhhdmUgYmVlbgo+ID4+PiByZW1vdmVkIGZyb20gQiBhbmQgcmVw
-bGFjZWQgd2l0aCBmYWtlIGRhdGEuIEZ1cnRoZXJtb3JlLCB0aGUgc3lzdGVtIGRvZXMKPiA+Pj4g
-bm90IGZyZWV6ZSBpZiB3ZSBzZXQgQjEncyBzY2hlZHVsaW5nIHBvbGljeSB0byBTQ0hFRF9PVEhF
-Ui4KPiA+Pgo+ID4+IERvIHlvdSBoYXZlIHRoZSBYZW5vbWFpIHdhdGNoZG9nIGVuYWJsZWQsIHRo
-dXMgd2lsbCB5b3UgYmUgYWJsZSB0byB0ZWxsCj4gPj4gUlQgYXBwbGljYXRpb24gImhhbmdzIiAo
-aW5maW5pdGUgbG9vcCBhdCBoaWdoIHByaW8pIGFwYXJ0IGZyb20gcmVhbAo+ID4+IGhhbmdzL2Ny
-YXNoZXM/Cj4gPgo+ID4gWWVzLiBXaGVuIHdlIHRyeSBhIHdoaWxlKHRydWUpIGluc2lkZSBhIFJU
-IGNvbnRleHQsIHdlIHNlZSB0aGUKPiA+IHdhdGNoZG9nIGtpbGxpbmcgb3VyIGFwcGxpY2F0aW9u
-Cj4gPiBhcyBleHBlY3RlZC4KPiA+Cj4gPgo+ID4+Pgo+ID4+PiBGcm9tIHRoZXNlIC0gcmF0aGVy
-IGhldXJpc3RpYyAtIHRlc3RzLCBpdCBsb29rcyBsaWtlIHRoZXJlIGNvdWxkIGJlIHNvbWUKPiA+
-Pj4gY291cGxpbmcgYmV0d2VlbiB1bnJlbGF0ZWQgcHJvY2Vzc2VzIHdoaWNoIGNhdXNlcyBzb21l
-IHNvcnQgb2YgYnVnLCB0aGF0IGlzCj4gPj4+IHByb2JhYmx5IHJlbGF0ZWQgdG8gc29tZSBpbnRl
-cmFjdGlvbiB3aXRoIG11dGV4ZXMvY29uZHZhcnMsIHdoZW4gdGhlc2UgYXJlCj4gPj4+IHVzZWQg
-ZnJvbSBhIFJUIGNvbnRleHQuIFRoaXMgaXNzdWUgc2hvd3MgdXAgKG9yIGF0IGxlYXN0IHdlIGhh
-dmUgc2VlbiBpdCkKPiA+Pj4gb25seSB1bmRlciBVYnVudHUgMjAuMDQgKEdDQyA5LngpLCB3aGVy
-ZWFzIGEgMTguMDQgYnVpbGQgKEdDQyA3LngpIGxvb2tzCj4gPj4+IGZpbmUuCj4gPj4KPiA+PiBV
-YnVudHUgdG9vbGNoYWlucyBhcmUga25vd24gZm9yIGFncmVzc2l2ZWx5IGVuYWJsaW5nIGNlcnRh
-aW4gc2VjdXJpdHkKPiA+PiBmZWF0dXJlcy4gTWF5YmUgb25lIHRoYXQgd2UgZGlkbid0IGNoZWNr
-IHlldCBmbGlwcGVkIGJldHdlZW4gMTguMDQgYW5kCj4gPj4gMjAuMDQgLSBpZiB0aGF0IHN3aXRj
-aCBpcyBvbmx5IGRpZmZlcmVuY2UgYmV0d2VlbiB3b3JraW5nIGFuZAo+ID4+IG5vbi13b3JraW5n
-IGJ1aWxkcyBpbiB5b3VyIGNhc2UuIEdDQyBpdHNlbGYgc2hvdWxkIGJlIGZpbmUsIHdlIGFyZQo+
-ID4+IHRlc3Rpbmcgd2l0aCBnY2MtMTAgdmlhIERlYmlhbiAxMSBpbiBvdXIgQ0kuCj4gPj4KPiA+
-PiBDYW4geW91IGNoZWNrIHdoZXRoZXIgdGhlIHRvb2xjaGFpbiBjaGFuZ2UgYnJlYWtzIHRoZSBr
-ZXJuZWwgKGtlcm5lbAo+ID4+IHdpdGggb2xkIHRvb2xjaGFpbiBydW5zIGZpbmUgd2l0aCB1c2Vy
-c3BhY2UgYnVpbHQgdmlhIG5ldyB0b29sY2hhaW4pPwo+ID4KPiA+IFdlIGhhdmUgdHJpZWQgdGhp
-cywgYW5kIHN0aWxsIHRoZSBzeXN0ZW0gZnJlZXplcyBhZnRlciBhIHdoaWxlLiBXZQo+ID4gZm9s
-bG93ZWQgdGhlIHByb2NlZHVyZSB0aGF0IGZvbGxvd3M6Cj4gPiAgMSkgZ2VuZXJhdGUgYmluYXJp
-ZXMgZm9yIG91ciAid29ya2luZyIga2VybmVsIDQuMTkuMTQwLXhlbm8taXBpcGUtMy4xCj4gPiBv
-biBhIFVidW50dSAxOCBtYWNoaW5lIChtYWtlIGRlYi1wa2cpCj4gPiAgMikgY29weSB0aGUgd2hv
-bGUgL3Vzci94ZW5vbWFpIGRpcmVjdG9yeSAoY29tcGlsZWQgd2l0aCB0aGUgMTguMDQKPiA+IHRv
-b2xjaGFpbikgdG8gdGhlIHRlc3QgbWFjaGluZSB3aXRoIFVidW50dSAyMC4wNAo+ID4gIDMpIGlu
-c3RhbGwgdGhlIGtlcm5lbCBiaW5hcmllcyB0byB0aGUgdGVzdCBtYWNoaW5lCj4gPiAgNCkgcmUt
-Y29tcGlsZSBvdXIgYXBwbGljYXRpb24KPiA+IElzIHRoaXMgb2s/Cj4gPgo+Cj4gV2FpdCwgdGhl
-c2UgYXJlIHRocmVlIHZhcmlhYmxlczoga2VybmVsLCBYZW5vbWFpIGFwcGxpY2F0aW9uIGFuZCBV
-YnVudHUKPiB1c2Vyc3BhY2UuIERvZXMgeW91ciBzeXN0ZW0gYWxzbyBicmVhayB3aGVuIHVzaW5n
-IGJvdGgga2VybmVsIGFuZAo+IGFwcGxpY2F0aW9uIGJpbmFyaWVzIGZyb20gYSBVYnVudHUgMTgg
-YnVpbGQ/IE9yIHdpbGwgaXQgc3RhcnQgdG8gYnJlYWsKPiBvbmNlIHlvdSByZWNvbXBpbGUgdGhl
-IFhlbm9tYWkgYXBwbGljYXRpb24gd2l0aCBVYnVudHUgMjAgdG9vbGNoYWluPwoKQWxzbyB0aGlz
-IG5lZWRzIGZ1cnRoZXIgaW52ZXN0aWdhdGlvbi4gUmlnaHQgbm93IHdlJ3JlIGZvY3VzaW5nIG9u
-CjUuMTAtZG92ZXRhaWwgKyBYZW5vbWFpIDMuMiArIGFwcGxpY2F0aW9uIGFsbCBidWlsdCB1bmRl
-cgp0aGUgZGVmYXVsdCAyMC4wNCB0b29sY2hhaW4uCgo+ID4+Pgo+ID4+PiBUaGUgcHVycG9zZSBv
-ZiB0aGlzIG1lc3NhZ2UgaXMgdHdvZm9sZC4KPiA+Pj4gRmlyc3QsIHRvIHNlZSBpZiB0aGVzZSBz
-eW1wdG9tcyBtaWdodCAicmluZyBhIGJlbGwiIHRvIGFueW9uZSBpbiB0aGUKPiA+Pj4gY29tbXVu
-aXR5LCB3aG8gbWlnaHQgYmUgYWJsZSB0byBzdWdnZXN0IGEgZml4Lgo+ID4+PiBTZWNvbmQsIHdl
-J2QgbGlrZSB0byBhc2sgd2hhdCB5b3Ugd291bGQgZG8gdG8gZGVidWcgdGhpcyBpc3N1ZS4gV2hp
-Y2ggdG9vbAo+ID4+PiBjb3VsZCB3ZSB1c2UgdG8gdHJhY2Ugd2hhdCdzIGdvaW5nIG9uLCBjb25z
-aWRlcmluZyB0aGF0IHdoYXRldmVyIHRoZSBidWcKPiA+Pj4gaXMsIGl0IGxlYWRzIHRvIGEgc3Rh
-dGUgd2hlcmUgdGhlIG1hY2hpbmUgaXMgbm90IHVzYWJsZSBhdCBhbGwuIFdlIGNhbgo+ID4+PiBz
-aGFyZSBvdXIgLmNvbmZpZyBmaWxlcyBpZiByZXF1aXJlZCwgYW5kIHdlIGFyZSB3aWxsaW5nIHRv
-IHRlc3QgbW9yZQo+ID4+PiBjb21iaW5hdGlvbnMgb2Yga2VybmVsIGFuZCB4ZW5vbWFpIHBhdGNo
-IG9yIGxpYnJhcnkgdmVyc2lvbnMgdXBvbiB5b3VyCj4gPj4+IGFkdmljZS4gQW55IGhlbHAgeW91
-IGNhbiBnaXZlIHVzIGlzIGdyZWF0bHkgYXBwcmVjaWF0ZWQuCj4gPj4+Cj4gPj4KPiA+PiBDYW4g
-eW91IHNpbXBsaWZ5IHlvdXIgdGVzdCBjYXNlIHRvIGEgbGV2ZWwgdGhhdCBtYWtlcyBpdCBzaGFy
-YWJsZSwKPiA+PiBleGVjdXRhYmxlIGJ5IHRoaXJkIHBhcnRpZXM/IFBsZWFzZSBhbHNvIHNoYXJl
-IHlvdXIga2VybmVsIC5jb25maWcuCj4gPgo+ID4gV2lsbCB0cnkuIEl0J3Mgbm90IGdvaW5nIHRv
-IGJlIHF1aWNrIHRob3VnaCwgYXMgYW55IHRyaWFsIHdlIG1ha2UKPiA+IG5lZWRzIGhvdXJzIG9m
-IHRlc3RpbmcgdG8gdW5kZXJzdGFuZCBpZiBpdCBjYXVzZXMgYSBzeXN0ZW0gZnJlZXplLgo+ID4K
-PiA+IFdoYXQgaXMgdGhlIHJlY29tbWVuZGVkIHRvIHRyYWNlL2RlYnVnIHRoaXMga2luZCBvZiBw
-cm9ibGVtcz8gSXMgdGhlcmUKPiA+IGFueXRoaW5nICJmYW5jaWVyIiB0aGFuIGJyb2FkY2FzdGlu
-ZyBrZXJuZWwgb3V0cHV0IG92ZXIgYSBzZXJpYWwgcG9ydD8KPiA+Cj4KPiBIYXJkIHRvIHNheSBp
-biBnZW5lcmFsLiBGdWxsIHN5c3RlbSBmcmVlemVzIGNhbiBiZSB0cmlja3kgdG8gZGVidWcKPiB1
-bmxlc3MgdGhlcmUgYXJlIGF0IGxlYXN0IHNvbWUgaGludHMgcHJvdmlkZWQgYnkgdGhlIGtlcm5l
-bC4gVGhhdCdzIHdoeQo+IHRoZSBmb2N1cyBpcyBmaXJzdCBvbiB2YWxpZGF0aW5nIHRoYXQuCgpJ
-biB0aGlzIHJlZ2FyZCwgd2UgbWFuYWdlZCB0byBwcm9kdWNlIGEgc3RhY2sgdHJhY2UgdmlhIHNl
-cmlhbCBwb3J0LgpUaGlzIGlzIG9idGFpbmVkIG9uIDUuMTAtZG92ZXRhaWwgKyBYZW5vbWFpIDMu
-MiArIGFwcGxpY2F0aW9uIGFsbApidWlsdCB1bmRlcgp0aGUgZGVmYXVsdCAyMC4wNCB0b29sY2hh
-aW4uIFRoaXMgaGFwcGVucyBjb25zaXN0ZW50bHkgaW4gYm90aCBvdXIKc2NlbmFyaW9zLCBpLmUu
-CiAxKSBwcm9jZXNzIEEgaW50ZXJhY3Rpbmcgd2l0aCBwcm9jZXNzIEIgdmlhIElERFAgYW5kIFpN
-USAoaS5lLiBUQ1AvSVApCiAyKSBwcm9jZXNzIEEgYW5kIGEgIm1vZGlmaWVkIiBwcm9jZXNzIEIg
-cnVubmluZyBhdCB0aGUgc2FtZSB0aW1lLCBhbmQKbm90IGludGVyYWN0aW5nIGluIGFueSB3YXkK
-VGhlIHN0YWNrIHRyYWNlIGlzIGFsd2F5cyB0aGUgc2FtZSAoSSBhbSBhdHRhY2hpbmcgYSBmZXcg
-ZXhhbXBsZXMpCgpbICA1OTQuMTE3MzA3XSBrZXJuZWwgdHJpZWQgdG8gZXhlY3V0ZSBOWC1wcm90
-ZWN0ZWQgcGFnZSAtIGV4cGxvaXQKYXR0ZW1wdD8gKHVpZDogMTAwMCkKWyAgNTk0LjExNzMwOF0g
-QlVHOiB1bmFibGUgdG8gaGFuZGxlIHBhZ2UgZmF1bHQgZm9yIGFkZHJlc3M6IGZmZmZhMjA5MDhl
-ZTFiMDAKWyAgNTk0LjExNzMwOF0gI1BGOiBzdXBlcnZpc29yIGluc3RydWN0aW9uIGZldGNoIGlu
-IGtlcm5lbCBtb2RlClsgIDU5NC4xMTczMDhdICNQRjogZXJyb3JfY29kZSgweDAwMTEpIC0gcGVy
-bWlzc2lvbnMgdmlvbGF0aW9uClsgIDU5NC4xMTczMDldIFBHRCA0NGI2MDEwNjcgUDREIDQ0YjYw
-MTA2NyBQVUQgODAwMDAwMDFjMDAwMDFlMwpbICA1OTQuMTE3MzEwXSBPb3BzOiAwMDExIFsjMV0g
-U01QIFBUSSBJUlFfUElQRUxJTkUKWyAgNTk0LjExNzMxMF0gQ1BVOiAxIFBJRDogMzQ1MDcgQ29t
-bTogeGJvdDItY29yZSBOb3QgdGFpbnRlZAo1LjEwLjg5LXhlbm8taXBpcGUtMy4xKyAjMQpbICA1
-OTQuMTE3MzExXSBIYXJkd2FyZSBuYW1lOiAgL1RTMTc1LCBCSU9TIEJRS0xSMTEyIDA3LzA0LzIw
-MTcKWyAgNTk0LjExNzMxMV0gSVJRIHN0YWdlOiBMaW51eApbICA1OTQuMTE3MzExXSBSSVA6IDAw
-MTA6MHhmZmZmYTIwOTA4ZWUxYjAwClsgIDU5NC4xMTczMTJdIENvZGU6IDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCjAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCjAwIDAwIDAwIDww
-Mj4gMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMApb
-ICA1OTQuMTE3MzEyXSBSU1A6IDAwMTg6ZmZmZmEzN2I4MDAzY2Y4MCBFRkxBR1M6IDAwMDEwMjAy
-ClsgIDU5NC4xMTczMTNdIFJBWDogZmZmZmZmZmY4NGNiMWQyOSBSQlg6IGZmZmZhMzdiODllOGJk
-OTggUkNYOiAwMDAwMDAwMGNkNDZlYThmClsgIDU5NC4xMTczMTNdIFJEWDogZmZmZmEzN2I4OWU4
-YmRhMCBSU0k6IGZmZmZhMjBiOWZjNDAwMDAgUkRJOiBmZmZmYTM3Yjg5ZThiZDk4ClsgIDU5NC4x
-MTczMTRdIFJCUDogZmZmZmZmZmY4NGQxMDA2NCBSMDg6IGZmZmZhMjA4NDAwNWQ4MDAgUjA5OiAw
-MDAwMDAwMDAwMDAwMDAxClsgIDU5NC4xMTczMTRdIFIxMDogMDAwMDAwMDAwMDAwMDAwMSBSMTE6
-IDAwMDAwMDAwMDAwMDAwMDEgUjEyOiAwMDAwMDAwMDAwMDAwMDFlClsgIDU5NC4xMTczMTRdIFIx
-MzogMDAwMDAwMDAwMDAwMDAxYyBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAwMDAw
-MDAwMDI0ClsgIDU5NC4xMTczMTVdIEZTOiAgMDAwMDdmZWYyYzE5MTYwMCgwMDAwKSBHUzpmZmZm
-YTIwYjlmYzQwMDAwKDAwMDApCmtubEdTOjAwMDAwMDAwMDAwMDAwMDAKWyAgNTk0LjExNzMxNV0g
-Q1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMwpbICA1OTQu
-MTE3MzE2XSBDUjI6IGZmZmZhMjA5MDhlZTFiMDAgQ1IzOiAwMDAwMDAwMTAwOTVlMDAzIENSNDog
-MDAwMDAwMDAwMDM3MDZlMApbICA1OTQuMTE3MzE2XSBEUjA6IDAwMDAwMDAwMDAwMDAwMDAgRFIx
-OiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMApbICA1OTQuMTE3MzE2XSBE
-UjM6IDAwMDAwMDAwMDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmUwZmYwIERSNzogMDAwMDAwMDAw
-MDAwMDQwMApbICA1OTQuMTE3MzE3XSBDYWxsIFRyYWNlOgpbICA1OTQuMTE3MzE3XSAgPElSUT4K
-WyAgNTk0LjExNzMxN10gID8gaXJxX3dvcmtfcnVuX2xpc3QrMHgzMi8weDQwClsgIDU5NC4xMTcz
-MTddICA/IGlycV93b3JrX3J1bisweDE4LzB4MzAKWyAgNTk0LjExNzMxOF0gID8gaW5iYW5kX3dv
-cmtfaW50ZXJydXB0KzB4OS8weDEwClsgIDU5NC4xMTczMThdICA/IGhhbmRsZV9zeW50aGV0aWNf
-aXJxKzB4NTkvMHg4MApbICA1OTQuMTE3MzE4XSAgPyBhc21fY2FsbF9pcnFfb25fc3RhY2srMHgx
-Mi8weDIwClsgIDU5NC4xMTczMTldICA8L0lSUT4KWyAgNTk0LjExNzMxOV0gID8gYXJjaF9kb19J
-UlFfcGlwZWxpbmVkKzB4YzIvMHgxNTAKWyAgNTk0LjExNzMxOV0gID8gc3luY19jdXJyZW50X2ly
-cV9zdGFnZSsweDFhZS8weDIzMApbICA1OTQuMTE3MzIwXSAgPyBfX2luYmFuZF9pcnFfZW5hYmxl
-KzB4NDcvMHg1MApbICA1OTQuMTE3MzIwXSAgPyBpbmJhbmRfaXJxX3Jlc3RvcmUrMHgyMS8weDMw
-ClsgIDU5NC4xMTczMjBdICA/IF9yYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSsweDFkLzB4MjAK
-WyAgNTk0LjExNzMyMF0gID8gX19zZXRfY3B1c19hbGxvd2VkX3B0cisweGEyLzB4MjAwClsgIDU5
-NC4xMTczMjFdICA/IHNjaGVkX3NldGFmZmluaXR5KzB4MWI3LzB4MmEwClsgIDU5NC4xMTczMjFd
-ICA/IF9feDY0X3N5c19zY2hlZF9zZXRhZmZpbml0eSsweDRlLzB4OTAKWyAgNTk0LjExNzMyMV0g
-ID8gZG9fc3lzY2FsbF82NCsweDQ0LzB4YTAKWyAgNTk0LjExNzMyMl0gID8gZW50cnlfU1lTQ0FM
-TF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQpbICA1OTQuMTE3MzIyXSBNb2R1bGVzIGxpbmtl
-ZCBpbjogZnVzZSBydHBhY2tldCBiaW5mbXRfbWlzYyBubHNfYXNjaWkKbmxzX2NwNDM3IHZmYXQg
-ZmF0IGV2ZGV2IHg4Nl9wa2dfdGVtcF90aGVybWFsIGludGVsX3Bvd2VyY2xhbXAKcnRfZTEwMDBl
-IGNyYzMyY19pbnRlbCBydG5ldCBpOTE1IGkyY19hbGdvX2JpdCB2aWRlbyBkcm1fa21zX2hlbHBl
-cgpjZmEKWyAgNTk0LjExNzMzMl0gQ1IyOiBmZmZmYTIwOTA4ZWUxYjAwClsgIDU5Ny42Njc4Mzhd
-IC0tLVsgZW5kIHRyYWNlIDM4NDkwM2ExNjQ0OGQwNDcgXS0tLQpbICA1OTcuNjY3ODM5XSBSSVA6
-IDAwMTA6MHhmZmZmYTIwOTA4ZWUxYjAwClsgIDU5Ny42Njc4NDBdIENvZGU6IDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCjAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCjAwIDAwIDAw
-IDwwMj4gMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MApbICA1OTcuNjY3ODQwXSBSU1A6IDAwMTg6ZmZmZmEzN2I4MDAzY2Y4MCBFRkxBR1M6IDAwMDEw
-MjAyClsgIDU5Ny42Njc4NDFdIFJBWDogZmZmZmZmZmY4NGNiMWQyOSBSQlg6IGZmZmZhMzdiODll
-OGJkOTggUkNYOiAwMDAwMDAwMGNkNDZlYThmClsgIDU5Ny42Njc4NDFdIFJEWDogZmZmZmEzN2I4
-OWU4YmRhMCBSU0k6IGZmZmZhMjBiOWZjNDAwMDAgUkRJOiBmZmZmYTM3Yjg5ZThiZDk4ClsgIDU5
-Ny42Njc4NDFdIFJCUDogZmZmZmZmZmY4NGQxMDA2NCBSMDg6IGZmZmZhMjA4NDAwNWQ4MDAgUjA5
-OiAwMDAwMDAwMDAwMDAwMDAxClsgIDU5Ny42Njc4NDJdIFIxMDogMDAwMDAwMDAwMDAwMDAwMSBS
-MTE6IDAwMDAwMDAwMDAwMDAwMDEgUjEyOiAwMDAwMDAwMDAwMDAwMDFlClsgIDU5Ny42Njc4NDJd
-IFIxMzogMDAwMDAwMDAwMDAwMDAxYyBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAw
-MDAwMDAwMDI0ClsgIDU5Ny42Njc4NDNdIEZTOiAgMDAwMDdmZWYyYzE5MTYwMCgwMDAwKSBHUzpm
-ZmZmYTIwYjlmYzQwMDAwKDAwMDApCmtubEdTOjAwMDAwMDAwMDAwMDAwMDAKWyAgNTk3LjY2Nzg0
-M10gQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMwpbICA1
-OTcuNjY3ODQzXSBDUjI6IGZmZmZhMjA5MDhlZTFiMDAgQ1IzOiAwMDAwMDAwMTAwOTVlMDAzIENS
-NDogMDAwMDAwMDAwMDM3MDZlMApbICA1OTcuNjY3ODQ0XSBEUjA6IDAwMDAwMDAwMDAwMDAwMDAg
-RFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMApbICA1OTcuNjY3ODQ0
-XSBEUjM6IDAwMDAwMDAwMDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmUwZmYwIERSNzogMDAwMDAw
-MDAwMDAwMDQwMApbICA1OTcuNjY3ODQ0XSBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogRmF0
-YWwgZXhjZXB0aW9uIGluIGludGVycnVwdAoKTW9yZSBpbnRlcmVzdGluZywgd2UgdHJpZWQgdG8g
-cmVtb3ZlIGFsbCBjYWxscyB0bwpwdGhyZWFkX3NldGFmZmluaXR5X25wIGluIG91ciBjb2RlIChz
-aW5jZSBpdCBhcHBlYXJzIGluIHRoZSBzdGFjawp0cmFjZSkuIEFmdGVyIHRoaXMgbW9kaWZpY2F0
-aW9uLCB0aGUgc3lzdGVtIGRvZXMgbm90IGZyZWV6ZSBhbnltb3JlCihvciwgYXQgbGVhc3QsCml0
-IG1hbmFnZXMgdG8gc3Vydml2ZSBvdmVybmlnaHQpLiBSZS1pbnRyb2R1Y2luZwpwdGhyZWFkX3Nl
-dGFmZmluaXR5X25wIGNvbnNpc3RlbnRseSBjYXVzZXMgdGhlIHN5c3RlbSB0byBmcmVlemUgYWdh
-aW4uCgpHaXZlbiB0aGlzLCB3aGF0IHNob3VsZCBiZSBvdXIgbmV4dCBzdGVwIGluIHlvdXIgb3Bp
-bmlvbj8gV2UgY291bGQKIC0gbW92ZSB0byBsYXRlc3QgZG92ZXRhaWwgYW5kIHRyeSBhZ2FpbiB3
-aXRoIG91ciAuY29uZmlnICg1LjE1PyB3aGljaCB4ZW5vbWFpPykKIC0gdXNlIHRoZSByZWZlcmVu
-Y2UgLmNvbmZpZyBhbmQgdHJ5IGFnYWluIChhbHNvIDUuMTU/IHdoaWNoIHhlbm9tYWk/KQogLSBv
-dGhlcj8KCldlJ3JlIGFsc28gdHJ5aW5nIHRvIHByb2R1Y2UgYSBtaW5pbWFsIHJlcHJvZHVjaWJs
-ZSBleGFtcGxlIHRoYXQgY2FuCnRyaWdnZXIgdGhlIGNyYXNoLCBidXQgaXQncyBub3QgZWFzeSBh
-cyB0aGUgbnVtYmVyIG9yIHZhcmlhYmxlcwppcyBiaWcgYW5kIGV2ZXJ5IHRyaWFsIHJlcXVpcmVz
-IGhvdXJzIG9mIHZhbGlkYXRpb24uCgo+IElmIHlvdSB3YW50IGl0IGZhbmNpZXI6IEluIHRoZSBw
-YXN0LCB3ZSB1c2VkIGtnZGIgb24gcmVhbCBoYXJkd2FyZSBhcwo+IHdlbGwsIGJ1dCB0aGF0IHdh
-c24ndCB0cmllZCBpbiBhIHdoaWxlLiBNb3JlIHJlbGlhYmxlIHRvIGRlYnVnIC0KPiBwcm92aWRl
-ZCB0aGUgaXNzdWUgaXMgcmVwcm9kdWNpYmxlIHRoZW4gLSBpcyBtb3ZpbmcgZXZlcnl0aGluZyBp
-bnRvIGEKPiBLVk0gbWFjaGluZSBhbmQgZGVidWdnaW5nIHRoZSBndWVzdCBmcm9tIHRoZSBob3N0
-IG9uY2UgaXQgbG9ja2VkIHVwLgo+Cj4gSmFuCgpUaGFua3MgZm9yIHRoaXMgcGllY2Ugb2YgYWR2
-aWNlLCB3ZSBhcmUgd2lsbGluZyB0byBsZWFybiBtb3JlIGFib3V0CnRoaXMgaWYgbW9yZSBiYXNp
-YyB0ZWNobmlxdWVzIHdvbid0CmZpeCBvdXIgaXNzdWUuCgpBcnR1cm8gTGF1cmVuemksIERhdmlk
-ZSBBbnRvbnVjY2kKCj4gLS0KPiBTaWVtZW5zIEFHLCBUZWNobm9sb2d5Cj4gQ29tcGV0ZW5jZSBD
-ZW50ZXIgRW1iZWRkZWQgTGludXgKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
-LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogS2VybmVsX2xv
-Z18zX2lkbGVfcG9zClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA2MTIzIGJ5
-dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNDE5LzAxNWJjYzFiL2F0dGFjaG1lbnQub2JqPgot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
-ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBLZXJuZWxfbG9nXzFfaWRsZV9wb3MKVHlwZTogYXBw
-bGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDUyOTcgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJs
-ZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAyMjA0MTkvMDE1YmNjMWIvYXR0YWNobWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogS2VybmVsX2xvZ18yX2lkbGVfcG9zClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0
-cmVhbQpTaXplOiA2NTMzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNDE5LzAxNWJjYzFi
-L2F0dGFjaG1lbnQtMDAwMi5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IEtlcm5lbF9s
-b2dfMV9kdW1teQpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogNjc4MiBieXRl
-cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDIyMDQxOS8wMTViY2MxYi9hdHRhY2htZW50LTAwMDMub2Jq
-Pgo=
+On 19.04.22 12:02, Arturo Laurenzi wrote:
+> Sorry for the delayed answer, it took us some time to instrument our
+> setup for broadcasting the kernel output over serial,
+> and now we have some interesting results.
+> See below.
+> 
+>> On 05.04.22 15:43, Arturo Laurenzi wrote:
+>>>> On 04.04.22 15:21, Arturo Laurenzi via Xenomai wrote:
+>>>
+>>>>>
+>>>>> Recently, we have started a transition towards Ubuntu 20.04, and things
+>>>>> have started to break.
+>>>>>
+>>>>> The first attempt was to install kernel 5.4.151 and stick to ipipe. Under
+>>>>> this setup, we experience issues even before starting our applications. We
+>>>>> have seen random crashes while compiling with GCC, sporadic "System Program
+>>>>> Problem Detected" popups by Ubuntu, and others. We even tried to re-install
+>>>>> OS and kernel from scratch with no luck.
+>>>>
+>>>> A reference setup for this kernel line can be found in xenomai-images
+>>>> (https://source.denx.de/Xenomai/xenomai-images). Would be good to
+>>>> understand which deviation from it makes the difference for which
+>>>> component (see also further questions below).
+>>>
+>>> I'm attaching the config we're using (from /boot/config-$(uname -r)).
+>>> If that makes sense, we're going to try to configure the kernel
+>>> according to this file
+>>> (https://source.denx.de/Xenomai/xenomai-images/-/blob/master/recipes-kernel/linux/files/amd64_defconfig).
+>>> What kernel version do you recommend to try?
+>>>
+>>
+>> Always the latest of the individual kernel series.
+> 
+> We still have to test the reference .config file, as we gave higher
+> priority to the kernel output over serial stuff.
+> 
+>>>>>
+>>>>> The second attempt was to stick to our old kernel 4.19.140. All the weird
+>>>>> issues disappear and the system is stable. However, we are unable to have
+>>>>> the system pass our suite of "stress tests", which basically involve starting,
+>>>>> running, and killing process B multiple times in a cyclic fashion, while
+>>>>> process A runs in the background. After a short while (minutes), the whole
+>>>>> system just hangs, forcing us to do an hard reset. Only once, we managed to
+>>>>> get this kernel oops after rebooting (journalctl -k -b -1 --no-pager).
+>>>>>
+>>>>
+>>>> For reliably recording crashes, it is highly recommended to use a UART
+>>>> as kernel debug output.
+>>>
+>>> Will do ASAP and let you know.
+> 
+> Done, see below.
+> 
+>>>>> The third attempt was to try out kernel 5.10.89 plus the new dovetail
+>>>>> patch, and Xenomai v3.2.1. Again, all the weird issues are gone and the
+>>>>> system is stable. However, we are unable to have the system pass our suite
+>>>>> of "stress tests". Differently from 4.19-ipipe, the system resists for a
+>>>>> longer time before hanging (few hours sometimes), but this also varies a
+>>>>> lot.
+>>>>>
+>>>>> After some more investigation, we found out something interesting. By
+>>>>> removing the code that interacts with Process A, Process B is then able to
+>>>>> run "forever" (overnight at least), but *only if Process A is not running*.
+>>>>> Otherwise, the system will hang. In other words, the mere presence of
+>>>>> Process A is affecting Process B, even though both IDDP and ZMQ have been
+>>>>> removed from B and replaced with fake data. Furthermore, the system does
+>>>>> not freeze if we set B1's scheduling policy to SCHED_OTHER.
+>>>>
+>>>> Do you have the Xenomai watchdog enabled, thus will you be able to tell
+>>>> RT application "hangs" (infinite loop at high prio) apart from real
+>>>> hangs/crashes?
+>>>
+>>> Yes. When we try a while(true) inside a RT context, we see the
+>>> watchdog killing our application
+>>> as expected.
+>>>
+>>>
+>>>>>
+>>>>> From these - rather heuristic - tests, it looks like there could be some
+>>>>> coupling between unrelated processes which causes some sort of bug, that is
+>>>>> probably related to some interaction with mutexes/condvars, when these are
+>>>>> used from a RT context. This issue shows up (or at least we have seen it)
+>>>>> only under Ubuntu 20.04 (GCC 9.x), whereas a 18.04 build (GCC 7.x) looks
+>>>>> fine.
+>>>>
+>>>> Ubuntu toolchains are known for agressively enabling certain security
+>>>> features. Maybe one that we didn't check yet flipped between 18.04 and
+>>>> 20.04 - if that switch is only difference between working and
+>>>> non-working builds in your case. GCC itself should be fine, we are
+>>>> testing with gcc-10 via Debian 11 in our CI.
+>>>>
+>>>> Can you check whether the toolchain change breaks the kernel (kernel
+>>>> with old toolchain runs fine with userspace built via new toolchain)?
+>>>
+>>> We have tried this, and still the system freezes after a while. We
+>>> followed the procedure that follows:
+>>>  1) generate binaries for our "working" kernel 4.19.140-xeno-ipipe-3.1
+>>> on a Ubuntu 18 machine (make deb-pkg)
+>>>  2) copy the whole /usr/xenomai directory (compiled with the 18.04
+>>> toolchain) to the test machine with Ubuntu 20.04
+>>>  3) install the kernel binaries to the test machine
+>>>  4) re-compile our application
+>>> Is this ok?
+>>>
+>>
+>> Wait, these are three variables: kernel, Xenomai application and Ubuntu
+>> userspace. Does your system also break when using both kernel and
+>> application binaries from a Ubuntu 18 build? Or will it start to break
+>> once you recompile the Xenomai application with Ubuntu 20 toolchain?
+> 
+> Also this needs further investigation. Right now we're focusing on
+> 5.10-dovetail + Xenomai 3.2 + application all built under
+> the default 20.04 toolchain.
+> 
+>>>>>
+>>>>> The purpose of this message is twofold.
+>>>>> First, to see if these symptoms might "ring a bell" to anyone in the
+>>>>> community, who might be able to suggest a fix.
+>>>>> Second, we'd like to ask what you would do to debug this issue. Which tool
+>>>>> could we use to trace what's going on, considering that whatever the bug
+>>>>> is, it leads to a state where the machine is not usable at all. We can
+>>>>> share our .config files if required, and we are willing to test more
+>>>>> combinations of kernel and xenomai patch or library versions upon your
+>>>>> advice. Any help you can give us is greatly appreciated.
+>>>>>
+>>>>
+>>>> Can you simplify your test case to a level that makes it sharable,
+>>>> executable by third parties? Please also share your kernel .config.
+>>>
+>>> Will try. It's not going to be quick though, as any trial we make
+>>> needs hours of testing to understand if it causes a system freeze.
+>>>
+>>> What is the recommended to trace/debug this kind of problems? Is there
+>>> anything "fancier" than broadcasting kernel output over a serial port?
+>>>
+>>
+>> Hard to say in general. Full system freezes can be tricky to debug
+>> unless there are at least some hints provided by the kernel. That's why
+>> the focus is first on validating that.
+> 
+> In this regard, we managed to produce a stack trace via serial port.
+> This is obtained on 5.10-dovetail + Xenomai 3.2 + application all
+> built under
+> the default 20.04 toolchain. This happens consistently in both our
+> scenarios, i.e.
+>  1) process A interacting with process B via IDDP and ZMQ (i.e. TCP/IP)
+>  2) process A and a "modified" process B running at the same time, and
+> not interacting in any way
+> The stack trace is always the same (I am attaching a few examples)
+> 
+> [  594.117307] kernel tried to execute NX-protected page - exploit
+> attempt? (uid: 1000)
+> [  594.117308] BUG: unable to handle page fault for address: ffffa20908ee1b00
+> [  594.117308] #PF: supervisor instruction fetch in kernel mode
+> [  594.117308] #PF: error_code(0x0011) - permissions violation
+> [  594.117309] PGD 44b601067 P4D 44b601067 PUD 80000001c00001e3
+> [  594.117310] Oops: 0011 [#1] SMP PTI IRQ_PIPELINE
+> [  594.117310] CPU: 1 PID: 34507 Comm: xbot2-core Not tainted
+> 5.10.89-xeno-ipipe-3.1+ #1
+> [  594.117311] Hardware name:  /TS175, BIOS BQKLR112 07/04/2017
+> [  594.117311] IRQ stage: Linux
+> [  594.117311] RIP: 0010:0xffffa20908ee1b00
+> [  594.117312] Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 00 00 00 <02> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0
+> [  594.117312] RSP: 0018:ffffa37b8003cf80 EFLAGS: 00010202
+> [  594.117313] RAX: ffffffff84cb1d29 RBX: ffffa37b89e8bd98 RCX: 00000000cd46ea8f
+> [  594.117313] RDX: ffffa37b89e8bda0 RSI: ffffa20b9fc40000 RDI: ffffa37b89e8bd98
+> [  594.117314] RBP: ffffffff84d10064 R08: ffffa2084005d800 R09: 0000000000000001
+> [  594.117314] R10: 0000000000000001 R11: 0000000000000001 R12: 000000000000001e
+> [  594.117314] R13: 000000000000001c R14: 0000000000000000 R15: 0000000000000024
+> [  594.117315] FS:  00007fef2c191600(0000) GS:ffffa20b9fc40000(0000)
+> knlGS:0000000000000000
+> [  594.117315] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  594.117316] CR2: ffffa20908ee1b00 CR3: 000000010095e003 CR4: 00000000003706e0
+> [  594.117316] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [  594.117316] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [  594.117317] Call Trace:
+> [  594.117317]  <IRQ>
+> [  594.117317]  ? irq_work_run_list+0x32/0x40
+> [  594.117317]  ? irq_work_run+0x18/0x30
+> [  594.117318]  ? inband_work_interrupt+0x9/0x10
+> [  594.117318]  ? handle_synthetic_irq+0x59/0x80
+> [  594.117318]  ? asm_call_irq_on_stack+0x12/0x20
+> [  594.117319]  </IRQ>
+> [  594.117319]  ? arch_do_IRQ_pipelined+0xc2/0x150
+> [  594.117319]  ? sync_current_irq_stage+0x1ae/0x230
+> [  594.117320]  ? __inband_irq_enable+0x47/0x50
+> [  594.117320]  ? inband_irq_restore+0x21/0x30
+> [  594.117320]  ? _raw_spin_unlock_irqrestore+0x1d/0x20
+> [  594.117320]  ? __set_cpus_allowed_ptr+0xa2/0x200
+> [  594.117321]  ? sched_setaffinity+0x1b7/0x2a0
+> [  594.117321]  ? __x64_sys_sched_setaffinity+0x4e/0x90
+> [  594.117321]  ? do_syscall_64+0x44/0xa0
+> [  594.117322]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The call-stack is not reported as fully reliable. Are you running with
+CONFIG_DEBUG_INFO=y? Do you have CONFIG_UNWINDER_ORC=y?
+
+Assuming it is reliable, we may try to run some irq-work that no longer
+exists. But that's speculation.
+
+What may help here is ftrace dump on panic, see
+https://www.kernel.org/doc/html/latest/admin-guide/sysctl/kernel.html#ftrace-dump-on-oops
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
