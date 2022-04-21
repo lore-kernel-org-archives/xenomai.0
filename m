@@ -1,11 +1,12 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/5] lib/cobalt: deprecate cobalt_event_post()
-Date: Wed,  6 Apr 2022 17:56:47 +0200
-Message-Id: <20220406155648.1592472-4-rpm@xenomai.org>
-In-Reply-To: <20220406155648.1592472-1-rpm@xenomai.org>
-References: <20220406155648.1592472-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
+Date: Thu, 21 Apr 2022 15:20:54 +0900
+From: =?utf-8?B?SmFlIEh5dW4gUGFyaw==?= <parkjahun42@naver.com>
+Subject: =?utf-8?B?RGlmZmVyZW5jZSBiZXR3ZWVuIHJ0X3Rhc2ssIHB0aHJlYWQgYW5kIHhudGhyZWFkIGluIA==?=
+ =?utf-8?B?WGVub21haSAz?=
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +17,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/cobalt/sys/cobalt.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/include/cobalt/sys/cobalt.h b/include/cobalt/sys/cobalt.h
-index 1035a29d52..5dde69da8a 100644
---- a/include/cobalt/sys/cobalt.h
-+++ b/include/cobalt/sys/cobalt.h
-@@ -113,6 +113,7 @@ int cobalt_event_broadcast(cobalt_event_t *event,
- 			unsigned int bits);
- 
- /* Backward compatibility with 3.2.x and earlier. */
-+__deprecated
- static inline int cobalt_event_post(cobalt_event_t *event,
- 				unsigned int bits)
- {
--- 
-2.34.1
-
+SGksIAoKSSBoYXZlIGJlZW4gdXNlZCBydF90YXNrX2NyZWF0ZSBmcm9tIFhlbm9tYWkgMi4gCgpJ
+biB0aGUgWGVub21haSAzIGNvYmFsdCBleGFtcGxlLCBpdCBzZWVtZWQgdG8gdXNlIG9ubHkgcHRo
+cmVhZF9jcmVhdGUuCgpJJ20gbm90IGZhbWlsaWFyIHRvIHRhc2ssIHByb2Nlc3MgYW5kIHRocmVh
+ZC4uLiAKCkkgaGF2ZSBzZXZlcmFsIHF1ZXN0aW9uIGJlbG9uZyB0byB0aHJlYWRfY3JlYXRlIGFu
+ZCBydF90YXNrX2NyZWF0ZS4KCjEuIGRvZXMgcnRfdGFza19jcmVhdGUgY3JlYXRlIGEgcHJvY2Vz
+cyh0YXNrKSBpbnN0ZWFkIG9mIGNyZWF0aW5nIGEgc2luZ2xlIHRocmVhZD8KCjIuIElzIGNyZWF0
+aW5nIHRocmVhZCBpcyBiZXR0ZXIgdGhhbiB1c2luZyBydF90YXNrX2NyZWF0ZSBpbiBYZW5vbWFp
+IDM/IEknbSB3b25kZXJpbmcgbm93IHdlIGFyZSBub3QgdXNpbmcgcnRfdGFza19jcmVhdGUuCiAg
+IAozLiBJcyB0aGVyZSBkaWZmZXJlbmNlIGJldHdlZW4geG50aHJlYWQgYW5kIHB0aHJlYWQ/CgpU
+aGFua3MuIA==
 
