@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-Message-ID: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
-Date: Thu, 21 Apr 2022 15:20:54 +0900
-From: =?utf-8?B?SmFlIEh5dW4gUGFyaw==?= <parkjahun42@naver.com>
-Subject: =?utf-8?B?RGlmZmVyZW5jZSBiZXR3ZWVuIHJ0X3Rhc2ssIHB0aHJlYWQgYW5kIHhudGhyZWFkIGluIA==?=
- =?utf-8?B?WGVub21haSAz?=
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
+In-Reply-To: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Thu, 21 Apr 2022 10:27:13 +0200
+Message-ID: <CAFLxGvwn1j+6MJFRWVfwTvR=6S6H3fKW8hHGoY5AdevyitHCsQ@mail.gmail.com>
+Subject: Re: Difference between rt_task, pthread and xnthread in Xenomai 3
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,16 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jae Hyun Park <parkjahun42@naver.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-SGksIAoKSSBoYXZlIGJlZW4gdXNlZCBydF90YXNrX2NyZWF0ZSBmcm9tIFhlbm9tYWkgMi4gCgpJ
-biB0aGUgWGVub21haSAzIGNvYmFsdCBleGFtcGxlLCBpdCBzZWVtZWQgdG8gdXNlIG9ubHkgcHRo
-cmVhZF9jcmVhdGUuCgpJJ20gbm90IGZhbWlsaWFyIHRvIHRhc2ssIHByb2Nlc3MgYW5kIHRocmVh
-ZC4uLiAKCkkgaGF2ZSBzZXZlcmFsIHF1ZXN0aW9uIGJlbG9uZyB0byB0aHJlYWRfY3JlYXRlIGFu
-ZCBydF90YXNrX2NyZWF0ZS4KCjEuIGRvZXMgcnRfdGFza19jcmVhdGUgY3JlYXRlIGEgcHJvY2Vz
-cyh0YXNrKSBpbnN0ZWFkIG9mIGNyZWF0aW5nIGEgc2luZ2xlIHRocmVhZD8KCjIuIElzIGNyZWF0
-aW5nIHRocmVhZCBpcyBiZXR0ZXIgdGhhbiB1c2luZyBydF90YXNrX2NyZWF0ZSBpbiBYZW5vbWFp
-IDM/IEknbSB3b25kZXJpbmcgbm93IHdlIGFyZSBub3QgdXNpbmcgcnRfdGFza19jcmVhdGUuCiAg
-IAozLiBJcyB0aGVyZSBkaWZmZXJlbmNlIGJldHdlZW4geG50aHJlYWQgYW5kIHB0aHJlYWQ/CgpU
-aGFua3MuIA==
+On Thu, Apr 21, 2022 at 8:21 AM Jae Hyun Park via Xenomai
+<xenomai@xenomai.org> wrote:
+> I have been used rt_task_create from Xenomai 2.
+>
+> In the Xenomai 3 cobalt example, it seemed to use only pthread_create.
+
+It depends on the skin. rt_task_create is part of the native/alchemy skin.
+While pthread_create is part of the posix skin.
+
+Xenomai offers multiple interfaces to use realtime.
+
+> I'm not familiar to task, process and thread...
+>
+> I have several question belong to thread_create and rt_task_create.
+>
+> 1. does rt_task_create create a process(task) instead of creating a single thread?
+
+No. See above.
+
+> 2. Is creating thread is better than using rt_task_create in Xenomai 3? I'm wondering now we are not using rt_task_create.
+
+Depends. Many people prefer the posix skin because it feels familiar.
+
+> 3. Is there difference between xnthread and pthread?
+
+xnthread is Xenomai's internal kernel structure to represent a realtime thread.
+
+-- 
+Thanks,
+//richard
 
