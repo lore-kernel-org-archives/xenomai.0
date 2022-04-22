@@ -1,11 +1,15 @@
 MIME-Version: 1.0
+Message-ID: <82ef88bc2e32fa37af5cb992be6a293@cweb012.nm.nfra.io>
+Date: Fri, 22 Apr 2022 12:02:00 +0900
+From: =?utf-8?B?SmFlIEh5dW4gUGFyaw==?= <parkjahun42@naver.com>
+In-Reply-To: <CAFLxGvwn1j+6MJFRWVfwTvR=6S6H3fKW8hHGoY5AdevyitHCsQ@mail.gmail.com>
 References: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
-In-Reply-To: <56fd561b25857e45232c952f6ef4a7a4@cweb010.nm.nfra.io>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 21 Apr 2022 10:27:13 +0200
-Message-ID: <CAFLxGvwn1j+6MJFRWVfwTvR=6S6H3fKW8hHGoY5AdevyitHCsQ@mail.gmail.com>
-Subject: Re: Difference between rt_task, pthread and xnthread in Xenomai 3
-Content-Type: text/plain; charset="UTF-8"
+ <CAFLxGvwn1j+6MJFRWVfwTvR=6S6H3fKW8hHGoY5AdevyitHCsQ@mail.gmail.com>
+Subject: =?utf-8?B?UmU6IERpZmZlcmVuY2UgYmV0d2VlbiBydF90YXNrLCBwdGhyZWFkIGFuZCB4bnRocmVhZA==?=
+ =?utf-8?B?IGluIFhlbm9tYWkgMw==?=
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jae Hyun Park <parkjahun42@naver.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?UmljaGFyZCBXZWluYmVyZ2Vy?= <richard.weinberger@gmail.com>
+Cc: =?utf-8?B?WGVub21haQ==?= <xenomai@xenomai.org>
 
-On Thu, Apr 21, 2022 at 8:21 AM Jae Hyun Park via Xenomai
-<xenomai@xenomai.org> wrote:
-> I have been used rt_task_create from Xenomai 2.
->
-> In the Xenomai 3 cobalt example, it seemed to use only pthread_create.
-
-It depends on the skin. rt_task_create is part of the native/alchemy skin.
-While pthread_create is part of the posix skin.
-
-Xenomai offers multiple interfaces to use realtime.
-
-> I'm not familiar to task, process and thread...
->
-> I have several question belong to thread_create and rt_task_create.
->
-> 1. does rt_task_create create a process(task) instead of creating a single thread?
-
-No. See above.
-
-> 2. Is creating thread is better than using rt_task_create in Xenomai 3? I'm wondering now we are not using rt_task_create.
-
-Depends. Many people prefer the posix skin because it feels familiar.
-
-> 3. Is there difference between xnthread and pthread?
-
-xnthread is Xenomai's internal kernel structure to represent a realtime thread.
-
--- 
-Thanks,
-//richard
+Pj4gSSBoYXZlIGJlZW4gdXNlZCBydF90YXNrX2NyZWF0ZSBmcm9tIFhlbm9tYWkgMi4KPj4KPj4g
+SW4gdGhlIFhlbm9tYWkgMyBjb2JhbHQgZXhhbXBsZSwgaXQgc2VlbWVkIHRvIHVzZSBvbmx5IHB0
+aHJlYWRfY3JlYXRlLgoKPkl0IGRlcGVuZHMgb24gdGhlIHNraW4uIHJ0X3Rhc2tfY3JlYXRlIGlz
+IHBhcnQgb2YgdGhlIG5hdGl2ZS9hbGNoZW15IHNraW4uCj5XaGlsZSBwdGhyZWFkX2NyZWF0ZSBp
+cyBwYXJ0IG9mIHRoZSBwb3NpeCBza2luLgoKPlhlbm9tYWkgb2ZmZXJzIG11bHRpcGxlIGludGVy
+ZmFjZXMgdG8gdXNlIHJlYWx0aW1lLgoKPj4gSSdtIG5vdCBmYW1pbGlhciB0byB0YXNrLCBwcm9j
+ZXNzIGFuZCB0aHJlYWQuLi4KPj4KPj4gSSBoYXZlIHNldmVyYWwgcXVlc3Rpb24gYmVsb25nIHRv
+IHRocmVhZF9jcmVhdGUgYW5kIHJ0X3Rhc2tfY3JlYXRlLgo+Pgo+IDEuIGRvZXMgcnRfdGFza19j
+cmVhdGUgY3JlYXRlIGEgcHJvY2Vzcyh0YXNrKSBpbnN0ZWFkIG9mIGNyZWF0aW5nIGEgc2luZ2xl
+IHRocmVhZD8KCj5Oby4gU2VlIGFib3ZlLgoKPj4gMi4gSXMgY3JlYXRpbmcgdGhyZWFkIGlzIGJl
+dHRlciB0aGFuIHVzaW5nIHJ0X3Rhc2tfY3JlYXRlIGluIFhlbm9tYWkgMz8gSSdtIHdvbmRlcmlu
+ZyBub3cgd2UgYXJlIG5vdCB1c2luZyBydF90YXNrX2NyZWF0ZS4KCj5EZXBlbmRzLiBNYW55IHBl
+b3BsZSBwcmVmZXIgdGhlIHBvc2l4IHNraW4gYmVjYXVzZSBpdCBmZWVscyBmYW1pbGlhci4KCj4+
+IDMuIElzIHRoZXJlIGRpZmZlcmVuY2UgYmV0d2VlbiB4bnRocmVhZCBhbmQgcHRocmVhZD8KCj54
+bnRocmVhZCBpcyBYZW5vbWFpJ3MgaW50ZXJuYWwga2VybmVsIHN0cnVjdHVyZSB0byByZXByZXNl
+bnQgYSByZWFsdGltZSB0aHJlYWQuCgo+LS0gCj4+VGhhbmtzLAo+Ly9yaWNoYXJkCgotLQoKVGhh
+bmtzIGZvciByZXNwb25kaW5nLiAKClRoZW4gY2FuIEkgdW5kZXJzdGFuZCB0aGF0IHRhc2tzIG1h
+ZGUgd2l0aCBydF90YXNrX2NyZWF0ZSB3b3JrIHNpbWlsYXJseSB0byBtdWx0aS10aHJlYWRpbmc/
+CgpBbmQgSSB3b25kZXIgaWYgdGhlcmUgaXMgYW55IGRpZmZlcmVuY2UgaW4gcmVhbC10aW1lIGd1
+YXJhbnRlZSBwZXJmb3JtYW5jZSBiZXR3ZWVuIHB0aHJlYWQgCgpvZiBwb3NpeCBza2luIGFuZCB4
+bnRocmVhZCBvZiByZWFsdGltZSB0aHJlYWQgb2YgeGVub21haS4K
 
