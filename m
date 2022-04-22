@@ -1,11 +1,9 @@
-Message-ID: <39dc9c89-bd9c-2fc0-adea-d038f1e0c7af@tin.it>
-Date: Fri, 22 Apr 2022 16:25:31 +0200
 MIME-Version: 1.0
-Content-Language: it-IT
-From: "Mauro S." <mau.salvi@tin.it>
-Subject: [PATCH] utils/net/rtnet.in: add delay during master configuration
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Ashwik John <johnashwik994@gmail.com>
+Date: Fri, 22 Apr 2022 17:11:16 +0200
+Message-ID: <CAESnvfOv9xfzqPrTxXjT7z-U+7MYMt+YQESoiQa07icMutd5aw@mail.gmail.com>
+Subject: Re: First application
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +14,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-U29tZSBjYXJkcyBhcmUgc2xvdyB0byBnZXQgdGhlIGNvbm5lY3Rpb24gbGluayB1cCBhZnRlciB0
-aGUKInJ0aWZjb25maWcgcnRldGgwIHVwIiBjb21tYW5kLCBlLmcuIG9uIGFuIEF0b20teDUgd2l0
-aCBhbiBJbnRlbCBJMjEwCihydF9pZ2IgZHJpdmVyKSBJIGRldGVjdGVkIGFwcHJveGltYXRlbHkg
-MyBzZWNvbmRzIHRvIGdldCB0aGUgbGluayB1cC4KCk9uIG1hc3RlciwgdGhlICJydGlmY29uZmln
-IHJ0ZXRoMCB1cCIgaXMgZm9sbG93ZWQgYnkgVERNQSBjb25maWd1cmF0aW9uIGFuZApzdGFydC4g
-QWZ0ZXIgdGhlIFRETUEgc3RhcnQsIHRoZSBzeW5jIHBhY2tldCBpcyBzZW50IGF0IHRoZSBkZWZp
-bmVkIApjeWNsZSB0aW1lLgoKU29tZXRpbWVzLCBhZnRlciAicnRuZXQgc3RhcnQiLCB0aGUgZG1l
-c2cgZmlsbHMgd2l0aCB0aGlzIGVycm9yOgoKICAgVERNQTogRmFpbGVkIHRvIHRyYW5zbWl0IHN5
-bmMgZnJhbWUhCgphbmQgdGhlIHJ0IGRyaXZlciBsb2Nrcy4gVGhlbiwgdGhlIGtlcm5lbCB3YXRj
-aGRvZyBpcyB0cmlnZ2VyZWQgYW5kIHRoZQpOSUMgaXMgaHctcmVzZXQgYnkgdGhlIGtlcm5lbCwg
-cHJvZHVjaW5nIG1vcmUgZXJyb3JzIGFuZCBhbm90aGVyIGxvY2suClNvbWV0aW1lcyB0aGUgZG1l
-c2cgb25seSBmaWxscyB3aXRoIHRoZSBlcnJvciBtZXNzYWdlIGFuZCB0aGUgTklDIGRvZXMKbm90
-IGxvY2suClRoaXMgaGFwcGVucyBiZWNhdXNlIHRoZSBpbnRlcmZhY2UgaXMgbm90IHVwIGFuZCBy
-ZWFkeSB0byBoYW5kbGUKdGhlIHN5bmMgcGFja2V0cyB3aGVuIFRETUEgaXMgc3RhcnRlZC4KClRo
-aXMgcGF0Y2ggaW50cm9kdWNlcyBhIGNvbmZpZ3VyYWJsZSBkZWxheSBiZXR3ZWVuIHRoZSAicnRp
-ZmNvbmZpZyAKcnRldGgwIHVwIgphbmQgdGhlIFRETUEgc3RhcnQgb24gbWFzdGVyIGhvc3QuIFRo
-aXMgYWxsb3dzIHRvIGF2b2lkIHRoZXNlIGtpbmQgb2YgCnByb2JsZW1zLgoKLS0gCk1hdXJvIFMu
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IDAwMDEtdXRpbHMtbmV0LXJ0bmV0LmluLWFkZC1k
-ZWxheS1kdXJpbmctbWFzdGVyLWNvbmZpZ3VyYS5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6
-ZTogMzA2MCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIyMDQyMi9kYWVkNzhkMC9hdHRhY2ht
-ZW50LmJpbj4K
+Hi,
+
+What is the procedure to build and run the application with EVL? For
+example a fifo thread.
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sched.h>
+#include <pthread.h>
+#include <evl/sched.h>
+#include <evl/thread.h>
+
+int main(int argc, char *argv[])
+{
+struct sched_param param;
+int ret, tfd;
+
+param.sched_priority = 8;
+ret = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+
+tfd = evl_attach_self("app-main-thread:%d", getpid());
+}
+
+Thank you,
