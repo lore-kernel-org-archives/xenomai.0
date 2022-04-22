@@ -1,12 +1,11 @@
-References: <mailman.3.1647601201.30395.xenomai@xenomai.org>
- <CAESnvfPvby7Wi5ncyB-KZQgR69pQ1p+6Xh5uVxMJUnKpQPaHqg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Xenomai Digest, Vol 119, Issue 50
-Date: Fri, 22 Apr 2022 11:23:47 +0200
-In-reply-to: <CAESnvfPvby7Wi5ncyB-KZQgR69pQ1p+6Xh5uVxMJUnKpQPaHqg@mail.gmail.com>
-Message-ID: <87a6cda2sr.fsf@xenomai.org>
+Message-ID: <39dc9c89-bd9c-2fc0-adea-d038f1e0c7af@tin.it>
+Date: Fri, 22 Apr 2022 16:25:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: [PATCH] utils/net/rtnet.in: add delay during master configuration
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,88 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ashwik John <johnashwik994@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-
-Ashwik John via Xenomai <xenomai@xenomai.org> writes:
-
-> Hi,
->
-> I have the same problem when running #evl test.
->
-> basic-xbuf: OK
-> clock-timer-periodic: OK
-> clone-fork-exec: OK
-> detach-self: OK
-> duplicate-element: OK
-> element-visibility: OK
-> fault: OK
-> fpu-preload: OK
-> fpu-stress: OK
-> heap-torture: OK
-> mapfd: OK
-> monitor-deadlock: OK
-> monitor-event: OK
-> monitor-flags: OK
-> monitor-pi: OK
-> monitor-pi-deadlock: OK
-> monitor-pp-dynamic: OK
-> monitor-pp-lower: OK
-> monitor-pp-nested: OK
-> monitor-pp-pi: OK
-> monitor-pp-raise: OK
-> monitor-pp-tryenter: OK
-> monitor-pp-weak: OK
-> monitor-steal: OK
-> monitor-wait-multiple: OK
-> observable-hm: OK
-> observable-inband: OK
-> observable-master: OK
-> observable-onchange: OK
-> observable-oob: OK
-> observable-race: OK
-> observable-thread: OK
-> poll-close: OK
-> poll-flags: OK
-> poll-many: OK
-> *** stack smashing detected ***: <unknown> terminated
-> Aborted (core dumped)
-> ** poll-multiple: BROKEN
->
->
-> (gdb) run
-> Starting program: /usr/evl/tests/poll-multiple
-> [Thread debugging using libthread_db enabled]
-> Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
-> [New Thread 0x7ffff7ff0700 (LWP 18985)]
-> [New Thread 0x7ffff7fd7700 (LWP 18988)]
-> [Thread 0x7ffff7ff0700 (LWP 18985) exited]
-> *** stack smashing detected ***: <unknown> terminated
-> [Thread 0x7ffff7fd7700 (LWP 18988) exited]
->
-> Thread 1 "poll-multi:1898" received signal SIGABRT, Aborted.
-> __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:51
-> 51 ../sysdeps/unix/sysv/linux/raise.c: No such file or directory.
-> (gdb) backtrace
-> #0  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:51
-> #1  0x00007ffff75f67f1 in __GI_abort () at abort.c:79
-> #2  0x00007ffff763f837 in __libc_message (action=action@entry=do_abort,
-> fmt=fmt@entry=0x7ffff776c869 "*** %s ***: %s terminated\n") at
-> ../sysdeps/posix/libc_fatal.c:181
-> #3  0x00007ffff76eab31 in __GI___fortify_fail_abort
-> (need_backtrace=need_backtrace@entry=false, msg=msg@entry=0x7ffff776c847
-> "stack smashing detected") at fortify_fail.c:33
-> #4  0x00007ffff76eaaf2 in __stack_chk_fail () at stack_chk_fail.c:29
-> #5  0x0000555555401d27 in main ()
->
-> Thank you for your support to solve this issue.
->
-
-Fixed by this commit:
-
-https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/c6475a83706167e60ddf2c303f136b97a8f25c59
-
--- 
-Philippe.
-
+U29tZSBjYXJkcyBhcmUgc2xvdyB0byBnZXQgdGhlIGNvbm5lY3Rpb24gbGluayB1cCBhZnRlciB0
+aGUKInJ0aWZjb25maWcgcnRldGgwIHVwIiBjb21tYW5kLCBlLmcuIG9uIGFuIEF0b20teDUgd2l0
+aCBhbiBJbnRlbCBJMjEwCihydF9pZ2IgZHJpdmVyKSBJIGRldGVjdGVkIGFwcHJveGltYXRlbHkg
+MyBzZWNvbmRzIHRvIGdldCB0aGUgbGluayB1cC4KCk9uIG1hc3RlciwgdGhlICJydGlmY29uZmln
+IHJ0ZXRoMCB1cCIgaXMgZm9sbG93ZWQgYnkgVERNQSBjb25maWd1cmF0aW9uIGFuZApzdGFydC4g
+QWZ0ZXIgdGhlIFRETUEgc3RhcnQsIHRoZSBzeW5jIHBhY2tldCBpcyBzZW50IGF0IHRoZSBkZWZp
+bmVkIApjeWNsZSB0aW1lLgoKU29tZXRpbWVzLCBhZnRlciAicnRuZXQgc3RhcnQiLCB0aGUgZG1l
+c2cgZmlsbHMgd2l0aCB0aGlzIGVycm9yOgoKICAgVERNQTogRmFpbGVkIHRvIHRyYW5zbWl0IHN5
+bmMgZnJhbWUhCgphbmQgdGhlIHJ0IGRyaXZlciBsb2Nrcy4gVGhlbiwgdGhlIGtlcm5lbCB3YXRj
+aGRvZyBpcyB0cmlnZ2VyZWQgYW5kIHRoZQpOSUMgaXMgaHctcmVzZXQgYnkgdGhlIGtlcm5lbCwg
+cHJvZHVjaW5nIG1vcmUgZXJyb3JzIGFuZCBhbm90aGVyIGxvY2suClNvbWV0aW1lcyB0aGUgZG1l
+c2cgb25seSBmaWxscyB3aXRoIHRoZSBlcnJvciBtZXNzYWdlIGFuZCB0aGUgTklDIGRvZXMKbm90
+IGxvY2suClRoaXMgaGFwcGVucyBiZWNhdXNlIHRoZSBpbnRlcmZhY2UgaXMgbm90IHVwIGFuZCBy
+ZWFkeSB0byBoYW5kbGUKdGhlIHN5bmMgcGFja2V0cyB3aGVuIFRETUEgaXMgc3RhcnRlZC4KClRo
+aXMgcGF0Y2ggaW50cm9kdWNlcyBhIGNvbmZpZ3VyYWJsZSBkZWxheSBiZXR3ZWVuIHRoZSAicnRp
+ZmNvbmZpZyAKcnRldGgwIHVwIgphbmQgdGhlIFRETUEgc3RhcnQgb24gbWFzdGVyIGhvc3QuIFRo
+aXMgYWxsb3dzIHRvIGF2b2lkIHRoZXNlIGtpbmQgb2YgCnByb2JsZW1zLgoKLS0gCk1hdXJvIFMu
+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IDAwMDEtdXRpbHMtbmV0LXJ0bmV0LmluLWFkZC1k
+ZWxheS1kdXJpbmctbWFzdGVyLWNvbmZpZ3VyYS5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6
+ZTogMzA2MCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIyMDQyMi9kYWVkNzhkMC9hdHRhY2ht
+ZW50LmJpbj4K
