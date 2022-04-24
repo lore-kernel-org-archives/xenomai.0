@@ -1,11 +1,14 @@
+From: Jerry Huang <jerry.huang@nxp.com>
+Subject: RE: [EXT] Re: latency: negative value?
+Date: Sun, 24 Apr 2022 09:54:28 +0000
+Message-ID: <VE1PR04MB6477819DEBB634785A81E05DFEF99@VE1PR04MB6477.eurprd04.prod.outlook.com>
 References: <VE1PR04MB6477905B7CC4E6A6F5D769BEFEF99@VE1PR04MB6477.eurprd04.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: latency: negative value?
-Date: Sun, 24 Apr 2022 11:00:34 +0200
-In-reply-to: <VE1PR04MB6477905B7CC4E6A6F5D769BEFEF99@VE1PR04MB6477.eurprd04.prod.outlook.com>
-Message-ID: <87v8uykfew.fsf@xenomai.org>
+ <87v8uykfew.fsf@xenomai.org>
+In-Reply-To: <87v8uykfew.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,90 +17,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerry Huang <jerry.huang@nxp.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Jerry Huang via Xenomai <xenomai@xenomai.org> writes:
-
-> Hi, all guys,
-> Now I am using linux-dovetail/v5.15.6-dovetail1-rebase on my RDB board.
-> 1 . I am running latency command, but when I running command:
-> latency -t 1 -T 30
-> I got the negative value:
-> RTD|     -2.760|     -2.654|     -1.800|       0|     0|     -2.760|     -1.400
->
-> 2. Then, I got the solution from google:
-> Run command: xeno latency -T 20
-> I got:
-> RTD|     -1.360|     -1.235|     -0.040|       0|     0|     -1.440|      0.440
->
-> 3. then I update /proc/xenomai/latency value
-> echo -1440 > /proc/xenomai/latency
->
-> 4. when I run xeno latency again, I got below result:
-> RTD|      5.240|      5.389|      6.640|       0|     0|      5.040|      7.600
->
-> 5. but when I run command again: latency -t 1 -T 30,
-> I still got the negative value:
-> RTD|     -2.760|     -2.652|     -1.760|       0|     0|     -2.760|     -1.400
->
-> So, How to fix the issue?
-
-The core timer needs to be calibrated, it looks like the default
-calibration values are too conservative for the performances of this
-board (is it from the Layerscape series?), especially for kernel
-thread/irq wakeups. This may help:
-
-https://xenomai.org/documentation/xenomai-3/html/man1/autotune/index.html
-
-> And how to check the xenomai interrupt? I remember I can get the interrupt number through "cat /proc/xenomai/irq",but now I can't find it.
->
-
-With Dovetail underneath, you just need to look at /proc/interrupts as
-usual. The 'oob' flag tells you whether the interrupt is handled by the
-real-time core in out-of-band mode (real-time).
-
-e.g. this is from an i.MX6QP SabreSD, we can see the per-CPU TWD being
-handled in oob mode for high-precision timing by the real-time
-domain. The proxy tick interrupt (315) is a synthetic IRQ created by
-Dovetail in order to relay some timer events to the common kernel at due
-date, since the real-time core manages the hardware for the whole
-system.
-
-~ # cat /proc/interrupts 
-           CPU0       CPU1       CPU2       CPU3       
- 24:          0          0          0          0     SIRQC  24 Edge          in-band work
- 25:        567        292        381        676 GIC-0  29 Edge     oob  twd
- 26:          0          0          0          0       GPC  55 Level         i.MX Timer Tick
- 27:          0          0          0          0       GPC  94 Level         arm-pmu
- 35:         50          0          0          0       GPC  26 Level         2020000.serial
- 55:          0          0          0          0       GPC  81 Level         20c0000.watchdog
- 67:          0          0          0          0       GPC   2 Level         sdma
- 70:       1611          0          0          0       GPC 118 Level         2188000.ethernet
- 71:          0          0          0          0       GPC 119 Level         2188000.ethernet
- 72:          0          0          0          0       GPC  23 Level         mmc1
- 73:        146          0          0          0       GPC  24 Level         mmc2
- 74:         43          0          0          0       GPC  25 Level         mmc3
- 75:          0          0          0          0       GPC  36 Level         21a0000.i2c
- 76:          0          0          0          0       GPC  37 Level         21a4000.i2c
- 77:          2          0          0          0       GPC  38 Level         21a8000.i2c
- 87:          0          0          0          0       GPC  39 Level         ahci-imx[2200000.sata]
- 95:          0          0          0          0  gpio-mxc   4 Edge          Volume Up
- 96:          0          0          0          0  gpio-mxc   5 Edge          Volume Down
-123:          0          0          0          0  gpio-mxc   0 Edge          2198000.mmc cd
-125:          0          0          0          0  gpio-mxc   2 Edge          2194000.mmc cd
-184:          0          0          0          0  gpio-mxc  29 Edge          Power Button
-315:        429        160        364        546     SIRQC 315 Edge          proxy tick
-IPI0:          0          0          0          0  CPU wakeup interrupts
-IPI1:          0          0          0          0  Timer broadcast interrupts
-IPI2:         37         40         27         23  Rescheduling interrupts
-IPI3:        470        944       1352       1809  Function call interrupts
-IPI4:          0          0          0          0  CPU stop interrupts
-IPI5:          0          0          0          0  IRQ work interrupts
-IPI6:          0          0          0          0  completion interrupts
-Err:          0
-
--- 
-Philippe.
+VGhhbmtzIGEgbG90LCBQaGlsaXBwZS4NClllcywgbXkgYm9hcmQgaXMgTGF5ZXJTY2FwZSBsczEw
+NDNhcmRiIGFuZCBsczEwMjhhcmRiLg0KV2l0aCB0aGUgY29tbWFuZCAiYXV0b3R1bmUiLCBub3cg
+dGhlIG5lZ2F0aXZlIHZhbHVlIGlzc3VlIGlzIGZpeGVkLg0KDQo+LS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCj5Gcm9tOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPlNlbnQ6
+IDIwMjLE6jTUwjI0yNUgMTc6MDENCj5UbzogSmVycnkgSHVhbmcgPGplcnJ5Lmh1YW5nQG54cC5j
+b20+DQo+Q2M6IHhlbm9tYWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBbRVhUXSBSZTogbGF0ZW5j
+eTogbmVnYXRpdmUgdmFsdWU/DQo+DQo+Q2F1dGlvbjogRVhUIEVtYWlsDQo+DQo+SmVycnkgSHVh
+bmcgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+IHdyaXRlczoNCj4NCj4+IEhpLCBh
+bGwgZ3V5cywNCj4+IE5vdyBJIGFtIHVzaW5nIGxpbnV4LWRvdmV0YWlsL3Y1LjE1LjYtZG92ZXRh
+aWwxLXJlYmFzZSBvbiBteSBSREIgYm9hcmQuDQo+PiAxIC4gSSBhbSBydW5uaW5nIGxhdGVuY3kg
+Y29tbWFuZCwgYnV0IHdoZW4gSSBydW5uaW5nIGNvbW1hbmQ6DQo+PiBsYXRlbmN5IC10IDEgLVQg
+MzANCj4+IEkgZ290IHRoZSBuZWdhdGl2ZSB2YWx1ZToNCj4+IFJURHwgICAgIC0yLjc2MHwgICAg
+IC0yLjY1NHwgICAgIC0xLjgwMHwgICAgICAgMHwgICAgIDB8DQo+LTIuNzYwfCAgICAgLTEuNDAw
+DQo+Pg0KPj4gMi4gVGhlbiwgSSBnb3QgdGhlIHNvbHV0aW9uIGZyb20gZ29vZ2xlOg0KPj4gUnVu
+IGNvbW1hbmQ6IHhlbm8gbGF0ZW5jeSAtVCAyMA0KPj4gSSBnb3Q6DQo+PiBSVER8ICAgICAtMS4z
+NjB8ICAgICAtMS4yMzV8ICAgICAtMC4wNDB8ICAgICAgIDB8ICAgICAwfA0KPi0xLjQ0MHwgICAg
+ICAwLjQ0MA0KPj4NCj4+IDMuIHRoZW4gSSB1cGRhdGUgL3Byb2MveGVub21haS9sYXRlbmN5IHZh
+bHVlIGVjaG8gLTE0NDAgPg0KPj4gL3Byb2MveGVub21haS9sYXRlbmN5DQo+Pg0KPj4gNC4gd2hl
+biBJIHJ1biB4ZW5vIGxhdGVuY3kgYWdhaW4sIEkgZ290IGJlbG93IHJlc3VsdDoNCj4+IFJURHwg
+ICAgICA1LjI0MHwgICAgICA1LjM4OXwgICAgICA2LjY0MHwgICAgICAgMHwgICAgIDB8DQo+NS4w
+NDB8ICAgICAgNy42MDANCj4+DQo+PiA1LiBidXQgd2hlbiBJIHJ1biBjb21tYW5kIGFnYWluOiBs
+YXRlbmN5IC10IDEgLVQgMzAsIEkgc3RpbGwgZ290IHRoZQ0KPj4gbmVnYXRpdmUgdmFsdWU6DQo+
+PiBSVER8ICAgICAtMi43NjB8ICAgICAtMi42NTJ8ICAgICAtMS43NjB8ICAgICAgIDB8ICAgICAw
+fA0KPi0yLjc2MHwgICAgIC0xLjQwMA0KPj4NCj4+IFNvLCBIb3cgdG8gZml4IHRoZSBpc3N1ZT8N
+Cj4NCj5UaGUgY29yZSB0aW1lciBuZWVkcyB0byBiZSBjYWxpYnJhdGVkLCBpdCBsb29rcyBsaWtl
+IHRoZSBkZWZhdWx0IGNhbGlicmF0aW9uIHZhbHVlcw0KPmFyZSB0b28gY29uc2VydmF0aXZlIGZv
+ciB0aGUgcGVyZm9ybWFuY2VzIG9mIHRoaXMgYm9hcmQgKGlzIGl0IGZyb20gdGhlDQo+TGF5ZXJz
+Y2FwZSBzZXJpZXM/KSwgZXNwZWNpYWxseSBmb3Iga2VybmVsIHRocmVhZC9pcnEgd2FrZXVwcy4g
+VGhpcyBtYXkgaGVscDoNCj4NCj5odHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91
+dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZ4ZW5vbWENCj5pLm9yZyUyRmRvY3VtZW50YXRp
+b24lMkZ4ZW5vbWFpLTMlMkZodG1sJTJGbWFuMSUyRmF1dG90dW5lJTJGaW5kZQ0KPnguaHRtbCZh
+bXA7ZGF0YT0wNSU3QzAxJTdDamVycnkuaHVhbmclNDBueHAuY29tJTdDYTgyNGEwZWY1ZjJiNDUw
+DQo+N2JkYTIwOGRhMjVkMzczNDIlN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYzNSU3
+QzAlN0MxJTcNCj5DNjM3ODYzODg3MzQ4NjY5NjcxJTdDVW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5
+SldJam9pTUM0d0xqQXcNCj5NREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pY
+VkNJNk1uMCUzRCU3QzIwMDAlN0MlN0MlDQo+N0MmYW1wO3NkYXRhPVRRQUVmQzI2RUU1d21JQ3J0
+SnIlMkJ5ZWo5YVYwMHVYVGJDcmFvTVlhbGlhcyUzRCZhDQo+bXA7cmVzZXJ2ZWQ9MA0KPg0KPj4g
+QW5kIGhvdyB0byBjaGVjayB0aGUgeGVub21haSBpbnRlcnJ1cHQ/IEkgcmVtZW1iZXIgSSBjYW4g
+Z2V0IHRoZSBpbnRlcnJ1cHQNCj5udW1iZXIgdGhyb3VnaCAiY2F0IC9wcm9jL3hlbm9tYWkvaXJx
+IixidXQgbm93IEkgY2FuJ3QgZmluZCBpdC4NCj4+DQo+DQo+V2l0aCBEb3ZldGFpbCB1bmRlcm5l
+YXRoLCB5b3UganVzdCBuZWVkIHRvIGxvb2sgYXQgL3Byb2MvaW50ZXJydXB0cyBhcyB1c3VhbC4N
+Cj5UaGUgJ29vYicgZmxhZyB0ZWxscyB5b3Ugd2hldGhlciB0aGUgaW50ZXJydXB0IGlzIGhhbmRs
+ZWQgYnkgdGhlIHJlYWwtdGltZSBjb3JlDQo+aW4gb3V0LW9mLWJhbmQgbW9kZSAocmVhbC10aW1l
+KS4NClRoYW5rcywgUGhpbGlwcGUsDQpJIGNhbiBzZWUgbXkgaW50ZXJydXB0IGluIC9wcm9jL2lu
+dGVycnVwdHMgd2l0aCBvb2IgZmxhZw0KOTg6ICAgICAgMzI0NTQgICAgICAgICAgMCAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgTVNJIDEzNDc0MjAxNiBFZGdlICAgICBvb2IgIHJ0ZXRoMA0K
+DQo+ZS5nLiB0aGlzIGlzIGZyb20gYW4gaS5NWDZRUCBTYWJyZVNELCB3ZSBjYW4gc2VlIHRoZSBw
+ZXItQ1BVIFRXRCBiZWluZw0KPmhhbmRsZWQgaW4gb29iIG1vZGUgZm9yIGhpZ2gtcHJlY2lzaW9u
+IHRpbWluZyBieSB0aGUgcmVhbC10aW1lIGRvbWFpbi4gVGhlDQo+cHJveHkgdGljayBpbnRlcnJ1
+cHQgKDMxNSkgaXMgYSBzeW50aGV0aWMgSVJRIGNyZWF0ZWQgYnkgRG92ZXRhaWwgaW4gb3JkZXIg
+dG8NCj5yZWxheSBzb21lIHRpbWVyIGV2ZW50cyB0byB0aGUgY29tbW9uIGtlcm5lbCBhdCBkdWUg
+ZGF0ZSwgc2luY2UgdGhlIHJlYWwtdGltZQ0KPmNvcmUgbWFuYWdlcyB0aGUgaGFyZHdhcmUgZm9y
+IHRoZSB3aG9sZSBzeXN0ZW0uDQo+DQo+fiAjIGNhdCAvcHJvYy9pbnRlcnJ1cHRzDQo+ICAgICAg
+ICAgICBDUFUwICAgICAgIENQVTEgICAgICAgQ1BVMiAgICAgICBDUFUzDQo+IDI0OiAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICBTSVJRQyAgMjQNCj5FZGdl
+ICAgICAgICAgIGluLWJhbmQgd29yaw0KPiAyNTogICAgICAgIDU2NyAgICAgICAgMjkyICAgICAg
+ICAzODEgICAgICAgIDY3NiBHSUMtMCAgMjkgRWRnZQ0KPm9vYiAgdHdkDQo+IDI2OiAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgIEdQQyAgNTUNCj5MZXZl
+bCAgICAgICAgIGkuTVggVGltZXIgVGljaw0KPiAyNzogICAgICAgICAgMCAgICAgICAgICAwICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICBHUEMgIDk0DQo+TGV2ZWwgICAgICAgICBhcm0tcG11
+DQo+IDM1OiAgICAgICAgIDUwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAg
+IEdQQyAgMjYNCj5MZXZlbCAgICAgICAgIDIwMjAwMDAuc2VyaWFsDQo+IDU1OiAgICAgICAgICAw
+ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgIEdQQyAgODENCj5MZXZlbCAg
+ICAgICAgIDIwYzAwMDAud2F0Y2hkb2cNCj4gNjc6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAg
+ICAgICAwICAgICAgICAgIDAgICAgICAgR1BDICAgMg0KPkxldmVsICAgICAgICAgc2RtYQ0KPiA3
+MDogICAgICAgMTYxMSAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICBHUEMg
+MTE4DQo+TGV2ZWwgICAgICAgICAyMTg4MDAwLmV0aGVybmV0DQo+IDcxOiAgICAgICAgICAwICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgIEdQQyAxMTkNCj5MZXZlbCAgICAg
+ICAgIDIxODgwMDAuZXRoZXJuZXQNCj4gNzI6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgR1BDICAyMw0KPkxldmVsICAgICAgICAgbW1jMQ0KPiA3Mzog
+ICAgICAgIDE0NiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICBHUEMgIDI0
+DQo+TGV2ZWwgICAgICAgICBtbWMyDQo+IDc0OiAgICAgICAgIDQzICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICAwICAgICAgIEdQQyAgMjUNCj5MZXZlbCAgICAgICAgIG1tYzMNCj4gNzU6
+ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgR1BDICAz
+Ng0KPkxldmVsICAgICAgICAgMjFhMDAwMC5pMmMNCj4gNzY6ICAgICAgICAgIDAgICAgICAgICAg
+MCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgR1BDICAzNw0KPkxldmVsICAgICAgICAgMjFh
+NDAwMC5pMmMNCj4gNzc6ICAgICAgICAgIDIgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
+IDAgICAgICAgR1BDICAzOA0KPkxldmVsICAgICAgICAgMjFhODAwMC5pMmMNCj4gODc6ICAgICAg
+ICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgR1BDICAzOQ0KPkxl
+dmVsICAgICAgICAgYWhjaS1pbXhbMjIwMDAwMC5zYXRhXQ0KPiA5NTogICAgICAgICAgMCAgICAg
+ICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgZ3Bpby1teGMgICA0DQo+RWRnZSAgICAgICAg
+ICBWb2x1bWUgVXANCj4gOTY6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAg
+ICAgIDAgIGdwaW8tbXhjICAgNQ0KPkVkZ2UgICAgICAgICAgVm9sdW1lIERvd24NCj4xMjM6ICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgIGdwaW8tbXhjICAgMA0K
+PkVkZ2UgICAgICAgICAgMjE5ODAwMC5tbWMgY2QNCj4xMjU6ICAgICAgICAgIDAgICAgICAgICAg
+MCAgICAgICAgICAwICAgICAgICAgIDAgIGdwaW8tbXhjICAgMg0KPkVkZ2UgICAgICAgICAgMjE5
+NDAwMC5tbWMgY2QNCj4xODQ6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAg
+ICAgIDAgIGdwaW8tbXhjICAyOQ0KPkVkZ2UgICAgICAgICAgUG93ZXIgQnV0dG9uDQo+MzE1OiAg
+ICAgICAgNDI5ICAgICAgICAxNjAgICAgICAgIDM2NCAgICAgICAgNTQ2ICAgICBTSVJRQyAzMTUN
+Cj5FZGdlICAgICAgICAgIHByb3h5IHRpY2sNCj5JUEkwOiAgICAgICAgICAwICAgICAgICAgIDAg
+ICAgICAgICAgMCAgICAgICAgICAwICBDUFUgd2FrZXVwDQo+aW50ZXJydXB0cw0KPklQSTE6ICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgIFRpbWVyIGJyb2FkY2Fz
+dA0KPmludGVycnVwdHMNCj5JUEkyOiAgICAgICAgIDM3ICAgICAgICAgNDAgICAgICAgICAyNyAg
+ICAgICAgIDIzICBSZXNjaGVkdWxpbmcNCj5pbnRlcnJ1cHRzDQo+SVBJMzogICAgICAgIDQ3MCAg
+ICAgICAgOTQ0ICAgICAgIDEzNTIgICAgICAgMTgwOSAgRnVuY3Rpb24gY2FsbA0KPmludGVycnVw
+dHMNCj5JUEk0OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICBD
+UFUgc3RvcA0KPmludGVycnVwdHMNCj5JUEk1OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICAwICBJUlEgd29yaw0KPmludGVycnVwdHMNCj5JUEk2OiAgICAgICAgICAw
+ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICBjb21wbGV0aW9uDQo+aW50ZXJydXB0
+cw0KPkVycjogICAgICAgICAgMA0KPg0KPi0tDQo+UGhpbGlwcGUuDQo=
 
