@@ -1,7 +1,15 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-5.4.180-arm64-5 released
-Message-Id: <E1njAou-0006b0-Ss@xenomai.org>
-Date: Tue, 26 Apr 2022 04:20:52 +0200
+Message-ID: <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
+Date: Tue, 26 Apr 2022 16:24:32 +0200
+MIME-Version: 1.0
+Subject: Re: [PATCH v2] utils/net/rtnet.in: add delay during master
+ configuration
+Content-Language: it-IT
+References: <7de1b93d-4feb-20a6-9204-6c8eddd0fa17@tin.it>
+ <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
+From: "Mauro S." <mau.salvi@tin.it>
+In-Reply-To: <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +20,132 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v5.x/arm64/ipipe-core-5.4.180-arm64-5.patch
+Hi Florian,
 
-Repository: https://git.xenomai.org/ipipe-arm64
-Release tag: ipipe-core-5.4.180-arm64-5
+thanks for your comments. See below mine.
+
+Il 23/04/22 19:26, Florian Bezdeka ha scritto:
+> Hi all,
+> 
+> some minor comments, see below:
+> 
+> On 22.04.22 20:58, Mauro S. via Xenomai wrote:
+>> Some cards are slow to get the connection link up after the
+>> "rtifconfig rteth0 up" command, e.g. on an Atom-x5 with an Intel I210
+>> (rt_igb driver) I detected approximately 3 seconds to get the link up.
+>>
+>> On master, the "rtifconfig rteth0 up" is followed by TDMA configuration and
+>> start. After the TDMA start, the sync packet is sent at the defined
+>> cycle time.
+>>
+>> Sometimes, after "rtnet start", the dmesg fills with this error:
+>>
+>>    TDMA: Failed to transmit sync frame!
+>>
+>> and the rt driver locks. Then, the kernel watchdog is triggered and the
+>> NIC is hw-reset by the kernel, producing more errors and another lock.
+>> Sometimes the dmesg only fills with the error message and the NIC does
+>> not lock.
+>> This happens because the interface is not up and ready to handle
+>> the sync packets when TDMA is started.
+>>
+>> This patch introduces a configurable delay between the "rtifconfig
+>> rteth0 up"
+>> and the TDMA start on master host. This allows to avoid these kind of
+>> problems.
+>>
+>> Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
+>> ---
+>>   utils/net/rtnet.in | 21 +++++++++++++++++++--
+>>   1 file changed, 19 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+>> index f81a7bb0a..8c2dcdf6e 100644
+>> --- a/utils/net/rtnet.in
+>> +++ b/utils/net/rtnet.in
+>> @@ -15,15 +15,19 @@ debug_func() {
+>>   usage() {
+>>       cat << EOF
+>>   Usage:
+>> -    $0 [-cf <config-file>] [-v] [-c] {start|stop}
+>> +    $0 [-cf <config-file>] [-d <delay>] [-v] [-c] {start|stop}
+>>       Start or stop station according to configuration file
+>>
+>> -    $0 [-cf <config-file>] [-v] [-c] master <slave_ip1> [<slave_ip2> ...]
+>> +    $0 [-cf <config-file>] [-d <delay>] [-v] [-c] master <slave_ip1>
+>> [<slave_ip2> ...]
+>>       Start station as master for given list of slaves
+>>
+>>       $0 [-cf <config-file>] [-v] capture
+>>       Start only passive realtime capturing
+>>
+>> +    The parameter -d allows to introduce a delay in seconds between the
+>> +    "rtifconfig rtethX up" command and the TDMA start on the host
+>> +    configured as master. Useful to avoid errors/card locks when the
+>> +    RT NIC is slow to get the link up.
+>>       The additional switch -v enables verbose output.
+>>       The additional switch -c enables capturing mode to allow use of a
+>> network
+>>       analyzer such as Wireshark (if rtnet was built with --enable-rtcap).
+>> @@ -76,6 +80,10 @@ submit_cfg() {
+>>       master)
+>>           $RTIFCONFIG rteth0 up $STATION_IP
+>>
+>> +        if [ -n "$UPDELAY" ]; then
+> 
+> Checked with shellcheck? I would expect ${UPDELAY} here and below.
+
+In fact, among many (info) and (warning) messages regarding other lines, 
+shellcheck says about this row:
+
+   Line 84:
+                   sleep $UPDELAY
+                         ^-- SC2086 (info): Double quote to prevent 
+globbing and word splitting.
+
+   Did you mean: (apply this, apply all SC2086)
+                   sleep "$UPDELAY"
+
+What should I do?
+
+> 
+>> +        sleep $UPDELAY
+> 
+> Indention looks broken.
+
+You are right, fixed thanks.
+
+> 
+>> +        fi
+>> +
+>>           $TDMACFG rteth0 master $TDMA_CYCLE
+>>           eval "$TDMA_SLOTS"
+>>
+>> @@ -144,6 +152,10 @@ start_master() {
+>>
+>>       $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
+>>
+>> +    if [ -n "$UPDELAY" ]; then
+>> +        sleep $UPDELAY
+>> +    fi
+>> +
+>>       $TDMACFG rteth0 master $TDMA_CYCLE
+>>       $TDMACFG rteth0 slot 0 0
+>>
+>> @@ -258,6 +270,11 @@ else
+>>       exit 1
+>>   fi
+>>
+>> +if [ "$1" = "-d" ]; then
+>> +    UPDELAY="$2"
+>> +    shift 2
+>> +fi
+>> +
+>>   if [ "$1" = "-v" ]; then
+>>       echo "Turning on verbose mode"
+>>       RTIFCONFIG="debug_func $RTIFCONFIG"
+> 
+
+-- 
+Mauro S.
 
