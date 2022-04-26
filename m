@@ -1,15 +1,17 @@
-Message-ID: <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
-Date: Tue, 26 Apr 2022 16:24:32 +0200
-MIME-Version: 1.0
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH v2] utils/net/rtnet.in: add delay during master
  configuration
-Content-Language: it-IT
+Date: Tue, 26 Apr 2022 15:18:10 +0000
+Message-ID: <8b6bf0f637e18e708bb3e6a1bd1bf4019905e2ad.camel@siemens.com>
 References: <7de1b93d-4feb-20a6-9204-6c8eddd0fa17@tin.it>
  <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
-From: "Mauro S." <mau.salvi@tin.it>
-In-Reply-To: <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+ <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
+In-Reply-To: <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1AD95F7FC243A84CB0B787835E616D4A@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,134 +20,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "mau.salvi@tin.it" <mau.salvi@tin.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Florian,
-
-thanks for your comments. See below mine.
-
-Il 23/04/22 19:26, Florian Bezdeka ha scritto:
-> Hi all,
-> 
-> some minor comments, see below:
-> 
-> On 22.04.22 20:58, Mauro S. via Xenomai wrote:
->> Some cards are slow to get the connection link up after the
->> "rtifconfig rteth0 up" command, e.g. on an Atom-x5 with an Intel I210
->> (rt_igb driver) I detected approximately 3 seconds to get the link up.
->>
->> On master, the "rtifconfig rteth0 up" is followed by TDMA configuration and
->> start. After the TDMA start, the sync packet is sent at the defined
->> cycle time.
->>
->> Sometimes, after "rtnet start", the dmesg fills with this error:
->>
->>    TDMA: Failed to transmit sync frame!
->>
->> and the rt driver locks. Then, the kernel watchdog is triggered and the
->> NIC is hw-reset by the kernel, producing more errors and another lock.
->> Sometimes the dmesg only fills with the error message and the NIC does
->> not lock.
->> This happens because the interface is not up and ready to handle
->> the sync packets when TDMA is started.
->>
->> This patch introduces a configurable delay between the "rtifconfig
->> rteth0 up"
->> and the TDMA start on master host. This allows to avoid these kind of
->> problems.
->>
->> Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
->> ---
->>   utils/net/rtnet.in | 21 +++++++++++++++++++--
->>   1 file changed, 19 insertions(+), 2 deletions(-)
->>
->> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
->> index f81a7bb0a..8c2dcdf6e 100644
->> --- a/utils/net/rtnet.in
->> +++ b/utils/net/rtnet.in
->> @@ -15,15 +15,19 @@ debug_func() {
->>   usage() {
->>       cat << EOF
->>   Usage:
->> -    $0 [-cf <config-file>] [-v] [-c] {start|stop}
->> +    $0 [-cf <config-file>] [-d <delay>] [-v] [-c] {start|stop}
->>       Start or stop station according to configuration file
->>
->> -    $0 [-cf <config-file>] [-v] [-c] master <slave_ip1> [<slave_ip2> ...]
->> +    $0 [-cf <config-file>] [-d <delay>] [-v] [-c] master <slave_ip1>
->> [<slave_ip2> ...]
->>       Start station as master for given list of slaves
->>
->>       $0 [-cf <config-file>] [-v] capture
->>       Start only passive realtime capturing
->>
->> +    The parameter -d allows to introduce a delay in seconds between the
->> +    "rtifconfig rtethX up" command and the TDMA start on the host
->> +    configured as master. Useful to avoid errors/card locks when the
->> +    RT NIC is slow to get the link up.
->>       The additional switch -v enables verbose output.
->>       The additional switch -c enables capturing mode to allow use of a
->> network
->>       analyzer such as Wireshark (if rtnet was built with --enable-rtcap).
->> @@ -76,6 +80,10 @@ submit_cfg() {
->>       master)
->>           $RTIFCONFIG rteth0 up $STATION_IP
->>
->> +        if [ -n "$UPDELAY" ]; then
-> 
-> Checked with shellcheck? I would expect ${UPDELAY} here and below.
-
-In fact, among many (info) and (warning) messages regarding other lines, 
-shellcheck says about this row:
-
-   Line 84:
-                   sleep $UPDELAY
-                         ^-- SC2086 (info): Double quote to prevent 
-globbing and word splitting.
-
-   Did you mean: (apply this, apply all SC2086)
-                   sleep "$UPDELAY"
-
-What should I do?
-
-> 
->> +        sleep $UPDELAY
-> 
-> Indention looks broken.
-
-You are right, fixed thanks.
-
-> 
->> +        fi
->> +
->>           $TDMACFG rteth0 master $TDMA_CYCLE
->>           eval "$TDMA_SLOTS"
->>
->> @@ -144,6 +152,10 @@ start_master() {
->>
->>       $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
->>
->> +    if [ -n "$UPDELAY" ]; then
->> +        sleep $UPDELAY
->> +    fi
->> +
->>       $TDMACFG rteth0 master $TDMA_CYCLE
->>       $TDMACFG rteth0 slot 0 0
->>
->> @@ -258,6 +270,11 @@ else
->>       exit 1
->>   fi
->>
->> +if [ "$1" = "-d" ]; then
->> +    UPDELAY="$2"
->> +    shift 2
->> +fi
->> +
->>   if [ "$1" = "-v" ]; then
->>       echo "Turning on verbose mode"
->>       RTIFCONFIG="debug_func $RTIFCONFIG"
-> 
-
--- 
-Mauro S.
+T24gVHVlLCAyMDIyLTA0LTI2IGF0IDE2OjI0ICswMjAwLCBNYXVybyBTLiB3cm90ZToNCj4gSGkg
+RmxvcmlhbiwNCj4gDQo+IHRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4gU2VlIGJlbG93IG1pbmUu
+DQo+IA0KPiBJbCAyMy8wNC8yMiAxOToyNiwgRmxvcmlhbiBCZXpkZWthIGhhIHNjcml0dG86DQo+
+ID4gSGkgYWxsLA0KPiA+IA0KPiA+IHNvbWUgbWlub3IgY29tbWVudHMsIHNlZSBiZWxvdzoNCg0K
+W3NuaXBdIA0KPiA+ID4gDQo+ID4gPiArwqDCoMKgIFRoZSBwYXJhbWV0ZXIgLWQgYWxsb3dzIHRv
+IGludHJvZHVjZSBhIGRlbGF5IGluIHNlY29uZHMgYmV0d2VlbiB0aGUNCj4gPiA+ICvCoMKgwqAg
+InJ0aWZjb25maWcgcnRldGhYIHVwIiBjb21tYW5kIGFuZCB0aGUgVERNQSBzdGFydCBvbiB0aGUg
+aG9zdA0KPiA+ID4gK8KgwqDCoCBjb25maWd1cmVkIGFzIG1hc3Rlci4gVXNlZnVsIHRvIGF2b2lk
+IGVycm9ycy9jYXJkIGxvY2tzIHdoZW4gdGhlDQo+ID4gPiArwqDCoMKgIFJUIE5JQyBpcyBzbG93
+IHRvIGdldCB0aGUgbGluayB1cC4NCj4gPiA+ICDCoMKgwqDCoCBUaGUgYWRkaXRpb25hbCBzd2l0
+Y2ggLXYgZW5hYmxlcyB2ZXJib3NlIG91dHB1dC4NCj4gPiA+ICDCoMKgwqDCoCBUaGUgYWRkaXRp
+b25hbCBzd2l0Y2ggLWMgZW5hYmxlcyBjYXB0dXJpbmcgbW9kZSB0byBhbGxvdyB1c2Ugb2YgYQ0K
+PiA+ID4gbmV0d29yaw0KPiA+ID4gIMKgwqDCoMKgIGFuYWx5emVyIHN1Y2ggYXMgV2lyZXNoYXJr
+IChpZiBydG5ldCB3YXMgYnVpbHQgd2l0aCAtLWVuYWJsZS1ydGNhcCkuDQo+ID4gPiBAQCAtNzYs
+NiArODAsMTAgQEAgc3VibWl0X2NmZygpIHsNCj4gPiA+ICDCoMKgwqDCoCBtYXN0ZXIpDQo+ID4g
+PiAgwqDCoMKgwqDCoMKgwqDCoCAkUlRJRkNPTkZJRyBydGV0aDAgdXAgJFNUQVRJT05fSVANCj4g
+PiA+IA0KPiA+ID4gK8KgwqDCoMKgwqDCoMKgIGlmIFsgLW4gIiRVUERFTEFZIiBdOyB0aGVuDQo+
+ID4gDQo+ID4gQ2hlY2tlZCB3aXRoIHNoZWxsY2hlY2s/IEkgd291bGQgZXhwZWN0ICR7VVBERUxB
+WX0gaGVyZSBhbmQgYmVsb3cuDQo+IA0KPiBJbiBmYWN0LCBhbW9uZyBtYW55IChpbmZvKSBhbmQg
+KHdhcm5pbmcpIG1lc3NhZ2VzIHJlZ2FyZGluZyBvdGhlciBsaW5lcywgDQo+IHNoZWxsY2hlY2sg
+c2F5cyBhYm91dCB0aGlzIHJvdzoNCj4gDQo+ICAgIExpbmUgODQ6DQo+ICAgICAgICAgICAgICAg
+ICAgICBzbGVlcCAkVVBERUxBWQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgXi0tIFNDMjA4
+NiAoaW5mbyk6IERvdWJsZSBxdW90ZSB0byBwcmV2ZW50IA0KPiBnbG9iYmluZyBhbmQgd29yZCBz
+cGxpdHRpbmcuDQo+IA0KPiAgICBEaWQgeW91IG1lYW46IChhcHBseSB0aGlzLCBhcHBseSBhbGwg
+U0MyMDg2KQ0KPiAgICAgICAgICAgICAgICAgICAgc2xlZXAgIiRVUERFTEFZIg0KPiANCj4gV2hh
+dCBzaG91bGQgSSBkbz8NCg0KTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0ICIke1VQREVMQVl9IiBp
+cyB0aGUgY29ycmVjdCB0aGluZyBoZXJlLg0KSW4gY2FzZSBzaGVsbGNoZWNrIHJlcG9ydHMgbW9y
+ZSBpc3N1ZXMgaW4gdGhlIHNhbWUgZmlsZSBJIHdvdWxkIHByZWZlcg0KdHdvIHBhdGNoZXM6DQoN
+CjEpIEZpeGluZyBzaGVsbGNoZWNrIHJlcG9ydGluZ3MNCjIpIFRoaXMgb25lIG9uIHRvcA0KDQpC
+dXQgYXQgdGhlIGVuZCBpdCdzIHRoZSBtYWludGFpbmVycycgZGVjaXNpb24uDQoNCj4gDQo+ID4g
+DQo+ID4gDQo+IA0KDQo=
 
