@@ -1,17 +1,11 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2] utils/net/rtnet.in: add delay during master
- configuration
-Date: Tue, 26 Apr 2022 15:18:10 +0000
-Message-ID: <8b6bf0f637e18e708bb3e6a1bd1bf4019905e2ad.camel@siemens.com>
-References: <7de1b93d-4feb-20a6-9204-6c8eddd0fa17@tin.it>
- <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
- <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
-In-Reply-To: <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1AD95F7FC243A84CB0B787835E616D4A@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Ryan Wilkins <ryan@elevated-networks.com>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: SDMA read/write pointer location issue
+Message-Id: <367CB8E2-7109-4ECA-A864-298568E87AE6@elevated-networks.com>
+Date: Tue, 26 Apr 2022 11:52:31 -0400
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,37 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "mau.salvi@tin.it" <mau.salvi@tin.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gVHVlLCAyMDIyLTA0LTI2IGF0IDE2OjI0ICswMjAwLCBNYXVybyBTLiB3cm90ZToNCj4gSGkg
-RmxvcmlhbiwNCj4gDQo+IHRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4gU2VlIGJlbG93IG1pbmUu
-DQo+IA0KPiBJbCAyMy8wNC8yMiAxOToyNiwgRmxvcmlhbiBCZXpkZWthIGhhIHNjcml0dG86DQo+
-ID4gSGkgYWxsLA0KPiA+IA0KPiA+IHNvbWUgbWlub3IgY29tbWVudHMsIHNlZSBiZWxvdzoNCg0K
-W3NuaXBdIA0KPiA+ID4gDQo+ID4gPiArwqDCoMKgIFRoZSBwYXJhbWV0ZXIgLWQgYWxsb3dzIHRv
-IGludHJvZHVjZSBhIGRlbGF5IGluIHNlY29uZHMgYmV0d2VlbiB0aGUNCj4gPiA+ICvCoMKgwqAg
-InJ0aWZjb25maWcgcnRldGhYIHVwIiBjb21tYW5kIGFuZCB0aGUgVERNQSBzdGFydCBvbiB0aGUg
-aG9zdA0KPiA+ID4gK8KgwqDCoCBjb25maWd1cmVkIGFzIG1hc3Rlci4gVXNlZnVsIHRvIGF2b2lk
-IGVycm9ycy9jYXJkIGxvY2tzIHdoZW4gdGhlDQo+ID4gPiArwqDCoMKgIFJUIE5JQyBpcyBzbG93
-IHRvIGdldCB0aGUgbGluayB1cC4NCj4gPiA+ICDCoMKgwqDCoCBUaGUgYWRkaXRpb25hbCBzd2l0
-Y2ggLXYgZW5hYmxlcyB2ZXJib3NlIG91dHB1dC4NCj4gPiA+ICDCoMKgwqDCoCBUaGUgYWRkaXRp
-b25hbCBzd2l0Y2ggLWMgZW5hYmxlcyBjYXB0dXJpbmcgbW9kZSB0byBhbGxvdyB1c2Ugb2YgYQ0K
-PiA+ID4gbmV0d29yaw0KPiA+ID4gIMKgwqDCoMKgIGFuYWx5emVyIHN1Y2ggYXMgV2lyZXNoYXJr
-IChpZiBydG5ldCB3YXMgYnVpbHQgd2l0aCAtLWVuYWJsZS1ydGNhcCkuDQo+ID4gPiBAQCAtNzYs
-NiArODAsMTAgQEAgc3VibWl0X2NmZygpIHsNCj4gPiA+ICDCoMKgwqDCoCBtYXN0ZXIpDQo+ID4g
-PiAgwqDCoMKgwqDCoMKgwqDCoCAkUlRJRkNPTkZJRyBydGV0aDAgdXAgJFNUQVRJT05fSVANCj4g
-PiA+IA0KPiA+ID4gK8KgwqDCoMKgwqDCoMKgIGlmIFsgLW4gIiRVUERFTEFZIiBdOyB0aGVuDQo+
-ID4gDQo+ID4gQ2hlY2tlZCB3aXRoIHNoZWxsY2hlY2s/IEkgd291bGQgZXhwZWN0ICR7VVBERUxB
-WX0gaGVyZSBhbmQgYmVsb3cuDQo+IA0KPiBJbiBmYWN0LCBhbW9uZyBtYW55IChpbmZvKSBhbmQg
-KHdhcm5pbmcpIG1lc3NhZ2VzIHJlZ2FyZGluZyBvdGhlciBsaW5lcywgDQo+IHNoZWxsY2hlY2sg
-c2F5cyBhYm91dCB0aGlzIHJvdzoNCj4gDQo+ICAgIExpbmUgODQ6DQo+ICAgICAgICAgICAgICAg
-ICAgICBzbGVlcCAkVVBERUxBWQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgXi0tIFNDMjA4
-NiAoaW5mbyk6IERvdWJsZSBxdW90ZSB0byBwcmV2ZW50IA0KPiBnbG9iYmluZyBhbmQgd29yZCBz
-cGxpdHRpbmcuDQo+IA0KPiAgICBEaWQgeW91IG1lYW46IChhcHBseSB0aGlzLCBhcHBseSBhbGwg
-U0MyMDg2KQ0KPiAgICAgICAgICAgICAgICAgICAgc2xlZXAgIiRVUERFTEFZIg0KPiANCj4gV2hh
-dCBzaG91bGQgSSBkbz8NCg0KTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0ICIke1VQREVMQVl9IiBp
-cyB0aGUgY29ycmVjdCB0aGluZyBoZXJlLg0KSW4gY2FzZSBzaGVsbGNoZWNrIHJlcG9ydHMgbW9y
-ZSBpc3N1ZXMgaW4gdGhlIHNhbWUgZmlsZSBJIHdvdWxkIHByZWZlcg0KdHdvIHBhdGNoZXM6DQoN
-CjEpIEZpeGluZyBzaGVsbGNoZWNrIHJlcG9ydGluZ3MNCjIpIFRoaXMgb25lIG9uIHRvcA0KDQpC
-dXQgYXQgdGhlIGVuZCBpdCdzIHRoZSBtYWludGFpbmVycycgZGVjaXNpb24uDQoNCj4gDQo+ID4g
-DQo+ID4gDQo+IA0KDQo=
+We are running Linux 4.9 under Xenomai 3.0.10 on an i.MX7D rev.5 v71 =
+processor.
+The SDMA engine is used to transfer data from main memory to and from =
+the SAI interface.
+The main memory buffer is around 40 kByte in size and the DMA uses it as =
+a ring buffer for the data transfer.
+In order to know where the DMA is currently reading or writing data =
+inside this buffer, an interrupt is generated whenever 576 bytes of data =
+have been transferred. The interrupt routine then updates a suitable =
+buffer pointer which is used by our software.
+The interrupt occurs on average every 250 =C2=B5sec and is handled by a =
+regular non-realtime Linux interrupt routine.
+
+This works but there is a problem: The DMA interrupt and consequently =
+the buffer pointer update is sometimes delayed for quite some time.  =
+Occasionally, there is no interrupt for more than 2 msec, followed by =
+nine interrupts in quick succession to make up for the delay.
+
+We have no evidence that interrupts are ever lost. However, the delayed =
+update of the buffer pointer causes problems in our software.
+
+One idea we had was to read the current DMA read/write address directly =
+from the SDMA hardware, rather than relying on the interrupt. We were =
+unsuccessfully looking at the file imx-sdma.c in order to find this =
+information.
+
+In summary, we need to know the DMA's read/write address when the =
+interrupt is triggered, with no or very little delay.
+
+Any pointers would be greatly appreciated.  Thank you!
+
+Ryan Wilkins
+
 
