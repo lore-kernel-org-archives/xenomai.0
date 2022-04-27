@@ -1,17 +1,9 @@
-From: <dietmar.schindler@manrolandgoss.com>
-Subject: RE: [PATCH v2] utils/net/rtnet.in: add delay during master
- configuration
-Date: Wed, 27 Apr 2022 05:43:57 +0000
-Message-ID: <cb94a0dd5d514ed79bcb1a9324490fd4@manrolandgoss.com>
-References: <7de1b93d-4feb-20a6-9204-6c8eddd0fa17@tin.it>
- <0247b98d-5768-96cb-3a87-2cc3e88e2d89@siemens.com>
- <bf1aa2ec-76a8-ebf7-b7db-49c478467c67@tin.it>
- <8b6bf0f637e18e708bb3e6a1bd1bf4019905e2ad.camel@siemens.com>
-In-Reply-To: <8b6bf0f637e18e708bb3e6a1bd1bf4019905e2ad.camel@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: Kevin Hall <hallsoftware@gmail.com>
+Date: Wed, 27 Apr 2022 10:10:44 -0700
+Message-ID: <CAG8a9PyaFXitcmim4801QgY4azT-RWBv8XOHen-_PvzrUQrqyQ@mail.gmail.com>
+Subject: Xenomai 4 / EVL: Out-of-band access to EtherNet interface
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,31 +14,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJv
-dW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBCZXpkZWthLCBGbG9yaWFuIHZpYSBYZW5v
-bWFpDQo+IFNlbnQ6IFR1ZXNkYXksIEFwcmlsIDI2LCAyMDIyIDU6MTggUE0NCj4gVG86IG1hdS5z
-YWx2aUB0aW4uaXQ7IHhlbm9tYWlAeGVub21haS5vcmcNCj4g4oCmDQo+IE15IHVuZGVyc3RhbmRp
-bmcgaXMgdGhhdCAiJHtVUERFTEFZfSIgaXMgdGhlIGNvcnJlY3QgdGhpbmcgaGVyZS4NCg0KICAg
-ICAgICAgICAgICAgICAgIHNsZWVwICIkVVBERUxBWSINCg0KaXMganVzdCBhcyBjb3JyZWN0Lg0K
-DQotLQ0KUmVnYXJkcywNCkRpZXRtYXIgU2NoaW5kbGVyDQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KbWFucm9sYW5kIEdvc3Mgd2ViIHN5c3RlbXMgR21iSCB8IE1hbmFnaW5nIERp
-cmVjdG9yOiBGcmFueiBLcmllY2hiYXVtDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcgfCBU
-cmFkZSBSZWdpc3RlcjogQUcgQXVnc2J1cmcgfCBIUkItTm8uOiAzMjYwOSB8IFZBVDogREU4MTU3
-NjQ4NTcNCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRh
-Y2hlZCBkb2N1bWVudHMgbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIG9yIHByb3ByaWV0YXJ5IGlu
-Zm9ybWF0aW9uIG9mIG1hbnJvbGFuZHxHb3NzLiBUaGVzZSBtYXRlcmlhbHMgYXJlIGludGVuZGVk
-IG9ubHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4gSWYgeW91IGFyZSBu
-b3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCBvZiB0aGlzIHRyYW5zbWlzc2lvbiwgeW91IGFyZSBo
-ZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgZGlzdHJpYnV0aW9uLCBkaXNjbG9zdXJlLCBwcmludGlu
-ZywgY29weWluZywgc3RvcmFnZSwgbW9kaWZpY2F0aW9uIG9yIHRoZSB0YWtpbmcgb2YgYW55IGFj
-dGlvbiBpbiByZWxpYW5jZSB1cG9uIHRoaXMgdHJhbnNtaXNzaW9uIGlzIHN0cmljdGx5IHByb2hp
-Yml0ZWQuIERlbGl2ZXJ5IG9mIHRoaXMgbWVzc2FnZSB0byBhbnkgcGVyc29uIG90aGVyIHRoYW4g
-dGhlIGludGVuZGVkIHJlY2lwaWVudCBzaGFsbCBub3QgY29tcHJvbWlzZSBvciB3YWl2ZSBzdWNo
-IGNvbmZpZGVudGlhbGl0eSwgcHJpdmlsZWdlIG9yIGV4ZW1wdGlvbiBmcm9tIGRpc2Nsb3N1cmUg
-YXMgdG8gdGhpcyBjb21tdW5pY2F0aW9uLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGNvbW11
-bmljYXRpb24gaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBh
-bmQgZGVsZXRlIHRoZSBtZXNzYWdlIGZyb20geW91ciBzeXN0ZW0uIEFsbCBsaWFiaWxpdHkgZm9y
-IHZpcnVzZXMgaXMgZXhjbHVkZWQgdG8gdGhlIGZ1bGxlc3QgZXh0ZW50IHBlcm1pdHRlZCBieSBs
-YXcuDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+Hi,
 
 
+Is OOB I/O service a candidate for an EtherNet-based fieldbus protocol? I
+read in a comment that it only applies to VLAN-tagged IP protocols, but I
+don't know how old that is or if things have changed. I am able to send and
+receive packets when using send() and recv(), but since these are not
+out-of-band, I am often times seeing large delays in the processing of
+data. That's why I am trying to use oob_read(...) and oob_write(...).
+
+
+Additional Information: I am using Xenomai 5.15 with a Raspberry Pi 4. The
+fieldbus protocol is EtherCAT (0x88a4).
+
+
+I would greatly appreciate any suggestions or help.
+
+
+Thank you!
+
+
+Kevin Hall
