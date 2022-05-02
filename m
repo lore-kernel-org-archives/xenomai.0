@@ -1,13 +1,12 @@
-Message-ID: <0d32fb5d-5eb8-b367-df21-53f8e32f78bd@siemens.com>
-Date: Mon, 2 May 2022 08:25:38 +0200
+Subject: Re: Thread's CPU time
+References: <6a50f4cf-4f2a-542a-c332-4d98975e36a6@bela.io>
+ <87fslvzyxa.fsf@xenomai.org>
+From: Giulio Moro <giulio@bela.io>
+Message-ID: <9757c566-0198-5199-3490-b53f7fb32308@bela.io>
+Date: Mon, 2 May 2022 11:42:12 +0200
 MIME-Version: 1.0
-Subject: Re: Interrupt handler illicit call
-Content-Language: en-US
-References: <CA+K1mPF--SuW4W3Gh_4j8pk=YbX+E2R-aYRxXxh4T8HHbSfLMw@mail.gmail.com>
- <CAFLxGvwS4v_y74uwUfRg5NOFPZ-uXFoanrKVkPuXxap99KGn4Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAFLxGvwS4v_y74uwUfRg5NOFPZ-uXFoanrKVkPuXxap99KGn4Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87fslvzyxa.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,43 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, C Smith <csmithquestions@gmail.com>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 29.04.22 21:01, Richard Weinberger via Xenomai wrote:
-> On Fri, Apr 29, 2022 at 9:04 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
->> int Lp_port_handler(rtdm_irq_t *irq_handle_p)
->> {
->>    static int err;
->>    unsigned long next;
->>    rtdm_irq_t *handle_p;
+Philippe Gerum wrote on 29/04/2022 17:29:>
+> Giulio Moro via Xenomai <xenomai@xenomai.org> writes:
+> 
+>> Hi everyone,
+>>  From /proc/xenomai/sched/stat I infer there must be an internal struct
+>> somewhere keeping track of how much CPU time is actually used by each
+>> thread. Is there any way to access this kind of statistics from a
+>> running Xenomai user space program without leaving primary mode and
+>> without attempting to read this file? I am implementing an
+>> infrastructure to measure the CPU time of a given block of
+>> code. Currently I am using Cobalt's clock_gettime(), but this only
+>> works reliably if the task does not get preempted or otherwise
+>> rescheduled between the two calls.
 >>
->>    handle_p = rtdm_irq_get_arg(irq_handle_p, rtdm_irq_t);
+>> I have run this kind of tests offline before and that's all nice and good, but I am looking for a lightweight and non invasive way of benchmarking particular sections of large-ish programs with minimal modifications.
 >>
->>    next = rtdm_clock_read();
->>    // do some timing calculations with 'next' var here ...
->>    err = rtdm_irq_enable(handle_p);   //re-enable this for subsequent interrupts
+>> Thanks,
+>> Giulio
 > 
-> You don't need this.
-> Unconditionally enabling the interrupt line will confuse the IRQ subsystem.
+> For xenomai3, you may want to have a look at cobalt_thread_stat() from
+> the internal API (sys/cobalt.h). The field of interest returned in
+> struct cobalt_threadstat would be 'xtime' (nsecs).
 > 
+Thanks, I tried to implement something based on that and it seems to carry a considerable overhead over calling Cobalt's clock_gettime(): about a 3% CPU increase (as measured by /proc/xenomai/sched/stat) for 6 calls to `cobalt_thread_stat()` during a periodic task with period 360us, which is suboptimal.
 
-...and it was never supported in primary mode. If it worked, then by
-chance and by disabling related checks. Enable/disable are no masking APIs.
+A look at COBALT_SYSCALL(thread_getstat, ...) suggests that it would be possible to get just xtime for significantly cheaper than a full clock_gettime() call, considering not only that there would be less memory to be copied around, but also that - afaict - the irqsave / irqrestore calls wouldn't be needed. I am wondering whether, to this effect, it would make sense to implement `CLOCK_THREAD_CPUTIME_ID` for Cobalt's clock_gettime(), returning the 'xtime' field of this struct, e.g. (untested and probably missing includes):
 
-Jan
+```
+diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+index 16cc8b20a..434380509 100644
+--- a/kernel/cobalt/posix/clock.c
++++ b/kernel/cobalt/posix/clock.c
+@@ -134,6 +134,14 @@ int __cobalt_clock_gettime(clockid_t clock_id, struct timespec64 *ts)
+                 if (pipeline_get_host_time(ts) != 0)
+                         return -EINVAL;
+                 break;
++       case CLOCK_THREAD_CPUTIME_ID:
++               {
++                       struct xnthread *thread = xnthread_current();
++                       if (thread == NULL)
++                               return -EPERM;
++                       ns2ts(ts, xnstat_exectime_get_total(&thread->stat.account));
++               }
++               break;
+         default:
+                 ret = do_ext_clock(clock_id, read_monotonic, ns);
+                 if (ret)
+```
 
->>   return 0;
-> 
-> Please use RTDM_IRQ_HANDLED here instead of raw values.
-> 
->> }
-> 
-> Thanks,
-> //richard
-> 
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Or am I oversimplifying here?
 
