@@ -1,12 +1,11 @@
-Date: Tue, 3 May 2022 13:12:20 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <514815802.20975.1651576340906.JavaMail.zimbra@nod.at>
-In-Reply-To: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
-References: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
-Subject: Re: Register (or stack) corruption: Xenomai 3.2.1 on 4.19-ipipe
+Message-ID: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
+Date: Tue, 3 May 2022 17:18:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: RTNet: sendto(): EAGAIN error
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Richard Weinberger <richard.weinberger@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Florian,
+Hi all,
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-> it seems that I'm able to reproduce a register (or stack) corruption on
-> x86.
->=20
-> The problem does not appear when running the Xenomai testsuite
-> (especially switchtest) without any additional load. Stressing Linux
-> with stress-ng makes the test fail.
->=20
-> Kernel: 4.19.231-cip68
-> Xenomai: 3.2.1
-> Hardware:
-> - Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz
-> - 32 cores
-> stress-ng cmdline:
-> stress-ng --cpu 16 --io 8 --vm 4 --vm-bytes 128M --fork 8
->=20
-> Any ideas how to debug that? Any additional config options that
-> could/should be enabled?
+I'm trying to use RTNet with TDMA.
 
-Do you have CONFIG_VMAP_STACK enabled?
-A vmalloc()'ed stack often helps catching the overwriter itself.
-In my case so far it did not, though.
-=20
-> Any advice is welcome...
->=20
-> Adding Richard to CC, he mentioned some undiscovered possible stack
-> corruption as well. As registers are stored on the stack, there might
-> be a pattern.
->=20
-> dmesg (from one xeno-test run):
-> [  184.461138] sched: RT throttling activated
-> [  250.243970] arch/x86/xenomai/ipipe/include/asm/xenomai/fptest.h:43: Wa=
-rning:
-> Linux is compiled to use FPU in kernel-s.
-> [  250.243970] For this reason, switchtest can not test using FPU in Linu=
-x
-> kernel-space.
-> [  250.244148] r1: 2147483648 !=3D 5
+I succesfully set up my bus:
 
-Is it always 0x80000000?
+- 1GBps speed
+- 3 devices
+- cycle time 1ms
+- timeslots with 200us offset
 
-Who's registers are overridden? In my case always the registers of kernel s=
-ide of the
-realtime userspace thread.
+I wrote a simple application that in parallel receives and sends UDP 
+packets on TDMA bus.
 
-Thanks,
-//richard
+- sendto() is done to the broadcast address, port 1111
+- recvfrom() is done on the port 1111
+
+Application sends a small packet (5 bytes) in a periodic task with 1ms 
+period and prio 51. Receive is done in a non-periodic task with prio 50.
+
+Application is running on all the three devices, and I can see packets 
+are sent and received correctly by all the devices.
+
+But after a while, all send() calls on all devices fails with error EAGAIN.
+
+Could this error be related to some internal buffer/queue that becomes 
+full? Or am I missing something?
+
+Thanks in advance, regards
+
+
+-- 
+Mauro S.
 
