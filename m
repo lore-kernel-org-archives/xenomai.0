@@ -1,14 +1,12 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: Register (or stack) corruption: Xenomai 3.2.1 on 4.19-ipipe
-Date: Tue, 3 May 2022 11:11:56 +0000
-Message-ID: <19bbc341ee636d7a81a5930563b076d1b0536d67.camel@siemens.com>
-References: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
+Date: Tue, 3 May 2022 13:12:20 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <514815802.20975.1651576340906.JavaMail.zimbra@nod.at>
 In-Reply-To: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8211840EFC1F9544BC7B165422D79324@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
+Subject: Re: Register (or stack) corruption: Xenomai 3.2.1 on 4.19-ipipe
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,99 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "rpm@xenomai.org" <rpm@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "richard@nod.at" <richard@nod.at>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Richard Weinberger <richard.weinberger@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>
 
-T24gVHVlLCAyMDIyLTA1LTAzIGF0IDEwOjQxICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBIaSBhbGwsDQo+IA0KPiBpdCBzZWVtcyB0aGF0IEknbSBhYmxlIHRv
-IHJlcHJvZHVjZSBhIHJlZ2lzdGVyIChvciBzdGFjaykgY29ycnVwdGlvbiBvbg0KPiB4ODYuDQo+
-IA0KPiBUaGUgcHJvYmxlbSBkb2VzIG5vdCBhcHBlYXIgd2hlbiBydW5uaW5nIHRoZSBYZW5vbWFp
-IHRlc3RzdWl0ZQ0KPiAoZXNwZWNpYWxseSBzd2l0Y2h0ZXN0KSB3aXRob3V0IGFueSBhZGRpdGlv
-bmFsIGxvYWQuIFN0cmVzc2luZyBMaW51eA0KPiB3aXRoIHN0cmVzcy1uZyBtYWtlcyB0aGUgdGVz
-dCBmYWlsLg0KPiANCj4gS2VybmVsOiA0LjE5LjIzMS1jaXA2OA0KPiBYZW5vbWFpOiAzLjIuMQ0K
-PiBIYXJkd2FyZToNCj4gIC0gSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY0MCB2MyBAIDIuNjBH
-SHoNCj4gIC0gMzIgY29yZXMNCj4gc3RyZXNzLW5nIGNtZGxpbmU6DQo+ICBzdHJlc3MtbmcgLS1j
-cHUgMTYgLS1pbyA4IC0tdm0gNCAtLXZtLWJ5dGVzIDEyOE0gLS1mb3JrIDgNCj4gDQo+IEFueSBp
-ZGVhcyBob3cgdG8gZGVidWcgdGhhdD8gQW55IGFkZGl0aW9uYWwgY29uZmlnIG9wdGlvbnMgdGhh
-dA0KPiBjb3VsZC9zaG91bGQgYmUgZW5hYmxlZD8NCj4gDQo+IEFueSBhZHZpY2UgaXMgd2VsY29t
-ZS4uLg0KPiANCj4gQWRkaW5nIFJpY2hhcmQgdG8gQ0MsIGhlIG1lbnRpb25lZCBzb21lIHVuZGlz
-Y292ZXJlZCBwb3NzaWJsZSBzdGFjaw0KPiBjb3JydXB0aW9uIGFzIHdlbGwuIEFzIHJlZ2lzdGVy
-cyBhcmUgc3RvcmVkIG9uIHRoZSBzdGFjaywgdGhlcmUgbWlnaHQNCj4gYmUgYSBwYXR0ZXJuLg0K
-PiANCj4gZG1lc2cgKGZyb20gb25lIHhlbm8tdGVzdCBydW4pOg0KPiBbICAxODQuNDYxMTM4XSBz
-Y2hlZDogUlQgdGhyb3R0bGluZyBhY3RpdmF0ZWQNCj4gWyAgMjUwLjI0Mzk3MF0gYXJjaC94ODYv
-eGVub21haS9pcGlwZS9pbmNsdWRlL2FzbS94ZW5vbWFpL2ZwdGVzdC5oOjQzOiBXYXJuaW5nOiBM
-aW51eCBpcyBjb21waWxlZCB0byB1c2UgRlBVIGluIGtlcm5lbC1zLg0KPiBbICAyNTAuMjQzOTcw
-XSBGb3IgdGhpcyByZWFzb24sIHN3aXRjaHRlc3QgY2FuIG5vdCB0ZXN0IHVzaW5nIEZQVSBpbiBM
-aW51eCBrZXJuZWwtc3BhY2UuDQo+IFsgIDI1MC4yNDQxNDhdIHIxOiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjM3NTYwOV0gcjI6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuMzk0MzgxXSBy
-MzogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC40MTMxNTVdIHI0OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjQzMTkyNF0gcjU6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNDUwNjk0XSBy
-NjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC40Njk0NjZdIHI3OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjQ4ODI0MF0gcjQ6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNTA3MDExXSBy
-NTogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC41MjU3ODRdIHI2OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjU0NDU1NV0gcjc6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNTYzMzI1XSBy
-NjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC41ODIwOTddIHI3OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjYwMDg2OV0gcjU6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNjE5NjQzXSBy
-NjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC42Mzg0MTJdIHI3OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjY1NzE4NF0gcjI6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNjc1OTU3XSBy
-MzogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC42OTQ3MjhdIHI0OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjcxMzUwMF0gcjU6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNzMyMjcxXSBy
-NjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC43NTEwNDNdIHI3OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjc2OTgxNl0gcjc6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuNzg4NTg3XSBy
-NDogMjE0NzQ4MzY0OCAhPSA2DQo+IFsgIDI1MC44MDczNjBdIHI1OiAyMTQ3NDgzNjQ4ICE9IDYN
-Cj4gWyAgMjUwLjgyNjEzMF0gcjY6IDIxNDc0ODM2NDggIT0gNg0KPiBbICAyNTAuODQ0OTAyXSBy
-NzogMjE0NzQ4MzY0OCAhPSA2DQo+IFsgIDI1MC44NjM2NzVdIHI2OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjg4MjQ0N10gcjc6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuOTAxMjE5XSBy
-MjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC45MTk5OTBdIHIzOiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjkzODc2Ml0gcjQ6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTAuOTU3NTM0XSBy
-NTogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MC45NzYzMDVdIHI2OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUwLjk5NTA3Nl0gcjc6IDIxNDc0ODM2NDggIT0gNQ0KPiBbICAyNTEuMDEzODUzXSBy
-NjogMjE0NzQ4MzY0OCAhPSA1DQo+IFsgIDI1MS4wMzI2MjFdIHI3OiAyMTQ3NDgzNjQ4ICE9IDUN
-Cj4gWyAgMjUxLjA1MTM5M10gcjY6IDIxNDc0ODM2NDggIT0gNg0KPiBbICAyNTEuMDcwMTY0XSBy
-NzogMjE0NzQ4MzY0OCAhPSA2DQo+IFsgIDI1MS4wODg5MzVdIHI3OiAyMTQ3NDgzNjQ4ICE9IDYN
-Cj4gWyAgMjUxLjEwNzcwOV0gcjU6IDIxNDc0ODM2NDggIT0gNg0KPiBbICAyNTEuMTI2NDgwXSBy
-NjogMjE0NzQ4MzY0OCAhPSA2DQo+IFsgIDI1MS4xNDUyNTJdIHI3OiAyMTQ3NDgzNjQ4ICE9IDYN
-Cg0KU29tZSBtb3JlIGxvZ3MgZnJvbSB0aGUgc3dpdGNodGVzdCBpdHNlbGYsIHdoZW4gcnVubmlu
-ZyAic3dpdGNodGVzdA0Kb25seSIgYWZ0ZXIgdGhlIGZpcnN0IGZhaWxlZCB4ZW5vLXRlc3QgYWJv
-dmU6DQoNCi91c3IvbGliL3hlbm9tYWkvdGVzdHN1aXRlL3N3aXRjaHRlc3QgLVQgMzANCj09IFRl
-c3RpbmcgRlBVIGNoZWNrIHJvdXRpbmVzLi4uDQpyMDogMSAhPSAyDQpyMTogMSAhPSAyDQpyMjog
-MSAhPSAyDQpyMzogMSAhPSAyDQpyNDogMSAhPSAyDQpyNTogMSAhPSAyDQpyNjogMSAhPSAyDQpy
-NzogMSAhPSAyDQp5bW0wOiAxLzEgIT0gMi8yDQp5bW0xOiAxLzEgIT0gMi8yDQp5bW0yOiAxLzEg
-IT0gMi8yDQp5bW0zOiAxLzEgIT0gMi8yDQp5bW00OiAxLzEgIT0gMi8yDQp5bW01OiAxLzEgIT0g
-Mi8yDQp5bW02OiAxLzEgIT0gMi8yDQp5bW03OiAxLzEgIT0gMi8yDQo9PSBGUFUgY2hlY2sgcm91
-dGluZXM6IE9LLg0KPT0gVGhyZWFkczogW3NuaXBdDQpFcnJvciBhZnRlciBjb250ZXh0IHN3aXRj
-aCBmcm9tIHRhc2sgNChydGtfZnA0LTQpIHRvIHRhc2sgNShydGtfZnBfdWZwcDQtNSksDQpGUFUg
-cmVnaXN0ZXJzIHdlcmUgc2V0IHRvIDIxNDc0ODM2NDggKHVuaWRlbnRpZmllZCB0YXNrKQ0KRXJy
-b3IgYWZ0ZXIgY29udGV4dCBzd2l0Y2ggZnJvbSB0YXNrIDQocnRrX2ZwMTItNCkgdG8gdGFzayA1
-KHJ0a19mcF91ZnBwMTItNSksDQpGUFUgcmVnaXN0ZXJzIHdlcmUgc2V0IHRvIDIxNDc0ODM2NDgg
-KHVuaWRlbnRpZmllZCB0YXNrKQ0KRXJyb3IgYWZ0ZXIgY29udGV4dCBzd2l0Y2ggZnJvbSB0YXNr
-IDQocnRrX2ZwMjQtNCkgdG8gdGFzayA1KHJ0a19mcF91ZnBwMjQtNSksDQpGUFUgcmVnaXN0ZXJz
-IHdlcmUgc2V0IHRvIDIxNDc0ODM2NDggKHVuaWRlbnRpZmllZCB0YXNrKQ0KRXJyb3IgYWZ0ZXIg
-Y29udGV4dCBzd2l0Y2ggZnJvbSB0YXNrIDQocnRrX2ZwMTctNCkgdG8gdGFzayA1KHJ0a19mcF91
-ZnBwMTctNSksDQpGUFUgcmVnaXN0ZXJzIHdlcmUgc2V0IHRvIDIxNDc0ODM2NDggKHVuaWRlbnRp
-ZmllZCB0YXNrKQ0KRXJyb3IgYWZ0ZXIgY29udGV4dCBzd2l0Y2ggZnJvbSB0YXNrIDQocnRrX2Zw
-MTgtNCkgdG8gdGFzayA1KHJ0a19mcF91ZnBwMTgtNSksDQpGUFUgcmVnaXN0ZXJzIHdlcmUgc2V0
-IHRvIDIxNDc0ODM2NDggKHVuaWRlbnRpZmllZCB0YXNrKQ0KRXJyb3IgYWZ0ZXIgY29udGV4dCBz
-d2l0Y2ggZnJvbSB0YXNrIDQocnRrX2ZwMjEtNCkgdG8gdGFzayA1KHJ0a19mcF91ZnBwMjEtNSks
-DQpGUFUgcmVnaXN0ZXJzIHdlcmUgc2V0IHRvIDIxNDc0ODM2NDggKHVuaWRlbnRpZmllZCB0YXNr
-KQ0KRXJyb3IgYWZ0ZXIgY29udGV4dCBzd2l0Y2ggZnJvbSB0YXNrIDUocnRrX2ZwX3VmcHAyOC01
-KSB0byB0YXNrIDYocnRrX2ZwX3VmcHAyOC02KSwNCkZQVSByZWdpc3RlcnMgd2VyZSBzZXQgdG8g
-MjE0NzQ4MzY0OCAodW5pZGVudGlmaWVkIHRhc2spDQoNCndoaWxlIGRtZXNnIGhvbGRzOg0KWyA1
-NDcyLjQ1NjUyM10gcjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjQ3NTMxM10gcjY6IDIxNDc0
-ODM2NDggIT0gNQ0KWyA1NDcyLjQ5NDA4M10gcjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjUx
-Mjg1NF0gcjU6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjUzMTYyNV0gcjY6IDIxNDc0ODM2NDgg
-IT0gNQ0KWyA1NDcyLjU1MDM5OF0gcjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjU2OTE2OF0g
-cjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjU4Nzk0MV0gcjA6IDIxNDc0ODM2NDggIT0gNQ0K
-WyA1NDcyLjYwNjcxM10gcjE6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjYyNTQ4NV0gcjI6IDIx
-NDc0ODM2NDggIT0gNQ0KWyA1NDcyLjY0NDI1N10gcjM6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcy
-LjY2MzAyOF0gcjQ6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjY4MTgwMF0gcjU6IDIxNDc0ODM2
-NDggIT0gNQ0KWyA1NDcyLjcwMDU3MV0gcjY6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjcxOTM0
-Ml0gcjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjczODExNF0gcjY6IDIxNDc0ODM2NDggIT0g
-NQ0KWyA1NDcyLjc1Njg4N10gcjc6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjc3NTY1N10gcjE6
-IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjc5NDQzMF0gcjI6IDIxNDc0ODM2NDggIT0gNQ0KWyA1
-NDcyLjgxMzIwMF0gcjM6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjgzMTk3NF0gcjQ6IDIxNDc0
-ODM2NDggIT0gNQ0KWyA1NDcyLjg1MDc0NF0gcjU6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjg2
-OTUxN10gcjY6IDIxNDc0ODM2NDggIT0gNQ0KWyA1NDcyLjg4ODI4OV0gcjc6IDIxNDc0ODM2NDgg
-IT0gNQ0KWyA1NDcyLjkwNzA2MV0gcjY6IDIxNDc0ODM2NDggIT0gNg0KWyA1NDcyLjkyNTgzM10g
-cjc6IDIxNDc0ODM2NDggIT0gNg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IEZsb3JpYW4NCg0K
+Florian,
+
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+> it seems that I'm able to reproduce a register (or stack) corruption on
+> x86.
+>=20
+> The problem does not appear when running the Xenomai testsuite
+> (especially switchtest) without any additional load. Stressing Linux
+> with stress-ng makes the test fail.
+>=20
+> Kernel: 4.19.231-cip68
+> Xenomai: 3.2.1
+> Hardware:
+> - Intel(R) Xeon(R) CPU E5-2640 v3 @ 2.60GHz
+> - 32 cores
+> stress-ng cmdline:
+> stress-ng --cpu 16 --io 8 --vm 4 --vm-bytes 128M --fork 8
+>=20
+> Any ideas how to debug that? Any additional config options that
+> could/should be enabled?
+
+Do you have CONFIG_VMAP_STACK enabled?
+A vmalloc()'ed stack often helps catching the overwriter itself.
+In my case so far it did not, though.
+=20
+> Any advice is welcome...
+>=20
+> Adding Richard to CC, he mentioned some undiscovered possible stack
+> corruption as well. As registers are stored on the stack, there might
+> be a pattern.
+>=20
+> dmesg (from one xeno-test run):
+> [  184.461138] sched: RT throttling activated
+> [  250.243970] arch/x86/xenomai/ipipe/include/asm/xenomai/fptest.h:43: Wa=
+rning:
+> Linux is compiled to use FPU in kernel-s.
+> [  250.243970] For this reason, switchtest can not test using FPU in Linu=
+x
+> kernel-space.
+> [  250.244148] r1: 2147483648 !=3D 5
+
+Is it always 0x80000000?
+
+Who's registers are overridden? In my case always the registers of kernel s=
+ide of the
+realtime userspace thread.
+
+Thanks,
+//richard
 
