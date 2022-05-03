@@ -1,13 +1,12 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: Reminder: Xenomai community call on Wednesday,  May 03, 2022, UTC
+ 7:00 AM
+Date: Tue, 3 May 2022 01:34:59 +0000
+Message-ID: <MN2PR11MB42857EC96BDA3CCB619A07DFF2C09@MN2PR11MB4285.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CA+K1mPF--SuW4W3Gh_4j8pk=YbX+E2R-aYRxXxh4T8HHbSfLMw@mail.gmail.com>
- <CAFLxGvwS4v_y74uwUfRg5NOFPZ-uXFoanrKVkPuXxap99KGn4Q@mail.gmail.com>
- <0d32fb5d-5eb8-b367-df21-53f8e32f78bd@siemens.com>
-In-Reply-To: <0d32fb5d-5eb8-b367-df21-53f8e32f78bd@siemens.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Mon, 2 May 2022 11:08:08 -0700
-Message-ID: <CA+K1mPFY9y2s37Y=k8xwJorgXzoYWTEDihMYeej_OhZPYQ+5sA@mail.gmail.com>
-Subject: Re: Interrupt handler illicit call
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Richard Weinberger <richard.weinberger@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sun, May 1, 2022 at 11:25 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 29.04.22 21:01, Richard Weinberger via Xenomai wrote:
-> > On Fri, Apr 29, 2022 at 9:04 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
-> >> int Lp_port_handler(rtdm_irq_t *irq_handle_p)
-> >> {
-> >>    static int err;
-> >>    unsigned long next;
-> >>    rtdm_irq_t *handle_p;
-> >>
-> >>    handle_p = rtdm_irq_get_arg(irq_handle_p, rtdm_irq_t);
-> >>
-> >>    next = rtdm_clock_read();
-> >>    // do some timing calculations with 'next' var here ...
-> >>    err = rtdm_irq_enable(handle_p);   //re-enable this for subsequent interrupts
-> >
-> > You don't need this.
-> > Unconditionally enabling the interrupt line will confuse the IRQ subsystem.
-> >
->
-> ...and it was never supported in primary mode. If it worked, then by
-> chance and by disabling related checks. Enable/disable are no masking APIs.
->
-> Jan
->
-> >>   return 0;
-> >
-> > Please use RTDM_IRQ_HANDLED here instead of raw values.
-> >
-> >> }
-> >
-> > Thanks,
-> > //richard
+We have the Xenomai community call today.
 
-I was thinking the rtdm_irq_enable() was like an STI, but that was a
-mistake.  I looked at the 16550A and CAN drivers for examples of
-interrupt handlers, and indeed I found I must return RTDM_IRQ_HANDLED
-too like Richard says, or Xenomai de-registers the interrupt since no
-one appears to handle it. There doesn't seem to be an interrupt
-example in Xenomai 3.1 or Xeno3.2 sources. Perhaps I should submit a
-demo interrupt handler module as a patch?
--C Smith
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
+
+Time:
+Wednesday, May 03, 2022, UTC 7:00 AM
+Paris, France CEST 9:00 AM
+China CST 3:00 PM
+
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
 
