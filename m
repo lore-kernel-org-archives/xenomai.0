@@ -1,11 +1,9 @@
-Message-ID: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
-Date: Tue, 3 May 2022 17:18:22 +0200
 MIME-Version: 1.0
-Content-Language: it-IT
-From: "Mauro S." <mau.salvi@tin.it>
-Subject: RTNet: sendto(): EAGAIN error
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: C Smith <csmithquestions@gmail.com>
+Date: Wed, 4 May 2022 22:47:08 -0700
+Message-ID: <CA+K1mPHS3UNezeo5hLOkwCP6BLQQLHX5UbQFVxQhrMtO361SCA@mail.gmail.com>
+Subject: serial 16550A rx_timeout
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +12,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai List <xenomai@xenomai.org>
 
-Hi all,
+In my serial_config which I pass to the ioctl() that sets up my
+16550A.ko serial port
+I have set   .rx_timeout  = 500000
+and I am doing non-blocking reads.
 
-I'm trying to use RTNet with TDMA.
+This indeed results in a 500us delay when reading a serial port with
+no incoming bytes, which I can measure precisely on an oscilloscope (I
+have a DIO port pulse depicting the duration of the read()).
 
-I succesfully set up my bus:
+This is wasted time in my (RT userspace) app during the read() when
+there is no serial traffic on a particular port, and I have many
+serial ports. But why must I decide how long to stall the RT process
+with a timeout? Can't read() return immediately if there is no data in
+the device ?
 
-- 1GBps speed
-- 3 devices
-- cycle time 1ms
-- timeslots with 200us offset
+Must I use an ioctl with RTSER_RTIOC_GET_STATUS to inspect the UART
+LSR for data available?
 
-I wrote a simple application that in parallel receives and sends UDP 
-packets on TDMA bus.
-
-- sendto() is done to the broadcast address, port 1111
-- recvfrom() is done on the port 1111
-
-Application sends a small packet (5 bytes) in a periodic task with 1ms 
-period and prio 51. Receive is done in a non-periodic task with prio 50.
-
-Application is running on all the three devices, and I can see packets 
-are sent and received correctly by all the devices.
-
-But after a while, all send() calls on all devices fails with error EAGAIN.
-
-Could this error be related to some internal buffer/queue that becomes 
-full? Or am I missing something?
-
-Thanks in advance, regards
-
-
--- 
-Mauro S.
+(This is a RT userspace app on Xeno 3.1.2, kernel 4.19.229, intel I5,
+16550 compat UART)
+thanks,   -C Smith
 
