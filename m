@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-References: <AM7P122MB022978CBCF4698031D9E1F33F2C29@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
-In-Reply-To: <AM7P122MB022978CBCF4698031D9E1F33F2C29@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+References: <20220413120509.5637-1-richard@nod.at>
+In-Reply-To: <20220413120509.5637-1-richard@nod.at>
 From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 5 May 2022 18:58:18 +0200
-Message-ID: <CAFLxGvxUFD4qRvESTfO4pHHshJV35FFOcf15-HDbKSSAQ2m_rw@mail.gmail.com>
-Subject: Re: Can't compile userspace application with compiler switch
- -std=c++11 and Xenomai 3.2
+Date: Thu, 5 May 2022 22:06:32 +0200
+Message-ID: <CAFLxGvwT2cgn8vRF4HzFuJd1BvjHMueMPc4Cq3+LxNoZ3QDd7A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] debian: Remove --enable-smp
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,20 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Grau, Gunter" <gunter.grau@philips.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Richard Weinberger <richard@nod.at>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, May 5, 2022 at 4:56 PM Grau, Gunter via Xenomai
+ping? :-)
+
+On Wed, Apr 13, 2022 at 2:05 PM Richard Weinberger via Xenomai
 <xenomai@xenomai.org> wrote:
 >
+> SMP is now enabled by default for all architectures.
+> No need to use --enable-smp anymore.
 >
-> Hi,
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+>  debian/rules | 1 -
+>  1 file changed, 1 deletion(-)
 >
-> We are trying to port our application to Xenomai 3.2.
-> The source is c++ and we use in some parts C++11 elements. Therefore the compile switch is set to -std=c++11.
+> diff --git a/debian/rules b/debian/rules
+> index 3fe6bece93c9..60094734630d 100755
+> --- a/debian/rules
+> +++ b/debian/rules
+> @@ -17,7 +17,6 @@ CONFIG_OPTS = --prefix=/usr \
+>              --includedir=/usr/include/xenomai \
+>              --mandir=/usr/share/man \
+>              --with-testdir=/usr/lib/xenomai/testsuite \
+> -            --enable-smp \
+>              --enable-lazy-setsched \
+>              --enable-debug=symbols \
+>              --enable-dlopen-libs
+> --
+> 2.26.2
+>
+>
 
-Since Xenomai uses GNU extensions you need to use -std=gnu++11 instead
-of -std=c++11.
 
 -- 
 Thanks,
