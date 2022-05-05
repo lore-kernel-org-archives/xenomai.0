@@ -1,13 +1,12 @@
-Message-ID: <cf925dbe-afe8-470b-5130-16d062c890c9@siemens.com>
-Date: Thu, 5 May 2022 15:05:45 +0200
-MIME-Version: 1.0
-Subject: Re: RTNet: sendto(): EAGAIN error
+From: "Grau, Gunter" <gunter.grau@philips.com>
+Subject: Can't compile userspace application with compiler switch -std=c++11
+ and Xenomai 3.2
+Date: Thu, 5 May 2022 14:56:49 +0000
+Message-ID: <AM7P122MB022978CBCF4698031D9E1F33F2C29@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
 Content-Language: en-US
-References: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +15,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Mauro S." <mau.salvi@tin.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.05.22 17:18, Mauro S. via Xenomai wrote:
-> Hi all,
-> 
-> I'm trying to use RTNet with TDMA.
-> 
-> I succesfully set up my bus:
-> 
-> - 1GBps speed
-> - 3 devices
-> - cycle time 1ms
-> - timeslots with 200us offset
-> 
-> I wrote a simple application that in parallel receives and sends UDP
-> packets on TDMA bus.
-> 
-> - sendto() is done to the broadcast address, port 1111
-> - recvfrom() is done on the port 1111
-> 
-> Application sends a small packet (5 bytes) in a periodic task with 1ms
-> period and prio 51. Receive is done in a non-periodic task with prio 50.
-> 
-> Application is running on all the three devices, and I can see packets
-> are sent and received correctly by all the devices.
-> 
-> But after a while, all send() calls on all devices fails with error EAGAIN.
-> 
-> Could this error be related to some internal buffer/queue that becomes
-> full? Or am I missing something?
 
-When you get EAGAIN on sender side, cleanup of TX buffers likely failed,
-and the socket ran out of buffers to send further frames. That may be
-related to TX IRQs not making it. Check the TX IRQ counter on the
-sender, if it increases at the same pace as you send packets.
+Hi,
 
-Jan
+We are trying to port our application to Xenomai 3.2.
+The source is c++ and we use in some parts C++11 elements. Therefore the co=
+mpile switch is set to -std=3Dc++11.
+When now compiling with this option we see following output when using Xeno=
+mai 3.2:
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+In file included from /home/delphi/sw/oss/IntelliVue-OSS-R18-FEATUREBUILD-5=
+.4-Kernel-88/sdk-iv-monitor/target-sysroot/usr/xenomai/include/cobalt/semap=
+hore.h:24,
+                 from /home/delphi/sw/oss/IntelliVue-OSS-R18-FEATUREBUILD-5=
+.4-Kernel-88/sdk-iv-monitor/target-sysroot/usr/xenomai/include/cobalt/sys/c=
+obalt.h:25,
+                 from /home/delphi/sw/oss/IntelliVue-OSS-R18-FEATUREBUILD-5=
+.4-Kernel-88/sdk-iv-monitor/target-sysroot/usr/xenomai/include/copperplate/=
+clockobj.h:113,
+                 from /home/delphi/sw/oss/IntelliVue-OSS-R18-FEATUREBUILD-5=
+.4-Kernel-88/sdk-iv-monitor/target-sysroot/usr/xenomai/include/alchemy/time=
+r.h:22,
+                 from /home/delphi/sw/oss/IntelliVue-OSS-R18-FEATUREBUILD-5=
+.4-Kernel-88/sdk-iv-monitor/target-sysroot/usr/xenomai/include/alchemy/heap=
+.h:22,
+                 from ../PROG/Test.cpp:39:
+/target-sysroot/usr/xenomai/include/cobalt/uapi/kernel/urw.h: In function '=
+void __try_read_start(const urw_t*, urwstate_t*)':
+/target-sysroot/usr/xenomai/include/cobalt/uapi/kernel/urw.h:57:19: error: =
+expected primary-expression before 'volatile'
+ #define READ_ONCE ACCESS_ONCE
+                   ^~~~~~~~~~~
+/target-sysroot/usr/xenomai/include/cobalt/uapi/kernel/urw.h:64:10: note: i=
+n expansion of macro 'READ_ONCE'
+  token =3D READ_ONCE(urw->sequence);
+          ^~~~~~~~~
+/target-sysroot/usr/xenomai/include/cobalt/uapi/kernel/urw.h:57:19: error: =
+expected ')' before 'volatile'
+ #define READ_ONCE ACCESS_ONCE
+                   ^~~~~~~~~~~
+/target-sysroot/usr/xenomai/include/cobalt/uapi/kernel/urw.h:64:10: note: i=
+n expansion of macro 'READ_ONCE'
+  token =3D READ_ONCE(urw->sequence);
+          ^~~~~~~~~
+
+This worked with Xenomai 3.1.
+It looks like the issue is related to the usage of "typeof" in the ACCESS_O=
+NCE macro. This seems not to be allowed if you use -std option:
+https://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html#Alternate-Keywor=
+ds
+I have now a workaround by defining a macro prior the inclusion of "heap.h"=
+:
+#define typeof __typeof__
+But I am not happy with this. Is there a way to do this better? Is -std now=
+ not allowed with Xenomai?
+
+Thanks,
+Gunter Grau
+
+
+________________________________
+The information contained in this message may be confidential and legally p=
+rotected under applicable law. The message is intended solely for the addre=
+ssee(s). If you are not the intended recipient, you are hereby notified tha=
+t any use, forwarding, dissemination, or reproduction of this message is st=
+rictly prohibited and may be unlawful. If you are not the intended recipien=
+t, please contact the sender by return e-mail and destroy all copies of the=
+ original message.
 
