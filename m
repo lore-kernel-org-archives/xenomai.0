@@ -1,14 +1,12 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH] Remove __work from PIPELINE_INBAND_WORK_INITIALIZER
-Date: Thu, 7 Apr 2022 08:03:12 +0000
-Message-ID: <6fabb15e3e078aae8bc23d1b4970f484e03e9943.camel@siemens.com>
-References: <20220406210614.17715-1-richard@nod.at>
-In-Reply-To: <20220406210614.17715-1-richard@nod.at>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <06972A03661B8047B66271BCF04E4699@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CA+K1mPHS3UNezeo5hLOkwCP6BLQQLHX5UbQFVxQhrMtO361SCA@mail.gmail.com>
+ <CAFLxGvyQNMYZ8ARhrwUAETB+z=MyTZv55Qx+H3-S=7Sb=sNA2g@mail.gmail.com>
+In-Reply-To: <CAFLxGvyQNMYZ8ARhrwUAETB+z=MyTZv55Qx+H3-S=7Sb=sNA2g@mail.gmail.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Thu, 5 May 2022 13:16:26 -0700
+Message-ID: <CA+K1mPFrf2xJc1ST-2njNkyyhR1x+iR-1O4S-LR0G2c4PhgZPg@mail.gmail.com>
+Subject: Re: serial 16550A rx_timeout
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,15 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "richard@nod.at" <richard@nod.at>
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Xenomai List <xenomai@xenomai.org>
 
-SGkgUmljaGFyZCwNCg0KT24gV2VkLCAyMDIyLTA0LTA2IGF0IDIzOjA2ICswMjAwLCBSaWNoYXJk
-IFdlaW5iZXJnZXIgdmlhIFhlbm9tYWkNCndyb3RlOg0KPiBpcGlwZSB0b29rIGEgY29weSBvZiB0
-aGUgcXVldWVkIHdvcmssIF9fd29yayB3YXMgdXNlZCB0byBkZXRlcm1pbmUgaG93IG11Y2gNCj4g
-Ynl0ZXMgaGFkIHRvIGdldCBjb3BpZWQuDQo+IFdpdGggZG92ZXRhaWwgbm8gY29weSBhcyB0YWtl
-biBhbmQgdGhlIF9fd29yayBwYXJhbWV0ZXIgaXMgbm8gbG9uZ2VyDQogICAgICAgICAgICAgICAg
-ICAgICAgICBeXiBpcw0KPiB1c2VmdWwsIHNvIHdlIGNhbiBnZXQgcmlkIG9mIGl0Lg0KDQpUaGUg
-cmVzdCBMR1RNLiBDb21taXQgbWVzc2FnZSBjb3VsZCBiZSBmaXhlZCB1cCBvbiBtZXJnZSBhcyBs
-b25nIGFzIEphbg0KZG9lcyBub3QgaW5zaXN0IG9uIHNlbmRpbmcgb3V0IGEgdjIuIA0KDQpSZWdh
-cmRzLA0KRmxvcmlhbg0KDQo=
+On Wed, May 4, 2022 at 11:31 PM Richard Weinberger
+<richard.weinberger@gmail.com> wrote:
+>
+> On Thu, May 5, 2022 at 7:47 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
+> >
+> > In my serial_config which I pass to the ioctl() that sets up my
+> > 16550A.ko serial port
+> > I have set   .rx_timeout  = 500000
+> > and I am doing non-blocking reads.
+> >
+> > This indeed results in a 500us delay when reading a serial port with
+> > no incoming bytes, which I can measure precisely on an oscilloscope (I
+> > have a DIO port pulse depicting the duration of the read()).
+> >
+> > This is wasted time in my (RT userspace) app during the read() when
+> > there is no serial traffic on a particular port, and I have many
+> > serial ports. But why must I decide how long to stall the RT process
+> > with a timeout? Can't read() return immediately if there is no data in
+> > the device ?
+> >
+> > Must I use an ioctl with RTSER_RTIOC_GET_STATUS to inspect the UART
+> > LSR for data available?
+> >
+> > (This is a RT userspace app on Xeno 3.1.2, kernel 4.19.229, intel I5,
+> > 16550 compat UART)
+>
+> IIRC as soon you configure a timeout, reads are blocking. Configuring -1
+> as timeout will cause read to return immediately with -EAGAIN if no
+> data is available.
+
+Indeed you were right. I set .rx_timeout = -1 and now the read() is
+nonblocking. errno gets set to EAGAIN, and it takes only 54us to read
+6 inactive ports.
+thanks  -C Smith
 
