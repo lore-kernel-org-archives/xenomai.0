@@ -1,12 +1,12 @@
-Message-ID: <f50fa498-d958-6d08-7404-cf127104fd84@tin.it>
-Date: Thu, 5 May 2022 17:04:01 +0200
+Message-ID: <7f7ea65a-a58e-33e3-1680-2e59289b2be8@tin.it>
+Date: Thu, 5 May 2022 17:12:38 +0200
 MIME-Version: 1.0
-Subject: Re: RTNet: sendto(): EAGAIN error
+Subject: [PATCH v2] utils/net/rtnet.in: fixes after shellcheck inspection
 Content-Language: it-IT
-References: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
- <cf925dbe-afe8-470b-5130-16d062c890c9@siemens.com>
+References: <4e8c2890-bab4-ea31-4db3-0866b389db3e@tin.it>
+ <63e4b7c7-bc03-6ca1-f4e1-ac8b77d8826b@siemens.com>
 From: "Mauro S." <mau.salvi@tin.it>
-In-Reply-To: <cf925dbe-afe8-470b-5130-16d062c890c9@siemens.com>
+In-Reply-To: <63e4b7c7-bc03-6ca1-f4e1-ac8b77d8826b@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,90 +17,246 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Il 05/05/22 15:05, Jan Kiszka ha scritto:
-> On 03.05.22 17:18, Mauro S. via Xenomai wrote:
->> Hi all,
->>
->> I'm trying to use RTNet with TDMA.
->>
->> I succesfully set up my bus:
->>
->> - 1GBps speed
->> - 3 devices
->> - cycle time 1ms
->> - timeslots with 200us offset
->>
->> I wrote a simple application that in parallel receives and sends UDP
->> packets on TDMA bus.
->>
->> - sendto() is done to the broadcast address, port 1111
->> - recvfrom() is done on the port 1111
->>
->> Application sends a small packet (5 bytes) in a periodic task with 1ms
->> period and prio 51. Receive is done in a non-periodic task with prio 50.
->>
->> Application is running on all the three devices, and I can see packets
->> are sent and received correctly by all the devices.
->>
->> But after a while, all send() calls on all devices fails with error EAGAIN.
->>
->> Could this error be related to some internal buffer/queue that becomes
->> full? Or am I missing something?
-> 
-> When you get EAGAIN on sender side, cleanup of TX buffers likely failed,
-> and the socket ran out of buffers to send further frames. That may be
-> related to TX IRQs not making it. Check the TX IRQ counter on the
-> sender, if it increases at the same pace as you send packets.
-> 
-> Jan
-> 
+Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
+---
+  utils/net/rtnet.in | 76 +++++++++++++++++++++++-----------------------
+  1 file changed, 38 insertions(+), 38 deletions(-)
 
-Thanks Jan for your fast answer.
+diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+index f81a7bb0a..9f136b804 100644
+--- a/utils/net/rtnet.in
++++ b/utils/net/rtnet.in
+@@ -9,7 +9,7 @@ RTNETCFG="@sysconfdir@/rtnet.conf"
 
-I forgot to mention that I'm using the rt_igb driver.
+  debug_func() {
+      echo "$*"
+-    eval $*
++    eval "$@"
+  }
 
-I have only one IRQ field in /proc/xenomai/irq, counting both TX and RX
+  usage() {
+@@ -33,35 +33,35 @@ EOF
+  init_rtnet() {
+      modprobe rtnet >/dev/null || exit 1
+      modprobe rtipv4 >/dev/null || exit 1
+-    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
++    modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
 
-  cat /proc/xenomai/irq | grep rteth0 
+      for dev in $REBIND_RT_NICS; do
+-	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+-	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
++	if [ -d /sys/bus/pci/devices/"$dev"/driver ]; then
++	    echo "$dev" > /sys/bus/pci/devices/"$dev"/driver/unbind
+  	fi
+-	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
++	echo "$dev" > /sys/bus/pci/drivers/"$RT_DRIVER"/bind
+      done
 
-   125:         0           0     2312152         0       rteth0-TxRx-0
+      for PROTOCOL in $RT_PROTOCOLS; do
+-	modprobe rt$PROTOCOL >/dev/null || exit 1
++	modprobe rt"$PROTOCOL" >/dev/null || exit 1
+      done
 
-I did this test:
+-    if [ $RT_LOOPBACK = "yes" ]; then
++    if [ "$RT_LOOPBACK" = "yes" ]; then
+  	modprobe rt_loopback >/dev/null || exit 1
+      fi
 
-* on the master I send a packet every 1ms in a periodic RT task (period 
-1ms, prio 51) with my test app.
+-    if [ $RTCAP = "yes" ]; then
++    if [ "$RTCAP" = "yes" ]; then
+  	modprobe rtcap >/dev/null || exit 1
+      fi
 
-* on the master I see an increment of about 2000 IRQs per second: I 
-guess 1000 are for my sent packets (1 packet every ms), and 1000 for the 
-TDMA sync packet. In fact I see the "rtifconfig" RX counter almost 
-stationary (only 8 packets every 2-3 seconds, refresh requests from 
-slaves?), TX counter incrementing in about 2000 packets per second.
+-    if [ $RT_LOOPBACK = "yes" ]; then
++    if [ "$RT_LOOPBACK" = "yes" ]; then
+  	$RTIFCONFIG rtlo up 127.0.0.1
+      fi
 
-* on the two slaves (thet are running nothing) I observe the same rate 
-(about 2000 IRQs per second). I see the "rtifconfig" TX counter almost 
-stationary (only 4 packets every 2-3 seconds), RX counter incrementing 
-in about 2000 packets per second.
+-    if [ $RTCAP = "yes" ]; then
++    if [ "$RTCAP" = "yes" ]; then
+  	ifconfig rteth0 up
+  	ifconfig rteth0-mac up
+-	if [ $RT_LOOPBACK = "yes" ]; then
++	if [ "$RT_LOOPBACK" = "yes" ]; then
+  	    ifconfig rtlo up
+  	fi
+      fi
+@@ -74,9 +74,9 @@ init_rtnet() {
+  submit_cfg() {
+      case "$STATION_TYPE" in
+  	master)
+-	    $RTIFCONFIG rteth0 up $STATION_IP
++	    $RTIFCONFIG rteth0 up "$STATION_IP"
 
-* if I stop sending packets with my app, I can see all the rates at 
-about 1000 per second
+-	    $TDMACFG rteth0 master $TDMA_CYCLE
++	    $TDMACFG rteth0 master "$TDMA_CYCLE"
+  	    eval "$TDMA_SLOTS"
 
-If I start send-receive on all the three devices, I can see a IRQ rate 
-around 4000 IRQs per second on all devices (1000 sync, 1000 send and 
-1000 + 1000 receive).
+  	    IPADDR=$STATION_IP
+@@ -96,7 +96,7 @@ submit_cfg() {
+  	    ADD_STAGE1_CMDS="ifconfig vnic0 up $STATION_IP"
 
-I observed that if I only send from master and receive on slaves the 
-problem does not appear. Or if I send/receive from all, but with a 
-packet every 2ms, the problem does not appear.
+  	    echo "$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+-		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 -
++		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 -
+  	    ;;
+  	backup-master)
+  	    if [ ! "$STATION_IP" = "" ]; then
+@@ -117,7 +117,7 @@ submit_cfg() {
+  	    fi
 
-Could be a CPU performance problem (4k IRQs per second are too much for 
-an Intel Atom x5-E8000 CPU @ 1.04GHz)?
+  	    echo "\$TDMACFG rteth0 detach;\$TDMACFG rteth0 master $TDMA_CYCLE 
+-b $TDMA_BACKUP_OFFS;$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+-		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 - $STAGE_2_OPT
++		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 - "$STAGE_2_OPT"
+  	    ;;
+      esac
 
+@@ -142,16 +142,16 @@ start_master() {
+  	#   Sync / Master Slot / + TDMA_OFFSET us / Slave 1 /
+  	#   + TDMA_OFFSET us / Slave 2 / + TDMA_OFFSET us / ... / Slave n
 
-Thanks in advance, regards
+-	$RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
++	$RTIFCONFIG rteth0 up "$IPADDR" $NETMASK_OPT
 
+-	$TDMACFG rteth0 master $TDMA_CYCLE
++	$TDMACFG rteth0 master "$TDMA_CYCLE"
+  	$TDMACFG rteth0 slot 0 0
+
+  	OFFSET=$TDMA_OFFSET
+  	for SLAVE in $TDMA_SLAVES; do
+  	    echo "\$TDMACFG rteth0 slot 0 $OFFSET;ifconfig vnic0 up \$IPADDR 
+\$NETMASK_OPT" | \
+-		$RTCFG rteth0 add $SLAVE -stage1 - $STAGE_2_OPT
+-	    OFFSET=$(($OFFSET+$TDMA_OFFSET))
++		$RTCFG rteth0 add "$SLAVE" -stage1 - "$STAGE_2_OPT"
++	    OFFSET=$((OFFSET+TDMA_OFFSET))
+  	done
+      else
+  	# Get setup from TDMA_CONFIG file:
+@@ -185,12 +185,12 @@ start_master() {
+  	# slot ...
+  	#
+
+-	if [ ! -r $TDMA_CONFIG ]; then
++	if [ ! -r "$TDMA_CONFIG" ]; then
+  	    echo "Could not read $TDMA_CONFIG"
+  	    exit 1
+  	fi
+
+-	while read ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
++	while read -r ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
+  	    case "$ARG1" in
+  		"master:")
+  		    submit_cfg
+@@ -217,7 +217,7 @@ start_master() {
+  		    STATION_MAC="$ARG2"
+  		    ;;
+  		"stage2")
+-		    STATION_STAGE_2="$ARG2"
++		    STATION_STAGE_2_SRC="$ARG2"
+  		    ;;
+  		"slot")
+  		    TDMA_SLOTS="$TDMA_SLOTS\$TDMACFG rteth0 slot $ARG2 $ARG3"
+@@ -233,13 +233,13 @@ start_master() {
+  		    TDMA_SLOTS="$TDMA_SLOTS;"
+  		    ;;
+  	    esac
+-	done < $TDMA_CONFIG
++	done < "$TDMA_CONFIG"
+  	submit_cfg
+      fi
+
+-    ifconfig vnic0 up $IPADDR $NETMASK_OPT
++    ifconfig vnic0 up "$IPADDR" $NETMASK_OPT
+
+-    echo -n "Waiting for all slaves..."
++    echo "Waiting for all slaves..."
+      $RTCFG rteth0 wait
+      $RTCFG rteth0 ready
+      echo
+@@ -251,8 +251,8 @@ if [ "$1" = "-cf" ]; then
+      shift 2
+  fi
+
+-if [ -r $RTNETCFG ]; then
+-    . $RTNETCFG
++if [ -r "$RTNETCFG" ]; then
++    . "$RTNETCFG"
+  else
+      echo "Could not read $RTNETCFG"
+      exit 1
+@@ -281,20 +281,20 @@ case "$1" in
+      start)
+  	init_rtnet
+
+-	if [ $TDMA_MODE = "master" ]; then
++	if [ "$TDMA_MODE" = "master" ]; then
+  	    start_master
+  	else
+  	    $TDMACFG rteth0 slave
+
+-	    $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
++	    $RTIFCONFIG rteth0 up "$IPADDR" "$NETMASK_OPT"
+
+-	    echo -n "Stage 1: searching for master..."
+-	    eval "`$RTCFG rteth0 client -c`"
++	    echo "Stage 1: searching for master..."
++	    eval "$($RTCFG rteth0 client -c)"
+  	    echo
+
+-	    echo -n "Stage 2: waiting for other slaves..."
++	    echo "Stage 2: waiting for other slaves..."
+  	    if [ ! "$STAGE_2_DST" = "" ]; then
+-		$RTCFG rteth0 announce -f $STAGE_2_DST
++		$RTCFG rteth0 announce -f "$STAGE_2_DST"
+  		echo
+  		eval "$STAGE_2_CMDS"
+  	    else
+@@ -302,7 +302,7 @@ case "$1" in
+  		echo
+  	    fi
+
+-	    echo -n "Stage 3: waiting for common setup completion..."
++	    echo "Stage 3: waiting for common setup completion..."
+  	    $RTCFG rteth0 ready
+  	    echo
+  	fi
+@@ -317,10 +317,10 @@ case "$1" in
+  	$RTIFCONFIG rteth0 down 2>/dev/null
+  	$RTIFCONFIG rtlo down 2>/dev/null
+
+-	rmmod tdma rtmac rtcfg rtcap rt_loopback $RT_DRIVER rtpacket rtudp 
+rttcp rtipv4 rtnet 2>/dev/null
++	rmmod tdma rtmac rtcfg rtcap rt_loopback "$RT_DRIVER" rtpacket rtudp 
+rttcp rtipv4 rtnet 2>/dev/null
+
+  	for dev in $REBIND_RT_NICS; do
+-	    echo 1 > /sys/bus/pci/devices/$dev/remove
++	    echo 1 > /sys/bus/pci/devices/"$dev"/remove
+  	done
+  	if [ ! "$REBIND_RT_NICS" = "" ]; then
+  	    sleep 1
+@@ -337,7 +337,7 @@ case "$1" in
+
+      capture)
+  	modprobe rtnet >/dev/null || exit 1
+-	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
++	modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
+  	modprobe rtcap >/dev/null || exit 1
+  	$RTIFCONFIG rteth0 up promisc
+  	ifconfig rteth0 up
+@@ -349,7 +349,7 @@ case "$1" in
+  	modprobe rtipv4 >/dev/null || exit 1
+
+  	for PROTOCOL in $RT_PROTOCOLS; do
+-	    modprobe rt$PROTOCOL >/dev/null || exit 1
++	    modprobe rt"$PROTOCOL" >/dev/null || exit 1
+  	done
+
+  	modprobe rt_loopback >/dev/null || exit 1
 -- 
-Mauro S.
+2.17.1
 
