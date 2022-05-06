@@ -1,12 +1,14 @@
+Message-ID: <8b049af2-e303-f07f-6ee2-6e91e6fac445@siemens.com>
+Date: Fri, 6 May 2022 08:24:41 +0200
 MIME-Version: 1.0
-References: <CA+K1mPHS3UNezeo5hLOkwCP6BLQQLHX5UbQFVxQhrMtO361SCA@mail.gmail.com>
- <CAFLxGvyQNMYZ8ARhrwUAETB+z=MyTZv55Qx+H3-S=7Sb=sNA2g@mail.gmail.com>
-In-Reply-To: <CAFLxGvyQNMYZ8ARhrwUAETB+z=MyTZv55Qx+H3-S=7Sb=sNA2g@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Thu, 5 May 2022 13:16:26 -0700
-Message-ID: <CA+K1mPFrf2xJc1ST-2njNkyyhR1x+iR-1O4S-LR0G2c4PhgZPg@mail.gmail.com>
-Subject: Re: serial 16550A rx_timeout
+Subject: Re: [PATCH 1/2] debian: Remove --enable-smp
+Content-Language: en-US
+References: <20220413120509.5637-1-richard@nod.at>
+ <CAFLxGvwT2cgn8vRF4HzFuJd1BvjHMueMPc4Cq3+LxNoZ3QDd7A@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <CAFLxGvwT2cgn8vRF4HzFuJd1BvjHMueMPc4Cq3+LxNoZ3QDd7A@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>, Richard Weinberger <richard@nod.at>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Wed, May 4, 2022 at 11:31 PM Richard Weinberger
-<richard.weinberger@gmail.com> wrote:
->
-> On Thu, May 5, 2022 at 7:47 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
-> >
-> > In my serial_config which I pass to the ioctl() that sets up my
-> > 16550A.ko serial port
-> > I have set   .rx_timeout  = 500000
-> > and I am doing non-blocking reads.
-> >
-> > This indeed results in a 500us delay when reading a serial port with
-> > no incoming bytes, which I can measure precisely on an oscilloscope (I
-> > have a DIO port pulse depicting the duration of the read()).
-> >
-> > This is wasted time in my (RT userspace) app during the read() when
-> > there is no serial traffic on a particular port, and I have many
-> > serial ports. But why must I decide how long to stall the RT process
-> > with a timeout? Can't read() return immediately if there is no data in
-> > the device ?
-> >
-> > Must I use an ioctl with RTSER_RTIOC_GET_STATUS to inspect the UART
-> > LSR for data available?
-> >
-> > (This is a RT userspace app on Xeno 3.1.2, kernel 4.19.229, intel I5,
-> > 16550 compat UART)
->
-> IIRC as soon you configure a timeout, reads are blocking. Configuring -1
-> as timeout will cause read to return immediately with -EAGAIN if no
-> data is available.
+On 05.05.22 22:06, Richard Weinberger via Xenomai wrote:
+> ping? :-)
+> 
 
-Indeed you were right. I set .rx_timeout = -1 and now the read() is
-nonblocking. errno gets set to EAGAIN, and it takes only 54us to read
-6 inactive ports.
-thanks  -C Smith
+Thanks for the reminder - merged.
+
+But "configure --help" itself still talks about "--enable-smp". Should
+like be changed to "--disable-smp" to reflect the default.
+
+Jan
+
+> On Wed, Apr 13, 2022 at 2:05 PM Richard Weinberger via Xenomai
+> <xenomai@xenomai.org> wrote:
+>>
+>> SMP is now enabled by default for all architectures.
+>> No need to use --enable-smp anymore.
+>>
+>> Signed-off-by: Richard Weinberger <richard@nod.at>
+>> ---
+>>  debian/rules | 1 -
+>>  1 file changed, 1 deletion(-)
+>>
+>> diff --git a/debian/rules b/debian/rules
+>> index 3fe6bece93c9..60094734630d 100755
+>> --- a/debian/rules
+>> +++ b/debian/rules
+>> @@ -17,7 +17,6 @@ CONFIG_OPTS = --prefix=/usr \
+>>              --includedir=/usr/include/xenomai \
+>>              --mandir=/usr/share/man \
+>>              --with-testdir=/usr/lib/xenomai/testsuite \
+>> -            --enable-smp \
+>>              --enable-lazy-setsched \
+>>              --enable-debug=symbols \
+>>              --enable-dlopen-libs
+>> --
+>> 2.26.2
+>>
+>>
+> 
+> 
+
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
