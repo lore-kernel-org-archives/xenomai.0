@@ -1,13 +1,17 @@
-References: <CAMES2hcz4K0DXAcktWZ0-DCqA1ds9b=oCfwNET8YaCq9sa+NGw@mail.gmail.com>
- <877d6sv1xg.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Building example code with EVL
-Date: Wed, 11 May 2022 12:19:49 +0200
-In-reply-to: <877d6sv1xg.fsf@xenomai.org>
-Message-ID: <87wnestlkv.fsf@xenomai.org>
+Message-ID: <cdef20fa-8134-6706-e43a-b94a2e98334b@tin.it>
+Date: Thu, 12 May 2022 09:00:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Subject: [PATCH v3] utils/net/rtnet.in: fixes after shellcheck inspection
+Content-Language: it-IT
+References: <4e8c2890-bab4-ea31-4db3-0866b389db3e@tin.it>
+ <63e4b7c7-bc03-6ca1-f4e1-ac8b77d8826b@siemens.com>
+ <7f7ea65a-a58e-33e3-1680-2e59289b2be8@tin.it>
+ <fc9fc714-e1e8-8132-7cc3-76e7ee1f4d87@siemens.com>
+ <d9a4b75d-81bb-28ea-4bee-293f19637c05@tin.it>
+From: "Mauro S." <mau.salvi@tin.it>
+In-Reply-To: <d9a4b75d-81bb-28ea-4bee-293f19637c05@tin.it>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +20,266 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Ferri <ironsnetwork@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+Remaning shellcheck warnings:
+- "SC2086: Double quote to prevent globbing and word splitting."
+   line 120, 153, 289 (variables STAGE_2_OPT and NETMASK_OPT)
+   Suggested fix not applicable because these variables can be empty,
+   resulting in command failure due to "" in command line
+- "SC2153: Possible misspelling: STAGE_2_DST may not be assigned, but 
+STAGE_2_OPT is."
+   line 296. STAGE_2_DST comes from included RTNETCFG file
+
+Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
+---
+  utils/net/rtnet.in | 86 +++++++++++++++++++++++-----------------------
+  1 file changed, 43 insertions(+), 43 deletions(-)
+
+diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+index f81a7bb0a..cd24017b4 100644
+--- a/utils/net/rtnet.in
++++ b/utils/net/rtnet.in
+@@ -9,7 +9,7 @@ RTNETCFG="@sysconfdir@/rtnet.conf"
+
+  debug_func() {
+      echo "$*"
+-    eval $*
++    eval "$@"
+  }
+
+  usage() {
+@@ -33,35 +33,35 @@ EOF
+  init_rtnet() {
+      modprobe rtnet >/dev/null || exit 1
+      modprobe rtipv4 >/dev/null || exit 1
+-    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
++    modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
+
+      for dev in $REBIND_RT_NICS; do
+-	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+-	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
++	if [ -d /sys/bus/pci/devices/"$dev"/driver ]; then
++	    echo "$dev" > /sys/bus/pci/devices/"$dev"/driver/unbind
+  	fi
+-	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
++	echo "$dev" > /sys/bus/pci/drivers/"$RT_DRIVER"/bind
+      done
+
+      for PROTOCOL in $RT_PROTOCOLS; do
+-	modprobe rt$PROTOCOL >/dev/null || exit 1
++	modprobe rt"$PROTOCOL" >/dev/null || exit 1
+      done
+
+-    if [ $RT_LOOPBACK = "yes" ]; then
++    if [ "$RT_LOOPBACK" = "yes" ]; then
+  	modprobe rt_loopback >/dev/null || exit 1
+      fi
+
+-    if [ $RTCAP = "yes" ]; then
++    if [ "$RTCAP" = "yes" ]; then
+  	modprobe rtcap >/dev/null || exit 1
+      fi
+
+-    if [ $RT_LOOPBACK = "yes" ]; then
++    if [ "$RT_LOOPBACK" = "yes" ]; then
+  	$RTIFCONFIG rtlo up 127.0.0.1
+      fi
+
+-    if [ $RTCAP = "yes" ]; then
++    if [ "$RTCAP" = "yes" ]; then
+  	ifconfig rteth0 up
+  	ifconfig rteth0-mac up
+-	if [ $RT_LOOPBACK = "yes" ]; then
++	if [ "$RT_LOOPBACK" = "yes" ]; then
+  	    ifconfig rtlo up
+  	fi
+      fi
+@@ -74,9 +74,9 @@ init_rtnet() {
+  submit_cfg() {
+      case "$STATION_TYPE" in
+  	master)
+-	    $RTIFCONFIG rteth0 up $STATION_IP
++	    $RTIFCONFIG rteth0 up "$STATION_IP"
+
+-	    $TDMACFG rteth0 master $TDMA_CYCLE
++	    $TDMACFG rteth0 master "$TDMA_CYCLE"
+  	    eval "$TDMA_SLOTS"
+
+  	    IPADDR=$STATION_IP
+@@ -96,7 +96,7 @@ submit_cfg() {
+  	    ADD_STAGE1_CMDS="ifconfig vnic0 up $STATION_IP"
+
+  	    echo "$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+-		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 -
++		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 -
+  	    ;;
+  	backup-master)
+  	    if [ ! "$STATION_IP" = "" ]; then
+@@ -117,7 +117,7 @@ submit_cfg() {
+  	    fi
+
+  	    echo "\$TDMACFG rteth0 detach;\$TDMACFG rteth0 master $TDMA_CYCLE 
+-b $TDMA_BACKUP_OFFS;$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+-		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 - $STAGE_2_OPT
++		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 - $STAGE_2_OPT
+  	    ;;
+      esac
+
+@@ -142,16 +142,16 @@ start_master() {
+  	#   Sync / Master Slot / + TDMA_OFFSET us / Slave 1 /
+  	#   + TDMA_OFFSET us / Slave 2 / + TDMA_OFFSET us / ... / Slave n
+
+-	$RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
++	$RTIFCONFIG rteth0 up "$IPADDR" $NETMASK_OPT
+
+-	$TDMACFG rteth0 master $TDMA_CYCLE
++	$TDMACFG rteth0 master "$TDMA_CYCLE"
+  	$TDMACFG rteth0 slot 0 0
+
+  	OFFSET=$TDMA_OFFSET
+  	for SLAVE in $TDMA_SLAVES; do
+  	    echo "\$TDMACFG rteth0 slot 0 $OFFSET;ifconfig vnic0 up \$IPADDR 
+\$NETMASK_OPT" | \
+-		$RTCFG rteth0 add $SLAVE -stage1 - $STAGE_2_OPT
+-	    OFFSET=$(($OFFSET+$TDMA_OFFSET))
++		$RTCFG rteth0 add "$SLAVE" -stage1 - $STAGE_2_OPT
++	    OFFSET=$((OFFSET+TDMA_OFFSET))
+  	done
+      else
+  	# Get setup from TDMA_CONFIG file:
+@@ -185,12 +185,12 @@ start_master() {
+  	# slot ...
+  	#
+
+-	if [ ! -r $TDMA_CONFIG ]; then
++	if [ ! -r "$TDMA_CONFIG" ]; then
+  	    echo "Could not read $TDMA_CONFIG"
+  	    exit 1
+  	fi
+
+-	while read ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
++	while read -r ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
+  	    case "$ARG1" in
+  		"master:")
+  		    submit_cfg
+@@ -217,7 +217,7 @@ start_master() {
+  		    STATION_MAC="$ARG2"
+  		    ;;
+  		"stage2")
+-		    STATION_STAGE_2="$ARG2"
++		    STATION_STAGE_2_SRC="$ARG2"
+  		    ;;
+  		"slot")
+  		    TDMA_SLOTS="$TDMA_SLOTS\$TDMACFG rteth0 slot $ARG2 $ARG3"
+@@ -233,16 +233,16 @@ start_master() {
+  		    TDMA_SLOTS="$TDMA_SLOTS;"
+  		    ;;
+  	    esac
+-	done < $TDMA_CONFIG
++	done < "$TDMA_CONFIG"
+  	submit_cfg
+      fi
+
+-    ifconfig vnic0 up $IPADDR $NETMASK_OPT
++    ifconfig vnic0 up "$IPADDR" $NETMASK_OPT
+
+-    echo -n "Waiting for all slaves..."
++    printf "Waiting for all slaves..."
+      $RTCFG rteth0 wait
+      $RTCFG rteth0 ready
+-    echo
++    printf "\n"
+  }
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
+@@ -251,8 +251,8 @@ if [ "$1" = "-cf" ]; then
+      shift 2
+  fi
 
-> Roberto Ferri via Xenomai <xenomai@xenomai.org> writes:
->
->> Hello!
->>
->> My team and I are trying to build an EVL-based application on a *Raspber=
-ry
->> Pi 4B* [1] without success. We followed the steps reported in the guide =
-[2]
->> to compile the code in [3].
->>
->> It would be great if you could tell us what we did wrong.
->>
->> Many thanks for your work!
->>
->> [1] kernel 5.15.35-v8, compiled using
->> https://source.denx.de/Xenomai/xenomai4/linux-evl
->>
->> [2] https://evlproject.org/core/user-api/#build-evl-app
->>
->> [3] https://evlproject.org/core/user-api/thread/#thread-services
->>
->>
->>
->> More info Building example code (#1) =C2=B7 Issues =C2=B7 xenomai / xeno=
-mai4 / libevl
->> =C2=B7 GitLab (denx.de)
->> <https://source.denx.de/Xenomai/xenomai4/libevl/-/issues/1>
->>
->>
->
-> Mm, <sched.h> is involuntarily shadowed by the libevl version. This is a
-> breakage introduced by two recent changes: 034e4fd, made worse by
-> bfa2c4b.
->
-> A fix will be available from the master branch in a couple of hours
-> today. Thanks for the test case.
+-if [ -r $RTNETCFG ]; then
+-    . $RTNETCFG
++if [ -r "$RTNETCFG" ]; then
++    . "$RTNETCFG"
+  else
+      echo "Could not read $RTNETCFG"
+      exit 1
+@@ -281,30 +281,30 @@ case "$1" in
+      start)
+  	init_rtnet
 
-Please let me know if [1] fixes the issue as expected. This passed my
-Yocto build test with a couple of applications here.
+-	if [ $TDMA_MODE = "master" ]; then
++	if [ "$TDMA_MODE" = "master" ]; then
+  	    start_master
+  	else
+  	    $TDMACFG rteth0 slave
 
-https://source.denx.de/Xenomai/xenomai4/libevl/-/commit/21e9a5f2154c65bdd29=
-0122dcfd4ce257da0e199
+-	    $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
++	    $RTIFCONFIG rteth0 up "$IPADDR" $NETMASK_OPT
 
---=20
-Philippe.
+-	    echo -n "Stage 1: searching for master..."
+-	    eval "`$RTCFG rteth0 client -c`"
+-	    echo
++	    printf "Stage 1: searching for master..."
++	    eval "$($RTCFG rteth0 client -c)"
++	    printf "\n"
+
+-	    echo -n "Stage 2: waiting for other slaves..."
++	    printf "Stage 2: waiting for other slaves..."
+  	    if [ ! "$STAGE_2_DST" = "" ]; then
+-		$RTCFG rteth0 announce -f $STAGE_2_DST
+-		echo
++		$RTCFG rteth0 announce -f "$STAGE_2_DST"
++		printf "\n"
+  		eval "$STAGE_2_CMDS"
+  	    else
+  		$RTCFG rteth0 announce
+-		echo
++		printf "\n"
+  	    fi
+
+-	    echo -n "Stage 3: waiting for common setup completion..."
++	    printf "Stage 3: waiting for common setup completion..."
+  	    $RTCFG rteth0 ready
+-	    echo
++	    printf "\n"
+  	fi
+  	;;
+
+@@ -317,10 +317,10 @@ case "$1" in
+  	$RTIFCONFIG rteth0 down 2>/dev/null
+  	$RTIFCONFIG rtlo down 2>/dev/null
+
+-	rmmod tdma rtmac rtcfg rtcap rt_loopback $RT_DRIVER rtpacket rtudp 
+rttcp rtipv4 rtnet 2>/dev/null
++	rmmod tdma rtmac rtcfg rtcap rt_loopback "$RT_DRIVER" rtpacket rtudp 
+rttcp rtipv4 rtnet 2>/dev/null
+
+  	for dev in $REBIND_RT_NICS; do
+-	    echo 1 > /sys/bus/pci/devices/$dev/remove
++	    echo 1 > /sys/bus/pci/devices/"$dev"/remove
+  	done
+  	if [ ! "$REBIND_RT_NICS" = "" ]; then
+  	    sleep 1
+@@ -337,7 +337,7 @@ case "$1" in
+
+      capture)
+  	modprobe rtnet >/dev/null || exit 1
+-	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
++	modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
+  	modprobe rtcap >/dev/null || exit 1
+  	$RTIFCONFIG rteth0 up promisc
+  	ifconfig rteth0 up
+@@ -349,7 +349,7 @@ case "$1" in
+  	modprobe rtipv4 >/dev/null || exit 1
+
+  	for PROTOCOL in $RT_PROTOCOLS; do
+-	    modprobe rt$PROTOCOL >/dev/null || exit 1
++	    modprobe rt"$PROTOCOL" >/dev/null || exit 1
+  	done
+
+  	modprobe rt_loopback >/dev/null || exit 1
+-- 
+2.17.1
+
 
