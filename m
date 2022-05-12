@@ -1,17 +1,14 @@
-Message-ID: <cdef20fa-8134-6706-e43a-b94a2e98334b@tin.it>
-Date: Thu, 12 May 2022 09:00:46 +0200
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: Register (or stack) corruption: Xenomai 3.2.1 on 4.19-ipipe
+Date: Thu, 12 May 2022 16:15:20 +0000
+Message-ID: <cecfd41b524f5438ff0f07163c73eefdc37aa0c5.camel@siemens.com>
+References: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
+In-Reply-To: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CF4C46926930C542B015D6DDA3381B7F@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: [PATCH v3] utils/net/rtnet.in: fixes after shellcheck inspection
-Content-Language: it-IT
-References: <4e8c2890-bab4-ea31-4db3-0866b389db3e@tin.it>
- <63e4b7c7-bc03-6ca1-f4e1-ac8b77d8826b@siemens.com>
- <7f7ea65a-a58e-33e3-1680-2e59289b2be8@tin.it>
- <fc9fc714-e1e8-8132-7cc3-76e7ee1f4d87@siemens.com>
- <d9a4b75d-81bb-28ea-4bee-293f19637c05@tin.it>
-From: "Mauro S." <mau.salvi@tin.it>
-In-Reply-To: <d9a4b75d-81bb-28ea-4bee-293f19637c05@tin.it>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,266 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "richard@nod.at" <richard@nod.at>, "Schild, Henning" <henning.schild@siemens.com>
 
-Remaning shellcheck warnings:
-- "SC2086: Double quote to prevent globbing and word splitting."
-   line 120, 153, 289 (variables STAGE_2_OPT and NETMASK_OPT)
-   Suggested fix not applicable because these variables can be empty,
-   resulting in command failure due to "" in command line
-- "SC2153: Possible misspelling: STAGE_2_DST may not be assigned, but 
-STAGE_2_OPT is."
-   line 296. STAGE_2_DST comes from included RTNETCFG file
-
-Signed-off-by: Mauro Salvini <mau.salvi@tin.it>
----
-  utils/net/rtnet.in | 86 +++++++++++++++++++++++-----------------------
-  1 file changed, 43 insertions(+), 43 deletions(-)
-
-diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
-index f81a7bb0a..cd24017b4 100644
---- a/utils/net/rtnet.in
-+++ b/utils/net/rtnet.in
-@@ -9,7 +9,7 @@ RTNETCFG="@sysconfdir@/rtnet.conf"
-
-  debug_func() {
-      echo "$*"
--    eval $*
-+    eval "$@"
-  }
-
-  usage() {
-@@ -33,35 +33,35 @@ EOF
-  init_rtnet() {
-      modprobe rtnet >/dev/null || exit 1
-      modprobe rtipv4 >/dev/null || exit 1
--    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-+    modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
-
-      for dev in $REBIND_RT_NICS; do
--	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
--	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
-+	if [ -d /sys/bus/pci/devices/"$dev"/driver ]; then
-+	    echo "$dev" > /sys/bus/pci/devices/"$dev"/driver/unbind
-  	fi
--	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
-+	echo "$dev" > /sys/bus/pci/drivers/"$RT_DRIVER"/bind
-      done
-
-      for PROTOCOL in $RT_PROTOCOLS; do
--	modprobe rt$PROTOCOL >/dev/null || exit 1
-+	modprobe rt"$PROTOCOL" >/dev/null || exit 1
-      done
-
--    if [ $RT_LOOPBACK = "yes" ]; then
-+    if [ "$RT_LOOPBACK" = "yes" ]; then
-  	modprobe rt_loopback >/dev/null || exit 1
-      fi
-
--    if [ $RTCAP = "yes" ]; then
-+    if [ "$RTCAP" = "yes" ]; then
-  	modprobe rtcap >/dev/null || exit 1
-      fi
-
--    if [ $RT_LOOPBACK = "yes" ]; then
-+    if [ "$RT_LOOPBACK" = "yes" ]; then
-  	$RTIFCONFIG rtlo up 127.0.0.1
-      fi
-
--    if [ $RTCAP = "yes" ]; then
-+    if [ "$RTCAP" = "yes" ]; then
-  	ifconfig rteth0 up
-  	ifconfig rteth0-mac up
--	if [ $RT_LOOPBACK = "yes" ]; then
-+	if [ "$RT_LOOPBACK" = "yes" ]; then
-  	    ifconfig rtlo up
-  	fi
-      fi
-@@ -74,9 +74,9 @@ init_rtnet() {
-  submit_cfg() {
-      case "$STATION_TYPE" in
-  	master)
--	    $RTIFCONFIG rteth0 up $STATION_IP
-+	    $RTIFCONFIG rteth0 up "$STATION_IP"
-
--	    $TDMACFG rteth0 master $TDMA_CYCLE
-+	    $TDMACFG rteth0 master "$TDMA_CYCLE"
-  	    eval "$TDMA_SLOTS"
-
-  	    IPADDR=$STATION_IP
-@@ -96,7 +96,7 @@ submit_cfg() {
-  	    ADD_STAGE1_CMDS="ifconfig vnic0 up $STATION_IP"
-
-  	    echo "$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
--		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 -
-+		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 -
-  	    ;;
-  	backup-master)
-  	    if [ ! "$STATION_IP" = "" ]; then
-@@ -117,7 +117,7 @@ submit_cfg() {
-  	    fi
-
-  	    echo "\$TDMACFG rteth0 detach;\$TDMACFG rteth0 master $TDMA_CYCLE 
--b $TDMA_BACKUP_OFFS;$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
--		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 - $STAGE_2_OPT
-+		$RTCFG rteth0 add "$RTCFG_CLIENT" -stage1 - $STAGE_2_OPT
-  	    ;;
-      esac
-
-@@ -142,16 +142,16 @@ start_master() {
-  	#   Sync / Master Slot / + TDMA_OFFSET us / Slave 1 /
-  	#   + TDMA_OFFSET us / Slave 2 / + TDMA_OFFSET us / ... / Slave n
-
--	$RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
-+	$RTIFCONFIG rteth0 up "$IPADDR" $NETMASK_OPT
-
--	$TDMACFG rteth0 master $TDMA_CYCLE
-+	$TDMACFG rteth0 master "$TDMA_CYCLE"
-  	$TDMACFG rteth0 slot 0 0
-
-  	OFFSET=$TDMA_OFFSET
-  	for SLAVE in $TDMA_SLAVES; do
-  	    echo "\$TDMACFG rteth0 slot 0 $OFFSET;ifconfig vnic0 up \$IPADDR 
-\$NETMASK_OPT" | \
--		$RTCFG rteth0 add $SLAVE -stage1 - $STAGE_2_OPT
--	    OFFSET=$(($OFFSET+$TDMA_OFFSET))
-+		$RTCFG rteth0 add "$SLAVE" -stage1 - $STAGE_2_OPT
-+	    OFFSET=$((OFFSET+TDMA_OFFSET))
-  	done
-      else
-  	# Get setup from TDMA_CONFIG file:
-@@ -185,12 +185,12 @@ start_master() {
-  	# slot ...
-  	#
-
--	if [ ! -r $TDMA_CONFIG ]; then
-+	if [ ! -r "$TDMA_CONFIG" ]; then
-  	    echo "Could not read $TDMA_CONFIG"
-  	    exit 1
-  	fi
-
--	while read ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
-+	while read -r ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
-  	    case "$ARG1" in
-  		"master:")
-  		    submit_cfg
-@@ -217,7 +217,7 @@ start_master() {
-  		    STATION_MAC="$ARG2"
-  		    ;;
-  		"stage2")
--		    STATION_STAGE_2="$ARG2"
-+		    STATION_STAGE_2_SRC="$ARG2"
-  		    ;;
-  		"slot")
-  		    TDMA_SLOTS="$TDMA_SLOTS\$TDMACFG rteth0 slot $ARG2 $ARG3"
-@@ -233,16 +233,16 @@ start_master() {
-  		    TDMA_SLOTS="$TDMA_SLOTS;"
-  		    ;;
-  	    esac
--	done < $TDMA_CONFIG
-+	done < "$TDMA_CONFIG"
-  	submit_cfg
-      fi
-
--    ifconfig vnic0 up $IPADDR $NETMASK_OPT
-+    ifconfig vnic0 up "$IPADDR" $NETMASK_OPT
-
--    echo -n "Waiting for all slaves..."
-+    printf "Waiting for all slaves..."
-      $RTCFG rteth0 wait
-      $RTCFG rteth0 ready
--    echo
-+    printf "\n"
-  }
-
-
-@@ -251,8 +251,8 @@ if [ "$1" = "-cf" ]; then
-      shift 2
-  fi
-
--if [ -r $RTNETCFG ]; then
--    . $RTNETCFG
-+if [ -r "$RTNETCFG" ]; then
-+    . "$RTNETCFG"
-  else
-      echo "Could not read $RTNETCFG"
-      exit 1
-@@ -281,30 +281,30 @@ case "$1" in
-      start)
-  	init_rtnet
-
--	if [ $TDMA_MODE = "master" ]; then
-+	if [ "$TDMA_MODE" = "master" ]; then
-  	    start_master
-  	else
-  	    $TDMACFG rteth0 slave
-
--	    $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
-+	    $RTIFCONFIG rteth0 up "$IPADDR" $NETMASK_OPT
-
--	    echo -n "Stage 1: searching for master..."
--	    eval "`$RTCFG rteth0 client -c`"
--	    echo
-+	    printf "Stage 1: searching for master..."
-+	    eval "$($RTCFG rteth0 client -c)"
-+	    printf "\n"
-
--	    echo -n "Stage 2: waiting for other slaves..."
-+	    printf "Stage 2: waiting for other slaves..."
-  	    if [ ! "$STAGE_2_DST" = "" ]; then
--		$RTCFG rteth0 announce -f $STAGE_2_DST
--		echo
-+		$RTCFG rteth0 announce -f "$STAGE_2_DST"
-+		printf "\n"
-  		eval "$STAGE_2_CMDS"
-  	    else
-  		$RTCFG rteth0 announce
--		echo
-+		printf "\n"
-  	    fi
-
--	    echo -n "Stage 3: waiting for common setup completion..."
-+	    printf "Stage 3: waiting for common setup completion..."
-  	    $RTCFG rteth0 ready
--	    echo
-+	    printf "\n"
-  	fi
-  	;;
-
-@@ -317,10 +317,10 @@ case "$1" in
-  	$RTIFCONFIG rteth0 down 2>/dev/null
-  	$RTIFCONFIG rtlo down 2>/dev/null
-
--	rmmod tdma rtmac rtcfg rtcap rt_loopback $RT_DRIVER rtpacket rtudp 
-rttcp rtipv4 rtnet 2>/dev/null
-+	rmmod tdma rtmac rtcfg rtcap rt_loopback "$RT_DRIVER" rtpacket rtudp 
-rttcp rtipv4 rtnet 2>/dev/null
-
-  	for dev in $REBIND_RT_NICS; do
--	    echo 1 > /sys/bus/pci/devices/$dev/remove
-+	    echo 1 > /sys/bus/pci/devices/"$dev"/remove
-  	done
-  	if [ ! "$REBIND_RT_NICS" = "" ]; then
-  	    sleep 1
-@@ -337,7 +337,7 @@ case "$1" in
-
-      capture)
-  	modprobe rtnet >/dev/null || exit 1
--	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-+	modprobe "$RT_DRIVER" "$RT_DRIVER_OPTIONS" >/dev/null || exit 1
-  	modprobe rtcap >/dev/null || exit 1
-  	$RTIFCONFIG rteth0 up promisc
-  	ifconfig rteth0 up
-@@ -349,7 +349,7 @@ case "$1" in
-  	modprobe rtipv4 >/dev/null || exit 1
-
-  	for PROTOCOL in $RT_PROTOCOLS; do
--	    modprobe rt$PROTOCOL >/dev/null || exit 1
-+	    modprobe rt"$PROTOCOL" >/dev/null || exit 1
-  	done
-
-  	modprobe rt_loopback >/dev/null || exit 1
--- 
-2.17.1
-
+T24gVHVlLCAyMDIyLTA1LTAzIGF0IDEwOjQxICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
+ZW5vbWFpIHdyb3RlOg0KPiBIaSBhbGwsDQo+IA0KPiBpdCBzZWVtcyB0aGF0IEknbSBhYmxlIHRv
+IHJlcHJvZHVjZSBhIHJlZ2lzdGVyIChvciBzdGFjaykgY29ycnVwdGlvbiBvbg0KPiB4ODYuDQo+
+IA0KPiBUaGUgcHJvYmxlbSBkb2VzIG5vdCBhcHBlYXIgd2hlbiBydW5uaW5nIHRoZSBYZW5vbWFp
+IHRlc3RzdWl0ZQ0KPiAoZXNwZWNpYWxseSBzd2l0Y2h0ZXN0KSB3aXRob3V0IGFueSBhZGRpdGlv
+bmFsIGxvYWQuIFN0cmVzc2luZyBMaW51eA0KPiB3aXRoIHN0cmVzcy1uZyBtYWtlcyB0aGUgdGVz
+dCBmYWlsLg0KPiANCj4gS2VybmVsOiA0LjE5LjIzMS1jaXA2OA0KPiBYZW5vbWFpOiAzLjIuMQ0K
+PiBIYXJkd2FyZToNCj4gIC0gSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY0MCB2MyBAIDIuNjBH
+SHoNCj4gIC0gMzIgY29yZXMNCj4gc3RyZXNzLW5nIGNtZGxpbmU6DQo+ICBzdHJlc3MtbmcgLS1j
+cHUgMTYgLS1pbyA4IC0tdm0gNCAtLXZtLWJ5dGVzIDEyOE0gLS1mb3JrIDgNCj4gDQoNCkhlcmUg
+aXMgdGhlIHJlc3VsdCBvZiBteSBhbmFseXNpcyBzbyBmYXIuIEknbSBxdWl0ZSBzdXJlIEkgZmln
+dXJlZCBpdA0Kb3V0LCBidXQgbGV0J3Mgc2VlIGlmIHlvdSBhbGwgYWdyZWUuIFNlZW1zIEknbSBm
+YWNpbmcgYSB0ZXN0IGlzc3VlLCBzbw0KbGV0J3Mgc3RhcnQgd2l0aCB0aGUgdGVzdDoNCg0KSW4g
+cnRzd2l0Y2hfa3Rhc2soKSB3ZSdyZSBjYWxsaW5nIGZwX3JlZ3Nfc2V0KCkgd2hpY2ggaG9sZHM6
+DQoNCglmb3IgKGkgPSAwOyBpIDwgODsgaSsrKQ0KCQlfX2FzbV9fIF9fdm9sYXRpbGVfXygiZmls
+ZGwgJTAiOiAvKiBubyBvdXRwdXQgKi8gOiJtIih2YWwpKTsNCg0KV2UncmUgdHJ5aW5nIHRvIGZp
+bGwgdGhlIGNvbXBsZXRlIEZQVSBzdGFjay4gQnV0OiBJcyB0aGVyZSBhbnkNCmd1YXJhbnRlZSB0
+aGF0IHdlIHdpbGwgc3VjY2VlZD8gVGhlcmUgaXMgbm8gImZuaW5pdCIgaW4gZnJvbnQsIHNvIHdl
+DQptaWdodCBnZXQgYW4gZGlydHkgRlBVIHN0YXRlLg0KDQpJIG1vZGlmaWVkIHRoZSBmcHUgdHJh
+Y2UgaW5mcmFzdHJ1Y3R1cmUgdG8gc2hvdyB0aGUgeDg3IHN0YXR1cyB3b3JkIGFuZA0KZ290Og0K
+DQogICAgICAgICBydGs1LzE1LTIwOTg3NSBbMDE1XSAgODEuMDM4MTM3OiB4ODZfZnB1X2luaXRf
+c3RhdGU6ICAgICB4ODYvZnB1OiAweGZmZmY5MzY4OTY1ZWNmMDAgaW5pdGlhbGl6ZWQ6IDAgeGZl
+YXR1cmVzOiAwIHhjb21wX2J2OiAwIHN3ZCgwKQ0KICAgICAgICAgcnRrNS8xNS0yMDk4NzUgWzAx
+NV0gIDgxLjAzODEzNzogeDg2X2ZwdV9hY3RpdmF0ZV9zdGF0ZTogeDg2L2ZwdTogMHhmZmZmOTM2
+ODk2NWVjZjAwIGluaXRpYWxpemVkOiAwIHhmZWF0dXJlczogMCB4Y29tcF9idjogMCBzd2QoMCkg
+DQogICAgICAgICBydGs1LzE1LTIwOTg3NSBbMDE1XSAgODEuMDM4MTQzOiB4ODZfZnB1X3hzYXZl
+OiAgICAgICAgICB4ODYvZnB1OiAweGZmZmY5MzY4OTY1ZWNmMDAgaW5pdGlhbGl6ZWQ6IDEgeGZl
+YXR1cmVzOiAzIHhjb21wX2J2OiAwIHN3ZCgweDE5MjkpDQoNClNvIHRoZSBmaXJzdCBGUFUgc3Rh
+dGUgd3JpdHRlbiBpbnRvIHRoZSB4c2F2ZSBtZW1vcnkgaGFzIFRPUCAodG9wIG9mDQpzdGFjayBw
+b2ludGVyKSBhbHJlYWR5IHNldCB0byAzIChiaXRzIDExLTEzIG9mIDB4MTkyOSkuDQoNCldoZW4g
+ZHVtcGluZyB0aGUgRlBVIFNUIHJlZ2lzdGVycyBhZnRlciBjYWxsaW5nIGZwX3JlZ3Nfc2V0KCkg
+cmlnaHQNCmJlZm9yZSB0aGUgInJlZ2lzdGVyIGNvcnJ1cHRpb24gZGV0ZWN0aW9uIiBJIGNhbiBz
+ZWUgdGhhdCAzIGZpbGRsDQpvcGVyYXRpb25zIHdlcmUgc3VjY2Vzc2Z1bCBhbmQgYW4gdXBkYXRl
+ZCBzdGF0dXMgd29yZCBvZiAweDE5NjkuDQoNCjB4MTk2OSBtZWFucyB0aGF0IHRoZSBDMSBhbmQg
+U0YgKFN0YWNrIEZhdWx0KSBiaXRzIGFyZSBzZXQgbm93LiBUaGlzDQpjb21iaW5hdGlvbiAoYWNj
+b3JkaW5nIHRvIEludGVsIERldmVsb3BlciBNYW51YWwpIG1lYW5zIHRoYXQgYSBzdGFjaw0Kb3Zl
+cmZsb3cgaGFwcGVuZWQuDQoNCkFkZGluZyBhICJmbmluaXQiIGluc3RydWN0aW9uIHRvIHRoZSB0
+ZXN0IGJlZm9yZSBzdGFydGluZyB0byBmaWxsIHRoZQ0KRlBVIHN0YWNrIGZpeGVzIG15IGlzc3Vl
+LiBObyBtb3JlIGNvcnJ1cHRpb25zIGRldGVjdGVkIG9uIG15IG1hY2hpbmUuDQoNCkRvZXMgdGhh
+dCBtYWtlIHNlbnNlIHRvIHlvdT8NCg0KQnR3OiBNb3N0IG9mIHRoZSBGUFUgdGVzdHMgYXJlIGN1
+cnJlbnRseSBkaXNhYmxlZCBvbiB4ODYgd2hlbiBvbmUgb2YNCnRoZSBmb2xsb3dpbmcgY29uZmln
+IG9wdGlvbnMgaXMgc2V0LiBJbiBteSBleWVzIHRoaXMgZG9lc24ndCBtYWtlIHNlbnNlDQphbmQg
+SSB3b3VsZCBjb21lIHVwIHdpdGggYSBwYXRjaCB0aGF0IHJlbW92ZXMgdGhpcyBsaW1pdGF0aW9u
+LiBUaGUNCm9wdGlvbnM6DQogLSBDT05GSUdfWDg2X1VTRV8zRE5PVw0KIC0gQ09ORklHX01EX1JB
+SUQ0NTYNCiAtIENPTkZJR19NRF9SQUlENDU2X01PRFVMRQ0KDQpSZWdhcmRzLA0KRmxvcmlhbg0K
+DQoNCg0K
 
