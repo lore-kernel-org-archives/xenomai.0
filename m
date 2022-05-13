@@ -1,14 +1,15 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: Register (or stack) corruption: Xenomai 3.2.1 on 4.19-ipipe
-Date: Thu, 12 May 2022 16:15:20 +0000
-Message-ID: <cecfd41b524f5438ff0f07163c73eefdc37aa0c5.camel@siemens.com>
-References: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
-In-Reply-To: <bcf08a98ba01d7718b85c698df6b8d2d9927259d.camel@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CF4C46926930C542B015D6DDA3381B7F@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Message-ID: <8adc7d89-e853-688f-aaca-2214d126581c@tin.it>
+Date: Fri, 13 May 2022 14:51:55 +0200
 MIME-Version: 1.0
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: Re: RTNet: sendto(): EAGAIN error
+References: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
+ <cf925dbe-afe8-470b-5130-16d062c890c9@siemens.com>
+ <f50fa498-d958-6d08-7404-cf127104fd84@tin.it>
+Content-Language: it-IT
+In-Reply-To: <f50fa498-d958-6d08-7404-cf127104fd84@tin.it>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +18,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "richard@nod.at" <richard@nod.at>, "Schild, Henning" <henning.schild@siemens.com>
+To: xenomai@xenomai.org
 
-T24gVHVlLCAyMDIyLTA1LTAzIGF0IDEwOjQxICswMDAwLCBCZXpkZWthLCBGbG9yaWFuIHZpYSBY
-ZW5vbWFpIHdyb3RlOg0KPiBIaSBhbGwsDQo+IA0KPiBpdCBzZWVtcyB0aGF0IEknbSBhYmxlIHRv
-IHJlcHJvZHVjZSBhIHJlZ2lzdGVyIChvciBzdGFjaykgY29ycnVwdGlvbiBvbg0KPiB4ODYuDQo+
-IA0KPiBUaGUgcHJvYmxlbSBkb2VzIG5vdCBhcHBlYXIgd2hlbiBydW5uaW5nIHRoZSBYZW5vbWFp
-IHRlc3RzdWl0ZQ0KPiAoZXNwZWNpYWxseSBzd2l0Y2h0ZXN0KSB3aXRob3V0IGFueSBhZGRpdGlv
-bmFsIGxvYWQuIFN0cmVzc2luZyBMaW51eA0KPiB3aXRoIHN0cmVzcy1uZyBtYWtlcyB0aGUgdGVz
-dCBmYWlsLg0KPiANCj4gS2VybmVsOiA0LjE5LjIzMS1jaXA2OA0KPiBYZW5vbWFpOiAzLjIuMQ0K
-PiBIYXJkd2FyZToNCj4gIC0gSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY0MCB2MyBAIDIuNjBH
-SHoNCj4gIC0gMzIgY29yZXMNCj4gc3RyZXNzLW5nIGNtZGxpbmU6DQo+ICBzdHJlc3MtbmcgLS1j
-cHUgMTYgLS1pbyA4IC0tdm0gNCAtLXZtLWJ5dGVzIDEyOE0gLS1mb3JrIDgNCj4gDQoNCkhlcmUg
-aXMgdGhlIHJlc3VsdCBvZiBteSBhbmFseXNpcyBzbyBmYXIuIEknbSBxdWl0ZSBzdXJlIEkgZmln
-dXJlZCBpdA0Kb3V0LCBidXQgbGV0J3Mgc2VlIGlmIHlvdSBhbGwgYWdyZWUuIFNlZW1zIEknbSBm
-YWNpbmcgYSB0ZXN0IGlzc3VlLCBzbw0KbGV0J3Mgc3RhcnQgd2l0aCB0aGUgdGVzdDoNCg0KSW4g
-cnRzd2l0Y2hfa3Rhc2soKSB3ZSdyZSBjYWxsaW5nIGZwX3JlZ3Nfc2V0KCkgd2hpY2ggaG9sZHM6
-DQoNCglmb3IgKGkgPSAwOyBpIDwgODsgaSsrKQ0KCQlfX2FzbV9fIF9fdm9sYXRpbGVfXygiZmls
-ZGwgJTAiOiAvKiBubyBvdXRwdXQgKi8gOiJtIih2YWwpKTsNCg0KV2UncmUgdHJ5aW5nIHRvIGZp
-bGwgdGhlIGNvbXBsZXRlIEZQVSBzdGFjay4gQnV0OiBJcyB0aGVyZSBhbnkNCmd1YXJhbnRlZSB0
-aGF0IHdlIHdpbGwgc3VjY2VlZD8gVGhlcmUgaXMgbm8gImZuaW5pdCIgaW4gZnJvbnQsIHNvIHdl
-DQptaWdodCBnZXQgYW4gZGlydHkgRlBVIHN0YXRlLg0KDQpJIG1vZGlmaWVkIHRoZSBmcHUgdHJh
-Y2UgaW5mcmFzdHJ1Y3R1cmUgdG8gc2hvdyB0aGUgeDg3IHN0YXR1cyB3b3JkIGFuZA0KZ290Og0K
-DQogICAgICAgICBydGs1LzE1LTIwOTg3NSBbMDE1XSAgODEuMDM4MTM3OiB4ODZfZnB1X2luaXRf
-c3RhdGU6ICAgICB4ODYvZnB1OiAweGZmZmY5MzY4OTY1ZWNmMDAgaW5pdGlhbGl6ZWQ6IDAgeGZl
-YXR1cmVzOiAwIHhjb21wX2J2OiAwIHN3ZCgwKQ0KICAgICAgICAgcnRrNS8xNS0yMDk4NzUgWzAx
-NV0gIDgxLjAzODEzNzogeDg2X2ZwdV9hY3RpdmF0ZV9zdGF0ZTogeDg2L2ZwdTogMHhmZmZmOTM2
-ODk2NWVjZjAwIGluaXRpYWxpemVkOiAwIHhmZWF0dXJlczogMCB4Y29tcF9idjogMCBzd2QoMCkg
-DQogICAgICAgICBydGs1LzE1LTIwOTg3NSBbMDE1XSAgODEuMDM4MTQzOiB4ODZfZnB1X3hzYXZl
-OiAgICAgICAgICB4ODYvZnB1OiAweGZmZmY5MzY4OTY1ZWNmMDAgaW5pdGlhbGl6ZWQ6IDEgeGZl
-YXR1cmVzOiAzIHhjb21wX2J2OiAwIHN3ZCgweDE5MjkpDQoNClNvIHRoZSBmaXJzdCBGUFUgc3Rh
-dGUgd3JpdHRlbiBpbnRvIHRoZSB4c2F2ZSBtZW1vcnkgaGFzIFRPUCAodG9wIG9mDQpzdGFjayBw
-b2ludGVyKSBhbHJlYWR5IHNldCB0byAzIChiaXRzIDExLTEzIG9mIDB4MTkyOSkuDQoNCldoZW4g
-ZHVtcGluZyB0aGUgRlBVIFNUIHJlZ2lzdGVycyBhZnRlciBjYWxsaW5nIGZwX3JlZ3Nfc2V0KCkg
-cmlnaHQNCmJlZm9yZSB0aGUgInJlZ2lzdGVyIGNvcnJ1cHRpb24gZGV0ZWN0aW9uIiBJIGNhbiBz
-ZWUgdGhhdCAzIGZpbGRsDQpvcGVyYXRpb25zIHdlcmUgc3VjY2Vzc2Z1bCBhbmQgYW4gdXBkYXRl
-ZCBzdGF0dXMgd29yZCBvZiAweDE5NjkuDQoNCjB4MTk2OSBtZWFucyB0aGF0IHRoZSBDMSBhbmQg
-U0YgKFN0YWNrIEZhdWx0KSBiaXRzIGFyZSBzZXQgbm93LiBUaGlzDQpjb21iaW5hdGlvbiAoYWNj
-b3JkaW5nIHRvIEludGVsIERldmVsb3BlciBNYW51YWwpIG1lYW5zIHRoYXQgYSBzdGFjaw0Kb3Zl
-cmZsb3cgaGFwcGVuZWQuDQoNCkFkZGluZyBhICJmbmluaXQiIGluc3RydWN0aW9uIHRvIHRoZSB0
-ZXN0IGJlZm9yZSBzdGFydGluZyB0byBmaWxsIHRoZQ0KRlBVIHN0YWNrIGZpeGVzIG15IGlzc3Vl
-LiBObyBtb3JlIGNvcnJ1cHRpb25zIGRldGVjdGVkIG9uIG15IG1hY2hpbmUuDQoNCkRvZXMgdGhh
-dCBtYWtlIHNlbnNlIHRvIHlvdT8NCg0KQnR3OiBNb3N0IG9mIHRoZSBGUFUgdGVzdHMgYXJlIGN1
-cnJlbnRseSBkaXNhYmxlZCBvbiB4ODYgd2hlbiBvbmUgb2YNCnRoZSBmb2xsb3dpbmcgY29uZmln
-IG9wdGlvbnMgaXMgc2V0LiBJbiBteSBleWVzIHRoaXMgZG9lc24ndCBtYWtlIHNlbnNlDQphbmQg
-SSB3b3VsZCBjb21lIHVwIHdpdGggYSBwYXRjaCB0aGF0IHJlbW92ZXMgdGhpcyBsaW1pdGF0aW9u
-LiBUaGUNCm9wdGlvbnM6DQogLSBDT05GSUdfWDg2X1VTRV8zRE5PVw0KIC0gQ09ORklHX01EX1JB
-SUQ0NTYNCiAtIENPTkZJR19NRF9SQUlENDU2X01PRFVMRQ0KDQpSZWdhcmRzLA0KRmxvcmlhbg0K
-DQoNCg0K
+Il 05/05/22 17:04, Mauro S. via Xenomai ha scritto:
+> Il 05/05/22 15:05, Jan Kiszka ha scritto:
+>> On 03.05.22 17:18, Mauro S. via Xenomai wrote:
+>>> Hi all,
+>>>
+>>> I'm trying to use RTNet with TDMA.
+>>>
+>>> I succesfully set up my bus:
+>>>
+>>> - 1GBps speed
+>>> - 3 devices
+>>> - cycle time 1ms
+>>> - timeslots with 200us offset
+>>>
+>>> I wrote a simple application that in parallel receives and sends UDP
+>>> packets on TDMA bus.
+>>>
+>>> - sendto() is done to the broadcast address, port 1111
+>>> - recvfrom() is done on the port 1111
+>>>
+>>> Application sends a small packet (5 bytes) in a periodic task with 1ms
+>>> period and prio 51. Receive is done in a non-periodic task with prio 50.
+>>>
+>>> Application is running on all the three devices, and I can see packets
+>>> are sent and received correctly by all the devices.
+>>>
+>>> But after a while, all send() calls on all devices fails with error 
+>>> EAGAIN.
+>>>
+>>> Could this error be related to some internal buffer/queue that becomes
+>>> full? Or am I missing something?
+>>
+>> When you get EAGAIN on sender side, cleanup of TX buffers likely failed,
+>> and the socket ran out of buffers to send further frames. That may be
+>> related to TX IRQs not making it. Check the TX IRQ counter on the
+>> sender, if it increases at the same pace as you send packets.
+>>
+>> Jan
+>>
+> 
+> Thanks Jan for your fast answer.
+> 
+> I forgot to mention that I'm using the rt_igb driver.
+> 
+> I have only one IRQ field in /proc/xenomai/irq, counting both TX and RX
+> 
+>   cat /proc/xenomai/irq | grep rteth0
+>    125:         0           0     2312152         0       rteth0-TxRx-0
+> 
+> I did this test:
+> 
+> * on the master I send a packet every 1ms in a periodic RT task (period 
+> 1ms, prio 51) with my test app.
+> 
+> * on the master I see an increment of about 2000 IRQs per second: I 
+> guess 1000 are for my sent packets (1 packet every ms), and 1000 for the 
+> TDMA sync packet. In fact I see the "rtifconfig" RX counter almost 
+> stationary (only 8 packets every 2-3 seconds, refresh requests from 
+> slaves?), TX counter incrementing in about 2000 packets per second.
+> 
+> * on the two slaves (thet are running nothing) I observe the same rate 
+> (about 2000 IRQs per second). I see the "rtifconfig" TX counter almost 
+> stationary (only 4 packets every 2-3 seconds), RX counter incrementing 
+> in about 2000 packets per second.
+> 
+> * if I stop sending packets with my app, I can see all the rates at 
+> about 1000 per second
+> 
+> If I start send-receive on all the three devices, I can see a IRQ rate 
+> around 4000 IRQs per second on all devices (1000 sync, 1000 send and 
+> 1000 + 1000 receive).
+> 
+> I observed that if I only send from master and receive on slaves the 
+> problem does not appear. Or if I send/receive from all, but with a 
+> packet every 2ms, the problem does not appear.
+> 
+> Could be a CPU performance problem (4k IRQs per second are too much for 
+> an Intel Atom x5-E8000 CPU @ 1.04GHz)?
+> 
+> 
+> Thanks in advance, regards
+> 
+
+Hi all,
+
+I did further tests.
+
+First of all I modified my code to wait the TDMA sync event before do a 
+send. I'm doing it with RTMAC_RTIOC_WAITONCYCLE ioctl (the .h file that 
+defines it is not exported in userland, I need to copy 
+kernel/drivers/net/stack/include/rtmac.h file in my project dir to 
+include it).
+
+I send one broadcast packet each TDMA cycle (1ms) from each device 
+(total 3 devices), and each device also receive the packets from the 
+other two (I use two different sockets to send and receive).
+
+The first problem that I detected is that the EAGAIN error happens 
+anyway (only with less frequency): I expected to have this error 
+disappearing, since I send one packet synced with TDMA cycle time, then 
+the rtskbs queue should remain empty (or at most with a single packet 
+queued). I tried to change the cycle time (2ms, then 4ms) but the 
+problem remains.
+
+The only mode that seems to don't have EAGAIN error (or at least have it 
+really less frequently) is to send the packet every two TDMA cycles,
+independently of the cycle duration (1ms, 2ms, 4ms...).
+
+Am I missing something?
+
+Are there any benchmarks/use cases using TDMA in this manner?
+
+The second problem that happened to me is that sometimes one slave 
+stopped to send/receive packets.
+Send is blocked in RTMAC_RTIOC_WAITONCYCLE, recv does receive nothing. 
+When the lock happens, rtifconfig shows dropped and overruns counters 
+incrementing with the TDMA cycle rate (e.g. 250 for 4ms cycle): seems 
+that the RX queue is completely locked. Dmesg does not show errors and 
+/proc/xenomai/irq shows that IRQ counter is still (1 irq each 2-3 
+seconds). A "rtnet stop && rtnet start" recovers from this situation.
+The strangeness is that the problematic device is always the same.
+Trying a different switch the problem disappears. Could be a problem 
+caused by some switch buffering?
+
+
+Thanks in advance, regards
+
+-- 
+Mauro S.
 
