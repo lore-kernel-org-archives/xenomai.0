@@ -1,10 +1,14 @@
-From: jamienstar@163.com
-Subject: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
-Date: Mon, 16 May 2022 23:32:42 +0800
-Message-Id: <20220516153242.12622-1-jamienstar@163.com>
-MIME-Version: 1.0
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
+Date: Mon, 16 May 2022 15:59:45 +0000
+Message-ID: <04bc2dc30b2195aeaa3a6e16c175fc8906640251.camel@siemens.com>
+References: <20220516153242.12622-1-jamienstar@163.com>
+In-Reply-To: <20220516153242.12622-1-jamienstar@163.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-ID: <3B54CC90059F6A4F939CBC0C9A2840B2@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,40 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org
-Cc: jamienstar@163.com, xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "jamienstar@163.com" <jamienstar@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jamie <jamienstar@163.com>
-
-In v5.18-evl-rebase, function kernel_fpu_disabled() has been removed in
-commit 59f5ede3bc0f("x86/fpu: Prevent FPU state corruption"), so we will
-get compile error when CONFIG_DOVETAIL is enabled:
-arch/x86/kernel/fpu/core.c:931:6: error: implicit declaration of function ‘kernel_fpu_disabled’; did you mean ‘perf_pmu_disable’? [-Werror=implicit-function-declaration]
-  if (kernel_fpu_disabled()) {
-      ^~~~~~~~~~~~~~~~~~~
-      perf_pmu_disable
-cc1: all warnings being treated as errors
-So, fix it.
-
-Signed-off-by: Jamie <jamienstar@163.com>
----
- arch/x86/kernel/fpu/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index 6a0d1e7f278f..c3adbbb73226 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -928,7 +928,7 @@ void fpu__suspend_inband(void)
- 	 * preemption of an inband kernel context currently using the
- 	 * fpu by a thread which resumes on the oob stage.
- 	 */
--	if (kernel_fpu_disabled()) {
-+	if (this_cpu_read(in_kernel_fpu)) {
- 		save_fpregs_to_fpstate(kfpu);
- 		__cpu_invalidate_fpregs_state();
- 		oob_fpu_set_preempt(&tsk->thread.fpu);
--- 
-2.17.1
-
+T24gTW9uLCAyMDIyLTA1LTE2IGF0IDIzOjMyICswODAwLCBKYW1pZSBIdWFuZyB2aWEgWGVub21h
+aSB3cm90ZToNCj4gRnJvbTogSmFtaWUgPGphbWllbnN0YXJAMTYzLmNvbT4NCg0KSXQncyB1cCB0
+byBKYW4gYnV0IEkgZ3Vlc3MgYSBjb21wbGV0ZSBuYW1lIHdvdWxkIGJlIG5pY2UgaGVyZS4gU2Ft
+ZQ0KZm9yZSB0aGUgU2lnbmVkLW9mZi1ieSBiZWxvdy4NCg0KPiANCj4gSW4gdjUuMTgtZXZsLXJl
+YmFzZSwgZnVuY3Rpb24ga2VybmVsX2ZwdV9kaXNhYmxlZCgpIGhhcyBiZWVuIHJlbW92ZWQgaW4N
+Cj4gY29tbWl0IDU5ZjVlZGUzYmMwZigieDg2L2ZwdTogUHJldmVudCBGUFUgc3RhdGUgY29ycnVw
+dGlvbiIpLCBzbyB3ZSB3aWxsDQo+IGdldCBjb21waWxlIGVycm9yIHdoZW4gQ09ORklHX0RPVkVU
+QUlMIGlzIGVuYWJsZWQ6DQo+IGFyY2gveDg2L2tlcm5lbC9mcHUvY29yZS5jOjkzMTo2OiBlcnJv
+cjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24g4oCYa2VybmVsX2ZwdV9kaXNhYmxl
+ZOKAmTsgZGlkIHlvdSBtZWFuIOKAmHBlcmZfcG11X2Rpc2FibGXigJk/IFstV2Vycm9yPWltcGxp
+Y2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQ0KPiAgIGlmIChrZXJuZWxfZnB1X2Rpc2FibGVkKCkp
+IHsNCj4gICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fg0KPiAgICAgICBwZXJmX3BtdV9kaXNhYmxl
+DQo+IGNjMTogYWxsIHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQgYXMgZXJyb3JzDQo+IFNvLCBmaXgg
+aXQuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBKYW1pZSA8amFtaWVuc3RhckAxNjMuY29tPg0KPiAt
+LS0NCj4gIGFyY2gveDg2L2tlcm5lbC9mcHUvY29yZS5jIHwgMiArLQ0KPiAgMSBmaWxlIGNoYW5n
+ZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJj
+aC94ODYva2VybmVsL2ZwdS9jb3JlLmMgYi9hcmNoL3g4Ni9rZXJuZWwvZnB1L2NvcmUuYw0KPiBp
+bmRleCA2YTBkMWU3ZjI3OGYuLmMzYWRiYmI3MzIyNiAxMDA2NDQNCj4gLS0tIGEvYXJjaC94ODYv
+a2VybmVsL2ZwdS9jb3JlLmMNCj4gKysrIGIvYXJjaC94ODYva2VybmVsL2ZwdS9jb3JlLmMNCj4g
+QEAgLTkyOCw3ICs5MjgsNyBAQCB2b2lkIGZwdV9fc3VzcGVuZF9pbmJhbmQodm9pZCkNCj4gIAkg
+KiBwcmVlbXB0aW9uIG9mIGFuIGluYmFuZCBrZXJuZWwgY29udGV4dCBjdXJyZW50bHkgdXNpbmcg
+dGhlDQo+ICAJICogZnB1IGJ5IGEgdGhyZWFkIHdoaWNoIHJlc3VtZXMgb24gdGhlIG9vYiBzdGFn
+ZS4NCj4gIAkgKi8NCj4gLQlpZiAoa2VybmVsX2ZwdV9kaXNhYmxlZCgpKSB7DQo+ICsJaWYgKHRo
+aXNfY3B1X3JlYWQoaW5fa2VybmVsX2ZwdSkpIHsNCj4gIAkJc2F2ZV9mcHJlZ3NfdG9fZnBzdGF0
+ZShrZnB1KTsNCj4gIAkJX19jcHVfaW52YWxpZGF0ZV9mcHJlZ3Nfc3RhdGUoKTsNCj4gIAkJb29i
+X2ZwdV9zZXRfcHJlZW1wdCgmdHNrLT50aHJlYWQuZnB1KTsNCg0KUmV2aWV3ZWQtQnk6IEZsb3Jp
+YW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KDQpJIG5vdGljZWQgdGhh
+dCB3aGlsZSBpbnZlc3RpZ2F0aW5nIHRoZSBGUFUgdGVzdCBpc3N1ZSB0aGF0IEkgYWxyZWFkeQ0K
+cmVwb3J0ZWQsIGJ1dCBtaXNzZWQgdGhhdCB3ZSBhbHJlYWR5IGhhdmUgYSBkb3ZldGFpbCBicmFu
+Y2ggd2hpY2ggaXMNCmFmZmVjdGVkLg0KDQpOb24tR2l0IHJlZmVyZW5jZSB3b3VsZCBiZQ0KaHR0
+cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDIyMDUwMTE5MzEwMi41ODg2ODkyNzBAbGludXRy
+b25peC5kZS8NCg0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuIEJlemRla2ENCg0K
 
