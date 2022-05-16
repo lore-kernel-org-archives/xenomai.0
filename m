@@ -1,11 +1,10 @@
-References: <3d2f5bbd-598c-19f2-6451-a72d5da47b8a@abaxor.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: EVL Interrupt
-Date: Mon, 16 May 2022 17:09:32 +0200
-In-reply-to: <3d2f5bbd-598c-19f2-6451-a72d5da47b8a@abaxor.de>
-Message-ID: <87tu9ph5cp.fsf@xenomai.org>
+From: jamienstar@163.com
+Subject: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
+Date: Mon, 16 May 2022 23:32:42 +0800
+Message-Id: <20220516153242.12622-1-jamienstar@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Blaesing <sebastian.blaesing@abaxor.de>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: jamienstar@163.com, xenomai@xenomai.org
 
+From: Jamie <jamienstar@163.com>
 
-Sebastian Blaesing via Xenomai <xenomai@xenomai.org> writes:
+In v5.18-evl-rebase, function kernel_fpu_disabled() has been removed in
+commit 59f5ede3bc0f("x86/fpu: Prevent FPU state corruption"), so we will
+get compile error when CONFIG_DOVETAIL is enabled:
+arch/x86/kernel/fpu/core.c:931:6: error: implicit declaration of function ‘kernel_fpu_disabled’; did you mean ‘perf_pmu_disable’? [-Werror=implicit-function-declaration]
+  if (kernel_fpu_disabled()) {
+      ^~~~~~~~~~~~~~~~~~~
+      perf_pmu_disable
+cc1: all warnings being treated as errors
+So, fix it.
 
-> Hi all,
->
-> what is the best and fastest way to pass critical hardware Irq signal
-> to control a semaphore in user space application?
->
-> Is it possible that kernel and user space share a semaphore?
->
+Signed-off-by: Jamie <jamienstar@163.com>
+---
+ arch/x86/kernel/fpu/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You do this indirectly: in the kernel driver which implements the IRQ
-handler, you create an EVL sema4, and an oob_ioctl() or oob_read()
-handler which waits on it. The IRQ handler posts the sema4 which the
-user-space application pends on via a call to oob_{ioctl|read}().
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 6a0d1e7f278f..c3adbbb73226 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -928,7 +928,7 @@ void fpu__suspend_inband(void)
+ 	 * preemption of an inband kernel context currently using the
+ 	 * fpu by a thread which resumes on the oob stage.
+ 	 */
+-	if (kernel_fpu_disabled()) {
++	if (this_cpu_read(in_kernel_fpu)) {
+ 		save_fpregs_to_fpstate(kfpu);
+ 		__cpu_invalidate_fpregs_state();
+ 		oob_fpu_set_preempt(&tsk->thread.fpu);
+-- 
+2.17.1
 
-The driver which talks to the 'latmus' application implements the same
-pattern, using an EVL flag instead of a sema4, but the logic is
-otherwise the same. Some handler triggered by some event (here a timer,
-yours would be triggered by an IRQ) raises a flag [1], which is awaited
-by a function [2] which is called by the application via the oob_ioctl()
-syscall [3].
-
-HTH,
-
-[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/v5.15.y-evl-rebase/drivers/evl/latmus.c#L561
-[2] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/v5.15.y-evl-rebase/drivers/evl/latmus.c#L627
-[3]
-https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/v5.15.y-evl-rebase/drivers/evl/latmus.c#L1130
-
---
-Philippe.
 
