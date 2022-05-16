@@ -1,9 +1,14 @@
+References: <CAMES2hcz4K0DXAcktWZ0-DCqA1ds9b=oCfwNET8YaCq9sa+NGw@mail.gmail.com>
+ <877d6sv1xg.fsf@xenomai.org> <87tu9wtlkk.fsf@xenomai.org>
+ <CAMES2hdMDXzs7K6fG10wgfO99w16QKq_vcwdAu=Hi6rg5grfYg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Building example code with EVL
+Date: Mon, 16 May 2022 15:59:53 +0200
+In-reply-to: <CAMES2hdMDXzs7K6fG10wgfO99w16QKq_vcwdAu=Hi6rg5grfYg@mail.gmail.com>
+Message-ID: <8735h9indw.fsf@xenomai.org>
 MIME-Version: 1.0
-From: Yunjie Gu <yunjie.gu1@gmail.com>
-Date: Thu, 7 Apr 2022 09:20:05 +0100
-Message-ID: <CAKcohPwheCLCT-h-itxuL_Lc0qEZr6KG8e=YGX14Ne=nT40Cfw@mail.gmail.com>
-Subject: pthread_cancel services not documented
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,23 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Roberto Ferri <ironsnetwork@gmail.com>
+Cc: xenomai@xenomai.org, engineervalide@gmail.com
 
-Hi All,
 
-I'm trying to use xenomai with posix interface, and I found some
-differences in the documentation for xenomai 2 and xenomai 3. In xenomai
-2, pthread_cancel related services (including pthread_setcancelstate, .etc)
-are clearly documented. In xenomai 3, however, only pthread_kill is
-documented, but it seems other services are still there in source codes. My
-guessing is that pthread_cancel related services are managed by the linux
-rather than cobalt core and therefore were not explicitly documented in
-xenomai 3, and we can use them in the same way as we do in linux. Can
-anyone confirm this? See link below
+Roberto Ferri <ironsnetwork@gmail.com> writes:
 
-https://xenomai.org/documentation/xenomai-2.6/html/api/group__posix__cancel.html
+> Thanks for your fast response!
+>
+> I compiled with meson but I got this error message:
+> ~/git/libevl/tests/observable-unicast.c:168:44: error: =E2=80=98EVL_CLONE=
+_UNICAST=E2=80=99 undeclared (first use in this function); did you mean =E2=
+=80=98EVL_CLONE_INPUT=E2=80=99?
+>
+> Getting the same error in [1], but not in [2].=20
+> More info at [3].
+>
+> [1] Files =C2=B7 c6e08a9b029a4c9eaeeb761f8978f9e374834909 =C2=B7 xenomai =
+/ xenomai4 / libevl =C2=B7 GitLab (denx.de)
+> [2] Files =C2=B7 bfa2c4b55cc7d237c685bff722b59d816e63cd8f =C2=B7 xenomai =
+/ xenomai4 / libevl =C2=B7 GitLab (denx.de)
+> [3] https://source.denx.de/Xenomai/xenomai4/libevl/-/issues/1#note_168405
+>
 
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__api__thread.html#gae1a96424296ef872696c7fb90a8ae9aa
+You need to resync with the latest kernel uapi section, the libevl -next
+branch builds on the latest EVL kernel code, see [1][2][3].
 
-Regards,
-Yunjie
+[1]
+https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commits/v5.15.y-evl-reb=
+ase/
+[2]
+https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commits/v5.18-evl-rebase
+[3] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commits/v5.10.y-evl=
+-rebase
+
+--=20
+Philippe.
+
