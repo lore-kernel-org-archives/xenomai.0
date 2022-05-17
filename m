@@ -1,19 +1,12 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: <evl/heap.h> compile conflict with Boost
-Date: Tue, 14 Jun 2022 08:41:24 +0000
-Message-ID: <940244f618b0c11f531c7ec5f08cdf53722a649b.camel@siemens.com>
-References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
- <87bkuvsph4.fsf@xenomai.org>
- <fed181147dbf1ece306f055e435dd0355d352f8e.camel@sprinte.eu>
- <877d5jsm1j.fsf@xenomai.org>
- <7ed5f664d9a0df0a14ce88d684dc0f4f7b389a05.camel@sprinte.eu>
-In-Reply-To: <7ed5f664d9a0df0a14ce88d684dc0f4f7b389a05.camel@sprinte.eu>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B5B67449FCEF1D4E9A2A76CF80752F5F@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Zqiang <qiang1.zhang@intel.com>
+Subject: [linux-dovetail][PATCH 1/3] x86/tsc: Add TSC support functions to
+ support ART driven Time-Aware GPIO
+Date: Tue, 17 May 2022 09:53:16 +0800
+Message-Id: <20220517015318.697955-2-qiang1.zhang@intel.com>
+In-Reply-To: <20220517015318.697955-1-qiang1.zhang@intel.com>
+References: <20220517015318.697955-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,53 +15,191 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "julien.blanc@sprinte.eu" <julien.blanc@sprinte.eu>, "rpm@xenomai.org" <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: rpm@xenomai.org, jan.kiszka@siemens.com
+Cc: hongzhan.chen@intel.com, xenomai@xenomai.org
 
-T24gVHVlLCAyMDIyLTA2LTE0IGF0IDA4OjI5ICswMDAwLCBKdWxpZW4gQmxhbmMgdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+IExlIG1hcmRpIDE0IGp1aW4gMjAyMiDDoCAxMDowNCArMDIwMCwgUGhpbGlw
-cGUgR2VydW0gYSDDqWNyaXQgOg0KPiA+IEp1bGllbiBCbGFuYyA8DQo+ID4ganVsaWVuLmJsYW5j
-QHNwcmludGUuZXUNCj4gPiA+IHdyaXRlczoNCj4gPiANCj4gPiA+IExlIG1hcmRpIDE0IGp1aW4g
-MjAyMiDDoCAwODo1NCArMDIwMCwgUGhpbGlwcGUgR2VydW0gYSDDqWNyaXQgOg0KPiA+ID4gPiBK
-dWxpZW4gQmxhbmMgdmlhIFhlbm9tYWkgDQo+ID4gPiA+ID4gI2RlZmluZSBfX2ZhbGx0aHJvdWdo
-CV9fYXR0cmlidXRlX18oKGZhbGx0aHJvdWdoKSkNCj4gPiA+ID4gPiANCj4gPiA+ID4gDQo+ID4g
-PiA+IDYuMzkuIGF0dHJpYnV0ZSBzeW50YXgNCj4gPiA+ID4gaHR0cHM6Ly9nY2MuZ251Lm9yZy9v
-bmxpbmVkb2NzL2djYy9BdHRyaWJ1dGUtU3ludGF4Lmh0bWwjQXR0cmlidXRlLVN5bnRheA0KPiA+
-ID4gPiANCj4gPiA+ID4gDQo+ID4gPiANCj4gPiA+IE5vdCBzdXJlIHdoYXQgeW91IG1lYW4gd2l0
-aCB0aGlzIGxpbmsuIFRoZSByZWxldmFudCBhdHRyaWJ1dGUgaXMNCj4gPiA+IGRvY3VtZW50ZWQg
-aGVyZTogDQo+ID4gPiBodHRwczovL2djYy5nbnUub3JnL29ubGluZWRvY3MvZ2NjL1N0YXRlbWVu
-dC1BdHRyaWJ1dGVzLmh0bWwNCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiA+IFBTOiBmaXhlcyBnbyB3
-aXRoIHBhdGNoZXMuDQo+ID4gPiANCj4gPiA+IEluZGVlZCwgYnV0IGknbGwgbGV0IFJ1c3NlbCBk
-byB0aGlzIG9uZSBhcyBpIGRvbid0IGhhdmUgdGhlDQo+ID4gPiBvcHBvcnR1bml0eQ0KPiA+ID4g
-dG8gdGVzdCBpdCByaWdodCBub3cuDQo+ID4gPiANCj4gPiANCj4gPiBUaGUgZG9jdW1lbnRhdGlv
-biAocGFyYWdyYXBoIDYuMzkpIHN0YXRlcyB0aGF0ICJZb3UgbWF5IG9wdGlvbmFsbHkNCj4gPiBz
-cGVjaWZ5IGF0dHJpYnV0ZSBuYW1lcyB3aXRoIOKAmF9f4oCZIHByZWNlZGluZyBhbmQgZm9sbG93
-aW5nIHRoZSBuYW1lLg0KPiA+IFRoaXMgYWxsb3dzIHlvdSB0byB1c2UgdGhlbSBpbiBoZWFkZXIg
-ZmlsZXMgd2l0aG91dCBiZWluZyBjb25jZXJuZWQNCj4gPiBhYm91dCBhIHBvc3NpYmxlIG1hY3Jv
-IG9mIHRoZSBzYW1lIG5hbWUuIEZvciBleGFtcGxlLCB5b3UgbWF5IHVzZSB0aGUNCj4gPiBhdHRy
-aWJ1dGUgbmFtZSBfX25vcmV0dXJuX18gaW5zdGVhZCBvZiBub3JldHVybi4iLg0KPiA+IA0KPiA+
-IFRoaXMgaXMgZ2VuZXJhbGx5IHVzZWQgd2l0aCBDIGF0dHJpYnV0ZXMgYXMgYSBwcmVjYXV0aW9u
-IGFnYWluc3QNCj4gPiBuYW1lc3BhY2UgY29uZmxpY3RzIGluIHRoZSBDIGxhbmd1YWdlIHNwYWNl
-LiBJT1csIG1ha2luZyBhIEMrKyBwYXJzZXINCj4gPiBoYXBweSBpcyBvayB3aXRoIG1lIGFzIGxv
-bmcgYXMgdGhpcyBkb2VzIG5vdCBpbnRyb2R1Y2UgcG90ZW50aWFsDQo+ID4gaXNzdWVzIGRvd24g
-dGhlIHJvYWQgd2l0aCByZWd1bGFyIEMgY29kZS4NCj4gDQo+IE1pc3NlZCB0aGF0IHBhcnQsIHRo
-YW5rcy4gVGhlIGlzc3VlIGhlcmUgaXMgdGh1cyBub3Qgd2l0aGluIHRoZQ0KPiBhdHRyaWJ1dGUg
-cGFydCwgd2hpY2ggY2FuIGJlIGVpdGhlciBmYWxsdGhyb3VnaCBvciBfX2ZhbGx0aHJvdWdoX18s
-IGJ1dA0KPiBvbmx5IGluIHRoZSBtYWNybyBuYW1lLCB3aGljaCBzaG91bGQgYmUgX19mYWxsdGhy
-b3VnaCBpbnN0ZWFkIG9mIGp1c3QNCj4gZmFsbHRocm91Z2guDQo+IA0KPiAoZm9sbG93aW5nIHVu
-dGVzdGVkLCBhbHRob3VnaCBpdCBzaG91bGQgYmUgb2ssIHByZXR0eSBzdHJhaWdodGZvcndhcmQp
-DQo+IA0KPiAgICAgRml4IGZhbGx0aHJvdWdoIG1hY3JvDQo+ICAgICANCj4gICAgIFNpZ25lZC1v
-ZmYtYnk6IEp1bGllbiBCbGFuYyA8anVsaWVuLmJsYW5jQHNwcmludGUuZXU+DQo+IA0KPiBkaWZm
-IC0tZ2l0IGEvdmVuZG9yL2V2bC9jb21waWxlci5oIGIvdmVuZG9yL2V2bC9jb21waWxlci5oDQo+
-IGluZGV4IGZjZTI3NjYuLjhlNmFkOGMgMTAwNjQ0DQo+IC0tLSBhL3ZlbmRvci9ldmwvY29tcGls
-ZXIuaA0KPiArKysgYi92ZW5kb3IvZXZsL2NvbXBpbGVyLmgNCj4gQEAgLTYxLDcgKzYxLDcgQEAN
-Cj4gICNlbmRpZg0KPiAgDQo+ICAjaWZuZGVmIF9fZmFsbHRocm91Z2gNCj4gLSNkZWZpbmUgZmFs
-bHRocm91Z2ggICAgX19hdHRyaWJ1dGVfXygoX19mYWxsdGhyb3VnaF9fKSkNCj4gKyNkZWZpbmUg
-X19mYWxsdGhyb3VnaCAgX19hdHRyaWJ1dGVfXygoX19mYWxsdGhyb3VnaF9fKSkNCj4gICNlbmRp
-Zg0KDQpBcmUgdGhlcmUgbm8gdXNlcnMgb2YgImZhbGx0aHJvdWdoIj8gVGhlIGlmbmRlZiBndWFy
-ZCBhbmQgdGhlIG1hY3JvDQpuYW1lIHNlZW0gb3V0IG9mIHN5bmMsIHllcywgYnV0IGlmIHRoZSBt
-YWNybyBpcyBuZXZlciB1c2VkIHdpdGhpbiB0aGUNCmV2bCBjb2RlIGJhc2UsIHdoeSBkbyB3ZSBk
-ZWZpbmUgaXQ/DQoNClF1aWNrIHNlYXJjaCB0ZWxscyBtZSB0aGF0IHRoZXJlIGFyZSB1c2Vycywg
-c28gSSBleHBlY3QgY29tcGlsZSBlcnJvcnMNCm5vdy4NCg0KPiAgDQo+ICAjaWZuZGVmIF9fYWxs
-b2Nfc2l6ZQ0KPiANCj4gDQoNCg==
+From: Christopher Hall <christopher.s.hall@intel.com>
+
+The PMC Time-Aware GPIO (TGPIO) logic is driven by ART. Several support
+functions are required to translate ART to/from nanoseconds units which
+is required by the PHC clock interface. A function is also added to get
+the current value of ART/TSC using get_cycles() (RDTSC). This avoids
+multiple MMIO reads required to retrieve ART.
+
+Note that rather than ART nanoseconds, TSC nanoseconds are used. These are
+related by TSC = ART * CPUID[15H].EBX/CPUID[15H].EAX + K. The value of
+K is the distinction between between the ART and TSC nanoseconds.
+
+The advantage of using TSC nanoseconds to represent the device clock
+because it can easily be calculated in user-space using only CPUID[15H].
+The value of ART in general can't be since K isn't necessarily known to
+the application.
+
+Signed-off-by: Christopher Hall <christopher.s.hall@intel.com>
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ arch/x86/include/asm/tsc.h |   6 ++
+ arch/x86/kernel/tsc.c      | 116 ++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 120 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/tsc.h b/arch/x86/include/asm/tsc.h
+index 01a300a9700b..721caa09a14d 100644
+--- a/arch/x86/include/asm/tsc.h
++++ b/arch/x86/include/asm/tsc.h
+@@ -30,6 +30,12 @@ static inline cycles_t get_cycles(void)
+ 
+ extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
++extern struct timespec64 get_tsc_ns_now(struct system_counterval_t
++					*system_counter);
++extern u64 convert_tsc_ns_to_art(struct timespec64 *tsc_ns);
++extern u64 convert_tsc_ns_to_art_duration(struct timespec64 *tsc_ns);
++extern struct timespec64 convert_art_to_tsc_ns(u64 art);
++extern struct timespec64 convert_art_to_tsc_ns_duration(u64 art);
+ 
+ extern void tsc_early_init(void);
+ extern void tsc_init(void);
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index 9eae730d8b44..c4b48323c4bf 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -1260,7 +1260,7 @@ int unsynchronized_tsc(void)
+ /*
+  * Convert ART to TSC given numerator/denominator found in detect_art()
+  */
+-struct system_counterval_t convert_art_to_tsc(u64 art)
++static struct system_counterval_t _convert_art_to_tsc(u64 art, bool dur)
+ {
+ 	u64 tmp, res, rem;
+ 
+@@ -1270,13 +1270,125 @@ struct system_counterval_t convert_art_to_tsc(u64 art)
+ 	tmp = rem * art_to_tsc_numerator;
+ 
+ 	do_div(tmp, art_to_tsc_denominator);
+-	res += tmp + art_to_tsc_offset;
++	res += tmp;
++	if (!dur)
++		res += art_to_tsc_offset;
+ 
+ 	return (struct system_counterval_t) {.cs = art_related_clocksource,
+ 			.cycles = res};
+ }
++
++struct system_counterval_t convert_art_to_tsc(u64 art)
++{
++	return _convert_art_to_tsc(art, false);
++}
+ EXPORT_SYMBOL(convert_art_to_tsc);
+ 
++static
++struct timespec64 get_tsc_ns(struct system_counterval_t *system_counter)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
++
++	cycles = system_counter->cycles;
++	rem = do_div(cycles, tsc_khz);
++
++	res = cycles * USEC_PER_SEC;
++	tmp = rem * USEC_PER_SEC;
++
++	rem = do_div(tmp, tsc_khz);
++	tmp += rem > tsc_khz >> 2 ? 1 : 0;
++	res += tmp;
++
++	rem = do_div(res, NSEC_PER_SEC);
++
++	return (struct timespec64) {.tv_sec = res, .tv_nsec = rem};
++}
++
++struct timespec64 get_tsc_ns_now(struct system_counterval_t *system_counter)
++{
++	struct system_counterval_t counterval;
++
++	if (system_counter == NULL)
++		system_counter = &counterval;
++
++	system_counter->cycles = clocksource_tsc.read(NULL);
++	system_counter->cs = art_related_clocksource;
++
++	return get_tsc_ns(system_counter);
++}
++EXPORT_SYMBOL(get_tsc_ns_now);
++
++struct timespec64 convert_art_to_tsc_ns(u64 art)
++{
++	struct system_counterval_t counterval;
++
++	counterval = _convert_art_to_tsc(art, false);
++
++	return get_tsc_ns(&counterval);
++}
++EXPORT_SYMBOL(convert_art_to_tsc_ns);
++
++struct timespec64 convert_art_to_tsc_ns_duration(u64 art)
++{
++	struct system_counterval_t counterval;
++
++	counterval = _convert_art_to_tsc(art, true);
++
++	return get_tsc_ns(&counterval);
++}
++EXPORT_SYMBOL(convert_art_to_tsc_ns_duration);
++
++static u64 convert_tsc_ns_to_tsc(struct timespec64 *tsc_ns)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
++
++	cycles = timespec64_to_ns(tsc_ns);
++
++	rem = do_div(cycles, USEC_PER_SEC);
++
++	res = cycles * tsc_khz;
++	tmp = rem * tsc_khz;
++
++	do_div(tmp, USEC_PER_SEC);
++
++	return res + tmp;
++}
++
++
++static u64 _convert_tsc_ns_to_art(struct timespec64 *tsc_ns, bool dur)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
++
++	cycles = convert_tsc_ns_to_tsc(tsc_ns);
++	if (!dur)
++		cycles -= art_to_tsc_offset;
++
++	rem = do_div(cycles, art_to_tsc_numerator);
++
++	res = cycles * art_to_tsc_denominator;
++	tmp = rem * art_to_tsc_denominator;
++
++	rem = do_div(tmp, art_to_tsc_numerator);
++	tmp += rem > art_to_tsc_numerator >> 2 ? 1 : 0;
++
++	return res + tmp;
++}
++
++u64 convert_tsc_ns_to_art(struct timespec64 *tsc_ns)
++{
++	return _convert_tsc_ns_to_art(tsc_ns, false);
++}
++EXPORT_SYMBOL(convert_tsc_ns_to_art);
++
++u64 convert_tsc_ns_to_art_duration(struct timespec64 *tsc_ns)
++{
++	return _convert_tsc_ns_to_art(tsc_ns, true);
++}
++EXPORT_SYMBOL(convert_tsc_ns_to_art_duration);
++
+ /**
+  * convert_art_ns_to_tsc() - Convert ART in nanoseconds to TSC.
+  * @art_ns: ART (Always Running Timer) in unit of nanoseconds
+-- 
+2.25.1
+
 
