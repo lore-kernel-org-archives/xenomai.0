@@ -1,16 +1,10 @@
-From: Prasanna Kannan <prasanna.kannan@ipg-automotive.com>
-References: <014301d871cf$2449b990$6cdd2cb0$@ipg-automotive.com>
- <MN2PR11MB4285318D2C2F0AEDABADDBBAF2DD9@MN2PR11MB4285.namprd11.prod.outlook.com>
- <006101d873f7$8cf5e070$a6e1a150$@ipg-automotive.com>
- <MN2PR11MB428540F7964087AB4A150191F2DD9@MN2PR11MB4285.namprd11.prod.outlook.com>
-In-Reply-To: <MN2PR11MB428540F7964087AB4A150191F2DD9@MN2PR11MB4285.namprd11.prod.outlook.com>
-Subject: AW: Difference between Xenomai timer and Linux clock
-Date: Mon, 30 May 2022 11:54:01 +0200 (CEST)
-Message-ID: <010e01d8740b$307fe520$917faf60$@ipg-automotive.com>
+From: Zqiang <qiang1.zhang@intel.com>
+Subject: [PATCH 0/4] TGPIO: Introduce tgpio driver and testcase
+Date: Tue, 17 May 2022 09:51:48 +0800
+Message-Id: <20220517015152.697886-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Language: de
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,126 +13,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: rpm@xenomai.org, jan.kiszka@siemens.com
+Cc: hongzhan.chen@intel.com, xenomai@xenomai.org
 
-> -----Urspr=FCngliche Nachricht-----
-> Von: Chen, Hongzhan [mailto:hongzhan.chen@intel.com]
-> Gesendet: Montag, 30. Mai 2022 10:44
-> An: Prasanna Kannan <prasanna.kannan@ipg-automotive.com>;
-> xenomai@xenomai.org
-> Betreff: RE: Difference between Xenomai timer and Linux clock
->
->
->
-> >-----Original Message-----
-> >From: Prasanna Kannan <prasanna.kannan@ipg-automotive.com>
-> >Sent: Monday, May 30, 2022 3:33 PM
-> >To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
-> >Subject: AW: Difference between Xenomai timer and Linux clock
-> >
-> >> -----Urspr=FCngliche Nachricht-----
-> >> Von: Chen, Hongzhan [mailto:hongzhan.chen@intel.com]
-> >> Gesendet: Montag, 30. Mai 2022 02:56
-> >> An: Prasanna Kannan <prasanna.kannan@ipg-automotive.com>;
-> >> xenomai@xenomai.org
-> >> Betreff: RE: Difference between Xenomai timer and Linux clock
-> >>
-> >>
-> >>
-> >> >-----Original Message-----
-> >> >From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of
-> Prasanna
-> >> >Kannan via Xenomai
-> >> >Sent: Friday, May 27, 2022 9:39 PM
-> >> >To: xenomai@xenomai.org
-> >> >Subject: Difference between Xenomai timer and Linux clock
-> >> >
-> >> >Hello Everybody,
-> >> >
-> >> >I am comparing the Xenomai Timer(rt_timer_read()) and
-> >> >clock_gettime() with CLOCK_REALTIME and found that the two drift at
-> >> >roughly 100 us/s Here is the snippet from my code:
-> >> >
-> >> >init():
-> >> >clock_gettime(CLOCK_REALTIME, &ts_start); rtime_start =3D
-> >> >rt_timer_read();
-> >> >
-> >> >runtime():
-> >> >clk_xenotime =3D (rt_timer_read() - rtime_start) * 1e-9;
-> >> >clock_gettime(CLOCK_REALTIME, &ts); clk_rttime =3D (ts.tv_sec -
-> >> >ts_start.tv_sec) + (ts.tv_nsec -
-> >> >ts_start.tv_nsec) * 1e-9;
-> >> >delta =3D clk_rttime - clk_xenotime
-> >> >
-> >> >The observation is that the delta is around 100us/s ...
-> >> >ClockGetTime:2.588435s, rt_timer_read:2.588167s, delta:0.000268s
-> >> >ClockGetTime:3.588533s, rt_timer_read:3.588161s, delta:0.000372s
-> >> >ClockGetTime:4.588671s, rt_timer_read:4.588196s, delta:0.000475s ...
-> >> >
-> >> >The Linux clock is not corrected via NTP/PTP, thus I am wondering
-> >> >why they are drifting in this way.
-> >> >
-> >> >Some Information about my setup:
-> >> >Xenomai/cobalt v3.1
-> >> >Linux rtdonau 4.19.115-ipipe #54 SMP PREEMPT Wed Oct 13 12:16:56
-> >> >CEST
-> >> >2021
-> >> >x86_64 GNU/Linux
-> >> >Kernel parameters: intel_idle.max_cstate=3D0 vga=3D0x317 ip=3Ddhcp
-> >> >root=3D/dev/nfs
-> >> >nfsroot=3D10.0.0.1:/opt/xyz/xeno_rt,tcp,nfsvers=3D3
-> BOOT_IMAGE=3Dxeno10.2
-> >> >I-pipe release #12 detected Cobalt core 3.1 detected
-> >> >Compiler: gcc version 7.5.0 (GCC)
-> >> >Build args: --prefix=3D/opt/xenomai-3.1 --enable-smp --enable-pshared
-> >> >--enable-dlopen-libs
-> >> >
-> >> >The hardware used is an Intel SBC based on Core i7-4700EQ CPU @
-> >> >2.40GHz
-> >>
-> >> One of what we found is that there is delayed work which would refine
-> >tsc
-> >> clock after Xenomai init and that cause Clock difference which may
-> >result in
-> >> such drift.  The patchset "[Cobalt Xenoami3.1 PATCH 0/2] notify
-> >> Xenomai udpated clockfreq."
-> >> I sent in community at 5/27 try to fix what we found.  Could you send
-> >your
-> >> complete linux dmsg to check if our issues is the same?
-> >>
-> >Yes, I can confirm this as I see similar messages in my linux dmesg:
-> >[    0.000000] tsc: Detected 2394.479 MHz processor
-> >[    1.714630] tsc: Refined TSC clocksource calibration: 2394.455 MHz
->
-> It seems there is similar refined tsc after xenomai init which is quite
-different
-> from what Xenomai is using
->
-> Could you do a quick test with passing xenomai.clockfreq=3D2394455000 in
-> commandline to force xenomai to use refined TSC clock freq and then run
-> your drift test again to check if there is improvement? If there is
-> improvement , I think my patchset may work.
+General-Purpose I/O (GPIO) is a digital signal pin on an electronic device
+without a specified purpose. A GPIO pin can work as output (by switching to
+the high or low state) or as input (by reading whether a pin is in the high
+or low state).
 
-Yes, with the quick test I can confirm that the rt_timer () and
-clock_gettime() doesn't drift very much.
-Thanks!
+The control of GPIOs on a system with Linux* or other OS may be less precise
+and produce more jitter compared to a bare-metal solution because of the OS
+scheduler.
 
-> Regards
->
-> Hongzhan Chen
->
-> >
-> >[rtdonau-~] !) cat /sys/module/xenomai/parameters/clockfreq
-> >2394479000
-> >Attached my complete  dmesg.
-> >
-> >> Regards
-> >>
-> >> Hongzhan Chen
-> >> >
-> >> >Thank you in Advance.
-> >> >
-> >> >Best Regards
-> >> >Prasanna
-> >> >
+Certain Intel processors(Intel Atom x6000E or 11th generation Intel Core
+processors) have a hardware feature called Time-Aware GPIO (TGPIO). These
+processors have one or more TGPIO pins, which you can control using timestamps.
+You can program a specific timestamp to toggle a TGPIO pin, or capture the
+current timestamp when a pin is toggled. This is done by hardware, so the OS
+or other software do not affect the precision.
+
+In this patchset, we add tgpio driver and tgpiotest smokey testcase.
+
+TGPIO RTDM driver:
+
+The TGPIO interface is represented as a RT PTP device(/dev/rtdm/pmc-tgpio and
+pse-tgpio). It is controlled using ioctl() syscalls and provides the following
+features:
+
+1. Getting TGPIO capabilities: number of pins, number of channels.
+2. Generating signals with a given period, which starts at a specific timestamp.
+3. Reading the timestamp when the input pin’s state changes.
+4. Cross-timestamping the TGPIO clock with the system clock.
+
+TGPIO smokey testcase:
+
+The tgpiotest smokey testcase demonstrate how to start working with Time-Aware
+GPIO (TGPIO):
+
+The info sample (tgpio_info) is a self-contained example program
+demonstrating how to get a report of available TGPIO capabilities for
+a specified device.
+
+for example:
+./tgpiotest --run=3 --verbose=4 --main-prio=90 device=/dev/rtdm/pmc-tgpio (or
+pse-tgpio)
+
+The basic oneshot output sample (tgpio_oneshot_output) is a self-contained
+example program demonstrating a TGPIO single-shot output scenario. The sample
+demonstrates how to trigger a TGPIO pin at the specific timestamp. In this
+sample, this timestamp is specified as an offset from the Base time.
+
+for example:
+./tgpiotest --run=0 --verbose=4 --main-prio=90 device=/dev/rtdm/pmc-tgpio (or
+pse-tgpio) pin=1 channel=1 start=10000000(ns)
+
+The basic periodic output sample (tgpio_periodic_output) is a self-contained
+example program demonstrating how to set a TGPIO pin to periodic output mode.
+The sample generates a signal based on the specified period (1 second, for
+example). The sample generates a voltage change on the output pin at the
+specific timestamp.
+
+for example:
+./tgpiotest --run=1 --verbose=4 --main-prio=90 device=/dev/rtdm/pmc-tgpio (or
+pse-tgpio) pin=1 channel=1 period=10000000(ns)
+
+The basic input sample (tgpio_input) is a self-contained example program that
+prints a timestamp when an edge is detected, indicating a change in the TGPIO
+input pin state.
+
+for example:
+./tgpiotest --run=1 --verbose=4 --main-prio=90 device=/dev/rtdm/pse-tgpio (or
+pmc-tgpio) pin=17 channel=17 mode=1
+
+BIOS configuration:
+
+To enable PMC Time-Aware GPIO, configure the following BIOS options:
+
+Intel Advanced Menu > PCH IO Configuration > Enabled Timed GPIO0 [Enable]
+Intel Advanced Menu > PCH IO Configuration > Enabled Timed GPIO1 [Enable]
+
+To enable pins to be controlled as PSE-TGPIO from OS for Intel
+Atom x6000E Series Processors, configure the following BIOS options:
+
+Intel Advanced Menu > PCH IO Configuration > Security Configuration >
+Force unlock on all GPIO pads > [Enabled]
+Intel Advanced Menu > PCH IO Configuration > SerialIo Configuration >
+SPI2 Controller > [Disabled]
+Intel Advanced Menu > PCH IO Configuration > PSE configuration > SPI0 >
+[Host owned with pin muxed]
+Intel Advanced Menu > PCH IO Configuration > PSE configuration > Eclite >
+[Disabled]
+Intel Advanced Menu > PCH IO Configuration > PSE configuration > GPIO/TGPIO 0 >
+[Host owned with pin muxed]
+Intel Advanced Menu > PCH IO Configuration > PSE configuration >
+GPIO/TGPIO 0 MUX SELECTION > MID
+Intel Advanced Menu > PCH IO Configuration > PSE configuration >
+GPIO/TGPIO 0 Pin Selection > Check pins 28 and 27
+Intel Advanced Menu > PCH IO Configuration > PinCntrl Driver GPIO scheme >
+[Enabled]
+(Note: PSE-TGPIO only support for Atom x6000E)
+
+Zqiang (4):
+  driver/ptp: introduce real-time PTP driver support
+  ptp/pmc-tgpio: introduce PMC Time-Aware GPIO driver for Intel
+    Processors
+  ptp/pse-tgpio: introduce PSE Time-Aware GPIO driver for Intel
+    Processors
+  testsuite/tgpiotest: introduce TGPIO smokey testcase
+
+ configure.ac                     |   1 +
+ include/rtdm/rt_ptp_clock.h      |  24 +
+ include/rtdm/uapi/rt_ptp_clock.h | 258 ++++++++++
+ include/rtdm/uapi/rtdm.h         |   1 +
+ include/smokey/smokey.h          |  10 +
+ kernel/drivers/Kconfig           |   2 +-
+ kernel/drivers/Makefile          |   2 +-
+ kernel/drivers/ptp/Kconfig       |  44 ++
+ kernel/drivers/ptp/Makefile      |   8 +
+ kernel/drivers/ptp/pmc-tgpio.c   | 827 +++++++++++++++++++++++++++++++
+ kernel/drivers/ptp/pse-tgpio.c   | 568 +++++++++++++++++++++
+ kernel/drivers/ptp/ptp.c         | 537 ++++++++++++++++++++
+ kernel/drivers/ptp/ptp.h         | 106 ++++
+ lib/smokey/helpers.c             |  19 +
+ testsuite/Makefile.am            |   2 +
+ testsuite/tgpiotest/Makefile.am  |  19 +
+ testsuite/tgpiotest/tgpiotest.c  | 591 ++++++++++++++++++++++
+ 17 files changed, 3017 insertions(+), 2 deletions(-)
+ create mode 100644 include/rtdm/rt_ptp_clock.h
+ create mode 100644 include/rtdm/uapi/rt_ptp_clock.h
+ create mode 100644 kernel/drivers/ptp/Kconfig
+ create mode 100644 kernel/drivers/ptp/Makefile
+ create mode 100644 kernel/drivers/ptp/pmc-tgpio.c
+ create mode 100644 kernel/drivers/ptp/pse-tgpio.c
+ create mode 100644 kernel/drivers/ptp/ptp.c
+ create mode 100644 kernel/drivers/ptp/ptp.h
+ create mode 100644 testsuite/tgpiotest/Makefile.am
+ create mode 100644 testsuite/tgpiotest/tgpiotest.c
+
+-- 
+2.25.1
+
 
