@@ -1,13 +1,11 @@
-Message-ID: <830ca0b1-8852-44cb-00fc-8f91c1cee73d@siemens.com>
-Date: Wed, 15 Jun 2022 18:12:09 +0200
-MIME-Version: 1.0
-Subject: Re: [xenomai-images][PATCH] Update Isar revision
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Registration is Now Open - 2022 Global Xenomai Community Meetup
+Date: Thu, 19 May 2022 06:52:49 +0000
+Message-ID: <CO6PR11MB5649B692FD9DA368B1EEEFC6BAD09@CO6PR11MB5649.namprd11.prod.outlook.com>
 Content-Language: en-US
-References: <bcc20aef-69c6-6d26-4437-f672e5ce317d@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <bcc20aef-69c6-6d26-4437-f672e5ce317d@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,120 +14,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 15.06.22 18:00, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> This brings changes to image types that are easy to account for. Also
-> the image file name changed, so adjust readme and start-qemu.sh.
-> 
-> The update fixes logging issues, thus helps a lot with analyzing failing
-> builds, specifically in CI.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  README.md                                       | 2 +-
->  conf/machine/hikey.conf                         | 2 +-
->  conf/machine/qemu-machine.inc                   | 2 +-
->  conf/machine/x86-64-efi.conf                    | 2 +-
->  kas.yml                                         | 2 +-
->  recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb | 2 ++
->  start-qemu.sh                                   | 2 +-
->  7 files changed, 8 insertions(+), 6 deletions(-)
-> 
-> diff --git a/README.md b/README.md
-> index b38e131..5f6c4c7 100644
-> --- a/README.md
-> +++ b/README.md
-> @@ -41,7 +41,7 @@ armhf(`board-beagle-bone-black.yml`) and arm64(`board-hikey.yml`) targets.
->  Each physical target will generate ready-to-boot images under
->  `build/tmp/deploy/images/`. To flash, e.g., the HiKey image to an SD card, run
->  
-> -    dd if=build/tmp/deploy/images/hikey/demo-image-hikey-xenomai-demo-hikey.wic.img \
-> +    dd if=build/tmp/deploy/images/hikey/demo-image-hikey-xenomai-demo-hikey.wic \
->         of=/dev/<medium-device> bs=1M status=progress
->  
->  ## CI Build
-> diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
-> index 6ad4611..344a3de 100644
-> --- a/conf/machine/hikey.conf
-> +++ b/conf/machine/hikey.conf
-> @@ -11,7 +11,7 @@
->  
->  DISTRO_ARCH = "arm64"
->  
-> -IMAGE_FSTYPES ?= "wic-img"
-> +IMAGE_FSTYPES ?= "wic"
->  IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
->  
->  IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
-> diff --git a/conf/machine/qemu-machine.inc b/conf/machine/qemu-machine.inc
-> index 7771a11..d9ee2dd 100644
-> --- a/conf/machine/qemu-machine.inc
-> +++ b/conf/machine/qemu-machine.inc
-> @@ -9,7 +9,7 @@
->  # SPDX-License-Identifier: MIT
->  #
->  
-> -IMAGE_FSTYPES = "ext4-img"
-> +IMAGE_FSTYPES = "ext4"
->  
->  IMAGE_INSTALL_remove += "expand-on-first-boot"
->  ROOTFS_EXTRA = "1024"
-> diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
-> index cb3ed85..036bdcd 100644
-> --- a/conf/machine/x86-64-efi.conf
-> +++ b/conf/machine/x86-64-efi.conf
-> @@ -11,5 +11,5 @@
->  
->  DISTRO_ARCH = "amd64"
->  
-> -IMAGE_FSTYPES ?= "wic-img"
-> +IMAGE_FSTYPES ?= "wic"
->  IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
-> diff --git a/kas.yml b/kas.yml
-> index 6b3b32d..7a06aca 100644
-> --- a/kas.yml
-> +++ b/kas.yml
-> @@ -22,7 +22,7 @@ repos:
->  
->    isar:
->      url: https://github.com/ilbers/isar.git
-> -    refspec: a960a4e52c50ef4a15e382768eeee5fa9cfffead
-> +    refspec: 660d23fe898297524628a058d6121d9e425694f9
->      layers:
->        meta:
->  
-> diff --git a/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-> index 6231e9e..00e4058 100644
-> --- a/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-> +++ b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-> @@ -20,3 +20,5 @@ SRC_URI = " \
->  SRCREV = "${AUTOREV}"
->  
->  S = "${WORKDIR}/git"
-> +
-> +SRC_URI += "file://stable.patch"
-> diff --git a/start-qemu.sh b/start-qemu.sh
-> index 68516cc..33b6e65 100755
-> --- a/start-qemu.sh
-> +++ b/start-qemu.sh
-> @@ -83,7 +83,7 @@ fi
->  shift 1
->  
->  ${QEMU_PATH}${QEMU} \
-> -	-drive file=${IMAGE_PREFIX}.ext4.img,discard=unmap,if=none,id=disk,format=raw \
-> +	-drive file=${IMAGE_PREFIX}.ext4,discard=unmap,if=none,id=disk,format=raw \
->  	-m 1G -serial mon:stdio -netdev user,id=net \
->  	-kernel ${IMAGE_PREFIX}-${KERNEL_SUFFIX} -append "${KERNEL_CMDLINE}" \
->  	-initrd ${IMAGE_PREFIX}-initrd.img ${QEMU_EXTRA_ARGS} "$@"
+Hi all,
 
-Strike it. Missed some cases, and it contains a debug line.
+We're excited to announce that the 2022 Global Xenomai Community Meetup is=
+=20
+open for registration!
 
-Jan
+Experts in Xenomai community from Europe, the United States and China will
+share Xenomai-based RTOS development, applications and best practices.=20
+There are 12 presentations and 2 Live Q&A sessions in the event.
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+The meetup was divided into two halves to facilitate Asia-Pacific and=20
+European time zones. The meetup provides simultaneous interpretation in=20
+both Chinese and English. Attendance will be free for everyone.=20
+
+For detail agenda and registration, please visit:
+https://intel.csdn.net/2022GlobalXenomaiCommunityMeetup/en
+
+Please "Click to enter Vhall live" and then "live registration".
+
+Opening for part 1 is at:=20
+PDT 18:00 May 24 | UTC 01:00, CEST 03:00, CST 09:00 May 25
+
+- Opening and Welcome
+  by Jonny Rikard Klasson (Intel)
+ =20
+- Real-time Operating Systems in Special Effects
+  by Steve Rosenbluth (Concept Overdrive Inc)
+
+- IEC61131-3 platform development and optimization based on Linux Xenomai
+  by Henry Bao (Shanghai Nxtrol Technology Co., Ltd.)
+
+- Xenomai Motion Control Solution and Tuning Based on Intel Edge Controls=20
+  for Industrial
+  by Wei Zhang, Yu Yan (Intel)
+ =20
+- Industrial PC & Xenomai
+  by Xiewei Wang (Shenzhen GWtech Co.,Ltd.)
+
+- Xenomai in Industry Control System
+  by Yebin Liang (Han's Smart Control Technology Co., Ltd.)
+
+- Speakers Q&A
+  by Session 1 Speakers
+
+
+Opening for part 2 is at:=20
+PDT 23:00 May 24 | UTC 06:00, CEST 08:00, CST 14:00 May 25
+
+- Welcome and Keynote Speaking
+  Xenomai Community: Today and Tomorrow
+  by Jan Kiszka (Siemens AG)
+
+- Upgrading to Xenomai 3: Lessons learned
+  by Richard Weinberger (Sigma star gmbh)
+
+- Realtime Exception Handling in Xenomai
+  by Johannes Kirchmai (SIGMATEK GmbH & Co KG)
+
+- Application Development Based on Xenomai
+  by Changjun Chen (SYMG(Shanghai) Intelligence System Co., Ltd)
+
+- Delivering Real-Time Performance with Intel=AE TCC
+  by Jianbo Cao (Intel)
+
+- Running Xenomai VM on ACRN hypervisor
+  by Ronnie Yang (Intel)
+
+- Speakers Q&A
+  by Session 2 Speakers
+
+
+Pacific Daylight Time=A0(PDT): UTC-7 hours
+Coordinated Universal Time (UTC)
+Central European Summer Time (CEST): UTC+2
+China Standard Time (CST): UTC+8 hours
+
+
+Looking forward to meeting you online!
+
+
+Thanks,
+Rick
 
