@@ -1,12 +1,15 @@
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH stable/3.0.x 2/2] x86: cobalt/switchtest: Enable FPU tests
- unconditionally
-Date: Wed, 15 Jun 2022 11:57:18 +0200
-Message-Id: <20220615095718.2445543-3-florian.bezdeka@siemens.com>
-In-Reply-To: <20220615095718.2445543-1-florian.bezdeka@siemens.com>
-References: <20220615095718.2445543-1-florian.bezdeka@siemens.com>
+Message-ID: <fde20948-b893-8a30-c653-8e8ae7cb8018@siemens.com>
+Date: Thu, 19 May 2022 07:41:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: Re: [linux-dovetail][PATCH 0/3] Add TSC function supports and MFD
+ driver for TGPIO
+Content-Language: en-US
+References: <20220517015318.697955-1-qiang1.zhang@intel.com>
+ <bfd5f3e30797c8318198c99fb9d5557a64aaebf2.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <bfd5f3e30797c8318198c99fb9d5557a64aaebf2.camel@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Bezdeka, Florian (T CED SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "qiang1.zhang@intel.com" <qiang1.zhang@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Parts of the FPU tests were skipped when one of the following config
-options was enabled, shadowing a real test issue that was triggered by
-high load on the system. The options:
-  - CONFIG_X86_USE_3DNOW
-  - CONFIG_MD_RAID456
-  - CONFIG_MD_RAID456_MODULE
+On 18.05.22 19:45, Bezdeka, Florian (T CED SES-DE) wrote:
+> On Tue, 2022-05-17 at 09:53 +0800, Zqiang via Xenomai wrote:
+>> The following modifications are mainly to add TSC function for TGPIO
+>> and add intel-ehl-gpio driver divides and initializes the PSE TGPIO
+>> resources.
+>>
+>> Christopher Hall (1):
+>>   x86/tsc: Add TSC support functions to support ART driven Time-Aware
+>>     GPIO
+>>
+>> D, Lakshmi Sowjanya (1):
+>>   ptp: tgpio: PSE TGPIO crosststamp, counttstamp
+>>
+>> Raymond Tan (1):
+>>   mfd: intel-ehl-gpio: Introduce MFD framework to PSE GPIO/TGPIO
+> 
+> I haven't looked at the details yet and I missed the Community meeting
+> today where this topic might have been discussed.
+> 
+> I'm asking myself if the dovetail tree is the right tree to take those
+> patches. Have these patches already been sent to upstream / Linux? If
+> so, we should fetch them within the next rebase cycle, right?
+> 
+> If not: I feel we shouldn't apply them here and follow the "upstream
+> first" approach.
 
-As the FPU initialization is fixed now, we can enable the tests
-unconditionally.
+Yup, those should be confirmed upstream first. I'm not seeing them in
+Linus' tree yet, or anything related. I thought EHL upstreaming was
+completed by now?
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h | 13 -------------
- 1 file changed, 13 deletions(-)
+Once they are confirmed, backporting accepted patches to certain stable
+trees is much safer than having to change APIs again once that feature
+hits upstream later.
 
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-index ccf7afa11..7a2b17d75 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-@@ -36,19 +36,6 @@ static inline void fp_init(void)
- 
- static inline int fp_linux_begin(void)
- {
--#if defined(CONFIG_X86_USE_3DNOW) \
--	|| defined(CONFIG_MD_RAID456) || defined(CONFIG_MD_RAID456_MODULE)
--	/* Ther kernel uses x86 FPU, we can not also use it in our tests. */
--	static int once = 0;
--	if (!once) {
--		once = 1;
--		printk("%s:%d: Warning: Linux is compiled to use FPU in "
--		       "kernel-space.\nFor this reason, switchtest can not "
--		       "test using FPU in Linux kernel-space.\n",
--		       __FILE__, __LINE__);
--	}
--	return -EBUSY;
--#endif /* 3DNow or RAID 456 */
- 	kernel_fpu_begin();
- 	/* kernel_fpu_begin() does no re-initialize the fpu context, but
- 	   fp_regs_set() implicitely expects an initialized fpu context, so
+Jan
+
 -- 
-2.30.2
-
+Siemens AG, Technology
+Competence Center Embedded Linux
 
