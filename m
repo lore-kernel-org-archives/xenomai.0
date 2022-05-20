@@ -1,8 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Mailing list temporarily disabled
-Date: Sat, 18 Jun 2022 15:38:24 +0200
-Message-ID: <87letu6p02.fsf@xenomai.org>
+From: Gunter Grau <guntgrau@bbl.ma.philips.com>
+Subject: Re: Bug in xenomai 3.2.x on ARM
+Date: Fri, 20 May 2022 16:29:12 +0200
+Message-Id: <20220520142913.2081560-1-guntgrau@bbl.ma.philips.com>
+In-Reply-To: <d00-62584d80-1a5-12ac4c80@96928095>
+References: <d00-62584d80-1a5-12ac4c80@96928095>
+Reply-To: Gunter Grau <gunter.grau@philips.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,32 +18,15 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+We also saw this issue when porting out application to Xenomai 3.2 with imx6.
+Looks like the return value in upstream is still defined to be not always 0 on success. So we wrote a patch.
+It looks like this happend when dovetail was introduced.
 
-This mailing list is temporarily disabled, until the migration to
-xenomai@lists.linux.dev [1] is complete.
+The patch only applies to Xenomai 3.2 since ipipe is not part of the
+master anymore.
 
-As mentioned in earlier notices, the existing subscriptions to
-xenomai@xenomai.org will NOT be automatically transferred to the new
-server. If you want to keep on receiving e-mails from the Xenomai
-mailing list once the service has resumed, please subscribe to
-xenomai@lists.linux.dev by sending an empty mail to
-xenomai+subscribe@lists.linux.dev.
+Regards, Gunter
 
-xenomai@lists.linux.dev will be aliased to xenomai@xenomai.org, keeping
-the old list address available for posting.
 
-The (now frozen) archive will remain available at [2] until moved to
-[3].
 
-The mailing list service should be fully available again at 6pm CET
-today.
-
-Thanks,
-
-[1] https://subspace.kernel.org/lists.linux.dev.html
-[2] https://xenomai.org/pipermail/xenomai/
-[3] https://lore.kernel.org/xenomai/
-
--- 
-Philippe.
 
