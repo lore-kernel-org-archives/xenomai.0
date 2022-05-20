@@ -1,16 +1,10 @@
-From: "Grau, Gunter" <gunter.grau@philips.com>
-Subject: RE: [PATCH] cobalt: ipipe: intr: Fix return value check of
- ipipe_set_irq_affinity
-Date: Fri, 20 May 2022 14:32:58 +0000
-Message-ID: <AM7P122MB0229C667A4B3A4E15AA57579F2D39@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
-References: <d00-62584d80-1a5-12ac4c80@96928095>
- <20220520142913.2081560-1-guntgrau@bbl.ma.philips.com>
- <20220520142913.2081560-2-guntgrau@bbl.ma.philips.com>
-In-Reply-To: <20220520142913.2081560-2-guntgrau@bbl.ma.philips.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+From: "dabbede@gmail.com" <dabbede@gmail.com>
+Date: Fri, 20 May 2022 13:41:21 +0200
+Message-ID: <CAEwYQ4RW220Mv4Ee1nVNtu2Y7PSyf_GbuySyegQuOx6HVoQgvg@mail.gmail.com>
+Subject: Wrong CPU count on Apollo Lake platform
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,89 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
-
-Sorry, looks like something went wrong with the reply-to.
-It belongs to this issue: https://xenomai.org/pipermail/xenomai/2022-April/=
-047624.html
-
-Thanks, Gunter
-
-
-> -----Original Message-----
-> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Gunter
-> Grau via Xenomai
-> Sent: Freitag, 20. Mai 2022 16:29
-> To: xenomai@xenomai.org
-> Cc: Gunter Grau <guntgrau@bbl.ma.philips.com>
-> Subject: [PATCH] cobalt: ipipe: intr: Fix return value check of
-> ipipe_set_irq_affinity
->
-> Caution: This e-mail originated from outside of Philips, be careful for
-> phishing.
->
->
-> From: Julian Haller <julian.haller@philips.com>
->
-> ipipe_set_irq_affinity directly returns the value of the regular
-> irq_set_affinity method. As described in irq.h in the linux kernel, the
-> following return values indicate a success:
->
-> /*
->  * Return value for chip->irq_set_affinity()
->  *
->  * IRQ_SET_MASK_OK      - OK, core updates irq_common_data.affinity
->  * IRQ_SET_MASK_NOCPY   - OK, chip did update irq_common_data.affinity
->  * IRQ_SET_MASK_OK_DONE - Same as IRQ_SET_MASK_OK for core. Special
-> code to
->  *                        support stacked irqchips, which indicates skipp=
-ing
->  *                        all descendent irqchips.
->  */
-> enum {
->         IRQ_SET_MASK_OK =3D 0,
->         IRQ_SET_MASK_OK_NOCOPY,
->         IRQ_SET_MASK_OK_DONE,
-> };
->
-> As one example, the GIC in i.MX6 devices returns IRQ_SET_MASK_OK_DONE
-> on success. Fix the xintr_attach function by treating all positive return=
- values
-> as success.
->
-> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> ---
->  kernel/cobalt/ipipe/intr.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/cobalt/ipipe/intr.c b/kernel/cobalt/ipipe/intr.c inde=
-x
-> 378c7f07d..cb15597f7 100644
-> --- a/kernel/cobalt/ipipe/intr.c
-> +++ b/kernel/cobalt/ipipe/intr.c
-> @@ -869,7 +869,7 @@ int xnintr_attach(struct xnintr *intr, void *cookie,
-> const cpumask_t *cpumask)
->                         return -EINVAL;
->         }
->         ret =3D ipipe_set_irq_affinity(intr->irq, *effective_mask);
-> -       if (ret)
-> +       if (ret < 0)
->                 return ret;
->  #endif /* CONFIG_SMP */
->
-> --
-> 2.25.1
->
-
-
-________________________________
-The information contained in this message may be confidential and legally p=
-rotected under applicable law. The message is intended solely for the addre=
-ssee(s). If you are not the intended recipient, you are hereby notified tha=
-t any use, forwarding, dissemination, or reproduction of this message is st=
-rictly prohibited and may be unlawful. If you are not the intended recipien=
-t, please contact the sender by return e-mail and destroy all copies of the=
- original message.
-
+RGVhciBYZW5vbWFpIGNvbW11bml0eSwKCkknbSB3cml0aW5nIGhlcmUgYmVjYXVzZSBvZiB0aGUg
+Zm9sbG93aW5nIGlzc3VlOiBJIGhhdmUgY29tcGlsZWQgYQp4ZW5vbWFpLXBhdGNoZWQga2VybmVs
+IHRoYXQsIHdoZW4gdXNlZCBvbiBhbiBJbnRlbCBBdG9tIEUzOTUwIChBcG9sbG8KTGFrZSBmYW1p
+bHkpLCByZXR1cm4gdGhlIHdyb25nIGNwdSBjb3VudCAoaS5lLiBucHJvYyByZXR1cm5zIDEgaW5z
+dGVhZApvZiA0LCBhbmQgYWxzbyBsc2NwdSBjbGFpbXMgQ1BVKHMpOiAxKS4KVGhlIHZlcnkgc2Ft
+ZSBrZXJuZWwsIHdoZW4gcnVuIG9uIGFuIEludGVsIGk1LTc0NDBFUSwgcmV0dXJucyBucHJvYz00
+LAp3aGljaCBpcyBjb3JyZWN0LgpJJ20gdXNpbmcgQ09ORklHX0dFTkVSSUNfQ1BVPXksIGFuZCB0
+aGlzLCB0byBteSBrbm93bGVkZ2UsIHNob3VsZCBiZSBhCnNhZmVyIG9wdGlvbiB0byBoYW5kbGUg
+Ym90aCBBdG9tIGFuZCBpNSBvciBvdGhlciBwbGF0Zm9ybXMuIEkndmUgYWxzbwp0cmllZCB0byB1
+c2UgQ09ORklHX01BVE9NIG9yIENPTkZJR19NQ09SRTIgd2l0aG91dCBub3RpY2VhYmxlCmRpZmZl
+cmVuY2VzLgoKSSBhdHRhY2ggaGVyZSB0aGUgZnVsbCBjb25maWcgYW5kIHRoZSBkbWVzZyB0aGF0
+IEkgb2J0YWluIG9uIHRoZSB0d28KcGxhdGZvcm1zLiBDb21wYXJpbmcgdGhlIGxvZ3MgSSd2ZSBu
+b3RpY2VkIHRoZSBtZXNzYWdlICJCSU9TIGJ1Zywgbm8KZXhwbGljaXQgSVJRIGVudHJpZXMsIHVz
+aW5nIGRlZmF1bHQgbXB0YWJsZS4gKHRlbGwgeW91ciBodyB2ZW5kb3IpIgpidXQgSSdtIG5vdCBz
+dXJlIHdoZXRoZXIgdGhpcyBpcyB0aGUgY2F1c2Ugb3IgYW4gZWZmZWN0IG9mIHRoZQpwcm9ibGVt
+LgoKQ2FuIHlvdSBoZWxwIG1lIHN1Z2dlc3Rpbmcgd2hpY2ggQ09ORklHIG9wdGlvbiBJIHNob3Vs
+ZCBjaGFuZ2U/CgpSZWdhcmRzLAoKICAgIERhdmlkZQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiBjb25maWctNC4xOS43NS15MwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
+MTUyOTkwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNTIwLzFkZTQ0YzNmL2F0dGFjaG1l
+bnQub2JqPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkbWVzZ19BdG9tX0UzOTUwClR5cGU6
+IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAzODkzNSBieXRlcwpEZXNjOiBub3QgYXZh
+aWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
+ZW50cy8yMDIyMDUyMC8xZGU0NGMzZi9hdHRhY2htZW50LTAwMDEub2JqPgotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBkbWVzZ19pNS03NDQwRVEKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
+ZWFtClNpemU6IDUxODgwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNTIwLzFkZTQ0YzNm
+L2F0dGFjaG1lbnQtMDAwMi5vYmo+Cg==
