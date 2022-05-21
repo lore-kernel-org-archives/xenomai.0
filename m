@@ -1,10 +1,9 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Mailing list rehosting
+Date: Sat, 21 May 2022 12:48:01 +0200
+Message-ID: <87fsl2aig1.fsf@xenomai.org>
 MIME-Version: 1.0
-From: "dabbede@gmail.com" <dabbede@gmail.com>
-Date: Fri, 20 May 2022 13:41:21 +0200
-Message-ID: <CAEwYQ4RW220Mv4Ee1nVNtu2Y7PSyf_GbuySyegQuOx6HVoQgvg@mail.gmail.com>
-Subject: Wrong CPU count on Apollo Lake platform
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +14,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-RGVhciBYZW5vbWFpIGNvbW11bml0eSwKCkknbSB3cml0aW5nIGhlcmUgYmVjYXVzZSBvZiB0aGUg
-Zm9sbG93aW5nIGlzc3VlOiBJIGhhdmUgY29tcGlsZWQgYQp4ZW5vbWFpLXBhdGNoZWQga2VybmVs
-IHRoYXQsIHdoZW4gdXNlZCBvbiBhbiBJbnRlbCBBdG9tIEUzOTUwIChBcG9sbG8KTGFrZSBmYW1p
-bHkpLCByZXR1cm4gdGhlIHdyb25nIGNwdSBjb3VudCAoaS5lLiBucHJvYyByZXR1cm5zIDEgaW5z
-dGVhZApvZiA0LCBhbmQgYWxzbyBsc2NwdSBjbGFpbXMgQ1BVKHMpOiAxKS4KVGhlIHZlcnkgc2Ft
-ZSBrZXJuZWwsIHdoZW4gcnVuIG9uIGFuIEludGVsIGk1LTc0NDBFUSwgcmV0dXJucyBucHJvYz00
-LAp3aGljaCBpcyBjb3JyZWN0LgpJJ20gdXNpbmcgQ09ORklHX0dFTkVSSUNfQ1BVPXksIGFuZCB0
-aGlzLCB0byBteSBrbm93bGVkZ2UsIHNob3VsZCBiZSBhCnNhZmVyIG9wdGlvbiB0byBoYW5kbGUg
-Ym90aCBBdG9tIGFuZCBpNSBvciBvdGhlciBwbGF0Zm9ybXMuIEkndmUgYWxzbwp0cmllZCB0byB1
-c2UgQ09ORklHX01BVE9NIG9yIENPTkZJR19NQ09SRTIgd2l0aG91dCBub3RpY2VhYmxlCmRpZmZl
-cmVuY2VzLgoKSSBhdHRhY2ggaGVyZSB0aGUgZnVsbCBjb25maWcgYW5kIHRoZSBkbWVzZyB0aGF0
-IEkgb2J0YWluIG9uIHRoZSB0d28KcGxhdGZvcm1zLiBDb21wYXJpbmcgdGhlIGxvZ3MgSSd2ZSBu
-b3RpY2VkIHRoZSBtZXNzYWdlICJCSU9TIGJ1Zywgbm8KZXhwbGljaXQgSVJRIGVudHJpZXMsIHVz
-aW5nIGRlZmF1bHQgbXB0YWJsZS4gKHRlbGwgeW91ciBodyB2ZW5kb3IpIgpidXQgSSdtIG5vdCBz
-dXJlIHdoZXRoZXIgdGhpcyBpcyB0aGUgY2F1c2Ugb3IgYW4gZWZmZWN0IG9mIHRoZQpwcm9ibGVt
-LgoKQ2FuIHlvdSBoZWxwIG1lIHN1Z2dlc3Rpbmcgd2hpY2ggQ09ORklHIG9wdGlvbiBJIHNob3Vs
-ZCBjaGFuZ2U/CgpSZWdhcmRzLAoKICAgIERhdmlkZQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
-LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
-OiBjb25maWctNC4xOS43NS15MwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
-MTUyOTkwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNTIwLzFkZTQ0YzNmL2F0dGFjaG1l
-bnQub2JqPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
-dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkbWVzZ19BdG9tX0UzOTUwClR5cGU6
-IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAzODkzNSBieXRlcwpEZXNjOiBub3QgYXZh
-aWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
-ZW50cy8yMDIyMDUyMC8xZGU0NGMzZi9hdHRhY2htZW50LTAwMDEub2JqPgotLS0tLS0tLS0tLS0t
-LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
-YmJlZC4uLgpOYW1lOiBkbWVzZ19pNS03NDQwRVEKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
-ZWFtClNpemU6IDUxODgwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjIwNTIwLzFkZTQ0YzNm
-L2F0dGFjaG1lbnQtMDAwMi5vYmo+Cg==
+
+The Xenomai mailing list server will be migrated to [1] on June 18
+2022. In the meantime, the current server will be operating as
+usual. However, the existing subscriptions to xenomai@xenomai.org will
+NOT be automatically transferred to the new server.
+
+This means that:
+
+- The Xenomai mailing list service will be inaccessible on June 18
+  from 4pm to 6pm CET for maintenance duties.
+
+- Starting from June 18 at 6pm CET, all posts to xenomai@xenomai.org
+  will be forwarded to xenomai@lists.linux.dev, the current mailing list
+  archive will move to [2] afterwards.
+
+- If you want to keep on receiving e-mails from the Xenomai mailing list
+  after this date, please subscribe to xenomai@lists.linux.dev by
+  sending an empty mail to xenomai+subscribe@lists.linux.dev.
+
+NOTE: xenomai@lists.linux.dev is a public list, you only need to
+subscribe for receiving e-mails.
+
+Thanks,
+
+[1] https://subspace.kernel.org/lists.linux.dev.html
+[2] https://lore.kernel.org/xenomai/
+
+-- 
+Philippe.
+
