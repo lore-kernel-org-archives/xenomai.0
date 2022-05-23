@@ -1,8 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Mailing list rehosting
-Date: Sat, 21 May 2022 12:48:01 +0200
-Message-ID: <87fsl2aig1.fsf@xenomai.org>
+From: Gunter Grau <guntgrau@bbl.ma.philips.com>
+Subject: [PATCH] rtdm/drvlib: Prevent pagefaults on arm on io mapping
+Date: Mon, 23 May 2022 16:04:44 +0200
+Message-Id: <20220523140444.2632658-1-guntgrau@bbl.ma.philips.com>
+Reply-To: Gunter Grau <gunter.grau@philips.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,33 +16,48 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+From: Gunter Grau <gunter.grau@philips.com>
 
-The Xenomai mailing list server will be migrated to [1] on June 18
-2022. In the meantime, the current server will be operating as
-usual. However, the existing subscriptions to xenomai@xenomai.org will
-NOT be automatically transferred to the new server.
+When mapping io memory into userspace an extra simulated pagefault for all
+pages is added to prevent later pagefaults because of copy on write
+mechanisms. This happens only on architectures that have defined the
+needed cobalt_machine.prefault function.
 
-This means that:
+Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+---
+ kernel/cobalt/rtdm/drvlib.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-- The Xenomai mailing list service will be inaccessible on June 18
-  from 4pm to 6pm CET for maintenance duties.
-
-- Starting from June 18 at 6pm CET, all posts to xenomai@xenomai.org
-  will be forwarded to xenomai@lists.linux.dev, the current mailing list
-  archive will move to [2] afterwards.
-
-- If you want to keep on receiving e-mails from the Xenomai mailing list
-  after this date, please subscribe to xenomai@lists.linux.dev by
-  sending an empty mail to xenomai+subscribe@lists.linux.dev.
-
-NOTE: xenomai@lists.linux.dev is a public list, you only need to
-subscribe for receiving e-mails.
-
-Thanks,
-
-[1] https://subspace.kernel.org/lists.linux.dev.html
-[2] https://lore.kernel.org/xenomai/
-
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 4eaf3a57c..db8431ee1 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+ {
+ 	pgprot_t prot = PAGE_SHARED;
+ 	unsigned long len;
++	int ret;
+ 
+ 	len = vma->vm_end - vma->vm_start;
+ #ifndef CONFIG_MMU
+@@ -1774,8 +1775,15 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+ #endif
+ 	vma->vm_page_prot = pgprot_noncached(prot);
+ 
+-	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
++	ret = remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+ 			       len, vma->vm_page_prot);
++	if (ret)
++		return ret;
++
++	if (cobalt_machine.prefault)
++		cobalt_machine.prefault(vma);
++
++	return ret;
+ }
+ 
+ static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct *vma)
 -- 
-Philippe.
+2.25.1
+
 
