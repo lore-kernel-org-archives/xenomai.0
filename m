@@ -1,7 +1,7 @@
 From: Gunter Grau <guntgrau@bbl.ma.philips.com>
-Subject: [PATCH 2/2] net/drivers: Remove ARM64 restriction for fec driver
-Date: Mon, 23 May 2022 16:19:29 +0200
-Message-Id: <20220523141929.2633409-3-guntgrau@bbl.ma.philips.com>
+Subject: [PATCH 1/2] net/drivers: Fix out of tree builds for fec driver
+Date: Mon, 23 May 2022 16:19:28 +0200
+Message-Id: <20220523141929.2633409-2-guntgrau@bbl.ma.philips.com>
 In-Reply-To: <20220523141929.2633409-1-guntgrau@bbl.ma.philips.com>
 References: <20220523141929.2633409-1-guntgrau@bbl.ma.philips.com>
 Reply-To: Gunter Grau <gunter.grau@philips.com>
@@ -20,40 +20,21 @@ To: xenomai@xenomai.org
 
 From: Johann Wiens <johann.wiens@philips.com>
 
-As described in commit 04fab252f5d2ec3fe47be266f94714c3dda624bd, the
-fec driver was added with the intention to have it working on an
-i.MX8 target.
-But i.MX SoC specific quirks are also handled already since the driver
-was originally ported from the Linux kernel.
-It was now tested on i.MX6 and i.MX7 also (raw packet socket only).
-
 Signed-off-by: Gunter Grau <gunter.grau@philips.com>
 ---
- kernel/drivers/net/drivers/Kconfig | 4 ----
- 1 file changed, 4 deletions(-)
+ kernel/drivers/net/drivers/freescale/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
-index 3a90dd8ab..ecbad2cd0 100644
---- a/kernel/drivers/net/drivers/Kconfig
-+++ b/kernel/drivers/net/drivers/Kconfig
-@@ -101,8 +101,6 @@ config XENO_DRIVERS_NET_DRV_MACB
+diff --git a/kernel/drivers/net/drivers/freescale/Makefile b/kernel/drivers/net/drivers/freescale/Makefile
+index fadab2e43..316d8c3c3 100644
+--- a/kernel/drivers/net/drivers/freescale/Makefile
++++ b/kernel/drivers/net/drivers/freescale/Makefile
+@@ -1,4 +1,4 @@
+-ccflags-y += -Idrivers/xenomai/net/stack/include
++ccflags-y += -I$(srctree)/drivers/xenomai/net/stack/include
  
- endif
+ obj-$(CONFIG_XENO_DRIVERS_NET_FEC) += rtnet_fec.o
  
--if ARM64
--
- config XENO_DRIVERS_NET_FEC
-     depends on XENO_DRIVERS_NET
-     tristate "Freescale FEC"
-@@ -113,8 +111,6 @@ config XENO_DRIVERS_NET_FEC
-     For built-in 10/100 Fast ethernet controller on Freescale i.MX
-     processors.
- 
--endif
--
- source "drivers/xenomai/net/drivers/experimental/Kconfig"
- 
- endmenu
 -- 
 2.25.1
 
