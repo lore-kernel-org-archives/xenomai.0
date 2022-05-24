@@ -1,13 +1,10 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Reminder - 18:00, May 24 PDT, 2022 Global Xenomai Community Meetup 
-Date: Tue, 24 May 2022 14:22:08 +0000
-Message-ID: <CO6PR11MB56490BA4B6F08FE02328E3CEBAD79@CO6PR11MB5649.namprd11.prod.outlook.com>
-References: <CO6PR11MB56496EA129364BF0D80F5FC0BAD79@CO6PR11MB5649.namprd11.prod.outlook.com>
-In-Reply-To: <CO6PR11MB56496EA129364BF0D80F5FC0BAD79@CO6PR11MB5649.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: jamienstar@163.com
+Subject: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
+Date: Tue, 24 May 2022 22:46:31 +0800
+Message-Id: <20220524144631.25020-1-jamienstar@163.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: jamienstar@163.com, jan.kiszka@siemens.com, florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBXYW5nLCBSaWNrIFkgPHJpY2su
-eS53YW5nQGludGVsLmNvbT4NCj4NCj5IaSBhbGwsDQo+DQo+V2UncmUgZXhjaXRlZCB0byBhbm5v
-dW5jZSB0aGF0IHRoZSAyMDIyIEdsb2JhbCBYZW5vbWFpIENvbW11bml0eSBNZWV0dXANCj5pcyBv
-cGVuIGZvciByZWdpc3RyYXRpb24hDQo+DQo+RXhwZXJ0cyBpbiBYZW5vbWFpIGNvbW11bml0eSBm
-cm9tIEV1cm9wZSwgdGhlIFVuaXRlZCBTdGF0ZXMgYW5kIENoaW5hIHdpbGwNCj5zaGFyZSBYZW5v
-bWFpLWJhc2VkIFJUT1MgZGV2ZWxvcG1lbnQsIGFwcGxpY2F0aW9ucyBhbmQgYmVzdCBwcmFjdGlj
-ZXMuDQo+VGhlcmUgYXJlIDEyIHByZXNlbnRhdGlvbnMgYW5kIDIgTGl2ZSBRJkEgc2Vzc2lvbnMg
-aW4gdGhlIGV2ZW50Lg0KPg0KPlRoZSBtZWV0dXAgd2FzIGRpdmlkZWQgaW50byB0d28gaGFsdmVz
-IHRvIGZhY2lsaXRhdGUgQXNpYS1QYWNpZmljIGFuZCBFdXJvcGVhbg0KPnRpbWUgem9uZXMuIFRo
-ZSBtZWV0dXAgcHJvdmlkZXMgc2ltdWx0YW5lb3VzIGludGVycHJldGF0aW9uIGluIGJvdGgNCj5D
-aGluZXNlIGFuZCBFbmdsaXNoLiBBdHRlbmRhbmNlIHdpbGwgYmUgZnJlZSBmb3IgZXZlcnlvbmUu
-DQo+DQo+Rm9yIGRldGFpbCBhZ2VuZGEgYW5kIHJlZ2lzdHJhdGlvbiwgcGxlYXNlIHZpc2l0Og0K
-Pmh0dHBzOi8vaW50ZWwuY3Nkbi5uZXQvMjAyMkdsb2JhbFhlbm9tYWlDb21tdW5pdHlNZWV0dXAv
-ZW4NCj4NCj5QbGVhc2UgIkNsaWNrIHRvIGVudGVyIFZoYWxsIGxpdmUiIGFuZCB0aGVuICJsaXZl
-IHJlZ2lzdHJhdGlvbiIuDQo+DQo+T3BlbmluZyBmb3IgcGFydCAxIGlzIGF0Og0KPlBEVCAxODow
-MCBNYXkgMjQgfCBVVEMgMDE6MDAsIENFU1QgMDM6MDAsIENTVCAwOTowMCBNYXkgMjUNCj4NCg0K
-VGhlIE1lZXR1cCB3aWxsIHN0YXJ0IG9uIHRpbWUuIExvb2tpbmcgZm9yd2FyZCB0byBtZWV0aW5n
-IHlvdSBzb29uLg0KDQo+LSBPcGVuaW5nIGFuZCBXZWxjb21lDQo+ICBieSBKb25ueSBSaWthcmQg
-S2xhc3NvbiAoSW50ZWwpDQo+DQo+LSBSZWFsLXRpbWUgT3BlcmF0aW5nIFN5c3RlbXMgaW4gU3Bl
-Y2lhbCBFZmZlY3RzDQo+ICBieSBTdGV2ZSBSb3NlbmJsdXRoIChDb25jZXB0IE92ZXJkcml2ZSBJ
-bmMpDQo+DQo+LSBJRUM2MTEzMS0zIHBsYXRmb3JtIGRldmVsb3BtZW50IGFuZCBvcHRpbWl6YXRp
-b24gYmFzZWQgb24gTGludXggWGVub21haQ0KPiAgYnkgSGVucnkgQmFvIChTaGFuZ2hhaSBOeHRy
-b2wgVGVjaG5vbG9neSBDby4sIEx0ZC4pDQo+DQo+LSBYZW5vbWFpIE1vdGlvbiBDb250cm9sIFNv
-bHV0aW9uIGFuZCBUdW5pbmcgQmFzZWQgb24gSW50ZWwgRWRnZSBDb250cm9scw0KPiAgZm9yIElu
-ZHVzdHJpYWwNCj4gIGJ5IFdlaSBaaGFuZywgWXUgWWFuIChJbnRlbCkNCj4NCj4tIEluZHVzdHJp
-YWwgUEMgJiBYZW5vbWFpDQo+ICBieSBYaWV3ZWkgV2FuZyAoU2hlbnpoZW4gR1d0ZWNoIENvLixM
-dGQuKQ0KPg0KPi0gWGVub21haSBpbiBJbmR1c3RyeSBDb250cm9sIFN5c3RlbQ0KPiAgYnkgWWVi
-aW4gTGlhbmcgKEhhbidzIFNtYXJ0IENvbnRyb2wgVGVjaG5vbG9neSBDby4sIEx0ZC4pDQo+DQo+
-LSBTcGVha2VycyBRJkENCj4gIGJ5IFNlc3Npb24gMSBTcGVha2Vycw0KPg0KPg0KPk9wZW5pbmcg
-Zm9yIHBhcnQgMiBpcyBhdDoNCj5QRFQgMjM6MDAgTWF5IDI0IHwgVVRDIDA2OjAwLCBDRVNUIDA4
-OjAwLCBDU1QgMTQ6MDAgTWF5IDI1DQo+DQo+LSBXZWxjb21lIGFuZCBLZXlub3RlIFNwZWFraW5n
-DQo+ICBYZW5vbWFpIENvbW11bml0eTogVG9kYXkgYW5kIFRvbW9ycm93DQo+ICBieSBKYW4gS2lz
-emthIChTaWVtZW5zIEFHKQ0KPg0KPi0gVXBncmFkaW5nIHRvIFhlbm9tYWkgMzogTGVzc29ucyBs
-ZWFybmVkDQo+ICBieSBSaWNoYXJkIFdlaW5iZXJnZXIgKFNpZ21hIHN0YXIgZ21iaCkNCj4NCj4t
-IFJlYWx0aW1lIEV4Y2VwdGlvbiBIYW5kbGluZyBpbiBYZW5vbWFpDQo+ICBieSBKb2hhbm5lcyBL
-aXJjaG1haSAoU0lHTUFURUsgR21iSCAmIENvIEtHKQ0KPg0KPi0gQXBwbGljYXRpb24gRGV2ZWxv
-cG1lbnQgQmFzZWQgb24gWGVub21haQ0KPiAgYnkgQ2hhbmdqdW4gQ2hlbiAoU1lNRyhTaGFuZ2hh
-aSkgSW50ZWxsaWdlbmNlIFN5c3RlbSBDby4sIEx0ZCkNCj4NCj4tIERlbGl2ZXJpbmcgUmVhbC1U
-aW1lIFBlcmZvcm1hbmNlIHdpdGggSW50ZWzCriBUQ0MNCj4gIGJ5IEppYW5ibyBDYW8gKEludGVs
-KQ0KPg0KPi0gUnVubmluZyBYZW5vbWFpIFZNIG9uIEFDUk4gaHlwZXJ2aXNvcg0KPiAgYnkgUm9u
-bmllIFlhbmcgKEludGVsKQ0KPg0KPi0gU3BlYWtlcnMgUSZBDQo+ICBieSBTZXNzaW9uIDIgU3Bl
-YWtlcnMNCj4NCj4NCj5QYWNpZmljIERheWxpZ2h0IFRpbWXCoChQRFQpOiBVVEMtNyBob3VycyAN
-Cj5Db29yZGluYXRlZCBVbml2ZXJzYWwgVGltZSAoVVRDKQ0KPkNlbnRyYWwgRXVyb3BlYW4gU3Vt
-bWVyIFRpbWUgKENFU1QpOiBVVEMrMiANCj5DaGluYSBTdGFuZGFyZCBUaW1lIChDU1QpOiBVVEMr
-OCBob3Vycw0KPg0KPg0KPkxvb2tpbmcgZm9yd2FyZCB0byBtZWV0aW5nIHlvdSBvbmxpbmUhDQo+
-DQo+DQo+VGhhbmtzLA0KPlJpY2sNCj4NCg0K
+From: Jamie Huang <jamienstar@163.com>
+
+In v5.18-evl-rebase, function kernel_fpu_disabled() has been removed in
+commit 59f5ede3bc0f("x86/fpu: Prevent FPU state corruption"), so we will
+get compile error when CONFIG_DOVETAIL is enabled:
+arch/x86/kernel/fpu/core.c:931:6: error: implicit declaration of function ‘kernel_fpu_disabled’; did you mean ‘perf_pmu_disable’? [-Werror=implicit-function-declaration]
+    if (kernel_fpu_disabled()) {
+        ^~~~~~~~~~~~~~~~~~~
+        perf_pmu_disable
+cc1: all warnings being treated as errors
+So, fix it.
+
+Signed-off-by: Jamie Huang <jamienstar@163.com>
+---
+ arch/x86/kernel/fpu/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 6a0d1e7f278f..c3adbbb73226 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -928,7 +928,7 @@ void fpu__suspend_inband(void)
+ 	 * preemption of an inband kernel context currently using the
+ 	 * fpu by a thread which resumes on the oob stage.
+ 	 */
+-	if (kernel_fpu_disabled()) {
++	if (this_cpu_read(in_kernel_fpu)) {
+ 		save_fpregs_to_fpstate(kfpu);
+ 		__cpu_invalidate_fpregs_state();
+ 		oob_fpu_set_preempt(&tsk->thread.fpu);
+-- 
+2.17.1
+
 
