@@ -1,17 +1,11 @@
-Message-ID: <a5eec2dd-fd48-164a-3df3-c09a1c7c96bf@tin.it>
-Date: Wed, 25 May 2022 14:47:37 +0200
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Replay available - 2022 Global Xenomai Community Meetup
+Date: Wed, 25 May 2022 13:33:27 +0000
+Message-ID: <CO6PR11MB5649AEDE5151E252923631A0BAD69@CO6PR11MB5649.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: "Mauro S." <mau.salvi@tin.it>
-Subject: Re: RTNet: sendto(): EAGAIN error
-References: <7e8bd6a5-dce4-04a6-f8b1-b9172f28b208@tin.it>
- <cf925dbe-afe8-470b-5130-16d062c890c9@siemens.com>
- <f50fa498-d958-6d08-7404-cf127104fd84@tin.it>
- <8adc7d89-e853-688f-aaca-2214d126581c@tin.it>
- <d88532f1-b851-1602-4fde-84045798bac3@siemens.com>
-Content-Language: it-IT
-In-Reply-To: <d88532f1-b851-1602-4fde-84045798bac3@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,176 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Il 24/05/22 08:33, Jan Kiszka ha scritto:
-> On 13.05.22 14:51, Mauro S. via Xenomai wrote:
->> Il 05/05/22 17:04, Mauro S. via Xenomai ha scritto:
->>> Il 05/05/22 15:05, Jan Kiszka ha scritto:
->>>> On 03.05.22 17:18, Mauro S. via Xenomai wrote:
->>>>> Hi all,
->>>>>
->>>>> I'm trying to use RTNet with TDMA.
->>>>>
->>>>> I succesfully set up my bus:
->>>>>
->>>>> - 1GBps speed
->>>>> - 3 devices
->>>>> - cycle time 1ms
->>>>> - timeslots with 200us offset
->>>>>
->>>>> I wrote a simple application that in parallel receives and sends UDP
->>>>> packets on TDMA bus.
->>>>>
->>>>> - sendto() is done to the broadcast address, port 1111
->>>>> - recvfrom() is done on the port 1111
->>>>>
->>>>> Application sends a small packet (5 bytes) in a periodic task with 1ms
->>>>> period and prio 51. Receive is done in a non-periodic task with prio
->>>>> 50.
->>>>>
->>>>> Application is running on all the three devices, and I can see packets
->>>>> are sent and received correctly by all the devices.
->>>>>
->>>>> But after a while, all send() calls on all devices fails with error
->>>>> EAGAIN.
->>>>>
->>>>> Could this error be related to some internal buffer/queue that becomes
->>>>> full? Or am I missing something?
->>>>
->>>> When you get EAGAIN on sender side, cleanup of TX buffers likely failed,
->>>> and the socket ran out of buffers to send further frames. That may be
->>>> related to TX IRQs not making it. Check the TX IRQ counter on the
->>>> sender, if it increases at the same pace as you send packets.
->>>>
->>>> Jan
->>>>
->>>
->>> Thanks Jan for your fast answer.
->>>
->>> I forgot to mention that I'm using the rt_igb driver.
->>>
->>> I have only one IRQ field in /proc/xenomai/irq, counting both TX and RX
->>>
->>>    cat /proc/xenomai/irq | grep rteth0
->>>     125:         0           0     2312152         0       rteth0-TxRx-0
->>>
->>> I did this test:
->>>
->>> * on the master I send a packet every 1ms in a periodic RT task
->>> (period 1ms, prio 51) with my test app.
->>>
->>> * on the master I see an increment of about 2000 IRQs per second: I
->>> guess 1000 are for my sent packets (1 packet every ms), and 1000 for
->>> the TDMA sync packet. In fact I see the "rtifconfig" RX counter almost
->>> stationary (only 8 packets every 2-3 seconds, refresh requests from
->>> slaves?), TX counter incrementing in about 2000 packets per second.
->>>
->>> * on the two slaves (thet are running nothing) I observe the same rate
->>> (about 2000 IRQs per second). I see the "rtifconfig" TX counter almost
->>> stationary (only 4 packets every 2-3 seconds), RX counter incrementing
->>> in about 2000 packets per second.
->>>
->>> * if I stop sending packets with my app, I can see all the rates at
->>> about 1000 per second
->>>
->>> If I start send-receive on all the three devices, I can see a IRQ rate
->>> around 4000 IRQs per second on all devices (1000 sync, 1000 send and
->>> 1000 + 1000 receive).
->>>
->>> I observed that if I only send from master and receive on slaves the
->>> problem does not appear. Or if I send/receive from all, but with a
->>> packet every 2ms, the problem does not appear.
->>>
->>> Could be a CPU performance problem (4k IRQs per second are too much
->>> for an Intel Atom x5-E8000 CPU @ 1.04GHz)?
->>>
->>>
->>> Thanks in advance, regards
->>>
->>
->> Hi all,
->>
->> I did further tests.
->>
->> First of all I modified my code to wait the TDMA sync event before do a
->> send. I'm doing it with RTMAC_RTIOC_WAITONCYCLE ioctl (the .h file that
->> defines it is not exported in userland, I need to copy
->> kernel/drivers/net/stack/include/rtmac.h file in my project dir to
->> include it).
->>
->> I send one broadcast packet each TDMA cycle (1ms) from each device
->> (total 3 devices), and each device also receive the packets from the
->> other two (I use two different sockets to send and receive).
->>
->> The first problem that I detected is that the EAGAIN error happens
->> anyway (only with less frequency): I expected to have this error
->> disappearing, since I send one packet synced with TDMA cycle time, then
->> the rtskbs queue should remain empty (or at most with a single packet
->> queued). I tried to change the cycle time (2ms, then 4ms) but the
->> problem remains.
->>
->> The only mode that seems to don't have EAGAIN error (or at least have it
->> really less frequently) is to send the packet every two TDMA cycles,
->> independently of the cycle duration (1ms, 2ms, 4ms...).
->>
->> Am I missing something?
->>
->> Are there any benchmarks/use cases using TDMA in this manner?
->>
->> The second problem that happened to me is that sometimes one slave
->> stopped to send/receive packets.
->> Send is blocked in RTMAC_RTIOC_WAITONCYCLE, recv does receive nothing.
->> When the lock happens, rtifconfig shows dropped and overruns counters
->> incrementing with the TDMA cycle rate (e.g. 250 for 4ms cycle): seems
->> that the RX queue is completely locked. Dmesg does not show errors and
->> /proc/xenomai/irq shows that IRQ counter is still (1 irq each 2-3
->> seconds). A "rtnet stop && rtnet start" recovers from this situation.
->> The strangeness is that the problematic device is always the same.
->> Trying a different switch the problem disappears. Could be a problem
->> caused by some switch buffering?
->>
-> 
-> Hmm, my first try then would be using a cross-link between two nodes and
-> see if the issue is gone. If so, there is very likely some issue in the
-> compatibility of the hardware and/or the current driver version. Keep in
-> mind that the RTnet drivers are all aging.
-> 
-> Jan
-> 
-
-Hi Jan,
-
-thank you. Meanwhile seems that I found a solution to the EAGAIN 
-problem: enable NRT slot for every slave.
-
-In my previous configuration I didn't specify any NRT slot (slot 1), 
-slot 0 is used also for NRT.
-Then, AFAIU, adding the NRT slot solves the problem because NRT packets 
-outgoing from devices were put in the slot 0 queue, among RT packets. 
-Since my test application wrote a RT packet each cycle, adding also the 
-NRT ones causes the queue to fill after some time (EAGAIN error), 
-because TDMA sends only one packet at cycle.
-
-I didn't use NRT interface (vnic0) to do NRT communications, and send() 
-in test app is done in a Xenomai RT task, without mode switches.
-Then, since these NRT packets are not coming from userspace, I think 
-that they should originate from RTNet stack: could be the heartbeat 
-packets from RTcfg? Are there some other NRT packets from stack (e.g. 
-for master that does not send heartbeat)? Or am I totally wrong?
-
-As said, a configuration with both RT and NRT slots enabled on all 
-devices solves the problem (at least, same test that before run only 
-some minutes, now has been running for 4 hours).
-
-
-Anyway, this could explain one half of the problem (the EAGAIN error), 
-but does not explain the other (why without NRT slots one slave had the 
-RX queue locked, and with NRT slot it works without problems)...any idea?
-
-
-Thanks, regards
-
--- 
-Mauro S.
+UmVwbGF5IG9mIHRoZSBFdmVudDoNCg0KQ1NETiBDaGluZXNlDQpodHRwczovL2ludGVsLmNzZG4u
+bmV0LzIwMjJHbG9iYWxYZW5vbWFpQ29tbXVuaXR5TWVldHVwL3poDQoNCkNTRE4gRW5nbGlzaA0K
+aHR0cHM6Ly9pbnRlbC5jc2RuLm5ldC8yMDIyR2xvYmFsWGVub21haUNvbW11bml0eU1lZXR1cC9l
+bg0KDQpWaGFsbCBPcmlnaW5hbA0KaHR0cHM6Ly9pbnRlbC52aGFsbC5jb20vcGMvMTgxP2NoYW5u
+ZWw9bWFpbg0KDQpWaGFsbCBDaGluZXNlDQpodHRwczovL2ludGVsLnZoYWxsLmNvbS9wYy8yMTU/
+Y2hhbm5lbD1tYWluDQoNClZoYWxsIEVuZ2xpc2gNCmh0dHBzOi8vaW50ZWwudmhhbGwuY29tL3Bj
+LzIxNz9jaGFubmVsPW1haW4NCg0KQmFuZCBvZiBBdXRvbWF0aW9uIEJyb3RoZXJzIEVuZ2xpc2g6
+DQpodHRwczovL3htZC5oNS54ZWtub3cuY29tL3NsLzR2cVNsbw0KDQpCYW5kIG9mIEF1dG9tYXRp
+b24gQnJvdGhlcnMgQ2hpbmVzZToNCmh0dHBzOi8veG1kLmg1Lnhla25vdy5jb20vc2wvMmZ2OXZq
+DQoNCg0KPkRhdGU6IFR1ZSwgMjQgTWF5IDIwMjIgMTQ6MjI6MDggKzAwMDANCj5Gcm9tOiAiV2Fu
+ZywgUmljayBZIiA8cmljay55LndhbmdAaW50ZWwuY29tPg0KPg0KPg0KPj4tLS0tLU9yaWdpbmFs
+IE1lc3NhZ2UtLS0tLQ0KPj5Gcm9tOiBXYW5nLCBSaWNrIFkgPHJpY2sueS53YW5nQGludGVsLmNv
+bT4NCj4+DQo+PkhpIGFsbCwNCj4+DQo+PldlJ3JlIGV4Y2l0ZWQgdG8gYW5ub3VuY2UgdGhhdCB0
+aGUgMjAyMiBHbG9iYWwgWGVub21haSBDb21tdW5pdHkgTWVldHVwDQo+PmlzIG9wZW4gZm9yIHJl
+Z2lzdHJhdGlvbiENCj4+DQo+PkV4cGVydHMgaW4gWGVub21haSBjb21tdW5pdHkgZnJvbSBFdXJv
+cGUsIHRoZSBVbml0ZWQgU3RhdGVzIGFuZCBDaGluYQ0KPj53aWxsIHNoYXJlIFhlbm9tYWktYmFz
+ZWQgUlRPUyBkZXZlbG9wbWVudCwgYXBwbGljYXRpb25zIGFuZCBiZXN0IHByYWN0aWNlcy4NCj4+
+VGhlcmUgYXJlIDEyIHByZXNlbnRhdGlvbnMgYW5kIDIgTGl2ZSBRJkEgc2Vzc2lvbnMgaW4gdGhl
+IGV2ZW50Lg0KPj4NCj4+VGhlIG1lZXR1cCB3YXMgZGl2aWRlZCBpbnRvIHR3byBoYWx2ZXMgdG8g
+ZmFjaWxpdGF0ZSBBc2lhLVBhY2lmaWMgYW5kDQo+PkV1cm9wZWFuIHRpbWUgem9uZXMuIFRoZSBt
+ZWV0dXAgcHJvdmlkZXMgc2ltdWx0YW5lb3VzIGludGVycHJldGF0aW9uIGluDQo+PmJvdGggQ2hp
+bmVzZSBhbmQgRW5nbGlzaC4gQXR0ZW5kYW5jZSB3aWxsIGJlIGZyZWUgZm9yIGV2ZXJ5b25lLg0K
+Pj4NCj4+Rm9yIGRldGFpbCBhZ2VuZGEgYW5kIHJlZ2lzdHJhdGlvbiwgcGxlYXNlIHZpc2l0Og0K
+Pj5odHRwczovL2ludGVsLmNzZG4ubmV0LzIwMjJHbG9iYWxYZW5vbWFpQ29tbXVuaXR5TWVldHVw
+L2VuDQo+Pg0KPj5QbGVhc2UgIkNsaWNrIHRvIGVudGVyIFZoYWxsIGxpdmUiIGFuZCB0aGVuICJs
+aXZlIHJlZ2lzdHJhdGlvbiIuDQo+Pg0KPj5PcGVuaW5nIGZvciBwYXJ0IDEgaXMgYXQ6DQo+PlBE
+VCAxODowMCBNYXkgMjQgfCBVVEMgMDE6MDAsIENFU1QgMDM6MDAsIENTVCAwOTowMCBNYXkgMjUN
+Cj4+DQo+DQo+VGhlIE1lZXR1cCB3aWxsIHN0YXJ0IG9uIHRpbWUuIExvb2tpbmcgZm9yd2FyZCB0
+byBtZWV0aW5nIHlvdSBzb29uLg0KPg0KPj4tIE9wZW5pbmcgYW5kIFdlbGNvbWUNCj4+ICBieSBK
+b25ueSBSaWthcmQgS2xhc3NvbiAoSW50ZWwpDQo+Pg0KPj4tIFJlYWwtdGltZSBPcGVyYXRpbmcg
+U3lzdGVtcyBpbiBTcGVjaWFsIEVmZmVjdHMNCj4+ICBieSBTdGV2ZSBSb3NlbmJsdXRoIChDb25j
+ZXB0IE92ZXJkcml2ZSBJbmMpDQo+Pg0KPj4tIElFQzYxMTMxLTMgcGxhdGZvcm0gZGV2ZWxvcG1l
+bnQgYW5kIG9wdGltaXphdGlvbiBiYXNlZCBvbiBMaW51eA0KPj5YZW5vbWFpDQo+PiAgYnkgSGVu
+cnkgQmFvIChTaGFuZ2hhaSBOeHRyb2wgVGVjaG5vbG9neSBDby4sIEx0ZC4pDQo+Pg0KPj4tIFhl
+bm9tYWkgTW90aW9uIENvbnRyb2wgU29sdXRpb24gYW5kIFR1bmluZyBCYXNlZCBvbiBJbnRlbCBF
+ZGdlDQo+PkNvbnRyb2xzDQo+PiAgZm9yIEluZHVzdHJpYWwNCj4+ICBieSBXZWkgWmhhbmcsIFl1
+IFlhbiAoSW50ZWwpDQo+Pg0KPj4tIEluZHVzdHJpYWwgUEMgJiBYZW5vbWFpDQo+PiAgYnkgWGll
+d2VpIFdhbmcgKFNoZW56aGVuIEdXdGVjaCBDby4sTHRkLikNCj4+DQo+Pi0gWGVub21haSBpbiBJ
+bmR1c3RyeSBDb250cm9sIFN5c3RlbQ0KPj4gIGJ5IFllYmluIExpYW5nIChIYW4ncyBTbWFydCBD
+b250cm9sIFRlY2hub2xvZ3kgQ28uLCBMdGQuKQ0KPj4NCj4+LSBTcGVha2VycyBRJkENCj4+ICBi
+eSBTZXNzaW9uIDEgU3BlYWtlcnMNCj4+DQo+Pg0KPj5PcGVuaW5nIGZvciBwYXJ0IDIgaXMgYXQ6
+DQo+PlBEVCAyMzowMCBNYXkgMjQgfCBVVEMgMDY6MDAsIENFU1QgMDg6MDAsIENTVCAxNDowMCBN
+YXkgMjUNCj4+DQo+Pi0gV2VsY29tZSBhbmQgS2V5bm90ZSBTcGVha2luZw0KPj4gIFhlbm9tYWkg
+Q29tbXVuaXR5OiBUb2RheSBhbmQgVG9tb3Jyb3cNCj4+ICBieSBKYW4gS2lzemthIChTaWVtZW5z
+IEFHKQ0KPj4NCj4+LSBVcGdyYWRpbmcgdG8gWGVub21haSAzOiBMZXNzb25zIGxlYXJuZWQNCj4+
+ICBieSBSaWNoYXJkIFdlaW5iZXJnZXIgKFNpZ21hIHN0YXIgZ21iaCkNCj4+DQo+Pi0gUmVhbHRp
+bWUgRXhjZXB0aW9uIEhhbmRsaW5nIGluIFhlbm9tYWkNCj4+ICBieSBKb2hhbm5lcyBLaXJjaG1h
+aSAoU0lHTUFURUsgR21iSCAmIENvIEtHKQ0KPj4NCj4+LSBBcHBsaWNhdGlvbiBEZXZlbG9wbWVu
+dCBCYXNlZCBvbiBYZW5vbWFpDQo+PiAgYnkgQ2hhbmdqdW4gQ2hlbiAoU1lNRyhTaGFuZ2hhaSkg
+SW50ZWxsaWdlbmNlIFN5c3RlbSBDby4sIEx0ZCkNCj4+DQo+Pi0gRGVsaXZlcmluZyBSZWFsLVRp
+bWUgUGVyZm9ybWFuY2Ugd2l0aCBJbnRlbMKuIFRDQw0KPj4gIGJ5IEppYW5ibyBDYW8gKEludGVs
+KQ0KPj4NCj4+LSBSdW5uaW5nIFhlbm9tYWkgVk0gb24gQUNSTiBoeXBlcnZpc29yDQo+PiAgYnkg
+Um9ubmllIFlhbmcgKEludGVsKQ0KPj4NCj4+LSBTcGVha2VycyBRJkENCj4+ICBieSBTZXNzaW9u
+IDIgU3BlYWtlcnMNCj4+DQo+Pg0KPj5QYWNpZmljIERheWxpZ2h0IFRpbWXCoChQRFQpOiBVVEMt
+NyBob3VycyBDb29yZGluYXRlZCBVbml2ZXJzYWwgVGltZQ0KPj4oVVRDKSBDZW50cmFsIEV1cm9w
+ZWFuIFN1bW1lciBUaW1lIChDRVNUKTogVVRDKzIgQ2hpbmEgU3RhbmRhcmQgVGltZQ0KPj4oQ1NU
+KTogVVRDKzggaG91cnMNCj4+DQo+Pg0KPj5Mb29raW5nIGZvcndhcmQgdG8gbWVldGluZyB5b3Ug
+b25saW5lIQ0KPj4NCj4+DQo+PlRoYW5rcywNCj4+Umljaw0KPj4NCg==
 
