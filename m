@@ -1,11 +1,10 @@
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 0/2] Backport: FPU testing / switchtest issue to 3.2 stable 
+Date: Wed, 25 May 2022 11:56:25 +0200
+Message-Id: <20220525095627.40521-1-florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 MIME-Version: 1.0
-References: <CA+K1mPGZhf9Rg+ywyoffiy+jn0BuM_n7D4C7exyS5MKQK+UW6Q@mail.gmail.com>
-In-Reply-To: <CA+K1mPGZhf9Rg+ywyoffiy+jn0BuM_n7D4C7exyS5MKQK+UW6Q@mail.gmail.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 25 May 2022 10:07:34 +0200
-Message-ID: <CAFLxGvzpxq=5GTWsXJbCyYVDTDnP6ab8KKTcNVMAn7kGiX-RPQ@mail.gmail.com>
-Subject: Re: 16550A IRQ not enabled
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,44 +13,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Wed, May 25, 2022 at 2:18 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
-> We are using Xenomai 3.1.2 on kernel 4.19.229, X86 CPU
-> We have a (Moxa CP-104ul) serial card on an isolated PCI bus interrupt 17.
-> lspci -v confirms that the serial card is isolated and that no other
-> peripheral uses this interrupt.
->
-> We have the 16550A serial driver loaded, and an external serial device
-> trying to initiate a serial connection, but no interrupts are being
-> generated. The interrupt counter in /proc/xenomai/irq stay at 0.
->
-> [user@device~]$ cat /proc/xenomai/irq
->   IRQ         CPU0        CPU1        CPU2        CPU3
->    17:           0           0           0           0         rtser2
-> rtser3 rtser4 rtser5
->
-> As an experiment: if we enable the Azalia sound chip in the BIOS, and
-> load its Alsa sound driver, the Serial card will then share IRQ 17
-> with that sound chip, and then the serial card works. The serial
-> interrupt counter is incrementing in /proc/xenomai/irq and our serial
-> peripheral can utilize the serial port OK.
+Hi all,
 
-I think enabling it in the BIOS is the key. Can you try keeping the sound driver
-disabled and only enable in the BIOS.
+this is the backport of the previously pulished FPU testing cleanup. As
+3.2 stable branch still supports ipipe and ipipe allows us to use the
+FPU in kernel space (in user task context) we have to deal with the
+problem differently.
 
-> We don't want the sound driver enabled, but this test indicates that
-> 16550A somehow failed to enable its interrupt, whereas the sound
-> driver succeeded in doing so.
->
-> How can we check a PIC, etc. to verify that the serial interrupt is
-> truly enabled when the 16550A driver is loaded alone?
+The x86 fpu test relied on getting a clean fpu state (created by
+fninit), but there was no guarantee that this initialization happened
+which was uncovered when stressing server grade hardware with stress-ng
+and running the xenomai testsuite in parallel.
 
-You can enable CONFIG_GENERIC_IRQ_DEBUGFS and then poke into
-/sys/kernel/debug/irq/.
+3.1 stable is also affected. I'm currently working on an additional
+backport to that branch.
+
+Best regards,
+Florian
+
+Florian Bezdeka (2):
+  x86: ipipe: Fix testing issue due to uninitialized FPU
+  x86: ipipe: Enable FPU tests unconditionally
+
+ .../arm/dovetail/include/asm/xenomai/fptest.h |  4 ++++
+ .../arm/ipipe/include/asm/xenomai/fptest.h    |  4 ++++
+ .../dovetail/include/asm/xenomai/fptest.h     |  4 ++++
+ .../arm64/ipipe/include/asm/xenomai/fptest.h  |  4 ++++
+ .../ipipe/include/asm/xenomai/fptest.h        |  4 ++++
+ .../x86/dovetail/include/asm/xenomai/fptest.h |  4 ++++
+ .../x86/ipipe/include/asm/xenomai/fptest.h    | 20 ++++++-------------
+ kernel/drivers/testing/switchtest.c           |  4 +++-
+ 8 files changed, 33 insertions(+), 15 deletions(-)
 
 -- 
-Thanks,
-//richard
+2.35.3
+
 
