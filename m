@@ -1,11 +1,12 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Replay available - 2022 Global Xenomai Community Meetup
-Date: Wed, 25 May 2022 13:33:27 +0000
-Message-ID: <CO6PR11MB5649AEDE5151E252923631A0BAD69@CO6PR11MB5649.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CA+K1mPGZhf9Rg+ywyoffiy+jn0BuM_n7D4C7exyS5MKQK+UW6Q@mail.gmail.com>
+ <CAFLxGvzpxq=5GTWsXJbCyYVDTDnP6ab8KKTcNVMAn7kGiX-RPQ@mail.gmail.com>
+In-Reply-To: <CAFLxGvzpxq=5GTWsXJbCyYVDTDnP6ab8KKTcNVMAn7kGiX-RPQ@mail.gmail.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Wed, 25 May 2022 17:08:34 -0700
+Message-ID: <CA+K1mPGfRDQsW_d=Rq+O50sHzJtSEsRLvimLqfCzcBawgiQnAg@mail.gmail.com>
+Subject: Re: 16550A IRQ not enabled
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +15,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>, Xenomai List <xenomai@xenomai.org>
 
-UmVwbGF5IG9mIHRoZSBFdmVudDoNCg0KQ1NETiBDaGluZXNlDQpodHRwczovL2ludGVsLmNzZG4u
-bmV0LzIwMjJHbG9iYWxYZW5vbWFpQ29tbXVuaXR5TWVldHVwL3poDQoNCkNTRE4gRW5nbGlzaA0K
-aHR0cHM6Ly9pbnRlbC5jc2RuLm5ldC8yMDIyR2xvYmFsWGVub21haUNvbW11bml0eU1lZXR1cC9l
-bg0KDQpWaGFsbCBPcmlnaW5hbA0KaHR0cHM6Ly9pbnRlbC52aGFsbC5jb20vcGMvMTgxP2NoYW5u
-ZWw9bWFpbg0KDQpWaGFsbCBDaGluZXNlDQpodHRwczovL2ludGVsLnZoYWxsLmNvbS9wYy8yMTU/
-Y2hhbm5lbD1tYWluDQoNClZoYWxsIEVuZ2xpc2gNCmh0dHBzOi8vaW50ZWwudmhhbGwuY29tL3Bj
-LzIxNz9jaGFubmVsPW1haW4NCg0KQmFuZCBvZiBBdXRvbWF0aW9uIEJyb3RoZXJzIEVuZ2xpc2g6
-DQpodHRwczovL3htZC5oNS54ZWtub3cuY29tL3NsLzR2cVNsbw0KDQpCYW5kIG9mIEF1dG9tYXRp
-b24gQnJvdGhlcnMgQ2hpbmVzZToNCmh0dHBzOi8veG1kLmg1Lnhla25vdy5jb20vc2wvMmZ2OXZq
-DQoNCg0KPkRhdGU6IFR1ZSwgMjQgTWF5IDIwMjIgMTQ6MjI6MDggKzAwMDANCj5Gcm9tOiAiV2Fu
-ZywgUmljayBZIiA8cmljay55LndhbmdAaW50ZWwuY29tPg0KPg0KPg0KPj4tLS0tLU9yaWdpbmFs
-IE1lc3NhZ2UtLS0tLQ0KPj5Gcm9tOiBXYW5nLCBSaWNrIFkgPHJpY2sueS53YW5nQGludGVsLmNv
-bT4NCj4+DQo+PkhpIGFsbCwNCj4+DQo+PldlJ3JlIGV4Y2l0ZWQgdG8gYW5ub3VuY2UgdGhhdCB0
-aGUgMjAyMiBHbG9iYWwgWGVub21haSBDb21tdW5pdHkgTWVldHVwDQo+PmlzIG9wZW4gZm9yIHJl
-Z2lzdHJhdGlvbiENCj4+DQo+PkV4cGVydHMgaW4gWGVub21haSBjb21tdW5pdHkgZnJvbSBFdXJv
-cGUsIHRoZSBVbml0ZWQgU3RhdGVzIGFuZCBDaGluYQ0KPj53aWxsIHNoYXJlIFhlbm9tYWktYmFz
-ZWQgUlRPUyBkZXZlbG9wbWVudCwgYXBwbGljYXRpb25zIGFuZCBiZXN0IHByYWN0aWNlcy4NCj4+
-VGhlcmUgYXJlIDEyIHByZXNlbnRhdGlvbnMgYW5kIDIgTGl2ZSBRJkEgc2Vzc2lvbnMgaW4gdGhl
-IGV2ZW50Lg0KPj4NCj4+VGhlIG1lZXR1cCB3YXMgZGl2aWRlZCBpbnRvIHR3byBoYWx2ZXMgdG8g
-ZmFjaWxpdGF0ZSBBc2lhLVBhY2lmaWMgYW5kDQo+PkV1cm9wZWFuIHRpbWUgem9uZXMuIFRoZSBt
-ZWV0dXAgcHJvdmlkZXMgc2ltdWx0YW5lb3VzIGludGVycHJldGF0aW9uIGluDQo+PmJvdGggQ2hp
-bmVzZSBhbmQgRW5nbGlzaC4gQXR0ZW5kYW5jZSB3aWxsIGJlIGZyZWUgZm9yIGV2ZXJ5b25lLg0K
-Pj4NCj4+Rm9yIGRldGFpbCBhZ2VuZGEgYW5kIHJlZ2lzdHJhdGlvbiwgcGxlYXNlIHZpc2l0Og0K
-Pj5odHRwczovL2ludGVsLmNzZG4ubmV0LzIwMjJHbG9iYWxYZW5vbWFpQ29tbXVuaXR5TWVldHVw
-L2VuDQo+Pg0KPj5QbGVhc2UgIkNsaWNrIHRvIGVudGVyIFZoYWxsIGxpdmUiIGFuZCB0aGVuICJs
-aXZlIHJlZ2lzdHJhdGlvbiIuDQo+Pg0KPj5PcGVuaW5nIGZvciBwYXJ0IDEgaXMgYXQ6DQo+PlBE
-VCAxODowMCBNYXkgMjQgfCBVVEMgMDE6MDAsIENFU1QgMDM6MDAsIENTVCAwOTowMCBNYXkgMjUN
-Cj4+DQo+DQo+VGhlIE1lZXR1cCB3aWxsIHN0YXJ0IG9uIHRpbWUuIExvb2tpbmcgZm9yd2FyZCB0
-byBtZWV0aW5nIHlvdSBzb29uLg0KPg0KPj4tIE9wZW5pbmcgYW5kIFdlbGNvbWUNCj4+ICBieSBK
-b25ueSBSaWthcmQgS2xhc3NvbiAoSW50ZWwpDQo+Pg0KPj4tIFJlYWwtdGltZSBPcGVyYXRpbmcg
-U3lzdGVtcyBpbiBTcGVjaWFsIEVmZmVjdHMNCj4+ICBieSBTdGV2ZSBSb3NlbmJsdXRoIChDb25j
-ZXB0IE92ZXJkcml2ZSBJbmMpDQo+Pg0KPj4tIElFQzYxMTMxLTMgcGxhdGZvcm0gZGV2ZWxvcG1l
-bnQgYW5kIG9wdGltaXphdGlvbiBiYXNlZCBvbiBMaW51eA0KPj5YZW5vbWFpDQo+PiAgYnkgSGVu
-cnkgQmFvIChTaGFuZ2hhaSBOeHRyb2wgVGVjaG5vbG9neSBDby4sIEx0ZC4pDQo+Pg0KPj4tIFhl
-bm9tYWkgTW90aW9uIENvbnRyb2wgU29sdXRpb24gYW5kIFR1bmluZyBCYXNlZCBvbiBJbnRlbCBF
-ZGdlDQo+PkNvbnRyb2xzDQo+PiAgZm9yIEluZHVzdHJpYWwNCj4+ICBieSBXZWkgWmhhbmcsIFl1
-IFlhbiAoSW50ZWwpDQo+Pg0KPj4tIEluZHVzdHJpYWwgUEMgJiBYZW5vbWFpDQo+PiAgYnkgWGll
-d2VpIFdhbmcgKFNoZW56aGVuIEdXdGVjaCBDby4sTHRkLikNCj4+DQo+Pi0gWGVub21haSBpbiBJ
-bmR1c3RyeSBDb250cm9sIFN5c3RlbQ0KPj4gIGJ5IFllYmluIExpYW5nIChIYW4ncyBTbWFydCBD
-b250cm9sIFRlY2hub2xvZ3kgQ28uLCBMdGQuKQ0KPj4NCj4+LSBTcGVha2VycyBRJkENCj4+ICBi
-eSBTZXNzaW9uIDEgU3BlYWtlcnMNCj4+DQo+Pg0KPj5PcGVuaW5nIGZvciBwYXJ0IDIgaXMgYXQ6
-DQo+PlBEVCAyMzowMCBNYXkgMjQgfCBVVEMgMDY6MDAsIENFU1QgMDg6MDAsIENTVCAxNDowMCBN
-YXkgMjUNCj4+DQo+Pi0gV2VsY29tZSBhbmQgS2V5bm90ZSBTcGVha2luZw0KPj4gIFhlbm9tYWkg
-Q29tbXVuaXR5OiBUb2RheSBhbmQgVG9tb3Jyb3cNCj4+ICBieSBKYW4gS2lzemthIChTaWVtZW5z
-IEFHKQ0KPj4NCj4+LSBVcGdyYWRpbmcgdG8gWGVub21haSAzOiBMZXNzb25zIGxlYXJuZWQNCj4+
-ICBieSBSaWNoYXJkIFdlaW5iZXJnZXIgKFNpZ21hIHN0YXIgZ21iaCkNCj4+DQo+Pi0gUmVhbHRp
-bWUgRXhjZXB0aW9uIEhhbmRsaW5nIGluIFhlbm9tYWkNCj4+ICBieSBKb2hhbm5lcyBLaXJjaG1h
-aSAoU0lHTUFURUsgR21iSCAmIENvIEtHKQ0KPj4NCj4+LSBBcHBsaWNhdGlvbiBEZXZlbG9wbWVu
-dCBCYXNlZCBvbiBYZW5vbWFpDQo+PiAgYnkgQ2hhbmdqdW4gQ2hlbiAoU1lNRyhTaGFuZ2hhaSkg
-SW50ZWxsaWdlbmNlIFN5c3RlbSBDby4sIEx0ZCkNCj4+DQo+Pi0gRGVsaXZlcmluZyBSZWFsLVRp
-bWUgUGVyZm9ybWFuY2Ugd2l0aCBJbnRlbMKuIFRDQw0KPj4gIGJ5IEppYW5ibyBDYW8gKEludGVs
-KQ0KPj4NCj4+LSBSdW5uaW5nIFhlbm9tYWkgVk0gb24gQUNSTiBoeXBlcnZpc29yDQo+PiAgYnkg
-Um9ubmllIFlhbmcgKEludGVsKQ0KPj4NCj4+LSBTcGVha2VycyBRJkENCj4+ICBieSBTZXNzaW9u
-IDIgU3BlYWtlcnMNCj4+DQo+Pg0KPj5QYWNpZmljIERheWxpZ2h0IFRpbWXCoChQRFQpOiBVVEMt
-NyBob3VycyBDb29yZGluYXRlZCBVbml2ZXJzYWwgVGltZQ0KPj4oVVRDKSBDZW50cmFsIEV1cm9w
-ZWFuIFN1bW1lciBUaW1lIChDRVNUKTogVVRDKzIgQ2hpbmEgU3RhbmRhcmQgVGltZQ0KPj4oQ1NU
-KTogVVRDKzggaG91cnMNCj4+DQo+Pg0KPj5Mb29raW5nIGZvcndhcmQgdG8gbWVldGluZyB5b3Ug
-b25saW5lIQ0KPj4NCj4+DQo+PlRoYW5rcywNCj4+Umljaw0KPj4NCg==
+On Wed, May 25, 2022 at 1:07 AM Richard Weinberger
+<richard.weinberger@gmail.com> wrote:
+>
+> On Wed, May 25, 2022 at 2:18 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
+> > We are using Xenomai 3.1.2 on kernel 4.19.229, X86 CPU
+> > We have a (Moxa CP-104ul) serial card on an isolated PCI bus interrupt 17.
+> > lspci -v confirms that the serial card is isolated and that no other
+> > peripheral uses this interrupt.
+> >
+> > We have the 16550A serial driver loaded, and an external serial device
+> > trying to initiate a serial connection, but no interrupts are being
+> > generated. The interrupt counter in /proc/xenomai/irq stay at 0.
+> >
+> > [user@device~]$ cat /proc/xenomai/irq
+> >   IRQ         CPU0        CPU1        CPU2        CPU3
+> >    17:           0           0           0           0         rtser2
+> > rtser3 rtser4 rtser5
+> >
+> > As an experiment: if we enable the Azalia sound chip in the BIOS, and
+> > load its Alsa sound driver, the Serial card will then share IRQ 17
+> > with that sound chip, and then the serial card works. The serial
+> > interrupt counter is incrementing in /proc/xenomai/irq and our serial
+> > peripheral can utilize the serial port OK.
+>
+> I think enabling it in the BIOS is the key. Can you try keeping the sound driver
+> disabled and only enable in the BIOS.
+
+We left the Azalia sound chip enabled in the BIOS, and disabled the
+sound driver.
+Interrupts in /proc/xenomai/irq are still not incrementing when serial
+packets come into the po
+
+> > We don't want the sound driver enabled, but this test indicates that
+> > 16550A somehow failed to enable its interrupt, whereas the sound
+> > driver succeeded in doing so.
+> >
+> > How can we check a PIC, etc. to verify that the serial interrupt is
+> > truly enabled when the 16550A driver is loaded alone?
+>
+> You can enable CONFIG_GENERIC_IRQ_DEBUGFS and then poke into
+> /sys/kernel/debug/irq/.
+>
+> --
+> Thanks,
+> //richard
+
+We rebuilt our kernel with CONFIG_GENERIC_IRQ_DEBUGFS enabled, booted
+with the sound driver disabled and loaded xeno_16550A:
+
+[root@device~]# cat /sys/kernel/debug/irq/irqs/17
+cat: /sys/kernel/debug/irq/irqs/17: No such file or directory.
+
+We noticed that /proc/xenomai/irq is not showing IRQ17 immediately
+after xeno_16550A is loaded.
+proc/xenomai/irq only shows IRQ17 after the serial device is opened
+for the first time.
+So /sys/kernel/debug/irq/irqs/17 doesn't become available until the
+sound driver is loaded.
+
+We also have a (Peak) CAN card installed in this system, and the
+corresponding IRQ shows up immediately in
+/sys/kernel/debug/irq/irqs/18
+after the xeno_can driver is loaded.
+
+Should we expect to see the IRQ show up in /proc/xenomai/irq
+immediately after loading the xeno_16550A driver?
+
+How can we debug this further, since /sys/kernel/debug/irq/irqs/17
+does not exist without that sound driver?
 
