@@ -1,12 +1,7 @@
-References: <20220524144631.25020-1-jamienstar@163.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
-Date: Thu, 26 May 2022 18:19:33 +0200
-In-reply-to: <20220524144631.25020-1-jamienstar@163.com>
-Message-ID: <871qwgp8nd.fsf@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
+Date: Fri, 27 May 2022 02:22:01 -0400
+Message-Id: <20220527062203.9498-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +10,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jamienstar@163.com
-Cc: jan.kiszka@siemens.com, florian.bezdeka@siemens.com, xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+When there is refined tsc clock, notify Xenomai to apply it.
+Linux may schedule a delayed work to refine tsc clock and update
+tsc_khz which happen after Xenomai finsih init but tsc_scale and
+tsc_shift still keep the value depending on origianl tsc clock
+which is outdated. The difference between two clocks may cause
+timing issue.
+
+For example:
+  [ 0.001731] tsc: Detected 2899.886 MHz TSC
+  [ 5.588387] tsc: Refined TSC clocksource calibration: 2903.999 MHz
+  cat /sys/module/xenomai/parameters/clockfreq
+  2899886000
+  After patching, we like to use 2903.999 MHz.
+
+The patchset includes IPIPE patch and cobalt-patch.
+
+Hongzhan Chen (1):
+  process: update clockfreq when receive corresponding event.
+  x86/tsc: I-PIPE : notify I-PIPE about updated clockfreq.
+
+cobalt side:
+ include/cobalt/kernel/init.h                        |  2 ++
+ kernel/cobalt/include/asm-generic/xenomai/machine.h |  1 +
+ kernel/cobalt/init.c                                | 11 ++++++++++-
+ kernel/cobalt/posix/process.c                       |  9 ++++++++-
+ 4 files changed, 21 insertions(+), 2 deletions(-)
+
+ipipe-side:
+ arch/x86/kernel/tsc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 
-jamienstar@163.com writes:
+-- 
+2.17.1
 
-> From: Jamie Huang <jamienstar@163.com>
->
-> In v5.18-evl-rebase, function kernel_fpu_disabled() has been removed in
-> commit 59f5ede3bc0f("x86/fpu: Prevent FPU state corruption"), so we will
-> get compile error when CONFIG_DOVETAIL is enabled:
-> arch/x86/kernel/fpu/core.c:931:6: error: implicit declaration of function=
- =E2=80=98kernel_fpu_disabled=E2=80=99; did you mean =E2=80=98perf_pmu_disa=
-ble=E2=80=99? [-Werror=3Dimplicit-function-declaration]
->     if (kernel_fpu_disabled()) {
->         ^~~~~~~~~~~~~~~~~~~
->         perf_pmu_disable
-> cc1: all warnings being treated as errors
-> So, fix it.
->
-> Signed-off-by: Jamie Huang <jamienstar@163.com>
-> ---
->  arch/x86/kernel/fpu/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-> index 6a0d1e7f278f..c3adbbb73226 100644
-> --- a/arch/x86/kernel/fpu/core.c
-> +++ b/arch/x86/kernel/fpu/core.c
-> @@ -928,7 +928,7 @@ void fpu__suspend_inband(void)
->  	 * preemption of an inband kernel context currently using the
->  	 * fpu by a thread which resumes on the oob stage.
->  	 */
-> -	if (kernel_fpu_disabled()) {
-> +	if (this_cpu_read(in_kernel_fpu)) {
->  		save_fpregs_to_fpstate(kfpu);
->  		__cpu_invalidate_fpregs_state();
->  		oob_fpu_set_preempt(&tsk->thread.fpu);
-
-Merged adding the same fixup to the comment nearby, thanks.
-
---=20
-Philippe.
 
