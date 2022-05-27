@@ -1,14 +1,16 @@
-MIME-Version: 1.0
+Date: Fri, 27 May 2022 10:34:01 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <1268724685.102689.1653640441692.JavaMail.zimbra@nod.at>
+In-Reply-To: <CA+K1mPGprv51onDpDEv1Vo5nEwTbv99J-hZPP+6gtUgBCdx3Zw@mail.gmail.com>
 References: <CA+K1mPGZhf9Rg+ywyoffiy+jn0BuM_n7D4C7exyS5MKQK+UW6Q@mail.gmail.com>
  <CAFLxGvzpxq=5GTWsXJbCyYVDTDnP6ab8KKTcNVMAn7kGiX-RPQ@mail.gmail.com>
  <CA+K1mPGfRDQsW_d=Rq+O50sHzJtSEsRLvimLqfCzcBawgiQnAg@mail.gmail.com>
  <CAFLxGvw7RQFx8ESxxiJ51wpykfcbp6q85wer3sH6Rx9FBfvAWw@mail.gmail.com>
-In-Reply-To: <CAFLxGvw7RQFx8ESxxiJ51wpykfcbp6q85wer3sH6Rx9FBfvAWw@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Fri, 27 May 2022 01:11:39 -0700
-Message-ID: <CA+K1mPGprv51onDpDEv1Vo5nEwTbv99J-hZPP+6gtUgBCdx3Zw@mail.gmail.com>
+ <CA+K1mPGprv51onDpDEv1Vo5nEwTbv99J-hZPP+6gtUgBCdx3Zw@mail.gmail.com>
 Subject: Re: 16550A IRQ not enabled
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,113 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: C Smith <csmithquestions@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Wed, May 25, 2022 at 10:50 PM Richard Weinberger
-<richard.weinberger@gmail.com> wrote:
->
-> On Thu, May 26, 2022 at 2:08 AM C Smith <csmithquestions@gmail.com> wrote:
-> >
-> > On Wed, May 25, 2022 at 1:07 AM Richard Weinberger
-> > <richard.weinberger@gmail.com> wrote:
-> > >
-> > > On Wed, May 25, 2022 at 2:18 AM C Smith via Xenomai <xenomai@xenomai.org> wrote:
-> > > > We are using Xenomai 3.1.2 on kernel 4.19.229, X86 CPU
-> > > > We have a (Moxa CP-104ul) serial card on an isolated PCI bus interrupt 17.
-> > > > lspci -v confirms that the serial card is isolated and that no other
-> > > > peripheral uses this interrupt.
-> > > >
-> > > > We have the 16550A serial driver loaded, and an external serial device
-> > > > trying to initiate a serial connection, but no interrupts are being
-> > > > generated. The interrupt counter in /proc/xenomai/irq stay at 0.
-> > > >
-> > > > [user@device~]$ cat /proc/xenomai/irq
-> > > >   IRQ         CPU0        CPU1        CPU2        CPU3
-> > > >    17:           0           0           0           0         rtser2
-> > > > rtser3 rtser4 rtser5
-> > > >
-> > > > As an experiment: if we enable the Azalia sound chip in the BIOS, and
-> > > > load its Alsa sound driver, the Serial card will then share IRQ 17
-> > > > with that sound chip, and then the serial card works. The serial
-> > > > interrupt counter is incrementing in /proc/xenomai/irq and our serial
-> > > > peripheral can utilize the serial port OK.
-> > >
-> > > I think enabling it in the BIOS is the key. Can you try keeping the sound driver
-> > > disabled and only enable in the BIOS.
-> >
-> > We left the Azalia sound chip enabled in the BIOS, and disabled the
-> > sound driver.
-> > Interrupts in /proc/xenomai/irq are still not incrementing when serial
-> > packets come into the po
-> >
-> > > > We don't want the sound driver enabled, but this test indicates that
-> > > > 16550A somehow failed to enable its interrupt, whereas the sound
-> > > > driver succeeded in doing so.
-> > > >
-> > > > How can we check a PIC, etc. to verify that the serial interrupt is
-> > > > truly enabled when the 16550A driver is loaded alone?
-> > >
-> > > You can enable CONFIG_GENERIC_IRQ_DEBUGFS and then poke into
-> > > /sys/kernel/debug/irq/.
-> > >
-> > > --
-> > > Thanks,
-> > > //richard
-> >
-> > We rebuilt our kernel with CONFIG_GENERIC_IRQ_DEBUGFS enabled, booted
-> > with the sound driver disabled and loaded xeno_16550A:
-> >
-> > [root@device~]# cat /sys/kernel/debug/irq/irqs/17
-> > cat: /sys/kernel/debug/irq/irqs/17: No such file or directory.
-> >
-> > We noticed that /proc/xenomai/irq is not showing IRQ17 immediately
-> > after xeno_16550A is loaded.
-> > proc/xenomai/irq only shows IRQ17 after the serial device is opened
-> > for the first time.
->
-> The driver requests the IRQ only upon open. So that's okay.
->
-> > So /sys/kernel/debug/irq/irqs/17 doesn't become available until the
-> > sound driver is loaded.
->
-> ...or until you use the xeno_16550A driver by opening the device handle?
->
-> > We also have a (Peak) CAN card installed in this system, and the
-> > corresponding IRQ shows up immediately in
-> > /sys/kernel/debug/irq/irqs/18
-> > after the xeno_can driver is loaded.
-> >
-> > Should we expect to see the IRQ show up in /proc/xenomai/irq
-> > immediately after loading the xeno_16550A driver?
->
-> No. It depends how the driver works. As I wrote, xeno_16550A does
-> rtdm_irq_request()
-> in the open, not the probe function.
->
-> > How can we debug this further, since /sys/kernel/debug/irq/irqs/17
-> > does not exist without that sound driver?
->
-> I don't really understand, didn't you write a few lines above that the
-> IRQ shows also up
-> when you open the device? Why do you need the IRQ earlier?
-> --
-> Thanks,
-> //richard
+----- Urspr=C3=BCngliche Mail -----
+> An update:
+> If the 16550A driver is modprobed with no arguments, it apparently
+> probes the PCI subsystem, gets the irq, and interrupts are enabled OK.
+> The serial port can send/receive data.
+> But, if a port=3D or irq=3D argument is passed into the 16550A driver,
+> then the driver seems to skip probing the PCI syubsystem, and the
+> driver fails to enable the irq. No data can transmitted or received by
+> the port, even though the driver has done an  rtdm_irq_request() of
+> the correct irq level.
+>=20
+> This is a problem for my application because I have 6 serial ports and
+> some must have different baud_base args, which is now impossible with
+> this inconsistent driver behavior.
 
-An update:
-If the 16550A driver is modprobed with no arguments, it apparently
-probes the PCI subsystem, gets the irq, and interrupts are enabled OK.
-The serial port can send/receive data.
-But, if a port= or irq= argument is passed into the 16550A driver,
-then the driver seems to skip probing the PCI syubsystem, and the
-driver fails to enable the irq. No data can transmitted or received by
-the port, even though the driver has done an  rtdm_irq_request() of
-the correct irq level.
+And just passing baud_base=3DX,Y,..,Z does not work?
+Sure this is still hacky since it depends on the PCI probe order...
 
-This is a problem for my application because I have 6 serial ports and
-some must have different baud_base args, which is now impossible with
-this inconsistent driver behavior.
+We could make baud_base configurable via ioctl, the driver supports already
+plenty of them.
+Or exposing this and other properties as sysfs attributes.
 
--C Smith
+Further I suggest splitting the driver in at at least two kernel modules.
+One for PCI and another one for legacy PIO/PNP.
+The current probe interface is IMHO confusing and error prone.
+
+Thanks,
+//richard
 
