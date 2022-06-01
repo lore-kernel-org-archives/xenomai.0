@@ -1,12 +1,11 @@
-Message-ID: <056720e5-8a50-1cbf-8913-a569859ed6d0@siemens.com>
-Date: Wed, 1 Jun 2022 07:44:52 +0200
+Message-ID: <9d47b5f3-b18e-0f75-9753-fefec5e9bdd7@siemens.com>
+Date: Wed, 1 Jun 2022 07:50:37 +0200
 MIME-Version: 1.0
-Subject: Re: Reminder: Xenomai community call on Wednesday, Jun 1, 2022, UTC
- 7:00 AM
+Subject: Re: [RFC] Rust API for evl
 Content-Language: en-US
-References: <MN2PR11MB42850151B669E6B6E3126F77F2DF9@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <87mtexkcxf.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB42850151B669E6B6E3126F77F2DF9@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <87mtexkcxf.fsf@xenomai.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,23 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 01.06.22 05:22, Chen, Hongzhan via Xenomai wrote:
+On 31.05.22 15:37, Philippe Gerum via Xenomai wrote:
 > 
-> We have the Xenomai community call today.
+> I've been getting my feet wet with Rust for a few weeks now, assessing
+> the real-time latency figures I could get from an existing (C++)
+> application once fully rewritten in this language.  It turned out that
+> performance was on par with the original implementation with memory
+> safety on top, among other upsides (like having quite some fun coding in
+> Rust in the first place).
 > 
-> Topics may include but are not limited to upstream/downstream project 
-> plans, status updates, and technical discussions. It's an open online 
-> meeting that anyone can join and ask questions.
+> Having Rust as a Tier 1 language for Xenomai4/evl along with the
+> existing C interface definitely makes sense to me. The goal would be to
+> have a 'revl' interface providing the EVL services the idiomatic Rust
+> way, available as a crate on top of the FFI bindings to libevl which
+> have just landed [1].
+> 
+> Whether you are a Rustacean or not, if you are willing to discuss and
+> help with this, let me know.
+> 
+> [1] https://source.denx.de/Xenomai/xenomai4/evl-sys.git
 > 
 
-Unfortunately, I won't be able to join today.
+I think this is a very interesting experiment, and I'm excited to see
+that there are apparently no RT traps in the runtime. Do you have some
+example code somewhere as well?
 
 Jan
-
-PS: Looking forward to meeting a few of you in person at the high
-altitude rt workshop next week!
 
 -- 
 Siemens AG, Technology
