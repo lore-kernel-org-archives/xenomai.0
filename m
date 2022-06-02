@@ -1,13 +1,14 @@
-Message-ID: <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
-Date: Thu, 2 Jun 2022 11:54:10 +0200
-MIME-Version: 1.0
-Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
+Date: Thu, 2 Jun 2022 12:56:37 +0000
+Message-ID: <MN2PR11MB42854A46A29C0E45D1B39944F2DE9@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220527062203.9498-1-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220527062203.9498-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
+In-Reply-To: <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.05.22 08:22, Hongzhan Chen via Xenomai wrote:
-> When there is refined tsc clock, notify Xenomai to apply it.
-> Linux may schedule a delayed work to refine tsc clock and update
-> tsc_khz which happen after Xenomai finsih init but tsc_scale and
-> tsc_shift still keep the value depending on origianl tsc clock
-> which is outdated. The difference between two clocks may cause
-> timing issue.
-> 
-> For example:
->   [ 0.001731] tsc: Detected 2899.886 MHz TSC
->   [ 5.588387] tsc: Refined TSC clocksource calibration: 2903.999 MHz
->   cat /sys/module/xenomai/parameters/clockfreq
->   2899886000
->   After patching, we like to use 2903.999 MHz.
-> 
-> The patchset includes IPIPE patch and cobalt-patch.
-> 
-
-Sounds reasonable, but you could help me with reviewing this by already
-answering:
-
- - How does dovetail (and xenomai 3.2 or evl) address this?
- - Why is this tagged "3.1" only?
- - Which I-pipe series is this targeting (5.4, or also 4.19)?
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+IA0KPlNlbnQ6IFRodXJzZGF5LCBKdW5lIDIsIDIwMjIgNTo1NCBQ
+TQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFp
+QHhlbm9tYWkub3JnDQo+U3ViamVjdDogUmU6IFtDb2JhbHQgWGVub2FtaTMuMSBQQVRDSCAwLzJd
+IG5vdGlmeSBYZW5vbWFpIHVkcGF0ZWQgY2xvY2tmcmVxLg0KPg0KPk9uIDI3LjA1LjIyIDA4OjIy
+LCBIb25nemhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gV2hlbiB0aGVyZSBpcyByZWZp
+bmVkIHRzYyBjbG9jaywgbm90aWZ5IFhlbm9tYWkgdG8gYXBwbHkgaXQuDQo+PiBMaW51eCBtYXkg
+c2NoZWR1bGUgYSBkZWxheWVkIHdvcmsgdG8gcmVmaW5lIHRzYyBjbG9jayBhbmQgdXBkYXRlDQo+
+PiB0c2Nfa2h6IHdoaWNoIGhhcHBlbiBhZnRlciBYZW5vbWFpIGZpbnNpaCBpbml0IGJ1dCB0c2Nf
+c2NhbGUgYW5kDQo+PiB0c2Nfc2hpZnQgc3RpbGwga2VlcCB0aGUgdmFsdWUgZGVwZW5kaW5nIG9u
+IG9yaWdpYW5sIHRzYyBjbG9jaw0KPj4gd2hpY2ggaXMgb3V0ZGF0ZWQuIFRoZSBkaWZmZXJlbmNl
+IGJldHdlZW4gdHdvIGNsb2NrcyBtYXkgY2F1c2UNCj4+IHRpbWluZyBpc3N1ZS4NCj4+IA0KPj4g
+Rm9yIGV4YW1wbGU6DQo+PiAgIFsgMC4wMDE3MzFdIHRzYzogRGV0ZWN0ZWQgMjg5OS44ODYgTUh6
+IFRTQw0KPj4gICBbIDUuNTg4Mzg3XSB0c2M6IFJlZmluZWQgVFNDIGNsb2Nrc291cmNlIGNhbGli
+cmF0aW9uOiAyOTAzLjk5OSBNSHoNCj4+ICAgY2F0IC9zeXMvbW9kdWxlL3hlbm9tYWkvcGFyYW1l
+dGVycy9jbG9ja2ZyZXENCj4+ICAgMjg5OTg4NjAwMA0KPj4gICBBZnRlciBwYXRjaGluZywgd2Ug
+bGlrZSB0byB1c2UgMjkwMy45OTkgTUh6Lg0KPj4gDQo+PiBUaGUgcGF0Y2hzZXQgaW5jbHVkZXMg
+SVBJUEUgcGF0Y2ggYW5kIGNvYmFsdC1wYXRjaC4NCj4+IA0KPg0KPlNvdW5kcyByZWFzb25hYmxl
+LCBidXQgeW91IGNvdWxkIGhlbHAgbWUgd2l0aCByZXZpZXdpbmcgdGhpcyBieSBhbHJlYWR5DQo+
+YW5zd2VyaW5nOg0KPg0KPiAtIEhvdyBkb2VzIGRvdmV0YWlsIChhbmQgeGVub21haSAzLjIgb3Ig
+ZXZsKSBhZGRyZXNzIHRoaXM/DQoNClNvIGZhciAsIEkgaGF2ZSBub3QgZm91bmQgc2ltaWxhciBp
+c3N1ZSBvbiBkb3ZldGFpbC1iYXNlZC4gRG92ZXRhaWwtYmFzZWQgd291bGQgZ28gdmRzbyB1bmlm
+b3JtbHkgc28gdGhlcmUgaXMNCm5vIHN1Y2ggaXNzdWUgYnV0IElQSVBFIHdvdWxkIGhhdmUgdG8g
+ZGVwZW5kICBvbiB0c2Nfa2h6IHZhbHVlIGl0IGdvdCBhdCBmaXJzdCB0byBkbyB0cmFuc2xhdGlv
+biBldmVuIGFmdGVyIHRzYyBjbG9ja2ZyZXEgaXMgcmVmaW5lZCBhbmQgY2hhbmdlZC4NCg0KPiAt
+IFdoeSBpcyB0aGlzIHRhZ2dlZCAiMy4xIiBvbmx5Pw0KPiAtIFdoaWNoIEktcGlwZSBzZXJpZXMg
+aXMgdGhpcyB0YXJnZXRpbmcgKDUuNCwgb3IgYWxzbyA0LjE5KT8NCg0KQ3VycmVudGx5ICwgSSBq
+dXN0IHJlcHJvZHVjZWQgdGhpcyBpc3N1ZSBhbmQgdmVyaWZpZWQgdGhlIHBhdGNoIG9uIDUuNC4x
+MzMgKyB4ZW5vbWFpIDMuMS4gQnV0IGFjY29yZGluZyB0byBbMV0gcmVwb3J0ZWQsDQp0aGUgaXNz
+dWUgY2FuIGJlIGZvdW5kIG9uIDQuMTkgYW5kIEkgdGhpbmsgbXkgcGF0Y2ggbWF5IHdvcmsgYnV0
+IEkgaGF2ZSBub3QgdmVyaWZpZWQgb24gNC4xOS4gDQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hl
+bg0KDQoNClsxXTogaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIyLU1h
+eS8wNDc3NzAuaHRtbA0KDQo=
 
