@@ -1,17 +1,13 @@
-Message-ID: <f7ec758f-b4d6-37d1-3954-883307865f84@rambler.ru>
-Date: Sat, 4 Jun 2022 17:21:05 +0300
+References: <87mtexkcxf.fsf@xenomai.org>
+ <9d47b5f3-b18e-0f75-9753-fefec5e9bdd7@siemens.com>
+ <87bkvcirgs.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [RFC] Rust API for evl
+Date: Sun, 05 Jun 2022 16:49:24 +0200
+In-reply-to: <87bkvcirgs.fsf@xenomai.org>
+Message-ID: <87a6arximj.fsf@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: linux-evl: 5.18.1: build error for arch/arm
-Content-Language: ru-RU
-References: <62e8601b-3066-959a-5436-5063ea61efe8@rambler.ru>
- <bf181341-b4ec-8137-9afa-1a4f1abab247@rambler.ru>
- <87a6auz0s0.fsf@xenomai.org>
- <e2dc3015-625b-8639-65c4-a7b4133bc3b5@rambler.ru>
- <875ylgzh6d.fsf@xenomai.org> <871qw4zfim.fsf@xenomai.org>
-From: Leonid Gasheev via Xenomai <feedcom@rambler.ru>
-In-Reply-To: <871qw4zfim.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,133 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, Harald Seiler <hws@denx.de>
 
-04.06.2022 17:07, Philippe Gerum пишет:
-> 
-> Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
-> 
->> Leonid Gasheev via Xenomai via Xenomai <xenomai@xenomai.org> writes:
->>
->>> 03.06.2022 10:01, Philippe Gerum пишет:
->>>> Leonid Gasheev via Xenomai via Xenomai <xenomai@xenomai.org> writes:
->>>>
->>>>> 02.06.2022 18:44, Leonid Gasheev via Xenomai пишет:
->>>>>> A series of patches extracted from v5.18-evl-rebase has been applied
->>>>>> to the kernel version v5.18.1
->>>>>> toolchain/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin
->>>>>> Build for the arm64 architecture is completed successfully.
->>>>>> But for arm:
->>>>>> arch/arm/kernel/irq.c: In function ‘handle_arch_irq_pipelined’:
->>>>>> arch/arm/kernel/irq.c:167:19: warning: cast between incompatible
->>>>>> function types from ‘int (*)(struct pt_regs *)’ to ‘void (*)(void
->>>>>> *)’ [-Wcast-function-type]
->>>>>>       call_with_stack((void (*)(void *))handle_irq_pipelined, regs,
->>>>>>                       ^
->>>>>> arch/arm/kernel/entry-armv.S: Assembler messages:
->>>>>> arch/arm/kernel/entry-armv.S:496: Error: instruction not allowed in
->>>>>> IT block -- `tst r0,r0'
->>>>>> arch/arm/kernel/entry-armv.S:785: Error: instruction not allowed in
->>>>>> IT block -- `tst r1,#0x0001'
->>>>>> make[2]: *** [scripts/Makefile.build:389:
->>>>>> arch/arm/kernel/entry-armv.o] Error 1
->>>>>
->>>>> A similar situation with the 5.15.43 kernel.
->>>>> The build for the arm fails:
->>>>>
->>>>> arch/arm/kernel/entry-armv.S: Assembler messages:
->>>>> arch/arm/kernel/entry-armv.S:470: Error: instruction not allowed in IT
->>>>> block -- `tst r0,r0'
->>>>> arch/arm/kernel/entry-armv.S:760: Error: instruction not allowed in IT
->>>>> block -- `tst r1,#0x0001'
->>>>> make[2]: *** [scripts/Makefile.build:390:
->>>>> arch/arm/kernel/entry-armv.o] Error 1
->>>>> make[1]: *** [scripts/Makefile.build:551: arch/arm/kernel] Error 2
->>>>> make[1]: *** Waiting for unfinished jobs....
->>>>> make: *** [Makefile:1870: arch/arm] Error 2
->>>>> make: *** Waiting for unfinished jobs....
->>>>> kernel/audit_tree.c:33:9: error: redefinition of ‘struct node’
->>>>>     struct node {
->>>>>            ^~~~
->>>>> In file included from ./include/linux/cpu.h:17,
->>>>>                    from ./arch/arm/include/asm/cpu.h:11,
->>>>>                    from ./arch/arm/include/asm/smp_plat.h:12,
->>>>>                    from ./arch/arm/include/asm/irq_work.h:5,
->>>>>                    from ./include/linux/irq_work.h:56,
->>>>>                    from ./include/linux/irq.h:19,
->>>>>                    from ./include/asm-generic/hardirq.h:17,
->>>>>                    from ./arch/arm/include/asm/hardirq.h:10,
->>>>>                    from ./include/linux/hardirq.h:12,
->>>>>                    from ./include/linux/highmem.h:10,
->>>>>                    from ./include/linux/bvec.h:10,
->>>>>                    from ./include/linux/skbuff.h:17,
->>>>>                    from kernel/audit.h:14,
->>>>>                    from kernel/audit_tree.c:2:
->>>>> ./include/linux/node.h:84:8: note: originally defined here
->>>>>    struct node {
->>>>>           ^~~~
->>>>> make[1]: *** [scripts/Makefile.build:288: kernel/audit_tree.o] Error 1
->>>>>
->>>>>
->>>>> Any thoughts. I am grateful in advance.
->>>> v5.15.44/arm builds fine here, so this could be a toolchain
->>>> issue. The
->>>> oldest toolchain I tested with is:
->>>> arm-linux-gnueabihf-gcc (Linaro GCC 7.5-2019.12) 7.5.0
->>>>
->>> Good afternoon.
->>> I found the problem, but it seems strange to me.
->>> If the CONFIG_THUMB2_KERNEL=y parameter is in the kernel
->>> configuration, I get an error:
->>> arch/arm/kernel/entry-armv.S: Assembler messages:
->>> arch/arm/kernel/entry-armv.S:496: Error: instruction not allowed in IT
->>> block -- `tst r0,r0'
->>> arch/arm/kernel/entry-armv.S:785: Error: instruction not allowed in IT
->>> block -- `tst r1,#0x0001'
->>>
->>> If the CONFIG_THUMB2_KERNEL parameter is not set, then compilation is
->>> successful.
->>>
->>> I looked at the history of my work with this architecture. The last
->>> time it was the 5.1 kernel, and there is no such error in my records.
->>> Unfortunately I can't fix it. I know assembly code very poorly.
->>>
->>> P.S. test board: bananapi-m3, cpu a83t, allwinner
->>
->> Ok, confirmed. I can reproduce this now building for a nanopi. I'll have
->> a look asap and follow up.
-> 
-> Ok, not only that code is wrong thumb2-wise, but it does not make much
-> sense either. This is a left-over from an ancient implementation kept
-> without thinking too much. You can just drop it.
-> 
-> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-> index c3c26345baaf..3a95cdb80e90 100644
-> --- a/arch/arm/kernel/entry-armv.S
-> +++ b/arch/arm/kernel/entry-armv.S
-> @@ -466,7 +466,6 @@ __irq_usr:
->   	irq_handler
->   	mov	why, #0
->   #ifdef CONFIG_IRQ_PIPELINE
-> -THUMB(	it ne)
->   	tst	r0, r0
->   	beq	fast_ret_to_user	@ skip epilogue if oob (in-band cannot be stalled)
->   #endif
-> diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
-> index efeaae7c180a..da1251c4e636 100644
-> --- a/arch/arm/kernel/entry-header.S
-> +++ b/arch/arm/kernel/entry-header.S
-> @@ -414,7 +414,6 @@
->   	.macro ret_to_user_pipelined, tmp
->   #ifdef CONFIG_IRQ_PIPELINE
->   	ldr	\tmp, [tsk, #TI_LOCAL_FLAGS]
-> -THUMB(	it ne)
->   	tst	\tmp, #_TLF_OOB
->   	bne	fast_ret_to_user
->   #endif
-> 
 
-Thank you!
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> Do you have some
+>> example code somewhere as well?
+>>
+>
+> Not yet. I have started working on the 'revl' crate implementing the EVL
+> interface for the Rust language though. There is not much of it yet
+> (clock services based on the 'embedded_time' crate, little
+> thread-related support, sema4 and basic mutex), but I'll push what is
+> there in a couple of days to a public repo.
+
+The first bits of the revl API have landed at [1]. This work is a
+starting point, a tentative implementation of a limited set of features
+ATM, which should be considered as RFC material.
+
+[1] https://source.denx.de/Xenomai/xenomai4/revl.git
+
 -- 
-Leonid Gasheev
+Philippe.
 
