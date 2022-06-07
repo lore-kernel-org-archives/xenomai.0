@@ -1,11 +1,11 @@
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: Track down in-band switches
-Date: Wed, 8 Jun 2022 01:29:41 +0000
-Message-ID: <PH1P110MB10502A1DEB9D85DE57CD10ACE2A49@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Content-Language: en-US
+From: Jussi Viiri <ilmai@iki.fi>
+Subject: Patch: Make Sched* struct fields public so they can be constructed
+Message-ID: <b4e4e45b-4b8c-bd6e-55d2-b580b1f576fd@iki.fi>
+Date: Tue, 7 Jun 2022 21:30:06 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,26 +14,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGVsbG8sCgogCgpJIGFtIGN1cnJlbnRseSB3b3JraW5nIG9uIHBvcnRpbmcgbXkgcmVhbHRpbWUg
-dGhyZWFkcyBpbiBteSBhcHAgdG8gRVZMLiBJIGFtCnVzaW5nICJldmwgcHMgLWwiIHRvIHRyYWNr
-IHdoZXRoZXIgb3Igbm90IHRoZXJlIGFyZSBhbnkgaW4tYmFuZCBzd2l0Y2hlcyBvbgpteSBFVkwg
-dGhyZWFkcy4gSXMgdGhlcmUgYW55IHJlY29tbWVuZGVkIHRvb2wgb3IgbWV0aG9kIGZvciB0cmFj
-a2luZyBkb3duCndoYXQgc3BlY2lmaWNhbGx5IGlzIGNhdXNpbmcgdGhlIGluLWJhbmQgc3dpdGNo
-ZXMgb24gYW4gRVZMIHRocmVhZD8gCgogCgogCgpUaGFua3MsCgpfX19fX19fX19fX18KClJ1c3Nl
-bGwgSm9obnNvbgoKU29mdHdhcmUgRGV2ZWxvcG1lbnQgRW5naW5lZXIsIEtyYXRvcyBTcGFjZQoK
-S3JhdG9zIERlZmVuc2UgJiBTZWN1cml0eSBTb2x1dGlvbnMsIEluYy4KCjEyNTE1IEFjYWRlbXkg
-UmlkZ2UgVmlldwpDb2xvcmFkbyBTcHJpbmdzLCBDb2xvcmFkbyA4MDkyMQpNYWluOiAgNzE5LjQ3
-Mi4zMzIzeDExOTIKCkRpcmVjdDogNzE5Ljg4NC42MzkyCgogPG1haWx0bzpydXNzZWxsLmpvaG5z
-b25Aa3JhdG9zZGVmZW5zZS5jb20+CnJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZlbnNlLmNvbQog
-PGh0dHA6Ly93d3cua3JhdG9zZGVmZW5zZS5jb20vPiB3d3cua3JhdG9zZGVmZW5zZS5jb20KCgoK
-IAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
-YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDEuanBnClR5cGU6IGltYWdlL2pw
-ZWcKU2l6ZTogMjU4MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIyMDYwOC82NTE3N2M2Mi9h
-dHRhY2htZW50LmpwZz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc21pbWUucDdzClR5cGU6
-IGFwcGxpY2F0aW9uL3BrY3M3LXNpZ25hdHVyZQpTaXplOiA2NzU5IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMjIwNjA4LzY1MTc3YzYyL2F0dGFjaG1lbnQuYmluPgo=
+ From 2c9979487f50ce3e6d38c7fa69f5ad5de4c60474 Mon Sep 17 00:00:00 2001
+From: Jussi Viiri <ilmai@iki.fi>
+Date: Tue, 7 Jun 2022 21:00:19 +0300
+Subject: [PATCH] Make Sched* struct fields public so they can be constructed
+
+---
+  src/sched.rs | 14 +++++++-------
+  1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/sched.rs b/src/sched.rs
+index bc069e4..2114d40 100644
+--- a/src/sched.rs
++++ b/src/sched.rs
+@@ -8,25 +8,25 @@ use evl_sys::{
+  pub struct SchedAttrs(pub(crate) evl_sched_attrs);
+
+  pub struct SchedFifo {
+-    prio: i32,
++    pub prio: i32,
+  }
+
+  pub struct SchedRR {
+-    prio: i32,
++    pub prio: i32,
+  }
+
+  pub struct SchedWeak {
+-    prio: i32,
++    pub prio: i32,
+  }
+
+  pub struct SchedQuota {
+-    group: i32,
+-    prio: i32,
++    pub group: i32,
++    pub prio: i32,
+  }
+
+  pub struct SchedTP {
+-    part: i32,
+-    prio: i32,
++    pub part: i32,
++    pub prio: i32,
+  }
+
+  pub trait PolicyParam {
+--
+2.25.1
+
