@@ -1,14 +1,16 @@
-Message-ID: <df433f28-5575-e348-7747-813d4c304aa9@siemens.com>
-Date: Wed, 8 Jun 2022 17:23:50 +0200
-MIME-Version: 1.0
-Subject: Re: [PATCH 2/2] net/drivers: Remove ARM64 restriction for fec driver
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 2/2] x86: ipipe: Enable FPU tests unconditionally
+Date: Wed, 8 Jun 2022 16:59:04 +0000
+Message-ID: <5d33d62362ec47029af74396682292f756f0de25.camel@siemens.com>
+References: <20220525095627.40521-1-florian.bezdeka@siemens.com>
+ <20220525095627.40521-3-florian.bezdeka@siemens.com>
+ <f8c2aab0-03a1-76a4-c484-0cfe55308c6c@siemens.com>
+In-Reply-To: <f8c2aab0-03a1-76a4-c484-0cfe55308c6c@siemens.com>
 Content-Language: en-US
-References: <20220523141929.2633409-1-guntgrau@bbl.ma.philips.com>
- <20220523141929.2633409-3-guntgrau@bbl.ma.philips.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220523141929.2633409-3-guntgrau@bbl.ma.philips.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E41740548F9C2A4A860B6C1DE61C37CC@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gunter Grau <gunter.grau@philips.com>, xenomai@xenomai.org
-Cc: Gunter Grau <guntgrau@bbl.ma.philips.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 23.05.22 16:19, Gunter Grau via Xenomai wrote:
-> From: Johann Wiens <johann.wiens@philips.com>
-> 
-> As described in commit 04fab252f5d2ec3fe47be266f94714c3dda624bd, the
-> fec driver was added with the intention to have it working on an
-> i.MX8 target.
-> But i.MX SoC specific quirks are also handled already since the driver
-> was originally ported from the Linux kernel.
-> It was now tested on i.MX6 and i.MX7 also (raw packet socket only).
-> 
-> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
-> ---
->  kernel/drivers/net/drivers/Kconfig | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
-> index 3a90dd8ab..ecbad2cd0 100644
-> --- a/kernel/drivers/net/drivers/Kconfig
-> +++ b/kernel/drivers/net/drivers/Kconfig
-> @@ -101,8 +101,6 @@ config XENO_DRIVERS_NET_DRV_MACB
->  
->  endif
->  
-> -if ARM64
-> -
->  config XENO_DRIVERS_NET_FEC
->      depends on XENO_DRIVERS_NET
->      tristate "Freescale FEC"
-> @@ -113,8 +111,6 @@ config XENO_DRIVERS_NET_FEC
->      For built-in 10/100 Fast ethernet controller on Freescale i.MX
->      processors.
->  
-> -endif
-> -
->  source "drivers/xenomai/net/drivers/experimental/Kconfig"
->  
->  endmenu
-
-Thanks, both applied. Let's see if the driver is already built in CI for
-arm64 or if it takes another patch.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+T24gV2VkLCAyMDIyLTA2LTA4IGF0IDE3OjAyICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyNS4wNS4yMiAxMTo1NiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+IFBhcnRzIG9mIHRo
+ZSBGUFUgdGVzdHMgd2VyZSBza2lwcGVkIHdoZW4gb25lIG9mIHRoZSBmb2xsb3dpbmcgY29uZmln
+DQo+ID4gb3B0aW9ucyB3YXMgZW5hYmxlZCwgc2hhZG93aW5nIGEgcmVhbCB0ZXN0IGlzc3VlIHRo
+YXQgd2FzIHRyaWdnZXJlZCBieQ0KPiA+IGhpZ2ggbG9hZCBvbiB0aGUgc3lzdGVtLiBUaGUgb3B0
+aW9uczoNCj4gPiAgIC0gQ09ORklHX1g4Nl9VU0VfM0ROT1cNCj4gPiAgIC0gQ09ORklHX01EX1JB
+SUQ0NTYNCj4gPiAgIC0gQ09ORklHX01EX1JBSUQ0NTZfTU9EVUxFDQo+ID4gDQo+ID4gQXMgdGhl
+IEZQVSBpbml0aWFsaXphdGlvbiBpcyBmaXhlZCBub3csIHdlIGNhbiBlbmFibGUgdGhlIHRlc3Rz
+DQo+ID4gdW5jb25kaXRpb25hbGx5Lg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEZsb3JpYW4g
+QmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KPiA+IC0tLQ0KPiA+ICAuLi4v
+YXJjaC94ODYvaXBpcGUvaW5jbHVkZS9hc20veGVub21haS9mcHRlc3QuaCAgICAgfCAxMyAtLS0t
+LS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxMyBkZWxldGlvbnMoLSkNCj4gPiANCj4g
+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni9pcGlwZS9pbmNsdWRlL2FzbS94
+ZW5vbWFpL2ZwdGVzdC5oIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni9pcGlwZS9pbmNsdWRlL2Fz
+bS94ZW5vbWFpL2ZwdGVzdC5oDQo+ID4gaW5kZXggY2NmN2FmYTExLi43YTJiMTdkNzUgMTAwNjQ0
+DQo+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni9pcGlwZS9pbmNsdWRlL2FzbS94ZW5v
+bWFpL2ZwdGVzdC5oDQo+ID4gKysrIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni9pcGlwZS9pbmNs
+dWRlL2FzbS94ZW5vbWFpL2ZwdGVzdC5oDQo+ID4gQEAgLTM2LDE5ICszNiw2IEBAIHN0YXRpYyBp
+bmxpbmUgdm9pZCBmcF9pbml0KHZvaWQpDQo+ID4gIA0KPiA+ICBzdGF0aWMgaW5saW5lIGludCBm
+cF9saW51eF9iZWdpbih2b2lkKQ0KPiA+ICB7DQo+ID4gLSNpZiBkZWZpbmVkKENPTkZJR19YODZf
+VVNFXzNETk9XKSBcDQo+ID4gLQl8fCBkZWZpbmVkKENPTkZJR19NRF9SQUlENDU2KSB8fCBkZWZp
+bmVkKENPTkZJR19NRF9SQUlENDU2X01PRFVMRSkNCj4gPiAtCS8qIFRoZXIga2VybmVsIHVzZXMg
+eDg2IEZQVSwgd2UgY2FuIG5vdCBhbHNvIHVzZSBpdCBpbiBvdXIgdGVzdHMuICovDQo+ID4gLQlz
+dGF0aWMgaW50IG9uY2UgPSAwOw0KPiA+IC0JaWYgKCFvbmNlKSB7DQo+ID4gLQkJb25jZSA9IDE7
+DQo+ID4gLQkJcHJpbnRrKCIlczolZDogV2FybmluZzogTGludXggaXMgY29tcGlsZWQgdG8gdXNl
+IEZQVSBpbiAiDQo+ID4gLQkJICAgICAgICJrZXJuZWwtc3BhY2UuXG5Gb3IgdGhpcyByZWFzb24s
+IHN3aXRjaHRlc3QgY2FuIG5vdCAiDQo+ID4gLQkJICAgICAgICJ0ZXN0IHVzaW5nIEZQVSBpbiBM
+aW51eCBrZXJuZWwtc3BhY2UuXG4iLA0KPiA+IC0JCSAgICAgICBfX0ZJTEVfXywgX19MSU5FX18p
+Ow0KPiA+IC0JfQ0KPiA+IC0JcmV0dXJuIC1FQlVTWTsNCj4gPiAtI2VuZGlmIC8qIDNETm93IG9y
+IFJBSUQgNDU2ICovDQo+ID4gIAlrZXJuZWxfZnB1X2JlZ2luKCk7DQo+ID4gIAkvKiBrZXJuZWxf
+ZnB1X2JlZ2luKCkgZG9lcyBubyByZS1pbml0aWFsaXplIHRoZSBmcHUgY29udGV4dCwgYnV0DQo+
+ID4gIAkgICBmcF9yZWdzX3NldCgpIGltcGxpY2l0ZWx5IGV4cGVjdHMgYW4gaW5pdGlhbGl6ZWQg
+ZnB1IGNvbnRleHQsIHNvDQo+IA0KPiBIbW0sIEknbSBub3QgeWV0IGZ1bGx5IGNvbnZpbmNlZCBm
+cm9tIHJlYWRpbmcgYm90aCBjb21taXQgbG9ncyB0aGF0IHRoZQ0KPiBvbmUgZml4IGFjdHVhbGx5
+IG9ic29sZXRlcyB0aGlzIGNoZWNrLiBEaWQgaXQgcmVhbGx5IG9ubHkgcGFwZXIgb3ZlciBhDQo+
+IHNpbXBsZSBidWc/DQoNCkkgZG9uJ3QgaGF2ZSB0aGUgZnVsbCBoaXN0b3J5IGhlcmUsIGJ1dCBp
+dCBzZWVtcyB0aGF0IHRoaXMgd2FzIGtpbmQgb2YNCmRvdWJsZSBwcm90ZWN0aW9uLg0KDQpTbyBm
+YXIgYWxsIHRlc3RzIGRpZCBub3QgYnJpbmcgdXAgYW55IGZ1cnRoZXIgaXNzdWVzLg0KDQpPbiBz
+eXN0ZW1zIHdpdGggUkFJRCAoPXN5c3RlbXMgd2l0aCBvbmUgb2YgdGhlIG1lbnRpb25lZCBvcHRp
+b25zDQplbmFibGVkKSBGUFUgdXNhZ2UgaXMgbXVjaCBtb3JlIGxpa2VseSBhbmQgYnVncyB3b3Vs
+ZCB0cmlnZ2VyIG1vcmUNCmxpa2VseS4gSSB3b3VsZCBsaWtlIHRvIGVuYWJsZSB0aGUgRlBVIHN5
+c3RlbXMgZXNwZWNpYWxseSBvbiBzdWNoDQpzeXN0ZW1zLg0KDQpCdXQ6IEluIGNhc2Ugd2UgaGF2
+ZSBtb3JlIHVuZGlzY292ZXJlZCBidWdzIGluIHRoaXMgYXJlYSwgaXQgbWlnaHQNCmhhcHBlbiB0
+aGF0IHdlIGRhbWFnZSBhIFJBSUQgYmFzZWQgZmlsZSBzeXN0ZW0uIEl0IHNlZW1zIEdpbGxlcyBo
+YWQNCnN1Y2ggYSBzeXN0ZW0gYW5kIHRyaWVkIHRvIHByZXZlbnQgRlMgZGFtYWdlIHRoaXMgd2F5
+Lg0KDQo+IA0KPiBKYW4NCj4gDQoNCg==
 
