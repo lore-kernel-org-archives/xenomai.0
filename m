@@ -1,14 +1,11 @@
+References: <b4e4e45b-4b8c-bd6e-55d2-b580b1f576fd@iki.fi>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Patch: Make Sched* struct fields public so they can be constructed
+Date: Wed, 08 Jun 2022 12:43:23 +0200
+In-reply-to: <b4e4e45b-4b8c-bd6e-55d2-b580b1f576fd@iki.fi>
+Message-ID: <87k09rwi3v.fsf@xenomai.org>
 MIME-Version: 1.0
-References: <5c1e1916-6966-f54c-6af5-ad06ac945718@monom.org>
- <CAFLxGvzxBSaqFAMUzBVfAwWdHgARxZP5MaeQXUpWUPV6ypETvA@mail.gmail.com>
- <20220527161420.hr5sxxqepuhjeqoi@carbon.lan>
-In-Reply-To: <20220527161420.hr5sxxqepuhjeqoi@carbon.lan>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 8 Jun 2022 11:22:44 +0200
-Message-ID: <CAFLxGvxij=8vsgd0YRRYC-843xvdUb+iEYJJtqaemkpXeMqsHg@mail.gmail.com>
-Subject: Re: [ANNOUNCE] High altitude realtime workshop 2022 edition
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniel Wagner <wagi@monom.org>
-Cc: rt-users <linux-rt-users@vger.kernel.org>, Xenomai <xenomai@xenomai.org>
+To: Jussi Viiri <ilmai@iki.fi>
+Cc: xenomai@xenomai.org
 
-On Fri, May 27, 2022 at 6:14 PM Daniel Wagner <wagi@monom.org> wrote:
-> > Whoops, old date.
-> > 10. June to 12. June 2022 it is.
-> Here some more details about this event (hint if you want to attend
-> please let us know).
 
-Please prepare for bad weather, in the mountains the situation can
-change quickly=E2=80=A6  The weather forecast predicts a small amount of
-snow fall for Thursday, and there might still be snow fields left from
-the winter near the summit.
+Jussi Viiri via Xenomai <xenomai@xenomai.org> writes:
 
-Also keep in mind that we are still in a pandemic, so be very sure
-that you're healthy (test yourself!) and be fully vaccinated.
+> From 2c9979487f50ce3e6d38c7fa69f5ad5de4c60474 Mon Sep 17 00:00:00 2001
+> From: Jussi Viiri <ilmai@iki.fi>
+> Date: Tue, 7 Jun 2022 21:00:19 +0300
+> Subject: [PATCH] Make Sched* struct fields public so they can be constructed
+>
 
---=20
-Thanks,
-//richard
+Merged, thanks.
+
+-- 
+Philippe.
 
