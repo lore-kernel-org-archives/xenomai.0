@@ -1,13 +1,13 @@
-Message-ID: <baf0b067-ee42-ec3d-8bea-10e6a04c50ce@siemens.com>
-Date: Wed, 8 Jun 2022 17:15:38 +0200
+Message-ID: <365a207c-715a-13d6-db37-a8112ea480c6@siemens.com>
+Date: Wed, 8 Jun 2022 17:20:50 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH 1/1] drivers/serial/16550A_pci.h: allow custom baud_base
- with pci cards
+Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
 Content-Language: en-US
-References: <1653687286-31621-1-git-send-email-ksmola51@gmail.com>
- <CAFLxGvwKxyzCDzNLwrT3-Tih0B2rkmvJLh7LVBAWavKumwun0w@mail.gmail.com>
+References: <20220527062203.9498-1-hongzhan.chen@intel.com>
+ <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
+ <MN2PR11MB42854A46A29C0E45D1B39944F2DE9@MN2PR11MB4285.namprd11.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAFLxGvwKxyzCDzNLwrT3-Tih0B2rkmvJLh7LVBAWavKumwun0w@mail.gmail.com>
+In-Reply-To: <MN2PR11MB42854A46A29C0E45D1B39944F2DE9@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,50 +18,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, Konstantin Smola <ksmola51@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.05.22 23:48, Richard Weinberger via Xenomai wrote:
-> On Fri, May 27, 2022 at 11:35 PM Konstantin Smola via Xenomai
-> <xenomai@xenomai.org> wrote:
->>
->> pci probe was overwriting baud_base with default values, ignoring baud_base arguments passed in while loading driver.
->>
->> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
->> ---
->>  kernel/drivers/serial/16550A_pci.h | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/drivers/serial/16550A_pci.h b/kernel/drivers/serial/16550A_pci.h
->> index 91b0390..b747a10 100644
->> --- a/kernel/drivers/serial/16550A_pci.h
->> +++ b/kernel/drivers/serial/16550A_pci.h
->> @@ -244,7 +244,8 @@ static int rt_16550_pci_probe(struct pci_dev *pdev,
->>                         io[i] = base_addr + port * board->port_ofs;
->>                         irq[i] = pdev->irq;
->>                         irqtype[i] = board->irqtype;
->> -                       baud_base[i] = board->baud_base;
->> +         if (baud_base[i] == 0)
->> +                          baud_base[i] = board->baud_base;
+On 02.06.22 14:56, Chen, Hongzhan wrote:
 > 
-> This assumes that the i-th baud_base you specify as module parameter
-> will also be
-> the i-th probed PCI driver.
-> But PCI can probe devices in any order, even userspace an unbind/bind
-> them at will.
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com> 
+>> Sent: Thursday, June 2, 2022 5:54 PM
+>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
+>> Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
+>>
+>> On 27.05.22 08:22, Hongzhan Chen via Xenomai wrote:
+>>> When there is refined tsc clock, notify Xenomai to apply it.
+>>> Linux may schedule a delayed work to refine tsc clock and update
+>>> tsc_khz which happen after Xenomai finsih init but tsc_scale and
+>>> tsc_shift still keep the value depending on origianl tsc clock
+>>> which is outdated. The difference between two clocks may cause
+>>> timing issue.
+>>>
+>>> For example:
+>>>   [ 0.001731] tsc: Detected 2899.886 MHz TSC
+>>>   [ 5.588387] tsc: Refined TSC clocksource calibration: 2903.999 MHz
+>>>   cat /sys/module/xenomai/parameters/clockfreq
+>>>   2899886000
+>>>   After patching, we like to use 2903.999 MHz.
+>>>
+>>> The patchset includes IPIPE patch and cobalt-patch.
+>>>
+>>
+>> Sounds reasonable, but you could help me with reviewing this by already
+>> answering:
+>>
+>> - How does dovetail (and xenomai 3.2 or evl) address this?
+> 
+> So far , I have not found similar issue on dovetail-based. Dovetail-based would go vdso uniformly so there is
+> no such issue but IPIPE would have to depend  on tsc_khz value it got at first to do translation even after tsc clockfreq is refined and changed.
+
+Right, that is reason...
+
+> 
+>> - Why is this tagged "3.1" only?
+>> - Which I-pipe series is this targeting (5.4, or also 4.19)?
+> 
+> Currently , I just reproduced this issue and verified the patch on 5.4.133 + xenomai 3.1. But according to [1] reported,
+> the issue can be found on 4.19 and I think my patch may work but I have not verified on 4.19. 
 > 
 
-Yeah, this whole index-based param passing at least became fragile over
-the past 15 years (time passed...), if it wasn't back then already. But
-I think this is not getting worse with this patch, is it?
-
-What is getting a little bit worse is the coding style. Please fix
-indentions.
+Please check stable/v3.2.x first (or as well) as that is the latest
+stable with I-pipe still included. Once the fix is merged there, we can
+pick it for 3.1 and possibly even 3.0 as well.
 
 Jan
 
-PS: Some "rtsetserial" to claim and parameterize an RTDM UART would
-likely be nicer, long-term.
+> Regards
+> 
+> Hongzhan Chen
+> 
+> 
+> [1]: https://xenomai.org/pipermail/xenomai/2022-May/047770.html
+> 
 
 -- 
 Siemens AG, Technology
