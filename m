@@ -1,13 +1,11 @@
-References: <87mtexkcxf.fsf@xenomai.org>
- <9d47b5f3-b18e-0f75-9753-fefec5e9bdd7@siemens.com>
- <87bkvcirgs.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [RFC] Rust API for evl
-Date: Sun, 05 Jun 2022 16:49:24 +0200
-In-reply-to: <87bkvcirgs.fsf@xenomai.org>
-Message-ID: <87a6arximj.fsf@xenomai.org>
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+Subject: Track down in-band switches
+Date: Wed, 8 Jun 2022 01:29:41 +0000
+Message-ID: <PH1P110MB10502A1DEB9D85DE57CD10ACE2A49@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org, Harald Seiler <hws@denx.de>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> Do you have some
->> example code somewhere as well?
->>
->
-> Not yet. I have started working on the 'revl' crate implementing the EVL
-> interface for the Rust language though. There is not much of it yet
-> (clock services based on the 'embedded_time' crate, little
-> thread-related support, sema4 and basic mutex), but I'll push what is
-> there in a couple of days to a public repo.
-
-The first bits of the revl API have landed at [1]. This work is a
-starting point, a tentative implementation of a limited set of features
-ATM, which should be considered as RFC material.
-
-[1] https://source.denx.de/Xenomai/xenomai4/revl.git
-
--- 
-Philippe.
-
+SGVsbG8sCgogCgpJIGFtIGN1cnJlbnRseSB3b3JraW5nIG9uIHBvcnRpbmcgbXkgcmVhbHRpbWUg
+dGhyZWFkcyBpbiBteSBhcHAgdG8gRVZMLiBJIGFtCnVzaW5nICJldmwgcHMgLWwiIHRvIHRyYWNr
+IHdoZXRoZXIgb3Igbm90IHRoZXJlIGFyZSBhbnkgaW4tYmFuZCBzd2l0Y2hlcyBvbgpteSBFVkwg
+dGhyZWFkcy4gSXMgdGhlcmUgYW55IHJlY29tbWVuZGVkIHRvb2wgb3IgbWV0aG9kIGZvciB0cmFj
+a2luZyBkb3duCndoYXQgc3BlY2lmaWNhbGx5IGlzIGNhdXNpbmcgdGhlIGluLWJhbmQgc3dpdGNo
+ZXMgb24gYW4gRVZMIHRocmVhZD8gCgogCgogCgpUaGFua3MsCgpfX19fX19fX19fX18KClJ1c3Nl
+bGwgSm9obnNvbgoKU29mdHdhcmUgRGV2ZWxvcG1lbnQgRW5naW5lZXIsIEtyYXRvcyBTcGFjZQoK
+S3JhdG9zIERlZmVuc2UgJiBTZWN1cml0eSBTb2x1dGlvbnMsIEluYy4KCjEyNTE1IEFjYWRlbXkg
+UmlkZ2UgVmlldwpDb2xvcmFkbyBTcHJpbmdzLCBDb2xvcmFkbyA4MDkyMQpNYWluOiAgNzE5LjQ3
+Mi4zMzIzeDExOTIKCkRpcmVjdDogNzE5Ljg4NC42MzkyCgogPG1haWx0bzpydXNzZWxsLmpvaG5z
+b25Aa3JhdG9zZGVmZW5zZS5jb20+CnJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZlbnNlLmNvbQog
+PGh0dHA6Ly93d3cua3JhdG9zZGVmZW5zZS5jb20vPiB3d3cua3JhdG9zZGVmZW5zZS5jb20KCgoK
+IAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
+YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDEuanBnClR5cGU6IGltYWdlL2pw
+ZWcKU2l6ZTogMjU4MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5v
+bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIyMDYwOC82NTE3N2M2Mi9h
+dHRhY2htZW50LmpwZz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
+bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc21pbWUucDdzClR5cGU6
+IGFwcGxpY2F0aW9uL3BrY3M3LXNpZ25hdHVyZQpTaXplOiA2NzU5IGJ5dGVzCkRlc2M6IG5vdCBh
+dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
+aG1lbnRzLzIwMjIwNjA4LzY1MTc3YzYyL2F0dGFjaG1lbnQuYmluPgo=
