@@ -1,16 +1,14 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
-Date: Thu, 9 Jun 2022 02:06:28 +0000
-Message-ID: <MN2PR11MB42851D39815E1B6326D7EFFDF2A79@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20220527062203.9498-1-hongzhan.chen@intel.com>
- <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
- <MN2PR11MB42854A46A29C0E45D1B39944F2DE9@MN2PR11MB4285.namprd11.prod.outlook.com>
- <365a207c-715a-13d6-db37-a8112ea480c6@siemens.com>
-In-Reply-To: <365a207c-715a-13d6-db37-a8112ea480c6@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <41546ac9-21d0-c42d-f0c5-87c874d32825@siemens.com>
+Date: Thu, 9 Jun 2022 07:45:24 +0200
 MIME-Version: 1.0
+Subject: Re: [PATCH] x86/fpu: fix compile error without kernel_fpu_disabled()
+Content-Language: en-US
+References: <20220524144631.25020-1-jamienstar@163.com>
+ <871qwgp8nd.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <871qwgp8nd.fsf@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,61 +17,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, jamienstar@163.com
+Cc: florian.bezdeka@siemens.com, xenomai@xenomai.org
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4gDQo+U2VudDogV2VkbmVzZGF5LCBKdW5lIDgsIDIwMjIgMTE6MjEgUE0N
-Cj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4
-ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbQ29iYWx0IFhlbm9hbWkzLjEgUEFUQ0ggMC8yXSBu
-b3RpZnkgWGVub21haSB1ZHBhdGVkIGNsb2NrZnJlcS4NCj4NCj5PbiAwMi4wNi4yMiAxNDo1Niwg
-Q2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+PiANCj4+IA0KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2Fn
-ZS0tLS0tDQo+Pj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gDQo+
-Pj4gU2VudDogVGh1cnNkYXksIEp1bmUgMiwgMjAyMiA1OjU0IFBNDQo+Pj4gVG86IENoZW4sIEhv
-bmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4+
-PiBTdWJqZWN0OiBSZTogW0NvYmFsdCBYZW5vYW1pMy4xIFBBVENIIDAvMl0gbm90aWZ5IFhlbm9t
-YWkgdWRwYXRlZCBjbG9ja2ZyZXEuDQo+Pj4NCj4+PiBPbiAyNy4wNS4yMiAwODoyMiwgSG9uZ3po
-YW4gQ2hlbiB2aWEgWGVub21haSB3cm90ZToNCj4+Pj4gV2hlbiB0aGVyZSBpcyByZWZpbmVkIHRz
-YyBjbG9jaywgbm90aWZ5IFhlbm9tYWkgdG8gYXBwbHkgaXQuDQo+Pj4+IExpbnV4IG1heSBzY2hl
-ZHVsZSBhIGRlbGF5ZWQgd29yayB0byByZWZpbmUgdHNjIGNsb2NrIGFuZCB1cGRhdGUNCj4+Pj4g
-dHNjX2toeiB3aGljaCBoYXBwZW4gYWZ0ZXIgWGVub21haSBmaW5zaWggaW5pdCBidXQgdHNjX3Nj
-YWxlIGFuZA0KPj4+PiB0c2Nfc2hpZnQgc3RpbGwga2VlcCB0aGUgdmFsdWUgZGVwZW5kaW5nIG9u
-IG9yaWdpYW5sIHRzYyBjbG9jaw0KPj4+PiB3aGljaCBpcyBvdXRkYXRlZC4gVGhlIGRpZmZlcmVu
-Y2UgYmV0d2VlbiB0d28gY2xvY2tzIG1heSBjYXVzZQ0KPj4+PiB0aW1pbmcgaXNzdWUuDQo+Pj4+
-DQo+Pj4+IEZvciBleGFtcGxlOg0KPj4+PiAgIFsgMC4wMDE3MzFdIHRzYzogRGV0ZWN0ZWQgMjg5
-OS44ODYgTUh6IFRTQw0KPj4+PiAgIFsgNS41ODgzODddIHRzYzogUmVmaW5lZCBUU0MgY2xvY2tz
-b3VyY2UgY2FsaWJyYXRpb246IDI5MDMuOTk5IE1Ieg0KPj4+PiAgIGNhdCAvc3lzL21vZHVsZS94
-ZW5vbWFpL3BhcmFtZXRlcnMvY2xvY2tmcmVxDQo+Pj4+ICAgMjg5OTg4NjAwMA0KPj4+PiAgIEFm
-dGVyIHBhdGNoaW5nLCB3ZSBsaWtlIHRvIHVzZSAyOTAzLjk5OSBNSHouDQo+Pj4+DQo+Pj4+IFRo
-ZSBwYXRjaHNldCBpbmNsdWRlcyBJUElQRSBwYXRjaCBhbmQgY29iYWx0LXBhdGNoLg0KPj4+Pg0K
-Pj4+DQo+Pj4gU291bmRzIHJlYXNvbmFibGUsIGJ1dCB5b3UgY291bGQgaGVscCBtZSB3aXRoIHJl
-dmlld2luZyB0aGlzIGJ5IGFscmVhZHkNCj4+PiBhbnN3ZXJpbmc6DQo+Pj4NCj4+PiAtIEhvdyBk
-b2VzIGRvdmV0YWlsIChhbmQgeGVub21haSAzLjIgb3IgZXZsKSBhZGRyZXNzIHRoaXM/DQo+PiAN
-Cj4+IFNvIGZhciAsIEkgaGF2ZSBub3QgZm91bmQgc2ltaWxhciBpc3N1ZSBvbiBkb3ZldGFpbC1i
-YXNlZC4gRG92ZXRhaWwtYmFzZWQgd291bGQgZ28gdmRzbyB1bmlmb3JtbHkgc28gdGhlcmUgaXMN
-Cj4+IG5vIHN1Y2ggaXNzdWUgYnV0IElQSVBFIHdvdWxkIGhhdmUgdG8gZGVwZW5kICBvbiB0c2Nf
-a2h6IHZhbHVlIGl0IGdvdCBhdCBmaXJzdCB0byBkbyB0cmFuc2xhdGlvbiBldmVuIGFmdGVyIHRz
-YyBjbG9ja2ZyZXEgaXMgcmVmaW5lZCBhbmQgY2hhbmdlZC4NCj4NCj5SaWdodCwgdGhhdCBpcyBy
-ZWFzb24uLi4NCj4NCj4+IA0KPj4+IC0gV2h5IGlzIHRoaXMgdGFnZ2VkICIzLjEiIG9ubHk/DQo+
-Pj4gLSBXaGljaCBJLXBpcGUgc2VyaWVzIGlzIHRoaXMgdGFyZ2V0aW5nICg1LjQsIG9yIGFsc28g
-NC4xOSk/DQo+PiANCj4+IEN1cnJlbnRseSAsIEkganVzdCByZXByb2R1Y2VkIHRoaXMgaXNzdWUg
-YW5kIHZlcmlmaWVkIHRoZSBwYXRjaCBvbiA1LjQuMTMzICsgeGVub21haSAzLjEuIEJ1dCBhY2Nv
-cmRpbmcgdG8gWzFdIHJlcG9ydGVkLA0KPj4gdGhlIGlzc3VlIGNhbiBiZSBmb3VuZCBvbiA0LjE5
-IGFuZCBJIHRoaW5rIG15IHBhdGNoIG1heSB3b3JrIGJ1dCBJIGhhdmUgbm90IHZlcmlmaWVkIG9u
-IDQuMTkuIA0KPj4gDQo+DQo+UGxlYXNlIGNoZWNrIHN0YWJsZS92My4yLnggZmlyc3QgKG9yIGFz
-IHdlbGwpIGFzIHRoYXQgaXMgdGhlIGxhdGVzdA0KPnN0YWJsZSB3aXRoIEktcGlwZSBzdGlsbCBp
-bmNsdWRlZC4gT25jZSB0aGUgZml4IGlzIG1lcmdlZCB0aGVyZSwgd2UgY2FuDQo+cGljayBpdCBm
-b3IgMy4xIGFuZCBwb3NzaWJseSBldmVuIDMuMCBhcyB3ZWxsLg0KDQpUaGUgY29kZSBiZXR3ZWVu
-IDMuMiBhbmQgMy4xIGludm9sdmluZyB0aGlzIHBhdGNoc2V0IGlzIHF1aXRlIGRpZmZlcmVudCBu
-b3cuIEZvciAzLjIsIHdlIGFscmVhZHkgZHJvcHBlZCBjb2RlIHJlbGF0ZWQgdG8gY2xvY2tmcmVx
-IHBhcmFtZXRlcg0KaW4gNmQyOTg5YjZkYTczZWM1MmZlOGM5OTA3OThiZThhNjM3ZTRkYjViOSBi
-eSBQaGlsaXBwZS4NCkJ1dCBpbiBteSBwYXRjaHNldCBmb3IgMy4xLCB3ZSBoYXZlIHRvIHVwZGF0
-ZSB2YWx1ZSBvZiAgY2xvY2tmcmVxIHBhcmFtZXRlciB0byBzaG93IGNvcnJlY3QgY2xvY2sgZnJl
-cSBhZnRlciB3ZSB1cGRhdGUgdG8gcmVmaW5lZCBjbG9jayBmcmVxLg0KVG8ga2VlcCBjb25zaXN0
-ZW5jeSBiZXR3ZWVuIDMuMSBhbmQgMy4yIGZvciBJLVBJUEUgYmFzZWQgY29kZSwgZG8gd2UgbmVl
-ZCB0byByZXZlcnQgdGhpcyBwYXJ0IG9mIGNvZGUgcmVsYXRlZCB0byBjbG9ja2ZyZXEgcGFyYW1l
-dGVyIGZvciAzLjI/DQoNClJlZ2FyZHMNCg0KSG9uZ3poYW4gQ2hlbg0KDQoNCj4NCj5KYW4NCj4N
-Cj4+IFJlZ2FyZHMNCj4+IA0KPj4gSG9uZ3poYW4gQ2hlbg0KPj4gDQo+PiANCj4+IFsxXTogaHR0
-cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDIyLU1heS8wNDc3NzAuaHRtbA0K
-Pj4gDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2UgQ2VudGVy
-IEVtYmVkZGVkIExpbnV4DQo=
+On 26.05.22 18:19, Philippe Gerum wrote:
+> 
+> jamienstar@163.com writes:
+> 
+>> From: Jamie Huang <jamienstar@163.com>
+>>
+>> In v5.18-evl-rebase, function kernel_fpu_disabled() has been removed in
+>> commit 59f5ede3bc0f("x86/fpu: Prevent FPU state corruption"), so we will
+>> get compile error when CONFIG_DOVETAIL is enabled:
+>> arch/x86/kernel/fpu/core.c:931:6: error: implicit declaration of function ‘kernel_fpu_disabled’; did you mean ‘perf_pmu_disable’? [-Werror=implicit-function-declaration]
+>>     if (kernel_fpu_disabled()) {
+>>         ^~~~~~~~~~~~~~~~~~~
+>>         perf_pmu_disable
+>> cc1: all warnings being treated as errors
+>> So, fix it.
+>>
+>> Signed-off-by: Jamie Huang <jamienstar@163.com>
+>> ---
+>>  arch/x86/kernel/fpu/core.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+>> index 6a0d1e7f278f..c3adbbb73226 100644
+>> --- a/arch/x86/kernel/fpu/core.c
+>> +++ b/arch/x86/kernel/fpu/core.c
+>> @@ -928,7 +928,7 @@ void fpu__suspend_inband(void)
+>>  	 * preemption of an inband kernel context currently using the
+>>  	 * fpu by a thread which resumes on the oob stage.
+>>  	 */
+>> -	if (kernel_fpu_disabled()) {
+>> +	if (this_cpu_read(in_kernel_fpu)) {
+>>  		save_fpregs_to_fpstate(kfpu);
+>>  		__cpu_invalidate_fpregs_state();
+>>  		oob_fpu_set_preempt(&tsk->thread.fpu);
+> 
+> Merged adding the same fixup to the comment nearby, thanks.
+> 
+
+Could you backport to 5.15 as well?
+
+https://gitlab.com/Xenomai/xenomai-hacker-space/-/jobs/2563340960
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
