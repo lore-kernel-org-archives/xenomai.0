@@ -1,17 +1,18 @@
-Message-ID: <1f5b616d-fcd4-8624-af2c-7100293d0e69@siemens.com>
-Date: Thu, 9 Jun 2022 07:47:30 +0200
-MIME-Version: 1.0
-Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
-Content-Language: en-US
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
+Date: Thu, 9 Jun 2022 06:47:11 +0000
+Message-ID: <MN2PR11MB42853B08DB943F08E7BD4484F2A79@MN2PR11MB4285.namprd11.prod.outlook.com>
 References: <20220527062203.9498-1-hongzhan.chen@intel.com>
  <64079ce9-c264-055f-7911-7a24144f4a15@siemens.com>
  <MN2PR11MB42854A46A29C0E45D1B39944F2DE9@MN2PR11MB4285.namprd11.prod.outlook.com>
  <365a207c-715a-13d6-db37-a8112ea480c6@siemens.com>
  <MN2PR11MB42851D39815E1B6326D7EFFDF2A79@MN2PR11MB4285.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <MN2PR11MB42851D39815E1B6326D7EFFDF2A79@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+ <1f5b616d-fcd4-8624-af2c-7100293d0e69@siemens.com>
+In-Reply-To: <1f5b616d-fcd4-8624-af2c-7100293d0e69@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,76 +21,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09.06.22 04:06, Chen, Hongzhan wrote:
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com> 
->> Sent: Wednesday, June 8, 2022 11:21 PM
->> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->> Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
->>
->> On 02.06.22 14:56, Chen, Hongzhan wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Jan Kiszka <jan.kiszka@siemens.com> 
->>>> Sent: Thursday, June 2, 2022 5:54 PM
->>>> To: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org
->>>> Subject: Re: [Cobalt Xenoami3.1 PATCH 0/2] notify Xenomai udpated clockfreq.
->>>>
->>>> On 27.05.22 08:22, Hongzhan Chen via Xenomai wrote:
->>>>> When there is refined tsc clock, notify Xenomai to apply it.
->>>>> Linux may schedule a delayed work to refine tsc clock and update
->>>>> tsc_khz which happen after Xenomai finsih init but tsc_scale and
->>>>> tsc_shift still keep the value depending on origianl tsc clock
->>>>> which is outdated. The difference between two clocks may cause
->>>>> timing issue.
->>>>>
->>>>> For example:
->>>>>   [ 0.001731] tsc: Detected 2899.886 MHz TSC
->>>>>   [ 5.588387] tsc: Refined TSC clocksource calibration: 2903.999 MHz
->>>>>   cat /sys/module/xenomai/parameters/clockfreq
->>>>>   2899886000
->>>>>   After patching, we like to use 2903.999 MHz.
->>>>>
->>>>> The patchset includes IPIPE patch and cobalt-patch.
->>>>>
->>>>
->>>> Sounds reasonable, but you could help me with reviewing this by already
->>>> answering:
->>>>
->>>> - How does dovetail (and xenomai 3.2 or evl) address this?
->>>
->>> So far , I have not found similar issue on dovetail-based. Dovetail-based would go vdso uniformly so there is
->>> no such issue but IPIPE would have to depend  on tsc_khz value it got at first to do translation even after tsc clockfreq is refined and changed.
->>
->> Right, that is reason...
->>
->>>
->>>> - Why is this tagged "3.1" only?
->>>> - Which I-pipe series is this targeting (5.4, or also 4.19)?
->>>
->>> Currently , I just reproduced this issue and verified the patch on 5.4.133 + xenomai 3.1. But according to [1] reported,
->>> the issue can be found on 4.19 and I think my patch may work but I have not verified on 4.19. 
->>>
->>
->> Please check stable/v3.2.x first (or as well) as that is the latest
->> stable with I-pipe still included. Once the fix is merged there, we can
->> pick it for 3.1 and possibly even 3.0 as well.
-> 
-> The code between 3.2 and 3.1 involving this patchset is quite different now. For 3.2, we already dropped code related to clockfreq parameter
-> in 6d2989b6da73ec52fe8c990798be8a637e4db5b9 by Philippe.
-> But in my patchset for 3.1, we have to update value of  clockfreq parameter to show correct clock freq after we update to refined clock freq.
-> To keep consistency between 3.1 and 3.2 for I-PIPE based code, do we need to revert this part of code related to clockfreq parameter for 3.2?
-
-Do you see the problem of 3.1+ipipe with 3.2 as well? I suspect so, but
-please confirm. Then we do need a solution there, too. How is the next
-question, I need to dive into that again.
-
-Jan
-
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPiANCj5TZW50OiBUaHVyc2RheSwgSnVuZSA5LCAyMDIyIDE6NDggUE0N
+Cj5UbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4
+ZW5vbWFpLm9yZw0KPlN1YmplY3Q6IFJlOiBbQ29iYWx0IFhlbm9hbWkzLjEgUEFUQ0ggMC8yXSBu
+b3RpZnkgWGVub21haSB1ZHBhdGVkIGNsb2NrZnJlcS4NCj4NCj5PbiAwOS4wNi4yMiAwNDowNiwg
+Q2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+
+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiANCj4+PiBTZW50OiBX
+ZWRuZXNkYXksIEp1bmUgOCwgMjAyMiAxMToyMSBQTQ0KPj4+IFRvOiBDaGVuLCBIb25nemhhbiA8
+aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4gU3ViamVj
+dDogUmU6IFtDb2JhbHQgWGVub2FtaTMuMSBQQVRDSCAwLzJdIG5vdGlmeSBYZW5vbWFpIHVkcGF0
+ZWQgY2xvY2tmcmVxLg0KPj4+DQo+Pj4gT24gMDIuMDYuMjIgMTQ6NTYsIENoZW4sIEhvbmd6aGFu
+IHdyb3RlOg0KPj4+Pg0KPj4+Pg0KPj4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+
+Pj4+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0KPj4+Pj4gU2Vu
+dDogVGh1cnNkYXksIEp1bmUgMiwgMjAyMiA1OjU0IFBNDQo+Pj4+PiBUbzogQ2hlbiwgSG9uZ3po
+YW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPj4+Pj4g
+U3ViamVjdDogUmU6IFtDb2JhbHQgWGVub2FtaTMuMSBQQVRDSCAwLzJdIG5vdGlmeSBYZW5vbWFp
+IHVkcGF0ZWQgY2xvY2tmcmVxLg0KPj4+Pj4NCj4+Pj4+IE9uIDI3LjA1LjIyIDA4OjIyLCBIb25n
+emhhbiBDaGVuIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4+Pj4+IFdoZW4gdGhlcmUgaXMgcmVmaW5l
+ZCB0c2MgY2xvY2ssIG5vdGlmeSBYZW5vbWFpIHRvIGFwcGx5IGl0Lg0KPj4+Pj4+IExpbnV4IG1h
+eSBzY2hlZHVsZSBhIGRlbGF5ZWQgd29yayB0byByZWZpbmUgdHNjIGNsb2NrIGFuZCB1cGRhdGUN
+Cj4+Pj4+PiB0c2Nfa2h6IHdoaWNoIGhhcHBlbiBhZnRlciBYZW5vbWFpIGZpbnNpaCBpbml0IGJ1
+dCB0c2Nfc2NhbGUgYW5kDQo+Pj4+Pj4gdHNjX3NoaWZ0IHN0aWxsIGtlZXAgdGhlIHZhbHVlIGRl
+cGVuZGluZyBvbiBvcmlnaWFubCB0c2MgY2xvY2sNCj4+Pj4+PiB3aGljaCBpcyBvdXRkYXRlZC4g
+VGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0d28gY2xvY2tzIG1heSBjYXVzZQ0KPj4+Pj4+IHRpbWlu
+ZyBpc3N1ZS4NCj4+Pj4+Pg0KPj4+Pj4+IEZvciBleGFtcGxlOg0KPj4+Pj4+ICAgWyAwLjAwMTcz
+MV0gdHNjOiBEZXRlY3RlZCAyODk5Ljg4NiBNSHogVFNDDQo+Pj4+Pj4gICBbIDUuNTg4Mzg3XSB0
+c2M6IFJlZmluZWQgVFNDIGNsb2Nrc291cmNlIGNhbGlicmF0aW9uOiAyOTAzLjk5OSBNSHoNCj4+
+Pj4+PiAgIGNhdCAvc3lzL21vZHVsZS94ZW5vbWFpL3BhcmFtZXRlcnMvY2xvY2tmcmVxDQo+Pj4+
+Pj4gICAyODk5ODg2MDAwDQo+Pj4+Pj4gICBBZnRlciBwYXRjaGluZywgd2UgbGlrZSB0byB1c2Ug
+MjkwMy45OTkgTUh6Lg0KPj4+Pj4+DQo+Pj4+Pj4gVGhlIHBhdGNoc2V0IGluY2x1ZGVzIElQSVBF
+IHBhdGNoIGFuZCBjb2JhbHQtcGF0Y2guDQo+Pj4+Pj4NCj4+Pj4+DQo+Pj4+PiBTb3VuZHMgcmVh
+c29uYWJsZSwgYnV0IHlvdSBjb3VsZCBoZWxwIG1lIHdpdGggcmV2aWV3aW5nIHRoaXMgYnkgYWxy
+ZWFkeQ0KPj4+Pj4gYW5zd2VyaW5nOg0KPj4+Pj4NCj4+Pj4+IC0gSG93IGRvZXMgZG92ZXRhaWwg
+KGFuZCB4ZW5vbWFpIDMuMiBvciBldmwpIGFkZHJlc3MgdGhpcz8NCj4+Pj4NCj4+Pj4gU28gZmFy
+ICwgSSBoYXZlIG5vdCBmb3VuZCBzaW1pbGFyIGlzc3VlIG9uIGRvdmV0YWlsLWJhc2VkLiBEb3Zl
+dGFpbC1iYXNlZCB3b3VsZCBnbyB2ZHNvIHVuaWZvcm1seSBzbyB0aGVyZSBpcw0KPj4+PiBubyBz
+dWNoIGlzc3VlIGJ1dCBJUElQRSB3b3VsZCBoYXZlIHRvIGRlcGVuZCAgb24gdHNjX2toeiB2YWx1
+ZSBpdCBnb3QgYXQgZmlyc3QgdG8gZG8gdHJhbnNsYXRpb24gZXZlbiBhZnRlciB0c2MgY2xvY2tm
+cmVxIGlzIHJlZmluZWQgYW5kIGNoYW5nZWQuDQo+Pj4NCj4+PiBSaWdodCwgdGhhdCBpcyByZWFz
+b24uLi4NCj4+Pg0KPj4+Pg0KPj4+Pj4gLSBXaHkgaXMgdGhpcyB0YWdnZWQgIjMuMSIgb25seT8N
+Cj4+Pj4+IC0gV2hpY2ggSS1waXBlIHNlcmllcyBpcyB0aGlzIHRhcmdldGluZyAoNS40LCBvciBh
+bHNvIDQuMTkpPw0KPj4+Pg0KPj4+PiBDdXJyZW50bHkgLCBJIGp1c3QgcmVwcm9kdWNlZCB0aGlz
+IGlzc3VlIGFuZCB2ZXJpZmllZCB0aGUgcGF0Y2ggb24gNS40LjEzMyArIHhlbm9tYWkgMy4xLiBC
+dXQgYWNjb3JkaW5nIHRvIFsxXSByZXBvcnRlZCwNCj4+Pj4gdGhlIGlzc3VlIGNhbiBiZSBmb3Vu
+ZCBvbiA0LjE5IGFuZCBJIHRoaW5rIG15IHBhdGNoIG1heSB3b3JrIGJ1dCBJIGhhdmUgbm90IHZl
+cmlmaWVkIG9uIDQuMTkuIA0KPj4+Pg0KPj4+DQo+Pj4gUGxlYXNlIGNoZWNrIHN0YWJsZS92My4y
+LnggZmlyc3QgKG9yIGFzIHdlbGwpIGFzIHRoYXQgaXMgdGhlIGxhdGVzdA0KPj4+IHN0YWJsZSB3
+aXRoIEktcGlwZSBzdGlsbCBpbmNsdWRlZC4gT25jZSB0aGUgZml4IGlzIG1lcmdlZCB0aGVyZSwg
+d2UgY2FuDQo+Pj4gcGljayBpdCBmb3IgMy4xIGFuZCBwb3NzaWJseSBldmVuIDMuMCBhcyB3ZWxs
+Lg0KPj4gDQo+PiBUaGUgY29kZSBiZXR3ZWVuIDMuMiBhbmQgMy4xIGludm9sdmluZyB0aGlzIHBh
+dGNoc2V0IGlzIHF1aXRlIGRpZmZlcmVudCBub3cuIEZvciAzLjIsIHdlIGFscmVhZHkgZHJvcHBl
+ZCBjb2RlIHJlbGF0ZWQgdG8gY2xvY2tmcmVxIHBhcmFtZXRlcg0KPj4gaW4gNmQyOTg5YjZkYTcz
+ZWM1MmZlOGM5OTA3OThiZThhNjM3ZTRkYjViOSBieSBQaGlsaXBwZS4NCj4+IEJ1dCBpbiBteSBw
+YXRjaHNldCBmb3IgMy4xLCB3ZSBoYXZlIHRvIHVwZGF0ZSB2YWx1ZSBvZiAgY2xvY2tmcmVxIHBh
+cmFtZXRlciB0byBzaG93IGNvcnJlY3QgY2xvY2sgZnJlcSBhZnRlciB3ZSB1cGRhdGUgdG8gcmVm
+aW5lZCBjbG9jayBmcmVxLg0KPj4gVG8ga2VlcCBjb25zaXN0ZW5jeSBiZXR3ZWVuIDMuMSBhbmQg
+My4yIGZvciBJLVBJUEUgYmFzZWQgY29kZSwgZG8gd2UgbmVlZCB0byByZXZlcnQgdGhpcyBwYXJ0
+IG9mIGNvZGUgcmVsYXRlZCB0byBjbG9ja2ZyZXEgcGFyYW1ldGVyIGZvciAzLjI/DQo+DQo+RG8g
+eW91IHNlZSB0aGUgcHJvYmxlbSBvZiAzLjEraXBpcGUgd2l0aCAzLjIgYXMgd2VsbD8gSSBzdXNw
+ZWN0IHNvLCBidXQNCg0KWWVzLiBPbiAzLjIgKyBJUElQRSwgaXQgc3RpbGwgdXNlIHRoZSBjbG9j
+ayBmcmVxIGF0IGZpcnN0IGdvdCB0byBkbyBpbml0IGJ1dCBuZXZlcg0KdXBkYXRlIGFjY29yZGlu
+Z2x5IGV2ZW4gYWZ0ZXIgdGhlcmUgaXMgcmVmaW5lZCB0c2MgY2xvY2suIEluIGNvYmFsdF90aWNr
+c19pbml0IG9mIA0KbGliL2NvYmFsdC90aWNrcy5jLCBpdCBpbml0IHRzY19zY2FsZSBhbmQgdHNj
+X3NoaWZ0IHdoZW4gdGhlcmUgaXMgbm9uLXplcm8gZnJlcSBwYXNzZWQNCmJ1dCBuZXZlciBjaGFu
+Z2UgYW5kIHBpcGVsaW5lX3VwZGF0ZV9jbG9ja19mcmVxIG5ldmVyIGNhbGxlZCB0byB1cGRhdGUg
+dGhlbSB3aGVuDQp0aGVyZSBpcyByZWZpbmVkIHRzYyBjbG9jay4gDQoNClJlZ2FyZHMNCg0KSG9u
+Z3poYW4gQ2hlbg0KDQo+cGxlYXNlIGNvbmZpcm0uIFRoZW4gd2UgZG8gbmVlZCBhIHNvbHV0aW9u
+IHRoZXJlLCB0b28uIEhvdyBpcyB0aGUgbmV4dA0KPnF1ZXN0aW9uLCBJIG5lZWQgdG8gZGl2ZSBp
+bnRvIHRoYXQgYWdhaW4uDQo+DQo+SmFuDQo+DQo+LS0gDQo+U2llbWVucyBBRywgVGVjaG5vbG9n
+eQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
 
