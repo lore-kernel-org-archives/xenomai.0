@@ -1,10 +1,14 @@
-From: Zqiang <qiang1.zhang@intel.com>
-Subject: [linux-dovetail][PATCH 0/3] Add TSC function supports and MFD driver
- for TGPIO
-Date: Tue, 17 May 2022 09:53:15 +0800
-Message-Id: <20220517015318.697955-1-qiang1.zhang@intel.com>
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+Subject: RE: [External] - Re: <evl/heap.h> compile conflict with Boost
+Date: Mon, 13 Jun 2022 21:25:10 +0000
+Message-ID: <PH1P110MB1050262973A8FF3F17B1D6B1E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
+In-Reply-To: <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org, jan.kiszka@siemens.com
-Cc: hongzhan.chen@intel.com, xenomai@xenomai.org
+To: Julien Blanc <julien.blanc@sprinte.eu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-The following modifications are mainly to add TSC function for TGPIO
-and add intel-ehl-gpio driver divides and initializes the PSE TGPIO
-resources.
-
-Christopher Hall (1):
-  x86/tsc: Add TSC support functions to support ART driven Time-Aware
-    GPIO
-
-D, Lakshmi Sowjanya (1):
-  ptp: tgpio: PSE TGPIO crosststamp, counttstamp
-
-Raymond Tan (1):
-  mfd: intel-ehl-gpio: Introduce MFD framework to PSE GPIO/TGPIO
-
- arch/x86/include/asm/tsc.h   |   8 ++
- arch/x86/kernel/tsc.c        | 168 +++++++++++++++++++++++-
- drivers/mfd/Kconfig          |  12 ++
- drivers/mfd/Makefile         |   1 +
- drivers/mfd/intel-ehl-gpio.c | 248 +++++++++++++++++++++++++++++++++++
- 5 files changed, 435 insertions(+), 2 deletions(-)
- create mode 100644 drivers/mfd/intel-ehl-gpio.c
-
--- 
-2.25.1
-
-
+SSBhZ3JlZSB3aXRoIHlvdXIgcHJvcG9zZWQgZml4LgoKCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
+LS0tCkZyb206IEp1bGllbiBCbGFuYyA8anVsaWVuLmJsYW5jQHNwcmludGUuZXU+IApTZW50OiBN
+b25kYXksIEp1bmUgMTMsIDIwMjIgOToxNyBBTQpUbzogUnVzc2VsbCBKb2huc29uIDxydXNzZWxs
+LmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnClN1YmplY3Q6
+IFtFeHRlcm5hbF0gLSBSZTogPGV2bC9oZWFwLmg+IGNvbXBpbGUgY29uZmxpY3Qgd2l0aCBCb29z
+dAoKQ0FVVElPTjogVGhpcyBlbWFpbCBvcmlnaW5hdGVkIGZyb20gb3V0c2lkZSBvZiB0aGUgb3Jn
+YW5pemF0aW9uLiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3Mg
+eW91IHJlY29nbml6ZSB0aGUgc2VuZGVyIGFuZCBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUuCgoK
+TGUgbHVuZGkgMTMganVpbiAyMDIyIMOgIDE0OjM5ICswMDAwLCBSdXNzZWxsIEpvaG5zb24gdmlh
+IFhlbm9tYWkgYSDDqWNyaXQgOgo+ICBJIHVzZSBib29zdCB0aHJvdWdob3V0IG15IGVudGlyZSBh
+cHAsIHNvIEkgbmVlZCB0byBmaWd1cmUgaG93IHRvIGdldCAKPiBib3RoIG9mIHRoZXNlIGxpYnJh
+cmllcyB0byBwbGF5IG5pY2Ugd2l0aCBlYWNoIG90aGVyLiBBbnkgaWRlYXM/ICggSSAKPiBhbSB1
+c2luZyBnY2MgOC4zIGFuZCBib29zdCAxLjcwLjApCj4KPiAvb3B0L2V2bC9pbmNsdWRlL2V2bC9j
+b21waWxlci5oOjY0OjM2OiBlcnJvcjogJ19fZmFsbHRocm91Z2hfXycgd2FzIAo+IG5vdCBkZWNs
+YXJlZCBpbiB0aGlzIHNjb3BlCj4KPiAjZGVmaW5lIGZhbGx0aHJvdWdoIF9fYXR0cmlidXRlX18o
+KF9fZmFsbHRocm91Z2hfXykpCj4KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBefn5+fn5+fn5+fn5+fn4KClRoaXMgbGluZSBsb29rcyB3cm9uZy4gVGhlIGNvcnJlY3Qgd2F5
+IHRvIHVzZSB0aGUgZmFsbHRocm91Z2ggYXR0cmlidXRlIChhdCBsZWFzdCB3aXRoIGdjYykgaXMg
+X19hdHRyaWJ1dGVfXygoZmFsbHRocm91Z2gpKSAsIHNvIHRoYXQgd2lsbCBjb25mbGljdCB3aXRo
+IGFueSB1c2FnZSAobm90IG9ubHkgYm9vc3QncykuCgpJdCBzaG91bGQgcHJvYmFibHkgYmUgZml4
+ZWQgYnk6CgojZGVmaW5lIF9fZmFsbHRocm91Z2ggICBfX2F0dHJpYnV0ZV9fKChmYWxsdGhyb3Vn
+aCkpCgpSZWdhcmRzLAoKSnVsaWVuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNtaW1lLnA3
+cwpUeXBlOiBhcHBsaWNhdGlvbi9wa2NzNy1zaWduYXR1cmUKU2l6ZTogNjc1OSBieXRlcwpEZXNj
+OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS9hdHRhY2htZW50cy8yMDIyMDYxMy9hMDMzNDIwOS9hdHRhY2htZW50LmJpbj4K
