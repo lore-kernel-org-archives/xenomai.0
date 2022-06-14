@@ -1,14 +1,13 @@
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: RE: [External] - Re: <evl/heap.h> compile conflict with Boost
-Date: Mon, 13 Jun 2022 21:25:10 +0000
-Message-ID: <PH1P110MB1050262973A8FF3F17B1D6B1E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
-In-Reply-To: <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
-Content-Language: en-US
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: <evl/heap.h> compile conflict with Boost
+Date: Tue, 14 Jun 2022 08:54:12 +0200
+In-reply-to: <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
+Message-ID: <87bkuvsph4.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Blanc <julien.blanc@sprinte.eu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Julien Blanc <julien.blanc@sprinte.eu>
+Cc: "russell.johnson@kratosdefense.com" <russell.johnson@kratosdefense.com>, xenomai@xenomai.org
 
-SSBhZ3JlZSB3aXRoIHlvdXIgcHJvcG9zZWQgZml4LgoKCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
-LS0tCkZyb206IEp1bGllbiBCbGFuYyA8anVsaWVuLmJsYW5jQHNwcmludGUuZXU+IApTZW50OiBN
-b25kYXksIEp1bmUgMTMsIDIwMjIgOToxNyBBTQpUbzogUnVzc2VsbCBKb2huc29uIDxydXNzZWxs
-LmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnClN1YmplY3Q6
-IFtFeHRlcm5hbF0gLSBSZTogPGV2bC9oZWFwLmg+IGNvbXBpbGUgY29uZmxpY3Qgd2l0aCBCb29z
-dAoKQ0FVVElPTjogVGhpcyBlbWFpbCBvcmlnaW5hdGVkIGZyb20gb3V0c2lkZSBvZiB0aGUgb3Jn
-YW5pemF0aW9uLiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3Mg
-eW91IHJlY29nbml6ZSB0aGUgc2VuZGVyIGFuZCBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUuCgoK
-TGUgbHVuZGkgMTMganVpbiAyMDIyIMOgIDE0OjM5ICswMDAwLCBSdXNzZWxsIEpvaG5zb24gdmlh
-IFhlbm9tYWkgYSDDqWNyaXQgOgo+ICBJIHVzZSBib29zdCB0aHJvdWdob3V0IG15IGVudGlyZSBh
-cHAsIHNvIEkgbmVlZCB0byBmaWd1cmUgaG93IHRvIGdldCAKPiBib3RoIG9mIHRoZXNlIGxpYnJh
-cmllcyB0byBwbGF5IG5pY2Ugd2l0aCBlYWNoIG90aGVyLiBBbnkgaWRlYXM/ICggSSAKPiBhbSB1
-c2luZyBnY2MgOC4zIGFuZCBib29zdCAxLjcwLjApCj4KPiAvb3B0L2V2bC9pbmNsdWRlL2V2bC9j
-b21waWxlci5oOjY0OjM2OiBlcnJvcjogJ19fZmFsbHRocm91Z2hfXycgd2FzIAo+IG5vdCBkZWNs
-YXJlZCBpbiB0aGlzIHNjb3BlCj4KPiAjZGVmaW5lIGZhbGx0aHJvdWdoIF9fYXR0cmlidXRlX18o
-KF9fZmFsbHRocm91Z2hfXykpCj4KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBefn5+fn5+fn5+fn5+fn4KClRoaXMgbGluZSBsb29rcyB3cm9uZy4gVGhlIGNvcnJlY3Qgd2F5
-IHRvIHVzZSB0aGUgZmFsbHRocm91Z2ggYXR0cmlidXRlIChhdCBsZWFzdCB3aXRoIGdjYykgaXMg
-X19hdHRyaWJ1dGVfXygoZmFsbHRocm91Z2gpKSAsIHNvIHRoYXQgd2lsbCBjb25mbGljdCB3aXRo
-IGFueSB1c2FnZSAobm90IG9ubHkgYm9vc3QncykuCgpJdCBzaG91bGQgcHJvYmFibHkgYmUgZml4
-ZWQgYnk6CgojZGVmaW5lIF9fZmFsbHRocm91Z2ggICBfX2F0dHJpYnV0ZV9fKChmYWxsdGhyb3Vn
-aCkpCgpSZWdhcmRzLAoKSnVsaWVuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNtaW1lLnA3
-cwpUeXBlOiBhcHBsaWNhdGlvbi9wa2NzNy1zaWduYXR1cmUKU2l6ZTogNjc1OSBieXRlcwpEZXNj
-OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS9hdHRhY2htZW50cy8yMDIyMDYxMy9hMDMzNDIwOS9hdHRhY2htZW50LmJpbj4K
+
+Julien Blanc via Xenomai <xenomai@xenomai.org> writes:
+
+> Le lundi 13 juin 2022 =C3=A0 14:39 +0000, Russell Johnson via Xenomai a
+> =C3=A9crit :
+>>  I use boost throughout my entire app, so I need
+>> to figure how to get both of these libraries to play nice with each
+>> other. Any ideas? ( I am using gcc 8.3 and boost 1.70.0)
+>>=20
+>> /opt/evl/include/evl/compiler.h:64:36: error: '__fallthrough__' was
+>> not
+>> declared in this scope
+>>=20
+>> #define fallthrough __attribute__((__fallthrough__))
+>>=20
+>>                                     ^~~~~~~~~~~~~~~
+>
+> This line looks wrong. The correct way to use the fallthrough attribute
+> (at least with gcc) is __attribute__((fallthrough)) , so that will
+> conflict with any usage (not only boost's).
+>
+> It should probably be fixed by:
+>
+> #define __fallthrough	__attribute__((fallthrough))
+>
+> Regards,
+>
+> Julien
+
+6.39. attribute syntax
+https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html#Attribute-Syntax
+
+PS: fixes go with patches.
+
+--=20
+Philippe.
+
