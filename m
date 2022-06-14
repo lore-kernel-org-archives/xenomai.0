@@ -1,15 +1,13 @@
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: RE: [External] - Re: <evl/heap.h> compile conflict with Boost
-Date: Tue, 14 Jun 2022 15:34:10 +0000
-Message-ID: <PH1P110MB10500F3E0FC8A4E382890559E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-References: <PH1P110MB1050824464C7A004168828B9E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <ff60d210-0e25-72aa-2820-8e30fc4565c9@siemens.com>
- <871qvrqnf8.fsf@xenomai.org>
-In-Reply-To: <871qvrqnf8.fsf@xenomai.org>
-Content-Language: en-US
+Message-ID: <59e12ca2-6c6f-09ff-5365-985586dc4e4e@siemens.com>
+Date: Tue, 14 Jun 2022 20:02:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH] rtdm/drvlib: Prevent pagefaults on arm on io mapping
+Content-Language: en-US
+References: <20220523140444.2632658-1-guntgrau@bbl.ma.philips.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20220523140444.2632658-1-guntgrau@bbl.ma.philips.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gunter Grau <gunter.grau@philips.com>, xenomai@xenomai.org
+Cc: Gunter Grau <guntgrau@bbl.ma.philips.com>
 
-QXBvbG9naWVzLiBIZXJlIHlvdSBnby4KCkZyb20gNDUyZThiMmNhOGVjZDUzNTcxYTZiMWY1ZDhi
-OWFiMjNjZDY3Zjk5ZCBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKRnJvbTogUnVzc2VsbCBKb2hu
-c29uIDxydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20+CkRhdGU6IFR1ZSwgMTQgSnVu
-IDIwMjIgMDg6MTA6MTQgLTA2MDAKU3ViamVjdDogW1BBVENIXSBmaXhpbmcgY29uZmxpY3Qgd2l0
-aCBDKysgW1tmYWxsdGhvdWdoXV0sIGFuZCBtYXliZSBhdCBzb21lCiBwb2ludCBpbiB0aGUgZnV0
-dXJlIHdpdGggdGhlIEMyWCBzdGFuZGFyZAoKU2lnbmVkLW9mZi1ieTogUnVzc2VsbCBKb2huc29u
-IDxydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20+Ci0tLQogYmVuY2htYXJrcy9oZWN0
-aWMuYyAgICB8IDEwICsrKysrLS0tLS0KIGJlbmNobWFya3MvbGF0bXVzLmMgICAgfCAgNCArKy0t
-CiBpbmNsdWRlL2V2bC9jb21waWxlci5oIHwgIDIgKy0KIGxpYi90aHJlYWQuYyAgICAgICAgICAg
-fCAgMiArLQogNCBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0p
-CgpkaWZmIC0tZ2l0IGEvYmVuY2htYXJrcy9oZWN0aWMuYyBiL2JlbmNobWFya3MvaGVjdGljLmMK
-aW5kZXggNmI2YjNiNS4uODg2ZjdkMiAxMDA2NDQKLS0tIGEvYmVuY2htYXJrcy9oZWN0aWMuYwor
-KysgYi9iZW5jaG1hcmtzL2hlY3RpYy5jCkBAIC0zMzYsNyArMzM2LDcgQEAgc3RhdGljIHZvaWQg
-KnNsZWVwZXJfc3dpdGNoZXIodm9pZCAqY29va2llKQogICAgICAgICAgICAgICAgICAgICAgICBi
-cmVhazsKICAgICAgICAgICAgICAgIGNhc2UgMToKICAgICAgICAgICAgICAgICAgICAgICAgaGFu
-ZGxlX2JhZF9mcHJlZyhwYXJhbS0+Y3B1LCB+MCwgLTEpOwotICAgICAgICAgICAgICAgICAgICAg
-ICBmYWxsdGhyb3VnaDsKKyAgICAgICAgICAgICAgICAgICAgICAgX19mYWxsdGhyb3VnaDsKICAg
-ICAgICAgICAgICAgIGNhc2UgLTE6CiAgICAgICAgICAgICAgICAgICAgICAgIGNsZWFuX2V4aXQo
-RVhJVF9GQUlMVVJFKTsKICAgICAgICAgICAgICAgIH0KQEAgLTQ2OSw3ICs0NjksNyBAQCBzdGF0
-aWMgdm9pZCAqcnR1cCh2b2lkICpjb29raWUpCiAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFr
-OwogICAgICAgICAgICAgICAgY2FzZSAxOgogICAgICAgICAgICAgICAgICAgICAgICBoYW5kbGVf
-YmFkX2ZwcmVnKHBhcmFtLT5jcHUsIH4wLCAtMSk7Ci0gICAgICAgICAgICAgICAgICAgICAgIGZh
-bGx0aHJvdWdoOworICAgICAgICAgICAgICAgICAgICAgICBfX2ZhbGx0aHJvdWdoOwogICAgICAg
-ICAgICAgICAgY2FzZSAtMToKICAgICAgICAgICAgICAgICAgICAgICAgY2xlYW5fZXhpdChFWElU
-X0ZBSUxVUkUpOwogICAgICAgICAgICAgICAgfQpAQCAtNTQ5LDcgKzU0OSw3IEBAIHN0YXRpYyB2
-b2lkICpydHVzKHZvaWQgKmNvb2tpZSkKICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7CiAg
-ICAgICAgICAgICAgICBjYXNlIDE6CiAgICAgICAgICAgICAgICAgICAgICAgIGhhbmRsZV9iYWRf
-ZnByZWcocGFyYW0tPmNwdSwgfjAsIC0xKTsKLSAgICAgICAgICAgICAgICAgICAgICAgZmFsbHRo
-cm91Z2g7CisgICAgICAgICAgICAgICAgICAgICAgIF9fZmFsbHRocm91Z2g7CiAgICAgICAgICAg
-ICAgICBjYXNlIC0xOgogICAgICAgICAgICAgICAgICAgICAgICBjbGVhbl9leGl0KEVYSVRfRkFJ
-TFVSRSk7CiAgICAgICAgICAgICAgICB9CkBAIC02NDYsNyArNjQ2LDcgQEAgc3RhdGljIHZvaWQg
-KnJ0dW8odm9pZCAqY29va2llKQogICAgICAgICAgICAgICAgICAgICAgICBicmVhazsKICAgICAg
-ICAgICAgICAgIGNhc2UgMToKICAgICAgICAgICAgICAgICAgICAgICAgaGFuZGxlX2JhZF9mcHJl
-ZyhwYXJhbS0+Y3B1LCB+MCwgLTEpOwotICAgICAgICAgICAgICAgICAgICAgICBmYWxsdGhyb3Vn
-aDsKKyAgICAgICAgICAgICAgICAgICAgICAgX19mYWxsdGhyb3VnaDsKICAgICAgICAgICAgICAg
-IGNhc2UgLTE6CiAgICAgICAgICAgICAgICAgICAgICAgIGNsZWFuX2V4aXQoRVhJVF9GQUlMVVJF
-KTsKICAgICAgICAgICAgICAgIH0KQEAgLTgxMSw3ICs4MTEsNyBAQCBzdGF0aWMgaW50IHRhc2tf
-Y3JlYXRlKHN0cnVjdCBjcHVfdGFza3MgKmNwdSwKICAgICAgICBjYXNlIFJUVVM6CiAgICAgICAg
-Y2FzZSBSVFVPOgogICAgICAgICAgICAgICAgcGFyYW0tPnN3dC5mbGFncyA9IEhFQ1RJQ19PT0Jf
-V0FJVDsKLSAgICAgICAgICAgICAgIGZhbGx0aHJvdWdoOworICAgICAgICAgICAgICAgX19mYWxs
-dGhyb3VnaDsKICAgICAgICBjYXNlIFNMRUVQRVI6CiAgICAgICAgY2FzZSBTV0lUQ0hFUjoKICAg
-ICAgICAgICAgICAgIGVyciA9IGlvY3RsKGNwdS0+ZmQsIEVWTF9IRUNJT0NfUkVHSVNURVJfVVRB
-U0ssCiZwYXJhbS0+c3d0KTsKZGlmZiAtLWdpdCBhL2JlbmNobWFya3MvbGF0bXVzLmMgYi9iZW5j
-aG1hcmtzL2xhdG11cy5jCmluZGV4IGE1MDdlODAuLjU5ZWQ0NDggMTAwNjQ0Ci0tLSBhL2JlbmNo
-bWFya3MvbGF0bXVzLmMKKysrIGIvYmVuY2htYXJrcy9sYXRtdXMuYwpAQCAtMTI1MiwxMCArMTI1
-MiwxMCBAQCBpbnQgbWFpbihpbnQgYXJnYywgY2hhciAqY29uc3QgYXJndltdKQogICAgICAgICAg
-ICAgICAgICAgICAgICBzd2l0Y2ggKCplbmRwdHIpIHsKICAgICAgICAgICAgICAgICAgICAgICAg
-Y2FzZSAnZCc6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGltZW91dCAqPSAyNDsK
-LSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmYWxsdGhyb3VnaDsKKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBfX2ZhbGx0aHJvdWdoOwogICAgICAgICAgICAgICAgICAgICAg
-ICBjYXNlICdoJzoKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aW1lb3V0ICo9IDYw
-OwotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZhbGx0aHJvdWdoOworICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIF9fZmFsbHRocm91Z2g7CiAgICAgICAgICAgICAgICAgICAg
-ICAgIGNhc2UgJ20nOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRpbWVvdXQgKj0g
-NjA7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7CmRpZmYgLS1naXQgYS9p
-bmNsdWRlL2V2bC9jb21waWxlci5oIGIvaW5jbHVkZS9ldmwvY29tcGlsZXIuaAppbmRleCBmY2Uy
-NzY2Li44ZTZhZDhjIDEwMDY0NAotLS0gYS9pbmNsdWRlL2V2bC9jb21waWxlci5oCisrKyBiL2lu
-Y2x1ZGUvZXZsL2NvbXBpbGVyLmgKQEAgLTYxLDcgKzYxLDcgQEAKICNlbmRpZgoKICNpZm5kZWYg
-X19mYWxsdGhyb3VnaAotI2RlZmluZSBmYWxsdGhyb3VnaCAgICBfX2F0dHJpYnV0ZV9fKChfX2Zh
-bGx0aHJvdWdoX18pKQorI2RlZmluZSBfX2ZhbGx0aHJvdWdoICBfX2F0dHJpYnV0ZV9fKChfX2Zh
-bGx0aHJvdWdoX18pKQogI2VuZGlmCgogI2lmbmRlZiBfX2FsbG9jX3NpemUKZGlmZiAtLWdpdCBh
-L2xpYi90aHJlYWQuYyBiL2xpYi90aHJlYWQuYwppbmRleCA0YjgzNmNjLi5kYzJjYTZjIDEwMDY0
-NAotLS0gYS9saWIvdGhyZWFkLmMKKysrIGIvbGliL3RocmVhZC5jCkBAIC0xMTEsNyArMTExLDcg
-QEAgaW50IGV2bF9hdHRhY2hfdGhyZWFkKGludCBmbGFncywgY29uc3QgY2hhciAqZm10LCAuLi4p
-CiAgICAgICAgICAgICAgICBicmVhazsKICAgICAgICBkZWZhdWx0OgogICAgICAgICAgICAgICAg
-cG9saWN5ID0gU0NIRURfRklGTzsKLSAgICAgICAgICAgICAgIGZhbGx0aHJvdWdoOworICAgICAg
-ICAgICAgICAgX19mYWxsdGhyb3VnaDsKICAgICAgICBjYXNlIFNDSEVEX0ZJRk86CiAgICAgICAg
-Y2FzZSBTQ0hFRF9SUjoKICAgICAgICAgICAgICAgIHByaW9yaXR5ID0gcGFyYW0uc2NoZWRfcHJp
-b3JpdHk7Ci0tCjEuOC4zLjEKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
-LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNtaW1lLnA3cwpU
-eXBlOiBhcHBsaWNhdGlvbi9wa2NzNy1zaWduYXR1cmUKU2l6ZTogNjc1OSBieXRlcwpEZXNjOiBu
-b3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
-dHRhY2htZW50cy8yMDIyMDYxNC9jY2VmYzgzMi9hdHRhY2htZW50LmJpbj4K
+On 23.05.22 16:04, Gunter Grau via Xenomai wrote:
+> From: Gunter Grau <gunter.grau@philips.com>
+> 
+> When mapping io memory into userspace an extra simulated pagefault for all
+> pages is added to prevent later pagefaults because of copy on write
+> mechanisms. This happens only on architectures that have defined the
+> needed cobalt_machine.prefault function.
+> 
+> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+> ---
+>  kernel/cobalt/rtdm/drvlib.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index 4eaf3a57c..db8431ee1 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+>  {
+>  	pgprot_t prot = PAGE_SHARED;
+>  	unsigned long len;
+> +	int ret;
+>  
+>  	len = vma->vm_end - vma->vm_start;
+>  #ifndef CONFIG_MMU
+> @@ -1774,8 +1775,15 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+>  #endif
+>  	vma->vm_page_prot = pgprot_noncached(prot);
+>  
+> -	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+> +	ret = remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+>  			       len, vma->vm_page_prot);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (cobalt_machine.prefault)
+> +		cobalt_machine.prefault(vma);
+> +
+> +	return ret;
+>  }
+>  
+>  static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct *vma)
+
+Wow, that was likely broken by the refactoring in c8e9e166, long ago.
+
+Applied to next
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
