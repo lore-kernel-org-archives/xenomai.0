@@ -1,15 +1,18 @@
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Subject: Re: <evl/heap.h> compile conflict with Boost
+Date: Tue, 14 Jun 2022 08:29:30 +0000
+Message-ID: <7ed5f664d9a0df0a14ce88d684dc0f4f7b389a05.camel@sprinte.eu>
 References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
  <87bkuvsph4.fsf@xenomai.org>
  <fed181147dbf1ece306f055e435dd0355d352f8e.camel@sprinte.eu>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: <evl/heap.h> compile conflict with Boost
-Date: Tue, 14 Jun 2022 10:04:33 +0200
-In-reply-to: <fed181147dbf1ece306f055e435dd0355d352f8e.camel@sprinte.eu>
-Message-ID: <877d5jsm1j.fsf@xenomai.org>
+ <877d5jsm1j.fsf@xenomai.org>
+In-Reply-To: <877d5jsm1j.fsf@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C14D2223D115F647BB29275C834C0D6E@EX793143.lan>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,44 +21,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Blanc <julien.blanc@sprinte.eu>
-Cc: "rpm@xenomai.org" <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-
-Julien Blanc <julien.blanc@sprinte.eu> writes:
-
-> Le mardi 14 juin 2022 =C3=A0 08:54 +0200, Philippe Gerum a =C3=A9crit :
->> Julien Blanc via Xenomai=20
->> >=20
->> > #define __fallthrough	__attribute__((fallthrough))
->> >=20
->>=20
->> 6.39. attribute syntax
->> https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html#Attribute-Syntax
->>=20
->
-> Not sure what you mean with this link. The relevant attribute is
-> documented here:=20
-> https://gcc.gnu.org/onlinedocs/gcc/Statement-Attributes.html
->
->> PS: fixes go with patches.
->
-> Indeed, but i'll let Russel do this one as i don't have the opportunity
-> to test it right now.
->
-
-The documentation (paragraph 6.39) states that "You may optionally
-specify attribute names with =E2=80=98__=E2=80=99 preceding and following t=
-he name. This
-allows you to use them in header files without being concerned about a
-possible macro of the same name. For example, you may use the attribute
-name __noreturn__ instead of noreturn.".
-
-This is generally used with C attributes as a precaution against
-namespace conflicts in the C language space. IOW, making a C++ parser
-happy is ok with me as long as this does not introduce potential issues
-down the road with regular C code.
-
---=20
-Philippe.
+TGUgbWFyZGkgMTQganVpbiAyMDIyIMOgIDEwOjA0ICswMjAwLCBQaGlsaXBwZSBHZXJ1bSBhIMOp
+Y3JpdCA6DQo+IEp1bGllbiBCbGFuYyA8DQo+IGp1bGllbi5ibGFuY0BzcHJpbnRlLmV1DQo+ID4g
+d3JpdGVzOg0KPiANCj4gPiBMZSBtYXJkaSAxNCBqdWluIDIwMjIgw6AgMDg6NTQgKzAyMDAsIFBo
+aWxpcHBlIEdlcnVtIGEgw6ljcml0IDoNCj4gPiA+IEp1bGllbiBCbGFuYyB2aWEgWGVub21haSAN
+Cj4gPiA+ID4gI2RlZmluZSBfX2ZhbGx0aHJvdWdoCV9fYXR0cmlidXRlX18oKGZhbGx0aHJvdWdo
+KSkNCj4gPiA+ID4gDQo+ID4gPiANCj4gPiA+IDYuMzkuIGF0dHJpYnV0ZSBzeW50YXgNCj4gPiA+
+IGh0dHBzOi8vZ2NjLmdudS5vcmcvb25saW5lZG9jcy9nY2MvQXR0cmlidXRlLVN5bnRheC5odG1s
+I0F0dHJpYnV0ZS1TeW50YXgNCj4gPiA+IA0KPiA+ID4gDQo+ID4gDQo+ID4gTm90IHN1cmUgd2hh
+dCB5b3UgbWVhbiB3aXRoIHRoaXMgbGluay4gVGhlIHJlbGV2YW50IGF0dHJpYnV0ZSBpcw0KPiA+
+IGRvY3VtZW50ZWQgaGVyZTogDQo+ID4gaHR0cHM6Ly9nY2MuZ251Lm9yZy9vbmxpbmVkb2NzL2dj
+Yy9TdGF0ZW1lbnQtQXR0cmlidXRlcy5odG1sDQo+ID4gDQo+ID4gDQo+ID4gPiBQUzogZml4ZXMg
+Z28gd2l0aCBwYXRjaGVzLg0KPiA+IA0KPiA+IEluZGVlZCwgYnV0IGknbGwgbGV0IFJ1c3NlbCBk
+byB0aGlzIG9uZSBhcyBpIGRvbid0IGhhdmUgdGhlDQo+ID4gb3Bwb3J0dW5pdHkNCj4gPiB0byB0
+ZXN0IGl0IHJpZ2h0IG5vdy4NCj4gPiANCj4gDQo+IFRoZSBkb2N1bWVudGF0aW9uIChwYXJhZ3Jh
+cGggNi4zOSkgc3RhdGVzIHRoYXQgIllvdSBtYXkgb3B0aW9uYWxseQ0KPiBzcGVjaWZ5IGF0dHJp
+YnV0ZSBuYW1lcyB3aXRoIOKAmF9f4oCZIHByZWNlZGluZyBhbmQgZm9sbG93aW5nIHRoZSBuYW1l
+Lg0KPiBUaGlzIGFsbG93cyB5b3UgdG8gdXNlIHRoZW0gaW4gaGVhZGVyIGZpbGVzIHdpdGhvdXQg
+YmVpbmcgY29uY2VybmVkDQo+IGFib3V0IGEgcG9zc2libGUgbWFjcm8gb2YgdGhlIHNhbWUgbmFt
+ZS4gRm9yIGV4YW1wbGUsIHlvdSBtYXkgdXNlIHRoZQ0KPiBhdHRyaWJ1dGUgbmFtZSBfX25vcmV0
+dXJuX18gaW5zdGVhZCBvZiBub3JldHVybi4iLg0KPiANCj4gVGhpcyBpcyBnZW5lcmFsbHkgdXNl
+ZCB3aXRoIEMgYXR0cmlidXRlcyBhcyBhIHByZWNhdXRpb24gYWdhaW5zdA0KPiBuYW1lc3BhY2Ug
+Y29uZmxpY3RzIGluIHRoZSBDIGxhbmd1YWdlIHNwYWNlLiBJT1csIG1ha2luZyBhIEMrKyBwYXJz
+ZXINCj4gaGFwcHkgaXMgb2sgd2l0aCBtZSBhcyBsb25nIGFzIHRoaXMgZG9lcyBub3QgaW50cm9k
+dWNlIHBvdGVudGlhbA0KPiBpc3N1ZXMgZG93biB0aGUgcm9hZCB3aXRoIHJlZ3VsYXIgQyBjb2Rl
+Lg0KDQpNaXNzZWQgdGhhdCBwYXJ0LCB0aGFua3MuIFRoZSBpc3N1ZSBoZXJlIGlzIHRodXMgbm90
+IHdpdGhpbiB0aGUNCmF0dHJpYnV0ZSBwYXJ0LCB3aGljaCBjYW4gYmUgZWl0aGVyIGZhbGx0aHJv
+dWdoIG9yIF9fZmFsbHRocm91Z2hfXywgYnV0DQpvbmx5IGluIHRoZSBtYWNybyBuYW1lLCB3aGlj
+aCBzaG91bGQgYmUgX19mYWxsdGhyb3VnaCBpbnN0ZWFkIG9mIGp1c3QNCmZhbGx0aHJvdWdoLg0K
+DQooZm9sbG93aW5nIHVudGVzdGVkLCBhbHRob3VnaCBpdCBzaG91bGQgYmUgb2ssIHByZXR0eSBz
+dHJhaWdodGZvcndhcmQpDQoNCiAgICBGaXggZmFsbHRocm91Z2ggbWFjcm8NCiAgICANCiAgICBT
+aWduZWQtb2ZmLWJ5OiBKdWxpZW4gQmxhbmMgPGp1bGllbi5ibGFuY0BzcHJpbnRlLmV1Pg0KDQpk
+aWZmIC0tZ2l0IGEvdmVuZG9yL2V2bC9jb21waWxlci5oIGIvdmVuZG9yL2V2bC9jb21waWxlci5o
+DQppbmRleCBmY2UyNzY2Li44ZTZhZDhjIDEwMDY0NA0KLS0tIGEvdmVuZG9yL2V2bC9jb21waWxl
+ci5oDQorKysgYi92ZW5kb3IvZXZsL2NvbXBpbGVyLmgNCkBAIC02MSw3ICs2MSw3IEBADQogI2Vu
+ZGlmDQogDQogI2lmbmRlZiBfX2ZhbGx0aHJvdWdoDQotI2RlZmluZSBmYWxsdGhyb3VnaCAgICBf
+X2F0dHJpYnV0ZV9fKChfX2ZhbGx0aHJvdWdoX18pKQ0KKyNkZWZpbmUgX19mYWxsdGhyb3VnaCAg
+X19hdHRyaWJ1dGVfXygoX19mYWxsdGhyb3VnaF9fKSkNCiAjZW5kaWYNCiANCiAjaWZuZGVmIF9f
+YWxsb2Nfc2l6ZQ0KDQoNCg==
 
