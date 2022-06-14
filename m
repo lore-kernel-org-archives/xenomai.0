@@ -1,3 +1,7 @@
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+Subject: RE: [External] - Re: <evl/heap.h> compile conflict with Boost
+Date: Tue, 14 Jun 2022 13:27:34 +0000
+Message-ID: <PH1P110MB105064E4175B44A16E71E1D4E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <e6438951abfa01c114c58b9ab27ff033c4006308.camel@sprinte.eu>
  <87bkuvsph4.fsf@xenomai.org>
@@ -7,14 +11,12 @@ References: <PH1P110MB10501E47843444D61312A452E2AB9@PH1P110MB1050.NAMP110.PROD.O
  <87y1xzr4il.fsf@xenomai.org>
  <a48d190418eb74605afdaa9e46303ff489a49fbe.camel@siemens.com>
  <5602727079218fbbc7d1aeb488c6c3e399f34de2.camel@sprinte.eu>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: <evl/heap.h> compile conflict with Boost
-Date: Tue, 14 Jun 2022 12:43:00 +0200
-In-reply-to: <5602727079218fbbc7d1aeb488c6c3e399f34de2.camel@sprinte.eu>
-Message-ID: <87tu8nqzj7.fsf@xenomai.org>
+ <87tu8nqzj7.fsf@xenomai.org>
+In-Reply-To: <87tu8nqzj7.fsf@xenomai.org>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,38 +25,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Blanc <julien.blanc@sprinte.eu>
-Cc: "rpm@xenomai.org" <rpm@xenomai.org>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Julien Blanc <julien.blanc@sprinte.eu>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-
-Julien Blanc <julien.blanc@sprinte.eu> writes:
-
-> Le mardi 14 juin 2022 =C3=A0 09:44 +0000, Bezdeka, Florian a =C3=A9crit :
->>=20
->> Based on the kernel's fallthrough, introducing evl_fallthrough would
->> avoid all kinds of conflicts (IMHO):
->>=20
->> #ifndev evl_fallthrough
->> #if __has_attribute(__fallthrough__)
->> # define evl_fallthrough	__attribute__((__fallthrough__))
->> #else
->> # define evl_fallthrough	do {} while (0)  /* fallthrough */
->> #endif
->> #endif
->>=20
->> All evl internal users would have to be migrated.
->
-> In that case, wouldn't it make sense to migrate *all* macros in
-> compiler.h to an evl-prefix (nonwithstanding the fact that it's gonna
-> break a lot of code)? Or are they supposed to be already defined and
-> compiler.h is here just as a fallback (in which case, it makes sense to
-> stick with the __ prefix) ?
->
-
-I'd favor the fallthrough -> __fallthrough option to align on other
-macros from compiler.h. Using the evl_ prefix for generic,
-compiler-level code looks odd.
-
---=20
-Philippe.
-
+VGhpcyBpcyB3aGF0IEkgaGF2ZSBiZWVuIHVzaW5nLiBJIGhhdmUgdGVzdGVkIGl0IGFuZCBpdCBz
+ZWVtcyB0byB3b3JrIGZpbmUuCgpUaGFua3MsCgogUnVzc2VsbAoKZGlmZiAtLWdpdCBhL2JlbmNo
+bWFya3MvaGVjdGljLmMgYi9iZW5jaG1hcmtzL2hlY3RpYy5jCmluZGV4IDZiNmIzYjUuLjg4NmY3
+ZDIgMTAwNjQ0Ci0tLSBhL2JlbmNobWFya3MvaGVjdGljLmMKKysrIGIvYmVuY2htYXJrcy9oZWN0
+aWMuYwpAQCAtMzM2LDcgKzMzNiw3IEBAIHN0YXRpYyB2b2lkICpzbGVlcGVyX3N3aXRjaGVyKHZv
+aWQgKmNvb2tpZSkKICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgICAgICAg
+ICBjYXNlIDE6CiAgICAgICAgICAgICAgICAgICAgICAgIGhhbmRsZV9iYWRfZnByZWcocGFyYW0t
+PmNwdSwgfjAsIC0xKTsKLSAgICAgICAgICAgICAgICAgICAgICAgZmFsbHRocm91Z2g7CisgICAg
+ICAgICAgICAgICAgICAgICAgIF9fZmFsbHRocm91Z2g7CiAgICAgICAgICAgICAgICBjYXNlIC0x
+OgogICAgICAgICAgICAgICAgICAgICAgICBjbGVhbl9leGl0KEVYSVRfRkFJTFVSRSk7CiAgICAg
+ICAgICAgICAgICB9CkBAIC00NjksNyArNDY5LDcgQEAgc3RhdGljIHZvaWQgKnJ0dXAodm9pZCAq
+Y29va2llKQogICAgICAgICAgICAgICAgICAgICAgICBicmVhazsKICAgICAgICAgICAgICAgIGNh
+c2UgMToKICAgICAgICAgICAgICAgICAgICAgICAgaGFuZGxlX2JhZF9mcHJlZyhwYXJhbS0+Y3B1
+LCB+MCwgLTEpOwotICAgICAgICAgICAgICAgICAgICAgICBmYWxsdGhyb3VnaDsKKyAgICAgICAg
+ICAgICAgICAgICAgICAgX19mYWxsdGhyb3VnaDsKICAgICAgICAgICAgICAgIGNhc2UgLTE6CiAg
+ICAgICAgICAgICAgICAgICAgICAgIGNsZWFuX2V4aXQoRVhJVF9GQUlMVVJFKTsKICAgICAgICAg
+ICAgICAgIH0KQEAgLTU0OSw3ICs1NDksNyBAQCBzdGF0aWMgdm9pZCAqcnR1cyh2b2lkICpjb29r
+aWUpCiAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrOwogICAgICAgICAgICAgICAgY2FzZSAx
+OgogICAgICAgICAgICAgICAgICAgICAgICBoYW5kbGVfYmFkX2ZwcmVnKHBhcmFtLT5jcHUsIH4w
+LCAtMSk7Ci0gICAgICAgICAgICAgICAgICAgICAgIGZhbGx0aHJvdWdoOworICAgICAgICAgICAg
+ICAgICAgICAgICBfX2ZhbGx0aHJvdWdoOwogICAgICAgICAgICAgICAgY2FzZSAtMToKICAgICAg
+ICAgICAgICAgICAgICAgICAgY2xlYW5fZXhpdChFWElUX0ZBSUxVUkUpOwogICAgICAgICAgICAg
+ICAgfQpAQCAtNjQ2LDcgKzY0Niw3IEBAIHN0YXRpYyB2b2lkICpydHVvKHZvaWQgKmNvb2tpZSkK
+ICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgICAgICAgICBjYXNlIDE6CiAg
+ICAgICAgICAgICAgICAgICAgICAgIGhhbmRsZV9iYWRfZnByZWcocGFyYW0tPmNwdSwgfjAsIC0x
+KTsKLSAgICAgICAgICAgICAgICAgICAgICAgZmFsbHRocm91Z2g7CisgICAgICAgICAgICAgICAg
+ICAgICAgIF9fZmFsbHRocm91Z2g7CiAgICAgICAgICAgICAgICBjYXNlIC0xOgogICAgICAgICAg
+ICAgICAgICAgICAgICBjbGVhbl9leGl0KEVYSVRfRkFJTFVSRSk7CiAgICAgICAgICAgICAgICB9
+CkBAIC04MTEsNyArODExLDcgQEAgc3RhdGljIGludCB0YXNrX2NyZWF0ZShzdHJ1Y3QgY3B1X3Rh
+c2tzICpjcHUsCiAgICAgICAgY2FzZSBSVFVTOgogICAgICAgIGNhc2UgUlRVTzoKICAgICAgICAg
+ICAgICAgIHBhcmFtLT5zd3QuZmxhZ3MgPSBIRUNUSUNfT09CX1dBSVQ7Ci0gICAgICAgICAgICAg
+ICBmYWxsdGhyb3VnaDsKKyAgICAgICAgICAgICAgIF9fZmFsbHRocm91Z2g7CiAgICAgICAgY2Fz
+ZSBTTEVFUEVSOgogICAgICAgIGNhc2UgU1dJVENIRVI6CiAgICAgICAgICAgICAgICBlcnIgPSBp
+b2N0bChjcHUtPmZkLCBFVkxfSEVDSU9DX1JFR0lTVEVSX1VUQVNLLCAmcGFyYW0tPnN3dCk7CmRp
+ZmYgLS1naXQgYS9iZW5jaG1hcmtzL2xhdG11cy5jIGIvYmVuY2htYXJrcy9sYXRtdXMuYwppbmRl
+eCBhNTA3ZTgwLi41OWVkNDQ4IDEwMDY0NAotLS0gYS9iZW5jaG1hcmtzL2xhdG11cy5jCisrKyBi
+L2JlbmNobWFya3MvbGF0bXVzLmMKQEAgLTEyNTIsMTAgKzEyNTIsMTAgQEAgaW50IG1haW4oaW50
+IGFyZ2MsIGNoYXIgKmNvbnN0IGFyZ3ZbXSkKICAgICAgICAgICAgICAgICAgICAgICAgc3dpdGNo
+ICgqZW5kcHRyKSB7CiAgICAgICAgICAgICAgICAgICAgICAgIGNhc2UgJ2QnOgogICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHRpbWVvdXQgKj0gMjQ7Ci0gICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgZmFsbHRocm91Z2g7CisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+X19mYWxsdGhyb3VnaDsKICAgICAgICAgICAgICAgICAgICAgICAgY2FzZSAnaCc6CiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgdGltZW91dCAqPSA2MDsKLSAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBmYWxsdGhyb3VnaDsKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBfX2ZhbGx0aHJvdWdoOwogICAgICAgICAgICAgICAgICAgICAgICBjYXNlICdtJzoKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICB0aW1lb3V0ICo9IDYwOwogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGJyZWFrOwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9ldmwvY29tcGlsZXIu
+aCBiL2luY2x1ZGUvZXZsL2NvbXBpbGVyLmgKaW5kZXggZmNlMjc2Ni4uOGU2YWQ4YyAxMDA2NDQK
+LS0tIGEvaW5jbHVkZS9ldmwvY29tcGlsZXIuaAorKysgYi9pbmNsdWRlL2V2bC9jb21waWxlci5o
+CkBAIC02MSw3ICs2MSw3IEBACiAjZW5kaWYKCiAjaWZuZGVmIF9fZmFsbHRocm91Z2gKLSNkZWZp
+bmUgZmFsbHRocm91Z2ggICAgX19hdHRyaWJ1dGVfXygoX19mYWxsdGhyb3VnaF9fKSkKKyNkZWZp
+bmUgX19mYWxsdGhyb3VnaCAgX19hdHRyaWJ1dGVfXygoX19mYWxsdGhyb3VnaF9fKSkKICNlbmRp
+ZgoKICNpZm5kZWYgX19hbGxvY19zaXplCmRpZmYgLS1naXQgYS9saWIvdGhyZWFkLmMgYi9saWIv
+dGhyZWFkLmMKaW5kZXggNGI4MzZjYy4uZGMyY2E2YyAxMDA2NDQKLS0tIGEvbGliL3RocmVhZC5j
+CisrKyBiL2xpYi90aHJlYWQuYwpAQCAtMTExLDcgKzExMSw3IEBAIGludCBldmxfYXR0YWNoX3Ro
+cmVhZChpbnQgZmxhZ3MsIGNvbnN0IGNoYXIgKmZtdCwgLi4uKQogICAgICAgICAgICAgICAgYnJl
+YWs7CiAgICAgICAgZGVmYXVsdDoKICAgICAgICAgICAgICAgIHBvbGljeSA9IFNDSEVEX0ZJRk87
+Ci0gICAgICAgICAgICAgICBmYWxsdGhyb3VnaDsKKyAgICAgICAgICAgICAgIF9fZmFsbHRocm91
+Z2g7CiAgICAgICAgY2FzZSBTQ0hFRF9GSUZPOgogICAgICAgIGNhc2UgU0NIRURfUlI6CiAgICAg
+ICAgICAgICAgICBwcmlvcml0eSA9IHBhcmFtLnNjaGVkX3ByaW9yaXR5OwotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBzbWltZS5wN3MKVHlwZTogYXBwbGljYXRpb24vcGtjczctc2lnbmF0dXJl
+ClNpemU6IDY3NTkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMjA2MTQvYjQ3OTE4MTUvYXR0
+YWNobWVudC5iaW4+Cg==
