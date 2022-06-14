@@ -1,12 +1,13 @@
-From: Zqiang <qiang1.zhang@intel.com>
-Subject: [linux-dovetail][PATCH 2/3] ptp: tgpio: PSE TGPIO crosststamp,
- counttstamp
-Date: Tue, 17 May 2022 09:53:17 +0800
-Message-Id: <20220517015318.697955-3-qiang1.zhang@intel.com>
-In-Reply-To: <20220517015318.697955-1-qiang1.zhang@intel.com>
-References: <20220517015318.697955-1-qiang1.zhang@intel.com>
+Message-ID: <ff60d210-0e25-72aa-2820-8e30fc4565c9@siemens.com>
+Date: Tue, 14 Jun 2022 17:11:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: Re: <evl/heap.h> compile conflict with Boost
+Content-Language: en-US
+References: <PH1P110MB1050824464C7A004168828B9E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <PH1P110MB1050824464C7A004168828B9E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,98 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org, jan.kiszka@siemens.com
-Cc: hongzhan.chen@intel.com, xenomai@xenomai.org
+To: Russell Johnson <russell.johnson@kratosdefense.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-From: "D, Lakshmi Sowjanya" <lakshmi.sowjanya.d@intel.com>
+On 14.06.22 16:18, Russell Johnson via Xenomai wrote:
+> From 452e8b2ca8ecd53571a6b1f5d8b9ab23cd67f99d Mon Sep 17 00:00:00 2001
+> From: Russell Johnson <russell.johnson@kratosdefense.com>
+> Date: Tue, 14 Jun 2022 08:10:14 -0600
+> Subject: [PATCH] fixing conflict with C++ [[fallthough]], and maybe at some
+>  point in the future with the C2X standard
+> 
 
-Driver gets the art time from get_art() function for PSE TGPIO crosststamp.
-Counttstamp implementation for PSE TGPIO.
+We are missing the DCO (signed-of-by) here. It's a trivial change, but
+we should hold up the policy for all trees.
 
-Signed-off-by: D, Lakshmi Sowjanya <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- arch/x86/include/asm/tsc.h |  2 ++
- arch/x86/kernel/tsc.c      | 52 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+Jan
 
-diff --git a/arch/x86/include/asm/tsc.h b/arch/x86/include/asm/tsc.h
-index 721caa09a14d..a480a76b47c3 100644
---- a/arch/x86/include/asm/tsc.h
-+++ b/arch/x86/include/asm/tsc.h
-@@ -32,6 +32,8 @@ extern struct system_counterval_t convert_art_to_tsc(u64 art);
- extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
- extern struct timespec64 get_tsc_ns_now(struct system_counterval_t
- 					*system_counter);
-+extern int convert_tsc_to_art(const struct system_counterval_t *tsc, u64 *art);
-+extern u64 read_art(void);
- extern u64 convert_tsc_ns_to_art(struct timespec64 *tsc_ns);
- extern u64 convert_tsc_ns_to_art_duration(struct timespec64 *tsc_ns);
- extern struct timespec64 convert_art_to_tsc_ns(u64 art);
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index c4b48323c4bf..0afbdbf5d394 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1257,6 +1257,58 @@ int unsynchronized_tsc(void)
- 	return 0;
- }
- 
-+/**
-+ * convert_tsc_to_art() - Returns ART value associated with system counter
-+ *
-+ * Converts input TSC to the corresponding ART value using conversion
-+ * factors discovered by detect_art()
-+ *
-+ * Return:
-+ * u64 ART value
-+ */
-+int convert_tsc_to_art(
-+        const struct system_counterval_t *system_counter, u64 *art)
-+{
-+	u64 tmp, res, rem;
-+
-+	if (system_counter->cs != art_related_clocksource)
-+		return -EINVAL;
-+
-+	res = system_counter->cycles - art_to_tsc_offset;
-+	rem = do_div(res, art_to_tsc_numerator);
-+
-+	*art = res * art_to_tsc_denominator;
-+	tmp = rem * art_to_tsc_denominator;
-+
-+	do_div(tmp, art_to_tsc_numerator);
-+	*art += tmp;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(convert_tsc_to_art);
-+
-+/**
-+ * read_art() - Returns current ART value
-+ *
-+ * Converts the current TSC to the current ART value using conversion
-+ * factors discovered by detect_art()
-+ *
-+ * Return:
-+ * u64 ART value
-+ */
-+u64 read_art(void)
-+{
-+	struct system_counterval_t tsc;
-+	u64 art = 0;
-+
-+	tsc.cs = art_related_clocksource;
-+	tsc.cycles = read_tsc(NULL);
-+	convert_tsc_to_art(&tsc, &art);
-+
-+	return art;
-+}
-+EXPORT_SYMBOL(read_art);
-+
- /*
-  * Convert ART to TSC given numerator/denominator found in detect_art()
-  */
 -- 
-2.25.1
-
+Siemens AG, Technology
+Competence Center Embedded Linux
 
