@@ -1,12 +1,14 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: Reminder: Xenomai community call on Wednesday,  May 18, 2022, UTC
- 7:00 AM
-Date: Wed, 18 May 2022 02:59:51 +0000
-Message-ID: <MN2PR11MB42857EDDD89DF93D1A345A60F2D19@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+References: <PH1P110MB1050824464C7A004168828B9E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <ff60d210-0e25-72aa-2820-8e30fc4565c9@siemens.com>
+ <871qvrqnf8.fsf@xenomai.org>
+ <PH1P110MB10500F3E0FC8A4E382890559E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [External] - Re: <evl/heap.h> compile conflict with Boost
+Date: Tue, 14 Jun 2022 18:06:48 +0200
+In-reply-to: <PH1P110MB10500F3E0FC8A4E382890559E2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87k09ipdkk.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,67 +17,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
-We have the Xenomai community call today.
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
-Topics may include but are not limited to upstream/downstream project=20
-plans, status updates, and technical discussions. It's an open online=20
-meeting that anyone can join and ask questions.
+> [[S/MIME Signed Part:Undecided]]
+> Apologies. Here you go.
+>
+> From 452e8b2ca8ecd53571a6b1f5d8b9ab23cd67f99d Mon Sep 17 00:00:00 2001
+> From: Russell Johnson <russell.johnson@kratosdefense.com>
+> Date: Tue, 14 Jun 2022 08:10:14 -0600
+> Subject: [PATCH] fixing conflict with C++ [[fallthough]], and maybe at some
+>  point in the future with the C2X standard
+>
+> Signed-off-by: Russell Johnson <russell.johnson@kratosdefense.com>
+> ---
+>  benchmarks/hectic.c    | 10 +++++-----
+>  benchmarks/latmus.c    |  4 ++--
+>  include/evl/compiler.h |  2 +-
+>  lib/thread.c           |  2 +-
+>  4 files changed, 9 insertions(+), 9 deletions(-)
+>
+> diff --git a/benchmarks/hectic.c b/benchmarks/hectic.c
+> index 6b6b3b5..886f7d2 100644
+> --- a/benchmarks/hectic.c
+> +++ b/benchmarks/hectic.c
+> @@ -336,7 +336,7 @@ static void *sleeper_switcher(void *cookie)
+>                         break;
+>                 case 1:
+>                         handle_bad_fpreg(param->cpu, ~0, -1);
+> -                       fallthrough;
+> +                       __fallthrough;
+>                 case -1:
+>                         clean_exit(EXIT_FAILURE);
+>                 }
+> @@ -469,7 +469,7 @@ static void *rtup(void *cookie)
+>                         break;
+>                 case 1:
+>                         handle_bad_fpreg(param->cpu, ~0, -1);
+> -                       fallthrough;
+> +                       __fallthrough;
+>                 case -1:
+>                         clean_exit(EXIT_FAILURE);
+>                 }
+> @@ -549,7 +549,7 @@ static void *rtus(void *cookie)
+>                         break;
+>                 case 1:
+>                         handle_bad_fpreg(param->cpu, ~0, -1);
+> -                       fallthrough;
+> +                       __fallthrough;
+>                 case -1:
+>                         clean_exit(EXIT_FAILURE);
+>                 }
+> @@ -646,7 +646,7 @@ static void *rtuo(void *cookie)
+>                         break;
+>                 case 1:
+>                         handle_bad_fpreg(param->cpu, ~0, -1);
+> -                       fallthrough;
+> +                       __fallthrough;
+>                 case -1:
+>                         clean_exit(EXIT_FAILURE);
+>                 }
+> @@ -811,7 +811,7 @@ static int task_create(struct cpu_tasks *cpu,
+>         case RTUS:
+>         case RTUO:
+>                 param->swt.flags = HECTIC_OOB_WAIT;
+> -               fallthrough;
+> +               __fallthrough;
+>         case SLEEPER:
+>         case SWITCHER:
+>                 err = ioctl(cpu->fd, EVL_HECIOC_REGISTER_UTASK,
+> &param->swt);
+> diff --git a/benchmarks/latmus.c b/benchmarks/latmus.c
+> index a507e80..59ed448 100644
+> --- a/benchmarks/latmus.c
+> +++ b/benchmarks/latmus.c
+> @@ -1252,10 +1252,10 @@ int main(int argc, char *const argv[])
+>                         switch (*endptr) {
+>                         case 'd':
+>                                 timeout *= 24;
+> -                               fallthrough;
+> +                               __fallthrough;
+>                         case 'h':
+>                                 timeout *= 60;
+> -                               fallthrough;
+> +                               __fallthrough;
+>                         case 'm':
+>                                 timeout *= 60;
+>                                 break;
+> diff --git a/include/evl/compiler.h b/include/evl/compiler.h
+> index fce2766..8e6ad8c 100644
+> --- a/include/evl/compiler.h
+> +++ b/include/evl/compiler.h
+> @@ -61,7 +61,7 @@
+>  #endif
+>
+>  #ifndef __fallthrough
+> -#define fallthrough    __attribute__((__fallthrough__))
+> +#define __fallthrough  __attribute__((__fallthrough__))
+>  #endif
+>
+>  #ifndef __alloc_size
+> diff --git a/lib/thread.c b/lib/thread.c
+> index 4b836cc..dc2ca6c 100644
+> --- a/lib/thread.c
+> +++ b/lib/thread.c
+> @@ -111,7 +111,7 @@ int evl_attach_thread(int flags, const char *fmt, ...)
+>                 break;
+>         default:
+>                 policy = SCHED_FIFO;
+> -               fallthrough;
+> +               __fallthrough;
+>         case SCHED_FIFO:
+>         case SCHED_RR:
+>                 priority = param.sched_priority;
 
-Time:
-Wednesday, May 18, 2022, UTC 7:00 AM
-Paris, France CEST 9:00 AM
-China CST 3:00 PM
+Merged, thanks.
 
-Join Zoom Meeting=20
-https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
-Or
-https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
-36e48b68e
-
-Meeting ID: 912 9727 9269
-Passcode: 367528
-One tap mobile
-+12532158782,,91297279269# US (Tacoma)
-+13462487799,,91297279269# US (Houston)
-
-Dial by your location
-        +1 253 215 8782 US (Tacoma)
-        +1 346 248 7799 US (Houston)
-        +1 669 900 9128 US (San Jose)
-        +1 301 715 8592 US (Washington DC)
-        +1 312 626 6799 US (Chicago)
-        +1 646 558 8656 US (New York)
-Meeting ID: 912 9727 9269
-Find your local number: https://intel.zoom.us/u/aTEA37i5G
-
-Join by SIP
-mailto:91297279269@zoomcrc.com
-
-Join by H.323
-162.255.37.11 (US West)
-162.255.36.11 (US East)
-115.114.131.7 (India Mumbai)
-115.114.115.7 (India Hyderabad)
-213.19.144.110 (Amsterdam Netherlands)
-213.244.140.110 (Germany)
-103.122.166.55 (Australia Sydney)
-103.122.167.55 (Australia Melbourne)
-209.9.211.110 (Hong Kong SAR)
-149.137.40.110 (Singapore)
-64.211.144.160 (Brazil)
-149.137.68.253 (Mexico)
-69.174.57.160 (Canada Toronto)
-65.39.152.160 (Canada Vancouver)
-207.226.132.110 (Japan Tokyo)
-149.137.24.110 (Japan Osaka)
-Meeting ID: 912 9727 9269
-Passcode: 367528
-
-
-Regards
-
-Hongzhan Chen
+-- 
+Philippe.
 
