@@ -1,13 +1,11 @@
-Message-ID: <b5ccdeab-0852-56db-a386-fb5ef22db11f@siemens.com>
-Date: Wed, 15 Jun 2022 09:46:09 +0200
+References: <PH1P110MB10509BB57F61B3162A85688BE2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: EVL Heap Clarification
+Date: Wed, 15 Jun 2022 08:35:56 +0200
+In-reply-to: <PH1P110MB10509BB57F61B3162A85688BE2AA9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87o7yupdlo.fsf@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [REMINDER] Mailing list rehosting
-Content-Language: en-US
-References: <87fsl2aig1.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <87fsl2aig1.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: xenomai@xenomai.org
 
-On 21.05.22 12:48, Philippe Gerum via Xenomai wrote:
-> 
-> The Xenomai mailing list server will be migrated to [1] on June 18
-> 2022. In the meantime, the current server will be operating as
-> usual. However, the existing subscriptions to xenomai@xenomai.org will
-> NOT be automatically transferred to the new server.
-> 
-> This means that:
-> 
-> - The Xenomai mailing list service will be inaccessible on June 18
->   from 4pm to 6pm CET for maintenance duties.
-> 
-> - Starting from June 18 at 6pm CET, all posts to xenomai@xenomai.org
->   will be forwarded to xenomai@lists.linux.dev, the current mailing list
->   archive will move to [2] afterwards.
-> 
-> - If you want to keep on receiving e-mails from the Xenomai mailing list
->   after this date, please subscribe to xenomai@lists.linux.dev by
->   sending an empty mail to xenomai+subscribe@lists.linux.dev.
-> 
-> NOTE: xenomai@lists.linux.dev is a public list, you only need to
-> subscribe for receiving e-mails.
-> 
-> Thanks,
-> 
-> [1] https://subspace.kernel.org/lists.linux.dev.html
-> [2] https://lore.kernel.org/xenomai/
-> 
 
-Reminder @all that this switch is happening this weekend. Make sure you
-are already subscribed to the new list.
+Russell Johnson via Xenomai <xenomai@xenomai.org> writes:
 
-Jan
+> Am I correct in assuming that any dynamic allocation in an EVL thread needs
+> to use the EVL heap in order to avoid in-band context switching?
+>
+>  
+>
+> There are 4 calls in particular that I am using from the EVL heap API:
+> evl_init_heap (on startup), evl_alloc_block (may be called during realtime
+> processing to expand a data structure), evl_free_block (on shutdown),
+> evl_destroy_heap (on shutdown). The question is are all 4 of these calls
+> expected to only ever be called by an EVL thread? Looking at the source
+> code, I see that the alloc and free functions lock/unlock an EVL mutex so I
+> assume those can only be called from an EVL thread? Though the error codes
+> are not checked on those mutex calls, so if you call alloc or free from a
+> Linux thread, they do not fail. Can init and destroy be called from a Linux
+> thread? I was looking at the test code in libevl for heap-torture, and it
+> appeared that all 4 of these functions were being called from an EVL
+> attached thread.
+>
+
+Please check this documentation, the 3rd column gives the answer:
+https://evlproject.org/core/user-api/function_index/#memory-heap-services
 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Philippe.
 
