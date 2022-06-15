@@ -1,16 +1,14 @@
-From: "Grau, Gunter" <gunter.grau@philips.com>
-Subject: RE: [PATCH] rtdm/drvlib: Prevent pagefaults on arm on io mapping
-Date: Wed, 15 Jun 2022 08:22:03 +0000
-Message-ID: <AM7P122MB0229644F6F5E47CEE7715879F2AD9@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
 References: <20220523140444.2632658-1-guntgrau@bbl.ma.philips.com>
  <59e12ca2-6c6f-09ff-5365-985586dc4e4e@siemens.com>
  <87fsk6pddt.fsf@xenomai.org>
  <06fc6d18-891c-e0b0-51a7-4b21f49e2add@siemens.com>
-In-Reply-To: <06fc6d18-891c-e0b0-51a7-4b21f49e2add@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] rtdm/drvlib: Prevent pagefaults on arm on io mapping
+Date: Wed, 15 Jun 2022 10:30:49 +0200
+In-reply-to: <06fc6d18-891c-e0b0-51a7-4b21f49e2add@siemens.com>
+Message-ID: <87bkuupad5.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,78 +17,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Gunter Grau <gunter.grau@philips.com>, xenomai@xenomai.org
 
-SGksDQoNCllvdXIgcmlnaHQsIGZvciBpbyBtZW1vcnkgaXQgZG9lcyBub3QgbWFrZSBzZW5zZSB0
-byBkbyBDT1cuDQpOZXZlcnRoZWxlc3Mgd2Ugc2VlIGEgcGFnZSBmYXVsdCBmb3IgZWFjaCBwYWdl
-IGFmdGVyIG1hcHBpbmcgb24gZmlyc3QgYWNjZXNzLg0KV2UgYWxzbyBzYXcgdGhpcyBhdCBmaXJz
-dCB3aGVuIHdlIHVzZWQgWGVub21haSAyLjYgb24gMzJiaXQgYXJtLCB3aGVyZSBpdCB3YXMgZml4
-ZWQuDQoNCkl0IG5vdyBoYXBwZW5lZCBhZ2FpbiB3aGVuIHBvcnRpbmcgdG8gWGVub21haTMuIEkg
-d2FzIGhvcGluZyB0aGUgbGludXgga2VybmVsIHdob3VsZCBub3cgYmVoYXZlIGluIGFuIG90aGVy
-IHdheSBmb3IgaW8gbWVtb3J5LCBidXQgbG9vayBsaWtlIGl0IHN0YXllZCB0aGUgc2FtZSBhdCBs
-ZWFzdCBmb3IgMzJCaXQgYXJtLiBTbyBJIGNoZWNrZWQgaG93IGl0IHdhcyBoYW5kbGVkIGluIG1t
-YXAgYW5kIGNvcGllZCB0aGUgc29sdXRpb24gZnJvbSB0aGVyZS4NCg0KUmVnYXJkcywNCkd1bnRl
-cg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEphbiBLaXN6a2EgPGph
-bi5raXN6a2FAc2llbWVucy5jb20+DQo+IFNlbnQ6IE1pdHR3b2NoLCAxNS4gSnVuaSAyMDIyIDEw
-OjEyDQo+IFRvOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPjsgR3JhdSwgR3VudGVy
-DQo+IDxndW50ZXIuZ3JhdUBwaGlsaXBzLmNvbT4NCj4gQ2M6IHhlbm9tYWlAeGVub21haS5vcmcN
-Cj4gU3ViamVjdDogUmU6IFtQQVRDSF0gcnRkbS9kcnZsaWI6IFByZXZlbnQgcGFnZWZhdWx0cyBv
-biBhcm0gb24gaW8gbWFwcGluZw0KPg0KPiBDYXV0aW9uOiBUaGlzIGUtbWFpbCBvcmlnaW5hdGVk
-IGZyb20gb3V0c2lkZSBvZiBQaGlsaXBzLCBiZSBjYXJlZnVsIGZvcg0KPiBwaGlzaGluZy4NCj4N
-Cj4NCj4gT24gMTUuMDYuMjIgMDk6NTQsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOg0KPiA+DQo+ID4g
-SmFuIEtpc3prYSB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4gd3JpdGVzOg0KPiA+
-DQo+ID4+IE9uIDIzLjA1LjIyIDE2OjA0LCBHdW50ZXIgR3JhdSB2aWEgWGVub21haSB3cm90ZToN
-Cj4gPj4+IEZyb206IEd1bnRlciBHcmF1IDxndW50ZXIuZ3JhdUBwaGlsaXBzLmNvbT4NCj4gPj4+
-DQo+ID4+PiBXaGVuIG1hcHBpbmcgaW8gbWVtb3J5IGludG8gdXNlcnNwYWNlIGFuIGV4dHJhIHNp
-bXVsYXRlZCBwYWdlZmF1bHQNCj4gPj4+IGZvciBhbGwgcGFnZXMgaXMgYWRkZWQgdG8gcHJldmVu
-dCBsYXRlciBwYWdlZmF1bHRzIGJlY2F1c2Ugb2YgY29weQ0KPiA+Pj4gb24gd3JpdGUgbWVjaGFu
-aXNtcy4gVGhpcyBoYXBwZW5zIG9ubHkgb24gYXJjaGl0ZWN0dXJlcyB0aGF0IGhhdmUNCj4gPj4+
-IGRlZmluZWQgdGhlIG5lZWRlZCBjb2JhbHRfbWFjaGluZS5wcmVmYXVsdCBmdW5jdGlvbi4NCj4g
-Pj4+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBHdW50ZXIgR3JhdSA8Z3VudGVyLmdyYXVAcGhpbGlw
-cy5jb20+DQo+ID4+PiAtLS0NCj4gPj4+ICBrZXJuZWwvY29iYWx0L3J0ZG0vZHJ2bGliLmMgfCAx
-MCArKysrKysrKystDQo+ID4+PiAgMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9ucygrKSwgMSBk
-ZWxldGlvbigtKQ0KPiA+Pj4NCj4gPj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L3J0ZG0v
-ZHJ2bGliLmMNCj4gPj4+IGIva2VybmVsL2NvYmFsdC9ydGRtL2RydmxpYi5jIGluZGV4IDRlYWYz
-YTU3Yy4uZGI4NDMxZWUxIDEwMDY0NA0KPiA+Pj4gLS0tIGEva2VybmVsL2NvYmFsdC9ydGRtL2Ry
-dmxpYi5jDQo+ID4+PiArKysgYi9rZXJuZWwvY29iYWx0L3J0ZG0vZHJ2bGliLmMNCj4gPj4+IEBA
-IC0xNzYxLDYgKzE3NjEsNyBAQCBzdGF0aWMgaW50IG1tYXBfaW9tZW1faGVscGVyKHN0cnVjdA0K
-PiA+Pj4gdm1fYXJlYV9zdHJ1Y3QgKnZtYSwgcGh5c19hZGRyX3QgcGEpICB7DQo+ID4+PiAgICAg
-cGdwcm90X3QgcHJvdCA9IFBBR0VfU0hBUkVEOw0KPiA+Pj4gICAgIHVuc2lnbmVkIGxvbmcgbGVu
-Ow0KPiA+Pj4gKyAgIGludCByZXQ7DQo+ID4+Pg0KPiA+Pj4gICAgIGxlbiA9IHZtYS0+dm1fZW5k
-IC0gdm1hLT52bV9zdGFydDsgICNpZm5kZWYgQ09ORklHX01NVSBAQA0KPiA+Pj4gLTE3NzQsOCAr
-MTc3NSwxNSBAQCBzdGF0aWMgaW50IG1tYXBfaW9tZW1faGVscGVyKHN0cnVjdA0KPiA+Pj4gdm1f
-YXJlYV9zdHJ1Y3QgKnZtYSwgcGh5c19hZGRyX3QgcGEpICAjZW5kaWYNCj4gPj4+ICAgICB2bWEt
-PnZtX3BhZ2VfcHJvdCA9IHBncHJvdF9ub25jYWNoZWQocHJvdCk7DQo+ID4+Pg0KPiA+Pj4gLSAg
-IHJldHVybiByZW1hcF9wZm5fcmFuZ2Uodm1hLCB2bWEtPnZtX3N0YXJ0LCBwYSA+PiBQQUdFX1NI
-SUZULA0KPiA+Pj4gKyAgIHJldCA9IHJlbWFwX3Bmbl9yYW5nZSh2bWEsIHZtYS0+dm1fc3RhcnQs
-IHBhID4+IFBBR0VfU0hJRlQsDQo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICBsZW4s
-IHZtYS0+dm1fcGFnZV9wcm90KTsNCj4gPj4+ICsgICBpZiAocmV0KQ0KPiA+Pj4gKyAgICAgICAg
-ICAgcmV0dXJuIHJldDsNCj4gPj4+ICsNCj4gPj4+ICsgICBpZiAoY29iYWx0X21hY2hpbmUucHJl
-ZmF1bHQpDQo+ID4+PiArICAgICAgICAgICBjb2JhbHRfbWFjaGluZS5wcmVmYXVsdCh2bWEpOw0K
-PiA+Pj4gKw0KPiA+Pj4gKyAgIHJldHVybiByZXQ7DQo+ID4+PiAgfQ0KPiA+Pj4NCj4gPj4+ICBz
-dGF0aWMgaW50IG1tYXBfYnVmZmVyX2hlbHBlcihzdHJ1Y3QgcnRkbV9mZCAqZmQsIHN0cnVjdA0K
-PiA+Pj4gdm1fYXJlYV9zdHJ1Y3QgKnZtYSkNCj4gPj4NCj4gPj4gV293LCB0aGF0IHdhcyBsaWtl
-bHkgYnJva2VuIGJ5IHRoZSByZWZhY3RvcmluZyBpbiBjOGU5ZTE2NiwgbG9uZyBhZ28uDQo+ID4+
-DQo+ID4+IEFwcGxpZWQgdG8gbmV4dA0KPiA+Pg0KPiA+DQo+ID4gVGhlIHByZWZhdWx0IGhvb2sg
-aGFzIGFsd2F5cyBiZWVuIHNwZWNpZmljYWxseSBhYm91dCBDT1ctYnJlYWtpbmcsIEkvTw0KPiA+
-IG1lbW9yeSBoYXMgbm8gYnVzaW5lc3Mgd2l0aCB0aGlzLCBzbyB0aGVyZSBpcyBubyBwb2ludCBp
-biBoYXZpbmcgdGhlDQo+ID4gaW9tZW0gaGVscGVyIGNhbGxpbmcgdGhlIHByZWZhdWx0aW5nIGhv
-b2suDQo+ID4NCj4gPiBJIHN1c3BlY3QgdGhhdCBydGRtX21tYXBfdG9fdXNlcigpIHNob3VsZCBi
-ZSBjYWxsZWQgaW5zdGVhZCBvZg0KPiA+IHJ0ZG1faW9tYXBfdG9fdXNlcigpIGluIHRoZSBjYXNl
-IGF0IGhhbmQuDQo+ID4NCj4NCj4gSWYgR3VudGVyIGlzIG1hcHBpbmcgSU8gbWVtb3J5LCBydGRt
-X21tYXBfdG9fdXNlciBpcyBzdXJlbHkgbm90IHRoZSByaWdodA0KPiB0aGluZy4NCj4NCj4gQ291
-bGQgaXQgYmUgdGhhdCB0aGUgcHJlZmF1bHQgY2FsbGJhY2sgYWxzbyBoYXMgdGhlIHNpZGUgZWZm
-ZWN0IG9mIHNldHRpbmcgYWxsDQo+IHBhZ2UgdGFibGUgZW50cmllcyB0aGF0IHdvdWxkIG90aGVy
-d2lzZSBvbmx5IGJlIGZpbGxlZCBsYXppbHk/DQo+DQo+IEphbg0KPg0KPiAtLQ0KPiBTaWVtZW5z
-IEFHLCBUZWNobm9sb2d5DQo+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpUaGUgaW5mb3JtYXRpb24gY29udGFpbmVk
-IGluIHRoaXMgbWVzc2FnZSBtYXkgYmUgY29uZmlkZW50aWFsIGFuZCBsZWdhbGx5IHByb3RlY3Rl
-ZCB1bmRlciBhcHBsaWNhYmxlIGxhdy4gVGhlIG1lc3NhZ2UgaXMgaW50ZW5kZWQgc29sZWx5IGZv
-ciB0aGUgYWRkcmVzc2VlKHMpLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
-LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2UsIGZvcndhcmRpbmcsIGRpc3Nl
-bWluYXRpb24sIG9yIHJlcHJvZHVjdGlvbiBvZiB0aGlzIG1lc3NhZ2UgaXMgc3RyaWN0bHkgcHJv
-aGliaXRlZCBhbmQgbWF5IGJlIHVubGF3ZnVsLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQg
-cmVjaXBpZW50LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGJ5IHJldHVybiBlLW1haWwgYW5k
-IGRlc3Ryb3kgYWxsIGNvcGllcyBvZiB0aGUgb3JpZ2luYWwgbWVzc2FnZS4NCg==
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 15.06.22 09:54, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+>> 
+>>> On 23.05.22 16:04, Gunter Grau via Xenomai wrote:
+>>>> From: Gunter Grau <gunter.grau@philips.com>
+>>>>
+>>>> When mapping io memory into userspace an extra simulated pagefault for all
+>>>> pages is added to prevent later pagefaults because of copy on write
+>>>> mechanisms. This happens only on architectures that have defined the
+>>>> needed cobalt_machine.prefault function.
+>>>>
+>>>> Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+>>>> ---
+>>>>  kernel/cobalt/rtdm/drvlib.c | 10 +++++++++-
+>>>>  1 file changed, 9 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+>>>> index 4eaf3a57c..db8431ee1 100644
+>>>> --- a/kernel/cobalt/rtdm/drvlib.c
+>>>> +++ b/kernel/cobalt/rtdm/drvlib.c
+>>>> @@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+>>>>  {
+>>>>  	pgprot_t prot = PAGE_SHARED;
+>>>>  	unsigned long len;
+>>>> +	int ret;
+>>>>  
+>>>>  	len = vma->vm_end - vma->vm_start;
+>>>>  #ifndef CONFIG_MMU
+>>>> @@ -1774,8 +1775,15 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+>>>>  #endif
+>>>>  	vma->vm_page_prot = pgprot_noncached(prot);
+>>>>  
+>>>> -	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+>>>> +	ret = remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+>>>>  			       len, vma->vm_page_prot);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	if (cobalt_machine.prefault)
+>>>> +		cobalt_machine.prefault(vma);
+>>>> +
+>>>> +	return ret;
+>>>>  }
+>>>>  
+>>>>  static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct *vma)
+>>>
+>>> Wow, that was likely broken by the refactoring in c8e9e166, long ago.
+>>>
+>>> Applied to next
+>>>
+>> 
+>> The prefault hook has always been specifically about COW-breaking, I/O
+>> memory has no business with this, so there is no point in having the
+>> iomem helper calling the prefaulting hook.
+>> 
+>> I suspect that rtdm_mmap_to_user() should be called instead of
+>> rtdm_iomap_to_user() in the case at hand.
+>> 
+>
+> If Gunter is mapping IO memory, rtdm_mmap_to_user is surely not the
+> right thing.
+
+The xenomai2 implementation had a single helper dealing with I/O and
+kernel memory mappings (from virtual and linear memory) altogether. So I
+would not find impossible that wrong assumptions could be made from
+this implementation.
+
+>
+> Could it be that the prefault callback also has the side effect of
+> setting all page table entries that would otherwise only be filled lazily?
+
+Yes, this could prevent PTE misses, however I would expect minor faults
+to take place, those should be handled directly from the out-of-band
+stage.  Otherwise, this _might_ be an issue with the interrupt pipeline
+used. The prefault for ARM was kind of a hack to work around
+shortcomings from the generic COW-breaking mechanism implemented by the
+I-pipe on ARM (IIRC, this had to do with LPAE support).
+
+-- 
+Philippe.
 
