@@ -1,15 +1,9 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [linux-dovetail][PATCH 0/3] Add TSC function supports and MFD
- driver for TGPIO
-Date: Wed, 18 May 2022 17:45:20 +0000
-Message-ID: <bfd5f3e30797c8318198c99fb9d5557a64aaebf2.camel@siemens.com>
-References: <20220517015318.697955-1-qiang1.zhang@intel.com>
-In-Reply-To: <20220517015318.697955-1-qiang1.zhang@intel.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <ED81C207794E8044872E24066F1194C4@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH stable/3.1.x 0/2] Backport FPU testing cleanup to 3.1.x 
+Date: Wed, 15 Jun 2022 11:51:17 +0200
+Message-Id: <20220615095119.2442600-1-florian.bezdeka@siemens.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,31 +12,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "qiang1.zhang@intel.com" <qiang1.zhang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gVHVlLCAyMDIyLTA1LTE3IGF0IDA5OjUzICswODAwLCBacWlhbmcgdmlhIFhlbm9tYWkgd3Jv
-dGU6DQo+IFRoZSBmb2xsb3dpbmcgbW9kaWZpY2F0aW9ucyBhcmUgbWFpbmx5IHRvIGFkZCBUU0Mg
-ZnVuY3Rpb24gZm9yIFRHUElPDQo+IGFuZCBhZGQgaW50ZWwtZWhsLWdwaW8gZHJpdmVyIGRpdmlk
-ZXMgYW5kIGluaXRpYWxpemVzIHRoZSBQU0UgVEdQSU8NCj4gcmVzb3VyY2VzLg0KPiANCj4gQ2hy
-aXN0b3BoZXIgSGFsbCAoMSk6DQo+ICAgeDg2L3RzYzogQWRkIFRTQyBzdXBwb3J0IGZ1bmN0aW9u
-cyB0byBzdXBwb3J0IEFSVCBkcml2ZW4gVGltZS1Bd2FyZQ0KPiAgICAgR1BJTw0KPiANCj4gRCwg
-TGFrc2htaSBTb3dqYW55YSAoMSk6DQo+ICAgcHRwOiB0Z3BpbzogUFNFIFRHUElPIGNyb3NzdHN0
-YW1wLCBjb3VudHRzdGFtcA0KPiANCj4gUmF5bW9uZCBUYW4gKDEpOg0KPiAgIG1mZDogaW50ZWwt
-ZWhsLWdwaW86IEludHJvZHVjZSBNRkQgZnJhbWV3b3JrIHRvIFBTRSBHUElPL1RHUElPDQoNCkkg
-aGF2ZW4ndCBsb29rZWQgYXQgdGhlIGRldGFpbHMgeWV0IGFuZCBJIG1pc3NlZCB0aGUgQ29tbXVu
-aXR5IG1lZXRpbmcNCnRvZGF5IHdoZXJlIHRoaXMgdG9waWMgbWlnaHQgaGF2ZSBiZWVuIGRpc2N1
-c3NlZC4NCg0KSSdtIGFza2luZyBteXNlbGYgaWYgdGhlIGRvdmV0YWlsIHRyZWUgaXMgdGhlIHJp
-Z2h0IHRyZWUgdG8gdGFrZSB0aG9zZQ0KcGF0Y2hlcy4gSGF2ZSB0aGVzZSBwYXRjaGVzIGFscmVh
-ZHkgYmVlbiBzZW50IHRvIHVwc3RyZWFtIC8gTGludXg/IElmDQpzbywgd2Ugc2hvdWxkIGZldGNo
-IHRoZW0gd2l0aGluIHRoZSBuZXh0IHJlYmFzZSBjeWNsZSwgcmlnaHQ/DQoNCklmIG5vdDogSSBm
-ZWVsIHdlIHNob3VsZG4ndCBhcHBseSB0aGVtIGhlcmUgYW5kIGZvbGxvdyB0aGUgInVwc3RyZWFt
-DQpmaXJzdCIgYXBwcm9hY2guDQoNCkJlc3QgcmVnYXJkcywNCkZsb3JpYW4NCg0KPiANCj4gIGFy
-Y2gveDg2L2luY2x1ZGUvYXNtL3RzYy5oICAgfCAgIDggKysNCj4gIGFyY2gveDg2L2tlcm5lbC90
-c2MuYyAgICAgICAgfCAxNjggKysrKysrKysrKysrKysrKysrKysrKystDQo+ICBkcml2ZXJzL21m
-ZC9LY29uZmlnICAgICAgICAgIHwgIDEyICsrDQo+ICBkcml2ZXJzL21mZC9NYWtlZmlsZSAgICAg
-ICAgIHwgICAxICsNCj4gIGRyaXZlcnMvbWZkL2ludGVsLWVobC1ncGlvLmMgfCAyNDggKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gIDUgZmlsZXMgY2hhbmdlZCwgNDM1IGlu
-c2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVy
-cy9tZmQvaW50ZWwtZWhsLWdwaW8uYw0KPiANCg0K
+Hi all,
+
+this is the backport of the previously published FPU testing cleanup
+series to the stable/3.1.x branch.
+
+Patch 1 has been updated to match the supported architectures in the
+3.1.x stable branch, Patch 2 is unmodified.
+
+Best regards,
+Florian
+
+Florian Bezdeka (2):
+  x86: cobalt/switchtest: Fix testing issue due to uninitialized FPU
+  x86: cobalt/switchtest: Enable FPU tests unconditionally
+
+ .../arch/arm/include/asm/xenomai/fptest.h     |  4 ++++
+ .../arch/arm64/include/asm/xenomai/fptest.h   |  4 ++++
+ .../arch/powerpc/include/asm/xenomai/fptest.h |  4 ++++
+ .../arch/x86/include/asm/xenomai/fptest.h     | 20 ++++++-------------
+ kernel/drivers/testing/switchtest.c           |  4 +++-
+ 5 files changed, 21 insertions(+), 15 deletions(-)
+
+-- 
+2.30.2
+
 
