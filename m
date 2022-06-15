@@ -1,15 +1,11 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [I-PIPE Xenoami3.1 PATCH 2/2] x86/tsc: I-PIPE : notify I-PIPE
- about updated clockfreq
-Date: Wed, 15 Jun 2022 01:58:20 +0000
-Message-ID: <MN2PR11MB42851793D2FFF669CA85636CF2AD9@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <20220527062203.9498-1-hongzhan.chen@intel.com>
- <20220527062203.9498-3-hongzhan.chen@intel.com>
- <daa7d34a-ec76-5ef7-0b79-acff3deb65bb@siemens.com>
-In-Reply-To: <daa7d34a-ec76-5ef7-0b79-acff3deb65bb@siemens.com>
+Subject: Reminder: Xenomai community call on Wednesday,  Jun 15, 2022, UTC
+ 7:00 AM
+Date: Wed, 15 Jun 2022 03:16:40 +0000
+Message-ID: <MN2PR11MB4285E9CC0E091DB3BA64B4E1F2AD9@MN2PR11MB4285.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,54 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pg0KPlhlbm9tYWkgaXMgY29uY2VwdHVhbGx5IG5vdCBrbm93biB0byBJLXBpcGUuIFRoaXMgcGF0
-Y2ggaXMgYWJvdXQgY2FsbGluZw0KPnRoZSB3ZWxsLWRlZmluZWQga2V2ZW50IGhvb2sgd2hlbiB0
-aGUgVFNDIGZyZXF1ZW5jeSBjaGFuZ2VzIGFmdGVyIGENCj5yZWNhbGlicmF0aW9uLiBBUk0gZG9l
-cyBzb21ldGhpbmcgc2ltaWxhciBvbiBmcmVxdWVuY3kgY2hhbmdlcy4NCj4NCj4+IExpbnV4IG1h
-eSBzY2hlZHVsZSBhIGRlbGF5ZWQgd29yayB0byByZWZpbmUgdHNjIGNsb2NrIGFuZCB1cGRhdGUN
-Cj4+IHRzY19raHogd2hpY2ggaGFwcGVuIGFmdGVyIFhlbm9tYWkgZmluc2loIGluaXQgYnV0IHRz
-Y19zY2FsZSBhbmQNCj4+IHRzY19zaGlmdCBzdGlsbCBrZWVwIHRoZSB2YWx1ZSBkZXBlbmRpbmcg
-b24gb3JpZ2lhbmwgdHNjIGNsb2NrDQo+PiB3aGljaCBpcyBvdXRkYXRlZC4gVGhlIGRpZmZlcmVu
-Y2UgYmV0d2VlbiB0d28gY2xvY2tzIG1heSBjYXVzZQ0KPj4gdW5leHBlY3RlZCB0aW1pbmcgZHJp
-ZnQuDQo+PiANCj4+IEZvciBleGFtcGxlOg0KPj4gICBbIDAuMDAxNzMxXSB0c2M6IERldGVjdGVk
-IDI4OTkuODg2IE1IeiBUU0MNCj4+ICAgWyA1LjU4ODM4N10gdHNjOiBSZWZpbmVkIFRTQyBjbG9j
-a3NvdXJjZSBjYWxpYnJhdGlvbjogMjkwMy45OTkgTUh6DQo+PiAgIGNhdCAvc3lzL21vZHVsZS94
-ZW5vbWFpL3BhcmFtZXRlcnMvY2xvY2tmcmVxDQo+PiAgIDI4OTk4ODYwMDANCj4+ICAgQWZ0ZXIg
-cGF0Y2hpbmcsIHdlIGxpa2UgdG8gdXNlIDI5MDMuOTk5IE1Iei4NCj4+IA0KPj4gU2lnbmVkLW9m
-Zi1ieTogSG9uZ3poYW4gQ2hlbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5jb20+DQo+PiANCj4+IGRp
-ZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvdHNjLmMgYi9hcmNoL3g4Ni9rZXJuZWwvdHNjLmMN
-Cj4+IGluZGV4IDgzNTg1NmVmZDcxZi4uZTJjYTczM2Q3NmVlIDEwMDY0NA0KPj4gLS0tIGEvYXJj
-aC94ODYva2VybmVsL3RzYy5jDQo+PiArKysgYi9hcmNoL3g4Ni9rZXJuZWwvdHNjLmMNCj4+IEBA
-IC0xMjk0LDYgKzEyOTQsNyBAQCBzdGF0aWMgdm9pZCB0c2NfcmVmaW5lX2NhbGlicmF0aW9uX3dv
-cmsoc3RydWN0IHdvcmtfc3RydWN0ICp3b3JrKQ0KPj4gIAl1NjQgdHNjX3N0b3AsIHJlZl9zdG9w
-LCBkZWx0YTsNCj4+ICAJdW5zaWduZWQgbG9uZyBmcmVxOw0KPj4gIAlpbnQgY3B1Ow0KPj4gKwl1
-bnNpZ25lZCBpbnQgaXBpcGVfZnJlcTsNCj4+ICANCj4+ICAJLyogRG9uJ3QgYm90aGVyIHJlZmlu
-aW5nIFRTQyBvbiB1bnN0YWJsZSBzeXN0ZW1zICovDQo+PiAgCWlmICh0c2NfdW5zdGFibGUpDQo+
-PiBAQCAtMTM0NSw2ICsxMzQ2LDEwIEBAIHN0YXRpYyB2b2lkIHRzY19yZWZpbmVfY2FsaWJyYXRp
-b25fd29yayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspDQo+PiAgCS8qIEluZm9ybSB0aGUgVFND
-IGRlYWRsaW5lIGNsb2NrZXZlbnQgZGV2aWNlcyBhYm91dCB0aGUgcmVjYWxpYnJhdGlvbiAqLw0K
-Pj4gIAlsYXBpY191cGRhdGVfdHNjX2ZyZXEoKTsNCj4+ICANCj4+ICsJLyogbm90aWZ5IHhlbm9t
-YWkgYWJvdXQgdXBkYXRlZCBjbG9ja2ZyZXEgKi8NCj4NCj5Ecm9wIHRoZSBjb21tZW50LCBpdCdz
-IG1pc2xlYWRpbmcuDQo+DQo+PiArCWlwaXBlX2ZyZXEgPSB0c2Nfa2h6ICogMTAwMDsNCj4+ICsJ
-IF9faXBpcGVfcmVwb3J0X2Nsb2NrZnJlcV91cGRhdGUoaXBpcGVfZnJlcSk7DQo+DQo+V2h5IG5v
-dCBzaW1wbHkNCj4NCj5fX2lwaXBlX3JlcG9ydF9jbG9ja2ZyZXFfdXBkYXRlKHRzY19raHogKiAx
-MDAwKTsNCg0KVGhlcmUgaXMgZm9sbG93aW5nIGVycm9yIGlmIHdlIGFwcGx5IHRoaXMuDQoNCi4v
-aW5jbHVkZS9saW51eC9pcGlwZS5oOjE3Nzo1MzogZXJyb3I6IGx2YWx1ZSByZXF1aXJlZCBhcyB1
-bmFyeSDigJgm4oCZIG9wZXJhbmQNCiAgMTc3IHwgICAgICAgICBfX2lwaXBlX25vdGlmeV9rZXZl
-bnQoSVBJUEVfS0VWVF9DTE9DS0ZSRVEsICYoZnJlcSkpDQogICAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeDQphcmNoL3g4Ni9rZXJuZWwv
-dHNjLmM6MTM0OToxMDogbm90ZTogaW4gZXhwYW5zaW9uIG9mIG1hY3JvIOKAmF9faXBpcGVfcmVw
-b3J0X2Nsb2NrZnJlcV91cGRhdGXigJkNCiAxMzQ5IHwgICAgICAgICAgX19pcGlwZV9yZXBvcnRf
-Y2xvY2tmcmVxX3VwZGF0ZSh0c2Nfa2h6ICogMTAwMCk7DQogICAgICB8ICAgICAgICAgIF5+fn5+
-fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCnNjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6MjYyOiBy
-ZWNpcGUgZm9yIHRhcmdldCAnYXJjaC94ODYva2VybmVsL3RzYy5vJyBmYWlsZWQNCg0KUmVnYXJk
-cw0KDQpIb25nemhhbiBDaGVuDQoNCj4NCj4/DQo+DQo+PiArDQo+PiAgCS8qIFVwZGF0ZSB0aGUg
-c2NoZWRfY2xvY2soKSByYXRlIHRvIG1hdGNoIHRoZSBjbG9ja3NvdXJjZSBvbmUgKi8NCj4+ICAJ
-Zm9yX2VhY2hfcG9zc2libGVfY3B1KGNwdSkNCj4+ICAJCXNldF9jeWMybnNfc2NhbGUodHNjX2to
-eiwgY3B1LCB0c2Nfc3RvcCk7DQo+DQo+VGhlIHBhdGNoIGxvb2tzIGxpa2UgdmFsaWQgY2FuZGlk
-YXRlIGZvciA1LjQsIDQuMTktY2lwIGFuZCBldmVuIDQuNC1jaXAuDQo+DQo+SmFuDQo+DQo+LS0g
-DQo+U2llbWVucyBBRywgVGVjaG5vbG9neQ0KPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
-bnV4DQo=
+
+
+We have the Xenomai community call today.
+
+Topics may include but are not limited to upstream/downstream project=20
+plans, status updates, and technical discussions. It's an open online=20
+meeting that anyone can join and ask questions.
+
+Time:
+Wednesday, Jun 15, 2022, UTC 7:00 AM
+Paris, France CEST 9:00 AM
+China CST 3:00 PM
+
+Join Zoom Meeting=20
+https://intel.zoom.us/j/91297279269?pwd=3DWmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
+Or
+https://intel.zoom.us/wc/join/91297279269?wpk=3Dwcpk52a9f96d989e7e20b628c2c=
+36e48b68e
+
+Meeting ID: 912 9727 9269
+Passcode: 367528
+One tap mobile
++12532158782,,91297279269# US (Tacoma)
++13462487799,,91297279269# US (Houston)
+
+Dial by your location
+        +1 253 215 8782 US (Tacoma)
+        +1 346 248 7799 US (Houston)
+        +1 669 900 9128 US (San Jose)
+        +1 301 715 8592 US (Washington DC)
+        +1 312 626 6799 US (Chicago)
+        +1 646 558 8656 US (New York)
+Meeting ID: 912 9727 9269
+Find your local number: https://intel.zoom.us/u/aTEA37i5G
+
+Join by SIP
+mailto:91297279269@zoomcrc.com
+
+Join by H.323
+162.255.37.11 (US West)
+162.255.36.11 (US East)
+115.114.131.7 (India Mumbai)
+115.114.115.7 (India Hyderabad)
+213.19.144.110 (Amsterdam Netherlands)
+213.244.140.110 (Germany)
+103.122.166.55 (Australia Sydney)
+103.122.167.55 (Australia Melbourne)
+209.9.211.110 (Hong Kong SAR)
+149.137.40.110 (Singapore)
+64.211.144.160 (Brazil)
+149.137.68.253 (Mexico)
+69.174.57.160 (Canada Toronto)
+65.39.152.160 (Canada Vancouver)
+207.226.132.110 (Japan Tokyo)
+149.137.24.110 (Japan Osaka)
+Meeting ID: 912 9727 9269
+Passcode: 367528
+
+
+Regards
+
+Hongzhan Chen
 
