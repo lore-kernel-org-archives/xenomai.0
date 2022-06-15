@@ -1,18 +1,13 @@
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 2/2] x86: ipipe: Enable FPU tests unconditionally
-Date: Wed, 15 Jun 2022 07:44:47 +0000
-Message-ID: <f1e0629bf2bb9b48f93e7c9ee92428d1b9367058.camel@siemens.com>
-References: <20220525095627.40521-1-florian.bezdeka@siemens.com>
- <20220525095627.40521-3-florian.bezdeka@siemens.com>
- <f8c2aab0-03a1-76a4-c484-0cfe55308c6c@siemens.com>
- <5d33d62362ec47029af74396682292f756f0de25.camel@siemens.com>
- <437466fb-9835-b8eb-652e-556e5a636908@siemens.com>
-In-Reply-To: <437466fb-9835-b8eb-652e-556e5a636908@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E2BD40ABE93FC24896B69F21B627FFAF@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Message-ID: <b5ccdeab-0852-56db-a386-fb5ef22db11f@siemens.com>
+Date: Wed, 15 Jun 2022 09:46:09 +0200
 MIME-Version: 1.0
+Subject: Re: [REMINDER] Mailing list rehosting
+Content-Language: en-US
+References: <87fsl2aig1.fsf@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <87fsl2aig1.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,66 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: xenomai@xenomai.org
 
-T24gVHVlLCAyMDIyLTA2LTE0IGF0IDIwOjExICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwOC4wNi4yMiAxODo1OSwgQmV6ZGVrYSwgRmxvcmlhbiAoVCBDRUQgU0VTLURFKSB3cm90ZToN
-Cj4gPiBPbiBXZWQsIDIwMjItMDYtMDggYXQgMTc6MDIgKzAyMDAsIEphbiBLaXN6a2Egd3JvdGU6
-DQo+ID4gPiBPbiAyNS4wNS4yMiAxMTo1NiwgRmxvcmlhbiBCZXpkZWthIHdyb3RlOg0KPiA+ID4g
-PiBQYXJ0cyBvZiB0aGUgRlBVIHRlc3RzIHdlcmUgc2tpcHBlZCB3aGVuIG9uZSBvZiB0aGUgZm9s
-bG93aW5nIGNvbmZpZw0KPiA+ID4gPiBvcHRpb25zIHdhcyBlbmFibGVkLCBzaGFkb3dpbmcgYSBy
-ZWFsIHRlc3QgaXNzdWUgdGhhdCB3YXMgdHJpZ2dlcmVkIGJ5DQo+ID4gPiA+IGhpZ2ggbG9hZCBv
-biB0aGUgc3lzdGVtLiBUaGUgb3B0aW9uczoNCj4gPiA+ID4gICAtIENPTkZJR19YODZfVVNFXzNE
-Tk9XDQo+ID4gPiA+ICAgLSBDT05GSUdfTURfUkFJRDQ1Ng0KPiA+ID4gPiAgIC0gQ09ORklHX01E
-X1JBSUQ0NTZfTU9EVUxFDQo+ID4gPiA+IA0KPiA+ID4gPiBBcyB0aGUgRlBVIGluaXRpYWxpemF0
-aW9uIGlzIGZpeGVkIG5vdywgd2UgY2FuIGVuYWJsZSB0aGUgdGVzdHMNCj4gPiA+ID4gdW5jb25k
-aXRpb25hbGx5Lg0KPiA+ID4gPiANCj4gPiA+ID4gU2lnbmVkLW9mZi1ieTogRmxvcmlhbiBCZXpk
-ZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gPiA+IC0tLQ0KPiA+ID4gPiAg
-Li4uL2FyY2gveDg2L2lwaXBlL2luY2x1ZGUvYXNtL3hlbm9tYWkvZnB0ZXN0LmggICAgIHwgMTMg
-LS0tLS0tLS0tLS0tLQ0KPiA+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDEzIGRlbGV0aW9ucygtKQ0K
-PiA+ID4gPiANCj4gPiA+ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvYXJjaC94ODYvaXBp
-cGUvaW5jbHVkZS9hc20veGVub21haS9mcHRlc3QuaCBiL2tlcm5lbC9jb2JhbHQvYXJjaC94ODYv
-aXBpcGUvaW5jbHVkZS9hc20veGVub21haS9mcHRlc3QuaA0KPiA+ID4gPiBpbmRleCBjY2Y3YWZh
-MTEuLjdhMmIxN2Q3NSAxMDA2NDQNCj4gPiA+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9hcmNoL3g4
-Ni9pcGlwZS9pbmNsdWRlL2FzbS94ZW5vbWFpL2ZwdGVzdC5oDQo+ID4gPiA+ICsrKyBiL2tlcm5l
-bC9jb2JhbHQvYXJjaC94ODYvaXBpcGUvaW5jbHVkZS9hc20veGVub21haS9mcHRlc3QuaA0KPiA+
-ID4gPiBAQCAtMzYsMTkgKzM2LDYgQEAgc3RhdGljIGlubGluZSB2b2lkIGZwX2luaXQodm9pZCkN
-Cj4gPiA+ID4gDQo+ID4gPiA+ICBzdGF0aWMgaW5saW5lIGludCBmcF9saW51eF9iZWdpbih2b2lk
-KQ0KPiA+ID4gPiAgew0KPiA+ID4gPiAtI2lmIGRlZmluZWQoQ09ORklHX1g4Nl9VU0VfM0ROT1cp
-IFwNCj4gPiA+ID4gLSAgIHx8IGRlZmluZWQoQ09ORklHX01EX1JBSUQ0NTYpIHx8IGRlZmluZWQo
-Q09ORklHX01EX1JBSUQ0NTZfTU9EVUxFKQ0KPiA+ID4gPiAtICAgLyogVGhlciBrZXJuZWwgdXNl
-cyB4ODYgRlBVLCB3ZSBjYW4gbm90IGFsc28gdXNlIGl0IGluIG91ciB0ZXN0cy4gKi8NCj4gPiA+
-ID4gLSAgIHN0YXRpYyBpbnQgb25jZSA9IDA7DQo+ID4gPiA+IC0gICBpZiAoIW9uY2UpIHsNCj4g
-PiA+ID4gLSAgICAgICAgICAgb25jZSA9IDE7DQo+ID4gPiA+IC0gICAgICAgICAgIHByaW50aygi
-JXM6JWQ6IFdhcm5pbmc6IExpbnV4IGlzIGNvbXBpbGVkIHRvIHVzZSBGUFUgaW4gIg0KPiA+ID4g
-PiAtICAgICAgICAgICAgICAgICAgImtlcm5lbC1zcGFjZS5cbkZvciB0aGlzIHJlYXNvbiwgc3dp
-dGNodGVzdCBjYW4gbm90ICINCj4gPiA+ID4gLSAgICAgICAgICAgICAgICAgICJ0ZXN0IHVzaW5n
-IEZQVSBpbiBMaW51eCBrZXJuZWwtc3BhY2UuXG4iLA0KPiA+ID4gPiAtICAgICAgICAgICAgICAg
-ICAgX19GSUxFX18sIF9fTElORV9fKTsNCj4gPiA+ID4gLSAgIH0NCj4gPiA+ID4gLSAgIHJldHVy
-biAtRUJVU1k7DQo+ID4gPiA+IC0jZW5kaWYgLyogM0ROb3cgb3IgUkFJRCA0NTYgKi8NCj4gPiA+
-ID4gICAgIGtlcm5lbF9mcHVfYmVnaW4oKTsNCj4gPiA+ID4gICAgIC8qIGtlcm5lbF9mcHVfYmVn
-aW4oKSBkb2VzIG5vIHJlLWluaXRpYWxpemUgdGhlIGZwdSBjb250ZXh0LCBidXQNCj4gPiA+ID4g
-ICAgICAgIGZwX3JlZ3Nfc2V0KCkgaW1wbGljaXRlbHkgZXhwZWN0cyBhbiBpbml0aWFsaXplZCBm
-cHUgY29udGV4dCwgc28NCj4gPiA+IA0KPiA+ID4gSG1tLCBJJ20gbm90IHlldCBmdWxseSBjb252
-aW5jZWQgZnJvbSByZWFkaW5nIGJvdGggY29tbWl0IGxvZ3MgdGhhdCB0aGUNCj4gPiA+IG9uZSBm
-aXggYWN0dWFsbHkgb2Jzb2xldGVzIHRoaXMgY2hlY2suIERpZCBpdCByZWFsbHkgb25seSBwYXBl
-ciBvdmVyIGENCj4gPiA+IHNpbXBsZSBidWc/DQo+ID4gDQo+ID4gSSBkb24ndCBoYXZlIHRoZSBm
-dWxsIGhpc3RvcnkgaGVyZSwgYnV0IGl0IHNlZW1zIHRoYXQgdGhpcyB3YXMga2luZCBvZg0KPiA+
-IGRvdWJsZSBwcm90ZWN0aW9uLg0KPiA+IA0KPiA+IFNvIGZhciBhbGwgdGVzdHMgZGlkIG5vdCBi
-cmluZyB1cCBhbnkgZnVydGhlciBpc3N1ZXMuDQo+ID4gDQo+ID4gT24gc3lzdGVtcyB3aXRoIFJB
-SUQgKD1zeXN0ZW1zIHdpdGggb25lIG9mIHRoZSBtZW50aW9uZWQgb3B0aW9ucw0KPiA+IGVuYWJs
-ZWQpIEZQVSB1c2FnZSBpcyBtdWNoIG1vcmUgbGlrZWx5IGFuZCBidWdzIHdvdWxkIHRyaWdnZXIg
-bW9yZQ0KPiA+IGxpa2VseS4gSSB3b3VsZCBsaWtlIHRvIGVuYWJsZSB0aGUgRlBVIHN5c3RlbXMg
-ZXNwZWNpYWxseSBvbiBzdWNoDQo+ID4gc3lzdGVtcy4NCj4gPiANCj4gPiBCdXQ6IEluIGNhc2Ug
-d2UgaGF2ZSBtb3JlIHVuZGlzY292ZXJlZCBidWdzIGluIHRoaXMgYXJlYSwgaXQgbWlnaHQNCj4g
-PiBoYXBwZW4gdGhhdCB3ZSBkYW1hZ2UgYSBSQUlEIGJhc2VkIGZpbGUgc3lzdGVtLiBJdCBzZWVt
-cyBHaWxsZXMgaGFkDQo+ID4gc3VjaCBhIHN5c3RlbSBhbmQgdHJpZWQgdG8gcHJldmVudCBGUyBk
-YW1hZ2UgdGhpcyB3YXkuDQo+ID4gDQo+IA0KPiBPSywgaXQncyBqdXN0IGEgdGVzdCBzZXR1cCBp
-biB0aGUgZW5kIC0gbGV0J3MgZGFyZSBpdC4NCj4gDQo+IEFwcGxpZWQgYm90aCB0byBzdGFibGUv
-djMuMi4NCg0KSSBoYXZlIHByZXBhcmVkIGJhY2twb3J0cyBmb3Igc3RhYmxlL3YzLjEueCBhbmQg
-c3RhYmxlL3YzLjAueCBhcyB3ZWxsLg0KSWYgdGhlcmUgaXMgaW50ZXJlc3QgSSBjb3VsZCBlYXNp
-bHkgc2VuZCB0aGVtIG91dC4gSSB3YXMganVzdCB3YWl0aW5nDQpmb3IgZmVlZGJhY2sgdG8gYXZv
-aWQgcmV3b3JraW5nIHRoZW0gYWxsLg0KDQpEbyB3ZSB0cnkgdG8ga2VlcCB0aGUgc3RhYmxlIGJy
-YW5jaGVzICJzeW5jaHJvbml6ZWQiIGV2ZW4gZm9yIHRlc3RpbmcNCmlzc3Vlcz8NCg0KPiANCj4g
-SmFuDQo+IA0KDQo=
+On 21.05.22 12:48, Philippe Gerum via Xenomai wrote:
+> 
+> The Xenomai mailing list server will be migrated to [1] on June 18
+> 2022. In the meantime, the current server will be operating as
+> usual. However, the existing subscriptions to xenomai@xenomai.org will
+> NOT be automatically transferred to the new server.
+> 
+> This means that:
+> 
+> - The Xenomai mailing list service will be inaccessible on June 18
+>   from 4pm to 6pm CET for maintenance duties.
+> 
+> - Starting from June 18 at 6pm CET, all posts to xenomai@xenomai.org
+>   will be forwarded to xenomai@lists.linux.dev, the current mailing list
+>   archive will move to [2] afterwards.
+> 
+> - If you want to keep on receiving e-mails from the Xenomai mailing list
+>   after this date, please subscribe to xenomai@lists.linux.dev by
+>   sending an empty mail to xenomai+subscribe@lists.linux.dev.
+> 
+> NOTE: xenomai@lists.linux.dev is a public list, you only need to
+> subscribe for receiving e-mails.
+> 
+> Thanks,
+> 
+> [1] https://subspace.kernel.org/lists.linux.dev.html
+> [2] https://lore.kernel.org/xenomai/
+> 
+
+Reminder @all that this switch is happening this weekend. Make sure you
+are already subscribed to the new list.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
