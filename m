@@ -1,15 +1,12 @@
-Message-ID: <fde20948-b893-8a30-c653-8e8ae7cb8018@siemens.com>
-Date: Thu, 19 May 2022 07:41:22 +0200
 MIME-Version: 1.0
-Subject: Re: [linux-dovetail][PATCH 0/3] Add TSC function supports and MFD
- driver for TGPIO
-Content-Language: en-US
-References: <20220517015318.697955-1-qiang1.zhang@intel.com>
- <bfd5f3e30797c8318198c99fb9d5557a64aaebf2.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <bfd5f3e30797c8318198c99fb9d5557a64aaebf2.camel@siemens.com>
+References: <CAA09Y8RZo_QUN_ncm7UighfkC9imE68FsnZx=M__pQbX9K_j=A@mail.gmail.com>
+ <878rq6vyw6.fsf@xenomai.org>
+In-Reply-To: <878rq6vyw6.fsf@xenomai.org>
+From: Davide Valeri <engineervalide@gmail.com>
+Date: Wed, 15 Jun 2022 15:53:19 +0200
+Message-ID: <CAA09Y8RUK7_1XkdC1rk1LJ1OziCCk8-JBS6ycexnLjBHKnwNwQ@mail.gmail.com>
+Subject: Re: SPI
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,46 +15,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T CED SES-DE)" <florian.bezdeka@siemens.com>, "rpm@xenomai.org" <rpm@xenomai.org>, "qiang1.zhang@intel.com" <qiang1.zhang@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Roberto Ferri <ironsnetwork@gmail.com>, xenomai@xenomai.org
 
-On 18.05.22 19:45, Bezdeka, Florian (T CED SES-DE) wrote:
-> On Tue, 2022-05-17 at 09:53 +0800, Zqiang via Xenomai wrote:
->> The following modifications are mainly to add TSC function for TGPIO
->> and add intel-ehl-gpio driver divides and initializes the PSE TGPIO
->> resources.
->>
->> Christopher Hall (1):
->>   x86/tsc: Add TSC support functions to support ART driven Time-Aware
->>     GPIO
->>
->> D, Lakshmi Sowjanya (1):
->>   ptp: tgpio: PSE TGPIO crosststamp, counttstamp
->>
->> Raymond Tan (1):
->>   mfd: intel-ehl-gpio: Introduce MFD framework to PSE GPIO/TGPIO
-> 
-> I haven't looked at the details yet and I missed the Community meeting
-> today where this topic might have been discussed.
-> 
-> I'm asking myself if the dovetail tree is the right tree to take those
-> patches. Have these patches already been sent to upstream / Linux? If
-> so, we should fetch them within the next rebase cycle, right?
-> 
-> If not: I feel we shouldn't apply them here and follow the "upstream
-> first" approach.
+Hi!
+Many thanks for your response, but unfortunately we're receiving the same error.
 
-Yup, those should be confirmed upstream first. I'm not seeing them in
-Linus' tree yet, or anything related. I thought EHL upstreaming was
-completed by now?
+I was already using the config file as suggested from the resource you
+provided, but still the compilation does not build the device trees
+RPi4 needs.
+So I compiled the official kernel source [1] (I tried with 5.15.45 [1]
+and .44 [2]) to have the correct overlays. Then, I installed the
+Xenomai modules and copied the Xenomai kernel. Still, I'm receiving
+the same error from my previous email and cannot enable the SPI.
 
-Once they are confirmed, backporting accepted patches to certain stable
-trees is much safer than having to change APIs again once that feature
-hits upstream later.
+I noticed the same error after compiling [3], thinking it was the
+right .44 kernel for RPi4. I don't know if it can be helpful.
 
-Jan
+Davide
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+[1] https://github.com/raspberrypi/linux
+[2] https://github.com/raspberrypi/linux/tree/ea7fe1b21ea73146b1d49ac5f554fbd0ac5de9de
+, "Merge remote-tracking branch 'stable/linux-5.15.y' into rpi-5.15.y"
+[3] https://github.com/raspberrypi/linux/tree/4e67be407725b1d8b829ed2075987037abec98ec
+, "Linux 5.15.44"
+
+Il giorno gio 9 giu 2022 alle ore 13:50 Philippe Gerum
+<rpm@xenomai.org> ha scritto:
+>
+>
+> Davide Valeri <engineervalide@gmail.com> writes:
+>
+> > Hi!
+> > We need your help once more.
+> > We cannot enable SPI in the built kernel. Neither "sudo raspi-config"
+> > nor manually editing "config.txt" worked.
+> >
+> > Using "raspi-config" results in
+> > "mount: /config/device-tree: mount point does not exist
+> > * Failed to mount configfs - 2"
+> >
+> > Commit linux-evl: 81e5b7be.
+> >
+> > We're using the bcm2711_defconfig provided by [1].
+> > We tried the kernel from the repository in [1] and we were able to enable SPI.
+> >
+> > Do you experience something like this?
+> >
+> > Davide Valeri
+> >
+> > [1] https://github.com/raspberrypi/linux/blob/rpi-5.15.y/arch/arm64/configs/bcm2711_defconfig
+> > (commit: 9b573727)
+>
+> This is not an EVL issue. Google has a match for this it seems:
+> https://forums.gentoo.org/viewtopic-t-1104786-start-0.html
+>
+> --
+> Philippe.
 
