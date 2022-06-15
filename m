@@ -1,11 +1,14 @@
-From: "Wang, Rick Y" <rick.y.wang@intel.com>
-Subject: Registration is Now Open - 2022 Global Xenomai Community Meetup
-Date: Thu, 19 May 2022 06:52:49 +0000
-Message-ID: <CO6PR11MB5649B692FD9DA368B1EEEFC6BAD09@CO6PR11MB5649.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <0ab62caf-ded4-7c12-6418-811f9d7861e4@siemens.com>
+Date: Wed, 15 Jun 2022 18:25:51 +0200
 MIME-Version: 1.0
+Subject: Re: [PATCH 3.2.x] cobalt/x86: Account for changes to
+ switch_fpu_finish in 5.4.182
+Content-Language: en-US
+References: <6384510d-fcc5-d513-d169-0c8b7643e876@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <6384510d-fcc5-d513-d169-0c8b7643e876@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,88 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+On 15.06.22 17:20, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> The signature of switch_fpu_finish changed in stable 5.4.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  kernel/cobalt/arch/x86/ipipe/thread.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/cobalt/arch/x86/ipipe/thread.c b/kernel/cobalt/arch/x86/ipipe/thread.c
+> index dd97a5d32c..7e28903a42 100644
+> --- a/kernel/cobalt/arch/x86/ipipe/thread.c
+> +++ b/kernel/cobalt/arch/x86/ipipe/thread.c
+> @@ -425,7 +425,9 @@ void xnarch_leave_root(struct xnthread *root)
+>  #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
+>  	/* restore current's fpregs */
+>  	__cpu_invalidate_fpregs_state();
+> -#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,182)
+> +	switch_fpu_finish(current);
+> +#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+>  	switch_fpu_finish(&current->thread.fpu);
+>  #else
+>  	switch_fpu_finish(&current->thread.fpu, raw_smp_processor_id());
 
-We're excited to announce that the 2022 Global Xenomai Community Meetup is=
-=20
-open for registration!
+Actually 3.1.x material as well - we already supported 5.4 there.
 
-Experts in Xenomai community from Europe, the United States and China will
-share Xenomai-based RTOS development, applications and best practices.=20
-There are 12 presentations and 2 Live Q&A sessions in the event.
+Jan
 
-The meetup was divided into two halves to facilitate Asia-Pacific and=20
-European time zones. The meetup provides simultaneous interpretation in=20
-both Chinese and English. Attendance will be free for everyone.=20
-
-For detail agenda and registration, please visit:
-https://intel.csdn.net/2022GlobalXenomaiCommunityMeetup/en
-
-Please "Click to enter Vhall live" and then "live registration".
-
-Opening for part 1 is at:=20
-PDT 18:00 May 24 | UTC 01:00, CEST 03:00, CST 09:00 May 25
-
-- Opening and Welcome
-  by Jonny Rikard Klasson (Intel)
- =20
-- Real-time Operating Systems in Special Effects
-  by Steve Rosenbluth (Concept Overdrive Inc)
-
-- IEC61131-3 platform development and optimization based on Linux Xenomai
-  by Henry Bao (Shanghai Nxtrol Technology Co., Ltd.)
-
-- Xenomai Motion Control Solution and Tuning Based on Intel Edge Controls=20
-  for Industrial
-  by Wei Zhang, Yu Yan (Intel)
- =20
-- Industrial PC & Xenomai
-  by Xiewei Wang (Shenzhen GWtech Co.,Ltd.)
-
-- Xenomai in Industry Control System
-  by Yebin Liang (Han's Smart Control Technology Co., Ltd.)
-
-- Speakers Q&A
-  by Session 1 Speakers
-
-
-Opening for part 2 is at:=20
-PDT 23:00 May 24 | UTC 06:00, CEST 08:00, CST 14:00 May 25
-
-- Welcome and Keynote Speaking
-  Xenomai Community: Today and Tomorrow
-  by Jan Kiszka (Siemens AG)
-
-- Upgrading to Xenomai 3: Lessons learned
-  by Richard Weinberger (Sigma star gmbh)
-
-- Realtime Exception Handling in Xenomai
-  by Johannes Kirchmai (SIGMATEK GmbH & Co KG)
-
-- Application Development Based on Xenomai
-  by Changjun Chen (SYMG(Shanghai) Intelligence System Co., Ltd)
-
-- Delivering Real-Time Performance with Intel=AE TCC
-  by Jianbo Cao (Intel)
-
-- Running Xenomai VM on ACRN hypervisor
-  by Ronnie Yang (Intel)
-
-- Speakers Q&A
-  by Session 2 Speakers
-
-
-Pacific Daylight Time=A0(PDT): UTC-7 hours
-Coordinated Universal Time (UTC)
-Central European Summer Time (CEST): UTC+2
-China Standard Time (CST): UTC+8 hours
-
-
-Looking forward to meeting you online!
-
-
-Thanks,
-Rick
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
