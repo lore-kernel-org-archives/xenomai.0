@@ -1,11 +1,11 @@
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: Interrupts
-Date: Fri, 17 Jun 2022 19:23:04 +0000
-Message-ID: <PH1P110MB1050EB01901ACB993D94FF8EE2AF9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Content-Language: en-US
+References: <PH1P110MB1050EB01901ACB993D94FF8EE2AF9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Interrupts
+Date: Sat, 18 Jun 2022 10:44:57 +0200
+In-reply-to: <PH1P110MB1050EB01901ACB993D94FF8EE2AF9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87pmj673g0.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,23 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: xenomai@xenomai.org
 
-VGhlIGFwcCB0aGF0IEkgYW0gY3VycmVudGx5IHdvcmtpbmcgd2l0aCBoYXMgYW4gaW50ZXJydXB0
-IHNjaGVtZSBhcyBmb2xsb3dzOgpkZXZpY2Ugb24gdGhlIFBDSWUgYnVzIHNlbmRzIGFuIGludGVy
-cnVwdCB0byB0aGUgQ1BVLCBvdXIgbGludXggZHJpdmVyIHRoZW4KaGFzIGFuIE1TSSBpbnRlcnJ1
-cHQgaGFuZGxlciAod2lsbCBiZSByZXBsYWNlZCBieSB0aGUgRVZMIG9vYiBpbnRlcnJ1cHQKaGFu
-ZGxlciksIHRoZSBoYW5kbGVyIHRoZW4gY2FsbHMgZXZlbnRmZF9zaWduYWwoKSB0byBhbGVydCB0
-aGUgdXNlcnNwYWNlIGFwcAp0aGF0IGFuIGludGVycnVwdCBoYXBwZW5lZC4gT24gdGhlIHVzZXJz
-cGFjZSBzaWRlLCB0aGVyZSBpcyBhIHRocmVhZCB0aGF0CmltcGxlbWVudHMgYW4gZXBvbGwgdGhh
-dCBpcyBtb25pdG9yaW5nIHRoZSBldmVudGZkIGZvciBhbiBldmVudC4gVGhlIGlzc3VlCmlzIHRo
-YXQgZXZlbnRmZCBhbmQgZXBvbGwgYXJlIGJvdGggTGludXggT1MgaXRlbXMsIHNvIEkgYW0gbm90
-IHN1cmUgaWYKc3RpY2tpbmcgd2l0aCB0aGlzIGtpbmQgb2YgbWV0aG9kIGlzIHRoZSBiZXN0IG9w
-dGlvbi4gSXMgdGhlcmUgYSBtb3JlCmdlbmVyYWxseSBleGNlcHRlZCBtZXRob2Qgd2hlbiBkZXZl
-bG9waW5nIHdpdGggRVZMIHRvIGhhdmUgYW4gRVZMIGtlcm5lbApkcml2ZXIgbm90aWZ5IGEgdXNl
-cnNwYWNlIEVWTCB0aHJlYWQgdGhhdCB0aGVyZSB3YXMgYW4gaW50ZXJydXB0PwoKIAoKVGhhbmtz
-LAoKIAoKUnVzc2VsbAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc21pbWUucDdzClR5cGU6
-IGFwcGxpY2F0aW9uL3BrY3M3LXNpZ25hdHVyZQpTaXplOiA2NzU5IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMjIwNjE3LzJkYmQ4MDA0L2F0dGFjaG1lbnQuYmluPgo=
+
+Russell Johnson via Xenomai <xenomai@xenomai.org> writes:
+
+> The app that I am currently working with has an interrupt scheme as follows:
+> device on the PCIe bus sends an interrupt to the CPU, our linux driver then
+> has an MSI interrupt handler (will be replaced by the EVL oob interrupt
+> handler), the handler then calls eventfd_signal() to alert the userspace app
+> that an interrupt happened. On the userspace side, there is a thread that
+> implements an epoll that is monitoring the eventfd for an event. The issue
+> is that eventfd and epoll are both Linux OS items, so I am not sure if
+> sticking with this kind of method is the best option. Is there a more
+> generally excepted method when developing with EVL to have an EVL kernel
+> driver notify a userspace EVL thread that there was an interrupt?
+>
+
+The recommended way with EVL is to follow the common patterns used for
+developing regular linux drivers, except that the EVL kernel API must be
+used instead of the regular/in-band kernel API for anything which wants
+to synchronize threads over the oob stage.
+
+Typically, you could share an EVL semaphore [1] or an event flag group
+[2] between the interrupt handler and the oob_ioctl() or oob_read()
+call, which would block the user-space task until the matching event
+happens. To monitor complex events, you could use an EVL wait queue
+instead of a semaphore or a flag.
+
+If you need to monitor multiple event sources in userland, you can use
+the EVL poll API [4] with the file descriptors you would otherwise pass
+to the oob_{ioctl, read, write}() calls.
+
+[1] https://evlproject.org/core/user-api/semaphore/
+[2] https://evlproject.org/core/user-api/flags/
+[3] https://evlproject.org/core/kernel-api/wait/
+[4] https://evlproject.org/core/user-api/poll/
+
+-- 
+Philippe.
+
