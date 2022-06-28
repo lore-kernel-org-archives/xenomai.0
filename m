@@ -1,145 +1,130 @@
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10080.outbound.protection.outlook.com [40.107.1.80])
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80133.outbound.protection.outlook.com [40.107.8.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 205E57A
-	for <xenomai@lists.linux.dev>; Tue, 28 Jun 2022 08:40:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1833257A
+	for <xenomai@lists.linux.dev>; Tue, 28 Jun 2022 11:02:56 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UDR+yStesbIapLXigNEyK9lY/vo9Tsw3TmuT/MBNXrN0MXP2FQTywXZMj9ELtTpgHHNnA+m+MsqHHPzqxk8St8b07AdwRRS0V/UtATV3y7miFOYsmfgy5wp3w4oNvDnbrwLXABr0GwVvjEFoeerYqoh/pAn0KmkaYkg2bTOn+OqDCezK84PBtO4B1ImQf30XymbuAQNGh6gwQVeZBpE4HV0umBpMpyM0ghu10GYXZDCzR0sT0Vgmxp7R0M3rE+4XaO6lRcjjNjajd2rNxcV09O7WcpIoKhUczzAg3UUckVkMswmYoV/DCvzuWUUHzC6C8hWSsLwt70VbDnl4//vo2g==
+ b=S5YW3yVL1VopgVvH50apfxU+Ad+/Bl5ulhzB8iLaa5+C9xvgJPO+gSV2mAYTC22cqLwDQBBNnaZS6IFs6Aogxxfvcy9mYekiGzurBoOWwzbchZqyZs5DN1o5HBz7et3pNC1WwYYXqOfH0KhKqGSEgss49ANQ7v8QK7llyQt/g7GWAty4Ca9jdaCPx2127jZI3y46xW2d8dzV4U3U34Gg9buYHgdOXwZVtssnFykqxMx9aZjuIqlXTZF/+c5cqDKnooegRUPb9NcO6r8UJ6EM8XoQcm0CAAf7bHQTCX3Ru/C5Ey+Ppz9Dv7gT09O9x6Nfrlykh3eaYD3JxJ0go45+3A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cllCYcYWs6BA5na08yGveVn+jfQ7nZO76GbgyRtKw7c=;
- b=OYRwcTXDxd0VjoBTg55baDlHjPVA4R7y47U4j/9d5tuFZrg7BQ6wwjAx/zASP5hVQKGja7ddfjKXiUf6t7bN//Hl9qWIMB/bPIwUAdXuI5uumqcS/Z7FybcY+ZQy6vvTCf9b52CaP+f94gZr2c5M/36KYBcmjhmj8JAnculd+mycB5Q1BhmOKXJp3c4a7eJfgQn7fnogsapuguLKALjwsMw/qGL/0aO6sB843aKNb+ZVtEvSAAyikI8oL/Qplpehtd0UhAD4AQlL0hHiPeVqLEQ+js5Gb66u9+0cQJUUwpiSCiIEE69MKJdphRz4iPa3AyfEDyRH//dlwraE+I87Xg==
+ bh=lFZTaXZ8EH0ACvS4DOUHwenjcgDHHY/OwPPd+f6k9h4=;
+ b=I75WzTFiyN7UnBS/kIfRK2fGkYcm60RbNLumwrA5Lnyqv8T7V8YyAnPhPwbQlkDrvtW1ekY/oO/xBgH5gwGu7pc+j6myUgXdREnQsbVMwlSsv0eMrujBgnkAbDBh1kd1SwVCS3vmN1bv27zEN+HR1XhSgY6hZ2WM9AB6dcGGwoTAVy52i+GqLoLgpxg4tjBtJvq/nLbxzoCNaGqGXcfyGoFtNiB18CN8c+656LNBRXhYhRcHnNaOpyixp+IqmBz31NvhYywXHjLalpFDp8zWcpjTmflhiERGdrG3/xJEq5lxdbMp3KvdebKjhaq6/W1sYZhJvpNunfd9z3XCZs/sJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.70) smtp.rcpttodomain=philips.com smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ 212.159.232.72) smtp.rcpttodomain=lists.linux.dev
+ smtp.mailfrom=bbl.ms.philips.com; dmarc=pass (p=reject sp=reject pct=100)
+ action=none header.from=bbl.ms.philips.com; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Philips.onmicrosoft.com; s=selector2-Philips-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cllCYcYWs6BA5na08yGveVn+jfQ7nZO76GbgyRtKw7c=;
- b=gMUhmXG79fV+Kial9+rVv3cmkGInB+fBb5sBPbv3dIMnyj+b/G5BnX6dc4yAYmMN4MBXcupvQJx27ig6EKeti0cN5aBh9JVTVrLoD/XQz5NDZd53NcA65oV44XVYPvAfs82TP2wJWURfw0BwXiRVPxf7pLlp4n4ssymBfkLf1Wxoe9g4E5rldsWOHHdYpsNuEMq1ZFosIXjYIGjriS9XkiXGCbLbjxDPQz4uYa7mNi8yKBVE8Pga5r9KmA2BB8UK0qkhhN90FbtzmUVAUg2Zdziu9UaEpjIAmjbiHvvfvqC0N7yHWS/I93Q4jYQr2raKd7IcCbke1mn00TohWlahSw==
-Received: from OL1P279CA0054.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:14::23)
- by HE1PR1001MB0969.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:3:70::18) with
+ bh=lFZTaXZ8EH0ACvS4DOUHwenjcgDHHY/OwPPd+f6k9h4=;
+ b=J7mfB6xkA/zFnpNeG6e7kAa+abZ7rMiIV8Em26XW2nynZMTd9V8S+BqmM/m1oZ02jpUkJhvrYlATu0TWS7903yDjqgYTFC/Wcpbco1vcqtwoD4gJxQpHZaYCGXi0dm2BWmAe8YoGPjRDSFs7LZ0ejijAj2UJp8KxXvjraJs1CUQ=
+Received: from DB8PR04CA0020.eurprd04.prod.outlook.com (2603:10a6:10:110::30)
+ by AM6P122MB0133.EURP122.PROD.OUTLOOK.COM (2603:10a6:20b:7a::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Tue, 28 Jun
- 2022 08:40:54 +0000
-Received: from HE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:e10:14:cafe::1c) by OL1P279CA0054.outlook.office365.com
- (2603:10a6:e10:14::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
- Transport; Tue, 28 Jun 2022 08:40:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.70)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.70 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.70; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.70) by
- HE1EUR01FT017.mail.protection.outlook.com (10.152.0.166) with Microsoft SMTP
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
+ 2022 11:02:53 +0000
+Received: from DB5EUR01FT053.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:10:110:cafe::55) by DB8PR04CA0020.outlook.office365.com
+ (2603:10a6:10:110::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.21 via Frontend
+ Transport; Tue, 28 Jun 2022 11:02:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 212.159.232.72)
+ smtp.mailfrom=bbl.ms.philips.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=bbl.ms.philips.com;
+Received-SPF: Pass (protection.outlook.com: domain of bbl.ms.philips.com
+ designates 212.159.232.72 as permitted sender)
+ receiver=protection.outlook.com; client-ip=212.159.232.72;
+ helo=ext-eur1.smtp.philips.com; pr=C
+Received: from ext-eur1.smtp.philips.com (212.159.232.72) by
+ DB5EUR01FT053.mail.protection.outlook.com (10.152.5.159) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5373.15 via Frontend Transport; Tue, 28 Jun 2022 08:40:53 +0000
-Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC9SJA.ad011.siemens.net (194.138.21.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Tue, 28 Jun 2022 10:40:51 +0200
-Received: from [167.87.37.192] (167.87.37.192) by
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Tue, 28 Jun 2022 10:40:51 +0200
-Message-ID: <11b10ed7-043b-6f37-a186-53b7d57a1ccc@siemens.com>
-Date: Tue, 28 Jun 2022 10:40:50 +0200
+ 15.20.5373.15 via Frontend Transport; Tue, 28 Jun 2022 11:02:53 +0000
+Received: from smtprelay-eur1.philips.com ([130.144.57.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 256/256 bits)
+	(Client did not present a certificate)
+	by ext-eur1.smtp.philips.com with ESMTP
+	id 64Grod8Rfl9Zi68zdoSW2h; Tue, 28 Jun 2022 13:02:53 +0200
+Received: from mail.bbl.ms.philips.com ([130.143.87.230])
+	by smtprelay-eur1.philips.com with ESMTP
+	id 68zdobBemBXNN68zdoVTka; Tue, 28 Jun 2022 13:02:53 +0200
+X-CLAM-Verdict: legit
+X-CLAM-Score: ??
+X-CLAM-Description: ??
+Received: from bbl2xgg1.bbl.ms.philips.com (bbl2xgg1.bbl.ms.philips.com [130.143.223.142])
+	by mail.bbl.ms.philips.com (Postfix) with ESMTP id 4F5D51833D4
+	for <xenomai@lists.linux.dev>; Tue, 28 Jun 2022 13:02:53 +0200 (CEST)
+Received: by bbl2xgg1.bbl.ms.philips.com (Postfix, from userid 1992)
+	id 48E961C004C; Tue, 28 Jun 2022 13:02:53 +0200 (CEST)
+From: Gunter Grau <gunter.grau@bbl.ms.philips.com>
+To: xenomai@lists.linux.dev
+Subject: [Xenomai PATCH] atomic: Use __typeof__ to be compatible with c++
+Date: Tue, 28 Jun 2022 13:02:53 +0200
+Message-Id: <20220628110253.2577276-1-gunter.grau@bbl.ms.philips.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <11b10ed7-043b-6f37-a186-53b7d57a1ccc@siemens.com>
+References: <11b10ed7-043b-6f37-a186-53b7d57a1ccc@siemens.com>
+Reply-To: Gunter Grau <gunter.grau@philips.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [Xenomai PATCH] atomic: Use __typeof__ to be compatible with c++
-Content-Language: en-US
-To: Gunter Grau <gunter.grau@philips.com>, <xenomai@lists.linux.dev>
-References: <56f788c9-f7c1-a88d-6018-c5de0aaa3a76@siemens.com>
- <20220628080113.2527683-1-gunter.grau@bbl.ms.philips.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220628080113.2527683-1-gunter.grau@bbl.ms.philips.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.87.37.192]
-X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--16.149800-8.000000
-X-TMASE-MatchedRID: Cc2Ao8tLfKDPhQMrvkSA3r6YI58LYP7EXKlUkWaHqwvx5KZMlKYS/SeH
-	MCGC+irnJLfQYoCQHFYjWgEz6moKERVKopMi6WfjV43p01DwjZX9od0tzzCKmEUzvZoSFxuNyWx
-	Pa/RwSU9eziy/2vLIY+Bq0yNOt+07k9/YVsv2kPVZyLN0Ehx8q1mxlmzmINeW3nHtGkYl/VrzZK
-	DA1/pIrjcQcUZK1ILgUx7kGWSmvLut2gtuWr1Lmtr+D80ZNbcycGCkjn3GWnaJkf5qQgIh3Vqhj
-	w5mlQ7KlAFH5WviIWiyl1phL2htxJcskeOj7yLTtqjRmi7h575Nfs8n85Te8oMbH85DUZXy3x1Y
-	Nh2+qangfCfWlnNb/1cppCzPq+1UOwBXM346/+xZVIZLzeVex2WOwB2MkYDlsjzumKnmF++g5+n
-	5ukO2OyPoSwAkCKjn
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--16.149800-8.000000
-X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-SNTS-SMTP:
- 9B2146B7DF8B2FB30497E9A2DA3D6D228573422013F9926B63E30D59FA343A682000:8
+Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dab3604f-3ff8-4505-9821-08da58e1e9ba
-X-MS-TrafficTypeDiagnostic: HE1PR1001MB0969:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 672edd9a-9fea-452d-cf11-08da58f5bfde
+X-MS-TrafficTypeDiagnostic: AM6P122MB0133:EE_
+X-MS-Exchange-AtpMessageProperties: SA|SL
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	5H2FPCgxenhWgkuXhXsRnfHi7HIluWtNgcyHoNf0gbtZVqvIhfoccY0kK7bk7MOEKsRdHKjrKQam5DczL3FQZ2CwlKX/XvvXWDkTxaYMwTqDzcYOopU3/qbKEWb+t/dXT/jPN8bwoGbLf+0zdsV8WChLwHfPthD2Rv9Gb4S2wuxwXYwX21jCBEeME1r4wkIlikpR3MpEiP1H1V/WqGR6hJw+yRmt4V4kOZFeePtMd2bDPXxRPsrQzJmvdK6bI5dw8cjrqG+qKA30yBD+FFaP0wTLaCzlfGW+yR/OKTSUNABM5I/JQQ0bTFCRqB1huYVHHEP3dSVvZi/+jtDrfAFs3u9SCBjlaYCJ5kQ0u9yKRpnF4YRhqLVfdf6z0bYIkwCspA4q9+ZA4BfETTGtJAzCTQ3vYIuIS2Gh22LH2ikhnNGl7VGCRcqragED9mPCuOyFv1WGZXCHbQ9yrzIMRehbaRD1Ob/chm2hQ+xxSw6HdABkalBbRREXsYu192iZyedBW8jRttu0eqcBeiLZcdKoMnaO7J72krA7JBYQxkha7i6lN8mb3jvLYpabZP+nWPVlbZLZIakfd8Ls8mU3HbsJiDQI602zdMJQm/BuACwsdS0A87LyP0azCC9PGyALSe/LWsUNfNW/raiGj0QbXW+BRnRml+FoJfyMpKdzahD0jdIaiqgXHgVHANcAEQe6W2hMvPwPQFmZah2nan+P4N4Fc77Oxh54cOeKu/49WP73blwM3IoJkTKdrsydbCofCWshT12Vx7FuhSqjbSnFeHiZudQVrBcD3cBPKx0ksftrL1PYALk/NXh+bJs8tfEz2H8k8BswNPlE0rfvZ3bRx8tsuqCsruM/eCZCNObU7V6fXJc=
+	Vzz+ozPuZu4U2L/0X5mZdwXsPDRJFczzgNF3VYNqW0bS4La6DHd8kOBgbDFblCCZWDxwKMUdeV1B79OliJ/He4nofxowXtDDKa/XTyFhOCLorHG3xMx/tT7zPp3aJ+iY9likxM5DnndkXlXBB9XNc26x9L/nNi9FN/kR5kN0jDp+FpTHezDLhmIA7QQw1TLBzUr9imRjljhrYhbOmn3ELnq6R0oJgtWvQYqKfdZ4zz7OMzuZBnTSrbj8/fPK1o66ep3k2UEnGXEXGKI3Xg+FwpysR0r24QBeLzNJAK536AFBvY4cvYn6z3q4Zm0uSo5iyV5wM4+Iq/mviPVp5wPlAj3ZQt9bpsY5I8gFwnVlxYB0KUXvLhmPo74k2mufB1mw9FVks6Q7+SboI+dr8hu8CWetME3Pp+SYabDzN/7r5RU4Z21tc9qgXT+sxfHPw5tRbqFpvgTLlJzSlGWd5UjQM3aKZ5wAAljYo+1ziRfOHW+LTuvbUnZ2fiM+evmz+Ek0Q+30Dhpyh8sy7ayFqWS3sGTo7dQxQaEPNZXRORZDuWpCguflE3OMFyhykOn5cbmwnNrY+jdyl6Ml1+aMxLFw71S2DzwtOCuVN7Fa9XFVfhl5S19OolSJQcvSpRqso9MmpBVKzkkT0VFJfopsBLvOf8ZkTlN9wBJ2qqpiMiJIVFq5lvbhgGNX1a/PJFYAr4aWYCGTHNAS7jP3gqx13+V+nSa0FrgH+N+EXTt8ox/nTXQkfaHdX0MGcQMwW0BnrBPomBO4W59zkWgQF5vuTQm/xGsBWppogv8HRscBI1rjyymahHnfMA5PW6g0xXwRYuXT
 X-Forefront-Antispam-Report:
-	CIP:194.138.21.70;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:hybrid.siemens.com;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(396003)(136003)(40470700004)(46966006)(36840700001)(8676002)(83380400001)(86362001)(53546011)(26005)(31696002)(82960400001)(40480700001)(16526019)(70586007)(478600001)(7596003)(7636003)(8936002)(44832011)(70206006)(36860700001)(5660300002)(40460700003)(356005)(110136005)(956004)(2616005)(36756003)(41300700001)(6706004)(296002)(336012)(47076005)(16576012)(82310400005)(31686004)(82740400003)(2906002)(316002)(186003)(3940600001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 08:40:53.7771
+	CIP:212.159.232.72;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:ext-eur1.smtp.philips.com;PTR:ext-eur1.smtp.philips.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(396003)(136003)(46966006)(40470700004)(36840700001)(82310400005)(44832011)(7596003)(8676002)(5660300002)(42186006)(36860700001)(83380400001)(82960400001)(6266002)(82740400003)(40460700003)(2906002)(7636003)(356005)(426003)(120186005)(8936002)(47076005)(336012)(2616005)(6916009)(41300700001)(186003)(316002)(1076003)(70586007)(70206006)(478600001)(40480700001)(26005);DIR:OUT;SFP:1102;
+X-OriginatorOrg: ms.philips.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 11:02:53.4847
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dab3604f-3ff8-4505-9821-08da58e1e9ba
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.70];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: 672edd9a-9fea-452d-cf11-08da58f5bfde
+X-MS-Exchange-CrossTenant-Id: 1a407a2d-7675-4d17-8692-b3ac285306e4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1a407a2d-7675-4d17-8692-b3ac285306e4;Ip=[212.159.232.72];Helo=[ext-eur1.smtp.philips.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	HE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
+	DB5EUR01FT053.eop-EUR01.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR1001MB0969
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6P122MB0133
 
-On 28.06.22 10:01, Gunter Grau wrote:
-> From: Gunter Grau <gunter.grau@philips.com>
-> 
-> When compiling C++ programs with e.g. std=c++11 compile switch the
-> compiler refuses to understand typeof since it is not part of the
-> c++ standard. Since Xenomai 3.2 the atomic.h header is pulled via
-> dependencies also when compiling userspace applications.
-> To keep the possibility to use higher c++ standards use
-> __typeof__ here instead which is also accepted there.
+From: Gunter Grau <gunter.grau@philips.com>
 
-Looks good to me, but your signed-off (Developer Certificate of Origin)
-is missing here.
+When compiling C++ programs with e.g. std=c++11 compile switch the
+compiler refuses to understand typeof since it is not part of the
+c++ standard. Since Xenomai 3.2 the atomic.h header is pulled via
+dependencies also when compiling userspace applications.
+To keep the possibility to use higher c++ standards use
+__typeof__ here instead which is also accepted there.
 
-Jan
+Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+---
+ include/boilerplate/atomic.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  include/boilerplate/atomic.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/boilerplate/atomic.h b/include/boilerplate/atomic.h
-> index 731961e3b..4ee5f3930 100644
-> --- a/include/boilerplate/atomic.h
-> +++ b/include/boilerplate/atomic.h
-> @@ -78,7 +78,7 @@ static inline void atomic_set(atomic_t *ptr, long v)
->  #define smp_wmb()	do { } while (0)
->  #endif /* !CONFIG_SMP */
->  
-> -#define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
-> +#define ACCESS_ONCE(x) (*(volatile __typeof__(x) *)&(x))
->  
->  #define compiler_barrier()	__asm__ __volatile__("": : :"memory")
->  
-
+diff --git a/include/boilerplate/atomic.h b/include/boilerplate/atomic.h
+index 731961e3b..4ee5f3930 100644
+--- a/include/boilerplate/atomic.h
++++ b/include/boilerplate/atomic.h
+@@ -78,7 +78,7 @@ static inline void atomic_set(atomic_t *ptr, long v)
+ #define smp_wmb()	do { } while (0)
+ #endif /* !CONFIG_SMP */
+ 
+-#define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
++#define ACCESS_ONCE(x) (*(volatile __typeof__(x) *)&(x))
+ 
+ #define compiler_barrier()	__asm__ __volatile__("": : :"memory")
+ 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+2.25.1
+
