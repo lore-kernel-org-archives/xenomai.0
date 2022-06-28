@@ -1,453 +1,127 @@
-Date: Mon, 23 May 2022 22:16:31 +0000 (UTC)
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-Message-ID: <1633441315.3007897.1653344191988@mail.yahoo.com>
-In-Reply-To: <DED11F55-AF03-42D8-A698-75D7A41887AD@yahoo.fr>
-References: <94C4E050-9732-4A9D-B358-7F93BB36E96D.ref@yahoo.fr>
- <94C4E050-9732-4A9D-B358-7F93BB36E96D@yahoo.fr>
- <010c1454-3ce4-6bca-b64d-a9797213d734@siemens.com>
- <DED11F55-AF03-42D8-A698-75D7A41887AD@yahoo.fr>
-Subject: Re: RTDM Kernel Driver exchanging with Linux Application via
- /dev/rtp0/ using RTIPC Protocol and XDDP socket
+Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00132.outbound.protection.outlook.com [40.107.0.132])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D064624
+	for <xenomai@lists.linux.dev>; Tue, 28 Jun 2022 08:01:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cV84I4XCbvVgPcWRNus/5qkh2N6BR5X/+L965ilAAEZIUdUQWr7XeTsJRhEvB6d0Dv4c9jiSOGyOAkSZBdychTCRQgqCN6ZbQdTM+h8KGq1QtUWONk3xmdh/nB1ZHaGytooHSGiawPD9TaDe+Mo+Mh7n1KSLwp2isYjdo2O1e6XUvD3FyR3mEine6OB/LIsJsgZEh6Rhgiw+tE4NqvOFanRlvoDENqeISxduOgnnyn/6inQJO0eVOasaO/SpHEe5YSNMDURf3Mdt1BKv3zYUyzwFlqtd55ie2ovnaJQ/Uk+DlnxyDmBWbG7QhUlVmYKWmVfsCo2sPVnFMCpYcYLuHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MML7XRsUWq9X5C6pU7Qd91++dwA937KCE4JVaPIZChw=;
+ b=WVc/1+Ti564c1ZHlWE+1dszE5wA0isw74LNasDyfxstYsT3dPSRk7GNVdQbinTuWluNfFYAD2BKIUzrNHh9FChCpT42qNxwgmWWXcEDdonMZKql1azm1iELkP2bnkdM86IGZXUnrFmGri45bNSz8inb9sjoKlp5JCxI/CANWKcQkXbZmVNV9DLc2i0uGkN9RqZRT0XQGCTuMmU8hHro78wPeCh3rZJBZx1lIqbG+QvQKLiEnnrB6Gti6c+PHf5fBKdWbOofJmEiHMTk9YSK2TOSNwDftY+AljiTWPZKWJE5EUJgDAA9sWN1mX5mZITtX0V3BjuU6eu11mZVVaXEVMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 212.159.232.72) smtp.rcpttodomain=lists.linux.dev
+ smtp.mailfrom=bbl.ms.philips.com; dmarc=pass (p=reject sp=reject pct=100)
+ action=none header.from=bbl.ms.philips.com; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Philips.onmicrosoft.com; s=selector2-Philips-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MML7XRsUWq9X5C6pU7Qd91++dwA937KCE4JVaPIZChw=;
+ b=Ht7v5Ch34h2xpoSKn1Ojlm/AR3OHxbxwAk6RrKqEZyeKJzDZIam2ix8B+86P3zbet74z4UpMwZTkBE6WLHoUPrMKfQjiLEhkF4eUrMDdOGqwxcW5lhJssaEqQ0z1+XVj4AieK/bJlUu8k3//0TLHHLy9gHonygXqbLMnt1dplKs=
+Received: from AS8P189CA0021.EURP189.PROD.OUTLOOK.COM (2603:10a6:20b:31f::25)
+ by DB6P122MB0039.EURP122.PROD.OUTLOOK.COM (2603:10a6:24:2::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5373.18; Tue, 28 Jun 2022 08:01:14 +0000
+Received: from VE1EUR01FT029.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:20b:31f:cafe::f9) by AS8P189CA0021.outlook.office365.com
+ (2603:10a6:20b:31f::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
+ Transport; Tue, 28 Jun 2022 08:01:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 212.159.232.72)
+ smtp.mailfrom=bbl.ms.philips.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=bbl.ms.philips.com;
+Received-SPF: Pass (protection.outlook.com: domain of bbl.ms.philips.com
+ designates 212.159.232.72 as permitted sender)
+ receiver=protection.outlook.com; client-ip=212.159.232.72;
+ helo=ext-eur1.smtp.philips.com; pr=C
+Received: from ext-eur1.smtp.philips.com (212.159.232.72) by
+ VE1EUR01FT029.mail.protection.outlook.com (10.152.2.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5373.15 via Frontend Transport; Tue, 28 Jun 2022 08:01:13 +0000
+Received: from smtprelay-eur1.philips.com ([130.144.57.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 256/256 bits)
+	(Client did not present a certificate)
+	by ext-eur1.smtp.philips.com with ESMTP
+	id 60X7od1iml9Zi669poS8yB; Tue, 28 Jun 2022 10:01:13 +0200
+Received: from mail.bbl.ms.philips.com ([130.143.87.230])
+	by smtprelay-eur1.philips.com with ESMTP
+	id 669poazHVBXNN669poVBJq; Tue, 28 Jun 2022 10:01:13 +0200
+X-CLAM-Verdict: legit
+X-CLAM-Score: ??
+X-CLAM-Description: ??
+Received: from bbl2xgg1.bbl.ms.philips.com (bbl2xgg1.bbl.ms.philips.com [130.143.223.142])
+	by mail.bbl.ms.philips.com (Postfix) with ESMTP id 6BD49183392
+	for <xenomai@lists.linux.dev>; Tue, 28 Jun 2022 10:01:13 +0200 (CEST)
+Received: by bbl2xgg1.bbl.ms.philips.com (Postfix, from userid 1992)
+	id 6836F1C004C; Tue, 28 Jun 2022 10:01:13 +0200 (CEST)
+From: Gunter Grau <gunter.grau@bbl.ms.philips.com>
+To: xenomai@lists.linux.dev
+Subject: [Xenomai PATCH] atomic: Use __typeof__ to be compatible with c++
+Date: Tue, 28 Jun 2022 10:01:13 +0200
+Message-Id: <20220628080113.2527683-1-gunter.grau@bbl.ms.philips.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <56f788c9-f7c1-a88d-6018-c5de0aaa3a76@siemens.com>
+References: <56f788c9-f7c1-a88d-6018-c5de0aaa3a76@siemens.com>
+Reply-To: Gunter Grau <gunter.grau@philips.com>
+Precedence: bulk
+X-Mailing-List: xenomai@lists.linux.dev
+List-Id: <xenomai.lists.linux.dev>
+List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
-List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://xenomai.org/pipermail/xenomai/>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
-List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 96a71d3e-1a22-4ba9-4ef5-08da58dc5f11
+X-MS-TrafficTypeDiagnostic: DB6P122MB0039:EE_
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/5Eq2GgDkBhkWJL3A35Ex+rk/Wz5Pti4zH6WasjNskEQe54xUmUx1pLB4zr39No7mYcjdgr9YZEEQV4wcAz1L73D1VFbGEwnCo7wr6Vxtqo7mnTPGLYhhkNpG09qX1Nn7GA2vajYgLNPFtUihatZekiWb6n8E7QgPNlmsbiBYRhDFc2lyOp9rfqTN/n5moQw3qPNtQywy8mOh595F5wv1G0DNI+mSewdnSuD3gupbx+BYd3uYQ3XHaDAPFImpEY+E4w+SWLcz+xxIOnLNyqzVFLgzKUdQ9lCFVdZr86LLFQOC99duCFkoORlDRQDuUs0ekJuhkoGDyFVJayo+52Q1P0POOJC4Y4F3mZq+0Dt1ozLzX12ny5u8LixkZHbZ1ufcLW1syecuCRdhbTsH9vqX17QQkagxWiEWHR2FrNhzO10E/nPs8EGVYtAV5/UOo91P/tpfB77sinzr/5dKDX9ABIbqis17MZprQzfogEz+6QPunyVZipAIEAL7a+fV1ZGrTSNclA5TNCA5hUH2otSgaYa+nc29BHY2Y3Xsr4wOjWW62hHTYzySDJe7rW2WBP1vDvQQatOyzg2f1dIWL9mxCOvWEfjNi9wc+VgEJekNdXnZl3vHLtbVk8czukWrr8mR3BiErier+/2HYYUSKBgVsa6nU4Pu/ZYpVpb08jBh2cr/G8g9uhxUyagPSl8pLxkeN25C16jhCZlFA/fliQ3ec9u8mKyq/LMaEvwwjImcF17ntr1YXEq/euMxllB2HL3vj/hwiOXEGL8kwvy7Tt2trEUHtHjuaOk8obhiD/t+aQQfLorskAlUkC+UGnT/DND
+X-Forefront-Antispam-Report:
+	CIP:212.159.232.72;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:ext-eur1.smtp.philips.com;PTR:ext-eur1.smtp.philips.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(396003)(136003)(39860400002)(40470700004)(46966006)(36840700001)(26005)(8936002)(356005)(82310400005)(7636003)(7596003)(82960400001)(82740400003)(44832011)(6266002)(4744005)(40460700003)(478600001)(5660300002)(2906002)(70586007)(41300700001)(336012)(2616005)(36860700001)(1076003)(120186005)(6916009)(47076005)(40480700001)(426003)(42186006)(316002)(83380400001)(8676002)(70206006)(186003);DIR:OUT;SFP:1102;
+X-OriginatorOrg: ms.philips.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 08:01:13.6584
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96a71d3e-1a22-4ba9-4ef5-08da58dc5f11
+X-MS-Exchange-CrossTenant-Id: 1a407a2d-7675-4d17-8692-b3ac285306e4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1a407a2d-7675-4d17-8692-b3ac285306e4;Ip=[212.159.232.72];Helo=[ext-eur1.smtp.philips.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	VE1EUR01FT029.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6P122MB0039
+
+From: Gunter Grau <gunter.grau@philips.com>
+
+When compiling C++ programs with e.g. std=c++11 compile switch the
+compiler refuses to understand typeof since it is not part of the
+c++ standard. Since Xenomai 3.2 the atomic.h header is pulled via
+dependencies also when compiling userspace applications.
+To keep the possibility to use higher c++ standards use
+__typeof__ here instead which is also accepted there.
+---
+ include/boilerplate/atomic.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/boilerplate/atomic.h b/include/boilerplate/atomic.h
+index 731961e3b..4ee5f3930 100644
+--- a/include/boilerplate/atomic.h
++++ b/include/boilerplate/atomic.h
+@@ -78,7 +78,7 @@ static inline void atomic_set(atomic_t *ptr, long v)
+ #define smp_wmb()	do { } while (0)
+ #endif /* !CONFIG_SMP */
+ 
+-#define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
++#define ACCESS_ONCE(x) (*(volatile __typeof__(x) *)&(x))
+ 
+ #define compiler_barrier()	__asm__ __volatile__("": : :"memory")
+ 
+-- 
+2.25.1
 
- Dear Jan,
-I am coming back to the same question since I did not succeed in this task,=
- now my example looks like :=C2=A0
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-
-#include <rtdm/driver.h>
-
-#include <rtdm/ipc.h>
-
-
-
-
-#define XDDP_PORT 0
-
-int ret;
-
-
-
-
-rtdm_task_t task_desc;
-
-
-
-
-static const char *msg =3D "Hello world!";
-
-
-
-
-void task(void *arg){
-
-
-
-
-=C2=A0 =C2=A0 int count =3D 0;
-
-=C2=A0 =C2=A0 struct sockaddr_ipc saddr;
-
-=C2=A0 =C2=A0 int s, len;
-
-=C2=A0 =C2=A0 size_t poolsz;
-
-=C2=A0=C2=A0 =C2=A0
-
-=C2=A0 =C2=A0 /*
-
-=C2=A0=C2=A0 =C2=A0 * Get a datagram socket to bind to the RT endpoint. Eac=
-h
-
-=C2=A0=C2=A0 =C2=A0 * endpoint is represented by a port number within the X=
-DDP
-
-=C2=A0=C2=A0 =C2=A0 * protocol namespace.
-
-=C2=A0=C2=A0 =C2=A0 */
-
-=C2=A0 =C2=A0 s =3D rtdm_socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);
-
-=C2=A0 =C2=A0 if (s < 0) {
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "socket error =3D %d\n",s=
-);
-
-=C2=A0 =C2=A0 }
-
-=C2=A0 =C2=A0 else{
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "socket succeed =3D %d\n"=
-,s);
-
-=C2=A0 =C2=A0 }
-
-
-
-
-=C2=A0 =C2=A0 /*
-
-=C2=A0=C2=A0 =C2=A0 * Set a local 16k pool for the RT endpoint. Memory need=
-ed to
-
-=C2=A0=C2=A0 =C2=A0 * convey datagrams will be pulled from this pool, inste=
-ad of
-
-=C2=A0=C2=A0 =C2=A0 * Xenomai's system pool.
-
-=C2=A0=C2=A0 =C2=A0 */
-
-=C2=A0 =C2=A0 poolsz =3D 16384; /* bytes */
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D rtdm_setsockopt(s, SOL_XDDP, XDD=
-P_POOLSZ,
-
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &poolsz, sizeof(poolsz));
-
-=C2=A0 =C2=A0 if (ret)
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "setsockopt error=3D %d\n=
-",ret);
-
-=C2=A0 =C2=A0 else{
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "setsockopt succeed =3D %=
-d\n",ret);
-
-=C2=A0 =C2=A0 }
-
-
-
-
-=C2=A0 =C2=A0 /*
-
-=C2=A0=C2=A0 =C2=A0 * Bind the socket to the port, to setup a proxy to chan=
-nel
-
-=C2=A0=C2=A0 =C2=A0 * traffic to/from the Linux domain.
-
-=C2=A0=C2=A0 =C2=A0 *
-
-=C2=A0=C2=A0 =C2=A0 * saddr.sipc_port specifies the port number to use.
-
-=C2=A0=C2=A0 =C2=A0 */
-
-=C2=A0 =C2=A0 memset(&saddr, 0, sizeof(saddr));
-
-=C2=A0 =C2=A0 saddr.sipc_family =3D AF_RTIPC;
-
-=C2=A0 =C2=A0 saddr.sipc_port =3D XDDP_PORT;
-
-=C2=A0 =C2=A0 ret =3D rtdm_bind(s, (struct sockaddr *)&saddr, sizeof(saddr)=
-);
-
-=C2=A0 =C2=A0 if (ret)
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "bind error =3D %d\n", re=
-t);
-
-=C2=A0 =C2=A0 else{
-
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "bind succeed =3D %d\n",r=
-et);
-
-=C2=A0 =C2=A0 }
-
-}
-
-
-
-
-static int __init my_module_init (void)
-
-{
-
-=C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s.%s()\n", THIS_MODULE->name, __FUNCT=
-ION__);
-
-=C2=A0=C2=A0 =C2=A0
-
-=C2=A0 =C2=A0 ret =3D rtdm_task_init(&task_desc, "rtdm-example", task, NULL=
-, 30, 0);=C2=A0
-
-
-
-
-=C2=A0 =C2=A0 if (ret) {
-
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s.%=
-s() : error rtdm_task_init\n", THIS_MODULE->name, __FUNCTION__);
-
-=C2=A0 =C2=A0 }
-
-
-
-
-=C2=A0 =C2=A0 else=C2=A0 rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task=
-_init\n", THIS_MODULE->name, __FUNCTION__);
-
-
-
-
- return 0;
-
-}
-
-
-
-
-
-
-
-
-
-
-static void __exit my_module_exit (void)
-
-{
-
-=C2=A0 =C2=A0 rtdm_task_destroy(&task_desc);
-
-
-
-
-=C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s.%s()\n", THIS_MODULE->name, __FUNCT=
-ION__);
-
-}
-
-
-
-
-
-
-
-
-
-
-module_init(my_module_init);
-
-module_exit(my_module_exit);
-
-MODULE_LICENSE("GPL");
-
-
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-Now, the RTDM driver compiles. However, the problem is that when I execute =
-it, it gives:
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-
-[=C2=A0 470.184417] rtdm_xddp.my_module_init()
-
-[=C2=A0 470.184932] rtdm_xddp.my_module_init() : success rtdm_task_init
-
-[=C2=A0 470.185003] socket succeed =3D 1
-
-[=C2=A0 470.185013] setsockopt succeed =3D 0
-
-[=C2=A0 470.185022] bind error =3D -38
-[=C2=A0 470.271916] rtdm_xddp.my_module_exit()
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-The=C2=A0bind=C2=A0fails. When I=C2=A0see the signification of this error i=
-s:
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-/*
-=C2=A0* This error code is special: arch syscall entry code will return
-=C2=A0* -ENOSYS if users try to call a syscall that doesn't exist.=C2=A0=C2=
-=A0To keep
-=C2=A0* failures of syscalls that really do exist distinguishable from
-=C2=A0* failures due to attempts to use a nonexistent syscall, syscall
-=C2=A0* implementations should refrain from returning -ENOSYS.
-=C2=A0*/
-#define=C2=A0ENOSYS=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A038=C2=A0 =C2=A0 =
-=C2=A0=C2=A0/* Invalid system call number */
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-Why it does not work?
-Thanks for your help.
-BR,Marwane.
-
-    Le samedi 9 mai 2020 =C3=A0 02:59:50 UTC+2, ayaida marwane <ayaida_marw=
-ane@yahoo.fr> a =C3=A9crit : =20
-=20
-=20
-
-
-Le 5 mai 2020 =C3=A0 21:22, Jan Kiszka <jan.kiszka@siemens.com> a =C3=A9cri=
-t :
-On 29.04.20 23:21, ayaida marwane via Xenomai wrote:
-
-Dear all,
-I am trying to develop a simple example of a RTDM driver running from Xenom=
-ai Kernel, that exchanges a string ("Hello world!") with a Linux Applicatio=
-n using /dev/rtp0.
-I already succeeded doing this with Xenomai 2 using RT_PIPE. However, as I =
-understand, this using RT_PIPE from the Kernel depreciated in Xenomai 3 and=
- it is recommended to use RTIPC Protocol and a XDDP socket.
-In the documentation, there are some examples (xddp-echo.c, xddp-label.c an=
-d xddp-stream.c), that worked well in my Xenomai 3.0.7 installed on a Raspb=
-erry Pi3.
-However, these examples are using a simple socket Protocol (socket(), bind(=
-), sendto() and recvfrom()) using the POSIX Skin. So, using this in a RTDM =
-module, will surely not work.
-Therefore, as I understand, I have to use the Real-time IPC defined in the =
-RTDM Skin =C2=A0(socket__AF_RTIPC(), bind__AF_RTIPC(), sendmsg__AF_RTIPC() =
-and recvmsg__AF_RTIPC()).
-
-
-These calls do not exist (where did you find them?) as your build error als=
-o says. Check the inter-driver API for such a stacking scenario. It provide=
-s rtdm_socket, rtdm_sendmsg etc.
-
-Depending on what kind of Linux application shall use the API in the end, i=
-t can be simpler to compile that for Xenomai and use the RTDM userspace API=
- directly to talk to the RTDM driver.
-
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
-
-Dear Jan,
-Thank you for your replay. I tried to use the inter-driver API to communica=
-te between the RTDM driver and the Linux side using /dev/rtp0. The exemple =
-is given below (inspired from xddp-echo.c):
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-#include <rtdm/driver.h>#include <rtdm/ipc.h>
-#define XDDP_PORT 0 =C2=A0 =C2=A0 /* [0..CONFIG-XENO_OPT_PIPE_NRDEV - 1] an=
-d /dev/rtpX=C2=A0 */
-static const char *msg =3D "Hello world!";
-static int __init my_module_init (void){=C2=A0 =C2=A0 struct sockaddr_ipc s=
-addr;=C2=A0 =C2=A0 int ret, s, len;=C2=A0 =C2=A0 size_t poolsz;=C2=A0 =C2=
-=A0 char buf[128];
-=C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s.%s()\n", THIS_MODULE->name, __FUNCT=
-ION__);
-=C2=A0 =C2=A0 s =3D rtdm_socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);=C2=A0=
- =C2=A0 if (s < 0) {=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "sock=
-et error\n");=C2=A0 =C2=A0 }
-=C2=A0 =C2=A0 poolsz =3D 16384; /* bytes */=C2=A0 =C2=A0 ret =3D rtdm_setso=
-ckopt(s, SOL_XDDP, XDDP_POOLSZ,=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 &poolsz, sizeof(poolsz));=C2=A0 =C2=A0 if (ret)=C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 rtdm_printk(KERN_INFO "setsockopt error\n");
-=C2=A0 =C2=A0 memset(&saddr, 0, sizeof(saddr));=C2=A0 =C2=A0 saddr.sipc_fam=
-ily =3D AF_RTIPC;=C2=A0 =C2=A0 saddr.sipc_port =3D XDDP_PORT;=C2=A0 =C2=A0 =
-ret =3D rtdm_bind(s, (struct sockaddr *)&saddr, sizeof(saddr));=C2=A0 =C2=
-=A0 if (ret)=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "bind error\n=
-");
-=C2=A0 =C2=A0 len =3D strlen(msg);
-=C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s: sent %d bytes, \"%.*s\"\n",=C2=A0 =
-__FUNCTION__, len, len, msg);
-=C2=A0 =C2=A0 ret =3D rtdm_sendto(s, msg, len, 0, NULL, 0);
-=C2=A0 =C2=A0 if (ret !=3D len)=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN=
-_INFO "sendto error =3D %d \n", ret);
-=C2=A0 =C2=A0 ret =3D rtdm_recvfrom(s, buf, sizeof(buf), 0, NULL, 0);=C2=A0=
- =C2=A0 if (ret <=3D 0)=C2=A0 =C2=A0 =C2=A0 =C2=A0 rtdm_printk(KERN_INFO "r=
-ecvfrom error\n");
-=C2=A0 =C2=A0 rtdm_printk(KERN_INFO "%s: =3D=3D> Received from Linux %d byt=
-es : %.*s\n", __FUNCTION__, ret, ret, buf);
- return 0;}
-static void __exit my_module_exit (void){ rtdm_printk(KERN_INFO "%s.%s()\n"=
-, THIS_MODULE->name, __FUNCTION__);}module_init(my_module_init);module_exit=
-(my_module_exit);MODULE_LICENSE("GPL");
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-Now, the RTDM driver compiles. However, the problem is that when I execute =
-it, it gives:
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-[ 5939.538234] rtdm_xddp.my_module_init()[ 5939.538437] my_module_init: sen=
-t 12 bytes, "Hello world!"[ 5939.538451] sendto error =3D -38=C2=A0[ 5939.5=
-38458] recvfrom error[ 5939.538468] my_module_init: =3D=3D> Received from L=
-inux -38 bytes :=C2=A0[ 5944.279224] rtdm_xddp.my_module_exit()
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-The sendto fails. When I=C2=A0see the signification of this error is:
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-/*
-=C2=A0* This error code is special: arch syscall entry code will return
-=C2=A0* -ENOSYS if users try to call a syscall that doesn't exist.=C2=A0=C2=
-=A0To keep
-=C2=A0* failures of syscalls that really do exist distinguishable from
-=C2=A0* failures due to attempts to use a nonexistent syscall, syscall
-=C2=A0* implementations should refrain from returning -ENOSYS.
-=C2=A0*/
-#define=C2=A0ENOSYS=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A038=C2=A0 =C2=A0 =
-=C2=A0=C2=A0/* Invalid system call number */
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=C2=A0
-Why it does not work? I found that the parameters of sendto() and=C2=A0rtdm=
-_sendto() are the same.
-Thanks for your help.
-BR,Marwane.
-
-
- =20
