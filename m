@@ -1,30 +1,30 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C293FE0
-	for <xenomai@lists.linux.dev>; Mon,  4 Jul 2022 13:08:39 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id E02B76000D
-	for <xenomai@lists.linux.dev>; Mon,  4 Jul 2022 13:08:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58FF468F
+	for <xenomai@lists.linux.dev>; Mon,  4 Jul 2022 13:08:40 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id A03E6FF80E
+	for <xenomai@lists.linux.dev>; Mon,  4 Jul 2022 13:08:38 +0000 (UTC)
 X-Envelope-To: xenomai@xenomai.org
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id ABF90AC1005
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 53A51740048
 	for <xenomai@xenomai.org>; Mon,  4 Jul 2022 13:08:37 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220704130837bfb48fc6b68b2e6698
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2022070413083603f306bcabd7f7614a
         for <xenomai@xenomai.org>;
-        Mon, 04 Jul 2022 15:08:37 +0200
+        Mon, 04 Jul 2022 15:08:36 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=w2k4oYMRAZBZKJbm18qMlpoZTV9eZTRNj+iGJSyS1Rs=;
- b=LZQnzxODE9szIzCBaWDwlbskRVfzwqfMpc97mBVIcMXqEOaipPA3E4dGUaLkzXxWnUs5H5
- qSQSgKhq4QH0ay/VNO7E/SdfPRiswB3P48RTbns3GLf3bfVMEXWvkRtvyuFVprkfAYYeM6Of
- nTPDOBYk4UMKxPiuSk2dFazoDgXlI=;
+ bh=HfRYtMDGMNFZlyBlDAkF/x5fIuf96P8SkDAClRH4PyI=;
+ b=moQr1EV603oZBJSFqiXqsrlq80nBnlNCw69Q2VM/8RLh5QDS8/exwDnLMcnRilWhhAtgJ8
+ KhMgihFoRtUuRJqxZIHR5sp8XLRDV5SCOYiyq//qNs/BrvHZ49ehLfzrp3oqm+uqzkHQKxUO
+ /nQMCiWfjcA754CAvwL/2Mi0IOPTs=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@xenomai.org
-Subject: [PATCH 13/15] drivers/spi: Switch to spi_controller API
-Date: Mon,  4 Jul 2022 15:08:33 +0200
-Message-Id: <9057f19283ecb4d30ae6d1d5dbae7815f9efcd1e.1656940114.git.jan.kiszka@siemens.com>
+Subject: [PATCH 08/15] drivers: Convert pci_map/unmap_single/page to DMA API
+Date: Mon,  4 Jul 2022 15:08:28 +0200
+Message-Id: <fd40c53b78df81480d382aaf9bbc96e6f5e17089.1656940114.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1656940114.git.jan.kiszka@siemens.com>
 References: <cover.1656940114.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -36,335 +36,825 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
-Received-SPF: pass (spool3: domain of rts-flowmailer.siemens.com designates 185.136.64.227 as permitted sender) client-ip=185.136.64.227; envelope-from=fm-294854-20220704130837bfb48fc6b68b2e6698-YtnnzI@rts-flowmailer.siemens.com; helo=mta-64-227.siemens.flowmailer.net;
+Received-SPF: pass (spool2: domain of rts-flowmailer.siemens.com designates 185.136.64.226 as permitted sender) client-ip=185.136.64.226; envelope-from=fm-294854-2022070413083603f306bcabd7f7614a-xgRGqv@rts-flowmailer.siemens.com; helo=mta-64-226.siemens.flowmailer.net;
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=fm1 header.b=LZQnzxOD;
-	dmarc=pass (policy=none) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of fm-294854-20220704130837bfb48fc6b68b2e6698-YtnnzI@rts-flowmailer.siemens.com designates 185.136.64.227 as permitted sender) smtp.mailfrom=fm-294854-20220704130837bfb48fc6b68b2e6698-YtnnzI@rts-flowmailer.siemens.com
+	dkim=pass header.d=siemens.com header.s=fm1 header.b=moQr1EV6;
+	spf=pass (spool.mail.gandi.net: domain of fm-294854-2022070413083603f306bcabd7f7614a-xgRGqv@rts-flowmailer.siemens.com designates 185.136.64.226 as permitted sender) smtp.mailfrom=fm-294854-2022070413083603f306bcabd7f7614a-xgRGqv@rts-flowmailer.siemens.com;
+	dmarc=pass (policy=none) header.from=siemens.com
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The kernel generalized spi_master to spi_controller and renamed several
-services. Follow this to avoid breakage when the legacy wrappers are
-eventually removed. Should come without functional changes.
+The legacy API has been finally dropped, and the new one was "already"
+available with 5.10.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/spi/spi-bcm2835.c        | 20 ++++++++++----------
- kernel/drivers/spi/spi-device.c         | 10 +++++-----
- kernel/drivers/spi/spi-master.c         | 24 ++++++++++++------------
- kernel/drivers/spi/spi-master.h         |  2 +-
- kernel/drivers/spi/spi-omap2-mcspi-rt.c | 20 ++++++++++----------
- kernel/drivers/spi/spi-sun6i.c          | 24 ++++++++++++------------
- 6 files changed, 50 insertions(+), 50 deletions(-)
+ kernel/drivers/net/drivers/e1000/e1000_main.c | 32 +++++-----
+ kernel/drivers/net/drivers/eepro100.c         | 35 ++++++-----
+ .../drivers/experimental/e1000/e1000_main.c   | 60 +++++++++----------
+ kernel/drivers/net/drivers/natsemi.c          | 29 ++++-----
+ kernel/drivers/net/drivers/pcnet32.c          | 34 +++++------
+ kernel/drivers/net/drivers/r8169.c            | 12 ++--
+ kernel/drivers/net/drivers/tulip/interrupt.c  | 18 +++---
+ kernel/drivers/net/drivers/tulip/tulip_core.c | 27 +++++----
+ kernel/drivers/net/drivers/via-rhine.c        | 36 ++++++-----
+ 9 files changed, 149 insertions(+), 134 deletions(-)
 
-diff --git a/kernel/drivers/spi/spi-bcm2835.c b/kernel/drivers/spi/spi-bcm2835.c
-index b1ee22bf82..e8df8fe7e0 100644
---- a/kernel/drivers/spi/spi-bcm2835.c
-+++ b/kernel/drivers/spi/spi-bcm2835.c
-@@ -111,7 +111,7 @@ to_master_bcm2835(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
+diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
+index 7c34e2f00f..726b38ab87 100644
+--- a/kernel/drivers/net/drivers/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
+@@ -1809,10 +1809,10 @@ e1000_unmap_and_free_tx_resource(struct e1000_adapter *adapter,
+ 			struct e1000_buffer *buffer_info)
  {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
- 
- static inline u32 bcm2835_rd(struct spi_master_bcm2835 *spim,
-@@ -453,7 +453,7 @@ static int gpio_match_name(struct gpio_chip *chip, void *data)
- 
- static int find_cs_gpio(struct spi_device *spi)
- {
--	struct spi_master *kmaster = spi->master;
-+	struct spi_controller *ctlr = spi->controller;
- 	u32 pingroup_index, pin, pin_index;
- 	struct device_node *pins;
- 	struct gpio_chip *chip;
-@@ -469,7 +469,7 @@ static int find_cs_gpio(struct spi_device *spi)
- 	/* Translate native CS to GPIO. */
- 
- 	for (pingroup_index = 0;
--	     (pins = of_parse_phandle(kmaster->dev.of_node,
-+	     (pins = of_parse_phandle(ctlr->dev.of_node,
- 		     "pinctrl-0", pingroup_index)) != 0; pingroup_index++) {
- 		for (pin_index = 0;
- 		     of_property_read_u32_index(pins, "brcm,pins",
-@@ -579,7 +579,7 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- {
- 	struct spi_master_bcm2835 *spim;
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
- 
-@@ -594,11 +594,11 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- 	master->ops = &bcm2835_master_ops;
- 	platform_set_drvdata(pdev, master);
- 
--	kmaster = master->kmaster;
--	kmaster->mode_bits = BCM2835_SPI_MODE_BITS;
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
--	kmaster->num_chipselect = 2;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr = master->controller;
-+	ctlr->mode_bits = BCM2835_SPI_MODE_BITS;
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->num_chipselect = 2;
-+	ctlr->dev.of_node = pdev->dev.of_node;
- 
- 	spim = container_of(master, struct spi_master_bcm2835, master);
- 	rtdm_event_init(&spim->transfer_done, 0);
-@@ -652,7 +652,7 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- fail_unclk:
- 	clk_disable_unprepare(spim->clk);
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
- 
- 	return ret;
- }
-diff --git a/kernel/drivers/spi/spi-device.c b/kernel/drivers/spi/spi-device.c
-index 6e975fc798..397af0f33d 100644
---- a/kernel/drivers/spi/spi-device.c
-+++ b/kernel/drivers/spi/spi-device.c
-@@ -29,7 +29,7 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 			      struct rtdm_spi_master *master,
- 			      struct spi_device *spi)
- {
--	struct spi_master *kmaster = master->kmaster;
-+	struct spi_controller *ctlr = master->controller;
- 	struct rtdm_device *dev;
- 	rtdm_lockctx_t c;
- 	int ret;
-@@ -44,8 +44,8 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 	dev = &slave->dev;
- 	dev->driver = &master->driver;
- 	dev->label = kasprintf(GFP_KERNEL, "%s/slave%d.%%d",
--			       dev_name(&kmaster->dev),
--			       kmaster->bus_num);
-+			       dev_name(&ctlr->dev),
-+			       ctlr->bus_num);
- 	if (dev->label == NULL)
- 		return -ENOMEM;
- 
-@@ -53,8 +53,8 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 		slave->cs_gpiod = spi->cs_gpiod;
- 	else {
- 		slave->cs_gpiod = NULL;
--		if (kmaster->cs_gpiods)
--			slave->cs_gpiod = kmaster->cs_gpiods[spi->chip_select];
-+		if (ctlr->cs_gpiods)
-+			slave->cs_gpiod = ctlr->cs_gpiods[spi->chip_select];
+ 	if (buffer_info->dma) {
+-		pci_unmap_page(adapter->pdev,
+-				buffer_info->dma,
+-				buffer_info->length,
+-				PCI_DMA_TODEVICE);
++		dma_unmap_page(&adapter->pdev->dev,
++			       buffer_info->dma,
++			       buffer_info->length,
++			       DMA_TO_DEVICE);
  	}
- 	
- 	mutex_init(&slave->ctl_lock);
-diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
-index 215b4bcc94..cffeaf087d 100644
---- a/kernel/drivers/spi/spi-master.c
-+++ b/kernel/drivers/spi/spi-master.c
-@@ -349,16 +349,16 @@ struct rtdm_spi_master *
- __rtdm_spi_alloc_master(struct device *dev, size_t size, int off)
+ 	if (buffer_info->skb)
+ 		kfree_rtskb(buffer_info->skb);
+@@ -1933,10 +1933,10 @@ e1000_clean_rx_ring(struct e1000_adapter *adapter,
+ 	for (i = 0; i < rx_ring->count; i++) {
+ 		buffer_info = &rx_ring->buffer_info[i];
+ 		if (buffer_info->skb) {
+-			pci_unmap_single(pdev,
++			dma_unmap_single(&pdev->dev,
+ 					 buffer_info->dma,
+ 					 buffer_info->length,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 
+ 			kfree_rtskb(buffer_info->skb);
+ 			buffer_info->skb = NULL;
+@@ -2382,10 +2382,10 @@ e1000_tx_map(struct e1000_adapter *adapter, struct e1000_tx_ring *tx_ring,
+ 
+ 		buffer_info->length = size;
+ 		buffer_info->dma =
+-			pci_map_single(adapter->pdev,
+-				skb->data + offset,
+-				size,
+-				PCI_DMA_TODEVICE);
++			dma_map_single(&adapter->pdev->dev,
++				       skb->data + offset,
++				       size,
++				       DMA_TO_DEVICE);
+ 		buffer_info->time_stamp = jiffies;
+ 
+ 		len -= size;
+@@ -2850,10 +2850,10 @@ e1000_clean_rx_irq(struct e1000_adapter *adapter,
+ 
+ 		cleaned = TRUE;
+ 		cleaned_count++;
+-		pci_unmap_single(pdev,
++		dma_unmap_single(&pdev->dev,
+ 				 buffer_info->dma,
+ 				 buffer_info->length,
+-				 PCI_DMA_FROMDEVICE);
++				 DMA_FROM_DEVICE);
+ 
+ 		length = le16_to_cpu(rx_desc->length);
+ 
+@@ -2985,10 +2985,10 @@ e1000_alloc_rx_buffers(struct e1000_adapter *adapter,
+ 		buffer_info->skb = skb;
+ 		buffer_info->length = adapter->rx_buffer_len;
+ map_skb:
+-		buffer_info->dma = pci_map_single(pdev,
++		buffer_info->dma = dma_map_single(&pdev->dev,
+ 						  skb->data,
+ 						  adapter->rx_buffer_len,
+-						  PCI_DMA_FROMDEVICE);
++						  DMA_FROM_DEVICE);
+ 
+ 		/* Fix for errata 23, can't cross 64kB boundary */
+ 		if (!e1000_check_64k_bound(adapter,
+@@ -3001,9 +3001,9 @@ map_skb:
+ 			kfree_rtskb(skb);
+ 			buffer_info->skb = NULL;
+ 
+-			pci_unmap_single(pdev, buffer_info->dma,
++			dma_unmap_single(&pdev->dev, buffer_info->dma,
+ 					 adapter->rx_buffer_len,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 
+ 			break; /* while !buffer_info->skb */
+ 		}
+diff --git a/kernel/drivers/net/drivers/eepro100.c b/kernel/drivers/net/drivers/eepro100.c
+index 64507756c3..74385d61d2 100644
+--- a/kernel/drivers/net/drivers/eepro100.c
++++ b/kernel/drivers/net/drivers/eepro100.c
+@@ -1070,8 +1070,9 @@ speedo_init_rx_ring(struct rtnet_device *rtdev)
+ 		rxf = (struct RxFD *)skb->tail;
+ 		sp->rx_ringp[i] = rxf;
+ 		sp->rx_ring_dma[i] =
+-			pci_map_single(sp->pdev, rxf,
+-					PKT_BUF_SZ + sizeof(struct RxFD), PCI_DMA_BIDIRECTIONAL);
++			dma_map_single(&sp->pdev->dev, rxf,
++				       PKT_BUF_SZ + sizeof(struct RxFD),
++				       DMA_BIDIRECTIONAL);
+ 		rtskb_reserve(skb, sizeof(struct RxFD));
+ 		if (last_rxf) {
+ 			last_rxf->link = cpu_to_le32(sp->rx_ring_dma[i]);
+@@ -1139,8 +1140,8 @@ speedo_start_xmit(struct rtskb *skb, struct rtnet_device *rtdev)
+ 	/* The data region is always in one buffer descriptor. */
+ 	sp->tx_ring[entry].count = cpu_to_le32(sp->tx_threshold);
+ 	sp->tx_ring[entry].tx_buf_addr0 =
+-		cpu_to_le32(pci_map_single(sp->pdev, skb->data,
+-					   skb->len, PCI_DMA_TODEVICE));
++		cpu_to_le32(dma_map_single(&sp->pdev->dev, skb->data,
++					   skb->len, DMA_TO_DEVICE));
+ 	sp->tx_ring[entry].tx_buf_size0 = cpu_to_le32(skb->len);
+ 
+ // *** RTnet ***
+@@ -1206,9 +1207,9 @@ static void speedo_tx_buffer_gc(struct rtnet_device *rtdev)
+ 		if (sp->tx_skbuff[entry]) {
+ 			sp->stats.tx_packets++;	/* Count only user packets. */
+ 			sp->stats.tx_bytes += sp->tx_skbuff[entry]->len;
+-			pci_unmap_single(sp->pdev,
+-					le32_to_cpu(sp->tx_ring[entry].tx_buf_addr0),
+-					sp->tx_skbuff[entry]->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&sp->pdev->dev,
++					 le32_to_cpu(sp->tx_ring[entry].tx_buf_addr0),
++					 sp->tx_skbuff[entry]->len, DMA_TO_DEVICE);
+ 
+ 			// *** RTnet ***
+ 			dev_kfree_rtskb(sp->tx_skbuff[entry]);
+@@ -1394,8 +1395,9 @@ static inline struct RxFD *speedo_rx_alloc(struct rtnet_device *rtdev, int entry
+ 	rtskb_reserve(skb, 2);  /* IP header alignment */
+ 	rxf = sp->rx_ringp[entry] = (struct RxFD *)skb->tail;
+ 	sp->rx_ring_dma[entry] =
+-		pci_map_single(sp->pdev, rxf,
+-					   PKT_BUF_SZ + sizeof(struct RxFD), PCI_DMA_FROMDEVICE);
++		dma_map_single(&sp->pdev->dev, rxf,
++			       PKT_BUF_SZ + sizeof(struct RxFD),
++			       DMA_FROM_DEVICE);
+ 	rtskb_reserve(skb, sizeof(struct RxFD));
+ 	rxf->rx_buf_addr = 0xffffffff;
+ 	pci_dma_sync_single_for_device(sp->pdev, sp->rx_ring_dma[entry],
+@@ -1538,8 +1540,10 @@ speedo_rx(struct rtnet_device *rtdev, int* packets, nanosecs_abs_t *time_stamp)
+ 				sp->rx_skbuff[entry] = NULL;
+ 				rtskb_put(skb, pkt_len);
+ 				sp->rx_ringp[entry] = NULL;
+-				pci_unmap_single(sp->pdev, sp->rx_ring_dma[entry],
+-						PKT_BUF_SZ + sizeof(struct RxFD), PCI_DMA_FROMDEVICE);
++				dma_unmap_single(&sp->pdev->dev,
++						 sp->rx_ring_dma[entry],
++						 PKT_BUF_SZ + sizeof(struct RxFD),
++						 DMA_FROM_DEVICE);
+ 			}
+ 			skb->protocol = rt_eth_type_trans(skb, rtdev);
+ 			//rtmac
+@@ -1608,9 +1612,10 @@ speedo_close(struct rtnet_device *rtdev)
+ 		sp->rx_skbuff[i] = 0;
+ 		/* Clear the Rx descriptors. */
+ 		if (skb) {
+-			pci_unmap_single(sp->pdev,
++			dma_unmap_single(&sp->pdev->dev,
+ 					 sp->rx_ring_dma[i],
+-					 PKT_BUF_SZ + sizeof(struct RxFD), PCI_DMA_FROMDEVICE);
++					 PKT_BUF_SZ + sizeof(struct RxFD),
++					 DMA_FROM_DEVICE);
+ 			dev_kfree_rtskb(skb);
+ 		}
+ 	}
+@@ -1620,9 +1625,9 @@ speedo_close(struct rtnet_device *rtdev)
+ 		sp->tx_skbuff[i] = 0;
+ 		/* Clear the Tx descriptors. */
+ 		if (skb) {
+-			pci_unmap_single(sp->pdev,
++			dma_unmap_single(&sp->pdev->dev,
+ 					 le32_to_cpu(sp->tx_ring[i].tx_buf_addr0),
+-					 skb->len, PCI_DMA_TODEVICE);
++					 skb->len, DMA_TO_DEVICE);
+ 
+ 			// *** RTnet ***
+ 			dev_kfree_rtskb(skb);
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+index 0098d8c2af..d76ad9c775 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+@@ -2594,10 +2594,10 @@ static void e1000_unmap_and_free_tx_resource(struct e1000_adapter *adapter,
+ 					     struct e1000_buffer *buffer_info)
  {
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
+ 	if (buffer_info->dma) {
+-		pci_unmap_page(adapter->pdev,
+-				buffer_info->dma,
+-				buffer_info->length,
+-				PCI_DMA_TODEVICE);
++		dma_unmap_page(&adapter->pdev->dev,
++			       buffer_info->dma,
++			       buffer_info->length,
++			       DMA_TO_DEVICE);
+ 		buffer_info->dma = 0;
+ 	}
+ 	if (buffer_info->skb) {
+@@ -2714,20 +2714,20 @@ static void e1000_clean_rx_ring(struct e1000_adapter *adapter,
+ 		buffer_info = &rx_ring->buffer_info[i];
+ 		if (buffer_info->dma &&
+ 		    adapter->clean_rx == e1000_clean_rx_irq) {
+-			pci_unmap_single(pdev, buffer_info->dma,
++			dma_unmap_single(&pdev->dev, buffer_info->dma,
+ 					 adapter->rx_buffer_len,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ #ifdef CONFIG_E1000_NAPI
+ 		} else if (buffer_info->dma &&
+ 			   adapter->clean_rx == e1000_clean_jumbo_rx_irq) {
+-			pci_unmap_page(pdev, buffer_info->dma, PAGE_SIZE,
+-				       PCI_DMA_FROMDEVICE);
++			dma_unmap_page(&pdev->dev, buffer_info->dma, PAGE_SIZE,
++				       DMA_FROM_DEVICE);
+ #endif
+ 		} else if (buffer_info->dma &&
+ 			   adapter->clean_rx == e1000_clean_rx_irq_ps) {
+-			pci_unmap_single(pdev, buffer_info->dma,
++			dma_unmap_single(&pdev->dev, buffer_info->dma,
+ 					 adapter->rx_ps_bsize0,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 		}
+ 		buffer_info->dma = 0;
+ 		if (buffer_info->page) {
+@@ -2742,9 +2742,9 @@ static void e1000_clean_rx_ring(struct e1000_adapter *adapter,
+ 		ps_page_dma = &rx_ring->ps_page_dma[i];
+ 		for (j = 0; j < adapter->rx_ps_pages; j++) {
+ 			if (!ps_page->ps_page[j]) break;
+-			pci_unmap_page(pdev,
++			dma_unmap_page(&pdev->dev,
+ 				       ps_page_dma->ps_page_dma[j],
+-				       PAGE_SIZE, PCI_DMA_FROMDEVICE);
++				       PAGE_SIZE, DMA_FROM_DEVICE);
+ 			ps_page_dma->ps_page_dma[j] = 0;
+ 			put_page(ps_page->ps_page[j]);
+ 			ps_page->ps_page[j] = NULL;
+@@ -3488,10 +3488,10 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
+ 		/* set time_stamp *before* dma to help avoid a possible race */
+ 		buffer_info->time_stamp = jiffies;
+ 		buffer_info->dma =
+-			pci_map_single(adapter->pdev,
++			dma_map_single(&adapter->pdev->dev,
+ 				skb->data + offset,
+ 				size,
+-				PCI_DMA_TODEVICE);
++				DMA_TO_DEVICE);
+ 		buffer_info->next_to_watch = i;
  
--	kmaster = spi_alloc_master(dev, size);
--	if (kmaster == NULL)
-+	ctlr = spi_alloc_master(dev, size);
-+	if (ctlr == NULL)
- 		return NULL;
+ 		len -= size;
+@@ -3528,11 +3528,11 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
+ 			buffer_info->length = size;
+ 			buffer_info->time_stamp = jiffies;
+ 			buffer_info->dma =
+-				pci_map_page(adapter->pdev,
++				dma_map_page(&adapter->pdev->dev,
+ 					frag->page,
+ 					offset,
+ 					size,
+-					PCI_DMA_TODEVICE);
++					DMA_TO_DEVICE);
+ 			buffer_info->next_to_watch = i;
  
--	master->use_gpio_descriptors = true;
--	master = (void *)(kmaster + 1) + off;
--	master->kmaster = kmaster;
--	spi_master_set_devdata(kmaster, master);
-+	ctlr->use_gpio_descriptors = true;
-+	master = (void *)(ctlr + 1) + off;
-+	master->controller = ctlr;
-+	spi_master_set_devdata(ctlr, master);
+ 			len -= size;
+@@ -4721,10 +4721,10 @@ static bool e1000_clean_jumbo_rx_irq(struct e1000_adapter *adapter,
  
- 	return master;
- }
-@@ -367,7 +367,7 @@ EXPORT_SYMBOL_GPL(__rtdm_spi_alloc_master);
- int __rtdm_spi_setup_driver(struct rtdm_spi_master *master)
- {
- 	master->classname = kstrdup(
--		dev_name(&master->kmaster->dev), GFP_KERNEL);
-+		dev_name(&master->controller->dev), GFP_KERNEL);
- 	master->devclass = class_create(THIS_MODULE,
- 		master->classname);
- 	if (IS_ERR(master->devclass)) {
-@@ -416,20 +416,20 @@ static int spi_transfer_one_unimp(struct spi_master *master,
+ 		cleaned = TRUE;
+ 		cleaned_count++;
+-		pci_unmap_page(pdev,
++		dma_unmap_page(&pdev->dev,
+ 			       buffer_info->dma,
+ 			       PAGE_SIZE,
+-			       PCI_DMA_FROMDEVICE);
++			       DMA_FROM_DEVICE);
+ 		buffer_info->dma = 0;
  
- int rtdm_spi_add_master(struct rtdm_spi_master *master)
- {
--	struct spi_master *kmaster = master->kmaster;
-+	struct spi_controller *ctlr = master->controller;
+ 		length = le16_to_cpu(rx_desc->length);
+@@ -4926,10 +4926,10 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
  
- 	/*
- 	 * Prevent the transfer handler to be called from the regular
- 	 * SPI stack, just in case.
- 	 */
--	kmaster->transfer_one = spi_transfer_one_unimp;
-+	ctlr->transfer_one = spi_transfer_one_unimp;
- 	master->devclass = NULL;
+ 		cleaned = TRUE;
+ 		cleaned_count++;
+-		pci_unmap_single(pdev,
++		dma_unmap_single(&pdev->dev,
+ 				 buffer_info->dma,
+ 				 adapter->rx_buffer_len,
+-				 PCI_DMA_FROMDEVICE);
++				 DMA_FROM_DEVICE);
+ 		buffer_info->dma = 0;
  
- 	/*
- 	 * Add the core SPI driver, devices on the bus will be
- 	 * enumerated, handed to spi_device_probe().
- 	 */
--	return spi_register_master(kmaster);
-+	return spi_register_controller(ctlr);
- }
- EXPORT_SYMBOL_GPL(rtdm_spi_add_master);
+ 		length = le16_to_cpu(rx_desc->length);
+@@ -5074,9 +5074,9 @@ static bool e1000_clean_rx_irq_ps(struct e1000_adapter *adapter,
  
-@@ -439,7 +439,7 @@ void rtdm_spi_remove_master(struct rtdm_spi_master *master)
- 	char *classname = master->classname;
- 	
- 	rtdm_mutex_destroy(&master->bus_lock);
--	spi_unregister_master(master->kmaster);
-+	spi_unregister_controller(master->controller);
- 	rtdm_drv_set_sysclass(&master->driver, NULL);
- 	class_destroy(class);
- 	kfree(classname);
-diff --git a/kernel/drivers/spi/spi-master.h b/kernel/drivers/spi/spi-master.h
-index ecfea2f902..449a6cc60b 100644
---- a/kernel/drivers/spi/spi-master.h
-+++ b/kernel/drivers/spi/spi-master.h
-@@ -53,7 +53,7 @@ struct rtdm_spi_master_ops {
- struct rtdm_spi_master {
- 	int subclass;
- 	const struct rtdm_spi_master_ops *ops;
--	struct spi_master *kmaster;
-+	struct spi_controller *controller;
- 	struct {	/* Internal */
- 		struct rtdm_driver driver;
- 		struct class *devclass;
-diff --git a/kernel/drivers/spi/spi-omap2-mcspi-rt.c b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-index 03678b9913..7918f61e7d 100644
---- a/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-+++ b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-@@ -181,7 +181,7 @@ to_master_omap2_mcspi(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
- {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
+ 		cleaned = TRUE;
+ 		cleaned_count++;
+-		pci_unmap_single(pdev, buffer_info->dma,
++		dma_unmap_single(&pdev->dev, buffer_info->dma,
+ 				 adapter->rx_ps_bsize0,
+-				 PCI_DMA_FROMDEVICE);
++				 DMA_FROM_DEVICE);
+ 		buffer_info->dma = 0;
  
- static inline u32 mcspi_rd_reg(struct spi_master_omap2_mcspi *spim,
-@@ -881,7 +881,7 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
- {
- 	struct spi_master_omap2_mcspi *spim;
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
- 	u32 regs_offset = 0;
-@@ -912,21 +912,21 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
- 	master->ops = &omap2_mcspi_master_ops;
- 	platform_set_drvdata(pdev, master);
+ 		if (unlikely(!(staterr & E1000_RXD_STAT_EOP))) {
+@@ -5144,8 +5144,8 @@ static bool e1000_clean_rx_irq_ps(struct e1000_adapter *adapter,
+ 		for (j = 0; j < adapter->rx_ps_pages; j++) {
+ 			if (!(length= le16_to_cpu(rx_desc->wb.upper.length[j])))
+ 				break;
+-			pci_unmap_page(pdev, ps_page_dma->ps_page_dma[j],
+-					PAGE_SIZE, PCI_DMA_FROMDEVICE);
++			dma_unmap_page(&pdev->dev, ps_page_dma->ps_page_dma[j],
++				       PAGE_SIZE, DMA_FROM_DEVICE);
+ 			ps_page_dma->ps_page_dma[j] = 0;
+ 			skb_fill_page_desc(skb, j, ps_page->ps_page[j], 0,
+ 					   length);
+@@ -5288,10 +5288,10 @@ check_page:
+ 		}
  
--	kmaster = master->kmaster;
-+	ctlr = master->controller;
- 	/* flags understood by this controller driver */
--	kmaster->mode_bits = OMAP2_MCSPI_SPI_MODE_BITS;
-+	ctlr->mode_bits = OMAP2_MCSPI_SPI_MODE_BITS;
- 	/* TODO: SPI_BPW_RANGE_MASK(4, 32); */
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
- 	of_property_read_u32(pdev->dev.of_node, "ti,spi-num-cs", &num_cs);
--	kmaster->num_chipselect = num_cs;
-+	ctlr->num_chipselect = num_cs;
- 	if (of_get_property(pdev->dev.of_node,
- 		"ti,pindir-d0-out-d1-in", NULL)) {
- 		pin_dir = MCSPI_PINDIR_D0_OUT_D1_IN;
+ 		if (!buffer_info->dma)
+-			buffer_info->dma = pci_map_page(pdev,
++			buffer_info->dma = dma_map_page(&pdev->dev,
+ 							buffer_info->page, 0,
+ 							PAGE_SIZE,
+-							PCI_DMA_FROMDEVICE);
++							DMA_FROM_DEVICE);
+ 
+ 		rx_desc = E1000_RX_DESC(*rx_ring, i);
+ 		rx_desc->buffer_addr = cpu_to_le64(buffer_info->dma);
+@@ -5382,10 +5382,10 @@ static void e1000_alloc_rx_buffers(struct e1000_adapter *adapter,
+ 
+ 		buffer_info->skb = skb;
+ map_skb:
+-		buffer_info->dma = pci_map_single(pdev,
++		buffer_info->dma = dma_map_single(&pdev->dev,
+ 						  skb->data,
+ 						  adapter->rx_buffer_len,
+-						  PCI_DMA_FROMDEVICE);
++						  DMA_FROM_DEVICE);
+ 
+ 		/* Fix for errata 23, can't cross 64kB boundary */
+ 		if (!e1000_check_64k_bound(adapter,
+@@ -5398,9 +5398,9 @@ map_skb:
+ 			kfree_rtskb(skb);
+ 			buffer_info->skb = NULL;
+ 
+-			pci_unmap_single(pdev, buffer_info->dma,
++			dma_unmap_single(&pdev->dev, buffer_info->dma,
+ 					 adapter->rx_buffer_len,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 			buffer_info->dma = 0;
+ 
+ 			adapter->alloc_rx_buff_failed++;
+diff --git a/kernel/drivers/net/drivers/natsemi.c b/kernel/drivers/net/drivers/natsemi.c
+index 74112c5a29..82d1c33506 100644
+--- a/kernel/drivers/net/drivers/natsemi.c
++++ b/kernel/drivers/net/drivers/natsemi.c
+@@ -1435,8 +1435,8 @@ static void refill_rx(struct rtnet_device *dev)
+ 			np->rx_skbuff[entry] = skb;
+ 			if (skb == NULL)
+ 				break; /* Better luck next round. */
+-			np->rx_dma[entry] = pci_map_single(np->pci_dev,
+-				skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++			np->rx_dma[entry] = dma_map_single(&np->pci_dev->dev,
++				skb->data, np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			np->rx_ring[entry].addr = cpu_to_le32(np->rx_dma[entry]);
+ 		}
+ 		np->rx_ring[entry].cmd_status = cpu_to_le32(np->rx_buf_sz);
+@@ -1493,9 +1493,9 @@ static void drain_tx(struct rtnet_device *dev)
+ 
+ 	for (i = 0; i < TX_RING_SIZE; i++) {
+ 		if (np->tx_skbuff[i]) {
+-			pci_unmap_single(np->pci_dev,
++			dma_unmap_single(&np->pci_dev->dev,
+ 				np->rx_dma[i], np->tx_skbuff[i]->len,
+-				PCI_DMA_TODEVICE);
++				DMA_TO_DEVICE);
+ 			dev_kfree_rtskb(np->tx_skbuff[i]);
+ 			np->stats.tx_dropped++;
+ 		}
+@@ -1513,9 +1513,9 @@ static void drain_ring(struct rtnet_device *dev)
+ 		np->rx_ring[i].cmd_status = 0;
+ 		np->rx_ring[i].addr = 0xBADF00D0; /* An invalid address. */
+ 		if (np->rx_skbuff[i]) {
+-			pci_unmap_single(np->pci_dev,
++			dma_unmap_single(&np->pci_dev->dev,
+ 				np->rx_dma[i], np->rx_skbuff[i]->len,
+-				PCI_DMA_FROMDEVICE);
++				DMA_FROM_DEVICE);
+ 			dev_kfree_rtskb(np->rx_skbuff[i]);
+ 		}
+ 		np->rx_skbuff[i] = NULL;
+@@ -1546,8 +1546,8 @@ static int start_tx(struct rtskb *skb, struct rtnet_device *dev) /*** RTnet ***/
+ 	entry = np->cur_tx % TX_RING_SIZE;
+ 
+ 	np->tx_skbuff[entry] = skb;
+-	np->tx_dma[entry] = pci_map_single(np->pci_dev,
+-				skb->data,skb->len, PCI_DMA_TODEVICE);
++	np->tx_dma[entry] = dma_map_single(&np->pci_dev->dev,
++				skb->data,skb->len, DMA_TO_DEVICE);
+ 
+ 	np->tx_ring[entry].addr = cpu_to_le32(np->tx_dma[entry]);
+ 
+@@ -1621,9 +1621,9 @@ static void netdev_tx_done(struct rtnet_device *dev)
+ 				np->stats.tx_window_errors++;
+ 			np->stats.tx_errors++;
+ 		}
+-		pci_unmap_single(np->pci_dev,np->tx_dma[entry],
+-					np->tx_skbuff[entry]->len,
+-					PCI_DMA_TODEVICE);
++		dma_unmap_single(&np->pci_dev->dev,np->tx_dma[entry],
++				np->tx_skbuff[entry]->len,
++				DMA_TO_DEVICE);
+ 		/* Free the original skb. */
+ 		dev_kfree_rtskb(np->tx_skbuff[entry]); /*** RTnet ***/
+ /*		dev_kfree_skb_irq(np->tx_skbuff[entry]);*/
+@@ -1750,9 +1750,10 @@ static void netdev_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp)
+ /*** RTnet ***/
+ 			{
+ 				skb = np->rx_skbuff[entry];
+-				pci_unmap_single(np->pci_dev, np->rx_dma[entry],
+-					np->rx_skbuff[entry]->len,
+-					PCI_DMA_FROMDEVICE);
++				dma_unmap_single(&np->pci_dev->dev,
++						 np->rx_dma[entry],
++						 np->rx_skbuff[entry]->len,
++						 DMA_FROM_DEVICE);
+ 				rtskb_put(skb, pkt_len);
+ 				np->rx_skbuff[entry] = NULL;
+ 			}
+diff --git a/kernel/drivers/net/drivers/pcnet32.c b/kernel/drivers/net/drivers/pcnet32.c
+index 11a0af8632..4fd5ba0b4a 100644
+--- a/kernel/drivers/net/drivers/pcnet32.c
++++ b/kernel/drivers/net/drivers/pcnet32.c
+@@ -1083,8 +1083,8 @@ static int pcnet32_init_ring(struct rtnet_device *dev) /*** RTnet ***/
+ 			rtskb_reserve(rx_skbuff, 2); /*** RTnet ***/
+ 		}
+ 		lp->rx_dma_addr[i] =
+-			pci_map_single(lp->pci_dev, rx_skbuff->tail,
+-				       rx_skbuff->len, PCI_DMA_FROMDEVICE);
++			dma_map_single(&lp->pci_dev->dev, rx_skbuff->tail,
++				       rx_skbuff->len, DMA_FROM_DEVICE);
+ 		lp->rx_ring[i].base = (u32)le32_to_cpu(lp->rx_dma_addr[i]);
+ 		lp->rx_ring[i].buf_length = le16_to_cpu(-PKT_BUF_SZ);
+ 		lp->rx_ring[i].status = le16_to_cpu(0x8000);
+@@ -1157,8 +1157,8 @@ static int pcnet32_start_xmit(struct rtskb *skb,
+ 	lp->tx_ring[entry].misc = 0x00000000;
+ 
+ 	lp->tx_skbuff[entry] = skb;
+-	lp->tx_dma_addr[entry] = pci_map_single(lp->pci_dev, skb->data,
+-						skb->len, PCI_DMA_TODEVICE);
++	lp->tx_dma_addr[entry] = dma_map_single(&lp->pci_dev->dev, skb->data,
++						skb->len, DMA_TO_DEVICE);
+ 	lp->tx_ring[entry].base = (u32)le32_to_cpu(lp->tx_dma_addr[entry]);
+ 
+ 	/*** RTnet ***/
+@@ -1295,11 +1295,11 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
+ 
+ 				/* We must free the original skb */
+ 				if (lp->tx_skbuff[entry]) {
+-					pci_unmap_single(
+-						lp->pci_dev,
++					dma_unmap_single(
++						&lp->pci_dev->dev,
+ 						lp->tx_dma_addr[entry],
+ 						lp->tx_skbuff[entry]->len,
+-						PCI_DMA_TODEVICE);
++						DMA_TO_DEVICE);
+ 					dev_kfree_rtskb(
+ 						lp->tx_skbuff[entry]); /*** RTnet ***/
+ 					lp->tx_skbuff[entry] = 0;
+@@ -1425,19 +1425,19 @@ static int pcnet32_rx(struct rtnet_device *dev,
+ 						     dev, PKT_BUF_SZ))) {
+ 						rtskb_reserve(newskb, 2);
+ 						skb = lp->rx_skbuff[entry];
+-						pci_unmap_single(
+-							lp->pci_dev,
++						dma_unmap_single(
++							&lp->pci_dev->dev,
+ 							lp->rx_dma_addr[entry],
+ 							skb->len,
+-							PCI_DMA_FROMDEVICE);
++							DMA_FROM_DEVICE);
+ 						rtskb_put(skb, pkt_len);
+ 						lp->rx_skbuff[entry] = newskb;
+ 						lp->rx_dma_addr
+-							[entry] = pci_map_single(
+-							lp->pci_dev,
++							[entry] = dma_map_single(
++							&lp->pci_dev->dev,
+ 							newskb->tail,
+ 							newskb->len,
+-							PCI_DMA_FROMDEVICE);
++							DMA_FROM_DEVICE);
+ 						lp->rx_ring[entry]
+ 							.base = le32_to_cpu(
+ 							lp->rx_dma_addr[entry]);
+@@ -1529,9 +1529,9 @@ static int pcnet32_close(struct rtnet_device *dev) /*** RTnet ***/
+ 	for (i = 0; i < RX_RING_SIZE; i++) {
+ 		lp->rx_ring[i].status = 0;
+ 		if (lp->rx_skbuff[i]) {
+-			pci_unmap_single(lp->pci_dev, lp->rx_dma_addr[i],
++			dma_unmap_single(&lp->pci_dev->dev, lp->rx_dma_addr[i],
+ 					 lp->rx_skbuff[i]->len,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 			dev_kfree_rtskb(lp->rx_skbuff[i]); /*** RTnet ***/
+ 		}
+ 		lp->rx_skbuff[i] = NULL;
+@@ -1540,9 +1540,9 @@ static int pcnet32_close(struct rtnet_device *dev) /*** RTnet ***/
+ 
+ 	for (i = 0; i < TX_RING_SIZE; i++) {
+ 		if (lp->tx_skbuff[i]) {
+-			pci_unmap_single(lp->pci_dev, lp->tx_dma_addr[i],
++			dma_unmap_single(&lp->pci_dev->dev, lp->tx_dma_addr[i],
+ 					 lp->tx_skbuff[i]->len,
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 			dev_kfree_rtskb(lp->tx_skbuff[i]); /*** RTnet ***/
+ 		}
+ 		lp->tx_skbuff[i] = NULL;
+diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
+index 9c0e259c26..498b998188 100644
+--- a/kernel/drivers/net/drivers/r8169.c
++++ b/kernel/drivers/net/drivers/r8169.c
+@@ -1285,7 +1285,7 @@ static void rtl8169_init_ring (struct rtnet_device *rtdev)
+ 
+ 	for (i=0 ; i<NUM_TX_DESC ; i++){
+ 		priv->Tx_skbuff[i]=NULL;
+-		priv->txdesc_array_dma_addr[i] = pci_map_single(pdev, &priv->TxDescArray[i], sizeof(struct TxDesc), PCI_DMA_TODEVICE);
++		priv->txdesc_array_dma_addr[i] = dma_map_single(&pdev->dev, &priv->TxDescArray[i], sizeof(struct TxDesc), DMA_TO_DEVICE);
  	}
  
--	kmaster->max_speed_hz = OMAP2_MCSPI_MAX_FREQ;
--	kmaster->min_speed_hz = OMAP2_MCSPI_MAX_FREQ >> 15;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr->max_speed_hz = OMAP2_MCSPI_MAX_FREQ;
-+	ctlr->min_speed_hz = OMAP2_MCSPI_MAX_FREQ >> 15;
-+	ctlr->dev.of_node = pdev->dev.of_node;
+ 	for (i=0; i <NUM_RX_DESC; i++) {
+@@ -1298,7 +1298,7 @@ static void rtl8169_init_ring (struct rtnet_device *rtdev)
  
- 	spim = container_of(master, struct spi_master_omap2_mcspi, master);
- 	rtdm_event_init(&spim->transfer_done, 0);
-@@ -987,7 +987,7 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
+ 		{//-----------------------------------------------------------------------
+ 			skb = priv->Rx_skbuff[i];
+-			priv->rx_skbuff_dma_addr[i] = pci_map_single(pdev, skb->data, priv->rx_buf_size /* MAX_RX_SKBDATA_SIZE */, PCI_DMA_FROMDEVICE);	/*** <kk> ***/
++			priv->rx_skbuff_dma_addr[i] = dma_map_single(&pdev->dev, skb->data, priv->rx_buf_size /* MAX_RX_SKBDATA_SIZE */, DMA_FROM_DEVICE);	/*** <kk> ***/
  
- fail_unclk:
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
- 
- 	return ret;
+ 			if( skb != NULL ){
+ 				priv->RxDescArray[i].buf_addr = cpu_to_le32(priv->rx_skbuff_dma_addr[i]);
+@@ -1309,7 +1309,7 @@ static void rtl8169_init_ring (struct rtnet_device *rtdev)
+ 				priv->drvinit_fail = 1;
+ 			}
+ 		}//-----------------------------------------------------------------------
+-		priv->rxdesc_array_dma_addr[i] = pci_map_single(pdev, &priv->RxDescArray[i], sizeof(struct RxDesc), PCI_DMA_TODEVICE);
++		priv->rxdesc_array_dma_addr[i] = dma_map_single(&pdev->dev, &priv->RxDescArray[i], sizeof(struct RxDesc), DMA_TO_DEVICE);
+ 		pci_dma_sync_single_for_device(pdev, priv->rxdesc_array_dma_addr[i], sizeof(struct RxDesc), PCI_DMA_TODEVICE);
+ 	}
  }
-diff --git a/kernel/drivers/spi/spi-sun6i.c b/kernel/drivers/spi/spi-sun6i.c
-index 36a2cd4713..72a4abd0d7 100644
---- a/kernel/drivers/spi/spi-sun6i.c
-+++ b/kernel/drivers/spi/spi-sun6i.c
-@@ -150,7 +150,7 @@ to_master_sun6i(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
- {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
+@@ -1378,7 +1378,7 @@ static int rtl8169_start_xmit (struct rtskb *skb, struct rtnet_device *rtdev)
+ 			len = ETH_ZLEN;
+ 		}
  
- static inline u32 sun6i_rd(struct spi_master_sun6i *spim,
-@@ -509,7 +509,7 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- {
- 	struct rtdm_spi_master *master;
- 	struct spi_master_sun6i *spim;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
- 	u32 clk_rate;
-@@ -525,13 +525,13 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- 	master->ops = &sun6i_master_ops;
- 	platform_set_drvdata(pdev, master);
+-		txbuf_dma_addr = pci_map_single(pdev, skb->data, len, PCI_DMA_TODEVICE);
++		txbuf_dma_addr = dma_map_single(&pdev->dev, skb->data, len, DMA_TO_DEVICE);
  
--	kmaster = master->kmaster;
--	kmaster->max_speed_hz = 100 * 1000 * 1000;
--	kmaster->min_speed_hz = 3 * 1000;
--	kmaster->mode_bits = SUN6I_SPI_MODE_BITS;
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
--	kmaster->num_chipselect = 4;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr = master->controller;
-+	ctlr->max_speed_hz = 100 * 1000 * 1000;
-+	ctlr->min_speed_hz = 3 * 1000;
-+	ctlr->mode_bits = SUN6I_SPI_MODE_BITS;
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->num_chipselect = 4;
-+	ctlr->dev.of_node = pdev->dev.of_node;
+ 		priv->TxDescArray[entry].buf_addr = cpu_to_le32(txbuf_dma_addr);
  
- 	spim = container_of(master, struct spi_master_sun6i, master);
- 	spim->setup = of_device_get_match_data(&pdev->dev);
-@@ -572,8 +572,8 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- 	 * the fastest transfers properly.
- 	 */
- 	clk_rate = clk_get_rate(spim->mclk);
--	if (clk_rate < 2 * kmaster->max_speed_hz)
--		clk_set_rate(spim->mclk, 2 * kmaster->max_speed_hz);
-+	if (clk_rate < 2 * ctlr->max_speed_hz)
-+		clk_set_rate(spim->mclk, 2 * ctlr->max_speed_hz);
+@@ -1504,7 +1504,7 @@ static void rtl8169_tx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
+ #endif //end #ifdef RTL8169_DYNAMIC_CONTROL
  
- 	spim->clk_hz = clk_get_rate(spim->mclk);
+ 			if (priv->txdesc_array_dma_addr[entry])
+-				pci_unmap_single(priv->pci_dev, priv->txdesc_array_dma_addr[entry], priv->Tx_skbuff[entry]->len, PCI_DMA_TODEVICE);	/*** ##KK## ***/
++				dma_unmap_single(&priv->pci_dev->dev, priv->txdesc_array_dma_addr[entry], priv->Tx_skbuff[entry]->len, DMA_TO_DEVICE);	/*** ##KK## ***/
+ 			dev_kfree_rtskb( priv->Tx_skbuff[entry] );	/*** RTnet; previously: dev_kfree_skb_irq() - luckily we're within an IRQ ***/
+ 			priv->Tx_skbuff[entry] = NULL;
+ 			priv->stats.tx_packets++;
+@@ -1626,7 +1626,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
+ 				cur_skb = priv->Rx_skbuff[cur_rx];
  
-@@ -624,7 +624,7 @@ fail_unclk:
- 	clk_disable_unprepare(spim->mclk);
- 	clk_disable_unprepare(spim->hclk);
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
+ 				if( cur_skb != NULL ){
+-					priv->rx_skbuff_dma_addr[cur_rx] = pci_map_single(pdev, cur_skb->data, priv->rx_buf_size /* <kk> MAX_RX_SKBDATA_SIZE */, PCI_DMA_FROMDEVICE);
++					priv->rx_skbuff_dma_addr[cur_rx] = dma_map_single(&pdev->dev, cur_skb->data, priv->rx_buf_size /* <kk> MAX_RX_SKBDATA_SIZE */, DMA_FROM_DEVICE);
+ 					rxdesc->buf_addr = cpu_to_le32(priv->rx_skbuff_dma_addr[cur_rx]);
+ 				}
+ 				else{
+diff --git a/kernel/drivers/net/drivers/tulip/interrupt.c b/kernel/drivers/net/drivers/tulip/interrupt.c
+index a5e16c8299..d65bb3f786 100644
+--- a/kernel/drivers/net/drivers/tulip/interrupt.c
++++ b/kernel/drivers/net/drivers/tulip/interrupt.c
+@@ -78,8 +78,8 @@ int tulip_refill_rx(/*RTnet*/struct rtnet_device *rtdev)
+ 			if (skb == NULL)
+ 				break;
  
- 	return ret;
- }
+-			mapping = pci_map_single(tp->pdev, skb->tail, PKT_BUF_SZ,
+-						 PCI_DMA_FROMDEVICE);
++			mapping = dma_map_single(&tp->pdev->dev, skb->tail,
++						 PKT_BUF_SZ, DMA_FROM_DEVICE);
+ 			tp->rx_buffers[entry].mapping = mapping;
+ 
+ 			tp->rx_ring[entry].buffer1 = cpu_to_le32(mapping);
+@@ -168,8 +168,9 @@ static int tulip_rx(/*RTnet*/struct rtnet_device *rtdev, nanosecs_abs_t *time_st
+ 				}
+ #endif
+ 
+-				pci_unmap_single(tp->pdev, tp->rx_buffers[entry].mapping,
+-						 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
++				dma_unmap_single(&tp->pdev->dev,
++						 tp->rx_buffers[entry].mapping,
++						 PKT_BUF_SZ, DMA_FROM_DEVICE);
+ 
+ 				tp->rx_buffers[entry].skb = NULL;
+ 				tp->rx_buffers[entry].mapping = 0;
+@@ -247,10 +248,10 @@ int tulip_interrupt(rtdm_irq_t *irq_handle)
+ 				if (tp->tx_buffers[entry].skb == NULL) {
+ 					/* test because dummy frames not mapped */
+ 					if (tp->tx_buffers[entry].mapping)
+-						pci_unmap_single(tp->pdev,
++						dma_unmap_single(&tp->pdev->dev,
+ 							 tp->tx_buffers[entry].mapping,
+ 							 sizeof(tp->setup_frame),
+-							 PCI_DMA_TODEVICE);
++							 DMA_TO_DEVICE);
+ 					continue;
+ 				}
+ 
+@@ -275,9 +276,10 @@ int tulip_interrupt(rtdm_irq_t *irq_handle)
+ 					tp->stats.tx_packets++;
+ 				}
+ 
+-				pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
++				dma_unmap_single(&tp->pdev->dev,
++						 tp->tx_buffers[entry].mapping,
+ 						 tp->tx_buffers[entry].skb->len,
+-						 PCI_DMA_TODEVICE);
++						 DMA_TO_DEVICE);
+ 
+ 				/* Free the original skb. */
+ 				/*RTnet*/dev_kfree_rtskb(tp->tx_buffers[entry].skb);
+diff --git a/kernel/drivers/net/drivers/tulip/tulip_core.c b/kernel/drivers/net/drivers/tulip/tulip_core.c
+index f5e7b3e9d3..3d0b3dba68 100644
+--- a/kernel/drivers/net/drivers/tulip/tulip_core.c
++++ b/kernel/drivers/net/drivers/tulip/tulip_core.c
+@@ -333,9 +333,9 @@ static void tulip_up(/*RTnet*/struct rtnet_device *rtdev)
+ 		*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
+ 		*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
+ 
+-		mapping = pci_map_single(tp->pdev, tp->setup_frame,
++		mapping = dma_map_single(&tp->pdev->dev, tp->setup_frame,
+ 					 sizeof(tp->setup_frame),
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 		tp->tx_buffers[tp->cur_tx].skb = NULL;
+ 		tp->tx_buffers[tp->cur_tx].mapping = mapping;
+ 
+@@ -537,7 +537,8 @@ static void tulip_init_ring(/*RTnet*/struct rtnet_device *rtdev)
+ 		tp->rx_buffers[i].skb = skb;
+ 		if (skb == NULL)
+ 			break;
+-		mapping = pci_map_single(tp->pdev, skb->tail, PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
++		mapping = dma_map_single(&tp->pdev->dev, skb->tail, PKT_BUF_SZ,
++					 DMA_FROM_DEVICE);
+ 		tp->rx_buffers[i].mapping = mapping;
+ 		tp->rx_ring[i].status = cpu_to_le32(DescOwned);	/* Owned by Tulip chip */
+ 		tp->rx_ring[i].buffer1 = cpu_to_le32(mapping);
+@@ -582,7 +583,8 @@ tulip_start_xmit(struct /*RTnet*/rtskb *skb, /*RTnet*/struct rtnet_device *rtdev
+ 	entry = tp->cur_tx % TX_RING_SIZE;
+ 
+ 	tp->tx_buffers[entry].skb = skb;
+-	mapping = pci_map_single(tp->pdev, skb->data, skb->len, PCI_DMA_TODEVICE);
++	mapping = dma_map_single(&tp->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
+ 	tp->tx_buffers[entry].mapping = mapping;
+ 	tp->tx_ring[entry].buffer1 = cpu_to_le32(mapping);
+ 
+@@ -642,16 +644,16 @@ static void tulip_clean_tx_ring(struct tulip_private *tp)
+ 		if (tp->tx_buffers[entry].skb == NULL) {
+ 			/* test because dummy frames not mapped */
+ 			if (tp->tx_buffers[entry].mapping)
+-				pci_unmap_single(tp->pdev,
++				dma_unmap_single(&tp->pdev->dev,
+ 					tp->tx_buffers[entry].mapping,
+ 					sizeof(tp->setup_frame),
+-					PCI_DMA_TODEVICE);
++					DMA_TO_DEVICE);
+ 			continue;
+ 		}
+ 
+-		pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
++		dma_unmap_single(&tp->pdev->dev, tp->tx_buffers[entry].mapping,
+ 				tp->tx_buffers[entry].skb->len,
+-				PCI_DMA_TODEVICE);
++				DMA_TO_DEVICE);
+ 
+ 		/* Free the original skb. */
+ 		/*RTnet*/dev_kfree_rtskb(tp->tx_buffers[entry].skb);
+@@ -731,8 +733,8 @@ static int tulip_close (/*RTnet*/struct rtnet_device *rtdev)
+ 		tp->rx_ring[i].length = 0;
+ 		tp->rx_ring[i].buffer1 = 0xBADF00D0;	/* An invalid address. */
+ 		if (skb) {
+-			pci_unmap_single(tp->pdev, mapping, PKT_BUF_SZ,
+-					 PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&tp->pdev->dev, mapping, PKT_BUF_SZ,
++					 DMA_FROM_DEVICE);
+ 			/*RTnet*/dev_kfree_rtskb (skb);
+ 		}
+ 	}
+@@ -740,8 +742,9 @@ static int tulip_close (/*RTnet*/struct rtnet_device *rtdev)
+ 		struct /*RTnet*/rtskb *skb = tp->tx_buffers[i].skb;
+ 
+ 		if (skb != NULL) {
+-			pci_unmap_single(tp->pdev, tp->tx_buffers[i].mapping,
+-					 skb->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&tp->pdev->dev,
++					 tp->tx_buffers[i].mapping,
++					 skb->len, DMA_TO_DEVICE);
+ 			/*RTnet*/dev_kfree_rtskb (skb);
+ 		}
+ 		tp->tx_buffers[i].skb = NULL;
+diff --git a/kernel/drivers/net/drivers/via-rhine.c b/kernel/drivers/net/drivers/via-rhine.c
+index fc867cf736..192f02eb6f 100644
+--- a/kernel/drivers/net/drivers/via-rhine.c
++++ b/kernel/drivers/net/drivers/via-rhine.c
+@@ -985,8 +985,8 @@ static void alloc_rbufs(struct rtnet_device *dev) /*** RTnet ***/
+ 		if (skb == NULL)
+ 			break;
+ 		np->rx_skbuff_dma[i] =
+-			pci_map_single(np->pdev, skb->tail, np->rx_buf_sz,
+-						   PCI_DMA_FROMDEVICE);
++			dma_map_single(&np->pdev->dev, skb->tail, np->rx_buf_sz,
++				       DMA_FROM_DEVICE);
+ 
+ 		np->rx_ring[i].addr = cpu_to_le32(np->rx_skbuff_dma[i]);
+ 		np->rx_ring[i].rx_status = cpu_to_le32(DescOwn);
+@@ -1004,9 +1004,8 @@ static void free_rbufs(struct rtnet_device* dev) /*** RTnet ***/
+ 		np->rx_ring[i].rx_status = 0;
+ 		np->rx_ring[i].addr = cpu_to_le32(0xBADF00D0); /* An invalid address. */
+ 		if (np->rx_skbuff[i]) {
+-			pci_unmap_single(np->pdev,
+-							 np->rx_skbuff_dma[i],
+-							 np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&np->pdev->dev, np->rx_skbuff_dma[i],
++					 np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			dev_kfree_rtskb(np->rx_skbuff[i]); /*** RTnet ***/
+ 		}
+ 		np->rx_skbuff[i] = 0;
+@@ -1044,9 +1043,10 @@ static void free_tbufs(struct rtnet_device* dev) /*** RTnet ***/
+ 		np->tx_ring[i].addr = cpu_to_le32(0xBADF00D0); /* An invalid address. */
+ 		if (np->tx_skbuff[i]) {
+ 			if (np->tx_skbuff_dma[i]) {
+-				pci_unmap_single(np->pdev,
+-								 np->tx_skbuff_dma[i],
+-								 np->tx_skbuff[i]->len, PCI_DMA_TODEVICE);
++				dma_unmap_single(&np->pdev->dev,
++						 np->tx_skbuff_dma[i],
++						 np->tx_skbuff[i]->len,
++						 DMA_TO_DEVICE);
+ 			}
+ 			dev_kfree_rtskb(np->tx_skbuff[i]); /*** RTnet ***/
+ 		}
+@@ -1282,7 +1282,8 @@ static int via_rhine_start_tx(struct rtskb *skb, struct rtnet_device *dev) /***
+ 										  (np->tx_buf[entry] - np->tx_bufs));
+ 	} else {
+ 		np->tx_skbuff_dma[entry] =
+-			pci_map_single(np->pdev, skb->data, skb->len, PCI_DMA_TODEVICE);
++			dma_map_single(&np->pdev->dev, skb->data, skb->len,
++				       DMA_TO_DEVICE);
+ 		np->tx_ring[entry].addr = cpu_to_le32(np->tx_skbuff_dma[entry]);
+ 
+ /*** RTnet ***/
+@@ -1445,9 +1446,10 @@ static void via_rhine_tx(struct rtnet_device *dev) /*** RTnet ***/
+ 		}
+ 		/* Free the original skb. */
+ 		if (np->tx_skbuff_dma[entry]) {
+-			pci_unmap_single(np->pdev,
+-							 np->tx_skbuff_dma[entry],
+-							 np->tx_skbuff[entry]->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&np->pdev->dev,
++					 np->tx_skbuff_dma[entry],
++					 np->tx_skbuff[entry]->len,
++					 DMA_TO_DEVICE);
+ 		}
+ 		dev_kfree_rtskb(np->tx_skbuff[entry]); /*** RTnet ***/
+ 		np->tx_skbuff[entry] = NULL;
+@@ -1522,8 +1524,10 @@ static void via_rhine_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp) /
+ 				}
+ 				np->rx_skbuff[entry] = NULL;
+ 				rtskb_put(skb, pkt_len); /*** RTnet ***/
+-				pci_unmap_single(np->pdev, np->rx_skbuff_dma[entry],
+-								 np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++				dma_unmap_single(&np->pdev->dev,
++						 np->rx_skbuff_dma[entry],
++						 np->rx_buf_sz,
++						 DMA_FROM_DEVICE);
+ 			}
+ /*** RTnet ***/
+ 			skb->protocol = rt_eth_type_trans(skb, dev);
+@@ -1548,8 +1552,8 @@ static void via_rhine_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp) /
+ 			if (skb == NULL)
+ 				break;			/* Better luck next round. */
+ 			np->rx_skbuff_dma[entry] =
+-				pci_map_single(np->pdev, skb->tail, np->rx_buf_sz,
+-							   PCI_DMA_FROMDEVICE);
++				dma_map_single(&np->pdev->dev, skb->tail,
++					       np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			np->rx_ring[entry].addr = cpu_to_le32(np->rx_skbuff_dma[entry]);
+ 		}
+ 		np->rx_ring[entry].rx_status = cpu_to_le32(DescOwn);
 -- 
 2.35.3
 
