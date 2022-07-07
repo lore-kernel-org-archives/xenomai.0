@@ -1,384 +1,158 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2132.outbound.protection.outlook.com [40.107.21.132])
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80079.outbound.protection.outlook.com [40.107.8.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2156E2111
-	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 14:00:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504B97C
+	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 15:19:13 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sf5rQSULqHzh5Fojkr//CDpecwwmAED0+akK7Xn1gkm3o8M9JCbO0uqSoAXjvmK6k3HHH2aUxnCJ/4tCcGFQHvlg6RPjRdKKWcAnEGsiEaR2QgKYyygVML8VEfAQDCVrQCvDrTphwOVpRBQ5qTTuhbL679NbimrKZpjk8C5oX9CnYLD2pZhwwGWBlMA9EtFOyVuQ3y/ZHwipLl7suJEeywyxQ6q3vD40aymj4wJQqBbECzNTR8KoW9LUz0OMBajfxaEnpkTyOcp+x67vFHXAalfgzFApY8kom3RxAIlhalNQ670Tb7eAIHt08NIbNjTGd34IeRLza0HZcK5tfKSqzg==
+ b=HL9GEP77GDBJEDDfIY2VGn8iZHi/ytJPHOO6S+h9TKK0dHfMvaAJMtpPbdGmzA3V+3/y0eSLlnlGihqfHicOBMFVwzpAA5N+uYyJYgs+Z+ubewmtTKdLdvC5gtNBu/xijC3pPl5USK1Nk5rwDPqQVOZU7PDSX3h57gjjGhbcfdVHkWSSjaOqOwSUHpLLg6tl6ybhAUJyzL/eDNjvSU9zwjFJRXpH5BeI2m9MU+p/V8AVBGsN4wR8fY8f3FDKOpvR5pg6GbrMlsprKcBJpCzv6YrB8nl2m/AoPSo6xc74CaDTkWmXBZMk6rFTHgc4UIv9DlU8lS1rOK6XcbXNfExjPw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DiOc3RD/EDmbdFzopfFRHWfqjvxpYPWohtvIP99V7bU=;
- b=Gnrj9EwWT10VG4l4SCoA+WKUGH4gNGgXObtD39gO4RDqjo0J7GTe1t0okj34inYwE0uFgdgdxW2KqG2Jn5mAF00CWYcaVwcNARaw3fdgwO8+Pum6oH02oslGyzaVSyK3xbS6P1O74AM41uf2xkt7O+AHmX9G57zydH3mPYQ/69tUhRXaslwi3rRg1myJxW7TMXu2hOKRlBrH+15csNHmR3uXoUxuef7wnsIXir8Mmv2JbOD03U+1VbzNpw5nthu5voWXkicXilsyXD8WVYHLF36rQnmPyPVRAX1AxUAziXnwa/KVmSUBYioTr2ldvy5T00H7dM1+n1WDGFlqEAatbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
- dkim=pass header.d=sigmatek.at; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
+ bh=yQfBimZb/UHhPLgQWXX8dxjxq4hfv6eyPCMBKkq/DIc=;
+ b=GovIK8mMFhdTWqn/1hefBSPSY6iuzUM4xBnN10P6nFZsqL50EThLXscymyFJDOlCPTe8X7BZiNfoDeyqZHfyM+oabvXi2eG48nlwWpxz69lZ4AzopOQdc6ZkJ6VX3zcMRu+t/UGNpwKraorwLTPg5wzL28p6eq66PdwX1gorvFULbcRFVal6RpHfLwLwlQONA/K0x9YBTJCkm43GCZHJTSuJvbAU55Zl3Cpx91eog30yYbJ09bhWMUIUm0dS/TeQfHXqgEXFhM0/2CpJAqUUoHisoG3KzQLxBI8Xhd+LRgIjaccMO90oJ4hklTzlkgMa0nYEeARhXouoG6V+GNd4Sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.70) smtp.rcpttodomain=sigmatek.at smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DiOc3RD/EDmbdFzopfFRHWfqjvxpYPWohtvIP99V7bU=;
- b=kGT60k4Vcd5s0txUToHtIcEunr4eqBF1lQJqab7HYmTPsK6EBDtu31CXBqmNf63ZqVALkXCVhmoto4J/DF+6ntZYKhxsq3b6ntZt7k+igKup1PJu3KpdmXM5+PTbVEVZryoyZH/o5Q6WiwxwGAJzEGhzK8kzepAVYUtlMBW5ASc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sigmatek.at;
-Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
- by AM8PR08MB5730.eurprd08.prod.outlook.com (2603:10a6:20b:1d5::7) with
+ bh=yQfBimZb/UHhPLgQWXX8dxjxq4hfv6eyPCMBKkq/DIc=;
+ b=ycLFXdpNu3AcCQOPZQ/xrvrdNr2kpEm2iPJSMZfSKxLGyWt3vU9I3g2Oys9oZwlsrGRooN4qqJCxS+f9aTQwLbhdaJ7pEMOGHaEPbWO9PTBOP/D3bXKlde5P2/gY0STBT8uLa6SCwRyOBATOmdj1boUbXdJgJRBXfRTP1vlA+lTGUhCkcm1q8QT4GTj2PVZ7CiIC/F/r+mmgR1pDET4MwbFUft6Lt4g6wjoM/0F+O0j/T1Kk4HrWfUMq7fmto/EizmM74kcNl7Dfu9Ef+fMLNB+45wJFh7j562uqDxH5uOLZP5/LOfhWfwXrkz+VXy7zdnIjZv0itb2gH+6c9UgHow==
+Received: from SV0P279CA0043.NORP279.PROD.OUTLOOK.COM (2603:10a6:f10:13::12)
+ by AM5PR1001MB1025.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:203:11::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Thu, 7 Jul
- 2022 14:00:06 +0000
-Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
- ([fe80::9978:7089:d0f:b288]) by VE1PR08MB4909.eurprd08.prod.outlook.com
- ([fe80::9978:7089:d0f:b288%5]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 14:00:06 +0000
-From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-To: xenomai@lists.linux.dev
-Subject: [PATCH 3/3] rtsignals: Add rt_signal test
-Date: Thu,  7 Jul 2022 15:59:52 +0200
-Message-Id: <20220707135952.5171-4-johannes.kirchmair@sigmatek.at>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
-References: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR04CA0108.eurprd04.prod.outlook.com
- (2603:10a6:803:64::43) To VE1PR08MB4909.eurprd08.prod.outlook.com
- (2603:10a6:802:a8::22)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
+ 2022 15:19:10 +0000
+Received: from HE1EUR01FT060.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:f10:13:cafe::f0) by SV0P279CA0043.outlook.office365.com
+ (2603:10a6:f10:13::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16 via Frontend
+ Transport; Thu, 7 Jul 2022 15:19:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.70)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.70 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.70; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.70) by
+ HE1EUR01FT060.mail.protection.outlook.com (10.152.0.249) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 15:19:10 +0000
+Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
+ DEMCHDC9SJA.ad011.siemens.net (194.138.21.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Thu, 7 Jul 2022 17:19:09 +0200
+Received: from [139.25.68.37] (139.25.68.37) by DEMCHDC89XA.ad011.siemens.net
+ (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.9; Thu, 7 Jul 2022
+ 17:19:08 +0200
+Message-ID: <ca02628e-3cb5-727e-0ecf-40046963bc83@siemens.com>
+Date: Thu, 7 Jul 2022 17:19:08 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/3] prove of concept
+Content-Language: en-US
+To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>,
+	<xenomai@lists.linux.dev>
+References: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [139.25.68.37]
+X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-AS-Result: No-10--19.321900-8.000000
+X-TMASE-MatchedRID: aZnThng3P7U5QaOxwNGfvo9bHfxDWoibnISV5mwBlcz8tJUUfQqfiBJS
+	x+7Qm/dKtaHmFblIOjmGPneCOFgqRPqhlOCLQMMGWl2S4SrquwQ+1mUhx2/+TIXw6erE6oP33WF
+	axVW7M2h2rnDBfCYJTAtqZTGYNzreVk32QV2rZIUPmulRAtWbQRsDEFC015iu9FQh3flUIh4nw4
+	PQgteoUHy/Hx1AgJrr+uDuUyjAibyk3d3YTZBs7mJAGiBp7WzYdieePCN6t0KSJLHHb2KALXMpY
+	TSKHyEINWj+ZQmmPbI/PJ8p+RzsASu0aDfjpMDQvfvlMSC+4cW8+Qw9PrZG9aLRJdE44xZwn4yd
+	uYf5HlWen0qBdy7fjFpcj46AI5R2uWqIEcIJprpENK5rxarX/tUv8ntSEF32XmFVlObh0PwMq8t
+	1qGggRJsoi2XrUn/JyeMtMD9QOgChMIDkR/KfwI2j49Ftap9EkGUtrowrXLg=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--19.321900-8.000000
+X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-SNTS-SMTP:
+ 7691D6EB2E6ED7E90CE80DC04826D5E87154E4BFD3BA8615F5829F9CA89E5FFE2000:8
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 29727248-11be-4c65-13af-08da6020febb
-X-MS-TrafficTypeDiagnostic: AM8PR08MB5730:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79418c81-b09f-469f-cd1e-08da602c0abd
+X-MS-TrafficTypeDiagnostic: AM5PR1001MB1025:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	PPMuPrG9wYHrngUj1Hb7R2S1KBNRYgsJa2DxEkE2thWfmqoPaS5M01nNPb51pd6EMsV8FOMRPMjvzNyThfXWy2eb/SvTBhELU+3DgCmSYcySqmJdEPecsdbrn+hg5z78KurngzLTSgTMBPCZe5DxPeaoW7ShjefE6+uA14mUAySDdcnzr/R2t5WqB6vvygattFcAU1yGzGo0eL+43M0UmtQoXRZNQuAJKg/HTzpuKYQJ0rTc2FnGK9ksbykIf9Rea/JKP2mGUq6JWWsF1KPXFjVJHpUTPjLNzxdA4bf4K86j+ND6yNM0tE/PKfUGchBp7Mhi64+fkpDwsXvLcFVeHnEwKqmADMaueB9nbSp9USTdrwZpq/v47jRLMv5h4UDcnhcUg1BxjCar6wBY9of1K+R1HVgU46bmw7kjHcLB8sFGgN/ZizNutXs3w0ByRVfI5y0gLM0LUsVP+SoPUkOMsm4KLI4MnUds9DzkhoV97dm0uH2/sDZM3KkoWbPxkUS7Fcz2gbKdYnb95bXaTyqvXPilx67tqroM0vF0jKKYuMh52p2sEwxAuZsowglZc8zhdEoEy6A0KNs+qoU5bnOq54gCqhc69KgnHQ8yEK/nbBuSCU7jdFGeYqCe+qfgsk1PpHrzYCJeL1EJ+tjgOTDTFBbgHESVsTgMQoCIbiEvYZOVAV8O/Wfk69pA2p29+NOzRAX6AY+jD1/z5wjmM5IcmdnVGAVPr/cyt5LjHQ/A8aPg5pSkRqAhvtf+gzuIWU/yVtNzZNYQdZ+1erci2NtkOOSWDbZJlhUpVyJImRYrQIv83tiUPaxONSZ5XhlY78MGf3YEdEOWxexUXfpjtdXe4Q==
+	R7E45Zpc8SDNgDQL1y1fZMg+4CfMcKr0+LbaNoWXXBfsfxk8umU3nF4Q9vAYunWe/EDGmDSIiMTbYBmBpG+tPAw5j4WHQ4AnD1DADjgga7leqRhMfC034wHETkywQ90b9BfIzBamPXLPtXXWX7p0pTc79wWiBxknC0vPcFRnrqinG3CFl2lZHIItCdk1l/QkeV2T9wDSb5UieFHKxulM4x+GownNBxtlbmEtZb4n9W16Or0ikdL99aru94fS3NwPxD4EpgnjhHKlEX/IUx/pyRqDHK09uGw25EPbz6p9Lvwu2q7EEBnf0q1zmpz4UhkcteV+MUOiatAOLXijKQMOlbEZHPZYwBF6CkK7jqnjyCR1MnBD8MfGBQ39bYdT1Fnae77tpkcnmPs3WnbzVe76qF27Tj85dFKp0tKBsiaF/NSMP84ZtKjOXOTWfaSMWbDGeHn9bN6xvzvy+VO1O5xaTO2cLKQaJJaDxJSOL1LDSg1h6/9Xu9cNS9O2EjmgvvFCFzvzqHG5+Dh+Pj3tlm6BmhjvEzZj1lCgm7WrZwcGP16+kx8PqB6ofV3cNwRwvnJnfuTibdyvKwT97CtY4OqixSTjUBb+p6MKnVjzpqYvUg9YLKTjol7uBXCO5UeYpIJ74NQGMgjvYUZZYphIig171F0k8/lHmKig3h+XIqu1W8ObqHgILallymQhN9IqUG+1xFFX/tlFF9sjz/nHgHaFxMUJ5WKl4vpNuklqn75VIi/TglGwT9UMcYWQGlIESb1oP3gcElpvLLzjdRyWWhcI7dXvoj49v3sfuL5m3PgJADuyIJ4/bIJESJ23MCAiaIEsWK7eS8lpomZ/wcZMf2lJNHs62EbKP6AGAyJQ+70YP/RZPSv6VGEkzy7RZfipGuyD
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(136003)(396003)(346002)(39850400004)(6666004)(38350700002)(38100700002)(478600001)(6486002)(2616005)(1076003)(186003)(2906002)(41300700001)(66556008)(52116002)(36756003)(6506007)(6916009)(8936002)(5660300002)(8676002)(26005)(86362001)(316002)(44832011)(66946007)(83380400001)(66476007)(6512007)(21314003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Q+ZbGb/1RdK5QFr/SSVj4iFBZXu0JvFT2kDWr9W4GmbRzG7WA0K0N6HZpQNa?=
- =?us-ascii?Q?o7aJCyxA7h3e5hTuM1ZM/kXeOo0qH9aPMPtYqc7Hzo01McZ4JiYDNQrEOKyr?=
- =?us-ascii?Q?PLsDpUf1kiDM7xAXiW1ZO5/ILHCmif2D0vY419Mr1REw2dDsM8nSTvK1rl+d?=
- =?us-ascii?Q?GPaEs2coc5AdhtXpw60NuIbr9UxnqpToei67cU0gTeMPOdxWFRmlpuJOvkU2?=
- =?us-ascii?Q?XTVE5FouMF2Kq1RAjs1m38tvPf+LDQX2JyTdLcCrkItM50A3Z2u3BB9aC+VY?=
- =?us-ascii?Q?jSIC+P4G3dZdiWUWCRGAF8kDA1peXO7aZ0MwaRhSvlAvRz4TssIYFDF9tStN?=
- =?us-ascii?Q?UVnHg8Un8F/y1R8V7799pAMVoAf2tzl/JP5wZdUHyZ/8strqsFyD4n3MRM93?=
- =?us-ascii?Q?pJA3BWh8Y+FqYiPEKf3wggayf2I/2PdYmk/AYflLe3UOEQFeyPutOnjB8Gez?=
- =?us-ascii?Q?Hz2YEJe5hcOIggWFFFPs/3KmlS7Nclv1IMNj+4wws/2uQkkgI+jjcTyJwAls?=
- =?us-ascii?Q?+AkXwtmSTtOE5c+JqIW5mwiF2h68G/Z4WfCfobYpj9wQCTeBPVsG5JlA6gMf?=
- =?us-ascii?Q?Dgt9syl8lNFICZ/KJ0bgKC8NjnzuO2YuDmVjvi/uwqY98vRkalNue9jeRVdl?=
- =?us-ascii?Q?rdSRsVMS5KWlFJ1GpCh8JLo1SnUvo8GeZI6JAvlEpldAoSJulrpxO/9tbHq6?=
- =?us-ascii?Q?78MSolbysT82JsjPRUbqdms3uJgIOeg9gvnKahfY9HAGcrr0DmUsxO+sbf7F?=
- =?us-ascii?Q?bOTZmU6f+otDpULb4ymhz5ta9qNxqiwqTo9KLIFlEUOc6deNOY5A9HSarGxI?=
- =?us-ascii?Q?8tUU0ibSl5u8z8JslX1bzniJrfVbc7CR/sbjplNliMvVAip3iKvyxOBLSCb5?=
- =?us-ascii?Q?+SzzdqupqabGDJDHVqUzfMhsNDol8hG1GXsYacMDG4g5rKfoS8hIEH5Crzui?=
- =?us-ascii?Q?Ctvotj/g/9xqwkJ/wD0YvLYhVMpE4It48CMIkY48yXQKwEM8Ukh7IfSZPoTT?=
- =?us-ascii?Q?4ygYlYJtHpXuG3KOcL7+t+FJrcs0FE0TIBJx9oWSii3plb1XjcTz6mKzDxAj?=
- =?us-ascii?Q?NFFNqAP5ol0vmOMWE54jg6oaWIuXADeomIUUNCe5k3+DSwm2x+31Z3o9MDZU?=
- =?us-ascii?Q?/J38FmUrE8wK4TRyPph7l59oJEkYwSott7nVzuLUYc7R9W89dXQoKuPE8upr?=
- =?us-ascii?Q?GOZxLYUYBKQOoD8J0cAqK6S/mLGa0MISEootL5lEEvF19Ih0C1h2HQtbOP7Z?=
- =?us-ascii?Q?5EvpchtHgwv2KSFk2dv9zqc6TOq98jxOh6p76qbGzNVM81ippkIOPZkq4rRe?=
- =?us-ascii?Q?gQ1NJuU1vPyLgSlc/Q9kLearuOlOtFHwgGmSn9Y6byFMvQNUkagTZTjE5LgH?=
- =?us-ascii?Q?NKJt3UOiNyDsrQMtoiBsm0coZQdq2Z2PAsp/8xNlpw6tMAS6OAz4UxwK3NsL?=
- =?us-ascii?Q?NkGwfbrGCZTw9ksSas0c0c9fPKyduCo0ygFK9j2S4shB2n2iiwYXdkqLSKDA?=
- =?us-ascii?Q?UCU5Wa+5qcJxYw4QIpFY2rHTokWc4UI+GTQBKRT5v+QxpvlEW/ZgZMhX70MW?=
- =?us-ascii?Q?/EN4ajAf1EIar7rDYCtCh0/kFADZj0uK9NVV8aPGQvSeo0/r79r7W8rGN1Rc?=
- =?us-ascii?Q?uw=3D=3D?=
-X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29727248-11be-4c65-13af-08da6020febb
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:00:05.6802
+	CIP:194.138.21.70;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:hybrid.siemens.com;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(39860400002)(376002)(346002)(40470700004)(46966006)(36840700001)(82310400005)(36860700001)(110136005)(6706004)(478600001)(70206006)(36756003)(40480700001)(40460700003)(86362001)(8676002)(5660300002)(16576012)(316002)(31686004)(31696002)(70586007)(8936002)(26005)(47076005)(186003)(956004)(2616005)(16526019)(356005)(83380400001)(7596003)(336012)(82740400003)(41300700001)(7636003)(2906002)(53546011)(44832011)(82960400001)(3940600001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 15:19:10.0603
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jd2SS/XIfwIgYRrFQOvxmjYl7SZIIRqOHXPGsOKdTsxQlpQyWad12gORPRJsQp8Y886tTgTAcAIVl8yvrbHTb9Vx13jHPyVonBFQoCVjx3Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR08MB5730
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79418c81-b09f-469f-cd1e-08da602c0abd
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.70];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	HE1EUR01FT060.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR1001MB1025
 
-From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+On 07.07.22 15:59, Johannes Kirchmair wrote:
+> This is a prove of concept implementation of exception handling in Xenomai real
+> time.
+> 
+> It implements an interface similar to the posix signals but with a much smaller
+> feature set.
+> 
+> For now, this feature can be used for handling floating point exception (fpe)
+> and illegal opcode exception in user space without losing real time.
+> 
+> The fpe exception handling can be used for fixing division by zero errors in
+> user space code without dropping out of the real time domain.
+> 
+> The illegal opcode exceptions can be used for implementing breakpoints. This
+> can be done by replacing the breakpoints original instruction by an illegal
+> opcode. At the time a task tries to execute the instruction an illegal opcode
+> exception will be triggered. The thread can be  suspended in the signal handler
+> in user space. There are two main advantages of having it done in real time.
+> 
+> The first is if a task does some time critical IO or has to meet some watchdog
+> constrains, the signal handler can be used to bring the IO into a sane state
+> before the task is stopped. Same for the watchdog, it can be stopped before it
+> sends the whole process into an error state.
+> 
+> The second advantage is for processes that have several real time tasks. For
+> example consider a process with rt tasks task1 and task2, where task1 is of a
+> higher priority than task2. If task1 triggers an exception and is relaxed to
+> the Linux domain, task2 of a lesser priority would take over and could block
+> the handling of the maybe more imported work/exception handling in task1.
+> 
+> Disclaimer:
+> This implementation is far from being ready to merge. It is mainly intended to
+> be a starting point for discussions about rather we (the community) want some
+> kind of exception handling interface in Xenomai and what a maintainable
+> interface for this could look like.
+> 
 
-This commit adds an overhauled version of the rt signal test
-for SIGFPE, SIGILL and SIGSEGV.
+Thanks for publishing this, will be very helpful to start the discussion!
 
-Edited-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
----
- configure.ac                              |   1 +
- testsuite/Makefile.am                     |   6 +-
- testsuite/rtsignal-tests/Makefile.am      |  30 ++++
- testsuite/rtsignal-tests/test_rt_signal.c | 185 ++++++++++++++++++++++
- 4 files changed, 220 insertions(+), 2 deletions(-)
- create mode 100644 testsuite/rtsignal-tests/Makefile.am
- create mode 100644 testsuite/rtsignal-tests/test_rt_signal.c
+I think you forgot to mention that it depends on I-pipe for now because
+of "return KEVENT_STOP" from handle_exception. And I still owe you the
+dovetail patch we have for 5.10 and that I just started to port to
+5.19-rebase today. Will share soon.
 
-diff --git a/configure.ac b/configure.ac
-index 61789af13..db92ddcc6 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -959,6 +959,7 @@ AC_CONFIG_FILES([ \
- 	testsuite/switchtest/Makefile \
- 	testsuite/gpiotest/Makefile \
- 	testsuite/gpiobench/Makefile \
-+	testsuite/rtsignal-tests/Makefile \
- 	testsuite/spitest/Makefile \
- 	testsuite/smokey/Makefile \
- 	testsuite/smokey/arith/Makefile \
-diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
-index 4932f6d33..87738dc78 100644
---- a/testsuite/Makefile.am
-+++ b/testsuite/Makefile.am
-@@ -5,6 +5,7 @@ if XENO_COBALT
- SUBDIRS += 		\
- 	clocktest	\
- 	gpiotest	\
-+	rtsignal-tests	\
- 	spitest		\
- 	switchtest	\
- 	xeno-test
-@@ -13,9 +14,10 @@ endif
- DIST_SUBDIRS =		\
- 	clocktest	\
- 	gpiotest	\
--	gpiobench   \
-+	gpiobench	\
- 	latency		\
- 	smokey		\
- 	spitest		\
- 	switchtest	\
--	xeno-test
-+	xeno-test	\
-+	rtsignal-tests
-diff --git a/testsuite/rtsignal-tests/Makefile.am b/testsuite/rtsignal-tests/Makefile.am
-new file mode 100644
-index 000000000..25c1093c9
---- /dev/null
-+++ b/testsuite/rtsignal-tests/Makefile.am
-@@ -0,0 +1,30 @@
-+testdir = @XENO_TEST_DIR@
-+
-+CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-+
-+test_PROGRAMS = test_rt_signal_fpe test_rt_signal_segfault test_rt_signal_ill
-+
-+alchemycppflags =              			 \
-+	$(XENO_USER_CFLAGS)    			 \
-+	-I$(top_srcdir)/include
-+
-+alchemyldadd =					\
-+	@XENO_AUTOINIT_LDFLAGS@			\
-+	$(XENO_POSIX_WRAPPERS)			\
-+	../../lib/alchemy/libalchemy.la		\
-+	../../lib/copperplate/libcopperplate.la	\
-+	@XENO_CORE_LDADD@			\
-+	@XENO_USER_LDADD@			\
-+	-lrt -lpthread -lm
-+
-+test_rt_signal_fpe_SOURCES = test_rt_signal.c
-+test_rt_signal_fpe_CPPFLAGS = $(alchemycppflags) -DTEST_FPE=1
-+test_rt_signal_fpe_LDADD = $(alchemyldadd)
-+
-+test_rt_signal_segfault_SOURCES = test_rt_signal.c
-+test_rt_signal_segfault_CPPFLAGS = $(alchemycppflags) -DTEST_SEGFAULT=1
-+test_rt_signal_segfault_LDADD = $(alchemyldadd)
-+
-+test_rt_signal_ill_SOURCES = test_rt_signal.c
-+test_rt_signal_ill_CPPFLAGS = $(alchemycppflags)
-+test_rt_signal_ill_LDADD = $(alchemyldadd)
-diff --git a/testsuite/rtsignal-tests/test_rt_signal.c b/testsuite/rtsignal-tests/test_rt_signal.c
-new file mode 100644
-index 000000000..63ba5c30f
---- /dev/null
-+++ b/testsuite/rtsignal-tests/test_rt_signal.c
-@@ -0,0 +1,185 @@
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <sys/types.h>
-+#include <copperplate/traceobj.h>
-+#include <alchemy/task.h>
-+#include <assert.h>
-+#include <setjmp.h>
-+#include <asm/ucontext.h>
-+
-+#ifdef TEST_SEGFAULT
-+#define TEST_SIGNAL SIGSEGV
-+#elif defined(TEST_FPE)
-+#define TEST_SIGNAL SIGFPE
-+#else
-+#define TEST_SIGNAL SIGILL
-+#endif
-+
-+#define BIT_FAULT_HANDLER_ENTERD     1
-+#define BIT_FAULT_HANDLER_FINISHED   2
-+#define BIT_FAULT_HANDLER_WRONG_TASK 4
-+#define BIT_FAULT_HANDLER_WRONG_SIG  8
-+#define BIT_DOMAIN_SWITCH            16
-+
-+static RT_TASK t1;
-+static sig_atomic_t status = 0;
-+static sig_atomic_t cause = 0;
-+
-+#ifdef JMP_CLEANUP
-+static jmp_buf jmpenv;
-+#endif
-+
-+static int status_ok(void)
-+{
-+	return status ==
-+	       (BIT_FAULT_HANDLER_ENTERD | BIT_FAULT_HANDLER_FINISHED);
-+}
-+
-+static const char *sigdebug_msg[] = {
-+	[SIGDEBUG_UNDEFINED] = "latency: received SIGXCPU for unknown reason",
-+	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
-+	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
-+	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
-+	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
-+	[SIGDEBUG_NOMLOCK] = "Xenomai: process memory not locked "
-+			     "(missing mlockall?)",
-+	[SIGDEBUG_WATCHDOG] = "Xenomai: watchdog triggered "
-+			      "(period too short?)",
-+};
-+
-+static void do_cleanup(void *context)
-+{
-+	int step = 0;
-+	struct ucontext *uc = context;
-+
-+#ifdef TEST_SEGFAULT
-+	step = 11;
-+#elif defined(TEST_FPE)
-+	step = 2;
-+#else
-+	step = 2;
-+#endif
-+
-+#ifdef __i386__
-+	uc->uc_mcontext.eip += step;
-+#else
-+	uc->uc_mcontext.rip += step;
-+#endif
-+}
-+
-+static void signal_handler(int sig, siginfo_t *info, void *context)
-+{
-+	RT_TASK *self;
-+	(void)context;
-+
-+	if (sig == SIGDEBUG) {
-+		cause = sigdebug_reason(info);
-+
-+		if (cause > SIGDEBUG_WATCHDOG)
-+			cause = SIGDEBUG_UNDEFINED;
-+
-+		/* XXX: caused by rt_task_delete() */
-+		if (!(status & BIT_FAULT_HANDLER_ENTERD) &&
-+		    cause == SIGDEBUG_MIGRATE_SYSCALL) {
-+			return;
-+		}
-+
-+		status |= BIT_DOMAIN_SWITCH;
-+	} else {
-+		status |= BIT_FAULT_HANDLER_ENTERD;
-+		if (sig != TEST_SIGNAL) {
-+			status |= BIT_FAULT_HANDLER_WRONG_SIG;
-+			return;
-+		}
-+
-+		self = rt_task_self();
-+
-+		if (self == NULL || !rt_task_same(self, &t1)) {
-+			status |= BIT_FAULT_HANDLER_WRONG_TASK;
-+		} else {
-+			status |= BIT_FAULT_HANDLER_FINISHED;
-+		}
-+
-+#ifdef JMP_CLEANUP
-+		longjmp(jmpenv, 1);
-+#else
-+		do_cleanup(context);
-+#endif
-+	}
-+}
-+
-+extern void do_div_by_0(void);
-+
-+static void task_proc(void *arg)
-+{
-+	int ret;
-+	(void)arg;
-+
-+	ret = cobalt_rt_signal(TEST_SIGNAL, signal_handler);
-+	assert(ret == 0);
-+	(void)ret;
-+
-+#ifdef JMP_CLEANUP
-+	if (setjmp(jmpenv) != 0)
-+		return;
-+#endif
-+
-+#ifdef TEST_SEGFAULT
-+	*((int *)0x73) = 0xDECAFBAD;
-+#elif defined(TEST_FPE)
-+	// TODO: different instruction sequence for ARM
-+	__asm__("xorl %eax, %eax\n\t"
-+		"movl %eax, %ecx\n\t"
-+		"cltd\n\t"
-+		"idivl %ecx");
-+#else
-+	// TODO: different instruction for ARM
-+	__asm__("ud2");
-+#endif
-+}
-+
-+static int test_sucessfull(void)
-+{
-+	if (status_ok()) {
-+		fputs("Test passed\n", stderr);
-+		return 1;
-+	}
-+
-+	if (!(status & BIT_FAULT_HANDLER_ENTERD))
-+		fputs("Test failed: signal handler not invoked!\n", stderr);
-+	if ((status & BIT_FAULT_HANDLER_WRONG_TASK))
-+		fputs("Test failed: Signal handler in wrong task!\n", stderr);
-+	if ((status & BIT_FAULT_HANDLER_WRONG_SIG))
-+		fputs("Test failed: Signal handler of wrong signal!\n", stderr);
-+	if ((status & BIT_DOMAIN_SWITCH)) {
-+		fputs("Test failed: domain switch happened!\n", stderr);
-+		fprintf(stderr, "Caused by: %s\n", sigdebug_msg[cause]);
-+	}
-+
-+	return 0;
-+}
-+
-+int main(void)
-+{
-+	struct sigaction sa;
-+	int ret;
-+
-+	memset(&sa, 0, sizeof(sa));
-+	sa.sa_sigaction = signal_handler;
-+	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
-+	sigaction(TEST_SIGNAL, &sa, NULL);
-+	sigaction(SIGDEBUG, &sa, NULL);
-+
-+	ret = rt_task_create(&t1, "rt-task", 0, 20, T_JOINABLE | T_WARNSW);
-+	assert(ret == 0);
-+
-+	ret = rt_task_start(&t1, task_proc, NULL);
-+	assert(ret == 0);
-+
-+	ret = rt_task_join(&t1);
-+	assert(ret == 0);
-+	(void)ret; // so the compiler does not complain about not checking ret
-+
-+	return test_sucessfull() ? EXIT_SUCCESS : EXIT_FAILURE;
-+}
+Jan
+
 -- 
-2.25.1
-
+Siemens AG, Technology
+Competence Center Embedded Linux
