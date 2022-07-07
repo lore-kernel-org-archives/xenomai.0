@@ -1,68 +1,73 @@
 Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04EC628F2
-	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 20:02:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CE4128ED
+	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 20:44:30 +0000 (UTC)
 Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267JIwOe010843;
-	Thu, 7 Jul 2022 13:02:38 -0700
-Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0151.outbound.protection.office365.us [23.103.199.151])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3h622f8vqq-1
+	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267JIwIN010843;
+	Thu, 7 Jul 2022 12:25:50 -0700
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0181.outbound.protection.office365.us [23.103.199.181])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3h622f8s84-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Jul 2022 13:02:37 -0700
+	Thu, 07 Jul 2022 12:25:49 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=t75hkVVbvqjNmyEHcIbSYidzjjvTajFOC6hT/c83BULQ4XLEdsI2C4ro3PUpKtlaA6MQZrZCS+4zMmXNWmDzWCd8OqjUdkbSTDunUhI0LoVuFURVmItZrXeSggxYZdTSpN058tTFREuI+7hSa8wiruJ0BbpTF5oRGHVHuZ1ZGMFTzyUBWxsclG4DHNLecFlu0I1BJdIA3Ym/GLhQoGrIKUlJDoMvySmQA9rOuNB5Pddl4HWESEIVRo7yJCpHhx7+4zkWamL6/g2d5MTFL4CAQBu5dIIzF4haaDPk3AivBvlPjlTWCRWKqKxDTtd7zsuucpekDTb+Io6OwPrmZZ4jUg==
+ b=L8vsthlujZwj9c8VRtvCCO9IAWCH3lcHat3GonfQJ+FdqbUxHlNGKimGui1u99iiowBUkh7T1ryGcj6gbtAmhp9Yc7t9coqQaNdWPrrA//PkhGqlwFExKCLqcuvqTOyhQrNqzSoQPI0LbUUKuvmIgKe8XukYI158Uc9xwPcdSoW9w+iv6qw/E/rirHsWEESHNp8UvabsMs/GZjkSj5ovrWJSR6qd5Sox02tZTeKbYrUq5q3sdoGPehzhf4aGtuTRofSer/QNHtTZSNI37xPt6j/fKOhsDHPQSVg310I0YNjumXfIPxheMqiIWOL9V7viKCDh/f4nny3B4HdQyz9gnQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Elx7uSIA472Xm0He+VEmtifbg61iDBh7e4FbqWIRBRg=;
- b=aheurg/nEfBQY9cODdgV7glGYjVff08q7fNrld/TigNwjU9kcRuyXysYO+HeM9FPoOWpHMr8xx9yc8Ft3nxe8y9/9f8bMPrNsLGrF8AYL2+zpCr/RUh+o4BuHAlt1GN+r6F4p3brIwS/pu7/vflX7BoRpzNi3bqomTbxVhn8I45fjFC+w0s9l9p+58pJSSgOEUlO9Bs7KBnvThkijoiYXIgUomis1RqzGrdtdgQ4DxvZOCFMBhNk+gFytVjhNkwRD2HcikVGiTRd/4H2/nIaHnpy4PLtq+OoeMm1cP7tZQWRMJzR3CwBogRIib+MHpnW1AO881XvuPCiN6AAHNjokA==
+ bh=v3tWOQspo3p+aF1pWNhHI4iDInOnw5zXf2cBtAbvmtw=;
+ b=lwtpUfSf5xk2+L2Vx3MONo6kr2OZKh3q7JhTVij+UkoYfooONwX3lGCN3BRl7WN/cNiub5iH2kfEuFlkqxQUpfzIOlcozagYYI4233mjWjopk/l+8yYlNZNZuxq9PQX5OKTBy5hZwpnllPrO3LD/jfSWpbHv7ZMbkJis0Dh7R82eDqWae0Ln/IhFGxZFHCMUhmmgbBYlmjpF0kIkesCW82T6NefuJY56l3DAMiPsSDYCftYIp1N0TW4D4UcaFiQbdnsmBQuBs/aheBnXfbUnca9KBtQNWAjr0W/rQdp6VsGirxD098DVlLYthazHYMFq90yxzLQE94+iY5eiweNF9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
  header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Elx7uSIA472Xm0He+VEmtifbg61iDBh7e4FbqWIRBRg=;
- b=SwFBy/iuEL8mTN4altUyVBDbqDmAfnCFNqfCl6PH/uXHjZBDukimVJKdZ4SNvSmqAMz+aOSgSyVA7UT6hXVbPaBrKJZHWsRxJT8QG6Ur17KtHHx7xEcY2SveJuktiOmyswpM2KoVtOCQTsprvGAsWqghyw1QBK8jA7Bd6SF5r5Y6eqaGea8kJsPiDrKTT8ysMScnWtrO6BBeC5kOeetqhDLzwgpyfMDVDPa//SwXPrQHwleHDrbBd6vKyAImT6QxcRZf14Q80CW09RCywuuNiwCuItRTN7B/ZnQ7evDvD0K7wao0JpjRh0DBPZsZsK1oMymF92eOF16fn1ILeCySuA==
+ bh=v3tWOQspo3p+aF1pWNhHI4iDInOnw5zXf2cBtAbvmtw=;
+ b=OTIdDar/7m9g4WUZQsbcl9Lj2gy6dv8qGiY7UK7Axbw3RGvN0k6FIGPMoGBwQWOUyVtraL1VqmMpAnIanIUnpY0z9E3wonvXH3H5w0ztKbuwNu7gTF8Liwy6VwOXD41ka6nAOxqdc0IukuCTqIsolOIR8quyJ8uh9sfMJdHn/jghxFte0pHWaDse9ruW+HwF50tYiGxKFaVue+NYnhO21WqJUYa+K9FgzSApEz7t5HZ4ksXjoLAY7XSru1daAVk+2LDTRZdLk/rTMhmKtjJst4b9YtGTb5/pGSaHCCn/QUmd7NwpumKhaelsdQxomlbUinT3ZWz1rf3zydlmDFvcjw==
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1505.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18a::14) with
+ by PH1P110MB1759.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:177::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Thu, 7 Jul
- 2022 20:02:28 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.22; Thu, 7 Jul
+ 2022 19:25:47 +0000
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::e86b:2aae:627b:df09]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::e86b:2aae:627b:df09%3]) with mapi id 15.20.5395.022; Thu, 7 Jul 2022
- 20:02:28 +0000
+ 19:25:47 +0000
 From: Russell Johnson <russell.johnson@kratosdefense.com>
 To: Philippe Gerum <rpm@xenomai.org>
 CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: More details on health monitoring notifications
-Thread-Topic: Re: More details on health monitoring notifications
-Thread-Index: AdiSPGO5Of3/RClLQL2HiRlpt+ODNQ==
-Date: Thu, 7 Jul 2022 20:02:28 +0000
+Subject: RE: [External] - Re: More details on health monitoring notifications
+Thread-Topic: [External] - Re: More details on health monitoring notifications
+Thread-Index: AdiNbbhFH+3BkTQFR/qyyowp6qx+DADUDZ3AACKz1gAAO21HcA==
+Date: Thu, 7 Jul 2022 19:25:47 +0000
 Message-ID: 
- <PH1P110MB1050DA45ACEDB22C7EFA31C0E2839@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB105066B5EF0817EFE24BF255E2839@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB105061FEB2694B16A3879348E2BD9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10506DDF3B33330889D67BE6E2819@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87o7y2s1p9.fsf@xenomai.org>
+In-Reply-To: <87o7y2s1p9.fsf@xenomai.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bf1da2a0-35d8-4274-e220-08da60539e4b
-x-ms-traffictypediagnostic: PH1P110MB1505:EE_
+x-ms-office365-filtering-correlation-id: 9cf08365-7379-4417-1e40-08da604e7e86
+x-ms-traffictypediagnostic: PH1P110MB1759:EE_
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info: 
- 0Ha4E2P98nD65yhOmauC+1zhBRgAojzAsZeidS7RESyJndJUPsMYMheK3ChNvAmOuEccJsvqG944LueYQbddtQ6SFL6ewoJAih0LdlGKvXBYPYI3IA3Uk7XWla/ZJh86zHu+Qf9WnRLXDX1/wyW3NvMCraZfQOmt2pfgiZssKrPiLhoD6098WEX2f290BXg2r4e5upnVZagmC0VFpoTIw2Srs5iEIZGS927hu0i0M3jRs2VNiXwq03ELiBqHslC808HSktrVFmswnlzdsPFudjbxxTxGSl8gXXJueSUWEdxveTJ2E2+IVooTUFrxQuJi3nTK+1M36J3Sn4LpNXgvuDNd8kIigckkYKNcvDgHLodQlCfcFRd51IynWUH9/svEuklCVrEaJoiZoeMVEBTCKWG2Z4LER0Qy6Tiv6geEzD3zOiY8ykkMe1vrV/dUrG5E/AiPjh8V3SmNTlcYNey4QDb73qp8fdsIsd/SYELqOEeOHWZS/ijqGA3Ip6yuTBWNXVFzndMYT4wR7Qulx4Iow71rV48iwgrx6rbdzpD1zFJDGzPCBZAItwsgDo+cMEi/BKnmL1IVe2Q6UfcvpLMNbxrKY7xrQn2k6rt0+qrRTupE2imXn6RV8DUbKhHxWsxcNVkY8Sl/3vGDEtM47CIsnEWxcvFngQ/JrxLz4HH0wjnzQJ3HzyeDqdsN+oLgZ3Bt1SyQ2N0TOnfB/INXGjdt6ZGHW62CNJDT1KxpZBhbb/gT8mfajh6nMjSkDKxJ24c2
+ nKTG+5ssZ+45sBuHqAkVPoERljRnxNgJWvLXoYOi3K0fiHlMAzkS7oa/zdb7PzoJCQ5ic6JPVu3XnrxAhMAtiQVnUnMOzX5RzUCwj/npFCCbhrlnLVdRj8ZHW8HzExEP7xkf3dAmznsSaa5wiUI/fERuZ384MjK1OolDXRV/W4y/nQiu/ePTR12FyevJSbyKoYP3JbW4/JlpAK7q2pa3w3TPicCNoLgZbrOH+Vq0C53eyh6m/RLhOpGgXOCL09xiV2vbymCdUQg+EqbGKgaII3ool7iNgB5/WoiGML/jK34+jhYtVn7GecmrqGFkGyl8e3QzR0+L/F/PXuqFl/uZQkoXfYCTnMygWSl3cBOFENlXpxo28AOyM83ju+kO9cko7WED+db+Laskbyp4wjUBbfcvGNDNZHCNF8C2ldAA3Py92RqQD6Z3qyiEVVEigaGPz2XL9Hv43qO4Y5lYljiMHm86fmKvDEIx3nuecadeaS7amfOn4jJVn4eFgeV6edhVW4em77kyBISEkyyvz4t9MoBVZyHZF18M2oM3SuQes4TVw88ykBhyY3ckEd0aZHJSH3cHu6OEpqbnjxnjJgDclO9w1Ii3NbyjUynD4FllZkQD5PTtfJ4h4dTCGNrXUrZTMn5LVo/ZbY2XEf6w3zHV/ULN5EdeY3R8Wf43fHPmZ0MocU9tj7AoyENS0pD96Hap40SUHf4+e7nA3Bkr1cLCOzf3lkciDfFtMUGCIPfTYeJmbLjzNczS+mTUcCzSS4Uu
 x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(9686003)(8676002)(66476007)(66556008)(64756008)(5660300002)(86362001)(8936002)(66946007)(66446008)(7696005)(55016003)(2906002)(6916009)(52536014)(33656002)(186003)(26005)(6506007)(76116006)(4326008)(498600001)(38070700005)(122000001)(83380400001)(71200400001)(4744005)(44832011)(38100700002)(99936003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(122000001)(83380400001)(38070700005)(38100700002)(99936003)(71200400001)(4744005)(44832011)(8936002)(86362001)(66946007)(66446008)(9686003)(8676002)(64756008)(5660300002)(66476007)(66556008)(26005)(6506007)(76116006)(4326008)(498600001)(55016003)(7696005)(52536014)(33656002)(186003)(2906002)(6916009);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0: 
- hVpfXBnDFNroOTupuvND+3DnWPnNaR2f5BimtbdkJhFo0KjhHTnuDS2H8T9TzCp3aKDwPb2mqCPaLQGGO0EYSL2HZwXlynTEF1DHQMD88fjsTjiHtSR7PwLWOcJd+oB9YNm9lx2AM4i0vJrStncQTpZ/ig3jjDKItpzlgewm2lEuMD3KcfGIhC/U1QjxvShrY38agATm84S5uTG/nlUPDGPCDEj20Ahv7sXlPFAVdb9ci3NaB46csBiE3Udw6WExQjPGVmkhZY3YZ8LbUiEnJhkZLRs9GqJrUGCiWsivIHKpihc6OKn3COgvCNc9D36HoFMh0tmH2AXslUdEnLnwqNDQQp7CCn1DK+ZO4xNlCKB3a+pG73aCc3c7OZKa9Zp+eCpVEMD5djFQ180TjBo1c30v6MVkvbf3tlzWoI4tzzQ=
+ HyazLmUvvuo+LHnMDVLs7dbpVk+nhAAdl4P0Aai2i2Pqqy/oLNzhYbMBp5Iia+Q9vb+RtneLoWrbCR2zDs4Ck+KoF+Zw2fkbGSDiiTr8GoDokVO1B+aLcxCUoksIxNFbySmKZ6aZKoHt29h+SvLVn9jSe0AR/1l5wgCrAvtUmtfjt9GqGQP56azUgpqObNaaQ4DKMLQYeY71TEPSsq0Uv5pBDlhYfLCz5BdtlnE5lvMEFCe2yIaq5NDxSyWy3pF/gPlW2CgJQxaasqTrjrx8zqO7WxCIMec3v9CglB8BvbFJA4LuCS3KNAe0zckQuXG8eQVi28ipQ0fkXmkNQS4Y8qP8xD6jTWUgZJw8diSmXeofW49XPjqSjyV8nDYfSONqXPofZlgvnJhpb//VjzRpV5+5uw8lETn/XOwoCmYlnlA=
 Content-Type: multipart/signed;
 	protocol="application/x-pkcs7-signature";
 	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_002B_01D8920A.3050CE80"
+	boundary="----=_NextPart_000_0008_01D89205.1046B230"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -72,147 +77,43 @@ MIME-Version: 1.0
 X-OriginatorOrg: kratosdefense.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf1da2a0-35d8-4274-e220-08da60539e4b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 20:02:28.0359
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cf08365-7379-4417-1e40-08da604e7e86
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 19:25:47.2313
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1505
-X-Proofpoint-GUID: m6aVUMeVTntFmO_eGHMIwBVO7Kn9FPkb
-X-Proofpoint-ORIG-GUID: m6aVUMeVTntFmO_eGHMIwBVO7Kn9FPkb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1759
+X-Proofpoint-GUID: 61ZW7KY4_kMUHr0XhW5Tj6wXn3NZRMYN
+X-Proofpoint-ORIG-GUID: 61ZW7KY4_kMUHr0XhW5Tj6wXn3NZRMYN
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_17,2022-06-28_01,2022-06-22_01
+ definitions=2022-07-07_16,2022-06-28_01,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
  priorityscore=1501 clxscore=1015 impostorscore=0 spamscore=0 mlxscore=0
  bulkscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0 malwarescore=0
  mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207070080
+ engine=8.12.0-2206140000 definitions=main-2207070077
 
-------=_NextPart_000_002B_01D8920A.3050CE80
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_002C_01D8920A.3050F590"
-
-
-------=_NextPart_001_002C_01D8920A.3050F590
+------=_NextPart_000_0008_01D89205.1046B230
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
 Correct, it is running on x86. I am not sure what would be causing a page 
-
-fault in the EVL threads as I figured the mlockall call by evl_init would
-take 
-
+fault in the EVL threads as I figured the mlockall call by evl_init would take 
 care of preventing that from happening.
 
- 
-
 I have tried to run the app with gdb (used to work fine pre-EVL), but now I 
-
 get all sorts off exceptions and error codes when trying to run in the 
-
-debugger. I quite frequently see EPERM issues with evl mutex unlock/lock
-(even 
-
-though it works fine when not run through a debugger). Also, when I swap the
-
-
+debugger. I quite frequently see EPERM issues with evl mutex unlock/lock (even 
+though it works fine when not run through a debugger). Also, when I swap the 
 thread mode flag from T_HMOBS to T_HMSIG and run in the debugger, I get a 
-
-"11776 CPU time limit exceeded (core dumped)" error on the create call for
-an 
-
-evl event in one of my threads. I am not sure why I am seeing such different
-
-
+"11776 CPU time limit exceeded (core dumped)" error on the create call for an 
+evl event in one of my threads. I am not sure why I am seeing such different 
 behavior in the debugger versus the normal run when it comes to the evl API 
-
 calls. Any ideas?
 
- 
-
-
-------=_NextPart_001_002C_01D8920A.3050F590
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
-HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
-(filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
-	{mso-style-priority:99;
-	mso-style-link:"Plain Text Char";
-	margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}
-span.PlainTextChar
-	{mso-style-name:"Plain Text Char";
-	mso-style-priority:99;
-	mso-style-link:"Plain Text";
-	font-family:"Calibri",sans-serif;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US =
-link=3D"#0563C1" vlink=3D"#954F72" style=3D'word-wrap:break-word'><div =
-class=3DWordSection1><p class=3DMsoPlainText>Correct, it is running on =
-x86. I am not sure what would be causing a page <o:p></o:p></p><p =
-class=3DMsoPlainText>fault in the EVL threads as I figured the mlockall =
-call by evl_init would take <o:p></o:p></p><p class=3DMsoPlainText>care =
-of preventing that from happening.<o:p></o:p></p><p =
-class=3DMsoPlainText><o:p>&nbsp;</o:p></p><p class=3DMsoPlainText>I have =
-tried to run the app with gdb (used to work fine pre-EVL), but now I =
-<o:p></o:p></p><p class=3DMsoPlainText>get all sorts off exceptions and =
-error codes when trying to run in the <o:p></o:p></p><p =
-class=3DMsoPlainText>debugger. I quite frequently see EPERM issues with =
-evl mutex unlock/lock (even <o:p></o:p></p><p =
-class=3DMsoPlainText>though it works fine when not run through a =
-debugger). Also, when I swap the <o:p></o:p></p><p =
-class=3DMsoPlainText>thread mode flag from T_HMOBS to T_HMSIG and run in =
-the debugger, I get a <o:p></o:p></p><p class=3DMsoPlainText>&quot;11776 =
-CPU time limit exceeded (core dumped)&quot; error on the create call for =
-an <o:p></o:p></p><p class=3DMsoPlainText>evl event in one of my =
-threads. I am not sure why I am seeing such different <o:p></o:p></p><p =
-class=3DMsoPlainText>behavior in the debugger versus the normal run when =
-it comes to the evl API <o:p></o:p></p><p class=3DMsoPlainText>calls. =
-Any ideas?<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p></div></body></html>
-------=_NextPart_001_002C_01D8920A.3050F590--
-
-------=_NextPart_000_002B_01D8920A.3050CE80
+------=_NextPart_000_0008_01D89205.1046B230
 Content-Type: application/pkcs7-signature;
 	name="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -322,8 +223,8 @@ MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
 EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
 IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
 JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjIwNzA3MjAwMjI2WjAvBgkqhkiG9w0BCQQxIgQgkG8/OOGJv3GxXQPs3ea6tyK8
-EMo9y/8oYzNNsIjavnEwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+9w0BCQUxDxcNMjIwNzA3MTkyNTQ1WjAvBgkqhkiG9w0BCQQxIgQgyqqPDmSs6wXM5hfMaB9PgPN9
+5w7mYOUHI6LXEqVRwuowgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
 BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
 AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
 AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
@@ -332,11 +233,11 @@ ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
 dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
 A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
 aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCI
-s1CiG87Tm22s3Nl//ycc6/BMIhdm4KAxvewS427d3CROmPn4zvOgDwP7XC6aMLnfcFkP/gCQz8mW
-I/p9OK+pI/Z6eGsWQugjnuZjCRwfYa7On5SwzYQDbNLqNngI8KA+rdGLaFKR3KSq83pUv/pg9upD
-cPF/C1HkDbdJve6FZmSVQRZukdNPXKfCeDz7e4PnF1Iaj+YQU96rUi2/qPyt5o/NTkO3/WIx9Z/k
-YjZuYikJfYYoAi2qPpDzok7nTmh5X951AqE39j1EkIqGCEzx+eTqjp9T3NlMzXytah4HlcJa6JUw
-j74Uumg0InbPlG2EW/sE4XgJrNFdvOZjoyfwAAAAAAAA
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCM
+RBtVh7E5ykBbROeatoRzR156ZcWRaNwxKcK+4kJmQInBoyUuexW+hYtT2YGezsdxySrrVUcnrkMV
+ye1bNe3za8GUq6O60MEljuuGuNdSczpSdf2S064fkIEVTs2ZmnKuR6yC1cLH4c2dTes8WF4QJj8E
+faN8YvKZGjtH/hrs1nyHcVzVEjTFwZGgX5If0VGdBwvzTuF3LKC6aQ3EAV7b2NV8DhtvXnkcUpXE
+Z1TZn+NNhfydXC2pkxhVnDLFuudS48jIxS1QaWVbMFoT2v10vOTAJMkNctkFGTWd6D80LCDqJ+9b
+3EBLTRKdjDkcQzE43aCuePZJ+AOCJsrYsnQ+AAAAAAAA
 
-------=_NextPart_000_002B_01D8920A.3050CE80--
+------=_NextPart_000_0008_01D89205.1046B230--
