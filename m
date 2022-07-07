@@ -1,23 +1,23 @@
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2132.outbound.protection.outlook.com [40.107.21.132])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7820F2111
-	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 14:00:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2156E2111
+	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 14:00:14 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gd+octBN5c1AygT5duMlLq0VNd5OYyPnMU9zhqCH4h+DH3E5Pom8hSC717PC+92b+iBtQTKiFbGUrbTu+66olOBxspr+vKhJc2/LgQa0Yy5Dpl35JHk3tFemEwjRf+8G3vMGH5o3gpkUOkd7rSiE8vQ1Cf+bBoQobfJVPPARGse7ftrzqJz3+6/b3OhG3A04lZ9d3bP4rZkNVJ8aC+uQ1LJa4lqL/bOKqsmEtpIJQDhCHsL/c59hWpgc9PLdI9F2482Jjva9bF/tEUQEIbfg2LMYHMquyC0E1IWVXyPDUjZUqms1hyYj4W02cELY84QtCT6cUEdOhO6Zib1w0xEg+g==
+ b=Sf5rQSULqHzh5Fojkr//CDpecwwmAED0+akK7Xn1gkm3o8M9JCbO0uqSoAXjvmK6k3HHH2aUxnCJ/4tCcGFQHvlg6RPjRdKKWcAnEGsiEaR2QgKYyygVML8VEfAQDCVrQCvDrTphwOVpRBQ5qTTuhbL679NbimrKZpjk8C5oX9CnYLD2pZhwwGWBlMA9EtFOyVuQ3y/ZHwipLl7suJEeywyxQ6q3vD40aymj4wJQqBbECzNTR8KoW9LUz0OMBajfxaEnpkTyOcp+x67vFHXAalfgzFApY8kom3RxAIlhalNQ670Tb7eAIHt08NIbNjTGd34IeRLza0HZcK5tfKSqzg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=icJHgR5IC/41Xk1o/GmP6318fPsx9Z6bhoxq7odZp4k=;
- b=lQfkoqINKG5pRUx13UBHLzxVaIGafTsVLJ2J89df5O3SrC/L8HfywdKgwXGUkgvu4fgwFbx0WePDAGb3l7Z+HUWDF45WKtgvFXcsqeIl0oSmlc5ykV4zKH0WOGs+CFjKw0UknxSo7loyjDJg0NIAZuRwAyZISB4ypfhb1LtQ0Qt9jrsStsXn/muBtf/vQU25VFaQsWx6tefshLzcQX3xJBSWZVOZPDhryIYEypIcTY8kFKtWTtDAbl08kJwMU9QRIaejGh5O5QJwxKYFhgKwVqAf9wnoetDzxlOTDLyLCoBAQImjCf3Cer5NXW7rbmijKDbx0pfOWbyB3GUr3ZR3fA==
+ bh=DiOc3RD/EDmbdFzopfFRHWfqjvxpYPWohtvIP99V7bU=;
+ b=Gnrj9EwWT10VG4l4SCoA+WKUGH4gNGgXObtD39gO4RDqjo0J7GTe1t0okj34inYwE0uFgdgdxW2KqG2Jn5mAF00CWYcaVwcNARaw3fdgwO8+Pum6oH02oslGyzaVSyK3xbS6P1O74AM41uf2xkt7O+AHmX9G57zydH3mPYQ/69tUhRXaslwi3rRg1myJxW7TMXu2hOKRlBrH+15csNHmR3uXoUxuef7wnsIXir8Mmv2JbOD03U+1VbzNpw5nthu5voWXkicXilsyXD8WVYHLF36rQnmPyPVRAX1AxUAziXnwa/KVmSUBYioTr2ldvy5T00H7dM1+n1WDGFlqEAatbQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=icJHgR5IC/41Xk1o/GmP6318fPsx9Z6bhoxq7odZp4k=;
- b=Nw8y0VrWe6VRRGu9KDBfm0zOlwmQa68f89QjzlENPbIYTCU+rfV3rwlhTV/xQ/VRCy0MdiGG9+76P7qXEJBRulBkUIFGmV3ROhjmUiz+sCen9TCXD2o3ebS/O9ZR+U4iC3bT2/xF9tD7WyhqNTRCF5XPJOBcsdqRcbDhos8L3Aw=
+ bh=DiOc3RD/EDmbdFzopfFRHWfqjvxpYPWohtvIP99V7bU=;
+ b=kGT60k4Vcd5s0txUToHtIcEunr4eqBF1lQJqab7HYmTPsK6EBDtu31CXBqmNf63ZqVALkXCVhmoto4J/DF+6ntZYKhxsq3b6ntZt7k+igKup1PJu3KpdmXM5+PTbVEVZryoyZH/o5Q6WiwxwGAJzEGhzK8kzepAVYUtlMBW5ASc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
@@ -28,12 +28,12 @@ Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::9978:7089:d0f:b288]) by VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::9978:7089:d0f:b288%5]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 14:00:05 +0000
+ 14:00:06 +0000
 From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 2/3] rtsignals: add i64 signal handling
-Date: Thu,  7 Jul 2022 15:59:51 +0200
-Message-Id: <20220707135952.5171-3-johannes.kirchmair@sigmatek.at>
+Subject: [PATCH 3/3] rtsignals: Add rt_signal test
+Date: Thu,  7 Jul 2022 15:59:52 +0200
+Message-Id: <20220707135952.5171-4-johannes.kirchmair@sigmatek.at>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
 References: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
@@ -49,424 +49,336 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0ef1833c-968e-41a2-8c3f-08da6020fe92
+X-MS-Office365-Filtering-Correlation-Id: 29727248-11be-4c65-13af-08da6020febb
 X-MS-TrafficTypeDiagnostic: AM8PR08MB5730:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	fNg/E1CWI0JhyIyFG+74fHAdz4zsHCUv+vKuH3fOtDLMZ6bWp3Rqko5vG2xhJQXkvY1AbOhyCUhbSCTNwWYI2lUBpWqWWUW5KD4W++hB6nJYKbBF1xEPWbFR/gBdofFWB9JE97tOUx8GoIflrmD2aRtEUBXeXnaGhX+nc59n4/XvoySCy9NpxLNAiLZyagVTbP7hUxk2Fo6jJfoTg5rgmrMYUZk3HB8DpjjFAijvbV+GMA6qcmiSIph9eMSbSaieSW4bLKA4MfF5wwOZDd7c28/n34j4DZEVLgr2tTnMkHyEK/U7y1GmYUg8zRRiD/4n5ywzvox1GJ2SDm4zlBxrVoWjrTAjP3+M4k0nGZk3AVbgHs2hyilVASi2LzN58Z0kbkypEnaT54N6ruwPN8tsGMdejINxwzWDOGF1+4kW+dT4JPGVq0/174X5TrD4wX0vIIHOCJzz9W/ooH01KmsSSzUHpuXttQeh7LyPegAuEq+jvSLVX+jhYRH0dR7aFiSNqB8p2bD+DSzahZv0igPidCRVFd0eT+5xeLcb6XTzz4cX2MDnd/jr+iU/HIbKRfKOW4ShDuyYxC4LTsrYcfq7yQXTS2S16o8B2Mzkusgm1RgP128zq0w+PVDk7vJ0uLWfA92/1C8V/2ki9IV3S+QuoJWXNKDFvKLNizG1VIZnPwik4i3zP5YI6c0MiZ6N7LR+kkYLPUUfCEPSf0vTZo8DznTiMckKhaK3BenjesxaVU6t0NVkWmYf8dyQp8R6TSoyws86XmajZjr9WhWdmFNfC664+gETFmRVigv08tf1YaCRBGp5g8+WLFKcnzp1LuYU
+	PPMuPrG9wYHrngUj1Hb7R2S1KBNRYgsJa2DxEkE2thWfmqoPaS5M01nNPb51pd6EMsV8FOMRPMjvzNyThfXWy2eb/SvTBhELU+3DgCmSYcySqmJdEPecsdbrn+hg5z78KurngzLTSgTMBPCZe5DxPeaoW7ShjefE6+uA14mUAySDdcnzr/R2t5WqB6vvygattFcAU1yGzGo0eL+43M0UmtQoXRZNQuAJKg/HTzpuKYQJ0rTc2FnGK9ksbykIf9Rea/JKP2mGUq6JWWsF1KPXFjVJHpUTPjLNzxdA4bf4K86j+ND6yNM0tE/PKfUGchBp7Mhi64+fkpDwsXvLcFVeHnEwKqmADMaueB9nbSp9USTdrwZpq/v47jRLMv5h4UDcnhcUg1BxjCar6wBY9of1K+R1HVgU46bmw7kjHcLB8sFGgN/ZizNutXs3w0ByRVfI5y0gLM0LUsVP+SoPUkOMsm4KLI4MnUds9DzkhoV97dm0uH2/sDZM3KkoWbPxkUS7Fcz2gbKdYnb95bXaTyqvXPilx67tqroM0vF0jKKYuMh52p2sEwxAuZsowglZc8zhdEoEy6A0KNs+qoU5bnOq54gCqhc69KgnHQ8yEK/nbBuSCU7jdFGeYqCe+qfgsk1PpHrzYCJeL1EJ+tjgOTDTFBbgHESVsTgMQoCIbiEvYZOVAV8O/Wfk69pA2p29+NOzRAX6AY+jD1/z5wjmM5IcmdnVGAVPr/cyt5LjHQ/A8aPg5pSkRqAhvtf+gzuIWU/yVtNzZNYQdZ+1erci2NtkOOSWDbZJlhUpVyJImRYrQIv83tiUPaxONSZ5XhlY78MGf3YEdEOWxexUXfpjtdXe4Q==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(136003)(396003)(346002)(39850400004)(6666004)(38350700002)(38100700002)(478600001)(6486002)(2616005)(1076003)(186003)(2906002)(41300700001)(66556008)(52116002)(36756003)(6506007)(6916009)(8936002)(5660300002)(8676002)(26005)(86362001)(316002)(30864003)(44832011)(66946007)(83380400001)(66476007)(6512007);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(136003)(396003)(346002)(39850400004)(6666004)(38350700002)(38100700002)(478600001)(6486002)(2616005)(1076003)(186003)(2906002)(41300700001)(66556008)(52116002)(36756003)(6506007)(6916009)(8936002)(5660300002)(8676002)(26005)(86362001)(316002)(44832011)(66946007)(83380400001)(66476007)(6512007)(21314003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?c0CDUtOfkWvfuL5y2huwu4tG41Cx99CnhqZFPuLBVnXLLEd3Zsc4hZsNP4AB?=
- =?us-ascii?Q?CAGDNEsxURBgeN+eeG4HfAYbwohXtmgAgzI6Mpv0U7zDC+fxHjPxwHUYI+EC?=
- =?us-ascii?Q?L8xG0j3bfHeOOBK29Gu0nhOrVcCJKqBZJnwKXRdpBmYtfb4Sho4Df68IC5mi?=
- =?us-ascii?Q?mKv6PGGXnUTBubeXKl2WAXoab+v/ieIbhTlGHGvyRprRD+eetcvH0NShqRVl?=
- =?us-ascii?Q?9200kM07pJNI//NTJpie3VQ0JrUp6Lgk9mqxv/eiUwslopMY4MNSBh5ldAxS?=
- =?us-ascii?Q?UWV7cozPL/D72+mKL0OuBV9kwKwKZnD7CGJ2HNEVLKwADJPQcXQRzptMH5m+?=
- =?us-ascii?Q?240Uze0JYevgrSyH+XIYcj3FjR7ek8BMyxvRZCnhYxhSKs/L7b1N1Fsi4d+L?=
- =?us-ascii?Q?+4iNBFeEnvC4Jgu4KjS8pQXAjUS3WaWlw3jYrZIezYdT2IXtBm1nOQDKjGjc?=
- =?us-ascii?Q?jNNCtyVdsG9LUkcBy4Dn/VCuVUbHbymsuhDLbFd9lrSsCrDi6kOB/ydstyuW?=
- =?us-ascii?Q?/g5cYn5fK2V05xglb7itYM7ugqywZL0lYM+r1TPElCEseiJOmT3g9xJ2Jkmv?=
- =?us-ascii?Q?y9mj19hxmWntjseDO6waYlPGvdeHkevvMYi2aPYns1lsKkAAXg0qUkQKQh0Q?=
- =?us-ascii?Q?IKTnNhtCrEMfxNvFM67UaK3nHZ0rNbjyfO0gMgAivHlgMqgI5fKK1Y6rNnAS?=
- =?us-ascii?Q?lDtVLHRkoyUj1AtIxfo+L0T6mxN0Wa93ahqyYKFkkHjQoCq5P+LExhFs9uSf?=
- =?us-ascii?Q?L7KL4PJuNTYe0T2rC8pUiQR5W77GCsWx0do+Qds3O/YyJhWMm1QsNh7bdPGw?=
- =?us-ascii?Q?GpKCMzgAZDrQH0Zcr3jKDs2jaY9aBu8t1oPX8YrIUvcRX9GAmd1EwwZNjj1e?=
- =?us-ascii?Q?x0RQdicN0A0rPcrwf4e7VuZQ84G8IjTHY8s5cdmuWVBbWXkizvrevE+AOyCq?=
- =?us-ascii?Q?QoBTstdZ/pQKCBFMX8yAZMCJerA9rYnpS8BxjJhnrJb6zKkuvUZ0dLRCR4Zv?=
- =?us-ascii?Q?zrWXXX1w/s8OAIi2UOJWkxdPKuZLdHvW+DmYhLpoy9FokKNe/MaLn/Txizzm?=
- =?us-ascii?Q?0NoP4Yj6JzcwXIesNlnZNiPtVHh7U25B+hXQH/6tvVs/JTjnjnWPP6mVY75e?=
- =?us-ascii?Q?Lkm2OU/MCJezE6TZk2quBpYpYZQoGNQcYjk0M4zcTwv+lBQW/IsROYpu4Czo?=
- =?us-ascii?Q?PPF51X/NgO7Wuh7uUbpDl/yx/lts3H256pZw7dorUE8nTb+NzlKQgiae6YF9?=
- =?us-ascii?Q?MLnY8bhgjlX5juaeDO2tqSU1n0NxuqU0bsnW15lTOoXYpiBZHK1uTmzL1oEu?=
- =?us-ascii?Q?5rLk4A8KREffCKkEB8g0D+ce9m2xHXs2hWD7aBS6UqYulA72DTSSmCC+cDdp?=
- =?us-ascii?Q?bXP6vn4PJOTuoEDlGY3HwVc2K8eW0Ui9qRmpLVw943KsbevkID11+pziwe/j?=
- =?us-ascii?Q?57hkQQ91iLaAg1PiqkIe4BP/vb4yxqUXHFiD4MSv+ntg2O82eZKNNpGdlWrJ?=
- =?us-ascii?Q?NZPZ7ZxCkcjoxrxrJVrwbeif8CpUG8YvhnkOXel2clPhDytU+JY9JTk754Tw?=
- =?us-ascii?Q?1PzQVvnNbRWap/AU1mnM0nfki2Mzw79Be5fserEqFKTSjDbe9mt+7JjkeMM+?=
- =?us-ascii?Q?Cg=3D=3D?=
+	=?us-ascii?Q?Q+ZbGb/1RdK5QFr/SSVj4iFBZXu0JvFT2kDWr9W4GmbRzG7WA0K0N6HZpQNa?=
+ =?us-ascii?Q?o7aJCyxA7h3e5hTuM1ZM/kXeOo0qH9aPMPtYqc7Hzo01McZ4JiYDNQrEOKyr?=
+ =?us-ascii?Q?PLsDpUf1kiDM7xAXiW1ZO5/ILHCmif2D0vY419Mr1REw2dDsM8nSTvK1rl+d?=
+ =?us-ascii?Q?GPaEs2coc5AdhtXpw60NuIbr9UxnqpToei67cU0gTeMPOdxWFRmlpuJOvkU2?=
+ =?us-ascii?Q?XTVE5FouMF2Kq1RAjs1m38tvPf+LDQX2JyTdLcCrkItM50A3Z2u3BB9aC+VY?=
+ =?us-ascii?Q?jSIC+P4G3dZdiWUWCRGAF8kDA1peXO7aZ0MwaRhSvlAvRz4TssIYFDF9tStN?=
+ =?us-ascii?Q?UVnHg8Un8F/y1R8V7799pAMVoAf2tzl/JP5wZdUHyZ/8strqsFyD4n3MRM93?=
+ =?us-ascii?Q?pJA3BWh8Y+FqYiPEKf3wggayf2I/2PdYmk/AYflLe3UOEQFeyPutOnjB8Gez?=
+ =?us-ascii?Q?Hz2YEJe5hcOIggWFFFPs/3KmlS7Nclv1IMNj+4wws/2uQkkgI+jjcTyJwAls?=
+ =?us-ascii?Q?+AkXwtmSTtOE5c+JqIW5mwiF2h68G/Z4WfCfobYpj9wQCTeBPVsG5JlA6gMf?=
+ =?us-ascii?Q?Dgt9syl8lNFICZ/KJ0bgKC8NjnzuO2YuDmVjvi/uwqY98vRkalNue9jeRVdl?=
+ =?us-ascii?Q?rdSRsVMS5KWlFJ1GpCh8JLo1SnUvo8GeZI6JAvlEpldAoSJulrpxO/9tbHq6?=
+ =?us-ascii?Q?78MSolbysT82JsjPRUbqdms3uJgIOeg9gvnKahfY9HAGcrr0DmUsxO+sbf7F?=
+ =?us-ascii?Q?bOTZmU6f+otDpULb4ymhz5ta9qNxqiwqTo9KLIFlEUOc6deNOY5A9HSarGxI?=
+ =?us-ascii?Q?8tUU0ibSl5u8z8JslX1bzniJrfVbc7CR/sbjplNliMvVAip3iKvyxOBLSCb5?=
+ =?us-ascii?Q?+SzzdqupqabGDJDHVqUzfMhsNDol8hG1GXsYacMDG4g5rKfoS8hIEH5Crzui?=
+ =?us-ascii?Q?Ctvotj/g/9xqwkJ/wD0YvLYhVMpE4It48CMIkY48yXQKwEM8Ukh7IfSZPoTT?=
+ =?us-ascii?Q?4ygYlYJtHpXuG3KOcL7+t+FJrcs0FE0TIBJx9oWSii3plb1XjcTz6mKzDxAj?=
+ =?us-ascii?Q?NFFNqAP5ol0vmOMWE54jg6oaWIuXADeomIUUNCe5k3+DSwm2x+31Z3o9MDZU?=
+ =?us-ascii?Q?/J38FmUrE8wK4TRyPph7l59oJEkYwSott7nVzuLUYc7R9W89dXQoKuPE8upr?=
+ =?us-ascii?Q?GOZxLYUYBKQOoD8J0cAqK6S/mLGa0MISEootL5lEEvF19Ih0C1h2HQtbOP7Z?=
+ =?us-ascii?Q?5EvpchtHgwv2KSFk2dv9zqc6TOq98jxOh6p76qbGzNVM81ippkIOPZkq4rRe?=
+ =?us-ascii?Q?gQ1NJuU1vPyLgSlc/Q9kLearuOlOtFHwgGmSn9Y6byFMvQNUkagTZTjE5LgH?=
+ =?us-ascii?Q?NKJt3UOiNyDsrQMtoiBsm0coZQdq2Z2PAsp/8xNlpw6tMAS6OAz4UxwK3NsL?=
+ =?us-ascii?Q?NkGwfbrGCZTw9ksSas0c0c9fPKyduCo0ygFK9j2S4shB2n2iiwYXdkqLSKDA?=
+ =?us-ascii?Q?UCU5Wa+5qcJxYw4QIpFY2rHTokWc4UI+GTQBKRT5v+QxpvlEW/ZgZMhX70MW?=
+ =?us-ascii?Q?/EN4ajAf1EIar7rDYCtCh0/kFADZj0uK9NVV8aPGQvSeo0/r79r7W8rGN1Rc?=
+ =?us-ascii?Q?uw=3D=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ef1833c-968e-41a2-8c3f-08da6020fe92
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29727248-11be-4c65-13af-08da6020febb
 X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:00:05.4302
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:00:05.6802
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g5E72hUb7fpYCzDy1xqCVUEsxYee/0mMd+jsMygpDqAlbtF3tIXqPzfdoIThkYQ6pDP3xELW8MqgR2FpM/uaC/PsWwr7zH2zoP2ViFwbOYk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: jd2SS/XIfwIgYRrFQOvxmjYl7SZIIRqOHXPGsOKdTsxQlpQyWad12gORPRJsQp8Y886tTgTAcAIVl8yvrbHTb9Vx13jHPyVonBFQoCVjx3Y=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR08MB5730
 
-Adds code for implementing signals that are handled in the real time
-domain. This is done for 64bit processes.
+From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
 
-It works in a similar way to signals in the Linux kernel.
+This commit adds an overhauled version of the rt signal test
+for SIGFPE, SIGILL and SIGSEGV.
+
+Edited-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 ---
- kernel/cobalt/arch/x86/Makefile               |   2 +-
- .../arch/x86/include/asm/xenomai/thread.h     |   6 +
- kernel/cobalt/arch/x86/signal_ia64.c          | 283 ++++++++++++++++++
- kernel/cobalt/posix/syscall.c                 |   5 +-
- kernel/cobalt/thread.c                        |  10 +-
- 5 files changed, 302 insertions(+), 4 deletions(-)
- create mode 100644 kernel/cobalt/arch/x86/signal_ia64.c
+ configure.ac                              |   1 +
+ testsuite/Makefile.am                     |   6 +-
+ testsuite/rtsignal-tests/Makefile.am      |  30 ++++
+ testsuite/rtsignal-tests/test_rt_signal.c | 185 ++++++++++++++++++++++
+ 4 files changed, 220 insertions(+), 2 deletions(-)
+ create mode 100644 testsuite/rtsignal-tests/Makefile.am
+ create mode 100644 testsuite/rtsignal-tests/test_rt_signal.c
 
-diff --git a/kernel/cobalt/arch/x86/Makefile b/kernel/cobalt/arch/x86/Makefile
-index 6bbf15651..bf58998cc 100644
---- a/kernel/cobalt/arch/x86/Makefile
-+++ b/kernel/cobalt/arch/x86/Makefile
-@@ -1,5 +1,5 @@
- 
- obj-$(CONFIG_XENOMAI) += xenomai.o
--xenomai-y := machine.o thread.o smi.o c1e.o signal_ia32.o
-+xenomai-y := machine.o thread.o smi.o c1e.o signal_ia32.o signal_ia64.o
- 
- ccflags-y := -I$(srctree)/arch/x86/xenomai/include -I$(srctree)/include/xenomai
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-index be93926a7..2505021c6 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-@@ -86,6 +86,12 @@ int xnarch_setup_rt_frame_ia32(int sig, void *handler,
- 
- int xnarch_rt_sigreturn_ia32(struct pt_regs *regs);
- 
-+int xnarch_setup_rt_frame_ia64(int sig, void *handler,
-+			       struct kernel_siginfo *si, struct pt_regs *regs,
-+			       void __user *restorer);
-+
-+int xnarch_rt_sigreturn_ia64(struct pt_regs *regs);
-+
- static inline void xnarch_enter_root(struct xnthread *root) { }
- 
- static inline int xnarch_escalate(void)
-diff --git a/kernel/cobalt/arch/x86/signal_ia64.c b/kernel/cobalt/arch/x86/signal_ia64.c
+diff --git a/configure.ac b/configure.ac
+index 61789af13..db92ddcc6 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -959,6 +959,7 @@ AC_CONFIG_FILES([ \
+ 	testsuite/switchtest/Makefile \
+ 	testsuite/gpiotest/Makefile \
+ 	testsuite/gpiobench/Makefile \
++	testsuite/rtsignal-tests/Makefile \
+ 	testsuite/spitest/Makefile \
+ 	testsuite/smokey/Makefile \
+ 	testsuite/smokey/arith/Makefile \
+diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
+index 4932f6d33..87738dc78 100644
+--- a/testsuite/Makefile.am
++++ b/testsuite/Makefile.am
+@@ -5,6 +5,7 @@ if XENO_COBALT
+ SUBDIRS += 		\
+ 	clocktest	\
+ 	gpiotest	\
++	rtsignal-tests	\
+ 	spitest		\
+ 	switchtest	\
+ 	xeno-test
+@@ -13,9 +14,10 @@ endif
+ DIST_SUBDIRS =		\
+ 	clocktest	\
+ 	gpiotest	\
+-	gpiobench   \
++	gpiobench	\
+ 	latency		\
+ 	smokey		\
+ 	spitest		\
+ 	switchtest	\
+-	xeno-test
++	xeno-test	\
++	rtsignal-tests
+diff --git a/testsuite/rtsignal-tests/Makefile.am b/testsuite/rtsignal-tests/Makefile.am
 new file mode 100644
-index 000000000..fd986e966
+index 000000000..25c1093c9
 --- /dev/null
-+++ b/kernel/cobalt/arch/x86/signal_ia64.c
-@@ -0,0 +1,283 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ *  Copyright (C) 1991, 1992  Linus Torvalds
-+ *  Copyright (C) 2000, 2001, 2002 Andi Kleen SuSE Labs
-+ *
-+ *  1997-11-28  Modified for POSIX.1b signals by Richard Henderson
-+ *  2000-06-20  Pentium III FXSR, SSE support by Gareth Hughes
-+ *  2000-2002   x86-64 support by Andi Kleen
-+ *
-+ *  2022        changes for use in xenomai by Johannes Kirchmair
-+ */
++++ b/testsuite/rtsignal-tests/Makefile.am
+@@ -0,0 +1,30 @@
++testdir = @XENO_TEST_DIR@
 +
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
-+#include <linux/signal.h>
-+#include <linux/uaccess.h>
-+#include <cobalt/kernel/thread.h>
++test_PROGRAMS = test_rt_signal_fpe test_rt_signal_segfault test_rt_signal_ill
 +
-+#include <asm/sigframe.h>
-+#include <asm/sighandling.h>
-+#include <asm/fpu/signal.h>
++alchemycppflags =              			 \
++	$(XENO_USER_CFLAGS)    			 \
++	-I$(top_srcdir)/include
 +
-+/*
-+ * If regs->ss will cause an IRET fault, change it.  Otherwise leave it
-+ * alone.  Using this generally makes no sense unless
-+ * user_64bit_mode(regs) would return true.
-+ */
-+static void force_valid_ss(struct pt_regs *regs)
++alchemyldadd =					\
++	@XENO_AUTOINIT_LDFLAGS@			\
++	$(XENO_POSIX_WRAPPERS)			\
++	../../lib/alchemy/libalchemy.la		\
++	../../lib/copperplate/libcopperplate.la	\
++	@XENO_CORE_LDADD@			\
++	@XENO_USER_LDADD@			\
++	-lrt -lpthread -lm
++
++test_rt_signal_fpe_SOURCES = test_rt_signal.c
++test_rt_signal_fpe_CPPFLAGS = $(alchemycppflags) -DTEST_FPE=1
++test_rt_signal_fpe_LDADD = $(alchemyldadd)
++
++test_rt_signal_segfault_SOURCES = test_rt_signal.c
++test_rt_signal_segfault_CPPFLAGS = $(alchemycppflags) -DTEST_SEGFAULT=1
++test_rt_signal_segfault_LDADD = $(alchemyldadd)
++
++test_rt_signal_ill_SOURCES = test_rt_signal.c
++test_rt_signal_ill_CPPFLAGS = $(alchemycppflags)
++test_rt_signal_ill_LDADD = $(alchemyldadd)
+diff --git a/testsuite/rtsignal-tests/test_rt_signal.c b/testsuite/rtsignal-tests/test_rt_signal.c
+new file mode 100644
+index 000000000..63ba5c30f
+--- /dev/null
++++ b/testsuite/rtsignal-tests/test_rt_signal.c
+@@ -0,0 +1,185 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <sys/types.h>
++#include <copperplate/traceobj.h>
++#include <alchemy/task.h>
++#include <assert.h>
++#include <setjmp.h>
++#include <asm/ucontext.h>
++
++#ifdef TEST_SEGFAULT
++#define TEST_SIGNAL SIGSEGV
++#elif defined(TEST_FPE)
++#define TEST_SIGNAL SIGFPE
++#else
++#define TEST_SIGNAL SIGILL
++#endif
++
++#define BIT_FAULT_HANDLER_ENTERD     1
++#define BIT_FAULT_HANDLER_FINISHED   2
++#define BIT_FAULT_HANDLER_WRONG_TASK 4
++#define BIT_FAULT_HANDLER_WRONG_SIG  8
++#define BIT_DOMAIN_SWITCH            16
++
++static RT_TASK t1;
++static sig_atomic_t status = 0;
++static sig_atomic_t cause = 0;
++
++#ifdef JMP_CLEANUP
++static jmp_buf jmpenv;
++#endif
++
++static int status_ok(void)
 +{
-+	u32 ar;
-+
-+	asm volatile ("lar %[old_ss], %[ar]\n\t"
-+		      "jz 1f\n\t"		/* If invalid: */
-+		      "xorl %[ar], %[ar]\n\t"	/* set ar = 0 */
-+		      "1:"
-+		      : [ar] "=r" (ar)
-+		      : [old_ss] "rm" ((u16)regs->ss));
-+
-+	/*
-+	 * For a valid 64-bit user context, we need DPL 3, type
-+	 * read-write data or read-write exp-down data, and S and P
-+	 * set.  We can't use VERW because VERW doesn't check the
-+	 * P bit.
-+	 */
-+	ar &= AR_DPL_MASK | AR_S | AR_P | AR_TYPE_MASK;
-+	if (ar != (AR_DPL3 | AR_S | AR_P | AR_TYPE_RWDATA) &&
-+	    ar != (AR_DPL3 | AR_S | AR_P | AR_TYPE_RWDATA_EXPDOWN))
-+		regs->ss = __USER_DS;
-+}
-+#define CONTEXT_COPY_SIZE offsetof(struct sigcontext, reserved1)
-+
-+static bool restore_sigcontext_ia64(struct pt_regs *regs,
-+				    struct sigcontext __user *usc,
-+				    unsigned long uc_flags)
-+{
-+	struct sigcontext sc;
-+
-+	if (copy_from_user(&sc, usc, CONTEXT_COPY_SIZE))
-+		return false;
-+
-+	regs->bx = sc.bx;
-+	regs->cx = sc.cx;
-+	regs->dx = sc.dx;
-+	regs->si = sc.si;
-+	regs->di = sc.di;
-+	regs->bp = sc.bp;
-+	regs->ax = sc.ax;
-+	regs->sp = sc.sp;
-+	regs->ip = sc.ip;
-+
-+	regs->r8 = sc.r8;
-+	regs->r9 = sc.r9;
-+	regs->r10 = sc.r10;
-+	regs->r11 = sc.r11;
-+	regs->r12 = sc.r12;
-+	regs->r13 = sc.r13;
-+	regs->r14 = sc.r14;
-+	regs->r15 = sc.r15;
-+
-+	/* Get CS/SS and force CPL3 */
-+	regs->cs = sc.cs | 0x03;
-+	regs->ss = sc.ss | 0x03;
-+
-+	regs->flags = (regs->flags & ~FIX_EFLAGS) | (sc.flags & FIX_EFLAGS);
-+	/* disable syscall checks */
-+	regs->orig_ax = -1;
-+
-+	/*
-+	 * Fix up SS if needed for the benefit of old DOSEMU and
-+	 * CRIU.
-+	 */
-+	force_valid_ss(regs);
-+
-+	return fpu__restore_sig((void __user *)sc.fpstate, 0);
++	return status ==
++	       (BIT_FAULT_HANDLER_ENTERD | BIT_FAULT_HANDLER_FINISHED);
 +}
 +
-+static __always_inline int
-+__unsafe_setup_sigcontext(struct sigcontext __user *sc, void __user *fpstate,
-+			  struct pt_regs *regs)
++static const char *sigdebug_msg[] = {
++	[SIGDEBUG_UNDEFINED] = "latency: received SIGXCPU for unknown reason",
++	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
++	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
++	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
++	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
++	[SIGDEBUG_NOMLOCK] = "Xenomai: process memory not locked "
++			     "(missing mlockall?)",
++	[SIGDEBUG_WATCHDOG] = "Xenomai: watchdog triggered "
++			      "(period too short?)",
++};
++
++static void do_cleanup(void *context)
 +{
-+	unsafe_put_user(regs->di, &sc->di, Efault);
-+	unsafe_put_user(regs->si, &sc->si, Efault);
-+	unsafe_put_user(regs->bp, &sc->bp, Efault);
-+	unsafe_put_user(regs->sp, &sc->sp, Efault);
-+	unsafe_put_user(regs->bx, &sc->bx, Efault);
-+	unsafe_put_user(regs->dx, &sc->dx, Efault);
-+	unsafe_put_user(regs->cx, &sc->cx, Efault);
-+	unsafe_put_user(regs->ax, &sc->ax, Efault);
-+	unsafe_put_user(regs->r8, &sc->r8, Efault);
-+	unsafe_put_user(regs->r9, &sc->r9, Efault);
-+	unsafe_put_user(regs->r10, &sc->r10, Efault);
-+	unsafe_put_user(regs->r11, &sc->r11, Efault);
-+	unsafe_put_user(regs->r12, &sc->r12, Efault);
-+	unsafe_put_user(regs->r13, &sc->r13, Efault);
-+	unsafe_put_user(regs->r14, &sc->r14, Efault);
-+	unsafe_put_user(regs->r15, &sc->r15, Efault);
++	int step = 0;
++	struct ucontext *uc = context;
 +
-+	unsafe_put_user(current->thread.trap_nr, &sc->trapno, Efault);
-+	unsafe_put_user(current->thread.error_code, &sc->err, Efault);
-+	unsafe_put_user(regs->ip, &sc->ip, Efault);
-+	unsafe_put_user(regs->flags, &sc->flags, Efault);
-+	unsafe_put_user(regs->cs, &sc->cs, Efault);
-+	unsafe_put_user(0, &sc->gs, Efault);
-+	unsafe_put_user(0, &sc->fs, Efault);
-+	unsafe_put_user(regs->ss, &sc->ss, Efault);
++#ifdef TEST_SEGFAULT
++	step = 11;
++#elif defined(TEST_FPE)
++	step = 2;
++#else
++	step = 2;
++#endif
 +
-+	unsafe_put_user(fpstate, (unsigned long __user *)&sc->fpstate, Efault);
-+
-+	/* non-iBCS2 extensions.. */
-+	unsafe_put_user(current->thread.cr2, &sc->cr2, Efault);
-+	return 0;
-+Efault:
-+	return -EFAULT;
++#ifdef __i386__
++	uc->uc_mcontext.eip += step;
++#else
++	uc->uc_mcontext.rip += step;
++#endif
 +}
 +
-+#define unsafe_put_sigcontext(sc, fp, regs, label)                             \
-+	do {                                                                   \
-+		if (__unsafe_setup_sigcontext(sc, fp, regs))                   \
-+			goto label;                                            \
-+	} while (0);
-+
-+/*
-+ * Set up a signal frame.
-+ */
-+
-+/* x86 ABI requires 16-byte alignment */
-+#define FRAME_ALIGNMENT 16UL
-+
-+/*
-+ * Determine which stack to use..
-+ */
-+static unsigned long align_sigframe(unsigned long sp)
++static void signal_handler(int sig, siginfo_t *info, void *context)
 +{
-+	sp = round_down(sp, FRAME_ALIGNMENT) - 8;
-+	return sp;
++	RT_TASK *self;
++	(void)context;
++
++	if (sig == SIGDEBUG) {
++		cause = sigdebug_reason(info);
++
++		if (cause > SIGDEBUG_WATCHDOG)
++			cause = SIGDEBUG_UNDEFINED;
++
++		/* XXX: caused by rt_task_delete() */
++		if (!(status & BIT_FAULT_HANDLER_ENTERD) &&
++		    cause == SIGDEBUG_MIGRATE_SYSCALL) {
++			return;
++		}
++
++		status |= BIT_DOMAIN_SWITCH;
++	} else {
++		status |= BIT_FAULT_HANDLER_ENTERD;
++		if (sig != TEST_SIGNAL) {
++			status |= BIT_FAULT_HANDLER_WRONG_SIG;
++			return;
++		}
++
++		self = rt_task_self();
++
++		if (self == NULL || !rt_task_same(self, &t1)) {
++			status |= BIT_FAULT_HANDLER_WRONG_TASK;
++		} else {
++			status |= BIT_FAULT_HANDLER_FINISHED;
++		}
++
++#ifdef JMP_CLEANUP
++		longjmp(jmpenv, 1);
++#else
++		do_cleanup(context);
++#endif
++	}
 +}
 +
-+static void __user *get_sigframe_ia64(struct pt_regs *regs, size_t frame_size,
-+				      void __user **fpstate)
++extern void do_div_by_0(void);
++
++static void task_proc(void *arg)
 +{
-+	/* Default to using normal stack */
-+	unsigned long math_size = 0;
-+	unsigned long sp = regs->sp;
-+	unsigned long buf_fx = 0;
++	int ret;
++	(void)arg;
 +
-+	/* redzone */
-+	if (IS_ENABLED(CONFIG_X86_64)) //TODO kirjoh ?
-+		sp -= 128;
++	ret = cobalt_rt_signal(TEST_SIGNAL, signal_handler);
++	assert(ret == 0);
++	(void)ret;
 +
-+	sp = fpu__alloc_mathframe(sp, 0, &buf_fx, &math_size);
-+	*fpstate = (void __user *)sp;
++#ifdef JMP_CLEANUP
++	if (setjmp(jmpenv) != 0)
++		return;
++#endif
 +
-+	sp = align_sigframe(sp - frame_size);
-+
-+	/* save i387 and extended state */
-+	if (copy_fpstate_to_sigframe(*fpstate, (void __user *)buf_fx,
-+				     math_size) < 0)
-+		return (void __user *)-1L;
-+
-+	return (void __user *)sp;
++#ifdef TEST_SEGFAULT
++	*((int *)0x73) = 0xDECAFBAD;
++#elif defined(TEST_FPE)
++	// TODO: different instruction sequence for ARM
++	__asm__("xorl %eax, %eax\n\t"
++		"movl %eax, %ecx\n\t"
++		"cltd\n\t"
++		"idivl %ecx");
++#else
++	// TODO: different instruction for ARM
++	__asm__("ud2");
++#endif
 +}
 +
-+static unsigned long frame_uc_flags_ia64(struct pt_regs *regs)
++static int test_sucessfull(void)
 +{
-+	unsigned long flags;
++	if (status_ok()) {
++		fputs("Test passed\n", stderr);
++		return 1;
++	}
 +
-+	if (boot_cpu_has(X86_FEATURE_XSAVE))
-+		flags = UC_FP_XSTATE | UC_SIGCONTEXT_SS;
-+	else
-+		flags = UC_SIGCONTEXT_SS;
-+
-+	return flags;
-+}
-+
-+int xnarch_setup_rt_frame_ia64(int sig, void *handler,
-+			       struct kernel_siginfo *si, struct pt_regs *regs,
-+			       void __user *restorer)
-+{
-+	struct rt_sigframe __user *frame;
-+	void __user *fp = NULL;
-+	unsigned long uc_flags;
-+
-+	frame = get_sigframe_ia64(regs, sizeof(struct rt_sigframe), &fp);
-+	uc_flags = frame_uc_flags_ia64(regs);
-+
-+	if (!user_access_begin(frame, sizeof(*frame)))
-+		return -EFAULT;
-+
-+	/* Create the ucontext.  */
-+	unsafe_put_user(uc_flags, &frame->uc.uc_flags, Efault);
-+	unsafe_put_user(0, &frame->uc.uc_link, Efault);
-+
-+	/* Set up to return from userspace.  If provided, use a stub
-+	   already in userspace.  */
-+	unsafe_put_user(restorer, &frame->pretcode, Efault);
-+	unsafe_put_sigcontext(&frame->uc.uc_mcontext, fp, regs, Efault);
-+	user_access_end();
-+
-+	if (copy_siginfo_to_user(&frame->info, si))
-+		return -EFAULT;
-+
-+	/* Set up registers for signal handler */
-+	regs->di = sig;
-+	/* In case the signal handler was declared without prototypes */
-+	regs->ax = 0;
-+
-+	/* This also works for non SA_SIGINFO handlers because they expect the
-+	   next argument after the signal number on the stack. */
-+	regs->si = (unsigned long)&frame->info;
-+	regs->dx = (unsigned long)&frame->uc;
-+	regs->ip = (unsigned long)handler;
-+
-+	regs->sp = (unsigned long)frame;
-+
-+	/*
-+	 * Set up the CS and SS registers to run signal handlers in
-+	 * 64-bit mode, even if the handler happens to be interrupting
-+	 * 32-bit or 16-bit code.
-+	 *
-+	 * SS is subtle.  In 64-bit mode, we don't need any particular
-+	 * SS descriptor, but we do need SS to be valid.  It's possible
-+	 * that the old SS is entirely bogus -- this can happen if the
-+	 * signal we're trying to deliver is #GP or #SS caused by a bad
-+	 * SS value.  We also have a compatibility issue here: DOSEMU
-+	 * relies on the contents of the SS register indicating the
-+	 * SS value at the time of the signal, even though that code in
-+	 * DOSEMU predates sigreturn's ability to restore SS.  (DOSEMU
-+	 * avoids relying on sigreturn to restore SS; instead it uses
-+	 * a trampoline.)  So we do our best: if the old SS was valid,
-+	 * we keep it.  Otherwise we replace it.
-+	 */
-+	regs->cs = __USER_CS;
-+
-+	if (unlikely(regs->ss != __USER_DS))
-+		force_valid_ss(regs);
++	if (!(status & BIT_FAULT_HANDLER_ENTERD))
++		fputs("Test failed: signal handler not invoked!\n", stderr);
++	if ((status & BIT_FAULT_HANDLER_WRONG_TASK))
++		fputs("Test failed: Signal handler in wrong task!\n", stderr);
++	if ((status & BIT_FAULT_HANDLER_WRONG_SIG))
++		fputs("Test failed: Signal handler of wrong signal!\n", stderr);
++	if ((status & BIT_DOMAIN_SWITCH)) {
++		fputs("Test failed: domain switch happened!\n", stderr);
++		fprintf(stderr, "Caused by: %s\n", sigdebug_msg[cause]);
++	}
 +
 +	return 0;
-+
-+Efault:
-+	user_access_end();
-+
-+	return -EFAULT;
 +}
 +
-+int xnarch_rt_sigreturn_ia64(struct pt_regs *regs)
++int main(void)
 +{
-+	struct rt_sigframe __user *frame;
-+	unsigned long uc_flags;
++	struct sigaction sa;
++	int ret;
 +
-+	frame = (struct rt_sigframe __user *)(regs->sp - sizeof(long));
-+	if (!access_ok(frame, sizeof(*frame)))
-+		goto badframe;
-+	if (__get_user(uc_flags, &frame->uc.uc_flags))
-+		goto badframe;
-+	if (!restore_sigcontext_ia64(regs, &frame->uc.uc_mcontext, uc_flags))
-+		goto badframe;
++	memset(&sa, 0, sizeof(sa));
++	sa.sa_sigaction = signal_handler;
++	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
++	sigaction(TEST_SIGNAL, &sa, NULL);
++	sigaction(SIGDEBUG, &sa, NULL);
 +
-+	return regs->ax;
++	ret = rt_task_create(&t1, "rt-task", 0, 20, T_JOINABLE | T_WARNSW);
++	assert(ret == 0);
 +
-+badframe:
-+	// signal_fault(regs, frame, "rt_sigreturn"); //TODO kirjoh kill prozess
-+	return 0;
++	ret = rt_task_start(&t1, task_proc, NULL);
++	assert(ret == 0);
++
++	ret = rt_task_join(&t1);
++	assert(ret == 0);
++	(void)ret; // so the compiler does not complain about not checking ret
++
++	return test_sucessfull() ? EXIT_SUCCESS : EXIT_FAILURE;
 +}
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index b63923017..ad54380fa 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -274,7 +274,10 @@ static COBALT_SYSCALL(sigreturn, current, (void))
- {
- 	struct pt_regs *regs = task_pt_regs(current);
- 
--	xnarch_rt_sigreturn_ia32(regs);
-+	if (regs->cs == __USER_CS)
-+		xnarch_rt_sigreturn_ia64(regs);
-+	if (regs->cs == __USER32_CS)
-+		xnarch_rt_sigreturn_ia32(regs);
- 
- 	return __xn_reg_rval(regs);
- }
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 34066e614..68473ac8f 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -2685,8 +2685,14 @@ int xnthread_handle_rt_signals(struct ipipe_trap_data *d)
- 	if (sys_ppd->sigrestorer == NULL)
- 		return 1;
- 
--	ret = xnarch_setup_rt_frame_ia32(sig, sys_ppd->sighand[sig], &si, regs,
--					 sys_ppd->sigrestorer);
-+	if (regs->cs == __USER_CS)
-+		ret = xnarch_setup_rt_frame_ia64(sig, sys_ppd->sighand[sig],
-+						 &si, regs,
-+						 sys_ppd->sigrestorer);
-+	if (regs->cs == __USER32_CS)
-+		ret = xnarch_setup_rt_frame_ia32(sig, sys_ppd->sighand[sig],
-+						 &si, regs,
-+						 sys_ppd->sigrestorer);
- 	if (ret)
- 		return 1;
- 
 -- 
 2.25.1
 
