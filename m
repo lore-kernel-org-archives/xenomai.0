@@ -1,243 +1,351 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30058.outbound.protection.outlook.com [40.107.3.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CE4128ED
-	for <xenomai@lists.linux.dev>; Thu,  7 Jul 2022 20:44:30 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267JIwIN010843;
-	Thu, 7 Jul 2022 12:25:50 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0181.outbound.protection.office365.us [23.103.199.181])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3h622f8s84-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Jul 2022 12:25:49 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=L8vsthlujZwj9c8VRtvCCO9IAWCH3lcHat3GonfQJ+FdqbUxHlNGKimGui1u99iiowBUkh7T1ryGcj6gbtAmhp9Yc7t9coqQaNdWPrrA//PkhGqlwFExKCLqcuvqTOyhQrNqzSoQPI0LbUUKuvmIgKe8XukYI158Uc9xwPcdSoW9w+iv6qw/E/rirHsWEESHNp8UvabsMs/GZjkSj5ovrWJSR6qd5Sox02tZTeKbYrUq5q3sdoGPehzhf4aGtuTRofSer/QNHtTZSNI37xPt6j/fKOhsDHPQSVg310I0YNjumXfIPxheMqiIWOL9V7viKCDh/f4nny3B4HdQyz9gnQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C767EB
+	for <xenomai@lists.linux.dev>; Fri,  8 Jul 2022 07:11:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UbC9UtRdcxWmcbB72eitzkdPlYf81Fva93To4AeBowT/vxEcQ+B6zfczeU4bWJmj85iLX00nSEQdA1lfj8D8tSmxb/xoWDPc60nEuDMp83IkKCaCltx7EWNrlekjecZxTiIJmwM5Chz3jrsGNj5alFvMh1aWKPnc0j8MEp4x/GZj9f8JGEQghyDRyFPXDfEmY8Y4wOq264ImU+4sgMBv9DPpzd+IBWwXdXS/4o3cteabaqgpB8+2WE6wuFgvT18tgLefr2Wd2+ak+HzHFBQ/DjJEtgLObi2H2MpBdLMjw15+Pr/d+UIOHS2by0dzpa0xBZf7iQT917e3itaEj4c9EQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
+ s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v3tWOQspo3p+aF1pWNhHI4iDInOnw5zXf2cBtAbvmtw=;
- b=lwtpUfSf5xk2+L2Vx3MONo6kr2OZKh3q7JhTVij+UkoYfooONwX3lGCN3BRl7WN/cNiub5iH2kfEuFlkqxQUpfzIOlcozagYYI4233mjWjopk/l+8yYlNZNZuxq9PQX5OKTBy5hZwpnllPrO3LD/jfSWpbHv7ZMbkJis0Dh7R82eDqWae0Ln/IhFGxZFHCMUhmmgbBYlmjpF0kIkesCW82T6NefuJY56l3DAMiPsSDYCftYIp1N0TW4D4UcaFiQbdnsmBQuBs/aheBnXfbUnca9KBtQNWAjr0W/rQdp6VsGirxD098DVlLYthazHYMFq90yxzLQE94+iY5eiweNF9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ bh=CFcH1314NhDij0TWNbLFPkgKg6KZUxtEqZa0vfMFltI=;
+ b=A1fhb7Gymqc2iyFoQck4qcTmLMqP3pnjJX0iCmzXcyihw4JmuTk8lplu2NRG5nHCf91AS95t1+PMUkBDwJEvHcG/4eHpy6h8U5lZUfKalEVDwCv/Xj8tkKN4jVOy7CxyS0u6Cg0xBEe3Xh1/Ib/Pgphy6VyuPw5plhm21neTYM921uhH3XOXyGZNJYuq8KPKxR7B5Euil8lFRxG4OORcGenFielGZONW9T1kpxvFVdcrfxSOg1UgjhKMGThxaEQTb7rGJMO8hz2fhPvJ1dEcWif+kpLvHnu7U252LC7r13B8PHDuVDHj+4IQv0khP6i6K3A+7znS5s8J3X9BvNLEvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.72) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v3tWOQspo3p+aF1pWNhHI4iDInOnw5zXf2cBtAbvmtw=;
- b=OTIdDar/7m9g4WUZQsbcl9Lj2gy6dv8qGiY7UK7Axbw3RGvN0k6FIGPMoGBwQWOUyVtraL1VqmMpAnIanIUnpY0z9E3wonvXH3H5w0ztKbuwNu7gTF8Liwy6VwOXD41ka6nAOxqdc0IukuCTqIsolOIR8quyJ8uh9sfMJdHn/jghxFte0pHWaDse9ruW+HwF50tYiGxKFaVue+NYnhO21WqJUYa+K9FgzSApEz7t5HZ4ksXjoLAY7XSru1daAVk+2LDTRZdLk/rTMhmKtjJst4b9YtGTb5/pGSaHCCn/QUmd7NwpumKhaelsdQxomlbUinT3ZWz1rf3zydlmDFvcjw==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1759.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:177::16) with
+ bh=CFcH1314NhDij0TWNbLFPkgKg6KZUxtEqZa0vfMFltI=;
+ b=IODjImOCmI7VeR1yn7nCL+QICKHO/W4JOnRQKwPYOaXPdUsrxRweUV5YiZVMO/55iooSfs9h0KM/II8Lxc+TrTUc3/n/3lqp8xo2CNZxPd7vh20mWfmUkK5kD/XUAv/Tp0e/zgu7GdF04iToWlHBx+VSwZZPS7YQx0I7IZSvQ/VMkPk3mWkFeummSGVTOeCHl2jMNdRUtabNOBkgUhb1pbfPjeGbYoCHYUChOleITRsvOuscQjw6Kbf2iSQp3ZVqQwRAyNUGNEOaWlY6qVCbfkf8KNozH4IqV0n85XaRQaLzd/FM6Y9ZXxsgJCa6jWS59jNqpUiMTEuV7d4kE0694g==
+Received: from DB6PR07CA0162.eurprd07.prod.outlook.com (2603:10a6:6:43::16) by
+ AM8PR10MB4114.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1c9::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.22; Thu, 7 Jul
- 2022 19:25:47 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::e86b:2aae:627b:df09]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::e86b:2aae:627b:df09%3]) with mapi id 15.20.5395.022; Thu, 7 Jul 2022
- 19:25:47 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: [External] - Re: More details on health monitoring notifications
-Thread-Topic: [External] - Re: More details on health monitoring notifications
-Thread-Index: AdiNbbhFH+3BkTQFR/qyyowp6qx+DADUDZ3AACKz1gAAO21HcA==
-Date: Thu, 7 Jul 2022 19:25:47 +0000
-Message-ID: 
- <PH1P110MB105066B5EF0817EFE24BF255E2839@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB105061FEB2694B16A3879348E2BD9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10506DDF3B33330889D67BE6E2819@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87o7y2s1p9.fsf@xenomai.org>
-In-Reply-To: <87o7y2s1p9.fsf@xenomai.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9cf08365-7379-4417-1e40-08da604e7e86
-x-ms-traffictypediagnostic: PH1P110MB1759:EE_
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- nKTG+5ssZ+45sBuHqAkVPoERljRnxNgJWvLXoYOi3K0fiHlMAzkS7oa/zdb7PzoJCQ5ic6JPVu3XnrxAhMAtiQVnUnMOzX5RzUCwj/npFCCbhrlnLVdRj8ZHW8HzExEP7xkf3dAmznsSaa5wiUI/fERuZ384MjK1OolDXRV/W4y/nQiu/ePTR12FyevJSbyKoYP3JbW4/JlpAK7q2pa3w3TPicCNoLgZbrOH+Vq0C53eyh6m/RLhOpGgXOCL09xiV2vbymCdUQg+EqbGKgaII3ool7iNgB5/WoiGML/jK34+jhYtVn7GecmrqGFkGyl8e3QzR0+L/F/PXuqFl/uZQkoXfYCTnMygWSl3cBOFENlXpxo28AOyM83ju+kO9cko7WED+db+Laskbyp4wjUBbfcvGNDNZHCNF8C2ldAA3Py92RqQD6Z3qyiEVVEigaGPz2XL9Hv43qO4Y5lYljiMHm86fmKvDEIx3nuecadeaS7amfOn4jJVn4eFgeV6edhVW4em77kyBISEkyyvz4t9MoBVZyHZF18M2oM3SuQes4TVw88ykBhyY3ckEd0aZHJSH3cHu6OEpqbnjxnjJgDclO9w1Ii3NbyjUynD4FllZkQD5PTtfJ4h4dTCGNrXUrZTMn5LVo/ZbY2XEf6w3zHV/ULN5EdeY3R8Wf43fHPmZ0MocU9tj7AoyENS0pD96Hap40SUHf4+e7nA3Bkr1cLCOzf3lkciDfFtMUGCIPfTYeJmbLjzNczS+mTUcCzSS4Uu
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(122000001)(83380400001)(38070700005)(38100700002)(99936003)(71200400001)(4744005)(44832011)(8936002)(86362001)(66946007)(66446008)(9686003)(8676002)(64756008)(5660300002)(66476007)(66556008)(26005)(6506007)(76116006)(4326008)(498600001)(55016003)(7696005)(52536014)(33656002)(186003)(2906002)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- HyazLmUvvuo+LHnMDVLs7dbpVk+nhAAdl4P0Aai2i2Pqqy/oLNzhYbMBp5Iia+Q9vb+RtneLoWrbCR2zDs4Ck+KoF+Zw2fkbGSDiiTr8GoDokVO1B+aLcxCUoksIxNFbySmKZ6aZKoHt29h+SvLVn9jSe0AR/1l5wgCrAvtUmtfjt9GqGQP56azUgpqObNaaQ4DKMLQYeY71TEPSsq0Uv5pBDlhYfLCz5BdtlnE5lvMEFCe2yIaq5NDxSyWy3pF/gPlW2CgJQxaasqTrjrx8zqO7WxCIMec3v9CglB8BvbFJA4LuCS3KNAe0zckQuXG8eQVi28ipQ0fkXmkNQS4Y8qP8xD6jTWUgZJw8diSmXeofW49XPjqSjyV8nDYfSONqXPofZlgvnJhpb//VjzRpV5+5uw8lETn/XOwoCmYlnlA=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0008_01D89205.1046B230"
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.17; Fri, 8 Jul
+ 2022 07:11:04 +0000
+Received: from DB5EUR01FT029.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:6:43:cafe::a4) by DB6PR07CA0162.outlook.office365.com
+ (2603:10a6:6:43::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.6 via Frontend
+ Transport; Fri, 8 Jul 2022 07:11:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.72; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.72) by
+ DB5EUR01FT029.mail.protection.outlook.com (10.152.4.241) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Fri, 8 Jul 2022 07:11:04 +0000
+Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
+ DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 8 Jul 2022 09:11:04 +0200
+Received: from [139.21.19.112] (139.21.19.112) by
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 8 Jul 2022 09:11:03 +0200
+Message-ID: <006148b8-dfa1-1abb-b243-029db08ceb0a@siemens.com>
+Date: Fri, 8 Jul 2022 09:11:03 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cf08365-7379-4417-1e40-08da604e7e86
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 19:25:47.2313
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1759
-X-Proofpoint-GUID: 61ZW7KY4_kMUHr0XhW5Tj6wXn3NZRMYN
-X-Proofpoint-ORIG-GUID: 61ZW7KY4_kMUHr0XhW5Tj6wXn3NZRMYN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_16,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 spamscore=0 mlxscore=0
- bulkscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0 malwarescore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207070077
-
-------=_NextPart_000_0008_01D89205.1046B230
-Content-Type: text/plain;
-	charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [RFC][PATCH] x86: dovetail: Permit to declare a trap handled
+Content-Language: en-US
+To: Xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>,
+	Johannes Kirchmair <johannes.kirchmair@sigmatek.at>, Richard Weinberger
+	<richard@nod.at>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [139.21.19.112]
+X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-AS-Result: No-10--15.538400-8.000000
+X-TMASE-MatchedRID: KkAe3/TPGQpA7NIb/hR3oOmWxAgjfDfrDGsvSm+tjWHi3aa5wOREERJS
+	x+7Qm/dKZBS9rNHmGlCINheLaEgz+dcDWT+bno+nxmJ07fhF3NZC+amDTCdIs6JVTu7sjgg1F4r
+	8H5YrEqzLkl8e9W70izZxczjXn+SumiCJ0WtA0U1sTJ5+0BsLPYxxTMlLewfdggra2NOo2i0/pO
+	SL72dTfwdkFovAReUoaUXs6FguVy2Wkqk2IvguWk4JukPmkVP5OYaLvc/+qakgCPGiZqtI8FDi5
+	vmx8OsRAkSnL4YTrqFn4/nMWJ1Bm6czyh8Nv2q46s99/ddG+MPTpuJrFQmMLCoiRKlBVkYIS3sN
+	HVAxomz7XVidhKCWnoHQ9Kct9aq8fdruklhVME2SSDwXemPNUlNq22uBrzfY/LSVFH0Kn4j865Q
+	lVwxmGyuGKh4AkqKVLK/0ECO56Oixoz8tfWWF04VWjMf7ysVUYMgr6Vt6S5K628cXbnOhT1Rn/7
+	j4scmhJsGUXROOpVmjxYyRBa/qJQPTK4qtAgwIPcCXjNqUmkW8QIu4z6HhEH7cGd19dSFd
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--15.538400-8.000000
+X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-SNTS-SMTP:
+ 6CBD78D0A13AFC53287CBFFA1283CCC9B9477920816F97D3947883D4CDB185492000:8
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c5d432d0-f7b6-4f09-d88a-08da60b105a4
+X-MS-TrafficTypeDiagnostic: AM8PR10MB4114:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	kbhCN3BpPkuuvCkip8stYKydulYNB4V8MyH3Byll8/DqkPPsnWtIiRxZt6017DxmbJhTsMoe/i5xZv6Zuf6vpynYIlt539gDi2be1L3Tvbc7wyn0nx/NiSISESCYVtVM1Yy9giLT5sSZSd2VriPOtUt5KcLO78a/qrEKq/s6qQGVn1HzGO/XzFYjudIfBjrUm1wwq0zV8U37eUGBvp8BLfghoPnjsvYSefyRNjBCZ/T6Tixz98IkeeChb716AETIcCxgg+k4qNPfIV87jJ3ZjJ4lT9FXmwVuCA7pPYTSSOIG1sIjsC9UrKFuOcJQFx5ddZO2r2lkzr+V7NN1DURdscHVjIwl9l4cO9enuzJ6R/0H/E3urCbFqn4TfCDmMU/llU2vtlJGeXMrChJFI3Z+NO1CWL7dfDS30Nn8/UpQCeK2WZh/6M+22xM8ibXuOReoZOk/m7hQIrFkYqc2Wt+1g9gIyklwbbecLnMh6I7cbB4G+c1/Qy5rLR9cCEzaCjHg1i3Q9v2UQz+mnrRuJ0nvrdpJ8krs9mxp1mWJOL7hWPvmGHky1kVfojCeUMkfj7yTvbuOIVblCBq0k+KwAQeJHt/uET9fxTgeW4drqruly78lQdaPM2Tj6FdKDGve8ZBDojCmdp1zEH4RZtfR717r0NsJGlJuhMcmfkw+ozofP+Lo9j0YlKuyT/b1k/SVwvzCpxRGP/Kc9OWPYhfIeBleASKYFBdtRKYNKlJSH8Tj3IJt6y7HUMamu1TjgCu/tdyW2NHfbXCUuvJUbVkyfxsjgzbExPgKI5wTSJZfLuZJO2sht7Nypj6wIcwojWwXxDY1olXajWaLZ4iYbGehIVxDQOwZ2/unilsI/wPmIUWB0JeCix0rDA81frt5e2ZlN52SKZdM8BKUcEU4nTQQKE5p/J5gX2u+uRpcd/yg1cYELOA=
+X-Forefront-Antispam-Report:
+	CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(376002)(136003)(40470700004)(46966006)(36840700001)(40480700001)(36756003)(47076005)(31686004)(40460700003)(82740400003)(186003)(36860700001)(16526019)(2906002)(2616005)(956004)(82310400005)(336012)(83380400001)(81166007)(316002)(31696002)(16576012)(5660300002)(26005)(44832011)(110136005)(478600001)(8936002)(70206006)(70586007)(8676002)(41300700001)(82960400001)(6706004)(356005)(86362001)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 07:11:04.5732
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5d432d0-f7b6-4f09-d88a-08da60b105a4
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB5EUR01FT029.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB4114
 
-Correct, it is running on x86. I am not sure what would be causing a page 
-fault in the EVL threads as I figured the mlockall call by evl_init would take 
-care of preventing that from happening.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I have tried to run the app with gdb (used to work fine pre-EVL), but now I 
-get all sorts off exceptions and error codes when trying to run in the 
-debugger. I quite frequently see EPERM issues with evl mutex unlock/lock (even 
-though it works fine when not run through a debugger). Also, when I swap the 
-thread mode flag from T_HMOBS to T_HMSIG and run in the debugger, I get a 
-"11776 CPU time limit exceeded (core dumped)" error on the create call for an 
-evl event in one of my threads. I am not sure why I am seeing such different 
-behavior in the debugger versus the normal run when it comes to the evl API 
-calls. Any ideas?
+This allows to skip reporting a trap to Linux when the OOB handler
+resolved it directly. The handler can signal this condition by returning
+"true". This feature was present in I-pipe as well.
 
-------=_NextPart_000_0008_01D89205.1046B230
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
+By intention, not all spots of oob_trap_notify are enabled for this.
+Debug traps are left out as well as asyncpf in kvm - no use cases from
+OOB-perspective.
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
-dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
-dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
-bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
-eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
-qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
-OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
-d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
-nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
-MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
-BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
-AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
-oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
-b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
-Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
-JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
-AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
-jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
-1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
-/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
-j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
-KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
-MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
-A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
-MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
-aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
-BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
-gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
-xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
-kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
-x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
-U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
-BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
-AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
-VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
-ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
-L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
-hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
-jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
-wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
-s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
-JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
-9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
-3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
-q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
-wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
-qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
-MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
-EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
-IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
-JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjIwNzA3MTkyNTQ1WjAvBgkqhkiG9w0BCQQxIgQgyqqPDmSs6wXM5hfMaB9PgPN9
-5w7mYOUHI6LXEqVRwuowgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
-BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
-AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
-AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
-cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
-ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
-dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
-A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
-aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCM
-RBtVh7E5ykBbROeatoRzR156ZcWRaNwxKcK+4kJmQInBoyUuexW+hYtT2YGezsdxySrrVUcnrkMV
-ye1bNe3za8GUq6O60MEljuuGuNdSczpSdf2S064fkIEVTs2ZmnKuR6yC1cLH4c2dTes8WF4QJj8E
-faN8YvKZGjtH/hrs1nyHcVzVEjTFwZGgX5If0VGdBwvzTuF3LKC6aQ3EAV7b2NV8DhtvXnkcUpXE
-Z1TZn+NNhfydXC2pkxhVnDLFuudS48jIxS1QaWVbMFoT2v10vOTAJMkNctkFGTWd6D80LCDqJ+9b
-3EBLTRKdjDkcQzE43aCuePZJ+AOCJsrYsnQ+AAAAAAAA
+NOTE: breaks unprepared users, breaks non-x86.
 
-------=_NextPart_000_0008_01D89205.1046B230--
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+I'm happy to add non-x86 support as well if the direction is fine.
+
+And if we introduce that to dovetail, we will have to add some kernel 
+version checks to Xenomai so that it does the right thing with the right 
+dovetail versions. Feature flags are out of fashion there as far as I 
+understood.
+
+ arch/x86/kernel/traps.c  | 38 ++++++++++++++++++++++----------------
+ arch/x86/mm/fault.c      |  9 ++++++---
+ include/linux/dovetail.h |  9 +++++----
+ kernel/dovetail.c        |  9 ++++++---
+ 4 files changed, 39 insertions(+), 26 deletions(-)
+
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 3d04a80a1464..daf222f444f4 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -163,10 +163,12 @@ static void show_signal(struct task_struct *tsk, int signr,
+ }
+ 
+ static __always_inline
+-void mark_trap_entry(int trapnr, struct pt_regs *regs)
++bool mark_trap_entry(int trapnr, struct pt_regs *regs)
+ {
+-	oob_trap_notify(trapnr, regs);
++	if (oob_trap_notify(trapnr, regs))
++		return false;
+ 	hard_cond_local_irq_enable();
++	return true;
+ }
+ 
+ static __always_inline
+@@ -211,9 +213,8 @@ static void do_error_trap(struct pt_regs *regs, long error_code, char *str,
+ {
+ 	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
+ 
+-	mark_trap_entry(trapnr, regs);
+-
+-	if (notify_die(DIE_TRAP, str, regs, error_code, trapnr, signr) !=
++	if (mark_trap_entry(trapnr, regs) &&
++	    notify_die(DIE_TRAP, str, regs, error_code, trapnr, signr) !=
+ 			NOTIFY_STOP) {
+ 		cond_local_irq_enable(regs);
+ 		do_trap(trapnr, signr, str, regs, error_code, sicode, addr);
+@@ -375,10 +376,12 @@ DEFINE_IDTENTRY_RAW(exc_invalid_op)
+ 		return;
+ 
+ 	state = irqentry_enter(regs);
+-	mark_trap_entry(X86_TRAP_UD, regs);
++	if (!mark_trap_entry(X86_TRAP_UD, regs))
++		goto mark_exit;
+ 	instrumentation_begin();
+ 	handle_invalid_op(regs);
+ 	instrumentation_end();
++mark_exit:
+ 	mark_trap_exit(X86_TRAP_UD, regs);
+ 	irqentry_exit(regs, state);
+ }
+@@ -411,7 +414,8 @@ DEFINE_IDTENTRY_ERRORCODE(exc_alignment_check)
+ {
+ 	char *str = "alignment check";
+ 
+-	mark_trap_entry(X86_TRAP_AC, regs);
++	if (!mark_trap_entry(X86_TRAP_AC, regs))
++		goto mark_exit;
+ 
+ 	if (notify_die(DIE_TRAP, str, regs, error_code, X86_TRAP_AC, SIGBUS) == NOTIFY_STOP)
+ 		goto mark_exit;
+@@ -595,7 +599,8 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
+ 
+ DEFINE_IDTENTRY(exc_bounds)
+ {
+-	mark_trap_entry(X86_TRAP_BR, regs);
++	if (!mark_trap_entry(X86_TRAP_BR, regs))
++		goto out;
+ 
+ 	if (notify_die(DIE_TRAP, "bounds", regs, 0,
+ 			X86_TRAP_BR, SIGSEGV) == NOTIFY_STOP)
+@@ -806,7 +811,8 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
+ 		if (fixup_vdso_exception(regs, X86_TRAP_GP, error_code, 0))
+ 			goto exit;
+ 
+-		mark_trap_entry(X86_TRAP_GP, regs);
++		if (!mark_trap_entry(X86_TRAP_GP, regs))
++			goto mark_exit;
+ 		gp_user_force_sig_segv(regs, X86_TRAP_GP, error_code, desc);
+ 		goto mark_exit;
+ 	}
+@@ -1273,7 +1279,8 @@ static void math_error(struct pt_regs *regs, int trapnr)
+ 		if (fixup_exception(regs, trapnr, 0, 0))
+ 			goto exit;
+ 
+-		mark_trap_entry(trapnr, regs);
++		if (!mark_trap_entry(trapnr, regs))
++			goto mark_exit;
+ 		task->thread.error_code = 0;
+ 		task->thread.trap_nr = trapnr;
+ 
+@@ -1300,10 +1307,9 @@ static void math_error(struct pt_regs *regs, int trapnr)
+ 	if (fixup_vdso_exception(regs, trapnr, 0, 0))
+ 		goto exit;
+ 
+-	mark_trap_entry(trapnr, regs);
+-
+-	force_sig_fault(SIGFPE, si_code,
+-			(void __user *)uprobe_get_trap_addr(regs));
++	if (mark_trap_entry(trapnr, regs))
++		force_sig_fault(SIGFPE, si_code,
++				(void __user *)uprobe_get_trap_addr(regs));
+ mark_exit:
+ 	mark_trap_exit(trapnr, regs);
+ exit:
+@@ -1416,8 +1422,8 @@ DEFINE_IDTENTRY(exc_device_not_available)
+ 		 * to kill the task than getting stuck in a never-ending
+ 		 * loop of #NM faults.
+ 		 */
+-		mark_trap_entry(X86_TRAP_NM, regs);
+-		die("unexpected #NM exception", regs, 0);
++		if (mark_trap_entry(X86_TRAP_NM, regs))
++			die("unexpected #NM exception", regs, 0);
+ 		mark_trap_exit(X86_TRAP_NM, regs);
+ 	}
+ }
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 834a6edd0be5..1cffd321878f 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -650,7 +650,8 @@ page_fault_oops(struct pt_regs *regs, unsigned long error_code,
+ 	 * Do not bother unwinding the notification context on
+ 	 * CPU/firmware/kernel bug.
+ 	 */
+-	oob_trap_notify(X86_TRAP_PF, regs);
++	if (oob_trap_notify(X86_TRAP_PF, regs))
++		return;
+ 
+ #ifdef CONFIG_VMAP_STACK
+ 	/*
+@@ -890,7 +891,8 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
+ 	if (fixup_vdso_exception(regs, X86_TRAP_PF, error_code, address))
+ 		return;
+ 
+-	oob_trap_notify(X86_TRAP_PF, regs);
++	if (oob_trap_notify(X86_TRAP_PF, regs))
++		return;
+ 
+ 	if (likely(show_unhandled_signals))
+ 		show_signal_msg(regs, error_code, address, tsk);
+@@ -1363,7 +1365,8 @@ void do_user_addr_fault(struct pt_regs *regs,
+ 	 * event, so that it might switch current to in-band mode if
+ 	 * need be.
+ 	 */
+-	oob_trap_notify(X86_TRAP_PF, regs);
++	if (oob_trap_notify(X86_TRAP_PF, regs))
++		return;
+ 
+ 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+ 
+diff --git a/include/linux/dovetail.h b/include/linux/dovetail.h
+index 6a244a44ab1f..4bd27531f9e5 100644
+--- a/include/linux/dovetail.h
++++ b/include/linux/dovetail.h
+@@ -58,14 +58,15 @@ void inband_task_init(struct task_struct *p);
+ 
+ int pipeline_syscall(unsigned int nr, struct pt_regs *regs);
+ 
+-void __oob_trap_notify(unsigned int exception,
++bool __oob_trap_notify(unsigned int exception,
+ 		       struct pt_regs *regs);
+ 
+-static __always_inline void oob_trap_notify(unsigned int exception,
++static __always_inline bool oob_trap_notify(unsigned int exception,
+ 					struct pt_regs *regs)
+ {
+ 	if (running_oob() && !test_thread_local_flags(_TLF_OOBTRAP))
+-		__oob_trap_notify(exception, regs);
++		return __oob_trap_notify(exception, regs);
++	return false;
+ }
+ 
+ void __oob_trap_unwind(unsigned int exception,
+@@ -248,7 +249,7 @@ static inline void arch_dovetail_exec_prepare(void)
+  * Keep the trap helpers as macros, we might not be able to resolve
+  * trap numbers if CONFIG_DOVETAIL is off.
+  */
+-#define oob_trap_notify(__exception, __regs)	do { } while (0)
++#define oob_trap_notify(__exception, __regs)	false
+ #define oob_trap_unwind(__exception, __regs)	do { } while (0)
+ 
+ static inline
+diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+index 79fd75918b37..167dc61dbcce 100644
+--- a/kernel/dovetail.c
++++ b/kernel/dovetail.c
+@@ -254,14 +254,16 @@ int pipeline_syscall(unsigned int nr, struct pt_regs *regs)
+ 	return 0; /* pass syscall down to the in-band dispatcher. */
+ }
+ 
+-void __weak handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
++bool __weak handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
+ {
++	return false;
+ }
+ 
+-noinstr void __oob_trap_notify(unsigned int exception,
++noinstr bool __oob_trap_notify(unsigned int exception,
+ 			       struct pt_regs *regs)
+ {
+ 	unsigned long flags;
++	bool handled;
+ 
+ 	/*
+ 	 * We send a notification about exceptions raised over a
+@@ -273,10 +275,11 @@ noinstr void __oob_trap_notify(unsigned int exception,
+ 		set_thread_local_flags(_TLF_OOBTRAP);
+ 		flags = hard_local_irq_save();
+ 		instrumentation_begin();
+-		handle_oob_trap_entry(exception, regs);
++		handled = handle_oob_trap_entry(exception, regs);
+ 		instrumentation_end();
+ 		hard_local_irq_restore(flags);
+ 	}
++	return handled;
+ }
+ 
+ void __weak handle_oob_trap_exit(unsigned int trapnr, struct pt_regs *regs)
+-- 
+2.35.3
