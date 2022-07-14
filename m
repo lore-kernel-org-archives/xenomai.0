@@ -1,34 +1,38 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 739AA20E1
-	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:16:28 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::221])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 1852BC9265
-	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:16:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3E5290B
+	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:19:31 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id 2D88060005
+	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:19:23 +0000 (UTC)
+X-Envelope-To: xenomai@xenomai.org
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 19AF9D80353
+	for <xenomai@xenomai.org>; Thu, 14 Jul 2022 08:19:23 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id B350724000C;
-	Thu, 14 Jul 2022 08:16:07 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id B0EB41C0007;
+	Thu, 14 Jul 2022 08:19:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1657786568;
+	t=1657786763;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=M0EDHkP7+1mc5rjdDHeh9K8mJx0v810SqN4301OgH9U=;
-	b=DJVHv+zFHKm6d2Cn9GMKM5IrFuvxHtSNLuPfUaKRsBbdzp40uPh7B/Ifl/KgOsImDgubn/
-	oR1Ay/DFa3/uNlSKIOMmmU07Vh+w5WCUPjlzOBVxkFUaAzUsRDZt7jFvr8ogV4iBuK4MDW
-	iR7ldnUtv5pzeEl5yodt6wTIA6pNWhX9tqWC4XBXYxMlIqHz0nnVbABRYnrYiNgrUEsQx8
-	+e/xh6LoGnAp1UJPwtrO3wGjTelQ+GUeeYEy6q370n6LUXasiA7cgjD1EwrcxbZbXDmFqN
-	S6dUJiUrlBlBIVDfsLPdD6Fxilu25k7MzSprsF/xK4mHHHGGiIloLXBEQ21P8Q==
-References: <PH1P110MB105057E1EB4A12D83DE85CA2E2899@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+	bh=YL+OUlgvNt8R9E/lHQ/hLbCTx3oUcxhN0lQcnKykCjg=;
+	b=T5UwLk0796B8V33xDvT/vsDYI9o9LLjDfXkBBen/QiGxaIMqgLY2r0vLt4GCYxgdkG0NND
+	XT6BwNHsCp4MqrAS43Ica1o0FotxDB9ao53+ilGXsVbIKPqW+rIyAp4TPZnfbl6pol87yT
+	oaE/lOQvn96DC+3SNDHtOXZadY2+2bK5xHU7rcRiW6GHFPs6JNSB94euUI0xnJcSoYWoT4
+	715W7UdpQC4UwDS8Os06uosOpAVdumETmxNwLzy13PixE99G8XCLeviNA2L5iH4493fDWq
+	++sruBTnQuc66BVaDsgiG898SXBg1hF8EZPJ/Noi3gonDRkDAtgAmOn1LhuS1Q==
+References: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
 User-agent: mu4e 1.6.6; emacs 27.2
 From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: Using the heap in an EVL thread
-Date: Thu, 14 Jul 2022 09:55:56 +0200
-In-reply-to: <PH1P110MB105057E1EB4A12D83DE85CA2E2899@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87k08gds8p.fsf@xenomai.org>
+To: Sri Subramanian <sridhar.subramanian@gmail.com>
+Cc: xenomai@xenomai.org
+Subject: Re: Xenomai 4 / oob_sendmsg crashes kernel from tidbits/oob-net-icmp
+Date: Thu, 14 Jul 2022 10:16:23 +0200
+In-reply-to: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
+Message-ID: <87fsj4ds39.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -36,33 +40,44 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
+Received-SPF: pass (spool5: domain of xenomai.org designates 217.70.183.197 as permitted sender) client-ip=217.70.183.197; envelope-from=rpm@xenomai.org; helo=relay5-d.mail.gandi.net;
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=xenomai.org header.s=gm1 header.b=T5UwLk07;
+	dmarc=none;
+	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 217.70.183.197 as permitted sender) smtp.mailfrom=rpm@xenomai.org
 
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+Sri Subramanian <sridhar.subramanian@gmail.com> writes:
 
-> [[S/MIME Signed Part:Undecided]]
-> I have done a bit of unit testing using an EVL thread along with a
-> structure such as an STL vector. I created and resized the vector
-> (which uses the std allocator) in the EVL thread itself, and I am not
-> seeing any in-band switches. Is it not a requirement to use the EVL
-> heap in an EVL thread? Especially when it comes to dynamic allocation
-> such as resizing a vector during realtime processing.
+> Hello,
+>
+> I am trying to optimize sending ethernet raw packets (for an Ethercat
+> fieldbus application) on a RaspberryPi/CM4 environment.
+>
+> Before implementing the application, I thought I'd try getting an ICMP
+> echo using the "tidbits" sample program oob-net-icmp.
+>
+> I am using eth0 from a RaspberryPI (used to ping) connected to another
+> PI device (CM4 on an IO board) also on eth0, which is echoing back the
+> pings using oob-net-icmp. I set up vlan 42 as documented in the
+> program, for both the devices. (I verify the network connection is
+> good  prior to this by sending pings and verifying the echo responses,
+> through the standard Linux stack on eth0).
+>
+> I also set up the ping-receiving device so the Xenomai kernel can
+> route the packets up the Xenomai mini stack, setting:
+>
+> echo 1> /sys/class/net/eth0.42/oob_port
+> echo 42 > /sys/class/evl/control/net_vlans
+>
+> On the first ping, the kernel crashes with the stack as below. I've
+> tested on both versions 5.15 and 5.17 (both with CONFIG_NET_OOB=y).
+> Thanks for any help or guidance.
+>
 
-It is. If the std allocator eventually relies on malloc(), the latter
-may have to issue in-band syscalls to obtain more memory from the kernel
-by extending the data segment or mapping more anon page(s) to fulfill
-the request. The caller may also have to sleep on a common mutex when
-allocating a chunk, upon contention with another thread doing the
-same. If malloc is fed by mapping memory pages and not sbrk(), it might
-even want to release unused pages at some point depending on some
-threshold, which would cause an in-band syscall too.
-
-IOW, there are several reasons why the calling thread may have to switch
-in-band while allocating or freeing a chunk of memory, but these
-conditions look random from the POV of the application. Therefore
-anything which is not based on a real-time allocator would be unsafe to
-use in this context, even if execution _seems_ to be ok most of the
-time.
+Thanks for reporting, I can reproduce this as well. Maybe a problem with
+the prep/recycling of socket buffers. Investigating this bug is on my
+todo list.
 
 -- 
 Philippe.
