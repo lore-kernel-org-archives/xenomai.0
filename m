@@ -1,38 +1,31 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3E5290B
-	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:19:31 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id 2D88060005
-	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:19:23 +0000 (UTC)
-X-Envelope-To: xenomai@xenomai.org
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 19AF9D80353
-	for <xenomai@xenomai.org>; Thu, 14 Jul 2022 08:19:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6EBF18F
+	for <xenomai@lists.linux.dev>; Thu, 14 Jul 2022 08:31:58 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id B0EB41C0007;
-	Thu, 14 Jul 2022 08:19:22 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id DA3251C0002;
+	Thu, 14 Jul 2022 08:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1657786763;
+	t=1657787511;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YL+OUlgvNt8R9E/lHQ/hLbCTx3oUcxhN0lQcnKykCjg=;
-	b=T5UwLk0796B8V33xDvT/vsDYI9o9LLjDfXkBBen/QiGxaIMqgLY2r0vLt4GCYxgdkG0NND
-	XT6BwNHsCp4MqrAS43Ica1o0FotxDB9ao53+ilGXsVbIKPqW+rIyAp4TPZnfbl6pol87yT
-	oaE/lOQvn96DC+3SNDHtOXZadY2+2bK5xHU7rcRiW6GHFPs6JNSB94euUI0xnJcSoYWoT4
-	715W7UdpQC4UwDS8Os06uosOpAVdumETmxNwLzy13PixE99G8XCLeviNA2L5iH4493fDWq
-	++sruBTnQuc66BVaDsgiG898SXBg1hF8EZPJ/Noi3gonDRkDAtgAmOn1LhuS1Q==
-References: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
+	bh=9lQX/9dhhVfqsOWKjQEAhMX2b+PHXMNX+NMGAaa44H0=;
+	b=lyPBT0mIF6Hn93/sNjHLqsZ/ytBTyXcz7ScgfYZV/TuVkBVysILbHklrnteq/dFWDvbdq8
+	xcT8zpD49gU51Mu4qXDwXwIJtJJnsnIPsEidlgnNbyyP23E0tJBNf8nGOWVd0tGpI4+ihj
+	evX9jfaVMjxnZ9J3m8acueqq2RD4A/bUXUrDnqKJUTTIz3zjURc6TaCXI0AaxLdue10G5R
+	EYCkD17vkuXKECqiQrr0Ftk0SnIv8aOQRXVkA1UncfVYSJgtyWpCerEMR+RbvNgGuKLV8X
+	tTOhvr8cZD/gD6CdFMvP3pSSRHhfsRdn+m+6VI7p5SwViu69/qXD/6CWEokYrw==
+References: <PH1P110MB1050DA45ACEDB22C7EFA31C0E2839@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 User-agent: mu4e 1.6.6; emacs 27.2
 From: Philippe Gerum <rpm@xenomai.org>
-To: Sri Subramanian <sridhar.subramanian@gmail.com>
-Cc: xenomai@xenomai.org
-Subject: Re: Xenomai 4 / oob_sendmsg crashes kernel from tidbits/oob-net-icmp
-Date: Thu, 14 Jul 2022 10:16:23 +0200
-In-reply-to: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
-Message-ID: <87fsj4ds39.fsf@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: More details on health monitoring notifications
+Date: Thu, 14 Jul 2022 10:19:41 +0200
+In-reply-to: <PH1P110MB1050DA45ACEDB22C7EFA31C0E2839@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87bktsdrih.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,44 +33,60 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
-Received-SPF: pass (spool5: domain of xenomai.org designates 217.70.183.197 as permitted sender) client-ip=217.70.183.197; envelope-from=rpm@xenomai.org; helo=relay5-d.mail.gandi.net;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.s=gm1 header.b=T5UwLk07;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 217.70.183.197 as permitted sender) smtp.mailfrom=rpm@xenomai.org
 
 
-Sri Subramanian <sridhar.subramanian@gmail.com> writes:
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
-> Hello,
+> [[S/MIME Signed Part:Undecided]]
+> Correct, it is running on x86. I am not sure what would be causing a page 
 >
-> I am trying to optimize sending ethernet raw packets (for an Ethercat
-> fieldbus application) on a RaspberryPi/CM4 environment.
+> fault in the EVL threads as I figured the mlockall call by evl_init would take 
 >
-> Before implementing the application, I thought I'd try getting an ICMP
-> echo using the "tidbits" sample program oob-net-icmp.
->
-> I am using eth0 from a RaspberryPI (used to ping) connected to another
-> PI device (CM4 on an IO board) also on eth0, which is echoing back the
-> pings using oob-net-icmp. I set up vlan 42 as documented in the
-> program, for both the devices. (I verify the network connection is
-> good  prior to this by sending pings and verifying the echo responses,
-> through the standard Linux stack on eth0).
->
-> I also set up the ping-receiving device so the Xenomai kernel can
-> route the packets up the Xenomai mini stack, setting:
->
-> echo 1> /sys/class/net/eth0.42/oob_port
-> echo 42 > /sys/class/evl/control/net_vlans
->
-> On the first ping, the kernel crashes with the stack as below. I've
-> tested on both versions 5.15 and 5.17 (both with CONFIG_NET_OOB=y).
-> Thanks for any help or guidance.
+> care of preventing that from happening.
 >
 
-Thanks for reporting, I can reproduce this as well. Maybe a problem with
-the prep/recycling of socket buffers. Investigating this bug is on my
-todo list.
+We may have a clue by knowing which type of memory is being referred
+to.
+
+- Did you trace the offending access using gdb, is it regular memory?
+
+- Does your application fork() in any way prior to running into this
+  issue?
+
+>  
+>
+> I have tried to run the app with gdb (used to work fine pre-EVL), but now I 
+>
+
+Which previous environment was this? Xenomai 3.x + I-pipe?
+
+> get all sorts off exceptions and error codes when trying to run in the 
+>
+> debugger. I quite frequently see EPERM issues with evl mutex unlock/lock (even 
+>
+> though it works fine when not run through a debugger). Also, when I swap the 
+>
+> thread mode flag from T_HMOBS to T_HMSIG and run in the debugger, I get a 
+>
+> "11776 CPU time limit exceeded (core dumped)" error on the create call for an 
+>
+> evl event in one of my threads.
+> I am not sure why I am seeing such different 
+>
+> behavior in the debugger versus the normal run when it comes to the evl API 
+>
+> calls. Any ideas?
+>
+
+SIGXCPU is an alias of SIGDEBUG, the signal the EVL core uses to warn
+you about something wrong in general. e.g. if CONFIG_EVL_DEBUG_WOLI is
+set in the kernel configuration and the application is doing something
+wrong wrt mutex-based locking patterns, the core would notify it using
+SIGDEBUG. The causes are described for the T_WOLI bit at [1]. The core
+might also issue SIGDEBUG when the watchdog triggers for the current
+thread (CONFIG_EVL_WATCHDOG).
+
+[1] https://evlproject.org/core/user-api/thread/#health-monitoring
 
 -- 
 Philippe.
