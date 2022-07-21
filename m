@@ -1,155 +1,101 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FD9A1FA5
-	for <xenomai@lists.linux.dev>; Thu, 21 Jul 2022 00:38:37 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id 11D1C1C0002
-	for <xenomai@lists.linux.dev>; Thu, 21 Jul 2022 00:38:34 +0000 (UTC)
-X-Envelope-To: rpm@xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E53D1854
+	for <xenomai@lists.linux.dev>; Thu, 21 Jul 2022 07:47:13 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id 2CF5D24000C
+	for <xenomai@lists.linux.dev>; Thu, 21 Jul 2022 07:47:10 +0000 (UTC)
 X-Envelope-To: xenomai@xenomai.org
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id EB1839401A1;
-	Thu, 21 Jul 2022 00:38:33 +0000 (UTC)
-Received: by mail-wr1-f46.google.com with SMTP id u5so92976wrm.4;
-        Wed, 20 Jul 2022 17:38:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VV3XFnms/QB2W655OfXtWeJ3QJwMZNA4QqN2QXtV/uI=;
-        b=fd0ad5sltSVEjMcEeNewKyKIvFpnxMYpI85FpCYbDiPb9/UG7S+skr1KYva/79zznC
-         hPB3qBTWmUpncvh4Cmq/c/+LGPX+8hpby7yjI6CdQ0sFc4bZSclyYUd4a1H/lCyDXlnm
-         l6/3GJlC5Vi+V7NJt0+/7ObpQQowgdEbXh8VKWuGtp37yXLAfAdFtlHlCK2E75NEwLKF
-         jRDGlIVWdGpsYC882tWDhHM6tLJ7MzEnDZM1nvphgbBLATPRRgPNB3dS14K6EUgLue5G
-         wYHgySNSfKJfRYWIrFt8lDNs7R8wmyX8r/L40D7gbRTph2JnRcPmOh0qdtko8hkzSPxJ
-         vWlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VV3XFnms/QB2W655OfXtWeJ3QJwMZNA4QqN2QXtV/uI=;
-        b=iW6FdiBKYduBC7OTvNuuKkXFMT0H2vog3BbxdBPgMtNjxEWVC6kQKgBYqd3hxgs+ZA
-         L49kDAYo7UPaQ2eYaWSt1SmUHCwlaACxaSNamIYJvtgXnkpbnGAFunfkRLfCuu6pnp6m
-         fQspKiexnkDfdE8hk1ddyxj0IrTJmgNNq3My07NNz5YjB2+N0xe66+hmg90i5dXznfoA
-         oc6BC7MiPpnzCxaDMC9iGFwczNr+6rUIK02qB5BLAA3y2BwZPtEDLjbepL2bsv9LuIDk
-         LSOrKGcHI26FFq2syoRl1ty6SjGBBCuEt/rd8bmfAE0/VBchxfEP9p8tLrVloSpvCJJq
-         wdLw==
-X-Gm-Message-State: AJIora85g6D3dudX2Ja5+lST6qwbTAvg6M+K4wplR6zNHPjUn9gJpvs7
-	UInPAJytmBIq+dwaP53KfVGa3nZ52AzVcjAs+6nMOz7+
-X-Google-Smtp-Source: AGRyM1vbByQP1+W26iU/iaTDPTTuBwHjEs5BTuAAXzU9wDU61c6MhR9Jup/wUzk3hGPqJ+paKOZ4gmPuD+LDc7n0Z4w=
-X-Received: by 2002:a05:6000:188b:b0:21d:b277:d492 with SMTP id
- a11-20020a056000188b00b0021db277d492mr33935987wri.311.1658363913321; Wed, 20
- Jul 2022 17:38:33 -0700 (PDT)
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 28E81740045
+	for <xenomai@xenomai.org>; Thu, 21 Jul 2022 07:47:09 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id C9FABFF805;
+	Thu, 21 Jul 2022 07:47:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1658389629;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=aGcFjtuknajhL0ZG3AQAUO4Dcs6VwbdsSDjJoxYESv0=;
+	b=dSUSYU8XDrctX4Jl5SQpbg5hk58lElU9cb66CaDRY1TTazljfRBWQzfpsUK3P7xTyHoFSZ
+	KTlSMSDxTz4rwaRYKQahQS8FrVZDvSZwqjW43B+o7XGD3xMJ1SeWtqpV6zYTSyt/lGRktZ
+	2Onz0DVkgakkL+dLkZ5TXbWYtEAvrzhYOQQS21pbKX2v3Os/6EexUH0aewGPUaaa6pX1c5
+	43pH1RPNQPuDbFvHY7Yu3nJOLMzcwf1rGuWlmF7zzlInUnEmlPRloFqqhhqU2rhMllUMT5
+	2ne53FF9OawhCkIRJQjB3SfZVYqG9wivNT8J1d4U9qkwU2fzsRW7kyY6uA4xyw==
+References: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
+ <87fsj3d827.fsf@xenomai.org>
+ <CAAm9oxq0qzdxx+KnbROMCHgNvp-xEZ99O90omY4zOxXtxsEpsA@mail.gmail.com>
+ <CAAm9oxqa0Rp3x3QS_oteS7PX35n4W8TYZu1=7y6U_QC5G-3S=w@mail.gmail.com>
+ <87edygmas6.fsf@xenomai.org>
+ <CAAm9oxqx-P9O7cONgeGwud0BvsSWok7itGzqSZdc7NRCmFLdyg@mail.gmail.com>
+ <87tu7bk76a.fsf@xenomai.org>
+ <CAAm9oxpbtX2qXHPxOGCQre14_7T7jZtDuN=b5U2sA2B_su6ARQ@mail.gmail.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Sri Subramanian <sridhar.subramanian@gmail.com>
+Cc: xenomai@xenomai.org
+Subject: Re: Xenomai 4 / oob_sendmsg crashes kernel from tidbits/oob-net-icmp
+Date: Thu, 21 Jul 2022 09:39:50 +0200
+In-reply-to: <CAAm9oxpbtX2qXHPxOGCQre14_7T7jZtDuN=b5U2sA2B_su6ARQ@mail.gmail.com>
+Message-ID: <87a692ewlf.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAAm9oxrn5pTSPH_AqrZ_0QakrL1LDsAW2GfA=ckejhnYFPOrFA@mail.gmail.com>
- <87fsj3d827.fsf@xenomai.org> <CAAm9oxq0qzdxx+KnbROMCHgNvp-xEZ99O90omY4zOxXtxsEpsA@mail.gmail.com>
- <CAAm9oxqa0Rp3x3QS_oteS7PX35n4W8TYZu1=7y6U_QC5G-3S=w@mail.gmail.com>
- <87edygmas6.fsf@xenomai.org> <CAAm9oxqx-P9O7cONgeGwud0BvsSWok7itGzqSZdc7NRCmFLdyg@mail.gmail.com>
- <87tu7bk76a.fsf@xenomai.org>
-In-Reply-To: <87tu7bk76a.fsf@xenomai.org>
-From: Sri Subramanian <sridhar.subramanian@gmail.com>
-Date: Wed, 20 Jul 2022 17:38:22 -0700
-Message-ID: <CAAm9oxpbtX2qXHPxOGCQre14_7T7jZtDuN=b5U2sA2B_su6ARQ@mail.gmail.com>
-Subject: Re: Xenomai 4 / oob_sendmsg crashes kernel from tidbits/oob-net-icmp
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
-Content-Type: text/plain; charset="UTF-8"
-Received-SPF: pass (spool1: domain of gmail.com designates 209.85.221.46 as permitted sender) client-ip=209.85.221.46; envelope-from=sridhar.subramanian@gmail.com; helo=mail-wr1-f46.google.com;
+Content-Type: text/plain
+Received-SPF: pass (spool2: domain of xenomai.org designates 217.70.183.199 as permitted sender) client-ip=217.70.183.199; envelope-from=rpm@xenomai.org; helo=relay9-d.mail.gandi.net;
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=gmail.com header.s=20210112 header.b=fd0ad5sl;
-	spf=pass (spool.mail.gandi.net: domain of sridharsubramanian@gmail.com designates 209.85.221.46 as permitted sender) smtp.mailfrom=sridharsubramanian@gmail.com;
-	dmarc=pass (policy=none) header.from=gmail.com
+	dkim=pass header.d=xenomai.org header.s=gm1 header.b=dSUSYU8X;
+	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 217.70.183.199 as permitted sender) smtp.mailfrom=rpm@xenomai.org;
+	dmarc=none
 
-On Wed, Jul 20, 2022 at 10:47 AM Philippe Gerum <rpm@xenomai.org> wrote:
+
+Sri Subramanian <sridhar.subramanian@gmail.com> writes:
+
+> On Wed, Jul 20, 2022 at 10:47 AM Philippe Gerum <rpm@xenomai.org> wrote:
+>>
+>>
+>> Ok. On my end, I'll connect a pi4 with the i.MX6, to add the GENET MAC
+>> module to the picture.
+>>
 >
+> It looks like the GENET MAC driver (or the interface) is the culprit.
+> For some reason, it
+> restricts the packets sent to 10 after every netif down/up toggle.
 >
-> Ok. On my end, I'll connect a pi4 with the i.MX6, to add the GENET MAC
-> module to the picture.
+
+Weird. I'll trace that.
+
+> I attached a network adapter card to the PCIe interface and connected
+> that to the switch.
+>
+> Both the oob-net-icmp and my packet generator are able to call oob_sendmsg
+> continuously!
+>
+> One anomaly I found in my experimentation:
+>
+> - When I try the USB-ethernet adapter, the packets are not seen by the
+> EVL mini-stack and
+> despite the fact that /sys/class/net/eth1.42/oob_port is set to 1 and
+> control/net_vlans is 42,
+> the packets are read/responded to by the Linux kernel and oob-net-icmp
+> is just waiting.
+>
+> Previously I've used the USB-ethernet adapter for all tcp/ip
+> communication to the device
+> and it works just fine.
 >
 
-It looks like the GENET MAC driver (or the interface) is the culprit.
-For some reason, it
-restricts the packets sent to 10 after every netif down/up toggle.
+I suspect something is wrong in the oob traffic detection handler,
+namely [1]. For some reason, incoming packets are not seen as belonging
+to the oob vlan. Most likely something I overlooked when looking for the
+802.1q encapsulation, which the USB adapter triggers.
 
-I attached a network adapter card to the PCIe interface and connected
-that to the switch.
+[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/v5.15.y-evl-rebase/kernel/evl/net/ethernet/input.c#L36
 
-Both the oob-net-icmp and my packet generator are able to call oob_sendmsg
-continuously!
-
-One anomaly I found in my experimentation:
-
-- When I try the USB-ethernet adapter, the packets are not seen by the
-EVL mini-stack and
-despite the fact that /sys/class/net/eth1.42/oob_port is set to 1 and
-control/net_vlans is 42,
-the packets are read/responded to by the Linux kernel and oob-net-icmp
-is just waiting.
-
-Previously I've used the USB-ethernet adapter for all tcp/ip
-communication to the device
-and it works just fine.
-
-> >
-> > On Wed, Jul 20, 2022 at 1:46 AM Philippe Gerum <rpm@xenomai.org> wrote:
-> >>
-> >>
-> >> Sri Subramanian <sridhar.subramanian@gmail.com> writes:
-> >>
-> >> > On Thu, Jul 14, 2022 at 5:59 PM Sri Subramanian
-> >> > <sridhar.subramanian@gmail.com> wrote:
-> >> >>
-> >> >> On Thu, Jul 14, 2022 at 8:32 AM Philippe Gerum <rpm@xenomai.org> wrote:
-> >> >> >
-> >> > <snip>
-> >> >> >
-> >> >> > This patch may help:
-> >> >> > https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/2ad6b2207f9f1669f64f6816428a20e1bbd6357c
-> >> >> >
-> >> >> > Feedback on this fix welcome, so that we may assume the issue is closed.
-> >> >> >
-> >> >>
-> >> >
-> >> > Hello Philippe,
-> >> >
-> >> > As noted below, the fix doesn't crash the kernel.
-> >> >
-> >> > However, I observe this strange behavior with oob_sendmsg:
-> >> >
-> >> > 1. With oob-net-icmp, sending back ICMP echo responses, the pinging device
-> >> > only receives exactly 10 responses, then stops. oob-net-icmp continues to
-> >> > print on the console that it is sending responses.
-> >> >
-> >> > 2. If I just use oob_sendmsg to send a packet every second to the network and
-> >> > then run tshark on the receiving device, I see the same behavior -- 10 packets
-> >> > received and then nothing while the client continues to indicate it
-> >> > has successfully
-> >> > sent the packets.
-> >> >
-> >> > 3. Once you get into this condition of "non-sent-packets", the only
-> >> > way to get out
-> >> > is to turn off eth0.42, reset the values to oob_port and
-> >> > control_vlans, then turn on
-> >> > eth0.42. It is, weirdly, as if the oob links are restricted to only
-> >> > send 10 packets.
-> >> >
-> >> > Again, the environment is Raspberry PI/CM4 and I've tested with both
-> >> > 5.15 and 5.17.
-> >> >
-> >>
-> >> I cannot reproduce such behavior (x86 <-> i.MX6q on the same switch),
-> >> the overnight test was still ok both sides after 14hrs. Does tshark see
-> >> the packets going out when observing from the sending device?
-> >>
-> >> --
-> >> Philippe.
->
->
-> --
-> Philippe.
+-- 
+Philippe.
