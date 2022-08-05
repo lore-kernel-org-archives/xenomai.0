@@ -1,66 +1,59 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63832EA2
-	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 09:11:26 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::221])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id EC06DC1F5B
-	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 09:00:58 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 4F621240002;
-	Fri,  5 Aug 2022 09:00:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1659690050;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=w4rQWuYySHuh98w5plBoVn24tyVExDLAre5buqYt0zQ=;
-	b=JeiytReH2OrJLX674YZcVZrybj6M9RYSU236LsnernVh2lGTE7LFTs0VhKVbVFwPxq0O7O
-	HLAtUKEwTCjsC2LxnMW2OLKc42le9Byubas+JHUKw/vskbrk1o3UplVabL6+6uJcTEFZ2p
-	Io8FiQbaMTqA4ZlxH2IIiYCcVNrdIkHRanqfiKtJBeiZjHhEfIJvUpT8dOzOwAKndXCBlu
-	tRY9dZOAIi4NcbuKlvTLNidJZqV0J0eyBX0VQrWtkJytq2BIM0vwu7Jm435KDYskam09Gg
-	KAk7LLJsCuYRY/oVwXhONTaYU+OIwBJ4YnfUM99Au4zogZ2Ape7cXfHD26ngkA==
-References: <c2c8a20e-0298-60f3-be88-4477be6c95be@siemens.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [PATCH dovetail-5.10.y] x86: irq_pipeline: fix build error
-Date: Fri, 05 Aug 2022 11:00:43 +0200
-In-reply-to: <c2c8a20e-0298-60f3-be88-4477be6c95be@siemens.com>
-Message-ID: <87les383pb.fsf@xenomai.org>
+Received: from smtpfb2-g21.free.fr (smtpfb2-g21.free.fr [212.27.42.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D370881D
+	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 12:58:43 +0000 (UTC)
+Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
+	by smtpfb2-g21.free.fr (Postfix) with ESMTP id 2F6104CB23
+	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 14:50:57 +0200 (CEST)
+Received: from mail.thom.fr.eu.org (unknown [IPv6:2a01:e0a:2aa:1dd0::2])
+	by smtp5-g21.free.fr (Postfix) with ESMTPS id F3A2B60148
+	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 14:50:48 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22) with ESMTP id 275ComZl912391
+	for <xenomai@lists.linux.dev>; Fri, 5 Aug 2022 14:50:48 +0200
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+To: xenomai@lists.linux.dev
+User-Agent: SOGoMail 5.0.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Date: Fri, 05 Aug 2022 14:50:48 +0200
+Subject: Using setuid to relinquish root rights
+Message-ID: <7eb52-62ed1200-d-65e32200@245807512>
+X-Forward: 217.109.173.233, 165.225.20.103
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.6 at tls-srv-03
+X-Virus-Status: Clean
 
+Hello,
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+I'm running a Xenomai (3.1) app, that comprises both realtime xenomai t=
+hread and plain linux threads. The app starts as root so as to be able =
+to bind <1024 tcp sockets.
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  arch/x86/kernel/alternative.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-> index a1e7ba5e0ac6..c08c2e21c227 100644
-> --- a/arch/x86/kernel/alternative.c
-> +++ b/arch/x86/kernel/alternative.c
-> @@ -369,7 +369,7 @@ static __always_inline int optimize_nops_range(u8 *instr, u8 instrlen, int off)
->  
->  	flags = hard_local_irq_save();
->  	add_nops(instr + off, nnops);
-> -	hard_local_irq_restore();
-> +	hard_local_irq_restore(flags);
->  
->  	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs: ", instr, off, i);
+After initialisation of the sockets and RT IPCs, I would like to reliqu=
+insh root rights, by calling setuid.
 
-Merged, thanks.
+After that call, I get lots of  syscall <56> denied to "One of my RT th=
+read" and syscall <61> denied to "One of my RT thread".
 
--- 
-Philippe.
+I figured out I had to set the CAP=5FSYS=5FNICE capability to the app b=
+efore, so I added 
+caps =3D cap=5Fget=5Fproc();
+cap=5Fset=5Fflag(caps, CAP=5FEFFECTIVE, 1, cap=5Flist, CAP=5FSET);
+cap=5Fset=5Fproc(caps);
+prctl(PR=5FSET=5FKEEPCAPS, 1, 0, 0, 0);
+
+Without success. Morevover, the user that I set the uid to has group xe=
+nomai as primary group plus I do echo 1000 >  /sys/module/xenomai/param=
+eters/allowed=5Fgroup before running the app, but still.
+
+Anybody can point me in the right direction.
+
+Thanks in advance
+
+Fran=C3=A7ois
+
