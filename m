@@ -1,59 +1,101 @@
-Received: from smtpfb2-g21.free.fr (smtpfb2-g21.free.fr [212.27.42.10])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D370881D
-	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 12:58:43 +0000 (UTC)
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
-	by smtpfb2-g21.free.fr (Postfix) with ESMTP id 2F6104CB23
-	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 14:50:57 +0200 (CEST)
-Received: from mail.thom.fr.eu.org (unknown [IPv6:2a01:e0a:2aa:1dd0::2])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id F3A2B60148
-	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 14:50:48 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22) with ESMTP id 275ComZl912391
-	for <xenomai@lists.linux.dev>; Fri, 5 Aug 2022 14:50:48 +0200
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-To: xenomai@lists.linux.dev
-User-Agent: SOGoMail 5.0.1
+Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF8E10E0
+	for <xenomai@lists.linux.dev>; Fri,  5 Aug 2022 13:42:36 +0000 (UTC)
+Received: by mail-vs1-f41.google.com with SMTP id q190so2486560vsb.7
+        for <xenomai@lists.linux.dev>; Fri, 05 Aug 2022 06:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U4s5t5VuR+WxZLnrPyTjiKoKbR0ppOEzGNWLpZWBXik=;
+        b=a9OJecAJuTZVzjEyOiOv5c8u/scrQl6ZWS1UvqNeMkE8Saiygy8nQeTZxy0GYoC56G
+         Uw40PYamOy49k213Vt3cQaxzn3WtegsmmoQgcZvN55TU49lInEmRqbsUjFP5iJnF34Uf
+         31lKlNf4t092Au5+1NBpf2DaWjap0ZfnvN2epdYYNQ45d85fivdCn6oeBHr8QUNMrvBj
+         ppdekZa4ibXjpesCQVJO050IJRz1bqrCxM5TcyvOqqolxQAuaUCz0678UyK/deJddklV
+         Il4hGa+9UgikQSOpE7SIJtZ8HLlY4bblpoYLMdjjdE2udtdpfMyrJNdRdpkAicToyxbF
+         FSAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U4s5t5VuR+WxZLnrPyTjiKoKbR0ppOEzGNWLpZWBXik=;
+        b=sGeQnQrkKnjZE9P2v2i6z8ful1T2euFqzdPL0df6Hc521LhfthRcdHqJUG7VJt5boC
+         RPQweo/SO4R6u9G0Di8Yrey7o8B3IVvkDMRmdkgHPOeMsCqwMoLzZ5o3+3aT+j5wRJ7t
+         nE40pdEtiPb1lOzCmSFnZOJGeou/MR7mKUUrzBuLW8XsU1BjXVbB2isDEFDWgGcAAdNM
+         fM8mwZ9gLlGtaELZoUUBcbMXi4l2RfPEcbWdrWe5AJMNzGacBZU7nB1qK+0Qrlay0in3
+         DINOekX7nSDcFFemETD4yYMVRkqMmYhds1vJxKR1qUocdUedgJ7xya9KHfDczBP+Nn9s
+         ZoNw==
+X-Gm-Message-State: ACgBeo0+ufWP+a/8yfoncVos9GAnt79UFxt+TLDoJWtMQqK2H8G1Lv0F
+	zDjuufrGSq4RiZHKNC80LtPbvOKQZ6lo4LFOT54=
+X-Google-Smtp-Source: AA6agR5YVotCdDPj339cVM1X/Tahwgs0Tz+xPKKl0PgenEP/RrLVARZWxigLQrhQiSBZb8L/By2dKex8KavhXIsFY+E=
+X-Received: by 2002:a67:c293:0:b0:388:6c32:bd90 with SMTP id
+ k19-20020a67c293000000b003886c32bd90mr2884808vsj.27.1659706955827; Fri, 05
+ Aug 2022 06:42:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Fri, 05 Aug 2022 14:50:48 +0200
-Subject: Using setuid to relinquish root rights
-Message-ID: <7eb52-62ed1200-d-65e32200@245807512>
-X-Forward: 217.109.173.233, 165.225.20.103
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.6 at tls-srv-03
-X-Virus-Status: Clean
+References: <20220725084231.8584-1-norbert.lange@andritz.com> <17cb9146-1ee7-ff17-c7d9-ba59cad6e292@siemens.com>
+In-Reply-To: <17cb9146-1ee7-ff17-c7d9-ba59cad6e292@siemens.com>
+From: Norbert Lange <nolange79@gmail.com>
+Date: Fri, 5 Aug 2022 15:42:25 +0200
+Message-ID: <CADYdroNMD5WwO3ZAVZ3UZ0=fbg0hnR7Xzbbjh2qP-VOUS8Cn-Q@mail.gmail.com>
+Subject: Re: [PATCH v2] fix build with clang
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@lists.linux.dev, Norbert Lange <norbert.lange@andritz.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hello,
+Am Mo., 25. Juli 2022 um 19:22 Uhr schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+>
+> On 25.07.22 10:42, Norbert Lange wrote:
+> > clang will never support 'variable length array in structure',
+> > and there does not seem to be a reason for this weird construct.
+> >
+> > Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+> > ---
+> > v1->v2:
+> > *   fix algorithm
+> > ---
+> >  testsuite/smokey/memcheck/memcheck.c | 6 ++----
+> >  1 file changed, 2 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/testsuite/smokey/memcheck/memcheck.c b/testsuite/smokey/memcheck/memcheck.c
+> > index a33700f49..b11d2babd 100644
+> > --- a/testsuite/smokey/memcheck/memcheck.c
+> > +++ b/testsuite/smokey/memcheck/memcheck.c
+> > @@ -80,9 +80,7 @@ static inline void swap(void *left, void *right, const size_t size)
+> >
+> >  static void random_shuffle(void *vbase, size_t nmemb, const size_t size)
+> >  {
+> > -     struct {
+> > -             char x[size];
+> > -     } __attribute__((packed)) *base = vbase;
+> > +     char *base = (char *)vbase;
+> >       unsigned int j, k;
+> >       double u;
+> >
+> > @@ -92,7 +90,7 @@ static void random_shuffle(void *vbase, size_t nmemb, const size_t size)
+> >               k = (unsigned int)(j * u) + 1;
+> >               if (j == k)
+> >                       continue;
+> > -             swap(&base[j - 1], &base[k - 1], size);
+> > +             swap(base + (j - 1) * size, base + (k - 1) * size, size);
+> >       }
+> >  }
+> >
+>
+> Thanks, applied.
+>
+> Jan
+>
+> --
+> Siemens AG, Technology
+> Competence Center Embedded Linux
 
-I'm running a Xenomai (3.1) app, that comprises both realtime xenomai t=
-hread and plain linux threads. The app starts as root so as to be able =
-to bind <1024 tcp sockets.
+Could you cherry-pick this commit to 3.0.x and 3.1.x aswell please?
 
-After initialisation of the sockets and RT IPCs, I would like to reliqu=
-insh root rights, by calling setuid.
-
-After that call, I get lots of  syscall <56> denied to "One of my RT th=
-read" and syscall <61> denied to "One of my RT thread".
-
-I figured out I had to set the CAP=5FSYS=5FNICE capability to the app b=
-efore, so I added 
-caps =3D cap=5Fget=5Fproc();
-cap=5Fset=5Fflag(caps, CAP=5FEFFECTIVE, 1, cap=5Flist, CAP=5FSET);
-cap=5Fset=5Fproc(caps);
-prctl(PR=5FSET=5FKEEPCAPS, 1, 0, 0, 0);
-
-Without success. Morevover, the user that I set the uid to has group xe=
-nomai as primary group plus I do echo 1000 >  /sys/module/xenomai/param=
-eters/allowed=5Fgroup before running the app, but still.
-
-Anybody can point me in the right direction.
-
-Thanks in advance
-
-Fran=C3=A7ois
-
+Norbert
