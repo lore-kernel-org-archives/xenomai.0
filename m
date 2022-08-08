@@ -1,225 +1,313 @@
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+Received: from mx0a-001f5801.pphosted.com (mx0b-001f5801.pphosted.com [148.163.159.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C398628EA
-	for <xenomai@lists.linux.dev>; Mon,  8 Aug 2022 11:58:34 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id 64855200004
-	for <xenomai@lists.linux.dev>; Mon,  8 Aug 2022 11:58:27 +0000 (UTC)
-X-Envelope-To: xenomai@xenomai.org
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00058.outbound.protection.outlook.com [40.107.0.58])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 0C579941693
-	for <xenomai@xenomai.org>; Mon,  8 Aug 2022 11:58:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eiXWw/f3KWl7zuOthMyFA5xvMGXWT7I/Tg8T8LT1ehwfio0SWW4p7Z/aFfwXPb8ba/nKZj95LACP3MFd+gL8WV9V0aLjE/irWuO0yroeBHTBfpfG3LRPPTQmDvov8NRok2FtHBtxfH6fwKWwPulKMIaJ5ZYAJn+yzAr5Zxz6rq4W4kEj3OD+GvHQjUKiwSUxvoB0Iho5lexzwnPutFrdCjPCCIjj6r6p2rQAs4iU1VF51g872cvKN8Dm7pO0Sr9sorF6j5rWpYMWiauBKeb+RIUzEABUM1PZSBSx/T7MexKrnEvriy9K4AQfr8Rqwb0pjGHRc1SOhDV6rHiIewImRg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36ED7A
+	for <xenomai@lists.linux.dev>; Mon,  8 Aug 2022 22:20:27 +0000 (UTC)
+Received: from pps.filterd (m0090335.ppops.net [127.0.0.1])
+	by mx0b-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278GA22d006007
+	for <xenomai@lists.linux.dev>; Mon, 8 Aug 2022 14:38:07 -0700
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0175.outbound.protection.office365.us [23.103.199.175])
+	by mx0b-001f5801.pphosted.com (PPS) with ESMTPS id 3hsqfbjem9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <xenomai@lists.linux.dev>; Mon, 08 Aug 2022 14:38:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=dr5Yz6X5NOHBO+Aztb/LAW4eWQQJV5F6h0RN8g3iBlbVAgwnBGtFXJ42NdUOq/gmfUOlfu7rcoWt9oHcvzsX/3hOqMCb4pV+ESlKd6gO+RROK8yp6uvey+Lc7qgs25OP9uGX7yPPc9btLUkkwDKaNb7uheB/eDCshzdjBCOVEh8rb27o4bD16LCEmWeiJKWoXr1yVSFNXe5E6gC/0sqQuwIyLOOgPlbK8a+ctW1NeAhvFU6VEv7eSsUnWc0swQcpWC39+LGXqreofMUloToOdK8w2cjDjMhyJRS0DrE2feD7997ybVuzKip0mnC6p/O/GheyRK7KbHbvA5XEhu0aKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
+ s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FBFK/gFiKEX6cJTWpEBhC/lLuzq9m474WCrhVAvF0PQ=;
- b=BQFNhTmiZbDC4kLDaKL6dYeb/vuHoAIS1MIpr4As/n/8Axspzw87+DTXIlj04uLBsdIBrG+RLNrd6Mu1uhT7bkU16qmduiau06xHEXD7VbK6Ell5dLcEISlAbwXWUfjiDIftFJrDc6jQJQFFF4uPwmWHFX3qR3Y1aewWrPrGzRdZanM3HoxtzX5TLOHrmvJgXRcmAGoisTZu4KNYTQ4rbdRNJJq2trU+ZQCuD6YsYaEUR7qRJ3pwk5xL9IIYvxLvU4/c+eGq3P9WGFWB+lyjh/YJ3UqBREYgNxEebnAxyFaJbW494a2j+l0GIhmXUOBvlNwEh3X09JivXYe2oDmoig==
+ bh=KIuA9D6Z20fQUGS0atsExWXHfYighShu/yy+kb4RJCY=;
+ b=ZT/tKZZ2wqcd6Qg0szTI4lJE+Dhzmw+fNSStmlc1HZHuW1bhinhYSF4fHYF2QQpUVRdYXn2pshjhNN9QTLccC5ypL75+UaBDllyLAfbfGC/fzc4Wbz54Y2xAl4o/mZl/KG1RK0iCczZrbMAY7jxogVqbVfltd92Q8M1zsZ+oADF3pf+W4/45gawSdYEhIt7nI3ITdcgc8n5HfwdrXTyoN6/F7is0wASDSo6IGO50oF+EUG9D6/baepS5xjbDnOaKEuGWFF/d2uf1DC/qjhcQ/lJ1Y0dVe2YD6j/AW2Pk7VRm/rzhj2xpDZ0vGqm4qe3/58xTFGavRIyo2LFpEVCJwQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FBFK/gFiKEX6cJTWpEBhC/lLuzq9m474WCrhVAvF0PQ=;
- b=Q3d6P9KHJ5ucM6FOYxrq4b+kdVebSDZi9m09QI1Bd1aC6zgfi2L4XeP8bGuq8tFE+JigZraXMPP2lwFioCQOOtRoETodcvaLCuV1mH6Hujq4DAUV+hW1UQb1QLb1A70bpPqfwUbE1bjQa90Uu1RHkoyeh8Smm2/T1ns4KQ12qSXXcQx2ddEEuyl6NggtvCYim9K1uDZBox5Pkfx0Ktc74aOMKn13wncPoaiPwd3TXZeF798s/nVDnVhXXVU/ayswRNqXc6e6OOWLU4uIlk1s8hXnK+3/vx5x2eGLPhMyo48bK6JIov5Eyi4/4c+0fdpaNajJG2Xu60Oroo286mCGYw==
-Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
- by AS8PR10MB6340.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:53c::12) with
+ bh=KIuA9D6Z20fQUGS0atsExWXHfYighShu/yy+kb4RJCY=;
+ b=LKCUvS30yKrZxzvIBzt+bu7cilRqjRTXkjjw0Jnp3hW2aRc2a5CE33kZkpGdyDXAi8919YdqEiV00iYgnIHdGgMIHTgisMWk3CH1He7A8VilPmcZ91aLqE8LKXckeaTdgCb4/G67bUFVoxG82eSol/NrWLHxsVM9zqh0s/jLEpky2aJkpU+dPuuGMot8Ou0LCjAS9lrW3Qrj5H6iIi9FTy1ZH/RLXyhnXqBUxz+4Jo8hUceKwmUue/cMubCeTiGN/P5IriztydLVJxTZChb1z4nu9Qdve6Iap8JR3xP9z7bX/0U51QcNicH7tKuaQRxkfHLyHZjIww4NTm2voCYgPQ==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1700.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18e::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Mon, 8 Aug
- 2022 11:58:24 +0000
-Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::1194:7137:4cd9:2bbb]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::1194:7137:4cd9:2bbb%5]) with mapi id 15.20.5504.016; Mon, 8 Aug 2022
- 11:58:24 +0000
-Message-ID: <53d63cbf-1298-e63b-dddd-087bd85720d9@siemens.com>
-Date: Mon, 8 Aug 2022 13:58:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/1] drivers/net/stack/ipv4/udp/udp.c: added 32-bit compat
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Mon, 8 Aug
+ 2022 21:38:04 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::f968:7cdd:eff1:e547]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::f968:7cdd:eff1:e547%6]) with mapi id 15.20.5504.018; Mon, 8 Aug 2022
+ 21:38:04 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Using an xbuf between two processes
+Thread-Topic: Using an xbuf between two processes
+Thread-Index: AdirbYJYoW6J9xLtRlKfRJC1N+6CGw==
+Date: Mon, 8 Aug 2022 21:38:03 +0000
+Message-ID: 
+ <PH1P110MB10504D04678A4ABF57F6040FE2639@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Accept-Language: en-US
 Content-Language: en-US
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Konstantin Smola <ksmola51@gmail.com>, xenomai@xenomai.org
-References: <1659458811-3014-1-git-send-email-ksmola51@gmail.com>
- <01895bb8-7c53-9a6d-c415-2da02ba2c036@siemens.com>
-In-Reply-To: <01895bb8-7c53-9a6d-c415-2da02ba2c036@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0159.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a2::19) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:248::14)
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5b271710-25e8-4081-1659-08da79864660
+x-ms-traffictypediagnostic: PH1P110MB1700:EE_
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ vPREGCVg8do/yTJ0Hh19dRLrkm17h0kv8FNNwFrpcIpav6I3G74i9gC/J+a1WyMdcq1WvBc7rJs4tDQbg2qt230gUryQq9SBKyHv+nxNWlKkhF2htEUX3fbTjREOsl3yf8aw/E0DiwpQembUMVXHXOH3nmFP5nsEC2aqIG09xsaDYYNBS99OXRrkvyD5jfl8TdyAShp89zYoyLa2bm9Dhbr5WWQxr2SIeeFBcfouIYLD5Dcm0D2GoU0mOcBpDUc3nyiTO6WrfzemH6YUe9/0E5RLuZ2y0MAbNCOOkFj3ik7jVvZqDcrfMlIytkgGrzTTW+bRLS3BM8MH7WvymLhYJvglZ729829LnDTpHR8ZH9wJEiLGYcreuhMsdSHtP8RRLjV4/tN0T8S0O0Kat407pgmboCRanGnrH6YvKriq5mF2NvyLxnG8Xse1diMaY40toQ/EvQkJOVcs7jTRUE1YjGMDyTarffvHmGPQthI1K7/ZovWtrTCiT4JtPBgga+vbfmNeul7C7rgNpsfnEPkCPmZ13Fuqvri1mWGB+1Of7nQv2aq1a+M3ZKfUvlSlJLkF6ZvlfR9Eb6EQv3lA4A76MposxyOqkjwMxRXnM3WKO8nccZavJ7KxmjXxVqGjZP7cxd9ZI5Um4hMpFrf47QVVagWf9nSZbn6EyA7iNUQNXSzx5095BJWq7V8z+BKNKXhwMC/9gEjTuD6YBza3+a4WzmjQnco5JBcLqqQn9pbU2SY=
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(9686003)(26005)(186003)(76116006)(86362001)(33656002)(2906002)(6506007)(7696005)(6916009)(64756008)(66946007)(44832011)(66446008)(71200400001)(66476007)(66556008)(4744005)(122000001)(38100700002)(5660300002)(52536014)(99936003)(9326002)(8676002)(55016003)(498600001)(38070700005)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ Pne9MQ5xjTG+8rL8cAnJrzvSkD0K1C2i6Lz0CYciYS8cIvzXUiRFfHnuYqPLPHjnY0ZNxqc1cP+r7L83+mlHS1Xyv9vcKMpXVQHQJE8M8n7oTP0xWRPatsi+NPmZTBiVjFq9Uzsq/+gE9f7l/gaLPb6WYIfLdRHVra7pb13t6FwQ+SRpM9+wKUSTS+lwEhdSfo3kZeklZsPZ5rKEzo2XAslkFVbzczF50kWHdXJtbjQZndLKbvyuLUnK7aNoDBa88iGxYsBAVdOhXag23lGxGqNVgdM+nKrtcmR+ritioaxz/YQrr4DhzChJJy5oMmtHyma208FioquF3m9209RoV4iI346SqzQUIo0lb+KnL8tIzb1gSEJTmXk/gGQeM+9jzIW1ejKibXOlioEPVXf/ZhIXNzOYiUsvhUanEKCk388=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_0050_01D8AB3C.D84CD110"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5188483a-f022-419a-463b-08da79354c3f
-X-MS-TrafficTypeDiagnostic: AS8PR10MB6340:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	zZjaKi39hxSb8UBHcx9cwmipcX6rY8iRvMwkSq402pgGxZFg9CAe9HN0yvw2EMgkHCOXOFJmtUGuh0WFPpYLNBExxRTO0nZw3DqaVJpwF89TPMPxw6guwUQmZwsMaKchouhallS4OcYN41tHZrPb6yeLGNxyt805PVMmQ5Zj1agn4NlTEf4pOtCgyrjSYIsxG4+k2iDu+FHGa/67kLrlJZg8s4OWmXlE3ACoRNq22Jit03bK9Y4NNlre4pcYtwFzYd1NEXSw7DK0pk76ImxyxTYu9LqKz29bjm9P30R3e+bOMzBR2JbbfHnISaQrdKd/dE5QH0yZcEDW7aL8Bh/usS9muR9RHCKmIYWVxzCHGxCWFvKCt77Dc7MzjHC1pGhIEuryUmUKkpZp6xhfxKts9y7BtWjYR4im6efUx/0t6pMMJpRplD7ijnlSlSXX89TFyvfhrf9SaAYK53G4lzLGV6cTtSEqerMk58q86Xru6rb+AYfqSV6tNI1MDO0K6RObKrzkkwKM4O7wsC261h/tgkwWwo/crh1Ipb8CTUDnZcjcKPbwAU9XYJCOkyRa0qhGqMsfuScfJumtJLwrvul2AxJDS7iHiaMZ3jpzcJCzrZPh5TamWbhn8d8eVa1fKqcDRCEz0isdPrkmthWfl2/lEavS3OChOT3EwT0BvxNJjHcCkYXI9J3zxDVRLVDe0VFLrOnkBMG/zNaPsAjyU2Ld/WLsSVc84jII9qOjfsz/xl+2L2LHHOd7l0rDj0HSZ1SHaeTdOKpGUEDGbdTZpPAJwnRLqHhnWRW1er8+8mxVQnTF6zVq6SqG+5P2LPmRihMbAwzGVAhEEBAWsKcpE+GB3Q==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(396003)(366004)(39860400002)(346002)(5660300002)(6512007)(2906002)(41300700001)(31686004)(82960400001)(316002)(36756003)(186003)(6486002)(86362001)(478600001)(2616005)(31696002)(83380400001)(8936002)(38100700002)(8676002)(44832011)(66476007)(6506007)(53546011)(66946007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UGJLZEVRVk9lOS9NQk1lZWd2TWxObTQzNkMvYlliSytnL3VsV2txL2xuNlBz?=
- =?utf-8?B?cFVJMmNIaG5RZEg0WXBodHJVVmdhOElxRTBSTFQ4blo0NTN1eXA0ZDJLSEM3?=
- =?utf-8?B?VjlhbHZLWmRJd2U1THd3cHQ1bDVhUWdLRmJjbFV3cmdHdURwOHI2NlVRdm9z?=
- =?utf-8?B?UEtiWHZvRGRFVk1yQmlmNmRKZUl6elJIc3dVYmdzemR6dHEvRDFaZ3poeHlD?=
- =?utf-8?B?WmZON2pwWWU4TkRVTm1FbE9nL3pGem9ZTkM3MVNmM0FQNGhERnAvMHd0Zlly?=
- =?utf-8?B?RjYrS1RMaUtSY0kzbEYzNk5neVdmdlErSDRWb0lUNk1NTTE4MUFlekVMUUt3?=
- =?utf-8?B?RXhlU1FLZG5ob2hQRzlEY0xtdGgwSWdjOEhzM0NlbFI5VGJZWUsyMGY4SUNo?=
- =?utf-8?B?dmJ2VlJtT3JJM2ZVZE0zOVRyWXZFNFRmSG5iVXVKSkFzeXA1U2N0ZDhjWVRH?=
- =?utf-8?B?QWhzV0o4SFlxQkFVQ3ZkUEk5Mkc0bFAvWlo0U01iUUg2YVF1d0VRNVNGZFl1?=
- =?utf-8?B?blI4RzJaSDhZLzlJK3hiNVpCOXdCM1VqNVp0S3ZtcWMvRDd5czVFZC9aZzdP?=
- =?utf-8?B?OTkvYkQrVFBSSHc0Qk1TcXZOR0lRVlp0YjBSTmxia2NjNHpiaDZFRFpqOHpz?=
- =?utf-8?B?Ui91WkxLYTlRc0d2R2VWU0hpcUFzYjZUVUY0T2xkVU5KeTRyNE1FKzNNK011?=
- =?utf-8?B?bFpuQWF6NnBLblVyL2Q1c29VWW1TU2tDK24vSEEwdVpGNi90eWZ0eGQvRDBJ?=
- =?utf-8?B?bnYyZm1VTEkrNlBmaC9EOTlnSE8vWGhqU1VIUGxvejU5Rno1MTVRM0RTY3JS?=
- =?utf-8?B?NElIRjAzTEMzamsrc0NRZUZwcEQ5NENRWjk0eHFmYlBBNm1JRXgwZXprZmxl?=
- =?utf-8?B?UHE4QU5FQnh3TkluUWRoOW5KUkZNcVF2M25DTlRDZ2k3clFHbHE5NnlRdTI4?=
- =?utf-8?B?eit6MlRQdDlmSStBRmpFSUY5SEhhOXNOWVY3SVhxckJJa3NNU3Y2TEtCaGU2?=
- =?utf-8?B?K3d1c2RlOE9PWkJMekhvZ3h3WVhxMm1DMEZtUmQvQWxKM3VMNnFqK0hHQzRk?=
- =?utf-8?B?UUNRS2ZKUGNNVVNiUkdtZTZleVFET2RwNVJ4bHBKdUhHSmEyNWFQMCtkeHdC?=
- =?utf-8?B?dU40UjZuQXNQTUZtLzArRzB5Mkl3a2FwMDZGODJPYWRHR2lIQUdxSXlWM3Q5?=
- =?utf-8?B?MFc4RDkwZFloc25tYTU2dlI3SmRRZkk1Sm1RTXRnYytHSDVUc01EbkVkZjdY?=
- =?utf-8?B?MGJFRWtaVGlVdmRNVFVycHYxMW44TXRCRDlwRU5uUzFNTHQvcmZjUUwzUUkw?=
- =?utf-8?B?dEc1MEUyUW85WFVxR1FRYVpweGo1NEd1OGJQSkM3ZnpsSW5HRTF5c3BaUzNB?=
- =?utf-8?B?VnVqWjlnSlRFK2REdXhvZHJXZVhrendBeVN6RUQvY2lFRkJ5cmJQMHMwSXJx?=
- =?utf-8?B?WXNZd0d5b0RWWWZqRGdxZ3QzbUcrTjdUeFRaS2JyTnJNV2J0dlF2MEhMWUtn?=
- =?utf-8?B?bStXK09ucGUrSnJ0aVFFQklaUmVvbEVEekZvUEV6NXFmQUNkM3V6T3dRZ0xI?=
- =?utf-8?B?dm5mY21Nclc4U2w1QXhjU0VNblQxaHpwOTNGdHBxZmNKbUtmS2hhemk5cXZ0?=
- =?utf-8?B?VklIbVh4aWJMT3gyU2VTRzc5dXRFQmEyQjJBa2VMV3I2eHUrRkVINW5iWW5s?=
- =?utf-8?B?aVA2Y2FBaER3cFRqVGErSG1JaGxnU21qc2pKZzk2dTF6ZG84SWx2aUx3ejFx?=
- =?utf-8?B?NDA0dVA2bzF3NlAySjFtbzJReGZHM2d2cTZISXU4Sm42MmZDVEVXWmlrVndy?=
- =?utf-8?B?eVgzRlRQQkZWTzAyZm04ZW5aUTVhU2VPVGN0cVN0WGw0dFlCcG9IRG5DQmRR?=
- =?utf-8?B?eEtyVFhVZjJscjV2Z2ZsRTh1YkZ0UEMrMS9CSXBLVGlCZ09JUzI4ZUFQdVJJ?=
- =?utf-8?B?dm5VOFk0dmdEbFR5QjE0NCtYRzAwWUo2ZEN5TGhkYnpCbWRzZ0VPd29kOFJp?=
- =?utf-8?B?dVc5Mlh5K3FUR2xMZVVXNWxpNHA1RmlIbmVFWXVNc0tFMjI3SUpKdnljTERa?=
- =?utf-8?B?TUJvTnNSaFBBZjJGTmZGWkJ2cnJxOERHb2YyRWlLemgydUZIdnprbzZWcXdy?=
- =?utf-8?B?UlEyTTVEUHZJVjdwTndDZ2xSaHZld20zL0NCTUxyVGc0SUszYlpMNDA2Y3Yy?=
- =?utf-8?B?VnIzSmNIa2VUdytCd3BncWsxaDYzOVpsTlFSclo0bkJVQnB2NHprU3NjSUYz?=
- =?utf-8?B?NmNlR1Q0ZVZPaUFlY2FtUjNlZTRnPT0=?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5188483a-f022-419a-463b-08da79354c3f
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-OriginatorOrg: kratosdefense.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 11:58:24.7663
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b271710-25e8-4081-1659-08da79864660
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2022 21:38:03.9471
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bvMPR9zoJeTqbG0h+a5dRnkISzXPVLgMvjA4Ab4U1uEpEbD3T+JQq3FPq6OFWAqASjwSmAbRqaMVO8WhNZghRDuS5994GmDTPF6wgRI0f2o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6340
-Received-SPF: pass (spool1: domain of siemens.com designates 40.107.0.58 as permitted sender) client-ip=40.107.0.58; envelope-from=florian.bezdeka@siemens.com; helo=EUR02-AM5-obe.outbound.protection.outlook.com;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=selector2 header.b=Q3d6P9KH;
-	spf=pass (spool.mail.gandi.net: domain of florian.bezdeka@siemens.com designates 40.107.0.58 as permitted sender) smtp.mailfrom=florian.bezdeka@siemens.com;
-	dmarc=pass (policy=none) header.from=siemens.com
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1700
+X-Proofpoint-ORIG-GUID: 018NMXWN6VdirRlRUXfYaOgf1dymCsTp
+X-Proofpoint-GUID: 018NMXWN6VdirRlRUXfYaOgf1dymCsTp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-08_13,2022-08-08_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=936 phishscore=0 adultscore=0 impostorscore=0 mlxscore=0
+ bulkscore=0 clxscore=1015 malwarescore=0 spamscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208080092
 
-On 04.08.22 20:38, Florian Bezdeka wrote:
-> Hi Konstantin,
-> 
-> On 02.08.22 18:46, Konstantin Smola wrote:
->> The rtnet interface was lacking 32-bit support for bind and connect ioctl.
->>
->> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
->> ---
->>  kernel/drivers/net/stack/include/rtnet_internal.h |  1 +
->>  kernel/drivers/net/stack/ipv4/udp/udp.c           | 39 ++++++++++++++++-------
->>  2 files changed, 29 insertions(+), 11 deletions(-)
->>
->> diff --git a/kernel/drivers/net/stack/include/rtnet_internal.h b/kernel/drivers/net/stack/include/rtnet_internal.h
->> index ec7e614..8194791 100644
->> --- a/kernel/drivers/net/stack/include/rtnet_internal.h
->> +++ b/kernel/drivers/net/stack/include/rtnet_internal.h
->> @@ -30,6 +30,7 @@
->>  #include <linux/module.h>
->>  #include <linux/mutex.h>
->>  #include <rtdm/driver.h>
->> +#include <rtdm/compat.h>
->>  
->>  #ifdef CONFIG_XENO_DRIVERS_NET_CHECKED
->>  #define RTNET_ASSERT(expr, func)                                               \
->> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
->> index 5977a3b..89f4d80 100644
->> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
->> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
->> @@ -357,23 +357,40 @@ int rt_udp_ioctl(struct rtdm_fd *fd, unsigned int request, void __user *arg)
->>  	struct rtsocket *sock = rtdm_fd_to_private(fd);
->>  	const struct _rtdm_setsockaddr_args *setaddr;
->>  	struct _rtdm_setsockaddr_args _setaddr;
->> +#ifdef CONFIG_XENO_ARCH_SYS3264
->> +	const struct compat_rtdm_setsockaddr_args *compat_setaddr;
->> +	struct compat_rtdm_setsockaddr_args _compat_setaddr;
->> +#endif
->>  
->>  	/* fast path for common socket IOCTLs */
->>  	if (_IOC_TYPE(request) == RTIOC_TYPE_NETWORK)
->>  		return rt_socket_common_ioctl(fd, request, arg);
->>  
->>  	switch (request) {
->> -	case _RTIOC_BIND:
->> -	case _RTIOC_CONNECT:
->> -		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
->> -		if (IS_ERR(setaddr))
->> -			return PTR_ERR(setaddr);
->> -		if (request == _RTIOC_BIND)
->> -			return rt_udp_bind(fd, sock, setaddr->addr,
->> -					   setaddr->addrlen);
->> -
->> -		return rt_udp_connect(fd, sock, setaddr->addr,
->> -				      setaddr->addrlen);
->> +	COMPAT_CASE(_RTIOC_BIND):
->> +	COMPAT_CASE(_RTIOC_CONNECT):
->> +#ifdef CONFIG_XENO_ARCH_SYS3264
->> +		if (rtdm_fd_is_compat(fd)) {
->> +			compat_setaddr = rtnet_get_arg(fd, &_compat_setaddr, arg, sizeof(_compat_setaddr));
->> +			if (IS_ERR(compat_setaddr))
->> +				return PTR_ERR(compat_setaddr);
->> +
->> +			if ((request == _RTIOC_BIND) || (request == _RTIOC_BIND_COMPAT))
->> +				return rt_udp_bind(fd, sock, (const struct sockaddr *)(uintptr_t)compat_setaddr->addr,
->> +						compat_setaddr->addrlen);
->> +			return rt_udp_connect(fd, sock, (const struct sockaddr *)(uintptr_t)compat_setaddr->addr,
->> +						compat_setaddr->addrlen);
->> +		} else {
->> +#endif
->> +			setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
->> +			if (IS_ERR(setaddr))
->> +				return PTR_ERR(setaddr);
->> +			if ((request == _RTIOC_BIND) || (request == _RTIOC_BIND_COMPAT))
->> +				return rt_udp_bind(fd, sock, setaddr->addr,
->> +							setaddr->addrlen);
->> +			return rt_udp_connect(fd, sock, setaddr->addr,
->> +						setaddr->addrlen);
->> +		}
-> 
-> I'm quite sure that this doesn't even compile when
-> CONFIG_XENO_ARCH_SYS3264 is not defined. You have to move the opening
-> bracket ("{") ouf of the #ifdef block.
-> 
-> 
+------=_NextPart_000_0050_01D8AB3C.D84CD110
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_0051_01D8AB3C.D84CD110"
 
-There is one more problem here: _RTIOC_BIND_COMPAT is only defined when
-CONFIG_XENO_ARCH_SYS3264 is set.
 
-I will pick this up and integrate it into my y2038 queue which I will
-hopefully dump to the ML soon. There is more infrastructure available
-now which should be able to handle this case as well.
+------=_NextPart_001_0051_01D8AB3C.D84CD110
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Florian
+Hello,
 
-> 
->>  
->>  	default:
->>  		return rt_ip_ioctl(fd, request, arg);
-> 
-> 
+ 
 
+We are intending to split our current application into two separate
+processes - one with the non-realtime code and one with the realtime code
+(the realtime app will be forked from the non-realtime one). The xbuf
+appears to be the natural solution for transferring data between the two
+processes. From what I can tell from using it and reading about it on the
+wiki, it should work for not only inter-thread communication but also
+inter-process communication, correct? I figure one app will create the xbuf
+(making it public) and the other app will open the already created xbuf.
+Then they can simply read/write back and forth. I just want to clarify that
+this is one of the intended purposes of the xbuf architecture and that we
+are not architecting ourselves in the wrong direction.
+
+ 
+
+Thanks,
+
+Russell
+
+
+------=_NextPart_001_0051_01D8AB3C.D84CD110
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
+HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
+(filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US =
+link=3D"#0563C1" vlink=3D"#954F72" style=3D'word-wrap:break-word'><div =
+class=3DWordSection1><p class=3DMsoNormal>Hello,<o:p></o:p></p><p =
+class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>We are =
+intending to split our current application into two separate processes =
+&#8211; one with the non-realtime code and one with the realtime code =
+(the realtime app will be forked from the non-realtime one). The xbuf =
+appears to be the natural solution for transferring data between the two =
+processes. From what I can tell from using it and reading about it on =
+the wiki, it should work for not only inter-thread communication but =
+also inter-process communication, correct? I figure one app will create =
+the xbuf (making it public) and the other app will open the already =
+created xbuf. Then they can simply read/write back and forth. I just =
+want to clarify that this is one of the intended purposes of the xbuf =
+architecture and that we are not architecting ourselves in the wrong =
+direction.<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
+class=3DMsoNormal>Thanks,<o:p></o:p></p><p =
+class=3DMsoNormal>Russell<o:p></o:p></p></div></body></html>
+------=_NextPart_001_0051_01D8AB3C.D84CD110--
+
+------=_NextPart_000_0050_01D8AB3C.D84CD110
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIwODA4MjEzODAyWjAvBgkqhkiG9w0BCQQxIgQgy8p/2eO3VnoRSq9JovbaZGGn
+lWQbjNlkzLPDSyztZ3wwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQA8
+8HS3UJdFuO3E4bxik7vscLZRbPyVrmMzHDA+Mm8AYaU4Bu4pLkmypQ7sPOeYnjXy+Pcmdm2d1DA2
+tQhaw1MM1OTiT4h305MoYVphPwPEumcAnL7911zEJGLcfgnFChe/BAmaSZqKidoxbCiS5l4enqn0
+H48U2iQRam0eHndmuqqNa0sO4vdo3sq7uQcAsdl38WokbYz99oDUEuC/UA7aAK4Iz6oNonPKY5X9
+NuCmbzFQbJ9F6OuxGCEcLZvjDn8HqZoJUAzuJDFwfPxHvDUX3jx04dDTO6GVxLyzzBh1Aqsu8A2h
+NaTifwQgbaENbFMBzhGUT1J2AahY+wc46ji3AAAAAAAA
+
+------=_NextPart_000_0050_01D8AB3C.D84CD110--
