@@ -1,46 +1,48 @@
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2050.outbound.protection.outlook.com [40.107.21.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5C74428
-	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:43:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E014E4428
+	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:43:53 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dlBGUgPxjONNOTG3pgKYhz98x/xfCNVXxI+wNwJOMVd/tlFz/mgPwbZJewQ8YFQ9qzvco4RBazRFpTi5w5KxKhBHEZRRGlgryOnQ3P6ZqzhPIOu4pbV8ZMsyK0q04mXvYFlEf7bLzdEQ1z5sFJOS9n8GUvohht7XMNMtHVdWGXP3HeV679T+rxf+oLpxtpyZvGHdDv9jkKi+ttXBTuL5whSZ6+CUGXY/AE5qQsDQBSyeLOb6JknMVLe/XE50oKJMm/a+ze6LnHPUC4dakE3moyQJY/uYLeIYJsqcTT34IL8sFsz7qw1cGigbfh4ZVKTfUxd+HqJbfMRnaCKiIh+IWw==
+ b=MIeCGOBSjgpf/9tFu55l8/cGcDIgnmVUTcN4XS4fNMtejMDVrQA/NtVGxn9B5xYl4Q6/OAXuenkwwc/X9fcaq0g43RF2JhgRCtJFWgwVVFK4ccHdNYPmI2b6yyp4tLVSwOkY+zD+Ht+SURVUVntc5uMSSY3+FGeuLWYHNcd8h8r1hok0FPLEwNrXcN2TS9wYJRZr5v+suX+jl3H9g7gRafrZ6MrwGlO9UTgQ8jnpEy0QDPiNXsxqYbvkBSYgcQNWKh11dg/eb5Rj1oXAUbX3W27GLpOZDwWSKfktZPBE9tiz91R1lFCUvhbRurI6S6Rks3YVkODRlWtYQBjxIrHG0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WAZ957Xp5M6MrjygRJO/Emhyw8TYIMdhZbaWeq2ymVw=;
- b=JNrD0XqJfn39/TWZ4RHfJoFvvdHnQpNkpoKz8yY+zgpKHCOXxaaSmqBDmvGdA3i9mPEDtBgsO6e6J2KnOoQGKM+4vPm9McRjB35Ss76whlusUevg65GTX8waAJ/cfV78sEhHNGt8O6n3q4ApEQMJXMnFkcK+X4Kfjl/7VvAk+MWE37SF3tTH8Pa4rNOvPzUKyYZxKYmqfjsGB8tYgLT8Ccc3hGjN6+NBlwmLGVzYuCdfjuzO9kpnz3yipS0/FPVJd/l9CWzmePYphZIlQmpIusiG+VnJAfOs/N82NT+F1/7PVTp/+KEwk3bovwkJXii0GkDNMYf6KGY56YjGoTpTeQ==
+ bh=+/fwXDuamMr+EDHpby9CBchlciwDU/E/71p2qfA/RLI=;
+ b=SjjeLKb3KVZSjxB6NVe96J74SBWdygsdMtej5Wmb+pNuHIUbx4L9k1A2oQn4fz33EvVxnJFdfUU+fMsjk8DdlZ25pfxAP2yoVoObp33wo3qKpge8Oo9VKiRWZzkRQr/CpLkrLu5BRsrK/WhKpELyE6tv+aeabmNVW7aDoITOEchXJS/GKG8Da+xfDfKo1Kgv7Af0Sr07ahsloxQjxLnW3hAcUj787sNmOqcljOrKpxg8SXFCvRptorILyMh9pihK8n5Y89o93E5hZX1n+NZvePvhoBfbASAL5AYive/xL1xkM4AZDKuKXSXSSc+eTeFsETiJbg7fkT8GMursTF25nA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WAZ957Xp5M6MrjygRJO/Emhyw8TYIMdhZbaWeq2ymVw=;
- b=ec/UylWfBey+UNIwgY5n5d8R/9/9j+xHmZeT/EpMBH5+1jlihjkPYm4msCXW+cmKqoTlh94wLUnPwBdIvLHStF/EhCipi6KbHASppa0ClrtV1155bTUyuRdIFrBHKHbyfDBPOT4q7qQ81nZ2HaWeDvNE+XmCN/TGqghyKe/BhgytpoXa4XTOsp4DwuauyKpbLZF0dufanNyg/pfY3NdIWVxa4JbfEBMvdZwGrbGeL+pAZKNX51bHzO8dp8dC0fKNaPXuokIgM4RHSt2o1Pm3gX49c3E8kz9krvZS1B3xzlbICrVBhuj8P00NIH2Z4+43qn58UPelNSd/mOKC+/ykfA==
+ bh=+/fwXDuamMr+EDHpby9CBchlciwDU/E/71p2qfA/RLI=;
+ b=SUplb8nzp63LjmEi6QRji6d+AbHhrZLTtsuyd71rC4pdyGb6TH9b3ATwJCsOrTwQ2D6+ia1bfJ42F1OAe+EilyeGFalmDv7Q4z4XwAE3anWfAgqTxrxyCAZ2gUVEo7Po9uOn+wNae0OZoU5RAmYlWqkuEJKUkcSlhgu+GdOd2fAcXZc1rxuGoQD5MKrUYMvn9FJV4VJtnKzFzjqWVYThEg/7q2JuZv0RZwvNZNnQiQqEfOCf9kOWG9xb/4gDqQTrMDMZEWHc7KjS8h4600fSzrpb4nmpztscWEfjmT3Tq9ePRCZAMoDDrconbCo9ugp3GAL9/92yuyVkUnHI/4SGLg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
  by DB9PR10MB5001.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:2c7::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Tue, 9 Aug
- 2022 13:43:43 +0000
+ 2022 13:43:50 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb%5]) with mapi id 15.20.5504.021; Tue, 9 Aug 2022
- 13:43:43 +0000
+ 13:43:50 +0000
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v1 00/42] y2038: Allow building and running somkey with y2038 support enabled 
-Date: Tue,  9 Aug 2022 15:42:44 +0200
-Message-Id: <20220809134326.23688-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v1 01/42] y2038: cobalt: posix/sem: Remove compat syscall for sem_timedwait64
+Date: Tue,  9 Aug 2022 15:42:45 +0200
+Message-Id: <20220809134326.23688-2-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.37.1
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20220809134326.23688-1-florian.bezdeka@siemens.com>
+References: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AS9PR06CA0461.eurprd06.prod.outlook.com
- (2603:10a6:20b:49a::12) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+Content-Type: text/plain
+X-ClientProxiedBy: AM5PR04CA0005.eurprd04.prod.outlook.com
+ (2603:10a6:206:1::18) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -49,275 +51,153 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71abe3f8-7c26-4d30-153b-08da7a0d2cce
+X-MS-Office365-Filtering-Correlation-Id: 86896a52-a2ed-4345-3883-08da7a0d30f2
 X-MS-TrafficTypeDiagnostic: DB9PR10MB5001:EE_
 X-LD-Processed: 38ae3bcd-9579-4fd4-adda-b42e1495d55a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	es2hC5xOsHFW4UcEWor1vRw/YpUn/lRFOKY2NH4YvPAnOWTFTkysSFrm4ZZAjxNTgna6oMBaksfjt8dLmCvp8mzhencIog6AnHjA0j4ZXcRT9n3C+aDvzbyd8CyLk+s2j4BCPCguXGPsNsp+OG/A7KctU2tdsYo7IewhqLBKW5amLhpBjEX3QhkJIdg+MD/v4fOF5Wh8lpsLeKVmZ+JLBUYlslvLuNrbP6ngSvzfgZe6mmy81NGG46ks4v2G5xNbEMIJduYyMWExRMf3TpJCDOvBtRQE+nYdf/K3xKmyZ6dz0zcPAT1Vo4dO3D1afBegKcEjNtf/pek7REBHna4SBcIGLf68i/bfqrRMAJ5WKPuPOlQif5e/yEus1Doz9oIYqXhV/3FE9maANZcEF9WAzTlOjFzWxyFbUmaaysDUL7ZBkPVkAs8eJVnPYJIn67qOJOjM5vujbIIYQ2jScDB27PiU4/EqXXZ8Uw/V9rsi7r93dwMV5GUgfmSLeRuAauIBojBZpk7HxgCCmPSDfpOj7WVUrFbep7yPEVPwsCyAV1SCoOPWL2ZD72FJxQmQJ8m+PhA2lywygBByOsvurXroyzydSDvkdiIzygDyARUG3Y5tqDVWNjh7EhGxZshOcG9+35H1acCtyhiF7fs/6PJcx+hHCkUufEBfS5PoL+X0XpRQQtONVTyJqUmovwJmutvEIU9KQxWlCGkVBh/m9b8azegmPdNi3yK0pp70CoRIjFE6Dk9uRmBHaYNtPQFnRlwAFHnJDW6nO3N/CmgE3WqXpw==
+	zwsE1VToj1jHYY8Z85F4lRJRpMRkDkmM/skPpnYFfetBHHxJZl/asx+ICpTlj3N96dU3/WPMPUoppfl49F3X4YiN75CZi+SVTdmNQ0qrAXqRFyVVm0sKgOrff4QVzftLr6IJ30s/RU17FcEUJNdVQKXu6wOwRtFuFtKjTEskckFLrwtbojTR6wXSZc6VgVQvI1mwBMQjp0CWzVQaOQAe+3KfLNLWcvBBiQQdsCcEdjUHAY8U6Joef6CspSc+3yBnLwT+rZQCCFzTVC7P07hZxv5OtGvcBUwdS+qBaCY/VooVqrqrDTk5tLuPJ0NN1Bv7mB48wrDmQbhZgpqdsI1zrvXGuabKyiWrl6lK/uJJO231UW0T1WePVMELuKPy0duOKYtv371MUpJL6Y/oz2SEj2Ok61VhZE9U7MLsIse68fuY1+7E9+s6mg3hqPp3nkR8g6NdzU/90+LPSZMURdvK0yesceWNYrPGPDXT3GSdhjD1sBODw7QEFe68r8vdrrmIpp0ZAWvApW5hW+k0rKfI1ItLEPeojOBAVNZo18o7gTWDqR5VfDYzaTvMMv9hWNr6pfnPvHENvBQvDdKLLM3psLakacOJ5gDbX/7QGdW4HTWCqZHdHhRvUq3aKWyVK5EqMcvyj+IVMbVwYcJzM7zNBJpRusyPBSKQNPKB4pT8l4HAMunVjhjK9ZYY9QBb2g89Fc762If+dg+RIA52fbPKdJ2hYcTbfe+Zu8dUQeHcfRw=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(478600001)(2906002)(44832011)(6486002)(966005)(66946007)(4326008)(8936002)(66476007)(66556008)(5660300002)(38100700002)(82960400001)(86362001)(1076003)(6512007)(41300700001)(186003)(107886003)(26005)(6506007)(2616005)(4743002)(6916009)(316002)(8676002)(36756003)(83380400001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(478600001)(2906002)(44832011)(6486002)(66946007)(4326008)(8936002)(66476007)(66556008)(5660300002)(38100700002)(82960400001)(55236004)(86362001)(1076003)(6666004)(6512007)(41300700001)(186003)(107886003)(26005)(6506007)(2616005)(6916009)(316002)(8676002)(36756003)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QWhCR01HNDdnRFlQc3B6TFhvVUJta040MHN2Y0xrSnBvSmtkdjJqVjZabGM2?=
- =?utf-8?B?RkNDeTd6Y2pXVXp5aG93dlY5ZjB5cERTcDZBcEE2L05PZUVLUG45b3lGZk1r?=
- =?utf-8?B?S0VkRHo0SmFHT2V4bDFubzBJL2tLYmw5cHFGT1QzTE1ld1RCTnNFOU5lV0xX?=
- =?utf-8?B?cjVmcGc1L0JjbS95d01pSWt4aDFNMTQwS0NObHB3bHR3dzJvK21IRFZXbkZH?=
- =?utf-8?B?dVpxeDMzMnlYUkZ4R0dYMkxzUEhHckRuNHhaVlRXdFY2ckU0eUdVM0VqUWVC?=
- =?utf-8?B?Zmx0cUJQanN2WE43dk5VZysrZXFRQ3pDT2hoa0FnRlNzNHNhU1VvaHlQZzg0?=
- =?utf-8?B?dVAzdVB3MktEVTN0ZVdWem5mYnlGV2p3enhXUVJwTHBxZXdFNFVZTUZpR3F3?=
- =?utf-8?B?RnA4MU83OHMvK0VNVCs1Q1NVY015aUJGV2trSFgzNXIyR3Y1aGlRTFhjbjRm?=
- =?utf-8?B?Vm5SUDFmdDZGWlhibDdqWUMzQWZKRXhubktWVkFPK1Fnd0NibVJpYmhXcGh5?=
- =?utf-8?B?S3hJUXhqaU9OaWVOT1VxU2t0c01DempWQlhIaHZiN0VQSXc2SjJSY29NN1V3?=
- =?utf-8?B?bGQ3U3N6SFgrT1VHalVCQmpCbzZXTVpKZkxjWmVkeWN0K1NvZy91dW80R3Zk?=
- =?utf-8?B?Nzk2M29GWjh4TXBnYytCeEJUemRVcTkrN1NiakoxSDBjQUxLa0dpbFBCVXh0?=
- =?utf-8?B?VGUvWm9EU3p2dmNjZ1Y2VVFla3EzZm9XcWRNNkJ0QTYzOHY4SWdLQkF2ay96?=
- =?utf-8?B?bDZVZ1hxYVpXdjJlL3E3TTBjTjRMbnQydVFzYUZUK2NnQ3F4b2hNdWRCVkhX?=
- =?utf-8?B?ZnF6RlR0T1Fqb0JDcWFwcVVxOHZOUEdJMytQWXg1V2VXT1FCWUZVRFBkcWxo?=
- =?utf-8?B?cjdSU29NVmNPN2wwVmgyYmtPZXpMRjZOYWVWQWlROWtuMlBSM1RycGZPTUJX?=
- =?utf-8?B?UEI4TURBdHdFV1A0Zjl4YVN5RkJ4OHZGcXlsY3hEZkJxZ2tDazU2TXlYUytt?=
- =?utf-8?B?bVNBN01aYlVUdjlzRnBpeDhLY1E3aDlTeFcyV1QreWpDTXNnekE0SDFUUkdQ?=
- =?utf-8?B?bWZCV0VrZHE3dHozVGN2dlMwOWNxTmxlWGZmS2VnMldhMlhWelErb2FsZE5C?=
- =?utf-8?B?Q0NIaTF3RGpsa1pFR2hkcXVseDdwNGFXc0E5NUJZY1hkRXdGTFNHa1pXclBo?=
- =?utf-8?B?ZXY0NGFScDNOUkttMWVvWWQ0TlFXU0V0Z1NEbWx4V1ExNHIvRTBiK0ZtL29F?=
- =?utf-8?B?dWZBWGpONWdkQ0VnOUpKMHYyVVBkbythdTVjZnVkRG1VcEJtWnEvN1lHVVcy?=
- =?utf-8?B?bWRCNlgxRlVMQnJPSGs2Qjh1MkZWcnZnRnBNMnhhVWxUZVpKejBZN1ByZXB4?=
- =?utf-8?B?Q3d0TlNaRXI2WEs2UndqL3ExK2tWYTAwN0g2NGEzem4yQk8yVUt3QUErelZv?=
- =?utf-8?B?cTcrd3c4LzFTaFpOODlZWWJJekFxMHlUUEJ5d2J3QXQzaW9pSUh2UjMrQkF5?=
- =?utf-8?B?RkFhZndRUkJDb3BrMVlhc1U0T3RsaU5sQ0VWVDgwSGcrVkhPUVVLcGtZUEtq?=
- =?utf-8?B?dmF3cHN3WU5ESVpFRksrd1Z2bDA1UUJzOEluRVJXYWtvdHljUEtGY3FWOFIy?=
- =?utf-8?B?L2dLRExDc3BubStPcnhLQVRGTWpaaWhjSlkvZEdhRHM3UFhPbHg0aFBmVzV4?=
- =?utf-8?B?NTl5TTFYSTlIZmtUa3lGV0Vyb2ZVUnQ1NFRFdE90bG9McldmYTE1dTJlS1Nw?=
- =?utf-8?B?dFlLRElydWZNckhBTjBXQk9CMEtJT1pNck5LYnhYbUE0QXZLZk1DOEhtMjBm?=
- =?utf-8?B?clo0cW9WbGx4aDhWRG4rNUo0K3ZqWTBsNk9HelRxTmkyaE9UQXFhZ2RlbXN3?=
- =?utf-8?B?eUQyWkVMaHNEUVFwU3drZ2ZnenJweTFQRSsreDBIYTd4RWhnZGZVYlpLbk9X?=
- =?utf-8?B?UUkxNzVpdHJWbGFzcGxtWVBZalVPYTRPWGlZNXM1ZEZ3emVSR1ZxUEtHRStN?=
- =?utf-8?B?dDdOelR3eVdwenZld1pHQXVPd2Y2Z3g5b2FFWDlZb0VTVW45QXNuS3hrL3Jp?=
- =?utf-8?B?em1Fak5sRVhHU29BWmtpT08rdFU4TTNKb0dmc09QMVVJY3Nkc2dubFhGRHhw?=
- =?utf-8?B?MWhpajluR0RRRHVvL2dUT0RNQU42Wi9kcVhCSnRQd1hhdlFQNWd2M3hYQmRY?=
- =?utf-8?B?YXc9PQ==?=
+	=?us-ascii?Q?fV8+/geYvCGeowfl0NRk15F9xZ4s1rXpm83zCqcptaZcuO0Yz9He7MqVm2BK?=
+ =?us-ascii?Q?zS6SzG3N9VHfsBryJ8mqZ+YzOz/ceibhfD83fFkmMvNpKJaavkz+EL5l738u?=
+ =?us-ascii?Q?Fr8Zxjmezwmv5r23owSyrA74XNY1x0ZQKBupjbRGab2Q6YBdz62LnzuJOOLQ?=
+ =?us-ascii?Q?aNnOIInFbr+PAKomaGSXbjNjm/wv1oWfmnWTAxDKGPTMwNptNCJyGh2CjWTx?=
+ =?us-ascii?Q?W9Hx9CwTvaitgfTmD2ehPw+6NAjGOIMFv2Vyx5Xf3LAgbQFEGeUr8O07cQZa?=
+ =?us-ascii?Q?Eiws3siJvdMh531l6M74hhdpXY0sMG13QwZ+J0KH0f/OKiYsUc2eeFC9CWwk?=
+ =?us-ascii?Q?DTgLfcezfkVEueTK0kp8EvsSkTFdXWzwu+0WTyUZTjf947Tmm7bBbk0iH3Qc?=
+ =?us-ascii?Q?xQkmjv445aDrUzRyl4lN2gvGavksgyaNAU4+be8KN5rw8AoU/Km/uARXSnGy?=
+ =?us-ascii?Q?ZXPLx77Plgpgza7nQak6XPZmcJ2VUQ4ldUIb7GIcBz2g8XNKpRq5XQ5hdsDg?=
+ =?us-ascii?Q?x09I95lYkj19QuhfI/4OlOW+kO2yMBZH8IO/5XESkgR+R5zaXHpAyBrpBZ7t?=
+ =?us-ascii?Q?2M5ER0XIiR7sKMQRscQby8ZB4l7sypwcrnhs0+c7MbZfkgPPrYUlm26NujfW?=
+ =?us-ascii?Q?bydaAE8vsMkduztp2Mhx/1eZc/qh8NaBHC0wEYcIn9UfejK6mSPWwFbT6sHh?=
+ =?us-ascii?Q?KN+iMW+dE5XYeDfY8z093lmJykRWXQsTTAW+Lr+jtkwLMJhV2bMkLK3xDMfD?=
+ =?us-ascii?Q?DE4OVqD0iRp6fH/VX/JVjuLx6gpBFv3otXf2iIwmEcg6u/7huGYD/LYUk1z4?=
+ =?us-ascii?Q?VftguzV3YpeSm4hliacId2Lnd4OTLs8coEsXap99O4Dc551ThyqB+Rb03hDw?=
+ =?us-ascii?Q?w+W7Y5t6eYouhUNkK+ffFX9q0h3xhRIyLuRRRF3d3QJ93O/UjQoX24LYaAoI?=
+ =?us-ascii?Q?BKrAcr4PU0SJiKf3uoP0ngtVk5ZHufmVIVHsWqE/azLWybedKm4BHQhffPm8?=
+ =?us-ascii?Q?iXchhgfchB6/Xmbg1fmwBfjp/9lYwfz8Ugy2XSJDKdiqO0Fn/JijaTTGC+6p?=
+ =?us-ascii?Q?3/KprFtHI79ivwIvT7Zq2molWv6GvgXQxdoF4MGfg23el++rGN4xWXRZ3NnV?=
+ =?us-ascii?Q?PMcDcsGDxL9uXOpHSEEhPQAvax2GztXPNhuvqwkqpX+KcCNGLDv3wi6RfwvS?=
+ =?us-ascii?Q?4vkBUThj0v/IoL74aC0F4yxmKDHXYjaFvvLBucRLP0uHi4m2vk5ewagWoP3y?=
+ =?us-ascii?Q?ghyPlUNFFmVANwR7IruOkQKS9wZx2cqrlAhfkk5FG6T5Bx6gqFlpjQp1D2hy?=
+ =?us-ascii?Q?/MXKdq1ZrJc3EDxSajy6/MJzT+Lvnn7QoZb/yJST8dRV4RKH5wDlkM5IeFyI?=
+ =?us-ascii?Q?+5O2+FBOTJ3TeHPrGKvniynUViLWzsUpI/DxzCHl3rg25BmtTA1TfUR06/0O?=
+ =?us-ascii?Q?4eMNR1fRkTDYL4wbUpmjv4n9KUQI/2ohw6q3/JRgRnzCoOS0I1bJzJ+8Ie8j?=
+ =?us-ascii?Q?iXMjWRvoRqp0LAxl2nCVJzVjV9nAnH85jXaiMsMFZoKugpptFJMcP/lYkCNT?=
+ =?us-ascii?Q?fvnbxS4i0Nwko6JNxrggUqFuWqxCYmVAxHV1rv3jLHK4Zd/RtJ8lO6BOEZ+p?=
+ =?us-ascii?Q?Dg=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71abe3f8-7c26-4d30-153b-08da7a0d2cce
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86896a52-a2ed-4345-3883-08da7a0d30f2
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:43:43.2276
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:43:50.1627
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: O37owwdujFR03ICPyr/O5HNrBEt+PMP8hFiTI0L/eMa9cO/vmRm6i4ddDzgkjiHM7+iFsUOaJAAtyf6XctZ889vcH5zICvx2qLmZqsuUaVs=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 41weySftzw42DZu73on9jGIfEPal3f54pqQvFB01HisIx6DlletkBxmTpAW6rzwOOWz2qprJqA5RPyNvCSODDjp/Van6wUwNp9DFgTLsFXA=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5001
 
-Hi all,
+There is no difference between the native and the compat entry point,
+so let's keep it simple. The native entrypoint is already linked into
+the syscall table at the right offset.
 
-it has been a while... I made some progress regarding y2038 support in
-Xenomai:
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ kernel/cobalt/posix/sem.c       | 20 +++++++-------------
+ kernel/cobalt/posix/sem.h       |  3 ---
+ kernel/cobalt/posix/syscall32.c |  7 -------
+ kernel/cobalt/posix/syscall32.h |  4 ----
+ 4 files changed, 7 insertions(+), 27 deletions(-)
 
-With that series applied I'm able to build and run Xenomai including
-smokey testsuite without any test failures or skipped tests with y2038
-support enabled!
-
-Preconditions:
---------------
- - glibc: You're glibc has to provide y2038 support.
-   glibc >= 2.34 has that.
+diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+index 71b8c52f5..869260924 100644
+--- a/kernel/cobalt/posix/sem.c
++++ b/kernel/cobalt/posix/sem.c
+@@ -360,18 +360,6 @@ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
+ 	return ret;
+ }
  
- - Xenomai: There is a new --enable-y2038 option to enable y2038
-   support. This option is off per default to keep things disabled for
-   now and avoid breaking any existing application.
-
-   When --enable-y2038 is supplied all userspace parts (libcobalt,
-   smokey, ...) will be compiled with y2038 support if glibc supports
-   that. If there is no support in glibc the option will be ignored.
-
-Structure of this series:
--------------------------
-We start with some cleanups and drive-by fixes followed by adding the 
-missing timer and timerfd support. Finally it cares about select() and 
-some drivers (ioctls) that were missing compat and/or y2038 support.
-
-  Patches  1-12: Cleanup some compat code. As long as there is no
-                 difference between the compat and native syscall entry we 
-                 do not have to declare them again. The syscall machinery
-                 will care about that by placing the native entry point
-                 at the compat offset into the syscall table again.
-
-  Patches 15-17: Add gcc 12 support, drive by fixes
-
-  Patches 18-34: Add y2038 support to timer and timerfd APIs.
-
-  Patches 34-37: Add y2038 support to select()
-                 There is no y2038 safe select() out there. Modern
-                 applications should switch to modern APIs like pselect().
-                 
-                 Implementing pselect() was not easy:
-                   - We have no support for waiting for signals and fds
-                     at the same time inside the xnsynch infrastructure
-                   - We already reached the maximum number of syscall
-                     parameters
-                 Solution taken: Implement pselect64() without the
-                 sigmask parameter. We do not wrap pselect() in 
-                 userspace and only use it for select() where the sigmask
-                 would be NULL anyhow. So no additional pselect() in our
-                 API but select() is now y2038 safe.
-
-  Patch 38:      Switch VDSO to __vdso_clock_gettime64 in case y2038
-                 support was requested.
-
-  Patches 39-41: Enable/Fix compat support for drivers covered by the
-                 smokey testsuite.
-
-  Patch 42:      Add/Enable all additional glibc wrappers necessary for
-                 building with y2038 support enabled.
-
-
-Testing:
---------
-I used Xenomai images for testing but had to switch the distribution
-from Debian to Ubuntu. There is no Debian version yet that ships an
-adequate glibc version.
-
-Switching the distribution was not that easy. Ubuntu packages are now
-compressed using xz which is not yet supported by the Debian package
-manager. You have to prepare your host environment (kas, kas-container)
-accordingly. 
-
-As Ubuntu ships a newer python version some ISAR patching was necessary
-as well. If someone is interested in such changes: Let me know.
-
-Open topics:
-------------
-  - Testing: Integration of compat tests to CI (not really a y2038 topic)
-             See https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
+-int __cobalt_sem_timedwait64(struct cobalt_sem_shadow __user *u_sem,
+-			     const struct __kernel_timespec __user *u_ts)
+-{
+-	int ret = 1;
+-	struct timespec64 ts64;
+-
+-	if (u_ts)
+-		ret = cobalt_get_timespec64(&ts64, u_ts);
+-
+-	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+-}
+-
+ static int sem_post(xnhandle_t handle)
+ {
+ 	struct cobalt_sem *sem;
+@@ -485,7 +473,13 @@ COBALT_SYSCALL(sem_timedwait64, primary,
+ 	       (struct cobalt_sem_shadow __user *u_sem,
+ 		const struct __kernel_timespec __user *u_ts))
+ {
+-	return __cobalt_sem_timedwait64(u_sem, u_ts);
++	int ret = 1;
++	struct timespec64 ts64;
++
++	if (u_ts)
++		ret = cobalt_get_timespec64(&ts64, u_ts);
++
++	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+ }
  
-  - Testing: Once compat tests are enabled, try to enable y2038 support
-            
-  - TCP:     The rt_tcp driver does not have compat support yet and is not
-             covered by the smokey testsuite
-
-  - y2038:   Re-visit some y2038 related syscalls like
-               - sc_cobalt_thread_setschedparam_ex
-               - sc_cobalt_thread_getschedparam_ex
-             There is a struct timespec deeply nested in the API.
-             Seems not covered by smokey.
-
-If someone is interested in helping in those topics: Let us/me know!
-
-With that: Happy reviewing! 
-
-The xenomai CI was regularly triggered. I do not expect any build or
-testing issues.
-
-Best regards,
-Florian
-
-Florian Bezdeka (42):
-  y2038: cobalt: posix/sem: Remove compat syscall for sem_timedwait64
-  y2038: cobalt: posix/clock: Remove compat syscall for clock_gettime64
-  y2038: cobalt: posix/clock: Remove compat syscall for clock_settime64
-  y2038: cobalt: posix/clock: Remove compat syscall for
-    clock_nanosleep64
-  y2038: cobalt: posix/clock: Remove compat syscall for clock_getres64
-  y2038: cobalt: posix/clock: Remove compat syscall for clock_adjtime64
-  y2038: cobalt: posix/mutex: Remove compat syscall for
-    mutex_timedlock64
-  y2038: cobalt: posix/mqueue: Remove compat syscall for mq_timedsend64
-  y2038: cobalt: posix/monitor: Remove compat syscall for monitor_wait64
-  y2038: cobalt: posix/event: Remove compat syscall for event_wait64
-  y2038: cobalt: posix/cond: Remove compat syscall for
-    cond_wait_prologue64
-  y2038: cobalt: Cleanup code style of time.{c,h}
-  y2038: posix/mq: Fix mq_timedsend syscall routing
-  lib/cobalt: Fix possible fd leak in __map_umm
-  testsuite/smokey/sched-quota: Allow building with gcc 12
-  y2038: posix/mq: Harmonize mq_receive and mq_timedreceive
-  y2038: testsuite/smokey/y2038: Fix a very unlikely resource leak
-  y2038: cobalt/posix/clock: Use timespec64_valid() for validation
-  y2038: Prepare code base for 64bit time_t
-  y2038: build: Introduce new build parameter --enable-y2038
-  y2038: cobalt: Introduce some itimerspec64 related helpers
-  y2038: cobalt/posix/timer: Adding timer_settime64
-  y2038: lib/cobalt: Dispatch timer_settime
-  y2038: testsuite/smokey/y2038: Adding tests for timer_settime
-  y2038: cobalt/posix/timer: Adding timer_gettime64
-  y2038: lib/cobalt: Dispatch timer_gettime
-  y2038: testsuite/smokey/y2038: Adding tests for timer_gettime
-  y2038: cobalt/posix/timerfd: Adding timerfd_settime64
-  y2038: lib/cobalt: Dispatch timerfd_settime
-  y2038: testsuite/smokey/y2038: Adding tests for timerfd_settime
-  y2038: cobalt/posix/timerfd: Adding timerfd_gettime64
-  y2038: lib/cobalt: Dispatch timerfd_gettime
-  y2038: testsuite/smokey/y2038: Adding tests for timerfd_gettime
-  y2038: cobalt/posix/select: Refactor __cobalt_select()
-  y2038: cobalt/posix/select: Adding pselect64
-  y2038: testsuite/smokey/y2038: Adding tests for pselect64
-  y2038: kernel/drivers: Implement SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
-  y2038: lib/cobalt: Switch vdso to gettime64
-  rtnet: Enable compat ioctl interface
-  drivers/rtcan: Implement compat support for the rtcan driver
-  drivers/net/stack/ipv4/udp/udp.c: Add compat support
-  y2038: lib/cobalt: Add additional time64_t related function wrappers
-
- configure.ac                                  |  64 +++-
- demo/alchemy/altency.c                        |  26 +-
- include/cobalt/kernel/rtdm/fd.h               |  16 +
- include/cobalt/kernel/time.h                  |  23 +-
- include/cobalt/uapi/syscall.h                 |   5 +
- .../include/asm-generic/xenomai/syscall.h     |  22 ++
- kernel/cobalt/posix/clock.c                   |  59 +---
- kernel/cobalt/posix/clock.h                   |  22 +-
- kernel/cobalt/posix/cond.c                    |  12 +-
- kernel/cobalt/posix/cond.h                    |   5 -
- kernel/cobalt/posix/event.c                   |  26 +-
- kernel/cobalt/posix/event.h                   |   5 -
- kernel/cobalt/posix/io.c                      |  94 +++--
- kernel/cobalt/posix/io.h                      |   8 +-
- kernel/cobalt/posix/monitor.c                 |  26 +-
- kernel/cobalt/posix/monitor.h                 |   5 -
- kernel/cobalt/posix/mqueue.c                  |  10 +-
- kernel/cobalt/posix/mqueue.h                  |   3 -
- kernel/cobalt/posix/mutex.c                   |  10 +-
- kernel/cobalt/posix/mutex.h                   |   3 -
- kernel/cobalt/posix/sem.c                     |  20 +-
- kernel/cobalt/posix/sem.h                     |   3 -
- kernel/cobalt/posix/syscall32.c               | 110 ++----
- kernel/cobalt/posix/syscall32.h               |  55 ---
- kernel/cobalt/posix/timer.c                   |  45 ++-
- kernel/cobalt/posix/timer.h                   |   8 +
- kernel/cobalt/posix/timerfd.c                 |  40 ++-
- kernel/cobalt/posix/timerfd.h                 |   8 +
- kernel/cobalt/rtdm/drvlib.c                   |  17 +-
- kernel/cobalt/rtdm/fd.c                       | 122 +++++++
- kernel/cobalt/time.c                          |  42 ++-
- kernel/cobalt/trace/cobalt-posix.h            |   7 +-
- kernel/drivers/can/rtcan_raw.c                |  42 +--
- kernel/drivers/ipc/bufp.c                     |  34 ++
- kernel/drivers/ipc/iddp.c                     |  34 ++
- kernel/drivers/ipc/internal.h                 |  27 ++
- kernel/drivers/ipc/rtipc.c                    |  29 ++
- kernel/drivers/ipc/xddp.c                     |  18 +
- kernel/drivers/net/stack/ipv4/tcp/tcp.c       |  31 ++
- kernel/drivers/net/stack/ipv4/udp/udp.c       |  29 +-
- kernel/drivers/net/stack/rtnet_chrdev.c       |   1 +
- lib/cobalt/Makefile.am                        |   7 +
- .../arch/x86/include/asm/xenomai/time.h       |   5 +
- lib/cobalt/cobalt-y2038-glibc.wrappers        |  20 ++
- lib/cobalt/mq.c                               |  47 ++-
- lib/cobalt/timer.c                            |  17 +-
- lib/cobalt/timerfd.c                          |  27 +-
- lib/cobalt/umm.c                              |   1 +
- lib/cobalt/wrappers_y2038.c                   | 187 ++++++++++
- scripts/xeno-config-cobalt.in                 |   5 +
- testsuite/latency/latency.c                   |  34 +-
- testsuite/smokey/sched-quota/sched-quota.c    |   4 +-
- testsuite/smokey/y2038/syscall-tests.c        | 324 +++++++++++++++++-
- testsuite/spitest/spitest.c                   |   6 +-
- 54 files changed, 1384 insertions(+), 466 deletions(-)
- create mode 100644 lib/cobalt/cobalt-y2038-glibc.wrappers
- create mode 100644 lib/cobalt/wrappers_y2038.c
-
+ COBALT_SYSCALL(sem_trywait, primary,
+diff --git a/kernel/cobalt/posix/sem.h b/kernel/cobalt/posix/sem.h
+index d7dbb9098..e1e4d68f0 100644
+--- a/kernel/cobalt/posix/sem.h
++++ b/kernel/cobalt/posix/sem.h
+@@ -66,9 +66,6 @@ __cobalt_sem_open(struct cobalt_sem_shadow __user *usm,
+ int __cobalt_sem_timedwait(struct cobalt_sem_shadow __user *u_sem,
+ 			   const struct timespec64 *ts);
+ 
+-int __cobalt_sem_timedwait64(struct cobalt_sem_shadow __user *u_sem,
+-			     const struct __kernel_timespec __user *u_ts);
+-
+ int __cobalt_sem_destroy(xnhandle_t handle);
+ 
+ void cobalt_nsem_reclaim(struct cobalt_process *process);
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index b65a0a760..2b4911c59 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -137,13 +137,6 @@ COBALT_SYSCALL32emu(sem_timedwait, primary,
+ 	return __cobalt_sem_timedwait(u_sem, ret ? NULL : &ts64);
+ }
+ 
+-COBALT_SYSCALL32emu(sem_timedwait64, primary,
+-		    (struct cobalt_sem_shadow __user *u_sem,
+-		     const struct __kernel_timespec __user *u_ts))
+-{
+-	return __cobalt_sem_timedwait64(u_sem, u_ts);
+-}
+-
+ COBALT_SYSCALL32emu(clock_getres, current,
+ 		    (clockid_t clock_id,
+ 		     struct old_timespec32 __user *u_ts))
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 55f08121c..f36fff272 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -293,8 +293,4 @@ COBALT_SYSCALL32emu_DECL(sem_timedwait,
+ 			 (struct cobalt_sem_shadow __user *u_sem,
+ 			  const struct old_timespec32 __user *u_ts));
+ 
+-COBALT_SYSCALL32emu_DECL(sem_timedwait64,
+-			 (struct cobalt_sem_shadow __user *u_sem,
+-			  const struct __kernel_timespec __user *u_ts));
+-
+ #endif /* !_COBALT_POSIX_SYSCALL32_H */
 -- 
 2.37.1
 
