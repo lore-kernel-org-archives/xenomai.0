@@ -1,48 +1,48 @@
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2070.outbound.protection.outlook.com [40.107.20.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354234429
-	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5E64429
+	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:59 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jaDQ8Tlm2ZXL0LcJYXxsgbIy6hv1y7ar9HT6i2VtUQtfrbEHwUjYC73+1xgakkvBPZY9AA/Rz3NxmdWwNrQS0dvT+8hykjzlNKI1FETvyyyzA31/HaS3MhGcwCuCVOU2mkuH06FeFA9ryDtAe/qtLwQjMfU/pE/zdrYJkaQU+IwxbOvtP40mW0bp5KNCzkCofoqgSE1qEE6uSblzfJeB7L7XMAgyuYvb+UWZRAeIC9YLwFVBuCfRn9YltF6uP2PRCs/E20RAD51FPex9HPnFnptiKPu1VgH0eApxwYUlEzS7aZL7DezSdv3J4NXbvUmfPJsCiCodRyRmXnwR3EEPoA==
+ b=Z7V+EMp0KVE1VpM5HGy0K07HrOam9scqRdrZzWnuezZiMfb7N6WQwe/kEVhJt9SRfu2QqUN/42SpDaxQ6ZyQzOpK0MyyB6+YIKjCVLOMihPB5leC4pwFZeKxURpYhKCyJxnXirHmjx8oXk/qLPqJ+9fz5otQewhCNSP1B2+fWLbKVYcaL8Kxe/+bkopBv25be3hYAgJN+nSJ7SQ6u98jq+dP5IzAY8YWcr5mp+lnqdQSKilPFPgNsbomeWR5Sf8rFlpqr8cq2eD8Gm+357wturzN/Uj725fZW3UQAqX+vtRTWtIR2BqFBRdQ4FBuVeMsuGxxPdITc2MquVCn8JpMgQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6SsgC+BoyRJSMcegM9n5mHFV7aaprZb0KduOMCz6WWA=;
- b=XTQY4KJJWOSOHG9lgfwtnl7WcjSc5VnqHJ7p3O3kds0KoETAinjuqzOzBvrsuHlXYGqXzFe8CQPvdB65/l5MpTHVJy13Uq9wZX8/D3wo4kVGdv0Xi1iKB8sAaZ6mW8yojMwPUDP9RStuPCcdoWhuc+NT8TUtt+C1I2lVgUlPzzq522B/L2HUJCVtGysPjVB2vpmyAii3lP5ex4a3/Vq648jChz8WdFk4Qb1rUEF+CKaLh8IH6RxCwREu/d+Ll059jE9AXXdWGOnmUvT4SG9vuFxynF3UnQiXH9TjXPFcMr9sIXdZXMKLivF2iCldcYn+/QKT+TQWqoCZ/5i1ZEmO3g==
+ bh=gz7LQEzdDEGyysyLl4jIZyI4FevNBlOydnq2VZvDBtM=;
+ b=aknCiuyta2H6oHqSNSvv05MNRZIWYvSHijdoqHtVhTlhMNoClGSTz6mXzfAzG/WqIaSNzYkHb+UMY9c20g8ghpXxclk5DirSjpffA5OQH72xmyQkuO3PmKomCGcbauhAuXI4SRMZsBDCML4BCgl6N4wnyD1aa/nK0N9NBx1WMFlhtc6vUd061xLfXjEHrUcdIKTsTcx8TYqm9OtoTav+9iGZH1DONbUkBnkeotjAovtKN6QTQHnVKMHYAQeDczgwQ2n+SFPvFdNdVVLtW2wF2R3VsoEnh3YSawHRbRznx33nw9AxgvdYWQRbOWdTuLLAHldue+dzFZibzuNykgjgnA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6SsgC+BoyRJSMcegM9n5mHFV7aaprZb0KduOMCz6WWA=;
- b=MiOQZIDin6Cx2Fr9vBfTaSdk1Tr47FbADIU/qNow9INrPUcK3RiO54J1bTUq6bbdT7qrrCY66PV+qNQKc1R8Yh22Jo0DORi/B1O5gG0+B7Onv0HiHsgzeV+yupKsuzLvYSSUHAtwCw7MWEVJGI2SDXcZSbFKxsbfqjpF9Y9QLYX5S/hrAgQeTiuaEiT0h97MEiT3Pke8uncKvh/C11yhxqUGcsbBfb3cDRWHuD+lsp1AtiD8ggIaOxr6IPWUm5KHZKzMjUOL23rz2ir55HFq+vdO2GeU/knuJgwlhbdnoNn+54woI3b0EVTV0RPwHj8Ohuyr96fdrDjF6iZidOTmrw==
+ bh=gz7LQEzdDEGyysyLl4jIZyI4FevNBlOydnq2VZvDBtM=;
+ b=ZEv8i60fC80anSeJvQhUs9uB7riWzVohrhbEhICHv+9gw2+d844QCNKgI71msRj/B8uiITK7Md0lNvqEnbEMCyVXGh5HTCS2G94qm8ct/l+d9kO6/zROhitxrkD0txJldRLADyWcUPiMq69uT42e4KvFgRi3sQY9th2bbafiiFNDfQTkPq2g6S+7o/sNS56X/NVtYgUSpIVgsvggSGcywAU+1z7H5JtAg2oLteWNKqG0V5zVh/aXyla8U2VZ81l7H3YkZRRDorLS798KJj+vdlAyJ4fKdRFDl3TdCJNEa5ddLjw2xZ5LqsTMclahtUW30Qio2wmSjIAJBIiroPe83w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
  by DB8PR10MB3116.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:b2::33) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
- 2022 13:44:51 +0000
+ 2022 13:44:53 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb%5]) with mapi id 15.20.5504.021; Tue, 9 Aug 2022
- 13:44:51 +0000
+ 13:44:52 +0000
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v1 35/42] y2038: cobalt/posix/select: Adding pselect64
-Date: Tue,  9 Aug 2022 15:43:19 +0200
-Message-Id: <20220809134326.23688-36-florian.bezdeka@siemens.com>
+Subject: [PATCH v1 37/42] y2038: kernel/drivers: Implement SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
+Date: Tue,  9 Aug 2022 15:43:21 +0200
+Message-Id: <20220809134326.23688-38-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 References: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: AS9PR06CA0206.eurprd06.prod.outlook.com
- (2603:10a6:20b:45d::26) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: AS8PR04CA0028.eurprd04.prod.outlook.com
+ (2603:10a6:20b:310::33) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -51,167 +51,435 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 238d13ce-316a-44be-e9ba-08da7a0d44fe
+X-MS-Office365-Filtering-Correlation-Id: 9a0eb7f6-1e1e-4a2c-84da-08da7a0d463e
 X-MS-TrafficTypeDiagnostic: DB8PR10MB3116:EE_
 X-LD-Processed: 38ae3bcd-9579-4fd4-adda-b42e1495d55a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	AM2qP/1UU9/R7tre6Hc7FbRXyqzrnXeO917HFdLPnd2SA34U5mHREEdzuze2zsvg8ZnpPIQQrtKl/3eVBNH6vJMhdKZ/eEeQwQYKJvYBo6Fm3S1LU4lui2ujqzgAhBuWMj20uz/izdt9KN5ZGtlB1v8TrqwcK1CfxmsHfKus6gKX4ZCVx2tkJCIln2gp2AI6lL6HJC2qH7LkV+FCPzcMabmynZGKP9cJFSoVy7D4xW+rkpGHghdWSZwYagsAp/L+i2RICv+T0lHgF+BGECiZaLXqzXe41PnJkxq5w4d4Bh2pyqDD6JNUzfSh+Ma5BuLmSbE1zx77BtyQ48aPW2g6fHxa2Vo2PA525sSd/Nb9AOx0rgn2TdmGtfHtZIi7cjsilaspm/u85O96oE8VR9qhfTd+LcWbwBrXi1+pT8MNrP1kJKfFFr0MdULI/ZaZTG7KU5shESoeoEB9LUKH960fYpVg/CaqpaDzzVsSas0heZHd1tZnY0yZjUxTOrdj82BEwntlNMNn/xuNTizOBjvHcP+wTOlu7AGpD/zfTKt4SmG1krEwlYylIi9MP4Ofv4JP3RK4szsqB0VFBIiZo5CXZ+Vs8R4BEbsigjh+zsuM/3dJ2URo+zIeBpSpC2DeQBvRPOUXCSmHWn9LoweK0c73CGgPOU8cH02NwShZ8/g0GFX6KKx9+H1yHpfjBFxPBwS0dVPZThKbRZIHsgzHhi3n7Bx/kpt9qAF1FiZcQOeBEyo=
+	wnKTZKVZuRWnUcR/hBw5KDR7YialH9UI0sFuBq7lXgu3BVqbLrq5T0Pg05j7PwGBKNXS2DIlNWww/Cv5g3CjEsqMQtjCyIdYv7LhOhfO/x14a4ubqIHAt7Qop8GUu3QvJLyW27gpuME35Nmf78G2gQEq4PU87Pi/RzTTNNwWLq8YVGxB3VwM8wUthxEdDzLLTFBJu2hqMKqhscMzHbLKb/t75qEKy7CdP5n9hJZK9CQDpdF/KVcUEZ12WJR4n+JNfA+b7frmFCoFo0dp1f6WdjqdaBCMGIf7xgNsEWOjS7xmAOMZ1hRFy0GhfV4dNXTPToZkScxXWHC1rUEQKDxY0uwlMpMLp3yov6ShFxBOLRp8f23L3nyCseM1eYQ6dXtIG1vEMPLVssEFur8XBOjIaJq+USTJLpubQ+x4bWJiBWgxPtNmD8ipoQsAdMmLmNcUEDMHsLShtWsCp+rNQtGPoYqc8EHb1tt1InU2gI+tilXC/6ruQx03Q2E15EZOTOXS6r0KD2gSgisC+XfUB3yUQLYitUm0vaAycn3G41KrgZjjOLpnS1JM/VQQiniqNXAuW/Ei0m+3lCJyYVRPlAK86KbIL+IT0LWb5pbT1ZnxPdaynRHlsM6EmLcPHkaaXJauFbWGib22prQkzscT/q4ddlIXzcgGyN6vPy1zFeTyOlPR72eeUMp81gi+VzNEF5LzWXxyN6/n8cT5EW9eJLGc5OAs+Bj7gp6s3p1XjKWRPZU=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(5660300002)(8936002)(82960400001)(1076003)(55236004)(2616005)(186003)(107886003)(36756003)(38100700002)(44832011)(6666004)(86362001)(6916009)(4326008)(66476007)(8676002)(66946007)(6486002)(66556008)(478600001)(6512007)(26005)(41300700001)(2906002)(83380400001)(316002)(6506007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(5660300002)(8936002)(82960400001)(1076003)(2616005)(186003)(107886003)(30864003)(36756003)(38100700002)(44832011)(6666004)(86362001)(6916009)(4326008)(66476007)(8676002)(66946007)(6486002)(66556008)(478600001)(6512007)(26005)(41300700001)(2906002)(83380400001)(316002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?edZun9IWQ+6NcB1oDHp8CuVUDXJ8NE9gh9xgvfoY4UnvW5f1Wquw1zvPk7rK?=
- =?us-ascii?Q?Hul0AcDxX67i6HudMT/nk7pefNyFtrLNU4Fgud1UPTK0iJbv8DxuCLVoCC4p?=
- =?us-ascii?Q?W2Za+YvJnCjhM0zu5GJ+BDpmV79dXqBNzbCef/HY+POVJiXzzV52kyyBiU8T?=
- =?us-ascii?Q?tSVc5AW4zk4T7ZhZG0JpEvpJCVjEn2eE1tbncgrf8Gpl4srYoe6AP0m8GObV?=
- =?us-ascii?Q?GMgvtev0HlyW99NUeB2fGgpGkoM6IjAPOS99SuNay5NqgR0z4wbq0+IgQGSw?=
- =?us-ascii?Q?Q4KAEUBkiv7GzP0j90qxLw0nnL0Ju3NATeCtWjyK28EtDe+HL9E7qGyN6og5?=
- =?us-ascii?Q?WX2ioAzJsmQts32+w9rs06X5HpvvfjSOvE3zzLLOANVwe2HFip0GeJEaegnP?=
- =?us-ascii?Q?qAb8Bec2iS+IEhxyWv5Rbm9V0V7WX+oxzE8Yr0rnSoeZ5D8aOONHmDgy5hKl?=
- =?us-ascii?Q?XJt2jcy7LJNy9JoaOpD8MoT6IHYCkUNDR064lBnKdvUdHHrJ1noKwi/L/gXA?=
- =?us-ascii?Q?29gtNb/9L6DIk9/BQSop85TQhgo6nD7AAKy//rw0djrlNtiECtCHS7JNKNKs?=
- =?us-ascii?Q?mWUa8GZTY1yQQzMA1uu9XMDdemFHcRTfrfsuyHTTqFq1+xTRG2j8hgEr4tGj?=
- =?us-ascii?Q?dGy9KUbYg7bsI8RO4y3oKpXnZM4vGIiMGiHUKk4ECAf9iIhOLkPEdEtIihJI?=
- =?us-ascii?Q?AICPFNVLg4gzte5/JDn9TuYq46f7KFqpzAVGtwg19GdDP2QBqtTtCTyR1+QW?=
- =?us-ascii?Q?Opoq56E2jZVBOdHmAMzyDF8xJrh/+hjku8WxHy1235qu5wRW8WeAA9lCVHLo?=
- =?us-ascii?Q?/P1ZFcr1/mFPFwqC/NXzjP7DO2rvN0XKtPYRngBPLp2b7unBSA4dzLtYykLC?=
- =?us-ascii?Q?QrPfTTIa2nE/66gQ/Zou82A3C/FYwnjXMc13v9KfnYqnw+3QVt8Zo/fU/ocj?=
- =?us-ascii?Q?JzBP4Q5EOORXOihn0+rEB0iiq/vFtGIRJC4Gvf7b8bVBtM0MqKdsgTgKNyee?=
- =?us-ascii?Q?JkqSzF3RhgtslxG4ctSRiEVgvgyPG2AUrmY4JH5/j8Jc2MXMP5el0uIfMU9n?=
- =?us-ascii?Q?+uY4g15LSeSW5bIBBZaADxoxxE2lpkOuAXbEIyNtKKXOriSZxQCA+2dn5FGB?=
- =?us-ascii?Q?FJmcqSXT2jGIk623VFgmkbfsVZ7yeneDgcVFhyI0o/rRV55fSYNEPmYOvzf2?=
- =?us-ascii?Q?HzrO0Ik7uKbWs8/9VLrbldSosPBtQLMbcLunHmYwf1/sBTcUZrUvG6DYxYup?=
- =?us-ascii?Q?nLbFeninOUVr9pSuRNTx42birfuVk/rJnm2KjiJEiKbFQJm+1Rk0gZiBVgE1?=
- =?us-ascii?Q?5CeADBm5TxLtkZSj0rjiKDY1ygprLTrT7YdwnwaWgR6w+nooxrYyjq+REgq1?=
- =?us-ascii?Q?Zfu4eY2WI7S8CD7SKJ5uXTWEkflxiQ/VN65ovECidGn9cvCXkvNZZWk4cMRo?=
- =?us-ascii?Q?wqD+AijM55Gp7qDOHCFAoNFCbAMDrM5ifIMJR/uGmbA3ACzQiAF206vlysBe?=
- =?us-ascii?Q?g5uuh8iseauxGorI3Wrr6RanX0w8Ps+vbPUVh1WZoqfoE5G/lhGt+uq2kwvq?=
- =?us-ascii?Q?166q5C2lYfAysvZiYlwoxu79MgnR+k/QzBlDNkMn5SXJ8/phO4Zq5Gildxc3?=
- =?us-ascii?Q?vw=3D=3D?=
+	=?us-ascii?Q?veS5mAJDgjvR/hhAtkx1CSwu2n9il30ynfUt5wV9gDqXWQn2tueE5pGCH0pH?=
+ =?us-ascii?Q?RnRuXmomVpT0ukPdhflw6rVVaJObatn7JNr/MoP3CJgM3U1hH5X4DV1awYO9?=
+ =?us-ascii?Q?PTJh28yArwpWMAufTWPpn774NMfI0Num1qcFiO3UtyfmO0Nh8Mnll9SHWnKy?=
+ =?us-ascii?Q?go9UvE79xc1Jly5/IPuWh0H3ycAK0xCjd7yBbvqgprqbCqHpV5t9aQ1XTidR?=
+ =?us-ascii?Q?gtixTj394DpYcyWSBsfx2qUKbh8cyISjzPvJPh7/16IeURdbKAfXPTUdoViK?=
+ =?us-ascii?Q?5Vzt99GrXX9laGxY+sMSw8lycU+JM6d76JRXWaGF/X3N2UTr7w3OFZRd2vrH?=
+ =?us-ascii?Q?/p0M+er0IC6EpiBKc5A/3iBYHHHLeVxJJeciKdph3WyO2llPMRaEwC+Xy+Jt?=
+ =?us-ascii?Q?ysVW1nAW8UcjahE2h15O+JFAmN3JtymGZxJAcWYGiYpU1C3HKp4PIL02cEqm?=
+ =?us-ascii?Q?Piih2sfk8uMKlXJXf5/ySc6IktAHM/jFcMM57f9tUn0xWOTY8smMxbNlMM5K?=
+ =?us-ascii?Q?M6FzjqcXlmrvlENanW2CXgkluFCCdZPu0wFRxd7CAUstWOSpGYZzc6kRpFs8?=
+ =?us-ascii?Q?3nNE6+5S2p3GvzERZrdkORsCXbNKyLnKNvFyKqxfQLTuwe5yDpdxTGnB/d/R?=
+ =?us-ascii?Q?dzumE5Ozm1HHbkKoyL7xhlMhHXU/YKtWrQ3iPSp7p5qErQFwh7XhPvlTsaDs?=
+ =?us-ascii?Q?t/El2vrExlIIEChr/bQfo+Nd6M3h7Tg5+MK6963+qXRrw8P8fLf5i78AgIpF?=
+ =?us-ascii?Q?5Hwtk6WV2Ewe3/SZN5TTcazCwU1ISAcHU8ySSWe5vx23Vo+G8ypZKe/mLu7u?=
+ =?us-ascii?Q?Hr9N+ERoiQVFJ2nhO/Skn/vmUiMlcEgwpjuxViHQoomFVJj9u6nfhnOmV5h/?=
+ =?us-ascii?Q?BHs9UCFVEO7Qp47CVHQnQNPuOzRd+wpReFiI5ObyqQf7PpNznJNxnNOBn0H0?=
+ =?us-ascii?Q?Tmtb+YBsL6YzXsntMDgcEnzy0tt1UqtocYviIC7YPmPFJgtDSo7GWxLtKj6D?=
+ =?us-ascii?Q?CJL4WmXP5lGwNKPp9lNuQUK9rsIxk7CilegiBl4GK+MymfLUvBxWUV3LLx7h?=
+ =?us-ascii?Q?EcLW6qfjxAfvx567K+aW4jApDdOaMFpN9LzxPXSUGOBsr2dfQC5BF+UkcEqV?=
+ =?us-ascii?Q?wl5col4EIIflzrO2A2xTeahUhP74fY1ZPTKdNa5cC/X0QjUWqAMqUyquw9/q?=
+ =?us-ascii?Q?wKkF/PfYKGs61S9Lbgk+PiQlnYgi4B/6VjNce3Q1mtY7AZKyqmVHOhGezuoM?=
+ =?us-ascii?Q?pbrPItusW9Q+r4Rls65nO9CYW92sPZQMYu8SVkV/+2vTZL01q+uLVezCNjga?=
+ =?us-ascii?Q?yzry58Fc5JqFF77jiriIoy3iBkmYc3gNoArGe9EKQxxi+AAHZp/o97BQmi5s?=
+ =?us-ascii?Q?4gccyGVpTHvTTN1+YMQ971u6J680UoSglBVz+FXm15IhByrWtxCMt1QhA93G?=
+ =?us-ascii?Q?1zcUKlRx3raTGKbdwY3m9aieRHQZgvR1pEd4xew6BI3FPdiPzbRkeFo8EnlX?=
+ =?us-ascii?Q?oJjgF+cVLCZwTq4J4aqCbCFNIjGCw9yR5KvCyYxE7UI1i7KE0n0KyzTggGOd?=
+ =?us-ascii?Q?FFqSV+7l663K+v2ldGAU9JefgklqVljdDo6P33MY4GM5dQvudKmDgb45OOn8?=
+ =?us-ascii?Q?kiclkO5LS3uAonCLraKzPcU=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 238d13ce-316a-44be-e9ba-08da7a0d44fe
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a0eb7f6-1e1e-4a2c-84da-08da7a0d463e
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:23.7847
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:25.9105
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ++/K5kgKbfSAaM2LSkVupQRRq5H1R+O1FB8L77vb7FqGUV7ty4zyS4Y8N09IQeC2jsu94lH8mSdzSy2dfF9fmB9BjNy+grN/BIAo1TWjjMc=
+X-MS-Exchange-CrossTenant-UserPrincipalName: JiT//Btd2hw7+ql2VxRDC+5g7un8ShlifYWtLmI/gElLIKVqXH+/SIkayyu/MaU6wXXYW8UVxMxOzAjk0vUeld89/Uy/nx+P8zXpJxkhhNU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3116
 
-This is not a full implementation of pselect() as we do not support
-waiting for signals yet. The xnsynch infrastructure is not prepared
-for that.
+When requesting y2038 support from recent glibc versions SO_RCVTIMEO and
+SO_SNDTIMEO will be auto-converted to the _NEW variants to make clear
+that we have to deal with a different (now y2038 safe) ABI.
 
-We will not wrap pselect() in userspace. We will only use the new
-syscall for providing y2038 safety for select().
-
-Another reason against a full pselec64 implementation is the fact that
-the XENOMAI_SYSCALLx() infrastructure ends at XENOMAI_SYSCALL5(),
-a real pselect64() implementation would require XENOMAI_SYSCALL6().
+Implementing SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW where necessary.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/uapi/syscall.h      |  1 +
- kernel/cobalt/posix/io.c           | 32 ++++++++++++++++++++++++++++++
- kernel/cobalt/posix/io.h           |  8 +++++++-
- kernel/cobalt/trace/cobalt-posix.h |  3 ++-
- 4 files changed, 42 insertions(+), 2 deletions(-)
+ kernel/drivers/ipc/bufp.c               | 34 +++++++++++++++++++++++++
+ kernel/drivers/ipc/iddp.c               | 34 +++++++++++++++++++++++++
+ kernel/drivers/ipc/internal.h           | 27 ++++++++++++++++++++
+ kernel/drivers/ipc/rtipc.c              | 29 +++++++++++++++++++++
+ kernel/drivers/ipc/xddp.c               | 18 +++++++++++++
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 31 ++++++++++++++++++++++
+ 6 files changed, 173 insertions(+)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 2dca90071..3e65efaab 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -140,6 +140,7 @@
- #define sc_cobalt_timer_gettime64		117
- #define sc_cobalt_timerfd_settime64		118
- #define sc_cobalt_timerfd_gettime64		119
-+#define sc_cobalt_pselect64			120
+diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
+index 565409dd6..f1936d846 100644
+--- a/kernel/drivers/ipc/bufp.c
++++ b/kernel/drivers/ipc/bufp.c
+@@ -824,6 +824,7 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_setsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -844,6 +845,14 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
  
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->rx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+@@ -851,6 +860,14 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			sk->tx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
  
-diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
-index 6709ef639..acfe03329 100644
---- a/kernel/cobalt/posix/io.c
-+++ b/kernel/cobalt/posix/io.c
-@@ -390,3 +390,35 @@ COBALT_SYSCALL(select, primary,
++		case SO_SNDTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->tx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -913,6 +930,7 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_getsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -936,6 +954,14 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 				return ret;
+ 			break;
  
- 	return ret;
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->rx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+@@ -943,6 +969,14 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->tx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
+index 05d019339..e4893a378 100644
+--- a/kernel/drivers/ipc/iddp.c
++++ b/kernel/drivers/ipc/iddp.c
+@@ -704,6 +704,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_setsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -724,6 +725,14 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->rx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+@@ -731,6 +740,14 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			sk->tx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->tx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -793,6 +810,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_getsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -817,6 +835,14 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->rx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+@@ -824,6 +850,14 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->tx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/ipc/internal.h b/kernel/drivers/ipc/internal.h
+index 919a5d978..f29ba2204 100644
+--- a/kernel/drivers/ipc/internal.h
++++ b/kernel/drivers/ipc/internal.h
+@@ -76,6 +76,17 @@ static inline nanosecs_rel_t rtipc_timeval_to_ns(const struct __kernel_old_timev
+ 	return ns;
  }
-+
-+COBALT_SYSCALL(pselect64, primary,
-+	       (int nfds,
-+		fd_set __user *u_rfds,
-+		fd_set __user *u_wfds,
-+		fd_set __user *u_xfds,
-+		struct __kernel_timespec __user *u_ts))
+ 
++static inline nanosecs_rel_t
++rtipc_sock_timeval_to_ns(const struct __kernel_sock_timeval *tv)
 +{
-+	struct timespec64 ts64, *to = NULL;
-+	int ret = 0;
++	nanosecs_rel_t ns = tv->tv_usec * 1000;
 +
-+	if (u_ts) {
-+		ret = cobalt_get_timespec64(&ts64, u_ts);
-+		to = &ts64;
++	if (tv->tv_sec)
++		ns += (nanosecs_rel_t)tv->tv_sec * 1000000000UL;
++
++	return ns;
++}
++
+ static inline void rtipc_ns_to_timeval(struct __kernel_old_timeval *tv, nanosecs_rel_t ns)
+ {
+ 	unsigned long nsecs;
+@@ -84,6 +95,15 @@ static inline void rtipc_ns_to_timeval(struct __kernel_old_timeval *tv, nanosecs
+ 	tv->tv_usec = nsecs / 1000;
+ }
+ 
++static inline void rtipc_ns_to_sock_timeval(struct __kernel_sock_timeval *tv,
++					    nanosecs_rel_t ns)
++{
++	unsigned long nsecs;
++
++	tv->tv_sec = xnclock_divrem_billion(ns, &nsecs);
++	tv->tv_usec = nsecs / 1000;
++}
++
+ int rtipc_get_sockaddr(struct rtdm_fd *fd,
+ 		       struct sockaddr_ipc **saddrp,
+ 		       const void *arg);
+@@ -105,9 +125,16 @@ int rtipc_get_sockoptin(struct rtdm_fd *fd,
+ int rtipc_get_timeval(struct rtdm_fd *fd, struct __kernel_old_timeval *tv,
+ 		      const void *arg, size_t arglen);
+ 
++int rtipc_get_sock_timeval(struct rtdm_fd *fd, struct __kernel_sock_timeval *tv,
++			   const void *arg, size_t arglen);
++
+ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 		      const struct __kernel_old_timeval *tv, size_t arglen);
+ 
++int rtipc_put_sock_timeval(struct rtdm_fd *fd, void *arg,
++			   const struct __kernel_sock_timeval *tv,
++			   size_t arglen);
++
+ int rtipc_get_length(struct rtdm_fd *fd, size_t *lenp,
+ 		     const void *arg, size_t arglen);
+ 
+diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
+index 211b496ec..66176adad 100644
+--- a/kernel/drivers/ipc/rtipc.c
++++ b/kernel/drivers/ipc/rtipc.c
+@@ -290,6 +290,20 @@ int rtipc_get_timeval(struct rtdm_fd *fd, struct __kernel_old_timeval *tv,
+ 	return rtdm_safe_copy_from_user(fd, tv, arg, sizeof(*tv));
+ }
+ 
++int rtipc_get_sock_timeval(struct rtdm_fd *fd, struct __kernel_sock_timeval *tv,
++			   const void *arg, size_t arglen)
++{
++	if (arglen != sizeof(*tv))
++		return -EINVAL;
++
++	if (!rtdm_fd_is_user(fd)) {
++		*tv = *(struct __kernel_sock_timeval *)arg;
++		return 0;
 +	}
 +
-+	if (ret)
-+		return ret;
-+
-+	ret = __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, to, false);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Normally pselect() would not write back the modified timeout. As we
-+	 * only use it for keeping select() y2038 safe we do it here as well.
-+	 */
-+	if (u_ts)
-+		ret = cobalt_put_timespec64(&ts64, u_ts);
-+
-+	return ret;
++	return rtdm_safe_copy_from_user(fd, tv, arg, sizeof(*tv));
 +}
-diff --git a/kernel/cobalt/posix/io.h b/kernel/cobalt/posix/io.h
-index 1d9ee0918..ca46aa309 100644
---- a/kernel/cobalt/posix/io.h
-+++ b/kernel/cobalt/posix/io.h
-@@ -24,7 +24,7 @@
- #include <cobalt/kernel/select.h>
- 
- int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
--		    void __user *u_xfds, void __user *u_tv, bool compat);
-+		    void __user *u_xfds, struct timespec64 *to, bool compat);
- 
- COBALT_SYSCALL_DECL(open,
- 		    (const char __user *u_path, int oflag));
-@@ -76,4 +76,10 @@ COBALT_SYSCALL_DECL(select,
- 		     fd_set __user *u_xfds,
- 		     struct __kernel_old_timeval __user *u_tv));
- 
-+COBALT_SYSCALL_DECL(pselect64, (int nfds,
-+				fd_set __user *u_rfds,
-+				fd_set __user *u_wfds,
-+				fd_set __user *u_xfds,
-+				struct __kernel_timespec __user *u_tv));
 +
- #endif /* !_COBALT_POSIX_IO_H */
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index f2ffdb3a2..47dc77e1c 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -172,7 +172,8 @@
- 		__cobalt_symbolic_syscall(timer_settime64),		\
- 		__cobalt_symbolic_syscall(timer_gettime64),		\
- 		__cobalt_symbolic_syscall(timerfd_settime64),		\
--		__cobalt_symbolic_syscall(timerfd_gettime64))
-+		__cobalt_symbolic_syscall(timerfd_gettime64),		\
-+		__cobalt_symbolic_syscall(pselect64))
+ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 		      const struct __kernel_old_timeval *tv, size_t arglen)
+ {
+@@ -312,6 +326,21 @@ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 	return rtdm_safe_copy_to_user(fd, arg, tv, sizeof(*tv));
+ }
  
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
- 	TP_PROTO(unsigned int nr),
++int rtipc_put_sock_timeval(struct rtdm_fd *fd, void *arg,
++			   const struct __kernel_sock_timeval *tv,
++			   size_t arglen)
++{
++	if (arglen != sizeof(*tv))
++		return -EINVAL;
++
++	if (!rtdm_fd_is_user(fd)) {
++		*(struct __kernel_sock_timeval *)arg = *tv;
++		return 0;
++	}
++
++	return rtdm_safe_copy_to_user(fd, arg, tv, sizeof(*tv));
++}
++
+ int rtipc_get_length(struct rtdm_fd *fd, size_t *lenp,
+ 		     const void *arg, size_t arglen)
+ {
+diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
+index 2ca0da5fd..864375d94 100644
+--- a/kernel/drivers/ipc/xddp.c
++++ b/kernel/drivers/ipc/xddp.c
+@@ -861,6 +861,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 	struct _rtdm_setsockopt_args sopt;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
++	struct __kernel_sock_timeval stv;
+ 	rtdm_lockctx_t s;
+ 	size_t len;
+ 	int ret;
+@@ -879,6 +880,14 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 			sk->timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++
++			sk->timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -967,6 +976,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
+ 	struct _rtdm_getsockopt_args sopt;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
++	struct __kernel_sock_timeval stv;
+ 	rtdm_lockctx_t s;
+ 	socklen_t len;
+ 	int ret;
+@@ -988,6 +998,14 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index 71628ba03..5bd114530 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -1743,6 +1743,7 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 			     socklen_t optlen)
+ {
+ 	/* uint64_t val; */
++	struct __kernel_sock_timeval stv;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t context;
+ 
+@@ -1793,6 +1794,36 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 
+ 		return 0;
+ 
++	case SO_SNDTIMEO_NEW:
++		if (optlen < sizeof(stv))
++			return -EINVAL;
++		if (rtdm_copy_from_user(fd, &stv, optval, sizeof(stv)))
++			return -EFAULT;
++		if (stv.tv_usec < 0 || stv.tv_usec >= 1000000)
++			return -EDOM;
++
++		rtdm_lock_get_irqsave(&ts->socket_lock, context);
++
++		if (stv.tv_sec < 0) {
++			ts->sk_sndtimeo = RTDM_TIMEOUT_NONE;
++			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++			return 0;
++		}
++
++		ts->sk_sndtimeo = RTDM_TIMEOUT_INFINITE;
++		if (stv.tv_sec == 0 && stv.tv_usec == 0) {
++			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++			return 0;
++		}
++
++		if (stv.tv_sec < (MAX_SCHEDULE_TIMEOUT / 1000000000ull - 1))
++			ts->sk_sndtimeo =
++				(stv.tv_sec * 1000000 + stv.tv_usec) * 1000;
++
++		rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++
++		return 0;
++
+ 	case SO_REUSEADDR:
+ 		/* to implement */
+ 		return -EOPNOTSUPP;
 -- 
 2.37.1
 
