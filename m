@@ -1,48 +1,48 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2043.outbound.protection.outlook.com [40.107.22.43])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2050.outbound.protection.outlook.com [40.107.21.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EACB442C
-	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B4394428
+	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:12 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wqywq4elxovq0LLBf3C8Gef2TGDMM7oHkx5sPldfUQsNUhLML6kiCmVdxAHsmZjTCv3nDcsHCWR2fyF6CokJRdXXd5a+7pd5dHJOBNoecHPwqklQmXeKGc/zq2D30cdgsDQe4qbXI67BMNhxm5r/apUYssCK8v1pqXcifmWLGae9ayesJ73phs7eIpS5EgNxHy3AfDrmmHIgWPbRg5rgsiA/aJt/mUd931PB925Q5mDObJJUfJeqvIqCHE4rlglvvVgl0i7hNK+7mgnqCAIuNfVTouwn3GsUbVi/IzwFLN5UkFPZ602uMkIyzB/U4ZiLRUow+b/Ly56VOkoK6CpkXQ==
+ b=IsA8/lWxoOWw+nhAOmIPpj/wTBJzDuVjEoXl2NCELT5sWSeZXJkDl1P/zi35NjvzASI210Itamit64sJR09K62nO11njqcuI0p2Xj8FHZLLXxwUMq1ZFeZWJGv8/FXLADaDXOU/aTBKMMC30JMWgug3AudqjD9pj+MdecKHREIoc8X9pVFI/TR4Kye8LJGLEpwN0nS+CrQzOqUcljeoQdunP45yCD9+J8VJrdkWHsKUJW5dt1/EIHU55SEtUhNWRJti4I+6LnRp+LXYoCj/p7+dA/UaaOh6htr2qIS1J2VYlj94KujRJq2a1U2uDfNUcwIzGDAy0PzvjlsjXU6q7HA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Li0JsYBWOo+374wOOi8w3lbwyBJ3wUnGYuS/drIzF54=;
- b=NZ/fN/GMQ5G1E7w9FZSn8oKEiKjjGmMTbls702oqWCiqpHu7R8rLjKvECiswjIPfBF5Fo0ZBx9aDFlMuxoCofNMWTgAyoiykH3e07WZUi6eGEh1tgjbOGxd+6gk3JJLHgGUDiEyZBBTzQcI/UWqvNhkICpy6h++EirXlo9Cdx8qQeqSp/aizYAT4m5DRN2TwvgVNT9WboZ+40LnCKJpbgAo0YZLYBp5KhB52MHdHD01qc68HvN/Xo7DvcpN3rXQXpm/hqFygEVlNVL05YxTIaUko2/6adXtxOR7r/ChPmJ82lK5D/qsHZaoAFvAZ8HUWJ6ob2gItBu96JVYG50W4XA==
+ bh=vYWdqV+0pbrxeXfLqJXoQlQqR9rvN92ZHseudUzIOyc=;
+ b=N3WQnwTjbP9YjIIiSu34K/jMcrhC4D9bL45uaQ9LxdDELw8FA2O7g+RyAsdS6m3hI6oL2RZVP+dWpO44WnJVHGm/m+UAozLzqeu3js/hfpj2VfHCt2MPsXe8mo6cbCujHJNN6wVX7zICIXjLHw0aXv9Nzw2DM79ta/VzAuQoF8s+UR4SRbkXeQ6pflI6UQaSK2HNdBob2bS3iPs/glK3DrFQhJPjkz9AUgb0UfR/MO0cHlOMpsjmPhxk0b+o6ZQHMnqgR0zyIceton6Vuo/3cJkAp33B/3k3obOm1xkMwhdp6Qvygas/0CUy1Q8oFGTijbtS6tciMbJSxL4KBVCevw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Li0JsYBWOo+374wOOi8w3lbwyBJ3wUnGYuS/drIzF54=;
- b=dEmFyzZQtP+Qn35GWnuNqlSkIbk7IScB5oeEdIxxE8HzTmIRNl4riuLtC+jyBrn87MfBz3aRlIU+IF6xSXCGVajmM2IlZghmzVV3SyuRstXZPj1MMuFFJtJeq/7t3aqqkHRAD0Kely5EyogdJAZi7OY7MN/UGPtDe0pHsdNR70ttJ6HRTyWHUX1lS7rBnLFfy3sFIhbMGgjEhuzocsrdeEL+f4CJnk8G4GxM9zZoaG/HNvFD/XIF77Lb5lBb5DI9RyKwSw2vSvYBjsmeHPz9GvoRysKioo80qtvWrMWdF6YMg0jqxC7fyHPg/XTtJS8VNZ5/OJEvDV+uRY/7klqNcw==
+ bh=vYWdqV+0pbrxeXfLqJXoQlQqR9rvN92ZHseudUzIOyc=;
+ b=wAI6T8p+dF9pydQc0KlvyiuwO2nWV5QqaopUnE0uQ20ji5z0cyIP6Uevb5Vi+Xk+Ivh/1AiZAMarCRj8w8bpxVtQdEpE9YNLDDUCp62jStiIwbUDa7/uWAzyhSc8TL+1ZamKhMUhTtGjujkiUjAdie+ULGmiaodmjVZcilBpCJ0znO6S6JOAOgNXF4BzpW8MEhrxVFnhugHaiwQgE2DdDogmA7dsy3CwTk1OrBkV1ek9Mh0c0hfAZZPOHiM1iESVZY8Xx52CnKlSbc6MOsXQWeOik5hV+JQxYR+sxNku1QxNbYhmf7/64rZLLOhPm5X4jDO9SDTImigqsWR8uM+iSw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
- by DB8PR10MB3674.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:131::19) with
+ by DB9PR10MB5001.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:2c7::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
- 2022 13:44:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Tue, 9 Aug
+ 2022 13:44:04 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::1194:7137:4cd9:2bbb%5]) with mapi id 15.20.5504.021; Tue, 9 Aug 2022
- 13:44:07 +0000
+ 13:44:04 +0000
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v1 19/42] y2038: Prepare code base for 64bit time_t
-Date: Tue,  9 Aug 2022 15:43:03 +0200
-Message-Id: <20220809134326.23688-20-florian.bezdeka@siemens.com>
+Subject: [PATCH v1 16/42] y2038: posix/mq: Harmonize mq_receive and mq_timedreceive
+Date: Tue,  9 Aug 2022 15:43:00 +0200
+Message-Id: <20220809134326.23688-17-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 References: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: AS9PR06CA0266.eurprd06.prod.outlook.com
- (2603:10a6:20b:45f::15) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0022.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1c::10) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -51,193 +51,117 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9d634498-80bd-44bf-5dc1-08da7a0d3b53
-X-MS-TrafficTypeDiagnostic: DB8PR10MB3674:EE_
+X-MS-Office365-Filtering-Correlation-Id: 73389c42-c212-42be-8339-08da7a0d3984
+X-MS-TrafficTypeDiagnostic: DB9PR10MB5001:EE_
 X-LD-Processed: 38ae3bcd-9579-4fd4-adda-b42e1495d55a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	FtmrQL7EhmyTiM5+419BPUAIiap+CAMBteTF+Rj3b3Xg0WIHkFHJlG5H5qDhANAkDAGqXJc2iOUFSxVGDM+vifOSuyX47fmKxljN3rSGRYQs4cXcsJTGvodbZgspdLOAbk14JkHYABHSVBhfAY0N4MpnvxWbmqgQld/rMImr9wU9g3CGlfeM+WWM7OD651ANIycRimv8uf6wmWVgtg1tR1sqPQJyVwJrPIMhMyZ51aeRfZnnr6JHhZer/NowsuHgEjljoe0A0kynQjrLhAXXdwnlhVIgOlBvoV27sVTpllMSpxL/LdOB3PV7ZMnNhefWNu1nebJc1w+uuU1EeQE2I9BOFFMr73OIFceWcgcs3RNS7ZZQN8FvI20FEE2vAJKS1B3D95pLd6C4t4MsV96UKu17Zrl8aPFaRrd1V+gbzpGRzFxJwEm/vO1YbwNHlCRi4/3FU69wqNIC7F7vHjoFlxb3CgCXZDAVJ+zPytnNgKkm3YsfSQyarqg+LUfIxRe7yqh/vPeJ7G+dOCQbBlXh/E1F2QdSU9sOfkuqn8FRm7Mo31Kwwi3XGz/kPZc0NwzvjJUfZ8/P2ppFmLZKUORVsATmp/KkhYQyQ5MVvycnq+I55UcgyvXnClJFtar7MwnBnamhTKbm+yKR/7CP2u/vBkk6FtjE/H5GcI3ZNt+3ZFuXTmN1gupP2iSGHqfmMoYH3+tLh6TZkIk8orkqzS61FTY+1NxNLkttO2rSP0JbyyQ=
+	lhjbC8fuW4brhrzGI31xAWLeX4S40eDhNH2dlp9OAKAtqj/arAgm9xPTleZnbQvOezWmDdCygjr/IDY5InrvK0LcGkcEQnFvMqUajjo4FLODrF8HRu7DwyWAp+wiV4ox2u2Wgl7o9MTO/u6DdjW5v2pm6gI8ND973VhX2VbnQc+9WUoYEBVgw6tkC7pnj3XHPIITjlAt7XbhGQByhBL8WYIVSwI/8C9t9XrAC7Y6Tx+Ne6XsPykN5evTCDtfF/gZPJdTlaGAl/OG73SAffS6WAS4zk5YuskvII6kC5ECYTPNqFx7wpjcPiAM2GI2gOk9A6vwoWNVBxxwNwtt4NSMfedx2NSjI2EmH9mKkinsbmUk532cFjjKm/+Or+o2H+hHEiS7nVTn1QL0rIZkCZ5GwviPe3tMkfmoRJQ0eyB9UN/4SmXwmEBFmcigpkbBXU0CA4DTSq5re3qHyz205lN/olGGgnr0J2H246qMKQZdvTb0XS6iNnttxpCLvKa8VY0+cUKuqrYKKJN0ugp2nUi42DAtYxQQ9K60kcjz6W742HOmCqJv8fq4E3LMwxAYFApK9/YU9+5TCKoOt/M/EkVWSZeaNIfv4h07MduDcUKfUvO47k9APy1ldjuRw84flagD6WxXiMU5xVUQGbmIBZb07nZ+Ns6May28YVqugtOX8AcWpCWbvq1aub9kL9izWmijk66hOjRLPVg8Haj1pG9svb4oHW1bpzYkqM5ehDhJEoo=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(346002)(136003)(376002)(44832011)(66476007)(66946007)(2906002)(8676002)(4326008)(316002)(478600001)(66556008)(36756003)(6916009)(6486002)(38100700002)(82960400001)(41300700001)(26005)(6506007)(6666004)(6512007)(86362001)(8936002)(5660300002)(1076003)(107886003)(186003)(2616005)(83380400001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(478600001)(2906002)(44832011)(6486002)(66946007)(4326008)(8936002)(66476007)(66556008)(5660300002)(38100700002)(82960400001)(55236004)(86362001)(1076003)(6666004)(6512007)(41300700001)(186003)(107886003)(26005)(6506007)(2616005)(6916009)(316002)(8676002)(36756003)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?XMxvG5+hBvX4KOHCe+JEOoK9AEBM7ZsgY9yQkAgKLDJjaN47t8C+30FnjQJ2?=
- =?us-ascii?Q?xHWFzr0qPhteWULu8L7GVPAJwBj1qJr27qzTcTsbUtjL3WnRAjCC7Fjp0QPF?=
- =?us-ascii?Q?SA1irdZBhKaj1Okc4R3IH4vFqD5W7wnSX/SCUPM/vrj55QNP1Zm3LMwmRWw1?=
- =?us-ascii?Q?IOCrIanlx3N6UvcvnSo0UQHDcnI47yDQBfu+hr9t2ZwFP5920GIfRSdHORtQ?=
- =?us-ascii?Q?EmfzjmNDto6dSOGHqjmogEVKcSs+0/HYEbx8315IEpTAP0gylmLmdOOEjXKa?=
- =?us-ascii?Q?o+WxlEjFN+127+Wf+pteM4ffP4hb65ZATJp8EcCPq1aeIINt0EnA6ww+djDg?=
- =?us-ascii?Q?kRHQGAzMuG9CGErqrDl5ID8wsOxhCXdnQYj+mN5LQsbCjOpWwRMBHnCZgv3p?=
- =?us-ascii?Q?xl4pBwW2c6BynAxJ2H7FwTMrZbM8R9Bw9sRymZnGDTC+5SBmFo+x2pSljBjA?=
- =?us-ascii?Q?HdIfuSPIRI3zTGALm4ulwl6G89WMdJL/es8GGs3vAjFmoJ8cguv2HJk8+OOo?=
- =?us-ascii?Q?lh8nzF5bXRwOaJdclDgRhIPHeJohhF9vbms8cbQmdkO6gTL7VO6lPvg6+uW+?=
- =?us-ascii?Q?uyfoLoIqXex8PUzrcTVJRILYsh4pDoEeK1V7y423jQhhmFdWPydtWoYVhkex?=
- =?us-ascii?Q?tEBSCYP+yB8mTfUD4BJ/JmHDw/C7RsR8mpJ6rFD2MzZlkSFBV7TmBXkti7y1?=
- =?us-ascii?Q?zpfvEOGvP/xuIdbGPOQviP+soVVLe8WlTwjyWx/TWfVJioHsJdLU+Q/Roo2j?=
- =?us-ascii?Q?VdbOroHHtNHDwtoERfEe2VpWRALYlu7iwMWtmKO6YkMCG/OjTtNeF+rxl4Tu?=
- =?us-ascii?Q?yTfi9o1qmzfkHg6XXpaZBfTCREmgjM0g/k9RkRdOniiKTPkzVcsdwT4QcVWn?=
- =?us-ascii?Q?YGUnzPSxWtO/hTvv0zy7PzK7CZ7yK9Ur5w/ZgOqYWKTzoG/TBSfojnzJHBY2?=
- =?us-ascii?Q?hY+YpgcXJgsecleWqA4Ba8OFCBtHDKW7Nr/lles1QuhJhfc8oZiHBzAtxQ8n?=
- =?us-ascii?Q?S16CsV3hXPxWzAse4M2pYh/unBGYUvxTtKIcUKB3jbn6Ih4j7ZyDzTAS6SsK?=
- =?us-ascii?Q?epKv4XGmI47fwr+qsvrwCBwXAkUAskg3/rOf3Q5SxDV8u++CCQQmhiDUJdpC?=
- =?us-ascii?Q?YNo3J2PhknjvWFoU2pkIZDQOxouW7hfiwtNhhTdSXMxqSQlc9tFTAj9THAf2?=
- =?us-ascii?Q?4lznzL2cQgScOe4hFlAY0DctywXLK3CQi0y/Xi9toJ9gYmIF1cpXd5XuDqDh?=
- =?us-ascii?Q?sApLGyPcwcVr4pFVhPFydHC69Ny+UAWhZ8EFGtDLp+A0L0/WqU8vaBX/W080?=
- =?us-ascii?Q?nFWoTaPr3MwbgXczufMCjjighCv80+Q880QmafdWKliLnWdPbE8jNPUAGw30?=
- =?us-ascii?Q?g/PNs10259t8M4HUmpbcXS4kuj3XOSUbVpUhwQOhRwPnaHJAXroUoQqt/Ury?=
- =?us-ascii?Q?5dyKfgGqZHbFQ1g4Q3IvykuYFERUDzgHXC59LXxxpU5DfO8e34ulwHkCJHcM?=
- =?us-ascii?Q?7YzQi6WW+hdcPV8CLlYd10rfCx8vAEAO393q6rZp7RKykhEZX7fmW44pMIUl?=
- =?us-ascii?Q?EQYUs6x9lajKdKeRir+D5ody/s0JZvikjmxfL3ykXsiGVzY5LS7jfMaoUqFp?=
- =?us-ascii?Q?fg=3D=3D?=
+	=?us-ascii?Q?RPJmnOYkXRP/ZH1U2B+g1y9Tpuyrdz3ef5K+tNh0i+8Us1hLXYAWYwq1GuFC?=
+ =?us-ascii?Q?bXIcLW0/kQ5A4Jf6/h955wW8UHJgKJxhwh4ZPGifhQaWK5eyPXyxLQFgejuT?=
+ =?us-ascii?Q?NBD8p5ksgzZte7GyY4M8KJUJAsGV+ADYt89DifJ2fWrS7DsJ1rD0Jpx1GsDI?=
+ =?us-ascii?Q?onVpP4+7yZsyXkGhCBOHrT1uJhB+qLXs+FKIHjZJIsDJpqQx25tR8dZPZXP+?=
+ =?us-ascii?Q?bGJbI/euT25aBdO0ss9/6DO9jy3ROT+rvIsBE5zbMztDBgolssQu//QkuPk8?=
+ =?us-ascii?Q?mUDTBQe7rCMnmHLgPHrsbwodIvnN5IJEr/aY1NzqqKpvxbHV2QiIMtnbuJVv?=
+ =?us-ascii?Q?xYDW34+voKImXSACst8xd2nV2skMCZj8M2G/uc820sTYS0HoA/ntlwJxYJpQ?=
+ =?us-ascii?Q?MYQB06W86j0WPqjV4Ldtflwt4jUnh/bS9fM6fmphbO3+ZxJrVxQBbp8Yqjdt?=
+ =?us-ascii?Q?jD4P1PC2bU+7YlhBcYJluK+QHKWQ6c+7B+UguBnSkG+pPrhjj1/yZN+GVebK?=
+ =?us-ascii?Q?RZqerR2mPKbJk7oZZCbGfx/fmfgsoajOWGBP0iKAlelO+KRFEHb70dkxPDlt?=
+ =?us-ascii?Q?UM0qn7DgqY/pz1KWX9dvK5q3wOoHFqf/FLXVjNc5orIQ+ck1BjAsZ+5xGLhF?=
+ =?us-ascii?Q?zKdsYMOyiUAOKgBTi9Fav3yEG0oHArzFJ2DtyRLhC53Lp2Gk7HoU/9dOiAFX?=
+ =?us-ascii?Q?odLPC/Yg5fEgBTXpHSDXW0sga0tDybdEu/7Sr0ojKXcw7Diq16YDmMqaYATo?=
+ =?us-ascii?Q?ukOehGvdaoBIhf9+0kJV6M/eZwbczw5UkS5xZohVXnnNyptnrXugP5pKaPqu?=
+ =?us-ascii?Q?Ri7y7ObX9nPlwvFbOKE0OtLXECy676KcRL7+CJUGtm2/kxTka3CE7UBMJGui?=
+ =?us-ascii?Q?bscy8MRQqdJnC/4odabTle5JDainW09FlbtratOFhHvL0Qb6ZjmSGl9wHrWJ?=
+ =?us-ascii?Q?Tennw3W8m18a2NzXlPU8sBTbmmF3B4MDMuoOo4o2GFM/oW/1loWs38DdO1/8?=
+ =?us-ascii?Q?BYr0x9Yi63Ez6B98CBWPw212xXCtPQvzvrYEO58r+kaOgbIAYC+yATL6CGj5?=
+ =?us-ascii?Q?Mp8A2i8CmgcXiPVw2T6D9tbZW7yozLxhmGCWfvkEPt7HghHe3oiTxoRkRq9T?=
+ =?us-ascii?Q?x2pWIlYVzDGJ1zwuDwL2cudbm0Mx6FxTzOIvko22rc25QeRFDNqdfMn3hKVf?=
+ =?us-ascii?Q?pIS88SrwBH0w2vR6mIZ+9ELv8x8VSIz1FHvCRpCV50waALf2ugmBf7uVHmK+?=
+ =?us-ascii?Q?P9PsH1AhbWvqr/wDNBhqDHHWO1/rWneZpeBqfPCnyO+uy+kHvq2adTuq1tba?=
+ =?us-ascii?Q?5jUUyYtSGVAkFUvGz8qvjMQsEOK9SXe1AygBBHu6K9NKkZ93PMnCgof1tad9?=
+ =?us-ascii?Q?aUq1ZBSRqSCRN65VmZlWS3qrjnzAejmzT1zel2JntwR/CKbYeSB8oXNQeDgH?=
+ =?us-ascii?Q?JEoAvi8jsFwoFW6I4H604qYSEIxQqWtgpc6gFFtB6p2JKrhor47pCPEPiakJ?=
+ =?us-ascii?Q?kn2pJvMH/G4iBNvFYhywVMtIVACXNhVYUadwTQoDWVuHf24biym0NfH+lqLu?=
+ =?us-ascii?Q?BO0iaMKP59hlpJUlfvfXfYLbebNIyDNKhqz8Lv4RS/1qvt2bPl2dgbhVHBYS?=
+ =?us-ascii?Q?mg=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d634498-80bd-44bf-5dc1-08da7a0d3b53
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73389c42-c212-42be-8339-08da7a0d3984
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:07.5922
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:04.5135
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o301ZM73UfYX7LIojUktwgzkkz7x5HzT5ZWX3zpiSm6xOAQySS1CVzeAgvePOcr5n23IpKnu+sJk+m2/qv8RJsZ1mE01hJ+bETWXAc+6Pkw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3674
+X-MS-Exchange-CrossTenant-UserPrincipalName: LOh4RR0P9IiPImC5zfPBhHUID3vGyjtxjwsbnsv1IgoGM+PMScjg5oUBV/iGTWfq2EweUmKhjKcsT49riesaAsgOH2EGeHnIVxZ9TQwpM4Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5001
 
-Compiling the Xenomai code base with CFLAGS set to
-"-D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64" - which is the requirement for
-y2038 safety on 32 bit platforms - failed. We had some problems with
-printf format specifiers which are now too small when time_t is lifted
-to 64 bit.
-
-Casting to (long long) should do it on all platforms we support.
+Let both callers of the cobalt_mq_timedcreceive service care about
+y2038 safety. The old code was correct but confusing. The mq_receive
+service is not y2038 affected because it does not forward a timeout,
+but it still calls the same service.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- demo/alchemy/altency.c      | 26 +++++++++++++-------------
- testsuite/latency/latency.c | 34 ++++++++++++++++++----------------
- testsuite/spitest/spitest.c |  6 ++++--
- 3 files changed, 35 insertions(+), 31 deletions(-)
+ lib/cobalt/mq.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/demo/alchemy/altency.c b/demo/alchemy/altency.c
-index e7c31d7c1..b15930567 100644
---- a/demo/alchemy/altency.c
-+++ b/demo/alchemy/altency.c
-@@ -258,12 +258,12 @@ static void display(void *cookie)
- 				time_t now, dt;
- 				time(&now);
- 				dt = now - start - WARMUP_TIME;
--				printf
--				    ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
--				     "priority %d)\n", dt / 3600,
--				     (dt / 60) % 60, dt % 60,
--				     test_mode_names[test_mode],
--				     period_ns / 1000, priority);
-+				printf("RTT|  %.2lld:%.2lld:%.2lld  (%s, %lld us period, priority %d)\n",
-+				       (long long)(dt / 3600),
-+				       (long long)((dt / 60) % 60),
-+				       (long long)(dt % 60),
-+				       test_mode_names[test_mode],
-+				       period_ns / 1000, priority);
- 				printf("RTH|%11s|%11s|%11s|%8s|%6s|%11s|%11s\n",
- 				       "----lat min", "----lat avg",
- 				       "----lat max", "-overrun", "---msw",
-@@ -413,13 +413,13 @@ static void cleanup(void)
- 	if (!test_duration)
- 		test_duration = actual_duration;
+diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
+index 88a74095b..365a28e7a 100644
+--- a/lib/cobalt/mq.c
++++ b/lib/cobalt/mq.c
+@@ -414,6 +414,19 @@ COBALT_IMPL(int, mq_timedsend, (mqd_t q,
+ 	return -1;
+ }
  
--	printf
--	    ("---|-----------|-----------|-----------|--------|------|-------------------------\n"
--	     "RTS|%11.3f|%11.3f|%11.3f|%8d|%6u|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
--	     (double)gminj / 1000, (double)gavgj / 1000, (double)gmaxj / 1000,
--	     goverrun, max_relaxed, actual_duration / 3600, (actual_duration / 60) % 60,
--	     actual_duration % 60, test_duration / 3600,
--	     (test_duration / 60) % 60, test_duration % 60);
-+	printf("---|-----------|-----------|-----------|--------|------|-------------------------\n"
-+	       "RTS|%11.3f|%11.3f|%11.3f|%8d|%6u|    %.2lld:%.2lld:%.2lld/%.2d:%.2d:%.2d\n",
-+	       (double)gminj / 1000, (double)gavgj / 1000, (double)gmaxj / 1000,
-+	       goverrun, max_relaxed, (long long)(actual_duration / 3600),
-+	       (long long)((actual_duration / 60) % 60),
-+	       (long long)(actual_duration % 60), test_duration / 3600,
-+	       (test_duration / 60) % 60, test_duration % 60);
- 	if (max_relaxed > 0)
- 		printf(
- "Warning! some latency peaks may have been due to involuntary mode switches.\n"
-diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
-index 6cd3a28b4..7856b48b8 100644
---- a/testsuite/latency/latency.c
-+++ b/testsuite/latency/latency.c
-@@ -322,12 +322,12 @@ static void *display(void *cookie)
- 				time_t now, dt;
- 				time(&now);
- 				dt = now - start - WARMUP_TIME;
--				printf
--				    ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
--				     "priority %d)\n", dt / 3600,
--				     (dt / 60) % 60, dt % 60,
--				     test_mode_names[test_mode],
--				     period_ns / 1000, priority);
-+				printf("RTT|  %.2lld:%.2lld:%.2lld  (%s, %lld us period, priority %d)\n",
-+				       (long long)(dt / 3600),
-+				       (long long)((dt / 60) % 60),
-+				       (long long)(dt % 60),
-+				       test_mode_names[test_mode],
-+				       period_ns / 1000, priority);
- 				printf("RTH|%11s|%11s|%11s|%8s|%6s|%11s|%11s\n",
- 				       "----lat min", "----lat avg",
- 				       "----lat max", "-overrun", "---msw",
-@@ -386,9 +386,10 @@ static void dump_histo_gnuplot(int32_t *histogram, time_t duration)
- 			return;
- 	}
++static inline int __do_mq_timedreceive(mqd_t q, char *buffer, ssize_t *len,
++				       unsigned int *prio,
++				       const struct timespec *timeout)
++{
++#ifdef __USE_TIME_BITS64
++	long sc_nr = sc_cobalt_mq_timedreceive64;
++#else
++	long sc_nr = sc_cobalt_mq_timedreceive;
++#endif
++
++	return XENOMAI_SYSCALL5(sc_nr, q, buffer, len, prio, timeout);
++}
++
+ /**
+  * Receive a message from a message queue.
+  *
+@@ -461,8 +474,7 @@ COBALT_IMPL(ssize_t, mq_receive, (mqd_t q, char *buffer, size_t len, unsigned *p
  
--	fprintf(ofp, "# %.2ld:%.2ld:%.2ld (%s, %Ld us period, priority %d)\n",
--		duration / 3600, (duration / 60) % 60, duration % 60,
--		test_mode_names[test_mode],
-+	fprintf(ofp,
-+		"# %.2lld:%.2lld:%.2lld (%s, %lld us period, priority %d)\n",
-+		(long long)duration / 3600, (long long)((duration / 60) % 60),
-+		(long long)(duration % 60), test_mode_names[test_mode],
- 		period_ns / 1000, priority);
- 	fprintf(ofp, "# %11s|%11s|%11s|%8s|%6s|\n",
- 		"----lat min", "----lat avg",
-@@ -515,13 +516,14 @@ static void cleanup(void)
- 	if (need_histo())
- 		dump_hist_stats(actual_duration);
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
  
--	printf
--	    ("---|-----------|-----------|-----------|--------|------|-------------------------\n"
--	     "RTS|%11.3f|%11.3f|%11.3f|%8d|%6u|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
--	     (double)gminjitter / 1000, (double)gavgjitter / 1000, (double)gmaxjitter / 1000,
--	     goverrun, max_relaxed, actual_duration / 3600, (actual_duration / 60) % 60,
--	     actual_duration % 60, test_duration / 3600,
--	     (test_duration / 60) % 60, test_duration % 60);
-+	printf("---|-----------|-----------|-----------|--------|------|-------------------------\n"
-+	       "RTS|%11.3f|%11.3f|%11.3f|%8d|%6u|    %.2lld:%.2lld:%.2lld/%.2d:%.2d:%.2d\n",
-+	       (double)gminjitter / 1000, (double)gavgjitter / 1000,
-+	       (double)gmaxjitter / 1000, goverrun, max_relaxed,
-+	       (long long)(actual_duration / 3600),
-+	       (long long)((actual_duration / 60) % 60),
-+	       (long long)(actual_duration % 60), test_duration / 3600,
-+	       (test_duration / 60) % 60, test_duration % 60);
- 	if (max_relaxed > 0)
- 		printf(
- "Warning! some latency peaks may have been due to involuntary mode switches.\n"
-diff --git a/testsuite/spitest/spitest.c b/testsuite/spitest/spitest.c
-index 6163e54bf..99d609403 100644
---- a/testsuite/spitest/spitest.c
-+++ b/testsuite/spitest/spitest.c
-@@ -233,8 +233,10 @@ static void *display_thread(void *arg)
- 		if (data_lines && (n++ % data_lines) == 0) {
- 			time(&now);
- 			dt = now - start;
--			printf("RTT|  %.2ld:%.2ld:%.2ld  (%Ld us period)\n",
--			       dt / 3600, (dt / 60) % 60, dt % 60,
-+			printf("RTT|  %.2lld:%.2lld:%.2lld  (%lld us period)\n",
-+			       (long long)(dt / 3600),
-+			       (long long)((dt / 60) % 60),
-+			       (long long)(dt % 60),
- 			       (long long)period_ns / 1000);
- 			printf("RTH|%11s|%11s|%11s|%8s|%8s|%11s|%11s\n",
- 			       "----lat min", "----lat avg",
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedreceive,
+-			       q, buffer, &rlen, prio, NULL);
++	err = __do_mq_timedreceive(q, buffer, &rlen, prio, NULL);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+@@ -526,13 +538,7 @@ COBALT_IMPL(ssize_t, mq_timedreceive, (mqd_t q,
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-#ifdef __USE_TIME_BITS64
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedreceive64,
+-			       q, buffer, &rlen, prio, timeout);
+-#else
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedreceive,
+-			       q, buffer, &rlen, prio, timeout);
+-#endif
++	err = __do_mq_timedreceive(q, buffer, &rlen, prio, timeout);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
 -- 
 2.37.1
 
