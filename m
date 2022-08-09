@@ -1,54 +1,53 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2044.outbound.protection.outlook.com [40.107.21.44])
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70072.outbound.protection.outlook.com [40.107.7.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80AE87A
-	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 05:53:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2CC87A
+	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 05:56:40 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nElA34v29pyvjc7YSwCcEAg1g9+0vRWDVi4fLgEHtTWz/ke9D5vb3eKsd2xWXHaAkqnAE7pYrdZaO+HaraLv1wkoZMJytZrxj3PWh4vz2T8h6qkK4ancuH7JRZMRxjjURyLBGfbdlgEK0tRw2bkQ6Zt5qg42HPLsUzlrDk2IS83E5nbZ/7x267oxjSWsM5Ku0Vwaw5vMvhFvd/oxb20YFTeiqZm2afWhNUUMY10csmr0HUIUwn+SgsyTi1OqMmc/9mLmwe0RbzbrOp6bcbIkRMdl2syoeNNc3sKJzJ+16Yo4syBTw975zbk7SsuNO5Z72g72vMukgDQ3RhhxCGZdbA==
+ b=T205owMlF5PxezXs7nVauCgurB3v1jAJXdV+mskAJWfrUECLqmRJWBngY6wPVtJSf0zvYOMhwdZ2ibjm8cW0tUAzwzoYx0s43xY95hUe/eFvNPD2kEC1u7gaUOFZcSDs/qcW0c4YqvjCmqN6bxQUr8BRv/X2XqAnxEcNKEi3dqInSMAS7ABAhQyJ0r/qoM3PwPSGgOFClbneqrFaRQyvvaj+1pFpIbU1Th5LovnMmXmCo4mHWagnykAXxBUF8MvapSeOEA2Ou2A+vBS8W+iQ/ZvgJlyiu+P79w8HgeWnSIRjN/gWGD3TNdmfQUIxnW/CCRzS+0wRygsvNe9orjRLHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qG++kL0Z8YCJD2mn5RrGq6tXkh8iJemJ0uiqIlmNgks=;
- b=Q5Gz8G7CrWvKB3OE1AnZm/gZIp6Ebk0mLRWeTYyB9L7fVIkSuds7HG+JpKIwpz51PepYACSBOyO82iUbKX85R+6k6w86EGtAS0ovUKe8uAMZspgozZps20lD/5ydaghbwZAuFURxuMfceYXx9lSILSq3TAFOgANqWYXUIqVyX2+2/GtK8yjiG7pVthS5QKncYW8YMvYYzZrDKXelFpiJOW9MNBywI9Bi1ohiSldPJJxcTGXt8oxZVe+8zSVsHaLgksyYyzUVFs7tuBD1E3rCS6gqVB8US6HfnTe6ADaJ+ZnnBWPz5ya1zfdyv82m9AEetghL6TPUiG3MKJbV5PS37g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.73) smtp.rcpttodomain=gmail.com smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
+ bh=CnQ5HNtPiq0NlYUbuh4tfZ2fvI7xiV4CwPEP8OFxhMM=;
+ b=VhlEbk7/AMsB7z+CPwWe/9ZnMXm7lf4c942PDXMN1KYjn5gcPXBjAv9VWrbIQjsLe4wW5H/ZS1XUpa9TgiRRje3HKCvyYgAfePfTp3o8QMEpMkW+PKpn5e3MLuZO3avfbEaepjsEnOy4mgAuyusAecrv/yn03ACg5VK+UsKJE7YetDpWYq7vVFi2C/M/h6OK3E0sJNXYlPYCZTsVuVJW60YZ2eMaLYSwJLfjsERKhAUJcBtpdOtgTwdAtbZrUB4bk8t7KdBGTAW2V/uqwXxDZI/ffw3akgHRVo7CGEWVbHQwv8C6Y0D5akh+Pg34bOKdgiUZ8G+BWpxCDwsRvnrqQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
+ is 194.138.21.76) smtp.rcpttodomain=thom.fr.eu.org smtp.mailfrom=siemens.com;
+ dmarc=temperror action=none header.from=siemens.com; dkim=none (message not
+ signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qG++kL0Z8YCJD2mn5RrGq6tXkh8iJemJ0uiqIlmNgks=;
- b=JWvHPw2VI5tC/tVQLxgAZMfLOEPddAiiC4Ea0e6yEOKmBSiIn76CIfqiRSrDjjGK0iEusDKTkWYvzgZWFqgpB5bjREcFolrtFf2PjOCD+vwmyi5X0BI024tIMy13IKPcfcgK69vH3kFiU413P2133BaTP5Pxw+Dy78kPtwoSPzWX/pKcDgwaulcJY60hjGRzZmU8+fsXhPU2TATN1udhH9VXPkjI3ZTGOMiIAUBtOfBpGAKF1/mJtEsCbDPNFC9BllCuVZeyr+Jg7SEZ98HIPFvdOJWY7qQA7PGZpRMTa8cE3/1QdzOGKeJ95tM6n6bdANrYvoDewT0a0cIX1yKarw==
-Received: from GV3P280CA0118.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:8::31) by
- AS8PR10MB4743.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:336::16) with
+ bh=CnQ5HNtPiq0NlYUbuh4tfZ2fvI7xiV4CwPEP8OFxhMM=;
+ b=RjKcHJXyWYEzxAp2oqclu3PtSJhiuaJFlyv6yxo0rtrlj+AD88r8mrGRIItEn5adUJFwQVZ8VVwysUZWNGLBuFDtAVRamPjMrlFK/wsOgxegosYy7MV6mSKGIbA6EVDB0yxHUrivQD+f2Beih0D9jk8JdyMMlujWIqyeb12pryktpwgu85RzSpVo4Zd2UJmIQr/LmQQt3KMmj45mIkqmFzV6w2MpHG7SvgVW60SBVhA3OiQbbgdMTgfwbdTtSqnMu+vAZXZ3eveUv/Ihqans+aeWg9EI5EobTSWjH6eLRWKvbmiaMVYO6F1Rabdv+kWxMAhKT8O/bnfbDAz06ummEA==
+Received: from GV3P280CA0065.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:a::23) by
+ AM0PR10MB2882.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:157::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Tue, 9 Aug
- 2022 05:53:50 +0000
-Received: from HE1EUR01FT066.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:150:8:cafe::c) by GV3P280CA0118.outlook.office365.com
- (2603:10a6:150:8::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
+ 2022 05:56:37 +0000
+Received: from HE1EUR01FT014.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:150:a:cafe::28) by GV3P280CA0065.outlook.office365.com
+ (2603:10a6:150:a::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14 via Frontend
- Transport; Tue, 9 Aug 2022 05:53:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.73)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.73 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.73; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.73) by
- HE1EUR01FT066.mail.protection.outlook.com (10.152.0.251) with Microsoft SMTP
+ Transport; Tue, 9 Aug 2022 05:56:37 +0000
+X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
+ 194.138.21.76) smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=temperror action=none header.from=siemens.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of siemens.com: DNS Timeout)
+Received: from hybrid.siemens.com (194.138.21.76) by
+ HE1EUR01FT014.mail.protection.outlook.com (10.152.0.156) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.14 via Frontend Transport; Tue, 9 Aug 2022 05:53:50 +0000
+ 15.20.5504.14 via Frontend Transport; Tue, 9 Aug 2022 05:56:35 +0000
 Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC9SNA.ad011.siemens.net (194.138.21.73) with Microsoft SMTP Server
+ DEMCHDC8VSA.ad011.siemens.net (194.138.21.76) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Tue, 9 Aug 2022 07:53:49 +0200
+ 15.2.1118.9; Tue, 9 Aug 2022 07:56:35 +0200
 Received: from [167.87.44.42] (167.87.44.42) by DEMCHDC89XA.ad011.siemens.net
  (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.9; Tue, 9 Aug 2022
- 07:53:49 +0200
-Message-ID: <22732737-b2fa-2561-3936-c503fb4ca57a@siemens.com>
-Date: Tue, 9 Aug 2022 07:53:47 +0200
+ 07:56:34 +0200
+Message-ID: <c0740fa3-b8ff-4e8d-08d3-10792dc0868f@siemens.com>
+Date: Tue, 9 Aug 2022 07:56:33 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -57,78 +56,85 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: Crash in xnclock_set_wallclock() if time/date is set early
+Subject: Re: Using setuid to relinquish root rights
 Content-Language: en-US
-To: Yuri Zaporozhets <yuri.zaporozhets@gmail.com>, <xenomai@lists.linux.dev>
-References: <CAEkURaZO-2uDFwx3ZnS=229z5XZT27WbeFs3kS5Qdq7MMPAiKw@mail.gmail.com>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>,
+	<xenomai@lists.linux.dev>
+References: <7eb52-62ed1200-d-65e32200@245807512>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAEkURaZO-2uDFwx3ZnS=229z5XZT27WbeFs3kS5Qdq7MMPAiKw@mail.gmail.com>
+In-Reply-To: <7eb52-62ed1200-d-65e32200@245807512>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Originating-IP: [167.87.44.42]
-X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
+X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
  DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
 X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--12.428800-8.000000
-X-TMASE-MatchedRID: 8xNMUprDHafPhQMrvkSA3njXAviTp2YZPg9yfk4YC0aSi82OWa7YY+D8
-	veomc3zgkY8eITaSJPijiKyi/sp0JBXqeLxjyCDuhg7u0oQFj2cdYTfgzQY7ziqRJ4M9q7OveLL
-	CA0PD7aip3QxRZDyTw06pgIbVd5RED3Nx13cUNzkPQj+lSK0Jjr1MabCtVw9LSHCU59h5KrEA+J
-	Hhu0IR5o2cB1+t/hlelUcxGfWk0G0r59u/gzv5MLUzq8RBkJuGSSOWVJeuO1A5f9Xw/xqKXXJnz
-	Nw42kCx2bNx1HEv7HAqtq5d3cxkNY8uVL0xheujjlIU7aZVD1psLtd6Z1k27fC8z15EtEJRVil9
-	P47auLI=
+X-TM-AS-Result: No-10--9.701300-8.000000
+X-TMASE-MatchedRID: AnkS0S6+UFrxcwVccMqxMEBu2tF/ewEwPg9yfk4YC0aiVU7u7I4INZ2/
+	fsiwSEV3iKJ9ulRl1bcRabZ6+ZfTItyF7gLxQJQe07N+F7q2pmJmE7c4m3YlonnNctcK7zfFzlT
+	5a6V0OSMvZMKeu0TTLgwFqajp21ReMXEzva6fGm/CfeBacBeafCUw/jz8mipWsFkCLeeufNtSDn
+	PEI8clbdcUntbeUinjS2yxGRKp+k0U4y1IJPG1GSmbPptcFcCpYOAAdwiwkva84C/3iwAgxMnlJ
+	e2gk8vIoguwQ+J4gZhVcXP3eMLfF683atTpX448H54QuRj/igXEAPZCs5UQ+/7FEhWgo0y8wJjn
+	8yqLU6JOS1V6oZBCu9noquRwHY3BIFQ3w3ZkqyzFNsXKUk3nHXcYbeAdGHHXXmFVlObh0PwMq8t
+	1qGggRJsoi2XrUn/JIq95DjCZh0xdY+ZoWiLImyAHAopEd76vSGOgrmPq+dFWRMmkGmZZiGKi6+
+	OGLKSbdOxGJGbQVArBJaOGswJUMg==
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--12.428800-8.000000
+X-TMASE-Result: 10--9.701300-8.000000
 X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-SNTS-SMTP:
- 712CA3548DB0144E72C40AEF7E69A812C01E914A7D6A44EF25A6953C4A6702D22000:8
+X-TM-SNTS-SMTP: 3BEA429FA31E879D5E551748C8A62609915C4CDD3DE3EAAC2ADD591AB491C7E82000:8
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8ca2bf82-a554-45e0-9d3a-08da79cb889b
-X-MS-TrafficTypeDiagnostic: AS8PR10MB4743:EE_
+X-MS-Office365-Filtering-Correlation-Id: c707b7ed-809d-461c-cc48-08da79cbeb56
+X-MS-TrafficTypeDiagnostic: AM0PR10MB2882:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	HeFoKzoBAPx7Hb/zBmWWGHHCtBdy/vnYHoXXx8i98A8aNQzIuH2TMJ7IX6m3uq3Qrg2xO7ElkxWkMxXxXgNxYcPB8fzviKsYIK3H9keiNWgku/8VDLfa7w9FzFNL8rQpJLXduO2dtFyB1oPzz/CVhdQw03TONDpVxJOpDRzOvzCl750t7ypIsKZTRW0sg+0F8meqFe9rhmnP7MnEd84P9tkH/Tkn/n2FRSwnBjUdjAlNFC/7q+dR0Ev9gT3EUZtvedKUEkOcqc6sqSjpScNAM0SohZm3QVHRUbZbipFkaJ8pMtN3RTygVU9n/eHa+NwR8zLvJdOIkg06pDlCxWDQZryQ6pHpA3JxUnwDm0TwO3OKhCBSejHi3ilov7nFrSWpJZloakzHVkZxX8rCc16hweX1w68NW7cB/rM22j7Xzr3mHyTK8QkIrCtVy6VDQL9KJb95ueAT11BrLvMF0zLB54qZ9wjONUMi7nHY5cDSMe95wMsImo1x3dVD64nmFWrMwjgAbUf1xsSVXjyXs3b0vLrunUIY/hpAgZv+5lW2W7E7efOicRD3h2AWclTh0AuRm4Xk/uw0OqIhlKZUpQe/9F7eBAhL56agS9zPppldeUGiZS3IOrYyj5Q7dGwjuX3NXWRYO+n9bZdFVlw+R9yBWkg1F+Dv7zNgiLJkKs85kEWHsYsXBtsm6DihJiK1BGS0NT27E76AhVFBA2zucbVtjmHgY6c0xEcGJDAi8TAFdw/ndTEsi7TN18nP0b2v8K1ZAy8261SgL+NvNUfgsFNYW1KyLKTz5Q5nyiHpzkfOLaDyyorXY2HOYyDqvdTd4Nlge/aEzf704cLKI0k/SexCm7vsI/UesvOsVD9ve3c0MAZ2Qy1V7nVL7OELmQmRMgX5nGG2cuN3zUOUwWLnbrc+6Q==
+	H45ESEdxxLHXJ+YR1mYwwSiwDf2aKyFtOwrre2dpxev22QvmcSw86VBUs6ZZNNqx6aHcXzfT0dwQZf5zazY4epzBxp1N5LGO6D4VDa4JVOB4zfV/blGQV25t5gtB4zZ+fo9640aYO6ja2vuCORGBFq2R7tDukbv8rnR7zIMdPmGvFREEiDjFdjhrTEUmrT8/NH4AnFJDkI/lUmTXC/IxNSgNe+jcxrk8cdpvpfaTRfS6rPpp0z1j/aDhrRurWCoq7wK2hyt81/oSXhWy1/MclEarch/Jr514xwzbyaMg9HPlDk2fOcXVWeMhyZ4MOvTFGR7QXc6XO6vnj2BPkFmRwWF69DrThcqkxIyqFfOnMikhf6FaPAHCwi5GrOzn0w+rKgqHDVEI5v/Etn5fsmsOQhNG7ahkmCs/cIAUyTLsIrC+UvvCS1F5gebGf73BDqVeXdZvnqAAineRMD0fUyu5Un1DQ6+/HBRx4IQKmLM8T+yRDUmVNVopralo0TulS7uUlIoFwb/SsF5/Vmbwf4IXFTw/Zh/aUn4JoFBOzQR6/c1aiJea79INSFkb7xcuxma1SY7PplTCReva7ZpSbNyerfioEljRsuysEuFIiNeLCPlUDu7hOFZx7ZmyjrB9NtVuOqTlj8+CAY+a+o9QtsjoqzZocGkfnGmFtOl9j9rfM+S983qw2W9Fh4TE2ii0GVlwnDo9P19TuRC2BacRKo6/CmjhKH2OZYGTvgi/DKobHM7pISI1IXqEfQZlPPKweYgxm/pEQ8DyFA0/VmOPJI5703Bel5neWtKRaYlBASooPCfPmtEXuRKa3ztrLS9AcBPDoBPPmVQNmgN4wGIbZfrypyNXdB4Rufhf+4ly3SbtbPrzYJ2vcHqK1caRdec+QGe8bj9yVQOwP5+6weMOrPwR5A==
 X-Forefront-Antispam-Report:
-	CIP:194.138.21.73;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(396003)(376002)(36840700001)(46966006)(40470700004)(41300700001)(478600001)(36756003)(81166007)(82960400001)(82740400003)(44832011)(16526019)(53546011)(2616005)(356005)(83380400001)(336012)(31686004)(956004)(186003)(47076005)(110136005)(86362001)(26005)(31696002)(40460700003)(40480700001)(316002)(70586007)(4744005)(70206006)(6706004)(5660300002)(8676002)(36860700001)(2906002)(8936002)(82310400005)(16576012)(3940600001)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+	CIP:194.138.21.76;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(136003)(376002)(39860400002)(40470700004)(46966006)(36840700001)(16526019)(8936002)(70206006)(36756003)(70586007)(336012)(8676002)(478600001)(186003)(40460700003)(5660300002)(316002)(31686004)(16576012)(6706004)(31696002)(86362001)(110136005)(63350400001)(26005)(63370400001)(44832011)(53546011)(356005)(2906002)(82960400001)(81166007)(2616005)(82310400005)(66574015)(41300700001)(956004)(47076005)(82740400003)(36860700001)(40480700001)(3940600001)(36900700001)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 05:53:50.2474
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 05:56:35.8908
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ca2bf82-a554-45e0-9d3a-08da79cb889b
+X-MS-Exchange-CrossTenant-Network-Message-Id: c707b7ed-809d-461c-cc48-08da79cbeb56
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.73];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.76];Helo=[hybrid.siemens.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	HE1EUR01FT066.eop-EUR01.prod.protection.outlook.com
+	HE1EUR01FT014.eop-EUR01.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB4743
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2882
 
-On 06.08.22 14:11, Yuri Zaporozhets wrote:
-> Dear Xenomai/Dovetail developers,
+On 05.08.22 14:50, François Legal wrote:
+> Hello,
 > 
-> I encountered the crash in xnclock_set_wallclock() (null pointer
-> dereference) in a custom build of the
-> Xenomai/Dovetail Linux kernel (version 5.15.32 or .51). The problem is
-> that in our custom kernel the clock
-> is set quite early (using do_settimeofday64()), and this implicitly
-> causes calling of xnclock_set_wallclock(), but
-> the whole xenomai_init / cobalt_init stuff hasn't been called at this
-> point of time yet. The variable nkvdso is
-> unconditionally referenced in xnclock_set_wallclock(), and, since it
-> is NULL, the kernel crash happens.
+> I'm running a Xenomai (3.1) app, that comprises both realtime xenomai thread and plain linux threads. The app starts as root so as to be able to bind <1024 tcp sockets.
 > 
-> Would it be possible to add the sanity check of nkvdso, and do not
-> reference it if it is NULL?
+> After initialisation of the sockets and RT IPCs, I would like to reliquinsh root rights, by calling setuid.
+> 
+> After that call, I get lots of  syscall <56> denied to "One of my RT thread" and syscall <61> denied to "One of my RT thread".
+> 
+> I figured out I had to set the CAP_SYS_NICE capability to the app before, so I added 
+> caps = cap_get_proc();
+> cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_list, CAP_SET);
+> cap_set_proc(caps);
+> prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
+> 
+> Without success. Morevover, the user that I set the uid to has group xenomai as primary group plus I do echo 1000 >  /sys/module/xenomai/parameters/allowed_group before running the app, but still.
+> 
+> Anybody can point me in the right direction.
 > 
 
-Sure, patch welcome.
+We may have regressions here as this configuration is not systematically
+tested. From your description and me read-up of our current logic, this
+is supposed to work fine.
 
-> Thank you in advance!
-> 
-> P.S. We call do_setttimeofday64() in x86_init.timers.timer_init.
-> 
+Can you debug the kernel logic in more details, check, if the cap is
+raised properly during the xenomai bind syscall and if we are later on
+checking it correctly? Maybe some other condition that the cap if
+failing, though I don't see yet which one.
+
 Jan
 
 -- 
