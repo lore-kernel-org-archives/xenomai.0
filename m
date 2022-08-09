@@ -1,23 +1,23 @@
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2070.outbound.protection.outlook.com [40.107.20.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44BD14429
-	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354234429
+	for <xenomai@lists.linux.dev>; Tue,  9 Aug 2022 13:44:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PFB3uQhj0t9JwbzvcBSrduFqqJ7Zq/72E94qDdq0oLiMaUk1WsExcjjiaR9wHER3vEzNRn7Azwav3ZLka82e3dR7fA1V1fOjvDb3IOrqr3+2guGp+4yoYVrcDtbOsipEWVhQFYHNGCGzHWuYy9zkdiwHxffPeFLYytHgm9cCJW3HXL/9QCXPRRreaqV3qHll4h+sY4LVnV1m/83c9aMhLEGfa5+1HSU6sUrbz1mSIaGIhK4jg7HbgGdSON5DO4R0qwZphVilRJsgSEbeEZ7r+nKnSpraSuXyhLlGRnFAKW9hvIeh0ARCWwS27ix6UBkRFfJ1KBajRT0RjK/hTpEUTA==
+ b=jaDQ8Tlm2ZXL0LcJYXxsgbIy6hv1y7ar9HT6i2VtUQtfrbEHwUjYC73+1xgakkvBPZY9AA/Rz3NxmdWwNrQS0dvT+8hykjzlNKI1FETvyyyzA31/HaS3MhGcwCuCVOU2mkuH06FeFA9ryDtAe/qtLwQjMfU/pE/zdrYJkaQU+IwxbOvtP40mW0bp5KNCzkCofoqgSE1qEE6uSblzfJeB7L7XMAgyuYvb+UWZRAeIC9YLwFVBuCfRn9YltF6uP2PRCs/E20RAD51FPex9HPnFnptiKPu1VgH0eApxwYUlEzS7aZL7DezSdv3J4NXbvUmfPJsCiCodRyRmXnwR3EEPoA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+DQpXX4mNhxcftVBeBpzvbR/JoUiB+Tf2+X2e+X3enM=;
- b=YlRfjodcfdW1MWtiqDX1PfY1w6tw563NQR1qkZ8CEHlVUe9WlgiMia50PZ2uJCYi7GxRmQMoZ/Um6on73gOzToD+JtDBYQc75fEB362R+tajZm6R37LB7PaP5ejWwFkmJkcM5m0O3j+TEPf3UuEfbb/hYpgsoP9mZWiLbVI7TIqHyKcvem/9uS08bc5xPO0QpHAfD4PU8GoQkBMuvNobKlRyGeYq1+3jwikUgYnhN9J7TaJpcOCnARmZDs5hfiDEmIzvxr6M8bDomUZHgbqXI1UIh3xShiFFPoei/MWdwreMLq++jjt4HLxq3kU0f2AZgGrDXjq8kewNZB7MBIaSTw==
+ bh=6SsgC+BoyRJSMcegM9n5mHFV7aaprZb0KduOMCz6WWA=;
+ b=XTQY4KJJWOSOHG9lgfwtnl7WcjSc5VnqHJ7p3O3kds0KoETAinjuqzOzBvrsuHlXYGqXzFe8CQPvdB65/l5MpTHVJy13Uq9wZX8/D3wo4kVGdv0Xi1iKB8sAaZ6mW8yojMwPUDP9RStuPCcdoWhuc+NT8TUtt+C1I2lVgUlPzzq522B/L2HUJCVtGysPjVB2vpmyAii3lP5ex4a3/Vq648jChz8WdFk4Qb1rUEF+CKaLh8IH6RxCwREu/d+Ll059jE9AXXdWGOnmUvT4SG9vuFxynF3UnQiXH9TjXPFcMr9sIXdZXMKLivF2iCldcYn+/QKT+TQWqoCZ/5i1ZEmO3g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+DQpXX4mNhxcftVBeBpzvbR/JoUiB+Tf2+X2e+X3enM=;
- b=TKz5FhBDXSVP0P9qoqe0EYUacNfC/jOYwgUy6JKQvEhe98vdUlB1FzU3LSbRQ7P9mJ7MYOD+sXirhYijynJFm7fYM/3cEoD3CiIKlbajDUysrzsEM4s7WgzcmWdvYsKOvdALeVYC9qtibRIHzkfyQ1+rHfKkGuOwXqFe3PqnbwtPWsHgFD7EzFSM9XGu4jghn47lv+nMvEinFUaJL6owd/apBkW96WNmUD3BJk/KchelOzTsuy6ezp0kk2M8oTznyCSHaqRf+IgR5fOxOMTAoI+FPCpug3vg+qkxylcQFiORLvlq3rm7a+39lEG15M9mbE7OYODMhZuiGPGtq5WseQ==
+ bh=6SsgC+BoyRJSMcegM9n5mHFV7aaprZb0KduOMCz6WWA=;
+ b=MiOQZIDin6Cx2Fr9vBfTaSdk1Tr47FbADIU/qNow9INrPUcK3RiO54J1bTUq6bbdT7qrrCY66PV+qNQKc1R8Yh22Jo0DORi/B1O5gG0+B7Onv0HiHsgzeV+yupKsuzLvYSSUHAtwCw7MWEVJGI2SDXcZSbFKxsbfqjpF9Y9QLYX5S/hrAgQeTiuaEiT0h97MEiT3Pke8uncKvh/C11yhxqUGcsbBfb3cDRWHuD+lsp1AtiD8ggIaOxr6IPWUm5KHZKzMjUOL23rz2ir55HFq+vdO2GeU/knuJgwlhbdnoNn+54woI3b0EVTV0RPwHj8Ohuyr96fdrDjF6iZidOTmrw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
@@ -33,16 +33,16 @@ From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v1 34/42] y2038: cobalt/posix/select: Refactor __cobalt_select()
-Date: Tue,  9 Aug 2022 15:43:18 +0200
-Message-Id: <20220809134326.23688-35-florian.bezdeka@siemens.com>
+Subject: [PATCH v1 35/42] y2038: cobalt/posix/select: Adding pselect64
+Date: Tue,  9 Aug 2022 15:43:19 +0200
+Message-Id: <20220809134326.23688-36-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 References: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: FR0P281CA0127.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:97::8) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: AS9PR06CA0206.eurprd06.prod.outlook.com
+ (2603:10a6:20b:45d::26) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -51,277 +51,167 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ece99a0b-7544-429c-6469-08da7a0d448a
+X-MS-Office365-Filtering-Correlation-Id: 238d13ce-316a-44be-e9ba-08da7a0d44fe
 X-MS-TrafficTypeDiagnostic: DB8PR10MB3116:EE_
 X-LD-Processed: 38ae3bcd-9579-4fd4-adda-b42e1495d55a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	QL8H4m6neKEyD7/bghFGktNAOQvx8oKAaTf7TQ/f2+cFOdpbYRYOF1O7mKKxiI0ZlsyivE+F5g5dGbwxZcsqSA316BHUlwrdQYffkyDH9jfCvSUa325lhS4iygvFOHZPMp9yns7pN99PHwKUeDOlLMvuXxVSA05AhKkenLwCWUwG4LmYS8Oa6CjF0LkSFx7oqKOwj0t6KUMdmg6RhirbELkiUAQ4U5/+o/hm9AYnIoz4qYMDivWusaL+XKk7vAJa30DSKCREvzf3BoMZ9iIhYfN5I5Id6PHMYwx7MLWJKFpKh+zXrZyc/8Ir7rQXGImMr01oA4FeTiMlIMdV7sQCl2Paj0H3HCYlPZ62EiQdHyOSCt186aaQOGsTYGjqwsnfUdWr8MDO04XQc/iyg+osguQbbO4mfJOz9C2aoiIVraR3Pu/Ow5KZxvyha1Y0rIiYDvTolGbqr51AnrBrziBEVejFDByydcozX6+jjNWTq+CrzbwsfebEsidf80+wLo2/f9WXQ+y5O3QqjmAHEJYzgxatIOpwz4BI69ca4BCwJ+5TZ79jzE1kCWnDR6m/02Sqcep8U4vQ+IJrncO+qZ1MR81DaW3KsWFFZzk2zsXZ7uVbPhP2WG1C5dJsfetiuTqawRfGIGNeF+yy4O5X2SUdL6zsy4HX0gOe/urI8aZycQYQD1sVj/UUBFoocBp5hLLozg/LMlH5ex6YDR0eDCEO6SR++b6qRFXbGjgHbj538+w=
+	AM2qP/1UU9/R7tre6Hc7FbRXyqzrnXeO917HFdLPnd2SA34U5mHREEdzuze2zsvg8ZnpPIQQrtKl/3eVBNH6vJMhdKZ/eEeQwQYKJvYBo6Fm3S1LU4lui2ujqzgAhBuWMj20uz/izdt9KN5ZGtlB1v8TrqwcK1CfxmsHfKus6gKX4ZCVx2tkJCIln2gp2AI6lL6HJC2qH7LkV+FCPzcMabmynZGKP9cJFSoVy7D4xW+rkpGHghdWSZwYagsAp/L+i2RICv+T0lHgF+BGECiZaLXqzXe41PnJkxq5w4d4Bh2pyqDD6JNUzfSh+Ma5BuLmSbE1zx77BtyQ48aPW2g6fHxa2Vo2PA525sSd/Nb9AOx0rgn2TdmGtfHtZIi7cjsilaspm/u85O96oE8VR9qhfTd+LcWbwBrXi1+pT8MNrP1kJKfFFr0MdULI/ZaZTG7KU5shESoeoEB9LUKH960fYpVg/CaqpaDzzVsSas0heZHd1tZnY0yZjUxTOrdj82BEwntlNMNn/xuNTizOBjvHcP+wTOlu7AGpD/zfTKt4SmG1krEwlYylIi9MP4Ofv4JP3RK4szsqB0VFBIiZo5CXZ+Vs8R4BEbsigjh+zsuM/3dJ2URo+zIeBpSpC2DeQBvRPOUXCSmHWn9LoweK0c73CGgPOU8cH02NwShZ8/g0GFX6KKx9+H1yHpfjBFxPBwS0dVPZThKbRZIHsgzHhi3n7Bx/kpt9qAF1FiZcQOeBEyo=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(5660300002)(8936002)(82960400001)(1076003)(2616005)(186003)(107886003)(36756003)(38100700002)(44832011)(6666004)(86362001)(6916009)(4326008)(66476007)(8676002)(66946007)(6486002)(66556008)(478600001)(6512007)(26005)(41300700001)(2906002)(83380400001)(316002)(6506007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(5660300002)(8936002)(82960400001)(1076003)(55236004)(2616005)(186003)(107886003)(36756003)(38100700002)(44832011)(6666004)(86362001)(6916009)(4326008)(66476007)(8676002)(66946007)(6486002)(66556008)(478600001)(6512007)(26005)(41300700001)(2906002)(83380400001)(316002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?qUKcWUqPc1hJFn2x+D1tnkkhJo59t9GULjHgj06FQcfkSySxDmBqTUkXCLaa?=
- =?us-ascii?Q?FJvrRV1/fRUiIuK7ov/ZLEh72JkhW//nRZkPkmYYKhsbLydEbqzxFevHCNo9?=
- =?us-ascii?Q?ZCbK3WYAIZTHc2063hBUghz0pGkGcjE5M4M9zdbUoN4Ud3bAkPHgcrSU+sx4?=
- =?us-ascii?Q?0QVloNy4AWZDgCz75pcfxsndkYUYyJXtEC365ndXh7LxXC1p0uYNXI4y+DRa?=
- =?us-ascii?Q?JR5Ge4McSPjUpKeVgNnuJ2SnpO8y9seFdAfrcwZW7Nspvo9Ax5JeEEtvYBvb?=
- =?us-ascii?Q?4WAy/A/7F8bLXJz78VZg8Di9dggT9AgpwElk8UxZuKlKtYA6VJTOvKVanBln?=
- =?us-ascii?Q?fznEbxeK+a94OZV7by7oGHSki5+ASMTh8MC5leQDkxj6gRJP5SAbNeWJfFsN?=
- =?us-ascii?Q?KbsmWNJnOdtCw48iJLAPI1TxLzBMpwBLLMQ365tefoh3fYT+BUDEXCx6am7q?=
- =?us-ascii?Q?s2NSbruH+/ovNX0E9tF/5jteH0pZVkUxsZ0R0Ee7Ry9wrb2N0enWb447x2Ks?=
- =?us-ascii?Q?HUyoI0g78hZiauFJ06/R6tijh9RG3eSP0PaiUm8XKl8/nbx6WGuYdht/Wk2y?=
- =?us-ascii?Q?oYcBDhlLnnwJrOYEgJojbCqyP/KXKOvliacdRhK3HLR/hqThWsWYGiVFGwQI?=
- =?us-ascii?Q?3NxxRr519PIQDq+DOgikxa4iOJxR1zTAlPBvd5ZP0ujOEcTrR265IMw9+Tma?=
- =?us-ascii?Q?nSrxMRoUotbFnQjTKYOQDfk9N25CBbmt0bjBS5wQ4aH8io/CUSEXhTG+yDss?=
- =?us-ascii?Q?Bt1OjjS9ScnnV+oB79CbdQNpRf7WZvPSYGK20L3jEiJgbslGh7qUaWBEp+eJ?=
- =?us-ascii?Q?SwM0A8GaP0ZwChOPQBJUJ5lKI/TBBlSA3RIYl8CCjEiSyUJ09+IfpQkeqqLx?=
- =?us-ascii?Q?K2T6GMzv87L4nkbqy7LTNpxVbxOW7CJiqQHXcmeVRl11g4KLLa8T/5LQx96c?=
- =?us-ascii?Q?9yHJnvQlMuQfWpWtUJBR2K8aNtDtXbHhUFXwWVctWXyxQRcYPGRD1oAOS0wF?=
- =?us-ascii?Q?CeFrlSH1T1f6ZQRBZdzziOIAsb+kJAc0+Y8bfWydCrTJIAA4m9vVkumN4EAw?=
- =?us-ascii?Q?8h+KSsLGtOVybtBeHnvQVwiNX7xh8yZ8xLe6sx+IcqbY+0KWFO+PkfHQScfW?=
- =?us-ascii?Q?FugFP0ffqVdTtw4bVhvrPmajcRXUVj91JTleCW92Vc08TkABbxJLnDcnmwf5?=
- =?us-ascii?Q?mv3N4d/o+neVFBj8NZLNuaMcIhiGKSqp//3Znnim4HEtv+jtbnr/IELei2R/?=
- =?us-ascii?Q?cO9ZW6Tyf5wkC+rewDNqrQ7ADW7HVTLVRX5v7KZgBAKO0mbXqSstt9yGYrc8?=
- =?us-ascii?Q?sxxoyPfon0jt513oFLyl4FuaYXerALSEEVjcjFOJcCAm32FGNzAWVyx9V3tV?=
- =?us-ascii?Q?j0rS8n5c8DSZD1p6zrdE1r4UesBd297Rglm12rqVQrJN1G5E85hw5RWvqVlL?=
- =?us-ascii?Q?DX0SmEfWti0UVZSzyGuoZaEJUoWjriwVu+6B6W3nrSXgEzupOJ0sR9nKy2jx?=
- =?us-ascii?Q?PrpNV/9ae0MF9GjbWoa22PXwOMTbLMwWDCbUs6tw7Zn0Pep1JUqaSpNiMXtY?=
- =?us-ascii?Q?+uNQP/3Mef7OMWTKTEcDwq4nu/MGgzun0/BJDOssmO1buEtmsCfVS/sMd7xb?=
- =?us-ascii?Q?QnNcMEePEZG///RR4EqAHIc=3D?=
+	=?us-ascii?Q?edZun9IWQ+6NcB1oDHp8CuVUDXJ8NE9gh9xgvfoY4UnvW5f1Wquw1zvPk7rK?=
+ =?us-ascii?Q?Hul0AcDxX67i6HudMT/nk7pefNyFtrLNU4Fgud1UPTK0iJbv8DxuCLVoCC4p?=
+ =?us-ascii?Q?W2Za+YvJnCjhM0zu5GJ+BDpmV79dXqBNzbCef/HY+POVJiXzzV52kyyBiU8T?=
+ =?us-ascii?Q?tSVc5AW4zk4T7ZhZG0JpEvpJCVjEn2eE1tbncgrf8Gpl4srYoe6AP0m8GObV?=
+ =?us-ascii?Q?GMgvtev0HlyW99NUeB2fGgpGkoM6IjAPOS99SuNay5NqgR0z4wbq0+IgQGSw?=
+ =?us-ascii?Q?Q4KAEUBkiv7GzP0j90qxLw0nnL0Ju3NATeCtWjyK28EtDe+HL9E7qGyN6og5?=
+ =?us-ascii?Q?WX2ioAzJsmQts32+w9rs06X5HpvvfjSOvE3zzLLOANVwe2HFip0GeJEaegnP?=
+ =?us-ascii?Q?qAb8Bec2iS+IEhxyWv5Rbm9V0V7WX+oxzE8Yr0rnSoeZ5D8aOONHmDgy5hKl?=
+ =?us-ascii?Q?XJt2jcy7LJNy9JoaOpD8MoT6IHYCkUNDR064lBnKdvUdHHrJ1noKwi/L/gXA?=
+ =?us-ascii?Q?29gtNb/9L6DIk9/BQSop85TQhgo6nD7AAKy//rw0djrlNtiECtCHS7JNKNKs?=
+ =?us-ascii?Q?mWUa8GZTY1yQQzMA1uu9XMDdemFHcRTfrfsuyHTTqFq1+xTRG2j8hgEr4tGj?=
+ =?us-ascii?Q?dGy9KUbYg7bsI8RO4y3oKpXnZM4vGIiMGiHUKk4ECAf9iIhOLkPEdEtIihJI?=
+ =?us-ascii?Q?AICPFNVLg4gzte5/JDn9TuYq46f7KFqpzAVGtwg19GdDP2QBqtTtCTyR1+QW?=
+ =?us-ascii?Q?Opoq56E2jZVBOdHmAMzyDF8xJrh/+hjku8WxHy1235qu5wRW8WeAA9lCVHLo?=
+ =?us-ascii?Q?/P1ZFcr1/mFPFwqC/NXzjP7DO2rvN0XKtPYRngBPLp2b7unBSA4dzLtYykLC?=
+ =?us-ascii?Q?QrPfTTIa2nE/66gQ/Zou82A3C/FYwnjXMc13v9KfnYqnw+3QVt8Zo/fU/ocj?=
+ =?us-ascii?Q?JzBP4Q5EOORXOihn0+rEB0iiq/vFtGIRJC4Gvf7b8bVBtM0MqKdsgTgKNyee?=
+ =?us-ascii?Q?JkqSzF3RhgtslxG4ctSRiEVgvgyPG2AUrmY4JH5/j8Jc2MXMP5el0uIfMU9n?=
+ =?us-ascii?Q?+uY4g15LSeSW5bIBBZaADxoxxE2lpkOuAXbEIyNtKKXOriSZxQCA+2dn5FGB?=
+ =?us-ascii?Q?FJmcqSXT2jGIk623VFgmkbfsVZ7yeneDgcVFhyI0o/rRV55fSYNEPmYOvzf2?=
+ =?us-ascii?Q?HzrO0Ik7uKbWs8/9VLrbldSosPBtQLMbcLunHmYwf1/sBTcUZrUvG6DYxYup?=
+ =?us-ascii?Q?nLbFeninOUVr9pSuRNTx42birfuVk/rJnm2KjiJEiKbFQJm+1Rk0gZiBVgE1?=
+ =?us-ascii?Q?5CeADBm5TxLtkZSj0rjiKDY1ygprLTrT7YdwnwaWgR6w+nooxrYyjq+REgq1?=
+ =?us-ascii?Q?Zfu4eY2WI7S8CD7SKJ5uXTWEkflxiQ/VN65ovECidGn9cvCXkvNZZWk4cMRo?=
+ =?us-ascii?Q?wqD+AijM55Gp7qDOHCFAoNFCbAMDrM5ifIMJR/uGmbA3ACzQiAF206vlysBe?=
+ =?us-ascii?Q?g5uuh8iseauxGorI3Wrr6RanX0w8Ps+vbPUVh1WZoqfoE5G/lhGt+uq2kwvq?=
+ =?us-ascii?Q?166q5C2lYfAysvZiYlwoxu79MgnR+k/QzBlDNkMn5SXJ8/phO4Zq5Gildxc3?=
+ =?us-ascii?Q?vw=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ece99a0b-7544-429c-6469-08da7a0d448a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 238d13ce-316a-44be-e9ba-08da7a0d44fe
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:23.0211
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:44:23.7847
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c/XWcB3YSTlT3HQqY+nYnxtIrubSJRSnkZsg5RMvDy11b5Dv3X/GjcdrVTx14VLlmcYbiz6xpQuXY4Vx5keornab5t0Yev/iMqIZo5Rz6Ls=
+X-MS-Exchange-CrossTenant-UserPrincipalName: ++/K5kgKbfSAaM2LSkVupQRRq5H1R+O1FB8L77vb7FqGUV7ty4zyS4Y8N09IQeC2jsu94lH8mSdzSy2dfF9fmB9BjNy+grN/BIAo1TWjjMc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3116
 
-There is no y2038 safe select() syscall provided by the kernel. If
-y2038 safety is required the application should not use select() and
-move on to something like pselect().
+This is not a full implementation of pselect() as we do not support
+waiting for signals yet. The xnsynch infrastructure is not prepared
+for that.
 
-As we still want to support select() for keeping backward compatibility
-- even if y2038 safety is requested - an additional pselect() based
-entry will be introduced soon which will re-use __cobalt_select().
+We will not wrap pselect() in userspace. We will only use the new
+syscall for providing y2038 safety for select().
 
-This patch moves all the timeout related userspace copy operations out
-of __cobalt_select() and migrates __cobalt_select() to
-struct timespec64. That will allow pselect64() to be based on
-__cobalt_select() as well.
+Another reason against a full pselec64 implementation is the fact that
+the XENOMAI_SYSCALLx() infrastructure ends at XENOMAI_SYSCALL5(),
+a real pselect64() implementation would require XENOMAI_SYSCALL6().
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- .../include/asm-generic/xenomai/syscall.h     | 22 +++++++
- kernel/cobalt/posix/clock.h                   |  6 +-
- kernel/cobalt/posix/io.c                      | 62 +++++++++----------
- kernel/cobalt/posix/syscall32.c               | 24 ++++++-
- 4 files changed, 78 insertions(+), 36 deletions(-)
+ include/cobalt/uapi/syscall.h      |  1 +
+ kernel/cobalt/posix/io.c           | 32 ++++++++++++++++++++++++++++++
+ kernel/cobalt/posix/io.h           |  8 +++++++-
+ kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+ 4 files changed, 42 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-index 70b3e68f9..d61b985fb 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-@@ -138,6 +138,28 @@ static inline int cobalt_put_u_itimerspec(
- 	return cobalt_copy_to_user(dst, &u_its, sizeof(*dst));
- }
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index 2dca90071..3e65efaab 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -140,6 +140,7 @@
+ #define sc_cobalt_timer_gettime64		117
+ #define sc_cobalt_timerfd_settime64		118
+ #define sc_cobalt_timerfd_gettime64		119
++#define sc_cobalt_pselect64			120
  
-+static inline struct timespec64
-+cobalt_timeval_to_timespec64(const struct __kernel_old_timeval *src)
-+{
-+	struct timespec64 ts;
-+
-+	ts.tv_sec = src->tv_sec + (src->tv_usec / USEC_PER_SEC);
-+	ts.tv_nsec = (src->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
-+
-+	return ts;
-+}
-+
-+static inline struct __kernel_old_timeval
-+cobalt_timespec64_to_timeval(const struct timespec64 *src)
-+{
-+	struct __kernel_old_timeval tv;
-+
-+	tv.tv_sec = src->tv_sec + (src->tv_nsec / NSEC_PER_SEC);
-+	tv.tv_usec = (src->tv_nsec % NSEC_PER_SEC) / NSEC_PER_USEC;
-+
-+	return tv;
-+}
-+
- /* 32bit syscall emulation */
- #define __COBALT_COMPAT_BIT	0x1
- /* 32bit syscall emulation - extended form */
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index dbaabbc5d..38b59e24f 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -68,12 +68,12 @@ static inline xnticks_t tv2ns(const struct __kernel_old_timeval *tv)
- 	return nsecs;
- }
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
  
--static inline void ticks2tv(struct __kernel_old_timeval *tv, xnticks_t ticks)
-+static inline void ticks2ts64(struct timespec64 *ts, xnticks_t ticks)
- {
- 	unsigned long nsecs;
- 
--	tv->tv_sec = xnclock_divrem_billion(ticks, &nsecs);
--	tv->tv_usec = nsecs / 1000;
-+	ts->tv_sec = xnclock_divrem_billion(ticks, &nsecs);
-+	ts->tv_nsec = nsecs;
- }
- 
- static inline xnticks_t clock_get_ticks(clockid_t clock_id)
 diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
-index 45ec09fae..6709ef639 100644
+index 6709ef639..acfe03329 100644
 --- a/kernel/cobalt/posix/io.c
 +++ b/kernel/cobalt/posix/io.c
-@@ -221,7 +221,7 @@ static int __cobalt_select_bind_all(struct xnselector *selector,
+@@ -390,3 +390,35 @@ COBALT_SYSCALL(select, primary,
+ 
+ 	return ret;
  }
- 
- int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
--		    void __user *u_xfds, void __user *u_tv, bool compat)
-+		    void __user *u_xfds, struct timespec64 *to, bool compat)
- {
- 	void __user *ufd_sets[XNSELECT_MAX_TYPES] = {
- 		[XNSELECT_READ] = u_rfds,
-@@ -237,13 +237,12 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
- 	xntmode_t mode = XN_RELATIVE;
- 	struct xnselector *selector;
- 	struct xnthread *curr;
--	struct __kernel_old_timeval tv;
- 	size_t fds_size;
- 	int i, err;
- 
- 	curr = xnthread_current();
- 
--	if (u_tv) {
-+	if (to) {
- 		if (xnthread_test_localinfo(curr, XNSYSRST)) {
- 			xnthread_clear_localinfo(curr, XNSYSRST);
- 
-@@ -255,23 +254,11 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
- 				goto out;
- 			}
- 		} else {
--#ifdef CONFIG_XENO_ARCH_SYS3264
--			if (compat) {
--				if (sys32_get_timeval(&tv, u_tv))
--					return -EFAULT;
--			} else
--#endif
--			{
--				if (!access_ok(u_tv, sizeof(tv))
--				    || cobalt_copy_from_user(&tv, u_tv,
--							     sizeof(tv)))
--					return -EFAULT;
--			}
- 
--			if (tv.tv_usec >= 1000000)
-+			if (!timespec64_valid(to))
- 				return -EINVAL;
- 
--			timeout = clock_get_ticks(CLOCK_MONOTONIC) + tv2ns(&tv);
-+			timeout = clock_get_ticks(CLOCK_MONOTONIC) + ts2ns(to);
- 		}
- 
- 		mode = XN_ABSOLUTE;
-@@ -343,23 +330,12 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
- 	}
- 
- out:
--	if (u_tv && (err > 0 || err == -EINTR)) {
-+	if (to && (err > 0 || err == -EINTR)) {
- 		xnsticks_t diff = timeout - clock_get_ticks(CLOCK_MONOTONIC);
- 		if (diff > 0)
--			ticks2tv(&tv, diff);
-+			ticks2ts64(to, diff);
- 		else
--			tv.tv_sec = tv.tv_usec = 0;
--
--#ifdef CONFIG_XENO_ARCH_SYS3264
--		if (compat) {
--			if (sys32_put_timeval(u_tv, &tv))
--				return -EFAULT;
--		} else
--#endif
--		{
--			if (cobalt_copy_to_user(u_tv, &tv, sizeof(tv)))
--				return -EFAULT;
--		}
-+			to->tv_sec = to->tv_nsec = 0;
- 	}
- 
- 	if (err >= 0)
-@@ -390,5 +366,27 @@ COBALT_SYSCALL(select, primary,
- 		fd_set __user *u_xfds,
- 		struct __kernel_old_timeval __user *u_tv))
- {
--	return __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, u_tv, false);
-+	struct __kernel_old_timeval tv;
++
++COBALT_SYSCALL(pselect64, primary,
++	       (int nfds,
++		fd_set __user *u_rfds,
++		fd_set __user *u_wfds,
++		fd_set __user *u_xfds,
++		struct __kernel_timespec __user *u_ts))
++{
 +	struct timespec64 ts64, *to = NULL;
-+	int ret;
++	int ret = 0;
 +
-+	if (u_tv && (!access_ok(u_tv, sizeof(tv)) ||
-+		     cobalt_copy_from_user(&tv, u_tv, sizeof(tv))))
-+		return -EFAULT;
-+
-+	if (u_tv) {
-+		ts64 = cobalt_timeval_to_timespec64(&tv);
++	if (u_ts) {
++		ret = cobalt_get_timespec64(&ts64, u_ts);
 +		to = &ts64;
 +	}
++
++	if (ret)
++		return ret;
 +
 +	ret = __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, to, false);
 +	if (ret)
 +		return ret;
 +
-+	if (u_tv) {
-+		tv = cobalt_timespec64_to_timeval(to);
-+		ret = cobalt_copy_to_user(u_tv, &tv, sizeof(tv));
-+	}
++	/*
++	 * Normally pselect() would not write back the modified timeout. As we
++	 * only use it for keeping select() y2038 safe we do it here as well.
++	 */
++	if (u_ts)
++		ret = cobalt_put_timespec64(&ts64, u_ts);
 +
 +	return ret;
- }
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 10b080dfd..af2365e78 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -749,7 +749,29 @@ COBALT_SYSCALL32emu(select, primary,
- 		     compat_fd_set __user *u_xfds,
- 		     struct old_timeval32 __user *u_tv))
- {
--	return __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, u_tv, true);
-+	struct __kernel_old_timeval tv;
-+	struct timespec64 ts64, *to = NULL;
-+	int ret;
-+
-+	if (u_tv &&
-+	    (!access_ok(u_tv, sizeof(tv)) || sys32_get_timeval(&tv, u_tv)))
-+		return -EFAULT;
-+
-+	if (u_tv) {
-+		ts64 = cobalt_timeval_to_timespec64(&tv);
-+		to = &ts64;
-+	}
-+
-+	ret = __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, to, true);
-+	if (ret)
-+		return ret;
-+
-+	if (u_tv) {
-+		tv = cobalt_timespec64_to_timeval(to);
-+		ret = sys32_put_timeval(u_tv, &tv);
-+	}
-+
-+	return ret;
- }
++}
+diff --git a/kernel/cobalt/posix/io.h b/kernel/cobalt/posix/io.h
+index 1d9ee0918..ca46aa309 100644
+--- a/kernel/cobalt/posix/io.h
++++ b/kernel/cobalt/posix/io.h
+@@ -24,7 +24,7 @@
+ #include <cobalt/kernel/select.h>
  
- COBALT_SYSCALL32emu(recvmsg, handover,
+ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
+-		    void __user *u_xfds, void __user *u_tv, bool compat);
++		    void __user *u_xfds, struct timespec64 *to, bool compat);
+ 
+ COBALT_SYSCALL_DECL(open,
+ 		    (const char __user *u_path, int oflag));
+@@ -76,4 +76,10 @@ COBALT_SYSCALL_DECL(select,
+ 		     fd_set __user *u_xfds,
+ 		     struct __kernel_old_timeval __user *u_tv));
+ 
++COBALT_SYSCALL_DECL(pselect64, (int nfds,
++				fd_set __user *u_rfds,
++				fd_set __user *u_wfds,
++				fd_set __user *u_xfds,
++				struct __kernel_timespec __user *u_tv));
++
+ #endif /* !_COBALT_POSIX_IO_H */
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index f2ffdb3a2..47dc77e1c 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -172,7 +172,8 @@
+ 		__cobalt_symbolic_syscall(timer_settime64),		\
+ 		__cobalt_symbolic_syscall(timer_gettime64),		\
+ 		__cobalt_symbolic_syscall(timerfd_settime64),		\
+-		__cobalt_symbolic_syscall(timerfd_gettime64))
++		__cobalt_symbolic_syscall(timerfd_gettime64),		\
++		__cobalt_symbolic_syscall(pselect64))
+ 
+ DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+ 	TP_PROTO(unsigned int nr),
 -- 
 2.37.1
 
