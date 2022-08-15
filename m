@@ -1,178 +1,134 @@
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2138.outbound.protection.outlook.com [40.107.22.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 950B77E
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 09:56:07 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 50E2AFF802;
-	Mon, 15 Aug 2022 09:55:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1660557358;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QOJ02icezSXtOr+aomzZeWqXmjJ77g2sFdrjrAurT9g=;
-	b=J69v/aMo8PxG1HhzgON4NEAvT2wh11QFSnKQW8bzYPlv26AIGEXj6eaaLup13wnrMt6wnE
-	raBd+0uTbP0nr6IQNGVrjaK+mesSEAoq4y+lphXOJzScoHVs+5Es6Qm8DcuYwVcnF77VYz
-	AzWZtPiGyUvUrBOZoONhXnKdIUcBN/XEqvXl+JDPTHSrIWk5TEz5RNlAV0II0guyyJxeNt
-	sLLaHerisCuXUBpXxgUO+2xQQYPncn40T2aIMKX4LsgLfNDeB2D+uf8hqZwOl1ntDhmI/p
-	d5LqF/eW4zXQgHeljw6ihB69G5PSUlN1LCbT2tw/rrqwqbPgkX+9r2klABrGzQ==
-References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
- <20220217084830.712756-1-gunter.grau@philips.com>
- <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
- <CALLqZ8QTq+g7pLx_L68K76ez1XJum8-OkjbC9RJP7tW-VaxdEA@mail.gmail.com>
- <e24f9de7-7170-5c5e-cb8f-07c778b67c21@siemens.com>
- <CALLqZ8THxAWDYMLOCUTKoGjzNt4V-PZtz_hTf2++FLF1QeCytg@mail.gmail.com>
- <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
- <86ca964e-62d8-2bc9-80f9-97097f1dedc7@siemens.com>
- <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Grau, Gunter" <gunter.grau@philips.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
-Date: Mon, 15 Aug 2022 11:34:50 +0200
-In-reply-to: <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
-Message-ID: <874jydkez7.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0075C7E
+	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 10:27:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XQofUMYGb4rzFeUaJ+iXlf7FA3SqFb2/2X3pcpObJAIxj3kNB5+QGLNkgwfuPbeI48E+PyvyA+1lSkTI8RRIAAEcqYX/DmYAErX+mdqqrTOxeUjK6NFGxIx8k8HySfjgN/YCmA/C+eifzLWmogETpOroej/TPdG1FFNSISoH6KY8TSEErdqi4DnGM8HpXKCfQ2RELMuFX8qaWOxCZO8orgz2yvvHyMgqjD3Gch5WN+QisBGZKBs5/t8QNRssUf3U96YZd6OQMijXwMfPy+7u81yWlZd4L8YmehF9jz/ct3hmdahDRxOWK8cdOvwy1RNXnTneeiNvsi4bdcowGjs8OA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=axLgJYcJMtJqrBvrwlVteCr1KUtJ4esBP3NUPXHB2/Q=;
+ b=gPvtWnbc+btwWHuYpHdxL1XOhz2ZEiwslLvWvHIOeoIgRJDgc1R9hUznzfTjzKybIfgIFpJ9JZCJBuc2NrGfsQYnF9tlDpt8Gsr0rJogDFJVCG3OyQ2gca79Cut/TWNn0FYsNnjns/Ue4eIog9BM9he0NdRJFQdqrDZWsUqZbqpUM/9H10coGKp8RjCNsomT9s4hMKgjoZ8HUMeBfYCDiI81w/2aUn9zt1/JgpB7SXgD++LogRyj9TmYg/4QgmaXvjFXeyvrhtQexCOeckdc1G37/QHM5OnD+OfENdN+9j6aGEVCJBx75+dbLc7bGnqW30E+PxQ90V5eA/S23xD92g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 212.159.232.72) smtp.rcpttodomain=lists.linux.dev
+ smtp.mailfrom=bbl.ms.philips.com; dmarc=pass (p=reject sp=reject pct=100)
+ action=none header.from=bbl.ms.philips.com; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Philips.onmicrosoft.com; s=selector2-Philips-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=axLgJYcJMtJqrBvrwlVteCr1KUtJ4esBP3NUPXHB2/Q=;
+ b=LYrENliyFyN1Y6jXbpNo7EueBST+Gsg8pQRa8VQqNyjuELPrpI3u0px9MUn8SB33iaj1cZiJrG4OHRghvUct8J2jAHVY+A97/MJ2WJAp0etH9jY4R1XpReSBoicJz7F/Avi75VaGouR3YML7QRqUQXrlXaXAz6Ac/c2anG7ER+A=
+Received: from DB6PR0802CA0025.eurprd08.prod.outlook.com (2603:10a6:4:a3::11)
+ by AM4P122MB0082.EURP122.PROD.OUTLOOK.COM (2603:10a6:220:1a::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Mon, 15 Aug
+ 2022 10:27:05 +0000
+Received: from DB5EUR01FT035.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:4:a3:cafe::82) by DB6PR0802CA0025.outlook.office365.com
+ (2603:10a6:4:a3::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.12 via Frontend
+ Transport; Mon, 15 Aug 2022 10:27:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 212.159.232.72)
+ smtp.mailfrom=bbl.ms.philips.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=bbl.ms.philips.com;
+Received-SPF: Pass (protection.outlook.com: domain of bbl.ms.philips.com
+ designates 212.159.232.72 as permitted sender)
+ receiver=protection.outlook.com; client-ip=212.159.232.72;
+ helo=ext-eur1.smtp.philips.com; pr=C
+Received: from ext-eur1.smtp.philips.com (212.159.232.72) by
+ DB5EUR01FT035.mail.protection.outlook.com (10.152.4.243) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 10:27:04 +0000
+Received: from smtprelay-eur1.philips.com ([130.144.57.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 256/256 bits)
+	(Client did not present a certificate)
+	by ext-eur1.smtp.philips.com with ESMTP
+	id NTjWoGqJ5l9ZiNXJIo2RjC; Mon, 15 Aug 2022 12:27:04 +0200
+Received: from mail.bbl.ms.philips.com ([130.143.87.230])
+	by smtprelay-eur1.philips.com with ESMTP
+	id NXJIob5pibpSaNXJIo768y; Mon, 15 Aug 2022 12:27:04 +0200
+X-CLAM-Verdict: legit
+X-CLAM-Score: ??
+X-CLAM-Description: ??
+Received: from bbl2xgg1.bbl.ms.philips.com (bbl2xgg1.bbl.ms.philips.com [130.143.223.142])
+	by mail.bbl.ms.philips.com (Postfix) with ESMTP id A198F182F94
+	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 12:27:04 +0200 (CEST)
+Received: by bbl2xgg1.bbl.ms.philips.com (Postfix, from userid 1992)
+	id 9E9DC1C0084; Mon, 15 Aug 2022 12:27:04 +0200 (CEST)
+From: Gunter Grau <guntgrau@bbl.ms.philips.com>
+To: xenomai@lists.linux.dev
+Subject: [[I-PIPE PATCH]] ipipe: noarch: Fix ipipe level end interrupt
+Date: Mon, 15 Aug 2022 12:27:04 +0200
+Message-Id: <20220815102704.1825151-1-guntgrau@bbl.ms.philips.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+References: <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+Reply-To: Gunter Grau <gunter.grau@philips.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 5dc1226c-26d6-4690-b6a3-08da7ea8b302
+X-MS-TrafficTypeDiagnostic: AM4P122MB0082:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	YAq3C1bDxwWyN4Il6IQ2nNWRsCB+832NCZE25wFvWySQhAF3swaprdKvs0xPe57pn8N6bp7pK9BB/oNyBGvFrgxNZ1SyD+Fab5XBoT744Kq88srAVTOhZySSmXYJ0j9gn1jmTSEqURHHPVXnGcegOIzS4LChyb5JnHy/uW+hWQMMiXg76IbbpWQGFlp/54wB9jYYRAeYf5Ims5DJnePPkhUEYs6tsJddLYfLlXLVjbcL/IGT5N5zfeVq6IpvedbDfZBY8H9ObTzzb7/mqN/yAuxpQN2Sc5ZOMWfaXYbfDwdwV7XssQiDaTEGNj0d0w0QQ11qWdyZP7orqS3iyXUpx3t9ganPw78Uf2NSe0H4zN6eFpENZOBnBdo0M5NVV9maOI7IjybnCotXktgaBXtK88kSSGoz313S33kk2nz1v9gFnyl9bFWXcMd/o+Ic1oqp8VPWMaa6P3KCgqgdq5jdqZAhS/VrIPnEox7f0ldhIjcySEkHj9kZ9bm5hnzfTwuEO5+00jZr159kO9R4CaNgHA1EXOakloX25t7NUQrtZIvx9VSKuvHmE0XPIgYQ7ax3K+3bl+fYhz3w+872/SuecTNpoUL6fB+mv0lWtEoy+Ldvzy3uOF1wDOZ4XkBzLuBsbhkzt2WrWHKuA0ja1CsTmf9xlPawnD7OBBrb/WMcWWPCmd1wrYbafU5jtYq9ZGNIDo252qm+HmnM+QKuHhYSui47SsKugthQCjF4qu2LRHngvH8ITNQdGNra6RDeGAuPz5O2Yc+3L1sVfQHIOD9osHOgodINiUslHipB6HCabl7jROV1RI04y1z3QTTXZwI8
+X-Forefront-Antispam-Report:
+	CIP:212.159.232.72;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:ext-eur1.smtp.philips.com;PTR:ext-eur1.smtp.philips.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(396003)(136003)(40470700004)(46966006)(36840700001)(478600001)(86362001)(336012)(2616005)(6266002)(26005)(120186005)(186003)(1076003)(41300700001)(426003)(47076005)(83380400001)(82310400005)(5660300002)(40480700001)(8676002)(70586007)(70206006)(42186006)(316002)(40460700003)(6916009)(7636003)(7596003)(356005)(36860700001)(82960400001)(8936002)(82740400003)(2906002);DIR:OUT;SFP:1102;
+X-OriginatorOrg: ms.philips.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 10:27:04.8470
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5dc1226c-26d6-4690-b6a3-08da7ea8b302
+X-MS-Exchange-CrossTenant-Id: 1a407a2d-7675-4d17-8692-b3ac285306e4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1a407a2d-7675-4d17-8692-b3ac285306e4;Ip=[212.159.232.72];Helo=[ext-eur1.smtp.philips.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB5EUR01FT035.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P122MB0082
 
+From: Gunter Grau <gunter.grau@philips.com>
 
-"Grau, Gunter" <gunter.grau@philips.com> writes:
+There is the possibility that a new level triggered interrupt is
+already waiting when __ipipe_end_level_irq() is called.
+In this case at the moment when the irq is unmasked it may already
+fire and call __ipipe_ack_level_irq() before the masked state is
+cleared in the irq description. If this happens mask_irq() called by
+__ipipe_ack_level_irq() will not mask the interrupt and the system
+my stall.
+To prevent this, the masked state will now be cleared before unmasking
+the interrupt. A following direct interrupt handler call will then
+correctly mask the hardware interrupt as needed.
 
-> Hi,
->
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Montag, 15. August 2022 08:19
->> To: Grau, Gunter <gunter.grau@philips.com>; xenomai@lists.linux.dev
->> Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
->>
->> Caution: This e-mail originated from outside of Philips, be careful for
->> phishing.
->>
->>
->> On 11.08.22 16:05, Grau, Gunter wrote:
->> >
->> > Hi,
->> >
->> > Unfortunately I have to come back to this.
->> >
->> > On Thu, Feb 17, 2022 at 10:12 AM Jan Kiszka
->> <mailto:jan.kiszka@siemens.com> wrote:
->> > On 17.02.22 15:11, Greg Gallagher wrote:
->> >>
->> >>
->> >> On Thu, Feb 17, 2022 at 4:15 AM Jan Kiszka
->> >> <mailto:jan.kiszka@siemens.com
->> <mailto:mailto:jan.kiszka@siemens.com>> wrote:
->> >>
->> >>     On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
->> >>     > The following commit in the vanilla kernel introduced
->> >>     > a check for the cached interrupt mask flag in mask_irq():
->> >>     >
->> >>     > bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function
->> >>     calls")
->> >>     >
->> >>     > This means if the flag is not serviced correctly
->> >>     > the real bit in the hardware interrupt controller may not be
->> >>     > cleared or set.
->> >>     > The __ipipe_end_level_irq() function does not follow this rule.
->> >>     > It unmasks the bit in the hardware without setting the cached f=
-lags
->> >>     > accordingly. So after the first level interrupt is finished the
->> >>     > mask cache has a wrong state. If now the next interrupt fires,
->> >>     > the mask_irq() function will not really mask the interrupt in
->> >>     > the hardware which causes a interrupt storm after reenabeling
->> >>     > the hard irqs.
->> >>     > The fix now also updates the shadow flag correctly.
->> >>     > ---
->> >>     >  kernel/irq/chip.c | 1 +
->> >>     >  1 file changed, 1 insertion(+)
->> >>     >
->> >>     > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->> >>     > index 7c03e2931189..ff9a8b3f33db 100644
->> >>     > --- a/kernel/irq/chip.c
->> >>     > +++ b/kernel/irq/chip.c
->> >>     > @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc
->> *desc)
->> >>     >  void __ipipe_end_level_irq(struct irq_desc *desc)
->> >>     >  {
->> >>     >         desc->irq_data.chip->irq_unmask(&desc->irq_data);
->> >>     > +       irq_state_clr_masked(desc);
->> >>     >  }
->> >>     >
->> >>     >  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
->> >>     > --
->> >>     > 2.25.1
->> >>     >
->> >
->> > We discovered some situations (with iio drivers) where this fix seem n=
-ot to
->> work.
->> > Obviously in the moment where the irq is unmasked, the new interrupt
->> seems to fire again and the irq_ack() code of the new interrupt runs bef=
-ore
->> the irq_stats_clr_masked() is called.
->> > When I wrote the patch I thought the irqs are disabled at this moment.
->> Looks like this is not the case. At least when I change the order to:
->> >
->> > irq_state_clr_masked(desc);
->> > desc->irq_data.chip->irq_unmask(&desc->irq_data);
->> >
->> > My use case works again.
->> > Now I am unsure if the above reordering is the correct solution or may=
-be
->> just calling unmask_irq(); which was the first proposal is better?
->> > We dropped unmask_irq() proposal because it does additionally some
->> locking, but maybe this is needed. I am unsure.
->> >
->> > Do you have some advice?
->>
->> I didn't wrap my head fully around this again yet, but if you can't ensu=
-re a
->> correct, race-free behavior by ordering, you need locking.
->> Maybe have a look again how dovetail works in this context as it should =
-have
->> logically the same thing to do.
->>
->
-> It looks like in dovetail the masked bit in the description is also not c=
-leared (missing irq_state_clr_masked(desc)).
-> This might work because the corresponding mask function here seems also s=
-ourced from the dovetail patch and is not checking the bit before masking t=
-he irq.
-> No guaranties here, I am not firm with dovetail and that=E2=80=99s what it
-> looks like when checking handle_percpu_irq().
+Signed-off-by: Gunter Grau <gunter.grau@philips.com>
+---
+ kernel/irq/chip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Dovetail does not work the I-pipe did, __ipipe_end_level_irq() is now
-handled internally. The only way to re-enable interrupts in this path
-would be to reschedule a real-time task, which cannot happen until
-irq_exit_pipeline() is called when unwinding the interrupt frame, at
-which point the companion core may reschedule, never before. So unless
-the core enables back hard IRQs in the handler, which would be 100%
-broken behavior, there is no issue.
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 6a883a4cee87..25d0942b592a 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1048,8 +1048,8 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
+ 
+ void __ipipe_end_level_irq(struct irq_desc *desc)
+ {
+-	desc->irq_data.chip->irq_unmask(&desc->irq_data);
+ 	irq_state_clr_masked(desc);
++	desc->irq_data.chip->irq_unmask(&desc->irq_data);
+ }
+ 
+ void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+-- 
+2.25.1
 
-IOW, both the interrupt flow and event handlers run with (hard) IRQs
-masked in the CPU all the way, preventing any interrupt storm, whether
-the guard bit is set prior to or after unmasking. Also, the vanilla
-[un]mask_irq() logic is kept, testing and setting irqd_irq_masked() as
-appropriate, i.e. when using the state cache is applicable.
-
-handle_percpu_irq() is a special case, the vanilla code does not have to
-use a state cache because you do not mask per-CPU irqs, you might
-disable them entirely if not handled.
-
-This is tricky stuff, so a bug can never be excluded, but I don't think
-the I-pipe scenario applies to Dovetail.
-
---=20
-Philippe.
