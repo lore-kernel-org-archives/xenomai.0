@@ -1,54 +1,54 @@
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50050.outbound.protection.outlook.com [40.107.5.50])
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60075.outbound.protection.outlook.com [40.107.6.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED1410F5
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 06:19:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F011102
+	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 07:00:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ObNBm+r4URipzT0e4BT+PXgLlIpHaY3/4gza6j2dznlQiU5IIxUDhHsTfJD2lM+Okbx/skzLmnVG0xlgwmwEHorqOrQub+V8k5Jzu3Jy/+qMKO9swpU2iGtR1WCVgBQuKCwToXhGbRgg0uh+jPTpHY6NPxabKXVn9UzSsPOsogO5l2gWQTEt6HfhoxvcE1FysFhIbCs1GRE2B1zcrbJpFgy7QzfzGWK5qgfR0MDdaZCl7Wr1uPFnRA+kK3Q2Heca0Qh6F+U17iKtXuzK2ZKnYUS1Z6ZBIoM5crZFM/A3Ef/t9hQPbm/MIkZDw446fASKSm/bYHGba+2dn8Gn3FXUqg==
+ b=C9ZUTkjLAHYkE5ww3sfJ/piR1ZqiLItvKsy7pJD4atfSO339OSt389Oe/PUVqympFkSEzXuSAq5LJs69FC2Myhaa41opLc4zhg/iQraRHikUnXRbJ3lrDw0OCx29W+Sqy4LUIeXzilSWRqq8gelUNxvvyotD/zpwoxjuednnhY7tStpEJntV4LjkaHzfdOKuNMx0UFOBHBKCX8V4vGl7hS2Ooe9eYAcMKT3tkQ5Ym9vey3jwCc3H371dmc5P5QE6ZS2qQ6xR8Jv7U2oOlYXxvVzX8iZ7HS7+1FdiCXMYoSAVmfAQwlIj52tJU0pm/bcf/Wd5RrdWJ7x0VrpownG09A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X4ZL7bni1T3NWSN/cUerWpvEnS+HcWuNMR6ZGhu4J0w=;
- b=l7u2AtUoapDuOTQakBSQO0GKLB47MSCDYJAM3dL7xJjO2OhEfrcFX/bgLqT3nj4qL14wEIeEGX3Fs0GoAHy7d91Jdcc7KawTtgXbHVm9rfFufS9i+DhHy5tlS0pHqNbw768J76kCAlEGpUxYgQ2tkNslvEaQifc4DW9rY/dY4nHH4wmw2mBpgxDm90QBb3usPoftMr3UhA7KvlAj25tPKgI6FOPq1yj0oTfpomGjx9nGgBy9ZDT8enAMtpzEIY7SdnPS15hg+x/A9VKxtweVBCzMRg12Be4FOiriB2lZWDzkJdomYHFl0DpVTuVpSS+fKwM5aDZrxKPVSSlmtKK0Nw==
+ bh=EpyQ/rPKMs4M8d9k8Znk5TBRgMrvKkkaBaV4dh1rWH8=;
+ b=fIWmo6VlUYHXbbCue0hxvg9lfoHD1zu0x0Q//SGmpMlruuC34dj7gN3y/QrFxeZw7X2fbD/8wemEOTZOyax0iNxBkMblRbOd8zt9/AwQ0vOVh8KUBa3TD0/Smd3Rh4H0IkNM+bJPa4UVHJ5iJpaNN5L6fvodpWOaAm7TiqUYTxdDflgfuMIEdbzcCTVQDfuHz1ZZaMfAjQIXkWqpyhmCZCWJ4HpsLQqgo/DiFJ3TKRrIOVAlHXZ44XabgrAJ9cqpk8Z17M9N4OImmhAX7DLk6qarRQmV5cPbTh/B7vbV/2uwgEwkqyMeNPL4t8nvb7Ckv0EYTJF7u0dHiixLlnElUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.72) smtp.rcpttodomain=philips.com smtp.mailfrom=siemens.com;
+ 194.138.21.71) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X4ZL7bni1T3NWSN/cUerWpvEnS+HcWuNMR6ZGhu4J0w=;
- b=jej2xpWORAjruMOpAUm/qhItNjA88FunZkQ+lnWc2cJvkjq265ctr2YgL8xNHteBa9bMNF3s2zXeXNRiEBUOu5ETLLKySKuKfZaVUfAJBonh3o86t3AcK8r9hyEsIeyCLtXz50ClSM/uDq1b0u0yyv6nu2pF3ODfJDA+lAwha7pnnwLAtmALhdJ3ObfowDQYEJo5P6wDQDYps6uXdmb7A4LZD87Kk1exTrZW4PIxaGjK+CAElm8jN9G+bcXBcMjDWgeyjl3nUTTFeCD4A9UGVLyJe4QRh8Y89F6s9CKnR5b7BVJqGOcD5bJv4FNISUm44xPMePZDNpLs3ya+QxPVsg==
-Received: from AS8P250CA0004.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:330::9)
- by AM7PR10MB3811.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:175::20) with
+ bh=EpyQ/rPKMs4M8d9k8Znk5TBRgMrvKkkaBaV4dh1rWH8=;
+ b=swl/xWMat4OuStVaM1SyNRIvJTmkIDZ+iB1qeXPPEbjseviV89pon++KY/bmTXNO6wU3pfnUQNJ+oF3mXw7d+zlC4Y3sFTFqMQTCjHS/FvYYanORIeOVe7ERpPyyEfyXsF1bNKrK/3Y8DTiPNZwpjaNqu+Frarbdxp1GbtX101NRSNuhejCpK/nhfSIyr2q2+x9DbKOIoEvkUmwsUnKxBHuQXLVqrQflGtYZMvFWeDrdmPnlBor5ShHIdU4sFrlpbHRzp/n7q0le4KcgW2Fo++pxQR0KlEKas77aOaAjvjSogyk5NhqSej/vSKF68yVEYQLKt+eGZLTTEb4lGXsWRw==
+Received: from DB6PR0601CA0014.eurprd06.prod.outlook.com (2603:10a6:4:7b::24)
+ by AM9PR10MB4214.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1f5::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Mon, 15 Aug
- 2022 06:19:33 +0000
-Received: from VE1EUR01FT053.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:20b:330:cafe::da) by AS8P250CA0004.outlook.office365.com
- (2603:10a6:20b:330::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.18 via Frontend
- Transport; Mon, 15 Aug 2022 06:19:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
+ 2022 07:00:34 +0000
+Received: from DB5EUR01FT087.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:4:7b:cafe::c0) by DB6PR0601CA0014.outlook.office365.com
+ (2603:10a6:4:7b::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10 via Frontend
+ Transport; Mon, 15 Aug 2022 07:00:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.71)
  smtp.mailfrom=siemens.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=siemens.com;
 Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.72; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.72) by
- VE1EUR01FT053.mail.protection.outlook.com (10.152.3.37) with Microsoft SMTP
+ 194.138.21.71 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.71; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.71) by
+ DB5EUR01FT087.mail.protection.outlook.com (10.152.5.162) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 06:19:33 +0000
+ 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 07:00:33 +0000
 Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
+ DEMCHDC9SKA.ad011.siemens.net (194.138.21.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Mon, 15 Aug 2022 08:19:31 +0200
+ 15.1.2507.9; Mon, 15 Aug 2022 09:00:32 +0200
 Received: from [167.87.45.91] (167.87.45.91) by DEMCHDC89XA.ad011.siemens.net
  (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.9; Mon, 15 Aug
- 2022 08:19:31 +0200
-Message-ID: <86ca964e-62d8-2bc9-80f9-97097f1dedc7@siemens.com>
-Date: Mon, 15 Aug 2022 09:19:29 +0300
+ 2022 09:00:32 +0200
+Message-ID: <78184c9d-83bf-b75a-4b55-15d894cc24a3@siemens.com>
+Date: Mon, 15 Aug 2022 10:00:30 +0300
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -57,133 +57,223 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+Subject: Re: [PATCH v1 00/42] y2038: Allow building and running somkey with
+ y2038 support enabled
 Content-Language: en-US
-To: "Grau, Gunter" <gunter.grau@philips.com>, "xenomai@lists.linux.dev"
-	<xenomai@lists.linux.dev>
-References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
- <20220217084830.712756-1-gunter.grau@philips.com>
- <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
- <CALLqZ8QTq+g7pLx_L68K76ez1XJum8-OkjbC9RJP7tW-VaxdEA@mail.gmail.com>
- <e24f9de7-7170-5c5e-cb8f-07c778b67c21@siemens.com>
- <CALLqZ8THxAWDYMLOCUTKoGjzNt4V-PZtz_hTf2++FLF1QeCytg@mail.gmail.com>
- <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, <xenomai@lists.linux.dev>
+References: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+In-Reply-To: <20220809134326.23688-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [167.87.45.91]
 X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
  DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
 X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--15.622600-8.000000
-X-TMASE-MatchedRID: jHaaRReu0S85QaOxwNGfvo9bHfxDWoib8lboxuXXyrMkp7iSXiinhEkb
-	eKVJE/sJTktVeqGQQrvi0nVT9rWZ+WNw+CBvj5AT25l4a3ju9FF+3MjV7YQcjXYZxYoZm58FsKi
-	4EXb8AIpHrX2E2MkfREIjIp4EpSqCfTFHhYwclEGpxN65wSU+kTfa6I248QZMH9HlIp7fUBFLXP
-	A26IG0hN9RlPzeVuQQ9VlGBjCDncgrdWdGoKfUyk2D9tvRJHr+SnGtPuNZB5x6bpYuCI/Ut9hQO
-	8CvZj/XByKmqDYf1WIf/AI515Wy+QkC2otz3ZOALOAsgxszcM2E6GalAjvSeThk1eHxQ+sgtwAS
-	5aedRegb9oq6FrYQ3Ip0zvmLzxGBvyIrut/4j2qSOWrMzZb/64n7DYFw3ayGM71h0SMVl8JOyHF
-	6Q7mfS6uPvo9L6iaIYG32ZLukpVN6ipWzVkuu8DN360kR9zHUXHEPHmpuRH05f9Xw/xqKXVkMvW
-	Auahr8+gD2vYtOFhgqtq5d3cxkNW3tuIXQKer8QL8AA68DQFr+9YDsM5vvSgBw9cgKeu54cR3qp
-	w0DENY=
+X-TM-AS-Result: No-10--23.754600-8.000000
+X-TMASE-MatchedRID: ytok2O4LhVs5QaOxwNGfvo9bHfxDWoibx/Z5eXpUUhQD2WXLXdz+AQ73
+	P4/aDCIFGxbFDAEoIooAwlwc7PMO4+8+tYH+bsNfo1iPgKgiLB17rjItHwarhR3EEAbn+GRbT5y
+	sQDj6eFlYC5LPd7BvbR6q6HJi0bIInjUGEK70lFOiAETbARUxfhaWO4rB/YQ8ttAWxuM5sl7YUD
+	vAr2Y/186RYIECOWSq6i57CzM1bRvtRdaYkrITB7xOw796cWi96ng+QM4KwJQtMfCdg6KRDY5A6
+	wTicMJ0zulpDGRdyOYjGAiCSC841CltdLRpYJkGA71GV1rRunGMtwEagfW7G6iUivh0j2Pvp5HL
+	LTy++LOLeLYcBsV39yACYtpe6t5bq4lZXyR8DnjozSz5BEVDr9FMBnmJRh/JC8FMH3T6F74V8rV
+	6fVLsBHxz6Ei4ZX4xWOWLMlqL93tXG1puYu9iTWQa9V+7S6z5OgFKp4GU2qgtep5gtv80qqn/3n
+	yhTdZwj1UOAOjhpZHQAhvnsK0MAyYKdnTbtpdrB/iW/INxnLznog8SXCuTCZMIKPXbrloXWNbBp
+	Q++I1nM/0sSqPZieHrCxgfs+1d8d6F5USj4uT3gxbc0qkj4UYn76yGQcyuFiH95tLFH8ecXw5Hb
+	3/XOHQkVOSlHtMObtFb3GVdOCmlJK2gV4PFM9gYdrsbAIOcl/Tb1X0NT+CqdVNZaI2n6/wiuJhI
+	TDnyhHTMj5a5/7iYgdJS38LsCnPobDz0cFNgwQ6A5rv8EiAEkVMQcdgU2qZr5ykm9NtIc4/qn72
+	YRaUKDjc5a5YrawGQHMMo0zV6pOoVDnE6J6/SRk6XtYogiau9c69BWUTGwVnRXm1iHN1bEQdG7H
+	66TyKsQd9qPXhnJ/4rWvpj9UcgD/dHyT/Xh7Q==
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--15.622600-8.000000
+X-TMASE-Result: 10--23.754600-8.000000
 X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
 X-TM-SNTS-SMTP:
- 11D0ABF329DBF8BFC896205DF0132BC2ECE463AE43CDB7E15FED6BA2D14130CA2000:8
+ 900EBDA8192DA0ADD518C502A247DFC7B25ED56C6A8CDED44496DDE8633B3BDD2000:8
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 19370fb1-5c63-4333-a29a-08da7e861ec6
-X-MS-TrafficTypeDiagnostic: AM7PR10MB3811:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50a498db-d871-4cd7-55ce-08da7e8bd8f5
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4214:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	FcvUxtZ+iReqRioe+8LnvxpjN4i0U7Qr4nZj6syrvrHbf3R2ftdSaER+wzu67wkPSrZ37OYknSyan4poPaZGGQTO1LwcB02pZyxHDm0/eRL+AYpM5Oj+pKGVEnd9cVzYJquCmKYW/+UXWWeNJt09/2/GsaLDHIteW89IkqrVE31JPhtFqbijnB2eVJO80yjkzOGHzwc9/iPhgs24zNkP+ZazwHVJSncXvdYP4h+4E2a84etm3SEB3BAwycyw5bkB420kLXnrEg8NluGNfkYr5tMqpQJ2jsCr6Ig3ie/F56TO4ogPfrIZafWf+Vq/QKsz4cy4ruHPcUL82+FPURrWQOynvPB+2Qfos9anRb07NYklnAvBkmhTrnDSFeRtKdtutkimNl1xkHA0o7d+NdzhZFvvNLDt4IOfmqnY0Wt5R/n8CezCGW8yu91FskZUdhwsjGTih10mR/ryLm+X/WzbND21hVhmQBH6uVzapkvzeUUaHQnpDgYBtET94sW02tDTPXxGvRLdwJAaenLURXiK5L4Ortv9J0lhr0K+zf4Z/ugS/I6HwOveGos6TxDiPruUEe+QZHlSN8ZIdx5Otf+IpbE+Tj9tAf5UgRYZUfNDv/JD3SFtI4dKLbSwK2X+r0LdnKyyjTHZXnBnksEOMbN+8Ym1hR3Y2AAnqPt51pzVVdUV9XslzWJ1Hf135D133vgFtNzqL1gHoFtjjtvcZ7eWb3Vv6yWN+kiJZw9vbtsDlsOBFTfa/hYg3iAxWALX6E1lE22Qd8gcVAIDfYG0C9h9NLouPjoqqvjJ8TW2ZNpvhg5ZV5tT0jgykUfyNcSruwuD+bDlkvLiDiHN3eJW3vEawL3BjxzZhtQtu9F8y7iydaUTN+YYfzIeNFJqunuSktCPSeSn6tpVq1rRA/adW/GA8w==
+	=?utf-8?B?bnZKdDQ4cDRBQW5SWEt5QjAxUTFTTm5xWGVLbysyazNVUUZMV0FvZXQwUkFR?=
+ =?utf-8?B?cmdVNm5SeXU4cE8yaWQ1Wmo5cVlhQTBxbktUTmIwM1dVN3haNjRBZzlkYmph?=
+ =?utf-8?B?aE04bG81RXBablhhaDlrU05xZVVSUXhOV0lvWGIzUHA2dHd2NzdpZGZEK2x2?=
+ =?utf-8?B?cjFjTjIrdGR5aVVmNDhmQnRuZlZ0OGFJRXFIOWplTXA2a1BpNm1ySGlBZzlz?=
+ =?utf-8?B?dlVuQ0wzNHo0eTROWHNBWkIwQzgrT2tkMWpNaEFwdml3cC9SV1pFM2E4THQv?=
+ =?utf-8?B?Znh3Y0dtVHQ3ODRrSWlrUkNPeUlkaHFBMmNZbmJ0TEhVc2hzNjlHdG5DaFZw?=
+ =?utf-8?B?S3E3N3h4YjhqOFNwVFBod0ZUQjNqdHkrMEhnV2JCSlRWYlNIZWJGS0V4ZjIz?=
+ =?utf-8?B?eG82NEFXUjlUdXl1OXFvZEI0ZHExWUU2N0Nhbzl6d3o5Nlh4cWVDNmkrR3o4?=
+ =?utf-8?B?d0xLbDlmaVROQ3gvS3ZManZJZ1RFaGNZQ0o2c2NjcTdLYVVrdlVvbEZIaUEw?=
+ =?utf-8?B?RjdqR2RmSWtnWWI4aHZaa0FUM3IwT2NiRW93OHRreVMxUm40VE1LeWFvY0NH?=
+ =?utf-8?B?ekdKNjVEQit6KzB3NVhXMHhIdGpNQmdjMXVrUDdlcTQ2bkx1RmpFZ00xV2Zj?=
+ =?utf-8?B?TE1IYWZnMGV3TDRIWEhqN21oWnZIMVQ0YkkyZ1B0TXZsSWdCNkZjdGtpLzhu?=
+ =?utf-8?B?VnlteSsxNjg3TjFaU3dCSmowZGlTclFaT3EwaTFMVHhkdktBSFNjLytOZFVm?=
+ =?utf-8?B?K1hEaHRuZTNVckdOTVUyNEdOMUZEYUFGQlZWbDcyN3lJbGxjZWhma0R1Q0tR?=
+ =?utf-8?B?d3ZYRHdMV2VJQ0FnVEhTZldkdS90U25Ua1N0bnRLMmtTdG1ER2U1aHY2akhM?=
+ =?utf-8?B?Y3pMYVlaNXorcUhLNzZWUDhLWkQ3aS9mRjBUR25RNldqMEJJUWpsQ3FFSmdM?=
+ =?utf-8?B?bC9lVExSWUs5VGNBNXNFYWMzSDVTeHppVTFQNVBiU2ZjcHYxcmszc1k3Ulp2?=
+ =?utf-8?B?THRaRVdGZ0hHUVlqaS9SR3F3bWNYUlVrMldBL1l1LzZXSjJTeTlLRUIxOUlY?=
+ =?utf-8?B?S3dFdm81a3AwNDhSU1ROVElWS21FUGxlR0I4bytvaHd1SjlJYTQxM3NQR3VH?=
+ =?utf-8?B?bmt6NVBId1dnZzhrWkFkVnVRZUdZOHQ5RXdVbWhlSTAxblN0VHM3R3g3QUJh?=
+ =?utf-8?B?NnN0eU11SEprY2RMSWpDQ2lTK2I5dVowT2lCc0RXZkhzZ296RE9vSzBMdnhC?=
+ =?utf-8?B?NHEvL0FIRXczNFJJZUxPa0lSNjZJTzBYVjZvZiswTTRjZTJHUT09?=
 X-Forefront-Antispam-Report:
-	CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(136003)(396003)(36840700001)(40470700004)(46966006)(81166007)(82310400005)(356005)(26005)(82960400001)(5660300002)(53546011)(40460700003)(478600001)(8936002)(86362001)(83380400001)(41300700001)(40480700001)(8676002)(2906002)(316002)(44832011)(82740400003)(31696002)(31686004)(110136005)(36860700001)(956004)(16576012)(70206006)(47076005)(186003)(16526019)(36756003)(336012)(6706004)(70586007)(2616005)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
+	CIP:194.138.21.71;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(346002)(136003)(46966006)(36840700001)(40470700004)(186003)(86362001)(31696002)(34070700002)(31686004)(36756003)(36860700001)(53546011)(82740400003)(16526019)(47076005)(2616005)(83380400001)(82960400001)(356005)(956004)(336012)(81166007)(26005)(316002)(478600001)(6706004)(16576012)(966005)(41300700001)(44832011)(8936002)(110136005)(8676002)(2906002)(5660300002)(40460700003)(70206006)(40480700001)(82310400005)(70586007)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 06:19:33.2929
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 07:00:33.1232
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19370fb1-5c63-4333-a29a-08da7e861ec6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50a498db-d871-4cd7-55ce-08da7e8bd8f5
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.71];Helo=[hybrid.siemens.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	VE1EUR01FT053.eop-EUR01.prod.protection.outlook.com
+	DB5EUR01FT087.eop-EUR01.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3811
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR10MB4214
 
-On 11.08.22 16:05, Grau, Gunter wrote:
+On 09.08.22 16:42, Florian Bezdeka wrote:
+> Hi all,
 > 
-> Hi,
+> it has been a while... I made some progress regarding y2038 support in
+> Xenomai:
 > 
-> Unfortunately I have to come back to this.
-> 
-> On Thu, Feb 17, 2022 at 10:12 AM Jan Kiszka <mailto:jan.kiszka@siemens.com> wrote:
-> On 17.02.22 15:11, Greg Gallagher wrote:
->>
->>
->> On Thu, Feb 17, 2022 at 4:15 AM Jan Kiszka <mailto:jan.kiszka@siemens.com
->> <mailto:mailto:jan.kiszka@siemens.com>> wrote:
->>
->>     On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
->>     > The following commit in the vanilla kernel introduced
->>     > a check for the cached interrupt mask flag in mask_irq():
->>     >
->>     > bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function
->>     calls")
->>     >
->>     > This means if the flag is not serviced correctly
->>     > the real bit in the hardware interrupt controller may not be
->>     > cleared or set.
->>     > The __ipipe_end_level_irq() function does not follow this rule.
->>     > It unmasks the bit in the hardware without setting the cached flags
->>     > accordingly. So after the first level interrupt is finished the
->>     > mask cache has a wrong state. If now the next interrupt fires,
->>     > the mask_irq() function will not really mask the interrupt in
->>     > the hardware which causes a interrupt storm after reenabeling
->>     > the hard irqs.
->>     > The fix now also updates the shadow flag correctly.
->>     > ---
->>     >  kernel/irq/chip.c | 1 +
->>     >  1 file changed, 1 insertion(+)
->>     >
->>     > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>     > index 7c03e2931189..ff9a8b3f33db 100644
->>     > --- a/kernel/irq/chip.c
->>     > +++ b/kernel/irq/chip.c
->>     > @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
->>     >  void __ipipe_end_level_irq(struct irq_desc *desc)
->>     >  {
->>     >         desc->irq_data.chip->irq_unmask(&desc->irq_data);
->>     > +       irq_state_clr_masked(desc);
->>     >  }
->>     >
->>     >  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
->>     > --
->>     > 2.25.1
->>     >
-> 
-> We discovered some situations (with iio drivers) where this fix seem not to work.
-> Obviously in the moment where the irq is unmasked, the new interrupt seems to fire again and the irq_ack() code of the new interrupt runs before the irq_stats_clr_masked() is called.
-> When I wrote the patch I thought the irqs are disabled at this moment. Looks like this is not the case. At least when I change the order to:
-> 
-> irq_state_clr_masked(desc);
-> desc->irq_data.chip->irq_unmask(&desc->irq_data);
-> 
-> My use case works again.
-> Now I am unsure if the above reordering is the correct solution or maybe just calling unmask_irq(); which was the first proposal is better?
-> We dropped unmask_irq() proposal because it does additionally some locking, but maybe this is needed. I am unsure.
-> 
-> Do you have some advice?
+> With that series applied I'm able to build and run Xenomai including
+> smokey testsuite without any test failures or skipped tests with y2038
+> support enabled!
 
-I didn't wrap my head fully around this again yet, but if you can't
-ensure a correct, race-free behavior by ordering, you need locking.
-Maybe have a look again how dovetail works in this context as it should
-have logically the same thing to do.
+Smokey or somkey? ;)
 
+> 
+> Preconditions:
+> --------------
+>  - glibc: You're glibc has to provide y2038 support.
+>    glibc >= 2.34 has that.
+>  
+>  - Xenomai: There is a new --enable-y2038 option to enable y2038
+>    support. This option is off per default to keep things disabled for
+>    now and avoid breaking any existing application.
+> 
+>    When --enable-y2038 is supplied all userspace parts (libcobalt,
+>    smokey, ...) will be compiled with y2038 support if glibc supports
+>    that. If there is no support in glibc the option will be ignored.
+
+I think we should at least warn during configure of y2038 is available
+via the libc but not enabled by the user - to slowly push people towards
+migration.
+
+> 
+> Structure of this series:
+> -------------------------
+> We start with some cleanups and drive-by fixes followed by adding the 
+> missing timer and timerfd support. Finally it cares about select() and 
+> some drivers (ioctls) that were missing compat and/or y2038 support.
+> 
+>   Patches  1-12: Cleanup some compat code. As long as there is no
+>                  difference between the compat and native syscall entry we 
+>                  do not have to declare them again. The syscall machinery
+>                  will care about that by placing the native entry point
+>                  at the compat offset into the syscall table again.
+
+These cases aren't test-covered yet at that point, right? Can we ensure
+that first?
+
+And what's 13/14 about? Something to pull to the front?
+
+> 
+>   Patches 15-17: Add gcc 12 support, drive by fixes
+
+Those look like early options as well. Or do they depends on anything in
+1-12?
+
+> 
+>   Patches 18-34: Add y2038 support to timer and timerfd APIs.
+> 
+>   Patches 34-37: Add y2038 support to select()
+>                  There is no y2038 safe select() out there. Modern
+>                  applications should switch to modern APIs like pselect().
+>                  
+>                  Implementing pselect() was not easy:
+>                    - We have no support for waiting for signals and fds
+>                      at the same time inside the xnsynch infrastructure
+>                    - We already reached the maximum number of syscall
+>                      parameters
+>                  Solution taken: Implement pselect64() without the
+>                  sigmask parameter. We do not wrap pselect() in 
+>                  userspace and only use it for select() where the sigmask
+>                  would be NULL anyhow. So no additional pselect() in our
+>                  API but select() is now y2038 safe.
+
+So, regular Linux/POSIX application will use pselect when looking for a
+2038-safe API, but Xenomai applications will continue to write "select"?
+
+> 
+>   Patch 38:      Switch VDSO to __vdso_clock_gettime64 in case y2038
+>                  support was requested.
+> 
+>   Patches 39-41: Enable/Fix compat support for drivers covered by the
+>                  smokey testsuite.
+
+Shouldn't we pull that to the front to enable compat testing before
+fiddling with it?
+
+> 
+>   Patch 42:      Add/Enable all additional glibc wrappers necessary for
+>                  building with y2038 support enabled.
+> 
+> 
+> Testing:
+> --------
+> I used Xenomai images for testing but had to switch the distribution
+> from Debian to Ubuntu. There is no Debian version yet that ships an
+> adequate glibc version.
+> 
+> Switching the distribution was not that easy. Ubuntu packages are now
+> compressed using xz which is not yet supported by the Debian package
+> manager. You have to prepare your host environment (kas, kas-container)
+> accordingly. 
+> 
+> As Ubuntu ships a newer python version some ISAR patching was necessary
+> as well. If someone is interested in such changes: Let me know.
+> 
+> Open topics:
+> ------------
+>   - Testing: Integration of compat tests to CI (not really a y2038 topic)
+>              See https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
+
+See above: I think this should be done first. Then we could also split
+the series along
+ - drive-by fixes
+ - compat testing, then cleanups
+ - 2038 finishing and testing
+
+>  
+>   - Testing: Once compat tests are enabled, try to enable y2038 support
+>             
+>   - TCP:     The rt_tcp driver does not have compat support yet and is not
+>              covered by the smokey testsuite
+
+Maybe open an issue for that to track it. We have some users of that,
+though possibly only very few.
+
+> 
+>   - y2038:   Re-visit some y2038 related syscalls like
+>                - sc_cobalt_thread_setschedparam_ex
+>                - sc_cobalt_thread_getschedparam_ex
+>              There is a struct timespec deeply nested in the API.
+>              Seems not covered by smokey.
+> 
+> If someone is interested in helping in those topics: Let us/me know!
+> 
+> With that: Happy reviewing! 
+> 
+> The xenomai CI was regularly triggered. I do not expect any build or
+> testing issues.
+> 
+
+Thanks,
 Jan
 
 -- 
