@@ -1,64 +1,54 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50050.outbound.protection.outlook.com [40.107.5.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE1D10F5
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 06:15:05 +0000 (UTC)
-Received: from relay4-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::224])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 6CBC9D06EA
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 06:14:36 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id A7EF3E0002
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 06:14:27 +0000 (UTC)
-X-Envelope-To: xenomai@xenomai.org
-X-Envelope-To: rpm@xenomai.org
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2050.outbound.protection.outlook.com [40.107.20.50])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 1ACAAD80144;
-	Mon, 15 Aug 2022 06:14:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED1410F5
+	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 06:19:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rj4jvMPnXuwid0NEFljra3xhc0uw1XO9m5hdJt7gbB+qc+WqhSeK3KdlCDILSb6+rWfHey3fB8f8/lSe7ySEaaDBe5so187G04BpZRM7ybQ4r6EWBCgrzIyAZvqEN79EgYF7oxt22T17lt4FnACkX1Y8l+QnDgYUiHSsao0ZMOQXLBRuSjpuELI/K/adpnppWQ3TA/6Jv9/xubMvrXLBCdokMIbWmim/xygdv2KD1VDfkC+gyGJC8px5r7EHK10DUxE90Rr1WV6DTxmc3nAonYNcYbDWkIFduDyE64ISoos+vOZ4aTr59keXb7raaLFIY1yAyf/jxZk8W6rCcpHHHg==
+ b=ObNBm+r4URipzT0e4BT+PXgLlIpHaY3/4gza6j2dznlQiU5IIxUDhHsTfJD2lM+Okbx/skzLmnVG0xlgwmwEHorqOrQub+V8k5Jzu3Jy/+qMKO9swpU2iGtR1WCVgBQuKCwToXhGbRgg0uh+jPTpHY6NPxabKXVn9UzSsPOsogO5l2gWQTEt6HfhoxvcE1FysFhIbCs1GRE2B1zcrbJpFgy7QzfzGWK5qgfR0MDdaZCl7Wr1uPFnRA+kK3Q2Heca0Qh6F+U17iKtXuzK2ZKnYUS1Z6ZBIoM5crZFM/A3Ef/t9hQPbm/MIkZDw446fASKSm/bYHGba+2dn8Gn3FXUqg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XBOQVVBX4bW7IHvya+v+LBjbBvCpxXAhN5nE7ZEuBWg=;
- b=bssupilklP/TH1cq9nr4/f21BjkqY2kNy8H3X/D6L71GERTGrRBihDit9pT52LdcdY+++4xbiH/9uGSKCzJ5DplbLL0teIKoqFXTYxER7fhGip6vAlD6hp+7QmnnvJZJgo6XqKT73lvIRQx1oFVFyAf7+WlQWLVU4QDT43smOUzU6offp5+GlCtlzjEUlz+ZkFxYoevdJ/2sXZ0Glqv5twEbWmZApolyFg3YFqJxv8NFSrpIhds2lWD/5AO0EsByfrWjI2VI1GSAj6sR1jruprYVWKEQZgqdFe921BZRaOlG37qdqQ8rTfsVKkJCgLa7c2uJjZ/pQk+jKNqsCdyZIQ==
+ bh=X4ZL7bni1T3NWSN/cUerWpvEnS+HcWuNMR6ZGhu4J0w=;
+ b=l7u2AtUoapDuOTQakBSQO0GKLB47MSCDYJAM3dL7xJjO2OhEfrcFX/bgLqT3nj4qL14wEIeEGX3Fs0GoAHy7d91Jdcc7KawTtgXbHVm9rfFufS9i+DhHy5tlS0pHqNbw768J76kCAlEGpUxYgQ2tkNslvEaQifc4DW9rY/dY4nHH4wmw2mBpgxDm90QBb3usPoftMr3UhA7KvlAj25tPKgI6FOPq1yj0oTfpomGjx9nGgBy9ZDT8enAMtpzEIY7SdnPS15hg+x/A9VKxtweVBCzMRg12Be4FOiriB2lZWDzkJdomYHFl0DpVTuVpSS+fKwM5aDZrxKPVSSlmtKK0Nw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.71) smtp.rcpttodomain=gmail.com smtp.mailfrom=siemens.com;
+ 194.138.21.72) smtp.rcpttodomain=philips.com smtp.mailfrom=siemens.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XBOQVVBX4bW7IHvya+v+LBjbBvCpxXAhN5nE7ZEuBWg=;
- b=Vy29z48OrSMePU7BkKYVi/FyMPBLBSlaAvABVvsEL1kunBtH5DLrBGa6z+51d6EntRo08n84Mn+rvKPO1WdEYG4qEAR3293pv2ITVXTxBMFWp5a71lDv4VPlKQQfHKU0e/dKZ63cYoKl7sbq5G4tfTgU93EVT0BZ0P/05L5NzW37jhNWY5PIpzHxOWr6UxO+Uq3IGOceTY2GekYkUl9NSyqxIYMYVnD8cy5WDlxWwM4gS+pA45pUEUtVAMLfskKFEP1baIMAsbeDCeoE8iZlQeuTNOKMzmbzjt2eVApVhe6qasT2SrlFzRIF8FrMeP6DV/+WByP5jnzFYEDoIFEztg==
-Received: from GV3P280CA0073.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:a::12) by
- DB9PR10MB4714.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:254::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5525.10; Mon, 15 Aug 2022 06:14:25 +0000
-Received: from HE1EUR01FT055.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:150:a:cafe::ee) by GV3P280CA0073.outlook.office365.com
- (2603:10a6:150:a::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10 via Frontend
- Transport; Mon, 15 Aug 2022 06:14:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.71)
+ bh=X4ZL7bni1T3NWSN/cUerWpvEnS+HcWuNMR6ZGhu4J0w=;
+ b=jej2xpWORAjruMOpAUm/qhItNjA88FunZkQ+lnWc2cJvkjq265ctr2YgL8xNHteBa9bMNF3s2zXeXNRiEBUOu5ETLLKySKuKfZaVUfAJBonh3o86t3AcK8r9hyEsIeyCLtXz50ClSM/uDq1b0u0yyv6nu2pF3ODfJDA+lAwha7pnnwLAtmALhdJ3ObfowDQYEJo5P6wDQDYps6uXdmb7A4LZD87Kk1exTrZW4PIxaGjK+CAElm8jN9G+bcXBcMjDWgeyjl3nUTTFeCD4A9UGVLyJe4QRh8Y89F6s9CKnR5b7BVJqGOcD5bJv4FNISUm44xPMePZDNpLs3ya+QxPVsg==
+Received: from AS8P250CA0004.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:330::9)
+ by AM7PR10MB3811.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:175::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Mon, 15 Aug
+ 2022 06:19:33 +0000
+Received: from VE1EUR01FT053.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:20b:330:cafe::da) by AS8P250CA0004.outlook.office365.com
+ (2603:10a6:20b:330::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.18 via Frontend
+ Transport; Mon, 15 Aug 2022 06:19:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
  smtp.mailfrom=siemens.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=siemens.com;
 Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.71 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.71; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.71) by
- HE1EUR01FT055.mail.protection.outlook.com (10.152.1.28) with Microsoft SMTP
+ 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.72; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.72) by
+ VE1EUR01FT053.mail.protection.outlook.com (10.152.3.37) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 06:14:25 +0000
+ 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 06:19:33 +0000
 Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC9SKA.ad011.siemens.net (194.138.21.71) with Microsoft SMTP Server
+ DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Mon, 15 Aug 2022 08:14:24 +0200
+ 15.1.2507.9; Mon, 15 Aug 2022 08:19:31 +0200
 Received: from [167.87.45.91] (167.87.45.91) by DEMCHDC89XA.ad011.siemens.net
  (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.9; Mon, 15 Aug
- 2022 08:14:23 +0200
-Message-ID: <646b8cce-c73e-4976-3787-b3b337679915@siemens.com>
-Date: Mon, 15 Aug 2022 09:14:21 +0300
+ 2022 08:19:31 +0200
+Message-ID: <86ca964e-62d8-2bc9-80f9-97097f1dedc7@siemens.com>
+Date: Mon, 15 Aug 2022 09:19:29 +0300
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -67,109 +57,132 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: Linux-xenomai hangs at "Starting kernel ..." on Jetson TX1
+Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
 Content-Language: en-US
-To: Yucong Chen <slaoub@gmail.com>, <xenomai@xenomai.org>, Philippe Gerum
-	<rpm@xenomai.org>
-References: <CAGjgvr9G4JpZ+krfnX9xWwbTiT6JbtG_2jUWiFJyqVtvFk=MKg@mail.gmail.com>
+To: "Grau, Gunter" <gunter.grau@philips.com>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
+ <20220217084830.712756-1-gunter.grau@philips.com>
+ <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
+ <CALLqZ8QTq+g7pLx_L68K76ez1XJum8-OkjbC9RJP7tW-VaxdEA@mail.gmail.com>
+ <e24f9de7-7170-5c5e-cb8f-07c778b67c21@siemens.com>
+ <CALLqZ8THxAWDYMLOCUTKoGjzNt4V-PZtz_hTf2++FLF1QeCytg@mail.gmail.com>
+ <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAGjgvr9G4JpZ+krfnX9xWwbTiT6JbtG_2jUWiFJyqVtvFk=MKg@mail.gmail.com>
+In-Reply-To: <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [167.87.45.91]
 X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
  DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
 X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--21.197400-8.000000
-X-TMASE-MatchedRID: jHaaRReu0S/PhQMrvkSA3k+KfaRNwmRcoRhq4uL6L1jx5KZMlKYS/fiH
-	64jt3FfEYtJaVJe/wLGgrkHr6pdTsP5eQGC0xHl/0mLNNa6mblm3pdlpOCmDCvRUId35VCIe2FA
-	7wK9mP9dOsq/n2Kz29F7sNBsTuYtU2Fpil90e7xQgZe7JCZgsCvs9SDPkW26pfOaYwP8dcX74qC
-	LIu0mtICCGMdYyqZjk5z54dP+IdryVJ1N1yBIzZPuL2jw7QJji5neCrx57xxoD2WXLXdz+AX607
-	foZgOWyBCzD0Dc8iUvIZhKKkwQd1vxBHRuKq8ZzhmZWBnxHZ3m6h4cjlhpqm/NctuQlbOgkqb3/
-	o5s+OcNZ+M9E/Hx6KFLiA4WBV3WfBHY11KaDvlWNKX6Ls5D/UyNNPqT1mYtxF+qQpCWTUjlQby3
-	Ra2CEIJ4Q+L3BXIWueqIbgKELG8Ir59u/gzv5MLUzq8RBkJuGSSOWVJeuO1A5f9Xw/xqKXVkMvW
-	Auahr8+gD2vYtOFhgqtq5d3cxkNQP90fJP9eHt
+X-TM-AS-Result: No-10--15.622600-8.000000
+X-TMASE-MatchedRID: jHaaRReu0S85QaOxwNGfvo9bHfxDWoib8lboxuXXyrMkp7iSXiinhEkb
+	eKVJE/sJTktVeqGQQrvi0nVT9rWZ+WNw+CBvj5AT25l4a3ju9FF+3MjV7YQcjXYZxYoZm58FsKi
+	4EXb8AIpHrX2E2MkfREIjIp4EpSqCfTFHhYwclEGpxN65wSU+kTfa6I248QZMH9HlIp7fUBFLXP
+	A26IG0hN9RlPzeVuQQ9VlGBjCDncgrdWdGoKfUyk2D9tvRJHr+SnGtPuNZB5x6bpYuCI/Ut9hQO
+	8CvZj/XByKmqDYf1WIf/AI515Wy+QkC2otz3ZOALOAsgxszcM2E6GalAjvSeThk1eHxQ+sgtwAS
+	5aedRegb9oq6FrYQ3Ip0zvmLzxGBvyIrut/4j2qSOWrMzZb/64n7DYFw3ayGM71h0SMVl8JOyHF
+	6Q7mfS6uPvo9L6iaIYG32ZLukpVN6ipWzVkuu8DN360kR9zHUXHEPHmpuRH05f9Xw/xqKXVkMvW
+	Auahr8+gD2vYtOFhgqtq5d3cxkNW3tuIXQKer8QL8AA68DQFr+9YDsM5vvSgBw9cgKeu54cR3qp
+	w0DENY=
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--21.197400-8.000000
+X-TMASE-Result: 10--15.622600-8.000000
 X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
 X-TM-SNTS-SMTP:
- F93A515C02EB9A561F3A275365C84164F8AE8D9A7707E6D6641CA64E666297712000:8
+ 11D0ABF329DBF8BFC896205DF0132BC2ECE463AE43CDB7E15FED6BA2D14130CA2000:8
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 972bb751-8b5a-473a-cb0a-08da7e856721
-X-MS-TrafficTypeDiagnostic: DB9PR10MB4714:EE_
+X-MS-Office365-Filtering-Correlation-Id: 19370fb1-5c63-4333-a29a-08da7e861ec6
+X-MS-TrafficTypeDiagnostic: AM7PR10MB3811:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	mTeukvyrwCIjzjfZoqjJrKJZk/9bZT6jNnjCrBPP5RVPtm0Dv+5KQriDzmuqW2mqaGXfTsNLeFsd9BEtziXaT1BP2UGdznJB2kazpQUEP9n6Fxi26/LhrEdq59FkAozV1jAX5b4YOx4gVQx/KcK7jQLtG/v1T6HNtLkcbg5mfvrfCZ4jD4D5LUwinFNpv97kI3YBeqJEJuSKqz/oEY5w35jmK3O9w124R3lQuKO7x01snqPw8SeNHqweDT7pJqV9rALGvn43iuQKZ1HSQU4UTff0sVjjrMO06BxxrHVJS/DLSCaoHFhsm29RXhL29Bt5vD6McuDpvpE0DRGE5v1lXTSUxRkn6WoYIaYp8po7zjOd24vxUKnh3gWlbKQvl9RR1JguJIWYnIAZDI0BbH8uZAC5Ex+HkG+FXU9wBOui10DToUnWkg3wIdjs43uP6z1G+CjG5beYZ6A+MysRELaqSXjn8t32KYe0qYZw3FHR2J3HuAUkdIYldU082/qyK04nEwCNXWVIXd+roIGKfpBKLTsEQlk3iWkhSy0rRP1gNKx12kAYs0Bb9TR+/LqiAtL2VhHzmW9Mqxv6tv63DJkPqpj1Qare+OWvupZ/Pr1Sw0+Zn9cIoOtb0pDJyuhfQVWTSEw1aQub+Xixgk2Wgi5jnw3Ceh3MbAlC8ZCFvBAcEi1mpkTh59BbIaneDtWoRfPH7m0UWakmBwdt85bMkS2IjfQMjFJ+IvgV1mKmgP6LTmJIh6c4p21sqOHFxLfbzr6InR3suUY8rCnVs9ExfOwEtOikruWTzqQZXOLQboVcWqpnOOtEE0OGyJ7l5TLfM5kx2+pkE18ObetDxnJn0DcBCzAXKtHUWvH0Ti+k+zlljWnM05OBaH291TEAqTye/4nptO5lb3QVBBgzYfN3ROFkUkVm9zHDbWOCKepXaO/BJVM=
+	FcvUxtZ+iReqRioe+8LnvxpjN4i0U7Qr4nZj6syrvrHbf3R2ftdSaER+wzu67wkPSrZ37OYknSyan4poPaZGGQTO1LwcB02pZyxHDm0/eRL+AYpM5Oj+pKGVEnd9cVzYJquCmKYW/+UXWWeNJt09/2/GsaLDHIteW89IkqrVE31JPhtFqbijnB2eVJO80yjkzOGHzwc9/iPhgs24zNkP+ZazwHVJSncXvdYP4h+4E2a84etm3SEB3BAwycyw5bkB420kLXnrEg8NluGNfkYr5tMqpQJ2jsCr6Ig3ie/F56TO4ogPfrIZafWf+Vq/QKsz4cy4ruHPcUL82+FPURrWQOynvPB+2Qfos9anRb07NYklnAvBkmhTrnDSFeRtKdtutkimNl1xkHA0o7d+NdzhZFvvNLDt4IOfmqnY0Wt5R/n8CezCGW8yu91FskZUdhwsjGTih10mR/ryLm+X/WzbND21hVhmQBH6uVzapkvzeUUaHQnpDgYBtET94sW02tDTPXxGvRLdwJAaenLURXiK5L4Ortv9J0lhr0K+zf4Z/ugS/I6HwOveGos6TxDiPruUEe+QZHlSN8ZIdx5Otf+IpbE+Tj9tAf5UgRYZUfNDv/JD3SFtI4dKLbSwK2X+r0LdnKyyjTHZXnBnksEOMbN+8Ym1hR3Y2AAnqPt51pzVVdUV9XslzWJ1Hf135D133vgFtNzqL1gHoFtjjtvcZ7eWb3Vv6yWN+kiJZw9vbtsDlsOBFTfa/hYg3iAxWALX6E1lE22Qd8gcVAIDfYG0C9h9NLouPjoqqvjJ8TW2ZNpvhg5ZV5tT0jgykUfyNcSruwuD+bDlkvLiDiHN3eJW3vEawL3BjxzZhtQtu9F8y7iydaUTN+YYfzIeNFJqunuSktCPSeSn6tpVq1rRA/adW/GA8w==
 X-Forefront-Antispam-Report:
-	CIP:194.138.21.71;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(39860400002)(376002)(40470700004)(46966006)(36840700001)(44832011)(316002)(31696002)(82740400003)(41300700001)(40480700001)(8676002)(83380400001)(2906002)(36756003)(336012)(70586007)(6706004)(2616005)(36860700001)(956004)(110136005)(31686004)(16576012)(47076005)(16526019)(186003)(70206006)(356005)(82310400005)(82960400001)(26005)(81166007)(40460700003)(8936002)(86362001)(478600001)(5660300002)(966005)(53546011)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
+	CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(136003)(396003)(36840700001)(40470700004)(46966006)(81166007)(82310400005)(356005)(26005)(82960400001)(5660300002)(53546011)(40460700003)(478600001)(8936002)(86362001)(83380400001)(41300700001)(40480700001)(8676002)(2906002)(316002)(44832011)(82740400003)(31696002)(31686004)(110136005)(36860700001)(956004)(16576012)(70206006)(47076005)(186003)(16526019)(36756003)(336012)(6706004)(70586007)(2616005)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 06:14:25.1376
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 06:19:33.2929
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 972bb751-8b5a-473a-cb0a-08da7e856721
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19370fb1-5c63-4333-a29a-08da7e861ec6
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.71];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	HE1EUR01FT055.eop-EUR01.prod.protection.outlook.com
+	VE1EUR01FT053.eop-EUR01.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB4714
-Received-SPF: pass (spool5: domain of siemens.com designates 40.107.20.50 as permitted sender) client-ip=40.107.20.50; envelope-from=jan.kiszka@siemens.com; helo=EUR05-DB8-obe.outbound.protection.outlook.com;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=selector2 header.b=Vy29z48O;
-	arc=pass ("microsoft.com:s=arcselector9901:i=1");
-	dmarc=pass (policy=none) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of jan.kiszka@siemens.com designates 40.107.20.50 as permitted sender) smtp.mailfrom=jan.kiszka@siemens.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3811
 
-On 11.08.22 11:03, Yucong Chen wrote:
-> Hi all,
-> I'm very sorry to bother you, I'm currently working on xenomai
-> evaluation, mainly to observe the real-time performance of xenomai on
-> different hardware platforms. Recently, I encountered some problems
-> when porting Xenomai to Nvidia Jetson TX1. We tried for a while and
-> couldn't locate the problem, so please help me analyze the root cause
-> of the following problems. The specific problem is described as
-> follows:
->        1. Kernel version: 5.15-dovetail,
-> https://source.denx.de/Xenomai/linux-dovetail
->        2. Compile the kernel method:
-> https://elinux.org/Jetson/TX1_Upstream_Kernel
->        3. The kernel of 5.15-dovetail can be successfully started, but
-> xenomai is not enabled, and the dtb file in the 5.15-dovetail
-> directory is used to replace the official dtb (Corresponding kernel
-> version is 4.4) file provided by Nvidia
->        4. Recompile the 5.15 kernel, but enable xenomai and use the
-> dtb file in the 5.15-dovetail directory
->        5. The 5.15-xenomai kernel compiled in step 4 cannot be
-> started, and stays in the "Starting kernel ..." stage
-> (linux-5.15-xenomai+upstream dtb combination cannot be started)
->        6. On the basis of step 5, we used the official dtb file
-> provided by nvidia. The kernel can be started, but it will be stuck in
-> other places (linux-5.15-xenomai+nvidia dtb). In any case, the kernel
-> can be loaded and executed. The reason why the system does not start
-> normally is the mismatch between the linux kernel and the dtb file.
+On 11.08.22 16:05, Grau, Gunter wrote:
 > 
+> Hi,
+> 
+> Unfortunately I have to come back to this.
+> 
+> On Thu, Feb 17, 2022 at 10:12 AM Jan Kiszka <mailto:jan.kiszka@siemens.com> wrote:
+> On 17.02.22 15:11, Greg Gallagher wrote:
+>>
+>>
+>> On Thu, Feb 17, 2022 at 4:15 AM Jan Kiszka <mailto:jan.kiszka@siemens.com
+>> <mailto:mailto:jan.kiszka@siemens.com>> wrote:
+>>
+>>     On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
+>>     > The following commit in the vanilla kernel introduced
+>>     > a check for the cached interrupt mask flag in mask_irq():
+>>     >
+>>     > bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function
+>>     calls")
+>>     >
+>>     > This means if the flag is not serviced correctly
+>>     > the real bit in the hardware interrupt controller may not be
+>>     > cleared or set.
+>>     > The __ipipe_end_level_irq() function does not follow this rule.
+>>     > It unmasks the bit in the hardware without setting the cached flags
+>>     > accordingly. So after the first level interrupt is finished the
+>>     > mask cache has a wrong state. If now the next interrupt fires,
+>>     > the mask_irq() function will not really mask the interrupt in
+>>     > the hardware which causes a interrupt storm after reenabeling
+>>     > the hard irqs.
+>>     > The fix now also updates the shadow flag correctly.
+>>     > ---
+>>     >  kernel/irq/chip.c | 1 +
+>>     >  1 file changed, 1 insertion(+)
+>>     >
+>>     > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+>>     > index 7c03e2931189..ff9a8b3f33db 100644
+>>     > --- a/kernel/irq/chip.c
+>>     > +++ b/kernel/irq/chip.c
+>>     > @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
+>>     >  void __ipipe_end_level_irq(struct irq_desc *desc)
+>>     >  {
+>>     >         desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>>     > +       irq_state_clr_masked(desc);
+>>     >  }
+>>     >
+>>     >  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+>>     > --
+>>     > 2.25.1
+>>     >
+> 
+> We discovered some situations (with iio drivers) where this fix seem not to work.
+> Obviously in the moment where the irq is unmasked, the new interrupt seems to fire again and the irq_ack() code of the new interrupt runs before the irq_stats_clr_masked() is called.
+> When I wrote the patch I thought the irqs are disabled at this moment. Looks like this is not the case. At least when I change the order to:
+> 
+> irq_state_clr_masked(desc);
+> desc->irq_data.chip->irq_unmask(&desc->irq_data);
+> 
+> My use case works again.
+> Now I am unsure if the above reordering is the correct solution or maybe just calling unmask_irq(); which was the first proposal is better?
+> We dropped unmask_irq() proposal because it does additionally some locking, but maybe this is needed. I am unsure.
+> 
+> Do you have some advice?
 
-It's likely more complex than that. If the kernel/dtb tuple starts with
-Xenomai off but not with Xenomai on, you have something IRQ or timer
-related not working as expected. The reason might be that some irqchip
-or timer needed on that platform has not yet been enabled for use with
-Dovetail. Philippe, was the Jetson platform enabled/tested already?
-
->        Question: Why does 5.15-dovetail get stuck in the "Starting
-> kernel ..." stage after enabling xenomai and matching the
-> corresponding dtb file? We analyzed the dts files in the upstream and
-> the dts files officially provided by Nvidia, and mainly focused on
-> interrupts, memory, CPU and other related content, but still did not
-> locate the problem. Here we have another question: what is the
-> relationship between xenomai and the device tree on the arm64
-> platform?
-
-Xenomai has no own business in the dtbs. What you see as difference is
-downstream Nvidia compared to upstream device tree bindings.
+I didn't wrap my head fully around this again yet, but if you can't
+ensure a correct, race-free behavior by ordering, you need locking.
+Maybe have a look again how dovetail works in this context as it should
+have logically the same thing to do.
 
 Jan
 
