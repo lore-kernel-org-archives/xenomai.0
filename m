@@ -1,42 +1,23 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2091.outbound.protection.outlook.com [40.107.21.91])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 107717E
-	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 09:13:31 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XuoVp3uJ3U+JdDZpv8W7B/BJykHeTo4hc6/nTLVnZFgy1ieRN+5KcFOZR0dd3b4Btqw2yOO2Kp6FFZRjZXxt4yLGfFjcS0XvCZ36kA3nY1nTZ94qqORIdAIhbaujvd0JKZx8QgPaTyLFraSUvSAH8wWtHMQJ7ZxMIJQ2bpdoLpeGC8TnHNnOv4S7DvQXHWKd3l0BTaHxmPG3mfcwHN4hVQvKLeDEfMdigrh6knh/klh9ViPuyE45A0h0osfx2bf9K68fhBZ3reRLfxmnZIFz8nzb6rBbLROgwI668ZZnUqxfBsLdL+Bi4h4EQwn3OhxaOkk7dpqK3+IZX/PnCY8yaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GDdxq0RhBJOxx+4alO3cydhBoMebkxE8nam/a16zcBA=;
- b=gF0apQmSlLI2FoYEJxFe7+ZwwA9twf8nGXybUPAyVby6X51ucNqwolYiaZLHZi5RqlnjKa2tZMhuwXMBv3v0ggkqT9IeeMgITsYC9RdN5FrJtT3upsRLxEN99ZNAHNFZNC0nz2njqVvAJzE1DbvSj0j1YBXeHqafa6sOWRL2NATwzGy53/lSJEHDkmA1KWmtgB54RWdZy+6jHumCXK7kKdijRAYke3NiR5eEDdBiK8F6IlWi9A9i5jJgBfCZlNdL8GbtF9qnEj2F9zU+D+hNlymvUAziIKdVRAa+yk/vPALVsyioGMzlR+hZek0f0KES80nQLYhvIm34zNKDuJIU9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=philips.com; dmarc=pass action=none header.from=philips.com;
- dkim=pass header.d=philips.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=philips.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GDdxq0RhBJOxx+4alO3cydhBoMebkxE8nam/a16zcBA=;
- b=a4STPWj19VzNR43Tk4+XOe4TjH9XdB7b83A31MTL/XdxbbxOqkMwO5sl6S/H5iE6zLfY1eT6nDmX4qcRcgmFFbCiaT0UVVoIIjj7ySYoaC3rDeX+770QtwMxvPTqmZit9mCE+nc9Q9xzJuToLAkNBODa3TjX0pPnshCYb2NUBB4=
-Received: from AM7P122MB0229.EURP122.PROD.OUTLOOK.COM (2603:10a6:20b:183::19)
- by AM8P122MB0277.EURP122.PROD.OUTLOOK.COM (2603:10a6:20b:228::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Mon, 15 Aug
- 2022 09:13:28 +0000
-Received: from AM7P122MB0229.EURP122.PROD.OUTLOOK.COM
- ([fe80::f9db:3a15:889:d347]) by AM7P122MB0229.EURP122.PROD.OUTLOOK.COM
- ([fe80::f9db:3a15:889:d347%6]) with mapi id 15.20.5504.028; Mon, 15 Aug 2022
- 09:13:28 +0000
-From: "Grau, Gunter" <gunter.grau@philips.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
-	<xenomai@lists.linux.dev>
-Subject: RE: [PATCH] ipipe: Fix ipipe level irq end
-Thread-Topic: [PATCH] ipipe: Fix ipipe level irq end
-Thread-Index:
- AQHYHpOub37/2+PVHkidVJ9ThPpzLayWtB4AgADFAACAAAemAIAAUqwAgAARFQCAAAAvAIES4W7wgAXaqoCAACtKkA==
-Date: Mon, 15 Aug 2022 09:13:28 +0000
-Message-ID:
- <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 950B77E
+	for <xenomai@lists.linux.dev>; Mon, 15 Aug 2022 09:56:07 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 50E2AFF802;
+	Mon, 15 Aug 2022 09:55:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1660557358;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QOJ02icezSXtOr+aomzZeWqXmjJ77g2sFdrjrAurT9g=;
+	b=J69v/aMo8PxG1HhzgON4NEAvT2wh11QFSnKQW8bzYPlv26AIGEXj6eaaLup13wnrMt6wnE
+	raBd+0uTbP0nr6IQNGVrjaK+mesSEAoq4y+lphXOJzScoHVs+5Es6Qm8DcuYwVcnF77VYz
+	AzWZtPiGyUvUrBOZoONhXnKdIUcBN/XEqvXl+JDPTHSrIWk5TEz5RNlAV0II0guyyJxeNt
+	sLLaHerisCuXUBpXxgUO+2xQQYPncn40T2aIMKX4LsgLfNDeB2D+uf8hqZwOl1ntDhmI/p
+	d5LqF/eW4zXQgHeljw6ihB69G5PSUlN1LCbT2tw/rrqwqbPgkX+9r2klABrGzQ==
 References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
  <20220217084830.712756-1-gunter.grau@philips.com>
  <dddc8d33-0379-eb0c-f994-264a20bef4e6@siemens.com>
@@ -45,163 +26,153 @@ References: <94f8dc12-d019-4736-2423-bfacc6b3b0b2@siemens.com>
  <CALLqZ8THxAWDYMLOCUTKoGjzNt4V-PZtz_hTf2++FLF1QeCytg@mail.gmail.com>
  <AM7P122MB022912B3CD5B49D168974AD7F2649@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
  <86ca964e-62d8-2bc9-80f9-97097f1dedc7@siemens.com>
-In-Reply-To: <86ca964e-62d8-2bc9-80f9-97097f1dedc7@siemens.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=philips.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 987924c8-e4d9-4b3d-4305-08da7e9e6ad0
-x-ms-traffictypediagnostic: AM8P122MB0277:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- lYHIH3Ri+PgbPG079vHGylXxPBee+jfj+f3nxCpaMZVF1YMbj3SYYe84vdh9cK0quhCz5zvHz90x00KgY+B7HhBkDSiaN8BQTflvY90qmpu8eDjcgEE68Hbdxhwo+PTD0/xGsdgILQCOijjlHH7YnX9nEbjdap0Ki7WchBYa4OarFJrJYk9mmb7/FvzoqoJxN0x2pF0W7JmMNMvB/Q4jrV2vWZFQzVlIDfo0WNCeXUSifOTNeO7wEwzQRY8kNrFYyqrNS1wHn18SLL7O+choGSwn8h8U8xZYvlKPOTuk3g5piCYuKDD0ufFSywAbjOobPc8oazNnqSn3s7hRC4G8dj6D93UyLmWO9mWPSipjT7XVdCIOjOxPXPSKbeyPHVmKIgiT9ElExISiyIBacoU972JpY490zpMJmiosw4aPISBh6lGYhbrnbIqziHBDybGW0q9eeDwpnpQCobJjD8iPqabP9ghahgHWHKyECTWb/+jIdrmxqwlyM9viwpS5wJSBWTBFgCLRacDq02BfjbgQSbcEkUlFQDq/OfFbttK27qqWxt12sGJ+8NwhjI9BIoO5EzvqceVegc3/0d57e7y+2rQl12CvJt/jS0cPzv2T+bceM4odUsuBfc2aeY4c8M3cSl/yN8XbkDDkyt5hgiCXADrkI3DJly9QxeP/2ekHyaJ0VZQpPQZjUwjVy1EFkOMmjDjZkfZAiVXy6T0mlH0N5YaHmOCObkqan3moI8Z60cX2wdREs2eIKHCX9+1Z8mEeYNRtTCwhD7WWoCRGzD3DVaa7lwqXZLUsz/t6vbqWHsx3/xhOIFpb41dWW4jECJ9E
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7P122MB0229.EURP122.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(83380400001)(110136005)(7696005)(6506007)(9686003)(316002)(2906002)(33656002)(86362001)(52536014)(8936002)(55016003)(38100700002)(122000001)(82960400001)(38070700005)(5660300002)(186003)(26005)(41300700001)(53546011)(478600001)(71200400001)(55236004)(76116006)(64756008)(66446008)(66476007)(66556008)(8676002)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?UEZBTUt1WGk4UnJJWmsxMlE3MElSNFY4VU00eHAzeCtoZ3ppY0t0WkhxeElU?=
- =?utf-8?B?UEhsTnVBRkdLeXF3TkJudTdDMlFUcEZzOU1QVERGbzhLWWpiUlF2Mkcvb2dt?=
- =?utf-8?B?OUEwRGp4eHhpZ2N2cGxNU3ZHekFyamJIZlR6ZjJqSVdmbGp6TVJqSkdkL1Ni?=
- =?utf-8?B?eDR4ekkxTWNnTFBFRnFNak53N3JSUmRVWW5PZHVTK29hcldmWUd4aVB3OGJi?=
- =?utf-8?B?TUFWUTF4OVVjS0NCYitBNnltb1RLZXlDUjY5TnhvZXdNUzgvc1NQWW1uTG4x?=
- =?utf-8?B?dVRGWE9wZ05COTlFUXU3Z0gvZnJxWjdNY1RpeEZodXE1eWtzOUlXWnpCY1Bq?=
- =?utf-8?B?MXFnUTFVbXJtUWRObUJ5M2k2UFJjblBBZ1lSSmp5U0NqbzdOaWcrRTRvNEpk?=
- =?utf-8?B?WFROdDQ1dUM3bUh2R0drSm5ieXQ5c0d6RTVyU0NtdHZqVjQ5dmlYUDZ4YXZH?=
- =?utf-8?B?RHcrU1N3SVVZUWxyQ1o5bkZKeitnRzFnL05zTkpHQWREb0I4Rnh1TGNYejk0?=
- =?utf-8?B?ZWhBOEprK08vSm5iRlF6elZuK1BLNjhnelJKSGcyNGdZVEN6TUFiQXkvTEFa?=
- =?utf-8?B?ZFNvbnBlM3FiQXU2RjhrS0h2MGpVQS9tenk2SWJDUlZMQm1TVDlJSDZjOHVt?=
- =?utf-8?B?NDZhcVZWdzFNY2loQkZPVWQ4T2ZpV29meTJ4eTgwL1hkV1F1czVBSGtzUy9y?=
- =?utf-8?B?ektEK0ZKVDlVQmIyZ3Y5Sm1CL280MGVmblJQbmc5K1hsN3gxbC9EV1NZT1Np?=
- =?utf-8?B?YmFVaSt5RHU4elh4YnJRNDRMbS9FNVc0a3grY0FHVCt6U05xMEQxbEVlUE83?=
- =?utf-8?B?VFlVTkFUaFBTdSs2U1F2bGI4TStOL3JlS0NMTDdnVU43NXdCTGFuWmdLRS80?=
- =?utf-8?B?aHBaRnd1cjhRZHJyS2hpZzJ2emdxUnlrL2w0MnY4NTZZTHNKNnlIU2R5dzlV?=
- =?utf-8?B?UVJnYXJuRjRpNVlyaWs5aExvc0pFZ2c4TzlqcEpvZzFsdk9FMGlkNjd2Ui91?=
- =?utf-8?B?eVFMb1NzSzlLMThlUHFtMjNqRUIxVW5sdFduYW14cTR5azVTdW4zc3pqOXZr?=
- =?utf-8?B?SDZsck9mbHpTeWJTUVFrMm1QYzRyNVREM0Z4L3ZZRGFYTnVSc2lnbVJrSzFa?=
- =?utf-8?B?dnJGU21GTWtIbUkrblVXOEY5MDJRS3h3OEdYVk5aUDVPbmVuZHl2Vkw3bS81?=
- =?utf-8?B?NThxejhZdU5HaVRZRDZLVVdlb0o5TGRkVkZ4OEYxbWFHNTNLYjA1ZXhJSjZY?=
- =?utf-8?B?eGQ0VEd5WEx3c0k0UnB5MDlwcU81Znc1WS9BWUUyVEpBTnQ4eElCYzQ5aGc5?=
- =?utf-8?B?K2lBcjZSZmF5ZEN4RFllN1dYOGRxUkZ0U2hFZlEvakt5OE1pREdPaC9BWG8z?=
- =?utf-8?B?NUtvTjBNdExSMEduY3BNd0NQUTJJUWpuSkdzYjRMczc0eVI4TGpNZHZOREFH?=
- =?utf-8?B?ZFRqMmRRaGt3Rjhtall2YzI0TUswRXlQQVpIL1h1bnlSWHNTRHk0S0lSb2xJ?=
- =?utf-8?B?R3k4d1cvV2xySEc5RVVOcExpVC94Rkw4YTY5SENGWWViSTBmYUV6bXNEOHdJ?=
- =?utf-8?B?bUcyVnJydDRHTVh0ZmdEMW1aaHRwcXdBS3B5Sk5pdTEwbW5MZjlpd2J3Qy95?=
- =?utf-8?B?Njl6dmwzcUU5ek9BVkgwOXkrcllKaXQrRmtZQ013TVR5T1l6eTdsMDB0a2xK?=
- =?utf-8?B?ZGpTbmJqRkRidUg5bVpPYmh6V0czMDVMUzlEV0JtNzRWVGZ6NlZJYndxRzcv?=
- =?utf-8?B?WjRGKy92c25hZGZGTG51Um4yWXp2eGt2MkhGMmVQQUhGVklvS0xJWEVUbFNp?=
- =?utf-8?B?QnZydmJwQVptbVZwTU1ZTkw2eC9OMW9uY2x1dmI1MmxpMzBmV09hMG5iZWsz?=
- =?utf-8?B?dStSQ2FMaWVaSEp5WDhaQmMvQ0VQV09ydjdBVFJRY2NvRHJwM2NjNVVxaTNp?=
- =?utf-8?B?QkhBUUkvMThTUUVud1V3ZVpEUGRTbVR5a2VsOTJObFlqOG9Jc05wQzUxams1?=
- =?utf-8?B?Wkhhc1ZWMWFlQXZsUkh5QmNNL1VQbWVPc29ibVFCdVVGTTlYM1FEeHFEZVZx?=
- =?utf-8?B?SXNOSVJBbEd2NGx3aVRXTUhTMUZISFplR3dISTNyZ0l4dE80RDB3SEk4a1Ux?=
- =?utf-8?Q?wEfEmLj5CtLHEVwbKSZOW9pYA?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: "Grau, Gunter" <gunter.grau@philips.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
+ <xenomai@lists.linux.dev>
+Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+Date: Mon, 15 Aug 2022 11:34:50 +0200
+In-reply-to: <AM7P122MB022949A2E0ADC59FCC8809BBF2689@AM7P122MB0229.EURP122.PROD.OUTLOOK.COM>
+Message-ID: <874jydkez7.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: philips.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM7P122MB0229.EURP122.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 987924c8-e4d9-4b3d-4305-08da7e9e6ad0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2022 09:13:28.7998
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1a407a2d-7675-4d17-8692-b3ac285306e4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j5hpeW37SFuMS1VS/0gvKRUTN2lg3IPZ3wp2B2WLw2UGCMC/5RM2jwK+vHax0JIAcNhBEU6bPby9lXBaV4QS5g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8P122MB0277
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8
-amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTW9udGFnLCAxNS4gQXVndXN0IDIwMjIg
-MDg6MTkNCj4gVG86IEdyYXUsIEd1bnRlciA8Z3VudGVyLmdyYXVAcGhpbGlwcy5jb20+OyB4ZW5v
-bWFpQGxpc3RzLmxpbnV4LmRldg0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBpcGlwZTogRml4IGlw
-aXBlIGxldmVsIGlycSBlbmQNCj4NCj4gQ2F1dGlvbjogVGhpcyBlLW1haWwgb3JpZ2luYXRlZCBm
-cm9tIG91dHNpZGUgb2YgUGhpbGlwcywgYmUgY2FyZWZ1bCBmb3INCj4gcGhpc2hpbmcuDQo+DQo+
-DQo+IE9uIDExLjA4LjIyIDE2OjA1LCBHcmF1LCBHdW50ZXIgd3JvdGU6DQo+ID4NCj4gPiBIaSwN
-Cj4gPg0KPiA+IFVuZm9ydHVuYXRlbHkgSSBoYXZlIHRvIGNvbWUgYmFjayB0byB0aGlzLg0KPiA+
-DQo+ID4gT24gVGh1LCBGZWIgMTcsIDIwMjIgYXQgMTA6MTIgQU0gSmFuIEtpc3prYQ0KPiA8bWFp
-bHRvOmphbi5raXN6a2FAc2llbWVucy5jb20+IHdyb3RlOg0KPiA+IE9uIDE3LjAyLjIyIDE1OjEx
-LCBHcmVnIEdhbGxhZ2hlciB3cm90ZToNCj4gPj4NCj4gPj4NCj4gPj4gT24gVGh1LCBGZWIgMTcs
-IDIwMjIgYXQgNDoxNSBBTSBKYW4gS2lzemthDQo+ID4+IDxtYWlsdG86amFuLmtpc3prYUBzaWVt
-ZW5zLmNvbQ0KPiA8bWFpbHRvOm1haWx0bzpqYW4ua2lzemthQHNpZW1lbnMuY29tPj4gd3JvdGU6
-DQo+ID4+DQo+ID4+ICAgICBPbiAxNy4wMi4yMiAwOTo0OCwgR3VudGVyIEdyYXUgdmlhIFhlbm9t
-YWkgd3JvdGU6DQo+ID4+ICAgICA+IFRoZSBmb2xsb3dpbmcgY29tbWl0IGluIHRoZSB2YW5pbGxh
-IGtlcm5lbCBpbnRyb2R1Y2VkDQo+ID4+ICAgICA+IGEgY2hlY2sgZm9yIHRoZSBjYWNoZWQgaW50
-ZXJydXB0IG1hc2sgZmxhZyBpbiBtYXNrX2lycSgpOg0KPiA+PiAgICAgPg0KPiA+PiAgICAgPiBi
-ZjIyZmY0NWJlZDYgKCJnZW5pcnE6IEF2b2lkIHVubmVjZXNzYXJ5IGxvdyBsZXZlbCBpcnEgZnVu
-Y3Rpb24NCj4gPj4gICAgIGNhbGxzIikNCj4gPj4gICAgID4NCj4gPj4gICAgID4gVGhpcyBtZWFu
-cyBpZiB0aGUgZmxhZyBpcyBub3Qgc2VydmljZWQgY29ycmVjdGx5DQo+ID4+ICAgICA+IHRoZSBy
-ZWFsIGJpdCBpbiB0aGUgaGFyZHdhcmUgaW50ZXJydXB0IGNvbnRyb2xsZXIgbWF5IG5vdCBiZQ0K
-PiA+PiAgICAgPiBjbGVhcmVkIG9yIHNldC4NCj4gPj4gICAgID4gVGhlIF9faXBpcGVfZW5kX2xl
-dmVsX2lycSgpIGZ1bmN0aW9uIGRvZXMgbm90IGZvbGxvdyB0aGlzIHJ1bGUuDQo+ID4+ICAgICA+
-IEl0IHVubWFza3MgdGhlIGJpdCBpbiB0aGUgaGFyZHdhcmUgd2l0aG91dCBzZXR0aW5nIHRoZSBj
-YWNoZWQgZmxhZ3MNCj4gPj4gICAgID4gYWNjb3JkaW5nbHkuIFNvIGFmdGVyIHRoZSBmaXJzdCBs
-ZXZlbCBpbnRlcnJ1cHQgaXMgZmluaXNoZWQgdGhlDQo+ID4+ICAgICA+IG1hc2sgY2FjaGUgaGFz
-IGEgd3Jvbmcgc3RhdGUuIElmIG5vdyB0aGUgbmV4dCBpbnRlcnJ1cHQgZmlyZXMsDQo+ID4+ICAg
-ICA+IHRoZSBtYXNrX2lycSgpIGZ1bmN0aW9uIHdpbGwgbm90IHJlYWxseSBtYXNrIHRoZSBpbnRl
-cnJ1cHQgaW4NCj4gPj4gICAgID4gdGhlIGhhcmR3YXJlIHdoaWNoIGNhdXNlcyBhIGludGVycnVw
-dCBzdG9ybSBhZnRlciByZWVuYWJlbGluZw0KPiA+PiAgICAgPiB0aGUgaGFyZCBpcnFzLg0KPiA+
-PiAgICAgPiBUaGUgZml4IG5vdyBhbHNvIHVwZGF0ZXMgdGhlIHNoYWRvdyBmbGFnIGNvcnJlY3Rs
-eS4NCj4gPj4gICAgID4gLS0tDQo+ID4+ICAgICA+ICBrZXJuZWwvaXJxL2NoaXAuYyB8IDEgKw0K
-PiA+PiAgICAgPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+ID4+ICAgICA+DQo+
-ID4+ICAgICA+IGRpZmYgLS1naXQgYS9rZXJuZWwvaXJxL2NoaXAuYyBiL2tlcm5lbC9pcnEvY2hp
-cC5jDQo+ID4+ICAgICA+IGluZGV4IDdjMDNlMjkzMTE4OS4uZmY5YThiM2YzM2RiIDEwMDY0NA0K
-PiA+PiAgICAgPiAtLS0gYS9rZXJuZWwvaXJxL2NoaXAuYw0KPiA+PiAgICAgPiArKysgYi9rZXJu
-ZWwvaXJxL2NoaXAuYw0KPiA+PiAgICAgPiBAQCAtOTg4LDYgKzk4OCw3IEBAIHZvaWQgX19pcGlw
-ZV9hY2tfbGV2ZWxfaXJxKHN0cnVjdCBpcnFfZGVzYw0KPiAqZGVzYykNCj4gPj4gICAgID4gIHZv
-aWQgX19pcGlwZV9lbmRfbGV2ZWxfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gPj4gICAg
-ID4gIHsNCj4gPj4gICAgID4gICAgICAgICBkZXNjLT5pcnFfZGF0YS5jaGlwLT5pcnFfdW5tYXNr
-KCZkZXNjLT5pcnFfZGF0YSk7DQo+ID4+ICAgICA+ICsgICAgICAgaXJxX3N0YXRlX2Nscl9tYXNr
-ZWQoZGVzYyk7DQo+ID4+ICAgICA+ICB9DQo+ID4+ICAgICA+DQo+ID4+ICAgICA+ICB2b2lkIF9f
-aXBpcGVfYWNrX2Zhc3Rlb2lfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gPj4gICAgID4g
-LS0NCj4gPj4gICAgID4gMi4yNS4xDQo+ID4+ICAgICA+DQo+ID4NCj4gPiBXZSBkaXNjb3ZlcmVk
-IHNvbWUgc2l0dWF0aW9ucyAod2l0aCBpaW8gZHJpdmVycykgd2hlcmUgdGhpcyBmaXggc2VlbSBu
-b3QgdG8NCj4gd29yay4NCj4gPiBPYnZpb3VzbHkgaW4gdGhlIG1vbWVudCB3aGVyZSB0aGUgaXJx
-IGlzIHVubWFza2VkLCB0aGUgbmV3IGludGVycnVwdA0KPiBzZWVtcyB0byBmaXJlIGFnYWluIGFu
-ZCB0aGUgaXJxX2FjaygpIGNvZGUgb2YgdGhlIG5ldyBpbnRlcnJ1cHQgcnVucyBiZWZvcmUNCj4g
-dGhlIGlycV9zdGF0c19jbHJfbWFza2VkKCkgaXMgY2FsbGVkLg0KPiA+IFdoZW4gSSB3cm90ZSB0
-aGUgcGF0Y2ggSSB0aG91Z2h0IHRoZSBpcnFzIGFyZSBkaXNhYmxlZCBhdCB0aGlzIG1vbWVudC4N
-Cj4gTG9va3MgbGlrZSB0aGlzIGlzIG5vdCB0aGUgY2FzZS4gQXQgbGVhc3Qgd2hlbiBJIGNoYW5n
-ZSB0aGUgb3JkZXIgdG86DQo+ID4NCj4gPiBpcnFfc3RhdGVfY2xyX21hc2tlZChkZXNjKTsNCj4g
-PiBkZXNjLT5pcnFfZGF0YS5jaGlwLT5pcnFfdW5tYXNrKCZkZXNjLT5pcnFfZGF0YSk7DQo+ID4N
-Cj4gPiBNeSB1c2UgY2FzZSB3b3JrcyBhZ2Fpbi4NCj4gPiBOb3cgSSBhbSB1bnN1cmUgaWYgdGhl
-IGFib3ZlIHJlb3JkZXJpbmcgaXMgdGhlIGNvcnJlY3Qgc29sdXRpb24gb3IgbWF5YmUNCj4ganVz
-dCBjYWxsaW5nIHVubWFza19pcnEoKTsgd2hpY2ggd2FzIHRoZSBmaXJzdCBwcm9wb3NhbCBpcyBi
-ZXR0ZXI/DQo+ID4gV2UgZHJvcHBlZCB1bm1hc2tfaXJxKCkgcHJvcG9zYWwgYmVjYXVzZSBpdCBk
-b2VzIGFkZGl0aW9uYWxseSBzb21lDQo+IGxvY2tpbmcsIGJ1dCBtYXliZSB0aGlzIGlzIG5lZWRl
-ZC4gSSBhbSB1bnN1cmUuDQo+ID4NCj4gPiBEbyB5b3UgaGF2ZSBzb21lIGFkdmljZT8NCj4NCj4g
-SSBkaWRuJ3Qgd3JhcCBteSBoZWFkIGZ1bGx5IGFyb3VuZCB0aGlzIGFnYWluIHlldCwgYnV0IGlm
-IHlvdSBjYW4ndCBlbnN1cmUgYQ0KPiBjb3JyZWN0LCByYWNlLWZyZWUgYmVoYXZpb3IgYnkgb3Jk
-ZXJpbmcsIHlvdSBuZWVkIGxvY2tpbmcuDQo+IE1heWJlIGhhdmUgYSBsb29rIGFnYWluIGhvdyBk
-b3ZldGFpbCB3b3JrcyBpbiB0aGlzIGNvbnRleHQgYXMgaXQgc2hvdWxkIGhhdmUNCj4gbG9naWNh
-bGx5IHRoZSBzYW1lIHRoaW5nIHRvIGRvLg0KPg0KDQpJdCBsb29rcyBsaWtlIGluIGRvdmV0YWls
-IHRoZSBtYXNrZWQgYml0IGluIHRoZSBkZXNjcmlwdGlvbiBpcyBhbHNvIG5vdCBjbGVhcmVkICht
-aXNzaW5nIGlycV9zdGF0ZV9jbHJfbWFza2VkKGRlc2MpKS4NClRoaXMgbWlnaHQgd29yayBiZWNh
-dXNlIHRoZSBjb3JyZXNwb25kaW5nIG1hc2sgZnVuY3Rpb24gaGVyZSBzZWVtcyBhbHNvIHNvdXJj
-ZWQgZnJvbSB0aGUgZG92ZXRhaWwgcGF0Y2ggYW5kIGlzIG5vdCBjaGVja2luZyB0aGUgYml0IGJl
-Zm9yZSBtYXNraW5nIHRoZSBpcnEuDQpObyBndWFyYW50aWVzIGhlcmUsIEkgYW0gbm90IGZpcm0g
-d2l0aCBkb3ZldGFpbCBhbmQgdGhhdOKAmXMgd2hhdCBpdCBsb29rcyBsaWtlIHdoZW4gY2hlY2tp
-bmcgaGFuZGxlX3BlcmNwdV9pcnEoKS4NCg0KU2luY2UgeW91ciBsYXN0IGNvbW1lbnQgYWJvdXQg
-dGhlIGZpcnN0IGZpeCBwb2ludGVkIG91dCB0aGF0IHVubWFza19pcnEoKSBpcyB3YXkgdG9vIG11
-Y2ggaW4gdGhpcyBjb250ZXh0IEkgd2lsbCBzZW5kIGEgcGF0Y2ggd2l0aCB0aGUgY29tbWFuZHMg
-cmVvcmRlcmVkIGFuZCBubyBleHRyYSBsb2NraW5nLiBUaGF0IHNob3VsZCB3b3JrLg0KDQpUaGFu
-a3MsDQpHdW50ZXINCg0KDQo+IEphbg0KPg0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBUZWNobm9sb2d5
-DQo+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQpUaGUgaW5mb3JtYXRpb24gY29udGFpbmVkIGluIHRoaXMgbWVzc2Fn
-ZSBtYXkgYmUgY29uZmlkZW50aWFsIGFuZCBsZWdhbGx5IHByb3RlY3RlZCB1bmRlciBhcHBsaWNh
-YmxlIGxhdy4gVGhlIG1lc3NhZ2UgaXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgYWRkcmVzc2Vl
-KHMpLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVi
-eSBub3RpZmllZCB0aGF0IGFueSB1c2UsIGZvcndhcmRpbmcsIGRpc3NlbWluYXRpb24sIG9yIHJl
-cHJvZHVjdGlvbiBvZiB0aGlzIG1lc3NhZ2UgaXMgc3RyaWN0bHkgcHJvaGliaXRlZCBhbmQgbWF5
-IGJlIHVubGF3ZnVsLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBwbGVh
-c2UgY29udGFjdCB0aGUgc2VuZGVyIGJ5IHJldHVybiBlLW1haWwgYW5kIGRlc3Ryb3kgYWxsIGNv
-cGllcyBvZiB0aGUgb3JpZ2luYWwgbWVzc2FnZS4NCg==
+
+"Grau, Gunter" <gunter.grau@philips.com> writes:
+
+> Hi,
+>
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Montag, 15. August 2022 08:19
+>> To: Grau, Gunter <gunter.grau@philips.com>; xenomai@lists.linux.dev
+>> Subject: Re: [PATCH] ipipe: Fix ipipe level irq end
+>>
+>> Caution: This e-mail originated from outside of Philips, be careful for
+>> phishing.
+>>
+>>
+>> On 11.08.22 16:05, Grau, Gunter wrote:
+>> >
+>> > Hi,
+>> >
+>> > Unfortunately I have to come back to this.
+>> >
+>> > On Thu, Feb 17, 2022 at 10:12 AM Jan Kiszka
+>> <mailto:jan.kiszka@siemens.com> wrote:
+>> > On 17.02.22 15:11, Greg Gallagher wrote:
+>> >>
+>> >>
+>> >> On Thu, Feb 17, 2022 at 4:15 AM Jan Kiszka
+>> >> <mailto:jan.kiszka@siemens.com
+>> <mailto:mailto:jan.kiszka@siemens.com>> wrote:
+>> >>
+>> >>     On 17.02.22 09:48, Gunter Grau via Xenomai wrote:
+>> >>     > The following commit in the vanilla kernel introduced
+>> >>     > a check for the cached interrupt mask flag in mask_irq():
+>> >>     >
+>> >>     > bf22ff45bed6 ("genirq: Avoid unnecessary low level irq function
+>> >>     calls")
+>> >>     >
+>> >>     > This means if the flag is not serviced correctly
+>> >>     > the real bit in the hardware interrupt controller may not be
+>> >>     > cleared or set.
+>> >>     > The __ipipe_end_level_irq() function does not follow this rule.
+>> >>     > It unmasks the bit in the hardware without setting the cached f=
+lags
+>> >>     > accordingly. So after the first level interrupt is finished the
+>> >>     > mask cache has a wrong state. If now the next interrupt fires,
+>> >>     > the mask_irq() function will not really mask the interrupt in
+>> >>     > the hardware which causes a interrupt storm after reenabeling
+>> >>     > the hard irqs.
+>> >>     > The fix now also updates the shadow flag correctly.
+>> >>     > ---
+>> >>     >  kernel/irq/chip.c | 1 +
+>> >>     >  1 file changed, 1 insertion(+)
+>> >>     >
+>> >>     > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+>> >>     > index 7c03e2931189..ff9a8b3f33db 100644
+>> >>     > --- a/kernel/irq/chip.c
+>> >>     > +++ b/kernel/irq/chip.c
+>> >>     > @@ -988,6 +988,7 @@ void __ipipe_ack_level_irq(struct irq_desc
+>> *desc)
+>> >>     >  void __ipipe_end_level_irq(struct irq_desc *desc)
+>> >>     >  {
+>> >>     >         desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>> >>     > +       irq_state_clr_masked(desc);
+>> >>     >  }
+>> >>     >
+>> >>     >  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+>> >>     > --
+>> >>     > 2.25.1
+>> >>     >
+>> >
+>> > We discovered some situations (with iio drivers) where this fix seem n=
+ot to
+>> work.
+>> > Obviously in the moment where the irq is unmasked, the new interrupt
+>> seems to fire again and the irq_ack() code of the new interrupt runs bef=
+ore
+>> the irq_stats_clr_masked() is called.
+>> > When I wrote the patch I thought the irqs are disabled at this moment.
+>> Looks like this is not the case. At least when I change the order to:
+>> >
+>> > irq_state_clr_masked(desc);
+>> > desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>> >
+>> > My use case works again.
+>> > Now I am unsure if the above reordering is the correct solution or may=
+be
+>> just calling unmask_irq(); which was the first proposal is better?
+>> > We dropped unmask_irq() proposal because it does additionally some
+>> locking, but maybe this is needed. I am unsure.
+>> >
+>> > Do you have some advice?
+>>
+>> I didn't wrap my head fully around this again yet, but if you can't ensu=
+re a
+>> correct, race-free behavior by ordering, you need locking.
+>> Maybe have a look again how dovetail works in this context as it should =
+have
+>> logically the same thing to do.
+>>
+>
+> It looks like in dovetail the masked bit in the description is also not c=
+leared (missing irq_state_clr_masked(desc)).
+> This might work because the corresponding mask function here seems also s=
+ourced from the dovetail patch and is not checking the bit before masking t=
+he irq.
+> No guaranties here, I am not firm with dovetail and that=E2=80=99s what it
+> looks like when checking handle_percpu_irq().
+
+Dovetail does not work the I-pipe did, __ipipe_end_level_irq() is now
+handled internally. The only way to re-enable interrupts in this path
+would be to reschedule a real-time task, which cannot happen until
+irq_exit_pipeline() is called when unwinding the interrupt frame, at
+which point the companion core may reschedule, never before. So unless
+the core enables back hard IRQs in the handler, which would be 100%
+broken behavior, there is no issue.
+
+IOW, both the interrupt flow and event handlers run with (hard) IRQs
+masked in the CPU all the way, preventing any interrupt storm, whether
+the guard bit is set prior to or after unmasking. Also, the vanilla
+[un]mask_irq() logic is kept, testing and setting irqd_irq_masked() as
+appropriate, i.e. when using the state cache is applicable.
+
+handle_percpu_irq() is a special case, the vanilla code does not have to
+use a state cache because you do not mask per-CPU irqs, you might
+disable them entirely if not handled.
+
+This is tricky stuff, so a bug can never be excluded, but I don't think
+the I-pipe scenario applies to Dovetail.
+
+--=20
+Philippe.
