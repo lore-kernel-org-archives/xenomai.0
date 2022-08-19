@@ -1,71 +1,67 @@
 Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33E64A09
-	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 19:14:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3453F6117
+	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 22:59:40 +0000 (UTC)
 Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JFQHLv021180
-	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 12:14:45 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0177.outbound.protection.office365.us [23.103.199.177])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3j1q70bkpt-1
+	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JFQMGF021245
+	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 11:44:15 -0700
+Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0144.outbound.protection.office365.us [23.103.199.144])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3j1q70bhgt-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 12:14:44 -0700
+	for <xenomai@lists.linux.dev>; Fri, 19 Aug 2022 11:44:14 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=iU0Pk6ahQGnpOvTh81k8qHf2eEkUR7dZTYSr9H19GG7WQX7aKWO2JnorPsXUuOXVWn2LETdLNN8rQBAsbDTvKUkFmZu6qyUjGHejtuCLoCEhyNCd/NvfoKY6/s2oQy31pZYKBF5WaUioGyxyVNI7v3AfplkKic4S3YVs5uJX8853DGF9hJHgH17gHmTQuUT0ub886905+bwAWrQDSF01Ml9FNNKCjLVi59AVq1m2aLo57kKQEpSllRX0uxAAgIUCGVy0aes10h5672MXOqEcM561MU4ygbMFiIErlgTx9RzKzKxH+pUTtFuWTq7dVYrV8eEwmkf+/HcE4rQzNSGyDg==
+ b=lEUhKDno4cCHqGzbdcmxxrhFXLQoLJT8zOvGwo0yq8xEgzg6O88hsClXfW1NYYNZDtDhsIrqi2h1g50Mz78kPSR8coG2s4fgykSxswujOPm1KMzbRXUtu7NSOAGRjXFSXkpbRXZlIYehw2ihirMw3VhtNdq4gceN+3P3IzSj2hZMyG/B+U6HpAUCUCq/87IwWXMJwUPrH3G2zfNbxYbbiSNr/fTeVPTRBxwP+pYT8gmzoSTXIMKBoeTV/BQOWJTRI4CabStowBCIve3H7iytnTaORtC0fXClrH0U0JktKIiQ6jhBwll+Iw9pJCJJXINWhPtQViBKJy4cjwZrW54s9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xSKbc6EYV5KRqGsjUn/BshgAL81IdDg9L9XTp741/5k=;
- b=bDXrOU12cgloRVrdxgwEi/oeGMDzQbu7ObU1X9hC0aO+1R5WgvMCwxQ40Y29ZgpMp+PJkMwwvgjzU7ChylypC+uqtRHj9mD7lr/RHCWcEvuX41k2Vb0FSFBG1V3fBhlrH5vAKJaHxjvENn4BvYsnX+nG9xg5gUwPDMKZ9j08uv1C29k5/muboIn/1v1MtC6geJtPTA6bLkSNlg24VX+TMrXU1eVnPaUJkedcwxufM9Yb2DleUr3TMX9tHXgEP7B26AOTE2WjAxMNgdzRH0Who4P/ToRcHTt3fDZzm3TWBza5rVUpqHapUH7WW6ubHD368j/hDp7PHZkEFnEeWHN+AQ==
+ bh=WjAswfPDxQPQI7mlZcrHqaNP87Rpdky9V+SnCPjOrLs=;
+ b=T5fvMIq3dZKNaaOFaeAFUeeKpDfDqRxHqc2sZnSIbWXbepYAlwf6xYmoDAE5mPlHIuIYzzzOTKrLHLBy6Qa9pt7MQusfaENEu91Lba8txnmBckJVEVWHwHPV8eF6IMTfve2OdTLkoCd1fFytsSMiTTXQo29QrQF0l89BdiaxwPW2adcF4LHdvup/N17RJpEiMKbhiHa0m+pzOG71R+Uhdfj37ZNpAPHSy+TqZAls8He4cqqP+tI3xAYwf5XnL3t/CH9WONLZ2qAdbqAksjWoS9r5ADG39WX61kLfjzKOo1ANap4VOvYhowxHrsl2yfTRwHTvE7jTWqTxMBFg0kCfiQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
  header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xSKbc6EYV5KRqGsjUn/BshgAL81IdDg9L9XTp741/5k=;
- b=AzRzZkUJe/D392WHPm+BaCZP4Fdy3+r8yGUeaP2XXvA8XqlrRtcVJiJCHefjZgDDEANoECA7loiV8I98vGLPv2a2P+I2sTvg7RWsC44YFJK7npnB8cis0PbFBBr9HjUL3NDtC3uvfsekH6MGgYQyH7NcPqoc8YENrRa/sy+sjDZ/2LY2cx1XD4FaloDJbaEsowQP5qH1Bnc/p3F09T+P7VKM8QYXBGBlI0hSuHVhcn+CeCtMxp6hQia9rCwpYQWgHB7CrzHauk0ISXWZcrJA+XTIaX6q5y5P41Xo5GJ2pa+UBFHlKeE+HZuKjD6t80JgWPkUvyCaqepE4erCnK0wWg==
+ bh=WjAswfPDxQPQI7mlZcrHqaNP87Rpdky9V+SnCPjOrLs=;
+ b=ezub/jnywpXDXHG6rALvq8Gv918zxqTAH4dXKIrOI/BJxsdruwWuFqeBhs3zZhawyV5bFsbaeZQk5St3L9lal1xuq6VDje4PDNB2cdclP5i3OixnbB5CC2w3j2mASeoDcbD/K0IaHG4Ug14uiRtbXqaJYUPJxygXW5G70P2Wl7b+sQVcHinBxXMa+s8vvc9HJSkYBvq7HQd2CDLMaAT+3Sqhx+Csowbtm/oQi/3BFIaOMOnLNWxCnARzVLa1XjTdfxADJbxpBEzzxOxqRZMdHgVwBV/ImuXexCex/UZoPRsBBjfBJ5ouNSI/EIs9bV85cwIXSFKk09Z1i0Ow4sHgJg==
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1396.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:189::15) with
+ by PH1P110MB0970.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.15; Fri, 19 Aug
- 2022 19:14:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Fri, 19 Aug
+ 2022 18:44:12 +0000
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::f968:7cdd:eff1:e547]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::f968:7cdd:eff1:e547%6]) with mapi id 15.20.5525.010; Fri, 19 Aug 2022
- 19:14:43 +0000
+ 18:44:12 +0000
 From: Russell Johnson <russell.johnson@kratosdefense.com>
 To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: Weird GDB behavior with parent/child EVL threads
+Subject: Weird GDB behavior with parent/child EVL threads
 Thread-Topic: Weird GDB behavior with parent/child EVL threads
-Thread-Index: Adiz+qiZ/e1HxEuNTQ2TkgbZB+6zfQABO07w
-Date: Fri, 19 Aug 2022 19:14:43 +0000
+Thread-Index: Adiz+qiZ/e1HxEuNTQ2TkgbZB+6zfQ==
+Date: Fri, 19 Aug 2022 18:44:12 +0000
 Message-ID: 
- <PH1P110MB1050DADF4DA216989262F434E26C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB10502931ADF4B99016ABBCFDE26C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-In-Reply-To: 
  <PH1P110MB10502931ADF4B99016ABBCFDE26C9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dbef0a0e-d2e8-44f1-d97a-08da82171266
-x-ms-traffictypediagnostic: PH1P110MB1396:EE_
+x-ms-office365-filtering-correlation-id: 99ab2358-358e-4a4d-aa13-08da8212cf1c
+x-ms-traffictypediagnostic: PH1P110MB0970:EE_
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info: 
- JnPgQGMnhkfLt5TL7d96ogfdcDAI4CztxapItMnSGUIxR/a1fxxJDjPbf7n2tx/yYgrU0+Dk6/kJaw2IjA6ERCzC0olPdnvUS0sWPFsppfhtWtic4mmFukNninUc4GKyXCCp35Tk5VPsSjU7he4ArmcWEjmhW3aFKVI1oGdp1VgYq4brMvk4k/lYQ2VIUA5hVR3pssQLzVVClcnhkcGbFsuqD3FDDuQUJOHEYOz3LECmwzwUU2S7G/aznCLzYkteJDAXNe7ia8nWnu1gp70BLrlNPonnCg/QKrqOgdnc22AZRFWwQ/4TyUgs2637V24HiZ4+v+FZZouyFEHnkp4CUHxvz4hyiT9E0MEU985Q7FxuaZbkwsHBJIbu7wez3jC+Jz+BaPOkPS+gy6kzo6NGe4EhJV7TzVWMC3bmzP970Mh6KixLycoP53daBGORH0UNsJncRryIXTRNdj5ZtWNBD4vUSe9T/ND0hMbooZu6GEuhUJruqvuTJDAQ+2PlFPMq2GvgCiBPhowrBW+tvhu7j4WncPQhCuMzQBoDWLps0tMaweT0QY4Po8ADGrSv3d4CLdCEEcP4RODJV4jPu33EglONI6eXfFdVdNcDjm1vHDUgTsFgOT4amwEuIFjKBznshSFiJGsTjWIcwXBoBh5UMB9lSy9dExObR5LVEW8LlN4qyxm3r27DiDQ0fHbOIpao
+ V5rfbC/KVBvoof4jWP7ghHEILFKeajgBHDBG0IDkiGD3Z6kx4K7X82dwHMQlme/w5U2hGFYXODL9qyDDx5GRayWM1fRtSEnQ6r2/XTktqDL3QcqyqRZagZwW7M+Sqf2hoA6A5LJBvyK2Af7Q4l9YENO3w8d0ns2c2TjmlRCEc8bmMBPNbV04uxvZm8xi6yPjYe3TmYPl4ilGodvhzSraENqSPjS0kPHGoWc1Ff0XAE7Qgvjn7C9FG7T2GJQ8wBGxjLD2d+8W63ZRatA275EMkWKC+bfSILbJTYdYjUXIErmmQeDY+Rvc4avYBfqpO06W/QMDOiM6HHU+T1NH9D3NwKYulYnbBdVlFlQu0Kla7XRf3IkJfZvbhqCrRIh9U5oMmbfa6XOhXndNXyLECmQbhKPwlQ6wXbO7RIHXabuY79tdxwZ4pvoJPjeSNzEB8iPJSK8jQubIXIBvj/Smqtze6To5FNSZGeYx+nZZ6314QEYIM2zyBuWl6j3TfrIU5J+kMXi/ToPdqoyVN9cjON7bEBLrZWxKkEH3SnlodbH+sV5UJ8Bf2yCguVG4Ef1wSplcP/DfE3miUQmnfhVBJUIUMqryE5SPZx6NpKYaAJvNnMLzFf1QmWKcba+mepwJhDZNq3CcNwvT7nlSuCocyBkBfZ/iBhyUdMT6eFOMQSjI1Xceu1z6x5uNAFSP9Xk64Qxf
 x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(38070700005)(186003)(83380400001)(86362001)(38100700002)(66556008)(66446008)(99936003)(66476007)(122000001)(66946007)(76116006)(8676002)(64756008)(6916009)(55016003)(2906002)(52536014)(44832011)(5660300002)(8936002)(33656002)(2940100002)(71200400001)(498600001)(6506007)(7696005)(53546011)(9686003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(5660300002)(122000001)(38100700002)(44832011)(52536014)(6916009)(8936002)(99936003)(66556008)(6506007)(9686003)(55016003)(7696005)(83380400001)(86362001)(186003)(33656002)(8676002)(64756008)(66946007)(498600001)(2906002)(76116006)(38070700005)(71200400001)(66476007)(66446008);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0: 
- reotxou/qHn3Iq54aXsomHB0w6g2D/cWhlIqCsJt5GX3EW+3sdd/0n4R5Z7wc3Clx9BdX1aVnTJtjfkSJiwPCR+aj23bu98ASgia3UJ1+jCrC5WK4O65xq13f2NGQewyPiSc2wJaHQwLOS6qYpTF8fcDKJaHBXVaclQqPehg2fExKSWWkEQHNbLfH/laSM9X36gbXsUeIOp8SGOPqO108RE7bi/zY2PMza0lauvW0WJ/p/BMSk9A0SMH6QJZoK0RN2bNrPcBGTOwIXe18y2VbTmCZEcBu3CouiP1ERO8LA+BXfIT5rbWJOmTObxMaNMsQtZ6nJrOqcU4cdlgVUxlD+WS6eeeg/83RCmcR5Kz28v5I1TuZFoZUINX09l5O6UvM1yCzjKR3tqR83u25AhNR15xkgJbgywM/grlp3dcEmjMGIenYiOaZ3xUX5aXUHu2uk8yFh23qfnLpdH8sYMez9dXA6IAnOHiq/fQac9+LWM=
+ VkYKTes781q2qkNU+/Z/9PDEtVIQbCig61kTwysO5g6/w0Ooe/UtJoHZC8LDD202y4mOLh3sw/t36OhZ4HWgCW5LbfTa0TwCZIsrxf8xzQKO8KZCAN2vDwPfm8m1y98/Hk8zYEF1SaS5pb/1auerIVKnS72bxDsi9so4mSHikuI8nthgqNhi07JzKOj0unU/Q3QsQkBzO+oUjLdBXc2/1DKBx1+X5ZeT/L550oE7z5ccFLgui07SiAxfHkJj8/WyvJXSw9pw12XE0XFZujcdd7BZR5p6UB6uCXPUMCmRDI1eAzdHuWEA+ng3uEADO5e/yr6MpJ5myqPAPcBVt71TaKRADumT+IMh7Xl8yIdWZTe5pKfUxxGxz/GEQR5QrXKSdDAI/wJF+7Jmw/RmMs3ItMvNZYXicxrbVWNgn7wr86b4N79h7+Jb5qMxca6fOelEhz/IWuF2g4a1Y5nSwVO0vRXfe+C4a2YbH9CffecyqDA=
 Content-Type: multipart/signed;
 	protocol="application/x-pkcs7-signature";
 	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0174_01D8B3CD.A4202FB0"
+	boundary="----=_NextPart_000_0159_01D8B3C9.60E15C50"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -75,14 +71,14 @@ MIME-Version: 1.0
 X-OriginatorOrg: kratosdefense.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbef0a0e-d2e8-44f1-d97a-08da82171266
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2022 19:14:43.0779
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99ab2358-358e-4a4d-aa13-08da8212cf1c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2022 18:44:12.1506
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1396
-X-Proofpoint-GUID: fE0caUbFX6G-AjaoeueLbNwF3eZVigMA
-X-Proofpoint-ORIG-GUID: fE0caUbFX6G-AjaoeueLbNwF3eZVigMA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB0970
+X-Proofpoint-GUID: fXxY4oITlpAOwFC6K6cE0aW5SvpfDKYx
+X-Proofpoint-ORIG-GUID: fXxY4oITlpAOwFC6K6cE0aW5SvpfDKYx
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-19_10,2022-08-18_01,2022-06-22_01
@@ -90,30 +86,17 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorit
  suspectscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
  phishscore=0 impostorscore=0 bulkscore=0 clxscore=1015 mlxscore=0
  spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208190072
+ engine=8.12.0-2207270000 definitions=main-2208190069
 
-------=_NextPart_000_0174_01D8B3CD.A4202FB0
+------=_NextPart_000_0159_01D8B3C9.60E15C50
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0175_01D8B3CD.A4202FB0"
+	boundary="----=_NextPart_001_015A_01D8B3C9.60E15C50"
 
 
-------=_NextPart_001_0175_01D8B3CD.A4202FB0
+------=_NextPart_001_015A_01D8B3C9.60E15C50
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-
-Turns out that it may have been a gdb version issue... I am using CentOS7
-which natively has gdb7, and when I upgraded to gdb8, it appears to work
-okay now. Sorry for the false alarm.
-
- 
-
-From: Russell Johnson 
-Sent: Friday, August 19, 2022 12:44 PM
-To: xenomai@lists.linux.dev
-Subject: Weird GDB behavior with parent/child EVL threads
-
- 
 
 I put together a very simple standalone test app to re-create an issue I am
 seeing in my own app. The scenario is simple: I spawn a parent evl thread in
@@ -401,7 +384,7 @@ int main(int argc, char *argv[])
 }
 
 
-------=_NextPart_001_0175_01D8B3CD.A4202FB0
+------=_NextPart_001_015A_01D8B3C9.60E15C50
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -410,8 +393,8 @@ Content-Transfer-Encoding: quoted-printable
 xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
 xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
 xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta =
-http-equiv=3DContent-Type content=3D"text/html; =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
+HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
 charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
 (filtered medium)"><style><!--
 /* Font Definitions */
@@ -426,13 +409,13 @@ p.MsoNormal, li.MsoNormal, div.MsoNormal
 	{margin:0in;
 	font-size:11.0pt;
 	font-family:"Calibri",sans-serif;}
-span.EmailStyle19
-	{mso-style-type:personal-reply;
+span.EmailStyle17
+	{mso-style-type:personal-compose;
 	font-family:"Calibri",sans-serif;
 	color:windowtext;}
 .MsoChpDefault
 	{mso-style-type:export-only;
-	font-size:10.0pt;}
+	font-family:"Calibri",sans-serif;}
 @page WordSection1
 	{size:8.5in 11.0in;
 	margin:1.0in 1.0in 1.0in 1.0in;}
@@ -445,41 +428,29 @@ div.WordSection1
 <o:idmap v:ext=3D"edit" data=3D"1" />
 </o:shapelayout></xml><![endif]--></head><body lang=3DEN-US =
 link=3D"#0563C1" vlink=3D"#954F72" style=3D'word-wrap:break-word'><div =
-class=3DWordSection1><p class=3DMsoNormal><span =
-style=3D'font-size:10.0pt;font-family:"Arial",sans-serif;color:black'>Tur=
-ns out that it may have been a gdb version issue... I am using CentOS7 =
-which natively has gdb7, and when I upgraded to gdb8, it appears to work =
-okay now&#8230; Sorry for the false alarm.<o:p></o:p></span></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><div><div =
-style=3D'border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in =
-0in 0in'><p class=3DMsoNormal><b>From:</b> Russell Johnson =
-<br><b>Sent:</b> Friday, August 19, 2022 12:44 PM<br><b>To:</b> =
-xenomai@lists.linux.dev<br><b>Subject:</b> Weird GDB behavior with =
-parent/child EVL threads<o:p></o:p></p></div></div><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>I put =
-together a very simple standalone test app to re-create an issue I am =
-seeing in my own app. The scenario is simple: I spawn a parent evl =
-thread in main, and the parent evl threads spawns two evl child threads =
-(each child prints their name every second so you know they are alive). =
-This runs great outside of gdb &#8211; you see both children printing =
-their name out every second, and &#8220;evl ps -l&#8221; shows all 3 evl =
-threads as expected. However, when you go to run this in gdb, you only =
-see the parent and the first child in &#8220;evl ps -l&#8221;, and that =
-one child prints out its name only once &#8211; the second child does =
-not get created/tracked and there are no prints to the console showing =
-that they are alive. I have not seen any issues if I create multiple evl =
-threads directly in main; I have only seen this issue when main creates =
-one parent evl thread that then spawns all the child evl threads for the =
-app. Any insight into why I am seeing this behavior? I have pasted in my =
-code to re-create this scenario.<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>// g++ -Wall =
--g -o test test.cpp -I/opt/evl/include -L/opt/evl/lib -levl =
--lpthread<o:p></o:p></p><p class=3DMsoNormal>#include =
-&lt;evl/evl.h&gt;<o:p></o:p></p><p class=3DMsoNormal>#include =
-&lt;evl/thread.h&gt;<o:p></o:p></p><p class=3DMsoNormal>#include =
-&lt;evl/clock.h&gt;<o:p></o:p></p><p class=3DMsoNormal>#include =
-&lt;thread&gt;<o:p></o:p></p><p class=3DMsoNormal>#include =
-&lt;unistd.h&gt;<o:p></o:p></p><p =
+class=3DWordSection1><p class=3DMsoNormal>I put together a very simple =
+standalone test app to re-create an issue I am seeing in my own app. The =
+scenario is simple: I spawn a parent evl thread in main, and the parent =
+evl threads spawns two evl child threads (each child prints their name =
+every second so you know they are alive). This runs great outside of gdb =
+&#8211; you see both children printing their name out every second, and =
+&#8220;evl ps -l&#8221; shows all 3 evl threads as expected. However, =
+when you go to run this in gdb, you only see the parent and the first =
+child in &#8220;evl ps -l&#8221;, and that one child prints out its name =
+only once &#8211; the second child does not get created/tracked and =
+there are no prints to the console showing that they are alive. I have =
+not seen any issues if I create multiple evl threads directly in main; I =
+have only seen this issue when main creates one parent evl thread that =
+then spawns all the child evl threads for the app. Any insight into why =
+I am seeing this behavior? I have pasted in my code to re-create this =
+scenario.<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
+class=3DMsoNormal>// g++ -Wall -g -o test test.cpp -I/opt/evl/include =
+-L/opt/evl/lib -levl -lpthread<o:p></o:p></p><p =
+class=3DMsoNormal>#include &lt;evl/evl.h&gt;<o:p></o:p></p><p =
+class=3DMsoNormal>#include &lt;evl/thread.h&gt;<o:p></o:p></p><p =
+class=3DMsoNormal>#include &lt;evl/clock.h&gt;<o:p></o:p></p><p =
+class=3DMsoNormal>#include &lt;thread&gt;<o:p></o:p></p><p =
+class=3DMsoNormal>#include &lt;unistd.h&gt;<o:p></o:p></p><p =
 class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>void* =
 Child1(void*)<o:p></o:p></p><p class=3DMsoNormal>{<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; pthread_setname_np(pthread_self(), =
@@ -537,8 +508,8 @@ class=3DMsoNormal>&nbsp;&nbsp;&nbsp; pthread_setname_np(pthread_self(), =
 class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; int fd =3D =
 evl_attach_thread(EVL_CLONE_OBSERVABLE | EVL_CLONE_NONBLOCK, =
-&quot;Parent&quot;);<o:p></o:p></p><p =
-class=3DMsoNormal>&nbsp;&nbsp;&nbsp;if (fd &lt; 0)<o:p></o:p></p><p =
+&quot;Parent&quot;);<o:p></o:p></p><p class=3DMsoNormal> =
+&nbsp;&nbsp;&nbsp;if (fd &lt; 0)<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; {<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
 evl_printf(&quot;Failed to attach to thread\n&quot;);<o:p></o:p></p><p =
@@ -573,7 +544,7 @@ class=3DMsoNormal>&nbsp;&nbsp;&nbsp; pthread_create(&amp;tid, =
 &amp;tattr, Child1, NULL);<o:p></o:p></p><p =
 class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; // Spawn child 2<o:p></o:p></p><p =
-class=3DMsoNormal>&nbsp;&nbsp;&nbsp;pthread_attr_t =
+class=3DMsoNormal> &nbsp;&nbsp;&nbsp;pthread_attr_t =
 tattr2;<o:p></o:p></p><p class=3DMsoNormal>&nbsp;&nbsp;&nbsp; =
 sched_param param2;<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; pthread_t tid2;<o:p></o:p></p><p =
@@ -614,8 +585,8 @@ argc, char *argv[])<o:p></o:p></p><p =
 class=3DMsoNormal>{<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; // Init EVL<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; int ret =3D =
-evl_init();<o:p></o:p></p><p class=3DMsoNormal>&nbsp;&nbsp;&nbsp;if (ret =
-!=3D 0)<o:p></o:p></p><p class=3DMsoNormal>&nbsp;&nbsp;&nbsp; =
+evl_init();<o:p></o:p></p><p class=3DMsoNormal> &nbsp;&nbsp;&nbsp;if =
+(ret !=3D 0)<o:p></o:p></p><p class=3DMsoNormal>&nbsp;&nbsp;&nbsp; =
 {<o:p></o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
 printf(&quot;EVL Init failed with error: %d\n&quot;, =
@@ -659,9 +630,9 @@ sleep(1);<o:p></o:p></p><p class=3DMsoNormal>&nbsp;&nbsp;&nbsp; =
 }<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
 class=3DMsoNormal>&nbsp;&nbsp;&nbsp; return 0;<o:p></o:p></p><p =
 class=3DMsoNormal>}<o:p></o:p></p></div></body></html>
-------=_NextPart_001_0175_01D8B3CD.A4202FB0--
+------=_NextPart_001_015A_01D8B3C9.60E15C50--
 
-------=_NextPart_000_0174_01D8B3CD.A4202FB0
+------=_NextPart_000_0159_01D8B3C9.60E15C50
 Content-Type: application/pkcs7-signature;
 	name="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -771,8 +742,8 @@ MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
 EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
 IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
 JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjIwODE5MTkxNDQxWjAvBgkqhkiG9w0BCQQxIgQgiui4hrdzneZx/k8Jp4xx6sWt
-3mmtNtBLbaczD9RWHBQwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+9w0BCQUxDxcNMjIwODE5MTg0NDEwWjAvBgkqhkiG9w0BCQQxIgQg3JbCTushTgT4AQ78ZyV7LrDG
+L9eM66encLUBVxhmt+EwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
 BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
 AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
 AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
@@ -781,11 +752,11 @@ ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
 dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
 A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
 aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQBR
-hwknoocCMq9VGmp0o1bDIOky2jZAeGrNbNGztRfhBDgOR+/w2O+icDXL8pleN+JOkrvWC9o3j9zd
-t2ZWjwTSH2Q1kuuBL23KWyT66O4oJmtIYmihq8dhV7uIwOTI4AaHkQH1+ZEBWUT9tu/oEvaExXqq
-pniLsvt0IXvkIn/xJ/mXaNtLrBNVBJF1ayG6G2IQXZmN4CJEfT1IJnhrPIA6AZFEz3idvbkftzxu
-Inld5of+6lU6wR0OVevoChtKjdXRESRQ+tGeiyVZqM+TP4DaMOzpk9eR93Zgyb1HSIUDGAD7ie/I
-MElrkxo0IueA4xg/Kw8wVopLihz1dw2RjZtDAAAAAAAA
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQA0
+w4r2PBdqUgzDruzK4g3iFffy6e44nzV/6L65jXa2lsRcTxn76/9v9o1RdlRqe1NHRSjlAlkqNzoI
+Dfi50IdrIomDlvwO4YCEFDVUUGwE2VpMPgxCJElZdgCfrXk3ATZlPxOUs4R2TAW4yt3iDgO6av2w
+vLqd2qc4dzab6mnX6X39LLVGEZiV+WiH+kk6B+TGBTpbbvWGnGtNCJ0dBKaB7Cmd1rxxY++J/7lU
+wUPYhkiYvsOWgAgaSF42NzGb3OAM9zLJD2WgkkRdy2bP+qHURGRvEkexeC4NIZYH5eQNDpIZp0kh
+jrb3pHoWw56h2q3OpAisv2hUB65/7Xh7KuAIAAAAAAAA
 
-------=_NextPart_000_0174_01D8B3CD.A4202FB0--
+------=_NextPart_000_0159_01D8B3C9.60E15C50--
