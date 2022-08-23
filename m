@@ -1,166 +1,301 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2125.outbound.protection.outlook.com [40.107.22.125])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5FC7E0
-	for <xenomai@lists.linux.dev>; Tue, 23 Aug 2022 00:16:02 +0000 (UTC)
-Received: from relay12.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::232])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 54730CAAB6
-	for <xenomai@lists.linux.dev>; Tue, 23 Aug 2022 00:11:24 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id 28A63200003
-	for <xenomai@lists.linux.dev>; Tue, 23 Aug 2022 00:11:16 +0000 (UTC)
-X-Envelope-To: xenomai@xenomai.org
-Received: from KOR01-SL2-obe.outbound.protection.outlook.com (mail-sl2kor01on2055.outbound.protection.outlook.com [40.107.129.55])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id DDE12940807
-	for <xenomai@xenomai.org>; Tue, 23 Aug 2022 00:11:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30336A3B
+	for <xenomai@lists.linux.dev>; Tue, 23 Aug 2022 06:32:32 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nFvGUZbSssk+3iBsH5hW+S7Xvzmi6J97w2yvvRRT2te1mRVNF8+FYTqKkqDdz1gfY3BNwGLHAy6oG8j0hWkJqfb1Y7kBhc2vjvYemB1L/vLe1+CuGNBF3yGZgTLncDgfK6bvnAEHmALbgDijjsN6Utp67ZNdg9wSt/UVZfHrZG9h9VhyktcAexaqe23q9MtwDA08rNHKhaRYuZntlnseA+viVAKUP8DHo4N1CCJAgLgsq7L1UqPdVnSwtmC2+cjjYJnlyJwJhRCFL5UH2H18MH43vGOMzAH1ljEytpAIrVZf+VhIzXi1lP7aY8EBw8Aod2hntz/MgsGguGoHao5H+A==
+ b=JoPXMCfKoBS4ZMYwNBivP51GA39iMlpav8wnBypiM/b/POJC8G4lOhnTBaSPKDpbtxG/XYI208S2h3ZZZ7tNK+Fmlaa4K43fb2eHrd0HNnb5nlt3WywCgL5pl/qaCDyaWJWojlLMMysQCAXsprjDtNMXgNZwI40OCV9ZdoDTT+/IKUO1vukN7Ul08UudUSByqg+eUrwT/QV9XRP9EYppfom/vSmbEe9Ao76j07NXCxsoNLEPBsZf0DORepvikT7z1XkSVykpGoWnNj5fGjjF863CZS0DyGelquzt4d7iGVTnr8GfOSRKkJl+RymYVsWcSJ1Bzjo6EUkZ77JVEw/idg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xIekKe+UdJmXVKCAUcsE/UN9Hs/VGvX61cyDhCefjjA=;
- b=a35a0sO22hwSPuJz/SMOC8mfGmuMGsy0U5XcdoDNFph/AWv8I0FisACdToDLbgrABTFP233+IAFzYktjvslL9fIgckaiaSR/CtJJLozuaIBov0HkDL9J3H2jZi8G2LFB0N31Tgg/e6hdG+1b0Sob6QFtlMPfr9B0bIrsW75AVverXfe3Zn/sEXBdpuD921g3yQto2OJ0+oi8QhJ6FGKaKCa9PvRAj1U30yw4mwwy1ux8FOEvAzuBgoH0KPWyX/qrb8oQEAlQWNx4q9tf7cI/BVsP69feDEPM6qgHbuWCLPDDjdddivCTIR+B3YXY8J98iAGGd1D54pgZutwdu/YOfw==
+ bh=fvgB0tPcKaIDs7Sea9N+khL2w0CFQiRBwDpKUfCsynU=;
+ b=MbKfRQhlGnEyL8Y0/Xn1Q6+LAGqiARW7AmKDqoaNG68kvKnlOMskRrYBPMG48CyxUZ1cAQOymnRqN0AjJTZqatIge8Z94r4nLZQcOi5OCbbUcYcMYsfoXgeRLmYcPeaCIimc5Am+ilairVYzw30qn9+R+FmWyPKUgr4rWuXUxGy9PQiU6l+ymZR/QUh4KX+YFHlMQhd7pS8ZwRyA+dIO+2B/s3fApqbStQC6UVNfoDQ+ztDOcNKK9umO/9Tp0749JW3e8ykn7bW2l/REfXuDcmAfmLzE0INZ9lMUQ4epE8lTHjOPlxu1j2NuOrWt3gho9cP7VKskOZAclsKHVd97kA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=doosan.com; dmarc=pass action=none header.from=doosan.com;
- dkim=pass header.d=doosan.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Doosan.onmicrosoft.com; s=selector1-Doosan-onmicrosoft-com;
+ smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
+ dkim=pass header.d=sigmatek.at; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xIekKe+UdJmXVKCAUcsE/UN9Hs/VGvX61cyDhCefjjA=;
- b=JNjeyOBlKWVkjRS9GGLCnx1cIzW7i6LVSbaliWfQRvfu1/Zrdag6jyHd7W4acpQnZ+oOUwOYzZOAQTnFe9OgR4zUygP8RLZzmwh/fUt782XiUv+rPuMEcBDqokXoQd6PY4Si5OLAJMrtqMVRI/IXNPSrSM6tbK816W7n2bQyYoc=
-Received: from SE2P216MB1394.KORP216.PROD.OUTLOOK.COM (2603:1096:101:2c::13)
- by SL2P216MB1529.KORP216.PROD.OUTLOOK.COM (2603:1096:101:1f::9) with
+ bh=fvgB0tPcKaIDs7Sea9N+khL2w0CFQiRBwDpKUfCsynU=;
+ b=DLekFiOat338k9mcsIQuaGC4ZDzSY5CJOck/kxAd9QYGIAhBdacVAmuRn3PI9/h9cszDNS1zIxHL66GoCnssshJmW0ZpjDXzZBgRnwJO0wb79KQcErWmm56TH7+yxccOjLBHF8mBshv6DY3Pg9jlfRD/k2rTuizVoeMZhjlNdes=
+Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
+ by AM0PR08MB4482.eurprd08.prod.outlook.com (2603:10a6:208:140::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19; Tue, 23 Aug
- 2022 00:11:09 +0000
-Received: from SE2P216MB1394.KORP216.PROD.OUTLOOK.COM
- ([fe80::2945:32b7:6b5e:7f0d]) by SE2P216MB1394.KORP216.PROD.OUTLOOK.COM
- ([fe80::2945:32b7:6b5e:7f0d%4]) with mapi id 15.20.5546.024; Tue, 23 Aug 2022
- 00:11:09 +0000
-From: =?utf-8?B?6rmA7IS47ZiEKFNlaHl1biBLaW0pIOyXsOq1rOybkCDrkZDsgrDroZzrs7Q=?=
- =?utf-8?B?7Yux7Iqk?= <sehyun2.kim@doosan.com>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-CC: =?utf-8?B?6rmA64+Z7KO8KERvbmdqb28gS2ltKSDssYXsnoTsl7Dqtazsm5Ag65GQ7IKw?=
- =?utf-8?B?66Gc67O07Yux7Iqk?= <dongjoo5.kim@doosan.com>
-Subject: What causes the latency of the rt_task_yield() API?
-Thread-Topic: What causes the latency of the rt_task_yield() API?
-Thread-Index: Adi2hA+8NshNMGH/S1C5hT38XRCzfA==
-Date: Tue, 23 Aug 2022 00:11:08 +0000
+ 2022 06:32:29 +0000
+Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
+ ([fe80::1a8:818d:b100:95a4]) by VE1PR08MB4909.eurprd08.prod.outlook.com
+ ([fe80::1a8:818d:b100:95a4%7]) with mapi id 15.20.5546.024; Tue, 23 Aug 2022
+ 06:32:28 +0000
+From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: RE: [PATCH 0/3] prove of concept
+Thread-Topic: [PATCH 0/3] prove of concept
+Thread-Index: AQHYkgnbkB/UFS5bDU2Bm0KbKVBupq10wDoAgEYICuA=
+Date: Tue, 23 Aug 2022 06:32:28 +0000
 Message-ID:
- <SE2P216MB1394874A00E10A497FE73DE0C2709@SE2P216MB1394.KORP216.PROD.OUTLOOK.COM>
-Accept-Language: ko-KR, en-US
-Content-Language: ko-KR
+ <VE1PR08MB490917EE71941F086968A9F192709@VE1PR08MB4909.eurprd08.prod.outlook.com>
+References: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
+ <875yk7mqdn.fsf@xenomai.org>
+In-Reply-To: <875yk7mqdn.fsf@xenomai.org>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
 X-MS-Has-Attach:
 X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=sigmatek.at;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ccae40b0-ef16-4ed7-b004-08da849bfada
-x-ms-traffictypediagnostic: SL2P216MB1529:EE_
+x-ms-office365-filtering-correlation-id: cd97fae3-be7d-488d-b887-08da84d1403a
+x-ms-traffictypediagnostic: AM0PR08MB4482:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- b74mnbgbukTNFGGAh4BoymwEg7iwfsGdbstODS2VERYQWlElFNjbpSRHkX4oaOMSTkGxa+4C3o1D8ldNhCSl8vgd7jCWNc0zegHi60acShIF3AvWG9Qt1jvDX5Ify4sYcmeYcsjbHObPuBzeoMd0V+8N6eN4wx/wgznSx9/J6WE9zcQ0zKgNx0iZW+gFEALwFDjtpABcUBJlBZuNK13LDZho7ag2nYi9Jol0/sHnU2LeLrTGkmJMEz2vOiX42odZ7nb3wljT0XMtwGH/XCs2auDIWuwCa9BzipxpUuFAXSeZ8/IjDsJC+twLZj54VzY0MuFELKS46I+fS6Jb323H+yLgcnf77YjAnIiz3FFS1aLPJ2xrXvzGOeS1XzunBjv/9mU4oBAeiX1wOcnnxJ71UYnNUW8ti56ZQlj7fFaXfQqPci3UnI1yxMcDSJmVlaGGMKsdrhVTT8lwqs3di6LrbQgdaWKmZPco5MvBJYARYSPqmZZtAeDD8Ip44FC1IhF2dhnTWGwHtGFcfCsMHaXRQbEDM5TkRJORwwzOWsFWV+9Z/9K+iufweepXMi2DMXx+yKTfUr7n/fiQKW8yqXPD0+oWveVJrBx5UP1n6gVXHf5d2ZiuzyIhJOUIfku9jKgvY+0gf37wZdHqVVtp1oMluFXuF9PlKvqCe0obJFzRfho5yHoJnSpsVdMndhrFhy/04hQc1FgVCoyM0U+ZfN5AHkHZiLM7pshid374ovjDXeKWb0X4zm2h1v69/PVrAStqfDQHkoXZaLTe5mT53r+FNfDhHeWLpT8LeIe6aMiCqB4=
+ UYml0kDYKCzMYi1ojZjHr1/MPmLTMblnFKACSK6hDTfXIzLsrmT7d+wdt1KuFMsGL2zJ9s2SNh5Cp3+YRI2OfmQc1/MBsImUAJoTWuiPqOyh3PngqKsFMK0QZgOeUwcd3CMVowqh0+K3OPK6ADDx/+QQW8SVPz5+s3YzHE3Bng8piWXnKwbtqtbOFL75HHVvNVMCub6nmv3RhsssyIEljJd1+og/gS8si8q8uhBPIfQg2GEHz7Iv4NCqOunIj6B7VHg8LhgfB3rBX6wrtwarhhtn8m3BgECG2tfBv0J9Ag3Z/WUwZrw8xZAoOFso8uK7jxldSpav6kTCm0dF4OZtN/WreuwYLcwWaWWZi9M+Mn6cqKqAtELjFl5C56MzWQqU0FR7foUOO5aw5Mhj13lhW2gKj2o1sIZidqZF3Kln7kjy+sOMDCb0ve6m1Em/Zzz26kSIL4t4G3A4MI36I7wRY5E1VyJBvIdpC2CpjmR/gjtLfNS33Kx1KEzGhNR9M2+2SHam4Zvzh+ZF/UHtBgE/JSlZt4U2l1gnep/CaF8Rxvc82AcLAVYV7DFQ6pkkqs0pp4n/E8K+I+VrR2uTdybZOWUwdmTuMPY4u7jcVSOW0/+Y9s6uxr9Yfd/1R7n7U+TllmcYGqjRXG3ZJrHtdhH5kSQfOecskS4I7IkPRtDGu5RZyPVkzj43139ZTJPoLLws4UFDyg0S9WxQC3TAWqp87WoxQHz89Z1YmWrntd1IABX0dRVP063JHjRkCn1dEuAREwEUpQofXGAyEaT0IY8mNw==
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SE2P216MB1394.KORP216.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(346002)(366004)(136003)(38070700005)(15974865002)(86362001)(122000001)(38100700002)(316002)(6916009)(52536014)(4326008)(8936002)(2906002)(6506007)(5660300002)(66446008)(66946007)(76116006)(66476007)(8676002)(66556008)(64756008)(83380400001)(186003)(478600001)(55016003)(41300700001)(71200400001)(26005)(7696005)(9686003)(33656002)(107886003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(366004)(346002)(39850400004)(396003)(83380400001)(38070700005)(66446008)(38100700002)(122000001)(76116006)(6916009)(4326008)(66946007)(66476007)(66556008)(8676002)(64756008)(316002)(55016003)(44832011)(2906002)(8936002)(5660300002)(26005)(7696005)(6506007)(53546011)(9686003)(33656002)(186003)(71200400001)(478600001)(41300700001)(86362001)(52536014);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?eUh2cE1UWGdTTDhwYUJDeE5BRGg0S2tjcEpDZ0RDREZPdUlTOGFHUi9CeFNv?=
- =?utf-8?B?UjhtcVJydlpOSXpmbXZTSVRvdjZmbHV4TExneTJLY1NiZGdxbDNxdFZsYjl6?=
- =?utf-8?B?VkF6UTRTZVJFYkROSDgxdWZrZ1JML3k4MkFCcmZtMS9qY21NSWNlelQ2bVRC?=
- =?utf-8?B?K1FHZ2ZsVmtFU0dLZ1JiM2QxNkhzWjVpWDJjZEh3ekhLdlZ1ZExnVDhUTG85?=
- =?utf-8?B?SklEclZYVEU1RWF4TlI5bTBRNUxoczZMQW1oZk55Wkt1YlF2ekFJWmhQbWpo?=
- =?utf-8?B?WTk2V1AvaXhPa2tLME9KM1N0ZFMzNElHRVFLVVpHQ25nNmpISyt3UmNrbDJp?=
- =?utf-8?B?dnJadGR3MW45M2VkbWlCV3ZNNGNkVFVXK3A3S3ZScXNXUHN3NWZTUXZ3OURO?=
- =?utf-8?B?YTFqTkM1ekFmTDJzVjVsMWNsK2YwMTdhUlMrdUd2OTRSL3pBT2ZMTGJNdy9v?=
- =?utf-8?B?T0c3VFFaM0ZUSysxQWNjeEtLY0c2SnV0Zkk0TzMvZGZJUzJ1OTN2QzFKdTMv?=
- =?utf-8?B?YjVEZmxobzBwRStrTzdFc0hwalE3L29mWGU4cHUyK3d2dmJrMFpRaGo2ZDg2?=
- =?utf-8?B?MjBRdWFXV1pYWkZZK21tNUo5S3k1MENMWmFiMWNIdUVsaWhtSFIwQXlXVUZN?=
- =?utf-8?B?dHVHcmtDYVNQUHllRUR6SlBmMTJwWmhpb3cvdjNUbW9QZXF0RHhLQVBVWjM1?=
- =?utf-8?B?OURHZC9rTmtwdjVONTVVSlFxZXdqN3pOa1dJSCtnUlJ3cTJUT1RQcG54UnVZ?=
- =?utf-8?B?aURMVFd3eEdEYTR6a2I4L2ZJcHZKbkpLVW1kbjdqNjNBRHhoOHdrbDkxWCtr?=
- =?utf-8?B?WDFSazBwNnlXYXBSR0ZhQXo0WTd2RjZweFZNUE1YWFc4QTNUNG15MEdCUTFY?=
- =?utf-8?B?Z1REdUN5SlFqMW5DcTFRa0NnRkFlS1ZhL2RNeUR3V2tmQm94MW1rYVJvOTNK?=
- =?utf-8?B?Y2VBc0RmNlpqSVcxY2NsUHFnRTF1eFhucUFqK0dFQVFjQWcyM2cremIwRmlh?=
- =?utf-8?B?VlA5d0IwRmY1eVQrUFVURng0QkQzaHAyR3ZpSExYeEVHQUNWeXBGV1VlM0cx?=
- =?utf-8?B?WFkrSndEbWtpdE1DekozNzR2R29VSUdybnRYSzhVRGxuYkZYa05RTEZQaWxD?=
- =?utf-8?B?S1U0b0dLT1FkSUVPODNiVytkNEI2c3gyb0NyZHphUEhLaDQrK08vSjNvNE03?=
- =?utf-8?B?ZEgxT3lnL1JFYmpZYWg4dHN3cnozZ0MrQm9NNnJlRmowNTVEcnlmYVhpYjdC?=
- =?utf-8?B?NzZOa2tKYlFHSTNFUlJZNFhPN2NvdURjbUxHY1dZVC83aURjYnJpalo5WE4r?=
- =?utf-8?B?ODZGRmljUGJGTXVGMS9jemhwWTczUE5tc3lSRi91Y3d0OGpuZ01IcGxKZ0k1?=
- =?utf-8?B?WkcrdGNUTkRSYVQ2TWNacW9jRlRLUGlEQkhHZGVSNkI1MWdxcVNpL09FZHFF?=
- =?utf-8?B?WGxWQXJEUmxjYWhFR1RjZkhWTjByYlYrNCtvclVOMVNMVVhNYzZwWEFFYU5i?=
- =?utf-8?B?OVc5aXVRcVlxT2JoVHhka21hMUVsVnhzRmpUTVdyTXB6dyszZVBBNnExWnlD?=
- =?utf-8?B?aTdIZDdyRzdoUmszSUJMdG93d0p3VDRYSm40VUc1aXc1dXR4QVZ6ZUFWZ3Ev?=
- =?utf-8?B?K1hFQ00zWkY5MkF2Y1dIUGtwNFlIenpkREpkb0RQUzhMbVRjc09kWWhva1lr?=
- =?utf-8?B?ZERwUFc1Q2k2ZldZMDkzSUt1UXV5a3FiRWZyYlNSTjUyMmVuU05SZnZjN0Zn?=
- =?utf-8?B?SGhmTFFTSFhTUlBncEU1aDZLeFdkMTlQcmNDWndhaTAvMmhqd1ZGV3JrYk9W?=
- =?utf-8?B?Y3MrN0RpUXh0SnkzSTlTSUdyLzRicHNaMXFpU3A1eFI0ajRZdHZLR0F6WTBL?=
- =?utf-8?B?d3JYNEJHbExhWVEvRDhHQ3d6N0d5NmFqTGNVVzNwdVlma0tjWHhTbVN0ajh3?=
- =?utf-8?B?dmdJUGdYcVl3OHQ3Z2NQLzlLTU9vVVN6WjRoNk5aTG5STFo2U0tuVlpaWW1w?=
- =?utf-8?B?YTdhWHhJYUdaa1ZnRy9JVER1NHhPSE1YZFVjTXBtZHFuUEgxTWl3WGVTc3BU?=
- =?utf-8?B?bHpGTzYvVFc5dzQrWEF3czVjeUF4WVh3dXRXUTVHQUNsWU9TRmRremI4S2Vs?=
- =?utf-8?Q?MXsNm311kWtq8XIhtPVns7NDK?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ =?us-ascii?Q?uNXNDsALKzdtfHAzJHAwat/pjAf4EKvAnEc71Ax1h7T84dON8BuI3E4M1xb+?=
+ =?us-ascii?Q?zHm6uJ7A8IeqbOPsUkNlu21skyMQfqLPJetgOOJ8clYOXeosUFQJadyinzk8?=
+ =?us-ascii?Q?d1mfurbOeHEO+U9+Z/jST/z4CBZ8gvyknJegxU7Cn6iVoh9wJDHah2yQ4BzY?=
+ =?us-ascii?Q?RiOTBkEW5srLgNhAw1820diOs9YJp9jENgcCy9+okGfPsgOfkjXiZ5jltB8Y?=
+ =?us-ascii?Q?IdjjZ9d9KJ2XiwrEeSI3nNe1QdGuSalpD741Zu/Cx/aBtDGqq4OD637e0mmj?=
+ =?us-ascii?Q?v/VbTKz+zqKClA3loi29AtdF7IkKeI/P8WZZnlbBK5VIDCuICwwXHFbOy4vG?=
+ =?us-ascii?Q?H7fOmmZQwhhoUbMGVa0lAjnpi+JW1TC9DuQ/4qY1s8+16nc6JJDQDrHPPXx3?=
+ =?us-ascii?Q?tUoUJZCyuzOPRI/itA2ysnfTaPmtNdK/T/3zlnWgDGNOVAMLgFKen5Mjablj?=
+ =?us-ascii?Q?nUzSOYQ7+krI10aim33a6Ra638lf900xlve110O7/ScfXrwsR7JflqN7QreO?=
+ =?us-ascii?Q?2Ia9slaGGrh+U5E0n11BMXrRQvuxyQw4gvxtJ7k8VROSh7MKF7uN6zUcUz2F?=
+ =?us-ascii?Q?7PGNOKmXAE2+RdGP7DHNAZqt5+wGMuz89qxJ1qISobdNoAHpP4WZ3AhvSSRh?=
+ =?us-ascii?Q?mhewcHHagLrbDSKlwCm24CnjlOoyrwLJGw1oDEeuYv2zEM1iaaUvvhy9CXNw?=
+ =?us-ascii?Q?jAVfnpYTWGiTLdjo8pdMcI/q4IBZ9oFiTxNPKOdODpsJQUkLJknzVU9ZCYgQ?=
+ =?us-ascii?Q?AoGvH/Bl23jPkjzEyW7dAndl4garKkT5eJ3FR8z4EIYUQf+ZCf29Xnw/TyCL?=
+ =?us-ascii?Q?Oq+vkrEe9ThVZxY4vgW7G5EeR5f92A8wSJ0oVDcY+F6sXtm+aaWELW9ZvNFW?=
+ =?us-ascii?Q?lN8BnzBxCa2fQj5YcTdYldU83omqHj44QD/Zh5rd/6LErTHjOj/PGIGviAJF?=
+ =?us-ascii?Q?fL6teUpkCxYoGxttKxR8zhgHrqF9S6acHi5eN7KHYZxqtLXsR7OjLvvZX2rY?=
+ =?us-ascii?Q?GaxsGvENzFKazuGS614PjpUldJAE6wdHqcM+5sv5gQjVTj+GTzbRiRV6PC2a?=
+ =?us-ascii?Q?cCZIQyVvwfbsQwhtc6xuSdUCQO46E5StfqjleyMmVwvwUS3PpY3zrWNH8P1G?=
+ =?us-ascii?Q?eeQ3TBs+bbyZPd8S4jnUdvR9CwT0+lwUPx/BiY7rGO0igV2XWo+ftM0LoYSt?=
+ =?us-ascii?Q?eOAqY68M95N+ewualDSvHMwUdk9Z+8PbaofAvemRL/3c3HgC8B4+u15vcjnB?=
+ =?us-ascii?Q?Vwto6utAfGbKyxOeXjLlBaCeZBWnksbc/p7bb/u1x080dC8+Op/SZo+vAgSf?=
+ =?us-ascii?Q?hHajfK+zVR+g3hnkzOrzPe4v43RbfEAc1T3yW9JrNBvqXvYEd90QGF4FXjCS?=
+ =?us-ascii?Q?26dwMWjZek1sNQ+zF9ZK+LH6Euvdq4oyTNOGwuM8Yp8i6stHR1whM2i//ltw?=
+ =?us-ascii?Q?LMWxIHD/wmQ3OrlAUVygY/n7eJ3mI7qf//AfWLMj/9WIIv0WW6hrPcxyRGKt?=
+ =?us-ascii?Q?JxE+zZ73VFbqkYWgVGPMTZ+53JEi1RClDHb/F547s0tWp2s9qpnFYhCS3B2L?=
+ =?us-ascii?Q?S5q4imXduJO2wdeA4GptHAEfNB9rthbZtqMlR04UwCvbMallJz/0rTqWCQ4w?=
+ =?us-ascii?Q?oQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: doosan.com
+X-OriginatorOrg: sigmatek.at
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SE2P216MB1394.KORP216.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ccae40b0-ef16-4ed7-b004-08da849bfada
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2022 00:11:08.9311
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd97fae3-be7d-488d-b887-08da84d1403a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2022 06:32:28.6342
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9d1b3610-9ab0-42d5-93aa-46150d723d87
+X-MS-Exchange-CrossTenant-id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IQePR140UxurHAd5v1l8lRHrvb5iKoR8LmJWJVgjR1f3YIfpE4bKAhmaTXOitUEAOFI2fGUT4KhoX44yInrw5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SL2P216MB1529
-Received-SPF: pass (spool1: domain of doosan.com designates 40.107.129.55 as permitted sender) client-ip=40.107.129.55; envelope-from=sehyun2.kim@doosan.com; helo=KOR01-SL2-obe.outbound.protection.outlook.com;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=Doosan.onmicrosoft.com header.s=selector1-Doosan-onmicrosoft-com header.b=JNjeyOBl;
-	spf=pass (spool.mail.gandi.net: domain of sehyun2.kim@doosan.com designates 40.107.129.55 as permitted sender) smtp.mailfrom=sehyun2.kim@doosan.com;
-	dmarc=none
+X-MS-Exchange-CrossTenant-userprincipalname: S/A4k2LZ1ZFL6LF/6NwZcYb90QsEvdumFQHORLOyucE6dN22gjvT8S2ez+ZWfwjRZzu5GrM3BP3JFmGMirncPxYD6/x6KIP1isndhBudb3k=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB4482
 
-DQpDdXJyZW50bHksIEkgYW0gdXNpbmcgeGVub21haSAyLjYuNSB2ZXJzaW9uIGFuZCBhbSB3b3Jr
-aW5nIG9uIGNoYW5naW5nIGl0IHRvIDMuMC44IHZlcnNpb24uDQoNCldoZW4gdXNpbmcgdmVyc2lv
-biAzLjAuOCwgdGhlcmUgaXMgYSBkZWxheSBvZiBhYm91dCA0bXMgd2hlbiB1c2luZyBydF90YXNr
-X3lpZWxkKCkNCg0KQWZ0ZXIgY3JlYXRpbmcgYW5kIHN0YXJ0aW5nIG11bHRpcGxlIHRhc2tzLCBy
-dF90YXNrX3lpZWxkKCkgaXMgc3RpbGwgcnVubmluZyBvbiBhbGwgdGFza3MuDQoNClRoaXMgaXMg
-YSBwcm9ibGVtIHRoYXQgZGlkIG5vdCBvY2N1ciBpbiB0aGUgMi42LjUgdmVyc2lvbi4NCg0KSXMg
-dGhlcmUgYW55dGhpbmcgSSBuZWVkIHRvIHNldCBpbiB2ZXJzaW9uIDMuMC44Pw0KSWYgbm90LCBp
-cyBpdCBhIGtlcm5lbCB2ZXJzaW9uIGlzc3VlPyAoVGhlIGN1cnJlbnQga2VybmVsIHZlcnNpb24g
-aXMgNC4xLjE4LikNCklmIG5vdCwgaXMgdGhlcmUgYW4gQVBJIHRoYXQgY2FuIHJlcGxhY2UgcnRf
-dGFza195aWVsZCgpID8NCg0KDQotIHByZXZpb3VzIHZlcnNpb24NCg0KWHVidW50dSA6IFh1YnVu
-dHUtMTcuMTAuMQ0KDQpMaW51eCBrZXJuZWwgOiBMaW51eC0zLjE0LjQ0DQoNClhlbm9tYWkgOiBY
-ZW5vbWFpLTIuNi41DQoNClhlbm9tYWkgSXBpcGUgOiBpcGlwZS1jb3JlLTMuMTQuNDQteDg2LTEy
-LnBhdGNoDQoNCg0KDQotIGN1cnJlbnQgdmVyc2lvbg0KDQpYdWJ1bnR1IDogWHVidW50dSAxOC4w
-NCBMVFMNCg0KTGludXgga2VybmVsIDogTGludXgga2VybmVsIDQuMS4xOA0KDQpYZW5vbWFpIDog
-WGVub21haS0zLjAuOA0KDQpYZW5vbWFpIElwaXBlIDogaXBpcGUtY29yZS00LjEuMTgteDg2LTcu
-cGF0Y2gNCg0KDQpMb29rIGZvcndhcmQgdG8gaGVhcmluZyBmcm9tIHlvdS4NCkJlc3QgcmVnYXJk
-cy4NCg0KDQoNCg0KDQoNClNFIEhZVU4gS0lNDQpSZXNlYXJjaGVyLCBSJkQgQ2VudGVyIENvbnRy
-b2wgRnJhbWV3b3JrIFRlYW0NCg0KRW1haWwgOiBzZWh5dW4yLmtpbUBkb29zYW4uY29tDQpXZWIg
-OiB3d3cuZG9vc2Fucm9ib3RpY3MuY29tDQoNCg0KDQoNCg0KDQpUaGlzIGUtbWFpbCBhbmQgYW55
-IGF0dGFjaG1lbnRzIGhlcmVpbiBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgb3IgcHJpdmlsZWdl
-ZCBpbmZvcm1hdGlvbiBhbmQgaXMgZm9yIHRoZSBleGNsdXNpdmUgdXNlIG9mIHRoZSBpbnRlbmRl
-ZCByZWNpcGllbnQocykgbmFtZWQgYWJvdmUuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCBy
-ZWNpcGllbnQocyksIHlvdSBzaG91bGQgbm90IGRpc3NlbWluYXRlLCBkaXN0cmlidXRlLCByZXRh
-aW4sIGNvcHkgb3Igb3RoZXJ3aXNlIHVzZSBhbnkgaW5mb3JtYXRpb24gY29udGFpbmVkIGhlcmVp
-bi4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBub3Rp
-ZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBieSByZXBseWluZyB0byB0aGlzIG1lc3NhZ2UgYW5k
-IGRlbGV0ZSB0aGlzIGUtbWFpbCBhbmQgYXNzb2NpYXRlZCBhdHRhY2htZW50cy4gT3VyIGNvbXBh
-bnkgZG9lcyBub3QgZ3VhcmFudGVlIHRoaXMgZS1tYWlsIGlzIHNlY3VyZSBvciBmcmVlIGZyb20g
-dmlydXNlcy4NCuydtCDrqZTsi5zsp4Ag67CPIOyyqOu2gOyekOujjOuKlCDrspXrpaDsg4Eg67mE
-67CA66GcIOuztO2YuOuQmOyWtOyVvCDtlaAg64K07Jqp7J2EIO2PrO2VqO2VmOqzoCDsnojqs6Ag
-7KCV64u57ZWcIOyImOyLoOyduOyXkOqyjOunjCDsoITri6ztlaAg66qp7KCB7Jy866GcIOuwnOyG
-oeuQmOyXiOycvOuvgOuhnCDsoJXri7ntlZwg7IiY7Iug7J247J20IOyVhOuLiOudvOuptCDrgrTs
-mqnsnZgg6rO16rCcLCDrsLDtj6wsIOuztOq0gOydgCDrrLzroaAg7Ja065akIOyaqeuPhOuhnOuP
-hCDsnbTrpbwg7J207Jqp7ZWgIOyImCDsl4bsnLzrqbAsIOuzuCDrqZTsnbzsnZgg7J6Y66q765Cc
-IOy3qOq4ieycvOuhnCDrsJzsg53tlZjripQg7JWI7KCE7ISxIOusuOygnOyXkCDqtIDtlZjsl6wg
-64u57IKs64qUIOyVhOustOufsCDssYXsnoTrj4Qg7KeA7KeAIOyVhOuLiO2VqOydhCDslYzroKQg
-65Oc66a964uI64ukLiDsnpjrqrsg7IiY7Iug7ZWY7IugIOqyveyasOyXkOuKlCDsponsi5wg7Iah
-7Iug7J6Q7JeQ6rKMIO2ajOyLoO2VmOyXrCDslYzroKTso7zsi6Ag7ZuEIOyCreygnO2VmOyXrCDs
-o7zsi5zquLAg67CU656N64uI64ukLiDtmJHsobDsl5Ag6rCQ7IKsIOuTnOumveuLiOuLpC4NCg==
+Hello Philippe,
+
+I am sorry for the very late response.
+After my vacation some other topics not directly linked to Xenomai hit me.
+
+> -----Original Message-----
+> From: Philippe Gerum <rpm@xenomai.org>
+> Sent: Freitag, 8. Juli 2022 19:43
+> To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+> Cc: xenomai@lists.linux.dev
+> Subject: Re: [PATCH 0/3] prove of concept
+>=20
+>=20
+> Johannes Kirchmair <johannes.kirchmair@sigmatek.at> writes:
+>=20
+> > This is a prove of concept implementation of exception handling in Xeno=
+mai
+> real
+> > time.
+> >
+> > It implements an interface similar to the posix signals but with a much=
+ smaller
+> > feature set.
+> >
+> > For now, this feature can be used for handling floating point exception=
+ (fpe)
+> > and illegal opcode exception in user space without losing real time.
+> >
+> > The fpe exception handling can be used for fixing division by zero erro=
+rs in
+> > user space code without dropping out of the real time domain.
+> >
+> > The illegal opcode exceptions can be used for implementing breakpoints.=
+ This
+> > can be done by replacing the breakpoints original instruction by an ill=
+egal
+> > opcode. At the time a task tries to execute the instruction an illegal =
+opcode
+> > exception will be triggered. The thread can be  suspended in the signal=
+ handler
+> > in user space. There are two main advantages of having it done in real =
+time.
+> >
+> > The first is if a task does some time critical IO or has to meet some w=
+atchdog
+> > constrains, the signal handler can be used to bring the IO into a sane =
+state
+> > before the task is stopped. Same for the watchdog, it can be stopped be=
+fore it
+> > sends the whole process into an error state.
+> >
+> > The second advantage is for processes that have several real time tasks=
+. For
+> > example consider a process with rt tasks task1 and task2, where task1 i=
+s of a
+> > higher priority than task2. If task1 triggers an exception and is relax=
+ed to
+> > the Linux domain, task2 of a lesser priority would take over and could =
+block
+> > the handling of the maybe more imported work/exception handling in task=
+1.
+> >
+> > Disclaimer:
+> > This implementation is far from being ready to merge. It is mainly inte=
+nded to
+> > be a starting point for discussions about rather we (the community) wan=
+t some
+> > kind of exception handling interface in Xenomai and what a maintainable
+> > interface for this could look like.
+> >
+>=20
+> Thanks for taking a close look to this. Since the proposal is about
+> handling CPU traps in user-space, I have a couple of observations
+> regarding the kernel side of things, and some questions regarding the
+> intended use cases application-wise.
+>=20
+> With respect to x86, the traps roughly fall into these categories:
+>=20
+> - #NM, #XF, #XM, #MF, #DB, #PF, #AC and #BP may need some kernel fixup
+>   to be applied when taken from non-privileged mode, we cannot just
+>   return from the oob handler and be done with it in every possible
+>   case.
+>=20
+> - #DF, #MC, #SS and #TS do not involve user-space activity, so let's
+>   ignore these, along with any trap involved in virtualization
+>   management, there is no point in routing them to a user-space handler
+>   anyway.
+>=20
+> - #GP, #DE, #OF, #BR and #UD either do not need further kernel fixup, or
+>   at least such fixup can be done transparently on the oob stage with no
+>   impact on the worst-case latency. Routing them to a rt signal handler
+>   in user-space could be done.
+>=20
+> The first set looks problematic though:
+>=20
+> * duplicating the original fixup code in the real-time core
+>   (e.g. Cobalt, EVL) would be a bad idea (obsolescence, portability
+>   issues, prone to hidden regressions). We have been there with the
+>   I-pipe and FPU management offloaded to Cobalt already. This is the
+>   reason why Dovetail provides built-in scheduling and FPU management in
+>   oob mode, offloading such tasks to the real-time core can only end up
+>   in some interstellar mess.
+>=20
+> * however, reusing the existing kernel fixup code may require to
+>   re-enter the regular inband execution context. In most cases, the
+>   portion of that code which handles user-originated traps cannot
+>   support out-of-band traversal (e.g. takes regular spinlocks we
+>   certainly do not want to convert to hard locks). Dovetail already
+>   tries hard not to notify the core about any fault which can be fixed
+>   up without switching in-band first, IOW: we leave oob mode only when
+>   we really have to, not systematically upon trap.
+>=20
+> Because of this, generalizing the ability for the core to bypass the
+> kernel fixups for any kind of trap does not look right.
+>=20
+> This does not impede us from looking for a way to catch the events from
+> the 3rd set which could be handled safely from user-space in oob mode
+> though. You mentioned so far the following use cases:
+
+
+Thank you for you detailed write-up of the different groups of exceptions a=
+nd their handling in the kernel.
+Actually I so far did not entertain the fact that the kernel does some comp=
+lex fixups for some exceptions.=20
+And I agree on the point that we probably should not handle those in oob-co=
+de.
+
+My main concern was with #UD and #DE as we have use cases for just those. A=
+t least at this moment.
+
+> - unchecked maths: #DE handling
+>=20
+> - I/O stall detection: watchdog disabling, hw cleanup then
+>   self-suspension on #UD (used as a way to force a breakpoint)
+>=20
+> What a handler would do looks obvious with respect to receiving a
+> forced #UD, the user code may even be allowed to resume normally
+> from the suspension point at some point later.
+>=20
+> However, it is unclear to me what a handler might do upon other traps,
+> such as #DE, #GP, #OF and so on: the faulty thread could not be allowed
+> to resume execution from the code location which caused the exception,
+> as I don't see how the original issue could be fixed reliably from the
+> rt signal handler.
+>=20
+> I see two options for this handler:
+>=20
+> - it does a siglongjmp() to some recovery point in the call stack:
+>   fairly ugly and basically unreliable for any state machine above
+>   trivial.
+>=20
+> - it notifies some health monitoring agent to take over, in order to run
+>   some recovery steps, then self-suspends the current thread. We would
+>   not need POSIX signal semantics to implement this.
+>
+
+To add some context, we do automatization hardware and have a runtime engin=
+e that allows our customers to run their own applications on our hardware. =
+They are able to run some stuff in real time tasks and also the runtime eng=
+ine use real time tasks for interacting with hardware that needs a certain =
+timing for the interaction with it.
+
+If we don't have a way to fix the problems that caused the exception we do =
+the following.=20
+We tell the runtime engine to stop the application running. Than in fact us=
+e siglongjmp to go to a certain point, where we most of the time do some cl=
+eanup for the task and  then terminate it.
+
+> In other words, is a generic async signal API the best - and required -
+> way to address the issue(s) at hand?
+
+I prefer  a solution with a signal like approach because it runs the except=
+ion handling in the same task context so we don't have to think that much a=
+bout tasks priorities. As the task that triggers an exception has a certain=
+ priority we should probably handle the error in the same priority. If we r=
+un the fixup in a monitoring task it will probably have a higher priority t=
+han the task having the issue. This could lead to indirect blocking of high=
+ priority tasks by a low priority task.
+
+Anyways, I did not find a lot of time to think of an alternative approach f=
+or the problem at hand because the solution with signals
+where already in use before I started at the my company.
+I will think about if signals are the only way and talk to some of the seni=
+or developers here, to get a better understanding.
+ =20
+But for sure thank you for your input and concerns regarding the topic.
+
+Best regards
+Johannes
+
+
+>=20
+> --
+> Philippe.
