@@ -1,87 +1,117 @@
-Received: from mout.web.de (mout.web.de [212.227.17.11])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C3D1FD0
-	for <xenomai@lists.linux.dev>; Fri, 26 Aug 2022 16:33:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-	s=dbaedf251592; t=1661531560;
-	bh=6siNYGkZUwiH5A6W39OO7BmsvjQtFULxJUI8pOgDphU=;
-	h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-	b=Tpn89PLjM4YuM2jfEsE+WgGSCTr3BwqIJdeVp3k54letAP6zdK+iqF++AUnaZEPvl
-	 tfnz3pwerViZ8OAMf6QCS19XCvvwA0Me7JfQ0EqldELdec9WrMqCEgQSuzCn7RXsCB
-	 kV8WxngpyA50f/IIq54lH0+xVLS+fxlhe8+zeOuw=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.178.20] ([92.210.49.225]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1M9qhD-1oXMw10Dn3-0060ug; Fri, 26
- Aug 2022 18:26:48 +0200
-Message-ID: <ad5ac2e9-e662-ee94-94fa-c7d42b6e4b68@web.de>
-Date: Fri, 26 Aug 2022 18:26:46 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE41C4401
+	for <xenomai@lists.linux.dev>; Fri, 26 Aug 2022 17:16:29 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id E5BE31BF209;
+	Fri, 26 Aug 2022 17:16:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1661534187;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0wY7mOGPR5SrIehHEfhfLl2RpgwQmozeF6L2xtq+zxE=;
+	b=UFI9qHB7VfZEjQpgMNdnTGnviI709TuQ8cDhMUA56X/7MGlNhfk2NLcHJAbnnQxelZwXrn
+	6kXy3efQiOqAqhZq2Ayp9faCG3S1FFPU1uSs7md/qNZ56xj9HpPx11QtU2y4WXZEPf70hd
+	tmSJoti8DSD2bbA5W9UQQ58tBozTxOD48OzoB3HRL6R8kizZcGRrFimJjfiu+bssC5w53S
+	0ls6I/6SzW0Ow+OsSAvAhKO2uoY8qBZLcOSJiSUWfIQU4IuNySA8pi2/6r/RQnFGrWQtLY
+	FTF+O4uqa2fcFdyX+zmVX+wT9ls0W7KIuHfEkC9nzvJE2WpX6XO5I++sCS4MeQ==
+References: <a4c1ed74-2ae9-9427-994b-54dd7773399e@bela.io>
+ <87pmgnnkyb.fsf@xenomai.org>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Giulio Moro <giulio@bela.io>
+Cc: xenomai@lists.linux.dev
+Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Subject: Re: Issues with evl_mutex_trylock()
+Date: Fri, 26 Aug 2022 18:17:18 +0200
+In-reply-to: <87pmgnnkyb.fsf@xenomai.org>
+Message-ID: <87h71zncwl.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 0/1] net/drivers: igc: introduce rt_igc driver
-Content-Language: en-US
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@lists.linux.dev
-References: <20220822011821.21283-1-hongzhan.chen@intel.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-In-Reply-To: <20220822011821.21283-1-hongzhan.chen@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1+QP0SYXQUlpbScvK0SeGpLoMllxddaSBgTjITI7MrZWq1P6DF6
- E0/2hwCsydjnc4Jmx4hdwjSNgLIj2cmBDfnGe/sSGjSM+T3ROZInlGVTDbPlWkf1R3wT1+5
- snA/4u9pFjNU5BK2Rxmyjc2s6EkxivcHsv/7J0RdICL/YpYs0MIi5Sv/Gp1kk32nXhgWhZ/
- idVMhs8MyrIerdO+6CKyg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Jxlojw6F81s=:9sGGidroM4iFS0qVqYR4OU
- WnOYSSGJLndgSayGD52uBIENUeaQDY7n3s/gzbhQucXVnBkX96gQU+DsUh3/iXTuF8hK9E5Mg
- HLNTlTt3BARY7oECPmwmOGTjMC2UgeLDPLzAfKE1yYCIT6cK3q++u1P+KsZ5M/7THPT7ZDLbO
- Su5P+0wvrJlice5aLU330o3Jq1lXAdXInpv30QJD9efRw4q2chcsQfcgQQGVUxuD60/CQphL9
- 2Js+PaAYI53vy91w9jujDcCaAAQawQS8/ySVcAd7pQnyV81WP17AqLcZs6uaYyxyk+g+L13me
- GPGj7EOl2G8O/I0XEsl+jD8XYAiHEiUSHI0ino8mk4gpTkPiyxfT6hzZCDhdWs2ERA2hUgXLd
- LG21+Udb2FJrs0n/klRu6E/BVsISVumkycoGLAU19aef9DMplAPbKhZi3fbhtez7vZfyxuwX6
- T0RvKGutAUuHQ6h1lXYObxTBWAa6C3vvib8oZt8Ha5O1lhROS7BGyWCBDBfkvmlHsV/c17Byf
- 8xkG1cC34NYAllZLCJH/9Z+dlWitw5wdiruGRr6bXU0rG7q9UgLOCh/UXJTdMkLQU9T925KR6
- 3YrD6knHzMypW4vCRM/m27JUs9H/+x56PEohx3VdIABHQdNkvShINqgOMGFoAsP1WIsxOpP2n
- OVz/NvF1KwzPZmcW5EIS6ziz8NKb4hlI40WduY2U6Uuntf8KvA5tYreS29blqgA+NqXOlrlSV
- lsIiZIcyH1dTGEoGbM6S3URKetbpFO6B5IB54aClrIQRGkacUolxz6Xnyf5dzUdUeNFv4AESH
- /4PJ8h5KnDpLQppikIqAkkZ2lCoyIqYkBDd34jQl+bqhTCQ/TGtQ+H8h5J0q4tKUGJA2RwrJQ
- scVJiBx42/7blKEnT868iUWfB/u4gwQeIY8KLo5vseEBp14i9u+qlbBAfa+wAbuu4AGVB/cyf
- y4Qe9F78EQlnBwK+xXqwTUMgXXnaMHuVlj3MAEijGN9dhmz1lKcHCO160n13kYYEV3eSjRktc
- wQAK3vXEjnvoYBdlLtqt7ioJZMl4dbegQ9HzmdC6izuCcTEPu45ghfj90ctfPyEuPjNYBdbCi
- uc8ssuTAGH8//NKhpXXxwUT9s6ispXEvCfRDnZnFbUsfjLGdyexf4ZL6Q==
+Content-Type: text/plain
 
-On 22.08.22 03:18, Hongzhan Chen wrote:
-> ported basic network functions not including TSN.
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> Giulio Moro <giulio@bela.io> writes:
 >
-> 1. passed three network related smokey test: UDP, raw, dgram, But
->    I do not know if these three test is enough to validate the
->    driver, please let me know if there is other tests need to
->    cover.
+>> In the toy example below I start some pthreads with SCHED_FIFO, priority 94 and setting the affinity of one thread per core. I then attach them to the EVL core and share a lock between them and the main thread. The main thread has a settable priority and schedule (SCHED_OTHER with prio 0 or SCHED_FIFO with higher priority) and its affinity is set to all available cores.
+>>
+>> Here's a summary of what I get when running the test with some
+>> parameters (arguments are: "max iterations", "number of threads to
+>> create", "priority of the main thread", "flags (t means don't print
+>> anything). The error code reported alongside failures is the base 2
+>> representation of the return code. 100 means that errors were
+>> detected in evl_unlock_mutex() in the main thread following a
+>> successful call to evl_trylock_mutex(). During these tests, the
+>> output is piped to cat and then redirected to /dev/null.
+>>
+>> mutex-test 100000 0 0 t :  Success real 0m13.583s user 0m1.218s sys 0m0.000s
+>> mutex-test 100000 0 90 t :  Success real 0m13.350s user 0m1.177s sys 0m0.000s
+>> mutex-test 100000 0 99 t :  Success real 0m13.347s user 0m1.179s sys 0m0.000s
+>> mutex-test 100000 1 0 t :  Success real 0m20.087s user 0m3.575s sys 0m0.000s
+>> mutex-test 100000 1 90 t :  Success real 0m17.610s user 0m2.133s sys 0m0.000s
+>> mutex-test 100000 1 99 t :  Success real 0m15.466s user 0m1.333s sys 0m0.000s
+>> mutex-test 100000 2 0 t :  Failed 100 real 0m0.259s user 0m0.083s sys 0m0.000s
+>> mutex-test 100000 2 90 t :  Failed 100 real 0m0.374s user 0m0.176s sys 0m0.000s
+>> mutex-test 100000 2 99 t :  Failed 100 real 0m0.207s user 0m0.109s sys 0m0.000s
+>> mutex-test 100000 3 0 t :  Failed 100 real 0m0.253s user 0m0.124s sys 0m0.000s
+>> mutex-test 100000 3 90 t :  Failed 100 real 0m0.383s user 0m0.149s sys 0m0.000s
+>> mutex-test 100000 3 99 t :  Failed 100 real 0m0.283s user 0m0.151s sys 0m0.000s
+>> mutex-test 100000 4 0 t :  Failed 100 real 0m0.526s user 0m0.221s sys 0m0.000s
+>> mutex-test 100000 4 90 t :  Failed 100 real 0m0.438s user 0m0.178s sys 0m0.000s
+>> mutex-test 100000 4 99 t :  Failed 100 real 0m0.434s user 0m0.178s sys 0m0.000s
+>>
+>> So, when running with 2 or more threads, the same error keeps surfacing very quickly.
+>>
+>
+> Confirmed. There is something wrong.
+>
 
-If those tests exchanged more than a hand-full of packets (to make sure
-we are not leaking buffers, thus will run out of resources after a
-while) and if you checked that the reported latency is comparable to
-rt_igb e.g., then we have a good indication that the driver works. The
-rest is field-testing.
+Please retry with this patch in. There is clearly a race in the current
+implementation of the mutex release code, specifically the release path.
 
-> 2. In addtion, another thing I want to discuss here is TSN functions of
->    i225 has the very similiar effect with TDMA not only from clock sync,
->    master and slave arch, timing mangement but the difference for TSN is
->    that most of fucntions is implemented by hardware. We are considering
->    if it is feasible to implement TSN-enabled TDMA-TSN driver to make
->    use of i225 hardware feature because TDMA itself is really heavy.
+@Jan: If believe this gremlin may be in Cobalt too. The key issue is
+with the handle transitioning to NO_HANDLE before transfer_ownership()
+switches it to the handle of the first contender in line. If userland
+manages to slip in with a fast_acquire() during this tiny window, we may
+be toast, with two threads actually holding the same lock. The issue was
+made more obvious with EVL which does not serialize the trylock code
+around cmpxchg in kernel space, triggering the issue faster. I'll have a
+second look to Cobalt, but since you know the mutex code in depth there,
+four eyeballs would be better.
 
-Yeah, time-triggered send is basically what RTmac/TDMA introduced via
-software almost two decades ago. I'm not sure, though, if we should map
-the configuration of TSN capabilities of modern hardware on interfaces
-(RTmac & Co.) that were designed that long ago. If it happens to work
-our easily, it's a nice experiment, but we would likely miss other
-things (Qbv transmission windows e.g.). And there is also the question
-how to set up an operate PTP aside RTnet.
-
-Jan
+diff --git a/kernel/evl/mutex.c b/kernel/evl/mutex.c
+index e0cf1ba21d5b4..d96f8c9f04df7 100644
+--- a/kernel/evl/mutex.c
++++ b/kernel/evl/mutex.c
+@@ -899,14 +899,16 @@ void __evl_unlock_mutex(struct evl_mutex *mutex)
+ 	if (mutex->flags & EVL_MUTEX_CEILING)
+ 		clear_boost_locked(mutex, curr, EVL_MUTEX_CEILING);
+ 
++	/*
++	 * The whole logic is based on the invariant that the current
++	 * thread does own the mutex being released.
++	 * IOW: currh == atomic_read(lockp) & ~(EVL_MUTEX_FLCLAIM|EVL_MUTEX_FLCEIL).
++	 */
+ 	h = atomic_read(lockp);
+-	h = atomic_cmpxchg(lockp, h, EVL_NO_HANDLE);
+-	if ((h & ~EVL_MUTEX_FLCEIL) != currh) {
+-		/* FLCLAIM set, mutex is contended. */
++	if (h & EVL_MUTEX_FLCLAIM) { /* Is there a contender? */
+ 		transfer_ownership(mutex, curr);
+ 	} else {
+-		if (h != currh)	/* FLCEIL set, FLCLAIM clear. */
+-			atomic_set(lockp, EVL_NO_HANDLE);
++		atomic_set(lockp, EVL_NO_HANDLE);
+ 		untrack_owner(mutex);
+ 	}
+ 
+-- 
+Philippe.
