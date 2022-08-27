@@ -1,137 +1,171 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from eastern.birch.relay.mailchannels.net (eastern.birch.relay.mailchannels.net [23.83.209.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2B5115A6
-	for <xenomai@lists.linux.dev>; Sat, 27 Aug 2022 08:42:57 +0000 (UTC)
-Received: from relay6-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::226])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id E3DE0C3792
-	for <xenomai@lists.linux.dev>; Sat, 27 Aug 2022 08:34:31 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id F3EB5C0004;
-	Sat, 27 Aug 2022 08:34:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1661589264;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466594413
+	for <xenomai@lists.linux.dev>; Sat, 27 Aug 2022 16:13:04 +0000 (UTC)
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id EF0117E0CBA;
+	Sat, 27 Aug 2022 16:12:57 +0000 (UTC)
+Received: from pdx1-sub0-mail-a305 (unknown [127.0.0.6])
+	(Authenticated sender: dreamhost)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 5B6E87E1612;
+	Sat, 27 Aug 2022 16:12:57 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661616777; a=rsa-sha256;
+	cv=none;
+	b=RD+3wA8S5VYVLIFo58fBSdd4quFDdYLuM4VUjo4jRTtQ3wcko01okOYG3XpxgQF4nbXpht
+	ICwfxQ4NFdO28Mv7/4UqMwKhoOK8GWKpaIxjWiUIh5YMjwzkavK3b9JhdbpnVcBLKFedJL
+	SgpUUh2s+8mR9RZgoyS1aX89VpxVVQaAqRLPSvn629YSJcCvj1MzYnsQr3qzojjynyWAQy
+	AxpxBVHhBMwaOjhsdrkc/AlL5gbDbFZTC5j2lRqmDHQ6mQLt+lZf1f/yBwT2SwRCtRzle5
+	S8/BcNNnGNbpECPL18t61y3BGkKWsqkU6n8gwSyh7NGPry5IHbPAdpDc209jpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1661616777;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Y1UOKmKECG7lzKX6k2FQ9malMPg02GQwu8rzAb0tIE8=;
-	b=AHvHaMH41IJI0vOLkE/OkI6mDYhdNf8nIcTNFNUJIJKx8y0W4ZRW4YBcRIp6f5FhQINhln
-	VfRxxoHGU57Y1QIaxnncwRa8HENwwjpk0pH1lwcZDuEVdfWA/uXg6yfWln0F2V5Iyc85O5
-	G/nf3rV0lBieYeFr/qZHFpClo/kIR1sgwkIMWQhdw1/vqZe6CLF/T5+bpD1XnJmV+SjzQc
-	wKHWuXsAK0GbxrSNx5Ylw9XFP2VTDeTlHtq8t3Zxr8/QpIRw+/txEQw/km0kjXxxdQN7VM
-	HPvdAUcJqXo+DwNAFQkYlTjjhFsOy/K/nYMQvaCkUmFejsRGd1wa4GLUm4VtJQ==
-References: <MW3PR12MB4460264EEABB2C91E529440BC2759@MW3PR12MB4460.namprd12.prod.outlook.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Auel, Kendall" <Kendall.Auel@3DSystems.Com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: PCI probe fails (Cobalt 3.2.2 / Dovetail 5.15.y-dovetail)
-Date: Sat, 27 Aug 2022 10:13:30 +0200
-In-reply-to: <MW3PR12MB4460264EEABB2C91E529440BC2759@MW3PR12MB4460.namprd12.prod.outlook.com>
-Message-ID: <87tu5yaxv5.fsf@xenomai.org>
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=OpGGmczUH6ynqLGv4exDRZURPQA+I/g8xLtlzQtxXBU=;
+	b=kM4HObUYm7qXUlN6f8ITvF0zr1ldRL46VtaFkEMe6VIrwF0EEt2ZWv7aVu1j5yDqm0IFws
+	0p3EOqvFDJntTRQuFziWDmtMp+C8AAnX0n4H4v1nIrLEvamfUKA7D20w/wJNhvDHYjp9ES
+	Pjnu70qBaiYS6Xe56OhlQkmKLsrUp7hdSYsQOS+XOsbFqaSQCQpxeXWu0sSrrSL42OsfnR
+	SzqS1RZHTY7jyxK992dA29cxpTL2Zk5oLvkALnSbcnGGUTTkGKVwp/FWJQqcBzveS4HZ93
+	dq6nSmMBpxHzLfeQzo38eFPFw+CJRKsq0my/N6gsn8aNwfcYZqu2xSUl8IFR1Q==
+ARC-Authentication-Results: i=1;
+	rspamd-75b4464bd-shprm;
+	auth=pass smtp.auth=dreamhost smtp.mailfrom=giulio@bela.io
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|giulio@bela.io
+X-MailChannels-Auth-Id: dreamhost
+X-Zesty-Glossy: 038bb9136225c6e4_1661616777637_1490607980
+X-MC-Loop-Signature: 1661616777637:3806417288
+X-MC-Ingress-Time: 1661616777637
+Received: from pdx1-sub0-mail-a305 (pop.dreamhost.com [64.90.62.162])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.119.194.207 (trex/6.7.1);
+	Sat, 27 Aug 2022 16:12:57 +0000
+Received: from [192.168.1.77] (unknown [5.179.185.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: giulio@bela.io)
+	by pdx1-sub0-mail-a305 (Postfix) with ESMTPSA id 4MFMDl3MCMzRZ;
+	Sat, 27 Aug 2022 09:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bela.io;
+	s=dreamhost; t=1661616777;
+	bh=OpGGmczUH6ynqLGv4exDRZURPQA+I/g8xLtlzQtxXBU=;
+	h=Subject:To:Cc:From:Date:Content-Type:Content-Transfer-Encoding;
+	b=BVWTwJzlwKGjZDbimWaI5bWWUIerj1Ex8IOHqCczhQPv8Yj6/Nykfvss82WvmNkh9
+	 K5oXOa/82JV3lzzLhjsVR72qIcbrRwlkEWesT3bRQryXPmjz/OjMJSLYedz5ZAnnP/
+	 yw4BlKDuA1YC2dqcrLnZzgYOgQsCGqRYZJIme3/K1H8MrPRZ25jcSyuor0wQeEEK0+
+	 BugOU64/mfEloXsg6ffhERqsS+UxJhJUjkhMhOY1SFjRv7JaZ8H7HIIPYob/7yJ0D7
+	 avU9b4RwOKSm2GGFOZdd/1m14hMraaE0dmdUMmx/vmR40nakc8E4GFT3fMRKM9/sLE
+	 euOpUkgJZ/I/g==
+Subject: Re: Issues with evl_mutex_trylock()
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+References: <a4c1ed74-2ae9-9427-994b-54dd7773399e@bela.io>
+ <87pmgnnkyb.fsf@xenomai.org> <87h71zncwl.fsf@xenomai.org>
+From: Giulio Moro <giulio@bela.io>
+Message-ID: <328b680c-5970-4e7a-abec-835a9062e0e6@bela.io>
+Date: Sat, 27 Aug 2022 18:12:53 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Firefox/60.0 SeaMonkey/2.53.4
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87h71zncwl.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+> Please retry with this patch in. There is clearly a race in the current
+> implementation of the mutex release code, specifically the release path.
+
+I retried with your recently pushed branch which includes that patch (alongside 59700fc66877ea9ffa958b46e2cdaf2925840f0a evl/mutex: simplify the release path) and the tests do indeed succeed.
+Thanks,
+Giulio
 
 
-Hi Kendall,
-
-"Auel, Kendall" <Kendall.Auel@3DSystems.Com> writes:
-
-> I'm porting a working PCI device driver from Cobalt/IPipe to
-> Cobalt/Dovetail and everything builds normally. When I attempt to
-> install the driver I get the error pasted below. I tried sending the
-> IRQF_SHARED flag in rtdm_irq_request but it didn't help (the flag was
-> ignored perhaps?). Any thoughts on what to try next? I suppose I'll
-> trace through the cobalt code and into dovetail to see why the shared
-> flag didn't take and why xnintr_destroy is being called.
->
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: genirq: Flags mismatch irq 16. 00=
-210000 (bolt) vs. 00000080 (i801_smbus)=20
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: ------------[ cut here ]---------=
----
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: Trying to free already-free IRQ 16
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: WARNING: CPU: 3 PID: 47441 at ker=
-nel/irq/manage.c:1942 free_irq+0x249/0x470
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: Modules linked in: bolt_driver(OE=
-+) evbus_driver(OE) nls_iso8859_1 i915 intel_rapl_msr intel_rapl_common x86=
-_pkg_temp_thermal intel_>
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: CPU: 3 PID: 47441 Comm: insmod Ta=
-inted: G =C2=A0 =C2=A0 =C2=A0 =C2=A0W =C2=A0OE =C2=A0 =C2=A0 5.15.57-bolt #1
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: Hardware name: Default string Def=
-ault string/Default string, BIOS 1.01B 09/21/2020
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: IRQ stage: Linux
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: RIP: 0010:free_irq+0x249/0x470
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: Code: 41 0f b1 94 24 c0 00 00 00 =
-0f 85 c0 01 00 00 9c 41 59 e9 76 fe ff ff 44 89 fe 48 c7 c7 18 d2 b2 82 4c =
-89 4d c8 e8 a3 58 9f 00 >
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: RSP: 0018:ffffa52ec15579b0 EFLAGS=
-: 00010082
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: RAX: 0000000000000000 RBX: ffffff=
-ffc0a23aa0 RCX: 0000000000000027
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: RDX: 0000000000000027 RSI: 800000=
-00ffffe62f RDI: ffff8ac67659f4c8
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: RBP: ffffa52ec15579e8 R08: ffff8a=
-c67659f4c0 R09: 0000000000000001
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: R10: 0000000000000001 R11: ffffff=
-ff8335689a R12: ffff8ac5001f6000
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: R13: ffff8ac5001f6180 R14: ffff8a=
-c500cfec80 R15: 0000000000000010
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: FS: =C2=A000007f1174eda540(0000) =
-GS:ffff8ac676580000(0000) knlGS:0000000000000000
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: CS: =C2=A00010 DS: 0000 ES: 0000 =
-CR0: 0000000080050033
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: CR2: 000055ba0acd3c28 CR3: 000000=
-01025ec002 CR4: 00000000003706e0
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: Call Trace:
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0<TASK>
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0xnintr_detach+0x25/0x30
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0xnintr_destroy+0xe/0x20
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0rtdm_irq_request_affine+0x8=
-2/0xa0
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0rtdm_irq_request+0x10/0x20
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0bolt_pci_probe+0x192/0x240 =
-[bolt_driver]
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0local_pci_probe+0x48/0x90
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0pci_device_probe+0x113/0x1c0
-> Aug 26 11:21:26 xeno-mx3110h-01 kernel: =C2=A0really_probe+0x1a4/0x3e0
->
->
-
-There are multiple issues:
-
-- Dovetail does allow sharing lines for oob interrupts [1], _only_ if
-  IRQF_OOB|IRQF_SHARED are set for all handlers attached to the shared
-  IRQ line. "genirq: Flags mismatch" reports an issue with this. The
-  smbus handler was set to IRQF_SHARED (0x00000080), whilst the 'bolt'
-  IRQ handler was given IRQF_OOB[|IRQF_NO_THREAD]. In order to share
-  this line with the 'bolt' device, you would need to enable IRQF_OOB on
-  the smbus handler as well.
-
-- Now, enabling IRQF_SHARED on an oob line is not possible with the
-  current implementation of xnintr_attach() in 3.2.2, which forces the
-  irqflags to IRQF_OOB. At the very least, you would need a way to pass
-  IRQF_OOB|IRQF_SHARED there.
-
-- xnintr_destroy() assumes the IRQ was successfully attached/requested,
-  as it attempts to free it. Cobalt/I-pipe had a state bit guarding this
-  condition, which does not exist in the Dovetail-based version of
-  Cobalt. As a result, rtdm_irq_request_affine() calls xnintr_destroy()
-  unconditionally to cleanup the mess after xnintr_attach() failed,
-  causing this report: "Trying to free already-free IRQ 16".
-
-Do you actually have to share IRQ16 between the bolt and smbus devices?
-Although possible via some ugly hack, sharing IRQs between rt and non-rt
-devices is a real problem.
-
-[1]
-https://evlproject.org/dovetail/pipeline/irq_handling/#request-oob-irq
-
---=20
-Philippe.
+Philippe Gerum wrote on 26/08/2022 18:17:
+> 
+> Philippe Gerum <rpm@xenomai.org> writes:
+> 
+>> Giulio Moro <giulio@bela.io> writes:
+>>
+>>> In the toy example below I start some pthreads with SCHED_FIFO, priority 94 and setting the affinity of one thread per core. I then attach them to the EVL core and share a lock between them and the main thread. The main thread has a settable priority and schedule (SCHED_OTHER with prio 0 or SCHED_FIFO with higher priority) and its affinity is set to all available cores.
+>>>
+>>> Here's a summary of what I get when running the test with some
+>>> parameters (arguments are: "max iterations", "number of threads to
+>>> create", "priority of the main thread", "flags (t means don't print
+>>> anything). The error code reported alongside failures is the base 2
+>>> representation of the return code. 100 means that errors were
+>>> detected in evl_unlock_mutex() in the main thread following a
+>>> successful call to evl_trylock_mutex(). During these tests, the
+>>> output is piped to cat and then redirected to /dev/null.
+>>>
+>>> mutex-test 100000 0 0 t :  Success real 0m13.583s user 0m1.218s sys 0m0.000s
+>>> mutex-test 100000 0 90 t :  Success real 0m13.350s user 0m1.177s sys 0m0.000s
+>>> mutex-test 100000 0 99 t :  Success real 0m13.347s user 0m1.179s sys 0m0.000s
+>>> mutex-test 100000 1 0 t :  Success real 0m20.087s user 0m3.575s sys 0m0.000s
+>>> mutex-test 100000 1 90 t :  Success real 0m17.610s user 0m2.133s sys 0m0.000s
+>>> mutex-test 100000 1 99 t :  Success real 0m15.466s user 0m1.333s sys 0m0.000s
+>>> mutex-test 100000 2 0 t :  Failed 100 real 0m0.259s user 0m0.083s sys 0m0.000s
+>>> mutex-test 100000 2 90 t :  Failed 100 real 0m0.374s user 0m0.176s sys 0m0.000s
+>>> mutex-test 100000 2 99 t :  Failed 100 real 0m0.207s user 0m0.109s sys 0m0.000s
+>>> mutex-test 100000 3 0 t :  Failed 100 real 0m0.253s user 0m0.124s sys 0m0.000s
+>>> mutex-test 100000 3 90 t :  Failed 100 real 0m0.383s user 0m0.149s sys 0m0.000s
+>>> mutex-test 100000 3 99 t :  Failed 100 real 0m0.283s user 0m0.151s sys 0m0.000s
+>>> mutex-test 100000 4 0 t :  Failed 100 real 0m0.526s user 0m0.221s sys 0m0.000s
+>>> mutex-test 100000 4 90 t :  Failed 100 real 0m0.438s user 0m0.178s sys 0m0.000s
+>>> mutex-test 100000 4 99 t :  Failed 100 real 0m0.434s user 0m0.178s sys 0m0.000s
+>>>
+>>> So, when running with 2 or more threads, the same error keeps surfacing very quickly.
+>>>
+>>
+>> Confirmed. There is something wrong.
+>>
+> 
+> Please retry with this patch in. There is clearly a race in the current
+> implementation of the mutex release code, specifically the release path.
+> 
+> @Jan: If believe this gremlin may be in Cobalt too. The key issue is
+> with the handle transitioning to NO_HANDLE before transfer_ownership()
+> switches it to the handle of the first contender in line. If userland
+> manages to slip in with a fast_acquire() during this tiny window, we may
+> be toast, with two threads actually holding the same lock. The issue was
+> made more obvious with EVL which does not serialize the trylock code
+> around cmpxchg in kernel space, triggering the issue faster. I'll have a
+> second look to Cobalt, but since you know the mutex code in depth there,
+> four eyeballs would be better.
+> 
+> diff --git a/kernel/evl/mutex.c b/kernel/evl/mutex.c
+> index e0cf1ba21d5b4..d96f8c9f04df7 100644
+> --- a/kernel/evl/mutex.c
+> +++ b/kernel/evl/mutex.c
+> @@ -899,14 +899,16 @@ void __evl_unlock_mutex(struct evl_mutex *mutex)
+>   	if (mutex->flags & EVL_MUTEX_CEILING)
+>   		clear_boost_locked(mutex, curr, EVL_MUTEX_CEILING);
+>   
+> +	/*
+> +	 * The whole logic is based on the invariant that the current
+> +	 * thread does own the mutex being released.
+> +	 * IOW: currh == atomic_read(lockp) & ~(EVL_MUTEX_FLCLAIM|EVL_MUTEX_FLCEIL).
+> +	 */
+>   	h = atomic_read(lockp);
+> -	h = atomic_cmpxchg(lockp, h, EVL_NO_HANDLE);
+> -	if ((h & ~EVL_MUTEX_FLCEIL) != currh) {
+> -		/* FLCLAIM set, mutex is contended. */
+> +	if (h & EVL_MUTEX_FLCLAIM) { /* Is there a contender? */
+>   		transfer_ownership(mutex, curr);
+>   	} else {
+> -		if (h != currh)	/* FLCEIL set, FLCLAIM clear. */
+> -			atomic_set(lockp, EVL_NO_HANDLE);
+> +		atomic_set(lockp, EVL_NO_HANDLE);
+>   		untrack_owner(mutex);
+>   	}
+>   
+> 
