@@ -1,199 +1,152 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2050.outbound.protection.outlook.com [40.107.104.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C9B7C
-	for <xenomai@lists.linux.dev>; Sat, 27 Aug 2022 18:09:03 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 65B3EE0003;
-	Sat, 27 Aug 2022 18:08:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1661623735;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ogGAiIAFfOsw/6XIuXwf8H6Osa5EyXt7wfqPNstt5QU=;
-	b=VHRLWQo/Wx8M76zyodKfBP4umyTZBhX0Oln4eTF1ue+BdA+C1/Eu1o9p4GT39fGgow5jpf
-	cfAOckMjESuD3P0VbdZa8RC/HgJPSEBO1zDMdIhAqbEhj9sYs7xEfIUCmosHtfLme84fcr
-	ahj3JV4iJBsfcx2YYHzO8Bv+1rYKT+WQTCNyE2+D1S3bRRKMAIgfgX4zVVpObQkupdiJkZ
-	/d3NI6rzZpxdotky5iTk8Vw7D6dKkO6oJjgBVIILYhvFZiZ3a+DWF7rKBKsHWPuPmF1iR4
-	DNTA9LUA2dzbCAsf7ICE0O7YNS8Eq2z49+igPzWqO80gwUr4u8nJUfw2yDRRmA==
-References: <a4c1ed74-2ae9-9427-994b-54dd7773399e@bela.io>
- <87pmgnnkyb.fsf@xenomai.org> <87h71zncwl.fsf@xenomai.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: Issues with evl_mutex_trylock()
-Date: Sat, 27 Aug 2022 19:53:57 +0200
-In-reply-to: <87h71zncwl.fsf@xenomai.org>
-Message-ID: <87h71xblu1.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F0D7211A
+	for <xenomai@lists.linux.dev>; Mon, 29 Aug 2022 09:11:55 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OPF+3SzsuCH3mLtp9y8apT/VvIt/a9T2dsRXScJO2BKQijQIUL1yknil3G7w7qh7RPlU1eBDE+KRQlYzOs2OD6Lp/WbPPf9JPz+WzLxGRRXo6a95WnGNbX2nzS9OOh5gtCy8vitysS1YlisOWKZvrzeOwLFmtkpxBub/7Ffzua6PshCZ7Ngti44obiFUITASgtd23CXUEK4gjznOcepkcB+hoysjb+tJVVMBVsplgCRx/wvOB3CYG5qjysFuV9AMKPj8GTeylRGZ4DZlcL+YzHfADdPwxKa2zbmwTRrPrfSr9179E7GEHU+pC1ogITPl0zSPh/RpJEf8Maq/+WCX4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/TO1R7PoS8niP31mzt7BHn2U3IAuvvne4t7GvKISva4=;
+ b=WVDkwLwio/iT8pR+fMc+EPQ6mxHCIgYBG6GHucBTxPD1hJYuRIh8nW4FjNbEexziXy8PJ7xiS3+x+RcPE5/9RwRoHp70LBq3au2Ur5tl6AZyDn+CuGaYhUKJJP9PMqD9yXV+CYmKss+dGBrpdYOFsFBoklvjqK3enAMMCdMTiTNIMcvlNUz0+gDzc0NL53m7BvDdXfHENi55lE72MjCrWxXinJdS9JjOtbuKPYYx0cZLg/+WsuuC3K8DjYWlbHFJzlfK1iuK5hkW5aBde65iLTuN1Eu1nzbzz0M0u2AnPQLmsX0rDifDyRfVCTyrIRHMS9rKik1rChDKCq/mtq47Tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/TO1R7PoS8niP31mzt7BHn2U3IAuvvne4t7GvKISva4=;
+ b=EqXahdR0HX7khS570ZE4eYjpwtIhxGlJMNRp8Nv3N0zjbXG/PqK1TxIM6IcmymU/B1g8d1ms11K/EEhcxCrjAHkunM/pyjWJYObVArzBwB5vwmEEsRZkiOkTL19vijDZe1u6nhzQ2kV1Fyq/CGez0MsmnpoDrQLzQ8UPPkY1+fuYdqHabEsfmHuuye4ytMAxjYim9BjP2RxEZInLbTqKjqDvh0V8cQdgkvJcsyvQlzxANiUMN55Amz4zDi3Io2XmSh1wsd8dgO7BngrMpXW1P2qQOnge9ZrQLHHnc/RvA5u3IqXWtXeLU68lrrYccd1b57KZmM1jUVanrh3+pI9suQ==
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
+ by AM9PR10MB4006.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1f2::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
+ 2022 09:11:53 +0000
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::1194:7137:4cd9:2bbb]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::1194:7137:4cd9:2bbb%6]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
+ 09:11:53 +0000
+From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+To: "jan.kiszka@web.de" <jan.kiszka@web.de>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+CC: "rpm@xenomai.org" <rpm@xenomai.org>
+Subject: Re: ipipe-4.19 on arm64: Stack overflow when compiled with gcc 12
+Thread-Topic: ipipe-4.19 on arm64: Stack overflow when compiled with gcc 12
+Thread-Index: AQHYtgR+LV9jgn3KxU22mQmE60hdg63BY12AgAQ/WgA=
+Date: Mon, 29 Aug 2022 09:11:52 +0000
+Message-ID: <5248b448f4e35fbe5c192ed0419e39776268f281.camel@siemens.com>
+References: <977443ed9083abfe574dcb1aa8582ecf091c2ff1.camel@siemens.com>
+	 <a6aa4aa0-fe70-a6fe-35ab-08c9636b59c4@web.de>
+In-Reply-To: <a6aa4aa0-fe70-a6fe-35ab-08c9636b59c4@web.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+user-agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 036b8f22-041b-4013-dc04-08da899e8378
+x-ms-traffictypediagnostic: AM9PR10MB4006:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ r9u0R2Me1OyJ3eAjxj5kB4Vlg4o0/lNtodcqLTjN9j3gc6IwtHyw5H/jbmYmGy776LQcW7PgrzG1Hu0HG+YuAcENOijeFsyieRzr9JQTEM0dyEObkPE4jiCW4X5rhmcK0oxPl8jA1ZLbKw/siPJhQkFeFQesnGrYN8i7y0qurf6Y9II3PP4f3Q48qHVjxM+AHwV3xytYwiwdpM3W0AYQ2ZHw8v3+htabO6xiOBv33rPM5JdK34UuEA0m/iPt6foKQx35lg9Pm/dmn0B+oolH8Ql8DtT5TumwGrFCNC6gIzLZduQ+fzkL86BOmZPUoPTAmYQ539s7G23wGOfVAYOIXk61y19ZgQB/TxScErcZfm85fg/21N7tnYHRwn2Xp70sWa3wFCJnXgPEQ0mzV83ag7kdHmuG89Pu4nKGqRXEJaheKOiUbBX5K5f3+xI9mcwIuRwPx4vvXH44BPhDdRwAhSBKyw9ZV+QCsNupaELFHiKTtav9cU9lRC7loq49B2hoNkFAH8Dl4i2BpME6XQ5PRvk44h4q6cs2ZvLqBzMTYdeOrjNDo+oz35e4dHzkyW1o/dx2bmQRJKdrtaDnhNkiis1fNB7/Gaw9P3Pzo/BpygC/TH3wFF6xWK33J/2YHQtuQifF+3hgOF2exLcwcmpoGqQpkkQahN+AnIUrTEXwFpkL7eGl9Y6nJGZ1rU7vHWKKMqVGdDeC28vXJEQm2abbNq9YZIEAoRB9l7a7JORxdfLC1UELdYAd0TkkQBkeRQs7qBpASvuiAO3cAvSZknNetz1cjoq0xd65QrjjxRkPBFE=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(66946007)(76116006)(64756008)(66446008)(91956017)(66556008)(66476007)(53546011)(2906002)(8676002)(8936002)(6506007)(6486002)(41300700001)(966005)(4326008)(5660300002)(2616005)(186003)(83380400001)(86362001)(478600001)(82960400001)(6512007)(38070700005)(110136005)(122000001)(38100700002)(316002)(71200400001)(36756003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?QlQvZEpKa2VQYVg4VFVsSUN3bTVTeklRTTZqNzkvb3dCSUpzUG5aWXJ4RDlQ?=
+ =?utf-8?B?TktSWEo5THZONjRBNzlTb0dEWGtpOE1TYVBKclFKVXQ3TjQwUFlTMjlxOHZN?=
+ =?utf-8?B?cGpsMDdPb292SmU3d0Q0NEl2OGtBTnZZeVJXSlVjV3l5bUIzb3lDYmpnaGR0?=
+ =?utf-8?B?WktrZE9qdjVVTmlWcjBpODNkVWh3bmZ1WWFXcHI5Qy81YU9JMGYvZmtZRzd3?=
+ =?utf-8?B?L3ZnbVFIbi9HK0xIV1VEWXN6R1RSTG4xTU0yNGhhV0pDRGcxVFZiM0xhWXZS?=
+ =?utf-8?B?K2lGdG52NjJldUhxMW1FRUZZQWZsZXN6eFB3TFdzSUpweDMweStFM3BncnFO?=
+ =?utf-8?B?SDd0TmFQSk8xak1tdEJLNU8rdityT2NuTzJlaGREbWo3ZW4yTTZGNzk5UmJy?=
+ =?utf-8?B?WmRmV0xVc0VJQzRmMFBZYjJpd0FFQjdoMndjMTBmYzZhN1FaeG55TDhYcDBC?=
+ =?utf-8?B?SUI4a1VISWNXRXVTcTlNNm82R3dXNDRlOU1sMlZYNFVSdFJROEQxbTVPSGlw?=
+ =?utf-8?B?Z2FZendmSGVMdUF6a3pDallxOFJxTnNrN0JPZ1RYaURNemhCM3AzeS9CVmdC?=
+ =?utf-8?B?dC92KzZCMzdZMVNabVV3b3hFeXRwZjJNb2x2UFVpeFY5TVhoVU56TExGVHBz?=
+ =?utf-8?B?cjdwbXhjbG1PZWFyTmVlMlYvOC9lQ2VXenpTQ00zQU9wL3hPcExSYUpDWUFQ?=
+ =?utf-8?B?b3lrbGtwQ0Y1bSsyMnpENjZXM0dkSDZMb0R5Qmp4WUhjM0dkdlZHbEdrbDNT?=
+ =?utf-8?B?RDA5SkpBQ1l3aGZ6NWo2UDRMKzhCOFN2M1NvZGFqdjZOb1Y5Q3UxbThCTjhY?=
+ =?utf-8?B?OHNZNWJwNHViWERnWDY0MEI2OGVGNnRUT3NkSXg0QUVhWi9XY3JDakNLSkxm?=
+ =?utf-8?B?OGFnWVJleTdIOTBGcG82bUJFZk01QldtQnpxWnVNdFRIRUhnZ3VMMU1aNXZ3?=
+ =?utf-8?B?RldERnhIOThodXFRa1lpN2MvNzY5WHF2eEJSOXVKbGQ5dTBlVGpYeFZzcEdO?=
+ =?utf-8?B?bTFMSGYvNWdtZlhwU3BFa3V6MGJrdCsvLzZLZnRpNGdHTHBndDl3Znd5YW1R?=
+ =?utf-8?B?SlJoUGRSMm9pNTJ4cmJsZ241cy9CcEVYVUh4eHFlNHliSXBFTkUrNHkxZlpq?=
+ =?utf-8?B?QjZLblhad2M3QmlINmtmYTlHZXFZREkwUklzcExsNjJKeVVkWkh2NlAzRHNI?=
+ =?utf-8?B?SERkUGxqd0NMNUhWSk02aEIxaHlLTTZTZFQ3cFlUVGc5TGRmTG13WCs4R29y?=
+ =?utf-8?B?QkMrZ0FOVWRmeWlpbVFnSWlWT3ZCbldqR3diNzdlOWo3TEdXQzRyYjVuNi85?=
+ =?utf-8?B?eHAycHpMdktyYXR0N2hLWVpmbncxTUhydUF3VWhuU09RQ3FxaGtyM2ZabmRK?=
+ =?utf-8?B?SVZ6NGtQUWxFcWtYMlFMa3BmOXp4ajMxV2J3WTBRaFR3SGNIYitrK2l4NnJ5?=
+ =?utf-8?B?VkVtS2ZUS01hcUo3TlVpK3hjNzhaSTJUcllUZWUzNlZpR2Q2S1pLT3IrRCtD?=
+ =?utf-8?B?Zkw5ZnhSWURub2sxS2x5RTVmZTQvVENtZC9DdUZzZUorSk9QeVBseWdPYm5j?=
+ =?utf-8?B?am5ZS0t6Vk1QRHFUSktNNHdjL0NTSTFabzRPTno2a1pJVFBoYUpOa2JNUGl6?=
+ =?utf-8?B?Vy9mdEVoZnBNeXFTbit6UlRuM2JocURSTXhJdUprOEM0NmRPeXcraUVUalR0?=
+ =?utf-8?B?UFgvMmgzeENtWitvWkFGMlBXZ3BUeElONG1ETWgwb1kwbGQxUHJmTXA0YWFK?=
+ =?utf-8?B?TDhOc3lHRW5HYnBna21tTGs3azFxZ0EzTTFubDVndnAySzRTQzEvSnp1OFhu?=
+ =?utf-8?B?dFpqSllsUStmb0ZXRTVQUVJxOHVtVVBNZTlncy9IZXlYaElmVGlNRHl1OWEx?=
+ =?utf-8?B?YkgrbVk2VVh6eHJycWtwaDZDWmFGelY5eDEzdVdUb2pkSTVXVVBYbnZGdVpW?=
+ =?utf-8?B?QVhKVGd6VVlJWEZzcWlvdHRGaXgydmswcFZ1MGVxd0VjV0dqbHE3TlBUaWpo?=
+ =?utf-8?B?U1VSTFE2SWdJdTBxNUFvU0pxOE9GcGN2ZWpPVXZ3L015dnp5Q016elpKeW9F?=
+ =?utf-8?B?ZjlmUjYzd01FckszaHFqaUN5NU5tTThLU3JHU2V6aEN3dlkxTXNNSUkvbkNF?=
+ =?utf-8?B?VmFTbmEraW5ZV1BlUzBFOE5mOURoekZvdUo2QU9QSnprSTJWS2RZSC9xRUZx?=
+ =?utf-8?B?MHJlREJvb3dqd0NmQXM3a29NKzA4R1cvVURrZnRISUo2N2Z2dWlVWE5FRUk4?=
+ =?utf-8?B?TTVnUUxOdCsxampSZTVnV1NaWXRnPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DFCC7DDC1BAEA046A5D192CFA03E5482@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 036b8f22-041b-4013-dc04-08da899e8378
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 09:11:52.9763
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5gowpXPMRt8PHLhB3ME/0a58bReA/jQLWNHAAY30YunE1ZSRUCXHD7X7khi8Y+U6+j7PMP5G4gQGNbzGjNfeFRsBvJWEQkAaJdCgz95G/l4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR10MB4006
 
-
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Philippe Gerum <rpm@xenomai.org> writes:
->
->> Giulio Moro <giulio@bela.io> writes:
->>
->>> In the toy example below I start some pthreads with SCHED_FIFO, priority 94 and setting the affinity of one thread per core. I then attach them to the EVL core and share a lock between them and the main thread. The main thread has a settable priority and schedule (SCHED_OTHER with prio 0 or SCHED_FIFO with higher priority) and its affinity is set to all available cores.
->>>
->>> Here's a summary of what I get when running the test with some
->>> parameters (arguments are: "max iterations", "number of threads to
->>> create", "priority of the main thread", "flags (t means don't print
->>> anything). The error code reported alongside failures is the base 2
->>> representation of the return code. 100 means that errors were
->>> detected in evl_unlock_mutex() in the main thread following a
->>> successful call to evl_trylock_mutex(). During these tests, the
->>> output is piped to cat and then redirected to /dev/null.
->>>
->>> mutex-test 100000 0 0 t :  Success real 0m13.583s user 0m1.218s sys 0m0.000s
->>> mutex-test 100000 0 90 t :  Success real 0m13.350s user 0m1.177s sys 0m0.000s
->>> mutex-test 100000 0 99 t :  Success real 0m13.347s user 0m1.179s sys 0m0.000s
->>> mutex-test 100000 1 0 t :  Success real 0m20.087s user 0m3.575s sys 0m0.000s
->>> mutex-test 100000 1 90 t :  Success real 0m17.610s user 0m2.133s sys 0m0.000s
->>> mutex-test 100000 1 99 t :  Success real 0m15.466s user 0m1.333s sys 0m0.000s
->>> mutex-test 100000 2 0 t :  Failed 100 real 0m0.259s user 0m0.083s sys 0m0.000s
->>> mutex-test 100000 2 90 t :  Failed 100 real 0m0.374s user 0m0.176s sys 0m0.000s
->>> mutex-test 100000 2 99 t :  Failed 100 real 0m0.207s user 0m0.109s sys 0m0.000s
->>> mutex-test 100000 3 0 t :  Failed 100 real 0m0.253s user 0m0.124s sys 0m0.000s
->>> mutex-test 100000 3 90 t :  Failed 100 real 0m0.383s user 0m0.149s sys 0m0.000s
->>> mutex-test 100000 3 99 t :  Failed 100 real 0m0.283s user 0m0.151s sys 0m0.000s
->>> mutex-test 100000 4 0 t :  Failed 100 real 0m0.526s user 0m0.221s sys 0m0.000s
->>> mutex-test 100000 4 90 t :  Failed 100 real 0m0.438s user 0m0.178s sys 0m0.000s
->>> mutex-test 100000 4 99 t :  Failed 100 real 0m0.434s user 0m0.178s sys 0m0.000s
->>>
->>> So, when running with 2 or more threads, the same error keeps surfacing very quickly.
->>>
->>
->> Confirmed. There is something wrong.
->>
->
-> Please retry with this patch in. There is clearly a race in the current
-> implementation of the mutex release code, specifically the release path.
->
-> @Jan: If believe this gremlin may be in Cobalt too. The key issue is
-> with the handle transitioning to NO_HANDLE before transfer_ownership()
-> switches it to the handle of the first contender in line. If userland
-> manages to slip in with a fast_acquire() during this tiny window, we may
-> be toast, with two threads actually holding the same lock. The issue was
-> made more obvious with EVL which does not serialize the trylock code
-> around cmpxchg in kernel space, triggering the issue faster. I'll have a
-> second look to Cobalt, but since you know the mutex code in depth there,
-> four eyeballs would be better.
->
-
-I believe that the problem just fixed in the EVL core also affects
-Cobalt. This is a suggested patch for fixing the same issue in the
-latter on top of 3.2.2. Smokey's posix_mutex test still happy with it.
-
-NOTE: the issue at hand is two threads being granted the _same_ lock
-concurrently, so this might be potentially catastrophic.
-
----
-
-commit 4417674f427a78ba7fe2c8e5b2607d5ca6886ec0 (HEAD -> master)
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Sat Aug 27 19:44:30 2022 +0200
-
-    cobalt/sync: fix race in release path
-    
-    The mutex owner handle transitions to XN_NO_HANDLE before
-    transfer_ownership() may switch it to the handle of the first
-    contender in line. If a user context manage to slip in with a
-    succcessful cmpxchg() in this tiny window, two threads may actually
-    end up holding the same lock.
-    
-    To address this bug, set the handle directly to its final value as a
-    result of transferring ownership, without transitioning via
-    XN_NO_HANDLE, closing the race window.
-    
-    At this chance, stop duplicating the logic which transfer_ownership()
-    already provides.  We may unconditionally rely on this routine for
-    either passing the lock to the next waiter in line, or marking the
-    lock as free, updating the fast handle accordingly in both cases.
-    
-    Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-
-diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
-index 6e50e537f..c5398dba3 100644
---- a/kernel/cobalt/synch.c
-+++ b/kernel/cobalt/synch.c
-@@ -850,6 +850,17 @@ static bool transfer_ownership(struct xnsynch *synch,
- 	xnhandle_t nextownerh;
- 	atomic_t *lockp;
- 
-+	/*
-+	 * FLCEIL may only be raised by the owner, or when the owner
-+	 * is blocked waiting for the synch (ownership transfer). In
-+	 * addition, only the current owner of a synch may release it,
-+	 * therefore we can't race while testing FLCEIL locklessly.
-+	 * All updates to FLCLAIM are covered by the superlock.
-+	 *
-+	 * Therefore, clearing the fastlock racelessly in this routine
-+	 * without leaking FLCEIL/FLCLAIM updates can be achieved by
-+	 * holding the superlock.
-+	 */
- 	lockp = xnsynch_fastlock(synch);
- 
- 	/*
-@@ -862,6 +873,8 @@ static bool transfer_ownership(struct xnsynch *synch,
- 		return false;
- 	}
- 
-+	XENO_WARN_ON(COBALT, !xnsynch_fast_is_claimed(atomic_read(lockp)));
-+
- 	nextowner = list_first_entry(&synch->pendq, struct xnthread, plink);
- 	list_del(&nextowner->plink);
- 	nextowner->wchan = NULL;
-@@ -916,8 +929,6 @@ static bool transfer_ownership(struct xnsynch *synch,
- bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
- {
- 	bool need_resched = false;
--	xnhandle_t currh, h;
--	atomic_t *lockp;
- 	spl_t s;
- 
- 	XENO_BUG_ON(COBALT, (synch->status & XNSYNCH_OWNER) == 0);
-@@ -927,19 +938,6 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
- 	if (xnthread_put_resource(curr))
- 		return false;
- 
--	lockp = xnsynch_fastlock(synch);
--	currh = curr->handle;
--	/*
--	 * FLCEIL may only be raised by the owner, or when the owner
--	 * is blocked waiting for the synch (ownership transfer). In
--	 * addition, only the current owner of a synch may release it,
--	 * therefore we can't race while testing FLCEIL locklessly.
--	 * All updates to FLCLAIM are covered by the superlock.
--	 *
--	 * Therefore, clearing the fastlock racelessly in this routine
--	 * without leaking FLCEIL/FLCLAIM updates can be achieved by
--	 * holding the superlock.
--	 */
- 	xnlock_get_irqsave(&nklock, s);
- 
- 	if (synch->status & XNSYNCH_CEILING) {
-@@ -947,12 +945,7 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
- 		need_resched = true;
- 	}
- 
--	h = atomic_cmpxchg(lockp, currh, XN_NO_HANDLE);
--	if ((h & ~XNSYNCH_FLCEIL) != currh)
--		/* FLCLAIM set, synch is contended. */
--		need_resched = transfer_ownership(synch, curr);
--	else if (h != currh)	/* FLCEIL set, FLCLAIM clear. */
--		atomic_set(lockp, XN_NO_HANDLE);
-+	need_resched |= transfer_ownership(synch, curr);
- 
- 	xnlock_put_irqrestore(&nklock, s);
- 
--- 
-Philippe.
+T24gRnJpLCAyMDIyLTA4LTI2IGF0IDE4OjIwICswMjAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAyMi4wOC4yMiAxMDo1MiwgQmV6ZGVrYSwgRmxvcmlhbiB3cm90ZToNCj4gPiBIaSBhbGwsDQo+
+ID4gDQo+ID4gd2hlbiB0cnlpbmcgdG8gZmluZCBhIHBsYXRmb3JtL2ltYWdlIHRoYXQgaXMgYWJs
+ZSB0byBidWlsZCBhbmQgdGVzdCBhbGwNCj4gPiBvZiBvdXIgWGVub21haSBicmFuY2hlcyBhbmQg
+a2VybmVsIGNvbWJpbmF0aW9ucyBmb3IgZHJpdmluZyB0aGUgQ0kNCj4gPiBpbmZyYXN0cnVjdHVy
+ZSBJIGhpdCB0aGUgZm9sbG93aW5nIHByb2JsZW06DQo+ID4gDQo+ID4gV2hlbiBjb21waWxpbmcg
+aXBpcGUtNC4xOSB1c2luZyBnY2MgMTIgdGhlIGFybTY0IHRlc3Rib2FyZCAoaGlrZXkpDQo+ID4g
+Y3Jhc2hlcyB3aXRoIGEga2VybmVsIHBhbmljIGR1ZSB0byBhIHN0YWNrIG92ZXJmbG93Lg0KPiA+
+IA0KPiA+IFRoZSBsb2dzIGFyZSBhdmFpbGFibGUgaGVyZToNCj4gPiAoU2VhcmNoaW5nIGZvciAi
+S2VybmVsIHBhbmljIiBtaWdodCBoZWxwKQ0KPiA+IA0KPiA+IC0gaHR0cHM6Ly9sYXZhLnhlbm9t
+YWkub3JnL3NjaGVkdWxlci9qb2IvNTA2OSAoc3RhYmxlL3YzLjEueCkNCj4gPiAtIGh0dHBzOi8v
+bGF2YS54ZW5vbWFpLm9yZy9zY2hlZHVsZXIvam9iLzUwNzIgKHN0YWJsZS92My4yLngpDQo+ID4g
+DQo+ID4gSXMgdGhhdCBzb21ldGhpbmcgdGhhdCBzaG91bGQgd29yayAvIHNob3VsZCBiZSBzdXBw
+b3J0ZWQgb3Igc2hvdWxkIHdlDQo+ID4gZGVmaW5lIHN1cHBvcnRlZCBjb21waWxlciB2ZXJzaW9u
+cyAocGVyIFhlbm9tYWkvS2VybmVsIGNvbWJpbmF0aW9uKSBhcw0KPiA+IHdlbGw/IEkgaG9wZWQg
+SSBjb3VsZCBhdm9pZCBhZGRpbmcgZXZlbiBtb3JlIGNvbXBsZXhpdHkgaW50byB0aGUgQ0kNCj4g
+PiBidWlsZC90ZXN0IG1hdHJpeC4NCj4gPiANCj4gPiBXYWl0aW5nIGZvciB5b3VyIGNvbW1lbnRz
+Li4uDQo+ID4gDQo+IA0KPiBBbHJlYWR5IGNoZWNrZWQgaWYgc29tZXRoaW5nIGhhcHBlbmVkIGlu
+IDQuMTkgb3Igc29tZSBzbGlnaHRseSBuZXdlciBMVFMNCj4ga2VybmVsIHJlbGF0ZWQgdG8gImdj
+YyAxMiIgdGhhdCB3ZSBqdXN0IGRpZCBub3QgcGljayB1cCB3aXRoIHRoZSBJLXBpcGUNCj4gYnJh
+bmNoZXMgc28gZmFyPw0KDQpJIGRpZCBhIHZlcnkgc2hvcnQgaW52ZXN0aWdhdGlvbi4gTW9zdCBv
+ZiBnY2MgMTIgcmVsYXRlZCBzdHVmZiB3YXMNCnNpbGVuY2luZyBuZXcgd2FybmluZ3MuIEVzcGVj
+aWFsbHkgaW4gdGhlIGFyZWEgb2YgYXJyYXkgYm91bmRhcnkNCmNoZWNrcy4NCg0KVGhlIGdjYyBj
+aGFuZ2Vsb2cgWzFdIG1lbnRpb25zIGEgbmV3IGZlYXR1cmUgY2FsbGVkIFNoYWRvd0NhbGxTdGFj
+aw0Kd2hpY2ggY2FuIGJlIHVzZWQgb24gQUFyY2g2NCAodGhlIG9ubHkgYXJjaCB0aGUgcHJvYmxl
+bSBzZWVtcw0KcmVwcm9kdWNpYmxlKSBvbmx5LiBNYWluIHVzZXIgb2YgdGhhdCBuZXcgZmVhdHVy
+ZSBpcyB0aGUgTGludXgga2VybmVsLiANCkl0IHNlZW1zIExpbnV4ID49IDUuOCBtaWdodCBlbmFi
+bGUgdGhhdCBmZWF0dXJlIGlmIGF2YWlsYWJsZS4gQXMgb2xkZXINCmlwaXBlIGtlcm5lbHMgYXJl
+IGFmZmVjdGVkIGFzIHdlbGwsIEkgZ3Vlc3MgaXQncyBub3QgdGhlIHNvdXJjZSBvZiBvdXINCnBy
+b2JsZW0uDQoNCkhhdmUgeW91IGNoZWNrZWQgdGhlIGxvZ3MgbWVudGlvbmVkIGFib3ZlPyBTZWVt
+cyB3ZSBoYXZlIGEgbG9vcCBhcm91bmQNCmhhbmRsZV9hcmNoX2lycV9waXBlbGluZWQuDQoNCkZs
+b3JpYW4NCg0KWzFdIGh0dHBzOi8vZ2NjLmdudS5vcmcvZ2NjLTEyL2NoYW5nZXMuaHRtbA0KDQoN
+Cj4gDQo+IEphbg0KDQo=
