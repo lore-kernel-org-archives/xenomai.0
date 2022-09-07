@@ -1,62 +1,243 @@
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A8257E
-	for <xenomai@lists.linux.dev>; Wed,  7 Sep 2022 07:05:20 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 701B8200015;
-	Wed,  7 Sep 2022 07:05:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1662534313;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RYsN5N7Meu38Lne6rpQEHEXyRrKmtgsM52q2xTnavYk=;
-	b=kjmOPPAhjO1BA6FqmsKQMIUbA6rpwv0BpJCyo2UsbwhSxUfxXY5tSYSOBRGg9JndJ6Jsan
-	4SltlhnwzDdkdXvfQuqfChQEz4mydmiEahGLQ7rmZNC4yKVNL+qjqOc7srf1WWhyNNijBd
-	YOeSFQ1O+eIrcOB1SedI94mOXx9ORYyRupV7EP48lMgiFE5oEFe/jgf/Pp6R+Z0pS7pHFQ
-	1opG3p5moZk/rvrWbzB0I+i4X6G3GfvS+WO1EiWf3VpDZsWww+rUAMlgKf6VEbWYiXJ9zd
-	9aQuorL0mXIDlLRjjxzkybU4GACNsLIeLSOK4Ko6QX7OJ26F96/w8t7SDXt4PQ==
-References: <PH1P110MB10503EB7CC57455924221392E27E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: SIGDEBUG signal received on oob_ioctl() call in EVL thread
-Date: Wed, 07 Sep 2022 09:00:13 +0200
-In-reply-to: <PH1P110MB10503EB7CC57455924221392E27E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87pmg7ll5k.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C8920F8
+	for <xenomai@lists.linux.dev>; Wed,  7 Sep 2022 14:58:01 +0000 (UTC)
+Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
+	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 287ErHPv016809;
+	Wed, 7 Sep 2022 07:58:01 -0700
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0180.outbound.protection.office365.us [23.103.199.180])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3jc353sbnp-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 07 Sep 2022 07:58:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=nZSwDX5fTCBobyOBlhOnS4dtSgusr+UIR+fK6vJzSRmO6I4uxUGSSm2UrP/BAOokHlvLQjrSz6bQoyNMf4ctSUFaXxsAfEGs722jsGmYbNqhVK97nqBxilo+HGaBVrY9WPXp15Yk8bG5hizootiZJQGazr+8ApbonczqYpKXk2UjuM7HbTGkqyP0hoX1dCFpeJWNRr6F7KUPeLd+FCfT4qtFxDyvxZNp/AS9B4FHG5B5s0Gv3SWYAtzlYobC/UQKLSN2sswUvnubg24nfb84kwvp7Mwh8Qz7RMyd/qK5uV5dnorKEwu/D+HBjSJAIncDwF7hDBWqPUcC5buVuRw8Ag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector5401;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oCzczJrpuq2Ouj22GqkaVy34v1QxzGHyiLM6NDc7yzI=;
+ b=U7/3Lb+Qx36U3kUzGRx/o0SoFGzro+qjcwu8Bb9xnufMxLaVLoG96qgz2KsCrT4qBj3jjwvbIt7hxe/UsqlKNByR4XwrMA/+NMeoGhtgfo5lTqTDaUuxLo2ijKojK6NI7bW7Ly+Gywxd2kCKnQsgeBbziDFe7/VIyj3pBHyR1of38ryxBAcOjUnvU19To93Skc3qOSal41nrVd20cVYi3qjQfJXCEmJxGnGMXTPusf9ViB3/fVhcSozilCSvLSnm9/gU+FTSI5W92wPpDVtxibqTaJrf6fwyxjV3QTbQqBFVSReM5g3XIe05gJd42SkU3zIO4TO0ilDgyR+qCCy0+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oCzczJrpuq2Ouj22GqkaVy34v1QxzGHyiLM6NDc7yzI=;
+ b=PZe6oyojXvcqLOhWk5L3rIihcDVxcRPCDCw2OWw2ysOUvZLoinRDyLyuLRgIWmKa3b+Rw5TN3OzbDIj//JwONdaNeCde3Kan/8OssxLbcNXuyMwJMURT2PjBGOiXFYbB9v5Us2An6ap7Q9M4yXu8yzwRdcmBxUmc/Ge7/ed1n+UrkPflUKYaBxYHzs2I/uP9PSFq2djQuzmO/FL7hNvhcErwX8xORgXfVjExcFBgq6A9bJILQst9+YSu8RD10S4ivqIe/cWZdwCudJWIbhokxR08nXnmIekcIZEqo53uiksSnD0Kgw0aUvX/pSVFsFpk2rK+7HJFW8tmvRc9hKxdfA==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1315.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18; Wed, 7 Sep
+ 2022 14:57:58 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::bc81:551d:80cb:1173]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::bc81:551d:80cb:1173%4]) with mapi id 15.20.5588.018; Wed, 7 Sep 2022
+ 14:57:58 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: RE: [External] - Re: SIGDEBUG signal received on oob_ioctl() call in
+ EVL thread
+Thread-Topic: [External] - Re: SIGDEBUG signal received on oob_ioctl() call in
+ EVL thread
+Thread-Index: AdjB/1D09BBuHnMXSAWqz0TOosIQ1wAiCkCAABCDjPA=
+Date: Wed, 7 Sep 2022 14:57:58 +0000
+Message-ID: 
+ <PH1P110MB1050B4BA41F165DECB24B06BE2419@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB10503EB7CC57455924221392E27E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87pmg7ll5k.fsf@xenomai.org>
+In-Reply-To: <87pmg7ll5k.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e8485340-f610-4b1f-a447-08da90e15a48
+x-ms-traffictypediagnostic: PH1P110MB1315:EE_
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ snXAqiZms+0SAnaJvOk1dtEiqvOzeBZNYBDlDG1LXjAJHLGKmFPpMjlLdSlVeIG3BLdMiIXfnxnRR9M9xaGMpa6f4Zu/gck7kyBn8rGV+3YQUhorw62eL1O5X1BUe8WYj3ZbozxJ++9JT/SWxQYKWmkhU+F2kkWECjzU79LbN1MNejhbrmZcXfGwhZuiMwRC/K3szhX8VGW1XeTPhlqRpmQJotpGO11iySQ9kX9OK504WRtWHHnZSGq7M1vx6kyahcmYmiCmXrVOssp16lyuJ8PgKULj3mJKzC/SUtxRUb1fWDKW27VneLyxPeviV695A4kJ/QDFKo3Mr5+9qcrKSi7Yzep27H5ZCNJsTBv2aXuM3H42VIV62gqzh0h4lgeUwoY64m8j7rgLhdfpGsBDFaHcXcqC0/RazmmL6822TbspOn00Od6kelZBVh713/qWtdQph4+lY+K4ecfKxiaR81Ookbs/CyXz5/EZ0FDC+ioGAEmQE0nXaVAOJAiqWjW6kjfFxjs7MKJUxDRhY6q682L0+BivxycFMwTfsHEy9WMT/SKqNKHRv3Xeswun0is4bj6TGMniXn45JDut1mDzG4W6VkWyF7zEYUIfrBE1t1Ur5P/dhtE6+sV8Y3a/3kxlNBCEQIef/eZTShBqc91JB7Ypl1O5Kq6EQp8tSf3ZELJZjhckAZxlpNJxTH5SgrfJ
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(83380400001)(186003)(52536014)(9686003)(44832011)(4744005)(8936002)(55016003)(5660300002)(26005)(86362001)(33656002)(71200400001)(2906002)(7696005)(498600001)(6506007)(38070700005)(64756008)(99936003)(66446008)(76116006)(66476007)(4326008)(6916009)(8676002)(122000001)(66946007)(66556008)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ SPoyqo+2n0KmSdrVY3otaonxZp59kwxAftQWvH7jKpKh0COcJsXplb67zF8nTDvB+uWNfdrZHhgykpgn54dUIAWaHUGf22l1TFBX5had2Js45E6m5yky7EPoZb17E7G2n41/tcGX3IxTEeIJOGtUfsUI6DjRuje6a61EiGXG04OZPbuEpOEwScW0vrXVvJfeFmy1Mb+nBMStOagwz9rT0V6NZ4G7GvfgqcWjCuuzjVUpBcZmmN75hO6/OvxkrB3TlhCAOAG8QB0uzEwrTBD0bL3wVdjhRLt/EzJ0eQRwWdLieUBI1nbCba+exTl3l+uCri9gd6NxlDgtkFvYv8pO1Lr6/mhwEHHDPtQ9whqQJMiKZoL0iCujHFHaHzdgxKTKXlS+tAElyCRZs/p87MeSa5IDVs3R7qdvHRYlAPVKwnI=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_01EE_01D8C297.EB81EB40"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8485340-f610-4b1f-a447-08da90e15a48
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2022 14:57:58.2473
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1315
+X-Proofpoint-GUID: yNzkJ55ueT6pr2ts3ZvTh1AOEE4Ms051
+X-Proofpoint-ORIG-GUID: yNzkJ55ueT6pr2ts3ZvTh1AOEE4Ms051
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-07_08,2022-09-07_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ bulkscore=0 clxscore=1011 priorityscore=1501 lowpriorityscore=0 mlxscore=0
+ mlxlogscore=999 impostorscore=0 suspectscore=0 malwarescore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209070058
 
+------=_NextPart_000_01EE_01D8C297.EB81EB40
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+> You may have EVL_DEBUG_WOLI enabled, and the cause reported by SIGDEBUG
+relates to this.
 
-> [[S/MIME Signed Part:Undecided]]
-> Hello,
->
->  
->
-> I have been debugging one of my EVL threads for any in-band switches that occur. Currently, what I am seeing is that my thread will run for a
-> little while and then I get a SIGDEBUG signal from the EVL core. If I throw it in gdb, then it tells me that the signal came on a call to oob_ioctl
-> into one of my drivers. I am not understanding how an oob_ioctl() call could cause an in-band switch. Essentially the thread is just sitting there
-> waiting for an interrupt to happen. It uses a kernel semaphore in order to block and wait for an interrupt; if it times out, then the thread
-> re-tries the oob_ioctl() call. I pasted some basic pseudo code below of the oob_ioctl() call in the userspace as well as the ioctl case that is
-> handled in the driver. Is there anything obvious that sticks out as something that could cause an in-band switch? What, in general, could
-> cause an in-band switch on an oob_ioctl() call?
->
+I turned observables on and it appears that the EVL core is sending an event
+#7 notification. It must be related to the evl semaphore I am using in the
+driver. I remember previously there was some weird behavior causing this
+event with the userspace condition variable. I wonder if it is possible that
+I am seeing similar behavior with the kernel semaphore (wait queue).
 
-There are multiple causes for SIGDEBUG, the stage downgrade notification
-is only one of them. The list is available at [1]. You may have
-EVL_DEBUG_WOLI enabled, and the cause reported by SIGDEBUG relates to
-this.
+Thanks,
 
-[1] https://evlproject.org/core/user-api/thread/#health-monitoring
+Russell
 
--- 
-Philippe.
+------=_NextPart_000_01EE_01D8C297.EB81EB40
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIwOTA3MTQ1NzU1WjAvBgkqhkiG9w0BCQQxIgQg3oT+Q/RYBJFFNxZksfzUZlJz
+KAf4PUzWoYbdzE/twm0wgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCO
+6TV0BiGsGTr3ONiGYltU098tktAcI19tCHLdrOO2ffnqXFY2qHwrx0hnR+3NthIN1NmxZcYaZ4mf
+go0PlPlYK7JdDg32RSvl5oOQ/BMqlvDkTFME+9qMPjo+jUVUJzrXJNPiQZDsYs8lp4gyiZtN7dhv
+/A7c/rtrS83df0kfuSROIwEIhb4sqzrMsaxwapOLhfYVMRLyxCOfMSJ6kL7Psw58tXQbEBWmCvM2
+IU+q7GyMWqwSMmB2YFVaRnPfEZN/eBprB2bjjXgvE8F51J/K++wJPyM+GftGMcrP/wWruCoqTF9q
+lpPBfGo8LHnfyQ8bj/4LUxMJTbubZ6EqBFzhAAAAAAAA
+
+------=_NextPart_000_01EE_01D8C297.EB81EB40--
