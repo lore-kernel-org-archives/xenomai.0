@@ -1,250 +1,104 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 915EF612F
-	for <xenomai@lists.linux.dev>; Fri,  9 Sep 2022 22:14:54 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 289L8E5r003319;
-	Fri, 9 Sep 2022 15:14:47 -0700
-Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0145.outbound.protection.office365.us [23.103.199.145])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3jg726199q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 Sep 2022 15:14:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=oZurnvX7bQlhmcWstHMp/j04OzRI6mwZh1+Yvcsx2ichIgNO+xDOWPMC/YSdlMm21EjAu8MXyb8kElVRttIqDksf24bNH6VPcu8XMYzcydmFStIqBKwKfJ1ocbX3yRP+hLwxjL4Ca+MQeSDlYOB/A3HfyTJAiZNKKtH89QpIrTKNEyxjgqb0XZgUHXFDHz0tgRfCcFtpeNJxdJZHKjqV0aLwi3dl3biXi+eGTB4fowSHIfJlUJKsmZgmqtssqJ2uOFMlLM/NVtmUyhBrPPG9BWyDAFth1298g926Ib5KzQIHoF1/Y/sMT78RiRyi8Qg1BeWtyDVA3xvHwnaQTe+IpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DVvNFpj0Nl8UGzCrpXqbNQZcEucfMLI7GVRbfC42Qjw=;
- b=zupTEXrQrlofIueP5h1sxEjJ65O32AfoU2sXguoAI7I768UxebkmluIezFgzoPEV6RlqaBUNv0iEP2Z4cl1cFMJcn/PrAqRIeZ6xadTdf+R2FV/G8DyKY/J5f9zbPxI4EO0cSh6Mz2bXSqLocLSyZ4BaeJaiLpGiyzOVHXWwzn0XGSuE8csj6GxckYh/sI6woiWbxLOcKLThOf6LppUGKR2nNTzebk48atH6+OoHKJ1DFiT2s1XYzRyQNnOOyezHIcqqdVMQGQcDJeKznB8o3efgDzZkCR1gjBBV5zBNycelz/aynXib2lSZQIDOhgxZBkZF2jF0l8E5G8h4JvzGIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DVvNFpj0Nl8UGzCrpXqbNQZcEucfMLI7GVRbfC42Qjw=;
- b=A50u9TGgGAyPG2MgZwitAsDiMPQrznWQRCojHHoy1mzZ0Lj9B5Q6rHYhTjYhf4obCMa61bzYGC9jbz3Ra5EIpxnjuXeAwXs+VJwULDO4P0f0fsYUpNTarVhxRE69kRH4D4emtLhD6IfsGm40Y2z91n1jpKFv/NEM6muQBqp/YFlaRG1jcntF/7KMH+MjcaVTqSNvPG8V8ncQ6yLc1EyWA3Ku3uODPgOM0FF7Pmlqc6E6Z9hOV4bM9Q9aPxtbEM5eeSTaW4bfmbxf6v2EUqjdgco3osAb5Rp5SmaQYb9lZleuaxrSiu3Fd9Bxq5dTrO0fflFwv6ry9HuUs1r3WGgb9g==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1742.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18; Fri, 9 Sep
- 2022 22:14:45 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bc81:551d:80cb:1173]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bc81:551d:80cb:1173%4]) with mapi id 15.20.5588.023; Fri, 9 Sep 2022
- 22:14:45 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: [External] - Re: SIGDEBUG signal received on oob_ioctl() call in
- EVL thread
-Thread-Topic: [External] - Re: SIGDEBUG signal received on oob_ioctl() call in
- EVL thread
-Thread-Index: AdjB/1D09BBuHnMXSAWqz0TOosIQ1wAiCkCAAIQ/y1A=
-Date: Fri, 9 Sep 2022 22:14:45 +0000
-Message-ID: 
- <PH1P110MB1050FA42497EBD1CE9F2ECDDE2439@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB10503EB7CC57455924221392E27E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5EB5EA2
+	for <xenomai@lists.linux.dev>; Sat, 10 Sep 2022 10:04:22 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 145F31BF204;
+	Sat, 10 Sep 2022 10:04:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1662804255;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=X89wlY2i8zMzb5/qjJ+pM41u659QajkTsWKmDIGBtaQ=;
+	b=kx4M0eOvOuLS1Hxt6H+pyym3lf8Wei7BcH29fFPg8gl6l5Uf67KbMuyrQ1SjXPCmr0hNt9
+	ElKa5suqEkSxl8QJD/INu+A6kjGxpVQ5bvx58M7Fljk2Slw1hX0u442658u5M2OjjwJ3fW
+	38jODxOVypgwjCeEqx/W61tWSUNFP/7gyDjlVo6GC6aJBQYBGsRxGyJFZcmbYj6fK3htE9
+	bde/2AZlN96V86Sk1h9Z5qHfL8qcPrbdEkMT25RWBavyTfh2mAuizwfjcH3yp8uZvf2TLB
+	2gr+dl1a9HMH/9MNXQfDXP9BoQ+DV+nRO3N4RV2ZEPcYiCvplonhBaLvOB428g==
+References: <PH1P110MB10503EB7CC57455924221392E27E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <87pmg7ll5k.fsf@xenomai.org>
-In-Reply-To: <87pmg7ll5k.fsf@xenomai.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2ce49dd3-a073-47a1-9489-08da92b0b3c9
-x-ms-traffictypediagnostic: PH1P110MB1742:EE_
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- lHTVUw7NtxJu+tvhIhbZEwA1o8vMr0T/KWLg7j5wYkCEIo4QgYWw5i36vI4kC3R7JZVrs1sG0MlxLYG9rYBHgrfIF33a4I1TB8fZiGjPbEHLZg5+4Xh8OmvOHsOAL7mFAZeciKDPV1AxlN8vV0Ivp4k/PqUB6CRxTdktzSN/gqkZUKGDBmphGBNnu8TiJ+fuviIxmaDDfNn43VQTfAdq1JRyF4fPNnb7/NxssVmAHbDsq9CLcmm6NjkW67sGHMOU19tYQKDCBortedV8niVQPMnjcEnMwnL9O2ozfN4RkeKm0B5XhgVMjr8laQ/vDFEqN57RJDvhYkVoW/O7XjOzf/ZVFjbGvePg9Hb9DRYwdCXJKg7av+wxhpmL5VJ+3C6qsrnvoc6Wr51CQ04sUpeQCS5HLPh4WlxfckBgFvsXRrxCAK+v2nr9lZ0E9TsmtYtC33LAJilfz37qC33yXm6nMQKUTejegK7bSzy0rDYMSfSb8cnC1aT8HW4y82bOG2TcxfFf2/xPgrQ0zyBh9nR6FOeYTtH2vea7I8aLy+I+zA07IwEMqke2d1ct8/GE3J/DQk2lPywuQolc/6+A4niYEJg4liOWhnPRfhFimHuWFBWq8EEJPiQEUCapxgMzDnBokVNihId5vzgktBn2p3h6zy0vyZzlPB0RSyVcre4IWTG3YlyvBfNVInBZ+DvVY967
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(55016003)(83380400001)(66446008)(66556008)(66476007)(76116006)(66946007)(498600001)(6916009)(8676002)(64756008)(4326008)(52536014)(71200400001)(7696005)(44832011)(186003)(9686003)(2906002)(122000001)(6506007)(8936002)(4744005)(5660300002)(86362001)(38100700002)(99936003)(33656002)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- d8ndASYyoWya79perKDc2La1rBIULi5xBW/gVNco+ecX4HG6E7wOsoovMuMBIUpYFzXONZXwZjo0ePKK1lQEtdeu9BvmlbxGBIj1RpPbPHgM6DGXltXBkK4SLgOMg65gaLuFRCIpXiQ1OLenfCFs8s9bALMYdjme4kobzQnT0GmAgzLRstt/3jde87qyvm/+CSvBv0dcQtFcvYb6/L4nxM2Kxq8KvYtTrAFBsKXp3EQYpLVeCldg5jd3yEtaQv6JLc+830lPArYuGnmEwo5g5t00/tyyqw4M/dqAqQKusUkUWachOHt/nUPPmT//0WqsHsVtzYM9F6spyxxnY4RheGWJcmSA9Grd3BQ/hv8vWuPGdqPCBbQXrJwl5vsC5En0wmhlOtgOGQvVbmigEvbrZ1m759JiFON6xNkJAGfgJuMsKUU7gSdHocvrHmokTBPLr3havhNoT8oMVsGLQ280W/o/U2sjuG8xUIAezS31IIs=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_02DB_01D8C467.45806E70"
+ <PH1P110MB1050FA42497EBD1CE9F2ECDDE2439@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: [External] - Re: SIGDEBUG signal received on oob_ioctl() call
+ in EVL thread
+Date: Sat, 10 Sep 2022 11:17:03 +0200
+In-reply-to: <PH1P110MB1050FA42497EBD1CE9F2ECDDE2439@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87zgf7zgte.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ce49dd3-a073-47a1-9489-08da92b0b3c9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2022 22:14:45.3953
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1742
-X-Proofpoint-ORIG-GUID: g8pPsB2Llv6wMWo-5bIiACxrEZoOLhrz
-X-Proofpoint-GUID: g8pPsB2Llv6wMWo-5bIiACxrEZoOLhrz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-09_10,2022-09-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 suspectscore=0 bulkscore=0 spamscore=0 phishscore=0
- clxscore=1015 malwarescore=0 priorityscore=1501 mlxlogscore=999
- impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209090077
+Content-Type: text/plain
 
-------=_NextPart_000_02DB_01D8C467.45806E70
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 
-> You may have EVL_DEBUG_WOLI enabled, and the cause reported by SIGDEBUG
-relates to this.
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
-So I ended up updating to the latest linux-evl kernel and libevl, and I ran
-some more tests. It appears that every time the EVL core sends the app a
-SIGDEBUG signal on an oob_ioctl call, that the kernel also logs a page fault
-in dmesg. I have also seen page faults on other evl system calls such as
-evl_read_clock() (which of course calls oob_ioctl under the hood). There
-must be something in the oob_ioctl() code in libevl (such as the varargs)
-that can sometimes lead to re-sizing or some kind of memory allocation (not
-necessarily bad). I am not sure exactly why this would lead to page faults
-however. mlockall() is being used in evl_init(). I also set
-mallopt(M_MMAP_MAX, 0) and mallopt(M_TRIM_THRESHOLD, -1). I believe each EVL
-thread's stack is prefaulted. I even prefault the EVL heap after it is
-setup. Any ideas?
+> [[S/MIME Signed Part:Undecided]]
+>> You may have EVL_DEBUG_WOLI enabled, and the cause reported by SIGDEBUG
+> relates to this.
+>
+> So I ended up updating to the latest linux-evl kernel and libevl, and I ran
+> some more tests. It appears that every time the EVL core sends the app a
+> SIGDEBUG signal on an oob_ioctl call, that the kernel also logs a page fault
+> in dmesg.
 
-Thanks,
+The core tells the app about the exact cause in the siginfo data passed
+to the signal handler, which can be queried by sigdebug_cause().
 
-Russell
+PF reports in dmesg also give the $PC register value (in user space) at
+the time of the fault, can you try matching this address to some portion
+of user code using gdb? Knowing the general location of this code, and a
+disassembly output starting 20 lines before, ending 20 lines after this
+spot may help understanding what is going on.
 
-------=_NextPart_000_02DB_01D8C467.45806E70
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
+> I have also seen page faults on other evl system calls such as
+> evl_read_clock() (which of course calls oob_ioctl under the hood).
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
-dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
-dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
-bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
-eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
-qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
-OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
-d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
-nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
-MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
-BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
-AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
-oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
-b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
-Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
-JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
-AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
-jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
-1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
-/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
-j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
-KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
-MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
-A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
-MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
-aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
-BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
-gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
-xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
-kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
-x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
-U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
-BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
-AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
-VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
-ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
-L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
-hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
-jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
-wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
-s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
-JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
-9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
-3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
-q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
-wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
-qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
-MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
-EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
-IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
-JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjIwOTA5MjIxNDQzWjAvBgkqhkiG9w0BCQQxIgQgyrAC6HepGxY0ZnJogSIr6M1S
-QIqAHsh5zWeZMuguCBYwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
-BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
-AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
-AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
-cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
-ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
-dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
-A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
-aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQA3
-ovFJYlaqiuWEh3QFS03zU/LnK9ORhXWlZfVQ5KXQ7E0L5/ExNQv00JLluHwz6593pBWDP/ixSkCh
-F13+Tx/IEb/XhDjzotPmqYrUYdflFXQNUkTR7BRyhGxfO35uoOv6IWUvS0ck1/9Hb+/liNhEhw9a
-CEStiSzqGCOvlR0qg3MFW5vZghPft/o2Z3GbBhyHzun3nxHx0tfr94jxvqpZ1BJ4DscXBXQoztOr
-DzDlLeLEEPN5c5BeOZhYrzY1s/SMUdYkqKfvkuEJ2VirY5V3GsSBg9sGc7wGE2xcw1cM6yiBpXyA
-vAr4FZtUbJSqwbqMYLWxiyQH+fb0PcTxaftcAAAAAAAA
+evl_read_clock() is a bit special in the sense that we expect an initial
+PF there, which is forcibly triggered by evl_init(). But we should see
+this happening once, in a controlled fashion, not more.
 
-------=_NextPart_000_02DB_01D8C467.45806E70--
+Is there any pattern regarding the other syscalls affected by this, or
+does this seem to affect any syscall randomly, whatever the application?
+Or is it a particular set of calls which is affected and/or a particular
+application?
+
+> There
+> must be something in the oob_ioctl() code in libevl (such as the varargs)
+> that can sometimes lead to re-sizing or some kind of memory allocation (not
+> necessarily bad).
+
+varargs handling in C should not involve any reallocation. As you likely
+saw already, the oob_ioctl() implementation is trivial, early resolving
+to a plain system call trap. Granted, we also call
+pthread_setcanceltype() there, but we used that interface extensively
+over the years in xenomai2 and xenomai3 as well without any issue. With
+a recent glibc at least, this boils down to a cmpxchg basically.
+
+> I am not sure exactly why this would lead to page faults
+> however. mlockall() is being used in evl_init(). I also set
+> mallopt(M_MMAP_MAX, 0) and mallopt(M_TRIM_THRESHOLD, -1). I believe
+> each EVL
+
+This tuning would not protect the app from unwanted mode switches, the
+malloc() arena is guarded by a common mutex, which might or might not be
+contented at the time of the call, leading to a regular futex syscall or
+not. So one never knows whether malloc()/free() would actually cause a
+stage switch.
+
+> thread's stack is prefaulted. I even prefault the EVL heap after it is
+> setup. Any ideas?
+>
+
+Do you think it would be possible to reproduce this issue for one of
+these syscalls in a standalone test case?
+
+-- 
+Philippe.
