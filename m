@@ -1,48 +1,48 @@
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2051.outbound.protection.outlook.com [40.107.20.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5471E1C14
-	for <xenomai@lists.linux.dev>; Tue, 20 Sep 2022 13:15:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C96B1C14
+	for <xenomai@lists.linux.dev>; Tue, 20 Sep 2022 13:15:09 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eGDqnI9gs9pGwZWWPD7NuixLou4GLyAE0Y0M0zOaJZjyWcC7j3acp1gV/gZhuVncgPr/I1A9gaJ+TUM13atsm7BADqBSjAGrZGRU+nicWAPsDp3hWVHTG/hUzNNAapB3yoyMsZKuoS7zqhVUdmJN29dn1lr32s2bfB+hEFN3On+iAUZDmP3vSL1C7bfdHv0GepW9qB7ff+RuvmLbrPeM8H5uSkT2fL2ZfvYL+t6uMEQMHnsr3N1E62ad5JrFT1qVRlzE0Oi84BEBbbsBsERxczxVNWgjHQzFzdopmLFyNc8iHsFXZa3+tznje9YYjXwfqVWL8YO1US+FqeOAAOL6VQ==
+ b=JfI+EQWO75nGj+rq0QCMjPegBeo6KzYWZ6Fre9XG4benRyeJfo3CaiFpgJ6+2fpM26CWkVc8NWCRdS/FcbVxwViMlx1uR/naoFw5WuxaQqqty4AQE9CBN/Fao+qlUar6eBRLxK3rRwhTk1Zz6JcMkSugsclkLcCvm3co0+tm1lZtwDqGhol+A9hQShOoPRi0+DfhGvPdiOihogtwdqEHukCBGky8afdqWhnmZrge+/a0njHl50TZciBHt8QJ43ozTDtDYiBRAjBsV+s2f5/wRFGgIsarUJX3PpqckQARdKQvRIxjkXcNhOfTlXEqiqqfsHB3WeIxLlSyGzBfvlcBSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kq5R0fKVoAzoytlNT/8pJ7ldBODz4iUrC2bpd3VDbbY=;
- b=gVhtVmeGrd0MP7X8Ue1k9on6cEzchC82btNDfWoBzrveAMxh6fK5wIlFFCiPrAuhEbciacKxY7NFLjZwHXT/du89CNRDlsptyr+uZjLoe7J06w2JVZKtIqizq5cnn9paMmwgbAWJ8jCpoYfe9VtEbdkKrqWdVdDJVIdcIMPW1q/RT+pzf1jGbfG6U4Wup+rWEcQ8Hc7W2ZQ2PM0/fwotgnCpNhMSJwL9/63Ef9OqxMJAgZX3DYFzZsrhvHbO5YwTVIJocMx4Yd0QaQ5gTq0tm2KPb2ThBEyl4fKCYFt2aH828Ckml70SKUMhc/nDYpWt/BhQuIx3z6zhqArqzeqagg==
+ bh=JpCVpuOt1o++nck6rf6WV21AuRC4EAsvgZOegrbsCwM=;
+ b=Z05IDeXWlblh4WOev/l+v3i532+1ngT2pbHh1XanJJsw4cgEQp3b0V4WGi9HhoAQ3fXbDA8X4YTywpDAZLOxUTweUXiDeQcXL4VdJEC6JDQGAd/VbcprrEJ6/AUherbudegfLrKrWIaxLruFmjk26Mrqp/Q7WyD4t1c+uP+eCRAMdWti5sonrrhfmL8N+FuWg8swTvGZIQeSDPW1TwW3DvfP8jzCpJ5voFU6gb20DHwwcpL2ceZ0pvoidOh9lcrDrj7PSllCI8jFJfz/SAnqkaJ3+sCbCUdDGst/INbvsIj1DBqtEfbcUcohxFE19dmntVb1nNm0IFYag/63UuWc8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kq5R0fKVoAzoytlNT/8pJ7ldBODz4iUrC2bpd3VDbbY=;
- b=VzvVB6/fF7lx5dQRaEkbukmiNveFdWK8iSNochHvTXrGGWeZyt8SUF95AXCYAxZzim2aO/ZdaJgIrv8gwjawdyLFf+KCSbis8friECawKkcVU9h0twsdbJhEad/KuaZU8qm7qbiqgN2/alHrVM45sxVVUy99zrtt26hkeBCd+q2HbeQgZ2dvwc/vyST5MhT3WB009KIgngFy+T/V6V0o0YnfFiYTaKCONvRK5gO7d95YOE6N+EAwMzUbRdzD7xh8IkFZmzHcvo1qsD7yofWc1nEYJmdOAdpl+ukIihgAXP4fMz3UQqzjgfu8YMyDGX0hnQA4Xo8tfnBOHgwKKJehgg==
+ bh=JpCVpuOt1o++nck6rf6WV21AuRC4EAsvgZOegrbsCwM=;
+ b=j2aKXGW7cF5P7D2rzYFJI7w41M5Mrp1SJ2bIMVwsjlm5YHo1eO8s0hjSX86K4aaZhe9ZTi7gvdWViucf9cM5GBJLN7ltq7z8Dq9JOPXggizZFsZ+XP2Y40rmySFnUHk+V8eRheqshauKZoLfGkUOY4G92LA9mBX1Fw0RdYZx1Hxrjipcnrq4hRp7fmSMK1Vzvb7MQBzYtc0hHceut93xGEr90zJSbZ6A3QAydhxukOUK0pgsxKd5PcCVK59f5H0rfOjYO3hdgcQU74ZttFbkdM5P1tMPavfrJGkmIMc98lLTSb+UDYhngPcnxbU0xrcw00x9dDiF9wsgTFFYBjjsBQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
  by GV1PR10MB6217.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:93::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.18; Tue, 20 Sep
- 2022 13:15:01 +0000
+ 2022 13:15:02 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::a52e:3187:b92b:cc8b]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::a52e:3187:b92b:cc8b%7]) with mapi id 15.20.5632.019; Tue, 20 Sep 2022
- 13:15:01 +0000
+ 13:15:02 +0000
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images] [PATCH v2 3/4] ci: Add compat enabled build and testing for x86
-Date: Tue, 20 Sep 2022 15:14:53 +0200
-Message-Id: <20220920131454.121225-4-florian.bezdeka@siemens.com>
+Subject: [xenomai-images] [PATCH v2 4/4] kconfig: Add compat build option
+Date: Tue, 20 Sep 2022 15:14:54 +0200
+Message-Id: <20220920131454.121225-5-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220920131454.121225-1-florian.bezdeka@siemens.com>
 References: <20220920131454.121225-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: AS8PR04CA0043.eurprd04.prod.outlook.com
- (2603:10a6:20b:312::18) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: AS9PR04CA0107.eurprd04.prod.outlook.com
+ (2603:10a6:20b:50e::19) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -52,133 +52,82 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|GV1PR10MB6217:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2a434dfe-3ea9-43a1-3471-08da9b0a1ff3
+X-MS-Office365-Filtering-Correlation-Id: bb3cf6f9-5d11-48ea-f8f5-08da9b0a20c4
 X-LD-Processed: 38ae3bcd-9579-4fd4-adda-b42e1495d55a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	8AOM74nr3whK3Qn9AZGDd370Sn9zqywMlBiipMPxoYny3Lxg3oGuBB/Pq/Uvr0f56zRsW1Gc8kuTIzGyVcvCdx6EGFcThobIJ+Zma6GaGWWAcQPjQW9XZbZj+wfX4cmt1MlwMqr2T7yN0AzzWrxWFz2FA7IY4X3LwF5+FzP1v9QcZoDA/2ntp1RsiKHNozReHbNA+g/FPq/SchV04xbZpno55AUqCXzfEeNAPcSXciiNh7Lf8/FcUMcDOmQ5DoA4sK4w3MeXC/fdO0CZ0mwtYNX2ESk5z+8CwD29dNRTFzmyRURiaLHYdrqlIexJXOmF5TI2MYXtxEX05YDnEdq+1VnXN7YeeyYlSAuY9RNsspEnIe/hYv9w0uyO66gBszdKPcpo91tqFPuIdRGexB8e/QwELJYgYSe1+YZoClaB2Hmdxvmaj9VFh5p2NNSDZ6SmNbl5Mgt+M+VuUkjx9H6REnm9fBkrQ3w07x6G/xOrA456b1u8sYGubCESF1OGwP3Thd0/GQzNIyrthswc4tj1QU0BY2zdDfeSNNi2nZcCJ/gFWDlb+I9ndodp4WqahyICXD2SVAx5tbohuGJTRlY+7WbdqHvn+1ZwY4ZXIGZjm7pYa8rprxFiGT+PPUrlubedpVTda6wGB6aqs3LcbesmGWgJr5WziBMk3PZYwFK5KFGqGSKoAzwtWfb+MSlLw+KfMFFGoYmLLG/OkAfAYIz7Lg==
+	7A5VGAWWPNO1Jk1yBfIMFYn0pTfLsCHFIrXxjO5mzuPZAVbSVqxzVWKCWQQM3dYkvE/bltlYyjflSdSmAcFxCGqYDlT0jcPQolJbFR205Rnkpnklai7Af/95Zp8wOkvcSIralLfnE6Fq/qOwbafMOgIZvZIdls1tJbG7+jRhf6ZD6JySQrGF523WFnPwDG+HRWsTsVM/2SpxPVDrUGVBekT8uauLXCIH8lmc3jzk4hmQmiRskxLi9LHyyRuaoX3XKnCnC/aJCiKEri0NiiqdLkwJWA57jwu1FmRCBzamVq1fRRn3zkEueRx9jrcs5LXGnFZBq/c1cVRgjWA+j/dVJ1bVCEdeKRr9ossqaUYowUjN0AiL+BxkywsaMXQgJNPclcDJ+DIstaoak+5Bwk3csG6cu9iyR+bFFyfKzOIMVwEg9i6JSc4fIY97t9kMkRNvSFjlya+y3TBnmt5emjoDfPmFWfuq+hYU58leZIAIhbtxB0+Uvuk9k7/+ewmnLqw50tuT661GxrQVO0tvCdD8L7bFBPnhfHmEMepk/nNLKxU5YTget3NahaFTWSD8Oy3EVtELtZTg9EDr5rHltJ4NILuctlQ770lQLE36lgKXZXumgHcruyGawtBvHJnIa5k1L/8bG5hB+DzmvpuEBXFvmLLZ/p/jdrwPuhXSGcLQeid4ewaQXxAv/n4A0IpUWEc1Mz6hnfNeQvxCB5F81UGIUw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(39860400002)(346002)(396003)(376002)(451199015)(66476007)(66946007)(5660300002)(66556008)(8676002)(4326008)(86362001)(6916009)(316002)(82960400001)(38100700002)(8936002)(107886003)(41300700001)(6486002)(6506007)(478600001)(2616005)(186003)(1076003)(6512007)(6666004)(36756003)(2906002)(44832011);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(39860400002)(346002)(396003)(376002)(451199015)(66476007)(66946007)(5660300002)(66556008)(8676002)(4326008)(86362001)(6916009)(316002)(82960400001)(38100700002)(8936002)(107886003)(41300700001)(6486002)(6506007)(478600001)(2616005)(186003)(1076003)(6512007)(6666004)(36756003)(4744005)(2906002)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?X9jxi/NNWRtonzEJYoV4mAF9B2IvC0egU13+2KHYuCBEajmtPfVnq3ohvKIc?=
- =?us-ascii?Q?b906+/QwYCcxmNWhaVVnati9ZxMkD4gXbshX9mhd5ddsHtKH43ASMD/DuSEW?=
- =?us-ascii?Q?FMob6MJdZlbAveM8mrX609IrO8YBkrRROnH07RLg0lQOoc3K488fQGJtxvkQ?=
- =?us-ascii?Q?gU7BRxV5UWRryg9XZzJseV5gi/wkAEcMcuWEySKps0nA4+V548rxmV6jOnHb?=
- =?us-ascii?Q?0dMrqIEJUlk4LeJPVONQ6dbZFmERS3uctZZ32JxbmZHL7YU45kgi6NPlWX19?=
- =?us-ascii?Q?lA26bUykj6wX3aeqkUNUqf6vLED8tS8EpaS6n2uq7oT1QJvO+R09s+VGHK0u?=
- =?us-ascii?Q?oF80YahoB4pDPA5jCeOzoPLZy4bhfZiAZ4lAL/AhYzEG81/6ZXt2Ntvc1H3+?=
- =?us-ascii?Q?00PDuFZU3jahNphnrA2Fzvc9h0We6+GlvixIfrt9xBItOLLSZ1hw3hy103ul?=
- =?us-ascii?Q?eQW8eWUGkryncDllYHIufkP32UMw7ooFGtVdNXDJeMlV47bmOVpHwnlMQOvZ?=
- =?us-ascii?Q?bEiXLB+ZKzqA9iFBPAnU4KG9m0E3TJEm/ufeKC+1OaAlT49oTRzxnHhgHZkn?=
- =?us-ascii?Q?ClweE1lBvt0HvYcT6+uugS6ZtovBXHUfQ/b1HClOwKbFT8MlWeVEigHCHrYH?=
- =?us-ascii?Q?gcUvooIp+DP5UDmkL6lRuOHk6CKlvkJlGjnZN+ybPyyWp0uwjxHquCfyld0L?=
- =?us-ascii?Q?DjGJR/ygVZfFubWC5qfYvliuZpbLJXf/MPcoegfxPRZwGBHlJaj4wKDGqtXU?=
- =?us-ascii?Q?TwTXTrDno4Ubc5UJjlNLEkdqTxzvsy9/uhd8qeC8cGcdmy0kRfvAHeFwAsrW?=
- =?us-ascii?Q?Z40rKy07oumny9o0fWLsFv9VRlo4SGHgf4avKPBnw4P7aVaul9s3Mv5vy3aI?=
- =?us-ascii?Q?62sxoxdwn3a1v5Qcc6P5qIYBjysK/zo0Q8r6MHGtVx4Z8GfA+JxxY10RYqF9?=
- =?us-ascii?Q?SbQfukw2tyrBJG7y9a3IsF7y4TNWz222wlp5jG1X5r77yymfCIGj/aTh1TmG?=
- =?us-ascii?Q?jA9sOCqg+6iouQkMfHLGA8LXLcY+TUynbS3tg0COIcrDtlGHl99j2WQchwkv?=
- =?us-ascii?Q?MonhPkXow0EwOgyDgpH3quJcuJKVuKW5qupMVu96AAiOXsP+27/iBaoFzy3N?=
- =?us-ascii?Q?+OBKJWaoVxPzodjt6URfYFnZKpFAM5wHvw9j5O3kVnp4W0iHFQ/FrSqsicDD?=
- =?us-ascii?Q?ek1/ZQ1rs/eNaiRQzC8wyZDR/2pl8Ft9OCQC27wc+yZQX+gSUE6nfdGFADC3?=
- =?us-ascii?Q?V4LvLpYVw4qbxVcrNVF5FRA8uDQZwZtT5uXzHFDuYfWiK8FoTRO20Xsi5qnv?=
- =?us-ascii?Q?IgiHyYs+as8oUZ6/O0RQ9fjK3cAFOMhifq5RdxUoJb6tkL1AASrPwg3xpGE0?=
- =?us-ascii?Q?BueULs3ABeodccT4zV7og6d/WOUEJ0oVYC815mtUHGzcm/gDDzBKs8yLzXiY?=
- =?us-ascii?Q?qHrf8II7EcBfoQ3SoLxetyGGC7lLiA7cmZZUrU7S4KuMspHRVSItsGJkAoVf?=
- =?us-ascii?Q?9KvKIZz9Ruca2YJkOXPlcbqml8huehk4NsafMXbhu+ZBEvi/dfJi35miy51h?=
- =?us-ascii?Q?ixdUtTxdJoww/x8VFmXNgrJ4RC1tFsSldFaqR/4H5UyGyzELqaQyXWkIcYMR?=
- =?us-ascii?Q?oWhtWgdlYpiHroLI7bHFhUb4EPoPoQRTKjVz67cZebRhTfBAIH4r7r+hHfCE?=
- =?us-ascii?Q?SG2stQ=3D=3D?=
+	=?us-ascii?Q?ewgokRFnX2p0trDTZ7LcHKyvVsXmb0/3mXkKsQ3J6mcpArkqFSEztqB+Hudw?=
+ =?us-ascii?Q?qdrkDoqcVhGtE2aWbujUQzvuv2al8vhQtwDNfR2v0xsFip/vN2PLZHLJHGpg?=
+ =?us-ascii?Q?8dNqKL48BFONqf++uL6qXPUGsMAbT3WysuE2Ik8fiG8akdOl7tME4SKNpKRf?=
+ =?us-ascii?Q?9mPqf1Z+fWej3r6j1Rt9b2YydKaa+XGRncZT+9WkXjD0fLup3Fyy9hZMnuQx?=
+ =?us-ascii?Q?3AudowHiwtkhwgyYc2zCbExo0V79HInpRpC7OignqNdfJCYsuTjpJJmCM/QD?=
+ =?us-ascii?Q?u8zmJP9kapq9ElgBIR2fGEYXWdydaPE4OoWJ++N7yQXgsTh+5jD1As54zEJ2?=
+ =?us-ascii?Q?jvzuhAOn7bzzUopPKYrm1CrvOTaJWCZRd99/EaPWfUGIdKXH5jIMH86Tg8bJ?=
+ =?us-ascii?Q?fxf94EHYzCVJEfuKk5ZOTP8Fr7YlwlquXjuz33es0wKyvgmVKBO3L//z8DXo?=
+ =?us-ascii?Q?aZX8iSeLMidQalFdyVl4QyXXOgohvd6x6ifqjIo//YQyBEGYyM9cb7geWZmB?=
+ =?us-ascii?Q?iqg3dsdTKW9ECftbBTkwNlzALfkPtYcNYbSSgUchxA51QGhF6exiPLGLMJvh?=
+ =?us-ascii?Q?t4DhuHwe8eziOun+x713rbsdCeN0N0zTkPcH9hFKCcPgeha8fwS30Mu6xS1a?=
+ =?us-ascii?Q?bbag061CFV0YLykUhWI0f/1V228WBKneaK+dSNEUuYaWbljnDQJSYwc8TDTS?=
+ =?us-ascii?Q?Sx/+p0QXOll2GTDCai0U1rmecRTnY2xBIZHNI7ivCvTil/8kgHP6Kx2jElcj?=
+ =?us-ascii?Q?tstFSk6gfnIowBoAI1MXrGM3mXhoz+uePiloqf18Mgjysnl9HkJ/8OHEKrjg?=
+ =?us-ascii?Q?QfUSwGQghLOXlAA30KzpW4PKe+JfyWLjeTJyhJP24bdgzRy9yRaB9p8Tn9uc?=
+ =?us-ascii?Q?Fr272ckZMNyw/3VyDdiJ2cz+hHTFikaVC6qa9h7liugKK/Wj6V48gaNoYkrP?=
+ =?us-ascii?Q?53pZ3ZCXJxIp6v79uMPj1ytLQ0t8Tk+NwGsWnoOOol9jj/5LP9K/U8cnKQHd?=
+ =?us-ascii?Q?9J0Xci/FZnOC/pho5rAUYCPjYN0LgPNdOuPLGFpcbRyZgkHSl+/ByM63VHlD?=
+ =?us-ascii?Q?f/oWKi6VnqH0X8y/NbPjo8f/VTAbEEaNX7t7N5LAKOEfyfu7z2BMauylWUqg?=
+ =?us-ascii?Q?/Xh+jEXW8c1XuVcOHAzJTRW0Yxk5BiqtiXYi8mf2CxEozJFAO1hssdX6LtUk?=
+ =?us-ascii?Q?3WYIvrrygFmNVGURnRoRb+NhtK78VsZNLl+uaXKudeHInOlH9hWBgRV5PE2G?=
+ =?us-ascii?Q?0qTU6iJuUgsmiag4tYBG1AytohF82mgU+qittYrzRYLwp2BDWFjHBkErZF1S?=
+ =?us-ascii?Q?jYX9z2O6rQVyph1OXdKe06ERvzeK4o9E8S4Dzl+5DhrXkM5nAtkpNixfB3gZ?=
+ =?us-ascii?Q?sED/OvpkmSMhg7u4V4wNlvaFoh/NB7XXXH0MvDm1o2aTp9SgqOxinSo856lO?=
+ =?us-ascii?Q?AYxntpbpBO4ao5pHmJnHfc3rI/DHqt22sJrm2VmOQkQbcDLMt4ruTG8AnsTx?=
+ =?us-ascii?Q?L8C9ifWnJqZyywIOXdmU1l1ysniX16UwccfKqSwAShbIX4y3X27Pu/8U6O0L?=
+ =?us-ascii?Q?TicqacPecJUSbf8hdO4srJELdm5hT2SgAWr4ABXUzWC7LaWmIJdnJuPJprPA?=
+ =?us-ascii?Q?7CpixntvcuHHKh9viU7yVvDA2M511lNOxh+YCd0CXZFZZtf2z5Rxei3e48BE?=
+ =?us-ascii?Q?nz6stw=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a434dfe-3ea9-43a1-3471-08da9b0a1ff3
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb3cf6f9-5d11-48ea-f8f5-08da9b0a20c4
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2022 13:15:01.5450
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2022 13:15:02.9042
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9sbz06OP7B8lpnHkCHbCwtOrdoPa2nwq9V2XPmFmfW0vpR9mtGb0IAgdiQa+Dfyn0Nf2UPJL1Vun5QVUEaOUS9YXldpmDbwp5s4yyjo2COk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: LhcKZXD6ZBhkeN2XoTBgsAUZrNE+4JOct10RjtyQJ49F72eSPysBXq7xY0v1HWCJpaZVBwOCdd0sY26CM9/83igyMmP23xv+ZCincFCAah0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB6217
 
-Adding compat enabled build and tests for the x86 architecture to the
-CI infrastructure.
+If selected the Xenomai userspace components will be build as 32 bit
+(=compat) applications.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- ci/xenomai_next.yml        |  1 +
- ci/xenomai_next_compat.yml | 47 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 48 insertions(+)
- create mode 100644 ci/xenomai_next_compat.yml
+ Kconfig | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
-index 52ac6dd..b9e9a57 100644
---- a/ci/xenomai_next.yml
-+++ b/ci/xenomai_next.yml
-@@ -13,6 +13,7 @@ include:
-   - local: '/ci/gitlab-ci-base.yml'
-   - local: '/ci/kernel_5_10.yml'
-   - local: '/ci/kernel_5_15.yml'
-+  - local: '/ci/xenomai_next_compat.yml'
- 
- variables:
-   XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
-diff --git a/ci/xenomai_next_compat.yml b/ci/xenomai_next_compat.yml
-new file mode 100644
-index 0000000..92571ef
---- /dev/null
-+++ b/ci/xenomai_next_compat.yml
-@@ -0,0 +1,47 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2022
-+#
-+# Authors:
-+#  Florian Bezdeka <florian.bezdeka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
+diff --git a/Kconfig b/Kconfig
+index 1e3371e..25e6d8c 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -165,3 +165,11 @@ config DEBUG
+ config KAS_INCLUDE_DEBUG
+ 	string
+ 	default "opt-debug.yml" if DEBUG
 +
-+.compat-vars:
-+  variables:
-+    XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml:opt-compat.yml"
-+    XENOMAI_VERSION: "next-compat"
++config COMPAT
++	bool "Build 32 bit Xenomai userspace"
++	depends on XENOMAI_LATEST && ARCH_X86
 +
-+build-5.15-compat:qemu-amd64:
-+  extends:
-+    - .build:qemu-amd64
-+    - .compat-vars
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
-+    KERNEL_VERSION: "5.15"
-+
-+lava-test-5.15-compat:qemu-amd64:
-+  needs: [ "build-5.15-compat:qemu-amd64" ]
-+  extends:
-+    - .lava-test:qemu-amd64
-+    - .compat-vars
-+  variables:
-+    KERNEL_VERSION: "5.15"
-+
-+build-5.15-compat:x86-64-efi:
-+  extends:
-+    - .build:x86-64-efi
-+    - .compat-vars
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
-+    KERNEL_VERSION: "5.15"
-+
-+lava-test-5.15-compat:x86-64-efi:
-+  needs: [ "build-5.15-compat:x86-64-efi" ]
-+  extends:
-+    - .lava-test:x86-64-efi
-+    - .compat-vars
-+  variables:
-+    KERNEL_VERSION: "5.15"
++config KAS_INCLUDE_COMPAT
++	string
++	default "opt-compat.yml" if COMPAT
 -- 
 2.37.3
 
