@@ -1,126 +1,116 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cczrelay01.in2p3.fr (cczrelay01.in2p3.fr [134.158.66.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4BBD7C
-	for <xenomai@lists.linux.dev>; Wed, 21 Sep 2022 10:08:26 +0000 (UTC)
-Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 1BA4FCD743
-	for <xenomai@lists.linux.dev>; Wed, 21 Sep 2022 09:58:30 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id A07EC40013;
-	Wed, 21 Sep 2022 09:58:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1663754303;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rPjS8ZAaI/l95HY72F14E2L1KaBbyM/UISP3eTXczyY=;
-	b=EEiQWCXKOWlODzOTRdvgQrTNA1zGp2WkGuMcLsD5QLq5ws8BtlKvlBzCfyGPyBarP1tUCt
-	8BsoN0X3geI2AFNfjSv5Kh63eQ8iV25Oa8SjtmfOoeZzoVqtIrIarPUSB9UtCAAskZP0JO
-	Qz8nXiMcwytdK7Alunw3nwBk3BrxyliHE5Trd9lr0Ki0+1erzrBwXKGDZvXD758u/hOJ3f
-	YxoGjMy8OQ+TJWWl7WgEuQ5LpKzsyQ+puOdWM+oIejGAwfx+jY1j6WqC+VgSZRo4kqUG5C
-	IHQXBvRDSrkBbD0Gxnd+Sb5uK9CYG+hfhZtPu4xDcYL7j0WamTrC08JbsA0QyQ==
-References: <4WAGIR.N142QYZSDNER1@lapp.in2p3.fr> <87y1ud3vzn.fsf@xenomai.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
-Cc: xenomai@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C4E533D4
+	for <xenomai@lists.linux.dev>; Wed, 21 Sep 2022 13:36:48 +0000 (UTC)
+Received: from [192.168.0.114] (mdb35-1_migr-88-125-107-19.fbx.proxad.net [88.125.107.19] (may be forged))
+	(authenticated bits=0)
+	by cczrelay01.in2p3.fr (8.14.4/8.14.4) with ESMTP id 28LDadlJ015431
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+	Wed, 21 Sep 2022 15:36:45 +0200
+Date: Wed, 21 Sep 2022 15:36:33 +0200
+From: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
 Subject: Re: How to debug realtime interrupt latency
-Date: Wed, 21 Sep 2022 11:44:53 +0200
-In-reply-to: <87y1ud3vzn.fsf@xenomai.org>
-Message-ID: <87tu513v7m.fsf@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+Message-Id: <X4BKIR.IUOSEN2ZXQGV1@lapp.in2p3.fr>
+In-Reply-To: <87y1ud3vzn.fsf@xenomai.org>
+References: <4WAGIR.N142QYZSDNER1@lapp.in2p3.fr> <87y1ud3vzn.fsf@xenomai.org>
+X-Mailer: geary/40.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-
-Philippe Gerum <rpm@xenomai.org> writes:
-
+Hi Philippe,
+Le mer., sept. 21 2022 at 08:51:54 +0200, Philippe Gerum=20
+<rpm@xenomai.org> a =E9crit :
+>=20
 > Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
->
->> Hi,
->>
->> Let me introduce myself and what I'm working on. I'm a software
->> engineer working on the real time acquisition and control system of
->> the Virgo interferometer:
->> https://en.wikipedia.org/wiki/Virgo_interferometer . This system is
->> currently based on RTAI 5.2, which allows us to implement control loop
->> up to 50 kHz. Data are exchanged using optical links of in-house PCIe
->> boards. These boards are synchronized using a distributed clock. Each
->> iteration of the control loop is triggered by an interrupt generated
->> by the PCIe board. From the interrupt handler, we are calling a list
->> of computational functions running in user space.
->>
->> I'm currently evaluating Xenomai 3 as a replacement of RTAI 5.2. The
->> first step consist in measuring the interrupt latency. During our
->> tests, one of our machines shown bigger worst case latencies than the
->> RTAI 5.2 based platform running on the same hardware, or even than the
->> same Xenomai 3.1 based platform running on a different hardware. That
->> is why I'm looking for advice on how to debug interrupt latency.
->>
->> Here is my 3 setups:
->>
->> CentOS 7 + Linux 4.14.111 + RTAI 5.2 on Dell PowerEdge R630 Intel(R)
->> Xeon(R) CPU E5-2623 v3 @ 3.00GHz
->> CentOS 7 + Linux 4.14.111 + Xenomai 3.1 on Dell PowerEdge R630
->> Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz
->> CentOS 7 + Linux 4.14.111 + Xenomai 3.1 on DELL PowerEdge T740
->> Intel(R) Xeon(R) Gold 5222 CPU @ 3.80GHz
->>
->> Except for the kernel, all the systems run the same OS (NFS mounted
->> root file system).
->>
->> The interrupt latency measurements are in this figure:
->> http://emmanuel.pacaud.free.fr/partage/interrupt-latencies.png
->>
->> All the systems have irqaffinity=3D0 and isolcpus=3D1,2,3. The affinity =
-of
->> the real time interrupt is set to 1.
->>
->> The real time interrupt is installed using
->> rt_request_irq/rt_assign_irq on RTAI, and xnintr_init/xnintr_affinity
->> on Xenomai.
->> The interrupt latency is measured using the in-house PCIe board (a
->> time register is latched when the board emit an interrupt, and a
->> current time register is read at the beginning of the interrupt
->> handler).
->>
->
+...
+>>  The real time interrupt is installed using
+>>  rt_request_irq/rt_assign_irq on RTAI, and=20
+>> xnintr_init/xnintr_affinity
+>>  on Xenomai.
+>>  The interrupt latency is measured using the in-house PCIe board (a
+>>  time register is latched when the board emit an interrupt, and a
+>>  current time register is read at the beginning of the interrupt
+>>  handler).
+>>=20
+>=20
 > Which is the frequency of the timer event in this test case?
->
->> What would explain the latency distribution on the DELL R630 + Xenomai
->> compared to RTAI on the same machine, or to itself on the other
->> machine ?
->
-> Hard to say ATM. 10-15 =C2=B5s could be explained by significantly more c=
-ache
-> misses, e.g. after a driver for a graphic adapter has issued wbinvd. Or
+
+The PCIe board send an interrupt at 10kHz.
+
+>>  What would explain the latency distribution on the DELL R630 +=20
+>> Xenomai
+>>  compared to RTAI on the same machine, or to itself on the other
+>>  machine ?
+>=20
+> Hard to say ATM. 10-15 =B5s could be explained by significantly more=20
+> cache
+> misses, e.g. after a driver for a graphic adapter has issued wbinvd.=20
+> Or
 > simply due to more convoluted code paths running the ISR. I understand
 > the test environment between RTAI 5.2 and Xenomai 3.1 does not change,
 > so cache invalidation from the kernel should bite the same way
-> though. Longer IRQ masking is another reason obviously, which is often a
+> though.
+
+The environnements are the same, as well as the kernel configurations=20
+(except for the RTAI and Xenomai specific configuration obviously). So=20
+yes, we should have seen the same behaviour using RTAI.
+
+>  Longer IRQ masking is another reason obviously, which is often a
 > function of cache behavior during some interrupt-free section.
->
 
-NOTE: There is a known source of jitter with the Xenomai 3.x series when
-it comes to dealing with the core timer (which should apply to RTAI as
-well IIRC), which is related to the single-lock model: beyond 4-6 cores
-(x86, less with ARM-based SoCs), the lack of SMP scalability this model
-causes may induce higher latency. To mitigate this, you would need to
-restrict the set of CPUs allowed to deal with real-time business, using
-the supported_cpus kernel argument, so that other CPUs do not attempt to
-grab that single lock as they catch Xenomai timer events uselessly.
+Do you mean there could be some interrupt masking done from the non=20
+real time part of the kernel ?
 
-Since your test case does not involve the core timer, but rather a
-common PCI device, this locking should not bite until the rescheduling
-procedure is called at the end of the ISR though (per-IRQ locking
-applies to device interrupts until then, not the ugly big lock).
+>>  Does Xenomai perform some other tasks before the real time interrupt
+>>  handler is called ?
+>=20
+> No unrelated housekeeping stuff is performed, only IRQ related work is
+> involved upon receipt.
 
---=20
-Philippe.
+Ok.
+
+>>  Is there a way in Xenomai to measure the interrupt latency from the
+>>  moment the kernel is awaken by an interrupt signal and the moment
+>>  Xenomai calls the installed interrupt handler ?
+>>=20
+>=20
+> As Hongzhan already mentioned, you may want to get some figures from=20
+> the
+> 'latency' program [1], specifically using the '-t2' option, which
+> measures the IRQ-to-ISR delay in kernel space (excluding any=20
+> additional
+> latency brought by switching user contexts). This should be equivalent
+> to your current test case, barring the event generator and clock=20
+> source.
+>=20
+> The I-pipe has a built-in tracer (CONFIG_IPIPE_TRACE); running=20
+> 'latency'
+> with the -f option would get you a snapshot of the active code path
+> before the worst-case figure was measured.
+
+Thanks for the infos.
+
+> Question: are you stuck with 4.14, or could you upgrade to the 5.x
+> kernel series? (4.x is EOL here, we moved away from the legacy I-pipe=20
+> to
+> Dovetail [2] with Xenomai 3.2).
+
+For the time being it would be better if I could stay with 4.14, as it=20
+looks like the 5.X kernel series requires a gcc version more recent=20
+that what is provided by our standard base OS (Centos7) . But I will=20
+definitely test Xenomai 3 with dovetail.
+
+Thanks again,
+
+	Emmanuel.
+
+
