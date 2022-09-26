@@ -1,159 +1,153 @@
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2076.outbound.protection.outlook.com [40.107.104.76])
+Received: from mx0a-001f5801.pphosted.com (mx0b-001f5801.pphosted.com [148.163.159.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B1F33CF
-	for <xenomai@lists.linux.dev>; Mon, 26 Sep 2022 14:12:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KAkWGbXjkeUPSY+Mm/aMNhMTOA0XUiUbknE0hT9m7vHcopHvofnjfCDZ4WBEQIH2WFj+zEDavku958QnjzVQpbITgqpANpIWZTHTwA2S3HWOr6Ncy7PXbHzKMBJcgpNWbkSGFbYcLPKdbHAFZEa/BzbSQ7YEngKUCkrw3x/5gju4pzKN8xI/b4kM9y7c1W2WQ+bDsCiBWiuS8foJDAQquqW2E/GhOvXnRO9kVDo5JmUl5ImgDyg4DfNXyAovwJJw0cWjTYn8n+7S8xiH/RazyqQI8l1WTXVJwQ++1udpIjOSzZK57/qaUXFCObol68mmbjJJmHGtF565qAiErixsew==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E9F33F2
+	for <xenomai@lists.linux.dev>; Mon, 26 Sep 2022 14:20:54 +0000 (UTC)
+Received: from pps.filterd (m0090335.ppops.net [127.0.0.1])
+	by mx0b-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28QD6hQE002263;
+	Mon, 26 Sep 2022 07:20:46 -0700
+Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0143.outbound.protection.office365.us [23.103.199.143])
+	by mx0b-001f5801.pphosted.com (PPS) with ESMTPS id 3jt12b25bm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 26 Sep 2022 07:20:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=OO9tpYuw/DIOv9RtOQFVxEsRTLWuTOSMEyKYzjnLNjk5WDOJeWa+iadQNn8gAvKtmGzxtafYVEcPVp9szC1tBiurr+nuJuGwHDgD1P8LUUo0ICwAvtFVNdpqXakVjEsg7Dv5eghyQS6P2c4u7pNXB9e6prjuMzTueZ6QtkLuju8tF8BbrjeWxueGjtJImBcdHM1qrCnf0Bs3R7f22uaWiqTYYqcho2a7BclNBiXlVN7hCUyMoMLevJ55BkDl+Sd51NplniEyOKmkRBbDu6oFE5dco/uY3W7ECTUe+gK12G8oNlN13bdXDCQ8nsv33iz5JBJlECvbBRPpYU89O3s1rA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
+ s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jgSJ5ft9bQtq7mt6UHik5qGoDEt7L43l34vDnSW9xHk=;
- b=ZlOHWZYTmuxU1v/hbH14FNWKIBukdB2iA4minUPqa0lmXUGcUcs0SmvLA7BcVQpXEhPmRrjOJAD5ItvJfOvcERKhJAzlp8yUJMhBNTElURNjLkruZWZzxN8lwpfS1XwY8ZTdS1GvnTnh/AU6KqUJq2lRBDgc3psRKBXp4SnZPaCE+9enNcVgjbPMNGj7m2z93uS+mW9dwSIrPV6X0vXhAsNiWeyh3TyP937AfjzSksHkvGLdSnaiINFyDawTERPceSBdjKjiLjL3PI/Qx7TySNiuW4yyP6LobBVMr0LVXkb29ftpbjD7TmSeC2RbuQFEiSUTdwxJ24j2IWNynVypKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.74) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ bh=ApAMtozi8oj7z6l8/vZ1sX10cGYakTqqdxX7GaUv5gQ=;
+ b=gA+vYPXOIZlvt2FqRCX4uzTNRUraxBi+kFGm8WJVBNlJTex06+i4EoWTwKu2JzT4hTsUv9qFFUZuAUvbgDjfuI+U7c+eaQhT0pz2c/4qcuihujLbZq96ySyqJnydGcNsLOeAcOvjfEp0lcZmj2/lVyidcwNxjb1BNjo0lCWqd6ecF2b+wEtKHNbWpIVw74b5WO+2lolg/Ad4QBmd3flHSGpdEPhmrsudpwszpq84GuwkhoS0YMRMz1GA/zaFko2KPYwKyldL/QbaQoqLIq8exarX/1+RO6gPLNC2VWtP2VyeMB4qIYteb4ewP+LCQxAtJ5Nxv7URwAySywLbAgYY8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jgSJ5ft9bQtq7mt6UHik5qGoDEt7L43l34vDnSW9xHk=;
- b=tQq53Eq+xRBUTLdLrCT4dXf2kptxhOZZHYHJ7uhJA528YUjjRN4+jMDdHjsaBUfIjMNsu/+LJg/rwGQ5lKfokD6WPQSJI7Y7rnvsFTmWaYew81AdJtnGy+XlzdcvUh4SuzHNfnHMWbYeTkCZDYS2Ir0HpRYQPbc6DJeV1mY0uWlAsUQ1p1MfJ87//xaPAbVsI5Xp4vGpIkviFBUrquKUE64NdIzsR7jZ63cUCBewvZuyWvGssjULwYzp5rD0do8v/XPKXKRyvQdhr9ejLwdbc1Rdq5HNFuAGx8WRQ2RRp9MmcGBnSRsfCw77lmNQnBKYS3UlsGesVFJfIL7KLRDd+Q==
-Received: from AS9PR04CA0098.eurprd04.prod.outlook.com (2603:10a6:20b:50e::29)
- by AS8PR10MB7065.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:5a8::10) with
+ bh=ApAMtozi8oj7z6l8/vZ1sX10cGYakTqqdxX7GaUv5gQ=;
+ b=lQTdBRRX8DV5Ii7wRuEo8NbhSLcXAEbNxM6K6y2eC3kUXfeQy0YeJm5loaIvb7JWtSgA6e//j527A43M0VgE5wOXPetjCzIFW3BZwj6Y34smsgfm6f1/i//GTLg7QK1Nwc7GTeRMBvRru0KxN+NUfLX2HZBlt76fXkIgu3ZpUldB8Uou7J/offyDE4ELMPSji8ral6zteJzpCDdRYedtrIuCyxQI+S8OGyxNdzp4zuU7q4Xa48R9sSMp4ihjuoE9qJnkt1mDv5vH2Hv4ztkE4rP3a0q0eAgECcuSIF+Kb5eRW6JUkyeGjwatfYewgTNL9ooIPqpOdKXQtwC9T8xyzg==
+Received: from BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:17a::9)
+ by BN2P110MB1415.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:17c::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 14:12:36 +0000
-Received: from VE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:20b:50e:cafe::87) by AS9PR04CA0098.outlook.office365.com
- (2603:10a6:20b:50e::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25 via Frontend
- Transport; Mon, 26 Sep 2022 14:12:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.74)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.74 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.74; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.74) by
- VE1EUR01FT017.mail.protection.outlook.com (10.152.2.226) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5654.14 via Frontend Transport; Mon, 26 Sep 2022 14:12:36 +0000
-Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC8VQA.ad011.siemens.net (194.138.21.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.12; Mon, 26 Sep 2022 16:12:35 +0200
-Received: from [167.87.17.23] (167.87.17.23) by DEMCHDC89XA.ad011.siemens.net
- (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.12; Mon, 26 Sep
- 2022 16:12:33 +0200
-Message-ID: <0b37be56-c31f-5603-414c-07e678c6b560@siemens.com>
-Date: Mon, 26 Sep 2022 16:12:32 +0200
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Mon, 26 Sep
+ 2022 14:20:43 +0000
+Received: from BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::fdb6:83da:a5e9:4056]) by BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::fdb6:83da:a5e9:4056%7]) with mapi id 15.20.5654.019; Mon, 26 Sep 2022
+ 14:20:43 +0000
+From: Bryan Butler <Bryan.Butler@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: Russell Johnson <russell.johnson@kratosdefense.com>,
+        "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: RE: [External] - Re: System hanging when using condition variables
+Thread-Topic: [External] - Re: System hanging when using condition variables
+Thread-Index: AQHYzo9KEi/6rzVHQeiyZvhBQUhKe63tb7PggADQfACAAgF/AIAAGiQAgAFs6aA=
+Date: Mon, 26 Sep 2022 14:20:43 +0000
+Message-ID: 
+ <BN2P110MB1288812BD18DBAA0E2714B618F529@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB10500CC96F6D84D2026A6F63E24D9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87pmfncw9u.fsf@xenomai.org>
+ <BN2P110MB128891FFD2A6A7F6AAF6C5EE8F519@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <87o7v59o02.fsf@xenomai.org> <87illb8pfs.fsf@xenomai.org>
+ <87edvz8l5i.fsf@xenomai.org>
+In-Reply-To: <87edvz8l5i.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN2P110MB1288:EE_|BN2P110MB1415:EE_
+x-ms-office365-filtering-correlation-id: f2cb5b0e-3c0f-4cbc-d7a5-08da9fca4c23
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ oW+GJ7RSzWoLkk9w6AK0UEhf+RW+6VPmv1AsfkzTIkTe1NObi0ZeVNPT+P7nqLYp21FmReUgLwIiTsbhU6vfFyECs8Y2axBPqgoSAcE2OY6psF6clktGcRmr2FKBF/BICrGREf+NAMm4kPK2vg5wNLioPZkruG7jBHQNRmiFQcHhoNZ/EkzI+YzVcsC+ACxvp53v6NQlOyc45XiOb5hZUcpZJvUN869cK0CLX1OPa6dTrhyax8lY644kGQTyWHOEHft+sbGc16HFoAWjNFGecBkx3DH3z3C4Z3Ie7TeWcH6q64l1DlCf9wFQzkkp0moiWJ1S5O0/iR/KFC49xAtYLbaIwdQxVkBiu+gc0M+I666JBWCaHp99+Bl8QMJ7A2CqWBT9X8CS6nRXbUtkYa/R2reLPHQ/v9vdx9TTaSSJoKN+KDPQ8FY420r98oyVwmfvju+yU47R1+WWLFL0Opb8qfTiQBbDktvxngnxPpeowqa2DKMWyKzihOKuYDw+nL5fT6G27L6gfbZZXl8o0SXlhxc5/BKXEtXBQFAoMSflcw/OmWowvg+CDCT1tkVhUgBmW4uPSP+qZMjPIU42nkKzUYHyouLoG93M/ZEg3bwoSfRmXGKxhgLmPshvDvLaI/q0vQ+CMduhabIzNOcrQ3fI/QHoTp5mkPC9O19QSXsQm/CCqF5rIrY57GgETe45AG19QetB7rPlnCY2ITkfGR98/w==
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(4326008)(55016003)(83380400001)(26005)(8676002)(7696005)(66946007)(66446008)(64756008)(76116006)(71200400001)(6506007)(38100700002)(6916009)(53546011)(9686003)(33656002)(54906003)(2906002)(498600001)(966005)(66476007)(186003)(86362001)(66556008)(5660300002)(122000001)(52536014)(8936002)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ GaO00cuRJmi+uyvvyOXLDYaNsVLNMiD2lf56Q9vZKkJPwV1ivzZx3AOSxTgKfnPmFgwG8nflxIHypS+894zAUhL54DOwbqctIWFqbPy5nTaC3GdJ9ChMhZcwu6y4uM3epxpnq9HPDfDJQ3bk1cbbdi+dABh5ZQy9GUzEBVxOz675QB7hQAcLj2fBtwA4AUGygRx84jksFvWVStFFCHgpRgoy0Tg3CMCqErBBnnNqmlsdRN9cLuMCJjDaUZeamcnYYnMJ2FQz49RgEihPaTiP8RYlUdHXS3BiJ19ZA3cT9fyRTXLG1elfYlq/wpxaIFcozXHCW7ClDUQEkdGxou9Kq0NvU9Nx06CgQ4bZiLHYY0lb3v4LNw5Hu++ZlfZowZgIqAchJBxcWnNWKinbZSYf9XCC1OE4O5ubWTbEOoqhngM=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH v2 0/4] Enablement of compat tests in CI
-Content-Language: en-US
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, <xenomai@lists.linux.dev>
-References: <20220920122503.115682-1-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20220920122503.115682-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.87.17.23]
-X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--15.938100-8.000000
-X-TMASE-MatchedRID: Alur8Cs15mw5QaOxwNGfvo9bHfxDWoibNtywwIf5ksV+J3gtIe0gA4vO
-	GTCbVKU4fsHhg+2FIAuj1fS2cCKT341rT/sKjwatpX1c04mAgVG61uxEWGyNMi289eFksaeReou
-	vej40T4hLxCuBTCXaKqJFmbmfOdw3zSEy3HVaiC5Joro5CEMAFAshYDXXcgntf8dNT84FpMYQAi
-	YeAVgD3qRymZqZOCCtY2iR7K8Wcsy+cKWVQmxRy5uxrOzNyr8Uqbt/wkKSxwz9xyC38S1f/f3l3
-	BKhUmN/Odl/GMFVBFuncita11QPxUWKnB9D0c9mvtPMyLC089dT+JmnZwrj3F5hVZTm4dD8QX5C
-	VimNCmkK1YKSPbUVZKPFjJEFr+olA9Mriq0CDAgBi3kqJOK62QtuKBGekqUpI/NGWt0UYPAI7oC
-	UriDS4fiNnF3M9WGNakQRvi6zrx4muxImCuacLZgsUDEHK8L/
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--15.938100-8.000000
-X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-SNTS-SMTP: 555B5E4F399CB7CAF55AFC9B2AE4BAB7A2AF05A73B180864D87C7460567BC20C2000:8
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VE1EUR01FT017:EE_|AS8PR10MB7065:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1c28b123-01eb-47df-8946-08da9fc92992
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	B0dnz7wzIjEwvrzCx/n07MJSBeBv5rv6LSvtkrUbBSz49gKD/7YKcALN4phAkByTYt09kXnF/4KabSR7aG1p1Lkw9WJl9pY3tqNJKbGgVkO7fkC+Diu3usQZ24Tp/60QmLMd2nWl6Cl5hGozVbzntCxjvfRSn38cj3efhjbVvaPnvjXxq6iAWrrSR8W4eNfx5U+hZI2vsS8Xjclu1iwt6NwwGHhUS2cqMfubPplsyFGSb6+w4vF1ok8gnLEHdrsN6ccNLkh1ULtbjrvy8BQ4z2H1yKqT1B7Uxs92rGOq4Ohk33AxZW5IVlLksdXnayUfUEDMs83w3adOiZWy8TgygaFRSnVk1O+nXB9w6SREjty+ojzAcmyaF16MXzh/S+zcVvSEU2Z6KZclcc5BpuLQtjRnSob5CGOG2l552FAGUb8Wymx7OtusS1cllJwjwFcPfsVDxn/Vb40bDTsTcpkNRmrMutzOq6Bm4nHkQgoooFoDUa3603HRZFzWp2/hSsFF6j+D+oFq/7hNzgbLTQz4aB+8DxRagXfOqywAYb8Q1bDosyeSO5/Jf3/OnfzJ9nOtyKOiAeGugDBpEWlav0KnJHwBEVg7recKyTHgAYzelPg0MCRLVvJc5vYFPO2QwPgUFvF6yoNlX9djf391KWUZIetjJPyizRbRof8+74jZ9mzrlLUHQuTBYjTsTKM/muAIMEYQdr7DLETrjYA1gnS0ZqBbXeGrZ4CRKUueU/qIH1wFMokRmfp2+xjGGuwrk2lWhePCf5sb1i+RZ1nd3VmRlONQXZv81fB7Uis3jZig0TectWgoYaBujK46NKt9m8aiDpJjVAdlnnlhnnEyZA5F7P+lIQpD2DuDXqg8ubl2ECQ=
-X-Forefront-Antispam-Report:
-	CIP:194.138.21.74;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:hybrid.siemens.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(39860400002)(376002)(451199015)(36840700001)(46966006)(40470700004)(44832011)(6706004)(40460700003)(356005)(41300700001)(7596003)(7636003)(2906002)(70586007)(70206006)(8676002)(110136005)(316002)(16576012)(31696002)(5660300002)(86362001)(53546011)(26005)(8936002)(47076005)(40480700001)(966005)(478600001)(36860700001)(82310400005)(186003)(16526019)(956004)(36756003)(2616005)(83380400001)(82960400001)(336012)(82740400003)(31686004)(3940600001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 14:12:36.0589
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2cb5b0e-3c0f-4cbc-d7a5-08da9fca4c23
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2022 14:20:43.5505
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c28b123-01eb-47df-8946-08da9fc92992
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.74];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	VE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7065
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN2P110MB1415
+X-Proofpoint-ORIG-GUID: VHQnwcjv2BVqwQnWNZub75OcfhcO0YNs
+X-Proofpoint-GUID: VHQnwcjv2BVqwQnWNZub75OcfhcO0YNs
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-26_08,2022-09-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ malwarescore=0 adultscore=0 mlxscore=0 spamscore=0 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=0 phishscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209260091
 
-On 20.09.22 14:24, Florian Bezdeka wrote:
-> Changes in v2:
->   - Removed patch 1 (already merged)
->   - Splitted patch 2 into 2 parts (addressing review comments)
->     - rtdm extension (now in patch 1)
->     - compat support for rt_can (patch 2)
->   - Added patch 4 (helps to separate CI logs)
-> 
+Thank you Philippe, this is indeed good news! We are downloading the patch =
+and rebuilding this morning. Will start testing and get you the results ASA=
+P.
+Thanks so much for your diligence.=20
 
-How about using patch 1 on other drivers than thouse you address in
-patch 2 and 3? Not needed? Or not possible?
+-----Original Message-----
+From: Philippe Gerum <rpm@xenomai.org>=20
+Sent: Sunday, September 25, 2022 10:33 AM
+To: Bryan Butler <Bryan.Butler@kratosdefense.com>
+Cc: Russell Johnson <russell.johnson@kratosdefense.com>; xenomai@lists.linu=
+x.dev
+Subject: Re: [External] - Re: System hanging when using condition variables
 
-Jan
+CAUTION: This email originated from outside of the organization. Do not cli=
+ck links or open attachments unless you recognize the sender and know the c=
+ontent is safe.
 
-> Hi all,
-> 
-> this is a spin-off out of my y2038 queue. This helps to shorten the
-> y2038 stuff. The following 3 patches are necessary for getting the smokey 
-> testsuite sucessfully running in compat mode.
-> 
-> The necessary adjustments to the CI infrastructure (part of the
-> xenomai-images project) will follow soon.
-> 
-> At the end the following issue will be resolved: 
-> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/21
-> 
-> Best regards,
-> Florian
-> 
-> 
-> Florian Bezdeka (4):
->   cobalt/rtdm/fd: Adding helpers for handling compat affected data
->     structures
->   drivers/rtcan: Implement compat support for the rtcan driver
->   drivers/net/stack/ipv4/udp: Implement compat support for the udp
->     driver
->   testsuite/smokey/y2038: Show sizeof(long) and sizeof(time_t) on
->     startup
-> 
->  include/cobalt/kernel/rtdm/fd.h         |  16 ++++
->  kernel/cobalt/rtdm/drvlib.c             |  17 +---
->  kernel/cobalt/rtdm/fd.c                 | 122 ++++++++++++++++++++++++
->  kernel/drivers/can/rtcan_raw.c          |  42 ++++----
->  kernel/drivers/net/stack/ipv4/udp/udp.c |  29 +++---
->  testsuite/smokey/y2038/syscall-tests.c  |   3 +
->  6 files changed, 176 insertions(+), 53 deletions(-)
-> 
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Philippe Gerum <rpm@xenomai.org> writes:
 
+> Philippe Gerum <rpm@xenomai.org> writes:
+>
+>> Bryan Butler <Bryan.Butler@kratosdefense.com> writes:
+>>
+>>> I have another system that behaves slightly differently. When it hits t=
+he watchdog, here's what I get:
+>>>
+>>
+>> I have been able to reproduce a bug on an armv7 SoC with the test=20
+>> case you provided. Sometimes the RCU stall detector triggers,=20
+>> sometimes it's a plain hard lockup. I believe these are symptoms of=20
+>> the same bug, which _seems_ to hide in the PI chain management. I'm on i=
+t.
+>
+> Actually, the PI chain was 'only' collateral damage. The bug was a=20
+> fairly silly ABBA deadlock issue elsewhere, in the monitor=20
+> implementation. A fix is under stress test here, I'll follow up with a=20
+> patch asap.
+>
+> Thanks for the fine test case, having it made a huge difference once=20
+> again.
+
+Please test this branch [1] which addresses the issue, passed a 1h runtime =
+stress test here. I'll wait for a confirmation from your end with the real =
+app before merging these bits to the mainline EVL code.
+
+TIA,
+
+[1] https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__source.denx.de_X=
+enomai_xenomai4_linux-2Devl_-2D_tree_testing_fix-2Dabba&d=3DDwIBAg&c=3DzeCC=
+s5WLaN-HWPHrpXwbFoOqeS0G3NH2_2IQ_bzV13g&r=3DZCxAV_wH32iGNw683_LJpz6zY-laHqP=
+yFpuUGbfNbD8&m=3Dj4miWzS4SlD0k9MUb_LS6XjrCKUMIzk8_ImpRAtPwW6n61PtaMYSTcv_Wz=
+IJ0tT8&s=3DpparDjiwRsE3zGtqgV0Nz3VNc7RfYRhH17md5-Xcw_8&e=3D
+
+--
+Philippe.
