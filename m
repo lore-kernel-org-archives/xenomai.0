@@ -1,191 +1,156 @@
-Received: from m1511.mail.126.com (m1511.mail.126.com [220.181.15.11])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A95322F32
-	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 14:09:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=cEdd7
-	5oKAWr4YCc4bSXCVsfqKqhVgrUQPRYsLDlTcU0=; b=GEVosWozhHhplgw1Twp26
-	Oo9XqGHdZtAe5smzygB7QzfKdsbzSg0XBUHdq1FFn1Ufz6nCEV0h1jlfjpRYYkkW
-	k/PFoWG51O0CRedr1UAUCQIXPYE26TYUqVb/lc8UA5peIzSyx7wFZNEGh7hlBsH/
-	uMMc8hSWkTdgHAls5cDLzU=
-Received: from yxianyao$126.com ( [113.118.224.64] ) by ajax-webmail-wmsvr11
- (Coremail) ; Mon, 10 Oct 2022 22:09:52 +0800 (CST)
-X-Originating-IP: [113.118.224.64]
-Date: Mon, 10 Oct 2022 22:09:52 +0800 (CST)
-From: "Yxian.Yao" <yxianyao@126.com>
-To: "Jan Kiszka" <jan.kiszka@siemens.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re:Re: some kernel exceptions
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <1ff093a6-a231-898c-aee6-3bfb19178ae1@siemens.com>
-References: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
- <1ff093a6-a231-898c-aee6-3bfb19178ae1@siemens.com>
-X-NTES-SC: AL_QuydB/iav0Ei5CGfbekWkkkVj+Y3UMa3u/Ug3Y5TP5E0vCn3+D8LcXVsGXn36O2TASuxuhKPcRp00/ZYZ6pmVKbXGDmVPVtKAkCzLGvX8Xaj
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20075.outbound.protection.outlook.com [40.107.2.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564402F32
+	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 14:13:56 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KDZ7Bl1XOrxXY/UrvHgRIQBBoWrMMHotzUZx1msWPR+SLzGsW8ezYbUcUg4bVJV78sxPHopsFTmtFYVRKB38ws5zyt0jnb2ADQKUdKUMvwhBcF7aQk0oKbDdZtz63REnucxAMYrdbhhoZkpVbNlp5HL0aBS9y6J0GIaTW+Zlhs6o3RMy9tK//XgMcNTTVH/UU5J6H+gxPHJL7GJ8qq0mLoVhuV8QRb5I3bnIh85k7DCafgoZfO54oJrGYEezQC1JA52l+QWaMijzRImspeJF2i5vr1duueCINa5jpgYas83E4fTSW/o/+uQH9STnzd/o+R0qoWXCPfVukZrozDfRcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z8cOlQ/veG7DWG3Bl4Ta/2sU7R0hrfYjtpjQHw7dMA8=;
+ b=RpXJUGs9jE6IkhBfsfGjFgwaFEjTEfyeED1B66hndzWgWie+2GTUMvOo/jxCAayWHRtG9m+9VLeXNCoBIB3ybQ9i4GX3C6fjfw5NrXedTbSiksyk5icczeOw8nuZfeKRLbPddT71VUBsWmp5sJhjZ8Jgo13KRGtxCexzBEAPzkkXo8wvPsovEYupT7i7TGjpNseVSrkKnsCHHrxrNoeN6efcmFo4Nk/OG931WTNyqxHkIwBRppvTlHE7YO9K6dM3TFhqFN+Ldc0pkqoH03X5e5tKIqoKx9FgITkkmW+R0+1xp3ZmbU378/yFB11zfL4yzvT2RzuPYsq4mXdk6inivQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.75) smtp.rcpttodomain=126.com smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z8cOlQ/veG7DWG3Bl4Ta/2sU7R0hrfYjtpjQHw7dMA8=;
+ b=qmkwsaIJ5EOC/lcVz8MluZr8yki4NJK0eNsrA9nbYH2wyqvfYHtrQX+zPFKXk3V54WfhdzXFXjwFL5W/RJ5mKyRvk9ot/Mb2BzCMy5MO6QMkicGYEz7EUaUhUDxFdeq28ziMl63G9AlicpQb8p8atBMDlJ198Cjs9dbv3vV7UlbWxClgG8QKUNulZ4hKwy5tvdERD5O0p3VCEPHBSO5FsQtR0V+C0lpKUAvzSFtB02xRRL0d2sUkWJT4vmDik/uI0gGPTnTMOFeWXYrm2pclhZJx6Nz7aTSuHGijyN55TDJP41IHyZKEGFc4V//QFERvCgQMJZ5xNC0DmHfcSHkrUw==
+Received: from DB6P193CA0018.EURP193.PROD.OUTLOOK.COM (2603:10a6:6:29::28) by
+ PA4PR10MB5635.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:264::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Mon, 10 Oct
+ 2022 14:13:53 +0000
+Received: from DB5EUR01FT028.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:6:29:cafe::56) by DB6P193CA0018.outlook.office365.com
+ (2603:10a6:6:29::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.15 via Frontend
+ Transport; Mon, 10 Oct 2022 14:13:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.75)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.75 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.75; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.75) by
+ DB5EUR01FT028.mail.protection.outlook.com (10.152.4.237) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5709.10 via Frontend Transport; Mon, 10 Oct 2022 14:13:52 +0000
+Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
+ DEMCHDC8VRA.ad011.siemens.net (194.138.21.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.12; Mon, 10 Oct 2022 16:13:52 +0200
+Received: from [139.25.68.37] (139.25.68.37) by DEMCHDC89XA.ad011.siemens.net
+ (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.12; Mon, 10 Oct
+ 2022 16:13:52 +0200
+Message-ID: <ae43e7c9-e35f-6f9a-ca2e-baceec231a50@siemens.com>
+Date: Mon, 10 Oct 2022 16:13:51 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <76f26fbc.727a.183c23b0834.Coremail.yxianyao@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:C8qowADnQsiwJ0RjBpyIAA--.12500W
-X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbiWBuWs11w-JD-EAABsJ
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: some kernel exceptions
+Content-Language: en-US
+To: Yxian.Yao <yxianyao@126.com>
+CC: <xenomai@lists.linux.dev>
+References: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
+ <1ff093a6-a231-898c-aee6-3bfb19178ae1@siemens.com>
+ <76f26fbc.727a.183c23b0834.Coremail.yxianyao@126.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <76f26fbc.727a.183c23b0834.Coremail.yxianyao@126.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [139.25.68.37]
+X-ClientProxiedBy: DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) To
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-AS-Result: No-10--20.130300-8.000000
+X-TMASE-MatchedRID: 3OnHKS+pL/Q5QaOxwNGfvvy6J2sQ40CSPg9yfk4YC0aJUlmL3Uj0mAv/
+	9UzFeXITFxWwVm4vHRT1WUYGMIOdyMG34NV1LokEY1gqwRMUc44kinkyECdW86btlVLKF4zpa2M
+	h+MYVtv82/UwdvFG5Inz0ry6FT4UcimyY0YAT/KlYQP62QpRT7H5uUfhNvnKz5wXI1oONVuAujM
+	j6uE1hubbMVaqtU3gFki7wEI18pApBj25t7WpOfl+24nCsUSFNt5CrqYXZLj+x5amWK2anSPoLR
+	4+zsDTtAqYBE3k9Mpw=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--20.130300-8.000000
+X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-SNTS-SMTP: F299122A6C87BDAD094543110B23702961CE113E240827CB329F701C557305242000:8
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB5EUR01FT028:EE_|PA4PR10MB5635:EE_
+X-MS-Office365-Filtering-Correlation-Id: db4930f5-795a-461b-ead3-08daaac9a934
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fAasdlAyijeElw8PwxlMI7o0Wm+lKs3BYTU+gcQ9c3pxhODPlLXdZ9zE2Inax2aUm/TGB2oO22G8WPqIouS4ZrZzih93u03iR8K4PMpeuDVHTeAJS92yaXsKBSaPhHp4yZOB9yIv4kuhRsRY+MW/IfqlKz9l7wg3yNpkXoWpnNMGsWZUeoGqpBc2GtFm3DDk+IwSYQse1Jm4d3gPKgk7c8gtmBvKq79twOQAf9zIXxN6mI48zImPM07Y6Zd7rCbMLsUTNYe6m1MokeVeT/j7rksJUocrhjPdGStbXI+eOUHwzn6cpoDWi/xAthWP+ihTI1MafN1VMYO9A6SNvdgtV8TYiczADg/o0v9Kemj3DwOCEAHvr088C/pFesGLXv8BVMREiz8CvmRg7E4QyctALQM8WnQ9UOgq7nHxK3qRCbF3ZNv6klCaD3cToYhOf0koWWDKDxweQR1E+gUxAfxJTTsdE69vWrGoD5jNIpvMjsDiSlszV30/zcA1AZ3Yepnuy5iNb4De8aYno6DD7AMIAGbcNAIIU6aLe2m4SzdObEW2MmW81u/knK2xZGijtGxZ12aWxoyPY5XSSPNL0BGJ6cUs1ps74irXIfw8ju+h4MfXLlW/O9pOrGqf53wOU0wYA50Ol+hgH3R0UllVSF1urP7eznsb7CJO516w1sSLku8liBlE40SOzlMVrBkZIGAjNaG3Hgmp+ohzMcxE4KHju6aQlJ4JRSuZvJCWeLdpPyfYiTejf9hrFQ1Jav0q5rjGlQrxdVfUUNH6+dwjzC5ZG7hHvjEsrji26IwhFMXiFDxVn3z2aDiuzLvGGPI96DeSGY7WMY9HBJa4aQICC5YW3JBq9FL4caVCJ71rSRPL1bA=
+X-Forefront-Antispam-Report:
+	CIP:194.138.21.75;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199015)(40470700004)(36840700001)(46966006)(6916009)(6706004)(31696002)(82310400005)(7116003)(2616005)(478600001)(82960400001)(8676002)(316002)(53546011)(40480700001)(3480700007)(16576012)(86362001)(82740400003)(356005)(336012)(4326008)(36756003)(40460700003)(83380400001)(81166007)(70586007)(47076005)(36860700001)(16526019)(956004)(186003)(70206006)(31686004)(26005)(41300700001)(5660300002)(2906002)(8936002)(44832011)(3940600001)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2022 14:13:52.9687
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: db4930f5-795a-461b-ead3-08daaac9a934
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.75];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB5EUR01FT028.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB5635
 
-CkhpIEphbiwKCgpUaGlzIGlzIHRoZSBvbmx5IGtlcm5lbCB2ZXJzaW9uLiBCZXNpZGVzLCB0aGVz
-ZSBwcm9ibGVtcyBhcmUgaGFyZCB0byByZXByb2R1Y2UuCldoZXRoZXIgc29tZSBjb25maWd1cmF0
-aW9ucyByZWxhdGVkIHRvIHBlcmYgYXJlIGVuYWJsZWQgaW4gdGhlIGtlcm5lbO+8nwpUaGUgZm9s
-bG93aW5nIGFyZSB0aGUgY29uZmlndXJhdGlvbiBpdGVtcyBmb3IgcGVyZjoKCgpDT05GSUdfQ0dS
-T1VQX1BFUkY9eQpDT05GSUdfQ0NfT1BUSU1JWkVfRk9SX1BFUkZPUk1BTkNFPXkKQ09ORklHX0hB
-VkVfUEVSRl9FVkVOVFM9eQojwqBLZXJuZWzCoFBlcmZvcm1hbmNlwqBFdmVudHPCoEFuZMKgQ291
-bnRlcnMKQ09ORklHX1BFUkZfRVZFTlRTPXkKI8KgQ09ORklHX0RFQlVHX1BFUkZfVVNFX1ZNQUxM
-T0PCoGlzwqBub3TCoHNldAojwqBQZXJmb3JtYW5jZcKgbW9uaXRvcmluZwpDT05GSUdfUEVSRl9F
-VkVOVFNfSU5URUxfVU5DT1JFPW0KQ09ORklHX1BFUkZfRVZFTlRTX0lOVEVMX1JBUEw9bQpDT05G
-SUdfUEVSRl9FVkVOVFNfSU5URUxfQ1NUQVRFPW0KI8KgQ09ORklHX1BFUkZfRVZFTlRTX0FNRF9Q
-T1dFUsKgaXPCoG5vdMKgc2V0CiPCoENPTkZJR19QQ0lFQVNQTV9QRVJGT1JNQU5DRcKgaXPCoG5v
-dMKgc2V0CkNPTkZJR19IQVZFX1BFUkZfRVZFTlRTX05NST15CkNPTkZJR19IQVZFX0hBUkRMT0NL
-VVBfREVURUNUT1JfUEVSRj15CkNPTkZJR19IQVZFX1BFUkZfUkVHUz15CkNPTkZJR19IQVZFX1BF
-UkZfVVNFUl9TVEFDS19EVU1QPXkKQ09ORklHX0NMU19VMzJfUEVSRj15CiPCoENPTkZJR19ERVZG
-UkVRX0dPVl9QRVJGT1JNQU5DRcKgaXPCoG5vdMKgc2V0CiPCoFBlcmZvcm1hbmNlwqBtb25pdG9y
-wqBzdXBwb3J0CkNPTkZJR19IQVJETE9DS1VQX0RFVEVDVE9SX1BFUkY9eQojwqBDT05GSUdfUkNV
-X1BFUkZfVEVTVMKgaXPCoG5vdMKgc2V0CgpBdCAyMDIyLTEwLTEwIDIxOjQxOjI2LCAiSmFuIEtp
-c3prYSIgPGphbi5raXN6a2FAc2llbWVucy5jb20+IHdyb3RlOgo+T24gMTAuMTAuMjIgMTU6MzEs
-IFl4aWFuLllhbyB3cm90ZToKPj4gCj4+IAo+PiBEdXJpbmfCoHRoZcKgcmVjZW50wqB0ZXN0aW5n
-wqBvbsKgdGhlwqBsaW51eC00LjE5Ljg5LWlwaXBlLTkteGVub21haS0zLjEgKGxpbnV4LTQuMTku
-ODkswqBpcGlwZS1jb3JlLTQuMTkuODkteDg2LTkucGF0Y2gswqB4ZW5vbWFpIDMuMSkswqAKPj4g
-dGhlwqBrZXJuZWzCoG91dHB1dHPCoHNvbWXCoGV4Y2VwdGlvbsKgbWVzc2FnZXMswqBhc8KgZm9s
-bG93cy4KPj4gUGxlYXNlwqBnaXZlwqBtZcKgc29tZcKgaGludHMhCj4KPkFyZSB5b3UgdXNpbmcg
-dGhlIHBlcmYgdG9vbCBoZXJlPwo+Cj5BbHNvLCBjYW4geW91IGNoZWNrIGlmIHRoZSBpc3N1ZSBw
-ZXJzaXN0cyB3aXRoIGEgcmVjZW50IGRvdmV0YWlsIGtlcm5lbAo+KDUuMTUgb3IgNS4xMCk/IE9y
-IGFyZSB5b3UgbG9ja2VkIGludG8gdGhlc2UgdmVyc2lvbnMgdGVjaG5pY2FsbHk/Cj4KPkphbgo+
-Cj4+IAo+PiBUaGFua3PCoGHCoGxvdC4KPj4gCj4+IAo+PiBbwqA1MjI4LjM1ODA4NV3CoHBlcmY6
-wqBpbnRlcnJ1cHTCoHRvb2vCoHRvb8KgbG9uZ8KgKDI1MDTCoD7CoDI1MDApLMKgbG93ZXJpbmfC
-oGtlcm5lbC5wZXJmX2V2ZW50X21heF9zYW1wbGVfcmF0ZcKgdG/CoDc5NzUwCj4+IFsxMzMyMy44
-OTk3NTldwqBwZXJmOsKgaW50ZXJydXB0wqB0b29rwqB0b2/CoGxvbmfCoCgzMTM3wqA+wqAzMTMw
-KSzCoGxvd2VyaW5nwqBrZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3JhdGXCoHRvwqA2Mzc1
-MAo+PiBbNjI1NDAuNjU5NzI1XcKgaHJ0aW1lcjrCoGludGVycnVwdMKgdG9va8KgMTIzNznCoG5z
-Cj4+IFs2MzQwNS42NjE5NThdwqBwZXJmOsKgaW50ZXJydXB0wqB0b29rwqB0b2/CoGxvbmfCoCgz
-OTI3wqA+wqAzOTIxKSzCoGxvd2VyaW5nwqBrZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3Jh
-dGXCoHRvwqA1MDc1MAo+PiBbMTMxMjA0LjE1MDAzOV3CoHBlcmY6wqBpbnRlcnJ1cHTCoHRvb2vC
-oHRvb8KgbG9uZ8KgKDUwMTLCoD7CoDQ5MDgpLMKgbG93ZXJpbmfCoGtlcm5lbC5wZXJmX2V2ZW50
-X21heF9zYW1wbGVfcmF0ZcKgdG/CoDM5NzUwCj4+IFsxNjYwMjEuODgxNzA3XcKgQlVHOsKgdW5h
-YmxlwqB0b8KgaGFuZGxlwqBrZXJuZWzCoHBhZ2luZ8KgcmVxdWVzdMKgYXTCoDAwMDAwMDAwMDAw
-YTIyZTgKPj4gWzE2NjAyMS44ODk1NzldwqBQR0TCoDDCoFA0RMKgMMKgCj4+IFsxNjYwMjEuODky
-NTAzXcKgT29wczrCoDAwMDDCoFsjMV3CoFBSRUVNUFTCoFNNUMKgUFRJCj4+IFsxNjYwMjEuODk3
-MjY4XcKgQ1BVOsKgMsKgUElEOsKgMTYwNMKgQ29tbTrCoFJ1bkNvbW1hbmRBY3RvcsKgS2R1bXA6
-wqBsb2FkZWTCoFRhaW50ZWQ6wqBQwqDCoMKgwqDCoMKgwqDCoMKgwqDCoE/CoMKgwqDCoMKgwqA0
-LjE5Ljg5LWlwaXBlLTkteGVub21haS0zLjEtMjAyMDEwMjfCoCMxCj4+IFsxNjYwMjEuOTEwNjYx
-XcKgSGFyZHdhcmXCoG5hbWU6wqBJbnRlbMKgQ29ycG9yYXRpb27CoFMyNjAwQ1dSL1MyNjAwQ1dS
-LMKgQklPU8KgU0U1QzYxMC44NkIuMDEuMDEuMDAyMi5DMi4wNjI4MjAxNzE5MDPCoDA2LzI4LzIw
-MTcKPj4gWzE2NjAyMS45MjI2OTZdwqBJLXBpcGXCoGRvbWFpbjrCoExpbnV4Cj4+IFsxNjYwMjEu
-OTI2Mzk0XcKgUklQOsKgYTIyNjA6MHhmZmZmODg4NjY3NjFjNTYwCj4+IFsxNjYwMjEuOTMwOTY1
-XcKgQ29kZTrCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqBjMMKgOGbC
-oDZhwqA2N8KgODbCoDg4wqBmZsKgZmbCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKg
-MDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAw
-MMKgMDDCoDwwMT7CoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMcKgMDHCoDAwwqAwMMKg
-MDDCoDAwwqAwMMKgMDDCoDAywqAwMMKgMDDCoDAwwqAwMMKgMDAKPj4gWzE2NjAyMS45NTIwMTZd
-wqBSU1A6wqA4MTAzN2YwNzowMDAwMDAwMDAwMGEyMjYwwqBFRkxBR1M6wqBmZmZmODg4NjY3NjFj
-NTYwwqBPUklHX1JBWDrCoGZmZmZmZmZmODExMTk1M2UKPj4gWzE2NjAyMS45NjE3MjZdwqBSQVg6
-wqAwMDAwMDAwMDAwMGEyMjYwwqBSQlg6wqAwMDAwMDAwMDAwMDAwMDAywqBSQ1g6wqBmZmZmZmZm
-ZjgyODAyMWMwCj4+IFsxNjYwMjEuOTY5Nzg2XcKgUkRYOsKgZmZmZjg4ODY2NzYxYzU2MMKgUlNJ
-OsKgMDAwMDAwMDAwMDAwMDAwMMKgUkRJOsKgMDAwMDAwMDAwMDAwMDAwMAo+PiBbMTY2MDIxLjk3
-Nzg0N13CoFJCUDrCoGZmZmY4ODg2Njc2YTQ1NDDCoFIwODrCoDAwMDAwMDAwMDAwNWYzZTDCoFIw
-OTrCoGZmZmZmZmZmODExODM4Y2IKPj4gWzE2NjAyMS45ODU5MDldwqBSMTA6wqBmZmZmZmZmZjgx
-MTdjZGRjwqBSMTE6wqAwMDAwMDAwMDAwMDAwMDAywqBSMTI6wqBmZmZmODg4NjY3NmE1ZDA4Cj4+
-IFsxNjYwMjEuOTkzOTY5XcKgUjEzOsKgZmZmZmU4ZjlmZjgwNzdkOMKgUjE0OsKgZmZmZjg4ODY2
-NzZhNDU0MMKgUjE1OsKgZmZmZmZmZmY4MTE4MzhjYgo+PiBbMTY2MDIyLjAwMjAzMF3CoEZTOsKg
-wqAwMDAwN2Y3M2M2ZmZkNzAwKDAwMDApwqBHUzpmZmZmODg4NjY3NjAwMDAwKDAwMDApwqBrbmxH
-UzowMDAwMDAwMDAwMDAwMDAwCj4+IFsxNjYwMjIuMDExMTU3XcKgQ1M6wqDCoDAwMTDCoERTOsKg
-MDAwMMKgRVM6wqAwMDAwwqBDUjA6wqAwMDAwMDAwMDgwMDUwMDMzCj4+IFsxNjYwMjIuMDE3NjY2
-XcKgQ1IyOsKgMDAwMDAwMDAwMDBhMjJlOMKgQ1IzOsKgMDAwMDAwMGMyOWNmODAwNMKgQ1I0OsKg
-MDAwMDAwMDAwMDE2MDZlMAo+PiBbMTY2MDIyLjAyNTcyMF3CoERSMDrCoDAwMDAwMDAwMDAwMDAw
-MDDCoERSMTrCoDAwMDAwMDAwMDAwMDAwMDDCoERSMjrCoDAwMDAwMDAwMDAwMDAwMDAKPj4gWzE2
-NjAyMi4wMzM3ODFdwqBEUjM6wqAwMDAwMDAwMDAwMDAwMDAwwqBEUjY6wqAwMDAwMDAwMGZmZmUw
-ZmYwwqBEUjc6wqAwMDAwMDAwMDAwMDAwNDAwCj4+IFsxNjYwMjIuMDQxODQzXcKgQ2FsbMKgVHJh
-Y2U6Cj4+IFsxNjYwMjIuMDQ0NjY3XcKgTW9kdWxlc8KgbGlua2VkwqBpbjrCoGZ1c2XCoG1vZF9z
-YW1vKFBPKcKgbW9kX2RyeHUoUE8pwqBtb2Rfc3RjdShQTynCoGFyYzTCoGVjYsKgbWQ0wqBzaGE1
-MTJfc3NzZTPCoHNoYTUxMl9nZW5lcmljwqBjbWFjwqBubHNfdXRmOMKgY2lmc8KgY2NtwqBkbnNf
-cmVzb2x2ZXLCoGZzY2FjaGXCoGludGVsX3JhcGzCoHNiX2VkYWPCoHg4Nl9wa2dfdGVtcF90aGVy
-bWFswqBpbnRlbF9wb3dlcmNsYW1wwqBjb3JldGVtcMKga3ZtwqBpcnFieXBhc3PCoGNyY3QxMGRp
-Zl9wY2xtdWzCoGNyYzMyX3BjbG11bMKgZ2hhc2hfY2xtdWxuaV9pbnRlbMKgcGNiY8KgYWVzbmlf
-aW50ZWzCoGFlc194ODZfNjTCoGNyeXB0b19zaW1kwqBjcnlwdGTCoGpveWRldsKgZ2x1ZV9oZWxw
-ZXLCoGludGVsX2NzdGF0ZcKgbWdhZzIwMMKgdHRtwqBkcm1fa21zX2hlbHBlcsKgZHJtwqBmYl9z
-eXNfZm9wc8KgaVRDT193ZHTCoGlUQ09fdmVuZG9yX3N1cHBvcnTCoGxwY19pY2jCoGludGVsX3Vu
-Y29yZcKgc3lzY29weWFyZWHCoGV2ZGV2wqBpcG1pX3NpwqBpcG1pX2RldmludGbCoG1mZF9jb3Jl
-wqBtZWlfbWXCoHN5c2ZpbGxyZWN0wqBpMmNfaTgwMcKgaXBtaV9tc2doYW5kbGVywqBteG1fd21p
-wqBpbnRlbF9yYXBsX3BlcmbCoHNuZF9wY3NwwqBzbmRfcGNtwqBzbmRfdGltZXLCoHNuZMKgc291
-bmRjb3JlwqBzeXNpbWdibHTCoGlvYXRkbWHCoG1lacKgYWNwaV9wb3dlcl9tZXRlcsKgd21pwqBi
-dXR0b27CoGlwX3RhYmxlc8KgeF90YWJsZXPCoGF1dG9mczTCoGV4dDTCoGNyYzE2wqBtYmNhY2hl
-wqBqYmQywqBmc2NyeXB0b8KgZG1fbW9kwqBpNDBldmbCoGF0bGFudGljwqBpNDBlwqBpeGdiwqBl
-MTAwMGXCoGUxMDAwwqBlMTAwwqBtaWnCoHZtd19wdnNjc2nCoHZteG5ldDPCoHNnwqBzZF9tb2QK
-Pj4gWzE2NjAyMi4xMjQwMzNdwqDCoGhpZF9nZW5lcmljwqB1c2JoaWTCoGhpZMKgYWhjacKgbGli
-YWhjacKgeGhjaV9wY2nCoGVoY2lfcGNpwqBsaWJhdGHCoHhoY2lfaGNkwqBlaGNpX2hjZMKgY3Jj
-MzJjX2ludGVswqBpZ2LCoGl4Z2JlwqBpMmNfYWxnb19iaXTCoHVzYmNvcmXCoHNjc2lfbW9kwqBt
-ZGlvwqBkY2EKPj4gCj4+IFsxNjYwMjIuMTM5NDgwXcKgQ1IyOsKgMDAwMDAwMDAwMDBhMjJlOAo+
-PiAKPj4gCj4+IAo+PiAKPj4gWzE4NDcyMy41MDkzNDFdwqBCVUc6wqB1bmFibGXCoHRvwqBoYW5k
-bGXCoGtlcm5lbMKgcGFnaW5nwqByZXF1ZXN0wqBhdMKgMDAwMDAwMDAwMDBhMjJlOAo+PiBbMTg0
-NzIzLjUxNjQxOF3CoEJVRzrCoHVuYWJsZcKgdG/CoGhhbmRsZcKga2VybmVswqBwYWdpbmfCoHJl
-cXVlc3TCoGF0wqAwMDAwMDAwMDAwMDQ4MDQ0Cj4+IFsxODQ3MjMuNTIzNDUzXcKgUEdEwqAwwqBQ
-NETCoDDCoAo+PiBbMTg0NzIzLjUyNjA3Ml3CoE9vcHM6wqAwMDEwwqBbIzFdwqBQUkVFTVBUwqBT
-TVDCoFBUSQo+PiBbMTg0NzIzLjUzMDMzNl3CoENQVTrCoDLCoFBJRDrCoDQ3NjPCoENvbW06wqBS
-dW5Db21tYW5kQWN0b3LCoEtkdW1wOsKgbG9hZGVkwqBUYWludGVkOsKgUMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqBPwqDCoMKgwqDCoMKgNC4xOS44OS1pcGlwZS05LXhlbm9tYWktMy4xLTIwMjAxMDI3
-wqAjMQo+PiBbMTg0NzIzLjU0MjMxMl3CoEhhcmR3YXJlwqBuYW1lOsKgU3VwZXJtaWNyb8KgS29u
-dHJvbsKgQzYxMlhTMS9Lb250cm9uwqBDNjEyWFMxLMKgQklPU8KgMi4wYS5WMsKgMDcvMDQvMjAy
-MQo+PiBbMTg0NzIzLjU1MDk5Nl3CoEktcGlwZcKgZG9tYWluOsKgTGludXgKPj4gWzE4NDcyMy41
-NTQzMDhdwqBSSVA6wqAwMDEwOjB4NDgwNDQKPj4gWzE4NDcyMy41NTczNjBdwqBDb2RlOsKgQmFk
-wqBSSVDCoHZhbHVlLgo+PiBbMTg0NzIzLjU2MDY2OV3CoFJTUDrCoDAwMTg6ZmZmZjg4ODg1ZmEw
-M2VkMMKgRUZMQUdTOsKgMDAwNTEwNDYKPj4gWzE4NDcyMy41NjU5NzJdwqBSQVg6wqBmZmZmODg4
-ODVmYTVmM2UwwqBSQlg6wqBmZmZmZmZmZmEwN2VkNGE4wqBSQ1g6wqBmZmZmODg4ODVmOGE0NTQw
-Cj4+IFsxODQ3MjMuNTczMTg0XcKgUkRYOsKgMDAwMDAwMDAwMDAwMDAwMMKgUlNJOsKgZmZmZmZm
-ZmY4MWUwZjBhN8KgUkRJOsKgMDAwMDAwMDAwMDAwMDAwYgo+PiBbMTg0NzIzLjU4MDM5NF3CoFJC
-UDrCoDAwMDAwMDAwMDAwMDAwMDDCoFIwODrCoDAwMDAwMDAwMDAwMDAwMDLCoFIwOTrCoDAwMDAw
-MDAwMDAwMDBhN2UKPj4gWzE4NDcyMy41ODc2MDRdwqBSMTA6wqAwMDAwMDAwMDAwMDAwMDBmwqBS
-MTE6wqBmZmZmZmZmZjgyNWIxZWVlwqBSMTI6wqBkZWFkMDAwMDAwMDAwMjAwCj4+IFsxODQ3MjMu
-NTk0ODE1XcKgUjEzOsKgZGVhZDAwMDAwMDAwMDEwMMKgUjE0OsKgZmZmZmZmZmZhMDdlZDQ4MMKg
-UjE1OsKgZmZmZmM5MDAwM2I1ZmE0MAo+PiBbMTg0NzIzLjYwMjAyOF3CoEZTOsKgwqAwMDAwN2Y0
-YWQ1N2ZhNzAwKDAwMDApwqBHUzpmZmZmODg4ODVmYTAwMDAwKDAwMDApwqBrbmxHUzowMDAwMDAw
-MDAwMDAwMDAwCj4+IFsxODQ3MjMuNjEwMTkwXcKgQ1M6wqDCoDAwMTDCoERTOsKgMDAwMMKgRVM6
-wqAwMDAwwqBDUjA6wqAwMDAwMDAwMDgwMDUwMDMzCj4+IFsxODQ3MjMuNjE2MDE0XcKgQ1IyOsKg
-MDAwMDAwMDAwMDA0ODAxYcKgQ1IzOsKgMDAwMDAwMDgxM2E2NjAwMcKgQ1I0OsKgMDAwMDAwMDAw
-MDE2MDZlMAo+PiBbMTg0NzIzLjYyMzIyNV3CoERSMDrCoDAwMDAwMDAwMDAwMDAwMDDCoERSMTrC
-oDAwMDAwMDAwMDAwMDAwMDDCoERSMjrCoDAwMDAwMDAwMDAwMDAwMDAKPj4gWzE4NDcyMy42MzA0
-MzVdwqBEUjM6wqAwMDAwMDAwMDAwMDAwMDAwwqBEUjY6wqAwMDAwMDAwMGZmZmUwZmYwwqBEUjc6
-wqAwMDAwMDAwMDAwMDAwNDAwCj4+IFsxODQ3MjMuNjM3NjQ1XcKgQ2FsbMKgVHJhY2U6Cj4+IFsx
-ODQ3MjMuNjQwMTc4XcKgwqA8SVJRPgo+PiBbMTg0NzIzLjY0MjI3N13CoMKgP8KgeG50aHJlYWRf
-c3dpdGNoX2ZwdSsweDIxLzB4MzAKPj4gWzE4NDcyMy42NDY2MzZdwqDCoD/CoF9fX3huc2NoZWRf
-cnVuLnBhcnQuNjgrMHgxZmIvMHg0NjAKPj4gWzE4NDcyMy42NTE0MjZdwqDCoD/CoHhuaW50cl9j
-b3JlX2Nsb2NrX2hhbmRsZXIrMHgyMGQvMHgzMTAKPj4gWzE4NDcyMy42NTY0NzFdwqDCoD/CoF9f
-X3huc2NoZWRfcnVuLnBhcnQuNjgrMHgxMjAvMHg0NjAKPj4gWzE4NDcyMy42NjEyNTddwqDCoD/C
-oF9faXBpcGVfZGlzcGF0Y2hfaXJxKzB4MTIwLzB4MWIwCj4+IFsxODQ3MjMuNjY1ODc2XcKgwqA/
-wqBfX2lwaXBlX2hhbmRsZV9pcnErMHg2Ny8weDFlMAo+PiBbMTg0NzIzLjY3MDIyNl3CoMKgP8Kg
-Y29tbW9uX2ludGVycnVwdCsweGYvMHgyYwo+PiBbMTg0NzIzLjY3NDIyOV3CoMKgPC9JUlE+Cj4+
-IFsxODQ3MjMuNjc2NDEyXcKgV0FSTklORzrCoHN0YWNrwqByZWN1cnNpb27CoG9uwqBzdGFja8Kg
-dHlwZcKgMgo+PiBbMTg0NzIzLjY3NjQxM13CoE1vZHVsZXPCoGxpbmtlZMKgaW46wqBtb2RfZGFj
-b25ydChQTynCoG1vZF9kYWNvKFBPKcKgbW9kX3BnY3UoUE8pwqBtb2RfdHNtdShQTynCoG1vZF9z
-Y2MoUE8pwqBmdXNlwqBhcmM0wqBlY2LCoG1kNMKgc2hhNTEyX3Nzc2UzwqBzaGE1MTJfZ2VuZXJp
-Y8KgY21hY8KgbmxzX3V0ZjjCoGNpZnPCoGNjbcKgZG5zX3Jlc29sdmVywqBmc2NhY2hlwqBpbnRl
-bF9yYXBswqB4ODZfcGtnX3RlbXBfdGhlcm1hbMKgaW50ZWxfcG93ZXJjbGFtcMKgY29yZXRlbXDC
-oGt2bV9pbnRlbMKga3ZtwqBpcnFieXBhc3PCoGNyY3QxMGRpZl9wY2xtdWzCoGNyYzMyX3BjbG11
-bMKgZ2hhc2hfY2xtdWxuaV9pbnRlbMKgcGNiY8KgYWVzbmlfaW50ZWzCoGFlc194ODZfNjTCoGNy
-eXB0b19zaW1kwqBjcnlwdGTCoGdsdWVfaGVscGVywqBpbnRlbF9jc3RhdGXCoGludGVsX3VuY29y
-ZcKgaW50ZWxfcmFwbF9wZXJmwqBzbmRfaGRhX2NvZGVjX3JlYWx0ZWvCoHNuZF9oZGFfY29kZWNf
-Z2VuZXJpY8KgaVRDT193ZHTCoGlUQ09fdmVuZG9yX3N1cHBvcnTCoGpveWRldsKgc25kX2hkYV9p
-bnRlbMKgYXN0wqBldmRldsKgc25kX2hkYV9jb2RlY8KgdHRtwqBzbmRfcGNzcMKgZHJtX2ttc19o
-ZWxwZXLCoGkyY19pODAxwqBzbmRfaGRhX2NvcmXCoGRybcKgc25kX2h3ZGVwwqBmYl9zeXNfZm9w
-c8Kgc3lzY29weWFyZWHCoHN5c2ZpbGxyZWN0wqBzbmRfcGNtwqBzeXNpbWdibHTCoHNuZF90aW1l
-csKgc25kwqBscGNfaWNowqBzb3VuZGNvcmXCoG1mZF9jb3JlwqB3bWnCoGlwbWlfc2nCoGlwbWlf
-ZGV2aW50ZsKgaXBtaV9tc2doYW5kbGVywqBidXR0b27CoGlwX3RhYmxlc8KgeF90YWJsZXPCoGF1
-dG9mczTCoGV4dDTCoGNyYzE2wqBtYmNhY2hlwqBqYmQywqBmc2NyeXB0b8KgZG1fbW9kCj4+IFsx
-ODQ3MjMuNzUyMzkzXcKgwqBoaWRfZ2VuZXJpY8KgdXNiaGlkwqBoaWTCoGk0MGV2ZsKgYXRsYW50
-aWPCoGl4Z2JlwqBtZGlvwqBpeGdiwqBlMTAwMGXCoGUxMDAwwqBlMTAwwqBtaWnCoHZtd19wdnNj
-c2nCoHZteG5ldDPCoHNnwqBzZF9tb2TCoGFoY2nCoHhoY2lfcGNpwqBsaWJhaGNpwqBlaGNpX3Bj
-acKgbGliYXRhwqBpZ2LCoGVoY2lfaGNkwqBpMmNfYWxnb19iaXTCoHhoY2lfaGNkwqBzY3NpX21v
-ZMKgZGNhwqBjcmMzMmNfaW50ZWzCoHVzYmNvcmXCoGk0MGXCoFtsYXN0wqB1bmxvYWRlZDrCoG1v
-ZF9zY2NdCj4+IFsxODQ3MjMuNzc1MDQxXcKgQ1IyOsKgMDAwMDAwMDAwMDA0ODA0NAo+Cj4tLSAK
-PlNpZW1lbnMgQUcsIFRlY2hub2xvZ3kKPkNvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4
-Cj4K
+On 10.10.22 16:09, Yxian.Yao wrote:
+> 
+> Hi Jan,
+> 
+> 
+> This is the only kernel version. Besides, these problems are hard to reproduce.
+> Whether some configurations related to perf are enabled in the kernel？
+
+No, I meant of you are calling "perf" in order to profile some
+applications. The pure activation of the related kernel features is not
+considered problematic, but some "perf" feature are if actively used.
+
+> The following are the configuration items for perf:
+> 
+> 
+> CONFIG_CGROUP_PERF=y
+> CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
+> CONFIG_HAVE_PERF_EVENTS=y
+> # Kernel Performance Events And Counters
+> CONFIG_PERF_EVENTS=y
+> # CONFIG_DEBUG_PERF_USE_VMALLOC is not set
+> # Performance monitoring
+> CONFIG_PERF_EVENTS_INTEL_UNCORE=m
+> CONFIG_PERF_EVENTS_INTEL_RAPL=m
+> CONFIG_PERF_EVENTS_INTEL_CSTATE=m
+> # CONFIG_PERF_EVENTS_AMD_POWER is not set
+> # CONFIG_PCIEASPM_PERFORMANCE is not set
+> CONFIG_HAVE_PERF_EVENTS_NMI=y
+> CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
+> CONFIG_HAVE_PERF_REGS=y
+> CONFIG_HAVE_PERF_USER_STACK_DUMP=y
+> CONFIG_CLS_U32_PERF=y
+> # CONFIG_DEVFREQ_GOV_PERFORMANCE is not set
+> # Performance monitor support
+> CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+> # CONFIG_RCU_PERF_TEST is not set
+
+If you do not need those features, you may also try disabling them, if
+that changes the picture. Also compare your config in this regard to the
+config we test in xenomai-images (just a reference, not as the only
+possibly valid config, by far).
+
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
