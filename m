@@ -1,161 +1,258 @@
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130042.outbound.protection.outlook.com [40.107.13.42])
+Received: from mx0a-001f5801.pphosted.com (mx0b-001f5801.pphosted.com [148.163.159.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FCBB3209
-	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 16:37:20 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oSYZceoayEQmY4r+w9Xa9amkxIszBdAx+QrGuc+J6Ey+z4uR43PUoSMGFPrjZDjxwkWTA1C6BVC67HFulnJkSRBzXcXJ9OqmVJWOqkmpyBiHcUsek2n6uS45gxWv6b9uA/9MbX3l5lWMZCcf5D/gW43bIj8fTekV9qjx9T7c4DH89xKhzMHs87AmUOPM7MaWuP8sXIX3RKqakk3oUkLzSVnZ28+3MQOSiLdhjF5myPPdVzxwIb+YD/jQY2jdDwQA8gJydG//qV/BTQ68/d5pSPC2/hs/AmxpXGOj9cf8DM/QOaJxp8xIHnFvRp8aqVI9epnDljIqIG7CwM101q+zHQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9238933CC
+	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 17:29:20 +0000 (UTC)
+Received: from pps.filterd (m0090335.ppops.net [127.0.0.1])
+	by mx0b-001f5801.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29AGJjuV003197;
+	Mon, 10 Oct 2022 10:04:05 -0700
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0180.outbound.protection.office365.us [23.103.199.180])
+	by mx0b-001f5801.pphosted.com (PPS) with ESMTPS id 3k38cats6g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Oct 2022 10:04:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=Isutqx3jg7vh3WjF8Iya9Pic5fV9Zc7lb43GfAuKSDHoJ4B34b1fWq4shJSgZ9LnzyBjfeEEQlxEDPWL+wIcATXLX9lAoZHE53Np6m8kh33V4rl4lgf5p0kNNACciAlopFpRdfJwVj4ebTWqGncFyY3e/9+K577rzl+UovahH1h0mkvSbCbLprbIW/4e38GUTf9+fTC0fPpk9RAgpnqPiTzOaW5bNBnfvz7qVULUmxalWqtjFkntUInm//Bgvt08wkvh/XVCcaJt+5AoHfqDgvJsoSotVNRLld3mbv/aMB3GG/ouYxljoF8EjIwSt4oS8aUWeRS/+5m0gPt7XyNIQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
+ s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5M7QgahBfbvCD0psJLPTNdDmdAz4qyNkInSEX9/RVOA=;
- b=Nmr6q2/YTmsR3+fnT72VDXpwNFR10st5RcrGgsHC4TBXDfPgn7vuceVw9hKxSuZHDvC/qGHkspr8BQIGqFGrkyXNeyNUokPtHNM1SpnCThOobbgbCZ0bJ12PsYX/wV8EgKcIuRRC0hnNVOPINpp2+6UkUxl3QSszMuIDXfi258tT78s9Y4kb/3FzHjH/zlky2HYFNuPJ6o3hAlaEuluFab+z/IdsIkgf/W2dRD9oARdBtZ1pUPSj8BHqXn68ALehGvbrYmqjOjNJ8bmXF8+UjWG7Te23OqWe7iTL7gRIxp7n7xCZKHna38vfLOfOXrJHMY0+r3SbIyPPpowOGEW8yQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.75) smtp.rcpttodomain=126.com smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ bh=VovIhUkcb36HJvq3LU4zIV8J4G3H5QLm9OlTTv9AyyM=;
+ b=xkVj1yp7VkdCpR1ByY1FMJs67dACKQ9qzFABn7s5CJaNRFXX6x/zBbjobDga8HpI5nmpzoHJbIuoUDgBKjozzFOXCABngWan2VNJm60DW6Hjog2Pa+pNpprj5+jMqs92cOxHV5xf7U+SYwSDbGuIIHlokPW7gIJNzg0yYHkRW8yQmh3s2yli6iy7rH40nrusoCN+iAJKCk+CPfPvbAZELJgloHdBvfuJtO5vnRO4wd5qlvtNs/bEp6pRMEeJ/PjKTwFPdE3D3KtxjxOfFsRAChl4hBSnr3ZMYwx9H6KYiwbWdigdQFTh9JRZzLoY928VMXFTeLYfy8DL4hwyHyJjXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5M7QgahBfbvCD0psJLPTNdDmdAz4qyNkInSEX9/RVOA=;
- b=OZjh7hJ11kqP/AJYIWPXT4Ceogh5ZcmPNjZb1EbFfJSi0ldeTjWSQecDZ9xzUSixB70ctZl9dxX7qeRYdrnOrDciLLy/ZdwUdiMYXRcU5QvfGXzvCSDQnMGevTuJapBD9KYgq21CERdXCHWBAdtEnMmh22rzJid6HgClJscHvbkXezlybvIvtkc0DpAnn6vG1HAgQ9z1cWIK7RutfGVIJUzdWQhdpE8ImcyPzDBXYhoJoUJh1yYlujB0+OYcyC1WJBF6EhZ8TveW9zsGplIcRg8FapJd9XrIpAXbOHhhEA8jwyNp/XDIrS90cy2Fv/fzg6eMM9Asx8CQAt5wzmHm3A==
-Received: from GV3P280CA0117.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:8::33) by
- DU0PR10MB6273.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3ec::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5676.28; Mon, 10 Oct 2022 16:37:17 +0000
-Received: from HE1EUR01FT020.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:150:8:cafe::6e) by GV3P280CA0117.outlook.office365.com
- (2603:10a6:150:8::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.15 via Frontend
- Transport; Mon, 10 Oct 2022 16:37:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.75)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.75 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.75; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.75) by
- HE1EUR01FT020.mail.protection.outlook.com (10.152.0.171) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5709.10 via Frontend Transport; Mon, 10 Oct 2022 16:37:16 +0000
-Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC8VRA.ad011.siemens.net (194.138.21.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.12; Mon, 10 Oct 2022 18:37:16 +0200
-Received: from [139.25.68.37] (139.25.68.37) by DEMCHDC89XA.ad011.siemens.net
- (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.12; Mon, 10 Oct
- 2022 18:37:16 +0200
-Message-ID: <f4daac37-68d6-7c76-a58b-5d28c4c96978@siemens.com>
-Date: Mon, 10 Oct 2022 18:37:04 +0200
+ bh=VovIhUkcb36HJvq3LU4zIV8J4G3H5QLm9OlTTv9AyyM=;
+ b=UEaAQYFd2MCQ7voOUBwcWh98hnq8qdOhCgreYchQTjXZLMMeXTVFWv8d7R0FyoFw6bGbz4jgHElfz56S8t+LxLQswEKoNtrvAzuDk0oPc588R06JvGGslRXBlV/4jiSil7yx9JorpMH1FfZEly3KWjXEi8vXNlFAP/44TaBFhH5LIHZgx3OoyqmBV6COkEwJuBgHjaqMm0rz9kGx41c5j7ksaUqR7Fc/wN1urLaOOUnkc2qjip/oNnpO+rCyC+sCYPmEH+1razMotgMQHkeGE2mmOemDh2vJBND+b0W8ABe/CWpvBR6uWtHslXn3JMHFUmJ+6HlNLfs5S/XZYkTWYQ==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1083.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:177::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.20; Mon, 10 Oct
+ 2022 17:04:03 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::dd17:900:976c:937c]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::dd17:900:976c:937c%6]) with mapi id 15.20.5676.040; Mon, 10 Oct 2022
+ 17:04:03 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: Bryan Butler <Bryan.Butler@kratosdefense.com>,
+        "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+Subject: RE: [External] - Re: System hanging when using condition variables
+Thread-Topic: [External] - Re: System hanging when using condition variables
+Thread-Index: 
+ AdjMb2kqEi/6rzVHQeiyZvhBQUhKewCH+EqAAD3N5wAAGglKAABAL88AAANEjQAALawygABDfHNwABf1R4AAEfuKoAAaNBUAAF91C2AArl+sAAEwRtqg
+Date: Mon, 10 Oct 2022 17:04:03 +0000
+Message-ID: 
+ <PH1P110MB10501C7D5B09180C4415A3A5E2209@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB10500CC96F6D84D2026A6F63E24D9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87pmfncw9u.fsf@xenomai.org>
+ <BN2P110MB128891FFD2A6A7F6AAF6C5EE8F519@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <87o7v59o02.fsf@xenomai.org> <87illb8pfs.fsf@xenomai.org>
+ <87edvz8l5i.fsf@xenomai.org>
+ <BN2P110MB1288812BD18DBAA0E2714B618F529@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB1050E6764B49A09B1699F3D1E2559@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87h70r7r0m.fsf@xenomai.org>
+ <PH1P110MB1050C74BE6BB64AD707616BAE2549@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87r0zu7j6i.fsf@xenomai.org>
+ <PH1P110MB1050EC5BE3C92F3A71EB8855E2599@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87fsg38to9.fsf@xenomai.org>
+In-Reply-To: <87fsg38to9.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1083:EE_
+x-ms-office365-filtering-correlation-id: 5f913109-dbe8-44c2-9af2-08daaae16f3c
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ GDGQfAJ9znJfx8SbWo4LAVx4EoXMLXZL1jYhs+qxng1/pKQMMmISB6FHqeuxT9M1rjU/Z41rRfwHjrVqyLmKL67LEF9DQzsWJ9bEvJY8CToww1fXbl7CPPAxdgQSAsHDqr1GqDCrYR6zTWawGk+nWiuU/ZoeJJ0SvEWpeQdGxtNYCc+kZ8261jcBkr4YFDR//c/+nRgfbPPlY3uPgmRmx6XCL5RWm0vbl70n87unIxHjb70IqOe7x9yqkFzShApOmHgb3UmevjOiZa9Uvufgq6fHx4H503DxawrbtHuPIof93T9Wg5g409yhSRdpasoYMAzNy+l8WZRHlI9Po9peI/4iP+4g7RACzRNVbKZtIvq+Cly5V4LZQN1CXW9TG1sYspQzUYWzV1Z0gcn4zEfFPtl1Z+FrPnDFLiV4dLQN7n4FnGo8OpVwW94+9tIDD7Uo9+Wz71jfEZBfBR661uUoRaNoyy0CLj1AV5TN1yaVMWtQ+wn1BxtWplf71GwjdnKXTocI3DYSEWEE+LHNYuGuYJxgOapkho3ohG6sHvLILnS/qSd1dCi+98pFACY5ibx1uVyHS6/MnxBsqpqnUbO5Pr5+7deatTchVglauj5gEp54mkLCn2n9KsHvPAv/j1QhQq6q51tGf5mzymm3aDZ+CQ8F4AC8UZX+MIb1UqUXrwCfkEqCpRv0YPGGUMWP8OzN
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(26005)(7696005)(52536014)(8936002)(122000001)(99936003)(9686003)(5660300002)(44832011)(4744005)(55016003)(86362001)(4326008)(33656002)(66556008)(76116006)(54906003)(6506007)(66476007)(186003)(8676002)(64756008)(498600001)(6916009)(66946007)(66446008)(71200400001)(83380400001)(38100700002)(2906002)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ B8SYRVpoFhvLtnjBjaNICEvArZX39Uff325OIMWFOdkTRjDMaH7PBpJrPTVkwnOZCfW00UgekvIvZNCUUiKaNrvyeps+LusrS+E0G4PrU7n8l+LbAEV4ypo3WnNKqYT3NshJqh2ISSCCt+PWN6LbZYzCnv0YwuccPJE+gaEBv5QggMD98FcSyDL89VsFgwZdYRbepk6NjoZUM0Z/3lxgPZ3rxjWhZQcjoScWHMmRJN6qy2Nh6hQ4tR3+WCNiUvSSFQzhFjeM4Ri8dV7GGotCW8YuL3If7GA2OKe02XFP2s2OHk96sNgwi5+hGenEmD13eMsMAlN+Lvi0yas8i5TKTGmYyXtm577kpA50AKC6Lv4sLAsee2u4GAjJd6Y3ImQeClRm5YIXZxVLC0w8bzZRkQZlSsUc5jn4Y9J5rmem2GY=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_003A_01D8DC98.01502940"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: some kernel exceptions
-Content-Language: en-US
-To: Yxian.Yao <yxianyao@126.com>
-CC: <xenomai@lists.linux.dev>
-References: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
- <1ff093a6-a231-898c-aee6-3bfb19178ae1@siemens.com>
- <76f26fbc.727a.183c23b0834.Coremail.yxianyao@126.com>
- <ae43e7c9-e35f-6f9a-ca2e-baceec231a50@siemens.com>
- <6baf052f.6f75.183c25409c4.Coremail.yxianyao@126.com>
- <c66ea2f5-6a7b-8420-f1ee-cd8abe7ad13d@siemens.com>
- <16329230.7168.183c284db3e.Coremail.yxianyao@126.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <16329230.7168.183c284db3e.Coremail.yxianyao@126.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [139.25.68.37]
-X-ClientProxiedBy: DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) To
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--18.567800-8.000000
-X-TMASE-MatchedRID: irl7E//xM945QaOxwNGfvvy6J2sQ40CSPg9yfk4YC0aLdOs6EBREoQIL
-	zOoe9wbaEt/W/Pt5w8c0EQvSVyckK7argL8XeJwHoZJhW5/fKzGCfOQxFVW1+9B5TKVn+YuXVaI
-	FkbBGkf439SEkyBcGrE8UroFNOGp78+j9F4dUdEI0e/Y8iC1gE5/0X5WpCPYcbBMSu4v05tML//
-	VMxXlyE7fByDgHbepjXEWXYTWtGMLxsFFIWbc6/rPRk6St5d5GgSwDI28Ufj8vLP1C8DIeOiYof
-	8qPjr5VCuSPuSVW5+54Eqpd84bqfyTiMF82GcCvasq9xzykaAUiXL+V+zm5iR1kSRHxj+Z5mGhe
-	EvjzATuUAUfla+IhaLKXWmEvaG3ElyyR46PvItO2qNGaLuHnvr9ZdlL8eonaVnRXm1iHN1bEQdG
-	7H66TyH4gKq42LRYkQsRoz98D60JezTH+Cgtly5xTKD+A2hgEhowjEYAWqmJ+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--18.567800-8.000000
-X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-SNTS-SMTP: B9CF0145A964CE4F1024F6E1F5F2786F5D85703275DC657938A1FF8E2904B7422000:8
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: HE1EUR01FT020:EE_|DU0PR10MB6273:EE_
-X-MS-Office365-Filtering-Correlation-Id: 360f4b2a-c7dd-4622-fa70-08daaaddb188
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	i3tq+NinjbiXEfnHn0Wmgk7v5AW3qvFlplL/VYwyJ4EQGBeUSb00qvkH7OFY1EZIU2X+myDv0yiXJfv3FC9WNMHihTl/tOuLe8Bzi+D4adcAWvuCATOcDNM/uXhRf6Qf6adpRzzc6JHDuE3Sj4zq3HKRtLctk4k+cwu6bNQM9zcjeuGFf0hTc7z8Mjcgvfxz4q/6juGUgo9c/sCofi5Y+Sob/JngWCz+m7TGngmVbccXrLMEIewVdullLj+ENTVkUHCDg2MyB0U65J5Sx1LZK/LpZmppzpOBflKDAEQ+mVJjE4qjWkz4dLXv+yU6zHGMXjyvH9WuyceSicvKvc6UEYs+kgAOz6ssC1CfTXW3a8s43O1n+7toZTGjH1kyTuxNmb3Xti2BJkGQu67pbu+SyFosiC6D/haJ7wC7HmGHGAHYSr595Ryv3f9ORWDhcOyvEb2xlFo3xhGJDqCOD3ZIb6xsAkMEBaeN4mZLw8RKjH0L4ro28lW1Nb4eaQkiKokcacinrIVOtnGqiwJOcdqKsSUENcwUJx2Zc65hEJYS8KC9PrkcROUliDcbO2Qc7B4VL6h4onIcFpAJKcqp3ciJDzeH0neSlVxdWD0IblhtI7v8eZHylQnbkXjMK2MdLF+eIOOonMyE8WVTsvlF/Syl3j2Q4JjL22r/VLgJ4ca0OBrM4UVcmPmTGmM7Yjxkcyijh+ymTdEnP5qhUoXb4q7UQiLeN7iijXB/SnVFcdd8gezzwniJjSVqSGFeQET9pPpzKbhflwr19qDj6gwm9jM829tP0uUV8Yrv1uLgO940uJCtnhMqgr8HJ2eMwJyCwb8jrcL6urcjtPirBYuXdIrs86GyZ69YWw6sVXBxmKhBbGg=
-X-Forefront-Antispam-Report:
-	CIP:194.138.21.75;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(136003)(376002)(396003)(39860400002)(451199015)(46966006)(36840700001)(40470700004)(2616005)(40460700003)(356005)(16526019)(956004)(82740400003)(2906002)(82960400001)(186003)(44832011)(82310400005)(4326008)(40480700001)(6666004)(86362001)(6706004)(336012)(8936002)(6916009)(31696002)(83380400001)(70206006)(36756003)(7116003)(8676002)(41300700001)(70586007)(16576012)(26005)(81166007)(316002)(53546011)(478600001)(3480700007)(31686004)(36860700001)(5660300002)(47076005)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2022 16:37:16.8291
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f913109-dbe8-44c2-9af2-08daaae16f3c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Oct 2022 17:04:03.6797
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 360f4b2a-c7dd-4622-fa70-08daaaddb188
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.75];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	HE1EUR01FT020.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6273
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1083
+X-Proofpoint-GUID: ymGXevoPAZuoUKRv1b7uI-KOAhB6_ULr
+X-Proofpoint-ORIG-GUID: ymGXevoPAZuoUKRv1b7uI-KOAhB6_ULr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-10_10,2022-10-10_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 suspectscore=0 mlxscore=0 spamscore=0
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=999 impostorscore=0
+ adultscore=0 bulkscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2209130000 definitions=main-2210100101
 
-On 10.10.22 17:30, Yxian.Yao wrote:
-> 
-> Hi Jan,
-> 
->> The warnings start with perf, but I might have been too quick to shoot
->> at it. The real issue is definitely the page fault. You don't have a
->> stack backtrace for the first one?
-> 
-> No, these are the last messages that the kernel outputs. 
-> The second exception is the same as the first one？
-> The logs are printed with "BUG: unable to handle kernel painting request at 00000000000a22e8"
-> 
+------=_NextPart_000_003A_01D8DC98.01502940
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-The issue is that you generally cannot trust succeeding BUG messages
-after the first one. They may point into the wrong direction, not to the
-root cause.
+>I can reproduce similar issues. The locking strategy in this particular
+area needs more 
+>work, now that I have fully enabled the kernel lock validator for EVL
+thread and mutex 
+>locks, the bug reports I get make this obvious. Fixing this is on top of my
+stack ATM, 
+>work is ongoing (tricky stuff which requires extra caution, so this won't
+happen 
+>overnight though).
 
-> 
->> Also note that your kernel is not just old /wrt to its base version
->> (4.19), it's also not using the latest I-pipe patch for that
->> (ipipe-core-4.19.252-cip78-x86-23).
-> 
-> What is the difference between cip and no cip on ipipe core?
-> 
+I'm glad you were able to reproduce similar issues. Understood on timeline.
+Let me know if there is anything I can do to help.
 
-At some point, we moved from 4.19-LTS to 4.19-CIP as baseline for the
-I-pipe patches as the latter kernel will live longer (10 instead of 6
-years). No further development was done on the 4.19-LTS branch you are
-sitting on, which is also missing some bug fixes to I-pipe since then.
+Thanks,
 
-> 
->> The key switches are warned about. But that does not exclude that some
->> sleeping bug is only surfaced by turning on or off some feature that
->> others usually do not touch.
-> 
-> 
-> How to further determine what caused it?
+Russell
 
-Hard to say yet. Please re-try with the latest 4.19-ipipe release if
-possible and also check if something changes positively when you use the
-config from xenomai-images.
+------=_NextPart_000_003A_01D8DC98.01502940
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
 
-Jan
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIxMDEwMTcwNDAyWjAvBgkqhkiG9w0BCQQxIgQgMGWcPz46Z10nHhxHpJYMFI9h
+o+ce0JjcsJsqkZnFpLMwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCb
+R5qIocfIFmwaLE7Lr+RyRyeHESPxtaeY0jW0WGfKAbBVsyJ4kI5GX8bWgohbXFPY7EuXAQNOwJ5W
+eo2BF10qdAJ7/wpZKneihuH/CSqtakdJQrco5Nf2U9l1S9PuCFAO5LObiYujWKyuRvTCVoDvc5eI
+dPdMblMO0jOHnpFU1ametvqGo3Peiwx9Vg4CskacGxHOat5IZyZTq1SlOfAY08SFQK/AxvRQWWZ+
+omF8KvjcsaFH07illjEuGPtRDg8ejXqF3oqgtVLA+gV6PNa74erx3I9kPtvpJOGbhNIEGkvnTti4
+DZhD87BZdZdcS4A1zEXjw6Nr/X6+M5cm5qSbAAAAAAAA
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
-
+------=_NextPart_000_003A_01D8DC98.01502940--
