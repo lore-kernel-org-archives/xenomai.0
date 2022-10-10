@@ -1,160 +1,198 @@
-Received: from m1511.mail.126.com (m1511.mail.126.com [220.181.15.11])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E18D2903
-	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 13:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=tXAkF
-	CIHhaak8Xt6NE24ouI/BruqeYbBkVxuQWa9Fyg=; b=eq3Srazp8Y9new7iorCb6
-	oNZrOmmbhD2Fedssvs9Z144f0DcpKVGTYj2lNVu0WGWaT/z+xd0eNo9ZQZKlKXBh
-	hNYijwhPfL4sEahDJLiGuas1im7QGNwnayxexupdg2wOGB/QjMdnJaypnkfo8/uH
-	22U4FoF6kVGwN/w/z55tM4=
-Received: from yxianyao$126.com ( [113.118.224.64] ) by ajax-webmail-wmsvr11
- (Coremail) ; Mon, 10 Oct 2022 21:31:25 +0800 (CST)
-X-Originating-IP: [113.118.224.64]
-Date: Mon, 10 Oct 2022 21:31:25 +0800 (CST)
-From: "Yxian.Yao" <yxianyao@126.com>
-To: xenomai@lists.linux.dev
-Subject: some kernel exceptions
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-X-NTES-SC: AL_QuydB/ibt04j4yGQY+kWkkkVj+Y3UMa3u/Ug3Y5TP5E0vCn3+D8LcXVsGXn36O2TASuxuhKPcRp00/ZYZ6pmVKZ0jjQdiMTT8loQCzSDDPsS
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50052.outbound.protection.outlook.com [40.107.5.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A1E02903
+	for <xenomai@lists.linux.dev>; Mon, 10 Oct 2022 13:41:44 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iJiJ59Yf4JVt7s4P1RyZRIIoc1MmHI5N+kAIhZw/ycmk6bgPi695X6L2g0+pCHwAufzbYQy56Hk4v5HDfyX1M4nujzmsGz7P+n6AAK2lBN6SiV1qliH0gghkRtOSBOf+Vlft1CTQVrW+ZsDdeZYzQ6sNNycziZ6gr/fLJByxwPbglsERSAP/IALahCdC3EmcVKJaSBVpgGFIaJRSuKw1LFcmi2LBlSEqTttLS7ikPz8JBvElE8s2DvylnV/CQdA674v/fuGZPB9LxFI9wpJgo7C2FJ1I++EAB/VNHBFiBb4SiVH9wEfzO4a/TFkTbN7TxDTRPgtvVNSnGF04lp5Waw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VLJCdpUQyXk18ampHhRq1ZXavPy6T7k1eNqmK63g4M0=;
+ b=Y8BLa1ISFBae2Ab/yWuH8znVM+gGYXfN030x5AK4Gor7o3nM7gvaQGtGd4BXdzo9QvKZFQVm8wxs6UhAFw3eFEtFXr0GqBOZyllI7rWnjDFCOe3aRRrkkMfbkHmmKcK+Oyxsbm5M39My6i9b0as7ExKdsmjeDninsZEKGVtHtquENKMrOr4ygQ36ihSP3srT8m1350qIlpndq5zVLEn/xaj1j1pe1BcJ4YyACzA7awvgZmakGmaf+c3HrUu3Vrdh0p/A3fABydErGfUZoN73owIxHvmk1yOMHzsTAYEyP+ynJVaQwO+UtnI9gyad8v81ShqZ0OTF8Tnw35pIgEOtRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.75) smtp.rcpttodomain=126.com smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VLJCdpUQyXk18ampHhRq1ZXavPy6T7k1eNqmK63g4M0=;
+ b=bIqVcnjj4/U810kpMlRGWpzAbJBS1evfUJVw7xWUlLj9arxc75DhoB0QgAlPmqkqsXp/u9s47Q1qup8q3GhKVQ/T8NwUrGwj6ITecZ/nDLIzh3xqphAqWT6xZkrqyfXjM8/co8RMeBPt9q6H7xSjNw3+W32Xz5d9dJBENa9UYZFuXnvl6xK9HAt8RT3vnM42J6MW8YGWqZckmgyBMPMgCoCkj193tYjrRjgcOkU4Rdh9jIRetqmawyTsT6RwCO6Xkh8qiSvVDFJdOp+frQ7Bw1mEYW46vpqu8p4BjZzi8iwCOQY6f8Pem/gGPSuz4kRhhMWYEXl6QHovbuGSo65HQg==
+Received: from AS8PR05CA0025.eurprd05.prod.outlook.com (2603:10a6:20b:311::30)
+ by DB8PR10MB3705.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:132::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Mon, 10 Oct
+ 2022 13:41:41 +0000
+Received: from VE1EUR01FT036.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:20b:311:cafe::e3) by AS8PR05CA0025.outlook.office365.com
+ (2603:10a6:20b:311::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.19 via Frontend
+ Transport; Mon, 10 Oct 2022 13:41:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.75)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.75 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.75; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.75) by
+ VE1EUR01FT036.mail.protection.outlook.com (10.152.3.31) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5709.10 via Frontend Transport; Mon, 10 Oct 2022 13:41:41 +0000
+Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
+ DEMCHDC8VRA.ad011.siemens.net (194.138.21.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.12; Mon, 10 Oct 2022 15:41:39 +0200
+Received: from [139.25.68.37] (139.25.68.37) by DEMCHDC89XA.ad011.siemens.net
+ (139.25.226.103) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.12; Mon, 10 Oct
+ 2022 15:41:39 +0200
+Message-ID: <1ff093a6-a231-898c-aee6-3bfb19178ae1@siemens.com>
+Date: Mon, 10 Oct 2022 15:41:26 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:C8qowADnQsitHkRjmZaIAA--.12455W
-X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbifgOWs1pEID-ItAABsk
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: some kernel exceptions
+Content-Language: en-US
+To: Yxian.Yao <yxianyao@126.com>, <xenomai@lists.linux.dev>
+References: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <54a0470d.7082.183c217d486.Coremail.yxianyao@126.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [139.25.68.37]
+X-ClientProxiedBy: DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) To
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-AS-Result: No-10--23.970700-8.000000
+X-TMASE-MatchedRID: 5kZRuoL5N6g5QaOxwNGfvvy6J2sQ40CSPg9yfk4YC0b27WtDgGBc8gD4
+	keG7QhHmbDD7i2QfyEePGutTIsMtmq4YUaH/Q8F2uAN3LEqlbKOmWOD8X0TFhJr5ykm9NtIcG2P
+	mwUTL+u+buvvgpZZI+TsFIVOYY1fQLoD4tn9vWJKulkHlSZ5QMdPxsjeTKRpT0HlMpWf5i5dVog
+	WRsEaR/kkrZ4mFjTbDY7btfej9JsI+Op6QH6cKGNwvoAJ3YEa7n48ibeRvdVyEv01fZOqaQJtcY
+	V58cc5iR8gZj3ANEgS8AJs9IkFC9ZNAHEbyceNqDrDi7yDegcTVT9opCASd7fwcuqXdCr5KTACU
+	LrJNhc6xW4YXFsTUDhZjuFZ2Rc972jtn8HbXDd94W1pIycz0orVV9elkcNTqOdY+ociA+RViMNd
+	0z/HZU5QBR+Vr4iFospdaYS9obcQLG8CBpMcXL1+24nCsUSFNt7DW3B48kkGtIWznhjjBtfoLR4
+	+zsDTtAqYBE3k9Mpw=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--23.970700-8.000000
+X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-SNTS-SMTP: D51982052CB2EEEF7B9B5AB930FC15036DF13AD6BCC0C37613D209E274CE9BAB2000:8
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1EUR01FT036:EE_|DB8PR10MB3705:EE_
+X-MS-Office365-Filtering-Correlation-Id: 625b001b-c2e1-4d8c-b3a0-08daaac529f9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	BIksxv8tHJZKr/BGx25OujzYy7s0OJTZ/VoABxBYW+Dl4ubQU0U9Vbwa1wdBEdaeNmE5xCFmDPFoyXXKvMfX0FNRRCNKq+P1cYHGpTXNeyepRY2irJoV+r0L3FhSTTlANULmclau9FqbSpGkFpENfdqiWxgDf9mb01rZtDWlNqTr34CSXgZzXu9R5zGvsmVuEZ0RN7Zc6zZR27GLuvA3VAzR67t8bDQyr72iJ3v+HedRGDm8LtuJeS7q6GpjWDLFnB3q3/yC6sjIs6X1NBXI5BqDeN1eopYxtR3ywWlKdza+F5CPRiN6kwRGX8b4u43F4sliHmj+ehpcopRuEytN44W8wHdP3+sZk53Sf1ngrF5RQnjkKwBY0BJj7qzcTFV05O5kD4tF+HLz8BpWiP/eZ3p6vgvytQg6tKHCq1AoBAcYBanoslRg+rmuTkWLlDNDxTAw3HNyUz1pA38sHLsbsW4T5VeoIyJ0XMo2iZBB7Nptw0JrEy1uAALHfuG8XtL5q4UPZ4bmErh511V9omtyuqAugdTtnAii8wvrbaT1fekEeOzvfubhLCNT6dpSAIMclPsIOj58mODXeeoICYX18O3VjGCxd8j6O8qZWswEUqp4CL5VhbV0Ra8ksFm1sAsQWEtslgaWbyGKVfYSOdfPeuCpaUAWnJaSjf1GT/PmHZ+U5ektI+XChOkZvAlCsFewzeti9RiahbDTqm3NMF7JBAzftlbHI63lShAscEjTNHmTBpx9trfHW+KKziM+mq98UI4+8hnFj1yFPb8CnVykss4Ud1BMzDKK1omLihZzC5si8yHBFaFheqfDQwbZktT51D2xfa7z5cswsuvBvAvzh3MTvfRs9AmkXai0YOPvLg7Zvt6IsItQ+CgPal9ppsJAFGa8MJxCFkyl5N+ALuWIPw==
+X-Forefront-Antispam-Report:
+	CIP:194.138.21.75;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(396003)(346002)(136003)(451199015)(46966006)(40470700004)(36840700001)(47076005)(2616005)(82960400001)(81166007)(336012)(3480700007)(956004)(186003)(83380400001)(356005)(5660300002)(44832011)(45080400002)(82740400003)(7116003)(2906002)(40480700001)(16526019)(316002)(40460700003)(8936002)(53546011)(8676002)(36860700001)(6666004)(16576012)(478600001)(70586007)(70206006)(26005)(82310400005)(41300700001)(6706004)(36756003)(31686004)(86362001)(31696002)(110136005)(3940600001)(36900700001)(43740500002)(505234007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2022 13:41:41.5331
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 625b001b-c2e1-4d8c-b3a0-08daaac529f9
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.75];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	VE1EUR01FT036.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3705
 
-CgpEdXJpbmfCoHRoZcKgcmVjZW50wqB0ZXN0aW5nwqBvbsKgdGhlwqBsaW51eC00LjE5Ljg5LWlw
-aXBlLTkteGVub21haS0zLjEgKGxpbnV4LTQuMTkuODkswqBpcGlwZS1jb3JlLTQuMTkuODkteDg2
-LTkucGF0Y2gswqB4ZW5vbWFpIDMuMSkswqAKdGhlwqBrZXJuZWzCoG91dHB1dHPCoHNvbWXCoGV4
-Y2VwdGlvbsKgbWVzc2FnZXMswqBhc8KgZm9sbG93cy4KUGxlYXNlwqBnaXZlwqBtZcKgc29tZcKg
-aGludHMhCgpUaGFua3PCoGHCoGxvdC4KCgpbwqA1MjI4LjM1ODA4NV3CoHBlcmY6wqBpbnRlcnJ1
-cHTCoHRvb2vCoHRvb8KgbG9uZ8KgKDI1MDTCoD7CoDI1MDApLMKgbG93ZXJpbmfCoGtlcm5lbC5w
-ZXJmX2V2ZW50X21heF9zYW1wbGVfcmF0ZcKgdG/CoDc5NzUwClsxMzMyMy44OTk3NTldwqBwZXJm
-OsKgaW50ZXJydXB0wqB0b29rwqB0b2/CoGxvbmfCoCgzMTM3wqA+wqAzMTMwKSzCoGxvd2VyaW5n
-wqBrZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3JhdGXCoHRvwqA2Mzc1MApbNjI1NDAuNjU5
-NzI1XcKgaHJ0aW1lcjrCoGludGVycnVwdMKgdG9va8KgMTIzNznCoG5zCls2MzQwNS42NjE5NThd
-wqBwZXJmOsKgaW50ZXJydXB0wqB0b29rwqB0b2/CoGxvbmfCoCgzOTI3wqA+wqAzOTIxKSzCoGxv
-d2VyaW5nwqBrZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3JhdGXCoHRvwqA1MDc1MApbMTMx
-MjA0LjE1MDAzOV3CoHBlcmY6wqBpbnRlcnJ1cHTCoHRvb2vCoHRvb8KgbG9uZ8KgKDUwMTLCoD7C
-oDQ5MDgpLMKgbG93ZXJpbmfCoGtlcm5lbC5wZXJmX2V2ZW50X21heF9zYW1wbGVfcmF0ZcKgdG/C
-oDM5NzUwClsxNjYwMjEuODgxNzA3XcKgQlVHOsKgdW5hYmxlwqB0b8KgaGFuZGxlwqBrZXJuZWzC
-oHBhZ2luZ8KgcmVxdWVzdMKgYXTCoDAwMDAwMDAwMDAwYTIyZTgKWzE2NjAyMS44ODk1NzldwqBQ
-R0TCoDDCoFA0RMKgMMKgClsxNjYwMjEuODkyNTAzXcKgT29wczrCoDAwMDDCoFsjMV3CoFBSRUVN
-UFTCoFNNUMKgUFRJClsxNjYwMjEuODk3MjY4XcKgQ1BVOsKgMsKgUElEOsKgMTYwNMKgQ29tbTrC
-oFJ1bkNvbW1hbmRBY3RvcsKgS2R1bXA6wqBsb2FkZWTCoFRhaW50ZWQ6wqBQwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoE/CoMKgwqDCoMKgwqA0LjE5Ljg5LWlwaXBlLTkteGVub21haS0zLjEtMjAyMDEw
-MjfCoCMxClsxNjYwMjEuOTEwNjYxXcKgSGFyZHdhcmXCoG5hbWU6wqBJbnRlbMKgQ29ycG9yYXRp
-b27CoFMyNjAwQ1dSL1MyNjAwQ1dSLMKgQklPU8KgU0U1QzYxMC44NkIuMDEuMDEuMDAyMi5DMi4w
-NjI4MjAxNzE5MDPCoDA2LzI4LzIwMTcKWzE2NjAyMS45MjI2OTZdwqBJLXBpcGXCoGRvbWFpbjrC
-oExpbnV4ClsxNjYwMjEuOTI2Mzk0XcKgUklQOsKgYTIyNjA6MHhmZmZmODg4NjY3NjFjNTYwClsx
-NjYwMjEuOTMwOTY1XcKgQ29kZTrCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDC
-oDAwwqBjMMKgOGbCoDZhwqA2N8KgODbCoDg4wqBmZsKgZmbCoDAwwqAwMMKgMDDCoDAwwqAwMMKg
-MDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAw
-MMKgMDDCoDAwwqAwMMKgMDDCoDwwMT7CoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAwwqAwMcKg
-MDHCoDAwwqAwMMKgMDDCoDAwwqAwMMKgMDDCoDAywqAwMMKgMDDCoDAwwqAwMMKgMDAKWzE2NjAy
-MS45NTIwMTZdwqBSU1A6wqA4MTAzN2YwNzowMDAwMDAwMDAwMGEyMjYwwqBFRkxBR1M6wqBmZmZm
-ODg4NjY3NjFjNTYwwqBPUklHX1JBWDrCoGZmZmZmZmZmODExMTk1M2UKWzE2NjAyMS45NjE3MjZd
-wqBSQVg6wqAwMDAwMDAwMDAwMGEyMjYwwqBSQlg6wqAwMDAwMDAwMDAwMDAwMDAywqBSQ1g6wqBm
-ZmZmZmZmZjgyODAyMWMwClsxNjYwMjEuOTY5Nzg2XcKgUkRYOsKgZmZmZjg4ODY2NzYxYzU2MMKg
-UlNJOsKgMDAwMDAwMDAwMDAwMDAwMMKgUkRJOsKgMDAwMDAwMDAwMDAwMDAwMApbMTY2MDIxLjk3
-Nzg0N13CoFJCUDrCoGZmZmY4ODg2Njc2YTQ1NDDCoFIwODrCoDAwMDAwMDAwMDAwNWYzZTDCoFIw
-OTrCoGZmZmZmZmZmODExODM4Y2IKWzE2NjAyMS45ODU5MDldwqBSMTA6wqBmZmZmZmZmZjgxMTdj
-ZGRjwqBSMTE6wqAwMDAwMDAwMDAwMDAwMDAywqBSMTI6wqBmZmZmODg4NjY3NmE1ZDA4ClsxNjYw
-MjEuOTkzOTY5XcKgUjEzOsKgZmZmZmU4ZjlmZjgwNzdkOMKgUjE0OsKgZmZmZjg4ODY2NzZhNDU0
-MMKgUjE1OsKgZmZmZmZmZmY4MTE4MzhjYgpbMTY2MDIyLjAwMjAzMF3CoEZTOsKgwqAwMDAwN2Y3
-M2M2ZmZkNzAwKDAwMDApwqBHUzpmZmZmODg4NjY3NjAwMDAwKDAwMDApwqBrbmxHUzowMDAwMDAw
-MDAwMDAwMDAwClsxNjYwMjIuMDExMTU3XcKgQ1M6wqDCoDAwMTDCoERTOsKgMDAwMMKgRVM6wqAw
-MDAwwqBDUjA6wqAwMDAwMDAwMDgwMDUwMDMzClsxNjYwMjIuMDE3NjY2XcKgQ1IyOsKgMDAwMDAw
-MDAwMDBhMjJlOMKgQ1IzOsKgMDAwMDAwMGMyOWNmODAwNMKgQ1I0OsKgMDAwMDAwMDAwMDE2MDZl
-MApbMTY2MDIyLjAyNTcyMF3CoERSMDrCoDAwMDAwMDAwMDAwMDAwMDDCoERSMTrCoDAwMDAwMDAw
-MDAwMDAwMDDCoERSMjrCoDAwMDAwMDAwMDAwMDAwMDAKWzE2NjAyMi4wMzM3ODFdwqBEUjM6wqAw
-MDAwMDAwMDAwMDAwMDAwwqBEUjY6wqAwMDAwMDAwMGZmZmUwZmYwwqBEUjc6wqAwMDAwMDAwMDAw
-MDAwNDAwClsxNjYwMjIuMDQxODQzXcKgQ2FsbMKgVHJhY2U6ClsxNjYwMjIuMDQ0NjY3XcKgTW9k
-dWxlc8KgbGlua2VkwqBpbjrCoGZ1c2XCoG1vZF9zYW1vKFBPKcKgbW9kX2RyeHUoUE8pwqBtb2Rf
-c3RjdShQTynCoGFyYzTCoGVjYsKgbWQ0wqBzaGE1MTJfc3NzZTPCoHNoYTUxMl9nZW5lcmljwqBj
-bWFjwqBubHNfdXRmOMKgY2lmc8KgY2NtwqBkbnNfcmVzb2x2ZXLCoGZzY2FjaGXCoGludGVsX3Jh
-cGzCoHNiX2VkYWPCoHg4Nl9wa2dfdGVtcF90aGVybWFswqBpbnRlbF9wb3dlcmNsYW1wwqBjb3Jl
-dGVtcMKga3ZtwqBpcnFieXBhc3PCoGNyY3QxMGRpZl9wY2xtdWzCoGNyYzMyX3BjbG11bMKgZ2hh
-c2hfY2xtdWxuaV9pbnRlbMKgcGNiY8KgYWVzbmlfaW50ZWzCoGFlc194ODZfNjTCoGNyeXB0b19z
-aW1kwqBjcnlwdGTCoGpveWRldsKgZ2x1ZV9oZWxwZXLCoGludGVsX2NzdGF0ZcKgbWdhZzIwMMKg
-dHRtwqBkcm1fa21zX2hlbHBlcsKgZHJtwqBmYl9zeXNfZm9wc8KgaVRDT193ZHTCoGlUQ09fdmVu
-ZG9yX3N1cHBvcnTCoGxwY19pY2jCoGludGVsX3VuY29yZcKgc3lzY29weWFyZWHCoGV2ZGV2wqBp
-cG1pX3NpwqBpcG1pX2RldmludGbCoG1mZF9jb3JlwqBtZWlfbWXCoHN5c2ZpbGxyZWN0wqBpMmNf
-aTgwMcKgaXBtaV9tc2doYW5kbGVywqBteG1fd21pwqBpbnRlbF9yYXBsX3BlcmbCoHNuZF9wY3Nw
-wqBzbmRfcGNtwqBzbmRfdGltZXLCoHNuZMKgc291bmRjb3JlwqBzeXNpbWdibHTCoGlvYXRkbWHC
-oG1lacKgYWNwaV9wb3dlcl9tZXRlcsKgd21pwqBidXR0b27CoGlwX3RhYmxlc8KgeF90YWJsZXPC
-oGF1dG9mczTCoGV4dDTCoGNyYzE2wqBtYmNhY2hlwqBqYmQywqBmc2NyeXB0b8KgZG1fbW9kwqBp
-NDBldmbCoGF0bGFudGljwqBpNDBlwqBpeGdiwqBlMTAwMGXCoGUxMDAwwqBlMTAwwqBtaWnCoHZt
-d19wdnNjc2nCoHZteG5ldDPCoHNnwqBzZF9tb2QKWzE2NjAyMi4xMjQwMzNdwqDCoGhpZF9nZW5l
-cmljwqB1c2JoaWTCoGhpZMKgYWhjacKgbGliYWhjacKgeGhjaV9wY2nCoGVoY2lfcGNpwqBsaWJh
-dGHCoHhoY2lfaGNkwqBlaGNpX2hjZMKgY3JjMzJjX2ludGVswqBpZ2LCoGl4Z2JlwqBpMmNfYWxn
-b19iaXTCoHVzYmNvcmXCoHNjc2lfbW9kwqBtZGlvwqBkY2EKClsxNjYwMjIuMTM5NDgwXcKgQ1Iy
-OsKgMDAwMDAwMDAwMDBhMjJlOAoKCgoKWzE4NDcyMy41MDkzNDFdwqBCVUc6wqB1bmFibGXCoHRv
-wqBoYW5kbGXCoGtlcm5lbMKgcGFnaW5nwqByZXF1ZXN0wqBhdMKgMDAwMDAwMDAwMDBhMjJlOApb
-MTg0NzIzLjUxNjQxOF3CoEJVRzrCoHVuYWJsZcKgdG/CoGhhbmRsZcKga2VybmVswqBwYWdpbmfC
-oHJlcXVlc3TCoGF0wqAwMDAwMDAwMDAwMDQ4MDQ0ClsxODQ3MjMuNTIzNDUzXcKgUEdEwqAwwqBQ
-NETCoDDCoApbMTg0NzIzLjUyNjA3Ml3CoE9vcHM6wqAwMDEwwqBbIzFdwqBQUkVFTVBUwqBTTVDC
-oFBUSQpbMTg0NzIzLjUzMDMzNl3CoENQVTrCoDLCoFBJRDrCoDQ3NjPCoENvbW06wqBSdW5Db21t
-YW5kQWN0b3LCoEtkdW1wOsKgbG9hZGVkwqBUYWludGVkOsKgUMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqBPwqDCoMKgwqDCoMKgNC4xOS44OS1pcGlwZS05LXhlbm9tYWktMy4xLTIwMjAxMDI3wqAjMQpb
-MTg0NzIzLjU0MjMxMl3CoEhhcmR3YXJlwqBuYW1lOsKgU3VwZXJtaWNyb8KgS29udHJvbsKgQzYx
-MlhTMS9Lb250cm9uwqBDNjEyWFMxLMKgQklPU8KgMi4wYS5WMsKgMDcvMDQvMjAyMQpbMTg0NzIz
-LjU1MDk5Nl3CoEktcGlwZcKgZG9tYWluOsKgTGludXgKWzE4NDcyMy41NTQzMDhdwqBSSVA6wqAw
-MDEwOjB4NDgwNDQKWzE4NDcyMy41NTczNjBdwqBDb2RlOsKgQmFkwqBSSVDCoHZhbHVlLgpbMTg0
-NzIzLjU2MDY2OV3CoFJTUDrCoDAwMTg6ZmZmZjg4ODg1ZmEwM2VkMMKgRUZMQUdTOsKgMDAwNTEw
-NDYKWzE4NDcyMy41NjU5NzJdwqBSQVg6wqBmZmZmODg4ODVmYTVmM2UwwqBSQlg6wqBmZmZmZmZm
-ZmEwN2VkNGE4wqBSQ1g6wqBmZmZmODg4ODVmOGE0NTQwClsxODQ3MjMuNTczMTg0XcKgUkRYOsKg
-MDAwMDAwMDAwMDAwMDAwMMKgUlNJOsKgZmZmZmZmZmY4MWUwZjBhN8KgUkRJOsKgMDAwMDAwMDAw
-MDAwMDAwYgpbMTg0NzIzLjU4MDM5NF3CoFJCUDrCoDAwMDAwMDAwMDAwMDAwMDDCoFIwODrCoDAw
-MDAwMDAwMDAwMDAwMDLCoFIwOTrCoDAwMDAwMDAwMDAwMDBhN2UKWzE4NDcyMy41ODc2MDRdwqBS
-MTA6wqAwMDAwMDAwMDAwMDAwMDBmwqBSMTE6wqBmZmZmZmZmZjgyNWIxZWVlwqBSMTI6wqBkZWFk
-MDAwMDAwMDAwMjAwClsxODQ3MjMuNTk0ODE1XcKgUjEzOsKgZGVhZDAwMDAwMDAwMDEwMMKgUjE0
-OsKgZmZmZmZmZmZhMDdlZDQ4MMKgUjE1OsKgZmZmZmM5MDAwM2I1ZmE0MApbMTg0NzIzLjYwMjAy
-OF3CoEZTOsKgwqAwMDAwN2Y0YWQ1N2ZhNzAwKDAwMDApwqBHUzpmZmZmODg4ODVmYTAwMDAwKDAw
-MDApwqBrbmxHUzowMDAwMDAwMDAwMDAwMDAwClsxODQ3MjMuNjEwMTkwXcKgQ1M6wqDCoDAwMTDC
-oERTOsKgMDAwMMKgRVM6wqAwMDAwwqBDUjA6wqAwMDAwMDAwMDgwMDUwMDMzClsxODQ3MjMuNjE2
-MDE0XcKgQ1IyOsKgMDAwMDAwMDAwMDA0ODAxYcKgQ1IzOsKgMDAwMDAwMDgxM2E2NjAwMcKgQ1I0
-OsKgMDAwMDAwMDAwMDE2MDZlMApbMTg0NzIzLjYyMzIyNV3CoERSMDrCoDAwMDAwMDAwMDAwMDAw
-MDDCoERSMTrCoDAwMDAwMDAwMDAwMDAwMDDCoERSMjrCoDAwMDAwMDAwMDAwMDAwMDAKWzE4NDcy
-My42MzA0MzVdwqBEUjM6wqAwMDAwMDAwMDAwMDAwMDAwwqBEUjY6wqAwMDAwMDAwMGZmZmUwZmYw
-wqBEUjc6wqAwMDAwMDAwMDAwMDAwNDAwClsxODQ3MjMuNjM3NjQ1XcKgQ2FsbMKgVHJhY2U6Clsx
-ODQ3MjMuNjQwMTc4XcKgwqA8SVJRPgpbMTg0NzIzLjY0MjI3N13CoMKgP8KgeG50aHJlYWRfc3dp
-dGNoX2ZwdSsweDIxLzB4MzAKWzE4NDcyMy42NDY2MzZdwqDCoD/CoF9fX3huc2NoZWRfcnVuLnBh
-cnQuNjgrMHgxZmIvMHg0NjAKWzE4NDcyMy42NTE0MjZdwqDCoD/CoHhuaW50cl9jb3JlX2Nsb2Nr
-X2hhbmRsZXIrMHgyMGQvMHgzMTAKWzE4NDcyMy42NTY0NzFdwqDCoD/CoF9fX3huc2NoZWRfcnVu
-LnBhcnQuNjgrMHgxMjAvMHg0NjAKWzE4NDcyMy42NjEyNTddwqDCoD/CoF9faXBpcGVfZGlzcGF0
-Y2hfaXJxKzB4MTIwLzB4MWIwClsxODQ3MjMuNjY1ODc2XcKgwqA/wqBfX2lwaXBlX2hhbmRsZV9p
-cnErMHg2Ny8weDFlMApbMTg0NzIzLjY3MDIyNl3CoMKgP8KgY29tbW9uX2ludGVycnVwdCsweGYv
-MHgyYwpbMTg0NzIzLjY3NDIyOV3CoMKgPC9JUlE+ClsxODQ3MjMuNjc2NDEyXcKgV0FSTklORzrC
-oHN0YWNrwqByZWN1cnNpb27CoG9uwqBzdGFja8KgdHlwZcKgMgpbMTg0NzIzLjY3NjQxM13CoE1v
-ZHVsZXPCoGxpbmtlZMKgaW46wqBtb2RfZGFjb25ydChQTynCoG1vZF9kYWNvKFBPKcKgbW9kX3Bn
-Y3UoUE8pwqBtb2RfdHNtdShQTynCoG1vZF9zY2MoUE8pwqBmdXNlwqBhcmM0wqBlY2LCoG1kNMKg
-c2hhNTEyX3Nzc2UzwqBzaGE1MTJfZ2VuZXJpY8KgY21hY8KgbmxzX3V0ZjjCoGNpZnPCoGNjbcKg
-ZG5zX3Jlc29sdmVywqBmc2NhY2hlwqBpbnRlbF9yYXBswqB4ODZfcGtnX3RlbXBfdGhlcm1hbMKg
-aW50ZWxfcG93ZXJjbGFtcMKgY29yZXRlbXDCoGt2bV9pbnRlbMKga3ZtwqBpcnFieXBhc3PCoGNy
-Y3QxMGRpZl9wY2xtdWzCoGNyYzMyX3BjbG11bMKgZ2hhc2hfY2xtdWxuaV9pbnRlbMKgcGNiY8Kg
-YWVzbmlfaW50ZWzCoGFlc194ODZfNjTCoGNyeXB0b19zaW1kwqBjcnlwdGTCoGdsdWVfaGVscGVy
-wqBpbnRlbF9jc3RhdGXCoGludGVsX3VuY29yZcKgaW50ZWxfcmFwbF9wZXJmwqBzbmRfaGRhX2Nv
-ZGVjX3JlYWx0ZWvCoHNuZF9oZGFfY29kZWNfZ2VuZXJpY8KgaVRDT193ZHTCoGlUQ09fdmVuZG9y
-X3N1cHBvcnTCoGpveWRldsKgc25kX2hkYV9pbnRlbMKgYXN0wqBldmRldsKgc25kX2hkYV9jb2Rl
-Y8KgdHRtwqBzbmRfcGNzcMKgZHJtX2ttc19oZWxwZXLCoGkyY19pODAxwqBzbmRfaGRhX2NvcmXC
-oGRybcKgc25kX2h3ZGVwwqBmYl9zeXNfZm9wc8Kgc3lzY29weWFyZWHCoHN5c2ZpbGxyZWN0wqBz
-bmRfcGNtwqBzeXNpbWdibHTCoHNuZF90aW1lcsKgc25kwqBscGNfaWNowqBzb3VuZGNvcmXCoG1m
-ZF9jb3JlwqB3bWnCoGlwbWlfc2nCoGlwbWlfZGV2aW50ZsKgaXBtaV9tc2doYW5kbGVywqBidXR0
-b27CoGlwX3RhYmxlc8KgeF90YWJsZXPCoGF1dG9mczTCoGV4dDTCoGNyYzE2wqBtYmNhY2hlwqBq
-YmQywqBmc2NyeXB0b8KgZG1fbW9kClsxODQ3MjMuNzUyMzkzXcKgwqBoaWRfZ2VuZXJpY8KgdXNi
-aGlkwqBoaWTCoGk0MGV2ZsKgYXRsYW50aWPCoGl4Z2JlwqBtZGlvwqBpeGdiwqBlMTAwMGXCoGUx
-MDAwwqBlMTAwwqBtaWnCoHZtd19wdnNjc2nCoHZteG5ldDPCoHNnwqBzZF9tb2TCoGFoY2nCoHho
-Y2lfcGNpwqBsaWJhaGNpwqBlaGNpX3BjacKgbGliYXRhwqBpZ2LCoGVoY2lfaGNkwqBpMmNfYWxn
-b19iaXTCoHhoY2lfaGNkwqBzY3NpX21vZMKgZGNhwqBjcmMzMmNfaW50ZWzCoHVzYmNvcmXCoGk0
-MGXCoFtsYXN0wqB1bmxvYWRlZDrCoG1vZF9zY2NdClsxODQ3MjMuNzc1MDQxXcKgQ1IyOsKgMDAw
-MDAwMDAwMDA0ODA0NA==
+On 10.10.22 15:31, Yxian.Yao wrote:
+> 
+> 
+> During the recent testing on the linux-4.19.89-ipipe-9-xenomai-3.1 (linux-4.19.89, ipipe-core-4.19.89-x86-9.patch, xenomai 3.1), 
+> the kernel outputs some exception messages, as follows.
+> Please give me some hints!
+
+Are you using the perf tool here?
+
+Also, can you check if the issue persists with a recent dovetail kernel
+(5.15 or 5.10)? Or are you locked into these versions technically?
+
+Jan
+
+> 
+> Thanks a lot.
+> 
+> 
+> [ 5228.358085] perf: interrupt took too long (2504 > 2500), lowering kernel.perf_event_max_sample_rate to 79750
+> [13323.899759] perf: interrupt took too long (3137 > 3130), lowering kernel.perf_event_max_sample_rate to 63750
+> [62540.659725] hrtimer: interrupt took 12379 ns
+> [63405.661958] perf: interrupt took too long (3927 > 3921), lowering kernel.perf_event_max_sample_rate to 50750
+> [131204.150039] perf: interrupt took too long (5012 > 4908), lowering kernel.perf_event_max_sample_rate to 39750
+> [166021.881707] BUG: unable to handle kernel paging request at 00000000000a22e8
+> [166021.889579] PGD 0 P4D 0 
+> [166021.892503] Oops: 0000 [#1] PREEMPT SMP PTI
+> [166021.897268] CPU: 2 PID: 1604 Comm: RunCommandActor Kdump: loaded Tainted: P           O      4.19.89-ipipe-9-xenomai-3.1-20201027 #1
+> [166021.910661] Hardware name: Intel Corporation S2600CWR/S2600CWR, BIOS SE5C610.86B.01.01.0022.C2.062820171903 06/28/2017
+> [166021.922696] I-pipe domain: Linux
+> [166021.926394] RIP: a2260:0xffff88866761c560
+> [166021.930965] Code: 00 00 00 00 00 00 00 00 00 00 c0 8f 6a 67 86 88 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <01> 00 00 00 00 00 00 00 01 01 00 00 00 00 00 00 02 00 00 00 00 00
+> [166021.952016] RSP: 81037f07:00000000000a2260 EFLAGS: ffff88866761c560 ORIG_RAX: ffffffff8111953e
+> [166021.961726] RAX: 00000000000a2260 RBX: 0000000000000002 RCX: ffffffff828021c0
+> [166021.969786] RDX: ffff88866761c560 RSI: 0000000000000000 RDI: 0000000000000000
+> [166021.977847] RBP: ffff8886676a4540 R08: 000000000005f3e0 R09: ffffffff811838cb
+> [166021.985909] R10: ffffffff8117cddc R11: 0000000000000002 R12: ffff8886676a5d08
+> [166021.993969] R13: ffffe8f9ff8077d8 R14: ffff8886676a4540 R15: ffffffff811838cb
+> [166022.002030] FS:  00007f73c6ffd700(0000) GS:ffff888667600000(0000) knlGS:0000000000000000
+> [166022.011157] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [166022.017666] CR2: 00000000000a22e8 CR3: 0000000c29cf8004 CR4: 00000000001606e0
+> [166022.025720] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [166022.033781] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [166022.041843] Call Trace:
+> [166022.044667] Modules linked in: fuse mod_samo(PO) mod_drxu(PO) mod_stcu(PO) arc4 ecb md4 sha512_ssse3 sha512_generic cmac nls_utf8 cifs ccm dns_resolver fscache intel_rapl sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp kvm irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc aesni_intel aes_x86_64 crypto_simd cryptd joydev glue_helper intel_cstate mgag200 ttm drm_kms_helper drm fb_sys_fops iTCO_wdt iTCO_vendor_support lpc_ich intel_uncore syscopyarea evdev ipmi_si ipmi_devintf mfd_core mei_me sysfillrect i2c_i801 ipmi_msghandler mxm_wmi intel_rapl_perf snd_pcsp snd_pcm snd_timer snd soundcore sysimgblt ioatdma mei acpi_power_meter wmi button ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 fscrypto dm_mod i40evf atlantic i40e ixgb e1000e e1000 e100 mii vmw_pvscsi vmxnet3 sg sd_mod
+> [166022.124033]  hid_generic usbhid hid ahci libahci xhci_pci ehci_pci libata xhci_hcd ehci_hcd crc32c_intel igb ixgbe i2c_algo_bit usbcore scsi_mod mdio dca
+> 
+> [166022.139480] CR2: 00000000000a22e8
+> 
+> 
+> 
+> 
+> [184723.509341] BUG: unable to handle kernel paging request at 00000000000a22e8
+> [184723.516418] BUG: unable to handle kernel paging request at 0000000000048044
+> [184723.523453] PGD 0 P4D 0 
+> [184723.526072] Oops: 0010 [#1] PREEMPT SMP PTI
+> [184723.530336] CPU: 2 PID: 4763 Comm: RunCommandActor Kdump: loaded Tainted: P           O      4.19.89-ipipe-9-xenomai-3.1-20201027 #1
+> [184723.542312] Hardware name: Supermicro Kontron C612XS1/Kontron C612XS1, BIOS 2.0a.V2 07/04/2021
+> [184723.550996] I-pipe domain: Linux
+> [184723.554308] RIP: 0010:0x48044
+> [184723.557360] Code: Bad RIP value.
+> [184723.560669] RSP: 0018:ffff88885fa03ed0 EFLAGS: 00051046
+> [184723.565972] RAX: ffff88885fa5f3e0 RBX: ffffffffa07ed4a8 RCX: ffff88885f8a4540
+> [184723.573184] RDX: 0000000000000000 RSI: ffffffff81e0f0a7 RDI: 000000000000000b
+> [184723.580394] RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000000a7e
+> [184723.587604] R10: 000000000000000f R11: ffffffff825b1eee R12: dead000000000200
+> [184723.594815] R13: dead000000000100 R14: ffffffffa07ed480 R15: ffffc90003b5fa40
+> [184723.602028] FS:  00007f4ad57fa700(0000) GS:ffff88885fa00000(0000) knlGS:0000000000000000
+> [184723.610190] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [184723.616014] CR2: 000000000004801a CR3: 0000000813a66001 CR4: 00000000001606e0
+> [184723.623225] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [184723.630435] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [184723.637645] Call Trace:
+> [184723.640178]  <IRQ>
+> [184723.642277]  ? xnthread_switch_fpu+0x21/0x30
+> [184723.646636]  ? ___xnsched_run.part.68+0x1fb/0x460
+> [184723.651426]  ? xnintr_core_clock_handler+0x20d/0x310
+> [184723.656471]  ? ___xnsched_run.part.68+0x120/0x460
+> [184723.661257]  ? __ipipe_dispatch_irq+0x120/0x1b0
+> [184723.665876]  ? __ipipe_handle_irq+0x67/0x1e0
+> [184723.670226]  ? common_interrupt+0xf/0x2c
+> [184723.674229]  </IRQ>
+> [184723.676412] WARNING: stack recursion on stack type 2
+> [184723.676413] Modules linked in: mod_daconrt(PO) mod_daco(PO) mod_pgcu(PO) mod_tsmu(PO) mod_scc(PO) fuse arc4 ecb md4 sha512_ssse3 sha512_generic cmac nls_utf8 cifs ccm dns_resolver fscache intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc aesni_intel aes_x86_64 crypto_simd cryptd glue_helper intel_cstate intel_uncore intel_rapl_perf snd_hda_codec_realtek snd_hda_codec_generic iTCO_wdt iTCO_vendor_support joydev snd_hda_intel ast evdev snd_hda_codec ttm snd_pcsp drm_kms_helper i2c_i801 snd_hda_core drm snd_hwdep fb_sys_fops syscopyarea sysfillrect snd_pcm sysimgblt snd_timer snd lpc_ich soundcore mfd_core wmi ipmi_si ipmi_devintf ipmi_msghandler button ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 fscrypto dm_mod
+> [184723.752393]  hid_generic usbhid hid i40evf atlantic ixgbe mdio ixgb e1000e e1000 e100 mii vmw_pvscsi vmxnet3 sg sd_mod ahci xhci_pci libahci ehci_pci libata igb ehci_hcd i2c_algo_bit xhci_hcd scsi_mod dca crc32c_intel usbcore i40e [last unloaded: mod_scc]
+> [184723.775041] CR2: 0000000000048044
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
