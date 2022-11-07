@@ -1,142 +1,152 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2041.outbound.protection.outlook.com [40.107.20.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8531E2F4D
-	for <xenomai@lists.linux.dev>; Sun,  6 Nov 2022 19:11:03 +0000 (UTC)
-Received: by mail-wr1-f49.google.com with SMTP id j15so13446561wrq.3
-        for <xenomai@lists.linux.dev>; Sun, 06 Nov 2022 11:11:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qxJWqHn/vWXT2mj0eNC97cKafhelYMk6Kb8tGpWUGUE=;
-        b=T9+4HHeLVSJe9+8m4/5uQZKgRd5VO99DJDvSWA0UcrmbDUOGX/maPnFSWHTqdMK7VG
-         f/VRgSMw03sn9xPH0GItCsgtNowL9lM9KacZU7r2N8VzetFSm/XUSv/IVwdS/xJVdz1+
-         +/2aWtZsH8HOigRx+thAqbm0sgPzijrOetxi1R7BDRAL2RYwtgccIrVYvzB+W48E941P
-         qm9la99bf5PL5AxMCPwydXFl2IZ28+Y+H8d0CroaqXyGrLC5P53mOdParKa75TkHyTEH
-         hiARrEDSANqIUfZLUhEzzkZoOhC+Dp+QqgeEDSMO0BQys9Ls+Ajr4SKCa55y/V0lQMNv
-         OACw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=qxJWqHn/vWXT2mj0eNC97cKafhelYMk6Kb8tGpWUGUE=;
-        b=qzO8HfaRLAK7Eo37x5OfN9EqcES4rDdJyooY5IWHsVgVJcqiTYNnKtvLaIIBmBZXuo
-         ZM6QCxelPaXQDdIAqTxP1gxpJz+20VEeWp21kcuqgl3Igh4AR8FNsMYC1yk2YAVOrxlK
-         04uyoRuwqdbAZ1Um7JGPbT8bCf25EKbhGpjGnp+Q6CbnkarlRQUNcF8m6nJCqtwF7Yv9
-         FE9WpVzptWsb8ATrl4zny7silWX7qOOLL9mhCKBME1Ta7q0OwexKZAIZmI+YaVwnHuue
-         rkE19DpR2niVCZOUZKuZQYRdNTjYbQjhPYrOPqC8Ljd/ZZ210buuD2qT1gs2R5zz35kf
-         MowQ==
-X-Gm-Message-State: ACrzQf2VABZXntrhopitITKoSWLCITQlHhrxug4LGj5mn3piPKnKCakI
-	FGywn3M3tzKgpdxJwxY7s2SWwQQr21k=
-X-Google-Smtp-Source: AMsMyM4uCK2cSzyi0O804FyooPFCtAB1LmoaoYw1/L0nj3/uC3Ijqmk+CZMZKnT1VkqYT19Nd+fxUg==
-X-Received: by 2002:adf:e199:0:b0:236:b24b:aaf9 with SMTP id az25-20020adfe199000000b00236b24baaf9mr489949wrb.394.1667761861818;
-        Sun, 06 Nov 2022 11:11:01 -0800 (PST)
-Received: from [192.168.42.52] (91-114-219-213.adsl.highway.telekom.at. [91.114.219.213])
-        by smtp.gmail.com with ESMTPSA id ck17-20020a5d5e91000000b002383e977920sm5277920wrb.110.2022.11.06.11.11.01
-        for <xenomai@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Nov 2022 11:11:01 -0800 (PST)
-Message-ID: <49fb01fa-abda-46eb-cf47-31d48810d7eb@gmail.com>
-Date: Sun, 6 Nov 2022 20:11:00 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AC228E8
+	for <xenomai@lists.linux.dev>; Mon,  7 Nov 2022 08:42:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P+SNW77MEUMDzqFM96hzaG0BxdG20unXA0OJkvEYqKPGVdaOr7gc0y1H36lyYyYibilSOZu0ioQ+CGnVhQISHRlJbzydt4ta3KG2uv/z65Zc+zuTWifPPVcd5BmdaVsTqU5Kl3UAyH92ElfkHN4fkyL2nWaMO1152Zpl8ZBkxK0CARwe3s72dFzuyelwHjxM7gyjg2Cl9RTLw6jb/IYXzqkhF76V42fLfZuuGHDlu6/TKA77CSY9T+TLKANcD1pmF94l7A1TpUsz2LklxT+NVlK0XY8NySZnPrXdvfUpp5PWqBF4IbKQg+YGfIu3U2LOUpoxJ9UQsmF0SO3346Ryhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yK4ESOtB02yKTH+j4P3Ka8FRf1GMYG+2MHXM04fFu84=;
+ b=S8eD1zobj+WJHJyrN+jzvnLkFiF3n6z9YPawhoPaan3jIiphEhiRbLMQ1tc4WhdZ/pXpg3s9Chb47rej2cQPjM8TbndZLp+IXr4naJxJ39na6smPXDApB3dZzcb3uCVs+vYLrrgGbRLHq54k/hamRPyPm+yfTB8USqe+Jm0ySbb67bUY+9thoDXDFGp/JHvyQc0QI4K4FG2fZJdXIX39E3seoCzjDDDPEENVY76sAcDjvVX12DO4lwALQAPSg8cbgbeFPArycl0Nx6JAZongKZeFJT0kq0ysYH3G6bFvX9Oo346DaA135dCkuDhloQ5KIHHNytdKJC7IoBSeBfTYOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yK4ESOtB02yKTH+j4P3Ka8FRf1GMYG+2MHXM04fFu84=;
+ b=ljeEI4OXmvUJwA89RXsbjrKYvx1PqLeepEq5aHcuV4DnOLEWXI9ysCpWEbiGeRB7oYe15cSOxE+SQy/InR6jPhsVzssnCwUXv7O/m1T4oo24bDV9J4qL/e4zPI6TRuTFhhc2tYsP99zCxWQOQEqjXSMPrmEIERBakpdfYLXJ2adIsOQXq0XSJIi57x2fI3hAnT9RILjVNAI8KaGDwHGO503Ot5q+29TpPM9ON63dEG4ZPARc2xwwA5lK7g1NimT/zr9CxW+P+tDUDjmjs8X35NqXGL6zneNev5yh/1FMRrKPXb3FI2tf8DQ5pPQK6PwzafxzRc90B0LoeJdlLfWcLg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS2PR10MB7069.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:597::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25; Mon, 7 Nov
+ 2022 08:42:40 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5d9b:b9d1:bd69:107b]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5d9b:b9d1:bd69:107b%4]) with mapi id 15.20.5791.025; Mon, 7 Nov 2022
+ 08:42:40 +0000
+Message-ID: <151047c2-a1cf-db66-d4d6-61d0df96976f@siemens.com>
+Date: Mon, 7 Nov 2022 09:42:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: Memory corruptions upon strcpy and similar when being interrupted
+ by scheduler
+Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: "Heber, Stefan" <Stefan.Heber@zwickroell.com>,
+ "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
+ "Wang, Rick Y" <rick.y.wang@intel.com>,
+ "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+References: <FR2P281MB265487EA098F01EFC0F77CB8FC569@FR2P281MB2654.DEUP281.PROD.OUTLOOK.COM>
+ <ca3f971c-87e1-b7b4-262c-bf80483ef9fd@siemens.com>
+ <PH0PR11MB5880908DA18819B93D4DAEB9DA319@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <4a08b7af-039d-99ef-ec9e-4749cb47379d@siemens.com>
+ <FR2P281MB265412CDC9321A60BA8B87BCFC309@FR2P281MB2654.DEUP281.PROD.OUTLOOK.COM>
+ <PH0PR11MB58807DD17256817B3BFC54A3DA399@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <FR2P281MB265432E604FFEB38A3FB7AB9FC399@FR2P281MB2654.DEUP281.PROD.OUTLOOK.COM>
+ <b49df726-0eb8-1f65-f584-37eba99aae77@siemens.com>
+In-Reply-To: <b49df726-0eb8-1f65-f584-37eba99aae77@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0059.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4b::21) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Content-Language: en-US
-To: xenomai@lists.linux.dev
-From: Robert Berger <xenomai.list@gmail.com>
-Subject: cyclictest vs. latmus
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS2PR10MB7069:EE_
+X-MS-Office365-Filtering-Correlation-Id: 94a734f9-071a-4050-d354-08dac09c0781
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	b84Uqg+6xmQ3LtnAZV9eZac4kse8OQ96Jaxe+jIAcFOJp9sKaPWcXpDSsutD0KsyDAlhRmLE3J0ROuz6edOOkCx+2P9HHxAEilizGloRo3WAs4dYRGP++nJFb6ZZYc3ycfybpITQamAQ+rmzD8fHcbIXmCM9FlvTZbss8GHzW4QSYbOE0hhRAwwUjysmtv63nbrs+PVdGGZujuBgKXpVEA3s6IyX20FOM31qqnhNQWKlfmYmAUXYxHwB4OKat7atOgUaj7kjifBcJzmUiE73ni4JedxTNpn/AAAssu3ZtZ67HnmzB3CInP1SvK0ujO5tEZEzACiW/qJj88yd77Gos8aAZW4vBSfi1gLmeOc/Nl0xTv1bbVPoE6n9UICtaPffalTc12FPJNcbpLXGjwZl5bjjeF9vVuMFQz77vGRe5Ang9F2Bq4lcj98o+TXZqOc21Zm/D/jKSI9rfhu56Bzv5bfbKlWK43gSj89rjCXMMfRUPC3kVl5siSfJFI1a72lREBetIZTwtRdBZpMWdmEbiLZ8EG2uBCnvRZaInqVkDmavOI/+ZdWyBhZZSW8FlC+LR2TbMZjuKSLGqSFmBLWyog6DoVgiQEHyNIyEkPh93cDdze9HAFCd6v/aBJcSAt5Slygf1mpcT3wtj5OvQ6DoA0XUC/zVz4O6+tkjDx/yOfLKuWNYERLjS4LwO50DOfvSKqoiLSQo3g31AfHJ7XdcHyxy/yGq7z4LUDVgwbbagcglxvSlLy6dcajYqihqZdO2Oba8M2HqOmzCaybbbGA6/6ICVvidMqqCwMxP4CvLTpg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(376002)(136003)(39860400002)(346002)(451199015)(36756003)(31686004)(38100700002)(86362001)(478600001)(41300700001)(6486002)(82960400001)(83380400001)(31696002)(4744005)(6666004)(6512007)(26005)(186003)(6506007)(44832011)(4326008)(53546011)(8936002)(5660300002)(8676002)(54906003)(2906002)(2616005)(316002)(110136005)(66476007)(66946007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TjJ3TWVKM2ZoSlA5eVZSb0hONXExeUVDUHBhYjVsOFVEdFhNeWJvcGpScjFw?=
+ =?utf-8?B?THQwNUp0VG8rZDc1ekpFOFhveGpJN0NpWi9QMUZYR3lLdUl3NWp1T2dYWTFP?=
+ =?utf-8?B?SzJ2NFJqTG1DaUdZRU9LRUkzU292RER3elBEcUtzVkhaS0pzNGVmVWFZNG4v?=
+ =?utf-8?B?NElYWGtCVE15UmlLQ1hhVCtyc2NmeG5BRjhrbEVDRUNCdC9GYndBSm5RRUJk?=
+ =?utf-8?B?UThSaTgvVmx0bldISVIwRVhSVmtDRXllVlc0N1JPeEpNYjJTaVFlWDUrWjVy?=
+ =?utf-8?B?emVzTGxhM0FhdjFqbFc0L2tyRSs0TGo2KzgzN21aWTVkeDFmQS91NlpjQmox?=
+ =?utf-8?B?OXd0NlYwK2NoMnhTTURjVFlTZlBxSmVSUy9ER1hqMlNxeitJY0JFSjdwUXJl?=
+ =?utf-8?B?YWo4YmZiTkVNdFdFTlZQUVZKbm1pc2FVUkpiTUIwaXNwSmtHZHNINkFDcVlN?=
+ =?utf-8?B?QUtGWm9uaWdOSVRSU1krUjd2U2FrQXkzUHV4YXhnWDdEUjVrc2REOHhCMHdJ?=
+ =?utf-8?B?SUEzcWtBRE1KSE1YUU8xMUpwbHkwdHFHMGVOU1ZLZ0czZGw4RG1EaVh4QlBp?=
+ =?utf-8?B?d2FKMG1OS1RoMjQyZmlLVnBlTFgvREd0K2VqQnRTaFpMa1JCNVd4NEpYdTZ0?=
+ =?utf-8?B?dlBzK1VXeDdBNmhCb05XeXprdTU2VTFkdVBHa0h5dTk0YXl1Q0FEb2Vwa2d4?=
+ =?utf-8?B?SG9ScXAyWTBVVThWNUFRb3VERVVYOGFDTG4zOTNsaGJoa0lmVXFVeWxvMWxQ?=
+ =?utf-8?B?M2c0aDNQRW5vd29ibGVFZzNSbEQrT0E2NFU4K2ZPUksvb2gwYndpYW1nNCt3?=
+ =?utf-8?B?MmFsRE1vRm94MU0yRDBrNUVmK1FlbkRIdmdMd3g1WUZKRUtRUHk5NENiMFJF?=
+ =?utf-8?B?L1hFQ0x2ODF0UUtUUWZEOE1qdzBWTlZXVVcxT3d6b2lrdnF0MWYyR2x6SE1r?=
+ =?utf-8?B?VThXSGp2MDZzSDNQeXFYNVZsU2J4REJzaVRLRG11WVQ1K09hNWRsb3QvT0k1?=
+ =?utf-8?B?TXRoZ1JBbHVpazRrc2Nmdm9rVmQxdHVyR3gxRE1yVlFVb3N0VzdBejYxZVVx?=
+ =?utf-8?B?eFpnM1dYMWVOZ2hLcE1VWnNobGxRUkllZEJnNzV3SFRiUnFDOWMvK20rUDRE?=
+ =?utf-8?B?UFQ4Vkd1MklXcnFPZHRWc0g0YzlwVzVlUDg5TkhTSnJFZjVIMFVoNThla29M?=
+ =?utf-8?B?dVNsU1E5dlIwUjdWZG9nSjVBQUVoTWErcWg0ck1VOWVUek1ycmp5cE0wYWxD?=
+ =?utf-8?B?dzlBblkzUmVXYkpVV3BtS3p5cXpGZkYvR2Npbk9wTGRZb0N5aWpmOGFqVVlL?=
+ =?utf-8?B?bnBZajc1RUNac2VMSHJKYmdQTXNsdWJ1Q0R6MmJnZ1FOZkdmbTFIU2V4RG5y?=
+ =?utf-8?B?WVFOemJtVjhJaTdZR2xHSnNmSG1nbGNDVVNZTVVJcGd2bmNsNTFPcG91MGZ6?=
+ =?utf-8?B?clkvSzJSd2h0ZlZIT1VPNWlXL1JodjFKbklKSSszMlFDUHkyYVpoMHlsRWt2?=
+ =?utf-8?B?NUg1Q0c1MFF3cFN4KzBCSDBMOG1NTFZic2ZmTlZqVG10SnkrL3hFOUI1OVUx?=
+ =?utf-8?B?Yy8rdVRrSmJCODJmVG1qTzhyUUVuaE00UmNvOG1aNmdmUFJYYjdWbTBDNVlq?=
+ =?utf-8?B?Z1A5a21lR1FxWFZvNjZDSEQzQnpTZENwRDRUVkNLM3haSXdsL3JLend3RTVv?=
+ =?utf-8?B?c0svdExiLy82TFVtenBqcnRoS3IxVGNUcUcvaUYrNWpXZWRLb1k4dHBHM2ZC?=
+ =?utf-8?B?SExqWDhuYU1CYjdvVnRBVGl0Rm1pOGJXL01jUFhUMWlnNllZcHZWZW0xdjBV?=
+ =?utf-8?B?RkVFMUxKUnVWZlo0elpEOVVOdXRQWndEeG0wOXBWMjhPRGNUejJJcVNEZ1ZL?=
+ =?utf-8?B?MkNocmVsV3RPdnVJTGpiQjJCM2FIODBrR2hhS01ZN2ozUVAwRUplc3Fkejdx?=
+ =?utf-8?B?RGlTRW9ISlI0bysrQmFCTi94QmQ0YnBEcnZMV24vYi9OQUYyS2dWMDU0djVB?=
+ =?utf-8?B?dEplMHIyTFNLMXhGaERFbWZaY3NhQUNNdDlFcmpIa3hBL2o0NFZLSUFaa244?=
+ =?utf-8?B?VW4wSkFGaHZhYndxeUIrZHhldVBQQ1ArQWNoRnp3bVRZeDM1R3ZqUjFMWnlx?=
+ =?utf-8?B?SmlMd29iQ1FwWEdCWWpMcEljM0NDSTBKUkQ5OG10WWZUUXQ5SFFGakhnOFFo?=
+ =?utf-8?B?Snc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94a734f9-071a-4050-d354-08dac09c0781
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2022 08:42:40.1288
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jyy5MTDTPIxt8mX2TDvdSeDmN4YuBAIPntDo64szyqEoePTHKyLr3ScNUMChnBUgAOKn1SbRuN/kW6GPiLPn8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7069
 
-Hi,
+On 02.11.22 16:48, Jan Kiszka wrote:
+> On 02.11.22 16:34, Heber, Stefan wrote:
+>> Hello Zqiang,
+>>
+>> We tested your 0001-IPIPE-ignore-xenomai-FPU-operation.patch on our system (Linux-kernel 5.4, Xenomai v3.2).
+>>
+>> This patch makes the problem disappear with our tiny testapp on our system, too.
+>> But with a systemtest from our huge application (>250k LoC, >20 threads) the problem still exists.
+> 
+> The patch is surely no solution, but it points to the direction where we
+> need to dig. Unfortunately, I still didn't find enough contiguous time
+> to start that.
 
-I run some test cases with cyclictest and cyclictest built for xenomai 3 
-for a couple of years now and want to switch to xenomai 4/evl.
+I'm starting to understand the problem:
 
-Looks like I managed to compile an evl kernel and the evllib and I use 
-latmus instead of cyclictest (not sure if I'm doing that correctly) and 
-also I compare the results against cyclictest (not sure it's right to do 
-that they way I'm doing it).
+Somewhere between 4.19 and 5.4, the kernel moved FPU restoration for
+incoming threads from the thread-switching code to
+prepare_exit_to_usermode(). However, this path is not taken when
+switching in a primary thread, at least when it's coming from secondary.
+Need to look for the right way to account for this now.
 
-Anyways, sorry for the lengthy document I came of with[1] with 
-histograms and questions.
-
-Here are my questions, which you can find in a nicer formatted way in 
-the doc[1].
-
-= evl Kernel - CONFIG_PREEMPT_NONE - cyclictest =
-
-My understanding is, that evl works similar to xenomai 3, meaning that 
-you need to compile/link an application against libevl for evl to kick 
-in. I would expect figures 15 and 16 on page 10 to look like figures 3
-and 4 on page 4.
-
-What’s odd is
-
-*) the outlier in the graph without load is bigger than the one with 
-load (1.3 ms vs. 550 us), which should be the opposite
-
-*) the outlier in the graph with load should be like the one in figure 4 
-which is around 10 ms, but it is more like 550 us - please note that the
-kernel config contains CONFIG_PREEMPT_NONE=y and CONFIG_EVL=y
-Does this observation imply, that an evl kernel modifies the behavior of 
-the "vanilla" Linux scheduler for processes which should run on the 
-"standard/vanilla" Linux scheduler?
-
-= evl Kernel - CONFIG_EVL - latmus =
-
-I am not quite sure if/how latmus compares to cyclictest. Ideally I 
-would like to compare histograms produced by latmus against those I 
-produce with cyclictest.
-
-Let’s have a look at graphs 17 and 18 on page 11.
-
-*) the outlier in the graph without load is bigger than the one with 
-load (780 us vs. 700 us), which should be the opposite
-
-*) xenomai 3 with cyclictest compiled for xenomai - figures 13 and 14 on 
-page 9 performs significantly better than evl with latmus
-**) no load outlier: xenomai 3(cyclictest): 26 us - evl(latmus): 780 us
-**) load outlier: xenomai 3(cyclictest): 65 us - evl(latmus): 700 us
-
-*) a preempt-rt patched kernel with cyclictest - figures 9 and 10 on 
-page 7 performs significantly
-better than evl with latmus
-**) no load outlier: preempt-rt(cyclictest): 120 us - evl(latmus): 780 us
-**) load outlier: preempt-rt(cyclictest): 119 us - evl(latmus): 700 us
-
-*) a vanilla kernel with CONFIG_PREEMPT with cyclictest - figures 7 and 
-8 on page 6 performs similar
-to evl with latmus
-**) no load outlier: preempt-rt(cyclictest): 880 us - evl(latmus): 780 us
-**) load outlier: preempt-rt(cyclictest): 720 us - evl(latmus): 700 us
-
-Please check the .pdf here[1] for more details:
-
-[1] 
-https://drive.google.com/drive/folders/1_5PZ_4sQxvL5MbiQU1Y1kUXC5IjF5SSX?usp=sharing
-
-Regards,
-
-Robert
+Jan
 
 -- 
-Robert Berger
-Embedded Software Evangelist
+Siemens AG, Technology
+Competence Center Embedded Linux
 
-Reliable Embedded Systems
-Consulting Training Engineering
-URL: https://www.reliableembeddedsystems.com
-
-Schedule a web meeting:
-https://calendly.com/reliableembeddedsystems/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
