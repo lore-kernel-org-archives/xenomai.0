@@ -1,210 +1,219 @@
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70059.outbound.protection.outlook.com [40.107.7.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C93EC08
-	for <xenomai@lists.linux.dev>; Wed,  9 Nov 2022 18:21:32 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 8C2F2240003;
-	Wed,  9 Nov 2022 18:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1668018090;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=p5KHvjxX09LTjY+QvnLPP6/Kcrb8SfcIv4gKbsKAd1c=;
-	b=DO4biEHftkzr8BjfIavx2042VhihECMXiwTqT4bNEFmd+I1c/6Cc2NKIXgdTLQxKo7Dlhr
-	G/glrsVedXblA9WKMcqmY7f+Gk2IyhsoyNF4cMEBNDE4YiwHdxHLapu6D8oJk3yd57RQO2
-	WmE+4uQFN9UJX74yE4kDMMhwOfKsApf/vEzdsqTZes+4U+5aGNjYdHL+55ynEzA1k+buRx
-	ih4atLxi6vWuk7cmqrq42P3K04JNkmwziggMsF5J6L78pR6CccGfOBf5pzUjbC/HRvtcsk
-	H5/paone/Z50LTsvFT9y3NcUK7Zo5pGEYLucWor49BvBco1Uv9ogKgFA6Fe1IA==
-References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Bryan Butler
- <Bryan.Butler@kratosdefense.com>, Shawn McManus
- <shawn.mcmanus@kratosdefense.com>
-Subject: Re: EVL Memory
-Date: Wed, 09 Nov 2022 18:20:40 +0100
-In-reply-to: <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <877d04dm52.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77C9918D
+	for <xenomai@lists.linux.dev>; Thu, 10 Nov 2022 06:38:58 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X+sBz2CVIffF9sopFGOvB5bdXpIAad7CASdIW8TXQxwPATi/kaZc7EzBLFtiAvMuU6Mbe2/hegTPV8+ocr6kQVs4Y/SK2x1rOaD9XO3ujQ5v+xt4pp/jNvB/BW2sccuv97bb+tfDjDhcFk9b3Cezx0TfOLIs7ffrrc9+ejbMOoHgk/sDaI6PSYliqVg0fe8Y626UQcMgyfy/kUVByJ3ySj9nCaWwJtY5tU9ln+herYxZlupAKaNqXcz62hdtS8uw+qztPH08b7bsOWmx5i2ikoNaw4EeICNOKjBRryJi2A+PUjoHnPGk7TZfDXrInH73IIyEJtpMUomjDZx7rfORmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lIsJz0LwfAOH6Fti128KtfIJbAymWSF1fT9bnDU6Z4o=;
+ b=W6dYW+yprbrowsTHXX3yhhT1KR3R+M7wjU+YpUXuWNYE+j3z+LMVnw5aqDatfja//S7i3CPxnW4B1hgQK11rrkPvZCAqZ29JjvSrLIJKYlG1hpJcDhBxj/2gnLa/knjTSn3AQA0UH4VEWNjsGjnYVHfAx2+yoGexrvFs+WRddQjJXMPpWfjbZHgPdenU3fL6vekiclseztldeVl6THsCcrdJNxkdPO65E0rgEjpWLBpGMZOkQ7ZyiX0tvvLopwF9Wrbl45FBWzvaUG/APSEPmY59EdfYmT1LMWr25SusrKK9uwS+7Fsxs/W3sEjYQ4rV34PcajHbNND9wDBkgcdLJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lIsJz0LwfAOH6Fti128KtfIJbAymWSF1fT9bnDU6Z4o=;
+ b=C78V1UIiW4vqDtB4dP/B2JEbD9vyxKVLo3qdtC6BAW52uwf//MxLEMnMIH8JinoO1EBg6um4b5sBsgD/U1DRs5V3VUni4hPKVAE3o22QjwtRHDq4vqcjjKSvdjSCVtUxWSGyXpC7sRw5+11jvrHcm/X3PCIyKKvRvMj0nErQ9IRoGR0CoRfPWV8ted2/lEmUoYfr0gaQyzjj2/kt7UlecjH4Grr5rjHC6kRgO0CvO+mw4lLFsFQ2gvzOGdE4ZRMuYIg+ZtHTeTVaynPcwh5+t90qjfIJ4tBFrN0K9tdcwAIw7eF9ttt+jTlO7lkPNastFELie5VGZeHXxT8jZbFbMg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS8PR10MB6055.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:570::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Thu, 10 Nov
+ 2022 06:38:55 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5d9b:b9d1:bd69:107b]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5d9b:b9d1:bd69:107b%4]) with mapi id 15.20.5791.025; Thu, 10 Nov 2022
+ 06:38:55 +0000
+Message-ID: <2934513f-c67b-35ee-e72c-dbebd23a432d@siemens.com>
+Date: Thu, 10 Nov 2022 07:38:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH, 3.2.x] cobalt/x86: Fix FPU switch during thread hardening
+Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Stefan Heber <Stefan.Heber@zwickroell.com>
+Cc: "Zhang, Qiang1" <qiang1.zhang@intel.com>,
+ Xenomai <xenomai@lists.linux.dev>
+References: <3a80ab49-09ac-2403-8e1f-6e61e3726657@siemens.com>
+In-Reply-To: <3a80ab49-09ac-2403-8e1f-6e61e3726657@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0091.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB6055:EE_
+X-MS-Office365-Filtering-Correlation-Id: af78098c-63d4-40b4-4615-08dac2e63d3e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	NlZyMg9SBLfoYKKXlwRN+ocvg6WS0VQWlQjNTIXtndhGvTb+8G0F1sRS+AaYDNFHRL/cPgBzlRvEBrB83vLxGoN3Mau2ClTTb19jdiF9xMZo7D4O/OaEZ+TdUvlE7ZNRpFgSbuheVhHPl76r4NK5uX2zRtxfCwgbqU90fJDAsEu0EfsXqKPijkBXEO4Bcxmf9Nd7aeBBULdCkhw7Xry5kEHkKtXFuXJLfUVvPKIxSPJ7Mco9bGPo3M3hPJqUkFIQyt+ckpBkPtawY510cQ9VkK343vhiUbI8deNS40z+rC5wfwAHAtK2LNa65bF6tOwWdUY8gscGkvbhmrpTnZmfjdedTYKo3IpdoysTp9ex4ZIncSJ8Jrq+Nlat9En4DToHqCgQtgq65pQ8aZCH0PWWkF1dFnftTM5f+WhZS3UMvzuSRr4OxuemY1jlHHaGLSi8GSJ0EWpKLa+YGW/w0N798rvaXabOZ4ripji5CTVcjoGmW3I7mErA5fSLeSDsHUKULdFzvCVo94WXN4O/jXrfiBhj5vP+TlzBZt+cxLumJMvcFl8HjAXFXDSoE27F9lAg3//cTsaiNfMOWSUQSxxz2n0N+X6fn2N1Oj9Vnjs+o5rQKrAxJzcCosq2+EPOZQlkrTK/PAkKf7jGkSmJpF3rfj5g/DRfKaanJ8mEPALdU3AcDascdsvyx1d55OhX2I0o2uCi8W6clqREFAwqnTI74fvhXjvTL/B/KaUC2W0y4rkIwUR/sUcSnaFmDZko3obQPAQfbvOGYOv3RNX8IsUCf+EBQSVXQQj6s5vTRBYv3ds=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(39860400002)(366004)(396003)(451199015)(83380400001)(2906002)(82960400001)(38100700002)(86362001)(31696002)(44832011)(186003)(54906003)(478600001)(66946007)(4326008)(6506007)(5660300002)(6512007)(8676002)(26005)(66476007)(2616005)(6486002)(66556008)(53546011)(316002)(66899015)(6916009)(41300700001)(36756003)(8936002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bG11anJPRjZxU3JmRXV2U0p1MWNBMHllbWZOTzhTMUpGV0JNWnE0M0lCRm9q?=
+ =?utf-8?B?cXJLRCsxMkdiVE02bFI2a1c3dVpEcjJ2RnBBMkpkWnl1VU8vNUpTK0VjMDVo?=
+ =?utf-8?B?NEx3b1lSWlBOSmNDNHRjd3JtYzQvbUdWeTh5S2ZKSzVYcWJaVXVHRTdLbk92?=
+ =?utf-8?B?enQ2OStiYlBJUWVOMUIrcXBncm9tVkY4KzJzdStndHBGTnh5dzRxWGFLazdZ?=
+ =?utf-8?B?czNpd2E0aWFaR0E2TUw5VVZ0dnpuRnp2TlhlRUl6Umk1bG9mczZPUm9uZkU4?=
+ =?utf-8?B?MHZTanBDQ0ZuVStya3Q0RzRFN0wzeWNqSi9laWpidkR4dEdMeURHREU2VEVw?=
+ =?utf-8?B?VEltL2FvczV4UHgvejVWRElxZ1NRUjNmRG94c0VYUWM2cnJPSmZldnpSekJz?=
+ =?utf-8?B?UXVlZUtjWk5wT1p1NTNRMkthZWkvS3RGMk1CUjQ5QUwveEhjMEtodGNpcTN3?=
+ =?utf-8?B?MVE0cjUxOWxzKzBlSmRBbEVGRlVLMTRVRytVMlRLSDZZaGcvZlRwRjI2TmI3?=
+ =?utf-8?B?c2RqaWlkRXczS1ZDRXBRcDdCbXNHbzFTT1N2SXhycWIvSGw0TWEwWjZZendU?=
+ =?utf-8?B?VUs5ZjRMNFMvVVpORlNycjNFU3JCNDYxRC90SFdaZDV0RDhFT3EwckZSd0tZ?=
+ =?utf-8?B?M2xaZFFTaFA1cDBUYlBtMjJXVEhxbUYyUm04bTRqemdLT2ZLRmxzMWpaOFBY?=
+ =?utf-8?B?WU9ORElCWjIzVTU0eVlPRVIvdjJQK3czMUhpenljOVNXbEFuSnZhQWI0clFj?=
+ =?utf-8?B?VXFSbzlhWkhRbkEyNEZLMEYyZ29QQlpBKzNsMVhmem1WaE1LNGZyVzJpL3FG?=
+ =?utf-8?B?dTU3Sk1VaHlEeVJzM28rVzFBVktTai9Ib0lBRm53a0JtYUVIbGZLeHY2d1BS?=
+ =?utf-8?B?RGJQeHZHVFdjNFU4OG8zL0hnK2VpaGkzaVMyb1VHc3Z4NkNwOU82TUdBU1Y4?=
+ =?utf-8?B?c1FyMVJZZjdzb0lnNDhqRmg3OE1YM21pSWo0c1VzNGx6RFVkVjVyUmt6V1lC?=
+ =?utf-8?B?UXZYYzNkUkhyTWo0b0ltaTgxL1h1b2pDaDd5ak53YTEwTUhPeWh5ZHVNQnNq?=
+ =?utf-8?B?Skc1aHhKK0pNYWIxZUpjWWdqMHFDQVhMQ0R2MnlhdVBTbnlPSEMzbE1nTlRq?=
+ =?utf-8?B?RzhrK1p1cnN3bXBRWWRZdURmUVUvT0dnTVVOMVhvcEQ0OGtxVXRIYzRjdWJn?=
+ =?utf-8?B?WGk3R21kNXZtanFSZGsrcmY1MUNhMDh2cGxySUJMMVVuUWZpL2tNaU1ITVND?=
+ =?utf-8?B?OENoOHZIbTN4ZXVMK0hmeE5PWHlzQmU1a1JUeWNOdTI0RzhxSGdXeWJ4ajYr?=
+ =?utf-8?B?cWV1QkU5MDRjVUlGT2pqVnhHekJkUGUvUFdEQStyTm1DajJaVmY5MzFCdHBH?=
+ =?utf-8?B?aHRCQksrZENhbTZVL1JoWUt4QXlBQ2hTMm51YVpLYjhqWjFJaVgxL1RxR25W?=
+ =?utf-8?B?V1ludmZxbkZnN0tzaEZ1VHEyWExoTzgwcFZENnFGeXdMdVFwZnZCcXR3SDlQ?=
+ =?utf-8?B?RUZmeHVFODRKK0tYclFaelVwM3JiK3RWRCtDS3krd253cGxrM2VBTHpnY1VG?=
+ =?utf-8?B?eThPdTE3aGY1ZGVpZ0t3RGEyWHpCVTJUTGNaL3RkYUZTaGRVclVFL09hWHBT?=
+ =?utf-8?B?VmRFOVB1RGVYYmtBcm9lYkwzSEx3ZFN3UFVOcnN1clhsWkVLSG05MHpmTjhU?=
+ =?utf-8?B?dGVNNHFtSko5TTdQOWNua0JpcVQ3UEREMXN4cTlpT21ObllUa0dzZjNaa01V?=
+ =?utf-8?B?OXFIMytISlo5amhTeERhWmRSN0xIbGtxWkhmc05uczd6QUczQ1pQNkcxdnBG?=
+ =?utf-8?B?REE0bnNnaHltK0h4aEF5RGpCNVV2UnArK0VJdWFyTTc3Z2F4YWVzbTRmbU84?=
+ =?utf-8?B?Slh4R2VvZkNlQ3FLRTJTZUp0VDZ4b1I2VGF0MUJGS1MyYzN3dmJhRXZYSVNO?=
+ =?utf-8?B?R2hxVDlXNnUwS1lsdzNJVFVlYjJLLzh0NWp2OXY1OUgxV3o0R3VCU0FVNXk2?=
+ =?utf-8?B?Nk1ST1Z0VGRSS0dFQUh5cDg2ZEViSXA2ZXQ0bStNbjZNVERDbU9RNEJtMmo3?=
+ =?utf-8?B?V1luL3UyekxpaWEzUENPbkRFWmtxaDEvZ3V2UmIvaWdOQXVMbk0rVkZ6ZWpB?=
+ =?utf-8?B?WHZCcEFsNlVaTDIvaGlIT0VMQVp6QnpIczdHNE40ODJGWFRhTFRPNlRyNURP?=
+ =?utf-8?B?VXc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af78098c-63d4-40b4-4615-08dac2e63d3e
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 06:38:55.3198
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +EW9frMSxYmbtcJHm1ldfSEvz8OIzJkAgTnGR3xWQbh0sC0DP1jWb0HJ+m2zXMAStoutxCidYvujDqF3TrR76g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6055
 
+On 07.11.22 18:42, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> The current place to account for the missing call to switch_fpu_return
+> when returning to userland in primary mode was missing one case: the
+> switch-in of a thread while migrating from secondary to primary mode.
+> Move the logic to xnarch_switch_fpu which is also called in that case.
+> This also avoids having to deal with NULL xnthread_current.
+> 
+> Reported-by: Stefan Heber <Stefan.Heber@zwickroell.com>
+> Fixes: 608c23297c4d ("cobalt/x86: Account for FPU changes in kernel 5.2")
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> A similar fix will go into 3.1.x as well.
+> 
+>  kernel/cobalt/arch/x86/ipipe/thread.c | 54 ++++++++++++---------------
+>  1 file changed, 24 insertions(+), 30 deletions(-)
+> 
+> diff --git a/kernel/cobalt/arch/x86/ipipe/thread.c b/kernel/cobalt/arch/x86/ipipe/thread.c
+> index 7e28903a42..46c47af890 100644
+> --- a/kernel/cobalt/arch/x86/ipipe/thread.c
+> +++ b/kernel/cobalt/arch/x86/ipipe/thread.c
+> @@ -209,29 +209,6 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>  #ifndef IPIPE_X86_FPU_EAGER
+>  	stts();
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+> -#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+> -	/* 
+> -	 * Refresh 'in', we switch the stacks. However, there might be no
+> -	 * current thread at this point.
+> -	 */
+> -	in = xnthread_current();
+> -	if (in && !xnthread_test_state(in, XNROOT) &&
+> -	    test_thread_flag(TIF_NEED_FPU_LOAD)) {
+> -		/*
+> -		 * This is open-coded switch_fpu_return but without a test for
+> -		 * PF_KTHREAD, i.e including kernel threads.
+> -		 */
+> -		struct fpu *fpu = &current->thread.fpu;
+> -		int cpu = raw_smp_processor_id();
+> -
+> -		if (!fpregs_state_valid(fpu, cpu)) {
+> -			copy_kernel_to_fpregs(&fpu->state);
+> -			fpregs_activate(fpu);
+> -			fpu->last_cpu = cpu;
+> -		}
+> -		clear_thread_flag(TIF_NEED_FPU_LOAD);
+> -	}
+> -#endif
+>  }
+>  
+>  #ifndef IPIPE_X86_FPU_EAGER
+> @@ -443,15 +420,32 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+>  {
+>  	struct xnarchtcb *const to_tcb = xnthread_archtcb(to);
+>  
+> -	if (!tcb_used_kfpu(to_tcb))
+> -		return;
+> -
+> -	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
+> +	if (tcb_used_kfpu(to_tcb)) {
+> +		copy_kernel_to_fpregs(&to_tcb->kfpu->state);
+>  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+> -	/* redo the invalidation done by kernel_fpu_begin */
+> -	__cpu_invalidate_fpregs_state();
+> +		/* redo the invalidation done by kernel_fpu_begin */
+> +		__cpu_invalidate_fpregs_state();
+> +#endif
+> +		kernel_fpu_disable();
+> +	}
+> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+> +	else if (!xnthread_test_state(to, XNROOT) &&
+> +		 test_thread_flag(TIF_NEED_FPU_LOAD)) {
+> +		/*
+> +		 * This is open-coded switch_fpu_return but without a test for
+> +		 * PF_KTHREAD, i.e including kernel threads.
+> +		 */
+> +		struct fpu *fpu = &current->thread.fpu;
+> +		int cpu = raw_smp_processor_id();
+> +
+> +		if (!fpregs_state_valid(fpu, cpu)) {
+> +			copy_kernel_to_fpregs(&fpu->state);
+> +			fpregs_activate(fpu);
+> +			fpu->last_cpu = cpu;
+> +		}
+> +		clear_thread_flag(TIF_NEED_FPU_LOAD);
+> +	}
+>  #endif
+> -	kernel_fpu_disable();
+>  }
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+>  
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+Would be great if you could also confirm this variant of the fix. It's
+in stable/v3.2.x by now as well.
 
-> [[S/MIME Signed Part:Undecided]]
-> Hello,
->
->=20=20
->
-> We have been running into some memory issues with our realtime EVL applic=
-ation. Recently, we are seeing a core dump write immediately on
-> startup, and when running in the debugger,  the call stack just doesn=E2=
-=80=99t make any sense =E2=80=93 it almost seems random. I have the latest =
-EVL
-> kernel built with all the EVL debug on including the EVL_DEBUG_MEM option=
-, and I also turned on KASAN. I see no output at all from the
-> kernel when this core dump happens except for a couple basic lines:
->
->=20=20
->
-> EVL: RxMain switching in-band [pid=3D4327, excpt=3D14, user_pc=3D0x0]
->
-> RxMain[4327]: segfault at 0 ip 0000000000000000 sp 00007f7ab5305468 error=
- 14 in realtime_sfhm[400000+161000]
->
-> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
->
->=20=20
->
-> I wouldn=E2=80=99t say those lines are very helpful. I know that exceptio=
-n 14 on x86 is a page fault and that a pc value of 0 does not seem good
-> (memory corruption?).=20
->
+Thanks,
+Jan
 
-Yes, this very much looks like a stack overwrite, since you are running
-x86, return addresses may be popped from the stack, so this could lead
-to that funky user_pc=3D0x0 if the IP register is reloaded with a random
-value.
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
->=20=20
->
-> I wanted to get your opinion on our overall memory setup and see if there=
- are obvious issues or if you had any recommendations of things to
-> try.
-
-Checking and controlling the thread stack consumption comes to mind,
-looking for unconstrained writes to stack-based variables too.
-
-> So we set up 1 EVL heap on startup of the application, and this heap is u=
-sed for all dynamic allocations throughout the entire app as we
-> also overrode global new/delete to use the EVL heap rather than malloc/fr=
-ee. The reason we overrode global new/delete is that we have a lot
-> of STL objects as well as third party libraries that we are using in this=
- app and it would become a very long and challenging process to actually
-> go through and modify all those to use custom allocators.
-
-Hopefully the STL won't use hidden synchronization via *libc mutexes,
-otherwise this would be an issue. Re-routing new()/delete() away from
-malloc()/free() to a dedicated allocator is common practice.
-
-> So, in main(), we spawn a =E2=80=9CMain=E2=80=9D EVL thread. All other th=
-reads are spawned from
-> this parent EVL thread. When the EVL Main thread starts, it sets a static=
- flag that enables using the evl heap in the global news/deletes, and
-> every library and process for the realtime app is created and started. We=
- also prefault the EVL heap after it is initialized/created in order to try
-> to avoid page faults while running the realtime loop. However, we still s=
-ee occasional page faults in our realtime EVL threads while running our
-> main realtime loop. I don=E2=80=99t understand how there could be a page =
-fault if the EVL heap is large enough (verified) and prefaulted.
->
->=20=20
->
-> Now back to the issue mentioned at the beginning of this email =E2=80=93 =
-we are unsure at this time if the page fault error seen there is cause, res=
-ult,
-> or primary error causing these core dumps.
-
-This page fault is a symptom, not the issue, the kernel detects that the
-app has done something weird, like jumping to 0x0. If the stack is
-wrecked, then other registers than IP might be trashed on reload,
-leading to other forms of bad accesses. But they would all originate
-from the same stack corruption issue.
-
-> Typically when I see the occasional page faults while running other EVL t=
-hreads in the app, I do
-> not see core dumps =E2=80=93 just the log from the kernel. The only reaso=
-n why I figured I would at least run this past you was that I did not see a=
-ny
-> core dumps when disabling the flag in the global new/delete and just usin=
-g malloc/free (of course I saw some in band switches, but that was
-> it).
-
-You may want to make sure to set ulimit to allow unlimited core dumps
-for the process.
-
->
->=20=20
->
-> The issue of occasional page faults, handling dynamic memory allocation (=
-using global new/delete), and now these possible memory
-> corruption seg faults is becoming a larger concern for us. We would like =
-to make sure that we are understanding how to use memory in an
-> EVL application properly, and we would be interested to know if there are=
- any recommended ways of tracking these down with an EVL
-> application. I have tried to build/run with the gcc address sanitizer, bu=
-t I was seeing issues attaching EVL threads when this was enabled. I
-> have also tried running valgrind, but that has produced nothing useful. A=
-nd, of course, I have run in gdb and the stack traces are not helpful.
-> At this point, any guidance, thoughts, and/or recommendations would be gr=
-eatly appreciated. I added some more clear/specific questions at
-> the bottom.
->
-
-An EVL application can run over valgrind, you may want to check if that
-helps.
-
->=20=20
->
-> A few specific questions:
->
-> 1 Is this a reasonable model to use for an EVL application, or do you exp=
-ect the model to revolve more around static allocation?
->
-
-No requirement for static allocation if that fits the bill.
-
-> 2 Are you aware of people using EVL overriding the global new/delete to u=
-se the EVL heap?
->
-
-Yes.
-
-> 3 Do you have any tools for debugging the EVL heap or have you adapted an=
-y existing tools (such as valgrind) to debug the EVL heap?
->
-
-As mentioned earlier, valgrind works out of the box for EVL apps.
-
-> 4 Is there any known way of protecting against a stack overflow?
->
-
-EVL threads are merely plain threads on real-time stero=C3=AFds, so the
-read-only canary area / red zone the *libc sets in order to detect
-overflows is there too. So maybe the stack is not overflowing, but
-trashed by some buffer overflow on some automatic variable.
-
-> 5 PC value of 0 is never valid and we have no evidence that we have an un=
-initialized pointer in our C++ code. Is there anyway to use info from
->  EVL to help track down this issue?
->
-
-No, it's the worst case, we loose track due to the bad jump, and there
-is no link register to locate the caller on this architecture.
-
-> 6 We are allocating 2GB of EVL Heap memory and pre-faulting all of it on =
-startup. We also use pthread_attr_setstacksize to pre-allocate the
->  stack for each EVL thread we have. EVL still says that we get rare page =
-faults. How is this possible? Are we missing something? (I have
->  attached our heap pre-faulting logic)
->
-
-To answer this, we'd need to find out which kind of PF is that, whether
-this is a PTE miss and which code actually triggers it. This would be a
-Dovetail/x86 issue if any, EVL leaves all the mm stuff to the in-band
-kernel.
-
---=20
-Philippe.
