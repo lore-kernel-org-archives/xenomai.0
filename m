@@ -1,148 +1,117 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFEAF39D
-	for <xenomai@lists.linux.dev>; Thu, 10 Nov 2022 06:52:46 +0000 (UTC)
-Received: by mail-wr1-f53.google.com with SMTP id bk15so841325wrb.13
-        for <xenomai@lists.linux.dev>; Wed, 09 Nov 2022 22:52:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Z7SwFxPW9RdqyeJzzAGtMDRXYNxef2aEN0LJ4myF3LM=;
-        b=ADwnnE/SGEZovZiVpn/zNwid3vQkh9/n2XPyPjfe8bdJXPhtxE0Ekuo5itoBcP3IUR
-         49HuAz47CxLWdlffc9m9bUXMao1rV9b8sud9OXcRy9PK2GRvWirieMcHYlLV9bTHVfNs
-         rEHMTlCBYWOlxr1cTusVZx0EQNw2R9n/9kW9qMCrjHJ+O7zfs+GZPWl7hVHMghXgvbQN
-         /b10HcLV2bF5Qd5Bwzl+VcBHf+kVBCcalbrJvih9rx+FAExkBztk7NB40kz8BXQNAHWc
-         ba8D5Jb2xL5AOrbagiHAEJEaCu7qnJJ4upmql9MyHpWWhNW85V4bkT58iY/uG9h1CVw5
-         7gEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z7SwFxPW9RdqyeJzzAGtMDRXYNxef2aEN0LJ4myF3LM=;
-        b=p/ctxDpzSosvVdIVrz3n6LrEKsYecocG9M+wI1yHbYnXHm/VA4M1QF6epLFJelfCLy
-         FE3TBOBZtucCigwZ+kUoqtYP3MalRU6NSdqxkylBQ6izUaZQzrUyQR7vG+yGQBADRART
-         8eKEPo+DhN3sb+42ogDwSuVBDU/h+vTZ1therJBZKeHhmRRl/RgVNDtax9UdzMQ+rz3B
-         leVGAb3WN7byvJo7WNz1whpgfe2dR5wUGF3e9Pit7YFZuOeS3AVxNMGYzHADn+JhRTMf
-         nxGbkQrqyFUVPKceLm7zCkruTUnoU0VnaUnlRdz50kOw3pQigSsjkEtI4Fuy18LUDmSh
-         iRDg==
-X-Gm-Message-State: ACrzQf29fMAIYUAJHfwvdLV/7FnJjUScFN0Ts6FA+L5zS7WArDuu5L/Q
-	WDi7+LXw8HaJbVXcFKHB9rg=
-X-Google-Smtp-Source: AMsMyM6sVrtxttA55Uy73rTvbaO0Xh+OI2ZD9CF8VEOQnISg58KcpCPVy0U4DGcfNJWKuxpSBkqB3Q==
-X-Received: by 2002:a5d:4688:0:b0:236:8e4d:5cb3 with SMTP id u8-20020a5d4688000000b002368e4d5cb3mr42136919wrq.710.1668063164736;
-        Wed, 09 Nov 2022 22:52:44 -0800 (PST)
-Received: from [192.168.42.52] (62-47-42-87.adsl.highway.telekom.at. [62.47.42.87])
-        by smtp.gmail.com with ESMTPSA id b14-20020a05600c4e0e00b003c6bd12ac27sm3948949wmq.37.2022.11.09.22.52.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Nov 2022 22:52:44 -0800 (PST)
-Message-ID: <3ef4b7b1-8bd4-edea-9518-1b2efce90cce@gmail.com>
-Date: Thu, 10 Nov 2022 07:52:42 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5850C625
+	for <xenomai@lists.linux.dev>; Thu, 10 Nov 2022 09:08:53 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 536A6C0007;
+	Thu, 10 Nov 2022 09:08:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1668071331;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gUrm4sMV+joLNqwdPuimySPz7zxPBrSHaCNJzd7LBOI=;
+	b=A0YjpXixHXXSN2RzAzw9LUZZb+PN1sYbdP0XsWx8Djp/qFINujTrLe/8/7K4r0nGa5EBA0
+	Q1Eif/cEvlYOMSDbrza8b9M9JfwAHugSjjDURRiprf2yfxoRoqunRCSUzY2wsN8c4hZibQ
+	xCym2PuNO3o9NvF/hNHNsNjlyvEjXK2aYENn4KNo/QguFN1CZuf2ViAjW2BFgcpgViJs0S
+	6X/YEpIY7sDoPdvV/jeluoOWAPq7wqXqx+m7eG16kdzWv89uXVYc0JQ+HlR2UY12yIgSYd
+	7ML7pSUaihZptT5XqTHsytSNL51woMp9uKkKrr2bAjlJfrQz6KXWURh9aZ7MEQ==
+References: <006148b8-dfa1-1abb-b243-029db08ceb0a@siemens.com>
+ <8929fce3-cbe6-79cf-d0a9-5e8399e3dec4@siemens.com>
+ <VE1PR08MB4909620AE0E4EE0139B54276923E9@VE1PR08MB4909.eurprd08.prod.outlook.com>
+ <f275bac0-492e-c8da-ea30-a48ebae505c4@siemens.com>
+ <87iljoh1gd.fsf@xenomai.org>
+ <d19b9dbf-9831-99ab-67bb-01d06b9b00f4@siemens.com>
+ <VE1PR08MB490963A18B8D61A5AF0B7AFA923E9@VE1PR08MB4909.eurprd08.prod.outlook.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>,
+ Richard Weinberger <richard@nod.at>
+Subject: Re: [RFC][PATCH] x86: dovetail: Permit to declare a trap handled
+Date: Thu, 10 Nov 2022 10:00:33 +0100
+In-reply-to: <VE1PR08MB490963A18B8D61A5AF0B7AFA923E9@VE1PR08MB4909.eurprd08.prod.outlook.com>
+Message-ID: <874jv7rxb2.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: cyclictest vs. latmus
-Content-Language: en-US
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <49fb01fa-abda-46eb-cf47-31d48810d7eb@gmail.com>
- <87a653p28w.fsf@xenomai.org>
-From: Robert Berger <xenomai.list@gmail.com>
-In-Reply-To: <87a653p28w.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-Hi,
-
-Thanks for the explanations and sorry for the late reply.
-
-My comments are inline.
-
-On 07/11/2022 08:32, Philippe Gerum wrote:
-> 
-> The results are available from [4][5] and [6][7] respectively. To sum
-> up, we have ~62 µs worst-case in non-isolated mode, 37 µs when
-> isolated. Both figures are in line with the expectations on this SoM.
-
-Yep and this is what I would expect, so most likely something is wrong 
-in my configuration ;
-
-> 
-> To help figuring out the reason for this behavior with latmus on your
-> test board, you may want to share your .config. However, I don't think
-> the results you observed with cyclictest are relevant to EVL.
-> 
-
-Please note, that I use a multi_v7_defconfig. I guess you use something 
-else.
-
-Here[1] you can find the config.gz, which I pulled from the board.
-
-Those are the components I use:
-
-root@multi-v7-ml:~# cat /proc/version
-Linux version 5.15.64-evl-student-g96fa4a8fcde6 
-(student@HP-ZBook-15-G4-2) (arm-resy-linux-gnueabi-gcc (GCC) 12.2.0, GNU 
-ld (GNU Binutils) 2.39.0.20220819) #1 SMP IRQPIPE Fri Nov 4 01:10:57
-CET 2022
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
-git show 96fa4a8fcde6d9361777daf05caaa527a44e418e
-commit 96fa4a8fcde6d9361777daf05caaa527a44e418e (HEAD -> 
-v5.15.64-evl3-rebase_LOCAL)
-Author: student <student@ReliableEmbeddedSystems.com>
-Date:   Fri Nov 4 01:10:35 2022 +0100
+Johannes Kirchmair <johannes.kirchmair@sigmatek.at> writes:
 
-     commit not to be -dirty
+> Hello,
+>
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Mittwoch, 9. November 2022 11:39
+>> To: Philippe Gerum <rpm@xenomai.org>
+>> Cc: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>; Xenomai
+>> <xenomai@lists.linux.dev>; Richard Weinberger <richard@nod.at>
+>> Subject: Re: [RFC][PATCH] x86: dovetail: Permit to declare a trap handled
+>>=20
+>> CAUTION: External E-Mail !
+>>=20
+>> On 09.11.22 11:06, Philippe Gerum wrote:
+>> >
+>> > Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> >
+>> >> On 09.11.22 08:31, Johannes Kirchmair wrote:
+>> >>> Hello all,
+>> >>>
+>> >>> I just recently found the time to test this patch in the context of =
+our
+>> rt_signals.
+>> >>> As a matter of fact it works quite well for us.
+>> >>>
+>> >>> So is there any intent/possibility to bring this upstream?
+>> >>>
+>> >>> I also did some similar changes for arm64. As we also use imx8 board=
+s.
+>> >>> If there is interest in those, I could post them.
+>> >>
+>> >> Yes, please share. Then we can continue with proposing it for the lat=
+est
+>> >> dovetail port (6.1 now).
+>> >>
+>> >
+>> > There is a slightly different approach which expresses the intent of
+>> > that notification hook Dovetail-wise:
+>> >
+>> > - if the real-time core switches in-band upon notification, then the
+>> >   in-band kernel code may assume that all regular fixups need to be
+>> >   applied next. This is the common case for most traps.
+>> >
+>> > - if the real-time core stays on the out-of-band stage upon
+>> >   notification, then the in-band kernel code should assume that all
+>> >   required fixups were done from that stage already, returning asap fr=
+om
+>> >   the outer trap handler.
+>> >
+>> > This gives the same flexibility than by expecting the hook to return a
+>> > continuation status, but makes sure that regular fixups cannot be
+>> > bypassed when/if switching to in-band mode is required to handle the
+>> > trap. Rationale: the regular in-band trap handlers know better about t=
+he
+>> > way to deal with those events from in-band context.
+>> >
+>
+> I like that idea because as I was looking at the arm code, I was not sure=
+ what would happen if we are out of band but=20
+> indicate that the kernel should handle the exception. With your idea that=
+=E2=80=99s not possible.
+>
+> Will have a look at my arm64 patch and try to adapt it.
+>
 
-diff --git a/arch/arm/configs/multi_v7_defconfig 
-b/arch/arm/configs/multi_v7_defconfig
-index 33572998dbbe..f770b9681a98 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -1187,3 +1187,8 @@ CONFIG_DEBUG_FS=y
-  CONFIG_CHROME_PLATFORMS=y
-  CONFIG_CROS_EC=m
-  CONFIG_CROS_EC_CHARDEV=m
-+CONFIG_DA9062_WATCHDOG=y
-+CONFIG_MFD_DA9062=y
-+CONFIG_REGULATOR_DA9062=y
-+CONFIG_IKCONFIG=y
-+CONFIG_IKCONFIG_PROC=y
+Ok, so since the idea is generally agreed, I'll push the x86 and arm
+support for this in a couple of days.
 
-commit 5c75c622911d192dc8c2988679713576cff89d45 (HEAD -> r39_LOCAL, tag: 
-r39, origin/next, origin/master, origin/HEAD, master)
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Mon Oct 31 12:16:38 2022 +0100
-
-     libevl r39
-
-     Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-
-[1] 
-https://drive.google.com/drive/folders/1yPOiKzfEgyXmdB-y4Pc4EzP15V4OtMyV?usp=sharing
-
-Regards,
-
-Robert
-
--- 
-Robert Berger
-Embedded Software Evangelist
-
-Reliable Embedded Systems
-Consulting Training Engineering
-URL: https://www.reliableembeddedsystems.com
-
-Schedule a web meeting:
-https://calendly.com/reliableembeddedsystems/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-
+--=20
+Philippe.
