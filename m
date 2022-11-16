@@ -1,23 +1,55 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3548F42
-	for <xenomai@lists.linux.dev>; Wed, 16 Nov 2022 16:01:31 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 9576320011;
-	Wed, 16 Nov 2022 16:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1668614487;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mNnwVy1yRK3Mxg8E8VpH1a0mOrJZfl8sSdxCgV77eo0=;
-	b=C0TV3/aAjtW2o78j7E1OqllsmplyNAJyP6bf9Cci0jMMNyGeUYjIWvwzoQmjxK/P4w3MLI
-	S/SPqqNoSg9kCe68huaDe//q3kXTO26CdzUMVVJF3QVWAEqF0yJwYDfFKyV8+aVKYiTwZQ
-	ZBbDyN72p1uPs0D7lUc+Vy05ZJ7YvC8rIDAI6YbvFsBAkLtKw0uex3/pJIlZgGG1f4kWjN
-	eHyvOhxnrJo0QY1TyqQGyPmZ0KDo1TFdWI2r5ICEV/4Pyon7ACIMIfu3aD3yzr/GiOCCur
-	PUivOHXamqzedhjmMtMHsRnbAZRUksB8Mb8Cq4DBGURnGt4NYy/PGXyop+yupA==
-References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7692312290
+	for <xenomai@lists.linux.dev>; Wed, 16 Nov 2022 21:37:30 +0000 (UTC)
+Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
+	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AGG3cdO008100;
+	Wed, 16 Nov 2022 13:37:23 -0800
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0176.outbound.protection.office365.us [23.103.199.176])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3kw325152k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 16 Nov 2022 13:37:23 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=RnlzxRm5EW+8cgqjvvn1bJ12F1a01//vm3jHCQldBxO93g4UqYfFSOVyzvASUGcLZx7xpW5HwdsLWOp72gbduo1ZBiCEt5JMXICLrk9KBPQ0KBLnmhdtIls81oSvDQWlfHERs7PE1fo4cAVsDRuurpy35rCKIONW/mIF7NvTGhIezAA3p/FKSLQsaNsMglIZ8sqH/1FeoMLl+r1R5pkxduwb23fYKCkaZRz3VKyYiBifbPEFHw8qe0AGYk28ZVzm6IiTgMxaYilhjKyn5WXj0H4Px/VaUlZlR51vdnXJWFioMRR9wV89rZ02BaD/9sPzM2n4rTj6IdIQkvkgtwbMAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector5401;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YhYGdCo5NWMP3cTH5fUn2V5WugcgWdL6xMh4XuJBGnM=;
+ b=NNYNZZNQ13wx+m58HrJRwnYUxIr+JrEnyeZ6Muk+TKnVlLGL+9uJIQ13MjT6lnhTIzzRqxg8uy7pglTyd4k4gApkTUiBZQy7Hbduk2Uq6JyxUNMQhcC8XJx+N45klPS+70A5YJYglM/g1ScuU4UgJLnxZ/UF+aTbKRL5ane9lAmRNQ7MrppfDG2hrE0giESyRKCQ8GCVBcG8q2SvZmUMX72C3WKZMOiz58WUyG5C+30BEVoSI0j/5dl5JHVhZ/itWrWWtyuYdDuji4KOocW70hU5IRQQcUPbdpuJ/VidcZJN9+hieZADFVw2+N1/VvxQ9GB2hFJKKtjXA8PciG9Eeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YhYGdCo5NWMP3cTH5fUn2V5WugcgWdL6xMh4XuJBGnM=;
+ b=HLWuTAR7LFV6kzer2AgkomQANJwIb/VtftQgc0/jOugXyOWlsoG+c10WNAYpfyoiE/PSJ8Jlm2SoTUhIYl+I12QXvmTok2dHvfFWEdJb1lvCDsIUWfsxg5zqiohd1NNcjrSqEprdeQEXj55XRRs5qQM0zLfG24hpAIGi9/4fq5RRQI3LhtLGCIuwXfwzpDe7Qw2Hi/UJIal/NxvUPp7f/T0dHGmPDeVkYcVs/HBVw4ArVATfvDyN1cu6mJ+XhZS0amstfiRwih2QxhvSDajWzTf+p9iHrquUxSNxs+T36mlQQ8hYemuFyZQ4NdPXGvd/BZI3Lpj+jvp2WjsaZ9wjBw==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1331.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Wed, 16 Nov
+ 2022 21:37:21 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725%6]) with mapi id 15.20.5813.018; Wed, 16 Nov 2022
+ 21:37:21 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,
+        Bryan Butler
+	<Bryan.Butler@kratosdefense.com>,
+        Shawn McManus
+	<shawn.mcmanus@kratosdefense.com>
+Subject: RE: [External] - Re: EVL Memory
+Thread-Topic: [External] - Re: EVL Memory
+Thread-Index: 
+ Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lA=
+Date: Wed, 16 Nov 2022 21:37:21 +0000
+Message-ID: 
+ <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <877d04dm52.fsf@xenomai.org>
@@ -26,215 +58,195 @@ References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.O
  <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <87zgcs4ma1.fsf@xenomai.org>
  <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87v8ng3vv7.fsf@xenomai.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Bryan Butler
- <Bryan.Butler@kratosdefense.com>, Shawn McManus
- <shawn.mcmanus@kratosdefense.com>
-Subject: Re: [External] - Re: EVL Memory
-Date: Wed, 16 Nov 2022 16:48:23 +0100
-In-reply-to: <87v8ng3vv7.fsf@xenomai.org>
-Message-ID: <87edu2dh2j.fsf@xenomai.org>
+ <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
+In-Reply-To: <87edu2dh2j.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1331:EE_
+x-ms-office365-filtering-correlation-id: c7528850-f9b1-4189-030d-08dac81abe7b
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ UmR2NFQSZfsmfusnD6xrdS1DP5/J0T5L99+FhZ2ReRnMkYfGZK7m7b6R8akBeVQmS8NM+rkfaMNdIWH0ZYcTmTt8HcdAD54HDlGI2P8M04yXv9GLVaF1NZ/iBZQeJtffGbmKQhUrLxnENcZZHD/ncRvesUDT9ThWiL0hkm8h0OQ8pts34EApAGcIC2dHCXIbI/p+RWcjjIwq7VsGvC6OSPrl4sPHCGanKNF4Zi0oNICPD8urQG3+v0hnckw0Ams5/L15LUeqKcoedM76ulKSdYjGie+Fp7ecvB6ijURRzruq7Vne1E2Z0PuuwDi5Zb6qAbTL/w8URaMCYchABjNlYSOyDti1bzKVRvHtWbtOn5lx29qUboP1J+SCl1D9xt3bHSWWOXCiHbrmX9zBgTodET5yRy7mPoqEMVmFIfifX4F1RfbbpQ17XsgfmWwaEPlxVPDrX6Ue1gJn5J8/9pDGRHNztZTBAdTsd6t3n8ctDJ831NNIyS/I5dbUTbUuXn0APUjLnfCbF9hrUnMZfKk7/1LujEl/jxy16w+1SbxA4Eb+evId0TiIj2AOcS8B2O1YUPTO3Npad4CnaeR8Hzo/t9FeTOWBv1/LoVPcPMptvAwgRHzbP1qI3CoUX/kM5K2rqQezfRjaL4cWtU2vvSLqf0DEph2lf7TS1iSpFk290UZhsU/JR2z5cLcDAv+zzdeY
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(2906002)(55016003)(558084003)(8676002)(186003)(4326008)(64756008)(33656002)(86362001)(44832011)(6916009)(107886003)(122000001)(38070700005)(99936003)(38100700002)(52536014)(5660300002)(76116006)(66556008)(8936002)(66446008)(66476007)(66946007)(498600001)(54906003)(71200400001)(6506007)(7696005)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ Cns4OVhoflgpSijIxrBjp+1l6ncDafZNBtLGddt68A5T5ZR1AKm6xgMDEGQ4hwQ7k4GJVHS0Yd/q77V8sivgGxfPOMPJtwmEB059v4klfKDqsDILA63LLlDXKprXltzjg8nHHJ3DSFdSqs1El6BQ1vCNEFG+jL8aXILQx+r57ZJrytOIbPmR7jjtI4FUcMByZi2ul7xkFdA3UnoWKhsk6O+6HeQR+N0AiEFa3Tr5FPNON1/NncXwDZ+Pc53WCr6hQP3EUsFX6G7bLBcTDLd7gx2SOJP7Ej8taAuyTbJ8rYhrvLviG2Aw93hvFzM6EgmcYcRj8f37ig58Mnwn5WDrRmE/E7szDhSXmTdbmeksia7lORl0NYXssZBtP6RnfG64ljvJsmkLv1UzENqEifdXjV7uWQYzqmAKD+/KnhDJQfNerhRBkXcDSv1i1k7UlaEC4LVqWVqzBf/TZgJy59yAG4ckYOcASlWS1tljBhJ5XHs=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_0012_01D8F9C8.EEA86B60"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	gzGlP6T31L5L959OYSS2Qi9xuOynGyYsvN7ncHl5ADBEqOo6DFFUHSOl9/y7LfAlsx2TSPDaYtN/QskOLVkar3ZcCa8Wgw1HipLEobkmoT5mZzk4Q9kVwkivAXEJeK8qFJVSSi+chz40YCixk9rCTjkb9SSl3ub+Vf1Vv6mVvjYtcfbjNTPElQpA3QiTnWFAa1E4czL/rrYij+Yh3JND8WaBQT2+LtecV8+EVdTB4TYb95Be4cKkvtVtJTl3wvikthmGxnKurAbyklAk2cpg+4lQLSyWZYxrEDFjLGjCmQd1E2wF0CexAzyBv7uAWC3kTwyWHLNEM0GGs9EYVYmdNOi1KVFCz/NjiMBrHpBFIK4oB0TZfoAuuXniCg04nvaQYF6475hv0rMHEP1zYV0T76PaUgldFhxDxO3xiD0i8dzRkSobBx9wvS2jfckVthtzV/ApRypPxB64mX3VI7uBcjBi5wZgdM9/c0sDkduDxkjpNhYyc/Q177zPz3mfbQ3J3UvnfZmxBjNZ2gycZ0OKbkgOKj04xLRpEwcUmOj+r8+Mr7Km0bM338obad+TdAXOkQ2OaweWkK9lyPbAVMwWH8kUihiXsI46NAcyv22ppc137RYK7Sfrrz5pm/dgAA0gNLwwxLwrrx32l+0ttYCkDgo2ltyGNa4i6cplrIJOBNngo2x/H8Rvc0fVPsj7nratzBJxS2ASRQ9ih6amoQwWoCBp0ZCVFLnfKL0xfYIIYCU4qr/ajzZkeUmDITntIv9Pv/jRw5IM+efOPDmv+nh8SNeHLL6BtPHDDsM/I8kK6OUJDUYWplsSjRpW72PTvugV
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7528850-f9b1-4189-030d-08dac81abe7b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Nov 2022 21:37:21.6159
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1331
+X-Proofpoint-GUID: oSUYoz6EZu36qsYZ_GGgxSxM1pjKUHp5
+X-Proofpoint-ORIG-GUID: oSUYoz6EZu36qsYZ_GGgxSxM1pjKUHp5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-16_03,2022-11-16_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ mlxlogscore=987 impostorscore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 bulkscore=0 adultscore=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211160147
+
+------=_NextPart_000_0012_01D8F9C8.EEA86B60
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+Sounds good. Just let me know when you want me to test, and I will pull your
+latest.
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
+Thanks,
 
-> Russell Johnson <russell.johnson@kratosdefense.com> writes:
->
->> [[S/MIME Signed Part:Undecided]]
->> Sometimes I saw this issue in seconds/minutes. However, I did just see it
->> run over night on one system, and it hasn't died yet. I did see one kernel
->> splat from that run though, so I attached it here.
->
-> Ok, this splat is a false positive from an assertion which should have
-> been removed now that the PI walk is preemptible. The case it complains
-> about is valid, I'll push a fix to address this tomorrow.
->
->> I am building the kernel
->> with the parameters you recommended to turn off as we speak. I will share
->> with you what I see once I get it installed and running.
->>
->
-> Thanks,
+Russell
 
-I caught this on a different x86 hardware today, this looks like the
-issue you reported, only with more reliable reporting from lockdep when
-running oob, thanks to some improvements just added to Dovetail (see the
-EVL -next branch).
+------=_NextPart_000_0012_01D8F9C8.EEA86B60
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
 
-The bug is highly time dependent it seems, this would explain why an
-overnight run may pass. In fact, slowing down the machine seems to help,
-among three systems running the test, only the one enabling CONFIG_KASAN
-reported it here.
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIxMTE2MjEzNzIwWjAvBgkqhkiG9w0BCQQxIgQgD/KS1SkAFVzWpZedWCjUPsVN
+4xHrMCretTYdqy+L28wwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQB1
+zs0a3M6/cYMDXiSXHjtp/C/5NNWNaPJ4vkUERPPLv5r3YIU749EaABzTgG3Is8YCw71KDryNtaMi
+sfZ6Tjqo7li8oAGPy1OLGSIcft8l3nvWxlXGH39FQFglYZ80SU8sAVPyz4fM7uAGIWcYp7neVBds
+8snxQQf8IUh9W8HvUAzZQjjStad0rieLCAwIEMRJRzLMJUs4BwhXHQvv898jUYIBpSONK7gNx7PV
+7RD30+XZq+R7hbHoyLxzErq2u///XqNV+3yRd50HwiQLo30/pbZOMWwufHXsPAG5LKoe4IYGfnfB
+af+42dRrvgI5o4JuEBY67DCtAoV+vjPaUsPsAAAAAAAA
 
-The trace below is clean, this will help fixing the issue. I'll follow
-up on this.
-
-[  170.488660] 
-[  170.488669] ======================================================
-[  170.488673] WARNING: possible circular locking dependency detected
-[  170.488677] 5.15.77+ #112 Not tainted
-[  170.488683] ------------------------------------------------------
-[  170.488685] monitor-trylock/575 is trying to acquire lock:
-[  170.488692] ffff88810182f018 (monitor-trylock-B:573){-...}-{0:0}, at: evl_lock_mutex_timeout+0x39a/0xf00
-[  170.488726] 
-[  170.488726] but task is already holding lock:
-[  170.488728] ffff8881017ee018 (monitor-trylock-D:573){-.-.}-{0:0}, at: evl_lock_mutex_timeout+0x39a/0xf00
-[  170.488749] 
-[  170.488749] which lock already depends on the new lock.
-[  170.488749] 
-[  170.488751] 
-[  170.488751] the existing dependency chain (in reverse order) is:
-[  170.488754] 
-[  170.488754] -> #2 (monitor-trylock-D:573){-.-.}-{0:0}:
-[  170.488767]        evl_lock_mutex_timeout+0x3eb/0xf00
-[  170.488776]        monitor_oob_ioctl+0x387/0x1560
-[  170.488784]        EVL_ioctl+0x82/0x100
-[  170.488792]        do_oob_syscall+0x264/0x6b0
-[  170.488800]        handle_oob_syscall+0x162/0x1f0
-[  170.488809]        pipeline_syscall+0xb7/0x1d0
-[  170.488816]        syscall_enter_from_user_mode+0x40/0xa0
-[  170.488828]        do_syscall_64+0x15/0xf0
-[  170.488836]        entry_SYSCALL_64_after_hwframe+0x61/0xcb
-[  170.488847] 
-[  170.488847] -> #1 (monitor-try-main:573){-.-.}-{0:0}:
-[  170.488859]        evl_wakeup_thread+0x45/0xe0
-[  170.488869]        do_clock_tick+0x1d8/0x6c0
-[  170.488876]        evl_core_tick+0x6e/0xe0
-[  170.488883]        lapic_oob_handler+0x65/0x90
-[  170.488891]        do_oob_irq+0x2d8/0x420
-[  170.488899]        handle_oob_irq+0x118/0x250
-[  170.488907]        generic_pipeline_irq_desc+0x1b2/0x400
-[  170.488916]        arch_handle_irq+0x6c/0x270
-[  170.488925]        arch_pipeline_entry+0xb1/0x110
-[  170.488934]        asm_sysvec_apic_timer_interrupt+0x16/0x20
-[  170.488945]        unlock_stage+0x4f/0x70
-[  170.488953]        lock_acquire+0x18d/0x3f0
-[  170.488963]        evl_init_thread+0x66a/0x820
-[  170.488971]        thread_factory_build+0x25a/0x960
-[  170.488980]        ioctl_clone_device+0x15c/0x330
-[  170.488988]        __x64_sys_ioctl+0xce/0x110
-[  170.488998]        do_syscall_64+0x44/0xf0
-[  170.489005]        entry_SYSCALL_64_after_hwframe+0x61/0xcb
-[  170.489015] 
-[  170.489015] -> #0 (monitor-trylock-B:573){-...}-{0:0}:
-[  170.489027]        __lock_acquire+0x1bef/0x35e0
-[  170.489037]        lock_acquire+0x162/0x3f0
-[  170.489045]        evl_lock_mutex_timeout+0x3eb/0xf00
-[  170.489053]        monitor_oob_ioctl+0x387/0x1560
-[  170.489061]        EVL_ioctl+0x82/0x100
-[  170.489068]        do_oob_syscall+0x264/0x6b0
-[  170.489076]        handle_oob_syscall+0x162/0x1f0
-[  170.489085]        pipeline_syscall+0xb7/0x1d0
-[  170.489092]        syscall_enter_from_user_mode+0x40/0xa0
-[  170.489101]        do_syscall_64+0x15/0xf0
-[  170.489109]        entry_SYSCALL_64_after_hwframe+0x61/0xcb
-[  170.489119] 
-[  170.489119] other info that might help us debug this:
-[  170.489119] 
-[  170.489121] Chain exists of:
-[  170.489121]   monitor-trylock-B:573 --> monitor-try-main:573 --> monitor-trylock-D:573
-[  170.489121] 
-[  170.489136]  Possible unsafe locking scenario:
-[  170.489136] 
-[  170.489138]        CPU0                    CPU1
-[  170.489140]        ----                    ----
-[  170.489142]   lock(monitor-trylock-D:573);
-[  170.489148]                                lock(monitor-try-main:573);
-[  170.489155]                                lock(monitor-trylock-D:573);
-[  170.489161]   lock(monitor-trylock-B:573);
-[  170.489166] 
-[  170.489166]  *** DEADLOCK ***
-[  170.489166] 
-[  170.489168] 2 locks held by monitor-trylock/575:
-[  170.489173]  #0: ffff888108433988 (test573.0){-...}-{0:0}, at: evl_lock_mutex_timeout+0x23c/0xf00
-[  170.489196]  #1: ffff8881017ee018 (monitor-trylock-D:573){-.-.}-{0:0}, at: evl_lock_mutex_timeout+0x39a/0xf00
-[  170.489218] 
-[  170.489218] stack backtrace:
-[  170.489223] CPU: 1 PID: 575 Comm: monitor-trylock Not tainted 5.15.77+ #112
-[  170.489232] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name, BIOS 5.12.09.16.05 07/26/2017
-[  170.489237] IRQ stage: EVL
-[  170.489241] Call Trace:
-[  170.489246]  <TASK>
-[  170.489252]  dump_stack_lvl+0x7d/0xb3
-[  170.489269]  check_noncircular+0x1ca/0x200
-[  170.489286]  ? print_circular_bug+0x240/0x240
-[  170.489306]  ? __lock_acquire+0x85e/0x35e0
-[  170.489331]  ? add_chain_block+0x33a/0x360
-[  170.489350]  __lock_acquire+0x1bef/0x35e0
-[  170.489391]  ? lockdep_hardirqs_on_prepare+0x240/0x240
-[  170.489401]  ? check_preemption_disabled+0x12/0xf0
-[  170.489414]  ? unlock_stage+0xa/0x70
-[  170.489429]  ? __evl_get_element_by_fundle+0xc5/0x1e0
-[  170.489449]  lock_acquire+0x162/0x3f0
-[  170.489461]  ? evl_lock_mutex_timeout+0x39a/0xf00
-[  170.489479]  ? lock_downgrade+0x3a0/0x3a0
-[  170.489489]  ? evl_lock_mutex_timeout+0xa63/0xf00
-[  170.489502]  ? do_raw_spin_lock+0x106/0x190
-[  170.489517]  ? spin_bug+0xa0/0xa0
-[  170.489542]  evl_lock_mutex_timeout+0x3eb/0xf00
-[  170.489551]  ? evl_lock_mutex_timeout+0x39a/0xf00
-[  170.489586]  ? evl_destroy_mutex+0x230/0x230
-[  170.489600]  ? reacquire_held_locks+0x290/0x290
-[  170.489615]  ? enter_monitor+0xf1/0x170
-[  170.489632]  monitor_oob_ioctl+0x387/0x1560
-[  170.489641]  ? do_raw_spin_unlock+0x9b/0x100
-[  170.489653]  ? check_preemption_disabled+0x12/0xf0
-[  170.489665]  ? unlock_stage+0xa/0x70
-[  170.489677]  ? lock_acquire+0x18d/0x3f0
-[  170.489690]  ? check_preemption_disabled+0x12/0xf0
-[  170.489702]  ? unlock_stage+0xa/0x70
-[  170.489714]  ? enter_monitor+0x170/0x170
-[  170.489723]  ? evl_get_file+0xec/0x130
-[  170.489735]  ? reacquire_held_locks+0x290/0x290
-[  170.489762]  ? do_raw_spin_unlock+0x9b/0x100
-[  170.489789]  EVL_ioctl+0x82/0x100
-[  170.489807]  do_oob_syscall+0x264/0x6b0
-[  170.489824]  ? EVL_read+0xe0/0xe0
-[  170.489836]  ? do_oob_syscall+0x6b0/0x6b0
-[  170.489857]  handle_oob_syscall+0x162/0x1f0
-[  170.489873]  ? handle_pipelined_syscall+0x770/0x770
-[  170.489913]  pipeline_syscall+0xb7/0x1d0
-[  170.489931]  syscall_enter_from_user_mode+0x40/0xa0
-[  170.489947]  do_syscall_64+0x15/0xf0
-[  170.489959]  entry_SYSCALL_64_after_hwframe+0x61/0xcb
-[  170.489971] RIP: 0033:0x7fba0aa0bc2b
-[  170.489981] Code: Unable to access opcode bytes at RIP 0x7fba0aa0bc01.
-[  170.489985] RSP: 002b:00007fba0a80e960 EFLAGS: 00000246 ORIG_RAX: 000000000000009d
-[  170.489995] RAX: ffffffffffffffda RBX: 0000000040106d00 RCX: 00007fba0aa0bc2b
-[  170.490001] RDX: 0000000040106d00 RSI: 000000000000000b RDI: 0000000010000002
-[  170.490006] RBP: 000000000000000b R08: 0000000000000000 R09: 00007ffd93d65090
-[  170.490011] R10: 00007fba0a80ea00 R11: 0000000000000246 R12: 00007fba0a80ea00
-[  170.490017] R13: 0000000000000000 R14: 00007ffd93c2fb70 R15: 00007fba0a7ff000
-[  170.490056]  </TASK>
-[  183.001931] EVL: watchdog triggered on CPU #1 -- runaway thread 'post-many-flags:645.2' signaled
-[  214.720837] EVL: fault:954 switching in-band [pid=954, excpt=14, user_pc=0x55a1b74461ec]
-[  249.980299] sched: RT throttling activated
-[  286.528172] EVL: fault:1500 switching in-band [pid=1500, excpt=14, user_pc=0x5575ebc251ec]
-[  322.356198] EVL: watchdog triggered on CPU #1 -- runaway thread 'post-many-flags:1716.0' signaled
-[  356.456796] EVL: fault:2037 switching in-band [pid=2037, excpt=14, user_pc=0x55892e4ea1ec]
-[  392.208582] EVL: watchdog triggered on CPU #2 -- runaway thread 'post-many-flags:2252.0' signaled
-[  423.936215] EVL: fault:2564 switching in-band [pid=2564, excpt=14, user_pc=0x55911362b1ec]
-[  459.696676] EVL: watchdog triggered on CPU #3 -- runaway thread 'post-many-flags:2778.1' signaled
-[  491.385666] EVL: fault:3096 switching in-band [pid=3096, excpt=14, user_pc=0x564c8f17d1ec]
-[  527.246324] EVL: watchdog triggered on CPU #1 -- runaway thread 'post-many-flags:3311.15' signaled
-[  558.830749] EVL: fault:3617 switching in-band [pid=3617, excpt=14, user_pc=0x5637705481ec]
-[  594.531226] EVL: watchdog triggered on CPU #0 -- runaway thread 'post-many-flags:3832.11' signaled
-[  626.164629] EVL: fault:4149 switching in-band [pid=4149, excpt=14, user_pc=0x5589652f01ec]
-[  662.032655] EVL: watchdog triggered on CPU #0 -- runaway thread 'post-many-flags:4364.11' signaled
-[  693.631577] EVL: fault:4675 switching in-band [pid=4675, excpt=14, user_pc=0x55558d6d91ec]
-[  729.450287] EVL: watchdog triggered on CPU #1 -- runaway thread 'post-many-flags:4890.1' signaled
-[  761.086870] EVL: fault:5202 switching in-band [pid=5202, excpt=14, user_pc=0x561b37a801ec]
-
-
--- 
-Philippe.
+------=_NextPart_000_0012_01D8F9C8.EEA86B60--
