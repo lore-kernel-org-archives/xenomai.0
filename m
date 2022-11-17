@@ -1,240 +1,260 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B503615BE
-	for <xenomai@lists.linux.dev>; Thu, 17 Nov 2022 16:45:32 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 85F53240011;
-	Thu, 17 Nov 2022 16:45:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1668703530;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=kKlKwvllZS2B1N/JhTd4ZAtefAr3MQiwmgsFSPe9KLs=;
-	b=H3CbZui6PFEexMFMxoDfc3JPTJhuhYhkiHgtZtkWPQwGZJynsF7qIHVXAVYZr8CbyZbl64
-	reWAYMhakLl9BhV2+wjIHxRdx07xjIAMBBEwvFjooMHHcjzyf1rfxRFnqnLOzb4Vkud/gT
-	jyNAMLgd/6amwAssjrYKubUtxvEU81bKoWzCQdg/Wap/SM1Vn1oVi6n/qWIyyou1ctZRhn
-	ptINwxdEog57/cSUuU4OYUrrdaQ2iDAd9AMpvb98LyrmjPj0Z9He1QL0rsb4DClkXrjFg9
-	uKOAUzzffqE22mCDHz52uk5XyddAMxz7VhIEuLuVP80+XA9VRCmBPn0Yj/utqQ==
-References: <PH1P110MB1050FFAC564F1F74AFE24367E2069@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <8735ahczf9.fsf@xenomai.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Bryan Butler
- <Bryan.Butler@kratosdefense.com>, Shawn McManus
- <shawn.mcmanus@kratosdefense.com>
-Subject: Re: EVL Thread Priorities
-Date: Thu, 17 Nov 2022 17:43:11 +0100
-In-reply-to: <8735ahczf9.fsf@xenomai.org>
-Message-ID: <87y1s9bkd3.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F05138BE2
+	for <xenomai@lists.linux.dev>; Thu, 17 Nov 2022 16:57:17 +0000 (UTC)
+Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
+	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AHE4aTV028377;
+	Thu, 17 Nov 2022 08:57:17 -0800
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0184.outbound.protection.office365.us [23.103.199.184])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3kw3253w0y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 17 Nov 2022 08:57:17 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=KdN2J30ifqMG7W1+zQIgksOcDgqyODMEF4cmBvtCmEB9KTTB378oX9VZ7cZMj7lyM0/bEWIXQh1NM+i9qfNHzlFeEv4a4vPcI8RZqXqCOVJKWcooOOBMX9OsNALJrW0/ru4Gyyh0UQTy2hjpoSDm25l9T8yetG4iw02kWcNF47RB3Dpo4R1xMcXSRNKK6So/P/OA7BA/Q5BD2eP0LV/dTJ0u60T47rlzerkZvXnKdiP9cQhKATw6q+0GoLx4KbRK11Lw83xyT0VKnuwbiPN7EYNsZYttYfED9zGBHY8JSBoO9Byj3UWp3e9pWcIz2x1YOLdYtKyrIf5ChmNa19/pRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector5401;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/jbhmyF1D39KlSNPGfsXI243s8fJERouQWCW04VOmHA=;
+ b=H0zdAEO13kTSPtiyPux2oz51ZKk9BzI3+wo39yg6sMX4vdMD9Fu/kfaR0CJI1raK4eT8MuMOXg4b9k85LFPARE8htUwj/ELz0NnyHFiR689VZU56dfcmEIwY2X1NdAL2Kt1szTsJNBQ4UBlvWx+d2RkrAKHS7uqZT7opuG95lEg27rKS3Q1sm7kMwqR0XTWShtbcg8ubMqxB/LfwIjjQggqMZ3YIMSljFjSISUhLZzZzL2I7EKCgOSNmsStd8PSvXJ2oWVajQ+Vi0EFOIv+vJeR7zJBbRofN38P6ufF9v99iZZTZHMkumZ1k2cHEqZceGzyK3bcKLSpiiHDTQjPpBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/jbhmyF1D39KlSNPGfsXI243s8fJERouQWCW04VOmHA=;
+ b=WZVRCvVy3ddKrCBK69zW0zlKYsOwT6FDyjPKp8jhn2s75cbzirS7mDE0mg4B493BIHdQkgzzy60YXNRASYUhLQ9j/WUEF7W/QJR1827iCYN3O9U+AwBpPFM/POmqQVjKY7h6JbWlCbFzOvsDw43FiP+Zu9NIw8j8msO1tMErqHZy2knu/+LZAnzP9YfluragrLrWo/Iukbapdtjp5AZrjtNx3Hy4t31HFYJ5ZL7C8wMbpMoM858exyYQChJRCrpaWQHoHs6xaMss5YR37kEDms/L9UYaGSQQLL7qCqppGx7hc1lPYTPOhFCQXjMHFLvmYBydOcwS1+wq2islwYzMIw==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1773.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:175::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Thu, 17 Nov
+ 2022 16:57:15 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725%6]) with mapi id 15.20.5813.019; Thu, 17 Nov 2022
+ 16:57:15 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,
+        Bryan Butler
+	<Bryan.Butler@kratosdefense.com>,
+        Shawn McManus
+	<shawn.mcmanus@kratosdefense.com>
+Subject: RE: [External] - Re: EVL Memory
+Thread-Topic: [External] - Re: EVL Memory
+Thread-Index: 
+ Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lAAKDcSAAAAOPzg
+Date: Thu, 17 Nov 2022 16:57:15 +0000
+Message-ID: 
+ <PH1P110MB10501A307D34D09C49EEBB74E2069@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877d04dm52.fsf@xenomai.org>
+ <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87leodn9kv.fsf@xenomai.org>
+ <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87zgcs4ma1.fsf@xenomai.org>
+ <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
+ <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87tu2xbk5k.fsf@xenomai.org>
+In-Reply-To: <87tu2xbk5k.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1773:EE_
+x-ms-office365-filtering-correlation-id: cb661aa2-6a11-4906-4a9d-08dac8bcc78b
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ 8NHYwjMWS7qCAuHjZqiEaUHfLbpPpzddFISNoQR+7tvGuSLB7EAoBuuWJ9YrnY3/f4niTF0yaQPEUFiTvwnAlymbTLoPbCgkxeJ/Y1+ap8FnBoBDn71L3ZD/6KqpGxPP8MuxE2Zj0cnTrv5Yyx6B2xmUmcvADoLfy8WcBbW+i9gQ6ExacKZMkRs7h5bnmG5HJPgjV6FWD9GyDK1hW0u7/v2Ob0E7yYqZU7ez8NDJ096Ycp1+Df1rG6BQqIeHoe1rnVkGuvY22aA3zJ1iMk7Qwd43swWimWLrur9yvv5HCIRUVgtUAhoj79Fdqpua8J46d1nZ3hiauvuMehdU/X0TEBi3JiZgiMyV4/6yLI192Kl4FzSqPGGuRb4oWgYJ1M58WXWa9vXt8HR1BsSbx5k3ZKfATbAtGHRt1k4AF0CArsau2xiPqw54eAyrXU4sXG/ScHGMqEjXlwCmp0YYnkzCiBZKKie7juAGHXeXFgEgHsuEcbYXluE+Q8JM11NCvHJJcKKfAuBucyEc6eIj5W2smtymfmJaPvHozP+gNrS3Ln8qFFzHY+not3B62puhXwVyboTEyW6b9z2CrtGTGDLx5sztqS99/D2mv3HU/sFxzzt+WacadTkvf+2XRRjUERG8
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(2906002)(4326008)(8676002)(8936002)(52536014)(44832011)(5660300002)(64756008)(76116006)(66946007)(66446008)(66476007)(66556008)(33656002)(498600001)(122000001)(86362001)(38070700005)(6916009)(99936003)(26005)(71200400001)(19627235002)(6506007)(54906003)(55016003)(4744005)(186003)(38100700002)(107886003)(7696005)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ TuE9I0oRIWCnQlX6H0rkfdEv0zmWJFFhnB5ZuE5rpGHNU+MFOHzCFisZdTwQzcJicF9pTVpXCtSj5TeNv7JSWd5ArurJlZ6Sr9WhG4OcxWlulgc6Zt6uCvs3TvHDaAew8tLEEjAzT1N2WIA7NJN27bgjwGP7hpdxmtFfzE7e30pxH6dt6AHX0P4A0c2tywiqW+k6tj6cYxdMXya5mnZTWTJ/Oms6r8wuif3XGMaagKA/ssSJaNBKcbh3VL5TdPw/vgd8LdlzPpre4/mDJqDDUBgZ2k7OGy9zMevn+9vR1bCI/y1smqe3sCjy0fNO7nSXl6JY3Lh0CquOm5YkDDc2XESvaQ011ZzZjhMft8HBssW1JNcqzQ2laRFOWBx5tH+xPT+SmiwJH1FmJ7kLzGr66zTyWPW2J4PE/fZeTXIH6Hw=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_0000_01D8FA6A.F76BBCA0"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	cLiDHTGhlluicpZjtqXyTxvYIys4YPOlUwN4wO1khg9/y6oKXhe5FXyyTn9UmaAWGnueFOjp6JU6fZDQ9OH5PSswXzA8qrJGv2Du2wWGQrkqviguBNRsY8iMbACvnUCN1LS6BCLZstpjMJxJGlU1mtUBvj88dKEtpHe02dSCmgPARhQ01JclgRg5q3NtqTU4+ljXLj+cBhPF460zSSGFwyAxbee8gxDIVwXPfLAehaSpt8FzhkF4tsAVZ4CYPPWjs4725pIWo356VHU+zEYQ4QxtcI6W8IGFMkxEqqzNxvCI5kmFl5tvp5nMMp5lX/wUGwW+O7MEbXjD7WhoRn+R+Ko0SIHp7x0D4E5SUeqBZqf6H8AMyHy1jmlz/6IprjJVTCkudWW9AiLpR8UjeHDgxDyrVoWzpFB+9ggx2M0RLaYyQWHM5xF6AiLpXrYLQuYXNy5eDddbMiXNFMcMAKbOZhXduQUxkLxp+jJf3W7CjAYAVK5h6nB7P2v9kaqsmIukB7u3ssysB1sjCSuaY9vYJjqRlezM9m3hMuQazCD2H8eRrGTD7awrBND08AgfeOo0MkScvevWm4A5CN2zKejZYhyfS1lvjYPyA/HFgJWMiK+e2UDwjOlE3WhRCwwICOKwM0yIchFJ7CpoiYA8wU1RBK0AP4/EjqXV1qqmL9uGlKCr5+7+USeLgnKIrMCt7X+6UYRwR2Qx1/nZpuZWZkr8qhrcxNOw89aWpoWNy65vXS3nMZXoS6qe+N+ZK8qEwclJ/LGv41POmPiJ+JU/GT8J2YPy7YJE6SJcpkX8Ct4Z0o1sWo8IpVEq4Qb2MdKuSyDX
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb661aa2-6a11-4906-4a9d-08dac8bcc78b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Nov 2022 16:57:15.3236
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1773
+X-Proofpoint-GUID: ZP8ibwCnOzEZTfTo8Ui0NkCin0M-9-fT
+X-Proofpoint-ORIG-GUID: ZP8ibwCnOzEZTfTo8Ui0NkCin0M-9-fT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-17_06,2022-11-17_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ mlxlogscore=999 impostorscore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 bulkscore=0 adultscore=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211170125
 
+------=_NextPart_000_0000_01D8FA6A.F76BBCA0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Philippe Gerum <rpm@xenomai.org> writes:
+Will do. I am currently fighting a weird build issue since pulling the
+latest commit of the kernel. I can try to build on a different system next. 
 
-> Russell Johnson <russell.johnson@kratosdefense.com> writes:
->
->> [[S/MIME Signed Part:Undecided]]
->> Hello,
->>
->>=20=20
->>
->> We are seeing an issue with setting thread priorities. I=E2=80=99m not s=
-ure if this is a real problem that is contributing to our issues, or if it=
-=E2=80=99s just
->> something weird happening.=20
->>
->>=20=20
->>
->> Here is a list of the real time threads and the priority and CPU affinit=
-y settings we=E2=80=99re asking for.
->>
->>=20=20
->>
->> Thread               Priority  CPU
->>
->> ___________________________
->>
->> Main                         50     0
->>
->> TxStartup                 52     0
->>
->> RxStartup                 51     0
->>
->> DummyTxConfig     89     2
->>
->> DummyTxService    88     3
->>
->> TxMain                      87     4
->>
->> TxWorker(n)             86    8-11
->>
->> DummyTxSample    85     5
->>
->> DummyRxConfig     79     2
->>
->> DummyRxService    78     3
->>
->> RxMain                      77     4
->>
->> RxWorker(n)             76    8-11
->>
->>=20=20
->>
->> If we run =E2=80=98top=E2=80=99 we can see the priority settings:
->>
->>   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMA=
-ND
->>
->> 32130 root      20   0 3731268   2.5g 110748 S  0.0 16.2   0:05.54 realt=
-ime_sfhm
->>
->> 32140 root      20   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 sigth=
-read
->>
->> 32144 root     -51   0 3731268   2.5g 110748 S  0.0 16.2   0:00.09 Main
->>
->> 32150 root     -53   0 3731268   2.5g 110748 S  0.0 16.2   0:00.21 TxSta=
-rtup
->>
->> 32151 root     -86   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 Dummy=
-TxSample
->>
->> 32152 root     -87   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 TxWor=
-ker0
->>
->> 32153 root     -87   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 TxWor=
-ker1
->>
->> 32154 root     -87   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 TxWor=
-ker2
->>
->> 32155 root     -52   0 3731268   2.5g 110748 S  0.0 16.2   0:00.13 RxSta=
-rtup
->>
->> 32156 root     -87   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 TxWor=
-ker3
->>
->> 32157 root     -88   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 TxMain
->>
->> 32158 root     -89   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 Dummy=
-TxService
->>
->> 32159 root     -80   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 Dummy=
-RxConfig
->>
->> 32160 root     -78   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 RxMain
->>
->> 32161 root     -77   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 RxWor=
-ker0
->>
->> 32162 root     -79   0 3731268   2.5g 110748 S  0.0 16.2   0:00.00 Dummy=
-RxService
->>
->>=20=20
->>
->> Top apparently has this weirdness where it displays real-time thread pri=
-orities as =E2=80=93(P+1), which I guess is how it=E2=80=99s maintained in =
-the kernel.
->> This seems to be a known issue, but it appears that, with this caveat, t=
-hat the thread priorities are being set properly within the pthreads
->> implementation. The two non-realtime threads are part of our startup pro=
-cess. They never execute within the EVL context.=20
->>
->>=20=20
->>
->> However, if we look at the same threads using =E2=80=98evl ps=E2=80=99, =
-we get this result:
->>
->> CPU   PID   SCHED   PRIO  ISW     CTXSW     SYS       RWA       STAT    =
- TIMEOUT      %CPU   CPUTIME     NAME
->>
->>   0   32144  fifo    50   34      1316      2910      0          Dto    =
- 011.587        0.0  00:027.437  Main
->>
->>   0   32150  fifo    52   4       1286      1974      0          Dto    =
- 075.003        0.0  00:023.977  TxStartup
->>
->>   5   32151  fifo    87   0       51201     587379    49931      wbto   =
- 907.752        1.0  01:343.085  DummyTxSample
->>
->>   8   32152  fifo    87   0       19580     207489    19653      wbto   =
- 998.796        1.0  01:240.410  TxWorker0
->>
->>   9   32153  fifo    87   0       19000     206602    19071      wbto   =
- 905.257        1.0  01:242.255  TxWorker1
->>
->> 10   32154  fifo    87   0       16976     197880    17049      wbto    =
-901.719        1.0  01:314.756  TxWorker2
->>
->>   0   32155  fifo    87   4       141       646       8          Dbto   =
- 966.055        0.0  00:007.204  RxStartup
->>
->> 11   32156  fifo    87   0       16372     180026    16439      wbto    =
-907.961        1.0  01:273.781  TxWorker3
->>
->>   4   32157  fifo    87   0       13443     851659    13390      wto    =
- 902.939        1.5  01:929.911  TxMain
->>
->>   3   32158  fifo    88   0       1281      3845      0          Dto    =
- 004.172        0.0  00:039.957  DummyTxService
->>
->>   2   32159  fifo    87   0       6515      260458    5314       wbto   =
- 073.624        0.7  00:858.282  DummyRxConfig
->>
->>   4   32160  fifo    87   0       49059     626499    49185      wbto   =
- 972.854        2.4  03:082.805  RxMain
->>
->>   8   32161  fifo    87   0       33436     386429    32535      wbto   =
- 065.114        1.8  02:317.974  RxWorker0
->>
->>   3   32162  fifo    87   0       37243     378069    36132      Dbto   =
- 071.350        1.9  02:374.748  DummyRxService
->>
->>=20=20
->>
->> CPU affinity settings look to be correct, but the priorities shown by =
-=E2=80=98evl ps=E2=80=99 are not consistent with those from =E2=80=98top=E2=
-=80=99. Furthermore, there seems
->> to be some difference between runs. Sometimes the priorities will be clo=
-ser to those we asked for. At other times it looks more like this, where
->> they all appear to be set to 87.
->>
->>=20=20
->>
->> I don=E2=80=99t know if this is just a mistake by the =E2=80=98evl ps=E2=
-=80=99 command, or if the EVL scheduler is actually using the wrong priorit=
-ies for scheduling.
->> Relative to our other issue that you=E2=80=99re looking at, this one is =
-definitely of lower importance, unless it is related in some way to that ot=
-her
->> problem.
->
-> The 'b' flag appearing in the STAT field for a thread means that it is
-> undergoing a priority boost due to mutex priority
-> inheritance/protection, PRIO displays the effective priority which may
-> be boosted - not the base priority.
->
-> By the way, if evl ps is able to catch this output frequently, this
-> means that your app triggers *a lot* of priority inheritance, maybe a
-> bit too much/frequent sharing of resources between threads which belong
-> to distinct priority groups?
+AR      drivers/built-in.a
+error: Bad exit status from /var/tmp/rpm-tmp.2BRlM1 (%build)
 
-CAUTION: if these priorities remain unchanged over time, then there
-could be an issue in the core, i.e. some threads not being deboosted
-properly. You may want to check this by running a display loop, e.g.
+I typically run "make rpm-pkg" so that I can install the built kernel on
+other systems. I am going to assume the issue is on my end for now... Will
+let you know what I find once I can get this to build.
 
-# watch -n1 evl ps -l
+Thanks,
 
---=20
-Philippe.
+Russell
+
+------=_NextPart_000_0000_01D8FA6A.F76BBCA0
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIxMTE3MTY1NzEzWjAvBgkqhkiG9w0BCQQxIgQgHyBvMWt5GfpxdUj8wApZPwWk
+rPjNbap0g4ArWw5tdJcwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQA0
+EdfwPFgxeZRHmH78QfES7I6nXHBSQESV5o2s4E3OwWEmLC4s/fWe7JSqk6A7sB2C39JTz9Qrgquv
+kRDoI42GmFPEiNyxyG88nKzIQIlWi8baMiMc/I+xOyS05hdGiLnhzBRgszKGSO3W9gjRiygTzLCt
+5GEuOyfhcqXgFYYPuxgtaIqReL5W3oM8RsqzjWFCorbPxvwh/fmIxgJqDDaW/X+IeuxXupMEslau
+1SUMlvv8lgKvGWv6qzVMw8PuF3vnfOgoZDKUU6Zrzq6UU+Z1oOMpM/42rQV86yCWeqb2T10wa76L
+2LJjGy25HjabOQOwq8GRioChvaxdPZNxFP/uAAAAAAAA
+
+------=_NextPart_000_0000_01D8FA6A.F76BBCA0--
