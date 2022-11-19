@@ -1,148 +1,287 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88ED8A492
-	for <xenomai@lists.linux.dev>; Fri, 18 Nov 2022 21:22:57 +0000 (UTC)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20221118154222e77a560769df3f3c6a
-        for <xenomai@lists.linux.dev>;
-        Fri, 18 Nov 2022 16:42:22 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=dPLarflOcmCMwAG+9hZNE6FORtyMusdEkHEaQyTyUiA=;
- b=MzkPNuPGqfyCnSB5erRBztpojqd5o2PXAHYPy4TFGAQrZxYEkBY6MTUIzQeifR8vrr/EUz
- /v2iyzDS8gWQX3DRsJoMMf+BVxIPB+t7w1bVfSdYZQOG8e0sl7bMWBD98pDfnFQAcHmC/vYh
- 7dZhz0Q89JycsXnminIU0gcK+jd0o=;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [RFC][stable 3.0.x] lib: Switch to pthread_mutexattr_setrobust
-Date: Fri, 18 Nov 2022 16:42:20 +0100
-Message-Id: <20221118154220.869584-1-florian.bezdeka@siemens.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CB13224
+	for <xenomai@lists.linux.dev>; Sat, 19 Nov 2022 16:37:51 +0000 (UTC)
+Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
+	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AJElbVQ024861;
+	Sat, 19 Nov 2022 08:37:44 -0800
+Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0181.outbound.protection.office365.us [23.103.199.181])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3kxv88rp5c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 19 Nov 2022 08:37:44 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=BVRAJRjDzLclI8f8Tpn/PNIAz0Yop9kcHxO2Z4ecS72tF90ha+luUEdqyPO2DYaF8rw7gTRosNq6mkZ865u50aZbDa1cRa7VY5v2jDueO4ad5jnJ/WlsVao7v5hr178V9Fz5QujtBGv9JF8owMXJSa5GljaDKvj6GRWrsqcsjcNVk8Fo4Pssg3OVG2EM/UQUgH36n5C0h7XzsqQz88W5UhvZ3iZ8sQ2whlL2s/vQekuz3Whb9Fb3jrh3kW/iooZq1lVOOkCLCiflaN2ATyJfVMYPSe71A97bfspv+fIDPzpuSIOIekq4RMAZKiG7HiXX0otoRfCKLji3rdgsemI1oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector5401;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sKihjwJRBvuD7WmQjh6yIcCewYgkwYVzCOMGwuznnhA=;
+ b=zyRXKFb0X8a+t72u6hukiBXjROjLeTaD/4KaOdKnnzTs8in2YLLdWTUQL/Eg/UXxEZWO4UGFpsKjdOhYG1KzdLqyeeccSTM3HxE7JerLxyyNYknRKPVnZe7+WfZJyQ+4QzK56jQc55eQWcl+y7nPb9hsBXPr/K/lsOg7Y1glFqN/whlThsswI8EpPUn3auYOSaIBFjgGvPKytIfNq4D+q/FHjRENLcOl/EZGKbUgWp2+vLZ6OwkdT3QoJA6T6mYDuIqytvw1lFiYm2DFqVGGbc4dcNcaBqzSU34F/1uZ+XTAb3U5pWReqeGpwgjYeLanb07sX8TOwTPy60tIlvzL1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sKihjwJRBvuD7WmQjh6yIcCewYgkwYVzCOMGwuznnhA=;
+ b=TdsVaALd2uW/dmPQ0cXmducVv28r+NsfsZLob1CfHekIzbyuBo3IBd+h4rPc4tbOeYnrVKQ3jtoOAMGJU3KdDY0Nzv4L7IP3VxrECDf+S52d0xTe4WFc0kpGn9blVb4AChZUeZdFd9hZ7aqOBN9a2t1/AQoAi5lEP+OPoEaVpq1Yd7oBGxs2EwMLjgjTD5FBPpXphgv6HJhsTsAHC/SmPQnI3NoXvD6QikogrfvO+dDlzGYU/OUkGm6uL2l/DJPgRZWdLRMNdGHeATsBlLXuEeNY8FicqGzESkQFuPz4fvoAER8bSjbHNz84zY20i7IpneJqahoC6DffQcsFz+B9Ag==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1412.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:189::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Sat, 19 Nov
+ 2022 16:37:40 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725%6]) with mapi id 15.20.5813.020; Sat, 19 Nov 2022
+ 16:37:40 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,
+        Bryan Butler
+	<Bryan.Butler@kratosdefense.com>,
+        Shawn McManus
+	<shawn.mcmanus@kratosdefense.com>
+Subject: RE: [External] - Re: EVL Memory
+Thread-Topic: [External] - Re: EVL Memory
+Thread-Index: 
+ Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lAAKDcSAAAgIxWAAEP6SSA=
+Date: Sat, 19 Nov 2022 16:37:40 +0000
+Message-ID: 
+ <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877d04dm52.fsf@xenomai.org>
+ <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87leodn9kv.fsf@xenomai.org>
+ <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87zgcs4ma1.fsf@xenomai.org>
+ <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
+ <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
+In-Reply-To: <87cz9kbrkr.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1412:EE_
+x-ms-office365-filtering-correlation-id: d57aeb1d-29f0-4696-a0a4-08daca4c6002
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ XILAJWT1TQNO5cqIURWUVGFqEhtcjUGWpJTfbvYPM2wxKlGcCG9fFo7T463F0edonjm/vgq+guVL8iNGaHRaehf1rBuuzjNiZxrW8KxoVOj6PtGb94Z8qjSmE6FzZagx019OPCZa3msxDX+PmI1N2Jc6Z5Na4ScwQojWvONuSU4Yxr77im78EThK+Zr2SOaD4hxp6O7J49BZ5BSDYGvNepjyop370kxwMCL/e9Si0MyujQFC8BJBzfr+bSN9Jmz0lNeIouKcKfIufdz/22KXCR3Kbpd9PcmaWKa40bfhYFgmrax6q7ECzXTIgSx3sKEf9CKGFhEsk/ekZPZk8Aw67AsDOpw1crK7/KWKCedkd/tzzewKeCT6Nrg/GocwOMoLfT5EsENOH+27eJoVx5RjtDv9J1ulT7Z/O+JtYq7Nn9H2UO3PKJ7NfQ1Aeb6lsLxQa4CWk/oB2RLTJ5g1tUodXrTmid/+Re2QPhMiIteGv5MrluWp/tkNh6HOgT6fSaAF80eM4QD2PdFu5lbt9BQw+y43I2HHgG7t/KgRKsdN9CN8GHNN4aMERIZoudmOUNIP/cPN/tgULXGxc2ZJgEP2NwHzWNQLtLgEVKiQMzWYA6J2Uk3hAWEYLD2BISS/4k/WTO+Nhj4PFM6caPs/HqASwXgEscP7cNXq++VkMDF9XgOXjWKAf94yPne0dAjdThh1
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(33656002)(2906002)(8676002)(4326008)(52536014)(38070700005)(4744005)(8936002)(44832011)(122000001)(99936003)(86362001)(83380400001)(38100700002)(64756008)(54906003)(6916009)(186003)(498600001)(66446008)(76116006)(66946007)(66476007)(66556008)(5660300002)(107886003)(7696005)(6506007)(9686003)(71200400001)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ =?us-ascii?Q?LbSQm7+6EUrzrQUAYPyTRB3USariprVdoKSAKMBimntkG1EtM48iVYZGIZJu?=
+ =?us-ascii?Q?GfXZO5OwEQpU1M4h7LxbzzbDACyoxr/2C/Pd3BvqYypfv0ynOUuUBZbbZAFe?=
+ =?us-ascii?Q?sSeqno8V0+qy6J9LYKx1Jl5HCY9INSHiP23yfm+92mGQFuWleL/zun9K/dKO?=
+ =?us-ascii?Q?mhT0Lr1o9WzXQSFr5RhkzqMLZc5o3UnI3uY0UvuvrLOnQaZzFvQ325x5ZyPW?=
+ =?us-ascii?Q?NwcMXe5HP2P5Pdd33wxEhmnAYg8I+gKgtyCNQYSXKDIk/O5ixF+aFMVNwpks?=
+ =?us-ascii?Q?EvRUZKzR847cPAJNhyZ8ylN04qnrizBolnzhaW/eOSGjPLGfnOTKkV3N7BnU?=
+ =?us-ascii?Q?CbwlGXlLKZTFcPx5fl5DtlILUjKX/+6mGL5L1BbBahtL/awQdaa3G8SkeS6c?=
+ =?us-ascii?Q?SFy3gL0J36c5sKIZWdd5Yck0ZTjwXZ1piYbmA9EpQ6il76YUOBpHimr4IGy8?=
+ =?us-ascii?Q?LvdEDc4H2JqG2Zpj+Toi3dw0JKuQIC4lWf5SBosWr/bRWFI4cbwvBeBcOysr?=
+ =?us-ascii?Q?I2w3pQmWQ+P0054wfSrHZPxMTRW/z98oF8LqY4oR6SEhCXdPq95rr5a5ObtZ?=
+ =?us-ascii?Q?9W60Fh0dS2mTzB44Q79mNFoud0qmqe1bB8pyKFCWOPF09QY9VhI0l5j2ZaSN?=
+ =?us-ascii?Q?obsvf3xXEHQAltn+xn54dyQ0FBYo1nxQ5qCXZa3Cz3LhuSDj/h7wYZyDj+Rq?=
+ =?us-ascii?Q?qiFiBygAyWOJltmx0rUcctiu9OQeuEKacSAQx8B2ZXDlCykruPDWd/OgPmNL?=
+ =?us-ascii?Q?mFTYL4hdR7r3AZDKjK33wMMUbjWi63g0g15SJHvPSLa4oVtV5IZRMqhLeLFU?=
+ =?us-ascii?Q?LiVA55kmYfwrrgrMPLMluhrLyTcc3hegCUoHgzpzQS2+rBZ6Lcu6290otk46?=
+ =?us-ascii?Q?VEK0Pj61K1PVjW+ci7Q/omd9WQgJck9kpydsRhg4croK0JRJnD3NQZGpNL8L?=
+ =?us-ascii?Q?H6v6E2hgZyl3hjjb83h5SrpZT51zy7CBlFWBwtQXG+hNdlb7hgZ1bWvrwBva?=
+ =?us-ascii?Q?WZOZBgoj28DTgg/SNGCwcAgqtGd5BKCZ6Isv2jaKMoWzUO4iZcXTqabEGfm6?=
+ =?us-ascii?Q?6CGDCRwcfUug8ZqBz/BOBDv9VWIlS5NT3x496Hu0jiNLju/KiHfr4TXyjzOq?=
+ =?us-ascii?Q?nSWX7CYALVKcoB9GstcKH7bJXUYms6ftHc2lh59h8i0D19R3ACVEZ0O7NBN2?=
+ =?us-ascii?Q?N7Hzpd14nFZuwQw7cu9ncJyGPDsbgezg7K9IXpqTAmgcrbq6IXSpqAHg1REr?=
+ =?us-ascii?Q?zZ0aTzRluLFfJiOG0JJYXDzlhc1uT6kQwRKKgA/XjDtUIWNym9XkAsrrbKVs?=
+ =?us-ascii?Q?nvKxKV70Zy1gBVCYwu+H5gwc2WF5Kt6T87YinMWtbwBOFRWfDMcpPJ9rUWHu?=
+ =?us-ascii?Q?BNWJRFgomBytA52WfElgpCauUu6Ddpuh++cY+3nLrzLRh4Uezsdmde7Ec+lx?=
+ =?us-ascii?Q?VF4ub9+hoXvK4IHqZXkuatD9W5nN4jVew+GrvCEYrFAgqDvHAhNMvufZzG02?=
+ =?us-ascii?Q?UycjciybcS0R8v+J2XiDrOTnGpK2zIia5hQ03ZooaL7gQPAj+kWayZpmZbr1?=
+ =?us-ascii?Q?Nk9qpsx46+DPF9Ih+RQ113ElWwRh7bNuN5kRpzhXao6bEXqpPF6beQDzYA6R?=
+ =?us-ascii?Q?rg=3D=3D?=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_0070_01D8FBFA.8FE38CC0"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	Cgmzt208c8lEGXeZGOh+QrJ53ZHIfYzFls6Jfbf0VOpKGq9jFY6jDbPj89kI3lK/F2Im4o4EC+ecvTTw6vYi25PLGHYiPv4/doCVWIPGPkLXbNjy5NqiuomdZxzv+pmEBG0/FOno5+hAvzpWDpm1yuSu3VriMnJKi4bwW3lReXETG2a0ovQwFsK/rpdMnPtyNexyUJSp5Y6ipFwGz6L+TaGI2VL8Tf8otxGuZ8fRjgYOU4YEisHr8o49GFD3VD3G4lDlvknVHMTbjAjEIMQ2Mtha3jHLDW+n3lpRrkVcZveGY2y9O+IKYWEJhsEuaiP0jh2NbujChuzGvHIEP5+60zIZatIKjqF0buzUH0fwTMsQ8eU8mlQo9i4FxD5HI56jL+iTS8wQnycfo8UzC8nhrhZ2DGmnTobi5Sp6+f5VXBUnLCLJ8yf59EKks9uUpIOlUtBEj3JOvCLIGTIebZW2SpjlHifqBiM4MnCayOTG0Tvgcup3w58uhlziQXaW0r0vyFODXppzSIzqAEIvdbPlwSJyW6Rh7fyFx0VMslqhZaxfrw+6dWpJjLoXBewMtNmU+ahUUSRKyraUxT1bqXoa6c0X7ISmO9I/FVO74af0fdHNRmf8IjRDyC1ynuSThjYNDADEBynY2/TRVbOh1R30wPgHOiTsjM9Tj4odUMET65bkqiL4DuxvHXzUX80Wf3p3Ats/2jDziu6ebT39KQDsZlSJU98lujsGXASF9IJgcAteiHOqOjsvU/Yge87AEGzmNYR7drwEFJ4I2k71sI5OxKGFSK3P4mEVraaLemfleNnPBaCOtn8TxCmZpdqmGOdl
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: d57aeb1d-29f0-4696-a0a4-08daca4c6002
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Nov 2022 16:37:40.2988
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1412
+X-Proofpoint-ORIG-GUID: ftwEKkNtrBnpDGZB9fU1SoKUCnXbnq1_
+X-Proofpoint-GUID: ftwEKkNtrBnpDGZB9fU1SoKUCnXbnq1_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-18_08,2022-11-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 spamscore=0
+ lowpriorityscore=0 impostorscore=0 mlxscore=0 adultscore=0 clxscore=1015
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211190127
 
-With recent glibc (at least 2.34), autoconf fails to detect
-pthread_mutexattr_setrobust_np. But that is long deprecated anyway. So
-switch to pthread_mutexattr_setrobust and only fall back to _np when
-needed.
+------=_NextPart_000_0070_01D8FBFA.8FE38CC0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-This is a backport of the following commits from stable 3.2:
+After fixing that line of code that was causing errors with building the EVL
+kernel, I was able to successfully build. I am now running our scenario that
+was causing issues previously. I will let you know what issues (if any) I
+run into. 
 
-746cbeb6ccc0 ("lib: Switch to pthread_mutexattr_setrobust")
-3f85c174e297 ("lib: Fix fallback signature of pthread_mutexattr_setrobust")
-2d947e6fe3f8 ("lib: Re-add "static" to pthread_mutexattr_setrobust fallback stub")
+To your other point, I can confirm that the priorities that are being
+boosted are never being cleared back to the original base priorities.. What
+do you recommend looking at first in order to figure out why this is
+happening?
 
-Backporting allows the stable 3.0 branch to be build with the latest
-Debian toolchain, so we don't need a special CI setup for the 3.0
-branch.
+Thanks,
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
+Russell
 
-Hi all,
+------=_NextPart_000_0070_01D8FBFA.8FE38CC0
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
 
-would it be acceptable to apply this patch to the 3.0.x stable branch? 
-It would allow us to build this branch with the same infrastructure once 
-we like to update to the next Debian version (12).
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIxMTE5MTYzNzM4WjAvBgkqhkiG9w0BCQQxIgQg/pYVB4aUQ5g9uiqjOxxDfjhO
++8xaNAtqLyprcudRsNwwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQBy
+FWT4XQtU+UZ8jW1mng8/bwn0u3LdtugJjMoad+k1zTR2ppwYHQhsAxukqpSCumB2aymUuIpmUK/3
+ZU5qfe2V9lXkTKEPJnuuo+buqRlKMkFoSznoew4whHFUDLQD5/LPtUE42hmrIdp8pJKZBEchvSQq
+usxG0wgBCCnhwdt001E7SlD2+YEdNTnDBwSQdwtNIr1Hm+cnjdzVYd1pnx4ajYQJ2D79I1WYdX8A
+f56OlOQP7yiT16OtEQuRPRgW45Nb8xC29+17tL2zCdZKg21wRCXvvZo9rfWIQm8fco3s19HzeL9P
+j/Ceo2W58MIwjKId0GlaH1uB1D+QXwVx8wbuAAAAAAAA
 
-Especially the y2038 tests require a recent glibc version the next 
-Debian stable release (bookworm, Debian 12) will ship such a version.
-
-One alternative would be to use different build environments for
-different Xenomai stable branches. I fear that's hard to maintain -
-especially the CI configuration will likely explode.
-
-WDYT?
-
-This patch has been tested with both build environments, so Debian 11
-(as is now) and the upcoming Debian 12.
-
-Best regards,
-Florian
-
- configure.ac               |  1 +
- include/boilerplate/libc.h | 14 +++++++++++---
- lib/alchemy/mutex.c        |  4 ++--
- lib/vxworks/semLib.c       |  4 ++--
- 4 files changed, 16 insertions(+), 7 deletions(-)
-
-diff --git a/configure.ac b/configure.ac
-index f31365c7a..0ad866ddd 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -489,6 +489,7 @@ save_LIBS="$LIBS"
- LIBS="$LIBS -lrt -lpthread"
- AC_CHECK_FUNCS([pthread_mutexattr_setprotocol	\
- 		pthread_mutexattr_getprotocol	\
-+		pthread_mutexattr_setrobust	\
- 		pthread_mutexattr_setrobust_np	\
- 		pthread_condattr_getclock	\
- 		pthread_condattr_setclock	\
-diff --git a/include/boilerplate/libc.h b/include/boilerplate/libc.h
-index 134176e54..e7d33101f 100644
---- a/include/boilerplate/libc.h
-+++ b/include/boilerplate/libc.h
-@@ -186,10 +186,18 @@ __weak int shm_unlink(const char *name)
- }
- #endif	/* !HAVE_SHM_UNLINK */
- 
--#ifndef HAVE_PTHREAD_MUTEXATTR_SETROBUST_NP
--#define pthread_mutexattr_setrobust_np(__attr, __robust)	\
--	({ ENOSYS; })
-+#ifndef HAVE_PTHREAD_MUTEXATTR_SETROBUST
-+#ifdef HAVE_PTHREAD_MUTEXATTR_SETROBUST_NP
-+#define pthread_mutexattr_setrobust	pthread_mutexattr_setrobust_np
-+#else
-+static inline
-+int pthread_mutexattr_setrobust(pthread_mutexattr_t *attr,
-+				int *robustness)
-+{
-+	return ENOSYS;
-+}
- #endif /* !HAVE_PTHREAD_MUTEXATTR_SETROBUST_NP */
-+#endif /* !HAVE_PTHREAD_MUTEXATTR_SETROBUST */
- 
- #if !defined(HAVE_PTHREAD_SETNAME_NP) && defined(CONFIG_XENO_MERCURY)
- static inline
-diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
-index 09eb1364e..f89338586 100644
---- a/lib/alchemy/mutex.c
-+++ b/lib/alchemy/mutex.c
-@@ -131,8 +131,8 @@ int rt_mutex_create(RT_MUTEX *mutex, const char *name)
- 	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
- 	pthread_mutexattr_setpshared(&mattr, mutex_scope_attribute);
- 	pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
--	/* pthread_mutexattr_setrobust_np() might not be implemented. */
--	pthread_mutexattr_setrobust_np(&mattr, PTHREAD_MUTEX_ROBUST_NP);
-+	/* pthread_mutexattr_setrobust() might not be implemented. */
-+	pthread_mutexattr_setrobust(&mattr, PTHREAD_MUTEX_ROBUST_NP);
- 	ret = __RT(pthread_mutex_init(&mcb->lock, &mattr));
- 	if (ret) {
- 		xnfree(mcb);
-diff --git a/lib/vxworks/semLib.c b/lib/vxworks/semLib.c
-index acce160ee..180ed2000 100644
---- a/lib/vxworks/semLib.c
-+++ b/lib/vxworks/semLib.c
-@@ -411,8 +411,8 @@ SEM_ID semMCreate(int options)
- 	 */
- 	pthread_mutexattr_init(&mattr);
- 	pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
--	/* pthread_mutexattr_setrobust_np() might not be implemented. */
--	pthread_mutexattr_setrobust_np(&mattr, PTHREAD_MUTEX_ROBUST_NP);
-+	/* pthread_mutexattr_setrobust() might not be implemented. */
-+	pthread_mutexattr_setrobust(&mattr, PTHREAD_MUTEX_ROBUST_NP);
- 	if (options & SEM_INVERSION_SAFE)
- 		pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
- 	pthread_mutexattr_setpshared(&mattr, mutex_scope_attribute);
--- 
-2.35.1
-
+------=_NextPart_000_0070_01D8FBFA.8FE38CC0--
