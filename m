@@ -1,157 +1,205 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2051.outbound.protection.outlook.com [40.107.22.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A44E3807
-	for <xenomai@lists.linux.dev>; Mon, 21 Nov 2022 18:33:46 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ALGGbJK012525;
-	Mon, 21 Nov 2022 10:33:40 -0800
-Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0151.outbound.protection.office365.us [23.103.199.151])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3kyqwx2k4w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 21 Nov 2022 10:33:39 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=Y5CIXwMxv6LHLmrg94GpkkAag7f8IhK+9NAQCJpytJ9Ut+m3uGagNe7egIZB7o6Fb3T1iYktBUA+Ejp888mXdoDH4d3T8SOPuPRHmuY4mJ2bklhocjp1MA2FrdtLCv3RkDk4lFH/SquyNTwbd1m1nlrfvQPq9E3b/R1RBxpiUKtjfEcso2E5YF6ebdfERA5tuDWgMEm++AjHUTMvP31MqOc3k9i02Y/kmZlpU7GngfUqHET54c585BUgaS1Wt5qO8JyCJxt8h/ngkTVRb8JaHeo7sLJjS+ExOBcdf9VGGOyq1Li9t0lRnVWjlgNHHXfkplyXwHmfuzPw1rOajS16Bw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 489A279C5
+	for <xenomai@lists.linux.dev>; Mon, 21 Nov 2022 18:36:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Qikr7O1Mcz6ibG9PIkyo0ZeMUSuC3cjmnRqmdFZwfXWn9juTk33I/1XQApgksNFeyWBQwv89y7jB3Ozhd5Rt/vAmSWFtKX1fhqe9abjYkCra2IjlvuhZARWV2hvF0Jf7f3nB6saVOK9Zz4gEjZ0pvJl3VeYZKq+s3+5UM9bYQ0knPBUiCe8sYGXY+9k9ecW+t3mt/CARta+fu4DOmv69e523cXSrSGSSWGu9HTcr+7Z5LcLhQWISzZTFwfiSQDxeoQOxUknB78aM3Lmwoin79PuBnmM32MnKRAcAsu8u2kwrLwjMzFf9clgDRdQDf3tTfBcdg1K3xpDsQwHw8Hi7Dw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
+ s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y0BWMZXrhwtGG3Fyl0czuy5pHl90hbFanUP4eNrz+Gk=;
- b=tiLVEhu5O5vxVmpcxYr53IS3+BE4Lqatx34kYb6O2wcY98LTeSCOZkyygu2X7PcvaGuwaAoCmzZqtQMhjPBnddXWt3b6hTchgZO7Qbm69Mprg1SJFPQDsIHurx2k5Wgmux+ThTCMcXvURum1swGq02dwAoH5EFJSdPX8zb0BHxN+YmCtJc5FKOPbKcOiRnV8vsZ16f+ADXsRm6gvG2x1DJi9Xgb4sekJd7JUkzrJwMgZbK+yxSxSgnognHrMqBCKWKZCDyJ/eGT0i39QK5cqiY9dVPVDh4whzBLvmPPGg155fjqZdJaQAhyrtveHeVsaHoUYCwYAXPsreMe5KmUA/Q==
+ bh=mp8gC0GItiVcWQGzEpg/yrqyPVgaWjYL8chdz1SGRM8=;
+ b=T21eGsBEn98n0BIYjbJzFvINqxfHxBGbcR2tVGfLrq4IS0+ZXyrZHkmFQQUR4jExlGXgjFt9J1bfuqIm78zaZQeQ7Fh01z1+hssOafQ2midSyMTt33njvZt5ZHvi4Sz56kOmKUoeaFQrLaHLU8UDBRH8ChiC3D6NLmk5r653bQcWlO4gsKG6rsW0TeEjPihdlZ0XQBm/sBV27NMRSqodmgiv2dwT5MqgfBRQ3uU70tg7yKVxrUYlIxsf03c2wMTbFVx1U7wSg2aT1SaNOmrw1yq/lAo9+tuf/yHI4ruoAquK1cE0EnjXlXrxj/EmrC9/HoUge3Zqv1wIyeoch7dLpQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y0BWMZXrhwtGG3Fyl0czuy5pHl90hbFanUP4eNrz+Gk=;
- b=taQEbdAI10JqsHUDl/CWU9VaCWXd9V78Pj0aLo34BEJKNwr7HHCY9froS5ciqEpJO5iE8ejY1GzjjMYYAyvK6FqqqktUcSfaMXs8sgS/jKV9hIijwSV5NVMnyK5W3VbjSI2IqCt7rkA8c+/3Pe4flHY74L1gfqIugvK6QoXo8Jp1Rsuu5L0JZHCz+BBysAlBHJDBCaziWJJ/gnuq+MAIgkqpFlulj/L3TfrXSbmM9xd8Uz9VQCOWaqTsoji8PmbRdYzeCftp3rZsnd1aWyWqnDDYh+DrlGhB0qqZdKRo4Tn0GB7cW0EYxb+RrT5KY/d5Flh6fELr/k7FmTQARzChAw==
-Received: from BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:17a::9)
- by BN2P110MB0946.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:16a::15) with
+ bh=mp8gC0GItiVcWQGzEpg/yrqyPVgaWjYL8chdz1SGRM8=;
+ b=dGhLtcbaRnQI6rl+1BuftjeFdBKdW3bb8irnkVnzSjSXByxHYGjELHAnozF28I60cuU5D5R7UIK4PwOBS7lRv29UHzOnxY3kkpsmMQr2m526uTo8l8OrOY0/Ugmd6/cCe5CcZ4wABZBEA0THtwYpVxBUbhreIvZTXFhOSzngoMQ5DC988f66YJcA3Tlp1peyXiRY/QKsj2io/HwLDyZ8Q72DD3MeEjr8XXjHNjete309zZvM/XpsoKYIZj2v5rO8rn5Ng2nzPi8eHshXj8ttd4GlBaivYXe6G9jntew55u1HjAxKkPzSR/14HY/bKmKjKRYUWdLhwC1J4d9wfH/o4g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by VI1PR10MB3344.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:13d::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Mon, 21 Nov
- 2022 18:33:37 +0000
-Received: from BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
- ([fe80::2056:dfda:4520:d00f]) by BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
- ([fe80::2056:dfda:4520:d00f%4]) with mapi id 15.20.5834.015; Mon, 21 Nov 2022
- 18:33:37 +0000
-From: Bryan Butler <Bryan.Butler@kratosdefense.com>
-To: Philippe Gerum <rpm@xenomai.org>,
-        Russell Johnson
-	<russell.johnson@kratosdefense.com>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,
-        Shawn McManus
-	<shawn.mcmanus@kratosdefense.com>
-Subject: RE: [External] - Re: EVL Memory
-Thread-Topic: [External] - Re: EVL Memory
-Thread-Index: 
- Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lAAKDcSAAAgIxWAAEP6SSAAYzsWgAAFcSNA
-Date: Mon, 21 Nov 2022 18:33:36 +0000
-Message-ID: 
- <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <877d04dm52.fsf@xenomai.org>
- <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87leodn9kv.fsf@xenomai.org>
- <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87zgcs4ma1.fsf@xenomai.org>
- <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
- <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
- <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <877czothz0.fsf@xenomai.org>
-In-Reply-To: <877czothz0.fsf@xenomai.org>
-Accept-Language: en-US
+ 2022 18:36:22 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::2957:50e8:8ce6:124a%9]) with mapi id 15.20.5834.015; Mon, 21 Nov 2022
+ 18:36:21 +0000
+Message-ID: <0835bd39-0dc8-e767-b39d-ee316f6b7ffd@siemens.com>
+Date: Mon, 21 Nov 2022 19:36:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN2P110MB1288:EE_|BN2P110MB0946:EE_
-x-ms-office365-filtering-correlation-id: 921f7d4c-d063-43fd-f767-08dacbeee751
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- G7TG23aoLZ+i82QqrrrobM8D/OShb9dZtwXz6/Lm5nzJlSzA78JIfGT2mhRRtuJz0+6NPhdDo726vCnIYkpXN6KpBAV2UcKrkpIi3RE7u/hDdAJXVmxYLEj/qAb5Qv3Mds+09MTVMvOGH7avynaQL3kSSOnO4LHB9Nt/rcyiZ1tjGo/RGKeJemjzkUgKay7ZsIotBJWH+Zz5/ZYLUXLcu0QgQQiJ6wYxLOAhMOYmjoOZfcB6iyc2Outtvn5ZNrhoN7/EWwZbJJELdGVIfpLywtP/5Avlzc2u3xr1s2X6jFoffqc7Q+atM8ipAFNq3V1XXIyfS/Cbs8O85KaE/MgfgKPf7wn8Abw2RnqWrRF2IYrDaeWlGdKF2Ed06oEJj8dzAeCGoQ+DXBiu2zChhYj5qncOcdxDCHlsqlkKSSVm/RqHdpOBA+/6ic4PQDagRMr4JghEVHLGU/1/SZwx0ocz+Sm+b6ME0gkXwyrQpGB/psmEJoZ4oAGqTdFaavCH8AHkAntDVfaapVDvWLK9gp0eTsu4k3nL362NFv4ao0JPH7o8siLrDiMJjk9Jw2IYPvGWJ6ZY4CpEGyEDjmPyi97bB4ngtiDEoD832BDz5navZ6s7RmYeAw/iGN3yjJ6AOY+V
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(6636002)(33656002)(54906003)(110136005)(38070700005)(107886003)(53546011)(55016003)(83380400001)(186003)(9686003)(71200400001)(7696005)(26005)(498600001)(6506007)(5660300002)(86362001)(52536014)(8936002)(38100700002)(2906002)(64756008)(76116006)(66446008)(66476007)(4326008)(8676002)(122000001)(66946007)(66556008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- mJADH8qBv7uxMO26CaxdbcIzrr3gumvu69451N9rHfIuG35mvbGr6R16Ew2D+MejklfpuN5jtc6La5g568H7CLN7MsnxIbg+UAh5bEOmzLabrTXoVEAefacsTv7XFQ84fwLCz5vEixmtECONHO147xAIhNF5jHbJZrHoCnIzhRah7p1TWjy6OovwSqmJohi5d6wa5eFupXIcgKtRR7PQnGqILx4ZMq2EZ3AuLtBx1+nk7mPqoUIg8cSkIyl6wU8bKWJrDq69oGJLaVO9FMOPukL+vC5r84cUYsOT7d40bWx7JPAXPiwD7gIFHjBpw3aT6knXFoeACHdbs3SOrcy39p+HZNje5E8EHppYffcxIC01dETryR2apEXcL6Bb/+TBnNYX6WF3yXaEro2fA1CxtIjwQriZ/jJCOFrJ/WKakh4=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: "suspicious RCU usage" in heapcheck driver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0103.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	/LXKvubh6ghYPWAYSZylD2xbEALLz0YHHNAzoDr1k9QfJhESfe8oYX/bAXmyEgwSZYbGDlFQIh4QPOYHyJUcEt+cjriLPpU7HUI392bU84guYYQ7o5B9Dur8R/ZWgqN2z1YC4tZnLKfaFpQRp/+cRs4lbtUaQ5URdM0yTMZKzSQE4CPJFBM0zcNdrB1hin404DL+lcnmfFrDTgfsZ6roaavHWHeKDQcjB8p3Z5TIjbZ77chNUqzXNk3NRUnqQZYupaeTzSJIqnAlMayVYVeS894ySlmuHm7vpsFMijs8HPqw+WEpSENoZ3S4z+gKWwGOZ1iZXxMbPNUw10qba2wrg7D60p2VG5rr/PqC81A9Gr3QmGvRemj1qJ9Q5DZfsUzYVxyU5+oxACZbJbhD6zKFUSHnao/BKq2EwI6Ki6sueyD0QenJ2HOsLLfUPosDb5Zjy/Kvw7Sy9hpwsfIjZ1N/WWtjmOgowZeU1C2jAndVZR5eFxLZrY/EcAHWNga5ROBPohlPe7JSsl6Shxqj5DWmRZvcoxuzlQeqRHXur3ZauLY1b5JDKieq3ylz6/yPEDlALsysC9l4UpGZ8EcXVU2FTnOE15K3L4A2VVsmsxFbiLkgk7Vok0kXfI8HihRYyv7kxAslTCIT0Gh3jOKiwZ7tJ+uYMF3VZo55WDna7m3kSWNM3eNvnvBJyHNdrsAoTSDRrWAKivUHhnELnz7uyTDCGRQHXT/rOMDLxuOixdpZRoi8wqR6d+yrZvGx9yoIennBqGcqUQM1zQr7tQP/HKjVVFm+ugvwsKXpBed/xn8GRWjnacyO1ik6nuaHee0Gpvng
-X-OriginatorOrg: kratosdefense.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3344:EE_
+X-MS-Office365-Filtering-Correlation-Id: bc5f15e8-8ed3-49a5-636c-08dacbef4969
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	CrWOk+91lb24RRTNTKi5H/UoABjx4rcwz2EY4dTw/ICn23zV1RWk6weg7caMufCCUX/wS4THuI7AYU/BwHMUOM2CZwkk7Oru8VEG0HpYI2rrmyGg9QBGs5QN8e3u4qbZHWuzE1jUaefiACO8tW6ssP4B+4wPoxO2YlL99hxi5tszNM+AX42gTuKEbCh+1aL/O0PsOJkCpj+bg4VD2IZNB5fZUAgFGgJx9SGBKDGpRIDVB1crvbn9xsIOK39q4w0OILFcHstpsrrr0YBmY/Y8vpdvzUPlLmHErmiFPO9/pInFfyETeXH1SksIhqg/zmE55lvTkOZNI9kdBD6xkgZFKst5iDO6c/8e1taMGX2M6FGaqAHxU7mZBo93FPrabFzCR7FpX+1YaYv4t4GHxA075gTmSX2YFWyVRKcSU1BcZLyKtGR9QEbc98QFblrfkpqzXnEpdNxBlAdAEt/JK/3KAYzUWGWYrAWoOF9sO4gDaKARKcBnXtp9cRtTN+NIb2ZIh322iEgN8qve8Yfq1YM5KbI5lFr9mpQxb4JgoBbajTXrwbgxo1X+DSMWn2RCAXoUBZvaRg/17yZzJ/FxU6/F1c1/ztBDg9gb5lb1Jqd22V/ScTMnjorduGiWBQGYioLSe0geU/eVILyP7HZrHf9FwsmyCtjMfbMHxWGXGegyeLrRpzztPVrtHHxArog+Jw6v6UcwC8HbfILs/2EV8Ch7xvLe1Rm//yyq7LROm+7Bn0xRXYg55We3YfqO9Mt7gC0+
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(346002)(136003)(376002)(396003)(451199015)(38100700002)(83380400001)(41300700001)(66476007)(82960400001)(8676002)(316002)(66946007)(66556008)(2906002)(2616005)(8936002)(5660300002)(44832011)(6512007)(6506007)(26005)(186003)(110136005)(966005)(478600001)(6486002)(31686004)(86362001)(31696002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VjZPMVh5RGVXZ2ZJYmx5UmhFNTJBTTZOY3gwZ2RZbnVNL3k0SU5zUTQ5anNl?=
+ =?utf-8?B?YVhXOTA5bi8wck1hYmoxaExGQ0FtdDlTM092N1R1N3hIMXlkSnYzVW9qZTNR?=
+ =?utf-8?B?RUhaY3B5N1FKa1g3R0lsd2o4MjFpLyt5NmlFM0ZEZ2NzYlpLSTdMZHd5NSty?=
+ =?utf-8?B?eTVPS2RObDhLdnJhQmFKNVdSclpSamRqMFFzUzc1QmpuTmFJeGk1citaMEJF?=
+ =?utf-8?B?WStzdUlIaFdFRFpuRnR2OXRrdzZkbkN6QmxmVTkrdENmVC8xZGJTczBQOTNz?=
+ =?utf-8?B?cDhwdGpXN0NFb2RhN0pac1hUd1BPTU1RTm0veWwra0NtMkhvNVdmVmN4Y2o2?=
+ =?utf-8?B?Z2IzQ2V6a2l3VmNCQjNVK29GM1JZZ043TG1Tb00wQ1NraFY2NnBGcys5dk02?=
+ =?utf-8?B?M01kUjdWLzBkV2xUWHJNWG43cDJOVlBzaVJjakZ3N1p1VWlDbTBQcWdzd3ZR?=
+ =?utf-8?B?L0JQUXJaZW5JYWVRRFYzd0Erb0xBRmJ3b3ppWkVNN2NiUjR3QUpEWHB3MEFU?=
+ =?utf-8?B?V3JkcFBvSmdJRVVDTE9nSllySkRyQWxYeE1FaWlBNnZVUnBKSk1uS091RDFu?=
+ =?utf-8?B?YWpUWWwvbldSWFg2REpVSkRSMjlLK1RHYnFYZXFndnZQTDhIY3J4cjgwV3Z2?=
+ =?utf-8?B?NnIrRVhicUk0eElhWnFPWkpEWDY1aGxhL0VPS3pqL0J3bWJCRHlkZUhLQlpv?=
+ =?utf-8?B?M2tSYUJmeGNyMjJEMGUyOXI4STVtWjd1ME5PcFh2cGhibGE5OHFhMndETGdT?=
+ =?utf-8?B?OERSRjJtaUZ3V0ZnRVRtbU5QdCtscXd3Y3prZGlCRUEyNXZ6TWNCQjBTeFBY?=
+ =?utf-8?B?NkYzKzB6QTR5VEF1TzQxQmlyZ3FhMVhpVmhqL1A5aDFQZ0tobGZTbkIzeDhn?=
+ =?utf-8?B?MkVMZWFaNDhtWFdlZG8xL0Zyck0wM3EwQi9IK2xVM2k4KzgwdVdIbTJ1U1Ni?=
+ =?utf-8?B?UXltVXYvVUQ5YmpjU3JxM1hybm93TkxpejVaL0R1amZjUDM5Z280R2UyU3dU?=
+ =?utf-8?B?cC9PZTZPSE9HOGJRa0RrQTJ0RmlIQ0ZWVG5uajBmajBFWWd5V3lZd0VSSFV0?=
+ =?utf-8?B?YVVNNW0ra2U4VnBzSXFrR3JaMjJVVlJhTzlyQTZpM0dkejJrTitCQTNQNzBC?=
+ =?utf-8?B?djdIb3dkWXFRbTh2bEcwek1adGVORUU4K0YwUGFNeEhrNjhkQk1QOVJDZko2?=
+ =?utf-8?B?Qmk1em90TnZnNVZNZEJmWmc3MVdOOW9mTys1N2c2dkFrVFdzTXdxeDE0MjJJ?=
+ =?utf-8?B?VklXMno0dmZSVTlZWnRWNURFUHhkbCtTdG5XQmVEcVdHZnRNMUhOUnVnN2NX?=
+ =?utf-8?B?RU5BeW1ZVElKcnVaOG9LOXVwc0w1Y2N1eXY4TGFmUTNTMWNrdHdJNEZWMGN0?=
+ =?utf-8?B?NTlYMTQ4MGUzS1dNZ3dwNU96Z1kvbXpHeHZnelEvVXBTa3IyVkdlWGtKamVu?=
+ =?utf-8?B?Um5ja1JaSUw3Y1h4elJpT1R5L0VMVVEySGRITkdsMHJuK3pnWWpNcHREQ3c3?=
+ =?utf-8?B?WVJVM2JoUjVsRjZWN29Xc1hsTUYrTGJHQ1hqUmFvWHEyVzBsZDFVVUtZVHBa?=
+ =?utf-8?B?Si9HNVNkV0xLY29SV1BIZ2NjZVZmQzczRUxXcmJZQ05uTktaa2RKMkU4cG1x?=
+ =?utf-8?B?dTU4ZnNXb0twbjJoM0tqVEZGWmx3VFlMYlRSV0x4MXd1cjYwRmlWMUlhdTcz?=
+ =?utf-8?B?eDRqU3VVQmRIdzhTR0FxM0VrQjc1ZUc1dGU1V2tYVFlsS0hzUCtIZC9IZXNr?=
+ =?utf-8?B?QVVnU0U1Q3cwYTlrdG1KdEU1dEcvUWZGd2tvajg3WGFSWmNpSXhxSGZ3Z1px?=
+ =?utf-8?B?SGlOeFNtS0VyUXMwYmprOWtoN3BMUmNMSk9zd2k2SUFPellpbFRpYTJYdGVu?=
+ =?utf-8?B?cjhOK1crdlJYa2tiekxTcVRub05LTnFtS0pkNVpCeDhjL3U4MVNMelBwbEJX?=
+ =?utf-8?B?cThtMVk5VTY4RzRJa1Mxekc1SDVvc2lOdVNGRUgvTHZsdUo2cUxiSE54NVdw?=
+ =?utf-8?B?ZTVtK2ZqQWxueGR1OWZDU3FLRU5Hc0NTUEFDaVFFKzBHaSt2dVZmZlJEVlFM?=
+ =?utf-8?B?OFZib0JyYVp4a1ZkcXpINHNJMTJHT2xqVkkyN3hYODUyLzFpNnYrVnF1ZWsr?=
+ =?utf-8?B?OG52TmZvVXY3L05UdkxUZmtmaHN6ZURZc29Nb3hIaVVzdVRWdFhoUDVFVGpH?=
+ =?utf-8?B?OWc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc5f15e8-8ed3-49a5-636c-08dacbef4969
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 921f7d4c-d063-43fd-f767-08dacbeee751
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2022 18:33:36.9441
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 18:36:21.6393
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN2P110MB0946
-X-Proofpoint-GUID: KmazcQSFsg6issTcRkyRvbj4zqABHITN
-X-Proofpoint-ORIG-GUID: KmazcQSFsg6issTcRkyRvbj4zqABHITN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-21_16,2022-11-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- impostorscore=0 mlxscore=0 mlxlogscore=999 adultscore=0 priorityscore=1501
- clxscore=1015 malwarescore=0 phishscore=0 lowpriorityscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211210141
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DoSnyS76ImwFct3vzbhHzDeHWziYqyCPhQZ/Rcn+dLTPQ+e5nsR2uoTTFLL6WTLkSBh1hwRFuR3ZFLQT5b4EMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3344
 
-Hi Philippe, just to let you know this is a holiday week here in the US, an=
-d Russell is out until next Monday. Those of us left will try to update our=
- build, but we may not be able to test it thoroughly. Just wanted you to kn=
-ow since you may not hear much from us for the next week.
+Hi Philippe,
 
------Original Message-----
-From: Philippe Gerum <rpm@xenomai.org>=20
-Sent: Monday, November 21, 2022 8:56 AM
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: xenomai@lists.linux.dev; Bryan Butler <Bryan.Butler@kratosdefense.com>;=
- Shawn McManus <shawn.mcmanus@kratosdefense.com>
-Subject: Re: [External] - Re: EVL Memory
+while preparing Xenomai for recent kernels, switching prandom_u32 to
+get_random_u32 [1], I triggered some RCU warning:
 
-CAUTION: This email originated from outside of the organization. Do not cli=
-ck links or open attachments unless you recognize the sender and know the c=
-ontent is safe.
+[  515.060011] =============================
+[  515.060011] WARNING: suspicious RCU usage
+[  515.060012] 6.1.0-rc5+ #10 Not tainted
+[  515.060014] -----------------------------
+[  515.060014] ../include/linux/rcupdate.h:740 rcu_read_lock() used
+illegally while idle!
+[  515.060017]
+[  515.060017] other info that might help us debug this:
+[  515.060017]
+[  515.060017]
+[  515.060017] rcu_scheduler_active = 2, debug_locks = 1
+[  515.060019] RCU used illegally from extended quiescent state!
+[  515.060019] 1 lock held by smokey/1435:
+[  515.060021]  #0: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+__is_insn_slot_addr+0x5/0x120
+[  515.060049]
+[  515.060049] stack backtrace:
+[  515.060050] CPU: 0 PID: 1435 Comm: smokey Not tainted 6.1.0-rc5+ #10
+[  515.060053] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+[  515.060054] IRQ stage: Xenomai
+[  515.060055] Call Trace:
+[  515.060056]  <TASK>
+[  515.060058]
+[  515.060058] =============================
+[  515.060059] WARNING: suspicious RCU usage
+[  515.060060] 6.1.0-rc5+ #10 Not tainted
+[  515.060061] -----------------------------
+[  515.060061] ../include/linux/rcupdate.h:768 rcu_read_unlock() used
+illegally while idle!
+[  515.060063]
+[  515.060063] other info that might help us debug this:
+[  515.060063]
+[  515.060063]
+[  515.060063] rcu_scheduler_active = 2, debug_locks = 1
+[  515.060065] RCU used illegally from extended quiescent state!
+[  515.060065] 2 locks held by smokey/1435:
+[  515.060067]  #0: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+__is_insn_slot_addr+0x5/0x120
+[  515.060073]  #1: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+__is_insn_slot_addr+0x5/0x120
+[  515.060078]
+[  515.060078] stack backtrace:
+[  515.060078] CPU: 0 PID: 1435 Comm: smokey Not tainted 6.1.0-rc5+ #10
+[  515.060081] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+[  515.060082] IRQ stage: Xenomai
+[  515.060083] Call Trace:
+[  515.060084]  <TASK>
+[  515.060086]  dump_stack_lvl+0x7d/0xb5
+[  515.060106]  __is_insn_slot_addr+0x10e/0x120
+[  515.060112]  kernel_text_address+0xbf/0xd0
+[  515.060126]  __kernel_text_address+0xe/0x40
+[  515.060129]  show_trace_log_lvl+0x18c/0x3f0
+[  515.060152]  ? dump_stack_lvl+0x7d/0xb5
+[  515.060162]  dump_stack_lvl+0x7d/0xb5
+[  515.060168]  __is_insn_slot_addr+0xd8/0x120
+[  515.060171]  kernel_text_address+0xbf/0xd0
+[  515.060176]  __kernel_text_address+0xe/0x40
+[  515.060179]  show_trace_log_lvl+0x18c/0x3f0
+[  515.060196]  ? dump_stack_lvl+0x7d/0xb5
+[  515.060206]  dump_stack_lvl+0x7d/0xb5
+[  515.060212]  inband_irq_save+0xa/0x30
+[  515.060215]  get_random_u32+0x2f/0x230
+[  515.060228]  heapcheck_ioctl+0xa42/0xbb0
+[  515.060244]  ? ktime_get_mono_fast_ns+0x3b/0xa0
+[  515.060260]  ? rtdm_fd_ioctl+0xec/0x340
+[  515.060270]  rtdm_fd_ioctl+0xec/0x340
+[  515.060284]  ? CoBaLt_fcntl+0x20/0x20
+[  515.060286]  CoBaLt_ioctl+0xa/0x20
+[  515.060288]  handle_head_syscall+0x115/0x5c0
+[  515.060301]  pipeline_syscall+0x85/0x120
+[  515.060307]  syscall_enter_from_user_mode+0x3f/0xa0
+[  515.060312]  do_syscall_64+0x15/0xb0
+[  515.060317]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
+From my understanding of the code path we are taking here, it's a non-RT
+IOCTL that should be fine to take random Linux locks or disable Linux
+IRQs. But 5.10, 5.15 and 6.1 all complain about being idle here. Any
+idea where we may confuse lockdep?
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+Jan
 
-> [[S/MIME Signed Part:Undecided]]
-> After fixing that line of code that was causing errors with building=20
-> the EVL kernel, I was able to successfully build. I am now running our=20
-> scenario that was causing issues previously. I will let you know what=20
-> issues (if any) I run into.
->
-> To your other point, I can confirm that the priorities that are being=20
-> boosted are never being cleared back to the original base priorities..=20
-> What do you recommend looking at first in order to figure out why this=20
-> is happening?
->
+[1]
+https://source.denx.de/Xenomai/xenomai/-/commit/91d4232ada71ab2f59709398f370df0c89857e76
 
-I could not reproduce this PI deboosting issue yet, however I eventually fi=
-gured out the reason for the lockup - which may translate to RCU warnings o=
-n your system with many CPUs: this is a Dovetail issue wrt lockdep support.=
- IOW, the bug is in the lock debug infrastructure, caused by adding interru=
-pt pipelining to the picture.
-
-You can work around this issue until fixed by disabling PROVE_LOCKING and L=
-OCKDEP entirely (which is also enabled by DEBUG_LOCK_ALLOC and DEBUG_WW_MUT=
-EX_SLOWPATH indirectly).
-
---
-Philippe.
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
