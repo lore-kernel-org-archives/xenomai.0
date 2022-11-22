@@ -1,115 +1,134 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E957E10786
-	for <xenomai@lists.linux.dev>; Mon, 21 Nov 2022 22:17:12 +0000 (UTC)
-Received: by mail-ed1-f42.google.com with SMTP id z18so18194087edb.9
-        for <xenomai@lists.linux.dev>; Mon, 21 Nov 2022 14:17:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2LA8IuAEAU+3DPvBoXy+eEEbuGav04oB+uxzYV+HJZ4=;
-        b=MTUq6uKS3xAu66tPNd89vGw01SJTP7I3b3EFwFlIRLwlDbH58OL6R4Bj3MhROk5cyX
-         25iwao6Mq9vLFfmJR8j+ONA7fNMuxQjyGxrkbMDFDSquWQsDR+r1c1bUc90KBgsQHobB
-         y2ZVEsN/J4MLUENpWaDxovu+/dRfkQlN92RY7h6bG0cS7s7A3Qs9eC5t7QW788csv+dh
-         JeW0YYMQ6OsEzGxHBaILoWGRtS3k7GBmDGWrvE9tUKoE26Kp+WAr1SvQvBUTiy1w0B6y
-         KUuIuAS55isZbfKLjfEzSL231OhMhzwMNlWxtHhtDJ5jrGAyJw+awHs81Yr1DhnJnyco
-         s8XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2LA8IuAEAU+3DPvBoXy+eEEbuGav04oB+uxzYV+HJZ4=;
-        b=dv2RRIqbbPwwf3xcYx6RB8gvUm3OdH6/nktQXiJBpchi3ps3X5tNGyBDGnKWrIzho2
-         sxWqRQhEp++gOvjvw7JiagPP2uWw3RxuicQWHd1iV7WQUWM1zhvHs9slYoxM6FAycahw
-         LHE/UozsFh3kbjYh+9keCBMIWLGnXef6nIRjiXZei20zRJ7B0fxMUSQUIclZQqB8baM4
-         /ZeqIJ4+DmYsUG+pQNkZDYYU6VWhqBZtsqQ57tyGF1CBO/k0dNNToesqmOAK/EuC6Mm3
-         UqfdVJaYhV2k9J0BrhkfM5dwtHHMNPIZKm96GNUUkFsje5+WfKkfTUOPpaR9uO7T/q89
-         gQLQ==
-X-Gm-Message-State: ANoB5pnRRLEeurPr0Togg9v//ocAGU8idVH1eB1pJ8GQQn0tOKtH/FMn
-	BucC/THzeohOXcbO545R/liHCleNVS8=
-X-Google-Smtp-Source: AA0mqf5i1KPdVZbHWbkoAWUu7pp8C2zBMvOvwJuBqGb1dlS/UF15aKrYipuDg904eppqXjucHvKCmQ==
-X-Received: by 2002:a05:6402:110d:b0:469:dd6:bfee with SMTP id u13-20020a056402110d00b004690dd6bfeemr1369490edv.330.1669069031050;
-        Mon, 21 Nov 2022 14:17:11 -0800 (PST)
-Received: from [192.168.42.52] (62-46-95-169.adsl.highway.telekom.at. [62.46.95.169])
-        by smtp.gmail.com with ESMTPSA id kk18-20020a170907767200b007aed2057eaesm5318741ejc.161.2022.11.21.14.17.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 14:17:10 -0800 (PST)
-Message-ID: <41898024-cd35-5e7f-978c-2e8005a12712@gmail.com>
-Date: Mon, 21 Nov 2022 23:17:09 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D002510E8
+	for <xenomai@lists.linux.dev>; Tue, 22 Nov 2022 08:05:50 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id DA3BA100006;
+	Tue, 22 Nov 2022 08:05:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1669104343;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2qvUeZUYRrXIfGTPKb6Pyh8boO5BkNsKZdFZDyLvT+U=;
+	b=MkAB0devHGkcRBTIGVoYNyaV1xKfhGR8Bzn4VcEsGmD5bGGtBVQGyX4uJc6Lu/8OHc+nVS
+	JdNRHMWQmqhNvL8radlKKxrRp9WwvHQYJeLbF07xL68Hs1BX5ntXB7NtCFx23M4Eqg++ad
+	xfHQ5KGRmxbKbhXSd1t3qytF2Z0PETAfZfQJsglsz3dlRW+mCBdWmYjPNu/5HxfzTWx1x6
+	h0JSTQ9IG3EyFabdMJYjFeSWoORxYhwJmEo1dF9ZiXaVeXbq886mvOWrezZ4OtOLcqDaZx
+	VcMtw1TfWMTsy0/4dW4bkly4cy11/pWTQmxOeJCwRL6Z4EtTGQfcD97/BnMglw==
+References: <0835bd39-0dc8-e767-b39d-ee316f6b7ffd@siemens.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: "suspicious RCU usage" in heapcheck driver
+Date: Tue, 22 Nov 2022 09:00:11 +0100
+In-reply-to: <0835bd39-0dc8-e767-b39d-ee316f6b7ffd@siemens.com>
+Message-ID: <87a64j9zxm.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: cyclictest vs. latmus
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <49fb01fa-abda-46eb-cf47-31d48810d7eb@gmail.com>
- <87a653p28w.fsf@xenomai.org> <3ef4b7b1-8bd4-edea-9518-1b2efce90cce@gmail.com>
- <87cz9tc0t4.fsf@xenomai.org>
-Content-Language: en-US
-From: Robert Berger <xenomai.list@gmail.com>
-In-Reply-To: <87cz9tc0t4.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-
-Hi,
-
-Sorry for the late reply - I was on the road.
-
-My comments are inline.
+Content-Type: text/plain
 
 
-On 11/11/2022 10:00, Philippe Gerum wrote:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> The latency spikes you observed is related to CPU frequency scaling (see
-> [1]), the "performance" governor was not the default one in your
-> Kconfig, but the on-demand governor was, leading to dynamic frequency
-> adjustment. This should be reported by the following command on your
-> system:
-> 
-> ~ # evl check
-> CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=n
-> CONFIG_FTRACE=y
-> 
-> CONFIG_FTRACE is also reported because it does have a noticeable impact
-> on the latency figures even when no tracer is enabled on ARM, although
-> the overhead is still negligible compared to actual latency killers.
-> 
-> Setting CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y is enough to fix your
-> Kconfig as I did here.
-> 
-> HTH,
-> 
-> [1] https://evlproject.org/core/caveat/#caveat-cpufreq
+> Hi Philippe,
+>
+> while preparing Xenomai for recent kernels, switching prandom_u32 to
+> get_random_u32 [1], I triggered some RCU warning:
+>
+> [  515.060011] =============================
+> [  515.060011] WARNING: suspicious RCU usage
+> [  515.060012] 6.1.0-rc5+ #10 Not tainted
+> [  515.060014] -----------------------------
+> [  515.060014] ../include/linux/rcupdate.h:740 rcu_read_lock() used
+> illegally while idle!
+> [  515.060017]
+> [  515.060017] other info that might help us debug this:
+> [  515.060017]
+> [  515.060017]
+> [  515.060017] rcu_scheduler_active = 2, debug_locks = 1
+> [  515.060019] RCU used illegally from extended quiescent state!
+> [  515.060019] 1 lock held by smokey/1435:
+> [  515.060021]  #0: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+> __is_insn_slot_addr+0x5/0x120
+> [  515.060049]
+> [  515.060049] stack backtrace:
+> [  515.060050] CPU: 0 PID: 1435 Comm: smokey Not tainted 6.1.0-rc5+ #10
+> [  515.060053] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+> rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+> [  515.060054] IRQ stage: Xenomai
+> [  515.060055] Call Trace:
+> [  515.060056]  <TASK>
+> [  515.060058]
+> [  515.060058] =============================
+> [  515.060059] WARNING: suspicious RCU usage
+> [  515.060060] 6.1.0-rc5+ #10 Not tainted
+> [  515.060061] -----------------------------
+> [  515.060061] ../include/linux/rcupdate.h:768 rcu_read_unlock() used
+> illegally while idle!
+> [  515.060063]
+> [  515.060063] other info that might help us debug this:
+> [  515.060063]
+> [  515.060063]
+> [  515.060063] rcu_scheduler_active = 2, debug_locks = 1
+> [  515.060065] RCU used illegally from extended quiescent state!
+> [  515.060065] 2 locks held by smokey/1435:
+> [  515.060067]  #0: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+> __is_insn_slot_addr+0x5/0x120
+> [  515.060073]  #1: ffffffff82d63c60 (rcu_read_lock){....}-{1:2}, at:
+> __is_insn_slot_addr+0x5/0x120
+> [  515.060078]
+> [  515.060078] stack backtrace:
+> [  515.060078] CPU: 0 PID: 1435 Comm: smokey Not tainted 6.1.0-rc5+ #10
+> [  515.060081] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+> rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+> [  515.060082] IRQ stage: Xenomai
+> [  515.060083] Call Trace:
+> [  515.060084]  <TASK>
+> [  515.060086]  dump_stack_lvl+0x7d/0xb5
+> [  515.060106]  __is_insn_slot_addr+0x10e/0x120
+> [  515.060112]  kernel_text_address+0xbf/0xd0
+> [  515.060126]  __kernel_text_address+0xe/0x40
+> [  515.060129]  show_trace_log_lvl+0x18c/0x3f0
+> [  515.060152]  ? dump_stack_lvl+0x7d/0xb5
+> [  515.060162]  dump_stack_lvl+0x7d/0xb5
+> [  515.060168]  __is_insn_slot_addr+0xd8/0x120
+> [  515.060171]  kernel_text_address+0xbf/0xd0
+> [  515.060176]  __kernel_text_address+0xe/0x40
+> [  515.060179]  show_trace_log_lvl+0x18c/0x3f0
+> [  515.060196]  ? dump_stack_lvl+0x7d/0xb5
+> [  515.060206]  dump_stack_lvl+0x7d/0xb5
+> [  515.060212]  inband_irq_save+0xa/0x30
+> [  515.060215]  get_random_u32+0x2f/0x230
+> [  515.060228]  heapcheck_ioctl+0xa42/0xbb0
+> [  515.060244]  ? ktime_get_mono_fast_ns+0x3b/0xa0
+> [  515.060260]  ? rtdm_fd_ioctl+0xec/0x340
+> [  515.060270]  rtdm_fd_ioctl+0xec/0x340
+> [  515.060284]  ? CoBaLt_fcntl+0x20/0x20
+> [  515.060286]  CoBaLt_ioctl+0xa/0x20
+> [  515.060288]  handle_head_syscall+0x115/0x5c0
+> [  515.060301]  pipeline_syscall+0x85/0x120
+> [  515.060307]  syscall_enter_from_user_mode+0x3f/0xa0
+> [  515.060312]  do_syscall_64+0x15/0xb0
+> [  515.060317]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> From my understanding of the code path we are taking here, it's a non-RT
+> IOCTL that should be fine to take random Linux locks or disable Linux
+> IRQs. But 5.10, 5.15 and 6.1 all complain about being idle here. Any
+> idea where we may confuse lockdep?
 
-Absolutely!
+This syscall is processed from the head stage otherwise it would have
+been routed to handle_root_syscall() I believe, so the issue is most
+likely with rcu_is_watching(). There is a fix for this in the linux-evl
+tree [1], still in the -next branch ATM, will be upstreamed soon.
 
-I fixed my kernel config and now the graphs looks like Xenomai 3.
-
-Thanks!
-
-Regards,
-
-Robert
+[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/03d19b028241d0385ea72e91481d7468d806ffe8
 
 -- 
-Robert Berger
-Embedded Software Evangelist
-
-Reliable Embedded Systems
-Consulting Training Engineering
-URL: https://www.reliableembeddedsystems.com
-
-Schedule a web meeting:
-https://calendly.com/reliableembeddedsystems/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-
+Philippe.
