@@ -1,116 +1,83 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5907E15C7
-	for <xenomai@lists.linux.dev>; Fri, 25 Nov 2022 13:01:51 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 7C9CC40011;
-	Fri, 25 Nov 2022 13:01:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1669381304;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=7FOndyw4k5C1E3qB1v+qn3kV0G87fo8Af6V9Q0vX5qI=;
-	b=Y097m+7O+P7oTaZTuwjBRMT4haHHVR+7kxGJpgmTcH5+MOAXyP8CN2XGisKXmIuWt9EmYN
-	QR1mlLKC+iGQi5H3t3As8ikanUDIXIJxw/8s2/zqyjrIdQPo8IUX//niOHaf/tkiZTxqQ/
-	jESMzS2eENGAl3Zo4DLdtK00ea4JTi/3tuJEkVb4avO63sucFXd6CiyD+UKbOpr2NDfay0
-	EZmjlKofvAZnPlBi3KZOC43EEqJP18yab6+sNOr0hK+u58ZOsxYGVvLAcsGjqaCBzIZN34
-	r+pfuiSQc1+0nCw4o9QOpCuH1yYmSa8/dJ73CzDkO0ntFjhdVy5oNIUk8uJQzw==
-References: <20221125090834.617271-1-florian.bezdeka@siemens.com>
- <8e95dbd6-b120-11a0-8c30-ce4f29b1ec84@siemens.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev,
- Greg Gallagher <greg@embeddedgreg.com>
-Subject: Re: [ipipe 4.19][RFC PATCH] ipipe: Do not report spurious
- interrupts by using printk
-Date: Fri, 25 Nov 2022 13:59:16 +0100
-In-reply-to: <8e95dbd6-b120-11a0-8c30-ce4f29b1ec84@siemens.com>
-Message-ID: <878rjzmbm2.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F61B33DC
+	for <xenomai@lists.linux.dev>; Fri, 25 Nov 2022 14:11:23 +0000 (UTC)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20221125141120ca90dd71506696a921
+        for <xenomai@lists.linux.dev>;
+        Fri, 25 Nov 2022 15:11:20 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=mKFKP23dymGt/e6/2XMH9xjwxTjpj9CNu/GrRbQt7WQ=;
+ b=gJFs3GlcTA8F/WPkXbnjCt0NTLAfXSnvAx8Rs6kOYrSi17sbJtmGQY6YhGzM9TnvC6k6v9
+ kbt4WW5ADxICUCna5+dJu75olY8WyvFcwcbbqZtWE5P56MDt2qTctHon54Cwer1D0ZyXUKcv
+ hk7XwntubljckGb1A94h4Vrh6sVlg=;
+Message-ID: <c7b9c30c4f0685adbd3f3829b9bba4b42835177a.camel@siemens.com>
+Subject: Synchronization request of supported ipipe kernel versions
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher
+ <greg@embeddedgreg.com>
+Cc: xenomai@lists.linux.dev
+Date: Fri, 25 Nov 2022 15:11:19 +0100
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
+
+Hi Jan, Hi Greg,
+
+while tracking down some ipipe issues that appeared while trying to
+modernize the CI toolchain (Debian 11 =3D> 12 update) I had massive
+problems with all the different kernel versions that we have for
+different architectures.
+
+Currently we have:
+
+            4.19             5.4  =20
+armhf   4.19.229-cip67+    5.4.180+
+arm64   4.19.144+          5.4.180+
+amd64   4.19.264-cip84+    5.4.223+
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Might I request to synchronize them?=C2=A0
 
-> On 25.11.22 10:08, Florian Bezdeka wrote:
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
->> 
->> Hi all,
->> 
->> I need this patch to get the Hikey board (part of the Xenomai CI lab) up
->> and running. The problem appeared when updating the test images from
->> Debian 11 to Debian 12 and with that from gcc 10 to gcc 12.
->> 
->> My understanding is:
->>  - During boot a UART hangup occurs, so we release the IRQ
->>  - While that happens there is still on IRQ in flight on a different CPU
->>  - The in-flight IRQ is detected as spurious interrupt
->>  - We try to report that using printk()
->> 
->> printk() internally calls ipipe_unstall_root() - by using one of the 
->> _irqrestore() macros/functions - which unconditionally calls 
->> hard_local_irq_enable() so HW IRQs are enabled now.
->> 
->> I end up in an IRQ stack overflow.
->> 
->> I assume this happens because the UART IRQ is a level-triggered IRQ. So
->> it simply fires again.
->> 
->> Does that make sense?
->> 
->> How to fix that properly? Ideas welcome...
->> 
->> The problem can be reproduced on the hikey board quite well. Nearly
->> every boot ends up in the IRQ stack overflow.
->> 
->> Best regards,
->> Florian
->>  
->> 
->>  kernel/ipipe/core.c | 2 +-
->>  kernel/irq/handle.c | 2 +-
->>  2 files changed, 2 insertions(+), 2 deletions(-)
->> 
->> diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
->> index d12e71103424..17ad6f2841f9 100644
->> --- a/kernel/ipipe/core.c
->> +++ b/kernel/ipipe/core.c
->> @@ -1491,7 +1491,7 @@ void __ipipe_dispatch_irq(unsigned int irq, int flags) /* hw interrupts off */
->>  
->>  #ifdef CONFIG_IPIPE_DEBUG
->>  	if (irq >= IPIPE_NR_IRQS) {
->> -		pr_err("I-pipe: spurious interrupt %u\n", irq);
->> +		//pr_err("I-pipe: spurious interrupt %u\n", irq);
->>  		return;
->>  	}
->>  #endif
->> diff --git a/kernel/irq/handle.c b/kernel/irq/handle.c
->> index e2f7afcb1ae6..1c3221c72977 100644
->> --- a/kernel/irq/handle.c
->> +++ b/kernel/irq/handle.c
->> @@ -32,7 +32,7 @@ void handle_bad_irq(struct irq_desc *desc)
->>  {
->>  	unsigned int irq = irq_desc_get_irq(desc);
->>  
->> -	print_irq_desc(irq, desc);
->> +	//print_irq_desc(irq, desc);
->>  	kstat_incr_irqs_this_cpu(desc);
->>  	ack_bad_irq(irq);
->>  }
->
-> Is this issue 4.19-specific, resolved in 5.4? Or in dovetail?
+It would simplify things a lot if=20
+  - all 4.19 versions would be based on the same patch level
+  - all 5.4  versions would be based on the same patch level
+  - The 4.19 and 5.4 versions would be based on the same stable=C2=A0
+    patch set. Currently 4.19.266 and 5.4.224 are recent versions
+    with the "same" set of patches applied.
 
-Dovetail has no such issue because unstalling the in-band stage does not
-re-enable hard irqs.
+Concrete example:
 
--- 
-Philippe.
+I had to update my 4.19 baseline to recent 4.19.264 to make sure that
+I'm not hunting for something that is already fixed. With that I pulled
+in the following upstream commit:
+
+211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle"=
+)
+
+This commit breaks (or will break) the pl011 driver in case ipipe is
+enabled. It is part of 4.19.253 and 5.4.207. The only tree that already
+has this commit is for amd64, but it's not a real problem as x86
+normally doesn't require this driver.
+
+a) I'm currently not able to fix that for arm/arm64=C2=A0
+   (too old but not yet affected)
+b) If 4.19 and 5.4 for arm/arm64 are not based on the same stable=20
+   patch level I have to backport for each arch/ipipe.
+
+Let me know what you think!
+
+Regards,
+Florian
+
+
+
