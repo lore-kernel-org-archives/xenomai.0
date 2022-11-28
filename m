@@ -1,260 +1,117 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2356E8F42
-	for <xenomai@lists.linux.dev>; Mon, 28 Nov 2022 15:21:16 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ASB4HHV001201;
-	Mon, 28 Nov 2022 07:21:10 -0800
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0175.outbound.protection.office365.us [23.103.199.175])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3m3fwa3bv9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 28 Nov 2022 07:21:09 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=sgU1l0gZHH62ySD919h16zPekF0ePLwnQF4CQcfcujMizQzNBB7RFJ+h0vy6/NOh9TweLysSTHB1zk/QBWsGOhvTSXB8z4RKDPsJFq72vonUza7XMlNtKGwS8IwfKbdxlg/xu4eg/wTp6xGbygKjq50FCbga1gYlUR4KeDeDXspdWoJRgYMNrvD5v2ZfsLhMUi0v5y0B7BWZZuuQGsEzXrWDP/3o3AFYwXlIp5SN1yZjmWd21MoQnS3hOtLjKWHJKXOyidssl+gy1NvKrwFAuOt0Y7v53Yh1UScnNMa06gI2GZZHShYgaAT2rBkSYUL4PS8PO9WPlxfenX1L3GKD/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/p6saAbRGeARdOtMzFcWOSpBLearHATmCgN2hJ5pSZU=;
- b=sOKNWK05/yklw+Lba7C1Zr9UjRIe6szL/Hd02gtrWyW3NtC7iJYQ+ynPlD9H5y6fPputX6Ev2Nvu5755LUtVfSSA8Nt/Z9sFxfg0wiPwgn2d4AH/IkVOel2yaqRt1kqSSNQoTbDmhe9J4JO65IFIC/8H5qMm+LI7sczovVGL7GOtesW2XOkZDJtelPaO828ZKL4auXHaB2kS/vYSnLHNyTGVmFJApkcDHGvkxOKhpdczbY6WfluifXeYs59IrefS9bg7BCPivDZGxe96UiuZJDiK2skMI5S+cEh4QZNKuAQ4VL0j1QNeHLn/Pv5xYrsUi0mEDfPSRQzv8WW4r6AuIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/p6saAbRGeARdOtMzFcWOSpBLearHATmCgN2hJ5pSZU=;
- b=av21huGHZab+YdhvKWThDNoVduXd7THvjRuLZUzAl/eiJ5XLd7FcWG1bBnhW5IiH+iTMsuFdEBRzqd6CyYkaLfg2OjU+Fh7NH0tzcuhNkbL0isyjUBq3GSmwPBmGy1v2+F9V0iA2788ESczEUzI842zpuHUssnynaCKURpxTXRhG0v/mFQfhZyTPUVKk2PtFIo2Pe4NHEWIOFuJKlVp2zuzSdi+8F6MPg/F60D07aazWWugkK3P3Xe+hnmVd2MhwQE7+fiE59+aO/8niuelQFm7duh1wCKcWFfCDlKWuaP7bDsvj+JvXrtzDckIFKpaY4ImSWA0OE4AS3EKbqqHuYA==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1036.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:174::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Mon, 28 Nov
- 2022 15:21:07 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::2dc2:8d63:5c5b:f725]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::2dc2:8d63:5c5b:f725%7]) with mapi id 15.20.5834.020; Mon, 28 Nov 2022
- 15:21:07 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: Bryan Butler <Bryan.Butler@kratosdefense.com>,
-        Philippe Gerum
-	<rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,
-        Shawn McManus
-	<shawn.mcmanus@kratosdefense.com>
-Subject: RE: [External] - Re: EVL Memory
-Thread-Topic: [External] - Re: EVL Memory
-Thread-Index: 
- Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lAAKDcSAAAgIxWAAEP6SSAAYzsWgAAFcSNAAVlSalA=
-Date: Mon, 28 Nov 2022 15:21:07 +0000
-Message-ID: 
- <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <877d04dm52.fsf@xenomai.org>
- <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87leodn9kv.fsf@xenomai.org>
- <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87zgcs4ma1.fsf@xenomai.org>
- <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
- <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
- <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <877czothz0.fsf@xenomai.org>
- <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
-In-Reply-To: 
- <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1036:EE_
-x-ms-office365-filtering-correlation-id: 08ef234d-2e9a-4e2a-ec54-08dad1542c67
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- 09j/MpPCBMK3uEyYBUU6XCJg9EvK+8tGjoVmhEHtyVEMcOHqLQH26lbpB+sAPKguJe7aiSRTe8OT6u1q1vY0hPcxB0/CRwOBSsJtow4IbP8h0+2zx7jKe0lJme2y9uA4APHJogWFWfEwKfVkHEZUaO7m3icIVKI1iC+A3SoW/UdoZsJGlRmhydWE9HsSv+jOSZpVSuqf7xLwdCXkDC3IFQBxbDOT5LYRsffthrlHqU6Gn1trIzCDcD7tQX945k0mmNUwXNm7+xd7jVozPXnXJKJlt0vZMy4v3Z9mMOYMxAFP5f44L/X4oOC81wtBUC+uSXgOTHmbzSxMWHN8x84TFKYXiV9BDntAZJmE+0kOdfei/iqU/CA9E8k9zzkMoC6Gar0ZjF1ZfsOPMBom7kTR7bntGGxAcakVokRfx9O3EeDw2EK4nGeqXBVZX0KVdEyNA94JC0QtG0YVdp1pQfFSKPh6nUu/S6341pNm8OL8dAlSadPp8L4FKNGGhCVvckw5O3IzCu4Eeonu+ViMLYhdjAvGEu59c10/AJDYCafMh0YAQGRYJ/pojHTC6SfpyMedQvwYhJbTl+/vNOaAhFeBWwupHKTucRP80ewbr8Zj5UgFPTH5qCK4/1ZV5LI813de
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(451199015)(5660300002)(86362001)(54906003)(8936002)(6506007)(52536014)(44832011)(8676002)(9686003)(4326008)(66476007)(64756008)(76116006)(66946007)(66446008)(66556008)(33656002)(107886003)(558084003)(110136005)(38100700002)(99936003)(186003)(83380400001)(122000001)(55016003)(7696005)(26005)(38070700005)(498600001)(71200400001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- JkWEPyNrf6H1EYTqNOOnppdXhpen5aVHqyb49TTjNI7mld3Apafh53/Z2i8vIYBFIfROCpVZ/JxlLEAAxWxX7MKz/xgjnl00T+kZo4EqMFJtpsbx5R9FUBwO6NjdVLuDqpQ1wJuUGG7QJpvbUqSEDOQdoXYz/qrePxUd5mj2BLo7g5tk48Dijz+RtQR1yb/1chnBfsLuAYL3H0S6cJOGeR8hvkWLb4hoOf0yv0QDznOWsr7LFbqkoTnFow1BuO3fj7Fmmy6i0gN5DUwRE2TWOM2o5yXuCs3+Di9kT6bLQH+QVhEC/axIbwYiNj+uwYCVTGT4yPc07NacH0ZajhMsjg9kjO5Dj98sDK51+wyLWUgw6bZdMMkJaVeVm1JHDjDLWhDBWjHiX1BpPlQ+Cj9JsMqQHxCwMAdZXWVlaAW9iho=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_00A4_01D90302.53F4A460"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DEA22F2D
+	for <xenomai@lists.linux.dev>; Mon, 28 Nov 2022 16:36:04 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2022112816360134f305dfcd4b03e430
+        for <xenomai@lists.linux.dev>;
+        Mon, 28 Nov 2022 17:36:01 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=fZ9CZJawEe4uj61HNHRVPaFCsMBvYV4+8ZTQ3h/9Ng4=;
+ b=QK/NHIvZHAqJseFfbrPvNnpUe/Bwpl/c8VgLLers+wcts4kIsy+CzmSKO4VVCPTk7Y2mye
+ uw6Qxxg8hH/eOjFFk6vD9GNCwlSUKCgvl3p3Qgn/Zo2fon//f6kvhk9Kw47/TmSbpF0rvnpB
+ F9EgQdGXbQmNgDhjOPO+HTX0Xt58Y=;
+Message-ID: <15331e9004e2a34e03bada655de9895531befaa8.camel@siemens.com>
+Subject: Re: Synchronization request of supported ipipe kernel versions
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Date: Mon, 28 Nov 2022 17:36:00 +0100
+In-Reply-To: <CALLqZ8T8ZxV2bJD7h47t_cQDkAyb9dMUpA2HOUO0x=0_0Pht2A@mail.gmail.com>
+References: <c7b9c30c4f0685adbd3f3829b9bba4b42835177a.camel@siemens.com>
+	 <CALLqZ8RgN_WNdf_k=My5m7kyOKFw=gmVB36e3ztQVUjsN9V_7g@mail.gmail.com>
+	 <CALLqZ8T8ZxV2bJD7h47t_cQDkAyb9dMUpA2HOUO0x=0_0Pht2A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	e1DRI0pu9BAQtW0EDFfSsURhNXMNJ2/ABop8ibGSX2a7Nk70XBT//aP+hKSoY8jystx5YRYwiYNXOMcB43/gWi/yvoMy8PGxeM8ACBxnxfnzcp2wSoydiD72WwxQIMoGBKf7qxBN+w9BxZ6UflUS5I6UuLOHHNL9xSqSLVnKLREFYyCRNwl41xGLT66NPn+r+aT722JKZL0j1w4J5Quvr17/TlzGXoTWJcIlH/XtFIue5/N8PVpr/L2kCMgqTT1T2Tr1CXiD0Mtk3iWidL9aXsM4XLaFyApj5DuLMwpfGgt7H5yFTFgd5txNtOMfuxBXKEDRUAfMuNfDJ+RrT/jaWY0abStEe2T5R0DDWYhSdEsvcjfewW2xnHq0ULQep+/E5zES9F9hui+NWy2H2JucyyPOJ1jDEz5Ed2FyPy6N+LubPXIAYKnabCd4xLjKQZBa+hDHLB9UcaDEbCMkUcQV7p17tUT/06QUj3Q0D2U2Unfp5YmMYninNTKORrQfkD3I+9Qaps5rxR9q4ZB2/lsiMFYXCkjBgT1TOqhmywIyOu3+HqMNi3pDlYfGlyjJSK6PLgx7IPsF4wSKWvRnkJdxMF9+vToRVDuHAunWnd7VrR24qkvCb70GW9n6fP72W2ryZjgsWVSfKVfESrBjy65IoyQgOPoYmIok2KHT7cLQVdvGOMyoO6GucKNNsXECFtnd9Jo+osrwSGd5bMgPfOvMoE3izWcCtoxGj6CR+l9LxkpEz0cOU2tdxCxtBhC2grC8S3IrfDjdtplTH6jrQQGakDuIeXiQEJGmQnfG/tAgARy7h5aRS5O9boT/cYDrasOu
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08ef234d-2e9a-4e2a-ec54-08dad1542c67
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 15:21:07.8188
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1036
-X-Proofpoint-GUID: NCfZ5S9wJ780a2hHoGrqBjb99eq41ALN
-X-Proofpoint-ORIG-GUID: NCfZ5S9wJ780a2hHoGrqBjb99eq41ALN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-28_13,2022-11-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- spamscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0 mlxscore=0
- bulkscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211280113
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-------=_NextPart_000_00A4_01D90302.53F4A460
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+On Sun, 2022-11-27 at 22:09 -0500, Greg Gallagher wrote:
+> On Fri, Nov 25, 2022 at 4:13 PM Greg Gallagher <greg@embeddedgreg.com> wr=
+ote:
+> >=20
+> > On Fri, Nov 25, 2022 at 9:11 AM Florian Bezdeka
+> > <florian.bezdeka@siemens.com> wrote:
+> > >=20
+> > > Hi Jan, Hi Greg,
+> > >=20
+> > > while tracking down some ipipe issues that appeared while trying to
+> > > modernize the CI toolchain (Debian 11 =3D> 12 update) I had massive
+> > > problems with all the different kernel versions that we have for
+> > > different architectures.
+> > >=20
+> > > Currently we have:
+> > >=20
+> > >             4.19             5.4
+> > > armhf   4.19.229-cip67+    5.4.180+
+> > > arm64   4.19.144+          5.4.180+
+> > > amd64   4.19.264-cip84+    5.4.223+
+> > >=20
+> > >=20
+> > > Might I request to synchronize them?
+> > >=20
+> > > It would simplify things a lot if
+> > >   - all 4.19 versions would be based on the same patch level
+> > >   - all 5.4  versions would be based on the same patch level
+> > >   - The 4.19 and 5.4 versions would be based on the same stable
+> > >     patch set. Currently 4.19.266 and 5.4.224 are recent versions
+> > >     with the "same" set of patches applied.
+> > >=20
+> > > Concrete example:
+> > >=20
+> > > I had to update my 4.19 baseline to recent 4.19.264 to make sure that
+> > > I'm not hunting for something that is already fixed. With that I pull=
+ed
+> > > in the following upstream commit:
+> > >=20
+> > > 211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthr=
+ottle")
+> > >=20
+> > > This commit breaks (or will break) the pl011 driver in case ipipe is
+> > > enabled. It is part of 4.19.253 and 5.4.207. The only tree that alrea=
+dy
+> > > has this commit is for amd64, but it's not a real problem as x86
+> > > normally doesn't require this driver.
+> > >=20
+> > > a) I'm currently not able to fix that for arm/arm64
+> > >    (too old but not yet affected)
+> > > b) If 4.19 and 5.4 for arm/arm64 are not based on the same stable
+> > >    patch level I have to backport for each arch/ipipe.
+> > >=20
+> > > Let me know what you think!
+> > >=20
+> > > Regards,
+> > > Florian
+> > >=20
+> > >=20
+> > >=20
+> >=20
+> > Sorry if this is a double reply I think my original didn't go through.
+> > I=E2=80=99m good with this, I can update the arm/arm64 branches this we=
+ekend.
+> >=20
+> > -Greg
+>=20
+> I've got my local branches based on 4.19.266 and 5.4.224, running
+> smoke tests.  I haven't looked into the pl011 driver breaking yet, do
+> we need that fixed before I update 4.19 and 5.4 ipipe? Once I run my
+> local smoke tests I should be ready to update the branches tomorrow or
+> Tuesday.
 
-Hi Philippe,
+If we do not fix that upfront I would expect Xenomai CI to report
+"hangs" on next pipline run.=20
 
-I am back in the office now. Should I go ahead and build the EVL kernel with
-the parameters you mentioned disabled, or has this issue been resolved? I
-can pull the latest next branch commit as well.
+Jan, can you also offer 4.19.226 and 5.4.224 for x86?
 
-Thanks,
 
-Russell
+>=20
+> -Greg
 
-------=_NextPart_000_00A4_01D90302.53F4A460
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
-dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
-dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
-bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
-eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
-qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
-OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
-d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
-nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
-MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
-BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
-AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
-oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
-b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
-Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
-JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
-AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
-jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
-1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
-/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
-j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
-KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
-MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
-A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
-MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
-aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
-BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
-gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
-xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
-kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
-x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
-U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
-BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
-AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
-VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
-ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
-L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
-hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
-jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
-wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
-s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
-JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
-9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
-3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
-q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
-wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
-qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
-MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
-EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
-IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
-JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjIxMTI4MTUyMDUxWjAvBgkqhkiG9w0BCQQxIgQgg0XHKUa81yLAxWcaEWYr+dZv
-jWf/8+CrGLkcueZrigQwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
-BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
-AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
-AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
-cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
-ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
-dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
-A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
-aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQBt
-hWFTeyONKbF1veaWWasTUhQxFlV66+hYZiakwkH349vIsD2Pt+VxoWTPNma7N3rNq0JwObR//RFU
-OstkMQF2x4Qmjk+JS5Jf029AcI+mK2AHCnGMMEn/wge4KDIMu7lFfYrXpk3gHP6baBZTStaxjw1N
-Dtq7AQD5eokW01CuOL7uX24DF4Ks/mXDK2aDqPlHliJtecsLHI5HiE3lJhpgfXdaPP1YRk1MBmb/
-KVbLi50WzMvAzFD1Sbl/sWyMRKINLRH1UyuHOBeE4Y0lEYG9lXSqGtDKQyjXDeTbtufGB+SDZdpu
-KuR/F7Vunk5dPTYOJbrSzEN1EopLHtsyJupgAAAAAAAA
-
-------=_NextPart_000_00A4_01D90302.53F4A460--
