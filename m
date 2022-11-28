@@ -1,117 +1,71 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DEA22F2D
-	for <xenomai@lists.linux.dev>; Mon, 28 Nov 2022 16:36:04 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2022112816360134f305dfcd4b03e430
-        for <xenomai@lists.linux.dev>;
-        Mon, 28 Nov 2022 17:36:01 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=fZ9CZJawEe4uj61HNHRVPaFCsMBvYV4+8ZTQ3h/9Ng4=;
- b=QK/NHIvZHAqJseFfbrPvNnpUe/Bwpl/c8VgLLers+wcts4kIsy+CzmSKO4VVCPTk7Y2mye
- uw6Qxxg8hH/eOjFFk6vD9GNCwlSUKCgvl3p3Qgn/Zo2fon//f6kvhk9Kw47/TmSbpF0rvnpB
- F9EgQdGXbQmNgDhjOPO+HTX0Xt58Y=;
-Message-ID: <15331e9004e2a34e03bada655de9895531befaa8.camel@siemens.com>
-Subject: Re: Synchronization request of supported ipipe kernel versions
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Date: Mon, 28 Nov 2022 17:36:00 +0100
-In-Reply-To: <CALLqZ8T8ZxV2bJD7h47t_cQDkAyb9dMUpA2HOUO0x=0_0Pht2A@mail.gmail.com>
-References: <c7b9c30c4f0685adbd3f3829b9bba4b42835177a.camel@siemens.com>
-	 <CALLqZ8RgN_WNdf_k=My5m7kyOKFw=gmVB36e3ztQVUjsN9V_7g@mail.gmail.com>
-	 <CALLqZ8T8ZxV2bJD7h47t_cQDkAyb9dMUpA2HOUO0x=0_0Pht2A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CB168F6C
+	for <xenomai@lists.linux.dev>; Mon, 28 Nov 2022 16:54:21 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 707BD20002;
+	Mon, 28 Nov 2022 16:54:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1669654453;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=MCcYSX53S8+z0BQBNTsRrXk651ceeowLRAkwiqPl6FI=;
+	b=nnQD8ROgkRFNQ0+zyScuIjF4+av3lzWsnMOsWjvRDJICR2HgHuNZzo2eIB+BJfK9VvbzxR
+	vPxgMHraY2PcUECJo0+WRK98nx3kFWh/ineVyQERsjyqqleqtSovpJiFm9kdHkmnhEFKJ9
+	GoMDgxRAjcgaTBw4fdKNeClTkVh4VQxpHu4ggStBGDZozwJ7f+zXeVLVfpMooMyZygz/2Q
+	NuDvKAM3lfhDtntychP2umi7xSDaa8Px4xsCnGEgetiBJ7wTQXw0wEMf1e92XJ0Az17V+n
+	eg8IKj5Y977mOTl8dosv9MwZNxGv9FJ9gy0ghcdo4vXyRPGS81n6/SAsr+kFaA==
+References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877d04dm52.fsf@xenomai.org>
+ <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87leodn9kv.fsf@xenomai.org>
+ <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87zgcs4ma1.fsf@xenomai.org>
+ <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
+ <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
+ <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877czothz0.fsf@xenomai.org>
+ <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
+ <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
+Subject: Re: [External] - Re: EVL Memory
+Date: Mon, 28 Nov 2022 17:49:49 +0100
+In-reply-to: <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87h6yj6mvg.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
-
-On Sun, 2022-11-27 at 22:09 -0500, Greg Gallagher wrote:
-> On Fri, Nov 25, 2022 at 4:13 PM Greg Gallagher <greg@embeddedgreg.com> wr=
-ote:
-> >=20
-> > On Fri, Nov 25, 2022 at 9:11 AM Florian Bezdeka
-> > <florian.bezdeka@siemens.com> wrote:
-> > >=20
-> > > Hi Jan, Hi Greg,
-> > >=20
-> > > while tracking down some ipipe issues that appeared while trying to
-> > > modernize the CI toolchain (Debian 11 =3D> 12 update) I had massive
-> > > problems with all the different kernel versions that we have for
-> > > different architectures.
-> > >=20
-> > > Currently we have:
-> > >=20
-> > >             4.19             5.4
-> > > armhf   4.19.229-cip67+    5.4.180+
-> > > arm64   4.19.144+          5.4.180+
-> > > amd64   4.19.264-cip84+    5.4.223+
-> > >=20
-> > >=20
-> > > Might I request to synchronize them?
-> > >=20
-> > > It would simplify things a lot if
-> > >   - all 4.19 versions would be based on the same patch level
-> > >   - all 5.4  versions would be based on the same patch level
-> > >   - The 4.19 and 5.4 versions would be based on the same stable
-> > >     patch set. Currently 4.19.266 and 5.4.224 are recent versions
-> > >     with the "same" set of patches applied.
-> > >=20
-> > > Concrete example:
-> > >=20
-> > > I had to update my 4.19 baseline to recent 4.19.264 to make sure that
-> > > I'm not hunting for something that is already fixed. With that I pull=
-ed
-> > > in the following upstream commit:
-> > >=20
-> > > 211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthr=
-ottle")
-> > >=20
-> > > This commit breaks (or will break) the pl011 driver in case ipipe is
-> > > enabled. It is part of 4.19.253 and 5.4.207. The only tree that alrea=
-dy
-> > > has this commit is for amd64, but it's not a real problem as x86
-> > > normally doesn't require this driver.
-> > >=20
-> > > a) I'm currently not able to fix that for arm/arm64
-> > >    (too old but not yet affected)
-> > > b) If 4.19 and 5.4 for arm/arm64 are not based on the same stable
-> > >    patch level I have to backport for each arch/ipipe.
-> > >=20
-> > > Let me know what you think!
-> > >=20
-> > > Regards,
-> > > Florian
-> > >=20
-> > >=20
-> > >=20
-> >=20
-> > Sorry if this is a double reply I think my original didn't go through.
-> > I=E2=80=99m good with this, I can update the arm/arm64 branches this we=
-ekend.
-> >=20
-> > -Greg
->=20
-> I've got my local branches based on 4.19.266 and 5.4.224, running
-> smoke tests.  I haven't looked into the pl011 driver breaking yet, do
-> we need that fixed before I update 4.19 and 5.4 ipipe? Once I run my
-> local smoke tests I should be ready to update the branches tomorrow or
-> Tuesday.
-
-If we do not fix that upfront I would expect Xenomai CI to report
-"hangs" on next pipline run.=20
-
-Jan, can you also offer 4.19.226 and 5.4.224 for x86?
+Content-Type: text/plain
 
 
->=20
-> -Greg
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
+> [[S/MIME Signed Part:Undecided]]
+> Hi Philippe,
+>
+> I am back in the office now. Should I go ahead and build the EVL kernel with
+> the parameters you mentioned disabled, or has this issue been resolved? I
+> can pull the latest next branch commit as well.
+>
+
+More improvements have landed, disabling PROVE_LOCKING is no longer
+necessary. Please pull v5.15.77-evl2-rebase (rebase/v5.15.y-evl) for
+testing.
+
+Thanks,
+
+-- 
+Philippe.
