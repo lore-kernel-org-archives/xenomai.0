@@ -1,52 +1,53 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060.outbound.protection.outlook.com [40.107.22.60])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2048.outbound.protection.outlook.com [40.107.241.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A9E536C
-	for <xenomai@lists.linux.dev>; Tue, 29 Nov 2022 06:33:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D075650
+	for <xenomai@lists.linux.dev>; Tue, 29 Nov 2022 07:01:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W9+DVM+nNsDMj6n26iq64tLSm7atnEE+2m3hk91R4A/2U4KoQRPPj7og+ItvJ6m/3SX+5wvuyT+AEEG0UmCoYvh4EcUutKXdDQUqcKPLP5ftZzQ6OqwmqupJ92nJio3guhvcJ6HW97EevVLojny3pLL24rjKWjo6PRCqumA+nhUaIQNRvJpmJJmo2HkyfbU+qWnKJ/a+r2Z40xCt6BD2wRdMahaDfbBLF93+UPovO26n63Zk7zC/qRIoLOVjBhiqowVDrfOH/8X9EuPQ8sgefi/ZZQLpNkLCAZ85V4bggpgYUjnrnModzLQhulzbTsOzClCYkz1Q4oiI1R0q8dFflQ==
+ b=fc/7QOqY5kGihByj0pPfIN7F3TwlNoTvb4FyOnWEsJqJtCLyEC3Vt52cHOVSduvP2hkDXPrqJgj7SAz+xtNXY8eE2wUu3M+sfxS3v4GYcQSqTj6jwjHt6tKHyEzwNIKkANHGc72Ce870/t7BUrTcUpc4Bbp9q8DeBSnafoKtqOreR3xchv4mEHfZr0P+uESehlgKANotd9tgBKI1uqnhZueIoa9Ad8NtUDxcQYXb0fkNKb+RNJvgBP+Hg+N2SFoaoKmTPpz84QgQU/P0nZ50gqn6TcLEG7yuU+bwkKD5EaKRfkT6yL1kCL0vcNmurcz+HqADtNuE3J5MrBtJY2hXsQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0ULOTqZN4FV9h+FVMqHMQc7ibHk5oDJcP6Y94I+Su0E=;
- b=KZJPbF5tcnXGVO8GmYi40RxpRpEtomeeP7Fw17riG/ChoXGzhz5bSS+1FNQigVp6zvvRZPkTHVehlHml0wDd99vllBQcz73OGwW7E+Fla2YTH2IHwUeYrG+LnKqZqjzI2t4/HuYzdF2mb8KFaDkR16M9Ex4vjoLKVcap+jP0SLJzZAyPPfC1jpiwVDLby4M0HCw7bNxtuAce9DfpyMb1OSvpM8Y6NAXj3eDz95Q0KdwlNJOqfYs4PTlnji945AhZ27VSGyS5xy8iRu04edXIoEtBrkrTQGy9bw/uWtW6BW5G9C1339AfP+o4g1id9NiVl6rIOy2G0E6CWtCpDTlfUg==
+ bh=P5+n3FlqAKd/pMkrmismFXzfgB8J2tEwN+OTVr0MBVU=;
+ b=X68siefid1+kkche4l9TM9hHk1sZkR7DvJDQniORbyStrzTn9ZeR9zUOwK/c1cBgo3tYcHwpzVbnwoQfK8PTJah1C3ZZfu8LOVBKd3ndXXqr46FLClO4nEIBIhmrBbwGcKe7hB5GMyDSBUf6R4jF7ULgqXDu0OnKh/6DqUeNVB3NRvM/A0u2hDKvDSF84W4Lz1XDZ1eSg22Ef4/w/UMyJd8ArbA6ZiXtVavSG0yWRvPbRZVaZHSaiwiylRDLYqdFxf3ffJMpSn5/p/HbycnsLvzps6O4nD6vfZs3jAGYXG7LmrWqriTtBhc0yNMvS2jJNBQ4KZvzkOuRJpwCQeUWsw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0ULOTqZN4FV9h+FVMqHMQc7ibHk5oDJcP6Y94I+Su0E=;
- b=MJJeelgaZnjYVDRsHN7+1H9h1byTRc/VXLx8K8Echfe2oqqSQjOEE7ogwk+EK8wnVphIfmVfrnPQ1YfslRiz/1/2cnXBh27V+yENTCSRLnGMg9XavR3yScsiuXuqIK45kDibf/Xr+BOqr2D6HvMxv2R1eW7HRgZKB1pmJrC7+DzWVZQsHm3FygxXR1haVsFoeXvBkdW88J2jivxumf59hnQcP99PukqQkrTJfUS+7Yw5IiiAr0Pn7XPpySujLZ2y/kck6t8wZuDWWDnSGQKoJZBxmiGcLJtO5R+FJvLQmQDVMS5S5QuI+zMhW4322HeTDBb4g9Bd8OmtVyDjjNHDRA==
+ bh=P5+n3FlqAKd/pMkrmismFXzfgB8J2tEwN+OTVr0MBVU=;
+ b=gQCf2nNglf/lIPFDqeQzAaMkHXb115xasGiUfkRcNknR+gkcuV/LKhBaM7LvvwRuBqBItYT9A9PKlzP7U58F1PAu2QeFgOHTWHgf+9UAc53eraYIzeOaV5LrPCRTp8fVkIslaEaUYAlGpMkozL1qBTR92zFsXpxDkYkeL6FC0KeQuwpPNsKN/DeL3SzwB+xooAXqQB0jf+IBNXylP00Ef5huxa30O9GNJO5us3Qchr0PG2bFAJX/isCuT9gwCh+rmLPfgw8ZkXorohD6uRnFDAzbT8E3p+zQupZraFveiXJemEY5wfE6456ML6yLuLfONfF/L8IsuoTHCDbX8S3USg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB5796.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:63::15) with
+ by AS4PR10MB5669.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4f0::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 29 Nov
- 2022 06:33:09 +0000
+ 2022 07:01:55 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a%8]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
- 06:33:09 +0000
-Message-ID: <94eafc79-3141-1a6c-330f-c7662013ca3f@siemens.com>
-Date: Tue, 29 Nov 2022 07:33:06 +0100
+ 07:01:55 +0000
+Message-ID: <dda4a74d-84d2-7282-7517-74ec4cd58436@siemens.com>
+Date: Tue, 29 Nov 2022 08:01:53 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [ipipe 4.19 5.4][PATCH] ipipe: Fix handling of level triggered
- IRQs
+Subject: Re: Synchronization request of supported ipipe kernel versions
 Content-Language: en-US
+To: Florian Bezdeka <florian.bezdeka@siemens.com>,
+ Greg Gallagher <greg@embeddedgreg.com>
+Cc: xenomai@lists.linux.dev
+References: <c7b9c30c4f0685adbd3f3829b9bba4b42835177a.camel@siemens.com>
+ <CALLqZ8RgN_WNdf_k=My5m7kyOKFw=gmVB36e3ztQVUjsN9V_7g@mail.gmail.com>
+ <CALLqZ8T8ZxV2bJD7h47t_cQDkAyb9dMUpA2HOUO0x=0_0Pht2A@mail.gmail.com>
+ <15331e9004e2a34e03bada655de9895531befaa8.camel@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-Cc: Greg Gallagher <greg@embeddedgreg.com>,
- Gunter Grau <gunter.grau@philips.com>
-References: <20221128120908.1136136-1-florian.bezdeka@siemens.com>
- <99782966-4c04-7b60-1b29-0986af501f92@siemens.com>
-In-Reply-To: <99782966-4c04-7b60-1b29-0986af501f92@siemens.com>
+In-Reply-To: <15331e9004e2a34e03bada655de9895531befaa8.camel@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0071.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:49::10) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR2P281CA0122.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9d::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -55,112 +56,142 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB5796:EE_
-X-MS-Office365-Filtering-Correlation-Id: f1cbdd7c-74db-4336-3066-08dad1d394ca
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS4PR10MB5669:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4064b7d2-3f2b-499b-a7f3-08dad1d799d8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	vVskxlIo+fsOBEJtx1HcykcdT8kYBKbk8aCQjnxn8HD/Iqk196+ZshXtbQs+trMiEwp/uio1KIdZmVyNsnDBZTWsnMGdLoIRXHuEiXpyILZkjbuOr1udVQI4Jq+arHucuwfgNPDcB2nNzFSjWWU4qhn9CBf3SDlRvW3dUTymKiGdrTcIPWgmFnbUo0/CqUoA0GyqDWJntdrkjIp5OqnT6Sqzz4ZsFc9PMSmUFmVdrfHG2J86hKBzMnBIpQl7qRZHv2W3sHUCi9rQpWabVLrbG3Ppu/GpeG6PPiUWMKyV495YFNxa1vrESpr05qkPlsZmfotVdL08qrgggG7/m8WjttP463E8HlMEpmP0hNA038SDDeRLPtB15N6irMSaduFpyhszHE+UE4FGKkTcHj6sfKQVS2bkujWvyw7+Gts0dm2EzQVwydPONvuPw2PsAhPrUaE2bUV8UQ/YuEYWq/9MFfAHPKAffSb5osXfxVw4Vz0+In8guRaIXHgD1a+5CUNv32zhi5lYFAA6IJCDQqj2us4M8f8qVOgBxNOL+ZYWgLtW539quXQY5Nx6INtnuHkCFvFycBuE+ZM0eq8mAdP2G42xKuPn3igLHnf76nE0adYnEzDpFXwukycJ7D2LHe9UbF+W/fziUZr7G5tP3JL6mfl+XFTV0YStOs5CuNvJzQ2UW7Rglj4Czq1QyTqXjL4VLGqtSUHbtjsE1UpPEp2kwdgXBkhFen/b7vPiV4CYYJn4kWKwiae1w7F5iNRTisdgjyEonhqhtaBaVpMI5A50hQ==
+	FEMAamhEM6DMV12pHE8Y6E43x+LhoeFZPVZNVbVS3cayYlvFLQoB7q16OLGhiYLlKx0c6QLpsAVedxsdT8EQbh/GpGM/hQOj5x/vuIL4WSu8hfSpxS1JcjGVXOZsUrlr2HeloNfyV7yqlxq6C9S4ezNnDcIEeDfcEXJrdcOG7iNomgRjUAZcAA01kvBuMCHoLI1PRHMS0k2L7FnaBEs1rdJEaxBNDhQl7BwqvTjoKvCV7lFjAt6KYxtKNEbPoqn0jXDEdzKKEBzMqru2X/dgj3SI4qQ8Dt4bic9Ev7cUfN/BlwQuZefhURpi6A6fTA4i5GXTZ4EG60DhXqXS+t4VE7ObABbDM2ZY9F8I6L3GyV5AC4AUHSskqyHvt5mWIp57C/dZIlq9lvgc8XDssvKnHjK+13Mhs+BhY2i/+IFxgtbp1e1s18WfzwjQGwX1SnsN/2gXaaSdS1mgd3ovI7AdjHOaUNNCU7UEzUymTiyXg+zMfHq7FOWCcqX6vfEGIxiqAZJO63mlrYf5gVoy5p1UQE5y0qkZbW0r5AuhZgcKurFujz0k0VszhINRzeHimz4GKr+yTZ49M7COok108yBOwJwsF3wVFjryKgMGTvxv9fcRxdbqYPcGnvWc2vesk0C56c8caRZZgp+Kw/Ig7kohpyCTjHgfUFgk1CKB2mYBsG1knvH73zw0LbbtS6xgXfoQh5ttFSQw4nQj7Q4uwgO4lIsVwsaqVbsCwokyj/67Lcw=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(451199015)(83380400001)(4326008)(8676002)(66476007)(66556008)(966005)(6486002)(66946007)(316002)(186003)(54906003)(36756003)(2616005)(86362001)(31696002)(38100700002)(82960400001)(5660300002)(44832011)(8936002)(41300700001)(2906002)(53546011)(6666004)(6512007)(26005)(6506007)(478600001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(376002)(396003)(136003)(346002)(451199015)(66899015)(2906002)(31686004)(31696002)(86362001)(2616005)(186003)(4326008)(8676002)(5660300002)(36756003)(8936002)(4001150100001)(44832011)(66556008)(66476007)(41300700001)(66946007)(110136005)(316002)(82960400001)(6486002)(478600001)(38100700002)(26005)(83380400001)(6512007)(6506007)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QkorR1NIQk5jWXRHN3NtQXJWS2IwTy9aYXNhWmk5UHkwZ211RGh1akM5M3dp?=
- =?utf-8?B?eW5LQzRnVjhOOStRTk1hdndSZVVCZnQzUzdTQTRjY1pxa3dQbUhMbENQMVM5?=
- =?utf-8?B?M01LM3pjNktMbU8xM1JydDJtOVlmYUFuRi91enFYT2xrd3RCTkorM09pOFRQ?=
- =?utf-8?B?ZC9nTTN3TXJNYVVRejFiTThYTnhGbWZKM0MvWVZqODY5bmxmbm1IZXN5S21n?=
- =?utf-8?B?d2JZUGlDVEw3clpVbHBLMm1hMENWTW5Uc1M0alJOd29jaFlTK0txdTA5SHM4?=
- =?utf-8?B?eDhYdEMrRTRZZ1BENHBSWTMyYzNVeTVjQm13dVBMak5ic241VXhHb1VnUll1?=
- =?utf-8?B?VU9FM2J3dFpReGxTRVlRcEhvaVFrWEt0Mm94UWgyOGdQQk53Mk1haHl3Zzh2?=
- =?utf-8?B?dkxlNUlvWUhUNUVoM3ovU2FrblpRcEJnVE5haEFCLy9neEdjN1o5SERVSG5M?=
- =?utf-8?B?cUZ5bGhCSXRPWTVWOEY4MWlOaWxpMnczYTRtOWtPZE5QcDhUTUFYcVJpOHUv?=
- =?utf-8?B?eHRERC93QSswTnlON0E5dDAzL3ZXbFlpV2Z0Z1hycHpCVGtERmdJRGpxKzhz?=
- =?utf-8?B?RjNPb25BVkJubjh2RFV0cHVQdm9saTMwUThmSWdNOXdsSVhSR2ZzWC9zQjFy?=
- =?utf-8?B?VlNzVnNKMU8wSVoxdDRMZ1dGbnlOTGg5bkQ3RVl1T1lRdEpRbFp0eExiY0RH?=
- =?utf-8?B?RFZEdkNPVFRmeUxHMTF0ZUFzTzBacXR2QThGOWgrNGptOGhIZkJkMzlkSXJ5?=
- =?utf-8?B?RksrQU5MVTIwWWpDS2RuQXlDcmFqQ2hWWWZlQnN3RE5TMDlZUjRJQ1FJOUhI?=
- =?utf-8?B?MTZTWnhlS2VhUVptRnprN2lGOFlIeCtuVjJDbFhmVVA3OHVOMHZNd3Zmcnp3?=
- =?utf-8?B?L0RXa1BJcHVVV1gyditOSlQrU1RYSlFxQWZGK2p1UXlvZmJrZXpVcHJQWVpJ?=
- =?utf-8?B?WDV3bVhnSWpJMTJuMittTExaWWd1NWVwVkZKSmZrMGw1cFdFRFlVZ2tJYmV3?=
- =?utf-8?B?R3EzVmdweDVycys3eUhiSWViUndpOTI3M0NJTWtBay85STVkS1h5S0UzRmVS?=
- =?utf-8?B?Yk8zSmh4Nk9iVEx1QlFkQ2ppUFpnWFdFWUpaVFh2RXdoY3JhWlp3YWNCcjJr?=
- =?utf-8?B?VDNSQXJRUDV2UG1BVHU5VGRqcGtFKzFXWWgvbEZEUk4zeWhmT3psV0kzNzhj?=
- =?utf-8?B?QXUxd2NneFRtV1dKME1qM1RkVy9WVDJLcFdVSGJLOE1OekNHQU5NYTRnaWxs?=
- =?utf-8?B?ZUtMRDJRbzdNRnFXZ3diclhqUWdCcDlhUEFIUjIxb0J4UVdLenUrS3NQaEhW?=
- =?utf-8?B?VG1XQm4zaDFRRUdSYTFHY2FaaVBwTHNld201UWkvY1R2bjVVclh2cU5NZkVB?=
- =?utf-8?B?Njh1d3ZWSmw3YzhXVU1BQ2pJQWZoV2hSOHpnNTh2WGNyL21aQWVCdlR6bkwz?=
- =?utf-8?B?K3dFUkE2K1huQkZka2g5Yy9ibzBXWDZ3U29OWnBqRlRmWkpyTS83azhHRmw1?=
- =?utf-8?B?NTRpeWtyQ2NsOFZPRFpucFNxZ0FiY1dBU3RPc3BodnBBa2M2ZVZWZjc0M2E4?=
- =?utf-8?B?M0JzQTREcURjNUs4VEo5L0h2WkZBeHZwVFYyM3Z3Y3E1M1JRdUNIUEFLL3hk?=
- =?utf-8?B?R1NRaDZJN3JMbFQ1c2JwK2RkRnpkTzl2dDNoUlhZZGRRMWdPYnYrUDVheWpi?=
- =?utf-8?B?QzRLcUJmZ0dROXVZVWd2cGlpaHdManNSTTZMc2p4NVR6SGRSdGtSeGx2bU9B?=
- =?utf-8?B?aC9kN29WWktWUXRaVVpRM0QrTmNNeWZodDZPRm1WMUlOQVc5cTNrczNXMHdj?=
- =?utf-8?B?eDd3dU11Q3l6clFObnRWU0RsZHEwOElSQWpqZDk1ZFFEUjNFTkRRYlNzWEti?=
- =?utf-8?B?NDJRMTVTc2FYb1FBWDduTkNBQmNRMXJPeUpzY1hhUWVpU0J4Ukw0NlJyeG5S?=
- =?utf-8?B?dnB0dnI1ajBrVERlRkl4TW1GWkNIMTJWMUdPcHkrVzBZcVl2VkhmUnZoL2Fp?=
- =?utf-8?B?UnYvMlF6bjhYUEZKU0hzaldxa1FKRUFIbTRZZkZ1VUxkWFFYWW1KMW1vSVo3?=
- =?utf-8?B?MmVvWGg2QS9HaFRrSXFub0pqdFdReGZIUTl2M2lYck5NWkFuMWhwd3RzcXpU?=
- =?utf-8?B?UnNmY0ZGVCt5d1JqOUlCYkI0a0w3bUZtVEpzOHpUREVieE4xMURtd21JbXZ3?=
- =?utf-8?B?amc9PQ==?=
+	=?utf-8?B?OTE5ZUQzZ0w1REl5VlgzZFAreWdRUjk5S3dTdXkzOUloTWl3S254SzZBR3Zn?=
+ =?utf-8?B?VzEvbi9aV0JmRytGQ3Q5UTdhamhjbkpwSmlJRmNKK2lQUWxUMXYwK3B3dXhC?=
+ =?utf-8?B?c1p4dWdyNHIwc3Z5VGJkN2dYcFMrdmc2TE90ZjRDS3F1U1pIZml2cHIvQlBN?=
+ =?utf-8?B?d0x2dmpiK1NlRDlObnNsa2FjSlFQb2ZpeWVaaFJWOFpyZTdPS0dJUXc1TTVj?=
+ =?utf-8?B?emVBdXZiSWNZZXBrTHNXMEJaVjNyS1RmRWJiNDR4TmFyR0FPWTlzZVdySVkx?=
+ =?utf-8?B?UkxvRW1FaVd2aktJVVMvR2FrMDJiSlhjbEFQeEp2ZGtCRWN4Z3VyYXN1emI1?=
+ =?utf-8?B?cTljcmxUSUlnaHlrL0lKQmw1djNST3VqcEYyam5Bdzc0Y1h4YkFVWnlEUmxE?=
+ =?utf-8?B?MW5zR012UjJCRFJFYUxQMy80RTQ1RDk5ZmYyZW81dHk2bURBRk9RSGdkRzZP?=
+ =?utf-8?B?MHgvVlpBK0J0WGdDbkRaUEJ5eU52QXFzckxPdUR6TVVucGQ0ZGlEbXBoWFdB?=
+ =?utf-8?B?ZmVWTnorQkZiV1NOdGovN2VUTzdmWHEzQUdoeEVpRzYvN1A5Nk1CODNiZFFs?=
+ =?utf-8?B?VXRVRjNyTUR5a1I2emhZOXRMVXJURXV4bW9teU9qajgvMk9XS3o1WGQ4NUxV?=
+ =?utf-8?B?dXpQT0JFNTdKaTgxdUd6V0l2UEFGSjl5aWV5ZFN5VTUrYm5jblI3eEk3bDVT?=
+ =?utf-8?B?cWp0dnFnM3I4TFNubThUVWxJVkxqVDR5VmlTNkIrMSt2RjFnc01VYXhqeXZM?=
+ =?utf-8?B?MXNJb0M3dHJ4RzZJYlQzNE0yZEhXMnBhWFJNMS9jc3k1Njl0WE9FV1dpVVBn?=
+ =?utf-8?B?L2F5d01KQ29MSURacFQ5ZE16REMyVWFXWStCOVg2YzVETmtVZFprZ09jblFv?=
+ =?utf-8?B?MkVIc3hHQjFucmNEN25YdHNSRW0xK0JTV0Y1MTNDUjRYcENSQlhGb2E5UjJj?=
+ =?utf-8?B?V2pEQzhtTE5wbVpxTmp3OHIwTXFNdHpNc01PekVZb1JoQjZYQ3JZU2NoZWNZ?=
+ =?utf-8?B?UFprbnA1RFFoZ3VXb3ZydGVVN3hBdlRTSXp5Z2JxcEcrRUNpVWVPZ1hIYytM?=
+ =?utf-8?B?d29Gd05GZnFBSTk3NDJrMDVZSnE3QWhXc2llVHlpY3l2OHNTOXZvNFdDa0dv?=
+ =?utf-8?B?bE1qcjlNRmp4NjkwcmJwd2FGL2dFczQ2Y3hWUXB2c1Erc2hPYmJXNGxRYXhj?=
+ =?utf-8?B?V2RONzFiZlk5T1VoLzA4RjI4VU1XR2pHSklzQ1ZPaUhLdWhJa0xDU0FKNFFw?=
+ =?utf-8?B?ZUhVbXA0VXUzdzBHaEdYUysreVZPM0tEaEtqeFNSall1RndHSkdlTVJ4akpl?=
+ =?utf-8?B?aWJweHZtUW9mdit3cFFRaEJJT1JIRTN2LzhFWE5rYjJKRWs2VDRaZjBVKzVm?=
+ =?utf-8?B?Vi9uOXR4Q1ExU3B3a1FJMUE3VGdxVXk3aEp1bWxRQ2dJUVd0a1JkMkNNMjk1?=
+ =?utf-8?B?QXhJOUJ2K0kwclhBSlU0eVhOdWtIanJrQ0NVSEFDK2NLamdsckFVRWlwenYy?=
+ =?utf-8?B?cW9kYS9PVmR0d0hucnlWR1g4S0dWOGlGbVV0T2UxQmZ5QUVIUExMNS8vMTBo?=
+ =?utf-8?B?STZCY2xhZmc2V0ZmbkZ4VThwSU9FMFBWYUc1Wm9xcVpYOWJGZzNYcUJvczBl?=
+ =?utf-8?B?Z0NnL2t6ZEM2SmdXL1dlaGJkK3NiUSt0dmh1ZUd5ZGdmT0RpaDUvaW96bDll?=
+ =?utf-8?B?V1FJci93d0FhaCtEQTJHRFdyVGZKVDBqdGNmV2RYTDZYakp0QW1BR3NDQ3lo?=
+ =?utf-8?B?Y2lydzBWQWVDT1NXNUNGSHovYnVUQnJrQkFCaTVLd1d2RWo2aGVvSmJmY3Fw?=
+ =?utf-8?B?cTVFUVlldmg3N2s5bHVGSTgxa3ZkbHNaRGtZWGJIV0NHUkV1RHc1VVNZN0Zk?=
+ =?utf-8?B?Q3RtcGZmUXNRdjVHN3hJWmRneUpDNXVOVXhDbGd5REwrYm1OMldMR25VL3la?=
+ =?utf-8?B?SzVYQ3RVSWp0QUFMb0x0N2pwSHkzZXZCUC8zbldHS0lvOFlkK3c2aGR1R1c2?=
+ =?utf-8?B?cElLektmQVJjaWhKeDQ5ODA5bEFueFFZbERNeEhMMWgrYlBIR2dBUVk0THE3?=
+ =?utf-8?B?NUFlQnFzWmpsQVRiMTY4bENuaVp1R1NxSHk3Y1pTZXdMN1VxaWI5WndOc3NJ?=
+ =?utf-8?B?VU8zZkhwZG5lV0NtSk1qSDREekNsMnB4a29adzRka04wTHpVQ3psaVlLS3lE?=
+ =?utf-8?B?TWc9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1cbdd7c-74db-4336-3066-08dad1d394ca
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4064b7d2-3f2b-499b-a7f3-08dad1d799d8
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 06:33:09.1866
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 07:01:55.6882
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9L+JjgC3N2/uV4B7ov/xNJSKq3tltSYXXr82U4JDZ7gdsP4B42j3NNoM5cmwagS7FryPkTyFIlNX6V8WclvPKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB5796
+X-MS-Exchange-CrossTenant-UserPrincipalName: WJ5GVSU+KDXS93a3yozzetr4jwx7fhLqT433j4t0bj4YV1BDqNRdWpSSBcALipC0cOzAyrPENt2yWCl9WQgDqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB5669
 
-On 29.11.22 07:29, Jan Kiszka wrote:
-> On 28.11.22 13:09, Florian Bezdeka wrote:
->> Hardware IRQs are enabled here! It might happen that right after
->> enabling the IRQ at hardware level the IRQ comes in again, even before
->> we could fix the software IRQ state flag.
+On 28.11.22 17:36, Florian Bezdeka wrote:
+> On Sun, 2022-11-27 at 22:09 -0500, Greg Gallagher wrote:
+>> On Fri, Nov 25, 2022 at 4:13 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
+>>>
+>>> On Fri, Nov 25, 2022 at 9:11 AM Florian Bezdeka
+>>> <florian.bezdeka@siemens.com> wrote:
+>>>>
+>>>> Hi Jan, Hi Greg,
+>>>>
+>>>> while tracking down some ipipe issues that appeared while trying to
+>>>> modernize the CI toolchain (Debian 11 => 12 update) I had massive
+>>>> problems with all the different kernel versions that we have for
+>>>> different architectures.
+>>>>
+>>>> Currently we have:
+>>>>
+>>>>             4.19             5.4
+>>>> armhf   4.19.229-cip67+    5.4.180+
+>>>> arm64   4.19.144+          5.4.180+
+>>>> amd64   4.19.264-cip84+    5.4.223+
+>>>>
+>>>>
+>>>> Might I request to synchronize them?
+>>>>
+>>>> It would simplify things a lot if
+>>>>   - all 4.19 versions would be based on the same patch level
+>>>>   - all 5.4  versions would be based on the same patch level
+>>>>   - The 4.19 and 5.4 versions would be based on the same stable
+>>>>     patch set. Currently 4.19.266 and 5.4.224 are recent versions
+>>>>     with the "same" set of patches applied.
+>>>>
+>>>> Concrete example:
+>>>>
+>>>> I had to update my 4.19 baseline to recent 4.19.264 to make sure that
+>>>> I'm not hunting for something that is already fixed. With that I pulled
+>>>> in the following upstream commit:
+>>>>
+>>>> 211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle")
+>>>>
+>>>> This commit breaks (or will break) the pl011 driver in case ipipe is
+>>>> enabled. It is part of 4.19.253 and 5.4.207. The only tree that already
+>>>> has this commit is for amd64, but it's not a real problem as x86
+>>>> normally doesn't require this driver.
+>>>>
+>>>> a) I'm currently not able to fix that for arm/arm64
+>>>>    (too old but not yet affected)
+>>>> b) If 4.19 and 5.4 for arm/arm64 are not based on the same stable
+>>>>    patch level I have to backport for each arch/ipipe.
+>>>>
+>>>> Let me know what you think!
+>>>>
+>>>> Regards,
+>>>> Florian
+>>>>
+>>>>
+>>>>
+>>>
+>>> Sorry if this is a double reply I think my original didn't go through.
+>>> I’m good with this, I can update the arm/arm64 branches this weekend.
+>>>
+>>> -Greg
 >>
->> The result was a IRQ storm and system freeze because the same IRQ was
->> not properly masked at hw level during next IRQ arrival. The software
->> IRQ flag is checked before going down to the HW level.
->>
->> Switching to unmask_irq() has two effects:
->>   - We do not have to care about the software IRQ state flag anymore
->>   - IRQ state is updated in a hwirq off section together with the hw
->>     state, so the software state flag and hw state should no longer
->>     diverge.
->>
->> Link: https://lore.kernel.org/xenomai/20220210153313.2229625-1-gunter.grau@philips.com/
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
->>  kernel/irq/chip.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->> index 41415a5ef7d0..6b34403858aa 100644
->> --- a/kernel/irq/chip.c
->> +++ b/kernel/irq/chip.c
->> @@ -990,8 +990,7 @@ void __ipipe_ack_level_irq(struct irq_desc *desc)
->>  
->>  void __ipipe_end_level_irq(struct irq_desc *desc)
->>  {
->> -	desc->irq_data.chip->irq_unmask(&desc->irq_data);
->> -	irq_state_clr_masked(desc);
->> +	unmask_irq(desc);
->>  }
->>  
->>  void __ipipe_ack_fasteoi_irq(struct irq_desc *desc)
+>> I've got my local branches based on 4.19.266 and 5.4.224, running
+>> smoke tests.  I haven't looked into the pl011 driver breaking yet, do
+>> we need that fixed before I update 4.19 and 5.4 ipipe? Once I run my
+>> local smoke tests I should be ready to update the branches tomorrow or
+>> Tuesday.
 > 
-> Ok, this is part of the answer to my other question.
+> If we do not fix that upfront I would expect Xenomai CI to report
+> "hangs" on next pipline run. 
 > 
-> Can you also document a code path that enters __ipipe_end_level_irq with
-> hard-irqs on?
+> Jan, can you also offer 4.19.226 and 5.4.224 for x86?
 > 
 
-To answer myself: E.g. Linux IRQ handling uses ipipe_end callbacks like
-this, and then obviously without hard IRQs off. I'll augment the patch
-explanation.
+ipipe-noarch ipipe/master and the heads of ipipe-x86-4.19.y-cip as well
+as ipipe-x86-5.4.y have been updates, CI is running.
 
 Jan
 
