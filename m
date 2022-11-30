@@ -1,173 +1,117 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2062.outbound.protection.outlook.com [40.107.21.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383087E0
-	for <xenomai@lists.linux.dev>; Wed, 30 Nov 2022 02:05:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669773933; x=1701309933;
-  h=from:to:subject:date:message-id:
-   content-transfer-encoding:mime-version;
-  bh=argSegHVwHWktHNlxLjSjYyk9u5tqCguWiby9nVHL9k=;
-  b=GJYlH7zCKOcw3QLxT3cRP6dtQdg9oNAq10XWcBlPI3xSo9rP7MV5FphS
-   etZKDu8ww7z+PeNfNiVWOzOcqOPImZJPNg+kpJPGJQbKLz1kBHLZXNLM7
-   SPI9mnOr5noAvAudm1AMf3XYWnZNuIh2wHCqF09pLVwm3ZJe5095tyxoZ
-   t9h0SDv0hIkoli+GOzQLvfpyB7MsoxT+ueUU+dIPbV99unTaeM2+xLmHD
-   qswuNiOZQZrtTZISb1rdWPxOed8n640C3guknzOVutcP26RyDQ0J4wWSN
-   9RcxjMbyV32WUa+LhgSV+qJkLOGEVbUEQ+/OxWuHBTVWnqKmbhTvONZJ6
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="315312773"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="315312773"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 18:05:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="750132131"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="750132131"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Nov 2022 18:05:32 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 29 Nov 2022 18:05:32 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 29 Nov 2022 18:05:31 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 29 Nov 2022 18:05:31 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 29 Nov 2022 18:05:31 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF7CF63A8
+	for <xenomai@lists.linux.dev>; Wed, 30 Nov 2022 14:12:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JEQEwaYDmAVi1th/AiEC+24v24djhCaCSE0OOtwrMfVk4jeIwpqdPB/fAOn2W3ftQ5M1fJYhoKCxlzw2GIJ0SmY6+wlpV34l0V1LLwxp6N2cWuWDrkQoAuxbS/txFHKCwd0+Vb4ZTFNG5nfgWTKv1X+jqm1E+KmtEBTog8FQUuTC0XVruLY8nefSBsQhUQf+o9kyQoxlPESbYUS0k9CgxxNY3qaxfrh6T+nLUj88rRKDYuu7Mc+q/F5twiRAEfTFLeFHvF+CCoezb0rWZNjrSHpauTGixMN2g6BQoHPmujfQSU3OUW1Z7tg5JhYqqOqJFzleUyAr3/Sex9U2njxNZw==
+ b=CJw8noCZB4wxbAUI2ZfG04KlGTxknKcdH9Ot9TqsrZc6OB+Hq+nsj1VyKE6myedg3JFptEp17O8/TKjqxaP9dkALhi3Pw5xeuj96qD0nTgzP3mc6nJ9X846AP35sRXkGR9+bjRVWG3mBZIvLsjoWfMuiD/ohDl7peMSssbh5i77L7W83wXIBLo0NURg6o6UJsgSqnDzHwjcujtbSfHCOrnD9OwJDFerIrKVv+vzua1a7h2hZUKoZ4HlYLV/WiS2hBlmmW2RXItqCsxKdYgF2VheN+eefDXfuQ20Eefq8ddBVQuSqwnkVMn6qoajQPun5f3q6UTdF6O7D22OgaAq3xg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=argSegHVwHWktHNlxLjSjYyk9u5tqCguWiby9nVHL9k=;
- b=a0srjXB5MHQjYZkdb9krE+EQk4t9HAHyFrOgNntm01ui188+BW/brMIDVis5P+xnpHfuzf0ee+5RK7fKjfVoiWoia4lEY55AlGJ1tc/1I5dch2/o8j69FDv6Sr78Xs5NirD5hky3XSP+iGOrZCPaWZwpwFfss0+PWilHsyEkN0nfZj71etufh6pnzGlxwHcbW0irQlJSTsYJGeqsnJ3V+z3jieOoJ6W1npjp5qHGXwzWicnb3V+ZcGqCbd0pZxms5KRdXa4QTjcNZY9bMQZOCq7X5fin19fnfHxlOfMZPGsejYRR7VTN9D1UuOe56ipcndE2UGEsLYrB27segYJoJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
- by DM4PR11MB5232.namprd11.prod.outlook.com (2603:10b6:5:38b::14) with
+ bh=oer8OAssRmA1Cm0rzU28hz5wa8sPaU22XPmxhoHmtRg=;
+ b=YEMmSoWDjJ0l9K+vKy/Y/z4g1pG3RyRuJkld2qI+vMiDGTKWuKg1ruHX+JDCJ84qhuyTZlihNn0uGIYRZ2f10wkpwA8OIYQdBDbnbGEgu9H3JP/IDgTMP8B1sQe04mlAoU9/ow5f9Sd0F6mdIVUmvNZhUaQhcu8LwUaIzNbEmf5UbLwCgPPOkd17JgjI6zy1R5ynsTHURrLn0LNrIqk0UBAGTDEUuKWDpe45k9FNixc6KSmrxrZwH92dMwggtGIfbMzDPIiXlOV657DWexaLJ2Aq1Aoat01Dw+I5Law7r0tb+vPxyL8Qny0qXRmFrcjpYorQjwb7pTqNsx6KkTdARQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.75) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oer8OAssRmA1Cm0rzU28hz5wa8sPaU22XPmxhoHmtRg=;
+ b=xuD7yowlxIw9NheiDF9q4fvdjKFbqO/M3e4ryfzGcNoC28EdkSpB+kTG6J7Y5blwtMgSBglHz/guBBXcmSoH/7Kl53grb/KLjtzjhthRYFk+KX5CvCn+xS9zakzFf9lyrh5wznS41Cu6hEQjQNYmGcB9wz7wLT5QhN9t+oJcatjq0VgLLVS9gWZCJP+CmyxGgRDg9KwXsa6jhdHucOEug4N0v3JT9tCsaRalgeWZrHRPlFqb9oLYghrURI3S4Ct7nD3s6SDtMX6cJ+bmZE6nuXhI2xxdAzk5voHzrmke6DJGWVCWzowGHZB4FJXZ8g8MMO1cvKr6IGGjtOvdBUHCUA==
+Received: from GVX0EPF000013D8.SWEP280.PROD.OUTLOOK.COM (2603:10a6:144:1::13)
+ by AS2PR10MB6375.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:556::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Wed, 30 Nov
- 2022 02:05:29 +0000
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::27cc:d8ed:9947:fecb]) by MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::27cc:d8ed:9947:fecb%7]) with mapi id 15.20.5857.023; Wed, 30 Nov 2022
- 02:05:29 +0000
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Reminder: Xenomai community call on Wednesday,  Nov 30, 2022, UTC
- 7:00 AM
-Thread-Topic: Reminder: Xenomai community call on Wednesday,  Nov 30, 2022,
- UTC 7:00 AM
-Thread-Index: AdkEYC1eD7czqLUHRJmKZcjvc7k6+Q==
-Date: Wed, 30 Nov 2022 02:05:29 +0000
-Message-ID: <MN2PR11MB42852EC1E5241AB659DEE1ACF2159@MN2PR11MB4285.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|DM4PR11MB5232:EE_
-x-ms-office365-filtering-correlation-id: 753ce6aa-f1be-401f-b1da-08dad2775aee
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4gj1ZCAQz6AQVRhNs3pYf1PeVB6b2QwJplPofro68yhaz9QV/KS1MdhrgksRRD4nhlXH6bq04foH5SBCLKuiHd/xrtTbbgG4ksh9/PN2Ylrs5cOGgP2TGALNoziOIcu1fKodW00sS9sdh/9OzT8it5klUeTaHoDQCKUJIRoImzn3oJZeNmkGuNbGMkcNwvPeYMJndbwfGFoUev7N2HzaqdPdatkbVGGR/9yPExQ8LTXDeFJxIub4mFKBDkmYO0Y2klKCKWYPxvC65TTz6zh5H0cd/TOrZ6eLT337gs0KICgfkAyMbG5NJ6uQjP0scmvX2gKVOU7TGYNZKeyXIAN/6tM1J33Z9WmI2WGxhFsDOUpi/hss/G6VV0zSAKGvyBsKCGTbmiKkg9JQ+FQPK4AxFHWtZ6af5tQApONF61NOr2VKjGeDHGjQvy1hhhBqdfE+u54t1HXXllpuHn1YeH25yy8P2plzj7d3hPsWI2iOAvgXlpoYB2aaHpYuThrlx0tjcDsC3hilyo4SSzyfm//rHx/DcGzwVgq7S0HBgILgPZvIV9aRSdOZoPehDG7n3L7HDxC2OBaqa90XhUfE+QfVmGoir6nQHpISsYS9yxN8iN1RSj0fekS9E0QK3NKSFAn/xjPQNGb/CiW1j0ZT40i0co+K++0ptEJ/U3IXXxyGKXJDj4PVZYJk90C9bliHeZA/U/ztmrsqIqavxFKNi+jR+KVQQFHotgwZK3RVmOL9AzBB6dWEmuMOAIsuOK+Szv0xSm9Ks7p9urU+MioPh3C/zA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(39860400002)(366004)(346002)(376002)(396003)(451199015)(55016003)(38070700005)(2906002)(86362001)(966005)(7696005)(71200400001)(40140700001)(478600001)(41300700001)(26005)(316002)(76116006)(66946007)(66556008)(6916009)(5660300002)(66476007)(66446008)(8676002)(64756008)(52536014)(8936002)(6506007)(186003)(33656002)(122000001)(82960400001)(83380400001)(38100700002)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SGRBNWNQcmIrUFJlYVJIS3g0WVVQRC9KSnBJbDM4MU5qWVFKd0NOQThvRkRN?=
- =?utf-8?B?dlAvMVRQc3hLQ2JxMW9SNVRDUXVyMzRCU3FOenV3Qm9yS0NEUWZGaUlXY2RH?=
- =?utf-8?B?R0RFNkJRQ2NaUUo1dEt3Wlc0NVZLaXZBRDZHNHlHSnRDUHJqZEZ6OXNkM055?=
- =?utf-8?B?UkxzcGlpWFlVejA0MllGQUR0aWZoZzNoSnZNL2plNUhrcUpsSGVVSmkxbS9K?=
- =?utf-8?B?Vk55V1JoaHJXY0NKVmFKbFhDTlVsM09vZkJGbWVYa0pneFhlVWx4VWgxNnNU?=
- =?utf-8?B?UzFseEtIOWRoSmcydDgxSndoUnZ0d055WDRGVUY5RG1BdE1qQkNENExsbWJW?=
- =?utf-8?B?bERsT2tmUC9kdy9BRDg0Wjc3WGdoSmliSDRaVzZuOEtCR205NEFrUEhnZWts?=
- =?utf-8?B?d3g2T1BnTlAyVGwyeUExQW9GMDF1clRBNFRKbDZJbW83K0FtK0ZDN2dzTVI0?=
- =?utf-8?B?TXIwMXM3bWJJTFkxRXZqQ2RkQkVvbXQyUlBqTmE3a0xOMkdOZEZLVmJTRWh1?=
- =?utf-8?B?UHZSWmxqRmM2dUpzbkVpR2xpbUdJNUh0bjRyOWZvVnFZNlFwcVVkQVVqQlRK?=
- =?utf-8?B?U2RHVElZbzRhWXJaRXl5cFZZb0ZjeU1IM2MvTWNWN2hHS0w1U0ZTT2c3cVVl?=
- =?utf-8?B?U0VVd2dPTFFNWndwQ1NjMkVXMXMzUnkza29UcUJtK1dmYmdxcHJFN2V3MlAr?=
- =?utf-8?B?a1NGN3pyMDU2QmN6Rlk4bmRYS1BpcTdHVnVwK21LeVdtaVhHMXJPWTVhdHBK?=
- =?utf-8?B?U050c1h1aDM0UXNFNnA0RHNQc3c3aDlyZUxGMkNLdUI2S3dGTEplZ1lJTnl0?=
- =?utf-8?B?MmIwcGM0enM5aVZFVGNVM2RNWVZlalcyVXpTUFhJT1Z5MXF1VEh3Umt6NDZu?=
- =?utf-8?B?a0tMQXBDczd6QnNwVzRsLzZzYi9teStZdngyN29LZ20wR3J1dlJKZXAzWkd2?=
- =?utf-8?B?bFozbnEyZW5jbkhobjhDYlUzTGJndENZV2VKVHM1MjZFNkFjczJLMDVzdVVQ?=
- =?utf-8?B?S3pRbFkyYzZtdUJmV1h5Q2FRd1FLU3F0ejlVRUZWWDBCN3lzem9GMGllZC9Z?=
- =?utf-8?B?d0ZqOVFwNWtEYVpFTEtkaHh1dlVINTdjREZoaXk1ZDRGUWJ6QXZmdFVsY1pG?=
- =?utf-8?B?c1VoM010YVcveVlJbkt4aDZLZTdRMlF1NGI1REZLUDVqMUFScmRtR29KN3Rk?=
- =?utf-8?B?djNZTXRNTUI5ZnJNYXZmWmVrN2hFKzk2Z0NuZlJZMHY5YVB0ZHhCSlRQczRn?=
- =?utf-8?B?ajgyaWdnRWxyOVVoKzR5TVNwSjI3YkMxNUo4d0NGOEExQUZ1eXVna2owNjV2?=
- =?utf-8?B?SE5wUkxBOVdqUExXYUtoTFNlcU9NMmF4dVdzcWcvL3FFaWpoRHQ4WGx0QVlz?=
- =?utf-8?B?bkJKeWg3Z3RyUHg2dW1iNnZuUUJ3UXROSndLS3FpRUxrRTFRWFh3bWQyWUdF?=
- =?utf-8?B?TS9panJMelZDWnJzZzc3ZlczdUQrQkE2cUIwcVA0b2FHcW91NzFaVklCZWIy?=
- =?utf-8?B?blNKNk9jWlhEYWNwYk9IcHVFY25KRGUvSlVnZ3VLSlVHUkNKeVhoTzIvY2V5?=
- =?utf-8?B?Nlp1a1duTHRjMDlwVnRrcEpRckV3dGRpUkhvUUJlTUNYZ1pGRzFrb0dLdjg2?=
- =?utf-8?B?VnRxZ0hTdFFuMERFdXZsSE5VbXk5QnlwQ3c3bXN3SUZxblg4R3htWm1Mc3BW?=
- =?utf-8?B?TFk4VXdqRWhFZFBORlN3V25KUFZ6M0NjVjltbS80U2JzOUo1M1lOK2lqRUxC?=
- =?utf-8?B?WlBZOStaSzhSUkVzUzAxUUNsVE9YM3BmUVFLV2dBeCt5YXZKUTAzYmtHcmhL?=
- =?utf-8?B?ZGtpU2d6bVlkNHRmalg0Mkx6R2E2Z2Y3dHpyNHVkVGMwb3dCVStjeVhNN05E?=
- =?utf-8?B?QkJ1WExiZEZiSndKc1VleEcyRjdXcWRHdmwrWHVlUGZiZlQ4cElaMWVOTnV0?=
- =?utf-8?B?enRSNmM0TGFtU3k5Z3AwT1JCMm95QkQwallmTWxqNzRzSjgzaHdCejRRMVQz?=
- =?utf-8?B?WWVPdit2WG94dUNMQUM2cXpBdGhaeExVdFhkQ0c3SlpGdzFMQjZ5R2hsc0pv?=
- =?utf-8?B?SWVPOHZxOEl1ZU5ERDB6RHRFNGZhYWxZUUFnRFJsT0ZjelRmZTY5bDBDSEND?=
- =?utf-8?Q?OKvDMqsbFdOH2MB7cDbmZ+fba?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 2022 14:11:59 +0000
+Received: from HE1EUR01FT093.eop-EUR01.prod.protection.outlook.com
+ (2a01:111:f400:7e1f::200) by GVX0EPF000013D8.outlook.office365.com
+ (2603:1026:900:2::3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25 via Frontend
+ Transport; Wed, 30 Nov 2022 14:11:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.75)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.75 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.75; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.75) by
+ HE1EUR01FT093.mail.protection.outlook.com (10.152.0.243) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5880.8 via Frontend Transport; Wed, 30 Nov 2022 14:11:58 +0000
+Received: from DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) by
+ DEMCHDC8VRA.ad011.siemens.net (194.138.21.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.20; Wed, 30 Nov 2022 15:11:57 +0100
+Received: from L15-Gen2.fritz.box (139.21.146.191) by
+ DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.20; Wed, 30 Nov 2022 15:11:57 +0100
+From: "T. Schaffner" <tobias.schaffner@siemens.com>
+To: <xenomai@lists.linux.dev>
+CC: <florian.bezdeka@siemens.com>, <jan.kiszka@siemens.com>, Tobias Schaffner
+	<tobias.schaffner@siemens.com>
+Subject: [PATCH 0/5] switchtest: test different migration types
+Date: Wed, 30 Nov 2022 15:11:29 +0100
+Message-ID: <20221130141134.2503172-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 753ce6aa-f1be-401f-b1da-08dad2775aee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2022 02:05:29.4723
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [139.21.146.191]
+X-ClientProxiedBy: DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) To
+ DEMCHDC8WBA.ad011.siemens.net (139.25.226.105)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: HE1EUR01FT093:EE_|AS2PR10MB6375:EE_
+X-MS-Office365-Filtering-Correlation-Id: a1734411-fd94-4cfd-82f4-08dad2dcd80d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	MesP0sC4IaN7N4WqyNaqBOK/3HjWMDP1zlJhsX+3j+82mFpq3xVCrTjfyxy8RjJXdx77dXpH9Zs1UJT5ohy4nB8tXS7KdrC8WM4jP2EMvRxwyEDJ7Pl5U+Q2L1p5FhZokDLbLxXuMHXeMP7TLQ9DdxcLoDZg8653pFi3XUJyVLRX4dCEn+qlB3QHdi8STXlk5rJJGprYfSUTyNZ6o9jYjPj/jRm9R+v7H08eHjawBRfgbGgvYi62fD59qNlEddhd7/m//Seo7u0HIY3jG4wAbImq77mRL2CvqTaI8E9v1aoiq9TCaw1B5y1XMQUOPJ9T+j4DUrO53ly06jMX9XRSOILHEW/QxeqbRvcdzjun8UxNMdpq8A032u78a52zwNg9NgVjwEzuTwl+JzDlrkIQ1G4WGum+W/2oCIXAl5/Dvq0Z4VjkD5D6SxHn4yPT/Tq5utv1TSeXdg4qrlCpz6EFH34csJcShXJfO5ZlT9KtxCDNNzsR8RYeZnw96MytdegTncUJkMkzKahZVT94ffqKjj9MSUM6KSOb4JJHhSZyCUYztKN8TgeOnjEbDwb2JXNYcEU+c6X9vng0dq5eks1b+Ay3EUVwKTvAyAqJhEP1OxUUVxtDZTGrKodu0n4snNuk67W5SYWTn+FfIoaK/xMmqpDU5Sj2CYNspwCh6UVj8cnfVQaLJX/y+BLqJssCulcnoXkUq/fNntA/wfbrLPPCrQOiEZykcBRkiHkghdLGHBs=
+X-Forefront-Antispam-Report:
+	CIP:194.138.21.75;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(376002)(451199015)(46966006)(40470700004)(36840700001)(82740400003)(478600001)(82310400005)(36756003)(82960400001)(40480700001)(26005)(6666004)(81166007)(40460700003)(41300700001)(70206006)(8676002)(356005)(70586007)(86362001)(4326008)(316002)(4744005)(54906003)(6916009)(5660300002)(8936002)(336012)(47076005)(956004)(186003)(2616005)(16526019)(1076003)(83380400001)(107886003)(2906002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2022 14:11:58.4811
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9uJxyBqZLx3378Md7Mx3VC1UNZHcBWSDl5fjNFRKvsmKK3TAFej0hUnNoKBq/GIYzrB9O2Qu5oXr+i5+Pv6rdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5232
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1734411-fd94-4cfd-82f4-08dad2dcd80d
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.75];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	HE1EUR01FT093.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB6375
 
-V2UgaGF2ZSB0aGUgWGVub21haSBjb21tdW5pdHkgY2FsbCB0b2RheS4NCg0KVG9waWNzIG1heSBp
-bmNsdWRlIGJ1dCBhcmUgbm90IGxpbWl0ZWQgdG8gdXBzdHJlYW0vZG93bnN0cmVhbSBwcm9qZWN0
-IA0KcGxhbnMsIHN0YXR1cyB1cGRhdGVzLCBhbmQgdGVjaG5pY2FsIGRpc2N1c3Npb25zLiBJdCdz
-IGFuIG9wZW4gb25saW5lIA0KbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9pbiBhbmQgYXNrIHF1
-ZXN0aW9ucy4NCg0KVGltZToNCldlZG5lc2RheSwgTm92IDMwLCAyMDIyLCBVVEMgNzowMCBBTQ0K
-UGFyaXMsIEZyYW5jZSBDRVNUIDg6MDAgQU0NCkNoaW5hIENTVCAzOjAwIFBNDQoNCkpvaW4gWm9v
-bSBNZWV0aW5nIA0KaHR0cHM6Ly9pbnRlbC56b29tLnVzL2ovOTEyOTcyNzkyNjk/cHdkPVdtZHdT
-MHBET0RSTk1TOXRRazU0WTFkdmJGbHFVVDA5DQpPcg0KaHR0cHM6Ly9pbnRlbC56b29tLnVzL3dj
-L2pvaW4vOTEyOTcyNzkyNjk/d3BrPXdjcGs1MmE5Zjk2ZDk4OWU3ZTIwYjYyOGMyYzM2ZTQ4YjY4
-ZQ0KDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpQYXNzY29kZTogMzY3NTI4DQpPbmUgdGFw
-IG1vYmlsZQ0KKzEyNTMyMTU4NzgyLCw5MTI5NzI3OTI2OSMgVVMgKFRhY29tYSkNCisxMzQ2MjQ4
-Nzc5OSwsOTEyOTcyNzkyNjkjIFVTIChIb3VzdG9uKQ0KDQpEaWFsIGJ5IHlvdXIgbG9jYXRpb24N
-CiAgICAgICAgKzEgMjUzIDIxNSA4NzgyIFVTIChUYWNvbWEpDQogICAgICAgICsxIDM0NiAyNDgg
-Nzc5OSBVUyAoSG91c3RvbikNCiAgICAgICAgKzEgNjY5IDkwMCA5MTI4IFVTIChTYW4gSm9zZSkN
-CiAgICAgICAgKzEgMzAxIDcxNSA4NTkyIFVTIChXYXNoaW5ndG9uIERDKQ0KICAgICAgICArMSAz
-MTIgNjI2IDY3OTkgVVMgKENoaWNhZ28pDQogICAgICAgICsxIDY0NiA1NTggODY1NiBVUyAoTmV3
-IFlvcmspDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpGaW5kIHlvdXIgbG9jYWwgbnVtYmVy
-OiBodHRwczovL2ludGVsLnpvb20udXMvdS9hVEVBMzdpNUcNCg0KSm9pbiBieSBTSVANCm1haWx0
-bzo5MTI5NzI3OTI2OUB6b29tY3JjLmNvbQ0KDQpKb2luIGJ5IEguMzIzDQoxNjIuMjU1LjM3LjEx
-IChVUyBXZXN0KQ0KMTYyLjI1NS4zNi4xMSAoVVMgRWFzdCkNCjExNS4xMTQuMTMxLjcgKEluZGlh
-IE11bWJhaSkNCjExNS4xMTQuMTE1LjcgKEluZGlhIEh5ZGVyYWJhZCkNCjIxMy4xOS4xNDQuMTEw
-IChBbXN0ZXJkYW0gTmV0aGVybGFuZHMpDQoyMTMuMjQ0LjE0MC4xMTAgKEdlcm1hbnkpDQoxMDMu
-MTIyLjE2Ni41NSAoQXVzdHJhbGlhIFN5ZG5leSkNCjEwMy4xMjIuMTY3LjU1IChBdXN0cmFsaWEg
-TWVsYm91cm5lKQ0KMjA5LjkuMjExLjExMCAoSG9uZyBLb25nIFNBUikNCjE0OS4xMzcuNDAuMTEw
-IChTaW5nYXBvcmUpDQo2NC4yMTEuMTQ0LjE2MCAoQnJhemlsKQ0KMTQ5LjEzNy42OC4yNTMgKE1l
-eGljbykNCjY5LjE3NC41Ny4xNjAgKENhbmFkYSBUb3JvbnRvKQ0KNjUuMzkuMTUyLjE2MCAoQ2Fu
-YWRhIFZhbmNvdXZlcikNCjIwNy4yMjYuMTMyLjExMCAoSmFwYW4gVG9reW8pDQoxNDkuMTM3LjI0
-LjExMCAoSmFwYW4gT3Nha2EpDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpQYXNzY29kZTog
-MzY3NTI4DQoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo=
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+
+Switchtest only tested intended switches between primary and secondary mode in
+userland.
+
+Let the rtuo thread also test fault based migrations and migrations that occur
+while in kernel mode.
+
+This patch series will also test the bug that was fixed in
+829d4d33cb7aa3ee485ad56da6ac0c3b0ce5dbe5
+
+Tobias Schaffner (5):
+  switchtest: fix rtuo not respectiong _ufps
+  switchtest: split the set_mode method
+  switchtest: test multiple secondary switch cases
+  switchtest: Remove assertion after fault migration
+  switchtest: test mode switche while in kernel mode
+
+ include/rtdm/uapi/testing.h         |   4 +
+ kernel/drivers/testing/switchtest.c |   4 +
+ testsuite/switchtest/switchtest.c   | 110 ++++++++++++++++++++++------
+ 3 files changed, 96 insertions(+), 22 deletions(-)
+
+-- 
+2.34.1
+
