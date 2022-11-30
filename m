@@ -1,93 +1,78 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0889663B3
-	for <xenomai@lists.linux.dev>; Wed, 30 Nov 2022 14:39:57 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2022113014395523b54d76bb551b0092
-        for <xenomai@lists.linux.dev>;
-        Wed, 30 Nov 2022 15:39:55 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=7bqv8ASW5ojX6E8n/z9C5n7V0/js5e3nu/5cahotzqk=;
- b=b+sNDXbzY7kFlCCUfLW3ZlyixhVm98AeOiXUbDwn2/ZSUtk3ncAeTR2pF/D4isXmOwDzUT
- 8QOv+E7fgwdWujRE5txobdkF+mGgM0oRTVx6bnfliy0dWTNw0wki3EEke9JggJsPwxosfdm+
- TfTaA+4pGA3QgchvtwviwZkpUxCGw=;
-Message-ID: <cd369b2ca41fc5e058ba521eb2c2071a56be4416.camel@siemens.com>
-Subject: Re: [PATCH 4/5] switchtest: Remove assertion after fault migration
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: "T. Schaffner" <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com
-Date: Wed, 30 Nov 2022 15:39:55 +0100
-In-Reply-To: <20221130141134.2503172-5-tobias.schaffner@siemens.com>
-References: <20221130141134.2503172-1-tobias.schaffner@siemens.com>
-	 <20221130141134.2503172-5-tobias.schaffner@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CE5063C0
+	for <xenomai@lists.linux.dev>; Wed, 30 Nov 2022 16:10:29 +0000 (UTC)
+Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id E9A45C6C4D
+	for <xenomai@lists.linux.dev>; Wed, 30 Nov 2022 15:58:04 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 661391C0004;
+	Wed, 30 Nov 2022 15:57:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1669823877;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GGC50BHgL/x0liIIwE0vvYplJJKpyXTKPrO/h40NILU=;
+	b=S4O1IKNwWooN94BVG7/z4/2wSZcwTNa6JQelSzgUXvn7W2WaYt2ZqT1pTZVHQPs9Gxp5cS
+	LWbf6RtQv12CdJhZIoSoUk8ZRwdYE3RYGbuJwJ3xZ3T0deWL/Tkigy0//84wuO27R4gSD1
+	urFTY5bbqTp8oONOwgLDwp/avYhJraDsx2GAWJ530KTPyeApf4oMua7naUXIsAGePNno5R
+	N9PtEfgzuhOOBJUwGUuatZWv/db90ZfiwXp8cRGXsrqLepJwxOK72lDJ++J8jpZlTVilrs
+	mLHnQ2cw7IBkPCPigWK/LN+N1vjSB5rUXKKqHAA0I/USTQJcRDzWtiAheuHzrw==
+References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10508DD9688B7D0E82AB30CDE23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB1050307D7FC58A2B99A40094E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877d04dm52.fsf@xenomai.org>
+ <PH1P110MB1050221E0BC34BD641127901E2009@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87leodn9kv.fsf@xenomai.org>
+ <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87zgcs4ma1.fsf@xenomai.org>
+ <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
+ <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
+ <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877czothz0.fsf@xenomai.org>
+ <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87h6yj6mvg.fsf@xenomai.org>
+ <PH1P110MB1050D4E123EE6368D98E071AE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <0082bff2d91b0125ac60050159d3003e64b45bffa35e0c4f0ed9799e38b97b8c@mu>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
+ <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
+Subject: Re: [External] - Re: EVL Memory
+Date: Wed, 30 Nov 2022 16:57:40 +0100
+In-reply-to: <0082bff2d91b0125ac60050159d3003e64b45bffa35e0c4f0ed9799e38b97b8c@mu>
+Message-ID: <87h6ygwi2l.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
 
-On Wed, 2022-11-30 at 15:11 +0100, T. Schaffner wrote:
-> From: Tobias Schaffner <tobias.schaffner@siemens.com>
->=20
-> Faults in a xenomai syscall lead to a migration to secondary mode most bu=
-t not
-> all of the time. Do not assert that the migration worked but expect it to=
- work
-> on next iteration of the test.
 
-Seems this patch should be folded / squashed into the patch that
-introduced this code.
+Philippe Gerum <rpm@xenomai.org> writes:
 
->=20
-> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> ---
->  testsuite/switchtest/switchtest.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->=20
-> diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/swi=
-tchtest.c
-> index f3737d193..970790b2e 100644
-> --- a/testsuite/switchtest/switchtest.c
-> +++ b/testsuite/switchtest/switchtest.c
-> @@ -309,7 +309,7 @@ static void _assert_primary_mode(char const * calling=
-_func) {
->  #define assert_primary_mode() _assert_primary_mode(__func__)
-> =20
->  static void _assert_secondary_mode(char const * calling_func) {
-> -	if (!(cobalt_thread_mode() & (XNRELAX))) {
-> +	if (! (cobalt_thread_mode() & (XNRELAX))) {
->  		fprintf(stderr, "Switch to secondary mode failed in %s.", calling_func=
-);
->  		clean_exit(EXIT_FAILURE);
->  	}
+> Russell Johnson <russell.johnson@kratosdefense.com> writes:
+>
+>> [[S/MIME Signed Part:Undecided]]
+>> Sounds good. I built the latest kernel (with lock debugging re-enabled). I
+>> am running our test case as we speak. I have not encountered a crash yet,
+>> but there was a little bit of debug output from the kernel that I have
+>> attached in this email. Also, I am definitely still seeing a lot of the
+>> threads be priority boosted forever. Let me know if you can think of other
+>> ways to help debug that priority issue.
+>>
+>>
+>
 
-We normally tend to ignore cosmetic changes.
+Working on it.
 
-> @@ -338,7 +338,12 @@ static void switch_to_secondary_mode_by_using_linux_=
-syscall(void)
->  static void switch_to_secondary_mode_by_fault_in_xenomai_syscall(void)
->  {
->  	XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, NULL, NULL);
-> -	assert_secondary_mode();
-> +
-> +	/* A fault in a xenomai syscall will lead to a migration most but not a=
-ll
-> +	   of the time.=20
-
-I would be very interested in the reason why this doesn't happen all
-the time. Please enlighten me ;-)
-
-> +
-> +	   assert_secondary_mode();
-> +	*/
->  }
-> =20
->  #define SWITCH_FUNC_COUNT 6
-
+-- 
+Philippe.
