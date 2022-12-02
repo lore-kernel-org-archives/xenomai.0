@@ -1,23 +1,54 @@
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from mx0a-001f5801.pphosted.com (mx0b-001f5801.pphosted.com [148.163.159.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D7846B8
-	for <xenomai@lists.linux.dev>; Fri,  2 Dec 2022 15:29:39 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id E35F7240013;
-	Fri,  2 Dec 2022 15:29:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1669994977;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dVbxXFGulshpJupeygL73pUsv2lC5WHZhvZVYcuIpIA=;
-	b=mTwDXY47Ni/zZd4biSCvFwLQD9mzjqLAWUE10mne30xnmxz5Rn5PpwvLc2/XCRe16dGNPj
-	31hrpDfVQrVl3+1zT5B5FdrGjR37uSfOFuoZm2NouDg08FEQtdcYvRHvDfUkgmncYXoflx
-	e8bUmKdDSl17wHYbuOb1w4Wq7A+FDOHK+MeUAVbByWhWYD4pVzSzQM3JMjUpOAWsHt+Bgn
-	q8NdoTHhlqy/arQCRZHUYSEpJIIRQKcnswlTwTSpymSnK2rElSB6ASDTp3f4Ibhtp/R6D1
-	/ls8UCp4r/bgAoglLz7wHCjTaGp468Q1IE06voYD6y94laqYDFnK+8xs0RckXA==
-References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D384C71
+	for <xenomai@lists.linux.dev>; Fri,  2 Dec 2022 15:48:11 +0000 (UTC)
+Received: from pps.filterd (m0090335.ppops.net [127.0.0.1])
+	by mx0b-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B2Fgpq4029003;
+	Fri, 2 Dec 2022 07:48:10 -0800
+Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0152.outbound.protection.office365.us [23.103.199.152])
+	by mx0b-001f5801.pphosted.com (PPS) with ESMTPS id 3m6kcnbe1s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 02 Dec 2022 07:48:09 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
+ b=pRbzbJFivsEZ5fNNUaRd7IdpQVWNh/kbaWhcIyN8Pyl+vmeQXc4WNraMJEGMgXl0OndsylgD9WP9yYEFMQ8mdIRzQeznIHJFcTu7lJZZBUI/S6btp1VI0PoQpCkmlGzW1gEURKsZ2Iq9m5wdVz2q5M/FlXpA5cewazVbJ5LJ/cnnM4ZIPT/8JzVEaS+JSbWcbLk1NpG8gLzE8ADFnAr9o2nmW+CU87MmoC4mmku2fk9tGb97ZL339S2Q/xsWXIJFnstEEZWR7niZR7TfMx4+LX7p9AmeJ6kenAljhg2T2ITB6z9uGXtz3TDI/eKZ74ZU52OCrOQ9XtheN7E1E74kiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector5401;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kGbZ2ZggndMBTMglvKV4mnufKbY0unR4iXQyAiMvRVA=;
+ b=UuTJVPeOZ3OXQOWJnphKyo88nL9K+mpyggnFMquu3d0GFLUZQBN2VnHosuobxlr24zJcDy8Td/BcviiRevDotj7FSidrG2ZJXmJUOK6dqdpS+sD6IhUS57ltTMvJw8Z/0VwAE+D7AirCM70i6NmkfEqi47zmmlnCidu8MgzeSfnsSaNnlVdsJr0U75jzTSa2q4T3VcO9wvWQhvkgV8R+LJB9TC5jfJdOrBPVQlcLoJbXzKquq9COb6gUu1O7ewtjig3NBm4yXexFk4M/IDnu6NC8TPQ84DLE2XLB0dvJnkQsJhStj9pd6SH8HasjgPpqPFLYFGEnKhnOzH6Rbo/G2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
+ header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kGbZ2ZggndMBTMglvKV4mnufKbY0unR4iXQyAiMvRVA=;
+ b=FTQAszUi5zx5Kvc1RRt/H18ark5UL2xDyyvSteWkT76J5zBaXKUQu7vmXMywQshbR3RpygSDZUNw5Cs/qWpYB7pvqGIDdls6XJFv6sQ/kzt/B0D49ZQDUGbax5wicKgB/WDza7o9LdKuJzpCj6FBgmIn6lLY4CLN1ihknVObgHB5Z/UjbeO+/FYS4wmMzLoAZvmHATLzlNkUA6ezEhyz3ZSaPwSCGvb12GANp6TxvZTFsmyM4B+b1Y5lQ4eipiIu2IK5ZOoUXHet50XLW01EHAxo+sacB/bXQm8x4lO4IPi6xzQNa0ctnPn9kvUKN8yZGNzzcrOoDcXL1oHUzX3Siw==
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
+ by PH1P110MB1377.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Fri, 2 Dec
+ 2022 15:48:07 +0000
+Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+ ([fe80::2dc2:8d63:5c5b:f725%7]) with mapi id 15.20.5834.022; Fri, 2 Dec 2022
+ 15:48:07 +0000
+From: Russell Johnson <russell.johnson@kratosdefense.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: Bryan Butler <Bryan.Butler@kratosdefense.com>,
+        "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>,
+        Shawn McManus <shawn.mcmanus@kratosdefense.com>
+Subject: RE: [External] - Re: EVL Memory
+Thread-Topic: [External] - Re: EVL Memory
+Thread-Index: 
+ Adjz0yff24VAOdNORJO8c3TjB/9lSwAgymPQAAE3ZMAAARoBAABtP6rQAH6X0oAAFuqKwAAYlRuAAA/9EKAABRGVgAAsa2CAAAwq7lAAKDcSAAAgIxWAAEP6SSAAYzsWgAAFcSNAAVlSalAAAyZ+gAAIpzogAFofRaAAL3JDAAALO44gABv0W4AADFRKsAAAioEAAACcvjA=
+Date: Fri, 2 Dec 2022 15:48:07 +0000
+Message-ID: 
+ <PH1P110MB1050356B939910A6A0406B96E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+References: 
+ <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <PH1P110MB105002FA12DD4C10060A7B59E2059@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <87zgcs4ma1.fsf@xenomai.org>
  <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
@@ -35,40 +66,505 @@ References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.O
  <PH1P110MB1050DA6B7C1C21B2866038CCE2149@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <871qpiw3zd.fsf@xenomai.org>
  <PH1P110MB105039710BB301C7126FF2D9E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
-Subject: Re: [External] - Re: EVL Memory
-Date: Fri, 02 Dec 2022 16:27:10 +0100
-In-reply-to: <PH1P110MB105039710BB301C7126FF2D9E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87wn797rj3.fsf@xenomai.org>
+ <87wn797rj3.fsf@xenomai.org>
+In-Reply-To: <87wn797rj3.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1377:EE_
+x-ms-office365-filtering-correlation-id: a42f2033-8a9e-4810-0b50-08dad47c9b77
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ 5D3uBheMpTb5flwvRZE+s0RGoD0bBg3vwNSETPBxLvh4Vu+a/L+CLDJxZNS5SJSxQACkVuHluPzzjVPMhugpZHGoe1dDCAiA+GB+GcDsVIBDPxWU2kuxawP6cf2t7vLLyEUqRmXWC1AKsy5JIwuhMQEbhqRJoAlL2m11YShQZB+CAiLILeVf7fJjmlaeXoyndlnvU/vgILIM8dAWYTa7pyC+Bu9CjnGBU4Gs1ahiZJgFY7nHa9gXPIqQAO0OqeHpsC1YYUuUiK2Rkb0hCRudADkBPVPP8226espM1iFyKHjwqFhHru+UcOnsUkgT9YWePfLo105bbFnyEvESCxmy8As4qo7FCq6Xkaz9YwJiJmwazaa0mT1MZNXKZKa+lxt4TQK3Oq0tB9VvFqYkz1B+z0Ha9zCPiv7wFn4tUeRXtvcGwmjG81atgc5I+yW/zp2YJkgjzIkpliO+2h6WBE1HFkvXUHeu53cC6CwxXojsCEkJzNeM1HV30qCGKghbLOMjllS6rkOpm9BVxgEHE/GroFc1MGogqQTvK8Zm6vlIQ5SMVefUH4ksl253lsLbNbDVgR25lgzErkT3ZKrT6SWYlZWBDg+5TnesG2wg2bgXXsV0db4dvRP0HSYyHNm5UmVB
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(396003)(39830400003)(136003)(366004)(451199015)(44832011)(41320700001)(8936002)(4744005)(52536014)(107886003)(4326008)(41300700001)(71200400001)(38100700002)(5660300002)(2906002)(33656002)(7696005)(38070700005)(66556008)(6506007)(9686003)(64756008)(186003)(66476007)(122000001)(8676002)(66946007)(76116006)(66446008)(54906003)(86362001)(508600001)(83380400001)(99936003)(6916009)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ yhoDup7Esb2+sZWhyERqbzZesKC6t5QD13rMWf2TpL0zFJoMYz059MWQpTCmdrAPBu+W6/oNidNThOcsG1UVySXxd2+bG7Op+pXrxbEHCYgRwOcfHdV/mDPYPwfqvFWyPsgkvLOLjAVHed1VftSWtlc8FL9p9IA3k/dSeMdsytAg6G2bjLS73+OmMzUlpZFxvMuiWXRbGa7NkdhZisVtB/xbCWfNDsvFA3i2p6sAHF9uKGO52IM2zXRyPabAZ1eXklQ+YqGaWuzbMD+ci+oZ7UUmIlP5VSANWT6d7d1xB29LKUyYx5sIexCSuV5l8VgZ6n26XdOghv8m6o4/SfNUmUPARpxyIq4JN0yImZ7G6Y5ljjm5xIsyFM4m4auDXpYrC7tya92/TJeNzpUaymFaeABSxKDXdMZk4bFG84D+bhVicEYE2KyprJNc3drGSQEqjt+MISrBAqSIrzy7/3KTRrWby7C4MxtcUkTxgjLbmik=
+Content-Type: multipart/signed;
+	protocol="application/x-pkcs7-signature";
+	micalg=2.16.840.1.101.3.4.2.1;
+	boundary="----=_NextPart_000_0228_01D9062A.CB7A18F0"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	DazYQl6/vQurUzTfOzTlB0G6n3j0Dk+54WKbVU9ybLaHT8IWFFGK76r07AiFPwfFrhe5IW3npW/gH5lEvzvzVqwNln+At088nB0vAPKPyPWsrs1FBlzykRMxHANdTC5/SvPJrzr/JMjrpN4XoqKrvkZiyt9o/40Ri3ScyVKHHHhIRi6OCFONk5/xfMQ35D0L15DflJAQwIyk33H6K4hEPwoKVwq1j5H04ja0bw8KrmGNcVJwKvLimVvJGNfpZfS9vIitaZB9VHiaX0FviL48reZoHT815KU0PFGfirHIMrRTYLiEu3vG0eRqmFlljW4k709LW+6RiJLhfV9d8mFGAnsY9WvOdppRY3jnQAH3G+tr2YTIpaB3pbPwZe85g2IMUotiiceEKDupr+GdrasC/qX7o+RGdM6PEp/t+S3OZttefUT4wlcTgBV2szPykcvJ1vwZTV2F4DeXAn1nK/530CEkS3tc68+EWb9hyfjYq0FMORglPNDTuWFNdG2ogf82/TsY+2B1qsI3njpL2AHNBMLnzG9a9ogMRsO7KNasXZR+8ZKRXMa/eka1VKvUUMvSFTVxiRLAMeY0CRMfNZjtYVMAMyZ/MMxqPkY8wt0ppPTDhl47vmOFPozQ4AdGuNheo5nkOI34R1jEptk6cjRXqsg6lJ4HP/v+I51Vzi/eFdJB0D6SJPprmm/d08I8zrgvKgi4FMpUBZqKvSaQR7tO3w7v+CEuASY9FxQctp51uxx0eafpzFKVYeFbvn4xmhKaPnyrg8kar22fWmGQ7a0bBoZQ7czxDAKBjsvGyFg5L9vLce/SG3To2pvn/xfb/xBN
+X-OriginatorOrg: kratosdefense.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a42f2033-8a9e-4810-0b50-08dad47c9b77
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2022 15:48:07.5025
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1377
+X-Proofpoint-GUID: nXKIzJuk6CgThULqdnumv4xswOLyD6Oq
+X-Proofpoint-ORIG-GUID: nXKIzJuk6CgThULqdnumv4xswOLyD6Oq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-02_08,2022-12-01_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 bulkscore=0 mlxlogscore=999 phishscore=0
+ adultscore=0 malwarescore=0 impostorscore=0 spamscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2212020123
+
+------=_NextPart_000_0228_01D9062A.CB7A18F0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_001_0229_01D9062A.CB7A18F0"
 
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+------=_NextPart_001_0229_01D9062A.CB7A18F0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-> [[S/MIME Signed Part:Undecided]]
-> I do already have that enabled and have confirmed the proper commit shows up
-> in uname. I will disable LOCKDEP and re-run.
->
-> Thanks,
->
-> Russell
->
-> [[End of S/MIME Signed Part]]
+Yes I have confirmed that the threads are stuck with boosted priority in
+"evl ps". I just went to re-run again with the
+kernel I used yesterday (with lockdep still enabled) - since the other
+kernel is still building - and I actually got a crash and some memory output
+from kasan. I attached the output.
 
-I realized that the line information from the kernel splats was matching
-the latest sources anyway, so you are definitely running the right
-kernel. Can you observe that the threads are indeed stuck with a boosted
-priority that never changes, using evl ps?
+I just saw your new email - I will look into that as well.
 
--- 
-Philippe.
+Thanks,
+
+Russell
+
+
+------=_NextPart_001_0229_01D9062A.CB7A18F0
+Content-Type: text/plain;
+	name="null_ptr.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="null_ptr.txt"
+
+Dec  2 08:43:14 10.243.0.116 [71855.650618] =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Dec  2 08:43:14 10.243.0.116 [71855.650625] BUG: KASAN: null-ptr-deref =
+in do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:14 10.243.0.116 [71855.650642] Read of size 4 at addr =
+0000000000000004 by task RxWorker0/6338
+Dec  2 08:43:14 10.243.0.116 [71855.650651]
+Dec  2 08:43:14 10.243.0.116 [71855.650655] CPU: 8 PID: 6338 Comm: =
+RxWorker0 Tainted: G        W         5.15.77evl-g5e681f841fc3 #3
+Dec  2 08:43:14 10.243.0.116 [71855.650669] Hardware name: Supermicro =
+Super Server/X10SDV-6C+-TLN4F, BIOS 2.1 11/22/2019
+Dec  2 08:43:14 10.243.0.116 [71855.650675] IRQ stage: EVL
+Dec  2 08:43:14 10.243.0.116 [71855.650680] Call Trace:
+Dec  2 08:43:14 10.243.0.116 [71855.650684]  <TASK>
+Dec  2 08:43:14 10.243.0.116 [71855.650691]  dump_stack_lvl+0x90/0xd8
+Dec  2 08:43:14 10.243.0.116 [71855.650706]  ? =
+do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:14 10.243.0.116 [71855.650717]  ? =
+do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:14 10.243.0.116 [71855.650728]  =
+kasan_report.cold.17+0x64/0xdb
+Dec  2 08:43:14 10.243.0.116 [71855.650750]  ? =
+do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:15 10.243.0.116 [71855.650768]  __asan_load4+0x6d/0x90
+Dec  2 08:43:15 10.243.0.116 [71855.650782]  do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:15 10.243.0.116 [71855.650794]  ? spin_dump+0x90/0x90
+Dec  2 08:43:15 10.243.0.116 [71855.650809]  ? =
+evl_get_thread_wchan+0x15b/0x270
+Dec  2 08:43:15 10.243.0.116 [71855.650836]  =
+evl_requeue_mutex_wait+0x18b/0x500
+Dec  2 08:43:15 10.243.0.116 [71855.650847]  ? =
+evl_requeue_mutex_wait+0x15f/0x500
+Dec  2 08:43:15 10.243.0.116 [71855.650858]  ? =
+evl_adjust_thread_boost+0x424/0xd70
+Dec  2 08:43:15 10.243.0.116 [71855.650882]  =
+evl_walk_lock_chain+0xea/0x280
+Dec  2 08:43:15 10.243.0.116 [71855.650908]  =
+evl_lock_mutex_timeout+0x40a/0xca0
+Dec  2 08:43:15 10.243.0.116 [71855.650940]  ? =
+evl_destroy_mutex+0x220/0x220
+Dec  2 08:43:15 10.243.0.116 [71855.650955]  ? =
+do_raw_spin_unlock+0x97/0x140
+Dec  2 08:43:15 10.243.0.116 [71855.650980]  enter_monitor+0x114/0x160
+Dec  2 08:43:15 10.243.0.116 [71855.650999]  =
+monitor_oob_ioctl+0x4c2/0x1670
+Dec  2 08:43:15 10.243.0.116 [71855.651011]  ? =
+rcu_read_lock_held_common+0x25/0x70
+Dec  2 08:43:15 10.243.0.116 [71855.651029]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.651045]  ? =
+rcu_read_lock_held_common+0x25/0x70
+Dec  2 08:43:15 10.243.0.116 [71855.651061]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.651081]  ? enter_monitor+0x160/0x160
+Dec  2 08:43:15 10.243.0.116 [71855.651101]  ? lock_release+0xd5/0x440
+Dec  2 08:43:15 10.243.0.116 [71855.651115]  ? evl_get_file+0xa3/0x130
+Dec  2 08:43:15 10.243.0.116 [71855.651132]  ? =
+lock_downgrade+0x3e0/0x3e0
+Dec  2 08:43:15 10.243.0.116 [71855.651148]  ? =
+do_raw_spin_lock+0x119/0x1e0
+Dec  2 08:43:15 10.243.0.116 [71855.651161]  ? spin_dump+0x90/0x90
+Dec  2 08:43:15 10.243.0.116 [71855.651183]  ? =
+__kasan_check_read+0x11/0x20
+Dec  2 08:43:15 10.243.0.116 [71855.651197]  ? =
+do_raw_spin_unlock+0x97/0x140
+Dec  2 08:43:15 10.243.0.116 [71855.651223]  EVL_ioctl+0x81/0xf0
+Dec  2 08:43:15 10.243.0.116 [71855.651243]  do_oob_syscall+0x5ac/0x6c0
+Dec  2 08:43:15 10.243.0.116 [71855.651262]  ? =
+prepare_for_signal+0x1b0/0x1b0
+Dec  2 08:43:15 10.243.0.116 [71855.651281]  ? do_oob_irq+0x2d0/0x880
+Dec  2 08:43:15 10.243.0.116 [71855.651293]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.651314]  =
+handle_oob_syscall+0x189/0x230
+Dec  2 08:43:15 10.243.0.116 [71855.651332]  ? =
+handle_pipelined_syscall+0x840/0x840
+Dec  2 08:43:15 10.243.0.116 [71855.651353]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.651370]  ? =
+rcu_read_lock_any_held.part.15+0x20/0x20
+Dec  2 08:43:15 10.243.0.116 [71855.651394]  pipeline_syscall+0xa7/0x1c0
+Dec  2 08:43:15 10.243.0.116 [71855.651418]  =
+syscall_enter_from_user_mode+0x5f/0x130
+Dec  2 08:43:15 10.243.0.116 [71855.651437]  do_syscall_64+0x1d/0xa0
+Dec  2 08:43:15 10.243.0.116 [71855.651454]  =
+entry_SYSCALL_64_after_hwframe+0x61/0xcb
+Dec  2 08:43:15 10.243.0.116 [71855.651470] RIP: 0033:0x7f5f997a5b4b
+Dec  2 08:43:15 10.243.0.116 [71855.651480] Code: Unable to access =
+opcode bytes at RIP 0x7f5f997a5b21.
+Dec  2 08:43:15 10.243.0.116 [71855.651486] RSP: 002b:00007f5f55fed510 =
+EFLAGS: 00000246 ORIG_RAX: 000000000000009d
+Dec  2 08:43:15 10.243.0.116 [71855.651498] RAX: ffffffffffffffda RBX: =
+00007f5f55fed5a0 RCX: 00007f5f997a5b4b
+Dec  2 08:43:15 10.243.0.116 [71855.651507] RDX: 0000000040106d00 RSI: =
+000000000000000e RDI: 0000000010000002
+Dec  2 08:43:15 10.243.0.116 [71855.651515] RBP: 0000000040106d00 R08: =
+0000000000000000 R09: 00000000ffffffff
+Dec  2 08:43:15 10.243.0.116 [71855.651523] R10: 00007f5f55fed5a0 R11: =
+0000000000000246 R12: 000000000000000e
+Dec  2 08:43:15 10.243.0.116 [71855.651530] R13: 00007f5f55fed600 R14: =
+0000000000000000 R15: 00007f5f55ffd700
+Dec  2 08:43:15 10.243.0.116 [71855.651566]  </TASK>
+Dec  2 08:43:15 10.243.0.116 [71855.651570] =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Dec  2 08:43:15 10.243.0.116 [71855.651576] EVL: RxWorker0 switching =
+in-band [pid=3D6338, excpt=3D14, do_raw_spin_lock+0x70/0x1e0]
+Dec  2 08:43:15 10.243.0.116 [71855.838056] EVL: RxWorker0[6338] could =
+not receive HM event #3
+Dec  2 08:43:15 10.243.0.116 [71855.838073] BUG: kernel NULL pointer =
+dereference, address: 0000000000000004
+Dec  2 08:43:15 10.243.0.116 [71855.838079] #PF: supervisor read access =
+in kernel mode
+Dec  2 08:43:15 10.243.0.116 [71855.838084] #PF: error_code(0x0000) - =
+not-present page
+Dec  2 08:43:15 10.243.0.116 [71855.838090] PGD 8000000135348067 P4D =
+8000000135348067 PUD 1e3e6c067 PMD 0
+Dec  2 08:43:15 10.243.0.116 [71855.838109] Oops: 0000 [#1] SMP KASAN =
+PTI IRQ_PIPELINE
+Dec  2 08:43:15 10.243.0.116 [71855.838122] CPU: 8 PID: 6338 Comm: =
+RxWorker0 Tainted: G    B   W         5.15.77evl-g5e681f841fc3 #3
+Dec  2 08:43:15 10.243.0.116 [71855.838134] Hardware name: Supermicro =
+Super Server/X10SDV-6C+-TLN4F, BIOS 2.1 11/22/2019
+Dec  2 08:43:15 10.243.0.116 [71855.838140] IRQ stage: Linux
+Dec  2 08:43:15 10.243.0.116 [71855.838143] RIP: =
+0010:do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:15 10.243.0.116 [71855.838158] Code: 41 48 c7 45 88 10 4f =
+1a 81 c7 00 f1 f1 f1 f1 c7 40 04 04 f2 f2 f2 65 48 8b 04 25 28 00 00 00 =
+48 89 45 d0 31 c0 e8 70 a9 33 00 <8b> 43 04 3d ad 4e ad de 0f 85 d7 00 =
+00 00 4c 8d 73 10 4c 89 f7 e8
+Dec  2 08:43:15 10.243.0.116 [71855.838168] RSP: 0018:ffff888105117868 =
+EFLAGS: 00010082
+Dec  2 08:43:15 10.243.0.116 [71855.838178] RAX: 0000000000000001 RBX: =
+0000000000000000 RCX: ffffffff811a5187
+Dec  2 08:43:15 10.243.0.116 [71855.838185] RDX: 0000000000000003 RSI: =
+dffffc0000000000 RDI: ffffffff8329cea0
+Dec  2 08:43:15 10.243.0.116 [71855.838193] RBP: ffff8881051178f0 R08: =
+fffffbfff06539d5 R09: fffffbfff06539d5
+Dec  2 08:43:15 10.243.0.116 [71855.838201] R10: ffffffff8329cea3 R11: =
+fffffbfff06539d4 R12: 1ffff11020a22f0d
+Dec  2 08:43:15 10.243.0.116 [71855.838209] R13: ffff8881051178c8 R14: =
+0000000000000000 R15: ffff888124d71968
+Dec  2 08:43:15 10.243.0.116 [71855.838216] FS:  00007f5f55ffd700(0000) =
+GS:ffff8883de400000(0000) knlGS:0000000000000000
+Dec  2 08:43:15 10.243.0.116 [71855.838226] CS:  0010 DS: 0000 ES: 0000 =
+CR0: 0000000080050033
+Dec  2 08:43:15 10.243.0.116 [71855.838234] CR2: 0000000000000004 CR3: =
+00000001ed95c004 CR4: 00000000003706e0
+Dec  2 08:43:15 10.243.0.116 [71855.838241] DR0: 0000000000000000 DR1: =
+0000000000000000 DR2: 0000000000000000
+Dec  2 08:43:15 10.243.0.116 [71855.838248] DR3: 0000000000000000 DR6: =
+00000000fffe0ff0 DR7: 0000000000000400
+Dec  2 08:43:15 10.243.0.116 [71855.838255] Call Trace:
+Dec  2 08:43:15 10.243.0.116 [71855.838258]  <TASK>
+Dec  2 08:43:15 10.243.0.116 [71855.838265]  ? spin_dump+0x90/0x90
+Dec  2 08:43:15 10.243.0.116 [71855.838279]  ? =
+evl_get_thread_wchan+0x15b/0x270
+Dec  2 08:43:15 10.243.0.116 [71855.838301]  =
+evl_requeue_mutex_wait+0x18b/0x500
+Dec  2 08:43:15 10.243.0.116 [71855.838313]  ? =
+evl_requeue_mutex_wait+0x15f/0x500
+Dec  2 08:43:15 10.243.0.116 [71855.838323]  ? =
+evl_adjust_thread_boost+0x424/0xd70
+Dec  2 08:43:15 10.243.0.116 [71855.838345]  =
+evl_walk_lock_chain+0xea/0x280
+Dec  2 08:43:15 10.243.0.116 [71855.838368]  =
+evl_lock_mutex_timeout+0x40a/0xca0
+Dec  2 08:43:15 10.243.0.116 [71855.838391]  ? =
+evl_destroy_mutex+0x220/0x220
+Dec  2 08:43:15 10.243.0.116 [71855.838402]  ? =
+do_raw_spin_unlock+0x97/0x140
+Dec  2 08:43:15 10.243.0.116 [71855.838419]  enter_monitor+0x114/0x160
+Dec  2 08:43:15 10.243.0.116 [71855.838433]  =
+monitor_oob_ioctl+0x4c2/0x1670
+Dec  2 08:43:15 10.243.0.116 [71855.838444]  ? =
+rcu_read_lock_held_common+0x25/0x70
+Dec  2 08:43:15 10.243.0.116 [71855.838461]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.838473]  ? =
+rcu_read_lock_held_common+0x25/0x70
+Dec  2 08:43:15 10.243.0.116 [71855.838488]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.838505]  ? enter_monitor+0x160/0x160
+Dec  2 08:43:15 10.243.0.116 [71855.838522]  ? lock_release+0xd5/0x440
+Dec  2 08:43:15 10.243.0.116 [71855.838536]  ? evl_get_file+0xa3/0x130
+Dec  2 08:43:15 10.243.0.116 [71855.838551]  ? =
+lock_downgrade+0x3e0/0x3e0
+Dec  2 08:43:15 10.243.0.116 [71855.838567]  ? =
+do_raw_spin_lock+0x119/0x1e0
+Dec  2 08:43:15 10.243.0.116 [71855.838579]  ? spin_dump+0x90/0x90
+Dec  2 08:43:15 10.243.0.116 [71855.838597]  ? =
+__kasan_check_read+0x11/0x20
+Dec  2 08:43:15 10.243.0.116 [71855.838611]  ? =
+do_raw_spin_unlock+0x97/0x140
+Dec  2 08:43:15 10.243.0.116 [71855.838633]  EVL_ioctl+0x81/0xf0
+Dec  2 08:43:15 10.243.0.116 [71855.838651]  do_oob_syscall+0x5ac/0x6c0
+Dec  2 08:43:15 10.243.0.116 [71855.838667]  ? =
+prepare_for_signal+0x1b0/0x1b0
+Dec  2 08:43:15 10.243.0.116 [71855.838683]  ? do_oob_irq+0x2d0/0x880
+Dec  2 08:43:15 10.243.0.116 [71855.838695]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.838715]  =
+handle_oob_syscall+0x189/0x230
+Dec  2 08:43:15 10.243.0.116 [71855.838732]  ? =
+handle_pipelined_syscall+0x840/0x840
+Dec  2 08:43:15 10.243.0.116 [71855.838751]  ? =
+rcu_read_lock_sched_held+0x5b/0xd0
+Dec  2 08:43:15 10.243.0.116 [71855.838767]  ? =
+rcu_read_lock_any_held.part.15+0x20/0x20
+Dec  2 08:43:15 10.243.0.116 [71855.838787]  pipeline_syscall+0xa7/0x1c0
+Dec  2 08:43:15 10.243.0.116 [71855.838807]  =
+syscall_enter_from_user_mode+0x5f/0x130
+Dec  2 08:43:15 10.243.0.116 [71855.838824]  do_syscall_64+0x1d/0xa0
+Dec  2 08:43:15 10.243.0.116 [71855.838840]  =
+entry_SYSCALL_64_after_hwframe+0x61/0xcb
+Dec  2 08:43:15 10.243.0.116 [71855.838854] RIP: 0033:0x7f5f997a5b4b
+Dec  2 08:43:15 10.243.0.116 [71855.838864] Code: 44 24 18 c7 44 24 08 =
+18 00 00 00 e8 0f 98 ff ff b9 9d 00 00 00 49 63 f4 48 89 ea bf 02 00 00 =
+10 49 89 da 45 31 c0 89 c8 0f 05 <8b> 7c 24 04 48 89 c3 31 f6 89 c5 e8 =
+e5 97 ff ff 85 db 75 11 48 83
+Dec  2 08:43:15 10.243.0.116 [71855.838873] RSP: 002b:00007f5f55fed510 =
+EFLAGS: 00000246 ORIG_RAX: 000000000000009d
+Dec  2 08:43:15 10.243.0.116 [71855.838885] RAX: ffffffffffffffda RBX: =
+00007f5f55fed5a0 RCX: 00007f5f997a5b4b
+Dec  2 08:43:15 10.243.0.116 [71855.838893] RDX: 0000000040106d00 RSI: =
+000000000000000e RDI: 0000000010000002
+Dec  2 08:43:15 10.243.0.116 [71855.838900] RBP: 0000000040106d00 R08: =
+0000000000000000 R09: 00000000ffffffff
+Dec  2 08:43:15 10.243.0.116 [71855.838908] R10: 00007f5f55fed5a0 R11: =
+0000000000000246 R12: 000000000000000e
+Dec  2 08:43:15 10.243.0.116 [71855.838914] R13: 00007f5f55fed600 R14: =
+0000000000000000 R15: 00007f5f55ffd700
+Dec  2 08:43:15 10.243.0.116 [71855.838941]  </TASK>
+Dec  2 08:43:15 10.243.0.116 [71855.838945] Modules linked in: =
+binfmt_misc xt_CHECKSUM xt_MASQUERADE tun netconsole ip6t_rpfilter =
+ip6t_REJECT nf_reject_ipv6 ipt_REJECT nf_reject_ipv4 xt_conntrack =
+ebtable_nat ebtable_broute ip6table_nat ip6table_mangle =
+ip6table_security ip6table_raw iptable_nat nf_nat iptable_mangle =
+iptable_security iptable_raw nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 =
+libcrc32c ip_set nfnetlink ebtable_filter ebtables rfkill =
+ip6table_filter ip6_tables iptable_filter sunrpc dm_mirror =
+dm_region_hash dm_log dm_mod x86_pkg_temp_thermal intel_powerclamp =
+coretemp kvm_intel iTCO_wdt gpio_ich iTCO_vendor_support mxm_wmi kvm =
+irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel =
+crypto_simd cryptd rapl joydev intel_cstate input_leds ftdi_sio pcspkr =
+i2c_i801 sg mei_me i2c_smbus intel_pch_thermal lpc_ich mei mfd_core =
+ioatdma wmi ip_tables ext4 mbcache jbd2 ast drm_vram_helper =
+drm_kms_helper ixgbe sr_mod sd_mod syscopyarea cdrom sysfillrect t10_pi =
+sysimgblt fb_sys_fops drm_ttm_helper ttm mdi
+Dec  2 08:43:15 10.243.0.116 [71855.839277]  drm ahci igb libahci libata =
+crc32c_intel ptp pps_core i2c_algo_bit dca fuse
+Dec  2 08:43:15 10.243.0.116 [71855.839318] CR2: 0000000000000004
+Dec  2 08:43:16 10.243.0.116 [71856.179377] ---[ end trace =
+fa2b3c78041cd9cc ]---
+Dec  2 08:43:16 10.243.0.116 [71856.190886] RIP: =
+0010:do_raw_spin_lock+0x70/0x1e0
+Dec  2 08:43:16 10.243.0.116 [71856.190897] Code: 41 48 c7 45 88 10 4f =
+1a 81 c7 00 f1 f1 f1 f1 c7 40 04 04 f2 f2 f2 65 48 8b 04 25 28 00 00 00 =
+48 89 45 d0 31 c0 e8 70 a9 33 00 <8b> 43 04 3d ad 4e ad de 0f 85 d7 00 =
+00 00 4c 8d 73 10 4c 89 f7 e8
+Dec  2 08:43:16 10.243.0.116 [71856.190903] RSP: 0018:ffff888105117868 =
+EFLAGS: 00010082
+Dec  2 08:43:16 10.243.0.116 [71856.190909] RAX: 0000000000000001 RBX: =
+0000000000000000 RCX: ffffffff811a5187
+Dec  2 08:43:16 10.243.0.116 [71856.190913] RDX: 0000000000000003 RSI: =
+dffffc0000000000 RDI: ffffffff8329cea0
+Dec  2 08:43:16 10.243.0.116 [71856.190917] RBP: ffff8881051178f0 R08: =
+fffffbfff06539d5 R09: fffffbfff06539d5
+Dec  2 08:43:16 10.243.0.116 [71856.190921] R10: ffffffff8329cea3 R11: =
+fffffbfff06539d4 R12: 1ffff11020a22f0d
+Dec  2 08:43:16 10.243.0.116 [71856.190925] R13: ffff8881051178c8 R14: =
+0000000000000000 R15: ffff888124d71968
+Dec  2 08:43:16 10.243.0.116 [71856.190929] FS:  00007f5f55ffd700(0000) =
+GS:ffff8883de400000(0000) knlGS:0000000000000000
+Dec  2 08:43:16 10.243.0.116 [71856.190934] CS:  0010 DS: 0000 ES: 0000 =
+CR0: 0000000080050033
+Dec  2 08:43:16 10.243.0.116 [71856.190938] CR2: 0000000000000004 CR3: =
+00000001ed95c004 CR4: 00000000003706e0
+Dec  2 08:43:16 10.243.0.116 [71856.190941] DR0: 0000000000000000 DR1: =
+0000000000000000 DR2: 0000000000000000
+Dec  2 08:43:16 10.243.0.116 [71856.190944] DR3: 0000000000000000 DR6: =
+00000000fffe0ff0 DR7: 0000000000000400
+Dec  2 08:43:16 10.243.0.116 [71856.190949] Kernel panic - not syncing: =
+Fatal exception
+Dec  2 08:43:16 10.243.0.116 [71857.263519] Shutting down cpus with NMI
+Dec  2 08:43:16 10.243.0.116 [71857.263528] Kernel Offset: 0x0 from =
+0xffffffff81000000 (relocation range: =
+0xffffffff80000000-0xffffffffbfffffff)
+------=_NextPart_001_0229_01D9062A.CB7A18F0--
+
+------=_NextPart_000_0228_01D9062A.CB7A18F0
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFcgw
+ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
+aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
+WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
+U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
+XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
+X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
+nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
+PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
+dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
+LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
+Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
+XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
+3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
+WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
+bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
+BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
+MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
+b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
+MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
+SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
+b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
+ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
+6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
+jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
+UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
+NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
+TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
+V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
+6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
+B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
+AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
+Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
+AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
+DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
+b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
+KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
+JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
+J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF9TCCBN2gAwIBAgIRAJIF
+dv7a2pEWVMfTkiUaPlcwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
+cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
+aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
+cmUgRW1haWwgQ0EwHhcNMjIwMzEwMDAwMDAwWhcNMjMwMzEwMjM1OTU5WjCB9jEaMBgGA1UEFBMR
+KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
+ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
+EwpDYWxpZm9ybmlhMRIwEAYDVQQHEwlTYW4gRGllZ28xCzAJBgNVBAYTAlVTMRgwFgYDVQQDEw9S
+dXNzZWxsIEpvaG5zb24xMDAuBgkqhkiG9w0BCQEWIXJ1c3NlbGwuam9obnNvbkBrcmF0b3NkZWZl
+bnNlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnh/To9+nijBjtTASsMRaO4
+eMR3Oh755HRtJdmmnh8R22FPh0g7SqJ0LqsdxB+F2MZuiATU0yGTqCiipYr7rvJe84G+g7buxK89
+qShsTVKg7ho0hYqf5st4OofS70TU6tDSok5DonFeoP13o8WSDj6VaTCgdN4R2EpylpCbkwA0Ztab
+OVLXq2c3T/2lYz9E3FktVbyW/g98PMreSQw/YHHVJDHIjRVuHWPDXNxWgL8JhvmBgW/sM0+RbOEB
+d8BbpUDKKENyfyh7pyWDuaGdwXgZewYN/rsed9sY3CQbjXdPlkNs2hRr3OBF2x7/r2dxC1WcjAqX
+nFpkj5GgZAj9ylkCAwEAAaOCAdowggHWMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZQs/J4K0A
+MB0GA1UdDgQWBBQozNUBGAya4A+1PrjoDHHIppZKmDAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/
+BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1BgwrBgEEAbIx
+AQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0fBFMwUTBP
+oE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRp
+b25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAChklodHRw
+Oi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAsBgNVHREE
+JTAjgSFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wDQYJKoZIhvcNAQELBQADggEB
+AFr/GaEORVDnaQlG1aZnzFZxeaplFNh2DXG9CRzdu3U6HWBvAYgQqwVxvRD8O8omtchUCTyApdif
+jla9M2OlWeyyAqIvCLqgZu7R2YkDuKzrNkyug95yKSUuG6WnFyr62tmlm7/Z/BOwYKdDracwiiJf
+1nhhK9tCUhSLEWmNBv6z6rYmszNdajEGuJ4Om2ul76u21GZzvV9xAeCZtzbpQiVK+ib5T8fe/USd
+/GIJkUmeyLNip1x1UA6TWJQNM6Y6vBNj2juHeydhVYUwOwrNiBWfYvbzZgbcTkoPjC5zbNf1/ffM
+j37+cmagv+vKIk2eZNfvxAw2iHBK/+oQe8fqbZ0wggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06
+KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQGEwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEU
+MBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwG
+A1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAw
+MDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5j
+aGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNV
+BAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8
+gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUfItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9N
+xOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeWQcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6
+kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YBrf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlV
+x/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewDch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+Q
+U5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0O
+BBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYD
+VR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRp
+ZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUFBwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDov
+L2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzAB
+hhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0GCSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXe
+jpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1G
+wmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Y
+s7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJ
+JIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz
+9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG0
+3i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8
+q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQOZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15us
+wgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qodx/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucX
+qm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i5ZgtwCLXgAIe5W8mybM2JzGCBF0wggRZAgEB
+MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
+IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
+JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjIxMjAyMTU0ODA1WjAvBgkqhkiG9w0BCQQxIgQgaIId1nVdxH6ItlVKziSAQjpq
+Ge2UfY4C7KKhhaKfFoAwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
+AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
+AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
+cjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVT
+ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
+dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
+A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
+aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQAl
+kZhFFgN5M5/QWPPLYPjTZFfMIPs9mVs0/RWNW4HRVKypqIQjnVq5o87ecM+R69sKUMuCvng/wKRP
+/VZS8Sms7FTlTKSGRIjAIemWMlaSP0OuaQVdONGCoROGcHIMfejCi3rc5CxEnWolbA5HOzPauW72
+GNMbHGZ87MR2W1GsI726A6wSCDDC/knSOsE63puYBqhxWMkfWqF9HgqTwj3/vxqkHJZKNHMNq/gx
+MVp8TiPEVvO1hHKUqvQ3RiyIkfm7zovCPL8BuqHom2P3+ySU6pzDftISyhs/OXNQlQsNsR1yOJxZ
+dj1BICPAkVrWAAMhFXPlwommR3Z90WYxGQveAAAAAAAA
+
+------=_NextPart_000_0228_01D9062A.CB7A18F0--
