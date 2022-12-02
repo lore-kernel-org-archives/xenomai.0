@@ -1,22 +1,22 @@
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9558C4C89
-	for <xenomai@lists.linux.dev>; Fri,  2 Dec 2022 16:52:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DABF64C89
+	for <xenomai@lists.linux.dev>; Fri,  2 Dec 2022 17:23:48 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 1973210000B;
-	Fri,  2 Dec 2022 16:52:09 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id 99BC120004;
+	Fri,  2 Dec 2022 17:23:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1669999931;
+	t=1670001821;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=O7hQs5EA3KMEjRRAiun7tfW0imfaEQAuXyxAWvxFFsc=;
-	b=om4UjRFQ3utKGV7CJhHv4EYyozpux1gBDuNG/5n/F1GPYVZHukDlqUsYxLkdyA/rsXjHOw
-	erAWZP//hkXPEwg3/IUS7LPv7u1uwDXEcH1zI1EUxa0DoovjS5AEhqr/o8GNNzArtDtxny
-	Wz2Qn3yRIgEkGZRivZgoSp7rcbdw9Rif6jy2HBt4FBxE7D77ugqgGu0hHct9azodXWu2AJ
-	WYiCgRs8YfMz3fM4dKdErgbWSiuDmT71Fu19FGU7phe20dWdzBa/2u68+mriFN8zFRlwO6
-	TH4+PkJMMFD+Ob8T2pC8XXZV8mKluDvelpcxykQEduojGDza4mq2nvDcdvD6CA==
+	bh=HVktFcyujL61Bfm4m0Z+wHELOCQKhQFQsxFMhPdMfbg=;
+	b=dv9urQaZ4k9tipA6iJ7pZfizCdey3ozBF9QDVksq3hRDA4haS/W+JBG4dAkFwyPw2z3sQH
+	Z4yPaU8RMnEsX87rq2VjTzTxMybi32PRRbpRYI5xoXlNzY4XVjtM/WnAJyLFytzUU/KBxT
+	uvw/ku6cejTzrrX/XJ4oPJDFd7uyH0jAZa8QUsZ0WuJyjtQWmSu+2nRVWyBncBXDFBwLBm
+	21CwJB3gOCcV7q2PemZAXVO/wNUXLe2LhlOgKKRLX1RtxcMbVSH4fwQU98WcT7Sd9xKncW
+	8S87IQZWHQjvRcmy65eqIXWOOQfsRxUlBW5BBRy3GiDOYIhe+R0WybfqhNRZFA==
 References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <PH1P110MB10500F942C9666D27F48E154E2049@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <87v8ng3vv7.fsf@xenomai.org> <87edu2dh2j.fsf@xenomai.org>
@@ -41,9 +41,9 @@ To: Russell Johnson <russell.johnson@kratosdefense.com>
 Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
  <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
 Subject: Re: [External] - Re: EVL Memory
-Date: Fri, 02 Dec 2022 17:50:54 +0100
+Date: Fri, 02 Dec 2022 18:22:24 +0100
 In-reply-to: <PH1P110MB1050356B939910A6A0406B96E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87lenp7npi.fsf@xenomai.org>
+Message-ID: <87cz917m8z.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -72,9 +72,27 @@ Russell Johnson <russell.johnson@kratosdefense.com> writes:
 >
 > [[End of S/MIME Signed Part]]
 
-Ok, the crash in evl_requeue_mutex_wait() visible in this log gives some
-hint. I cannot reproduce this though, so this must be a very specific
-pattern.
+This should fix the null pointer issue. I'm still trying to figure out
+how the other issue can ever happen.
+
+diff --git a/kernel/evl/mutex.c b/kernel/evl/mutex.c
+index 16750fd193377..a74108fdc5ef6 100644
+--- a/kernel/evl/mutex.c
++++ b/kernel/evl/mutex.c
+@@ -727,6 +727,13 @@ bool evl_requeue_mutex_wait(struct evl_wait_channel *wchan,
+ 	assert_hard_lock(&wchan->lock);
+ 	assert_hard_lock(&waiter->lock);
+ 
++	/*
++	 * __evl_unlock_mutex() may run concurrently to us, dropping
++	 * ownership. Make sure we still have an owner.
++	 */
++	if (owner == NULL)
++		return false;
++
+ 	/*
+ 	 * To prevent ABBA, we may drop the waiter lock prior to
+ 	 * reacquiring it in a double locking sequence along with
 
 -- 
 Philippe.
