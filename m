@@ -1,34 +1,32 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 283922F56
-	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:25:40 +0000 (UTC)
-Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id DA1DAD247D
-	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:11:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ACDA1FA0
+	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:43:56 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 1916940005;
-	Sat,  3 Dec 2022 16:11:23 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id CFBD4240009;
+	Sat,  3 Dec 2022 16:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1670083884;
+	t=1670085828;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=HIHnpR+NKlYlRH7oQrw5wPQwSGWeEmy02V1VRvEzUs8=;
-	b=S+78nbpp9WEE18r9i/TPcDa8kMg7u5r0csFtMYkUILhu+T9yfk1qHPoCp7dQ1oIeafx8fG
-	Jhx+v325EIIw3M6Dg8csMiWCWzDNyWJzD3XWDtiit36wX332c2LQia4XZd8Eiw0Ao9nrPf
-	k1llTrkIcXqvEjfZnLqivcJvHdrHHv/QXKKy6jPpWr+zonwC6qQyG3jyeBrPyv3V4Vq2yP
-	ggk8ac1Ls5Wo75ZYFftzcI3gIHXsJml2tD4sskntcyF06yTXmNuaDKJf4euIHnqnLtXd12
-	mc0xGM0KnhBe52o+3XMhFQWli4iChBS66GAff8Lrjc5Y8dlpDOYmKOuvkqkJPA==
+	bh=1xQzGuAhv6EXeN2r7vr4oaFIbkpZLYujVqskBQfM4Zw=;
+	b=LtYWMLax+cb4Cb1z2iYqIU6nxhvOo5KXc6e7EeeqXTh/m0qZy+YrTwWImEzo8yjEDnw7c2
+	t6OoA+rvRFANANcTUoHVJoeufLHH6XgIi4aEHOs3cA5sV/17ZzbWiNWIdF4Bc7ACi+7pPM
+	PYSqu+szOEFlBQrgFROP5hvtgCqx10RMscaDvt/vEhjzwAxUviKbAe766ObU2U70Ay8x3h
+	XonakiZrqOn8UgKZ9Fw1LYobmGPzaDScvmXE6s6eXlzb2nA7asFPvcJ+igxJoQ71Tv1PHr
+	ARUiPTcwOKikPEn4w8mV3LhBGhD/xUV67n/X751gzDnfqCVOSvgJawlz7C6t2Q==
 References: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
+ <87mt84h3h0.fsf@xenomai.org>
 User-agent: mu4e 1.6.6; emacs 28.1
 From: Philippe Gerum <rpm@xenomai.org>
 To: Sri Subramanian <sridhar.subramanian@gmail.com>
 Cc: xenomai@lists.linux.dev
 Subject: Re: Xenomai crash in timer IRQ
-Date: Sat, 03 Dec 2022 17:06:11 +0100
-In-reply-to: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
-Message-ID: <87mt84h3h0.fsf@xenomai.org>
+Date: Sat, 03 Dec 2022 17:33:37 +0100
+In-reply-to: <87mt84h3h0.fsf@xenomai.org>
+Message-ID: <87ilish1z0.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,147 +36,75 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 
-Sri Subramanian <sridhar.subramanian@gmail.com> writes:
+Philippe Gerum <rpm@xenomai.org> writes:
 
-> Hello,
+> Sri Subramanian <sridhar.subramanian@gmail.com> writes:
 >
-> I have an application waking up every 500us (waiting with an
-> oob_read() on an EVL monotonic clock) and taking action.
->
-> The application also has an interface to enable/disable NTP and set
-> the clock manually. The system will run over days without any issues.
-> But if NTP is disabled, and the clock is set manually, then NTP is
-> re-enabled, a short time after (order of minutes), the OS crashes and
-> the system reboots. It is reproducible every time.
->
-> Should the monotonic clock be affected by an RTC clock setting? I was
-> assuming not, but I am not so sure now.
->
+>> Hello,
+>>
+>> I have an application waking up every 500us (waiting with an
+>> oob_read() on an EVL monotonic clock) and taking action.
+>>
+>> The application also has an interface to enable/disable NTP and set
+>> the clock manually. The system will run over days without any issues.
+>> But if NTP is disabled, and the clock is set manually, then NTP is
+>> re-enabled, a short time after (order of minutes), the OS crashes and
+>> the system reboots. It is reproducible every time.
+>>
 
-Not EVL_CLOCK_MONOTONIC.
+I cannot reproduce this using a plain hwclock -s while latmus
+runs.
 
-> Hardware environment: Raspberry PI CM4 with a standard CM4-IO board.
-> Xenomai tag: 5.15.77-evl-rebase
-> Stack and config as below:
+>> Should the monotonic clock be affected by an RTC clock setting? I was
+>> assuming not, but I am not so sure now.
+>>
 >
-> Thanks for any help,
-> Sri
-> ==========
-> [  363.094612] CPU: 3 PID: 706 Comm: EcatCyclic-tid_ Tainted: G
->  C        5.15.35-xeno-v5.15.77-evl1-rebase #1
-> [  363.094617] Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
-> [  363.094619] IRQ stage: Linux
-> [  363.094621] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  363.094626] pc : evl_get_timer_overruns+0x1b8/0x1c4
-> [  363.094630] lr : evl_get_timer_overruns+0x54/0x1c4
-> [  363.094634] sp : ffffffc00a283c40
-> [  363.094635] x29: ffffffc00a283c40 x28: 0000000000000000 x27: ffffff810103acc0
-> [  363.094642] x26: ffffff810103ac00 x25: ffffffc008deb320 x24: ffffffc008c6aae8
-> [  363.094647] x23: 0000000000000000 x22: ffffff81fefde3e0 x21: 0000000000000001
-> [  363.094652] x20: 000000548931dc32 x19: ffffff810103ac00 x18: 0000000000000000
-> [  363.094658] x17: 0000000000000000 x16: 0000000000000001 x15: 0000000000000000
-> [  363.094662] x14: 0000000000000000 x13: ffffffc00898a790 x12: 00000000fa83b2da
-> [  363.094667] x11: 0000000000000029 x10: 0000000000000930 x9 : ffffffc00a283c30
-> [  363.094673] x8 : ffffff811c496810 x7 : 000000000000b7df x6 : 00000004a520e245
-> [  363.094678] x5 : 00ffffffffffffff x4 : 0011bdb637657ad8 x3 : 000000000007a120
-> [  363.094683] x2 : 0000000000000001 x1 : 0000000000000005 x0 : 0000000000000005
-> [  363.094688] Call trace:
-> [  363.094691]  evl_get_timer_overruns+0x1b8/0x1c4
-> [  363.094695]  timerfd_oob_read+0x200/0x290
-> [  363.094701]  EVL_read+0x50/0xd0
-> [  363.094703]  handle_pipelined_syscall+0x218/0x260
-> [  363.094707]  __pipeline_syscall+0xe8/0x2a0
-> [  363.094710]  pipeline_syscall+0x64/0x110
-> [  363.094713]  el0_svc_common.constprop.0+0x48/0x12c
-> [  363.094719]  do_el0_svc+0x28/0x90
-> [  363.094722]  el0_svc+0x4c/0xd0
-> [  363.094728]  el0t_64_sync_handler+0xa4/0x130
-> [  363.094733]  el0t_64_sync+0x1a0/0x1a4
-> [  363.094736] ---[ end trace ac73e88b51a9ac19 ]---
-> [  363.094750] EVL: EcatCyclic-tid_706 resuming out-of-band [pid=706,
-> excpt=3, evl_get_timer_overruns+0x1bc/0x1c4]
-> [  363.094764] Unable to handle kernel paging request at virtual
-> address dead000000000108
-> [  363.094767] Mem abort info:
-> [  363.094768]   ESR = 0x96000044
-> [  363.094769]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [  363.094772]   SET = 0, FnV = 0
-> [  363.094774]   EA = 0, S1PTW = 0
-> [  363.094775]   FSC = 0x04: level 0 translation fault
-> [  363.094778] Data abort info:
-> [  363.094779]   ISV = 0, ISS = 0x00000044
-> [  363.094780]   CM = 0, WnR = 1
-> [  363.094782] [dead000000000108] address between user and kernel address ranges
-> [  363.094786] Internal error: Oops: 96000044 [#1] PREEMPT SMP
-> [  363.094789] Modules linked in: cdc_mbim cdc_wdm cdc_ncm cdc_ether
-> bcm2835_v4l2(C) bcm2835_mmal_vchiq(C) videobuf2_vmalloc
-> videobuf2_memops videobuf2_v4l2 videobuf2_common raspberrypi_hwmon
-> videodev mc vc4 cec drm_kms_helper snd_soc_core snd_pcm_dmaengine
-> snd_pcm snd_timer snd syscopyarea sysfillrect sysimgblt fb_sys_fops
-> i2c_gpio i2c_algo_bit ax88179_178a uio_pdrv_genirq uio nvmem_rmem
-> cfg80211 rfkill sch_fq_codel fuse drm drm_panel_orientation_quirks
-> backlight configfs ipv6
-> [  363.094828] CPU: 3 PID: 706 Comm: EcatCyclic-tid_ Tainted: G
-> WC        5.15.35-xeno-v5.15.77-evl1-rebase #1
-> [  363.094832] Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
-> [  363.094834] IRQ stage: EVL
-> [  363.094835] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  363.094839] pc : evl_get_timer_overruns+0xfc/0x1c4
-> [  363.094843] lr : evl_get_timer_overruns+0x54/0x1c4
-> [  363.094846] sp : ffffffc00a283c40
-> [  363.094847] x29: ffffffc00a283c40 x28: 0000000000000000 x27: ffffff810103acc0
-> [  363.094853] x26: ffffff810103ac00 x25: ffffffc008deb320 x24: ffffffc008c6aae8
-> [  363.094858] x23: 0000000000000000 x22: ffffff81fefde3e0 x21: 0000000000000001
-> [  363.094863] x20: 000000548931dc32 x19: ffffff810103ac00 x18: 0000000000000000
-> [  363.094868] x17: 0000000000000000 x16: 0000000000000001 x15: 0000000000000000
-> [  363.094873] x14: 0000000000000000 x13: ffffffc00898a790 x12: 00000000fa83b2da
-> [  363.094878] x11: 0000000000000029 x10: 0000000000000930 x9 : ffffffc00a283c30
-> [  363.094883] x8 : ffffff811c496810 x7 : 000000000000b7df x6 : 00000004a520e245
-> [  363.094887] x5 : 00ffffffffffffff x4 : 0011bdb637657ad8 x3 : 000000000007a120
-> [  363.094892] x2 : dead000000000100 x1 : 0000000000000005 x0 : dead000000000122
-> [  363.094897] Call trace:
-> [  363.094899]  evl_get_timer_overruns+0xfc/0x1c4
-> [  363.094903]  timerfd_oob_read+0x200/0x290
-> [  363.094907]  EVL_read+0x50/0xd0
-> [  363.094910]  handle_pipelined_syscall+0x218/0x260
-> [  363.094913]  __pipeline_syscall+0xe8/0x2a0
-> [  363.094916]  pipeline_syscall+0x64/0x110
-> [  363.094919]  el0_svc_common.constprop.0+0x48/0x12c
-> [  363.094923]  do_el0_svc+0x28/0x90
-> [  363.094926]  el0_svc+0x4c/0xd0
-> [  363.094931]  el0t_64_sync_handler+0xa4/0x130
-> [  363.094935]  el0t_64_sync+0x1a0/0x1a4
-> [  363.094940] Code: 0a010000 7100101f 54000621 a9410262 (f9000440)
+> Not EVL_CLOCK_MONOTONIC.
 >
-> ========
-> CONFIG_HAVE_ARCH_EVL=y
-> CONFIG_EVL=y
-> CONFIG_EVL_SCHED_QUOTA=y
-> # CONFIG_EVL_SCHED_TP is not set
-> # CONFIG_EVL_HIGH_PERCPU_CONCURRENCY is not set
-> CONFIG_EVL_RUNSTATS=y
-> # CONFIG_EVL_NET is not set
-> CONFIG_EVL_COREMEM_SIZE=2048
-> CONFIG_EVL_NR_THREADS=256
-> CONFIG_EVL_NR_MONITORS=512
-> CONFIG_EVL_NR_CLOCKS=8
-> CONFIG_EVL_NR_XBUFS=16
-> CONFIG_EVL_NR_PROXIES=64
-> CONFIG_EVL_NR_OBSERVABLES=64
-> CONFIG_EVL_LATENCY_USER=1500
-> CONFIG_EVL_LATENCY_KERNEL=1500
-> CONFIG_EVL_LATENCY_IRQ=500
-> CONFIG_EVL_DEBUG=y
-> CONFIG_EVL_DEBUG_CORE=y
-> CONFIG_EVL_DEBUG_MEMORY=y
-> CONFIG_EVL_DEBUG_WOLI=y
-> # CONFIG_EVL_DEBUG_NET is not set
-> CONFIG_EVL_WATCHDOG=y
-> CONFIG_EVL_WATCHDOG_TIMEOUT=4
-> CONFIG_EVL_LATMUS=y
-> CONFIG_EVL_HECTIC=y
-> ==========
+>> Hardware environment: Raspberry PI CM4 with a standard CM4-IO board.
+>> Xenomai tag: 5.15.77-evl-rebase
+>> Stack and config as below:
+>>
+>> Thanks for any help,
+>> Sri
+>> ==========
+>> [  363.094612] CPU: 3 PID: 706 Comm: EcatCyclic-tid_ Tainted: G
+>>  C        5.15.35-xeno-v5.15.77-evl1-rebase #1
+>> [  363.094617] Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+>> [  363.094619] IRQ stage: Linux
+>> [  363.094621] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>> [  363.094626] pc : evl_get_timer_overruns+0x1b8/0x1c4
+>> [  363.094630] lr : evl_get_timer_overruns+0x54/0x1c4
+>> [  363.094634] sp : ffffffc00a283c40
+>> [  363.094635] x29: ffffffc00a283c40 x28: 0000000000000000 x27: ffffff810103acc0
+>> [  363.094642] x26: ffffff810103ac00 x25: ffffffc008deb320 x24: ffffffc008c6aae8
+>> [  363.094647] x23: 0000000000000000 x22: ffffff81fefde3e0 x21: 0000000000000001
+>> [  363.094652] x20: 000000548931dc32 x19: ffffff810103ac00 x18: 0000000000000000
+>> [  363.094658] x17: 0000000000000000 x16: 0000000000000001 x15: 0000000000000000
+>> [  363.094662] x14: 0000000000000000 x13: ffffffc00898a790 x12: 00000000fa83b2da
+>> [  363.094667] x11: 0000000000000029 x10: 0000000000000930 x9 : ffffffc00a283c30
+>> [  363.094673] x8 : ffffff811c496810 x7 : 000000000000b7df x6 : 00000004a520e245
+>> [  363.094678] x5 : 00ffffffffffffff x4 : 0011bdb637657ad8 x3 : 000000000007a120
+>> [  363.094683] x2 : 0000000000000001 x1 : 0000000000000005 x0 : 0000000000000005
+>> [  363.094688] Call trace:
+>> [  363.094691]  evl_get_timer_overruns+0x1b8/0x1c4
+>> [  363.094695]  timerfd_oob_read+0x200/0x290
 
+Since the crash is easily reproducible, you should be able to trace it
+directly into the kernel code, i.e. from evl_get_timer_overruns(), to
+figure out which line is causing this. Or you could disassemble your
+vmlinux image compiled with CONFIG_DEBUG_INFO set, and look for a
+statement which matches $pc as reported in the register dump.
+
+I pushed a change addressing a potential load tearing issue in the timer
+code to the next-evl-rebase. I don't think this fixes the issue you
+observed, but at the very least you may want that change in.
+
+Next step for you would be to enable the ftracer (using next-evl-rebase,
+it contains fixes you need for tracing), then post a snapshot of the
+global trace buffer until the crash happens. ftrace_dump_on_oops may be
+useful if you cannot access the machine after the oops, with a bit of
+luck the snapshot should be sent to the console stream.
 
 -- 
 Philippe.
