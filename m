@@ -1,53 +1,34 @@
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D9333C1
-	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:03:38 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::221])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id BD6E7D6F20
-	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 15:46:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 283922F56
+	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:25:40 +0000 (UTC)
+Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id DA1DAD247D
+	for <xenomai@lists.linux.dev>; Sat,  3 Dec 2022 16:11:31 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id BE170240005;
-	Sat,  3 Dec 2022 15:46:09 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id 1916940005;
+	Sat,  3 Dec 2022 16:11:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1670082370;
+	t=1670083884;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=pWBhMypqi/ejETJKPSkSOrS3qo7865hWET7PPNSifWI=;
-	b=d6Vw8Q6hVVtzAN4swwFPL5COyCts4UaIMUzJKvUZdAReRgjIf+V1CDxm0q7GUHBPzcnVlk
-	kk1G/KbJkA7z3cvoJI7Id6ynNvWmqtQQxQ1I6fVhO0AGJ4h3t8mDEW0pbSmAqs15vjcRtv
-	JwC3rzChu/KWeadyDsvUB2odShUvLf6PcUOEpvq1hsunkmHkKXg9tWS5IHY3IOGbFKdBWn
-	TVHC/MrP01JilJf5sIU12M7pIZA9vauuC+8qeZ7kXbsvPJYEuLCuClPnAXzK8pX0iEw+kn
-	RLvopFY+uLcHJ0IrwqNqtzyTAs3nnwIK7lmAQE5uDJ3O2Byd4IofIZI73O/uuw==
-References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10505104BB0814A3F46A86BCE2079@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
- <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <877czothz0.fsf@xenomai.org>
- <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87h6yj6mvg.fsf@xenomai.org>
- <PH1P110MB1050D4E123EE6368D98E071AE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <0082bff2d91b0125ac60050159d3003e64b45bffa35e0c4f0ed9799e38b97b8c@mu>
- <87h6ygwi2l.fsf@xenomai.org> <875yevw5ln.fsf@xenomai.org>
- <PH1P110MB1050DA6B7C1C21B2866038CCE2149@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <871qpiw3zd.fsf@xenomai.org>
- <PH1P110MB105039710BB301C7126FF2D9E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87wn797rj3.fsf@xenomai.org>
- <PH1P110MB1050356B939910A6A0406B96E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87cz917m8z.fsf@xenomai.org>
- <PH1P110MB1050E66FF8CC978CF642CDF8E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <87v8mshg4n.fsf@xenomai.org>
+	bh=HIHnpR+NKlYlRH7oQrw5wPQwSGWeEmy02V1VRvEzUs8=;
+	b=S+78nbpp9WEE18r9i/TPcDa8kMg7u5r0csFtMYkUILhu+T9yfk1qHPoCp7dQ1oIeafx8fG
+	Jhx+v325EIIw3M6Dg8csMiWCWzDNyWJzD3XWDtiit36wX332c2LQia4XZd8Eiw0Ao9nrPf
+	k1llTrkIcXqvEjfZnLqivcJvHdrHHv/QXKKy6jPpWr+zonwC6qQyG3jyeBrPyv3V4Vq2yP
+	ggk8ac1Ls5Wo75ZYFftzcI3gIHXsJml2tD4sskntcyF06yTXmNuaDKJf4euIHnqnLtXd12
+	mc0xGM0KnhBe52o+3XMhFQWli4iChBS66GAff8Lrjc5Y8dlpDOYmKOuvkqkJPA==
+References: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
 User-agent: mu4e 1.6.6; emacs 28.1
 From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
-Subject: Re: [External] - Re: EVL Memory
-Date: Sat, 03 Dec 2022 16:44:55 +0100
-In-reply-to: <87v8mshg4n.fsf@xenomai.org>
-Message-ID: <87r0xgh4n2.fsf@xenomai.org>
+To: Sri Subramanian <sridhar.subramanian@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: Xenomai crash in timer IRQ
+Date: Sat, 03 Dec 2022 17:06:11 +0100
+In-reply-to: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
+Message-ID: <87mt84h3h0.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -57,31 +38,147 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 
-Philippe Gerum <rpm@xenomai.org> writes:
+Sri Subramanian <sridhar.subramanian@gmail.com> writes:
 
-> Russell Johnson <russell.johnson@kratosdefense.com> writes:
+> Hello,
 >
->> [[S/MIME Signed Part:Undecided]]
->> I added in your patches and rebuilt with lockdep disabled and with ftrace
->> disabled (since the ftrace seems to be killing the system). I did see a
->> couple brief kernel splats that I figured I would at least ship your way to
->> see if they are important.
->>
->> Thanks,
->>
->> Russell
->>
->> [2. text/plain; stack_trace.txt]...
->>
->> [[End of S/MIME Signed Part]]
+> I have an application waking up every 500us (waiting with an
+> oob_read() on an EVL monotonic clock) and taking action.
 >
-> These warnings relate to the same deboosting bug we have been chasing
-> lately. Still trying to reproduce this here, no luck so far.
+> The application also has an interface to enable/disable NTP and set
+> the clock manually. The system will run over days without any issues.
+> But if NTP is disabled, and the clock is set manually, then NTP is
+> re-enabled, a short time after (order of minutes), the OS crashes and
+> the system reboots. It is reproducible every time.
+>
+> Should the monotonic clock be affected by an RTC clock setting? I was
+> assuming not, but I am not so sure now.
+>
 
+Not EVL_CLOCK_MONOTONIC.
 
-Please try the current tip of next-evl, which includes this fix [1].
+> Hardware environment: Raspberry PI CM4 with a standard CM4-IO board.
+> Xenomai tag: 5.15.77-evl-rebase
+> Stack and config as below:
+>
+> Thanks for any help,
+> Sri
+> ==========
+> [  363.094612] CPU: 3 PID: 706 Comm: EcatCyclic-tid_ Tainted: G
+>  C        5.15.35-xeno-v5.15.77-evl1-rebase #1
+> [  363.094617] Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+> [  363.094619] IRQ stage: Linux
+> [  363.094621] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  363.094626] pc : evl_get_timer_overruns+0x1b8/0x1c4
+> [  363.094630] lr : evl_get_timer_overruns+0x54/0x1c4
+> [  363.094634] sp : ffffffc00a283c40
+> [  363.094635] x29: ffffffc00a283c40 x28: 0000000000000000 x27: ffffff810103acc0
+> [  363.094642] x26: ffffff810103ac00 x25: ffffffc008deb320 x24: ffffffc008c6aae8
+> [  363.094647] x23: 0000000000000000 x22: ffffff81fefde3e0 x21: 0000000000000001
+> [  363.094652] x20: 000000548931dc32 x19: ffffff810103ac00 x18: 0000000000000000
+> [  363.094658] x17: 0000000000000000 x16: 0000000000000001 x15: 0000000000000000
+> [  363.094662] x14: 0000000000000000 x13: ffffffc00898a790 x12: 00000000fa83b2da
+> [  363.094667] x11: 0000000000000029 x10: 0000000000000930 x9 : ffffffc00a283c30
+> [  363.094673] x8 : ffffff811c496810 x7 : 000000000000b7df x6 : 00000004a520e245
+> [  363.094678] x5 : 00ffffffffffffff x4 : 0011bdb637657ad8 x3 : 000000000007a120
+> [  363.094683] x2 : 0000000000000001 x1 : 0000000000000005 x0 : 0000000000000005
+> [  363.094688] Call trace:
+> [  363.094691]  evl_get_timer_overruns+0x1b8/0x1c4
+> [  363.094695]  timerfd_oob_read+0x200/0x290
+> [  363.094701]  EVL_read+0x50/0xd0
+> [  363.094703]  handle_pipelined_syscall+0x218/0x260
+> [  363.094707]  __pipeline_syscall+0xe8/0x2a0
+> [  363.094710]  pipeline_syscall+0x64/0x110
+> [  363.094713]  el0_svc_common.constprop.0+0x48/0x12c
+> [  363.094719]  do_el0_svc+0x28/0x90
+> [  363.094722]  el0_svc+0x4c/0xd0
+> [  363.094728]  el0t_64_sync_handler+0xa4/0x130
+> [  363.094733]  el0t_64_sync+0x1a0/0x1a4
+> [  363.094736] ---[ end trace ac73e88b51a9ac19 ]---
+> [  363.094750] EVL: EcatCyclic-tid_706 resuming out-of-band [pid=706,
+> excpt=3, evl_get_timer_overruns+0x1bc/0x1c4]
+> [  363.094764] Unable to handle kernel paging request at virtual
+> address dead000000000108
+> [  363.094767] Mem abort info:
+> [  363.094768]   ESR = 0x96000044
+> [  363.094769]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [  363.094772]   SET = 0, FnV = 0
+> [  363.094774]   EA = 0, S1PTW = 0
+> [  363.094775]   FSC = 0x04: level 0 translation fault
+> [  363.094778] Data abort info:
+> [  363.094779]   ISV = 0, ISS = 0x00000044
+> [  363.094780]   CM = 0, WnR = 1
+> [  363.094782] [dead000000000108] address between user and kernel address ranges
+> [  363.094786] Internal error: Oops: 96000044 [#1] PREEMPT SMP
+> [  363.094789] Modules linked in: cdc_mbim cdc_wdm cdc_ncm cdc_ether
+> bcm2835_v4l2(C) bcm2835_mmal_vchiq(C) videobuf2_vmalloc
+> videobuf2_memops videobuf2_v4l2 videobuf2_common raspberrypi_hwmon
+> videodev mc vc4 cec drm_kms_helper snd_soc_core snd_pcm_dmaengine
+> snd_pcm snd_timer snd syscopyarea sysfillrect sysimgblt fb_sys_fops
+> i2c_gpio i2c_algo_bit ax88179_178a uio_pdrv_genirq uio nvmem_rmem
+> cfg80211 rfkill sch_fq_codel fuse drm drm_panel_orientation_quirks
+> backlight configfs ipv6
+> [  363.094828] CPU: 3 PID: 706 Comm: EcatCyclic-tid_ Tainted: G
+> WC        5.15.35-xeno-v5.15.77-evl1-rebase #1
+> [  363.094832] Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+> [  363.094834] IRQ stage: EVL
+> [  363.094835] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  363.094839] pc : evl_get_timer_overruns+0xfc/0x1c4
+> [  363.094843] lr : evl_get_timer_overruns+0x54/0x1c4
+> [  363.094846] sp : ffffffc00a283c40
+> [  363.094847] x29: ffffffc00a283c40 x28: 0000000000000000 x27: ffffff810103acc0
+> [  363.094853] x26: ffffff810103ac00 x25: ffffffc008deb320 x24: ffffffc008c6aae8
+> [  363.094858] x23: 0000000000000000 x22: ffffff81fefde3e0 x21: 0000000000000001
+> [  363.094863] x20: 000000548931dc32 x19: ffffff810103ac00 x18: 0000000000000000
+> [  363.094868] x17: 0000000000000000 x16: 0000000000000001 x15: 0000000000000000
+> [  363.094873] x14: 0000000000000000 x13: ffffffc00898a790 x12: 00000000fa83b2da
+> [  363.094878] x11: 0000000000000029 x10: 0000000000000930 x9 : ffffffc00a283c30
+> [  363.094883] x8 : ffffff811c496810 x7 : 000000000000b7df x6 : 00000004a520e245
+> [  363.094887] x5 : 00ffffffffffffff x4 : 0011bdb637657ad8 x3 : 000000000007a120
+> [  363.094892] x2 : dead000000000100 x1 : 0000000000000005 x0 : dead000000000122
+> [  363.094897] Call trace:
+> [  363.094899]  evl_get_timer_overruns+0xfc/0x1c4
+> [  363.094903]  timerfd_oob_read+0x200/0x290
+> [  363.094907]  EVL_read+0x50/0xd0
+> [  363.094910]  handle_pipelined_syscall+0x218/0x260
+> [  363.094913]  __pipeline_syscall+0xe8/0x2a0
+> [  363.094916]  pipeline_syscall+0x64/0x110
+> [  363.094919]  el0_svc_common.constprop.0+0x48/0x12c
+> [  363.094923]  do_el0_svc+0x28/0x90
+> [  363.094926]  el0_svc+0x4c/0xd0
+> [  363.094931]  el0t_64_sync_handler+0xa4/0x130
+> [  363.094935]  el0t_64_sync+0x1a0/0x1a4
+> [  363.094940] Code: 0a010000 7100101f 54000621 a9410262 (f9000440)
+>
+> ========
+> CONFIG_HAVE_ARCH_EVL=y
+> CONFIG_EVL=y
+> CONFIG_EVL_SCHED_QUOTA=y
+> # CONFIG_EVL_SCHED_TP is not set
+> # CONFIG_EVL_HIGH_PERCPU_CONCURRENCY is not set
+> CONFIG_EVL_RUNSTATS=y
+> # CONFIG_EVL_NET is not set
+> CONFIG_EVL_COREMEM_SIZE=2048
+> CONFIG_EVL_NR_THREADS=256
+> CONFIG_EVL_NR_MONITORS=512
+> CONFIG_EVL_NR_CLOCKS=8
+> CONFIG_EVL_NR_XBUFS=16
+> CONFIG_EVL_NR_PROXIES=64
+> CONFIG_EVL_NR_OBSERVABLES=64
+> CONFIG_EVL_LATENCY_USER=1500
+> CONFIG_EVL_LATENCY_KERNEL=1500
+> CONFIG_EVL_LATENCY_IRQ=500
+> CONFIG_EVL_DEBUG=y
+> CONFIG_EVL_DEBUG_CORE=y
+> CONFIG_EVL_DEBUG_MEMORY=y
+> CONFIG_EVL_DEBUG_WOLI=y
+> # CONFIG_EVL_DEBUG_NET is not set
+> CONFIG_EVL_WATCHDOG=y
+> CONFIG_EVL_WATCHDOG_TIMEOUT=4
+> CONFIG_EVL_LATMUS=y
+> CONFIG_EVL_HECTIC=y
+> ==========
 
-[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/722ded4782f949e95e36ffad248a8f63c6446c4c
 
 -- 
 Philippe.
