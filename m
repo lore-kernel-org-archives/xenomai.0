@@ -1,140 +1,89 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1067C
-	for <xenomai@lists.linux.dev>; Sun,  4 Dec 2022 07:34:48 +0000 (UTC)
-Received: by mail-ed1-f48.google.com with SMTP id v8so11793356edi.3
-        for <xenomai@lists.linux.dev>; Sat, 03 Dec 2022 23:34:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jWZ5UvZydwOE8Zc0xDO3u63n9hPqMkeCsQmd2Rx93kc=;
-        b=ggIyyqf5Iim4BCsvYtzoe5fm41uCQl2jPtWEUuav6kHilSYRJeZlZdRlP2d2S4po9J
-         LytnDw3sYn3W0hwUcs4h7TMZtIhu0m7BJGOnVmzVJC3zCt8nT5xXu4p88nTjW2ggIwRx
-         T5o7ka71xw8Em8JKZU0CrgNXnEJEUwovaoXosb1rx0GidTMQOZs0EHJhGLouX1L4cedh
-         o36d3PPvCXdQ+m+jePFu1t0JXasRMZmrARdcqXjnl+qM0Tr4sLYYtLf5eNwN7d8hRIK/
-         afmMvP7iH/7sEibBOTzQBmvmd4D54pKqGukfKrNePgOnkg5fKSRymUZ7B95n3aZ7qWSy
-         FJBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jWZ5UvZydwOE8Zc0xDO3u63n9hPqMkeCsQmd2Rx93kc=;
-        b=ZUqCTw0Zhnac/cCz9l4s5ZXPjwLxJJwBzN6L0waxPM3miCNgZOrwJpcN5TISjFQYFj
-         aH8su1oh7EoD1SMrTTuuB80w7N8CNobkwjV+NtZR2lFpT/sapOZs2vIaNTPGMy/Igt9G
-         sHJavTNveVdsosvJc7+XQlaRGCDoa/hUpyy2I7tbrfrSDQP26sw20wCAqJwf2Y9YqS2Y
-         eez2OyCiMYVBPeHVDXTAN1xORv5O8ATJrqZDgW24XLz9t9gexnaNSubOu850mDqgAuhP
-         itX3HlZEcS1dhbf3K1mfc+ChwNzK32tas0UgCQ43k1Ycf+kjLeJ4326kTXwhFZxoPpPi
-         V8Tg==
-X-Gm-Message-State: ANoB5pmWcW3TMn2UXu1HJuwKVAjx56cncJAtpcsiGvtnJ9H6nZV7uBCY
-	Jt67QwFLo7KVjgZtGGNguc4USK4CRhZx+i+QPuMmRcEh+GY=
-X-Google-Smtp-Source: AA0mqf4cJWgIKLvOXLMeT2Fu8wlx6YKEnp1vCMe8iP5NXQ0JGs1lSfJDUeHY4dy27Di0otw5gIN7gIvFcZFM8fAKgpg=
-X-Received: by 2002:a05:6402:181:b0:461:ea0c:e151 with SMTP id
- r1-20020a056402018100b00461ea0ce151mr55175418edv.376.1670139286116; Sat, 03
- Dec 2022 23:34:46 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C99B4259B
+	for <xenomai@lists.linux.dev>; Sun,  4 Dec 2022 11:11:11 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id E0D6460003;
+	Sun,  4 Dec 2022 11:11:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1670152269;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jO//WSfBr08d0OeUGhC0jYZYh/sO2n/bcue5Ah14+E4=;
+	b=APohDJvLIZGlNJ3LHi85VlUqbFNrcDUxEqHImLA41RF5BEnH/9/oTA1wADkoERVycTDfaY
+	4LVbM25797nRbcjTxiS7O7qJOiRRoABssVERKKEqQJpVlNbmrRGlZ+iqWAGzSs4ojeUngc
+	D+ZrQRVBqwudgeHo5VU8c9apvILCO+MPnQtXq2640zjLvg8OAAvey46GiSmpkdNrQpoDeS
+	kXZOa5r5+KePQinSQoAIAZXn0rYzK2CoCjmD3KQnHAKUsGf3x1MBalZH6MQBREms+kATkF
+	Lih6pQs11w7cwz9ALpY6O08jsdU7l9f30OVk+YMvy2JC3IWmOf1u+cgptRnSig==
+References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87tu2xbk5k.fsf@xenomai.org> <87cz9kbrkr.fsf@xenomai.org>
+ <PH1P110MB105079B5A344B300F33874E3E2089@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877czothz0.fsf@xenomai.org>
+ <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87h6yj6mvg.fsf@xenomai.org>
+ <PH1P110MB1050D4E123EE6368D98E071AE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <0082bff2d91b0125ac60050159d3003e64b45bffa35e0c4f0ed9799e38b97b8c@mu>
+ <87h6ygwi2l.fsf@xenomai.org> <875yevw5ln.fsf@xenomai.org>
+ <PH1P110MB1050DA6B7C1C21B2866038CCE2149@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <871qpiw3zd.fsf@xenomai.org>
+ <PH1P110MB105039710BB301C7126FF2D9E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87wn797rj3.fsf@xenomai.org>
+ <PH1P110MB1050356B939910A6A0406B96E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87cz917m8z.fsf@xenomai.org>
+ <PH1P110MB1050E66FF8CC978CF642CDF8E2179@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <87v8mshg4n.fsf@xenomai.org> <87r0xgh4n2.fsf@xenomai.org>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
+ <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
+Subject: Re: [External] - Re: EVL Memory
+Date: Sun, 04 Dec 2022 12:05:10 +0100
+In-reply-to: <87r0xgh4n2.fsf@xenomai.org>
+Message-ID: <87mt83zano.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Steve Rosenbluth <stever8@gmail.com>
-Date: Sat, 3 Dec 2022 23:34:33 -0800
-Message-ID: <CAExw09DoupMN0cZDTYA0ouYT6MRe0KPzYSunOifMNG78EO4doQ@mail.gmail.com>
-Subject: Calibrating TSC with HPET timer
-To: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 
-On the last community call I promised to report back the results of my
-RTDM module TSC calibration vs the kernel's TSC calibration.
+a
+Philippe Gerum <rpm@xenomai.org> writes:
 
-The original problem was that of varying TSC frequency on boot of x86
-i5/i7/Atom processors. This is not runtime TSC drift, this is the TSC
-starting up at a significantly different frequency at boot time and
-then staying at that frequency. The TSC rate variation manifests
-itself as over 1.0usec discrepancy in the period of a Xenomai periodic
-task - such that a Xenomai RT periodic task doesn't run at the same
-rate across cold boots.
+> Philippe Gerum <rpm@xenomai.org> writes:
+>
+>> Russell Johnson <russell.johnson@kratosdefense.com> writes:
+>>
+>>> [[S/MIME Signed Part:Undecided]]
+>>> I added in your patches and rebuilt with lockdep disabled and with ftrace
+>>> disabled (since the ftrace seems to be killing the system). I did see a
+>>> couple brief kernel splats that I figured I would at least ship your way to
+>>> see if they are important.
+>>>
+>>> Thanks,
+>>>
+>>> Russell
+>>>
+>>> [2. text/plain; stack_trace.txt]...
+>>>
+>>> [[End of S/MIME Signed Part]]
+>>
+>> These warnings relate to the same deboosting bug we have been chasing
+>> lately. Still trying to reproduce this here, no luck so far.
+>
+>
+> Please try the current tip of next-evl, which includes this fix [1].
+>
+> [1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/commit/722ded4782f949e95e36ffad248a8f63c6446c4c
 
-Recently Hongzhan created an ipipe patch to re-read the kernels
-ongoing calibration, which is available as of Xenomai 3 kernels
-4.19.246 and above.
-https://source.denx.de/Xenomai/ipipe-x86/-/commit/24c2fbb40b03aef678fe9cc062badc2e8cfd985c
-The patch adds to tsc.c : __ipipe_report_clockfreq_update()
+This patch is ironing an important code path, but I just managed to
+reproduce a deboosting issue for the first time. I would suggest to wait
+until I can issue a patch fixing it before testing the next-evl branch.
 
-My manual calibration consisted of busy-looping in a RTDM module for 5
-seconds, and comparing TSC clock ticks to HPET clock ticks. Applying
-the resultant calibration factor I could get my RT-userspace periodic
-task to run at a consistent rate across cold boots of the PC, with a
-period deviation of only about +/-2nsec as measured on a calibrated
-external frequency counter.
-
-So the answer to the big question is that Hongzhan's patch for using
-the kernel calibration achieves exactly the same thing, the RT task
-period variation is equally as accurate (+/-2nsec). As a matter of
-fact it appears the kernel is using the HPET for its calibration too,
-because I see on the frequency counter the same constant error in the
-kernel's calibration versus my RTDM calibration (HPET is always off by
-about 40nsec, but with a static scaling factor the RT task period is
-made perfect). I tested with Xeno 3.1.2 and the latest ipipe patch
-ipipe-core-4.19.264-cip84-x86-24.patch.
-
-An example of printed output from dmesg is as follows:
-[ 7235.365194] * Xeno TSC monotonic clock delta was 4999510139 ns
-[ 7235.365196] * hpet actual clock delta was 5000000139 ns
- * calib adjustment factor == 0.999902000
-
-The way I did the calibration in an RTDM module on Xenomai 3 is in the
-code below. We are using this approach now in our legacy Xenomai 2.6.5
-systems and it works well. Note that you can't do floating point in an
-RTDM module on Xeno 2.6 but you can pass the TSC/HPET clock ticks via
-shared memory from the RTDM module to your RT periodic task where you
-can calculate the calibration scaling factor.
-
-hpet_freq_p = (int *) kallsyms_lookup_name("hpet_freq");  // HPET frequency
-if (hpet_freq_p)            // if kernel has exported the needed symbol
-{
-   rtdm_printk("* hpet clock freq, according to kernel, is: %d\n",
-*hpet_freq_p);
-   hpet_period = 1.0/(double)*hpet_freq_p;        // hpet_freq has
-been determined by the kernel
-   calib_period_ns =  5000000000;                  // calibrate for
-this many nsec
-   read_hpet_p = (void *) kallsyms_lookup_name("read_hpet");    // get
-access to kernel's read function
-   if (read_hpet_p > 0)
-   {
-      rtdm_printk("* Starting TSC calibration, calib duration will be
-%lld sec.\n",calib_period_ns);
-      tod1 = (*read_hpet_p)(NULL);      // get (hpet) wall clock
-      xeno_start_time_ns = rtdm_clock_read_monotonic();  // Xeno
-monotonic clock, based on TSE
-      do
-      {
-          tod2 = (*read_hpet_p)(NULL);      // Xeno reads wall clock
-      }
-      while ( (tod2*hpet_period*1000000000.0) <
-((tod1*hpet_period*1000000000.0) + calib_period_ns) );
-      xeno_stop_time_ns = rtdm_clock_read_monotonic();
-      delta_monotonic_ns = xeno_stop_time_ns - xeno_start_time_ns;
-      delta_hpet_ns = (long long)((tod2-tod1)*hpet_period*1000000000.0);
-      shmem_p->calib_clock_adjust =
-(double)delta_monotonic_ns/(double)delta_hpet_ns;  // will use this to
-adjust period
-      rtdm_printk("* Xeno TSC monotonic clock delta was %lld ns\n",
-delta_monotonic_ns );
-      rtdm_printk("* hpet actual clock delta was %lld ns\n", delta_hpet_ns);
-   }
-   else
-   {
-      rtdm_printk("* Problem getting read_hpet() handle!\n");
-      shmem_p->calib_clock_adjust = 1.0;         // don't use this
-clock for calibration
-   }
-}
-else
-   rtdm_printk("* Problem getting 'hpet_freq' handle! Will skip
-calibration.\n");
-
--Steve Rosenbluth
+-- 
+Philippe.
