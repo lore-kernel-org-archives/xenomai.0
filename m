@@ -1,23 +1,24 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB87AEB11
-	for <xenomai@lists.linux.dev>; Mon,  5 Dec 2022 08:41:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7385917E0
+	for <xenomai@lists.linux.dev>; Mon,  5 Dec 2022 08:48:26 +0000 (UTC)
 Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id AF9DFE0007;
-	Mon,  5 Dec 2022 08:40:54 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id 32EBF1BF217;
+	Mon,  5 Dec 2022 08:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1670229655;
+	t=1670230099;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=BHtnaxXIhMblnWxsNiqbs2X2KWOSjbxEFBVyyK0CW/s=;
-	b=p7DGOBI80HyAr2YUOd3eZrPyatCdFiu4zR5NcF+5iYAmMKPHwTpWG98Wo8Hq2NxMYfdyeE
-	tJJ4kk6rEk2G5HmPk80wr2IXMcV6EmnmgQJclp5irFArr/l8O1ry33MHDkLI+0Xuxdagp1
-	aasyyF4H/dj1fl3AWo5Fh9XnWVn0/My/Le1Ke/+yVSUqk4uhT9fqT15CIfTmfmKerpVd6M
-	FEGgQJcT8NdjpXf4CDHgPI+6nx2+CDSSRSeSXKXphZyLl4CyiNYw6YT4RYmCMYEj1Aiu+n
-	HgtNAi7oIyjPE0KUXYC2I8pCPIn38VsvRwXJIkMOO/9epy2Qf1tjEL2NEzeCDA==
+	bh=KJ2yo8UcZpArZ/bkvD/FpXKPOT3JVkJdgFsPIvOLDlI=;
+	b=WKiYdB8d8IduGLSgMGO6yInhr0o6Ok7ySiiuZbpNZD+1CcYkVg/T1i3AAQABMNGZ3rOMid
+	qS1Cx0cU6exFjCNe9PDhBi58Zm46pIiCAZAtA2k5Q8Nikvg+XRtC2/DGNFPWv6Z222bvg7
+	obYH1lQCp42UwqAUJH5EQrSvsO/QuTm6kgKpOaqZ+GBo5ztx5CHpBy6BCueHuu5EKALyeb
+	LSz+j4LgkGDlleAl435FnaCyzUXaBIzaKJXDv7rUvh4PRt9XMJbngzpSTf9IPeo6IRY45g
+	QQbvACGyJ68Ql0+vogZZXnBjJFKG9shf86/XT4ulhSIfK38Sh5zkB34PgLQNhg==
 References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <877czothz0.fsf@xenomai.org>
  <BN2P110MB1288677543F1950D08808B3B8F0A9@BN2P110MB1288.NAMP110.PROD.OUTLOOK.COM>
  <PH1P110MB10502B0F1F62BFBA1CE3D3EBE2139@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
  <87h6yj6mvg.fsf@xenomai.org>
@@ -34,16 +35,15 @@ References: <PH1P110MB1050AD875FCD924D827A0A54E23E9@PH1P110MB1050.NAMP110.PROD.O
  <87v8mshg4n.fsf@xenomai.org> <87r0xgh4n2.fsf@xenomai.org>
  <87mt83zano.fsf@xenomai.org> <87iliryrgg.fsf@xenomai.org>
  <PH1P110MB1050A989B8056FC64EA8C093E2189@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <PH1P110MB1050AFF2769662D3ED430659E2189@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 User-agent: mu4e 1.6.6; emacs 28.1
 From: Philippe Gerum <rpm@xenomai.org>
 To: Russell Johnson <russell.johnson@kratosdefense.com>
 Cc: Bryan Butler <Bryan.Butler@kratosdefense.com>, "xenomai@lists.linux.dev"
  <xenomai@lists.linux.dev>, Shawn McManus <shawn.mcmanus@kratosdefense.com>
 Subject: Re: [External] - Re: EVL Memory
-Date: Mon, 05 Dec 2022 09:24:30 +0100
-In-reply-to: <PH1P110MB1050AFF2769662D3ED430659E2189@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87edtez1ih.fsf@xenomai.org>
+Date: Mon, 05 Dec 2022 09:45:24 +0100
+In-reply-to: <PH1P110MB1050A989B8056FC64EA8C093E2189@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87a642z166.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -56,22 +56,17 @@ Content-Type: text/plain
 Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
 > [[S/MIME Signed Part:Undecided]]
-> By the way, I did notice that in "evl ps -l", the WCHAN column lists
-> "(null)" for all EVL Threads. I believe it used to list stuff like
-> ksem->wait, so not sure if something changed there.
+> Just ran the latest kernel from the next branch with the lockdep turned back
+> on and ftrace off for now. Good news is that I no longer see a boosting
+> issue. Thanks again for the work to track that down. All that is left at the
+> moment is one lockdep kernel splat which may not be important, but I
+> attached anyway.
 >
->
 
-Nothing changed, I've been running evl ps loops here as well and did not
-notice any weirdness of that kind, this does not look good since the ABI
-did not change with these latest fixes.
-
-Generally speaking, evl ps extracts all the information it displays from
-/sys device files, as published by the real-time core. Could you check
-the values exported for threads manually? e.g.
-
-root@homelab-qemu-x86_64:/sys# cat /sys/devices/virtual/thread/Thread2/wchan 
-Event1
+I'll have a look at this one too, this is depending on
+CONFIG_DEBUG_LOCKDEP. I have not been able to reproduce it yet.  ftrace
+should be back to normal as well, I fixed the recently broken tracepoint
+causing crashes.
 
 -- 
 Philippe.
