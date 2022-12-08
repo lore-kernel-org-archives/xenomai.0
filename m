@@ -1,50 +1,50 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2071.outbound.protection.outlook.com [40.107.20.71])
+Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2089.outbound.protection.outlook.com [40.107.103.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C7702F3D
-	for <xenomai@lists.linux.dev>; Thu,  8 Dec 2022 13:49:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E392F3D
+	for <xenomai@lists.linux.dev>; Thu,  8 Dec 2022 13:53:31 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XO4vRJ5eS6DRtBDzqz1NZEqO8V88UQZKMufkL+fE/f6mJtW/GL7inQ3oc9/mqzH/qcoms5339KxpVGoMPRS4VjQbjC7jda24Cy+Wwtfq231NyED6ZfBq/JhWv/vS7Ni8Yokqr2MLAOHOTu6HkwyWHPLRdbDZIzU3nEc8mxenbwNV7dvQxMlMH7zoHyuumlAErg6SVzoAC3h7wyuxhoUoaeA9qyoYlLRvOSUztTwRvC4O8IY2tzRosJQbsH4qavfP1672sELyXVfkyBRmQzKGbtG5DGwGER4PrqftVsZelNcaVh8IIO0uC4LaOBwzMFiE4+B9VgOfKOqwat5NCKevLA==
+ b=PUVlkBDNzFBNHzzFi9dL0kvAD1MqOnPLSbrTbTxxGr9Goer5k+1JZnc0Gf0RahzYYtLQfCJBcr/CVU5pAvOCZZ8CGlIxgLLcG2yMEyhPOTyWq3pPjwW1dRnar13GAN/dJRF/7AVQD6FIHWNcVcYFkoG6+v9TVwOEYVnpjmgMeXwczLxi37mUFDX0uWg9RArLLdwtNQqsXDloCSHQ8APlGvJbjYkrqiHpkqaHsJBO4OG7gb4CMGT1EYUYMFVaFWNF8hCr1pYNfV/kQSl6fLWuTK5ZFXeCO5rshqM5TxvnuqN3GVkc4vOUWiBMdDy37wAWmlho80VIdy2eIzmfnpztfw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DnJhfhCtFNKdC2nVRrupWvpuN7Hs7I+gps4dvTyv9vU=;
- b=U6d1kojhYjTSkO/ONkIIrrhcsiRmUPiSSNSXKpyd0VI61GmspKVIg4U1ROkWWmnA1gdl44Cye5RTIogbN16RvnBCHWmCAi1Z/9Uy9LXOVQ+FQScDeClNEsWhlV/eMnOo4VuzyyTQDhjcx42VPSMeN4yrQnFt3vuUwFYR4Xx+NTilEipvZ61QmrKbGKvi1+nOssBxN7a0/ugV4W05NohNN6fw4myanD+ra6EoGWfohtQQwc0MKFIz+NSclPuYqOw6L77xFpq9SJMerE7/UEhp1ngd9iTT/k4vgrAOk+r78qLOQF4mEyDp6Rj6s14nYNz/o1/gKqseuHMzNH/uOYlJYw==
+ bh=7YC08dEDwHQFS62V/IK3JnYcNxuISMljTFM3TKBrX44=;
+ b=U0zGcakm++ryuDDH5otX64/LsSHbxmm5Lgvf0sBYrrDUgx513rT94nlJJHLy3gMJqgSDoW0OLpuhy+8VfSU/Vu1SU1ZuAhAdoQW7QnQDQYwcNUezYk9frKKNDHbsWSPpEBqIVk1P8s7nlyh4rqW2gk6vjCdryq3dDEEuw1xswIdB5WtZI9ghsUG9Eslw+7L4n8Jw4nrcRw1QsdXXG5158tPJM7dnF7OPKL0EiHD925LmfNXsgnHHYQkU6StR1m2sDSX6gW08DZ7Ufiu+QBf/GG43tMymX7YMeKTshGABY3E2O4RGTL0c4acbkCrHWrNeGyKXiBFxkkQnvkI6QOXQIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DnJhfhCtFNKdC2nVRrupWvpuN7Hs7I+gps4dvTyv9vU=;
- b=LjsiRx++b59xjXkcgeYFSG8crN+MA+F6BK/cuekWPbZJXDC2mnkj5dJ1k6XFX3V26ApYbR9CUNmG458wCYUFjHOnC38JZ2Q2vp0ACbDlXkN3wwWbMQi2e7a3YFWcokfBxOEJss+7OkUa8v0+5aEIbL/Rm/WJQYA9oTpovLPimrD/OZnNoJosvTyVnb1KWsaj5YaQVIOGONKiuMZr0oAXUgbx9GrAdwcUUDm6eEYN1axN6UAT/czGS9WIt4tKv3sirpdlPs5oyBPTzKKA6SKd5xMJxMEwZGoZqJO+7yFAHSCg6W2gZbWcRN2e+8W4G9Zf8A/gUvsSLbuozs/JqrOqrg==
+ bh=7YC08dEDwHQFS62V/IK3JnYcNxuISMljTFM3TKBrX44=;
+ b=HIfDGrrv5dUQYbuecMW9GMdGIp/JYBu5d7sDwgat6+WWUld0eFTOmctnv7hS3zRtsVFL1dTC2stHKMC12GswNVcnM4fxjL3XDOyjhLHnT449nphHNuFZiYZMryzY/A/jHq2hMzLPzDAuCEDMYi2UDXLOVM5t3d+vISi3lgBDsVPVRSdb7lFET+PD4WtAmsZHXlA+E+GT8OzN7Zhx4rAUZstOv82T2MzlTZ0zJuowOZH+eyGnwuTO/hIUEqdpzNhYYkR/MfbereOCLK5kxy7nzLhAyCLHemzt7uCwxNKCCLU/p6QCSWRWgPh7YKopiiHFABt8NAyTR4jyX1I6UpW+CQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB6682.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:83::8) with
+ by GV2PR10MB6935.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:db::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Thu, 8 Dec
- 2022 13:49:41 +0000
+ 2022 13:53:28 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a%9]) with mapi id 15.20.5880.014; Thu, 8 Dec 2022
- 13:49:41 +0000
-Message-ID: <d5bb587b-39ef-d2b5-7dcd-79e6543fe5bf@siemens.com>
-Date: Thu, 8 Dec 2022 14:49:39 +0100
+ 13:53:28 +0000
+Message-ID: <9aa8fee9-0700-6568-76d0-ef13e38ba87f@siemens.com>
+Date: Thu, 8 Dec 2022 14:53:25 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH v2 1/3] switchtest: split the set_mode method
+Subject: Re: [PATCH v2 2/3] switchtest: test multiple secondary switch cases
 Content-Language: en-US
 To: "T. Schaffner" <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
 Cc: florian.bezdeka@siemens.com
 References: <20221205152104.3555474-1-tobias.schaffner@siemens.com>
- <20221205152104.3555474-2-tobias.schaffner@siemens.com>
+ <20221205152104.3555474-3-tobias.schaffner@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20221205152104.3555474-2-tobias.schaffner@siemens.com>
+In-Reply-To: <20221205152104.3555474-3-tobias.schaffner@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0150.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:95::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR2P281CA0170.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:99::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -53,183 +53,287 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB6682:EE_
-X-MS-Office365-Filtering-Correlation-Id: 076f1a4f-864e-4ebb-310c-08dad9230e57
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV2PR10MB6935:EE_
+X-MS-Office365-Filtering-Correlation-Id: 90d72a5d-be32-430f-e933-08dad9239594
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	L8YrzYHrRWdsrLUJotzkvwIjKVwc6fYktiIxtBmTU0QosD6IXa/q44kiwPKdvQ5v6r7+vwxBVx7xxt8RqZj6tmn7EcfQ/27v+PYTJoGIhdnhg0Q6CpPs1gTjgWiyCOC9ODO26p+lX5kfe3f4tIk1y5uT/SZopORQ8G6VpAlhCQgzoChSzczUngFBsebvsjOqNz1Sc5MwhMN3/Egp/r+dshTmCcv3ycFlqBz+hnZzI3L3u/net85VzOTpt5toNmA0qbVftim6uQViVETW6JvPwpLICGeM2LqOajoA7J+F8enU479KNdMsPz4VcCTGcP9DDnuLffhY8sShRHdQaWgQj/BfiLp/+S9tFaAB4Su2jrhP3OkXuwaxz5Rovrh0XBX+a4h5GCslEoPdZfhqNT2tIhzezcmawQlxYIBhABRMfGWw3LIovYX+ouIb3IpqelurxTBMXDTN0+mOXD14wjJhcDBtLkTObQLu8It8wTEq3M4rNVC7D9mfRYqT4hOVJ3uV6VMIVTllDfpQINyQZOmv3KNw7fnBrpCXvuRpYdsNc0IPKmJKPvycZUIN8FT9aK3AJXwHjPt7NN8KPGlexAbp4fMzfcgd2fowtWMt29rkoyw4Y56H27xohsdtSnnDRuVi1Z6CrGv1i2uUkgq3JolIhl0KBEM7qCziWd8qY6we0brttnEhQVn0cRxe/j3j5p/yP1uZ9ArfDSVMzp52ZBgeYjiibHUs1cPDci97lZaiG1A=
+	QAPukzX5+u3/wnVlC9jFmK5WsjWf6jSNUk7pkNH5n2ZDJy5LKXk/lw3mxrkOU/HwoD/Bs8XX90xkN9p4FBslFMKkbaRIgKjxah3Bj8mPOpYC/RCMVII4r+6gz1JWZQog7iipgr1o9jR5w11aVvhjYPWNvRTCXnBorkThpqZ1RKHqj7PtSMyF0rEL2IloKAF4ub/ShQTCRqKWTQ8vEGyzIL8jD0TftRJ+5yBqJ/cd7G1FtBfkMpxmSjEfuDoKYq0vH5Ldu7A0W11a+vcIGyOFubiRzm8xwRfr0YrGOYG0AOlWa32/ZKNscnQuTB4AMUTNiB9lJnMnBp0tvtNTIJ18BNPBfVRSu8PluGxVgDoLIbwNnafIvCpkJ+Nsx6wyWDk77xQROc/ZKJkQoVjuZnXi718G9iWqxj0bCk5zpoVAyWMIfB9m+sc/a0XvFM5xpgrPwBUB2j5M8UUj54islGd26Kpy9qArff8NQQWGL1QT9FjHm3o7lpDWHTm9OqotNKgLhTt1c6x946EJK4KOYKBKn0etfdAh7VbxYPd3ievLvqtrsMWVmLIDacn1AnqgzugsAqf1g9MyPLxX3uB5U3zmRw4szVT2GqWGRUZUFg4dKfxL3s/cLL1rs31hpohjVUZFj0NbN6Z7hPVHpotrioeJKRcywypwgvhcatLKgTSmp7Squ6Eo6jEQzFuq++KMoBzfM7VPP3oADOmsiFxFk3t+J+YSpxI9dEM62UoRNt+oUXE=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(451199015)(5660300002)(2906002)(31686004)(41300700001)(316002)(8676002)(4326008)(44832011)(66476007)(66946007)(8936002)(66556008)(83380400001)(26005)(478600001)(36756003)(107886003)(6486002)(6506007)(53546011)(6512007)(2616005)(186003)(38100700002)(86362001)(31696002)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(136003)(396003)(376002)(39860400002)(451199015)(38100700002)(31686004)(36756003)(4326008)(83380400001)(44832011)(82960400001)(2906002)(8936002)(41300700001)(86362001)(5660300002)(8676002)(6486002)(66556008)(2616005)(316002)(6666004)(478600001)(66476007)(66946007)(31696002)(186003)(107886003)(6512007)(26005)(6506007)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aTQ0c2c4RXZzeXBKZkxTT0xlMi9EUkdha2cyRWYyUkk2YlUwWlhjb1creENM?=
- =?utf-8?B?eGhZejRJV2IxKzAwOFJrQ2JNRzNsVGo0YTZSV2F5M2RPKytUWHc2dnpuVStk?=
- =?utf-8?B?a2p1Uk1UZkRrMHNTN0kzanFDbGVxK1c0K0h0S2JiUE4yd2RIekFaUGhVdmdT?=
- =?utf-8?B?MU5GYkltOUU0bXVUcWNDY3JJejhUL3RNVGYvQUgvUHRlOGo0cDZ5OEdmckd3?=
- =?utf-8?B?cmF6aEgrZ0NwNVFuV1BPN2FpZ29HYlZuTTVJWWdiUTA2R0hmNXV5b1hEMWRD?=
- =?utf-8?B?dDVZT2pMQjlVUzZrcjY2ZDZzSlVKUVowUDBnaCtoZ2w2eUh6SFNRWUNESjZ5?=
- =?utf-8?B?STNBaHBnUDF3TXk2bkFKRVU2SERYMW5LODhlUWl4dEJ2N2pQbXdqVDFpbGFr?=
- =?utf-8?B?SWtGNjJGcWRKMWw1RzBoZXZRekVNQ2VPTmlQTW5GTE1LbGIwUnJVeEEvMTJj?=
- =?utf-8?B?b0RaM09NS3ZhTWxoV2JoTUdTTC9LVjY5N1pSTWFJeFRnS21zMDl2alJoNndy?=
- =?utf-8?B?cHhiZHUyampoRnQ3eUJnLzloazNWVDNGeXQySS9FRE9KajZUUmUvZnRpZVNF?=
- =?utf-8?B?aDIycmhVcGo2VEZSMVpUNmV2bGptRnNGYTVacHVBbnNrMWk4L0NrUE5ZUW1B?=
- =?utf-8?B?LzkxV2xaYzUydmJOTm9BUldVL3FEZmtaei9oZlVQMGh5TkVCaGcxbDI1ZEVV?=
- =?utf-8?B?djQrV3RyWjkwNnFyVmRjQitaaUoxUWxOdHlLVjRkUG5NTDk5WnlnRkdqMmR3?=
- =?utf-8?B?QzJ0cEc0dmJuNFMyaDZxUUtWQStFL2wrSWdMRzZ1RU1ZWHVwa3BQUFZCVzhj?=
- =?utf-8?B?RVVUYzlOVHhGQ0I5NWpqQ3d6WVV0bVFSbE1zTUpwdjkwTDYwaHpaUUpINWVD?=
- =?utf-8?B?YldHZHVrVTBGV2gwcEZDU2dPRlpldHFXVGtXaGFIYk5nMWRnQTE0UUhLS0Y1?=
- =?utf-8?B?NkxHc2NHMkVHd1VIRnVld0N2Y2pVbHVsMldVMkFvSktCT1hzZTNESThYeDNH?=
- =?utf-8?B?Zm9Kc0dhSWpNQW5kN3NQTklmYVZ0Y3c3ZlU0Tkc2MU5uYklDRHUxQUdoNEs4?=
- =?utf-8?B?eElGazVTTUZZSjVUZHluTUErMXNKNG9tekdVa2RqRm55M3ltTlhHUE1XZk9q?=
- =?utf-8?B?T3F1dTdnT04xOUNZd2xWeHptMU1Dems5c3VFSklCOFVTQ1BoQ09KM3pEZ3Rv?=
- =?utf-8?B?V3RCblhCMXRYNWE5ejdHMUNTRWFqcVdST1B0SW9OYWtnOE1KRXI3bDR1REYy?=
- =?utf-8?B?WmhubE9XT0d2YTlUUVIwZ1JVYTduOUs1aXRiZkNETzZBcEFEcDRtWlNIYkZO?=
- =?utf-8?B?WWtFQ0Znc21tcmNvMHNxUDdOblVrT0JBemV2clNLOFpwUWs4YUpWaVZtdWQ4?=
- =?utf-8?B?bjI2TFF4QVRGM2hhbGtUTjZQMzJXMi9lb05CVXZtcVp5ZzEydENJVlYyelFj?=
- =?utf-8?B?VlNZNGlsNThxTjRad0t0MUtUeWFpVXRsQW5aNkNpMklJam91cDU5QktXOUxp?=
- =?utf-8?B?M2J1NTNFbGNUdHV1UFpUSzk2VjI0eVZEMk9XNUZsRmxVS2xzOTZ5NENSdlpE?=
- =?utf-8?B?NzAzYWdGTGVyelFzT1BTYlg5MFE4eFZHeE1NSldzbXJsVTc1Y1Y3QkJueGV3?=
- =?utf-8?B?YmZ4RXNkalRjL3FZVmxjaUtpVUNub3dGMUI1Y3RxSkJRcGRSaEJIRjAvK3FS?=
- =?utf-8?B?dWQzNHh4QUhPaWlmb3RUQTJUNmRhZWd4aVBRNHBkL1A1VlZSQjNXUmt1NlUw?=
- =?utf-8?B?MmMrdkRDbFNjUUY2TEtmOXYyOHRmT2ZSeWdHZDVhcFpQWWo5Qk8xZmMwQVJq?=
- =?utf-8?B?WGNUdmZNc0dtNVpjckxqYmpXWCs2K0lZYjJRYUovWk5Hblh1aDRKQnZUZE9s?=
- =?utf-8?B?UW1zUmJ2MWQwTWN0K0Q3dEJoYnpOVVFEVXVlMm91Z1FWVCtJTElaeGRWS2Vp?=
- =?utf-8?B?b2RTNzdDSllkcTRWZTFkTUJ3TDBEVFhQTkhkUWFZYmxNUmQyN0tRa1VCVkxu?=
- =?utf-8?B?ZTZobk9IeDRmb2M3dG9ab01lcWF5UUE0d3Z6Ymh2N3VHY2gzRE5lR1lYa2I4?=
- =?utf-8?B?VlQwbVVQS2dmaVN3K3VsK3RhNG8xMFNGaWZ5OTZJVHptZGhhR2EzOFFENUtR?=
- =?utf-8?B?ckNjTHVsZ1M2NHhoZDkxUzU1elRQVitPd0lGNDA5SnBSZEhkSEJZNGxoMWI3?=
- =?utf-8?B?dnc9PQ==?=
+	=?utf-8?B?Nno0cnAxUW4razVHbmFYWVNQYUFxck9JdDM5cjV6K2hzWE91NEl3Z3B5cmNR?=
+ =?utf-8?B?NC9ONzdPc093Nm9uajNQNzh5R01Qc3REWVdqazQvZzNxMXB6RXJWWG81akxS?=
+ =?utf-8?B?MWFhY1dDdFhCelFkdzZoREpycG5jMXZTK3hDd1Bya2VCNmEydmNjRVdzbVhN?=
+ =?utf-8?B?eTBPMFhqeC9uMHBza3h0UmVhcW12N2JJMm9MTHhoRS9PRVVZU1pmUHJQZ1VS?=
+ =?utf-8?B?a2pHZHFJbUtkdmdZd3NielBhSGV1YStzYUhUNktmbEloYkM1Rzh5NUV6SDNy?=
+ =?utf-8?B?dTRTdm44ZTBwT1lLb0VXZ09NVVUwbGN3RUc4NElNaklyUlhwQmdsVE00MEZu?=
+ =?utf-8?B?WHlJSFBLOHFYNFhmTytWVVlac0dTVjN1UExZczRwcUVUbDRVR2N5OGhUNERI?=
+ =?utf-8?B?VXNQdnFwV1pQYmNvNXcxY25FSm9JWlAzbWkvQ2svUEY3SEpGc2RlZWlMbGd2?=
+ =?utf-8?B?VUw0RTgwRS9vVDhLQ0xESFpDa1pGM3QzeUVRZmMxL212b2k3K1lVSjJwUDIr?=
+ =?utf-8?B?UXh1b3VGaSszWnpGM3pCbjlaYy80R1pWbFNkeVpWTEZUTVE2dmdQVm1TT3R0?=
+ =?utf-8?B?TnBqNXFzNHdTZGhtaFM5MHN2YXlCVnBtUGh1cE8rd3ZXVkVlRFZqdmw0OUZ1?=
+ =?utf-8?B?b2duOGpJZlQzaFdqQjh0Mng4OWIvaFpMamwrMi92Yzd3eDR5YVcyQ2N3Y29y?=
+ =?utf-8?B?NVdZcUU0WUsvSW9QUnRhamxyMW54VTJsd2VEVHBQcFNuYlN6em55Z3JrbGVn?=
+ =?utf-8?B?azJwLy9uZFhnazlMWFRkVnd5NkhqY3dvYkJHWlptdi9qdi9maFdPTm1pc2pw?=
+ =?utf-8?B?VW1xc1d5RDZSSnYxbVNDT3pWNG5PcGNBeFRudE9LdHN1MThUTHdBZ0ZDMTZn?=
+ =?utf-8?B?SXdUNnlCOXF2dXpnbkNOa0Z3WXVidENUUkloNlhkTlVxSWZLb3VHbFFlcCsz?=
+ =?utf-8?B?VURpdWF5UzlWa1l1SVFxMklRYjk5ZzNwTFVJc0lwUnlRQWZYNUVSekR3Q0tj?=
+ =?utf-8?B?LzNlS0FxeFlsWXhYT3g5Z2hEeWExOE00Njd1cjZsMWNvcDloN3JUK1J6UDY2?=
+ =?utf-8?B?TENiN1V3bGlYMVFSMkNyMG5zMXlETWJIWDg5Yi9oOGZ0SUkyMVVicGFaK3R5?=
+ =?utf-8?B?S04yaFM5NjFJRmg0V01KVVJuR0lsbGtrWlExb2poRjlORXU4MWFmR2xVMHRW?=
+ =?utf-8?B?aUdFUFNPb09KWS8yM2hWZ0ljQTVSQmZpQVRhMzNTOUhLUHdzcUcwYlM5dll3?=
+ =?utf-8?B?VzBUUGNhOWI3Q1VpZWRPdEwxc3ZXck9SRllhSm94bVRPVmd3TnB4QkRGWkdv?=
+ =?utf-8?B?Yy9FbFE4empKMjVrTkJwNzVITHV1SUVGT0lvZ2szTE1GMzVGNGtKamlWYWtR?=
+ =?utf-8?B?QWlmcWQ5VG9WMkY4Ri85NXFXdjdmYkNvcVlLa2ZSQys2Zi9QeldVOVR0Mnpj?=
+ =?utf-8?B?bWVnbGcycHpsQWh2TXNvSVIvditMdnVUT3FQampEdFhPdnhQSW5BZ2dZZWVj?=
+ =?utf-8?B?aSt3VmtSbE01dlM4QmpQektYOUQ5WlRNcXJWOGNmaDRsdm1VUnhEVWZjZm0z?=
+ =?utf-8?B?ZzRYeExFWjZ1K3FlUmF1L1hMR1NBOW1NWWpzOG4yQS83c09kR20zR1dwMll0?=
+ =?utf-8?B?ZXdGanFLeENwTGpyWVR3azVaRFpRS0NXVFBGcW9vMDAvN2ZGQkRSV1hLR3pp?=
+ =?utf-8?B?cDUySmsxd1ZxVnV1Tmx2eHdyYndlSjIwWDRDV3RrQnRjVDlrOU9HMGhGdk5K?=
+ =?utf-8?B?U2d4YjVDSlJIVFczQ2h0OGgrY3RTemh6TEwrczU5cjI3anlZZTFaV2VuTU5U?=
+ =?utf-8?B?WldncjhtalJpeFA3UU5KMHpsa3hOR25WR0RZZ29TTytpY3d0RDA2ckJHSG5D?=
+ =?utf-8?B?ckdiUmJuTUFhSXVYbGJuZGxPYk1oMUdFWjl3RFR5SElaSHJ0Z285dVkrdHhM?=
+ =?utf-8?B?ZWFsazBsSUdaNTBpMHVoRU5lZTVaU0xiZHdMdzNobkYyTGI0dUdLNnhoVVl0?=
+ =?utf-8?B?cEFESUNGYWFGQkpVTHNTYnhmQzdnMFdHeGFzWVM3RzNtSTdVZ0hDSjFvUEVH?=
+ =?utf-8?B?VE5EZUhTUTFCTzlFZkYvWER1SWZueWFnb01KbU5uWEVRSFpxcS95bENMK05y?=
+ =?utf-8?B?SDB4cStnM0lDaVp1NUpMK05iQ1JMZ0RhWDY0WUUrYzJNZENnUjlEOHV5bU5r?=
+ =?utf-8?B?cEE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 076f1a4f-864e-4ebb-310c-08dad9230e57
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90d72a5d-be32-430f-e933-08dad9239594
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 13:49:41.5117
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 13:53:28.4087
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VkZ3jzXTcVKVmqP+wChso4FNshj01GOljvSAjWZRWsM7Wakrgz+L1ansErB4G5dYx4xTiwiK4XmJ/+3AtBHsVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB6682
+X-MS-Exchange-CrossTenant-UserPrincipalName: sIO6hMIJWUJ3MIu+fGLciYrKpJwURxiRyeroW1+hS8b6hNUVOlTNwxPrt6x03MolKNYZP52EfhKvwt/H7lOR/Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB6935
 
 On 05.12.22 16:21, T. Schaffner wrote:
 > From: Tobias Schaffner <tobias.schaffner@siemens.com>
 > 
-> Split the set_mode method in separate methods for switching to primary and
-> secondary mode for improved readability.
-> 
-> This also fixes a wrong evaluation of the mode variable that lead to never
-> checking the FPU registers in secondary mode.
+> Switches to secondary mode do not only occur when a relax is explicitly
+> called via the cobalt api but also e.g. when a linux syscall is called in
+> primary mode.
 > 
 > Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 > ---
->  testsuite/switchtest/switchtest.c | 48 ++++++++++++++++++++-----------
->  1 file changed, 32 insertions(+), 16 deletions(-)
+>  testsuite/switchtest/switchtest.c | 117 ++++++++++++++++++++----------
+>  1 file changed, 79 insertions(+), 38 deletions(-)
 > 
 > diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/switchtest.c
-> index f2a5c1601..f8a37da79 100644
+> index f8a37da79..12516186b 100644
 > --- a/testsuite/switchtest/switchtest.c
 > +++ b/testsuite/switchtest/switchtest.c
-> @@ -440,15 +440,21 @@ static void *fpu_stress(void *cookie)
->  	return NULL;
->  }
+> @@ -34,7 +34,9 @@
+>  #include <semaphore.h>
+>  #include <setjmp.h>
+>  #include <getopt.h>
+> +#include <asm/unistd.h>
+>  #include <asm/xenomai/features.h>
+> +#include <asm/xenomai/syscall.h>
+>  #include <asm/xenomai/uapi/fptest.h>
+>  #include <cobalt/trace.h>
+>  #include <rtdm/testing.h>
+> @@ -75,6 +77,14 @@ typedef enum {
+>  	UFPS = 4	 /* use the FPU while in secondary mode. */
+>  } fpflags;
 >  
-> -static void set_mode(const char *prefix, int fd, unsigned mode)
-> +static void switch_to_primary_mode(void)
->  {
-> -	switch (mode) {
-> -	case 1:
-> -		cobalt_thread_harden();
-> -		return;
-> +	cobalt_thread_harden();
+> +#define TASK_SWITCH_MODES 3
+> +
+> +enum task_switch_mode {
+> +	TASK_SWITCH_PREVIOUS = 0,
+> +	TASK_SWITCH_NEXT = 1,
+> +	TASK_SWITCH_MODE = 2
+> +};
+> +
+>  struct cpu_tasks;
+>  
+>  struct task_params {
+> @@ -297,6 +307,57 @@ static int printout(const char *fmt, ...)
+>  #define check_fp_result(__expected)	\
+>  	fp_regs_check(fp_features, __expected, printout)
+>  
+> +static void _assert_primary_mode(char const *calling_func)
+> +{
 > +	if (cobalt_thread_mode() & (XNRELAX|XNWEAK)) {
-> +		perror("Switch to primary mode failed.");
+> +		fprintf(stderr,
+> +			"Switch to primary mode failed in %s.",
+> +			calling_func);
 > +		clean_exit(EXIT_FAILURE);
 > +	}
 > +}
->  
-> -	case 2:
-> -		cobalt_thread_relax();
+> +
+> +#define assert_primary_mode() _assert_primary_mode(__func__)
+> +
+> +static void _assert_secondary_mode(char const *calling_func)
+> +{
+> +	if (!(cobalt_thread_mode() & (XNRELAX))) {
+> +		fprintf(stderr,
+> +			"Switch to secondary mode failed in %s.",
+> +			calling_func);
+> +		clean_exit(EXIT_FAILURE);
+> +	}
+> +}
+> +
+> +#define assert_secondary_mode() _assert_secondary_mode(__func__)
+> +
+> +static void switch_to_primary_mode(void)
+> +{
+> +	cobalt_thread_harden();
+> +	assert_primary_mode();
+> +}
+> +
 > +static void switch_to_secondary_mode(void)
 > +{
 > +	cobalt_thread_relax();
-> +	if (!(cobalt_thread_mode() & (XNRELAX))) {
-
-Redundant braces around XNRELAX.
-
-> +		perror("Switch to secondary mode failed.");
-> +		clean_exit(EXIT_FAILURE);
->  	}
+> +	assert_secondary_mode();
+> +}
+> +
+> +static void switch_to_secondary_mode_by_using_linux_syscall(void)
+> +{
+> +	syscall(__NR_gettid);
+> +	assert_secondary_mode();
+> +}
+> +
+> +#define SWITCH_FUNC_COUNT 4
+> +
+> +static void (*switch_funcs[SWITCH_FUNC_COUNT]) (void) = {
+> +	switch_to_secondary_mode,
+> +	switch_to_primary_mode,
+> +	switch_to_secondary_mode_by_using_linux_syscall,
+> +	switch_to_primary_mode,
+> +};
+> +
+>  static void *sleeper_switcher(void *cookie)
+>  {
+>  	struct task_params *param = (struct task_params *) cookie;
+> @@ -354,13 +415,13 @@ static void *sleeper_switcher(void *cookie)
+>  		if (tasks_count == 1)
+>  			continue;
+>  
+> -		switch (i % 3) {
+> -		case 0:
+> +		switch (i % TASK_SWITCH_MODES) {
+> +		case TASK_SWITCH_PREVIOUS:
+>  			/* to == from means "return to last task" */
+>  			rtsw.to = rtsw.from;
+>  			break;
+>  
+> -		case 1:
+> +		case TASK_SWITCH_NEXT:
+>  			if (++to == rtsw.from)
+>  				++to;
+>  			if (to > tasks_count - 1)
+> @@ -440,24 +501,6 @@ static void *fpu_stress(void *cookie)
+>  	return NULL;
 >  }
 >  
-> @@ -475,7 +481,7 @@ static void *rtup(void *cookie)
->  	   allowed when suspended in ioctl. */
->  	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+> -static void switch_to_primary_mode(void)
+> -{
+> -	cobalt_thread_harden();
+> -	if (cobalt_thread_mode() & (XNRELAX|XNWEAK)) {
+> -		perror("Switch to primary mode failed.");
+> -		clean_exit(EXIT_FAILURE);
+> -	}
+> -}
+> -
+> -static void switch_to_secondary_mode(void)
+> -{
+> -	cobalt_thread_relax();
+> -	if (!(cobalt_thread_mode() & (XNRELAX))) {
+> -		perror("Switch to secondary mode failed.");
+> -		clean_exit(EXIT_FAILURE);
+> -	}
+> -}
+> -
+
+Please locate those two already at the right spot in patch 1. Then you
+don't need to move them around here which makes the patch smaller.
+
+>  static void *rtup(void *cookie)
+>  {
+>  	struct task_params *param = (struct task_params *) cookie;
+> @@ -493,13 +536,13 @@ static void *rtup(void *cookie)
+>  	for (;;) {
+>  		unsigned expected, fp_val;
 >  
-> -	set_mode("rtup", fd, 1);
-> +	switch_to_primary_mode();
+> -		switch (i % 3) {
+> -		case 0:
+> +		switch (i % TASK_SWITCH_MODES) {
+> +		case TASK_SWITCH_PREVIOUS:
+>  			/* to == from means "return to last task" */
+>  			rtsw.to = rtsw.from;
+>  			break;
 >  
->  	do {
->  		err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
-> @@ -556,7 +562,7 @@ static void *rtus(void *cookie)
->  	   allowed when suspended in ioctl. */
->  	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+> -		case 1:
+> +		case TASK_SWITCH_NEXT:
+>  			if (++to == rtsw.from)
+>  				++to;
+>  			if (to > tasks_count - 1)
+> @@ -574,13 +617,13 @@ static void *rtus(void *cookie)
+>  	for (;;) {
+>  		unsigned expected, fp_val;
 >  
-> -	set_mode("rtus", fd, 2);
-> +	switch_to_secondary_mode();
+> -		switch (i % 3) {
+> -		case 0:
+> +		switch (i % TASK_SWITCH_MODES) {
+> +		case TASK_SWITCH_PREVIOUS:
+>  			/* to == from means "return to last task" */
+>  			rtsw.to = rtsw.from;
+>  			break;
 >  
->  	do {
->  		err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
-> @@ -637,8 +643,9 @@ static void *rtuo(void *cookie)
->  	   allowed when suspended in ioctl. */
->  	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+> -		case 1:
+> +		case TASK_SWITCH_NEXT:
+>  			if (++to == rtsw.from)
+>  				++to;
+>  			if (to > tasks_count - 1)
+> @@ -656,13 +699,13 @@ static void *rtuo(void *cookie)
+>  	for (;;) {
+>  		unsigned expected, fp_val;
 >  
-> -	mode = 1;
-> -	set_mode("rtuo", fd, mode);
-> +	switch_to_primary_mode();
-> +	mode = COBALT_PRIMARY;
-> +
->  	do {
->  		err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
->  	} while (err == -1 && errno == EINTR);
-> @@ -668,8 +675,10 @@ static void *rtuo(void *cookie)
->  		}
+> -		switch (i % 3) {
+> -		case 0:
+> +		switch (i % TASK_SWITCH_MODES) {
+> +		case TASK_SWITCH_PREVIOUS:
+>  			/* to == from means "return to last task" */
+>  			rtsw.to = rtsw.from;
+>  			break;
 >  
->  		expected = rtsw.from + i * 1000;
-> -		if ((mode && param->fp & UFPP) || (!mode && param->fp & UFPS))
-> +		if ((mode == COBALT_PRIMARY && param->fp & UFPP) ||
-> +		    (mode == COBALT_SECONDARY && param->fp & UFPS)) {
+> -		case 1:
+> +		case TASK_SWITCH_NEXT:
+>  			if (++to == rtsw.from)
+>  				++to;
+>  			if (to > tasks_count - 1)
+> @@ -679,6 +722,7 @@ static void *rtuo(void *cookie)
+>  		    (mode == COBALT_SECONDARY && param->fp & UFPS)) {
 >  			fp_regs_set(fp_features, expected);
-> +		}
+>  		}
+> +
 >  		err = ioctl(fd, RTTST_RTIOC_SWTEST_SWITCH_TO, &rtsw);
 >  		while (err == -1 && errno == EINTR)
 >  			err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
-> @@ -682,16 +691,23 @@ static void *rtuo(void *cookie)
->  		case -1:
->  			clean_exit(EXIT_FAILURE);
->  		}
-> -		if ((mode && param->fp & UFPP) || (!mode && param->fp & UFPS)) {
-> +
-> +		if ((mode == COBALT_PRIMARY && param->fp & UFPP) ||
-> +		    (mode == COBALT_SECONDARY && param->fp & UFPS)) {
->  			fp_val = check_fp_result(expected);
->  			if (fp_val != expected)
->  				handle_bad_fpreg(param->cpu, fp_val);
+> @@ -700,14 +744,11 @@ static void *rtuo(void *cookie)
 >  		}
 >  
-> -		/* Switch mode. */
-> +		/* Switch between primary and secondary mode */
->  		if (i % 3 == 2) {
-> -			mode = 3 - mode;
-> -			set_mode("rtuo", fd, mode);
-> +			if (mode == COBALT_PRIMARY) {
-> +				switch_to_secondary_mode();
-> +				mode = COBALT_SECONDARY;
-> +			} else {
-> +				switch_to_primary_mode();
-> +				mode = COBALT_PRIMARY;
-> +			}
+>  		/* Switch between primary and secondary mode */
+> -		if (i % 3 == 2) {
+> -			if (mode == COBALT_PRIMARY) {
+> -				switch_to_secondary_mode();
+> -				mode = COBALT_SECONDARY;
+> -			} else {
+> -				switch_to_primary_mode();
+> -				mode = COBALT_PRIMARY;
+> -			}
+> +		if (i % TASK_SWITCH_MODES == TASK_SWITCH_MODE) {
+> +			uint switch_iteration = (i / TASK_SWITCH_MODES %
+> +				SWITCH_FUNC_COUNT);
+> +			switch_funcs[switch_iteration]();
+> +			mode = !mode;
 >  		}
 >  
 >  		if(++i == 4000000)
