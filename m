@@ -1,237 +1,173 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2056.outbound.protection.outlook.com [40.107.241.56])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BA6479E2
-	for <xenomai@lists.linux.dev>; Tue, 13 Dec 2022 19:52:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4606C7B
+	for <xenomai@lists.linux.dev>; Wed, 14 Dec 2022 02:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670985066; x=1702521066;
+  h=from:to:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=cDwMvX/cBmvmXPE+4BOfYkTaeuhllHBjKpZQ/Ft/q1E=;
+  b=cGablOSVbI012Var54lrf3+3Q/Yay4JjPRdBOKZdk3KK5yVye2X2/UuW
+   tQ+SiVEpm0BRsbYBWCaIhlyQP4Z/JtkBIAUaELdSEGvUu7OTaInuL1TsM
+   dzre6tF+FlbvYfKXe5JUNYRr7NjYUfSTs85nXmtoU9zEH+B9UwNdfeE1m
+   AXYKdKSkaWLKzJNfYpaFt//SZATe/va4z84bAtCz1rfnzB8Ds/C1O3ek/
+   GBS3nffJrsJAKTqcFuo/QuOxyLtLJeSnpsBo7gy2SPf3Kxwiu/px+a3lg
+   z5UvQesV1dnfKlcy9/8HnQAY7Rgnmyd2QKPMQ7WaSUHnPgqRPtloUJ47M
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="318335442"
+X-IronPort-AV: E=Sophos;i="5.96,243,1665471600"; 
+   d="scan'208";a="318335442"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2022 18:31:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="823104613"
+X-IronPort-AV: E=Sophos;i="5.96,243,1665471600"; 
+   d="scan'208";a="823104613"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga005.jf.intel.com with ESMTP; 13 Dec 2022 18:31:05 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 13 Dec 2022 18:31:04 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 13 Dec 2022 18:31:04 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Tue, 13 Dec 2022 18:31:04 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Tue, 13 Dec 2022 18:31:03 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jW4AGWlPEXQYRkfjWkaPAUvj9eNOhliOF6mBIbycliP+eYICRAfVpK2VJviUXe9MgXt7uAxjJmF/7mqJTPRVYtAkHMe3IY9B5xhN+KqdVoxiPf/VEvWGkBXIsUirwR+qvdez6oaaYh+tOPI+AActn2ZmKdxWWYkyZOZyraXIiJZCXCftcYHuV8hkJYviCgP2D1ollNbb/NI4lAk3Dpsc7p0lLgUTzhMabX4VLd4fp6AbyZmvVQEK1lY+JpL7fY5/elzdsxwNMxTxJ42YOIu6IxDzeS9E8RMEW+sOpK5s96Ka0FwEnyi1Kyf6djuao1zFXkIjwUWIZNNEM8gvdyKqRg==
+ b=ifz7KAuR/PRg879lOEbGLHOM3mxc4ifoa7aCqrL5eqQQSKFa9WIUKsbwvwjbOQ3yadQEcdvRXCSPKOLXfm1wSuamarrxw2f8zyJQ1TEgnrUbZHFMxeaGlIcCWfM11mmIKRx+k1f8twAzdVphDaPvz2CTfgBp0JSlmniJ4APrpfJel9A8bTumLFuw1oOWLEa+0c4J3nlu5+S/QudSu+HhUlnniUHY54NARZUIjAjMt0SGwPZOH7xTkn5qH7QYmiKjUo3GegJZmWhc/rGYSGIYqOdpuh5ocz1bQ50F4bU3t89NWGax+toPkl/UqxCcR1SQ1Ir0MraN//WtrWxXy1BxiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0/GPRS6WOv9AetNuzH/Np8jw+1FuBYaoLmpSbuejbo8=;
- b=cjDNCPl5tccxQVxpy0/vfUOzA+EmxmgqEXiePzjlqfqxa3a9TrdB/Ris+e5uCo2qoLz5qveuQGzHnFhXs8+77aoUfMHo2E+Wqp775oovxQPVyAVbhVyO/FxaNj8f/T2Jb4WOhHRG8R31WN+P8HIRF6AfDaghQCNC6C2YqM6MHqZ80TYg831iau67oD9USi47nJjP9jq4R8McvxiS9bZ4bZlKZ7R7esoeyHzZI5M2zOp/i0TwSN1dOZEw8IvLVBs5Yp55LCtEH901Gv9eNVD4Ai24PsxDbE07tzM/n9UPxPXRsyCkqEgelPUKeiVCajOqqzueZhsSaMlF9Jm8OWKTdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.76) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0/GPRS6WOv9AetNuzH/Np8jw+1FuBYaoLmpSbuejbo8=;
- b=Q+HCXaQ44WWTrZ8B/cncKA+tlkT7QMA1JqSQYsAk/wtM2U8fs6lQjO8sq13HQBp8VfIFC2t7WkPjXocTqg8+8IFeLFzbZlGfTp1CRKVXMjGu+J0v9OZffPMWp+QfIa50goZTuX2Z/+CBwb4RpykuAlUWb64Bc/XN/GcZUf0IdRz0SedsJIHoM9okwrQjVvBhw7I/SR6+1FddGRHsJofAj+YdPd3OIuH9+Uf614XUypOdTrMtkb4V+XmdHo76xf5Nw8GGyPu/RMwlSFZuGdGB0RI/GRFq2uv/kyffjDNu65xKOGnCTa5yuNGnmiwfUoKbNVn5vkxR0yQ14TW+Gj4beA==
-Received: from DB6PR0201CA0024.eurprd02.prod.outlook.com (2603:10a6:4:3f::34)
- by DU0PR10MB7028.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:41f::17) with
+ bh=cDwMvX/cBmvmXPE+4BOfYkTaeuhllHBjKpZQ/Ft/q1E=;
+ b=Y7XZ9zlw2+u3lX5W5cJXH3ag5pVyC3o+CdkdypKGKxnp58eFyS7ISbSeSPhXqacIUII3WjanqKk8V+InabnUzeV5RJr3HUxtBRbBiE6RU2iLcomcafYQXjMZh9jwVKMmmLRB5pDygNHiVFJgOsMbuGf12UQ1oJgIKbP2dcDVhArcxZfE67vwJqUkcsIXrJopZ0a7ZdhwMWC9MNyc07uPTPuaAwHZis/Celk2C4fMtp8hr1a7TAm7RYOlno5zeOTEwpZiu8TAwNYe9ckR7CCjVO79MdVK53897VlwtJ4h5Odns8ZGvsZydgUr0aG7cig1o85i5S1PKydXhs1k3cCrDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
+ by MW4PR11MB7152.namprd11.prod.outlook.com (2603:10b6:303:222::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Tue, 13 Dec
- 2022 19:52:41 +0000
-Received: from DB5EUR01FT094.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:4:3f:cafe::8) by DB6PR0201CA0024.outlook.office365.com
- (2603:10a6:4:3f::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8 via Frontend
- Transport; Tue, 13 Dec 2022 19:52:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.76)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.76 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.76; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.76) by
- DB5EUR01FT094.mail.protection.outlook.com (10.152.4.184) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5924.10 via Frontend Transport; Tue, 13 Dec 2022 19:52:41 +0000
-Received: from DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) by
- DEMCHDC8VSA.ad011.siemens.net (194.138.21.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20; Tue, 13 Dec 2022 20:52:40 +0100
-Received: from L15-Gen2.fritz.box (139.21.146.184) by
- DEMCHDC8WBA.ad011.siemens.net (139.25.226.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20; Tue, 13 Dec 2022 20:52:40 +0100
-From: "T. Schaffner" <tobias.schaffner@siemens.com>
-To: <xenomai@lists.linux.dev>
-CC: <florian.bezdeka@siemens.com>, <jan.kiszka@siemens.com>, Tobias Schaffner
-	<tobias.schaffner@siemens.com>
-Subject: [PATCH v4 3/3] switchtest: test mode switches while in kernel mode
-Date: Tue, 13 Dec 2022 20:52:05 +0100
-Message-ID: <20221213195205.2870828-4-tobias.schaffner@siemens.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221213195205.2870828-1-tobias.schaffner@siemens.com>
-References: <20221213195205.2870828-1-tobias.schaffner@siemens.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Wed, 14 Dec
+ 2022 02:31:01 +0000
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::27cc:d8ed:9947:fecb]) by MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::27cc:d8ed:9947:fecb%7]) with mapi id 15.20.5880.019; Wed, 14 Dec 2022
+ 02:31:01 +0000
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Reminder: Xenomai community call on Wednesday,  Dec 14, 2022, UTC
+ 7:00 AM
+Thread-Topic: Reminder: Xenomai community call on Wednesday,  Dec 14, 2022,
+ UTC 7:00 AM
+Thread-Index: AdkPZAjdGt/WYXFpTACvMcPNBmKJSA==
+Date: Wed, 14 Dec 2022 02:31:01 +0000
+Message-ID: <MN2PR11MB4285BDEEACED1195EAC700D3F2E09@MN2PR11MB4285.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|MW4PR11MB7152:EE_
+x-ms-office365-filtering-correlation-id: 70f4f18a-1a08-4abb-b6e3-08dadd7b3d9f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KA6s5KIMmfm1yJ/KirS6u4H1oOCuX6l5Z/QGvQm20Fwpr5hWD3YJNl30E9OHnqxE68/hgIvTkZsG4RYceVSR3jFCWBoEQOPWNJiWMdXJ1PlBZCvRaV2BavcnlCLtjWLhRhyT3EvM6/4PSXGCzS1UkHYyjWTM2gSs4rN3C+pMipk4dMcR8+MXC4quDJY+/0TRv4maRRbLWcJcYKpqGcd3BfTAAsNUGgdjK3NrEuUbOoqHMK1MwVW8mVZDOA+7hwqOTyzkQ1P6YER9Bc13FJsnkzlAneEPfmvW8Ijc0XIDB8D6B59wAxdBHrpcZ6npInF+QPha1nqbGMnwWDx3pKacrnpWPqWm4ltqm8lB0xx0W301eJLeDryxny6Up/KW3/uIOwQR5I1uF5/5AKdjtA5ddVzM+YQhnKhSUMw6c+42aflJukFS4zEJ85sU80ZS9e4n/ZEEYmX5fZdLjCXjfXypwGDq4g3zj1iiEbYe/Pobn2uhuDr+CjOm+3vni/ajmnV2Db/g8aFxuRwa6U7hHH3ybDVNWsVU3rAUeBMPfyoaU/5n3Pgl6s/Xo550NchLsiK+qQ4f0zz99IWFGElNRMJ/In1BBTj5OcTuiGEU8ZdzlefwMbbCm+VS1p+pyMWUkLXmmv3I2gn6N8PKnYxag0kyfSx8ty3SgHNBdl0n7VicWz/AgTWy4nA0QoLtlQ3h4n1NYxlZF4QJiysmqxdgXBCwBdcsSRp3XD0Ohat0RKnb4iltSREeiTj/onastqvu4tjcQd+hYIriiU4j5zyavvKzUg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(376002)(39860400002)(366004)(346002)(451199015)(2906002)(66556008)(40140700001)(33656002)(76116006)(64756008)(66446008)(122000001)(186003)(66946007)(8676002)(66476007)(5660300002)(41300700001)(52536014)(8936002)(26005)(71200400001)(6916009)(55016003)(316002)(478600001)(38070700005)(82960400001)(9686003)(7696005)(6506007)(38100700002)(83380400001)(86362001)(966005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RnJkdFN6RFBUSjVITlZuQzIvYVpZZUZaQSthaytiVWxlZE9DSVNCR2ZlUjZ2?=
+ =?utf-8?B?UDJpRUxhQzF0UWZ4NEczanVSeEpoKzB4VFMxbFZYZ04yZ0FmN2xEYkdlUmpl?=
+ =?utf-8?B?U2lSNUttb3ZEK3NjZml0MG1oMGZIVEQ0SUpSZmJyNDM0bXFhY3dha1Vmbkw5?=
+ =?utf-8?B?dUJvc2lhM0R6ZnI0UkR4ZDlVZ2RlVllJWmw4QXVhL01BM284dVZvSlR2TFVn?=
+ =?utf-8?B?VmRZVDBIQ3Y3dlBZdGloTnEvRkVjdWxUa3Z6WGRCWjBZcEQvSmdJMERNRnZH?=
+ =?utf-8?B?YjRydHUxTldHcUMvc3JCaUhTVkdIeERzSDR0SUx2VWFHRTducUhvejVCeUZi?=
+ =?utf-8?B?UjkzQ1F1MFVHWXlVWTl1NzlTQjZJR1FkYStmSnUzeUlOc2UrbDNiNUN2YUtT?=
+ =?utf-8?B?aFhXMXEyVUhIY2k1ZVIvYkNIRmUrOG10cWtyR0xnTXNzdmgrdFE2NHh0UkU1?=
+ =?utf-8?B?eEc5ZGcwRGh6QzRrYk5LR2xYYmVUdVVRdHQ4K0JHRDQ0N0g1djZCeUhWNG95?=
+ =?utf-8?B?ZWRtd0ZVVm1pWEtFOGFlWCtTclc1QVhUT0wyRU0rWDVuZUIrbHIvSWhIR0Uz?=
+ =?utf-8?B?bkNKRVA1UWY1YlZLZWVQQ1pjUWFGaGc3ZUd4QUtYUHdCbGs3aWhpNkw4Z0RD?=
+ =?utf-8?B?aDlaUkxhS0lrblZsK29aNkd3WlRLeUo3cFVSbUdhV1o1YURFd2ZVdEVaSjNC?=
+ =?utf-8?B?eEQ3YkFKTWNNdTZwS3FtQ0FqMnI2b1p4cTRKUTN2ekR6eHhLc01lT1QxRU1U?=
+ =?utf-8?B?NndlbW9wUzkwdnJFZ1d6Uk5PeEMwNGIwMWZKUzNoWmRhOXpPT3U2bURNMFVN?=
+ =?utf-8?B?blNZL1Zobmk1eXE5MDcyMnExRDZCSWZjMXA0Q1N6K3FodU9WSlJJaVV6T1Aw?=
+ =?utf-8?B?QXQ3SEovNWh1WHc5RE5yYkY0RGR4MW9lc0NqMXFDTm05WE0xanpTUGNRRTQ5?=
+ =?utf-8?B?WUxnbllWSXRzWTFtYWV4Ym9STEQvclF3OGIxZWVBQmt1V1QwWEJOdUZ4b2Nw?=
+ =?utf-8?B?UEpIYkM1dWhOVW1Xd21IRFNkQXpKcy9IN1JkYzVlWkdYS0Fvb0pTalcvK1U3?=
+ =?utf-8?B?UGhoNXRzNWhIUDRnb21aUCtrK3A0Q0FKVitOa0FhbWdoVmpQazYwSUs3ZUx3?=
+ =?utf-8?B?dXhtREdRVDJRS1ZqRVIwRFBXYUNCSC9PWGd3S0RaOEkrN0NkYW15VS9hRG81?=
+ =?utf-8?B?eGQ3ODdQSkMxM0JUNitLNGthcGZ4NkJTSFY3SmdCYUl3ZW5TQTZJVDNaVHd4?=
+ =?utf-8?B?cWtKRnk2Q2xpWGQ3bVU4QitPQ2t1OFM4SGl3ZXZTSTUxNXZiOFBzOU4wbTRT?=
+ =?utf-8?B?M0I3Mkw5azVydVgvOUEwQm9QcHRiWlNHZmZ3QUR6WDI3d1hocnAyL1dTempT?=
+ =?utf-8?B?VXA4TThFOHkyQ2RKdEl6RWsrNjM1ZndRRFhHTEVKLzdwM014aTlrRHpMcUM4?=
+ =?utf-8?B?NXV1ZndrZEJpOXNuMXVNLzVOUmNEZ0pxSTFONERpL2dhbU40SlR1Y3lmbTQ5?=
+ =?utf-8?B?dDQxOERDZ2pwVFJ4cjV3WVNJcTRBTkZGM2xZUlVGaWVPU2dVZXcwb0xTTHZZ?=
+ =?utf-8?B?eUlxdzNjUGJ2T2pHd0NJL3NSc2tVVVRydzJBZjNQS08xTktuRHlHRlJEdmU0?=
+ =?utf-8?B?ZFJSYndSNUlOSWozU2Q5elpWNGRqUVo2K2ttMzl2OXc3ZWV0R3U4R0dZK2Vq?=
+ =?utf-8?B?Q2p5TWtoZmNoMWE4TmcxbytiYkwrMTZ6VTNURDA1RjJsdVVkb3duU29TTFNW?=
+ =?utf-8?B?amhzNkV6R1BZVWRDc0VhMVVQRkpxV3J0eUY2ZnRXZ2tBVkt2cjlJR2Z0bllM?=
+ =?utf-8?B?RGVlZXVoWEJRL1ZoRkY0OFdBbmN1aTU3ME5reUVRNTg0dWV1ZEZ6YWpBQklR?=
+ =?utf-8?B?a2dTVm84UHduV1NveWplRzduRkxpM0hCb1JCazNaRlhFc2VtY2lWVmtrdzhF?=
+ =?utf-8?B?TFJPTTVjcVpzd3FBcFFydzdYRWQxZDlqL2s2SExTRG9KQ1ozNmk4a0Nud041?=
+ =?utf-8?B?czlxd1VkeHJSZ2x3bGJURjZnV1V5ZjVWcmxFQkdRdkVCSjU2TUJqVndjZTd5?=
+ =?utf-8?B?cElTTU9hcEwxTkN5alR2eHZZT09aaHpyU1RiT1psR2p6V0FUYmwxbEtsNzFL?=
+ =?utf-8?Q?gopQhHcweYynGhAZj4oUwXyrE?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [139.21.146.184]
-X-ClientProxiedBy: DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) To
- DEMCHDC8WBA.ad011.siemens.net (139.25.226.105)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB5EUR01FT094:EE_|DU0PR10MB7028:EE_
-X-MS-Office365-Filtering-Correlation-Id: 939fe0b4-6cde-4be6-02df-08dadd43983b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	K7uatR33yMZ0DsmVPbpG1Vdmjc3ck6w0J6CdOq6QCms6D75TtNyPdj6V//hLZv3Z2iRst7lV2SjV4dKHrS/VJLzlX3Q8AF1qhd/cbo5frcJI+DS7knlm7WwTIUzcPq6aQNP0+LTkmTrEeAmMwvLfXUaaT7cid3xHZCdJWbYDMSfpEqekAfb/w3LPim2VoXDxg61s6c4RMMSC/9Eec6F3CNqMreFjyJFX8q67FxiAZQJeWrRDHNYANZZENXE6WjaHh0EGLjHj9ptPvVmmq6TpCf7U1/8PwQ7T/q5DCbVW5gUELE5aY6AXK91a/0uVaseVsGZq7g16BeC9/Eh+li85Y6zs1nhsvpgB3kUVYJV5BLuqJu/HEAQ1io7aFZPUDrEequjxiYIC6Oq7asT3xcVYYbii5+XW11XsNFMh5PWLlFBFzbWl/9gPvyZnrcJbYXQioq0JhnYdjEK2VNCpPevEOaUrARDvcMOZantn0LSend1AupfF2RompmyHAaPmI4BAcg2nJuqBbglkWx2XiBzDzIhjrwhMYLrq9DwgFTiS0vPCW9H0Zj87NURaiSwkdk379RwvUiCkfd9hR3LPYsl/uEYTL780eKMamWWlx05UaNynCl7sKN8qGeniQZQ8VBpZsQK9vGn4Q0o7MVD3c1n5w0O3sJLPIvvfueL2hkWEYPt5cDQnfcywTFJ04VzBarJErG4BL/iDsNG+Fqz2UgEViIHdD0mlAYQz5N4zZUd1aN0=
-X-Forefront-Antispam-Report:
-	CIP:194.138.21.76;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199015)(36840700001)(46966006)(40470700004)(36756003)(86362001)(82310400005)(47076005)(2906002)(107886003)(6666004)(5660300002)(8936002)(36860700001)(70586007)(83380400001)(54906003)(41300700001)(4326008)(316002)(70206006)(6916009)(8676002)(82960400001)(186003)(16526019)(40480700001)(956004)(81166007)(2616005)(82740400003)(336012)(26005)(356005)(40460700003)(1076003)(478600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2022 19:52:41.2089
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70f4f18a-1a08-4abb-b6e3-08dadd7b3d9f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Dec 2022 02:31:01.0470
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 939fe0b4-6cde-4be6-02df-08dadd43983b
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.76];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB5EUR01FT094.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7028
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /34pOs6NZMkCmAvv3b7SrLzffgbuI0BVLh9yluC8aHrSNEnfAgcWFqhnw7a0AQEizDCntmLJM36AXsfLIPhq3A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7152
+X-OriginatorOrg: intel.com
 
-From: Tobias Schaffner <tobias.schaffner@siemens.com>
-
-Make the rtuo thread switch between primary and secondary mode while in the
-RTTST_RTIOC_SWTEST_SWITCH_TO syscall.
-
-Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
----
- include/rtdm/uapi/testing.h         | 14 ++++++++++++++
- kernel/drivers/testing/switchtest.c |  8 ++++++++
- testsuite/switchtest/switchtest.c   | 22 ++++++++++++++++++++--
- 3 files changed, 42 insertions(+), 2 deletions(-)
-
-diff --git a/include/rtdm/uapi/testing.h b/include/rtdm/uapi/testing.h
-index 49f0b7f25..3674ae2de 100644
---- a/include/rtdm/uapi/testing.h
-+++ b/include/rtdm/uapi/testing.h
-@@ -70,9 +70,23 @@ struct rttst_swtest_task {
- #define RTTST_SWTEST_FPU		0x1
- #define RTTST_SWTEST_FREEZE		0x4 /* Only for kernel-space tasks. */
- 
-+/**
-+ * @brief parameter for the RTTST_RTIOC_SWTEST_SWITCH_TO syscall
-+ * @anchor rttst_swtest_dir
-+ *
-+ * This structure is used to tell the RTTST_RTIOC_SWTEST_SWITCH_TO syscall
-+ * which threads should be exchanged and if the mode (primary/secondary) of the
-+ * from thread should be switched.
-+ */
- struct rttst_swtest_dir {
-+	/** Index of the thread that should be replaced. */
- 	unsigned int from;
-+
-+	/** Index of the thread that should run. */
- 	unsigned int to;
-+
-+	/** If the mode should be switched: 0 for no switch, 1 for switch. */
-+	unsigned int switch_mode;
- };
- 
- struct rttst_swtest_error {
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index b6d0242de..674cdef73 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -622,6 +622,10 @@ static int rtswitch_ioctl_nrt(struct rtdm_fd *fd,
- 				    arg,
- 				    sizeof(fromto));
- 
-+		if (fromto.switch_mode) {
-+			xnthread_harden();
-+			return rtswitch_to_rt(ctx, fromto.from, fromto.to);
-+		}
- 		return rtswitch_to_nrt(ctx, fromto.from, fromto.to);
- 
- 	case RTTST_RTIOC_SWTEST_GET_SWITCHES_COUNT:
-@@ -676,6 +680,10 @@ static int rtswitch_ioctl_rt(struct rtdm_fd *fd,
- 				    arg,
- 				    sizeof(fromto));
- 
-+		if (fromto.switch_mode) {
-+			xnthread_relax(0, 0);
-+			return rtswitch_to_nrt(ctx, fromto.from, fromto.to);
-+		}
- 		return rtswitch_to_rt(ctx, fromto.from, fromto.to);
- 
- 	case RTTST_RTIOC_SWTEST_GET_LAST_ERROR:
-diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/switchtest.c
-index e9c552216..cb8e956d5 100644
---- a/testsuite/switchtest/switchtest.c
-+++ b/testsuite/switchtest/switchtest.c
-@@ -358,6 +358,9 @@ static void (*switch_funcs[SWITCH_FUNC_COUNT]) (void) = {
- 	switch_to_primary_mode,
- };
- 
-+/* Switch two times: primary to secondary and back from secondary to primary */
-+#define MODE_SWITCHES_KERNEL 2
-+
- static void *sleeper_switcher(void *cookie)
- {
- 	struct task_params *param = (struct task_params *) cookie;
-@@ -377,6 +380,7 @@ static void *sleeper_switcher(void *cookie)
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-+	rtsw.switch_mode = 0;
- 	rtsw.from = param->swt.index;
- 	to = param->swt.index;
- 
-@@ -517,6 +521,7 @@ static void *rtup(void *cookie)
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-+	rtsw.switch_mode = 0;
- 	rtsw.from = param->swt.index;
- 	to = param->swt.index;
- 
-@@ -598,6 +603,7 @@ static void *rtus(void *cookie)
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-+	rtsw.switch_mode = 0;
- 	rtsw.from = param->swt.index;
- 	to = param->swt.index;
- 
-@@ -679,6 +685,7 @@ static void *rtuo(void *cookie)
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-+	rtsw.switch_mode = 0;
- 	rtsw.from = param->swt.index;
- 	to = param->swt.index;
- 
-@@ -727,6 +734,9 @@ static void *rtuo(void *cookie)
- 		while (err == -1 && errno == EINTR)
- 			err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
- 
-+		/* Return to default: do not switch in syscall */
-+		rtsw.switch_mode = 0;
-+
- 		switch (err) {
- 		case 0:
- 			break;
-@@ -746,8 +756,16 @@ static void *rtuo(void *cookie)
- 		/* Switch between primary and secondary mode */
- 		if (i % TASK_SWITCH_MODES == TASK_SWITCH_MODE) {
- 			uint switch_iteration = (i / TASK_SWITCH_MODES %
--				SWITCH_FUNC_COUNT);
--			switch_funcs[switch_iteration]();
-+				(SWITCH_FUNC_COUNT + MODE_SWITCHES_KERNEL));
-+
-+			if (switch_iteration < SWITCH_FUNC_COUNT) {
-+				switch_funcs[switch_iteration]();
-+			} else {
-+				/* Switch mode on next
-+				 * RTTST_RTIOC_SWTEST_SWITCH_TO syscall */
-+				rtsw.switch_mode = 1;
-+			}
-+
- 			mode = !mode;
- 		}
- 
--- 
-2.34.1
-
+V2UgaGF2ZSB0aGUgWGVub21haSBjb21tdW5pdHkgY2FsbCB0b2RheS4NCg0KVG9waWNzIG1heSBp
+bmNsdWRlIGJ1dCBhcmUgbm90IGxpbWl0ZWQgdG8gdXBzdHJlYW0vZG93bnN0cmVhbSBwcm9qZWN0
+IA0KcGxhbnMsIHN0YXR1cyB1cGRhdGVzLCBhbmQgdGVjaG5pY2FsIGRpc2N1c3Npb25zLiBJdCdz
+IGFuIG9wZW4gb25saW5lIA0KbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9pbiBhbmQgYXNrIHF1
+ZXN0aW9ucy4NCg0KVGltZToNCldlZG5lc2RheSwgRGVjIDE0LCAyMDIyLCBVVEMgNzowMCBBTQ0K
+UGFyaXMsIEZyYW5jZSBDRVNUIDg6MDAgQU0NCkNoaW5hIENTVCAzOjAwIFBNDQoNCkpvaW4gWm9v
+bSBNZWV0aW5nIA0KaHR0cHM6Ly9pbnRlbC56b29tLnVzL2ovOTEyOTcyNzkyNjk/cHdkPVdtZHdT
+MHBET0RSTk1TOXRRazU0WTFkdmJGbHFVVDA5DQpPcg0KaHR0cHM6Ly9pbnRlbC56b29tLnVzL3dj
+L2pvaW4vOTEyOTcyNzkyNjk/d3BrPXdjcGs1MmE5Zjk2ZDk4OWU3ZTIwYjYyOGMyYzM2ZTQ4YjY4
+ZQ0KDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpQYXNzY29kZTogMzY3NTI4DQpPbmUgdGFw
+IG1vYmlsZQ0KKzEyNTMyMTU4NzgyLCw5MTI5NzI3OTI2OSMgVVMgKFRhY29tYSkNCisxMzQ2MjQ4
+Nzc5OSwsOTEyOTcyNzkyNjkjIFVTIChIb3VzdG9uKQ0KDQpEaWFsIGJ5IHlvdXIgbG9jYXRpb24N
+CiAgICAgICAgKzEgMjUzIDIxNSA4NzgyIFVTIChUYWNvbWEpDQogICAgICAgICsxIDM0NiAyNDgg
+Nzc5OSBVUyAoSG91c3RvbikNCiAgICAgICAgKzEgNjY5IDkwMCA5MTI4IFVTIChTYW4gSm9zZSkN
+CiAgICAgICAgKzEgMzAxIDcxNSA4NTkyIFVTIChXYXNoaW5ndG9uIERDKQ0KICAgICAgICArMSAz
+MTIgNjI2IDY3OTkgVVMgKENoaWNhZ28pDQogICAgICAgICsxIDY0NiA1NTggODY1NiBVUyAoTmV3
+IFlvcmspDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpGaW5kIHlvdXIgbG9jYWwgbnVtYmVy
+OiBodHRwczovL2ludGVsLnpvb20udXMvdS9hVEVBMzdpNUcNCg0KSm9pbiBieSBTSVANCm1haWx0
+bzo5MTI5NzI3OTI2OUB6b29tY3JjLmNvbQ0KDQpKb2luIGJ5IEguMzIzDQoxNjIuMjU1LjM3LjEx
+IChVUyBXZXN0KQ0KMTYyLjI1NS4zNi4xMSAoVVMgRWFzdCkNCjExNS4xMTQuMTMxLjcgKEluZGlh
+IE11bWJhaSkNCjExNS4xMTQuMTE1LjcgKEluZGlhIEh5ZGVyYWJhZCkNCjIxMy4xOS4xNDQuMTEw
+IChBbXN0ZXJkYW0gTmV0aGVybGFuZHMpDQoyMTMuMjQ0LjE0MC4xMTAgKEdlcm1hbnkpDQoxMDMu
+MTIyLjE2Ni41NSAoQXVzdHJhbGlhIFN5ZG5leSkNCjEwMy4xMjIuMTY3LjU1IChBdXN0cmFsaWEg
+TWVsYm91cm5lKQ0KMjA5LjkuMjExLjExMCAoSG9uZyBLb25nIFNBUikNCjE0OS4xMzcuNDAuMTEw
+IChTaW5nYXBvcmUpDQo2NC4yMTEuMTQ0LjE2MCAoQnJhemlsKQ0KMTQ5LjEzNy42OC4yNTMgKE1l
+eGljbykNCjY5LjE3NC41Ny4xNjAgKENhbmFkYSBUb3JvbnRvKQ0KNjUuMzkuMTUyLjE2MCAoQ2Fu
+YWRhIFZhbmNvdXZlcikNCjIwNy4yMjYuMTMyLjExMCAoSmFwYW4gVG9reW8pDQoxNDkuMTM3LjI0
+LjExMCAoSmFwYW4gT3Nha2EpDQpNZWV0aW5nIElEOiA5MTIgOTcyNyA5MjY5DQpQYXNzY29kZTog
+MzY3NTI4DQoNCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo=
