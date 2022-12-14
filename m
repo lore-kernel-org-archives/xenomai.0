@@ -1,167 +1,269 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2045.outbound.protection.outlook.com [40.107.7.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25ED217CB
-	for <xenomai@lists.linux.dev>; Wed, 14 Dec 2022 05:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670996815; x=1702532815;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version;
-  bh=1tsIkGF1oGqY/pxT/gX3smqgmObmfqsRzY/+qckx1RU=;
-  b=X+wNQhhrDIaM7gsDVvvou0ECkodD5DZKTBMfj/Hp2QtNF8K+WR/l707Z
-   JUbwVZvxrfk+HlhPhU7MzyZgYh09gDr5SiNorOkHc7BQSClQ7FAcYa0Zl
-   rzLfHRyNwLPyAU86SY9HM6OjkN38x9riCidN8/Z6RJXkeKJYZxTFh6yde
-   xbHgn7Gf1dwPmqtsLaEhBiPA0IZdjiu42clvRcyIzlDrTIUTdXATrdicl
-   mT4sJf0FXT58XNvXvAvfR1j5oalbLDZzMvoZTnI+4pjAp3AuX4H7zQ94K
-   EHkzil9g90iBX5x30G1Hqofs2oHbdeeLc5gwQMLAaHmdNIyWqtgPUnTVF
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="301740239"
-X-IronPort-AV: E=Sophos;i="5.96,243,1665471600"; 
-   d="scan'208";a="301740239"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2022 21:46:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="773216075"
-X-IronPort-AV: E=Sophos;i="5.96,243,1665471600"; 
-   d="scan'208";a="773216075"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga004.jf.intel.com with ESMTP; 13 Dec 2022 21:46:53 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 13 Dec 2022 21:46:52 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 13 Dec 2022 21:46:52 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 13 Dec 2022 21:46:52 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 13 Dec 2022 21:46:52 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16E3A20E6
+	for <xenomai@lists.linux.dev>; Wed, 14 Dec 2022 08:14:29 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K/vWMOaTSI3Oh470lVosCwQdSkeElku3mtORxeGRrQKZtlc36fP2nGSA17XnOIbxTJRTxHIZey3XG+I2afr1cL5xAcB3KR3hU6Eu5kKecVYc+ZJto7IR71EakTCLJuUBfC8mVJJAIsn2tEemn77ez78ywKxagnzZ9KOEmC7hd7tMuoSaX/o/wQQpgC7pP78J8aHOdPHpJiUD7UaNmbJN8RDfiFCeLXakm2coM631fjZYiOxGAV1iKIdeERYRozZIO/PAE5Y/85oyHzYytOZVFyumPR5yk++LUZPPA87K2KlvarlzEgQi7av5slJrrH1cTrvIilpUNGLg+TNwFxj+ng==
+ b=E+sXr1ZJAQ3xKadBH0tRJB/ddONvtes1Wb/9/Zxe1eZRaHcZ4igoznsB4axxX45R3QB6NjDhO9Z0dun8uZss51rIfc7DscgsxMru74iBH/5U5Zo9OgSznakW1OlYjh29SyAD/GHogY0KujAcT8qoctpgKjeYhmQovINuZ0rIWOc4AH0cGPPord+sB0FChUrG4XyQ6ZalJ6hzeNBYnGbOG6wOrZ9OpS6qkjbxC2KpoO9jfawwyd3W3nN/F086VOFZaLHFUK6OvMWJl5PkunIhlul4TvGPCNO9t8Q3HC4SH3jINTVcNP9ZZ4r1eHYrfTPdJP5Z08MFk0RGDTIB1Uzb5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1tsIkGF1oGqY/pxT/gX3smqgmObmfqsRzY/+qckx1RU=;
- b=ijgBq/6uTkeNlWvsPhIJVYGZHNIfNP3FUwVBYo1pUk4pK10SD0+sOfn7VeiSz7ewevEfMeYeB8G9CvariNBtKnK3BXT/Ce0CuH7x5uz/If2L5CiQH/1nc7L32lAkoUNmTetljKTTeKWZslND8jvFVeAlQE9jE+SAy0fnikiiGrap1/Fx98NNh3jkEpv9Bjr3oepbIYcndvqk3r99wFNPcqbEjBQBB9cgP+oS+hqSrE3w4I0ckZkRFtCQOP5iNX7B/Wg++p5wkb1akQJZG2sEMkrAJIGZraQ7I4agj1SheM/juLPBP2SCpqEDIswsZj2jTUpKiU4iacwN8tOLyonbEQ==
+ bh=bGCHbi7nAIDOLeZ1WvveEg+y7WWsIr2GZtGyda8tLP4=;
+ b=fiQBADw6mdkR3EBSNC2waqYLkfM1l/j60ELJFKaqXLIe6pbRLaDlV/QJKgyuJNRFbJC4YczyCupBCln3ohxMqClqwQB8GCYgyqRXn0KoTuijOaqhRxEC9ST6ePamMWS3GX2C3zGWGG4S1KBhKmM9r1uv21xjVxNR2/qzbZ++0HSsnrqtOirKqO/IgoT0ML88sP1DemLe9iud9x+MzZh8iamPfCv7EDh7DuUqUK0j1GfGng9wu8YTGECQ/pW3WHdxRweOoP3Vvjo80Q7lnLYXwUB1q16YX+3ozCvPzF/UF4OgvkxQ7+xMszLZbymBNN4MsivqBZd9MNxuhqAo7/1cvQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
- by PH0PR11MB5013.namprd11.prod.outlook.com (2603:10b6:510:30::21) with
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bGCHbi7nAIDOLeZ1WvveEg+y7WWsIr2GZtGyda8tLP4=;
+ b=isi7VRxvsZZS1wmqsZ3enysKy5W1b5uTA4TXNQQA2IMZyKTaKU21W9R+e1o0l4Lvjt8a0wvjEPSPTcbCtKCoQk+kOrOr+i2KrZKJMC0pB9y4EVujRLiGR2UMjRL44Bbb3NVfJ4SCXqVhBvlge79/THU+DY0hYOB9V2P72KsNaW/ilVOHdRerBbkj6w+AUv7fxTavukGvRCmu7Thz3aOJMIHDQMamq9R14IaX+R8JZQaLT3iptnFESqaPwcrZtG38BiDypyuw2qxWQOiKueZk/Wq7nxUeS3JKCBWFQ55RvHkpB6E8QesKGQXdFzWJGesuxESR5IIj7FNBkj+vxqg1NA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS2PR10MB7372.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:604::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Wed, 14 Dec
- 2022 05:46:48 +0000
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::27cc:d8ed:9947:fecb]) by MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::27cc:d8ed:9947:fecb%7]) with mapi id 15.20.5880.019; Wed, 14 Dec 2022
- 05:46:48 +0000
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-To: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
-	<xenomai@lists.linux.dev>
-Subject: RE: Reminder: Xenomai community call on Wednesday, Dec 14, 2022, UTC
- 7:00 AM
-Thread-Topic: Reminder: Xenomai community call on Wednesday, Dec 14, 2022, UTC
- 7:00 AM
-Thread-Index: AQHZD308oTv699yiFkGorIuNzKkLw65s347g
-Date: Wed, 14 Dec 2022 05:46:48 +0000
-Message-ID: <MN2PR11MB4285F9EB11748D3A3137D919F2E09@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <MN2PR11MB4285BDEEACED1195EAC700D3F2E09@MN2PR11MB4285.namprd11.prod.outlook.com>
- <42c1ea5f-e648-8a00-6a5d-151c8d1550ff@siemens.com>
-In-Reply-To: <42c1ea5f-e648-8a00-6a5d-151c8d1550ff@siemens.com>
-Accept-Language: en-US
+ 2022 08:14:27 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::2957:50e8:8ce6:124a%8]) with mapi id 15.20.5880.019; Wed, 14 Dec 2022
+ 08:14:27 +0000
+Message-ID: <ce47a52d-aac5-f761-849d-a3938b40f3ab@siemens.com>
+Date: Wed, 14 Dec 2022 09:14:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH v4 3/3] switchtest: test mode switches while in kernel
+ mode
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|PH0PR11MB5013:EE_
-x-ms-office365-filtering-correlation-id: 7eee05e5-19af-4279-8e5c-08dadd9697c3
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BFSkznvLgWCvtVdiD88JFnLpED7xoeBJIdA9Y+ZIbMSO8bRTJKbf8uh+N9PFaN47As+yeBtWrWOxVGrRqo5/BNJz0lYfQTmYwx20LxLZzD/I44M/x71mmIp43mixj383RlIvXQugk0Dia0EXjM4mnn7TsQh3D3gVhl6Qap8JBgIUaX3H3gv0ol8kbzXwnTBRtkZxEPMmYFNztneAHeYRaBfqronofG0S5rzXWJyj4kdlXDJri6F/zcKab3HgrvI3fVFdJ1TgXdPImeyI9xWLi592Bkhv5YRAFkKxob/wllw8kIE9RwLlPr/iDVcoXvsBK1jR2P52MWkI2DrzW1XhI4/lZKYocJw1XxuuairICOKaMNIhQ25sVXuD+7B8ab2HSsj3sG6l8jhdYSrDygvTHiC+XSj0eEYdHOJxeOxhlXdRkOpv+BO+5e1LOUIGP6cWREjkVQQGXqrB9nelOVYciXOxVcMHJ6wS6wwoNZydiEGIDykw+UFTqUhdz1KHavEKW6BEKfV0jfzHGEK5csCbcX+f/AZJQBwRy7yUaos5MctLHSHKWBgVF3tc3rrcc5i9zNqNdv9B/r3IXwbEBczlKhH+dI7rzptV1IRJp2QhKTIcY4S8eP+xDbPDStIT+aZMII6V9uA4oAavZtVrJi/EY8OerdDvAF1+mvj09M66ddbnfGeP7IY2J9stI6oHPrR1mcKDuy1lkPpnqVdrF9cSMw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(39860400002)(366004)(346002)(136003)(396003)(451199015)(55016003)(186003)(122000001)(38100700002)(82960400001)(2906002)(38070700005)(4744005)(5660300002)(66446008)(71200400001)(66556008)(9686003)(33656002)(64756008)(66476007)(26005)(8676002)(86362001)(41300700001)(52536014)(8936002)(478600001)(83380400001)(110136005)(7696005)(6506007)(66946007)(76116006)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cno4bU9BNmRrZk9ic29kYVBrNzV5cW92QzJ2YlVYQ1FWQkZmNmZlbkJDRzFq?=
- =?utf-8?B?YmhmNE9sZGlMYVlteG9tZitFZGY2dmNKb25Xd0Y0RUVXOUNVdW55ZFBJQXB2?=
- =?utf-8?B?Ym1qWFUxd1h1elc0YkpIcFA1UzRDc2RLNDBhSFc3cUpOcVlNMS9VV21TK1Zw?=
- =?utf-8?B?MGxGTjJmdnZIbnIrRStEc3pwdnlZcGl1YlJ2bC9penBYdVJud2h1VGRqa3Zi?=
- =?utf-8?B?UnlsQTF4R1pCZVpmWC9EM0xnL2ZWSWNGRTVrZ0Z3a0pGejJMdDNEWGdjeENU?=
- =?utf-8?B?RlNTaGFRMWxUVk9ud3NJUnN2eHF6dVlaSVNENVNJZ0ZpZDMzTzBicmdGUDZ5?=
- =?utf-8?B?akJVVWdCN2dOS0ZXaFlDWlV2RjcvZDhuSjBuRERFdjlXUkppenRpZ1hrS0gv?=
- =?utf-8?B?WUxhUjZ6RFcyUHhSK2J6ZTNKOTV5MENsMDhUNEI4Mk16ZU1Wc3J3eENFWFpL?=
- =?utf-8?B?WDgza3ExRjFINHBFdU5XbUVtMHIwbDBSdkhXOFVrTjdGcGtrRVRQUmFWZkpy?=
- =?utf-8?B?UytUWEtIUmtnd3FVT0p1N3czdWVrYkI4KzlwTTdYb0FEWnZVcGRGMHZFZmo2?=
- =?utf-8?B?c2FoRGVFMlltYUp0ZmpsbUY0Wm95ZHpJeWd6Z2dkc3ZiOEVZY2duRld1b09i?=
- =?utf-8?B?Ylp0UU84S3BWdUlVUmIwVWVwVS91eDNHeE12ZDVzSkRxaUNxNTAwN09wZG1y?=
- =?utf-8?B?UW5EVm40RDBKV3kxTlVCQzRuWDdhYjhXdXVMaSs0MXFKRjFURWlPMDNHelpB?=
- =?utf-8?B?aUp0dVlIQzlnK2pCUkxLTzBGNFIwQjRJcEJCUWp5SXR5L2NSL3J0OGlOSGJt?=
- =?utf-8?B?NDlSTXA5UURreWZpa1RlUlNxc1o2SXk4L3lFcU1KeGhqRzk1dnFJYVRvaTEr?=
- =?utf-8?B?L3N0SE9SanZIZjFnUGlLRmlGOHZZRmhTcXpuYk1LUGtaMVVUU2ZEa3lNcHZR?=
- =?utf-8?B?bDNSeEtYYW5ZR3FLejUzY2pTNGVYUEhOcXJmTkYxeUN4K0dJL3Z4LzJsZ1kw?=
- =?utf-8?B?TXFCekNJSml0eHREdDJzSGl6bzY2YkhvWjEzcDlRNzZScko4SEVnTG4rVExm?=
- =?utf-8?B?b1JVbUlndDNnM0hCRFJlN25DTktvcmFWV1pmRzAxVDFUV0dRaVJqaTBQWkdR?=
- =?utf-8?B?UDZSQVR3djlOeVVlTVM1S1BUeEpNVER2M0JQWFhLUmtuYkZvd1cxeWZmMWZx?=
- =?utf-8?B?SkRHdnV0NmFVaHRrNVVNeURkMG9mQ3ovNDF6VEljVjhwTGRGRVlMU1ZpYnhl?=
- =?utf-8?B?SDQwZ0k5Yk9Yb1NpWWRoYm1WUE9FU0R5Y0pIQmpoRkpRZSt0WlcyRHZwazYr?=
- =?utf-8?B?UEY1bTh0K09pbVRlZGRCdC9iL2pvRGJxbTRCWm1YSVpXNkR3d29vcVlhQzR4?=
- =?utf-8?B?Qit4WHFtSTdtVVdBdVJIRDVQRHl3bVptald3NFdXSGFmMUdVc0JuUk10VUVI?=
- =?utf-8?B?SnJHSklDVytUNHQ1YjF0RWhMcC8vRmlNazFOKzRSNWxYcVg5dkdPSkFQdC9N?=
- =?utf-8?B?SCswN0FPK0NMdTJqRUhoMGJ2dE13allyVXNtUytoakJ1QUZTRi9nemMwaHN6?=
- =?utf-8?B?SWhFMytHbWhHaXFIRXVlNWFSak4ybGFQb1F1RDRPMllBR3VKQ0MrRDZWcFJB?=
- =?utf-8?B?UVVoaGo4dGtIVUY5VmpZbkNZdUV6UTFZOFRKZjk3VFUrb1pPUXF6QWs2QWlo?=
- =?utf-8?B?UHozOUI0VVVldWNXMFFzZHYzRmFOeG04QjhHYUptckowUE05aUZSVzJqMnF0?=
- =?utf-8?B?aG1ycFpCbnJGM2wxaVEwZ3NyakFGYVRQY2lLR0M1ekRJUVNsaEJIZXg5RW16?=
- =?utf-8?B?K0xPT0hiWnZnNERFUzNaalhkUzB6blJjNDRuZG1PQzljamNKSytUd3NlaGJB?=
- =?utf-8?B?NXhBaTJRNGlMeFdSRVpTTDR5aHlWRm5kcm1KZlRnY1Nkai8rS1hvbFRoQmFm?=
- =?utf-8?B?S3MrTWxMSXNwSndYVk5yVWdQR0NiRDBwQkQvcGRmNmdqNVE5K1BwUVplVFd4?=
- =?utf-8?B?K3RKbTJpSGh5c3pIM2lydDM5ZDVPOXNuZ1pvcldIZkQ3dHdLMzBwWWFBdjRZ?=
- =?utf-8?B?Vk5LM3ZXYWdaRGpoNTNMdVJpVDZVYkppd1hMcnFkSUJuajc5WmljVDljRUoy?=
- =?utf-8?Q?8H5Th6muR7Ryz9b9aqsk+ebu9?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+To: "T. Schaffner" <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: florian.bezdeka@siemens.com
+References: <20221213195205.2870828-1-tobias.schaffner@siemens.com>
+ <20221213195205.2870828-4-tobias.schaffner@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20221213195205.2870828-4-tobias.schaffner@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0073.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1f::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS2PR10MB7372:EE_
+X-MS-Office365-Filtering-Correlation-Id: 69f0f1bd-6ced-4b37-5cf9-08daddab37a7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	iqFdm55ZLPbVjwoBvs39SlXgtd5sDQOutXHd8NRGwaeEojUkLKB0yGv85hCfix7WqZKMxnUWzSoz8ktCBTfpvMfYF8Q52iOyqdQCwArBXp50OWij229o9wGD1Lqgh3oG/w3P9gc+cvYxVg3JkfuH35G0AYL/faGzehWM+OZlozWWO8Lh78k4Tjv9jT4AmlZw8C9ulOaXfgSXUIVSYZbvAbKWhckn4TWH1bW/SkMLVBhoMRmOS2Wd8b+M8x+iy7GdCeJOqn2IFT8gSpOqNKYeVvTDDZgYtHgk1wbpr79zc6JxV1jrDVh3h8BewQ7GXVTls9f46xN1ugP9VJ9eouUIsxKCBWulBf56EPMlwa/Oo8gedaLw5+t99W7Az5fi6PYxWxbZtywKCEV+g54zFx/HluHqbIdZOEsYTSxQIGs9CSxSqy2ePkRxMb0Y8KM5CwffSiMuF6Ro7bJPbSDPRcWdmjPzkLoxRsKNnQVqUK+f9aqTbDzxsMxIOGZhnJsk2PX8AvX1bPGgi0EkxAbAAcqgvgxTe3NE0u6wmIIBcoC8MElEleP/2SggFRb19HN40G8EJm7LhS4SMB+FeCLBTdHlZjIlkVC/46Z+BOPwsvNXXvtQ5ZOqtLR5MTEh0bTa23oItUGE+DtzhIRbxyv+ipPdfaZWUVuscNZSljh7H7qTGgT2DhuTr5QSRNQJ9LE8hRP0qYw9tzRAneUCZUgGHtEGmcrX4z9GPvTgFAJuULTicSQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(346002)(376002)(366004)(451199015)(107886003)(31686004)(6512007)(6506007)(316002)(186003)(53546011)(26005)(2906002)(6666004)(2616005)(8676002)(36756003)(66476007)(66946007)(66556008)(41300700001)(82960400001)(4326008)(83380400001)(38100700002)(44832011)(5660300002)(478600001)(8936002)(6486002)(86362001)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UFhGL0phcXV6eVlTUVdnS2d0ZXFDY2RtVHpCWENVTndCM1RsdDlxMGdZZlRs?=
+ =?utf-8?B?NEhVVWswSWhWTmFIUDkrTEVwbzM2Uko3UVNFbGNjVXF6WC9QNVhrR0U1Y1Y3?=
+ =?utf-8?B?Y3JYOS9CRVFNQzJublV1aVYxWnJ1NG1PclVHWCtYS21ONzlJVG1ja1lzcW1F?=
+ =?utf-8?B?ekdBdk1BRTAyeVNhc3R2TzNPYm4raG41UC9NQWtBZjhPV0sxUC9hRktCNzJ0?=
+ =?utf-8?B?Uy9MTGhXTjdxK3pYUkhkUmEvQTVzWWdLOFhHb0xkbEt2TWwxU3pJMFQwdWVK?=
+ =?utf-8?B?N1JUQmJ1YWR3VEF5NmorZTM1UWcrQ0pUb3BSQ0Z1M1JNT0loM1ZXU0p2eVNW?=
+ =?utf-8?B?VkFmMzhBcXhCV2xZMzRoNHBrYnNTK2tpMk00cTR2bkVQcWFvZktRMlArWnBC?=
+ =?utf-8?B?T3F0K0puU2hFOEUyZkpUMm9IdUxiZHVPRHJFNTM0RUlEZ1NpYkx2MWdEd1Nj?=
+ =?utf-8?B?SGI0TkhmS3EwWFpaVVp3OC8yQzFjeXNOTklTUktwU0NBQkU3MGNnTUhsK2hO?=
+ =?utf-8?B?T1p2WVd1enRTdjNibnQzR2h0bCtGQWg0UUVQTEpZZFUyUnB1czJSME16ay9k?=
+ =?utf-8?B?dzlWcldvZnJEbDN6MENiTWkrWW5vdGYrcys5TWFFSEVOa1FuQm01ZmVEc0I2?=
+ =?utf-8?B?REhXWDcwaFV2Q2NsaUlNYTVmdUNXT2pQTTI4bHR1NEtOZGdwZDBKOXVGVkY2?=
+ =?utf-8?B?SmxEeVBQdGtHSHVOWXcxVGpram5udDQrNVFLYmZEcnE1TUVpVGphZW5KbzZl?=
+ =?utf-8?B?RFZUWnl3SzdkbHdONGtOb1c3T0pIT1QxaENoZzlreXd1dm4rNEt4RlVRZTBy?=
+ =?utf-8?B?Q0kvOXNGU0dPZUlXUEdDRGR4cjF1ajhiTWRhcGpVUDFKY2NqQVJuTUxFL2Jj?=
+ =?utf-8?B?cUZ4OUpzM1EvelhBZkw4bkx0SS9sTmFNVWJsV3JUWjU1SUJCeHB1Uy93SHRi?=
+ =?utf-8?B?akw5b3VxSDhpSzRic2tBaEpFMHhrL3hSazNkSEtFYzNycTVyK0g0cnR5RVRD?=
+ =?utf-8?B?cFlNd3ZDTHFNb0dYY1lLSFVVTzlmMG5vYlp3ZWFTT2VZZ2F4OFFxU0h1WHpF?=
+ =?utf-8?B?bGhtOFRjR3FrNFhmSDg1Zk5VaFJIMVdCR0ZhTmRadm5TMVREczJ3WE44elpo?=
+ =?utf-8?B?T3J6ZkRKSzQ2WkR5cjdJL1VxZDlkSWNXYThjV0Z1NHpXQnI4Mm56MGhhdnNm?=
+ =?utf-8?B?MHNvOGQ0d2l6SmEvbGFuTm5Rb2RtVVR0ekZ4eFRaSG8yWTNYOGlxeEpCSUpP?=
+ =?utf-8?B?bFVIbnVBb2VSZ0dvU0xRUE1CdXkzTC9LTjUzanNnQnNSbzN3c1gvZU0rVUFC?=
+ =?utf-8?B?SjRwQ2hEcWt4T25iNjhRWkZYbHR5V2FPZC9BM3ppQUV1QUxHSHpIMDBVOHI4?=
+ =?utf-8?B?OU9TVEdpZlhjc1l2QmFxcTBsUjYyTTdtaTdnQVduSFBPbFdTSFFLVjdITUZ2?=
+ =?utf-8?B?c3VHdUVFSTBwTEhVSWo2ZnFBak1xVlNST2pkSC9hc2JZcGtmNXA5ZkNQdVd4?=
+ =?utf-8?B?MUVtQW1qcCttdnI4T09iTlJKRFhDZ2ZHK2dYM0ZFaDF0aHB0RHZMZTRHSFYv?=
+ =?utf-8?B?dFpTdkNKdnJ3N0hRYzVoeEUzNy9FeWJRM2w5Zmx2ZmQyZTRJUTliWHpwWG5i?=
+ =?utf-8?B?T2hxZEhQNDNlM1oxbEhOaXZ3L2JYZFo5Z3JlQlFxZk1Cc0V2U3h2TGNtb2pI?=
+ =?utf-8?B?dVZ5ckRHcVZtRGNaTEVhSWFNNVhGd2xORUp2cTZNYW14NXdaUXRua0ErZ0lH?=
+ =?utf-8?B?WGEzbG1sWk41Q3c2dk8rQ0xlbW9lNEdGYyttNWZJOHJ3L1YyNmRrMTV1ZVQr?=
+ =?utf-8?B?ek5mMi9MdHV0ZHplVDQyQ3NwVmNDYlBJYlhMNVhDbG9qZmx1U1QxaUlhemp6?=
+ =?utf-8?B?Q2ZQcFVVeGdxcGZ1UlhuMk1oclRsUTRKU0Rhc1IwRW1mMlVIV2tuS3FLcDIw?=
+ =?utf-8?B?TDdVQVFFTk5hTGFlaDVXa1FlMEJLenJXQWtFZnBBeTZIZFJCU0JoWDZuUWUz?=
+ =?utf-8?B?NTIzNGZob2lWYkJnblNGeEhSK0czbmhhN2hYUmg0VFZUUEhOYVJlVm94blFW?=
+ =?utf-8?B?dkF1bUdMNGhMOGIxNTRmQ09ZRkpHaGgzNU1tQ2k3QnQwUEZqd0d0NGVKYkVh?=
+ =?utf-8?B?RTFDRHgrRy8waG92ZGxzT2lrV2xWU29ZS3lyOUI5RmxqeDdtbVNoc0xOeTdL?=
+ =?utf-8?B?bWc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69f0f1bd-6ced-4b37-5cf9-08daddab37a7
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7eee05e5-19af-4279-8e5c-08dadd9697c3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Dec 2022 05:46:48.7198
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 08:14:27.0145
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1Y0RtkLsnHU+t7HXgO0ZOm6nOHuLYSvfaXlTqS85IGzJ6iI4lwaYMjyUanTW1Y4XFUDEJ2WWdDYCCJm8OYqELA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5013
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WO6ePTGwZcIdM0AoGu3XLWuA+DKj7D1oIcM7P4XjY4jWPakWbJZ2d9S8UofoxlP0+sGuH6K4vs5xzXR1rvriHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7372
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+DQo+U2VudDogV2VkbmVzZGF5LCBEZWNlbWJlciAxNCwgMjAyMiAx
-OjMwIFBNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IHhl
-bm9tYWlAbGlzdHMubGludXguZGV2DQo+U3ViamVjdDogUmU6IFJlbWluZGVyOiBYZW5vbWFpIGNv
-bW11bml0eSBjYWxsIG9uIFdlZG5lc2RheSwgRGVjIDE0LCAyMDIyLA0KPlVUQyA3OjAwIEFNDQo+
-DQo+T24gMTQuMTIuMjIgMDM6MzEsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4gV2UgaGF2ZSB0
-aGUgWGVub21haSBjb21tdW5pdHkgY2FsbCB0b2RheS4NCj4+DQo+PiBUb3BpY3MgbWF5IGluY2x1
-ZGUgYnV0IGFyZSBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9kb3duc3RyZWFtIHByb2plY3QNCj4+
-IHBsYW5zLCBzdGF0dXMgdXBkYXRlcywgYW5kIHRlY2huaWNhbCBkaXNjdXNzaW9ucy4gSXQncyBh
-biBvcGVuIG9ubGluZQ0KPj4gbWVldGluZyB0aGF0IGFueW9uZSBjYW4gam9pbiBhbmQgYXNrIHF1
-ZXN0aW9ucy4NCj4+DQo+PiBUaW1lOg0KPj4gV2VkbmVzZGF5LCBEZWMgMTQsIDIwMjIsIFVUQyA3
-OjAwIEFNDQo+PiBQYXJpcywgRnJhbmNlIENFU1QgODowMCBBTQ0KPj4gQ2hpbmEgQ1NUIDM6MDAg
-UE0NCj4+DQo+DQo+U29ycnksIGZvcmdvdCB0byBpbmZvcm0geW91IHRoYXQgSSB3b24ndCBiZSBh
-dmFpbGFibGUgdG9kYXkuIEFsc28gaW4gdHdvDQo+d2Vla3MgKGhvbGlkYXkgc2Vhc29uKS4NCg0K
-Tm8gcHJvYmxlbS4gIExldCB1cyBjYW5jZWwgdGhlc2UgdHdvIG1lZXRpbmdzIGluY2x1ZGluZyB0
-b2RheS4NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo+DQo+SmFuDQo+DQo+LS0NCj5TaWVt
-ZW5zIEFHLCBUZWNobm9sb2d5DQo+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4N
-Cg0K
+On 13.12.22 20:52, T. Schaffner wrote:
+> From: Tobias Schaffner <tobias.schaffner@siemens.com>
+> 
+> Make the rtuo thread switch between primary and secondary mode while in the
+> RTTST_RTIOC_SWTEST_SWITCH_TO syscall.
+> 
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> ---
+>  include/rtdm/uapi/testing.h         | 14 ++++++++++++++
+>  kernel/drivers/testing/switchtest.c |  8 ++++++++
+>  testsuite/switchtest/switchtest.c   | 22 ++++++++++++++++++++--
+>  3 files changed, 42 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/rtdm/uapi/testing.h b/include/rtdm/uapi/testing.h
+> index 49f0b7f25..3674ae2de 100644
+> --- a/include/rtdm/uapi/testing.h
+> +++ b/include/rtdm/uapi/testing.h
+> @@ -70,9 +70,23 @@ struct rttst_swtest_task {
+>  #define RTTST_SWTEST_FPU		0x1
+>  #define RTTST_SWTEST_FREEZE		0x4 /* Only for kernel-space tasks. */
+>  
+> +/**
+> + * @brief parameter for the RTTST_RTIOC_SWTEST_SWITCH_TO syscall
+> + * @anchor rttst_swtest_dir
+> + *
+> + * This structure is used to tell the RTTST_RTIOC_SWTEST_SWITCH_TO syscall
+> + * which threads should be exchanged and if the mode (primary/secondary) of the
+> + * from thread should be switched.
+> + */
+>  struct rttst_swtest_dir {
+> +	/** Index of the thread that should be replaced. */
+>  	unsigned int from;
+> +
+> +	/** Index of the thread that should run. */
+>  	unsigned int to;
+> +
+> +	/** If the mode should be switched: 0 for no switch, 1 for switch. */
+> +	unsigned int switch_mode;
+>  };
+>  
+>  struct rttst_swtest_error {
+> diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
+> index b6d0242de..674cdef73 100644
+> --- a/kernel/drivers/testing/switchtest.c
+> +++ b/kernel/drivers/testing/switchtest.c
+> @@ -622,6 +622,10 @@ static int rtswitch_ioctl_nrt(struct rtdm_fd *fd,
+>  				    arg,
+>  				    sizeof(fromto));
+>  
+> +		if (fromto.switch_mode) {
+> +			xnthread_harden();
+> +			return rtswitch_to_rt(ctx, fromto.from, fromto.to);
+> +		}
+>  		return rtswitch_to_nrt(ctx, fromto.from, fromto.to);
+>  
+>  	case RTTST_RTIOC_SWTEST_GET_SWITCHES_COUNT:
+> @@ -676,6 +680,10 @@ static int rtswitch_ioctl_rt(struct rtdm_fd *fd,
+>  				    arg,
+>  				    sizeof(fromto));
+>  
+> +		if (fromto.switch_mode) {
+> +			xnthread_relax(0, 0);
+> +			return rtswitch_to_nrt(ctx, fromto.from, fromto.to);
+> +		}
+>  		return rtswitch_to_rt(ctx, fromto.from, fromto.to);
+>  
+>  	case RTTST_RTIOC_SWTEST_GET_LAST_ERROR:
+> diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/switchtest.c
+> index e9c552216..cb8e956d5 100644
+> --- a/testsuite/switchtest/switchtest.c
+> +++ b/testsuite/switchtest/switchtest.c
+> @@ -358,6 +358,9 @@ static void (*switch_funcs[SWITCH_FUNC_COUNT]) (void) = {
+>  	switch_to_primary_mode,
+>  };
+>  
+> +/* Switch two times: primary to secondary and back from secondary to primary */
+> +#define MODE_SWITCHES_KERNEL 2
+> +
+>  static void *sleeper_switcher(void *cookie)
+>  {
+>  	struct task_params *param = (struct task_params *) cookie;
+> @@ -377,6 +380,7 @@ static void *sleeper_switcher(void *cookie)
+>  		clean_exit(EXIT_FAILURE);
+>  	}
+>  
+> +	rtsw.switch_mode = 0;
+>  	rtsw.from = param->swt.index;
+>  	to = param->swt.index;
+>  
+> @@ -517,6 +521,7 @@ static void *rtup(void *cookie)
+>  		clean_exit(EXIT_FAILURE);
+>  	}
+>  
+> +	rtsw.switch_mode = 0;
+>  	rtsw.from = param->swt.index;
+>  	to = param->swt.index;
+>  
+> @@ -598,6 +603,7 @@ static void *rtus(void *cookie)
+>  		clean_exit(EXIT_FAILURE);
+>  	}
+>  
+> +	rtsw.switch_mode = 0;
+>  	rtsw.from = param->swt.index;
+>  	to = param->swt.index;
+>  
+> @@ -679,6 +685,7 @@ static void *rtuo(void *cookie)
+>  		clean_exit(EXIT_FAILURE);
+>  	}
+>  
+> +	rtsw.switch_mode = 0;
+>  	rtsw.from = param->swt.index;
+>  	to = param->swt.index;
+>  
+> @@ -727,6 +734,9 @@ static void *rtuo(void *cookie)
+>  		while (err == -1 && errno == EINTR)
+>  			err = ioctl(fd, RTTST_RTIOC_SWTEST_PEND, &param->swt);
+>  
+> +		/* Return to default: do not switch in syscall */
+> +		rtsw.switch_mode = 0;
+> +
+>  		switch (err) {
+>  		case 0:
+>  			break;
+> @@ -746,8 +756,16 @@ static void *rtuo(void *cookie)
+>  		/* Switch between primary and secondary mode */
+>  		if (i % TASK_SWITCH_MODES == TASK_SWITCH_MODE) {
+>  			uint switch_iteration = (i / TASK_SWITCH_MODES %
+> -				SWITCH_FUNC_COUNT);
+> -			switch_funcs[switch_iteration]();
+> +				(SWITCH_FUNC_COUNT + MODE_SWITCHES_KERNEL));
+> +
+> +			if (switch_iteration < SWITCH_FUNC_COUNT) {
+> +				switch_funcs[switch_iteration]();
+> +			} else {
+> +				/* Switch mode on next
+> +				 * RTTST_RTIOC_SWTEST_SWITCH_TO syscall */
+> +				rtsw.switch_mode = 1;
+> +			}
+> +
+>  			mode = !mode;
+>  		}
+>  
+
+Applied this to next now as well (patches 1 and 2 were already via v3 of
+the series - I assume they didn't change).
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
+
