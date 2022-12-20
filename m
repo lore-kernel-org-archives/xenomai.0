@@ -1,106 +1,63 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5308E79D7
-	for <xenomai@lists.linux.dev>; Mon, 19 Dec 2022 21:51:40 +0000 (UTC)
-Received: by mail-qt1-f179.google.com with SMTP id c7so9498447qtw.8
-        for <xenomai@lists.linux.dev>; Mon, 19 Dec 2022 13:51:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=aNYOo6LEJcH1OGxZLdyNILodJzL3Zocoe2eYWHUN10g=;
-        b=Zl9r5m00LZRGDDbeBLlES2JBl0/oyK1m38ZwxTGgVTISAODDwiOCrhkneS7iKw673v
-         ZDHN/7b+su5LL52rkebcJrXJvC69VSNWtJPZ4Q6iVmIDRN14Jggmmyp7g1RPzl/VfOy5
-         yU+o40gXh/lqjxny/oDqB9IkEpf/oJ5fNpjnKtQbUIsM/pA0AaSbBNlpJLHDOdQtFCWV
-         uESNnXVrRjMomVtRMwgMq9KzUBWpzWrW6773HTw88VzlXT72+iLkQCUb4kXPP+EYoDzo
-         XXF02JE0Qc6Z2pIfP+i4vH6TpoBlocePluAThGnPUUAz8L4CmnFjdOrg6XLV3BtLSHue
-         UPoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aNYOo6LEJcH1OGxZLdyNILodJzL3Zocoe2eYWHUN10g=;
-        b=3OPUPjv67JmcXf71V0kkg36vCsDbOSaldJcO1mjp8THV8WtLxUq9ulJ4GcCzr2+KhH
-         BCJTeQTWPhfxDCz68MJPy3jGGImcdSsOLptDMJwFuATPZUZr3zbLZ1JP0yYBqVpyTGti
-         JFU+ReDSMnKrqCQxfhLvbd3mAoU7wKXH7psbSv8NlWy6SvZcN8pS5ocpJwW/BpA/wMKF
-         mqvkeCZqE8gSNpSGLPbGRhEeumiCvUphAN38aBgXO8nnwOcMPd8TZBk+4hJ5IchzfLUN
-         h/f6vnbPowJO6QJOHv2uLR9dzKmKS2mYnSXsFjINGOTSAxdcEtE2EK66pyUzSy5jSn1b
-         m0Ww==
-X-Gm-Message-State: ANoB5pmGZzr9JbNa0NS6oJlOH7fatPvukrl4voAEZ4mftT0rPj6qvMhq
-	MNw2Yiy1WJAREadJ7ke27gtqULuy6Son3DsUL9s4eVjZ
-X-Google-Smtp-Source: AA0mqf7y3mJBD2fmaYiYEazBcOTYoBuvc07DKH/49NklzV3iTHIGZdqSoHDe1DBapdV7yiyLWHxWXb/UXbqZb73AQSc=
-X-Received: by 2002:ac8:6713:0:b0:3a8:2719:39c3 with SMTP id
- e19-20020ac86713000000b003a8271939c3mr843642qtp.432.1671486698974; Mon, 19
- Dec 2022 13:51:38 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD6761FDB
+	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:47:45 +0000 (UTC)
+Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id E9CD4D43AE
+	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:40:51 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id 5D885E0002
+	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:40:44 +0000 (UTC)
+X-Envelope-To: xenomai@xenomai.org
+Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 79A7874003C
+	for <xenomai@xenomai.org>; Tue, 20 Dec 2022 12:40:43 +0000 (UTC)
+Received: from zimbra90-e16.priv.proxad.net (unknown [172.20.243.145])
+	by smtp6-g21.free.fr (Postfix) with ESMTP id 7007178034D
+	for <xenomai@xenomai.org>; Tue, 20 Dec 2022 13:40:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=free.fr;
+	s=smtp-20201208; t=1671540043;
+	bh=pVZ+JlalWx635H3tzt9tM09DIRW8/r511QC+iWuhcuQ=;
+	h=Date:From:To:In-Reply-To:Subject:From;
+	b=tT837ReltQWAIt/KvDzT4hSE7TlvnK+o+WeMjoCVl+Hnqz5N0AFrmiqa6TGy/S8gM
+	 2by9jmf3supg5acjm6TrVuacuy33ILMQ+DJWlvUYNF1nhZgF3kEvOqgxxwo1qWehru
+	 QQuR6AmjHVTGgAmq/UdZ9WDyaVxEkMlB5gGgj4b81RxWDKk86CxYtCHRgUefG8Q3Rc
+	 is+zUZaR9wwG1mOTpWSIQkkBookimLjrntDH1rHSsgEGeecTfMIz1As/XmBQeuQ18j
+	 X0a7lEvDBzzxrxQGLxiHKXk7R+tRqB0t4tlDYUupekNYxfuSD57nDl5ieb0HiWJlr4
+	 cYODZSv79Rg2A==
+Date: Tue, 20 Dec 2022 13:40:43 +0100 (CET)
+From: hansen.franck1@free.fr
+To: xenomai@xenomai.org
+Message-ID: <1231689819.651785197.1671540043295.JavaMail.root@zimbra90-e16.priv.proxad.net>
+In-Reply-To: <1360970257.651782515.1671539985508.JavaMail.root@zimbra90-e16.priv.proxad.net>
+Subject: Re: Incompatible pointer type error when compiling kernel
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
- <87mt84h3h0.fsf@xenomai.org> <87ilish1z0.fsf@xenomai.org> <CAAm9oxp-Zm+25CpxT7wYUiDWxZGBxStB14D8QnEZWDmCp6jYsQ@mail.gmail.com>
- <87359qwclj.fsf@xenomai.org> <CAAm9oxq-=MQ7KcG1G3FQsdsMWHPscRZed2FFMJK0efD04HfUiw@mail.gmail.com>
-In-Reply-To: <CAAm9oxq-=MQ7KcG1G3FQsdsMWHPscRZed2FFMJK0efD04HfUiw@mail.gmail.com>
-From: Sri Subramanian <sridhar.subramanian@gmail.com>
-Date: Mon, 19 Dec 2022 13:51:31 -0800
-Message-ID: <CAAm9oxqWBMH9TDN8-7CdfH4ZNXCeytvPwvQWc_48vQL4KuqBNw@mail.gmail.com>
-Subject: Re: Xenomai crash in timer IRQ
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2a04:cec0:10d8:335c:81e5:5a21:b6d6:b8f7]
+X-Mailer: Zimbra 7.2.0-GA2598 (ZimbraWebClient - FF3.0 (Linux)/7.2.0-GA2598)
+X-Authenticated-User: hansen.franck1@free.fr
+Received-SPF: pass (spool2: domain of free.fr designates 212.27.42.6 as permitted sender) client-ip=212.27.42.6; envelope-from=hansen.franck1@free.fr; helo=smtp6-g21.free.fr;
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=free.fr header.s=smtp-20201208 header.b=tT837Rel;
+	spf=pass (spool.mail.gandi.net: domain of hansen.franck1@free.fr designates 212.27.42.6 as permitted sender) smtp.mailfrom=hansen.franck1@free.fr;
+	dmarc=pass (policy=none) header.from=free.fr
 
-Hi Philippe,
+You can test this :
 
-I've had no luck reproducing this condition with a simple test. Is
-there any useful information in the trace I attached previously? Would
-you like me to trace specific events or subsystems?
 
-Thanks
-Sri
+        ....
+	__prev = (xnstat_exectime_t *)atomic_long_xchg(((atomic_long_t *)&(sched)->current_account), (long)(new_account)); \
+        ....
 
-On Fri, Dec 9, 2022 at 9:05 AM Sri Subramanian
-<sridhar.subramanian@gmail.com> wrote:
->
-> Hi Philippe,
->
-> I was able to reproduce one crash with a trace on evl events! If there
-> are other specific events you want me to include, please let me know.
-> I can only get it to hang with no output (after an overnight run) if I
-> include all events.
->
-> To answer your questions, we don't have any custom drivers. I'll check
-> the application for stale timers. I had no luck with reproducing the
-> crash with a simple test but will continue to pursue it.
->
-> Sri
->
-> On Wed, Dec 7, 2022 at 11:58 PM Philippe Gerum <rpm@xenomai.org> wrote:
-> >
-> >
-> > Sri Subramanian <sridhar.subramanian@gmail.com> writes:
-> >
-> > > Hi Philippe,
-> > >
-> > > With next-evl-rebase, I am not able to reproduce the crash. Instead
-> > > the system reboots (from the watchdog) or hangs (if I disable the
-> > > watchdog).
-> > >
-> > > I'll try going back to the original setup and try other experiments --
-> > > maybe try to reproduce this with a test program or attach a debugger
-> > > to get more data.
-> > >
-> >
-> > Ack, at this point it should be possible to reproduce this bug with a
-> > simple test case if you think the core is doing something wrong when the
-> > kernel wallclock is set.
-> >
-> > If you have custom drivers, you may want to check the lifetime of any
-> > standalone evl_timer structs it might define for correctness, to make
-> > sure there is no stale timers being reprogrammed (unlikely, but worth a
-> > check anyway).
-> >
-> > --
-> > Philippe.
+
+this work for me
+Regards
+
+Franck
