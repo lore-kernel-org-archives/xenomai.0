@@ -1,63 +1,62 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from mta-out-01.tin.it (mta-out-01.tin.it [217.169.118.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD6761FDB
-	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:47:45 +0000 (UTC)
-Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id E9CD4D43AE
-	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:40:51 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
-	by relay.mail.gandi.net (Postfix) with ESMTPS id 5D885E0002
-	for <xenomai@lists.linux.dev>; Tue, 20 Dec 2022 12:40:44 +0000 (UTC)
-X-Envelope-To: xenomai@xenomai.org
-Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 79A7874003C
-	for <xenomai@xenomai.org>; Tue, 20 Dec 2022 12:40:43 +0000 (UTC)
-Received: from zimbra90-e16.priv.proxad.net (unknown [172.20.243.145])
-	by smtp6-g21.free.fr (Postfix) with ESMTP id 7007178034D
-	for <xenomai@xenomai.org>; Tue, 20 Dec 2022 13:40:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=free.fr;
-	s=smtp-20201208; t=1671540043;
-	bh=pVZ+JlalWx635H3tzt9tM09DIRW8/r511QC+iWuhcuQ=;
-	h=Date:From:To:In-Reply-To:Subject:From;
-	b=tT837ReltQWAIt/KvDzT4hSE7TlvnK+o+WeMjoCVl+Hnqz5N0AFrmiqa6TGy/S8gM
-	 2by9jmf3supg5acjm6TrVuacuy33ILMQ+DJWlvUYNF1nhZgF3kEvOqgxxwo1qWehru
-	 QQuR6AmjHVTGgAmq/UdZ9WDyaVxEkMlB5gGgj4b81RxWDKk86CxYtCHRgUefG8Q3Rc
-	 is+zUZaR9wwG1mOTpWSIQkkBookimLjrntDH1rHSsgEGeecTfMIz1As/XmBQeuQ18j
-	 X0a7lEvDBzzxrxQGLxiHKXk7R+tRqB0t4tlDYUupekNYxfuSD57nDl5ieb0HiWJlr4
-	 cYODZSv79Rg2A==
-Date: Tue, 20 Dec 2022 13:40:43 +0100 (CET)
-From: hansen.franck1@free.fr
-To: xenomai@xenomai.org
-Message-ID: <1231689819.651785197.1671540043295.JavaMail.root@zimbra90-e16.priv.proxad.net>
-In-Reply-To: <1360970257.651782515.1671539985508.JavaMail.root@zimbra90-e16.priv.proxad.net>
-Subject: Re: Incompatible pointer type error when compiling kernel
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32BE71FD2
+	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 09:08:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tin.it; s=20211207; t=1671613688; 
+        bh=KQA3SrEwFUKMvkLpnMZc+a1zSvh8C8cWXrNIZa1gz1c=;
+        h=Message-ID:Date:MIME-Version:From:Subject:To:Content-Type:Content-Transfer-Encoding;
+        b=goNk97WSYA15XUlwxzniL6yf6ZHmhpz8UXY6KT4T2nkBOe6RhbumV+YVfe2UgzXfjTLx6VfmzGqVkpgMGNt03Tlo9sBdILAWSMwxFSOAU7hYZN7V9ZMl/VbmIQ9DIzWugc+wvZuILUUIXU6/mbwb0HFIUVLOEkfJEH30Qm1+kUBvxiRKbNPDCXR9jmVg2Caf/7hr1y2YdiPmosYuYzTLiQzExAuCj6Nzig6L4k78tZAHr7iYHk2vVorSOpgSpa9qeVyo9rxZ4EfO5n+90WXFYV/VLk7axNqJyPFQNjWJsFt3so02wJGFsjX3EmSmQsTzn78XO4xBkg4zxVoJF69KLw==
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvhedrgeejgdduvdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuvffgnffgvefqoffkvfetnffktedpqfgfvfenuceurghilhhouhhtmecufedtudenucenucfjughrpefkffggfgfhuffvtgfgsehtjeertddtfeejnecuhfhrohhmpedfofgruhhrohcuufdrfdcuoehmrghurdhsrghlvhhisehtihhnrdhitheqnecuggftrfgrthhtvghrnhepjeejudekffdukefggfehuedtfeegleelgefgleffteekveetieffleejueevffdunecukfhppeekvddrudekkedrvdehvddrvddvjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegluddtrddtrdeiledrudekngdpihhnvghtpeekvddrudekkedrvdehvddrvddvjedpmhgrihhlfhhrohhmpehmrghurdhsrghlvhhisehtihhnrdhithdpnhgspghrtghpthhtohepuddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrvghvkffrpehhohhsthdqkedvqddukeekqddvhedvqddvvdejrdgsuhhsihhnvghsshdrthgvlhgvtghomhhithgrlhhirgdrihhtpdgruhhthhgpuhhsvghrpehmrghurdhsrghlvhhisehtihhnrdhithdpghgvohfkrfepkffvpdfovfetjfhoshhtpehrrgiiohhrqdhouhhtqdhtihhnqddtud
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+Received: from [10.0.69.18] (82.188.252.227) by mta-out-01.tin.it (5.8.812) (authenticated as mau.salvi@tin.it)
+        id 6358E8150538B7BB for xenomai@lists.linux.dev; Wed, 21 Dec 2022 10:05:51 +0100
+Message-ID: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
+Date: Wed, 21 Dec 2022 10:05:50 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@tin.it>
+Subject: "failed to allocate main tcb" error
+To: xenomai@lists.linux.dev
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2a04:cec0:10d8:335c:81e5:5a21:b6d6:b8f7]
-X-Mailer: Zimbra 7.2.0-GA2598 (ZimbraWebClient - FF3.0 (Linux)/7.2.0-GA2598)
-X-Authenticated-User: hansen.franck1@free.fr
-Received-SPF: pass (spool2: domain of free.fr designates 212.27.42.6 as permitted sender) client-ip=212.27.42.6; envelope-from=hansen.franck1@free.fr; helo=smtp6-g21.free.fr;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=free.fr header.s=smtp-20201208 header.b=tT837Rel;
-	spf=pass (spool.mail.gandi.net: domain of hansen.franck1@free.fr designates 212.27.42.6 as permitted sender) smtp.mailfrom=hansen.franck1@free.fr;
-	dmarc=pass (policy=none) header.from=free.fr
 
-You can test this :
+Hi all,
 
+I'm using Xenomai 3.1.2 on a x86-64 Atom processor, with Copperplate and 
+pshared enabled. Linux kernel is 5.4.181.
 
-        ....
-	__prev = (xnstat_exectime_t *)atomic_long_xchg(((atomic_long_t *)&(sched)->current_account), (long)(new_account)); \
-        ....
+I have a main application, and another service application that connects 
+to the main one using shared session.
 
+After some time the main application is running, the service application 
+stops to connect to the main one with the error
 
-this work for me
-Regards
+     0"004.166| BUG in main_overlay(): [main] failed to allocate main tcb
 
-Franck
+Digging a bit in the code, I found that the failing function is the 
+xnmalloc() call in lib/copperplate/threadobj.c:__threadobj_alloc().
+If I understood correctly, this function tries to allocate some space 
+from the shared heap. But the shared heap is almost free
+
+   # cat /proc/xenomai/heap
+     TOTAL      FREE  NAME
+   4194304   3616512  system heap
+   1048576   1041776  shared heap
+   1048576   1048480  private heap[14505]
+     36864     19968  xddp-pool@0
+     24576      7680  xddp-pool@10
+
+Any suggestions about what could be the problem?
+
+Thanks in advance, regards
+-- 
+Mauro S.
