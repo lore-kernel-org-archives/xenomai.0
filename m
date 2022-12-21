@@ -1,23 +1,33 @@
-Received: from mout.web.de (mout.web.de [212.227.17.12])
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 396DB7E
-	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 14:29:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3E6E1C13
+	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 14:36:37 +0000 (UTC)
+Received: from relay7-d.mail.gandi.net (unknown [217.70.183.200])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id 3B45AD17A7
+	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 14:28:02 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id 7685420003
+	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 14:27:54 +0000 (UTC)
+X-Envelope-To: xenomai@xenomai.org
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 664EE740059
+	for <xenomai@xenomai.org>; Wed, 21 Dec 2022 14:27:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1671632976; bh=w40yyT614XNg4IZNkojQka30sy5gDAJa1PRojRdqVAQ=;
+	t=1671632872; bh=YP2R7rfOstW5n16LRFhFG8kkMN6gvFS0U9aHxxjrjpk=;
 	h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-	b=orWnkSQ27mraoIX5Zz3TLxqSQJl+e24JokEc/cec92UfP31CSu35qoJ5RJ6VClmpC
-	 RxOpLTfdJAAWXc2MttK4mMTTjd259Nqbg2Ef6DllR0bqUpFdhWlmnlshfLcb0ycnbv
-	 yG9btlcLItKZBiid9FQFm/sibRBUEy2OP/YE0ofeuPu01ZDAlFsLmtRavEHjV57+FL
-	 xbqBn69WUKmKqnMwONVVQfH8ZdoHFhNAFaiOTLlvNEtuOsX9HRk+mIVqZZSuPF1CN5
-	 iqX9RP5nK5S5OWuH6ugCwHJR2TeLqhx8mvPyBVzfXZN97H+ojSJOKkawwM1I3yhgUI
-	 vlZXGUcjHPtTg==
+	b=KXLWd29vm9cCoR9pXeDSNV/J4lkPHujItUvwvF7xfNDE5VuvGlsOP7MhT/drZ1TPA
+	 MmzWFASPuhRSUhqk1rPMWpJRGa6FM2iNYZ/1qQkhxnN1EFoK3uOx0SiH4Vu257Twxo
+	 b2U3uYErHaatJbYDAysyAq4K+PsM0NqwhQkGfkITz+yKsFRiVOh2W1vqqAa8MzI366
+	 /w4Si44zwqbkpsvfggBYElr5d6NBGW1vW9aC0Nn3oIgpa88VhvSm1O/DziLjAp+CTK
+	 Vr9LJeRDpzPbA3l9pANMhn0Tvv5IW6Kef3N1WoT6+BW95xrM/yCQigVrS+OQR9DJja
+	 nOw2z90udcmyg==
 X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
 Received: from [192.168.178.20] ([88.73.153.142]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MGgJM-1p34Qf3z1O-00EEoi; Wed, 21
- Dec 2022 15:29:36 +0100
-Message-ID: <198d2e2a-eb01-0822-67ff-895e8c2f1856@web.de>
-Date: Wed, 21 Dec 2022 15:29:35 +0100
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MmQcl-1oPtkH1mWf-00i626; Wed, 21
+ Dec 2022 15:27:52 +0100
+Message-ID: <b8f18ed3-37de-9a93-88ba-701860442844@web.de>
+Date: Wed, 21 Dec 2022 15:27:51 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -26,83 +36,52 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.1
-Subject: Re: "failed to allocate main tcb" error
+Subject: Re: Incompatible pointer type error when compiling kernel
 Content-Language: en-US
-To: "Mauro S." <mau.salvi@tin.it>, xenomai@lists.linux.dev
-References: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
+To: hansen.franck1@free.fr, xenomai@xenomai.org
+References: <1231689819.651785197.1671540043295.JavaMail.root@zimbra90-e16.priv.proxad.net>
 From: Jan Kiszka <jan.kiszka@web.de>
-In-Reply-To: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
+In-Reply-To: <1231689819.651785197.1671540043295.JavaMail.root@zimbra90-e16.priv.proxad.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:MhLEXGPL+vyzBLqTi4pdg/79c5g/YH6XPoRcbwhzGi/Kfudyfn4
- oCIzhJ7MC2fky1KE+YtJHCSF8dEWQIsfQCjRHjp/8OmOs/HTymeytsqCq3NLtlxgvagTK1p
- qp+grEVTQQVnlvNhUnTP+9oE5Rf8T4NEchGfjYq82X31tlBYe5abGPWl1iFkNDyRh13/xrJ
- Vkbg9fs4XojObagqgCiDw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:ZEtyYyPOPlM=;mDRUoXmvGeG/r+wW+3RWRAEp69t
- +b/75p31PwdhBF4MbnvP+4PD0camiDOe4RHFClqfxaucxcwkFzvTi4Cb1j9wwCZ7640ALYF49
- ng1v2YnZYxM+a8idWzFfYkk/UiUBVxrVMy3/Kw8320/iNVDIYeNWY66mO6nwlnHOjeoTRkiFQ
- 1Fy5Aodtph2w/pRl1nw2dB1eGoBJR7GP9bxwVbtigyL6XJnOSq1I7G8Zoo3ykypyHDC9MAuob
- r847kcnf0uIiCHp8yVNB3Iom6V5pj0PWDBoTdh0EQZBYrwMfzVr1V1eUNMtKpgfzYM8rvyA9R
- DJrAWXhFR+MyYQ/XU4PB9egS79g0QtjVEFwQl3EhY110PJ2Ef0pM1I6IFDsD1Hgci9K/IxBOW
- W0HO8xoT8ASwMVI4Fh427m7CYN7KiljbupjbU2eciqtNEo35Iqg+Teh93zfCTYTb+mxRCrO1V
- BkiY4/iLYfueaOOd/awv2k+qMzkb6siIcNhmzavrFJnL42gwj6mQXFC8svnYwgfWU4uMzS8Ip
- xoT0VgO2p+eq6+CJMU+yYbwKsJ7To5yMHpbk7C4XuvolatlDp90ci0T94w6beVN1iFDDMyZRU
- C/Nbyu2Ie3JRubBhV6vEFfn4HV8upNd4rcOob1puBvaIX0Ek6Bt+lf+Ho/rJvPToG7jb55eho
- 4K9rqXVLLOB1PMaml9gdvRukxo85cGW8XDpq+9my0k6qZAxDhM3NjxIkk77xu9I8x40DFSubl
- MqMhK8TVM3iBIYSL6M9ROwIMvETtKz51qcMZWn3xUfFQQ7k3xIyeH9oQZu909d479KGr3cI6K
- UPdm9DV64SM7n7EJ3XZWimOpWONR0h6/NngVVkhtzSrMjNfXIaI8sf0p7Zi5WTRiO6EJ87xpL
- NoL8nYILipFLuPVI3hmS4vVfxuVK7OrgvJsDKilgREDzB6rXoI30ebnIotnWzaHpZ/b1t4H1p
- Nu3N5TUvxN0lYOmgrSTlOm22qDg=
+X-Provags-ID: V03:K1:y7RS1OcCKntr714s+8bXUtr6s6aMbjQFD/eSLsSjW0IUTv5CcJo
+ ZfG+pKgJzUCh6G9d4pRfm0CPiDsPv0Q4cWd//A+Jft00tHkfGCiwTR4Pkc2T1A3WbWvJFLq
+ eNem3frCpFIkIjrutwzDyfZpxUc4/mt+QW+M424DfgYtcka2n61aKzof6QNM7Xu3YZ2sOoj
+ Mv1CC48Aig5D5EOYwQtWw==
+UI-OutboundReport: notjunk:1;M01:P0:T83EDK1ZGgQ=;rtJ5ca21+AhwlKrxn5Di2y/nxFv
+ S86mnicMNqEIWbcItrjXBlvc/zmBv/ZoMv4zproUTjtC8kcfRCZF5CtpWbX97d88Gzj8hgwee
+ 62pcFyfzkezdmjooKjhMhLCZ60t5ZMPvYm9duayGTB3KpiZ26paJGjO/NjkB+oOLaMOrkmrzt
+ Dg2fh3vnCEGf5vVc1PkTikKlCO6nk4jQSbvM/JJ0dUZTvIEwjp6D6M7yeNmV/4NoLfS5aOPZ7
+ Q4AIf8LRjcEucS3E29K8S8OvS4uGVQ7nSc4Rs8ti4+538zBN2CVLRqDFwGWa3KYh2cqaHeJhW
+ ctzaaIB72CWTDMyw7EH1yBrxj6FcujLenuG9zXhEQ9J3Vdd0QMPmE7RywDTFGeJZHGvSYk/jc
+ r1KkQToEz236q+DeTYG4gmhf7NWat/7m14ZcMYOrOtJcqx6ek3cbjeXLWo2wHKMmVr+oARr+7
+ UNp17DfKTQBCzAfbyoIf0rOUrgV/H1CaSzdIilFHvlGm3CVJxnyoYd/vFA8YN3T1b/UlDMyQ4
+ 1Rxsmo9EN/Uno6ALRMdl5UzQz/onBKjv0IRYSR4ox3yyMFAHY/F7tfznweSuZnXPfwxlltqac
+ K9arHXZ5zzCI27oOAOOFfIHE4nF790rPwkXEuyhnBDxe+yAtLK3nxw6kOHilBnisPhGskCecI
+ OEdP1flefnCb1QQVbPT76Ee31Mm7OJ6NTt2NJUC7i6wsVi3sVqCScf+nH9l1wLnV9tlUeOWF4
+ t2G6qVSmRk+cQtBqHCIyc14ZZeU8D46kREFvYKEOAES8+iufMM2HZ1mt9Na5sXXhbYv5UmbTb
+ fG0Zybz2I1uiWVvRdpGP0eNDCAfOblyw7P66dz+XHDWUSvaG2qpLOIIvrNQqDc0mw6OEsUeOY
+ K48FRdHa1ylC2utPADnFAYbW0gpGjELxUSWyeiECvgZabj7unV72lGls4l3YnWjJ7dMB5g8Ka
+ mzucSw==
+Received-SPF: pass (spool2: domain of web.de designates 212.227.17.12 as permitted sender) client-ip=212.227.17.12; envelope-from=jan.kiszka@web.de; helo=mout.web.de;
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=web.de header.s=s29768273 header.b=KXLWd29v;
+	spf=pass (spool.mail.gandi.net: domain of jan.kiszka@web.de designates 212.227.17.12 as permitted sender) smtp.mailfrom=jan.kiszka@web.de;
+	dmarc=pass (policy=none) header.from=web.de
 
-On 21.12.22 10:05, Mauro S. wrote:
-> Hi all,
+On 20.12.22 13:40, hansen.franck1@free.fr wrote:
+> You can test this :
 >
-> I'm using Xenomai 3.1.2 on a x86-64 Atom processor, with Copperplate and
-> pshared enabled. Linux kernel is 5.4.181.
 >
-> I have a main application, and another service application that connects
-> to the main one using shared session.
->
-> After some time the main application is running, the service application
-> stops to connect to the main one with the error
->
-> =C2=A0=C2=A0=C2=A0 0"004.166| BUG in main_overlay(): [main] failed to al=
-locate main tcb
->
-> Digging a bit in the code, I found that the failing function is the
-> xnmalloc() call in lib/copperplate/threadobj.c:__threadobj_alloc().
-> If I understood correctly, this function tries to allocate some space
-> from the shared heap. But the shared heap is almost free
->
-> =C2=A0 # cat /proc/xenomai/heap
-> =C2=A0=C2=A0=C2=A0 TOTAL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 FREE=C2=A0 NAME
-> =C2=A0 4194304=C2=A0=C2=A0 3616512=C2=A0 system heap
-> =C2=A0 1048576=C2=A0=C2=A0 1041776=C2=A0 shared heap
-> =C2=A0 1048576=C2=A0=C2=A0 1048480=C2=A0 private heap[14505]
-> =C2=A0=C2=A0=C2=A0 36864=C2=A0=C2=A0=C2=A0=C2=A0 19968=C2=A0 xddp-pool@0
-> =C2=A0=C2=A0=C2=A0 24576=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 7680=C2=A0 xddp-p=
-ool@10
+>         ....
+> 	__prev =3D (xnstat_exectime_t *)atomic_long_xchg(((atomic_long_t *)&(sc=
+hed)->current_account), (long)(new_account)); \
+>         ....
 >
 
-This is the code that triggers the message:
-
-        if (pthread_key_create(&threadobj_tskey, finalize_thread))
-                early_panic("failed to allocate TSD key");
-
-pthread_key_create has nothing to do with xnmalloc. That's a plain glibc
-service, and its documentation says:
-
-       The pthread_key_create() function shall fail if:
-
-       EAGAIN The system lacked the necessary resources to create
-another thread-specific data key, or the system-imposed limit on the
-total number of keys per process {PTHREAD_KEYS_MAX} has been exceeded.
-
-       ENOMEM Insufficient memory exists to create the key.
-
-Already checked THOSE conditions? Are you possibly creating threads
-without cleaning them up completely?
+ENOCONTEXT - can you provide more details what you compiled (versions)
+and how (build steps)?
 
 Jan
+
 
