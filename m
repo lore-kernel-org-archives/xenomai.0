@@ -1,23 +1,20 @@
-Received: from mout.web.de (mout.web.de [212.227.17.11])
+Received: from mta-out-01.tin.it (mta-out-01.tin.it [217.169.118.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEEFC2573
-	for <xenomai@lists.linux.dev>; Wed, 21 Dec 2022 16:04:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1671638656; bh=gTS0d2sUy3Y6XqnEjY00Vv6I24vf/0Yj9bE9YDLXiYA=;
-	h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-	b=byj6bbaC1dyyzwPPxbCuFS5y/URlvYtct1RNS/z4kofEcMUsQG63vFqD3GtVP/nYj
-	 SnWddR35ucIyukdoID+y25MH7kf0t8jeTlFmpklnpCDUHh6J7kiiKDTJKnF+BNkMrx
-	 g/igjtvfAzYa/5CpxLmcZUePyAyRery4vrbVkp7K91Bq0fELDA6MbYLINIwx3dCaTa
-	 rIrIHOtp4gpGqtUCv3+dyiCxpI1/RS+lCi+qa+iTgNrprwUIa8v49NA0OlYwwe/yJg
-	 4CRxriRLUQ44LXBRmV4UN3mp0BamcrfW5AfZSxR5mk3qB9+O+pVy3Owh7K6hEnrhQC
-	 beI/yt/muLtCg==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.20] ([88.73.153.142]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1Mav6f-1oaKSJ1BtL-00c4jY; Wed, 21
- Dec 2022 17:04:16 +0100
-Message-ID: <30fdc0c6-d807-c062-2e98-c63f3a9d55b7@web.de>
-Date: Wed, 21 Dec 2022 17:04:15 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79CEB5CAD
+	for <xenomai@lists.linux.dev>; Thu, 22 Dec 2022 13:57:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tin.it; s=20211207; t=1671717479; 
+        bh=P1zBAD2oUjes8whV9VGo+EF7o9T/BpNjnNbqVoIdlLQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        b=NzmXoT7Vb5D2J1Pt1VPpxRWKhLhTAy17iTd3F+4P9R24Q+yzTPI50GXT0F3VvItkhl2oWL+/BaXwfXWKIBUYpZO9WxjP2BWrAk100f2MAqbbDGZsoCHjDwLT5mUNWph2jDzwjFCvHjAeSwdbPamR3JRYdRfCs69xG+opp4N6m4UJFfsrNRa+5Cdy1Sv5Ztr9auu8WeBvnliSHIOiGOXWmVpUTdTh+SaPYAa9bRd863gj4vQNI5azWdZeRQvN4FJwWrapaLVztkQ0462ESLPUIhidg1GCj15KyygSlpkIYLPwoAIwc0Uh1q9xyDuZQ9Cm23qXiLtG+BzlJldjD9oKkA==
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvhedrhedtgdehkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfvgffngfevqffokffvtefnkfetpdfqfgfvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpedfofgruhhrohcuufdrfdcuoehmrghurdhsrghlvhhisehtihhnrdhitheqnecuggftrfgrthhtvghrnheptdeftdelteetleeglefgffduheejjeffuefgveejheeiueeuffefieeftdeugeelnecuffhomhgrihhnpeguvghngidruggvnecukfhppeekvddrudekkedrvdehvddrvddvjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegluddtrddtrdeiledrudekngdpihhnvghtpeekvddrudekkedrvdehvddrvddvjedpmhgrihhlfhhrohhmpehmrghurdhsrghlvhhisehtihhnrdhithdpnhgspghrtghpthhtohepvddprhgtphhtthhopehjrghnrdhkihhsiihkrgesfigvsgdruggvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgvvhfkrfephhhoshhtqdekvddqudekkedqvdehvddqvddvjedrsghushhinhgvshhsrdhtvghlvggtohhmihhtrghlihgrrdhithdprghuthhhpghushgvrhepmhgruhdrshgrlhhvihesthhinhdrihhtpdhgvghokffrpefkvfdpoffvtefjohhstheprhgr
+	iihorhdqohhuthdqthhinhdqtddu
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+Received: from [10.0.69.18] (82.188.252.227) by mta-out-01.tin.it (5.8.812) (authenticated as mau.salvi@tin.it)
+        id 6358E81505582832; Thu, 22 Dec 2022 14:57:50 +0100
+Message-ID: <641ab944-2cda-0f4b-00bd-73bd553495bb@tin.it>
+Date: Thu, 22 Dec 2022 14:57:49 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,10 +22,9 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
+ Thunderbird/102.4.2
 Subject: Re: "failed to allocate main tcb" error
-Content-Language: en-US
-To: "Mauro S." <mau.salvi@tin.it>, xenomai@lists.linux.dev
+To: Jan Kiszka <jan.kiszka@web.de>, xenomai@lists.linux.dev
 References: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
  <198d2e2a-eb01-0822-67ff-895e8c2f1856@web.de>
  <f3167be0-db2a-2676-4866-d2690172a412@tin.it>
@@ -36,174 +32,159 @@ References: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
  <d33591ec-f2be-3898-b87e-904d7da77bf1@tin.it>
  <7c281c36-f7d9-71f1-2346-cb00ac5334d7@web.de>
  <7f782cbd-7353-7573-7768-e61a2c885c88@tin.it>
-From: Jan Kiszka <jan.kiszka@web.de>
-In-Reply-To: <7f782cbd-7353-7573-7768-e61a2c885c88@tin.it>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:FjaJgfs45yzO9qXBvKgVRaPI6N3MGAWXmN6IBTnstl4NxOOWYb0
- 8lTyzdyA+2Vq3WueQrk7IpJGPUm7GPt0SuIKhBcbjIFD5bsLMu5fgdAG6+a8v9UOR74Dr2E
- ldWFXslGE/HohfaS0l/jCWGawC90pL5hZjiDJqbv6Xo7GTZ3xUcMrldwsca08RmSY1SYnYs
- d3sSH+gYaEos19Nb946YA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:iJY/0yD21Sg=;pH+oilrdpPKMhSQF5aI3PyhVQzJ
- 8J5s81jKYupCGAZKBmbjI3319aLJL/MeZc94Q/gTjoSU7F3esLOIGPnRTq4RvXbHhy5hz7gtN
- DdsOfVZTur4X9DKQ3AXjhtUMPCu9IL5LW3jIAJ0nYure3tXBQHUGLjpmJo9uynKrp53HvZNvh
- JxySd33PMvn0nwDnRu/r99JPm8kClVOR4RdbSdHr2ZtKtqmgmMXd5gpWSgrccYT2ik7NOjkxc
- H6RmqKBrWnmT7y6k885/01wqSMULvjTxPT3rUrEbscMD7P0hb3U262cEQ/0Vm2IQRhxH5hof7
- +3gqPjasCx54OddiJW2+sQ/x6cKz40WvX9/8yyHv4lzvogLDqUPmdvHPEcekTcWAXiYN9ozLd
- 6ciCnn8SDSjIaSyLdbdYv4QG2M80QmU2Gv8qSuvfFa/aW60PGk7dLjMkHh6Yp8Q+JUCY56GIi
- B9QIIygTwZ684H3MYUgkBfNnVKzHyyEr2lNpbD7yOwDHwtp9owXeA3lMZpbkCUxYXSsZe3EB7
- ZfdYbl0By/Fv6Cs7FFu1BJjE7tUDGTMpeFTI/IiQSALrk1PEeV73j18ZpvONNGnB218EQkDZa
- p8BY+wrOC/+VfRsqOKUvsAbe1OUgA5fzAQVq7wbxh3NE4a2yd/gZocIVL0jsdO+d+74gv+U2w
- Yj0Csb08Pzn6LDtD/fJ1+/422/4/bs2hZOx5xpvAUnB54X90fbeNzjQXDgBy4/FvafwN9OiRE
- AlQ1NXzEFbU/a7o/2nMkmdLe7EbkEO2fruzGmeHZc4mmHZUlzSeQgSOny8Q8qeXqS8X8iA2Ty
- eTUBgcpypMwqNLg2DqPQN+VngowmbfvVZM5ZaPJnqyxXw9xBC1AsHUhRqQnDFEOLllZDaWBxg
- BGmwPOzBgRkelcLGcHAZ+KnvsNRYPZc3Zs9HTrY8Km5h2OopIP+4kOXhs8LSO0a44NnEsoCjY
- jjC3jAouvU099/6x9Fdq0APiFnP4Kps++VOjtDCqV0n1BFpkJOGmVMnocc9vgUfDgZZ4tA==
+ <30fdc0c6-d807-c062-2e98-c63f3a9d55b7@web.de>
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@tin.it>
+In-Reply-To: <30fdc0c6-d807-c062-2e98-c63f3a9d55b7@web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 21.12.22 16:25, Mauro S. wrote:
-> Il 21/12/22 16:11, Jan Kiszka ha scritto:
->> On 21.12.22 15:57, Mauro S. wrote:
->>> Il 21/12/22 15:48, Jan Kiszka ha scritto:
->>>> On 21.12.22 15:45, Mauro S. wrote:
->>>>> Il 21/12/22 15:29, Jan Kiszka ha scritto:
->>>>>> On 21.12.22 10:05, Mauro S. wrote:
->>>>>>> Hi all,
+Il 21/12/22 17:04, Jan Kiszka ha scritto:
+> On 21.12.22 16:25, Mauro S. wrote:
+>> Il 21/12/22 16:11, Jan Kiszka ha scritto:
+>>> On 21.12.22 15:57, Mauro S. wrote:
+>>>> Il 21/12/22 15:48, Jan Kiszka ha scritto:
+>>>>> On 21.12.22 15:45, Mauro S. wrote:
+>>>>>> Il 21/12/22 15:29, Jan Kiszka ha scritto:
+>>>>>>> On 21.12.22 10:05, Mauro S. wrote:
+>>>>>>>> Hi all,
+>>>>>>>>
+>>>>>>>> I'm using Xenomai 3.1.2 on a x86-64 Atom processor, with
+>>>>>>>> Copperplate and
+>>>>>>>> pshared enabled. Linux kernel is 5.4.181.
+>>>>>>>>
+>>>>>>>> I have a main application, and another service application that
+>>>>>>>> connects
+>>>>>>>> to the main one using shared session.
+>>>>>>>>
+>>>>>>>> After some time the main application is running, the service
+>>>>>>>> application
+>>>>>>>> stops to connect to the main one with the error
+>>>>>>>>
+>>>>>>>>         0"004.166| BUG in main_overlay(): [main] failed to
+>>>>>>>> allocate main
+>>>>>>>> tcb
+>>>>>>>>
+>>>>>>>> Digging a bit in the code, I found that the failing function is the
+>>>>>>>> xnmalloc() call in lib/copperplate/threadobj.c:__threadobj_alloc().
+>>>>>>>> If I understood correctly, this function tries to allocate some
+>>>>>>>> space
+>>>>>>>> from the shared heap. But the shared heap is almost free
+>>>>>>>>
+>>>>>>>>       # cat /proc/xenomai/heap
+>>>>>>>>         TOTAL      FREE  NAME
+>>>>>>>>       4194304   3616512  system heap
+>>>>>>>>       1048576   1041776  shared heap
+>>>>>>>>       1048576   1048480  private heap[14505]
+>>>>>>>>         36864     19968  xddp-pool@0
+>>>>>>>>         24576      7680  xddp-pool@10
+>>>>>>>>
 >>>>>>>
->>>>>>> I'm using Xenomai 3.1.2 on a x86-64 Atom processor, with
->>>>>>> Copperplate and
->>>>>>> pshared enabled. Linux kernel is 5.4.181.
+>>>>>>> This is the code that triggers the message:
 >>>>>>>
->>>>>>> I have a main application, and another service application that
->>>>>>> connects
->>>>>>> to the main one using shared session.
+>>>>>>>             if (pthread_key_create(&threadobj_tskey, finalize_thread))
+>>>>>>>                     early_panic("failed to allocate TSD key");
 >>>>>>>
->>>>>>> After some time the main application is running, the service
->>>>>>> application
->>>>>>> stops to connect to the main one with the error
+>>>>>>> pthread_key_create has nothing to do with xnmalloc. That's a plain
+>>>>>>> glibc
+>>>>>>> service, and its documentation says:
 >>>>>>>
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0"004.166| BUG in main_overla=
-y(): [main] failed to
->>>>>>> allocate main
->>>>>>> tcb
+>>>>>>>            The pthread_key_create() function shall fail if:
 >>>>>>>
->>>>>>> Digging a bit in the code, I found that the failing function is th=
-e
->>>>>>> xnmalloc() call in lib/copperplate/threadobj.c:__threadobj_alloc()=
-.
->>>>>>> If I understood correctly, this function tries to allocate some
->>>>>>> space
->>>>>>> from the shared heap. But the shared heap is almost free
+>>>>>>>            EAGAIN The system lacked the necessary resources to create
+>>>>>>> another thread-specific data key, or the system-imposed limit on the
+>>>>>>> total number of keys per process {PTHREAD_KEYS_MAX} has been
+>>>>>>> exceeded.
 >>>>>>>
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 # cat /proc/xenomai/heap
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 TOTAL=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 FREE=C2=A0 NAME
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 4194304=C2=A0=C2=A0 3616512=C2=A0 system =
-heap
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 1048576=C2=A0=C2=A0 1041776=C2=A0 shared =
-heap
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 1048576=C2=A0=C2=A0 1048480=C2=A0 private=
- heap[14505]
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 36864=C2=A0=C2=A0=C2=A0=C2=A0=
- 19968=C2=A0 xddp-pool@0
->>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 24576=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 7680=C2=A0 xddp-pool@10
+>>>>>>>            ENOMEM Insufficient memory exists to create the key.
+>>>>>>>
+>>>>>>> Already checked THOSE conditions? Are you possibly creating threads
+>>>>>>> without cleaning them up completely?
+>>>>>>>
+>>>>>>> Jan
 >>>>>>>
 >>>>>>
->>>>>> This is the code that triggers the message:
+>>>>>> Hi Jan,
 >>>>>>
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (pt=
-hread_key_create(&threadobj_tskey, finalize_thread))
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 early_panic("failed to allocate=
- TSD key");
->>>>>>
->>>>>> pthread_key_create has nothing to do with xnmalloc. That's a plain
->>>>>> glibc
->>>>>> service, and its documentation says:
->>>>>>
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 The pthread_=
-key_create() function shall fail if:
->>>>>>
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 EAGAIN The s=
-ystem lacked the necessary resources to create
->>>>>> another thread-specific data key, or the system-imposed limit on th=
-e
->>>>>> total number of keys per process {PTHREAD_KEYS_MAX} has been
->>>>>> exceeded.
->>>>>>
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ENOMEM Insuf=
-ficient memory exists to create the key.
->>>>>>
->>>>>> Already checked THOSE conditions? Are you possibly creating threads
->>>>>> without cleaning them up completely?
->>>>>>
->>>>>> Jan
+>>>>>> thank you.
+>>>>>> Sorry but I can't figure out how the code you specified (that panics
+>>>>>> generating the message "failed to allocate TSD key") could trigger the
+>>>>>> "failed to allocate main tcb" message.
 >>>>>>
 >>>>>
->>>>> Hi Jan,
+>>>>> https://source.denx.de/Xenomai/xenomai/-/blob/v3.1.2/lib/copperplate/threadobj.c#L86
 >>>>>
->>>>> thank you.
->>>>> Sorry but I can't figure out how the code you specified (that panics
->>>>> generating the message "failed to allocate TSD key") could trigger t=
-he
->>>>> "failed to allocate main tcb" message.
+>>>>> That's the only line in Xenomai which raises this message. If you don't
+>>>>> believe it triggered it, start your application in gdb and put a
+>>>>> breakpoint on that panic line.
+>>>>>
+>>>>> Jan
 >>>>>
 >>>>
->>>> https://source.denx.de/Xenomai/xenomai/-/blob/v3.1.2/lib/copperplate/=
-threadobj.c#L86
+>>>> I believe thet this code triggers the message "failed to allocate TSD
+>>>> key".
 >>>>
->>>> That's the only line in Xenomai which raises this message. If you don=
-'t
->>>> believe it triggered it, start your application in gdb and put a
->>>> breakpoint on that panic line.
->>>>
->>>> Jan
+>>>> But I get the message "failed to allocate main tcb", that is in the same
+>>>> file, but at the line #1790.
 >>>>
 >>>
->>> I believe thet this code triggers the message "failed to allocate TSD
->>> key".
+>>> Ah, sorry, you are right. Didn't read careful enough.
+>>
+>> Ok, no problem :-)
+>>
 >>>
->>> But I get the message "failed to allocate main tcb", that is in the sa=
-me
->>> file, but at the line #1790.
+>>> Could the heap be fragmented after lots and lots of
+>>> allocations/releases? But what is also a bit strange is that the main
+>>> thread is continuously mapped. Are you restarting the main application
+>>> for every request?
 >>>
 >>
->> Ah, sorry, you are right. Didn't read careful enough.
->
-> Ok, no problem :-)
->
+>> The main application is started once and keeps running, but internally
+>> creates and destroys many Xenomay tasks.
 >>
->> Could the heap be fragmented after lots and lots of
->> allocations/releases? But what is also a bit strange is that the main
->> thread is continuously mapped. Are you restarting the main application
->> for every request?
+>> During the main application lifetime (that can be long), the service
+>> application reads some statistics from the main application, prints
+>> these statistics and exits. Then, the main application is never
+>> restarted, and the service application is restarted for every request,
+>> that happens every 5 seconds (but the error seems not dependent on the
+>> service application restart period length).
+> 
+> Ok, so the service applications are mapping its main thread against
+> Xenomai, and that as pshared apps using the shared heap.
+> 
+
+Yes, exactly.
+
 >>
->
-> The main application is started once and keeps running, but internally
-> creates and destroys many Xenomay tasks.
->
-> During the main application lifetime (that can be long), the service
-> application reads some statistics from the main application, prints
-> these statistics and exits. Then, the main application is never
-> restarted, and the service application is restarted for every request,
-> that happens every 5 seconds (but the error seems not dependent on the
-> service application restart period length).
+>> On another device I have a similar (but not same) main application, and
+>> the same service application, and this problem does not show.
+>>
+>> Then, the problem should be located in the main application, but I can't
+>> figure out where the problem could be.
+> 
+> As the allocation happens against a shared, global heap, the issue may
+> be global as well. You could either try to trace the allocation/release
+> pattern against the shared heap and look for anomalies or even factor
+> out that pattern into a stand-alone reproducer.
 
-Ok, so the service applications are mapping its main thread against
-Xenomai, and that as pshared apps using the shared heap.
+Thanks for your suggestions. Trace the allocation/release pattern would 
+be a huge work for this application, then I started with a simple test: 
+enlarge the heap sizes.
+Before I had a 4096kb system heap, 1024kb shared heap, 1024kb private heap.
+Now I have a 8192kb system heap, 4096kb shared heap, 2048kb private heap.
+Nothing, the error happens again. Could this be a clue that this is not 
+a fragmentation problem and could be a heap corruption problem?
 
->
-> On another device I have a similar (but not same) main application, and
-> the same service application, and this problem does not show.
->
-> Then, the problem should be located in the main application, but I can't
-> figure out where the problem could be.
+During tests, I also noted that when the error starts to happen, no 
+tasks in main applications are created/deleted. But there are some 
+queues and pipes communications active, then the heap could be used by 
+them.
 
-As the allocation happens against a shared, global heap, the issue may
-be global as well. You could either try to trace the allocation/release
-pattern against the shared heap and look for anomalies or even factor
-out that pattern into a stand-alone reproducer.
+I will continue investigating on this problem. If you have some other 
+ideas/hints, I'll be glad to hear them.
 
-Jan
+Thank you, regards
+
+-- 
+Mauro S.
 
