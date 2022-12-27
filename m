@@ -1,210 +1,162 @@
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2044.outbound.protection.outlook.com [40.107.105.44])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 469C4A56
-	for <xenomai@lists.linux.dev>; Tue, 27 Dec 2022 10:07:35 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FKU9Abt6mrTgStmhoQ84fdYrimW5T66jQdHCHisaDCBlAj9neZnNTXm35S+TwyzKPfDgnhx+x0YrZeIlNEOJYVQh3RT7wqAMPSEqaIi7b63kLqCT87OthlI8b4OgUQEwyMUQ0rqGstk2VpuiXD4nAXSubEJWFB3smlB6TfKXzysMlUjBC+39OXtnSZpVftP52eZIil6PBuMnIMAKwyzodYDMCAVwUrH3wdQXupZq1sp1LI2MregnDu6wDw9M/owHxeasU7gQDPs2MYY4SR/PlFu4HDxODNbDNQy7uqblvx4m9ZKzLyGK1688qRDvgqhtAHLoXpyZuvtr74eZNqp7RQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8rxv3FvgTpH0B2q6FbMYPEEuGNrSLZLCJKt8YxYoX3Q=;
- b=jy2n1NXfD6Z873RWe84OjBURT6lIoYmqp8JMHsABZATfuCmWJsxrpHXG56hNBsMM83RFolx+acmdZT8QQKeSkXsh89wjozINMr86IhXf8pi++SjjNXOePk7ZoRkIXN1o8iKyffoRsOrDQy06XZUoA7VfUd0dQsc7YB/Tl785CkvKH+SeEl37YWSs29PG1M/bRYZeXCmfkmKLViA0Q7uBM8i3c9gnFRG5C3wctUyathJLoJcdV14387HsNtGpPqLkMOx/Td7bLv3jFk4G1QCFBe24ls8sLhXf4fVvsilHK010lk4fr1v9Q99cIBkHePNtKu57nGVXLgpwZOtUQZ0+2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8rxv3FvgTpH0B2q6FbMYPEEuGNrSLZLCJKt8YxYoX3Q=;
- b=gZecbgCEZOveBUuYHzVHnRU3KqAn6I4a3010fMz4NAtYwh0GRrMopq2XjuGRpt6Cpr9kXsSo2F9nQEgricamn3BFwrojaBW3vWFC8ufVif9cscpPltxe81gQ4lkol8uxaUdfqdaAsusWDlw876ySswjz9YmU8rhaJyFSlbudejDXQIOJSMHekr74i/ZIWOEGqMK3ZL8rePC5uMFR7CU1Wk738o5wQjV5vlQYYpNVONm4eNFIuRgv8FWjfPFWoH2RCupX/K58KBFUOJpq8PBfytpj5IjIgTGs/YylmyoQggUGM/Rpk2vM3QfWfke0teCuSkoAa9BQZY2ravIJWsZt5g==
-Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
- by PR3PR10MB3850.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:4f::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.16; Tue, 27 Dec
- 2022 10:07:32 +0000
-Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::13db:8a1:709a:4671]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::13db:8a1:709a:4671%6]) with mapi id 15.20.5944.016; Tue, 27 Dec 2022
- 10:07:32 +0000
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, "yxianyao@126.com"
-	<yxianyao@126.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F07AEB8
+	for <xenomai@lists.linux.dev>; Tue, 27 Dec 2022 10:16:31 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20221227093613828cc8b1e536a15645
+        for <xenomai@lists.linux.dev>;
+        Tue, 27 Dec 2022 10:36:13 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=8TaEtuaBfI0Yzo6QgxGQXVTe4lq1L3UFKLvAVBef71Q=;
+ b=OT4PdnGPNJNsDsFW7zq29kg1kvwd2ExuLUGzwh2UCf6hLwC8NAuE3ZE5zVBlvoQlwNxkIB
+ BiiVa9j1IegFwFp4DaG4UJVRyQnCQbsxrwDXnZpa/+AhQwhbf8o9GhDJd5yazqrQoh2cUyeZ
+ pQ/m17pqn3D0THGmHq5UEcaD2CPkI=;
+Message-ID: <9da33db3ae41a25ec71926bbbd7f49dc5c19e8a6.camel@siemens.com>
 Subject: Re: some kernel exceptions
-Thread-Topic: some kernel exceptions
-Thread-Index: AQHZGQE2kNJ7eI4SJkiKMWMLd4tZaw==
-Date: Tue, 27 Dec 2022 10:07:32 +0000
-Message-ID: <b3a6c5faf65f8b48ed52cc3bc1493e6dcb7d4470.camel@siemens.com>
-References: <9da33db3ae41a25ec71926bbbd7f49dc5c19e8a6.camel@siemens.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Evolution 3.46.2 (3.46.2-1.fc37) 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR10MB5712:EE_|PR3PR10MB3850:EE_
-x-ms-office365-filtering-correlation-id: 1a22f0c1-8762-45ab-c367-08dae7f22b9b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 3FOHa6wC/aRkpI/h8LEvvwtwxFiL2edPvIufz9+DP78VciD3cdlHxPHHvd9t4orSSm6cr4x1mPTditBGMP2YvNoe7t8IoLykxvGoSBFURvWULHD80r1g8etqnqsBfLRgvYnFYGpqa2zkoLjbgpjpQ0FT7ynd8JSXoICWd3Awc3BL02OKg03NfR9jTz4Kxauq3cq1HherUH6qB6H/wayoHK7iYffNPDi63HT1Zn0fxfcU2xLYTxm4pjRoy+CgVmkSdExOkUmkmweQ+ZkzUkA5UZ2zR/HuSAj+gWE9y9nNI3v7G3szJKTkeMdcGGpN+2pg6zf1TVGch5fJxqCA51ZTcnrDCO0Ohup++Pip09GiicCNnlML/Q9DyepKqa/AWjnQZcAGzofOe/fI7FfdNf7MLfA/NkzrdmMXImIXJbDFrBhbwD7npgIPlun5qUuovXSgEE/5W68qd64KsUeYw1cfWjUvUP8XiVZ2Vw1r+bIksqSHu+UjqnIPXMPwPVOxa/oHxweQm3Qk2srv+ZOqPongRCZXM5vs+WUD6s08ZH3iviaIjfSHiKccoTY7ErgYqAF9T+Uwb6cQFGZqInzVCMK/hDK0jUQSNE8TfRUCaA0I3RHfcf5W3rhNS0/UtmCXo6hu/STHzUFaviXLwyAi6oEB6xiz3UAnamnPTiiHaztHkAkW6/H7cdgWuUcX21t1k1ph/Cy2siX+hemsd+1qc7Yr+w==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(396003)(346002)(366004)(451199015)(83380400001)(45080400002)(478600001)(186003)(6512007)(71200400001)(6486002)(36756003)(86362001)(38100700002)(2616005)(38070700005)(122000001)(3480700007)(82960400001)(66446008)(5660300002)(66556008)(76116006)(66476007)(64756008)(66946007)(91956017)(41300700001)(6506007)(8676002)(316002)(2906002)(7116003)(8936002)(4001150100001)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?L1YwNWd6aDQ5VGpGQ0FEVmU1a3ZSbEVpdmJpbzJFblZkRGNPZ3VnTW9ua3By?=
- =?utf-8?B?YTBid2ZzWU9TSjJaUDR6TUxHWUtXVFJXTVV2Vm02cS8rVkQwRUZQU084d2VU?=
- =?utf-8?B?cERDNlBRRkhKYmM0UW53UHExMDlyWStGVThId1QwNUEraGxIUjBaOEVibnhz?=
- =?utf-8?B?VjZqRURjK1B6SFVBK1RBQ1crWVBXYlNmQXhYNG1kVTdnd3I4bVJrczNTV3gv?=
- =?utf-8?B?WU05dlBxdzVVb3Flak9kZnhoUXg4ZXRGV251MmNERWJQYXNTZjNxVFNlUkhK?=
- =?utf-8?B?WDNUb1Q2TEx3dDBjUys3TWJSM21JYjlsRU5DUnVKMTJ6OWVVSHdmNjZMc053?=
- =?utf-8?B?MjBHM1MwK1hUekhrN0szTFpNNkFvbml0cmhWdGJUL0xCTFdOTUE4clFtaTMx?=
- =?utf-8?B?UlF0VldQdWg3M0pScnlxZ2tpN3JXUW9NZjFWMWw0UmNPeU5oc0doUXFEaUFG?=
- =?utf-8?B?K1RaRG83Z1N0Tk1pU2RoQnVjRDJsL21YbzVJMzNTYnFIT0FmKzlwaTVuZUdR?=
- =?utf-8?B?MG80eW5Ic3BZNVl3ZXJUTHRmV3B2SGxiMElocmhreVpycmo2dlF4STJ0VStE?=
- =?utf-8?B?ck1aaWYzMWUyNDFuTjN1WC9hTFFUeXFMZXJuZHBBdnU4RlQxT0d0ZTYwSjNH?=
- =?utf-8?B?Z0JOUXdKL3J4dUN2emMzZitqYVp6d2tlL2RhQmMveXZWc3h4bEtRNXFPZWNU?=
- =?utf-8?B?WFdYbXE5MWVmTUppK3pjRERaSWpIdUpLdXFuamQrM1Y4UUxDVng4cWhIcGht?=
- =?utf-8?B?VDZTdi8zOWF5RWVnNjRvWmhLU0xCeVJrUlFLaC9jaUZUVzMxWmZQYTh4OUpC?=
- =?utf-8?B?b0k5MEFzU1RRNk9zMHBGdERkc2FUNmRiVlZGWHVUVHRiZ0dzUndMdXhpa3cx?=
- =?utf-8?B?MEFuS1E1WlRYczBWd3RJVlNhbXp6b0NBZ2h3QzFRWkNacDNOWjNDOGlQdkFn?=
- =?utf-8?B?VmxwbWdIQllnMXJNMG9pT25Td084UnFvVHBVRlhBcFdWVW9iMTZQOXRmZlY4?=
- =?utf-8?B?T2tyaWdQNklWdGdiREN2RkpmaFhSNTNUdkJTWXg1RlVsQXpSOGI2WEdLWkEz?=
- =?utf-8?B?VHVsclo5aCtNN1QyQm80eStZVklXWTIwazc0NEVkcnFhOVZmMVQ2dVV6NEdG?=
- =?utf-8?B?SFlPbVcvNFZVNFh4KzJhSnBtOW1lcGI2TWxJVGtuc0o1ZXdubU9RYlJ3STE1?=
- =?utf-8?B?SEtqMUVybjBuQ2Z0SzcwQXEvbmJ2VmhrV1JFSWMrejh1bEI0ajBUaW1qTHNT?=
- =?utf-8?B?Rm83Mm1Kc1RYbEJIM2UzYTE1Q0NKWG5LdHZIdnYwai8wWHNaSEoxbGlLS0JS?=
- =?utf-8?B?ZDVJdTE5SDIwZGtCZlVQMTlHK0h1TmNscCs5WWt2WFkyWHVHOFNVWVYzN0Ir?=
- =?utf-8?B?MWNJRG93TGhTTFVSTWI0SXJOeHg0UWpreFZKK2ROcTAxZ1NGdHRjL21saEZQ?=
- =?utf-8?B?VzZLQVRiVFN3YXkzRm5qNU85Z2FkeWdZL01aa043SHhrNloyRnpGQm9mQnI1?=
- =?utf-8?B?NXFFOEVQV2N6dnRrcS9qUnVLcUZCUHdZL2hPSWI4Tk8xYVFwemZNalpTWTh1?=
- =?utf-8?B?a0Q3WFY1RzdtV0R0UFA1OGc5M1VBVUJkNGprRlVXbVFDcnF2cVRjdHJHMENt?=
- =?utf-8?B?SXFvekdyV1gzRTFBQ2RhMXRPOFk5bGExUm9vblNxU0RmaUlNOHIxdktpc0hn?=
- =?utf-8?B?UlRZY3dBWk03N0ZmMGh5cU1SL3R3RjhqWDYyN0JUVGJQU3RHcXdNZE5ZaVE1?=
- =?utf-8?B?WUFGbXlQQjl6eStUdjhwbEhsaXQ1MVBGaytIRnZkKzkydHJlRHJQVkJ1Zk1n?=
- =?utf-8?B?NW5SQWNoRm41dC9jNWJhWlBDY09MVjZvejRUVEZFNFovajR6NmVOOTlVOVlW?=
- =?utf-8?B?MGg1TUVGb1kyZWhQcHJPVmMxU1J4UzA3emxzQTFrYmlxMGZHMUlpSUcrdEhX?=
- =?utf-8?B?ZEZudFR0RUF4NFhvT2d5WnN3Sm5oSGgvbmZVYUlSVkpYS1hWNXFEdEJFTXI3?=
- =?utf-8?B?ZUdRc1dCSlRidDNJNGRkekprNjJoUzlhejF2RFE5UjdWK0hueWVHd0JJQVBK?=
- =?utf-8?B?TEZWN0Rqc0pvN2RYM0tIbTRFSlNaKzJ4SlZIYy9hU0VWNDZUSGN5SmtNekVP?=
- =?utf-8?B?RjU1ZUNjcjZGaytOcVQyU2ZzaGN2amR2TnVxSGN4RC95dVRWUm5NbktjRGV2?=
- =?utf-8?B?dUZ2UDYyOVVPT2d1alNmZlB4dVhaUDdVOTZ6NkdpMkd1bFJ6eElad2MxOURP?=
- =?utf-8?B?NlNaNWdTU09DK3RYZlVEWWd5UUlBPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <20ED1C0B7CD55941A0DB5614653B02BC@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: "Yxian.Yao" <yxianyao@126.com>, xenomai@lists.linux.dev
+Date: Tue, 27 Dec 2022 10:36:12 +0100
+In-Reply-To: <44d3d245.e8a.1854d5dc672.Coremail.yxianyao@126.com>
+References: <44d3d245.e8a.1854d5dc672.Coremail.yxianyao@126.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a22f0c1-8762-45ab-c367-08dae7f22b9b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Dec 2022 10:07:32.5920
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Me4AL1LdJkPkcj86S3/UJ0Qn4VZ5mQZzYJPj89TW+xct7ost/SsagiGx6rDadx2DUk53wgvFaAKa3dJ0NvQ58Qwjxm1iXax45g+3pMWzHl8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB3850
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-W1JFU0VORDogU2VlbXMgbXkgb3JpZ2luYWwgbWFpbCBkaWQgbm90IG1ha2UgaXQgdG8gdGhlIGxp
-c3RdDQoNCkhpLA0KDQpPbiBNb24sIDIwMjItMTItMjYgYXQgMTU6MzcgKzA4MDAsIFl4aWFuLllh
-byB3cm90ZToNCj4gDQo+IEhp77yMDQo+IA0KPiBJbnN0YWxsIHRoZSBkZWJpYW4xMS4wIG9wZXJh
-dGluZyBzeXN0ZW0gb24gdGhlIG1hY2hpbmUu77yMdGhlIHN5c3RlbQ0KPiBjYW4gc3RhcnQgbm9y
-bWFsbHkuDQo+IEJ1dCB0aGUgc3lzdGVtIGlzIGFibm9ybWFsIGFmdGVyIHVzaW5nIHRoaXMga2Vy
-bmVsLGxpbnV4LTUuNC4xMzMtDQo+IGlwaXBlLTYteGVub21haS0zLjEuMS0yMDIyMTIxNiAobGlu
-dXgtNS40LjEzMyzCoGlwaXBlLWNvcmUtNS40LjEzMy0NCj4geDg2LTYucGF0Y2gswqB4ZW5vbWFp
-IDMuMS4xKSzCoA0KPiBTZWUgdGhlIGF0dGFjaG1lbnQgZm9yIG91dHB1dCBpbmZvcm1hdGlvbiBk
-dXJpbmcga2VybmVsIHN0YXJ0dXAsIGFuZA0KPiB0aGXCoGtlcm5lbMKgb3V0cHV0c8Kgc29tZcKg
-ZXhjZXB0aW9uwqBtZXNzYWdlcyzCoGFzwqBmb2xsb3dzLg0KDQpMaW51eCBpcyBmYWlsaW5nIHdo
-aWxlIHRyeWluZyB0byBpbml0aWFsaXplIHRoZSBJUlEgY29udHJvbGVyIChBUElDKSBvZg0KeW91
-ciBhcHBsaWNhdGlvbiBwcm9jZXNzb3JzIChBUHMpICg9IG5vbiBib290IENQVXMpLiBUaGVyZSBz
-ZWVtcyB0byBiZQ0KYSBtaXNtYXRjaCByZWdhcmRpbmcgTEFQSUMgSURzLg0KDQpTdWNoIElEcyBh
-cmUgbm9ybWFsbHkgZXh0cmFjdGVkIGZyb20gdGhlIEFQSUMgQUNQSSB0YWJsZS4gU29tZXRoaW5n
-DQpzZWVtcyB0byBnbyB3cm9uZyB0aGVyZSAodGFrZW4gZnJvbSB5b3VyIGF0dGFjaG1lbnQpOg0K
-DQpbICAgIDAuMjE0NzM0XSBBQ1BJOiB4MmFwaWMgZW50cnkgaWdub3JlZA0KDQpUaGVyZSBhcmUg
-YSBsb3Qgb2Ygc3VjaCBsaW5lcy4gVGhpcyBtYWtlcyBtZSB3b25kZXIgaWYgeW91ciBBQ1BJIHRh
-Ymxlcw0KYXJlIHNldCB1cCBwcm9wZXJseSAod2hpY2ggbWlnaHQgYmUgYSBCSU9TL0Zpcm13YXJl
-IGlzc3VlKS4gVGhhdCdzDQpub3RoaW5nIFhlbm9tYWkvaXBpcGUgc3BlY2lmaWMuIERvZXMgYSBz
-dGFuZGFyZCBMaW51eCA1LjQgYm9vdCBvbiB0aGF0DQptYWNoaW5lPw0KDQpbICAgIDAuMjE0ODQw
-XSBzbXBib290OiBCb290IENQVSAoaWQgMjU1KSBub3QgbGlzdGVkIGJ5IEJJT1MNCg0KVGhhdCBw
-b2ludHMgaW50byB0aGUgc2FtZSBkaXJlY3Rpb24uIFlvdXIgYm9vdCBDUFUgaGFzIGEgQVBJQyBJ
-RCBvZg0KMjU1LCBJIHdvdWxkIGV4cGVjdCAwLg0KDQpbICAgIDAuMjg0NTM0XSBzZXR1cF9wZXJj
-cHU6IE5SX0NQVVM6NTEyIG5yX2NwdW1hc2tfYml0czo1MTIgbnJfY3B1X2lkczoxIG5yX25vZGVf
-aWRzOjENCg0KbnJfY3B1X2lkczogMSBpcyBzdHJhZ2UuIEFjY29yZGluZyB0byB0aGUgbGluZSBi
-ZWxvdyB3ZSBhcmUgb24gYSBOVU1BDQpzeXN0ZW0gKHdpdGggb25lIG5vZGUpIGFuZCBJIHdvdWxk
-IGV4cGVjdCBhIGhpZ2hlciBudW1iZXIgb2YgQ1BVcyBvbg0KdGhhdCBzeXN0ZW0uIFNvIHNvbWV0
-aGluZyBpcyBoaWRpbmcgeW91ciBjb3Jlcy4gKEF0IGxlYXN0IHRoZXJlIGlzIG5vDQptYXhjcHVz
-PTEgb24geW91ciBrZXJuZWwgY21kbGluZSkuDQoNCk5VTUEgY29uZmlndXJhdGlvbjoNClsgICAg
-MC4wMDgxOTZdIE5VTUE6IE5vZGUgMCBbbWVtIDB4MDAwMDAwMDAtMHg3ZmZmZmZmZl0gKyBbbWVt
-IDB4MTAwMDAwMDAwLTB4MjA3ZmZmZmZmZl0gLT4gW21lbSAweDAwMDAwMDAwLTB4MjA3ZmZmZmZm
-Zl0NCg0KSG9wZSB0aGF0IGhlbHBzLA0KRmxvcmlhbg0KDQo+IA0KPiBQbGVhc2XCoGdpdmXCoG1l
-wqBzb21lwqBoaW50cyENCj4gDQo+IFRoYW5rc8KgYcKgbG90Lg0KPiANCj4gW8KgIMKgIDIuNDI1
-ODczXSAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NCj4gW8KgIMKgIDIuNDMw
-MjcwXSBrZXJuZWwgQlVHIGF0IGFyY2gveDg2L2tlcm5lbC9hcGljL2FwaWMuYzoxNjU5IQ0KPiBb
-wqAgwqAgMi40MzU1OTNdIGludmFsaWQgb3Bjb2RlOiAwMDAwIFsjMV0gUFJFRU1QVCBTTVAgTk9Q
-VEkNCj4gW8KgIMKgIDIuNDQwNTc0XSBDUFU6IDAgUElEOiAwIENvbW06IHN3YXBwZXIvMCBOb3Qg
-dGFpbnRlZCA1LjQuMTMzLWlwaXBlLTYteGVub21haS0zLjEuMS0yMDIyMTIxNiAjMQ0KPiBbwqAg
-wqAgMi40NDg4NTFdIEhhcmR3YXJlIG5hbWU6IEhQIEhQIFo4IEZ1cnkgRzUgV29ya3N0YXRpb24v
-ODhDMSwgQklPUyBVNjEgVmVyLiA3OS4wMS44NyAwOS8yMi8yMDIyDQo+IFvCoCDCoCAyLjQ1NzEy
-OV0gSS1waXBlIGRvbWFpbjogTGludXgNCj4gW8KgIMKgIDIuNDYwMjExXSBSSVA6IDAwMTA6c2V0
-dXBfbG9jYWxfQVBJQysweDJkZi8weDMxMA0KPiBbwqAgwqAgMi40NjQ3NzVdIENvZGU6IDAwIDBi
-IDA1IGI4IDY2IDViIDAxIDBmIDg1IGY3IGZlIGZmIGZmIDg1IGQyIDdmIDNmIDQ4IDhiIDA1IDQz
-IDM2IGU0IDAwIGJlIDAwIDA3IDAxIDAwIGJmIDUwIDAzIDAwIDAwIGZmIDUwIDEwIGU5IGY2IGZl
-IGZmIGZmIDwwZj4gMGIgNDggOGIgNGMgMjQgNDAgNjUgNDggMmIgMGMgMjUgMjggMDAgMDAgMDAg
-NzUgMGEgYmUgMDAgMDQgMDANCj4gW8KgIMKgIDIuNDgyNjI4XSBSU1A6IDAwMDA6ZmZmZmZmZmY4
-MjAwM2VhMCBFRkxBR1M6IDAwMDEwMjQ2DQo+IFvCoCDCoCAyLjQ4NzYwNl0gUkFYOiAwMDAwMDAw
-MDAwMDAwMDAwIFJCWDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IGZmZmY4ODlmZmZlMDAwMDANCj4g
-W8KgIMKgIDIuNDk0NDAxXSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiAwMDAwMDAwMGZmZmZm
-ZWZmIFJESTogMDAwMDAwMDAwMDAwMDAyMA0KPiBbwqAgwqAgMi41MDExOTZdIFJCUDogZmZmZmZm
-ZmY4MjUzZDJlMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDEgUjA5OiBmZmZmZmZmZjgyMGRiYzIwDQo+
-IFvCoCDCoCAyLjUwNzk4OV0gUjEwOiAwMDAwMDAwMDAwMDAwMDA4IFIxMTogMDAwMDAwMDAwMDAw
-MDAwMCBSMTI6IDAwMDAwMDAwMDAwMDAwZDANCj4gW8KgIMKgIDIuNTE0Nzg2XSBSMTM6IDAwMDAw
-MDAwMDAwMDAwMDAgUjE0OiAwMDAwMDAwMDU1NjVmMDAwIFIxNTogMDAwMDAwMDA1YjBjYTAwMA0K
-PiBbwqAgwqAgMi41MjE1ODJdIEZTOsKgIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmZmZjg4
-OWZmZmUwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQo+IFvCoCDCoCAyLjUyOTI4
-NV0gQ1M6wqAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4g
-W8KgIMKgIDIuNTM0NzU5XSBDUjI6IGZmZmY4OGEwN2ZmZmYwMDAgQ1IzOiAwMDAwMDAwMDA0MDBh
-MDAxIENSNDogMDAwMDAwMDAwMDA2MDZiMA0KPiBbwqAgwqAgMi41NDE1NTNdIERSMDogMDAwMDAw
-MDAwMDAwMDAwMCBEUjE6IDAwMDAwMDAwMDAwMDAwMDAgRFIyOiAwMDAwMDAwMDAwMDAwMDAwDQo+
-IFvCoCDCoCAyLjU0ODM0OF0gRFIzOiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAwMDBmZmZl
-MDdmMCBEUjc6IDAwMDAwMDAwMDAwMDA0MDANCj4gW8KgIMKgIDIuNTU1MTQxXSBDYWxsIFRyYWNl
-Og0KPiBbwqAgwqAgMi41NTc0NzldwqAgPyBfX2lwaXBlX2RvX0lSUSsweDg3LzB4YjANCj4gW8Kg
-IMKgIDIuNTYxMTM3XcKgID8gX19pcGlwZV9kb19zeW5jX3N0YWdlKzB4MTJhLzB4MTYwDQo+IFvC
-oCDCoCAyLjU2NTUzN13CoCBhcGljX2ludHJfbW9kZV9pbml0KzB4YjcvMHhkYQ0KPiBbwqAgwqAg
-Mi41Njk0NDFdwqAgeDg2X2xhdGVfdGltZV9pbml0KzB4MTIvMHgxNw0KPiBbwqAgwqAgMi41NzMy
-NjJdwqAgc3RhcnRfa2VybmVsKzB4NDJlLzB4NGU3DQo+IFvCoCDCoCAyLjU3Njc1N13CoCBzZWNv
-bmRhcnlfc3RhcnR1cF82NCsweGE0LzB4YjANCj4gW8KgIMKgIDIuNTgwNzQ0XSBNb2R1bGVzIGxp
-bmtlZCBpbjoNCj4gW8KgIMKgIDIuNTgzNjU5XSAtLS1bIGVuZCB0cmFjZSBiZDNkYTVhYzZlYjM5
-YTdiIF0tLS0NCj4gW8KgIMKgIDIuNTg4MDU4XSBSSVA6IDAwMTA6c2V0dXBfbG9jYWxfQVBJQysw
-eDJkZi8weDMxMA0KPiBbwqAgwqAgMi41OTI2MjJdIENvZGU6IDAwIDBiIDA1IGI4IDY2IDViIDAx
-IDBmIDg1IGY3IGZlIGZmIGZmIDg1IGQyIDdmIDNmIDQ4IDhiIDA1IDQzIDM2IGU0IDAwIGJlIDAw
-IDA3IDAxIDAwIGJmIDUwIDAzIDAwIDAwIGZmIDUwIDEwIGU5IGY2IGZlIGZmIGZmIDwwZj4gMGIg
-NDggOGIgNGMgMjQgNDAgNjUgNDggMmIgMGMgMjUgMjggMDAgMDAgMDAgNzUgMGEgYmUgMDAgMDQg
-MDANCj4gW8KgIMKgIDIuNjEwNDgyXSBSU1A6IDAwMDA6ZmZmZmZmZmY4MjAwM2VhMCBFRkxBR1M6
-IDAwMDEwMjQ2DQo+IFvCoCDCoCAyLjYxNTQ2MF0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDog
-MDAwMDAwMDAwMDAwMDAwMCBSQ1g6IGZmZmY4ODlmZmZlMDAwMDANCj4gW8KgIMKgIDIuNjIyMjUy
-XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiAwMDAwMDAwMGZmZmZmZWZmIFJESTogMDAwMDAw
-MDAwMDAwMDAyMA0KPiBbwqAgwqAgMi42MjkwNDhdIFJCUDogZmZmZmZmZmY4MjUzZDJlMCBSMDg6
-IDAwMDAwMDAwMDAwMDAwMDEgUjA5OiBmZmZmZmZmZjgyMGRiYzIwDQo+IFvCoCDCoCAyLjYzNTg0
-MV0gUjEwOiAwMDAwMDAwMDAwMDAwMDA4IFIxMTogMDAwMDAwMDAwMDAwMDAwMCBSMTI6IDAwMDAw
-MDAwMDAwMDAwZDANCj4gW8KgIMKgIDIuNjQyNjM3XSBSMTM6IDAwMDAwMDAwMDAwMDAwMDAgUjE0
-OiAwMDAwMDAwMDU1NjVmMDAwIFIxNTogMDAwMDAwMDA1YjBjYTAwMA0KPiBbwqAgwqAgMi42NDk0
-MzBdIEZTOsKgIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmZmZjg4OWZmZmUwMDAwMCgwMDAw
-KSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQo+IFvCoCDCoCAyLjY1NzEzNV0gQ1M6wqAgMDAxMCBE
-UzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4gW8KgIMKgIDIuNjYyNjA4
-XSBDUjI6IGZmZmY4OGEwN2ZmZmYwMDAgQ1IzOiAwMDAwMDAwMDA0MDBhMDAxIENSNDogMDAwMDAw
-MDAwMDA2MDZiMA0KPiBbwqAgwqAgMi42Njk0MDNdIERSMDogMDAwMDAwMDAwMDAwMDAwMCBEUjE6
-IDAwMDAwMDAwMDAwMDAwMDAgRFIyOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFvCoCDCoCAyLjY3NjE5
-OF0gRFIzOiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAwMDBmZmZlMDdmMCBEUjc6IDAwMDAw
-MDAwMDAwMDA0MDANCj4gW8KgIMKgIDIuNjgyOTkzXSBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2lu
-ZzogQXR0ZW1wdGVkIHRvIGtpbGwgdGhlIGlkbGUgdGFzayENCj4gW8KgIMKgIDIuNjg5Mzk2XSBS
-ZWJvb3RpbmcgaW4gMSBzZWNvbmRzLi4NCj4gW8KgIMKgIDMuNjQ4NzU5XSBBQ1BJIE1FTU9SWSBv
-ciBJL08gUkVTRVRfUkVHLg0KDQoNCg==
+Hi,
+
+On Mon, 2022-12-26 at 15:37 +0800, Yxian.Yao wrote:
+>=20
+> Hi=EF=BC=8C
+>=20
+> Install the debian11.0 operating system on the machine.=EF=BC=8Cthe syste=
+m
+> can start normally.
+> But the system is abnormal after using this kernel,linux-5.4.133-
+> ipipe-6-xenomai-3.1.1-20221216 (linux-5.4.133,=C2=A0ipipe-core-5.4.133-
+> x86-6.patch,=C2=A0xenomai 3.1.1),=C2=A0
+> See the attachment for output information during kernel startup, and
+> the=C2=A0kernel=C2=A0outputs=C2=A0some=C2=A0exception=C2=A0messages,=C2=
+=A0as=C2=A0follows.
+
+Linux is failing while trying to initialize the IRQ controler (APIC) of
+your application processors (APs) (=3D non boot CPUs). There seems to be
+a mismatch regarding LAPIC IDs.
+
+Such IDs are normally extracted from the APIC ACPI table. Something
+seems to go wrong there (taken from your attachment):
+
+[    0.214734] ACPI: x2apic entry ignored
+
+There are a lot of such lines. This makes me wonder if your ACPI tables
+are set up properly (which might be a BIOS/Firmware issue). That's
+nothing Xenomai/ipipe specific. Does a standard Linux 5.4 boot on that
+machine?
+
+[    0.214840] smpboot: Boot CPU (id 255) not listed by BIOS
+
+That points into the same direction. Your boot CPU has a APIC ID of
+255, I would expect 0.
+
+[    0.284534] setup_percpu: NR_CPUS:512 nr_cpumask_bits:512 nr_cpu_ids:1 n=
+r_node_ids:1
+
+nr_cpu_ids: 1 is strage. According to the line below we are on a NUMA
+system (with one node) and I would expect a higher number of CPUs on
+that system. So something is hiding your cores. (At least there is no
+maxcpus=3D1 on your kernel cmdline).
+
+NUMA configuration:
+[    0.008196] NUMA: Node 0 [mem 0x00000000-0x7fffffff] + [mem 0x100000000-=
+0x207fffffff] -> [mem 0x00000000-0x207fffffff]
+
+Hope that helps,
+Florian
+
+>=20
+> Please=C2=A0give=C2=A0me=C2=A0some=C2=A0hints!
+>=20
+> Thanks=C2=A0a=C2=A0lot.
+>=20
+> [=C2=A0 =C2=A0 2.425873] ------------[ cut here ]------------
+> [=C2=A0 =C2=A0 2.430270] kernel BUG at arch/x86/kernel/apic/apic.c:1659!
+> [=C2=A0 =C2=A0 2.435593] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+> [=C2=A0 =C2=A0 2.440574] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.13=
+3-ipipe-6-xenomai-3.1.1-20221216 #1
+> [=C2=A0 =C2=A0 2.448851] Hardware name: HP HP Z8 Fury G5 Workstation/88C1=
+, BIOS U61 Ver. 79.01.87 09/22/2022
+> [=C2=A0 =C2=A0 2.457129] I-pipe domain: Linux
+> [=C2=A0 =C2=A0 2.460211] RIP: 0010:setup_local_APIC+0x2df/0x310
+> [=C2=A0 =C2=A0 2.464775] Code: 00 0b 05 b8 66 5b 01 0f 85 f7 fe ff ff 85 =
+d2 7f 3f 48 8b 05 43 36 e4 00 be 00 07 01 00 bf 50 03 00 00 ff 50 10 e9 f6 =
+fe ff ff <0f> 0b 48 8b 4c 24 40 65 48 2b 0c 25 28 00 00 00 75 0a be 00 04 0=
+0
+> [=C2=A0 =C2=A0 2.482628] RSP: 0000:ffffffff82003ea0 EFLAGS: 00010246
+> [=C2=A0 =C2=A0 2.487606] RAX: 0000000000000000 RBX: 0000000000000000 RCX:=
+ ffff889fffe00000
+> [=C2=A0 =C2=A0 2.494401] RDX: 0000000000000000 RSI: 00000000fffffeff RDI:=
+ 0000000000000020
+> [=C2=A0 =C2=A0 2.501196] RBP: ffffffff8253d2e0 R08: 0000000000000001 R09:=
+ ffffffff820dbc20
+> [=C2=A0 =C2=A0 2.507989] R10: 0000000000000008 R11: 0000000000000000 R12:=
+ 00000000000000d0
+> [=C2=A0 =C2=A0 2.514786] R13: 0000000000000000 R14: 000000005565f000 R15:=
+ 000000005b0ca000
+> [=C2=A0 =C2=A0 2.521582] FS:=C2=A0 0000000000000000(0000) GS:ffff889fffe0=
+0000(0000) knlGS:0000000000000000
+> [=C2=A0 =C2=A0 2.529285] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080=
+050033
+> [=C2=A0 =C2=A0 2.534759] CR2: ffff88a07ffff000 CR3: 000000000400a001 CR4:=
+ 00000000000606b0
+> [=C2=A0 =C2=A0 2.541553] DR0: 0000000000000000 DR1: 0000000000000000 DR2:=
+ 0000000000000000
+> [=C2=A0 =C2=A0 2.548348] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7:=
+ 0000000000000400
+> [=C2=A0 =C2=A0 2.555141] Call Trace:
+> [=C2=A0 =C2=A0 2.557479]=C2=A0 ? __ipipe_do_IRQ+0x87/0xb0
+> [=C2=A0 =C2=A0 2.561137]=C2=A0 ? __ipipe_do_sync_stage+0x12a/0x160
+> [=C2=A0 =C2=A0 2.565537]=C2=A0 apic_intr_mode_init+0xb7/0xda
+> [=C2=A0 =C2=A0 2.569441]=C2=A0 x86_late_time_init+0x12/0x17
+> [=C2=A0 =C2=A0 2.573262]=C2=A0 start_kernel+0x42e/0x4e7
+> [=C2=A0 =C2=A0 2.576757]=C2=A0 secondary_startup_64+0xa4/0xb0
+> [=C2=A0 =C2=A0 2.580744] Modules linked in:
+> [=C2=A0 =C2=A0 2.583659] ---[ end trace bd3da5ac6eb39a7b ]---
+> [=C2=A0 =C2=A0 2.588058] RIP: 0010:setup_local_APIC+0x2df/0x310
+> [=C2=A0 =C2=A0 2.592622] Code: 00 0b 05 b8 66 5b 01 0f 85 f7 fe ff ff 85 =
+d2 7f 3f 48 8b 05 43 36 e4 00 be 00 07 01 00 bf 50 03 00 00 ff 50 10 e9 f6 =
+fe ff ff <0f> 0b 48 8b 4c 24 40 65 48 2b 0c 25 28 00 00 00 75 0a be 00 04 0=
+0
+> [=C2=A0 =C2=A0 2.610482] RSP: 0000:ffffffff82003ea0 EFLAGS: 00010246
+> [=C2=A0 =C2=A0 2.615460] RAX: 0000000000000000 RBX: 0000000000000000 RCX:=
+ ffff889fffe00000
+> [=C2=A0 =C2=A0 2.622252] RDX: 0000000000000000 RSI: 00000000fffffeff RDI:=
+ 0000000000000020
+> [=C2=A0 =C2=A0 2.629048] RBP: ffffffff8253d2e0 R08: 0000000000000001 R09:=
+ ffffffff820dbc20
+> [=C2=A0 =C2=A0 2.635841] R10: 0000000000000008 R11: 0000000000000000 R12:=
+ 00000000000000d0
+> [=C2=A0 =C2=A0 2.642637] R13: 0000000000000000 R14: 000000005565f000 R15:=
+ 000000005b0ca000
+> [=C2=A0 =C2=A0 2.649430] FS:=C2=A0 0000000000000000(0000) GS:ffff889fffe0=
+0000(0000) knlGS:0000000000000000
+> [=C2=A0 =C2=A0 2.657135] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080=
+050033
+> [=C2=A0 =C2=A0 2.662608] CR2: ffff88a07ffff000 CR3: 000000000400a001 CR4:=
+ 00000000000606b0
+> [=C2=A0 =C2=A0 2.669403] DR0: 0000000000000000 DR1: 0000000000000000 DR2:=
+ 0000000000000000
+> [=C2=A0 =C2=A0 2.676198] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7:=
+ 0000000000000400
+> [=C2=A0 =C2=A0 2.682993] Kernel panic - not syncing: Attempted to kill th=
+e idle task!
+> [=C2=A0 =C2=A0 2.689396] Rebooting in 1 seconds..
+> [=C2=A0 =C2=A0 3.648759] ACPI MEMORY or I/O RESET_REG.
+
