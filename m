@@ -1,68 +1,68 @@
 Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEEC3BA53
-	for <xenomai@lists.linux.dev>; Wed,  4 Jan 2023 22:24:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2802AD502
+	for <xenomai@lists.linux.dev>; Wed,  4 Jan 2023 22:28:56 +0000 (UTC)
 Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 304F2fNF019662
-	for <xenomai@lists.linux.dev>; Wed, 4 Jan 2023 12:08:27 -0800
+	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 304F2jCc019688
+	for <xenomai@lists.linux.dev>; Wed, 4 Jan 2023 14:28:55 -0800
 Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0147.outbound.protection.office365.us [23.103.199.147])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3mwbrkh0hm-1
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3mwbrkhc7g-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Wed, 04 Jan 2023 12:08:27 -0800
+	for <xenomai@lists.linux.dev>; Wed, 04 Jan 2023 14:28:55 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=OrWQPtlHhUoT9VrYRuJcFm5PSc5mWn8HPG5QJxne20fh6UzkETE46vZqX+lQTzYx9jiXiXORA+Nf5l3rtFuTxQ22dPUCXz80U261WsTWI9mI2ci+zGzryRStbo+KMCL8SzOMbKgrmYdTdMytjFNALwEByLugnQRxmQqFXMq8zaifm87W7UK+XtX3srThjKn9wgvqTlNEP7VSAlOn2ERPZNuQ7JixcgNL6T9tzdqvLur51BpevdwEma3BC7Cd8XyGS3xNX0urfqMKmiCMxSnmDgNtJqgeG4cpeyWuYMinClqwXG9qBaP6MQ4/PNDrGPdrB33nTJHCK+q/ZaPPwIlI8w==
+ b=qy3V3ULDfMxlXXnjN6Z818suc/2JgXQncQIX10Tzdl7K1q9kyN5BFIg0XngjQzi7IhZuV+WuMf3lIMcO61v9pMdAWH3fIQDz7apvFZtfo89r80bCU+j5OP0wJUD3nz82IbeM7kNJyj1JG10MlI49Dvord1/E1Cb34fi5qYxjdXWrM7dab0YEVn/txrJcdov7GD+0K5XAqFkt1RcQqmarqklnRXLBOkKGKv7RGmrtw15IIOqIiPkTL6aR8xVN1dRZ4xXl0YLac9s/k/yZNVug2oCQFSgh0vqIDyP/lL2z1vfqqCxn15biiS92UewMfvIozr+qAoJ1/uch4gY5dJenPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u2aSgbzTMVY0LHvuLjSrR9TxIWlRYYHRpX04njw5uUo=;
- b=IFkNx8QlOLIgZzn4BSZublQlMVftCCFbuxfCs3V2GYCC+h1PwtYiVhrsprkX+pGFiNuckBNbeRC3H8nr3SsdR1wAcC2Xek5yNkRtMsm+ih96fXbc4u1UmrpRAW8SIRf1vsNPwMe17JPoM2tGnJJkn4ZOYE1/UHJLJPwwcljlz1Xgt0LrFae18pHSc/WQV67V5op+L7tOYUuMBfQzm2gkf6L4rNa1QOVqDTFA6Px6D8VvWe6veX0q7bkXbOKa42ba4j+odzAX1vrWVZMjeAiA9BV7IBZQ3a2/MtXuylJdg9p4ALqr15/YMJxpaOqOCgLuo+PXOrYBUfDEXoBYwWw7+w==
+ bh=4vTYnq148lHs7K4A0n4tIysaIAcQFKANTQPlpkigHrs=;
+ b=oVLhUkX0ni39uCoTXTZufYo1Phdd4N5wO0J8lVMPdi0hGkkyvZI/ljBc1IQBoW4OV1u/gBYGSZCn2ObdqYmz2pKROTptrnYy0ZfGS/APxLTBMWZw1ELJUCrGguF6ID1UOttI/CoTmFWEaAzfBuQ2xz72rQqHEERJW0UlvVCx42N+xLCwVHqTWFkKb3pIRW72/w8BddiWdFDGK2dMtQYA9PLuPl4PPUDC+arKwFqsnkjMFSOzFHEbBaEoiks1hIIeFh6fZAnQlKsboGXuoSMvJWdJiD3gj2NvKgdFmNl/goBlKd7AJG3WCoSkZUxCkV4tbhySlDCsUh72wLNShrSXug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
  header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u2aSgbzTMVY0LHvuLjSrR9TxIWlRYYHRpX04njw5uUo=;
- b=a3nCxnwlZCtWS3TwSe9oG7VGxCSnDQDtWt0pDhuIGSI17I/zgw5OGMDLWP+l/U3lgH7e4YxYXAQw0OeWfeQl1VjGe8mjc5bDzRcpCum1aeh1EWbceKNZ0p1oiUack/KzpJZTKlLZlAfijgjPWPKe1xO6+o9uAkYi3RTkBEb2m7SCnRqTlSHPxF72uCnVtrUI9L3nVhTvumdNn/JsSgIrxHFXMvaxKhetiWL1le9usTdmFsbE68lZenm+vrGcUauutzTejV5eXORlVeDfdGmqkiGdjwSDIQ5pnw5s+GB/TsdNnHU1H1qDbwYg0Mn9zwNj6TykDh8xcdEgFRS3v9O3Mw==
+ bh=4vTYnq148lHs7K4A0n4tIysaIAcQFKANTQPlpkigHrs=;
+ b=gOwFuOpcro9JbDEUsIRmzvIDEdgmz+OIAW3BZI6jsX4MOD3muEpKRd3QGKgjg1F77rBMmZjqkGBJOOvIHjc/M6Jum4nNT3T6nHsah3Anpvv5qbPVuFLYEpealQgwtONKlNANwk0CHXRSKjQVCj5yGGs+KV1V9iJdJvHW5gUQ5j/RpPSJPZnUfc5gXBFR/8t6LMVUb83wnQWTr8zjGQbw02+dKEqGkBrvlQ16E9H9zG9y+SuNLvnehJlFPD78woNraXKHriGVWd2QUbRvDt87spCSZ8MwaaAmPIdVQeF59qCgl4/ABuWdVOMhg9EsIm/Ed1G9IBqWiF93h7Ouf9Vsig==
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1185.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18c::17) with
+ by PH1P110MB1362.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18d::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Wed, 4 Jan
- 2023 20:08:24 +0000
+ 2023 22:28:52 +0000
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::f260:75b3:f076:14cb]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::f260:75b3:f076:14cb%4]) with mapi id 15.20.5944.019; Wed, 4 Jan 2023
- 20:08:24 +0000
+ 22:28:52 +0000
 From: Russell Johnson <russell.johnson@kratosdefense.com>
 To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
 CC: Bryan Butler <Bryan.Butler@kratosdefense.com>
 Subject: Conflicting EVL Processing Loops
 Thread-Topic: Conflicting EVL Processing Loops
-Thread-Index: AdkgeBQXz3DcF9hoQHmlGeiHUsYglg==
-Date: Wed, 4 Jan 2023 20:08:24 +0000
+Thread-Index: Adkgi+LtPmHGHADoTpO4vPcK7ox9Ng==
+Date: Wed, 4 Jan 2023 22:28:52 +0000
 Message-ID: 
- <PH1P110MB10502215781144297BCF2AC9E2F59@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB105032AE6426F4599E6A080CE2F59@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1185:EE_
-x-ms-office365-filtering-correlation-id: 8d2078ce-0f84-4204-5d7d-08daee8f6fbd
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1362:EE_
+x-ms-office365-filtering-correlation-id: 6bb5719d-a824-4951-51a6-08daeea30ece
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info: 
- 2SLB0D4zWAqHbm2UUPCeGup2RiHlj/+3qM1XAbVqisNAb2y9VJg6e6AmKseMsZMmjVYYd8aqvHJakHm/Q1Rppx/9lP6CmRh3wZa9fmCM0SC7rJQAeCk40HMSaiMN2vl8HG8+KLJ9PT11ji39BLmNaaOOpGqa/i5EviiS+ug52HNgLx0kWXLAnDWU3gZA5/kFxJliFlf4LnHaD3G52g8PKvtyWpM5LuhjWQAssd4tpFSkPPVVweT525c2APFf1jkJd2ChVo7Q5OVeR4QpN6uSx1xZ9NnCjbnXY/coiklIC7XuPg9+wH5xOQjlVnN54loZ/rPIMyJWN/ySULTxUwvudYBurR8DX4n1FK+QLSMULl5NWvaWtBRY7/B1/c6lzmAWickZQgmJdfXiJ3R+RzRG9h5PfsLA7v5+RRCwzL+uryi0SxUoUKQr3EPAgYrOmE/ypIUd/+1EhegVdUNOp10HHTPzZ9QJazzx3yAM8tjgoKW7FKPyvi1mza0El4VEQ3mlLEh/lS0CkMTVjId6gLDeV535074HDY6zTeOPoKdTJYq2cOINQlWC8AjCcVFe5/rG
+ DtXb92Udhx5uG7VQByb6JnxHRJR7vmxMVz76TUxX9Y5WKhSdETpUb8kFv6NKhQIXw8psk4B1xQ1RGySVvgR5qhOPymtbIipY5nKTZNSY07yTrgwloqYyJZu+7q/tBLhkf7GOhyVLbmCqLqFG/0ItusjTA0XFoCj47+XB5rQjUM19VYmMN86wqBNl7kArGbdTdRFU//PHAzzOEu7aMJeizyGXbMbQhesCOh+zSCdqYeEqk0+z2QTSQoiLk1kXHijIhWKqU5l9IzCUeuzziw121gaqzM+QYoMjLgVDXUI+qznENdD8fwFZeiRG+z6JsydfCJk5paFPJ/FS9cZENtbmAlUGFxi7eR3PcR9ZzWFkywCoNzFvy/ofPkOm+H6USpVVW2JY1BSDi92G+1YJFojG66p18IIyEDMCY+ebphlobXFIRe+u4p97khHzHNGavedVPyNZYr24W+XXlP7G9mGEgDp6GRjYMa5nUZlaBc9N8H1tBmc7lPzauYAzCjCtMRp3746JmYJ+5QYenZBPhUvo541oAVDe+dSsowC4974GSBNRq1SXwbQsHWbIL4/72F8i
 x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(366004)(39830400003)(136003)(396003)(451199015)(9686003)(76116006)(26005)(186003)(4744005)(3480700007)(44832011)(99936003)(6916009)(5660300002)(38100700002)(122000001)(8936002)(9326002)(6506007)(52536014)(66446008)(66946007)(66556008)(38070700005)(107886003)(8676002)(4326008)(41320700001)(7696005)(66476007)(41300700001)(55016003)(86362001)(33656002)(64756008)(2906002)(71200400001)(508600001);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(39830400003)(366004)(396003)(136003)(451199015)(33656002)(55016003)(6916009)(508600001)(86362001)(38070700005)(3480700007)(122000001)(99936003)(9686003)(186003)(26005)(6506007)(38100700002)(71200400001)(8676002)(66476007)(8936002)(44832011)(2906002)(7696005)(5660300002)(52536014)(41320700001)(107886003)(66946007)(64756008)(4326008)(41300700001)(66556008)(4744005)(66446008)(76116006);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0: 
- NYA/gwRPNHIW2ncqRW+D8KGENWE+UqqLnX76CNKgQ94iRw6c18XoDTtl3CYJqXcpYpFt3glJ1HFLudxDzkTacyBICJsVxeSuN8tGFhc5GepQh5HGdIYUTg0elQF5Yla3ZfomxpijjWgA3Y72xb2UiSHT45AIxcnXC5J5pd8IdWz6zGxgxcmZT6tnET83eZq/8EF07DqhlyY1wNYra/7TcAsG52laJwIh+Z1vsDv1Nf8IqSnYw7sHKurDycTGKpckBcM+BRGpopkycPU0ny4X4IP3wVG8O/kLjQifOSxKPf72q1lUM27cB0OMJo4WAKX9qxLWCJcTjelZdSX/EFP7+34vFylNYo0n2o7hn7ogqheklGAVwq9hd2T87OdaZPY1CGhFRTM2M4XRrdsvvrfwF+Tr9yMUdThI3Kwm4WwmowA=
+ p7XFjqQ1x72QJ0g1nXxnSoAS9J7gudVKa8NoFm6bAGD4dN1WiyQ9SuRyT981/obLhXoaIEdnVAzWYbgRUg2tmBphgRbgUIU/wfIkugoux5S4TqnKlRVTSDgf6+F5m0iNYVeroBDLfiojdREn/7EF6b+b3Qx5pkvxryBTLRmYfX6vgjs2gXWffkcUODSJgoY2wAGLVizMmcW0iV+lcWPdtZDgeIZywbr4K7nA9NYlgMHu8Be4HJsQ2J1Are4rISvIaXjr6NV2nTRPiDAEY8Mf/x6Fvf+AsXwJPgpdc4edkRoe//6xoE0cMSKkN0jV7s8YYHaBYiC33rzWdLLryrSuMtVjJCRMMUk+LNmOhhONAzzmdG4+05db8JZI797dt0UBSqOBCHLY0i+Wdlk7EeC5YBSN9az9HoW4N7zHptbLm80=
 Content-Type: multipart/signed;
 	protocol="application/x-pkcs7-signature";
 	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_00A7_01D9203D.A0064680"
+	boundary="----=_NextPart_000_00EE_01D92051.3F26D690"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -71,40 +71,33 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	xs9/NjNwUJn9ZujrNsr6S9cYdz7ZMp+St2RLIc3PZEsEvceokl4UDoz5nEJnc0rxpV4x1WH0udoPghy0K8fWKHey+d6MYph9s3mirVS7C6PUxhZ/YDYGwbWLzkiCgjWtcecl5sRyJKP8KpHnA4e4jMA63Iy4Euwj41oIqg7iYErCbnrWoamqENnCAdKIcSxx8/6jLbEwX67ZlzIkEqMCMzSvjtbIZR1Ko2DwvgU2w3cmMGQBE0xOyFXGNXcVtLkt+2l3zuR+dc/5D5qz/mgFdmYw7cWLoxP+pqGeMuujfMeHT1ZBedaBBg0Nzc+lsd9bbTxOPqyeTdH+S3AtNCnfWix/p2gSPt6lBXjUFMKZLhmuRVpOqcBXJ0W2kzqFWehSHHIww9npFncv4KEjlyKoIb8Xk9+jIkvesOeG3FZ1zF6IrE70tvA8PsEY95MrjFZiPmmS/1FEHhkUAFQe5Cy2Xi7QBC+uRWSMICfN9ZF94pF5rcS09Zcrm2Ub13wSneKPXOg3nUlLb0kXOXijEKw6zyYZTZHcFp0QT4LQGuPmMhUR+zIatO8O1DW2ozI4ZgZ+sJAfnQtNII5zLg0ZAV/awL3dawdtX40kk6MAj/EUgqm+8ukJjcQMa+yb9ekU1jQIviHz4gJ9OPfagcecWSlaJanka5P56LP2ZNWI2gXtcVxVZZhlqt8ODFIGmNB901B9ME6qu3eWyGu+m60/3TiJXe5OqX+DUfOaP4HxyvJPz4z26GxYZjEUkMnpr8oXYNCNZ1fKJYci6KlMvFx/lnib2g==
+	40j1ufZ0C2ckwUqWLR5FNXg9xthmCCyz0M7BEg7yYPJQgRm0JZJf7CPkj3p8Wh0tncZm830yJ23O+EikmcJ3p3Ab3dTCXTScMu285rWgfHQQvMNoa1MTeoJRTFnxnaL4ELsW8tB2PEboxDq2fipgRH7dsXCVmn429yqPuHnGjsukIdaCZz8JF8azaszD4DADFOxN94lHPyFYIKioXXCDcRxKf8A+04T4N52zbCJ8iuEM8reGWi9umDJ0GvquB2ZeQn60ruxovix1LYt5wAoh1lIzAyqcO3RH6phDwc8+xsL63kbvcsZq1mZI/wq8vtCEKMh9BfzMD6/04A32wnbEDVFfDRmH8v/fE+UQhvwbaNWaLvqfIp9+e25z6RK2aZsI+aVjBRTbGUcxnKcrXgxLtamVUg1AqfevdsknrC2XRA+N5jQDe2QS8LLolZf5s7rfwlcx90nOjOL3nKALg/CWqdXGQIKAucQsNWpYBfTEf9H96M++Rq16v3kR+HOZPC6l3udvZ68P/tLM5nxIp56kgO0jK9LTr1cOZB/o1tPuJ+BIwHAw7FLxPo3dFq0zr564Z7JoRtqMqnwrypzliOHaaUuVK8qNuCohNQXk3EawV9+kK+Bcu5Q/WfXbRSWogxEokQc0VCF9t0xQujMklH6zA7ruISzg8Veqy2R0iv/DiedQombfzUBZyuLg/9QhI/V5Rr0bRDDjPCC59XMYhCVZ4w+no3ZspZLBrBoNJnJSdbWXJvdoCCHEVx+mORjgs5BIh4PnBGVsa+r70GF38WD4JA==
 X-OriginatorOrg: kratosdefense.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d2078ce-0f84-4204-5d7d-08daee8f6fbd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jan 2023 20:08:24.8605
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bb5719d-a824-4951-51a6-08daeea30ece
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jan 2023 22:28:52.1203
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1185
-X-Proofpoint-GUID: 1s-GdbxePKARhu9-vu1woOOsWaH5ubSM
-X-Proofpoint-ORIG-GUID: 1s-GdbxePKARhu9-vu1woOOsWaH5ubSM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1362
+X-Proofpoint-GUID: NaWtaSru1h0jzFaTBqmtPlzg2_Axanv7
+X-Proofpoint-ORIG-GUID: NaWtaSru1h0jzFaTBqmtPlzg2_Axanv7
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-04_07,2023-01-04_02,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 suspectscore=0 mlxlogscore=477 adultscore=0 mlxscore=0
+ priorityscore=1501 suspectscore=0 mlxlogscore=413 adultscore=0 mlxscore=0
  impostorscore=0 bulkscore=0 phishscore=0 malwarescore=0 spamscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301040162
+ engine=8.12.0-2212070000 definitions=main-2301040182
 
-------=_NextPart_000_00A7_01D9203D.A0064680
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_00A8_01D9203D.A0064680"
-
-
-------=_NextPart_001_00A8_01D9203D.A0064680
+------=_NextPart_000_00EE_01D92051.3F26D690
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Hello,
-
- 
 
 We have two independent processing loops, each consisting of their own set
 of EVL threads and interrupts. Each loop completes its processing and then
@@ -117,81 +110,12 @@ with Linux equivalents), then we are able to run both loops simultaneously
 without issue. Any clue what could be causing us troubles or where to start
 looking?
 
- 
-
- 
 
 Thanks,
 
- 
-
 Russell
 
-
-------=_NextPart_001_00A8_01D9203D.A0064680
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
-HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
-(filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US =
-link=3D"#0563C1" vlink=3D"#954F72" style=3D'word-wrap:break-word'><div =
-class=3DWordSection1><p class=3DMsoNormal>Hello,<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>We have two =
-independent processing loops, each consisting of their own set of EVL =
-threads and interrupts. Each loop completes its processing and then =
-performs an evl_sleep_until to delay until the next processing deadline =
-occurs. If we run either loop by itself, everything is fine, and our =
-timing margins are met. However, if we try to run both simultaneously, =
-the timing error is increased significantly, and the loops never meet =
-their processing deadlines. If we compile the code for Linux =
-(substituting all EVL primitives with Linux equivalents), then we are =
-able to run both loops simultaneously without issue. Any clue what could =
-be causing us troubles or where to start looking?<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
-class=3DMsoNormal>Thanks,<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
-class=3DMsoNormal>Russell<o:p></o:p></p></div></body></html>
-------=_NextPart_001_00A8_01D9203D.A0064680--
-
-------=_NextPart_000_00A7_01D9203D.A0064680
+------=_NextPart_000_00EE_01D92051.3F26D690
 Content-Type: application/pkcs7-signature;
 	name="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -301,8 +225,8 @@ MIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
 EwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNB
 IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OS
 JRo+VzANBglghkgBZQMEAgEFAKCCAoEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjMwMTA0MjAwODIzWjAvBgkqhkiG9w0BCQQxIgQg3Sj1KtXEyGXRkqNx7pF6AS9W
-MLUW0n9uIDphU9jFR04wgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
+9w0BCQUxDxcNMjMwMTA0MjIyODUwWjAvBgkqhkiG9w0BCQQxIgQgsgPbNg5aOOOGPd4BkYKLuerY
+tFa6QTN1vYw0SADd2wkwgZMGCSqGSIb3DQEJDzGBhTCBgjALBglghkgBZQMEASowCwYJYIZIAWUD
 BAEWMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBAjAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC
 AUAwCwYJYIZIAWUDBAIBMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowgb0GCSsG
 AQQBgjcQBDGBrzCBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3Rl
@@ -311,11 +235,11 @@ ZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAJIF
 dv7a2pEWVMfTkiUaPlcwgb8GCyqGSIb3DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkG
 A1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0
 aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBh
-bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQB5
-20QfKnOyOBKlclis0DYqHCwMYwaov5pSfZDtp33vOabhpBSDvwx8flk3l0DvxctKXSNs8PPekw0r
-eYtaJXshbmiu5sNysbjyT7HWkke5RS+jidS+/ttXwgmJAWVjIdBV22+IgI02FX3qg7y7QgzaIFKY
-6ZyJuisujdPibISU25lP1ga1q7Cqq6x/MbmEDbpHVHzUJxFN0vuGxX+fhFvAD5b+FvRD2c4T591d
-eaYabH11D4UQ/O7kfpOphDqJbQvyts9syMvl6xFBO3OvcDoioI5iLM0/H7O/pfmk30Wf0toq367T
-csIUa4O9Ygt2UnU0lIJXsZB+wcT+qhBkE1B7AAAAAAAA
+bmQgU2VjdXJlIEVtYWlsIENBAhEAkgV2/trakRZUx9OSJRo+VzANBgkqhkiG9w0BAQEFAASCAQCj
+kz4rTCPeTCWpYWUiOD53aMvw5wJhISNLdlHQCi9OY39SSc8Oh1lwJlZb4djk9UmiwykDsPL+zfPq
+n5UrvM3YzbIP4B2qHO9p17UqFp5IzLtPprXcfUVC/IKWm9AMBcElQm2fqQJlo08xU4ltbR933SNa
+LChw3NNDGmUPLl2ScZMDXzjff6fXaIVTs1FKXSzNfCPvHzbC+DsjDhbKlbBkx+KRcY3AkkcDcpwU
+RgCeaVdDgbPHRS+eeAK262jzoZJl+dGuk1aL3NstmP/eIMmNVi5ufKSFsKdOjdOpEJ1uKXr+zm22
+AdNki4/5MuBoUVTFLDpfuEbn6F9C9xwMZ3NzAAAAAAAA
 
-------=_NextPart_000_00A7_01D9203D.A0064680--
+------=_NextPart_000_00EE_01D92051.3F26D690--
