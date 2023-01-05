@@ -1,47 +1,48 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2075.outbound.protection.outlook.com [40.107.7.75])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2078.outbound.protection.outlook.com [40.107.20.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCD680F
-	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 06:58:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9E6080F
+	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 06:59:35 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C/1iu/v/BzajBXfQfJn6Ve+HeM1XWH9570OVE/PGb9cNCKCKxN0nWgprTrFQsfDd/ocrJ/ggtalIcAHQR5Efevd7ELRL8dGfA9untrNkHOMNR1nncpwcwdWev3FmIYrakYwGKbxyCPuDU7IiON+7kKHeE74bYAacx0WF86q1xWkJw3niN+aP5wkYZkdyhsWFPFSfD7fAYRi/5c6T+fiuXRyIyH/zLO2cmPAfptAVwI/+5rI1ptD25q65y1qNHu5RtsQlhLXnHteOVkrRyf7f0XjcUf0ipk3sw1f4muVhzNNhMlWQoDuoxZOOCYtgN77eSNVMuCn3CNCJeyXEONiKDw==
+ b=M9N90W1czrWfhUhe9qFvya/mNMNVYouethtJM4OvLjWUolyU+t5jEOPDfiKrC9HTpuFU8s+UmSgpFJhstt7GvH0Q/Y0fREOxocinFgTLejq03JVpK6/A2upxbxVfTBK88wCLql3ZVCnc1hso+yaRDXdrRfpykuKPeHs++i++zMeGwapwV16A4RnIFZUIhWKh85cqDo0ZG9yuHGqfcKN1tGNu+4McbWueNZQXqY9EArbAVCSCUlBlEBNKWfxL9hrO+a8YjoVSPfIUOfTxH7dIpKBcqjuY92DFcSfkb01FjejqhY2aBem8auq5PhAxlJvpKTrSy9yD+WABTfy8nSmd9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L+f8Dsh4Mdu6z2OVZfnfOKSRQiW/H6nJtWpNqQs7l4U=;
- b=Bwv9ewzSYrT91R4BCdz1wgdJtZemz236Gi1CHQK7M/Che2ywswlLK3LtRS4ssUsJy5lFNikXtocXDxfp70HYYjxcPtaWIgzxcy7EKYSW5HNxwGYwWscNZLOWK/cW+SKoXV8YDyob1ZSsBpYksEy4O10+adXINp3ZLdtKAFfcMp8MweuJq3mSXwsyRGQEF+8e54qENfrTKn/mvfXhyUJ7RJC1fR52cnHHnefNuhjJcukULdiAuDPUydzrN9XDtdKBZpKG/Ww8ChrKMXw4euLLrB8QO3GuwboVI/sdPHRPztn84etmwNbfz3Vc1pUKBAsEjGTZvPYOGC9dizzVxOx8/w==
+ bh=xrlLYm4tORRX92LP1a4kgk3j8DtAMIOOuiSHVm1hKHQ=;
+ b=Vrhi9R3i8R9KGu+W9DN3CQ2ojCyVOf9mZ1jqECRMrjpTOYv59vSjACu071wcqL+KNwF6E5+2tvNweb2yGNh8+dwRkhfcVH3+vjCzt1IAEB/M1TNYwLS4oSyhHkLK+CYbWCFauqO/mDtHwerUa+RzmRgNOgu/88KGybcZCGqAyNlfca5D5S1xYag8gah81PrQFiVdbhhh/utJqcyJnnPN6BI9/c/WUC6m57BjCULhlp4TC8NxAg0wT/oCMLyrEO2u7XFaxdUXWrSRoqx2tfYRgdJ9VJms4D2zTIbI7IUuQajlRQDTI17s4npLa2rcB3mLIbu6IEu3RGaCQk1EpNaKgA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L+f8Dsh4Mdu6z2OVZfnfOKSRQiW/H6nJtWpNqQs7l4U=;
- b=N0gslnMZ13EZdPEpRH9cwU0bXXo1x5VUKyYVd/jQfOVyBjIVSUh7fM3DYZHoY5Ubyqm0BDewbYuIwv9Q57gWJvDu59LIkOMcvwnfL/2Qk8FJOcQY9dxrUxdCDxC5BlhSslJbtdCDLxugi9I6T+znc4mh5XiM6pk/Kb6OC0RNT+r3Tk28KfDZkPa6If4Ocql44H048GzNn1uQLUnqG1tmwHH0/WfSfAhyi7KZMGTM2gMCCn5yNMgWwzJPb2JvG83GCtKR/FvOIccTSszGFHPHE/Rts8XqvrHLL8wPzvJkFBkwSN+s4iy2KxWC9FybJlo2K2cgEKEpc2yYyqt4lVYB7w==
+ bh=xrlLYm4tORRX92LP1a4kgk3j8DtAMIOOuiSHVm1hKHQ=;
+ b=ZntzMAkiuNZgZC9IbhDtF8UDiYvZ4SvqhkCCRpoNYzKoaFjRKeezYIaNpqj8wQTvKNhuWCmGf/wycGmmBlvrK8IdxB/Wf2fktD7E/2OQhPi7BZOHAX8nmOxet7w5whPWqVIe4gmw2UFqBMkOehjzSS0S9vwD6FLGeWBZ67WNaHa6o7xnmNgDVrxULcD9UT1vnkv8jPyERD9omly04xu3IAanuSGm3VPudDOXp6onubepjoGGVNQlCF9qwDUitqiuzql7BDB0FKgcoZEBr1VXMfpHrhIN3blOHSP8HWZvmCOLmlE0xiovum6ilB1pDzvnfCyNWlnC4Mlh1nWXdwwltw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by DU0PR10MB6017.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3b3::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 06:58:04 +0000
+ 2023 06:59:33 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::2957:50e8:8ce6:124a%9]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
- 06:58:03 +0000
-Message-ID: <fcc7da6d-da51-6eb0-a91c-4a018529db23@siemens.com>
-Date: Thu, 5 Jan 2023 07:57:58 +0100
+ 06:59:33 +0000
+Message-ID: <68351de3-9b3f-9132-157c-8bb7cd5e3676@siemens.com>
+Date: Thu, 5 Jan 2023 07:59:30 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: [PATCH v2] rtdm: Account for class::devnode signature change in 6.2
-Content-Language: en-US
 From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] drivers/net/freescale: Convert to adjfine interface
+Content-Language: en-US
 To: Xenomai <xenomai@lists.linux.dev>
-References: <1922d6df-c8cb-0c4a-692e-4c43fe407fac@siemens.com>
-In-Reply-To: <1922d6df-c8cb-0c4a-692e-4c43fe407fac@siemens.com>
+Cc: =?UTF-8?Q?Jean-Baptiste_Tr=c3=a9dez?=
+ <jean-baptiste.tredez@ba-healthcare.com>,
+ Gunter Grau <gunter.grau@philips.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FRYP281CA0010.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::20)
+X-ClientProxiedBy: FRYP281CA0002.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::12)
  To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -51,125 +52,114 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6017:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4d6d67ad-ecc3-4aef-79ef-08daeeea30ef
+X-MS-Office365-Filtering-Correlation-Id: ba5920a7-ae55-4637-50e8-08daeeea6614
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	l9aBjEK8+4/tbOPw40BNxkPHwkmDvCXvB2QTitkeDYj6r463zM9KttEeAlKHQ0CTtM7N7Kj1LJE1MidpxaeeZUuk7UXRpKx7XSePOnEt4+Tf5W7x91UmP13w5qQfDuCYPZlkYkzx7jf6hwDcyZNugye7aABfCwW90/Nua59z+MGYhzzYnsheAMB/xR7V3RsYqrK6AvN9H+Pu4KB6nhh6AaINyUwkB/b5iXm1dRVkHSzt2cPp0YPcUWDoiO4RgLoDj8KAmTrs5EfYqhzmemIlMbd86Zv9ROMNmYuUEUC5lJSmjxaXK2F5WyVaQYYKiHXok8nEz5D+FpsppQhiNLItMvgy+HvEOYHW3Z71bUP7jJ8LyMzSpRykPeh28flaev4x6Cc7hBSWCG/c5E8K2KD6XysHiDQ2SPlHb+q0rzlE97WkoBTA30JxY+tle+da09fAFGr00SfoXFUcCOqpmppvtWdQlkxdGAkSHpDloB1xTetcJvkL7nsNwRnptzDF135dT/G0KtakeWnMtuRyWLNNntCA/xrzFZaf1cbrv/WMoKOa+/KK1g9WSYLjHGgXW+xjLPS56KMZ5eI3sLCkyrZE5216GTpK9rsCC4ibwwKkwb6CLEKk8O+rKMp5/7nDPJEkzkJwFnUoRF+W9K60UFl36G1NrcHygaMyOtzimlBcLOnwUVXN+XLjRkHFZ9seFgmLVyqwIXhmMkk3XDBw4e6S+DdFGEPh2pDMmQirKhXjryw=
+	TvH4rojIF4Qmm3MmfZdD5f9r4Ba6Sux+b4oqE9cTi8UzwrxRVZBA9HFFhJr24KszT/9F/OB5BoX/QraX41uKqznR3yMgUpzllAB3qvfKl6yrsRK/HL7ihSW9OoJNkWggNOMcS/oMccTQxxGRpeb9U/kPJSqOZQhDlatlT+rxnaeuMDndsw2P0btNyBk+U1CzozGJb2g74fpt0z0KUR/QopwFo5FOLHEpBAUbI72l1X9TI12ka0x1p9bsAieq2Le7tJ7YKXB5DYkz0G2Azhz5nMzWQgfghox/ZZb/wK1mOzCe7j5+l8a0ZV7cGsBAlbutkkXQEemDnTpRFpb/GoO++fyfhtOOnmkAUSP9xVChFJVsMqn+WhcxaTmqYo3cch+7rXF1o4jO8jWYWKvP+05bEc5h5E6wI9TPQSkYY2/QEy4Rjzl6scydThTPBreOSHyOc2o05hXJxPWoPWjJLlP5VleNoCp6aiTYH/DNxKbjUL4kgPT8+etIAAcfEOMjE6IT2HycN36OZa+cGwWzbqwbu9WfUmIiBw85awiIk1ul272/ORFfrur1JXO/ZuFmImzY5Rh+iaDRjFJsTDYT3YStuqJskl+v0lKiZOVtY02SSlaBuBhqKh9/+CU1pSszC4RR4LlcXORxdbLZL4NGY25pbx+ASarXyo8qDGW7xoJI2m4VMDLdyUhnB+M9j6XKjsIGXS4W1OP/96hWmjCXQXMrapZPYamI++llfZhxbcp/Q2Q=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(396003)(346002)(136003)(366004)(451199015)(36756003)(6916009)(86362001)(316002)(31696002)(478600001)(44832011)(6486002)(5660300002)(2906002)(66556008)(41300700001)(8676002)(66476007)(6666004)(66946007)(8936002)(82960400001)(38100700002)(26005)(6512007)(186003)(6506007)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(396003)(346002)(136003)(366004)(451199015)(36756003)(6916009)(86362001)(54906003)(316002)(31696002)(478600001)(44832011)(6486002)(4326008)(5660300002)(2906002)(66556008)(41300700001)(8676002)(66476007)(66946007)(8936002)(82960400001)(38100700002)(26005)(6512007)(186003)(6506007)(83380400001)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MmVxK3pWZjRNOVhoYStpekcxbzZHUkNzQlU0MElYVi9kQ3dpdHJocTNaM2Vi?=
- =?utf-8?B?ck82U003aGdEbVhWblR0NFlNN3pQaWlPNmd5dzB5eWE4WXl1MWJhd3pKajdZ?=
- =?utf-8?B?UUI0UnJqWlVuYXd1V2g2cDZFaFRibkc0MFlZMXpIZnJBaXJ4cElRaFZHMXRw?=
- =?utf-8?B?Z0poME9VVTJxbGFPOFE4c2krTU12MVloZ2FSYW0rNXA2alEyem5GTW9yK2hs?=
- =?utf-8?B?UmJlWDBSaldFNkZlNUJVTk95Wi9VUnRjNTNpaDFjVVQyMmF3NnBrYjRua0FQ?=
- =?utf-8?B?S1N5WDArNURDOWhudDF1NlNkaXQ0WXA0eE5HL01pazUrQUo5SWR6ZFE2K3o2?=
- =?utf-8?B?MGFoRGYrNnhEYytNZis3SnJuZ1BTQ0t6YTU4OWo2SUxRTnlrOHlwWHNZNkQ4?=
- =?utf-8?B?anR2Ni9UVUlOT2lpNG1uSmVYSDZ6akxxQVpGdE9TYkJCY2JIQS92akFOZHFC?=
- =?utf-8?B?cnhwNlkwa3JTME1yRTIzcHROZUVIRFI1Z3YzWHdiUC9HL2l4UHJWT2w1dkZ4?=
- =?utf-8?B?ZFpnbGVhUC85ZXd5NFlBcVRNbjEzdlc4cU45YXdEclpjSGdLZDRpVHlCd21s?=
- =?utf-8?B?UjRHSmJNaThkQlhpZ2RwVTlBUTMvdThHY1RiYWR4MWZ2NmVGTkNkdnJjWmhl?=
- =?utf-8?B?dERNZDNwTXlkME9RdWwvLzJsU1EzOHp5ajR6WDVNeEVHVWlidVZIQkdaM0Z6?=
- =?utf-8?B?Nlh3RGFDZTJ2V1pZN2UwZGdSNGtuRkZkZ3NDOXZ5WUMxQnRJU1JzMXh4QSs5?=
- =?utf-8?B?Y0Zpb3duM3VzcXRERFZIcEk4bWVYdlFKNFJCY2JmWG1JMy8zVzFQOUZGSFpE?=
- =?utf-8?B?aWlEcG1mUWJsTVJnVGV0YkVGdFNYUVh0SnVsUzNqTWd5NDlIcVR5aGhWcUl5?=
- =?utf-8?B?MDY2dkE1SFF1Wnl1MjdaMG85Q29VMGZsdFM1SnVqZFFidHFnQWswWkgxdlpI?=
- =?utf-8?B?cjFVb1dTQ1hwRXpXWjhhdGd1OGZnZk9SUk0rd0hJRmU0N3VpTTNnRUxCVm85?=
- =?utf-8?B?ek41SVRxTG1ZanRWc0JGM29yc2JQT3liWkdNMFJPUU9qNmk5R0w2b0tOR1Vx?=
- =?utf-8?B?TGYzRjFDVUJyb01XZDJrNkR5OTR2N1U4S0tDNGZtYWpGOWZhaHpFa3l2cGxH?=
- =?utf-8?B?YmswMWF3S1lraUZROGlHNmtidDJQbUNvb09ObWoxcmcwS3dSMW9lVE9zcWpI?=
- =?utf-8?B?MFQzdE9rUjYwcTNhRTVmbXU0NEtRYmEvajlCS2YySVdmcEdoU1pFUkJpR2FQ?=
- =?utf-8?B?czUzNmRxTUxhMWNlRTM0OTZMVUZabXhyUDJJMGxqTFRwNW1sY2MvcDYxTk52?=
- =?utf-8?B?RlNUMklPaWtnUDBxZjYwQnRacXcwN0pPNGE2UU1rS2hDeGk1cERZSFAvNEwy?=
- =?utf-8?B?ek9RT1UvWTlEMGJpWjdsYmdsRVJ3Mkp3cWRRVWVJbW8wOUlsRTMrMnE5N2dX?=
- =?utf-8?B?U3R6VEQ1Q2FJSnFrMGhuVysyZVN0L09PM3htTjlrZS92d1lRTDhmV1RKdUkz?=
- =?utf-8?B?Z2tDT3VNNUdwMjB4TngwV3hPLzZ3eEN4RWFGWi9xTGNYQ1FwU1gxK3Zjb0hC?=
- =?utf-8?B?bndZcC9oVStZNUFOV0JVcmlKVTZuSDM3Y09VRjZ5ZFA3c0R4ejVvV1RndDBH?=
- =?utf-8?B?ck0rTFBIbXhwY1FKZTkvU0dUc3RrdTdIQkdtWlRZdVZCVG0vSVVZTDcvSWZs?=
- =?utf-8?B?cE9YREZVRUhXRVJRL2p0YVh3UkRDa01IM3RSZHp4ZVdGY3dUdm42T3N0dVFW?=
- =?utf-8?B?d0hDaHRlWjBOdlhMcHhObHh1UUdTRC83NXljSnN3bm1KZmRubWp3Wm1HTVho?=
- =?utf-8?B?b2J6bTk4OEVnbUZsUmRoUWVtNWFZZERIazFQYmVpZ1FudW5tUjhvL3FRcGtk?=
- =?utf-8?B?QXpOTnRUTEROak1EVkJab0gvRk9ZVGp2d2ExSit2NmxWM0lwWXUveEprd3lP?=
- =?utf-8?B?bVNVSTF0dXpHemRwRTV1cFMzYWtNalEvTjQzQS96OUkva2JKS1c5ekltSkwy?=
- =?utf-8?B?ZnZFR1lrVnNET0tnaE9JOGhpZ3JhcVk3N3BtWm4rWEpPZmRxZVludGRBeXJG?=
- =?utf-8?B?NHZCRlhpaEtyYks2cFVEaExOOS9UOVZ2MzU1WGRBQjFxOUVIYWFwbDJvOHBM?=
- =?utf-8?B?TVlqbTMyUmMvcExNN1RKQmtYc0VsWHhSZDJvU1M4NkFadFgrM0t6cUF6cGp5?=
- =?utf-8?B?QUE9PQ==?=
+	=?utf-8?B?TVhNTTlJMnl1VUVXam9YalBIb2cvWWhHN1dCNlFweUx5SjFybGpDS1Ivclhl?=
+ =?utf-8?B?SDUrQitLYXdBQXdqNXRGaWorV0hTd1I4Ykkwdmg2S0xJT2VIUk0xdVFGKy9T?=
+ =?utf-8?B?cWZzSmwzNXQxRmxlVDM0bU93VjliRno2RDFiNkd2Nkh4N3FmQWtjZEJua05C?=
+ =?utf-8?B?dzdwVE12OFhqRGRJYnZ2YmlibUxRZ2JDSG5EK1MvZ2FQRDhtcHlGbTdtbE1p?=
+ =?utf-8?B?YXluWUVqc3kyY0hJaXFIRGNweWJSMnNJNFhoMzBMRGg4eFdxRnZrWTVIaXlk?=
+ =?utf-8?B?Rys3ZFBwMXVYNjJpUlBrZk4zUnplbGFWa1NpQlFKYkpSUUNQNUNwRVRCSlR3?=
+ =?utf-8?B?UXZSRmlJcWpla3JrcUhQc1hVYm9VRGoyRmE4U3RPK3ZNKytkV3EwN1pNRU5k?=
+ =?utf-8?B?NGU0bTNvYk1rajJPQi82M01nQUF1bmI5MXdTWUhPSVZBbFFVU1hkK0hmZDh2?=
+ =?utf-8?B?Z2xXbHYrclAveENVdk5vV3RzbVJoanhNZlV0QmtKcDY0emxDbFRHZFNNWFkx?=
+ =?utf-8?B?NFdHQkQ2Qmo5dWlGQ0pmRVBEdlo1T0NDbmlCeHRaaWwrL1NyWGhqWFlKaUgy?=
+ =?utf-8?B?RXlFVm9xM2UwWVh1R2pHTUNzM3I2QXhZcmRmU2x6Vi9tUm1YTFRnUk5lWFFV?=
+ =?utf-8?B?bzdxbzRDOFZhZlN4MFcxU2lFaHd4Y0dBaEQ2QU1YaXA3RVh2UzNWWG1aS3Zq?=
+ =?utf-8?B?dWVORFNFdFFpeENRK05ONCtPT015R1ZGb0hpNjVyYTV2Tk10WWZMMUhCWFk1?=
+ =?utf-8?B?ckNiN2liYVVrM1BBWjZZNkc1SnpzekZqVEFqTVM3R3kyMVMzUDREUDV2VVlq?=
+ =?utf-8?B?VElHUEpVNTRTcE1BMjB3VlhGbGhBSlVFNXdzdHhxUjEzMTcvNjZubHBSRkdC?=
+ =?utf-8?B?L29LNU9yRDFyMkZGK2w5VGNvWjl6N09CQTgzV2lsbCtpTW1mTk4wd1dvKzNp?=
+ =?utf-8?B?VjVWSTJSVjc5OVhGbnpmSTV0a0dsUUo5bVVQWmROc0pFZUpxZTBxOFJ5bjFm?=
+ =?utf-8?B?dkY0U3BITHhlTFpUeUUvN3NPQTB2NkJ3QVQ2YklWWlNnaXpFM3JsLzQveVhB?=
+ =?utf-8?B?T1pEV1BpTitsOTVab2M3dnZwQ0NnU3NoL05BTmlzNTFlOEhiK2dnSCt1NTdh?=
+ =?utf-8?B?Sm4rY2ZhTi9LUDF5SWd5WnNoUDNsQjdEbWZpTml5eHhvOVpLVEVQb3R5Uk1H?=
+ =?utf-8?B?akJ0QzVueSszaE1Ya0g4ZXF2b2RrOCtCZS9LTTZQOVZsb2FkTTZsRUF1Ym1y?=
+ =?utf-8?B?RUsxVVpLTjVZbDZEcGUvcEpQT2ZhRDdBQUcvT3pnVTVIbmU0RXBwYmZMdjRH?=
+ =?utf-8?B?VGFHSGZtMjZMNk42bC9IYTdxbUxaQ1pWUXFMejllSWdVT2VLWTlQQjBvUHpl?=
+ =?utf-8?B?VVFtOGUwZnAzcC93NDRHdURDSi9Bd1JSU3FRamNUZEJsVEZpRThUeDhvd014?=
+ =?utf-8?B?YWRVUytRUzhjTWMxbXhsbTQ3RWczZmhieEU4TmREeUg1TUoybXJLTWM2MlNL?=
+ =?utf-8?B?TGlIT1BvdC9LTmNEZnV6V21PcEVwRkJOYzJyV1JHZnFtWi8yN1Q3dklrYXJP?=
+ =?utf-8?B?SGJBUnpKazhTV0FDNFN1NkExZDF0QzVTTThWUmtaZExGRW80c1VEMFdPZ20r?=
+ =?utf-8?B?ZitMUUFqaTloRFdmNU1RR0FkaG82cjNKT0ZrRzJsVjNrSnNhS2xDeGQ0dm5S?=
+ =?utf-8?B?aTNhTGVzbjlLbUIyMUtHVGVJVyt6anFhU1E1L3FjaU5YWnlITVBDUk50eE5o?=
+ =?utf-8?B?cVV1Z09oZlgrZXQ5LytTSktSWjZTU0tSUG1jY0FVNFBRVTJrc2ZxTXFYS1A5?=
+ =?utf-8?B?cE5EaWtWbjhFREFPcFh2WVpCK0ovVzdpdWRTRzUvazAxOXhXTlN6Mm5jOG50?=
+ =?utf-8?B?bnhOc3c0OUpGUk56WmhpdUh5NnNHL2hMRTU4QXZKWkJ4OTFHUmIyQk1KTCs3?=
+ =?utf-8?B?dWszb1NJUytOWXdMU3BtMGJtNGZvdTdJTno1aU84VzY1YVE1WnlUU2dWWm5v?=
+ =?utf-8?B?aUZmb0lGc0ZkaWF2bndwVjlFZjMvdktIYnVrVjl1dmdvbk5FUXlid2xnNlBG?=
+ =?utf-8?B?YzlSRER6M1EzTTUxaExqcDhhUzg0Z3M2aUZ0L0JDZXIwRVg1NjN0Zmtta2ZI?=
+ =?utf-8?B?aWRubzRhUExSRVlSQ1JBVDFxQ0xkeFh0RVF4bFhPVktadit1ZGlvbUtJTm1S?=
+ =?utf-8?B?N3c9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d6d67ad-ecc3-4aef-79ef-08daeeea30ef
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba5920a7-ae55-4637-50e8-08daeeea6614
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 06:58:03.8510
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 06:59:32.9662
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d57jam+Xr6ESy0q3HVaWUa9nUW4li7fwk5avNK8D69taQVekvPYYi/XJ+GKYwIW1ubV3PKwmFTTX/+j/AO54Og==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3+CnsIwhfvrv03rHDhpKfvQ0495o7S6PEMyTfb5h2wLbcRERcBPqha4fuugwytcfSQkMmT/jjjTNgrI/Z65RLw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6017
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Extracted from upstream commit e2bd9c76c89fbe25df351fc5902cbbcca6a7d372.
+We can apply this unconditionally as the adjfine interface was already
+present in 5.10, the oldest supported kernel here.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
+ kernel/drivers/net/drivers/freescale/fec_ptp.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-Changes in v2:
- - there were more spots...
-
- kernel/cobalt/rtdm/device.c     | 4 ++++
- kernel/drivers/gpio/gpio-core.c | 4 ++++
- kernel/drivers/spi/spi-master.c | 4 ++++
- 3 files changed, 12 insertions(+)
-
-diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-index 12155157a6..33db21e63b 100644
---- a/kernel/cobalt/rtdm/device.c
-+++ b/kernel/cobalt/rtdm/device.c
-@@ -137,7 +137,11 @@ struct rtdm_device *__rtdm_get_protodev(int protocol_family, int socket_type)
-  * @{
+diff --git a/kernel/drivers/net/drivers/freescale/fec_ptp.c b/kernel/drivers/net/drivers/freescale/fec_ptp.c
+index d71eac7e19..e7ccf7d676 100644
+--- a/kernel/drivers/net/drivers/freescale/fec_ptp.c
++++ b/kernel/drivers/net/drivers/freescale/fec_ptp.c
+@@ -268,18 +268,21 @@ void fec_ptp_start_cyclecounter(struct net_device *ndev)
+ }
+ 
+ /**
+- * fec_ptp_adjfreq - adjust ptp cycle frequency
++ * fec_ptp_adjfine - adjust ptp cycle frequency
+  * @ptp: the ptp clock structure
+- * @ppb: parts per billion adjustment from base
++ * @scaled_ppm: scaled parts per million adjustment from base
+  *
+  * Adjust the frequency of the ptp cycle counter by the
+- * indicated ppb from the base frequency.
++ * indicated amount from the base frequency.
++ *
++ * Scaled parts per million is ppm with a 16-bit binary fractional field.
+  *
+  * Because ENET hardware frequency adjust is complex,
+  * using software method to do that.
   */
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,2,0)
-+static char *rtdm_devnode(const struct device *dev, umode_t *mode)
-+#else
- static char *rtdm_devnode(struct device *dev, umode_t *mode)
-+#endif
+-static int fec_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
++static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  {
- 	return kasprintf(GFP_KERNEL, "rtdm/%s", dev_name(dev));
- }
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index a054328f3c..e58bce1616 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -399,7 +399,11 @@ fail_name:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,2,0)
-+static char *gpio_pin_devnode(const struct device *dev, umode_t *mode)
-+#else
- static char *gpio_pin_devnode(struct device *dev, umode_t *mode)
-+#endif
- {
- 	return kasprintf(GFP_KERNEL, "rtdm/%s/%s",
- 			 dev->class->name,
-diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
-index cffeaf087d..ccc50eedee 100644
---- a/kernel/drivers/spi/spi-master.c
-+++ b/kernel/drivers/spi/spi-master.c
-@@ -338,7 +338,11 @@ static int spi_master_mmap(struct rtdm_fd *fd, struct vm_area_struct *vma)
- 	return 0;
- }
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,2,0)
-+static char *spi_slave_devnode(const struct device *dev, umode_t *mode)
-+#else
- static char *spi_slave_devnode(struct device *dev, umode_t *mode)
-+#endif
- {
- 	return kasprintf(GFP_KERNEL, "rtdm/%s/%s",
- 			 dev->class->name,
++	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+ 	unsigned long flags;
+ 	int neg_adj = 0;
+ 	u32 i, tmp;
+@@ -595,7 +598,7 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
+ 	fep->ptp_caps.n_per_out = 0;
+ 	fep->ptp_caps.n_pins = 0;
+ 	fep->ptp_caps.pps = 1;
+-	fep->ptp_caps.adjfreq = fec_ptp_adjfreq;
++	fep->ptp_caps.adjfine = fec_ptp_adjfine;
+ 	fep->ptp_caps.adjtime = fec_ptp_adjtime;
+ 	fep->ptp_caps.gettime64 = fec_ptp_gettime;
+ 	fep->ptp_caps.settime64 = fec_ptp_settime;
 -- 
 2.35.3
