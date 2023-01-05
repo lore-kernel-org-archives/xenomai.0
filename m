@@ -1,399 +1,297 @@
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2046.outbound.protection.outlook.com [40.107.249.46])
+Received: from mta-out-01.tin.it (mta-out-01.tin.it [217.169.118.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71C4FEB0F
-	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 18:06:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DxiFiMMlNtZ/25qkoxVVEfg7ZinMb8+oaHyi29ttmPbDKQHnIazZq4SN1Uz7upa30ksYOJFbYc94wksstWAk/7Vpd/egAfo0cacijuf5LEM8mp6KAgnhSxegPMP/o5Nt7ny4tezWe/XlWlXTMg3eBou2/OAyDvvwjeovnq9ECiUgnRt2E7kfIYKRVbJQbw3YhSicGsepnXN22N5mQHJ5o+zAicQyA+aoaRCn4c6sgrPTrsJitMoaqvXW7zUBGjm5LmoHFROAKulpGUKxjLtfquuJrKO1w1JHXSCWplKuK5YK5EVghpJfCZ8cU5W6NJhxU78eKh0sNsfJWqoL264vMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IgR/vc/HJfwHXDN4r35RAYgQU4eh28WtN9z7NaDKdyM=;
- b=VPTECBDR4F0s9lOE/XoZK7ahvMBnsAxqJxJ6edBGX3Hp0RxXPc3EA1krXbPhOU09k/q3+7fiY7GhMlORnH3codeWAcWpFC3wIlcKwnVh82dvNd9tJ+1lLaFUfa79cLiIYPaI+KL1bHgZk+/9LVxZPTT816WHsfmLhzCrwPZKeFC6BM8ICkd461ooW/TJ22j87sLOuTx2yvjNdncBlafCTCjwqk5Y7vZ55TStGhVPxXzquLlldmzDNn+bETGWKI213PJnQPd2NEDhnN6ZdgMDQKHApXFbsd6mbamzBNUaULPWaFjB8JNjdRvdeiG9rUAPp0AcGRtQQMr8UHw5I6fMcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IgR/vc/HJfwHXDN4r35RAYgQU4eh28WtN9z7NaDKdyM=;
- b=sGnLeS8+JMm/JfdzChhYW3V2SY8XoTAeOzKl4uKWojUhBayihhxbvN+z0+VWxWc9irVWB+jhl6vh0VD/5h3yu01ivRVKJWCL83QbDp5BlOMOFOsVP1qe8mIyZg1W2aLYmQaZkeoWlFfhlPG9lN5VC9R6rSs0guBpQJSBTz79X7Vfld4cnCYPtYIbrXOj4eUlQKBXLius5HbIBz1oQ/vEjta01LQNcueOYAeawUBdDNdiyMGpSuqFD8C/y/eyqRqhvtPE9xtttqcSCjYdmCxnJBJkdV0W8FKT2igrulrQT1NjKCKOQOa3E+UCD0ZqWrNtLlfkFQhcs1wT3XSiN1QGag==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB7120.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:44f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 18:06:40 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::2957:50e8:8ce6:124a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::2957:50e8:8ce6:124a%9]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
- 18:06:40 +0000
-Message-ID: <ee077ae5-b261-18cb-a903-8d268fa29883@siemens.com>
-Date: Thu, 5 Jan 2023 19:06:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [RFC PATCH] Update Isar to latest next version - sbuild
- integration
-Content-Language: en-US
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <20230105132733.3056171-1-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20230105132733.3056171-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0103.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a9::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E411310785
+	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 20:28:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tin.it; s=20211207; t=1672950488; 
+        bh=lIypGJps71KopCB4gjqshAuVSS61IrGyQMefhUn9+MY=;
+        h=Content-Type:Message-ID:Date:MIME-Version:Subject:From:To:References:Cc:In-Reply-To;
+        b=g5vohO3+kYsbeZSCgiOp+hGKOTTOTe9hrSZURdJmX4e2IyaCyO52IISzbO1t1/SMvxJF0pFtLsA1B/uVnl0rykPkc56hS4kB3urvOFmpOQQjbVnpwLhI+3puAhBvPRGL49kBo+Fl5tIhPzu4F2WgspJh8FlwZDRC3RAT80gcKPsSyth65M8mlfU7CHiUyYJw0HwQucPVcT01/cFjHyjb8i5Eg/pErwv7O1bCOnpILfHTi0uvM8SG3EbGEg4fTDENHIb5iAKcKLpnmUkmduBU78dQiPVHMm+8C8+JEzfVENIZZOnaCWtDpKSWakrB+m1+XGwPYLO66MoRAxb/+YnBPA==
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvhedrjeekgddugedtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuvffgnffgvefqoffkvfetnffktedpqfgfvfenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurheptgfkffggfgfuhffvfhevjgesmhdtreertdefjeenucfhrhhomhepfdforghurhhoucfurddfuceomhgruhdrshgrlhhvihesthhinhdrihhtqeenucggtffrrghtthgvrhhnpeeifefgvedtveeuleduheekueefudegkedthfdugfevleehjeetgfeiteetjeeghfenucffohhmrghinhepuggvnhigrdguvgenucfkphepkedvrdehvddrvddtuddrudekheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedrudejkedrfeelngdpihhnvghtpeekvddrhedvrddvtddurddukeehpdhmrghilhhfrhhomhepmhgruhdrshgrlhhvihesthhinhdrihhtpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepjhgrnhdrkhhishiikhgrseifvggsrdguvgdprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrvghvkffrpehhohhsthdqkedvqdehvddqvddtuddqudekhedrrhgvthgrihhlrdhtvghlvggtohhmihhtrghlihgrrdhithdprghuthhhpghushgvrhepmhgruhdrshgrlhhvihesthhinhdrihhtpdhgvghokffrpefkvfdpoffvtefjohhstheprhgr
+	iihorhdqohhuthdqthhinhdqtddu
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+Received: from [192.168.178.39] (82.52.201.185) by mta-out-01.tin.it (5.8.812) (authenticated as mau.salvi@tin.it)
+        id 6358E815065D3692; Thu, 5 Jan 2023 21:25:56 +0100
+Content-Type: multipart/mixed; boundary="------------rgtPP1LwVNuT7d0jo8mcbFSo"
+Message-ID: <1c345c13-bd40-b8b2-31c0-0fd87ab95162@tin.it>
+Date: Thu, 5 Jan 2023 21:25:55 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB7120:EE_
-X-MS-Office365-Filtering-Correlation-Id: 94e4b4d0-ecfe-4fe7-8e36-08daef479858
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	pEnjL+1hkw3oITJatnpiMCGe/6NRTbbl1Uy56LVQ7zLkDhqU9oFGXpvZj0bGZgBo4O1o5PeyulF1ojemKLZNMuX5ynJRhTHz+t8sfCwbV+kEHX5ZN7LjbSVlfcReaIZt5/i/I2Dz/WCtTAmpL4OXeUq53b1h+H1MreicCe/GZx10zkI2dfMZ0epk7ZRbjgHJXceI1Fp0b/7L93cgGnXmrXDCJHgXOf3gPqHBlb4RnD0Mtgs7UXrx11EaSa7Abi5wHj5/GuhwLLPVlsIOHcnwe6Eic3czao7VEbjJ+dSgTj9UBbU3C29hiK735dld6UCmXW//3stNztMTMejRnI1oFa3AwHpLCBCij7r1WzssyPI9joVu/fbpw6yAbxd1PZgSwuPtKrhuR3Wv1KenapcKTS1RgXyotHrZuEI/DcE0Rc0PX/izdzhpEXdnIBd2kMG3fEY1EjUAuqX2HVRiZKq8AklCeDRY2He7k2QGv9c/QtK2xk9gMx2JHzZQszpPfW+vStUPaN+7DeUVIX5sN3UgeFAtMyCTy7ri11YlZqK5gWO4LxZM7E4EA+OCVq/jk70AjTLLkpdFxY6JIZpMNjz/WjGT++k2CTE1aNhEgZn04AgCvb0L13ixWFRv5OticgfakV2rtq78aDDNnoDIZzf3EHjSR/Fkfxfsj4+SBMDcwLeCUWL+1X7CEKTIZsPK9ElrbrbWDfYO+TLfYxcnHjrarL7ygBZsPnNwNhHVbJfFZfz2YJ6G3FwqacQhkdIUMmbmmQeclTBBKmZTuHpUgXXx6A==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(451199015)(6486002)(6506007)(478600001)(6666004)(966005)(6512007)(26005)(316002)(2616005)(66899015)(53546011)(66476007)(66946007)(44832011)(8676002)(30864003)(66556008)(186003)(41300700001)(2906002)(5660300002)(15650500001)(83380400001)(8936002)(86362001)(31696002)(38100700002)(31686004)(36756003)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?S2pPTDJRUkswVERTblRPV1BGN2dmSzZGZ0crNW5VSnU5d0tPb0RwZDkyN1pY?=
- =?utf-8?B?Q2dWL3NqUXhIRC9CNlRjZWsvb3FURHlQMUg0ZzJHamV0NEJCZStiOVYyRnpl?=
- =?utf-8?B?eFB3Z0ZKcld1bGZSQStrZ2RDNFB4cDRyMnZGa3Z5VWU5b2NPajZyc2k2TmNm?=
- =?utf-8?B?ZTZXQnVnQ3k1WHVkNHltLy9zSjVyU1kvOTkwdndOS1o0eTdQQ3dwSHYyYlNS?=
- =?utf-8?B?MzJId0QzY0lqdzNpbzM1RkpTdDZlOEd1Z29XVVBMcXNKRERobDM5R1ZaSHk4?=
- =?utf-8?B?b2d0akdNaUtNVEdSYnhnQzl0bWxtcDhYaGl4Tnd1ajdwcFRkSmMrb2JWWXFa?=
- =?utf-8?B?MGtXaDVBQ0dmTkxIdXdJRTdjZjhGcmZyb1cxcGFraW1TMDBydTlBMlZuTkJT?=
- =?utf-8?B?Q1ZISndqK0RTb1RMdzRnbU1BY2FtV1NzV0R1S0svSCtnK1VDQkZvZXNQNEcw?=
- =?utf-8?B?RnA2MkdaMzRWK1pQeXh3RWdublhROFhBaktuMVhtMlVGL0RDMkRoaVRnNDAr?=
- =?utf-8?B?YjhJaDZhemtycDYxcGludS9valdSZFFIdFdzQ0ozS05tazFuaUo0UVp4Wll6?=
- =?utf-8?B?dTZOMkVVTXIvQzg0cGhmd3R4SFp4cEdiMnROeFNIM0xxaHhYeXZ4ZTdJTFJz?=
- =?utf-8?B?dTYvN1VESnNYNWNBWERLRnFDNG83T21CNXMyUHdEclpseGNHU2dkSVVMYXJu?=
- =?utf-8?B?TWtLajVaTmxscHM3SmxvRVRmQVQrM3lLL3pGSkk2TGpoTkdnaGZvL0hxelZE?=
- =?utf-8?B?QXVwbG9pUTBmeXYrL205ZHUydURpSzZTdllNdEV4WEtScm9qM0Q4WXhaVnlH?=
- =?utf-8?B?bXl3T3RXYjhkaVY3SkxGbE1McW1veFpiUkg0UlN2RWh1QU1rL04wYXZqcE9D?=
- =?utf-8?B?eVJULzZPUjlhK2xyTDJzekx3cDlDS3JPQVA5S2owVW12T2R4a2phWEV1SEJM?=
- =?utf-8?B?ZWtXa3BQb1VCYWtEMlM0U0FmZDhIUEZUeFdGTTlPUUV4VzAxbE9GbkFtam9z?=
- =?utf-8?B?M2RMQnpaeDJ1RXl2aGo2ZUJUbThrcXJzaDZkWmxZQUdGZGZ6MGNjK1A1V2hP?=
- =?utf-8?B?WVZLNkY1RWZVYXhLMmdJZ0NpRm53ZGpEQWZJYXpvcFIyc1lKVXVnY1FsbnFJ?=
- =?utf-8?B?bEMrRjR4MWFOOUZHWXlNQ3Z1bHpDenMwTEZWR1F4Ulc3MjE1SkFrc3lxRXNz?=
- =?utf-8?B?RmtSSlJFeVpOK3lyQ1liazE3aVQySWpwTnlYWms1VjJlSGJKZWc1ajZWOUta?=
- =?utf-8?B?NDVNRnBNL25jT25vNVBGb0ZrU04zYUI2V1R6WSs1Wm5rVDRzcUVCUC9DOXov?=
- =?utf-8?B?UGllT05FWVVKak9tQUFhT242ME0vZFlWSEs3NmFUaVZVQ3liTENQNXh5NWJY?=
- =?utf-8?B?c0szc2czd1d2aktjSHh1aVJqVitOcjAwL1BFc09ORDQrcUhFTmo3QUI1bzU4?=
- =?utf-8?B?Q1JaYVJsajdSNG9ha2FJZ2N5Q2FwdUUyZnAzREZvRGFzbGhmczFEYklEbnZT?=
- =?utf-8?B?VFlleGd6TWNYT0lYQ05oNFd4OGE1OHhrK0lOVngrZHczVVpUQlZFckkxcklB?=
- =?utf-8?B?cjlzbGp1eG9jejhwOHRKUkZXQ3RtcWd4cTFQRjFyOGNYNm14VmdjdmFybXo3?=
- =?utf-8?B?K2NncVBKQ1N4Wk42SXVUYmZpTUprSTA3bXFkSmhQSUhxNUxWNXVmaXNqUnZV?=
- =?utf-8?B?Z0RpSVQvSnhXWVNCQkJjdjBxMTh1RWZaM1VhcmtkaUV3YlQ4a3VYLzRUcDBa?=
- =?utf-8?B?KzZIbU0zWUZYWVJhaVdiQkE4ZGwwOXEyd0FwbGE5ZUtrTi9CZGtNbjFrRk9M?=
- =?utf-8?B?V2wvay85eXhzaUo4aGljQUg1WDdtb251V2M4a1l2RHUraEVvYVJucGdhQ0N2?=
- =?utf-8?B?aU1LZEF5b2x1b3duSU8yRWpKOU0xZ1dUbC8vYzhTekIrYVBWcXRhQllpOWh5?=
- =?utf-8?B?cmNsUkx6R3pKdDZtbnZzb3FVWXJ6ZWdqRm0wZm92M29FYS90Rkgzc1FodkRn?=
- =?utf-8?B?V2hTb3hpZXptM29HOTRiajhIZTU2UStwZmh2bmhUQkQ4UmFZS3c1czFhVE1r?=
- =?utf-8?B?cXFhVWlmM3A4UkFmTFgxV3Rocy9kU1NvMnlvRmxhRTgvOEV3eHVEejl1Y3VM?=
- =?utf-8?B?NkZxT2htQnRWYmZPK0hTcHhhQ3ViY1M3R3c0RytzVGtGYjRPdG5WdE5nbm5h?=
- =?utf-8?B?YWc9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94e4b4d0-ecfe-4fe7-8e36-08daef479858
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 18:06:40.4939
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: O21WNv/uowsg70nNwGM1FpAN8YR8q7LOsd/6aATP1sMasuQkHjAD8y7LWPGrQxMtDcnSQrsIjdotBUR73fQCIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7120
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: "failed to allocate main tcb" error
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@tin.it>
+To: xenomai@lists.linux.dev
+References: <9e3a4efe-f967-09c0-e8bb-df8d7e8140a9@tin.it>
+ <198d2e2a-eb01-0822-67ff-895e8c2f1856@web.de>
+ <f3167be0-db2a-2676-4866-d2690172a412@tin.it>
+ <fa74110f-f02a-3ef3-4690-bd6690700ee6@web.de>
+ <d33591ec-f2be-3898-b87e-904d7da77bf1@tin.it>
+ <7c281c36-f7d9-71f1-2346-cb00ac5334d7@web.de>
+ <7f782cbd-7353-7573-7768-e61a2c885c88@tin.it>
+ <30fdc0c6-d807-c062-2e98-c63f3a9d55b7@web.de>
+ <641ab944-2cda-0f4b-00bd-73bd553495bb@tin.it>
+ <ab51d02f-3403-7057-4403-f704ae278e74@web.de>
+ <b8a7ea5c-1412-1bc6-8684-e8d2eacb2274@tin.it>
+Cc: Jan Kiszka <jan.kiszka@web.de>
+In-Reply-To: <b8a7ea5c-1412-1bc6-8684-e8d2eacb2274@tin.it>
 
-On 05.01.23 14:27, Florian Bezdeka wrote:
-> Updating to latest Isar will allow us to use Debian bookworm as base
-> distribution. Bookworm ships a recent glibc which will help to enable
-> y2038 testing in the CI environment.
+This is a multi-part message in MIME format.
+--------------rgtPP1LwVNuT7d0jo8mcbFSo
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Il 22/12/22 16:42, Mauro S. ha scritto:
+> Il 22/12/22 15:11, Jan Kiszka ha scritto:
+>> On 22.12.22 14:57, Mauro S. wrote:
+>>> Il 21/12/22 17:04, Jan Kiszka ha scritto:
+>>>> On 21.12.22 16:25, Mauro S. wrote:
+>>>>> Il 21/12/22 16:11, Jan Kiszka ha scritto:
+>>>>>> On 21.12.22 15:57, Mauro S. wrote:
+>>>>>>> Il 21/12/22 15:48, Jan Kiszka ha scritto:
+>>>>>>>> On 21.12.22 15:45, Mauro S. wrote:
+>>>>>>>>> Il 21/12/22 15:29, Jan Kiszka ha scritto:
+>>>>>>>>>> On 21.12.22 10:05, Mauro S. wrote:
+>>>>>>>>>>> Hi all,
+>>>>>>>>>>>
+>>>>>>>>>>> I'm using Xenomai 3.1.2 on a x86-64 Atom processor, with
+>>>>>>>>>>> Copperplate and
+>>>>>>>>>>> pshared enabled. Linux kernel is 5.4.181.
+>>>>>>>>>>>
+>>>>>>>>>>> I have a main application, and another service application that
+>>>>>>>>>>> connects
+>>>>>>>>>>> to the main one using shared session.
+>>>>>>>>>>>
+>>>>>>>>>>> After some time the main application is running, the service
+>>>>>>>>>>> application
+>>>>>>>>>>> stops to connect to the main one with the error
+>>>>>>>>>>>
+>>>>>>>>>>>          0"004.166| BUG in main_overlay(): [main] failed to
+>>>>>>>>>>> allocate main
+>>>>>>>>>>> tcb
+>>>>>>>>>>>
+>>>>>>>>>>> Digging a bit in the code, I found that the failing function is
+>>>>>>>>>>> the
+>>>>>>>>>>> xnmalloc() call in
+>>>>>>>>>>> lib/copperplate/threadobj.c:__threadobj_alloc().
+>>>>>>>>>>> If I understood correctly, this function tries to allocate some
+>>>>>>>>>>> space
+>>>>>>>>>>> from the shared heap. But the shared heap is almost free
+>>>>>>>>>>>
+>>>>>>>>>>>        # cat /proc/xenomai/heap
+>>>>>>>>>>>          TOTAL      FREE  NAME
+>>>>>>>>>>>        4194304   3616512  system heap
+>>>>>>>>>>>        1048576   1041776  shared heap
+>>>>>>>>>>>        1048576   1048480  private heap[14505]
+>>>>>>>>>>>          36864     19968  xddp-pool@0
+>>>>>>>>>>>          24576      7680  xddp-pool@10
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> This is the code that triggers the message:
+>>>>>>>>>>
+>>>>>>>>>>              if (pthread_key_create(&threadobj_tskey,
+>>>>>>>>>> finalize_thread))
+>>>>>>>>>>                      early_panic("failed to allocate TSD key");
+>>>>>>>>>>
+>>>>>>>>>> pthread_key_create has nothing to do with xnmalloc. That's a 
+>>>>>>>>>> plain
+>>>>>>>>>> glibc
+>>>>>>>>>> service, and its documentation says:
+>>>>>>>>>>
+>>>>>>>>>>             The pthread_key_create() function shall fail if:
+>>>>>>>>>>
+>>>>>>>>>>             EAGAIN The system lacked the necessary resources to
+>>>>>>>>>> create
+>>>>>>>>>> another thread-specific data key, or the system-imposed limit on
+>>>>>>>>>> the
+>>>>>>>>>> total number of keys per process {PTHREAD_KEYS_MAX} has been
+>>>>>>>>>> exceeded.
+>>>>>>>>>>
+>>>>>>>>>>             ENOMEM Insufficient memory exists to create the key.
+>>>>>>>>>>
+>>>>>>>>>> Already checked THOSE conditions? Are you possibly creating 
+>>>>>>>>>> threads
+>>>>>>>>>> without cleaning them up completely?
+>>>>>>>>>>
+>>>>>>>>>> Jan
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Hi Jan,
+>>>>>>>>>
+>>>>>>>>> thank you.
+>>>>>>>>> Sorry but I can't figure out how the code you specified (that 
+>>>>>>>>> panics
+>>>>>>>>> generating the message "failed to allocate TSD key") could
+>>>>>>>>> trigger the
+>>>>>>>>> "failed to allocate main tcb" message.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> https://source.denx.de/Xenomai/xenomai/-/blob/v3.1.2/lib/copperplate/threadobj.c#L86
+>>>>>>>>
+>>>>>>>> That's the only line in Xenomai which raises this message. If you
+>>>>>>>> don't
+>>>>>>>> believe it triggered it, start your application in gdb and put a
+>>>>>>>> breakpoint on that panic line.
+>>>>>>>>
+>>>>>>>> Jan
+>>>>>>>>
+>>>>>>>
+>>>>>>> I believe thet this code triggers the message "failed to allocate 
+>>>>>>> TSD
+>>>>>>> key".
+>>>>>>>
+>>>>>>> But I get the message "failed to allocate main tcb", that is in the
+>>>>>>> same
+>>>>>>> file, but at the line #1790.
+>>>>>>>
+>>>>>>
+>>>>>> Ah, sorry, you are right. Didn't read careful enough.
+>>>>>
+>>>>> Ok, no problem :-)
+>>>>>
+>>>>>>
+>>>>>> Could the heap be fragmented after lots and lots of
+>>>>>> allocations/releases? But what is also a bit strange is that the main
+>>>>>> thread is continuously mapped. Are you restarting the main 
+>>>>>> application
+>>>>>> for every request?
+>>>>>>
+>>>>>
+>>>>> The main application is started once and keeps running, but internally
+>>>>> creates and destroys many Xenomay tasks.
+>>>>>
+>>>>> During the main application lifetime (that can be long), the service
+>>>>> application reads some statistics from the main application, prints
+>>>>> these statistics and exits. Then, the main application is never
+>>>>> restarted, and the service application is restarted for every request,
+>>>>> that happens every 5 seconds (but the error seems not dependent on the
+>>>>> service application restart period length).
+>>>>
+>>>> Ok, so the service applications are mapping its main thread against
+>>>> Xenomai, and that as pshared apps using the shared heap.
+>>>>
+>>>
+>>> Yes, exactly.
+>>>
+>>>>>
+>>>>> On another device I have a similar (but not same) main application, 
+>>>>> and
+>>>>> the same service application, and this problem does not show.
+>>>>>
+>>>>> Then, the problem should be located in the main application, but I 
+>>>>> can't
+>>>>> figure out where the problem could be.
+>>>>
+>>>> As the allocation happens against a shared, global heap, the issue may
+>>>> be global as well. You could either try to trace the allocation/release
+>>>> pattern against the shared heap and look for anomalies or even factor
+>>>> out that pattern into a stand-alone reproducer.
+>>>
+>>> Thanks for your suggestions. Trace the allocation/release pattern would
+>>> be a huge work for this application, then I started with a simple test:
+>>> enlarge the heap sizes.
+>>> Before I had a 4096kb system heap, 1024kb shared heap, 1024kb private 
+>>> heap.
+>>> Now I have a 8192kb system heap, 4096kb shared heap, 2048kb private 
+>>> heap.
+>>> Nothing, the error happens again. Could this be a clue that this is not
+>>> a fragmentation problem and could be a heap corruption problem?
+>>
+>> Not impossible. The control structures should be heading the allocated
+>> memory blocks, thus could get corrupted if some other user overwrites
+>> its assigned block.
+>>
+>>>
+>>> During tests, I also noted that when the error starts to happen, no
+>>> tasks in main applications are created/deleted. But there are some
+>>> queues and pipes communications active, then the heap could be used by
+>>> them.
+>>
+>> All objects that could now be used across processes are allocated on the
+>> shared heap if pshared is on. So we are not only looking at task objects
+>> and their life cycles.
+>>
+>>>
+>>> I will continue investigating on this problem. If you have some other
+>>> ideas/hints, I'll be glad to hear them.
+>>
+>> Try reducing factors that could contribute to it, e.g. the types of
+>> objects used. That may help narrowing down the actual trigger.
+>>
+>> Jan
+>>
 > 
-> This is the first version of Isar with sbuild enabled, so we can't use
-> the tricks around ${BUILDCHROOT_DIR} anymore.
-> 
-> xenomai: The scripts/bootstrap call is already part of the upstream
-> debian/rules file, so we do not have to call it again.
-> 
-> linux-xenomai: Moving the prepare-kernel and patch-kernel step into
-> debian/rules requires patching the debian/rules file deployed by the
-> Isar linux-custom.inc helper.
-> 
-> The added Isar patches can be removed on next Isar update. The problem
-> was that the rootfs is no longer added to /etc/fstab. As a result the
-> rootfs was mounted read-only failing LAVA tests. As the oe -> isar ->
-> xenomai-images transition will need some time the patches are added here
-> as well.
+> Thanks Jan, I will do some tests and (hopefully) come back with results.
 
-I think we should wait for Isar and/or OE to react on those patches
-before moving the Isar revision forward. But we can already start
-refactoring the problematic recipes as that should be independent of the
-update. Comments on that below.
+Hi Jan,
 
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> 
-> Some notes:
->   - One step closer to y2038-safe builds
->   - The upstraming process for necessary Isar patches started already
->     Might take some time until patches hit Isar next
->   - Internal CI did not report any issues
->   - Comments (especially on the sbuild stuff) are welcome
-> 
->  kas.yml                                       | 11 +++-
->  ...age-remove-entry-from-fstab-template.patch | 28 ++++++++++
->  ...2-wic-replace-existing-fstab-entries.patch | 52 +++++++++++++++++++
->  recipes-kernel/linux/files/debian_rules.gdiff | 14 +++++
->  recipes-kernel/linux/linux-xenomai.inc        | 35 +++++--------
->  recipes-xenomai/xenomai/xenomai.inc           |  7 ---
->  6 files changed, 116 insertions(+), 31 deletions(-)
->  create mode 100644 patches/isar/0001-Revert-image-remove-entry-from-fstab-template.patch
->  create mode 100644 patches/isar/0002-wic-replace-existing-fstab-entries.patch
->  create mode 100644 recipes-kernel/linux/files/debian_rules.gdiff
-> 
-> diff --git a/kas.yml b/kas.yml
-> index f8790e5..b6e5133 100644
-> --- a/kas.yml
-> +++ b/kas.yml
-> @@ -1,7 +1,7 @@
->  #
->  # Xenomai Real-Time System
->  #
-> -# Copyright (c) Siemens AG, 2018-2020
-> +# Copyright (c) Siemens AG, 2018-2023
->  #
->  # Authors:
->  #  Jan Kiszka <jan.kiszka@siemens.com>
-> @@ -22,7 +22,14 @@ repos:
->  
->    isar:
->      url: https://github.com/ilbers/isar.git
-> -    refspec: 213b8f62fa74e87321f927fb6b4ed9db93e5cb37
-> +    refspec: 8530a94bdc8919fadccad13e6061832d2f2c1fcc
-> +    patches:
-> +      "0001":
-> +        repo: xenomai
-> +        path: patches/isar/0001-Revert-image-remove-entry-from-fstab-template.patch
-> +      "0002":
-> +        repo: xenomai
-> +        path: patches/isar/0002-wic-replace-existing-fstab-entries.patch
->      layers:
->        meta:
->  
-> diff --git a/patches/isar/0001-Revert-image-remove-entry-from-fstab-template.patch b/patches/isar/0001-Revert-image-remove-entry-from-fstab-template.patch
-> new file mode 100644
-> index 0000000..4354d32
-> --- /dev/null
-> +++ b/patches/isar/0001-Revert-image-remove-entry-from-fstab-template.patch
-> @@ -0,0 +1,28 @@
-> +From 5c9df8b8ac0691c2c4b11deaf763999bb7a136e6 Mon Sep 17 00:00:00 2001
-> +From: Felix Moessbauer <felix.moessbauer@siemens.com>
-> +Date: Thu, 5 Jan 2023 08:45:02 +0000
-> +Subject: [PATCH 1/2] Revert "image: remove / entry from fstab template"
-> +
-> +This reverts commit fc4f004eb67237d9d09b1ffad0de1a19217fa94a.
-> +
-> +Signed-off-by: Felix Moessbauer <felix.moessbauer@siemens.com>
-> +Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> +---
-> + meta/classes/image.bbclass | 1 +
-> + 1 file changed, 1 insertion(+)
-> +
-> +diff --git a/meta/classes/image.bbclass b/meta/classes/image.bbclass
-> +index d8d605d..ccff810 100644
-> +--- a/meta/classes/image.bbclass
-> ++++ b/meta/classes/image.bbclass
-> +@@ -327,6 +327,7 @@ image_configure_fstab[weight] = "2"
-> + image_configure_fstab() {
-> +     sudo tee '${IMAGE_ROOTFS}/etc/fstab' << EOF
-> + # Begin /etc/fstab
-> ++/dev/root	/		auto		defaults		0	0
-> + proc		/proc		proc		nosuid,noexec,nodev	0	0
-> + sysfs		/sys		sysfs		nosuid,noexec,nodev	0	0
-> + devpts		/dev/pts	devpts		gid=5,mode=620		0	0
-> +-- 
-> +2.39.0
-> +
-> diff --git a/patches/isar/0002-wic-replace-existing-fstab-entries.patch b/patches/isar/0002-wic-replace-existing-fstab-entries.patch
-> new file mode 100644
-> index 0000000..63e852b
-> --- /dev/null
-> +++ b/patches/isar/0002-wic-replace-existing-fstab-entries.patch
-> @@ -0,0 +1,52 @@
-> +From d162b4cfe3c8cce723372519bedb9d861e305135 Mon Sep 17 00:00:00 2001
-> +From: Felix Moessbauer <felix.moessbauer@siemens.com>
-> +Date: Thu, 5 Jan 2023 08:45:03 +0000
-> +Subject: [PATCH 2/2] wic: replace existing fstab entries
-> +
-> +This patch extend the imager direct class to check if the mountpoint of
-> +an to-be-added entry in the fstab is already there. If it is, the old
-> +entry is removed and the new entry is appended.
-> +
-> +This solves issues with duplicated entries which coming from the rootfs
-> +itself. One example where this happens is when generating images for
-> +both direct kernel boot and EFI. In this case, the rootfs mountpoint
-> +needs to be in the fstab of the rootfs and needs to be replaced in WIC.
-> +
-> +Signed-off-by: Felix Moessbauer <felix.moessbauer@siemens.com>
-> +Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> +---
-> + scripts/lib/wic/plugins/imager/direct.py | 11 ++++++++++-
-> + 1 file changed, 10 insertions(+), 1 deletion(-)
-> +
-> +diff --git a/scripts/lib/wic/plugins/imager/direct.py b/scripts/lib/wic/plugins/imager/direct.py
-> +index c44159b..7f8733a 100644
-> +--- a/scripts/lib/wic/plugins/imager/direct.py
-> ++++ b/scripts/lib/wic/plugins/imager/direct.py
-> +@@ -104,6 +104,14 @@ class DirectPlugin(ImagerPlugin):
-> + 
-> +     def update_fstab(self, image_rootfs):
-> +         """Assume partition order same as in wks"""
-> ++
-> ++        # return the mountpoint from an fstab entry
-> ++        def _get_mountpoint(line):
-> ++            parts = line.split()
-> ++            if line.startswith('#') or len(parts) != 6:
-> ++                return None
-> ++            return parts[1]
-> ++
-> +         if not image_rootfs:
-> +             return
-> + 
-> +@@ -141,7 +149,8 @@ class DirectPlugin(ImagerPlugin):
-> +             passno = part.fspassno if part.fspassno else "0"
-> +             line = "\t".join([device_name, part.mountpoint, part.fstype,
-> +                               opts, "0", passno]) + "\n"
-> +-
-> ++            # if this mountpoint is already in the fstab, replace it
-> ++            fstab_lines = [item for item in fstab_lines if _get_mountpoint(item) != part.mountpoint]
-> +             fstab_lines.append(line)
-> +             updated = True
-> + 
-> +-- 
-> +2.39.0
-> +
-> diff --git a/recipes-kernel/linux/files/debian_rules.gdiff b/recipes-kernel/linux/files/debian_rules.gdiff
-> new file mode 100644
-> index 0000000..477e581
-> --- /dev/null
-> +++ b/recipes-kernel/linux/files/debian_rules.gdiff
+sorry for the delay.
 
-Is .gdiff some specific file extension? Or is it just to avoid
-interpretation by the do_patch job? That could also be achieved by
-"...;apply=no".
+Attached there is the code of two small test programs able to reproduce 
+the problem. There is also the script to start them.
 
-> @@ -0,0 +1,14 @@
-> +diff --git a/meta/recipes-kernel/linux/files/debian/rules.tmpl b/meta/recipes-kernel/linux/files/debian/rules.tmpl
-> +index 8063c49..5ce2c5f 100755
-> +--- a/meta/recipes-kernel/linux/files/debian/rules.tmpl
-> ++++ b/meta/recipes-kernel/linux/files/debian/rules.tmpl
-> +@@ -24,6 +24,9 @@ override_dh_auto_clean:
-> + 	$(isar_env) && bash $(deb_top_dir)/isar/clean
-> + 
-> + override_dh_auto_configure:
-> ++	/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
-> ++		--linux=$(S) \
-> ++		--arch=${KERNEL_ARCH}
-> + 	$(isar_env) && bash $(deb_top_dir)/isar/configure
-> + 
-> + override_dh_auto_build:
-> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-> index 7dba96e..eed372d 100644
-> --- a/recipes-kernel/linux/linux-xenomai.inc
-> +++ b/recipes-kernel/linux/linux-xenomai.inc
-> @@ -19,6 +19,7 @@ XENOMAI_DEBUG ?= "0"
->  
->  SRC_URI += "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_DEFCONFIG') == d.getVar('XENOMAI_DEFCONFIG') else ''}"
->  SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBUG') == '0' else ''}"
-> +SRC_URI += "file://debian_rules.gdiff"
->  
->  DEPENDS += "xenomai-kernel-source"
->  KBUILD_DEPENDS += "xenomai-kernel-source:native"
-> @@ -32,26 +33,16 @@ def get_commit(d):
->  LINUX_COMMIT ?= "${@get_commit(d)}"
->  
->  dpkg_runbuild_prepend() {
-> -	case ${DISTRO_ARCH} in
-> -	armhf)
-> -		ARCH=arm
-> -		;;
-> -	arm64)
-> -		ARCH=arm64
-> -		;;
-> -	amd64|i386)
-> -		ARCH=x86
-> -		;;
-> -	*)
-> -		bberror "Unsupported architecture ${DISTRO_ARCH}"
-> -		exit 1
-> -	esac
-> -	bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
-> -			 ${PV} ${LINUX_COMMIT})
-> -
-> -	${BUILDCHROOT_DIR}/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
-> -		--linux=${BUILDCHROOT_DIR}/${PP}/${PPS} --arch=$ARCH \
-> -		--outpatch=${WORKDIR}/xenomai-kernel.patch
-> -	patch -d ${BUILDCHROOT_DIR}/${PP}/${PPS} \
-> -		-p1 -i ${WORKDIR}/xenomai-kernel.patch
-> +    bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
-> +                     ${PV} ${LINUX_COMMIT})
->  }
-> +
-> +do_patch_debian_rules() {
-> +    # debian/rules is a template deployed by the the linux-custom helper in
-> +    # Isar. The template needs some patching before it is processed by the
-> +    # templating engine. We have to feed in the xenomai specific
-> +    # "prepare-kernel" and "patch kernel" steps.
-> +    # Note: We can't use the .patch or .diff file ending here (bitbake magic)
-> +    patch -d ${WORKDIR} -p5 -i ${WORKDIR}/debian_rules.gdiff
+Briefly, the "xeno-test-tcb-allocate-mainproc" application creates two 
+rt buffers (request and response) and waits indefinitely on the request 
+buffer. On the request buffer, the "xeno-test-tcb-allocate-secproc" 
+writes a request and waits for the response on the response buffer. When 
+the request is received by the "mainproc", the "mainproc" sends a 
+response with an incremental counter on the response buffer, and returns 
+to wait requests. "secproc" receives the response, prints its content 
+and exits.
 
-I wonder if we could also come of with a pattern that uses the original
-rules of Isar, including it, just adding a prerequisit to
-override_dh_auto_configure:
+"secproc" is launched every 0.5 seconds. After about four minutes 
+running, the "secproc" starts to fail at launch with the error
 
-include isar-rules
+    BUG in main_overlay(): [main] failed to allocate main tcb
 
-override_dh_auto_configure: prepare-kernel
-
-prepare_kernel:
-	...
-
-.PHONY: prepare_kernel
-
-> +}
-> +addtask patch_debian_rules after do_unpack before do_transform_template
-> \ No newline at end of file
-> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-> index b874a4a..4994533 100644
-> --- a/recipes-xenomai/xenomai/xenomai.inc
-> +++ b/recipes-xenomai/xenomai/xenomai.inc
-> @@ -34,10 +34,3 @@ do_prepare_build() {
->      rm -f ${S}/debian/source/format
->  }
->  
-> -dpkg_runbuild_prepend() {
-> -    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
-> -                     ${PV} ${COMMIT})
-
-We lost this part now.
-
-> -
-> -    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
-> -        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
-> -}
-
-Jan
+Thanks in advance, regards
 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Mauro S.
 
+--------------rgtPP1LwVNuT7d0jo8mcbFSo
+Content-Type: application/gzip; name="tcb_allocate_test.tar.gz"
+Content-Disposition: attachment; filename="tcb_allocate_test.tar.gz"
+Content-Transfer-Encoding: base64
+
+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
+KbMkG5aylKUsZSlLWcpS3kr+AVQnxf8AKAAA
+
+--------------rgtPP1LwVNuT7d0jo8mcbFSo--
