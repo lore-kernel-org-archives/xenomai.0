@@ -1,75 +1,63 @@
-Received: from m1545.mail.126.com (m1545.mail.126.com [220.181.15.45])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0900580F
-	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 07:22:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=BIeGjMr6VhLVilM78lExulYpuLNXohttGKaLBMdcBOE=; b=R
-	3HsmtzMpUSztLRD7Chb+J6qLHxZnKXJ/Qls9fhkpHiXFVgxqZwfo4kXS30Y4MoYZ
-	eizyQMCgNcDroaf/FBiBciZkoxA8A98x9dTyH+jInjhkdGrcqZfwCzo9gejaAjjg
-	2eG8dkX3MEOcMGIKC6AeoB71/8SAtYtQ9pza27oFlU=
-Received: from yxianyao$126.com ( [103.161.254.5] ) by ajax-webmail-wmsvr45
- (Coremail) ; Thu, 5 Jan 2023 14:52:18 +0800 (CST)
-X-Originating-IP: [103.161.254.5]
-Date: Thu, 5 Jan 2023 14:52:18 +0800 (CST)
-From: "Yxian Yao" <yxianyao@126.com>
-To: xenomai@lists.linux.dev
-Subject: xenomai_init does not return
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20220708(c4627114)
- Copyright (c) 2002-2023 www.mailtech.cn 126com
-X-NTES-SC: AL_QuycAPWbvk0o7iGaYekWmEsQju45WMW0uPwu3YZTOJs0gSnS1iktXG9NAnzy3sWOMQO0oAiUeR9v5M1IQ4VZVKgrndV7CujlFHR4ZD84wS1k
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BF580F
+	for <xenomai@lists.linux.dev>; Thu,  5 Jan 2023 07:54:01 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 61337240008;
+	Thu,  5 Jan 2023 07:53:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1672905234;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XUkMnJogoSGnApVXvgPMppicx6W6ZRbYPMyaaEmE+Rs=;
+	b=WaD7EWcAKXff4/JXamT79MgFQSJDnp3WQvo0a4oOP1WKUUIwC80o/yRxmF97JVR9lw9Fml
+	/4P/cERVq+f3Orxk2SbRwjbijuhJ4waxffRs5DVuZgGzdqDpRwRO3ybaspnJScOHjCMSVr
+	G7Woi/jmLTrYziKexO4VC224ex2kgrm+aZ+AyccR9TM96peTddD/c09pnOWU+K2/8mUk1i
+	XKp83poGAA917yDZsWxtyuHaFS4tGGxKT93NO55cfNUlAXNZgatAHjCs1Gi/+AHYoPkNp9
+	gQUDbGtv43jvigGUR7xRb3yRWXEC43Ui4wT5ss5SlSm2ZE9h10Vgi+urO8OIMA==
+References: <PH1P110MB105032AE6426F4599E6A080CE2F59@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Bryan Butler
+ <Bryan.Butler@kratosdefense.com>
+Subject: Re: Conflicting EVL Processing Loops
+Date: Thu, 05 Jan 2023 08:49:32 +0100
+In-reply-to: <PH1P110MB105032AE6426F4599E6A080CE2F59@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87k021s9gw.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <27c815f8.42c9.18580b3b14e.Coremail.yxianyao@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:LcqowADH1DGjc7ZjmTMBAA--.11840W
-X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbiGAPts1pEI6WzyQAAsn
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain
 
-CkhpLAoKVGhlIGZvbGxvd2luZyBjb2RlKHhlbm9tYWlfdGVzdF9tYWluLmMpIGlzIGNvbXBpbGVk
-IGFuZCBydW4sIHRoZSB4ZW5vbWFpX2luaXQgZG9lcyBub3QgcmV0dXJuLgpQbGVhc2UgZ2l2ZSBt
-ZSBzb21lIGhpbnRzIQpUaGFua3MgYSBsb3QuCgoKI2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRl
-IDxzdGRhcmcuaD4KI2luY2x1ZGUgPHN0cmluZy5oPgojaW5jbHVkZSA8c3RkbGliLmg+CgojaW5j
-bHVkZSA8eGVub21haS9pbml0Lmg+CiNpbmNsdWRlIDxhbGNoZW15L3Rhc2suaD4KCmludCBtYWlu
-KGludCBhZ3JjLCBjaGFyICphcmd2W10pCnsKICAgIHByaW50ZigiRW50ZXIgbWFpbi4uLlxuIik7
-CgkKwqAgwqAgaW50IGR1bW15X2FyZ2MgPSA1OwrCoCDCoCBjaGFyIGR1bW15X2FyZ3YwW10gPSAi
-ZHVtbXkiOwrCoCDCoCBjaGFyIGR1bW15X2FyZ3YxW10gPSAiLS1zZXNzaW9uIjsKwqAgwqAgY2hh
-ciBkdW1teV9hcmd2MltdID0gInhlbm9fdGVzdCI7CsKgIMKgIGNoYXIgZHVtbXlfYXJndjNbXSA9
-ICItLW1lbS1wb29sLXNpemUiOwrCoCDCoCBjaGFyIGR1bW15X2FyZ3Y0WzIwXSA9ICIyNTZNIjsK
-wqAgwqAgY2hhciAqZHVtbXlfYXJndltdID0ge2R1bW15X2FyZ3YwLCBkdW1teV9hcmd2MSwgZHVt
-bXlfYXJndjIsIGR1bW15X2FyZ3YzLCBkdW1teV9hcmd2NCwgTlVMTH07CsKgIMKgIGNoYXIgKmNv
-bnN0KiBjb25zdF9kdW1teV9hcmd2ID0gZHVtbXlfYXJndjsKwqAgwqAgeGVub21haV9pbml0KCZk
-dW1teV9hcmdjLCAmY29uc3RfZHVtbXlfYXJndik7CgogICAgcHJpbnRmKCJFeGl0IG1haW4uLi5c
-biIpOwoKICAgIHJldHVybiAwOwp9CgoKcm9vdEBkZWJpYW46L2hvbWUvdWloL3hlbm9tYWlfdGVz
-dC9zcmMjIG1ha2UgY2xlYW47bWFrZQpybSAtZiB4ZW5vbWFpX3Rlc3QgIHhlbm9tYWlfdGVzdF9t
-YWluLm8KZ2NjIC1JL3Vzci9pbmNsdWRlL3hlbm9tYWkvY29iYWx0IC1JL3Vzci9pbmNsdWRlL3hl
-bm9tYWkgLURfR05VX1NPVVJDRSAtRF9SRUVOVFJBTlQgLWZhc3luY2hyb25vdXMtdW53aW5kLXRh
-YmxlcyAtRF9fQ09CQUxUX18gLUkvdXNyL2luY2x1ZGUveGVub21haS9hbGNoZW15IC1nICAgLWMg
-LW8geGVub21haV90ZXN0X21haW4ubyB4ZW5vbWFpX3Rlc3RfbWFpbi5jCmdjYyAtbyB4ZW5vbWFp
-X3Rlc3QgeGVub21haV90ZXN0X21haW4ubyAtV2wsLS1uby1hcy1uZWVkZWQgLVdsLEAvdXNyL2xp
-Yi9tb2RlY2hrLndyYXBwZXJzIC1sYWxjaGVteSAtbGNvcHBlcnBsYXRlICAgLUwvdXNyL2xpYiAt
-bGNvYmFsdCAtbG1vZGVjaGsgLWxwdGhyZWFkIC1scnQgICAgLWxmdXNlIC1wdGhyZWFkCnJvb3RA
-ZGViaWFuOi9ob21lL3VpaC94ZW5vbWFpX3Rlc3Qvc3JjIyAKcm9vdEBkZWJpYW46L2hvbWUvdWlo
-L3hlbm9tYWlfdGVzdC9zcmMjIHhlbm8tY29uZmlnIC0taW5mbwpYZW5vbWFpIHZlcnNpb246IFhl
-bm9tYWkvY29iYWx0IHYzLjEuMQpMaW51eCBkZWJpYW4gNS40LjEzMy1pcGlwZS02LXhlbm9tYWkt
-My4xLjEtMjAyMjEyMjggIzEgU01QIFBSRUVNUFQgV2VkIERlYyAyOCAwNDozNDowNCBFU1QgMjAy
-MiB4ODZfNjQgR05VL0xpbnV4Cktlcm5lbCBwYXJhbWV0ZXJzOiBCT09UX0lNQUdFPS9ib290L3Zt
-bGludXotNS40LjEzMy1pcGlwZS02LXhlbm9tYWktMy4xLjEtMjAyMjEyMjggcm9vdD1VVUlEPTY3
-Y2UyNThjLWNhNGItNGY5ZS1hZTU5LTM2ZDIyMTJkMzY2ZCBybyBjcmFzaGtlcm5lbD01MTJNIHhl
-bm9tYWkuc3VwcG9ydGVkX2NwdXM9MHhmIGlkbGU9aGFsdCBub3NtYXAgbm1pX3dhdGNoZG9nPXBh
-bmljIGNvbnNvbGU9dHR5UzAsMTE1MjAwbjggcGFuaWM9MQpJLXBpcGUgcmVsZWFzZSAjNiBkZXRl
-Y3RlZApDb2JhbHQgY29yZSAzLjEuMSBkZXRlY3RlZApDb21waWxlcjogZ2NjIHZlcnNpb24gNi4z
-LjAgMjAxNzA1MTYgKERlYmlhbiA2LjMuMC0xOCtkZWI5dTEpIApCdWlsZCBhcmdzOiAtLXByZWZp
-eD0vdXNyIC0taW5jbHVkZWRpcj0vdXNyL2luY2x1ZGUveGVub21haSAtLW1hbmRpcj0vdXNyL3No
-YXJlL21hbiAtLXdpdGgtdGVzdGRpcj0vdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZSAtLXdpdGgt
-Y29yZT1jb2JhbHQgLS1lbmFibGUtc21wIC0tZW5hYmxlLXRscyAtLWVuYWJsZS1kbG9wZW4tbGli
-cyAtLWVuYWJsZS1yZWdpc3RyeSAtLWVuYWJsZS1wc2hhcmVkIC0tYnVpbGQgeDg2XzY0LWxpbnV4
-LWdudSBidWlsZF9hbGlhcz14ODZfNjQtbGludXgtZ251CnJvb3RAZGViaWFuOi9ob21lL3VpaC94
-ZW5vbWFpX3Rlc3Qvc3JjIyAKcm9vdEBkZWJpYW46L2hvbWUvdWloL3hlbm9tYWlfdGVzdC9zcmMj
-IC4veGVub21haV90ZXN0CkVudGVyIG1haW4uLi4KCg==
+
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
+
+> [[S/MIME Signed Part:Undecided]]
+> Hello,
+>
+> We have two independent processing loops, each consisting of their own set
+> of EVL threads and interrupts. Each loop completes its processing and then
+> performs an evl_sleep_until to delay until the next processing deadline
+> occurs. If we run either loop by itself, everything is fine, and our timing
+> margins are met. However, if we try to run both simultaneously, the timing
+> error is increased significantly, and the loops never meet their processing
+> deadlines. If we compile the code for Linux (substituting all EVL primitives
+> with Linux equivalents), then we are able to run both loops simultaneously
+> without issue. Any clue what could be causing us troubles or where to start
+> looking?
+>
+
+In absence of any code to review, the question is too broad to figure
+out what might happen. Quick check though: make sure to disable all the
+kernel debug options which may be turned on for your EVL kernel
+(PROVE_LOCKING, DEBUG_LIST, KASAN and others). evl check may help with
+this.
+
+-- 
+Philippe.
