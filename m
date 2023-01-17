@@ -1,150 +1,282 @@
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2058.outbound.protection.outlook.com [40.107.6.58])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2057.outbound.protection.outlook.com [40.107.20.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D1911FC2
-	for <xenomai@lists.linux.dev>; Tue, 17 Jan 2023 09:57:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3056128EC
+	for <xenomai@lists.linux.dev>; Tue, 17 Jan 2023 17:03:46 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BedJqVYwkTeRY4gR+kxhpRK2kmpPgGjDvL945dsszJu6yJMDXK/zEw0Y+9iDrTEGgaNjP7ysO43olhOsGte4og2UDTK9qvoO0PggN2k8/aqK1vLVDZ0uIV6Xd+kqAELbBmxfBai4PKCW3eDI6vRDHlhxEp350RTAKRpiYBxYhRHVDuaSJFNyagaQiSqxa3o6+zKkwlxgH87otJ/Oo7TQ/X8Ko1vXWOdkeysiD0DFP6fk90k3G0Fb1IGoZIYBA7WCFeIZ6zML8DXC/x2x0teeJV1/naAvidxQfwQWm9f4rSGgP526b+sxSuLeAMA7I5NTk87KYUWgaUNLXFFrnDe5Rg==
+ b=eJi4ZDoq+PS/emDSSlxkO00gc3/3R5QgIr4DNDbWO7RosAthtTxJUCwSLLjwLEqObsS8YLH9EdpMIW8FxK/jX3NJw/0tR+lMWt6gOc4U/NO3rrCN9FSQNUP3COifpGVIQ9MyDmuHExyNEascDPOY67h7uthN+lPdCIT4Am2vrgkDm7Kg7iDMrmJkX5X6RElZN3Y1GopsS4uULiX03ggUm82WyYlC8smb0ggI0b36STSgKeNu7uVxnDVUmgmexsk+YzsF2ojjWJH9uRe9hPtZHd0+pz8yin2eWz7UbURbJOy8W9BAfoJ1YqHZRI2UdwyfFU9yQ2SiwXeNa7ywHPSdiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NSp/P+pkVireUg58XPvOQbcqGTjrGg9BsQ0XXl5SgDI=;
- b=BDLITxt4m4p8pj94RqVyJBxSmX0AR6zjsxMnHVGV0N9J9/h07kUEH7F6ug0Mon77e+rY1KVExfDtRlJ/uU1lXLE+xM6NI9IVMusOsFt/c/PfTI/AE2jc2F/SzDGwnukAcwLxBol7x094KTGOnB4SFtp9lIZSSHaGzALIk4HSkcYWVwjoMlX4sfrpyztNqSAp7VGDAVrIWpUGZZNOGHVwdYEb75KyWvigtGPOGb2uteDNzNtHsScEHcLQJFmCJ2M3lP3DTHXBRnjJxv9kp7He2N93vSw6GFm6qd2+jz77EpLdYeZTkURBtmyWIUsaP30LHq13ZZqw4yZF2u3gQO2tZg==
+ bh=u+2w0Q7dpe5BM+MSxU/Ic2mCZF0Y3WkCEV/0zFlZSJQ=;
+ b=jOCTtODQSB/bXwfNuB7JVfP5pwHOWHcfr5kGb2QCGHNSu16WjSodHSfQ3euVa0UjB56ZWXeorOw+EpPmGnFq62c6D6vrtrlew5dkCl4O62XbZ0XvAoIXboom4OrN9Xy3aZCdh0R3BhYAw+P3o9We6ZVrWAQP6FcN61auqCHVl3laFQWD3SIHAtjBX51hbx4eXW0ckSKOglWLQUnoCNmAu9xG8PHWJrCfyKCzxTzEZyi3GvxDxjMCRwYUV/QQ1DgKZDcYqPhi0x1+2Hccn3ttihuNYiUguo1876WZWp94fLbxCagyzxJJ79aAdmh4XXFr+1X3esuVAbktMgz2CeHqoQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ smtp.mailfrom=boschrexroth.nl; dmarc=pass action=none
+ header.from=boschrexroth.nl; dkim=pass header.d=boschrexroth.nl; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=boschrexroth.nl;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NSp/P+pkVireUg58XPvOQbcqGTjrGg9BsQ0XXl5SgDI=;
- b=B7qJUb+Bs2eiffeK9/iJNiOXJ5Y/I1oZLOTY3BxSzNfJTtPJOceYNbWSRqaY3Ig+cveNUeR9i7Ezqqpcv1RobhBStgqQ1eDIg05nVsO6JoawuicjVJarIegcS1u2jNTKhTtliayhpkmCgYf6oAGmW59zEReV0DrbBFkwQ+37j3ambSOc3MaXwMWZavWt9LfyggYakqjtcumn/3oapisBmn8/KN2gPfx52YC0BJ76IbOgK6vYNTvySW3myR/o3NjSF/8lXu1Jw6SN8uX++p9YRJg3e422HCK4de1JypqicQ5ULY5/zvy8cu6VGRXBAiYBWaIXb91gTda7U93kVXGblQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB4PR10MB6237.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:383::10) with
+ bh=u+2w0Q7dpe5BM+MSxU/Ic2mCZF0Y3WkCEV/0zFlZSJQ=;
+ b=IfvO5AowT/ssvFyKW8rRnJ/vhZ36i6SW8zTpAPWe0toRLbTNR9Wj8KYaAfs7m9wVKxRyL1wG8zxccxQc0kSe/F2MW7YygxXBR03ZcUZpT07+mhRkwA1mCawO8T6enFQVMKIF8B/JEpTJcSx7la5V613Lw/LS6IvMORjyLC6SuHw=
+Received: from DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:4f::29)
+ by AM7PR10MB3777.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:17a::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Tue, 17 Jan
- 2023 09:57:49 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::784b:e95b:b855:dcc5]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::784b:e95b:b855:dcc5%7]) with mapi id 15.20.5986.019; Tue, 17 Jan 2023
- 09:57:49 +0000
-Message-ID: <c3a61a34-0028-57c1-1201-d18c1d9b1da0@siemens.com>
-Date: Tue, 17 Jan 2023 10:57:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: while loop in a multi-core cpu
+ 2023 17:03:43 +0000
+Received: from DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::dd8e:ce70:2cb:b314]) by DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::dd8e:ce70:2cb:b314%4]) with mapi id 15.20.5986.023; Tue, 17 Jan 2023
+ 17:03:43 +0000
+From: "Schuman Eelco (DC-AE/ESW5)" <Eelco.Schuman@boschrexroth.nl>
+To: Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka
+	<jan.kiszka@siemens.com>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Philippe Gerum
+	<rpm@xenomai.org>
+Subject: RE: Process hangs after upgrade
+Thread-Topic: Process hangs after upgrade
+Thread-Index: AdkmmhngNDTyhWzyQbyfaaWtTlh5HwAvDIgAAAZCn4AAANE2gACdjIcAACpMHCA=
+Date: Tue, 17 Jan 2023 17:03:43 +0000
+Message-ID:
+ <DB7PR10MB245911DDA609584F8C2682D1ECC69@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
+References:
+ <DB7PR10MB245971E67E0E4183BD4D4F5CECFD9@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
+ <ed5d41d3-cadc-67dd-72b7-bbe680d36134@siemens.com>
+ <CALLqZ8SU192LLP+8noH1QeK1Djvi8E+xRi8r172pXhp99604eg@mail.gmail.com>
+ <b401122e-7d0d-b63a-2689-81bd4284af8b@siemens.com>
+ <CALLqZ8T1s9KN_s0=5u0=up-8E-KLx0L0rbRK=zZT4ybc4B9i0A@mail.gmail.com>
+In-Reply-To:
+ <CALLqZ8T1s9KN_s0=5u0=up-8E-KLx0L0rbRK=zZT4ybc4B9i0A@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Yunjie Gu <yunjie.gu1@gmail.com>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, qiyu_sjtu@163.com
-References: <1673779013-11742-mlmmj-00f27513@lists.linux.dev>
- <CAKcohPxHzbQvztgQMQaFq-EoXGbpfQxi1HpPV9nogBUaQ+PUSw@mail.gmail.com>
- <CAKcohPxdhCMohJZfSNaL2EvEDcLdm8CRgdy3hUusCu9Y5jexxw@mail.gmail.com>
- <MN2PR11MB42854A69C41937ADA0F29CDAF2C19@MN2PR11MB4285.namprd11.prod.outlook.com>
- <e8f0810b-7104-18a2-9931-a1df6ede2917@siemens.com>
- <MN2PR11MB42855B83E5F981669B6B0ED9F2C19@MN2PR11MB4285.namprd11.prod.outlook.com>
- <94fdf3b0-bc07-7063-7cc6-f6987ad1ed10@siemens.com>
- <847c0a00-2e91-6391-d8e4-6677ca719baf@siemens.com>
- <MN2PR11MB4285E612761676D50EF5571DF2C19@MN2PR11MB4285.namprd11.prod.outlook.com>
- <b3eeb9f2-21a4-feab-a605-70f6fbe9285f@siemens.com>
- <CAKcohPz3z+HVJxsaYcEr0Z1QDwxWHdbryoBUuc7+FxynR3nk6A@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAKcohPz3z+HVJxsaYcEr0Z1QDwxWHdbryoBUuc7+FxynR3nk6A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0011.namprd03.prod.outlook.com
- (2603:10b6:610:b0::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=boschrexroth.nl;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB7PR10MB2459:EE_|AM7PR10MB3777:EE_
+x-ms-office365-filtering-correlation-id: 8a20e149-e8e2-4591-f6aa-08daf8acca3c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ o98a1QwSOIKkV6Q5b/2MvIwnpTYmPDgUBkzIlnt/HlSvU+hVSSWw0KvvsEYvIJ3Q9G97w28S5BL0MGlTDYFUdhYpqS/KVwfWiRrte31u4Mgy/114kavM/+mh2T/z+ngA04MzVy0awYJHDAv2nAQu3txdIm6fco4KaFh/bUQXv3aGdiGW7x4oaXXCzcZctawIH5KVu6qxULMci8b8ETTIqLUJyQLZJC0UCdTHaSN+S8v3n/shm1X+FVsvcS/fGAWTGSwamk8y4tKcDgv0W6eUXvZJoBKUjYoPTImIo3S3mwF36VaQKIOFeluZLjHg86Zb36UQGDPC6NF+aBFpEsnLoXFdrs8ZK1jhUuhGBcAeCqDRb1XNtzk5Qf8uKnA6jooynkAga+dnmP6gx2ZxmDcto6rqAcOGMlFfny2maCv244wZdCDjD/oZDiTj6Jv+qtTDdRBQgIm3C/eF0ov4i4km9o2OcnegZfXHVNlOve/LR1hJ2m8NXlqL1S6U6noUVYQbtKpvDX08RRs0LF9/qys+3DZt4rkEShLPfTCLKWD211IfEMQCJTQJWaPorlWa6vj6AXbHoU5WBu5fiOA+PZhNI9U1E4Uvw9N7kWlOe/2ApwjMHaSb2KDr/ESREZ+zEqQ8Y24T4xC6C6Di3rGWCM1RK3nodr3/bAr2MY7/hs3EN2PiKq2FjYMy2HFr8zlrs6syJHuEQI5te6Xv3XU+upU66WFUJP6jw6TbXbnyH1qHz8Y=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(346002)(366004)(451199015)(55016003)(86362001)(33656002)(9686003)(53546011)(186003)(26005)(4326008)(8676002)(66446008)(66556008)(76116006)(41300700001)(64756008)(66476007)(66946007)(316002)(71200400001)(110136005)(54906003)(478600001)(45080400002)(6506007)(7696005)(966005)(122000001)(2906002)(38100700002)(38070700005)(82960400001)(52536014)(83380400001)(5660300002)(8936002)(3480700007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?N4g0m7cMh6tFKl4888pvcMrzM7t3qVZWDkqvnOV/bbP1a9HyQwrUkscAgSgN?=
+ =?us-ascii?Q?OvrRzY3Kqu6WXSAeej6UeZAI5LCZZrVjxXrW47/Mz9OdkT4eQM28Lv2mJv1g?=
+ =?us-ascii?Q?pVrd811dhV7Rq3hWsEsMGPU2GSgH9HVb7vH+adkPkDYcbbFIZD6vmcpAWSaF?=
+ =?us-ascii?Q?THFErpSa/LXTCRWQR2DBcUnEOrVGcDb8cW+MZAOM7RMjX7u1SXXJUGUUtn0L?=
+ =?us-ascii?Q?CaIT+R/V4Gc16eSeKyIEJJ01slWJ4ouHaYVi6k+dFuTQL9izEcblCv9+2Thg?=
+ =?us-ascii?Q?9LIm3bLcYalnN8vW+XCkgG76EctcPehKXjZyUsI2vRKPsQvc6FYKHdtSt3mC?=
+ =?us-ascii?Q?Y21ORr3xiJnnAICYWneeLEr3k8aHA/XtUnltwh5gWrjT6AwDbfDB8MH7RJb0?=
+ =?us-ascii?Q?1cmsvKw3dsUrNwKksN05TwKuDQ/o77sO+u+zP4+KZ0HsYVy+03G8GO2CWA/U?=
+ =?us-ascii?Q?S2BX6RXjPjyG0XYk/vdirSW3TR5lbV62wZcsGLPIuzNEFlY75t52Wr10Svv8?=
+ =?us-ascii?Q?MMwofkmqp3KhhhLA2kjJdzefctmcBEx5mhQRBMxDLubcv4WPXy0RKhSmh+zm?=
+ =?us-ascii?Q?LUe2TcVikJ0P2S9O9oUV3ZA4HBNQvaxNAvh6TmaacZND7cN/43M0IX9iO53a?=
+ =?us-ascii?Q?HBUJ2beq7p6dmHCfIqXtMnPaydVxTUsiXu9/w7o6/7SM+QslGuKR/MF6+Poh?=
+ =?us-ascii?Q?VKW1cdN2EfKXESK3NTXe6bfmgwoBBfv1UQc4j7+u+I+xKMrJ+2tJQH80NrMR?=
+ =?us-ascii?Q?LjcM+2TcPxhNZ0sFVfup9VzYm+wyxbc308jHexw4sc6IUNEGkXoa8zMBGOMU?=
+ =?us-ascii?Q?BUdNNBoQNfJEgAhcna+W/nwjoMMvPBg3O9VIvsenNqaSmBTqmXjzFt1QO80K?=
+ =?us-ascii?Q?GhK16t9p2G9jFjMNFsRvKVqcT62dOlUB4AWrwfa4XdCQy/x8F2jn6RWYX5UO?=
+ =?us-ascii?Q?EVKIf57qcLTSwf4UUomDh5TxxlgHFNLs3HN8MkqJW/rdWj5kEzOG0oO8nOXP?=
+ =?us-ascii?Q?HUIlLuF4KFPJj4fSi5E+AUDUflKa4irEtubTlNYjML7ju3iuSu3dlgHpLrj+?=
+ =?us-ascii?Q?Qkj9PROWPDpMuY1GQg7/QfOv06/aCPHALyTBa+i/lKcLIl7CISieBKDUc6WZ?=
+ =?us-ascii?Q?sYy6ICQqyZ+ilmu+fVT1/OkjNO7MBhfPSpBixd7FkjS0cnv+UHn6JxQ2YBfL?=
+ =?us-ascii?Q?BORjVuBbri7wswDTmlSy7jSrKOLh2c+wCXAaqs4JDzttQW8fREGk8KsKwdmp?=
+ =?us-ascii?Q?c8VquMKqArfN12W5/wWLL7vNJQ8KDYyrE82tGjFTlR1ywMWtoboq6/41Ozjr?=
+ =?us-ascii?Q?pPT7rgfdnlh6fpnhktegN49VIbNtbPqQMwKwh/2orLl8FiDrOekYKx5nn+NR?=
+ =?us-ascii?Q?UjTpau0wEF6qJn/ivxu4Q0et5JSW5H5x17iNwsheWIiZvK9d1u6fkjpyLunv?=
+ =?us-ascii?Q?a91hAIZdxuxJo6YjzI6o+Ir+vDxvAojrZ6zl85mytU2NfllT/09O/UmGc4Vk?=
+ =?us-ascii?Q?sCNINl7qUXb1ej3kTX3jV/jvU31egDf0hop7Bv+bQhwIWwU8JN/obUJoQP5e?=
+ =?us-ascii?Q?LfID4EXDgRpQzTfuZ/I=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB4PR10MB6237:EE_
-X-MS-Office365-Filtering-Correlation-Id: c55dfa5f-3fdc-485e-1054-08daf8714a9a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	OjESiUCxaWp5aFQM8RoOEGInM9Gxb0P/lJr/fYj4XDTEDAQRZA7jD3DteUlum+qmJcEppb72VXJu7NO/CjY4r71JdC8BxrUSS4bmBvNu490AwNbGFxqv5o7jcoQOw29ZkqYINx+vITQc5+McjQe9blqYqcugsnhKJPSbya9HMNzHhDOapvSri/TNbwnnVm9QDEjWi+TR4tzK9R2dM31kh11fHZOoCKfG1Sky/3GyujEduBN8kJ8cijdtxCcrVACaPQQt8R2qVYD99/MuDFSdjGvk+RCU5/AGs0cKGP0L99se/rn++jyZCirXk0X9in4uOjhqUBU3f8I4XHr/lUH4yqUKIi7ptPV9QshQnvlrsswTB9Ej/Jr0/1qBZRFA/Qap+JAhyumH1LYKEC/Oo98+5/U+21JK24zrmFJ/pxdfN4O5Y/AFRb1KyW1eQlKVSCzl0DH33F2jOo95JDcgEe3b1IBNbfTZgKxHfLhBYejfuixRkGAweUNtJcpeu5/d8+f7G1nUmFkX7gOBjwFTtWgqAclz+q2iHzDGdIzLyF4yjrakw4UDPdSYbSkWyluN+1rct9vEou81HNLd43GvbaERTYOK57dG56sByus5SeMKI5kcuOu+cT0RD8pO7UbLZUTmDi4nJp0H+B88B3hgTvefdn8/GRput1KtMlcXwgcJooV3zmfRSoRWKc2Vjnhr3Aji+lnPQImxMm2usGaoPvt5H6X5XgeVyF+i8YICiAgPVZQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(451199015)(82960400001)(86362001)(31696002)(38100700002)(478600001)(6486002)(6512007)(26005)(36756003)(6666004)(6506007)(53546011)(186003)(31686004)(5660300002)(4326008)(6916009)(8676002)(66476007)(4744005)(66556008)(2616005)(316002)(66946007)(54906003)(41300700001)(8936002)(2906002)(44832011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RVVFUCs3S2YwSTlQaFpxdU93bEFUNTR2K09iTXU4SE5xbnBTQWE0Zm1Ic0Ns?=
- =?utf-8?B?KzVhclNXbFRFUm5mQTZCWGlkNmZObHUxT05jODJQYVY4M01ZU1dTTk43UXBz?=
- =?utf-8?B?Wm9MTzVkMDlqeUZHTzZTcUlGbUdoYjJFZkJSbURKWmN3ODhKL0lnelhTQUJ3?=
- =?utf-8?B?ekxJNElCZ1J1ZXJLMExsQkJlTUdUQVZ5Smk1eWk4WHJXOFl6TUVkR2R6Y09T?=
- =?utf-8?B?YjJQSlphSUJJZmFQdnFUTmQ1OFRreTdyOHZjS21lazZtUnQ5TytmY2p0Yi9p?=
- =?utf-8?B?M1NXM29zRG9VQXRTT21nTHpEeEZvdkg4WlU0NVBVWmhzaURwcEpGN0FhU1ZV?=
- =?utf-8?B?MkpiN0hkMTF2YjBnSHFIbjJiR3R5SGQ3WGw1L1F0ZWxxWWladTQxN2UzMC9S?=
- =?utf-8?B?bE9wdUs3SVFVRjNOS09SdjhtNTJ3eHNrTlFsTEJSeUhTMzlxVlJWaTBhbEow?=
- =?utf-8?B?OXgvU25MajdHaTlpNGFSN3RjdkdsZGNmdHpmeHBjTUVBK3FMTG9UT0hqa0pa?=
- =?utf-8?B?UGV6WkcydXZXSXF2ZkF3NGlPR243a096NmRDQVE2SDNNUWdUekpJTjdPQ0Jh?=
- =?utf-8?B?Q0F6SGJyRjFZYlJLM0cwcjYrNEFRSTlyL0RFN3ZpR2NQZ0p3U0tRYmovclg0?=
- =?utf-8?B?SDBydVBSMDU1b2hZTzgyRGFJbVhMSmMvT2grblozK3RrNk9WdVpoRDhiemw3?=
- =?utf-8?B?dUVwMlVyNmZOc0JTZmt0M3FIdXczSlBLcE9WUmFZOGlIQWtDWm1XNjJGZTN6?=
- =?utf-8?B?WkhDcGhnZmpCUVhsaUlYWmhJa3JDYnFtQ3M0TnVteDhYR2VTVElBdk51UnZo?=
- =?utf-8?B?NXRka0J1RitpeGMzbDUwUmh6QnM4ci96ZVU3dnRGc3BGRnQ3blpRNTdteTJa?=
- =?utf-8?B?MCtrdktDcTB2SEVMLzNpbWFRb2JSbkErNFk5ZEJyUWgyRXN4bHBYY3Y2WTVK?=
- =?utf-8?B?M2FsT3FwampDQWEwa3M3c2lpOVhDYXJQVlpIK0YxRVMvVW1SSlJRV0d3U3NS?=
- =?utf-8?B?SGhWM1Npc1pYMVRWdUxOMWhDR1hHTGdpYjAxVG41bzRQeXF6WW9QeGVwYUE1?=
- =?utf-8?B?VnVoa1l6eUFHaHFPTjN5bDVIYzBCcEpneXY4aFBJREZlTEt2dGdYZFhNZkdE?=
- =?utf-8?B?NE9Cb3dWS3M0UVhJSlZzWXF1MFRXQ0lHbTVDbVBXRS9PaXdkNlpVdk10MDNZ?=
- =?utf-8?B?QTBFNldkeXpBdFpyMUtxQ3NKSHpIRzQ3clhJcEU5ZHhZbjJ1VWlJYmtUWVMy?=
- =?utf-8?B?eFl3UzUvbFV5TjZzbXgxU3lRZmp1cUlZTzVnSW9IczczenpYOElNVWwyMEUz?=
- =?utf-8?B?eFRVdUFuNGFGMHpkMzhxVTJXbHpYaDdtcUdha3daMGlsQ2dWSVpZV3F3SXd4?=
- =?utf-8?B?Z0NPRVNGZFFhZ2FiaGZKb08zNzgyWExwa2lIY2FWVklzUzJtQ1QwUU5zL1Br?=
- =?utf-8?B?dkpSbVpCT29yMUVBUmNmdjYwblJ6SjJBTGtUaStBTzhibmZnclRjQUM3TXli?=
- =?utf-8?B?d1c2c3N6VEFkRFkxUEYwaHlvb3JWMTEyQUJ6TWxmTEdnVXI1RFkyTnduLy9V?=
- =?utf-8?B?bFVLOHFWUUFJaVhJaEg1bkVMZmRBck9wUzl2UnBSMFdYaCswcUZZeWVKUW9Z?=
- =?utf-8?B?S2J2MERrTmVPSy8xZ3IyTVo2RE1NdllqSEwxek1sTzBvaFBibXNpZ2VrbWsz?=
- =?utf-8?B?ZFJUaDRDU0VoWGczdWRIOERuSjk1TkRzMjNNZEx5bVhuMDc1bmQ2TkNMUVFN?=
- =?utf-8?B?cmdpOVdFcXRsaE50Q1pVaEVpNEJmVmNzZWkvR1RWK2wvcmlyVGhUUHpZQTQy?=
- =?utf-8?B?RmJFTGs4aHljdy9MTHV3ZWQ5U0pjb3lTOGhCUGRiQitnUTQzNVVBTVJhVHpl?=
- =?utf-8?B?blBiUXZmM0lNZVhpdmJiZkNCNUlORTdIMWZUdnY1cURucUVmTWxaUGxaMlpD?=
- =?utf-8?B?ZzY4SHRWd0g0cXhGdm1ZYlRBOU9ZRjhEZW9rVk9UVGEzcnhhVjRQbXNXTmsy?=
- =?utf-8?B?Z0ZBcWg0VzJTQnYxZjJTMkFOL3k0dUlraDN1VEtvVytTaHVPZFlKNExxbkJG?=
- =?utf-8?B?VXFTSmwyMFh0NmhWRG03VUtCb3Z6T0pUUkxPMU9lTE5yYmtJc1NqU3g0aUdF?=
- =?utf-8?B?SHlpUzgyOC8waXRNbjY1VlRoM1BZY0lGZktGZ2cwcmVXT2YwbTBqSDR2NmFY?=
- =?utf-8?B?clE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c55dfa5f-3fdc-485e-1054-08daf8714a9a
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-OriginatorOrg: boschrexroth.nl
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 09:57:49.5449
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a20e149-e8e2-4591-f6aa-08daf8acca3c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2023 17:03:43.7090
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Fqm+KyTKxk2T1FPZ3UiNScemVi4qRFSgn8394ku8lRJS+dMlOE3WQxcGWwjQqnbpEF7GgchpBXSrmVHL9WCN3A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB4PR10MB6237
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0ae51e19-07c8-4e4b-bb6d-648ee58410f4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ss5NoqJN+RXTu2zOlL/2JotQ95P0bzC4xd7kK4kjjVYEc91B2l99A4oKr8AEy7KyQvKyvFg5kPrqDo6OYa7vGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3777
 
-On 17.01.23 10:50, Yunjie Gu wrote:
-> Hi Hongzhan and Jan,
-> 
-> Many thanks for the answers. Is this also true even for multi-core
-> cpus? When one of the cores is running a xenomai thread 100%, what the
-> other cores are doing?
+> On Fri, Jan 13, 2023 at 12:15 PM Jan Kiszka <jan.kiszka@siemens.com> wrot=
+e:
+> >
+> > On 13.01.23 17:51, Greg Gallagher wrote:
+> > On Fri, Jan 13, 2023 at 8:52 AM Jan Kiszka <jan.kiszka@siemens.com> wro=
+te:
+> > >
+>> > > On 12.01.23 16:26, Schuman Eelco (DC-AE/ESW5) wrote:
+>> >>> Hi,
+>> >>>
+>> >>> I'm trying to upgrade a system from Linux 4.4 to v5.10.y-dovetail wi=
+th Xenomai 3.2.2 on a Zynq 7000 ARMv7 board.
+>> >>> I'm seeing scheduling problems, e.g. sleep 1 does not finish.
+>> >>>
+>> >>> The IRQ pipeline torture tests run OK:
+>> >>> [    0.992675] Starting IRQ pipeline tests...
+>> >>> [    0.992687] IRQ pipeline: high-priority torture stage added.
+>> >>> [    1.005789] irq_pipeline-torture: CPU0 initiates stop_machine()
+>> >>> [    1.011772] irq_pipeline-torture: CPU1 responds to stop_machine()
+>> >>> [    1.021390] CPU1: proxy tick device registered (325.00MHz)
+>> >>> [    1.026881] CPU0: proxy tick device registered (325.00MHz)
+>> >>> [    1.035773] irq_pipeline-torture: CPU0: irq_work handled
+>> >>> [    1.041099] irq_pipeline-torture: CPU0: in-band->in-band irq_work=
+ trigger works
+>> >>> [    1.048430] irq_pipeline-torture: CPU0: stage escalation request =
+works
+>> >>> [    1.048436] irq_pipeline-torture: CPU0: irq_work handled
+>> >>> [    1.060276] irq_pipeline-torture: CPU0: oob->in-band irq_work tri=
+gger works
+>> >>> [    2.113302] CPU1: proxy tick device unregistered
+>> >>> [    2.117930] CPU0: proxy tick device unregistered
+>> >>> [    2.126014] IRQ pipeline: torture stage removed.
+>> >>> [    2.130654] IRQ pipeline tests OK.
+>> >>>
+>> >>>
+>> >>> There is a warning in the kernel logs:
+>> >>>
+>> >>>      0.000000] ------------[ cut here ]------------
+>> >>> [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/irq/pipeline.c:1742 =
+irq_pipeline_init+0x20/0x84
+>> >>
+>> >> This complains that hard-IRQs would be on while they must not. All=20
+>> >> that in fairly early boot code.
+>> >>
+>> >>> [    0.000000] Modules linked in:
+>> >>> [    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.157-xe=
+nomai #2
+>> >>> [    0.000000] Hardware name: Xilinx Zynq Platform
+>> >>> [    0.000000] IRQ stage: Linux
+>> >>> [    0.000000] [<c0014460>] (unwind_backtrace) from [<c0011400>] (sh=
+ow_stack+0x10/0x14)
+>> >>> [    0.000000] [<c0011400>] (show_stack) from [<c03aac8c>] (dump_sta=
+ck+0xdc/0xfc)
+>> >>> [    0.000000] [<c03aac8c>] (dump_stack) from [<c03a7b08>] (__warn+0=
+xa4/0xcc)
+>> >>> [    0.000000] [<c03a7b08>] (__warn) from [<c03a7ba8>] (warn_slowpat=
+h_fmt+0x78/0xb0)
+>> >>> [    0.000000] [<c03a7ba8>] (warn_slowpath_fmt) from [<c04d1e20>] (i=
+rq_pipeline_init+0x20/0x84)
+>> >>> [    0.000000] [<c04d1e20>] (irq_pipeline_init) from [<c04c6d4c>] (s=
+tart_kernel+0x28c/0x4b8)
+>> >>> [    0.000000] [<c04c6d4c>] (start_kernel) from [<00000000>] (0x0)
+>> >>> [    0.000000] ---[ end trace 58996bc4bee07162 ]---
+>> >>> [    0.000000] IRQ pipeline enabled
+>> >>>
+>> >>> The system and applications run OK with only one core in use.
+>> >>>
+>> >>> Is there something missing in the Linux config or anything else I ca=
+n try?
+>> >>
+>> >> Not sure. We don't have a Zynq in the test lab or at least as=20
+>> >> reference image here. It might be that dovetail is missing some=20
+>> >> bits for this SoC, e.g. a patch analogously to [1] for=20
+>> >> drivers/gpio/gpio-zynq.c. Adding Philippe for possibly more insights.
+>> >>
+>> >> ARM multi-core is generically fine, see our QEMU target
+>> >> (https://eur03.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2F
+>> >> source.denx.de%2FXenomai%2Fxenomai-images%2F-%2Fjobs%2F552798&data=3D=
+05%7C01%7CEelco.Schuman%40boschrexroth.nl%7Cbde2fcb830c7453eb24e08daf7fff75=
+c%7C0ae51e1907c84e4bbb6d648ee58410f4%7C0%7C0%7C638094975982300406%7CUnknown=
+%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6=
+Mn0%3D%7C3000%7C%7C%7C&sdata=3DX9HSPXZaFPte2sxFfS5OTd683dFqMhWRpRcGXX%2FtRD=
+g%3D&reserved=3D0 e.g.). But our only physical armhf target in the lab is a=
+ single-core beaglebone.
+>> >>
+>> >> Jan
+>> >>
+>> >> [1]
+>> >> https://eur03.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fs
+>> >> ource.denx.de%2FXenomai%2Flinux-dovetail%2F-%2Fcommit%2F3d3e5a1659d
+>> >> 69c9dc96471efa542dc05fcc58e56&data=3D05%7C01%7CEelco.Schuman%40boschr
+>> >> exroth.nl%7Cbde2fcb830c7453eb24e08daf7fff75c%7C0ae51e1907c84e4bbb6d
+>> >> 648ee58410f4%7C0%7C0%7C638094975982300406%7CUnknown%7CTWFpbGZsb3d8e
+>> >> yJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7
+>> >> C3000%7C%7C%7C&sdata=3DOwo4KNn2Bo6r8yKJaI0ZrJNKTQ7woM4eOjYCb74M6ZA%3D
+>> >> &reserved=3D0
+>> >>
+>> >> --
+>> >> Siemens AG, Technology
+>> >> Competence Center Embedded Linux
+>> >>
+>> >>
+>> >>
+>> > If Philippe doesn't have time for an immediate answer I can try one=20
+>> > of my zynq boards this weekend.  I reserved some time for ipipe=20
+>> > things, I can add this to the list and see if I can help.
+>>
+>> That would be great! I have one zync board literally at my feet as=20
+>> well, but setting all that up will take the usual time...
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Technology
+>> Competence Center Embedded Linux
+>>
+>
+>I reproduced the issue (pretty sure), I can look at it this week if that h=
+elps.  Just to confirm, Eelco, to reproduce I can create a thread and call =
+sleep(1) and I should see the process hang?
+>
+>-Greg
 
-NO_HZ_FULL only works on multicore - you can't operate a complete Linux
-system with only a single runnable task.
 
-> If we really want a core to run a 100% while loop, how can we do that
-> in a dual-core xenomai system? Say, can we isolate one core that is
-> not managed by the OS (i.e. kind of bare-metal) to do this?
+Hi Greg, many thanks for looking at this issue. Yes, a 'sleep(1)' in an app=
+lication or thread hangs the process.  I noticed that the proxy tick does n=
+ot get any interrupts:
 
-An architectural alternative to using 100%-tasks under Linux is applying
-a hypervisor and running that task on an isolated core bare-metal.
-Jailhouse (https:github.com/siemens/jailhouse) is one example for such
-an hypervisor. That comes with its own pros and cons, though.
+          CPU0       CPU1
+ 24:          0          5     SIRQC  24 Edge          in-band work
+ 25:          0          0     GIC-0  27 Edge          gt
+ 26:      94785      94399     GIC-0  29 Edge     oob  twd
+ 27:          0          0     GIC-0  37 Level         arm-pmu
+ 28:          0          0     GIC-0  38 Level         arm-pmu
+ 29:         43          0     GIC-0  39 Level         f8007100.adc
+ 32:          0          0     GIC-0  45 Level         f8003000.dmac
+ 33:          0          0     GIC-0  46 Level         f8003000.dmac
+ 34:          0          0     GIC-0  47 Level         f8003000.dmac
+ 35:          0          0     GIC-0  48 Level         f8003000.dmac
+ 36:          0          0     GIC-0  49 Level         f8003000.dmac
+ 37:          0          0     GIC-0  72 Level         f8003000.dmac
+ 38:          0          0     GIC-0  73 Level         f8003000.dmac
+ 39:          0          0     GIC-0  74 Level         f8003000.dmac
+ 40:          0          0     GIC-0  75 Level         f8003000.dmac
+ 41:          0          0     GIC-0  54 Level         eth0
+ 43:       2840          0     GIC-0  57 Level         cdns-i2c
+ 45:        463          0     GIC-0  59 Level         xuartps
+ 46:          0          0     GIC-0  64 Level    oob  [nyce-kmod]
+ 48:          0          0     SIRQC  48 Edge          Inband sirq
+ 49:          0          0     SIRQC  49 Edge          Inband sirq
+ 50:          0          0     SIRQC  50 Edge          Inband sirq
+ 51:          0          0     SIRQC  51 Edge          proxy tick
+IPI0:          0          0  CPU wakeup interrupts
+IPI1:          0          0  Timer broadcast interrupts
+IPI2:        321        528  Rescheduling interrupts
+IPI3:          5          2  Function call interrupts
+IPI4:          0          0  CPU stop interrupts
+IPI5:          0          0  IRQ work interrupts
+IPI6:          0          0  completion interrupts
 
-Jan
+Is this because xnintr_host_tick() is not called, e.g. from xnintr_core_clo=
+ck_handler() ?=20
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+
+Best regards,
+
+Eelco
+
 
