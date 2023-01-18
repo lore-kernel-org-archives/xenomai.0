@@ -1,255 +1,138 @@
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2071.outbound.protection.outlook.com [40.107.241.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 071A03C2D
-	for <xenomai@lists.linux.dev>; Wed, 18 Jan 2023 17:32:35 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 18B51100007;
-	Wed, 18 Jan 2023 17:32:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1674063148;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mdUQjtUsnpKTGhNrSdax9AvwB3tBvsKz+TwHSPUCvyw=;
-	b=pdeIlrpl42rVzwCEsk/pS21rvsEFjNeoxAeY3QLhLhM7Fy/uZuVM9evgdDOcKWnOyT2jb0
-	IZ4/jjii+ZLkYA87JIn6b/ZemhMYyjd6ocmclKJpHFGsUCce69rYX0w35gQ6KN9xCtLMtS
-	6tmLaRzDyJYMYhyICuPbXhLAWQjKC3L0F9+gHZ2ZVUHrAprs+vqLUjs5rI7Woj2SLexIrf
-	5u/CpcKxP+dEIog5FSHRbw89VVq2pS4CfxPT6Y0+8u/PW833444oO2/anZoz+07AgflGiR
-	439DUb7JX06nouy7ABaT02nf7S3AewLYtyfcWWb3rxqqw1WI1jdv57ZOS2HwVQ==
-References: <DB7PR10MB245971E67E0E4183BD4D4F5CECFD9@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
- <ed5d41d3-cadc-67dd-72b7-bbe680d36134@siemens.com>
- <CALLqZ8SU192LLP+8noH1QeK1Djvi8E+xRi8r172pXhp99604eg@mail.gmail.com>
- <b401122e-7d0d-b63a-2689-81bd4284af8b@siemens.com>
- <CALLqZ8T1s9KN_s0=5u0=up-8E-KLx0L0rbRK=zZT4ybc4B9i0A@mail.gmail.com>
- <DB7PR10MB245911DDA609584F8C2682D1ECC69@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
- <CALLqZ8RMnou=0s-2Hcq-Xm5R7j3HVYNbN=aMHCPcHzY6ZfPJGg@mail.gmail.com>
- <DB7PR10MB2459D0CB902662E6C5B5A6ABECC79@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Schuman Eelco (DC-AE/ESW5)" <Eelco.Schuman@boschrexroth.nl>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka
- <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: Process hangs after upgrade
-Date: Wed, 18 Jan 2023 18:21:29 +0100
-In-reply-to: <DB7PR10MB2459D0CB902662E6C5B5A6ABECC79@DB7PR10MB2459.EURPRD10.PROD.OUTLOOK.COM>
-Message-ID: <87wn5jiw9h.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD8233C2D
+	for <xenomai@lists.linux.dev>; Wed, 18 Jan 2023 17:43:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oFY+96T+C3UgEotzO3EK7f3W7v6oMQ6lEao9HoiR8WQ9IFUA/5Lci5Wr6kJ3qeuTfK2Gih7fCUe+Nmt2N80JPsklI4eHKP1Lj1wtkuc04KrdHpmGxY2QwfI9XI2BVAFlRPvbKvMWLHVC+2rDUJy9doW5hUGAMNOulRux1J8iZakN1VZVvCiWf+ZpfeOFVxrHpm8fLjbIDGSIFEAluCW/H0sQ8laNEoNIuE4SSulBZgMDw/ggHgEy+T+iiLhHGkkVrjDoRoA6gfVbdUdYy9DhwkkdaZQ703RcxZnfvX0RRQHmK0JNCd6kseono9N0/OCCTVNsR9ozdU2ieQV1nqKgMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZlqEGQG4bfmZPhz137WC0CEDS2tgNvj1OU/o0fwANYw=;
+ b=LI1CgRkUmcl8z577sq0UQVmWkBtCJ8MKTL/XgtIXUbLzPmcqI+U+lJ0xXmkWkq3z6cQk67jChwz9dERTJDW1vhTbJe/djtXnjKDD2/P/MM8wzwgCbWTcZ3thqiCawTaeeYy/vNociBcMI2bs6LBvOxjnDv7ZLskHh9MfGYU2T4ye0zOFP4ZYmh0aWPCvOPpEJRd03Uk41zM+eydxqmRF7QQll4LAQmgeM4u0SiA/xhjGM8HQspKeyEHmAZkNhidEwBOoENOsiX36TWLWsFBOftv6KYBA68dWhFhHhOB9CIeg3RuOuF0FckUiKCswQx2JalcC7uCW8I1Nd5w9sS+dkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZlqEGQG4bfmZPhz137WC0CEDS2tgNvj1OU/o0fwANYw=;
+ b=J7UFwZf5uxj1m0FSoi1eZ9ISG+ZkGrvPUHLog5CB2IwbzW4dkexLsI4kz8qASPdDMXZ/ZGMk5KCni381o9LPf32Qtze8AINSiSe8FKSl0tNJKxvn9aokuCnZRm5utPxWrfzQEJUxNCvbPAM7hLi4cYlUiEvZYKhVvdxDm+o0roN7ZHegQKNZCeMAe+3G5E5lZU158i1K/hNiVB6baaGvabZwor2oWxKD2B2kZ85kPCOgmcOUrihQRq7eCxu0FXG9ZSu7PTVlcsOm45tY2FvzQHdxFVK1deZ1ChFJenYNM7IOIhT/WsGCa+DpUtziQZ360+UTgs5x4VpVTM8SVhdBgw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS8PR10MB7757.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:630::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.12; Wed, 18 Jan
+ 2023 17:43:49 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::784b:e95b:b855:dcc5]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::784b:e95b:b855:dcc5%7]) with mapi id 15.20.5986.019; Wed, 18 Jan 2023
+ 17:43:48 +0000
+Message-ID: <2893142d-70c7-eb2b-89ad-f2a7154f5eed@siemens.com>
+Date: Wed, 18 Jan 2023 18:43:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH] testsuite: dpdk: Add l2fwd example which is based on
+ DPDK.
+Content-Language: en-US
+To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@lists.linux.dev
+References: <20230118130506.30418-1-hongzhan.chen@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20230118130506.30418-1-hongzhan.chen@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0116.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9d::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB7757:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2c791a3-b56c-4ccc-f87c-08daf97b8e2a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Up7Pkq1KSNZAtUb0zw4rttSxhW9he7XTW70mnV4X6BvkVHSPvLWym/T/at21PHKaZvzDXUytNyCut0cGsE27rGe2H/dde/e9rxNZ9AU17gWYKhlzFvTu/wfap2PaoB1lez/Sj+oK+41+XPmCQ7wc01EZMKSIFIENq9SiFbBiwDx7nk2h/vEiTdrlB8JUS44Yw2rKWJk+bjyw+RRgMvh/yvImxeoFk7dy9lRIgpcDL3/AGahEbwQzgV/BB4hC3OpqOg6xfSOQCc1Zvg+NqNvzlk/iUO1ZOJTCkZrbbzFlJQD+YtTBIpOhnZj4TI30ECtJgonpjmGZ6xS7xO1hlUYs0cgF7nUf8maGQXGs6pL57Abs1S909gcN9Mv1q1HBpFP0ZP1LDGY2k31nr3qM0AErHX/i5LE9QuGpo6qi1W9ZdtATAxDLRO4bBCw3WzDW1L8NTvH0WBH/XKOPFT6m0xtFNFV3hYttg5fcKXcAbD34LAtc2pV1RxnDeG4hSxchvvwd42NpDer7FyhtphiaG7HBvj5Op22kVZeJMFb2dGFoSAJtaTL3OAaS6gG/Uni6nR8lEM16pOv3eLiylbnBfnZWrx2BU0qfb2Q/UCNJ6rtYWy3v9lsiuSw77EISxSwjb+/6F44gGaEKHNOOSm8ZxoMK+PB7l3lwmHu5eDrJH/sNU60Tp3eCt2PmlpBAGTO2uGfv1Y0efMPcfz5V3bFuQb1xeOBYWGiWaHzBSMEg/UNhdKs=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(136003)(366004)(346002)(396003)(451199015)(31686004)(36756003)(44832011)(2906002)(31696002)(86362001)(38100700002)(4744005)(41300700001)(5660300002)(8936002)(83380400001)(82960400001)(66556008)(186003)(6506007)(478600001)(316002)(66946007)(8676002)(53546011)(66476007)(2616005)(6512007)(6666004)(26005)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ck0yeWtpM3grd2czNk9OSFNOUHB2WUp4cjVuUEtHemQweW9nRG1aVFFGMFFV?=
+ =?utf-8?B?eXJJcmNVTXMxS1hscnVXY2dsM1Znc29HVnJlVXBvTzU2ZGFQMGVUWHJMNzRG?=
+ =?utf-8?B?d2tvaVRPKzY2ajhlamYrNis3NlI1c0VYZ0pPOTlvRitPWHExQ0R0L1VtZ1Rt?=
+ =?utf-8?B?Q0N0VWRoQzhFOGlzVmU5QjJ2ckhBMkNmR3ZxUEF1dUIvNFNYQUdlc1c2L3V6?=
+ =?utf-8?B?czN1emgzNWVndk9QVGJwV2g2dTM2VWlsc01ZSTRaa3AwWVRVM1E0cmJzS0Z6?=
+ =?utf-8?B?S0FhNFpMR21xK2k3ZFNCWlVHSGRoN05mYUxqNHdUYVNYWUhIODFrQmVVVk9W?=
+ =?utf-8?B?NXRza0hjNGFuMkxrN1lPK1djWmNRcXVXRmcycWdJM3M3R0VrQ05tV0szRjh5?=
+ =?utf-8?B?QTNML3NFV1Yza2p2ZStiY2R6REZSMnZPSy9sY0VVWHFxUDJSUitzaU9TYlBF?=
+ =?utf-8?B?ckxFN1UxN0dXWW92MjllSFBmbHpWSVR5VW5Ub3FsaVY0T1Boa0FZTmZHdFVK?=
+ =?utf-8?B?THRMenN5UFQwVXo3ckV1clhrVmMxaDgwVkNEc0R4ZmNwSUNEVWhvZjFMMVg3?=
+ =?utf-8?B?ZXNISlljQ1lYWnhxY0FKalQvZE9KRjFwbENVU2lrVTJSaExNZG9ralNtSkQ0?=
+ =?utf-8?B?UmNUM0IrTm9teE5SL3BjYU5NcVRLUnlnQnlDWi9oQk9UdlZOT0NDcWhHYjlV?=
+ =?utf-8?B?aGFOanFIUUoyNGt6a241THpQVEZvWkhzMHFTdnMySnl3Z1hHZFMybytkdmQ5?=
+ =?utf-8?B?NllrdnUvT0UzNUVDMEpaU3JOeU9jYTVlZm5KUzRENDZFTkZCMWlucDlFNE9i?=
+ =?utf-8?B?WXZORU1NdkRIZjZTWWpEUUp3OFJiSEZ0UGpGbHk0QmdHdFluOEdZVlJFakpu?=
+ =?utf-8?B?ekxKQ2kvOVZPRzErdWFLdkl3SEVWNFdTcjlqTUNYaFh5Rmh5ODBTMnZmMTR6?=
+ =?utf-8?B?L1E1YUlaMjNiNDJaTlIzYVFaQ2dOd3dDYzFrQWFIWW9ORFNFalpIdzFtdVU3?=
+ =?utf-8?B?Q3ZwWkJ1REhQd3d1bXMvVEVEc2t0cEdwbWdrZ0N6K1k5V0pva1FFNUI3MGdt?=
+ =?utf-8?B?c3E0TzZrWFgxclY1bWh5YUhQeXpnc3V3bzBzajE5S2xtTm16NXVOemZaazQx?=
+ =?utf-8?B?NjJ5b2lYcWhJRlNqeUxvUW9BVzIyWFFKbUxHOEpHdDE3bnRjdC84ZG04cTgw?=
+ =?utf-8?B?VU1CblJjOVc3NHFtNkVNU2ZEWDFQQktqakpYelczeG84MEh4b3FSb2xVdDg4?=
+ =?utf-8?B?QjgwZ2dtQ0lzbTdvWjVJK1ZWUmgzUWpPaU8yNjZyT20ydCsrVWpnSHJjdkZH?=
+ =?utf-8?B?RXM0U1Zwb3h3MldYcy9EVjdydUpaM3ZacU14NjNsU2NyNDM3VUpJZWR0cE1N?=
+ =?utf-8?B?NThpVUxocUk4TGx6eWRQaXo5REJYNVRERllZUU9FSGFNK3l1aU5lTmxPNzFr?=
+ =?utf-8?B?UHBwU0Roem1USFdVOWl4MS8wN1dUMGhBeTBYYzV1c1ZVQzEzN25CYkdYRFBF?=
+ =?utf-8?B?ZkozY0ZjZ0FKTUJzcE01NHFJMGJ0MER0UUhoSHhGeG5KNGZWWFhPTHBwdGtz?=
+ =?utf-8?B?MjFaMnNMUEVRM2JqMzlvdmFLM0pvYndISHZvTTFiV2JQZjdHdFpBendhOXZk?=
+ =?utf-8?B?UC9wOWtwVTdOV3VOTUR2WTFDbGh2OEk5WERSYUZaa3BTLzNDN1RMcEVtWEJk?=
+ =?utf-8?B?OCtFdzNLME56clB4MXk3ckZ3MFRjYUFHb0c1TlRvTUloVWVsQS9ldU10RDlW?=
+ =?utf-8?B?Si9VRndIcmFzSVREUWJaNllUekdLVnprdFFlUlZ1aDlkdm14eEYrUXJUd0ky?=
+ =?utf-8?B?ci94aVFLSndkbkJJcktrS252Z0pKQTJqUWJEVE9ZMWdRT3pPckk4VEVKcnQ2?=
+ =?utf-8?B?VFl5SnhXMFBBSDExbTNQeUZIcmg1SFdmSFd6aGZ4R0UxQjNwUzV6clRZd3JY?=
+ =?utf-8?B?ckZiZHJJVWZkVS9uNE91Z085K3A5OFJpUEpQVWlHV1ZENjFvSWJOZUdqTWRN?=
+ =?utf-8?B?VEhCaHpQMWExOC9jK3NUZFQ5T1M4ems5a0dwSVA1SVBxK053VnF6bFowTzly?=
+ =?utf-8?B?UUtFVHRjMnRieVNaNlp6SzJOMWVBNHZPUTNVQ0dHTXpXa0tVWDlLbU1DUW42?=
+ =?utf-8?B?L2hXbjBBNXV5V0hZKzlQeE9BdVRsd1lqZnNWUGw4VXlmeUsyUlp0Ny83bUhZ?=
+ =?utf-8?B?VWc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2c791a3-b56c-4ccc-f87c-08daf97b8e2a
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 17:43:48.9070
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9METNqd/thgPNkXoHGIHyLirwNVgjdIW7Bm+q+7HWkVJljShmyhDKjY2tUOwDofyxJdsE0hfzaJsPmaH1dMpwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7757
 
+On 18.01.23 14:05, Hongzhan Chen wrote:
+> The L2 Forwarding sample application(l2fwd) is a simple
+> example of packet processing using the Data Plane
+> Development Kit (DPDK).
 
-"Schuman Eelco (DC-AE/ESW5)" <Eelco.Schuman@boschrexroth.nl> writes:
+Can you elaborate a bit on the envisioned use cases here and go more
+into details in the accompanied documentation? The latter only describes
+the "how", not at all the "why" (or "which use cases"). Some words on
+the threading model (or limitations of it) would surely be good as well
+("how can I integrate this pattern into a real application?").
 
->>On Tue, Jan 17, 2023 at 12:03 PM Schuman Eelco (DC-AE/ESW5) <Eelco.Schuman@boschrexroth.nl> wrote:
->>>
->>> > On Fri, Jan 13, 2023 at 12:15 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> > >
->>> > > On 13.01.23 17:51, Greg Gallagher wrote:
->>> > > On Fri, Jan 13, 2023 at 8:52 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> > > >
->>> >> > > On 12.01.23 16:26, Schuman Eelco (DC-AE/ESW5) wrote:
->>> >> >>> Hi,
->>> >> >>>
->>> >> >>> I'm trying to upgrade a system from Linux 4.4 to v5.10.y-dovetail with Xenomai 3.2.2 on a Zynq 7000 ARMv7 board.
->>> >> >>> I'm seeing scheduling problems, e.g. sleep 1 does not finish.
->>> >> >>>
->>> >> >>> The IRQ pipeline torture tests run OK:
->>> >> >>> [    0.992675] Starting IRQ pipeline tests...
->>> >> >>> [    0.992687] IRQ pipeline: high-priority torture stage added.
->>> >> >>> [    1.005789] irq_pipeline-torture: CPU0 initiates stop_machine()
->>> >> >>> [    1.011772] irq_pipeline-torture: CPU1 responds to stop_machine()
->>> >> >>> [    1.021390] CPU1: proxy tick device registered (325.00MHz)
->>> >> >>> [    1.026881] CPU0: proxy tick device registered (325.00MHz)
->>> >> >>> [    1.035773] irq_pipeline-torture: CPU0: irq_work handled
->>> >> >>> [    1.041099] irq_pipeline-torture: CPU0: in-band->in-band irq_work trigger works
->>> >> >>> [    1.048430] irq_pipeline-torture: CPU0: stage escalation request works
->>> >> >>> [    1.048436] irq_pipeline-torture: CPU0: irq_work handled
->>> >> >>> [    1.060276] irq_pipeline-torture: CPU0: oob->in-band irq_work trigger works
->>> >> >>> [    2.113302] CPU1: proxy tick device unregistered
->>> >> >>> [    2.117930] CPU0: proxy tick device unregistered
->>> >> >>> [    2.126014] IRQ pipeline: torture stage removed.
->>> >> >>> [    2.130654] IRQ pipeline tests OK.
->>> >> >>>
->>> >> >>>
->>> >> >>> There is a warning in the kernel logs:
->>> >> >>>
->>> >> >>>      0.000000] ------------[ cut here ]------------
->>> >> >>> [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/irq/pipeline.c:1742 irq_pipeline_init+0x20/0x84
->>> >> >>
->>> >> >> This complains that hard-IRQs would be on while they must not. 
->>> >> >> All that in fairly early boot code.
->>> >> >>
->>> >> >>> [    0.000000] Modules linked in:
->>> >> >>> [    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.157-xenomai #2
->>> >> >>> [    0.000000] Hardware name: Xilinx Zynq Platform
->>> >> >>> [    0.000000] IRQ stage: Linux
->>> >> >>> [    0.000000] [<c0014460>] (unwind_backtrace) from [<c0011400>] (show_stack+0x10/0x14)
->>> >> >>> [    0.000000] [<c0011400>] (show_stack) from [<c03aac8c>] (dump_stack+0xdc/0xfc)
->>> >> >>> [    0.000000] [<c03aac8c>] (dump_stack) from [<c03a7b08>] (__warn+0xa4/0xcc)
->>> >> >>> [    0.000000] [<c03a7b08>] (__warn) from [<c03a7ba8>] (warn_slowpath_fmt+0x78/0xb0)
->>> >> >>> [    0.000000] [<c03a7ba8>] (warn_slowpath_fmt) from [<c04d1e20>] (irq_pipeline_init+0x20/0x84)
->>> >> >>> [    0.000000] [<c04d1e20>] (irq_pipeline_init) from [<c04c6d4c>] (start_kernel+0x28c/0x4b8)
->>> >> >>> [    0.000000] [<c04c6d4c>] (start_kernel) from [<00000000>] (0x0)
->>> >> >>> [    0.000000] ---[ end trace 58996bc4bee07162 ]---
->>> >> >>> [    0.000000] IRQ pipeline enabled
->>> >> >>>
->>> >> >>> The system and applications run OK with only one core in use.
->>> >> >>>
->>> >> >>> Is there something missing in the Linux config or anything else I can try?
->>> >> >>
->>> >> >> Not sure. We don't have a Zynq in the test lab or at least as 
->>> >> >> reference image here. It might be that dovetail is missing some 
->>> >> >> bits for this SoC, e.g. a patch analogously to [1] for 
->>> >> >> drivers/gpio/gpio-zynq.c. Adding Philippe for possibly more insights.
->>> >> >>
->>> >> >> ARM multi-core is generically fine, see our QEMU target 
->>> >> >> (https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F
->>> >> >> %2F
->>> >> >> source.denx.de%2FXenomai%2Fxenomai-images%2F-%2Fjobs%2F552798&data=05%7C01%7CEelco.Schuman%40boschrexroth.nl%7Cbde2fcb830c7453eb24e08daf7fff75c%7C0ae51e1907c84e4bbb6d648ee58410f4%7C0%7C0%7C638094975982300406%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=X9HSPXZaFPte2sxFfS5OTd683dFqMhWRpRcGXX%2FtRDg%3D&reserved=0
->>> >> >> e.g.). But our only physical armhf target in the lab is a
->>> >> >> single-core beaglebone.
->>> >> >>
->>> >> >> Jan
->>> >> >>
->>> >> >> [1]
->>> >> >> https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F%
->>> >> >> 2Fs%2F&data=05%7C01%7CEelco.Schuman%40boschrexroth.nl%7C503f3bab
->>> >> >> a62247f1cc7008daf8c0f983%7C0ae51e1907c84e4bbb6d648ee58410f4%7C0%
->>> >> >> 7C0%7C638095804954456375%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjA
->>> >> >> wMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C
->>> >> >> %7C&sdata=gskg%2FBDZWbmrHmEJe2%2B26EiYQDdroZJBOXXz9d29ROY%3D&res
->>> >> >> erved=0 
->>> >> >> ource.denx.de%2FXenomai%2Flinux-dovetail%2F-%2Fcommit%2F3d3e5a16
->>> >> >> 59d 
->>> >> >> 69c9dc96471efa542dc05fcc58e56&data=05%7C01%7CEelco.Schuman%40bos
->>> >> >> chr 
->>> >> >> exroth.nl%7Cbde2fcb830c7453eb24e08daf7fff75c%7C0ae51e1907c84e4bb
->>> >> >> b6d 
->>> >> >> 648ee58410f4%7C0%7C0%7C638094975982300406%7CUnknown%7CTWFpbGZsb3
->>> >> >> d8e
->>> >> >> yJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3
->>> >> >> D%7 
->>> >> >> C3000%7C%7C%7C&sdata=Owo4KNn2Bo6r8yKJaI0ZrJNKTQ7woM4eOjYCb74M6ZA
->>> >> >> %3D
->>> >> >> &reserved=0
->>> >> >>
->>> >> >> --
->>> >> >> Siemens AG, Technology
->>> >> >> Competence Center Embedded Linux
->>> >> >>
->>> >> >>
->>> >> >>
->>> >> > If Philippe doesn't have time for an immediate answer I can try 
->>> >> > one of my zynq boards this weekend.  I reserved some time for 
->>> >> > ipipe things, I can add this to the list and see if I can help.
->>> >>
->>> >> That would be great! I have one zync board literally at my feet as 
->>> >> well, but setting all that up will take the usual time...
->>> >>
->>> >> Jan
->>> >>
->>> >> --
->>> >> Siemens AG, Technology
->>> >> Competence Center Embedded Linux
->>> >>
->>> >
->>> >I reproduced the issue (pretty sure), I can look at it this week if that helps.  Just to confirm, Eelco, to reproduce I can create a thread and call sleep(1) and I should see the process hang?
->>> >
->>> >-Greg
->>>
->>>
->>> Hi Greg, many thanks for looking at this issue. Yes, a 'sleep(1)' in an application or thread hangs the process.  I noticed that the proxy tick does not get any interrupts:
->>>
->>>           CPU0       CPU1
->>>  24:          0          5     SIRQC  24 Edge          in-band work
->>>  25:          0          0     GIC-0  27 Edge          gt
->>>  26:      94785      94399     GIC-0  29 Edge     oob  twd
->>>  27:          0          0     GIC-0  37 Level         arm-pmu
->>>  28:          0          0     GIC-0  38 Level         arm-pmu
->>>  29:         43          0     GIC-0  39 Level         f8007100.adc
->>>  32:          0          0     GIC-0  45 Level         f8003000.dmac
->>>  33:          0          0     GIC-0  46 Level         f8003000.dmac
->>>  34:          0          0     GIC-0  47 Level         f8003000.dmac
->>>  35:          0          0     GIC-0  48 Level         f8003000.dmac
->>>  36:          0          0     GIC-0  49 Level         f8003000.dmac
->>>  37:          0          0     GIC-0  72 Level         f8003000.dmac
->>>  38:          0          0     GIC-0  73 Level         f8003000.dmac
->>>  39:          0          0     GIC-0  74 Level         f8003000.dmac
->>>  40:          0          0     GIC-0  75 Level         f8003000.dmac
->>>  41:          0          0     GIC-0  54 Level         eth0
->>>  43:       2840          0     GIC-0  57 Level         cdns-i2c
->>>  45:        463          0     GIC-0  59 Level         xuartps
->>>  46:          0          0     GIC-0  64 Level    oob  [nyce-kmod]
->>>  48:          0          0     SIRQC  48 Edge          Inband sirq
->>>  49:          0          0     SIRQC  49 Edge          Inband sirq
->>>  50:          0          0     SIRQC  50 Edge          Inband sirq
->>>  51:          0          0     SIRQC  51 Edge          proxy tick
->>> IPI0:          0          0  CPU wakeup interrupts
->>> IPI1:          0          0  Timer broadcast interrupts
->>> IPI2:        321        528  Rescheduling interrupts
->>> IPI3:          5          2  Function call interrupts
->>> IPI4:          0          0  CPU stop interrupts
->>> IPI5:          0          0  IRQ work interrupts
->>> IPI6:          0          0  completion interrupts
->>>
->>> Is this because xnintr_host_tick() is not called, e.g. from xnintr_core_clock_handler() ?
->>>
->>>
->>> Best regards,
->>>
->>> Eelco
->>>
->>>
->>I would start looking there, that looks suspicious to me.  Prior to the sleep() call proxy tick does get interrupts?
->>
->>-Greg
->
-> - A process with 'sleep 1' hangs, so if you do (in bash)
->    * sleep 1
->    * wait 2 seconds
->    * put in background ^Z                      [1]+  Stopped                    sleep 1
->    * process is scheduled and finishes         [1]+  Done                       sleep 1
->
-> - The proxy tick has no interrupts before and after sleep. I don't see changes in the interrupt counts, except for the twd count.
->
-> - I did a quick experiment to force xnintr_host_ticks(). With this I see proxy tick interrupts and sleep works as expected. 
->
-> void xnintr_core_clock_handler(void)
-> {
-> ...
-> ...
-> 	sched = xnsched_current();
-> 	// if ((sched->lflags & XNHTICK) &&               -- force inband interrupts to proxy tick
-> 	if (xnthread_test_state(sched->curr, XNROOT))
-> 		xnintr_host_tick(sched);
-> }
->
-> Thanks,
-> --Eelco
+Regarding the patch itself, you should go over it again and eliminate
+debugging left-overs as well as unrelated changes (there is one at least
+in testsuite/Makefile.am). The way of the integration looks fine to me
+in principle.
 
+BTW, what prevents the usage of the VFIO driver so far?
 
-Is proxy_set_next_ktime() steadily called in the failing case? It should
-be with sleep 1 running. The fact that your patch works around the issue
-means that the system does receive (oob) clock events normally, but if
-Xenomai's host timer (sched->htimer) is not queued upon a timing request
-received from the inband kernel, then XNHTICK cannot be raised, breaking
-the proxy tick propagation downwards from Xenomai to the inband kernel.
-
-The theory of operations for the proxy tick is documented at [1]. Also,
-you may want to check whether the ONESHOT_STOPPED mode of clockevents
-is not involved in the issue, just in case.
-
-Sorry, I cannot do much more ATM for investigating the issue, I could
-not reproduce it on any of the arm(64) SoCs I have at hand, and I'm
-deeply buried in my todo list.
-
-[1] https://evlproject.org/dovetail/porting/timer/#proxy-tick-logic
+Jan
 
 -- 
-Philippe.
+Siemens AG, Technology
+Competence Center Embedded Linux
+
