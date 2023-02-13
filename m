@@ -1,25 +1,23 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3124D1FA8
-	for <xenomai@lists.linux.dev>; Mon, 13 Feb 2023 07:41:36 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230213070118a28d069897cf90b68d
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA741FB6
+	for <xenomai@lists.linux.dev>; Mon, 13 Feb 2023 07:41:37 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230213070117bcb91b01ec53ff5a15
         for <xenomai@lists.linux.dev>;
         Mon, 13 Feb 2023 08:01:18 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=lyT5hQRCeMn/VQpr67dFU5yBclhmOhpxjwA2jDj1Fz0=;
- b=WGREfVWWJ+Ps3ppNflHQ5INyOhS2xwc8oT4uAPMLTEdz67ck4xFr6ANdXvmfp8oZhZJLyM
- MOOQjeoBxdWt+28oo/pJmPBWnkHzb2aico+te02KbyaqEQH/ZBmdQiv5aWd3UUdKL4Yj6PKf
- dgM+WsR5Ddmgz6EPOu8jKmCN7FWaE=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+ bh=rDpaoMWOBGsd+jCFGQzB4dWBYHgilNHg/aQFI3tIw9I=;
+ b=ObYLPt7WCxfbPEkky7OidmMwu9nE6qcquIK+a6ARnTSVYmoDeompiTotz5oUF1o6QCRDi+
+ Gff2PCIC5QcqiFs7ZWu5/R2sS6KxJe4PvJvsTTAccp1jMwztqiL29sRfiUrXIyMYWLO4ssb+
+ jJB3jcWYUIldgp+RsRSg+Iq6rjbrc=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 2/7] linux-xenomai: Factor out linux-xenomai-dovetail.inc
-Date: Mon, 13 Feb 2023 08:01:11 +0100
-Message-Id: <1229a794aab2012c8d13335d006c11f9764e1fc1.1676271676.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1676271676.git.jan.kiszka@siemens.com>
-References: <cover.1676271676.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 0/7] LTS kernel 6.1, kernel 5.2 for 3.2.x, Isar update to bitbake 2.0
+Date: Mon, 13 Feb 2023 08:01:09 +0100
+Message-Id: <cover.1676271676.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -30,62 +28,49 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This adds the now available dovetail LTS branch for kernel 6.1 to the
+xenomai-next builds. Furthermore, it enables 5.15 for 3.2-head which
+just gained support for it. And finally, Isar is updated and the layer
+is adjusted to bitbake 2.0 syntax changes.
 
-Two lines to share per kernel, and there is another kernel upcoming.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .../{linux-xenomai_5.15.bb => linux-xenomai-dovetail.inc}    | 1 -
- recipes-kernel/linux/linux-xenomai_5.10.bb                   | 5 +----
- recipes-kernel/linux/linux-xenomai_5.15.bb                   | 5 +----
- 3 files changed, 2 insertions(+), 9 deletions(-)
- copy recipes-kernel/linux/{linux-xenomai_5.15.bb => linux-xenomai-dovetail.inc} (91%)
+Jan Kiszka (7):
+  linux-xenomai: Move S assignment into common include
+  linux-xenomai: Factor out linux-xenomai-dovetail.inc
+  Add kernel 6.1 recipe and kas files
+  ci: Hook up kernel 6.1
+  Kconfig: Enable kernel 5.15 for xenomai 3.2 head
+  ci: Add kernel 5.15 to Xenomai 3.2 pipeline
+  Update Isar after bitbake 2 switch
 
-diff --git a/recipes-kernel/linux/linux-xenomai_5.15.bb b/recipes-kernel/linux/linux-xenomai-dovetail.inc
-similarity index 91%
-copy from recipes-kernel/linux/linux-xenomai_5.15.bb
-copy to recipes-kernel/linux/linux-xenomai-dovetail.inc
-index 168334c..05d775e 100644
---- a/recipes-kernel/linux/linux-xenomai_5.15.bb
-+++ b/recipes-kernel/linux/linux-xenomai-dovetail.inc
-@@ -12,6 +12,5 @@
- require recipes-kernel/linux/linux-xenomai.inc
- 
- SRC_URI += "git://source.denx.de/xenomai/linux-dovetail.git;protocol=https;nobranch=1"
--SRCREV ?= "v5.15.85-dovetail1"
- 
- PV ?= "${@d.getVar('SRCREV').strip('-')[0].lstrip('v')}+"
-diff --git a/recipes-kernel/linux/linux-xenomai_5.10.bb b/recipes-kernel/linux/linux-xenomai_5.10.bb
-index 1c98d29..986060d 100644
---- a/recipes-kernel/linux/linux-xenomai_5.10.bb
-+++ b/recipes-kernel/linux/linux-xenomai_5.10.bb
-@@ -9,9 +9,6 @@
- # SPDX-License-Identifier: MIT
- #
- 
--require recipes-kernel/linux/linux-xenomai.inc
-+require recipes-kernel/linux/linux-xenomai-dovetail.inc
- 
--SRC_URI += "git://source.denx.de/xenomai/linux-dovetail.git;protocol=https;nobranch=1"
- SRCREV ?= "v5.10.161-dovetail1"
--
--PV ?= "${@d.getVar('SRCREV').strip('-')[0].lstrip('v')}+"
-diff --git a/recipes-kernel/linux/linux-xenomai_5.15.bb b/recipes-kernel/linux/linux-xenomai_5.15.bb
-index 168334c..63865eb 100644
---- a/recipes-kernel/linux/linux-xenomai_5.15.bb
-+++ b/recipes-kernel/linux/linux-xenomai_5.15.bb
-@@ -9,9 +9,6 @@
- # SPDX-License-Identifier: MIT
- #
- 
--require recipes-kernel/linux/linux-xenomai.inc
-+require recipes-kernel/linux/linux-xenomai-dovetail.inc
- 
--SRC_URI += "git://source.denx.de/xenomai/linux-dovetail.git;protocol=https;nobranch=1"
- SRCREV ?= "v5.15.85-dovetail1"
--
--PV ?= "${@d.getVar('SRCREV').strip('-')[0].lstrip('v')}+"
+ Kconfig                                       | 14 +++-
+ ci/kernel_6_1.yml                             | 82 +++++++++++++++++++
+ ci/xenomai_3_2_x.yml                          |  3 +-
+ ci/xenomai_next.yml                           |  1 +
+ conf/machine/hikey.conf                       |  2 +-
+ conf/machine/qemu-machine.inc                 |  2 +-
+ kas.yml                                       |  2 +-
+ opt-ci.yml                                    |  6 +-
+ opt-linux-6.1.yml                             | 17 ++++
+ opt-linux-latest-6.1.yml                      | 18 ++++
+ ...mai_5.15.bb => linux-xenomai-dovetail.inc} |  3 -
+ recipes-kernel/linux/linux-xenomai.inc        |  4 +-
+ recipes-kernel/linux/linux-xenomai_4.19.bb    | 14 ++--
+ recipes-kernel/linux/linux-xenomai_4.4.bb     | 12 ++-
+ recipes-kernel/linux/linux-xenomai_5.10.bb    |  7 +-
+ recipes-kernel/linux/linux-xenomai_5.15.bb    |  7 +-
+ recipes-kernel/linux/linux-xenomai_5.4.bb     | 14 ++--
+ recipes-kernel/linux/linux-xenomai_6.1.bb     | 14 ++++
+ recipes-kernel/linux/linux-xenomai_latest.bb  | 17 ++--
+ recipes-xenomai/xenomai/xenomai.inc           |  2 +-
+ 20 files changed, 184 insertions(+), 57 deletions(-)
+ create mode 100644 ci/kernel_6_1.yml
+ create mode 100644 opt-linux-6.1.yml
+ create mode 100644 opt-linux-latest-6.1.yml
+ copy recipes-kernel/linux/{linux-xenomai_5.15.bb => linux-xenomai-dovetail.inc} (86%)
+ create mode 100644 recipes-kernel/linux/linux-xenomai_6.1.bb
+
 -- 
 2.35.3
 
