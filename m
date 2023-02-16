@@ -1,69 +1,183 @@
-Received: from m1561.mail.126.com (m1561.mail.126.com [220.181.15.61])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF5AC7B
-	for <xenomai@lists.linux.dev>; Thu, 16 Feb 2023 01:24:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=3C9mDdLfkK4dSV4oMD79uXwi1TDoi2nvU96uK5Xgn3E=; b=Y
-	cLOH8Pr8/n4ECUSY5hLktJWv+c+9Ydr/XQmEp5n6nfyb/mfflpOk4p4vKOczIx0u
-	Cw14/uawkEu194ez95I8+IbizEj/eHKIMchNqRmi0T42yWXUYQeDSLOXONVcpHT8
-	NWokbajNp0kpRBrKydXYT9xYmdoX4G1B9AiHm2o0As=
-Received: from yxianyao$126.com ( [103.161.254.5] ) by ajax-webmail-wmsvr61
- (Coremail) ; Thu, 16 Feb 2023 09:24:56 +0800 (CST)
-X-Originating-IP: [103.161.254.5]
-Date: Thu, 16 Feb 2023 09:24:56 +0800 (CST)
-From: "Yao,Yongxian" <yxianyao@126.com>
-To: "Jan Kiszka" <jan.kiszka@siemens.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re:Re: about rcu_preempt detected stalls on CPUs/tasks
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2023 www.mailtech.cn 126com
-In-Reply-To: <31d280a1-f7bd-fab6-2e37-fc9dbdaad400@siemens.com>
-References: <502ffef0.6ee4.186548762d8.Coremail.yxianyao@126.com>
- <f2b91213-82a0-f78f-9948-3c7f9a13888b@siemens.com>
- <6cb72fb7.7353.18654c1e3da.Coremail.yxianyao@126.com>
- <31d280a1-f7bd-fab6-2e37-fc9dbdaad400@siemens.com>
-X-NTES-SC: AL_QuycBPmav04i4CeRZukWmEsQju45WMW0uPwu3YZTOJs0oyrs5DIKcl1tLHXxz9mIKRmDkjq2UBV08Od7UYRyZ6BY6oDHl29kGqylrLYvb/ZX
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 585FD7B
+	for <xenomai@lists.linux.dev>; Thu, 16 Feb 2023 09:31:24 +0000 (UTC)
+Received: from relay5-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::225])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id CC1E1C1EE3
+	for <xenomai@lists.linux.dev>; Thu, 16 Feb 2023 09:25:55 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id B686C1C0003
+	for <xenomai@lists.linux.dev>; Thu, 16 Feb 2023 09:25:47 +0000 (UTC)
+X-Envelope-To: xenomai@xenomai.org
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.197])
+	by spool.mail.gandi.net (Postfix) with ESMTP id 0B2DD9414C0
+	for <xenomai@xenomai.org>; Thu, 16 Feb 2023 09:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Message-ID:Date:MIME-Version:From:Subject:
+	Content-Type; bh=XCb1TpEgIbHmNbX13E2f3zzVbsLttF6DU5ns0Pm/2J4=;
+	b=HqkiziNYYt0MN3GNqxVQs+GOf/g6DolxNX+60BP3rPCzkQ0Wn2g08lV4nL27kk
+	PV2/1aF2bwYiyx5+4qRUPiMdpeZlp6EIHFo3hYG+FE4urtH3DnUoFm804IlG1Rmw
+	5MbkXag0j/K6cAneVUI5tv3bJCLEiw0M/HJ99NCZ8RIt8=
+Received: from [10.10.80.195] (unknown [117.121.60.17])
+	by zwqz-smtp-mta-g4-0 (Coremail) with SMTP id _____wCHgu6P9u1jCU36EA--.44230S2;
+	Thu, 16 Feb 2023 17:25:35 +0800 (CST)
+Message-ID: <6b1485d5-c10f-e607-916e-138b9d3ccf75@163.com>
+Date: Thu, 16 Feb 2023 17:25:35 +0800
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <40a7d44a.e85.18657d3155b.Coremail.yxianyao@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:PcqowADX37vohe1jFoUSAA--.7300W
-X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbibQsYs1pECrQW0QABsr
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To: xenomai@xenomai.org
+From: linz <powertree@163.com>
+Subject: I found the jitter was greater, when using the patch "cobalt/init:
+ Fail if CPU 0 is missing from real-time CPU mask"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wCHgu6P9u1jCU36EA--.44230S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3Jry7uw1kuFykZr4UAFy5urg_yoW7urWUpr
+	W2qr4aqw1qqFyjg3yUAasrXr1rJrW0939xJr17W34xArn8Ar93WFyUAryUtrW7C3s5u3Wj
+	qr1DZF93Jr9Iya7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jjBT5UUUUU=
+X-Originating-IP: [117.121.60.17]
+X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/xtbBEhcYlWI0WH2USwAAsk
+Received-SPF: pass (spool1: domain of 163.com designates 220.181.12.197 as permitted sender) client-ip=220.181.12.197; envelope-from=powertree@163.com; helo=m12.mail.163.com;
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=163.com header.s=s110527 header.b=HqkiziNY;
+	spf=pass (spool.mail.gandi.net: domain of powertree@163.com designates 220.181.12.197 as permitted sender) smtp.mailfrom=powertree@163.com;
+	dmarc=pass (policy=none) header.from=163.com
 
-CkhpIEphbiwKCkF0IDIwMjMtMDItMTUgMjE6MDQ6MzQsICJKYW4gS2lzemthIiA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4gd3JvdGU6Cj5PbiAxNS4wMi4yMyAxMjowNywgWWFvLFlvbmd4aWFuIHdy
-b3RlOgo+PiAKPj4gb24gMjAyMy0wMi0xNSAxODo0OToxMe+8jCJKYW4gS2lzemthIiA8amFuLmtp
-c3prYUBzaWVtZW5zLmNvbT4gd3JvdGXvvJoKPj4+IE9uIDE1LjAyLjIzIDExOjAzLCBZYW8sWW9u
-Z3hpYW4gd3JvdGU6Cj4+Pj4gIAo+Pj4+IEZvbGxvd2luZyBleGNlcHRpb25zIG9jY3VyIG9uIHRo
-ZSBEZWJpYW4xMC4zIHVzaW5nIExpbnV4K3hlbm9tYWkga2VybmVsLsKgCj4+Pj4gUGxlYXNlIGdp
-dmUgbWUgc29tZSBoaW50cy7CoAo+Pj4KPj4+IElzIHlvdXIgWGVub21haSBhcHBsaWNhdGlvbiBk
-b21pbmF0aW5nIGEgQ1BVIGZvciBtb3JlIHRoYW4gYSBmZXcgZG96ZW5zCj4+PiBvZiBtaWxsaXNl
-Y29uZHM/IERvIHlvdSBoYXZlIHRoZSBYZW5vbWFpIHdhdGNoZG9nIGVuYWJsZWQgKGl0IHdvdWxk
-Cj4+PiBjYXRjaCBzdWNoIGNhc2VzLCBhZnRlciBzb21lIHNlY29uZHMpPyBJZiB5b3UgZG8gaGF2
-ZSBzdWNoIGEgd29ya2xvYWQsCj4+PiBMaW51eCBjb21wbGFpbmluZyBhYm91dCBub3QgaGF2aW5n
-IHRoZSB0aW1lIHRvICJicmVhdGgiIG9uIHN1Y2ggYSBDUFUgaXMKPj4+IG5vIHN1cnByaXNlLgo+
-PiAKPj4gUmVhbC10aW1lIGFwcGxpY2F0aW9ucyB3aWxsIG5vdCBvY2N1cHkgQ1BVIGNvbnRpbnVv
-dXNseSBmb3IgYSBsb25nIHRpbWUuCj4+IEFuZCB0aGUgeGVub21haSB3YXRjaGRvZyBoYXMgYmVl
-biB0dXJuZWQgb24uCj4+IAo+PiBDT05GSUdfWEVOT19PUFRfV0FUQ0hET0c9eQo+PiBDT05GSUdf
-WEVOT19PUFRfV0FUQ0hET0dfVElNRU9VVD0xCj4+IAo+Cj5PaywgdGhlbjoKPgo+IC0gQW55IG90
-aGVyIGVycm9yIG1lc3NhZ2VzIGJlZm9yZSB0aGUgb25lIHlvdSBzaGFyZWQ/CgpUaGF0J3MgYWxs
-IHRoZSBlcnJvciBtZXNzYWdlcy4KCj4gLSBBbHJlYWR5IHRyaWVkIGlmIHRoZSBpc3N1ZSBwZXJz
-aXN0cyB3aXRoIGEgKG1vcmUpIHVwLXRvLWRhdGUga2VybmVsPwo+ICAgaXBpcGUtY29yZS00LjE5
-LjI2Ni1jaXA4Ni14ODYtMjUgaXMgbGF0ZXN0IG9uIDQuMTksIGxhc3QgSS1waXBlIGlzCj4gICA1
-LjQsIGFuZCB3ZSBoYXZlIHBsZW50eSBvZiBkb3ZldGFpbCBrZXJuZWxzCgpUaGUgY3VzdG9tZXIg
-c2l0ZXMgbm93IHVzZSB0aGUgaXBpcGUtY29yZS00LjE5Ljg5LXg4Ni05LCB3aGljaCBpcyBkaWZm
-aWN1bHQgdG8ga2VlcCBwYWNlIHdpdGggdGhlIHJlbGVhc2Ugb2YgdGhlIHhlbm9tYWkgY29tbXVu
-aXR5LiAKV2UgYXJlIHBsYW5uaW5nIHRvIHVwZGF0ZSB0aGUgbmV3IGtlcm5lbC4KCj4gLSBBbnkg
-ZGV0YWlscyBvbiBob3cgdGhpcyBjYW4gYmUgcmVwcm9kdWNlZD8KPgoKTWFueSBzaXRlcyBoYXZl
-IGRlcGxveWVkIHRoaXMgdmVyc2lvbiBvZiB0aGUga2VybmVsLiBUaGlzIHByb2JsZW0gaGFzIG9u
-bHkgb2NjdXJyZWQgb25jZSwgYW5kIHRoZXJlIGlzIG5vIHdheSB0byByZXByb2R1Y2UgaXQuCgpJ
-biB5b3VyIG9waW5pb24sIHdoYXQgYXJlIHRoZSByZWFzb25zIGZvciB0aGlzIHByb2JsZW0/CgpU
-aGFua3MuCgotLQpZYW8gWW9uZ3hpYW4K
+Hi, I met a question when using xenomai v3.2.2.
+The CPU on my development board has four cores, CPU0, CPU1, CPU2, CPU3
+I used CPU0 and CPU3 for xenomai, and CPU1 and CPU3 for linux. The 
+bootargs is as follows:
+setenv bootargs  isolcpus=0,3 xenomai.supported_cpus=0x9 nohz_full=0,3 
+rcu_nocbs=0,3 irqaffinity=1,2 nosoftlockup nmi_watchdog=0;
+
+Then I runned latency testsuit, I found the jitter was greater than before.
+So I tried to use ftrace to look for the reason, and found the thread 
+runing in CPU0 and CPU3 compete for nklock.
+The ftrace is as follows:
+
+             sshd-2187    [000] *.~2  6695.901950: ___xnlock_get 
+<-___xnsched_run /////////////////////////////////////////////// CPU0 
+got xnlock
+           <idle>-0       [003] *.~1  6695.901950: rcu_oob_prepare_lock 
+<-irq_find_mapping
+           <idle>-0       [003] *.~1  6695.901951: __rcu_read_lock 
+<-irq_find_mapping
+           <idle>-0       [003] *.~1  6695.901951: __rcu_read_unlock 
+<-irq_find_mapping
+             sshd-2187    [000] *.~2  6695.901951: xnsched_pick_next 
+<-___xnsched_run
+           <idle>-0       [003] *.~1  6695.901952: rcu_oob_finish_lock 
+<-irq_find_mapping
+           <idle>-0       [003] *.~1  6695.901952: generic_pipeline_irq 
+<-gic_handle_irq
+           <idle>-0       [003] *.~1  6695.901952: 
+generic_pipeline_irq_desc <-generic_pipeline_irq
+             sshd-2187    [000] *.~2  6695.901953: 
+ktime_get_mono_fast_ns <-___xnsched_run
+           <idle>-0       [003] *.~1  6695.901953: 
+handle_percpu_devid_irq <-generic_pipeline_irq_desc
+             sshd-2187    [000] *.~2  6695.901953: arch_counter_read 
+<-ktime_get_mono_fast_ns
+           <idle>-0       [003] *.~1  6695.901953: handle_oob_irq 
+<-handle_percpu_devid_irq
+           <idle>-0       [003] *.~1  6695.901954: do_oob_irq 
+<-handle_oob_irq
+           <idle>-0       [003] *.~1  6695.901954: 
+arch_timer_handler_phys <-do_oob_irq
+             sshd-2187    [000] *.~2  6695.901954: pipeline_switch_to 
+<-___xnsched_run
+           <idle>-0       [003] *.~1  6695.901955: 
+xnintr_core_clock_handler <-arch_timer_handler_phys
+           <idle>-0       [003] *.~1  6695.901955: ___xnlock_get 
+<-xnintr_core_clock_handler 
+///////////////////////////////////////////////  CPU3 wanted to get xnlock
+           <idle>-0       [003] *.~1  6695.901955: 
+queued_spin_lock_slowpath <-___xnlock_get 
+///////////////////////////////////////////////  CPU3 failed and waited
+             sshd-2187    [000] *.~2  6695.901956: 
+dovetail_context_switch <-pipeline_switch_to
+             sshd-2187    [000] *.~2  6695.901956: 
+check_and_switch_context <-dovetail_context_switch
+             sshd-2187    [000] *.~2  6695.901957: cpu_do_switch_mm 
+<-check_and_switch_context
+             sshd-2187    [000] *.~2  6695.901958: 
+post_ttbr_update_workaround <-cpu_do_switch_mm
+             sshd-2187    [000] *.~2  6695.901958: fpsimd_thread_switch 
+<-__switch_to
+             sshd-2187    [000] *.~2  6695.901959: 
+__get_cpu_fpsimd_context <-fpsimd_thread_switch
+             sshd-2187    [000] *.~2  6695.901960: __fpsimd_save 
+<-fpsimd_thread_switch
+             sshd-2187    [000] *.~2  6695.901960: 
+__put_cpu_fpsimd_context <-fpsimd_thread_switch
+             sshd-2187    [000] *.~2  6695.901961: 
+hw_breakpoint_thread_switch <-__switch_to
+             sshd-2187    [000] *.~2  6695.901962: uao_thread_switch 
+<-__switch_to
+             sshd-2187    [000] *.~2  6695.901962: 
+spectre_v4_enable_task_mitigation <-__switch_to
+             sshd-2187    [000] *.~2  6695.901963: 
+spectre_v4_mitigations_off <-spectre_v4_enable_task_mitigation
+             sshd-2187    [000] *.~2  6695.901963: cpu_mitigations_off 
+<-spectre_v4_mitigations_off
+             sshd-2187    [000] *.~2  6695.901964: 
+spectre_v4_mitigations_off <-spectre_v4_enable_task_mitigation
+             sshd-2187    [000] *.~2  6695.901965: cpu_mitigations_off 
+<-spectre_v4_mitigations_off
+             sshd-2187    [000] *.~2  6695.901965: 
+erratum_1418040_thread_switch <-__switch_to
+             sshd-2187    [000] *.~2  6695.901966: this_cpu_has_cap 
+<-erratum_1418040_thread_switch
+             sshd-2187    [000] *.~2  6695.901967: 
+is_affected_midr_range_list <-this_cpu_has_cap
+             sshd-2187    [000] *.~2  6695.901967: mte_thread_switch 
+<-__switch_to
+            <...>-2294    [000] *..2  6695.901968: inband_switch_tail 
+<-__schedule /////////////////////////////////////////////// CPU0 switch 
+thread sshd-2187 -> stress-2294
+            <...>-2294    [000] *..2  6695.901969: preempt_count_add 
+<-inband_switch_tail
+            <...>-2294    [000] *.~2  6695.901969: 
+fpsimd_restore_current_oob <-dovetail_leave_inband
+            <...>-2294    [000] *.~2  6695.901970: 
+fpsimd_restore_current_state <-fpsimd_restore_current_oob
+            <...>-2294    [000] *.~2  6695.901970: hard_preempt_disable 
+<-fpsimd_restore_current_state
+            <...>-2294    [000] *.~2  6695.901971: 
+__get_cpu_fpsimd_context <-fpsimd_restore_current_state
+            <...>-2294    [000] *.~2  6695.901972: 
+__put_cpu_fpsimd_context <-fpsimd_restore_current_state
+            <...>-2294    [000] *.~2  6695.901973: hard_preempt_enable 
+<-fpsimd_restore_current_state
+            <...>-2294    [000] *.~2  6695.901973: ___xnlock_put 
+<-xnthread_harden /////////////////////////////////////////////// CPU0 
+released xnlock
+           <idle>-0       [003] *.~1  6695.901974: xnclock_tick 
+<-xnintr_core_clock_handler 
+/////////////////////////////////////////////// CPU3 got xnlock finally, 
+but lost 901974-901955==19us
+
+
+I try to revert the patch "cobalt/init: Fail if CPU 0 is missing from 
+real-time CPU mask "(website is 
+https://source.denx.de/Xenomai/xenomai/-/commit/5ac4984a6d50a2538139193350eef82b60a42001), 
+
+and then use the follow bootargs: setenv bootargs isolcpus=3 
+xenomai.supported_cpus=0x9 nohz_full=3 rcu_nocbs=3 irqaffinity=0,1,2 
+nosoftlockup nmi_watchdog=0;
+finally, the problem is resolved.
+
+My question is:
+If I revert the patch, what is the impact on the system?
+Can you specify where CPU 0 is supposed to be real-time?
+                     Thank you
+
