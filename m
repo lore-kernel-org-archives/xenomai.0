@@ -1,127 +1,102 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7583833E6
-	for <xenomai@lists.linux.dev>; Thu, 16 Feb 2023 22:16:20 +0000 (UTC)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202302162216102dbe5e4cf9ccd0b29b
-        for <xenomai@lists.linux.dev>;
-        Thu, 16 Feb 2023 23:16:11 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=LSSy9Nsm655fpkxjda9FqR2377cX5mlSA8AOJHO1U7Q=;
- b=XIaae2WaGhKrAMc3BghxdlmdW38xpnUO+HOV8NoQ+1tEqxoqmulrDHml6PihqAKcCEU9BV
- BjlJh80jKIfgA3JoWpRiKF0pqsCqlNe3Sm1wpOymyMJNu67an9k8bjIpGxPVWTIOMN8luxGq
- TPGJssXzBEu/C51LiEu8bWIXnGrNw=;
-Message-ID: <df1a4ee9ec73edab59086b1054a9b8a5f4e3062b.camel@siemens.com>
-Subject: Re: about rcu_preempt detected stalls on CPUs/tasks
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Yao,Yongxian" <yxianyao@126.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Date: Thu, 16 Feb 2023 23:16:07 +0100
-In-Reply-To: <91565036-8b64-6a00-58f0-877fe83ba153@siemens.com>
+Received: from m1545.mail.126.com (m1545.mail.126.com [220.181.15.45])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FCE2361
+	for <xenomai@lists.linux.dev>; Fri, 17 Feb 2023 02:18:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=eMadMiiGJY2sxVoB51aWjdpp8g3jqWf2W/iqr23F22o=; b=T
+	SQ4O3kXygY+s+0Ui/tKBOIFFbgTSXyLEK9pHgMhQNN8nOvoRNcCLWDLBVCdMfwSN
+	PY7mIQUsEwXygJ+6MRu/NGCveaBQ+hpxzr5IQRPLSLPHBdP8AKQbnsK2KJIVEVHQ
+	uLN49xQJfhiE598lDdwGOEtFTGkrKbSqm3mLv8YcMw=
+Received: from yxianyao$126.com ( [103.161.254.5] ) by ajax-webmail-wmsvr45
+ (Coremail) ; Fri, 17 Feb 2023 09:47:52 +0800 (CST)
+X-Originating-IP: [103.161.254.5]
+Date: Fri, 17 Feb 2023 09:47:52 +0800 (CST)
+From: "Yao Yongxian" <yxianyao@126.com>
+To: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+Cc: "Jan Kiszka" <jan.kiszka@siemens.com>, 
+	"xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re:Re: about rcu_preempt detected stalls on CPUs/tasks
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 126com
+In-Reply-To: <df1a4ee9ec73edab59086b1054a9b8a5f4e3062b.camel@siemens.com>
 References: <502ffef0.6ee4.186548762d8.Coremail.yxianyao@126.com>
-	 <f2b91213-82a0-f78f-9948-3c7f9a13888b@siemens.com>
-	 <6cb72fb7.7353.18654c1e3da.Coremail.yxianyao@126.com>
-	 <31d280a1-f7bd-fab6-2e37-fc9dbdaad400@siemens.com>
-	 <40a7d44a.e85.18657d3155b.Coremail.yxianyao@126.com>
-	 <91565036-8b64-6a00-58f0-877fe83ba153@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <f2b91213-82a0-f78f-9948-3c7f9a13888b@siemens.com>
+ <6cb72fb7.7353.18654c1e3da.Coremail.yxianyao@126.com>
+ <31d280a1-f7bd-fab6-2e37-fc9dbdaad400@siemens.com>
+ <40a7d44a.e85.18657d3155b.Coremail.yxianyao@126.com>
+ <91565036-8b64-6a00-58f0-877fe83ba153@siemens.com>
+ <df1a4ee9ec73edab59086b1054a9b8a5f4e3062b.camel@siemens.com>
+X-NTES-SC: AL_QuycBPmSt0ws5CWbbOkWmEsQju45WMW0uPwu3YZTOJs0gSn9/g4wRW9YIVbp9sWCDAG0oAiWTTJi+txacbJ9Zah9hqZjYdAw78uod2ESDp0N
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Message-ID: <7f8b162e.12b4.1865d0e6f5d.Coremail.yxianyao@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:LcqowABXZTLJ3O5jLTwTAA--.18073W
+X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbiHAkZs1pEJMTchwAAsa
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On Thu, 2023-02-16 at 10:31 +0100, Jan Kiszka wrote:
-> On 16.02.23 02:24, Yao,Yongxian wrote:
-> >=20
-> > Hi Jan,
-> >=20
-> > At 2023-02-15 21:04:34, "Jan Kiszka" <jan.kiszka@siemens.com> wrote:
-> > > On 15.02.23 12:07, Yao,Yongxian wrote:
-> > > >=20
-> > > > on 2023-02-15 18:49:11=EF=BC=8C"Jan Kiszka" <jan.kiszka@siemens.com=
-> wrote=EF=BC=9A
-> > > > > On 15.02.23 11:03, Yao,Yongxian wrote:
-> > > > > > =20
-> > > > > > Following exceptions occur on the Debian10.3 using Linux+xenoma=
-i kernel.=C2=A0
-> > > > > > Please give me some hints.=C2=A0
-> > > > >=20
-> > > > > Is your Xenomai application dominating a CPU for more than a few =
-dozens
-> > > > > of milliseconds? Do you have the Xenomai watchdog enabled (it wou=
-ld
-> > > > > catch such cases, after some seconds)? If you do have such a work=
-load,
-> > > > > Linux complaining about not having the time to "breath" on such a=
- CPU is
-> > > > > no surprise.
-> > > >=20
-> > > > Real-time applications will not occupy CPU continuously for a long =
-time.
-> > > > And the xenomai watchdog has been turned on.
-> > > >=20
-> > > > CONFIG_XENO_OPT_WATCHDOG=3Dy
-> > > > CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=3D1
-> > > >=20
-> > >=20
-> > > Ok, then:
-> > >=20
-> > > - Any other error messages before the one you shared?
-> >=20
-> > That's all the error messages.
-> >=20
-> > > - Already tried if the issue persists with a (more) up-to-date kernel=
-?
-> > >   ipipe-core-4.19.266-cip86-x86-25 is latest on 4.19, last I-pipe is
-> > >   5.4, and we have plenty of dovetail kernels
-> >=20
-> > The customer sites now use the ipipe-core-4.19.89-x86-9, which is diffi=
-cult to keep pace with the release of the xenomai community.=20
-> > We are planning to update the new kernel.
-> >=20
-> > > - Any details on how this can be reproduced?
-> > >=20
-> >=20
-> > Many sites have deployed this version of the kernel. This problem has o=
-nly occurred once, and there is no way to reproduce it.
-> >=20
->=20
-> That sounds indeed unpleasant.
->=20
-> > In your opinion, what are the reasons for this problem?
-> >=20
->=20
-> No idea yet.
->=20
-> Florian, from our own deployments of older 4.19 in our MRT scenarios, do
-> you recall any similar reports?
-
-Tried to find something similar in our internal issue tracker. We had
-something similar in the past, but with dovetail underneath - not
-ipipe.
-
-The first report is about a network inactivity (CIFS timing out). It's
-likely not the root cause but 6sec is a quite long time. Something
-similar was detected in the early dovetail days. Root cause was a LAPIC
-stall. I'm not aware of any related/similar ipipe issue.
-
-Any special kernel cmdline arguments deployed?
-
-It might help to put significant load and network traffic on the system
-(stress-ng, iperf). Still needs some luck, but maybe you're able to
-reproduce it.
-
-Best regards,
-Florianq
-
->=20
-> Jan
->=20
-
+CkF0IDIwMjMtMDItMTcgMDY6MTY6MDcsICJGbG9yaWFuIEJlemRla2EiIDxmbG9yaWFuLmJlemRl
+a2FAc2llbWVucy5jb20+IHdyb3RlOgo+T24gVGh1LCAyMDIzLTAyLTE2IGF0IDEwOjMxICswMTAw
+LCBKYW4gS2lzemthIHdyb3RlOgo+PiBPbiAxNi4wMi4yMyAwMjoyNCwgWWFvLFlvbmd4aWFuIHdy
+b3RlOgo+PiA+IAo+PiA+IEF0IDIwMjMtMDItMTUgMjE6MDQ6MzQsICJKYW4gS2lzemthIiA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4gd3JvdGU6Cj4+ID4gPiBPbiAxNS4wMi4yMyAxMjowNywgWWFv
+LFlvbmd4aWFuIHdyb3RlOgo+PiA+ID4gPiAKPj4gPiA+ID4gb24gMjAyMy0wMi0xNSAxODo0OTox
+Me+8jCJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gd3JvdGXvvJoKPj4gPiA+
+ID4gPiBPbiAxNS4wMi4yMyAxMTowMywgWWFvLFlvbmd4aWFuIHdyb3RlOgo+PiA+ID4gPiA+ID4g
+IAo+PiA+ID4gPiA+ID4gRm9sbG93aW5nIGV4Y2VwdGlvbnMgb2NjdXIgb24gdGhlIERlYmlhbjEw
+LjMgdXNpbmcgTGludXgreGVub21haSBrZXJuZWwuwqAKPj4gPiA+ID4gPiA+IFBsZWFzZSBnaXZl
+IG1lIHNvbWUgaGludHMuwqAKPj4gPiA+ID4gPiAKPj4gPiA+ID4gPiBJcyB5b3VyIFhlbm9tYWkg
+YXBwbGljYXRpb24gZG9taW5hdGluZyBhIENQVSBmb3IgbW9yZSB0aGFuIGEgZmV3IGRvemVucwo+
+PiA+ID4gPiA+IG9mIG1pbGxpc2Vjb25kcz8gRG8geW91IGhhdmUgdGhlIFhlbm9tYWkgd2F0Y2hk
+b2cgZW5hYmxlZCAoaXQgd291bGQKPj4gPiA+ID4gPiBjYXRjaCBzdWNoIGNhc2VzLCBhZnRlciBz
+b21lIHNlY29uZHMpPyBJZiB5b3UgZG8gaGF2ZSBzdWNoIGEgd29ya2xvYWQsCj4+ID4gPiA+ID4g
+TGludXggY29tcGxhaW5pbmcgYWJvdXQgbm90IGhhdmluZyB0aGUgdGltZSB0byAiYnJlYXRoIiBv
+biBzdWNoIGEgQ1BVIGlzCj4+ID4gPiA+ID4gbm8gc3VycHJpc2UuCj4+ID4gPiA+IAo+PiA+ID4g
+PiBSZWFsLXRpbWUgYXBwbGljYXRpb25zIHdpbGwgbm90IG9jY3VweSBDUFUgY29udGludW91c2x5
+IGZvciBhIGxvbmcgdGltZS4KPj4gPiA+ID4gQW5kIHRoZSB4ZW5vbWFpIHdhdGNoZG9nIGhhcyBi
+ZWVuIHR1cm5lZCBvbi4KPj4gPiA+ID4gCj4+ID4gPiA+IENPTkZJR19YRU5PX09QVF9XQVRDSERP
+Rz15Cj4+ID4gPiA+IENPTkZJR19YRU5PX09QVF9XQVRDSERPR19USU1FT1VUPTEKPj4gPiA+ID4g
+Cj4+ID4gPiAKPj4gPiA+IE9rLCB0aGVuOgo+PiA+ID4gCj4+ID4gPiAtIEFueSBvdGhlciBlcnJv
+ciBtZXNzYWdlcyBiZWZvcmUgdGhlIG9uZSB5b3Ugc2hhcmVkPwo+PiA+IAo+PiA+IFRoYXQncyBh
+bGwgdGhlIGVycm9yIG1lc3NhZ2VzLgo+PiA+IAo+PiA+ID4gLSBBbHJlYWR5IHRyaWVkIGlmIHRo
+ZSBpc3N1ZSBwZXJzaXN0cyB3aXRoIGEgKG1vcmUpIHVwLXRvLWRhdGUga2VybmVsPwo+PiA+ID4g
+ICBpcGlwZS1jb3JlLTQuMTkuMjY2LWNpcDg2LXg4Ni0yNSBpcyBsYXRlc3Qgb24gNC4xOSwgbGFz
+dCBJLXBpcGUgaXMKPj4gPiA+ICAgNS40LCBhbmQgd2UgaGF2ZSBwbGVudHkgb2YgZG92ZXRhaWwg
+a2VybmVscwo+PiA+IAo+PiA+IFRoZSBjdXN0b21lciBzaXRlcyBub3cgdXNlIHRoZSBpcGlwZS1j
+b3JlLTQuMTkuODkteDg2LTksIHdoaWNoIGlzIGRpZmZpY3VsdCB0byBrZWVwIHBhY2Ugd2l0aCB0
+aGUgcmVsZWFzZSBvZiB0aGUgeGVub21haSBjb21tdW5pdHkuIAo+PiA+IFdlIGFyZSBwbGFubmlu
+ZyB0byB1cGRhdGUgdGhlIG5ldyBrZXJuZWwuCj4+ID4gCj4+ID4gPiAtIEFueSBkZXRhaWxzIG9u
+IGhvdyB0aGlzIGNhbiBiZSByZXByb2R1Y2VkPwo+PiA+ID4gCj4+ID4gCj4+ID4gTWFueSBzaXRl
+cyBoYXZlIGRlcGxveWVkIHRoaXMgdmVyc2lvbiBvZiB0aGUga2VybmVsLiBUaGlzIHByb2JsZW0g
+aGFzIG9ubHkgb2NjdXJyZWQgb25jZSwgYW5kIHRoZXJlIGlzIG5vIHdheSB0byByZXByb2R1Y2Ug
+aXQuCj4+ID4gCj4+IAo+PiBUaGF0IHNvdW5kcyBpbmRlZWQgdW5wbGVhc2FudC4KPj4gCj4+ID4g
+SW4geW91ciBvcGluaW9uLCB3aGF0IGFyZSB0aGUgcmVhc29ucyBmb3IgdGhpcyBwcm9ibGVtPwo+
+PiA+IAo+PiAKPj4gTm8gaWRlYSB5ZXQuCj4+IAo+PiBGbG9yaWFuLCBmcm9tIG91ciBvd24gZGVw
+bG95bWVudHMgb2Ygb2xkZXIgNC4xOSBpbiBvdXIgTVJUIHNjZW5hcmlvcywgZG8KPj4geW91IHJl
+Y2FsbCBhbnkgc2ltaWxhciByZXBvcnRzPwo+Cj5UcmllZCB0byBmaW5kIHNvbWV0aGluZyBzaW1p
+bGFyIGluIG91ciBpbnRlcm5hbCBpc3N1ZSB0cmFja2VyLiBXZSBoYWQKPnNvbWV0aGluZyBzaW1p
+bGFyIGluIHRoZSBwYXN0LCBidXQgd2l0aCBkb3ZldGFpbCB1bmRlcm5lYXRoIC0gbm90Cj5pcGlw
+ZS4KPgo+VGhlIGZpcnN0IHJlcG9ydCBpcyBhYm91dCBhIG5ldHdvcmsgaW5hY3Rpdml0eSAoQ0lG
+UyB0aW1pbmcgb3V0KS4gSXQncwo+bGlrZWx5IG5vdCB0aGUgcm9vdCBjYXVzZSBidXQgNnNlYyBp
+cyBhIHF1aXRlIGxvbmcgdGltZS4gU29tZXRoaW5nCj5zaW1pbGFyIHdhcyBkZXRlY3RlZCBpbiB0
+aGUgZWFybHkgZG92ZXRhaWwgZGF5cy4gUm9vdCBjYXVzZSB3YXMgYSBMQVBJQwo+c3RhbGwuIEkn
+bSBub3QgYXdhcmUgb2YgYW55IHJlbGF0ZWQvc2ltaWxhciBpcGlwZSBpc3N1ZS4KPgo+QW55IHNw
+ZWNpYWwga2VybmVsIGNtZGxpbmUgYXJndW1lbnRzIGRlcGxveWVkPwoKbmV0LmlmbmFtZXM9MCBj
+cmFzaGtlcm5lbD01MTJNIHhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MHhmIGlkbGU9aGFsdCAKbm9z
+bWFwIG5taV93YXRjaGRvZz1wYW5pYyBjb25zb2xlPXR0eVMwLDExNTIwMG44IHBhbmljPTEKCj5J
+dCBtaWdodCBoZWxwIHRvIHB1dCBzaWduaWZpY2FudCBsb2FkIGFuZCBuZXR3b3JrIHRyYWZmaWMg
+b24gdGhlIHN5c3RlbQo+KHN0cmVzcy1uZywgaXBlcmYpLiBTdGlsbCBuZWVkcyBzb21lIGx1Y2ss
+IGJ1dCBtYXliZSB5b3UncmUgYWJsZSB0bwo+cmVwcm9kdWNlIGl0LgoKSSBhbSBsb29raW5nIGZv
+cndhcmQgdG8geW91ciByZXN1bHRzIGFuZCB0cnVseSBncmF0ZWZ1bCBmb3IgeW91ciBoZWxwLgoK
+SW4gYWRkaXRpb24gd2hhdCBzcGVjaWZpYyBleGVjdXRpb24gY29tbWFuZHMoY29tbWFuZCxjb21t
+YW5kIHBhcmFtZXRlciBhbmQgCnBhcmFtZXRlciB2YWx1ZSkgZG8geW91IHJlY29tbWVuZCBmb3Ig
+dGhlc2UgdHdvIHRvb2xzPwpBbmQgSSB3aWxsIHRyeSB0byByZXByb2R1Y2UgaXQgb24gbXkgc3lz
+dGVtIGFjY29yZGluZyB0byB5b3VyIHN1Z2dlc3Rpb24uIAoKQmVzdCByZWdhcmRzLgpZYW8gWW9u
+Z3hpYW4K
