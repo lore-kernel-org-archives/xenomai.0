@@ -1,47 +1,47 @@
-Received: from sonic307-32.consmr.mail.ir2.yahoo.com (sonic307-32.consmr.mail.ir2.yahoo.com [87.248.110.57])
+Received: from sonic304-48.consmr.mail.ir2.yahoo.com (sonic304-48.consmr.mail.ir2.yahoo.com [77.238.179.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 659AB1C07
-	for <xenomai@lists.linux.dev>; Tue, 21 Feb 2023 10:26:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1676975211; bh=UQ/YTcIOc/S9aoIdEigZn67taNjsGRQzDB+EjgX/6PI=; h=Date:Subject:To:References:From:Cc:In-Reply-To:From:Subject:Reply-To; b=ELpvrQn2NQ3pl1r55iUeEMkixAPPWVZjlIXdKLxvn+Sgc7xNNQWXY9gCaXd8A727Bgtzm2t5Kb0d6cpYbOd4AbSnXOiTdFLdt/+HBqVIifC9OeT7z0nj6JwL+mJ3nAld3V4H+OpNLkuN2Nk5MjosNan7osSsgXKu8jOIF5CwkCo93H/QY0SUmkSIXl5s5k0RKGgK2X7AUDs4KXyQe1qZsOBa0ienUjs+XnXEC1RR/EgrfgdpSWKvD5X7aaYYkZkiYrLmugOd24Gu6IQf5SXgiofU99u+/yhuaVqcZ2KYGHqZBcws2DgmyLDlcsengdzybRwDf2d8MLvQIXAeTtNpwQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1676975211; bh=ZUdwLrujklldjKGV9Y5JaYbYKssrN3dyM9M7MTtel2V=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=QxAHXemjqgDo2IVkFKxXt+GKhW4X2lNZLJdulVi3u3EFGxDAsscxC2m/vSE1SeX49iF3q8r0NkXhZLGBBnVL2Xma1BnWwT3ieodfwaZ+uZXaKasMLSk1A8OzIS1L4t8M2pU6B2ZEFYgHZt5Q/E02jGtedU7Fknu6ugHuAnk2dlFLzf7d+Ho4ueDu3nbtQLHVT9mFzEpKsTAzxg0Zr08/I9kNkh4vN2GGl0DX4q7ml+QMj2bWx5g9FBWssuCyvNeo/QIt5pNxo2bi3XEXAwsF5Z+pRL6zLWn56330QYq2MlGmQUtwJbPgwDwEO7jRiy3xQRBejyR7epJztVFZX+q4Xg==
-X-YMail-OSG: U6IKK0kVM1kIiiCB7k0OzZdyKJJA60SLvekUxDIq6cVjgQN9_8ePdMeg7Vo3aMn
- epJ4TgBympy74fa3drtTpHJfHn6U.WnRhqbyFA0D_a.dA68ZKrP_v3wuOacEOe8ZvPo3acLC9tpn
- t4grDc9HCrC8ySji0gYZGVfbZpu8ZFgdkvtKQYUdIqeODkhqUy2T1h4C.UcqDI1W7FnqTrcRSFVt
- .wGeq8LDIuS3_XV8xrAdEuEMMiR3K1K3uX2PfYb3dLSwIld5tztT5JmvFoa06yu6ewc7mQX9SGQk
- 5FodefpS9BKHz9MtrBpFrwcYEFmoYEdZjcquAvMfr8IQJ5vCZVrY1xcXlrCZUFNzgRGgp7Gyz0ed
- vhPDSFsDyRpEY4hO3yRQMTWwqSnAycJFF42FdEqvDJQht40gjRrwsUv7eywxEDL3HaFTghountqP
- QUVbnPdYjej_6mXAKbNeFLz2Yn.bvAhhdJyBXLF2GREzewM9EDoLAX4qryc2h7kpYfZ8CiEVCMW0
- dNPsaU42aaFg9xckPBulO1LqZIGVWjBrCGU9TAYzDMg3a02vfHtPuSRWFoMsa1Iyc.Rq_.Gl._s5
- SILtn7z3PS6EgnA2oASyhCUU3krCiQHuJVYvXzGemQIRWl4rCRJpcZXDst6TY7UMrnq5wD6Cpl_9
- LjfO0CAoZshoz12m2KNq2_Yolkl782aVHApWTng7f23ExIWEzxjZUWkb6LhWrNjCTBqFnjzvovKL
- pDKSZ0fscvLQdFTIyifW0u0673idxMvg4nZjvKp6YLjyzj2SWFSh..M3xj.EtPUjQ2xy6xBf4wVS
- BDFEIgkzp050btz1WDnJRsaGRy.fFeyR3oviKCqKnzHNrKozNnbOTQ4Gh3ioLHWR7jcR6xVI53g0
- _VHa2BKtraLYWTc31wfL2fJlG6uEpagvfUy78LKP7R0.TkZ5dfwKu12tfW.2BrjCDB.yPjZ.R0Bo
- 6JCXR2dqZwVgVigGOZENACy4bxeaH62xv4b0Z3Z_Qne.mixVuUZ7VAgMEyr385kHvogUamruP2gu
- RltFFSX2DQOa0Rd5Q624EIc0hts2qVXaZcW9uXizXuzGq4Wf6dlsq8Vof.A3O9.T0hrKWwTltSKH
- ZyrNun4BxIGlG66aoJ8LZzJxSHJgqaVpSlGaySBeptR5AH9yqW_eJ2H9ry_VUuuyzT6dBqRihwEq
- kHjUY_77xYBMHc6MRz4DrGOZ4YoR4RRb9dwm0Il71jVWWG2EIYg5UkHE172cNelsRyjMpZzfVDeV
- htbCnf4jU4whCPIRtBqAgD1MDsxfQ7fizZWpfsfCI8zqYA5R.1yI2wXqhdtrzzjcY_YHGrL8zwDT
- XQi34XXtcxKJ8THFR1BvHgmrt.dcGQhJjoqiPdlcWq.F4FKskdqNKceo6q3Fcu5ZLahFD6jy9JuI
- edkA2RBT8o.i_SGMbZ5QsW_jigj_A9FY7RAQsuUDbRpxTl8V6IpGiYsqyJkygIuGuYA1zVO65MPe
- QsFhCsLVhFaiIIzpPvddPOSRxg1UIBZvySnu4tqm0NATIPoDOi35U1qmZ54IntyeSu8sMqkC_Q5a
- tAA4GyO4vp175dTp5ESzDdSRbIsRz4O0xkmKkojGt.HJZPn1mmtgmMhqXWeOZaOgnQPE8el1DgBs
- TbkzUHCi2c4HNtx_pdH9MKmLo3yF8ivVXNisrwDA3QlW9lzVNJFhBYv2GyS0C.JOWdkEJjTrDbVR
- dzGARBbpt1qJkZkjcwvPJgjIzEVGdNI7QWtUOcCOX7QbuZNLqADQnJ7bk.LLj.mK8mqrT3lpn6hQ
- hZpY288u2qnFOJqo8Bgx6j52twd2b0Egz308S.tk6fY7ZyPn1JIxJlSm9Gn6zF6ZsByo1a_RCCid
- OvYe3TdPC7kFLmevq4n7E3cZvNPnCe8VjtP1j60Yh1gdbwxsQYWmdMpWQ84kkR2idvnYb7u7LAH4
- oG3e5Bsua9k1AfPD3zblS.APkTbROrgkIeDBXASMfDxgtZT96h7.8d1REOGB5loPpEu0d0aa5nql
- l.48.KXzgZicZc_lY6DTzGFw1MjmNnp6EvM66OXRLi_.8HMsin3Z6eVqj6ojwCGaBgFPZlaWf8Y5
- iN6sZRJOnnrKeehFTPVUgw5CXJvLk.G0gFTdIa16oM2s2UFOFoYgqCIgQ0RfVcHWYHiA9uvle3mY
- LRrAjZRXnkU8kD4xrwYynQNWNrv9HzknBoI0lmcPiry1CVuzYwYq9oqyMj7xJ3KBLyR4FgaaWAMN
- N3FmlObH15V7d
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 799391C3A
+	for <xenomai@lists.linux.dev>; Tue, 21 Feb 2023 10:42:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1676976136; bh=UkYRrrSVs9YBSbFHYDL+lkRug5QfLZpkW0Kg97jzGQ4=; h=Date:Subject:From:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=sbJBwtTs99ocRK8b8U9HJ8hJY72c+D3K0CIO9jtyjZp7pvGP/JlPnT6t+CdQOTyRtIv3m5D+4mkaJPukL9C2hBul6cjeVoGWhGsz9l6XDA9+IPTgrjkCSohRufaPdzVAF0wRUEWaKnEuNkazUx5BBupINs8OsEzeKKs9pFpl1r6J9BZfTZJAWDFfvs1pF0eYJ6bn6kLSLAXRNf4saCTkqxQFKYzGNK4odao4u4wv5sR3J/DgMClanT2nVRBvKg0M1lHF3njcGk2W1DCZFbjFSuKNB+TENlIg93UocdwOnC6yecMSHjhhQa2ObGoQRr0vc15VhbSVOsUo0A6wI0Er+A==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1676976136; bh=1xzDzWjBU1cPIl3k/wdAj4bVIS9Af08na3qxJ0AO+Lu=; h=X-Sonic-MF:Date:Subject:From:To:From:Subject; b=TXSBg5/tvc4YrPMHWB6m/D5S5bVq6A+6cboZLogM2BdGpufH35m/qVHFq9p+tST54HohcHuomSgb3XXEWYimFhszQdwDdGxIKOX0XIxSMrjrZc1vhx3vlEWgnhWjoD5wg0s8bnSzAduAMQqb0uKLEPiOoA24tOQSUbL8DRe8CphVoJNrJf1iaebWl4oEkkpCYh/GtPsJtJjgLrJxT7wV5cHJ/ZNt0msIJno+k5TMJouRWXXMS6NvWvDg3ktKmvFilFYepxKNKZKuKMS+dYMZzzamsisYAEm9Sb5ZsvlyidiC35kAZGk5zyF9P+atZdMMfuvKBD+TXYyE7ht8yyvuZg==
+X-YMail-OSG: 8VpE78kVM1l0CIF3_aN3p8pYil.bfLT1pbmQITe5Ue5OSNW0eMpEFl9uow3.u4G
+ _rAl6kGRb_UtKRJLaS.O5UmAo_l6TUsnwpJhROKu3kn7yvX7h37N.L3P8pN3ReGROGs29BSoSsY9
+ Mcqh2QQXMHp8xHIwCPxnXWRhQZir9l8W05dFWbRFY9Kq46nrKkLb7vspiT33KSkRJlRLStuCPtyq
+ zQrkuPoLR5NssGYOLSMBS20WLUlSH.XXRisMkkq5JsD9cYngkKQ02Dg7P14EwDexpCAu6RNVI4PE
+ syw0gqI6NYuvBt4A0iUYPPveL1YtoyhjbG8MJDgDTbSKdCeqNK_t6nvJzcm6.uzd5OYqF0V1fPWA
+ NDr2b43ek82sk9a2F7h_Gr1ZP3PvnWPyrAltLNdAB6kBU6MsHnXBkIJ7EZr7r5PS5kDyLN1WmmFK
+ ht_O8SALtdKIrHugWhqzfI665Gu4hUUZpFxXBo0fR7.oV2HwNxHVdfD6eefEnfCZXagNNWytX0KP
+ uoCmPbbxq89QgP1xf_KUMo7LixBXxxuvQbS1yTBLONFDuRk40psimcAAPJ8BoMLJoqxVCtI_qIRU
+ azK0uB6UtDX_q.SyOOPl1cQicnum3ePS6vLkjeB.SGBk6TZ7cbcTk22nFTtbYM7pqCHaDJilY9Tr
+ 27wJJlgLHrwkQAp_GsAMsGa5do_HnqNZ0inGeffo2FBFEUCgh7NTnrj5XOjkEJa93lVmE.gr433.
+ KsjHFj6oUCIA_cHvf162t90ZW4mmXxzFhd.kWTuwbXneDPuLveRI3uvYx_04wTiHgNY045CRKusl
+ hePjI1zjo0x57r8HqvoP6OShBKMpoqJHDq527DqapEx7meRF.BAXGph._NJ6M_8Ao48GXAu09_Tj
+ yXi_.iZFfCM_U6Gx.zd_KYCHQNqpXP_j9mM90pD9quP1eL0_56Kp97rPDdoqPaJJIyotd73ttDA0
+ iY6a8rVNatVyqjROKCmvOPhvM3x7gAxnHTU2WXaDRCnR.oo8vVbcuZTUdsjmayMtlmjEiOLADiya
+ 60aiiCLqHk4rh8j1N2Uvw2lGUmAqF7qS_jZcZd6DWtcKg2KS8CCpHZ3nSLpCwn6qLenXzfYhUEca
+ dFHF6_.Txb_yTlqE_6WQ3v_q3SJvpYa5XA7BtWrjb8.sxXGefKi0pkysr053B3Q5MB2WKGvJNmST
+ IgVFg3wQdSzyLbcYiNYuQvv9TYxVEg3NK4kyH85UCgmMVjk_xPEBZyn4OZjl3_Fy2dAFlANi0Wg8
+ bhMRyiGz8V3vq0AtYrhBMNSVR.VloFzG6IB2juiaKXK8RFZsWkSDTYyUuEzagabODdDw3Ex1JKuv
+ ylP1v8CB53rnVIF5G8piuIZtxkgiF__VnkcltEjnNngARkd1Fn0mLqls2i461A7zbguLAPoUoOpF
+ Dxz6Ljiff9vfQpOZzveybkGkXN5iICvwoRM0.JFczb_C5ZrRX7dLfIax0ojt7d1VPZVw5jVMJIIh
+ Zfj1icwxwJeXDi1lhrDs4Dl3hmJezefxjkeKA0kPFKNFJ9DA5p0TW17QPHPr_OhHoeqLWR2HoBYo
+ OGlj6UCFm8uEdRd2L4GGuZTR9Q6LOr0FB6lAwJIPU1AXTqAXbYoEMH343O.V09Gza_YSna7LIv9l
+ 68y4LN4waNS2OK0qRhKOwDuOo5zKFErU2bvkbIWnEm2Vv68RBhvXxmXHNFj1vmtC7VE0ZjfyTotX
+ xihR1JVDLVAWwpZyny30jVGLAbaIHjyb6UPQKgtNbjTabhD8U02w8s_am3aGtT2yWsowdJcDcw6M
+ sl_GmxPPcvlnXCzThqd58gRcvzVAT0Dv3Urmfay7hPS0FkSx5hMxWgQr.z9w5VRLhz.tQRYIBHPv
+ VMsS3m6ofkehx5W_s22PIlFHbDp4td86kYNY87a3Z2alpPPPpN6b.n4UXOArZIfxKAVic1_va5hd
+ iA9OwTHlAXEY.fFKAdDgoXlV3eMpakTpvp9tAyEEYLrS5O3l44tY1lhxhs_Vw6ZTK_U6elTtfhmT
+ b5jSTT4z.Ixp65mFzUK3e4.xRPVtt1PkTGPId8FwlfIXzYPqDTfkH58w0dgr1XK4YWnvRcxpBjN3
+ cN7.rTBeXy6Xp3pN48C9B_vV39g0fpMEw5L128WgGd3FzF_kATLuJ4MhA0ZNHT8AVO0V8ZVZmKe4
+ XxcD2xYBwZIEwHPinJOEIIzImVV1RhrhQ9mY4I9GgKvWt1d1K8TjjE3B6WvEM2UwcEeSBsA.o9UF
+ SHtwjOIDSPG3w_bnDEyA-
 X-Sonic-MF: <mau.salvi@yahoo.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ir2.yahoo.com with HTTP; Tue, 21 Feb 2023 10:26:51 +0000
-Received: by hermes--production-ir2-65c64dfd66-q88mm (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4852639f9dccbf6ce68feb3060d055ca;
-          Tue, 21 Feb 2023 10:24:49 +0000 (UTC)
-Message-ID: <04a817d8-5792-c00b-8533-488cbc24cb4d@yahoo.com>
-Date: Tue, 21 Feb 2023 11:24:48 +0100
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ir2.yahoo.com with HTTP; Tue, 21 Feb 2023 10:42:16 +0000
+Received: by hermes--production-ir2-65c64dfd66-hwhd6 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 9f183a554ffa4253bf97dd9aef6b6f0d;
+          Tue, 21 Feb 2023 10:40:15 +0000 (UTC)
+Message-ID: <02c53276-6a36-8377-4792-575274793c66@yahoo.com>
+Date: Tue, 21 Feb 2023 11:40:13 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -52,83 +52,108 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Subject: Re: undefined reference to `fuse_main_real_compat25' when build with
  --enable-registry
+Content-Language: it-IT
+From: "Mauro S." <mau.salvi@yahoo.com>
 To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
+ Jan Kiszka <jan.kiszka@siemens.com>
 References: <fc2f8e65-dce5-452d-3789-70ebc838abf2.ref@yahoo.com>
  <fc2f8e65-dce5-452d-3789-70ebc838abf2@yahoo.com>
  <MN2PR11MB4285DF9642B16AE3F170431FF2D89@MN2PR11MB4285.namprd11.prod.outlook.com>
  <b953b20d-f866-5bec-faf3-f8560354bf59@siemens.com>
-Content-Language: it-IT
-From: "Mauro S." <mau.salvi@yahoo.com>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
- Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <b953b20d-f866-5bec-faf3-f8560354bf59@siemens.com>
+ <04a817d8-5792-c00b-8533-488cbc24cb4d@yahoo.com>
+In-Reply-To: <04a817d8-5792-c00b-8533-488cbc24cb4d@yahoo.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Mailer: WebService/1.1.21183 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-Il 08/02/23 09:21, Jan Kiszka ha scritto:
-> On 08.02.23 03:27, Chen, Hongzhan wrote:
+Il 21/02/23 11:24, Mauro S. ha scritto:
+> Il 08/02/23 09:21, Jan Kiszka ha scritto:
+>> On 08.02.23 03:27, Chen, Hongzhan wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Mauro S. <mau.salvi@yahoo.com>
+>>>> Sent: Tuesday, February 7, 2023 9:46 PM
+>>>> To: xenomai@lists.linux.dev
+>>>> Subject: undefined reference to `fuse_main_real_compat25' when build 
+>>>> with -
+>>>> -enable-registry
+>>>>
+>>>> Hi all,
+>>>>
+>>>> I'm bulding Xenomai 3.2.2 for x86_64.
+>>>>
+>>>> When I configure the library with --enable-registry, I get the error
+>>>>
+>>>>    ..
+>>>>      CCLD     rtcanrecv
+>>>>    libcopperplate.so: undefined reference to `fuse_main_real_compat25'
+>>>>    collect2: error: ld returned 1 exit status
+>>>>    ..
+>>>>
+>>>> libfuse-dev package is installed (the configure script finds fuse), and
+>>>> it has the function fuse_main_real_compat25 exported
+>>>>
+>>>>    readelf -Ws /usr/lib/x86_64-linux-gnu/libfuse.so | grep
+>>>> fuse_main_real_compat25
+>>>>     318: 000000000001a500    14 FUNC    GLOBAL DEFAULT   12
+>>>> fuse_main_real_compat25@@FUSE_2.6
+>>>
+>>> I do not know if it might be related to fuse version. In configure.ac 
+>>> , it selects fuse version 25 but you are using 26?
+>>>
+>>> if test x$use_registry = xy; then
+>>>          PKG_CHECK_MODULES(FUSE, fuse)
+>>>          FUSE_CFLAGS="$FUSE_CFLAGS -DFUSE_USE_VERSION=25"
+>>>          AC_DEFINE(CONFIG_XENO_REGISTRY,1,[config])
+>>>          
+>>> AC_DEFINE_UNQUOTED(CONFIG_XENO_REGISTRY_ROOT,"$registry_root",[config])
+>>> Fi
 >>
+>> That's a good hint. I vaguely recall similar issues when building
+>> against a newer version and trying to run that against an older one on
+>> the target.
 >>
->>> -----Original Message-----
->>> From: Mauro S. <mau.salvi@yahoo.com>
->>> Sent: Tuesday, February 7, 2023 9:46 PM
->>> To: xenomai@lists.linux.dev
->>> Subject: undefined reference to `fuse_main_real_compat25' when build with -
->>> -enable-registry
->>>
->>> Hi all,
->>>
->>> I'm bulding Xenomai 3.2.2 for x86_64.
->>>
->>> When I configure the library with --enable-registry, I get the error
->>>
->>>    ..
->>>      CCLD     rtcanrecv
->>>    libcopperplate.so: undefined reference to `fuse_main_real_compat25'
->>>    collect2: error: ld returned 1 exit status
->>>    ..
->>>
->>> libfuse-dev package is installed (the configure script finds fuse), and
->>> it has the function fuse_main_real_compat25 exported
->>>
->>>    readelf -Ws /usr/lib/x86_64-linux-gnu/libfuse.so | grep
->>> fuse_main_real_compat25
->>>     318: 000000000001a500    14 FUNC    GLOBAL DEFAULT   12
->>> fuse_main_real_compat25@@FUSE_2.6
+>> Jan
 >>
->> I do not know if it might be related to fuse version. In configure.ac , it selects fuse version 25 but you are using 26?
->>
->> if test x$use_registry = xy; then
->>          PKG_CHECK_MODULES(FUSE, fuse)
->>          FUSE_CFLAGS="$FUSE_CFLAGS -DFUSE_USE_VERSION=25"
->>          AC_DEFINE(CONFIG_XENO_REGISTRY,1,[config])
->>          AC_DEFINE_UNQUOTED(CONFIG_XENO_REGISTRY_ROOT,"$registry_root",[config])
->> Fi
 > 
-> That's a good hint. I vaguely recall similar issues when building
-> against a newer version and trying to run that against an older one on
-> the target.
+> Hi all,
 > 
-> Jan
+> Yes, I'm using libfuse compiled with FUSE_USE_VERSION=26.
+> I'm building in Yocto.
+> 
+> I tried to
+> - change FUSE_USE_VERSION=26 in Xenomai: does not work
+> - change FUSE_USE_VERSION=25 in fuse and rebuild it: does not work
+> 
+> I finally removed the can utils from the Xenomai build (I don't need it) 
+> and the build completes correctly.
+> 
+> Seems that the fuse symbols are not found only for can utils (don't know 
+> why).
+> 
+> Thanks, regards
 > 
 
-Hi all,
+Replying to myself: Xenomai does build but does not work:
 
-Yes, I'm using libfuse compiled with FUSE_USE_VERSION=26.
-I'm building in Yocto.
+/usr/lib/libcopperplate.so.0: undefined symbol: fuse_main_real_compat25
 
-I tried to
-- change FUSE_USE_VERSION=26 in Xenomai: does not work
-- change FUSE_USE_VERSION=25 in fuse and rebuild it: does not work
+Strange thing is that /usr/lib/libcopperplate.so.0 does not depend by 
+libfuse2 (that have the fuse_main_real_compat25 symbol exported)
 
-I finally removed the can utils from the Xenomai build (I don't need it) 
-and the build completes correctly.
+LD_TRACE_LOADED_OBJECTS=1 /lib/ld-linux-x86-64.so.2 
+/usr/lib/libcopperplate.so.0
+	linux-vdso.so.1 (0x00007ffe6ed14000)
+	libcobalt.so.2 => /usr/lib/libcobalt.so.2 (0x00007f21fc308000)
+	libmodechk.so.0 => /usr/lib/libmodechk.so.0 (0x00007f21fc303000)
+	librt.so.1 => /lib/librt.so.1 (0x00007f21fc2f8000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x00007f21fc2d7000)
+	libc.so.6 => /lib/libc.so.6 (0x00007f21fc10a000)
+	/lib/ld-linux-x86-64.so.2 (0x00007f21fc355000)
 
-Seems that the fuse symbols are not found only for can utils (don't know 
-why).
-
-Thanks, regards
+Other hints? Thanks in advance, regards
 
 -- 
 Mauro S.
