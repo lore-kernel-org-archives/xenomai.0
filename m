@@ -1,115 +1,94 @@
-Received: from sonic312-45.consmr.mail.ir2.yahoo.com (sonic312-45.consmr.mail.ir2.yahoo.com [77.238.178.132])
+Received: from sonic307-33.consmr.mail.ir2.yahoo.com (sonic307-33.consmr.mail.ir2.yahoo.com [87.248.110.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A31815392
-	for <xenomai@lists.linux.dev>; Wed, 22 Feb 2023 13:44:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677073488; bh=GWvxnjCkLZVQ3x3JpL5B90zrpiCcOh1oNE8jBVIqZTc=; h=Date:Subject:To:References:From:In-Reply-To:From:Subject:Reply-To; b=XhkswIKnfx9PdrwgF9Fy/rMWnP9JTsXNdf6YZ6brUtsVWp4AJz7bD5QGreuUhSgu2ul+s9jtG1NTxHaEqIrm7Ch8seE//xtu1FFO/qnYxNHPg6MxbJvRDDLWafZM6XllsVBSu5kxsoSzV6JCf5ZiAr+ce9F0nPLvOEujeveWsiq37FPSFK90XxvmhRG0nyv6T7wAYAqdB5Zb+EJwIf15ayLSD6K2nVki5UqiZRHa8WxAIqrLjoaQa5k31/psJU8t06WNnWukOATVJGrNi1k9FWepiUOTv7dIdDjQa8uQ1dFWAQLm/m7IgHOehD+RfcOepbygdO2gb8nKxREiFeeKdw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677073488; bh=D65qLcdqYIjh2Mj2eMo/ZxvEOuJYzn6EYZx7TujMy0V=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=SWwpZ9Oj3YkP8WutydToP//DXZuJzqLJGBM3rzqtRQV7nlbGGvp6yk2SH/I80/mZnu9JBrR3b7C9vCj3Adj1ldAuFi8q6TTnUbpjFNorjz+q9zWgIhQe0jzbia0/uh1J7lP4+EvoRA1ZEcIuXdRPHqltEw88OZ8Zj4S0+LsvBbsUeBOU7ccqhBwcfUz/kujBWXZrdl0M6yglqwsZyOvDzJN4oY6oJ3KdWhiSh5ohymie/WZi9/5A+2wjTTeOn6nnPNBs0QMJULwudlJmqFENa5WRovUPd6GZ5TA16zXqT9ctKf8xRQgi8ZI4fdZ2niaUk0sGgi5lzC4+IUP++MPFKA==
-X-YMail-OSG: FzGWvosVM1nQhdQoMvAuE64d4FF4ba.rFNjyt.gMNApHSvGRhV2O3XTEWTEPjEI
- 3Btf4kqRvKwgHMiXUg8MkK2dv_ifbwqfM5OnE29LfvRcHW2BnmqP7mZfqZNJ843la.B8p1c8pBbD
- FZa0A0uCwj245OWZn_J98IpDAVl_DhFooHdyqcg9.6lEvE3MMpf6frKVHl_otg7h7eHeBnDinZky
- 217Z2IuN3o8Y65ZGrBu5kZJBC1WuXcRXwG1zT.GyzfdTgncHlDlKqBc3a2tRMdyeri80Qhpii.jV
- d9cLyWvNN6gJdh58T0iscDuPLlV66m_Uz4IXRITFkaQTUrlIfQ5MeNj6JWfvU1MCMvK5c55u73WZ
- Miy2C_.apyyrE43BWsHoEmrebA98ereJBSDKKa8bNp3WgbimG_ulqd5D65Tn.O4tlSHY0HQoRQBV
- rb7bh02_wYDgEE1J43KMhBkIqrBkCdGlkQRAD4C0sL_FzA1sPhzFNXU5J0D.yymheqY4bLl1lphp
- 38vMfp3SPAu.3vFIqk8T9XzeEUfOvdKZeEgYDZ8076RoD6iE3zr9s9t6aPRXofQBWv7BvV7Vf2wc
- LfJH4AvJaE0pTr_fXUOIsZIK23XjbDDQSMGYUMjOVNg3r0zIaEXuXGQYrWMrD1rdmnKqDSkFBI8M
- o7NkQ1HsHng9LrRBvkuL7T8_5G5KyuaSdhm_pYvVwx_poiBI2li1uW1CBTexehZhz5Qf9HpD6a3l
- t3yoXbG6ZNFGOck6ux3kfWbLdpdRucuM36OjjKeFyhThSSE8KKCcXtf1v35DdXyxc3OmCeJkNePC
- kKOrBGmo3IyMGpAnAWnH0ZybgKbASChJNn9_CibEWYkRPxEMjur.8YfIYH9IAWdukl3wCCeyC4AY
- WLqz.X24gN0qqEqCnDn21mKVAUYItLvu_kLpgPwn3d9wl3D4KBwhCXfSU0ZLR4muWN.73YgWmd.P
- 21NrDlMBIBvG0W9eyT3cBs2kTyTduMqMJlHgZI8XXawamNYZxgdHwn_o5LsolknRtfqDZcEuQmMy
- PC0rAz11HRQoEd9GvoGKv.YzROLlXiKKOtWmUD7_76EyJi5gkh31CnNIxqaVGv1.7yEh7ZGaKiSS
- 3C3Q6u8bg3Kig.NEkgOnVZqB.25mX_7_bLIPcDI6jkhgWvt.lkOqje3DibVJTKKaCmoupH7SOCgY
- yukyi8Eoc4zZEk56GJff062htNQXkrO_IiLRXSDd4VHzu3C_Q2fOpIjXoyM3K9onwX41RN51BMYe
- 3OzEprBn2AvjU1m.rIZCPmoMfJEfdzBoZVGeL1f3dBqrIhI4aeY8Wjd.DNxy.0sbK0..DYOSMo7c
- ekZ.I5XzwdZa49mkK7VkC2.ykJU_bQAxoyXr5e.myEc0LcUCjAOh19e2.N7PqxQEK5VDfP0ZyJx.
- nzebh94zaQGuzsBbMuNYdF2Nl1z5KktbmAtV4OpOuOsUVhrJYfaNqSI8i1s.1G1CPAQE05Jy.yTQ
- zvX8_BVNmZCkHvWmICAN2UJS_LXpGr5P07PWK1w0cSg6DYC7hengHJ7t5FNinM9pnha_3YhUcuAv
- cMEkEzRpbHf0.jhDAAK.6E_FX79kkR_32g_qsekMu1OfuDCbRXmvJuy.CgglHIRSiMyG1vsWCIid
- Jv3wKwZoDwfbhiNJqtEdTSvQ045pnc9oyqnr5YJ6VL0c3WF.1a_nwO6fKG0kLEjkaaORfMI8Pc4b
- 9jlCou4HUxM_1F1AWs5nmPH_DK6balPGaYC0PJ9QHNPuXsh6gx1PT8Q1SKJjUpe15oH7w.k3D2Tv
- gvbNuMFVB7ZCITvBUTglNSZ03UXgnt6Tix6m3avm13lAb1vi6NO3nmhsaB3ekW1nhZV7S_2Xfk.g
- wpL_NoEkvHIIFzLP_R1zUAWp26pBnJgEcPsmhvRT6JMofZqdpUBeIWUPnAFGucI7Wjnp_0bgDckN
- p0m.9qtj4Rx.FRTNSK.aZXtTkf.EN03wnEaKPPzgEGBk6438lBuErYYT5DT6CUtmsswo7RkobjE5
- VUfRDkOKw8cA2Mq9c6E2RAxbg5MASz_1Y65B6aMnPK5RJ.ci1Ea5vRja1k3OIVuFFrOUTDQGa9j.
- xwc_0b7v1vKSv7RTYJOkk70JOazUgrNwiMceHl8Uxk51lAiRO0EJkNAw9UMeQ3q3YKciwpT7nw1s
- ZbPq3jXoxspjOgcP9f7bF4VZ7DhBEsIg8dGAb0I_L8AkjUTQOJUyHCtGW5TcPOOG50iqQklYCTHb
- NhRHoph1M1QM-
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0AB5392
+	for <xenomai@lists.linux.dev>; Wed, 22 Feb 2023 14:07:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677074874; bh=qq0Du5mvTmdJy/r8ww5nIr0Y7VKqvDWDxAsyQFqTyGg=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=ebzHMYGcb2Vxa53O94nGxD6sFe0JHOVvEWv4DIItnynk4+dNRMUDocyjz5wpROF4dWvZ05GFUdE30jjHsDgcxCli/9LfUxcBrBmYOFJOsvz1HCYMgVV5P1cEmaY7flXlhRiSBJqIkQDTOdQDVuepwVBYiWvUWDfIlkm6bk8MVsfqkC1u+uHckWrWMxWJKY7Km7nEQkVrCSSFHNzxKpwYCghwr9wleClx3upfBL+lY4f1eTAcGzzV2HAjp5iV8GUSy7+cgOh7jobcxqipVoQy9JHEhC9j5zvumIQiVcQPfQn18KdrCeIc3sc904N2O8IZwn3FBNNvT/gcbt3ewo9rlQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677074874; bh=WptaceeLVkakU0phP11C4uipf8HpPXl7J1A+C1Zx1wX=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=FHdYd6FBizS2aCnPMOUnFjUA1NBhkG3oKuwqVPghyKFMkqGs2qBm3EEvHyDDL/OfY8p37qCR9nUMLlT+UdE289MJ1UGWrpMbTtvO1qH+epmU1Ztu1lefU5wgc9dciYFQoWbJW5w9phS/1vlTl8OVZGj3Bple7cv1FIz4WHcWB6lN91PFtMPYhIguGrlUlLEXKSylJS+hE/oFwmI97kOMdtZIaxm5Hm4XJhS3otNngvOvTZ5kLJU9n9t0sAELhQMrtri25aSWLSlM/BHZabN0tXv5MWEMRWqzRvVFogX2jYTQkvFXd6hhxtapH3B11OLXoRUP+JV7WuXApnCV8cmuMg==
+X-YMail-OSG: 5eSZl58VM1nVD3QGKYrVM1u2IIN9KLXtaU7sXn8j4Uz.mIMtH6Xog9jN6NemkFf
+ KPecCAbz3Qb1WAMgl3DLCl.G14K7H1o9YC5O7.3LfnDUvHedNzvRlEa_VaSD7LVXxGbg_z0M3BzS
+ hBdjcuRgSxSMg8kbN4hB_s2danYXFQW8Sk2SG6AMsHzORymCPUt.n2T94VOx_GKKlDEzCEAg8rOD
+ cLFQxh0RGXYlW8FRadMY0B8Fb6ciuGIjkGl4k1zIL6kZeEmb8G8CzhKvh4hoYXR.h80cYGzk_U7D
+ qbNQ87KXxibD3ncfeiAW7d834JHG36HWPVlckbkb_.Ql1KD04QYeLFhqEQ7WJRI4dF.uH679Xr5a
+ kX9CWjLifCbXN6Zr8.qsZIbXShP1RMTJTaOeRrSeh2buSpZ28hbjaG9FhWW0qgWzt7VtQWKZQ2yB
+ B9JySz7Vz6tLkG6oZk..gu0HhetwWiXNOfb36FSJoOeoqb_vvEVdNUanUHLCUGsRiWWEWcotemfr
+ yGDNi1E4gi99aQX5Tz_eEZ9thIXeR7RzjDbzpdHgPWwTu3MIdpXq8XPyEkRljM7trD5PLEOlnsMm
+ 7UIzhUUGkMeF7E9yd5vMo2uFm5wyZMrZzzpr1vP0B.AcotEn84T5ajic1HafL3aZiRT2PrEhE84h
+ uM01qP9U8kLxXtts0Y6Dw1bvKxiK.r2y171VScDF..9myHwBffQU4TyzJ8qvP4MHGOfVah5ILtz7
+ 7xgZLjFW7q_E5ZrKI2Fn_G3UVqRr2R5KqaNB8SIF6UrhLTy0pwMieg1uS78SYPggs_lW5NqDrbVw
+ d8LEjKR6_aokZZxcWe.45UfDayQCe5e0E.JAWnoJbLIzub5pOF3WuqGsgweXthVgkrhbBwE87wgl
+ tSM.hPAIJUhoYqjNBGBg.YnFoX8x2S3vkF.A17sOpb.9rWSdVo6VbbZe.p2lxSv6fKdAgZcDkBZ7
+ fmaS2mlSFgchwAXtsZ4BpEKSAiywPnJJLDz3Iqe3PBwhvFgo7Uxc0b5Yo4yZIMdbTzr6J458k6xO
+ BzC3agsJCVvh9XZ9awogvf8_hgDg5VZAvb.iq8VnXFqM.9GawM7INHSsSShR5yAgzlBP_3_qOif_
+ B657_KsoNbHSvjaC5XYun6tRmbkMr1w8fwFOm.M6Eib_4tu_0flhfMvxmE4tT6HLqsvgER85SPXk
+ s.Ub.eNac6BpE_Q05emmpryfCQmqr_TcgyqEz5rWO9Eu0SzkxPL_84QeTBF5O_ZO60psGj7mcbN8
+ yWDD1mB0AhDCdPgshBn67OHIigEVPmSji3X0F_vBpTrAsBsN_xY_Myw_890yhY4_cUPpKgnQgrNr
+ TI7vLvJUiN10wrEg9O.7Oql4HpqJR.kBquyg6_VKPq.o3pon5J_rxJpTfpZ2dshFj1qMkNfZmpmA
+ YR9vcFu.WDiPC_xzVElDSCXq5n6PfoTJa15lM4cELr45Z4E_uBON.PFjRC9lcrdYuBhcX9D9.R_1
+ v.3R_kWXUnhnn3ekFgw2UZsQL0oSAqymuspF6XZVVCGR1U0haeAqfhXqOsPHplwGFefvTQHew4dI
+ PC71wWxNrNLJahxb2nD5GiSAAebuqlnwdC.lYPQUtHWolJyt6TXj6slVTFUIsxL.Ky6KiIYfAxka
+ sefSdyaWUbykYabmp6h62VKcDlEuYotG7ORmXSskTjGuLJXeTymdrPqIPcucGTfYmpr_hKDsAn2L
+ YeXdT_el68InRNDU8g5MqdkUXGx_tWHBgPkqDbH1cnu1YxDAEVf5R4b1QZx2965C9pM7j9IfCI9P
+ 7bm2o1XprUbibdCo6XHbzuLTazaiDNJDhxJ_d7g_5JY1hRsaKvdCT6vxf6rcXev6dRf4ZYbkAb3b
+ OLcPZvm_K3oKVqh61h6F3x7zZH4Nmm3WdkWgXulV4GUaHsX8XCi3wZDy3rvuA9XPQ5y2Y42O3_kY
+ L4BnFVcUOMD7bwbG6m8DNPzOx__F9L9eCKDP9swelyw0EgfBRXVnbn8th4xs9PYDICBrAP0yMjDv
+ _.2QCS.hl5lMiyludGYKa7Vi9JRcH1wrBvHqiocJ983xh5SSf6XfhAUgL_K7PwP1wDwCzlT6FmDl
+ ApmtXEd1i4XF3p3u_jVDUsg5Ip7xfGLIjvECnebV03ODr2SjECl4RjjkZqBgzw7H32aiGu.t9hTo
+ J3Ma3vlnuCiFTPkwTcR3UD2t24vl4jXXiV649BG0ZucTlQp3EiRPnQHJTUky0gydgjrzlh6CFzDH
+ 7bPn_kg--
 X-Sonic-MF: <mau.salvi@yahoo.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ir2.yahoo.com with HTTP; Wed, 22 Feb 2023 13:44:48 +0000
-Received: by hermes--production-ir2-65c64dfd66-ntl7g (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 2ee39e0183a097e2e2135ab023289c5b;
-          Wed, 22 Feb 2023 13:42:47 +0000 (UTC)
-Message-ID: <70e1512e-6697-4752-117b-ba50a3dc31d0@yahoo.com>
-Date: Wed, 22 Feb 2023 14:42:44 +0100
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ir2.yahoo.com with HTTP; Wed, 22 Feb 2023 14:07:54 +0000
+Received: by hermes--production-ir2-65c64dfd66-pqdpl (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID c283dc74d1e86dfb378068521dd9a5a3;
+          Wed, 22 Feb 2023 14:05:53 +0000 (UTC)
+From: Mauro Salvini <mau.salvi@yahoo.com>
+To: xenomai@lists.linux.dev
+Cc: Mauro Salvini <mau.salvi@yahoo.com>
+Subject: [PATCH v2] copperplate: sysregd: fix Makefile.am
+Date: Wed, 22 Feb 2023 15:05:43 +0100
+Message-Id: <20230222140543.19880-1-mau.salvi@yahoo.com>
+X-Mailer: git-send-email 2.17.1
+References: <20230222140543.19880-1-mau.salvi.ref@yahoo.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] copperplate: sysregd: fix Makefile.am
-Content-Language: it-IT
-To: Jan Kiszka <jan.kiszka@siemens.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-References: <fe268669-3bf8-627a-05c3-6231e44cead5.ref@yahoo.com>
- <fe268669-3bf8-627a-05c3-6231e44cead5@yahoo.com>
- <f7897511-3723-4962-dfd6-f25466b50f94@siemens.com>
-From: "Mauro S." <mau.salvi@yahoo.com>
-In-Reply-To: <f7897511-3723-4962-dfd6-f25466b50f94@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.21183 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-Il 22/02/23 14:29, Jan Kiszka ha scritto:
-> On 22.02.23 13:51, Mauro S. wrote:
->>
->> To avoid following Yocto error:
->>
->>    do_package_qa: QA Issue: File /usr/sbin/sysregd in package xenomai
->>    doesn't have GNU_HASH (didn't pass LDFLAGS?) [ldflags]
->>
->> Signed-off-by: Mauro Salvini <mau.salvi@yahoo.com>
->> ---
->>   lib/copperplate/regd/Makefile.am | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/lib/copperplate/regd/Makefile.am
->> b/lib/copperplate/regd/Makefile.am
->> index 3b14e9863..590a47c2f 100644
->> --- a/lib/copperplate/regd/Makefile.am
->> +++ b/lib/copperplate/regd/Makefile.am
->> @@ -1,14 +1,14 @@
->>   sbin_PROGRAMS = sysregd
->>   -CPPFLAGS =             \
->> +sysregd_CPPFLAGS =             \
->>       @XENO_USER_CFLAGS@    \
->>       @XENO_FUSE_CFLAGS@    \
->>       -I$(top_srcdir)/lib    \
->>       -I$(top_srcdir)/include
->>   -LDFLAGS = $(XENO_POSIX_WRAPPERS)
->> +sysregd_LDFLAGS = $(XENO_POSIX_WRAPPERS)
->>   -LDADD =             \
->> +sysregd_LDADD =             \
->>       ../libcopperplate@CORE@.la    \
->>       @XENO_CORE_LDADD@    \
->>       @XENO_USER_LDADD@    \
-> 
-> This was heavily mangled. Please check your mail client settings or use
-> git send-email.
-> 
-> Besides that, some explanation why making the same settings
-> program-only, rather than global, would be good to see in the commit
-> message.
-> 
+Settings in this Makefile.am are done without the sysregd_
+prepend, differently from other tools (e.g. utils/corectl)
 
-Ok sorry, I will resend it with git send-email (I need some time to 
-manage it to work with yahoo/oauth2...)
+This also avoids following Yocto error:
 
-> Jan
-> 
+  do_package_qa: QA Issue: File /usr/sbin/sysregd in package xenomai
+  doesn't have GNU_HASH (didn't pass LDFLAGS?) [ldflags]
+
+Signed-off-by: Mauro Salvini <mau.salvi@yahoo.com>
+---
+ lib/copperplate/regd/Makefile.am | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lib/copperplate/regd/Makefile.am b/lib/copperplate/regd/Makefile.am
+index 3b14e9863..590a47c2f 100644
+--- a/lib/copperplate/regd/Makefile.am
++++ b/lib/copperplate/regd/Makefile.am
+@@ -1,14 +1,14 @@
+ sbin_PROGRAMS = sysregd
+ 
+-CPPFLAGS = 			\
++sysregd_CPPFLAGS = 			\
+ 	@XENO_USER_CFLAGS@	\
+ 	@XENO_FUSE_CFLAGS@	\
+ 	-I$(top_srcdir)/lib	\
+ 	-I$(top_srcdir)/include
+ 
+-LDFLAGS = $(XENO_POSIX_WRAPPERS)
++sysregd_LDFLAGS = $(XENO_POSIX_WRAPPERS)
+ 
+-LDADD = 			\
++sysregd_LDADD = 			\
+ 	../libcopperplate@CORE@.la	\
+ 	@XENO_CORE_LDADD@	\
+ 	@XENO_USER_LDADD@	\
 -- 
-Mauro S.
+2.17.1
 
