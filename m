@@ -1,195 +1,131 @@
-Received: from sonic310-37.consmr.mail.ir2.yahoo.com (sonic310-37.consmr.mail.ir2.yahoo.com [77.238.177.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2046.outbound.protection.outlook.com [40.107.249.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 909C31FB5
-	for <xenomai@lists.linux.dev>; Wed, 22 Feb 2023 07:21:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677050491; bh=OLzvhctcZshVTig50qxus4Hn3g1NEjM6UH/xdAQzje8=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=hkqzFDFDYlg0jxWPGToxCfS8pzOKgnbGymXhMzGcsfGYyYbrAKNaALUyeO64e7z0foKld/KNfyCldXhSb3r3LklwX7YitqnUcRdQYnYeYFOa+BFHWxQvo4zt8iWjCufz1thvv66Op3TZk6QB9dIQtdQ9gyMn5fqVuLvys6Srur5Pal9xHGFWPruqsxUEuizyqeXjXVA1DyC8lzxo7+jTEDzrCU4CUsAqIRDF77GRAZFhOjeHmvlTbfSzfe3PoNIKruwWhcDygCJXIg6xJBH5+H3523aemIHX2wnSHsyTufX6gr0gf799xgy5kPbL7GV8Drj4pnj1Hj4N0hrPERdWwA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677050491; bh=xdA/CYCxxsxK8Gi7e7K1CVSbpAivTCiEBVhTCI3F+K2=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=rRfrbDp/hDKc/kYFwn4ZOYEJdgGH2IIED+QGOwrJWZ09zyf9laptILtobnuRlnGEV5G3Qk9TbVvnY+b/k0p6POUu/gCJkcfAncVOahqzSlbbAKTHRc4G2kPhxXXsF1ZkKmRa5NOgxWrOS1a9l9zNos+j3gL0GQAwMb7AYsXJu+LwoERVIaPzZMvcK/q2pN6H/IjB182UUO2aiuMYqJC1t1ZQSBkb96ihspZRZy9ChQHHPJyWZkXvScURZzakb0YZkoqwvYOeUU0iAv/31tOlvLltoiKhqYfBupD5odAEfX6uhVhfVt73zptxtvHuJF9jyJo3dsOE6Ewf32KzwiqhYg==
-X-YMail-OSG: nVsGV78VM1lRxpX1cN2FkSdgr4fAkulwJMMBa1iUDIagvkWFLKrlyiB9O9uXekS
- jL_L08FUeYapo8iTfSPUAsUTy0yk6phQqiV8JHtKyMXkXOTBHJEuTZv8Lukl8DNr2ZTlpWxtri.2
- DkIFKQ8lReLOijwAzb1dM.wqGoKd0UtFZl.XSLX5uf_hO4fVMdEK7ckdxD.ozX3v4E.4fdXdps8o
- MBMf27d7hEAvSuPaoRhv_mzqnSmZhj4QNTV6ue2FPcR5U_eAL9_0Fu8X6OGVNiaprxO7fi4XIMnh
- aokCcB.lwMONQCQA0O53aQWOHywvHR.Z7tOIK3NsPSnTYvhDRLb1j._E3bPaXpYrYJyDmWKwJZyZ
- Xx.0bsiPXMWrdMnIixNAfnx3tfmprEVQnaU63Jw3I0s7ppD1RxI7_5t1r9XVqi8QqjFO2TlJ_pv0
- 8MEiYfxRSy6xx200XEacgbYBnD1aWeeWGCzFp9alZLYQ_qJZRbllUVU1G5yW5xypz7.Uk2l_0zMz
- jCjslwwouocefddKPbIu_tLnItQUD6mKDdq5E7gk6XlcrWz9wcSRri5zqlHBiQxboymR7iuHQy5n
- Fjn9TNpa9UHtWdir_g1c0MS.4VbBrCmjTQnU6JoZXDv8Gl369RSizJReDXHlxs9GjKfdEhr_LwKC
- Pct13vAU_s60QTHYiG.o50r5ez1uu1TQGxmS4quQSTbpjSLuLk7KvcDo0XBnYvRDHQnglR5UKl3H
- Gbq2rhcrV67Xry9QOsUib4c.xFVVXznAJ1kH9VnQrEhFHEWXO1IYf2M9z3AOjJZxag9rAowCDmPf
- foz8wjFtCayYyQutY.b2Gb6uqwaDQl58OL3anYjFTLMuXcM7V015_LLHBW6D_17OIEa7Dad0uzX5
- Q7NFWSoP4zGe3ZNYWSgxxNbcsqGvbmQvdw16hh.CpWJFEBLu6gB0CGi.C9K5bPpCV8jIU.ROWysO
- qs5CrXOSRw_IqoSIMJJuHoqC9fnt_j5NPRnVsHA1o2F.5CAvOMx24L8l6KQY32GNH_cAuljNMdiG
- 1a8N_LA3H5oV_V0nBaj66bsRAJBOS07bp7qr7M5I1pnpLmmpbhw8LwKvkd.K3iFoyFzu5evl6mVH
- h7lAu5iqPwWZU7ObNso8_.WKRIpGfAMXauF0gJ7qzLm6PiFNeu.7Wq0EpyCqzCMvOtgMDKksHNNO
- 0N_mZa1NCH7ytJipOse1vPRph7jbsFgFxvXBr1i3zkT_WJF38u12RntnJWpHnHuLQHRrItIqw_So
- EqM4yenRndpsPOkAU9RZTIFTMQOehz4BFQrK5nvN7LdiGBXvsjQgtYemWslwxsqwa3I__afUWGU6
- mtoAH2tmqNZgb5neYC2nJX9v4Ij2ZS9G1c4FcdTyy8l_PSadMT20Rk39wr9Uuco7mg6gWmidl3d3
- kMP1zYjG9Y6I2degs3pHSP98OuATBtwJUT8gVT066CcNb0s4JCumq5yVhqvqeu7wCsjT0qIp1hzg
- kmTnpyyBRDY_OadyEvaoDElqvBrckPgJ6rd5twNToYwv2lxpZYjYt0DDL4aHftIZwWlq.gv_5QnX
- O2suBVxBq8InwM9AELFLdlcu0KvKW_2jVddtEch4Unw8YXokq8hNxqDIA__ZdUm0OyllJu0La8nA
- Itc_7CHvlqxbvI4_yH6qVUWmvH9cexgDAA50MoZujEoThYGFFOWP2HpI95HoLIJop0uCk8ES4EBF
- 0enOy6OGB7FJGIo4XCqqB6OczHACq7u_eRByqNdLyx3pJWVUdb6bot7DJSC1j11tS4tQrpf4jrgz
- qU1dfDIN8AqMrblozN1PnsGzV3VaTPVeLfLOwEHN6pgR9PXuMtbeVNJU1hmybFj0tZn3hyWADFuf
- LMlbfq_OA5WpXGxl_YW2a3FINiuTMTXCGaFBoZJV2tgtpczHgFyq14uKpCT5G_86iOFZCrBCyt1_
- hDVNaFW4KwPGT31iG4jh8zn04mTu5Sm3uEyqrdrtlm6FGBMhBawCaLi1MnJv1VAtmmZyfgHbt9Hn
- qkm._VvFRmHbT9V377zo0ooYwghobY7Kv1C6rfmDPv1AZV4uRLoXoTq26wk.WLP_KJk.6T0PtdGF
- vpzcDeKlrjqR5NEvFVeqglhuhU7wXLyeNa8eofqdfTKJ61dxDjDCvOF5zNX8mu_zuOjBAk3_OdLT
- uAIslXg_3ZZRG4Lr4WFpSsqqmKFQmv9hGevD6sCZd41jU3wGa_v4hWGd96CiyVQqQB6z9Sav1luR
- cJu_cXdHTCQU6mlIHh6.W
-X-Sonic-MF: <mau.salvi@yahoo.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ir2.yahoo.com with HTTP; Wed, 22 Feb 2023 07:21:31 +0000
-Received: by hermes--production-ir2-65c64dfd66-hxbb4 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 918bc84f4cebfbf6e2c2de83f0a645d6;
-          Wed, 22 Feb 2023 07:19:30 +0000 (UTC)
-Message-ID: <bfea17eb-684d-40ba-8325-ef3b45bfc226@yahoo.com>
-Date: Wed, 22 Feb 2023 08:19:29 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40FA21FB5
+	for <xenomai@lists.linux.dev>; Wed, 22 Feb 2023 07:32:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kwakwnh/uKjCuMRcRByP8anzRDo76igHHWSstVnFyzx6CtiNowBhZJO2+yfCjs1otXp7V7Jzvkh8cAtwWHFVw110ejkV9tKPdyBoKKeOvCGipO3NuyfYfrq74BRhMYAalAat7W3eDPOPFajrrz5C2encx4xcKKnVu7mb+zGm13KyLOgZsERrf4TjcSF8E9IoiCKcRZhRlwHEkwQwe8brjMe6lmDTbDPWyCWX3XaeS54Ig0u/l02E5PCyvxKwhAEiXfkq/7npjvbz2bHL6ji8W9Ma/Hj7LVBkTt1ZStWiGE+f0WD+xOqLTaNM6SOXEUNRncZQgmGTMTxvqZDd4UVqZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e3MA48nggg0mGF0NEt1RpPJ255MsEzeUa+47vrCRpiI=;
+ b=OmKScRuwEzqAZemSAGrwXdUTJREVjNHC6PopXiyFrcaYSLzI9PBa207pWQBzZVflWJBqFdIo3C8S6zXOiRqLpGeSE37ve+lPGzHcuR7iCiw0SpE6IlHu3RQbCesuuETvGDk5LVr2SSH1ghgGwS+CFm9AY9z4lL4FToWi91zuxFlUsCmIaFvmb0xPV9r9VB5GhH4FIgT48WljGrO11Hi38jt1jhJmYuvzYqS/WirIZj98LDrw328b3iF+FASCmMPlWSml7a+OREJOG9eFKnOR5feqpK0Cy36pcx5pTjNQuhVqAVWJLHLkHdkUeN4658XXIKLIL88goplinm4Eu9Ni9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e3MA48nggg0mGF0NEt1RpPJ255MsEzeUa+47vrCRpiI=;
+ b=rBVvSyTsMcW+0nHzx75iIGm15er1x23Eg7KIpMI5Ma33LUFtL1w/oDSbLbo/7MXyPCR35jwdzqEvcsaU1SlBo+N7BaICr/B8kQSpHmZdVd93mMGQbIxPWqoIFsIZM3CQfQTUqEJZ12XMbA1XDSR85UmixiL1Ssyxje80GtaJAdtNdEa/AUJVxTJ1TerVgrONrbSiBinj1OsI2lFCP0HTWjCvnmeWuxH+oo4pGBGnxU2VnWVLxvHM9R1kXMeaI2yg+RgN/JicqAReVjtdhI6UodeH6ZWjbI1LlulWcIM420DBK10wt5BLHTvk4/v8JwtFLQKOwDbJJYAXxT3lWzBFAA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS8PR10MB6030.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:539::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.18; Wed, 22 Feb
+ 2023 07:32:57 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::784b:e95b:b855:dcc5]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::784b:e95b:b855:dcc5%9]) with mapi id 15.20.6134.019; Wed, 22 Feb 2023
+ 07:32:56 +0000
+Message-ID: <de5bac83-77b1-87bf-1a66-c1e712e52a7c@siemens.com>
+Date: Wed, 22 Feb 2023 08:32:55 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To: Xenomai <xenomai@lists.linux.dev>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Meet-up around EOSS (Prague, end of June)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0158.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::8) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: undefined reference to `fuse_main_real_compat25' when build with
- --enable-registry
-To: Jan Kiszka <jan.kiszka@siemens.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-References: <fc2f8e65-dce5-452d-3789-70ebc838abf2.ref@yahoo.com>
- <fc2f8e65-dce5-452d-3789-70ebc838abf2@yahoo.com>
- <MN2PR11MB4285DF9642B16AE3F170431FF2D89@MN2PR11MB4285.namprd11.prod.outlook.com>
- <b953b20d-f866-5bec-faf3-f8560354bf59@siemens.com>
- <04a817d8-5792-c00b-8533-488cbc24cb4d@yahoo.com>
- <02c53276-6a36-8377-4792-575274793c66@yahoo.com>
- <023a8783-e78e-94e2-fd2a-0bf959b886de@siemens.com>
-Content-Language: it-IT
-From: "Mauro S." <mau.salvi@yahoo.com>
-In-Reply-To: <023a8783-e78e-94e2-fd2a-0bf959b886de@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.21183 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB6030:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4b1f415-2b98-4b2a-147c-08db14a70442
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	UKnftdEXCiaspZlgIUkQN+u+3SwhkCjerxVCjN48fFBk9QM8FMaGS0RDUmRUPIksVVo38vZiQ//HiRx9C3wt+NzvrSkSa+JwoMsEnmqHkSBBFWSmn7gyxX1GNKkL7GWPTBmbUgIghErzvQnbP5TWDG54FgOa2/a1URzJjYZZnOCdR1YsXB2DGPE4EMMW33f0g1r/vXLZhsI4SZwgBPFkwfhOZiSaBWlh7971+jsyzlz+K9lP2b7jotUTFeZxyrp7sltcU7SjPEOHp7uh1Z+R+PSOO8AGUAkU82GUmIvlSKppHo3z0j4fmQ5JzTls4CsT+qJb5iqQMzc751cbutCMV4FiYDYEPRGUfo+acvlaOvB7/rbPBJ+tqoNireHIbvWKAcg68aweOcpIXKYX6W6DPtrPIhRYWfhSdhEvRyQsJ9C0riLM3Jzl6WkKhMa+MgSxG/KYxTtzsIyYT+HJDLsBhiv0/khkEdpJBoD4p9Yw+hT9ZaOux8z7mhD3x4yT7vzndQIzRm4O55s6bQQHclMw7sPmFQqxZGjv6Eq2+sWgoHqZloD6O8lwIE9OxQ4g3zdz7mZsOPJbn7d/TtfHxM0yvMgdoryddpahfuKGJ8nR3dDHZHyiCamT3XkCxzANcHlssVAkmnboXm38uiINPwkKhrVTAKTwJM4zg/SyzrE7mW+/pXF5OWkMEjvUofEcG6uPTTP3DDQ3jGx2e7GGdSJ8xni6jCgFtoJMMFy58mdN25w=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(396003)(366004)(376002)(136003)(451199018)(478600001)(31696002)(82960400001)(86362001)(4744005)(38100700002)(2906002)(44832011)(316002)(41300700001)(36756003)(5660300002)(8936002)(66946007)(66476007)(8676002)(6916009)(66556008)(966005)(31686004)(26005)(6486002)(186003)(6512007)(6506007)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?elh5bVlRUmMvMitOcmgyako0YkVkRnZzb2djY2p6NXcwVWFxVzRaT1loenBN?=
+ =?utf-8?B?Z0w2YUw3dkRSaThjenhsWnVQVWtWbms1bURLT1loWVAzQzdnWWVJUFhlNlRa?=
+ =?utf-8?B?cFU1bEpycWlSOXJDeGVWSmNKRUxoenVabWdpMmpkZXE1dHcwSmE1QXpPUys4?=
+ =?utf-8?B?YjdmWENBYXRCLzQzU1BKUFA4ZWFuU3NCSS9IK0FZYnkvSmFjcFgxMStlVm45?=
+ =?utf-8?B?S1NlNHZJaU54eU1jZ0NLWXdwdGZ5c0JJTkhmVnphSnY1NTRDSTJxcTVOQmZz?=
+ =?utf-8?B?RzZjYTE3eXZlTDQvQzNEUTNPSi82bGZRT0ovWXMwNVVRMHg2cGtDL2x0b2Z1?=
+ =?utf-8?B?UzdrZE0yRU1qUGlHVW1TdUNwVjkrTUpQdlZwaGswY3E5b3dBQlVjbUVZdGNI?=
+ =?utf-8?B?SGp6N0J6RGVGZ1BIbHVheTZRZmVkdlJTbjN6czVzUlRzeTUxQ2M0SDJmcVdK?=
+ =?utf-8?B?a0FNd0FtOUJWTFFOU0liZWE2Rm10clVuS256Zks5d0NWTG5uNzQ0MkVoeXNO?=
+ =?utf-8?B?UjlZaVlOeXdvcHNkZW4reDlTWFBacHV2SzIwL29WRkkweHZCdS95d0RTNWty?=
+ =?utf-8?B?YjI0ZDZUcG9jOHJCRVo0eHFLNjFucDNWUm12RENtOTd1N3JyYVRvMGxiakh2?=
+ =?utf-8?B?MGl0SU1rcEQrRDBCMUFsTlJQWGdXNGFZWWRXQStFM1dDdGN6QjEzanY4SHlL?=
+ =?utf-8?B?QkZ3aGdyWUdIZHYyZmVLSWNPWmhuQSs1VTg0OUFNZDd5bkJaUlJVZnZ1aHJM?=
+ =?utf-8?B?aVNoSU1ZQktPdXdmaTN0di9RaFdYQi9MYmpibmZIaUZLd0t3NXBvSzc1cXBE?=
+ =?utf-8?B?L2ZzZktyTjNLNG51b1NScm05M1dPT1RKUGNRTEIva0JEc0ZURW12S2sraHZ5?=
+ =?utf-8?B?RlRZM0oraHF1YXJwTW1lUnRYRklvTU9Wdm16R2xXRTYvcDdUamswMmx3a1Ji?=
+ =?utf-8?B?Ym5HYU1ZNFhaWjJTdmVNL1E2Zk5vM2lGVFZtZlk0Rjl4NTV5dTYvSVYzQVNx?=
+ =?utf-8?B?a09JRDZMcVByeitwcVlsT21yd20vbXB0Yjc5c25UaTZvM0FMV1JvZzhtNTZY?=
+ =?utf-8?B?MENlZi82SXVMR3RZZXFaeFRWTk9kbEZHRjA4Mmc1emNQSlZITFl1YzNJTU00?=
+ =?utf-8?B?anI1YURycDhqSTdqTU5TZEVKbkJxRXlORmJLRmJsQ1pjMnkxekJxQk0rTFpB?=
+ =?utf-8?B?ZXIxandsQkEwUmVXd3dwbHZNYVhlQ3NxTWt5TlEvaEZMK0xPVTQ4dmd5LzJI?=
+ =?utf-8?B?WXNxc2VaS2Yzc0FmYjU2L1J1Y2VBNUNkSVhpZElQRzk2ZzlxdElPWVU2RVgr?=
+ =?utf-8?B?cDdCYmhWUitwOGFlMU9BNERKdS82NnVvM2lRd1hJcFNmUExXdldNZVNnUU1k?=
+ =?utf-8?B?c0hVK0J2ak4xclp2S0Q3anV3OVkva1pVaXVwMW5iT2VEa2xhdVg0NEg0TGlN?=
+ =?utf-8?B?Wkx4Z3lYU1UwQ0xxbzQrQVh2SmlQYmhGM1JFQ05KNVRYSVpEeHFpNDduNWNJ?=
+ =?utf-8?B?bjgzWitVN1J3YXIzeDJ2dktqTTcvaFpGbGJOS2hIQUVxRFVBR09rVzRWbDRS?=
+ =?utf-8?B?MU95YWgyRzNBcFVjOTFWeVhtQjJLdzBKekFTZ092VC96Z0pFMHc4VVJhbVZk?=
+ =?utf-8?B?UmRCM3VNNXh2MlBjL2lVOTQyWG9TZFovTkxkazNVSFRmNnVEcExZRmwreUU5?=
+ =?utf-8?B?YzMyVWlZM0p5M0poeUFTeW1nci9YR1pHVlRGN0pNL2FpTGFVSlYrSDZxUFly?=
+ =?utf-8?B?K25ieGF4T0dYUTJQQUdXUlJOM1dhZis0UlhzcGF5YTVTbTcyYnoxRFJSU2hh?=
+ =?utf-8?B?VEFTNjRtVHpEaDdRZUhhdzAxamNMQ0J1aUdUTVVWRzJGWW1PYkRsRVIwUDRY?=
+ =?utf-8?B?M01iM2M3OWRra2VZYXEwQ3FGbmRzZGh0WGk2cHEwQXo1OU9mRmZtT1RiU2VF?=
+ =?utf-8?B?Nm9IUDh2ckhaRVNJOXZuSE1lajZTb2Q3OTNMOVZxc1N0ZE1KWVZ4NWp2TlpS?=
+ =?utf-8?B?QTlWWjk0SGlMbFlrS3o4dFBycmxZY2dRNXU4SHg1NXdPYXNJZE9OYnYzNCtG?=
+ =?utf-8?B?QXliMHBKMUNNTGI2dFV2SmdyamxCUjNYemtqcktEYWZqbVVHcnRHa1dRcVhT?=
+ =?utf-8?B?R0dMTjlzR2FkRzlHaUVXeFgvbW5QZGNRcDA1WWkzQ0FOdEk1TmkramlZS25p?=
+ =?utf-8?B?cWc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4b1f415-2b98-4b2a-147c-08db14a70442
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2023 07:32:56.8621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4BK1WYXJUGXZi3bOZrBzlcG/uESWDDfOEvqfvBvy5odTCWkcqgPzTU8RqYuhSFYdgnEVK8d5uMdHJ6TnAwy3Xw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6030
 
-Il 21/02/23 17:57, Jan Kiszka ha scritto:
-> On 21.02.23 11:40, Mauro S. wrote:
->> Il 21/02/23 11:24, Mauro S. ha scritto:
->>> Il 08/02/23 09:21, Jan Kiszka ha scritto:
->>>> On 08.02.23 03:27, Chen, Hongzhan wrote:
->>>>>
->>>>>
->>>>>> -----Original Message-----
->>>>>> From: Mauro S. <mau.salvi@yahoo.com>
->>>>>> Sent: Tuesday, February 7, 2023 9:46 PM
->>>>>> To: xenomai@lists.linux.dev
->>>>>> Subject: undefined reference to `fuse_main_real_compat25' when
->>>>>> build with -
->>>>>> -enable-registry
->>>>>>
->>>>>> Hi all,
->>>>>>
->>>>>> I'm bulding Xenomai 3.2.2 for x86_64.
->>>>>>
->>>>>> When I configure the library with --enable-registry, I get the error
->>>>>>
->>>>>>     ..
->>>>>>       CCLD     rtcanrecv
->>>>>>     libcopperplate.so: undefined reference to `fuse_main_real_compat25'
->>>>>>     collect2: error: ld returned 1 exit status
->>>>>>     ..
->>>>>>
->>>>>> libfuse-dev package is installed (the configure script finds fuse),
->>>>>> and
->>>>>> it has the function fuse_main_real_compat25 exported
->>>>>>
->>>>>>     readelf -Ws /usr/lib/x86_64-linux-gnu/libfuse.so | grep
->>>>>> fuse_main_real_compat25
->>>>>>      318: 000000000001a500    14 FUNC    GLOBAL DEFAULT   12
->>>>>> fuse_main_real_compat25@@FUSE_2.6
->>>>>
->>>>> I do not know if it might be related to fuse version. In
->>>>> configure.ac , it selects fuse version 25 but you are using 26?
->>>>>
->>>>> if test x$use_registry = xy; then
->>>>>           PKG_CHECK_MODULES(FUSE, fuse)
->>>>>           FUSE_CFLAGS="$FUSE_CFLAGS -DFUSE_USE_VERSION=25"
->>>>>           AC_DEFINE(CONFIG_XENO_REGISTRY,1,[config])
->>>>>          
->>>>> AC_DEFINE_UNQUOTED(CONFIG_XENO_REGISTRY_ROOT,"$registry_root",[config])
->>>>> Fi
->>>>
->>>> That's a good hint. I vaguely recall similar issues when building
->>>> against a newer version and trying to run that against an older one on
->>>> the target.
->>>>
->>>> Jan
->>>>
->>>
->>> Hi all,
->>>
->>> Yes, I'm using libfuse compiled with FUSE_USE_VERSION=26.
->>> I'm building in Yocto.
->>>
->>> I tried to
->>> - change FUSE_USE_VERSION=26 in Xenomai: does not work
->>> - change FUSE_USE_VERSION=25 in fuse and rebuild it: does not work
->>>
->>> I finally removed the can utils from the Xenomai build (I don't need
->>> it) and the build completes correctly.
->>>
->>> Seems that the fuse symbols are not found only for can utils (don't
->>> know why).
->>>
->>> Thanks, regards
->>>
->>
->> Replying to myself: Xenomai does build but does not work:
->>
->> /usr/lib/libcopperplate.so.0: undefined symbol: fuse_main_real_compat25
->>
->> Strange thing is that /usr/lib/libcopperplate.so.0 does not depend by
->> libfuse2 (that have the fuse_main_real_compat25 symbol exported)
->>
->> LD_TRACE_LOADED_OBJECTS=1 /lib/ld-linux-x86-64.so.2
->> /usr/lib/libcopperplate.so.0
->>      linux-vdso.so.1 (0x00007ffe6ed14000)
->>      libcobalt.so.2 => /usr/lib/libcobalt.so.2 (0x00007f21fc308000)
->>      libmodechk.so.0 => /usr/lib/libmodechk.so.0 (0x00007f21fc303000)
->>      librt.so.1 => /lib/librt.so.1 (0x00007f21fc2f8000)
->>      libpthread.so.0 => /lib/libpthread.so.0 (0x00007f21fc2d7000)
->>      libc.so.6 => /lib/libc.so.6 (0x00007f21fc10a000)
->>      /lib/ld-linux-x86-64.so.2 (0x00007f21fc355000)
->>
->> Other hints? Thanks in advance, regards
-> 
-> If only can-utils are affected, it should be possible to spot some delta
-> in the Makefiles, the build logs or also the generated binaries of other
-> tools. There are many more tools, and the can-utils do not reference
-> fuse or the registry service explicitly.
-> 
+Hi all,
 
-Yes, I will go in this direction doing diffs between build logs, ldflags 
-order etc.
+as just discussed in the community call, I'd like to propose having a
+Xenomai meet-up at or around the Embedded Open Source Summit in Prague
+this year [1]. If you plan to go there - I do - and are interested in
+chatting about Xenomai topics face-to-face, please let us know.
+Depending on the feedback, we would make this more or less formal, from
+looking for a real meeting room to defining a time and place to have
+dinner and beer together.
 
-> And: Where does version 25 come from? Do you have it on the host, and
-> something actually leaks into the yocto build so that the host libs are
-> referenced?
+BTW, the CFP for EOSS is still open for a few more days in case you want
+to talk about your latest great Xenomai project at this event.
 
-Version 25 is the libfuse API/ABI version that Xenomai wants to use, and 
-it is indicated in Xenomai's configure.ac, as pointed out by Chen.
+Jan
 
-libfuse is built with version 26, but contains backward compatibility 
-API/ABI for version 25, allowing the binaries to use it like Xenomai is 
-doing. In fact, the libfuse2.so library contains the 
-fuse_main_real_compat25, but canutils does not see it during the build, 
-and libcopperplate does not find it at runtime because seems not linked 
-to libfuse2.
+[1] https://events.linuxfoundation.org/embedded-open-source-summit/
 
-I will do more investigations about it.
-
-Thanks, regards
-
-> 
-> Jan
-> 
 -- 
-Mauro S.
-
+Siemens AG, Technology
+Competence Center Embedded Linux
