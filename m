@@ -1,27 +1,25 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 650811FB5
-	for <xenomai@lists.linux.dev>; Thu, 23 Feb 2023 07:44:41 +0000 (UTC)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230223070423a7ba55ba51f16194da
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE021FB5
+	for <xenomai@lists.linux.dev>; Thu, 23 Feb 2023 07:48:45 +0000 (UTC)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202302230748433a961e80afa7bf8b4e
         for <xenomai@lists.linux.dev>;
-        Thu, 23 Feb 2023 08:04:23 +0100
+        Thu, 23 Feb 2023 08:48:43 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=AtCA0dkvpZM2/PoIQEglaui1L3P7/hJNqSITkJ6B5e8=;
- b=LL0Iu2rArayAtzsMvH7djc8UGn3KrxbdbqAGZiVjaMevftzwKexTHIdlqrq+Nc8AVjnLOO
- M7ggoCxEm6wdR1/BteZglgKODMY09LDoF7Pm0v6mifVsAIHkITTd/IOb8/HqDv23JHCF0xpS
- f9KE5PlEj4R1EZ4tFdwG39fpvptJg=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=1zY8qXk/jkxDGroN9fbotK89vrufTRt9M8ORrTiGzl0=;
+ b=dwy3J2CbzPD2dJg2Mlq0pQVnA/e5k2YCaEe/8Bmr2JDRe9PUUHtb7zBZz0KORRx4OKcyI2
+ dxLPjyGHkmIiHfLIEzIq6jhmQPQLJQUaszl7PFqTxV+ANBcNJ4B32zVlxgNdJbrEXCnayvG3
+ 2EfQcYQzaqZs/MMx/rAiMStpHdS7M=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [stable 3.2.x][PATCH 6/7] drivers/rtcan: Implement compat support for the rtcan driver
-Date: Thu, 23 Feb 2023 08:04:16 +0100
-Message-Id: <20230223070417.3969366-7-florian.bezdeka@siemens.com>
-In-Reply-To: <20230223070417.3969366-1-florian.bezdeka@siemens.com>
-References: <20230223070417.3969366-1-florian.bezdeka@siemens.com>
+Subject: [RFC PATCH] ci: Enable compat testing for the Xenomai stable/v3.2.x branch
+Date: Thu, 23 Feb 2023 08:48:41 +0100
+Message-Id: <20230223074841.3977544-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -32,121 +30,157 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-[ This is a backport of 74478a4063ae5c3df7bfeb489eaefd0802179a5d ]
+Add compat build and test jobs for the stable/v3.2.x branch.
 
-Once Xenomai was running as compat application (=32bit applicaiton over
-64bit kernel) the can smokey test failed. This patch fixes the test by
-implementing the necessary compat bits.
-
-Affected ioctls:
-  - _RTIOC_BIND
-  - _RTIOC_SETSOCKOPT
-
-Affected syscalls:
-  - recvmsg
-  - sendmsg
+The compat build and test jobs have been moved to compat_jobs.yml which
+is now included by xenomai_next_compat.yml and xenomai_3_2_x.yml.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/can/rtcan_raw.c | 42 ++++++++++++++--------------------
- 1 file changed, 17 insertions(+), 25 deletions(-)
+ ci/compat_jobs.yml          | 43 +++++++++++++++++++++++++++++++++++++
+ ci/xenomai_3_2_x.yml        |  1 +
+ ci/xenomai_3_2_x_compat.yml | 19 ++++++++++++++++
+ ci/xenomai_next_compat.yml  | 34 +++--------------------------
+ 4 files changed, 66 insertions(+), 31 deletions(-)
+ create mode 100644 ci/compat_jobs.yml
+ create mode 100644 ci/xenomai_3_2_x_compat.yml
 
-diff --git a/kernel/drivers/can/rtcan_raw.c b/kernel/drivers/can/rtcan_raw.c
-index b6b456939..441bfbc6d 100644
---- a/kernel/drivers/can/rtcan_raw.c
-+++ b/kernel/drivers/can/rtcan_raw.c
-@@ -41,6 +41,7 @@
- #include <rtdm/driver.h>
- 
- #include <rtdm/can.h>
-+#include <rtdm/compat.h>
- #include "rtcan_version.h"
- #include "rtcan_socket.h"
- #include "rtcan_list.h"
-@@ -411,17 +412,15 @@ int rtcan_raw_ioctl(struct rtdm_fd *fd,
-     int ret = 0;
- 
-     switch (request) {
--    case _RTIOC_BIND: {
-+    COMPAT_CASE(_RTIOC_BIND): {
+diff --git a/ci/compat_jobs.yml b/ci/compat_jobs.yml
+new file mode 100644
+index 0000000..aaf582a
+--- /dev/null
++++ b/ci/compat_jobs.yml
+@@ -0,0 +1,43 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Florian Bezdeka <florian.bezdeka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
 +
- 	struct _rtdm_setsockaddr_args *setaddr, setaddr_buf;
- 	struct sockaddr_can *sockaddr, sockaddr_buf;
++build-5.15-compat:qemu-amd64:
++  extends:
++    - .build:qemu-amd64
++    - .compat-vars
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
++    KERNEL_VERSION: "5.15"
++
++lava-test-5.15-compat:qemu-amd64:
++  needs: [ "build-5.15-compat:qemu-amd64" ]
++  extends:
++    - .lava-test:qemu-amd64
++    - .compat-vars
++  variables:
++    KERNEL_VERSION: "5.15"
++
++build-5.15-compat:x86-64-efi:
++  extends:
++    - .build:x86-64-efi
++    - .compat-vars
++  variables:
++    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
++    KERNEL_VERSION: "5.15"
++
++lava-test-5.15-compat:x86-64-efi:
++  needs: [ "build-5.15-compat:x86-64-efi" ]
++  extends:
++    - .lava-test:x86-64-efi
++    - .compat-vars
++  variables:
++    KERNEL_VERSION: "5.15"
++
+diff --git a/ci/xenomai_3_2_x.yml b/ci/xenomai_3_2_x.yml
+index 3a1d5e3..3ee0b7d 100644
+--- a/ci/xenomai_3_2_x.yml
++++ b/ci/xenomai_3_2_x.yml
+@@ -15,6 +15,7 @@ include:
+   - local: '/ci/kernel_5_4.yml'
+   - local: '/ci/kernel_5_10.yml'
+   - local: '/ci/kernel_5_15.yml'
++  - local: '/ci/xenomai_3_2_x_compat.yml'
  
- 	if (rtdm_fd_is_user(fd)) {
--	    /* Copy argument structure from userspace */
--	    if (!rtdm_read_user_ok(fd, arg,
--				   sizeof(struct _rtdm_setsockaddr_args)) ||
--		rtdm_copy_from_user(fd, &setaddr_buf, arg,
--				    sizeof(struct _rtdm_setsockaddr_args)))
--		return -EFAULT;
-+	    ret = rtdm_fd_get_setsockaddr_args(fd, &setaddr_buf, arg);
-+	    if (ret)
-+		return ret;
+ variables:
+   XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml"
+diff --git a/ci/xenomai_3_2_x_compat.yml b/ci/xenomai_3_2_x_compat.yml
+new file mode 100644
+index 0000000..a212859
+--- /dev/null
++++ b/ci/xenomai_3_2_x_compat.yml
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Florian Bezdeka <florian.bezdeka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++.compat-vars:
++  variables:
++    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml:opt-compat.yml"
++    XENOMAI_VERSION: "3_2_x-compat"
++
++include:
++  - local: '/ci/compat_jobs.yml'
++
+diff --git a/ci/xenomai_next_compat.yml b/ci/xenomai_next_compat.yml
+index 92571ef..f7e3146 100644
+--- a/ci/xenomai_next_compat.yml
++++ b/ci/xenomai_next_compat.yml
+@@ -1,7 +1,7 @@
+ #
+ # Xenomai Real-Time System
+ #
+-# Copyright (c) Siemens AG, 2022
++# Copyright (c) Siemens AG, 2023
+ #
+ # Authors:
+ #  Florian Bezdeka <florian.bezdeka@siemens.com>
+@@ -14,34 +14,6 @@
+     XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml:opt-compat.yml"
+     XENOMAI_VERSION: "next-compat"
  
- 	    setaddr = &setaddr_buf;
+-build-5.15-compat:qemu-amd64:
+-  extends:
+-    - .build:qemu-amd64
+-    - .compat-vars
+-  variables:
+-    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
+-    KERNEL_VERSION: "5.15"
+-
+-lava-test-5.15-compat:qemu-amd64:
+-  needs: [ "build-5.15-compat:qemu-amd64" ]
+-  extends:
+-    - .lava-test:qemu-amd64
+-    - .compat-vars
+-  variables:
+-    KERNEL_VERSION: "5.15"
++include:
++  - local: '/ci/compat_jobs.yml'
  
-@@ -447,16 +446,14 @@ int rtcan_raw_ioctl(struct rtdm_fd *fd,
- 	break;
-     }
- 
--    case _RTIOC_SETSOCKOPT: {
-+    COMPAT_CASE(_RTIOC_SETSOCKOPT): {
- 	struct _rtdm_setsockopt_args *setopt;
- 	struct _rtdm_setsockopt_args setopt_buf;
- 
- 	if (rtdm_fd_is_user(fd)) {
--	    if (!rtdm_read_user_ok(fd, arg,
--				   sizeof(struct _rtdm_setsockopt_args)) ||
--		rtdm_copy_from_user(fd, &setopt_buf, arg,
--				    sizeof(struct _rtdm_setsockopt_args)))
--		return -EFAULT;
-+	    ret = rtdm_fd_get_setsockopt_args(fd, &setopt_buf, arg);
-+	    if (ret)
-+		    return ret;
- 
- 	    setopt = &setopt_buf;
- 	} else
-@@ -575,11 +572,9 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
- 
-     if (rtdm_fd_is_user(fd)) {
- 	/* Copy IO vector from userspace */
--	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
--			     sizeof(struct iovec)) ||
--	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
--				sizeof(struct iovec)))
--	    return -EFAULT;
-+	ret = rtdm_fd_get_iovec(fd, &iov_buf, msg, true);
-+	if (ret)
-+		return -EFAULT;
- 
- 	iov = &iov_buf;
-     }
-@@ -716,9 +711,9 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_fd *fd,
- 	iov->iov_base += sizeof(can_frame_t);
- 	iov->iov_len -= sizeof(can_frame_t);
- 	/* ... and copy it, too. */
--	if (rtdm_copy_to_user(fd, msg->msg_iov, iov,
--			      sizeof(struct iovec)))
--	    return -EFAULT;
-+	ret = rtdm_fd_put_iovec(fd, iov, msg);
-+	if (ret)
-+		return -EFAULT;
- 
- 	/* Copy timestamp if existent and wanted */
- 	if (msg->msg_controllen) {
-@@ -832,10 +827,7 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_fd *fd,
- 
-     if (rtdm_fd_is_user(fd)) {
- 	/* Copy IO vector from userspace */
--	if (!rtdm_rw_user_ok(fd, msg->msg_iov,
--			     sizeof(struct iovec)) ||
--	    rtdm_copy_from_user(fd, &iov_buf, msg->msg_iov,
--				sizeof(struct iovec)))
-+	if (rtdm_fd_get_iovec(fd, &iov_buf, msg, false))
- 	    return -EFAULT;
- 
- 	iov = &iov_buf;
+-build-5.15-compat:x86-64-efi:
+-  extends:
+-    - .build:x86-64-efi
+-    - .compat-vars
+-  variables:
+-    LINUX_BUILD_OPTION: ":opt-linux-latest-5.15.yml"
+-    KERNEL_VERSION: "5.15"
+-
+-lava-test-5.15-compat:x86-64-efi:
+-  needs: [ "build-5.15-compat:x86-64-efi" ]
+-  extends:
+-    - .lava-test:x86-64-efi
+-    - .compat-vars
+-  variables:
+-    KERNEL_VERSION: "5.15"
 -- 
 2.39.1
 
