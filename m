@@ -1,174 +1,81 @@
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E156185E
-	for <xenomai@lists.linux.dev>; Sun, 26 Feb 2023 10:13:47 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id BA0CEFF803;
-	Sun, 26 Feb 2023 10:13:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1677406420;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RYmJNr+GZJir7YBtDDSasyBUJYvQ4lZfMbDLrUZ6on4=;
-	b=LWGwq58td/47f6+5bTwCKtpJoNXYDRT6A6xJ8qw46wS4rU99Fwqw8G4TTaNXu0zItfOeku
-	D7ZIR/+HY0pr452Q1SnKn1yi/mG5unMkVFLVEzQNI38O6da4XCC6iBIa0Gc3ekLkUl8lGI
-	pO+JQ7ba2JDqIHpJjxfZGvCAidwb3bretAgsAOHorjlSbas66rPlzqZnIEdj6CRrvdJZgA
-	XKS2nkKbtWPB0IKWX/GR1FPM3GelYbNNi82ogJyoECZ9lgPzgH+IuDs/+YnRBVrXA2sMqJ
-	wAaKHQeOHoJbmaY7N89lklnKgauzvRZRvXsQj1JwOWZ8qYwSVOCuwOM6RlPWZg==
-References: <VE1PR08MB49090AD3D9BB287AFBD16EEA92AB9@VE1PR08MB4909.eurprd08.prod.outlook.com>
- <87y1olh9i4.fsf@xenomai.org>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Jan Kiszka
- <jan.kiszka@siemens.com>
-Subject: Re: problem while handling exceptions in oob stage
-Date: Sun, 26 Feb 2023 10:47:32 +0100
-In-reply-to: <87y1olh9i4.fsf@xenomai.org>
-Message-ID: <874jr8vinh.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDED374
+	for <xenomai@lists.linux.dev>; Mon, 27 Feb 2023 01:26:45 +0000 (UTC)
+Received: by mail-ed1-f47.google.com with SMTP id ec43so19547613edb.8
+        for <xenomai@lists.linux.dev>; Sun, 26 Feb 2023 17:26:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=d4kzwT0VMH0rpdtFS2EJqYVDiJ1EdPyCSV/9T2G+M4U=;
+        b=qmvdkPZXpLzSTSpl/YpGbRa9qXwc9u2k5Awu61/PmF+/82M/HYQUlx9qhSqxOCxqHi
+         Me5pMiwv9wrNH0F45bbjjkObyp7bYDpfqpBaaCS6VHxgIIES5j+F2933Q8GQELDfnnRU
+         6CJ6K/NawCRswPDtBHWeQJ4w4WfuNKcvcoBTJ1z8YpuiP9G5kzpfkZAR6otFJ4XEPnLL
+         yNrsZ+i+tQz9K/N0gfWqbWap5R6FWwMV/TSBVJTHtQU/eTA/Vn/AinJnbAWWef8rgapd
+         JVkC6MfKhJ10oZK5Iw3eG9BsA2ItzpCwOlqkzmfx05pH7n32ex9u0Y9CFuSCQebiVMl1
+         WqsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d4kzwT0VMH0rpdtFS2EJqYVDiJ1EdPyCSV/9T2G+M4U=;
+        b=RMXSkPL01jDehQo/HQ8w0tKVocnmcHdu2udUCKEde0jQK52ddCxmkxwmDDbY1byld3
+         O5tFzgalf7aHnOrE30ZUBPxa8ByvCS+It3PHM9cQmvhHJ1Ffyqmxw2vK2zhBE9UQoyE8
+         l87ZtJChK6OKp8Y+yXxjbYAWiOfcaj7AxOeiiWyxVpucbtEYy+UvNktolP6tBTWCTjom
+         wRdqKN31w+OnG5cGTzQaTKDfBEvMizT5Z6Fp6kkESfJteMAX5jwZmXGcFMGhS6OGmX27
+         esXjiFBquDqaufAwvjFgZdjYoo4w5JV29ut7wPc0l0UP2YXaK8XdIGxnthI7U/fQJP/1
+         3Zaw==
+X-Gm-Message-State: AO0yUKWcmeNIIYBq8Kx1uspAkA1mf+qjAMpuLz8WCMblzGJUKOZfcAQg
+	nUyyZAno0xflZwq2QBDU5ot+fVwROxWOHVTmTDv2nNA4PXA=
+X-Google-Smtp-Source: AK7set8q+jd6CLhByp1PEvVjoINpuz+et0BAFcPVy6W6d25yuDRoPi2SjETkXmE+k47t+v64lnjjVJx0a3qzsgi7Zec=
+X-Received: by 2002:a17:906:9410:b0:8b1:b795:110a with SMTP id
+ q16-20020a170906941000b008b1b795110amr15817416ejx.13.1677461203743; Sun, 26
+ Feb 2023 17:26:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+From: C Smith <csmithquestions@gmail.com>
+Date: Sun, 26 Feb 2023 17:26:32 -0800
+Message-ID: <CA+K1mPGxOi=GFfDbE+nq99HsMWEe0+Q37bw=X=UHjqb-yNfj9A@mail.gmail.com>
+Subject: xenomai 3.2 compile failure : cobalt_lookup_vdso
+To: xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
+I am unable to compile xeno 3.2 after patching and booting kernel
+5.4.228 successfully.
 
-Philippe Gerum <rpm@xenomai.org> writes:
+I had done: git checkout origin/stable/v3.2.x
+Kernel is patched like this:
+[root@host linux]# ../xenomai/scripts/prepare-kernel.sh --arch=x86_32
+--ipipe=../ipipe-core-5.4.228-x86-12.patch
+I am compiling xenomai for 32 bit apps, so maybe that is unique. Here
+are the configure options:
+./configure --enable-smp --enable-registry --enable-debug=symbols
+--enable-shared --host=i686-linux CFLAGS="-m32 -D_FILE_OFFSET_BITS=64"
+LDFLAGS=-m32 host_alias=i686-linux
 
-> Johannes Kirchmair <johannes.kirchmair@sigmatek.at> writes:
->
->> Hello,
->>
->> we encountered a problem, while handling invalid opcode exception in oob stage. 
->> Our fixup code works fine if we execute ud2 instruction the first time.
->> Upon second execution of ud2, we encounter the problem that our fixup code is not reached.
->>
->> The problem is that the first time entering the kernel, mark_trap_entry_raw is called and in a subsequent call the _TLF_OOBTRAP flag is set.
->> But because we do not switch to inband stage, we do not call mark_trap_exit_raw and the _TLF_OOBTRAP flag is not cleared.
->>
->> The second time we enter the kernel on execution of ud2,  we encounter (again) the following code:
->>
->> static __always_inline void oob_trap_notify(unsigned int exception,
->>                                          struct pt_regs *regs)
->> {
->>          if (running_oob() && !test_thread_local_flags(_TLF_OOBTRAP))
->>                  __oob_trap_notify(exception, regs);
->> }
->>
->> Because _TLF_OOBTRAP is set and because we are still oob, we just leave the kernel without calling __oob_trap_notify and subsequently our clean up code.
->> This results in re-execution of the same ud2 again and again.
->>
->> I fixed it for me in the following way:
->>
->> --- a/arch/x86/kernel/traps.c
->> +++ b/arch/x86/kernel/traps.c
->> @@ -414,8 +414,9 @@ DEFINE_IDTENTRY_RAW(exc_invalid_op)
->>                 handle_invalid_op(regs);
->>                 instrumentation_end();
->>                 irqentry_exit(regs, state);
->> -               mark_trap_exit_raw(X86_TRAP_UD, regs);
->>         }
->> +
->> +       mark_trap_exit_raw(X86_TRAP_UD, regs);
->>  }
->>
->> I am not sure it this is a valid way to fix this issue.
->> If it is, I could work up a patch next week that addresses all the places where this problem could trigger.
->>
->> What do you think?
->
-> That would work in the current implementation of mark_trap_exit*(), I
-> would recommend to keep the semantics of the mark_trap* pairs unchanged
-> though, meaning that no exit should take place if the corresponding
-> entry failed.
->
-> Dovetail-wise, the inner oob_trap_entry/oob_trap_unwind pair should mark
-> the start/end of the in-band handling of a trap, so that the core can do
-> some housekeeping before and after such handling. As you rightfully
-> noticed, because such entry was actually notified unconditionally to the
-> core, we should always tell it about the matching exit point as well,
-> especially if we plan not to do anything about the trap event.
->
-> Something like this should do for x86 (same issue for arm64 and arm,
-> I'll fix them up too):
->
-> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> index 7238f5c90b998..234e8ab84c221 100644
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -174,6 +174,13 @@ bool mark_trap_entry(int trapnr, struct pt_regs *regs)
->  		return true;
->  	}
->  
-> +	/*
-> +	 * If the oob core did not switch us inband, our caller is
-> +	 * expected to leave the trap handler immediately, so we may
-> +	 * notify the core about this right now.
-> +	 */
-> +	oob_trap_unwind(trapnr, regs);
-> +
->  	return false;
->  }
->  
-> @@ -188,7 +195,13 @@ static __always_inline
->  bool mark_trap_entry_raw(int trapnr, struct pt_regs *regs)
->  {
->  	oob_trap_notify(trapnr, regs);
-> -	return running_inband();
-> +
-> +	if (unlikely(running_oob())) {
-> +		oob_trap_unwind(trapnr, regs);
-> +		return false;
-> +	}
-> +
-> +	return true;
->  }
->  
->  static __always_inline
+The failure I got is as follows:
+...Making all in regd
+make[3]: Entering directory '/usr/src/xenomai-git-master/lib/copperplate/regd'
+ CC       regd.o
+ CC       fs-common.o
+ CC       fs-cobalt.o
+ CCLD     sysregd
+../../../lib/cobalt/.libs/libcobalt.so: undefined reference to
+`cobalt_lookup_vdso'
+collect2: error: ld returned 1 exit status
 
-The patch for mm/fault.c above is not correct, the following one is
-better, i.e. since we are still running oob, we must not alter the
-in-band interrupt state, plus oob_trap_unwind() turns hard irqs off
-unconditionally on entry and leaves them that way, therefore we can and
-_must_ skip local_irq_disable_full():
+I got the same problem when trying to compile 64 bit, with:
+./configure --enable-smp --enable-registry --enable-debug=symbols
+--enable-shared
+But I actually need to compile for a large suite of legacy 32 bit apps.
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index 4b697ef4bd678..c7999b493865b 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -922,10 +922,8 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
- 		return;
- 
- 	oob_trap_notify(X86_TRAP_PF, regs);
--	if (!running_inband()) {
--		local_irq_disable_full();
--		return;
--	}
-+	if (!running_inband())
-+		goto out;
- 
- 	if (likely(show_unhandled_signals))
- 		show_signal_msg(regs, error_code, address, tsk);
-@@ -938,6 +936,7 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
- 		force_sig_fault(SIGSEGV, si_code, (void __user *)address);
- 
- 	local_irq_disable_full();
-+out:
- 	oob_trap_unwind(X86_TRAP_PF, regs);
- }
- 
-@@ -1401,7 +1400,7 @@ void do_user_addr_fault(struct pt_regs *regs,
- 	 */
- 	oob_trap_notify(X86_TRAP_PF, regs);
- 	if (!running_inband())
--		return;
-+		goto out;
- 
- 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+I can send my kernel .config if you want it.
 
--- 
-Philippe.
+Thanks in advance for your help,
+-C Smith
