@@ -1,281 +1,127 @@
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2095.outbound.protection.outlook.com [40.107.104.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic305-20.consmr.mail.ir2.yahoo.com (sonic305-20.consmr.mail.ir2.yahoo.com [77.238.177.82])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A754B2CA2
-	for <xenomai@lists.linux.dev>; Tue, 28 Feb 2023 12:09:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FvhYKhmwpI83XvCgGatlJBdwV5cfxfh8t6Za641PAfX/SUg9+XOhXY3A70ifX/lqYLnbOvfNeBrySOaMEegJJ9KKag/yVHh4uMI8UWT2GG5v2dzBPtUNyd+8BpqlaR3qN7opJvKdp6paCht/tSJnnn877KSzU/vbtGdklgU8HmAv/suT51phAc+sQXf654caKgXF8EmYzs9XQ35kYA2BomQ82on5rTBlJn5ChjJXisVMMNMPyXympUla0PAVjZh6R2FwQRqHMVolU1Mj4yoSVzrhSJX9WRwqCAb7z2iJe1p2eby02CK6RbLSAPMsxgSTxDqRb1pnCiaU+Pb5sl4HbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RF2tWHT1e2RxsWJy/2bj6b4XJCfx7k+01MjmAdYWR5o=;
- b=IUtm1ODMwtEPrckTDycUx5aS43XgdSnb9JFZUFKTXpOoNiAgX1GHVKHcAjdPIQ/c/9kLLibsgVwW0zi+GrIoXVvQfAPxuWg4VMMeapp+YAt0IQFnRQxNGNse50vWz7vCfInujY5VDI0jM0zTxheID/o4bEuPoxAXlD+hNz9OHuytJYiS+nYRIXkz4U5kej3qlmSPQQLQwMS0rHOxiSHpbdrfU6TXuDrcwmlbzkyCFToeCwdNvh6Pqb2GZ9eQn4V/Dni7W2oB35GFJ4BfuZe0vjaLsUrM+AZqipSpNNRN4ZCQngbwmVFZlEV9YXHMyS9ujRvKVwMKpezfVc+rOd1IKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
- dkim=pass header.d=sigmatek.at; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RF2tWHT1e2RxsWJy/2bj6b4XJCfx7k+01MjmAdYWR5o=;
- b=EI1RS1pkbLyCqBKStZgAB6Myh+wI0wP6FW4LEjNdkZsbLk8pRZ+I/fywx85vrtoZFKb98s39xrk2GmeslXKi0mB/JNzkvzWcKkA8vgrEw08ySlP8tOJqKlFKlbp+95Qs2xya3mIgXKM7syl2LTZDJma0f09huHkW7g+dfiRzGC0=
-Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
- by AS8PR08MB8394.eurprd08.prod.outlook.com (2603:10a6:20b:568::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Tue, 28 Feb
- 2023 12:09:41 +0000
-Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
- ([fe80::f60:da2a:818f:e6d3]) by VE1PR08MB4909.eurprd08.prod.outlook.com
- ([fe80::f60:da2a:818f:e6d3%3]) with mapi id 15.20.6134.030; Tue, 28 Feb 2023
- 12:09:41 +0000
-From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Jan Kiszka
-	<jan.kiszka@siemens.com>
-Subject: RE: problem while handling exceptions in oob stage
-Thread-Topic: problem while handling exceptions in oob stage
-Thread-Index: AdlHiSicop1W4d0MS2Gakd59UUNxuwBvFCkAACB33gAAaXhsQA==
-Date: Tue, 28 Feb 2023 12:09:41 +0000
-Message-ID:
- <VE1PR08MB490939225029D8A349278FDD92AC9@VE1PR08MB4909.eurprd08.prod.outlook.com>
-References:
- <VE1PR08MB49090AD3D9BB287AFBD16EEA92AB9@VE1PR08MB4909.eurprd08.prod.outlook.com>
- <87y1olh9i4.fsf@xenomai.org> <874jr8vinh.fsf@xenomai.org>
-In-Reply-To: <874jr8vinh.fsf@xenomai.org>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sigmatek.at;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VE1PR08MB4909:EE_|AS8PR08MB8394:EE_
-x-ms-office365-filtering-correlation-id: 113f4e49-86ed-4e8b-2633-08db1984ac0c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- rEjyCB0h/8FVXLXiICr7rSkHE0QJAllfoACW2XGiyS18n1tVlWEFFDOSanx97GPUdahbSu+KlQbGlJgDwM6Yqih6083p9j2ahwcv40MsqHObGeIf5l40VG569FjWK4xtzU8IsxobwhMDftP5LNvtNqjteE4NGNkqeeD9T2OyGvKxn5VoF60FZKqgp+pMY49/FwSFHwD65oEUJ9JDngxXE4J+A1qoSFgYSRd1xrLnkiWVNHsGOETOcSpAto6yJ5AzE2u/EIuRFUpgLVqd1SfNJmF3vL0zHGr0mMGG9X9xbGZb/BSjCaRPtPue5CJJeQZleUfJLeNkPwE8XPEF90bvzBvf4UGi5eNd1k//qmg3F9ITdwvyZNjWkkA/8SKsFbDW31h89qqhGzXVS517gpF82R04wCgpaodtMdJH9CYnc630mkhCPI9w+cjBC6lLOQUj2gaq9fxgkubdjuspHnd92lmy2AVIPOlIUMr2xN0dTTrLCFIvdUIY4b/Y7hivLvAmr5OalZUCIZGwpyF/kTyIg6rqjYZXtOfq+q79TCI9uKO2URNZtGh7TOqpHLgHh2WEo3YL9BzpxZGxubofGu2eMAkoDAck/8AT1vivrssOiVAEZVjfOwSsJDglfQa1CbHOgUx3OHVa8hM7EE99Z2Z5KdltBMYLwjQDrlTb24ceXPG7trmZTs6aMlVSx1knF7Lb5JlMzQnNJTZoM8r6MRJn1g==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39840400004)(366004)(346002)(136003)(376002)(451199018)(316002)(83380400001)(54906003)(33656002)(4326008)(6916009)(122000001)(76116006)(38100700002)(66446008)(8676002)(64756008)(6506007)(53546011)(478600001)(9686003)(7696005)(71200400001)(26005)(5660300002)(186003)(66476007)(66556008)(55016003)(66946007)(2906002)(44832011)(52536014)(8936002)(86362001)(38070700005)(41300700001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?V0XZ12u61DzI93zje6yHgVoPJOw5dMIV8jBa9PHnaDto0XM4dB2xyW1ewu6t?=
- =?us-ascii?Q?bJyCb4hM9o5FbHxnrmOQCShdX5xp85utNICuukkGb144QbJ+1bDejxWJUWEU?=
- =?us-ascii?Q?SU2CVL9DxdgGjr7GxDF/SWrBmfnmhGOLtF/XMQxiypFL48uHH62/x1y/gzwC?=
- =?us-ascii?Q?Ob5r7zOFVfkT3xWc2A9CW5IfcoPm9DwRmvIrrEOyqU/A8JxAgf4qGQXhSMUw?=
- =?us-ascii?Q?r6qtGRy7kibbAERmNolvHGRsDfkQ47cSsZttmMeNJpg4NxV3aPldV5/LbRqE?=
- =?us-ascii?Q?NK+WUKSJN3SZJsScMwC5Q+/El72eXYWgZ2Fe5W9qAOPWAMaffI5ykv8DtKs9?=
- =?us-ascii?Q?QstA6MlHiyWmkWtF2WCossivPc7H9a0vLNZTzgEn6P2Moz1hCDQ0KWwhXubE?=
- =?us-ascii?Q?/c+MpowUS2EiYgzwH8OxdfZg44WVecvNXNSDnANntzjRQTKnk2lOSqSVzTMP?=
- =?us-ascii?Q?cKdV+p8Rg1a6AKdv3VAtPa55tH5QX07P+jMa4GCHDuzmUn0kRCNUo37o32yw?=
- =?us-ascii?Q?wtQZlPTLRUDjE0fSHJWX7FAa0gox5EZqRSTHjojy+jRFhArWbABufHciXFc4?=
- =?us-ascii?Q?Zc15Q+YW9shYdi42e2a3FTcXiYZPSCL/uJFwwSpwf+vtPuXlc3e6Pjrtlzli?=
- =?us-ascii?Q?cvp4nx0VtVaraPuOQR617N4j2V4a/vJgGJP8FI8fL3QgFwNMuvDPBdilIueB?=
- =?us-ascii?Q?Kwzef7zPlqdW8tAjBlClZ8iTXIRs0nqtzQtqP0AnjBFDU+5G0e794ZsOWl+m?=
- =?us-ascii?Q?JKmsAASrGj4QRqmyz6SlODyflg5ypjsg/a6s6OShb1cK/zjDzLYYLWvg3Oop?=
- =?us-ascii?Q?aMs4jUP+eY/h+cPPHNlxKB9zqgKPYT/6A1C5T84MMGehB7k/dgwvO/hoPC1X?=
- =?us-ascii?Q?b1cOpGYHtLlXA1b5co0x94ufJldsQIDL6VJkS7a3+rOmz/S1KcJyAYVXF/U0?=
- =?us-ascii?Q?WulA6mTRWOuZjDfXOTfPWbqHbRmPtHfkGQ3pI7doALfOqScDR5i6t3yxTRv/?=
- =?us-ascii?Q?ebQJYhJSv6w0uTDzYgzr7OMHnlf2lO/bsCu8kkcSusUXDh4Wp4RFs7oX8bOe?=
- =?us-ascii?Q?uxL0/qHR6d34eGcb+tb6YMVYwkG6RVgxKRl368hflXRoEmvyXlnk3YySWjra?=
- =?us-ascii?Q?8Y9xtbbR2SXtHq0P7e21qnz+4WBFX+fL8LdSYImrFFfr94O8hU7R4PXzk0KM?=
- =?us-ascii?Q?+92ev9XFZYxWohrBt2tXFs5tnCrE8Y84lUPHSte93/olNoX08C5CPPXLftVs?=
- =?us-ascii?Q?WVMokyhtsuyBA2kpVpcdzDhkMLMQnXGi5ZSJ1b/oQnpZlHu/2QdkMMdyVZJF?=
- =?us-ascii?Q?CeVH3omdkMc4l8uQ0KejvdqOZe2eG4JZ0YQj0Wh/WWjKPt7zJyfh3IYT8xJT?=
- =?us-ascii?Q?QNTPPPHNsg9FGxk02ofZH4lGMMpFFhvmr3rUHUms/vi8TGqEsk+lspRLId/q?=
- =?us-ascii?Q?J1jNfcgJBZbhp3wiOLHYnJ66MGXh9Dg97BaEUIqrufwqBYwdi0H/BEpKq0JD?=
- =?us-ascii?Q?74GVbf4e6cxxZcP7BogM+GUpRQqrwr4BTiNbYYcKRxt4gLBMQU4VF/Kp67H5?=
- =?us-ascii?Q?1y0whv2uz/FWdLMCLks4iH0pFAB+JnI9CBcKeYthoOEhyqbW73o+u9vJOKyp?=
- =?us-ascii?Q?tg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A102CA2
+	for <xenomai@lists.linux.dev>; Tue, 28 Feb 2023 12:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677586207; bh=o6ielnwdsqGJbIae27xQhxIA6uLphRH2/ptHQSR2Goc=; h=Date:Subject:From:To:References:In-Reply-To:From:Subject:Reply-To; b=FDEpv+4+Sjs3rLYAfskL+1Qlj+CHBQOndb/lZpTjEiIrUZSwtaE/+u7KKgScPqkYqCtLYpbqWqNZKKM4pfxOQdM7jCspCrABdMU5+RoebJ0Ie85qnRBFIi6nRfxGyH3ZDF0bbevyG8l+PPT+1anqhRBQvSqqoHXy4sjnVdxZw+OCfLfKi5Iynp04CVL3QJUX2IH7i/esvcB83Ch3FwNGd14fSyK4vVmnFOqMjDGgRy8ou6rZUqkLN4umQP2j5Nb1SE4D1GGuG1OwT7DebxYbi62JnZRysPUiFQWdlBxg15wEFasHQLExGhzu2zu2PBMzakfVXHz5drWqPg1KpgMHSA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1677586207; bh=ivglpkzEtPdAu6YxXxaSmKH8XJfyWAZiXhLI9DMVItg=; h=X-Sonic-MF:Date:Subject:From:To:From:Subject; b=TsyA/k+uoMLqIpXzsNa12m/9ME9dp/BWN6Fgr1ZKwRYl3J0CC79kf4jktH/lbo1ydPBlSdAOXGO8FyCmA3rK8o5cgcoJVpW3YQH9ilvIAWwwCA6ESIw9T0sRaSNvnjENzb7yoGRdKQQ0HWIxGH9PydS4xnj4nHAbbenQw9FhwwhGQiXXoAimrHRA2iOCZCuAE/7fmpjYSnEfMPSlT1qS0QbLVXasnaFL/mLKr3OaN+T/PgS7bXLR0eK4V7sjnHp3USVqCgETACltDs7B7GyAhU3T5zEpJ+Fe9HJ8K04Olatq2dNz48B2NAZO9YNVV9KRATl7wivFJounZKmHRzlYjw==
+X-YMail-OSG: ZomJk_4VM1nyIFuRG.ZEgRbVLCvmpiVnJgbZTvPgleK9pvD8y6rdFWgZrCcjr0a
+ L_ehcIpGCD1fqDutd2MsKQt0M9HMFywYF.CFbx.V4frC3G4dhGwPw2WRn2OvYQAET2dZ9R0B2Ldt
+ HAmbt9hqJngTxTMMYqn9dQVHtONYTjdW6UlYV2F_H8YIo3pz7Y041ZlvSUceyfDGnALhwB7REsG3
+ kaCjEphF1qCysCl7DZTBNeeb2YW.fuiV22sl.PuVY9PJaYGNhAFltmWSY17mTA.4ONraLBU2Wg6s
+ h7lAk00acbZHFZuM6l3ZWxNrCa.zgQEHnMtWqjo7mg6kG4YXGZYVH7t0hM0lOKTZa9CIpS.07rac
+ d_277FrFYoInyes9Bm3YxtMhRPfIxCRIpKwY8g0Cgv9M72Ysf0lS4Q3T24HGlOIarjlO7jqxMlsp
+ 1mrklch8KWdRN42NMJiqc7UqAAk8ByF6y169U8asRQ9.SZv3ViLUSIuSBrD8SLkxBCHQJMS7Drom
+ ySa2ykxyX5hTAymAUPdBq50oCohxR89LLGAKXDI5cbFeyduJIvTe1oiJD_oweDUZFkD1ElNtOK72
+ AUJQfceRvu4gZX7xHYoaIQp5d4ediaTB0_2xHwN_FlsjWzi_zMXmtz8dA2Q5GMXeQh0H7ZQ_KhyT
+ phxXgbeoc43ch0h9dkztjSZFCIzyDDx9nWuEVI6if3nWi4eNoXU1Elcu2BvQq3BB7qocaD83dI4L
+ 9cGdoLoljf65rf3l1R8gfW5ot07_YWngR6MtVfJwo_wd3Nho_N2s7Nw5O_0niXXEaaj1AxK5j1ju
+ ssDZEKpLinIYophcUhvbxoQ5teWvhSp_3a_.nFxHgzX8.EgIkMrdMCBzH1.nklTgMZooLTy6Z7so
+ _7WIRZmOUbYUZgmUvGRmUQ.gQ.lHf6LdlpXL7xFryKA7TXPbt4GKRvxY3mehbxfyFi.S8Y8AesBM
+ dYQNOMJrLWlTUHDXRrYNrwgHwCXr1CYwy7ModcmbTHEWK0ZofSp6wg7kqGnGh_0hVtRGOKbvZaZp
+ Q8U8unzd9z7VBv1Hb0ZFheqX.2Sa0h7_fEbCdWIcNEP4hw.ugc7v1H4d0LHh4qBHMaplB2kCW.Gg
+ gPiWC3Dcq_S_uDXBSuKq.UfgcBFGpFUFQrCebuwZWwkCZponZEQO2krApi.1ogWgckQrpIfaMQat
+ tIrwt3rDns71gqYtaqOzzIeYrz2_4Nkp8pgzpKv1AFhhDjsKEm9wCjBrbHrJKEJfLRzcEIVwF9Wv
+ X5q35Vbzzbgx1Ccw0eJ36VEfmVqpPCiYblRgZ3awX2rcXODrSWaqJ0Vkp.CYlhJKs0cMHEa9w5vB
+ VW2OOm2HgVTS.6tXPpXaRdCAEVcU_7PYEgT8FzGEW8AefrhP_uL7AtEP3aXM55J6j19KeI5nEGx6
+ Xzs9NHgr4Ht3zqyAOVF05fjgueM3I2AaZQkSMDIwVddV2Jzf.Njuia_shVQYyIJr.x0.1M9rpegG
+ BYTFEVhNE7HE.mCFmZdrI4gl8xBwlGxvhjEy5ZqsK.f2CeZZX4WHHCk3cnWAXi6SKIgCC7.BnqHh
+ FifdpL3z_cRwAqfFvrow5n5RlU8l1JWI0vCileYx9WRtjIB_Z99mT5Sjou5TvGnUESm1cXUDfVMi
+ ih7NSuOA_OYx3u5BS.EXxvDZ03_vXstb_7o98tv6Ver3fp00POgfxU4ov7ksBElauagTKCtvJIQ4
+ djQJ2CIdl6wsvhG5cTon377ZUh59KrEZXBF.W8I0gxoi3jch4NeVOBD_h9fzIA9uvMIQp2GlwIu.
+ v2juYaWD_uuvkWw12_eRDKjwiWo9bJwoN0iAf0kpBMkRuLO3ci9_saB1Kz8oufW9QODVGOc7FmCw
+ KtjfThzn1.djuG1yeSqjz1NfkwBnKlJWo8SukihckoQv3An6DynVU162gyp18X5A8oZKsLBKowaS
+ bMrwaygFI_zpQ.NjBruM615TIqBtjNGndxLwXpSl9Ncmn6cnlJIslYsHE5_Euhwt96PEUGr05Ku4
+ 3meFg1Shila1mIi_3okeDrKiKSVzhMOT1zKHsepuNsjw7RbnaJig2aynq1eQrUohTk52tGNnr7oH
+ mJ.AexP89c8qEj2zp8bps.hRfoOk9f.wwYy_fiY67pgEviicWKBZjR16sJJ.iemVvcgl4K.v92JV
+ 00siXHdQYe6NUXuZQZswSQSdrPHgKUCuRHX20Nf0t7o7GGpGu9GSjo_kugGbT5Z8-
+X-Sonic-MF: <mau.salvi@yahoo.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.ir2.yahoo.com with HTTP; Tue, 28 Feb 2023 12:10:07 +0000
+Received: by hermes--production-ir2-65c64dfd66-fhq4t (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID a40cbac568c271306afa417cde737cb3;
+          Tue, 28 Feb 2023 12:10:06 +0000 (UTC)
+Message-ID: <645dbe21-4dc6-1449-bf73-ea83165fa4d6@yahoo.com>
+Date: Tue, 28 Feb 2023 13:10:05 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 113f4e49-86ed-4e8b-2633-08db1984ac0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Feb 2023 12:09:41.5443
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jg0c+gb3aFxzfmP+PqukhSgOWzyVrmzs/n+jekQGQuycAgA6WssP3hltB1Ik+GRtncytF/CfctPCkp9X1yv5jXpYagTrUxPR3J89ZAhoy6E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB8394
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: Segfault on exit after commit ec804ffbd "lib/copperplate: Release
+ main threadobj on exit"
+From: "Mauro S." <mau.salvi@yahoo.com>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+References: <233902a7-0911-06e8-a54b-dd7a1d568264.ref@yahoo.com>
+ <233902a7-0911-06e8-a54b-dd7a1d568264@yahoo.com>
+Content-Language: it-IT
+In-Reply-To: <233902a7-0911-06e8-a54b-dd7a1d568264@yahoo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Mailer: WebService/1.1.21221 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-Hi,
+Il 21/02/23 15:13, Mauro S. ha scritto:
+> Hi all,
+> 
+> I'm using Xenomai 3.2.2 at commit ec804ffbd, kernel 5.4.228, cobalt 
+> mode, on a Atom x5-E8000 x86-64.
+> 
+> Since I trarted to use the commit in message, I have a subtle segfault 
+> when I close my application.
+> 
+> I managed to reduce the case in the simple code attached to the message.
+> If you run the script, almost always the 
+> xeno-test-session-segfault-mainproc generates a segfault at exit.
+> 
+> Analyzing the core, the involved code is always the same:
+> 
+> #0  0x00007ff729498400 in __hash_key () from /usr/lib/libcobalt.so.2
+> #1  0x00007ff729498897 in hash_remove () from /usr/lib/libcobalt.so.2
+> #2  0x00007ff7294b49ac in syncluster_delobj () from 
+> /usr/lib/libcopperplate.so.0
+> #3  0x00007ff7294ce06d in ?? () from /usr/lib/libalchemy.so.0
+> #4  0x00007ff7294b6774 in semobj_destroy () from 
+> /usr/lib/libcopperplate.so.0
+> #5  0x00007ff7294ce216 in rt_sem_delete () from /usr/lib/libalchemy.so.0
+> #6  0x0000559ca0298651 in SubDummyFn (arg=<optimized out>) at 
+> main_proc.c:55
+> #7  0x00007ff7294cca0a in ?? () from /usr/lib/libalchemy.so.0
+> #8  0x00007ff7294b5ce9 in ?? () from /usr/lib/libcopperplate.so.0
+> #9  0x00007ff729494f7e in ?? () from /usr/lib/libcobalt.so.2
+> #10 0x00007ff729461ea4 in start_thread (arg=<optimized out>) at 
+> pthread_create.c:477
+> #11 0x00007ff72937859f in clone () at 
+> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+> 
+> Reverting the commit in object the segfault disappears.
+> 
+> Applying the commit to 3.1 branch results in the same problem.
+> 
+> Seems to be a corruption of the session memory shared between processes 
+> caused by the atexit() callback introduced by the commit.
+> 
+> Some notes:
+> - seems that it depends on when the xeno-test-session-segfault-secproc 
+> exits: if exit happens during the SubDummy tasks start, the segfault is 
+> generated, otherwise no
+> - seems to be related with the number of calls of the 
+> xeno-test-session-segfault-secproc: with only one call (change i == 2 
+> with i == 1 at main_proc.c:139 and remove one call in the script), the 
+> problem does not happen
+> 
+> Thanks in advance, regards.
+> 
 
-just tested the patch.=20
-It resolves my problem.
+Hi all,
 
-Best regards
-Johannes
+just a kind ping.
 
-> -----Original Message-----
-> From: Philippe Gerum <rpm@xenomai.org>
-> Sent: Sonntag, 26. Februar 2023 10:48
-> To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-> Cc: xenomai@lists.linux.dev; Jan Kiszka <jan.kiszka@siemens.com>
-> Subject: Re: problem while handling exceptions in oob stage
->=20
-> CAUTION: External E-Mail !
->=20
-> Philippe Gerum <rpm@xenomai.org> writes:
->=20
-> > Johannes Kirchmair <johannes.kirchmair@sigmatek.at> writes:
-> >
-> >> Hello,
-> >>
-> >> we encountered a problem, while handling invalid opcode exception in o=
-ob
-> stage.
-> >> Our fixup code works fine if we execute ud2 instruction the first time=
-.
-> >> Upon second execution of ud2, we encounter the problem that our fixup
-> code is not reached.
-> >>
-> >> The problem is that the first time entering the kernel, mark_trap_entr=
-y_raw is
-> called and in a subsequent call the _TLF_OOBTRAP flag is set.
-> >> But because we do not switch to inband stage, we do not call
-> mark_trap_exit_raw and the _TLF_OOBTRAP flag is not cleared.
-> >>
-> >> The second time we enter the kernel on execution of ud2,  we encounter
-> (again) the following code:
-> >>
-> >> static __always_inline void oob_trap_notify(unsigned int exception,
-> >>                                          struct pt_regs *regs)
-> >> {
-> >>          if (running_oob() && !test_thread_local_flags(_TLF_OOBTRAP))
-> >>                  __oob_trap_notify(exception, regs);
-> >> }
-> >>
-> >> Because _TLF_OOBTRAP is set and because we are still oob, we just leav=
-e the
-> kernel without calling __oob_trap_notify and subsequently our clean up co=
-de.
-> >> This results in re-execution of the same ud2 again and again.
-> >>
-> >> I fixed it for me in the following way:
-> >>
-> >> --- a/arch/x86/kernel/traps.c
-> >> +++ b/arch/x86/kernel/traps.c
-> >> @@ -414,8 +414,9 @@ DEFINE_IDTENTRY_RAW(exc_invalid_op)
-> >>                 handle_invalid_op(regs);
-> >>                 instrumentation_end();
-> >>                 irqentry_exit(regs, state);
-> >> -               mark_trap_exit_raw(X86_TRAP_UD, regs);
-> >>         }
-> >> +
-> >> +       mark_trap_exit_raw(X86_TRAP_UD, regs);
-> >>  }
-> >>
-> >> I am not sure it this is a valid way to fix this issue.
-> >> If it is, I could work up a patch next week that addresses all the pla=
-ces where
-> this problem could trigger.
-> >>
-> >> What do you think?
-> >
-> > That would work in the current implementation of mark_trap_exit*(), I
-> > would recommend to keep the semantics of the mark_trap* pairs unchanged
-> > though, meaning that no exit should take place if the corresponding
-> > entry failed.
-> >
-> > Dovetail-wise, the inner oob_trap_entry/oob_trap_unwind pair should mar=
-k
-> > the start/end of the in-band handling of a trap, so that the core can d=
-o
-> > some housekeeping before and after such handling. As you rightfully
-> > noticed, because such entry was actually notified unconditionally to th=
-e
-> > core, we should always tell it about the matching exit point as well,
-> > especially if we plan not to do anything about the trap event.
-> >
-> > Something like this should do for x86 (same issue for arm64 and arm,
-> > I'll fix them up too):
-> >
-> > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> > index 7238f5c90b998..234e8ab84c221 100644
-> > --- a/arch/x86/kernel/traps.c
-> > +++ b/arch/x86/kernel/traps.c
-> > @@ -174,6 +174,13 @@ bool mark_trap_entry(int trapnr, struct pt_regs *r=
-egs)
-> >               return true;
-> >       }
-> >
-> > +     /*
-> > +      * If the oob core did not switch us inband, our caller is
-> > +      * expected to leave the trap handler immediately, so we may
-> > +      * notify the core about this right now.
-> > +      */
-> > +     oob_trap_unwind(trapnr, regs);
-> > +
-> >       return false;
-> >  }
-> >
-> > @@ -188,7 +195,13 @@ static __always_inline
-> >  bool mark_trap_entry_raw(int trapnr, struct pt_regs *regs)
-> >  {
-> >       oob_trap_notify(trapnr, regs);
-> > -     return running_inband();
-> > +
-> > +     if (unlikely(running_oob())) {
-> > +             oob_trap_unwind(trapnr, regs);
-> > +             return false;
-> > +     }
-> > +
-> > +     return true;
-> >  }
-> >
-> >  static __always_inline
->=20
-> The patch for mm/fault.c above is not correct, the following one is
-> better, i.e. since we are still running oob, we must not alter the
-> in-band interrupt state, plus oob_trap_unwind() turns hard irqs off
-> unconditionally on entry and leaves them that way, therefore we can and
-> _must_ skip local_irq_disable_full():
->=20
-> diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-> index 4b697ef4bd678..c7999b493865b 100644
-> --- a/arch/x86/mm/fault.c
-> +++ b/arch/x86/mm/fault.c
-> @@ -922,10 +922,8 @@ __bad_area_nosemaphore(struct pt_regs *regs,
-> unsigned long error_code,
->                 return;
->=20
->         oob_trap_notify(X86_TRAP_PF, regs);
-> -       if (!running_inband()) {
-> -               local_irq_disable_full();
-> -               return;
-> -       }
-> +       if (!running_inband())
-> +               goto out;
->=20
->         if (likely(show_unhandled_signals))
->                 show_signal_msg(regs, error_code, address, tsk);
-> @@ -938,6 +936,7 @@ __bad_area_nosemaphore(struct pt_regs *regs,
-> unsigned long error_code,
->                 force_sig_fault(SIGSEGV, si_code, (void __user *)address)=
-;
->=20
->         local_irq_disable_full();
-> +out:
->         oob_trap_unwind(X86_TRAP_PF, regs);
->  }
->=20
-> @@ -1401,7 +1400,7 @@ void do_user_addr_fault(struct pt_regs *regs,
->          */
->         oob_trap_notify(X86_TRAP_PF, regs);
->         if (!running_inband())
-> -               return;
-> +               goto out;
->=20
->         perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
->=20
-> --
-> Philippe.
+Is there anything I can do to try to solve this problem / do you have 
+some indications?
+
+Thanks in advance, regards
+
+-- 
+Mauro S.
+
