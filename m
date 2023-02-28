@@ -1,190 +1,337 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2081.outbound.protection.outlook.com [40.107.21.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01AB29AC
-	for <xenomai@lists.linux.dev>; Tue, 28 Feb 2023 12:51:42 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WfYtUnfPHvEDD7GiHStxscoOv1m8HzI2tvKHxOZhN1T0p+bLufRGPyqivKjvazSpeRtf/rNUEUGAx3H6ll613HSiwssA+1l9QhNd5ShwuQ0wjwW2vLYaYXmnJ6r+nQIo3b1ba1aaKXeNpwCevkLdDavLtQA/hfoLgHWD1H6WfTHYQ51jnTmzFek9OplGR0zTg9RNZ3tLX3GT+X3bRnxXfJ3A+tLixnJQ4IJ2IsDvU8pxgV03ZXU3MSy7e2WhXY5jFUO6BadCyw8f0jgluFwJ/JHOI8FkQ8jnmDfQcdfaFlVzwpbZgrhBVECvjyH/wuPNsmatD+yZUFpBwvHbEktXMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0VXtmvuPJcfb/5AhKLOvp6sIW7xQStkmbERmKtutqQk=;
- b=fWcK9oHmo26z3TN0sVKnJCWQxsNjInUUKCbHc0A7OgRwQF6te8PLW1SO9mYkpBa63HjfFUjyhGlgKBYrIHTNmOp1//60ouDkOr2fXglevbEWT4qn7bDmuIer30HP1h3JECaE0UibXbRZCnL0fDSlWaIq+qEYu9NokHGyWCxEeZ4IQcuzbnTW32P2TSmV3tVgL3CxE0QyCWOTTZ4JrG46QG+YfmQXUPnxwPBB+D+tbPIjC3nbU3T3pt7awTjmHa6E3r4QnojkJdUyBLbA9caFsnZCXO+ULHcGv9QK9T4OlYqpJVsKUhDwjlHpgKQVZy/j+QlGBc1XKwCMIr3XYNoiHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VXtmvuPJcfb/5AhKLOvp6sIW7xQStkmbERmKtutqQk=;
- b=iWREQHED0dJ+h5dGdg/Clmeo51FaUXFhP82RRdPrEtv7RtGHnln4llD59Imz1u82mL3TjFt4O3lUywTPtQpXUvvwHz93K/D1kSvWD2dBxXFCoD9swrQjE3idtUvjU4LMaQ0MLwpED9D1Zsxv6oMMcyJoD7lGnDo8SFjN3qJfO4VCWhCNs/nNQ7+w6h+77Eq7z15d3qj1x5SYkC3/zXy4Q2OjSMFiRL+FIrZZyZ6WYWgTR10EeFLS1ei3nRnBla8pbDdmLAqZxJsOPuV5TovuokPqRJ+zf98J6ceux+kSAmlLrCpAqGfI+cuM9Q3cvDnRiM9QCp2AiNhDrB9qoOPaXQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GVXPR10MB8131.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:114::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Tue, 28 Feb
- 2023 12:51:39 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::784b:e95b:b855:dcc5]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::784b:e95b:b855:dcc5%9]) with mapi id 15.20.6134.030; Tue, 28 Feb 2023
- 12:51:39 +0000
-Message-ID: <75e4fb40-027a-7e00-d565-ed765b1739a7@siemens.com>
-Date: Tue, 28 Feb 2023 13:51:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: Segfault on exit after commit ec804ffbd "lib/copperplate: Release
- main threadobj on exit"
-Content-Language: en-US
-To: "Mauro S." <mau.salvi@yahoo.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-References: <233902a7-0911-06e8-a54b-dd7a1d568264.ref@yahoo.com>
- <233902a7-0911-06e8-a54b-dd7a1d568264@yahoo.com>
- <645dbe21-4dc6-1449-bf73-ea83165fa4d6@yahoo.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <645dbe21-4dc6-1449-bf73-ea83165fa4d6@yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH0PR13CA0002.namprd13.prod.outlook.com
- (2603:10b6:610:b1::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3CE9443
+	for <xenomai@lists.linux.dev>; Tue, 28 Feb 2023 17:41:51 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id cq23so43452887edb.1
+        for <xenomai@lists.linux.dev>; Tue, 28 Feb 2023 09:41:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677606110;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1fE5N6Ry/f9dHyy+GGWKqxv9IML4MilMlzB18mYPn1A=;
+        b=l4iU16IN+KlBbS5/JdduUiqx1OMmSqwHsKtlkqlx6IzFEvRcoFSH0ijlZTe8OW9J9P
+         IQcwmEEzQDLXXakXNTxGaVt4xUveSpHjRMExniDe/SvWdJ3NakwiN/4Pynt4rx983Mtj
+         KMqdx5i1N+1ls1Mx7AFPOgqPfzChHSNHNtnPF9RM7RmyIJbACWeQLlxBOVi68XJF6M5O
+         y/O31lbIAgeNbBqzTElZ5Tt/i4utkSc64bY0RW1Thws0GINsPNwMO9ezKZGJIYGykH4+
+         npj42F2pM0V4tZzuzmp/ZqgPXsm/gnqxQlG5X2TmfabuqQbLm4RzIaDPTpbMNEfIJzlc
+         Uw4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677606110;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1fE5N6Ry/f9dHyy+GGWKqxv9IML4MilMlzB18mYPn1A=;
+        b=ySB+6A7q5b62ZfOzhO1kbQZ4S+p04U8TEMMnEU93lTBI9rZlpkaQ3ya9sz5ErmL24x
+         G8foxZsoxtxJ1T+jxdesgYtBYUNo0mb6YrDbKVNCTyNb7xdn+hM1q5v3yj/s6HxJceQw
+         +K7xxRDZyfvX1Q5I8w/hiwQ8oWgPct/Yk3Esv5tKFPrF5PYlDsYCKuijisjYgUKlmIbF
+         y9jf1HnRqlKgDdea00URR+2FG1nc49cnv1lMaNk8d/SwRjUKWVdgDpaehtMytPPuENyO
+         fw4gc0shGwZgNMyU5i9Jh9lm4+SEQ0BM0DQ4eHkLYOFd9KoT/ecgqdUfvh9hHRq/Zanu
+         w4Fg==
+X-Gm-Message-State: AO0yUKW6T/5n0YFYpqjwXqe6ZY3zJal2ePollKbzaQ8SgOPF7ITlZ3ou
+	iiaLG3hT0K/VNV78841DRg6nNOdoDrqCE0u1yCwo0ua3Qk0=
+X-Google-Smtp-Source: AK7set8XpL0rqYT1ik8XOkSdlqO2D2UfQgzxrzDbCHotXyybfv0eWFRfP2XYkSUXdy8T0Y63UHOzZrzlwE+YkndGgTs=
+X-Received: by 2002:a17:907:c004:b0:8af:2ad8:3453 with SMTP id
+ ss4-20020a170907c00400b008af2ad83453mr8829193ejc.6.1677606109956; Tue, 28 Feb
+ 2023 09:41:49 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GVXPR10MB8131:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34a3ae98-2428-4dd7-cdcc-08db198a88b2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	bwo7vNYqxz98cI8fSJ0FO/Tdr5jnZI2cyfZb9oTsLEoeblW4JUWCqvuuiN9C9wEczlxZXIm4J/shdFAvtQ3SS85Q41lMHVobFmAZOJpF/TCb2sR47ioicw76WNIpW0+VG3t+W4l1IzmApR9ui0/Td1dTvChr6Q+VQmwH1aZACN+W7yZjDpYeydSEwJXyDOd1wAlHC3r49Eqy4nlsylOpv+tAj0CnW0NKSFBy4bVMT1Gk8VvMNIqBMncCq5zAxhALNyIXQR15dsoW2tcuQXagFTWF3zwwVYdl4WhN2+3W+xVwv96uwn60lxO18kU9pM6ccRN89uquNzQWNLpEAGZ+j2nibmaUKgxYXEXGlYjyoQcAnprcM3S6Gpdd0gSVm0xrjMSUr3nOQArdxyk/hkAWQCmCVc2xR7j4ID0iYnsD9e4ezszxzip/4QgFK2DGOM2IbHEth9ZDyVuZyDxyPOLp8Ubt+ai47NWnW6OeXL2txUP9TiflaJsEjreBx8Vq/iWwBrsfIVqY92nsGgqK7nPGbeuanX2fFKD30IEufHhSK3w5vRXbRsrmHaXZonaLmv6b0UwT5+G9CVdWlRCPAi+nz5LxsMHMl7U9l3lPjDL/FvbarSS6JUpG/btuw+mEPDD+HJqhNtYQg7Gg98CaD+D7t6unCF1X2QAdeRpvphPmchAwFZUkpyN3wZBWrz4L4O9koLT580CaFbBT+HdEdL/u7c1gvmc+qRl0RajiF/f5U3M=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(451199018)(31686004)(66899018)(316002)(36756003)(110136005)(86362001)(38100700002)(31696002)(82960400001)(6512007)(53546011)(83380400001)(6666004)(26005)(6506007)(186003)(2616005)(8936002)(5660300002)(6486002)(478600001)(2906002)(41300700001)(8676002)(44832011)(66946007)(66476007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eFZueUxFb2NIb24yR1FTZzZIVCtOTE01SEhndzZiWW9CSGozeHFsalNtV2xj?=
- =?utf-8?B?Y3RmcmdVUzFpVExNbngwemI4RU1CVHVJbTF1b3p2NW1Vd0VZUFhpQzJwN0RQ?=
- =?utf-8?B?Wk1kQU5XTkxUQkFhcFJNamVyTGwxTDRMdnJEbXdvbk9iMVhGWitVR0J2Z1V3?=
- =?utf-8?B?T3F4Z0VGN1JDTFJ2VUN1ZTNSaUV2UGVpZThBMXlrU1ZBc1d4cTUrY09PYytw?=
- =?utf-8?B?dDlYUWRTMWM4YWRQcjRyZmtmNVRMOVZqUXcySEgrZnUzVzdLVmRicjZQTVkz?=
- =?utf-8?B?KzB4Uk44bU9ySk9RSlFDZXE5ZGFQcnZtWnRqVnQxdkRLUG4xU3NXdlRSUnds?=
- =?utf-8?B?bU9vWWNLZXlLV0ZZYWQ0NGFoTWNiUWJ2TjhsMjBRREQ5TmV1d2FtQnJMUUQv?=
- =?utf-8?B?ZWpjdlk1UUswYkpKWThxY0pDTUJ0T2ZJMGJGdi9RcVFXRmdmQnBjVzh5WWVp?=
- =?utf-8?B?M0laTXN3amIvUWR2YWQ1c2JQeFdsQUNFSi81U3F4c3RsemVkQkFxMTZlaHln?=
- =?utf-8?B?dU1aMFRSUzVxK2Mzak9zR3dpdmpLb2lRbDRpRnBtVWRpL1puMlFlUmtBWWhX?=
- =?utf-8?B?dHBLcS9LUEk3ZWdaTmhWWXpzSEc4YU5UQThiQ3gwR3MrRENJVkcranlsN290?=
- =?utf-8?B?MjZGUVFHUjhLaU8xU1R4RFdreElPeUlCeWpXVlczUnNhdjJLb1Q3L0QyNHFh?=
- =?utf-8?B?dU42NDhvNzdjVnkxVnV3UnRHaWZ1SGxFUjJNRlJhczEyUGlYVVJyLzFpYXhP?=
- =?utf-8?B?dFZBbkkvSGFyeUJTWldKRm41U09DdFoxdEVoZFR4WWg2RXJ6TGlFR0lVa1dX?=
- =?utf-8?B?L0pRb09FSEVOcGx5WCsrOHlJY25DRTBWMTVLaWlLanV1Ui83MkxWckFZTVE2?=
- =?utf-8?B?TVFkUHQ0aU9vSGxvVFAyMGoxSms0VWlLbzN0dGZ3cUZkMy8vRzFzZURWRzQw?=
- =?utf-8?B?RU5DUEh1VlRDaXV4Y3VXR2RJWVIyelRjODM3TFpqMTRiQnZyYUZhYVhxRDIz?=
- =?utf-8?B?RWlCWEFveVNHeWR1dFc5SGNPMWJZb0tLRytKZ3ZYK2Vtc3B5NGFaVzRkQkFD?=
- =?utf-8?B?bFJzbHZqdzV5TURieUFHdk1CQjBrV21DQTk4bnBQenF4UE4rMFo3cmFMWkgy?=
- =?utf-8?B?RE13UlNWTmxJcTNWcTg4RSs0eW1RcFVUUEd5SVBPaVRnRHJmbTNueDB4VWxN?=
- =?utf-8?B?NTRyYXliUjQwVXQ1Z2hFS01GNElWM3REODV2VTRlNlE3MVZ1NHRNS1lzSXVy?=
- =?utf-8?B?MlludWtWdW9mb2h1c1c4bjRsYkJzdXdlVjVhVWxXeUFiS1h6bFRUNkVRUkJH?=
- =?utf-8?B?ZElScjlmWTJ3TTU3bXZ1dWQ4NVM1aE9PcVRxdWd2d1lieU9FREp3eVpETGcx?=
- =?utf-8?B?SEdsTVFlQ0E1cFRGSFZFNVRQejZZNjRzUjVnb1RUWElGK0hpaEJhNytyZ3dm?=
- =?utf-8?B?NlRRWmJaUkdMbXpzMFNjUEtUdTdFam96VHlsZXp2MEZ0RUN6SXRac2FiOHJl?=
- =?utf-8?B?WXdzZXExOGtYQVVHZ0JJd0JRYUN3UWUxZjA4Zm1CNER6Mlo0c1FWZ0lnc2hl?=
- =?utf-8?B?a1pNQWoweWlEZ3hQZUcreVVQQmQ4WmlmMmJKZzJhRE1zbDBZNisxYitsTjdL?=
- =?utf-8?B?ckpFOFhYS1JFakJkTDgzZDR2ZnRqaU9oWC9IOFNLUzVhYm1UY1kra01wLy8x?=
- =?utf-8?B?dTJHS3gxdSt6L3ZYQTJBemZoK1VkeW1VbXVvV1Z4OUxGS2RlTU5pV3E1RGV3?=
- =?utf-8?B?OG5BY0ZFZFdlVlI3QzV6RU04dlNEeVhtNk1USTQzQnA4bDFyZ2gxVnpKRlFs?=
- =?utf-8?B?OGVpVy9IZ0FxVmJXQndDRVlnYVZ1Z2p5VElKWEdiYVZ0Q2xLSVFwd0ZQYkx0?=
- =?utf-8?B?ZkNkd0ptMG9IOW5iSXNKdUEwL0NpOWJOYTVCZ0NVSGhjY2hYYmFZMzh1K0w5?=
- =?utf-8?B?RjJGdG5HN08xTURVQzh6Q2Z3Qy9yVVNLVVE3REtkbEZISkNFWlVLaElmQTNJ?=
- =?utf-8?B?dk81OURKK0E1aE9WRXFvNFJheGNVeUxoWnpXWnJoeVZUTUQxSGVYQkhxckkv?=
- =?utf-8?B?bjNRcGR3Y0ZYRHFFYjUwRGhiY2JKcHh0TFpEc0ZWSGdtU09oZzFLak9CTzVJ?=
- =?utf-8?B?SnJaUmY3SEdBN1VTcVh0Q2JlajVsR29mcFgydU5pcWVsMThIK0hUV1NxQ0Fl?=
- =?utf-8?B?TlE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34a3ae98-2428-4dd7-cdcc-08db198a88b2
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 12:51:39.5638
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: K0R3vsw8RK69jGAM2Zna8Mx8Vv7YYMtPTpmYFdTPQHRLod6IwfQ537WU/QSwA2EPSfKwc1ppM8MIxohMilo/IA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB8131
+References: <CA+K1mPGxOi=GFfDbE+nq99HsMWEe0+Q37bw=X=UHjqb-yNfj9A@mail.gmail.com>
+ <39ce5d58-ddcf-de33-32fb-eda57a5d128b@siemens.com> <CA+K1mPF8G3c0V4Y7co=y9SGdjTy_R_d9Up=9bj7c6Nz2XEXp-g@mail.gmail.com>
+ <0dea24a1-0943-d9ed-1f9f-c535e5a526ba@siemens.com> <d58eb804-dcbf-5fe2-182b-878b4fd987c3@siemens.com>
+ <CA+K1mPGGw1iJaCh_L0hRVNFcw-J4O8L-V2wMybnTZQh5EjqNMQ@mail.gmail.com>
+ <8fb9cff1-7ef4-715d-0db6-3b15ffa728b1@siemens.com> <CA+K1mPFkq-JD_+M8JzCEp+n5aPjgWGu2D6h9uZc=UNd8q6uqHQ@mail.gmail.com>
+ <58bb082d-fb06-c69f-8b67-3e9a045f0a3f@siemens.com>
+In-Reply-To: <58bb082d-fb06-c69f-8b67-3e9a045f0a3f@siemens.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Tue, 28 Feb 2023 09:41:38 -0800
+Message-ID: <CA+K1mPE+8V=k9+JE8yM9tD5T1B_2ZbWHUgVD9TO-D2Gie+SfOQ@mail.gmail.com>
+Subject: Re: xenomai 3.2 compile failure : cobalt_lookup_vdso
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 28.02.23 13:10, Mauro S. wrote:
-> Il 21/02/23 15:13, Mauro S. ha scritto:
->> Hi all,
->>
->> I'm using Xenomai 3.2.2 at commit ec804ffbd, kernel 5.4.228, cobalt
->> mode, on a Atom x5-E8000 x86-64.
->>
->> Since I trarted to use the commit in message, I have a subtle segfault
->> when I close my application.
->>
->> I managed to reduce the case in the simple code attached to the message.
->> If you run the script, almost always the
->> xeno-test-session-segfault-mainproc generates a segfault at exit.
->>
->> Analyzing the core, the involved code is always the same:
->>
->> #0  0x00007ff729498400 in __hash_key () from /usr/lib/libcobalt.so.2
->> #1  0x00007ff729498897 in hash_remove () from /usr/lib/libcobalt.so.2
->> #2  0x00007ff7294b49ac in syncluster_delobj () from
->> /usr/lib/libcopperplate.so.0
->> #3  0x00007ff7294ce06d in ?? () from /usr/lib/libalchemy.so.0
->> #4  0x00007ff7294b6774 in semobj_destroy () from
->> /usr/lib/libcopperplate.so.0
->> #5  0x00007ff7294ce216 in rt_sem_delete () from /usr/lib/libalchemy.so.0
->> #6  0x0000559ca0298651 in SubDummyFn (arg=<optimized out>) at
->> main_proc.c:55
->> #7  0x00007ff7294cca0a in ?? () from /usr/lib/libalchemy.so.0
->> #8  0x00007ff7294b5ce9 in ?? () from /usr/lib/libcopperplate.so.0
->> #9  0x00007ff729494f7e in ?? () from /usr/lib/libcobalt.so.2
->> #10 0x00007ff729461ea4 in start_thread (arg=<optimized out>) at
->> pthread_create.c:477
->> #11 0x00007ff72937859f in clone () at
->> ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
->>
->> Reverting the commit in object the segfault disappears.
->>
->> Applying the commit to 3.1 branch results in the same problem.
->>
->> Seems to be a corruption of the session memory shared between
->> processes caused by the atexit() callback introduced by the commit.
->>
->> Some notes:
->> - seems that it depends on when the xeno-test-session-segfault-secproc
->> exits: if exit happens during the SubDummy tasks start, the segfault
->> is generated, otherwise no
->> - seems to be related with the number of calls of the
->> xeno-test-session-segfault-secproc: with only one call (change i == 2
->> with i == 1 at main_proc.c:139 and remove one call in the script), the
->> problem does not happen
->>
->> Thanks in advance, regards.
->>
-> 
-> Hi all,
-> 
-> just a kind ping.
-> 
-> Is there anything I can do to try to solve this problem / do you have
-> some indications?
-> 
-> Thanks in advance, regards
-> 
+On Mon, Feb 27, 2023 at 9:11=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
+>
+> On 27.02.23 20:54, C Smith wrote:
+> > On Mon, Feb 27, 2023 at 10:21=E2=80=AFAM Jan Kiszka <jan.kiszka@siemens=
+.com> wrote:
+> >>
+> >> On 27.02.23 19:02, C Smith wrote:
+> >>> On Mon, Feb 27, 2023 at 2:30=E2=80=AFAM Jan Kiszka <jan.kiszka@siemen=
+s.com> wrote:
+> >>>>
+> >>>> On 27.02.23 10:45, Jan Kiszka wrote:
+> >>>>> On 27.02.23 08:27, C Smith wrote:
+> >>>>>> On Sun, Feb 26, 2023 at 10:54=E2=80=AFPM Jan Kiszka <jan.kiszka@si=
+emens.com> wrote:
+> >>>>>>>
+> >>>>>>> On 27.02.23 02:26, C Smith wrote:
+> >>>>>>>> I am unable to compile xeno 3.2 after patching and booting kerne=
+l
+> >>>>>>>> 5.4.228 successfully.
+> >>>>>>>>
+> >>>>>>>> I had done: git checkout origin/stable/v3.2.x
+> >>>>>>>> Kernel is patched like this:
+> >>>>>>>> [root@host linux]# ../xenomai/scripts/prepare-kernel.sh --arch=
+=3Dx86_32
+> >>>>>>>> --ipipe=3D../ipipe-core-5.4.228-x86-12.patch
+> >>>>>>>> I am compiling xenomai for 32 bit apps, so maybe that is unique.=
+ Here
+> >>>>>>>> are the configure options:
+> >>>>>>>> ./configure --enable-smp --enable-registry --enable-debug=3Dsymb=
+ols
+> >>>>>>>> --enable-shared --host=3Di686-linux CFLAGS=3D"-m32 -D_FILE_OFFSE=
+T_BITS=3D64"
+> >>>>>>>> LDFLAGS=3D-m32 host_alias=3Di686-linux
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Not really:
+> >>>>>>> https://source.denx.de/Xenomai/xenomai-images/-/commit/ed48e736f4=
+b3f96c73cb676f793f768a921d0624
+> >>>>>>>
+> >>>>>>> But we don't think have the registry enabled. Maybe worth to chan=
+ge that
+> >>>>>>> (debian/rules).
+> >>>>>>>
+> >>>>>>>> The failure I got is as follows:
+> >>>>>>>> ...Making all in regd
+> >>>>>>>> make[3]: Entering directory '/usr/src/xenomai-git-master/lib/cop=
+perplate/regd'
+> >>>>>>>>  CC       regd.o
+> >>>>>>>>  CC       fs-common.o
+> >>>>>>>>  CC       fs-cobalt.o
+> >>>>>>>>  CCLD     sysregd
+> >>>>>>>> ../../../lib/cobalt/.libs/libcobalt.so: undefined reference to
+> >>>>>>>> `cobalt_lookup_vdso'
+> >>>>>>>> collect2: error: ld returned 1 exit status
+> >>>>>>>>
+> >>>>>>>> I got the same problem when trying to compile 64 bit, with:
+> >>>>>>>> ./configure --enable-smp --enable-registry --enable-debug=3Dsymb=
+ols
+> >>>>>>>> --enable-shared
+> >>>>>>>> But I actually need to compile for a large suite of legacy 32 bi=
+t apps.
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Can't reproduces. What is your build environment (compiler versio=
+ns,
+> >>>>>>> host and target distro)? which revision of stable/v3.2.x are you
+> >>>>>>> building (though I'm not aware of any related changes)?
+> >>>>>>
+> >>>>>> I'm on RHEL8.5
+> >>>>>> gcc version 8.5.0 20210514 (Red Hat 8.5.0-4) (GCC)
+> >>>>>> I got the linux 5.4.228 from kernel.org
+> >>>>>>
+> >>>>>> I'm using the latest from the 3.2 stable branch this way:
+> >>>>>> I did a 'git pull' inside a git clone and got a bunch of deltas
+> >>>>>> I did:
+> >>>>>>   git checkout origin/stable/v3.2.x
+> >>>>>> This is what branch I'm on now:
+> >>>>>> [root@host xenomai-git-master]# git branch
+> >>>>>> * (HEAD detached at origin/stable/v3.2.x)
+> >>>>>>   master
+> >>>>>>
+> >>>>>> git log shows:
+> >>>>>> commit 62edc8a277d811bf35acea1784d561c45bf592c8 (HEAD, origin/stab=
+le/v3.2.x)
+> >>>>>> Author: Florian Bezdeka <florian.bezdeka@siemens.com>
+> >>>>>> Date:   Thu Feb 16 00:02:54 2023 +0100
+> >>>>>>     testsuite/smokey/sched-quota: Allow building with gcc 12
+> >>>>>> So thats the latest commit on this branch, right ?
+> >>>>>>
+> >>>>>>> Also check what happens to cobalt_lookup_vdso in libcobalt.so. In=
+ my
+> >>>>>>> side, readelf -a lists it. Check if lib/cobalt/parse_vdso.c is bu=
+ilt and
+> >>>>>>> included in your case.
+> >>>>>>
+> >>>>>> parse_vdso.c didnt build into a .o file but I think it is linked i=
+nto libcobalt
+> >>>>>> [root@host cobalt]# ls -l |grep vdso
+> >>>>>> -rw-r--r-- 1 root   sstorage  7240 Feb 25 23:56 parse_vdso.c
+> >>>>>> looking at Makefile.am:
+> >>>>>> libcobalt_la_SOURCES =3D          \
+> >>>>>>         attr.c                  \
+> >>>>>>         clock.c                 \
+> >>>>>>         cond.c                  \
+> >>>>>>         current.c               \
+> >>>>>>         init.c                  \
+> >>>>>>         internal.c              \
+> >>>>>>         mq.c                    \
+> >>>>>>         mutex.c                 \
+> >>>>>>         parse_vdso.c            \
+> >>>>>>         printf.c                \
+> >>>>>> ...
+> >>>>>>
+> >>>>>> [root@host xenomai-git-master]# readelf -a
+> >>>>>> ./lib/cobalt/.libs/libcobalt.so |grep vdso
+> >>>>>> 00024f88  00026306 R_386_GLOB_DAT    00025ac8   cobalt_vdso
+> >>>>>> 00024fa0  0001f306 R_386_GLOB_DAT    000255fc   __cobalt_vdso_gett=
+ime
+> >>>>>> 000254bc  00009707 R_386_JUMP_SLOT   00000000   cobalt_lookup_vdso
+> >>>>>>    151: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND cobalt_lookup_v=
+dso
+> >>>>>>    499: 000255fc     4 OBJECT  GLOBAL DEFAULT   23 __cobalt_vdso_g=
+ettime
+> >>>>>>    611: 00025ac8     4 OBJECT  GLOBAL DEFAULT   24 cobalt_vdso
+> >>>>>>    453: 00025ac8     4 OBJECT  GLOBAL DEFAULT   24 cobalt_vdso
+> >>>>>>    507: 000255fc     4 OBJECT  GLOBAL DEFAULT   23 __cobalt_vdso_g=
+ettime
+> >>>>>>    903: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND cobalt_lookup_v=
+dso
+> >>>>>>
+> >>>>>>>> I can send my kernel .config if you want it.
+> >>>>>>>
+> >>>>>>> The kernel config plays no role here.
+> >>>>>>> Jan
+> >>>>>>
+> >>>>>> Well, I untarred the xeno 3.2.1 package from xenomai.org and that
+> >>>>>> compiles fine, no errors - so that's good.
+> >>>>>>
+> >>>>>> But the git stable branch above won't compile - and I thought I ne=
+eded
+> >>>>>> to be on that branch because I want Florian's latest compat patche=
+s.
+> >>>>>>
+> >>>>>
+> >>>>> That's weird, given:
+> >>>>>
+> >>>>> # git diff --stat v3.2.1..stable/v3.2.x lib/ configure.ac include/
+> >>>>>  include/boilerplate/atomic.h                      |  2 +-
+> >>>>>  include/boilerplate/debug.h                       |  3 ++-
+> >>>>>  include/boilerplate/libc.h                        |  4 ++--
+> >>>>>  include/cobalt/kernel/assert.h                    |  2 --
+> >>>>>  include/cobalt/kernel/dovetail/pipeline/clock.h   |  5 +----
+> >>>>>  include/cobalt/kernel/dovetail/pipeline/trace.h   | 26 ++++++-----=
+------------
+> >>>>>  include/cobalt/kernel/rtdm/fd.h                   | 16 +++++++++++=
++++
+> >>>>>  include/cobalt/uapi/kernel/synch.h                |  4 ++--
+> >>>>>  include/copperplate/clockobj.h                    |  2 +-
+> >>>>>  include/rtdm/uapi/testing.h                       | 14 +++++++++++=
++
+> >>>>>  lib/cobalt/arch/x86/include/asm/xenomai/syscall.h |  6 +++---
+> >>>>>  lib/copperplate/threadobj.c                       | 11 ++++++++++
+> >>>>>  12 files changed, 59 insertions(+), 36 deletions(-)
+> >>>>>
+> >>>>> Please test if a checkout of v3.2.1 is also unaffected, and then do=
+ some
+> >>>>> bisecting. I'll see if I can find a RHEL 8.5-like container image
+> >>>>> somewhere.
+> >>>>
+> >>>> Tested in redhat/ubi8:8.6-990 (with fuse-libs/devel from centos, did=
+n't
+> >>>> find it in the RHEL repos) and only with 64 bit (didn't find the i68=
+6
+> >>>> wrappers for gcc), but hat worked fine.
+> >>>>
+> >>>> There must be something else different on your side to trigger this.
+> >>>>
+> >>>> Jan
+> >>>
+> >>> Some progress, I got further.  But still another build problem below.=
+..
+> >>> First I did:
+> >>> git reset --hard
+> >>> git clean -d -f
+> >>> I'm still on the stable branch:
+> >>> [root@rhelG xenomai-git-master]# git status
+> >>> HEAD detached at origin/stable/v3.2.x
+> >>> And 'git diff' returns nothing , indicating I made no changes.
+> >>>
+> >>> then I did this again:
+> >>
+> >> Please run scripts/bootstrap first, just to be sure configure and
+> >> makefiles are up-to-date.
+> >>
+> >> Jan
+> >>
+> >>> ./configure --host=3Di686-linux CFLAGS=3D"-m32 -D_FILE_OFFSET_BITS=3D=
+64"
+> >>> LDFLAGS=3D-m32 host_alias=3Di686-linux
+> >>> To Florians question: I got that configure line from Jan a year ago
+> >>> and I've been using it successfully since then. I think 'i686-linux'
+> >>> is appropriate as I want to generate 32 bit libraries to link my 32
+> >>> bit apps against.
+> >>>
+> >>> Then I did: make
+> >>> libcobalt linked ok! No more  missing cobalt_lookup_vdso, but then th=
+e
+> >>> build stalls here:
+> >>> ...
+> >>>   CC       libtrank_la-posix.lo
+> >>>   CC       libtrank_la-native.lo
+> >>>   CCLD     libtrank.la
+> >>> make[2]: Leaving directory '/usr/src/xenomai-git-master/lib/trank'
+> >>> make[2]: Entering directory '/usr/src/xenomai-git-master/lib'
+> >>> make[2]: Nothing to be done for 'all-am'.
+> >>> make[2]: Leaving directory '/usr/src/xenomai-git-master/lib'
+> >>> make[1]: Leaving directory '/usr/src/xenomai-git-master/lib'
+> >>> Making all in config
+> >>> make[1]: Entering directory '/usr/src/xenomai-git-master/config'
+> >>> make[1]: Nothing to be done for 'all'.
+> >>> make[1]: Leaving directory '/usr/src/xenomai-git-master/config'
+> >>> Making all in include
+> >>> make[1]: Entering directory '/usr/src/xenomai-git-master/include'
+> >>> make  all-recursive
+> >>> make[2]: Entering directory '/usr/src/xenomai-git-master/include'
+> >>> Making all in boilerplate
+> >>> make[3]: Entering directory '/usr/src/xenomai-git-master/include/boil=
+erplate'
+> >>> make[3]: Nothing to be done for 'all'.
+> >>> make[3]: Leaving directory '/usr/src/xenomai-git-master/include/boile=
+rplate'
+> >>> Making all in copperplate
+> >>> make[3]: Entering directory '/usr/src/xenomai-git-master/include/copp=
+erplate'
+> >>> make[3]: *** No rule to make target 'wrappers.h', needed by 'all-am'.=
+  Stop.
+> >>> make[3]: Leaving directory '/usr/src/xenomai-git-master/include/coppe=
+rplate'
+> >>>
+> >>> Incidentally I already did a 'make install' after building xeno 3.2.1
+> >>> from the official tarball, so /usr/xenomai is in good order.
+> >>> How do I get past this wrappers.h problem ?
+> >>>
+> >>> thanks   -C Smith
+> >
+> > OK, I did:
+> > make clean
+> > git clean -d -f
+> > ./configure...
+> > make
+> > and the compile finally succeeded in its entirety.
+> > Perhaps this git sandbox was used previously and the sources were
+> > bootstrapped against an older version of code.
+> >
+> > Is it possible that the Makefiles could clean things up better during
+> > a 'make distclean', and then in the absence of any bootstrapping the
+> > user could be warned that bootstrapping is required?
+>
+> I the absence of bootstrapping, there are no configure and makefiles at a=
+ll.
+> Jan
 
-Sorry, the original email didn't make it to my inbox, but I see it now
-in the archives. Will try to have a look but would also welcome if
-someone else can debug deeper.
+Right. But analyzing what happened: make bootstrap was run long before
+git pull, then after pulling recent sources the sandbox wouldn't
+compile anymore. So some mechanism to get the sources out of that
+state would be valuable.  scripts/bootstrap is bespoke and unknown to
+developers, 'make distclean' is universally known.
 
-Jan
+Right now make distclean already deletes the top level Makefile but
+that is not sufficient because configure regenerates it, allowing the
+build to fail again.
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+So how about if Make distclean deletes the configure script? It would
+also print a warning telling the developer to 'make bootstrap'. Of
+course, once they do that, the sources will build successfully.
 
+-C Smith
