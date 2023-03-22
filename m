@@ -1,47 +1,49 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2071.outbound.protection.outlook.com [40.107.7.71])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2066.outbound.protection.outlook.com [40.107.20.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466117C
-	for <xenomai@lists.linux.dev>; Wed, 22 Mar 2023 05:48:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79C851FB1
+	for <xenomai@lists.linux.dev>; Wed, 22 Mar 2023 07:49:56 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AagSSTIxtWdol12msIROtc7t+rRMWQiIwR/Le6ilOkaJCjYSTNrnXp6Ch1lAZ96A/usYekR6usTyoOIgZpEby2UaXB8l3J3hNJbN3ySj9sO8VzoDD0WRXnCt4+1CZ6HQ9pFvFBVSPWjCNE8IOVUcwYl4tZD+fVhG3QI+hJSmWK8vry6hj/zOBFTJWTFDVL4KeV9pXEqy+I+n6IV//Mk4w8lBEHpgGOCMR0+Ad7ri9I+8kwOTkkaBPteVpLUk/NuOPBiHLV81QwcCtpRFGR5QprT+YyiNmgrwmLnBqutqdctUjRjFDn9iOAfh0iZPQgB4zTGH+V+PVAnsQwOISqBnKg==
+ b=UE/j9uh6OBG23m43SFhl+9oZNY6RRruLShCHaJvp5ED7sX+t111hUwNIbiCtsg2zTATmZCTV0BCOcNF60TVdG/y5nC2ohFdGL22OMpImpHZkGXvxGfc30XemBOTA+gYBx3vphNydh8oO1ytkugSJfax0806Mfc1UK2AoyeKGcoE6vPde1n3deaDqiqyViOrsIQgps+X3cXzztAcXqIApBHyldhdGbri0wWZHH1h3rylp3+XG4wryxy9rs3o/D89QsOxck8RtzHjHmc9KOeMMZKXbEDwspxf6uWziRc9cvvFajpuG5+vj7iNbIcAg+jrxF6GrN3eH4uxZ9haKImoZng==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KkL9Nlo00plhBUgUv9Z4SyySima2aJYJb27pwkcW08g=;
- b=FyBNnejruYqQYUwZzT3AOzTeTgMEdqdtq/xVeOSUsWqq3jXl/K+kbEm5H/8ev4biOQQSx67GIt6nSVB3RAdyfTSDii7qij3vNwb8sp0ks8+2SmOdBbgpa8dROfretZYzlU0YF/J1BkeZDZzIUgmkbfmiHwji9DiIrDZ9T/lhO1EL3pIg7hVyPJIr5IYWKzcsNeRKAghDLY1KptaKBQ0Rb2ZPKADPRozIgAlF1xonrEX/Biij8jLcHegmpUAQRJ/1iLNsVdHdcKMp+nGphAKFf/ujz+VyAHV+90ZRHJ6ze2JXDwgCBmgJB+pbdEY5eM1p1czm8MCaxFAyHZTiing3vQ==
+ bh=DS6al7/QeDJRvNDNdbdI+zs7pq5dsvPUFsa4gMET/gw=;
+ b=aOZURCnpvOiwlaGeeJOxMdVjNK2GpZxM9rb22xK5SI5C7uTRr5WAAmJJKjta1ETz+yldHFtCagP+AM1xJZLVwLdb7fNWroQUqmuSmkMYIPk3cgWnaQ+MyhUt9xdW0HzZO7lVPkB3u5PLOHGVwHWuiIQoGMBQm6aHgnDgCk62aymR6qxUWyzcMu2mcSno3EUdBB1OS0J5p2hROFxwlfUpXskCPdmQzjaq3cWcTFCX5ujVrauM+jwlK1HEvdwK/8RJnLdronjOp4ZEtWeLeKqEd13U4mafYXaLetImYkleDwOzdBm0sS20vc/skcKVczsvZELtT/ovj7szrv2bA6FT3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KkL9Nlo00plhBUgUv9Z4SyySima2aJYJb27pwkcW08g=;
- b=zkvdBN64hoiJalpzE6ApgGRl+SfZbXsItXwSicacrKcCiZr/bMBGmoCuqWA+0jCEEH3Ox1XaKg3BTF/+ZmMODPde59kM5Q5kOFQ8XKr2SNqppzoOpuElh81Rkrbt+kDPQjh8Wu5FHjPEFAYWtDb5J+ad9rhkLnMIPQgBgkrFp+FUSokb4Di9q6f69/UhuhfzWOXiYorgc2vrQEWA65Oe5PgNUCXo1usbAiLS2sBTK4Wza/nSeMmcEKkSkkIiNnv/B8EYhEK4qTAhygUjr0A+yVd+R3vruA9Shj/sCA/vU8x+oNUmFrrPJ4QExC2eZAxDL/4lXrdfHy/l25sybjky4w==
+ bh=DS6al7/QeDJRvNDNdbdI+zs7pq5dsvPUFsa4gMET/gw=;
+ b=PuhJ8x1R4exYdC8gYrP1SU98ny2awWQHflALpLcZmsZTiH/0/0MiIdrl8bcXKGYkGs1nuvQYBBbVHwCKdzsTLxcrzhOangk0W/ICxopQuSMVbD9vp0YjnGK1BbpESE8VK5JLScRes/iOdTXcNx+IO0hJnqFNI4UMJMcFBzsmZ1R7J054h806lLsLZF5f+hfzysNcoSfoT47B6LV+Fir6fOWJtEOOpHgIVlKxda6P606aRonQGOfkE2alOM6rWMdUJEifrO79/t5JSjyJa/q81vkHxcJKcK7IO2OPXcNNN094UeKDNH9F+JKBqWhbl5LKsJWYPbJQS+XVy9sTdfFRsQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by PAVPR10MB6986.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:305::7) with
+ by DB8PR10MB3800.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:167::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.8; Wed, 22 Mar
- 2023 05:48:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.10; Wed, 22 Mar
+ 2023 07:49:53 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::d4b2:77cc:31cd:a3a2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::d4b2:77cc:31cd:a3a2%9]) with mapi id 15.20.6178.026; Wed, 22 Mar 2023
- 05:48:32 +0000
-Message-ID: <a7ba7e08-c550-86c4-cff6-20cb85a60ca0@siemens.com>
-Date: Wed, 22 Mar 2023 06:48:30 +0100
+ 07:49:53 +0000
+Message-ID: <36d74732-6c5e-c4d8-621f-d6f8cff59edf@siemens.com>
+Date: Wed, 22 Mar 2023 08:49:50 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] automake: Avoid usage of user variables CPPFLAGS and LDFLAGS
+Subject: Re: [xenomai-images][PATCH 1/2] ci: Run qemu jobs only for the latest
+ supported kernel version
 Content-Language: en-US
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: Mauro Salvini <mau.salvi@yahoo.com>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20230228104434.15829-1-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20230228104434.15829-1-florian.bezdeka@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0074.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1f::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0059.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4b::21) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -50,151 +52,233 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAVPR10MB6986:EE_
-X-MS-Office365-Filtering-Correlation-Id: e3f1ba48-14d7-4504-3b2e-08db2a9911ee
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB8PR10MB3800:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2c9dd3a4-c538-448a-c856-08db2aaa0605
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zr109pLFdhkX0q44pHux3fcH4a727iTeeO/FPp6l0LQMFkbDCTpoGgDu5FChNf2puTOXSEAd9cF0kSY/VY9c6aeEVYPtNvjH75IgvEpHOncf4tMwvdowz+weHoBjgKkEz1JKhkmgz4PFNHSvp6nm2Q1EQO6IV6m4pKy1bgwuk0kJidu6FQxnBOJymgbCmq53ajSsZ5x89F3XaB9giLeiUXxo/7D36XyfgsW8G8Lfy0FzOACXXZl58L39OBwOWWmxyBlWFxHR4PIZgoyNGdnz+RV23UyMvAKdOZIqgUZiHt+kZTpnoNAYmgpRjwYo2rV6OQgpBhgj0HqEf3VCJqmGu2x3Ee+LV/B+r0TWKiYskqsjINjEcw1VPM4DDBC97xyobmkEX5PSm2MBO6Zkcw3Eo10zcskeLasSjW5RWsljOy8nXv/Wmy9Xd1w7BYwZtuWgaYtvAojWGxNagzvHYpVFyrHMYYHPvsxFFaC1WJNnanlXl1G+1CDPyOaiv2tNLH/UMSciHhaLM3qkHO9EXsY+buNYKCUVS892wbvjXpQiucDbFJSjRTcREg880YkcueLjm5MhWMnR5u4KV7UgXnnKVv9KSlDHyNG9HCxS9RkA/OVksQIeQuxuuNftt6y5JaS6NpMPE3RQPkBpztoL01xsUHdtV5xWYwzBNlo5Qvf7c+VJKvFafcwjw9UyXi5bR1xmfx3fGEr7yVD3ItW9owj3PjnIHWHCrR4Px/4WcH2GVYd4CjrVSNLNAOkNpbR9PZpCGf1SDV5JNMtvhaXtKR7ebw==
+	dYOQdPs7y8MXBQnrCLOJEsUQjkoQPEiRq/wi6nrqCNAsiv7p01CnvOn9IGfVfNc2Hi/MDeQTykEwep4oMDXOWFHSTlR2eh1dw6nWnebSAuHXjmdzqGz9DUIWDjtNklmvFaD9yA0nbyUNC2eL4Xqz2lifuWP+UX5iART+oYXz+UKGnRlzqXNyqU1Z2YNEK8FOESgJoRtPzvbzPZJWBX7qkzigMTywOSeb49GynO6tDy/YQEsGO5pfcQ0TvXtfnc2TJXR+gk1GlwbcxeTA7J+E8bt8p1NtaTCVbZ05jsyzcdqNUfCfBwwh+MyW9tGdgAuooNaY8qgQebB/VHwvNVZPiA3t6CoqpHYu3XHrhS9ekk9iA0TTkI24re1kZWKggOukqII8ef2c3ez+dDREh0MUB7PbAonbfySzrvYoQfYmUyhlXfHBjrnymBzSP2mxZPFuM2F2m5q1eKifQS+7tnsxP/alPypLmTwNpRAa/pAg0Ho+133BIC/GVzUHft0WJr5nw15CIDylLWJH68YDo8mqFTlsRxE8zNON4EdlX7wYg/Bg1ZCf0/beWBIxP8L6j1XDtboVVbME605MNZKr6I+WzZR+srHxlVgpRoaUbibHS9tLHyvXsqtI+2upCKlQ2hjv7upzJ+2+SPRYwPDVv6maOVbFd9Z/TmG1tgmwYftTfkUXpkvvbMo9HZrCn3wghfJEbOthnAVeZAy5dK7MNMXRGw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(396003)(136003)(39860400002)(376002)(451199018)(36756003)(38100700002)(966005)(6486002)(82960400001)(6512007)(186003)(31696002)(8936002)(41300700001)(44832011)(86362001)(66556008)(8676002)(26005)(66946007)(66476007)(6916009)(4326008)(2616005)(478600001)(31686004)(5660300002)(2906002)(316002)(6506007)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(366004)(376002)(396003)(136003)(451199018)(41300700001)(966005)(83380400001)(66476007)(66556008)(66946007)(8676002)(36756003)(6486002)(26005)(38100700002)(8936002)(31686004)(82960400001)(478600001)(2616005)(316002)(186003)(6512007)(53546011)(6506007)(44832011)(31696002)(5660300002)(86362001)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MG83cUFucUNkbDRXWGttMUhZZGZQRWdDMVVmN1QrSmVRaDlCdTdsSjBIcmxt?=
- =?utf-8?B?L0x0bTE0QytTVUZaKzJLZnEyTW94TWdjSHVJRDRWZ2F4RnJKd1gybjdiekt1?=
- =?utf-8?B?Y1JkV1BnMmJWbm5tbVV3Z01mdU52OXBzdlpwUFZDaEVkc1dLYVRySldZc1ov?=
- =?utf-8?B?RVc4NTNDcFZTSDNxTDc1MlgxOFBFQ0wwazdka3dBcFgyWHA4b3BkenBVazJq?=
- =?utf-8?B?bHFpOGVOdHJ0WXpLRzl0THVyVVhXM3pvWGQ1TUNVdDA4Z0s2Y3B4T08yaWda?=
- =?utf-8?B?U1ZiUW1aeERsSFhyM01SdDNzZmo3WGxKb0dNQWZ3ZjM4Ynd0ZFVFUVVCWnVN?=
- =?utf-8?B?SjJsYmE5V2tSNUJQcXdBNUNDcU9jUitXNGF1TmtGUWx6S2hDQ1lqbno2OG0x?=
- =?utf-8?B?eEFuVTA4ZjQrMFNNUWxqR2lBZmNxYTRKUis5N0VCYjBDbUs0bmRQTkdGZDNq?=
- =?utf-8?B?clhiNDhFSXVyN0VNQWlVK2J5Tml4Njk2dlE5S3UvWm5sWkdvYStsOVV3d0JP?=
- =?utf-8?B?OGdLTXdCb0JrYmhud1FlcVo2YmY0YkE5WW5yS0dydVdZV053M3FBbnlUMUh4?=
- =?utf-8?B?U3lMNzJ5Z3RQLzBBeXQycjlLWkx2Z2JoeUE3M1VsdGZOSmd5eXkyc0NHRmpY?=
- =?utf-8?B?dWs2TzdaS2l1aFBGdTFKRWNjcVRSVUZyYUFuTXgyZHh2RVZsbzlmbUZscTVn?=
- =?utf-8?B?QlpWR2tYQ3hWRmZMcjN5Y3FDQzFKWVFObUZXZUZqM3VVeUZyaEhiZW91Zjl5?=
- =?utf-8?B?eWdoRDJhKzBaemtJbGQ2NVNybWplTVUyeVI2dFBMZnZML09QNWx2M3hGMFV1?=
- =?utf-8?B?bzU1YXA5MEVpaDBKd0lxN3hiajR1ZHlMelZjMnVhYVB1RVFrQW5PKzJzWkEv?=
- =?utf-8?B?enp3alR1enNBYTRteWFlZDU1Q0dXMFNnSGxlZmpTOCtaamxob0xTRTFlQjZE?=
- =?utf-8?B?WmQ1eWJuUkc4ZGczK0tsZmY1TXkwZXEyaVl4QWVKVDhYUSt5R1BBT05pWUpl?=
- =?utf-8?B?TXNmUGIzR2FYOUM2SU9BdGRZZGtFVHRPMzZpUVZXQjMyQjFTdEFnY21pREE2?=
- =?utf-8?B?NzZyQkRmTWs2TjduUHRCK1dNVWcvT2p5QXJlbmRORVEvZGM1ZjhvSlVoK2RZ?=
- =?utf-8?B?TGw1ZzdtZFRRcUJJQUJPb1ZCc3FQekdJcGZYSW5lc2lydUxZNnBBV2xoemRT?=
- =?utf-8?B?dG03UFpkU1hDRUZwNUxma2x3clM4ZUVwanVxSk9UUGhQRDcwa2xOUzU1Q3dC?=
- =?utf-8?B?SDRkcE95ZmhlUmE1RFR1S3lwcjRRNUhPNVVGcW9pQklXcW9RK2pzcnZVbk9l?=
- =?utf-8?B?cWJiZmtCREVUYkpENnlubytzc200cDZxQytaUXZrWWtXalh2Q0ZFODhyYkxu?=
- =?utf-8?B?VWNVZFVSY3hRUVhjbUw4TVcyMFNVazczR2RIaVk0bzBMM3lOSmRzRHEvSlFC?=
- =?utf-8?B?N3prRzF0Zm5XRXJqQUsyclBPWTJWSzQzRFVwUlZPbVkxbWdMd0xDaDVRY1gz?=
- =?utf-8?B?em9PTDRPaEIyNnJNbk5QUVVtakdSRHJYZ2VtblhsRXErNUJkUGlXWC9hRFpr?=
- =?utf-8?B?WEFaN24rRTlTeGVGY0ZCeXNvZE1STmFmZWtGMFNQQlNyd2lCY2tlbzY1Nzgr?=
- =?utf-8?B?R0IweHczOGRMb0ptL0xWUGxsYlhMSVMwanIvTStmRU9YWVd1TThxN1VjRXBL?=
- =?utf-8?B?SnNqbGVkSm4reVVsYzU2ZkZxdnBOaE5ULytydWlsbHRoQWpucW9VOEpuL0ky?=
- =?utf-8?B?TEpwMmJoaEd4dmdoUVhwaE5WejkrV2FnZzVpR0xNSnJQcDZKSDRlZjY3Yy9S?=
- =?utf-8?B?TnNlMUVoZEhLM08ycFJZdXpsOHIyQkdlTVNNbUlReFQ3Y0RaeFhpS08ycDRE?=
- =?utf-8?B?SDgxWVNBdElqNXhkUkFia29MYWxBWjdKVUtteXY4bTNpOFZHaVBQamtPa2FK?=
- =?utf-8?B?aXhJTlU5VVZabEdZbFJCOTBDVVBRWjZZSHljNUdIZVlVSmQyVnpPcE82UHRR?=
- =?utf-8?B?TE05OFlNWWdIS1hPZjk1V1FOOGZpb3FKNmpKU2hLSTFWVFpwdiswOUJKZEds?=
- =?utf-8?B?ZXN4UzNsZ1hhVkgwR01WVUtpQlNxU0ZDMVJSK3lLOEJNaGRib1VmeGZCWjdt?=
- =?utf-8?B?Lzc4M3ZjNzVzNk9XTzdWWkw4c2U0RWt3aU51T0h4dGoyaEUzU2xXc2Q3YXhS?=
- =?utf-8?B?cWc9PQ==?=
+	=?utf-8?B?M1NrYWFyOGJkQWpoMmdlT1VFUmJLY0wrTWhoSUFaNFU2eWIrYzBEdEZEc09S?=
+ =?utf-8?B?ZVd0bzBOL2tiVHpXNzI1OWVDTWdaMFBiQTFqd0xna1dFZFo3a3k2dVFqZG5C?=
+ =?utf-8?B?RmNCUm9VRzRleTBiVFNmSzE2L3FzUmtmQ3VYS0Y3V0VSWVNKTG1hOEJuV3Bs?=
+ =?utf-8?B?M1VqdG5ZREJZMDZ4d3UxYXAydG9oY0tXdUNtUmkvT2NXd1hPdDJ5ekw0RWZn?=
+ =?utf-8?B?ZmpvQ1ZCelROZ0xNMVhUUXdvenEwUEowaWl0N0VpVkcvMVlMN0VobTZNL1A3?=
+ =?utf-8?B?UEY5V2c2TGlHbldnQTdoMlZvOE1vcmlFQndTNDkrTlJNOFNiKzFTYlJkL0du?=
+ =?utf-8?B?MGVFRUpjMTN5MnBBNTdWZHlodzdJWFM2ZlN6WXVibjNkbFhFelVaemRwQTFm?=
+ =?utf-8?B?UjZQc3RuV3FXYlB4QTI1TjJXdzdGdEZDL0VjYk5lODYwblNtWEdlZUk2NzVB?=
+ =?utf-8?B?dVk5QVZqVy83TjVScCtja3ljdFdMa3gxQnVjYTh0bVl5d3c0L3hvYXhHL2ZM?=
+ =?utf-8?B?blk2Z3NNSyt5Z0RzOEZ1dm12Ty9NYUo3alZXSWJKK1lLdktMZHpwd3lWNGJV?=
+ =?utf-8?B?UE1nMWhRQm0rQ3JhZTJHUUM3R2w5bjU4WWh3OHFBcjFGcUNaeDJ4TDdoR2dk?=
+ =?utf-8?B?eUZwaVJlUFdUQ3JvYkdmZFJxaStGZFFjdENVVU5KcGhpUGhBbnp5Q1VSWGd2?=
+ =?utf-8?B?ek5CaHB3ODFWV2o2NzdKeFBBWXRHOWVMODVIWmR1ZzQ3Z2txRHpkdFRwZmFt?=
+ =?utf-8?B?MDNtRlRUWm82SmZtczA2OTczVFFSMmVSWCsrVU5KSlFGMzVON0IwQTdrWEds?=
+ =?utf-8?B?THQ0Q0xRQ2RVekRXQXdHZ1AyMHY0WEFDUkdoVjlzdHBCaE8zelpPTmpHM1pX?=
+ =?utf-8?B?YVh6eEhzZG5EUlh5Y2xjcTVLRCs1V1lFYmxXaTVOQlVFSnVtRk5rSHZyUTQz?=
+ =?utf-8?B?cUFXMW1IQ3BDTUxWNm1Bb0E3Tm5Eb0RnemZoUEJiNlAzRUxYSkJvYmwyeWdG?=
+ =?utf-8?B?aFk1RHhwUzhPMVdBR0ovQmt0eVBYUThjdlY0NTR6Sk1RYnBqREdRK0E2TVAy?=
+ =?utf-8?B?SlpkdW5lN0JGekR0ZFFVb3ZQOG9Gd0diQWNKekgzWkhKWm9EMk16ODBtTmpW?=
+ =?utf-8?B?cWNrSnhPTlcvcWQzcnFrU2R5cC9iRFl0bFlNOEpjS2hLd1BaTk1LZUxUMnYv?=
+ =?utf-8?B?K2NQRlN3NXJJUklNQm5paWhQdCs5QUk1NE4vT09OWlU1MnJERXNFeGhyWEQz?=
+ =?utf-8?B?ZUYraVFFQW13QllUUjlMdzU4STBjamZqYjlrMXVqUXQxWlJoaHF1aWppZFVX?=
+ =?utf-8?B?M2c4NlBJdk9LL0VjVnM2Z2lwSGQ2QUtTa3UzQVhoTDhaWS9hanY0Y1p0RVBH?=
+ =?utf-8?B?anBOdFJmTzM3TmxoYnVwL0FNazN4Yk9RTjk3NTdRNGxVaEJmK1pTUDNIVUgv?=
+ =?utf-8?B?NWd5RXpMdmlmMUpCZ3lKd0VHM1JyNVRCM0FaSzd0QzF6MWIxUmd1SjE0eUZN?=
+ =?utf-8?B?cDlEQ0psZWZqSC9rcGNBeno2UTI4OTQ4SDdsR05OSmkxbk1lckx3V01BZ0hk?=
+ =?utf-8?B?a2ltWmtRZUV5QUkrbWpnb1JzVDk4K0tVckJpUkxpZFZXMHNHaHVUMXc5bUs0?=
+ =?utf-8?B?cWdPV0hTUU5PYmh4VWw3U2MrV3Bla3NPZFR4S1hwZnJZb1k5VmVoZGJqRDVQ?=
+ =?utf-8?B?Vmc0OGZxWkdQdFJsVExXWEd4SnRVdjRyYllodmoxTmZrWHY0U0lYYzNLWHBN?=
+ =?utf-8?B?VGVqZk1hKzhQTHZCZ2dPNDRubVo2REZxZkVKRmNYNXg4b0J4ZFBXQUgzcjY3?=
+ =?utf-8?B?T2Z3K0czcWR3RFJITWpCeXlQVmNjTzZiTlFCRDRSUi9HYWxXV0I3RFZwSjJD?=
+ =?utf-8?B?R3FmZCtZbWRMa3NVejFHQTQ4ZmZPcWpvWUxWTWFvTzRLTnRMZWcrNnk1VHk0?=
+ =?utf-8?B?aEhnZjh0aU1nQmtWY0hXYVpwSHR6aFlkVXBRT284VmNPaUNZajg1cHVhOTlj?=
+ =?utf-8?B?VVowcWhKSXhKa0lMQy9VNzcxaHFISXEwT3Uxd3gzZ2x4TnJuU1RjcisrcVBa?=
+ =?utf-8?B?eE5tdDgwcEVQc0hQZHBPY0x0R0UzMjV3cS9vMlIvalJ3QldFU1J4TVcyczFP?=
+ =?utf-8?B?bWhqNzlvSnFxSjBJdUhLRzJtcXpkMm9lVlFoT3FEVWRjLy9JOTlOV25NL1pX?=
+ =?utf-8?B?cVE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3f1ba48-14d7-4504-3b2e-08db2a9911ee
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c9dd3a4-c538-448a-c856-08db2aaa0605
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 05:48:32.3026
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 07:49:53.8312
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 82AXLEKxiBVG2btJCvPSwVYchiSlGxUzZjAodggO/NEPSACqC3WekfeZeFyed0giwGG8XvBQ5bEVKnDv9GhvEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB6986
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0ywMONoXhZo4PDIj4Kd206WLdCANeET+7qlFUwlH1+yAji9qPqTaneLSFSIkCVJC744uSxH2DVM90Og5m8PPgg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3800
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 28.02.23 11:44, Florian Bezdeka wrote:
+> Each branch (represented by the xenomai_<branch>.yml files) can now
+> define the latest kernel version that is supported by this branch. The
+> qemu build and test jobs will only be run for this kernel version.
+> 
+> Note: The stable/v3.0.x and stable/v3.1.x branches do not define a
+> latest kernel version. For those branches no qemu build and test jobs
+> will be scheduled. For stable/v3.0.x the situation is unchanged,
+> for stable/v3.1.x no qemu tasks will be scheduled anymore.
+> 
+> All qemu jobs can be re-enabled on pipeline creation time when the env
+> variale named ALL_QEMU_JOBS is set to "true". CI documentation has been
+> updated.
+> 
+> ALL_QEMU_JOBS and LAVA_TESTS_ENABLED might be feeded in by the gitlab UI
+> to limit the number of CI jobs.
+> 
+> We have to forward this variables to the downstream pipelines. Previously
+> they were defined with their default values in downstream pipelines which
+> made it impossible to overwrite the default from outside.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  .gitlab-ci.yml        |  7 +++++++
+>  ci/gitlab-ci-base.yml | 25 ++++++++++++++++++-------
+>  ci/xenomai_3_2_x.yml  |  1 +
+>  ci/xenomai_next.yml   |  1 +
+>  tests/README.md       |  4 ++++
+>  5 files changed, 31 insertions(+), 7 deletions(-)
+> 
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index 58398fc..58d61b1 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -9,6 +9,10 @@
+>  # SPDX-License-Identifier: MIT
+>  #
+>  
+> +variables:
+> +  LAVA_TESTS_ENABLED: "true"
+> +  ALL_QEMU_JOBS: "false"
+> +
+>  stages:
+>    - parent
+>  
+> @@ -16,6 +20,9 @@ stages:
+>    stage: parent
+>    trigger:
+>      strategy: depend
+> +  variables:
+> +    LAVA_TESTS_ENABLED: "${LAVA_TESTS_ENABLED}" 
+> +    ALL_QEMU_JOBS: "${ALL_QEMU_JOBS}"
+>    rules:
+>      - if: '$ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME'
+>  
+> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+> index ee71ea3..f1980b6 100644
+> --- a/ci/gitlab-ci-base.yml
+> +++ b/ci/gitlab-ci-base.yml
+> @@ -20,7 +20,6 @@ variables:
+>    no_proxy: "$NO_PROXY"
+>    ISAR_IMAGE: demo-image
+>    ISAR_DISTRIBUTION: xenomai-demo
+> -  LAVA_TESTS_ENABLED: "true"
+>    BUILD_IDENTIFIER: "xenomai-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
+>  
+>  default:
+> @@ -45,6 +44,12 @@ default:
+>      - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
+>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+>  
+> +.build-qemu:
+> +  extends: .build
+> +  rules:
+> +    - if: '$KERNEL_VERSION == $LATEST_KERNEL_VERSION'
+> +    - if: '$ALL_QEMU_JOBS == "true"'
+> +
+>  .test:
+>    extends: .common-config
+>    stage: test
+> @@ -62,33 +67,39 @@ default:
+>    rules:
+>      - if: '$LAVA_TESTS_ENABLED == "true"'
+>  
+> +.test-qemu:
+> +  extends: .test
+> +  rules:
+> +    - if: '$KERNEL_VERSION == $LATEST_KERNEL_VERSION'
+> +    - if: '$ALL_QEMU_JOBS == "true"'
+> +
+>  .build:qemu-amd64:
+> -  extends: .build
+> +  extends: .build-qemu
+>    variables:
+>      TARGET: qemu-amd64
+>  
+>  .lava-test:qemu-amd64:
+> -  extends: .test
+> +  extends: .test-qemu
+>    variables:
+>      TARGET: qemu-amd64
+>  
+>  .build:qemu-armhf:
+> -  extends: .build
+> +  extends: .build-qemu
+>    variables:
+>      TARGET: qemu-armhf
+>  
+>  .lava-test:qemu-armhf:
+> -  extends: .test
+> +  extends: .test-qemu
+>    variables:
+>      TARGET: qemu-armhf
+>  
+>  .build:qemu-arm64:
+> -  extends: .build
+> +  extends: .build-qemu
+>    variables:
+>      TARGET: qemu-arm64
+>  
+>  .lava-test:qemu-arm64:
+> -  extends: .test
+> +  extends: .test-qemu
+>    variables:
+>      TARGET: qemu-arm64
+>  
+> diff --git a/ci/xenomai_3_2_x.yml b/ci/xenomai_3_2_x.yml
+> index 3ee0b7d..781eec8 100644
+> --- a/ci/xenomai_3_2_x.yml
+> +++ b/ci/xenomai_3_2_x.yml
+> @@ -20,3 +20,4 @@ include:
+>  variables:
+>    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml"
+>    XENOMAI_VERSION: "3.2.x"
+> +  LATEST_KERNEL_VERSION: "5.15"
+> diff --git a/ci/xenomai_next.yml b/ci/xenomai_next.yml
+> index 3e4d513..b611e60 100644
+> --- a/ci/xenomai_next.yml
+> +++ b/ci/xenomai_next.yml
+> @@ -19,3 +19,4 @@ include:
+>  variables:
+>    XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
+>    XENOMAI_VERSION: "next"
+> +  LATEST_KERNEL_VERSION: "6.1"
+> diff --git a/tests/README.md b/tests/README.md
+> index 50942df..c092d54 100644
+> --- a/tests/README.md
+> +++ b/tests/README.md
+> @@ -106,6 +106,10 @@ The following variables are used and set by the ci system:
+>    - `ALT_DNS_SERVER`: optional, can be set to something like "8.8.8.8" to use a specific DNS server
+>    - `DISTRO_APT_PREMIRRORS`: optional, can be set to something like "deb\.debian\.org cdn-aws.deb.debian.org\n" to use a specific Debian mirror
+>  
+> +- CI job "filers":
+> +  - `ALL_QEMU_JOBS`: Default is false. Set to true to enable all qemu based jobs
+> +  - `LAVA_TESTS_ENABLED`: Default is true. Set to false to disable all LAVA jobs
+> +
+>  - LAVA settings:
+>    - `LAVA_MASTER_ACCOUNT`: lava master account name to register lavacli for test execution
+>    - `LAVA_MASTER_TOKEN`: token to connect with the lava master
 
-In automake files, those should be prefixed with AM_ to avoid conflicts
-with the user-controlled variables. See also
+This or patch 2 cause some overfiltering, only noticed now, see e.g.
 
-https://www.gnu.org/software/automake/manual/html_node/Flag-Variables-Ordering.html
+https://source.denx.de/Xenomai/xenomai-images/-/pipelines/15462
 
-Reported-by: Mauro Salvini <mau.salvi@yahoo.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/copperplate/regd/Makefile.am | 4 ++--
- utils/analogy/Makefile.am        | 2 +-
- utils/net/Makefile.am            | 2 +-
- utils/ps/Makefile.am             | 2 +-
- utils/slackspot/Makefile.am      | 2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+Jan
 
-diff --git a/lib/copperplate/regd/Makefile.am b/lib/copperplate/regd/Makefile.am
-index 3b14e98636..5e4301bf81 100644
---- a/lib/copperplate/regd/Makefile.am
-+++ b/lib/copperplate/regd/Makefile.am
-@@ -1,12 +1,12 @@
- sbin_PROGRAMS = sysregd
- 
--CPPFLAGS = 			\
-+AM_CPPFLAGS = 			\
- 	@XENO_USER_CFLAGS@	\
- 	@XENO_FUSE_CFLAGS@	\
- 	-I$(top_srcdir)/lib	\
- 	-I$(top_srcdir)/include
- 
--LDFLAGS = $(XENO_POSIX_WRAPPERS)
-+AM_LDFLAGS = $(XENO_POSIX_WRAPPERS)
- 
- LDADD = 			\
- 	../libcopperplate@CORE@.la	\
-diff --git a/utils/analogy/Makefile.am b/utils/analogy/Makefile.am
-index f8a304b601..a1506de5d8 100644
---- a/utils/analogy/Makefile.am
-+++ b/utils/analogy/Makefile.am
-@@ -9,7 +9,7 @@ bin_PROGRAMS = \
- 	insn_bits \
- 	wf_generate
- 
--CPPFLAGS = 						\
-+AM_CPPFLAGS = 						\
- 	@XENO_USER_CFLAGS@ 				\
- 	-ggdb						\
- 	-I$(top_srcdir)/include                         \
-diff --git a/utils/net/Makefile.am b/utils/net/Makefile.am
-index 3b90f8adfd..86d351ede4 100644
---- a/utils/net/Makefile.am
-+++ b/utils/net/Makefile.am
-@@ -2,7 +2,7 @@ nodist_sysconf_DATA = rtnet.conf
- 
- dist_sysconf_DATA = tdma.conf
- 
--CPPFLAGS = -I$(top_srcdir)/kernel/drivers/net/stack/include
-+AM_CPPFLAGS = -I$(top_srcdir)/kernel/drivers/net/stack/include
- 
- sbin_SCRIPTS = rtnet
- 
-diff --git a/utils/ps/Makefile.am b/utils/ps/Makefile.am
-index b8930fb56d..1120e6da3f 100644
---- a/utils/ps/Makefile.am
-+++ b/utils/ps/Makefile.am
-@@ -1,6 +1,6 @@
- sbin_PROGRAMS = rtps
- 
--CPPFLAGS = 						\
-+AM_CPPFLAGS = 						\
- 	@XENO_USER_CFLAGS@				\
- 	-I$(top_srcdir)/include
- 
-diff --git a/utils/slackspot/Makefile.am b/utils/slackspot/Makefile.am
-index 179243a95e..87f99e49ea 100644
---- a/utils/slackspot/Makefile.am
-+++ b/utils/slackspot/Makefile.am
-@@ -1,6 +1,6 @@
- sbin_PROGRAMS = slackspot
- 
--CPPFLAGS = 				\
-+AM_CPPFLAGS = 				\
- 	@XENO_USER_CFLAGS_STDLIB@	\
- 	-I$(top_srcdir)/include
- 
 -- 
-2.35.3
+Siemens AG, Technology
+Competence Center Embedded Linux
+
