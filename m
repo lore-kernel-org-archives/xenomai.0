@@ -1,67 +1,70 @@
 Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E1FA93A
-	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 15:09:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098E6A93A
+	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 15:14:17 +0000 (UTC)
 Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32NEBULe001535
-	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 07:51:19 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0176.outbound.protection.office365.us [23.103.199.176])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3pgrah85de-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 07:51:18 -0700
+	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32NEBUQq001535;
+	Thu, 23 Mar 2023 08:14:17 -0700
+Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0143.outbound.protection.office365.us [23.103.199.143])
+	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3pgrah8930-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 23 Mar 2023 08:14:16 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=OsqANQozinlUIMgldwkgTZXos5FWGP5iKEfGzyBW4bELFWdEG7kIO1ihVPcsEjrqKXVeymAyq+uOzjXgqN6JqiqXTIoaF/gTE5Ug0JpqJmtqX1VZg9XGXqZT/SgeER3DhpEXfKRRb/U++djew3aCzJqfi6N+U+YtxVWCL0zWZcGRHXj4jA73a+84B8BQC6CYI1KL9sHho2ptcfDQPOzGeFfKdLD60gCiITOPerbKUfGjIVq35C5GfXhTm0OHTIx+xFZwF6aW6g36UGQd5twq9snzLOEnG/Av+Ruh1nVZlHSF+pxnXvA+E6EDjrXVV89dItaocwvtVaHRcvVls6vhuQ==
+ b=zWYKcITCxfw4i5S3t7zBW+0RxfmqFzkfmAvb5K8SRl7qr7wZ3IaKpS9ELik6vZ+h9LTZDITwrTqqVCulAKZapYBYHW4MfNgSLiKdZMmLrnJv65osPzFX9+4Ljzr1qVG1OamHrGf2VI+cEOIFsNurDuFVlRNXO+LM0nGEWrl+b7ILnv77uCkKden1dKWV44s/0iWkyoP+k/1dm0ZURLjThgGbtjE8GWNZfX1Jb1NVOoEPPeVPzp+43uTSVPtkzoEYjsyabpvVAWEPndYCj0l7DyWYVF9Pz+GWpzcAZHu5nG8GJ6p7xY0CfC2JFlFkd+du5vbaV9ndPwczEog+QP5Hhg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector5401;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IL/naF4ouswtSZwXg7DobCdPnaz4eXYDTy6xl4kpF+I=;
- b=MUUOsJHZ1DU46Cg0tjap9vcmcBDcjQnrKY8Gb4O/Wyp1tRY+5qVriH0IaDIW2ieEDGaSqJ306dequ89tL0XoImszM32doU1yYucAOSglLlASi0+AljK6XLkLvWjqjHVeguLlXrwm5A44qmtapa7AUXR71Cf15kX6nMUrdOEuKLSjIjDe6+XBLr9gunY8oIHma0ijS/N7VKGWiOa218F3oQ7bfsULtt1EypYHGcOiSKxCB+06YCuc9qAQEyc95PdP6RSL1sPW7NRon0/xBdtxlQq7ybIHfPnNTSAnfuO7o9v2zGPZ4ykQ8fukFLnRSazM4LOdQncjK9G+gxAOep9E4A==
+ bh=aYLmlRz6BmlyUJE+sckrk2iV4MOWIHdkecrnoScnQtI=;
+ b=KEPmnhNcaBDC629A4RbA00Hr+mlMhNsVRtaLEwmCfpQ3bSqzeH5fV1+HfqZB1EYrBbeIjssDuyVvVoNebgFtd/F4q2TbbHL5DqB1aH4ZDXiHTBNxqX8NU8quRUhXWUokZGk3VV7nL2yzs4rXKQ4aloCIBHl1rGZqf+V0RJfdHM1McShTAbH+JDrwX37YOGIVPkWF+nWsWzwHdWmhDR2z5PH3ouu9/YiuiVuvXkSUYWDBKnqUW1Nja93DJfUWojMsWbiGzFzqJAP8IbyuiiiD3KZ09AInke/SnK3V9bYF6CirSpMuF5sviZFNkWUXS6ebMAKbvU4l+KaYZUwRhWIy/A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
  header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IL/naF4ouswtSZwXg7DobCdPnaz4eXYDTy6xl4kpF+I=;
- b=hDmela+Dslmvh5n4ZgZ3+0P6wKqT0U4i4Rgtq7KyGG3tRevU4J24CMCuoWNhxzRX3VW1h1xTBo3gXpw9oppuRls/zkLNtRcEIrhAlymycXzVE1jT+RK6CeYnMKKY4FgQB2++TrBA6PgQxLwbSMfgNvpxnTzFo9ZmsLywtL7sWeDezX5ApeW+fYJNA/dUjS+TeWAkd+DQmU58tpSWEPfALiVXXAtTTkhFvTpOl8kr+raPejuHtEGZhRMf38uOoz/49Z3nYSuOi9gcvrN3YG7DnqnPQAUvDdlmnfeSVpiqTqCytjT0mGNsNmkG5gF591YxQOdt+psT4Aj8vR8htUYaWw==
+ bh=aYLmlRz6BmlyUJE+sckrk2iV4MOWIHdkecrnoScnQtI=;
+ b=TJ5855BTAqn7eoV7Rwd8Tf0Z1n+9VGPEuYPppxVyIXt7Ct/3KHGYkn/mQCdxn8g/aSYhkPBQ+9Xis1dNF7QljAga2bQsWBph+OzGJ/Xe9HV61IUzar4V+CerB2Zx8meizz3W6orfZNE+/S0xvf9FycYtHuhvVkO6huBS+D/sd6MYcQlMVb6NBz+dwE1AzMLL6oDbFiGo50FwxlBcIMOvyafJEa0J0Jft/qdDqMePsn2ivXuZLa8ma0Ez+pALtQl0lOCLnlLUjpD5tOgTLgrYtVlYdF6vA+Cme/WPIWKdwa8HcR9HtFJZ58/lu+AqiLeFuSi9xfDstzOWK5S9EqxaSA==
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1004.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:174::13) with
+ by PH1P110MB1649.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18a::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
- 2023 14:51:15 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.36; Thu, 23 Mar
+ 2023 15:14:14 +0000
 Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::bdc2:38d4:36c5:68d1]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
  ([fe80::bdc2:38d4:36c5:68d1%4]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 14:51:15 +0000
+ 15:14:14 +0000
 From: Russell Johnson <russell.johnson@kratosdefense.com>
 To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+CC: Dave Rolenc <Dave.Rolenc@kratosdefense.com>,
+        Philippe Gerum
+	<rpm@xenomai.org>
 Subject: Issue with evl_wait_event on startup
 Thread-Topic: Issue with evl_wait_event on startup
-Thread-Index: Adldlmq6BAwjVK/7T+ucGRrlb+09Iw==
-Date: Thu, 23 Mar 2023 14:51:14 +0000
+Thread-Index: Adldmbjt6Rz6wIx4SDCJK+ZB2ffrzA==
+Date: Thu, 23 Mar 2023 15:14:14 +0000
 Message-ID: 
- <PH1P110MB105092F3657F368FA123D4A5E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+ <PH1P110MB10507AD02CB117F1769A1CA8E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1004:EE_
-x-ms-office365-filtering-correlation-id: 76e386e5-f59a-4b7e-708d-08db2bae0d29
+x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1649:EE_
+x-ms-office365-filtering-correlation-id: f6226637-e637-4587-57d2-08db2bb14382
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info: 
- 1BbBP7CLOVP7m/Hqb0ivu47TAh+rt9OU1apydx84l+GZL1w5LYm84KIScRGRDmTaHF6vYdvwR2VgJq8QLS3by9IxYP9mSbsygfBtHf88GxADylrW1dJXQmzMVLGqaUfu7K1zx8QGoz4K3s54Q5VXgmbjelTE36czg05mnz95LmCJstX66whZ1Faof+nh8JIqUk/R0ivUhHnikNQ+h8b4KZxfyQl++EFCM2Nu6l+xK++N7qkltgruutpcajSIpzGO/Pmx3oP0wWR6GCq8JzE1h1naxng39eaFr+s1GQjCFW7cyPQEyOvotJp1yYl5fE70+fnb1RGvVODh8EMxMx1M4T7gT5gAaQkfgIDo/ImJoHOJPoEBp5otFIf3/m7qDArT++bKDngoZIJT+ACome0gEUbM1ZA/jP8OMkRAf8k4OvK6Ql3L5pxTj4+37noohn5K4xX9Jciae6lvEV/V0vE0LWybDLlUkAtKAB1na3CQN2ZQimFk+JGLKAWQQfhtP0Azmtfaeo09c0OXlzQgDvt+LVXHGW/o9KYigdbX60j+3CM0s6t6LCw9UCmpYsy/H48gxR3bKQO5gcugmSKQQN1G2N49MX3/Na4k2TQcaNFZbNXN9Sb2W/5BDEPHfRI56LY5
+ /ulGwiXrJfA7/scnJ3k17GzmzrUob9+Sd5zmxBgT/JrQX4T49MkWzLrEI7acqL2gCNuullOLNlfFjJ1cOoC4Yy9uySkMe47x6im++uJiRsXoSeYQ0KifulnCRQS9cHjFc2cQzfjd5mCEwbI5xTiulfi6M2tN+izMBP7zJU/rSDpEVfz0fd1X7cOemKz81U944RUu/oAeb4sw88qBhM92pX+W1rdzG3+exqWxFsHA8eJPKwLD/BfaglW0h873VFuZ/yNRQn1zHwCH57QgrU8CJA+nYXCJRFT7aPhrxAJ5mEXlTesrevkuXfrgeoZw8NyC7O6sKIwTlcbwWPzNTGozO6M3ScgyXyEzxQyxbG98ECACK1jU4KZeJbJzZRyXgvYSoC0fcYb+SqYoCU+tFdt+fjFIUIn2N9LNH8/qegkrjDfBk8wCw5r0+UqZ/NoU/fXVAJKVx9jaAH8UOV7ubNivdRPweuStUHX+aNJOTRdoli/xRnv+9bZk/nft1RB/p2UZs694eXDI7WNnFHEC1qf44kL/gfHV6UhH0rkDtvBGR06heVloYsiA4SXgLbNcUQXgrkMVvRZYX8VrbTkcX0NbY3wsPvNaa17ghcvMWAGH1UE79TVEWWP959CN+jF8TKxV
 x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(136003)(366004)(396003)(39830400003)(451199018)(2906002)(33656002)(86362001)(55016003)(38070700005)(38100700002)(122000001)(6916009)(41300700001)(5660300002)(8676002)(66446008)(66946007)(66556008)(76116006)(99936003)(52536014)(64756008)(8936002)(44832011)(66476007)(4744005)(71200400001)(508600001)(9686003)(6506007)(186003)(26005)(41320700001)(7696005);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(39830400003)(366004)(396003)(136003)(451199018)(33656002)(54906003)(508600001)(86362001)(6506007)(41300700001)(55016003)(99936003)(66946007)(8676002)(4744005)(8936002)(5660300002)(64756008)(4326008)(66476007)(6916009)(44832011)(76116006)(66446008)(38100700002)(52536014)(186003)(26005)(41320700001)(7696005)(9686003)(71200400001)(38070700005)(2906002)(122000001)(66556008);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0: 
- f+Y7KHPgyN8lWaXhBityjMWg+27PmsH1uXB6H7xTqtzlFfS8QMbxGAxi9Rq7aWNeOGhmOCFau2N7UvD8THnF4a7F8vmZg/QKZWUMiZgVLokYnmzDE/5oI6F4FremE6ckdE400KWCAJWJHMHl/PzU/28A38CPaoL+yBUbQuahotGRgNNM6ihTtg9pohfdnPOGShMjHJUcmFfxgI/bKA2Xml5uaexep3z5de7WYmTTe3RO4n56vT8q55JN5aAByWoDB+17/5W0hSzG3WVvcddZ346mimZwhaQFK15obk++iwwf1emq3ybTnIeksqyQYp2FAGXncEJIQ7JQoY/p9k9N9dJfgHZu7i1ETUd3aXjGIzkODY9uMFEZBGWTmEZlFMxTE4ZoUoSGgvieY1Ek6i3bvqumqzTmVeGl9Cj9OUke1K8=
+ 5NwXeyYWBnNsLU8BDWsDZbvXwpKoE+9ms7PTK6e2/ZFPtD+riEgjdmSAb0Z9ms0fyf4Hl6ItPkAnC9SFxBRvg+uSuyuzwY5H8Z5JlW8uSg+w9CE5nOy/x39/qf0BZ2iaLaSOz2FXh1xdSYM3Zf4ALER0St9PSAbPdqHNBVAc8837EU/vKLg9mIeicugW/nOH0LB8gyYZRvGeWW+vqw0EGXsF9OIBph75GqPZBe8Ukkdzrt/5vw204GhyvtEKoAYQ6TtbjBBY4bajt9/REhXs1lSX4FY3xeYzNf56cqJcZ+Gr+jcnRPRe1loYgJfUI8BcSVJIgZI8mv2vY2t4d4dFEzm1Ev6vlwsgqYrDp3WXtdYVFOEZoukNOdS4kpbSIcWC4jqGcMaJWAM+xQNELR6mofoqCyeY0HI5yydfl9/Gg40=
 Content-Type: multipart/signed;
 	protocol="application/x-pkcs7-signature";
 	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0021_01D95D64.9E8920C0"
+	boundary="----=_NextPart_000_0035_01D95D67.D551E8F0"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -70,18 +73,18 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	1l67ySSQrOPEIaLpanqKlFzaF27sI41/sybJ2WKi0TuBjlMMj0TLuBC+Hye4/rMQV1n/8iJWum9WNWaaMGMfQmzMoQJoUaZiWfHE8LNQtyhyH3IYQOSLhAjsLHT4hja+Lrx3MygVvxLigLadvSZo9F+qE3J5EopgUGby6k7Hr2BdKgP+GhDv1mmIQ0mOlMzYDdRZLO+K63Rd89bzitoha478JGzGVAudRuoIKM9AG0g5z55wDQzmpHUOQctYvPXjS4YnrP71pAqEKewLtc4dG13cYXdnaf2hjDwg5UCfJrgyoOoEH5l/U1EBjDDlzZbX4/2eviUF2iOA42Eqd8RPih9M9xrQk1RLI+tPIipnc/0B6K87co9jM9mgoK3mgZKOHaZOKv3pTzRX6//2D6ZQ8CmVLvp55lwAuRrNK854WiCjqAy9JPWMt6ro2EHUFEfDd1gFN38o/tDHidywYxMcSPIpKcwKxtG/waDHOHqS46UafKmyogr9EnSeXGZdQea3TlNJIkz3aiDuND6w4LTVZoz8FECVH36fBGEr5sPAl6Uc8b11wj34B49Yg1U6CG5eDpZ6ogwm7Kc4z5NlyU5rlDW9IF4QTykXQk9u/IlPxDDLFXBzoEB26ocWc6sV8Tb+kC2r0MlE9AQlfGtJNkrfcJTYjPW0LxhfZ51FTpJiYS6GcC5HJw+DiiP4QXXGSst400/IWo+ct1le110XC8fWfAyNNaXeXgP8qkU79e8Uz5btXiId9a2jfv5oU1atvnTDcGPY+GonAk66Bto2dHRSQQ==
+	3UsJAWovS1X//+le73QI3KCF5WaooVNfG8Z3cHBcJFxUbKd1rCJec6AMaAT0qM3TKASP0IGmPknlRIFqfADlgibWaqI1gbi6eEBS+iDn2asxA4CPIThEvCoMJIyg//VUoqstehuptbHME5+ljE1AgoKoVMPNtzY86qStuNSExrDnNRWFa4l0fQiEqmF9zdi0TZtOZ9YAfTO7azwQ0Y1zwwBtzJ+qpbeBniCjyxqRvmj7seSA2NsL4C2uQxVvgBnVkmBaBWeUQFMYzLNQSo2F0mFKSzwHVKOb4WOXjEr2PXZHDDDXlxokRLNO7YQmgSv8qzpuBDCS4Dvyw7qUzeOma2lUmRX82o/W2OyrF08aL40s0SCPO44gLIwbPH7MWUp//4A+khU6BuAmyuCEWD7QzX5XGFZN7ByghA3o+6B1WeCIWg2eLhtylEcyd/xZGcquKQzp6kvM1a0vYOEOSnMK9sLpICaM+S+YG3Rqod/O2Lh6FdWLannXigKl3fTncjyEo1iGjVtnZ85GPON9I7RbQW6dwpjhK5N5XVpTwjWplBk/vdsBxlL2w6GHK/T6/klr1qjmw3x8qC+5PdK5XKITEkbO0Mbjn7b0pEWrapcpJ/X85jg3xOvLxNbZqHeLss1TwRB3PSA+OgNIKc0PEuV72/3ngpgy/EgD7JVB3LwxllP6rx3MXhlOBBmp18LzxoiSdrsElZpBS7MB67hvFABqiBgEClF8knCY5hEDZAJew5UPSrru5l6dFFCyOvRoubOtNKz8MCbKRd3cRLCIFdaUAUhj6jbl58EDe2tJDcBJ8t2/bjrSu2pANc0UABLDJlII
 X-OriginatorOrg: kratosdefense.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76e386e5-f59a-4b7e-708d-08db2bae0d29
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2023 14:51:14.8024
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6226637-e637-4587-57d2-08db2bb14382
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2023 15:14:14.4722
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1004
-X-Proofpoint-GUID: G_b3cIS_1qz1cG8o9_9_IIevnVxq1aMa
-X-Proofpoint-ORIG-GUID: G_b3cIS_1qz1cG8o9_9_IIevnVxq1aMa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1649
+X-Proofpoint-GUID: KP90MJDloq8Sl34v6c1LUDwPmoFnVPKL
+X-Proofpoint-ORIG-GUID: KP90MJDloq8Sl34v6c1LUDwPmoFnVPKL
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-22_21,2023-03-23_02,2023-02-09_01
@@ -89,92 +92,26 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogs
  priorityscore=1501 impostorscore=0 bulkscore=0 mlxscore=0 spamscore=0
  lowpriorityscore=0 phishscore=0 suspectscore=0 malwarescore=0
  clxscore=1011 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303150002 definitions=main-2303230110
+ engine=8.12.0-2303150002 definitions=main-2303230111
 
-------=_NextPart_000_0021_01D95D64.9E8920C0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0022_01D95D64.9E8920C0"
-
-
-------=_NextPart_001_0022_01D95D64.9E8920C0
+------=_NextPart_000_0035_01D95D67.D551E8F0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Sometimes on startup of my EVL application, I get an EIDRM error returned
-from a evl_wait_event call. When this happens, we create a new event to
-replace the old invalid one. Then any successive calls to evl_wait_event
-seem to return EPERM.. First of all, what could be causing the EIDRM error?
-Is creating a new event the correct solution when you receive that error?
-And why would I be getting EPERM after creating a new event?
+from an evl_wait_event call. When this happens, I currently try to create a
+new event object to replace the old invalid one. Then any successive calls
+to evl_wait_event appear to return EPERM.. What could be causing the EIDRM
+error in the first place? Is creating a new event the correct behavior when
+EIDRM is received? Why would I be getting EPERM after creating a new event?
 
- 
 
 Thanks,
 
- 
-
 Russell
 
-
-------=_NextPart_001_0022_01D95D64.9E8920C0
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
-HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
-(filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US =
-link=3D"#0563C1" vlink=3D"#954F72" style=3D'word-wrap:break-word'><div =
-class=3DWordSection1><p class=3DMsoNormal>Sometimes on startup of my EVL =
-application, I get an EIDRM error returned from a evl_wait_event call. =
-When this happens, we create a new event to replace the old invalid one. =
-Then any successive calls to evl_wait_event seem to return EPERM.. First =
-of all, what could be causing the EIDRM error? Is creating a new event =
-the correct solution when you receive that error? And why would I be =
-getting EPERM after creating a new event?<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
-class=3DMsoNormal>Thanks,<o:p></o:p></p><p =
-class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
-class=3DMsoNormal>Russell<o:p></o:p></p></div></body></html>
-------=_NextPart_001_0022_01D95D64.9E8920C0--
-
-------=_NextPart_000_0021_01D95D64.9E8920C0
+------=_NextPart_000_0035_01D95D67.D551E8F0
 Content-Type: application/pkcs7-signature;
 	name="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -283,8 +220,8 @@ NzLOpklhNwZ+4uWYLcAi14ACHuVvJsmzNicxggRdMIIEWQIBATCBrDCBljELMAkGA1UEBhMCR0Ix
 GzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMP
 U2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRp
 b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAI/zsKoC9gIWd6K2uUMqX0gwDQYJYIZIAWUDBAIBBQCg
-ggKBMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMyMzE0NTEx
-MlowLwYJKoZIhvcNAQkEMSIEIGafCfh6D0qCfWo83MpStwiFviBsF4l49rdM8oa4XseIMIGTBgkq
+ggKBMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMyMzE1MTQx
+MlowLwYJKoZIhvcNAQkEMSIEILJFHYqZ+qdFxqOyCobjftiXC2t9J7WnpFV2IoHpr+fQMIGTBgkq
 hkiG9w0BCQ8xgYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglg
 hkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglg
 hkgBZQMEAgMwCwYJYIZIAWUDBAICMAcGBSsOAwIaMIG9BgkrBgEEAYI3EAQxga8wgawwgZYxCzAJ
@@ -294,11 +231,11 @@ dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQCP87CqAvYCFneitrlDKl9IMIG/Bgsq
 hkiG9w0BCRACCzGBr6CBrDCBljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hl
 c3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQD
 EzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIR
-AI/zsKoC9gIWd6K2uUMqX0gwDQYJKoZIhvcNAQEBBQAEggEALWTbNXS3kAdaVRyb4oGe2tjjo0eu
-yJzEw1RG4C3T7M9yvpK4zC38mgwugPq4NDXu1cLYHa2ri2w4l9ZCLpad4CV6wEitzZM+jZCUUo2V
-E9ok7Fiuj+arZAOAhcH2Qb8kIcnXXn9OtrB9NHKJ+0EDKHRqvE3wuuaMEARXjmLcRqxzqs8enDex
-jAyXmdUWHoqty7z/n9H8TqqFxb6OTvpSzsWOF6HuG9pNZZHd3r3BJXKy1IePVoNjyjrTRPZvt1H0
-njVKs5JDf8EuADVT02SOwWamDU9icP+Xc6dl1Pyh1+lIxJxBeTnWslsMOIB6+WJ13sYch6KaB+Y+
-8AJNTHU3HwAAAAAAAA==
+AI/zsKoC9gIWd6K2uUMqX0gwDQYJKoZIhvcNAQEBBQAEggEAHLffUiFMlDZPREl6VXyAuqqX3txD
++KFgk20Phrjk7TXalhCB8x8Ks7UVFBPwNDhSh8wGryBhFzj+WcqMRpH7FrWf7Jjv04/0mRc5H28I
+P6NksZtjP/Lrr/zjjMDoqUyszN28tJMDDxIzr/xfMjjBkacoIrXlXm4QxYkYwifFXvamf/ILmj3G
+uu788MGbdRGg1q392QVrmhcb+wWeoaIfdjH9Yv1LdoIPD/w9qNa1y8afTNNrEZu8WO28z5PHDeGM
+b5nKePEshRpE0kMYeRLTY0xM/SLHaUBsafhgioP6Lsz3ejNH7TrkxEO8jOh9FMe307XY2S/VadkX
+XsEtKiFtIAAAAAAAAA==
 
-------=_NextPart_000_0021_01D95D64.9E8920C0--
+------=_NextPart_000_0035_01D95D67.D551E8F0--
