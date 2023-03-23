@@ -1,241 +1,71 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098E6A93A
-	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 15:14:17 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32NEBUQq001535;
-	Thu, 23 Mar 2023 08:14:17 -0700
-Received: from usg02-bn3-obe.outbound.protection.office365.us (mail-bn3usg02lp0143.outbound.protection.office365.us [23.103.199.143])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3pgrah8930-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 23 Mar 2023 08:14:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=zWYKcITCxfw4i5S3t7zBW+0RxfmqFzkfmAvb5K8SRl7qr7wZ3IaKpS9ELik6vZ+h9LTZDITwrTqqVCulAKZapYBYHW4MfNgSLiKdZMmLrnJv65osPzFX9+4Ljzr1qVG1OamHrGf2VI+cEOIFsNurDuFVlRNXO+LM0nGEWrl+b7ILnv77uCkKden1dKWV44s/0iWkyoP+k/1dm0ZURLjThgGbtjE8GWNZfX1Jb1NVOoEPPeVPzp+43uTSVPtkzoEYjsyabpvVAWEPndYCj0l7DyWYVF9Pz+GWpzcAZHu5nG8GJ6p7xY0CfC2JFlFkd+du5vbaV9ndPwczEog+QP5Hhg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aYLmlRz6BmlyUJE+sckrk2iV4MOWIHdkecrnoScnQtI=;
- b=KEPmnhNcaBDC629A4RbA00Hr+mlMhNsVRtaLEwmCfpQ3bSqzeH5fV1+HfqZB1EYrBbeIjssDuyVvVoNebgFtd/F4q2TbbHL5DqB1aH4ZDXiHTBNxqX8NU8quRUhXWUokZGk3VV7nL2yzs4rXKQ4aloCIBHl1rGZqf+V0RJfdHM1McShTAbH+JDrwX37YOGIVPkWF+nWsWzwHdWmhDR2z5PH3ouu9/YiuiVuvXkSUYWDBKnqUW1Nja93DJfUWojMsWbiGzFzqJAP8IbyuiiiD3KZ09AInke/SnK3V9bYF6CirSpMuF5sviZFNkWUXS6ebMAKbvU4l+KaYZUwRhWIy/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aYLmlRz6BmlyUJE+sckrk2iV4MOWIHdkecrnoScnQtI=;
- b=TJ5855BTAqn7eoV7Rwd8Tf0Z1n+9VGPEuYPppxVyIXt7Ct/3KHGYkn/mQCdxn8g/aSYhkPBQ+9Xis1dNF7QljAga2bQsWBph+OzGJ/Xe9HV61IUzar4V+CerB2Zx8meizz3W6orfZNE+/S0xvf9FycYtHuhvVkO6huBS+D/sd6MYcQlMVb6NBz+dwE1AzMLL6oDbFiGo50FwxlBcIMOvyafJEa0J0Jft/qdDqMePsn2ivXuZLa8ma0Ez+pALtQl0lOCLnlLUjpD5tOgTLgrYtVlYdF6vA+Cme/WPIWKdwa8HcR9HtFJZ58/lu+AqiLeFuSi9xfDstzOWK5S9EqxaSA==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1649.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:18a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.36; Thu, 23 Mar
- 2023 15:14:14 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bdc2:38d4:36c5:68d1]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bdc2:38d4:36c5:68d1%4]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 15:14:14 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-CC: Dave Rolenc <Dave.Rolenc@kratosdefense.com>,
-        Philippe Gerum
-	<rpm@xenomai.org>
-Subject: Issue with evl_wait_event on startup
-Thread-Topic: Issue with evl_wait_event on startup
-Thread-Index: Adldmbjt6Rz6wIx4SDCJK+ZB2ffrzA==
-Date: Thu, 23 Mar 2023 15:14:14 +0000
-Message-ID: 
- <PH1P110MB10507AD02CB117F1769A1CA8E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1649:EE_
-x-ms-office365-filtering-correlation-id: f6226637-e637-4587-57d2-08db2bb14382
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- /ulGwiXrJfA7/scnJ3k17GzmzrUob9+Sd5zmxBgT/JrQX4T49MkWzLrEI7acqL2gCNuullOLNlfFjJ1cOoC4Yy9uySkMe47x6im++uJiRsXoSeYQ0KifulnCRQS9cHjFc2cQzfjd5mCEwbI5xTiulfi6M2tN+izMBP7zJU/rSDpEVfz0fd1X7cOemKz81U944RUu/oAeb4sw88qBhM92pX+W1rdzG3+exqWxFsHA8eJPKwLD/BfaglW0h873VFuZ/yNRQn1zHwCH57QgrU8CJA+nYXCJRFT7aPhrxAJ5mEXlTesrevkuXfrgeoZw8NyC7O6sKIwTlcbwWPzNTGozO6M3ScgyXyEzxQyxbG98ECACK1jU4KZeJbJzZRyXgvYSoC0fcYb+SqYoCU+tFdt+fjFIUIn2N9LNH8/qegkrjDfBk8wCw5r0+UqZ/NoU/fXVAJKVx9jaAH8UOV7ubNivdRPweuStUHX+aNJOTRdoli/xRnv+9bZk/nft1RB/p2UZs694eXDI7WNnFHEC1qf44kL/gfHV6UhH0rkDtvBGR06heVloYsiA4SXgLbNcUQXgrkMVvRZYX8VrbTkcX0NbY3wsPvNaa17ghcvMWAGH1UE79TVEWWP959CN+jF8TKxV
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(39830400003)(366004)(396003)(136003)(451199018)(33656002)(54906003)(508600001)(86362001)(6506007)(41300700001)(55016003)(99936003)(66946007)(8676002)(4744005)(8936002)(5660300002)(64756008)(4326008)(66476007)(6916009)(44832011)(76116006)(66446008)(38100700002)(52536014)(186003)(26005)(41320700001)(7696005)(9686003)(71200400001)(38070700005)(2906002)(122000001)(66556008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- 5NwXeyYWBnNsLU8BDWsDZbvXwpKoE+9ms7PTK6e2/ZFPtD+riEgjdmSAb0Z9ms0fyf4Hl6ItPkAnC9SFxBRvg+uSuyuzwY5H8Z5JlW8uSg+w9CE5nOy/x39/qf0BZ2iaLaSOz2FXh1xdSYM3Zf4ALER0St9PSAbPdqHNBVAc8837EU/vKLg9mIeicugW/nOH0LB8gyYZRvGeWW+vqw0EGXsF9OIBph75GqPZBe8Ukkdzrt/5vw204GhyvtEKoAYQ6TtbjBBY4bajt9/REhXs1lSX4FY3xeYzNf56cqJcZ+Gr+jcnRPRe1loYgJfUI8BcSVJIgZI8mv2vY2t4d4dFEzm1Ev6vlwsgqYrDp3WXtdYVFOEZoukNOdS4kpbSIcWC4jqGcMaJWAM+xQNELR6mofoqCyeY0HI5yydfl9/Gg40=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0035_01D95D67.D551E8F0"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC45BA950
+	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 17:20:43 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id BB9CE20004;
+	Thu, 23 Mar 2023 17:20:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1679592036;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4k1RlOdM4Yqj6sqB4jL31WvTWJcMnWpZTVIaHzUSS7g=;
+	b=iMyWGbi+gGdUsuwWkj5apUT4DubvjwyxOM6wGapT1VVo+jHcfXM46bS/PZUekq9FrpC2xg
+	6VVJsVvMnEpUjeQdQ/oHpKnR/r/aVQXK+oNifBquX3Wc3IXrIxu1dB9XQLwqA721lUjC+o
+	yBypJiBI/baykfU5adGZEvAvKbN04/mRoscj3XQQrNrM2lTzhFQhZvSn5RhEpYsmgS8P3O
+	mnBuknzmLwpfNDLh6j6WwsPcSdh9YaSL7JArC09pqRubWbU11/RGhqVim1lCyrFV9clB1U
+	u+MkHGtB61yRRHnq3j6H3C+aaDuqDLueclrnoxEOm8Zu5ZP/09HxUa3fddEtAw==
+References: <PH1P110MB105092F3657F368FA123D4A5E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: Issue with evl_wait_event on startup
+Date: Thu, 23 Mar 2023 18:03:36 +0100
+In-reply-to: <PH1P110MB105092F3657F368FA123D4A5E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87wn37bd0d.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	3UsJAWovS1X//+le73QI3KCF5WaooVNfG8Z3cHBcJFxUbKd1rCJec6AMaAT0qM3TKASP0IGmPknlRIFqfADlgibWaqI1gbi6eEBS+iDn2asxA4CPIThEvCoMJIyg//VUoqstehuptbHME5+ljE1AgoKoVMPNtzY86qStuNSExrDnNRWFa4l0fQiEqmF9zdi0TZtOZ9YAfTO7azwQ0Y1zwwBtzJ+qpbeBniCjyxqRvmj7seSA2NsL4C2uQxVvgBnVkmBaBWeUQFMYzLNQSo2F0mFKSzwHVKOb4WOXjEr2PXZHDDDXlxokRLNO7YQmgSv8qzpuBDCS4Dvyw7qUzeOma2lUmRX82o/W2OyrF08aL40s0SCPO44gLIwbPH7MWUp//4A+khU6BuAmyuCEWD7QzX5XGFZN7ByghA3o+6B1WeCIWg2eLhtylEcyd/xZGcquKQzp6kvM1a0vYOEOSnMK9sLpICaM+S+YG3Rqod/O2Lh6FdWLannXigKl3fTncjyEo1iGjVtnZ85GPON9I7RbQW6dwpjhK5N5XVpTwjWplBk/vdsBxlL2w6GHK/T6/klr1qjmw3x8qC+5PdK5XKITEkbO0Mbjn7b0pEWrapcpJ/X85jg3xOvLxNbZqHeLss1TwRB3PSA+OgNIKc0PEuV72/3ngpgy/EgD7JVB3LwxllP6rx3MXhlOBBmp18LzxoiSdrsElZpBS7MB67hvFABqiBgEClF8knCY5hEDZAJew5UPSrru5l6dFFCyOvRoubOtNKz8MCbKRd3cRLCIFdaUAUhj6jbl58EDe2tJDcBJ8t2/bjrSu2pANc0UABLDJlII
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6226637-e637-4587-57d2-08db2bb14382
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2023 15:14:14.4722
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1649
-X-Proofpoint-GUID: KP90MJDloq8Sl34v6c1LUDwPmoFnVPKL
-X-Proofpoint-ORIG-GUID: KP90MJDloq8Sl34v6c1LUDwPmoFnVPKL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-22_21,2023-03-23_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 bulkscore=0 mlxscore=0 spamscore=0
- lowpriorityscore=0 phishscore=0 suspectscore=0 malwarescore=0
- clxscore=1011 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303150002 definitions=main-2303230111
-
-------=_NextPart_000_0035_01D95D67.D551E8F0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-Sometimes on startup of my EVL application, I get an EIDRM error returned
-from an evl_wait_event call. When this happens, I currently try to create a
-new event object to replace the old invalid one. Then any successive calls
-to evl_wait_event appear to return EPERM.. What could be causing the EIDRM
-error in the first place? Is creating a new event the correct behavior when
-EIDRM is received? Why would I be getting EPERM after creating a new event?
+Content-Type: text/plain
 
 
-Thanks,
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
-Russell
+> [[S/MIME Signed Part:Undecided]]
+> Sometimes on startup of my EVL application, I get an EIDRM error returned from a evl_wait_event call. When this happens, we create a new
+> event to replace the old invalid one. Then any successive calls to evl_wait_event seem to return EPERM.. First of all, what could be causing the
+> EIDRM error? Is creating a new event the correct solution when you receive that error? And why would I be getting EPERM after creating a new
+> event?
+>
 
-------=_NextPart_000_0035_01D95D67.D551E8F0
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
+Normally, this would mean that something along these lines happens:
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFbQw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF4TCCBMmgAwIBAgIRAI/z
-sKoC9gIWd6K2uUMqX0gwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjMwMzA5MDAwMDAwWhcNMjQwMzA4MjM1OTU5WjCB4jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMQswCQYDVQQGEwJVUzEYMBYGA1UEAxMPUnVzc2VsbCBKb2huc29uMTAwLgYJ
-KoZIhvcNAQkBFiFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wggEiMA0GCSqGSIb3
-DQEBAQUAA4IBDwAwggEKAoIBAQDAs1JlPXcxObC/SDH5jeXQCR/wpwukNllyXtVupCmQwW0zjEXN
-bnSaUcXkpkqU52fnuPrvg49YNVMs8j9ftVR1JgYBTzqfe4cYa1085W31zMc1ysOFO4Q4fmL1ew+t
-UkDewFDJhiZMPbsFDFMLZmrdsdE+zoO3snCOykm1bJYQ23DFfk+41sgLNMSxrvaMzTk9Dr2MVGYJ
-U5XiwKGseszOA59mR278QTbitwAaGm2yZ3haqxRpSiLdTCpWP6NT+ufDgN7gdUqNHzIDX0/Wkm2l
-se1EneAnUyGvZAVuqcgrtdHzslP51mJ92jxuDSkRNJxUU8jo3OkX1rkRRpppQi0vAgMBAAGjggHa
-MIIB1jAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUG/7kujLuZ4Qp
-vVGdPTrnUMwMRwMwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYB
-BQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEW
-F2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2Vj
-dGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5j
-cmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9T
-ZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEF
-BQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wLAYDVR0RBCUwI4EhcnVzc2VsbC5qb2huc29u
-QGtyYXRvc2RlZmVuc2UuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQBRRMaZHiM5JRYIchy62As+w13F
-TXX2s5QeFwTWbbS732kxBxsFpv1KxGoL7Dze5Y3pQXk0wHKEu922i1O5rSBQ/63HOeZ9t1F1Vu7b
-oUU6BP+uhqcamCtQPkV9MiEInBonCOimhoeqU2aSgyOHAM7MAnXAk4SZ/ElFQAogucYaDI1DpciA
-uClBkWCfbYVjYkzbN/WURM02AQpicgXkWXJoWxHt9J1unZP7AIdIE3WD5No+wsxF0nZTg+5XU0RY
-Y1FAx82tWR4Hq4i2qOFgs/pu2KSfGzo2IOuft380xuEe67ovMgvTzNL/PVaYNxn08XACfn4hbP9Y
-LBCOCUz2NbYXMIIGEDCCA/igAwIBAgIQTZQsENQ74JQJxYEtOisGTzANBgkqhkiG9w0BAQwFADCB
-iDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCk5ldyBKZXJzZXkxFDASBgNVBAcTC0plcnNleSBDaXR5
-MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxLjAsBgNVBAMTJVVTRVJUcnVzdCBSU0Eg
-Q2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTgxMTAyMDAwMDAwWhcNMzAxMjMxMjM1OTU5WjCB
-ljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2Fs
-Zm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGll
-bnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAMo87ZQKQf/e+Ua56NY75tqSvysQTqoavIK9viYcKSoq0s2cUIE/bZQu85eo
-Z9X140qOTKl1HyLTJbazGl6nBEibivHbSuejQkq6uIgymiqvTcTlxZql19szfBxxo0Nm9l79L9S+
-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
-XsEtKiFtIAAAAAAAAA==
+[Ta]  ret = evl_timedwait_event(&event, ...)
+      <...blocks...>
 
-------=_NextPart_000_0035_01D95D67.D551E8F0--
+[Tb]  evl_close_event(&event)
+      <unblock Ta>
+
+[Ta]  <resumes>
+      ret = -EIDRM
+
+
+The alternative explanation would be that I screwed up something,
+somewhere.
+
+Receiving -EPERM next is likely a consequence of the first issue, maybe
+some bad mutex state, assuming the caller did not detach itself from the
+core.
+
+At any rate, we are not expected to receive EIDRM under normal
+circumstances, so re-creating the event when this happens is only
+papering over the issue. Could you reproduce it in a simple test case?
+
+-- 
+Philippe.
