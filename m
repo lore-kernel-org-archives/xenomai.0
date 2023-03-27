@@ -1,71 +1,61 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC45BA950
-	for <xenomai@lists.linux.dev>; Thu, 23 Mar 2023 17:20:43 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id BB9CE20004;
-	Thu, 23 Mar 2023 17:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1679592036;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4k1RlOdM4Yqj6sqB4jL31WvTWJcMnWpZTVIaHzUSS7g=;
-	b=iMyWGbi+gGdUsuwWkj5apUT4DubvjwyxOM6wGapT1VVo+jHcfXM46bS/PZUekq9FrpC2xg
-	6VVJsVvMnEpUjeQdQ/oHpKnR/r/aVQXK+oNifBquX3Wc3IXrIxu1dB9XQLwqA721lUjC+o
-	yBypJiBI/baykfU5adGZEvAvKbN04/mRoscj3XQQrNrM2lTzhFQhZvSn5RhEpYsmgS8P3O
-	mnBuknzmLwpfNDLh6j6WwsPcSdh9YaSL7JArC09pqRubWbU11/RGhqVim1lCyrFV9clB1U
-	u+MkHGtB61yRRHnq3j6H3C+aaDuqDLueclrnoxEOm8Zu5ZP/09HxUa3fddEtAw==
-References: <PH1P110MB105092F3657F368FA123D4A5E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: Issue with evl_wait_event on startup
-Date: Thu, 23 Mar 2023 18:03:36 +0100
-In-reply-to: <PH1P110MB105092F3657F368FA123D4A5E2879@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87wn37bd0d.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FD6A51
+	for <xenomai@lists.linux.dev>; Mon, 27 Mar 2023 10:55:54 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230327105546fca613aea2fd835f21
+        for <xenomai@lists.linux.dev>;
+        Mon, 27 Mar 2023 12:55:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=noykLBM8BQzTdQP69o/0dHXlACeS4lIDtn35Gxm6tzk=;
+ b=gWXHEkLn0WiRXu0w2Mv8wEeH8590KEeUmFj/J2HrAQCpxQRL6dAjYVnjJXk06xSzg5Un78
+ wIfAWFk6aMZIvZBrg/8FD71oQsmTp9R4Gq6Pjc6b1CXZ02W/ETw/7AR+mTnWhR6gWiUqe7KB
+ HxpDuIWA7pz03fHD3Dl0ib6bJ9i8k=;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH] debian/control: Fix missing dependency to gdb
+Date: Mon, 27 Mar 2023 12:55:42 +0200
+Message-Id: <20230327105542.1320510-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
+
+The xenomai testusite - part of the xenomai-runtime package - needs the
+gdb binary for testing the gdb support. The dependency was missing so
+running the testsuite on a fresh Debian system failed.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+
+Backports to all the stable branches will follow.
 
 
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> [[S/MIME Signed Part:Undecided]]
-> Sometimes on startup of my EVL application, I get an EIDRM error returned from a evl_wait_event call. When this happens, we create a new
-> event to replace the old invalid one. Then any successive calls to evl_wait_event seem to return EPERM.. First of all, what could be causing the
-> EIDRM error? Is creating a new event the correct solution when you receive that error? And why would I be getting EPERM after creating a new
-> event?
->
-
-Normally, this would mean that something along these lines happens:
-
-[Ta]  ret = evl_timedwait_event(&event, ...)
-      <...blocks...>
-
-[Tb]  evl_close_event(&event)
-      <unblock Ta>
-
-[Ta]  <resumes>
-      ret = -EIDRM
-
-
-The alternative explanation would be that I screwed up something,
-somewhere.
-
-Receiving -EPERM next is likely a consequence of the first issue, maybe
-some bad mutex state, assuming the caller did not detach itself from the
-core.
-
-At any rate, we are not expected to receive EIDRM under normal
-circumstances, so re-creating the event when this happens is only
-papering over the issue. Could you reproduce it in a simple test case?
-
+diff --git a/debian/control b/debian/control
+index 857d8ff8f..aba59949c 100644
+--- a/debian/control
++++ b/debian/control
+@@ -9,7 +9,7 @@ Homepage: http://www.xenomai.org/
+ Package: xenomai-runtime
+ Section: devel
+ Architecture: amd64 arm armeb armel armhf arm64 i386
+-Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat
++Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat, gdb
+ Suggests: xenomai-kernel-source
+ Replaces: xenomai
+ Conflicts: xenomai
 -- 
-Philippe.
+2.39.2
+
