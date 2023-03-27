@@ -1,235 +1,93 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from mout.web.de (mout.web.de [217.72.192.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 662A36AB6
-	for <xenomai@lists.linux.dev>; Mon, 27 Mar 2023 18:09:17 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32RGFjPh012805
-	for <xenomai@lists.linux.dev>; Mon, 27 Mar 2023 11:09:10 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0179.outbound.protection.office365.us [23.103.199.179])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3pkb27gx8u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Mon, 27 Mar 2023 11:09:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=yGGczrZtb8yWcT9kwM7Yrsy9aOeSDbmz83c8J9NxkMwkv256mfk/t5m2//uHBEc0VfNmNOD+hVJg/vqtGUx/eyCsHnluY2K8xbS+mRDHVtq6hP3G15enWDqhlmFK/pYqroQClhWoP36c8Ew0bzTJPS8C/fD5NqnzrPbd4Hkpuaq7jPQ7/bQAZKUy0cRAJ8uSrrsBQeZr39KriSI2s7hDtgsOyfbRbk62YQwM0XPM20IKPDNXqQlivJ9SiWkFZGnX4uGLTX4I3wXraB8p14qc46qS3nwK4SujbWBuHGrVguTOIwmMHNU1YjwmAXHfvJjtM5tcaNKlZNYLFECisRJU4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vZvJ2JRMcb2V5MYEyQjuwemh3V7/TQ0W6Eg6lSxYd70=;
- b=Nw3scRiwIOatOOgAopLJ2cU/LGAu7LqvW6x/MaXT8v/3tihKH3ANchV9K/svORecHAFxuJvX79UaiQozJt2lOex+uir6bEtwmrDsydoXdqJpBtVebVWGy6s034Cj0c7hyyD2sEN0YAENELuVSXXRngt5wPdhhAhoL/H0ogZuW3CxaOGes9kKd167eGmCSswVR7xARSw19Zvf1DUpl1m6V8vhRkjPU3odzdybGQjYMsCiKDRW3h+zxj9qC3AxlF9Oa62scCTfqJKVA2A0TDwKMvPyMl5/QAeZzRMTzlfolB3f/5Soh/oRvKkTPVeoalMLy0v4wOP72wFJapuPTf03lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZvJ2JRMcb2V5MYEyQjuwemh3V7/TQ0W6Eg6lSxYd70=;
- b=HKqJeGpSBNDDltF5EvU4O7tK9NqJtb1yhfLpLw5zVAyuDsIzZTPa9fcd/nsNsRrqDeD8GyYweSG1rZ25lKTCUPb6XWZj3qgKtD20+72GaHkl45gpGVRy/kmQVJYANkBALaAqY55kXcsD+qsKL7zqVjJBjC3tYrraQWAwL8hFg5oo8+saATpbc3uDSZg9T43B0nzm0WkhXo/xYrz9Ky9M3P5C+fVUlsYbioW0SfFxeec/EUkDeMzIu2i8qjwKK2kbTpxeQG/+8fi2+idAOAaxztth4S0adMnRXYy5UImws/twq4/npgvocwuoejcKKwQD3HFHScKeNkVQhuElyhhUbA==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1018.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Mon, 27 Mar
- 2023 18:09:08 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bdc2:38d4:36c5:68d1]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::bdc2:38d4:36c5:68d1%4]) with mapi id 15.20.6178.041; Mon, 27 Mar 2023
- 18:09:08 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: evl ps - round robbin
-Thread-Topic: evl ps - round robbin
-Thread-Index: Adlg1xN8Ez/aHsUBQGWAMMjzjU3gVA==
-Date: Mon, 27 Mar 2023 18:09:07 +0000
-Message-ID: 
- <PH1P110MB10506A8CC6DE166D6C3889DBE28B9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1018:EE_
-x-ms-office365-filtering-correlation-id: 2d0b3034-3bb5-4397-37ef-08db2eee5bc5
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- akmjnFGQEf5NLGoFB6bjdReDfyy8q4Ft+G7VuzaU0yQFDYRou52t2H/4TShwpmVLmmKlng61WwTsgcdPChEFgDei4lI7cDpAvAnLLlrCdcYxRTWupNTGcHDvUq2QiKAWVW4FqVx5Nw8Lsm/w2YbaaOdhSf9JoaCIQu843+eq+xQI6P/EogSqqPOud/NHyDsG972ZU0Py4vbAMAn5fV6vYbgQFetArDTvotUupii4B0OkxyyZ2Gdi8q47fDHJWroUxR6Freb3tGA4pB263bJu/uKL66B35khWBvs9aZnmPQyS5EE2OYwDfw7Kq4mO5OKMQQOIOSbcyafjfbkYbxjgXYZNUvQ948RB5Gy42XZzDIHumU/4/XutpLTFnc6GTnrzMgjwQnSFr7NFIykZo7d8h08WPKSHX6lyaFEzRu3hAkxAuCF2+e4zCS3MletsbVZrqA/y3gPoKoEG3WgUYejkcC8sP09y76avKZGLa6IHh+VkdF9vstXRaEY5wVj+7rv0EYz8K5PozsZtrZp2F+bCqa+pPpMVegHiA8UA7M/Y5RsoB3DrXZ3OrYfbmyZ/943t2O5+47jJSr1hjDtgepiwb6HpfBLnDGO2F6yFDaIWFJS2dowaXqIaGPikwZ4a1o/w
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(39830400003)(396003)(136003)(366004)(451199021)(26005)(9686003)(6506007)(38070700005)(33656002)(66446008)(8676002)(52536014)(86362001)(55016003)(6916009)(66476007)(66946007)(76116006)(66556008)(8936002)(5660300002)(64756008)(83380400001)(41320700001)(122000001)(44832011)(99936003)(558084003)(71200400001)(508600001)(2906002)(7696005)(41300700001)(38100700002)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- Z/DgeFwUj9cEULfQlmjvEKL3DN5UpX7UV82E9wuEr5M9fFLBx37pfZYOzC4QhWb97tGCn+AUxKHin96aZMFIFY//SZzmwNWxv0mIb+R92rnz4/fiVXGkg16hPdo6U19wX7+D3QtBBTn/FtkvYwDAWuDTiocoQtUollvN+X1At4kYWvAH8NIlufGVMSHLuhhOZI96dB+dc+vkevmeHdtkXUe3q7sGEfleYsOeG8SUhMobvwdAfDQDlHkXqffmJ6BHHlE8qKyqEJ4zXhyZf5QcTG9xJPG0zIQvXUyHqyYpg3MGBcxNthLDDT09+URxYXQgzmIYV7apnJB1vKiDZ8xRgIXLpmPUeqAeiBsFX4Eu0GX+ZZd/AiQ9l3G8VWsmFQQexYCCLJKMArodAybNJsZoV1OtuCHfilvXHSepSUuE9OQ=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0129_01D960A4.EDAD9760"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8A72596
+	for <xenomai@lists.linux.dev>; Mon, 27 Mar 2023 22:55:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
+	t=1679957735; i=jan.kiszka@web.de;
+	bh=yWq4blz9UvtcRHG3rPtn3x1Rz7zpecVxM4FZMh6pX6Y=;
+	h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
+	b=Cmj7VN7sHS5Wmnb8q+PtRY5GwqaAWAQiCEvtJSerJX6nQHNJlF1WkBAhkI6sdHE+k
+	 uJB9vpQUtR/xwravAzehBYkdinkrW3RsHnFVxA7+R0IsHHKLSa4Is8IySFQktLBOZt
+	 FD6zHTm30xJRb6RgklpiN6ttEIWRP/y1AeupBGCZ6djiv+JMnMnbrxEK76fXHqAC4+
+	 GU0Peh/j9rhFKZXoM1vnxsrrjMNBM9TcdVKcPl32rYlv1mhSfX7SGWEyG2glAL4XXG
+	 914XPDXSKQAx7/DvvRvSL8T9AjkzxyGQ6jj4SSO2ljn5LKBFZ7HXAGNWKFMv4VhPxh
+	 q6+pO3W7FtUMQ==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.20] ([94.217.148.24]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MtPvg-1qafQv1634-00ux4G; Tue, 28
+ Mar 2023 00:55:35 +0200
+Message-ID: <aeb950f3-558a-f704-dcf0-7e6ffc1c7283@web.de>
+Date: Tue, 28 Mar 2023 00:55:34 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	OxgnZcpECLHJ2Nxn7Ue/pfAX+/2wYJQB8W49IkyRw/XEC7BHQWLMIkYPr3LtzCFk/CbOEjo+rVaScZdmFgVuFXACmIILF5WcHv5JQrZWw41WXPj90dSUv42tIXMJaZp1/QvDApZ69nmPCo29rXL/BHgynviiy/u5rw5/lZyonLGFnzK1y55tS70mGmMKu6ulZk5A+yyZzx5nMvoVbG1nkXercFEHF58DxvBwRjV1fCRsdy2nqJ0eTmRzJWPgu0QUWFgQkZuQ/JsNNpuvRav42HPCiEx6lNHEZeqaXcZdOvdHyn39Z+3n8hSZUQm2T3ES7O4hKGbMhOCrXC44Kp0lUtNeQL+NsY32iqXKAJY/14nMjFsGmcDJbYmOrdf6ApyltnQ7mbB4xGvbXW0eB3ZW1Ug5c3tRFRrdtvw7UgLQoq2lBcZ9RlKnyNGx5EHhM2T/mfALbud4HURyzMfb9WwnbI+AW9F38jqEWI07IrIRzbQo5KtwjhlildjglW/dBhWlF8RTTYL37roVKtbNTMFiaohuZsmU88mCCb3X3Kon3JkB670b4TW4iW1iRQGnUhMcfbEMCxfFDPE46pTdJbyynXOsrrJOSB7Mdg+P02GhCkEQCNX/PM2wCLL7kvAtfQkgrsI8kyYiB4x4fLAn5hEqdcSrqoWqpx43vn76Dw1nPZwEf6DMYT0b4SRsejNfhUuIheDajevRrG6ktnzFEHrqcoqhpeH7YkkcCtnKnyYRa8x0XfSmqywUlTU7eYqeJjZnqqMcG6pKjYK/ZN6htfqiJA==
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d0b3034-3bb5-4397-37ef-08db2eee5bc5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2023 18:09:07.9490
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1018
-X-Proofpoint-ORIG-GUID: 8FHFjmMwl-tYRwzSAMZciF4DBlA_lhU0
-X-Proofpoint-GUID: 8FHFjmMwl-tYRwzSAMZciF4DBlA_lhU0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-24_11,2023-03-27_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 mlxscore=0 suspectscore=0
- bulkscore=0 clxscore=1015 spamscore=0 mlxlogscore=999 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2303270149
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] debian/control: Fix missing dependency to gdb
+Content-Language: en-US
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20230327105542.1320510-1-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+In-Reply-To: <20230327105542.1320510-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:7r8jhHrk56FraDIN7mqn0B15EjH6xjpHeAHT1P8YYDG1qIRI40y
+ wX6MhoZ4t9Zok3C4YT4iruc29CzrYFhfXgQqJeJbZPPPyxaFyNv7Xd9iP5Tf30T6SB3ewPl
+ Pz76xPzROyzEY2IlMMoRtm/L555EJ/doUbDRnxpgTqFWXE9sBuNuBIfjlMHJfQfl3g1gDFt
+ 37loo4JytRifhj2snHY0Q==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:q9XSX8KQgzU=;J4d6LLF9CWLnX+XLeEj7S+b0Kd3
+ 2SBR1KOJ3e1MRlOwOEb/v62UGPx60QDhKY8ZYQ7Y4mqibfAkkgQQWgvH+c/ro0ppPrlfGBJXX
+ eIT0KhIGVt0VtqzADcf/C3mmWWbjNq1I3kdoJQqN7yiLtPZ45XF8OsH+Nrn5GOzpJZPi+nZxk
+ 4v+KfiQgjdy+kJaUvEt96nViYdJxbISbiuNKliy77ycCfDQmcu1hzp2VUgMi5UQLsNqRTskT+
+ BVGsl6b32j12zGbHbW/mwnxuvyJJeiBhmCGAgsJqbg8c8diijPwmqSN6cbhymYYVeC3+ZThyP
+ /Y5qaViOB9JY2xBA4S96r2jZb7hYQ5U2lWz/uGmxo+CkVX5YyExXb0ICat31Q0A3MZyNRNl4T
+ ivbD1KTKlfe1XdOA+u837dIQKY/3hguZrV6SZ/N8nsjfqd9ZevTQViKiOk8Ej19rqDEuvHegQ
+ 80TvZPqJ6VVeH954pfGZa/ADvEMjLuAaThpV+Ltcd6ZjnntRBDSPgvMDIdohocV+fQJ9ESxJm
+ UkVbt9vuPZ77MFw7yKieL/uDh3I23ej2lSRljcNAlNixJJDnl8uS4TWh0NvUFWGH2CYCb6mwv
+ 58L/LbM8cm1fvrGgORIRUTzxiv3aLzwpTHfQDck5fadKnyIkIpNTnkVJ9ub3Nut5xqOTM2ufs
+ oglEWPW/7vgha2DLYOYUrr4MfsMaMtVvbgc//89UQ/EtYw7EA1/pNmRMQKfjBQW42T5c1B9Db
+ 0/b8NaHVEnCeB9utMBl7LVoA8i1gDSRB6I9bBlnV8nPsasIGUVg5KCjnPY9l/I/o6gtUFsDGF
+ FzbZ+cnnnWtVYRByPxoh0DSd75AnYQk4q2SUTBhsKnvTkZxd+BhK93vPjwna4cH9O8rSVZjrd
+ 24mVOab7hsKGsWnF0x4/+OQCZB/mVacm0Pgu+VVPtRqGqP51NukgTDB9kYVnfzZJ3eKjHxGue
+ mczrVS01phxEP5adjjBA7sEjywQ=
 
-------=_NextPart_000_0129_01D960A4.EDAD9760
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+On 27.03.23 12:55, Florian Bezdeka wrote:
+> The xenomai testusite - part of the xenomai-runtime package - needs the
+> gdb binary for testing the gdb support. The dependency was missing so
+> running the testsuite on a fresh Debian system failed.
+>
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>
+> Backports to all the stable branches will follow.
+>
+>
+>  debian/control | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/debian/control b/debian/control
+> index 857d8ff8f..aba59949c 100644
+> --- a/debian/control
+> +++ b/debian/control
+> @@ -9,7 +9,7 @@ Homepage: http://www.xenomai.org/
+>  Package: xenomai-runtime
+>  Section: devel
+>  Architecture: amd64 arm armeb armel armhf arm64 i386
+> -Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat
+> +Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat, gdb
+>  Suggests: xenomai-kernel-source
+>  Replaces: xenomai
+>  Conflicts: xenomai
 
-I have configured one of my EVL threads to be round robbin using the
-evl_set_schedattr call, and I have verified it is getting set properly with
-evl_get_schedattr. However, when I run evl ps, the SCHED column still says
-FIFO. Is this expected?
+Looks like xenomai-images installed that "manually". Can be dropped once
+this fix is in all stable releases.
 
-Thanks,
+Eventually, we should split off a testsuite package to allow installing
+tools without pulling all those deps of the former...
 
-Russell
-
-------=_NextPart_000_0129_01D960A4.EDAD9760
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFbQw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF4TCCBMmgAwIBAgIRAI/z
-sKoC9gIWd6K2uUMqX0gwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjMwMzA5MDAwMDAwWhcNMjQwMzA4MjM1OTU5WjCB4jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMQswCQYDVQQGEwJVUzEYMBYGA1UEAxMPUnVzc2VsbCBKb2huc29uMTAwLgYJ
-KoZIhvcNAQkBFiFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wggEiMA0GCSqGSIb3
-DQEBAQUAA4IBDwAwggEKAoIBAQDAs1JlPXcxObC/SDH5jeXQCR/wpwukNllyXtVupCmQwW0zjEXN
-bnSaUcXkpkqU52fnuPrvg49YNVMs8j9ftVR1JgYBTzqfe4cYa1085W31zMc1ysOFO4Q4fmL1ew+t
-UkDewFDJhiZMPbsFDFMLZmrdsdE+zoO3snCOykm1bJYQ23DFfk+41sgLNMSxrvaMzTk9Dr2MVGYJ
-U5XiwKGseszOA59mR278QTbitwAaGm2yZ3haqxRpSiLdTCpWP6NT+ufDgN7gdUqNHzIDX0/Wkm2l
-se1EneAnUyGvZAVuqcgrtdHzslP51mJ92jxuDSkRNJxUU8jo3OkX1rkRRpppQi0vAgMBAAGjggHa
-MIIB1jAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUG/7kujLuZ4Qp
-vVGdPTrnUMwMRwMwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYB
-BQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEW
-F2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2Vj
-dGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5j
-cmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9T
-ZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEF
-BQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wLAYDVR0RBCUwI4EhcnVzc2VsbC5qb2huc29u
-QGtyYXRvc2RlZmVuc2UuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQBRRMaZHiM5JRYIchy62As+w13F
-TXX2s5QeFwTWbbS732kxBxsFpv1KxGoL7Dze5Y3pQXk0wHKEu922i1O5rSBQ/63HOeZ9t1F1Vu7b
-oUU6BP+uhqcamCtQPkV9MiEInBonCOimhoeqU2aSgyOHAM7MAnXAk4SZ/ElFQAogucYaDI1DpciA
-uClBkWCfbYVjYkzbN/WURM02AQpicgXkWXJoWxHt9J1unZP7AIdIE3WD5No+wsxF0nZTg+5XU0RY
-Y1FAx82tWR4Hq4i2qOFgs/pu2KSfGzo2IOuft380xuEe67ovMgvTzNL/PVaYNxn08XACfn4hbP9Y
-LBCOCUz2NbYXMIIGEDCCA/igAwIBAgIQTZQsENQ74JQJxYEtOisGTzANBgkqhkiG9w0BAQwFADCB
-iDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCk5ldyBKZXJzZXkxFDASBgNVBAcTC0plcnNleSBDaXR5
-MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxLjAsBgNVBAMTJVVTRVJUcnVzdCBSU0Eg
-Q2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTgxMTAyMDAwMDAwWhcNMzAxMjMxMjM1OTU5WjCB
-ljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2Fs
-Zm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGll
-bnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAMo87ZQKQf/e+Ua56NY75tqSvysQTqoavIK9viYcKSoq0s2cUIE/bZQu85eo
-Z9X140qOTKl1HyLTJbazGl6nBEibivHbSuejQkq6uIgymiqvTcTlxZql19szfBxxo0Nm9l79L9S+
-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
-vItydI1IOgAAAAAAAA==
-
-------=_NextPart_000_0129_01D960A4.EDAD9760--
+Jan
