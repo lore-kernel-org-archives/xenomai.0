@@ -1,49 +1,50 @@
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2077.outbound.protection.outlook.com [40.107.249.77])
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2054.outbound.protection.outlook.com [40.107.15.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B5F33C5
-	for <xenomai@lists.linux.dev>; Tue, 28 Mar 2023 14:33:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74534947A
+	for <xenomai@lists.linux.dev>; Tue, 28 Mar 2023 16:01:57 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e6Liuw6EXKQnSFSMFKPpBomVOQkkzDkhlDLqrPP5LvQM2o6V61+khd7WMrdgKaLbV6NSwlrPNYWnBpNgq8E9DLQusCusRiEDGQi8WqWZOmPR8TuewXICSpljzRLsKznjA/ksZHdMRdHMBMSrMUOuJr3w+6IgBhWv1WWEShZZrLUqeJSpdoUNYFVnXgBL4Ms3YGxbIPBEK8QFNYLkuilj7bqxmfL6/R11Y4INh9vbbirr8Tvibpve86Yzzzzm9ZNixp9GFRhrPjuEpAwoSUFnXZBjolMSTGE2MMzlZLviHacX/uuajXnLEmMlYefQ6CFVekfgeabb1cexs38Iyeg1GQ==
+ b=hLYvhDtgFvS81AWuv7ivgfq6fsSZ+QG4kPLrLGYH4esSVKVpu/t5z4eJVquz8Rd/VrVj596rnlxleA4wkpfILS5EYVGJnwKqtbdTYnBSpqdthrqjDQiQjRbO2ic2b4wSChp5AvNUyY95sfDVmxI2/vpzYrtPu5EFFbfhUIEfIMHZOUx49iPh8d6QEGZweaYTk0RPuKXjunr9Hap+5pkbE9OXGyjirKDWOEFT6N/o1P5/rxfR+JyvQpHAyGEKeK41BU08piExWYP+B+b6SHuxclQN0qfpH6T0F2oVjqZnzQhsu3dstzLHFfD8MO1tjdR4cuXreGcBzq3y4z9zSu0u2A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=exO3W+iuBTouxmXPCYXinhpNx6i5AHv76otaPSoOaWs=;
- b=l53Nq8XXs7tNL/TXMzd7R5i82QU3Aqs8QXRcX9IpxSiMyUp/jZ1eoXPH10fDIN25ljVLVxoLbC4qbvE3eDT+2vp997ExQwtUoNY3FXqALc2OUsQwHCS4L1R6pfD+dbGoQPbdI8vFAlPIl+cdX827aNf1G9ZXyepWoJQdaMA8tUHKx8cT8AtaeOV00MEfvAhEiebnRkb/vfxlE7otXOGr5/t0wps2XSKOhv59CRt0Cfs2vbI9Cq1PrsX4QJnzVot9CVvQcCM//W79rX5p6ERNbHosCEyBuo0/n8OThFKzfNGAQnh9kNGwo0kdMd1TyG6sKS/jDrqlQn6erJEcA52HWw==
+ bh=qAXJNCvpF4nEBiNnaAdmyFfp6rAZKwnwnEvV3XHIGPg=;
+ b=HGhb8fBMethnUcjZOV4WvcDeXe3zwpCm0bF2Kd2Ou5xNvUenm5qfEple8s/7NKx73lRa9APY6YTk2fFNn4JoouGt5pfHZs/dcmdMw4cTFLtuUf1o+9sldBxlvOxzuQRX16bbMh1XdI2BjmOickUFGs/K9rJeWxD8OdygvQ/wsgj49mXyGMhhS2X6vqX8NEWarNHNPqc4wfjN8TohNg21qIGDlW6kTohGewM9FrAnobfFwWKaKaQ4izEc7vF72qAAkXpVxi2g+1b//UhDgiI+Wmdy2RR1WXevo/p8ht8hWfPC+dEzQsIf+GfWOuH3uMOQA4zGQVb5GwXO5ZPqIswB7g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=exO3W+iuBTouxmXPCYXinhpNx6i5AHv76otaPSoOaWs=;
- b=Cars1sVH+kz5EULH8b6JoKfbPCIdSNt/uhrxJN2EE1vMqb6ZrJLRED4M41Yzigxr4zQTWzr2qfMJ77MK/0VsrQzcgFLmJoOCtoIEp/7Y4yXag4E+a/9BPrEpUJ9jPdIwyP+Y0k/6LhjqNLU4CB1//boWivyzxL5u7vrtKJNXSO6ozgk9PiDIT7nfu33uVmLUCeXjY55sVso7d9Zbs8/oGIgvCQZqWysyjxB96hJm2Wmz6TdB8GHQxKx+Qp1YMTst0lCBkgOo5CwXoSOV+zQmTzSJ+I8aTPZdQpvrJNkQ1EaZgmz5fzY4nEO0aSNQWN5v/XsZZouNSV3yrHt20nQPfQ==
+ bh=qAXJNCvpF4nEBiNnaAdmyFfp6rAZKwnwnEvV3XHIGPg=;
+ b=WdSHwAYLz6Ckm3DAnUSnNpT5VdsFBWnXI+MpXCApyMhDxQji2e7d4n50sKahdeYs9wQfCJ8nGdE+eFxdKfJvSbwYlwHDIVWv7uLj3gUyWgwiBjDGi3hmW72I3PiumVGpiqMVDEcprK6kx5WzulcKp608sbFpQMs5oLvD9tUWzTWyzWfztrZ5mVXjjnA47OvKxQ7TsKJMyaerD35/TMjhLd0pVizNVjLu5uisQcvw8q6UGnPAsf2QO9EM6nyZXD59unWSVA+b1Ewoc0VCThp8AcWwQVRdQFAzn2km0nWVrN5MwC7xY0aGDB+eWJb72A2TxTMjyKj8SKQO9ZDU13+iXg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
- by DU0PR10MB7025.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:41c::19) with
+ by DU0PR10MB7923.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:321::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.18; Tue, 28 Mar
- 2023 14:33:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.16; Tue, 28 Mar
+ 2023 16:01:54 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::70fa:c4d2:5d95:aa96]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::70fa:c4d2:5d95:aa96%9]) with mapi id 15.20.6254.018; Tue, 28 Mar 2023
- 14:33:30 +0000
-Message-ID: <54f04d62-9f13-b8c1-f69d-f42f5f394272@siemens.com>
-Date: Tue, 28 Mar 2023 16:33:27 +0200
+ 16:01:54 +0000
+Message-ID: <8cdb7db3-cf99-9fa7-be7e-d0104b74831b@siemens.com>
+Date: Tue, 28 Mar 2023 18:01:52 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH] debian/control: Fix missing dependency to gdb
+Subject: Re: RFC: System hang / deadlock on Linux 6.1
 Content-Language: en-US
 To: Jan Kiszka <jan.kiszka@web.de>, xenomai@lists.linux.dev
-References: <20230327105542.1320510-1-florian.bezdeka@siemens.com>
- <aeb950f3-558a-f704-dcf0-7e6ffc1c7283@web.de>
+Cc: Philippe Gerum <rpm@xenomai.org>
+References: <1550a773-6461-5006-3686-d5f2f7e78ee4@siemens.com>
+ <09e26675-d1f5-7726-a803-6ee1fd01ecbb@web.de>
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-In-Reply-To: <aeb950f3-558a-f704-dcf0-7e6ffc1c7283@web.de>
+In-Reply-To: <09e26675-d1f5-7726-a803-6ee1fd01ecbb@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0180.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b4::10) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0265.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b5::14) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -52,105 +53,200 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|DU0PR10MB7025:EE_
-X-MS-Office365-Filtering-Correlation-Id: 667170eb-b379-42b5-57c5-08db2f99666b
+X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|DU0PR10MB7923:EE_
+X-MS-Office365-Filtering-Correlation-Id: 982c87b4-550b-4f4b-8ba9-08db2fa5c037
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	WGbD+uLDXS6oMS78z9Bw7NXJ9RbfM5IR66SLsXI48u4CU3/R5PGjgejpwlT3CnLkrKKcmbiJXhH0gMLCNxxsLaiKIobfhkvKJZF1w/mUSsLKeCupWCl0WbW3EsALqQTH5KfpSMOYnusJ5DHWKXYyt6KYSybfE6dRgbf46y22qwbM3Zq1FFDzOM9XRuY4PSfnZKJDHQooLdDFPD4t6CtAvMOjWmqf7QYq08qrWwdMvz8eZtbdQLgF1sG6lqgzRORRCq7vIZY9vQzqj+IY3IJrY+EvGNGMSIGXSuOX+RlHjhuhJjGfQNXY82tCCm91de5qC4lwgsQzVo13PGiJ1Xh6ZWRMQTnP0v5RNfm7D7G/6rebFhU92afUaUCxTvbVu1hQwF1JnwU3RiHahaah5a7EfzIpE8wuGFPb54u8OGW3uQgWnamdxqmUk/mYzkToQmbcHHVrYeWU0da7j37oWKYj/2M0yQsRxaSCPQBqemzvKXpJlzlrdrh8atLOduGkuHJruAq5kXj1Znr+pdDQmCA5efkJBhlIXqC4yld0YegJWt94Yt4/bYV5V/eacTQmJCzaPeSEGYgIRX2c+kQqA6R4YUybz8iZn8ZDezyX0XkW9Pum0tozA4CbnabDEyREcPT45wvDXbawAt/00hbvSfLNiw==
+	oio8cvMudLuwxN9iOG9Ik1re3N8BY5A1vEQd5IeVbEFU4vAPrjQG2O9SL9a6QsoCZlAI1azzfR+CKNYjKK/+yFSgyINs9LFG/52WOMttSE2ro+sJgR1k0pO6rP1TF8eJityCES6tYPkeW/Op0eaEOH1S9QzIpGONXmepFdrLbxccT5k+U/TEvgfhXrpzgc92gaMlZ12NcGt+ZReldz30D+DgJZGpQ1WghFpG2a5GmWerKgspYk5YGA2oI07wQZSUCcfyebRBwsPMPKgQwHUb9A4i/zkZ18LgjAyCXcZFU9IQpmoJavawNJ3x7KkeCJS1eT4ehCirW+A/ukTU4idOoSry5rz3Ka4b0gjwlmLPczbsNqf2DAP08qF726djcvPMj9EpFOgUKoAjneVq4aqjJA2ueSIVGEFAEsBRNKara8p+PM2g/7sTS2wjk74gNCLCqBsX44gFRgvxKCxC6sMPu9GBag4WIOgn+V1At9tLqbDev6YH5+RPbN+ksdHgAqiEvwkuuDOc2elJo9JznzEVC9cmO7VPKSXdtk5Coz0RBNioJGBS864lzKqIZLdI1kPjhAzzMx+YKRK/AxiA0bAUyBxfF18zIidRd1Q48nQU2NlRzToGFS6ejILQpOhWpFQILcBqzje4Zf1/11PcZcTpAg==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(346002)(376002)(39860400002)(396003)(451199021)(2616005)(966005)(6486002)(6506007)(53546011)(36756003)(186003)(6512007)(31696002)(6666004)(86362001)(41300700001)(82960400001)(66946007)(44832011)(8676002)(66556008)(66476007)(8936002)(316002)(5660300002)(38100700002)(478600001)(31686004)(83380400001)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(451199021)(66476007)(8676002)(4326008)(66946007)(5660300002)(316002)(66556008)(2906002)(31686004)(8936002)(53546011)(44832011)(6486002)(478600001)(41300700001)(6506007)(6512007)(186003)(83380400001)(2616005)(38100700002)(82960400001)(36756003)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VVNuV0h2NmwrU1o5ZjFuRlZuamlXNS92Rk5xWlpUOHdXZGxHa2hXVlIxRlNZ?=
- =?utf-8?B?dFozdEtLZU83VllDSURVSVVDQXZoQmI3cXNubmEvdE5GTytra2pNb3hLY1N0?=
- =?utf-8?B?bnhpUzFOR2xnN3BTQ25KblZucnRGU1JBWERzQ3IvMnowWDZUeFg2ZUxQemJW?=
- =?utf-8?B?RmJvbTNodXc0VVBvRHBaMDFyMXdzem8vb096VnBBZDZKRm9qSGh3QndDZE5h?=
- =?utf-8?B?RUxjS0FZMEIycHhGVlNSeUVUSmFWUFlxQWlUTW94NFU5RlFaWXJtOEMzeUpI?=
- =?utf-8?B?ZlZxaGsvUzB0UkFONERyZDJZcXgyU2NXaytDL3QwdGs4OW91NU9Ialo1STZR?=
- =?utf-8?B?eVo0MGQ2TFpUVzZTVzVHVnhzM3pNR0d0Z2tNdjlDY2FRTjg0dzFTa3ZCVDhj?=
- =?utf-8?B?SGt4bStXYm8rb0h5RHdzY3N0c0dqcjZBWkxOUjJ0b0ltSTd0RFB2cWlnTDBS?=
- =?utf-8?B?YVhSZVVKOHNzbC9oYWg1RXBhSE9pRmx5VnRoYlpWUHZwMU1ReU9UK1dZU1JL?=
- =?utf-8?B?SVNSWVFSai9WRnZ4NzhkdUdMV0ZNQlJiZmlvQUh0a3VqcG5BWDJsWmNBVGp4?=
- =?utf-8?B?OFhxY0dLakN6RWR5dFZVekxvWUk4QjI1VSt1cDRKMFA0R1RmZ1FFM2dIL0to?=
- =?utf-8?B?dXdBbGw0bDB3SDlMQlROa1VncTNFZkc3cUc1bjJXRDNmbzZZZjh3azRZemFy?=
- =?utf-8?B?Y1dOemZ1NGZzM05jK0hPd3RwUVNOU3pINCtaNUlYOUtQamI2VWxzazVWWEQ4?=
- =?utf-8?B?UmRjMVVtb1AyblBhVEVBWWRJalpTVHpKaFpjMkhpbkRlS1lJSnR0cG51U0Nl?=
- =?utf-8?B?VDhzcWFmTnBLTlhNTzdqZVJrNlk1ajRLWFNqSTNZNlI3T2duWi9BOTRBaVIw?=
- =?utf-8?B?bEZWaDRyU2k0Uk9zVkwxTUpUdVIwa2xKQzArVGVmRWpIcVY1TXpEMFpNWENj?=
- =?utf-8?B?Y1lkWEpmdXgzTzFVbElEV2t4VHp4UmFJbG9QMzFRUy9BNi9QbFVKWFl3QmYx?=
- =?utf-8?B?UXVRZ0hRWXdLTkFrdkxrOGkwWHRkU05yNWNoM3BtdGV5S0VNbkhZd2FkbXB6?=
- =?utf-8?B?WFJtUk5YMXBrQUNCUzI2a0RXQk1xSk95ajV0WTRycWhPUG9TMnVPMTk5VldP?=
- =?utf-8?B?RUNFRjZpZ2FUQXNpYnhZYXM1MWVRd3l2bVRacUY0ekxmcUtDWjIrcUN4Z2lK?=
- =?utf-8?B?WmloR1I4QzE0NlJIOGJXSkszRitWM2lEbGhaWkxtRzhVVWNMaXlBV1ZGZm9p?=
- =?utf-8?B?NUJvMUt6Y1lyeDZ5R011aUh3U0g2TVUvYWgwOXAvQWV4UkVkRXhjSFBQT0g1?=
- =?utf-8?B?elptRGF1WGsrYlluQ2M3b3JSMUxYSVVQTjBEYXUrTjhOTEkwSjh2T0RQbUlV?=
- =?utf-8?B?WUtyTFRiS3RXcU01M3hNSFpOanIxZDdJNTJJVDErbnk3VXRQZDFVT0tBK2FU?=
- =?utf-8?B?YTU2K0FKMHJnRW5jSm0vWXY3Snh4SWpBUk4wWjZGdHRCMGlsR1RGbjJQNWcx?=
- =?utf-8?B?dzhyRENnRVA3YUtEc0R6MCtYMjNkQ0xmTGFJOEhLQTlJR0JWTndMOGp3OHlG?=
- =?utf-8?B?bktHaVplZmkrOGJHZVg3dHFSV054YjJGaGpDZXVtekNtdDhzeHNnMThsVWh1?=
- =?utf-8?B?b3NXMEdBUnVNNVg2STVNNDlEbnhkVUxneFZhVG05R2I2UWxBQzIzdnVXYmVk?=
- =?utf-8?B?eFplZGtzYzZhODR0c0ZheStWNnl0YjNHOWx4c1hGRHF4OWpzL3RYUkxPWWhI?=
- =?utf-8?B?dE9zV3RkaDhzUkk5OUNDc01kUnNaYmpIcUhCV1Vpd1pQZ1F4WTBNRERVUC9V?=
- =?utf-8?B?a1RNbngxT1BlbStOSjEybFNsQ0pZRnpNSzlKcDEvS21qbU5EUmtvanUwZHlx?=
- =?utf-8?B?RkNrYUgzbmJ6Sy9FUmxSWlNzTlZNS1ZacHZoVTBZY1JjSk40MmttQUNpMURy?=
- =?utf-8?B?QWFVTTEwM01DblhDeW5rZzE2K2pzUWc4TG9xTER0Z25iQ2tyTzZ6R0lhWW1O?=
- =?utf-8?B?Y0lkb1V4emtkY2NycHR3d1pJR2ZjR0N6eURISWE4b0ZtL1A3TVBBakp2NERt?=
- =?utf-8?B?anJqaFVxZ25XVXd3NDRkSzZ2VmdCR1JKRHloZExHbDdpdTMxc1ViNWJnSXB4?=
- =?utf-8?B?Y2hrSWxPM24yOG9wdW1JdFo1MXVwaHZOLy9qRUx0WVZ4ek84UVVuQUZVdnJm?=
- =?utf-8?B?L0RqYUhXYkR4QVRVYUFQc2xPUXN6cmNxcWpQa1hMRW9Fcmh6MHA1d3FtbVZP?=
- =?utf-8?B?ZGFET2YwNDJxRFFRZ1JieGFtNi93PT0=?=
+	=?utf-8?B?MFdpRnZVSkdTSkNCSEdGSUJzV0h1VFdXT2FnT3dQK25RdHhMQ1NPMjVmelhX?=
+ =?utf-8?B?Y290ZVZwL2Z3R09mYlVzM1NiWFNGeEg2TUl1ZlpTS3Ewajk4WkM5Y0hIeFdI?=
+ =?utf-8?B?YUFUMHovSCtEa1lmcklEc1JiMmNZWmFxMWdkSThua1BOWnAreHBwaXlqSW9y?=
+ =?utf-8?B?TXQzWkdHamR5MDFoU1pWdkozYUlMdUhsM3ZUSVcyd0pLcDArRkFITWZRNjRu?=
+ =?utf-8?B?U0svRGs2U3Z5NWljeTR4NGtDb1QyNnI4ZzZKK3hpVDZlUTM1UTErZkRROUhl?=
+ =?utf-8?B?QmVRRVdpWllacTBDZHZ3RUxUeWl4WldEUUVNbHYyMXdvU0pGdUY3dFZHbVA3?=
+ =?utf-8?B?OVh0OEZneDQvRmdhUWN6TzhKYXViWFFmWWdBU0dzL0g0OXJoUmJDRGcvaHRz?=
+ =?utf-8?B?YU1tVjdhVEZxR01HamI0ZGgzVHZvUzJsK2xkQzVCRzFoTU4yNHFTTVBvT1I0?=
+ =?utf-8?B?czFJQU9zUVZ0YTVyeVFBRk1SY1Fqc3czUVBVWWpwYjNoRmJldjYyWFh2dkRn?=
+ =?utf-8?B?U3BBYmlKMDhEZzVJVEh5b0hVQ3RlMjNranE5VnpXUHFtWGtqU0t3c1NIQzNQ?=
+ =?utf-8?B?VXhzVFZDT1VydGUrcHlqNnR0aEhnVnZDSk1JaDVtMk0zNzd5Tkw2dEJTVEoy?=
+ =?utf-8?B?NEpPaU8ycDJRcG50aGhoQUlxWjlZQm4zcWtRb21PS1RhZ25sYTZkMlh6NnFJ?=
+ =?utf-8?B?SFZRZUxuSTBpR0hwdnI0WTE1OVo3akxCajVtUUU0OTQxZkYzSU9xK2JacDNj?=
+ =?utf-8?B?bFFMM0Y1RnJCRXZlVGJTOElHYVE4Q2lPK0ZubU11aHV3U01KOU1rbGZEY3Zr?=
+ =?utf-8?B?VXp2TW42VVYrS2ozSk9rTWR5SFVXU0FqM0RyQlltRGY2REM3ejN6K3JjR2Zr?=
+ =?utf-8?B?NjhRc0hPbHRocHRIQkJ5Z2RIYVE1bFNRL2k3a3ZWNFZjM2NTYm4yS3prK0FD?=
+ =?utf-8?B?ODZJOGtQTDZhbTdhOUJLZ2l4ODdjRkloSUhHQ2tFd3BRUzdLS1ZZeHdDRVNo?=
+ =?utf-8?B?T1hkdEVlMTlRWVNtbmdreGpOM2FyaGcrdnB3bkxTTTIrY0trUEhOa20zcW9S?=
+ =?utf-8?B?djFLelNOSVdiWDNPblIyOTZRVzA4cnVWdTlJekZjVGJ2QUc2QTBpOVo4S2Y0?=
+ =?utf-8?B?U1kwelhlR2xyQ1hkd1g0S3VXRHNtbTBRcTJoeHlmbkxVYnN0L3B4TW9kWVd2?=
+ =?utf-8?B?WkNZM080QnYzTnh2OHcxZ3RqcFRsVk1ING1KWW1yYmY5Zzl1OVNBRktOVGND?=
+ =?utf-8?B?dnVjZ0dSb0hpQmUvWUV0c3J3MDVONmEwdlR3a083VTJFTmQ0WDYxczdBUFVm?=
+ =?utf-8?B?eVF5cWdXOWxYNFNRNDkyWVF5NjR5aUx1OWNzNDJzYUE0dW1QWDc3VWxhT043?=
+ =?utf-8?B?b2hvTnZmdFNvS3d1ZjltYkg5NmhQLzF2RUZOMlZlNHdNMUduMGVwUWlnMW1x?=
+ =?utf-8?B?a2MyZS9RRTlzRnZBZ0hZMmNzYUxDeVBPRCtGMmtTakNHVkNMTGlubVFLbTF5?=
+ =?utf-8?B?cUU5bi9MTEcrc0VtRVFxNHlReFlsR3hEZGZscWg5OUtYZE9iQ295YWpZdnFw?=
+ =?utf-8?B?bm5uSHFXSXlzQ1EvdnZtNFR3aUFOS3plWTZjMUdUSUlTUk10bkNub2oxMHk4?=
+ =?utf-8?B?b25BTksrazQ0bjRYQ1hqUE5Zei9pVmFPYWw1L1dTMFpsVzBLY2xkQlRoSVY3?=
+ =?utf-8?B?UEE2WmUwTTMrVVVKODRwYm5CQVJ0Z29jZVo2ckM3VXFSRU1xa3VJdDdMcENO?=
+ =?utf-8?B?SGJZZnd0N0RwUy9JTXRvOGJDUWdnYTZ4eGYxblRjaVVHaEpJWGExTFkvQUZl?=
+ =?utf-8?B?RGNEQ0locisybmdxb1lnSkhCQ245aFcycnV0TlE3bWhlOVVKd2VoVTdkZC94?=
+ =?utf-8?B?K3BSeUZkKzBweTdzRUZzYmRKWmFPeStRQk9tOHh0N2dJWG1NTFBIWVdGY2lo?=
+ =?utf-8?B?ZGhMb1ZVZnhIVW8rU3NNdkMySzk0c21BWkZRbDZlbkVNeXVHbVlKQWRGWmY2?=
+ =?utf-8?B?aVlncGpYSjA2SG9QbUR1b1pwa282QUV1U2QrZyszK0lHYzFIQ2puRXJyNU1P?=
+ =?utf-8?B?SklGTS9KdmlQUEJjbkZTbHlURHhxN09YbStlZDczNjFDRE5hYW5LdEVRZ253?=
+ =?utf-8?B?WGZMS2lEUXVFL0R5MTR1aFhYZlZwbmIxZWdUQ1ZlZjlCQTB3WFowM2g0a3JJ?=
+ =?utf-8?B?QVNncmZ2RHcrL2s1K1JieXplZGZ6eU1HanFZYkM3UFFjeS9salFkeU9jamgz?=
+ =?utf-8?B?NHBQV2oxN1hSdkFmTko0ek9lMzlnPT0=?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 667170eb-b379-42b5-57c5-08db2f99666b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 982c87b4-550b-4f4b-8ba9-08db2fa5c037
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 14:33:29.9848
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 16:01:54.5728
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: URWYIbU293iKMcQn81wR2IaV6idX7X+2i43s4KlCHVS5NylUG1WZskP5of/22gs+fDedCM0KQ99OU9YW7TY7Yo1lfX/0SLuHap0s4dd9Wjs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7025
+X-MS-Exchange-CrossTenant-UserPrincipalName: OQJvyx6/6zqvkqg/o5jpMmSeZsWZIYkRCEvsWSD+g7Di+1yf/zrICoqwavzGDPktQFbTWq1zhOOV7Q8lzsutPllp7fp+QfBTQKb9DrePE0w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7923
 
-On 28.03.23 00:55, Jan Kiszka wrote:
-> On 27.03.23 12:55, Florian Bezdeka wrote:
->> The xenomai testusite - part of the xenomai-runtime package - needs the
->> gdb binary for testing the gdb support. The dependency was missing so
->> running the testsuite on a fresh Debian system failed.
+On 28.03.23 01:01, Jan Kiszka wrote:
+> On 27.03.23 19:30, Florian Bezdeka wrote:
+>> Hi all,
 >>
->> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> ---
+>> I'm currently investigating an issue reported by an internal customer. When
+>> trying to run Xenomai (next branch) on top of Dovetail (6.1.15) in an virtual
+>> environment (VirtualBox 7.0.6) a complete system hang / deadlock can be
+>> observed.
 >>
->> Backports to all the stable branches will follow.
+>> I was not able to reproduce the locking issue myself, but I'm able to "stall"
+>> the system by putting a lot of load on the system (stress-ng). After 10-20
+>> minutes there is no progress anymore.
 >>
+>> The locking issue reported by the customer:
 >>
->>  debian/control | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> [    5.063059] [Xenomai] lock (____ptrval____) already unlocked on CPU #3
+>> [    5.063059]           last owner = kernel/xenomai/pipeline/intr.c:26 (xnintr_core_clock_handler(), CPU #0)
+>> [    5.063072] CPU: 3 PID: 130 Comm: systemd-udevd Not tainted 6.1.15-xenomai-1 #1
+>> [    5.063075] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VM 12/01/2006
+>> [    5.063075] IRQ stage: Xenomai
+>> [    5.063077] Call Trace:
+>> [    5.063141]  <TASK>
+>> [    5.063146]  dump_stack_lvl+0x71/0xa0
+>> [    5.063153]  xnlock_dbg_release.cold+0x21/0x2c
+>> [    5.063158]  xnintr_core_clock_handler+0xa4/0x140
+>> [    5.063166]  lapic_oob_handler+0x41/0xf0
+>> [    5.063172]  do_oob_irq+0x25a/0x3e0
+>> [    5.063179]  handle_oob_irq+0x4e/0xd0
+>> [    5.063182]  generic_pipeline_irq_desc+0xb0/0x160
+>> [    5.063213]  arch_handle_irq+0x5d/0x1e0
+>> [    5.063218]  arch_pipeline_entry+0xa1/0x110
+>> [    5.063222]  asm_sysvec_apic_timer_interrupt+0x16/0x20
+>> ...
 >>
->> diff --git a/debian/control b/debian/control
->> index 857d8ff8f..aba59949c 100644
->> --- a/debian/control
->> +++ b/debian/control
->> @@ -9,7 +9,7 @@ Homepage: http://www.xenomai.org/
->>  Package: xenomai-runtime
->>  Section: devel
->>  Architecture: amd64 arm armeb armel armhf arm64 i386
->> -Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat
->> +Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat, gdb
->>  Suggests: xenomai-kernel-source
->>  Replaces: xenomai
->>  Conflicts: xenomai
+>> After reading a lot of code I realized that the so called paravirtualized
+>> spinlocks are being used when running under VB (VirtualBox):
+>>
+>> [    0.019574] kvm-guest: PV spinlocks enabled
+>>
+>> vs. Qemu:
+>>
+>> Qemu (with -enable-kvm):
+>> [    0.255790] kvm-guest: PV spinlocks disabled, no host support
+>>
+>> The good news: With CONFIG_PARAVIRT_SPINLOCKS=n (or "nopvspin" on the kernel
+>> cmdline) the problem disappears.
+>>
+>> The bad news: As Linux alone (and dovetail without Xenomai patch) runs fine,
+>> even with all the stress applied, I'm quite sure that we have a (maybe
+>> longstanding) locking bug.
+>>
+>> RFC: I'm now testing the patch below, which is already running fine for some
+>> hours now. Please let me know if all of this makes sense. I might have
+>> overlooked something.
+>>
+>> If I'm not mistaken the following can happen on one CPU:
+>>
+>> // Example: taken from tick.c, proxy_set_next_ktime()
+>> xnlock_get_irqsave(&nklock, flags);
+>> // root domain stalled, but hard IRQs are still enabled
 > 
-> Looks like xenomai-images installed that "manually". Can be dropped once
-> this fix is in all stable releases.
+> OOB + hard IRQs stalled (xnlock_get_irqsave -> splhigh -> oob_irq_save).
 > 
-> Eventually, we should split off a testsuite package to allow installing
-> tools without pulling all those deps of the former...
+>>
+>> 	// PROXY TICK IRQ FIRES
+>> 	// taken from intr.c, xnintr_core_clock_handler()
+>> 	xnlock_get(&nklock);	// we already own the lock
+> 
+> If this code runs under the assumption that hard-IRQs and OOB is stalled
+> while they are not, we indeed have a problem. Please check where that
+> may have gone wrong.
 
-Yes, might be the right follow up. I guess the situation is different
-for stable branches, so such branches might stay as they are now, right?
+My warnings used to check the context actually never triggered so far,
+but the system is still entering the broken state. Some further findings:
+
+- nklock internally uses a arch_spinlock_t for locking
+- nklock is used by the proxy timer tick IRQ, so very "often"
+- arch_spinlock_t is very rarely used in Linux, I found only a couple
+  of usages inside x86 code (dumpstack.c, hpet.c, tsc_sync.c)
+- arch_spinlock_t might use the PV optimized spinlock operations
+- Most other spinlocks (especially in dovetail) are based on
+  raw_spinlock
+- raw_spinlock does not use PV optimized operations
+
+That might be the reason why Linux alone runs fine.
+
+I'm now asking myself if the PV spinlock implementation provided by
+virtualbox has a bug... As virtualbox is to some degree based on KVM
+that might be a KVM bug as well...
+
+Let me try to force the slow path for arch_spinlock_t. Maybe my vCPUs
+never come back...
+
+Florian
 
 > 
 > Jan
+> 
+>> 	xnclock_tick(&nkclock);
+>> 	xnlock_put(&nklock);	// we unconditionally release the lock
+>> 	// EOI
+>>
+>> // back in proxy_set_next_ktime(), but nklock released!
+>> // Other CPU might already own the lock
+>> sched = xnsched_current();
+>> ret = xntimer_start(&sched->htimer, delta, XN_INFINITE, XN_RELATIVE);
+>> xnlock_put_irqrestore(&nklock, flags);
+>>
+>>
+>> To avoid unconditional lock release I switched to xnlock_{get,put}_irqsave() in
+>> xnintr_core_clock_handler. I think it's correct. Additionally stalling the
+>> root domain should not be an issues as hard IRQs are already disabled.
+>>
+>> diff --git a/kernel/cobalt/dovetail/intr.c b/kernel/cobalt/dovetail/intr.c
+>> index a9459b7a8..ce69dd602 100644
+>> --- a/kernel/cobalt/dovetail/intr.c
+>> +++ b/kernel/cobalt/dovetail/intr.c
+>> @@ -22,10 +22,11 @@ void xnintr_host_tick(struct xnsched *sched) /* hard irqs off */
+>>  void xnintr_core_clock_handler(void)
+>>  {
+>>         struct xnsched *sched;
+>> +       unsigned long flags;
+>>
+>> -       xnlock_get(&nklock);
+>> +       xnlock_get_irqsave(&nklock, flags);
+>>         xnclock_tick(&nkclock);
+>> -       xnlock_put(&nklock);
+>> +       xnlock_put_irqrestore(&nklock, flags);
+>>
+>> Please let me know what you think!
+>>
+>> Best regards,
+>> Florian
+>>
+> 
 
