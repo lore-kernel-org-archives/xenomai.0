@@ -1,58 +1,131 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 485F81FB1
-	for <xenomai@lists.linux.dev>; Fri, 31 Mar 2023 08:02:54 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id CCA2DE0005;
-	Fri, 31 Mar 2023 08:02:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1680249773;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=hFubsCw/czv3BubtcUW+DpDB76WjANltQ/BkWQROJJo=;
-	b=J6vzDGtidsAe6oSG6Q5Y+lzYMblpaPwMHqx8ZMA5BPOPebyS5vnPMVug5tGpi8tiSlwJ/e
-	8deiDTn5LOddyfJuSxITzrMTlr51s6Dqui6reLAkf655sj+S86Zs7cd4mJGyP1n9/pSTO7
-	zyb8cuQjTMihKasoF6ZR5Rodf0K6wHa/VEBKnGKzTt6/sexAbB8YUjfzkZv98iZuXMIUo5
-	cT0EIbhCMpzkJvTROYPXWoFq1SDwhSf0VGz7XSdIYcERBh9mpeqOmugWMy5NVqfSYS9Lvi
-	4pOR+nh5vRoOn7zZAMIupSxabm7NFJyB88UU/btHu99HRZAxj7y9XHDr6jeAug==
-References: <PH1P110MB10506A8CC6DE166D6C3889DBE28B9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Russell Johnson <russell.johnson@kratosdefense.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: evl ps - round robbin
-Date: Fri, 31 Mar 2023 09:57:44 +0200
-In-reply-to: <PH1P110MB10506A8CC6DE166D6C3889DBE28B9@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Message-ID: <87cz4pic0j.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1AF23C1
+	for <xenomai@lists.linux.dev>; Fri, 31 Mar 2023 09:27:25 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
+	by relay.mail.gandi.net (Postfix) with ESMTPS id 9C2D4FF804
+	for <xenomai@lists.linux.dev>; Fri, 31 Mar 2023 09:27:17 +0000 (UTC)
+Received: from mail.sprinte.eu (mail.sprinte.eu [141.95.128.206])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 8664094149A
+	for <Xenomai@xenomai.org>; Fri, 31 Mar 2023 09:27:16 +0000 (UTC)
+Received: from S1044812.EX793143.lan (2001:41d0:11b:2f00::8d5f:80ce) by
+ S1044812.EX793143.lan (2001:41d0:11b:2f00::8d5f:80ce) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Fri, 31 Mar 2023 11:29:19 +0200
+Received: from S1044812.EX793143.lan ([fe80::90d1:6ba3:6aa1:fae0]) by
+ S1044812.EX793143.lan ([fe80::90d1:6ba3:6aa1:fae0%6]) with mapi id
+ 15.02.1118.026; Fri, 31 Mar 2023 11:29:19 +0200
+From: Julien Blanc <julien.blanc@sprinte.eu>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Subject: flexcan irq error on kernel >= 5.10
+Thread-Topic: flexcan irq error on kernel >= 5.10
+Thread-Index: AQHZY7NFdD44H6qk8EWTdeY1KHGnnA==
+Date: Fri, 31 Mar 2023 09:29:19 +0000
+Message-ID: <5ecc6e0045d7fb9e12096b2956b09595cb2f1af0.camel@sprinte.eu>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [146.247.92.174]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CA27DECBB872A14E9ACB23F3F9508CBF@EX793143.lan>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Received-SPF: pass (spool1: domain of sprinte.eu designates 141.95.128.206 as permitted sender) client-ip=141.95.128.206; envelope-from=julien.blanc@sprinte.eu; helo=mail.sprinte.eu;
+Authentication-Results: spool.mail.gandi.net;
+	dkim=none;
+	spf=pass (spool.mail.gandi.net: domain of julien.blanc@sprinte.eu designates 141.95.128.206 as permitted sender) smtp.mailfrom=julien.blanc@sprinte.eu;
+	dmarc=none
 
-
-Russell Johnson <russell.johnson@kratosdefense.com> writes:
-
-> [[S/MIME Signed Part:Undecided]]
-> I have configured one of my EVL threads to be round robbin using the
-> evl_set_schedattr call, and I have verified it is getting set properly with
-> evl_get_schedattr. However, when I run evl ps, the SCHED column still says
-> FIFO. Is this expected?
->
-
-Yes, it's a short-coming of the EVL routine exporting the scheduling
-information via the /sysfs interface. As a matter of fact, a thread
-which undergoes the RR policy is actually managed as a FIFO thread, with
-the EVL_T_RRB [1] modifier set, which enables its round-robin timer
-internally.
-
-The output of evl-ps is correct but confusing.
-
-[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/blob/v6.2-evl-rebase/include/uapi/evl/thread.h#L29
-
--- 
-Philippe.
+SGkgYWxsLA0KDQpJJ20gY3VycmVudGx5IGluIHRoZSBwcm9jZXNzIG9mIG1pZ3JhdGluZyBvdXIg
+aW14NnVsbCBiYXNlZCBib2FyZCBmcm9tDQpsaW51eCA1LjQgKyBpcGlwZSArIHhlbm9tYWkgMy4y
+LjIgdG8gbGludXggNS4xNS45OC1kb3ZldGFpbDEgKyB4ZW5vbWFpDQozLjIgdHJ1bmsuDQoNCkkg
+Y2FuJ3QgZ2V0IHRoZSBmbGV4Y2FuIGRyaXZlciB0byB3b3JrLiBUcnlpbmcgdG8gYnJpbmcgcnRj
+YW4wIChyZXNwDQpydGNhbjEpIHVwIGZhaWxzIHdpdGggdGhlIGZvbGxvd2luZyBlcnJvcjoNCg0K
+WyAgIDg1Ljc4ODYzMV0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tDQpbICAg
+ODUuNzg4NjU3XSBXQVJOSU5HOiBDUFU6IDAgUElEOiAxNjkgYXQga2VybmVsL2lycS9tYW5hZ2Uu
+YzoxOTU3DQpmcmVlX2lycSsweDIzMC8weDQwOA0KWyAgIDg1Ljc4ODcyNF0gVHJ5aW5nIHRvIGZy
+ZWUgYWxyZWFkeS1mcmVlIElSUSAyNA0KWyAgIDg1Ljc4ODczM10gTW9kdWxlcyBsaW5rZWQgaW46
+IGlteF9zZG1hDQpbICAgODUuNzg4NzY2XSBDUFU6IDAgUElEOiAxNjkgQ29tbTogcnRjYW5jb25m
+aWcgTm90IHRhaW50ZWQgNS4xNS45OA0KIzEyDQpbICAgODUuNzg4NzkxXSBIYXJkd2FyZSBuYW1l
+OiBGcmVlc2NhbGUgaS5NWDYgVWx0cmFsaXRlIChEZXZpY2UgVHJlZSkNClsgICA4NS43ODg4MDFd
+IElSUSBzdGFnZTogWGVub21haQ0KWyAgIDg1Ljc4ODgyNF0gWzxjMDEwZTA4Yz5dICh1bndpbmRf
+YmFja3RyYWNlKSBmcm9tIFs8YzAxMGI2MjA+XQ0KKHNob3dfc3RhY2srMHgxMC8weDE0KQ0KWyAg
+IDg1Ljc4ODg3NV0gWzxjMDEwYjYyMD5dIChzaG93X3N0YWNrKSBmcm9tIFs8YzAxMWYxZjg+XQ0K
+KF9fd2FybisweDg4LzB4MTNjKQ0KWyAgIDg1Ljc4ODkxOV0gWzxjMDExZjFmOD5dIChfX3dhcm4p
+IGZyb20gWzxjMDhjNmEzMD5dDQood2Fybl9zbG93cGF0aF9mbXQrMHg3OC8weGFjKQ0KWyAgIDg1
+Ljc4ODk2N10gWzxjMDhjNmEzMD5dICh3YXJuX3Nsb3dwYXRoX2ZtdCkgZnJvbSBbPGMwMTczZGU4
+Pl0NCihmcmVlX2lycSsweDIzMC8weDQwOCkNClsgICA4NS43ODkwMTRdIFs8YzAxNzNkZTg+XSAo
+ZnJlZV9pcnEpIGZyb20gWzxjMDIxYTAwND5dDQoocnRkbV9pcnFfcmVxdWVzdCsweDg0LzB4OTgp
+DQpbICAgODUuNzg5MDYwXSBbPGMwMjFhMDA0Pl0gKHJ0ZG1faXJxX3JlcXVlc3QpIGZyb20gWzxj
+MDc1YjhlOD5dDQooZmxleGNhbl9zZXRfbW9kZSsweDI0Yy8weDMxYykNClsgICA4NS43ODkxMTNd
+IFs8YzA3NWI4ZTg+XSAoZmxleGNhbl9zZXRfbW9kZSkgZnJvbSBbPGMwNzU5ZDE4Pl0NCihydGNh
+bl9yYXdfaW9jdGxfZGV2KzB4ODVjLzB4OTdjKQ0KWyAgIDg1Ljc4OTE2OV0gWzxjMDc1OWQxOD5d
+IChydGNhbl9yYXdfaW9jdGxfZGV2KSBmcm9tIFs8YzAyMWFmZDQ+XQ0KKHJ0ZG1fZmRfaW9jdGwr
+MHhiYy8weDJiNCkNClsgICA4NS43ODkyMTddIFs8YzAyMWFmZDQ+XSAocnRkbV9mZF9pb2N0bCkg
+ZnJvbSBbPGMwMjJlZTFjPl0NCihoYW5kbGVfcm9vdF9zeXNjYWxsKzB4MTI4LzB4M2MwKQ0KWyAg
+IDg1Ljc4OTI2Nl0gWzxjMDIyZWUxYz5dIChoYW5kbGVfcm9vdF9zeXNjYWxsKSBmcm9tIFs8YzAx
+ZGU2ODg+XQ0KKF9fcGlwZWxpbmVfc3lzY2FsbCsweGI4LzB4MWYwKQ0KWyAgIDg1Ljc4OTMxOF0g
+WzxjMDFkZTY4OD5dIChfX3BpcGVsaW5lX3N5c2NhbGwpIGZyb20gWzxjMDEwMDI4Yz5dDQoocGlw
+ZWxpbmVfc3lzY2FsbCsweDgvMHgxYykNClsgICA4NS43ODkzNjNdIEV4Y2VwdGlvbiBzdGFjaygw
+eGMzMmM1ZmIwIHRvIDB4YzMyYzVmZjgpDQpbICAgODUuNzg5Mzg4XSA1ZmEwOiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAxMDAwMDA1MA0KMDAwMDAwMDMgNDAxYzAzMDUgYmVj
+YWNjMTANClsgICA4NS43ODk0MTVdIDVmYzA6IDAwMDAwMDAxIDAwMDAwMDAzIDQwMWMwMzA1IDAw
+MGYwMDQyIGJlY2FjYzEwDQowMDRkMWY2NCAwMDAwMDAwMCAwMDAwMDAwMw0KWyAgIDg1Ljc4OTQz
+OF0gNWZlMDogMDAwZjAwNDIgYmVjYWNiOTQgYjZmOTAwYTAgYjZmMzFhMjAgODAwMzAwMTANCjEw
+MDAwMDUwDQpbICAgODUuNzg5NDU2XSBpcnEgZXZlbnQgc3RhbXA6IDMzMTY4DQpbICAgODUuNzg5
+NDY0XSBoYXJkaXJxcyBsYXN0ICBlbmFibGVkIGF0ICgzMzE2Nyk6IFs8YzA4ZDk1Mjg+XQ0KX3Jh
+d19zcGluX3VubG9ja19pcnFyZXN0b3JlKzB4NTAvMHg1NA0KWyAgIDg1Ljc4OTUwNV0gaGFyZGly
+cXMgbGFzdCBkaXNhYmxlZCBhdCAoMzMxNjgpOiBbPGMwOGQxZTgwPl0NCl9fc2NoZWR1bGUrMHhh
+OC8weDgxNA0KWyAgIDg1Ljc4OTUzNV0gc29mdGlycXMgbGFzdCAgZW5hYmxlZCBhdCAoMjgzNTIp
+OiBbPGMwMTAxNjVjPl0NCl9fZG9fc29mdGlycSsweDMzYy8weDRlYw0KWyAgIDg1Ljc4OTU2N10g
+c29mdGlycXMgbGFzdCBkaXNhYmxlZCBhdCAoMjgzNDMpOiBbPGMwMTI0Y2M4Pl0NCl9faXJxX2V4
+aXRfcmN1KzB4MWIwLzB4MWZjDQpbICAgODUuNzg5NjAwXSAtLS1bIGVuZCB0cmFjZSAyZTBjZmRm
+NDNiZjYyNjNjIF0tLS0NCg0KDQp3aGljaCBzZWVtcyB0byBpbmRpY2F0ZSB0aGF0IHJlcXVlc3Rp
+bmcgdGhlIGlycSBmYWlsZWQuDQoNCkkgY2hlY2tlZCB0aGF0IHVzaW5nIHRoZSBzYW1lIGtlcm5l
+bCwgdGhlIGxpbnV4IGZsZXhjYW4gZHJpdmVyIHdvcmtzDQpjb3JyZWN0bHksIHVzaW5nIHRoZSBz
+YW1lIGludGVycnVwdHMgKDI0IGFuZCAyNSwgd2hlcmVhcyB3aXRoIDUuNA0Ka2VybmVsIGl0IHdh
+cyB1c2luZyAyMyBhbmQgMjQgLSBub3Qgc3VyZSBpZiB0aGF0J3MgcmVsZXZhbnQpLg0KDQpJdCB3
+YXMgd29ya2luZyBjb3JyZWN0bHkgd2l0aCBrZXJuZWwgNS40ICsgeGVub21haSwgdXNpbmcgZXhh
+Y3RseSB0aGUNCnNhbWUgZHRzIGZpbGUgYW5kIHNhbWUgeGVub21haSBjb25maWcuDQoNCkhlcmUg
+YXJlIHNvbWUgcmVsZXZhbnQgbGluZXMgaW4gdGhlIGJvb3QgbG9nOg0KDQpbICAgIDcuNDAyMDQ4
+XSBSVC1Tb2NrZXQtQ0FOIDAuOTAuMiAtIChDKSAyMDA2IFJULVNvY2tldC1DQU4NCkRldmVsb3Bt
+ZW50IFRlYW0NClsgICAgNy40MjQwNDddIGZsZXhjYW4gMjA5MDAwMC5jYW46IHN1cHBseSB4Y2Vp
+dmVyIG5vdCBmb3VuZCwgdXNpbmcNCmR1bW15IHJlZ3VsYXRvcg0KWyAgICA3LjQ0MjQxOV0gcnRj
+YW46IHJlZ2lzdGVyZWQgcnRjYW4wDQpbICAgIDcuNDQ2Mzk4XSBmbGV4Y2FuIDIwOTAwMDAuY2Fu
+OiBkZXZpY2UgcmVnaXN0ZXJlZA0KKHJlZ19iYXNlPTI5MGI3MWQ3LCBpcnE9MjQpDQpbICAgIDcu
+NDU2MzcwXSBmbGV4Y2FuIDIwOTQwMDAuY2FuOiBzdXBwbHkgeGNlaXZlciBub3QgZm91bmQsIHVz
+aW5nDQpkdW1teSByZWd1bGF0b3INClsgICAgNy40NjgyODJdIHJ0Y2FuOiByZWdpc3RlcmVkIHJ0
+Y2FuMQ0KWyAgICA3LjQ3MjIwMV0gZmxleGNhbiAyMDk0MDAwLmNhbjogZGV2aWNlIHJlZ2lzdGVy
+ZWQNCihyZWdfYmFzZT1lNzlhMjlmZSwgaXJxPTI1KQ0KWyAgICA3LjQ4NjI2Ml0gTkVUOiBSZWdp
+c3RlcmVkIFBGX1BBQ0tFVCBwcm90b2NvbCBmYW1pbHkNClsgICAgNy40OTE4ODddIGNhbjogY29u
+dHJvbGxlciBhcmVhIG5ldHdvcmsgY29yZQ0KWyAgICA3LjQ5ODI0Nl0gTkVUOiBSZWdpc3RlcmVk
+IFBGX0NBTiBwcm90b2NvbCBmYW1pbHkNClsgICAgNy41MDMzMjFdIGNhbjogcmF3IHByb3RvY29s
+DQpbICAgIDcuNTA3MDI4XSBjYW46IGJyb2FkY2FzdCBtYW5hZ2VyIHByb3RvY29sDQpbICAgIDcu
+NTEyMjE2XSBjYW46IG5ldGxpbmsgZ2F0ZXdheSAtIG1heF9ob3BzPTENCg0KSSBmaW5kIHRoZSBy
+ZWdfYmFzZSB2YWx1ZSByYXRoZXIgc3RyYW5nZSAod2l0aCA1LjQgaXQgd2FzIGp1c3QgaWlyYw0K
+IihwdHIpIiwgc28gaSBkb24ndCBoYXZlIHNvbWV0aGluZyB0byBjb21wYXJlIHdpdGgpLg0KDQpJ
+IG11c3Qgc2F5IGknbSBhIGJpdCBvdXQgb2YgaWRlYXMgaGVyZS4gQW55IGFkdmljZSBvbiBob3cg
+dG8gZnVydGhlcg0KZGVidWcgdGhpcyB3b3VsZCBiZSBncmVhdGx5IGFwcHJlY2lhdGVkLiBIZXJl
+J3MgdGhlIG91dHB1dCBvZg0KDQojIGNhdCAvc3lzL2tlcm5lbC9kZWJ1Zy9pcnEvaXJxcy8yNA0K
+aGFuZGxlcjogIGhhbmRsZV9mYXN0ZW9pX2lycQ0KZGV2aWNlOiAgIChudWxsKQ0Kc3RhdHVzOiAg
+IDB4MDAwMDAwMDANCmlzdGF0ZTogICAweDAwMDA0MDAwDQpkZGVwdGg6ICAgMQ0Kd2RlcHRoOiAg
+IDANCmRzdGF0ZTogICAweDEzMDMwMDA0DQogICAgICAgICAgICBJUlFfVFlQRV9MRVZFTF9ISUdI
+DQogICAgICAgICAgICBJUlFEX0lSUV9ESVNBQkxFRA0KICAgICAgICAgICAgSVJRRF9JUlFfTUFT
+S0VEDQogICAgICAgICAgICBJUlFEX1NJTkdMRV9UQVJHRVQNCiAgICAgICAgICAgIElSUURfREVG
+QVVMVF9UUklHR0VSX1NFVA0KICAgICAgICAgICAgSVJRRF9IQU5ETEVfRU5GT1JDRV9JUlFDVFgN
+Cm5vZGU6ICAgICAwDQpkb21haW46ICA6c29jOmJ1c0AyMDAwMDAwOmdwY0AyMGRjMDAwDQogaHdp
+cnE6ICAgMHg2ZQ0KIGNoaXA6ICAgIEdQQw0KICBmbGFnczogICAweDgwMA0KIHBhcmVudDoNCiAg
+ICBkb21haW46ICA6c29jOmludGVycnVwdC1jb250cm9sbGVyQGEwMTAwMA0KICAgICBod2lycTog
+ICAweDhlDQogICAgIGNoaXA6ICAgIEdJQy0wDQogICAgICBmbGFnczogICAweDgxNQ0KICAgICAg
+ICAgICAgICAgICBJUlFDSElQX1NFVF9UWVBFX01BU0tFRA0KICAgICAgICAgICAgICAgICBJUlFD
+SElQX01BU0tfT05fU1VTUEVORA0KICAgICAgICAgICAgICAgICBJUlFDSElQX1NLSVBfU0VUX1dB
+S0UNCg0KDQpJdCBsb29rcyBsaWtlIHRoZSBpbnRlcnJ1cHQgaXMgbm90IGVuYWJsZWQgYXQgdGhl
+IGhhcmR3YXJlIGxldmVsLCBhbmQNCmZvciBzb21lIHJlYXNvbiB0aGUgZHJpdmVyIGZhaWxzIHRv
+IGVuYWJsZSBpdC4NCg0KUmVnYXJkcywNCg0KSnVsaWVuDQo=
