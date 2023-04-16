@@ -1,81 +1,75 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9297E8
-	for <xenomai@lists.linux.dev>; Sun, 16 Apr 2023 08:48:45 +0000 (UTC)
-Received: from relay11.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::231])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 62AD2C1F41
-	for <xenomai@lists.linux.dev>; Sun, 16 Apr 2023 08:35:07 +0000 (UTC)
-Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 7C1B0100004;
-	Sun, 16 Apr 2023 08:34:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1681634098;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OlDXRbrW6hDN6V/KzYwhIr9qSZCl+cBhFL5ylxyQeEc=;
-	b=jvpp7E+NVmuLo0jNb0f7HOpfwPK5rFTnb6xn2gRbzR0hMB6ZMe7roxpoUsR6EhKsqn9b09
-	ovrT+qb8CtQtfsl7NR+y3gdbgHRMNWd9KIHEHEDMZXWKkMtS3Fhx24BfXuET323sdiWabS
-	SfFqp9hN8p7eYzFwP9J1U/81Pw3tjc8lxnqZPAnrCYmMKj22+K/GLV9scVm5aKDwREimBL
-	PlxF0EFH+qWA3Fm/c0nXrwW6xEmoIuBBVjmoHTGT7jPqExCus6MWGJRHNEd1564GurnWQH
-	WF5wsFwioG7Ld/vFH7AIKID/VwCVX/sVWbsxI+UYcOlLDgY3kPKdgKDAp49IDw==
-References: <20230412170927.80793-1-d.sanz@ecler.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Dani Sanz <sbrk.modules@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH] spi: bcm2835: fix NULL pointer deref for OOB transfers.
-Date: Sun, 16 Apr 2023 10:31:42 +0200
-In-reply-to: <20230412170927.80793-1-d.sanz@ecler.com>
-Message-ID: <87edokb4y7.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E2E6139A
+	for <xenomai@lists.linux.dev>; Sun, 16 Apr 2023 09:13:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 9068964551BD;
+	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id cuF4QKfiOp-0; Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 2B61864551DF;
+	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id Kq1heE5Z7tgU; Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 0EA1C64551BD;
+	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
+Date: Sun, 16 Apr 2023 11:03:17 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: aaron <aaron@sigma-star.at>, xenomai <xenomai@lists.linux.dev>, 
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Message-ID: <701402089.81094.1681635797935.JavaMail.zimbra@nod.at>
+In-Reply-To: <0443c031-46cd-de1d-6d16-acd656b90832@siemens.com>
+References: <20220413215819.22954-1-richard@nod.at> <20230406103341.2914-1-aaron@sigma-star.at> <8ee4086e-580d-3d15-cade-4d983c86e402@siemens.com> <0443c031-46cd-de1d-6d16-acd656b90832@siemens.com>
+Subject: Re: [PATCH v3 0/11] Revive alchemy, pSOS and VxWorks tests
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: Revive alchemy, pSOS and VxWorks tests
+Thread-Index: J69FVOOzyVr4XsNFi5MXRkZyKTEmiQ==
 
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+>> ...but it does hook up with smokey, thus will not run as part of
+>> xeno-test and our CI. Please fix that - after either resolving the
+>> remaining broken tests or disabling them for now. It should be easy to
+>> spawn the new tests as separate processes from a smokey instance and
+>> visualize their results as part of smokey.
+>>=20
+>=20
+> BTW, mutex1 from alchemytest fails for me, all other alchemy tests are fi=
+ne.
 
-Dani Sanz <sbrk.modules@gmail.com> writes:
+Not sure whether this is related, but on Thursday I ran into a bug in rt_mu=
+tex_create(),
+it returns also positive error numbers.
+This seems to be the fix:
 
-> From: Dani Sanz <sbrk.modules@gmail.com>
->
-> There was a problem when calling ioctl(fd, SPI_IOC_ENABLE_OOB_MODE,
-> oob_spi_setup) to use spidev in OOB mode after setting up the spidev.
->
-> The kernel crashed because on function
-> bcm2835_spi_start_oob_transfer(struct spi_controller *ctlr, struct
-> spi_oob_transfer *xfer), it tried to access bs->slv->prepare_cs,
-> however bs->slv was NULL.
->
-> This patch sets the bs->slv value to the correct bcm2835_spidev object
-> during bcm2835_spi_setup(struct spi_device *spi), so the NULL pointer
-> dereference that happened later is avoided.
->
-> Signed-off-by: Dani Sanz <sbrk.modules@gmail.com>
-> ---
->  drivers/spi/spi-bcm2835.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/spi/spi-bcm2835.c b/drivers/spi/spi-bcm2835.c
-> index 2626abfc0a5b..1051482df945 100644
-> --- a/drivers/spi/spi-bcm2835.c
-> +++ b/drivers/spi/spi-bcm2835.c
-> @@ -1244,6 +1244,8 @@ static int bcm2835_spi_setup(struct spi_device *spi)
->  
->  		spi_set_ctldata(spi, slv);
->  
-> +		bs->slv = slv;
-> +
->  		ret = bcm2835_spi_setup_dma(ctlr, spi, bs, slv);
->  		if (ret)
->  			goto err_cleanup;
+diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
+index f8933858647a..5836af59f05e 100644
+--- a/lib/alchemy/mutex.c
++++ b/lib/alchemy/mutex.c
+@@ -133,7 +133,7 @@ int rt_mutex_create(RT_MUTEX *mutex, const char *name)
+ =09pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
+ =09/* pthread_mutexattr_setrobust() might not be implemented. */
+ =09pthread_mutexattr_setrobust(&mattr, PTHREAD_MUTEX_ROBUST_NP);
+-=09ret =3D __RT(pthread_mutex_init(&mcb->lock, &mattr));
++=09ret =3D -__RT(pthread_mutex_init(&mcb->lock, &mattr));
+ =09if (ret) {
+ =09=09xnfree(mcb);
+ =09=09goto out;
 
-This bug has been there for quite some time it seems. Merged into
-5.15.y, 6.1.y and 6.3, dovetail and evl trees. Thanks for looking into
-this.
-
--- 
-Philippe.
+Thanks,
+//richard
