@@ -1,75 +1,72 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E2E6139A
-	for <xenomai@lists.linux.dev>; Sun, 16 Apr 2023 09:13:02 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 9068964551BD;
-	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id cuF4QKfiOp-0; Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 2B61864551DF;
-	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id Kq1heE5Z7tgU; Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 0EA1C64551BD;
-	Sun, 16 Apr 2023 11:03:18 +0200 (CEST)
-Date: Sun, 16 Apr 2023 11:03:17 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B55AC2C3
+	for <xenomai@lists.linux.dev>; Sun, 16 Apr 2023 09:51:12 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id 6339020004;
+	Sun, 16 Apr 2023 09:51:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1681638663;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7P8yZRZtWMksH8QyAS0hJb7w8JklHrtV70/vr6S61Xs=;
+	b=hxI7iMwVJkgJCnX2Pq8jvTLUrZlc86st7tq4zVHgU91Z3zk8DCfmSQeH24seOmtDDi6d7V
+	7CFnnOm3kPeVbjtnDmVXdEvY8Tsl3UeUApetJSuY3GmftcmM050S7kYPeQVt/jTLPHkNzH
+	r1Bq0oavVADonCjORG1VO/qGa/2kLHxjHoBVdhWHzcIxIM7Rf3fYyG6YamGgeqCunlMBym
+	y8VVW/s+ZJpjY6tg69cDmoltCVH+22Wtmu0Zn0Q14hHJ7stZ48DC3ZBohg0FOj+tz1ifuz
+	fUlSBuDVPuiZvHfU2rYDL6E/rSfKQD/F9lzd3u4gLw1DlDzvdnifGK3eeLZHBQ==
+References: <d9608046-cbd4-ebd2-c440-d668e47c471f@siemens.com>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: aaron <aaron@sigma-star.at>, xenomai <xenomai@lists.linux.dev>, 
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <701402089.81094.1681635797935.JavaMail.zimbra@nod.at>
-In-Reply-To: <0443c031-46cd-de1d-6d16-acd656b90832@siemens.com>
-References: <20220413215819.22954-1-richard@nod.at> <20230406103341.2914-1-aaron@sigma-star.at> <8ee4086e-580d-3d15-cade-4d983c86e402@siemens.com> <0443c031-46cd-de1d-6d16-acd656b90832@siemens.com>
-Subject: Re: [PATCH v3 0/11] Revive alchemy, pSOS and VxWorks tests
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: tracing: irq_pipeline: skip RCU check if oob
+Date: Sun, 16 Apr 2023 10:59:35 +0200
+In-reply-to: <d9608046-cbd4-ebd2-c440-d668e47c471f@siemens.com>
+Message-ID: <875y9w9mux.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: Revive alchemy, pSOS and VxWorks tests
-Thread-Index: J69FVOOzyVr4XsNFi5MXRkZyKTEmiQ==
+Content-Type: text/plain
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
->> ...but it does hook up with smokey, thus will not run as part of
->> xeno-test and our CI. Please fix that - after either resolving the
->> remaining broken tests or disabling them for now. It should be easy to
->> spawn the new tests as separate processes from a smokey instance and
->> visualize their results as part of smokey.
->>=20
->=20
-> BTW, mutex1 from alchemytest fails for me, all other alchemy tests are fi=
-ne.
 
-Not sure whether this is related, but on Thursday I ran into a bug in rt_mu=
-tex_create(),
-it returns also positive error numbers.
-This seems to be the fix:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
-index f8933858647a..5836af59f05e 100644
---- a/lib/alchemy/mutex.c
-+++ b/lib/alchemy/mutex.c
-@@ -133,7 +133,7 @@ int rt_mutex_create(RT_MUTEX *mutex, const char *name)
- =09pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
- =09/* pthread_mutexattr_setrobust() might not be implemented. */
- =09pthread_mutexattr_setrobust(&mattr, PTHREAD_MUTEX_ROBUST_NP);
--=09ret =3D __RT(pthread_mutex_init(&mcb->lock, &mattr));
-+=09ret =3D -__RT(pthread_mutex_init(&mcb->lock, &mattr));
- =09if (ret) {
- =09=09xnfree(mcb);
- =09=09goto out;
+> Hi Philippe,
+>
+> I just found changes like [1] in dovetail, something I did for I-pipe as
+> well [2]. But, as I wrote in the I-pipe commit, there it was laziness
+> combined with carefulness. I don't think we need that laziness at least
+> in dovetail and fix that issue properly (rcu_nmi_enter/exit on oob
+> entry/exit?). Or what were your thoughts?
 
-Thanks,
-//richard
+Currently, when running oob, RCU is forced to watch by rcu_read_lock()
+which calls ct_nmi_enter() as its prologue, hence the laziness in the
+tracepoint.
+
+But, this somewhat defeats the "lightest-weight conceivable read-side
+primitives" mantra of RCU, this looks more of a workaround than a fix,
+so I'm not happy with that stuff.  We should rather make the inband
+kernel consider the oob context on a CPU as an ongoing read-side
+critical section RCU-wise, just like common preemption-disabled sections
+are these days. This would have two upsides:
+
+- making all these oob-specific exceptions to checking that RCU is
+  watching plain useless, by telling RCU to _always_ watch an oob
+  context as an ongoing NMI, not solely while running a pipeline entry
+  like today.
+
+- generally enabling the read-side protection for the oob context, while
+  leaving the QSBR work to the in-band context.
+
+However, we must be sure not to leak oob read-side sections into the
+inband context, i.e. being cautious about oob -> inband transitions, and
+perhaps more tricky issues.
+
+-- 
+Philippe.
