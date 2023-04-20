@@ -1,1017 +1,280 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2066.outbound.protection.outlook.com [40.107.20.66])
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2083.outbound.protection.outlook.com [40.107.14.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80DB02F22
-	for <xenomai@lists.linux.dev>; Thu, 20 Apr 2023 08:04:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B55E533D5
+	for <xenomai@lists.linux.dev>; Thu, 20 Apr 2023 08:13:02 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TrXzfWK9CCDL7C+GOdKo0aWR1sXi8nSHVe7Z4K1RDNygqMitagSo3fGJ9/si3EDKTCCT9nyF0a1I+iRtF6TLAS3N9LtpQ2Zc+z5Gq/DZKug3J2NGwX+58o4qRAUg40wDF2ql+FggaFwWP7ahygdmu0Bf6T8kggYumRw9Mz5aGRqmcVH2+Y6/APF6TMzuoRhLy1lUY1gQGLm2yZuPxciMEyRA0g8gyXYnW8eWZ/sz1KQXMNVsFRKv9rc71iiWio9W28WZUcupOzL7M/VwypToUJ/NqRuK07lswu87avyz4v9NGq+1pmvIt0rUxMpiSpSbZpNVur63sVNDAQI7ZTpmGw==
+ b=KFynQI8BJRYOVCjpl+dns0E4/fir+htbD9iiRtpaW3aIgccK1uwAb4PXn+V9WolQqQesdSLWPCX3XQG+rO4gfIfdcQUbYruBmqVaOfvRlfr2c+4extWaTx6zphZLPv8g/HWPHssiHAJBOBC6ZW4qDpJmsD9rIpWWDTskEVR992CSLIYRyo03C9rwIgwA/oP8uGoW97IarxUzXRRAM3AY3J0YMLe3i2VAMcqUYiTczHJ0JTBbbjfHddkG3BwecHANjlbUpLHBK/dluIZpCYoyJ6LUfRDCtl5LiIWJ1djIe6fK+lq7lMG8eL6DPmRoyHRUAMzgyc+l2OfSSd8E9lStJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NtX/udd2MgT2cGwdnFuYprj8LrYThGkFveV6iKVdpkI=;
- b=jldtgeTWG1+mmBJEYJbN3OdQd4mMRBry2rX64AMWzVfAqu1joDqIQMfxrJriUhD7dH67gTL9jgWeEbrwjOJJffNQwbp44hM3K3Zp9MxHp0a95XlVaS6EmPbIv3C6KWfLsZNz3xz5agyQbJmy83P5i5huvNHAfo3UIRwQayqr1pgvuvVSeZZ1eoIu4bzb33Bmc/A4venFwHZ1y+b0YkEu+VFO/k7/T49mDb+B3tM8XFMmdn183iVkU26UbJBmJvv/L2Ulyzyu/Nl3VKGOkImTOtA0s9pHjvLfpsCItn/cUzNbGMVyv98NRecP7vvxX2IrOC3DI4930cRk4Gqz4tZ81Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.74) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=siemens.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
+ bh=hf2wpAuoBYeWxMwHSpx/rFgVXgWDS/OOwX5EPBb4noc=;
+ b=S0EuAZLN8O8UybQNlVTK7tkQyciiilknavKCzAiEt+SlVB3Zi+Wz653bIXoOoM+/ln/UsCOf+WKomNGv6/yNz/xV/iTcCGfmtZ6FqzM1OadQADv31aCgmgYmMEAVlD6sLDKFAwqWhBq1p2OMq4G+OBmfpA60K53azpU0ORI0qxmpvX9dap35Fx+6NsJwzlOzOUhm0DPgziKnciX6W8CAC3nf5s0lNwSnzGWbxj8VlPEApKrkUg7Bb8hpyGg7WTH1txutV4Es7130G498WM3mw0HV4sBN9EaYSbd4VcQE820MIfQi89NVgKVYt686tlbx7g1KYA/tvuFd+rrbQ3xQdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NtX/udd2MgT2cGwdnFuYprj8LrYThGkFveV6iKVdpkI=;
- b=qC3gl80DqkBSUil/mMb8R/MZfapbaZKLvbeeRChTcMzyOIep4ulYLx8/R1ljEn2ER+6ooR+QsELpKi7d9iX9PsW436i3eLELayxr5VSMYwm1/a8v/tFD8Yk7yhu3WZ9hHqiHV6HYgJDVG6xPGzuvn6auP/W7qMpr4f0272NnhtBj/ftjwYR2boJa7xIhcGRFsgdvcSvwmr6i1S1kylbxSbZv1XflcQg3tAquvA6vVLez+HSYrMb5FT3XwJbZ4YCsD63Ss5PsJyj6BydPRMflFj6MGTn7aaLiP/f6skPZUdP4lIY44iRvLrQAFQsS2vI7kR7d14aZQ6WZqgljudTZXQ==
-Received: from ZRAP278CA0012.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::22)
- by DU2PR10MB7648.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:490::21) with
+ bh=hf2wpAuoBYeWxMwHSpx/rFgVXgWDS/OOwX5EPBb4noc=;
+ b=YR7B3/r0NMNZWdSIw0lJAvTmNDfAavZXieisWQEJhezBp77rnOE/mtcDXmnVWyu7IzmpHxRqLgxOSF0Jmu6QrnuKCr3AdstzuuNdqHPRrcPAAERB/y0PTraNu9DOFykBDouG6Cl1+8XFzWhZm1bAZwqU8dG6LTwuGkzmYTEerTz5PUAHuel4qYhtQYfXFuUJiMOFT8nZ7HjhfYhgYyu3nPzrfmYN5CzTmPiLXqlpSRhN1NjIotQoFbrlwj3C9MGFP+C+D9plvIRX76R0sJMUQjHcJ7lYvQfgc89pZQzWQMEPqAxG8IX8yPpgyNpzOUDpXRy0hrckpBxL+TylHH0cpw==
+Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
+ by DB9PR10MB5233.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:33e::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.21; Thu, 20 Apr
- 2023 08:04:10 +0000
-Received: from VE1EUR01FT083.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:910:10:cafe::30) by ZRAP278CA0012.outlook.office365.com
- (2603:10a6:910:10::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.24 via Frontend
- Transport; Thu, 20 Apr 2023 08:04:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.74)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.74 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.74; helo=hybrid.siemens.com; pr=C
-Received: from hybrid.siemens.com (194.138.21.74) by
- VE1EUR01FT083.mail.protection.outlook.com (10.152.3.59) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.20 via Frontend Transport; Thu, 20 Apr 2023 08:04:09 +0000
-Received: from DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) by
- DEMCHDC8VQA.ad011.siemens.net (194.138.21.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 20 Apr 2023 10:04:09 +0200
-Received: from L15-Gen2.fritz.box (167.87.31.19) by
- DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 20 Apr 2023 10:04:07 +0200
-From: "T. Schaffner" <tobias.schaffner@siemens.com>
-To: <xenomai@lists.linux.dev>
-CC: <jan.kiszka@siemens.com>, <johannes.kirchmair@sigmatek.at>,
-	<richard@nod.at>, Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH] testsuite: Add exception handling tests to smokey
-Date: Thu, 20 Apr 2023 10:03:52 +0200
-Message-ID: <20230420080352.2403887-1-tobias.schaffner@siemens.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <c5238f77-0f7a-34eb-6e8c-ef7bfb6908bb@siemens.com>
-References: <c5238f77-0f7a-34eb-6e8c-ef7bfb6908bb@siemens.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.10; Thu, 20 Apr
+ 2023 08:12:59 +0000
+Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::465d:c1a1:7546:505e]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::465d:c1a1:7546:505e%3]) with mapi id 15.20.6319.021; Thu, 20 Apr 2023
+ 08:12:59 +0000
+From: "Schaffner, Tobias" <tobias.schaffner@siemens.com>
+To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>, "Kiszka, Jan"
+	<jan.kiszka@siemens.com>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: [PATCH 1/3] rtsignals: part one, core code plus x86
+Thread-Topic: [PATCH 1/3] rtsignals: part one, core code plus x86
+Thread-Index: AQHZLK5GWll5Z5sU9ESSXovCDUVHoK6nI7SAgAALSwCAi7eNgIABf+wA
+Date: Thu, 20 Apr 2023 08:12:59 +0000
+Message-ID: <7068a747-8125-61ba-7d64-ec08259dec9a@siemens.com>
+References: <20220707135952.5171-1-johannes.kirchmair@sigmatek.at>
+ <20220707135952.5171-2-johannes.kirchmair@sigmatek.at>
+ <327d7547-3485-1aa4-c686-60e81d4885e1@siemens.com>
+ <VE1PR08MB490960CBB789FC9F26E4210192829@VE1PR08MB4909.eurprd08.prod.outlook.com>
+ <39d68bfe-f2ba-a183-f8d9-d477d696ffcd@siemens.com>
+ <VE1PR08MB4909574295D8F9CE21C7DFB092C59@VE1PR08MB4909.eurprd08.prod.outlook.com>
+ <35f36456-ee3a-12e6-3f90-83a1047aeb2c@siemens.com>
+ <VE1PR08MB4909CA10A9C7E767BA97C2FA92629@VE1PR08MB4909.eurprd08.prod.outlook.com>
+In-Reply-To:
+ <VE1PR08MB4909CA10A9C7E767BA97C2FA92629@VE1PR08MB4909.eurprd08.prod.outlook.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AS2PR10MB6349:EE_|DB9PR10MB5233:EE_
+x-ms-office365-filtering-correlation-id: 0ceda968-9300-40bf-fa9e-08db41770dfd
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ V91MRMdhHsr2H24CwiixecIDzjwFgdGTQdpabAHVWk+aNEd95WlZUS9HRf+QZeLFc8v46eGo86qKtxvHEqnZnW1ezwEg2lnv8urFOElDqho2r5U9M3OpnmOT6r+8cPu5+4Qm9xR8zOzAQdgU7tMWR+Xs/h8isBP/Et207QZvC6mNTxp4Q6HOhsuDnGOrdtjo8oe71SUuXZBjrcAgED6j7sTD9LeaBXH9SlLBYP0wxg+O4gooM4reOty1eOzM9S1sPi5fNa+arVXnT3zJbKEo4lbcALFF1M0VqA1iRaPv1+5oS1It93xsjcXV9eMPDGsRmyhbopKCTASFsQ2Y/3du3Me2yiNd5UrS/OccbBfEhMGd7S6JV0iRPeA5jaxvAXFv4+6KgtRtdpkY6HwUAT0ntvj6PWCLIeFt+dw3scRncOTkHt6f8jk/CpfFELdcnI29yPX3qxvPHDBfc9BJJMeNte7DAkVxvtqfGzD+IV7u3EaI4ANIc/lpIGtgY8hKR5FBDbuy5QlbSM35pqHsuoZU/2rHduAOyDPTb1/JwqCZ0swz5Z0RF6YzrANhKxQpBx7oQo0213OOle1lUlAUXj9WMu4S9fbqO4jjUZbRV98NRAb/Fuu42ZhspEZ4Lbs7tF5jhncAROYa60wjvnwS0N5XdA==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(451199021)(38100700002)(38070700005)(8676002)(8936002)(5660300002)(2906002)(36756003)(86362001)(31696002)(6486002)(71200400001)(26005)(110136005)(6636002)(478600001)(2616005)(31686004)(83380400001)(66574015)(53546011)(6506007)(6512007)(186003)(4326008)(66556008)(66446008)(66476007)(91956017)(66946007)(76116006)(41300700001)(64756008)(82960400001)(316002)(122000001)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?cjdLQzl2bndoVjdFd29jR3hmTG9Qa0h1MjZpM05hVEN6cGtjUVQxSkdXYmJu?=
+ =?utf-8?B?K2VhV0JxUjNQU1VSQ1Q5ZVJkRDFZVzU4TXRnZnh1YTNCVEIvUkRaSnlhRHdz?=
+ =?utf-8?B?UDM5Y2k3Y2xYRFFGMG9scDJBbVpZMzZxZElreEtpdllGNVlQZGJTdkVsQTIy?=
+ =?utf-8?B?THhEL1hnNWhtanFURlcyVHJzOU9GeHY3OUZ2VkthODZsMGlZdGdna3BqVTB3?=
+ =?utf-8?B?ZkEyUmorQkowelRsbGhrYmZXN2ltRDFjOU1ZQkhORWl5ZG5PTjJJdDl4UG5I?=
+ =?utf-8?B?UVgwVGtQczc0NDl6bkhSZkdGUmJBY3VTZUNVK3lrSnV3aXdzRnVRNGo3ZHd3?=
+ =?utf-8?B?TFdKOHZsN2FsODJud216cHlYWUtHZ3ROc0tXSlZXT0N1TGU4OGNMNCtYK2ZR?=
+ =?utf-8?B?WXVWaW9qdUpaME82eTBudVNwVlNseTZhVkNCcnY3Z1g1S1V6QlJLSHVJU09k?=
+ =?utf-8?B?STFoRzlsMXlSUURqVXp1d3cwVFF6T2dxRzVLU2RYRkpVSFVvY2NvM0VFS0lk?=
+ =?utf-8?B?ODFGWnJaTHk4NkVXTFJaeTJJR21CZHBKQ1V5U241eisxcmViNU1aRzZYKzZn?=
+ =?utf-8?B?MzJxTVRhZ0ZRNnBhS3NaWTZ1Um45Q1RxZXZKcVFhMHZML1VIUk1OdG5OSmQz?=
+ =?utf-8?B?bGVoUXhXTldzUDZLVGgyQjdNMmozL1ZlSHFsZTQwSENsWVBseFYwZDg2NzBK?=
+ =?utf-8?B?UHM0S1I4dDJJRUlIS1hUODdPUTBKMENhNDhsZ21vbU5zelBock5vUmhUZVNn?=
+ =?utf-8?B?NjVBbVU1UFliMC9VTWRoRWt0eStwOE9xTkdkVW5wWHFRUjdDQTJkeFI3Rmpq?=
+ =?utf-8?B?MTI5Qlppbk9aNEQ4d0FqVlZhdFlNV3QxVE84dkJYZWtlcWt2dHBtUkpWUHN1?=
+ =?utf-8?B?NUttTGk4Tit0QWoyMVRHb05vZmU3VUZWYmtxU25rYk01R2VJSVFYMHlGRG5I?=
+ =?utf-8?B?MFRDL2x1SDhOeXl5Nm1za2dkUHZCY2RIQklYcXhXeEZRWE9jVDFFcmk5bkVF?=
+ =?utf-8?B?enBwTGFjNEdSUC9WV1Y1YjBkQktjM2p0Y0FEQ0kvNTY2ZnBUcnVnQmpsdGx0?=
+ =?utf-8?B?cVpzak1jV3FWMXk2aVQra3pQcFV1SnJGWXdzTVdGV1h3d2xUZnBiK2Y5RTJH?=
+ =?utf-8?B?SStRaDBXQ2pwSGRuSkZkOWJLdmluQnhwSGlqZ1RXY1d0SDJmU2VyK29BNVpP?=
+ =?utf-8?B?azk5dDhMNmdIVUFsdlFrVUx0RVI2cHJ6aWovNFF2dmlKckJMdnpzdjBYVHN1?=
+ =?utf-8?B?bFJ6TG40aWt2ZTRHL2lUS1dlV28zWUxaRy9FUGRCaDlma2M4b1ord05id1E1?=
+ =?utf-8?B?MVo2MzErUEY3aC9DY1dLZ0ozZ01aQTZVcStObVZwQThzdUhDNmVUZ1R4Nm4x?=
+ =?utf-8?B?V0Z5WVJTK3Vad3hhWENUUmpXUzNicmpYdEJ1N3dLTGtWaUdaV0w1SGJGcWdE?=
+ =?utf-8?B?bmcxSDBIWSs1c0g5QkJRSGNSWVZXQVowZzZmRmRteVNKN1VQWWJWOEMxOGhz?=
+ =?utf-8?B?UWlYK3c5MTNoZDhNdjhqYUx3TWs2Sm5MeHdQY3pJcFUxZ0pQRldubElBM3Z6?=
+ =?utf-8?B?UUdRQmZFZU1CUmhsWUI5VWJGcTNkNUVTNWxWRjJlL1J0d2N1ZTlodCtNQVFh?=
+ =?utf-8?B?dEx5cCtnVHIvV3pIS1J1RDJKVTdhcDArRGxNV2tWZlBCRnZaWUVLY2liZDBQ?=
+ =?utf-8?B?bWI0M3dBSnVkSDJoL1NjSVJzOFFTb2o2aXV4eWcyYUlFOThBNkFxejF4Sndt?=
+ =?utf-8?B?VHRBMWx3RjgxZ0c5YzZtMGJFcUxLNjJaZFkzQVpsRithVFA3RjNNVE1GVi83?=
+ =?utf-8?B?aDVxSVBYcUlrR1ppaUV1MXZkZXpnY1d0L1JKUWVRVlRNdXhCSzloeG5PSVg0?=
+ =?utf-8?B?MnEybDQ0YWRmcFdCS3pnTmJ2K3ZVeWlIaDJKRVJ6d0w1S2dxdzRURTdHaHFW?=
+ =?utf-8?B?NjFQZFNpbkx3UkhhbEZhOU1Ga0VOZzU2Uy8vR1lFbW03V0Jod2ZnVDk1dFUw?=
+ =?utf-8?B?N3hxaW1DRGFFM3ZLdGRLKysxV0c1VktwSGN3MnlGaEFNaVJVZjA0OWFIOVQ4?=
+ =?utf-8?B?eE5sVm8xWmNUNHQ4ODlNSW5HT2FaK1FOSmpvc2NMM3phM1FzYmJ2MGR4Nkc4?=
+ =?utf-8?Q?8rPPRfmHXBjlGuNpxCx5i2eHd?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5912F631D3241440A4A13BC26D54CBE2@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [167.87.31.19]
-X-ClientProxiedBy: DEMCHDC8WAA.ad011.siemens.net (139.25.226.104) To
- DEMCHDC8WAA.ad011.siemens.net (139.25.226.104)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VE1EUR01FT083:EE_|DU2PR10MB7648:EE_
-X-MS-Office365-Filtering-Correlation-Id: ad24c569-3b77-4fbe-365e-08db4175d234
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	bXBimI3sCEpgtaZRLmgaStcV4tqjcRo3a2SG9AJpHCId/T0/OhocNO/Xxy769DD1kjobvj9cqzQDrF7TvdmjtYIAvfb6FAl9fUhcr0DTeD0B31sURMg/AubViohQ513W7bHu5o+E3en9YiwKJwKGyQ0abqAlqnzUQdR1ziRalHUU01s6KstxJSgfWEgIOIMYBLEMz7h1aEeBR6TYHdkf3mCqqnMGaHU61qCy4iBpTgcul+3ggjwNvxm28oxa6JSaekDLkmxsHOgg9/C/1UMiPy3iIIA0gqmdaSR1MEP+7pazDso7MbDscY/5pkn/Mhc6o818TMuv/l376tgxvCgmmLa+uXsElq8U/FVx+2NR7uU7q4D/2bH6/Y1rvyRlWPQbY4CA3QtVBRtlsVYSCcIKZiMWUNd4HIqyVpMyRGY8Sur4XNn1W2wk8kEa9DbeGPBTIWkhWFVxcijRGieRwXo9MAT2Y51qco9aC5SSlw9aa8df94DBWcm04qugJt7VBDapLOk0Rn68hciT6J4bPklKexWb7qp2DYWlmr8N9kw7n0P1+Cpk/YHRq4/5N4eJOF0/D2TMRoTMNjtIx1U1S8h/vEi8YfuefhXH0iUP+bwxxGRAzkXgq/TS8WyX+Q9ogUkdIc40E7SUWoKocsYU2I2YtjysyLAnNoFQafUfrMTwizNtyRNrwVuXcaEfnZW8k74OUhnDK7e+VrSunXxOKRRnIw==
-X-Forefront-Antispam-Report:
-	CIP:194.138.21.74;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:hybrid.siemens.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199021)(40470700004)(36840700001)(46966006)(7636003)(2906002)(356005)(82960400001)(82740400003)(7596003)(5660300002)(30864003)(8676002)(8936002)(16526019)(186003)(478600001)(4326008)(6916009)(41300700001)(316002)(70206006)(36756003)(70586007)(54906003)(36860700001)(40460700003)(47076005)(83380400001)(336012)(6666004)(86362001)(966005)(40480700001)(956004)(2616005)(66899021)(107886003)(1076003)(26005)(82310400005)(2004002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 08:04:09.6048
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ceda968-9300-40bf-fa9e-08db41770dfd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2023 08:12:59.4152
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad24c569-3b77-4fbe-365e-08db4175d234
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.74];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	VE1EUR01FT083.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR10MB7648
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZuwzAKpNwuyDmYDa7qdklFBzvt4d8MuT633oDku7ikS91QkmzRQTkCqyHMUE1Z3tAtMaDcCiPxGfUU2uPCsj+Pxw474InsN7qW7ntQrctqI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5233
 
-From: Tobias Schaffner <tobias.schaffner@siemens.com>
-
-Add a testsuite that ensures that different exceptions lead to the
-designated signal described in the signal posix standard [1].
-
-Introduces tests for floating point exceptions, illegal opcode
-exceptions and segmentation faults.
-
-If setup correctly the generated signals should not lead to a migration
-but should be handled by the configured handler.
-
-Further test if signals raised while already in the signal handler are
-handled correctly with and without SA_NODEFER set.
-
-Add an additional Makefile.standalone Makefile that allows to build
-without the Xenomai kernel for reference. If build without Xenomai all
-tests should pass.
-
-[1] https://pubs.opengroup.org/onlinepubs/009695399/
-
-Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
----
- configure.ac                                  |   1 +
- testsuite/smokey/Makefile.am                  |   2 +
- testsuite/smokey/signal-tests/Makefile.am     |  15 ++
- .../smokey/signal-tests/Makefile.standalone   |  16 ++
- testsuite/smokey/signal-tests/main.c          |  51 ++++
- testsuite/smokey/signal-tests/signal_test.c   | 243 ++++++++++++++++++
- testsuite/smokey/signal-tests/signal_test.h   |  93 +++++++
- .../signal-tests/signal_test_exceptions.c     |  84 ++++++
- .../signal-tests/signal_test_exceptions.h     |  51 ++++
- .../smokey/signal-tests/signal_test_thread.c  |  61 +++++
- .../smokey/signal-tests/signal_test_thread.h  |  37 +++
- .../smokey/signal-tests/signal_test_utils.c   |  80 ++++++
- .../smokey/signal-tests/signal_test_utils.h   |  44 ++++
- 13 files changed, 778 insertions(+)
- create mode 100644 testsuite/smokey/signal-tests/Makefile.am
- create mode 100644 testsuite/smokey/signal-tests/Makefile.standalone
- create mode 100644 testsuite/smokey/signal-tests/main.c
- create mode 100644 testsuite/smokey/signal-tests/signal_test.c
- create mode 100644 testsuite/smokey/signal-tests/signal_test.h
- create mode 100644 testsuite/smokey/signal-tests/signal_test_exceptions.c
- create mode 100644 testsuite/smokey/signal-tests/signal_test_exceptions.h
- create mode 100644 testsuite/smokey/signal-tests/signal_test_thread.c
- create mode 100644 testsuite/smokey/signal-tests/signal_test_thread.h
- create mode 100644 testsuite/smokey/signal-tests/signal_test_utils.c
- create mode 100644 testsuite/smokey/signal-tests/signal_test_utils.h
-
-diff --git a/configure.ac b/configure.ac
-index db92ddcc6..0e0bd0f44 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -978,6 +978,7 @@ AC_CONFIG_FILES([ \
- 	testsuite/smokey/iddp/Makefile \
- 	testsuite/smokey/bufp/Makefile \
- 	testsuite/smokey/sigdebug/Makefile \
-+	testsuite/smokey/signal-tests/Makefile \
- 	testsuite/smokey/timerfd/Makefile \
- 	testsuite/smokey/tsc/Makefile \
- 	testsuite/smokey/leaks/Makefile \
-diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index 02613c7dc..877b16702 100644
---- a/testsuite/smokey/Makefile.am
-+++ b/testsuite/smokey/Makefile.am
-@@ -35,6 +35,7 @@ COBALT_SUBDIRS = 	\
- 	sched-tp 	\
- 	setsched	\
- 	sigdebug	\
-+	signal-tests    \
- 	timerfd		\
- 	tsc		\
- 	vdso-access 	\
-@@ -73,6 +74,7 @@ DIST_SUBDIRS = 		\
- 	sched-tp 	\
- 	setsched	\
- 	sigdebug	\
-+	signal-tests    \
- 	timerfd		\
- 	tsc		\
- 	vdso-access 	\
-diff --git a/testsuite/smokey/signal-tests/Makefile.am b/testsuite/smokey/signal-tests/Makefile.am
-new file mode 100644
-index 000000000..728a90744
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/Makefile.am
-@@ -0,0 +1,15 @@
-+noinst_LIBRARIES = libsignal-tests.a
-+
-+libsignal_tests_a_SOURCES = main.c \
-+                       signal_test.c \
-+                       signal_test.h \
-+                       signal_test_exceptions.c \
-+                       signal_test_exceptions.h \
-+                       signal_test_thread.c \
-+                       signal_test_thread.h \
-+                       signal_test_utils.c \
-+                       signal_test_utils.h
-+
-+libsignal_tests_a_CPPFLAGS = @XENO_USER_CFLAGS@ -I$(top_srcdir)/include -DXENOMAI
-+
-+CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-diff --git a/testsuite/smokey/signal-tests/Makefile.standalone b/testsuite/smokey/signal-tests/Makefile.standalone
-new file mode 100644
-index 000000000..15f7c79f3
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/Makefile.standalone
-@@ -0,0 +1,16 @@
-+# Use this Makefile to build without XENOMAI
-+
-+CC      = gcc
-+CFLAGS  = -g -pthread
-+RM      = rm -f
-+
-+default: all
-+
-+all: clean signal_test
-+
-+signal_test: *.c
-+	$(CC) $(CFLAGS) -o signal_test *.c
-+
-+clean veryclean:
-+	$(RM) signal_test
-+
-diff --git a/testsuite/smokey/signal-tests/main.c b/testsuite/smokey/signal-tests/main.c
-new file mode 100644
-index 000000000..cf3bbb39a
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/main.c
-@@ -0,0 +1,51 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#include "signal_test_utils.h"
-+#include "signal_test.h"
-+
-+#ifdef XENOMAI
-+
-+#include <smokey/smokey.h>
-+
-+smokey_test_plugin(signal_tests, SMOKEY_NOARGS,
-+		   "Test for signals on exceptions.");
-+
-+static int run_signal_tests(struct smokey_test *t, int argc, char *const argv[])
-+#else
-+int main(void)
-+#endif
-+{
-+	TEST(test_exceptions_fpe());
-+	TEST(test_exceptions_invalid_opcode());
-+	TEST(test_exceptions_segfault());
-+
-+	TEST(test_exceptions_nesting_fpe());
-+	TEST(test_exceptions_nesting_invalid_opcode());
-+	TEST(test_exceptions_nesting_segfault());
-+
-+	TEST(test_exceptions_queuing_fpe());
-+	TEST(test_exceptions_queuing_invalid_opcode());
-+	TEST(test_exceptions_queuing_segfault());
-+
-+	return signal_test_testsuite_exit();
-+}
-diff --git a/testsuite/smokey/signal-tests/signal_test.c b/testsuite/smokey/signal-tests/signal_test.c
-new file mode 100644
-index 000000000..eaefce485
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test.c
-@@ -0,0 +1,243 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#include <pthread.h>
-+#include <signal.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <sys/wait.h>
-+#include <unistd.h>
-+
-+#include "signal_test.h"
-+#include "signal_test_exceptions.h"
-+#include "signal_test_thread.h"
-+#include "signal_test_utils.h"
-+
-+static int depth, handler_calls = 0;
-+static bool wrong_thread, wrong_signal, migration, nested, do_reraise = false;
-+static void (*exception_raise_func)(void);
-+
-+static void test_signal_handler(int sig, siginfo_t *info, void *context)
-+{
-+	if (thread_id != pthread_self())
-+		wrong_thread = true;
-+
-+#ifdef XENOMAI
-+	if (sig == SIGDEBUG) {
-+		migration = true;
-+		return;
-+	}
-+#endif
-+
-+	if (sig != signal_test_exceptions_get_expected_signal()) {
-+		wrong_signal = true;
-+		return;
-+	}
-+
-+	handler_calls++;
-+
-+	if (do_reraise) {
-+		if (depth++)
-+			nested = true;
-+
-+		if (handler_calls < 3) {
-+			(*exception_raise_func)();
-+		}
-+
-+		depth--;
-+	}
-+
-+	signal_test_exceptions_recover(context);
-+}
-+
-+static int run_exception_test(int sa_flags, int signal, bool reraise,
-+			      int expected_handler_calls)
-+{
-+	struct sigaction sigact = { 0 };
-+	sigact.sa_sigaction = test_signal_handler;
-+	sigact.sa_flags = sa_flags;
-+
-+	depth = 0;
-+	do_reraise = reraise;
-+	handler_calls = 0;
-+	migration = false;
-+	nested = false;
-+	wrong_thread = false;
-+	wrong_signal = false;
-+
-+#ifdef XENOMAI
-+	ASSERT(sigaction(SIGDEBUG, &sigact, NULL), 0);
-+	ASSERT(cobalt_rt_signal(signal, test_signal_handler), 0);
-+#else
-+	ASSERT(sigaction(signal, &sigact, NULL), 0);
-+#endif
-+
-+	ASSERT(signal_test_thread_start((void *)exception_raise_func), 0);
-+	ASSERT(pthread_join(thread_id, NULL), 0);
-+
-+	ASSERT(!reraise || nested, true);
-+	ASSERT(depth, 0);
-+	ASSERT(handler_calls, expected_handler_calls);
-+	ASSERT(migration, false);
-+	ASSERT(wrong_signal, false);
-+	ASSERT(wrong_thread, false);
-+
-+	return 0;
-+}
-+
-+static void reset_signals(void)
-+{
-+	struct sigaction sigAct;
-+	sigAct.sa_handler = SIG_DFL;
-+	sigaction(SIGSEGV, &sigAct, NULL);
-+	sigaction(SIGFPE, &sigAct, NULL);
-+	sigaction(SIGILL, &sigAct, NULL);
-+#ifdef XENOMAI
-+	sigaction(SIGDEBUG, &sigAct, NULL);
-+	cobalt_rt_signal(SIGSEGV, (void (*)(int, siginfo_t *, void *))SIG_DFL);
-+	cobalt_rt_signal(SIGFPE, (void (*)(int, siginfo_t *, void *))SIG_DFL);
-+	cobalt_rt_signal(SIGILL, (void (*)(int, siginfo_t *, void *))SIG_DFL);
-+#endif
-+}
-+
-+static void setup(void)
-+{
-+	reset_signals();
-+}
-+
-+static void teardown(void)
-+{
-+	reset_signals();
-+}
-+
-+static int fork_exception_test(int *status, int sa_flags, int signal,
-+			       bool reraise, int expected_handler_calls)
-+{
-+	setup();
-+
-+	pid_t child_pid = fork();
-+
-+	if (child_pid < 0) {
-+		fprintf(stderr, "fork failed in %s:%d", __FILE__, __LINE__);
-+		return 1;
-+	} else if (child_pid == 0) {
-+		exit(run_exception_test(sa_flags, signal, reraise,
-+					expected_handler_calls));
-+	} else {
-+		waitpid(child_pid, status, 0);
-+	}
-+
-+	teardown();
-+
-+	return 0;
-+}
-+
-+static int test_exceptions(void (*exception)(void), int signal)
-+{
-+	int status;
-+	exception_raise_func = exception;
-+
-+	fork_exception_test(&status, SA_SIGINFO, signal, false, 1);
-+
-+	ASSERT(WIFSIGNALED(status), false);
-+	ASSERT(WIFEXITED(status), true);
-+	return WEXITSTATUS(status);
-+}
-+
-+int test_exceptions_segfault()
-+{
-+	return test_exceptions(&signal_test_exceptions_raise_segfault, SIGSEGV);
-+}
-+
-+int test_exceptions_fpe()
-+{
-+	return test_exceptions(&signal_test_exceptions_raise_fpe, SIGFPE);
-+}
-+
-+int test_exceptions_invalid_opcode()
-+{
-+	return test_exceptions(&signal_test_exceptions_raise_invalid_opcode,
-+			       SIGILL);
-+}
-+
-+static int test_exceptions_queuing(void (*exception)(void), int signal)
-+{
-+	int status;
-+	exception_raise_func = exception;
-+
-+	fork_exception_test(&status, SA_SIGINFO, signal, true, 3);
-+
-+	ASSERT(WIFSIGNALED(status), true);
-+	ASSERT(WTERMSIG(status), signal);
-+
-+	return 0;
-+}
-+
-+int test_exceptions_queuing_segfault()
-+{
-+	return test_exceptions_queuing(&signal_test_exceptions_raise_segfault,
-+				       SIGSEGV);
-+}
-+
-+int test_exceptions_queuing_fpe()
-+{
-+	return test_exceptions_queuing(&signal_test_exceptions_raise_fpe,
-+				       SIGFPE);
-+}
-+
-+int test_exceptions_queuing_invalid_opcode()
-+{
-+	return test_exceptions_queuing(
-+		&signal_test_exceptions_raise_invalid_opcode, SIGILL);
-+}
-+
-+static int test_exceptions_nesting(void (*exception)(void), int signal)
-+{
-+	int status;
-+	exception_raise_func = exception;
-+
-+	fork_exception_test(&status, SA_SIGINFO | SA_NODEFER, signal, true, 3);
-+
-+	ASSERT(WIFSIGNALED(status), false);
-+	ASSERT(WIFEXITED(status), true);
-+	return WEXITSTATUS(status);
-+}
-+
-+int test_exceptions_nesting_segfault()
-+{
-+	return test_exceptions_nesting(&signal_test_exceptions_raise_segfault,
-+				       SIGSEGV);
-+}
-+
-+int test_exceptions_nesting_fpe()
-+{
-+	return test_exceptions_nesting(&signal_test_exceptions_raise_fpe,
-+				       SIGFPE);
-+}
-+
-+int test_exceptions_nesting_invalid_opcode()
-+{
-+	return test_exceptions_nesting(
-+		&signal_test_exceptions_raise_invalid_opcode, SIGILL);
-+}
-+
-diff --git a/testsuite/smokey/signal-tests/signal_test.h b/testsuite/smokey/signal-tests/signal_test.h
-new file mode 100644
-index 000000000..51e945ed2
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test.h
-@@ -0,0 +1,93 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+/**
-+ * @brief Test if a segfault leads to a SIGSEGV signal.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_segfault(void);
-+
-+/**
-+ * @brief Test if a floating point exception leads to a SIGFPE signal.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_fpe(void);
-+
-+/**
-+ * @brief Test if an invalid opcode exceptions leads to a SIGILL signal.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_invalid_opcode(void);
-+
-+/**
-+ * @brief Raise a second segfault while in the signal handler. Test if the
-+ * second exception leads to process termination even if a signal handler is
-+ * set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_queuing_segfault(void);
-+
-+/**
-+ * @brief Raise a second fpe exception while in the signal handler. Test if the
-+ * second exception leads to process termination even if a signal handler is
-+ * set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_queuing_fpe(void);
-+
-+/**
-+ * @brief Raise a second invalid opcode exception while in the signal handler.
-+ * Test if the second exception leads to process termination even if a signal
-+ * handler is set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_queuing_invalid_opcode(void);
-+
-+/**
-+ * @brief Test that that a second sefault raised while in the signal handler
-+ * will be processed nested if SA_NODEFER is set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_nesting_segfault(void);
-+
-+/**
-+ * @brief Test that that a second fpe raised while in the signal handler will
-+ * be processed nested if SA_NODEFER is set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_nesting_fpe(void);
-+
-+/**
-+ * @brief Test that that a second invalid opcode exception raised while in the
-+ * signal handler will be processed nested if SA_NODEFER is set.
-+ * 
-+ * @return int 0 if the test was successfull
-+ */
-+int test_exceptions_nesting_invalid_opcode(void);
-diff --git a/testsuite/smokey/signal-tests/signal_test_exceptions.c b/testsuite/smokey/signal-tests/signal_test_exceptions.c
-new file mode 100644
-index 000000000..fa74dfb46
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_exceptions.c
-@@ -0,0 +1,84 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#include <signal.h>
-+
-+#include "signal_test_exceptions.h"
-+#include "signal_test_utils.h"
-+
-+static int expected_signal;
-+static long unsigned int return_address;
-+
-+int signal_test_exceptions_get_expected_signal(void)
-+{
-+	return expected_signal;
-+}
-+
-+void signal_test_exceptions_recover(struct ucontext *context)
-+{
-+	context->uc_mcontext.rip = return_address;
-+}
-+
-+void signal_test_exceptions_raise_segfault(void)
-+{
-+	expected_signal = SIGSEGV;
-+
-+	__asm__("leaq .label%=(%%rip),%%r15;" // Store unique label address in r15
-+		"movq %%r15,%0;"
-+
-+		"movl $0xDECAFBAD, 0x0;" // Raise SEGFAULT
-+
-+		".label%=:;" // Unique Label
-+
-+		: "=g"(return_address)::"memory", "r15");
-+}
-+
-+void signal_test_exceptions_raise_fpe(void)
-+{
-+	expected_signal = SIGFPE;
-+
-+	__asm__("leaq .label%=(%%rip),%%r15;" // Store unique label address in r15
-+		"movq %%r15,%0;"
-+
-+		"xorl %%eax, %%eax;" // Start raise FPE
-+		"movl %%eax, %%ecx;"
-+		"cltd;"
-+		"idivl %%ecx;" // End raise FPE
-+
-+		".label%=:;" // Unique Label
-+
-+		: "=g"(return_address)::"memory", "eax", "ecx", "r15");
-+}
-+
-+void signal_test_exceptions_raise_invalid_opcode(void)
-+{
-+	expected_signal = SIGILL;
-+
-+	__asm__("leaq .label%=(%%rip),%%r15;" // Store unique label address in r15
-+		"movq %%r15,%0;"
-+
-+		"ud2;" // Raise invalid opcode
-+
-+		".label%=:;" // Unique Label
-+
-+		: "=g"(return_address)::"memory", "r15");
-+}
-diff --git a/testsuite/smokey/signal-tests/signal_test_exceptions.h b/testsuite/smokey/signal-tests/signal_test_exceptions.h
-new file mode 100644
-index 000000000..62652f1ea
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_exceptions.h
-@@ -0,0 +1,51 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#ifndef SIGNAL_TEST_EXCEPTIONS_H
-+#define SIGNAL_TEST_EXCEPTIONS_H
-+
-+#include <asm/ucontext.h>
-+
-+/**
-+ * @brief Raise a segfault.
-+ */
-+void signal_test_exceptions_raise_segfault(void);
-+
-+/**
-+ * @brief Raise a floating point exception.
-+ */
-+void signal_test_exceptions_raise_fpe(void);
-+
-+/**
-+ * @brief Raise an invalid opcode exception.
-+ */
-+void signal_test_exceptions_raise_invalid_opcode(void);
-+
-+/**
-+ * @brief Recover from a exception by jumping to a label
-+ * after the exception.
-+ */
-+void signal_test_exceptions_recover(struct ucontext *);
-+
-+int signal_test_exceptions_get_expected_signal(void);
-+
-+#endif
-diff --git a/testsuite/smokey/signal-tests/signal_test_thread.c b/testsuite/smokey/signal-tests/signal_test_thread.c
-new file mode 100644
-index 000000000..95a0963e7
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_thread.c
-@@ -0,0 +1,61 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#include "signal_test_thread.h"
-+#include "signal_test_utils.h"
-+
-+pthread_t thread_id;
-+
-+static pthread_attr_t attr;
-+static struct sched_param sp;
-+
-+static void (*signal_test_thread_function)(void);
-+
-+static void signal_test_thread_run(void)
-+{
-+	thread_id = pthread_self();
-+
-+#ifdef XENOMAI
-+	pthread_setmode_np(0, PTHREAD_WARNSW, NULL);
-+#endif
-+
-+	(*signal_test_thread_function)();
-+}
-+
-+int signal_test_thread_start(void *thread_function)
-+{
-+	signal_test_thread_function = thread_function;
-+
-+	ASSERT(pthread_attr_init(&attr), 0);
-+
-+#ifdef XENOMAI
-+	sp.sched_priority = 1;
-+	ASSERT(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED), 0);
-+	ASSERT(pthread_attr_setschedpolicy(&attr, SCHED_FIFO), 0);
-+	ASSERT(pthread_attr_setschedparam(&attr, &sp), 0);
-+#endif
-+
-+	ASSERT(pthread_create(&thread_id, &attr, (void *)signal_test_thread_run,
-+			      NULL),
-+	       0);
-+	return 0;
-+}
-diff --git a/testsuite/smokey/signal-tests/signal_test_thread.h b/testsuite/smokey/signal-tests/signal_test_thread.h
-new file mode 100644
-index 000000000..5c42d2659
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_thread.h
-@@ -0,0 +1,37 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#ifndef SIGNAL_TEST_THREAD_H
-+#define SIGNAL_TEST_THREAD_H
-+
-+#include <pthread.h>
-+
-+extern pthread_t thread_id;
-+
-+/**
-+ * @brief Start a thread that runs the given function.
-+ * 
-+ * @return int 0 if the test was successfull and 1 on failure.
-+ */
-+int signal_test_thread_start(void *);
-+
-+#endif
-diff --git a/testsuite/smokey/signal-tests/signal_test_utils.c b/testsuite/smokey/signal-tests/signal_test_utils.c
-new file mode 100644
-index 000000000..117d32e8a
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_utils.c
-@@ -0,0 +1,80 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#include "signal_test_utils.h"
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+
-+#ifdef XENOMAI
-+#include <smokey/smokey.h>
-+#else
-+static int smokey_verbose_mode = 2;
-+#endif
-+
-+static int testsuite_result = 0;
-+
-+int signal_test_assert(char *file, int line, int under_test, int expected)
-+{
-+	if (under_test == expected)
-+		return 0;
-+
-+	fprintf(stderr,
-+		"\n\x1B[31mAssertion error in %s:%d: expected \"%d\" but was \"%d\".\x1B[0m",
-+		file, line, expected, under_test);
-+
-+	return 1;
-+}
-+
-+void signal_test_entry(char *function_name)
-+{
-+	if (smokey_verbose_mode > 1) {
-+		fprintf(stdout, "Test %s... ", function_name);
-+		fflush(stdout);
-+	}
-+}
-+
-+void signal_test_exit(char *function_name, int error_code)
-+{
-+	if (error_code) {
-+		fprintf(stderr,
-+			"\n\x1B[31mTest %s failed with error: %d\x1B[0m\n",
-+			function_name, error_code);
-+		testsuite_result = 1;
-+	} else {
-+		if (smokey_verbose_mode > 1)
-+			fprintf(stdout, "OK\n");
-+	}
-+}
-+
-+int signal_test_testsuite_exit(void)
-+{
-+	if (testsuite_result) {
-+		fprintf(stdout,
-+			"\nsignal_tests failed with error: %d\n",
-+			testsuite_result);
-+	} else {
-+		fprintf(stdout, "signal_tests OK\n");
-+	}
-+
-+	return testsuite_result;
-+}
-diff --git a/testsuite/smokey/signal-tests/signal_test_utils.h b/testsuite/smokey/signal-tests/signal_test_utils.h
-new file mode 100644
-index 000000000..ceaa21c35
---- /dev/null
-+++ b/testsuite/smokey/signal-tests/signal_test_utils.h
-@@ -0,0 +1,44 @@
-+/*
-+ * Copyright (C) Siemens AG 2023
-+ *
-+ * Authors:
-+ *  Tobias Schaffner <tobias.schaffner@siemens.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ */
-+
-+#ifndef SIGNAL_TEST_UTILS_H
-+#define SIGNAL_TEST_UTILS_H
-+
-+#define NAME(name) #name
-+
-+#define ASSERT(under_test, expected)                                           \
-+	if (signal_test_assert(__FILE__, __LINE__, under_test, expected))      \
-+		return 1;
-+
-+#define TEST(func)                                                             \
-+	do {                                                                   \
-+		signal_test_entry(NAME(func));                                 \
-+		signal_test_exit(NAME(func), func);                            \
-+	} while (0)
-+
-+int signal_test_assert(char *, int, int, int);
-+void signal_test_entry(char *);
-+void signal_test_exit(char *, int);
-+
-+int signal_test_testsuite_exit(void);
-+
-+#endif
--- 
-2.34.1
-
+T24gMTkuMDQuMjMgMTE6MTgsIEpvaGFubmVzIEtpcmNobWFpciB3cm90ZToNCj4gSGV5IEphbiwN
+Cj4gDQo+IFJpY2hhcmQgdG9sZCBtZSB0aGF0IHRoZXJlIHdhcyB0aGUgdG9waWMgb2YgcnQtc2ln
+bmFscyBpbiB0aGUgY29tbXVuaXR5IGNhbGwgdG9kYXkuDQo+IEhlIHNhaWQgdGhhdCB5b3UgYXNr
+ZWQgaWYgdGhlcmUgYXJlIG5ld2VyIHZlcnNpb24gb2YgdGhlIHJ0LXNpZ25hbCBwYXRjaGVzIGZp
+bmFsbHkuDQo+IA0KPiBBZnRlciB0aGUgbGFzdCBjYWxsIEkgYXR0ZW5kZWQsIEkgZGlkIHNvbWUg
+d29yayBtb3ZpbmcgdGhlIHNpZ25hbCBmcmFtZSBzZXR1cCBhbmQgcmVzdG9yaW5nIGludG8gdGhl
+IGRvdmV0YWlsIHBhcnQuIEFzIHlvdSBzYWlkIHRoYXQgdGhpcyBpcyB0aGUgd2F5IGlmIHdlIHdh
+bnQgdG8gdXNlIHNvbWUgb2YgdGhlIExpbnV4IGZ1bmN0aW9ucy4NCj4gDQo+IFVuZm9ydHVuYXRl
+bHkgSSBoYWQgdG8gc3RvcCB3b3JraW5nIG9uIGl0IGR1ZSB0byBhbm90aGVyIHRvcHBpbmcgcG9w
+cGluZyB1cC4NCj4gDQo+IEkganVzdCBsb29rIGludG8gdGhlIHN0dWZmIEkgY2hhbmdlZCBhbmQg
+aXQgc2VlbXMgbGlrZSBpdCBzaG91bGQgd29yayB0aGUgd2F5IGl0IGlzIG5vdy4NCj4gQnV0IEkg
+d2lsbCBoYXZlIHRvIHRlc3QgaXQgYWdhaW4gKGJlY2F1c2UgSSBkb27igJl0IHJlbWVtYmVyLCBp
+ZiBpdCByZWFsbHkgd29ya2VkIGFmdGVyIG15IGNoYW5nZXMpLg0KDQpIaSBKb2hhbm5lcywNCg0K
+aSBqdXN0IHBvc3RlZCBhIHNtb2tleSB0ZXN0IHRvIHRoaXMgdGhyZWFkIHRoYXQgYWRkcmVzc2Vz
+IHNvbWUgDQphZGRpdGlvbmFsIGNvcm5lciBjYXNlcy4NCg0KRmVlbCBmcmVlIHRvIHVzZSBpdCB0
+byB0ZXN0IHlvdXIgY2hhbmdlcy4NCkkgd2lsbCBleHRlbmQgdGhlIHRlc3RzIHRvIHRlc3QgYXJt
+NjQgc29vbi4NCg0KRmVlbCBmcmVlIHRvIHJlcG9ydCBpZiB5b3UgaGF2ZSBpZGVhcyBmb3IgYWRk
+aXRpb25hbCB0ZXN0IGNhc2VzLg0KDQo+IEFmdGVyIHRoYXQgSSBjb3VsZCBwcm92aWRlIHBhdGNo
+ZXMgZm9yIERvdmV0YWlsIGFuZCBYZW5vbWFpLiBXaXRoIHRoaXMgd2UgY291bGQgc3RhcnQgZGlz
+Y3Vzc2luZyBpZiBJIHVzZSB0byBtdWNoIG9mIExpbnV4IGNvZGUgZm9yIHJlYWwgdGltZS4gSSBh
+bSBub3QgcmVhbGx5IHN1cmUgd2hhdCBpcyB2aWFibGUgdG8gZG8gaW4gb29iIHN0YWdlIGFuZCB3
+aGF0IGlzIG5vdC4gU28gSSB3aWxsIGRlcGVuZCBvbiB0aGUgZXhwZXJpZW5jZSBvZiB5b3UgYW5k
+IG90aGVyIGV4cGVydHMuDQo+IEFuZCB3ZSBzaG91bGQgYWxzbyBzcGVhayBhYm91dCB0aGUgaW50
+ZXJmYWNlcyBhbmQgdGhlIGZ1bmN0aW9uYWxpdHkgd2UgcmVhbGx5IHdhbnQgdG8gcHJvdmlkZSBm
+b3IgcnQgdGFzay4NCj4gDQo+IFNvcnJ5IGZvciB0aGUgcmF0aGVyIHNsb3cgcHJvY2VzcyBvZiB0
+aGlzIGZlYXR1cmVzIGRldmVsb3BtZW50Lg0KPiANCj4gRllJOiBJIHdpbGwgYmUgYXQgRU9TUyBp
+biBKdW5lIGFuZCB3b3VsZCBiZSBnbGFkIGlmIHdlIGNvdWxkIG1lZXQgdXAgdGhlcmUuDQoNCkkg
+d2lsbCBtb3N0IHByb2JhYmx5IGFsc28gYmUgdGhlcmUuIExvb2tpbmcgZm9yd2FyZCB0byBpdC4N
+Cg0KQWxsIHRoZSBiZXN0LA0KVG9iaWFzDQoNCj4gQmVzdCByZWdhcmRzDQo+IEpvaGFubmVzDQo+
+IA0KPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+IEZyb206IEphbiBLaXN6a2EgPGph
+bi5raXN6a2FAc2llbWVucy5jb20+DQo+PiBTZW50OiBGcmVpdGFnLCAyMC4gSsOkbm5lciAyMDIz
+IDEyOjQyDQo+PiBUbzogSm9oYW5uZXMgS2lyY2htYWlyIDxqb2hhbm5lcy5raXJjaG1haXJAc2ln
+bWF0ZWsuYXQ+Ow0KPj4geGVub21haUBsaXN0cy5saW51eC5kZXYNCj4+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggMS8zXSBydHNpZ25hbHM6IHBhcnQgb25lLCBjb3JlIGNvZGUgcGx1cyB4ODYNCj4+DQo+
+PiBDQVVUSU9OOiBFeHRlcm5hbCBFLU1haWwgIQ0KPj4NCj4+IE9uIDIwLjAxLjIzIDEyOjAxLCBK
+b2hhbm5lcyBLaXJjaG1haXIgd3JvdGU6DQo+Pj4gSGV5IEphbiwNCj4+Pg0KPj4+IFNvcnJ5IGZv
+ciBub3QgcmVzcG9uZGluZyBmb3Igc28gbG9uZy4NCj4+PiBHb3QgZHJhZ2dlZCBhd2F5IGZyb20g
+dGhpcyB1bmZvcnR1bmF0bHkuDQo+Pj4NCj4+Pg0KPj4+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KPj4+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPj4+
+PiBTZW50OiBGcmVpdGFnLCAyMC4gSsOkbm5lciAyMDIzIDEwOjA1DQo+Pj4+IFRvOiBKb2hhbm5l
+cyBLaXJjaG1haXIgPGpvaGFubmVzLmtpcmNobWFpckBzaWdtYXRlay5hdD47DQo+Pj4+IHhlbm9t
+YWlAbGlzdHMubGludXguZGV2DQo+Pj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMS8zXSBydHNpZ25h
+bHM6IHBhcnQgb25lLCBjb3JlIGNvZGUgcGx1cyB4ODYNCj4+Pj4NCj4+Pj4gQ0FVVElPTjogRXh0
+ZXJuYWwgRS1NYWlsICENCj4+Pj4NCj4+Pj4gT24gMDguMDcuMjIgMDk6MzAsIEpvaGFubmVzIEtp
+cmNobWFpciB3cm90ZToNCj4+Pj4+IEhleSBKYW4sDQo+Pj4+Pg0KPj4+Pj4+IC0tLS0tT3JpZ2lu
+YWwgTWVzc2FnZS0tLS0tDQo+Pj4+Pj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVt
+ZW5zLmNvbT4NCj4+Pj4+PiBTZW50OiBEb25uZXJzdGFnLCA3LiBKdWxpIDIwMjIgMTc6MjQNCj4+
+Pj4+PiBUbzogSm9oYW5uZXMgS2lyY2htYWlyIDxqb2hhbm5lcy5raXJjaG1haXJAc2lnbWF0ZWsu
+YXQ+Ow0KPj4+Pj4+IHhlbm9tYWlAbGlzdHMubGludXguZGV2DQo+Pj4+Pj4gU3ViamVjdDogUmU6
+IFtQQVRDSCAxLzNdIHJ0c2lnbmFsczogcGFydCBvbmUsIGNvcmUgY29kZSBwbHVzIHg4Ng0KPj4+
+Pj4+DQo+Pj4+Pj4gT24gMDcuMDcuMjIgMTU6NTksIEpvaGFubmVzIEtpcmNobWFpciB3cm90ZToN
+Cj4+Pj4+Pj4gRnJvbTogUmljaGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkQG5vZC5hdD4NCj4+Pj4+
+Pj4NCj4+Pj4+Pj4gQWRkcyBjb2RlIGZvciBpbXBsZW1lbnRpbmcgc2lnbmFscyB0aGF0IGFyZSBo
+YW5kbGVkIGluIHRoZSByZWFsIHRpbWUNCj4+Pj4+Pj4gZG9tYWluLiBUaGlzIGlzIGRvbmUgZm9y
+IDMyYml0IHByb2Nlc3MgdW5kZXIgYW4gNjRiaXQga2VybmVsLg0KPj4+Pj4+PiBJdCB3b3JrcyBp
+biBhIHNpbWlsYXIgd2F5IHRvIHNpZ25hbHMgaW4gdGhlIExpbnV4IGtlcm5lbC4NCj4+Pj4+Pj4N
+Cj4+Pj4+Pj4gRWRpdGVkLWJ5OiBKb2hhbm5lcyBLaXJjaG1haXIgPGpvaGFubmVzLmtpcmNobWFp
+ckBzaWdtYXRlay5hdD4NCj4+Pj4+Pg0KPj4+Pj4+IC4uLg0KPj4+Pj4+DQo+Pj4+Pj4+ICtzdGF0
+aWMgaW50IGlhMzJfc2V0dXBfc2lnY29udGV4dChzdHJ1Y3Qgc2lnY29udGV4dF8zMiBfX3VzZXIg
+KnNjLA0KPj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgIHZvaWQgX191c2VyICpm
+cHN0YXRlLCBzdHJ1Y3QgcHRfcmVncyAqcmVncywNCj4+Pj4+Pj4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB1bnNpZ25lZCBpbnQgbWFzaykNCj4+Pj4+Pj4gK3sNCj4+Pj4+Pj4gKyAgIGlu
+dCBlcnIgPSAwOw0KPj4+Pj4+PiArDQo+Pj4+Pj4+ICsgICBwdXRfdXNlcl90cnkNCj4+Pj4+Pj4g
+KyAgIHsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgoZ2V0X3VzZXJfc2VnKGdzKSwg
+KHVuc2lnbmVkIGludCBfX3VzZXIgKikmc2MtPmdzKTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0
+X3VzZXJfZXgoZ2V0X3VzZXJfc2VnKGZzKSwgKHVuc2lnbmVkIGludCBfX3VzZXIgKikmc2MtPmZz
+KTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgoZ2V0X3VzZXJfc2VnKGRzKSwgKHVu
+c2lnbmVkIGludCBfX3VzZXIgKikmc2MtPmRzKTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3Vz
+ZXJfZXgoZ2V0X3VzZXJfc2VnKGVzKSwgKHVuc2lnbmVkIGludCBfX3VzZXIgKikmc2MtPmVzKTsN
+Cj4+Pj4+Pj4gKw0KPj4+Pj4+PiArICAgICAgICAgICBwdXRfdXNlcl9leChyZWdzLT5kaSwgJnNj
+LT5kaSk7DQo+Pj4+Pj4+ICsgICAgICAgICAgIHB1dF91c2VyX2V4KHJlZ3MtPnNpLCAmc2MtPnNp
+KTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgocmVncy0+YnAsICZzYy0+YnApOw0K
+Pj4+Pj4+PiArICAgICAgICAgICBwdXRfdXNlcl9leChyZWdzLT5zcCwgJnNjLT5zcCk7DQo+Pj4+
+Pj4+ICsgICAgICAgICAgIHB1dF91c2VyX2V4KHJlZ3MtPmJ4LCAmc2MtPmJ4KTsNCj4+Pj4+Pj4g
+KyAgICAgICAgICAgcHV0X3VzZXJfZXgocmVncy0+ZHgsICZzYy0+ZHgpOw0KPj4+Pj4+PiArICAg
+ICAgICAgICBwdXRfdXNlcl9leChyZWdzLT5jeCwgJnNjLT5jeCk7DQo+Pj4+Pj4+ICsgICAgICAg
+ICAgIHB1dF91c2VyX2V4KHJlZ3MtPmF4LCAmc2MtPmF4KTsNCj4+Pj4+Pj4gKyAgICAgICAgICAg
+cHV0X3VzZXJfZXgoY3VycmVudC0+dGhyZWFkLnRyYXBfbnIsICZzYy0+dHJhcG5vKTsNCj4+Pj4+
+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgoY3VycmVudC0+dGhyZWFkLmVycm9yX2NvZGUsICZz
+Yy0+ZXJyKTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgocmVncy0+aXAsICZzYy0+
+aXApOw0KPj4+Pj4+PiArICAgICAgICAgICBwdXRfdXNlcl9leChyZWdzLT5jcywgKHVuc2lnbmVk
+IGludCBfX3VzZXIgKikmc2MtPmNzKTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgo
+cmVncy0+ZmxhZ3MsICZzYy0+ZmxhZ3MpOw0KPj4+Pj4+PiArICAgICAgICAgICBwdXRfdXNlcl9l
+eChyZWdzLT5zcCwgJnNjLT5zcF9hdF9zaWduYWwpOw0KPj4+Pj4+PiArICAgICAgICAgICBwdXRf
+dXNlcl9leChyZWdzLT5zcywgKHVuc2lnbmVkIGludCBfX3VzZXIgKikmc2MtPnNzKTsNCj4+Pj4+
+Pj4gKw0KPj4+Pj4+PiArICAgICAgICAgICBwdXRfdXNlcl9leChwdHJfdG9fY29tcGF0KGZwc3Rh
+dGUpLCAmc2MtPmZwc3RhdGUpOw0KPj4+Pj4+PiArDQo+Pj4+Pj4+ICsgICAgICAgICAgIC8qIG5v
+bi1pQkNTMiBleHRlbnNpb25zLi4gKi8NCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgo
+bWFzaywgJnNjLT5vbGRtYXNrKTsNCj4+Pj4+Pj4gKyAgICAgICAgICAgcHV0X3VzZXJfZXgoY3Vy
+cmVudC0+dGhyZWFkLmNyMiwgJnNjLT5jcjIpOw0KPj4+Pj4+PiArICAgfQ0KPj4+Pj4+PiArICAg
+cHV0X3VzZXJfY2F0Y2goZXJyKTsNCj4+Pj4+Pg0KPj4+Pj4+IEFtIEkgbWlzc2luZyBzb21ldGhp
+bmcgLSBvciBkaWQgeW91IG1pc3MgdG8gYWRkIHRoZSBtYWdpYyBmb3IgdGhpcw0KPj4+Pj4+IGdl
+dC9wdXRfdXNlcl90cnkvY2F0Y2g/DQo+Pj4+PiBUcmllZCB0byBmaWd1cmUgaXQgb3V0IHRoaXMg
+bW9ybmluZywgYnV0IGRvbuKAmXQgdW5kZXJzdGFuZCBpdCBmdWxseSBqZXQuIEFjdHVhbGx5DQo+
+Pj4+IGRvbuKAmXQgcXVpdGUgZ2V0LCBob3cgdGhlIGVycm9ycyBvZiBwdXRfdXNlcl9leCBhcmUg
+cHJvcGFnYXRlZCBpbnRvIHRoZSBlcnINCj4+Pj4gdmFyaWFibGUuIFByb2JhYmx5IGluIHRoaXMg
+Y2FzZSBwdXRfdXNlcl90cnksIHB1dF91c2VyX2NhdGNoIGlzIG9ubHkgZm9yDQo+PiBkaXNhYmxp
+bmcNCj4+Pj4gU01BUC4gQnV0IEkgd2lsbCBoYXZlIGEgZGVlcGVyIGxvb2sgYXQgaXQgaW4gdGhl
+IGJlZ2lubmluZyBvZiBBdWd1c3QgYWZ0ZXIgbXkNCj4+Pj4gdmFjYXRpb24uDQo+Pj4+Pg0KPj4+
+Pg0KPj4+PiBXYXMgdGhlcmUgYSBmb2xsb3ctdXAgb24gdGhpcz8gSSdtIHBsYW5uaW5nIHRvIHJl
+dml2ZSB0aGlzIGZpbmFsbHksDQo+Pj4+IGZpZ3VyaW5nIG91dCBpZiB0aGVyZSBhcmUgcGl0ZmFs
+bHMgaW4gZ29pbmcgdGhlIHNpZ2FjdGlvbi9zaWdyZXR1cm4gcGF0aA0KPj4+PiBmb3IgWGVub21h
+aS4NCj4+PiBGb3IgdGhlIHF1ZXN0aW9uIG9mIHRoZSB0cnkvY2F0Y2gNCj4+PiBXZSBkb27igJl0
+IGhhdmUgcmVhbGx5IGEgY2F0Y2ggY2xhdXNlIGhlcmUsIGFzIHdlIGNoZWNrIGFjY2VzcyB0byB0
+aGUgc2lnZnJhbWUNCj4+IGJlZm9yZWhhbmQgYW5kIHdlIG9ubHkgdXNlIHRoZSBwdXRfdXNlcl90
+cnkgdG8gZGlzYWJsZSBTTUFQIHRvIGJlIGFibGUgdG8NCj4+IGNvcHkgdG8gdGhlIHVzZXIgc3Rh
+Y2suDQo+Pj4NCj4+Pj4NCj4+Pj4gQlRXLCBJIGRvIG5vdCB1bmRlcnN0YW5kIHdoeSB5b3UgbWFk
+ZSB0aGUgcmVzdG9yZXIgZnVuY3Rpb24gYSBkaXJlY3QNCj4+Pj4gcGFyYW1ldGVyIG9mIHRoZSBz
+aWdhY3Rpb24gc3lzY2FsbC4gSXQgY29tZXMgZnJvbSB0aGUgc2lnYWN0aW9uDQo+Pj4+IHN0cnVj
+dHVyZS4gQW5kIHlvdXIgaW1wbGVtZW50YXRpb24gY2Fubm90IHByb3ZpZGUgb2FjdCB3aGVuIHdl
+IHdhbnQgdG8NCj4+Pj4gYWRkIHNpZ2FjdGlvbiBhcyBsaWJyYXJ5IGNhbGwgYXMgd2VsbC4NCj4+
+PiBPYWN0Pw0KPj4NCj4+IFByZXZpb3VzIChvbGQpIGFjdGlvbiBoYW5kbGVyLCBzZWUgbWFuIHNp
+Z2FjdGlvbi4NCj4+DQo+Pj4NCj4+PiBBY3R1YWxseSBJIGFtIG5vdCBxdWl0ZSBzdXJlLCBidXQg
+SSBndWVzcyB0aGUgcmVhc29uIHdhcyB0byBoYXZlIGEgcmF0aGVyIHNpbXBsZQ0KPj4gZGlzdGlu
+Y3Qgc3lzY2FsbCB0byBMaW51eCBzaWdhY3Rpb24gc3lzY2FsbC4NCj4+PiBXZSBkbyBub3QgZXZl
+biBwYXNzIGEgc2lnYWN0aW9uIHN0cnVjdHVyZSB0byB0aGUgY29iYWx0IGNvcmUsIGJ1dCBqdXN0
+IGEgaGFuZGxlcg0KPj4gYW5kIHRoZSByZXN0b3Jlci4NCj4+DQo+PiBFbm91Z2ggZm9yIHNpZ25h
+bCgpLCBub3QgZm9yIHNpZ2FjdGlvbigpLiBCdXQgaXQgd291bGQgYmUgYSB2YWxpZA0KPj4gcXVl
+c3Rpb24gaWYgd2UgcmVhbGx5IHdhbnQvaGF2ZSB0byBzdXBwb3J0IGFsbCBmZWF0dXJlcyBvZiBz
+aWdhY3Rpb24uDQo+Pg0KPj4+DQo+Pj4gVGhlcmUgYXJlIHNvbWUgdGhpbmdzIEkgdGhvdWdodCBh
+Ym91dCwgYnV0IGRpZCBub3QgZmluZCB0aGUgdGltZSB0byBpbnZlc3RpZ2F0ZToNCj4+Pg0KPj4+
+IC0gSSBjb3BpZWQgYW5kIG1vZGlmaWVkIHNvbWUgb2YgdGhlIHNpZ25hbCBjb2RlIGZyb20gTGlu
+dXggYW5kIHJlbW92ZWQNCj4+IGV2ZXJ5dGhpbmcgSSBkaWQgbm90IG5lZWQgZm9yIG15IHB1cnBv
+c2UuDQo+Pj4gICAgTWF5YmUgaXQgd291bGQgYmUgcG9zc2libGUgdG8gdXNlIHRoZSBMaW51eCBm
+dW5jdGlvbnMgd2l0aG91dCBtb2RpZnlpbmcuDQo+PiAoUHJpbWFyaWx5IHRoZSBzaWdmcmFtZSBz
+ZXR1cCBhbmQgcmVzdG9yZSBjb2RlKQ0KPj4+ICAgIEkgdGhpbmsgaXQgd291bGQgYmUgY2xlYW5l
+ciB0byBub3QgaGF2ZSB0b28gbXVjaCBjb3BpZWQgY29kZS4NCj4+DQo+PiBBY2ssIHRvLWJlLWNo
+ZWNrZWQuDQo+Pg0KPj4+DQo+Pj4gLSBJIGFsd2F5cyB3b25kZXJlZCB3aGF0IHdvdWxkIGhhcHBl
+biBpZiB3ZSBoYXZlIGEgZG9tYWluIHN3aXRjaCBpbiBhIHNpZ25hbA0KPj4gaGFuZGxlci4NCj4+
+PiAgICBJIHN0aWxsIGhhdmUgbm90IGEgZGVlcCBlbm91Z2gga25vd2xlZGdlIG9mIFhlbm9tYWku
+IElmIHdlIHN3aXRjaCBmcm9tDQo+PiBYZW5vbWFpIHRvIExpbnV4IGRvbWFpbi4NCj4+PiAgICBU
+aGUgcmVzdG9yZXIgY29kZSB3b3VsZCBtYWtlIGFuIGNvYmFsZCBzeXNjYWxsIGVuZGluZyB1cCBp
+biB0aGUgY29iYWxkDQo+PiByZXN0b3JlciwgYnV0IG5vdCBxdWl0ZSBzdXJlIGFib3V0IGl0Lg0K
+Pj4NCj4+IEkgZG9uJ3QgdGhpbmsgdGhpcyBzaG91bGQgY2F1c2UgdHJvdWJsZXMuIENvYmFsdCdz
+IHNpZ3JldHVybiB3b3VsZA0KPj4gc2ltcGx5IGVuZm9yY2UgYSBzd2l0Y2gtYmFjayB0byBSVCAo
+aWYgdGhhdCBpcyBuZWVkZWQsIGRpZG4ndCBjaGVjaykgYW5kDQo+PiB3b3VsZCByZXN0b3JlIHVz
+ZXJzcGFjZSBzdGF0ZSBmcm9tIHRoZSBzYXZlZCBzdGF0ZSBvbiB0aGUgdGhyZWFkJ3Mgc3RhY2su
+DQo+Pg0KPj4gV2hhdCBzaG91bGQgYmUgY29uc2lkZXJlZCBhcyB3ZWxsIGlzIGFuIGFzeW5jIHNp
+Z25hbCBoYW5kbGluZyBpbiB0aGUNCj4+IG1pZGRsZSBvZiB0aGUgUlQgaGFuZGxlciAtIHdoZXRo
+ZXIgYWxyZWFkeSBtaWdyYXRlZCBvciBvbmx5IG1pZ3JhdGVkDQo+PiB1cG9uIHRoYXQuIEFzIGFs
+bCB1c2Vyc3BhY2UtcmVsYXRlZCBzdGF0ZSBpcyBvbiB0aGUgdXNlcnNwYWNlIHN0YWNrLA0KPj4g
+bmVzdGluZyBzaG91bGQgd29yaywgYnV0IGl0IGFsbCBiZWNvbWVzIHF1aWNrbHkgcmF0aGVyIGNv
+bXBsaWNhdGVkLg0KPj4NCj4+Pg0KPj4+IC0gVGhvdWdodCBhYm91dCwgaWYgd2UgY291bGQgdXNl
+IHRoZSBzaWdoYW5kbGVyIHN0b3JlZCBpbiBMaW51eGVzIHRhc2sgc3RydWN0Lg0KPj4+ICAgIFNv
+IHdlIGNvdWxkIGhhbmRsZSBzaWduYWxzIGluIFhlbm9tYWkgZG9tYWluLCB0aGF0IHdlcmUgcmVn
+aXN0ZXJlZCBmb3JtDQo+PiBMaW51eCBkb21haW4uDQo+Pj4gICAgQnV0IG5vdCBzdXJlIGlmIHBv
+c3NpYmxlLg0KPj4NCj4+IEFsc28gd29ydGggdGhlIGNoZWNrLCB0aG91Z2ggaXQgY29tZXMgd2l0
+aCB0aGUgcmlzayBvZiBtYWtpbmcgdGhlIGNvcmUNCj4+IHRvbyBtdWNoIGRlcGVuZCB1cG9uIHRo
+ZSBMaW51eCBzdHJ1Y3R1cmVzLg0KPj4NCj4+Pg0KPj4+IEkgYW0gbm90IHF1aXRlIHN1cmUsIGF0
+IHdoYXQgdGltZSBJIHdpbGwgaGF2ZSB0aW1lIHRvIHdvcmsgb24gdGhpcyBhZ2Fpbi4gV2lsbCBo
+YXZlDQo+PiB0byB0YWxrIHRvIG15IHN1cGVydmlzb3IuDQo+Pj4NCj4+PiBCdXQgd291bGQgYmUg
+aGFwcHkgaWYgd2Ugd291bGQgZmluZCBhIGNsZWFuIHdheSBvZiBpbnRlZ3JhdGluZyB0aGlzIGlu
+dG8NCj4+IFhlbm9tYWkuDQo+Pg0KPj4gWWVzLCBzcGVjaWZpY2FsbHkgYXMgd2Ugbm93IGhhdmUg
+dGhlIHVuZGVybHlpbmcgRG92ZXRhaWwgc3VwcG9ydC4gSQ0KPj4gdGVzdGVkIGl0IHdpdGggb3V0
+IGN1cnJlbnQgb3V0LW9mLXRyZWUgcGF0dGVybiwgYW5kIGl0IHdvcmtzIGFzIGV4cGVjdGVkLg0K
+Pj4NCj4+IEphbg0KPj4NCj4+IC0tDQo+PiBTaWVtZW5zIEFHLCBUZWNobm9sb2d5DQo+PiBDb21w
+ZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KPiANCg==
