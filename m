@@ -1,288 +1,117 @@
-Received: from mx0a-001f5801.pphosted.com (mx0b-001f5801.pphosted.com [148.163.159.244])
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E8946ADC
-	for <xenomai@lists.linux.dev>; Wed, 26 Apr 2023 19:57:56 +0000 (UTC)
-Received: from pps.filterd (m0090335.ppops.net [127.0.0.1])
-	by mx0b-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33QJ2ReQ000768
-	for <xenomai@lists.linux.dev>; Wed, 26 Apr 2023 12:52:09 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0177.outbound.protection.office365.us [23.103.199.177])
-	by mx0b-001f5801.pphosted.com (PPS) with ESMTPS id 3q4ercdbdw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Wed, 26 Apr 2023 12:52:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=MF1QN5JzyQXaBQRSZHg70jigq6xTZSdppIvc7IyAtoi+zLQv19BfHJw+LfRWNVPrVFyhXGBA+w9EXiPrOM6LhXn+r/3pKfWQ6c5CrvEfmq3sJBNHTo4SreMxxPYjzrnrk541ZdVkVdEvlF9je2IIUxa0GhFFQ7zxoFinZfbpUkMit02RzIMcJvu8oOZb4M4HTl9WtE8nu5xvX3FDn2/WcS22CvY2XQTckWYd7wdCxQou3WB5h1UY0bYGbM8x3MEIvgUPYIXukj1zb8uhPZ2hLoZ7IO3nCsoqR9o2UPSphbMm8lWyc3x/+homuSjHBuV9AE+9r/2AdyR7I8thTU7IjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FQDgMucWCTDqT5DJ8Ei1qIiGF2irQYctwLAb+UR+x1s=;
- b=FDIUSxHkZHAd0G0HAUSeMfmWOqN7A1udytAnrEyN0WhuNNmygwjGgvcV4N1Fysq5J7gf+NDULGkIHdExUl2WimB5pBELZ+dtFx5/JxkTLwCPxeTlPbGZ40NdiGknWDBFl+MeruSLSa6lH+DE+I8/CswORgADERmqS8x2waWWyq2iQG517fm4I/nYJsAmpKQibauavBrFcOJw0UqYlQnaLW8RyrWvp2t3lnYgpXczJDmpUJSEaRLucPDlg+KVNP/L/NW5fg9+hhP5I2wWhb2O7XsMvsuxv0rp/IMzKpg9rLGS8coaejWQEIPq3tdlDyEy+vtDXd27HCf8N7qgbibcTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FQDgMucWCTDqT5DJ8Ei1qIiGF2irQYctwLAb+UR+x1s=;
- b=U0opPI7CxS/RqmS/LGoTOT75Mp+VkWuSCVnov6vZKgAt+4QK7JH7QOJhA7XuuXuERo450PmZA5i8XfNXiWkvdBFTlUvAC1rG4pDI+2SCUjR5R9+n+JEXuLi4DmadBFj2QGT7ABvlrRP/ZU5D/d6mzUiu5KkFbeNdwUMLQFrAi3urs/dDptZRiOgoWp3aFIzcpc1dTeS7EMed1CP03zMGF/NUSjy3DqvLaOYA8phrI7marSPME++7LrN1y69QEP/RfWveJi7N5xk5anBVm1vVfqIiq+SlqG1HZHaFgU1v21ie4dXGrIR+tQCD0WOd8DYja7RsumVnLx53MN9DHKZEQQ==
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:176::15)
- by PH1P110MB1115.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:177::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.36; Wed, 26 Apr
- 2023 19:52:06 +0000
-Received: from PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::8eea:4b85:8222:6796]) by PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
- ([fe80::8eea:4b85:8222:6796%4]) with mapi id 15.20.6319.036; Wed, 26 Apr 2023
- 19:52:06 +0000
-From: Russell Johnson <russell.johnson@kratosdefense.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-CC: Dave Rolenc <Dave.Rolenc@kratosdefense.com>
-Subject: EVL Kernel Debugging
-Thread-Topic: EVL Kernel Debugging
-Thread-Index: Adl4eJLbpY1BiroZTtmQ1ix6FWcdsw==
-Date: Wed, 26 Apr 2023 19:52:06 +0000
-Message-ID: 
- <PH1P110MB1050E3792D231FD98FD707B7E2659@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1050:EE_|PH1P110MB1115:EE_
-x-ms-office365-filtering-correlation-id: cd872e75-17d5-445b-80e3-08db468fb70f
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- o7GDPrC6rCnAEEm9buRXUf3wenppU+OhUBGaXg1seU2F1Z7xG3KZEGcwLkJLx01x7MZ+Ww0ro8P7vwAXreZJv5DQRR3GNRfFYcqJqxyi4L/cfLyVdVKDWMUDrf3Cj/A+QuUgt+IZJagLNW1criTHbSXINhbKifjQbwN/+15+W0ESBptW94+Z4FFtbeYDcg8weTOFZOzAlUfROJtekbuKrLJOR4mG4QcZ/n8Ia4oeaWgCWNLdB354TYZ34k2nGoM9UT87eZ1G4E2sNuzWXQgvTOPt83di7wx4brOoPZBq1POZFbDsILY8ZfpYmC2j8v2FeO0n/0zgEbsvbOidPcBr5HAdQxSdw0ARWr4nB7WsmhqNX+VrKbXM9uKiP1MN62T0ZvFHk/+OphLcw5yOcB5c8sqaGwjXw6+5TebVwdw9zJgVIr9PCywoYXOOjhS4qmsNK0qOZ2Cc36SMXrO97zNb59/v5oxKQ+LKwTqCiRdzVIzTj60cqoxymx15BflRaOR1TJjTfvX9Z3VqgqIICWVbEIAdiQfrbzDl41GK5LcsUnvOFdjCpm9C83TSXA5KywygyKBZsi2YmPoruv2+PHMkOnutEndFfwWxLPo12Vp/ABhAeSSt3qmNWyJBtxcHnfd9
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(396003)(136003)(39830400003)(366004)(451199021)(44832011)(66899021)(41320700001)(107886003)(26005)(6506007)(38100700002)(122000001)(99936003)(55016003)(71200400001)(508600001)(64756008)(66446008)(66556008)(41300700001)(4326008)(66946007)(66476007)(7696005)(6916009)(86362001)(76116006)(3480700007)(83380400001)(186003)(9686003)(38070700005)(7116003)(33656002)(8676002)(8936002)(2906002)(52536014)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- /6sOsD9gjHRMygksdDJiI732+WdBu3Yb6sWD5NRrWYsZtdDO88AzBGzqB6t8Uk6RHQle1GjsL5k+h93JiCp6/g3CU5gyvuZR0aX7cpnuyeLh7ucFqwo5mUKsrMxG3LrmNzYReT/iXYgumdcSddCED7kIfND8V6LJB2nIr8T/3g+1yfbWV/J4QV+0PO5Xpkn0zTIM/mIEWFGUiwlOBjmrSR/J41FTKkNflyrakbor0gZgugZgrmWrSz4L9JgNC2uIm8xGaGS7/Om5BO0cK52xYo1nMZunlAqyEzbxuUWZGm9vFkvObm2jGfx3OHsFPFKHR/2p7FshMbFgH2nX6udL8u7RBofV9zrBdA61r4dT6Rxw3U9m/poc5AXpPSPCZrS39E2hQPPGFl/caSlqKGshEA5TjvcACgFpAFUfZYG8gN0=
-Content-Type: multipart/signed;
-	protocol="application/x-pkcs7-signature";
-	micalg=2.16.840.1.101.3.4.2.1;
-	boundary="----=_NextPart_000_0007_01D97846.48A929F0"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B411FCC
+	for <xenomai@lists.linux.dev>; Thu, 27 Apr 2023 08:15:08 +0000 (UTC)
+Received: (Authenticated sender: philippe.gerum@sourcetrek.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id B80A724000B;
+	Thu, 27 Apr 2023 08:14:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1682583300;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4VAPWhLAsHnc547jo+u2jQo3kVgzCM01lYOSvdW2fms=;
+	b=ZKW1OdCek74Si0XBv169JQFmZkGCGKQNvResztqr3y4Uj0jPmaFRCwrQ/ZLZGuccJvJca4
+	ixN5bsefXLtYqXyPIg/PR8TbVdUWl0M68A+Fhvj8HFJqO9rqf/EHkHKwEm5S72TeiloZ7M
+	hDqpuRt7Moq93jmzWVVIxSZMP+VsrUveVWW/bSuly53WdQpVUzuaisDhd8Qfr4qpBfwJBP
+	eeZQWXCjlNtuXWbAUfjrT/7Z6sMyH2jSpHJXibkf1VT/B2y4a9MENHkkFyWjaZlz2Uyr0Z
+	Kg7zZZwwVbNN5gNPCmuFDE+VlxTKC1jhOcKeXdaA3D6r7QSs8xiyBN2gfXaeyA==
+References: <PH1P110MB1050E3792D231FD98FD707B7E2659@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Russell Johnson <russell.johnson@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Dave Rolenc
+ <Dave.Rolenc@kratosdefense.com>
+Subject: Re: EVL Kernel Debugging
+Date: Thu, 27 Apr 2023 09:58:28 +0200
+In-reply-to: <PH1P110MB1050E3792D231FD98FD707B7E2659@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <871qk5zqpp.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	qPiaoYa4wCZNOdS1JOlReY79roaxV6iVkHI3/zaWCW0magWIUBPq83pzVNzHhudnhyYiy5Ip1SgjSO7mk9U24sYma3xhBqvCl20AaxBfJtzKo7pdg8KFiRK+REY1DcqIm4dqbyUUPoIWTDOoFiIV/BK1sSylot05drsJHlIMumlKtT/2Ci5vz8G0lTXGEbzbRIjc1o+R/jvI4554tiecWfq8DnHeXnmWjMkj7aTs2IU25BqO4eP7c3YVbvpxNbP9CWO5W+ih8Yj9x2DvZoaz91woTz/kM0Zy7pB2bsUMJR6jZXvVxQFpcoCMtlWj3v8E2UZHpwyzL8l2xV6sSXq7mLDjqxQEqp4U3RKVq2BtCv/vqrBArSUyVIWmFT49xqguOvYMmO2kOto22XATNG9cgZKYQDo0yjSMO1uO0TMuggGdNi2WQhMIAAEOKB50qv3gmKysWwMyN2kDFlU1HM1a3fuNOS5ntSKp8Mt7Ncs0OlfqWSIpyLDGlZZ6uoIkocYacldubE/aIrT0DV8UfPzppjBGZLzwljCGJu45R95k05pT5rpzPofkxdPe2O8tnq0m9ND11MErRXLpsD33rW4Rma54piUmvU6yro2JAu98/hi3T4QqXuWMsv3zsum7616JDRTueZ0qjcYRUIXSR8Bke/ESvxhWVP/uIxENjEuRLUKFcDxt+9qVNoJ8Mm1PQr3jv3YoeoycVaxctEMwBflwMY0w5n0zrysXNvChtmSODpasvWoZr4RqwPdhnb6Ax3FfsKTu/8m4YKWPQM0iAY+lYA==
-X-OriginatorOrg: kratosdefense.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd872e75-17d5-445b-80e3-08db468fb70f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2023 19:52:06.8468
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1115
-X-Proofpoint-GUID: 9_yw5fMqP7dPprpjm_ysg4rszcs2PNES
-X-Proofpoint-ORIG-GUID: 9_yw5fMqP7dPprpjm_ysg4rszcs2PNES
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-26_10,2023-04-26_03,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 priorityscore=1501 suspectscore=0 bulkscore=0
- phishscore=0 spamscore=0 malwarescore=0 impostorscore=0 mlxscore=0
- clxscore=1015 mlxlogscore=604 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2303200000 definitions=main-2304260175
-
-------=_NextPart_000_0007_01D97846.48A929F0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-Has there been any successful use of kdb or kgdb with the evl kernel?
-
-We are currently using 5.15.98evl-g1541335eef8b, and have not had much luck
-in getting kdg or kgdb to work. We see the start of a kdb session, but the
-serial port eventually hangs.
-
-We are connecting the unit under test (running evl kernel) over a serial
-port to a secondary machine. 
-
-I think we have all the necessary settings n the kernel config for GDB/KDB:
-
-[root@localhost boot]# cat config-5.15.98evl-g1541335eef8b-dirty|grep GDB
-CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
-CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
-# CONFIG_SERIAL_KGDB_NMI is not set
-# CONFIG_GDB_SCRIPTS is not set
-CONFIG_HAVE_ARCH_KGDB=y
-CONFIG_KGDB=y
-CONFIG_KGDB_HONOUR_BLOCKLIST=y
-CONFIG_KGDB_SERIAL_CONSOLE=y
-CONFIG_KGDB_TESTS=y
-# CONFIG_KGDB_TESTS_ON_BOOT is not set
-CONFIG_KGDB_LOW_LEVEL_TRAP=y
-CONFIG_KGDB_KDB=y
-
-Our command line is as follows:
-BOOT_IMAGE=/vmlinuz-5.15.98evl-g1541335eef8b-dirty
-root=UUID=8748ad87-3ef2-48fe-8d3d-fb2ef72a8f13 ro crashkernel=auto fips=1
-kgdboc=ttyS0,115200
-
-On the secondary machine, we connect with minicom or screen over the serial
-port. 
-
-The first issue is that  magic sysrq over serial (ctrl-a f g with minicom,
-for example) doesn't work even with the proper mask written to
-/proc/sys/kernel/sysrq (we tried "1", which should enable all magic-sysrq
-features). Doing   echo g > /proc/sysrq-trigger from the evl system does
-seem to work, but that isn't ideal. We'd rather break in from the secondary
-system when the system is hung. We think we have the correct kernel config
-for Magic-Sysrq over serial:
-
-[root@localhost boot]# cat config-5.15.98evl-g1541335eef8b-dirty|grep
-MAGIC_SYS
-CONFIG_MAGIC_SYSRQ=y
-CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
-CONFIG_MAGIC_SYSRQ_SERIAL=y
-CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=""
-
-After the magic sysrq g is issued, the connection via serial port seems to
-have kdb content, but the connection is not stable, usually hanging but
-sometimes giving a kdb prompt once or twice. One time we were able to issue
-the "kgdb" command within kdb and attempt to connect via gdb, but after the
-target remote /dev/ttyS0 within gdb, the gdb process just hung.
-
-Do you have any suggestions on debugging a hard hang in the evl environment?
-We get a CPU STUCK when restarting an evl-enabled app multiple times, and
-one way to get more insight into this problem is with a kernel debugger.
-With the kernel debugger not working, it seems difficult to get any
-kernel-level insight. 
+Content-Type: text/plain
 
 
-------=_NextPart_000_0007_01D97846.48A929F0
-Content-Type: application/pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
+Russell Johnson <russell.johnson@kratosdefense.com> writes:
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCFbQw
-ggQyMIIDGqADAgECAgEBMA0GCSqGSIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBM
-aW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAxMDAwMDAw
-WhcNMjgxMjMxMjM1OTU5WjB7MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
-AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvkCd9G7h6naHHE1FRI6+RsiDBp3BKv4YH47kAvrzq11QihYxC5oG0MVwIs1JLVRjzLZuaEYL
-U+rLTCTAvHJO6vEVrvRUmhIKw3qyM2Di2olV8yJY897cz++DhqKMlE+faPKYkEaEJ8d2v+PMNSyL
-XgdkZYLASLCokflhn3YgUKiRx2a163hiA1bwihoT6jGjHqCZ/Tj29icyWG8H9Wu4+xQrr7eqzNZj
-X3OM2gWZqDioyxd4NlGs6Z70eDqNzw/ZQuKYDKsvnw4B3u+fmUnxLd+sdE0bmLVHxeUp0fmQGMdi
-nL6DxyZ7Poolx8DdneY1aBAgnY/Y3tLDhJwNXugvyQIDAQABo4HAMIG9MB0GA1UdDgQWBBSgEQoj
-PpbxB+zirynvgqV/0DCktDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zB7BgNVHR8E
-dDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2Vz
-LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0FBQUNlcnRpZmljYXRlU2VydmljZXMu
-Y3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAIVvwC8Jvo/6T61nvGRIDOT8TF9gBYzKa2vBRJaAR26Obu
-XewCD2DWjVAYTyZOAePmsKXuv7x0VEG//fwSuMdPWvSJYAV/YLcFSvP28cK/xLl0hrYtfWvM0vNG
-3S/G4GrDwzQDLH2W3VrCDqcKmcEFi6sML/NcOs9sN1UJh95TQGxY7/y2q2VuBPYb3DzgWhXGntnx
-WUgwIWUDbOzpIXPsmwOh4DetoBUYj/q6As6nLKkQEyzU5QgmqyKXYPiQXnTUoppTvfKpaOCibsLX
-bLGjD56/62jnVvKu8uMrODoJgbVrhde+Le0/GreyY+L1YiyC1GoAQVDxOYOflek2lphuMIIFgTCC
-BGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7MQswCQYDVQQGEwJHQjEb
-MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRowGAYDVQQKDBFD
-b21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5
-MDMxMjAwMDAwMFoXDTI4MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcg
-SmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3
-b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjAN
-BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sIs9CsVw127c0n00ytUINh4qogTQkt
-ZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnGvDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i
-6HTJGLSR1GJk23+jBvGIGGqQIjy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1R
-jjWmp2bIcmfbIWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
-tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97Exwzf4TKuzJM7
-UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNVicQNwZNUMBkTrNN9N6frXTps
-NVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LT
-TLPtW//e5XOsIzstAL81VXQJSdhJWBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAf
-V1SoPv10Yy+xUGUJ5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu
-6lzGKAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSgEQojPpbx
-B+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rIDZsswDgYDVR0PAQH/BAQD
-AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSG
-Mmh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsG
-AQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3
-DQEBDAUAA4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+rvSN
-b3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+/czSAaF9ffgZGclC
-KxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gACiIDEOUMsfnNkjcZ7Tvx5Dq2+UUT
-JnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1FzZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBz
-J0RHfxBdiSprhTEUxOipakyAvGp4z7h/jnZymQyd/teRCBaho1+VMIIF4TCCBMmgAwIBAgIRAI/z
-sKoC9gIWd6K2uUMqX0gwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJH
-cmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGlt
-aXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1
-cmUgRW1haWwgQ0EwHhcNMjMwMzA5MDAwMDAwWhcNMjQwMzA4MjM1OTU5WjCB4jEaMBgGA1UEFBMR
-KzEgKDcxOSkgODg0LTYzOTIxDjAMBgNVBBETBTkyMTMxMTIwMAYDVQQKDClLcmF0b3MgRGVmZW5z
-ZSAmIFNlY3VyaXR5IFNvbHV0aW9ucywgSW5jLjESMBAGA1UECRMJU3VpdGUgNjAwMRMwEQYDVQQI
-EwpDYWxpZm9ybmlhMQswCQYDVQQGEwJVUzEYMBYGA1UEAxMPUnVzc2VsbCBKb2huc29uMTAwLgYJ
-KoZIhvcNAQkBFiFydXNzZWxsLmpvaG5zb25Aa3JhdG9zZGVmZW5zZS5jb20wggEiMA0GCSqGSIb3
-DQEBAQUAA4IBDwAwggEKAoIBAQDAs1JlPXcxObC/SDH5jeXQCR/wpwukNllyXtVupCmQwW0zjEXN
-bnSaUcXkpkqU52fnuPrvg49YNVMs8j9ftVR1JgYBTzqfe4cYa1085W31zMc1ysOFO4Q4fmL1ew+t
-UkDewFDJhiZMPbsFDFMLZmrdsdE+zoO3snCOykm1bJYQ23DFfk+41sgLNMSxrvaMzTk9Dr2MVGYJ
-U5XiwKGseszOA59mR278QTbitwAaGm2yZ3haqxRpSiLdTCpWP6NT+ufDgN7gdUqNHzIDX0/Wkm2l
-se1EneAnUyGvZAVuqcgrtdHzslP51mJ92jxuDSkRNJxUU8jo3OkX1rkRRpppQi0vAgMBAAGjggHa
-MIIB1jAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUG/7kujLuZ4Qp
-vVGdPTrnUMwMRwMwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYB
-BQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEW
-F2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2Vj
-dGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5j
-cmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9T
-ZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEF
-BQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wLAYDVR0RBCUwI4EhcnVzc2VsbC5qb2huc29u
-QGtyYXRvc2RlZmVuc2UuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQBRRMaZHiM5JRYIchy62As+w13F
-TXX2s5QeFwTWbbS732kxBxsFpv1KxGoL7Dze5Y3pQXk0wHKEu922i1O5rSBQ/63HOeZ9t1F1Vu7b
-oUU6BP+uhqcamCtQPkV9MiEInBonCOimhoeqU2aSgyOHAM7MAnXAk4SZ/ElFQAogucYaDI1DpciA
-uClBkWCfbYVjYkzbN/WURM02AQpicgXkWXJoWxHt9J1unZP7AIdIE3WD5No+wsxF0nZTg+5XU0RY
-Y1FAx82tWR4Hq4i2qOFgs/pu2KSfGzo2IOuft380xuEe67ovMgvTzNL/PVaYNxn08XACfn4hbP9Y
-LBCOCUz2NbYXMIIGEDCCA/igAwIBAgIQTZQsENQ74JQJxYEtOisGTzANBgkqhkiG9w0BAQwFADCB
-iDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCk5ldyBKZXJzZXkxFDASBgNVBAcTC0plcnNleSBDaXR5
-MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxLjAsBgNVBAMTJVVTRVJUcnVzdCBSU0Eg
-Q2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTgxMTAyMDAwMDAwWhcNMzAxMjMxMjM1OTU5WjCB
-ljELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2Fs
-Zm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGll
-bnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAMo87ZQKQf/e+Ua56NY75tqSvysQTqoavIK9viYcKSoq0s2cUIE/bZQu85eo
-Z9X140qOTKl1HyLTJbazGl6nBEibivHbSuejQkq6uIgymiqvTcTlxZql19szfBxxo0Nm9l79L9S+
-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
-tVQT+z3o8gAAAAAAAA==
+> [[S/MIME Signed Part:Undecided]]
+> Has there been any successful use of kdb or kgdb with the evl kernel?
+>
+> We are currently using 5.15.98evl-g1541335eef8b, and have not had much luck
+> in getting kdg or kgdb to work. We see the start of a kdb session, but the
+> serial port eventually hangs.
+>
+> We are connecting the unit under test (running evl kernel) over a serial
+> port to a secondary machine. 
+>
+> I think we have all the necessary settings n the kernel config for GDB/KDB:
+>
+> [root@localhost boot]# cat config-5.15.98evl-g1541335eef8b-dirty|grep GDB
+> CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
+> CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
+> # CONFIG_SERIAL_KGDB_NMI is not set
+> # CONFIG_GDB_SCRIPTS is not set
+> CONFIG_HAVE_ARCH_KGDB=y
+> CONFIG_KGDB=y
+> CONFIG_KGDB_HONOUR_BLOCKLIST=y
+> CONFIG_KGDB_SERIAL_CONSOLE=y
+> CONFIG_KGDB_TESTS=y
+> # CONFIG_KGDB_TESTS_ON_BOOT is not set
+> CONFIG_KGDB_LOW_LEVEL_TRAP=y
+> CONFIG_KGDB_KDB=y
+>
+> Our command line is as follows:
+> BOOT_IMAGE=/vmlinuz-5.15.98evl-g1541335eef8b-dirty
+> root=UUID=8748ad87-3ef2-48fe-8d3d-fb2ef72a8f13 ro crashkernel=auto fips=1
+> kgdboc=ttyS0,115200
+>
+> On the secondary machine, we connect with minicom or screen over the serial
+> port. 
+>
+> The first issue is that  magic sysrq over serial (ctrl-a f g with minicom,
+> for example) doesn't work even with the proper mask written to
+> /proc/sys/kernel/sysrq (we tried "1", which should enable all magic-sysrq
+> features). Doing   echo g > /proc/sysrq-trigger from the evl system does
+> seem to work, but that isn't ideal. We'd rather break in from the secondary
+> system when the system is hung. We think we have the correct kernel config
+> for Magic-Sysrq over serial:
+>
+> [root@localhost boot]# cat config-5.15.98evl-g1541335eef8b-dirty|grep
+> MAGIC_SYS
+> CONFIG_MAGIC_SYSRQ=y
+> CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
+> CONFIG_MAGIC_SYSRQ_SERIAL=y
+> CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=""
+>
+> After the magic sysrq g is issued, the connection via serial port seems to
+> have kdb content, but the connection is not stable, usually hanging but
+> sometimes giving a kdb prompt once or twice. One time we were able to issue
+> the "kgdb" command within kdb and attempt to connect via gdb, but after the
+> target remote /dev/ttyS0 within gdb, the gdb process just hung.
+>
 
-------=_NextPart_000_0007_01D97846.48A929F0--
+This is more of a Dovetail issue than an EVL one. I don't use kernel
+debuggers, so I must admit that Dovetail + KGDB support did not get much
+attention and certainly no testing from my side.
+
+> Do you have any suggestions on debugging a hard hang in the evl environment?
+> We get a CPU STUCK when restarting an evl-enabled app multiple times, and
+> one way to get more insight into this problem is with a kernel debugger.
+> With the kernel debugger not working, it seems difficult to get any
+> kernel-level insight. 
+>
+
+With x86, you could try passing nmi_watchdog=1 via the kernel cmdline to
+enable the APIC watchdog on the CPUs, _only for the purpose of
+debugging_ because this is likely going to make the latency figures
+skyrocket (setting nmi_watchdog=0 is a common recommendation on x86 for
+a real-time configuration). But if the application logic can bear with
+degraded response time, with luck you might get a kernel backtrace
+exposing the culprit.
+
+-- 
+Philippe.
