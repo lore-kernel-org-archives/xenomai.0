@@ -1,22 +1,23 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C283F2594
-	for <xenomai@lists.linux.dev>; Thu, 27 Apr 2023 12:36:44 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202304271156253669625f35a187bcf2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 864222F44
+	for <xenomai@lists.linux.dev>; Thu, 27 Apr 2023 14:32:17 +0000 (UTC)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202304271432140272471db63abc0906
         for <xenomai@lists.linux.dev>;
-        Thu, 27 Apr 2023 13:56:25 +0200
+        Thu, 27 Apr 2023 16:32:14 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=zTJ3lad5hlg9iam2T1uglsItPa2abqfbGzVLv+qWL+Q=;
- b=AIhuaDoEOfWtkJZDsy/Sn/HjQt/j9tWLcuAF6IMLKlEkCfgFQrA3+03d/Lp3uRLkNol/N+
- yCxNOh9JHEsKEhoaIrx50igzBceeFOLyOrceq+jGkgF7w51+HtaAMH+mwEQ5YYnzBzwJU6uL
- 367+9rJgoPIwIJAjkvq1YX75bUcY4=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=QubP26bNTGIvUBOJvDEA1izu67krlhH1Zl6O4z1HEOE=;
+ b=VaMsjBdpIOgk0VRGJXMkEoOKRd5v8KPiYbamqPfPLymbRkTexVYY9aGyKbdaF0WFv8Ibis
+ cpkEL3opi0ix/JKm4HKcRh8YFrm/J+8SfmLVy9MdbFSz4Wyb2eh3SJ6VraTHghJYT/QDKYUG
+ zgzgikM84b0V7UGidOhOvEfniLENo=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Thu, 27 Apr 2023 13:56:19 +0200
-Subject: [PATCH xenomai-images 2/2] xenomai: Install xenomai-testsuite in
- addition to xenomai-runtime
+Subject: [PATCH 0/2] debian: Move testsuite (smokey) into a separate
+ package
+Date: Thu, 27 Apr 2023 16:32:09 +0200
+Message-Id: <20230426-florian-debianization-extract-testsuite-v1-0-0a957cde7b74@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,79 +26,47 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230426-flo-testsuite-extraction-v1-2-6f026bba9c39@siemens.com>
-References: <20230426-flo-testsuite-extraction-v1-0-6f026bba9c39@siemens.com>
-In-Reply-To: <20230426-flo-testsuite-extraction-v1-0-6f026bba9c39@siemens.com>
-To: jan.kiszka@siemens.com, xenomai@lists.linux.dev
+X-B4-Tracking: v=1; b=H4sIAGmHSmQC/52OzW7CMBCEXwX53K1sk4TCqe9RcfDPhKwUHOQ1E
+ RDl3Wu49VhOq2+k/WYWJcgMUYfNojJmFp5SBfOxUWFw6QTiWFlZbbe6sR3145TZJYrw9fDDlfp
+ BuJXsQqECKXLlAtqHoFvYztudVtXmnYB8dikM1Zeu41jDS0bPt1f9z7HywFKmfH+tmc0z/X/xb
+ EhT0zVbmBhD0+JbGGck+QzT+bnkPSM6o+Puq98j+D/G47quv2BhHRBHAQAA
+To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The xenomai testsuite has been moved into a separate package
-(xenomai-testsuite) during 3.3.x development but will stay inside the
-xenomai-runtime package for older stable releases.
+Moving the testsuite into its own package allows to minimize the xenomai
+footprint on production systems. Previously the testsuite was part of the 
+xenomai-runtime package which had some limitations. For example the gdb
+dependency was skipped to keep production systems clean.
+
+With that series applied the xenomai-images build for next/master will
+fail. Necessary patches will follow soon and need to be applied in
+lockstep with this series.
+
+Note: I'm now using b4 to keep track of patch series versioning, cover
+letter creation and sending out patches. Especially the layout/content
+of the cover letter is now slightly different. Let me know if there is a
+problem somewhere.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- recipes-core/images/demo-image.bb   | 27 +++++++++++++++++++++++++--
- recipes-xenomai/xenomai/xenomai.inc |  2 ++
- 2 files changed, 27 insertions(+), 2 deletions(-)
+Florian Bezdeka (2):
+      lib/boilerplate: Do not remove $(DESTDIR)$(libdir)/xenomai on uninstall
+      debian: Extract xenomai tests into separate package (xenomai-testsuite)
 
-diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
-index df849f2..540583b 100644
---- a/recipes-core/images/demo-image.bb
-+++ b/recipes-core/images/demo-image.bb
-@@ -14,11 +14,34 @@ inherit image
- ISAR_RELEASE_CMD = "git -C ${LAYERDIR_xenomai} describe --tags --dirty --always --match 'v[0-9].[0-9]*'"
- DESCRIPTION = "Xenomai demo and test image"
- 
-+# The Xenomai testsuite was part of the xenomai-runtime package until 3.2.x.
-+# Since 3.3.x a new package (xenomai-testsuite) is providing the testsuite.
-+def has_testsuite_package(d):
-+    xeno_ver = "PREFERRED_VERSION_xenomai"
-+    v3_0 = d.getVar("XENOMAI_3_0_VERSION_LIST")
-+    v3_1 = d.getVar("XENOMAI_3_1_VERSION_LIST")
-+    v3_2 = d.getVar("XENOMAI_3_2_VERSION_LIST")
-+    all = v3_0 + " " + v3_1 + " " + v3_2
-+
-+    return bb.utils.contains_any(xeno_ver, all, False, True, d)
-+
-+def get_testsuite_package_names(d):
-+    if not has_testsuite_package(d):
-+        return ""
-+
-+    return "xenomai-testsuite xenomai-testsuite-dbgsym"
-+
-+# Install gdb only for older stable releases. Enables gdb tests and avoids a
-+# arch missmatch for compat builds on newer releases.
-+IMAGE_PREINSTALL += "${@ 'gdb' if not has_testsuite_package(d) else '' }"
-+
- IMAGE_PREINSTALL += " \
-     bash-completion less vim nano man \
-     ifupdown isc-dhcp-client net-tools iputils-ping ssh \
-     iw wireless-tools wpasupplicant dbus \
--    gdb lsb-release"
-+    lsb-release"
- 
--IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
-+IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym"
-+IMAGE_INSTALL += "${@get_testsuite_package_names(d)}"
-+IMAGE_INSTALL += "libxenomai1-dbgsym"
- IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
-diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-index ca71d8c..0a32981 100644
---- a/recipes-xenomai/xenomai/xenomai.inc
-+++ b/recipes-xenomai/xenomai/xenomai.inc
-@@ -14,6 +14,8 @@ inherit dpkg
- PROVIDES += "xenomai-kernel-source"
- PROVIDES += "xenomai-runtime"
- PROVIDES += "xenomai-runtime-dbgsym"
-+PROVIDES += "xenomai-testsuite"
-+PROVIDES += "xenomai-testsuite-dbgsym"
- PROVIDES += "libxenomai1"
- PROVIDES += "libxenomai-dev"
- PROVIDES += "libxenomai1-dbgsym"
+ debian/control                   | 18 +++++++++++++++---
+ debian/libxenomai-dev.install    |  1 +
+ debian/rules                     |  2 --
+ debian/xenomai-runtime.install   |  8 ++++++--
+ debian/xenomai-testsuite.install |  2 ++
+ lib/boilerplate/init/Makefile.am |  2 +-
+ 6 files changed, 25 insertions(+), 8 deletions(-)
+---
+base-commit: f06a2e785900ba0d5da170636b2abf2364eacc15
+change-id: 20230426-florian-debianization-extract-testsuite-9cc05e26b270
 
+Best regards,
 -- 
-2.39.2
+Florian Bezdeka <florian.bezdeka@siemens.com>
 
