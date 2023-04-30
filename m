@@ -1,183 +1,153 @@
-Received: from mx0a-001f5801.pphosted.com (mx0a-001f5801.pphosted.com [148.163.157.244])
+Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2084.outbound.protection.outlook.com [40.107.247.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFCE1320C
-	for <xenomai@lists.linux.dev>; Fri, 28 Apr 2023 22:29:28 +0000 (UTC)
-Received: from pps.filterd (m0090334.ppops.net [127.0.0.1])
-	by mx0a-001f5801.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33SKlhjv022159
-	for <xenomai@lists.linux.dev>; Fri, 28 Apr 2023 13:47:53 -0700
-Received: from usg02-cy1-obe.outbound.protection.office365.us (mail-cy1usg02lp0177.outbound.protection.office365.us [23.103.199.177])
-	by mx0a-001f5801.pphosted.com (PPS) with ESMTPS id 3q8j8c0fe6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <xenomai@lists.linux.dev>; Fri, 28 Apr 2023 13:47:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=d4Zw7MQ/6CZVqfH9jO3R2UGHri4OJKJw43Q6TctbUtv/N4cSfmk9lpOxo3Wuo7Wb5CFc7bw80LUbZfYDddAPCkg36gFvYEeUvSPH3MFm0yTiF/QMlaXIceGuh/enyWJJyj+cQ79pQV0ozE6yEfSzeJTnWgE+7AtoBFbdXTwnSwuOWmnefZQDZvMql2oKW7zzFsBUdivPDRPajACUyO+5/7+afWIYjYbiJWWmcpau4DZvWTgZiEQt8p/FktCsBEneHBuOz/kTjJBShNxraj1JJTtLcJmioaDmnqw4A6G0p3oj8PXn474ysnlW4KSeDGYlXKs2iqatT6AuFtBPcueb/Q==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36D3315A2
+	for <xenomai@lists.linux.dev>; Sun, 30 Apr 2023 09:22:15 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RihmMaa03XA1H8PngiWd4i9mQV3A70rGfH9yNWBHJZC4M+hcDnZJ9oa9ST/wGtMjKg+o28XA+fs7sxuJ0icXzK7Jv7sGelknQPB4ZnXU5sVbAypWPEog0uQmhGu5DBh4T6XGDJau2jC+r9qo7BdwjDYHmQd9eXlhgy9hzBIYhu+9L/A0Ser2Tedc3OjKL+a57lSUXElb4ylz8V9IDqxrAZzrD6Q+bcLLdJ8tUuBgS62+HpVvSb76tcCxAQl9Q0APgU9n+VYiFrGOkakOHgdEO5XXm2UuGGgrb8styMGA8cn2LbHbZMFUltgBP1dwihu/athQS1GCzVRi27rGP3trwQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
+ s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cP/EkH+CXMwsrbjs5Bq9jOe3gUBfYi78YjWmn+qWdXk=;
- b=d6zzkljqntIrzPjBmaAhgyWdYuOE8bWtp6531rwlKiwHJE4BF24uMSmHtdj74XkC5Y6uitd7xHxBfxi4wAobcehlQcJx4HdIcKVMDGgD4/aRjXihS406e+ScmGllnb9GgK0rGUEs0ZdQdJ1bE2qdmnKHXzmbQ5bKvvSPVcX8CXP5Z94rMkZCBl2bui6Q2t1y5m03ObmiA3h8+CodicF0ji41bYYyQZFzgyTaCeyvHDvlZm4Emw9Vqg+1BELWV8jUl4kftcZvVLviFO7WLBbsTOX8DBPrGCPDLxc7qRl9g8ynoFLTi1AoIBYKyTUW91CmgD6Y16iRFxBs3lnFUMy7oA==
+ bh=O/yijuGLg7n+r3Khih/Y0TnpjQt+/UFpp38BFEjXb9M=;
+ b=YyVPcW8MgcCBcQEGHmyH3490zCFHPJDTkprFUtlPEvBidk4fv57eVVdJ83RBJIOnmvhifBL4YoRk0//mBeXQscfpAwRQsByG/xB8MbIIiMQpVf32yRRChpnsaXV/Gu/ttdiEq0zrxEVwxqTUXHBIaHQVM0ookbJAeGqzIvLKB2HLsSe0QlZIfroHc+sWxvXV+6hWeQ6Clu15ZSR7TXLszN4iwO1GkxK5icRQ9C22T8FjoFlETepiRWJAFWenZdBg0JhcxJZFA1TAl+XnyFoSTjgfvspVdCsISz7hxdDyI+l/KK5FTVX2j5R0/bIvCjXnWH0NbU+Qn+8TuYqOlwsOow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kratosdefense.com; dmarc=pass action=none
- header.from=kratosdefense.com; dkim=pass header.d=kratosdefense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=kratosdefense.onmicrosoft.us; s=selector1-kratosdefense-onmicrosoft-us;
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cP/EkH+CXMwsrbjs5Bq9jOe3gUBfYi78YjWmn+qWdXk=;
- b=DRmjV+8LQm41bXmACfO07yA7a9Za2TePG2gfHb9+Q/t5bMBIgenbOhgr6NFH6XGeQ8HHOANQ7HEwyc8UXRFh+eg6K+fqgvsfynWS+UuMO7NOMlY3g9rc5Y2AWU4gZrMG1rJOr7usof+vwPLWySUrjqZwTtwDKRvG8CXzZLEE2kXwCoF3XyJI4hYrBKwsp4G4t1NE4YePBRsw342mMdnnQO3LXJM0CfGdtbRcZYD8aWwWvWmA2P3Rm3bf2Qw00bzYmooeMvg8oUv+7/9Za3k9Ln4GtUPlXtwMMF5X9iWD88GAmrTx7sG7PJwR4bm+y/NjVDC2VIwe8DLu/YN5vl889Q==
-Received: from PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:188::21)
- by PH1P110MB1132.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:174::18) with
+ bh=O/yijuGLg7n+r3Khih/Y0TnpjQt+/UFpp38BFEjXb9M=;
+ b=aYU70PI1vWmD66nsTC+KDRUU2Dlm2kYuTi8L7YvjM4VWZtqaS4DNSrps7nR8GScB9n1hjcVYW3uIdAKviNBf+xQPq5hbWTrVWt7ibTlvvxlkrNfQjgQvOZnPR6cPVLi6FpYlwneHgIdPMPTOKSsfX+x6zlb0dzWlisLTeJicG1mDsOS5duFJaSbCCbEZ93agFmbqoAzBVNAnchvZ5m9tE1TkjZzfrVkMRToTnn4BRIeBVVlpqAFMVhsbd7/MDQ0iLXPEjipvcqsFQQVVefNevLCYjbJBLqf6Zue39ygosZS7kbCHbnkH49OrqTV0re3qAO0hi2ElfmjwbAebwEj06Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS1PR10MB5603.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:47a::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.24; Fri, 28 Apr
- 2023 20:47:50 +0000
-Received: from PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM
- ([fe80::c96e:5bd5:5363:2999]) by PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM
- ([fe80::c96e:5bd5:5363:2999%5]) with mapi id 15.20.6319.037; Fri, 28 Apr 2023
- 20:47:50 +0000
-From: Dave Rolenc <Dave.Rolenc@kratosdefense.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-CC: Russell Johnson <russell.johnson@kratosdefense.com>
-Subject: Re: EVL Kernel Debugging
-Thread-Topic: EVL Kernel Debugging
-Thread-Index: AQHZehKyzv2OZiOdmUu0PHGOX4OOsA==
-Date: Fri, 28 Apr 2023 20:47:50 +0000
-Message-ID: 
- <PH1P110MB1666BA1533E0614496E7B678FE6B9@PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM>
-References: 
- <PH1P110MB1050E3792D231FD98FD707B7E2659@PH1P110MB1050.NAMP110.PROD.OUTLOOK.COM>
- <871qk5zqpp.fsf@xenomai.org>
-In-Reply-To: <871qk5zqpp.fsf@xenomai.org>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.28; Sun, 30 Apr
+ 2023 09:22:13 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::f5ab:5f59:3b47:fc2e]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::f5ab:5f59:3b47:fc2e%4]) with mapi id 15.20.6340.025; Sun, 30 Apr 2023
+ 09:22:13 +0000
+Message-ID: <309787e1-da5d-20b8-c6e1-255ef962edb2@siemens.com>
+Date: Sun, 30 Apr 2023 11:22:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH 0/2] debian: Move testsuite (smokey) into a separate
+ package
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH1P110MB1666:EE_|PH1P110MB1132:EE_
-x-ms-office365-filtering-correlation-id: e08aee45-096b-43f7-525e-08db4829d4b1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- z9nuCYzkKpHcs0jLG9hYWTXaYSsj5O3Df5PurD2b68uNSzxFIwf3KwCS8Lj/nSgDDXpJ6yKZFL4Kb7QgpeW4jfU3tpgJkWv+LPxjkZMsHOdX6ZJw521TEPhnklTjC0PoIM//5dQi0oVEEazopN79p/hsqS/u83sWLtTJDNEXYHKVE2/yZ1wP2OfgMw/NwQICpoipLSO9KDz22yz6bfS44Hh+9OkzAgqj58KaTfQNCUF3ogvVMxmCMDSv2dUSX19iErt+hn5RqaJOGRE3dbe66HpbUcxguJ9NZZWjp3THinKOfPMqc/UZGRRRPc+dOb45OfaU6CTsK47zPFsvoFlc46GLlKzLNq+ELDQKI8NvS5xy77WVWViDd0p1XSjKGV/sBa6a5bxq6S9TxHQM0fr7uB03WYhVTnkOLqtO2E2vClFQ5za2B89SjVBshZKl7sbUsun9ZGhHBfZAqRwDUDXOLDJFEYU84wlHvAa3uFqeLVLVEM4nTILzmWyL3mX+9KAxI43yjmSGxuHYZi6kSBzeS7KwveUglZe93R9tdnfOtm6DAsuD1Jms6jPqeM9KwGnR09XxRhccHEvL1F0e/8KwzegTtiW3oKNDfkUywYZuJ4ghSlfZ82qK8dTzdOO+UKpf
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(39830400003)(451199021)(107886003)(122000001)(9686003)(71200400001)(26005)(6506007)(41320700001)(7696005)(38100700002)(3480700007)(83380400001)(186003)(2906002)(8676002)(66556008)(66946007)(508600001)(33656002)(86362001)(64756008)(66476007)(76116006)(38070700005)(66446008)(5660300002)(55016003)(8936002)(7116003)(52536014)(6916009)(41300700001)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- dvkqxpLo5wbqjHAheqK86oKW07bxXpfLcki1j3q5qSjOENWfaEhx20SpAom163viZ0kdgUsSBNGkHnHDqHJ2fmvH8fBSNTxm9n02RMq4/pwbWg1UzOB9qE6IS3G3TbTKEVGhUnbaW3+CjkaiW1RYY1h5bhaAt8HHR0Q4hppF4/3zAYF6Rmi2cxFBA4M25jhidXSjY3jYdt2y+x74UG0ynPUroi4iblpNcSMC6BkmlnmmwxwpqCI566AROC/CpZ+8y0o+RoMTFENkVxzHH4t4eNSY/QZPNnTe/v1yjiOuYmb/Zbe2jQyAjk578YM6lCaKPCSfBrxJ0vT/8e1DCTeuq8sgs2zW3F0MQr5hvKSetIK/ZBe2uaIoX57OAs0A4RuyGaHgpCG5yVsOyhKileEErUNhbsh+OVO+7NN4qoRnrqI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20230426-florian-debianization-extract-testsuite-v1-0-0a957cde7b74@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20230426-florian-debianization-extract-testsuite-v1-0-0a957cde7b74@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR03CA0067.eurprd03.prod.outlook.com (2603:10a6:208::44)
+ To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	Nw3cA9uQrSLjGvkaMae3ftECSbBmRNtQJChKIIKHFuUgRpQ7P1OXUjIBP6s234gf0UHs/089IQ2xrc5wknjioIh2JZEeTszuHaPenayGDeuib7TOCwa9j0G3Ggqx6EPbllhF9WvbBKaXSRtlMbwbQUgnTmwZzqPZqNtfKeltikN649l5CncAucYJwmJp3X6Er+OgamKrPt46tlffuzetTJmPbQsmU0mj+BFfaV8kNDLFz4HZBmOMc79zuIg/btfxsQZpZSQUwt5818PldOhOcfZmmD/RO+/41wuS1mfvq8049Q6tSLIGN+bGkI3HSxcDBMctQN00dWFk2JOk34YAUh/Hw3M2JN2T+JbKq7C1c6+8AD8JQhvlDp/igOnL2LzN5E9s7W3lku7ja/EljVmYNqY/5nG++JTN+3YO2HcvyFY6v7bYfkUpJgu6cy/hD3crN1V0FHh2PPEevrunsRJRf/XIkMz4rdcf+nf5JrDFJ3dBaVK+As7xsE2yhlPJbtq5rdJvapOAAFyw521woKg/pAd1ceUUKg+sFi5GFGO/afwGYQsCmQDyHdt1lpAT9HfiU/BSK/6FJYo6gka3UsdYWkQS5Hk5qswJLJotbO4ReYKEm1ffqhQvtMFvYvhExIa1X/T2/sDxB05jYegNpCems8m6A98s12TKBYGEyAw+pMYeV2PTfXrh6EcopNJvxpY1gVaCLvX1NkcogZRyon8r0tnDPUxfkZus8JBurE+d7O2z+7D52G5R16usYUoApNUGmYPMic8vmGaEQ1iDTlb5jQ==
-X-OriginatorOrg: kratosdefense.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS1PR10MB5603:EE_
+X-MS-Office365-Filtering-Correlation-Id: 16746944-ce8a-4ad3-fce9-08db495c620c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zxVbp1oomFYQjxsnaQrbce2aALQ+c9RxfUokdhBkfXdTUrlDvMyEk57dgz4ywdYl/vMV5343qMj2tn2OUrCrdkiAbPvC95MQ2si6emy5wGPoWjP9a7Jl5NWB62mRbjId9assZL2zXaSwrVS5dmrqmWir633mPXHzjYdBjNfjpZ9XgaZqCz8XvMKW6/4KNCc0Mwuptu7kN0D4rk7lV78sbBt06ZYfFb1G9vxkA061S0wzLTtHeug6sEV+5SrFIpRkvhkXEo2iUEDTp/zBW8FMkd9JU52epLhqiqO3Px3QPb/VRebfaL+qpNH/yEgTO6q3RkNjkAtfic5NsamLNTFxEGQD9a28Dbq29voSc1C+xmHIAbN9IlGzco7V6YX3EKtW1IzRFDf0T8GgEOoocs2IoGIRhRo1UfXcYja13FyJ7yOzDtrGVyynWuxt6fPsf/tUCELRbQSZop1jJGh2SB+MXs0W9Ty8NKkUmMAaaCYlUYzNDUqAb29Eo+EIk4WsiBKxvVFx2qacKGb0op6GOYKZWGtyvbmh+M5KiQHGYNop3QTH+JxkNhAvYtoBHA/TNvx9SuogerCrPvPt//9jWoq+DQuBk7jOFegTpIIB9u2Vf0P7kyhPSarnMT9c0rfz6w/qgXumnKCfL2bT5BD6RZ7E2w==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(451199021)(2906002)(478600001)(186003)(2616005)(36756003)(44832011)(6666004)(6486002)(41300700001)(316002)(82960400001)(6506007)(6512007)(53546011)(38100700002)(26005)(31686004)(83380400001)(66556008)(66946007)(66476007)(31696002)(5660300002)(86362001)(8936002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RXhmNmxMTGxJbzVXTm1HdUtqeVd1ZnFQNmR2U2RpeTBQSENMODAxNnAydTVC?=
+ =?utf-8?B?N0F6NW8waXhMQ3FFVERpMzBMMGJ4ZDBVaUtoRkVIUjFtbWl2ME1zT1ZpNUpE?=
+ =?utf-8?B?dnhuQ2F4L2FOWXpvZmZ3TUVRNDlocjRjajVpdDFVNEpIb0o4VDZCWHVWRm83?=
+ =?utf-8?B?OWRjS3k3Z3VFbkgvREJTK1dSUDQyaE9teWZBcmJ0NWR4dGQ1U0x0KzZvQjdr?=
+ =?utf-8?B?RVpiNkJKdDZUUWpoME8yV3N2eHpCNThhQnBEenhiaVZNMFA4Z0dVRERqNDJr?=
+ =?utf-8?B?dE9xSmFLMFVZZjZBZVdmbXlFTGR6NW1KMXhQSVBzQzkwbzRJVlVPa3FHd21u?=
+ =?utf-8?B?dFFxSnBtbEtuaGEwbmZ1K2VpKzN5Q3ZvSzBnejBvd2dVem9BWlFIMHU4VkRu?=
+ =?utf-8?B?Y2xSWUpkZ244ZXdDdlFOK1UwczZQd2xJUURSbWlLdzNrOU93Mlllc1Y1NDg5?=
+ =?utf-8?B?WEtOanNObW51a1FtTklFWWQ5UFhnNmdvRlhnMUdiZ0RjZXdLbWlVMmE1Y3ZX?=
+ =?utf-8?B?VkxTeFZ4N1puTXdGaHRzQU9TN3RwOU5JN2RYWW1IR0crRDViWDdrMzVaN2c0?=
+ =?utf-8?B?cHJudkgrc3V3SllQRWNNMGdRbTU0N0hIK3lscVRmYkNKbFVudVJPZk5TNmZp?=
+ =?utf-8?B?UjlEcXRKQ3JEL2Ivdk1CWnhUTTdXZXFZYVBEZ25Bb0tpMENqUHlrVllmT1dr?=
+ =?utf-8?B?bm1Yd1F2S09jTVczZU9IWElBbTNrZlFlanNOdU81ajNZVHhWeUVmM0tPVkdR?=
+ =?utf-8?B?Z3VtcW5nWndBMUVwQkwxVW0zTWRHTG5KYndicUxHYmxqRXY0OTQ2OXI0VUhR?=
+ =?utf-8?B?VUEvRDN6czlYUU5ZVkE2SE8ydTZ0emM0bitzWGxrdThvMFB6eG1oVmZyTlNV?=
+ =?utf-8?B?VGVKR1B6MS9QaDYrenZ5Y2pyRGh1TmZzb3BMWkQva004RU9wTklpYXV5RHFJ?=
+ =?utf-8?B?QWFnL3lXbFgyN1V1SFpiUDQvNTJEaFBzS1VUZGNKYjF0Z0JMOWgrMndWdTRR?=
+ =?utf-8?B?VzBlbDd6OS9XdjlVY1NVNkdWS2pNZFF5UW9TZHZuM0s3VXVzODM3VzlLNUcr?=
+ =?utf-8?B?QitHNVRaV1dWT1BqRWpvdXdLMlcyRmhHYWFmREQvdFd3cU9Cakl1NnZXbUMr?=
+ =?utf-8?B?aWtYMnEvc1lXcTlSRUxhc0lZYnFYREpnWWhiTnhzME8vb0JLcnU3K3lwZlp0?=
+ =?utf-8?B?aEE2OVplaGZaZkpTZnY0cnhmV0UydTNvTnM1aExvUENFYndoQ0NOT1k3Mk1H?=
+ =?utf-8?B?Y1UyYXRGanhEaXY3Sk96emw4M24zblRFOVZaMFFnQ0FFYWtyWDRNNjE4N2lE?=
+ =?utf-8?B?YmVUbW9BNDJVSlR1VWovZEpOTWtFREN4QlhyeHM3U0Nad0FFYndoZDNkckRZ?=
+ =?utf-8?B?aUxlNy8zK25pQmFNODBOdHFhd2FqNUcrcFpueFdqUzAwaEtRc09PcEJZb1hH?=
+ =?utf-8?B?bVdJczVISVh1andnTHZRREhRdVNNV2Z6cGp1RnNrSjJXeXNueE80ejRRNEFO?=
+ =?utf-8?B?UWpmaDBQZU5YbUhzM3ZiRXQ3TVlsdEhhMzRmVTZBdEYvTzE4QmF5SkxTOVhC?=
+ =?utf-8?B?dm5vMFJ6SzNWbDFNOVNDN1hsUGFuOC9DYm1URnEvWkNsV1hBaTU0NDJkYThy?=
+ =?utf-8?B?dFM3VkFWNVpBR2lMMHN0bEh5MFExQnNUclFtYWZIaHIyN2tMcXh5bkxUZmww?=
+ =?utf-8?B?ZUdkeDRQMllVUTl5QUFxT212eWtVcG9nNUZHYVA3ekRJOWZBaUpiVzZSVnUz?=
+ =?utf-8?B?LzJ3NG1nTjlMOEJXNW10dzJXbXJQVmFjeHBoTTV6eng1VGNWcThlZzBUUFBQ?=
+ =?utf-8?B?RzFlcGsyU2ducUJkdU1RQlduRDFnUU5aQWcxM0hINUpqZnBHcGpXTUdFM3Ro?=
+ =?utf-8?B?S2dQT1FHN1JYSW5wZVBVWDRRT2FTZ3UzZlUrNUx5YXF0MXJ3UzZDdUNyYnN2?=
+ =?utf-8?B?dlNESlZ5TFZRUVJlQVdzd2VESU5jaENMT3pHVDIzQ2J4RkxRTDFOY0RLcE9J?=
+ =?utf-8?B?bWZjeVBYMjhzR1liQzdHR2hLR0c4ckNPOHFlTnFleHJZcHlDblNYNno0aXVk?=
+ =?utf-8?B?eHBkUjZiQk96WWx5elNHeCszclhvS0c1WGN4OEJYOHJwNEl5TzlINmtIRWov?=
+ =?utf-8?Q?ppDDT9zySOlHOKB4koBCIrCX6?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16746944-ce8a-4ad3-fce9-08db495c620c
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: e08aee45-096b-43f7-525e-08db4829d4b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2023 20:47:50.1715
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2023 09:22:13.5332
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7932d891-b9cc-431d-be14-d43339fa1133
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH1P110MB1132
-X-Proofpoint-GUID: O6LvjKRqqRtezCSMZQzl9AIqGXV6xc3T
-X-Proofpoint-ORIG-GUID: O6LvjKRqqRtezCSMZQzl9AIqGXV6xc3T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-28_06,2023-04-27_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- suspectscore=0 mlxlogscore=835 malwarescore=0 adultscore=0
- lowpriorityscore=0 phishscore=0 impostorscore=0 priorityscore=1501
- bulkscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304280171
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0wIRsJ66EqiCgWmd4I8i1rhvItUawbM5D+KVYeBCgCbRJAnpeaTmLKQvXco12zCr25ZlMWP/DRtJNKTyAadseQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB5603
 
->> We get a CPU STUCK when restarting an evl-enabled app multiple times,=20
->> and one way to get more insight into this problem is with a kernel debug=
-ger.
->> With the kernel debugger not working, it seems difficult to get any=20
->> kernel-level insight.
+On 27.04.23 16:32, Florian Bezdeka wrote:
+> Moving the testsuite into its own package allows to minimize the xenomai
+> footprint on production systems. Previously the testsuite was part of the 
+> xenomai-runtime package which had some limitations. For example the gdb
+> dependency was skipped to keep production systems clean.
+> 
+> With that series applied the xenomai-images build for next/master will
+> fail. Necessary patches will follow soon and need to be applied in
+> lockstep with this series.
+> 
+> Note: I'm now using b4 to keep track of patch series versioning, cover
+> letter creation and sending out patches. Especially the layout/content
+> of the cover letter is now slightly different. Let me know if there is a
+> problem somewhere.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+> Florian Bezdeka (2):
+>       lib/boilerplate: Do not remove $(DESTDIR)$(libdir)/xenomai on uninstall
+>       debian: Extract xenomai tests into separate package (xenomai-testsuite)
+> 
+>  debian/control                   | 18 +++++++++++++++---
+>  debian/libxenomai-dev.install    |  1 +
+>  debian/rules                     |  2 --
+>  debian/xenomai-runtime.install   |  8 ++++++--
+>  debian/xenomai-testsuite.install |  2 ++
+>  lib/boilerplate/init/Makefile.am |  2 +-
+>  6 files changed, 25 insertions(+), 8 deletions(-)
+> ---
+> base-commit: f06a2e785900ba0d5da170636b2abf2364eacc15
+> change-id: 20230426-florian-debianization-extract-testsuite-9cc05e26b270
+> 
+> Best regards,
 
-> With x86, you could try passing nmi_watchdog=3D1 via the kernel cmdline
-> to enable the APIC watchdog on the CPUs, _only for the purpose of
-> debugging_ because this is likely going to make the latency figures
-> skyrocket (setting nmi_watchdog=3D0 is a common recommendation on x86
-> for a real-time configuration). But if the application logic can bear
-> with degraded response time, with luck you might get a kernel
-> backtrace exposing the culprit.
+Thanks, applied.
 
-With this approach, we did end up with some stack traces. They mostly look =
-like this:
-
-sync_current_irq_stage (kernel/irq/pipeline.c:922 kernel/irq/pipeline.c:128=
-8)
-__inband_irq_enable (arch/x86/include/asm/irqflags.h:41 arch/x86/include/as=
-m/irqflags.h:91 kernel/irq/pipeline.c:287)
-inband_irq_enable (kernel/irq/pipeline.c:317 (discriminator 9))
-_raw_spin_unlock_irq (kernel/locking/spinlock.c:203)
-rwsem_down_write_slowpath (arch/x86/include/asm/current.h:15 (discriminator=
- 1) kernel/locking/rwsem.c:1136 (discriminator 1))
-down_write (kernel/locking/rwsem.c:1535)
-kernfs_activate (fs/kernfs/dir.c:1302)
-kernfs_add_one (fs/kernfs/dir.c:774)
-kernfs_create_dir_ns (fs/kernfs/dir.c:1001)
-sysfs_create_dir_ns (fs/sysfs/dir.c:62)
-kobject_add_internal (lib/kobject.c:89 (discriminator 11) lib/kobject.c:255=
- (discriminator 11))
-kobject_add (lib/kobject.c:390 lib/kobject.c:442)
-? _raw_spin_unlock (kernel/locking/spinlock.c:187)
-device_add (drivers/base/core.c:3329)
-? __init_waitqueue_head (kernel/sched/wait.c:13)
-device_register (drivers/base/core.c:3476)
-create_sys_device (kernel/evl/factory.c:312)
-create_element_device (kernel/evl/factory.c:439)
-ioctl_clone_device (kernel/evl/factory.c:559)
- __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:874 fs/ioctl.c:860 fs/ioctl.c:86=
-0)
-do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:89)
-entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:118)
-
-I have to dig a little deeper about the origin of the ioctl from
-userspace. The top of the trace seems to vary a little bit above
-the inband_irq_enable. For example, here is another trace from
-the stuck CPU where the sync_current_irq_stage call is missing:
-
-__inband_irq_enable (arch/x86/include/asm/irqflags.h:41 arch/x86/include/as=
-m/irqflags.h:91 kernel/irq/pipeline.c:287)
-inband_irq_enable (kernel/irq/pipeline.c:317 (discriminator 9))
-_raw_spin_unlock_irq (kernel/locking/spinlock.c:203)
-rwsem_down_write_slowpath (arch/x86/include/asm/current.h:15 (discriminator=
- 1) kernel/locking/rwsem.c:1136 (discriminator 1))
-down_write (kernel/locking/rwsem.c:1535)
-kernfs_activate (fs/kernfs/dir.c:1302)
-kernfs_add_one (fs/kernfs/dir.c:774)
-kernfs_create_dir_ns (fs/kernfs/dir.c:1001)
-sysfs_create_dir_ns (fs/sysfs/dir.c:62)
-kobject_add_internal (lib/kobject.c:89 (discriminator 11) lib/kobject.c:255=
- (discriminator 11))
-kobject_add (lib/kobject.c:390 lib/kobject.c:442)
-? _raw_spin_unlock (kernel/locking/spinlock.c:187)
-device_add (drivers/base/core.c:3329)
-? __init_waitqueue_head (kernel/sched/wait.c:13)
-device_register (drivers/base/core.c:3476)
-create_sys_device (kernel/evl/factory.c:312)
-create_element_device (kernel/evl/factory.c:439)
-ioctl_clone_device (kernel/evl/factory.c:559)
-__x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:874 fs/ioctl.c:860 fs/ioctl.c:860=
-)
-do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:89)
-entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:118)
-
-Any thoughts on what may be causing this?
-
---
-David Rolenc
-Principal Engineer=20
-Kratos Defense & Security Solutions, Inc.
-
-
-
-
+Jan
+-- 
+Siemens AG, Technology
+Competence Center Embedded Linux
 
