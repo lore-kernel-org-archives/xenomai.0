@@ -1,52 +1,48 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2046.outbound.protection.outlook.com [40.107.22.46])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2083.outbound.protection.outlook.com [40.107.22.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD759321E
-	for <xenomai@lists.linux.dev>; Wed,  3 May 2023 14:17:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 590964A11
+	for <xenomai@lists.linux.dev>; Wed,  3 May 2023 14:57:16 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CzW8BUxcCJvKCGQHY4MYbneRAsHym5OalRDaRm2+Ke3noDOTskAdnvlzlXeIaRnOPyowKbjZBmPd9hmFnwLRLY3dOFNJjhcNn0inMKuV22iUVgrwN1qqpHtnDwc/q0VVN3utgfT8ofiHFmJL18QyhPK30NL3LSyrt9jfx8XmcRMattO6OfBXQAfTeVNkOJm+V5UCy6CrENtvAOlKpYAf3ukv8wOWP4FHhK6Li447arVUb6aYY8HwyDp8hst+ol/SxrjKrbRBiaV6TE0SUydROlNUCcNdrVXovUGrBJSXTAXOYixGCmxoCpuYbybJ+bse7YXwnsqRtC5F2OvQGB0/sA==
+ b=kL20UqmQU20VYPWFBPKGE8NggdFiCJ0FUhbi+Z1vpDYuYyFsTNsXazCKOo5Ns1UgtGvREd9Efmx77F8Ql9ETquejHhpT6jFVkI1Yt01MDdUZcRZxS9zWqSEcLCBJ2UZ0rU/ct2vPcdK3ZTZ2K6P1272vask/mSJudamXVqtPpDOnf0jmPRupQ1LTuHgp9g8OcQ9AKLy3WDJTbIB5Gqgq1CldVnGOaP1TxS17M/7k0xrfXfICS6ShMeBy6CawhgXXfuzZdrBwqaP/ck6RMceVaS2SNIC//L14kxwbj+xz9i6uDziF5yUXvXA1Ez8NpsQNsySiYgjq06nTQiQ7G0R79g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dVf/2H8KbemUL80656C86fbvIcL7o8rxlAjpwt9E8ww=;
- b=LyKQJ7ix1mVSYC7Vn33PihXwqGdlpIESZX7pgbK8HuEwONjSNH0H1jvZZI2jDMWOdFjtRH26Dg50pe9IiZ/9YMVgHaaj5Cct5x8VkiBmW6cuYlSWFZuC9UnpGQLYNxnczl/hrcWOYqHWSB0kfqZtdg7RquG0mFYTKbTL4Uw/4k12E+FSoo8xCIrxtkvUFCEWvfIBEeo7VafHVhXoLAB/sg5E5dywLq8w0vt/9uX4Z6KhwA3Sk+7U88sXqyC41X9BUkbQGWeHKp5z+lX+3cLJb+hHDOY/zp9X3L6x3VJlETuXWywQK73ODhfIApZ81nAYtVqPmKrydrrlZJg2QxhdkA==
+ bh=q2/OoM1h/rNy7FLeAfycxRqcOPNAuzz12GLY2/W84F0=;
+ b=lnWaWdZVpeq3a0bbg/jY6N1MaUZhBuzosjl5q18qxAa2JgPOm9evkIMK7AqUhqG/9bvBON87/TQDuoZxLd067bG75wjJs1rsNARanBKlNzkTM4w75MnEqSRwccZcZXd5W13XFjpXdRiU11ABNWqeG6wl8n9W+apyFXtJCZjmGLYGuRdqYpRVlZ2jZR23agTXZZEoX34d3TW3/hU2dHY+PyxSov/pnpM1LE4h3LQkqwBAN7jrddPcGT/YPJ1uzPXZV19eZgX3HWh5wopS5X0JC/vMsmjCWbB+ZcB7K7uPs81PX1A7IjIVGK9jBORUsfjEAqDp39bCBMvrf/n8inzNiA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dVf/2H8KbemUL80656C86fbvIcL7o8rxlAjpwt9E8ww=;
- b=hp/Bf+j+Fn4IGxDiMwKYUqR8W5Jo9XIZKBFTye59427XLUS8rO33/X8ZkZYHcT9ePcnItOpG203+kQLPspa4av+OjhJ6Jd39L7pG0oOK3+25z2ts7SLRsgUUrapAtX5UH4zlFsTZ6sQcCmveOy4UXz/jLDp3IU3DqI8+JYF9kHR4eSPxqpAFADL4XiTmDqgSR+Nr7YZB82W20k+wLgZ7AGy8mjSn/Te2pS16v4X77dpaVl81KL2FRXDBSlj+8A8hkgmv8tsvHQvF64jt0hN1xvsRUSEcco0QnaAL+z4HeKwq25xb22vAsoybgydqGjWSYzFOZwffNynZ0QjVmULebw==
+ bh=q2/OoM1h/rNy7FLeAfycxRqcOPNAuzz12GLY2/W84F0=;
+ b=vY84KgoonvXGtkxx19VB2Csb+OZrLXvTlOb4xAdyZ9hgBSmXPTVyrudUJC+ZLOFNmiKPKLwL3ZceZiNTRKu0iShtkFaYjVeWROEWfHu2W452P5TfDt8t58RO9tFPhn+Vz0+/V6H+hxAUael8bedAthuPWaeWwqgtSPsw4FzUDb5Co4cp2FjSAE/5D+iGmP8nmg3wKgIpDFdoVrWZw7ptAXNtZ+kLJdOFXUxVF6mufpgCU5flsVJ2vaX+z4Q1sMEUdA0fObOicgDd+FfHQ34X3nQH3srRMCvgvotMFU8CNBFQoMyMhP4z8ZCaDRJcBvN8yY69YABm+4nOPXLfRt8wsQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by VI1PR10MB3341.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:13b::13) with
+ by PAVPR10MB7489.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:2f4::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Wed, 3 May
- 2023 14:17:45 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Wed, 3 May
+ 2023 14:57:13 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::f5ab:5f59:3b47:fc2e]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::f5ab:5f59:3b47:fc2e%4]) with mapi id 15.20.6340.031; Wed, 3 May 2023
- 14:17:45 +0000
-Message-ID: <fb3c2fe7-4558-921c-e83f-bf494cd4e25c@siemens.com>
-Date: Wed, 3 May 2023 16:17:40 +0200
+ 14:57:13 +0000
+Message-ID: <189dee91-923f-131a-ccae-0afcccd06107@siemens.com>
+Date: Wed, 3 May 2023 16:57:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH xenomai-images 3/4] customizations: Mask
- systemd-network-generator service
+Subject: Re: Question about a freeze under Xenomai 3.2.1
 Content-Language: en-US
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <20230503-flo-debian-bookworm-update-v1-0-6a4aa9e4d95f@siemens.com>
- <20230503-flo-debian-bookworm-update-v1-3-6a4aa9e4d95f@siemens.com>
- <87725da2-1d9b-83e3-9822-da38db11f7ac@siemens.com>
- <549fb46b2327ef762fc9e7798a07e2e890081425.camel@siemens.com>
+To: Julien Aube <julien.aube@smile.fr>, xenomai@lists.linux.dev
+References: <5a8afa1e-d6d7-df9f-2895-6832ffa9673f@smile.fr>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <549fb46b2327ef762fc9e7798a07e2e890081425.camel@siemens.com>
+In-Reply-To: <5a8afa1e-d6d7-df9f-2895-6832ffa9673f@smile.fr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR04CA0117.eurprd04.prod.outlook.com
- (2603:10a6:208:55::22) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: AM3PR07CA0130.eurprd07.prod.outlook.com
+ (2603:10a6:207:8::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -55,110 +51,151 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3341:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5d29f7f6-397f-4cf0-a2c2-08db4be12a2d
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAVPR10MB7489:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a0fc5b0-12c6-4083-5ef0-08db4be6addb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	xbdVv8nF1EsIAFpFbyWJCRkZlyj1NjePREfwn1TyUL58OHakCN2HKIVLmmwNDhctWoiPZHcWTOtTw33zEYo8n6g3sKSHDdjT5LC/+Mqlvy1Jn2Juf5HOR9XVRzk2u2rz4mUU8oyb2vozUhpVNBkfUmVpJk8SgDCx43iKtO++kKJCdnQBgMis01EwBayBC3+IIlHl6lAZQeO0f0kBV0aZvnB9UGoP6X44rWaoz9CK9P0yOAHxmo4GUvQzkXPY/eVJ4j6yU5jQjgfu8BdxM7gdysXC2vL8Tlyhp4IflFGfFS5saJjWQpwvfwsCFa5QMvN0e1WIzK378OmaPGXseSaut9oai+zwCsMfGATPafQHSHO0TV+R5EtXw4c7S3vrCY+5pgQcuRKQOS0UXv0LiAZT9WHG4WZZeBOEeEbX0vK+ehdEhIX0/JGoFcLIPXKD4tJpr3mT2RyaqaWMs3EZiQFPdFRqtw4Y9daa4SBY8+XpC04b3xy+FGpN6IOnmsJVMbs6i9Q8AonC4lGBLx0jvq/0OcZonWvG3Y82LCKjI1+xCXYiVAAE9oqjaE4lsPjvnNB38jdpx5mWjqQusIm0jt/MWPiGwSRlteSz5U3y3lv0970nVoT+SpjqexVGIyOQ2bO61W6vH6MjTzj0xh9beh+LWcF0Plv0ZcZ+E77bsrLh5sY=
+	aPX9r8psDdBEMwvadt/Xd+5wgfDnX1cFwTcAFvsem3cyM8k4mWTXjyChTtQzWSytxpylf+mEyDeX//WpkiCOYmXSfb32x6YOCwtrKY0gLbAHmeHhKxz5E1Z4guagPEfNrlSjpTmeeoyps7/fHyCOdDeFDHUXNsGJWugrF6GYkqQHp3w+J1YC9yliCxqC93SoEpcxQKy/07InqMVcH3Dx4ZcILWrgN6qQxySE9NwsOu1HvbP+BSKH9P5zjcm6VmzkBwVQdhri0HM3MsKMFIvIY/IDfyp/qy+smf9om2AGMTHgTVWCYaL2STIF902CRROrm3xN+pfGyR3rgmNV4hLjwrsSyRQyqUXQnAAWE1eq6lguneQkaecwzkbVDhdi9G7c8bb2CqDjQjjlYMbnU+R+yFIi/y6NPogs3kEh2+7pfCR3NVz+5cnh8aDEplhteoIwe36vR4L4phUgtLByNWAYpgVYGISCZlIcjnegPgJRF7F+RgC3EldVxpWpssJaTu8CghbrWylpPB0XKAZhjrvnOOxSXXc/icr48P+YGmFKwPV1I52Gj8/EvdxZPaz0h+BxLFtzzqS59IEte0Zo2k4fYRuCXEqEh0wTxEZcEdYysuzrlBJZsM9emlQRmRrjtzrQVTnFKRzFEP0yC6QZ1vZuSw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(346002)(396003)(39860400002)(366004)(451199021)(31686004)(2616005)(83380400001)(66476007)(8936002)(66556008)(6506007)(38100700002)(41300700001)(36756003)(8676002)(82960400001)(66946007)(316002)(6512007)(6486002)(53546011)(478600001)(5660300002)(31696002)(26005)(86362001)(44832011)(186003)(2906002)(6666004)(3714002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(366004)(346002)(376002)(136003)(451199021)(36756003)(86362001)(31696002)(316002)(66946007)(66556008)(66476007)(6486002)(478600001)(2906002)(8676002)(41300700001)(44832011)(8936002)(82960400001)(2616005)(186003)(38100700002)(53546011)(6512007)(26005)(6506007)(5660300002)(83380400001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UzNvU3FXbjYrV21FMVJWT2RUSDB3YVBvY256VGlaWkRiTGdLUTFOaDJ1YTBm?=
- =?utf-8?B?dnkrTW9ybWJOL0ROTlIvT1NTYUJOUitQeWFQc3hoMDVNa0o3Q2RjbTkwODVj?=
- =?utf-8?B?UC9tSHhtUXBtUWh1cnJQOU1IUm9ySUowY3VOdUtPa2hPRXJSUEsyYUd5MjNX?=
- =?utf-8?B?UytieGJzOHhNTjhkY3FtSmE3QlcyTVZDRjdCZ3lGRFN4bzVRYS85aGcxczdj?=
- =?utf-8?B?Z1NzRWVQNXBRY2F6aWJnQTA5ZGNHVUVTNldrOHpvMFFVUDQvQWNSWGpmakcz?=
- =?utf-8?B?b002SVkyNFNjV1N5Sm01S09aV052RVBxS0FRa2tZQkVFSlozdUt6ZkdYMWc3?=
- =?utf-8?B?cGdsU20wbE5GaFJJRUZySHpMUG9seXprVnlSc3JINUNlNzBIdXZ3LzdxaDQ0?=
- =?utf-8?B?d2FCZ2pwYjFnVzM2cTA1M2xrYk0rSDdWVW5PRTFoTklmT1hHU2V2b2tJRzE3?=
- =?utf-8?B?a2JLaE42eUlkTHJESXlvdW1sSG9lNUhKYUJ3ZzZRNjllSC9uSkxQV3FIcUw0?=
- =?utf-8?B?Mmtqa3ZPbFVpMERFOHJ5MW1QQ21ZVkhSeE9YOXdzZEJSTGkydUViNGpuODkx?=
- =?utf-8?B?cUtZK01mRUo0Yk45cVZldkJDOVR2Z0hIMm41dE9VUW0xT3dCaUMxVEZ4V2Zu?=
- =?utf-8?B?VnhpOG1wVXl0YTA0RW5MYmh6eXpsR0RNYTNUWWhmMlVTNHliaXdoRTdSN1BM?=
- =?utf-8?B?d3BUOFdrelRHY1VOdGlLVWNVb3kzNFlXYzYvY2V5WW5wZUFQVXZqdk96Vjl0?=
- =?utf-8?B?ZDRLbUl0M05RQ2Qxak4vR2N5V2ZjVG0yZEVwTkJUWWVWTmZzOFpNWWpqUDBz?=
- =?utf-8?B?L1lLMGhiTWk2SmdxdmxId0hsV1VZM09NRTArQ21WWmhiWFl1dGdic3R3NFgw?=
- =?utf-8?B?S2xYS01LdFIxRFZGM3oxVjBzd0pOYXhreVlrekt2clBUMklxUzRFRWdma0VL?=
- =?utf-8?B?Q1NYbWNzTTJTbFdWV25DNVd5aWtGeWdvTTVCckl6cTJWa1pDaVJmWE43YWpi?=
- =?utf-8?B?b2Iyc01XTURYSU5uSUVOZFFHNmxKZHJ2WUtodzB3d3lBMjFRK1YxNXNZZ3Vl?=
- =?utf-8?B?UUR1MDEzNjZMWXZrSGNzK3Z3Z2o1OWRqVTNqd0x6VEhheHdQNHpMMGlHdHZP?=
- =?utf-8?B?WER5RG5LSEQ3ZVB6VnZYbEZKcGFMTm1YWWY3cjlwYy9KVmRzL0U3YzQyM2NK?=
- =?utf-8?B?aXFyWlRjNFJOVnY3S3BuSDZUMW1oN2NWdkt3VXFFZGxwWU41R2dpYWpqdXBm?=
- =?utf-8?B?dkNsM1duVEJlUzRMZ2RtWTJoY2NoVE01c0MxejBsUXUrelloUEtTY0ltL2dv?=
- =?utf-8?B?YkVSdytHU0xLMVVLWllUNWhjeDMzZHoreFh1ZVBMZi91ZWFLcGZySUFabmJ4?=
- =?utf-8?B?S0VNUTh1SmVVTVNWMFc5K04rUlF4eml1SzkrYXZoY1NoejVNcThvT1lLaFJv?=
- =?utf-8?B?NmRCTlVtU1NScnhyY1V4QmkrVW92a0VhaEhCUDVrUFZMcG52OE9zdmJNQW0z?=
- =?utf-8?B?Y3AvazFyamNhNUYzTzgzMzBiU2xPZFVQK0FPdGVyT2owdlowV25BZDI2ZVg5?=
- =?utf-8?B?UlVOa1l0a2lTekU0YjJmKzVNU0FrQzlDZEU1S1RRK21KY0hRd1RHN1RKWlN0?=
- =?utf-8?B?UG5ERGdFTFl5Qm40b2FJeVdGeGgxMXBHNEVEdWxlTnZIcGl3a2N2ak5uRHkv?=
- =?utf-8?B?dDd5bzF6cEJTVWtDT0xiQXMrMXg1YmloVGhrbmFxWXpncUdWQlNzYkpaWjlG?=
- =?utf-8?B?UldBcitiRUVraXhHL0R4Yy8yTVRFVnBrenZ3aXZ6VWpySUdvTGVTTzJoVVJD?=
- =?utf-8?B?ak05d2U0QkZpMmh4eTVKVTV0QVA1Um9VUHFVY0x3eHB5QUNYUzVQQkR2M0Uw?=
- =?utf-8?B?d1FpRHNldis0aUkwV3dHWUpScGVvYWRHMitWZUczY2Q0TCtKaXQ5U05IYVRm?=
- =?utf-8?B?ZXpqYytvT1N2bGNLUUNFMXNRU0hBdURjUzZwdXlLVC8vcisvQWh6SmVicVlh?=
- =?utf-8?B?dGFsLzFtak0reDVVQmwwV21JSGxvSjcrSlBjTmgrMmhLOEZrTzFucnNKN00r?=
- =?utf-8?B?TFhtc2dkUWVEYVVWa0haR1lDZUZTTjF6ajVUS1RSL05jZFJ1U1JlQWZ3UkR4?=
- =?utf-8?Q?6jylixnS3YWI5OELbTpbxN3Q+?=
+	=?utf-8?B?MkVrdzRvWXBwSFRVOXR2VlpwZlYyaHU5QUF4eGo0RE1TakFPUUVUelhRbHY3?=
+ =?utf-8?B?aWNUN0x3YlhtbHEya1BSSnFvLzVZejkvUkpDcGNVZzJrazVFSlF2VmlOQVc2?=
+ =?utf-8?B?ckM0VWlJbTZPWlk2QWhuUlE5cG5PMUNVNGtNZWk3cFdla2F6cCtwUTk2YnlL?=
+ =?utf-8?B?cTg4ci9aNG5lOHB1cmdWL25uUnhMeElQSVcyaHc4dStRVHZkKzFBYVRiN051?=
+ =?utf-8?B?alhFeEZmSVJyaHo0NnY2Rkl2NXBLWUZBNW5ORXFnTTJRQWtpWGFGb3RvQXRj?=
+ =?utf-8?B?MXU0YkUwaUFLK1dvQ2lOenV2eXkvUjdhWUM1UzA2cWdFZThmSDVVR0JwUlE4?=
+ =?utf-8?B?NUtOWlFUb2VxSmQrTWtsMGJoZFNCTWNTUjd1ZHdzYTNrZnE2TEUvc3Y5SW16?=
+ =?utf-8?B?dWdLNkJkcWpVRlJLZk16eTB4OVR6NmEzOVN5RHRsZ3k5L1ZhcmlBVk50UXJN?=
+ =?utf-8?B?TCtvTFpzQmY2UmFCcGNPS3o3NVczdXhhNVlBU3B1SU5ocW5iRXpVREJxTjI4?=
+ =?utf-8?B?MjlQcm9URUgxOHFrTjRMRlZzaDNDdTlkWTJYakduKy90ZThybnQ3OU1GcjM1?=
+ =?utf-8?B?UHloMkZRWmJLSDlXMDhsUjNReThCaDNSaldBdkVJU3JoNE1oU0NjZUVCaXRI?=
+ =?utf-8?B?RVBXUVBxQUdmUGx4KzBTWi94RDZHWXJ5YlE0L0JPaCtySHlSeFdxVUYyMndr?=
+ =?utf-8?B?cTUrT3NkMi9MbUJ4SFVRektOV3NmUzNHQmJVeTc4VkQ2dmxKdUZKZ0pZTkpt?=
+ =?utf-8?B?ajFWOGgwR1NVUkpOQ0hTYXR0U3lDVVA1dlNrTSsxNjNNdnY5NFZlY0tYcDc3?=
+ =?utf-8?B?Njdzb2MvRWc1QU9VYjdwdldHejNENlVHZHhoTnA1MXRuR05NMk8xclZ6cVdF?=
+ =?utf-8?B?QkJnVlA4TTFvRVVoKzd4TVdpcXNicTE1RHI0NnhJZUU0Y0lEbU5ucjRUVG9N?=
+ =?utf-8?B?aVAzaFdZNlA1enlqZkFWVFladmZJRmRYbGRLVlBodldHUUVVRHQ3OGJxdDcr?=
+ =?utf-8?B?RVd3NFRORlY4T2ZHMjhEaW1nd09WSkdXQUhkSW1ya3c0bitoRG5pVHZsMksy?=
+ =?utf-8?B?andZZzJXcGZwOTJIeFk2OXJpbGVtTkRrMklHaWRWZzBJbXJpWjd4STlTVERR?=
+ =?utf-8?B?Ym5hOUxKaU5UbWJMOE1rNUZmODZmNm1qWVZxNjN2dU9jRjFocnhOdWFHM2ZL?=
+ =?utf-8?B?R3hheE9XQVFUSjBMMTdmaG5QZFpWemRwaWU2K3Uwc3NPMHNIT0JIQmRUbG4v?=
+ =?utf-8?B?dDFNdHhHNU9idmNIWVprQ2NJU2VxcE4vS1VIK0N1aXkwQmhKTkF6d2FOdzdv?=
+ =?utf-8?B?TXFOeFVSaWoxQ2J6blJWVk1kb29YNzlKZ09LWlJKSmg2UlVQd1huVDV4Kyta?=
+ =?utf-8?B?Z0hoRmRLdVMrTEpCZ2VodjFNeWxYQnRFV0RTZmFhUzJFY1Q5N3RzTDlGTStT?=
+ =?utf-8?B?dnNUWDJqSGl6d0MyRFlBRXY2TmQvUktlVitldVJkbEVvRlV2VlRPMXVsY0tV?=
+ =?utf-8?B?WkxVelVuVGpveHlTRkFSZ0k0alc0RFRCejBCQVZnV0VqU3JXemRxaHM5Q2Js?=
+ =?utf-8?B?eGkwSllPNkJDUVVzbW5RVU5iOWV5NTVWeEc5OVNkV2ZBa1VEdDdIRFZTd0ln?=
+ =?utf-8?B?SUhRUGhGTmNVNTdndHRISEZ0MHBIMHE2dzZzaFU1UFh6SldYV1E2bkwrNDQ3?=
+ =?utf-8?B?bUxESUdDWksyRlF5U2ZaeFo2T21hTjViVFB2VFdhNEdsaDhJQk5Ha1VQcy93?=
+ =?utf-8?B?Y2VkaXF5UkdQUnEwZlJ2OUdTMlRuK3NDdXFHSlduS2hmK3g2ZXAxd0JSRmdE?=
+ =?utf-8?B?aFBXS0g3elMxampZZGx3Ymd3c0htNHhNYXpuWENxUU5vVFB0NFVRN0VRK0Zt?=
+ =?utf-8?B?OGx4cm5ER3ZhVVk1V3EwVVFxdVU1ZVRJc3BwSi84VzhBWVROSDBpMGtLci81?=
+ =?utf-8?B?T3RIdkZEb1p1OEM3WXJMdUw1YWlkSzRvQWlDdThVbEtJUWdOaS9hbENMQ1Jx?=
+ =?utf-8?B?cCtoTFhmK1IveEJFL0UzQmtuMmpvazF5YVM0QU1nUUw3bmorcXlSaVhOK1VI?=
+ =?utf-8?B?eHdzYXNsZUhJMnZ4NXVBUUV0aTRqbTF1TzB1VTA2SXdOclpJN3JyL1pLcXNu?=
+ =?utf-8?Q?VjCGmHO+Licz79Mv566aW7WSY?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d29f7f6-397f-4cf0-a2c2-08db4be12a2d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a0fc5b0-12c6-4083-5ef0-08db4be6addb
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 14:17:45.1606
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 14:57:13.5657
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Co5uhB2EqN2HbZmePuVJi3wIi6ARAdzzibz3Bl6eGydB8T2MGGmgl29XIqKTD1qTDTwaV2b/DL/zQkP2X2V78w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3341
+X-MS-Exchange-CrossTenant-UserPrincipalName: qE7vnbuOyZB652Oc+ASPrQ9fA/fxazNcGveC1NL7mf9HARjld4x91dIkedqlQkJPa6k2C8qfK8rzAWpBVOIi8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB7489
 
-On 03.05.23 14:54, Florian Bezdeka wrote:
-> On Wed, 2023-05-03 at 14:47 +0200, Jan Kiszka wrote:
->> On 03.05.23 14:10, Florian Bezdeka wrote:
->>> We use ip=dhcp as kernel cmdline option for most of our CI targets.
->>> This cmdline option is now taken into account by newer systemd versions
->>> and a network configuration generation in userspace is triggered.
->>>
->>> WLAN interfaces are part of the generated network configuration and
->>> might trigger a complete system hang. Especially the HiKey board in
->>> combination with 4.19 (ipipe) is affected.
->>>
->>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->>> ---
->>>  recipes-core/customizations/files/postinst | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/recipes-core/customizations/files/postinst b/recipes-core/customizations/files/postinst
->>> index 691988f..d8d141c 100644
->>> --- a/recipes-core/customizations/files/postinst
->>> +++ b/recipes-core/customizations/files/postinst
->>> @@ -15,3 +15,5 @@ echo "Xenomai Demo Image (login: root/root)" > /etc/issue
->>>  echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
->>>  
->>>  echo "demo" > /etc/hostname
->>> +
->>> +/usr/bin/systemctl mask systemd-network-generator
->>>
->>
->> Shouldn't this be patch 2 then, to avoid a regression moving to bullseye?
+On 03.05.23 15:43, Julien Aube wrote:
+> Hello,
 > 
-> Valid point (assuming you meant moving to bullseye).
+> 
+> I'm currently porting an old code from Xenomai 2 to Xenomai 3/Dovetail.
+> 
+> I'm using kernel 5.10.177-dovetail1 as this is the latest version I
+> could work with xenomai 3.2.1.
 
-Moving to bookworm, I meant...
+Well, 3.2.3 would also work with 5.15.y.
+
+> The driver I'm porting makes heavy use of RTDM.
+> 
+> The platform is a Zynq 7030 (dual cortex-9).
+> 
+> I uses buildroot 2022.11 to build.
+> 
+> I hit a strange issue and ask for an advice before having to setup JTAG
+> / opencd , as you may have seen
+> the same issue before.
+> 
+> On the aforementioned platform , everything goes well as long as I do
+> not enable SMP.
+> If I do, what happens is that Ethernet's phy detection hangup forever :
+> 
+>> Registering platform device 'Fixed MDIO bus.0'. Parent at platform
+>> device: 'Fixed MDIO bus.0': device_add
+>> bus: 'platform': add device Fixed MDIO bus.0
+>> device: 'fixed-0': device_add
+>> bus: 'mdio_bus': add driver Micrel KS8737
+>> [...]
+>> bus: 'mdio_bus': add driver Microchip KSZ9477
+>> bus: 'platform': add driver macb
+>> bus: 'platform': driver_probe_device: matched device e000c000.ethernet
+>> with driver macb
+>> bus: 'platform': really_probe: probing driver macb with device
+>> e000c000.ethernet
+>> macb e000c000.ethernet: no pinctrl handle
+>> device: 'e000c000.ethernet-ffffffff': device_add
+> 
+> If I disable SMP in the linux config kernel , here is what I have :
+> 
+>> Registering platform device 'Fixed MDIO bus.0'. Parent at platform
+>> device: 'Fixed MDIO bus.0': device_add
+>> bus: 'platform': add device Fixed MDIO bus.0
+>> device: 'fixed-0': device_add
+>> bus: 'mdio_bus': add driver Micrel KS8737
+>> [...]
+>> bus: 'mdio_bus': add driver Microchip KSZ9477
+>> bus: 'platform': add driver macb
+>> bus: 'platform': driver_probe_device: matched device e000c000.ethernet
+>> with driver macb
+>> bus: 'platform': really_probe: probing driver macb with device
+>> e000c000.ethernet
+>> macb e000c000.ethernet: no pinctrl handle
+>> device: 'e000c000.ethernet-ffffffff': device_add
+>> device: 'e000c000.ethernet-ffffffff:01': device_add
+>> bus: 'mdio_bus': add device e000c000.ethernet-ffffffff:01
+>> bus: 'mdio_bus': driver_probe_device: matched device
+>> e000c000.ethernet-ffffffff:01 with driver Micrel KSZ9031 Gigabit PHY
+>> bus: 'mdio_bus': really_probe: probing driver Micrel KSZ9031 Gigabit
+>> PHY with device e000c000.ethernet-ffffffff:01
+>> Micrel KSZ9031 Gigabit PHY e000c000.ethernet-ffffffff:01: no pinctrl
+>> handle
+>> driver: 'Micrel KSZ9031 Gigabit PHY': driver_bound: bound to device
+>> 'e000c000.ethernet-ffffffff:01'
+>> bus: 'mdio_bus': really_probe: bound device
+>> e000c000.ethernet-ffffffff:01 to driver Micrel KSZ9031 Gigabit PHY
+>> device: 'eth0': device_add
+>> macb e000c000.ethernet eth0: Cadence GEM rev 0x00020118 at 0xe000c000
+>> irq 24 (xx:xx:xx:xx:xx:xx)
+> 
+> Kernel command line is rather simple :
+> 
+>> console=ttyPS0,115200 earlyprintk root=/dev/nfs rw
+> nfsroot=192.168.101.56:/home/rootfs/rootfs_2022,vers=4,tcp ip=dhcp
+> 
+> 
+> => Is this something you already faced ?
+> If not , do you have any insight on debugging method besides JTAG ?
+
+First of all, can you reproduce the issue when disabling Xenomai? And
+when also disabling dovetail? And when using the corresponding LTS
+kernel as is?
 
 Jan
-
-> 
-> Let me spawn a pipeline run with the changed order to make sure there
-> are no side effects on bullseye (the current distro).
-> > Florian
-> 
->>
->> Jan
->>
-> 
 
 -- 
 Siemens AG, Technology
