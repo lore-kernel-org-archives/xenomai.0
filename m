@@ -1,94 +1,84 @@
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8107AFBF7
-	for <xenomai@lists.linux.dev>; Thu,  4 May 2023 15:00:49 +0000 (UTC)
-Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-547303fccefso397649eaf.3
-        for <xenomai@lists.linux.dev>; Thu, 04 May 2023 08:00:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF1472F48
+	for <xenomai@lists.linux.dev>; Thu,  4 May 2023 15:50:48 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-3f192c23fffso5134225e9.3
+        for <xenomai@lists.linux.dev>; Thu, 04 May 2023 08:50:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=embeddedgreg-com.20221208.gappssmtp.com; s=20221208; t=1683212448; x=1685804448;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UdQkc2kaVDZtN9bT+v7mdyvjHon3xpmnF4WKBogM0XE=;
-        b=oiXqRA82EPeM9CdOnkRSDC83LAueoh9LF9ytqncCkLoYxYF6h3Mtgq01wZYzMS9WqD
-         GLKKafqkhXWUmWr/mTI5gWzHwy4VYFBPZFtNXqcpK2bWlmHUJkuxG09mHXX6ffIh9shX
-         NsYXJzsYDRoDB8NUmVVdznvzDMtrPHJLS+qPf7D4ZFVFUgp7cTTLGhAsb/IOed3x8zqM
-         645TUzXneUQO9TFaDoxhyYXhztKClL/dYBz6It8nVR01EDbEDZvbPTS5fYf9oc0SPNu/
-         f7QoU3YtPQTqsxUnJrEhWA1QsAEUkyj5zPteSL3RDjxcUyro/HbzF37OSZR3YMPlGxMc
-         LnWA==
+        d=smile-fr.20221208.gappssmtp.com; s=20221208; t=1683215447; x=1685807447;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=R5bSnUO3l4ie4EvxNZDyyYOCPZEw0C6ICNh7/BKukEc=;
+        b=Huex3Z7oYwDEofqfl+yuRgIqVVYGTC10s9xI93qgtLYEg74eW+IOcC4za9ab43Icjl
+         UG74IAAjRsQOLczBnRVMeja8oLcrwlh+rSec/pGZWtCjtvm4aoNLnErnIO4N37S+l25n
+         HEl+fwkGvnzgarQqTcz+k8BJgYna9KYbzHujysCFz93fCk8F10ElV4+ieR9wJVnoxqGx
+         YEFQ/Qu2xkpsMKKZNvOeLND5lJleP++9KKp13MCv8jz1NqUQvWUAlbQMKLjCRrjsDKlL
+         FKmsCpfBpzYl0O9sUFz8zw4c9tYAvhLmlBmpHKFSmVmnGnhAbfu3ajJsvf+iSbfhRa/m
+         kkBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683212448; x=1685804448;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UdQkc2kaVDZtN9bT+v7mdyvjHon3xpmnF4WKBogM0XE=;
-        b=EH7w/8JKTQx30QHTQooCBKrPGuUJ7/n+MkK7WQHEWJBz4VoM/2BOPYUSY65R7rAnsT
-         LhUdMsh8CUSvPTbF0lRAZedcYvNKDZeOLhkikIOo9J1+q08m0ylxnx5fkws7kQbE55jU
-         suPI22HIB6HeOLj1imF2B4AYQq6Coi4JUc8/n1nQHTgu3xraaxeSIkeMbjDyeXN+ygFH
-         IlEeP/tbDit0LY28sWJpBZ7nP1i21IMVtwn6HvIUXpYmsE4MJFDlCv8SQc/x7+HKsGJU
-         QMATQKMDW7x9DvmaB8gJcTwn5VTjHdiihv7/h1qodgTYV2wNNimT53ZPN/fXqh6zTvfp
-         HNng==
-X-Gm-Message-State: AC+VfDzzyHXt6HcWZA1i/+rU9R/ZdFoeP1cJJbjrry2RxIaSSNTtiBCI
-	cbpH/8wTpdm4ikQMKEXsP4RcnY0sBfT+7yySHdJkFcRvb+PYOkiwZv0=
-X-Google-Smtp-Source: ACHHUZ46D+6v0RXrhZmDZyHK4vbEjv1N/mZ7Dq9pq1XrW/jAc2s0balKtOtoLj46EL7f9KcW/yIPujOe1wyTNP+mUUQ=
-X-Received: by 2002:a4a:be10:0:b0:542:5d35:12a0 with SMTP id
- l16-20020a4abe10000000b005425d3512a0mr10694519oop.3.1683212448473; Thu, 04
- May 2023 08:00:48 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683215447; x=1685807447;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R5bSnUO3l4ie4EvxNZDyyYOCPZEw0C6ICNh7/BKukEc=;
+        b=J5Dx5OYEiKB2/ZOG+bKOujU+AhnW4Nd7BTq6tux34wnMifgeMg2ikdT3m6v2oKcoJe
+         hmrmfki2r0EES0F04yWzuzJB6iAU5hbEXL3lgjNPXxqAWhQdujavOXSKEiFhuXe7mnrP
+         0Ul8Dzasn15bTX+DN2hj2ai775tjwiY2Za6RqhyUX55ZrVjIyjb6Ixz8iHlz3t2XWpmy
+         0ohJckwPgQnZYPWT2EQ9niq4l0VVWCgX37QYSUKMcOSIj+H60UJWcExbL+1i38UdMU5q
+         9x6s/4CgqgvdHkMOJ1TtI2Mu2JFQ4B1In2gJ6IykaeiQ8qlaPD9F0VJu87ln9j4EOhpQ
+         jZBA==
+X-Gm-Message-State: AC+VfDxe70IWAQ7ifSzI0TLkk+9C1aTDOFRf9E0zliUv78HIFfaNE3S1
+	6MRKq3ne9LRFddWHem6Tppw3uRRe/lEuhrNS5MA=
+X-Google-Smtp-Source: ACHHUZ6Z0fsgrca3C3DMSG4ydysowRfmxfA0OoxfNo2f0NGSlM4EZu0Be/msYYyK4h7aEhAZfZLyIw==
+X-Received: by 2002:a7b:c399:0:b0:3f1:6527:df05 with SMTP id s25-20020a7bc399000000b003f16527df05mr86412wmj.22.1683215446832;
+        Thu, 04 May 2023 08:50:46 -0700 (PDT)
+Received: from [192.168.101.56] (i19-lef02-th2-212-194-241-67.ft.lns.abo.bbox.fr. [212.194.241.67])
+        by smtp.gmail.com with ESMTPSA id l9-20020a7bc449000000b003f2390bdd0csm5263473wmi.32.2023.05.04.08.50.45
+        for <xenomai@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 May 2023 08:50:46 -0700 (PDT)
+Message-ID: <0e065176-74b8-b02a-29c2-30eb34a79cdb@smile.fr>
+Date: Thu, 4 May 2023 17:50:45 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <5a8afa1e-d6d7-df9f-2895-6832ffa9673f@smile.fr>
- <189dee91-923f-131a-ccae-0afcccd06107@siemens.com> <7dfbe0c0-161f-0977-4332-75575f1a17ce@smile.fr>
- <9a48d273-5ebd-f557-7941-8532b7ec4b67@siemens.com> <5523da9b-bb44-a1be-9e54-bcad21867eb6@smile.fr>
-In-Reply-To: <5523da9b-bb44-a1be-9e54-bcad21867eb6@smile.fr>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 4 May 2023 11:00:37 -0400
-Message-ID: <CALLqZ8TeAeeu++UP499YS_XPwVYw05eMEYf-K7HPmyhXHBoACg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
 Subject: Re: Question about a freeze under Xenomai 3.2.1
-To: Julien Aube <julien.aube@smile.fr>
-Cc: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: fr
+To: xenomai@lists.linux.dev
+References: <5a8afa1e-d6d7-df9f-2895-6832ffa9673f@smile.fr>
+ <189dee91-923f-131a-ccae-0afcccd06107@siemens.com>
+ <7dfbe0c0-161f-0977-4332-75575f1a17ce@smile.fr>
+ <9a48d273-5ebd-f557-7941-8532b7ec4b67@siemens.com>
+ <5523da9b-bb44-a1be-9e54-bcad21867eb6@smile.fr>
+ <CALLqZ8TeAeeu++UP499YS_XPwVYw05eMEYf-K7HPmyhXHBoACg@mail.gmail.com>
+From: Julien Aube <julien.aube@smile.fr>
+In-Reply-To: <CALLqZ8TeAeeu++UP499YS_XPwVYw05eMEYf-K7HPmyhXHBoACg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 4, 2023 at 10:27=E2=80=AFAM Julien Aube <julien.aube@smile.fr> =
-wrote:
+Le 04/05/2023 à 17:00, Greg Gallagher a écrit :
+> I think we saw this issue a while ago.  I can't remember if a proper
+> patch was submitted.  Let me take a look at my setup here.  I test
+> ipipe on both zynq7000 and Ultrascale boards.  I had a dovetail
+> environment to test zynq 7000 since there were some small issues
+> reported in the past. I should have some time to boot something
+> similar this weekend and see.
 >
-> > Is there any own driver involved, or can you reproduce the issue withou=
-t
-> > it as well?
->
-> I could not reproduce the issue since for now I'm booting on an NFS
-> filesystem, and the hang happens when the GEM driver does the detection
-> of the phy (thus maybe the issue is rather in the phy layer rather than
-> the ethernet driver).
->
-> The crash might happen elsewere but I have not seen it.
->
-> I'll try to create a setup were the rootfs is on the storage, disable
-> ethernet driver and see what happens. Thanks for the idea.
->
-> > I'm furthermore no longer sure if the Zynq 7030 is officially / fully
-> > supported by dovetail. Maybe Philippe can comment on that.
->
-> It's a dual cortex-a9 , and it was working in xenomai 2 / kernel 3.9 ,
-> so if it's not working I hope the issue is a small one.
->
-> In the meantime I'll see what I can do with a jtag probe.
->
-> Thanks !
->
-> Julien
->
->
-I think we saw this issue a while ago.  I can't remember if a proper
-patch was submitted.  Let me take a look at my setup here.  I test
-ipipe on both zynq7000 and Ultrascale boards.  I had a dovetail
-environment to test zynq 7000 since there were some small issues
-reported in the past. I should have some time to boot something
-similar this weekend and see.
+> -Greg
 
--Greg
+Thanks for your help.
+As an additional test I tried a RedPitaya that I own (very useful tool 
+btw) , based on a 7010. Same issue occurs in the same setup.
+
+Interesting to know that some issues occurs in the past. I'll try to see 
+if I can find some insights in the mailing list archive.
+
+Julien
+
