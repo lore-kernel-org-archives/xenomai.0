@@ -1,22 +1,21 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2EA64C87
-	for <xenomai@lists.linux.dev>; Fri,  5 May 2023 07:21:11 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230505072103f05a2977a7b9f71c3b
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB604C8C
+	for <xenomai@lists.linux.dev>; Fri,  5 May 2023 07:21:12 +0000 (UTC)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230505072104fc2330f941039ebf73
         for <xenomai@lists.linux.dev>;
-        Fri, 05 May 2023 09:21:03 +0200
+        Fri, 05 May 2023 09:21:04 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=VJGu5EM3bvP5bXs4C6G5E0SPWRfpEnOShNNPsAhmD+Y=;
- b=O0UhUmDW4vNBBN1aB+HWbXNhPLRZjvOdWjXJBnZcFr8SS5b+bmyrAI95gSVr9t2NyIdJBz
- V9x0yszh7MpHU0+KfrPR+PmHubaA+NfUDCRExqSk2Ds7YSL1BR8TwYcPbiTuV/YV6Cvt57Nt
- CyzQNr9UK/Ai5EECLRbLtYN3g37mo=;
+ bh=hHCVNN/dXlFh1eywQJNNUmYkd4RnnQmKGGIhKcLzYKw=;
+ b=qRPaI8GI9rtGTcFJnauM/7PafBDTmbJMKKFBPSPA6+boAQa0i1iClQ4mjVl4IR7YPMNBVx
+ dSF/q0UVRl8GKbang8OX8DBiH7jBaBuXoSe6MDknmHtLnI49ldxsxGwJ5l/zdjsVG8opjXGc
+ tSWtyga6l3rW03j8leAV16tOE4vWo=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 05 May 2023 09:21:06 +0200
-Subject: [PATCH 11/17] y2038: cobalt: posix/cond: Remove compat syscall for
- cond_wait_prologue64
+Date: Fri, 05 May 2023 09:21:08 +0200
+Subject: [PATCH 13/17] y2038: posix/mq: Fix mq_timedsend syscall routing
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +24,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230428-florian-y2038-part-one-v1-11-64a972ff2189@siemens.com>
+Message-Id: <20230428-florian-y2038-part-one-v1-13-64a972ff2189@siemens.com>
 References: <20230428-florian-y2038-part-one-v1-0-64a972ff2189@siemens.com>
 In-Reply-To: <20230428-florian-y2038-part-one-v1-0-64a972ff2189@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -33,103 +32,69 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-There is no difference between the native and the compat entry point,
-so let's keep it simple. The native entrypoint is already linked into
-the syscall table at the right offset.
+The sc_cobalt_mq_timedsend syscall was used twice, once for the
+mq_timedsend service and once for the mq_send service which re-uses the
+same cobalt service without supplying a timeout.
+
+The mq_timedsend case - which actually counts y2038 wise - has been
+overlooked by Song when introducing y2038 support for some reason.
+
+Both services fall back to the same helper now, so we can handle them
+the same way.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/cond.c      | 12 ++----------
- kernel/cobalt/posix/cond.h      |  5 -----
- kernel/cobalt/posix/syscall32.c | 10 ----------
- kernel/cobalt/posix/syscall32.h |  7 -------
- 4 files changed, 2 insertions(+), 32 deletions(-)
+ lib/cobalt/mq.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/cobalt/posix/cond.c b/kernel/cobalt/posix/cond.c
-index 95d1e75bc..7b87fe908 100644
---- a/kernel/cobalt/posix/cond.c
-+++ b/kernel/cobalt/posix/cond.c
-@@ -354,15 +354,6 @@ int __cobalt_cond_wait_prologue(struct cobalt_cond_shadow __user *u_cnd,
- 	return err == 0 ? perr : err;
+diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
+index a8c88b406..88a74095b 100644
+--- a/lib/cobalt/mq.c
++++ b/lib/cobalt/mq.c
+@@ -289,6 +289,18 @@ COBALT_IMPL(int, mq_setattr, (mqd_t mqd,
+ 	return -1;
  }
  
--int __cobalt_cond_wait_prologue64(struct cobalt_cond_shadow __user *u_cnd,
--				  struct cobalt_mutex_shadow __user *u_mx,
--				  int __user *u_err, unsigned int timed,
--				  void __user *u_ts)
--{
--	return __cobalt_cond_wait_prologue(u_cnd, u_mx, u_err, u_ts,
--					   timed ? cond_fetch_timeout64 : NULL);
--}
--
- /* pthread_cond_wait_prologue(cond, mutex, count_ptr, timed, timeout) */
- COBALT_SYSCALL(cond_wait_prologue, nonrestartable,
- 	       (struct cobalt_cond_shadow __user *u_cnd,
-@@ -382,7 +373,8 @@ COBALT_SYSCALL(cond_wait_prologue64, nonrestartable,
- 		unsigned int timed,
- 		struct __kernel_timespec __user *u_ts))
- {
--	return __cobalt_cond_wait_prologue64(u_cnd, u_mx, u_err, timed, u_ts);
-+	return __cobalt_cond_wait_prologue(u_cnd, u_mx, u_err, u_ts,
-+					   timed ? cond_fetch_timeout64 : NULL);
- }
++static inline int __do_mq_timesend(mqd_t q, const char *buffer, size_t len,
++				   unsigned int prio, const struct timespec *to)
++{
++#ifdef __USE_TIME_BITS64
++	long sc_nr = sc_cobalt_mq_timedsend64;
++#else
++	long sc_nr = sc_cobalt_mq_timedsend;
++#endif
++
++	return XENOMAI_SYSCALL5(sc_nr, q, buffer, len, prio, to);
++}
++
+ /**
+  * Send a message to a message queue.
+  *
+@@ -332,13 +344,7 @@ COBALT_IMPL(int, mq_send, (mqd_t q, const char *buffer, size_t len, unsigned pri
  
- COBALT_SYSCALL(cond_wait_epilogue, primary,
-diff --git a/kernel/cobalt/posix/cond.h b/kernel/cobalt/posix/cond.h
-index 1fd4256ce..c2fdd40e0 100644
---- a/kernel/cobalt/posix/cond.h
-+++ b/kernel/cobalt/posix/cond.h
-@@ -46,11 +46,6 @@ int __cobalt_cond_wait_prologue(struct cobalt_cond_shadow __user *u_cnd,
- 				int (*fetch_timeout)(struct timespec64 *ts,
- 						     const void __user *u_ts));
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
  
--int __cobalt_cond_wait_prologue64(struct cobalt_cond_shadow __user *u_cnd,
--				  struct cobalt_mutex_shadow __user *u_mx,
--				  int __user *u_err, unsigned int timed,
--				  void __user *u_ts);
--
- COBALT_SYSCALL_DECL(cond_init,
- 		    (struct cobalt_cond_shadow __user *u_cnd,
- 		     const struct cobalt_condattr __user *u_attr));
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 97981bda9..10b080dfd 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -236,16 +236,6 @@ COBALT_SYSCALL32emu(cond_wait_prologue, nonrestartable,
- 					   timed ? sys32_fetch_timeout : NULL);
- }
+-#ifdef __USE_TIME_BITS64
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend64,
+-			       q, buffer, len, prio, NULL);
+-#else
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend,
+-			       q, buffer, len, prio, NULL);
+-#endif
++	err = __do_mq_timesend(q, buffer, len, prio, NULL);
  
--COBALT_SYSCALL32emu(cond_wait_prologue64, nonrestartable,
--		    (struct cobalt_cond_shadow __user *u_cnd,
--		     struct cobalt_mutex_shadow __user *u_mx,
--		     int __user *u_err,
--		     unsigned int timed,
--		     struct __kernel_timespec __user *u_ts))
--{
--	return __cobalt_cond_wait_prologue64(u_cnd, u_mx, u_err, timed, u_ts);
--}
--
- COBALT_SYSCALL32emu(mq_open, lostage,
- 		    (const char __user *u_name, int oflags,
- 		     mode_t mode, struct compat_mq_attr __user *u_attr))
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index c96fa1379..3df6224b7 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -83,13 +83,6 @@ COBALT_SYSCALL32emu_DECL(cond_wait_prologue,
- 			  unsigned int timed,
- 			  struct old_timespec32 __user *u_ts));
+ 	pthread_setcanceltype(oldtype, NULL);
  
--COBALT_SYSCALL32emu_DECL(cond_wait_prologue64,
--			 (struct cobalt_cond_shadow __user *u_cnd,
--			  struct cobalt_mutex_shadow __user *u_mx,
--			  int __user *u_err,
--			  unsigned int timed,
--			  struct __kernel_timespec __user *u_ts));
--
- COBALT_SYSCALL32emu_DECL(mq_open,
- 			 (const char __user *u_name, int oflags,
- 			  mode_t mode, struct compat_mq_attr __user *u_attr));
+@@ -397,8 +403,7 @@ COBALT_IMPL(int, mq_timedsend, (mqd_t q,
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend,
+-			       q, buffer, len, prio, timeout);
++	err = __do_mq_timesend(q, buffer, len, prio, timeout);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
 
 -- 
 2.39.2
