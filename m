@@ -1,21 +1,22 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB604C8C
-	for <xenomai@lists.linux.dev>; Fri,  5 May 2023 07:21:12 +0000 (UTC)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230505072104fc2330f941039ebf73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AE85393
+	for <xenomai@lists.linux.dev>; Fri,  5 May 2023 07:31:10 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230505072059e1dd91319778f990f6
         for <xenomai@lists.linux.dev>;
-        Fri, 05 May 2023 09:21:04 +0200
+        Fri, 05 May 2023 09:20:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=hHCVNN/dXlFh1eywQJNNUmYkd4RnnQmKGGIhKcLzYKw=;
- b=qRPaI8GI9rtGTcFJnauM/7PafBDTmbJMKKFBPSPA6+boAQa0i1iClQ4mjVl4IR7YPMNBVx
- dSF/q0UVRl8GKbang8OX8DBiH7jBaBuXoSe6MDknmHtLnI49ldxsxGwJ5l/zdjsVG8opjXGc
- tSWtyga6l3rW03j8leAV16tOE4vWo=;
+ bh=KICBqMMk7qDqiTNrZQ+wNndgojQ20tpBSxhRaEfWTC4=;
+ b=R8BHYryvRwJbBgTNstUm1oCNjDq1WCGR1h2upKPq6wzfw1socMg+8YgXlrr5UNrWle3EkN
+ 9mIzXLImN9dSbi4Z1byykEpNA/wTkyUtjC/kUmtEG77GKG4h/Y5gW4NM+1i2Qv9nnp1cilaV
+ rUe8rsswgFQRWPsTc+b87bTae94ak=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 05 May 2023 09:21:08 +0200
-Subject: [PATCH 13/17] y2038: posix/mq: Fix mq_timedsend syscall routing
+Date: Fri, 05 May 2023 09:20:58 +0200
+Subject: [PATCH 03/17] y2038: cobalt: posix/clock: Remove compat syscall
+ for clock_settime64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -24,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230428-florian-y2038-part-one-v1-13-64a972ff2189@siemens.com>
+Message-Id: <20230428-florian-y2038-part-one-v1-3-64a972ff2189@siemens.com>
 References: <20230428-florian-y2038-part-one-v1-0-64a972ff2189@siemens.com>
 In-Reply-To: <20230428-florian-y2038-part-one-v1-0-64a972ff2189@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -32,69 +33,94 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The sc_cobalt_mq_timedsend syscall was used twice, once for the
-mq_timedsend service and once for the mq_send service which re-uses the
-same cobalt service without supplying a timeout.
-
-The mq_timedsend case - which actually counts y2038 wise - has been
-overlooked by Song when introducing y2038 support for some reason.
-
-Both services fall back to the same helper now, so we can handle them
-the same way.
+There is no difference between the native and the compat entry point,
+so let's keep it simple. The native entrypoint is already linked into
+the syscall table at the right offset.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/mq.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ kernel/cobalt/posix/clock.c     | 11 +++--------
+ kernel/cobalt/posix/clock.h     |  3 ---
+ kernel/cobalt/posix/syscall32.c |  7 -------
+ kernel/cobalt/posix/syscall32.h |  4 ----
+ 4 files changed, 3 insertions(+), 22 deletions(-)
 
-diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
-index a8c88b406..88a74095b 100644
---- a/lib/cobalt/mq.c
-+++ b/lib/cobalt/mq.c
-@@ -289,6 +289,18 @@ COBALT_IMPL(int, mq_setattr, (mqd_t mqd,
- 	return -1;
+diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+index bd393bb11..c4457b6c9 100644
+--- a/kernel/cobalt/posix/clock.c
++++ b/kernel/cobalt/posix/clock.c
+@@ -232,8 +232,9 @@ COBALT_SYSCALL(clock_settime, current,
+ 	return __cobalt_clock_settime(clock_id, &ts);
  }
  
-+static inline int __do_mq_timesend(mqd_t q, const char *buffer, size_t len,
-+				   unsigned int prio, const struct timespec *to)
-+{
-+#ifdef __USE_TIME_BITS64
-+	long sc_nr = sc_cobalt_mq_timedsend64;
-+#else
-+	long sc_nr = sc_cobalt_mq_timedsend;
-+#endif
-+
-+	return XENOMAI_SYSCALL5(sc_nr, q, buffer, len, prio, to);
-+}
-+
- /**
-  * Send a message to a message queue.
-  *
-@@ -332,13 +344,7 @@ COBALT_IMPL(int, mq_send, (mqd_t q, const char *buffer, size_t len, unsigned pri
+-int __cobalt_clock_settime64(clockid_t clock_id,
+-			const struct __kernel_timespec __user *u_ts)
++COBALT_SYSCALL(clock_settime64, current,
++	       (clockid_t clock_id,
++		const struct __kernel_timespec __user *u_ts))
+ {
+ 	struct timespec64 ts64;
  
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+@@ -243,12 +244,6 @@ int __cobalt_clock_settime64(clockid_t clock_id,
+ 	return __cobalt_clock_settime(clock_id, &ts64);
+ }
  
--#ifdef __USE_TIME_BITS64
--	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend64,
--			       q, buffer, len, prio, NULL);
--#else
--	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend,
--			       q, buffer, len, prio, NULL);
--#endif
-+	err = __do_mq_timesend(q, buffer, len, prio, NULL);
+-COBALT_SYSCALL(clock_settime64, current,
+-	       (clockid_t clock_id, const struct __kernel_timespec __user *u_ts))
+-{
+-	return __cobalt_clock_settime64(clock_id, u_ts);
+-}
+-
+ COBALT_SYSCALL(clock_adjtime, current,
+ 	       (clockid_t clock_id, struct __user_old_timex __user *u_tx))
+ {
+diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
+index 169d51e62..2607522e8 100644
+--- a/kernel/cobalt/posix/clock.h
++++ b/kernel/cobalt/posix/clock.h
+@@ -106,9 +106,6 @@ int __cobalt_clock_gettime(clockid_t clock_id,
+ int __cobalt_clock_settime(clockid_t clock_id,
+ 			   const struct timespec64 *ts);
  
- 	pthread_setcanceltype(oldtype, NULL);
+-int __cobalt_clock_settime64(clockid_t clock_id,
+-			const struct __kernel_timespec __user *u_ts);
+-
+ int __cobalt_clock_adjtime(clockid_t clock_id,
+ 			   struct __kernel_timex *tx);
  
-@@ -397,8 +403,7 @@ COBALT_IMPL(int, mq_timedsend, (mqd_t q,
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index 917a67625..30d7e1bcd 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -186,13 +186,6 @@ COBALT_SYSCALL32emu(clock_settime, current,
+ 	return __cobalt_clock_settime(clock_id, &ts);
+ }
  
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+-COBALT_SYSCALL32emu(clock_settime64, current,
+-		    (clockid_t clock_id,
+-		     const struct __kernel_timespec __user *u_ts))
+-{
+-	return __cobalt_clock_settime64(clock_id, u_ts);
+-}
+-
+ COBALT_SYSCALL32emu(clock_adjtime, current,
+ 		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
+ {
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 7d448d0ef..c016c904c 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -67,10 +67,6 @@ COBALT_SYSCALL32emu_DECL(clock_settime,
+ 			 (clockid_t clock_id,
+ 			  const struct old_timespec32 __user *u_ts));
  
--	err = XENOMAI_SYSCALL5(sc_cobalt_mq_timedsend,
--			       q, buffer, len, prio, timeout);
-+	err = __do_mq_timesend(q, buffer, len, prio, timeout);
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
+-COBALT_SYSCALL32emu_DECL(clock_settime64,
+-			 (clockid_t clock_id,
+-			  const struct __kernel_timespec __user *u_ts));
+-
+ COBALT_SYSCALL32emu_DECL(clock_adjtime,
+ 			 (clockid_t clock_id,
+ 			  struct old_timex32 __user *u_tx));
 
 -- 
 2.39.2
