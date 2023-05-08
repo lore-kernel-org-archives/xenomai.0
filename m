@@ -1,100 +1,55 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from smtpoutv5.alinto.net (v5prod-smtp3.alinto.net [83.145.109.217])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F649171AF
-	for <xenomai@lists.linux.dev>; Mon,  8 May 2023 11:45:35 +0000 (UTC)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202305081145261213a27c0eb0119fcd
-        for <xenomai@lists.linux.dev>;
-        Mon, 08 May 2023 13:45:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Cc:References:In-Reply-To;
- bh=z6hitZ49BBFtGIC3c1oLsoN4yo7McCj4QlBLoVGuaqk=;
- b=FXlksvob0IBuMFUWnqlLGBjBNWTKgQmcfhek0Zq8GQ+LyCzwcdyGUotcEQNLieGOOM+iHG
- 3jJnRj6VqSIFzLROPPto3QiYMPRvMMCeErP3T7zkZ7G2EUPXxSEuQDT3PKq/pBrEBXqvMWx5
- adYb3bl8vaHVtf7eiee9xFoMjYsvY=;
-Message-ID: <862cebd40855873341eb4ec40e81f2bc83284e36.camel@siemens.com>
-Subject: Re: [PATCH 13/13] y2038: testsuite/smokey/y2038: Adding tests for
- timerfd_gettime
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Lukasz Majewski <lukma@denx.de>
-Cc: xenomai@lists.linux.dev, jan.kiszka@siemens.com
-Date: Mon, 08 May 2023 13:45:13 +0200
-In-Reply-To: <20230508125007.52fc2dae@wsk>
-References: <20230508-florian-y2038-part-two-v1-0-a417812fba85@siemens.com>
-	 <20230508-florian-y2038-part-two-v1-13-a417812fba85@siemens.com>
-	 <20230508125007.52fc2dae@wsk>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-ro1auC1JaNnuTvASU8Hh"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE78017D0
+	for <xenomai@lists.linux.dev>; Mon,  8 May 2023 14:46:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+	by smtpoutv5.alinto.net (Postfix) with ESMTP id 4QFPHb4YxFz53n3C
+	for <xenomai@lists.linux.dev>; Mon,  8 May 2023 16:46:19 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at localdomain
+Received: from smtpoutv5.alinto.net ([127.0.0.1])
+	by localhost (v5-smtp3.alinto.net [127.0.0.1]) (amavisd-new, port 10050)
+	with LMTP id 4Wq4ZsP9z6TN for <xenomai@lists.linux.dev>;
+	Mon,  8 May 2023 16:46:19 +0200 (CEST)
+Received: from [192.168.13.12] (unknown [80.254.183.189])
+	(Authenticated sender: frey@stettbacher.ch)
+	by smtpoutv5.alinto.net (Postfix) with ESMTPSA id 4QFPHb0cwhz50WY0
+	for <xenomai@lists.linux.dev>; Mon,  8 May 2023 16:46:18 +0200 (CEST)
+Message-ID: <214d5fea-6991-44f9-d858-8034687dba8a@stettbacher.ch>
+Date: Mon, 8 May 2023 16:46:18 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+To: xenomai@lists.linux.dev
+Content-Language: en-US
+From: Felix Frey <frey@stettbacher.ch>
+Subject: Some newbie questions
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi everybody
+
+I'm new to Xenomai, however I'm familiar with RTAI and the dual kernel concept and
+realtime designs in general.
+Now I'm facing the challenge of porting an application and a driver from RTAI to Xenomai.
+
+First of all, what would be the recommended version of Xenomai to use: 3 or 4 (EVL) ?
+For now, I'm not bound to any application interface.
+
+There seem to be several different application interfaces (skins?). Ok, when I go with
+EVL than it's given by the libevl. Otherwise what would be the recommended interface?
+
+I need to implement a driver which handles a realtime interrupt and resumes a userspace
+rt-thread when the interrupt arrives. What would be the straight forward way to implement this?
+
+Any help is appreciated.
+
+Regards
+Felix
 
 
---=-ro1auC1JaNnuTvASU8Hh
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, 2023-05-08 at 12:50 +0200, Lukasz Majewski wrote:
-> Hi Florian,
->=20
-> > Extending the smokey testsuite to do some tests for the recently added
-> > timerfd_gettime syscall.
-> >=20
->=20
-> For better Y2038 compliance coverage one can use OE/Yocto ptest from
-> glibc:
->=20
-> https://git.yoctoproject.org/poky/plain/meta/recipes-core/glibc/glibc/run=
--ptest
-> https://lore.kernel.org/all/YXm9s2mVGNI+NtzR@piout.net/T/##
-
-Hi Lukasz,
-
-I know your glibc testing stuff but it's not re-usable for Xenomai as
-is right now. One reason is that the necessary glibc wrappers have not
-been merged into Xenomai yet. That is one of the things still waiting
-in my y2038 queue (see cover letter). I hope to get that merged within
-next weeks.
-
-We can reconsider when the remaining stuff has been integrated.
-
-The purpose of the y2038 smokey tests is to test the lowest level of
-kernel service entry points and proper routing within Xenomai. That's
-likely not what the glibc test would provide. Integration of such tests
-would likely happen within xenomai-images project and not within
-Xenomai itself. (IMHO ;-))
-
-Thanks for the heads up, again.
-
-Best regards,
-Florian
-
->=20
-> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> > ---
-
-
---=-ro1auC1JaNnuTvASU8Hh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQFQBAABCAA6FiEE9uDgn8QzUKfG+AFGSgfIT2sbV08FAmRY4MkcHGZsb3JpYW4u
-YmV6ZGVrYUBzaWVtZW5zLmNvbQAKCRBKB8hPaxtXT20YB/96AeXiUfXjjjqpBRvj
-JNPGcSO41RqlMnkI27g1KgkqsIoc+v05AO8hZ1Y6V6Nm2/j/IbX0IjrvyvRHWSqL
-puH7i0rqRIJK9UgZPrHvuVxrw7ztjSlG27MQ2yrlh1ilKG5Ifu3qQKGJchs2HDLu
-S3lCEfxJOgoo3ZODsxkYKU25rY/mRMOPx8o42qPD9gWqEXS45ftNBWkVg2t+4bV3
-T3pJ/WAY7bJoWZiawN7zJHFunnX3Yz7Gtf8GAWzWy3NAaPUshn3gqhG4q4p9CVzU
-TVDXoAglcUJUXGsBfbQY+6Sy18LnCcluq5HMCNzGHSkQeNwTQz5nha6AJ9frp6KE
-Mhdm
-=FC3L
------END PGP SIGNATURE-----
-
---=-ro1auC1JaNnuTvASU8Hh--
