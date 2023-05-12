@@ -1,50 +1,49 @@
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2057.outbound.protection.outlook.com [40.107.104.57])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2058.outbound.protection.outlook.com [40.107.21.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E68492414A
-	for <xenomai@lists.linux.dev>; Fri, 12 May 2023 15:59:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B00B2414A
+	for <xenomai@lists.linux.dev>; Fri, 12 May 2023 16:02:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fXrKNVH4dCIbSZtS4SAKLvxuyXjXmHBSGRug1MriNuuordV4Oiy8pthmLpF6kVyxiTX+H2r9o4Ry0j40rTIhlY2tjhHccm9jLa56WuoF7bQVWnXuKL9EJx6yz7zNCSqxLmN5fhWOeHr9T2HsH6DSlaKCgfQo7nG1h4CjBKzEBaetlLERKJOom0AQ6EzzuaNY/dCdwH51JbsNVA5fnRUIT9hgenwhqN5J3pnTiDLPvQ5XkLPoDbKoMtYuf6cLtzFqBHLRa9Ono2kbL4fRbU0E3y9GBpJen5FkTUJ7ZK4fAFJbuCK2hdHPRL6XH2CHELZMBpoFapK7GeykNfwya+qNGQ==
+ b=Hm0snXfRR2wDqYADuskvmUXyG8Yixu8vqqktUNHBWz87zrxZacq0RKD8yLMab9rhp4MSUTH0RXT3PlyTP3blD3Mv5wOOV7M4cIiLnBKVLHlivzXf5kLdq9saH1fsuPWvmE8xNXaIW8qtLyHo0yKQTm+AvCil02R88zKX2yl/8c4/5Q4PSQroQPPWAFXVrf1XzWsFNm+XW1/jfvr1JO+I7U4IAfib4AQxB1Gz2EOO23d9xgfpo47AcZtvkaw1DE7z3/aPTxIc9hxtymVPzSbmtsnZVUkQNgZ+RE8ZzeVqxDBh1kTkgZ/JJT0EDj4BNpqLPKgs/JqmnlBUcPvgrHP29w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JaQoZ7k36XLfCoTC/EHlG0O2XCkFYmrAAP8qGTIZMx4=;
- b=FuXUrw3HSyTHdalRnnXzsQeFqmrDX5yORUfU0mO+DcMwTW1UKF23iXLbc5WfdvHbKvCdcZMAAMno5zMSP7frviY51DIJXUm132hBwec8W83aBSMYc6KdRR+/qTY69Aj8Vx0X7kgh5o5ksveVehHtD9u9l3DT2a01+Fa8g5pvdRQ6KDhZh5yja4gtp+opgYG0IDJJ5vz9yfkWevZvneaoxAiZTIcfWjpI0xa4bJy79+et89hYcw7eGVIkcu8LGAhWIGk4ZfhD4qF1oDpJrzDOUg3IkVFVDuHppk+Du9jOyon4/iCNN5+vfzp2v8MWjAsF6n3dt8TRoS4rcor28BxTjQ==
+ bh=V1F/bj71ECdBiV0DXEYBMYy70vVEkKrk04555xGrAwY=;
+ b=KwEmnd0Vil9tuj1T2geVEjx5EG23WBl2733pcmpv+lw/H1M3EjSOeZQQ1AAlP/lKaaE3JqP71j4sXnTGFNAaYMWDKu/aF5Te1NBBhYznLsv7bHkzxiSq9GUEJsL5P4ZKHPfi9wJg+1+BrhuoIJAX37NkPEXEmHqCy3/xgMWtXy2SgK+8B2nPs7aVg3CCTXka/hYXZYoT9elp6Z5Iqf4HYmlv+Jkc5Hsq+v9uNqbUEt8hAQpRlobdKRC7nV47F97zLJhp/qn0lsH4cE8VSfz0xh9rqJqxJINgfSojCrakUkpAfUoxM4R2v0j3Eaiks8r7lD8itPLJaYnYooKfZ0NwNw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JaQoZ7k36XLfCoTC/EHlG0O2XCkFYmrAAP8qGTIZMx4=;
- b=Lo9fdkwvNtSozy+derGex23d28y+ygwlQkogEf4wkahWCBDoVPN28uI+MiNEhmaZ8SgdcPCj52bV1CAdy4/ArN47L77bzeJ9JSkmfusIUOOosKojlk+S/g03EFU7R19VlFgSTlsRgbXZWRZd2qr60beId8ugSO7Tu+rTNhYBfF2Yo6Q3GdzKvonrhIotdjx9NFo3P6++AtLA7BECyKvocB7j39nxN9oJz8VdSzNVDE+KlR3ciQUwmAmNCHDEp8huieQtSV4bAl5QyPIP+6Ak5WjdX8UPguZkpTa/3afN5PiVFl4D/mzxMpUpd9O+xeQo5G56kjz+Xg3idYJawNhmIA==
+ bh=V1F/bj71ECdBiV0DXEYBMYy70vVEkKrk04555xGrAwY=;
+ b=VJg3lEubfotiILikhYuMUaqIxxuxvhCp22VKhutu6Gj/ey8qP2URgqqp2eRNiZupL28zrXzomoCBeIRCxgX0lczC5HeuzRGI9QqzoKDNLf9KXLt98uzCj0kKpqG28TiUJUzvcfcuG1eXWMXp8eanZsMdRWmKL+vtJ1Hrql7yy88/jx5Lzm52/I2o3VtQEnD5rwGLXba0YdnR6Y/oiORUdYGc4hJZS9yMyG0iYxGxpQjWs/WyFzHsaDTKFtAzPHM4RNDypseXyKznmbtwmiy7U1ixiCVyUXkDF7JZOgp8VbkviNayRbLuoiXAVHcpmq/C3EnQNoNwRT9+gKK9Banfxw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB5311.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:34e::12) with
+ by AS4PR10MB6157.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:585::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.21; Fri, 12 May
- 2023 15:59:11 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.23; Fri, 12 May
+ 2023 16:02:34 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::d638:8333:21fb:5f18]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::d638:8333:21fb:5f18%6]) with mapi id 15.20.6387.022; Fri, 12 May 2023
- 15:59:11 +0000
-Message-ID: <9693dc1a-1606-652b-29a8-8f1a23b9cdbd@siemens.com>
-Date: Fri, 12 May 2023 17:59:08 +0200
+ 16:02:34 +0000
+Message-ID: <a38c9123-f06e-f17c-ea83-0ca96cde7555@siemens.com>
+Date: Fri, 12 May 2023 18:02:31 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH 01/13] y2038: cobalt: Introduce some itimerspec64 related
- helpers
+Subject: Re: [PATCH 02/13] y2038: cobalt/posix/timer: Adding timer_settime64
 Content-Language: en-US
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
 References: <20230508-florian-y2038-part-two-v1-0-a417812fba85@siemens.com>
- <20230508-florian-y2038-part-two-v1-1-a417812fba85@siemens.com>
+ <20230508-florian-y2038-part-two-v1-2-a417812fba85@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20230508-florian-y2038-part-two-v1-1-a417812fba85@siemens.com>
+In-Reply-To: <20230508-florian-y2038-part-two-v1-2-a417812fba85@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0138.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:95::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0171.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a0::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -53,156 +52,179 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB5311:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0867cb27-7772-4df8-a328-08db5301d33d
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS4PR10MB6157:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc856f58-9983-498c-d54e-08db53024c5d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	mnAeR9oY5O0YLQiJ2ST/z02Gef+p+D1YUBMnh1g1PS96HlRt0qi3XDGTWWiAQrVc78WXchdPbeU+DLVytn8+nZIgpUQFW3GlOn0ZG3XMpzpDM9/uY4LaxaAzHpdw11fYcQ7/9Eo+a1/2u/x5ju4mD9IlHg3u9MMnLwiqRUyYtQKVmpKLQQDdwvrRS0LRRqHPtfHSBqHHEy5ZkD8M2laj6U8je8P+gcmWXsusOQORFpH9OAIclEsEWWYFVD3Nz1D6E9LAvAvMOzjBoOYhWpQ3tqM7nn5pl7YTo1Dy3ip21jkUtV3MXkrf0u+Gt+31ftJSwp8mpX4ZVjrIRCv+GX9g1e9p6WUWlG5WFiabCohOlntMvOenO9QKSAWbjBqATSlzfNDT1WSOxlekhzxGdviKGq9MiotWoKiSLYMhUg/PNFyjBqqRUViV7halAllatLyzKQV8VdMLvOEQfn7H1qnpLK1yrtJB58pFo2U2NJFVH5JD1WeGCRNZS+To8nnT7uqJ7Wf7g2IS3WHqun0TPqmCouTgb/dpy9P+SFFfFDE50vnOZ+1O+IpzmhZjquCiEXRCZ1fHxB0Rh2kiQ779JxUu6TyG4o9kaBxbVxANGcBjNT9SdN1ntuVTSfwxY3nvkIuK7lAB1YX3MIchJfm9SKRiiQ==
+	xQtLkvkq8FjNIPS2AT0OJ8Vsioec801XupDS+Gu2HJgcVGjM9yvsFkxNLvPfTbPqhkm1nJB3G7TJ058YBTuztVdA5q4IEgVlE5RZHC5xhFs9ZKlrZi+rzxC2OECqJtnSeIXqzVR4Az0E9gLh/FbMB8RLP7hYwWEaX6fQVbGcr/9zdv4Zg2jR+H+xHDhTEqOXaFnEkIDREMtmnSECP/GdZwCGRft6nY7qrFn5cyMrhdT5nkGnuvpR41hTckQhDh0Y0x92HCdk465xedypfVbKOGw17znR2GSTvJCfBNbGYpwj6zad87NgND8JHghimgY2pznIVuAQwZyyeEkfKTi2jdwpRQ8LuW3DjiOOCs/hn+ptCLdrXXThtL/fawyjWbdH9r6EuSuMUwJK6so4OHs1L4pKlBaGPoyZPTFQwQFuuwc0SVhYBuelfuaU0cZ4qGTSLe8FORji51H6hxRpff6FoxXuS/1x6Au4yiE8XGgI9q/oFVcJ47BND9eTI2PaPVCaCccn/958hpQn0byy9Dt8/tsWmid821Y0QKa3A6APjZsVt4IaOHiXOPoUflFaBXkM/XI+hiX8ole2KHZy+gOxZTntQHLEvFv+qcdtBvCUhsKhWWml6nu/AGuFRPhD3FJBTlL6HTEt1VT4n+ytuAPKsA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(396003)(366004)(346002)(451199021)(31686004)(6486002)(66556008)(66946007)(478600001)(66476007)(316002)(31696002)(86362001)(36756003)(83380400001)(26005)(186003)(53546011)(2616005)(6506007)(6666004)(6512007)(8936002)(8676002)(41300700001)(2906002)(44832011)(38100700002)(82960400001)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(451199021)(31686004)(31696002)(41300700001)(316002)(6666004)(36756003)(478600001)(86362001)(66476007)(66946007)(66556008)(26005)(6512007)(83380400001)(2616005)(186003)(38100700002)(6486002)(5660300002)(53546011)(82960400001)(44832011)(8676002)(8936002)(6506007)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SjQ5dGlSWVdENkFXTUtJYUVWOU5tZHZRaFFPS3lvaHVuSWR2UjJNM1Z2cHhW?=
- =?utf-8?B?SlZHYUFyc2tDc2VMcllwLytlamtOejljR1pKeVNmYWY1Mk1nMGdxejVWL3NH?=
- =?utf-8?B?K1BLNzRkMDNDblBvc284cUZOWVBsMUg0VmZNL3lqT0I2WHAzdENYcVhUVGti?=
- =?utf-8?B?RkpMZlp2enFiOS9TVWhCN3NxQ1MyNldST01pQU45dkVpR2JoMHVzVDRBNkpF?=
- =?utf-8?B?eHZuNWZJRytUbGdOanFGU0FWSkUzcmV2bHlpTnJraElnMjNnenNJZHZZOFRR?=
- =?utf-8?B?NDUzc083TmNUVy9LNEdlamlyUzM4RURGajZvbUtDWG9VdFc0ZmpmR2xVK0s3?=
- =?utf-8?B?OXlnTk5RM2dIdlBld3cwSy9rN3pmaklYeU1BQlJsMGo1RlFMTlEvWW41UW5S?=
- =?utf-8?B?RGJvak5qOU1idExDMmZ2QmhQVTlnQUprNE9oclNVQmVueEYyMkpMUm5VektF?=
- =?utf-8?B?Zm1USzlodThmZFNMaGErYXAvMllKQmVrKzBacStCb1lSaHBvd000Ty9iUGMz?=
- =?utf-8?B?QTJWb3NvVzZhYitDTW80bFdmaHJlWHhXN2ludmhrc3RLejFtaC9qSWNBUGVO?=
- =?utf-8?B?K2xhS2FzSEVFZ2ZCRmlPTWdPdVlVRWhKLzhhVEtzUjIzOHUycVpvOFNkV3I5?=
- =?utf-8?B?eG00ajIrUXBlZzNKNDExNFVzZ2srNy94bHlPNEtsNTBPMDEyMERXRElhQ0FJ?=
- =?utf-8?B?ZGJ5dlViaUdMV2t4NVo3MjhwUUZPMjBYYjM0di9RdEtGUWtzSkJzbjBWTHRl?=
- =?utf-8?B?cnRBNkQwcGxSMmc1cnNzMldHVUU0bFVCeS9leXk1VnlFN2Z1YXRtdTh1Unlh?=
- =?utf-8?B?UW52dm5lMUh5WDkzT0NCdUxPd2M4NjJvNnkvVjJrZVVUaVVxbEdEd3BOekJi?=
- =?utf-8?B?eEFodFVlUDFtZFVSY25XUEVib0hKSDUvOERiSGpGVmtiQXV3YXNnZExWK1FT?=
- =?utf-8?B?c0FsdDFudGpJSTZvU0RyYy91VXY0WUZCUXRDeVFHKzc5bUltM1Q1QzJQbEt1?=
- =?utf-8?B?Y2ZqV3VseDB1TkkydTFZT0R3WDl3WE81czZzNmpNNU1HVm5Db3paTHEwSVNk?=
- =?utf-8?B?dHNiQnY5alg3bUdubTNuUWJDbWpuSFhaamtvbksyc1VxTUtKb1N1VzNPMGp0?=
- =?utf-8?B?RjV1akVId0J0SnloOUUrQWtrMzIxMTZIYVJDM3o4V3FHbmJtdGh6WWt6SVVs?=
- =?utf-8?B?S2pKcWttWmxhVzFCdWc0OVc5VndLUDJHc2VMSlZ0MDEza3NtQ0tOaG0rdXAw?=
- =?utf-8?B?aDhDUTdyYkpSVjlYVXBRb2tQZXV4THFIMUw2aFlsRThDYzk0QXMwU1BWeEZE?=
- =?utf-8?B?b3RZdmJFWmNRYnVyVXpNcTZwMFlqd0ZsajI1WGF3OXp5VC94OW5INnBHZUhr?=
- =?utf-8?B?VnlBTk0vSDVHNGs4Q3NkSi9RYyszOEFMYTZVSGd6dEtoRUI0bk5xVWhjTVRE?=
- =?utf-8?B?bkV5ZTRpUWF0Q1BnWXdvR2VEQWFYYUpkaDI5KzNSQUZGdGhVTEphZlh5a0VK?=
- =?utf-8?B?WlJQaEhnbmFsbzU4V3JEZkptRnZndzVEUm1CV3paZlZhVWcvenBFWEdiNG5r?=
- =?utf-8?B?bVAxbXcwd25oU3VSVEdmeGNwNnNtT1FqV1dyNnJFbEtVRnA2bktiRWphWDJN?=
- =?utf-8?B?MkY2Z1dMOUNhOTlLZ3MvK2RwRFJlUmh3aWhreEdzT1BHVWErQUUrSHc0bHA0?=
- =?utf-8?B?dEx1TWluT29rVXBoSWJ1TFdIaUxWZThVb2c2Z2hlYVlVSHR6WDd4ZlZwMUoz?=
- =?utf-8?B?WkNrOThQcVRvRVEwZDA0T2d5UGdVUFBuWktaRVE2d1hDaEJOK1RDdTF6QmEw?=
- =?utf-8?B?MGl5Q09qdWY0TzBXbnlhNTFnRkdlNmF6UjFZVWluRllvbnJudm5FTXRaOHpH?=
- =?utf-8?B?TWVaRFpOKzU0Y2lwNjFvVEdZWE1Tek1EaFRaZmFDdklyVUlRQ0t6a0s4cEZP?=
- =?utf-8?B?bzhpUnh3Yi9WRlcwZnhoSTJsTkFWQktuaVh4dUdmRnQ4RW1TaTQvL295Nlkr?=
- =?utf-8?B?QkZKWGhhNExXcEVtcERBNWRqYVRDOHA2NkE5bEw2clFaTlVLNmdWZ3NpZ2ZR?=
- =?utf-8?B?S3BrSE5Uc0JMaXBDcHJNNlBwdGVEbFNnbURnZWJVc05sODUzbWlDZXduemg4?=
- =?utf-8?B?cElDRnZ4K1BVNmYzNEFiRGVXTG02T3kzdC9ia1k2emdOUFQwcE1wMXZwY2VH?=
- =?utf-8?B?TUE9PQ==?=
+	=?utf-8?B?Uk9HckhEbEpFaUxRcklUeVJNZ21DcDdRQmlXSGpWYy9uR3ZOVWdmd3JoZFUy?=
+ =?utf-8?B?ZzFKcmFRandVZGF0YmlZYWFOeGpxMnhCM0ZIbTU0VkcyTkFyUzVzWlU5azRz?=
+ =?utf-8?B?aDU1Q25Kdmo1NWJpajZKWElyRkJtUFlFOGtadmtrNy80QVN1WlVhb0tqbDNE?=
+ =?utf-8?B?UWR3NUpudkJxTXI2djB4b1Z4Vm5sQXp5RUN5ejQwdTdaQ3loMjFRVTMxWHV4?=
+ =?utf-8?B?ZFBtYVp3U0IybjMweEFEK0hjZG41elM3cW9hbkI1bWVLOXBGVkkwWlcxRlgy?=
+ =?utf-8?B?TFVYRzltc2lJdlo2VFpTWkFlUFdWSVZnRzdkMWR0a0czMmNoYlR3Q1doZU52?=
+ =?utf-8?B?YTdjZFlQVzdOWldpR015MGR2YXM4M2RGbFZGdnU0TVMrTXRaQjZmK1dlME8v?=
+ =?utf-8?B?VGs5ekFaY3pXekwraHl1Y0IxbTFhNUJBL2poVjVoRUc2K0tDMDVUR1gvcVdG?=
+ =?utf-8?B?SzRnd01HcFZHbmRlTlhycHFORkMzQmkzWFk2VCtUcVFVYWRNWkxVaXVnNkV3?=
+ =?utf-8?B?QzhJaWVEcjgrcCt4TU5kYUFTajVmcFluM3ZvSGNlOHNTdGVQK0RKUkJCZnFL?=
+ =?utf-8?B?TGg2QW5ZZnhsc1IzMyt4ZUIvb2tOTlRQRkpQajJyUEJiSEFvUnhaelpUTlJH?=
+ =?utf-8?B?dlFrRURNSThQQWM5Q2RrY1M0cjRsQWUzZ3ZoYlJxN1BvQVBDZGtjOWh5Zm01?=
+ =?utf-8?B?bnJwMjAydjVEeTBnbW0yVllvNE1SazJNNkFtMHo1MzhwbEVUeHNNR3FPT2N0?=
+ =?utf-8?B?UmIxVjQzc04xSjlVYlU5VzR5c3BJNTN3NVM5dTcwVE1BOUZRNDcrV25FOWY0?=
+ =?utf-8?B?SlptaHhPUWZ6ankwV0J2MXk2WEVmWlE1WktEcThvYWN2bVZxZlBRekJ2ZG1B?=
+ =?utf-8?B?TURvY0VvMHRsc0tXSHk4QktFQ0NGSTcvSHo1a0pmOFUycHlQNzl4SHFNckcv?=
+ =?utf-8?B?Wk1zYzNOQmFTN0FuK0RuZnRoeUg3eWF4VEZnZTFDUWthcXo2Vysxa3E5VnNO?=
+ =?utf-8?B?dFJLaVZNUFQwbllBNjJWeEtvVWFVSzhvQmgzdXBPL3dnNlhJRE9jeENSWXVP?=
+ =?utf-8?B?N0ZXcFJOWnN0cFdrNzlSZUI3WVo2S0JaNG5xdjRmVFFFRnZndUcyUVpSdnBq?=
+ =?utf-8?B?bHlKaHdsMFgwWURkSEJGd01aMHJTU0R6bk9aZjJYTzNpbmtsVlZnUnRGUTJF?=
+ =?utf-8?B?SHVTMVhTMWVNVWRsM00zM1Z4TGF4S0ZkaURTN2ZuZVdqcjZ2a0g3R215YXUw?=
+ =?utf-8?B?bmxHbjUvYVNMcTRoUEIvSXhyNXhYaTZrOUtWbHNCc3BSVXQrblZTL1NkZ0dr?=
+ =?utf-8?B?Y1ZTOGx6bDRGalZIMUgxdjlJRmplU1BoUnFITFBYSndVQjBiSlNGZDlXeTdz?=
+ =?utf-8?B?RGU1SHBWRklQZlR4NU1xWVQwYnEzVGFwcVg0UUd1VEY2aUI5NjluWlU5ZXJ2?=
+ =?utf-8?B?WGFyVTJhaWY2Y2t3QldiL1pCeVVqNFd6QjArUVRMcGRlamRLbDMrWXF1c1hI?=
+ =?utf-8?B?NHdYbk43cGN2TU0vc3VJTDM0bjlwSG9DaFlzVVJWRXZPZEErd1dOMTFPZHhF?=
+ =?utf-8?B?MEVEOEJTLy83a2t0Mk1OUmoxenBSWWhCSm1POEdPWmlYVGt3TU1VRVRXR2pB?=
+ =?utf-8?B?by9HLzNJN3ZDYXM1YnBmWGpnZG1NMGc1ZjhCcllaQmRvbTcxb05nY1JoSW5J?=
+ =?utf-8?B?SEFaelZvbEJmajRwWkgxYVhodDhjVDVGa3g0NWZzMWZ2UDdLM2tOS1lxSFVR?=
+ =?utf-8?B?bmEwRXlWMHBwZnpoTW9LR2oxelU5ZHVtN1NjWkJrTGprbUtTYjVlbzdpWWl5?=
+ =?utf-8?B?MVRxYXJNRVNCc2tjZExydjhyWUxTQlk5YjB1Y1dhOVRvU0o2OUk1VFZtQkE1?=
+ =?utf-8?B?Vm1VWVdOU1p0NGxHQTM0QWVKU1FWWG0yMWR3cElOMXpmYi9PSUVUd0tCSU1W?=
+ =?utf-8?B?K1ZlV290RldPa0RnZWN1emRkdkVCMUpkVkhSRUh0RU9KaU5XcS9XWlB3TGdQ?=
+ =?utf-8?B?UzAwanNUanNUcmNIcnpodUtaS1I4eUNtbmFSR2hNSmNwY2NZTHU5UzhaemZl?=
+ =?utf-8?B?MUN6N0FhUHcwUHdCaDJvMkdGM1EyU09nTStNUnV0VkhKSldpSkJnWDM2RVZt?=
+ =?utf-8?B?Ri9BWEtCaGhqQ1B2U1hHRGJGM05ZUFFyQThxckxlTG5zL3RZcVpMbjA3VVI0?=
+ =?utf-8?B?bFE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0867cb27-7772-4df8-a328-08db5301d33d
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc856f58-9983-498c-d54e-08db53024c5d
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 15:59:10.9031
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 16:02:34.0922
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o4FqpsmRDb6MQZaGrepMXRCLSFp7Loz1/tW6mDoZ49CFw2PjgXIENd7o7JXuHRdX3XiIFT7EPf7EMGSDaQ0n1A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB5311
+X-MS-Exchange-CrossTenant-UserPrincipalName: WSp37fnPMVbu6J9NhUvXEFywCdkga5FabhcP2i988LGx+v+Kbm1TO5q3neQBTQMyhdSBrBnmX76dFEWY7Dcwng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB6157
 
 On 08.05.23 10:13, Florian Bezdeka wrote:
-> The introduced helpers will be used by the timer and timerfd y2038
-> related services for reading/writing itimerspec from/to userspace.
+> Add a syscall specific for timer_settime with 64bit time_t.
 > 
 > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 > ---
->  include/cobalt/kernel/time.h | 21 +++++++++++++++++++++
->  kernel/cobalt/time.c         | 38 ++++++++++++++++++++++++++++++++++++++
->  2 files changed, 59 insertions(+)
+>  include/cobalt/uapi/syscall.h      |  1 +
+>  kernel/cobalt/posix/timer.c        | 32 +++++++++++++++++++++++++++++---
+>  kernel/cobalt/posix/timer.h        |  5 +++++
+>  kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+>  4 files changed, 37 insertions(+), 4 deletions(-)
 > 
-> diff --git a/include/cobalt/kernel/time.h b/include/cobalt/kernel/time.h
-> index a55398068..e348cf9b8 100644
-> --- a/include/cobalt/kernel/time.h
-> +++ b/include/cobalt/kernel/time.h
-> @@ -28,4 +28,25 @@ int cobalt_get_timespec64(struct timespec64 *ts,
->  int cobalt_put_timespec64(const struct timespec64 *ts,
->  			  struct __kernel_timespec __user *uts);
+> diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+> index 9646a0d97..77184bd22 100644
+> --- a/include/cobalt/uapi/syscall.h
+> +++ b/include/cobalt/uapi/syscall.h
+> @@ -136,6 +136,7 @@
+>  #define sc_cobalt_event_wait64			113
+>  #define sc_cobalt_recvmmsg64			114
+>  #define sc_cobalt_cond_wait_prologue64		115
+> +#define sc_cobalt_timer_settime64		116
 >  
-> +/**
-> + * Read struct __kernel_itimerspec from userspace and convert to
-> + * struct itimerspec64
-> + *
-> + * @param dst The destination, will be filled
-> + * @param src The source, provided by an application
-> + * @return 0 on success, -EFAULT otherwise
-> + */
-> +int cobalt_get_itimerspec64(struct itimerspec64 *dst,
-> +			    const struct __kernel_itimerspec __user *src);
-> +
-> +/**
-> + * Convert struct itimerspec64 to struct __kernel_itimerspec and copy to user
-> + * space
-> + * @param dst The destination, will be filled, provided by an application
-> + * @param src The source, provided by the kernel
-> + * @return 0 un success, -EFAULT otherwise
-> + */
-> +int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
-> +			    const struct itimerspec64 *src);
-> +
->  #endif //_COBALT_KERNEL_TIME_H
-> diff --git a/kernel/cobalt/time.c b/kernel/cobalt/time.c
-> index 27dbf8290..716223dc5 100644
-> --- a/kernel/cobalt/time.c
-> +++ b/kernel/cobalt/time.c
-> @@ -36,3 +36,41 @@ int cobalt_put_timespec64(const struct timespec64 *ts,
+>  #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
 >  
->  	return cobalt_copy_to_user(uts, &kts, sizeof(kts)) ? -EFAULT : 0;
+> diff --git a/kernel/cobalt/posix/timer.c b/kernel/cobalt/posix/timer.c
+> index a115ded53..3c7579def 100644
+> --- a/kernel/cobalt/posix/timer.c
+> +++ b/kernel/cobalt/posix/timer.c
+> @@ -16,6 +16,7 @@
+>   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+>   */
+>  
+> +#include <cobalt/kernel/time.h>
+>  #include <linux/module.h>
+>  #include <linux/cred.h>
+>  #include <linux/err.h>
+> @@ -295,9 +296,8 @@ int __cobalt_timer_setval(struct xntimer *__restrict__ timer, int clock_flag,
+>  		return 0;
+>  	}
+>  
+> -	if ((unsigned long)value->it_value.tv_nsec >= ONE_BILLION ||
+> -	    ((unsigned long)value->it_interval.tv_nsec >= ONE_BILLION &&
+> -	     (value->it_value.tv_sec != 0 || value->it_value.tv_nsec != 0)))
+> +	if (!timespec64_valid(&value->it_interval) ||
+> +	    !timespec64_valid(&value->it_value))
+
+Is that directly related to this patch? Or rather some cleanup?
+
+>  		return -EINVAL;
+>  
+>  	start = ts2ns(&value->it_value) + 1;
+> @@ -495,6 +495,32 @@ COBALT_SYSCALL(timer_settime, primary,
+>  	return 0;
 >  }
-> +
-> +int cobalt_get_itimerspec64(struct itimerspec64 *dst,
-> +			    const struct __kernel_itimerspec __user *src)
+>  
+> +COBALT_SYSCALL(timer_settime64, primary,
+> +	       (timer_t tm, int flags,
+> +		const struct __kernel_itimerspec __user *u_newval,
+> +		struct __kernel_itimerspec __user *u_oldval))
 > +{
-> +	struct timespec64 interval, value;
+> +	struct itimerspec64 newv, oldv, *oldvp = &oldv;
 > +	int ret;
 > +
-> +	if (!src)
-
-Can that be enough to validate the pointer? Or is it even needed? We
-must validate it via cobalt_get_timespec64 anyway, no?
-
+> +	if (u_oldval == NULL)
+> +		oldvp = NULL;
+> +
+> +	if (cobalt_get_itimerspec64(&newv, u_newval))
 > +		return -EFAULT;
 > +
-> +	ret = cobalt_get_timespec64(&interval, &src->it_interval);
+> +	ret = __cobalt_timer_settime(tm, flags, &newv, oldvp);
 > +	if (ret)
 > +		return ret;
 > +
-> +	ret = cobalt_get_timespec64(&value, &src->it_value);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dst->it_interval.tv_sec = interval.tv_sec;
-> +	dst->it_interval.tv_nsec = interval.tv_nsec;
-> +	dst->it_value.tv_sec = value.tv_sec;
-> +	dst->it_value.tv_nsec = value.tv_nsec;
+> +	if (oldvp && cobalt_put_itimerspec64(u_oldval, oldvp)) {
+> +		__cobalt_timer_settime(tm, flags, oldvp, NULL);
+> +		return -EFAULT;
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
-> +			    const struct itimerspec64 *src)
-> +{
-> +	struct __kernel_itimerspec kits = {
-> +		.it_interval.tv_sec = src->it_interval.tv_sec,
-> +		.it_interval.tv_nsec = src->it_interval.tv_nsec,
-> +		.it_value.tv_sec = src->it_value.tv_sec,
-> +		.it_value.tv_nsec = src->it_value.tv_nsec
-> +	};
+>  COBALT_SYSCALL(timer_gettime, current,
+>  	       (timer_t tm, struct __user_old_itimerspec __user *u_val))
+>  {
+> diff --git a/kernel/cobalt/posix/timer.h b/kernel/cobalt/posix/timer.h
+> index 3b580d470..16d3a572a 100644
+> --- a/kernel/cobalt/posix/timer.h
+> +++ b/kernel/cobalt/posix/timer.h
+> @@ -78,6 +78,11 @@ COBALT_SYSCALL_DECL(timer_settime,
+>  		     const struct __user_old_itimerspec __user *u_newval,
+>  		     struct __user_old_itimerspec __user *u_oldval));
+>  
+> +COBALT_SYSCALL_DECL(timer_settime64,
+> +		    (timer_t tm, int flags,
+> +		     const struct __kernel_itimerspec __user *u_newval,
+> +		     struct __kernel_itimerspec __user *u_oldval));
 > +
-> +	return cobalt_copy_to_user(dst, &kits, sizeof(kits));
-> +}
+>  COBALT_SYSCALL_DECL(timer_gettime,
+>  		    (timer_t tm, struct __user_old_itimerspec __user *u_val));
+>  
+> diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+> index c7eef7fba..5f99b1162 100644
+> --- a/kernel/cobalt/trace/cobalt-posix.h
+> +++ b/kernel/cobalt/trace/cobalt-posix.h
+> @@ -168,7 +168,8 @@
+>  		__cobalt_symbolic_syscall(monitor_wait64),		\
+>  		__cobalt_symbolic_syscall(event_wait64),		\
+>  		__cobalt_symbolic_syscall(recvmmsg64),			\
+> -		__cobalt_symbolic_syscall(cond_wait_prologue64))
+> +		__cobalt_symbolic_syscall(cond_wait_prologue64),	\
+> +		__cobalt_symbolic_syscall(timer_settime64))
+>  
+>  DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+>  	TP_PROTO(unsigned int nr),
 > 
 
 Jan
