@@ -1,22 +1,22 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 637C3D2E5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3A68D2E9
 	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 14:50:26 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305151450235b9ebd9c4c114ab520
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202305151450216bf0240ef73204b58a
         for <xenomai@lists.linux.dev>;
-        Mon, 15 May 2023 16:50:23 +0200
+        Mon, 15 May 2023 16:50:21 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=dI7+rCqSIZGzNDpZ2DQhpS8ENiieubU1nHaWgrQ2sbo=;
- b=qCQqyeznlaObeiDu5rMQFao7yLctpDqGEbnacJTqhaM761BcwFkjJeUBY+ZGWOAbzOwXIc
- xPF+qqj+jykRkzixqqAMrE2x7O1Bx7ntakyWFCyoR2XQWnR8XJXYe4TANWGI/NevkpuSG2K4
- I+YQ0gL/7Wy2kMDl2ca4jhah3rgLI=;
+ bh=4Vhu6dN5Y8HzvewS2fDFRLBydHWBPSA73jCobU2oAHA=;
+ b=XLBm80RXJUCsG1j66kkTM44dxMF4QLll0S46Gvju1C5md0eHTetQ5Wb9oxgS7za6JsPjrK
+ EEnfe4qU7TuV4xRz4G/5q50wKcvJ6Izfk9eyZOh1rxH2EsGh4maFFSvYvCPxDWlvlG/pVR+W
+ SAYPcSfGCJ1ASorStmnRtvEiVgEJ8=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 15 May 2023 16:50:05 +0200
-Subject: [PATCH v2 05/14] y2038: testsuite/smokey/y2038: Adding tests for
- timer_settime
+Date: Mon, 15 May 2023 16:50:01 +0200
+Subject: [PATCH v2 01/14] y2038: cobalt: Introduce some itimerspec64
+ related helpers
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230508-florian-y2038-part-two-v2-5-a12f69d870d7@siemens.com>
+Message-Id: <20230508-florian-y2038-part-two-v2-1-a12f69d870d7@siemens.com>
 References: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 In-Reply-To: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -33,110 +33,88 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Extending the smokey testsuite to do some tests for the recently added
-timer_settime syscall.
+The introduced helpers will be used by the timer and timerfd y2038
+related services for reading/writing itimerspec from/to userspace.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/smokey/y2038/syscall-tests.c | 72 ++++++++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+ include/cobalt/kernel/time.h | 21 +++++++++++++++++++++
+ kernel/cobalt/time.c         | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index ef8c72225..312d1b041 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -25,6 +25,11 @@ struct xn_timespec64 {
- 	int64_t tv_nsec;
- };
+diff --git a/include/cobalt/kernel/time.h b/include/cobalt/kernel/time.h
+index a55398068..e348cf9b8 100644
+--- a/include/cobalt/kernel/time.h
++++ b/include/cobalt/kernel/time.h
+@@ -28,4 +28,25 @@ int cobalt_get_timespec64(struct timespec64 *ts,
+ int cobalt_put_timespec64(const struct timespec64 *ts,
+ 			  struct __kernel_timespec __user *uts);
  
-+struct xn_itimerspec64 {
-+	struct xn_timespec64 interval;
-+	struct xn_timespec64 value;
-+};
++/**
++ * Read struct __kernel_itimerspec from userspace and convert to
++ * struct itimerspec64
++ *
++ * @param dst The destination, will be filled
++ * @param src The source, provided by an application
++ * @return 0 on success, -EFAULT otherwise
++ */
++int cobalt_get_itimerspec64(struct itimerspec64 *dst,
++			    const struct __kernel_itimerspec __user *src);
 +
- struct xn_timex_timeval {
- 	int64_t tv_sec;
- 	int64_t	tv_usec;
-@@ -1212,6 +1217,69 @@ out_mutex:
- 	return ret;
- }
++/**
++ * Convert struct itimerspec64 to struct __kernel_itimerspec and copy to user
++ * space
++ * @param dst The destination, will be filled, provided by an application
++ * @param src The source, provided by the kernel
++ * @return 0 un success, -EFAULT otherwise
++ */
++int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
++			    const struct itimerspec64 *src);
++
+ #endif //_COBALT_KERNEL_TIME_H
+diff --git a/kernel/cobalt/time.c b/kernel/cobalt/time.c
+index 27dbf8290..d88f2efd8 100644
+--- a/kernel/cobalt/time.c
++++ b/kernel/cobalt/time.c
+@@ -36,3 +36,38 @@ int cobalt_put_timespec64(const struct timespec64 *ts,
  
-+static int test_sc_cobalt_timer_settime64(void)
+ 	return cobalt_copy_to_user(uts, &kts, sizeof(kts)) ? -EFAULT : 0;
+ }
++
++int cobalt_get_itimerspec64(struct itimerspec64 *dst,
++			    const struct __kernel_itimerspec __user *src)
 +{
-+	long sc_nr = sc_cobalt_timer_settime64;
-+	struct xn_itimerspec64 its;
-+	struct sigevent sev;
-+	sigset_t sigset;
-+	timer_t t;
-+	int sig;
++	struct timespec64 interval, value;
 +	int ret;
 +
-+	sig = SIGUSR1;
-+	sigemptyset(&sigset);
-+	sigaddset(&sigset, sig);
-+
-+	memset(&sev, 0, sizeof(sev));
-+	memset(&its, 0, sizeof(its));
-+
-+	sev.sigev_signo = sig;
-+	sev.sigev_notify = SIGEV_THREAD_ID | SIGEV_SIGNAL;
-+	sev.sigev_notify_thread_id = gettid();
-+
-+	ret = smokey_check_errno(timer_create(CLOCK_REALTIME, &sev, &t));
++	ret = cobalt_get_timespec64(&interval, &src->it_interval);
 +	if (ret)
 +		return ret;
 +
-+	/* Make sure we don't crash because of NULL pointers */
-+	ret = XENOMAI_SYSCALL4(sc_nr, t, 0, NULL, NULL);
-+	if (ret == -ENOSYS) {
-+		smokey_note(
-+			"cobalt_timer_settime64: skipped. (no kernel support)");
-+		ret = 0;
-+		goto out; // Not implemented, nothing to test, success
-+	}
-+	if (!smokey_assert(ret == -EFAULT)) {
-+		ret = ret ?: -EINVAL;
-+		goto out;
-+	}
++	ret = cobalt_get_timespec64(&value, &src->it_value);
++	if (ret)
++		return ret;
 +
-+	its.value.tv_sec = -1;
-+	its.value.tv_nsec = 100000;
++	dst->it_interval.tv_sec = interval.tv_sec;
++	dst->it_interval.tv_nsec = interval.tv_nsec;
++	dst->it_value.tv_sec = value.tv_sec;
++	dst->it_value.tv_nsec = value.tv_nsec;
 +
-+	/* Provide an invalid expiration time, should deliver -EINVAL */
-+	ret = XENOMAI_SYSCALL4(sc_nr, t, 0, &its, NULL);
-+	if (!smokey_assert(ret == -EINVAL)) {
-+		ret = ret ?: -EINVAL;
-+		goto out;
-+	}
-+
-+	/* Provide a valid expiration time, should succeed */
-+	its.value.tv_sec = 0;
-+	ret = XENOMAI_SYSCALL4(sc_nr, t, 0, &its, NULL);
-+	if (!smokey_assert(!ret))
-+		goto out;
-+
-+	/* Wait for the timer to deliver the signal */
-+	sigwait(&sigset, &sig);
-+
-+out:
-+	timer_delete(t);
-+
-+	return ret;
++	return 0;
 +}
 +
- static int check_kernel_version(void)
- {
- 	int ret, major, minor;
-@@ -1301,5 +1369,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
- 
-+	ret = test_sc_cobalt_timer_settime64();
-+	if (ret)
-+		return ret;
++int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
++			    const struct itimerspec64 *src)
++{
++	struct __kernel_itimerspec kits = {
++		.it_interval.tv_sec = src->it_interval.tv_sec,
++		.it_interval.tv_nsec = src->it_interval.tv_nsec,
++		.it_value.tv_sec = src->it_value.tv_sec,
++		.it_value.tv_nsec = src->it_value.tv_nsec
++	};
 +
- 	return 0;
- }
++	return cobalt_copy_to_user(dst, &kits, sizeof(kits));
++}
 
 -- 
 2.39.2
