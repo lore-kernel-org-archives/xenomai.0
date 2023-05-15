@@ -1,21 +1,22 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F71D52B
-	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 14:50:29 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305151450240f2e352657656385e4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F9AD2F3
+	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 14:50:27 +0000 (UTC)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2023051514502582e1d8ab7ff7ed9c0e
         for <xenomai@lists.linux.dev>;
-        Mon, 15 May 2023 16:50:24 +0200
+        Mon, 15 May 2023 16:50:25 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=sORxsgI/5yUUdgWYdnvchSSsrSb8vyNRJvbQ7OeHcdw=;
- b=T5x+OUEIsPJN/eXy+Qx7ONFc50MkaYPZusENiZ4y563s3Ht5Kdrh4eWfsiVOLQDVFuWjWl
- hl7Yp4GP0u72gs8svLgUvc1my3KN2exJ5nosqgJmD7UxTpERRBCz8ocOYegeMvsLdwiyckyX
- VtmvGYtaij/wU7+xj6kowmxp4tRIY=;
+ bh=Z+ywMKqG55mqDmrHWOEQHN3ZQP8nMDFuhP2j8/8/8UM=;
+ b=kayXJ2NYGfF6uHxXvqaciRob+iF+3Sb968gPq+VV5x0vMIVGjxQDNWIriUT3gGXw2XxAHR
+ 2AUmoYoihwWsJRG9Qw4B8cUZuo/cljpBasQtqyiWm01cUfgTXQmw3h5Ic6IvpCHkqH9cu5CS
+ 2HQgfP3jyre5J/T3HEOiTKqjTQhaY=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 15 May 2023 16:50:06 +0200
-Subject: [PATCH v2 06/14] y2038: cobalt/posix/timer: Adding timer_gettime64
+Date: Mon, 15 May 2023 16:50:08 +0200
+Subject: [PATCH v2 08/14] y2038: testsuite/smokey/y2038: Adding tests for
+ timer_gettime
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -24,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230508-florian-y2038-part-two-v2-6-a12f69d870d7@siemens.com>
+Message-Id: <20230508-florian-y2038-part-two-v2-8-a12f69d870d7@siemens.com>
 References: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 In-Reply-To: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -32,80 +33,94 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Add a syscall specific for timer_gettime with 64bit time_t.
+Extending the smokey testsuite to do some tests for the recently added
+timer_gettime syscall.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/uapi/syscall.h      |  1 +
- kernel/cobalt/posix/timer.c        | 13 +++++++++++++
- kernel/cobalt/posix/timer.h        |  3 +++
- kernel/cobalt/trace/cobalt-posix.h |  3 ++-
- 4 files changed, 19 insertions(+), 1 deletion(-)
+ testsuite/smokey/y2038/syscall-tests.c | 63 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 77184bd22..24e759eef 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -137,6 +137,7 @@
- #define sc_cobalt_recvmmsg64			114
- #define sc_cobalt_cond_wait_prologue64		115
- #define sc_cobalt_timer_settime64		116
-+#define sc_cobalt_timer_gettime64		117
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/posix/timer.c b/kernel/cobalt/posix/timer.c
-index 3c7579def..0f111a42c 100644
---- a/kernel/cobalt/posix/timer.c
-+++ b/kernel/cobalt/posix/timer.c
-@@ -534,6 +534,19 @@ COBALT_SYSCALL(timer_gettime, current,
- 	return cobalt_put_u_itimerspec(u_val, &val);
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 312d1b041..069553f37 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -1280,6 +1280,65 @@ out:
+ 	return ret;
  }
  
-+COBALT_SYSCALL(timer_gettime64, current,
-+	       (timer_t tm, struct __kernel_itimerspec __user *u_val))
++static int test_sc_cobalt_timer_gettime64(void)
 +{
-+	struct itimerspec64 val;
++	long sc_nr = sc_cobalt_timer_gettime64;
++	struct xn_itimerspec64 its;
++	struct sigevent sev;
++	sigset_t sigset;
++	timer_t t;
++	int sig;
 +	int ret;
 +
-+	ret = __cobalt_timer_gettime(tm, &val);
++	sig = SIGUSR1;
++	sigemptyset(&sigset);
++	sigaddset(&sigset, sig);
++
++	memset(&sev, 0, sizeof(sev));
++	memset(&its, 0, sizeof(its));
++
++	sev.sigev_signo = sig;
++	sev.sigev_notify = SIGEV_THREAD_ID | SIGEV_SIGNAL;
++	sev.sigev_notify_thread_id = gettid();
++
++	ret = smokey_check_errno(timer_create(CLOCK_REALTIME, &sev, &t));
 +	if (ret)
 +		return ret;
 +
-+	return cobalt_put_itimerspec64(u_val, &val);
++	/* Make sure we don't crash because of NULL pointers */
++	ret = XENOMAI_SYSCALL2(sc_nr, t, NULL);
++	if (ret == -ENOSYS) {
++		smokey_note(
++			"cobalt_timer_gettime64: skipped. (no kernel support)");
++		ret = 0;
++		goto out; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -EFAULT)) {
++		ret = ret ?: -EINVAL;
++		goto out;
++	}
++
++	/*
++	 * Init some random values, allows us to identify that the kernel has
++	 * written the time
++	 */
++	its.value.tv_sec = 123;
++	its.value.tv_nsec = 456;
++
++	/* Fetch the time from the timer, should succeed */
++	ret = XENOMAI_SYSCALL2(sc_nr, t, &its);
++	if (!smokey_assert(!ret))
++		goto out;
++
++	smokey_assert(its.value.tv_sec == 0);
++	smokey_assert(its.value.tv_nsec == 0);
++
++out:
++	timer_delete(t);
++
++	return ret;
 +}
 +
- COBALT_SYSCALL(timer_getoverrun, current, (timer_t timerid))
+ static int check_kernel_version(void)
  {
- 	struct cobalt_timer *timer;
-diff --git a/kernel/cobalt/posix/timer.h b/kernel/cobalt/posix/timer.h
-index 16d3a572a..864c780e8 100644
---- a/kernel/cobalt/posix/timer.h
-+++ b/kernel/cobalt/posix/timer.h
-@@ -86,6 +86,9 @@ COBALT_SYSCALL_DECL(timer_settime64,
- COBALT_SYSCALL_DECL(timer_gettime,
- 		    (timer_t tm, struct __user_old_itimerspec __user *u_val));
+ 	int ret, major, minor;
+@@ -1373,5 +1432,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
  
-+COBALT_SYSCALL_DECL(timer_gettime64,
-+		    (timer_t tm, struct __kernel_itimerspec __user *u_val));
++	ret = test_sc_cobalt_timer_gettime64();
++	if (ret)
++		return ret;
 +
- COBALT_SYSCALL_DECL(timer_getoverrun, (timer_t tm));
- 
- #endif /* !_COBALT_POSIX_TIMER_H */
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 5f99b1162..dc4f53a5a 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -169,7 +169,8 @@
- 		__cobalt_symbolic_syscall(event_wait64),		\
- 		__cobalt_symbolic_syscall(recvmmsg64),			\
- 		__cobalt_symbolic_syscall(cond_wait_prologue64),	\
--		__cobalt_symbolic_syscall(timer_settime64))
-+		__cobalt_symbolic_syscall(timer_settime64),		\
-+		__cobalt_symbolic_syscall(timer_gettime64))
- 
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
- 	TP_PROTO(unsigned int nr),
+ 	return 0;
+ }
 
 -- 
 2.39.2
