@@ -1,22 +1,22 @@
 Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 113D4C8E5
-	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 15:00:30 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2023051514502089dfd3e424aab86332
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A32FC8E5
+	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 15:00:35 +0000 (UTC)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230515145027a2455409ed02bfdfa2
         for <xenomai@lists.linux.dev>;
-        Mon, 15 May 2023 16:50:20 +0200
+        Mon, 15 May 2023 16:50:27 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=6J42IVWrK5ODuQ3dqDJH1kOnM3yPTx7BlMGyLVemaDQ=;
- b=ekrl7Gwhn4SkrCTj3z/NCrjjX1/QBSO7nK3wBzdaRCi1pa3IhZyuxUvTuBXV6X5H6qrvZ0
- LQJBvtLKo/ck85i7jhkr/tpXSbpRQVi1moCExuNaKA1kyGs4B6QrP02L9Pv1L6Nf8WC2r+4c
- 3q9frERpNJBmTDqobuDcZHK8RE/PM=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=2+tdYfgsc/wK/GmWqw/1TdK0aojCA2MPcjNs1ByxzWs=;
+ b=Oo2+58bTPeBhj2NMtKuETVmI6WaDvxVaja4u0EgKrmZxFoo+He+bWF0pEhlCnQIU64F6TU
+ GLc23JzQjQDx+OjKTmUEnouTBFRgZpDAQ3eCETMImSDJ402BB8TN3ZFBWL1zTOh5h5tAGwzs
+ JECNoh9BwtZHDCdWSeK8+po+I1OrE=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 00/14] y2038: Part two - timer and timerfd support
-Date: Mon, 15 May 2023 16:50:00 +0200
-Message-Id: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
+Date: Mon, 15 May 2023 16:50:12 +0200
+Subject: [PATCH v2 12/14] y2038: cobalt/posix/timerfd: Adding
+ timerfd_gettime64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,74 +25,82 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAJhGYmQC/4WNQQ6CMBAAv0J6dk1bwDae/IfhsNBFNoGWtIgSw
- t+tfsDjTDKZXSSKTElci11EWjlx8Bn0qRDdgP5BwC6z0FKXspYW+jFERg+blqWFGeMCyyuAccZ
- eKofOGSVy3GIiaCP6bsi5f45jlnOknt+/273JPHBaQtx+81V97d/PqkACVspYpfsWbX1LTBP5d
- O7CJJrjOD6oIVGJ0wAAAA==
+Message-Id: <20230508-florian-y2038-part-two-v2-12-a12f69d870d7@siemens.com>
+References: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
+In-Reply-To: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
-
-I'm trying to bring the remaining patches from my y2038 queue into Xenomai 
-next/master branches. The full queue [1] holds ~20 patches. I'm trying to 
-split that up to keep reviewing efforts low.
-
-This series brings y2038 support for
-  - timer_settime
-  - timer_gettime
-  - timerfd_settime
-  - timerfd_gettime
-
-Best regards,
-Florian
-
-[1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
+Add a syscall specific for timerfd_gettime with 64bit time_t.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v2:
-- Patch 1: Remove unnecessary NULL check
-- Patch 2: Split timespec validation into separate patch (now Patch 3)
-- Patch 3: New patch
-- Link to v1: https://lore.kernel.org/r/20230508-florian-y2038-part-two-v1-0-a417812fba85@siemens.com
+ include/cobalt/uapi/syscall.h      |  1 +
+ kernel/cobalt/posix/timerfd.c      | 11 +++++++++++
+ kernel/cobalt/posix/timerfd.h      |  3 +++
+ kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+ 4 files changed, 17 insertions(+), 1 deletion(-)
 
----
-Florian Bezdeka (14):
-      y2038: cobalt: Introduce some itimerspec64 related helpers
-      y2038: cobalt/posix/timer: Adding timer_settime64
-      y2038: cobalt/posix/timer: Use timespec64_valid() for validation
-      y2038: lib/cobalt: Dispatch timer_settime
-      y2038: testsuite/smokey/y2038: Adding tests for timer_settime
-      y2038: cobalt/posix/timer: Adding timer_gettime64
-      y2038: lib/cobalt: Dispatch timer_gettime
-      y2038: testsuite/smokey/y2038: Adding tests for timer_gettime
-      y2038: cobalt/posix/timerfd: Adding timerfd_settime64
-      y2038: lib/cobalt: Dispatch timerfd_settime
-      y2038: testsuite/smokey/y2038: Adding tests for timerfd_settime
-      y2038: cobalt/posix/timerfd: Adding timerfd_gettime64
-      y2038: lib/cobalt: Dispatch timerfd_gettime
-      y2038: testsuite/smokey/y2038: Adding tests for timerfd_gettime
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index b8271618f..2dca90071 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -139,6 +139,7 @@
+ #define sc_cobalt_timer_settime64		116
+ #define sc_cobalt_timer_gettime64		117
+ #define sc_cobalt_timerfd_settime64		118
++#define sc_cobalt_timerfd_gettime64		119
+ 
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
+ 
+diff --git a/kernel/cobalt/posix/timerfd.c b/kernel/cobalt/posix/timerfd.c
+index 9b2683ad9..ae7578d29 100644
+--- a/kernel/cobalt/posix/timerfd.c
++++ b/kernel/cobalt/posix/timerfd.c
+@@ -359,3 +359,14 @@ COBALT_SYSCALL(timerfd_gettime, current,
+ 
+ 	return ret ?: cobalt_put_u_itimerspec(curr_value, &value);
+ }
++
++COBALT_SYSCALL(timerfd_gettime64, current,
++	       (int fd, struct __kernel_itimerspec __user *curr_value))
++{
++	struct itimerspec64 value;
++	int ret;
++
++	ret = __cobalt_timerfd_gettime(fd, &value);
++
++	return ret ?: cobalt_put_itimerspec64(curr_value, &value);
++}
+diff --git a/kernel/cobalt/posix/timerfd.h b/kernel/cobalt/posix/timerfd.h
+index ae9945152..b82dac748 100644
+--- a/kernel/cobalt/posix/timerfd.h
++++ b/kernel/cobalt/posix/timerfd.h
+@@ -44,4 +44,7 @@ COBALT_SYSCALL_DECL(timerfd_settime64,
+ COBALT_SYSCALL_DECL(timerfd_gettime,
+ 		    (int fd, struct __user_old_itimerspec __user *curr_value));
+ 
++COBALT_SYSCALL_DECL(timerfd_gettime64,
++		    (int fd, struct __kernel_itimerspec __user *curr_value));
++
+ #endif /* TIMERFD_H */
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index 3d396674c..f2ffdb3a2 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -171,7 +171,8 @@
+ 		__cobalt_symbolic_syscall(cond_wait_prologue64),	\
+ 		__cobalt_symbolic_syscall(timer_settime64),		\
+ 		__cobalt_symbolic_syscall(timer_gettime64),		\
+-		__cobalt_symbolic_syscall(timerfd_settime64))
++		__cobalt_symbolic_syscall(timerfd_settime64),		\
++		__cobalt_symbolic_syscall(timerfd_gettime64))
+ 
+ DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+ 	TP_PROTO(unsigned int nr),
 
- include/cobalt/kernel/time.h           |  21 +++
- include/cobalt/uapi/syscall.h          |   4 +
- kernel/cobalt/posix/timer.c            |  45 +++++-
- kernel/cobalt/posix/timer.h            |   8 ++
- kernel/cobalt/posix/timerfd.c          |  40 +++++-
- kernel/cobalt/posix/timerfd.h          |   8 ++
- kernel/cobalt/time.c                   |  35 +++++
- kernel/cobalt/trace/cobalt-posix.h     |   6 +-
- lib/cobalt/timer.c                     |  17 ++-
- lib/cobalt/timerfd.c                   |  27 ++--
- testsuite/smokey/y2038/syscall-tests.c | 247 +++++++++++++++++++++++++++++++++
- 11 files changed, 442 insertions(+), 16 deletions(-)
----
-base-commit: 2a60f423f269539f1af0d261810644ed09ee494d
-change-id: 20230508-florian-y2038-part-two-7d7864dadd71
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
