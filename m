@@ -1,22 +1,21 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3A68D2E9
-	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 14:50:26 +0000 (UTC)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202305151450216bf0240ef73204b58a
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F71D52B
+	for <xenomai@lists.linux.dev>; Mon, 15 May 2023 14:50:29 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305151450240f2e352657656385e4
         for <xenomai@lists.linux.dev>;
-        Mon, 15 May 2023 16:50:21 +0200
+        Mon, 15 May 2023 16:50:24 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=4Vhu6dN5Y8HzvewS2fDFRLBydHWBPSA73jCobU2oAHA=;
- b=XLBm80RXJUCsG1j66kkTM44dxMF4QLll0S46Gvju1C5md0eHTetQ5Wb9oxgS7za6JsPjrK
- EEnfe4qU7TuV4xRz4G/5q50wKcvJ6Izfk9eyZOh1rxH2EsGh4maFFSvYvCPxDWlvlG/pVR+W
- SAYPcSfGCJ1ASorStmnRtvEiVgEJ8=;
+ bh=sORxsgI/5yUUdgWYdnvchSSsrSb8vyNRJvbQ7OeHcdw=;
+ b=T5x+OUEIsPJN/eXy+Qx7ONFc50MkaYPZusENiZ4y563s3Ht5Kdrh4eWfsiVOLQDVFuWjWl
+ hl7Yp4GP0u72gs8svLgUvc1my3KN2exJ5nosqgJmD7UxTpERRBCz8ocOYegeMvsLdwiyckyX
+ VtmvGYtaij/wU7+xj6kowmxp4tRIY=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 15 May 2023 16:50:01 +0200
-Subject: [PATCH v2 01/14] y2038: cobalt: Introduce some itimerspec64
- related helpers
+Date: Mon, 15 May 2023 16:50:06 +0200
+Subject: [PATCH v2 06/14] y2038: cobalt/posix/timer: Adding timer_gettime64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +24,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230508-florian-y2038-part-two-v2-1-a12f69d870d7@siemens.com>
+Message-Id: <20230508-florian-y2038-part-two-v2-6-a12f69d870d7@siemens.com>
 References: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 In-Reply-To: <20230508-florian-y2038-part-two-v2-0-a12f69d870d7@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -33,88 +32,80 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The introduced helpers will be used by the timer and timerfd y2038
-related services for reading/writing itimerspec from/to userspace.
+Add a syscall specific for timer_gettime with 64bit time_t.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/kernel/time.h | 21 +++++++++++++++++++++
- kernel/cobalt/time.c         | 35 +++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+ include/cobalt/uapi/syscall.h      |  1 +
+ kernel/cobalt/posix/timer.c        | 13 +++++++++++++
+ kernel/cobalt/posix/timer.h        |  3 +++
+ kernel/cobalt/trace/cobalt-posix.h |  3 ++-
+ 4 files changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/include/cobalt/kernel/time.h b/include/cobalt/kernel/time.h
-index a55398068..e348cf9b8 100644
---- a/include/cobalt/kernel/time.h
-+++ b/include/cobalt/kernel/time.h
-@@ -28,4 +28,25 @@ int cobalt_get_timespec64(struct timespec64 *ts,
- int cobalt_put_timespec64(const struct timespec64 *ts,
- 			  struct __kernel_timespec __user *uts);
+diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
+index 77184bd22..24e759eef 100644
+--- a/include/cobalt/uapi/syscall.h
++++ b/include/cobalt/uapi/syscall.h
+@@ -137,6 +137,7 @@
+ #define sc_cobalt_recvmmsg64			114
+ #define sc_cobalt_cond_wait_prologue64		115
+ #define sc_cobalt_timer_settime64		116
++#define sc_cobalt_timer_gettime64		117
  
-+/**
-+ * Read struct __kernel_itimerspec from userspace and convert to
-+ * struct itimerspec64
-+ *
-+ * @param dst The destination, will be filled
-+ * @param src The source, provided by an application
-+ * @return 0 on success, -EFAULT otherwise
-+ */
-+int cobalt_get_itimerspec64(struct itimerspec64 *dst,
-+			    const struct __kernel_itimerspec __user *src);
-+
-+/**
-+ * Convert struct itimerspec64 to struct __kernel_itimerspec and copy to user
-+ * space
-+ * @param dst The destination, will be filled, provided by an application
-+ * @param src The source, provided by the kernel
-+ * @return 0 un success, -EFAULT otherwise
-+ */
-+int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
-+			    const struct itimerspec64 *src);
-+
- #endif //_COBALT_KERNEL_TIME_H
-diff --git a/kernel/cobalt/time.c b/kernel/cobalt/time.c
-index 27dbf8290..d88f2efd8 100644
---- a/kernel/cobalt/time.c
-+++ b/kernel/cobalt/time.c
-@@ -36,3 +36,38 @@ int cobalt_put_timespec64(const struct timespec64 *ts,
+ #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
  
- 	return cobalt_copy_to_user(uts, &kts, sizeof(kts)) ? -EFAULT : 0;
+diff --git a/kernel/cobalt/posix/timer.c b/kernel/cobalt/posix/timer.c
+index 3c7579def..0f111a42c 100644
+--- a/kernel/cobalt/posix/timer.c
++++ b/kernel/cobalt/posix/timer.c
+@@ -534,6 +534,19 @@ COBALT_SYSCALL(timer_gettime, current,
+ 	return cobalt_put_u_itimerspec(u_val, &val);
  }
-+
-+int cobalt_get_itimerspec64(struct itimerspec64 *dst,
-+			    const struct __kernel_itimerspec __user *src)
+ 
++COBALT_SYSCALL(timer_gettime64, current,
++	       (timer_t tm, struct __kernel_itimerspec __user *u_val))
 +{
-+	struct timespec64 interval, value;
++	struct itimerspec64 val;
 +	int ret;
 +
-+	ret = cobalt_get_timespec64(&interval, &src->it_interval);
++	ret = __cobalt_timer_gettime(tm, &val);
 +	if (ret)
 +		return ret;
 +
-+	ret = cobalt_get_timespec64(&value, &src->it_value);
-+	if (ret)
-+		return ret;
-+
-+	dst->it_interval.tv_sec = interval.tv_sec;
-+	dst->it_interval.tv_nsec = interval.tv_nsec;
-+	dst->it_value.tv_sec = value.tv_sec;
-+	dst->it_value.tv_nsec = value.tv_nsec;
-+
-+	return 0;
++	return cobalt_put_itimerspec64(u_val, &val);
 +}
 +
-+int cobalt_put_itimerspec64(struct __kernel_itimerspec __user *dst,
-+			    const struct itimerspec64 *src)
-+{
-+	struct __kernel_itimerspec kits = {
-+		.it_interval.tv_sec = src->it_interval.tv_sec,
-+		.it_interval.tv_nsec = src->it_interval.tv_nsec,
-+		.it_value.tv_sec = src->it_value.tv_sec,
-+		.it_value.tv_nsec = src->it_value.tv_nsec
-+	};
+ COBALT_SYSCALL(timer_getoverrun, current, (timer_t timerid))
+ {
+ 	struct cobalt_timer *timer;
+diff --git a/kernel/cobalt/posix/timer.h b/kernel/cobalt/posix/timer.h
+index 16d3a572a..864c780e8 100644
+--- a/kernel/cobalt/posix/timer.h
++++ b/kernel/cobalt/posix/timer.h
+@@ -86,6 +86,9 @@ COBALT_SYSCALL_DECL(timer_settime64,
+ COBALT_SYSCALL_DECL(timer_gettime,
+ 		    (timer_t tm, struct __user_old_itimerspec __user *u_val));
+ 
++COBALT_SYSCALL_DECL(timer_gettime64,
++		    (timer_t tm, struct __kernel_itimerspec __user *u_val));
 +
-+	return cobalt_copy_to_user(dst, &kits, sizeof(kits));
-+}
+ COBALT_SYSCALL_DECL(timer_getoverrun, (timer_t tm));
+ 
+ #endif /* !_COBALT_POSIX_TIMER_H */
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index 5f99b1162..dc4f53a5a 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -169,7 +169,8 @@
+ 		__cobalt_symbolic_syscall(event_wait64),		\
+ 		__cobalt_symbolic_syscall(recvmmsg64),			\
+ 		__cobalt_symbolic_syscall(cond_wait_prologue64),	\
+-		__cobalt_symbolic_syscall(timer_settime64))
++		__cobalt_symbolic_syscall(timer_settime64),		\
++		__cobalt_symbolic_syscall(timer_gettime64))
+ 
+ DECLARE_EVENT_CLASS(cobalt_syscall_entry,
+ 	TP_PROTO(unsigned int nr),
 
 -- 
 2.39.2
