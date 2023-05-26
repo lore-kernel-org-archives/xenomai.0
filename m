@@ -1,22 +1,22 @@
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D5AF23D0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F22123D8
 	for <xenomai@lists.linux.dev>; Fri, 26 May 2023 05:46:10 +0000 (UTC)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202305260536006aaf8fe5e572960d0c
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230526053600aed8b9f3ac592f836f
         for <xenomai@lists.linux.dev>;
-        Fri, 26 May 2023 07:36:01 +0200
+        Fri, 26 May 2023 07:36:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=KTNRuHORp21zHTNU1ZyfC7W4qTWBCSlJnOlmjzpYjZU=;
- b=Fl1fTqq6hPpTASrCHR119m3PVjc5RJjWjJn7Cw4CzlNEUFoOlpEZrMK3wXtN3WkMt2hBDT
- uhMiuxS46LXyPGh3XJ4igQmcGK3ZH6ttiVgNRKHW9NIAlZ6sfS1AC9Z+Ch9t8GkweMwKHjGa
- c1twBM3EMD2r+8SrPcdrKtoo1AhQI=;
+ bh=mYmSgbW9hCCmyjvn0MANbTgvPqeDYmERQdnqZxWQpVo=;
+ b=hb0adb4fpll2kj7knlppt9gs+ZEPgJmBL9S0Iy3M2f7jIGIkbvcqSzGKYIT2oIAW8ge742
+ bW7lq9q3qiMfxr4992dfLOTqbRfbktIO666f0+G/q5w8nBqlgtRckGBIQKcN6GPypMr79KEL
+ Ob0paXr6G3kul2U9+uhGsDVFRSCdA=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 26 May 2023 07:36:00 +0200
-Subject: [PATCH v2 4/4] cobalt/posix/select: Fix timeout update in case of
- -EINTR
+Date: Fri, 26 May 2023 07:35:59 +0200
+Subject: [PATCH v2 3/4] y2038: testsuite/smokey/y2038: Adding tests for
+ pselect64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230516-florian-y2038-part-three-v2-4-3fc689b21a32@siemens.com>
+Message-Id: <20230516-florian-y2038-part-three-v2-3-3fc689b21a32@siemens.com>
 References: <20230516-florian-y2038-part-three-v2-0-3fc689b21a32@siemens.com>
 In-Reply-To: <20230516-florian-y2038-part-three-v2-0-3fc689b21a32@siemens.com>
 To: jan.kiszka@siemens.com, xenomai@lists.linux.dev
@@ -33,173 +33,101 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-When the select() syscall was interrupted (e.g. for handling a Linux
-signal) the supplied timeout has not been updated. __cobalt_select()
-bailed out too early.
-
-The testsuite has been improved to cover this case as well.
+Extending the smokey testsuite to do some tests for the recently added
+pselect64 syscall.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/posix/io.c               | 18 +++----
- testsuite/smokey/y2038/syscall-tests.c | 94 +++++++++++++++++++++++++++++++++-
- 2 files changed, 102 insertions(+), 10 deletions(-)
+ testsuite/smokey/y2038/syscall-tests.c | 70 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
-index 42a9b6208..beaa8fe63 100644
---- a/kernel/cobalt/posix/io.c
-+++ b/kernel/cobalt/posix/io.c
-@@ -319,6 +319,15 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
- 		}
- 	} while (err == -ECHRNG);
- 
-+out:
-+	if (to && (err > 0 || err == -EINTR)) {
-+		xnsticks_t diff = timeout - clock_get_ticks(CLOCK_MONOTONIC);
-+		if (diff > 0)
-+			ticks2ts64(to, diff);
-+		else
-+			to->tv_sec = to->tv_nsec = 0;
-+	}
-+
- 	if (err == -EINTR && signal_pending(current)) {
- 		xnthread_set_localinfo(curr, XNSYSRST);
- 
-@@ -329,15 +338,6 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
- 		return -ERESTARTSYS;
- 	}
- 
--out:
--	if (to && (err > 0 || err == -EINTR)) {
--		xnsticks_t diff = timeout - clock_get_ticks(CLOCK_MONOTONIC);
--		if (diff > 0)
--			ticks2ts64(to, diff);
--		else
--			to->tv_sec = to->tv_nsec = 0;
--	}
--
- 	if (err >= 0)
- 		for (i = 0; i < XNSELECT_MAX_TYPES; i++) {
- 			if (!ufd_sets[i])
 diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index d1e1f46bf..af27f2bce 100644
+index 2e3b81e0c..d1e1f46bf 100644
 --- a/testsuite/smokey/y2038/syscall-tests.c
 +++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -123,6 +123,7 @@ static inline bool ts_less(const struct xn_timespec64 *a,
-  */
- struct thread_context {
- 	int sc_nr;
-+	int sock;
- 	pthread_mutex_t *mutex;
- 	struct xn_timespec64 *ts;
- 	bool timedwait_timecheck;
-@@ -1443,6 +1444,94 @@ out:
+@@ -1443,6 +1443,72 @@ out:
  	return ret;
  }
  
-+static void pselect64_sig_handler(int sig)
++static int test_sc_cobalt_pselect64(void)
 +{
-+	smokey_trace("pselect64: signal received");
-+}
-+
-+static void *pselect64_waiting_thread(void *arg)
-+{
-+	struct thread_context *ctx = (struct thread_context *)arg;
-+	struct xn_timespec64 ts;
-+	int sock = ctx->sock;
-+	struct sigaction sa;
-+	fd_set rfds;
++	long sc_nr = sc_cobalt_pselect64;
++	struct xn_timespec64 t1, t2;
++	struct timespec ts_nat;
 +	int ret;
 +
-+	FD_ZERO(&rfds);
-+	FD_SET(ctx->sock, &rfds);
-+
-+	sigemptyset(&sa.sa_mask);
-+	sa.sa_flags = SA_SIGINFO;
-+	sa.sa_handler = pselect64_sig_handler;
-+
-+	ret = smokey_check_errno(sigaction(SIGUSR1, &sa, NULL));
-+	if (ret)
-+		goto out;
-+
-+	/* Waiting for 1sec should be enough to get a signal */
-+	ts.tv_sec = 1;
-+	ts.tv_nsec = 0;
-+	ret = XENOMAI_SYSCALL5(ctx->sc_nr, sock + 1, &rfds, NULL, NULL, &ts);
-+	if (!smokey_assert(ret == -EINTR)) {
++	/* Supplying an invalid timeout should deliver -EINVAL */
++	t1.tv_sec = -1;
++	t1.tv_nsec = 0;
++	ret = XENOMAI_SYSCALL5(sc_nr, NULL, NULL, NULL, NULL, &t1);
++	if (ret == -ENOSYS) {
++		smokey_note("cobalt_pselect64: skipped. (no kernel support)");
++		ret = 0;
++		goto out; // Not implemented, nothing to test, success
++	}
++	if (!smokey_assert(ret == -EINVAL)) {
 +		ret = ret ?: -EINVAL;
 +		goto out;
 +	}
 +
-+	/* The remaining timeout has to be less than 1 sec */
-+	if (!smokey_assert(ts.tv_sec == 0 && ts.tv_nsec > 0)) {
-+		ret = -EINVAL;
++	/* Supplying an invalid address should deliver -EFAULT */
++	ret = XENOMAI_SYSCALL5(sc_nr, NULL, NULL, NULL, NULL,
++			       (void *)0xdeadbeefUL);
++	if (!smokey_assert(ret == -EFAULT)) {
++		ret = ret ?: -EINVAL;
 +		goto out;
 +	}
 +
-+out:
-+	return (void *)(long)ret;
-+}
++	/*
++	 * Providing a valid timeout, waiting for it to time out and check
++	 * that we didn't come back to early.
++	 */
++	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts_nat));
++	if (ret)
++		goto out;
 +
-+static int test_pselect64_interruption(void)
-+{
-+	struct timespec ts = { .tv_sec = 0, .tv_nsec = 100000 };
-+	struct thread_context ctx = { 0 };
-+	void *w_ret = NULL;
-+	pthread_t w;
-+	int sock;
-+	int ret;
++	t1.tv_sec = 0;
++	t1.tv_nsec = 500000;
 +
-+	sock = smokey_check_errno(socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP));
-+	if (sock == -EAFNOSUPPORT) {
-+		smokey_note("pselect64: skipped timeout write back test");
-+		return 0;
++	ret = XENOMAI_SYSCALL5(sc_nr, NULL, NULL, NULL, NULL, &t1);
++	if (!smokey_assert(!ret)) {
++		ret = ret ? ret : -EINVAL;
++		goto out;
 +	}
-+	if (sock < 0)
-+		return sock;
 +
-+	ctx.sock = sock;
-+	ctx.sc_nr = sc_cobalt_pselect64;
++	t1.tv_sec = ts_nat.tv_sec;
++	t1.tv_nsec = ts_nat.tv_nsec;
 +
-+	ret = smokey_check_status(
-+		pthread_create(&w, NULL, pselect64_waiting_thread, &ctx));
++	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts_nat));
 +	if (ret)
-+		goto out_sock;
++		goto out;
 +
-+	/* Allow the waiting thread to enter the pselect64() syscall */
-+	nanosleep(&ts, NULL);
++	t2.tv_sec = ts_nat.tv_sec;
++	t2.tv_nsec = ts_nat.tv_nsec;
 +
-+	/* Send a signal to interrupt the syscall and trigger -EINTR */
-+	__STD(pthread_kill(w, SIGUSR1));
++	if (ts_less(&t2, &t1))
++		smokey_warning("pselect64 returned to early!\n"
++			       "Expected wakeup at: %lld sec %lld nsec\n"
++			       "Back at           : %lld sec %lld nsec\n",
++			       t1.tv_sec, t1.tv_nsec, t2.tv_sec, t2.tv_nsec);
 +
-+	ret = smokey_check_status(pthread_join(w, &w_ret));
-+	if (ret)
-+		goto out_sock;
-+
-+	ret = smokey_assert((long)w_ret == -EINTR);
-+	if (ret)
-+		w_ret = NULL;
-+
-+out_sock:
-+	close(sock);
-+	return (int)(long)w_ret;
++out:
++	return ret;
 +}
 +
- static int test_sc_cobalt_pselect64(void)
+ static int check_kernel_version(void)
  {
- 	long sc_nr = sc_cobalt_pselect64;
-@@ -1506,7 +1595,10 @@ static int test_sc_cobalt_pselect64(void)
- 			       t1.tv_sec, t1.tv_nsec, t2.tv_sec, t2.tv_nsec);
+ 	int ret, major, minor;
+@@ -1548,5 +1614,9 @@ static int run_y2038(struct smokey_test *t, int argc, char *const argv[])
+ 	if (ret)
+ 		return ret;
  
- out:
--	return ret;
++	ret = test_sc_cobalt_pselect64();
 +	if (ret)
 +		return ret;
 +
-+	return test_pselect64_interruption();
+ 	return 0;
  }
- 
- static int check_kernel_version(void)
 
 -- 
 2.39.2
