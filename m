@@ -1,22 +1,22 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33D3206B5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3391206B4
 	for <xenomai@lists.linux.dev>; Tue, 30 May 2023 18:57:13 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230530185704b93215174e7997aab2
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230530185705279af4a597d8ef0cc8
         for <xenomai@lists.linux.dev>;
-        Tue, 30 May 2023 20:57:04 +0200
+        Tue, 30 May 2023 20:57:05 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=mDN4CiRDkvtSbuHf88LP2J3IRtdI+9880BjOxryrVeI=;
- b=bEWVguP6JnDkGzmJUL1I0KczxhB3SvCK5ZwZNXAKHD3dzG4q9x+nNacMh94uwJU2q+2AtJ
- ndeEU7fMn1+rcTijHdqQueNDmazVRIM9rSwk3jhWQ72dn8Kg1qr3fWxlhDMKxrrqky1HAXC8
- UDFr+DiNyt8HNa3Hs+zb5/4tAlFj0=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=TrGYQ6ooBv1JXJMsKf4vL/1ca1ICSVVzZCOd236j1yE=;
+ b=lsl6VZ5bCc6tPrheYr/6+iLpWmd1iBoYnevayqW5hHW5GbWGmj37otWjaTEiMJsL1SJ1BE
+ iBKXJ1Y62cAsu0V5lLZjM0jJIDww8jX9npmWoBszowzJpGMJzXQGK9ow+chnQO4/MXHZjOth
+ pd7QA8+UwGTOElHuwhePg02XzmFmw=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v3 0/4] y2038: Part three - support for select()
-Date: Tue, 30 May 2023 20:57:03 +0200
-Message-Id: <20230516-florian-y2038-part-three-v3-0-ecb4d58538d7@siemens.com>
+Date: Tue, 30 May 2023 20:57:04 +0200
+Subject: [PATCH v3 1/4] y2038: cobalt/posix/select: Refactor
+ __cobalt_select()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,92 +25,236 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAP9GdmQC/42NwQ6CMBAFf4X07Jp2qwie/A/joS1baQItaZFIC
- P9u4eaN47zkzSwsUXSU2L1YWKTJJRd8BnkqmGmVfxO4JjNDjpJfRQm2C9EpDzNyWcGg4ghjG4l
- A8lo2qrZkbMXyXatEoKPyps0C/+m6PA6RrPvuvecrc+vSGOK85yexrQdKkwAOWlw43iqNpSkfy
- VFPPp1N6NmmnfCoCrNKWlNWtUahJP6r1nX9AVWPiOkiAQAA
+Message-Id: <20230516-florian-y2038-part-three-v3-1-ecb4d58538d7@siemens.com>
+References: <20230516-florian-y2038-part-three-v3-0-ecb4d58538d7@siemens.com>
+In-Reply-To: <20230516-florian-y2038-part-three-v3-0-ecb4d58538d7@siemens.com>
 To: jan.kiszka@siemens.com, xenomai@lists.linux.dev
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+There is no y2038 safe select() syscall provided by Linuy. If y2038
+safety is required the application should not use select() and move on
+to something like pselect().
 
-I'm trying to bring the remaining patches from my y2038 queue into Xenomai 
-next/master branches. The full queue [1] holds ~7 patches. I'm trying to 
-split that up to keep reviewing efforts low.
+As we still want to support select() for keeping backward compatibility
+- even if y2038 safety is requested - an additional pselect() based
+entry will be introduced soon which will re-use __cobalt_select().
 
-This series brings y2038 support for select().
-
-select() is somehow special. Linux does not support a y2038 safe
-implementation for select() itself. If the application needs y2038
-support the application has to use something like the pselect() service.
-
-To make select() y2038 safe glibc wrapps select() and wires it to the 
-pselect() Linux service.
-
-Xenomai (cobalt) does not provide pselect() yet and it's not easy to 
-implement that. The reasons:
-
-  - The underlying xnsynch infrastructure is not prepared for waiting for a
-    combination of file descriptors and signals. (Let me know if I
-    overlooked something!)
-
-  - Implementing pselect() would require up to 6 parameters that need to
-    be forwarded to the kernel. Xenomais current limit is 5.
-
-To get select() y2038 safe a "pselect64() like" service service is being
-added. The signal part is skipped.
-
-The wrapper for __select64() will be added later and will convert 
-struct timeval to struct timespec64 in user space. This way select() 
-provided by libcobalt gets y2038 support but pselect() is still not 
-supported.
-
-Best regards,
-Florian
-
-[1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/tree/florian/y2038
+This patch moves all the timeout related userspace copy operations out
+of __cobalt_select() and migrates __cobalt_select() to
+struct timespec64. That will allow pselect64() to be based on
+__cobalt_select() as well.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v3:
-- Patch 1: Remove trailing comments, document error handling 
-- Patch 2: Remove trailing comment, document error handling
-- Patch 4: Rewrite commit message
-- Link to v2: https://lore.kernel.org/r/20230516-florian-y2038-part-three-v2-0-3fc689b21a32@siemens.com
+ .../cobalt/include/asm-generic/xenomai/syscall.h   | 22 ++++++++
+ kernel/cobalt/posix/clock.h                        |  6 +-
+ kernel/cobalt/posix/io.c                           | 65 +++++++++++-----------
+ kernel/cobalt/posix/syscall32.c                    | 23 +++++++-
+ 4 files changed, 80 insertions(+), 36 deletions(-)
 
-Changes in v2:
-- Patch 1: Do not skip updating the timeout if fds changed
-           Fix is in all entry points.
-- Patch 2: pselect64: Same as above. Do not skip the update if fds
-           changed.
-- Patch 3: unmodified
-- Patch 4: New patch. Fix timeout update in case of -EINTR
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index 70b3e68f9..d61b985fb 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -138,6 +138,28 @@ static inline int cobalt_put_u_itimerspec(
+ 	return cobalt_copy_to_user(dst, &u_its, sizeof(*dst));
+ }
+ 
++static inline struct timespec64
++cobalt_timeval_to_timespec64(const struct __kernel_old_timeval *src)
++{
++	struct timespec64 ts;
++
++	ts.tv_sec = src->tv_sec + (src->tv_usec / USEC_PER_SEC);
++	ts.tv_nsec = (src->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
++
++	return ts;
++}
++
++static inline struct __kernel_old_timeval
++cobalt_timespec64_to_timeval(const struct timespec64 *src)
++{
++	struct __kernel_old_timeval tv;
++
++	tv.tv_sec = src->tv_sec + (src->tv_nsec / NSEC_PER_SEC);
++	tv.tv_usec = (src->tv_nsec % NSEC_PER_SEC) / NSEC_PER_USEC;
++
++	return tv;
++}
++
+ /* 32bit syscall emulation */
+ #define __COBALT_COMPAT_BIT	0x1
+ /* 32bit syscall emulation - extended form */
+diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
+index dbaabbc5d..38b59e24f 100644
+--- a/kernel/cobalt/posix/clock.h
++++ b/kernel/cobalt/posix/clock.h
+@@ -68,12 +68,12 @@ static inline xnticks_t tv2ns(const struct __kernel_old_timeval *tv)
+ 	return nsecs;
+ }
+ 
+-static inline void ticks2tv(struct __kernel_old_timeval *tv, xnticks_t ticks)
++static inline void ticks2ts64(struct timespec64 *ts, xnticks_t ticks)
+ {
+ 	unsigned long nsecs;
+ 
+-	tv->tv_sec = xnclock_divrem_billion(ticks, &nsecs);
+-	tv->tv_usec = nsecs / 1000;
++	ts->tv_sec = xnclock_divrem_billion(ticks, &nsecs);
++	ts->tv_nsec = nsecs;
+ }
+ 
+ static inline xnticks_t clock_get_ticks(clockid_t clock_id)
+diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+index 45ec09fae..786cb8ea9 100644
+--- a/kernel/cobalt/posix/io.c
++++ b/kernel/cobalt/posix/io.c
+@@ -221,7 +221,7 @@ static int __cobalt_select_bind_all(struct xnselector *selector,
+ }
+ 
+ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
+-		    void __user *u_xfds, void __user *u_tv, bool compat)
++		    void __user *u_xfds, struct timespec64 *to, bool compat)
+ {
+ 	void __user *ufd_sets[XNSELECT_MAX_TYPES] = {
+ 		[XNSELECT_READ] = u_rfds,
+@@ -237,13 +237,12 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
+ 	xntmode_t mode = XN_RELATIVE;
+ 	struct xnselector *selector;
+ 	struct xnthread *curr;
+-	struct __kernel_old_timeval tv;
+ 	size_t fds_size;
+ 	int i, err;
+ 
+ 	curr = xnthread_current();
+ 
+-	if (u_tv) {
++	if (to) {
+ 		if (xnthread_test_localinfo(curr, XNSYSRST)) {
+ 			xnthread_clear_localinfo(curr, XNSYSRST);
+ 
+@@ -255,23 +254,11 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
+ 				goto out;
+ 			}
+ 		} else {
+-#ifdef CONFIG_XENO_ARCH_SYS3264
+-			if (compat) {
+-				if (sys32_get_timeval(&tv, u_tv))
+-					return -EFAULT;
+-			} else
+-#endif
+-			{
+-				if (!access_ok(u_tv, sizeof(tv))
+-				    || cobalt_copy_from_user(&tv, u_tv,
+-							     sizeof(tv)))
+-					return -EFAULT;
+-			}
+ 
+-			if (tv.tv_usec >= 1000000)
++			if (!timespec64_valid(to))
+ 				return -EINVAL;
+ 
+-			timeout = clock_get_ticks(CLOCK_MONOTONIC) + tv2ns(&tv);
++			timeout = clock_get_ticks(CLOCK_MONOTONIC) + ts2ns(to);
+ 		}
+ 
+ 		mode = XN_ABSOLUTE;
+@@ -343,23 +330,12 @@ int __cobalt_select(int nfds, void __user *u_rfds, void __user *u_wfds,
+ 	}
+ 
+ out:
+-	if (u_tv && (err > 0 || err == -EINTR)) {
++	if (to && (err > 0 || err == -EINTR)) {
+ 		xnsticks_t diff = timeout - clock_get_ticks(CLOCK_MONOTONIC);
+ 		if (diff > 0)
+-			ticks2tv(&tv, diff);
++			ticks2ts64(to, diff);
+ 		else
+-			tv.tv_sec = tv.tv_usec = 0;
+-
+-#ifdef CONFIG_XENO_ARCH_SYS3264
+-		if (compat) {
+-			if (sys32_put_timeval(u_tv, &tv))
+-				return -EFAULT;
+-		} else
+-#endif
+-		{
+-			if (cobalt_copy_to_user(u_tv, &tv, sizeof(tv)))
+-				return -EFAULT;
+-		}
++			to->tv_sec = to->tv_nsec = 0;
+ 	}
+ 
+ 	if (err >= 0)
+@@ -390,5 +366,30 @@ COBALT_SYSCALL(select, primary,
+ 		fd_set __user *u_xfds,
+ 		struct __kernel_old_timeval __user *u_tv))
+ {
+-	return __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, u_tv, false);
++	struct timespec64 ts64, *to = NULL;
++	struct __kernel_old_timeval tv;
++	int ret;
++
++	if (u_tv && (!access_ok(u_tv, sizeof(tv)) ||
++		     cobalt_copy_from_user(&tv, u_tv, sizeof(tv))))
++		return -EFAULT;
++
++	if (u_tv) {
++		ts64 = cobalt_timeval_to_timespec64(&tv);
++		to = &ts64;
++	}
++
++	ret = __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, to, false);
++
++	if (u_tv) {
++		tv = cobalt_timespec64_to_timeval(to);
++		/*
++		 * Writing to u_tv might fail. We ignore a possible error here
++		 * to report back the number of changed fds (or the error).
++		 * This is aligned with the Linux select() implementation.
++		 */
++		cobalt_copy_to_user(u_tv, &tv, sizeof(tv));
++	}
++
++	return ret;
+ }
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index 10b080dfd..780d276b1 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -749,7 +749,28 @@ COBALT_SYSCALL32emu(select, primary,
+ 		     compat_fd_set __user *u_xfds,
+ 		     struct old_timeval32 __user *u_tv))
+ {
+-	return __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, u_tv, true);
++	struct timespec64 ts64, *to = NULL;
++	struct __kernel_old_timeval tv;
++	int ret;
++
++	if (u_tv &&
++	    (!access_ok(u_tv, sizeof(tv)) || sys32_get_timeval(&tv, u_tv)))
++		return -EFAULT;
++
++	if (u_tv) {
++		ts64 = cobalt_timeval_to_timespec64(&tv);
++		to = &ts64;
++	}
++
++	ret = __cobalt_select(nfds, u_rfds, u_wfds, u_xfds, to, true);
++
++	if (u_tv) {
++		tv = cobalt_timespec64_to_timeval(to);
++		/* See CoBaLt_select() */
++		sys32_put_timeval(u_tv, &tv);
++	}
++
++	return ret;
+ }
+ 
+ COBALT_SYSCALL32emu(recvmsg, handover,
 
-- Link to v1: https://lore.kernel.org/r/20230516-florian-y2038-part-three-v1-0-b140278b26c6@siemens.com
-
----
-Florian Bezdeka (4):
-      y2038: cobalt/posix/select: Refactor __cobalt_select()
-      y2038: cobalt/posix/select: Adding pselect64
-      y2038: testsuite/smokey/y2038: Adding tests for pselect64
-      cobalt/posix/select: Fix timeout update in case of -EINTR
-
- include/cobalt/uapi/syscall.h                      |   1 +
- .../cobalt/include/asm-generic/xenomai/syscall.h   |  22 +++
- kernel/cobalt/posix/clock.h                        |   6 +-
- kernel/cobalt/posix/io.c                           | 109 +++++++++-----
- kernel/cobalt/posix/io.h                           |   8 +-
- kernel/cobalt/posix/syscall32.c                    |  23 ++-
- kernel/cobalt/trace/cobalt-posix.h                 |   3 +-
- testsuite/smokey/y2038/syscall-tests.c             | 162 +++++++++++++++++++++
- 8 files changed, 290 insertions(+), 44 deletions(-)
----
-base-commit: a74abe52269f191654b449357bd9aaa57f2cd75c
-change-id: 20230516-florian-y2038-part-three-3093da9fecf8
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
