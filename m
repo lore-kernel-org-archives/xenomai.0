@@ -1,34 +1,25 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D21E3C2D7
-	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:10:11 +0000 (UTC)
-Received: from redirect.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::233])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id B49CAD3B5E
-	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:03:29 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay13.mail.gandi.net (Postfix) with ESMTPS id C950C80002
-	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:03:21 +0000 (UTC)
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id C27757803E0
-	for <xenomai@xenomai.org>; Wed, 31 May 2023 11:03:20 +0000 (UTC)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230531110320cc3ef40f489da61414
-        for <xenomai@xenomai.org>;
-        Wed, 31 May 2023 13:03:20 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE49CC8ED
+	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:11:30 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305311111267d16139e3ba2a6ec40
+        for <xenomai@lists.linux.dev>;
+        Wed, 31 May 2023 13:11:26 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
  bh=LsE1uwMJ61tjyp+/zoHbAGtVgPJfOxLQvZH8Fi6VU/Y=;
- b=HWwZUqcYekFgUmf16MGNVgnIBcVL76LPAmhKUg17/kv1XJZtykmKvTN1OKUc3kkNkaVtnM
- EVXfDpozpa0E3kWwyK2kd2rxFX0noarjbYIN8IDMFeUOf9+FnI+DZyZ51ip5C7pgsFFd6RcM
- YJEGoXOdQgBipQGT8CTWPB0AHzaE4=;
+ b=SPgFDwA/Tfrj8dFkkZ8POZaf79fkb2Uvyff914uGB/eSgma1ukmAkJ2/iOltqjfoFHQ+4B
+ 30pgdqR2qieQ7ClDeZFpDjt0/70xa3OaxH/PaUNlRkMYKS9Kr98m1l0CuRxHsmaS1HVhb+81
+ kaKWnNC+CVzz+2q/pQbioayEnJ/7k=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
-To: xenomai@xenomai.org
-Subject: [PATCH 1/4] kernel: Account for signature change of class_create in 6.4
-Date: Wed, 31 May 2023 13:03:11 +0200
-Message-Id: <ee2d8907dae99e99fb9e69625b02154b8a885939.1685530994.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1685530994.git.jan.kiszka@siemens.com>
-References: <cover.1685530994.git.jan.kiszka@siemens.com>
+To: xenomai@lists.linux.dev
+Subject: [PATCH [REPOST] 1/4] kernel: Account for signature change of class_create in 6.4
+Date: Wed, 31 May 2023 13:11:23 +0200
+Message-Id: <ee2d8907dae99e99fb9e69625b02154b8a885939.1685531485.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1685531485.git.jan.kiszka@siemens.com>
+References: <cover.1685531485.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,11 +29,6 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
-Received-SPF: pass (spool4: domain of rts-flowmailer.siemens.com designates 185.136.64.225 as permitted sender) client-ip=185.136.64.225; envelope-from=fm-294854-20230531110320cc3ef40f489da61414-GasUDh@rts-flowmailer.siemens.com; helo=mta-64-225.siemens.flowmailer.net;
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=fm1 header.b=HWwZUqcY;
-	dmarc=pass (policy=reject) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of fm-294854-20230531110320cc3ef40f489da61414-GasUDh@rts-flowmailer.siemens.com designates 185.136.64.225 as permitted sender) smtp.mailfrom=fm-294854-20230531110320cc3ef40f489da61414-GasUDh@rts-flowmailer.siemens.com
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
