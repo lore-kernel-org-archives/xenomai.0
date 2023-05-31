@@ -1,23 +1,23 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE49CC8ED
-	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:11:30 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305311111267d16139e3ba2a6ec40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED0712B74
+	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 11:11:35 +0000 (UTC)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202305311111261c7c950fb0f4c7eec3
         for <xenomai@lists.linux.dev>;
-        Wed, 31 May 2023 13:11:26 +0200
+        Wed, 31 May 2023 13:11:27 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=LsE1uwMJ61tjyp+/zoHbAGtVgPJfOxLQvZH8Fi6VU/Y=;
- b=SPgFDwA/Tfrj8dFkkZ8POZaf79fkb2Uvyff914uGB/eSgma1ukmAkJ2/iOltqjfoFHQ+4B
- 30pgdqR2qieQ7ClDeZFpDjt0/70xa3OaxH/PaUNlRkMYKS9Kr98m1l0CuRxHsmaS1HVhb+81
- kaKWnNC+CVzz+2q/pQbioayEnJ/7k=;
+ bh=LWoZFXlhW4e911sW4TsGnGV+/V32vWPDj8QRmJaZdSQ=;
+ b=egHmJYbauvNVyhBr+YrkjNGptW+ohh3bfoT3m1aVVZ0I8UdcUCbx1S6oI0ohX+ulVBxG9H
+ +fTJwo5wmfj2KHBUuSNjA4l/qCUn4pWnPDINxhmtk5j8oKXzkJMjCR5grpL88L5ffdvtY2ZB
+ Wi7ym9qZ/Z8j0KBWyQIOVH1CoRxOk=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH [REPOST] 1/4] kernel: Account for signature change of class_create in 6.4
-Date: Wed, 31 May 2023 13:11:23 +0200
-Message-Id: <ee2d8907dae99e99fb9e69625b02154b8a885939.1685531485.git.jan.kiszka@siemens.com>
+Subject: [PATCH [REPOST] 2/4] cobalt/registry: Convert export_mutex to real mutex
+Date: Wed, 31 May 2023 13:11:24 +0200
+Message-Id: <1d69e75ef183f2e1bd156f7fb598e52071c76d63.1685531485.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1685531485.git.jan.kiszka@siemens.com>
 References: <cover.1685531485.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -32,97 +32,54 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+A semaphore is semantically not a mutex, plus there are now changes in
+its definition in 6.4. Therefore, just convert the export_mutex to a
+real one.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/pipe.c                    | 4 ++++
- kernel/cobalt/rtdm/device.c             | 4 ++++
- kernel/drivers/gpio/gpio-core.c         | 4 ++++
- kernel/drivers/net/stack/rtnet_module.c | 4 ++++
- kernel/drivers/spi/spi-master.c         | 7 +++++--
- 5 files changed, 21 insertions(+), 2 deletions(-)
+ kernel/cobalt/registry.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
-index 33181101a0..7519f31651 100644
---- a/kernel/cobalt/pipe.c
-+++ b/kernel/cobalt/pipe.c
-@@ -1149,7 +1149,11 @@ int xnpipe_mount(void)
- 		state->nroutq = 0;
- 	}
+diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+index 211e0f76f0..02f4ebbbae 100644
+--- a/kernel/cobalt/registry.c
++++ b/kernel/cobalt/registry.c
+@@ -16,6 +16,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
  
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
-+	xnpipe_class = class_create("rtpipe");
-+#else
- 	xnpipe_class = class_create(THIS_MODULE, "rtpipe");
-+#endif
- 	if (IS_ERR(xnpipe_class)) {
- 		printk(XENO_ERR "error creating rtpipe class, err=%ld\n",
- 		       PTR_ERR(xnpipe_class));
-diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-index 33db21e63b..9d6837c393 100644
---- a/kernel/cobalt/rtdm/device.c
-+++ b/kernel/cobalt/rtdm/device.c
-@@ -630,7 +630,11 @@ int __init rtdm_init(void)
- {
- 	xntree_init(&protocol_devices);
++#include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/heap.h>
+@@ -209,7 +210,7 @@ void xnregistry_cleanup(void)
  
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
-+	rtdm_class = class_create("rtdm");
-+#else
- 	rtdm_class = class_create(THIS_MODULE, "rtdm");
-+#endif
- 	if (IS_ERR(rtdm_class)) {
- 		printk(XENO_ERR "cannot create RTDM sysfs class\n");
- 		return PTR_ERR(rtdm_class);
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index e58bce1616..ba5014f8bd 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -415,7 +415,11 @@ int rtdm_gpiochip_add(struct rtdm_gpio_chip *rgc,
- {
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 
+-static DEFINE_SEMAPHORE(export_mutex);
++static DEFINE_MUTEX(export_mutex);
+ 
+ /*
+  * The following stuff implements the mechanism for delegating
+@@ -232,7 +233,7 @@ static void proc_callback(struct work_struct *work)
  	int ret;
+ 	spl_t s;
  
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
-+	rgc->devclass = class_create(gc->label);
-+#else
- 	rgc->devclass = class_create(gc->owner, gc->label);
-+#endif
- 	if (IS_ERR(rgc->devclass)) {
- 		printk(XENO_ERR "cannot create sysfs class\n");
- 		return PTR_ERR(rgc->devclass);
-diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
-index 16dc91fda0..37c61289f6 100644
---- a/kernel/drivers/net/stack/rtnet_module.c
-+++ b/kernel/drivers/net/stack/rtnet_module.c
-@@ -324,7 +324,11 @@ int __init rtnet_init(void)
- 	printk("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
- 	printk("RTnet: initialising real-time networking\n");
+-	down(&export_mutex);
++	mutex_lock(&export_mutex);
  
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
-+	rtnet_class = class_create("rtnet");
-+#else
- 	rtnet_class = class_create(THIS_MODULE, "rtnet");
-+#endif
- 	if (IS_ERR(rtnet_class))
- 		return PTR_ERR(rtnet_class);
+ 	xnlock_get_irqsave(&nklock, s);
  
-diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
-index ccc50eedee..6c3af409d3 100644
---- a/kernel/drivers/spi/spi-master.c
-+++ b/kernel/drivers/spi/spi-master.c
-@@ -372,8 +372,11 @@ int __rtdm_spi_setup_driver(struct rtdm_spi_master *master)
- {
- 	master->classname = kstrdup(
- 		dev_name(&master->controller->dev), GFP_KERNEL);
--	master->devclass = class_create(THIS_MODULE,
--		master->classname);
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
-+	master->devclass = class_create(master->classname);
-+#else
-+	master->devclass = class_create(THIS_MODULE, master->classname);
-+#endif
- 	if (IS_ERR(master->devclass)) {
- 		kfree(master->classname);
- 		printk(XENO_ERR "cannot create sysfs class\n");
+@@ -324,7 +325,7 @@ static void proc_callback(struct work_struct *work)
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-	up(&export_mutex);
++	mutex_unlock(&export_mutex);
+ }
+ 
+ static irqreturn_t registry_proc_schedule(int virq, void *dev_id)
 -- 
 2.35.3
 
