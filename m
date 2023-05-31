@@ -1,150 +1,113 @@
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2089.outbound.protection.outlook.com [40.107.13.89])
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 897FA1FBF
-	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 05:27:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AzdcpB7jYowdMOQ+wm+DNEi25Hgl0XkbDU8JpaZlq0rQCULL+jvCzlBtIcN7VGzckxeajdNqrtMHA8MG+lWYdMxdL5s7JewrPP70E4lpsKh466GVNsBZbDiflXz72GUilLEIQPKSwhqjm8f+FGDQgnKm9YHasUDdxEknvJ7s8P2exYOqfCmbleSMo/DqSKOzyQPrwKOIPjKxhb2GQuu57Uz8qt+FfvgmbJBxbpkPT1C37WcUW9stARHSbudB+e1G56w6sL8cuLtUCioH5VlVpwCCVVWFDjOtak8SAisuB2OGZ/qc1+QyKIWlQPWWxpEfoZTqiI5utATwDN8xTJIDBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5rG42SneLu9JkdYenc7jkR1h2OaE4gj0o5jy/2s2Bwo=;
- b=OFaEIVS4OrEMYYTeynqowtE23n7prk+LpuNRwGgX7bAytxxYlQaJpz+l8d/TkeyIU0C3VFmCwtXUCBki0+WILIfapVwKNmFR8euThYknU78nclV33NkC037ICLZPmPqMUimNAq0TkCsS9J7O9AR2k98D1BQ9TjbpZTlDnueAcif4UiZ0WWd4UXlStWaVVfClQkvBF585gVHkacRns9Igf6Cak23hTTOvuQCJgp/KldC5ZaBn65amnhB+lruJLKT4Z+GphNco+D1OnQiL0StZLlUDF4ta0syD1UdKFxAOm7cuQg4bFw4HXoJUujzONA8AEYFaGPHRVj6XF5dzJVwaBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5rG42SneLu9JkdYenc7jkR1h2OaE4gj0o5jy/2s2Bwo=;
- b=mAZBBv1QwG1suDQYlatdVlJZyZxV35ocILrX+25L76NvhnbvJg57XwYpGpBqaM7N6fD4LqK1F5evb37WPvKw3fk8uZVPthmLqEdS8RWrrbZfkQsTBnckIlWQdz+CRd/OEoAMDp87htgDQvrSQkf378l/L5gXHG/0pawI5pN7ebrK6LhemQhZS3Zq5Rmw6uuYab59okJNqEYo49DEZMWyklHGF+vTQQMWitaWhkla1M+kU1WuLRkiDiQ9GBN1UQyufagJYYNEf7aXu7TzqQatrwZcYByhbMkB2sw9JgPZJeZXY0oqCGEZ7Hn1K0qxU+SuWF5ITHwuy/HA1Pe5W3R8xg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by PAWPR10MB7416.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:2ea::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Wed, 31 May
- 2023 05:27:46 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::d638:8333:21fb:5f18]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::d638:8333:21fb:5f18%7]) with mapi id 15.20.6433.022; Wed, 31 May 2023
- 05:27:46 +0000
-Message-ID: <7223f5bf-784d-a062-d2de-975e173a329b@siemens.com>
-Date: Wed, 31 May 2023 07:27:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH 1/1] rwsem_down_write_slowpath check if oob() before
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867C04C67
+	for <xenomai@lists.linux.dev>; Wed, 31 May 2023 06:53:36 +0000 (UTC)
+X-GND-Sasl: rpm@xenomai.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1685516012;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=v6Xao60y10W9l/OHgPceCbvVqu0S78x+Fe51ssqzYCs=;
+	b=MjzT3Q13+MXSBeE74DHYOqbiCtL2TfrvzgAZRfduLQPaQ1eJWmxQfdA/V5k2JZ+uQClXIr
+	nYPTmjZieuZ4QoInTG/T0J1nlB17/PPYmuP9U++U/qM8YP/7Wt2DlqjWgG6TTntcLWSx96
+	v6e8IKFpRoIP0R3/cw5AiHNNd5Bhk3qlr5JWj4aXZxBfiwu5sIII6Lqh8s2ocwhQ7bhAAv
+	jXgyANmMaEbfaqNN0oi1LzhqcOWi9eMe9IQPfLfbXrqzpBWQrNRa9n+9rzdDYeExfHHzGn
+	a2LIjpO+hYzaI2NapZYGiJL3X5Efi5j2XLZnPeXy48bjNXAyCe3lFWEZIImIPw==
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Sasl: rpm@xenomai.org
+Received: by mail.gandi.net (Postfix) with ESMTPSA id ED924240003;
+	Wed, 31 May 2023 06:53:31 +0000 (UTC)
+References: <e5624d226deb4a49bbe28867e15eadf9@PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Dave Rolenc <Dave.Rolenc@kratosdefense.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>, Russell Johnson
+ <russell.johnson@kratosdefense.com>
+Subject: Re: [PATCH 0/1] rwsem_down_write_slowpath check if oob() before
  skipping schedule()
-Content-Language: en-US
-To: Dave Rolenc <Dave.Rolenc@kratosdefense.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Cc: Russell Johnson <russell.johnson@kratosdefense.com>
-References: <0173f9b60a0e4dfbb40fe55454a65fdd@PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <0173f9b60a0e4dfbb40fe55454a65fdd@PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0209.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a5::8) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+Date: Wed, 31 May 2023 08:22:34 +0200
+In-reply-to: <e5624d226deb4a49bbe28867e15eadf9@PH1P110MB1666.NAMP110.PROD.OUTLOOK.COM>
+Message-ID: <87jzwpxa8l.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB7416:EE_
-X-MS-Office365-Filtering-Correlation-Id: 96d269c6-0970-488c-bbc2-08db6197c45b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	tqonFZQJcT81AWGGA3W7IrDL/izxihHqYnnGwxZJ8lQ73EbXsbzvZMJIfkqWSOpuGvC5gzECuV8xT+NQbn8AmLggXo7u/emtdqY4nOiIC7eovORBi8Gt3QHemlr9SwvdITaLlrNayg5gYDjh7ZUZRs58dkWRqJ+OS9h+Bqfy4T32vIzm5zyGV1txlzZ+8aWeBcnCKFkClnn2Uv1Ft9g7c4s054RaBrniCc0JP50UAI6tmp7zczvhkGvNvePAV7OYe1xSoJ73ml2/emPFb3O4REC6krkgbQKUN8Nhw9CvAS++o6cwajCbLnYa/gG+gSu9oMcmPrFXRYq23rygdxEiWoDTAqneGWGUHPKCtxS+gMb814zeY3ughQK0Vo1/1pwkrsPUe5Izz2kbCxuQiY4oMAqR8F1CtxtOYMAq8jdwUTI+gzoCzsdBrbp0SvMacq2XfHCCOETi2VlKKjmSzaaonJt9IGXNJK4T4plPdab2ZrSB+9PTQGJ6VU7/zeKjEcbNK3A1PyaiH/Df3ETpkkYYhPolhXepomBdlQoPOmhpHV0w69J4I+jtS17mPZHR0ix5XXjKlzSBZvbAsjq6W7CnE0z5st2JbxyvKRdoCTx/56mDAu7aMytp9S9Bqvmhuois8WNAY9ibpUpvsNvROA292Q==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(366004)(396003)(346002)(39860400002)(451199021)(31696002)(86362001)(66476007)(66946007)(66556008)(44832011)(4326008)(8936002)(8676002)(316002)(41300700001)(31686004)(5660300002)(2906002)(4744005)(110136005)(478600001)(38100700002)(6666004)(82960400001)(6486002)(83380400001)(53546011)(186003)(26005)(6512007)(6506007)(36756003)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WFh5Q0Y0bjc4RGk3OVR0NXZNVzVCL256UDdLWGF5dDlMN1BZRVBtcEFnRGk1?=
- =?utf-8?B?NFNyWFhDSEdrN3ZEdW9wQ0hmUVUxK0t2anJuOG0xSm9wbzdMNkIvbUt4NS8r?=
- =?utf-8?B?eEdoUllmZm0rRlFMTzJTTG1GSzlQblNwbjlaQnNPS3pETzlMejR4OUludW1p?=
- =?utf-8?B?dC80bGh6S2NKbGJ2aFBXZ2NsRjVqQjdCQjJuQjJYMXNESWVZUDB6RzZnVzYr?=
- =?utf-8?B?SlgwTTR3SDkyYjQ0UW1ud2ZRSnc2dHRBRnVtNkl4TVRkTzJlTEtvN0lCSTNI?=
- =?utf-8?B?WU9seDRRVk5yUGRPbm1uUWc4aVAxRk1MVE5FWnpxYTFLbFhpM1NKekR4UnRl?=
- =?utf-8?B?S0NHMzcwSW5mMDFhWThXWkdreE1ubWtFQUkva3M4MC9KaXdqUG04VzJtZEti?=
- =?utf-8?B?bmk1WVE5c3NjTk9SY0pYNUpKblhMbi9vUlZQQ0treU5PYlpveExxeXEzemdI?=
- =?utf-8?B?bFYrY2cvMGExTVdveGRMWGc3cUxrQ1FFRUliYVdwS0x1eHRZYUh4Ujd2c3dr?=
- =?utf-8?B?VW8xeDV2Yk14WlJxT0FybzNiNUNHdm8ydEwrZHJEZ1lmcTcyWWk5dkN6ZTZZ?=
- =?utf-8?B?N2ZSbjF1SU9aUjFBdTVxOW9Kb2lXVk9EQ3JUOGJ4ZThjVzZwVFdaZ1dPcGoz?=
- =?utf-8?B?TmdsQjE4ZEZZY3hZTUNOdjVtNk00MXUwbTFCVmp1cWNnT2NPelRJb2RuYXlM?=
- =?utf-8?B?Y3pHWENmMmxERGZndFhicFRIZDZVZEFlSHp5eGg4clpodXhqQVRiNURwektY?=
- =?utf-8?B?WWhXVEVOaUFidHU2Zmw4SVVNYjNrZmp5RnBBeXVrK0d6OElWekF0bi9VUGVC?=
- =?utf-8?B?bGlGVlpPeXREWHJROTdNZE9obHJnUGFqVTQ1SkJodUJsbmF0YWlJSDI2Nk1t?=
- =?utf-8?B?VjJtL3BCaVZJOU5PL1gxQTByVTlZK090bzBkRDlEYjNVVm8rTmwzR0NMZ1BL?=
- =?utf-8?B?dkNnc09HZDl2MDZjSExCSlhSM2JQSFkyRlZBMjNsekczYVdhbHVuekhhZ2E1?=
- =?utf-8?B?YnZxUGlhV0JOQi9jNnA1WHdwUkxva0daMkJDU251bjlRYXVuSVlBbDFWbFYr?=
- =?utf-8?B?WWFjWXA1Q1hzL05lVzIzYlk1UFRMTkdWUlpPa0ZwSVJaMjB5anRtR2U3aTlm?=
- =?utf-8?B?emVpa2Ntemo2RzYwTkVUVWFReUMvdXFjQU9iMU5RWjY1bWZTVFUvQlFQM2FX?=
- =?utf-8?B?UG1QVVRKNVpGU1NzczJjL2xSc0prSnl0bFQ1bU1FOGI3MU12YWFOY1dqK3dB?=
- =?utf-8?B?ZmRUcHIxSWpETlpLRmxrNzcyY1d5MDh6M0V3bms3U0lCOWpqSUxNdGVqYUZz?=
- =?utf-8?B?MGNpY2JXQ1dqMFpjOHV2bk91bSsvbWNZVWRKd2xUNWxzVjZCdVp1dFpia1du?=
- =?utf-8?B?K3NMMDJ3RUlFR2djYmpScjV4cUxxYndxcExhNW9NWW52N0RTRDVFL0ltaEdU?=
- =?utf-8?B?YmNTUGpyakk2OVVnOFpicEdmZTVkem1NMG1ieVBoQm41eGR6eno0N1JqTjFL?=
- =?utf-8?B?bVhuZW1waXFvc0owTmtiNFowMEpkNDUzcTU0eGlkcXJvZmt6NjFyZlNyRFBM?=
- =?utf-8?B?L0JUMHFwQ01EekIzK203R0tUVDVjSE1XM0cwM0Rmb3ZKSHBLNUtBbGlLeVR0?=
- =?utf-8?B?SkhPWFpGMW9Jd2lqa3V2MDcvaWx6SWxBbWM5bzZ6aUNDaUhVU3d1Q0Z4N3Yz?=
- =?utf-8?B?bTdhZlBEZ1ZxZU1GaUorQVcwNGF5YU00em4wa2NMSXRVSElmUHpVT2pCVHJs?=
- =?utf-8?B?dXFNL0JhRHNONGszS0M5SFVORW9NRUc4WkZSQmYwcnBwbldCQ0FNbTNaaDA0?=
- =?utf-8?B?SnJYUlA1dmo1czIvOUhqQjNsU0s4bjRJa0hVM3J2UW9tZDVmc1E5Ym1EUjhZ?=
- =?utf-8?B?OEdNRUlKWFhUdnc0YjlaUHNZbzdpaFRRZXpNTUVsazBRMFJDRCtSZjhWQVY5?=
- =?utf-8?B?cE5heHlrRDdpdWtOWFBCZXRsb2VRb3l2eW1lMlAzeXdwU3lWSWkxc3BKdnlw?=
- =?utf-8?B?U1ZkYks4aUt4UlkvaFRkQUJabFVXaTNNVnYzNWhKcnhFYm9vUEpiMFc2b01Y?=
- =?utf-8?B?OFJweVhhSjM3bkp4N2U4L3B5SFlNMXdIUnJWSk1BcHN0Um96TFBXOEp2S2Vq?=
- =?utf-8?B?Z01KZG5LcnRsWlBYYUpKNStWb1BIYmxVdG9hYUtlRjFlTlRpUmJyQUZjNHBi?=
- =?utf-8?B?S0E9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96d269c6-0970-488c-bbc2-08db6197c45b
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 05:27:46.7007
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s835qhH7Dtx8NWMQlwbX/0zmRVjflIVxNW7nElAIqGelNqVL4SD4lx7AOrAn2SzOQ2IwdjSJZKwRU+lBhf7KTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB7416
+Content-Type: text/plain
 
-On 30.05.23 21:04, Dave Rolenc wrote:
 
-Here should be the commit message that explains the reason for this
-change. It will go into git, your patch 0/1 just into the mailing list
-archive.
+Dave Rolenc <Dave.Rolenc@kratosdefense.com> writes:
 
-> Signed-off-by: Dave Rolenc <dave.rolenc@kratosdefense.com>
-> ---
+> This fixes a timing-dependent bug that would cause a tight loop without
+> schedule() when running in-band. The rwsem would get released enough to
+> allow this tight loop without schedule() to execute when the handoff
+> bit got set, but it would never allow the previous on-CPU owner to
+> finish releasing the rwsem. Checking to see if we are running oob before
+> skipping the schedule() seems to fix the problem. This problem was nasty
+> when the global kernfs_rwsem was the target semaphore since many tasks
+> ended up in D state waiting on the kernfs_rwsem. 
+>
+> We would typically see this problem when repeatedly starting/stopping an
+> EVL-enabled application, which would create and tear-down a lot of EVL
+> elements. Eventually, the timing worked out to where we'd get a stuck
+> CPU message and a bunch of tasks in D-state waiting on the kernfs_rwsem.
+> The cuplrit task was stuck in a forever loop in
+> rwsem_down_write_slowpath() with the handoff bit set and skipping the
+> schedule() call. 
+>
+> This patch is based on 5.15.98.
+>
+> This is also my first patch submission to this group, so if you need me
+> to follow some specific procedure or checklist for patch submission,
+> please let me know and I'll comply.
+>
+> Dave Rolenc (1):
+>   rwsem_down_write_slowpath check if oob() before skipping schedule()
+>
 >  kernel/locking/rwsem.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-> index 4cc73e6f8974..cb77bd38cb64 100644
-> --- a/kernel/locking/rwsem.c
-> +++ b/kernel/locking/rwsem.c
-> @@ -1151,7 +1151,7 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
->  			owner_state = rwsem_spin_on_owner(sem);
->  			preempt_enable();
->  
-> -			if (owner_state == OWNER_NULL)
-> +			if (owner_state == OWNER_NULL && running_oob())
->  				goto trylock_again;
->  		}
->  
 
-Since when does EVL allow to call rwsem_down_write from OOB? Isn't that
-the actual issues, but in your application?
+Mm, nasty. Thanks for digging into this. What's even worse and the root
+cause of that issue is that no task on the oob stage should ever run
+rwsem_down_write_slowpath() in the first place. Generally speaking, oob
+execution is an NMI-like context, therefore taking regular locks and/or
+(re)scheduling is not allowed, which means rwsem_down_write_slowpath()
+should not be entered by a task running oob. In other words, Houston
+we've had a problem here.
 
-Jan
+In order to figure out what happened, could you please check whether the
+following patch causes a kernel splat when the bug triggers?  We are
+trying to find out who calls rwsem_down_write_slowpath() from the wrong
+context. The second hunk in this patch is making sure nothing weird
+happens due to transitioning from inband to oob context - when Dovetail
+is enabled, the tail code of the logic performing such transition lives
+in the regular/inband schedule() code, but that should never leak into
+the common in-band code.
+
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index f0287a16b4ec8..12f4956842fdb 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -1070,6 +1070,8 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 	struct rwsem_waiter waiter;
+ 	DEFINE_WAKE_Q(wake_q);
+ 
++	WARN_ON_ONCE(running_oob());
++
+ 	/* do optimistic spinning and steal lock if possible */
+ 	if (rwsem_can_spin_on_owner(sem) && rwsem_optimistic_spin(sem)) {
+ 		/* rwsem_optimistic_spin() implies ACQUIRE on success */
+@@ -1155,6 +1157,7 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 		}
+ 
+ 		schedule();
++		WARN_ON_ONCE(running_oob());
+ 		lockevent_inc(rwsem_sleep_writer);
+ 		set_current_state(state);
+ trylock_again:
 
 -- 
-Siemens AG, Technology
-Competence Center Embedded Linux
-
+Philippe.
