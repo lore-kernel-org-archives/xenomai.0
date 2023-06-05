@@ -1,174 +1,298 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2078.outbound.protection.outlook.com [40.107.22.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3334FC17
-	for <xenomai@lists.linux.dev>; Sun,  4 Jun 2023 19:42:11 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g7gW/mPUKdPyI5E8x9ipN1qPWsToyyb0hcO8DioH1fGr+GcwxM3ZYOlO89iA+l7JU4IBT+CZCPROol+gPFAIsDj937hZXsz68fAmLuRV3t/yzU7/8Y24PIXXycoCdp75wK05Xx2+sPO5NjyNuDSIhmoU+M5X7cbYkQtCOoeMaLQgBTRCIc3FFmqpJmKEDOUHXcIDYH4jYbXZZbUdfqmXB59v+1AhR2nPjCEKxGeT/6SVvjc9Lof2dG0c1TT+xbnDXoiGYamPVr7OiBrfLrYeXnCRjM8dSPBN3741gkrO2AXRFjM2IVN1RAqSrjOocBcrtzGtJZB4KJJeAbymJgQ3HQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c4aGvcI+JMu1slpcTOVDLJViS0jObp31vir6lvtXRQM=;
- b=Dw0JhYe/EZiHFqWIact89ld6/fiWyQJ4ONRvW85N3kEDHXYS8SXYFz/WO88aM4NGjflR/+U3glbB4HY5E0FD9RiO9drLJsOprh6hdsviYVUlmCSylk3qnPxdPHH9CWIzbp9GDer7owOp1QSwAoicyBvC60ByOGz+JKKCcnbevqoqpf84abRXxrJxWUDaKzviDR2TnFK2HcjOb25Dkgd8yYVRJvQ2eN5cDDXVqcqqlEKjL8ijOnQGfoKyMq8pQ5JRCgvid11ptX2p66901DrUyZ/Sh4iW4sAUJSNaDX8n1FyZwxG5xA5j35/AT13ekE17IRSGy/bYw+jONLM3VlJ0WQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c4aGvcI+JMu1slpcTOVDLJViS0jObp31vir6lvtXRQM=;
- b=O6J6I5gutKi4FArGsXxp6QAnQqA/WqdXHqLd8Jga6uf6ARv+/afySKXrTLUl40AqghUJeQVvNKItvaiD0CjQ5fCsBs3zu756QDCTo5vze5iqpIRD1XBvJr/X2rcGxUhjLWhD9v5Rj+Hb18ptY4w3irB/qbD68+KhaKBQeQIVVVEsz0r8wK+0DTBLBWSPmeDmFvVeVzA9AgsTulQRHK+HWiXv8hqu2PJ+1kqfl8e09WAwil0P498pO/Sm/FcaRMRY9O/TZI0u8/gFI08OEThk1mPGoTpb3PJjXqu6YzEF2dMbW2RkGL9h5+y/RghWB04CIvH1XpVl/Krb3kwnuJWlPA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by VI1PR10MB8303.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:1e0::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.31; Sun, 4 Jun
- 2023 19:42:08 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::2ecd:9a8a:5601:47e4]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::2ecd:9a8a:5601:47e4%6]) with mapi id 15.20.6455.030; Sun, 4 Jun 2023
- 19:42:08 +0000
-Message-ID: <d1d58b04-25f9-78a2-c244-db16e67bae9d@siemens.com>
-Date: Sun, 4 Jun 2023 21:42:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Secondary Mode backtraces
-Content-Language: en-US
-To: C Smith <csmithquestions@gmail.com>, xenomai@lists.linux.dev,
- Xenomai List <xenomai@xenomai.org>
-References: <CA+K1mPG0PPv6vus7jOraBVJ1cQHoj3XnJcOud7v_7iNO5QyuVQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CA+K1mPG0PPv6vus7jOraBVJ1cQHoj3XnJcOud7v_7iNO5QyuVQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0194.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a4::10) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5E00631
+	for <xenomai@lists.linux.dev>; Mon,  5 Jun 2023 04:47:16 +0000 (UTC)
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-62614a1dd47so32149946d6.2
+        for <xenomai@lists.linux.dev>; Sun, 04 Jun 2023 21:47:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685940435; x=1688532435;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+nXglQPf2qUbviHmcYecLJhA1Gzj/6B5VUFguKAJP0k=;
+        b=Q7Yeat/NXL7baCHyMJzAJTIFgjrEqqiY4+nEQOB2bwiM+GXWsd1SS5iovRhARUiaoM
+         MIyJZ9bUOi72y95CnYYAgAzPRG92RNGp7/OJ8wkBm6B0XU+3vx9pp4iDfi4Sv4/nd5Ja
+         ClIkKvvMvxjFHzdsHUjMf/AHZbyZnNOc1jmUFE+u0MGlKn+iEFm50qdkprFO8uUnr02A
+         QsdyqO7A1TxMgyb0vZv7GOsOe8UB65bmJBBvfHjlAgzrtn0s18FVQ2fT9a214oJS/eWw
+         mnmMkwHMbOjRtgZsZV6AIXjxhmvdlENcNlylAjXQR2tqhEDp9eycvy66MdeX0+HpTpeq
+         /R1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685940435; x=1688532435;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+nXglQPf2qUbviHmcYecLJhA1Gzj/6B5VUFguKAJP0k=;
+        b=C/YYS8Iy7J1sIT8zjtK8QeCyO+SsuO1kiTmvYFq1IUe4fGuDMyHrq7Sq7Auu+Z6Jds
+         EZPb1+LNf956OiK8XQWFwtXcij14DQa3znf2ZLEdVAxO3FjmqFGhxaOVecbMpv4IzHNQ
+         HukfEaZUz2Wt0BB4UOdj5diPyoI7u5xMBZn9prVnPRtcVgWx7psrORubcNAP+n/muiqt
+         wdE8wGpsl6e2jaPqPjz1leD/whX5rqqnOfL5KMzDy2rg3hc7l+WzzxW5PjGxW+dM2j3K
+         3wHPpWNfXQQnJf0JzyckuU1iYKaATNueTyDVAgZ88LNLA0bM0yuGZJgNk0PTRmgc4t2D
+         TNpA==
+X-Gm-Message-State: AC+VfDxPtRwxy4LTeLNM9WXfXwjbQZFbZ/sdsQmEDjeR8yH54NaUOxC0
+	bb8kppwFfOuw2R7vKQ1OXvgXOCzSlRDrOlFM2n2kC1fQ+78=
+X-Google-Smtp-Source: ACHHUZ6wPXX3/juwDyhyAyLMZj7PmzLBhnkLbE1wGYmdiPcNci317qHHdJHUpAx+i0BCoKqIl+jKscJiK4wcO6jNiYw=
+X-Received: by 2002:a05:6214:2389:b0:626:25f7:3bee with SMTP id
+ fw9-20020a056214238900b0062625f73beemr5876112qvb.34.1685940435460; Sun, 04
+ Jun 2023 21:47:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB8303:EE_
-X-MS-Office365-Filtering-Correlation-Id: 36ef1030-6826-4834-0264-08db6533c877
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Jg6a1OY1fro1nv3ZTxzD1lX4X4iimwoh39nePkG6rVf2oeWaRsQmAv4lMN7nGwhvewa6JIahLyuungWxGQhfsTAGFhNLZOUS5pigAmtD9gKSUTs5kGRPm9GfRnrMGOQjgCsYd8npDVefuTF+Okg41a4tEKMlgNZs5qg28RO12mDDmkXZI7ciC0d2MHAXkJB1z7kGXSZsVWmIz2aoz/ndPZ1WWrhjT+llUiwVTIj5NGz9m5Fn8GqhqX1vmDxshjcxV4s7+J7PTft/JuKYnhWnVW9xcMs8NUUy546i1D/n+7n2pOw0xeqJ5q0zWgQidN78xRbtfOGeslVfQ7KOk6Tzi+1totE1rk3KYcyHcXv79ggDsHrRRYNzRESwRMgiUC/raJwVJ9QtX596NhOw+krFQTT0LopRkrkdIMhZasXJC41s61tR2p//K+eeqV4u3WUCMMfenjH3TOus7cI5r7FOYYzZ0cEBq4Ju7t6XNJ2hmCQsM3a3sOwBJQ34NK10CwFCHdJru/77EIIF3kYkKnFvVQOfkS2JhRIj1wBSmN4lWN7cfkdHEsuQXyhSxpZvrJDS19FnWuHGj3CSkKkp4lb3gArb18pgYulBdRrPNOdn6kFtg7X4++umTW7JbI5qbgGMFForG+ZWDjSncGQezT7AZQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(366004)(376002)(39860400002)(451199021)(186003)(66556008)(66476007)(316002)(66946007)(31686004)(3480700007)(7116003)(110136005)(41300700001)(44832011)(5660300002)(8936002)(8676002)(2906002)(478600001)(82960400001)(53546011)(6506007)(26005)(6512007)(31696002)(86362001)(38100700002)(36756003)(6486002)(2616005)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WjBVVm9YMWFaL0VMWEtkeTBpNENkOWNROTNoU0Q3OVBSay9MZE43SVZmWVA2?=
- =?utf-8?B?YjhoSkhjeHBwclVKVFJzM3pnYTlyN1lyQzRCVEpCaVNCM1dlMEgwV2hudjJi?=
- =?utf-8?B?cDl3QTZDdHp1L01ETmtqOThDMUh5bXBiT0NTZENQQlpwejkzMXp4eHBKT2FM?=
- =?utf-8?B?Y3VscXZkU2JEQWZBVU5ZUnNYSmx4dVNnbzRRL210SnVrUTFQdXQ1SWR6UTZ6?=
- =?utf-8?B?alFYUHJwSGNKZzNHR1V0WE1YQjQrc3M4M09JTmw4c0xrRHZWQmFNbmJPUTNR?=
- =?utf-8?B?NkJaTmJIN2gzWTZJbUhhcGR6QjRuMnBERnpTcE5VeGpQdGhEU3paK0NIY3d2?=
- =?utf-8?B?d3ZKZmQwKy9YUnlobWF1UzJHQ1pBREJreDdmeXM4T3lIL3UyMktydmxGVi9G?=
- =?utf-8?B?UlBxOVU3Mm5ITlZwdjNBWWVxY1hhK09QSkZmM1B4U2ZncGJCSVdvWlpYbVdm?=
- =?utf-8?B?bWtDMExpZEN1VHNxWTJvQjJyN1FVcnVBL1g1WmhrMStMZ3Q4T0R5ZGxnamNw?=
- =?utf-8?B?S08rNzlDQlpLMDJBZlVSVkhyNDA4RlBuRjJWMnRYY3VVL2hPOHYrMnlpNlMx?=
- =?utf-8?B?ckdvWXZ6bGx4L3FHREUybTFHVnpyMXFXWXY1Zmg3VmpicnNJcGZDK3pBcnF6?=
- =?utf-8?B?TkxBWFBycDYyRys3c2xobVZvYzgrZzBjNFhJN1FiU0h4bzNSdWxoZ1A0OTlW?=
- =?utf-8?B?UU9xZmVMVkxYK3RtcU5OUlBOdWpOTkNxOW1NR0tyNlNwcFlFRzRnTWJrcGN0?=
- =?utf-8?B?QXNVVS92VXpQZGtxRHZRZDBWZmdWaXFBaGxpRjBhelI5VGN4UllFRm9YN25O?=
- =?utf-8?B?Z094UHVCZitPN0kvazhwTTUrV0ZQd2tyVldEMVllMkF0K3ZrZGdIVVZIQzNu?=
- =?utf-8?B?clVHWkFoUEFtNmozb2dkZEdEcHdyM2FWT0hqa2xRVXVmcjdNTGRuRExnWGNx?=
- =?utf-8?B?MmNKRlpTdlpReEdzbHdrNmNsYkxTQVNNbTRuL3RqdExlRlVMNEwxVmNtUXdB?=
- =?utf-8?B?OTJSbWVnMkJBZ2xTU3U1OEgrN2JvU3IxTmUyQkx5d3FGREJTSkoyQ2pnREc0?=
- =?utf-8?B?YXpiaUdyZi9rM3lrakhkeUR1RW9ya1I3Myt4eTBCT2pQNXF0MzV3bEw5NWRv?=
- =?utf-8?B?VjVMcXYrbzh5a1d2RSsvY3hZQzQ1bENHSklaaVNoOEFCWWM5SkdDTWxMblZa?=
- =?utf-8?B?cWpNYkx6Ym1IbkIrWXJFSE5RYWpZVHRiVTVCNTlwSWlmcVI3TWFQK01ibWU1?=
- =?utf-8?B?L1k4MWRNNzVzZW1IYStnZnU5bEd1U1V5STl1MlJJckV3ZW54UFY5WVVnV0Rv?=
- =?utf-8?B?RUQwOHRiSFd5YS96WmZTb0xldHJyRCtXY1doaDN3S0Q1NmRTdnoyeCsvTkMy?=
- =?utf-8?B?d3VwcHFSVjJrSUdQWGs1OTd6NWx6b3R3K0tRMUtuYWZNVDV2ZjlWcVgrUXNq?=
- =?utf-8?B?dXk1YThWbmorKzVQZFVvRXM3RHpTNU5idzZ4Nys0MFhDWmxRVzVZUm1FcVVr?=
- =?utf-8?B?YjAyNXZaQ2N6Uk8xVm9iQXdLR1d3elNNNXU2RldnOVI0djF4Y2RTSmUxcitQ?=
- =?utf-8?B?bDlmVURrajRpTDVqUzkzdWJ2MjZvaTFpUUd2VWZOMzNqa3lUemNzdDAvK0ZZ?=
- =?utf-8?B?ZEFtVUFoRitqd1ZhNmVKMkFhNWNHeDliNzdxNGxjS2NBNXlXVVhsbzJnU3ln?=
- =?utf-8?B?bDJpSGhRNnJhT2RNcXJqcGhsbE14czZBMEc4TStsMVBBVXdBTzNaUzloZHJ2?=
- =?utf-8?B?V1hPK0ltSmJhSDQ3S3hIb0FpeTVObkpocS83Yzl1M3NZcnVNRFVyeTBQY3dI?=
- =?utf-8?B?Y25ZL25jaXRrbHEvSks0RTRjUVJmOVlOMWRneitUNGJIUS9jYVVMaWI1eDhx?=
- =?utf-8?B?RHNTbDJ6Q01VSlRFT0pJby9NeWRwNThaaFlRdlFGYVlNTVFqUXZXM0FSd1hL?=
- =?utf-8?B?VVB3V0JRVWNmcURtUVlWK01weUdoWXhFYlhNOTFNSUN3K3dBbUZuY05lSjc4?=
- =?utf-8?B?UmNXT0lSVTJUbXdYT056aGg5cVFMQjBJVFZad3BHWm5JSy83VEdHM0FhMzdr?=
- =?utf-8?B?bDRyZFg1OUlST3NGMHRNQVNRQ2dIYXFKcWZCMk1CTHpDeExWYVFaajlrK2Va?=
- =?utf-8?Q?8+cOnAwhwgVwlU2sHZKKAWfUe?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36ef1030-6826-4834-0264-08db6533c877
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2023 19:42:08.5102
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wig55afkceH/jVi9JLOjQmr4dkadWa6L16734Qva21hrWehu62U5KgVmzn2pYTyU0q5II/1pmQvT7GyJvMxkvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB8303
+References: <CAAm9oxrZ+g7RgBV0SC5GkvEeKKGXOZb2R_BRjf0qRObQM1wCgg@mail.gmail.com>
+ <87mt84h3h0.fsf@xenomai.org> <87ilish1z0.fsf@xenomai.org> <CAAm9oxp-Zm+25CpxT7wYUiDWxZGBxStB14D8QnEZWDmCp6jYsQ@mail.gmail.com>
+ <87359qwclj.fsf@xenomai.org> <CAAm9oxoRmKRZhOCa7PVmazCxouy2OdcHAxwCFJBEXwk1JcDnyQ@mail.gmail.com>
+ <874jnoyghn.fsf@xenomai.org> <87zg5gws3p.fsf@xenomai.org>
+In-Reply-To: <87zg5gws3p.fsf@xenomai.org>
+From: Sri Subramanian <sridhar.subramanian@gmail.com>
+Date: Sun, 4 Jun 2023 21:47:04 -0700
+Message-ID: <CAAm9oxp9DgeU6GZeF8cnUzkUoQOYMvzm23xgxN4Tf8AszVb_Lw@mail.gmail.com>
+Subject: Re: Xenomai crash in timer IRQ
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 03.06.23 22:38, C Smith wrote:
-> I have RT userspace app which is failing and switching to secondary mode.
-> I'm wondering if there is a way to get a more informative backtrace in my
-> SIGXCPU handler.
-> 
-> I'm using xenomai 3.1.2, kernel 4.19.229 on an X68 CPU, and my app is compiled
-> with -g3 debugging symbols, it is not optimized. I have a signal
-> handler to catch secondary mode:
->  signal(SIGXCPU, warn_upon_switch); // in case Xenomai switches to
-> non-realtime mode
-> I just added code to generate a backtrace :
->  warn_upon_switch()
->  ...
->   nentries = backtrace(bt, sizeof(bt) / sizeof(bt[0]));
->   backtrace_symbols_fd(bt, nentries, fileno(stdout)); /* print
-> function strings, offsets */
-> 
-> I am now running the app and waiting for another Secondary mode
-> switch, to get a backtrace,
-> but the time between the last two failures was 7 days.  In the
-> meantime, I did a test where I forced a switch to secondary mode (by
-> calling glibc open()) in an arbitrary place in my RT thread,
-> which gave me a backtrace to investigate:
-> 
->  10:23:22.843077: /xdevel/bin/my_app() [0x807cbf4]
->  10:23:22.840927: linux-gate.so.1(__kernel_vsyscall+0x9) [0xf7f6eb69]
->  10:23:22.841009:
-> /usr/xenomai/lib/libcobalt.so.2(__cobalt_open64+0x3e) [0xf7c74b2e]
->  10:23:22.843335: /xdevel/bin/my_app() [0x807c98e]
->  10:23:22.843410: /usr/xenomai/lib/libcopperplate.so.0(+0x5405) [0xf7c91405]
->  10:23:22.843486: /lib/libpthread.so.0(+0x6e99) [0xf7c49e99]
-> 
-> The first line of the backtrace referencing my app is the second line of
-> my SIGXCPU handler - not helpful. The second reference into my app is
-> more informative:
->  addr2line -f -e main/my_app 0x807c98e
->  Periodic_routine
->  /home/xuser/src/xdevel3.5/my_app/main/my_app.c:24057
-> 
-> That Periodic_routine() line 24057 is the line just /after/ the call
-> to my function Find_devices() in which is my intentional switch to
-> secondary mode.
-> So the problem is that the backtrace did not catch secondary mode on
-> the proper line inside
-> Find_devices() but it blamed a line just after that function returned.
-> 
-> * Is there any way to make the backtrace more accurate, like an inline ASSERT
-> or something?
-> 
+Hello Philippe,
 
-Did you try backtracing from the signal handler using gdb already? Also,
-there is a smokey test for this (sigdebug), though not for the accuracy
-of backtraces. Maybe worth to play with that as well. I suspect the
-issue is which the symbol information here, not where the signal is raised.
+Thanks for your quick fix! I can confirm it works for the test program
+in my environment.
 
-Jan
+I'll try the fix in the product and let you know.
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+Thanks again!
+Sri
 
+On Sat, Jun 3, 2023 at 7:14=E2=80=AFAM Philippe Gerum <rpm@xenomai.org> wro=
+te:
+>
+>
+> Philippe Gerum <rpm@xenomai.org> writes:
+>
+> > Sri Subramanian <sridhar.subramanian@gmail.com> writes:
+> >
+> >> Hi Philippe,
+> >>
+> >> Sorry for the long pause in this thread.
+> >>
+> >> However, I am able to reproduce the kernel crash stack (off
+> >> timerfd_oob_read) with a simple test program which does the following:
+> >>
+> >> In a loop:
+> >>   create timer fd
+> >>   create thread which
+> >>        sets up periodic triggers off the monotonic timer
+> >>       closes the timer after a few periods.
+> >>   join w/thread
+> >>
+> >> If the main thread and the timer thread are in the same cpu, I can run
+> >> it with hectic in the background for 2 hrs at least. However, if the
+> >> threads are on different cpus, the kernel crashes within minutes. I am
+> >> attaching the crash and the test program.
+> >>
+> >> Environment:
+> >> HW: Raspberry Pi (CM4)
+> >> SW: Xenomai 5.15.109 tag, Libevl r44
+> >>
+> >> Test steps:
+> >> # hectic -s 200 -q&
+> >> # ./timer-crash1 -a 0 -t 1 -q&
+> >>
+> >> BTW: this thread's history implies changes to the realtime clock, but
+> >> really, this doesn't have anything to do with it.
+> >
+> > Ouch, confirmed. Something is wrong, this is a generic issue. Working o=
+n
+> > it.
+> >
+> > root@homelab-qemu-x86_64:~# ./timerfd_crash -a 1 -t 2
+> > 0[  347.430316] ------------[ cut here ]------------
+> > [  347.430319] WARNING: CPU: 2 PID: 3241 at kernel/evl/timer.c:430 evl_=
+get_timer_overruns+0x1ac/0x1c0
+> > [  347.430332] Modules linked in:
+> > [  347.430334] CPU: 2 PID: 3241 Comm: timer-crash1-ch Not tainted 6.1.2=
+9+ #178
+> > [  347.430338] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
+IOS 1.16.2-1.fc38 04/01/2014
+> > [  347.430340] IRQ stage: EVL
+> > [  347.430342] RIP: 0010:evl_get_timer_overruns+0x1ac/0x1c0
+> > [  347.430348] Code: eb d5 e8 c7 d7 f5 ff 49 89 c4 e9 9f fe ff ff 4c 89=
+ f6 48 89 df e8 44 fd ff ff 48 8b 4b 48 e9 ba fe ff ff 0f 0b e9 13 ff ff ff=
+ <0f> 0b e9 2e ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f
+> > [  347.430350] RSP: 0018:ffffc900016c7dc0 EFLAGS: 00010002
+> > [  347.430353] RAX: 0000000000000005 RBX: ffff88810429b400 RCX: 0000000=
+000000007
+> > [  347.430355] RDX: 00000000000025f9 RSI: 00000000000061a8 RDI: ffff888=
+237ac87d0
+> > [  347.430357] RBP: ffff888237ac87d0 R08: 00000000ffffffff R09: 0000000=
+000000001
+> > [  347.430358] R10: 0000000000000082 R11: 0000000000000000 R12: 0000005=
+0e066c458
+> > [  347.430360] R13: 0000000000000001 R14: ffff88810429b4b0 R15: ffff888=
+10429b400
+> > [  347.430368] FS:  00007fa304e746c0(0000) GS:ffff888237b00000(0000) kn=
+lGS:0000000000000000
+> > [  347.430370] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  347.430372] CR2: 0000563c64c7d018 CR3: 00000001050ea000 CR4: 0000000=
+0000406e0
+> > [  347.430374] Call Trace:
+> > [  347.430376]  <TASK>
+> > [  347.430378]  timerfd_oob_read+0x190/0x210
+> > [  347.430385]  EVL_read+0x46/0x90
+> > [  347.430388]  do_oob_syscall+0x11a/0x360
+> > [  347.430392]  handle_oob_syscall+0xa5/0xf0
+> > [  347.430395]  pipeline_syscall+0x93/0x110
+> > [  347.430399]  syscall_enter_from_user_mode+0x57/0x120
+> > [  347.430406]  do_syscall_64+0x1d/0xa0
+> > [  347.430410]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > [  347.430414] RIP: 0033:0x7fa305064308
+> > [  347.430416] Code: Unable to access opcode bytes at 0x7fa3050642de.
+> > [  347.430418] RSP: 002b:00007fa304e73a30 EFLAGS: 00000246 ORIG_RAX: 00=
+000000000
+>
+> Please try this patch, this should help. To sum up, the conditions for
+> the bug to trigger are as follows:
+>
+> - the timer and the thread consuming its ticks should run on distinct
+>   CPUs,
+>
+> - an overrun condition must exist (the interval set to 25=C2=B5s in the t=
+est
+>   case made this more likely fortunately),
+>
+> This is an architecture-independent issue, caused by a SMP race.
+>
+> Thanks for the neat test case, this definitely helped in spotting the
+> issue quickly.
+>
+> diff --git a/include/evl/timer.h b/include/evl/timer.h
+> index 0f5616b26e385..c5ce4a0fff406 100644
+> --- a/include/evl/timer.h
+> +++ b/include/evl/timer.h
+> @@ -179,7 +179,7 @@ struct evl_timer {
+>         int status;
+>         ktime_t interval;       /* 0 =3D=3D oneshot */
+>         ktime_t start_date;
+> -       u64 pexpect_ticks;      /* periodic release date */
+> +       u64 consumed_ticks;     /* advanced by evl_get_timer_overruns() *=
+/
+>         u64 periodic_ticks;
+>  #ifdef CONFIG_SMP
+>         struct evl_rq *rq;
+> @@ -263,7 +263,7 @@ static inline
+>  ktime_t evl_get_timer_next_date(struct evl_timer *timer)
+>  {
+>         return ktime_add_ns(timer->start_date,
+> -                       timer->pexpect_ticks * ktime_to_ns(timer->interva=
+l));
+> +                       timer->consumed_ticks * ktime_to_ns(timer->interv=
+al));
+>  }
+>
+>  void __evl_init_timer(struct evl_timer *timer,
+> diff --git a/kernel/evl/clock.c b/kernel/evl/clock.c
+> index ca5422f2de3fd..e72db15cc6ca8 100644
+> --- a/kernel/evl/clock.c
+> +++ b/kernel/evl/clock.c
+> @@ -85,7 +85,7 @@ static void adjust_timer(struct evl_clock *clock,
+>                  */
+>                 div =3D ktime_divns(-diff, ktime_to_ns(period));
+>                 timer->periodic_ticks -=3D div;
+> -               timer->pexpect_ticks -=3D div;
+> +               timer->consumed_ticks -=3D div;
+>                 evl_update_timer_date(timer);
+>         }
+>
+> diff --git a/kernel/evl/timer.c b/kernel/evl/timer.c
+> index c609676eae5ba..a53a53eb3e6f9 100644
+> --- a/kernel/evl/timer.c
+> +++ b/kernel/evl/timer.c
+> @@ -160,7 +160,7 @@ void evl_start_timer(struct evl_timer *timer,
+>         if (!timeout_infinite(interval)) {
+>                 timer->interval =3D interval;
+>                 timer->start_date =3D value;
+> -               timer->pexpect_ticks =3D 0;
+> +               timer->consumed_ticks =3D 0;
+>                 timer->periodic_ticks =3D 0;
+>                 timer->status |=3D EVL_TIMER_PERIODIC;
+>         }
+> @@ -415,21 +415,59 @@ unsigned long evl_get_timer_overruns(struct evl_tim=
+er *timer)
+>         struct evl_tqueue *tq;
+>         ktime_t now, delta;
+>
+> -       now =3D evl_read_clock(timer->clock);
+> +       if (EVL_WARN_ON_ONCE(CORE, !evl_timer_is_periodic(timer)))
+> +               return 0;
+> +
+>         base =3D lock_timer_base(timer, &flags);
+> +       now =3D evl_read_clock(timer->clock);
+>
+> +       /*
+> +        * Measure the lateness with respect to the expected expiry
+> +        * date in the timeline for this timer. This ideal expiry date
+> +        * would be the start date of the timer, plus the interval
+> +        * duration times the number of ticks which were consumed so
+> +        * far. Any delay longer than the periodic interval denotes an
+> +        * overrun condition since we missed at least one tick.
+> +        */
+>         delta =3D ktime_sub(now, evl_get_timer_next_date(timer));
+>         if (likely(delta < timer->interval))
+>                 goto done;
+>
+>         overruns =3D ktime_divns(delta, ktime_to_ns(timer->interval));
+> -       timer->pexpect_ticks +=3D overruns;
+> +
+> +       /*
+> +        * Compensate for the current lateness as the timer progresses
+> +        * in the timeline, consuming all missed ticks in one gulp to
+> +        * catch up.
+> +        */
+> +       timer->consumed_ticks +=3D overruns;
+> +
+> +       /*
+> +        * We are about to re-enqueue the timer for its next expiry
+> +        * date. However, we refrain from doing so if either:
+> +        *
+> +        * - the timer was deactivated, in which case there is no
+> +        * point in planning for further expiry.
+> +        *
+> +        * - the timer is still running but not queued, which means
+> +        * that do_clock_tick() dequeued it then released the base
+> +        * lock on a remote CPU for running its handler. Since the
+> +        * timer is running and we hold that lock at the moment,
+> +        * do_clock_tick() is certainly going to either advance the
+> +        * expiry as required or shut the timer down after we drop the
+> +        * base lock. IOW, we may leave reprogramming to the core tick
+> +        * handler.
+> +        */
+>         if (!evl_timer_is_running(timer))
+>                 goto done;
+>
+> -       EVL_WARN_ON_ONCE(CORE, (timer->status &
+> -                       (EVL_TIMER_DEQUEUED|EVL_TIMER_PERIODIC))
+> -                       !=3D EVL_TIMER_PERIODIC);
+> +       if (timer->status & EVL_TIMER_DEQUEUED)
+> +               goto done;
+> +
+> +       /*
+> +        * Re-enqueue the periodic timer so that it ticks at the next
+> +        * interval boundary.
+> +        */
+>         tq =3D &base->q;
+>         evl_dequeue_timer(timer, tq);
+>         while (evl_tdate(timer) < now) {
+> @@ -439,7 +477,7 @@ unsigned long evl_get_timer_overruns(struct evl_timer=
+ *timer)
+>
+>         program_timer(timer, tq);
+>  done:
+> -       timer->pexpect_ticks++;
+> +       timer->consumed_ticks++;
+>
+>         unlock_timer_base(base, flags);
+>
+> --
+> Philippe.
