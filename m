@@ -1,36 +1,36 @@
-Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
+Received: from redirect.mail.gandi.net (relay13.mail.gandi.net [217.70.178.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBFA3361
-	for <xenomai@lists.linux.dev>; Tue, 13 Jun 2023 05:52:49 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay14.mail.gandi.net (Postfix) with ESMTPS id 4BDE31A0002
-	for <xenomai@lists.linux.dev>; Tue, 13 Jun 2023 05:52:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F70F23C6A
+	for <xenomai@lists.linux.dev>; Tue, 13 Jun 2023 17:20:09 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay13.mail.gandi.net (Postfix) with ESMTPS id CC1DE80006
+	for <xenomai@lists.linux.dev>; Tue, 13 Jun 2023 17:20:01 +0000 (UTC)
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 3FE99AC0BF5
-	for <xenomai@xenomai.org>; Tue, 13 Jun 2023 05:52:46 +0000 (UTC)
+	by spool.mail.gandi.net (Postfix) with ESMTPS id B8D3D74003C
+	for <xenomai@xenomai.org>; Tue, 13 Jun 2023 17:20:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 96FF1616B2C5;
-	Tue, 13 Jun 2023 07:52:45 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id 3E12160FB282;
+	Tue, 13 Jun 2023 19:20:00 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id 808bcTQscPhf; Tue, 13 Jun 2023 07:52:45 +0200 (CEST)
+	with ESMTP id Nst2CzrBQ3Nc; Tue, 13 Jun 2023 19:19:59 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 3150E616B2DB;
-	Tue, 13 Jun 2023 07:52:45 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id CD23D61CED10;
+	Tue, 13 Jun 2023 19:19:59 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 9d78-m0twMVo; Tue, 13 Jun 2023 07:52:45 +0200 (CEST)
+	with ESMTP id Dmx4oNkz1xgd; Tue, 13 Jun 2023 19:19:59 +0200 (CEST)
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 0E090616B2C5;
-	Tue, 13 Jun 2023 07:52:45 +0200 (CEST)
-Date: Tue, 13 Jun 2023 07:52:44 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id AE5B460FB282;
+	Tue, 13 Jun 2023 19:19:59 +0200 (CEST)
+Date: Tue, 13 Jun 2023 19:19:59 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
-To: Hongzhan Chen <hongzhan.chen@intel.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
-Message-ID: <419315969.3719613.1686635564849.JavaMail.zimbra@nod.at>
-In-Reply-To: <MN2PR11MB4285A757D474F8E0FF2AEE75F255A@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <321584983.3714817.1686565517697.JavaMail.zimbra@nod.at> <dd6b33a8-f53c-8c51-a30d-2688ddac1709@siemens.com> <1832934245.3714909.1686568547516.JavaMail.zimbra@nod.at> <MN2PR11MB4285A757D474F8E0FF2AEE75F255A@MN2PR11MB4285.namprd11.prod.outlook.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
+Message-ID: <14248715.5206787.1686676799496.JavaMail.zimbra@nod.at>
+In-Reply-To: <1832934245.3714909.1686568547516.JavaMail.zimbra@nod.at>
+References: <321584983.3714817.1686565517697.JavaMail.zimbra@nod.at> <dd6b33a8-f53c-8c51-a30d-2688ddac1709@siemens.com> <1832934245.3714909.1686568547516.JavaMail.zimbra@nod.at>
 Subject: Re: Massive variations of execution time on x86
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -43,7 +43,7 @@ Content-Transfer-Encoding: quoted-printable
 X-Originating-IP: [195.201.40.130]
 X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
 Thread-Topic: Massive variations of execution time on x86
-Thread-Index: ecxCFjAboALDcvYMCoVCc8urSYAceJq2B3qAAAFT3oAAHbkSsGPK/sza
+Thread-Index: fyQsGbKDBkEXIc1GLlvhrrt6ZOhyksETGpDv
 Received-SPF: 
 Authentication-Results: spool.mail.gandi.net;
 	dkim=none;
@@ -51,10 +51,23 @@ Authentication-Results: spool.mail.gandi.net;
 	spf=pass (spool.mail.gandi.net: domain of richard@nod.at designates 195.201.40.130 as permitted sender) smtp.mailfrom=richard@nod.at
 
 ----- Urspr=C3=BCngliche Mail -----
-> Von: "Hongzhan Chen" <hongzhan.chen@intel.com>
-> Did you try with disabling Hyper-threading?
+> Von: "richard" <richard@nod.at>
+> An: "Jan Kiszka" <jan.kiszka@siemens.com>
+> It is passive cooled but according to hardware engineers, the temperature=
+ is
+> not even close to a limit.
+>=20
+> Is comparing /sys/devices/system/cpu/cpuX/cpufreq/scaling_cur_freq and
+> scaling_max_freq the correct way to detect throttling?
+>=20
+>> Also, do you see similar variations with similar variations on the same
+>> hardware with preempt-rt (provided at least your synthetic tests are
+>> portable)?
+>=20
+> I think I can do this. But might need some time.
 
-Hyperthreading is always disabled on all x86 systems here.
+I can confirm that the variations are also observable without Xenomai/Dovet=
+ail.
 
 Thanks,
 //richard
