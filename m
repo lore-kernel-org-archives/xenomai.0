@@ -1,62 +1,35 @@
-Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9521AEAF8
-	for <xenomai@lists.linux.dev>; Thu, 15 Jun 2023 20:09:22 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay14.mail.gandi.net (Postfix) with ESMTPS id EDD561A000B
-	for <xenomai@lists.linux.dev>; Thu, 15 Jun 2023 20:09:13 +0000 (UTC)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id DD509AC19FD;
-	Thu, 15 Jun 2023 20:09:12 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 5D1EA616B2CC;
-	Thu, 15 Jun 2023 22:09:12 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id DO2xiMDvpg-S; Thu, 15 Jun 2023 22:09:12 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 0242C616B2D4;
-	Thu, 15 Jun 2023 22:09:12 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id r3DH1TrWw3NL; Thu, 15 Jun 2023 22:09:11 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id D0F71616B2CC;
-	Thu, 15 Jun 2023 22:09:11 +0200 (CEST)
-Date: Thu, 15 Jun 2023 22:09:11 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Hongzhan Chen <hongzhan.chen@intel.com>, Jan Kiszka <jan.kiszka@siemens.com>, 
-	xenomai <xenomai@xenomai.org>
-Message-ID: <471825413.5689772.1686859751567.JavaMail.zimbra@nod.at>
-In-Reply-To: <87r0qdcbwc.fsf@xenomai.org>
-References: <321584983.3714817.1686565517697.JavaMail.zimbra@nod.at> <dd6b33a8-f53c-8c51-a30d-2688ddac1709@siemens.com> <1832934245.3714909.1686568547516.JavaMail.zimbra@nod.at> <14248715.5206787.1686676799496.JavaMail.zimbra@nod.at> <MN2PR11MB42852073A335361100FF8948F25AA@MN2PR11MB4285.namprd11.prod.outlook.com> <116129980.5299274.1686733935108.JavaMail.zimbra@nod.at> <87r0qdcbwc.fsf@xenomai.org>
-Subject: Re: Massive variations of execution time on x86
+Received: from m1561.mail.126.com (m1561.mail.126.com [220.181.15.61])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5812A1851
+	for <xenomai@lists.linux.dev>; Tue, 20 Jun 2023 07:02:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=uNfwXgbIVJZJGmapTI4DdWrZXdTu0WLgjIaNS/csfzA=; b=k
+	dPv0MEHdn5fKCNVn2gYL3YiQnIad9ud+r9u9E2Mz9TAQDXXflE7e/cwr3+hcXTFs
+	nOGoTAsokHULdpUWDlZvggNkoKd6NkueUaMex7uFpTv5HFm4Jr+zm0675/GGY+Og
+	3CAVKfV98BmpJ1Y9HCof8PpgMEi70JmxjrI5vWw7wc=
+Received: from yxianyao$126.com ( [103.161.254.5] ) by ajax-webmail-wmsvr61
+ (Coremail) ; Tue, 20 Jun 2023 14:46:46 +0800 (CST)
+X-Originating-IP: [103.161.254.5]
+Date: Tue, 20 Jun 2023 14:46:46 +0800 (CST)
+From: "Yao Yongxian" <yxianyao@126.com>
+To: xenomai@lists.linux.dev
+Subject: unsubscribe
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 126com
+X-NTES-SC: AL_QuyTBf6fvE4r4CmYZukWmEsQju45WMW0uPwu3YZTOJs0oyrPxyc6XV9mF1Du0sOwGyqPkDiJfAhrwcF3UrBWb4ExJ3yrPyb5wPkGluTZZjqE
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: Massive variations of execution time on x86
-Thread-Index: 5Q8ybtva3ID/zlNzu0obs9H1Xt2LMg==
-Received-SPF: 
-Authentication-Results: spool.mail.gandi.net;
-	dkim=none;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of richard@nod.at designates 195.201.40.130 as permitted sender) smtp.mailfrom=richard@nod.at
+Message-ID: <1358d69f.45df.188d78e4b79.Coremail.yxianyao@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:PcqowABXLMpXS5Fk8DowAA--.23032W
+X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbiHBaUs1pEKQMoPgACsN
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Philippe Gerum" <rpm@xenomai.org>
-> Any chance an NMI-based Perf event handler might be causing this?
-> (nmi_watchdog=3D0)
-
-Hm, I did check "NMI" in /proc/interrupts, the numbers don't raise.
-
-Thanks,
-//richard
+CnVuc3Vic2NyaWJl
