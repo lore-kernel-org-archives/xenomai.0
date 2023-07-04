@@ -1,189 +1,149 @@
-Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABC76A2C
-	for <xenomai@lists.linux.dev>; Tue,  4 Jul 2023 15:03:18 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 0BD87200007
-	for <xenomai@lists.linux.dev>; Tue,  4 Jul 2023 15:03:16 +0000 (UTC)
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on0603.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1f::603])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id EC92C941973
-	for <xenomai@xenomai.org>; Tue,  4 Jul 2023 15:03:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LgeD879TA+r5qt722T+fM2A+U0s8T/WukWEQFEO/bwbSb2ZwNi3mHpN7bYyohNeZ1zb2lw1S6mfl2OVPbdC/71w2n2Sk5jh1ZUkqRMlFpPTytWecYn4EJ5dU8w1ylFmsHye6WEcEmGcksoMahyN/bGQT8FA7YnWGsioS13D1rhqbvHzeuKJemKthJwr366uz0G0oruvf7nHLkSF/FESQ0tGko51r1iJKcQaw4tyj/51+Ls30HixnNrQORNPbttgtdiDPcscF/ohvoYUK4fxgQeDJ9Npn6Me9k8lbOXJ0bqhGddhX1q8y1cHLSgeqGshLfxr/P8V2WHCo1HqxRUqAeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lbd7JYnde74fx/oRr4n+e2HLdSg1NtRiwHKb7dhrVTQ=;
- b=Gd2D/48OcOtzBzW44PqfpiEZLVn/xrz1dSLZOZJ6ZZm6sNXlHL8VeiPzN/AWRb8Ct082J4YR+dowHYXq8HTKXC17JhWGtbc+Tlwozaf0RCy42L9RxiNmRDpvwPqjTz9me+IKXXOiUi4Z9F5dchFz+cWzzDs0j83ofO7v432gi0jl1xEnqIcWJTQm2yo1OODa9pqUK3ss2l9ovi0EfHaTeCkWVXshNStL1JybFmCgZJYefQ8ClRc6z8D31oDtX3Qjx0zUIYy7enCfRcrkEntO4GjL5LiEA8esmwi3P3UowqnQWyqYnnKX/GNfTUDMX9i2K73Y3mGMPkPtNC62vW2Mkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lbd7JYnde74fx/oRr4n+e2HLdSg1NtRiwHKb7dhrVTQ=;
- b=JmbOEgLMpFt6eKCVOdl48dFSQoVWrdds4Z3v2HuyUSPW66PjP8+CsMqNzB1F+sVUsXLdOAZdQSAuZ0/GMN9SmvWVIZGSQmQOUp3+juCKuP3Cc/z2IvIAZCzXQZKoSCaE+3mswVUa5vK0p1U7gve4D6AKGy3f2OKtPFYS0xdxoJdIZ/apVUJP5nY0iVVxedXMUBc6t9NwkiUcBSVlTMDxFldXN2bNNk1KhztUHUa63973piXYpOwq4vRT637uyhq0c5yI+nhNsBm4Pv8SaQS2DjB23uYHrfuaayR6+4OVYooa1ZJiIXNHwDD1R1vyHG5yj7WQpY5Z3tE+DfqnjBuP+w==
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB5702.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:315::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Tue, 4 Jul
- 2023 15:03:13 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::53c2:174a:8b13:ce94]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::53c2:174a:8b13:ce94%3]) with mapi id 15.20.6544.024; Tue, 4 Jul 2023
- 15:03:13 +0000
-Message-ID: <40a81c94-2d46-930a-a087-7b3a75a204d1@siemens.com>
-Date: Tue, 4 Jul 2023 17:03:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v2] Make macb/gem RT driver to be built against linux >=
- 5.0 kernels
-Content-Language: en-US
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
-References: <3b7514-64a41880-35-28cbfc80@10274948>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <3b7514-64a41880-35-28cbfc80@10274948>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR2P281CA0100.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9c::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4CAD6AA5
+	for <xenomai@lists.linux.dev>; Tue,  4 Jul 2023 16:52:51 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 28CB7100002
+	for <xenomai@lists.linux.dev>; Tue,  4 Jul 2023 16:52:47 +0000 (UTC)
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 24ADB7803DE
+	for <xenomai@xenomai.org>; Tue,  4 Jul 2023 16:52:46 +0000 (UTC)
+Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-4fb87828386so1861633e87.1
+        for <xenomai@xenomai.org>; Tue, 04 Jul 2023 09:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1688489565; x=1691081565;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=IFs/m6gAe06NPhDA2pChf//baW/c2RasXp0O9gIAX1w=;
+        b=B2JBa1pXjWnxKueHrp73WI64DeW5U240pKiNcRtngTI06IsXtkZ6LO2BxsezgRsSyv
+         5n5pPybCltVD0Eb/qQW9adAiWDkhtOxLBrvkEd+An7IPnuSmUw0kyPFwAn4S//Ohp342
+         4TZHrgRL8s6TmYIxCoDcOmaG782X6tU8BgB/KrHNjd1ir+X2ar5ulyEZUVjswSFb7D5L
+         3FrsWsqhOLpYf/1Q8e2CasF5HUtJrjEnWB4gjmKGSGVagTpA3fClfPUP1EgsEuT2tlWU
+         E6/jGWYGMgtU11jaMEaZ2Q25GcMnzhwBUt/wAuLEeLYxbKeUtkpsLDPOS1/MvBY+gF+p
+         5SDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688489565; x=1691081565;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IFs/m6gAe06NPhDA2pChf//baW/c2RasXp0O9gIAX1w=;
+        b=U5e6ZCWWCpouXgbYMS/gRJGQ349fDU3XASLWj282WX0YSWIvNHQO6q9tigOWV/f/oj
+         gImiZYBLvFdoXNMilc9kvODlgjEPOzJYpKKJMq/h1SjXd/6eUY08yz7ssUJNPiuN4rq+
+         kTNUiMVvuNfTMvoEZLhWFiD2KD5q4pGUpzBIvZ3vUVLWqWTvnNCg4uk9/TOey9W5jCRf
+         1FrEjF8QkYeRB7lFhJb3niRKei5etHqG0nx7j2hXyj/rYXjcgXewy0vQdQ85yK3hSsCu
+         /qgCuGc1Bpv2LvzGq9p1Rdu7mwMpRHoJqHoN1lYecah9zHeLuVqvbKXZ0928glzAz9cM
+         2gHw==
+X-Gm-Message-State: ABy/qLbrDxnT6ojb3Q4pjya51MFFTCUlRabLXgmP2VzwGZDUe2aruLaf
+	oIvuiJS3xDDo88gT+vUcxSwk+wY++vr//ZR+3dQvjgBkcx4cGI4=
+X-Google-Smtp-Source: APBJJlEJowyeSKKwrAURVJIYtfQrFaxZlIszehXkGMeHQh4ECRB3UZcofppEHHPl7yxAYdQL5eg+aCG5VG4f5F2qkgg=
+X-Received: by 2002:ac2:4841:0:b0:4fb:963f:d6e3 with SMTP id
+ 1-20020ac24841000000b004fb963fd6e3mr8035375lfy.1.1688489564983; Tue, 04 Jul
+ 2023 09:52:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB5702:EE_
-X-MS-Office365-Filtering-Correlation-Id: 56ce546d-1f45-4230-f1f1-08db7c9fca04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jRh+E9P4/Fm8KN3rSXk37lu3urWL7xrTuQyJIB1B0NoGjZmu92f01LHD1dS6yOoCEDEmh7JKGqNmkRxeVT5zu49WyUUVjktmzDxzzb5BMkW9x9gm+LnR7uKRgtakBb7KRhbCS0s9uIXkXm3mAb0PAVrEOLim7LCRCO/YlokCUwgqrHAuJqMc3YywL0/2aQUccFSEViUhO5kEyObggZU1EoA2GCFEK3vsq2Q3rt2vkFi8R10JE6vJ4QkA43KjXCmV8mO4W6vjtdi35G/PxXbsuY389e94TkGWPYmsxQjrhFj95eKzKDtAPacdidb/tqWSbff+vrD5slYOiWW+X+stSq0nE6udSI9nhpsx7Tl3lJbOqxsL41NFZNSZ3F039jjwRFr9w23rGZBqucSRanKmv845MizQQbuI9mX0aHzOd5bTxPWm2A4tB2nQPUPNi4rwF2JN1/iz2ssQLknhhRttvRZiLJamf3pbm7g0TFtqkmo+mwgIkUePBBL5cDTUYiv782ZOaI5tCkuIh9RLJL3ivU0bBQGJDCS6mrci41ZitG5RVukOu6Ev22lyJpFSjlETlMjgCreTZ5nIkWKWcrrB+qQL5n3ysf0wR4KH/vIy2yZIWLbugrlaLGiDxFzTVcZJ4xmmain2LSkoWMBQCGBsTA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(451199021)(2906002)(41300700001)(5660300002)(8676002)(8936002)(44832011)(36756003)(86362001)(31696002)(186003)(2616005)(82960400001)(478600001)(31686004)(26005)(6512007)(6506007)(6486002)(316002)(6916009)(4326008)(66476007)(66946007)(66556008)(53546011)(38100700002)(66574015)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZW0xZ0ZEMElkNWZBSHZSem04Zktad0Vpc1V3QTdmMklPSkxPOXBLSlErSzlx?=
- =?utf-8?B?Q0VSdlVpL3JRU01FamtVVmd4K2hLd0tveVo1S2h2d3NneXhFUE0wY3ZYVzMr?=
- =?utf-8?B?WWhla05jMy9sMFA2b09Xa3lTdXl2dkpYWVI2NldvV1VsdXYwM2gyRGNMczNp?=
- =?utf-8?B?c1E2L2lQQXQrQ04ydVZXcmNuRmtQbis0ZXNnT1BFT0pDSVk4T1dLSldhVFQx?=
- =?utf-8?B?eXI3eEJSV2NJTXNod2dmMllDVElTeGorQzNjVmMra0VKODNvakZySnV0OEZa?=
- =?utf-8?B?N1NPUE5Tc1N0bFNQMk9MalB4elY2Vlp4MU1TOUxmTm9ub1l5WkVyT1MvaFZS?=
- =?utf-8?B?N3NhZkxsbjlEUnF3Q1dwemZuczZYdnQ1d1JVanQ0M0xmTG1wangwSUl4SFZo?=
- =?utf-8?B?Q3d1Mlh1QVd2cVFFQzFubEtIenNhck1VRnIyTTFHWnQ5TXRQQUVKNXFmNDlo?=
- =?utf-8?B?aWtLMTlrMjU4dW50RjdZN2FyU1NJWUZCRVhjN0xzM1FxT0l2VXQ4WWszMEZo?=
- =?utf-8?B?LzdROUVCMkJ5b1Y1bGdTd212Q05NL0FGNmxpckxpNGtKWjZ1bTNWa0dVVHBt?=
- =?utf-8?B?VE1zTXk1OVBUUzJtamN3Sk5nbTdCeGFYS0M2SmlpNERBUEs3ZnJ3WFljMmRK?=
- =?utf-8?B?ZnNiTFZHbmVnMVMzRm5pMHBFMnIrWHpycWIxTVEwdVlBZ0E2REV4MmRGVkN2?=
- =?utf-8?B?UThET2VPY1pQM3h6THBOMG9TektzU2lKb1p5eDRwLzNDSnlibGw4YTI3OXZV?=
- =?utf-8?B?UTFKZkc3UXE0clFZcVRvdjU2Z2kwRkVkRkUzc0MvS3RXWDVwVUtnT1VodDNy?=
- =?utf-8?B?Yk9LL292K2lpWTFZUk5OTnRUNUM4RkVwbXhHOHBoYmxtclFGdkdMY01OSnR0?=
- =?utf-8?B?dzl4a1Y0a2RPUWo3ZmRBbktZOGtCNG9VOEZSMWNuZ083R2dSeG9hY3NCNk9u?=
- =?utf-8?B?bi9aVEZDMFlpNTFjQXZLbHZlTmhlRDgwSktCcFRMRS8zUGtkRXlsM3ZZZ1Yz?=
- =?utf-8?B?eGt3LytBYy80WTJsdTh4SDRxT0liTEVLZFp0RHdKdlhlTGxoUWRwRTJHMFlJ?=
- =?utf-8?B?ak15RkFqOWVSL2JqSDUwRjQ0VWt4ZFpoeGk5R2oyY21tQjI3QUtXNFozaGNj?=
- =?utf-8?B?dU1JWTNXUU1nYTFlalVNQ0o1OGJRRkFuSFlacm9nY0RYTkRPeHZvSzAyTU1m?=
- =?utf-8?B?MHFJSnhhMVErYVdKSTRmNitrWit2MTFVNVFMdDVSdUp2THpkVmdtSXQ2OGhu?=
- =?utf-8?B?UTd5dkhHTWt6NGQ1amJSTmhRak51SHQ5ZnN4Y1Y3SlhXRjVvcUtwQ3ZMakZp?=
- =?utf-8?B?QWNYTHpnSHJhbzM2UFAvRlovZEwxZEQ4SUxOei9Cam82MEpDS3R6dTYxOVpM?=
- =?utf-8?B?WHpuRHdWS0JFdE9TQVREQTZDK3Z6d2Fwa29hY2JmZEI5VGJHWG5IdVVIRkVH?=
- =?utf-8?B?MFJRZzF0RjZRZDMzdkZUQ3VBVlBXR2tBczhKbTdHazZjMXFSRWRvY2xjUEFt?=
- =?utf-8?B?dkdNYnpOKzJwMERxN2IwVi82QmpzSkgvYkw1MXZtbFVFa2lTcndPRDdTakJF?=
- =?utf-8?B?YWUwR0VJREgyWUlHdldkSTVjbzBEdElKVHNxZzlBNHZ3a1BUeUZ1ZjlYbnla?=
- =?utf-8?B?aGRBZHNjVHRHWUFLbFgwdGdhd2pXaG1PaE5neU9VWmxqMHFvZjBCTGRodU5M?=
- =?utf-8?B?WnpPTVhzOUFPNmxlTTUzdVZZL3VFRlpVcXV1STNlTUtlTUgzb2VqN3dPd2My?=
- =?utf-8?B?Ukw2ZHpiQmNFUkNEbHJabFM5clhpWkUrYXFOUGVkNEVKb3c2MXBpZlNsYW1P?=
- =?utf-8?B?ZCtoVjFOdjNObVZOcnRBdThjTllvQkE4V3BBUWoxL1MzUm1HNnA5L1d0cUdD?=
- =?utf-8?B?RWt5b3U5S2Q5RGR2cThzRnVmQTFTSE1aRGMyTjRQVlhwc1N5OWRKUDFLRHA3?=
- =?utf-8?B?K2cxVmVNS2F3M0JTcXRKajhxTldoenNrNEx6UXMycmhBNE1BRklXaFhYMHN0?=
- =?utf-8?B?OTlOVDRzbVZlNkFqYWFzdkZjZlJQSkd4emI2dm5wS2pySmtFTUlXWUR1elRT?=
- =?utf-8?B?eEZQdXN1T1dtQzBzMXZRSjB4QzJ0UHRaMFc1S1lobE00ZWVDOVordW91WDYr?=
- =?utf-8?B?YTFMd3FTaDZLN0lncDlha24zNkZsT1Npck9pQzJJRU1ja0JROTF5cGxFYXZ4?=
- =?utf-8?B?enc9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56ce546d-1f45-4230-f1f1-08db7c9fca04
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2023 15:03:13.4945
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QOEupr+suKqTXRgJoO5QjfkbJH343zGa2JX1gxCft4BqVJ+rLa5rOpxqkg4RM9mlaoeYEbfnf43yxH94ha7xiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB5702
+From: John Ho <johnho26@gmail.com>
+Date: Tue, 4 Jul 2023 18:52:34 +0200
+Message-ID: <CAMjL99Lk-QT=vev=3QeeUAjHzfP7X-fCRwJM18OkvTR1V5SRYQ@mail.gmail.com>
+Subject: Invalid Opcode
+To: xenomai@xenomai.org
+Content-Type: text/plain; charset="UTF-8"
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=selector2 header.b=JmbOEgLM;
-	dmarc=pass (policy=reject) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of jan.kiszka@siemens.com designates 2a01:111:f400:fe1f::603 as permitted sender) smtp.mailfrom=jan.kiszka@siemens.com
+	dkim=pass header.d=gmail.com header.s=20221208 header.b=B2JBa1pX;
+	dmarc=pass (policy=none) header.from=gmail.com;
+	spf=pass (spool.mail.gandi.net: domain of johnho26@gmail.com designates 2a00:1450:4864:20::12c as permitted sender) smtp.mailfrom=johnho26@gmail.com
 
-On 04.07.23 15:02, François Legal wrote:
-> Le Mardi, Juillet 04, 2023 14:46 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->  
->> On 04.07.23 14:24, François Legal wrote:
->>> Le Mardi, Juillet 04, 2023 11:25 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->>>  
->>>> On 29.06.23 22:04, François Legal wrote:
->>>>> PHY layer in upstream has changed a little after 5.0 in the way autonegociation
->>>>> capabilities are encoded.
->>>>> MACB platform data tend to disappear after 5.2 upstream.
->>>>> Plus, ioctl prototype has changed in xenomai. RTMACB driver does not build
->>>>> anymore.
->>>>>
->>>>> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
->>>>> ---
->>>>>  kernel/drivers/net/drivers/macb.c    | 60 ++++++++++++++++++----------
->>>>>  kernel/drivers/net/drivers/rt_macb.h |  2 +-
->>>>>  2 files changed, 40 insertions(+), 22 deletions(-)
->>>>>
->>>>> diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
->>>>> index 77957d906..0648afa3b 100644
->>>>> --- a/kernel/drivers/net/drivers/macb.c
->>>>> +++ b/kernel/drivers/net/drivers/macb.c
->>>>> @@ -132,6 +132,7 @@ void rtmacb_get_hwaddr(struct macb *bp)
->>>>>  		bottom = macb_or_gem_readl(bp, SA1B + i * 8);
->>>>>  		top = macb_or_gem_readl(bp, SA1T + i * 8);
->>>>>  
->>>>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
->>>>
->>>> Thanks for the patch, but master does not support kernels older than
->>>> 5.10 (dovetail) anymore.
->>>>
->>>> Is this patch needed for stable/v3.2.x or can it wait for v3.3? In any
->>>> case, we need a master patch first, then we can discuss whether to
->>>> backport it as well.
->>>
->>> Well, I started patching 3.2 then submitted it against master. I can submit for 3.2 as well. I believe this is my target version.
->>>
->>>>
->>>> What we also need is enabling of the driver for CI to catch such issues
->>>> earlier. See .gitlab-ci.yml and all those driver configs there.
->>>
->>> I don't really know about this.
->>> Do you want me to submit a patch for this file ?
->>> Would it be something like 
->>>      - ./scripts/config -m XENO_DRIVERS_NET_DRV_E1000_NEW
->>>      - ./scripts/config -m XENO_DRIVERS_NET_DRV_RT2500
->>> +    - ./scripts/config -m XENO_DRIVERS_NET_DRV_MACB
->>>      - ./scripts/config -m XENO_DRIVERS_NET_FEC
->>>      - ./scripts/config -m XENO_DRIVERS_NET_ADDON_RTCAP
->>>
->>
->> Yes, if that is sufficient to actually build it (check if it has
->> dependencies that may not be fulfilled in a defconfig).
-> 
-> Thing is, XENO_DRIVERS_NET_DRV_MACB depends on ARM. I'm not sure how this can be achieved in your CI build system
+Hi all,
+I have encountered an invalid Opcode while running some of my stuff,
+and I have no idea where this is coming from, and I would like to ask
+for some help.
 
-Yes, we build for multiple arch, so the driver should at least be tested
-via the arm-* targets.
+I have assumed that adding Nopti would help eliminate this invalid
+opcode, but it has not helped.
 
-Jan
+[  100.456173] kernel BUG at kernel/xenomai/synch.c:968!
+[  100.456183] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[  100.456191] CPU: 0 PID: 2255 Comm: OrbRunner Tainted: G     U
+5.4.198-neuron-1.6 #1
+[  100.456194] Hardware name: _ _/, BIOS N3FCPDU1 03/22/2023
+[  100.456197] I-pipe domain: Linux
+[  100.456206] RIP: 0010:xnsynch_requeue_sleeper+0x16/0x1d0
+[  100.456210] Code: f6 4c 89 cf 48 89 e5 e8 98 fe ff ff 5d c3 c3 0f
+1f 44 00 00 e8 9b c9 a1 00 55 48 8b 97 40 12 00 00 48 89 e5 f6 42 20
+01 75 02 <0f> 0b 48 8b 87 18 12 00 00 48 8d 72 28 48 8b 8f 10 12 00 00
+4c 8d
+[  100.456214] RSP: 0018:ffffb1d8414ebd28 EFLAGS: 00010246
+[  100.456218] RAX: 0000000000000000 RBX: ffffb1d840e96240 RCX: 0000000000000002
+[  100.456221] RDX: ffffffff84f48ce0 RSI: ffffb1d8414ebd0c RDI: ffffb1d840e96240
+[  100.456223] RBP: ffffb1d8414ebd28 R08: ffffb1d840e91a10 R09: ffffb1d840e91a30
+[  100.456226] R10: 0000000080000092 R11: 0000000080000092 R12: ffffb1d840e91a08
+[  100.456229] R13: ffffb1d840e8fa40 R14: ffffb1d843880c80 R15: 00000000000000c5
+[  100.456232] FS:  00007f1b57e4ab00(0000) GS:ffff95360c000000(0000)
+knlGS:0000000000000000
+[  100.456235] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  100.456238] CR2: 00007f94fc6b6d68 CR3: 00000003de2be006 CR4: 00000000003606b0
+[  100.456241] Call Trace:
+[  100.456248]  inherit_thread_priority+0x2d/0x40
+[  100.456254]  xnsynch_acquire+0x5b7/0x810
+[  100.456260]  ? __switch_to_asm+0x40/0x70
+[  100.456267]  __cobalt_mutex_acquire_unchecked+0x55/0x80
+[  100.456271]  __cobalt_mutex_timedlock_break+0x2cb/0x390
+[  100.456277]  ? CoBaLt_mutex_trylock+0x200/0x200
+[  100.456281]  CoBaLt_mutex_lock+0x12/0x20
+[  100.456286]  handle_root_syscall+0x15b/0x2e0
+[  100.456291]  ipipe_syscall_hook+0x38/0x50
+[  100.456296]  __ipipe_notify_syscall+0xb4/0x190
+[  100.456301]  ipipe_handle_syscall+0x7f/0xb0
+[  100.456306]  do_syscall_64+0x2c/0xe0
+[  100.456312]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  100.456315] RIP: 0033:0x7f1b651cc7c7
+[  100.456319] Code: 43 08 75 77 48 8b 15 98 67 21 00 48 03 02 8b 00
+25 ff ff ff 5f 39 e8 74 9a be 1d 00 00 10 0f 1f 44 00 00 48 89 df 89
+f0 0f 05 <83> f8 fc 89 c2 74 f2 85 c0 75 07 c7 43 04 01 00 00 00 48 83
+c4 18
+[  100.456322] RSP: 002b:00007f1b57e49f60 EFLAGS: 00000293 ORIG_RAX:
+000000001000001d
+[  100.456326] RAX: ffffffffffffffda RBX: 00007f1b67690bd8 RCX: 00007f1b651cc7c7
+[  100.456329] RDX: 00007f1b653e41b0 RSI: 000000001000001d RDI: 00007f1b67690bd8
+[  100.456331] RBP: 00000000000000c5 R08: 0000000000000009 R09: 0000556930a82a90
+[  100.456334] R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
+[  100.456337] R13: 00007f1b653e420c R14: 00007f1b67690bd8 R15: 00007f1b57e4a240
+[  100.456343] Modules linked in: nls_iso8859_1 snd_hda_codec_hdmi
+snd_hda_codec_realtek snd_hda_codec_generic ledtrig_audio joydev
+input_leds snd_hda_intel snd_intel_nhlt snd_hda_codec snd_hda_core
+snd_hwdep snd_pcm hid_generic mei_hdcp snd_seq_midi snd_seq_midi_event
+crct10dif_pclmul i915 snd_rawmidi binfmt_misc crc32_pclmul
+ghash_clmulni_intel snd_seq aesni_intel crypto_simd cdc_ether cryptd
+usbnet drm_kms_helper glue_helper snd_seq_device r8152 snd_timer mii
+drm usbhid i2c_algo_bit wmi_bmof serio_raw snd hid fb_sys_fops
+syscopyarea soundcore mei_me sysfillrect mei sysimgblt acpi_tad
+sch_fq_codel parport_pc ppdev lp parport ip_tables x_tables autofs4
+ahci psmouse e1000e igc libahci wmi pinctrl_cannonlake pinctrl_intel
+video
+[  100.456390] ---[ end trace 7997569d11a0d891 ]---
+[  100.456396] RIP: 0010:xnsynch_requeue_sleeper+0x16/0x1d0
+[  100.456399] Code: f6 4c 89 cf 48 89 e5 e8 98 fe ff ff 5d c3 c3 0f
+1f 44 00 00 e8 9b c9 a1 00 55 48 8b 97 40 12 00 00 48 89 e5 f6 42 20
+01 75 02 <0f> 0b 48 8b 87 18 12 00 00 48 8d 72 28 48 8b 8f 10 12 00 00
+4c 8d
+[  100.456402] RSP: 0018:ffffb1d8414ebd28 EFLAGS: 00010246
+[  100.456406] RAX: 0000000000000000 RBX: ffffb1d840e96240 RCX: 0000000000000002
+[  100.456408] RDX: ffffffff84f48ce0 RSI: ffffb1d8414ebd0c RDI: ffffb1d840e96240
+[  100.456411] RBP: ffffb1d8414ebd28 R08: ffffb1d840e91a10 R09: ffffb1d840e91a30
+[  100.456414] R10: 0000000080000092 R11: 0000000080000092 R12: ffffb1d840e91a08
+[  100.456417] R13: ffffb1d840e8fa40 R14: ffffb1d843880c80 R15: 00000000000000c5
+[  100.456420] FS:  00007f1b57e4ab00(0000) GS:ffff95360c000000(0000)
+knlGS:0000000000000000
+[  100.456423] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  100.456426] CR2: 00007f94fc6b6d68 CR3: 00000003de2be006 CR4: 00000000003606b0
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+May I know if there is anything I can do to help resolve this, or can
+I get a suggestion on this issue, I have been trying to resolve this
+for the past few days. This has been an issue after switching from
+xenomai 3.1 to 3.2.1 #eedf4ffe3
 
+yours sincerely,
+John
