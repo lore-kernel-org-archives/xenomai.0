@@ -1,807 +1,142 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2067.outbound.protection.outlook.com [40.107.104.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41E51877
-	for <xenomai@lists.linux.dev>; Wed,  5 Jul 2023 06:48:39 +0000 (UTC)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202307050638245ff1ac941263d6f1ee
-        for <xenomai@lists.linux.dev>;
-        Wed, 05 Jul 2023 08:38:24 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=t9E/C15kyQeVqrK1LqQhwoLJdXcAbkzWDDFwc3DF77A=;
- b=JkXgKynszh+lBoL7779y7pCtjSQ3jmrsW/TT/IBGG9bsLp/VK3iPM6b5+jqWXWKqnTCuNh
- v6N9DNtF+K7c/id60EqlfUU8NHkVpmeSwgPGSldIog7I9e+q6H0vStVnhEq9uzTJeFPnrw0f
- +636LlU4LE9/TNLz1Hx8/s1m3wvu8=;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 05 Jul 2023 08:38:23 +0200
-Subject: [PATCH 01/12] y2038: cobalt: Introduce sched_param_ex64 and use it
- internally
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BAAED2
+	for <xenomai@lists.linux.dev>; Wed,  5 Jul 2023 06:52:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GOYbZTPOHBB57FyxTShgEV3d5WmAuupfYoh+Z3CQoUMOx1pC+WReWRbGWM+xdXtyJKAx6aRZ1DONjkeOfQTmzyjg8w26CIqeKfEG3yylcPAg+FQMTbnHPRcsSJxydOF35qwlQqm7C8xUUKyJkoI06QBq9rL64f4PX9/o4g42GK3N1GK7JS/OV/UFFl34iTaD/r/5sGBlWvw03Z4lKDisAWmeZ59MQ/az1JeUPRaNGv8Uj+ppfIiWijVEkXiDeq7ViyRydEWG9oYZAAjgOeB/0pOri7klpAkS1wwnb7p9qT9RraAQnA+rOwjFGuExCg1mT7K9DcnVZffQcOXRe9vSfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/5kSfUh/SNEubE4gU5itgJChhs5/t0tsj5GX71+SbO0=;
+ b=V9TfH1BYCb9GnZwpXWvHw4RxI93P6AaY+avSNdpL2ZjZNAwNkuZeScSyA/KjWRrLcrLp12WWKk6K0gpVzXLNZi9tbDnNzf5WiWq35hjHCySNuTkinWSsPV9eqj9UlEkOFM11sOPA3SXLFdgpbliKCTptezPOnRKQUiyxh3JeLKDp28wRoiI4mGOdqRQ9F8MPQw7bfeDjWrpkt9Vy+M5CqTGQasKo9f18IyAi3047NdAAxl+sLfMbtJNfwKUnGIxSJDU/I9MEZcui35q1kk5kqXmyPf3y8WrTV9pucDRdAwkz6J0VaG4BUBIi7dE2wEAEGLXAx2IQq1Mjv0O/DP1Y4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/5kSfUh/SNEubE4gU5itgJChhs5/t0tsj5GX71+SbO0=;
+ b=mHBLdUh/0cTIdcOAb1bFySkCSYf91fg64y/yMLsMgixxgAnvtJHbu6Jia1J9/wI/+6q8Pnzz0s5q3pfLtPDFu8l6AhAgSrlZZTPsYueL8kajZMOHS/KySmhOVOS0zi8AZmVvcZlHBfwfqC+aKzMdqiaWuSUB//WIqKY1RzT5DHu0hgzuAx56qNHuzPkE5OiTCRy8rBN6WFh3VfE2tw7KzJWQBePBQ7nykHWzZ/O4aFPgadY8flaBp8+pl72i+xobnj6a3sLUondy9NuXkzVSY11CBN3IrgZfiC0Qy+7WO+m4eX3tIolH9+xFuhGUYxS0puFmBbipbCIIPuuPTfawJA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by DU0PR10MB5631.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:319::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Wed, 5 Jul
+ 2023 06:52:16 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::53c2:174a:8b13:ce94]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::53c2:174a:8b13:ce94%3]) with mapi id 15.20.6565.016; Wed, 5 Jul 2023
+ 06:52:16 +0000
+Message-ID: <bac774aa-a722-8ba6-d0ab-efca68e3559e@siemens.com>
+Date: Wed, 5 Jul 2023 08:52:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: dovetail kernel build fail on 6.1
+Content-Language: en-US
+To: yo sang <stlfatboy@hotmail.com>,
+ "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+References: <DM6PR14MB38719DD14CE4CBF6F612C036A32FA@DM6PR14MB3871.namprd14.prod.outlook.com>
+ <DM6PR14MB3871F74C7C44DB95CAA1C6C0A32FA@DM6PR14MB3871.namprd14.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <DM6PR14MB3871F74C7C44DB95CAA1C6C0A32FA@DM6PR14MB3871.namprd14.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR0P281CA0210.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ad::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230630-florian-y2038-part-four-upstreaming-v1-1-604a089542c2@siemens.com>
-References: <20230630-florian-y2038-part-four-upstreaming-v1-0-604a089542c2@siemens.com>
-In-Reply-To: <20230630-florian-y2038-part-four-upstreaming-v1-0-604a089542c2@siemens.com>
-To: jan.kiszka@siemens.com, xenomai@lists.linux.dev
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB5631:EE_
+X-MS-Office365-Filtering-Correlation-Id: 70d2e6c1-4510-4e8c-cc3a-08db7d245e38
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	U0Hipl39PadJufT1HaSszbqwTNlZmjbLmetYTVzmxWF6Y6wBVX7PfUwgJkq/Y4oR/xqzbsWyfg/pjtMTKCm5tFCIr8TFIUrWygjllFXM5SbUvZgGvSsfj8AZL3UDecAuoEL8r/0cNQl93+bRhgtgmX8VkWF+W082gok1FyWvLL7PWlivHqKAjr3vbSilifuhOcbNUqUWSe8DcH/DqGvGKjQfmlMHo0tzoTeHbRE/hmZsDOhhtohKcCtHhfevDmLMIh9dWUi3UgpfOcFLunQYhWcIVnmgT3EmB3so/SHF+gsqs5nljRN3FPaD0ETBXxr6MW4P1oOrWZPDMbp27+VuvJq+hHGRsaPtk1+2CC3CLUuKCrRFdoNjZsFN5Z/I5oyon8W0WGzb9SyiuwmgFmqJzCguVPHGTNFmXyLRaFbfgey49M2WBg90pFcPmtXJW2nF5BW1gXJZNDc1Q8yi18uPJRvIWyj29sH4Y+P+QlaYhMAmHqds7iys1Bt3yglzYUNKQEHyrSMDYM95ao3QOBm9KoRpl2H5edmjryqKGLHqUHOK9EKZ1+NYBepDi2H9DQQhD8cg8Sa0zW6QCvN8bI5Th0WG+zGjowXHbI8ir+A2/6lJNgy05h9C7IuiijV5GZMbsXb7g58ks8yQpF+6kDFf7Q==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(376002)(396003)(136003)(346002)(451199021)(478600001)(83380400001)(6666004)(6512007)(86362001)(31696002)(6486002)(66946007)(82960400001)(6506007)(316002)(38100700002)(26005)(186003)(53546011)(66556008)(31686004)(66476007)(110136005)(2616005)(8936002)(8676002)(44832011)(2906002)(41300700001)(5660300002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?NjdBdmgzc0laT2pacGk4cTR2TVJETmFZTERkcG9lMGFlR0JqeFlmZlBQcHlL?=
+ =?utf-8?B?N3hQZmxBNjBoeEh0NU1WYlFOeklUUUFpazZFc2dFaytIV3RUQTBHN3l6d1Br?=
+ =?utf-8?B?czlSUFhydHZ1UFFWdGRWa0RlVTlmSHZ3cDRteVBZZEpIdXdRVWQ2VVJRcy93?=
+ =?utf-8?B?U1V3K3dUS1YxK2JOZXU1aU9NN0xXYkVPV0R4QVJHN21UMkNaRjZ5VEVvNHFp?=
+ =?utf-8?B?Rm9SSVkwSVFoRUNkNlVBNjBTYklaU3Z3ZXBiREErT1BtQkdONU12QVdiUHUy?=
+ =?utf-8?B?OTFnMGJiU2hQTFUxeFc1VkZJQmJxaWJVMENwWncwbEhDMEV3RTNPNUl0dm14?=
+ =?utf-8?B?VnJaRi9XMzRNVCtveXNER3djeFdDWnRLNlh5c3JyMEdvT0g2M3EzT2dwL0F2?=
+ =?utf-8?B?aHZPOWovRkNvVEhpeUxqYlVDOXJwV0VMbU9QNVk5Q0RBN3NJd3MzdksyNG4z?=
+ =?utf-8?B?dXQ1SENBT0NrZnJodGxIMWkvNWZRS2ZKU291MnY0eHJKU0NSdkV6UlhPLzlq?=
+ =?utf-8?B?OHMwQTdJa1lzZ2NoTUY0Q3I2dnY5ZTVsekFWOGRJQThDVkJ3ZmhLdFdwd3dq?=
+ =?utf-8?B?Nk5kZGdxVm9mdk9McFRuSko3VFlmempIODZWeVYyRStXSWRRaDJnVklGR3Rv?=
+ =?utf-8?B?cks1S01yMUI5UlNJQXFKeXZ5UHNHSC9mNWwxaTBZZUVOeWRPMGFkcTNVaVVJ?=
+ =?utf-8?B?WjFJY3ljcnFVTDU1b1l5d25JMkNTRVJPQUVhMFVnTmdYeWFSY09JcWhYS0cr?=
+ =?utf-8?B?YnpTNStNd0RsVDVRWWsvbjBPWStRRjRZQnpvcWRGL1pTdnAyeHVWZFdiOEtq?=
+ =?utf-8?B?aDJzazFWNlBqZy9Hb080QWQ3ZG9IRkttdTdjV2tjS25VcVFDSW1DL0p0bC9a?=
+ =?utf-8?B?OFA1UGgwTlZvUHNvbmhndEJNNE40NUk2QXZuY0pyTU5idFBjRFBCMUhVekNY?=
+ =?utf-8?B?cEoyTjN4a0t3WUlUMjZ2V1NoN1lPelpmYVBjdEpMVHFaa2hVbnQyYU9XS2pB?=
+ =?utf-8?B?bzlpNjdobFpsWllITkJFYWtRRHp5MGoyRmFYR3pLNjIrdHJuUDVRaHI0RGZ3?=
+ =?utf-8?B?MVFtVE56bVAxckczRHh6ZEF2ZTBvRlJCK1dsOWh2dVhyTEJaNmR5WmtyVXo2?=
+ =?utf-8?B?SXQxVW1mVDZhK2MrbENnMGoxbFI0dVRRbnAraVZLdjd6UDBlcXk1UFNRdVg5?=
+ =?utf-8?B?QjRaSzFTT0cvbk5lZXYwcFBTYjA1OFdGZTRKYTNOYTJFK21kYXRTUmlpbHZM?=
+ =?utf-8?B?VmJWc2pnQUdTVFlkMEFjYzRTQlVadkMyN2pua3k5aTI3MmgxUmpOeWFkT2Nu?=
+ =?utf-8?B?TE5zZzBBM2drQk9OckZieVEyK3dkalVYT01VY3dDeGhLQVp6YnhPTzJmeklz?=
+ =?utf-8?B?aFBITEtNeFBkT3pVL21GMnB3RlZGeFJob1p6RzBmWWliM1J5bHQxNUlZK1R0?=
+ =?utf-8?B?OTNxbG9LdFpveGcxVUN0emUwWXROR3BMam5KWUpVcXdxRnlOTlFXakRyVnFI?=
+ =?utf-8?B?SlVsYmcwSnBMVDVZYVFkWU4yWTlVeGZYek8vV1NkTzVxQkZOZUJEWHI3NkNu?=
+ =?utf-8?B?SDM4YTBVMHE0VlV2QlRYeUNTM0g2MEZBekZsTExwVkgyVldMcFBPR05uQytC?=
+ =?utf-8?B?Y3IyQ0JuTnVoL0JSQ0NEQ2dHN3EzNk02Ky84alVpZWRMNG0wK2NJZ1NMUVFS?=
+ =?utf-8?B?ZFlHaW9idyt0dFl3Q01FYVJzTWNybW1hUUFTSUxVeUdtSGZMNm9SNktkUjJu?=
+ =?utf-8?B?SWJHZHFZMUNnQXp4WG1ZUHlCOHlDTEUxRlNxdXMyQUh1N3phTDlORnozcXZo?=
+ =?utf-8?B?Nk0vTlV5Sk95aGZCZ2kxY0ZjMmJrTnJHVndQSy92TFlUL0R4ajhPekhQcGhH?=
+ =?utf-8?B?Rk9KdUYrbHlIVW9GYy9rV05TVmtlK1hrZm1UVW1WbFd4SUFza2IzUytpZysr?=
+ =?utf-8?B?cFNIdFdmdTF3MFZ5d1BzT1A5TzcrT1NWeXFVUlA1VzE0SWQxOEJNV3BRb2Zm?=
+ =?utf-8?B?YXIxVkdpcUJGZVVLZzVkTG0ydHFHK0d3QnZFMlNWSGhJZ1ZxT2Vmdys4TUlU?=
+ =?utf-8?B?RlE1dFJmdHVtZVovQmJLWXFtNTZJWXFzMFRmcFdobkRvS1JhbVJvUEtwd1Jn?=
+ =?utf-8?B?VkZZUXY0YkUvUUxkeWRhUFp0S3k1VE9YVFpNL3RvU21jczQ1STM3WTlVaTJB?=
+ =?utf-8?B?VGc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70d2e6c1-4510-4e8c-cc3a-08db7d245e38
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2023 06:52:15.6838
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U8WMl39s70pqwMo119Hpt6D0RGmlB9ykADBKoCmWMMFtTLFx6yQ6y7xFpJvibe9kHl/tmX9QOfJLDz/L8obNZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB5631
 
-Introducing a new type sched_param_ex64. All members are (always) based
-on time64_t. All internal APIs have been migrated now. Existing compat
-and native system call entry points will do the necessary translation.
+On 05.07.23 07:27, yo sang wrote:
+> Hi, All
+> 
+>        I am trying switching to 6.1 from 5.10. It's ok when build with xenomai v3.2.3 + dovetail v5.10.179, but failed using same xenomai version + dovetail v6.1.34 (building in released Debian bookworm with gcc 12.2)
+> 
+> In file included from ./include/asm-generic/xenomai/syscall.h:26,
+>                  from ./arch/x86/xenomai/dovetail/include/asm/xenomai/syscall.h:24,
+>                  from ./include/xenomai/pipeline/pipeline.h:12,
+>                  from ./include/xenomai/cobalt/kernel/lock.h:26,
+>                  from ./include/xenomai/cobalt/kernel/sched.h:23,
+>                  from ./arch/x86/include/dovetail/irq.h:12,
+>                  from kernel/irq/pipeline.c:16:
+> ./arch/x86/xenomai/include/asm/xenomai/wrappers.h:44:10: fatal error: asm/fpu/internal.h: No such file or directory
+>    44 | #include <asm/fpu/internal.h>
+>       |          ^~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> 
 
-This is a preparation step for introducing time64_t based cobalt thread
-cobalt services.
+You need Xenomai master for kernels > 5.15. Changes to make that work
+also with v3.2.x would be a little bit too invasive for stable.1
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/kernel/compat.h     |   5 +-
- kernel/cobalt/posix/clock.h        |  38 +++++++++--
- kernel/cobalt/posix/compat.c       |   5 +-
- kernel/cobalt/posix/sched.c        |  39 +++++++-----
- kernel/cobalt/posix/sched.h        |   8 +--
- kernel/cobalt/posix/syscall32.c    |  12 ++--
- kernel/cobalt/posix/thread.c       | 126 ++++++++++++++++++++++++++++++-------
- kernel/cobalt/posix/thread.h       |  39 ++++++++++--
- kernel/cobalt/trace/cobalt-posix.h |  20 +++---
- 9 files changed, 219 insertions(+), 73 deletions(-)
-
-diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-index 275735df5..f2dce74b4 100644
---- a/include/cobalt/kernel/compat.h
-+++ b/include/cobalt/kernel/compat.h
-@@ -26,6 +26,7 @@
- #include <cobalt/uapi/sched.h>
- 
- struct mq_attr;
-+struct sched_param_ex64;
- 
- struct __compat_sched_ss_param {
- 	int __sched_low_priority;
-@@ -117,12 +118,12 @@ int sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
- 		    size_t fdsize);
- 
- int sys32_get_param_ex(int policy,
--		       struct sched_param_ex *p,
-+		       struct sched_param_ex64 *p,
- 		       const struct compat_sched_param_ex __user *u_cp);
- 
- int sys32_put_param_ex(int policy,
- 		       struct compat_sched_param_ex __user *u_cp,
--		       const struct sched_param_ex *p);
-+		       const struct sched_param_ex64 *p);
- 
- int sys32_get_mqattr(struct mq_attr *ap,
- 		     const struct compat_mq_attr __user *u_cap);
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index 38b59e24f..b0fc84396 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -18,6 +18,7 @@
- #ifndef _COBALT_POSIX_CLOCK_H
- #define _COBALT_POSIX_CLOCK_H
- 
-+#include <linux/compat.h>
- #include <linux/types.h>
- #include <linux/time.h>
- #include <linux/cpumask.h>
-@@ -38,6 +39,14 @@ static inline void u_ns2ts(struct __user_old_timespec *ts, xnticks_t nsecs)
- 	ts->tv_sec = xnclock_divrem_billion(nsecs, &ts->tv_nsec);
- }
- 
-+static inline void ns2kts(struct __kernel_timespec *kts, xnticks_t ticks)
-+{
-+	unsigned long nsecs;
-+
-+	kts->tv_sec = xnclock_divrem_billion(ticks, &nsecs);
-+	kts->tv_nsec = (long long)nsecs;
-+}
-+
- static inline xnticks_t ts2ns(const struct timespec64 *ts)
- {
- 	xnticks_t nsecs = ts->tv_nsec;
-@@ -48,6 +57,23 @@ static inline xnticks_t ts2ns(const struct timespec64 *ts)
- 	return nsecs;
- }
- 
-+static inline xnticks_t kts2ns(const struct __kernel_timespec *ts)
-+{
-+	xnticks_t nsecs = ts->tv_nsec;
-+
-+	/* zero out padding in compat mode */
-+	if (in_compat_syscall())
-+		nsecs &= 0xFFFFFFFFUL;
-+
-+	/* In 32-bit mode, this drops the padding */
-+	nsecs = (long)nsecs;
-+
-+	if (ts->tv_sec)
-+		nsecs += (xnticks_t)ts->tv_sec * ONE_BILLION;
-+
-+	return nsecs;
-+}
-+
- static inline xnticks_t u_ts2ns(const struct __user_old_timespec *ts)
- {
- 	xnticks_t nsecs = ts->tv_nsec;
-@@ -111,34 +137,34 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 			     struct timespec64 *rmt);
- 
- COBALT_SYSCALL_DECL(clock_getres,
--		    (clockid_t clock_id, struct __user_old_timespec __user *u_ts));
-+		    (clockid_t clock_id, struct __kernel_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_getres64,
- 		    (clockid_t clock_id, struct __kernel_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_gettime,
--		    (clockid_t clock_id, struct __user_old_timespec __user *u_ts));
-+		    (clockid_t clock_id, struct __kernel_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_gettime64,
- 		    (clockid_t clock_id, struct __kernel_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_settime,
--		    (clockid_t clock_id, const struct __user_old_timespec __user *u_ts));
-+		    (clockid_t clock_id, const struct __kernel_old_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_settime64,
- 		    (clockid_t clock_id,
- 			 const struct __kernel_timespec __user *u_ts));
- 
- COBALT_SYSCALL_DECL(clock_adjtime,
--		    (clockid_t clock_id, struct __user_old_timex __user *u_tx));
-+		    (clockid_t clock_id, struct old_timex32 __user *u_tx));
- 
- COBALT_SYSCALL_DECL(clock_adjtime64,
- 		    (clockid_t clock_id, struct __kernel_timex __user *u_tx));
- 
- COBALT_SYSCALL_DECL(clock_nanosleep,
- 		    (clockid_t clock_id, int flags,
--		     const struct __user_old_timespec __user *u_rqt,
--		     struct __user_old_timespec __user *u_rmt));
-+		     const struct __kernel_old_timespec __user *u_rqt,
-+		     struct __kernel_old_timespec __user *u_rmt));
- 
- COBALT_SYSCALL_DECL(clock_nanosleep64,
- 		    (clockid_t clock_id, int flags,
-diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-index c7fc4fc33..710cde638 100644
---- a/kernel/cobalt/posix/compat.c
-+++ b/kernel/cobalt/posix/compat.c
-@@ -21,6 +21,7 @@
- #include <cobalt/kernel/compat.h>
- #include <asm/xenomai/syscall.h>
- #include <xenomai/posix/mqueue.h>
-+#include <xenomai/posix/thread.h>
- 
- int sys32_get_timespec(struct timespec64 *ts,
- 		       const struct old_timespec32 __user *u_cts)
-@@ -207,7 +208,7 @@ int sys32_put_fdset(compat_fd_set __user *cfds, const fd_set *fds,
- }
- 
- int sys32_get_param_ex(int policy,
--		       struct sched_param_ex *p,
-+		       struct sched_param_ex64 *p,
- 		       const struct compat_sched_param_ex __user *u_cp)
- {
- 	struct compat_sched_param_ex cpex;
-@@ -244,7 +245,7 @@ EXPORT_SYMBOL_GPL(sys32_get_param_ex);
- 
- int sys32_put_param_ex(int policy,
- 		       struct compat_sched_param_ex __user *u_cp,
--		       const struct sched_param_ex *p)
-+		       const struct sched_param_ex64 *p)
- {
- 	struct compat_sched_param_ex cpex;
- 
-diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-index 994ee88d9..1c3a7de61 100644
---- a/kernel/cobalt/posix/sched.c
-+++ b/kernel/cobalt/posix/sched.c
-@@ -24,7 +24,7 @@
- 
- struct xnsched_class *
- cobalt_sched_policy_param(union xnsched_policy_param *param,
--			  int u_policy, const struct sched_param_ex *param_ex,
-+			  int u_policy, const struct sched_param_ex64 *param_ex,
- 			  xnticks_t *tslice_r)
- {
- 	struct xnsched_class *sched_class;
-@@ -73,7 +73,7 @@ cobalt_sched_policy_param(union xnsched_policy_param *param,
- 		break;
- 	case SCHED_RR:
- 		/* if unspecified, use current one. */
--		tslice = u_ts2ns(&param_ex->sched_rr_quantum);
-+		tslice = kts2ns(&param_ex->sched_rr_quantum);
- 		if (tslice == XN_INFINITE && tslice_r)
- 			tslice = *tslice_r;
- 		fallthrough;
-@@ -92,8 +92,8 @@ cobalt_sched_policy_param(union xnsched_policy_param *param,
- 		param->pss.normal_prio = param_ex->sched_priority;
- 		param->pss.low_prio = param_ex->sched_ss_low_priority;
- 		param->pss.current_prio = param->pss.normal_prio;
--		param->pss.init_budget = u_ts2ns(&param_ex->sched_ss_init_budget);
--		param->pss.repl_period = u_ts2ns(&param_ex->sched_ss_repl_period);
-+		param->pss.init_budget = kts2ns(&param_ex->sched_ss_init_budget);
-+		param->pss.repl_period = kts2ns(&param_ex->sched_ss_repl_period);
- 		param->pss.max_repl = param_ex->sched_ss_max_repl;
- 		sched_class = &xnsched_class_sporadic;
- 		break;
-@@ -707,7 +707,7 @@ COBALT_SYSCALL(sched_getconfig_np, conforming,
- }
- 
- int __cobalt_sched_weightprio(int policy,
--			      const struct sched_param_ex *param_ex)
-+			      const struct sched_param_ex64 *param_ex)
- {
- 	struct xnsched_class *sched_class;
- 	union xnsched_policy_param param;
-@@ -728,17 +728,19 @@ int __cobalt_sched_weightprio(int policy,
- COBALT_SYSCALL(sched_weightprio, current,
- 	       (int policy, const struct sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
-+	int ret;
- 
--	if (cobalt_copy_from_user(&param_ex, u_param, sizeof(param_ex)))
--		return -EFAULT;
-+	ret = cobalt_thread_get_schedparam_ex(&param_ex, u_param, policy);
-+	if (ret)
-+		return ret;
- 
- 	return __cobalt_sched_weightprio(policy, &param_ex);
- }
- 
- int cobalt_sched_setscheduler_ex(pid_t pid,
- 				 int policy,
--				 const struct sched_param_ex *param_ex,
-+				 const struct sched_param_ex64 *param_ex,
- 				 __u32 __user *u_winoff,
- 				 int __user *u_promoted)
- {
-@@ -781,10 +783,12 @@ COBALT_SYSCALL(sched_setscheduler_ex, conforming,
- 		__u32 __user *u_winoff,
- 		int __user *u_promoted))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
-+	int ret;
- 
--	if (cobalt_copy_from_user(&param_ex, u_param, sizeof(param_ex)))
--		return -EFAULT;
-+	ret = cobalt_thread_get_schedparam_ex(&param_ex, u_param, policy);
-+	if (ret)
-+		return ret;
- 
- 	return cobalt_sched_setscheduler_ex(pid, policy, &param_ex,
- 					    u_winoff, u_promoted);
-@@ -792,7 +796,7 @@ COBALT_SYSCALL(sched_setscheduler_ex, conforming,
- 
- int cobalt_sched_getscheduler_ex(pid_t pid,
- 				 int *policy_r,
--				 struct sched_param_ex *param_ex)
-+				 struct sched_param_ex64 *param_ex)
- {
- 	struct cobalt_thread *thread;
- 	spl_t s;
-@@ -817,15 +821,18 @@ COBALT_SYSCALL(sched_getscheduler_ex, current,
- 		int __user *u_policy,
- 		struct sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret, policy;
- 
- 	ret = cobalt_sched_getscheduler_ex(pid, &policy, &param_ex);
- 	if (ret)
- 		return ret;
- 
--	if (cobalt_copy_to_user(u_param, &param_ex, sizeof(param_ex)) ||
--	    cobalt_copy_to_user(u_policy, &policy, sizeof(policy)))
-+	ret = cobalt_thread_put_schedparam_ex(u_param, &param_ex, policy);
-+	if (ret)
-+		return ret;
-+
-+	if (cobalt_copy_to_user(u_policy, &policy, sizeof(policy)))
- 		return -EFAULT;
- 
- 	return 0;
-diff --git a/kernel/cobalt/posix/sched.h b/kernel/cobalt/posix/sched.h
-index 2b23be0a6..e8b9f9113 100644
---- a/kernel/cobalt/posix/sched.h
-+++ b/kernel/cobalt/posix/sched.h
-@@ -35,7 +35,7 @@ struct cobalt_sched_group {
- };
- 
- int __cobalt_sched_weightprio(int policy,
--			      const struct sched_param_ex *param_ex);
-+			      const struct sched_param_ex64 *param_ex);
- 
- int __cobalt_sched_setconfig_np(int cpu, int policy,
- 				void __user *u_config,
-@@ -59,17 +59,17 @@ ssize_t __cobalt_sched_getconfig_np(int cpu, int policy,
- 							  size_t len));
- int cobalt_sched_setscheduler_ex(pid_t pid,
- 				 int policy,
--				 const struct sched_param_ex *param_ex,
-+				 const struct sched_param_ex64 *param_ex,
- 				 __u32 __user *u_winoff,
- 				 int __user *u_promoted);
- 
- int cobalt_sched_getscheduler_ex(pid_t pid,
- 				 int *policy_r,
--				 struct sched_param_ex *param_ex);
-+				 struct sched_param_ex64 *param_ex);
- 
- struct xnsched_class *
- cobalt_sched_policy_param(union xnsched_policy_param *param,
--			  int u_policy, const struct sched_param_ex *param_ex,
-+			  int u_policy, const struct sched_param_ex64 *param_ex,
- 			  xnticks_t *tslice_r);
- 
- COBALT_SYSCALL_DECL(sched_yield, (void));
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index 780d276b1..9b09d734d 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -44,7 +44,7 @@ COBALT_SYSCALL32emu(thread_create, init,
- 		     int xid,
- 		     __u32 __user *u_winoff))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
- 	ret = sys32_get_param_ex(policy, &param_ex, u_param_ex);
-@@ -61,7 +61,7 @@ COBALT_SYSCALL32emu(thread_setschedparam_ex, conforming,
- 		     __u32 __user *u_winoff,
- 		     int __user *u_promoted))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
- 	ret = sys32_get_param_ex(policy, &param_ex, u_param_ex);
-@@ -77,7 +77,7 @@ COBALT_SYSCALL32emu(thread_getschedparam_ex, current,
- 		     int __user *u_policy,
- 		     struct compat_sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret, policy;
- 
- 	ret = cobalt_thread_getschedparam_ex(pth, &policy, &param_ex);
-@@ -343,7 +343,7 @@ COBALT_SYSCALL32emu(sched_weightprio, current,
- 		    (int policy,
- 		     const struct compat_sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
- 	ret = sys32_get_param_ex(policy, &param_ex, u_param);
-@@ -492,7 +492,7 @@ COBALT_SYSCALL32emu(sched_setscheduler_ex, conforming,
- 		     __u32 __user *u_winoff,
- 		     int __user *u_promoted))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
- 	ret = sys32_get_param_ex(policy, &param_ex, u_param_ex);
-@@ -508,7 +508,7 @@ COBALT_SYSCALL32emu(sched_getscheduler_ex, current,
- 		     int __user *u_policy,
- 		     struct compat_sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret, policy;
- 
- 	ret = cobalt_sched_getscheduler_ex(pid, &policy, &param_ex);
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index 94a6e394e..2fa8a9e6a 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -240,7 +240,7 @@ struct xnthread_personality *cobalt_thread_finalize(struct xnthread *zombie)
- }
- 
- int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
--				     const struct sched_param_ex *param_ex)
-+				     const struct sched_param_ex64 *param_ex)
- {
- 	struct xnsched_class *sched_class;
- 	union xnsched_policy_param param;
-@@ -278,7 +278,7 @@ out:
- 
- int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- 				     int *policy_r,
--				     struct sched_param_ex *param_ex)
-+				     struct sched_param_ex64 *param_ex)
- {
- 	struct xnsched_class *base_class;
- 	struct xnthread *base_thread;
-@@ -302,7 +302,7 @@ int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- 
- 	if (base_class == &xnsched_class_rt) {
- 		if (xnthread_test_state(base_thread, XNRRB)) {
--			u_ns2ts(&param_ex->sched_rr_quantum, base_thread->rrperiod);
-+			ns2kts(&param_ex->sched_rr_quantum, base_thread->rrperiod);
- 			*policy_r = SCHED_RR;
- 		}
- 		goto out;
-@@ -318,8 +318,8 @@ int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- #ifdef CONFIG_XENO_OPT_SCHED_SPORADIC
- 	if (base_class == &xnsched_class_sporadic) {
- 		param_ex->sched_ss_low_priority = base_thread->pss->param.low_prio;
--		u_ns2ts(&param_ex->sched_ss_repl_period, base_thread->pss->param.repl_period);
--		u_ns2ts(&param_ex->sched_ss_init_budget, base_thread->pss->param.init_budget);
-+		ns2kts(&param_ex->sched_ss_repl_period, base_thread->pss->param.repl_period);
-+		ns2kts(&param_ex->sched_ss_init_budget, base_thread->pss->param.init_budget);
- 		param_ex->sched_ss_max_repl = base_thread->pss->param.max_repl;
- 		goto out;
- 	}
-@@ -346,7 +346,7 @@ out:
- 
- static int pthread_create(struct cobalt_thread **thread_p,
- 			  int policy,
--			  const struct sched_param_ex *param_ex,
-+			  const struct sched_param_ex64 *param_ex,
- 			  struct task_struct *task)
- {
- 	struct cobalt_process *process = cobalt_current_process();
-@@ -479,9 +479,87 @@ static struct cobalt_thread *thread_lookup_or_shadow(unsigned long pth,
- 	return thread;
- }
- 
-+int cobalt_thread_get_schedparam_ex(struct sched_param_ex64 *out,
-+				    const struct sched_param_ex *in, int policy)
-+{
-+	struct sched_param_ex tmp;
-+
-+	if (in == NULL || cobalt_copy_from_user(&tmp, in, sizeof(tmp)))
-+		return -EFAULT;
-+
-+	out->sched_priority = tmp.sched_priority;
-+
-+	switch (policy) {
-+	case SCHED_SPORADIC:
-+		out->sched_ss_low_priority = tmp.sched_ss_low_priority;
-+		out->sched_ss_max_repl = tmp.sched_ss_max_repl;
-+		out->sched_ss_repl_period.tv_sec =
-+			tmp.sched_ss_repl_period.tv_sec;
-+		out->sched_ss_repl_period.tv_nsec =
-+			tmp.sched_ss_repl_period.tv_nsec;
-+		out->sched_ss_init_budget.tv_sec =
-+			tmp.sched_ss_init_budget.tv_sec;
-+		out->sched_ss_init_budget.tv_nsec =
-+			tmp.sched_ss_init_budget.tv_nsec;
-+		break;
-+	case SCHED_RR:
-+		out->sched_rr_quantum.tv_sec = tmp.sched_rr_quantum.tv_sec;
-+		out->sched_rr_quantum.tv_nsec = tmp.sched_rr_quantum.tv_nsec;
-+		break;
-+	case SCHED_TP:
-+		out->sched_tp_partition = tmp.sched_tp_partition;
-+		break;
-+	case SCHED_QUOTA:
-+		out->sched_quota_group = tmp.sched_quota_group;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+int cobalt_thread_put_schedparam_ex(struct sched_param_ex *out,
-+				    const struct sched_param_ex64 *in,
-+				    int policy)
-+{
-+	struct sched_param_ex tmp;
-+
-+	tmp.sched_priority = in->sched_priority;
-+
-+	switch (policy) {
-+	case SCHED_SPORADIC:
-+		tmp.sched_ss_low_priority = in->sched_ss_low_priority;
-+		tmp.sched_ss_max_repl = in->sched_ss_max_repl;
-+		tmp.sched_ss_repl_period.tv_sec =
-+			in->sched_ss_repl_period.tv_sec;
-+		tmp.sched_ss_repl_period.tv_nsec =
-+			in->sched_ss_repl_period.tv_nsec;
-+		tmp.sched_ss_init_budget.tv_sec =
-+			in->sched_ss_init_budget.tv_sec;
-+		tmp.sched_ss_init_budget.tv_nsec =
-+			in->sched_ss_init_budget.tv_nsec;
-+		break;
-+	case SCHED_RR:
-+		tmp.sched_rr_quantum.tv_sec = in->sched_rr_quantum.tv_sec;
-+		tmp.sched_rr_quantum.tv_nsec = in->sched_rr_quantum.tv_nsec;
-+		break;
-+	case SCHED_TP:
-+		tmp.sched_tp_partition = in->sched_tp_partition;
-+		break;
-+	case SCHED_QUOTA:
-+		tmp.sched_quota_group = in->sched_quota_group;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return cobalt_copy_to_user(out, &tmp, sizeof(tmp));
-+}
-+
- int cobalt_thread_setschedparam_ex(unsigned long pth,
- 				   int policy,
--				   const struct sched_param_ex *param_ex,
-+				   const struct sched_param_ex64 *param_ex,
- 				   __u32 __user *u_winoff,
- 				   int __user *u_promoted)
- {
-@@ -508,18 +586,22 @@ COBALT_SYSCALL(thread_setschedparam_ex, conforming,
- 		__u32 __user *u_winoff,
- 		int __user *u_promoted))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
-+	int ret;
- 
--	if (cobalt_copy_from_user(&param_ex, u_param, sizeof(param_ex)))
--		return -EFAULT;
-+	ret = cobalt_thread_get_schedparam_ex(&param_ex, u_param, policy);
-+	if (ret)
-+		return ret;
- 
--	return cobalt_thread_setschedparam_ex(pth, policy, &param_ex,
--					      u_winoff, u_promoted);
-+	ret = cobalt_thread_setschedparam_ex(pth, policy, &param_ex, u_winoff,
-+					     u_promoted);
-+
-+	return ret;
- }
- 
- int cobalt_thread_getschedparam_ex(unsigned long pth,
- 				   int *policy_r,
--				   struct sched_param_ex *param_ex)
-+				   struct sched_param_ex64 *param_ex)
- {
- 	struct cobalt_local_hkey hkey;
- 	struct cobalt_thread *thread;
-@@ -545,7 +627,7 @@ COBALT_SYSCALL(thread_getschedparam_ex, current,
- 		int __user *u_policy,
- 		struct sched_param_ex __user *u_param))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret, policy;
- 
- 	ret = cobalt_thread_getschedparam_ex(pth, &policy, &param_ex);
-@@ -556,7 +638,7 @@ COBALT_SYSCALL(thread_getschedparam_ex, current,
- 	if (ret)
- 		return ret;
- 
--	return cobalt_copy_to_user(u_param, &param_ex, sizeof(param_ex));
-+	return cobalt_thread_put_schedparam_ex(u_param, &param_ex, policy);
- }
- 
- int cobalt_thread_setschedprio(unsigned long pth,
-@@ -564,7 +646,7 @@ int cobalt_thread_setschedprio(unsigned long pth,
- 			       __u32 __user *u_winoff,
- 			       int __user *u_promoted)
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	struct cobalt_thread *thread;
- 	int ret, policy, promoted;
- 
-@@ -597,7 +679,7 @@ COBALT_SYSCALL(thread_setschedprio, conforming,
- }
- 
- int __cobalt_thread_create(unsigned long pth, int policy,
--			   struct sched_param_ex *param_ex,
-+			   struct sched_param_ex64 *param_ex,
- 			   int xid, __u32 __user *u_winoff)
- {
- 	struct cobalt_thread *thread = NULL;
-@@ -650,10 +732,10 @@ COBALT_SYSCALL(thread_create, init,
- 		int xid,
- 		__u32 __user *u_winoff))
- {
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
--	ret = cobalt_copy_from_user(&param_ex, u_param, sizeof(param_ex));
-+	ret = cobalt_thread_get_schedparam_ex(&param_ex, u_param, policy);
- 	if (ret)
- 		return ret;
- 
-@@ -665,7 +747,7 @@ cobalt_thread_shadow(struct cobalt_local_hkey *hkey,
- 		     __u32 __user *u_winoff)
- {
- 	struct cobalt_thread *thread = NULL;
--	struct sched_param_ex param_ex;
-+	struct sched_param_ex64 param_ex;
- 	int ret;
- 
- 	if (xnthread_current())
-@@ -911,7 +993,7 @@ EXPORT_SYMBOL_GPL(cobalt_thread_restrict);
- #endif /* !CONFIG_XENO_OPT_COBALT_EXTENSION */
- 
- const char *cobalt_trace_parse_sched_params(struct trace_seq *p, int policy,
--					    struct sched_param_ex *params)
-+					    struct sched_param_ex64 *params)
- {
- 	const char *ret = trace_seq_buffer_ptr(p);
- 
-@@ -930,7 +1012,7 @@ const char *cobalt_trace_parse_sched_params(struct trace_seq *p, int policy,
- 		break;
- 	case SCHED_SPORADIC:
- 		trace_seq_printf(p, "priority=%d, low_priority=%d, "
--				 "budget=(%ld.%09ld), period=(%ld.%09ld), "
-+				 "budget=(%lld.%09lld), period=(%lld.%09lld), "
- 				 "maxrepl=%d",
- 				 params->sched_priority,
- 				 params->sched_ss_low_priority,
-diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
-index 0959ff6d7..8916d05b9 100644
---- a/kernel/cobalt/posix/thread.h
-+++ b/kernel/cobalt/posix/thread.h
-@@ -112,6 +112,27 @@ struct cobalt_sigwait_context {
- 	struct siginfo *si;
- };
- 
-+struct __sched_ss_param64 {
-+	int __sched_low_priority;
-+	struct __kernel_timespec __sched_repl_period;
-+	struct __kernel_timespec __sched_init_budget;
-+	int __sched_max_repl;
-+};
-+
-+struct __sched_rr_param64 {
-+	struct __kernel_timespec __sched_rr_quantum;
-+};
-+
-+struct sched_param_ex64 {
-+	int sched_priority;
-+	union {
-+		struct __sched_ss_param64 ss;
-+		struct __sched_rr_param64 rr;
-+		struct __sched_tp_param tp;
-+		struct __sched_quota_param quota;
-+	} sched_u;
-+};
-+
- static inline struct cobalt_thread *cobalt_current_thread(void)
- {
- 	struct xnthread *curr = xnthread_current();
-@@ -119,25 +140,33 @@ static inline struct cobalt_thread *cobalt_current_thread(void)
- }
- 
- int __cobalt_thread_create(unsigned long pth, int policy,
--			   struct sched_param_ex __user *u_param,
-+			   struct sched_param_ex64 __user *u_param,
- 			   int xid, __u32 __user *u_winoff);
- 
-+int cobalt_thread_get_schedparam_ex(struct sched_param_ex64 *out,
-+				    const struct sched_param_ex *in,
-+				    int policy);
-+
-+int cobalt_thread_put_schedparam_ex(struct sched_param_ex *out,
-+				    const struct sched_param_ex64 *in,
-+				    int policy);
-+
- int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
--				     const struct sched_param_ex *param_ex);
-+				     const struct sched_param_ex64 *param_ex);
- 
- int cobalt_thread_setschedparam_ex(unsigned long pth,
- 				   int policy,
--				   const struct sched_param_ex *param_ex,
-+				   const struct sched_param_ex64 *param_ex,
- 				   __u32 __user *u_winoff,
- 				   int __user *u_promoted);
- 
- int cobalt_thread_getschedparam_ex(unsigned long pth,
- 				   int *policy_r,
--				   struct sched_param_ex *param_ex);
-+				   struct sched_param_ex64 *param_ex);
- 
- int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- 				     int *policy_r,
--				     struct sched_param_ex *param_ex);
-+				     struct sched_param_ex64 *param_ex);
- 
- int cobalt_thread_setschedprio(unsigned long pth,
- 			       int prio,
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 47dc77e1c..c6c430cff 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -217,21 +217,21 @@ DECLARE_EVENT_CLASS(cobalt_syscall_exit,
- 			 {SCHED_WEAK, "weak"})
- 
- const char *cobalt_trace_parse_sched_params(struct trace_seq *, int,
--					    struct sched_param_ex *);
-+					    struct sched_param_ex64 *);
- 
- #define __parse_sched_params(policy, params)			\
- 	cobalt_trace_parse_sched_params(p, policy,		\
--					(struct sched_param_ex *)(params))
-+					(struct sched_param_ex64 *)(params))
- 
- DECLARE_EVENT_CLASS(cobalt_posix_schedparam,
- 	TP_PROTO(unsigned long pth, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pth, policy, param_ex),
- 
- 	TP_STRUCT__entry(
- 		__field(unsigned long, pth)
- 		__field(int, policy)
--		__dynamic_array(char, param_ex, sizeof(struct sched_param_ex))
-+		__dynamic_array(char, param_ex, sizeof(struct sched_param_ex64))
- 	),
- 
- 	TP_fast_assign(
-@@ -250,13 +250,13 @@ DECLARE_EVENT_CLASS(cobalt_posix_schedparam,
- 
- DECLARE_EVENT_CLASS(cobalt_posix_scheduler,
- 	TP_PROTO(pid_t pid, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pid, policy, param_ex),
- 
- 	TP_STRUCT__entry(
- 		__field(pid_t, pid)
- 		__field(int, policy)
--		__dynamic_array(char, param_ex, sizeof(struct sched_param_ex))
-+		__dynamic_array(char, param_ex, sizeof(struct sched_param_ex64))
- 	),
- 
- 	TP_fast_assign(
-@@ -307,19 +307,19 @@ DEFINE_EVENT(cobalt_syscall_exit, cobalt_root_sysexit,
- 
- DEFINE_EVENT(cobalt_posix_schedparam, cobalt_pthread_create,
- 	TP_PROTO(unsigned long pth, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pth, policy, param_ex)
- );
- 
- DEFINE_EVENT(cobalt_posix_schedparam, cobalt_pthread_setschedparam,
- 	TP_PROTO(unsigned long pth, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pth, policy, param_ex)
- );
- 
- DEFINE_EVENT(cobalt_posix_schedparam, cobalt_pthread_getschedparam,
- 	TP_PROTO(unsigned long pth, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pth, policy, param_ex)
- );
- 
-@@ -501,7 +501,7 @@ TRACE_EVENT(cobalt_sched_get_config,
- 
- DEFINE_EVENT(cobalt_posix_scheduler, cobalt_sched_setscheduler,
- 	TP_PROTO(pid_t pid, int policy,
--		 const struct sched_param_ex *param_ex),
-+		 const struct sched_param_ex64 *param_ex),
- 	TP_ARGS(pid, policy, param_ex)
- );
- 
+Jan
 
 -- 
-2.39.2
+Siemens AG, Technology
+Competence Center Embedded Linux
 
