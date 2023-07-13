@@ -1,127 +1,120 @@
-Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD001F163
-	for <xenomai@lists.linux.dev>; Thu, 13 Jul 2023 15:45:59 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay14.mail.gandi.net (Postfix) with ESMTPS id C6E361A0003
-	for <xenomai@lists.linux.dev>; Thu, 13 Jul 2023 15:45:51 +0000 (UTC)
-Received: from USG02-CY1-obe.outbound.protection.office365.us (mail-cy1usg02on0716.outbound.protection.office365.us [IPv6:2001:489a:2202:d::716])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 8F1027803DF
-	for <xenomai@xenomai.org>; Thu, 13 Jul 2023 15:45:50 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=dwwfYG3VknujtRThAhvKCkSIitiUNG6iNxsQZTHwGHes+O4NR9DLFogPz3Go8d4BFgVMNedwbMyfk592z32c5j7Yoev/ZKXDJxekXFVbtkiqdju5sB2nB1GJs8o52uOMcMCrBqygImK08JdgWNJSzTu/StPNZtmC9E/UH8Fu+/u3oNQDS1HTNykhWTJvGWXkWxb5T8RhO3cvAJ2Lb7sTQYA5HbNsoAGTb1wGczawwrnTl6+h+9KOHiGNwHW90SJmV76d02r9Sx+wVr0+vk4RJlCXIrX45GEZUYy/4TxwiVKfUi9RC5drjs8+Wk+g3jUbVQaKwbMa6tnUyuPmkBlx3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RNtUhT18hTH6BkOERYnWILKQfQrri+/NrvH7L9bgz8o=;
- b=JoXdXru3nytOlnW+0KWWrYyICBrS2XBkV05F/ieDoCGZlWo0cwxkRWG++UOJ/iWgSuq3My5RwbtPvXLkQCt4XUX7tYeYcPGREtBft2YBw7FjQXeF7tYYfZmP+p1t5WZhtrORVviio9cSHw+sthnTnzs5z1SerzcZh7xyycd4zZVvtb+CcBqujuW1r3whnEGGRamU6cmFfzFOGEk1rWl/HBB3ZONQA07gxX1WgKBqOYiSnOXZPdDkAf2idVn9VtA/X/EZ+PWRMgi+H/ltVvILMeU+ZPiROknW+Lw0X6SeIy3f1jv6rfXb+2tSGAlRp9u65DDTDnsHa7D6aRNiR9JFEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=relativityspace.com; dmarc=pass action=none
- header.from=relativityspace.com; dkim=pass header.d=relativityspace.com;
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=relativityspace.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RNtUhT18hTH6BkOERYnWILKQfQrri+/NrvH7L9bgz8o=;
- b=HI6jsjDWm7w9R0xzn3rI9D/EZ113uKsQPXyDVFYPBPqgXb2Ci2rWwzuuZzF1xdt56KZ0Yfbj3CqwJWQLrLbQjXy6pebluNgZvT413yg0n/WU9l5iOgsq/NH6ixWBtaxpyPagD8R9Bq5OR7Zl09pVqHGN01LMX+x/w/89zrIPub8=
-Received: from SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:194::20)
- by SA1P110MB1056.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:170::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.45; Thu, 13 Jul
- 2023 15:45:45 +0000
-Received: from SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM
- ([fe80::3664:f457:a4ce:ac7f]) by SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM
- ([fe80::3664:f457:a4ce:ac7f%6]) with mapi id 15.20.6521.045; Thu, 13 Jul 2023
- 15:45:45 +0000
-From: Brandon Ho <brho@relativityspace.com>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-CC: Jay Sridharan <jsridharan@relativityspace.com>
-Subject: UDP checksum incorrect when using RTnet network driver
-Thread-Topic: UDP checksum incorrect when using RTnet network driver
-Thread-Index: AQHZtaBDn4K4F1kqg0uumZzUUQmrxw==
-Date: Thu, 13 Jul 2023 15:45:45 +0000
-Message-ID:
- <SA1P110MB1278E19EF6B5E38108A221CED337A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA1P110MB1278:EE_|SA1P110MB1056:EE_
-x-ms-office365-filtering-correlation-id: 55356d0f-44a2-4fa8-b5b5-08db83b838d0
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- pczdCSJRdXlUMCXRUHR1pcMM4GgR0E/RaG8YNxepgCjbiGkETSFaroRjtRBPn9xOd+U+XcNhHbodXnL2K0nEey50Ep2NiJo0+LQ7hUxBxsIPB0FAMbJF1CkyxMUIcB/vdW5fN313K678NMAC7iHTcimYVTFt1B0hen6bOHmX6YNOTR/Yt9rAQEP7KJeJx955xsohfy/pGARdps6MCEjWN36QXmvEIgay0zw0aAJSLpnRJnYhm3geK5NmdWJekZzIU+4IkxvUGIYl2iEwDcQvYAN7KH3tk/eyBrLcDiKVn+gySuMe9K9jI6gGMjBLtkfSkfke/jI79ujmbCSqGyJ6WDsheQshR1psk0tS/xZYniyliLBB2C/V5tR9Q+/88wAHghlfUPGfverceEXPcJGW2Kgq1qYZeEfjHpW3i5NhTXNwpeCZ4cYf05/EdW1YoBAjmwWt7uyNNo4MKYsgTurCJ0EE0gc7Ucg80mvNAyHvEj3rchycml6rxTImtW+8chAXNnq+tD4dQVyYWqQ4hjFfmI3TtGIlj/MGc0eGbBi5ljawY6OHwllXMJRnr6Dplkwceq4zLSpsZFmpHHePgGayrMH1jEaeozrkxSMkqZbGoC1uiU4bZZGpYrufzOMGLVLK
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39830400003)(136003)(451199021)(5660300002)(6506007)(26005)(508600001)(2906002)(186003)(9686003)(83380400001)(55016003)(41300700001)(122000001)(86362001)(38070700005)(8676002)(8936002)(38100700002)(7696005)(66446008)(71200400001)(52536014)(66946007)(41320700001)(107886003)(64756008)(966005)(66556008)(4326008)(33656002)(76116006)(6916009)(66476007)(554374003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- USjQ/Pa5ZKCGR6NfMgdj6wvvFRYu1L0cSJiyc9Xlfotzz7wc7d/gQKnelGcVrgDVNHLB1AuxspAn2wc1WL00oZVQLd8bBs5kM0MR/DEUeGgN4Kb5D+9WvgV6+VhRniV5kU7nfy3GJf1LKocBaSxETwZJS1orh2xPL4r/Jp/OJdXsjR80Qa3g0/gLduax1Ebw13XSi9i2DHvkCINVl6fylxQ/sTxovmDILe35oq1MPWVvIEyqQMW5Kt/DgNJAgNDT1f2vzu31gMfVhcixZn5iElBvopWaX2yuYI25rWrmO/BqH+6UFKcg17jw0AFK482jKtYLlR2NHdJlm9JMygfeAx8KboKWS2Ob+iXGj1IaDSW+vPNPqm88xsGTfH323ajoelrBlQsu1QHgFt3dVf89OsCiREMnOJ81IIvPPF4d/t4=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41EA81F163
+	for <xenomai@lists.linux.dev>; Thu, 13 Jul 2023 15:57:03 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 86D33100003
+	for <xenomai@lists.linux.dev>; Thu, 13 Jul 2023 15:56:56 +0000 (UTC)
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 950DE740035
+	for <xenomai@xenomai.org>; Thu, 13 Jul 2023 15:56:55 +0000 (UTC)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230713155655df5fccfcc36f877ece
+        for <xenomai@xenomai.org>;
+        Thu, 13 Jul 2023 17:56:55 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=gXOZndPetJHVtH0u4ojg1zPxbTtC6zBtV+2T/eOOkXI=;
+ b=ER8N0QzyxYqjhnM2lPNn1QSiGCwCE8x+OlOoP2eS4VUGfE+GVs6HgxYRvrekXafhWkSoo0
+ uUI7MeCAhkly4NgiYmoLwOVxGzCmlPnBd6O7xsxzj1woo0WIx/eM48hDyBFIeLdrb3bQZC4O
+ C7SktqQqU+9w/Myv5XA+Ja12/WRNI=;
+Message-ID: <a7e4f5d61a527afea5cb413d2c07dd0f0227ad64.camel@siemens.com>
+Subject: Re: UDP checksum incorrect when using RTnet network driver
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Brandon Ho <brho@relativityspace.com>, "xenomai@xenomai.org"
+	 <xenomai@xenomai.org>
+Cc: Jay Sridharan <jsridharan@relativityspace.com>
+Date: Thu, 13 Jul 2023 17:56:54 +0200
+In-Reply-To: <SA1P110MB1278E19EF6B5E38108A221CED337A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
+References: 
+	<SA1P110MB1278E19EF6B5E38108A221CED337A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: relativityspace.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55356d0f-44a2-4fa8-b5b5-08db83b838d0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2023 15:45:45.3455
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 95efb839-1b37-48d6-a201-7187831a1c9c
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1P110MB1056
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=relativityspace.com header.s=selector1 header.b=HI6jsjDW;
-	arc=pass ("microsoft.com:s=arcselector5401:i=1");
-	dmarc=pass (policy=reject) header.from=relativityspace.com;
-	spf=pass (spool.mail.gandi.net: domain of brho@relativityspace.com designates 2001:489a:2202:d::716 as permitted sender) smtp.mailfrom=brho@relativityspace.com
+	dkim=pass header.d=siemens.com header.s=fm1 header.b=ER8N0Qzy;
+	dmarc=pass (policy=reject) header.from=siemens.com;
+	spf=pass (spool.mail.gandi.net: domain of fm-68982-20230713155655df5fccfcc36f877ece-2_lIa1@rts-flowmailer.siemens.com designates 185.136.65.227 as permitted sender) smtp.mailfrom=fm-68982-20230713155655df5fccfcc36f877ece-2_lIa1@rts-flowmailer.siemens.com
 
-SGksCgpJIGhhdmUgYmVlbiBwbGF5aW5nIGFyb3VuZCB3aXRoIHRyeWluZyB0byBzZW5kIFVEUCBt
-ZXNzYWdlcyBvdmVyIFJUbmV0IGJ1dCBoYXZlIHJ1biBpbnRvIGEgd2VpcmQgYnVnIHdoZXJlIHRo
-ZSBVRFAgcGFja2V0cyBzZW50IHdpdGggdGhlIFJUbmV0IG5ldHdvcmsgZHJpdmVyIGVuZCB1cCB3
-aXRoIGFuIGluY29ycmVjdCBjaGVja3N1bS4KCkN1cnJlbnRseSBJIGRvIG5vdCBydW4gUlRtYWMg
-b3IgdGRtYS4gVGhlIHNjcmlwdCBJIGFtIHJ1bm5pbmcgdG8gc2VuZCB0aGUgVURQIHBhY2tldHMg
-aXMgdGhlIGV4YW1wbGUgWGVub21haSBuYXRpdmUgc2NyaXB0IGZyb20gdGhlIFJUbmV0IHJlcG86
-Cmh0dHBzOi8vc291cmNlZm9yZ2UubmV0L3AvcnRuZXQvY29kZS9jaS9tYXN0ZXIvdHJlZS9leGFt
-cGxlcy94ZW5vbWFpL25hdGl2ZS9mcmFnLWlwLmMKCkkgdXNlIHRoaXMgc2NyaXB0IGxhcmdlbHkg
-dW5jaGFuZ2VkIChqdXN0IGNoYW5naW5nIHRoZSBkZXN0L2xvY2FsIGlwIHRvIHRoYXQgb2YgbXkg
-ZGV2aWNlcykKCkEgY291cGxlIG1vcmUgZGV0YWlsczogCgpNeSBzdGFydHVwIHNjcmlwdCBmb3Ig
-UlRuZXQgaXMgYXMgZm9sbG93cwoK4oCC4oCC4oCC4oCCIG1vZHByb2JlIHJ0bmV0ID4vZGV2L251
-bGwgfHwgZXhpdCAxCiAgICAgICAgbW9kcHJvYmUgcnRpcHY0ID4vZGV2L251bGwgfHwgZXhpdCAx
-CiAgICAgICAgbW9kcHJvYmUgJFJUX0RSSVZFUiA+L2Rldi9udWxsIHx8IGV4aXQgMQogICAgICAg
-IGVjaG8gJEVUSEVSTkVUX1BDSV9CVVNfTlVNID4gL3N5cy9idXMvcGNpL2RldmljZXMvJEVUSEVS
-TkVUX1BDSV9CVVNfTlVNL2RyaXZlci91bmJpbmQKICAgICAgICBlY2hvICRFVEhFUk5FVF9QQ0lf
-QlVTX05VTSA+IC9zeXMvYnVzL3BjaS9kcml2ZXJzLyRSVF9EUklWRVIvYmluZAogICAgICAgIG1v
-ZHByb2JlIHJ0cGFja2V0ID4vZGV2L251bGwgfHwgZXhpdCAxCiAgICAgICAgbW9kcHJvYmUgcnR1
-ZHAgPi9kZXYvbnVsbCB8fCBleGl0IDEKICAgICAgICBtb2Rwcm9iZSBydF9sb29wYmFjayA+L2Rl
-di9udWxsIHx8IGV4aXQgMQoKICAgICAgICAkUlRJRkNPTkZJRyBydGxvIHVwIDEyNy4wLjAuMSAg
-IAogICAgICAgICRSVElGQ09ORklHIHJ0ZXRoMCB1cCAkSVBfQUREUiBuZXRtYXNrICRORVRNQVNL
-CiAgICAgICAgc2xlZXAgMwoKICAgICAgICAkUlRST1VURSBzb2xpY2l0ICRIT1NUX0lQIGRldiBy
-dGV0aDAKClRoZSBJUF9BRERSIGlzIHRoZSBsb2NhbCBhZGRyZXNzIG9mIHRoZSBkZXZpY2UgYW5k
-IHRoZSBIT1NUX0lQIHJlZmVycyB0byB0aGUgZW5kIGhvc3QgSSdkIGxpa2UgdG8gc2VuZCBwYWNr
-ZXRzIHRvIC0tIGFsbCBvdGhlciB2YXJzIGZvbGxvdyB0aGUgY29udmVudGlvbiBpbiB0aGUgZGVm
-YXVsdCBydG5ldCBzdGFydHVwIHNjcmlwdC4gSSBhbSBhYmxlIHRvIHJ0cGluZyBteSBlbmQgaG9z
-dCBzdWNjZXNzZnVsbHkuCgpXaGVuIEkgd2lyZXNoYXJrIG9uIHRoZSBlbmQgaG9zdCAoZGV2aWNl
-IHJlY2VpdmluZyB0aGUgVURQIHBhY2tldHMpLCBJIHNlZSB0aGF0IHRoZSBjaGVja3N1bSBpcyBj
-b25zaXN0ZW50bHkgd3JvbmcsIGJ1dCB0aGUgZGF0YSBwYXlsb2FkIGlzIGNvcnJlY3QuIFdoZW4g
-SSB1bmxvYWQgdGhlIHJ0IGRyaXZlciBmcm9tIHRoZSBuZXR3b3JrIGNhcmQgKHJ0X2UxMDAwZSkg
-YW5kIGxvYWQgYmFjayB0aGUgbm9ybWFsIGRyaXZlciAoZTEwMDBlKSB0aGUgY2hlY2tzdW0gaXMg
-Y29ycmVjdC4gSnVzdCB3b25kZXJpbmcgd2hhdCBtaWdodCBiZSB3cm9uZy4KClN5c3RlbSBpbmZv
-OiAodGhpcyBpcyB3aGF0IEkgc2VlIHdoZW4gSSBydW4geGVuby1jb25maWcgLS1pbmZvKQpYZW5v
-bWFpIHZlcnNpb246IFhlbm9tYWkvY29iYWx0IHYzLjIuMiAtLSAjNjJlZGM4YSAoMjAyMy0wMi0y
-NCAxODo1MDo1MSArMDEwMCkKTGludXggeHh4eC14eHh4eHh4eC0yIDUuMTUuOTgteGVuMy4yKyAj
-NCBTTVAgSVJRUElQRSBUaHUgTWFyIDIzIDAyOjA0OjQ3IFVUQyAyMDIzIHg4Nl82NCB4ODZfNjQg
-eDg2XzY0IEdOVS9MaW51eApLZXJuZWwgcGFyYW1ldGVyczogQk9PVF9JTUFHRT0vYm9vdC92bWxp
-bnV6LTUuMTUuOTgteGVuMy4yKyByb290PVVVSUQ9ZjIzNmUwOTQtNGE4YS00OWU4LTgyOWYtNDJm
-NTRiMWViNWQ4IHJvIHF1aWV0IHNwbGFzaCBpOTE1LmVuYWJsZV9yYzY9MCBpOTE1LmVuYWJsZV9k
-Yz0wIG5vYXBpYyBub3NtYXAgeGVub21haS5zbWk9MSB4ZW5vbWFpLmFsbG93ZWRfZ3JvdXA9MzAw
-MDAgY3B1aWRsZS5vZmY9MSB2dC5oYW5kb2ZmPTcKQ29iYWx0IGNvcmUgMy4yLjIgZGV0ZWN0ZWQK
-Q29tcGlsZXI6IGdjYyB2ZXJzaW9uIDExLjMuMCAoVWJ1bnR1IDExLjMuMC0xdWJ1bnR1MX4yMi4w
-NCkKQnVpbGQgYXJnczoKClRoYW5rcyEK
+Hi Brandon,
+
+On Thu, 2023-07-13 at 15:45 +0000, Brandon Ho wrote:
+> Hi,
+>=20
+> I have been playing around with trying to send UDP messages over RTnet bu=
+t have run into a weird bug where the UDP packets sent with the RTnet netwo=
+rk driver end up with an incorrect checksum.
+>=20
+> Currently I do not run RTmac or tdma. The script I am running to send the=
+ UDP packets is the example Xenomai native script from the RTnet repo:
+> https://sourceforge.net/p/rtnet/code/ci/master/tree/examples/xenomai/nati=
+ve/frag-ip.c
+>=20
+> I use this script largely unchanged (just changing the dest/local ip to t=
+hat of my devices)
+>=20
+> A couple more details:=20
+>=20
+> My startup script for RTnet is as follows
+>=20
+> =E2=80=82=E2=80=82=E2=80=82=E2=80=82 modprobe rtnet >/dev/null || exit 1
+>         modprobe rtipv4 >/dev/null || exit 1
+>         modprobe $RT_DRIVER >/dev/null || exit 1
+>         echo $ETHERNET_PCI_BUS_NUM > /sys/bus/pci/devices/$ETHERNET_PCI_B=
+US_NUM/driver/unbind
+>         echo $ETHERNET_PCI_BUS_NUM > /sys/bus/pci/drivers/$RT_DRIVER/bind
+>         modprobe rtpacket >/dev/null || exit 1
+>         modprobe rtudp >/dev/null || exit 1
+>         modprobe rt_loopback >/dev/null || exit 1
+>=20
+>         $RTIFCONFIG rtlo up 127.0.0.1  =20
+>         $RTIFCONFIG rteth0 up $IP_ADDR netmask $NETMASK
+>         sleep 3
+>=20
+>         $RTROUTE solicit $HOST_IP dev rteth0
+>=20
+> The IP_ADDR is the local address of the device and the HOST_IP refers to =
+the end host I'd like to send packets to -- all other vars follow the conve=
+ntion in the default rtnet startup script. I am able to rtping my end host =
+successfully.
+>=20
+> When I wireshark on the end host (device receiving the UDP packets), I se=
+e that the checksum is consistently wrong, but the data payload is correct.=
+ When I unload the rt driver from the network card (rt_e1000e) and load bac=
+k the normal driver (e1000e) the checksum is correct. Just wondering what m=
+ight be wrong.
+
+Which component does the checksum calculation in this scenario? The
+application, the driver or via HW offloading (if supported by the
+HW...) the HW itself?
+
+Maybe double check that you don't have two checksums. Might happen if
+the application already provides a checksum and the device (or driver)
+adds one more because of incorrect configuration.
+
+Sorry, no more ideas so far...
+
+>=20
+> System info: (this is what I see when I run xeno-config --info)
+> Xenomai version: Xenomai/cobalt v3.2.2 -- #62edc8a (2023-02-24 18:50:51 +=
+0100)
+> Linux xxxx-xxxxxxxx-2 5.15.98-xen3.2+ #4 SMP IRQPIPE Thu Mar 23 02:04:47 =
+UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+> Kernel parameters: BOOT_IMAGE=3D/boot/vmlinuz-5.15.98-xen3.2+ root=3DUUID=
+=3Df236e094-4a8a-49e8-829f-42f54b1eb5d8 ro quiet splash i915.enable_rc6=3D0=
+ i915.enable_dc=3D0 noapic nosmap xenomai.smi=3D1 xenomai.allowed_group=3D3=
+0000 cpuidle.off=3D1 vt.handoff=3D7
+> Cobalt core 3.2.2 detected
+> Compiler: gcc version 11.3.0 (Ubuntu 11.3.0-1ubuntu1~22.04)
+> Build args:
+>=20
+> Thanks!
+
