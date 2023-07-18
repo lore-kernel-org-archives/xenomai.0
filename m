@@ -1,164 +1,282 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D26FEDE
-	for <xenomai@lists.linux.dev>; Tue, 18 Jul 2023 01:31:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689643866; x=1721179866;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version;
-  bh=ri1jMzMDNa+17iTW0KWBYhOlrTM2pXPudlkRWW+GRg4=;
-  b=bJdBJUiXdoCG59u3JGrJNq3oixj/Dfp2/XLgQjrAJhDm32w6jEoXaNKV
-   xr0Az4UIn9kMdOCGWa++Nu7eRvqPkOGLBU5BnpvFghHryCGd1mkc9bPuf
-   JtiWPK2p6J1E2KLp18Z3ANm+Ss6lN4PqnCAaYTDG4gqVdP/Id52JTXs95
-   0GJkmLfyQZTgXyae9iS5c8YMePtt1BGXfhTdTMWTf7mGHsRwtZnwyk5Ic
-   LgkM4ffvDvOgOHD3ex73Fk7bH7iLSA1DZHNzhQU1XlR7Pp8HljD3beRMj
-   jJbXiU0XZetvqhx3O0V4kbaTzJaFG/mj99J/1OKb/uwwqCAxdeZWNZCWQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10774"; a="429843678"
-X-IronPort-AV: E=Sophos;i="6.01,211,1684825200"; 
-   d="scan'208";a="429843678"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2023 18:31:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10774"; a="726748809"
-X-IronPort-AV: E=Sophos;i="6.01,211,1684825200"; 
-   d="scan'208";a="726748809"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga007.fm.intel.com with ESMTP; 17 Jul 2023 18:31:04 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 17 Jul 2023 18:31:04 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 17 Jul 2023 18:31:04 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 17 Jul 2023 18:31:04 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 17 Jul 2023 18:31:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bgIZ3XGerKzh+4uJUbFf+8FV2XUaiOgtgzK+HgqCpKlZ88OQRTi1b4+Art2TgjJ6ePuKCBjqKCX9EsdnX48ZjtXZx9Ab3m0Mk9f+ZFJRNFQAiCHcE02bd42IFpaiSyA/Z3LKKF7ZdlRR+U/g5D/XbAdsnICLDp9v1z/LaHyar9fIrMv7ie9QHl38a7dHa4J10Iud5TFnxH0f64eLi2I0c/lw08DudoUdasNyE3mSREts5j206rwwR7/hPEkAH3UP3Nhjk/5NYLfceoL2O/90DeGeI3WAkxV82h2Gd8cI4v0bDoIgdYCcVsH4V0ausHWQFvP14+Qc9PhWbTtcXTnfJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ri1jMzMDNa+17iTW0KWBYhOlrTM2pXPudlkRWW+GRg4=;
- b=ag7QjrR3if4Ozp3kl2Pp4ZFDTWtf+L6Prr3OhqNceG8S/xdJeeCrTW0HYP0EG8s+ZJYB4dhsdoRpKtHsiKayu32YtxhVJB37gDZEigREr2lJ3G8jm2NTWglquRrRCI5lPJzafH6gc1b3elN6lUF38rsusJvZl4eSZuRE3o//XG22AN/qsh/FOxP4WaVE5yIdS/moluAhyaeqPlK/u26wqf7evmISvmWJl6R10U2HGdq672TW7mbkruWKvWP6EVATHbVGsIgABwjtvgF77rncADpIqWsJYkPCqs6epLmTNSyErifNnrVoE3LsYtCFyyoexhhsiUAzkZyQqMk6YKFVbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
- by DM4PR11MB6357.namprd11.prod.outlook.com (2603:10b6:8:b5::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.31; Tue, 18 Jul
- 2023 01:31:00 +0000
-Received: from MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::431f:7b31:39c7:e9be]) by MN2PR11MB4285.namprd11.prod.outlook.com
- ([fe80::431f:7b31:39c7:e9be%3]) with mapi id 15.20.6588.031; Tue, 18 Jul 2023
- 01:30:59 +0000
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-To: Yao Yongxian <yxianyao@126.com>, "xenomai@lists.linux.dev"
-	<xenomai@lists.linux.dev>
-Subject: RE: The issue of high CPU load
-Thread-Topic: The issue of high CPU load
-Thread-Index: AQHZuF/6lH3cHLH/D0azNkYpJUOD8q++s6lQ
-Date: Tue, 18 Jul 2023 01:30:59 +0000
-Message-ID: <MN2PR11MB428578B713BAF8CCD9E5E3B2F238A@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: <19116d90.26f0.18961de2924.Coremail.yxianyao@126.com>
-In-Reply-To: <19116d90.26f0.18961de2924.Coremail.yxianyao@126.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|DM4PR11MB6357:EE_
-x-ms-office365-filtering-correlation-id: 0b1f38d4-1f88-4e93-1322-08db872ea469
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YYPRWcPseIGMFX/bpsmT2t10ilIc0llYvJk1bQ7kgwylQAfJgJI3XZ3L8zFKQwfLA00rgth0fWub0QOw0RGouZbdVs4M8Gz2kTYhiK+EPSnofy4R0qhzJ68wlr7ISYxBPJRSwIogzwDRbzn+mGqeoF9+UhWPBqKzIf9qO4ty5mmVxN8SRbjkfQWOOFKUiP75US9+f1biYsG3mMhQ8syRYjukm7EIdkOKD9udTRUXbQpuU7aWIDTnHw5wVKb0THsFrlGAlBIPtzDzo81fg07ZrQfiffdHRt0vSiTcR8I9s9ygg6pZXWcY0KlsZHiNBr8gq0kfUoDhuoc0EOi06bvtEeSD8wkmXLaYXR9tXpcJI6yAsRzUYLrE0sTDAcrYDU8jAkVuO2bjBe66K6hXJ60CxcnGoEX0VFy8ChF/rMI0qas3U6R9sVGMgq8PB0QaCfvoyw9oA8abRd6A8MKWn7HB0BO/qBOVrD39ZmwoIQU5amOQZdZK/ypzNP+kSshEaoEjFYPn0GVv1dq4YFfXUauCIKGqwAqQvHrBehgvvRoZ052Z8UWSmlEApH3vMB++MhOPMNIYBVyb9H9h4CXEMFJY+XRAp+c/DQCRS3mzjWckEl0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(39860400002)(366004)(136003)(346002)(376002)(451199021)(478600001)(7696005)(71200400001)(110136005)(6506007)(966005)(186003)(316002)(2906002)(76116006)(4744005)(9686003)(52536014)(41300700001)(66476007)(66446008)(66946007)(5660300002)(8676002)(8936002)(66556008)(122000001)(82960400001)(64756008)(38100700002)(26005)(86362001)(38070700005)(83380400001)(55016003)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OFJXM1ZqZ25qY3RESllaTFZjWTJqck5YQlJJbjNXWWxROWN2L28rTXhGWVVk?=
- =?utf-8?B?MEVHNjF1OW9BY1BQdWp2R3VLazlMODgydG5KLzNZbDFFNTdUSzhkc3BwSHhX?=
- =?utf-8?B?MitPR1djU2E5TVdjUnNIU1hZd2hIdWtZSGZpVUFPa2hiQTdzZnJmRHBXbGxL?=
- =?utf-8?B?TFphNldHeUlFNFlnQ0NzTmZ0aENwQzJ2U3lVdEdTTnZsc2dSVVJ2NXJkRUdV?=
- =?utf-8?B?S1lMK3VMdjBZRWN6aGF3TXEyK2pWQlpSQitib09WYUZ3ZEdoTHR2VnU5TTFn?=
- =?utf-8?B?NlB1T2trMWl3MTYzWkNtc01HYkMwenVpV2JOQm9GcXE4c0lWNndBaHA1NTB4?=
- =?utf-8?B?S092eVVKNWFyOGE4VlBzR0MxQmZsemdtSVNxYVprZnQ4L1F2dXBJdXVZMjV5?=
- =?utf-8?B?N2VZaGMzb0FCOTVtMHM5V3p2MWJ2NkxWREwvdnR2elFQbTVaZ1oraUsxRktr?=
- =?utf-8?B?ZEdURDJqOFBuVG91ZE9nYTZvMU9zM3U4bERZRmwwQkZkNVBIVE1VTDJlemR2?=
- =?utf-8?B?RkZaWi96UDdabzNVZ0IxdzRhcGZLUzJ2OC85emJDYjVTUDJiMnczdXk0N3Mv?=
- =?utf-8?B?WTh0NGNkakVpTFNrYllwTkpwR3VWVHVKSi9VMHR3WXRSMmtIYndFamtwWEYz?=
- =?utf-8?B?b0NqWEt5QjBvbUIxY1Z1K3FRMHlHWkpySlZNb0U2WVRRUXhwYVo3dUtHWXBZ?=
- =?utf-8?B?MWJHVis0N1h3TC9wTVRWMGpOS0dsdDVkL1ZmWjBUOEFma21WVGZUSEZEdnIx?=
- =?utf-8?B?TzdJeUxhZlhPc2F6SGdtZktiMTRHNzVrdUhVcHJkYi9GV2JMempDQmMzMUU4?=
- =?utf-8?B?c2RlVDcyejNnT2RRbmZIUlJueTRWU1prQy8vSkJIS1Bld3dmRGJScDI1OFRK?=
- =?utf-8?B?L2tIbUJXZEphUVE3eTA1ZTAzd1E4d2Ira1BEUXhxUnErWkxSUWxOQ0JZbmE1?=
- =?utf-8?B?blVjdzVDYk9BY0xNWEJxS2JjTXRkS2sxK3gvVkk4aFlEeUwrb2xSTCsyMndr?=
- =?utf-8?B?MlNkaURSR2RqME1BeXY2RnB0b1NQai9jU0t1dTNUdnRrL2VFUnJxY1g3MXhi?=
- =?utf-8?B?ZUZxU2dKYU04NEZTOE12elZMOFFyejBhODhJS0ZIcWkxLzNZdjRkNXBSOG1B?=
- =?utf-8?B?ZGFDUkNXT05GaWtvNm5TQ202TTU5Vm04WUk2YlR1S2xIaUNuWmhWNnFLOXIv?=
- =?utf-8?B?ZFR1RURuTldNWERydW14d0x3TW5nYWVJcTNWVGFvT3NvVjVmU2lkVXBBcG5x?=
- =?utf-8?B?MlFJZ3Q4QldEeWx2amR0b0xBM21UN3VXUGs0K3FrQVRNeFRaOU9kNVNpdmZB?=
- =?utf-8?B?SzVRN3F1UHNheldHemdvbzlodzBvYU9TdEl5Z3lxVU9vTXY2R1Q2dFozQTlF?=
- =?utf-8?B?SnZnZnZCQXdGUVQzVFZkS21DNUc1bmhPS3pQOFZHYUFmMktnNEhvYmRFdjBr?=
- =?utf-8?B?Tk96U3A0aExNelRHbDdTT2E1bWNZUnF4cEpqM3U1MDBvanRxNW0wQnlONGlR?=
- =?utf-8?B?RjNkTEhDdnhzU0xEWWRpME0zRUJJdjk0TWhrbi9nNjhWSGtaZ3Q3bWt1bGp2?=
- =?utf-8?B?TzZaZG1OR2diTzFnS2Nib2J5bStxUm5tZEkwYU9xTnJBaUQ4QlFhcWVEY3gx?=
- =?utf-8?B?NUNJczdrUDZDYW5EWHJLd1NzbmJYUGVuMmo1WDBYYzFYVWxTUnVkRmFlekND?=
- =?utf-8?B?cjVFVVRmWWhWbUw2SGU1VkROYkUxdlZMbC84cENwanBhQkQ1d1pwZEg4Q3ZD?=
- =?utf-8?B?TmVGUUtlQjdwQWxaTFBxaFpuSXJmL2R6N0pYOGNGMzkxU21YcmFQLzZqWmx1?=
- =?utf-8?B?eGFKOFZPdi9wNjhYbW1VUStxTEMxTmNxY0tKMW1idnNIKzY2VGlIeWcyVmoz?=
- =?utf-8?B?b3BLbmhnUjdEU1FKdFg1NWJzQ3gyakZUSi84bHlwZU9aQlNtUm5QRklvYXdp?=
- =?utf-8?B?Wm9pSGdYMXFvdzRDaFgvK0Y2cjd5bGQ1bUlkRWhadlQ4ZTlZZjZXdlBEbGN0?=
- =?utf-8?B?WFpuSXlUNjZjcVZra2xTcFFJSys2cE45TGIrLzNwMUR2cGFkVEJrcTJ0dGxo?=
- =?utf-8?B?bWp4SjFrV0RQdytkY2Zwc29lbVlOaG9uZi8rNkUrNW5kNVdaZXJRRENUb1c3?=
- =?utf-8?Q?aDg2Ys34VSMM8Xxfhe7+FDs0f?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE12810EA
+	for <xenomai@lists.linux.dev>; Tue, 18 Jul 2023 06:44:50 +0000 (UTC)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230718064447e19cce1116cebb7c05
+        for <xenomai@lists.linux.dev>;
+        Tue, 18 Jul 2023 08:44:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=eFPb1N25mUySU0LeBXBJn7+akL6c6C+4eH7hO/xoMbo=;
+ b=nPi/So7AN3+G3zejUmftl5j8nz2Gq90HHNx6+r87CySs7FOH2I8q9dlKSDru46SOMFZNCL
+ G7o/7qgNiAmYZ5WTsAIiRie2185U2YxMgtV4mm//IiAHU+RfCnkoneuFDLvxvXd+spzkq+8i
+ QCGOtswmQPscBRdGrNyz6ydVQvalk=;
+Message-ID: <0a0b0b0482cd9d5b4b816348d01a964673afcd23.camel@siemens.com>
+Subject: Re: Missing asm/fpu/internal.h
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: =?ISO-8859-1?Q?Tam=E1s_Pa=E1l?= <paal.tam@gmail.com>, 
+	xenomai@lists.linux.dev
+Date: Tue, 18 Jul 2023 08:44:47 +0200
+In-Reply-To: <CAH0t8y321gcc59b_GBtgtwqK8cqSuxcOZu5FHgm78WSoMB5Qzg@mail.gmail.com>
+References: 
+	<CAH0t8y1U_A8ggJG3mjikhsk+soJYm-du0NcxAApbe=UFWXwm5Q@mail.gmail.com>
+	 <2e134bee306f59f28c098d5415b387a758d4a38c.camel@siemens.com>
+	 <CAH0t8y3bbjFi8J2RekiYyiEWjfgfThR8ZYWa5JQE2jCM4jOVkg@mail.gmail.com>
+	 <fc4a4f7c128f2ddbf625c5d575ec8a85a217fcd7.camel@siemens.com>
+	 <CAH0t8y2U95PXRT4xNKm6fO93XNwrQD4V4MbaQu1B3V6SAQWVmw@mail.gmail.com>
+	 <CAH0t8y321gcc59b_GBtgtwqK8cqSuxcOZu5FHgm78WSoMB5Qzg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b1f38d4-1f88-4e93-1322-08db872ea469
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2023 01:30:59.9288
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xkT3v8uvL4rt2J43q56Vpcxwj1qn7BEFd+OaZ31s7nDwl2Fhcl5TLAxfafTJcClg6WfyRV+iBY495lc0sdRdow==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6357
-X-OriginatorOrg: intel.com
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IFlhbyBZb25neGlhbiA8eXhp
-YW55YW9AMTI2LmNvbT4NCj5TZW50OiBNb25kYXksIEp1bHkgMTcsIDIwMjMgMTE6MjIgQU0NCj5U
-bzogeGVub21haUBsaXN0cy5saW51eC5kZXYNCj5TdWJqZWN0OiBUaGUgaXNzdWUgb2YgaGlnaCBD
-UFUgbG9hZA0KPg0KPg0KPkhp77yMDQo+DQo+SGlnaCBDUFUgbG9hZCBvbiB0aGUgcmVhbC10aW1l
-IHRocmVhZCBvciBpZiBhIFhlbm9tYWkgdGhyZWFkIHJ1bnMgZm9yIGEgbG9uZw0KPnRpbWUgY2Fu
-IGNhdXNlIHRoZSBzeXN0ZW0gdG8gYmVjb21lIHVucmVzcG9uc2l2ZSBvciBldmVuIGNyYXNoLg0K
-PlRoaXMgaXMgYmVjYXVzZSB0aGUgcmVhbC10aW1lIHRocmVhZCBtYXkgY29uc3VtZSBhbGwgYXZh
-aWxhYmxlIENQVSByZXNvdXJjZXMsDQo+bGVhdmluZyBubyByZXNvdXJjZXMgZm9yIG90aGVyIHRo
-cmVhZHMgb3Igc3lzdGVtIHByb2Nlc3Nlcy4NCg0KWW91IG1heSBmaW5kIG1vcmUgZXhwbGFuYXRp
-b24gYWJvdXQgc3VjaCBpc3N1ZSBpbiB0aHJlYWRzIFsxXS4gDQoNClsxXTogaHR0cHM6Ly9sb3Jl
-Lmtlcm5lbC5vcmcveGVub21haS9DQUtjb2hQeGRoQ01vaEpaZlNOYUwyRXZFRGNMZG04Q1JnZHkz
-aFV1c0N1OVk1amV4eHdAbWFpbC5nbWFpbC5jb20vDQoNCj4NCj5XaWxsIGhpZ2ggQ1BVIGxvYWQg
-Y2F1c2VkIGJ5IG5vbiByZWFsLXRpbWUgcHJvY2Vzc2VzIGFmZmVjdCB0aGUgeGVub21haSByZWFs
-LQ0KPnRpbWUgc3lzdGVtIHN0YWJpbGl0eSBvciBsZWFkIHRvIG90aGVyIGlzc3Vlcz8NCj5Db3Vs
-ZCB5b3UgcGxlYXNlIGdpdmUgbWUgc29tZSBkZXRhaWxlZCBleHBsYW5hdGlvbj8NCg0KV2UgZG8g
-bm90IGZpbmQgc3lzdGVtIHN0YWJpbGl0eSBpc3N1ZSBvbiB4ZW5vbWFpIHNpZGUgY2F1c2VkIGJ5
-IGhpZ2ggQ1BVIGxvYWRpbmcgb2Ygbm9uIHJ0IHRocmVhZHMuDQoNClJlZ2FyZHMNCg0KSG9uZ3po
-YW4gQ2hlbg0KDQoNCj4NCj5Mb29raW5nIGZvcndhcmQgdG8geW91ciByZXBseS4NCj4NCj5UaGFu
-ayB5b3UuDQo+DQo+DQoNCg==
+On Mon, 2023-07-17 at 16:51 +0200, Tam=C3=A1s Pa=C3=A1l wrote:
+> > > > > Dear All,
+> > > > >=20
+> > > > > I am using the 5.15 dovetail based kernel together with Xenomai 3=
+.2.1.
+> > > > > It works fine. I would like to upgrade to a more recent kernel, b=
+ut I
+> > > > > run into a kernel compilation error very early:
+> > > > > >=20
+> > > >=20
+> > > > > In file included from ./include/asm-generic/xenomai/ Xenomai 3.2.=
+x supports Linux up to 5.15. If you want to update to newer
+> > > > > Linux versions you have to use Xenomai from master branch. There =
+is no
+> > > > > 3.3 release yet, but we're working on it. We already discussed th=
+at
+> > > > > "missing release" in our community call some days ago. There are =
+some
+> > > > > features pending that we would like to integrate. So: stay tuned.
+> > > > >=20
+> > > > > Florian
+> > > >=20
+> > > > Thank you!
+> > > > Which kernel do you recommend to start working with. 6.1, or 6.4? I=
+s
+> > > > the current master in a "working shape", or should I wait for a
+> > > > release?
+> > > >=20
+> > > 6.1 is a LTS (Long Term Support) release, so it will stay for some
+> > > time, Xenomai support included.
+> > >=20
+> > > 6.4 is just a normal release and will vanish once 6.5. is out. We're
+> > > testing that in combination with latest Xenomai already (to make sure
+> > > we stay compatible) but we do not plan to support that specific relea=
+se
+> > > over the long run.
+> > >=20
+> > > Florian
+> >=20
+> > Thank you very much!
+> > Tamas
+>=20
+> I downloaded the latest  Xenomai master branch. I compiled a new
+> kernel (6.1 and 6.4 behaves the same way) . The xeno-test fails:
+>=20
+> ./xeno-test: line 100:  1746 Segmentation fault      (core dumped)
+> $testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=3D64
+> pattern_check_rounds=3D64
+> + start_timesyncd
+> + true
+> + systemctl start systemd-timesyncd
+> + timesyncd_was_running=3Dfalse
+> child 1739 returned: exited with status 139
+>=20
+> Am I doing something wrong?
+> Thank you,
+> Tamas
+
+The CI runs that we did on this versions look OK, so I think it's a
+problem in your setup. Make sure you don't try to run an older (3.2.x)
+testsuite linked against up to date Xenomai libraries (or the other way
+around).
+
+Maybe something got screwed up while testing all those different
+versions?
+
+The segfault happens when trying to run the smokey testsuite. Is it a
+single test that fails, or basically all of them? You may limit the
+number of tests to be executed by "smokey --run=3D<list of test names>"
+
+Florian
+
+>=20
+> Tam=C3=A1s Pa=C3=A1l <paal.tam@gmail.com> ezt =C3=ADrta (id=C5=91pont: 20=
+23. j=C3=BAl. 17., H, 11:49):
+> >=20
+> > > > > Dear All,
+> > > > >=20
+> > > > > I am using the 5.15 dovetail based kernel together with Xenomai 3=
+.2.1.
+> > > > > It works fine. I would like to upgrade to a more recent kernel, b=
+ut I
+> > > > > run into a kernel compilation error very early:
+> > > > >=20
+> > > > >=20
+> > > > > In file included from ./include/asm-generic/xenomai/ Xenomai 3.2.=
+x supports Linux up to 5.15. If you want to update to newer
+> > > > > Linux versions you have to use Xenomai from master branch. There =
+is no
+> > > > > 3.3 release yet, but we're working on it. We already discussed th=
+at
+> > > > > "missing release" in our community call some days ago. There are =
+some
+> > > > > features pending that we would like to integrate. So: stay tuned.
+> > > > >=20
+> > > > > Florian
+> > > >=20
+> > > > Thank you!
+> > > > Which kernel do you recommend to start working with. 6.1, or 6.4? I=
+s
+> > > > the current master in a "working shape", or should I wait for a
+> > > > release?
+> > >=20
+> > > 6.1 is a LTS (Long Term Support) release, so it will stay for some
+> > > time, Xenomai support included.
+> > >=20
+> > > 6.4 is just a normal release and will vanish once 6.5. is out. We're
+> > > testing that in combination with latest Xenomai already (to make sure
+> > > we stay compatible) but we do not plan to support that specific relea=
+se
+> > > over the long run.
+> > >=20
+> > > Florian
+> >=20
+> > Thank you very much!
+> > Tamas
+> >=20
+> > Florian Bezdeka <florian.bezdeka@siemens.com> ezt =C3=ADrta (id=C5=91po=
+nt: 2023.
+> > j=C3=BAl. 17., H, 11:46):
+> > >=20
+> > > On Mon, 2023-07-17 at 11:36 +0200, Tam=C3=A1s Pa=C3=A1l wrote:
+> > > > > Dear All,
+> > > > >=20
+> > > > > I am using the 5.15 dovetail based kernel together with Xenomai 3=
+.2.1.
+> > > > > It works fine. I would like to upgrade to a more recent kernel, b=
+ut I
+> > > > > run into a kernel compilation error very early:
+> > > > >=20
+> > > > >=20
+> > > > > In file included from ./include/asm-generic/xenomai/ Xenomai 3.2.=
+x supports Linux up to 5.15. If you want to update to newer
+> > > > > Linux versions you have to use Xenomai from master branch. There =
+is no
+> > > > > 3.3 release yet, but we're working on it. We already discussed th=
+at
+> > > > > "missing release" in our community call some days ago. There are =
+some
+> > > > > features pending that we would like to integrate. So: stay tuned.
+> > > > >=20
+> > > > > Florian
+> > > >=20
+> > > > Thank you!
+> > > > Which kernel do you recommend to start working with. 6.1, or 6.4? I=
+s
+> > > > the current master in a "working shape", or should I wait for a
+> > > > release?
+> > >=20
+> > > 6.1 is a LTS (Long Term Support) release, so it will stay for some
+> > > time, Xenomai support included.
+> > >=20
+> > > 6.4 is just a normal release and will vanish once 6.5. is out. We're
+> > > testing that in combination with latest Xenomai already (to make sure
+> > > we stay compatible) but we do not plan to support that specific relea=
+se
+> > > over the long run.
+> > >=20
+> > > Florian
+> > >=20
+> > > >=20
+> > > > Thank you very much!
+> > > > Tamas
+> > > >=20
+> > > > Florian Bezdeka <florian.bezdeka@siemens.com> ezt =C3=ADrta (id=C5=
+=91pont: 2023.
+> > > > j=C3=BAl. 17., H, 11:15):
+> > > > >=20
+> > > > > On Mon, 2023-07-17 at 11:05 +0200, Tam=C3=A1s Pa=C3=A1l wrote:
+> > > > > > Dear All,
+> > > > > >=20
+> > > > > > I am using the 5.15 dovetail based kernel together with Xenomai=
+ 3.2.1.
+> > > > > > It works fine. I would like to upgrade to a more recent kernel,=
+ but I
+> > > > > > run into a kernel compilation error very early:
+> > > > > >=20
+> > > > > >=20
+> > > > > > In file included from ./include/asm-generic/xenomai/syscall.h:2=
+6,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from
+> > > > > > ./arch/x86/xenomai/dovetail/include/asm/xenomai/syscall.h:24,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from ./include/xenomai/pipeline/pipe=
+line.h:12,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from ./include/xenomai/cobalt/kernel=
+/lock.h:26,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from ./include/xenomai/cobalt/kernel=
+/sched.h:23,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from ./arch/x86/include/dovetail/irq=
+.h:12,
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0from kernel/irq/pipeline.c:17:
+> > > > > > ./arch/x86/xenomai/include/asm/xenomai/wrappers.h:44:10: fatal =
+error:
+> > > > > > asm/fpu/internal.h: No such file or directory
+> > > > > > =C2=A0=C2=A0=C2=A044 | #include <asm/fpu/internal.h>
+> > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|          ^~~~~~~~~~~~~~~~=
+~~~~
+> > > > > > compilation terminated.
+> > > > > > make[3]: *** [scripts/Makefile.build:252: kernel/irq/pipeline.o=
+] Error 1
+> > > > > > make[2]: *** [scripts/Makefile.build:494: kernel/irq] Error 2
+> > > > > > make[1]: *** [scripts/Makefile.build:494: kernel] Error 2
+> > > > > >=20
+> > > > > >=20
+> > > > > > I have been tried kernel 5.19, 6.1, 6.4, Xenomai 3.2.1, 3.2.3 i=
+n all
+> > > > > > combinations, with the same result.
+> > > > > > In kernel version 5.15 the arch/x86/include/asm/fpu directory c=
+ontains
+> > > > > > an internal.h, but I cannot find this file from 5.19 and above.=
+ I
+> > > > > > believe this is the cause of the error.
+> > > > > >=20
+> > > > > > Please help me. What am I doing wrong?
+> > > > >=20
+> > > > > Xenomai 3.2.x supports Linux up to 5.15. If you want to update to=
+ newer
+> > > > > Linux versions you have to use Xenomai from master branch. There =
+is no
+> > > > > 3.3 release yet, but we're working on it. We already discussed th=
+at
+> > > > > "missing release" in our community call some days ago. There are =
+some
+> > > > > features pending that we would like to integrate. So: stay tuned.
+> > > > >=20
+> > > > > Florian
+> > > > >=20
+> > > > > >=20
+> > > > > > Thank you,
+> > > > > > Tamas
+> > > > > >=20
+> > > > >=20
+> > > >=20
+> > >=20
+>=20
+
