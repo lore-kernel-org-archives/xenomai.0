@@ -1,51 +1,51 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE9218AE4
-	for <xenomai@lists.linux.dev>; Thu, 20 Jul 2023 14:52:08 +0000 (UTC)
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-9939fbb7191so205014266b.0
-        for <xenomai@lists.linux.dev>; Thu, 20 Jul 2023 07:52:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A52F18AE7
+	for <xenomai@lists.linux.dev>; Thu, 20 Jul 2023 14:52:09 +0000 (UTC)
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-51e57874bfdso1238951a12.0
+        for <xenomai@lists.linux.dev>; Thu, 20 Jul 2023 07:52:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1689864727; x=1690469527;
+        d=sigma-star.at; s=google; t=1689864728; x=1690469528;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=X1cQOc964HWxVz5/SRWF8kLGcrk3hDq1vbOJf8B2Nkc=;
-        b=lsY3F0DsuxYiojerP6XFIVLN9g6yEKhNDYfaz0Zx6qyxCbWGKE3I32TFGgEWN8yYnN
-         u3IysLbz8Bn+VJmDlbgmfxSpdatmIb/VLPnGXZJ62IRBSz23+6SlJg0CUVo+5nheZZVK
-         RAhXM8GI46vTt0mbd/S4REOYCSIZhw7f0moy3DxcKg0xKeyIGZ6AhsFuF5wsusdvSLRP
-         BbnF9jxiD5KYu+JoHq/SahlGJZXeVruOa9yInrXzKGF9O9ivFWD46p6U/p+c1DXoe2ga
-         F70iSEGHkMVyL5iDa6CgXao3OC+R4Hcsd5I8iNopjM5r4lofYLs+tcRL2I4wKoYao+ZR
-         nq/A==
+        bh=y8wyq5zlbwmBl2z5r15EjCpmgvXiFhSWkqekXZ9l2jc=;
+        b=KoaMncTkJauMR1wU4KPfhIgDogmrHtJIBzcVRxL8zLVAqAKx39Mg87hFBuxc6UjU2m
+         LIqn8K/yp6L+91cwfHwB94+qzsciRCEVtBuyfqlkOzLemGcgiVccsBx2j7RlH269n1ua
+         yOJIIzP/0ZGpK55Eyz6zb9huao+wlm75/WybSPDVsnjoOp+V9BbecwP3d+ePmVipsyg+
+         rJ+QXK1r/nK0TfgLN963YfXnz4iOCi+qpjHJGY787y7Gg6WbVvzViqHjhQoSv56hek4x
+         l6SuObZl2869paAgQQ8TOkriQPzd0+7wy33LTkazvaobLX5Hi57QhWLn8S+SBxbYy16r
+         HkjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689864727; x=1690469527;
+        d=1e100.net; s=20221208; t=1689864728; x=1690469528;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=X1cQOc964HWxVz5/SRWF8kLGcrk3hDq1vbOJf8B2Nkc=;
-        b=e4BnEADpnMjp47fatkjhB0XvwbGJ9Hph466B9za4z7vVm2fZ0+bvCSSBGSBLfzj4lL
-         ApC2RHjWvIGg2/Egt8vD86ir/OQmjPIAlzYinjzso6Z9QtrLFXymez5kUrNFtw9Rg8rH
-         AZsjYlb9QQRazbtXczTiDgI0/4IaORAywEzw89kZi8yijeH4MqeRgR4nVHNhBfCkuDON
-         QEG+wYpelVHZdtjR0DlOv+6Td8SYRQpEbEXV2LKm2o9+DlNcBR51uzffN0mFhGR6BnvQ
-         8p36uSLikJ8T9PVCoSGUxZyDQT1r400xIuWZx5RxeI0W27et5pqAO3UUPDjyd4dxezvk
-         haZg==
-X-Gm-Message-State: ABy/qLZlVETFWR6M6/dKCZst6rIEVObs5PiaxSpnLp2q28Knf/Rw24lG
-	ZXAwN5rVPeVDI+9q6L9hBpLqQduXDsfF5RWv/tY=
-X-Google-Smtp-Source: APBJJlF58aXe9gzTymxmuRbs0NAzizAkdVf2N6lW6hi60OYamrgpOYcjMTSA1uDaWWoR8piKPFs6zQ==
-X-Received: by 2002:a17:906:51d3:b0:98e:370c:be69 with SMTP id v19-20020a17090651d300b0098e370cbe69mr5748778ejk.6.1689864726964;
-        Thu, 20 Jul 2023 07:52:06 -0700 (PDT)
+        bh=y8wyq5zlbwmBl2z5r15EjCpmgvXiFhSWkqekXZ9l2jc=;
+        b=EfMCdIbDspzWBlcq7wkSFmzNfZxexlMyI7ZXJZc5CybsfUg/WBkRykCO5GnT5JyaxI
+         JPMquew2c4grOBZpVqaxXoaemAMur/AEdRPpvPOgQrFZJwFfCy3F99ZV6U5icxEH48r8
+         aZFer5Ts91NDAtYyZR4IwL5cCkRHJVDQ+aby6sttdL3xhhN+u0UQNb8z6zvikJEBJ2SU
+         Nledf++AYnv74egTKN0Kg49QRrjXA+wReVOerwDaz9eSRY7lANkSi0lYzO6FNlOjCLBz
+         gfnbRnCbNMzAZqqwTJRkw4X1vculPDUhFxi+HBp6rCwhfAn1wa9w06Ex+rTYDvq416qh
+         mLkg==
+X-Gm-Message-State: ABy/qLb7hB8+Bp7oiKwWOViBDnOwCoV3k7h04iyzIjw+4EWzGsNomsVt
+	/wnIsO23YoNyyRMkJWrCMzIUko9p1zZe9IoCEZw=
+X-Google-Smtp-Source: APBJJlGVZUJKt8PWpDMO1ElI3lkBN0oohudYDcfZq7eaSWFsFAPzLAXRg8Dm/BaX6f2vPmpi+ZOkwQ==
+X-Received: by 2002:a17:906:519a:b0:994:5396:e322 with SMTP id y26-20020a170906519a00b009945396e322mr2861997ejk.1.1689864728153;
+        Thu, 20 Jul 2023 07:52:08 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id h13-20020a170906854d00b0099290e2c163sm793462ejy.204.2023.07.20.07.52.06
+        by smtp.gmail.com with ESMTPSA id h13-20020a170906854d00b0099290e2c163sm793462ejy.204.2023.07.20.07.52.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jul 2023 07:52:06 -0700 (PDT)
+        Thu, 20 Jul 2023 07:52:07 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH 04/10] testsuite: Remove old alchemytests Makefile
-Date: Thu, 20 Jul 2023 16:51:44 +0200
-Message-Id: <20230720145150.24607-5-aaron@sigma-star.at>
+Subject: [PATCH 05/10] alchemytests: Fix gcc warning in buffer-1
+Date: Thu, 20 Jul 2023 16:51:45 +0200
+Message-Id: <20230720145150.24607-6-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230720145150.24607-1-aaron@sigma-star.at>
 References: <20230406103341.2914-1-aaron@sigma-star.at>
@@ -56,93 +56,38 @@ List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Richard Weinberger <richard@nod.at>
 
+Make n an unsigned integer, such that gcc realizes that "%.2d" cannot
+become negative and will fit into our 3 bytes buffer.
+
+Fixes:
+buffer-1.c:64:15: error: ‘%.2d’ directive writing between 2 and 10 bytes into a region of size 3 [-Werror=format-overflow=]
+   sprintf(s, "%.2d", 11 * n);
+               ^~~~
+
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
 ---
- lib/alchemy/testsuite/Makefile | 70 ----------------------------------
- 1 file changed, 70 deletions(-)
- delete mode 100644 lib/alchemy/testsuite/Makefile
+ testsuite/smokey/alchemytests/buffer-1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/alchemy/testsuite/Makefile b/lib/alchemy/testsuite/Makefile
-deleted file mode 100644
-index a831c999e..000000000
---- a/lib/alchemy/testsuite/Makefile
-+++ /dev/null
-@@ -1,70 +0,0 @@
--ifeq ($(DESTDIR),)
--XENO_CONFIG=xeno-config
--else
--XENO_CONFIG=$(DESTDIR)/bin/xeno-config
--endif
--
--prefix := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --prefix)
--solibs := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --libdir)
--core := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --core)
--
--ifeq ($(prefix),)
--$(error Please add <xenomai-install-path>/bin to your PATH variable or specify DESTDIR)
--endif
--
--cobalt-only := pipe-1
--mercury-only :=
--core-specific = $($(core)-only)
--
--TESTS :=		\
--	task-1		\
--	task-2		\
--	task-3		\
--	task-4		\
--	task-5		\
--	task-6		\
--	task-7		\
--	task-8		\
--	task-9		\
--	task-10		\
--	mq-1		\
--	mq-2		\
--	mq-3		\
--	alarm-1		\
--	sem-1		\
--	sem-2		\
--	mutex-1		\
--	event-1		\
--	heap-1		\
--	heap-2		\
--	buffer-1	\
--	$(core-specific)
--
--CFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=alchemy --cflags) -g
--LDFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=alchemy --ldflags)
--CC = $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --cc)
--
--all: $(TESTS)
--
--%: %.c
--	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
--
--install: all
--	install -d $(prefix)/testsuite/alchemy
--	install -t $(prefix)/testsuite/alchemy $(TESTS)
--
--clean:
--	$(RM) $(TESTS) *~
--
--# Run the test suite. We pin all tests to CPU #0, so that SMP does not
--# alter the execution sequence we expect from them.
--test: all
--	@for t in $(TESTS); do \
--		echo -n $$t...; \
--		sudo LD_LIBRARY_PATH=$(solibs) $(VALGRIND) ./$$t --cpu-affinity=0 --silent && echo ok || echo BAD; \
--	done
--
--test/%: %
--	sudo LD_LIBRARY_PATH=$(solibs) $(VALGRIND) ./$(@F) --cpu-affinity=0 --silent && echo ok || echo BAD
--
--.PHONY: clean test
+diff --git a/testsuite/smokey/alchemytests/buffer-1.c b/testsuite/smokey/alchemytests/buffer-1.c
+index d6d1d9ad7..807db1dcf 100644
+--- a/testsuite/smokey/alchemytests/buffer-1.c
++++ b/testsuite/smokey/alchemytests/buffer-1.c
+@@ -49,7 +49,7 @@ static void background_task(void *arg)
+ {
+ 	char c = 'A', s[3];
+ 	ssize_t ret;
+-	int n = 0;
++	unsigned int n = 0;
+ 
+ 	traceobj_enter(&trobj);
+ 
 -- 
 2.35.3
 
