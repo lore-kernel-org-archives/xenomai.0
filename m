@@ -1,282 +1,151 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2043.outbound.protection.outlook.com [40.107.13.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14D297C
-	for <xenomai@lists.linux.dev>; Sun, 23 Jul 2023 09:39:52 +0000 (UTC)
-Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id B6345C2EDF
-	for <xenomai@lists.linux.dev>; Sun, 23 Jul 2023 09:36:41 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id A60B21C0004;
-	Sun, 23 Jul 2023 09:36:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1690104994;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Oc7GHTuKvzGRrARznURResUkRzkit7kyuymQg9VIias=;
-	b=UV8aEMxBGfU3WWaWUcI8IT0cLzs27ANGZBIFCWuHxx+cTPNRAPhJhr9aQRDy2oMf4/q3Et
-	lP2y1oRPBGjZLushw5lBMsgP2g8UnTPJPpp34xAuWRCwneNzS9Ln9ohfXTe5w/f6rw7Afu
-	aXFQ7QcWJT5p8hBb2K4bUJIt33wydxHVRypjW7iu80s3Bh5j/NEWzscopnRMts1LVwkn+4
-	bSq0Qe09T24UskUZ5n0wqV6yFYlHXPXgzyVrIY2TknUX4NoK9NJbN3M6OoL1eYbHg0xUoS
-	+7ysIBL0p/ebDoLIqboNyxp/YPAa8RvXha0WSVNkMgK8UQ9QhGnO7hxlAqi0hA==
-References: <ecada31f7d6376ed073cb485bd21457e1358d357.camel@siemens.com>
- <87ttub8sx1.fsf@xenomai.org>
- <621694c10b6c86f1b914779305934a2a714a7ef1.camel@siemens.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: dovetail: IO-APIC IRQ storm
-Date: Sun, 23 Jul 2023 11:25:20 +0200
-In-reply-to: <621694c10b6c86f1b914779305934a2a714a7ef1.camel@siemens.com>
-Message-ID: <87fs5f0y2p.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A4B1C10
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 07:40:41 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eRCMxtGY1SZm3KiWzgOPbQHHXszHle5rMyorz+lHKBJEOFsVtL9w9ky5bR9hwVFkbM8LdI1knBJnd+rlIyYRFaszrwahsk9V5fw8xD3QBhdz4F+oiPZpjwXAXnwaK6OmEzF08+dIUcEiwNQeqMyi4YdV7hoc2cB/F97LD1BuU815zDeTWusImw/q+CAfSjlIWryUNvTbsq9IQx0daiB8IrelDxBPV1SxzFWkp2bUZYpOSZ/TwS9Tv5hYh6VgXRTWaO5SM2rYe4PVkEVDcNoIFtH0l6g8N34dKDnWA65ibRCiCCG5y4sBP/qvd7cQXmNZyIh5ItExDoGidvx9w4Hyvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Yt73P84EZO0djGSs+fc8zDaqK1wS/Qi+IvwV33GNI4g=;
+ b=EvFy0D/+xkPigLGLkNfdoiCZX/3W6ifX3uhQMM5r6HIbcpUJNKxwhnEwFGGLStuztVMwkpPeP404gal0C87WmHxEFHXLdM2c2ihQn53cnAIBJerTyMRR4zEk6BDZjHTioIIcAlHr/rxdIHcbARoQKVyrxSqScplKGX6DmBVWzzsRPnYgK78JSGhWleZK/xTxnkswbx38Byof14TcfnQhH4G4Ey4LgQlKS4wVVAEOSQJ9yx/PC6UNamuC+txP1Sm163B2yFaCnJOiBMw1qSw/LnFH6FGWY235zlkyHyDpyPTB0GrPXVkTdKyj4SZD+gfxVoPso14WIlgq2ll6dE+z+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yt73P84EZO0djGSs+fc8zDaqK1wS/Qi+IvwV33GNI4g=;
+ b=h3hNgE8PelTmSKxhF1pbWyZ3m754v1yvu+phFX13MQ/LYJIBdOuHe/kog6aCzDXcQ2mt3gfomJTl1Csl41kX0iEdM5L9tAjsOEOWdTIllrLBsNUGangkW2kFlTrAgRYJRxdEzMGz86EvdFuegygFi77f4hJ+ZTTf6976bKXdJgWR9CIZl34tbIHi2v5Io0kj1pZflToDmErTi+8OWvVZZ7gT+ukVGpxu9PNJx5Xro60rGpPWX7lR7saGXep16yceAP8KbwpxMkNxM4mL2yAaBoknrK+g03ZFzOv7/APiJMTfgeRur7XMbB+jqtxRV2RZG7fJGTDyiW76prcB6lyOJw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
+ by VI1PR10MB3710.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:13c::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Mon, 24 Jul
+ 2023 07:40:38 +0000
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::83e0:fdfd:2432:226a]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::83e0:fdfd:2432:226a%7]) with mapi id 15.20.6609.031; Mon, 24 Jul 2023
+ 07:40:38 +0000
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH 1/2] linux-xenomai: Fix SD card boot for beagle bone black
+Date: Mon, 24 Jul 2023 09:40:34 +0200
+Message-ID: <20230724074035.81965-1-florian.bezdeka@siemens.com>
+X-Mailer: git-send-email 2.41.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0218.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ac::14) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|VI1PR10MB3710:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37064683-382a-4c25-4fa6-08db8c1945db
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	SDZtr0420IXjfCgnwChNJcqmke+O5z3cbFhNP2bcNOW244C1UQMFDYGoO6Oq22cpsQN9c/HqDsVr/z6WcG1zz4nHmaaVRVmkzG0jz49c7oKluEs1Wr7eees8BE+g/V5n3Lb5zYhImvWGd8DJzseona3aeAlT29P2raZvhrINknLk1mgVaJlI0I/nd94B66qt8KznCYcLbIxxw+taGeI88J3oXloG4lnjNGrg+pK6K96+Y2fsi/UXAjUI0h8jTUum05otYjHrLoIzVJcNfjXG7GbDytqrA5s2Wq6AbTyvGwCe2N9kGGCkE2F43/S2Y/ITz2TSn80i7ouJ0EeBfteWlDE0qP52KOwJHhqqIvGi/Eab3UZ4VvtjueiD4wUvIxJ/MHrFhrqj0SDCNiFv8SRS9fq6mjODJEkNxt8Vg3AXdmqL7pfP/a/uQNnh+Vr4b70aG4zX2/scZq7KrQrlK5a0NXEyc40ZYIotG+32+Zc+WVDUFcS2HQGBHJyyQfGA64joKDuCfRBnKZMrqA0aV0kNjGS5rc2e/xncpQ4xg+IeH8jrWu0EmZWjLrVI5+dnGgMv
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(376002)(136003)(396003)(346002)(451199021)(1076003)(186003)(6506007)(44832011)(5660300002)(36756003)(8676002)(8936002)(2906002)(2616005)(82960400001)(86362001)(107886003)(38100700002)(83380400001)(6916009)(66946007)(66556008)(66476007)(4326008)(316002)(6486002)(6512007)(6666004)(478600001)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZRuCv17Rtshs11pDjQIP890rmidAsYLc28hbuS3jy++iu9bJfWlVXWliL2TA?=
+ =?us-ascii?Q?9R9lmH3wqkc3iMOUBGFtrmI34Td+LGyzGwjjeSUud3oO4wPsoVRvzA8/7/va?=
+ =?us-ascii?Q?yqJQunlqfd8aZpLpRRkzbPJ5auxUsTh4eqrRFMGEnRz+EL3cxzTOAK1VFC6M?=
+ =?us-ascii?Q?qqJG3mNLUCA4wQa++cEn7BkHgRMMIcw2Q+NfAc3K/1SenKJjkC7NUU5vmSpq?=
+ =?us-ascii?Q?q87+UbyQQ1zRC42L+UdH/weacFT/9xiuFQl8Lpf1LFT/2UzIgKOyFm2ydLpV?=
+ =?us-ascii?Q?Z5Bp1fJzAvQddnM/g3VU1OHIMV/r6l+A+MVdTih8lT5Q5IVu1VPUHSDY7/Ou?=
+ =?us-ascii?Q?Qj1szbWuCBUxb5JkDLIUH86S35zuLfPkgdHIzPWi3vlbCCYIzquC8IsDHvC9?=
+ =?us-ascii?Q?0nHdKQlsCwm+F4g3+Ly8/KVWz7xLqYkNqFHWOpKBjqnMUnQK12rEzKVzrsCn?=
+ =?us-ascii?Q?b+lpidEr8KAiGHHAI2tVfHgQCEOInsC/5O/PjmKCljNEcq9nOdZZoftyFfIJ?=
+ =?us-ascii?Q?FqNMnTUwU5aKNMYEn+nU6y21WF1+GOvHS19x41tICcRcSvIxUV6DQoYnuKzs?=
+ =?us-ascii?Q?gW/PB4729mLHxvHLPP29jJD3wBaZmPBk1wlbpawFdIZaMi3reguM633P90zR?=
+ =?us-ascii?Q?IfO1Q9jmoQShPrAvR58f3uBI5PQNbF5ogbuv+tQiE8FumDn8PYwNm4T36/pJ?=
+ =?us-ascii?Q?8kNIiq3QY8BA/jhAEPax0eR3EgKoyoWIEq/4wzTfzXPhtA0a0fj4JwJDK7Ui?=
+ =?us-ascii?Q?OAEej+Etdb06ko/KaOBBo9SoJuIetNDIIkIrOztxAUbQhYSdwrz/Pt7HRYya?=
+ =?us-ascii?Q?15xHL8WWLwsHx9v/cUP4AAGAGlUomTnItyisyefZZVL+Avsg8HeKngfjIhRO?=
+ =?us-ascii?Q?H7VoDzrFL6R703hZsbzM0nzOoTOTly7E/el4f3F9tMVrZv3YWJS5y97Ne4Bm?=
+ =?us-ascii?Q?YVVM44R5ETQeR3HTyw24pj4CIUlKLW2Q+vT4d5WO2XDc2eSED7fR6Rqj0Egp?=
+ =?us-ascii?Q?EdQ8A5cog3G103wMRe3XJyqwhssWlXS/oKZbTC6xgh7ysL14Y5eSILNlnuQG?=
+ =?us-ascii?Q?WwbeCiBZMx0WwDIwmHoLAej0/8n7avMvKgwGiwcOHoAn4xd0ViVlv2Wf/dsR?=
+ =?us-ascii?Q?anV70Zon4hSOpA2EmNE0M2GNP6w3TgOsxM1NUadqlRHXav0jNL67fzAtTrG3?=
+ =?us-ascii?Q?PHXAcNOebP5B1stXSxZm5OkwedI5YimLVS44+nCRsH644Z3ufrCjY+mhM3/x?=
+ =?us-ascii?Q?itLJ6K1t62JDgf1OVVYkAdVgGQMMaNFKvUyaT9+QKWMwC95i2Fi0xlEncUsI?=
+ =?us-ascii?Q?OvDVhZZ4780xCbuXlJFWbDSO0eI9dD1M6J22EJYdT9EnZTaZBZEGaP3dhAWK?=
+ =?us-ascii?Q?raqZeUK7iPLi4+i7XRqwpZQtQSQcXeC/Zl/cbl0dE1v+rNyuy7FUBjJronIl?=
+ =?us-ascii?Q?MD5X0WlyGQWGLxNddrODc+VNjVER354PnpvlRhPAr8WGZcUfJO+ODFxjIyY5?=
+ =?us-ascii?Q?htqGBY9dIlOgoOixcXfsIHh1z/cHOsBqcELPA9tD503HfWfqumIoNyfhluzS?=
+ =?us-ascii?Q?GB4F5IQYQKfVZOTnvY9hQSdxayQZJSDEWXZf2w9uUy4jJu+fR5Ej/EphD5c1?=
+ =?us-ascii?Q?HlmqnzLjoQATKArQWUBAi3ClOPmw78pChlZzXpUKIqW6HbpEZ6DOmRwDX0vX?=
+ =?us-ascii?Q?v0jOow=3D=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37064683-382a-4c25-4fa6-08db8c1945db
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 07:40:38.2727
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FbgtZ7e/+CyrgI8X1owmzQwtsdtrI6QFE/2PHSlen/ElXHVH/5cvW0iCpzunmUHircNBTaFR7vE9Hz0rU9fqkPvNJbXA+nyZl6sw8NttCsE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3710
 
+The sd card boot was not working due to missing driver support. CI did
+not recognize this as we use NFS boot, so no sd card inolved.
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+While at it: Convert a DIY machine check into a machine override.
 
-> On Mon, 2023-07-10 at 21:20 +0200, Philippe Gerum wrote:
->> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->>=20
->> > Hi Philippe,
->> >=20
->> > it seems I'm facing a problem with dovetail on x86 related to IRQs
->> > routed through the IO-APIC.
->> >=20
->> > Note the=C2=A0stack trace below, it seems that once we ACK the IRQ in
->> > ioapic_ack_level() by calling __ack_APIC_irq() we immediately get the
->> > next IRQ.
->> >=20
->> > cat /proc/interrupts delivers (minimized to the relevant IRQ):
->> >=20
->> >           CPU0       CPU1       CPU2       CPU3
->> > 21:          0       2392          0          0   IO-APIC     21 -fast=
-eoi   ahci[0000:00:0d.0], snd_intel8x0
->> >=20
->> > Seems IRQ masking does not work as expected. I have to add more
->> > debugging code but it looks like an IRQ storm for now. I have the
->> > following options in mind right now, but there might be more:
->> >=20
->> > - Masking of the AHCI IRQ does not work as expected
->>=20
->> The ioapic backend code is unchanged for mask_ioapic_irq() aside of the
->> conversion to hard spinlocking, so maybe the generic portion there
->> unexpectedly detecting a masked line, blocking the actual masking?
->>=20
->> void mask_irq(struct irq_desc *desc)
->> {
->> 	if (irqd_irq_masked(&desc->irq_data))
->> 		return;
->
-> I added a WARN() here, so whenever we skip calling the low level
-> chip.irq_mask() function I get notified.=20
->
-> This happens from time to time for my affected IRQ 21.
->
-> When it happens, the unmask_irq() also skips calling the
-> chip.irq_unmask() function.
->
-> Warning from mask_irq:
->
-> [ 1914.059288] ------------[ cut here ]------------
-> [ 1914.059304] IRQ(21) already masked.
-> [ 1914.059330] WARNING: CPU: 2 PID: 567 at kernel/irq/chip.c:430 mask_irq=
-+0x4b/0x60
-> [ 1914.059375] Modules linked in: intel_rapl_msr intel_rapl_common
-> ghash_clmulni_intel sha512_ssse3 sha512_generic vmwgfx snd_pcm
-> drm_ttm_helper ttm snd_timer snd drm_kms_helper soundcore aesni_intel
-> crypto_simd fb_sys_fops cryptd pcspkr syscopyarea sysfillrect
-> sysimgblt vboxguest ac button joydev evdev serio_raw sg binfmt_misc
-> loop dm_mod fuse efi_pstore drm dax configfs ip_tables x_tables
-> autofs4 ext4 crc32c_generic crc16 mbcache jbd2 hid_generic usbhid hid
-> sd_mod t10_pi crc64_rocksoft crc64 crc_t10dif sr_mod cdrom
-> crct10dif_generic ata_generic ohci_pci ahci ata_piix libahci
-> crct10dif_pclmul crct10dif_common libata crc32_pclmul ehci_pci
-> ohci_hcd ehci_hcd crc32c_intel psmouse scsi_mod e1000 usbcore
-> i2c_piix4 usb_common scsi_common video wmi
-> [ 1914.060573] CPU: 2 PID: 567 Comm: stress-ng-cpu Tainted: G        W   =
-       6.1.37-xenomai-1 #1
-> [ 1914.060587] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS Vi=
-rtualBox 12/01/2006
-> [ 1914.060598] IRQ stage: Xenomai
-> [ 1914.060621] RIP: 0010:mask_irq+0x4b/0x60
-> [ 1914.060635] Code: 74 13 48 8d 7f 28 e8 b4 94 cf 00 48 8b 43 38 81 08 0=
-0 00 02 00 5b e9 e4 96 cf 00 8b 77 2c 48 c7 c7 ee 47 4f 9a e8 85 ff f7 ff <=
-0f> 0b 5b e9 cd 96 cf 00 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f
-> [ 1914.060638] RSP: 0000:ffffc1420103bd78 EFLAGS: 00010082
-> [ 1914.060737] RAX: 0000000000000000 RBX: ffffa061f6252200 RCX: 000000000=
-0000000
-> [ 1914.060750] RDX: 0000000003000002 RSI: ffffffff9a533156 RDI: 00000000f=
-fffffff
-> [ 1914.060763] RBP: ffffa061f62522c8 R08: 8000000100000356 R09: 000000000=
-0000001
-> [ 1914.060842] R10: 3fffffffffffffff R11: ffffffff9c194a16 R12: ffffffff9=
-ae3c8c0
-> [ 1914.060855] R13: ffffa061f6252200 R14: 0000000000000000 R15: ffffa061f=
-6252200
-> [ 1914.060932] FS:  00007f41397e6740(0000) GS:ffffa0623dd00000(0000) knlG=
-S:0000000000000000
-> [ 1914.060947] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 1914.060960] CR2: 00007fff3e274dc3 CR3: 0000000002d7c000 CR4: 000000000=
-00506e0
-> [ 1914.061010] Call Trace:
-> [ 1914.061038]  <TASK>
-> [ 1914.061053]  ? __warn+0x7d/0xc0
-> [ 1914.061071]  ? mask_irq+0x4b/0x60
-> [ 1914.061084]  ? report_bug+0xe6/0x170
-> [ 1914.061130]  ? handle_bug+0x4e/0xb0
-> [ 1914.061146]  ? exc_invalid_op+0xca/0xe0
-> [ 1914.061191]  ? asm_exc_invalid_op+0x16/0x20
-> [ 1914.061252]  ? mask_irq+0x4b/0x60
-> [ 1914.061268]  ? mask_irq+0x4b/0x60
-> [ 1914.061295]  handle_fasteoi_irq+0x1ba/0x200
-> [ 1914.061311]  generic_pipeline_irq_desc+0xb0/0x160
-> [ 1914.061327]  arch_handle_irq+0x5d/0x1e0
-> [ 1914.061375]  arch_pipeline_entry+0x3b/0x110
-> [ 1914.061399]  asm_common_interrupt+0x22/0x40
-> [ 1914.061414] RIP: 0010:arch_do_IRQ_pipelined+0x0/0x770
-> [ 1914.061428] Code: 96 0d 36 01 53 48 89 fb 31 f6 bf b0 00 00 00 48 8b 0=
-0 e8 c3 be d9 00 48 89 df 5b e9 ca 80 0a 00 31 ff e9 d3 3f ff ff 0f 1f 00 <=
-0f> 1f 44 00 00 41 55 65 48 8b 04 25 00 ed 01 00 41 54 55 48 c7 c5
-> [ 1914.061441] RSP: 0000:ffffc1420103bed0 EFLAGS: 00000246
-> [ 1914.061488] RAX: 00000000cd4094af RBX: ffffffff9accfdf0 RCX: 00000000e=
-6765107
-> [ 1914.061500] RDX: 0000000000e2d1cb RSI: 000000005e7e250c RDI: ffffa061f=
-6252200
-> [ 1914.061520] RBP: 00000000000501e0 R08: 0000000000000000 R09: 000000000=
-0000040
-> [ 1914.061527] R10: 0000000000000000 R11: 0000000000000000 R12: ffffa061c=
-25f4bc0
-> [ 1914.061527] R13: 0000000000000015 R14: 000000000000002f R15: 000000000=
-0000000
-> [ 1914.061527]  sync_current_irq_stage+0x1b5/0x260
-> [ 1914.061527]  handle_irq_pipelined_finish+0x9f/0x190
-> [ 1914.061527]  arch_pipeline_entry+0xd6/0x110
-> [ 1914.061527]  asm_common_interrupt+0x22/0x40
-> [ 1914.061527] RIP: 0033:0x55f685717ff1
-> [ 1914.061527] Code: Unable to access opcode bytes at 0x55f685717fc7.
-> [ 1914.061527] RSP: 002b:00007fff3e272940 EFLAGS: 00000202
-> [ 1914.061527] RAX: 400fe7a4791f144c RBX: 0000000000000176 RCX: 000ffffff=
-fffffff
-> [ 1914.061527] RDX: 8000000000000000 RSI: 0000000000000400 RDI: 000000000=
-0000020
-> [ 1914.061527] RBP: 00007fff3e2729c0 R08: ffff000000000000 R09: 000000000=
-0000001
-> [ 1914.061527] R10: 000fe7a4791f144c R11: 000c4a0f3df91177 R12: 00007fff3=
-e2729d0
-> [ 1914.061527] R13: 000000000000001f R14: 8000000000000000 R15: 00007fff3=
-e272b90
-> [ 1914.061527]  </TASK>
-> [ 1914.061527] ---[ end trace 0000000000000000 ]---
->
-> Warning from unmask_irq:
->
-> [ 1914.061527] ------------[ cut here ]------------
-> [ 1914.061527] IRQ(21) already unmasked.
-> [ 1914.061527] WARNING: CPU: 2 PID: 567 at kernel/irq/chip.c:443 unmask_i=
-rq+0x4b/0x60
-> [ 1914.061527] Modules linked in: intel_rapl_msr intel_rapl_common
-> ghash_clmulni_intel sha512_ssse3 sha512_generic vmwgfx snd_pcm
-> drm_ttm_helper ttm snd_timer snd drm_kms_helper soundcore aesni_intel
-> crypto_simd fb_sys_fops cryptd pcspkr syscopyarea sysfillrect
-> sysimgblt vboxguest ac button joydev evdev serio_raw sg binfmt_misc
-> loop dm_mod fuse efi_pstore drm dax configfs ip_tables x_tables
-> autofs4 ext4 crc32c_generic crc16 mbcache jbd2 hid_generic usbhid hid
-> sd_mod t10_pi crc64_rocksoft crc64 crc_t10dif sr_mod cdrom
-> crct10dif_generic ata_generic ohci_pci ahci ata_piix libahci
-> crct10dif_pclmul crct10dif_common libata crc32_pclmul ehci_pci
-> ohci_hcd ehci_hcd crc32c_intel psmouse scsi_mod e1000 usbcore
-> i2c_piix4 usb_common scsi_common video wmi
-> [ 1914.061527] CPU: 2 PID: 567 Comm: stress-ng-cpu Tainted: G        W   =
-       6.1.37-xenomai-1 #1
-> [ 1914.061527] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS Vi=
-rtualBox 12/01/2006
-> [ 1914.061527] IRQ stage: Linux
-> [ 1914.061527] RIP: 0010:unmask_irq+0x4b/0x60
-> [ 1914.061527] Code: 74 13 48 8d 7f 28 e8 44 93 cf 00 48 8b 43 38 81 20 f=
-f ff fd ff 5b e9 74 95 cf 00 8b 77 2c 48 c7 c7 07 48 4f 9a e8 15 fe f7 ff <=
-0f> 0b 5b e9 5d 95 cf 00 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f
-> [ 1914.061527] RSP: 0000:ffffc1420010cee8 EFLAGS: 00010082
-> [ 1914.061527] RAX: 0000000000000000 RBX: ffffa061f6252200 RCX: 000000000=
-0000000
-> [ 1914.061527] RDX: 0000000000010103 RSI: ffffffff9a533156 RDI: 00000000f=
-fffffff
-> [ 1914.061527] RBP: ffffa061f62522c8 R08: 800000010000038d R09: 000000000=
-0000001
-> [ 1914.061527] R10: 3fffffffffffffff R11: ffffffff9c195a8e R12: ffffffff9=
-ae3c8c0
-> [ 1914.061527] R13: 0000000000000000 R14: 000000000000002f R15: 000000000=
-0000000
-> [ 1914.061527] FS:  00007f41397e6740(0000) GS:ffffa0623dd00000(0000) knlG=
-S:0000000000000000
-> [ 1914.061527] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 1914.061527] CR2: 00007fff3e274dc3 CR3: 0000000002d7c000 CR4: 000000000=
-00506e0
-> [ 1914.061527] Call Trace:
-> [ 1914.061527]  <IRQ>
-> [ 1914.061527]  ? __warn+0x7d/0xc0
-> [ 1914.061527]  ? unmask_irq+0x4b/0x60
-> [ 1914.061527]  ? report_bug+0xe6/0x170
-> [ 1914.061527]  ? handle_bug+0x4e/0xb0
-> [ 1914.061527]  ? exc_invalid_op+0xca/0xe0
-> [ 1914.061527]  ? asm_exc_invalid_op+0x16/0x20
-> [ 1914.061527]  ? unmask_irq+0x4b/0x60
-> [ 1914.061527]  ? unmask_irq+0x4b/0x60
-> [ 1914.061527]  handle_fasteoi_irq+0x15a/0x200
-> [ 1914.061527]  arch_do_IRQ_pipelined+0xc3/0x770
-> [ 1914.061527]  sync_current_irq_stage+0x1b5/0x260
-> [ 1914.061527]  inband_irq_enable+0x46/0x60
-> [ 1914.061527]  __do_softirq+0x84/0x2fc
-> [ 1914.061527]  __irq_exit_rcu+0xdc/0x140
-> [ 1914.061527]  arch_do_IRQ_pipelined+0x13b/0x770
-> [ 1914.061527]  </IRQ>
-> [ 1914.061527]  <TASK>
-> [ 1914.061527]  sync_current_irq_stage+0x1b5/0x260
-> [ 1914.061527]  handle_irq_pipelined_finish+0x9f/0x190
-> [ 1914.061527]  arch_pipeline_entry+0xd6/0x110
-> [ 1914.061527]  asm_common_interrupt+0x22/0x40
-> [ 1914.061527] RIP: 0033:0x55f685717ff1
-> [ 1914.061527] Code: ff 7f 00 00 31 c0 e9 8e f0 ff ff 66 2e 0f 1f 84 00 0=
-0 00 00 00 0f 1f 40 00 f3 0f 1e fa 48 83 ec 28 0f 29 04 24 0f ae 5c 24 1c <=
-48> 8b 4c 24 08 4c 8b 04 24 48 b8 ff ff ff ff ff ff 00 00 48 21 c8
-> [ 1914.061527] RSP: 002b:00007fff3e272940 EFLAGS: 00000202
-> [ 1914.061527] RAX: 400fe7a4791f144c RBX: 0000000000000176 RCX: 000ffffff=
-fffffff
-> [ 1914.061527] RDX: 8000000000000000 RSI: 0000000000000400 RDI: 000000000=
-0000020
-> [ 1914.061527] RBP: 00007fff3e2729c0 R08: ffff000000000000 R09: 000000000=
-0000001
-> [ 1914.061527] R10: 000fe7a4791f144c R11: 000c4a0f3df91177 R12: 00007fff3=
-e2729d0
-> [ 1914.061527] R13: 000000000000001f R14: 8000000000000000 R15: 00007fff3=
-e272b90
-> [ 1914.061527]  </TASK>
-> [ 1914.061527] ---[ end trace 0000000000000000 ]---
->
-> It seems that for some reason the "software state" runs out of sync, we
-> skip the IRQ masking, call the io-apic EOI function, ACK the IRQ at the
-> IO-APIC and with some luck we immediately have to handle the next IRQ.
->
-> Philippe, do you agree?
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ recipes-kernel/linux/files/armhf_defconfig   | 5 +++--
+ recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-The issue seems different than a virtual state breakage: for some reason
-IRQ21 is delivered by the hw although it was supposedly masked which is
-not depending on the inband stall bit. From that point, the whole logic
-runs amok.
+diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
+index b9342a5..dee6f5e 100644
+--- a/recipes-kernel/linux/files/armhf_defconfig
++++ b/recipes-kernel/linux/files/armhf_defconfig
+@@ -5192,7 +5192,7 @@ CONFIG_PWRSEQ_EMMC=y
+ # CONFIG_PWRSEQ_SD8787 is not set
+ CONFIG_PWRSEQ_SIMPLE=y
+ CONFIG_MMC_BLOCK=y
+-CONFIG_MMC_BLOCK_MINORS=16
++CONFIG_MMC_BLOCK_MINORS=256
+ # CONFIG_SDIO_UART is not set
+ # CONFIG_MMC_TEST is not set
+ 
+@@ -5204,8 +5204,9 @@ CONFIG_MMC_ARMMMCI=y
+ CONFIG_MMC_QCOM_DML=y
+ CONFIG_MMC_SDHCI=y
+ CONFIG_MMC_SDHCI_IO_ACCESSORS=y
+-# CONFIG_MMC_SDHCI_PCI is not set
++CONFIG_MMC_SDHCI_PCI=y
+ CONFIG_MMC_SDHCI_PLTFM=y
++CONFIG_MMC_SDHCI_OMAP=m
+ CONFIG_MMC_SDHCI_OF_ARASAN=y
+ CONFIG_MMC_SDHCI_OF_AT91=y
+ CONFIG_MMC_SDHCI_OF_ESDHC=y
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 7d002f1..e5348c6 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -74,4 +74,4 @@ GIT_BRANCH:arm64 = "${@ \
+ SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
+ SRCREV = "${AUTOREV}"
+ 
+-SRC_URI:append:armhf = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) and d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
++SRC_URI:append:beagle-bone-black = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) else '' }"
+-- 
+2.41.0
 
-I have not been able to reproduce the issue so far with the xenomai4/evl
-core on top of dovetail 6.1.37 running on my fresh virtualbox install
-here. Can you share the kernel config and maybe the OVA export file of
-your VM? Also, does the issue happen without enabling Cobalt?
-
---=20
-Philippe.
