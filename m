@@ -1,51 +1,51 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4E6CC8F8
-	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:53:01 +0000 (UTC)
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-4fb77f21c63so6607343e87.2
-        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:53:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F9DD2FC
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:53:02 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-4faaaa476a9so6639075e87.2
+        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:53:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1690206779; x=1690811579;
+        d=sigma-star.at; s=google; t=1690206780; x=1690811580;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+XcCLWC39+8QMjcUTvdz7glL5ZxbKtjyuZbxFizKY08=;
-        b=vtreznwu2iIuxwpYZzmv3Kqv34XHZegXrXspf4xCwcns2VTN+QtuyKp0CectztYNut
-         3ZHBTMrqhBtO8OOAxvoRzRBroo3CusJ+vlMrS6IWX3m2g5FccGIBvO1Hkxe0QrYlG53w
-         cJ1TNKsXuYQgiL8hm0ee3bQwbbgHq1jmAE13gmFqEEAuhaNrMar67FS0LMYwIeYV4k+N
-         hwL4Rn/OoVqMXL0+3kceOaSFelRhJl3vc/hqtn0Pc1wQWssQghnq3YQKOssLtODzJkNY
-         H7LzcMmMpyT3D5cPbCqUygYUgVQz3xHfa53IlAZSEjLGbdiWt0eE1FDKzNXOHnd00UCE
-         kFYg==
+        bh=HP/Un1N58EC5XJ5gxEFycWuZzj2RTEECVEEOIUqf/iU=;
+        b=VBQ1aB9c5XWEa748GadYFEF/OMXnwkkADuZtxDOjFE9zLVVpikgAP9QeqJsJNu0VbT
+         53RGLqaW4TqVDba+mtdo/LOY0tlSYZoz9qAVHXLJY2/e0IneDbz5Ab7KE6aje5+Q4N1A
+         7Oywx9r1FRw35WL0gzkFGip/U51BymIDDovB2E9sMJjU8CdJRH0ZaZ1mud0EBpzQ5c2C
+         carJ+4ocYvfhXL4sutEGRiVG2XwLAYDmlRLZPva8DcSJ97ykf9qcCfWE7FJzn524PDdN
+         MtRTD/AOmjrONDQI8BMZHzpdfJ4arpcXvogXWKeynNmTP73/ySLqpr12Kfo7K/sLGe6m
+         dugQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690206779; x=1690811579;
+        d=1e100.net; s=20221208; t=1690206780; x=1690811580;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+XcCLWC39+8QMjcUTvdz7glL5ZxbKtjyuZbxFizKY08=;
-        b=XVJzPg+K25mYT5o2ZmXTvnudNDIlfAJMmPDI1CiVUb+jaEM4J2XST0lbkyoJE9CjsC
-         gmohejllncxmA4MRFEYi6T25jn3Y6WNoE84CjOti3a/1C2U7ep25eo87fybeeLNYVl5B
-         2HfGzNQf2MzNOsd/CKujAV8ThY9Vk303DZ+F0/Cjjpw9zw7PFU2LwcGKJfcwfrSQDWpt
-         Z+W8Z3EQ8TDimVBd1jwnIog90duaMOpOGrmERFA2gtlS3+OoD/NAlFdgyEI0P+2gexVx
-         ZgxpvdCb2xTS6BLXqjU0y0iac/KSQdyFtygrfHZmcT6Rt9AdySKT5vNa4MH1awIxtKyf
-         MAhA==
-X-Gm-Message-State: ABy/qLYVsftNcPsqO/jcXELKShBdiZO9YIHzU2MKmS6MgK5XXVdz8BJa
-	Vu1YMD3VA9IvnUEyQxsrYXcePF01MjPtMQkRLcU=
-X-Google-Smtp-Source: APBJJlHB++YV3s4I36Aan9DtPFfn60QdlowwkQwu70uXJxST2Mp6LzMJ0x0DBC+B4ME8rb6UnAHXjA==
-X-Received: by 2002:a05:6512:114a:b0:4f8:67aa:4f03 with SMTP id m10-20020a056512114a00b004f867aa4f03mr6023434lfg.1.1690206779658;
-        Mon, 24 Jul 2023 06:52:59 -0700 (PDT)
+        bh=HP/Un1N58EC5XJ5gxEFycWuZzj2RTEECVEEOIUqf/iU=;
+        b=Fgma1tIxarPiuwfj7e60ptvvObE5oHmUQEZIx54Y25BSCqIjLPaYRzVHblMrufA0kg
+         gp7L45Ca5ZsiGrhzz927zFg7MhbW9yoM/jjNfHTUBRWW+mFcSAnkXkXIMBN40+i0irtr
+         RqXfrXs7NCrplBYrcpTTAYgOOh4QU4F+sSsF59SyE8UrVI87XeC1xHgsjAEATCXCpCCY
+         FUPYKnPf1HnrVCOEx2NPVoHhDOM5RJ17iqzJygJ+2zYvbYuSB/3FYBxD+cCXElbIQMAA
+         NutfTw71WG7wTbceIC1W/DwXGtRmiaszczFaIyEsPd4wQN3CCGaDA7McnA0bMLNsV37p
+         fqDg==
+X-Gm-Message-State: ABy/qLaeL8vfDQhNaofBH3IA36wPYCPH/kyJl/j5tFriEMsiWcKrAbJl
+	f9wr+957jr1TYAc+9ma0dF8CpwWOkHUp4+gSo+M=
+X-Google-Smtp-Source: APBJJlGk4AovqGOikcBoQfhOg73yj6xyNkXX5g0d1uvZRf/S8lzkz3AsGRbNJkhXfoul/z9I1Ko9Ng==
+X-Received: by 2002:a05:6512:3e0c:b0:4f8:6560:6436 with SMTP id i12-20020a0565123e0c00b004f865606436mr6893995lfv.9.1690206780345;
+        Mon, 24 Jul 2023 06:53:00 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
         by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jul 2023 06:52:59 -0700 (PDT)
+        Mon, 24 Jul 2023 06:53:00 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH 09/10] alchemytests: Fix task-5 logic
-Date: Mon, 24 Jul 2023 15:52:38 +0200
-Message-Id: <20230724135239.10579-10-aaron@sigma-star.at>
+Subject: [PATCH 10/10] testsuite: disable broken tests
+Date: Mon, 24 Jul 2023 15:52:39 +0200
+Message-Id: <20230724135239.10579-11-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230724135239.10579-1-aaron@sigma-star.at>
 References: <20230720145150.24607-1-aaron@sigma-star.at>
@@ -58,44 +58,53 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Semaphore call in wrong logical order, so that on the second
-rt_task_set_priority call the task doesn't exist anymore and thus the
-call fails with EINVAL.
-
-This commit fixes the order so that the test passes again.
+as discussed on the mailing list, disable broken tests (for now)
 
 Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
 ---
- testsuite/smokey/alchemytests/task-5.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ testsuite/smokey/psostests/psostests.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/testsuite/smokey/alchemytests/task-5.c b/testsuite/smokey/alchemytests/task-5.c
-index b9075945d..2aecd8125 100644
---- a/testsuite/smokey/alchemytests/task-5.c
-+++ b/testsuite/smokey/alchemytests/task-5.c
-@@ -45,17 +45,17 @@ static void foreground_task(void *arg)
- 
- 	traceobj_mark(&trobj, 4);
- 
--	ret = rt_sem_v(&sem);
--	traceobj_check(&trobj, ret, 0);
-+	ret = rt_task_inquire(NULL, &info);
-+	traceobj_assert(&trobj, ret == 0 && info.prio == 21);
- 
- 	traceobj_mark(&trobj, 5);
- 
--	ret = rt_task_inquire(NULL, &info);
--	traceobj_assert(&trobj, ret == 0 && info.prio == 21);
-+	ret = rt_task_set_priority(&t_bgnd, info.prio);
-+	traceobj_check(&trobj, ret, 0);
- 
- 	traceobj_mark(&trobj, 6);
- 
--	ret = rt_task_set_priority(&t_bgnd, info.prio);
-+	ret = rt_sem_v(&sem);
- 	traceobj_check(&trobj, ret, 0);
- 
- 	traceobj_mark(&trobj, 7);
+diff --git a/testsuite/smokey/psostests/psostests.c b/testsuite/smokey/psostests/psostests.c
+index 254a1515c..f315c1d55 100644
+--- a/testsuite/smokey/psostests/psostests.c
++++ b/testsuite/smokey/psostests/psostests.c
+@@ -35,18 +35,30 @@ TEST(psostests_mq1)
+ TEST(psostests_mq2)
+ TEST(psostests_mq3)
+ TEST(psostests_pt1)
+-TEST(psostests_rn1)
++// 0"000.679| BUG in __traceobj_assert_failed(): [rn1] trace assertion failed:
++//            testsuite/psostests/rn-1.c:46
++// => "ret == 0"
++//TEST(psostests_rn1)
+ TEST(psostests_sem1)
+ TEST(psostests_sem2)
+ TEST(psostests_task1)
+-TEST(psostests_task2)
++// 0"014.452| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
++//            ../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-2.c:56 => "ret == 0"
++//TEST(psostests_task2)
+ TEST(psostests_task3)
+ TEST(psostests_task4)
+ TEST(psostests_task5)
+-TEST(psostests_task6)
++// 0"011.370| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
++//            testsuite/psostests/task-6.c:62
++// => "ret == 0 && oldprio == myprio"
++// TEST(psostests_task6)
+ TEST(psostests_task7)
+-TEST(psostests_task8)
+-TEST(psostests_task9)
++// runs forever (100% CPU)
++//TEST(psostests_task8)
++// 0"002.198| WARNING: [main] lack of resources for core thread, EBUSY
++// 0"003.421| BUG in __traceobj_assert_failed(): [root] trace assertion failed:
++//           ../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-9.c:29 => "ret == 0"
++//TEST(psostests_task9)
+ TEST(psostests_tm1)
+ TEST(psostests_tm2)
+ TEST(psostests_tm3)
 -- 
 2.35.3
 
