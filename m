@@ -1,94 +1,81 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54AA0847B
-	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:52:54 +0000 (UTC)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-51e429e1eabso6568786a12.2
-        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:52:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D9348C1A
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:52:56 +0000 (UTC)
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4fb761efa7aso6655827e87.0
+        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:52:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1690206773; x=1690811573;
+        d=sigma-star.at; s=google; t=1690206774; x=1690811574;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7OVQf6fGk3O+0sl7+xn+DOmjh4zttv4IbbBJuPcX93A=;
-        b=TG5bXFhff9vOaCQTo9i/w8L2tw9d3gGg02HExgL8YKeYVngLsYU1NG47ZZxtEohxV5
-         2AW3APaXbQ1PK4ZWWu48n/6RCF83XtbiBXLObfqOi9oPdj4cXgsAtDwmuARXAa3FCUgc
-         vIpXUSGSwX6e++Hc8NUD7Huw2ZrLHyhxMcHL9Cihcke1OnHpCRwWiCmz0LzngE9ePc3U
-         B7Mxz4hi69QvuqTPLrCMmF28rryUzZCwSs8GKxiYOanfPmX/bMRwYMTy2Wv5COlFkwFg
-         yxXGWtVzIqo1y0iaj/k9svA5jJJX2/58UtSK2Q/2eBzvUQX0or1/KPV8JNNJ/up6vsVl
-         hTaQ==
+        bh=eg1jmi4S4xgnJWr9joNVMzMBVSMjk7V1sOkER9KWiGI=;
+        b=AnB7EVDwvpM6tk3U/y1PWglqje1ggDRn5hmj58jNon9xuCvPvz/smZWnUSrtVeFqnk
+         hvxBlphzkzYVaQBKrkvtPq/xSscEPxoiE1Ok3NBvhyEjOMhuk5tWAXErKPsyObICBb5k
+         KB9S7lCKSH/dE1JL2OnHHUpySBmEvTqNneJ9ajT7UgwyfsGLPPinJ8x+fWlxSj8kCPV2
+         Bpl5UFcoOGpAwck726Pq1YWzfePJeWTBGUHqVFFdaRXJ/eCghtlKLmDkk3tPUOFLNCoa
+         kY3kf0u666YpEcoM8cbnyaQnL87rEh7n4hF3d+Lqk6wQvrIrAhVJ5NMYJ2DeOGj3mB7u
+         QBmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690206773; x=1690811573;
+        d=1e100.net; s=20221208; t=1690206774; x=1690811574;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7OVQf6fGk3O+0sl7+xn+DOmjh4zttv4IbbBJuPcX93A=;
-        b=VXMeEKtgCu28DLwr2VhciBiL6AN22H5CE4dLKg4GTZk/7d6HksgGNmoBditGB5tWGN
-         9DmbH3rll6dx5DH9HT8jMDfXVHeBTgcjZpEZu7wF7uvqDi0igUoz3GnXmvdnNp/nDQuJ
-         druR2Jb4ltYZuv/+9Y2Odh3fJKmCSnc7j+im9qFg9vHfUDw4G46ds8YKhoTer1qwE+/d
-         JakvjZqrjZ00zMWI21cHxV2qCGFEsrzX0gz890ZQSpkfIIPkoharPURh4G9lTex/cjam
-         8qAMUOhHXy5U8lRN+Qv0tbToJsnhej/AK5Q3urg5JwlJCFXviIyv609kM3h0/gryO2jC
-         XEYA==
-X-Gm-Message-State: ABy/qLYZcKTHcST4I9ekZBrNv9MJZybjKJx5vRkvw+O6PB+DMf4vGdEL
-	cmRFXHbfIDcZA6nqy+vkw1W3vpB7GpKzIxM+3gs=
-X-Google-Smtp-Source: APBJJlH9VwkWIPNClOKHz/ElqwulekmcbV//xf5oVEFm4yMhkA1DX0JZXeNR/xGsEU9+L7QubQCh2g==
-X-Received: by 2002:a50:ff19:0:b0:522:2b60:fc5e with SMTP id a25-20020a50ff19000000b005222b60fc5emr2566458edu.6.1690206773148;
+        bh=eg1jmi4S4xgnJWr9joNVMzMBVSMjk7V1sOkER9KWiGI=;
+        b=YHFo27OP4rXEPeuWBnmzVgJeZ50nmKJsAJfx+tEJqgHneVlVRa6AEWcgEU64y1wEQG
+         Tqe0zPTX2E+M/CwBcQR2K3wPHsEWz2xTHmgycPikE5HvbjE7hu+13HSjP6TwSGqXkPu4
+         Own3ArBKPq/iPqWYae+cCrUItRotL2e6Br231rc5hpIfpj3Lw8se0lv2Nqg1Lm91A8Nw
+         b18//l6HiktixPlm7xeb5DLK/OU4cgXrIrXCvHUi0QK6o+/WxaxYFIwz0XO1AuyKNCEG
+         NX7+rqnndFlrpBLLPgLy3Jq709BmZ0cV1OumZgRR8W9+uIqdWDw7HXAfkyzWujC75Ebg
+         jUAw==
+X-Gm-Message-State: ABy/qLa7r0g0ShfW5X+OUFCFYspAiHgLi1nuX6iI3c40z3UvC14zZDXu
+	2QjxcvYGu7fqyLxOGs8xsnllU47PTYOG3vUmCD0=
+X-Google-Smtp-Source: APBJJlHJt+p0BSEllHeE1HysM2ytiodzTby3VIgzWm77Kg+vOeyo1ryp2MYhEYAtRueeOtwFhLoC4w==
+X-Received: by 2002:a05:6512:1c7:b0:4fb:8966:5720 with SMTP id f7-20020a05651201c700b004fb89665720mr5217366lfp.25.1690206773879;
         Mon, 24 Jul 2023 06:52:53 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.52
+        by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jul 2023 06:52:52 -0700 (PDT)
+        Mon, 24 Jul 2023 06:52:53 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH v5 00/10] Revive alchemy, pSOS and VxWorks tests
-Date: Mon, 24 Jul 2023 15:52:29 +0200
-Message-Id: <20230724135239.10579-1-aaron@sigma-star.at>
+Subject: [PATCH 01/10] testsuite: Fully integrate alchemytests into smokey
+Date: Mon, 24 Jul 2023 15:52:30 +0200
+Message-Id: <20230724135239.10579-2-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20230720145150.24607-1-aaron@sigma-star.at>
+In-Reply-To: <20230724135239.10579-1-aaron@sigma-star.at>
 References: <20230720145150.24607-1-aaron@sigma-star.at>
+ <20230724135239.10579-1-aaron@sigma-star.at>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This patch series fully integrates the currently abandoned alchemy, pSOS
-and VxWorks tests into Xenomai's testsuite.
-For each test, a Smokey testcase is hooked up.
+This is the very first step to have the alchemy tests embedded
+into our testsuite.
 
-Changes since v4:
-- Added SPDX-License-Identifier lines
+Build them using Xenomai's build system and hook them up using
+Smokey. Every test binary has it's own respective testcase in the
+testsuite.
 
-Aaron Marcher (7):
-  testsuite: Fully integrate alchemytests into smokey
-  testsuite: Fully integrate psostests into smokey
-  testsuite: Fully integrate vwworkstests into smokey
-  alchemytests: Check pipe-1 asprintf ret value
-  alchemytests: Fix task-2
-  alchemytests: Fix task-5 logic
-  testsuite: disable broken tests
-
-Richard Weinberger (3):
-  testsuite: Remove old alchemytests Makefile
-  alchemytests: Fix gcc warning in buffer-1
-  alchemytests: Fix gcc warning in task-9
-
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
+---
  configure.ac                                  |   7 +-
- lib/alchemy/testsuite/Makefile                |  70 ---------
- lib/psos/testsuite/Makefile                   |  49 ------
- lib/vxworks/testsuite/Makefile                |  43 -----
- testsuite/smokey/Makefile.am                  |  15 +-
+ testsuite/Makefile.am                         |   8 +-
+ testsuite/smokey/Makefile.am                  |   9 +-
  testsuite/smokey/alchemytests/Makefile.am     | 148 ++++++++++++++++++
  .../smokey/alchemytests}/alarm-1.c            |   1 +
  testsuite/smokey/alchemytests/alchemytests.c  |  56 +++++++
  .../smokey/alchemytests/alchemytests_driver.c |  33 ++++
- .../smokey/alchemytests}/buffer-1.c           |   3 +-
+ .../smokey/alchemytests}/buffer-1.c           |   1 +
  .../smokey/alchemytests}/event-1.c            |   1 +
  .../smokey/alchemytests}/heap-1.c             |   1 +
  .../smokey/alchemytests}/heap-2.c             |   1 +
@@ -96,69 +83,25 @@ Richard Weinberger (3):
  .../smokey/alchemytests}/mq-2.c               |   1 +
  .../smokey/alchemytests}/mq-3.c               |   1 +
  .../smokey/alchemytests}/mutex-1.c            |   1 +
- .../smokey/alchemytests}/pipe-1.c             |   7 +-
+ .../smokey/alchemytests}/pipe-1.c             |   1 +
  .../smokey/alchemytests}/sem-1.c              |   1 +
  .../smokey/alchemytests}/sem-2.c              |   1 +
  .../smokey/alchemytests}/task-1.c             |   1 +
  .../smokey/alchemytests}/task-10.c            |   1 +
- .../smokey/alchemytests}/task-2.c             |   5 +-
+ .../smokey/alchemytests}/task-2.c             |   1 +
  .../smokey/alchemytests}/task-3.c             |   1 +
  .../smokey/alchemytests}/task-4.c             |   1 +
- .../smokey/alchemytests}/task-5.c             |  11 +-
+ .../smokey/alchemytests}/task-5.c             |   1 +
  .../smokey/alchemytests}/task-6.c             |   1 +
  .../smokey/alchemytests}/task-7.c             |   1 +
  .../smokey/alchemytests}/task-8.c             |   1 +
- .../smokey/alchemytests}/task-9.c             |   3 +-
- testsuite/smokey/psostests/Makefile.am        | 148 ++++++++++++++++++
- .../smokey/psostests}/mq-1.c                  |   1 +
- .../smokey/psostests}/mq-2.c                  |   1 +
- .../smokey/psostests}/mq-3.c                  |   1 +
- testsuite/smokey/psostests/psostests.c        |  69 ++++++++
- testsuite/smokey/psostests/psostests_driver.c |  34 ++++
- .../smokey/psostests}/pt-1.c                  |   1 +
- .../smokey/psostests}/rn-1.c                  |   1 +
- .../smokey/psostests}/sem-1.c                 |   1 +
- .../smokey/psostests}/sem-2.c                 |   1 +
- .../smokey/psostests}/task-1.c                |   1 +
- .../smokey/psostests}/task-2.c                |   1 +
- .../smokey/psostests}/task-3.c                |   1 +
- .../smokey/psostests}/task-4.c                |   1 +
- .../smokey/psostests}/task-5.c                |   1 +
- .../smokey/psostests}/task-6.c                |   1 +
- .../smokey/psostests}/task-7.c                |   1 +
- .../smokey/psostests}/task-8.c                |   1 +
- .../smokey/psostests}/task-9.c                |   1 +
- .../smokey/psostests}/tm-1.c                  |   1 +
- .../smokey/psostests}/tm-2.c                  |   1 +
- .../smokey/psostests}/tm-3.c                  |   1 +
- .../smokey/psostests}/tm-4.c                  |   1 +
- .../smokey/psostests}/tm-5.c                  |   1 +
- .../smokey/psostests}/tm-6.c                  |   1 +
- .../smokey/psostests}/tm-7.c                  |   1 +
- testsuite/smokey/vxworkstests/Makefile.am     |  94 +++++++++++
- .../smokey/vxworkstests}/lst-1.c              |   1 +
- .../smokey/vxworkstests}/msgQ-1.c             |   1 +
- .../smokey/vxworkstests}/msgQ-2.c             |   1 +
- .../smokey/vxworkstests}/msgQ-3.c             |   1 +
- .../smokey/vxworkstests}/rng-1.c              |   1 +
- .../smokey/vxworkstests}/sem-1.c              |   1 +
- .../smokey/vxworkstests}/sem-2.c              |   1 +
- .../smokey/vxworkstests}/sem-3.c              |   1 +
- .../smokey/vxworkstests}/sem-4.c              |   1 +
- .../smokey/vxworkstests}/task-1.c             |   1 +
- .../smokey/vxworkstests}/task-2.c             |   1 +
- testsuite/smokey/vxworkstests/vxworkstests.c  |  46 ++++++
- .../smokey/vxworkstests/vxworkstests_driver.c |  33 ++++
- .../smokey/vxworkstests}/wd-1.c               |   1 +
- 71 files changed, 749 insertions(+), 177 deletions(-)
- delete mode 100644 lib/alchemy/testsuite/Makefile
- delete mode 100644 lib/psos/testsuite/Makefile
- delete mode 100644 lib/vxworks/testsuite/Makefile
+ .../smokey/alchemytests}/task-9.c             |   1 +
+ 28 files changed, 276 insertions(+), 7 deletions(-)
  create mode 100644 testsuite/smokey/alchemytests/Makefile.am
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/alarm-1.c (97%)
  create mode 100644 testsuite/smokey/alchemytests/alchemytests.c
  create mode 100644 testsuite/smokey/alchemytests/alchemytests_driver.c
- rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/buffer-1.c (97%)
+ rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/buffer-1.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/event-1.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/heap-1.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/heap-2.c (98%)
@@ -166,61 +109,613 @@ Richard Weinberger (3):
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mq-2.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mq-3.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mutex-1.c (98%)
- rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/pipe-1.c (96%)
+ rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/pipe-1.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/sem-1.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/sem-2.c (97%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-1.c (94%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-10.c (97%)
- rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-2.c (95%)
+ rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-2.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-3.c (97%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-4.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-5.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-6.c (97%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-7.c (98%)
  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-8.c (97%)
- rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-9.c (94%)
- create mode 100644 testsuite/smokey/psostests/Makefile.am
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-1.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-2.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-3.c (98%)
- create mode 100644 testsuite/smokey/psostests/psostests.c
- create mode 100644 testsuite/smokey/psostests/psostests_driver.c
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/pt-1.c (96%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/rn-1.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-1.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-2.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-1.c (95%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-2.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-3.c (96%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-4.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-5.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-6.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-7.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-8.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-9.c (98%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-1.c (95%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-2.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-3.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-4.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-5.c (97%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-6.c (95%)
- rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-7.c (95%)
- create mode 100644 testsuite/smokey/vxworkstests/Makefile.am
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/lst-1.c (99%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-1.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-2.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-3.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/rng-1.c (99%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-1.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-2.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-3.c (97%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-4.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-1.c (96%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-2.c (98%)
- create mode 100644 testsuite/smokey/vxworkstests/vxworkstests.c
- create mode 100644 testsuite/smokey/vxworkstests/vxworkstests_driver.c
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/wd-1.c (97%)
+ rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-9.c (97%)
 
+diff --git a/configure.ac b/configure.ac
+index 3ce34048e..fe59333ed 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1041,10 +1041,13 @@ AC_CONFIG_FILES([ \
+ 	testsuite/smokey/cpu-affinity/Makefile \
+ 	testsuite/smokey/gdb/Makefile \
+ 	testsuite/smokey/y2038/Makefile \
+-	testsuite/smokey/can/Makefile
+-	testsuite/smokey/x86io/Makefile
++	testsuite/smokey/can/Makefile \
++	testsuite/smokey/x86io/Makefile \
++	testsuite/smokey/alchemytests/Makefile \
+ 	testsuite/clocktest/Makefile \
+ 	testsuite/xeno-test/Makefile \
++	testsuite/psostests/Makefile \
++	testsuite/vxworkstests/Makefile \
+ 	utils/Makefile \
+ 	utils/hdb/Makefile \
+ 	utils/can/Makefile \
+diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
+index 4932f6d33..1be7eaba4 100644
+--- a/testsuite/Makefile.am
++++ b/testsuite/Makefile.am
+@@ -7,7 +7,9 @@ SUBDIRS += 		\
+ 	gpiotest	\
+ 	spitest		\
+ 	switchtest	\
+-	xeno-test
++	xeno-test	\
++	psostests	\
++	vxworkstests
+ endif
+ 
+ DIST_SUBDIRS =		\
+@@ -18,4 +20,6 @@ DIST_SUBDIRS =		\
+ 	smokey		\
+ 	spitest		\
+ 	switchtest	\
+-	xeno-test
++	xeno-test	\
++	psostests \
++	vxworkstests
+diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
+index 79dc61e9f..633a87387 100644
+--- a/testsuite/smokey/Makefile.am
++++ b/testsuite/smokey/Makefile.am
+@@ -40,12 +40,14 @@ COBALT_SUBDIRS = 	\
+ 	tsc		\
+ 	vdso-access 	\
+ 	xddp		\
+-	y2038
++	y2038 \
++	alchemytests
+ 
+ MERCURY_SUBDIRS =	\
+ 	memory-heapmem	\
+ 	memory-tlsf	\
+-	memcheck
++	memcheck \
++	alchemytests
+ 
+ DIST_SUBDIRS = 		\
+ 	arith 		\
+@@ -80,7 +82,8 @@ DIST_SUBDIRS = 		\
+ 	tsc		\
+ 	vdso-access 	\
+ 	xddp		\
+-	y2038
++	y2038 \
++	alchemytests
+ 
+ if XENO_X86
+ DIST_SUBDIRS += x86io
+diff --git a/testsuite/smokey/alchemytests/Makefile.am b/testsuite/smokey/alchemytests/Makefile.am
+new file mode 100644
+index 000000000..9da3a98f3
+--- /dev/null
++++ b/testsuite/smokey/alchemytests/Makefile.am
+@@ -0,0 +1,148 @@
++testdir = @XENO_TEST_DIR@
++noinst_LIBRARIES = libalchemytests.a
++
++libalchemytests_a_SOURCES = alchemytests.c
++libalchemytests_a_CPPFLAGS = 		\
++	@XENO_USER_CFLAGS@	\
++	-I$(top_srcdir)		\
++	-I$(top_srcdir)/include \
++	-DXENO_TEST_DIR='"$(XENO_TEST_DIR)"'
++
++CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
++
++test_PROGRAMS = \
++		alchemytests \
++		alchemytests_alarm1		   \
++		alchemytests_buffer1		   \
++		alchemytests_event1		   \
++		alchemytests_heap1		   \
++		alchemytests_heap2		   \
++		alchemytests_mq1		   \
++		alchemytests_mq2		   \
++		alchemytests_mq3		   \
++		alchemytests_mutex1		   \
++		alchemytests_pipe1		   \
++		alchemytests_sem1		   \
++		alchemytests_sem2		   \
++		alchemytests_task1		   \
++		alchemytests_task2		   \
++		alchemytests_task3		   \
++		alchemytests_task4		   \
++		alchemytests_task5		   \
++		alchemytests_task6		   \
++		alchemytests_task7		   \
++		alchemytests_task8		   \
++		alchemytests_task9		   \
++		alchemytests_task10
++
++alchemycppflags = 				\
++	$(XENO_USER_CFLAGS)		\
++	-I$(top_srcdir)/include
++
++alchemyldadd = 					\
++	../../../lib/alchemy/libalchemy@CORE@.la		\
++	../../../lib/copperplate/libcopperplate@CORE@.la	\
++	@XENO_CORE_LDADD@ 			\
++	@XENO_USER_LDADD@			\
++	-lpthread -lrt -lm
++
++alchemytests_SOURCES = alchemytests_driver.c
++alchemytests_CPPFLAGS =			\
++	$(XENO_USER_CFLAGS)			\
++	-I$(top_srcdir)/include
++alchemytests_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_LDADD =			\
++	../../../lib/smokey/libsmokey@CORE@.la	\
++	@XENO_CORE_LDADD@		\
++	@XENO_USER_LDADD@		\
++	-lpthread -lrt
++
++alchemytests_alarm1_SOURCES = alarm-1.c
++alchemytests_alarm1_CPPFLAGS = $(alchemycppflags)
++alchemytests_alarm1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_alarm1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_event1_SOURCES = event-1.c
++alchemytests_event1_CPPFLAGS = $(alchemycppflags)
++alchemytests_event1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_event1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_heap1_SOURCES = heap-1.c
++alchemytests_heap1_CPPFLAGS = $(alchemycppflags)
++alchemytests_heap1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_heap1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_heap2_SOURCES = heap-2.c
++alchemytests_heap2_CPPFLAGS = $(alchemycppflags)
++alchemytests_heap2_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_heap2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_buffer1_SOURCES = buffer-1.c
++alchemytests_buffer1_CPPFLAGS = $(alchemycppflags)
++alchemytests_buffer1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_buffer1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_mutex1_SOURCES = mutex-1.c
++alchemytests_mutex1_CPPFLAGS = $(alchemycppflags)
++alchemytests_mutex1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_mutex1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_pipe1_SOURCES = pipe-1.c
++alchemytests_pipe1_CPPFLAGS = $(alchemycppflags)
++alchemytests_pipe1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_pipe1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_mq1_SOURCES = mq-1.c
++alchemytests_mq1_CPPFLAGS = $(alchemycppflags)
++alchemytests_mq1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_mq1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_mq2_SOURCES = mq-2.c
++alchemytests_mq2_CPPFLAGS = $(alchemycppflags)
++alchemytests_mq2_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_mq2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_mq3_SOURCES = mq-3.c
++alchemytests_mq3_CPPFLAGS = $(alchemycppflags)
++alchemytests_mq3_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_mq3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_sem1_SOURCES = sem-1.c
++alchemytests_sem1_CPPFLAGS = $(alchemycppflags)
++alchemytests_sem1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_sem1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_sem2_SOURCES = sem-2.c
++alchemytests_sem2_CPPFLAGS = $(alchemycppflags)
++alchemytests_sem2_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_sem2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task1_SOURCES = task-1.c
++alchemytests_task1_CPPFLAGS = $(alchemycppflags)
++alchemytests_task1_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task2_SOURCES = task-2.c
++alchemytests_task2_CPPFLAGS = $(alchemycppflags)
++alchemytests_task2_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task3_SOURCES = task-3.c
++alchemytests_task3_CPPFLAGS = $(alchemycppflags)
++alchemytests_task3_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task4_SOURCES = task-4.c
++alchemytests_task4_CPPFLAGS = $(alchemycppflags)
++alchemytests_task4_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task4_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task5_SOURCES = task-5.c
++alchemytests_task5_CPPFLAGS = $(alchemycppflags)
++alchemytests_task5_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task5_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task6_SOURCES = task-6.c
++alchemytests_task6_CPPFLAGS = $(alchemycppflags)
++alchemytests_task6_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task6_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task7_SOURCES = task-7.c
++alchemytests_task7_CPPFLAGS = $(alchemycppflags)
++alchemytests_task7_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task7_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task8_SOURCES = task-8.c
++alchemytests_task8_CPPFLAGS = $(alchemycppflags)
++alchemytests_task8_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task8_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task9_SOURCES = task-9.c
++alchemytests_task9_CPPFLAGS = $(alchemycppflags)
++alchemytests_task9_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task9_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task10_SOURCES = task-10.c
++alchemytests_task10_CPPFLAGS = $(alchemycppflags)
++alchemytests_task10_LDADD = $(alchemyldadd) -lpthread -lrt -lm
++alchemytests_task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++
+diff --git a/lib/alchemy/testsuite/alarm-1.c b/testsuite/smokey/alchemytests/alarm-1.c
+similarity index 97%
+rename from lib/alchemy/testsuite/alarm-1.c
+rename to testsuite/smokey/alchemytests/alarm-1.c
+index 29b3bbe74..eb6c5310a 100644
+--- a/lib/alchemy/testsuite/alarm-1.c
++++ b/testsuite/smokey/alchemytests/alarm-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
+new file mode 100644
+index 000000000..ee8d1703b
+--- /dev/null
++++ b/testsuite/smokey/alchemytests/alchemytests.c
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <error.h>
++#include <libgen.h>
++#include <smokey/smokey.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++
++#define TEST(name)								   \
++	smokey_test_plugin(name, SMOKEY_NOARGS, "Run external test");		   \
++	static int run_##name(struct smokey_test *t, int argc, char *const argv[]) \
++	{									   \
++		return __run_extprog(t, argc, argv);				   \
++	}
++
++static int __run_extprog(struct smokey_test *t, int argc, char *const argv[])
++{
++	int ret;
++	char *tst_path;
++
++	ret = asprintf(&tst_path, "%s/%s --cpu-affinity=0", XENO_TEST_DIR, t->name);
++	if (ret == -1)
++		return -ENOMEM;
++
++	ret = system(tst_path);
++	free(tst_path);
++
++	return ret;
++}
++
++TEST(alchemytests)
++TEST(alchemytests_alarm1)
++TEST(alchemytests_buffer1)
++TEST(alchemytests_event1)
++TEST(alchemytests_heap1)
++TEST(alchemytests_heap2)
++TEST(alchemytests_mq1)
++TEST(alchemytests_mq2)
++TEST(alchemytests_mq3)
++TEST(alchemytests_mutex1)
++TEST(alchemytests_pipe1)
++TEST(alchemytests_sem1)
++TEST(alchemytests_sem2)
++TEST(alchemytests_task1)
++TEST(alchemytests_task2)
++TEST(alchemytests_task3)
++TEST(alchemytests_task4)
++TEST(alchemytests_task5)
++TEST(alchemytests_task6)
++TEST(alchemytests_task7)
++TEST(alchemytests_task8)
++TEST(alchemytests_task9)
++TEST(alchemytests_task10)
++
+diff --git a/testsuite/smokey/alchemytests/alchemytests_driver.c b/testsuite/smokey/alchemytests/alchemytests_driver.c
+new file mode 100644
+index 000000000..7cacbb399
+--- /dev/null
++++ b/testsuite/smokey/alchemytests/alchemytests_driver.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <error.h>
++#include <libgen.h>
++#include <smokey/smokey.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++
++int main(int argc, char *const argv[])
++{
++	struct smokey_test *t;
++	int ret, fails = 0;
++
++	if (pvlist_empty(&smokey_test_list))
++		return 0;
++
++	for_each_smokey_test(t) {
++		ret = t->run(t, argc, argv);
++		if (ret) {
++			fails++;
++			if (smokey_keep_going)
++				continue;
++			if (smokey_verbose_mode)
++				error(1, -ret, "test %s failed", t->name);
++			return 1;
++		}
++		smokey_note("%s OK", t->name);
++	}
++
++	return fails != 0;
++}
+diff --git a/lib/alchemy/testsuite/buffer-1.c b/testsuite/smokey/alchemytests/buffer-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/buffer-1.c
+rename to testsuite/smokey/alchemytests/buffer-1.c
+index d6d1d9ad7..fdcb5e8d7 100644
+--- a/lib/alchemy/testsuite/buffer-1.c
++++ b/testsuite/smokey/alchemytests/buffer-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <memory.h>
+diff --git a/lib/alchemy/testsuite/event-1.c b/testsuite/smokey/alchemytests/event-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/event-1.c
+rename to testsuite/smokey/alchemytests/event-1.c
+index 0893df36d..9ce679c71 100644
+--- a/lib/alchemy/testsuite/event-1.c
++++ b/testsuite/smokey/alchemytests/event-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/heap-1.c b/testsuite/smokey/alchemytests/heap-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/heap-1.c
+rename to testsuite/smokey/alchemytests/heap-1.c
+index 48bc4a56e..f0904439f 100644
+--- a/lib/alchemy/testsuite/heap-1.c
++++ b/testsuite/smokey/alchemytests/heap-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/heap-2.c b/testsuite/smokey/alchemytests/heap-2.c
+similarity index 98%
+rename from lib/alchemy/testsuite/heap-2.c
+rename to testsuite/smokey/alchemytests/heap-2.c
+index ad67afb2f..1f80db80c 100644
+--- a/lib/alchemy/testsuite/heap-2.c
++++ b/testsuite/smokey/alchemytests/heap-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/mq-1.c b/testsuite/smokey/alchemytests/mq-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/mq-1.c
+rename to testsuite/smokey/alchemytests/mq-1.c
+index ac9801e72..952ff6448 100644
+--- a/lib/alchemy/testsuite/mq-1.c
++++ b/testsuite/smokey/alchemytests/mq-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/mq-2.c b/testsuite/smokey/alchemytests/mq-2.c
+similarity index 98%
+rename from lib/alchemy/testsuite/mq-2.c
+rename to testsuite/smokey/alchemytests/mq-2.c
+index 9fea471b7..acc6ec051 100644
+--- a/lib/alchemy/testsuite/mq-2.c
++++ b/testsuite/smokey/alchemytests/mq-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/mq-3.c b/testsuite/smokey/alchemytests/mq-3.c
+similarity index 98%
+rename from lib/alchemy/testsuite/mq-3.c
+rename to testsuite/smokey/alchemytests/mq-3.c
+index 7fcae020a..cb4c77d43 100644
+--- a/lib/alchemy/testsuite/mq-3.c
++++ b/testsuite/smokey/alchemytests/mq-3.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/mutex-1.c b/testsuite/smokey/alchemytests/mutex-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/mutex-1.c
+rename to testsuite/smokey/alchemytests/mutex-1.c
+index ef58a2c86..f08665254 100644
+--- a/lib/alchemy/testsuite/mutex-1.c
++++ b/testsuite/smokey/alchemytests/mutex-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/pipe-1.c b/testsuite/smokey/alchemytests/pipe-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/pipe-1.c
+rename to testsuite/smokey/alchemytests/pipe-1.c
+index 4202be2ba..4011f9c8a 100644
+--- a/lib/alchemy/testsuite/pipe-1.c
++++ b/testsuite/smokey/alchemytests/pipe-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <fcntl.h>
+diff --git a/lib/alchemy/testsuite/sem-1.c b/testsuite/smokey/alchemytests/sem-1.c
+similarity index 98%
+rename from lib/alchemy/testsuite/sem-1.c
+rename to testsuite/smokey/alchemytests/sem-1.c
+index 3e526eddf..080bcea9a 100644
+--- a/lib/alchemy/testsuite/sem-1.c
++++ b/testsuite/smokey/alchemytests/sem-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/sem-2.c b/testsuite/smokey/alchemytests/sem-2.c
+similarity index 97%
+rename from lib/alchemy/testsuite/sem-2.c
+rename to testsuite/smokey/alchemytests/sem-2.c
+index c01f6a431..74cce2b7d 100644
+--- a/lib/alchemy/testsuite/sem-2.c
++++ b/testsuite/smokey/alchemytests/sem-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-1.c b/testsuite/smokey/alchemytests/task-1.c
+similarity index 94%
+rename from lib/alchemy/testsuite/task-1.c
+rename to testsuite/smokey/alchemytests/task-1.c
+index 34a6c22fd..d3d9a6f7f 100644
+--- a/lib/alchemy/testsuite/task-1.c
++++ b/testsuite/smokey/alchemytests/task-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-10.c b/testsuite/smokey/alchemytests/task-10.c
+similarity index 97%
+rename from lib/alchemy/testsuite/task-10.c
+rename to testsuite/smokey/alchemytests/task-10.c
+index 58f4cb035..c4a29ae76 100644
+--- a/lib/alchemy/testsuite/task-10.c
++++ b/testsuite/smokey/alchemytests/task-10.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-2.c b/testsuite/smokey/alchemytests/task-2.c
+similarity index 98%
+rename from lib/alchemy/testsuite/task-2.c
+rename to testsuite/smokey/alchemytests/task-2.c
+index e751ddd34..592f2ed20 100644
+--- a/lib/alchemy/testsuite/task-2.c
++++ b/testsuite/smokey/alchemytests/task-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-3.c b/testsuite/smokey/alchemytests/task-3.c
+similarity index 97%
+rename from lib/alchemy/testsuite/task-3.c
+rename to testsuite/smokey/alchemytests/task-3.c
+index 06f235af9..eb24935a4 100644
+--- a/lib/alchemy/testsuite/task-3.c
++++ b/testsuite/smokey/alchemytests/task-3.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-4.c b/testsuite/smokey/alchemytests/task-4.c
+similarity index 98%
+rename from lib/alchemy/testsuite/task-4.c
+rename to testsuite/smokey/alchemytests/task-4.c
+index eba7fbb86..90e0236be 100644
+--- a/lib/alchemy/testsuite/task-4.c
++++ b/testsuite/smokey/alchemytests/task-4.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-5.c b/testsuite/smokey/alchemytests/task-5.c
+similarity index 98%
+rename from lib/alchemy/testsuite/task-5.c
+rename to testsuite/smokey/alchemytests/task-5.c
+index 3c0fa427c..b9075945d 100644
+--- a/lib/alchemy/testsuite/task-5.c
++++ b/testsuite/smokey/alchemytests/task-5.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-6.c b/testsuite/smokey/alchemytests/task-6.c
+similarity index 97%
+rename from lib/alchemy/testsuite/task-6.c
+rename to testsuite/smokey/alchemytests/task-6.c
+index 7c88fde9c..fa58d0fdc 100644
+--- a/lib/alchemy/testsuite/task-6.c
++++ b/testsuite/smokey/alchemytests/task-6.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-7.c b/testsuite/smokey/alchemytests/task-7.c
+similarity index 98%
+rename from lib/alchemy/testsuite/task-7.c
+rename to testsuite/smokey/alchemytests/task-7.c
+index 1350bb39c..d118abf42 100644
+--- a/lib/alchemy/testsuite/task-7.c
++++ b/testsuite/smokey/alchemytests/task-7.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-8.c b/testsuite/smokey/alchemytests/task-8.c
+similarity index 97%
+rename from lib/alchemy/testsuite/task-8.c
+rename to testsuite/smokey/alchemytests/task-8.c
+index bb6dfff06..959b3d3c4 100644
+--- a/lib/alchemy/testsuite/task-8.c
++++ b/testsuite/smokey/alchemytests/task-8.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/alchemy/testsuite/task-9.c b/testsuite/smokey/alchemytests/task-9.c
+similarity index 97%
+rename from lib/alchemy/testsuite/task-9.c
+rename to testsuite/smokey/alchemytests/task-9.c
+index e358154c5..56cc7bfeb 100644
+--- a/lib/alchemy/testsuite/task-9.c
++++ b/testsuite/smokey/alchemytests/task-9.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <signal.h>
 -- 
 2.35.3
 
