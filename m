@@ -1,51 +1,51 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE59C8F1
-	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:53:00 +0000 (UTC)
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-51ff0e3d8c1so6292037a12.0
-        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:53:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4E6CC8F8
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:53:01 +0000 (UTC)
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-4fb77f21c63so6607343e87.2
+        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:53:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sigma-star.at; s=google; t=1690206779; x=1690811579;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4T/h8f7UA0MwJtvuR5Ih4P1FPPGqFQNWXoqmPtCy13Q=;
-        b=Y76opnDL69FXXesDYZHhKj3t5qggSP3Ll0Arz1r6lU1cIt7CpNTAmvoJKFUCIuKep0
-         vcXTuXImt5K8LefonAwb1xq+nrZEPVFI87xrfXp4w6e+9Kxo7P9ZEjqTqjRug11cZb3J
-         RSWiaXAw9WOQoqd24L2VBWAmPTr09D1CGP4z1reURttfJe4wvFR3srT+04A6mUxVrjYJ
-         w2SMMJ6/YtO9UvNGh4nKsoX8vk5WmKf0MM+e0ae5Ls14HgdVPlPKFsyqzp+4pCvH3IOX
-         rPcG4WAkliOfVTOpnGwVYLNF2nY3J/lx+T73W/AzeRWkdpHQ6rwGTB/TwVun2oxbZBCs
-         KkIQ==
+        bh=+XcCLWC39+8QMjcUTvdz7glL5ZxbKtjyuZbxFizKY08=;
+        b=vtreznwu2iIuxwpYZzmv3Kqv34XHZegXrXspf4xCwcns2VTN+QtuyKp0CectztYNut
+         3ZHBTMrqhBtO8OOAxvoRzRBroo3CusJ+vlMrS6IWX3m2g5FccGIBvO1Hkxe0QrYlG53w
+         cJ1TNKsXuYQgiL8hm0ee3bQwbbgHq1jmAE13gmFqEEAuhaNrMar67FS0LMYwIeYV4k+N
+         hwL4Rn/OoVqMXL0+3kceOaSFelRhJl3vc/hqtn0Pc1wQWssQghnq3YQKOssLtODzJkNY
+         H7LzcMmMpyT3D5cPbCqUygYUgVQz3xHfa53IlAZSEjLGbdiWt0eE1FDKzNXOHnd00UCE
+         kFYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20221208; t=1690206779; x=1690811579;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4T/h8f7UA0MwJtvuR5Ih4P1FPPGqFQNWXoqmPtCy13Q=;
-        b=fSW9ydhnaS11jyfiJ1skLisuXl90Be5BASdO8cvSrUPiRl7AObopn0Dmt8q3501tvL
-         noUruG6idBYykltEd+ENaRp/MhplYHE0fzONJhZWhOqIHQYuKUKWfWOg0XvWZ/6EyMr1
-         JQ1rWBbF+L0Ah1J/N7n9m7DxW7TuC5sET76fVJTHxuibICXjHf/K1Yj8J1dxK6+6M++A
-         uJLZHs5tSMCLsAdllNXhyZUQ0qfOzmSJtVv96aui88N86JGdwVATt762pEGxzUAKmGlg
-         LgtMbZX1D7ckVhTQ2jkVZ7glB/2HK8pNwn/uVecU1XGV0extWKL85fWNNiIgoq1E/WHX
-         9/VQ==
-X-Gm-Message-State: ABy/qLbO30LJzTZF+11ZFZ+3TcRv3V0yanZ70rOSZXOlyis9AkuJ5ONj
-	Qy5gsaAgI7Dcz7gYqbwAcvdej6ADxr2DXBCx+Z0=
-X-Google-Smtp-Source: APBJJlF4HYo/+3MMUHQMrj8rqOtbgaCSGjqZYNJQS/dLe2PcQURizAyiDsYImCk9Wj4/L6llIKjypw==
-X-Received: by 2002:a50:ed0f:0:b0:522:3abb:5bba with SMTP id j15-20020a50ed0f000000b005223abb5bbamr1141596eds.24.1690206778965;
-        Mon, 24 Jul 2023 06:52:58 -0700 (PDT)
+        bh=+XcCLWC39+8QMjcUTvdz7glL5ZxbKtjyuZbxFizKY08=;
+        b=XVJzPg+K25mYT5o2ZmXTvnudNDIlfAJMmPDI1CiVUb+jaEM4J2XST0lbkyoJE9CjsC
+         gmohejllncxmA4MRFEYi6T25jn3Y6WNoE84CjOti3a/1C2U7ep25eo87fybeeLNYVl5B
+         2HfGzNQf2MzNOsd/CKujAV8ThY9Vk303DZ+F0/Cjjpw9zw7PFU2LwcGKJfcwfrSQDWpt
+         Z+W8Z3EQ8TDimVBd1jwnIog90duaMOpOGrmERFA2gtlS3+OoD/NAlFdgyEI0P+2gexVx
+         ZgxpvdCb2xTS6BLXqjU0y0iac/KSQdyFtygrfHZmcT6Rt9AdySKT5vNa4MH1awIxtKyf
+         MAhA==
+X-Gm-Message-State: ABy/qLYVsftNcPsqO/jcXELKShBdiZO9YIHzU2MKmS6MgK5XXVdz8BJa
+	Vu1YMD3VA9IvnUEyQxsrYXcePF01MjPtMQkRLcU=
+X-Google-Smtp-Source: APBJJlHB++YV3s4I36Aan9DtPFfn60QdlowwkQwu70uXJxST2Mp6LzMJ0x0DBC+B4ME8rb6UnAHXjA==
+X-Received: by 2002:a05:6512:114a:b0:4f8:67aa:4f03 with SMTP id m10-20020a056512114a00b004f867aa4f03mr6023434lfg.1.1690206779658;
+        Mon, 24 Jul 2023 06:52:59 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.58
+        by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jul 2023 06:52:58 -0700 (PDT)
+        Mon, 24 Jul 2023 06:52:59 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH 08/10] alchemytests: Fix task-2
-Date: Mon, 24 Jul 2023 15:52:37 +0200
-Message-Id: <20230724135239.10579-9-aaron@sigma-star.at>
+Subject: [PATCH 09/10] alchemytests: Fix task-5 logic
+Date: Mon, 24 Jul 2023 15:52:38 +0200
+Message-Id: <20230724135239.10579-10-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230724135239.10579-1-aaron@sigma-star.at>
 References: <20230720145150.24607-1-aaron@sigma-star.at>
@@ -58,29 +58,44 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-https://lore.kernel.org/xenomai/2065449276.254073.1649941119506.JavaMail.zimbra@nod.at/
+Semaphore call in wrong logical order, so that on the second
+rt_task_set_priority call the task doesn't exist anymore and thus the
+call fails with EINVAL.
+
+This commit fixes the order so that the test passes again.
 
 Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
 ---
- testsuite/smokey/alchemytests/task-2.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ testsuite/smokey/alchemytests/task-5.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/testsuite/smokey/alchemytests/task-2.c b/testsuite/smokey/alchemytests/task-2.c
-index 592f2ed20..1284a8b61 100644
---- a/testsuite/smokey/alchemytests/task-2.c
-+++ b/testsuite/smokey/alchemytests/task-2.c
-@@ -29,8 +29,10 @@ static void background_task(void *arg)
+diff --git a/testsuite/smokey/alchemytests/task-5.c b/testsuite/smokey/alchemytests/task-5.c
+index b9075945d..2aecd8125 100644
+--- a/testsuite/smokey/alchemytests/task-5.c
++++ b/testsuite/smokey/alchemytests/task-5.c
+@@ -45,17 +45,17 @@ static void foreground_task(void *arg)
  
- 	traceobj_mark(&trobj, 2);
+ 	traceobj_mark(&trobj, 4);
  
--	while (--safety > 0)
-+	while (--safety > 0) {
-+		compiler_barrier();
- 		count++;
-+	}
+-	ret = rt_sem_v(&sem);
+-	traceobj_check(&trobj, ret, 0);
++	ret = rt_task_inquire(NULL, &info);
++	traceobj_assert(&trobj, ret == 0 && info.prio == 21);
  
- 	traceobj_exit(&trobj);
- }
+ 	traceobj_mark(&trobj, 5);
+ 
+-	ret = rt_task_inquire(NULL, &info);
+-	traceobj_assert(&trobj, ret == 0 && info.prio == 21);
++	ret = rt_task_set_priority(&t_bgnd, info.prio);
++	traceobj_check(&trobj, ret, 0);
+ 
+ 	traceobj_mark(&trobj, 6);
+ 
+-	ret = rt_task_set_priority(&t_bgnd, info.prio);
++	ret = rt_sem_v(&sem);
+ 	traceobj_check(&trobj, ret, 0);
+ 
+ 	traceobj_mark(&trobj, 7);
 -- 
 2.35.3
 
