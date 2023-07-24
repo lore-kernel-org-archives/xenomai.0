@@ -1,46 +1,48 @@
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2043.outbound.protection.outlook.com [40.107.13.43])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2075.outbound.protection.outlook.com [40.107.21.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A4B1C10
-	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 07:40:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2499D1C32
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 07:40:42 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eRCMxtGY1SZm3KiWzgOPbQHHXszHle5rMyorz+lHKBJEOFsVtL9w9ky5bR9hwVFkbM8LdI1knBJnd+rlIyYRFaszrwahsk9V5fw8xD3QBhdz4F+oiPZpjwXAXnwaK6OmEzF08+dIUcEiwNQeqMyi4YdV7hoc2cB/F97LD1BuU815zDeTWusImw/q+CAfSjlIWryUNvTbsq9IQx0daiB8IrelDxBPV1SxzFWkp2bUZYpOSZ/TwS9Tv5hYh6VgXRTWaO5SM2rYe4PVkEVDcNoIFtH0l6g8N34dKDnWA65ibRCiCCG5y4sBP/qvd7cQXmNZyIh5ItExDoGidvx9w4Hyvw==
+ b=g6bcb+UzVb3ErP5vRkqV+OdCCUBrI5PHz6ASnRmwu//xLnZwILFmHvsMyygrwTbkfN03STE5TMNp8PfCMmervAM3B+AjAn3UkVIeeLOc65zcCe2E6gPTztHnm/lUgdHwLhd3WjEyVM6JXNELPli+V3kj3ektipZ47ZdxBLYJTNUz8G8RX4uWULcWc8d0DJC0jIwvqhvuI3patFPqqwy5LCe9IkTve91UFzz/1ls6X+00kPt9Yx4GVeA2hdCBPl813DUnwEcFe11m3+Cvs1+nwVF/VtrF9e08D+SzQqZ8VBHEaeSerSF6X/9WmHG2wT4UY+WWZtXNyr8Xta/4V8Ov3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Yt73P84EZO0djGSs+fc8zDaqK1wS/Qi+IvwV33GNI4g=;
- b=EvFy0D/+xkPigLGLkNfdoiCZX/3W6ifX3uhQMM5r6HIbcpUJNKxwhnEwFGGLStuztVMwkpPeP404gal0C87WmHxEFHXLdM2c2ihQn53cnAIBJerTyMRR4zEk6BDZjHTioIIcAlHr/rxdIHcbARoQKVyrxSqScplKGX6DmBVWzzsRPnYgK78JSGhWleZK/xTxnkswbx38Byof14TcfnQhH4G4Ey4LgQlKS4wVVAEOSQJ9yx/PC6UNamuC+txP1Sm163B2yFaCnJOiBMw1qSw/LnFH6FGWY235zlkyHyDpyPTB0GrPXVkTdKyj4SZD+gfxVoPso14WIlgq2ll6dE+z+A==
+ bh=JfeuaoU7GTCbcl60CqnyXOK24PyeO94E4fo/WUUuFBk=;
+ b=VUYV/wAe3tKSPyCtheCqMw8CfzmCwRo1tD8GWVOMinqW30nmxJmuEFdbHnioIEITCiZhM8DdnONCdYbUOHmSbmditsBfY7i5uvr9VIpWQhZiMPOvaejEmi3KHNuiVC5vhtOb7/nNj6u0xzrxoVCl+ACzuhydeohGngO1cHlXW2KmdFX6pkcH6ErLcF1zY5j0FCprE2M90mDDqN/HwFYbVg/R4qe3biHOjmy0u4d7hUNWu/xNnTQIXRQetDBoteLL0L+N19nZkbTbHXrXPGHE4UBusoQI8jEABR0NGneIDtpSyxaUCR4MZybbr39Vh1r0gPXD//ZrnTM0fnh7LK6gbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Yt73P84EZO0djGSs+fc8zDaqK1wS/Qi+IvwV33GNI4g=;
- b=h3hNgE8PelTmSKxhF1pbWyZ3m754v1yvu+phFX13MQ/LYJIBdOuHe/kog6aCzDXcQ2mt3gfomJTl1Csl41kX0iEdM5L9tAjsOEOWdTIllrLBsNUGangkW2kFlTrAgRYJRxdEzMGz86EvdFuegygFi77f4hJ+ZTTf6976bKXdJgWR9CIZl34tbIHi2v5Io0kj1pZflToDmErTi+8OWvVZZ7gT+ukVGpxu9PNJx5Xro60rGpPWX7lR7saGXep16yceAP8KbwpxMkNxM4mL2yAaBoknrK+g03ZFzOv7/APiJMTfgeRur7XMbB+jqtxRV2RZG7fJGTDyiW76prcB6lyOJw==
+ bh=JfeuaoU7GTCbcl60CqnyXOK24PyeO94E4fo/WUUuFBk=;
+ b=DkltigzPfZbmxhT6NIwbHIUAtIvSOipmnZwUf4wB55qhhSuJ8XB9zE0qKPRKz8MAzawDprdOllhQqV5DSieng8sWTC9FcVTiX5V1OWsnR+pE0QMZJsRm5Wv+iIb9xM3fq4HeE2UiFk7nO7nbo6uWxGwILK893xgIalym55yNix3fd5uwrqHVtofJu4s9xxDp1dhS3hp8ZcPntDt5XtAlVNpt+H3yObekrF71PdQrPPaoDggBcMnd2cjE+DgtYO4Cl0GBz1cJHkvElICTdKpk48oZ0fWYDqBt3w8pry91CxK2DaYSAk0CgXm33h6XIzYdDp1ETStkM9VWwctcnM2kCA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
- by VI1PR10MB3710.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:13c::11) with
+ by AM7PR10MB3175.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:dd::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Mon, 24 Jul
- 2023 07:40:38 +0000
+ 2023 07:40:40 +0000
 Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::83e0:fdfd:2432:226a]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::83e0:fdfd:2432:226a%7]) with mapi id 15.20.6609.031; Mon, 24 Jul 2023
- 07:40:38 +0000
+ 07:40:40 +0000
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH 1/2] linux-xenomai: Fix SD card boot for beagle bone black
-Date: Mon, 24 Jul 2023 09:40:34 +0200
-Message-ID: <20230724074035.81965-1-florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH 2/2] customizations: Install systemd-resolved as DNS resolver
+Date: Mon, 24 Jul 2023 09:40:35 +0200
+Message-ID: <20230724074035.81965-2-florian.bezdeka@siemens.com>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230724074035.81965-1-florian.bezdeka@siemens.com>
+References: <20230724074035.81965-1-florian.bezdeka@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: FR0P281CA0218.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ac::14) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0099.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a1::16) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -49,103 +51,79 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|VI1PR10MB3710:EE_
-X-MS-Office365-Filtering-Correlation-Id: 37064683-382a-4c25-4fa6-08db8c1945db
+X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|AM7PR10MB3175:EE_
+X-MS-Office365-Filtering-Correlation-Id: c8b90d8b-05e4-46ac-2c6b-08db8c19474f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	SDZtr0420IXjfCgnwChNJcqmke+O5z3cbFhNP2bcNOW244C1UQMFDYGoO6Oq22cpsQN9c/HqDsVr/z6WcG1zz4nHmaaVRVmkzG0jz49c7oKluEs1Wr7eees8BE+g/V5n3Lb5zYhImvWGd8DJzseona3aeAlT29P2raZvhrINknLk1mgVaJlI0I/nd94B66qt8KznCYcLbIxxw+taGeI88J3oXloG4lnjNGrg+pK6K96+Y2fsi/UXAjUI0h8jTUum05otYjHrLoIzVJcNfjXG7GbDytqrA5s2Wq6AbTyvGwCe2N9kGGCkE2F43/S2Y/ITz2TSn80i7ouJ0EeBfteWlDE0qP52KOwJHhqqIvGi/Eab3UZ4VvtjueiD4wUvIxJ/MHrFhrqj0SDCNiFv8SRS9fq6mjODJEkNxt8Vg3AXdmqL7pfP/a/uQNnh+Vr4b70aG4zX2/scZq7KrQrlK5a0NXEyc40ZYIotG+32+Zc+WVDUFcS2HQGBHJyyQfGA64joKDuCfRBnKZMrqA0aV0kNjGS5rc2e/xncpQ4xg+IeH8jrWu0EmZWjLrVI5+dnGgMv
+	1gk81pffb4jsrf5gc0AbnvaDh4+dkvZfA2V+Qmt4Wc3IUFxnUc5Pyc3CUUP41k0oPD0/Y1QfFfVtesXuyLxNAM26uFNC2xPVxGeF8jK5wKPhW0tVe80+7q3/HAEOTCWtHe8f+LbGJ4yX6j7c4BMvKSG/tozrXnixfgQCeisRpbHqOBf0iC7yJEDfJB7YhAc0buom/XsRUnYgZQRo3aWeecemYgS0Da1kIs5OgU1qyY8Ihs5JPXML60R0Erj4OVKysp167+mqeborMbHXUgr04E12RNgV3xVUmHUJCA/oFKHLX4izIWMa+4JTbHC47Dh9lzId55wVQRQdTm3fj5WWTP6iAjY0590XLuDiHfmM8ic39BwxZHp/cUjKc8Huq5RKdXVDw1xl0d10/qv5zkplD9phhv2oKKy6mM5Z4oVK6Ns9ZHNEPqZMDrdruq5LiYPbInM+cLc8or0lOSvM3BxzYIw1PsQ0TOb3yarW8bi04sPlpDSuDMfbPBTRK4hpwkihNtdRWPRl/joNCEyGYtVoC/Sk0iXHEmVd+F9P0hZJ2e3BX4oTOTR8KDonYRFTnqi+
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(376002)(136003)(396003)(346002)(451199021)(1076003)(186003)(6506007)(44832011)(5660300002)(36756003)(8676002)(8936002)(2906002)(2616005)(82960400001)(86362001)(107886003)(38100700002)(83380400001)(6916009)(66946007)(66556008)(66476007)(4326008)(316002)(6486002)(6512007)(6666004)(478600001)(41300700001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(39860400002)(376002)(366004)(451199021)(6506007)(1076003)(186003)(36756003)(5660300002)(44832011)(8936002)(8676002)(4744005)(2906002)(38100700002)(107886003)(82960400001)(86362001)(6666004)(6486002)(6512007)(66476007)(66556008)(66946007)(83380400001)(478600001)(41300700001)(2616005)(4326008)(6916009)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZRuCv17Rtshs11pDjQIP890rmidAsYLc28hbuS3jy++iu9bJfWlVXWliL2TA?=
- =?us-ascii?Q?9R9lmH3wqkc3iMOUBGFtrmI34Td+LGyzGwjjeSUud3oO4wPsoVRvzA8/7/va?=
- =?us-ascii?Q?yqJQunlqfd8aZpLpRRkzbPJ5auxUsTh4eqrRFMGEnRz+EL3cxzTOAK1VFC6M?=
- =?us-ascii?Q?qqJG3mNLUCA4wQa++cEn7BkHgRMMIcw2Q+NfAc3K/1SenKJjkC7NUU5vmSpq?=
- =?us-ascii?Q?q87+UbyQQ1zRC42L+UdH/weacFT/9xiuFQl8Lpf1LFT/2UzIgKOyFm2ydLpV?=
- =?us-ascii?Q?Z5Bp1fJzAvQddnM/g3VU1OHIMV/r6l+A+MVdTih8lT5Q5IVu1VPUHSDY7/Ou?=
- =?us-ascii?Q?Qj1szbWuCBUxb5JkDLIUH86S35zuLfPkgdHIzPWi3vlbCCYIzquC8IsDHvC9?=
- =?us-ascii?Q?0nHdKQlsCwm+F4g3+Ly8/KVWz7xLqYkNqFHWOpKBjqnMUnQK12rEzKVzrsCn?=
- =?us-ascii?Q?b+lpidEr8KAiGHHAI2tVfHgQCEOInsC/5O/PjmKCljNEcq9nOdZZoftyFfIJ?=
- =?us-ascii?Q?FqNMnTUwU5aKNMYEn+nU6y21WF1+GOvHS19x41tICcRcSvIxUV6DQoYnuKzs?=
- =?us-ascii?Q?gW/PB4729mLHxvHLPP29jJD3wBaZmPBk1wlbpawFdIZaMi3reguM633P90zR?=
- =?us-ascii?Q?IfO1Q9jmoQShPrAvR58f3uBI5PQNbF5ogbuv+tQiE8FumDn8PYwNm4T36/pJ?=
- =?us-ascii?Q?8kNIiq3QY8BA/jhAEPax0eR3EgKoyoWIEq/4wzTfzXPhtA0a0fj4JwJDK7Ui?=
- =?us-ascii?Q?OAEej+Etdb06ko/KaOBBo9SoJuIetNDIIkIrOztxAUbQhYSdwrz/Pt7HRYya?=
- =?us-ascii?Q?15xHL8WWLwsHx9v/cUP4AAGAGlUomTnItyisyefZZVL+Avsg8HeKngfjIhRO?=
- =?us-ascii?Q?H7VoDzrFL6R703hZsbzM0nzOoTOTly7E/el4f3F9tMVrZv3YWJS5y97Ne4Bm?=
- =?us-ascii?Q?YVVM44R5ETQeR3HTyw24pj4CIUlKLW2Q+vT4d5WO2XDc2eSED7fR6Rqj0Egp?=
- =?us-ascii?Q?EdQ8A5cog3G103wMRe3XJyqwhssWlXS/oKZbTC6xgh7ysL14Y5eSILNlnuQG?=
- =?us-ascii?Q?WwbeCiBZMx0WwDIwmHoLAej0/8n7avMvKgwGiwcOHoAn4xd0ViVlv2Wf/dsR?=
- =?us-ascii?Q?anV70Zon4hSOpA2EmNE0M2GNP6w3TgOsxM1NUadqlRHXav0jNL67fzAtTrG3?=
- =?us-ascii?Q?PHXAcNOebP5B1stXSxZm5OkwedI5YimLVS44+nCRsH644Z3ufrCjY+mhM3/x?=
- =?us-ascii?Q?itLJ6K1t62JDgf1OVVYkAdVgGQMMaNFKvUyaT9+QKWMwC95i2Fi0xlEncUsI?=
- =?us-ascii?Q?OvDVhZZ4780xCbuXlJFWbDSO0eI9dD1M6J22EJYdT9EnZTaZBZEGaP3dhAWK?=
- =?us-ascii?Q?raqZeUK7iPLi4+i7XRqwpZQtQSQcXeC/Zl/cbl0dE1v+rNyuy7FUBjJronIl?=
- =?us-ascii?Q?MD5X0WlyGQWGLxNddrODc+VNjVER354PnpvlRhPAr8WGZcUfJO+ODFxjIyY5?=
- =?us-ascii?Q?htqGBY9dIlOgoOixcXfsIHh1z/cHOsBqcELPA9tD503HfWfqumIoNyfhluzS?=
- =?us-ascii?Q?GB4F5IQYQKfVZOTnvY9hQSdxayQZJSDEWXZf2w9uUy4jJu+fR5Ej/EphD5c1?=
- =?us-ascii?Q?HlmqnzLjoQATKArQWUBAi3ClOPmw78pChlZzXpUKIqW6HbpEZ6DOmRwDX0vX?=
- =?us-ascii?Q?v0jOow=3D=3D?=
+	=?us-ascii?Q?nOeT0BeJ/BA6/03aX0wsQvcbUqjUXtQfSebq7YfoZM3FN8oPHFOXvhZFtA4z?=
+ =?us-ascii?Q?dmv5sTcCZUUBL8ZEokHVx6X2oMNrHG56zJeEyl5HrNv8M+aRnknJ66O8zXKR?=
+ =?us-ascii?Q?Sliaj7oIQc03jNo4HqwHQ919bRiIwBdE6FGIl9EkpUETrjw4mOr+xzRoIH8m?=
+ =?us-ascii?Q?b1NLyjOlspZyb58nJwjH7VCPbsRrGxS2FrOkQuQd4Lo8PXnmgblyw5f4AdnE?=
+ =?us-ascii?Q?C1RJBt7qhR+bceFMXq3R+O+MOvhUUt/gRXDviJTvJc7E1o/zEDLsdh34Ea7k?=
+ =?us-ascii?Q?HvECC7q+6HLU5NtY6Prb6Y+GrvY1opXn2y4IIh9u2YR6z3/t17q42DhNmeNC?=
+ =?us-ascii?Q?J/r896uJ73dToHyOAuTEpzMcIrEQ38J00sL3AEbU8y+MZdAb52n9nN2sVfe9?=
+ =?us-ascii?Q?6N++ICbLHXwB3L3zj1qZVYmE/+SQM2QlmXvG6anmt182eZEi7gDrAUQh7dqK?=
+ =?us-ascii?Q?gW0E7XnbCfPsg5KJaV7U9ZgbE32/2z7qJICOWxEgiDi74HcDNveYKColmkD1?=
+ =?us-ascii?Q?4NVW+0y/SQV2Oys9KKWmt0wHqgnctSdMeE3HPEuRhtSrDdBVTQEUfWlEuPDT?=
+ =?us-ascii?Q?PTfjXMxhxtPEI+db/dlJ/3+DMCIzZHfqA9T+0juFTcfa0OhhfeaUwoocVqjd?=
+ =?us-ascii?Q?81CtvanAsNvzySI0nTc9/CBHhu3rp0t7bQ1GgU61cYH48koyWapOb9PjKwNo?=
+ =?us-ascii?Q?HfcUoZ3VuuY62tXQ4PRJGUZB69lmFQ92u1+szTlBqEhDxkafpRPOvlERpaEB?=
+ =?us-ascii?Q?GB4KVaQAP2bCEnf9JobCLhtGI/hFObbuwH64xhW2t1ObmRVSlJJ1pRT7bMf6?=
+ =?us-ascii?Q?dG8Lla8GuFR567B4xwHBlFaFCf4B+dfSaSHLBCUtpcJaD+C7XJ9RT9ZQnGbC?=
+ =?us-ascii?Q?mssd568QKd3JysjuJwndzTXb/W3kPrmoKTGp+Jz3DBkocAr8jVWynxrdaQwi?=
+ =?us-ascii?Q?A7pR97N0vd17zI3G9Wr9i9i6V4G1YXbgc/2THqM6cDdgrJaMR26AXKL4ouvh?=
+ =?us-ascii?Q?psbG/Bt1RDX7rFKVhAaUU/5POFxa8uVG2gvmUSq5B96fZVWdeHr6y9wXV+Up?=
+ =?us-ascii?Q?uE1WK9nYyCIGhLg1J47+kuFs34qk7/qOzvcTTMph9CfLodOfHv9jkfa1im6E?=
+ =?us-ascii?Q?Sr6EQU3+kxyBSEnpFBjqM4/EgSTo0i69dOnARUg/KzfOd2tTYTAm+CRgp7Xj?=
+ =?us-ascii?Q?Nqqv9micHxjyYQwfVfU+3F7fmQNWFsUhnP8+NxJ+R7jj8jqSjj7nqP0LwYtO?=
+ =?us-ascii?Q?lbvSqb+xEmC5allzG0CPlXbOcX8qAPB6MbF58XtKoKUy1d3HYMHFF5uizvBO?=
+ =?us-ascii?Q?4XKfi6xNaWLi6HWpHbisalD+oYpBIbkDv/jX0OrH7DR6q7IIbDj/fcXXizqT?=
+ =?us-ascii?Q?v9wIB+MLGmmiGAdqm1cBNqhPNyAJw2XiJkEUrYXupyBHMLeQ9/55QiJ8Rw+L?=
+ =?us-ascii?Q?H4yG2cDi3ReHh3/Fe6OhaWSl6IuydguEZfGR5+/IGauIhaXURMgyqNS4Vkvl?=
+ =?us-ascii?Q?qMnvJ4cs1xqY/ynMo9ioeEgQ6N9fV98sjPrjwpYhEvSWXHYmoVBlUcTjwGQc?=
+ =?us-ascii?Q?kTcE9SoeiFBC2AQMYAkEk5SbWXQQRqPYCM4kqrIWqSIvNSOMmxRNxPSj8IBI?=
+ =?us-ascii?Q?I3m9OlPUq6h39/z2iKY8HzsyQNoiBVdoklV3eGKTJd14z93Z4ReZNy+vDNUa?=
+ =?us-ascii?Q?pFleXw=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37064683-382a-4c25-4fa6-08db8c1945db
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8b90d8b-05e4-46ac-2c6b-08db8c19474f
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 07:40:38.2727
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 07:40:40.2865
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FbgtZ7e/+CyrgI8X1owmzQwtsdtrI6QFE/2PHSlen/ElXHVH/5cvW0iCpzunmUHircNBTaFR7vE9Hz0rU9fqkPvNJbXA+nyZl6sw8NttCsE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3710
+X-MS-Exchange-CrossTenant-UserPrincipalName: uR5osA1AvbFQPNFjcoCd3QAlAxNHJPWpzwH8460Tqg4PApqXkzf5XPMK2gUMmtXkFqTRfXU5OuT3Wk2OnfL4ADqNhEPg3vHoVJ5a99FahMc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3175
 
-The sd card boot was not working due to missing driver support. CI did
-not recognize this as we use NFS boot, so no sd card inolved.
-
-While at it: Convert a DIY machine check into a machine override.
+The DHCP part of our network configuration was working but DNS was
+unusable due to missing systemd-resolved.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- recipes-kernel/linux/files/armhf_defconfig   | 5 +++--
- recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ recipes-core/customizations/customizations.bb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
-index b9342a5..dee6f5e 100644
---- a/recipes-kernel/linux/files/armhf_defconfig
-+++ b/recipes-kernel/linux/files/armhf_defconfig
-@@ -5192,7 +5192,7 @@ CONFIG_PWRSEQ_EMMC=y
- # CONFIG_PWRSEQ_SD8787 is not set
- CONFIG_PWRSEQ_SIMPLE=y
- CONFIG_MMC_BLOCK=y
--CONFIG_MMC_BLOCK_MINORS=16
-+CONFIG_MMC_BLOCK_MINORS=256
- # CONFIG_SDIO_UART is not set
- # CONFIG_MMC_TEST is not set
+diff --git a/recipes-core/customizations/customizations.bb b/recipes-core/customizations/customizations.bb
+index f86bf68..fb79a8f 100644
+--- a/recipes-core/customizations/customizations.bb
++++ b/recipes-core/customizations/customizations.bb
+@@ -18,7 +18,7 @@ SRC_URI = " \
+     file://primary.network \
+     file://99-silent-printk.conf"
  
-@@ -5204,8 +5204,9 @@ CONFIG_MMC_ARMMMCI=y
- CONFIG_MMC_QCOM_DML=y
- CONFIG_MMC_SDHCI=y
- CONFIG_MMC_SDHCI_IO_ACCESSORS=y
--# CONFIG_MMC_SDHCI_PCI is not set
-+CONFIG_MMC_SDHCI_PCI=y
- CONFIG_MMC_SDHCI_PLTFM=y
-+CONFIG_MMC_SDHCI_OMAP=m
- CONFIG_MMC_SDHCI_OF_ARASAN=y
- CONFIG_MMC_SDHCI_OF_AT91=y
- CONFIG_MMC_SDHCI_OF_ESDHC=y
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 7d002f1..e5348c6 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -74,4 +74,4 @@ GIT_BRANCH:arm64 = "${@ \
- SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
- SRCREV = "${AUTOREV}"
+-DEBIAN_DEPENDS = "openssh-server"
++DEBIAN_DEPENDS = "openssh-server, systemd-resolved"
  
--SRC_URI:append:armhf = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) and d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
-+SRC_URI:append:beagle-bone-black = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) else '' }"
+ do_install() {
+ 	install -d ${D}/etc/systemd/network
 -- 
 2.41.0
 
