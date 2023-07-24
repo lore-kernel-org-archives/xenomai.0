@@ -1,51 +1,51 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5EDD8F47
-	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:52:57 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-4fb960b7c9dso6653072e87.0
-        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:52:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 464968C1B
+	for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 13:52:56 +0000 (UTC)
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2b933bbd3eeso63010141fa.1
+        for <xenomai@lists.linux.dev>; Mon, 24 Jul 2023 06:52:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sigma-star.at; s=google; t=1690206775; x=1690811575;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Wm5HDB09cUndJsrDMeSAAvkj1KR0Lv7U8ii+PnT490o=;
-        b=LDTeC4bbY+s/dk/TuB10n/3SU6kvRhP2B365EVG8hVsCiajfKdU1cJiQFhBkK0oYZx
-         ZThEIbvCHa+bb/d4Cv5FWbEPQ/1VzETxv/Q3ihVK+cF0BegOqhXWwpN8lqGSkC784PsG
-         Yll0wXMfhFsMhFNbfusJOAd8dPGtHCItUIbw3WRWQnj/njnk6/j1qhItCJIAB9bAYwF9
-         YVSXuwohRN/jXG3MPQGtEQOi1ybzo+DbgLorGzGeDvfPv1UYg1PfVEDJDutR53D5Exzd
-         GgN205N3eWULgx3/j2cVVWoq07ut0OrL6r/qSEv/TYRmM3saGaAvHpQ6ObeGxsyiOoAx
-         Qa3A==
+        bh=tNEpyk1VXbRyxxHyFGgnsJuniYpmpqTNtiFq1+h4OHQ=;
+        b=IxKxc8+7KTdOwME6XbJ6r7H3PJkVo0Yom8IVWMoBnY+UKYlTIXdsVMnD9dj0ec4kqO
+         HBg4NxSNz1XZlF8ygIpTw9bLY8ndh7dJOPJ5/nniUFhGkDXEwf5UZEBRDhZgdo8QKuyv
+         XvXLsY1FBs+55eYNOeDed10oLm7Xmpud5+YM6UdJOysqb35UAtn38rcCTaU2Apaz9O4+
+         ncehYKaHKH2uJVU3+YqsQFNthIF3cKlIF2OgTpntl03evRiOg2ESGNZ8NlEI5Yl0CeeJ
+         R2xqLHdj2Pcv/XpCd+80xSQynML3JGlAdaDawxb1Dg50UcecYgNsX7sck52pAAaNJ8CS
+         rAJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20221208; t=1690206775; x=1690811575;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Wm5HDB09cUndJsrDMeSAAvkj1KR0Lv7U8ii+PnT490o=;
-        b=evBykVfoof19ErlOrFrssWbzAttAXN25CIPpmAwFQOTBDzlRheqov9PKZPBeGDGEp+
-         KdMqXNgVTHe0dn2EN2O9ryLzxnhMK+0RKH1mIXJI/YZfPM6K+pArJrNU1VQjWCbA+QTm
-         hwnC8gHNkQwX3GctfdMYDVuR5oyLrtDfMB0QizB8VMAIxh7BlbJIwB66nxyLkiJZ4Mzm
-         jAe8n/ATNuyL6TTIUNPW5UPa+rI+lg+7fNHLNkXQKdRDt7PNyh0lspvpWcagDpqvtMvh
-         IhktDUG3LKmXv+gwAaVttRDZRG7NoUCVX33sdpMrxURx7F0Zpt0hVNv5iwCoS50nacEU
-         1ZUw==
-X-Gm-Message-State: ABy/qLZWxJDSKnmvKCO4WZIPm3scOCRMQOYcjgD0xdxAfdf379yrUXOH
-	ngce3u2I3/uRLERQcM2XzRBAAUnAYF202s1zNIg=
-X-Google-Smtp-Source: APBJJlG6Af3RwDxTUnCmnbooNFIEvfm0DLkSV+4+FSFSBIgx8dw4gFXbnjY0Mv4Ih3Pi7ZtLy8nU7Q==
-X-Received: by 2002:a05:6512:208b:b0:4f8:5f32:b1da with SMTP id t11-20020a056512208b00b004f85f32b1damr4948677lfr.24.1690206775465;
-        Mon, 24 Jul 2023 06:52:55 -0700 (PDT)
+        bh=tNEpyk1VXbRyxxHyFGgnsJuniYpmpqTNtiFq1+h4OHQ=;
+        b=ALyRRqBr0YA0sCguvcgWSTmVoWgVsSBq0/9AVOXnIhk6alt46OnPHaEXX5vsSoN/8X
+         puh0uDDYecoHkpzieSqTKTyYrLfhXC1mpwNSmO5o+9R1w2Z33HSxSgousUA2iPkGkgWq
+         CeCFWdMXHiiYyrxDSBPHYqPiCROMuFlkQXUbA74jjzxBwSTzE2Kl3ZbOH6qd9ZImOFSt
+         b5QRYG6x+9JeLXlhLBt+1wzPW5xk/dEH2L5CU/ixMU7EXBhJVHHcech4YFEkWpFGoitq
+         u43WM8aOc7XO1+AYNsbkCnUgOY80mUXACL81+QcFzyv/GF2bdvvrIceCr7a2Ur3csB/6
+         NfjA==
+X-Gm-Message-State: ABy/qLaPWj5BsCUlI3nqpGzTIZBsXgcRT7RUGVwjJT3m7s0VDzYJPlyt
+	8cIKP6l95oGAxAcL2fwjtHx1ZTtKKlDtUVH9dls=
+X-Google-Smtp-Source: APBJJlFWeuYJKJJ3ZimmvJbvoZuynbYQUb9PIn3d0QWb+7MquOFFTkcSlVrJ58qHGzr2Ife6zz3CzA==
+X-Received: by 2002:a05:6512:534:b0:4fb:8bab:48b6 with SMTP id o20-20020a056512053400b004fb8bab48b6mr4928382lfc.52.1690206774621;
+        Mon, 24 Jul 2023 06:52:54 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
         by smtp.gmail.com with ESMTPSA id v2-20020aa7cd42000000b0051bed498851sm6239100edw.54.2023.07.24.06.52.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jul 2023 06:52:55 -0700 (PDT)
+        Mon, 24 Jul 2023 06:52:54 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH 03/10] testsuite: Fully integrate vwworkstests into smokey
-Date: Mon, 24 Jul 2023 15:52:32 +0200
-Message-Id: <20230724135239.10579-4-aaron@sigma-star.at>
+Subject: [PATCH 02/10] testsuite: Fully integrate psostests into smokey
+Date: Mon, 24 Jul 2023 15:52:31 +0200
+Message-Id: <20230724135239.10579-3-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230724135239.10579-1-aaron@sigma-star.at>
 References: <20230720145150.24607-1-aaron@sigma-star.at>
@@ -58,69 +58,91 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Same as for alchemytests and psostests.
+Just like for alchemytests, integrate them into our testsuite.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
 ---
- configure.ac                                  |  2 +-
- lib/vxworks/testsuite/Makefile                | 43 ---------
- testsuite/Makefile.am                         |  6 +-
- testsuite/smokey/Makefile.am                  |  3 +
- testsuite/smokey/vxworkstests/Makefile.am     | 94 +++++++++++++++++++
- .../smokey/vxworkstests}/lst-1.c              |  1 +
- .../smokey/vxworkstests}/msgQ-1.c             |  1 +
- .../smokey/vxworkstests}/msgQ-2.c             |  1 +
- .../smokey/vxworkstests}/msgQ-3.c             |  1 +
- .../smokey/vxworkstests}/rng-1.c              |  1 +
- .../smokey/vxworkstests}/sem-1.c              |  1 +
- .../smokey/vxworkstests}/sem-2.c              |  1 +
- .../smokey/vxworkstests}/sem-3.c              |  1 +
- .../smokey/vxworkstests}/sem-4.c              |  1 +
- .../smokey/vxworkstests}/task-1.c             |  1 +
- .../smokey/vxworkstests}/task-2.c             |  1 +
- testsuite/smokey/vxworkstests/vxworkstests.c  | 46 +++++++++
- .../smokey/vxworkstests/vxworkstests_driver.c | 33 +++++++
- .../smokey/vxworkstests}/wd-1.c               |  1 +
- 19 files changed, 191 insertions(+), 48 deletions(-)
- delete mode 100644 lib/vxworks/testsuite/Makefile
- create mode 100644 testsuite/smokey/vxworkstests/Makefile.am
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/lst-1.c (99%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-1.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-2.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-3.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/rng-1.c (99%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-1.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-2.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-3.c (97%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-4.c (98%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-1.c (96%)
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-2.c (98%)
- create mode 100644 testsuite/smokey/vxworkstests/vxworkstests.c
- create mode 100644 testsuite/smokey/vxworkstests/vxworkstests_driver.c
- rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/wd-1.c (97%)
+ configure.ac                                  |   2 +-
+ lib/psos/testsuite/Makefile                   |  49 ------
+ testsuite/Makefile.am                         |   2 -
+ testsuite/smokey/Makefile.am                  |   9 +-
+ testsuite/smokey/psostests/Makefile.am        | 148 ++++++++++++++++++
+ .../smokey/psostests}/mq-1.c                  |   1 +
+ .../smokey/psostests}/mq-2.c                  |   1 +
+ .../smokey/psostests}/mq-3.c                  |   1 +
+ testsuite/smokey/psostests/psostests.c        |  57 +++++++
+ testsuite/smokey/psostests/psostests_driver.c |  34 ++++
+ .../smokey/psostests}/pt-1.c                  |   1 +
+ .../smokey/psostests}/rn-1.c                  |   1 +
+ .../smokey/psostests}/sem-1.c                 |   1 +
+ .../smokey/psostests}/sem-2.c                 |   1 +
+ .../smokey/psostests}/task-1.c                |   1 +
+ .../smokey/psostests}/task-2.c                |   1 +
+ .../smokey/psostests}/task-3.c                |   1 +
+ .../smokey/psostests}/task-4.c                |   1 +
+ .../smokey/psostests}/task-5.c                |   1 +
+ .../smokey/psostests}/task-6.c                |   1 +
+ .../smokey/psostests}/task-7.c                |   1 +
+ .../smokey/psostests}/task-8.c                |   1 +
+ .../smokey/psostests}/task-9.c                |   1 +
+ .../smokey/psostests}/tm-1.c                  |   1 +
+ .../smokey/psostests}/tm-2.c                  |   1 +
+ .../smokey/psostests}/tm-3.c                  |   1 +
+ .../smokey/psostests}/tm-4.c                  |   1 +
+ .../smokey/psostests}/tm-5.c                  |   1 +
+ .../smokey/psostests}/tm-6.c                  |   1 +
+ .../smokey/psostests}/tm-7.c                  |   1 +
+ 30 files changed, 269 insertions(+), 55 deletions(-)
+ delete mode 100644 lib/psos/testsuite/Makefile
+ create mode 100644 testsuite/smokey/psostests/Makefile.am
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-1.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-2.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-3.c (98%)
+ create mode 100644 testsuite/smokey/psostests/psostests.c
+ create mode 100644 testsuite/smokey/psostests/psostests_driver.c
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/pt-1.c (96%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/rn-1.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-1.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-2.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-1.c (95%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-2.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-3.c (96%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-4.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-5.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-6.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-7.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-8.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-9.c (98%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-1.c (95%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-2.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-3.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-4.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-5.c (97%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-6.c (95%)
+ rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-7.c (95%)
 
 diff --git a/configure.ac b/configure.ac
-index 9db5438eb..a601f94cd 100644
+index fe59333ed..9db5438eb 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1045,9 +1045,9 @@ AC_CONFIG_FILES([ \
+@@ -1044,9 +1044,9 @@ AC_CONFIG_FILES([ \
+ 	testsuite/smokey/can/Makefile \
  	testsuite/smokey/x86io/Makefile \
  	testsuite/smokey/alchemytests/Makefile \
- 	testsuite/smokey/psostests/Makefile \
-+	testsuite/smokey/vxworkstests/Makefile \
++	testsuite/smokey/psostests/Makefile \
  	testsuite/clocktest/Makefile \
  	testsuite/xeno-test/Makefile \
--	testsuite/vxworkstests/Makefile \
+-	testsuite/psostests/Makefile \
+ 	testsuite/vxworkstests/Makefile \
  	utils/Makefile \
  	utils/hdb/Makefile \
- 	utils/can/Makefile \
-diff --git a/lib/vxworks/testsuite/Makefile b/lib/vxworks/testsuite/Makefile
+diff --git a/lib/psos/testsuite/Makefile b/lib/psos/testsuite/Makefile
 deleted file mode 100644
-index 648c9be90..000000000
---- a/lib/vxworks/testsuite/Makefile
+index 3330a617c..000000000
+--- a/lib/psos/testsuite/Makefile
 +++ /dev/null
-@@ -1,43 +0,0 @@
+@@ -1,49 +0,0 @@
 -ifeq ($(DESTDIR),)
 -XENO_CONFIG=xeno-config
 -else
@@ -134,10 +156,16 @@ index 648c9be90..000000000
 -$(error Please add <xenomai-install-path>/bin to your PATH variable or specify DESTDIR)
 -endif
 -
--TESTS := task-1 task-2 msgQ-1 msgQ-2 msgQ-3 wd-1 sem-1 sem-2 sem-3 sem-4 lst-1 rng-1
+-TESTS := \
+-	task-1 task-2 task-3 task-4 task-5 task-6 task-7 task-8 task-9 \
+-	tm-1 tm-2 tm-3 tm-4 tm-5 tm-6 tm-7 \
+-	mq-1 mq-2 mq-3 \
+-	sem-1 sem-2 \
+-	pt-1 \
+-	rn-1
 -
--CFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=vxworks --cflags) -g
--LDFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=vxworks --ldflags)
+-CFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=psos --cflags) -g
+-LDFLAGS := $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --skin=psos --ldflags)
 -CC = $(shell DESTDIR=$(DESTDIR) $(XENO_CONFIG) --cc)
 -
 -all: $(TESTS)
@@ -146,8 +174,8 @@ index 648c9be90..000000000
 -	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
 -
 -install: all
--	install -d $(prefix)/testsuite/vxworks
--	install -t $(prefix)/testsuite/vxworks $(TESTS)
+-	install -d $(prefix)/testsuite/psos
+-	install -t $(prefix)/testsuite/psos $(TESTS)
 -
 -clean:
 -	$(RM) $(TESTS) *~
@@ -165,65 +193,66 @@ index 648c9be90..000000000
 -
 -.PHONY: clean test
 diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
-index bb94f6ba6..4932f6d33 100644
+index 1be7eaba4..bb94f6ba6 100644
 --- a/testsuite/Makefile.am
 +++ b/testsuite/Makefile.am
-@@ -7,8 +7,7 @@ SUBDIRS += 		\
- 	gpiotest	\
+@@ -8,7 +8,6 @@ SUBDIRS += 		\
  	spitest		\
  	switchtest	\
--	xeno-test	\
--	vxworkstests
-+	xeno-test
+ 	xeno-test	\
+-	psostests	\
+ 	vxworkstests
  endif
  
- DIST_SUBDIRS =		\
-@@ -19,5 +18,4 @@ DIST_SUBDIRS =		\
- 	smokey		\
+@@ -21,5 +20,4 @@ DIST_SUBDIRS =		\
  	spitest		\
  	switchtest	\
--	xeno-test	\
--	vxworkstests
-+	xeno-test
+ 	xeno-test	\
+-	psostests \
+ 	vxworkstests
 diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index 457e22a84..888e83b1c 100644
+index 633a87387..457e22a84 100644
 --- a/testsuite/smokey/Makefile.am
 +++ b/testsuite/smokey/Makefile.am
-@@ -42,6 +42,7 @@ COBALT_SUBDIRS = 	\
+@@ -41,13 +41,15 @@ COBALT_SUBDIRS = 	\
+ 	vdso-access 	\
  	xddp		\
  	y2038 \
- 	alchemytests \
-+	vxworkstests \
- 	psostests
+-	alchemytests
++	alchemytests \
++	psostests
  
  MERCURY_SUBDIRS =	\
-@@ -49,6 +50,7 @@ MERCURY_SUBDIRS =	\
+ 	memory-heapmem	\
  	memory-tlsf	\
  	memcheck \
- 	alchemytests \
-+	vxworkstests \
- 	psostests
+-	alchemytests
++	alchemytests \
++	psostests
  
  DIST_SUBDIRS = 		\
-@@ -86,6 +88,7 @@ DIST_SUBDIRS = 		\
+ 	arith 		\
+@@ -83,7 +85,8 @@ DIST_SUBDIRS = 		\
+ 	vdso-access 	\
  	xddp		\
  	y2038 \
- 	alchemytests \
-+	vxworkstests \
- 	psostests
+-	alchemytests
++	alchemytests \
++	psostests
  
  if XENO_X86
-diff --git a/testsuite/smokey/vxworkstests/Makefile.am b/testsuite/smokey/vxworkstests/Makefile.am
+ DIST_SUBDIRS += x86io
+diff --git a/testsuite/smokey/psostests/Makefile.am b/testsuite/smokey/psostests/Makefile.am
 new file mode 100644
-index 000000000..ba942c455
+index 000000000..bd6abc74c
 --- /dev/null
-+++ b/testsuite/smokey/vxworkstests/Makefile.am
-@@ -0,0 +1,94 @@
++++ b/testsuite/smokey/psostests/Makefile.am
+@@ -0,0 +1,148 @@
 +testdir = @XENO_TEST_DIR@
-+noinst_LIBRARIES = libvxworkstests.a
++noinst_LIBRARIES = libpsostests.a
 +
-+libvxworkstests_a_SOURCES = vxworkstests.c
-+libvxworkstests_a_CPPFLAGS = 		\
++libpsostests_a_SOURCES = psostests.c
++libpsostests_a_CPPFLAGS = 		\
 +	@XENO_USER_CFLAGS@	\
 +	-I$(top_srcdir)		\
 +	-I$(top_srcdir)/include \
@@ -232,225 +261,183 @@ index 000000000..ba942c455
 +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
 +test_PROGRAMS = \
-+		vxworkstests \
-+		vxworkstests_lst1	\
-+		vxworkstests_msgQ1	\
-+		vxworkstests_msgQ2	\
-+		vxworkstests_msgQ3	\
-+		vxworkstests_rng1	\
-+		vxworkstests_sem1	\
-+		vxworkstests_sem2	\
-+		vxworkstests_sem3	\
-+		vxworkstests_sem4	\
-+		vxworkstests_wd1	\
-+		vxworkstests_task1	\
-+		vxworkstests_task2
++		psostests       \
++		psostests_mq1	\
++		psostests_mq2	\
++		psostests_mq3	\
++		psostests_pt1	\
++		psostests_rn1	\
++		psostests_sem1	\
++		psostests_sem2	\
++		psostests_tm1	\
++		psostests_tm2	\
++		psostests_tm3	\
++		psostests_tm4	\
++		psostests_tm5	\
++		psostests_tm6	\
++		psostests_tm7	\
++		psostests_task1	\
++		psostests_task2	\
++		psostests_task3	\
++		psostests_task4	\
++		psostests_task5	\
++		psostests_task6	\
++		psostests_task7	\
++		psostests_task8	\
++		psostests_task9
 +
-+vxworkscppflags = 				\
++psoscppflags = 				\
 +	$(XENO_USER_CFLAGS)		\
++	-I$(top_srcdir)		\
 +	-I$(top_srcdir)/include
 +
-+vxworksldadd = 					\
-+	../../../lib/vxworks/libvxworks@CORE@.la		\
++psosldadd = 					\
++	../../../lib/psos/libpsos@CORE@.la		\
 +	../../../lib/copperplate/libcopperplate@CORE@.la	\
 +	@XENO_CORE_LDADD@ 			\
 +	@XENO_USER_LDADD@			\
 +	-lpthread -lrt -lm
 +
-+vxworkstests_SOURCES = vxworkstests_driver.c
-+vxworkstests_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_LDADD =			\
-+	../../../lib/smokey/libsmokey@CORE@.la	\
-+	-lpthread -lrt
++psostests_SOURCES = psostests_driver.c
++psostests_CPPFLAGS = $(psoscppflags)
++psostests_LDADD = ../../../lib/smokey/libsmokey@CORE@.la -lpthread -lrt
++psostests_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
 +
-+vxworkstests_lst1_SOURCES = lst-1.c
-+vxworkstests_lst1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_lst1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_lst1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_task1_SOURCES = task-1.c
-+vxworkstests_task1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_task1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_task1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_task2_SOURCES = task-2.c
-+vxworkstests_task2_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_task2_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_task2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_msgQ1_SOURCES = msgQ-1.c
-+vxworkstests_msgQ1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_msgQ1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_msgQ1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_msgQ2_SOURCES = msgQ-2.c
-+vxworkstests_msgQ2_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_msgQ2_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_msgQ2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_msgQ3_SOURCES = msgQ-3.c
-+vxworkstests_msgQ3_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_msgQ3_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_msgQ3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_rng1_SOURCES = rng-1.c
-+vxworkstests_rng1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_rng1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_rng1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_sem1_SOURCES = sem-1.c
-+vxworkstests_sem1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_sem1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_sem1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_sem2_SOURCES = sem-2.c
-+vxworkstests_sem2_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_sem2_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_sem2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_sem3_SOURCES = sem-3.c
-+vxworkstests_sem3_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_sem3_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_sem3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_sem4_SOURCES = sem-4.c
-+vxworkstests_sem4_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_sem4_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_sem4_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+vxworkstests_wd1_SOURCES = wd-1.c
-+vxworkstests_wd1_CPPFLAGS = $(vxworkscppflags)
-+vxworkstests_wd1_LDADD = $(vxworksldadd) -lpthread -lrt -lm
-+vxworkstests_wd1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_mq1_SOURCES = mq-1.c
++psostests_mq1_CPPFLAGS = $(psoscppflags)
++psostests_mq1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_mq1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_mq2_SOURCES = mq-2.c
++psostests_mq2_CPPFLAGS = $(psoscppflags)
++psostests_mq2_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_mq2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_mq3_SOURCES = mq-3.c
++psostests_mq3_CPPFLAGS = $(psoscppflags)
++psostests_mq3_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_mq3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_pt1_SOURCES = pt-1.c
++psostests_pt1_CPPFLAGS = $(psoscppflags)
++psostests_pt1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_pt1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_rn1_SOURCES = rn-1.c
++psostests_rn1_CPPFLAGS = $(psoscppflags)
++psostests_rn1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_rn1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_sem1_SOURCES = sem-1.c
++psostests_sem1_CPPFLAGS = $(psoscppflags)
++psostests_sem1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_sem1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_sem2_SOURCES = sem-2.c
++psostests_sem2_CPPFLAGS = $(psoscppflags)
++psostests_sem2_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_sem2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm1_SOURCES = tm-1.c
++psostests_tm1_CPPFLAGS = $(psoscppflags)
++psostests_tm1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm2_SOURCES = tm-2.c
++psostests_tm2_CPPFLAGS = $(psoscppflags)
++psostests_tm2_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm3_SOURCES = tm-3.c
++psostests_tm3_CPPFLAGS = $(psoscppflags)
++psostests_tm3_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm4_SOURCES = tm-4.c
++psostests_tm4_CPPFLAGS = $(psoscppflags)
++psostests_tm4_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm4_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm5_SOURCES = tm-5.c
++psostests_tm5_CPPFLAGS = $(psoscppflags)
++psostests_tm5_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm5_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm6_SOURCES = tm-6.c
++psostests_tm6_CPPFLAGS = $(psoscppflags)
++psostests_tm6_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm6_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_tm7_SOURCES = tm-7.c
++psostests_tm7_CPPFLAGS = $(psoscppflags)
++psostests_tm7_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_tm7_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task1_SOURCES = task-1.c
++psostests_task1_CPPFLAGS = $(psoscppflags)
++psostests_task1_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task1_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task2_SOURCES = task-2.c
++psostests_task2_CPPFLAGS = $(psoscppflags)
++psostests_task2_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task2_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task3_SOURCES = task-3.c
++psostests_task3_CPPFLAGS = $(psoscppflags)
++psostests_task3_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task3_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task4_SOURCES = task-4.c
++psostests_task4_CPPFLAGS = $(psoscppflags)
++psostests_task4_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task4_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task5_SOURCES = task-5.c
++psostests_task5_CPPFLAGS = $(psoscppflags)
++psostests_task5_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task5_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task6_SOURCES = task-6.c
++psostests_task6_CPPFLAGS = $(psoscppflags)
++psostests_task6_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task6_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task7_SOURCES = task-7.c
++psostests_task7_CPPFLAGS = $(psoscppflags)
++psostests_task7_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task7_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task8_SOURCES = task-8.c
++psostests_task8_CPPFLAGS = $(psoscppflags)
++psostests_task8_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task8_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++psostests_task9_SOURCES = task-9.c
++psostests_task9_CPPFLAGS = $(psoscppflags)
++psostests_task9_LDADD = $(psosldadd) -lpthread -lrt -lm
++psostests_task9_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
 +
-diff --git a/lib/vxworks/testsuite/lst-1.c b/testsuite/smokey/vxworkstests/lst-1.c
-similarity index 99%
-rename from lib/vxworks/testsuite/lst-1.c
-rename to testsuite/smokey/vxworkstests/lst-1.c
-index 03dec367d..878f32c90 100644
---- a/lib/vxworks/testsuite/lst-1.c
-+++ b/testsuite/smokey/vxworkstests/lst-1.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/msgQ-1.c b/testsuite/smokey/vxworkstests/msgQ-1.c
-similarity index 98%
-rename from lib/vxworks/testsuite/msgQ-1.c
-rename to testsuite/smokey/vxworkstests/msgQ-1.c
-index fd15e1ddd..71eedd44f 100644
---- a/lib/vxworks/testsuite/msgQ-1.c
-+++ b/testsuite/smokey/vxworkstests/msgQ-1.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/msgQ-2.c b/testsuite/smokey/vxworkstests/msgQ-2.c
-similarity index 98%
-rename from lib/vxworks/testsuite/msgQ-2.c
-rename to testsuite/smokey/vxworkstests/msgQ-2.c
-index 58f11e3a1..d3ee1397c 100644
---- a/lib/vxworks/testsuite/msgQ-2.c
-+++ b/testsuite/smokey/vxworkstests/msgQ-2.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/msgQ-3.c b/testsuite/smokey/vxworkstests/msgQ-3.c
-similarity index 98%
-rename from lib/vxworks/testsuite/msgQ-3.c
-rename to testsuite/smokey/vxworkstests/msgQ-3.c
-index 1a4e20d26..a23d5c3d0 100644
---- a/lib/vxworks/testsuite/msgQ-3.c
-+++ b/testsuite/smokey/vxworkstests/msgQ-3.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/rng-1.c b/testsuite/smokey/vxworkstests/rng-1.c
-similarity index 99%
-rename from lib/vxworks/testsuite/rng-1.c
-rename to testsuite/smokey/vxworkstests/rng-1.c
-index dd944a58a..1e179c6f6 100644
---- a/lib/vxworks/testsuite/rng-1.c
-+++ b/testsuite/smokey/vxworkstests/rng-1.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdlib.h>
- #include <string.h>
- #include <stdio.h>
-diff --git a/lib/vxworks/testsuite/sem-1.c b/testsuite/smokey/vxworkstests/sem-1.c
-similarity index 98%
-rename from lib/vxworks/testsuite/sem-1.c
-rename to testsuite/smokey/vxworkstests/sem-1.c
-index 245eb5c48..b64aba3b8 100644
---- a/lib/vxworks/testsuite/sem-1.c
-+++ b/testsuite/smokey/vxworkstests/sem-1.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/sem-2.c b/testsuite/smokey/vxworkstests/sem-2.c
-similarity index 98%
-rename from lib/vxworks/testsuite/sem-2.c
-rename to testsuite/smokey/vxworkstests/sem-2.c
-index c9befc4d9..67caf2924 100644
---- a/lib/vxworks/testsuite/sem-2.c
-+++ b/testsuite/smokey/vxworkstests/sem-2.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/sem-3.c b/testsuite/smokey/vxworkstests/sem-3.c
+diff --git a/lib/psos/testsuite/mq-1.c b/testsuite/smokey/psostests/mq-1.c
 similarity index 97%
-rename from lib/vxworks/testsuite/sem-3.c
-rename to testsuite/smokey/vxworkstests/sem-3.c
-index 1041d25b0..1f4252e3d 100644
---- a/lib/vxworks/testsuite/sem-3.c
-+++ b/testsuite/smokey/vxworkstests/sem-3.c
+rename from lib/psos/testsuite/mq-1.c
+rename to testsuite/smokey/psostests/mq-1.c
+index 00f424898..83a24028e 100644
+--- a/lib/psos/testsuite/mq-1.c
++++ b/testsuite/smokey/psostests/mq-1.c
 @@ -1,3 +1,4 @@
 +// SPDX-License-Identifier: GPL-2.0
  #include <stdio.h>
  #include <stdlib.h>
  #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/sem-4.c b/testsuite/smokey/vxworkstests/sem-4.c
+diff --git a/lib/psos/testsuite/mq-2.c b/testsuite/smokey/psostests/mq-2.c
 similarity index 98%
-rename from lib/vxworks/testsuite/sem-4.c
-rename to testsuite/smokey/vxworkstests/sem-4.c
-index 5c82169e1..0a8daedb1 100644
---- a/lib/vxworks/testsuite/sem-4.c
-+++ b/testsuite/smokey/vxworkstests/sem-4.c
+rename from lib/psos/testsuite/mq-2.c
+rename to testsuite/smokey/psostests/mq-2.c
+index 48b4e611c..8af8b42d6 100644
+--- a/lib/psos/testsuite/mq-2.c
++++ b/testsuite/smokey/psostests/mq-2.c
 @@ -1,3 +1,4 @@
 +// SPDX-License-Identifier: GPL-2.0
  #include <stdio.h>
  #include <stdlib.h>
  #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/task-1.c b/testsuite/smokey/vxworkstests/task-1.c
-similarity index 96%
-rename from lib/vxworks/testsuite/task-1.c
-rename to testsuite/smokey/vxworkstests/task-1.c
-index 3cf5f3806..a07d643c3 100644
---- a/lib/vxworks/testsuite/task-1.c
-+++ b/testsuite/smokey/vxworkstests/task-1.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <stdlib.h>
- #include <copperplate/traceobj.h>
-diff --git a/lib/vxworks/testsuite/task-2.c b/testsuite/smokey/vxworkstests/task-2.c
+diff --git a/lib/psos/testsuite/mq-3.c b/testsuite/smokey/psostests/mq-3.c
 similarity index 98%
-rename from lib/vxworks/testsuite/task-2.c
-rename to testsuite/smokey/vxworkstests/task-2.c
-index 46d99a266..7f9f0f002 100644
---- a/lib/vxworks/testsuite/task-2.c
-+++ b/testsuite/smokey/vxworkstests/task-2.c
+rename from lib/psos/testsuite/mq-3.c
+rename to testsuite/smokey/psostests/mq-3.c
+index 942b1a325..1171a7054 100644
+--- a/lib/psos/testsuite/mq-3.c
++++ b/testsuite/smokey/psostests/mq-3.c
 @@ -1,3 +1,4 @@
 +// SPDX-License-Identifier: GPL-2.0
  #include <stdio.h>
  #include <stdlib.h>
- #include <unistd.h>
-diff --git a/testsuite/smokey/vxworkstests/vxworkstests.c b/testsuite/smokey/vxworkstests/vxworkstests.c
+ #include <copperplate/traceobj.h>
+diff --git a/testsuite/smokey/psostests/psostests.c b/testsuite/smokey/psostests/psostests.c
 new file mode 100644
-index 000000000..e244c4d98
+index 000000000..254a1515c
 --- /dev/null
-+++ b/testsuite/smokey/vxworkstests/vxworkstests.c
-@@ -0,0 +1,46 @@
++++ b/testsuite/smokey/psostests/psostests.c
+@@ -0,0 +1,57 @@
 +// SPDX-License-Identifier: GPL-2.0
 +#include <error.h>
 +#include <libgen.h>
@@ -483,26 +470,37 @@ index 000000000..e244c4d98
 +	return ret;
 +}
 +
-+TEST(vxworkstests)
-+TEST(vxworkstests_lst1)
-+TEST(vxworkstests_msgQ1)
-+TEST(vxworkstests_msgQ2)
-+TEST(vxworkstests_msgQ3)
-+TEST(vxworkstests_rng1)
-+TEST(vxworkstests_sem1)
-+TEST(vxworkstests_sem2)
-+TEST(vxworkstests_sem3)
-+TEST(vxworkstests_sem4)
-+TEST(vxworkstests_wd1)
-+TEST(vxworkstests_task1)
-+TEST(vxworkstests_task2)
++TEST(psostests)
++TEST(psostests_mq1)
++TEST(psostests_mq2)
++TEST(psostests_mq3)
++TEST(psostests_pt1)
++TEST(psostests_rn1)
++TEST(psostests_sem1)
++TEST(psostests_sem2)
++TEST(psostests_task1)
++TEST(psostests_task2)
++TEST(psostests_task3)
++TEST(psostests_task4)
++TEST(psostests_task5)
++TEST(psostests_task6)
++TEST(psostests_task7)
++TEST(psostests_task8)
++TEST(psostests_task9)
++TEST(psostests_tm1)
++TEST(psostests_tm2)
++TEST(psostests_tm3)
++TEST(psostests_tm4)
++TEST(psostests_tm5)
++TEST(psostests_tm6)
++TEST(psostests_tm7)
 +
-diff --git a/testsuite/smokey/vxworkstests/vxworkstests_driver.c b/testsuite/smokey/vxworkstests/vxworkstests_driver.c
+diff --git a/testsuite/smokey/psostests/psostests_driver.c b/testsuite/smokey/psostests/psostests_driver.c
 new file mode 100644
-index 000000000..7cacbb399
+index 000000000..dd9eafc42
 --- /dev/null
-+++ b/testsuite/smokey/vxworkstests/vxworkstests_driver.c
-@@ -0,0 +1,33 @@
++++ b/testsuite/smokey/psostests/psostests_driver.c
+@@ -0,0 +1,34 @@
 +// SPDX-License-Identifier: GPL-2.0
 +#include <error.h>
 +#include <libgen.h>
@@ -515,34 +513,263 @@ index 000000000..7cacbb399
 +
 +int main(int argc, char *const argv[])
 +{
-+	struct smokey_test *t;
-+	int ret, fails = 0;
++       struct smokey_test *t;
++       int ret, fails = 0;
 +
-+	if (pvlist_empty(&smokey_test_list))
-+		return 0;
++       if (pvlist_empty(&smokey_test_list))
++               return 0;
 +
-+	for_each_smokey_test(t) {
-+		ret = t->run(t, argc, argv);
-+		if (ret) {
-+			fails++;
-+			if (smokey_keep_going)
-+				continue;
-+			if (smokey_verbose_mode)
-+				error(1, -ret, "test %s failed", t->name);
-+			return 1;
-+		}
-+		smokey_note("%s OK", t->name);
-+	}
++       for_each_smokey_test(t) {
++               ret = t->run(t, argc, argv);
++               if (ret) {
++                       fails++;
++                       if (smokey_keep_going)
++                               continue;
++                       if (smokey_verbose_mode)
++                               error(1, -ret, "test %s failed", t->name);
++                       return 1;
++               }
++               smokey_note("%s OK", t->name);
++       }
 +
-+	return fails != 0;
++       return fails != 0;
 +}
-diff --git a/lib/vxworks/testsuite/wd-1.c b/testsuite/smokey/vxworkstests/wd-1.c
++
+diff --git a/lib/psos/testsuite/pt-1.c b/testsuite/smokey/psostests/pt-1.c
+similarity index 96%
+rename from lib/psos/testsuite/pt-1.c
+rename to testsuite/smokey/psostests/pt-1.c
+index 99f93ca1a..48f9799f7 100644
+--- a/lib/psos/testsuite/pt-1.c
++++ b/testsuite/smokey/psostests/pt-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <memory.h>
+diff --git a/lib/psos/testsuite/rn-1.c b/testsuite/smokey/psostests/rn-1.c
 similarity index 97%
-rename from lib/vxworks/testsuite/wd-1.c
-rename to testsuite/smokey/vxworkstests/wd-1.c
-index b557545e8..7da5d4dcb 100644
---- a/lib/vxworks/testsuite/wd-1.c
-+++ b/testsuite/smokey/vxworkstests/wd-1.c
+rename from lib/psos/testsuite/rn-1.c
+rename to testsuite/smokey/psostests/rn-1.c
+index da136f381..42f86a7ea 100644
+--- a/lib/psos/testsuite/rn-1.c
++++ b/testsuite/smokey/psostests/rn-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <memory.h>
+diff --git a/lib/psos/testsuite/sem-1.c b/testsuite/smokey/psostests/sem-1.c
+similarity index 98%
+rename from lib/psos/testsuite/sem-1.c
+rename to testsuite/smokey/psostests/sem-1.c
+index 61fa4b605..d32334c02 100644
+--- a/lib/psos/testsuite/sem-1.c
++++ b/testsuite/smokey/psostests/sem-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/sem-2.c b/testsuite/smokey/psostests/sem-2.c
+similarity index 97%
+rename from lib/psos/testsuite/sem-2.c
+rename to testsuite/smokey/psostests/sem-2.c
+index a15bc388f..8223434f5 100644
+--- a/lib/psos/testsuite/sem-2.c
++++ b/testsuite/smokey/psostests/sem-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-1.c b/testsuite/smokey/psostests/task-1.c
+similarity index 95%
+rename from lib/psos/testsuite/task-1.c
+rename to testsuite/smokey/psostests/task-1.c
+index f4bb71b7e..a0e6efa97 100644
+--- a/lib/psos/testsuite/task-1.c
++++ b/testsuite/smokey/psostests/task-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-2.c b/testsuite/smokey/psostests/task-2.c
+similarity index 98%
+rename from lib/psos/testsuite/task-2.c
+rename to testsuite/smokey/psostests/task-2.c
+index d7f9fa06f..d24c13465 100644
+--- a/lib/psos/testsuite/task-2.c
++++ b/testsuite/smokey/psostests/task-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-3.c b/testsuite/smokey/psostests/task-3.c
+similarity index 96%
+rename from lib/psos/testsuite/task-3.c
+rename to testsuite/smokey/psostests/task-3.c
+index d775f2823..d13e30423 100644
+--- a/lib/psos/testsuite/task-3.c
++++ b/testsuite/smokey/psostests/task-3.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-4.c b/testsuite/smokey/psostests/task-4.c
+similarity index 97%
+rename from lib/psos/testsuite/task-4.c
+rename to testsuite/smokey/psostests/task-4.c
+index 3bca00271..ec6a99609 100644
+--- a/lib/psos/testsuite/task-4.c
++++ b/testsuite/smokey/psostests/task-4.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-5.c b/testsuite/smokey/psostests/task-5.c
+similarity index 98%
+rename from lib/psos/testsuite/task-5.c
+rename to testsuite/smokey/psostests/task-5.c
+index e0124c12b..dcb8ec6ea 100644
+--- a/lib/psos/testsuite/task-5.c
++++ b/testsuite/smokey/psostests/task-5.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-6.c b/testsuite/smokey/psostests/task-6.c
+similarity index 98%
+rename from lib/psos/testsuite/task-6.c
+rename to testsuite/smokey/psostests/task-6.c
+index 13c618c57..9cc46e633 100644
+--- a/lib/psos/testsuite/task-6.c
++++ b/testsuite/smokey/psostests/task-6.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-7.c b/testsuite/smokey/psostests/task-7.c
+similarity index 97%
+rename from lib/psos/testsuite/task-7.c
+rename to testsuite/smokey/psostests/task-7.c
+index 8f5441afa..9177dbbf4 100644
+--- a/lib/psos/testsuite/task-7.c
++++ b/testsuite/smokey/psostests/task-7.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/task-8.c b/testsuite/smokey/psostests/task-8.c
+similarity index 98%
+rename from lib/psos/testsuite/task-8.c
+rename to testsuite/smokey/psostests/task-8.c
+index d7c8fb33d..4543a04fa 100644
+--- a/lib/psos/testsuite/task-8.c
++++ b/testsuite/smokey/psostests/task-8.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <xeno_config.h>
+diff --git a/lib/psos/testsuite/task-9.c b/testsuite/smokey/psostests/task-9.c
+similarity index 98%
+rename from lib/psos/testsuite/task-9.c
+rename to testsuite/smokey/psostests/task-9.c
+index 1ae992999..f37d6736e 100644
+--- a/lib/psos/testsuite/task-9.c
++++ b/testsuite/smokey/psostests/task-9.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-1.c b/testsuite/smokey/psostests/tm-1.c
+similarity index 95%
+rename from lib/psos/testsuite/tm-1.c
+rename to testsuite/smokey/psostests/tm-1.c
+index b2f38f298..64605d8b9 100644
+--- a/lib/psos/testsuite/tm-1.c
++++ b/testsuite/smokey/psostests/tm-1.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-2.c b/testsuite/smokey/psostests/tm-2.c
+similarity index 97%
+rename from lib/psos/testsuite/tm-2.c
+rename to testsuite/smokey/psostests/tm-2.c
+index 44340f5dd..18ddff4b6 100644
+--- a/lib/psos/testsuite/tm-2.c
++++ b/testsuite/smokey/psostests/tm-2.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-3.c b/testsuite/smokey/psostests/tm-3.c
+similarity index 97%
+rename from lib/psos/testsuite/tm-3.c
+rename to testsuite/smokey/psostests/tm-3.c
+index 260a1314e..f5a947f46 100644
+--- a/lib/psos/testsuite/tm-3.c
++++ b/testsuite/smokey/psostests/tm-3.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-4.c b/testsuite/smokey/psostests/tm-4.c
+similarity index 97%
+rename from lib/psos/testsuite/tm-4.c
+rename to testsuite/smokey/psostests/tm-4.c
+index 26697c2fb..2c8c7a318 100644
+--- a/lib/psos/testsuite/tm-4.c
++++ b/testsuite/smokey/psostests/tm-4.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-5.c b/testsuite/smokey/psostests/tm-5.c
+similarity index 97%
+rename from lib/psos/testsuite/tm-5.c
+rename to testsuite/smokey/psostests/tm-5.c
+index 0fca7d023..d13613398 100644
+--- a/lib/psos/testsuite/tm-5.c
++++ b/testsuite/smokey/psostests/tm-5.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-6.c b/testsuite/smokey/psostests/tm-6.c
+similarity index 95%
+rename from lib/psos/testsuite/tm-6.c
+rename to testsuite/smokey/psostests/tm-6.c
+index 9debc498c..ba92c3071 100644
+--- a/lib/psos/testsuite/tm-6.c
++++ b/testsuite/smokey/psostests/tm-6.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <copperplate/traceobj.h>
+diff --git a/lib/psos/testsuite/tm-7.c b/testsuite/smokey/psostests/tm-7.c
+similarity index 95%
+rename from lib/psos/testsuite/tm-7.c
+rename to testsuite/smokey/psostests/tm-7.c
+index 202985daa..367650278 100644
+--- a/lib/psos/testsuite/tm-7.c
++++ b/testsuite/smokey/psostests/tm-7.c
 @@ -1,3 +1,4 @@
 +// SPDX-License-Identifier: GPL-2.0
  #include <stdio.h>
