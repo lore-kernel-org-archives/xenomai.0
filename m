@@ -1,108 +1,108 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281B51DDFF
-	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 11:27:45 +0000 (UTC)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230801112743e5d09dc5ca599527c9
-        for <xenomai@lists.linux.dev>;
-        Tue, 01 Aug 2023 13:27:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=Ez0wA93dG+p8txBnZWvJznBd/3e5ZGY/9KU+BXB+vLo=;
- b=eBzVyWxPuj+tpYSRixkjE1Z4lsdS2EdmzdTHyra51HYO2smjMtHcYNut5EYKSk/J6tRBZa
- V8H/IxBEIvk1DPMlkoEfDVij3d6AsRgnz1f38fWYFK9vsC812zVZs5Hhw4s0f0ZWF7e7rQhU
- uo065DioiRtt3LJ60QCuRm0tsyD94=;
-Message-ID: <beff2aa61a6b00af08baa7374feff1a0ddf6dd93.camel@siemens.com>
-Subject: Re: v6.1.y-dovetail-rebase
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Date: Tue, 01 Aug 2023 13:27:42 +0200
-In-Reply-To: <a35a96771c0f059370357b9a37c9ab1871e621b0.camel@siemens.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08DA9111E
+	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 13:42:24 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 140B31BF204;
+	Tue,  1 Aug 2023 13:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1690897337;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Eh7zz1uXifmPKNBVCKMssy0ub0MVkzOyFOAJcXxlrrI=;
+	b=hLjkfORLKt4S7Oa0rRAH77vkHspPnuDgl/5rr30h0aw/A5clZE3beIrSCrSl+FhRxLCl2M
+	MMM8WxIw38SkLBZVmymeV3YBLdhxAPuKeS4OcwRQI+U1Iz+NeAVcR8hbsZ/PKVQq2juvWg
+	82m6cGkZB4Xgj8szsF024FlCQ6cC1U+KmOApK6vBfSPQkNg/YjSM9glthvs38XkNwhydxF
+	Ft8kraLvSy5h43Q5961YIttHQ33LMpAtlt6AeZq3NWQ8E7QmTgRaB8k/JRMF5RqJOfxJeL
+	4IdarmNwGUTo0NLPh3IUzEjDQQsHFZZ7YnwgSO2ePi3XgqTtDmCxZDmGvCDppQ==
 References: <a022bab1-7fbb-3b71-3eb3-e16791f3c2be@siemens.com>
-	 <87edlkeu1b.fsf@xenomai.org>
-	 <a35a96771c0f059370357b9a37c9ab1871e621b0.camel@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <87edlkeu1b.fsf@xenomai.org>
+ <a35a96771c0f059370357b9a37c9ab1871e621b0.camel@siemens.com>
+ <beff2aa61a6b00af08baa7374feff1a0ddf6dd93.camel@siemens.com>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Subject: Re: v6.1.y-dovetail-rebase
+Date: Tue, 01 Aug 2023 15:26:44 +0200
+In-reply-to: <beff2aa61a6b00af08baa7374feff1a0ddf6dd93.camel@siemens.com>
+Message-ID: <87tttiswuf.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
 
-On Mon, 2023-07-10 at 08:59 +0200, Florian Bezdeka wrote:
-> On Thu, 2023-07-06 at 21:00 +0200, Philippe Gerum wrote:
-> > Hi,
-> >=20
-> > Jan Kiszka <jan.kiszka@siemens.com> writes:
-> >=20
-> > > Hi Philippe,
-> > >=20
-> > > quick feedback on latest rebasing:
-> > >=20
-> > > https://source.denx.de/Xenomai/linux-dovetail/-/commit/8f155631c8b517=
-31dfc2ae5145d4dcc68f2ed7ed
-> > >=20
-> > > This was likely accidentally folded, right?
-> > >=20
-> >=20
-> > It looks so. This conditional statement appeared upstream during the
-> > v6.0 cycle it seems, and was unfortunately left unfixed in the dovetail
-> > patch for this entire series.
-> >=20
-> > > Furthermore, I will factor this change out into a separate commit in=
-=20
-> > > merging v6.1.y-dovetail, for better traceability:
-> > >=20
-> > > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-> > > index ce8bdd804bc7..c843bf352999 100644
-> > > --- a/arch/x86/mm/fault.c
-> > > +++ b/arch/x86/mm/fault.c
-> > > @@ -1466,7 +1466,7 @@ void do_user_addr_fault(struct pt_regs *regs,
-> > > =20
-> > >  	/* The fault is fully completed (including releasing mmap lock) */
-> > >  	if (fault & VM_FAULT_COMPLETED)
-> > > -		return;
-> > > +		goto out;
-> > > =20
-> > >  	/*
-> > >  	 * If we need to retry the mmap_lock has already been released,
-> > >=20
-> > > To my understanding, this was a dovetail fix that applied to previous=
-=20
-> > > versions as well.
-> >=20
-> > Only to v6.0, however this series is not maintained dovetail-wise
-> > anymore, so this stayed under the radar.
->=20
-> FYI: This change fixes a real issue here. The 6.1-rebase branch made it
-> through a 24h stress test while the "merge" branch failed. Happily
-> waiting for the next release...
 
-Do we have a idea / plan when the next 6.1 dovetail release will
-happen? My internal customer is waiting for that and I want to avoid
-backporting to 6.1.34.
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-@Philippe, any news regarding the IRQ issue? Did the VM image help to
-reproduce the issue?
+> On Mon, 2023-07-10 at 08:59 +0200, Florian Bezdeka wrote:
+>> On Thu, 2023-07-06 at 21:00 +0200, Philippe Gerum wrote:
+>> > Hi,
+>> > 
+>> > Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> > 
+>> > > Hi Philippe,
+>> > > 
+>> > > quick feedback on latest rebasing:
+>> > > 
+>> > > https://source.denx.de/Xenomai/linux-dovetail/-/commit/8f155631c8b51731dfc2ae5145d4dcc68f2ed7ed
+>> > > 
+>> > > This was likely accidentally folded, right?
+>> > > 
+>> > 
+>> > It looks so. This conditional statement appeared upstream during the
+>> > v6.0 cycle it seems, and was unfortunately left unfixed in the dovetail
+>> > patch for this entire series.
+>> > 
+>> > > Furthermore, I will factor this change out into a separate commit in 
+>> > > merging v6.1.y-dovetail, for better traceability:
+>> > > 
+>> > > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+>> > > index ce8bdd804bc7..c843bf352999 100644
+>> > > --- a/arch/x86/mm/fault.c
+>> > > +++ b/arch/x86/mm/fault.c
+>> > > @@ -1466,7 +1466,7 @@ void do_user_addr_fault(struct pt_regs *regs,
+>> > >  
+>> > >  	/* The fault is fully completed (including releasing mmap lock) */
+>> > >  	if (fault & VM_FAULT_COMPLETED)
+>> > > -		return;
+>> > > +		goto out;
+>> > >  
+>> > >  	/*
+>> > >  	 * If we need to retry the mmap_lock has already been released,
+>> > > 
+>> > > To my understanding, this was a dovetail fix that applied to previous 
+>> > > versions as well.
+>> > 
+>> > Only to v6.0, however this series is not maintained dovetail-wise
+>> > anymore, so this stayed under the radar.
+>> 
+>> FYI: This change fixes a real issue here. The 6.1-rebase branch made it
+>> through a 24h stress test while the "merge" branch failed. Happily
+>> waiting for the next release...
+>
+> Do we have a idea / plan when the next 6.1 dovetail release will
+> happen? My internal customer is waiting for that and I want to avoid
+> backporting to 6.1.34.
+>
 
-Florian
+There is a brewing rebase to v6.1.42 pending tests here, no challenging
+source conflict. I pushed the tree untagged to the v6.1.y-rebase branch
+if you want to give it a try before Jan updates the stable branch.
 
->=20
-> >=20
-> > > Besides StackRot, another reason to update 6.1 soon.
-> > >=20
-> > > A tag on the new branch is still missing. I suspect you are still=20
-> > > testing? CI picked up the head already as well:
-> > >=20
-> >=20
-> > Yes, still in the process of testing the latest rebases on -stable for
-> > 5.10, 5.15, and 6.1 (armv8).
-> >=20
->=20
->=20
+> @Philippe, any news regarding the IRQ issue? Did the VM image help to
+> reproduce the issue?
+>
 
+I did not have a chance to look at this yet although I intend to, no
+spare cycles ATM. I'll follow up when I have news. Since it takes ~18h
+on average to observe the issue on your end, I would not expect a quick
+resolution though.
+
+-- 
+Philippe.
