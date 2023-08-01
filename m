@@ -1,35 +1,32 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC3582CA5
-	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 17:42:24 +0000 (UTC)
-Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id 16C64D6D08
-	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 17:31:23 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8F8661C0006;
-	Tue,  1 Aug 2023 17:31:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1690911074;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Gy60djYcw2v5M6h1BY1mSo+VeWN0yhFGiNRdYM2i/4o=;
-	b=fAPaa3BlGQu+SZ+G6h5bq39oMhxXA+I7rWnvS9QNYBK8Tz7vFRH6UZCq7INgEdvG3AYAmn
-	8amadeyidPQ0GdogTD+sgisx7i18S3dmJc4ppnrWoPaI7RL0vdVuloal4VtZMk/sQDV0MO
-	Ydaw4puw8oRKQv0HKdozqjJuXahkw+90evhShPa3+uAcvYHdaMYJVshwTndZeBVmsLwBFn
-	HckNdR/R8PMZvxRIM8aq2fCLGnO9f6eSGVSeDqK3twjC7L/aStdmkz2gHWTb2dZ7mpjlUM
-	tljlpmQiTH5k6BnVLQPWofyhceEn7Q1mBim4zV3r1jPeBrEqKqZTCchnwthvIg==
-References: <DM6PR14MB3871876E6E078D3BE974ADCBA30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
- <DM6PR14MB387142813E6733B5C9DEFEE7A30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: yo sang <stlfatboy@hotmail.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: data modified by second NRT write with same memory location
-Date: Tue, 01 Aug 2023 19:29:27 +0200
-In-reply-to: <DM6PR14MB387142813E6733B5C9DEFEE7A30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
-Message-ID: <87pm46sm8y.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3AB24DC77
+	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 20:55:07 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 23CA663577DD;
+	Tue,  1 Aug 2023 22:49:50 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id R5TAQasAlr2Q; Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id A64E163577E2;
+	Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id HwS6ohfc9Egw; Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 8527163577D8;
+	Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
+Date: Tue, 1 Aug 2023 22:49:49 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai <xenomai@lists.linux.dev>, Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1904879955.1621501.1690922989393.JavaMail.zimbra@nod.at>
+In-Reply-To: <20230630-florian-y2038-part-four-upstreaming-v3-7-2aea39ad909a@siemens.com>
+References: <20230630-florian-y2038-part-four-upstreaming-v3-0-2aea39ad909a@siemens.com> <20230630-florian-y2038-part-four-upstreaming-v3-7-2aea39ad909a@siemens.com>
+Subject: Re: [PATCH v3 7/7] include/rtdm/serial.h: Fix compat support of
+ struct rtser_config
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,50 +35,83 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: include/rtdm/serial.h: Fix compat support of struct rtser_config
+Thread-Index: iF48FRvJH8jRhe51vugQUJKw7nKXgg==
 
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+> An: "xenomai" <xenomai@lists.linux.dev>, "Jan Kiszka" <jan.kiszka@siemens=
+.com>
+> CC: "Florian Bezdeka" <florian.bezdeka@siemens.com>, "richard" <richard@n=
+od.at>
+> Gesendet: Dienstag, 1. August 2023 11:29:41
+> Betreff: [PATCH v3 7/7] include/rtdm/serial.h: Fix compat support of stru=
+ct rtser_config
 
-yo sang <stlfatboy@hotmail.com> writes:
+> This is a backward compatibility breaking change for compat (32 bit)
+> applications. We already bumped the ABI revision so we already force
+> recompiling all applications.
+>=20
+> On 32bits:
+> struct rtser_config {
+>        int                        config_mask;          /*     0     4 */
+>        int                        baud_rate;            /*     4     4 */
+>        int                        parity;               /*     8     4 */
+>        int                        data_bits;            /*    12     4 */
+>        int                        stop_bits;            /*    16     4 */
+>        int                        handshake;            /*    20     4 */
+>        int                        fifo_depth;           /*    24     4 */
+>        int                        reserved;             /*    28     4 */
+>        nanosecs_rel_t             rx_timeout;           /*    32     8 */
+>        nanosecs_rel_t             tx_timeout;           /*    40     8 */
+>        nanosecs_rel_t             event_timeout;        /*    48     8 */
+>        int                        timestamp_history;    /*    56     4 */
+>        int                        event_mask;           /*    60     4 */
+>        /* --- cacheline 1 boundary (64 bytes) --- */
+>        int                        rs485;                /*    64     4 */
+>=20
+>        /* size: 68, cachelines: 2, members: 14 */
+>        /* last cacheline: 4 bytes */
+> } __attribute__((__packed__));
+>=20
+> Note: I don't know why pahole reports this struct as packed. It is not.
+>=20
+> and 64:
+> struct rtser_config {
+>        int                        config_mask;          /*     0     4 */
+>        int                        baud_rate;            /*     4     4 */
+>        int                        parity;               /*     8     4 */
+>        int                        data_bits;            /*    12     4 */
+>        int                        stop_bits;            /*    16     4 */
+>        int                        handshake;            /*    20     4 */
+>        int                        fifo_depth;           /*    24     4 */
+>        int                        reserved;             /*    28     4 */
+>        nanosecs_rel_t             rx_timeout;           /*    32     8 */
+>        nanosecs_rel_t             tx_timeout;           /*    40     8 */
+>        nanosecs_rel_t             event_timeout;        /*    48     8 */
+>        int                        timestamp_history;    /*    56     4 */
+>        int                        event_mask;           /*    60     4 */
+>        /* --- cacheline 1 boundary (64 bytes) --- */
+>        int                        rs485;                /*    64     4 */
+>=20
+>        /* size: 72, cachelines: 2, members: 14 */
+>        /* padding: 4 */
+>        /* last cacheline: 8 bytes */
+> };
+>=20
+> While nanosecs_rel_t is in both case int64_t, gcc adds different tail pad=
+ding to
+> the struct.
+>=20
+> Link:
+> https://lore.kernel.org/all/601440741.237005.1668456855365.JavaMail.zimbr=
+a@nod.at/
+> Reported-by: Richard Weinberger <richard@nod.at>
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-> Hi,
->
-> 	I was playing with xddp recently, and found a strange situation.
-> 	I modified official example xddp-echo to test my case:
->
-> 	Main()
-> 		*   =3D>  get socket=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
->  		*   =3D>  bind socket to port 0=20=20=20=20
-> 		*   =3D>  open /dev/rtp0=20=20=20=20
->
-> 		*	=3D>  create data buf with =E2=80=9Cfirst=E2=80=9D=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20
->  		*   =3D>  write buf to RT domain via write()=20=20=20=20
-> 		* 	=3D>  modify data buf to =E2=80=9Csecond=E2=80=9D
-> =E3=80=80=E3=80=80	*   =3D>  write buf to RT domain via write()=20=20=20
-> =E3=80=80=E3=80=80
-> 	* Start realtime_thread-------------------------------------->----------=
-+=20=20=20=20=20=20=20=20
-> =E3=80=80=E3=80=80	*   =3D>  read from NRT domain via recvfrom()=20=20=20=
-=20=20
-> =E3=80=80=E3=80=80	*	=3D>  print output: =E2=80=9Csecond"
->  		*   =3D>  read from NRT domain via recvfrom()=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20
-> =E3=80=80		*	=3D>  print output: =E2=80=9Csecond=E2=80=9D=20=20=20=20=20=
-=20=20
-> =E3=80=80
-> =E3=80=80If I write twice with same data location, the RT-end will receiv=
-e =E2=80=9Csecond=E2=80=9D twice.
-> =E3=80=80
-> =E3=80=80Any comments?
-> =E3=80=80Thanks
->
->=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+Reviewed-by: Richard Weinberger <richard@nod.at>
 
-Please send the shortest possible piece of code illustrating the issue.
-
---=20
-Philippe.
+Thanks,
+//richard
