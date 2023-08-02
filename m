@@ -1,193 +1,101 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12olkn2103.outbound.protection.outlook.com [40.92.22.103])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355F2ED7
-	for <xenomai@lists.linux.dev>; Wed,  2 Aug 2023 06:04:37 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UwVC8HIX8irdj+qMq373PeeVBtow+dQsQl3H10Uf4yUsdw2z/htthc078Wh7qJT5aY6mPuuS2ix4NTd2gDxCqZBp8Hz5m6vjvvRQwN3RwEc5SpmDB7LC/iygFseQ/npHDMU6D6FpEQLpZQgrm32we95g7TseY3EREMpEjh9OXy33jrxh2/A1PjyGQAv+/ENuEJq/wucSXXKnk2XC/ZpKy+yWoMmfJ+46Roqm6fkf0KX5stnU6+yP+ZZCh5UDS00OQJoLpqRO6Y4GExzObBSq41ScqvNkiJDbb95MlH+isBuYlOMfS6C1DJrHM2/gz9A5mUMtVqwxTv33i0lDW7m1vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zcJXWFYNMfa2IRPF/pUN8pMcGVOCM/lJpEJBGEWiCLA=;
- b=Y2PCLXEbaaoOZ0P3HZ9lfVBDRx15MXqjy+E+1YDWgqHh9z0kvt+yMRtGxO8BvhBiWiR0+A0z0uuXMxyJjAndG9xd4qHFgQyoHeqr+Q0MtaPfy00yEG+oa3hRM0ZCei39YI9eNrEUeVLj011p4cJ0Zf0gmNBn5whHJ6xe3s48xkSVfuxRIQlW2wl1xQfJys73CCbv2fh4lycNB8L6JQIpU4+eUjSy3JvQZKEOQw8M1Sj8zt1OmX6FOshSIGGb4s5l038s9fplGz/fvRF5iCxGkrFldihX+B3PWU64Va86tBAJWdIxFeqginkThIW7WNSgWC2TmPMPhB18sPP1SUBR1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zcJXWFYNMfa2IRPF/pUN8pMcGVOCM/lJpEJBGEWiCLA=;
- b=b++ZrcTOdPXwxOsFLCnJA1HoEkhrawN2R+S/0WOXLM8D2dLvmVvv8ngUrA4NRqnYTeqs5GaSUCjDMPbhHxNAnhbsPWehEVjI0D7TX9QFlFoOK3b1WeamuMFwTDrTNlrR9jq6Hb7pOyT2MYcuUCb40hcoSfkSTVIcKsqp3gIqcgzP8DVfia6Vk+FXVi6HI7+9NMNljrKe+rYdB5KCpNb3F7bCJHS9J+4rAxhXYq3q2cDejprse2u8zQO8J55bixF/02vH0cX8NrTbYPghPyidpW/zS3tqAuEoxkXMTRRXQmmIv+NfUofK+p/8u11AMFSnN/f7/Zaky0CFEe31vuyxOQ==
-Received: from DM6PR14MB3871.namprd14.prod.outlook.com (2603:10b6:5:1b6::20)
- by SJ0PR14MB4249.namprd14.prod.outlook.com (2603:10b6:a03:2e5::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
- 2023 06:04:36 +0000
-Received: from DM6PR14MB3871.namprd14.prod.outlook.com
- ([fe80::a24d:c80e:726f:9848]) by DM6PR14MB3871.namprd14.prod.outlook.com
- ([fe80::a24d:c80e:726f:9848%4]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
- 06:04:36 +0000
-From: yo sang <stlfatboy@hotmail.com>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: data modified by second NRT write with same memory location
-Thread-Topic: data modified by second NRT write with same memory location
-Thread-Index: AQHZxFkf5jzl3P6vkEqeVqOzGMy4Jq/Vsr6AgAB/3MCAAFGRYA==
-Date: Wed, 2 Aug 2023 06:04:35 +0000
-Message-ID:
- <DM6PR14MB38714729ADDC7529E3268CCEA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
-References:
- <DM6PR14MB3871876E6E078D3BE974ADCBA30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36BA4C9D
+	for <xenomai@lists.linux.dev>; Wed,  2 Aug 2023 07:47:45 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 67CE7C000E;
+	Wed,  2 Aug 2023 07:47:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1690962457;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=H8+LDvpx6x2vxlohDjGHoGfLH+/U43SmYsSAMRMJm3s=;
+	b=RF4trYyd7NOEEDd6GDry0RN+aOVrzyWvuahzYb5fJOqM81HknviN9IEWbCOsZPlIi/XEyO
+	cMEpqPX5zNP8OC2eP59q/8rKI+VKiDR8/JJK1FZdwCUmbtazuK9XN2pryghnBO9Dhvuuo5
+	1kkz1bVXfPkmTae9QcTl/7axTR1nfKgrGKLPZ2TVO2H3Yf7TX0I34MGkmyxmwIjzY7O2bV
+	VPy6uJX0iKvZkxet9WJFE9V8DWygBBkxSwS2LIkL7ALWTw8lhTbpVVrVk9/KH7cQOfhPje
+	Pl8NAPbnrz45lIw71oHdfDVSq3BUXiGv3a3k8uJWoqeyHA35BmHB8X67NkaQQw==
+References: <DM6PR14MB3871876E6E078D3BE974ADCBA30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
  <DM6PR14MB387142813E6733B5C9DEFEE7A30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
  <87pm46sm8y.fsf@xenomai.org>
  <DM6PR14MB38719B58539606FEA830CF9CA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
-In-Reply-To:
- <DM6PR14MB38719B58539606FEA830CF9CA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [K+ogBebTit0aV1pKHGWFs6sWuUByeJPX]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR14MB3871:EE_|SJ0PR14MB4249:EE_
-x-ms-office365-filtering-correlation-id: c8c32014-84e3-4178-b7db-08db931e5959
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- nyGyVbYcclHGkviPOTxHlXuHsxSCo+N3r8g2FsxShR/bCfSB7Jc4EJgs2l1g8qBRagdRDs6lPQEziqmPNXR773rVLozMCGYLregjqzh2wWXfR9099U6cCJaSw03NQGsYSW748G7ROqSi5gB8etqrTpfkmwrh9JHczLv8cMpHG3y/kIl4R+FA8+hTK8Cp1S4Ha8kALwaicz29i3Tey+1qH9k4rGr1vNTTjT0qGxJxU0NsFIhAo38C8ZKsnGiQ6YVzWAcYKa3uimvvpirZPtjYJRXZGyJj25sb2fY7ho2HvxMTt8ZZcO53gqdy7KAkAFOd89jTSmMhylgKd1Q7zd2Iwo1Y+ZLOztdm5Kvc18wzesknSWF5litP1G0xHXiWmkCqUv0rc/wIbnkUzVu2yE1QxrmYEjdY2moAPrJCn+z3NEZGQ2LHuFc4oYxSSSsIQEcBh+tVEZnsUvuaBIZHgz+3byiv9rLnp7E9va33OUz5au71+PDZNWtUyxBB5MmV23Aa3KCukMGvh6klfL1S4vYKPBg1c0m0aMvEdY959M/0Jret+8nB+mwyQO3CNczOWH9r
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?L3hqWTBvT1lqOGlDQU9QMFhES2pQRUtGZDZxMWZKVHhwampqY3NOQ1hNMk9F?=
- =?utf-8?B?dkp2VGpCV1p4ejg0aERIazE3SDUvLzRZb21Kamluem5vRFllMWYzRzNDcVMw?=
- =?utf-8?B?T20zbjUxREkwMXl4cm1EZUN3dEJORG93YS9WNU5JSURiNExPVTNpckFocktw?=
- =?utf-8?B?RzQvQkFlRFh6RXg5cVRsbXRKZjdiNFBWUkZuZUtMTDV5bFJMQ29xVFFlL2Fr?=
- =?utf-8?B?ZUdsalpqOXc3U2xJSzRuVERUZXdPS2ZWTUVRZFNITGZRenhVdWZwTGwvMDc3?=
- =?utf-8?B?SlAwRFh3dGVtSy9DV1RjOEg4OFNtU2I0d1VqQVBwV0drdDBFNUp4MVhtTGht?=
- =?utf-8?B?UHlqWkR2ZDJBeENOc3p2QzJyTWFCTjF4VWoyemxyMndDMWpLeGhXT0Z3MVB1?=
- =?utf-8?B?YjQ1WmtXa0NJOWtUcUhCbHBKNURGUktPdEhPdE50d0RDQ01iMjh1dVBhSUxU?=
- =?utf-8?B?d3ZycFM5NkQwV2gyaHEyc1Jnb1M0UTRyazFKQWpKTlA5N0JUOHN0UDk0Y2VW?=
- =?utf-8?B?dWk5dlRwTnIxTGt2cjVHa1lBRDJTZjY3OG9JQkRyNUQ0NlBjZ082aGM2MVFw?=
- =?utf-8?B?VmF0ZklZd3dRYmhJYXVISjZHUVF3N1FMWWc1Qnd4UEtMNktJVEdVZVVFTTI3?=
- =?utf-8?B?c3NTNEVyRmlqaUlKa3J2OURnd2VOY1dkQTVieUkxMEUwZDQySU1vbGRpOVJK?=
- =?utf-8?B?SUcrVlRmeDg4bmc3TS9GdCtxdlhDUzFtOHJnL3hYUFdTLzUvYWlFVUthN1hF?=
- =?utf-8?B?ZS9pcnJhK1RkWTEvMnNyRW84SDBCZU9UYnd4bmgyK2xlSkVqSlRiV2dlM0VG?=
- =?utf-8?B?YlJQSWE5RHFueUJsaDVWUkdvT2dCYzZCNTBBYnpTK2ROZ3JEMnFJVFlwNnFy?=
- =?utf-8?B?YmJqY01NbGQ0NGlROERVT0hnWHdDbkxubmxYcXhZZ0V0akZkRVFwd1dIQ1VE?=
- =?utf-8?B?aVRVU25zdDdUcE94Q1VxUklhWlJpd2xkWXdXM2d3OEJWTHlVSVJaSXNCMkFa?=
- =?utf-8?B?VGVOMGViOEN0bzRJSWhmMjVvdUhOb3R0V1dGK0pucG1KNnpTVjhrcC9lVkRo?=
- =?utf-8?B?MTB6bGJMUGdCRkNET3FXR3loaHdOOHFaSFMwVVh4emQ5SUdOTjEvU09jL1Aw?=
- =?utf-8?B?R1RXZjNVVytnYXBPMW5mVWZHbG8zZk91V3hBV1JSV0tZSmlKOVN6RTlDSUZS?=
- =?utf-8?B?TittSEZaNjVid1RmOFdoaG9nN3NqY0hKOFlTcUtZVjEyU1IvNWEvZ0YyVk95?=
- =?utf-8?B?cVBXdk5XUzdWT3JYeFBEMVRHRWVNeFp5VnIyMmRCRTIzMTdLNFF1T0pwdWZH?=
- =?utf-8?B?bEhjZ1U1YnBTb2ZtZWp5NkxZSkdjTlhaM2dvQnRUOTdyYTJBWVFrSC8wVm81?=
- =?utf-8?B?TUxiMFZtWHVyVURWeU4rOUZxS1N2YXJvWFdvVGZuUDJ4dzVkVlNMWS85N0ZP?=
- =?utf-8?B?QVlUZHM5bUpGS3Y2VzJ0bXl0cVppZlJWaWkvNTNlVlJ6amxNS1M1MnB4VTVS?=
- =?utf-8?B?S1V0QjUyRE02anVqcVUwR1h3WGFMeTI2TUszSmlZZFpjQk1lYlkvZ2pzQmU1?=
- =?utf-8?B?YTlJdXNvRnFEenhvaUdqZFVaVGZZdWdWM1pqVENNTEtZeDRYNWJuenZZYm8w?=
- =?utf-8?B?TmUyTVVoSHRXb0kvaGd0RkI5Skxqemc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <DM6PR14MB38714729ADDC7529E3268CCEA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: yo sang <stlfatboy@hotmail.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: data modified by second NRT write with same memory location
+Date: Wed, 02 Aug 2023 09:30:50 +0200
+In-reply-to: <DM6PR14MB38714729ADDC7529E3268CCEA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
+Message-ID: <87fs51evhn.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-cd57b.templateTenant
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR14MB3871.namprd14.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8c32014-84e3-4178-b7db-08db931e5959
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2023 06:04:35.9883
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR14MB4249
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
 
-DQoNCioqKioqKioqKipQbGVhc2UgaWdub3JlIHByZXZpb3VzIGNvZGUgc2FtcGxlKioqKioqKioq
-DQoNCg0KDQoNCiNkZWZpbmUgWEREUF9QT1JUICg2KQ0KDQplbnVtIFJUTWVtVHlwZQ0Kew0KICAg
-IFJUTUVNX05PTkUgPSAwLA0KICAgIFJUTUVNXzEsDQogICAgUlRNRU1fMg0KfTsNCg0KY2xhc3Mg
-UlRNZW0NCnsNCnB1YmxpYzoNCglSVE1lbSgpIHt9DQoNCglSVE1lbShjb25zdCBjaGFyKiBkYXRh
-LCBpbnQgc2l6ZSwgUlRNZW1UeXBlIHR5cGUpIHsNCgkJRGF0YSA9IEJ1ZjsNCgkJbWVtY3B5KERh
-dGEsIGRhdGEsIHNpemUpOw0KCQlTaXplID0gc2l6ZTsNCgkJVHlwZSA9IHR5cGU7DQoJfQ0KDQoJ
-aW50CQkJU2l6ZXt9Ow0KCVJUTWVtVHlwZQlUeXBle307DQoJY2hhcioJCURhdGF7fTsJDQoJY2hh
-cgkJQnVmWzI1Nl17fTsNCg0KfTsNCg0Kc3RhdGljIHZvaWQgKnJlYWx0aW1lX3RocmVhZCh2b2lk
-ICphcmcpDQp7DQogICAgc3RydWN0IHRpbWVzcGVjIHRzOw0KICAgIGludCByZXQ7DQogICAgUlRN
-ZW0gYnVmOw0KICAgIGZvciAoOzspIHsNCiAgICAgICAgcmV0ID0gcmVjdmZyb20ocywgJmJ1Ziwg
-c2l6ZW9mKGJ1ZiksIDAsIE5VTEwsIDApOw0KICAgICAgICBpZiAocmV0IDw9IDApDQoJCQlmYWls
-KCJyZWN2ZnJvbSIpOw0KICAgICAgICBwcmludGYoIiAgID0+ICVzIFxuIiwgYnVmLkRhdGEpOw0K
-DQogICAgICAgIHRzLnR2X3NlYyA9IDA7DQogICAgICAgIHRzLnR2X25zZWMgPSAxMDAwMDAwMDA7
-IC8qIDEwMCBtcyAqLw0KICAgICAgICBjbG9ja19uYW5vc2xlZXAoQ0xPQ0tfUkVBTFRJTUUsIDAs
-ICZ0cywgTlVMTCk7DQogICAgfQ0KICAgIHJldHVybiBOVUxMOw0KfQ0KDQppbnQgbWFpbigpDQp7
-DQogICAgc2lnc2V0X3Qgc2V0Ow0KICAgIGludCBzaWc7DQogICAgc2lnZW1wdHlzZXQoJnNldCk7
-DQogICAgc2lnYWRkc2V0KCZzZXQsIFNJR0lOVCk7DQogICAgc2lnYWRkc2V0KCZzZXQsIFNJR1RF
-Uk0pOw0KICAgIHNpZ2FkZHNldCgmc2V0LCBTSUdIVVApOw0KICAgIHB0aHJlYWRfc2lnbWFzayhT
-SUdfQkxPQ0ssICZzZXQsIE5VTEwpOw0KDQogICAgc3RydWN0IHNvY2thZGRyX2lwYyBzYWRkcjsN
-CiAgICBpbnQgcmV0LCBuID0gMCwgbGVuOw0KICAgIA0KICAgIHNpemVfdCBwb29sc3o7DQogICAg
-LyoNCiAgICAgICAgKiBHZXQgYSBkYXRhZ3JhbSBzb2NrZXQgdG8gYmluZCB0byB0aGUgUlQgZW5k
-cG9pbnQuIEVhY2gNCiAgICAgICAgKiBlbmRwb2ludCBpcyByZXByZXNlbnRlZCBieSBhIHBvcnQg
-bnVtYmVyIHdpdGhpbiB0aGUgWEREUA0KICAgICAgICAqIHByb3RvY29sIG5hbWVzcGFjZS4NCiAg
-ICAgICAgKi8NCiAgICBzID0gc29ja2V0KEFGX1JUSVBDLCBTT0NLX0RHUkFNLCBJUENQUk9UT19Y
-RERQKTsNCiAgICBpZiAocyA8IDApIHsNCiAgICAgICAgcGVycm9yKCJzb2NrZXQiKTsNCiAgICAg
-ICAgZXhpdChFWElUX0ZBSUxVUkUpOw0KICAgIH0NCiAgICAvKg0KICAgICAgICAqIFNldCBhIGxv
-Y2FsIDE2ayBwb29sIGZvciB0aGUgUlQgZW5kcG9pbnQuIE1lbW9yeSBuZWVkZWQgdG8NCiAgICAg
-ICAgKiBjb252ZXkgZGF0YWdyYW1zIHdpbGwgYmUgcHVsbGVkIGZyb20gdGhpcyBwb29sLCBpbnN0
-ZWFkIG9mDQogICAgICAgICogWGVub21haSdzIHN5c3RlbSBwb29sLg0KICAgICAgICAqLw0KICAg
-IHBvb2xzeiA9IHNpemVvZihSVE1lbSkgKiAxMjg7IC8qIGJ5dGVzICovDQogICAgcmV0ID0gc2V0
-c29ja29wdChzLCBTT0xfWEREUCwgWEREUF9QT09MU1osDQogICAgICAgICAgICAgICAgICAgICAg
-ICAmcG9vbHN6LCBzaXplb2YocG9vbHN6KSk7DQogICAgaWYgKHJldCkNCiAgICAgICAgZmFpbCgi
-c2V0c29ja29wdCIpOw0KICAgIC8qDQogICAgICAgICogQmluZCB0aGUgc29ja2V0IHRvIHRoZSBw
-b3J0LCB0byBzZXR1cCBhIHByb3h5IHRvIGNoYW5uZWwNCiAgICAgICAgKiB0cmFmZmljIHRvL2Zy
-b20gdGhlIExpbnV4IGRvbWFpbi4NCiAgICAgICAgKg0KICAgICAgICAqIHNhZGRyLnNpcGNfcG9y
-dCBzcGVjaWZpZXMgdGhlIHBvcnQgbnVtYmVyIHRvIHVzZS4NCiAgICAgICAgKi8NCiAgICBtZW1z
-ZXQoJnNhZGRyLCAwLCBzaXplb2Yoc2FkZHIpKTsNCiAgICBzYWRkci5zaXBjX2ZhbWlseSA9IEFG
-X1JUSVBDOw0KICAgIHNhZGRyLnNpcGNfcG9ydCA9IFhERFBfUE9SVDsNCiAgICByZXQgPSBiaW5k
-KHMsIChzdHJ1Y3Qgc29ja2FkZHIgKikmc2FkZHIsIHNpemVvZihzYWRkcikpOw0KICAgIGlmIChy
-ZXQpDQogICAgICAgIGZhaWwoImJpbmQiKTsNCg0KICAgIGNoYXIgKmRldm5hbWU7DQogICAgaW50
-IGZkOw0KICAgIGlmIChhc3ByaW50ZigmZGV2bmFtZSwgIi9kZXYvcnRwJWQiLCBYRERQX1BPUlQp
-IDwgMCkNCiAgICAgICAgICAgIGZhaWwoImFzcHJpbnRmIik7DQogICAgZmQgPSBvcGVuKGRldm5h
-bWUsIE9fV1JPTkxZIHwgT19BUFBFTkQpOw0KICAgIGZyZWUoZGV2bmFtZSk7DQogICAgaWYgKGZk
-IDwgMCkNCiAgICAgICAgICAgIGZhaWwoIm9wZW4iKTsNCiAgICANCiAgICBSVE1lbSBkYXRhKCJk
-YXRhMSIsIDYsIFJUTUVNXzEpOw0KICAgIHJldCA9IHdyaXRlKGZkLCAmZGF0YSwgc2l6ZW9mKGRh
-dGEpKTsNCiAgICBpZiAocmV0ICE9IHNpemVvZihkYXRhKSkNCiAgICAgICAgZmFpbCgid3JpdGUi
-KTsNCiAgICBtZW1jcHkoZGF0YS5EYXRhLCAiZGF0YWRhdGEiLCA5KTsNCiAgICBkYXRhLlNpemUg
-PSA5Ow0KICAgIGRhdGEuVHlwZSA9IFJUTUVNXzI7DQogICAgcmV0ID0gd3JpdGUoZmQsICZkYXRh
-LCBzaXplb2YoZGF0YSkpOw0KICAgIGlmIChyZXQgIT0gc2l6ZW9mKGRhdGEpKQ0KICAgICAgICBm
-YWlsKCJ3cml0ZSIpOw0KDQogICAgc3RydWN0IHNjaGVkX3BhcmFtIHJ0cGFyYW0gPSB7IC5zY2hl
-ZF9wcmlvcml0eSA9IDQyIH07DQogICAgcHRocmVhZF9hdHRyX3QgcnRhdHRyOw0KDQogICAgcHRo
-cmVhZF9hdHRyX2luaXQoJnJ0YXR0cik7DQogICAgcHRocmVhZF9hdHRyX3NldGRldGFjaHN0YXRl
-KCZydGF0dHIsIFBUSFJFQURfQ1JFQVRFX0pPSU5BQkxFKTsNCiAgICBwdGhyZWFkX2F0dHJfc2V0
-aW5oZXJpdHNjaGVkKCZydGF0dHIsIFBUSFJFQURfRVhQTElDSVRfU0NIRUQpOw0KICAgIHB0aHJl
-YWRfYXR0cl9zZXRzY2hlZHBvbGljeSgmcnRhdHRyLCBTQ0hFRF9GSUZPKTsNCiAgICBwdGhyZWFk
-X2F0dHJfc2V0c2NoZWRwYXJhbSgmcnRhdHRyLCAmcnRwYXJhbSk7DQogICAgZXJybm8gPSBwdGhy
-ZWFkX2NyZWF0ZSgmcnQsICZydGF0dHIsICZyZWFsdGltZV90aHJlYWQsIE5VTEwpOw0KICAgIGlm
-IChlcnJubykNCiAgICAgICAgICAgIGZhaWwoInB0aHJlYWRfY3JlYXRlIik7DQoNCiAgICBzaWd3
-YWl0KCZzZXQsICZzaWcpOw0KICAgIHB0aHJlYWRfY2FuY2VsKHJ0KTsNCiAgICBwdGhyZWFkX2pv
-aW4ocnQsIE5VTEwpOw0KICAgIGNsb3NlKHMpOw0KICAgIGNsb3NlKGZkKTsNCg0KICAgIHJldHVy
-biAwOw0KfQ0KDQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-DQoNCkknbSBleHBlY3RpbmcgcmVzdWx0IHRvIGJlDQoJPT4gZGF0YTENCgk9PiBkYXRhZGF0YQ0K
-DQpIb3dldmVyIGl0IHdpbGwgYmUgDQoJPT4gZGF0YWRhdGENCgk9PiBkYXRhZGF0YQ0KDQoNCi0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9t
-YWkub3JnPiANClNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDIsIDIwMjMgMToyOSBBTQ0KVG86IHlv
-IHNhbmcgPHN0bGZhdGJveUBob3RtYWlsLmNvbT4NCkNjOiB4ZW5vbWFpQGxpc3RzLmxpbnV4LmRl
-dg0KU3ViamVjdDogUmU6IGRhdGEgbW9kaWZpZWQgYnkgc2Vjb25kIE5SVCB3cml0ZSB3aXRoIHNh
-bWUgbWVtb3J5IGxvY2F0aW9uDQoNCg0KeW8gc2FuZyA8c3RsZmF0Ym95QGhvdG1haWwuY29tPiB3
-cml0ZXM6DQoNCj4gSGksDQo+DQo+IAlJIHdhcyBwbGF5aW5nIHdpdGggeGRkcCByZWNlbnRseSwg
-YW5kIGZvdW5kIGEgc3RyYW5nZSBzaXR1YXRpb24uDQo+IAlJIG1vZGlmaWVkIG9mZmljaWFsIGV4
-YW1wbGUgeGRkcC1lY2hvIHRvIHRlc3QgbXkgY2FzZToNCj4NCj4gCU1haW4oKQ0KPiAJCSogICA9
-PiAgZ2V0IHNvY2tldCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICANCj4g
-IAkJKiAgID0+ICBiaW5kIHNvY2tldCB0byBwb3J0IDAgICAgDQo+IAkJKiAgID0+ICBvcGVuIC9k
-ZXYvcnRwMCAgICANCj4NCj4gCQkqCT0+ICBjcmVhdGUgZGF0YSBidWYgd2l0aCDigJxmaXJzdOKA
-nSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KPiAgCQkqICAgPT4gIHdyaXRlIGJ1
-ZiB0byBSVCBkb21haW4gdmlhIHdyaXRlKCkgICAgDQo+IAkJKiAJPT4gIG1vZGlmeSBkYXRhIGJ1
-ZiB0byDigJxzZWNvbmTigJ0NCj4g44CA44CACSogICA9PiAgd3JpdGUgYnVmIHRvIFJUIGRvbWFp
-biB2aWEgd3JpdGUoKSAgIA0KPiDjgIDjgIANCj4gCSogU3RhcnQgcmVhbHRpbWVfdGhyZWFkLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0+LS0tLS0tLS0tLSsgICAgICAgIA0K
-PiDjgIDjgIAJKiAgID0+ICByZWFkIGZyb20gTlJUIGRvbWFpbiB2aWEgcmVjdmZyb20oKSAgICAg
-DQo+IOOAgOOAgAkqCT0+ICBwcmludCBvdXRwdXQ6IOKAnHNlY29uZCINCj4gIAkJKiAgID0+ICBy
-ZWFkIGZyb20gTlJUIGRvbWFpbiB2aWEgcmVjdmZyb20oKSAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQo+IOOAgAkJKgk9PiAgcHJpbnQg
-b3V0cHV0OiDigJxzZWNvbmTigJ0gICAgICAgDQo+IOOAgA0KPiDjgIBJZiBJIHdyaXRlIHR3aWNl
-IHdpdGggc2FtZSBkYXRhIGxvY2F0aW9uLCB0aGUgUlQtZW5kIHdpbGwgcmVjZWl2ZSDigJxzZWNv
-bmTigJ0gdHdpY2UuDQo+IOOAgA0KPiDjgIBBbnkgY29tbWVudHM/DQo+IOOAgFRoYW5rcw0KPg0K
-PiAgICAgICAgICAgICAgDQoNClBsZWFzZSBzZW5kIHRoZSBzaG9ydGVzdCBwb3NzaWJsZSBwaWVj
-ZSBvZiBjb2RlIGlsbHVzdHJhdGluZyB0aGUgaXNzdWUuDQoNCi0tIA0KUGhpbGlwcGUuDQo=
+
+yo sang <stlfatboy@hotmail.com> writes:
+
+> class RTMem
+> {
+> public:
+> 	RTMem() {}
+>
+> 	RTMem(const char* data, int size, RTMemType type) {
+> 		Data = Buf;
+> 		memcpy(Data, data, size);
+> 		Size = size;
+> 		Type = type;
+> 	}
+>
+> 	int			Size{};
+> 	RTMemType	Type{};
+> 	char*		Data{};	
+> 	char		Buf[256]{};
+>
+> };
+
+<snip>
+
+> static void *realtime_thread(void *arg)
+> {
+>    struct timespec ts;
+>    int ret;
+>    RTMem buf;
+>    for (;;) {
+>        ret = recvfrom(s, &buf, sizeof(buf), 0, NULL, 0);
+>        if (ret <= 0)
+>			fail("recvfrom");
+>        printf("   => %s \n", buf.Data);
+
+<snip>
+
+>
+>     RTMem data("data1", 6, RTMEM_1);
+>     ret = write(fd, &data, sizeof(data));
+>     if (ret != sizeof(data))
+>         fail("write");
+>     memcpy(data.Data, "datadata", 9);
+>     data.Size = 9;
+>     data.Type = RTMEM_2;
+>     ret = write(fd, &data, sizeof(data));
+>     if (ret != sizeof(data))
+>         fail("write");
+
+This example code is broken, badly. Please consider what the reader
+thread actually reads, which is definitely not a value, but a descriptor
+containing a pointer to some value, which the writer thread will
+overwrite before realtime_thread() runs. Which explains the outcome.
+
+At the very least, you should have a distinct RTMem instance to feed
+each write() with. This said, since XDDP is by design an inter-stage,
+inter-process IPC, passing process-private pointers in messages looks
+wrong in the first place.
+
+-- 
+Philippe.
