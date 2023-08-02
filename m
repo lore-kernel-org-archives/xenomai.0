@@ -1,117 +1,190 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02olkn2030.outbound.protection.outlook.com [40.92.15.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3AB24DC77
-	for <xenomai@lists.linux.dev>; Tue,  1 Aug 2023 20:55:07 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 23CA663577DD;
-	Tue,  1 Aug 2023 22:49:50 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id R5TAQasAlr2Q; Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id A64E163577E2;
-	Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id HwS6ohfc9Egw; Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 8527163577D8;
-	Tue,  1 Aug 2023 22:49:49 +0200 (CEST)
-Date: Tue, 1 Aug 2023 22:49:49 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>, Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1904879955.1621501.1690922989393.JavaMail.zimbra@nod.at>
-In-Reply-To: <20230630-florian-y2038-part-four-upstreaming-v3-7-2aea39ad909a@siemens.com>
-References: <20230630-florian-y2038-part-four-upstreaming-v3-0-2aea39ad909a@siemens.com> <20230630-florian-y2038-part-four-upstreaming-v3-7-2aea39ad909a@siemens.com>
-Subject: Re: [PATCH v3 7/7] include/rtdm/serial.h: Fix compat support of
- struct rtser_config
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F4827E
+	for <xenomai@lists.linux.dev>; Wed,  2 Aug 2023 01:19:29 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DUVbRG/+EyACPHuC8wVynQygKiohk2/0qYDsP+NG+U6A0zGXrt5nDlEGsbiaqfWogxGgwLkdAfhkj2T2RPSqgRY8YwaWJyMLrDLVVNw7XvqCWdT6lxEec7cDdLUxN9fg8I6mIBarcjLtiLGakC+bZTmeJ0LZsiOLeVd9Sdds/JIFTPLwzU8MsO9y0prPVpK9/c0e8+mQ12hAR8euZf7CNdTR9tXrbdXmcOXQyQrJEsJTIQJM1sxa7Fo89F8mo+ug2ur4B4bCuBQnucbu87Nh2aUlobcl3akVrdY4Ej3Qp06F9AhbqPYyKDwi+ksqiJDLiureSuo+5yEyVKvDy4pf+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fq7RA4hCz4Wevh42uUpRdJt/pZtwyUOWY6c1liFsYwQ=;
+ b=AzGkgA0SN1AVWQmPVueNvhGdllavSH8A5PwoQAHKX4/mfuZtPox4E7fCA6UHvF8sfdleL2SKEJ04B8imcydEtTQiyb7OaPs8PjlFKrPjfwJuO/ZCopXw8gnuN7WGP5d5dZtPukZvYF/E6bwK9H+nHLfZQarbIsscR/TburlBWnM3N/8Bx23w6l1TOqjHUdGu+NMxBsh+jDDEx9JenBpB65Rm0AcaRk7m0/sRFEc2DJEJgrqNm77iFJfLs7yiKf8A5YbPbilCeYQFohKmMx9iMb8v5WEt7rtCdNLwHqhM/2KGr4qNRwGDLalyynIy6LbsZx7sxYhBSqyWgGQ23ojJYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fq7RA4hCz4Wevh42uUpRdJt/pZtwyUOWY6c1liFsYwQ=;
+ b=cOs3FdD0z6EgLpuUYmoRstjIJkoAiPJFx5Hqn9Rv9pV/lcAy5Zm63QxvKxrLuhgL19ahSXzLUFZLtVgvnRxt8o59BN9DIwGlybESf/eGnV51qt/QdunM5+fDEy2fCcGGuDVkZDuNOVI7ve7PlxOxQWsriGctvSoFN3CIdoXCXvAyjZpG8oR2iVjsAAGFla/m7G8zNyv0w9xqaNVh8AuR1yaiOQEc477EShYkLPgqmYzGR9kh/tSsPZ3nrHuGhJfeZzXC2ZaDPjx46evG+WCfFy0eW2ON2N/pngt3K3gCQAvu0O8uL7BLIl5VkzIJJLXuNvDKixr+zXVyYpRLwltxcA==
+Received: from DM6PR14MB3871.namprd14.prod.outlook.com (2603:10b6:5:1b6::20)
+ by BY5PR14MB3525.namprd14.prod.outlook.com (2603:10b6:a03:1dc::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
+ 2023 01:19:27 +0000
+Received: from DM6PR14MB3871.namprd14.prod.outlook.com
+ ([fe80::a24d:c80e:726f:9848]) by DM6PR14MB3871.namprd14.prod.outlook.com
+ ([fe80::a24d:c80e:726f:9848%4]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
+ 01:19:27 +0000
+From: yo sang <stlfatboy@hotmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
+CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: RE: data modified by second NRT write with same memory location
+Thread-Topic: data modified by second NRT write with same memory location
+Thread-Index: AQHZxFkf5jzl3P6vkEqeVqOzGMy4Jq/Vsr6AgAB/3MA=
+Date: Wed, 2 Aug 2023 01:19:27 +0000
+Message-ID:
+ <DM6PR14MB38719B58539606FEA830CF9CA30BA@DM6PR14MB3871.namprd14.prod.outlook.com>
+References:
+ <DM6PR14MB3871876E6E078D3BE974ADCBA30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
+ <DM6PR14MB387142813E6733B5C9DEFEE7A30AA@DM6PR14MB3871.namprd14.prod.outlook.com>
+ <87pm46sm8y.fsf@xenomai.org>
+In-Reply-To: <87pm46sm8y.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [7DGbXFqDDCNnOt/JNMsMBetDcSs5Pcv4]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR14MB3871:EE_|BY5PR14MB3525:EE_
+x-ms-office365-filtering-correlation-id: f2dd6ee1-110a-4706-2930-08db92f6839f
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ styhhYeH8MqUC0g+FlR4ful8BhMeeUXo8EzOTbFNzTVhIe6mTAK5KB9MC/281nNo61HU1RLMU0MkYNUhNqdTuUrEr5stwhEuHPl7bE625Q31vEVmVqWgFfzo66Ki8B9YSZzu3aa0jAorX/UznXAZ5V3v/g85EBRhQGrS3eA1sYvIholtoJUFOpxHP0VLg6SKdeoEyNTG3xHCQaUgay+e6cQKiFXcdFevp6GT35CtYbjvFG1PgS6Biee4j5j1xRYrki7MpOEYt/GsXiwjtGvnwKUI6fTtQaCy6hcD7woTn2EZyh0tmEqycZugz7b/rhGr278ROXWchQjP6KM6ZtUOj6josP73kMm4IkWLBIKQuRaDWLDev94KCJhNu3FChro32scO05Qjl8bGHNwbLLDjoewZ7nU+g42WUgV0uUR4BuqA/RZqNvxtU5k6Ol9ux0V+1NxWNz24XJPyg9MIWn3sS1fTI7DksnpRZ+ZpfI6RmQR4dWV2UBkxarVM8nZVuVqwWF8oXhCfF+TkfqIS8IWc3CN25rJFPM8zhdlJBq9ERrkqulg/o02tKRXGnlGvHYxe
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?azRvWitoZG52YmVMMkdidUk2Znh4QU5VU1lwMmRqb1VJZWh2d1JVSXdUaXM5?=
+ =?utf-8?B?L3lXZHY2aHFrZXdSVEFPSzZOOTJZdGl1YzduZXliR2NLU3d0d24zTkxtem9s?=
+ =?utf-8?B?bjhzR2E5OVZWcW56NjhFZWx4c0pxYkJlQzI1TmppRGwyek1PZDRmWjBERzB2?=
+ =?utf-8?B?ZmhnNldiajJSa2FSc2laNkJkMitRblB5YzAyUmtlTzBqelRUTWZRUWw3U25j?=
+ =?utf-8?B?WHJYQWljYUhYaEhmZTdxbks5eVdUdFRZakJNU1JoNG5IYVkrdXJ4RFhUSjNH?=
+ =?utf-8?B?NkxidzBYM29ZcHZaRUh2VjhDV1FHZGNBL2RJSTUvODN4VXZWL3JSNno5TG9L?=
+ =?utf-8?B?NmQ4Njh1eDdCa0xWUHZoSTdMNS9JZXRkNFgwa0J0Y0NUbkRpTDJ5NWxKRmE5?=
+ =?utf-8?B?UkdHczJsc2lNTEpXb0Z1YjU0VERkL1U1RzVHSUNXdTY2emMzbUFrRlkwejhE?=
+ =?utf-8?B?ZzBVWm0rRys4TDRZV1N6QlkyN0FVT1QrMWE3SjdWdHFsQjM1R1ZnYjhrS2Nk?=
+ =?utf-8?B?WjRHc1hBTlM0VWo1dzZOZUZCZTFJRjNqazJYR0lwWGpBZDYrWGFOK1BMM0dz?=
+ =?utf-8?B?enFjbnpoV1dyNUR4ZU15VGRNdTNsdXQvK2czQk0ydXo4ZXJlRlRIZ1Z6WjhQ?=
+ =?utf-8?B?N0duVEdBTklucngybkFxZUwxeDJNTzRIcnRHQVZFNmt4dUpqWExESkFJK1Nw?=
+ =?utf-8?B?T3RRdGtqeS9kQ3d5ZzBHaWt2K0pPRzVWdmtLVUlKQlRvU3FKNWdyQXIzS0RM?=
+ =?utf-8?B?bVB6NjlDZGNYU3MrU2JCOUxESUFsQ1dGRks4S3pvR250ZFd3Wkh6ZGxheXd4?=
+ =?utf-8?B?cVJManVPNktKK1lhY0pYWVg0b3BCOTU1c2RseGJhZm5tbUNjKzVGNTZzLzNM?=
+ =?utf-8?B?SGMydDZoVlY3dmh0bGM4d2tUTDUvd0gvdjBXRlkxaGxqRU8zcmtvUWVnL20y?=
+ =?utf-8?B?aHhDOGt2U2IvUUs4L0Fjd0twL2Y2bUUzcWFGWXpuNkMyOHlCcGZtL0YrTGxQ?=
+ =?utf-8?B?QUswbm8wanNmaGVPenZFTmcwQnFINHU5dkNCVlRIZVE5YXFsWndOMmxncC92?=
+ =?utf-8?B?YkY0SXYzREM3NU9OSFlDN0NTeWhRcnJ2c0RkbUo4QnpjRlFrQUk5Zm5Rb0VD?=
+ =?utf-8?B?cHd4b1AvVGltTGlObWxlMGJTTnJFS2lJaytkaUFXVTAvTjVaOHZlbE9NYlMy?=
+ =?utf-8?B?L3RORlMvalJIT04yYWV6ejVqYTFzeTJIUlJGYW4vLzBTaDFtd0dyaU9DenFx?=
+ =?utf-8?B?aUNGZ3lwOHlBY3Ruc2tVM1J5Mkp1WlUwMnBkNmFnNGtCbWxsVVd2azRmNTJ5?=
+ =?utf-8?B?TFY2aUxKNHMvaXJ3YnhOb3JmNCtQcWdla1ZOWHVGUTFwU3pCRm9pU3hFY1R1?=
+ =?utf-8?B?djdJc2MvemdIQzM2QWM0Q01Rb2pVelE1M1B0eGNyYmpSbnhyay9adDdsTys3?=
+ =?utf-8?B?c2ZadVl2WTJzMWwyN1BVaW9TWWcwbmdpUHQ1RERBZWwxWUdOS0QvblVIbURC?=
+ =?utf-8?B?ZUlKVDZ2TG1Bd1RxRUxUbnFZUDMyME4xV3h6WW5JQlR0UEVTTFlUVm9mK0Er?=
+ =?utf-8?B?L09SYytQQ3hNTi9HVUJIVzhwbHY2OXN6ajdHeXdBQ1RUczlYSWVaV3JRQW9u?=
+ =?utf-8?B?NjlKT3gzMjY4V3MyR3JST0pxNnZTNGc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: include/rtdm/serial.h: Fix compat support of struct rtser_config
-Thread-Index: iF48FRvJH8jRhe51vugQUJKw7nKXgg==
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-cd57b.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR14MB3871.namprd14.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2dd6ee1-110a-4706-2930-08db92f6839f
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2023 01:19:27.0340
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR14MB3525
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-> An: "xenomai" <xenomai@lists.linux.dev>, "Jan Kiszka" <jan.kiszka@siemens=
-.com>
-> CC: "Florian Bezdeka" <florian.bezdeka@siemens.com>, "richard" <richard@n=
-od.at>
-> Gesendet: Dienstag, 1. August 2023 11:29:41
-> Betreff: [PATCH v3 7/7] include/rtdm/serial.h: Fix compat support of stru=
-ct rtser_config
-
-> This is a backward compatibility breaking change for compat (32 bit)
-> applications. We already bumped the ABI revision so we already force
-> recompiling all applications.
->=20
-> On 32bits:
-> struct rtser_config {
->        int                        config_mask;          /*     0     4 */
->        int                        baud_rate;            /*     4     4 */
->        int                        parity;               /*     8     4 */
->        int                        data_bits;            /*    12     4 */
->        int                        stop_bits;            /*    16     4 */
->        int                        handshake;            /*    20     4 */
->        int                        fifo_depth;           /*    24     4 */
->        int                        reserved;             /*    28     4 */
->        nanosecs_rel_t             rx_timeout;           /*    32     8 */
->        nanosecs_rel_t             tx_timeout;           /*    40     8 */
->        nanosecs_rel_t             event_timeout;        /*    48     8 */
->        int                        timestamp_history;    /*    56     4 */
->        int                        event_mask;           /*    60     4 */
->        /* --- cacheline 1 boundary (64 bytes) --- */
->        int                        rs485;                /*    64     4 */
->=20
->        /* size: 68, cachelines: 2, members: 14 */
->        /* last cacheline: 4 bytes */
-> } __attribute__((__packed__));
->=20
-> Note: I don't know why pahole reports this struct as packed. It is not.
->=20
-> and 64:
-> struct rtser_config {
->        int                        config_mask;          /*     0     4 */
->        int                        baud_rate;            /*     4     4 */
->        int                        parity;               /*     8     4 */
->        int                        data_bits;            /*    12     4 */
->        int                        stop_bits;            /*    16     4 */
->        int                        handshake;            /*    20     4 */
->        int                        fifo_depth;           /*    24     4 */
->        int                        reserved;             /*    28     4 */
->        nanosecs_rel_t             rx_timeout;           /*    32     8 */
->        nanosecs_rel_t             tx_timeout;           /*    40     8 */
->        nanosecs_rel_t             event_timeout;        /*    48     8 */
->        int                        timestamp_history;    /*    56     4 */
->        int                        event_mask;           /*    60     4 */
->        /* --- cacheline 1 boundary (64 bytes) --- */
->        int                        rs485;                /*    64     4 */
->=20
->        /* size: 72, cachelines: 2, members: 14 */
->        /* padding: 4 */
->        /* last cacheline: 8 bytes */
-> };
->=20
-> While nanosecs_rel_t is in both case int64_t, gcc adds different tail pad=
-ding to
-> the struct.
->=20
-> Link:
-> https://lore.kernel.org/all/601440741.237005.1668456855365.JavaMail.zimbr=
-a@nod.at/
-> Reported-by: Richard Weinberger <richard@nod.at>
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-
-Reviewed-by: Richard Weinberger <richard@nod.at>
-
-Thanks,
-//richard
+DQojZGVmaW5lIFhERFBfUE9SVCAoNikNCg0KZW51bSBSVE1lbVR5cGUNCnsNCiAgICBSVE1FTV9O
+T05FID0gMCwNCiAgICBSVE1FTV8xLA0KICAgIFJUTUVNXzINCn07DQoNCmNsYXNzIFJUTWVtDQp7
+DQpwdWJsaWM6DQoJUlRNZW0oKSB7fQ0KDQoJUlRNZW0oY29uc3QgY2hhciogZGF0YSwgaW50IHNp
+emUsIFJUTWVtVHlwZSB0eXBlKSB7DQoJCW1lbWNweShEYXRhLCBkYXRhLCBzaXplKTsNCgkJU2l6
+ZSA9IHNpemU7DQoJCVR5cGUgPSB0eXBlOw0KCX0NCg0KCWludAkJCVNpemV7fTsNCglSVE1lbVR5
+cGUJVHlwZXt9Ow0KCWNoYXIJCURhdGFbMjU2XXt9Ow0KDQp9Ow0KDQpzdGF0aWMgdm9pZCAqcmVh
+bHRpbWVfdGhyZWFkKHZvaWQgKmFyZykNCnsNCiAgICBzdHJ1Y3QgdGltZXNwZWMgdHM7DQogICAg
+aW50IHJldDsNCiAgICBSVE1lbSBidWY7DQogICAgZm9yICg7Oykgew0KICAgICAgICByZXQgPSBy
+ZWN2ZnJvbShzLCAmYnVmLCBzaXplb2YoYnVmKSwgMCwgTlVMTCwgMCk7DQogICAgICAgIGlmIChy
+ZXQgPD0gMCkNCgkJCWZhaWwoInJlY3Zmcm9tIik7DQogICAgICAgIHByaW50ZigiICAgPT4gJXMg
+XG4iLCBidWYuRGF0YSk7DQoNCiAgICAgICAgdHMudHZfc2VjID0gMDsNCiAgICAgICAgdHMudHZf
+bnNlYyA9IDEwMDAwMDAwMDsgLyogMTAwIG1zICovDQogICAgICAgIGNsb2NrX25hbm9zbGVlcChD
+TE9DS19SRUFMVElNRSwgMCwgJnRzLCBOVUxMKTsNCiAgICB9DQogICAgcmV0dXJuIE5VTEw7DQp9
+DQoNCmludCBtYWluKCkNCnsNCiAgICBzaWdzZXRfdCBzZXQ7DQogICAgaW50IHNpZzsNCiAgICBz
+aWdlbXB0eXNldCgmc2V0KTsNCiAgICBzaWdhZGRzZXQoJnNldCwgU0lHSU5UKTsNCiAgICBzaWdh
+ZGRzZXQoJnNldCwgU0lHVEVSTSk7DQogICAgc2lnYWRkc2V0KCZzZXQsIFNJR0hVUCk7DQogICAg
+cHRocmVhZF9zaWdtYXNrKFNJR19CTE9DSywgJnNldCwgTlVMTCk7DQoNCiAgICBzdHJ1Y3Qgc29j
+a2FkZHJfaXBjIHNhZGRyOw0KICAgIGludCByZXQsIG4gPSAwLCBsZW47DQogICAgDQogICAgc2l6
+ZV90IHBvb2xzejsNCiAgICAvKg0KICAgICAgICAqIEdldCBhIGRhdGFncmFtIHNvY2tldCB0byBi
+aW5kIHRvIHRoZSBSVCBlbmRwb2ludC4gRWFjaA0KICAgICAgICAqIGVuZHBvaW50IGlzIHJlcHJl
+c2VudGVkIGJ5IGEgcG9ydCBudW1iZXIgd2l0aGluIHRoZSBYRERQDQogICAgICAgICogcHJvdG9j
+b2wgbmFtZXNwYWNlLg0KICAgICAgICAqLw0KICAgIHMgPSBzb2NrZXQoQUZfUlRJUEMsIFNPQ0tf
+REdSQU0sIElQQ1BST1RPX1hERFApOw0KICAgIGlmIChzIDwgMCkgew0KICAgICAgICBwZXJyb3Io
+InNvY2tldCIpOw0KICAgICAgICBleGl0KEVYSVRfRkFJTFVSRSk7DQogICAgfQ0KICAgIC8qDQog
+ICAgICAgICogU2V0IGEgbG9jYWwgMTZrIHBvb2wgZm9yIHRoZSBSVCBlbmRwb2ludC4gTWVtb3J5
+IG5lZWRlZCB0bw0KICAgICAgICAqIGNvbnZleSBkYXRhZ3JhbXMgd2lsbCBiZSBwdWxsZWQgZnJv
+bSB0aGlzIHBvb2wsIGluc3RlYWQgb2YNCiAgICAgICAgKiBYZW5vbWFpJ3Mgc3lzdGVtIHBvb2wu
+DQogICAgICAgICovDQogICAgcG9vbHN6ID0gc2l6ZW9mKFJUTWVtKSAqIDEyODsgLyogYnl0ZXMg
+Ki8NCiAgICByZXQgPSBzZXRzb2Nrb3B0KHMsIFNPTF9YRERQLCBYRERQX1BPT0xTWiwNCiAgICAg
+ICAgICAgICAgICAgICAgICAgICZwb29sc3osIHNpemVvZihwb29sc3opKTsNCiAgICBpZiAocmV0
+KQ0KICAgICAgICBmYWlsKCJzZXRzb2Nrb3B0Iik7DQogICAgLyoNCiAgICAgICAgKiBCaW5kIHRo
+ZSBzb2NrZXQgdG8gdGhlIHBvcnQsIHRvIHNldHVwIGEgcHJveHkgdG8gY2hhbm5lbA0KICAgICAg
+ICAqIHRyYWZmaWMgdG8vZnJvbSB0aGUgTGludXggZG9tYWluLg0KICAgICAgICAqDQogICAgICAg
+ICogc2FkZHIuc2lwY19wb3J0IHNwZWNpZmllcyB0aGUgcG9ydCBudW1iZXIgdG8gdXNlLg0KICAg
+ICAgICAqLw0KICAgIG1lbXNldCgmc2FkZHIsIDAsIHNpemVvZihzYWRkcikpOw0KICAgIHNhZGRy
+LnNpcGNfZmFtaWx5ID0gQUZfUlRJUEM7DQogICAgc2FkZHIuc2lwY19wb3J0ID0gWEREUF9QT1JU
+Ow0KICAgIHJldCA9IGJpbmQocywgKHN0cnVjdCBzb2NrYWRkciAqKSZzYWRkciwgc2l6ZW9mKHNh
+ZGRyKSk7DQogICAgaWYgKHJldCkNCiAgICAgICAgZmFpbCgiYmluZCIpOw0KDQogICAgY2hhciAq
+ZGV2bmFtZTsNCiAgICBpbnQgZmQ7DQogICAgaWYgKGFzcHJpbnRmKCZkZXZuYW1lLCAiL2Rldi9y
+dHAlZCIsIFhERFBfUE9SVCkgPCAwKQ0KICAgICAgICAgICAgZmFpbCgiYXNwcmludGYiKTsNCiAg
+ICBmZCA9IG9wZW4oZGV2bmFtZSwgT19XUk9OTFkgfCBPX0FQUEVORCk7DQogICAgZnJlZShkZXZu
+YW1lKTsNCiAgICBpZiAoZmQgPCAwKQ0KICAgICAgICAgICAgZmFpbCgib3BlbiIpOw0KICAgIA0K
+ICAgIFJUTWVtIGRhdGEoImRhdGExIiwgNiwgUlRNRU1fMSk7DQogICAgcmV0ID0gd3JpdGUoZmQs
+ICZkYXRhLCBzaXplb2YoZGF0YSkpOw0KICAgIGlmIChyZXQgIT0gc2l6ZW9mKGRhdGEpKQ0KICAg
+ICAgICBmYWlsKCJ3cml0ZSIpOw0KICAgIG1lbWNweShkYXRhLkRhdGEsICJkYXRhZGF0YSIsIDkp
+Ow0KICAgIGRhdGEuU2l6ZSA9IDk7DQogICAgZGF0YS5UeXBlID0gUlRNRU1fMjsNCiAgICByZXQg
+PSB3cml0ZShmZCwgJmRhdGEsIHNpemVvZihkYXRhKSk7DQogICAgaWYgKHJldCAhPSBzaXplb2Yo
+ZGF0YSkpDQogICAgICAgIGZhaWwoIndyaXRlIik7DQoNCiAgICBzdHJ1Y3Qgc2NoZWRfcGFyYW0g
+cnRwYXJhbSA9IHsgLnNjaGVkX3ByaW9yaXR5ID0gNDIgfTsNCiAgICBwdGhyZWFkX2F0dHJfdCBy
+dGF0dHI7DQoNCiAgICBwdGhyZWFkX2F0dHJfaW5pdCgmcnRhdHRyKTsNCiAgICBwdGhyZWFkX2F0
+dHJfc2V0ZGV0YWNoc3RhdGUoJnJ0YXR0ciwgUFRIUkVBRF9DUkVBVEVfSk9JTkFCTEUpOw0KICAg
+IHB0aHJlYWRfYXR0cl9zZXRpbmhlcml0c2NoZWQoJnJ0YXR0ciwgUFRIUkVBRF9FWFBMSUNJVF9T
+Q0hFRCk7DQogICAgcHRocmVhZF9hdHRyX3NldHNjaGVkcG9saWN5KCZydGF0dHIsIFNDSEVEX0ZJ
+Rk8pOw0KICAgIHB0aHJlYWRfYXR0cl9zZXRzY2hlZHBhcmFtKCZydGF0dHIsICZydHBhcmFtKTsN
+CiAgICBlcnJubyA9IHB0aHJlYWRfY3JlYXRlKCZydCwgJnJ0YXR0ciwgJnJlYWx0aW1lX3RocmVh
+ZCwgTlVMTCk7DQogICAgaWYgKGVycm5vKQ0KICAgICAgICAgICAgZmFpbCgicHRocmVhZF9jcmVh
+dGUiKTsNCg0KICAgIHNpZ3dhaXQoJnNldCwgJnNpZyk7DQogICAgcHRocmVhZF9jYW5jZWwocnQp
+Ow0KICAgIHB0aHJlYWRfam9pbihydCwgTlVMTCk7DQogICAgY2xvc2Uocyk7DQogICAgY2xvc2Uo
+ZmQpOw0KDQogICAgcmV0dXJuIDA7DQp9DQoNCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT0NCg0KSSdtIGV4cGVjdGluZyByZXN1bHQgdG8gYmUNCgk9PiBkYXRh
+MQ0KCT0+IGRhdGFkYXRhDQoNCkhvd2V2ZXIgaXQgd2lsbCBiZSANCgk9PiBkYXRhZGF0YQ0KCT0+
+IGRhdGFkYXRhDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBl
+IEdlcnVtIDxycG1AeGVub21haS5vcmc+IA0KU2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMiwgMjAy
+MyAxOjI5IEFNDQpUbzogeW8gc2FuZyA8c3RsZmF0Ym95QGhvdG1haWwuY29tPg0KQ2M6IHhlbm9t
+YWlAbGlzdHMubGludXguZGV2DQpTdWJqZWN0OiBSZTogZGF0YSBtb2RpZmllZCBieSBzZWNvbmQg
+TlJUIHdyaXRlIHdpdGggc2FtZSBtZW1vcnkgbG9jYXRpb24NCg0KDQp5byBzYW5nIDxzdGxmYXRi
+b3lAaG90bWFpbC5jb20+IHdyaXRlczoNCg0KPiBIaSwNCj4NCj4gCUkgd2FzIHBsYXlpbmcgd2l0
+aCB4ZGRwIHJlY2VudGx5LCBhbmQgZm91bmQgYSBzdHJhbmdlIHNpdHVhdGlvbi4NCj4gCUkgbW9k
+aWZpZWQgb2ZmaWNpYWwgZXhhbXBsZSB4ZGRwLWVjaG8gdG8gdGVzdCBteSBjYXNlOg0KPg0KPiAJ
+TWFpbigpDQo+IAkJKiAgID0+ICBnZXQgc29ja2V0ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIA0KPiAgCQkqICAgPT4gIGJpbmQgc29ja2V0IHRvIHBvcnQgMCAgICANCj4g
+CQkqICAgPT4gIG9wZW4gL2Rldi9ydHAwICAgIA0KPg0KPiAJCSoJPT4gIGNyZWF0ZSBkYXRhIGJ1
+ZiB3aXRoIOKAnGZpcnN04oCdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQo+ICAJ
+CSogICA9PiAgd3JpdGUgYnVmIHRvIFJUIGRvbWFpbiB2aWEgd3JpdGUoKSAgICANCj4gCQkqIAk9
+PiAgbW9kaWZ5IGRhdGEgYnVmIHRvIOKAnHNlY29uZOKAnQ0KPiDjgIDjgIAJKiAgID0+ICB3cml0
+ZSBidWYgdG8gUlQgZG9tYWluIHZpYSB3cml0ZSgpICAgDQo+IOOAgOOAgA0KPiAJKiBTdGFydCBy
+ZWFsdGltZV90aHJlYWQtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLT4tLS0t
+LS0tLS0tKyAgICAgICAgDQo+IOOAgOOAgAkqICAgPT4gIHJlYWQgZnJvbSBOUlQgZG9tYWluIHZp
+YSByZWN2ZnJvbSgpICAgICANCj4g44CA44CACSoJPT4gIHByaW50IG91dHB1dDog4oCcc2Vjb25k
+Ig0KPiAgCQkqICAgPT4gIHJlYWQgZnJvbSBOUlQgZG9tYWluIHZpYSByZWN2ZnJvbSgpICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICANCj4g
+44CACQkqCT0+ICBwcmludCBvdXRwdXQ6IOKAnHNlY29uZOKAnSAgICAgICANCj4g44CADQo+IOOA
+gElmIEkgd3JpdGUgdHdpY2Ugd2l0aCBzYW1lIGRhdGEgbG9jYXRpb24sIHRoZSBSVC1lbmQgd2ls
+bCByZWNlaXZlIOKAnHNlY29uZOKAnSB0d2ljZS4NCj4g44CADQo+IOOAgEFueSBjb21tZW50cz8N
+Cj4g44CAVGhhbmtzDQo+DQo+ICAgICAgICAgICAgICANCg0KUGxlYXNlIHNlbmQgdGhlIHNob3J0
+ZXN0IHBvc3NpYmxlIHBpZWNlIG9mIGNvZGUgaWxsdXN0cmF0aW5nIHRoZSBpc3N1ZS4NCg0KLS0g
+DQpQaGlsaXBwZS4NCg==
