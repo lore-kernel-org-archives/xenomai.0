@@ -1,49 +1,52 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2040.outbound.protection.outlook.com [40.107.241.40])
+Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B814B6124
-	for <xenomai@lists.linux.dev>; Wed,  9 Aug 2023 07:36:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FE36124
+	for <xenomai@lists.linux.dev>; Wed,  9 Aug 2023 07:38:44 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay14.mail.gandi.net (Postfix) with ESMTPS id 1412E1A0003
+	for <xenomai@lists.linux.dev>; Wed,  9 Aug 2023 07:38:37 +0000 (UTC)
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on0613.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1e::613])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id DFBB1D80477
+	for <xenomai@xenomai.org>; Wed,  9 Aug 2023 07:38:35 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ncYgEftrHYKrrJr1F9Dneihoze+YqFt/s0pX6FvE9BmfixpIMtXl2A2zcHxtsEHiYSwPfmHAKDh9kcYUIYREdSWTUhOnbOWkGiqgMNxPM3AH27TNnBLm9QrIACojxtQyGTI8lsTJSy+prwwFJJupzjquk/gX7lLftiLUXYT9U27VjmR+Cv8oqZL4zo2/stCAGF7GggsjxFbZI9bKwJuHVbFZL2unn7Hb6qp+GozyrXDjtx7NtyLzhEXuZlAqxAk5zYB+DqS0jbzsISpWopbDQFcaf/TtQcfBogKuCi+ZG8up39a++UHdQGlypPvHdU68h2pUY9XYyIUlQuc/jsL0gQ==
+ b=OQLvXrYM+ualpoS/pJeYMTJOywSaJaMBbs8sUiRpYi87Y96SCJYgw3vJEaxKedDlnesRRXvpumxSjeGxjKFVHK2uKRyHqr2yMVx2pG6TRSHhqgxroPtAKm4NDIONZpj/9CJbARybHSGiwDAyp9hDymlF89MtcfjCTa52A8p3e0KWz+rF6j6oel1ufCC9XC14wGMUnBkmM3GaDumZ2KY2hY0TvG+ePwdd9E4U5HalNlAfTfaLWYv7n127lTNdSf7U2QWUHftvCAVF3ynHlB07TBmJN7swJ0oYmqjdURIjWiCgu/HESQ1qfuZU6Gp3p/x5oZx8D0gIGXPfc1TD0ANHYg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YPR0kqtAfw8AVEmsi1P/POX9Bu2Qwh5J5XeCkgFwfCk=;
- b=cOZ0hBKcLwQdsP+Zkb5jrA5HZNm3eGSs/k2ADm1W0lIydiN8YzboVPPtOHxmMyOhRQCLpU00XJl+1oIsE4ibIfnuhMBunBK1BPm8ONR+hBHCd3lQuz9LlZRmUlwg26wz1J+bJDf5nvRxQy4n6GWq9jJXf04OVFTMi2v2K/AIzwNVIC3VN1IS4Jrl7tD02JAqSnwtxkQKeDyR6F4EF2rdQrPP2Uk8lfZPsgtQA236f9jbyKprKMUS6z8Abx36QT29Tp/EW6mGWEOY7t3mq5movqT4iLM9d4N4cnHgOF7l4tR/PYXPGEY6KgmPW825FeV2acrYS3g1TtmvnSIf4DmpKA==
+ bh=qvZqU6+UNua8n7q64BlThxZVeydnm3uFHpqSqf/mHHQ=;
+ b=XxEKAgMVfJSITvo3lMw8RB1Pauqywp6Mc5Sx22WoH0TTdoImiKMCf2Y+6ItVL0zK6EqXTxaJa6+90urmBJfZicHizPTwHthg0zK+epvFZc5eC6FpNdiNiIg2UDWIU07ybQuy2wCbiUJ1iLFLiNK0lUUf5h+pMYdpiNSHZrvmRukxByA+1pBNKPUdq5RS5HUauC7O3GkGJBVlhMJyLCZyUz4cVGg6+tUakNdSh4h+mxeEciaGCpwetxlLZELdKmT87eIJuEKY3CYA7CPEqHAhqno3Gtr1MZNVvZGUek2nI0viWaSfqnnyZ7RpNGOi0m4+bL+nNWvZgl7nIoAcU/Vmsg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YPR0kqtAfw8AVEmsi1P/POX9Bu2Qwh5J5XeCkgFwfCk=;
- b=EDUF0u70BcDawYyWniOwH++23iPOZqiCV4kdkwBt3PO6K9j/FaNkyVaEpjpFagruQUN/5hBTfSvb+yZw8ofhZQWYhRlMQ4eM9nV6RfcpxMspkjn7dww6ZfqB1FS+wet3jywTsFSIAeJVNkN5Hf7bPlTKLVoBLSvbDmIt1eFERXEHSfYuKNuity8EA3UY+QU2r6cWnDR2HVRzoROBG/8cibiM9kdtRdH4pirT2DtwMOOPvHbVD63wyPZulSDQB34FPwz1s4fwVZz5YkIi79ypTXdx7/8yKO6IzU7Zzbw4t0sU1aEJ8EpgdZD2FWxTs3WYBhdcQ3gkAm1uBcmVVe3EgA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
+ bh=qvZqU6+UNua8n7q64BlThxZVeydnm3uFHpqSqf/mHHQ=;
+ b=UcmAKVJbk6iCH+fQNHRc4cV3WvLOe6H0686dISoE/f0Uz0FpGX41PGj6bIxVGbiT+70w4iHVqFhW2HJwi6ou6AXNl+B9XumKq7J5YGtigcgyvSd3YEMejMfc7Mc7bmhy5lnYJUuDuWNndCC4n69Jz1E0HWeLKv7pZdHlddsHTzDAlZ4hC/sAZ2P1igYCCrgvQsq++prheUgsKMYf6Je95sv9+SR7I89beeQI8DkMmWEp/U6SSkPmzV70M+FpXNvmaKD+h3wpXwBE2Jj+W6oj6r1RjC+/g2g1S8FT1rh8Y5vUoRuUd3DSy+B0vw6DFD+fsRkPM8Sr/BE5QFO9PEyBjg==
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB5502.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:305::13) with
+ by AS2PR10MB6688.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:55f::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.28; Wed, 9 Aug
- 2023 07:36:20 +0000
+ 2023 07:38:33 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::a41b:5cd6:2d52:e47a]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::a41b:5cd6:2d52:e47a%4]) with mapi id 15.20.6652.026; Wed, 9 Aug 2023
- 07:36:20 +0000
-Message-ID: <6b3a57a7-01fb-f40c-ee81-b8aedaf2ca4a@siemens.com>
-Date: Wed, 9 Aug 2023 09:36:17 +0200
+ 07:38:33 +0000
+Message-ID: <94d3c359-941d-a745-6551-fe4a94f83939@siemens.com>
+Date: Wed, 9 Aug 2023 09:38:31 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/10] Revive alchemy, pSOS and VxWorks tests
+Subject: Re: XENO_ARCH_FPU
 Content-Language: en-US
-To: Aaron Marcher <aaron@sigma-star.at>, xenomai@lists.linux.dev
-Cc: richard@nod.at
-References: <1753829974.221010.1690209596711.JavaMail.zimbra@nod.at>
- <20230725082959.5144-1-aaron@sigma-star.at>
+To: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>,
+ xenomai@xenomai.org
+References: <38a527-64c12200-3-647b8480@101120884>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20230725082959.5144-1-aaron@sigma-star.at>
+In-Reply-To: <38a527-64c12200-3-647b8480@101120884>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0017.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::27) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR2P281CA0087.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9b::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -52,236 +55,97 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5502:EE_
-X-MS-Office365-Filtering-Correlation-Id: 500effe5-f875-4790-facb-08db98ab5302
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS2PR10MB6688:EE_
+X-MS-Office365-Filtering-Correlation-Id: e587e174-b642-4e7c-2941-08db98aba230
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	CtnqMVXrcVs9B2L9bX9a2iVWNTCLEbUUWrNBGGHDwvWRarP7jRnKWm4LNDub5PrsJisuNP4Xh4lsD+npYrPhOeBe43txBEel+VScgeCMXSO6AEBK7mQkjf/mvjkrIQRXV4j4aAGiIjbOtmk7bH6RwKsvbGMfELucnbPOZrL/TaHOTnNzN6GE4BeBf8bs2f/uWkxvv0+dK9Nb5z8uLyiVJuPFHQKWld29pbBIek9LmYBhu319tLpgDkzlT2c1/pMDlSX9sf5RfOQuP9rolJKufMEN5SxKQEzyGGMt8jmKE3ZWv6nt4eTkRAYCu/BiUBOjX/Ky18vg9uWFKOz/Xzh1M/bWCAZeXW6JLJqZhNVIOAubnd1SB74+lhs79zXsGni4aMqJ8TLXUonVeJi0iuNZBlzD6kC+HzFqxJeA2N77zjzKYFwYkZQb2gueOlKaXyl5xwHfln0EhS7TqVMwu0wZFMPqXu9HyVIwwoiCvT3NvMZOeFHHEROpg0eGI5XKrX1SdJol98FkG0++dXZZI5nPrR5uKuDfO+BydGFcDhWHLtA4Ji0hsOp7KgTnhemdsjQkDKXC1I+Tppa8qSufAfNeT/+1oKd7lqAS9cbRt+dVWYySeXvX2jtE7kMfxzEJgz6EyYpEiYqDy9VgR4xmDhR8iw==
+	OfzuMDdq0cN4Y+m0rsxeWJN+6zDkpeWTG4OVEoZvQZzKg3dgHYnMH3xeKqjBEoWRV/JQRPeMRTxI7vbjLo7s3CoxmivOshCjyV8fZuaVmEgD3Yj5soxL9aaIkjIjuF18prRx2xVScFt8u/wwjgvbr+ZTsZ7dkwIs+jB4HG8mDXdXcVxsHQMHwsZoUF9Xx5N242lQNffhg9dlrZtkqhp5j4wojIy1nxRe2OagpLTRkjc5Kv7ifPvSwIDUkOpDLM3GX/9pyY4YKjUkbInRcR9QYs0bQTjicdf3L3GeJKNS+ZQ451BC+/dQtySsPHn998rG8aA0XwrTqFaFSoQlu1U6Kqp2jJglLO0pppo2+HeuooeFYmV9L7rVLuj67t72T53uY/XY4oZMjnVEHTJ8XmGUIPO3Od0q7j8tKiUCKHO39i0iIlCJLJoCFNah3b9CLhx9kzJrTFe9nUNOOxdVntnBy0br56MimkP4FvKmQoL1GN4Li6aOBX7wIcS5vvSLJD4RuVpsj0k3HQ3sBSfjmCfX+2hvOyozY3lI86kZrmkbPEXcBRPH8sM42mLZN2dGmWTMdZBEaPVT3BsswvoVLWItNJC4n34mpFeEAHmhPrbfS6ovLXaGr1Qgr7/sOqmhYw8vHlM6KbsElUjbvf5r7oLsDA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(6029001)(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199021)(1800799006)(186006)(31686004)(316002)(4326008)(36756003)(2906002)(31696002)(86362001)(82960400001)(44832011)(38100700002)(5660300002)(8936002)(8676002)(41300700001)(6512007)(83380400001)(26005)(6506007)(53546011)(6486002)(478600001)(6666004)(66946007)(2616005)(66556008)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(451199021)(186006)(1800799006)(44832011)(8676002)(7116003)(5660300002)(2906002)(82960400001)(8936002)(38100700002)(6506007)(26005)(2616005)(83380400001)(66574015)(53546011)(31696002)(41300700001)(66476007)(6512007)(316002)(6486002)(86362001)(36756003)(66946007)(66556008)(478600001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZThHSVVORUZQYVRoSTRaRXdxVUtlV25uQ3ROTWlJcG4zaXJodmZweENQUUQ5?=
- =?utf-8?B?R3NLUXFIMmpnMTkyWjFRSUo0UDdqUGVaZEFCQjVTNGhOdGRkYndCTnhrNzVS?=
- =?utf-8?B?eDZpUmljVEJ6NmJWU1M5Yk9CeXZxNkc3WHdENUpSTXBHMVhwaGdyV0lCYnNy?=
- =?utf-8?B?dFNZRTdML0YxSjBEa2c1L0krQmtXR2FLbjcvbHovM2hxSnIzWHRGR3pLRUdz?=
- =?utf-8?B?Yk9xZEt3anZweEk1OXJxM3B4QVpSYi8xakw0K1ozOWJIeG92U1pDVkJNZzZY?=
- =?utf-8?B?UGNaa3cvdGt0dm5uZFBhTnJ1TUdBc2wyMk96TUxXdytqTDVFbzF1Tmcxamdz?=
- =?utf-8?B?dzVWWWZmcUtlM0huQ1Y4K3NPTFdHSmlzcVZHN0RmTDN1OVdST0wrQ1R3dS8v?=
- =?utf-8?B?aEtxS29RVFJUb3FSc0kxZ0Y5RTRhRnFwZWFTTHQySmxYY0U1T1JuTkxsS0kw?=
- =?utf-8?B?Sk9BcHBXM3UvS2RCSXBneXVrM0ZJdXdQcmh6QVI3UEpSQm52UUJ6dVRKR0tw?=
- =?utf-8?B?RWJ6WHgyeFZKbm1xbURxdjhaRnRCQlVEWWNQUHlYaG0wR1pjVWNkTWptZTdi?=
- =?utf-8?B?SE9rQ2JKZmJ5aEJqRXRkSEdQU0VMSzFDSE1yM0lLUTIzTVJzMXh1VVRiRVgy?=
- =?utf-8?B?QVdqTk9XeHltTnQyMFNGS0xEUTA0U0xwTmRFcEdkMXR5eFdlMDhCSSswdGxM?=
- =?utf-8?B?NGFSQllod0hsRXhHVGVrOWdWOXRDVzZwdHBCeDh0N1c5a3FtdHRJTmdsZXp0?=
- =?utf-8?B?OUpHYWZIaHBvdExaSmJteGdPZCtUSGVnNUFvcG1WNDBub0lUQng4bFBYYnh3?=
- =?utf-8?B?ZmFvSnBiZFNXWXZsSjBSRVNkaENQWEU4M2MxbFMxbEhnUEViN3pQNjZJcDRF?=
- =?utf-8?B?ZzFiYTE4OUVBQjBoRXVkUkMxcmUvVWE1RlkwdWQ5dGtoU2luM0tablhKOFpY?=
- =?utf-8?B?UlJaUlBuUzc5QUl0eTdZTVRONnhkTkxQZ0Y1Q3F5OURPOThrZ1lQMjVudjYv?=
- =?utf-8?B?c25yM0VyL2xEZGNXTGdFVTR5Ung0Yk1FTmowUDBGUW9qNHByTTBzMmlHNzBo?=
- =?utf-8?B?OTRhcURSSW9FajlpSkU0M1lteHp4ZEhBZ2k1QzBtMWpCYWFld0t2dlpmZG1o?=
- =?utf-8?B?TUZRdE5qbTYxdUp2YlVOKzU5M21wZm5XRGNqeEM5Qm1nOWxOQVZkZXhFS3Ny?=
- =?utf-8?B?U1UvL3BkODQyMGRCODhjdE9PcWNhYzRRaWRDdW4veDB4R1dSR3ZhOHBxTE9z?=
- =?utf-8?B?bjQ2RDgvZGRxMjhhRjlEcWhYVFZMRDhWcWowamlFeXhmSEVDSkF4MnZmUzRn?=
- =?utf-8?B?RTZKSjgzSExWYWNUcWw1NGFsKzNBNVRnclZEelZVcVUvNHhIekF0c29EWHBY?=
- =?utf-8?B?cWNJRmVRN0ZkM1JTR2czaGIyelJvK0NuaUI1ZU8yWEVNMXVBaVhDdFlBUko1?=
- =?utf-8?B?TmtSQ1JYRGwzNWZqc1JlWDBabHJEalpXbFlOSWlwNkF2NFZIMzJ2bTZXc1kr?=
- =?utf-8?B?ODE0dmkzaVVqQ3VVeGszVEIvMlZFZEV3T3FUTzRUY1RhdUR6Tm1UQUlsNjY4?=
- =?utf-8?B?M3FRNDVHQ0lGUzlGWVlFVFpYMktlR1hqYnVzbUZuaE9XcFZwTjVzK1djMWor?=
- =?utf-8?B?aEVnUjJ6UTlZODRSVEE5VXdtazhnbHpqbjVXRzNYOHB6U2dXK04xaVZ5SVhP?=
- =?utf-8?B?aWdEOGdrVndnR01IN2cyZzJ1aTMwZk5HTVpOSjQ2S2RONFliMm9mSTZ4bXB1?=
- =?utf-8?B?eGNLWGFCMlZOb2l3MmwzRjY2ZENUc0YrSEpmOGkzcm9sNkFoQmcxOVRJNlov?=
- =?utf-8?B?TXNNemFxZWl0Z1UyVGRxemRDMzAya3lxbVZ4UEYyVEJ4VjVqbWhOR0YwMlh6?=
- =?utf-8?B?aCtzcmJQb0g0ZXZqNlNMalc1c2JhVFNSM3piaUEvR2Fya2dIUGJReDhlR0hR?=
- =?utf-8?B?YTR5WDl4T0hjQmNVVmgvMGJWcnNpWFdrWDRRVlhlYTExU3dxMmgyYVp3MEpv?=
- =?utf-8?B?NXh3K3duQzloODBoL28yMGFJdjY2Vk5uUmNxWFRkR2wvVTdLZlJKY0puWUgv?=
- =?utf-8?B?UFR2S3k3ZVorclVrc3gvZHdMUWhmcUVZSVN6eTljak1DcUFLV2JDQWtuZDlG?=
- =?utf-8?B?eTZyRlNRUDl0OHVvb2FQR1Y5K2pxUkVTdS9ML3ZFeXIvS0I0TXF3SVVNNGZK?=
- =?utf-8?B?Snc9PQ==?=
+	=?utf-8?B?Z2M3Y1paWlZmT2JodWhsWTVqTC9OQngxaEM3dGJNWXZYWGh4YmxCMjhuL3BW?=
+ =?utf-8?B?elBrUC9hMU5yOFB2U0dVY2R6ZjMwRUJKbXU4djZyZDE3dVMweDFnMTRzOFVx?=
+ =?utf-8?B?RGxzOUpNWmhWd2Jld0lPQ29RSzZ2NUJjMmE2NlFMYTBSQ3hWOWtOU3p5cGNo?=
+ =?utf-8?B?Y2NhUmRGOE5GSlAxRS9qK3BqeXpLRWR3dFdsM3dQN0xzckpOMCtEVTF2UEVX?=
+ =?utf-8?B?SThoSXM0SC9OSUZTNTF6Y2I0U3h6cm5OWGlmVldmOURJQUpjQWpUbFppTEZM?=
+ =?utf-8?B?eWpwVGFPOVMzQUtjcmpIUldXdU1FcEYvUk5HTzRNSEVrWWFxWE9hckgrU0tG?=
+ =?utf-8?B?Q0ZXNThCMWFNc0VzUkgzVGdGSDBySk9NdWRhS1JEdVRPVnpBdFI4YXFHM09E?=
+ =?utf-8?B?RVpGQXJjeVJWZ2xRcUFpVUowWDUwSmRycE1OSDBpbnRCUm5HV3NteUlIWENw?=
+ =?utf-8?B?Q0xheFR0alZxREUveTh5T2c3Wi9vd2JhSGtYSC9XcUROejhGamM0cDQzdVl2?=
+ =?utf-8?B?a1pCdnZ1ZFR6RnBRNEFTV0hQTTJVK3UyZ0lwVThtZkZuWi9nRmNTKzluRE9h?=
+ =?utf-8?B?VVhHTmF1eUtmdU85U0dBTjhsOEtVcTFVVTBxVzZWVVRveDlGS1J0ejJxNVpo?=
+ =?utf-8?B?QkZENW1uZmxnOVE3WVY2KytaK215ZzF1anV4aXFnRXJNWWJLcXVGUmY5aERz?=
+ =?utf-8?B?aWpha2tSL2grd1RCaE9MQmZFa3l2TW9CYzExUWJEdXpDNjIva2Q5YXBwTGkr?=
+ =?utf-8?B?M2VxSmxVbmx5NFdYbnVIbmFqTGpINjBnZHkzODFxR2NMZjJGRHpvbFVyOE9Z?=
+ =?utf-8?B?TXRZSEFoaHVST1pJOWJGc3BFRDBLeGRNOFpETVg0VGNxN1BEdVJneEh5bCtv?=
+ =?utf-8?B?MjVLdXVmMlZxT2djOStlU3ltZzczL1l5clgzckxzVjc5YjloaXpKMXBadUJH?=
+ =?utf-8?B?alNya1pIc3NOaW5aR3ovVTVMcVRnRnZUMi9mZFZpWTdoSlkwRFVUUkdvQ1ZD?=
+ =?utf-8?B?dWVrdE43NHAwbWdDRHBWTlE4NWV6Vit0Vk1BZGQyOGxadUZtbE9sazRiMHls?=
+ =?utf-8?B?L1RHbm4zaU9xRkN3QWIwUU5ZaXRmMi8rQ2QwTndjQUp1WktmNGgzQ3pHbklT?=
+ =?utf-8?B?cGZYdDh0Yi94N0szaGxBS3U5UXlTYXVDakpVbzIrRW5OamM0THFBUit1YXFp?=
+ =?utf-8?B?cHJzZUxZRzVadFQwZjliTktEalJMRHlQOXNwcllNVjhEOHh0bHg4SVl5Z2th?=
+ =?utf-8?B?TWFwc3Q5NnZ0cENsUExTZkNEL3BzL283YUtud3FnTStRNmpETndMUEYxRXN4?=
+ =?utf-8?B?VW5yY0lzUEpTNGRBNUw3KzhiY1pGelJ1bEhiZUFCaG9uOURFdUpOUlpwempU?=
+ =?utf-8?B?V1Z3cFRFeUpxUnZZR3UxY1VDVzRNeUJDTnc1VnVjUUQ1bmZVczkyZzh6eGlj?=
+ =?utf-8?B?VVVqSXI4OXBRcHBLWjdDVnNydjJIM1djN3Fyd0tLSlBqd2liSU51NWFYU3Nk?=
+ =?utf-8?B?eXQ2cWZoK2g1V2dWclJ1VjdLOWc0L3h5ZTRDVUhrMmlReUJYc2RabGxmOEFX?=
+ =?utf-8?B?MWdPV2YrM29KVVdVUzBRVDhUcmJnbktHYTJ1UnFaNXkxeXNKN005bW93ajQy?=
+ =?utf-8?B?MjhqaHJ5clZGdytYTG9nclRwa0lQd1dqZUttMVUwZjlNSE9iQVpKQWkrZFhx?=
+ =?utf-8?B?U2Q0QWExbktVSHA2TXplZW1RYWFIYUlrN0lQNkpPVUF0aUJpd1F1SUZDelZE?=
+ =?utf-8?B?M09OS0JlM05lZHVNZTAwcVRXZjRyN2w1S2ZGd1diSUR6KzBDODhXSHVEcTZK?=
+ =?utf-8?B?YXBnVkNXdlBFSUpGNzlkd3lEQjdjU1V0cmpVeUx5b0p6eHdsaEtJeHFLQ2FZ?=
+ =?utf-8?B?Y2Y3S3hvQkZqL3A4T01tRStjL1Y2ek1ja2hsdzdRdlNLRnFGdGRHdzRhY0x6?=
+ =?utf-8?B?WEU5R1VhaXlQaDZMTkwzYnNUdXR0UFgzTS95OTk0ZTY0Mm1UT21hRkZRYVVu?=
+ =?utf-8?B?bVQ0RXpSdlpGQTFzUWVqNUFoNHJrMjJBL1hibUVXU3V1bUFTV1pVWmFackpU?=
+ =?utf-8?B?VmM5UnFyYnBLcTIyWWI2YVhydjJCeVk4dTFtcHNiSU1sYmNjU3kvOFZobEtO?=
+ =?utf-8?B?MTVJeENMTm5FZ0dUNW82RUszcFF4SlNVcnhaSDdtSURnbWJITnNoYnArQ2Nm?=
+ =?utf-8?B?RUE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 500effe5-f875-4790-facb-08db98ab5302
+X-MS-Exchange-CrossTenant-Network-Message-Id: e587e174-b642-4e7c-2941-08db98aba230
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 07:36:20.5250
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 07:38:33.3603
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rFYJAiaHRf7HdicYasMKP4eC8rjJJcXTjfAINVUKpbNu7/3b6XRIeq2qfmmJ288e/+eFwbulnXUR5QHLjv01Jg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5502
+X-MS-Exchange-CrossTenant-UserPrincipalName: +mJ+NzXsxEqpHthK3ejNQzrdEApufn/HK/vW5PIplPJJn+a5ciRyTYVT9m3wdOEQjQQdBunRK+drxx6IkhhhcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB6688
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=siemens.com header.s=selector2 header.b=UcmAKVJb;
+	spf=pass (spool.mail.gandi.net: domain of jan.kiszka@siemens.com designates 2a01:111:f400:fe1e::613 as permitted sender) smtp.mailfrom=jan.kiszka@siemens.com;
+	dmarc=pass (policy=reject) header.from=siemens.com;
+	arc=pass ("microsoft.com:s=arcselector9901:i=1")
 
-On 25.07.23 10:29, Aaron Marcher wrote:
-> This patch series fully integrates the currently abandoned alchemy, pSOS
-> and VxWorks tests into Xenomai's testsuite.
-> For each test, a Smokey testcase is hooked up.
+On 26.07.23 15:39, François Legal wrote:
+> Hello,
 > 
-> Changes since v5:
-> - Improved task-2 fix commit message
-> 
-> Aaron Marcher (7):
->   testsuite: Fully integrate alchemytests into smokey
->   testsuite: Fully integrate psostests into smokey
->   testsuite: Fully integrate vwworkstests into smokey
->   alchemytests: Check pipe-1 asprintf ret value
->   alchemytests: Fix task-2
->   alchemytests: Fix task-5 logic
->   testsuite: disable broken tests
-> 
-> Richard Weinberger (3):
->   testsuite: Remove old alchemytests Makefile
->   alchemytests: Fix gcc warning in buffer-1
->   alchemytests: Fix gcc warning in task-9
-> 
->  configure.ac                                  |   7 +-
->  lib/alchemy/testsuite/Makefile                |  70 ---------
->  lib/psos/testsuite/Makefile                   |  49 ------
->  lib/vxworks/testsuite/Makefile                |  43 -----
->  testsuite/smokey/Makefile.am                  |  15 +-
->  testsuite/smokey/alchemytests/Makefile.am     | 148 ++++++++++++++++++
->  .../smokey/alchemytests}/alarm-1.c            |   1 +
->  testsuite/smokey/alchemytests/alchemytests.c  |  56 +++++++
->  .../smokey/alchemytests/alchemytests_driver.c |  33 ++++
->  .../smokey/alchemytests}/buffer-1.c           |   3 +-
->  .../smokey/alchemytests}/event-1.c            |   1 +
->  .../smokey/alchemytests}/heap-1.c             |   1 +
->  .../smokey/alchemytests}/heap-2.c             |   1 +
->  .../smokey/alchemytests}/mq-1.c               |   1 +
->  .../smokey/alchemytests}/mq-2.c               |   1 +
->  .../smokey/alchemytests}/mq-3.c               |   1 +
->  .../smokey/alchemytests}/mutex-1.c            |   1 +
->  .../smokey/alchemytests}/pipe-1.c             |   7 +-
->  .../smokey/alchemytests}/sem-1.c              |   1 +
->  .../smokey/alchemytests}/sem-2.c              |   1 +
->  .../smokey/alchemytests}/task-1.c             |   1 +
->  .../smokey/alchemytests}/task-10.c            |   1 +
->  .../smokey/alchemytests}/task-2.c             |   5 +-
->  .../smokey/alchemytests}/task-3.c             |   1 +
->  .../smokey/alchemytests}/task-4.c             |   1 +
->  .../smokey/alchemytests}/task-5.c             |  11 +-
->  .../smokey/alchemytests}/task-6.c             |   1 +
->  .../smokey/alchemytests}/task-7.c             |   1 +
->  .../smokey/alchemytests}/task-8.c             |   1 +
->  .../smokey/alchemytests}/task-9.c             |   3 +-
->  testsuite/smokey/psostests/Makefile.am        | 148 ++++++++++++++++++
->  .../smokey/psostests}/mq-1.c                  |   1 +
->  .../smokey/psostests}/mq-2.c                  |   1 +
->  .../smokey/psostests}/mq-3.c                  |   1 +
->  testsuite/smokey/psostests/psostests.c        |  69 ++++++++
->  testsuite/smokey/psostests/psostests_driver.c |  34 ++++
->  .../smokey/psostests}/pt-1.c                  |   1 +
->  .../smokey/psostests}/rn-1.c                  |   1 +
->  .../smokey/psostests}/sem-1.c                 |   1 +
->  .../smokey/psostests}/sem-2.c                 |   1 +
->  .../smokey/psostests}/task-1.c                |   1 +
->  .../smokey/psostests}/task-2.c                |   1 +
->  .../smokey/psostests}/task-3.c                |   1 +
->  .../smokey/psostests}/task-4.c                |   1 +
->  .../smokey/psostests}/task-5.c                |   1 +
->  .../smokey/psostests}/task-6.c                |   1 +
->  .../smokey/psostests}/task-7.c                |   1 +
->  .../smokey/psostests}/task-8.c                |   1 +
->  .../smokey/psostests}/task-9.c                |   1 +
->  .../smokey/psostests}/tm-1.c                  |   1 +
->  .../smokey/psostests}/tm-2.c                  |   1 +
->  .../smokey/psostests}/tm-3.c                  |   1 +
->  .../smokey/psostests}/tm-4.c                  |   1 +
->  .../smokey/psostests}/tm-5.c                  |   1 +
->  .../smokey/psostests}/tm-6.c                  |   1 +
->  .../smokey/psostests}/tm-7.c                  |   1 +
->  testsuite/smokey/vxworkstests/Makefile.am     |  94 +++++++++++
->  .../smokey/vxworkstests}/lst-1.c              |   1 +
->  .../smokey/vxworkstests}/msgQ-1.c             |   1 +
->  .../smokey/vxworkstests}/msgQ-2.c             |   1 +
->  .../smokey/vxworkstests}/msgQ-3.c             |   1 +
->  .../smokey/vxworkstests}/rng-1.c              |   1 +
->  .../smokey/vxworkstests}/sem-1.c              |   1 +
->  .../smokey/vxworkstests}/sem-2.c              |   1 +
->  .../smokey/vxworkstests}/sem-3.c              |   1 +
->  .../smokey/vxworkstests}/sem-4.c              |   1 +
->  .../smokey/vxworkstests}/task-1.c             |   1 +
->  .../smokey/vxworkstests}/task-2.c             |   1 +
->  testsuite/smokey/vxworkstests/vxworkstests.c  |  46 ++++++
->  .../smokey/vxworkstests/vxworkstests_driver.c |  33 ++++
->  .../smokey/vxworkstests}/wd-1.c               |   1 +
->  71 files changed, 749 insertions(+), 177 deletions(-)
->  delete mode 100644 lib/alchemy/testsuite/Makefile
->  delete mode 100644 lib/psos/testsuite/Makefile
->  delete mode 100644 lib/vxworks/testsuite/Makefile
->  create mode 100644 testsuite/smokey/alchemytests/Makefile.am
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/alarm-1.c (97%)
->  create mode 100644 testsuite/smokey/alchemytests/alchemytests.c
->  create mode 100644 testsuite/smokey/alchemytests/alchemytests_driver.c
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/buffer-1.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/event-1.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/heap-1.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/heap-2.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mq-1.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mq-2.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mq-3.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/mutex-1.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/pipe-1.c (96%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/sem-1.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/sem-2.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-1.c (94%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-10.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-2.c (95%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-3.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-4.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-5.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-6.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-7.c (98%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-8.c (97%)
->  rename {lib/alchemy/testsuite => testsuite/smokey/alchemytests}/task-9.c (94%)
->  create mode 100644 testsuite/smokey/psostests/Makefile.am
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-1.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-2.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/mq-3.c (98%)
->  create mode 100644 testsuite/smokey/psostests/psostests.c
->  create mode 100644 testsuite/smokey/psostests/psostests_driver.c
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/pt-1.c (96%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/rn-1.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-1.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/sem-2.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-1.c (95%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-2.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-3.c (96%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-4.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-5.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-6.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-7.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-8.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/task-9.c (98%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-1.c (95%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-2.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-3.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-4.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-5.c (97%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-6.c (95%)
->  rename {lib/psos/testsuite => testsuite/smokey/psostests}/tm-7.c (95%)
->  create mode 100644 testsuite/smokey/vxworkstests/Makefile.am
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/lst-1.c (99%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-1.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-2.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/msgQ-3.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/rng-1.c (99%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-1.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-2.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-3.c (97%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/sem-4.c (98%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-1.c (96%)
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/task-2.c (98%)
->  create mode 100644 testsuite/smokey/vxworkstests/vxworkstests.c
->  create mode 100644 testsuite/smokey/vxworkstests/vxworkstests_driver.c
->  rename {lib/vxworks/testsuite => testsuite/smokey/vxworkstests}/wd-1.c (97%)
+> upgrading to xenomai 3.2.x for ARM arch (zynq7000 target), I have a build failure on kernel/cobalt/ipipe/sched.c :
+> kernel/xenomai/pipeline/sched.c:97:9: error: implicit declaration of function 'switch_fpu'; did you mean 'switch_to'? [-Werror=implicit-function-declaration]
 > 
 
-All applied, just with some whitespace massaging and a reordering of
-when the build system is actually updated. See next branch for the result.
+What is the kernel version you are building against? It's kind of a FAQ
+by now, but 3.2.x is only supported up to 5.15. Newer kernels need
+current master / future 3.3.
 
-Thanks,
 Jan
+
+> The problem seem to be caused by CONFIG_XENO_ARCH_FPU not being defined, and in this case, the switch_fpu() function is not defined, but called unconditionnally in pipeline_switch_to() and pipeline_leave_inband()
+> 
+> The fix seem straightforward, however, I could not find any place where this CONFIG_XENO_ARCH_FPU gets defined for any arch, nor any Kconfig menu to enable/disable it.
+> 
+> It is however the same for my previous xenomai 3.1 setup
+> 
+> Can anybody help on this ?
+> 
+> Thanks in advance
+> 
+> François
+> 
+> 
 
 -- 
 Siemens AG, Technology
