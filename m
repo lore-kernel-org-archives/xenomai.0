@@ -1,22 +1,22 @@
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BDC6539F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A0B3539D
 	for <xenomai@lists.linux.dev>; Fri, 11 Aug 2023 07:37:58 +0000 (UTC)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023081107374963aa24845348dc3044
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023081107374931444d6619d9a308b3
         for <xenomai@lists.linux.dev>;
         Fri, 11 Aug 2023 09:37:49 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=J2sqFq9w6cVf9RjnE5NCZgcXdRcRy+0q7FVIYdjHunw=;
- b=TxCbKazJrXyBvWgQAwjKrVMdvyPnL8HhrDRm2yh72/Yf1fuDkyW5klVOQANj9r07V5U6CT
- imYI8MGwPA10vv4Y2YruxhYnns5SBNzB5hVYdnaxxXDJOdH6YyNiUNNCG5n7pVb1xBL66wdm
- rjH1qxxDrk79+Kd5n7vwrEH06iStg=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=8c8G0sAT+fXWwHxX7UzmTZMNNz1I4VLXiY4XY0fh7TY=;
+ b=ZVp/x4L+n2r9M4Jya3LJuGM6ashAa2RPHGopi+f95FQxBid8DTR5AoHXMoEDhRD9OY3R7m
+ vQ92C0dEGurzGQ0YC8Bgp9dDZi+I/opy9juCUoNI8hii21UvxkBnjMwUHCdUcFMNJDH6DBFj
+ byUtpXHZtTRt48bxoyVBXrTI7HBQE=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/7] y2038: Finalize and enable y2038 support
-Date: Fri, 11 Aug 2023 09:37:35 +0200
-Message-Id: <20230809-florian-y2038-2-v1-0-d1cfe2f394a3@siemens.com>
+Date: Fri, 11 Aug 2023 09:37:36 +0200
+Subject: [PATCH 1/7] y2038: kernel/drivers: Implement SO_RCVTIMEO_NEW and
+ SO_SNDTIMEO_NEW
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,79 +25,392 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAD/l1WQC/x2NQQrCQAwAv1JyNhCziNWviId0zdrAspUsFqX07
- waPMzDMBl3dtMN12MB1tW5LCzgeBsiztKeiPYKBiRONdMFSFzdp+GVKIzJySpREzifKBaKapCt
- OLi3P0bV3rSFfrsU+/83tvu8/f0Vfd3YAAAA=
+Message-Id: <20230809-florian-y2038-2-v1-1-d1cfe2f394a3@siemens.com>
+References: <20230809-florian-y2038-2-v1-0-d1cfe2f394a3@siemens.com>
+In-Reply-To: <20230809-florian-y2038-2-v1-0-d1cfe2f394a3@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
-    
-this is the final y2038 related patch series. With this series applied
-y2038 support will be enabled by default for all affected
-builds/architectures.
+When requesting y2038 support from recent glibc versions SO_RCVTIMEO and
+SO_SNDTIMEO will be auto-converted to the _NEW variants to make clear
+that we have to deal with a different (now y2038 safe) ABI.
 
-There is a kill switch (--disable-y2038) available in case unexpected
-problems come up after merge but that is not expected. The y2038 queue
-was regularly tested over the last two years now.
-    
-Short summary:
-  - Implement y2038 safe ioctls around SO_RCVTIMEO and SO_SNDTIMEO
-  - Enable additional function wrapping
-  - Fix some smokey tests (reading of reference clocks)
-
-Fingers crossed, seems the y2038 issue is solved now.
-
-Best regards,
-Florian
+Implementing SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW where necessary.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Florian Bezdeka (7):
-      y2038: kernel/drivers: Implement SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
-      y2038: lib/cobalt: Switch vdso to gettime64
-      y2038: testsuite/clocktest: Fix reading of reference clock
-      y2038: build: Introduce new build parameter --disable-y2038
-      y2038: lib/cobalt: Add additional time64_t related function wrappers
-      y2038: Route explicitly requested stdlib calls to time64 equivalents
-      y2038: lib/cobalt/select: Fix __RT(select()) routing
+ kernel/drivers/ipc/bufp.c               | 34 +++++++++++++++++++++++++++++++++
+ kernel/drivers/ipc/iddp.c               | 34 +++++++++++++++++++++++++++++++++
+ kernel/drivers/ipc/internal.h           | 27 ++++++++++++++++++++++++++
+ kernel/drivers/ipc/rtipc.c              | 29 ++++++++++++++++++++++++++++
+ kernel/drivers/ipc/xddp.c               | 18 +++++++++++++++++
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 31 ++++++++++++++++++++++++++++++
+ 6 files changed, 173 insertions(+)
 
- configure.ac                                     |  63 ++++++-
- include/cobalt/mqueue.h                          |  11 ++
- include/cobalt/pthread.h                         |  10 ++
- include/cobalt/semaphore.h                       |   4 +
- include/cobalt/signal.h                          |   5 +
- include/cobalt/sys/ioctl.h                       |   3 +
- include/cobalt/sys/select.h                      |   8 +
- include/cobalt/sys/socket.h                      |  15 ++
- include/cobalt/sys/time.h                        |   4 +
- include/cobalt/sys/timerfd.h                     |   9 +
- include/cobalt/time.h                            |  35 ++++
- include/cobalt/wrappers.h                        |  10 ++
- kernel/drivers/ipc/bufp.c                        |  34 ++++
- kernel/drivers/ipc/iddp.c                        |  34 ++++
- kernel/drivers/ipc/internal.h                    |  27 +++
- kernel/drivers/ipc/rtipc.c                       |  29 ++++
- kernel/drivers/ipc/xddp.c                        |  18 ++
- kernel/drivers/net/stack/ipv4/tcp/tcp.c          |  31 ++++
- lib/cobalt/Makefile.am                           |   7 +
- lib/cobalt/arch/arm/include/asm/xenomai/time.h   |   5 +
- lib/cobalt/arch/arm64/include/asm/xenomai/time.h |   5 +
- lib/cobalt/arch/x86/include/asm/xenomai/time.h   |   5 +
- lib/cobalt/cobalt-glibc-time64.wrappers          |  23 +++
- lib/cobalt/select.c                              |  15 ++
- lib/cobalt/wrappers-time64.c                     | 203 +++++++++++++++++++++++
- scripts/xeno-config-cobalt.in                    |   5 +
- testsuite/clocktest/clocktest.c                  |  11 +-
- testsuite/smokey/y2038/syscall-tests.c           |  46 +++++
- 28 files changed, 669 insertions(+), 6 deletions(-)
----
-base-commit: b6c84c13785ebb2c5493bdfe8fad50974eda442e
-change-id: 20230809-florian-y2038-2-23303aa750cf
+diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
+index 565409dd6..f1936d846 100644
+--- a/kernel/drivers/ipc/bufp.c
++++ b/kernel/drivers/ipc/bufp.c
+@@ -824,6 +824,7 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_setsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -844,6 +845,14 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->rx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+@@ -851,6 +860,14 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 			sk->tx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->tx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -913,6 +930,7 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_getsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -936,6 +954,14 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->rx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+@@ -943,6 +969,14 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->tx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
+index 05d019339..e4893a378 100644
+--- a/kernel/drivers/ipc/iddp.c
++++ b/kernel/drivers/ipc/iddp.c
+@@ -704,6 +704,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_setsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -724,6 +725,14 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->rx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+@@ -731,6 +740,14 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 			sk->tx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++			sk->tx_timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -793,6 +810,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_getsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -817,6 +835,14 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->rx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+@@ -824,6 +850,14 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_SNDTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->tx_timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/ipc/internal.h b/kernel/drivers/ipc/internal.h
+index 919a5d978..f29ba2204 100644
+--- a/kernel/drivers/ipc/internal.h
++++ b/kernel/drivers/ipc/internal.h
+@@ -76,6 +76,17 @@ static inline nanosecs_rel_t rtipc_timeval_to_ns(const struct __kernel_old_timev
+ 	return ns;
+ }
+ 
++static inline nanosecs_rel_t
++rtipc_sock_timeval_to_ns(const struct __kernel_sock_timeval *tv)
++{
++	nanosecs_rel_t ns = tv->tv_usec * 1000;
++
++	if (tv->tv_sec)
++		ns += (nanosecs_rel_t)tv->tv_sec * 1000000000UL;
++
++	return ns;
++}
++
+ static inline void rtipc_ns_to_timeval(struct __kernel_old_timeval *tv, nanosecs_rel_t ns)
+ {
+ 	unsigned long nsecs;
+@@ -84,6 +95,15 @@ static inline void rtipc_ns_to_timeval(struct __kernel_old_timeval *tv, nanosecs
+ 	tv->tv_usec = nsecs / 1000;
+ }
+ 
++static inline void rtipc_ns_to_sock_timeval(struct __kernel_sock_timeval *tv,
++					    nanosecs_rel_t ns)
++{
++	unsigned long nsecs;
++
++	tv->tv_sec = xnclock_divrem_billion(ns, &nsecs);
++	tv->tv_usec = nsecs / 1000;
++}
++
+ int rtipc_get_sockaddr(struct rtdm_fd *fd,
+ 		       struct sockaddr_ipc **saddrp,
+ 		       const void *arg);
+@@ -105,9 +125,16 @@ int rtipc_get_sockoptin(struct rtdm_fd *fd,
+ int rtipc_get_timeval(struct rtdm_fd *fd, struct __kernel_old_timeval *tv,
+ 		      const void *arg, size_t arglen);
+ 
++int rtipc_get_sock_timeval(struct rtdm_fd *fd, struct __kernel_sock_timeval *tv,
++			   const void *arg, size_t arglen);
++
+ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 		      const struct __kernel_old_timeval *tv, size_t arglen);
+ 
++int rtipc_put_sock_timeval(struct rtdm_fd *fd, void *arg,
++			   const struct __kernel_sock_timeval *tv,
++			   size_t arglen);
++
+ int rtipc_get_length(struct rtdm_fd *fd, size_t *lenp,
+ 		     const void *arg, size_t arglen);
+ 
+diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
+index 211b496ec..66176adad 100644
+--- a/kernel/drivers/ipc/rtipc.c
++++ b/kernel/drivers/ipc/rtipc.c
+@@ -290,6 +290,20 @@ int rtipc_get_timeval(struct rtdm_fd *fd, struct __kernel_old_timeval *tv,
+ 	return rtdm_safe_copy_from_user(fd, tv, arg, sizeof(*tv));
+ }
+ 
++int rtipc_get_sock_timeval(struct rtdm_fd *fd, struct __kernel_sock_timeval *tv,
++			   const void *arg, size_t arglen)
++{
++	if (arglen != sizeof(*tv))
++		return -EINVAL;
++
++	if (!rtdm_fd_is_user(fd)) {
++		*tv = *(struct __kernel_sock_timeval *)arg;
++		return 0;
++	}
++
++	return rtdm_safe_copy_from_user(fd, tv, arg, sizeof(*tv));
++}
++
+ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 		      const struct __kernel_old_timeval *tv, size_t arglen)
+ {
+@@ -312,6 +326,21 @@ int rtipc_put_timeval(struct rtdm_fd *fd, void *arg,
+ 	return rtdm_safe_copy_to_user(fd, arg, tv, sizeof(*tv));
+ }
+ 
++int rtipc_put_sock_timeval(struct rtdm_fd *fd, void *arg,
++			   const struct __kernel_sock_timeval *tv,
++			   size_t arglen)
++{
++	if (arglen != sizeof(*tv))
++		return -EINVAL;
++
++	if (!rtdm_fd_is_user(fd)) {
++		*(struct __kernel_sock_timeval *)arg = *tv;
++		return 0;
++	}
++
++	return rtdm_safe_copy_to_user(fd, arg, tv, sizeof(*tv));
++}
++
+ int rtipc_get_length(struct rtdm_fd *fd, size_t *lenp,
+ 		     const void *arg, size_t arglen)
+ {
+diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
+index 2ca0da5fd..8f1b2ece7 100644
+--- a/kernel/drivers/ipc/xddp.c
++++ b/kernel/drivers/ipc/xddp.c
+@@ -859,6 +859,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ {
+ 	int (*monitor)(struct rtdm_fd *fd, int event, long arg);
+ 	struct _rtdm_setsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -879,6 +880,14 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 			sk->timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			ret = rtipc_get_sock_timeval(fd, &stv, sopt.optval,
++						     sopt.optlen);
++			if (ret)
++				return ret;
++
++			sk->timeout = rtipc_sock_timeval_to_ns(&stv);
++			break;
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+@@ -965,6 +974,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
+ 			     void *arg)
+ {
+ 	struct _rtdm_getsockopt_args sopt;
++	struct __kernel_sock_timeval stv;
+ 	struct rtipc_port_label plabel;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t s;
+@@ -988,6 +998,14 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
+ 				return ret;
+ 			break;
+ 
++		case SO_RCVTIMEO_NEW:
++			rtipc_ns_to_sock_timeval(&stv, sk->timeout);
++			ret = rtipc_put_sock_timeval(fd, sopt.optval, &stv,
++						     len);
++			if (ret)
++				return ret;
++			break;
++
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index 71628ba03..5bd114530 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -1743,6 +1743,7 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 			     socklen_t optlen)
+ {
+ 	/* uint64_t val; */
++	struct __kernel_sock_timeval stv;
+ 	struct __kernel_old_timeval tv;
+ 	rtdm_lockctx_t context;
+ 
+@@ -1793,6 +1794,36 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 
+ 		return 0;
+ 
++	case SO_SNDTIMEO_NEW:
++		if (optlen < sizeof(stv))
++			return -EINVAL;
++		if (rtdm_copy_from_user(fd, &stv, optval, sizeof(stv)))
++			return -EFAULT;
++		if (stv.tv_usec < 0 || stv.tv_usec >= 1000000)
++			return -EDOM;
++
++		rtdm_lock_get_irqsave(&ts->socket_lock, context);
++
++		if (stv.tv_sec < 0) {
++			ts->sk_sndtimeo = RTDM_TIMEOUT_NONE;
++			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++			return 0;
++		}
++
++		ts->sk_sndtimeo = RTDM_TIMEOUT_INFINITE;
++		if (stv.tv_sec == 0 && stv.tv_usec == 0) {
++			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++			return 0;
++		}
++
++		if (stv.tv_sec < (MAX_SCHEDULE_TIMEOUT / 1000000000ull - 1))
++			ts->sk_sndtimeo =
++				(stv.tv_sec * 1000000 + stv.tv_usec) * 1000;
++
++		rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++
++		return 0;
++
+ 	case SO_REUSEADDR:
+ 		/* to implement */
+ 		return -EOPNOTSUPP;
 
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
