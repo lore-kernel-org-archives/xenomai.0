@@ -1,229 +1,103 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75FF2186C
-	for <xenomai@lists.linux.dev>; Thu, 10 Aug 2023 08:53:27 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 401032000C;
-	Thu, 10 Aug 2023 08:53:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1691657598;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ewLWJ2RW8dN9lrizpoQ3yQgDBiCTF4APIjwbjpgtduM=;
-	b=nYGJQSkSL3CX3KrQVINRE+/XPrjVWMDVSXt+lkkphFZDZu7bzTgxoJgaLDlVKEXNptjyRK
-	KzegsYSWOZBf5+EligOE/AaEdGfDOPGmuddGmXTuZvH07qg30XpIeepuD7ZFvt74jGqeQw
-	ARjncuSeNcWbLs8SlKrBhatQMHvX3iJOALxMrwkzyP8TApGpjIDaWGQCElXRrWZ2ZoSFgG
-	S/H9H8S5v5RzWASqtQdoniNdXONjoXCYsIX23TVYKacdrY+8NkgJ16hojnVhzG9cn0DD6G
-	NOrjYbf61rCv8/4NjF0rHwRXpzF9rfKO6E3D40sFnKU6LibFtFXQchZrE/z4Zw==
-References: <a4c1ed74-2ae9-9427-994b-54dd7773399e@bela.io>
- <87pmgnnkyb.fsf@xenomai.org> <87h71zncwl.fsf@xenomai.org>
- <87h71xblu1.fsf@xenomai.org>
- <a2b3c058-6166-41fb-9e34-6f414faf814d@siemens.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@lists.linux.dev, sang yo <stlfatboy@hotmail.com>
-Subject: Re: Issues with evl_mutex_trylock()
-Date: Thu, 10 Aug 2023 10:18:25 +0200
-In-reply-to: <a2b3c058-6166-41fb-9e34-6f414faf814d@siemens.com>
-Message-ID: <87bkffqnwi.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BDC6539F
+	for <xenomai@lists.linux.dev>; Fri, 11 Aug 2023 07:37:58 +0000 (UTC)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023081107374963aa24845348dc3044
+        for <xenomai@lists.linux.dev>;
+        Fri, 11 Aug 2023 09:37:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=J2sqFq9w6cVf9RjnE5NCZgcXdRcRy+0q7FVIYdjHunw=;
+ b=TxCbKazJrXyBvWgQAwjKrVMdvyPnL8HhrDRm2yh72/Yf1fuDkyW5klVOQANj9r07V5U6CT
+ imYI8MGwPA10vv4Y2YruxhYnns5SBNzB5hVYdnaxxXDJOdH6YyNiUNNCG5n7pVb1xBL66wdm
+ rjH1qxxDrk79+Kd5n7vwrEH06iStg=;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 0/7] y2038: Finalize and enable y2038 support
+Date: Fri, 11 Aug 2023 09:37:35 +0200
+Message-Id: <20230809-florian-y2038-2-v1-0-d1cfe2f394a3@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAD/l1WQC/x2NQQrCQAwAv1JyNhCziNWviId0zdrAspUsFqX07
+ waPMzDMBl3dtMN12MB1tW5LCzgeBsiztKeiPYKBiRONdMFSFzdp+GVKIzJySpREzifKBaKapCt
+ OLi3P0bV3rSFfrsU+/83tvu8/f0Vfd3YAAAA=
+To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+Hi all,
+    
+this is the final y2038 related patch series. With this series applied
+y2038 support will be enabled by default for all affected
+builds/architectures.
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+There is a kill switch (--disable-y2038) available in case unexpected
+problems come up after merge but that is not expected. The y2038 queue
+was regularly tested over the last two years now.
+    
+Short summary:
+  - Implement y2038 safe ioctls around SO_RCVTIMEO and SO_SNDTIMEO
+  - Enable additional function wrapping
+  - Fix some smokey tests (reading of reference clocks)
 
-> On 27.08.22 19:53, Philippe Gerum wrote:
->> 
->> Philippe Gerum <rpm@xenomai.org> writes:
->> 
->>> Philippe Gerum <rpm@xenomai.org> writes:
->>>
->>>> Giulio Moro <giulio@bela.io> writes:
->>>>
->>>>> In the toy example below I start some pthreads with SCHED_FIFO, priority 94 and setting the affinity of one thread per core. I then attach them to the EVL core and share a lock between them and the main thread. The main thread has a settable priority and schedule (SCHED_OTHER with prio 0 or SCHED_FIFO with higher priority) and its affinity is set to all available cores.
->>>>>
->>>>> Here's a summary of what I get when running the test with some
->>>>> parameters (arguments are: "max iterations", "number of threads to
->>>>> create", "priority of the main thread", "flags (t means don't print
->>>>> anything). The error code reported alongside failures is the base 2
->>>>> representation of the return code. 100 means that errors were
->>>>> detected in evl_unlock_mutex() in the main thread following a
->>>>> successful call to evl_trylock_mutex(). During these tests, the
->>>>> output is piped to cat and then redirected to /dev/null.
->>>>>
->>>>> mutex-test 100000 0 0 t :  Success real 0m13.583s user 0m1.218s sys 0m0.000s
->>>>> mutex-test 100000 0 90 t :  Success real 0m13.350s user 0m1.177s sys 0m0.000s
->>>>> mutex-test 100000 0 99 t :  Success real 0m13.347s user 0m1.179s sys 0m0.000s
->>>>> mutex-test 100000 1 0 t :  Success real 0m20.087s user 0m3.575s sys 0m0.000s
->>>>> mutex-test 100000 1 90 t :  Success real 0m17.610s user 0m2.133s sys 0m0.000s
->>>>> mutex-test 100000 1 99 t :  Success real 0m15.466s user 0m1.333s sys 0m0.000s
->>>>> mutex-test 100000 2 0 t :  Failed 100 real 0m0.259s user 0m0.083s sys 0m0.000s
->>>>> mutex-test 100000 2 90 t :  Failed 100 real 0m0.374s user 0m0.176s sys 0m0.000s
->>>>> mutex-test 100000 2 99 t :  Failed 100 real 0m0.207s user 0m0.109s sys 0m0.000s
->>>>> mutex-test 100000 3 0 t :  Failed 100 real 0m0.253s user 0m0.124s sys 0m0.000s
->>>>> mutex-test 100000 3 90 t :  Failed 100 real 0m0.383s user 0m0.149s sys 0m0.000s
->>>>> mutex-test 100000 3 99 t :  Failed 100 real 0m0.283s user 0m0.151s sys 0m0.000s
->>>>> mutex-test 100000 4 0 t :  Failed 100 real 0m0.526s user 0m0.221s sys 0m0.000s
->>>>> mutex-test 100000 4 90 t :  Failed 100 real 0m0.438s user 0m0.178s sys 0m0.000s
->>>>> mutex-test 100000 4 99 t :  Failed 100 real 0m0.434s user 0m0.178s sys 0m0.000s
->>>>>
->>>>> So, when running with 2 or more threads, the same error keeps surfacing very quickly.
->>>>>
->>>>
->>>> Confirmed. There is something wrong.
->>>>
->>>
->>> Please retry with this patch in. There is clearly a race in the current
->>> implementation of the mutex release code, specifically the release path.
->>>
->>> @Jan: If believe this gremlin may be in Cobalt too. The key issue is
->>> with the handle transitioning to NO_HANDLE before transfer_ownership()
->>> switches it to the handle of the first contender in line. If userland
->>> manages to slip in with a fast_acquire() during this tiny window, we may
->>> be toast, with two threads actually holding the same lock. The issue was
->>> made more obvious with EVL which does not serialize the trylock code
->>> around cmpxchg in kernel space, triggering the issue faster. I'll have a
->>> second look to Cobalt, but since you know the mutex code in depth there,
->>> four eyeballs would be better.
->>>
->> 
->> I believe that the problem just fixed in the EVL core also affects
->> Cobalt. This is a suggested patch for fixing the same issue in the
->> latter on top of 3.2.2. Smokey's posix_mutex test still happy with it.
->> 
->> NOTE: the issue at hand is two threads being granted the _same_ lock
->> concurrently, so this might be potentially catastrophic.
->> 
->> ---
->> 
->> commit 4417674f427a78ba7fe2c8e5b2607d5ca6886ec0 (HEAD -> master)
->> Author: Philippe Gerum <rpm@xenomai.org>
->> Date:   Sat Aug 27 19:44:30 2022 +0200
->> 
->>     cobalt/sync: fix race in release path
->>     
->>     The mutex owner handle transitions to XN_NO_HANDLE before
->>     transfer_ownership() may switch it to the handle of the first
->>     contender in line. If a user context manage to slip in with a
->>     succcessful cmpxchg() in this tiny window, two threads may actually
->>     end up holding the same lock.
->>     
->>     To address this bug, set the handle directly to its final value as a
->>     result of transferring ownership, without transitioning via
->>     XN_NO_HANDLE, closing the race window.
->>     
->>     At this chance, stop duplicating the logic which transfer_ownership()
->>     already provides.  We may unconditionally rely on this routine for
->>     either passing the lock to the next waiter in line, or marking the
->>     lock as free, updating the fast handle accordingly in both cases.
->>     
->>     Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> 
->> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
->> index 6e50e537f..c5398dba3 100644
->> --- a/kernel/cobalt/synch.c
->> +++ b/kernel/cobalt/synch.c
->> @@ -850,6 +850,17 @@ static bool transfer_ownership(struct xnsynch *synch,
->>  	xnhandle_t nextownerh;
->>  	atomic_t *lockp;
->>  
->> +	/*
->> +	 * FLCEIL may only be raised by the owner, or when the owner
->> +	 * is blocked waiting for the synch (ownership transfer). In
->> +	 * addition, only the current owner of a synch may release it,
->> +	 * therefore we can't race while testing FLCEIL locklessly.
->> +	 * All updates to FLCLAIM are covered by the superlock.
->> +	 *
->> +	 * Therefore, clearing the fastlock racelessly in this routine
->> +	 * without leaking FLCEIL/FLCLAIM updates can be achieved by
->> +	 * holding the superlock.
->> +	 */
->>  	lockp = xnsynch_fastlock(synch);
->>  
->>  	/*
->> @@ -862,6 +873,8 @@ static bool transfer_ownership(struct xnsynch *synch,
->>  		return false;
->>  	}
->>  
->> +	XENO_WARN_ON(COBALT, !xnsynch_fast_is_claimed(atomic_read(lockp)));
->> +
->>  	nextowner = list_first_entry(&synch->pendq, struct xnthread, plink);
->>  	list_del(&nextowner->plink);
->>  	nextowner->wchan = NULL;
->> @@ -916,8 +929,6 @@ static bool transfer_ownership(struct xnsynch *synch,
->>  bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
->>  {
->>  	bool need_resched = false;
->> -	xnhandle_t currh, h;
->> -	atomic_t *lockp;
->>  	spl_t s;
->>  
->>  	XENO_BUG_ON(COBALT, (synch->status & XNSYNCH_OWNER) == 0);
->> @@ -927,19 +938,6 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
->>  	if (xnthread_put_resource(curr))
->>  		return false;
->>  
->> -	lockp = xnsynch_fastlock(synch);
->> -	currh = curr->handle;
->> -	/*
->> -	 * FLCEIL may only be raised by the owner, or when the owner
->> -	 * is blocked waiting for the synch (ownership transfer). In
->> -	 * addition, only the current owner of a synch may release it,
->> -	 * therefore we can't race while testing FLCEIL locklessly.
->> -	 * All updates to FLCLAIM are covered by the superlock.
->> -	 *
->> -	 * Therefore, clearing the fastlock racelessly in this routine
->> -	 * without leaking FLCEIL/FLCLAIM updates can be achieved by
->> -	 * holding the superlock.
->> -	 */
->>  	xnlock_get_irqsave(&nklock, s);
->>  
->>  	if (synch->status & XNSYNCH_CEILING) {
->> @@ -947,12 +945,7 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
->>  		need_resched = true;
->>  	}
->>  
->> -	h = atomic_cmpxchg(lockp, currh, XN_NO_HANDLE);
->> -	if ((h & ~XNSYNCH_FLCEIL) != currh)
->> -		/* FLCLAIM set, synch is contended. */
->> -		need_resched = transfer_ownership(synch, curr);
->> -	else if (h != currh)	/* FLCEIL set, FLCLAIM clear. */
->> -		atomic_set(lockp, XN_NO_HANDLE);
->> +	need_resched |= transfer_ownership(synch, curr);
->>  
->>  	xnlock_put_irqrestore(&nklock, s);
->>  
->
-> This apparently fell through the cracks on my side, not being submitted
-> as top-level patch, thanks for pointing out, Sang Yo.
->
-> Philippe, this is still valid?
+Fingers crossed, seems the y2038 issue is solved now.
 
-From reading xnsynch_release() in Cobalt and the explanations in that
-commit log, it is. Since you were a direct recipient of this patch, I
-assumed you queued it for a deep review given its criticality, so I
-moved on, sorry for this.
+Best regards,
+Florian
 
-> How can we check if we need it and it
-> does the think it is supposed to do?
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+Florian Bezdeka (7):
+      y2038: kernel/drivers: Implement SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
+      y2038: lib/cobalt: Switch vdso to gettime64
+      y2038: testsuite/clocktest: Fix reading of reference clock
+      y2038: build: Introduce new build parameter --disable-y2038
+      y2038: lib/cobalt: Add additional time64_t related function wrappers
+      y2038: Route explicitly requested stdlib calls to time64 equivalents
+      y2038: lib/cobalt/select: Fix __RT(select()) routing
 
-Unfortunately I have no xenomai3 test at hand, this bug was originally
-uncovered in xenomai4 which initially imported the xenomai3 mutex logic
-into the EVL core before I reworked it heavily last year, starting with
-fixing this bug. Maybe the test case [1] Giulio posted back then could
-also trigger the issue with xenomai3 which still runs the original
-mutex implementation.
+ configure.ac                                     |  63 ++++++-
+ include/cobalt/mqueue.h                          |  11 ++
+ include/cobalt/pthread.h                         |  10 ++
+ include/cobalt/semaphore.h                       |   4 +
+ include/cobalt/signal.h                          |   5 +
+ include/cobalt/sys/ioctl.h                       |   3 +
+ include/cobalt/sys/select.h                      |   8 +
+ include/cobalt/sys/socket.h                      |  15 ++
+ include/cobalt/sys/time.h                        |   4 +
+ include/cobalt/sys/timerfd.h                     |   9 +
+ include/cobalt/time.h                            |  35 ++++
+ include/cobalt/wrappers.h                        |  10 ++
+ kernel/drivers/ipc/bufp.c                        |  34 ++++
+ kernel/drivers/ipc/iddp.c                        |  34 ++++
+ kernel/drivers/ipc/internal.h                    |  27 +++
+ kernel/drivers/ipc/rtipc.c                       |  29 ++++
+ kernel/drivers/ipc/xddp.c                        |  18 ++
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c          |  31 ++++
+ lib/cobalt/Makefile.am                           |   7 +
+ lib/cobalt/arch/arm/include/asm/xenomai/time.h   |   5 +
+ lib/cobalt/arch/arm64/include/asm/xenomai/time.h |   5 +
+ lib/cobalt/arch/x86/include/asm/xenomai/time.h   |   5 +
+ lib/cobalt/cobalt-glibc-time64.wrappers          |  23 +++
+ lib/cobalt/select.c                              |  15 ++
+ lib/cobalt/wrappers-time64.c                     | 203 +++++++++++++++++++++++
+ scripts/xeno-config-cobalt.in                    |   5 +
+ testsuite/clocktest/clocktest.c                  |  11 +-
+ testsuite/smokey/y2038/syscall-tests.c           |  46 +++++
+ 28 files changed, 669 insertions(+), 6 deletions(-)
+---
+base-commit: b6c84c13785ebb2c5493bdfe8fad50974eda442e
+change-id: 20230809-florian-y2038-2-23303aa750cf
 
-[1]
-https://lore.kernel.org/xenomai/a4c1ed74-2ae9-9427-994b-54dd7773399e@bela.io/
-
+Best regards,
 -- 
-Philippe.
+Florian Bezdeka <florian.bezdeka@siemens.com>
+
