@@ -1,40 +1,40 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2096.outbound.protection.outlook.com [40.107.241.96])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2136.outbound.protection.outlook.com [40.107.241.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB7ED2EE
-	for <xenomai@lists.linux.dev>; Wed, 16 Aug 2023 10:19:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE142D2EE
+	for <xenomai@lists.linux.dev>; Wed, 16 Aug 2023 10:19:55 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FVasPkiu5jirzwkDSI8JhMSaL+mW5eZL9vUfCK/iu6ejhvMUkLUPYiJiXLAaxZ2xpp2x4wt1iv/rHYzu0QLGewZoLYZw7d0vl4N8Z/Ms6FqvVIBLX2SnGeq8OpEeCpASkS3WoZnmsserfXT9T/ygBzZcUtqYsRP879BkHUQ5wUgFqEMQ/7mLjtoSrEyObQxUZb1LFhBVLLNGcFoqZht06vXnZt4uSuyFVY0cA2e9xsjtWvsQm+d2AOE/4SZkjD37XlLh+ASA/pb21AdnyyD8AtZ6A3zXPQR6JrWNzpsNdADcYt/NwreJ64G5XPCsujhc98cAGH5ZxhyslzzNO4UFeQ==
+ b=F+36BIdi9/Tf6ytQ0WHkP7n3b5f/ASH4AsGt2jGz/7Pah4bDCEVP/XPuzfgYeSYOyaciqZp5hpo0/A+Tgj9Xw8jN1VtChLl7KkQQ0PgNb1T9nrFOpbs3gcJS5jMspiGrt39fjhjqIXwfEDRvBWSm1UcmJZLN9mhkWZ6yPLapfYtPh6Ve6htwYiC7TZkgnp0JcU5FUpzVQNcbePvyEv12/1eU0osIUOrJ8Gwv4gRLfXuBWlCodEx7vw9ZNrQ+vRtCfMD9MnLDcVFS9zv4SNTxeOCRH8Wsks05e/vXgekIxOfvJu5Oj7SOuZ918ql87v7A1xJNSfc9WDRIv4ww1gvAuQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sR9tymniCFNddqwyCjBQW06TgTjCJNOW5IFeP8zd4pM=;
- b=HWHOd6giUO5JtKOp/yXvZ6ct2nAqP4QGdmzgolYh2rTQnoDm7tWzsciASsJTk35Q4S0XO4ASVpQFmjc/NEG4UUacdqJgh4XVrrfOPbzq+QWJlGsMeui0B2RExmRZC0wtVQFFxcQhqLbhmIxUVi0WfNfQMnWweVmS7MODfoV4unZJuGyNyIi883abEieVJvhh4zfhAQnm8AU8zITbDpZ3embArSNqcT0TaL7/qJ6JOGmIw10kapztIGIbWf3/DzwRbAQN/+3tNzYZabebQPVjK7jtcv0KSsfqvyM+VJw7vN/etX5IX2ymDTnBxB9KKQ239ExFdMMubS09Fk9pMtHs6Q==
+ bh=7KO63ad2K7o4c/TYWg9JGrdSgDCWzkx3YZzDaHITX84=;
+ b=XzGQoupDjqFr7xKPVxnt0fhGYBuOEM4cXYkPeRCOF3+Yy1eWg4S8B9/NedKEseFKpgAMi+5Afotua07rhxScs2z4iTNgriqpBtzvkz1Ku9C94X+qOwyPgPdvHyr049XVFOE+//38GvTb2PFs6BWQf4WbIpkoKDZK2NqwBgAziYKZLuzsCeUmq85SDeW3I92vJrKJtfl1xktrIpcU7nlSpdnfo9H4MsAGlqL9Ryk2fWyRFgNRAVbMC1eTKs73ZNh7HkOe2RQE/yAxBRrO05y1/8AXnrz5vwtIC72ENwEHbuBOET1hCEB/xmKtbBslAEUDyO7/rh+A2Q6E1QJwlwCVIg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sR9tymniCFNddqwyCjBQW06TgTjCJNOW5IFeP8zd4pM=;
- b=ZFOCeHEY8b1aOZsZhSavBs+xBm6rabgFBBuCVlGStvAaRlPffF4XIZ1f4RzikHC/iAMoIjuxpGaF3ncTQHliDHpxc0Th8NLTq+aGzpyk9Tpo2V3IpLU44OwmYPlbQf7F9ilyeSxuuNTTx9rBU1xRlPtmfJMQeOeQEzzORcRxJmM=
+ bh=7KO63ad2K7o4c/TYWg9JGrdSgDCWzkx3YZzDaHITX84=;
+ b=i5fDbrx38A5EaWAFW0hJbKIGcyBOpICCFtcgLUliCRznXYaCOraANW7ra0g+okmf6gE6nMma7+Rl/P1LnGNGDdKgDZYy2khZ+7htZHnsqNzZqT+Rdbwh3RPPl2Grbha3umIZqkiOUpxuYWcszn9Sj7Z6EO+kkFKX3EGlaKQXMEg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
  by AM7PR08MB5496.eurprd08.prod.outlook.com (2603:10a6:20b:de::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.29; Wed, 16 Aug
- 2023 10:19:45 +0000
+ 2023 10:19:53 +0000
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::9286:1a5a:446d:7470]) by VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::9286:1a5a:446d:7470%7]) with mapi id 15.20.6678.022; Wed, 16 Aug 2023
- 10:19:45 +0000
+ 10:19:53 +0000
 From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 To: xenomai@lists.linux.dev
 Cc: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Subject: [PATCH 2/3] [POC] Add rt_signal test
-Date: Wed, 16 Aug 2023 12:18:41 +0200
-Message-Id: <20230816101842.3377643-2-johannes.kirchmair@sigmatek.at>
+Subject: [PATCH 3/3] [POC] add a tool to measure rt_signal latency
+Date: Wed, 16 Aug 2023 12:18:42 +0200
+Message-Id: <20230816101842.3377643-3-johannes.kirchmair@sigmatek.at>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230816101842.3377643-1-johannes.kirchmair@sigmatek.at>
 References: <20230816101842.3377643-1-johannes.kirchmair@sigmatek.at>
@@ -51,101 +51,110 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VE1PR08MB4909:EE_|AM7PR08MB5496:EE_
-X-MS-Office365-Filtering-Correlation-Id: 983d7a35-70c7-407c-9f8c-08db9e42502f
+X-MS-Office365-Filtering-Correlation-Id: c14bd670-2421-43c8-f1e5-08db9e4254e5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	O0fU2mVA0HjPtQ0i+Hq952ydzkbjF+7BweD3vU5OfxgUd7/qCtU2zLsoQb6kB7GNhGldSSP/yi641rnpMCVd2lWIUFxEi0q0qd6V64B+XsT+ngmdEllLQwgLPMEfZ0q5cyGF+tILkK5efeQaKTpOx4nJMA5M9GonIGIZarRNSrgH2mdyUK2W5V2qP24tN6cto3SCWlr2Jio2Xsb0SoZdawAld0+ks6/r7xFtGa9KmP4MIqW5n8b/gZSiZzW77255VpNiuPoMrGtJY+sGr6ocFVUQP0LU2oVPzM5IeFafjzHf9wezoV4T2GpxL9ZMlulvrYGZN51Uf3Fl82aYRj6Km+C5Bswnn2fvy/kD1e1s8xRDuPsEFpyyE5HdPI27Ler7e2bBkVvmiknUcXUY2TC+I/THmHMDORDlQtsKCDvECJC2k6Ss1/dbNMLQZ9Gd/zSAjz/oZNL9K9E7sA03j2j4idyvBWJM7MvNdx5keACrOv/S9vmtuy4NJaXCihYYpHqjK9we0E9I7g8G+vGzv6HMTQz9ZLajBo4t4VmIf8pLYgfeKTNn67MA/IyX/QWE3UXBE6eeee6ty4c10/cbtXdFmxIDg8AplldXUTAGbWTHM4/PWsMLOpHhieZATgyU6p+3JscPBHKWEK0p6c1kJ3oFNg==
+	stOVjBALHtiGHz5ZPJw3VD1LBatUFIYIIWL+Hx7cgSm5S/UqsSBaFRgerMINDRBljvc5B8LH15knrNPq3N7R7/NFTaBk9Krb4xvTQMvqdi4A54Em6RvyWCILgKvrRo8oE3bY8g/V8JIxuqjN1YpkftbJ+NbyVoviQxkwCn9DEKo/ftVg5+eWFvKA+N4IRPELhrpmBgOwBiVJWVWmT8n2so4PPbO3bopJU8oj/LDRasZ5hfEgltiq52ogVdDDFO/fD6D6j5oAdLpyhDj/mfehxciLIxzNw8GXVXksiL4NX+T1PMqKJrr96vKgZA85soCpOsjg5BcsKB4Q5vyunIAyuWyHG1wYRkQ61JfQhINgPZFA57TzesHYgAt/NgwdOC7hoigrFmPzRqRtBMbC9edqzQAL0uoMS0MjtRIoYccnAEx6ioHySKw9Uges99rYid9jwxxUwWgTnCblG4kpnnnPxfMa/TxfvghFbNem1pxlAgpf7kcOo3g3gZBaLhly1wiMGQsMa5vhAWyDFvPGVSNynMkOhti6d0/ybzNc2xQZhB6jrhpPeqfPXxe+1FDeK4Np2TKpNnIL1DbaYb7FJgAVUAZilKtd1BUYLvy8MLwCBBoNFyQBm8YFl8W6B5bDIE2K
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(366004)(136003)(396003)(39840400004)(1800799009)(451199024)(186009)(2906002)(83380400001)(86362001)(478600001)(6506007)(36756003)(6486002)(2616005)(6666004)(1076003)(107886003)(52116002)(6512007)(26005)(5660300002)(44832011)(41300700001)(6916009)(316002)(66946007)(66556008)(66476007)(8676002)(8936002)(4326008)(38100700002)(38350700002)(21314003);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(366004)(136003)(396003)(39840400004)(1800799009)(451199024)(186009)(2906002)(83380400001)(86362001)(478600001)(6506007)(36756003)(6486002)(2616005)(6666004)(1076003)(107886003)(52116002)(6512007)(26005)(5660300002)(44832011)(41300700001)(6916009)(316002)(66946007)(66556008)(66476007)(8676002)(8936002)(4326008)(38100700002)(38350700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?KkkpK/HJtkHltPQFlY/ioXaOp9VLtPgonmTwbZjq5rUFEfSg25hwYTVejfah?=
- =?us-ascii?Q?Rulk1TO2EaLy6sq6DGg2Zhyd22t41tBJN4+FHZRtqCko9sMXAjfQ3Q4YIN01?=
- =?us-ascii?Q?nI1/NrKgXYzvlV+L+bcqV6UDr5ogNdlmHQjU24WHLzYj6LjV7Dx0iF8P1HPP?=
- =?us-ascii?Q?GBZ9L127nkZCKgif/9zkvkSi7B5AVs2wmkLwFKAejMxeo/dA5nAJ5UGP3I+d?=
- =?us-ascii?Q?4E4Swr4oR0yHw/pv4gUcv/8wqG6i4VpMwrnSHN4U5Tejap7IxPpTBQJ5VTHW?=
- =?us-ascii?Q?ui7ZwOIhVO4gl5wdNudScubYL1pEa6pNZjzQ8VmxUoB1I8/n1M8lRy6EfzeO?=
- =?us-ascii?Q?f0Txmu+c6TjDz2h0Z4fxT5aHNMZTTfoHUjk68EETWJA4K1F0oPVsl4MTjDVf?=
- =?us-ascii?Q?xYWW8Jgpum59zZJiRW4v366gCvJCbM3+ReX2njQdQxvMsoss7QWjq20NbbvV?=
- =?us-ascii?Q?2P7mPTN/lEi1xjsBi24XDfwB0xNeIAf+zD1QaRjPEr7MwnB2AU7BMF6X+35t?=
- =?us-ascii?Q?MYvm/ZtHfkW1s8GezZ7a/7amxvnQcF6rVC5FnoabTldnuzNvoS1cc0CNkoEe?=
- =?us-ascii?Q?lPRKj1TMhghaKI7OvVwGOwe1Zy7wIQ9JgV/LDcHb1tzLKKXwnUv9mrKRHx0g?=
- =?us-ascii?Q?StWwyrXOJT2hzKvUpV7l2SD5I4yvVT7H1HSi9Tw/4JEBHtofn3PqfPam1mpB?=
- =?us-ascii?Q?tVCChgRKeiHlMZRIojSD27w+eCWINwUxmXt5nbgvw2Wns5oTPp0da8PffgAv?=
- =?us-ascii?Q?C0VKx6NoNofiEcxeCt9pBsROEoIOozL4f9rqcm/bGWyQty3t21qOVaqlYT7s?=
- =?us-ascii?Q?kYGr2WArVdHOrqg3bnu9x3showNw+a7J6XSM8JgkNddLZ34cB91SzxQkAavN?=
- =?us-ascii?Q?YceafZZB1z6tiRC3elvq0H03mKrC+BKOw0Wm9S8n5fbkAoBkdb0uQxmPJLC5?=
- =?us-ascii?Q?H3RTMHuNS9UVC2rQG589cM6EAZImt6N4+dqQrTeiykcU8PUaJQeji+xwn3Iw?=
- =?us-ascii?Q?RB9PvJe1p95Vd5FOvE9E7fvInlWT88LIdAZUFYy6Ly/amzOXk8XaUVwP00nv?=
- =?us-ascii?Q?UgfxQ700VaQtJxl5fuJCNuq5LSdivfdfdSNCsvK6Xowyr+NCdsfvmwKm60CV?=
- =?us-ascii?Q?2Dn7Exli94eA3HUx8p2AQMYkvDaV+khu41SRJRxcrlWWv9uvFly3oRuYhw+1?=
- =?us-ascii?Q?4ZxB3sWpUWn5fmuUs2d8//pUEZyz6nRJHPaFyO7QIJOwH0CQEPXRGqiin+Dy?=
- =?us-ascii?Q?cC8K6F09R8XONOEnshp8St23jBEivkjDDvohggIcfsYhMT5VnIjrNrPSPMb/?=
- =?us-ascii?Q?8xL22FuO46XZkso+jRXAHuTCTSs5BUGx+/wWkjt4lw5DZY+br9kau3W0xKcO?=
- =?us-ascii?Q?wpnAfdGclMf7FMnCkrw23DvMy6DQrFqlrykGiCH4Kku5XCu9luUjvkr6JxS/?=
- =?us-ascii?Q?adJpUBOpE8jliKFgai0Z3IILfD1hx6feaGO1DHLgQMcyA552Wk/GBbN17lbu?=
- =?us-ascii?Q?mDpoTC1JLkYPfXZpeAdanrTR9NnJ4/c3GEKblmDU535mLEDEC6MhWI9tMOmv?=
- =?us-ascii?Q?dv8pX77Y4XgWJFwTAmyYn0wHjNs/30WlICUoVKbB5VcixwnQORFki76xdNai?=
- =?us-ascii?Q?26PXLYJ/UlhvktJsMiTXmRY=3D?=
+	=?us-ascii?Q?GO84AF2LOut20PYLZZaXsrtnwo86bXT29MTg7mvqc9IDF/GcZWc2c0UKX46/?=
+ =?us-ascii?Q?uO6h5pczfH7JhLsLhvUTOlR+Ug5aCASfdLz9uZy3cishw7X9/Fpvyt9Klfgt?=
+ =?us-ascii?Q?n42GYsN4F/LdDjC51bQ66ZeghI8i2LW6DcMVZ+VK4Z7P7KwMTIbBJFNwwBO+?=
+ =?us-ascii?Q?hyd4Do0szLKyRl+oHtU9x7OqPV8H8bqzOBKYTvmfwYmuljBSoNW3QTofstXJ?=
+ =?us-ascii?Q?L1Pzs5ZpsMg6iwnCLAHkwJN6ad8xA9yFMqpDuYOUJbmaQeAl2/YMBHuzR/L4?=
+ =?us-ascii?Q?/rs1+K/oZ+mRF4u1pmWM0OzNN748UGe+cKbkg/ywUVfWHuIFSwaEpAPFoB+X?=
+ =?us-ascii?Q?Mh/2FjUl/7CoMe1kOcYqBy3skJWhFN+Hz9OX9VfdyOQsaTJdBeIcmFpeHhLJ?=
+ =?us-ascii?Q?Sa1t2uDip4PblrdaRCxaOpDBIn1h1LKHu87xqBho10u2T6+UvWXGaeQLYZuC?=
+ =?us-ascii?Q?tJVliRmfJcuWEakwLm4m0qJ0uxRFNAj3m6TgNuFKtQ9a0qBDnKxkgk5mMIr0?=
+ =?us-ascii?Q?LYGumpdj6jyzq5frJMJHsNP8RdPJKzqnUHpEfyVDai11itL7OkS3iFysLk4Y?=
+ =?us-ascii?Q?qokkQYPwXPsOlveZBH08vEERWbIR8JNM3qtvxbsKH7lkJ5++i8eVJsZQN58k?=
+ =?us-ascii?Q?PUuPSIwwR3+y5SZRs4NoeeVryFSyBFzzMVKjs39Sk4FuEG22cqz6S+bsw33L?=
+ =?us-ascii?Q?wsHII7qyTJSxwOq25mYtX8eByp+qiPtiAfQX/unj2/t+VCnM6shBpCH8Et0C?=
+ =?us-ascii?Q?HAGSRoJCZaQ1d748rXjMlUW2cyAhm+kkNHnPsqi9jRDZl7Stky8QISum7yDF?=
+ =?us-ascii?Q?askwcMTuROA2IRqHVOVbS6y4Nj767J0IGzW07Dud/dvTtNz23OL6GPVCzJ6h?=
+ =?us-ascii?Q?0i1SHYv6lqE+P6zk9GUGW5crG2wcJIx4EzIQ2W5MPKrDIHLq1mtB9FKWSMw2?=
+ =?us-ascii?Q?wzO7dJM2GXMI0R6ryz7bu9ICyLFjQj6FrCJ59a7m1kdA2nJKcyORxsiAvMvQ?=
+ =?us-ascii?Q?CQM39zzD2yizU7gQUWYe4TW5Q7SCh5O0XDdJ8tDACtUaEKAmDRXg9DvRYfSz?=
+ =?us-ascii?Q?/Fx6bJRN0lvDWswQoEc/M7uWWZScNl6qKymx4HXuCXfpDFNexPLbn459BAKM?=
+ =?us-ascii?Q?EuUL/u1DcnFM6JaNBst6YsZmMwmszwDBKhVbtVKGSEfal5/XXpw8V1eKKUi1?=
+ =?us-ascii?Q?WnrjPIUwDp7IdQTRrMBGKDPEd9MoCNO6rqn13ZiRTuOyiY3TYummT3fgZIUY?=
+ =?us-ascii?Q?uf88ZAZVcVu3t+e4kZLpRaGnGJCV4B9630hy4V0C6bDjJxzNgM4MEMl14uch?=
+ =?us-ascii?Q?sFsvberYpV3jdzEMSghRLwNXo/HD9WcPhebyXNm/HhaPXpKY41lEFVFhIZYE?=
+ =?us-ascii?Q?DaJMfXuLy3coBjO1Uq45aLkxasW66OR7HggjhvvoWa9DxktZCBpkToe4Pzh3?=
+ =?us-ascii?Q?ST+mTnAoZ/LPzG23wv4Qv0sGUhHNzMh6s3lqDQqCFarD7QRYaSTLwKfXpZDo?=
+ =?us-ascii?Q?ZtsLchyk2H1+5L7c6ddIcBDcEX0a/DZIUDmLaVR1+PCtVuO8cd8f9372pSQz?=
+ =?us-ascii?Q?PAGPtGuNTuWNJOJnMyiye+/Wz8cjHBJNJxuotrc+UPeJK5vnSsWGkO1m6SIY?=
+ =?us-ascii?Q?8yjh8qxO6QoMf3JWt4N7NXs=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: 983d7a35-70c7-407c-9f8c-08db9e42502f
+X-MS-Exchange-CrossTenant-Network-Message-Id: c14bd670-2421-43c8-f1e5-08db9e4254e5
 X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 10:19:45.4985
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 10:19:53.4297
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uSEX5SK8gcl9AeORtjxXKV65WQrK3L/46JTIUUDnJeMl+/68UwxbOWjtpqO7iHe2KTzxQz6SSmrqahlvEq+g9xiU2mPaqs5O2CX4QKM1c1c=
+X-MS-Exchange-CrossTenant-UserPrincipalName: TERs++E12TXV5LGOMgmT10c0T+Z2F8eK8IdbXm1gXWVQFgbXndPO8q7CD6qpZMZX0C8LjYJ37aXi9aD2Blq5je33jAsRgvmLImMPQa89Wk8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR08MB5496
 
-This commit adds simple rt signal test for SIGFPE, SIGILL and SIGSEGV.
+Signed-off-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 ---
- configure.ac                               |   1 +
- testsuite/Makefile.am                      |   1 +
- testsuite/rt-signal-tests/Makefile.am      |  31 +++
- testsuite/rt-signal-tests/rt_signal_test.c | 231 +++++++++++++++++++++
- 4 files changed, 264 insertions(+)
- create mode 100644 testsuite/rt-signal-tests/Makefile.am
- create mode 100644 testsuite/rt-signal-tests/rt_signal_test.c
+ configure.ac                          |   1 +
+ utils/Makefile.am                     |   2 +-
+ utils/rt_signal_hist/Makefile.am      |  22 ++++
+ utils/rt_signal_hist/error.h          |  14 +++
+ utils/rt_signal_hist/histo.c          |  46 ++++++++
+ utils/rt_signal_hist/histo.h          |  13 +++
+ utils/rt_signal_hist/result.c         |  16 +++
+ utils/rt_signal_hist/result.h         |  12 ++
+ utils/rt_signal_hist/rt_signal_hist.c | 158 ++++++++++++++++++++++++++
+ 9 files changed, 283 insertions(+), 1 deletion(-)
+ create mode 100644 utils/rt_signal_hist/Makefile.am
+ create mode 100644 utils/rt_signal_hist/error.h
+ create mode 100644 utils/rt_signal_hist/histo.c
+ create mode 100644 utils/rt_signal_hist/histo.h
+ create mode 100644 utils/rt_signal_hist/result.c
+ create mode 100644 utils/rt_signal_hist/result.h
+ create mode 100644 utils/rt_signal_hist/rt_signal_hist.c
 
 diff --git a/configure.ac b/configure.ac
-index 3ce34048e..3325482fc 100644
+index 3325482fc..fe4a3b3e0 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1007,6 +1007,7 @@ AC_CONFIG_FILES([ \
- 	testsuite/switchtest/Makefile \
- 	testsuite/gpiotest/Makefile \
- 	testsuite/gpiobench/Makefile \
-+	testsuite/rt-signal-tests/Makefile \
- 	testsuite/spitest/Makefile \
- 	testsuite/smokey/Makefile \
- 	testsuite/smokey/arith/Makefile \
-diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
-index 4932f6d33..59f36967a 100644
---- a/testsuite/Makefile.am
-+++ b/testsuite/Makefile.am
-@@ -5,6 +5,7 @@ if XENO_COBALT
- SUBDIRS += 		\
- 	clocktest	\
- 	gpiotest	\
-+	rt-signal-tests	\
- 	spitest		\
- 	switchtest	\
- 	xeno-test
-diff --git a/testsuite/rt-signal-tests/Makefile.am b/testsuite/rt-signal-tests/Makefile.am
+@@ -1054,6 +1054,7 @@ AC_CONFIG_FILES([ \
+ 	utils/slackspot/Makefile \
+ 	utils/corectl/Makefile \
+ 	utils/autotune/Makefile \
++	utils/rt_signal_hist/Makefile \
+ 	utils/net/rtnet \
+ 	utils/net/rtnet.conf \
+ 	utils/net/Makefile \
+diff --git a/utils/Makefile.am b/utils/Makefile.am
+index 4de6434a9..79c39ac90 100644
+--- a/utils/Makefile.am
++++ b/utils/Makefile.am
+@@ -1,5 +1,5 @@
+ SUBDIRS = hdb
+ if XENO_COBALT
+-SUBDIRS += analogy autotune can net ps slackspot corectl
++SUBDIRS += analogy autotune can net ps slackspot corectl rt_signal_hist
+ endif
+ SUBDIRS += chkkconf
+diff --git a/utils/rt_signal_hist/Makefile.am b/utils/rt_signal_hist/Makefile.am
 new file mode 100644
-index 000000000..084347631
+index 000000000..810a63bba
 --- /dev/null
-+++ b/testsuite/rt-signal-tests/Makefile.am
-@@ -0,0 +1,31 @@
++++ b/utils/rt_signal_hist/Makefile.am
+@@ -0,0 +1,22 @@
 +testdir = @XENO_TEST_DIR@
 +
 +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
-+test_PROGRAMS = rt_signal_test_fpe rt_signal_test_segfault rt_signal_test_ill
++test_PROGRAMS = rt_signal_hist
 +
 +alchemycppflags =              			 \
 +	$(XENO_USER_CFLAGS)    			 \
@@ -160,163 +169,188 @@ index 000000000..084347631
 +	@XENO_USER_LDADD@			\
 +	-lrt -lpthread -lm
 +
-+rt_signal_test_fpe_SOURCES = rt_signal_test.c
-+rt_signal_test_fpe_CPPFLAGS = $(alchemycppflags) -DTEST_FPE=1
-+rt_signal_test_fpe_LDADD = $(alchemyldadd)
-+
-+rt_signal_test_segfault_SOURCES = rt_signal_test.c
-+rt_signal_test_segfault_CPPFLAGS = $(alchemycppflags) -DTEST_SEGFAULT=1
-+rt_signal_test_segfault_LDADD = $(alchemyldadd)
-+
-+rt_signal_test_ill_SOURCES = rt_signal_test.c
-+rt_signal_test_ill_CPPFLAGS = $(alchemycppflags)
-+rt_signal_test_ill_LDADD = $(alchemyldadd)
-+
-diff --git a/testsuite/rt-signal-tests/rt_signal_test.c b/testsuite/rt-signal-tests/rt_signal_test.c
++rt_signal_hist_SOURCES = rt_signal_hist.c histo.c result.c
++rt_signal_hist_CPPFLAGS = $(alchemycppflags)
++rt_signal_hist_LDADD = $(alchemyldadd)
+diff --git a/utils/rt_signal_hist/error.h b/utils/rt_signal_hist/error.h
 new file mode 100644
-index 000000000..ef569b30d
+index 000000000..4aa50e70e
 --- /dev/null
-+++ b/testsuite/rt-signal-tests/rt_signal_test.c
-@@ -0,0 +1,231 @@
++++ b/utils/rt_signal_hist/error.h
+@@ -0,0 +1,14 @@
++#ifndef ERROR_EXIT_H
++#define ERROR_EXIT_H
++
 +#include <stdio.h>
 +#include <stdlib.h>
-+#include <unistd.h>
-+#include <sys/types.h>
-+#include <copperplate/traceobj.h>
-+#include <alchemy/task.h>
-+#include <assert.h>
-+#include <setjmp.h>
-+#include <asm/ucontext.h>
 +
-+#ifdef TEST_SEGFAULT
-+#define TEST_SIGNAL SIGSEGV
-+#elif defined(TEST_FPE)
-+#define TEST_SIGNAL SIGFPE
-+#else
-+#define TEST_SIGNAL SIGILL
-+#endif
-+
-+#define BIT_FAULT_HANDLER_ENTERD     1
-+#define BIT_FAULT_HANDLER_FINISHED   2
-+#define BIT_FAULT_HANDLER_WRONG_TASK 4
-+#define BIT_FAULT_HANDLER_WRONG_SIG  8
-+#define BIT_DOMAIN_SWITCH            16
-+
-+static RT_TASK t1;
-+static sig_atomic_t status = 0;
-+static sig_atomic_t cause = 0;
-+
-+// #define JMP_CLEANUP
-+#ifdef JMP_CLEANUP
-+static jmp_buf jmpenv;
-+#endif
-+
-+static int status_ok(void)
++static int error(char *reason, int ret)
 +{
-+	return status ==
-+	       (BIT_FAULT_HANDLER_ENTERD | BIT_FAULT_HANDLER_FINISHED);
++	printf("%s: err= %d\n", reason, ret);
++	exit(1);
 +}
 +
-+static const char *sigdebug_msg[] = {
-+	[SIGDEBUG_UNDEFINED] = "latency: received SIGXCPU for unknown reason",
-+	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
-+	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
-+	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
-+	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
-+	[SIGDEBUG_NOMLOCK] = "Xenomai: process memory not locked "
-+			     "(missing mlockall?)",
-+	[SIGDEBUG_WATCHDOG] = "Xenomai: watchdog triggered "
-+			      "(period too short?)",
++#endif
++
+diff --git a/utils/rt_signal_hist/histo.c b/utils/rt_signal_hist/histo.c
+new file mode 100644
+index 000000000..36e51201b
+--- /dev/null
++++ b/utils/rt_signal_hist/histo.c
+@@ -0,0 +1,46 @@
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "histo.h"
++#include "error.h"
++
++void initHisto(struct histo **histo, unsigned long n)
++{
++	int i = 0;
++	*histo = malloc(sizeof(struct histo) + n * sizeof(unsigned long));
++	if (!histo)
++		return;
++
++	for (i = 0; i < n; ++i) {
++		(*histo)->data[i] = 0;
++	}
++	(*histo)->max_index = 0;
++	(*histo)->n = n;
++}
++
++void writeHisto(struct histo *histo)
++{
++	unsigned long i;
++	FILE *f = fopen("hist.txt", "w");
++	if (!f)
++		error("can't open \"hist.txt\n", errno);
++
++	for (i = 0; i <= histo->max_index; ++i) {
++		fprintf(f, "%lu %lu\n", i, histo->data[i]);
++	}
++
++	fclose(f);
++}
++
++void updateHisto(struct histo *histo, unsigned long curr)
++{
++	unsigned long index;
++
++	index = curr;
++	index = index >= histo->n ? histo->n - 1 : index;
++
++	histo->max_index = histo->max_index >= index ? histo->max_index : index;
++	histo->data[index]++;
++}
++
+diff --git a/utils/rt_signal_hist/histo.h b/utils/rt_signal_hist/histo.h
+new file mode 100644
+index 000000000..63c92014a
+--- /dev/null
++++ b/utils/rt_signal_hist/histo.h
+@@ -0,0 +1,13 @@
++#ifndef HISTO_H
++#define HISTO_H
++
++struct histo {
++	unsigned long n;
++	unsigned long max_index;
++	unsigned long data[];
 +};
 +
++void initHisto(struct histo **histo, unsigned long n);
++void writeHisto(struct histo *histo);
++void updateHisto(struct histo *histo, unsigned long curr);
++#endif
+diff --git a/utils/rt_signal_hist/result.c b/utils/rt_signal_hist/result.c
+new file mode 100644
+index 000000000..a863d7182
+--- /dev/null
++++ b/utils/rt_signal_hist/result.c
+@@ -0,0 +1,16 @@
++#include "result.h"
 +
-+#ifndef JMP_CLEANUP
-+static int get_step(void)
++void initResult(struct result *resu)
 +{
-+#ifdef TEST_SEGFAULT
-+#if defined(__i386__) || defined(__x86_64__)
-+	return 11;
-+#else
-+	return 4;
-+#endif
-+#elif defined(TEST_FPE)
-+	return 2;
-+#else
-+#if defined(__i386__) || defined(__x86_64__)
-+	return 2;
-+#else
-+	return 4;
-+#endif
-+#endif
++	resu->min = (unsigned long)-1l;
++	resu->max = 0ul;
++	resu->avr = 0ul;
 +}
++
++void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry)
++{
++	resu->min = curr < resu->min ? curr: resu->min;
++	resu->max = curr > resu->max ? curr: resu->max;
++	resu->avr = (resu->avr *(ith_entry - 1) + curr) / ith_entry;
++}
++
+diff --git a/utils/rt_signal_hist/result.h b/utils/rt_signal_hist/result.h
+new file mode 100644
+index 000000000..9895535ee
+--- /dev/null
++++ b/utils/rt_signal_hist/result.h
+@@ -0,0 +1,12 @@
++#ifndef RESULT_H
++#define RESULT_H
++
++struct result {
++	unsigned long min;
++	unsigned long max;
++	unsigned long avr;
++};
++
++void initResult(struct result *resu);
++void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry);
++#endif
+diff --git a/utils/rt_signal_hist/rt_signal_hist.c b/utils/rt_signal_hist/rt_signal_hist.c
+new file mode 100644
+index 000000000..076084e9e
+--- /dev/null
++++ b/utils/rt_signal_hist/rt_signal_hist.c
+@@ -0,0 +1,158 @@
++#ifndef _GNU_SOURCE
++#define _GNU_SOURCE
++#endif
++
++#include <stdio.h>
++#include <signal.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <errno.h>
++
++#include <asm/ucontext.h>
++
++#include <alchemy/task.h>
++#include <cobalt/signal.h>
++#include <copperplate/clockobj.h>
++
++#include "histo.h"
++#include "result.h"
++#include "error.h"
++
++#define TEST_SIGNAL SIGILL
++#define USE_GETTIME 0
++#define USE_RT_SIGNALS 1
++
++static RT_TASK task;
 +
 +static void do_cleanup(void *context)
 +{
-+	int step = 0;
 +	struct ucontext *uc = context;
 +
-+	step = get_step();
-+
 +#if defined(__i386__)
-+	uc->uc_mcontext.eip += step;
++	uc->uc_mcontext.eip += 2;
 +#elif defined(__x86_64__)
-+	uc->uc_mcontext.rip += step;
-+#elif defined(__aarch64__)
-+	uc->uc_mcontext.pc += step;
-+#endif
-+}
-+#endif
-+
-+static void signal_handler(int sig, siginfo_t *info, void *context)
-+{
-+	RT_TASK *self;
-+	(void)context;
-+
-+	if (sig == SIGDEBUG) {
-+		cause = sigdebug_reason(info);
-+
-+		if (cause > SIGDEBUG_WATCHDOG)
-+			cause = SIGDEBUG_UNDEFINED;
-+
-+		/* XXX: caused by rt_task_delete() */
-+		if (!(status & BIT_FAULT_HANDLER_ENTERD) &&
-+		    cause == SIGDEBUG_MIGRATE_SYSCALL) {
-+			return;
-+		}
-+
-+		status |= BIT_DOMAIN_SWITCH;
-+	} else {
-+		status |= BIT_FAULT_HANDLER_ENTERD;
-+		if (sig != TEST_SIGNAL) {
-+			status |= BIT_FAULT_HANDLER_WRONG_SIG;
-+			return;
-+		}
-+
-+		self = rt_task_self();
-+
-+		if (self == NULL || !rt_task_same(self, &t1)) {
-+			status |= BIT_FAULT_HANDLER_WRONG_TASK;
-+		} else {
-+			status |= BIT_FAULT_HANDLER_FINISHED;
-+		}
-+
-+#ifdef JMP_CLEANUP
-+		longjmp(jmpenv, 1);
++	uc->uc_mcontext.rip += 2;
 +#else
-+		do_cleanup(context);
++	uc->uc_mcontext.pc += 4;
 +#endif
-+	}
 +}
 +
-+static void do_div_by_0(void)
++static void sighandler(int sig, siginfo_t *info, void *data)
 +{
-+#if defined(__i386__) || defined (__x86_64__)
-+	__asm__("xorl %eax, %eax\n\t"
-+		"movl %eax, %ecx\n\t"
-+		"cltd\n\t"
-+		"idivl %ecx");
-+#endif
-+	//TODO find a cortex-A way to trigger an FPE
++	do_cleanup(data);
 +}
 +
 +static void do_ill(void)
@@ -328,87 +362,111 @@ index 000000000..ef569b30d
 +#endif
 +}
 +
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Warray-bounds"
-+static void do_segfault(void)
-+{
-+	*((int *)0x73) = 0xdecafbad;
-+}
-+#pragma GCC diagnostic pop
-+
-+static void task_proc(void *arg)
++static void registerSignal(void)
 +{
 +	int ret;
-+	(void)arg;
 +
-+	ret = cobalt_rt_signal(TEST_SIGNAL, signal_handler);
-+	assert(ret == 0);
-+	(void)ret;
++	ret = cobalt_rt_signal(TEST_SIGNAL, sighandler);
++	if (ret)
++		error("cobalt_rt_signal", ret);
++}
 +
-+#ifdef JMP_CLEANUP
-+	if (setjmp(jmpenv) != 0)
-+		return;
-+#endif
-+
-+#ifdef TEST_SEGFAULT
-+	do_segfault();
-+#elif defined(TEST_FPE)
-+	do_div_by_0();
-+#else
-+	do_ill();
-+#endif
-+
-+	if (0) { // so we don't geht defined but not used errors
-+		do_segfault();
-+		do_div_by_0();
-+		do_ill();
++static void printPreRunInfo(void)
++{
++	if (USE_GETTIME) {
++		struct timespec time;
++		clock_getres(CLOCK_MONOTONIC_RAW, &time);
++		printf("res_sec = %ld res_nsec = %ld \n", time.tv_sec, time.tv_nsec);
++	} else {
++		printf("res_nsec = %lld\n", clockobj_tsc_to_ns(1));
 +	}
 +}
 +
-+static int test_sucessfull(void)
++static inline unsigned long ns_now(void)
 +{
-+	if (status_ok()) {
-+		fputs("Test passed\n", stderr);
-+		return 1;
++	if (USE_GETTIME) {
++		struct timespec time;
++		clock_gettime(CLOCK_MONOTONIC_RAW, &time);
++		return time.tv_nsec;
++	} else {
++		ticks_t ticks;
++		ticks = clockobj_get_tsc();
++		return clockobj_tsc_to_ns(ticks);
 +	}
++}
 +
-+	if (!(status & BIT_FAULT_HANDLER_ENTERD))
-+		fputs("Test failed: signal handler not invoked!\n", stderr);
-+	if ((status & BIT_FAULT_HANDLER_WRONG_TASK))
-+		fputs("Test failed: Signal handler in wrong task!\n", stderr);
-+	if ((status & BIT_FAULT_HANDLER_WRONG_SIG))
-+		fputs("Test failed: Signal handler of wrong signal!\n", stderr);
-+	if ((status & BIT_DOMAIN_SWITCH)) {
-+		fputs("Test failed: domain switch happened!\n", stderr);
-+		fprintf(stderr, "Caused by: %s\n", sigdebug_msg[cause]);
++static void task_func(void *cookie)
++{
++	struct histo *histo = (struct histo *)cookie;
++	struct result resu;
++
++	unsigned long start, stop, curr;
++	int i, j;
++
++	printPreRunInfo();
++
++	registerSignal();
++
++	initResult(&resu);
++
++	for (j = 0; j < 10000; ++j) {
++		for (i = 0; i < 1000; ++i) {
++
++			start = ns_now();
++			do_ill();
++			stop = ns_now();
++
++			if (stop <= start) { // dismiss on counter overrun
++				continue;
++			}
++
++			curr = stop - start;
++
++			updateResult(&resu, curr, i+1); // + 1 as we add with index i the (i+1)th entry
++
++			updateHisto(histo, curr);
++		}
++
++		printf("min = %lu max = %lu avr = %lu\n", resu.min, resu.max, resu.avr);
++		rt_task_sleep(1000000);
 +	}
++}
++
++static const char *task_name = "signal_test_task";
++static const int prio = 80;
++
++int main(int argc, char **argv)
++{
++	int ret;
++	struct histo *histo;
++
++	struct sigaction sa;
++
++	memset(&sa, 0, sizeof(sa));
++	sa.sa_sigaction = sighandler;
++	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
++	sigaction(TEST_SIGNAL, &sa, NULL);
++
++	initHisto(&histo, 100000000);
++	if (!histo)
++		error("could not init histo", -ENOMEM);
++
++	ret = rt_task_create(&task, task_name, 0, prio, T_JOINABLE);
++	if (ret)
++		error("rt_task_create", ret);
++
++	ret = rt_task_start(&task, task_func, histo);
++	if (ret)
++		error("cant start task", ret);
++
++	rt_task_join(&task);
++	rt_task_delete(&task);
++
++	writeHisto(histo);
 +
 +	return 0;
 +}
 +
-+int main(void)
-+{
-+	struct sigaction sa;
-+	int ret;
-+
-+	memset(&sa, 0, sizeof(sa));
-+	sa.sa_sigaction = signal_handler;
-+	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
-+	sigaction(TEST_SIGNAL, &sa, NULL);
-+	sigaction(SIGDEBUG, &sa, NULL);
-+
-+	ret = rt_task_create(&t1, "rt-task", 0, 20, T_JOINABLE | T_WARNSW);
-+	assert(ret == 0);
-+
-+	ret = rt_task_start(&t1, task_proc, NULL);
-+	assert(ret == 0);
-+
-+	ret = rt_task_join(&t1);
-+	assert(ret == 0);
-+	(void)ret; // so the compiler does not complain about not checking ret
-+
-+	return test_sucessfull() ? EXIT_SUCCESS : EXIT_FAILURE;
-+}
 -- 
 2.25.1
 
