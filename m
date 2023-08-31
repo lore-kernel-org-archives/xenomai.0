@@ -1,22 +1,22 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C300E1AA78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DE171AA70
 	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 20:37:53 +0000 (UTC)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023083120374662260d97c793c201c2
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2023083120374417ab4ca1b1d01f07c9
         for <xenomai@lists.linux.dev>;
-        Thu, 31 Aug 2023 22:37:46 +0200
+        Thu, 31 Aug 2023 22:37:45 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=NX/gJdTlcCmc+/twm9+NiSOnBsOpwczqmX+5hX7fCyA=;
- b=jNC52eIgIf+5y4jxGO8uBtFbtqBGb5OOIsF+YD61GOrhwCMEi3f+Xl21YLrXQ/v9v0TgFb
- 2fpF5oK4pSQmq+rzKXDXe8wqZJvNN3OxvBgkPomc14IORVNf533yZSFcEfh5VvS0IFm63rn9
- J7hjZlMALwDiVacE99h549e+7KLK8=;
+ bh=Wej0lI58vJjrR+FBTzX6FELX/Dny9mSQyUlDwbt6tY0=;
+ b=ZwLmMP1K40gh1zr0d0lp8D30vL5mtYyFIV8r+Eq1JVXPis1BPz4vrvwuVWEHrcQessxaFn
+ HIRuhY2d0HqLf0Lbq9y8PFNUofokqkOrUjmi55Z/ptdS0MxxT9yb8DwkEIA9Ewg4kjPf0NXv
+ fneEhALBI6SB/8kofKGQJ4LNBS7Wk=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Thu, 31 Aug 2023 22:37:38 +0200
-Subject: [PATCH stable/v3.2.x 12/19] drivers/spi: Switch to spi_controller
- API
+Date: Thu, 31 Aug 2023 22:37:35 +0200
+Subject: [PATCH stable/v3.2.x 09/19] cobalt: Resolve cast-function-type
+ warnings
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v1-12-0e08770820e8@siemens.com>
+Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v1-9-0e08770820e8@siemens.com>
 References: <20230828-florian-enable-stable-3-2-for-6-1-v1-0-0e08770820e8@siemens.com>
 In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v1-0-0e08770820e8@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -34,329 +34,102 @@ Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-[ master commit 446e07bd3b8a2ae6a25403c8e3212c86779b5b70 ]
+[ master commit 73a91e2c85bb61863cc00f5b44b2095b6e4ecf90 ]
 
-The kernel generalized spi_master to spi_controller and renamed several
-services. Follow this to avoid breakage when the legacy wrappers are
-eventually removed. Should come without functional changes.
+Latest kernel with around gcc-10 starts to complain about the type casts
+done for error stubs, syscall handlers and nomac_dev_openclose. Those
+casts remain fine, so suppress them by casting to the special
+"void (*)(void)" type first.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/spi/spi-bcm2835.c        | 20 ++++++++++----------
- kernel/drivers/spi/spi-device.c         | 10 +++++-----
- kernel/drivers/spi/spi-master.c         | 24 ++++++++++++------------
- kernel/drivers/spi/spi-master.h         |  2 +-
- kernel/drivers/spi/spi-omap2-mcspi-rt.c | 20 ++++++++++----------
- kernel/drivers/spi/spi-sun6i.c          | 24 ++++++++++++------------
- 6 files changed, 50 insertions(+), 50 deletions(-)
+ kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h |  3 ++-
+ kernel/cobalt/posix/syscall.c                          |  3 ++-
+ kernel/cobalt/rtdm/device.c                            | 10 ++++++----
+ kernel/cobalt/rtdm/fd.c                                |  2 +-
+ kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c       |  4 ++--
+ 5 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/drivers/spi/spi-bcm2835.c b/kernel/drivers/spi/spi-bcm2835.c
-index b1ee22bf8..e8df8fe7e 100644
---- a/kernel/drivers/spi/spi-bcm2835.c
-+++ b/kernel/drivers/spi/spi-bcm2835.c
-@@ -111,7 +111,7 @@ to_master_bcm2835(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
- {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+index a0395e187..f023de354 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+@@ -40,7 +40,8 @@
+ #error "__NR_COBALT_SYSCALLS > __COBALT_IA32_BASE"
+ #endif
  
- static inline u32 bcm2835_rd(struct spi_master_bcm2835 *spim,
-@@ -453,7 +453,7 @@ static int gpio_match_name(struct gpio_chip *chip, void *data)
+-#define __syshand32emu__(__name)	((cobalt_syshand)(CoBaLt32emu_ ## __name))
++#define __syshand32emu__(__name)	\
++	((cobalt_syshand)(void (*)(void))(CoBaLt32emu_ ## __name))
  
- static int find_cs_gpio(struct spi_device *spi)
- {
--	struct spi_master *kmaster = spi->master;
-+	struct spi_controller *ctlr = spi->controller;
- 	u32 pingroup_index, pin, pin_index;
- 	struct device_node *pins;
- 	struct gpio_chip *chip;
-@@ -469,7 +469,7 @@ static int find_cs_gpio(struct spi_device *spi)
- 	/* Translate native CS to GPIO. */
+ #define __COBALT_CALL32emu_INITHAND(__handler)	\
+ 	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index cd72b22d1..46c4998e4 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -426,7 +426,8 @@ static int CoBaLt_ni(void)
+  *
+  * --rpm
+  */
+-#define __syshand__(__name)	((cobalt_syshand)(CoBaLt_ ## __name))
++#define __syshand__(__name)	\
++	((cobalt_syshand)(void (*)(void))(CoBaLt_ ## __name))
  
- 	for (pingroup_index = 0;
--	     (pins = of_parse_phandle(kmaster->dev.of_node,
-+	     (pins = of_parse_phandle(ctlr->dev.of_node,
- 		     "pinctrl-0", pingroup_index)) != 0; pingroup_index++) {
- 		for (pin_index = 0;
- 		     of_property_read_u32_index(pins, "brcm,pins",
-@@ -579,7 +579,7 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- {
- 	struct spi_master_bcm2835 *spim;
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
+ #define __COBALT_NI	__syshand__(ni)
  
-@@ -594,11 +594,11 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- 	master->ops = &bcm2835_master_ops;
- 	platform_set_drvdata(pdev, master);
- 
--	kmaster = master->kmaster;
--	kmaster->mode_bits = BCM2835_SPI_MODE_BITS;
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
--	kmaster->num_chipselect = 2;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr = master->controller;
-+	ctlr->mode_bits = BCM2835_SPI_MODE_BITS;
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->num_chipselect = 2;
-+	ctlr->dev.of_node = pdev->dev.of_node;
- 
- 	spim = container_of(master, struct spi_master_bcm2835, master);
- 	rtdm_event_init(&spim->transfer_done, 0);
-@@ -652,7 +652,7 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
- fail_unclk:
- 	clk_disable_unprepare(spim->clk);
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
- 
- 	return ret;
- }
-diff --git a/kernel/drivers/spi/spi-device.c b/kernel/drivers/spi/spi-device.c
-index 6e975fc79..397af0f33 100644
---- a/kernel/drivers/spi/spi-device.c
-+++ b/kernel/drivers/spi/spi-device.c
-@@ -29,7 +29,7 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 			      struct rtdm_spi_master *master,
- 			      struct spi_device *spi)
- {
--	struct spi_master *kmaster = master->kmaster;
-+	struct spi_controller *ctlr = master->controller;
- 	struct rtdm_device *dev;
- 	rtdm_lockctx_t c;
- 	int ret;
-@@ -44,8 +44,8 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 	dev = &slave->dev;
- 	dev->driver = &master->driver;
- 	dev->label = kasprintf(GFP_KERNEL, "%s/slave%d.%%d",
--			       dev_name(&kmaster->dev),
--			       kmaster->bus_num);
-+			       dev_name(&ctlr->dev),
-+			       ctlr->bus_num);
- 	if (dev->label == NULL)
- 		return -ENOMEM;
- 
-@@ -53,8 +53,8 @@ int rtdm_spi_add_remote_slave(struct rtdm_spi_remote_slave *slave,
- 		slave->cs_gpiod = spi->cs_gpiod;
- 	else {
- 		slave->cs_gpiod = NULL;
--		if (kmaster->cs_gpiods)
--			slave->cs_gpiod = kmaster->cs_gpiods[spi->chip_select];
-+		if (ctlr->cs_gpiods)
-+			slave->cs_gpiod = ctlr->cs_gpiods[spi->chip_select];
- 	}
- 	
- 	mutex_init(&slave->ctl_lock);
-diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
-index 215b4bcc9..cffeaf087 100644
---- a/kernel/drivers/spi/spi-master.c
-+++ b/kernel/drivers/spi/spi-master.c
-@@ -349,16 +349,16 @@ struct rtdm_spi_master *
- __rtdm_spi_alloc_master(struct device *dev, size_t size, int off)
- {
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 
--	kmaster = spi_alloc_master(dev, size);
--	if (kmaster == NULL)
-+	ctlr = spi_alloc_master(dev, size);
-+	if (ctlr == NULL)
- 		return NULL;
- 
--	master->use_gpio_descriptors = true;
--	master = (void *)(kmaster + 1) + off;
--	master->kmaster = kmaster;
--	spi_master_set_devdata(kmaster, master);
-+	ctlr->use_gpio_descriptors = true;
-+	master = (void *)(ctlr + 1) + off;
-+	master->controller = ctlr;
-+	spi_master_set_devdata(ctlr, master);
- 
- 	return master;
- }
-@@ -367,7 +367,7 @@ EXPORT_SYMBOL_GPL(__rtdm_spi_alloc_master);
- int __rtdm_spi_setup_driver(struct rtdm_spi_master *master)
- {
- 	master->classname = kstrdup(
--		dev_name(&master->kmaster->dev), GFP_KERNEL);
-+		dev_name(&master->controller->dev), GFP_KERNEL);
- 	master->devclass = class_create(THIS_MODULE,
- 		master->classname);
- 	if (IS_ERR(master->devclass)) {
-@@ -416,20 +416,20 @@ static int spi_transfer_one_unimp(struct spi_master *master,
- 
- int rtdm_spi_add_master(struct rtdm_spi_master *master)
- {
--	struct spi_master *kmaster = master->kmaster;
-+	struct spi_controller *ctlr = master->controller;
- 
- 	/*
- 	 * Prevent the transfer handler to be called from the regular
- 	 * SPI stack, just in case.
- 	 */
--	kmaster->transfer_one = spi_transfer_one_unimp;
-+	ctlr->transfer_one = spi_transfer_one_unimp;
- 	master->devclass = NULL;
- 
- 	/*
- 	 * Add the core SPI driver, devices on the bus will be
- 	 * enumerated, handed to spi_device_probe().
- 	 */
--	return spi_register_master(kmaster);
-+	return spi_register_controller(ctlr);
- }
- EXPORT_SYMBOL_GPL(rtdm_spi_add_master);
- 
-@@ -439,7 +439,7 @@ void rtdm_spi_remove_master(struct rtdm_spi_master *master)
- 	char *classname = master->classname;
- 	
- 	rtdm_mutex_destroy(&master->bus_lock);
--	spi_unregister_master(master->kmaster);
-+	spi_unregister_controller(master->controller);
- 	rtdm_drv_set_sysclass(&master->driver, NULL);
- 	class_destroy(class);
- 	kfree(classname);
-diff --git a/kernel/drivers/spi/spi-master.h b/kernel/drivers/spi/spi-master.h
-index ecfea2f90..449a6cc60 100644
---- a/kernel/drivers/spi/spi-master.h
-+++ b/kernel/drivers/spi/spi-master.h
-@@ -53,7 +53,7 @@ struct rtdm_spi_master_ops {
- struct rtdm_spi_master {
- 	int subclass;
- 	const struct rtdm_spi_master_ops *ops;
--	struct spi_master *kmaster;
-+	struct spi_controller *controller;
- 	struct {	/* Internal */
- 		struct rtdm_driver driver;
- 		struct class *devclass;
-diff --git a/kernel/drivers/spi/spi-omap2-mcspi-rt.c b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-index 03678b991..7918f61e7 100644
---- a/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-+++ b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-@@ -181,7 +181,7 @@ to_master_omap2_mcspi(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
- {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
- 
- static inline u32 mcspi_rd_reg(struct spi_master_omap2_mcspi *spim,
-@@ -881,7 +881,7 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
- {
- 	struct spi_master_omap2_mcspi *spim;
- 	struct rtdm_spi_master *master;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
- 	u32 regs_offset = 0;
-@@ -912,21 +912,21 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
- 	master->ops = &omap2_mcspi_master_ops;
- 	platform_set_drvdata(pdev, master);
- 
--	kmaster = master->kmaster;
-+	ctlr = master->controller;
- 	/* flags understood by this controller driver */
--	kmaster->mode_bits = OMAP2_MCSPI_SPI_MODE_BITS;
-+	ctlr->mode_bits = OMAP2_MCSPI_SPI_MODE_BITS;
- 	/* TODO: SPI_BPW_RANGE_MASK(4, 32); */
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
- 	of_property_read_u32(pdev->dev.of_node, "ti,spi-num-cs", &num_cs);
--	kmaster->num_chipselect = num_cs;
-+	ctlr->num_chipselect = num_cs;
- 	if (of_get_property(pdev->dev.of_node,
- 		"ti,pindir-d0-out-d1-in", NULL)) {
- 		pin_dir = MCSPI_PINDIR_D0_OUT_D1_IN;
+diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
+index 736e82da7..12155157a 100644
+--- a/kernel/cobalt/rtdm/device.c
++++ b/kernel/cobalt/rtdm/device.c
+@@ -412,10 +412,12 @@ int rtdm_dev_register(struct rtdm_device *dev)
  	}
  
--	kmaster->max_speed_hz = OMAP2_MCSPI_MAX_FREQ;
--	kmaster->min_speed_hz = OMAP2_MCSPI_MAX_FREQ >> 15;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr->max_speed_hz = OMAP2_MCSPI_MAX_FREQ;
-+	ctlr->min_speed_hz = OMAP2_MCSPI_MAX_FREQ >> 15;
-+	ctlr->dev.of_node = pdev->dev.of_node;
+ 	dev->ops = drv->ops;
+-	if (drv->device_flags & RTDM_NAMED_DEVICE)
+-		dev->ops.socket = (typeof(dev->ops.socket))enosys;
+-	else
+-		dev->ops.open = (typeof(dev->ops.open))enosys;
++	if (drv->device_flags & RTDM_NAMED_DEVICE) {
++		dev->ops.socket =
++			(typeof(dev->ops.socket))(void (*)(void))enosys;
++	} else {
++		dev->ops.open = (typeof(dev->ops.open))(void (*)(void))enosys;
++	}
  
- 	spim = container_of(master, struct spi_master_omap2_mcspi, master);
- 	rtdm_event_init(&spim->transfer_done, 0);
-@@ -987,7 +987,7 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&dev->openfd_list);
+ 	init_waitqueue_head(&dev->putwq);
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index e63fab7dc..c7ceb767f 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -90,7 +90,7 @@ static struct rtdm_fd *fetch_fd(struct cobalt_ppd *p, int ufd)
  
- fail_unclk:
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
+ #define assign_invalid_handler(__handler, __invalid)			\
+ 	do								\
+-		(__handler) = (typeof(__handler))__invalid;		\
++		(__handler) = (typeof(__handler))(void (*)(void))__invalid; \
+ 	while (0)
  
- 	return ret;
- }
-diff --git a/kernel/drivers/spi/spi-sun6i.c b/kernel/drivers/spi/spi-sun6i.c
-index 36a2cd471..72a4abd0d 100644
---- a/kernel/drivers/spi/spi-sun6i.c
-+++ b/kernel/drivers/spi/spi-sun6i.c
-@@ -150,7 +150,7 @@ to_master_sun6i(struct rtdm_spi_remote_slave *slave)
- static inline struct device *
- master_to_kdev(struct rtdm_spi_master *master)
- {
--	return &master->kmaster->dev;
-+	return &master->controller->dev;
- }
+ /* Calling this handler should beget ENOSYS if not implemented. */
+diff --git a/kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c b/kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c
+index f75f5f8b7..572d893c0 100644
+--- a/kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c
++++ b/kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c
+@@ -59,11 +59,11 @@ static struct rtdm_driver
+ 			 .context_size = 0,
+ 			 .ops = {
+ 				 .open = (typeof(nomac_driver.ops.open))
+-					 nomac_dev_openclose,
++					 (void (*)(void))nomac_dev_openclose,
+ 				 .ioctl_rt = nomac_dev_ioctl,
+ 				 .ioctl_nrt = nomac_dev_ioctl,
+ 				 .close = (typeof(nomac_driver.ops.close))
+-					 nomac_dev_openclose,
++					 (void (*)(void))nomac_dev_openclose,
+ 			 } };
  
- static inline u32 sun6i_rd(struct spi_master_sun6i *spim,
-@@ -509,7 +509,7 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- {
- 	struct rtdm_spi_master *master;
- 	struct spi_master_sun6i *spim;
--	struct spi_master *kmaster;
-+	struct spi_controller *ctlr;
- 	struct resource *r;
- 	int ret, irq;
- 	u32 clk_rate;
-@@ -525,13 +525,13 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- 	master->ops = &sun6i_master_ops;
- 	platform_set_drvdata(pdev, master);
- 
--	kmaster = master->kmaster;
--	kmaster->max_speed_hz = 100 * 1000 * 1000;
--	kmaster->min_speed_hz = 3 * 1000;
--	kmaster->mode_bits = SUN6I_SPI_MODE_BITS;
--	kmaster->bits_per_word_mask = SPI_BPW_MASK(8);
--	kmaster->num_chipselect = 4;
--	kmaster->dev.of_node = pdev->dev.of_node;
-+	ctlr = master->controller;
-+	ctlr->max_speed_hz = 100 * 1000 * 1000;
-+	ctlr->min_speed_hz = 3 * 1000;
-+	ctlr->mode_bits = SUN6I_SPI_MODE_BITS;
-+	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
-+	ctlr->num_chipselect = 4;
-+	ctlr->dev.of_node = pdev->dev.of_node;
- 
- 	spim = container_of(master, struct spi_master_sun6i, master);
- 	spim->setup = of_device_get_match_data(&pdev->dev);
-@@ -572,8 +572,8 @@ static int sun6i_spi_probe(struct platform_device *pdev)
- 	 * the fastest transfers properly.
- 	 */
- 	clk_rate = clk_get_rate(spim->mclk);
--	if (clk_rate < 2 * kmaster->max_speed_hz)
--		clk_set_rate(spim->mclk, 2 * kmaster->max_speed_hz);
-+	if (clk_rate < 2 * ctlr->max_speed_hz)
-+		clk_set_rate(spim->mclk, 2 * ctlr->max_speed_hz);
- 
- 	spim->clk_hz = clk_get_rate(spim->mclk);
- 
-@@ -624,7 +624,7 @@ fail_unclk:
- 	clk_disable_unprepare(spim->mclk);
- 	clk_disable_unprepare(spim->hclk);
- fail:
--	spi_master_put(kmaster);
-+	spi_controller_put(ctlr);
- 
- 	return ret;
- }
+ int nomac_dev_init(struct rtnet_device *rtdev, struct nomac_priv *nomac)
 
 -- 
 2.39.2
