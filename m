@@ -1,282 +1,120 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2092.outbound.protection.outlook.com [40.107.21.92])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373E5210A
-	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 09:05:55 +0000 (UTC)
-Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id CCB26CC37B
-	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 08:57:13 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 1EDE44001A;
-	Thu, 31 Aug 2023 08:57:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1693472225;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O8TUSHlUM1htJ0SIo5r8qqkYKKjRXXGYPtQmsBcCS4I=;
-	b=dqx2Ra7xC9PWIztIQWTh8fzd1KN/G9UCTAY/x4V+8jsDrRnUwINb0plizjC8nKXlaTslPE
-	GssyD+TlUkA8SUGgBM7CFqC1PD0U+RJDUaLBLERCxDCSBPS4eGU6SeS3QiMOV0wvLZ5LJw
-	ZQtV2nmb6PHjMKe7ZyUlo6Ao6CQ4jgRMFimtZpE7Psyto6lZfp1fl9iIJfNDunW5Requ4k
-	3blZ0LNRHN+zDIpso9Mdku5ElKt+TkEBCtEZAeCt8b5rwmUngB7042sDVU+fK9tJqWwylW
-	BxrciGya7P7hlBb1OWyD3mmj0uDMo/30d7KPOmQ60j+K7Vln9D93a/JLwV2jhA==
-References: <MN2PR11MB42855A234CF8BF7D17E9E2ECF2E6A@MN2PR11MB4285.namprd11.prod.outlook.com>
- <d5505413fbbf778aacaeb40effe8cb0ea61107b9.camel@siemens.com>
- <MN2PR11MB4285D68E3408171C181D9C20F2E6A@MN2PR11MB4285.namprd11.prod.outlook.com>
- <463948a9bd09ddf6062f879fa9746b0c70e6a9ab.camel@siemens.com>
- <MN2PR11MB428547B97385F160CD2E4394F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
- <42d72c52569d30b9ecaf8fd30dd777abd422adf1.camel@siemens.com>
- <MN2PR11MB4285133F95080135AD983AC4F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
- <874jkffxe0.fsf@xenomai.org>
- <MN2PR11MB42858E54D7324967AE6D1FC2F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "Bezdeka, Florian" <florian.bezdeka@siemens.com>, "Kiszka, Jan"
- <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced from
- pinctrl device
-Date: Thu, 31 Aug 2023 10:56:31 +0200
-In-reply-to: <MN2PR11MB42858E54D7324967AE6D1FC2F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
-Message-ID: <87zg27egin.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24231186A
+	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 14:59:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=et+AwJk1cKHtRb1szCaWBE0h1KE6u2kIKtj5RDXVpzVud4NK6IdyWieniIl2NKgw4DXzK2aOczmGvKOEaVEJ7hxLMl3ME2j+kXJ6y1aUnq2lo4dIotpHQS0N9jq4lKxmBIZQQ6XN5LumgE72XZ3Mw8ArXcVXwpnwqAgdhKI6jGBJYbhwkmo+dQn+yT7tou7wVQNKMZICzL+wo5LGQtUQ2oksgr9FQpliacg/EkcP88mPvAVxWXZcmD73MzLTokBXt/AOEADxxyTnhlUFJVlZHNTqhDRUues1aVA95GrKmYrYQvkINXQa+9jLiSK4ZY1TBrBQ1VXipu76AkRLsRMUtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Rk0Vl9C7UGsSmmby+SFVp2fIb3vxnFM6/1XmDNDhTLk=;
+ b=QqvSXBzG/fndS5kECWs5miVw9D3zZ4vrEhsoiKA9eggmYYc8CruYm79bFnkNi0s4lQKY9d/VuIc7whCmwgU1C6q2mOM96kydj4Gy162maDmB1IkBcMcLTlU5MCYOVBSU1VhkxkAbPgPdf2T2gwxqF7yv7QXYaiIwtZaEEc3i+gl4C98w07KcM9MEbzR3+k54TNJnBeK33t7XTlhVrdJ76s5KCgVeuAQlQJDYyyPwxsANtkHSDDLDajM0jw5gZWTKYwsrtKeEBDthePNunCLlbx1UMAG9bVMF7OIOGEXvRev+kFpSaqlXnHi5ZS+HrxkGcMnp4dogJY7qaK5aA8xV/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ecler.com; dmarc=pass action=none header.from=ecler.com;
+ dkim=pass header.d=ecler.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ecler.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Rk0Vl9C7UGsSmmby+SFVp2fIb3vxnFM6/1XmDNDhTLk=;
+ b=B25gW5qo+jV0i1EIMcFrPtq8Ml+si1Y1cE+/phy5JkEmY8IROVT4S3mU/9Jmw59VIphpPzSs047Sha3uWEFnLDWAvN2eep4UBSCXlya+2fQZPs+iHMrabN+dWQYwQr1JDQvOmYGwl5NicJGw0M/zf+sQAcNAVDtJmsxgsw9RrA6EDiMbWIpPTUfy3eddvT3dC2G2zBYK8qMngI3qFys6Q/ERS7l3Lv95+7JprOvyJaBMTHCsq4fMTHz2KKZTkcEbchwNVr8vup1A52iR/59xkxP6fFi6ETtVYpKMxNFhvV0OH6XlWaoEHtqFuRmjVyRXAjXnCRnDLIUiXJVtCxeHQw==
+Received: from DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:13c::17)
+ by PAXPR10MB5615.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:245::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.34; Thu, 31 Aug
+ 2023 14:59:17 +0000
+Received: from DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7e1c:67bf:856c:9c98]) by DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7e1c:67bf:856c:9c98%6]) with mapi id 15.20.6745.021; Thu, 31 Aug 2023
+ 14:59:17 +0000
+From: Jesus Villena <j.villena@ecler.com>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: [EVL] GPIO driver error
+Thread-Topic: [EVL] GPIO driver error
+Thread-Index: AdncBeRRjgB7kKECQA2lYHfUvYqVyg==
+Date: Thu, 31 Aug 2023 14:59:17 +0000
+Message-ID:
+ <DB8PR10MB3706C1F288ABC9A40F6E7E3AF9E5A@DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: es-ES, en-US
+Content-Language: es-ES
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=ecler.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB8PR10MB3706:EE_|PAXPR10MB5615:EE_
+x-ms-office365-filtering-correlation-id: d2879b76-62e4-4d9f-8e23-08dbaa32d981
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ +zHf5R9p9zK7grKrWPoGp5DV0Q1uAWMzgWfaD98MDo5lWiuTQ9XnLOdOUMFEzPWflxU6RDyoKTT5J6IhcU+sIse4xB9kjqz304KstzU36HvnmTFc6uYPBP3L56t0EDCpFrnGuXZGiuIAwaHpiJ5VXHxbHU9s2KH8MChUNTes2DXXWHv7a8lBm3WE8tpqnppWm1JJu4Kix7w2XlmaKJA8cEm5VLrLuLc/FoRxESza+XFHSr3VkAGDKITf8k07JPCXCLzvAqyJs2s9WiIiUBy1ZFN5VRTYFOHMJRauN41D8Xel1pVAPFndrcBT+EYylQOHxqtuM2PNeX8thhMlAkVUz9Es3OuCdCnz9GaMeR0nLoomeHsGfs5GtsLs5kkI9auxwEZd0z0rr7nB3Rey8/yFiq1OoLW8ckvK8hNopKDyZAWjanjp+jSwp77f/+umX9YC6vdKEey7VJKS508GK05uWW8KHiajuYZ3DnndIb4Wd9QTm0uFqBJzzD2SY2sr2x7mwW2X2tiI0dIp2rKXu/F5nLHYXD2x5NqKIhofSkigrQfqT0bv0JauRVd6EYXUaLo2Xv5+VNmm0oA5Sv7QZCh+ohhFZUAB9r+CVwmgadfJactRkitFUUH/nzuKTiaFCsavw2iVLh0z2FZ+bh+GfdULk4EnAa0+hPB0CTy45S8m4H0=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(346002)(136003)(376002)(39850400004)(186009)(1800799009)(451199024)(8936002)(66946007)(122000001)(478600001)(76116006)(7696005)(64756008)(66476007)(6506007)(71200400001)(66446008)(66556008)(6916009)(38070700005)(316002)(38100700002)(41300700001)(9686003)(26005)(8676002)(5660300002)(2906002)(55016003)(4744005)(86362001)(33656002)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?Np1twCfdjk+dA9pv9JSoG8Ya98Riq94owTAaK/kxbTW9mUrr3ApMqXDyeZ?=
+ =?iso-8859-1?Q?geHelHhk4822/1ayUX+AAsTDZ4RY87Y3ztbb5D7mtn3V+mR9XLVn9tST7o?=
+ =?iso-8859-1?Q?eNW5bshkdt9OcDMON7R5L79GE7eyUq8J9GpRCSXaAbikPcyjGvLGzecvrJ?=
+ =?iso-8859-1?Q?quDBcOi+5/5xJCw/QZWh5YglIbndaCk2UrYTDuwdNYDuznspZqg6sAn4pc?=
+ =?iso-8859-1?Q?ABksogbhyYcj1KaV5ZXUYRnYIKME4Kr0UevMVUPYsEgTJaKWVIb2Z4Vckw?=
+ =?iso-8859-1?Q?2UEu1qDAfx0WyAOhfEu3uDroJsAVe0lpg8eJIQBI90Psvy/LT82dC0SXi7?=
+ =?iso-8859-1?Q?qF8GS2F0nIt8aNKk4EYX7B8LuNBqgcyfX50QJDRLBRNXyNJIGGNU8QFRG5?=
+ =?iso-8859-1?Q?Nv1ZSz6bnY+RMCkqLSeqmlCrCtGXnEggke+guz/UAG7X3SuK5/QUTGO2z+?=
+ =?iso-8859-1?Q?2ZliupRINcfa9uCV8fBIiXOPiSMk2sraEGbDzJrG7H9GRtifydWM7A0Bqo?=
+ =?iso-8859-1?Q?vu9lDT6b76gawrnBSL4gUPAQlplq2VtjybxhDM5DOOXM1Ek0ALqWojszZ9?=
+ =?iso-8859-1?Q?unth+hmA2jz2TuaDmWZUo52BpfOu9ruoNND1scrFICeAZcaed5YAvyRS/T?=
+ =?iso-8859-1?Q?j/T2VHx5NqAlkVoAGjfCOFQcvyemxkBpBHEt6FAmnBKwSTqvsO2dLtPD9P?=
+ =?iso-8859-1?Q?0hy9xqpeoUYIR+/5vvrSGIzaS6DvVuqIdH6V5AkiI/Aa0SHnPoqi8+HLaW?=
+ =?iso-8859-1?Q?cauHCV9CsPwo2HXsugczK25gu3M+pd/CGHUCcmzZkm1IBQ27XOeVw1Qd+W?=
+ =?iso-8859-1?Q?mVCegADkiGK8eozxNhrauKKH15E9MEufYe8/Nv5ZPmOH98ZUg/uJZUa5qQ?=
+ =?iso-8859-1?Q?mpfbrJ+lcRjQktVL9HS2XmylzmYZQ5ZdxB1y47/SdVL/LhsFKhNRXF/v/G?=
+ =?iso-8859-1?Q?kifW9ra1Tt0+R69YO1aKhbDROHE6J8hm3PzpFg6XKel997NbinCyTozNwI?=
+ =?iso-8859-1?Q?wsuzM6Pk9geTzJJXm2b6YkLGKd3+UvARC8W9RKpknLNQYk+2V4MAkUOKTE?=
+ =?iso-8859-1?Q?N3Uu8aqxRB/m5K+chePTF7HLkRYwZ42JjqfCKHziYoUvBmxCmEt/qR5vEG?=
+ =?iso-8859-1?Q?Q0bhSp4SwELhMFODE6v3Eakb+NTsy7ZZcB2/lp5vjgBsKiwIIGh1Uu1spD?=
+ =?iso-8859-1?Q?jiByYxEtQDuIEAGeNorLfCxVwGynsEK/Af79c9QWoFXk0aolVv7kB4o8GM?=
+ =?iso-8859-1?Q?pqsNiuIAHy/c5fqTTGxBscfLr1Ffgtk1x44RCb/G8D/zUn/W789g5KzECk?=
+ =?iso-8859-1?Q?ITVKCb8y/9O4Tni2zEgkdA3NQb3HScec7XkCoI+jir9kOCVElRW3va1IBY?=
+ =?iso-8859-1?Q?AK4MxBxVVadVjG+/4ubkQfaERu3GGyGddOpPo1G6K/xy7gTAiNszkCpLGS?=
+ =?iso-8859-1?Q?GfabuRFXiSX+vA5y6Q0gmFqiGSZ1EHhHg2gbl5uX2o9OnT1EJb4O/am6n9?=
+ =?iso-8859-1?Q?U0G8mQhJH424iyHJOQsjaYnB7X+zR5jozXx1YlREymT64MazWKtY7hxcoM?=
+ =?iso-8859-1?Q?2eHs1iZrXL90ic/SZn6jQCBUufNwF/46c0rT6aWtRDtC11/6BxfNje+zYi?=
+ =?iso-8859-1?Q?MIHPPdk4laZpA=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+X-OriginatorOrg: ecler.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2879b76-62e4-4d9f-8e23-08dbaa32d981
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2023 14:59:17.6860
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 6f9193a3-7ddb-4a6c-9664-df2759e0e5ac
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HoQ9E4wnYY+fcJ+kNqSmOHdh6j6H3x/7Urd2mjnLBWvs95Xz9o/ogYzgO/t8HEaW+duGeXTWSnz5IWO7dOmTEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR10MB5615
+
+Hello,
+
+I have found and error on drivers/gpio/gpiolib-cdev.c: the function lineeve=
+nt_create doesn't call to init_waitqueue_head(&le->wait), which leads to a =
+critical kernel error plus rebooting when trying to use GPIOs under an EVL =
+enabled kernel.
+
+On branch v5.10.y-evl-rebase the fix would be on line 2026:
+
+2025 =A0=A0=A0INIT_KFIFO(le->events);
+2026 + init_waitqueue_head(&le->wait);
+
+I have seen that this error is present also on the other branches.
+
+Greetings
 
 
-"Chen, Hongzhan" <hongzhan.chen@intel.com> writes:
-
->>-----Original Message-----
->>From: Philippe Gerum <rpm@xenomai.org>
->>Sent: Thursday, August 31, 2023 4:06 PM
->>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>Cc: Bezdeka, Florian <florian.bezdeka@siemens.com>; Kiszka, Jan
->><jan.kiszka@siemens.com>; xenomai@lists.linux.dev
->>Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced from
->>pinctrl device
->>
->>
->>"Chen, Hongzhan" <hongzhan.chen@intel.com> writes:
->>
->>>>-----Original Message-----
->>>>From: Florian Bezdeka <florian.bezdeka@siemens.com>
->>>>Sent: Thursday, August 31, 2023 3:10 PM
->>>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>Cc: Kiszka, Jan <jan.kiszka@siemens.com>; xenomai@lists.linux.dev;
->>Philippe
->>>>Gerum <rpm@xenomai.org>
->>>>Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced from
->>>>pinctrl device
->>>>
->>>>On Thu, 2023-08-31 at 00:45 +0000, Chen, Hongzhan wrote:
->>>>>
->>>>> > -----Original Message-----
->>>>> > From: Florian Bezdeka <florian.bezdeka@siemens.com>
->>>>> > Sent: Wednesday, August 30, 2023 9:23 PM
->>>>> > To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>>>> > Cc: Kiszka, Jan <jan.kiszka@siemens.com>; xenomai@lists.linux.dev;
->>>>Philippe
->>>>> > Gerum <rpm@xenomai.org>
->>>>> > Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced
->>from
->>>>> > pinctrl device
->>>>> >
->>>>> > On Wed, 2023-08-30 at 07:54 +0000, Chen, Hongzhan wrote:
->>>>> > >
->>>>> > > > -----Original Message-----
->>>>> > > > From: Florian Bezdeka <florian.bezdeka@siemens.com>
->>>>> > > > Sent: Wednesday, August 30, 2023 3:20 PM
->>>>> > > > To: Chen, Hongzhan <hongzhan.chen@intel.com>;
->>>>> > xenomai@lists.linux.dev
->>>>> > > > Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced
->>>>from
->>>>> > > > pinctrl device
->>>>> > > >
->>>>> > > > On Wed, 2023-08-30 at 03:05 +0000, Chen, Hongzhan wrote:
->>>>> > > > > Hi Philippe/Jan
->>>>> > > > >
->>>>> > > > > We found there is irq storm issue like [1] on sd/mmc card detect
->>>>> > interrupt
->>>>> > > > alloced from
->>>>> > > > > pinctrl device with Xenomai 3.2 Dovetail 5.10.*
->>>>> > > > > According to our test,  the patch [2] works for such issue in our
->>case.
->>>>It
->>>>> > > > seems that handle_edge_irq
->>>>> > > > > never ack the irq to clear the interrupt status for the Linux gpio
->>>>interrupt.
->>>>> > > > >
->>>>> > > > > I am wondering if there is any side-effect for this patch, Please
->>>>suggest.
->>>>> > > > >
->>>>> > > > > Regards
->>>>> > > > >
->>>>> > > > > Hongzhan Chen
->>>>> > > > >
->>>>> > > > > [1]:
->>>>> > > > > cat /proc/interrupts
->>>>> > > > >   14:    2440190          0          0          0  IR-IO-APIC   14    -fasteoi
->>>>> > INTC1020:00,
->>>>> > > > INTC1020:01, INTC1020:03, INTC1020:04, INTC1020:05
->>>>> > > > > 128:    2440190          0          0          0  INTC1020:01  112
->>0000:00:1a.1
->>>>cd
->>>>> > > > >
->>>>> > > > > [2]:
->>>>> > > > > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>>>> > > > > index 6aca6c036ada..4d08eaf076e9 100644
->>>>> > > > > --- a/kernel/irq/chip.c
->>>>> > > > > +++ b/kernel/irq/chip.c
->>>>> > > > > @@ -869,7 +869,6 @@ void handle_edge_irq(struct irq_desc
->>*desc)
->>>>> > > > >         kstat_incr_irqs_this_cpu(desc);
->>>>> > > > >
->>>>> > > > >         /* Start handling the irq */
->>>>> > > > > -       if (!irqs_pipelined())
->>>>> > > > >                 chip->irq_ack(&desc->irq_data);
->>>>> > > > >
->>>>> > > > >
->>>>> > > >
->>>>> > > > That doesn't make much sense. A IRQ storm means that we
->>unmasked
->>>>the
->>>>> > > > IRQ to early or forgot to mask it.
->>>>> > > >
->>>>> > > > A forgotten ACK would mean the IRQ stalls, so it would never be
->>fired
->>>>> > > > again. No?
->>>>> > >
->>>>> > > According to the test, it seems forgotten ACK will keep firing interrupt
->>>>here
->>>>> > like
->>>>> > > following comparing:
->>>>> >
->>>>> > This doesn't make sense (IMHO).
->>>>> > Can you provide a callstack from handle_edge_irq() in case
->>>>> > on_pipeline_entry() returns false?
->>>>> >
->>>>> > The IRQ should be ACKed on pipeline entry already, even if
->>>>> > handle_edge_irq() is called again (from Linux/Inband context) the IRQ
->>>>> > should already be ACKed.
->>>>>
->>>>> Following stack is dumped after patching my patch. Without patching
->>there
->>>>is no intel_gpio_irq_ack. It is called in handle_irq_pipelined_finish from
->>which
->>>>it already called irq_exit_pipeline before sync_current_irq_stage. That is
->>why
->>>>on_pipeline_entry returned false in handle_edge_irq
->>>>>
->>>>>
->>>>>
->>>>> [  291.009330] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G     U
->>>>5.10.179-intel-ese-standard-lts-dovetail+ #1
->>>>> [  291.009331] Hardware name: Intel Corporation Elkhart Lake Embedded
->>>>Platform/ElkhartLake LPDDR4x T3 CRB, BIOS
->>>>EHLSFWI1.R00.5204.A01.2305180757 05/18/2023
->>>>> [  291.009332] IRQ stage: Linux
->>>>> [  291.009332] Call Trace:
->>>>> [  291.009332]  <IRQ>
->>>>> [  291.009333]  dump_stack+0x7b/0x93
->>>>> [  291.009333]  intel_gpio_irq_ack.cold+0x22/0x27
->>>>> [  291.009334]  handle_edge_irq+0xe4/0x310
->>>>> [  291.009334]  generic_handle_irq+0x4b/0x60
->>>>> [  291.009335]  intel_gpio_irq+0x11f/0x1c0
->>>>> [  291.009335]  __handle_irq_event_percpu+0x77/0x190
->>>>> [  291.009336]  ? handle_level_irq+0x200/0x200
->>>>> [  291.009336]  handle_irq_event+0x6c/0x100
->>>>> [  291.009337]  handle_fasteoi_irq+0xd8/0x250
->>>>> [  291.009337]  asm_call_irq_on_stack+0xf/0x20
->>>>> [  291.009338]  </IRQ>
->>>>> [  291.009338]  arch_do_IRQ_pipelined+0x11d/0x230
->>>>> [  291.009339]  sync_current_irq_stage+0x157/0x1f0
->>>>                   ^^
->>>>My understanding is that you are not handling an HW IRQ, you are in the
->>>>stage where the inband IRQ log is being processed. HW IRQs are already
->>>>ACKed at that stage.
->>>>
->>>>Maybe we have to understand your IRQ chip routing. Is there an IO APIC
->>>>involved? handle_fasteoi_irq() would be the first level IRQ entry point
->>>>which takes care of masking + ack.
->>>
->>> Yes. IOAPIC is the first level for external devices. handle_fasteoi_irq() is
->>registered in io_apic driver. There is second level pinctrl device acting as
->>gpiochip which has irq domains where sd/mmc cd interrupt alloced from ,
->>which need to be acked in handle_edge_irq.
->>>
->>> Regards
->>>
->>> Hongzhan Chen
->>>>
->>>>> [  291.009339]  handle_irq_pipelined_finish+0xa2/0x1a0
->>>>> [  291.009340]  arch_pipeline_entry+0xdb/0x120
->>>>> [  291.009340]  asm_common_interrupt+0x1e/0x40
->>>>> [  291.009341] RIP: 0010:cpu_idle_poll.isra.0+0x3a/0x110
->>>>> [  291.009342] Code: 00 85 d2 0f 8f 9c 00 00 00 e8 72 33 28 ff 65 48 8b 1c
->>25
->>>>00 ad 01 00 e8 a4 29 27 ff 48 8b 03 a8 08 74 0b eb 1c f3 90 48 8b 03 <a8> 08
->>75
->>>>13 8b 05 cc 6b 01 01 85 c0 75 ed e8 f3 22 2a ff 85 c0 75
->>>>> [  291.009342] RSP: 0018:ffffffffa1803ec0 EFLAGS: 00000202
->>>>>
->>>>> Regards
->>>>>
->>>>> Hongzhan Chen
->>>>> >
->>>>> > But: If we use the dovetail sources to build a kernel with pipelining
->>>>> > disabled we have to ACK the IRQ. I assume pipelining is active on your
->>>>> > end.
->>>>> >
->>>>> > As Jan said, I'm searching for a similar problem for some time now that
->>>>> > I can only reproduce on VirtualBox VMM. In my case I'm seeing a stall,
->>>>> > not a storm. I will give it a try, let's see.
->>>>> >
->>>>> > >
->>>>> > > After patching:
->>>>> > > 128:          2          0          0          0  INTC1020:01  112      0000:00:1a.1 cd
->>>>> > >
->>>>> > > Before patching:
->>>>> > > 128:    2440190          0          0          0  INTC1020:01  112      0000:00:1a.1
->>cd
->>>>> > >
->>>>> > > Regards
->>>>> > >
->>>>> > > Hongzhan Chen
->>>>> > > >
->>>>> > > > Could you please check if we call unmask_irq() with HW IRQs
->>enabled?
->>>>If
->>>>> > > > so, I have an idea what is going on...
->>>>> > > >
->>>>> > > > Florian
->>>>> > >
->>>>>
->>
->>To start with, prior to any further analysis:
->>
->>diff --git a/drivers/pinctrl/intel/pinctrl-intel.h b/drivers/pinctrl/intel/pinctrl-
->>intel.h
->>index 65628423bf639..b7afa763ee079 100644
->>--- a/drivers/pinctrl/intel/pinctrl-intel.h
->>+++ b/drivers/pinctrl/intel/pinctrl-intel.h
->>@@ -222,7 +222,7 @@ struct intel_pinctrl_context {
->>  */
->> struct intel_pinctrl {
->> 	struct device *dev;
->>-	raw_spinlock_t lock;
->>+	hard_spinlock_t lock;
->
-> I already modified it at first when we found the issue.  But it does not work with it.
->
-> After patching my patch[2] I mentioned, the issue disappear finally.
->
-
-Ok, but the patch is papering over the real issue I believe.
-
--- 
-Philippe.
