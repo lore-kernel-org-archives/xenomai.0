@@ -1,208 +1,276 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75AD41FCC
-	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 07:09:49 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202308310709416c79f1166a4ef6c19f
-        for <xenomai@lists.linux.dev>;
-        Thu, 31 Aug 2023 09:09:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=w14iChf7G0+5AIr/4KOnB0Icq0yg9t+3LV64loO34dU=;
- b=GpBiZkOc5bSTDfRTV08zHs8XCL+LIZLP1zlMKm3JPC9pfk4/Nd0XApxjA6GIVmFlHtz2eR
- u0BvuBLd2AOXnEam7lcZROGNR3NkcBT40pjksDFKBTJ6mQiRAQdRE4DSiNhlkx9DT8T/e/kr
- RujUSul57TnH065YVuC7W6AVR21fE=;
-Message-ID: <42d72c52569d30b9ecaf8fd30dd777abd422adf1.camel@siemens.com>
-Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced from
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B8F53BD
+	for <xenomai@lists.linux.dev>; Thu, 31 Aug 2023 07:39:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693467591; x=1725003591;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=36oRM4iF3XqdPekEkzOoPADEuCtzG1HaOGBoJpcy9gI=;
+  b=ZpL/A29T6a8oD4uotM+aZshW0h2OQQ/tVhkzYPicejURa3LSnwwvVoiy
+   ly/jSYU+9tD8zruzr18tKLRA+pP98e6slC/ZNvGT5xtWjgHkOoxyuLuU9
+   INZRkXJEztZO6rNL9BbBIjB16grsEVhK1pWIkMAWlOkrnPkTKrlJVXrxJ
+   FfI4v9WcIG15sNeQzmv82KjdFTyxTjGtEoyIjPvgLHI7kUAvz5Dqil+iu
+   DihnUNi/sMT9OUDUwV1bmk4775OfI+Fn+Lx8TZaX1mqxeZ+eMNh7f09Fn
+   3N+2HCocam+KHay0QoiwTFCUQZiGs8ipwg3on/lKd48XGUSSoZNQV00XL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="406842863"
+X-IronPort-AV: E=Sophos;i="6.02,216,1688454000"; 
+   d="scan'208";a="406842863"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 00:39:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="986102250"
+X-IronPort-AV: E=Sophos;i="6.02,216,1688454000"; 
+   d="scan'208";a="986102250"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Aug 2023 00:39:41 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Thu, 31 Aug 2023 00:39:40 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Thu, 31 Aug 2023 00:39:39 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Thu, 31 Aug 2023 00:39:39 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Thu, 31 Aug 2023 00:39:39 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nRCYKbDUgKb5ijzJv94NbY9w/aX6x+jSbuDOZGcxKaEPpOahdgCSkuuHQhpCRI8TsMjr2F5DvFdOLygC98GTI0XSs+lgf9J0OtBZ7h+LzX2MUcMk1uql8rAM8Zp2tIUpbTa8dVS47hMkK4FYC9KrcgcqvlvGVRrA4AJXkiNioNZpyEOCFZzPRmsvEhIuiRwv6RGCtPdvUwj6iJEQl7NAKeT5nFY+INHsaqABjiyiTX53NwUQRPI2fBHffm14uc0POBEEy5kCkxKVkdjhbsP8qJRLJFEDu6aFLmLvyj4jWSmjv5HiCZoUnVXQJW66Vh9+441/7Gy+oeQav8nLKPbOVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=36oRM4iF3XqdPekEkzOoPADEuCtzG1HaOGBoJpcy9gI=;
+ b=Fp9EveTXcSx0Z3aHMJUF7mQPQf1/+cdx3uCv6icYmwB7mTMO9aPPSKWCvYBO5/8IirnK1m7vNMnQwWqCIhp2T0ULv/z0xgyTptKJWgoLbVhJgu6LStyb+Ga4NJmsarxNTaak2pB/LWnPBeuodzdRHZPjm7biM5id4ibW+86WGkh+J2PGIVBewlB+BZfg6QfPZYyLMcFyC3NY0Jv3uRW9X0906+5miOz92Nf2QC/+JXugkjC+NKpHmMoeKeSNXtDkNMVO77IS8lUWxTp9bqGOYTQLSN+noeMA/8t5/18ZLbaPJ8Wb/uOEnzGLDd5WIM+hP6TUzGyh4svTRh0RdCJ6FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
+ by CH0PR11MB5347.namprd11.prod.outlook.com (2603:10b6:610:ba::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.21; Thu, 31 Aug
+ 2023 07:39:37 +0000
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::9f36:bd07:796b:9d38]) by MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::9f36:bd07:796b:9d38%7]) with mapi id 15.20.6745.020; Thu, 31 Aug 2023
+ 07:39:36 +0000
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
+CC: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>
+Subject: RE: irq storm on sd/mmc card detect gpio interrupt alloced from
  pinctrl device
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
-	 <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>
-Date: Thu, 31 Aug 2023 09:09:41 +0200
-In-Reply-To: <MN2PR11MB428547B97385F160CD2E4394F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
-References: 
-	<MN2PR11MB42855A234CF8BF7D17E9E2ECF2E6A@MN2PR11MB4285.namprd11.prod.outlook.com>
+Thread-Topic: irq storm on sd/mmc card detect gpio interrupt alloced from
+ pinctrl device
+Thread-Index: Adna7t33BX+CE6qmT/ikjq1kbx2b0QAI4iMAAAETyqAAC50cgAAXhiDAAA22coAAAKjtQA==
+Date: Thu, 31 Aug 2023 07:39:36 +0000
+Message-ID: <MN2PR11MB4285133F95080135AD983AC4F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <MN2PR11MB42855A234CF8BF7D17E9E2ECF2E6A@MN2PR11MB4285.namprd11.prod.outlook.com>
 	 <d5505413fbbf778aacaeb40effe8cb0ea61107b9.camel@siemens.com>
 	 <MN2PR11MB4285D68E3408171C181D9C20F2E6A@MN2PR11MB4285.namprd11.prod.outlook.com>
 	 <463948a9bd09ddf6062f879fa9746b0c70e6a9ab.camel@siemens.com>
 	 <MN2PR11MB428547B97385F160CD2E4394F2E5A@MN2PR11MB4285.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <42d72c52569d30b9ecaf8fd30dd777abd422adf1.camel@siemens.com>
+In-Reply-To: <42d72c52569d30b9ecaf8fd30dd777abd422adf1.camel@siemens.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|CH0PR11MB5347:EE_
+x-ms-office365-filtering-correlation-id: 511c40e2-4694-4025-3104-08dba9f56d49
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rhNWf2/K+RWDJYtR2eepex3Hboq+0r0qlQ8K5YHYvM/yBHPxz7SJwGzL7+chPkOC5YFg70U+u7hq+FCAoCWRb5npR20F1dVm2vSGok711CT/PONiLwn1sKvw0tczZekrYyYI8x5GD+OIhCv69hZY8OBDX8Bs5Iq88B+fP1o3KG119tPIvdwNFAFtYuttvLSG0mgO0+BDXZ1hAqpT7DHMtOFjZqN75e/Zti3S8JxedwBOTfqrvfXVnWGqbfE/t82CkfJvfFIJehfsdKXp8ckHx9VfwT7LgF2snfSTmG+U14s0ijCPBXmH4HXSLaBVRLbbht3g8qvDsBGKkmHBiOaAIkgP0O1WQPuciDdKzTKL/56/zV6i1dP/CKg9ttSL661l/M/it7ZpnPtABhlKEtH8/OP7hB0qkhEfNzUBlroEYGK4vGWWWq87+zJkEapAfpUR4wtj657Ae7IQ6X2M0/fXhQIhkm4aNXa7XSQmz29mG0Oc0/aH4cJsy3/kMZPNI+ypIJVa+962GfVRsMBqmU+11HMXtHZRvb0tcJB7TcGgh12U7e77f/xE4DMtXlDr2rNKSihz68oZIQPKvtMwySlkqbvNZIFXn68C3OWYSAz/MllOexPF5HlQmEYGOL53/NUp
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(396003)(136003)(366004)(376002)(1800799009)(186009)(451199024)(6506007)(71200400001)(7696005)(9686003)(53546011)(478600001)(83380400001)(2906002)(26005)(6916009)(66476007)(54906003)(64756008)(41300700001)(66556008)(316002)(66446008)(66946007)(76116006)(52536014)(5660300002)(8936002)(4326008)(8676002)(82960400001)(33656002)(55016003)(86362001)(38100700002)(38070700005)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OVUzNTZOakpHazhWUitNdmJMNFNPVUIvUi94M1ROdjhnTTVTbXVOcFl2cEhp?=
+ =?utf-8?B?T21TcmJ2b083QUZ2enBjcWxldkRjZTkwdmMvekJmSjIvR0REZlgySHYvaDBv?=
+ =?utf-8?B?aHlackRxdkkrZjc4T0dtR2hldGJJTHprVkkrYXlRY3hLa2x4KzIxTkJKUzdx?=
+ =?utf-8?B?SlhUTnRuQ3I3QkRWNVc4YTVqdFZVTnlvSTIrdklUeHkwK1dvR1BQVW1DTzRZ?=
+ =?utf-8?B?ZWxIRTVmS0pHa3p2cndUUVdCLzc0Nno0cjM5MFRqcmNsNjN3M21pa3ZuNEFv?=
+ =?utf-8?B?ZEpkT0cza1J6WE9iWGszQ243OFJneE5OMXYvYVhZa1krNUZFcG1BTkI2VjZU?=
+ =?utf-8?B?RFNVUGhTdmZGQjlLeW1Pb0pjakptVEpiSjE3TWo2RStXZkg2RHI4cnViam5T?=
+ =?utf-8?B?SFJSWjZyTnlyU0tsbXNNeXZmYVBMRHQyZWRmZEVTd3J2VXVweEdlK0NjOC9i?=
+ =?utf-8?B?TzYxM1d6U3NFWTl2YUhVdll3MDlMemJJaWRHYkpuSDlYNDJlQnNQSVF1VG9M?=
+ =?utf-8?B?aUNTZFkybWh4ZDJ3dkxabldDOWlBV2VtL09NZEZ0VHBJdVlSREJaU2dWTWxr?=
+ =?utf-8?B?Ym5yZkozZE4zc0wyOXZtRURSak5Sc0dKeTBkbDJXUWR6UlBhcU9LRDgyVzU3?=
+ =?utf-8?B?ZDNBQzBBMnVrVmh4MzJwSjlFZ25JSk5YRm1hcTlUem9zVk8vVzlUb2ZDbm9v?=
+ =?utf-8?B?Z1NiUW84ZzVFckpVNU51M0x3NWQzWUNqUWI1SjVFSmxPVHJYdkl3Zzg3Ulhw?=
+ =?utf-8?B?OXZpcm5JcVJLUGcwanZUY2drN2xtT0ZGbGJxZU5tTHdTUFJ6ZkgzK29WQ1VE?=
+ =?utf-8?B?NzJZSmJWNVpqakN5b2toVUpwdCtkazZhZXBsVVdtOEhKdEJxSlJwV2VDR1F1?=
+ =?utf-8?B?YWdRSU8vY3pyU3RGS2hNcmxXN3pWWXl3RHZhN0w5Z2JzdW9QbTMzYVRmOCsz?=
+ =?utf-8?B?VS91UlgvN0Y3SExHN0c0bDduYkE4QksrNXlhQmVQM2pKcTNJMEVDaURoaWg5?=
+ =?utf-8?B?dDBSNHNBUGVQaDN0dWdVYXc2WTgxT1FEZUZwUmxpUUV6eDd0MCtQWmF0SnRz?=
+ =?utf-8?B?Slh0RHdkc3gxWmtRaXhyUnM0ZUxLZ1AvdTVNYkk2a0ZvdUtHc21UVEptTTlL?=
+ =?utf-8?B?TVE4a3RLT0wyajZOay8rRE1QSXBFYnMrdWFQTU1WRFpocW84djU2YnBtSXZl?=
+ =?utf-8?B?MldzWGNsSzZSejBKZkx4cm5IaFRTR3U0bTBrK2s5ZW5weDFPTlJzVXMxM05a?=
+ =?utf-8?B?eG1HdmlIb1Exc0RrN2ozZHZlbUxMME5tcGhWS0ZpcVJQdVYrN3l2Yjg0bEox?=
+ =?utf-8?B?d1gvTnFrZ09ZUHVCTlJoOFhPM1NWamYvaEc3SFU2emgza2dXYng2OTFva0Vh?=
+ =?utf-8?B?VWt4cEp1elJWSXZiNGNaUjhSNzdabU52dE4xWkVaaDJFNForNWVyck9HVjZE?=
+ =?utf-8?B?VWlhUWRZbHBpMzRBRElwL3U1OU16VDNQWVdsTVJvbFRPZDIrTzZHOFIxbmcv?=
+ =?utf-8?B?UTk5Z3gzZSs3WEQyaHNiRk5PUW1nMWdCSXk2bTE0UnUzTlAyWkp1NXIvWUE2?=
+ =?utf-8?B?U0hPUjlCUUJnREFrcW85Nm9QN1B4eUk2YVpqTEYrYXJxYy9VMFpCcDVHcWdJ?=
+ =?utf-8?B?YjVXdzh1YXhZdVpERTJzaGVMbGZhbkpJWWNGNE5NYVUzVGdJNFJBNC8zbnpO?=
+ =?utf-8?B?Z0c2bEdLMmRtVmlmLzRQYzFoRUtHM0t4VndYNC91TmpCNVFqKzhTcmllQ3Z5?=
+ =?utf-8?B?bXZHQ05KWHA3Z0JMKzhVdmZlNkpDdW1rSDRrUVhlTkpqK2VMaWJOUTBiUW01?=
+ =?utf-8?B?MVFTbHpKUjdCMUVrZ0RwcEFZMkEzY3FtUjN2VWdjYWszRlZGbExnTGg1Y0dn?=
+ =?utf-8?B?SGhYZXRMWjl4c09UYmx1WVk2TTVjc2ZLTXhwOHZVS0VnUlhIQllIaXorWnla?=
+ =?utf-8?B?bjlySlhVS1N0S2p4NWlzVzVnNDZraHVsaDVUMmlQVUVPdzc3dHRYb0NpeWta?=
+ =?utf-8?B?WHM2V1RrUlphVytoeGhaQ2FRNnpDZFVzNHY1eGQvd2FuUU52SkJlN3ZlZEN5?=
+ =?utf-8?B?VWg0RnFRK3ZpTjhBbDQ4ZFlLakY5VVFQUlpnTEhvbDFZQzVqa25XOG1yYmFD?=
+ =?utf-8?Q?3RI3+kYO52BPO9nj+p/dO8h3V?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 511c40e2-4694-4025-3104-08dba9f56d49
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2023 07:39:36.8055
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aXoWz/g2dE7JuASaCVcSn7o3nR1WCkj02A1IR3wULfI1FUpTNq8/A2DqhwtkkIhpe1hc7DSOvF8j7EgdyprFNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5347
+X-OriginatorOrg: intel.com
 
-On Thu, 2023-08-31 at 00:45 +0000, Chen, Hongzhan wrote:
->=20
-> > -----Original Message-----
-> > From: Florian Bezdeka <florian.bezdeka@siemens.com>
-> > Sent: Wednesday, August 30, 2023 9:23 PM
-> > To: Chen, Hongzhan <hongzhan.chen@intel.com>
-> > Cc: Kiszka, Jan <jan.kiszka@siemens.com>; xenomai@lists.linux.dev; Phil=
-ippe
-> > Gerum <rpm@xenomai.org>
-> > Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced fro=
-m
-> > pinctrl device
-> >=20
-> > On Wed, 2023-08-30 at 07:54 +0000, Chen, Hongzhan wrote:
-> > >=20
-> > > > -----Original Message-----
-> > > > From: Florian Bezdeka <florian.bezdeka@siemens.com>
-> > > > Sent: Wednesday, August 30, 2023 3:20 PM
-> > > > To: Chen, Hongzhan <hongzhan.chen@intel.com>;
-> > xenomai@lists.linux.dev
-> > > > Subject: Re: irq storm on sd/mmc card detect gpio interrupt alloced=
- from
-> > > > pinctrl device
-> > > >=20
-> > > > On Wed, 2023-08-30 at 03:05 +0000, Chen, Hongzhan wrote:
-> > > > > Hi Philippe/Jan
-> > > > >=20
-> > > > > We found there is irq storm issue like [1] on sd/mmc card detect
-> > interrupt
-> > > > alloced from
-> > > > > pinctrl device with Xenomai 3.2 Dovetail 5.10.*
-> > > > > According to our test,  the patch [2] works for such issue in our=
- case. It
-> > > > seems that handle_edge_irq
-> > > > > never ack the irq to clear the interrupt status for the Linux gpi=
-o interrupt.
-> > > > >=20
-> > > > > I am wondering if there is any side-effect for this patch, Please=
- suggest.
-> > > > >=20
-> > > > > Regards
-> > > > >=20
-> > > > > Hongzhan Chen
-> > > > >=20
-> > > > > [1]:
-> > > > > cat /proc/interrupts
-> > > > >   14:    2440190          0          0          0  IR-IO-APIC   1=
-4    -fasteoi
-> > INTC1020:00,
-> > > > INTC1020:01, INTC1020:03, INTC1020:04, INTC1020:05
-> > > > > 128:    2440190          0          0          0  INTC1020:01  11=
-2      0000:00:1a.1 cd
-> > > > >=20
-> > > > > [2]:
-> > > > > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> > > > > index 6aca6c036ada..4d08eaf076e9 100644
-> > > > > --- a/kernel/irq/chip.c
-> > > > > +++ b/kernel/irq/chip.c
-> > > > > @@ -869,7 +869,6 @@ void handle_edge_irq(struct irq_desc *desc)
-> > > > >         kstat_incr_irqs_this_cpu(desc);
-> > > > >=20
-> > > > >         /* Start handling the irq */
-> > > > > -       if (!irqs_pipelined())
-> > > > >                 chip->irq_ack(&desc->irq_data);
-> > > > >=20
-> > > > >=20
-> > > >=20
-> > > > That doesn't make much sense. A IRQ storm means that we unmasked th=
-e
-> > > > IRQ to early or forgot to mask it.
-> > > >=20
-> > > > A forgotten ACK would mean the IRQ stalls, so it would never be fir=
-ed
-> > > > again. No?
-> > >=20
-> > > According to the test, it seems forgotten ACK will keep firing interr=
-upt here
-> > like
-> > > following comparing:
-> >=20
-> > This doesn't make sense (IMHO).
-> > Can you provide a callstack from handle_edge_irq() in case
-> > on_pipeline_entry() returns false?
-> >=20
-> > The IRQ should be ACKed on pipeline entry already, even if
-> > handle_edge_irq() is called again (from Linux/Inband context) the IRQ
-> > should already be ACKed.
->=20
-> Following stack is dumped after patching my patch. Without patching there=
- is no intel_gpio_irq_ack. It is called in handle_irq_pipelined_finish from=
- which it already called irq_exit_pipeline before sync_current_irq_stage. T=
-hat is why on_pipeline_entry returned false in handle_edge_irq
->=20
->=20
->=20
-> [  291.009330] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G     U            =
-5.10.179-intel-ese-standard-lts-dovetail+ #1
-> [  291.009331] Hardware name: Intel Corporation Elkhart Lake Embedded Pla=
-tform/ElkhartLake LPDDR4x T3 CRB, BIOS EHLSFWI1.R00.5204.A01.2305180757 05/=
-18/2023
-> [  291.009332] IRQ stage: Linux
-> [  291.009332] Call Trace:
-> [  291.009332]  <IRQ>
-> [  291.009333]  dump_stack+0x7b/0x93
-> [  291.009333]  intel_gpio_irq_ack.cold+0x22/0x27
-> [  291.009334]  handle_edge_irq+0xe4/0x310
-> [  291.009334]  generic_handle_irq+0x4b/0x60
-> [  291.009335]  intel_gpio_irq+0x11f/0x1c0
-> [  291.009335]  __handle_irq_event_percpu+0x77/0x190
-> [  291.009336]  ? handle_level_irq+0x200/0x200
-> [  291.009336]  handle_irq_event+0x6c/0x100
-> [  291.009337]  handle_fasteoi_irq+0xd8/0x250
-> [  291.009337]  asm_call_irq_on_stack+0xf/0x20
-> [  291.009338]  </IRQ>
-> [  291.009338]  arch_do_IRQ_pipelined+0x11d/0x230
-> [  291.009339]  sync_current_irq_stage+0x157/0x1f0
-                   ^^
-My understanding is that you are not handling an HW IRQ, you are in the
-stage where the inband IRQ log is being processed. HW IRQs are already
-ACKed at that stage.
-
-Maybe we have to understand your IRQ chip routing. Is there an IO APIC
-involved? handle_fasteoi_irq() would be the first level IRQ entry point
-which takes care of masking + ack.
-
-> [  291.009339]  handle_irq_pipelined_finish+0xa2/0x1a0
-> [  291.009340]  arch_pipeline_entry+0xdb/0x120
-> [  291.009340]  asm_common_interrupt+0x1e/0x40
-> [  291.009341] RIP: 0010:cpu_idle_poll.isra.0+0x3a/0x110
-> [  291.009342] Code: 00 85 d2 0f 8f 9c 00 00 00 e8 72 33 28 ff 65 48 8b 1=
-c 25 00 ad 01 00 e8 a4 29 27 ff 48 8b 03 a8 08 74 0b eb 1c f3 90 48 8b 03 <=
-a8> 08 75 13 8b 05 cc 6b 01 01 85 c0 75 ed e8 f3 22 2a ff 85 c0 75
-> [  291.009342] RSP: 0018:ffffffffa1803ec0 EFLAGS: 00000202
->=20
-> Regards
->=20
-> Hongzhan Chen
-> >=20
-> > But: If we use the dovetail sources to build a kernel with pipelining
-> > disabled we have to ACK the IRQ. I assume pipelining is active on your
-> > end.
-> >=20
-> > As Jan said, I'm searching for a similar problem for some time now that
-> > I can only reproduce on VirtualBox VMM. In my case I'm seeing a stall,
-> > not a storm. I will give it a try, let's see.
-> >=20
-> > >=20
-> > > After patching:
-> > > 128:          2          0          0          0  INTC1020:01  112   =
-   0000:00:1a.1 cd
-> > >=20
-> > > Before patching:
-> > > 128:    2440190          0          0          0  INTC1020:01  112   =
-   0000:00:1a.1 cd
-> > >=20
-> > > Regards
-> > >=20
-> > > Hongzhan Chen
-> > > >=20
-> > > > Could you please check if we call unmask_irq() with HW IRQs enabled=
-? If
-> > > > so, I have an idea what is going on...
-> > > >=20
-> > > > Florian
-> > >=20
->=20
-
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEZsb3JpYW4gQmV6ZGVrYSA8
+Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KPlNlbnQ6IFRodXJzZGF5LCBBdWd1c3QgMzEs
+IDIwMjMgMzoxMCBQTQ0KPlRvOiBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
+b20+DQo+Q2M6IEtpc3prYSwgSmFuIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPjsgeGVub21haUBs
+aXN0cy5saW51eC5kZXY7IFBoaWxpcHBlDQo+R2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj5TdWJq
+ZWN0OiBSZTogaXJxIHN0b3JtIG9uIHNkL21tYyBjYXJkIGRldGVjdCBncGlvIGludGVycnVwdCBh
+bGxvY2VkIGZyb20NCj5waW5jdHJsIGRldmljZQ0KPg0KPk9uIFRodSwgMjAyMy0wOC0zMSBhdCAw
+MDo0NSArMDAwMCwgQ2hlbiwgSG9uZ3poYW4gd3JvdGU6DQo+Pg0KPj4gPiAtLS0tLU9yaWdpbmFs
+IE1lc3NhZ2UtLS0tLQ0KPj4gPiBGcm9tOiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVr
+YUBzaWVtZW5zLmNvbT4NCj4+ID4gU2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMzAsIDIwMjMgOToy
+MyBQTQ0KPj4gPiBUbzogQ2hlbiwgSG9uZ3poYW4gPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0K
+Pj4gPiBDYzogS2lzemthLCBKYW4gPGphbi5raXN6a2FAc2llbWVucy5jb20+OyB4ZW5vbWFpQGxp
+c3RzLmxpbnV4LmRldjsNCj5QaGlsaXBwZQ0KPj4gPiBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0K
+Pj4gPiBTdWJqZWN0OiBSZTogaXJxIHN0b3JtIG9uIHNkL21tYyBjYXJkIGRldGVjdCBncGlvIGlu
+dGVycnVwdCBhbGxvY2VkIGZyb20NCj4+ID4gcGluY3RybCBkZXZpY2UNCj4+ID4NCj4+ID4gT24g
+V2VkLCAyMDIzLTA4LTMwIGF0IDA3OjU0ICswMDAwLCBDaGVuLCBIb25nemhhbiB3cm90ZToNCj4+
+ID4gPg0KPj4gPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+ID4gPiA+IEZyb206
+IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0KPj4gPiA+ID4g
+U2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMzAsIDIwMjMgMzoyMCBQTQ0KPj4gPiA+ID4gVG86IENo
+ZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47DQo+PiA+IHhlbm9tYWlAbGlz
+dHMubGludXguZGV2DQo+PiA+ID4gPiBTdWJqZWN0OiBSZTogaXJxIHN0b3JtIG9uIHNkL21tYyBj
+YXJkIGRldGVjdCBncGlvIGludGVycnVwdCBhbGxvY2VkDQo+ZnJvbQ0KPj4gPiA+ID4gcGluY3Ry
+bCBkZXZpY2UNCj4+ID4gPiA+DQo+PiA+ID4gPiBPbiBXZWQsIDIwMjMtMDgtMzAgYXQgMDM6MDUg
+KzAwMDAsIENoZW4sIEhvbmd6aGFuIHdyb3RlOg0KPj4gPiA+ID4gPiBIaSBQaGlsaXBwZS9KYW4N
+Cj4+ID4gPiA+ID4NCj4+ID4gPiA+ID4gV2UgZm91bmQgdGhlcmUgaXMgaXJxIHN0b3JtIGlzc3Vl
+IGxpa2UgWzFdIG9uIHNkL21tYyBjYXJkIGRldGVjdA0KPj4gPiBpbnRlcnJ1cHQNCj4+ID4gPiA+
+IGFsbG9jZWQgZnJvbQ0KPj4gPiA+ID4gPiBwaW5jdHJsIGRldmljZSB3aXRoIFhlbm9tYWkgMy4y
+IERvdmV0YWlsIDUuMTAuKg0KPj4gPiA+ID4gPiBBY2NvcmRpbmcgdG8gb3VyIHRlc3QsICB0aGUg
+cGF0Y2ggWzJdIHdvcmtzIGZvciBzdWNoIGlzc3VlIGluIG91ciBjYXNlLg0KPkl0DQo+PiA+ID4g
+PiBzZWVtcyB0aGF0IGhhbmRsZV9lZGdlX2lycQ0KPj4gPiA+ID4gPiBuZXZlciBhY2sgdGhlIGly
+cSB0byBjbGVhciB0aGUgaW50ZXJydXB0IHN0YXR1cyBmb3IgdGhlIExpbnV4IGdwaW8NCj5pbnRl
+cnJ1cHQuDQo+PiA+ID4gPiA+DQo+PiA+ID4gPiA+IEkgYW0gd29uZGVyaW5nIGlmIHRoZXJlIGlz
+IGFueSBzaWRlLWVmZmVjdCBmb3IgdGhpcyBwYXRjaCwgUGxlYXNlDQo+c3VnZ2VzdC4NCj4+ID4g
+PiA+ID4NCj4+ID4gPiA+ID4gUmVnYXJkcw0KPj4gPiA+ID4gPg0KPj4gPiA+ID4gPiBIb25nemhh
+biBDaGVuDQo+PiA+ID4gPiA+DQo+PiA+ID4gPiA+IFsxXToNCj4+ID4gPiA+ID4gY2F0IC9wcm9j
+L2ludGVycnVwdHMNCj4+ID4gPiA+ID4gICAxNDogICAgMjQ0MDE5MCAgICAgICAgICAwICAgICAg
+ICAgIDAgICAgICAgICAgMCAgSVItSU8tQVBJQyAgIDE0ICAgIC1mYXN0ZW9pDQo+PiA+IElOVEMx
+MDIwOjAwLA0KPj4gPiA+ID4gSU5UQzEwMjA6MDEsIElOVEMxMDIwOjAzLCBJTlRDMTAyMDowNCwg
+SU5UQzEwMjA6MDUNCj4+ID4gPiA+ID4gMTI4OiAgICAyNDQwMTkwICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICAwICBJTlRDMTAyMDowMSAgMTEyICAgICAgMDAwMDowMDoxYS4xDQo+Y2QN
+Cj4+ID4gPiA+ID4NCj4+ID4gPiA+ID4gWzJdOg0KPj4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEva2Vy
+bmVsL2lycS9jaGlwLmMgYi9rZXJuZWwvaXJxL2NoaXAuYw0KPj4gPiA+ID4gPiBpbmRleCA2YWNh
+NmMwMzZhZGEuLjRkMDhlYWYwNzZlOSAxMDA2NDQNCj4+ID4gPiA+ID4gLS0tIGEva2VybmVsL2ly
+cS9jaGlwLmMNCj4+ID4gPiA+ID4gKysrIGIva2VybmVsL2lycS9jaGlwLmMNCj4+ID4gPiA+ID4g
+QEAgLTg2OSw3ICs4NjksNiBAQCB2b2lkIGhhbmRsZV9lZGdlX2lycShzdHJ1Y3QgaXJxX2Rlc2Mg
+KmRlc2MpDQo+PiA+ID4gPiA+ICAgICAgICAga3N0YXRfaW5jcl9pcnFzX3RoaXNfY3B1KGRlc2Mp
+Ow0KPj4gPiA+ID4gPg0KPj4gPiA+ID4gPiAgICAgICAgIC8qIFN0YXJ0IGhhbmRsaW5nIHRoZSBp
+cnEgKi8NCj4+ID4gPiA+ID4gLSAgICAgICBpZiAoIWlycXNfcGlwZWxpbmVkKCkpDQo+PiA+ID4g
+PiA+ICAgICAgICAgICAgICAgICBjaGlwLT5pcnFfYWNrKCZkZXNjLT5pcnFfZGF0YSk7DQo+PiA+
+ID4gPiA+DQo+PiA+ID4gPiA+DQo+PiA+ID4gPg0KPj4gPiA+ID4gVGhhdCBkb2Vzbid0IG1ha2Ug
+bXVjaCBzZW5zZS4gQSBJUlEgc3Rvcm0gbWVhbnMgdGhhdCB3ZSB1bm1hc2tlZA0KPnRoZQ0KPj4g
+PiA+ID4gSVJRIHRvIGVhcmx5IG9yIGZvcmdvdCB0byBtYXNrIGl0Lg0KPj4gPiA+ID4NCj4+ID4g
+PiA+IEEgZm9yZ290dGVuIEFDSyB3b3VsZCBtZWFuIHRoZSBJUlEgc3RhbGxzLCBzbyBpdCB3b3Vs
+ZCBuZXZlciBiZSBmaXJlZA0KPj4gPiA+ID4gYWdhaW4uIE5vPw0KPj4gPiA+DQo+PiA+ID4gQWNj
+b3JkaW5nIHRvIHRoZSB0ZXN0LCBpdCBzZWVtcyBmb3Jnb3R0ZW4gQUNLIHdpbGwga2VlcCBmaXJp
+bmcgaW50ZXJydXB0DQo+aGVyZQ0KPj4gPiBsaWtlDQo+PiA+ID4gZm9sbG93aW5nIGNvbXBhcmlu
+ZzoNCj4+ID4NCj4+ID4gVGhpcyBkb2Vzbid0IG1ha2Ugc2Vuc2UgKElNSE8pLg0KPj4gPiBDYW4g
+eW91IHByb3ZpZGUgYSBjYWxsc3RhY2sgZnJvbSBoYW5kbGVfZWRnZV9pcnEoKSBpbiBjYXNlDQo+
+PiA+IG9uX3BpcGVsaW5lX2VudHJ5KCkgcmV0dXJucyBmYWxzZT8NCj4+ID4NCj4+ID4gVGhlIElS
+USBzaG91bGQgYmUgQUNLZWQgb24gcGlwZWxpbmUgZW50cnkgYWxyZWFkeSwgZXZlbiBpZg0KPj4g
+PiBoYW5kbGVfZWRnZV9pcnEoKSBpcyBjYWxsZWQgYWdhaW4gKGZyb20gTGludXgvSW5iYW5kIGNv
+bnRleHQpIHRoZSBJUlENCj4+ID4gc2hvdWxkIGFscmVhZHkgYmUgQUNLZWQuDQo+Pg0KPj4gRm9s
+bG93aW5nIHN0YWNrIGlzIGR1bXBlZCBhZnRlciBwYXRjaGluZyBteSBwYXRjaC4gV2l0aG91dCBw
+YXRjaGluZyB0aGVyZQ0KPmlzIG5vIGludGVsX2dwaW9faXJxX2Fjay4gSXQgaXMgY2FsbGVkIGlu
+IGhhbmRsZV9pcnFfcGlwZWxpbmVkX2ZpbmlzaCBmcm9tIHdoaWNoDQo+aXQgYWxyZWFkeSBjYWxs
+ZWQgaXJxX2V4aXRfcGlwZWxpbmUgYmVmb3JlIHN5bmNfY3VycmVudF9pcnFfc3RhZ2UuIFRoYXQg
+aXMgd2h5DQo+b25fcGlwZWxpbmVfZW50cnkgcmV0dXJuZWQgZmFsc2UgaW4gaGFuZGxlX2VkZ2Vf
+aXJxDQo+Pg0KPj4NCj4+DQo+PiBbICAyOTEuMDA5MzMwXSBDUFU6IDAgUElEOiAwIENvbW06IHN3
+YXBwZXIvMCBUYWludGVkOiBHICAgICBVDQo+NS4xMC4xNzktaW50ZWwtZXNlLXN0YW5kYXJkLWx0
+cy1kb3ZldGFpbCsgIzENCj4+IFsgIDI5MS4wMDkzMzFdIEhhcmR3YXJlIG5hbWU6IEludGVsIENv
+cnBvcmF0aW9uIEVsa2hhcnQgTGFrZSBFbWJlZGRlZA0KPlBsYXRmb3JtL0Vsa2hhcnRMYWtlIExQ
+RERSNHggVDMgQ1JCLCBCSU9TDQo+RUhMU0ZXSTEuUjAwLjUyMDQuQTAxLjIzMDUxODA3NTcgMDUv
+MTgvMjAyMw0KPj4gWyAgMjkxLjAwOTMzMl0gSVJRIHN0YWdlOiBMaW51eA0KPj4gWyAgMjkxLjAw
+OTMzMl0gQ2FsbCBUcmFjZToNCj4+IFsgIDI5MS4wMDkzMzJdICA8SVJRPg0KPj4gWyAgMjkxLjAw
+OTMzM10gIGR1bXBfc3RhY2srMHg3Yi8weDkzDQo+PiBbICAyOTEuMDA5MzMzXSAgaW50ZWxfZ3Bp
+b19pcnFfYWNrLmNvbGQrMHgyMi8weDI3DQo+PiBbICAyOTEuMDA5MzM0XSAgaGFuZGxlX2VkZ2Vf
+aXJxKzB4ZTQvMHgzMTANCj4+IFsgIDI5MS4wMDkzMzRdICBnZW5lcmljX2hhbmRsZV9pcnErMHg0
+Yi8weDYwDQo+PiBbICAyOTEuMDA5MzM1XSAgaW50ZWxfZ3Bpb19pcnErMHgxMWYvMHgxYzANCj4+
+IFsgIDI5MS4wMDkzMzVdICBfX2hhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KzB4NzcvMHgxOTANCj4+
+IFsgIDI5MS4wMDkzMzZdICA/IGhhbmRsZV9sZXZlbF9pcnErMHgyMDAvMHgyMDANCj4+IFsgIDI5
+MS4wMDkzMzZdICBoYW5kbGVfaXJxX2V2ZW50KzB4NmMvMHgxMDANCj4+IFsgIDI5MS4wMDkzMzdd
+ICBoYW5kbGVfZmFzdGVvaV9pcnErMHhkOC8weDI1MA0KPj4gWyAgMjkxLjAwOTMzN10gIGFzbV9j
+YWxsX2lycV9vbl9zdGFjaysweGYvMHgyMA0KPj4gWyAgMjkxLjAwOTMzOF0gIDwvSVJRPg0KPj4g
+WyAgMjkxLjAwOTMzOF0gIGFyY2hfZG9fSVJRX3BpcGVsaW5lZCsweDExZC8weDIzMA0KPj4gWyAg
+MjkxLjAwOTMzOV0gIHN5bmNfY3VycmVudF9pcnFfc3RhZ2UrMHgxNTcvMHgxZjANCj4gICAgICAg
+ICAgICAgICAgICAgXl4NCj5NeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgeW91IGFyZSBub3QgaGFu
+ZGxpbmcgYW4gSFcgSVJRLCB5b3UgYXJlIGluIHRoZQ0KPnN0YWdlIHdoZXJlIHRoZSBpbmJhbmQg
+SVJRIGxvZyBpcyBiZWluZyBwcm9jZXNzZWQuIEhXIElSUXMgYXJlIGFscmVhZHkNCj5BQ0tlZCBh
+dCB0aGF0IHN0YWdlLg0KPg0KPk1heWJlIHdlIGhhdmUgdG8gdW5kZXJzdGFuZCB5b3VyIElSUSBj
+aGlwIHJvdXRpbmcuIElzIHRoZXJlIGFuIElPIEFQSUMNCj5pbnZvbHZlZD8gaGFuZGxlX2Zhc3Rl
+b2lfaXJxKCkgd291bGQgYmUgdGhlIGZpcnN0IGxldmVsIElSUSBlbnRyeSBwb2ludA0KPndoaWNo
+IHRha2VzIGNhcmUgb2YgbWFza2luZyArIGFjay4NCg0KWWVzLiBJT0FQSUMgaXMgdGhlIGZpcnN0
+IGxldmVsIGZvciBleHRlcm5hbCBkZXZpY2VzLiBoYW5kbGVfZmFzdGVvaV9pcnEoKSBpcyByZWdp
+c3RlcmVkIGluIGlvX2FwaWMgZHJpdmVyLiBUaGVyZSBpcyBzZWNvbmQgbGV2ZWwgcGluY3RybCBk
+ZXZpY2UgYWN0aW5nIGFzIGdwaW9jaGlwIHdoaWNoIGhhcyBpcnEgZG9tYWlucyB3aGVyZSBzZC9t
+bWMgY2QgaW50ZXJydXB0IGFsbG9jZWQgZnJvbSAsIHdoaWNoIG5lZWQgdG8gYmUgYWNrZWQgaW4g
+aGFuZGxlX2VkZ2VfaXJxLg0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCj4NCj4+IFsgIDI5
+MS4wMDkzMzldICBoYW5kbGVfaXJxX3BpcGVsaW5lZF9maW5pc2grMHhhMi8weDFhMA0KPj4gWyAg
+MjkxLjAwOTM0MF0gIGFyY2hfcGlwZWxpbmVfZW50cnkrMHhkYi8weDEyMA0KPj4gWyAgMjkxLjAw
+OTM0MF0gIGFzbV9jb21tb25faW50ZXJydXB0KzB4MWUvMHg0MA0KPj4gWyAgMjkxLjAwOTM0MV0g
+UklQOiAwMDEwOmNwdV9pZGxlX3BvbGwuaXNyYS4wKzB4M2EvMHgxMTANCj4+IFsgIDI5MS4wMDkz
+NDJdIENvZGU6IDAwIDg1IGQyIDBmIDhmIDljIDAwIDAwIDAwIGU4IDcyIDMzIDI4IGZmIDY1IDQ4
+IDhiIDFjIDI1DQo+MDAgYWQgMDEgMDAgZTggYTQgMjkgMjcgZmYgNDggOGIgMDMgYTggMDggNzQg
+MGIgZWIgMWMgZjMgOTAgNDggOGIgMDMgPGE4PiAwOCA3NQ0KPjEzIDhiIDA1IGNjIDZiIDAxIDAx
+IDg1IGMwIDc1IGVkIGU4IGYzIDIyIDJhIGZmIDg1IGMwIDc1DQo+PiBbICAyOTEuMDA5MzQyXSBS
+U1A6IDAwMTg6ZmZmZmZmZmZhMTgwM2VjMCBFRkxBR1M6IDAwMDAwMjAyDQo+Pg0KPj4gUmVnYXJk
+cw0KPj4NCj4+IEhvbmd6aGFuIENoZW4NCj4+ID4NCj4+ID4gQnV0OiBJZiB3ZSB1c2UgdGhlIGRv
+dmV0YWlsIHNvdXJjZXMgdG8gYnVpbGQgYSBrZXJuZWwgd2l0aCBwaXBlbGluaW5nDQo+PiA+IGRp
+c2FibGVkIHdlIGhhdmUgdG8gQUNLIHRoZSBJUlEuIEkgYXNzdW1lIHBpcGVsaW5pbmcgaXMgYWN0
+aXZlIG9uIHlvdXINCj4+ID4gZW5kLg0KPj4gPg0KPj4gPiBBcyBKYW4gc2FpZCwgSSdtIHNlYXJj
+aGluZyBmb3IgYSBzaW1pbGFyIHByb2JsZW0gZm9yIHNvbWUgdGltZSBub3cgdGhhdA0KPj4gPiBJ
+IGNhbiBvbmx5IHJlcHJvZHVjZSBvbiBWaXJ0dWFsQm94IFZNTS4gSW4gbXkgY2FzZSBJJ20gc2Vl
+aW5nIGEgc3RhbGwsDQo+PiA+IG5vdCBhIHN0b3JtLiBJIHdpbGwgZ2l2ZSBpdCBhIHRyeSwgbGV0
+J3Mgc2VlLg0KPj4gPg0KPj4gPiA+DQo+PiA+ID4gQWZ0ZXIgcGF0Y2hpbmc6DQo+PiA+ID4gMTI4
+OiAgICAgICAgICAyICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICBJTlRDMTAyMDow
+MSAgMTEyICAgICAgMDAwMDowMDoxYS4xIGNkDQo+PiA+ID4NCj4+ID4gPiBCZWZvcmUgcGF0Y2hp
+bmc6DQo+PiA+ID4gMTI4OiAgICAyNDQwMTkwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAg
+ICAwICBJTlRDMTAyMDowMSAgMTEyICAgICAgMDAwMDowMDoxYS4xIGNkDQo+PiA+ID4NCj4+ID4g
+PiBSZWdhcmRzDQo+PiA+ID4NCj4+ID4gPiBIb25nemhhbiBDaGVuDQo+PiA+ID4gPg0KPj4gPiA+
+ID4gQ291bGQgeW91IHBsZWFzZSBjaGVjayBpZiB3ZSBjYWxsIHVubWFza19pcnEoKSB3aXRoIEhX
+IElSUXMgZW5hYmxlZD8NCj5JZg0KPj4gPiA+ID4gc28sIEkgaGF2ZSBhbiBpZGVhIHdoYXQgaXMg
+Z29pbmcgb24uLi4NCj4+ID4gPiA+DQo+PiA+ID4gPiBGbG9yaWFuDQo+PiA+ID4NCj4+DQoNCg==
