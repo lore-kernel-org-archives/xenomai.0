@@ -1,23 +1,22 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43F6C8DD
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:30 +0000 (UTC)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230901194527d8b43bab93acc94654
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FDFAC8EC
+	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:31 +0000 (UTC)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230901194528d208b922a38ebd0a44
         for <xenomai@lists.linux.dev>;
-        Fri, 01 Sep 2023 21:45:27 +0200
+        Fri, 01 Sep 2023 21:45:28 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=2bDPzCsLbVPWZDt22/Nvbo4GhzCxBBKKNo0Bpz0nYJM=;
- b=nd/+ocLXM5JUjPwJzIfmA51vmTWaNVMRFIuVvhwmU7sZ1M0ux9qqqR4Sea9MVwJOrTvpWA
- XImirnag6Q7qwZ+lYmgmoZG43ERh3BdHNjLIBlMyIcqq/ijxF0Ljl4r4ob2epuwJFrzXlCyu
- fmmHN7iIAHs1av45ZDOOZB5dXinHA=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=j/GTxWvHkcW+1FKoT/vpn5Ic8fioEkx16KNCpXdqwOE=;
+ b=WkbZJcR7UV+5pA2aAT372V663thNTbEnqMehun9imbb0iE7tRw75BmVZDEvVBFmPo4IWNz
+ sAyywLfj/rrZ4k8cEXP2Gy3qpLfG/Q9C/upi2KwkAJqvVe53fc3NAXpq0kTXKQLY/HVsagUh
+ oGoVu+9UlQ3K4MTMG1OQ0AZrOsUIQ=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 00/17] Enable stable/v3.2.x branch to be buildable with
- 6.1 kernels
-Date: Fri, 01 Sep 2023 21:45:23 +0200
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
+Date: Fri, 01 Sep 2023 21:45:25 +0200
+Subject: [PATCH stable/v3.2.x v2 02/17] Use linux/stddef.h instead of
+ toolchain header
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -26,108 +25,37 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFM/8mQC/5WOQQ6DIBBFr2Jm3bGItZKueo/GBeJQSRAasMTGe
- PcSeoKuJn9m/vt/h0jBUIRbtUOgZKLxLgt+qkDN0j0JzZQ1cMZbJrhAbX0w0iE5OVrCuJbRIkf
- tA16xQcUmcZlIaN11kDmjjIRjkE7NmeTe1ublK5A2Wwl+wA9yTm3N6w2GfJ5NXH34lFqpKU9/N
- EgNMmTERN9nByNxj4YWcrFWfoHhOI4vLOnYPPgAAAA=
+Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-2-5189cfb05a62@siemens.com>
+References: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
+In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-with this series applied the stable/3.2.x branch gets buildable with
-the 6.1 LTS series of Linux / dovetail.
+[ master commit ed213eca23696cd4194e5ab8bd149d56863480a3 ]
 
-Most of the patches were taken 1:1 from the master branch. The commit id
-on the master branch is mentioned in each patch / commit.
-
-The last patch is a manual backport to support 4.19 kernels. The
-referenced commit in master did not have to care about such old kernels.
-We already stopped supporting them in master. Please review carefully!
-
-Best regards,
-Florian
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
-Changes in v2:
-- Folded backports into the patches that introduced the need for a
-  backport
-- Link to v1: https://lore.kernel.org/r/20230828-florian-enable-stable-3-2-for-6-1-v1-0-0e08770820e8@siemens.com
+ kernel/cobalt/posix/sem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
----
-Florian Bezdeka (5):
-      drivers/net: Switch to dev_addr_set and eth_hw_addr_set
-      drivers/spi: Convert to GPIO descriptor API
-      drivers/spi: Switch to spi_controller API
-      cobalt/pipe: Allow building with kernels up to 6.1
-      cobalt/x86: Allow building with kernels up to 6.1
+diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+index 6fb4dc2c2..71b8c52f5 100644
+--- a/kernel/cobalt/posix/sem.c
++++ b/kernel/cobalt/posix/sem.c
+@@ -17,7 +17,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
+-#include <stddef.h>
++#include <linux/stddef.h>
+ #include <linux/err.h>
+ #include <cobalt/kernel/time.h>
+ #include "internal.h"
 
-Jan Kiszka (12):
-      Account for switch to pde_data in 5.17
-      Use linux/stddef.h instead of toolchain header
-      drivers/serial/16550A: Account for privatized defines in 5.17
-      drivers: Convert pci_set_*dma_mask to DMA API
-      drivers: Convert pci_alloc/free_consistent to DMA API
-      drivers: Convert pci_map/unmap_single/page to DMA API
-      drivers: Convert pci_dma_sync_single_for_cpu/device to DMA API
-      cobalt: Resolve cast-function-type warnings
-      drivers/net/experimental/e1000: Use fallthrough
-      drivers/spi: Account for dropped return value of spi_driver.remove
-      drivers/testing/heapcheck: Replace prandom_u32 with custom implementation
-      drivers/net/pcnet32: Adjust for kernel 6.1
-
- .../arch/x86/include/asm/xenomai/syscall32.h       |   3 +-
- .../cobalt/arch/x86/include/asm/xenomai/wrappers.h |   4 +-
- .../cobalt/include/asm-generic/xenomai/wrappers.h  |  15 +++
- kernel/cobalt/pipe.c                               |   1 +
- kernel/cobalt/posix/sem.c                          |   2 +-
- kernel/cobalt/posix/syscall.c                      |   3 +-
- kernel/cobalt/rtdm/device.c                        |  10 +-
- kernel/cobalt/rtdm/fd.c                            |   2 +-
- kernel/cobalt/vfile.c                              |   8 +-
- kernel/drivers/analogy/device.c                    |   2 +-
- kernel/drivers/analogy/national_instruments/mite.c |  12 +-
- kernel/drivers/analogy/national_instruments/mite.h |   4 +-
- kernel/drivers/can/rtcan_module.c                  |   4 +-
- kernel/drivers/can/sja1000/rtcan_sja1000_proc.c    |   2 +-
- kernel/drivers/net/addons/cap.c                    |   5 +-
- kernel/drivers/net/addons/proxy.c                  |   2 +-
- kernel/drivers/net/drivers/8139too.c               |  18 ++-
- kernel/drivers/net/drivers/e1000/e1000_main.c      |  84 ++++++++------
- kernel/drivers/net/drivers/eepro100.c              |  75 +++++++------
- kernel/drivers/net/drivers/experimental/3c59x.c    |  21 ++--
- .../net/drivers/experimental/e1000/e1000_82540.c   |   2 +-
- .../net/drivers/experimental/e1000/e1000_82571.c   |   2 +-
- .../net/drivers/experimental/e1000/e1000_ethtool.c |  14 ++-
- .../net/drivers/experimental/e1000/e1000_main.c    | 122 +++++++++++----------
- .../net/drivers/experimental/rt2500/rt2500pci.c    |   4 +-
- kernel/drivers/net/drivers/freescale/fec_main.c    |  11 +-
- kernel/drivers/net/drivers/natsemi.c               |  35 +++---
- kernel/drivers/net/drivers/pcnet32.c               |  57 +++++-----
- kernel/drivers/net/drivers/r8169.c                 |  36 +++---
- kernel/drivers/net/drivers/tulip/interrupt.c       |  18 +--
- kernel/drivers/net/drivers/tulip/tulip_core.c      |  51 +++++----
- kernel/drivers/net/drivers/via-rhine.c             |  71 ++++++------
- kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c   |   4 +-
- kernel/drivers/net/stack/rtmac/rtmac_vnic.c        |   5 +-
- kernel/drivers/serial/16550A_pci.h                 |  19 +++-
- kernel/drivers/spi/spi-bcm2835.c                   |  63 +++++++----
- kernel/drivers/spi/spi-device.c                    |  61 +++++++----
- kernel/drivers/spi/spi-device.h                    |   1 -
- kernel/drivers/spi/spi-master.c                    |  31 +++---
- kernel/drivers/spi/spi-master.h                    |   2 +-
- kernel/drivers/spi/spi-omap2-mcspi-rt.c            |  20 ++--
- kernel/drivers/spi/spi-sun6i.c                     |  24 ++--
- kernel/drivers/testing/heapcheck.c                 |  14 ++-
- 43 files changed, 542 insertions(+), 402 deletions(-)
----
-base-commit: ee85e330c26c72974d57d4130c24e3369f1d85c4
-change-id: 20230828-florian-enable-stable-3-2-for-6-1-c0d84de8ff55
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
