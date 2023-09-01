@@ -1,22 +1,22 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0517DF50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7821DDDCF
 	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:34 +0000 (UTC)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230901194532935e145e5319fe1b73
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230901194534358129c7249895afb9
         for <xenomai@lists.linux.dev>;
-        Fri, 01 Sep 2023 21:45:32 +0200
+        Fri, 01 Sep 2023 21:45:34 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=/yk5tkvS8hNK5wSPnqi0VCCmmsWuzVjb1OMWsNI7jQA=;
- b=naUFfe6BTrXAqzJBanVh13NxSi7aMv6FCUmdW6BgNDNDSo31yhBCV+uoVeefZN3r+8sT1h
- 1Ti5ax3jEFbR0/4VFsroJqBGFhzSJh8YgyV4zGMzXr/BALFys1r46e84b0tGPSdgfeY1p5oe
- MN8+hq5e1cpMsfFEkvyWRozze8PNA=;
+ bh=ta9G6OOkAr7k2J/8jFwM9Dy4UXOBXdiXnbBMrJBhwSg=;
+ b=msdQJjLeLrgwcfwb3UEaNF7QgJB9hVJZHjt2CfmiPBU9swCv9ipwt4VYR8yoZGPle+VvVy
+ vXOvGblVf9vkSAEzPGjTIgPYPmKi1cNvXnFyC+OKH9+8Zyf4fHm1UHlDY8cXGuJz0kVryzP6
+ 2Toa+fSpLmFwPNhty+rNMrLmO5LCg=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 01 Sep 2023 21:45:33 +0200
-Subject: [PATCH stable/v3.2.x v2 10/17] drivers/net/experimental/e1000: Use
- fallthrough
+Date: Fri, 01 Sep 2023 21:45:37 +0200
+Subject: [PATCH stable/v3.2.x v2 14/17] drivers/testing/heapcheck: Replace
+ prandom_u32 with custom implementation
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-10-5189cfb05a62@siemens.com>
+Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-14-5189cfb05a62@siemens.com>
 References: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -35,40 +35,72 @@ Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-[ master commit b0c1f8afbfdb84c88579e99a53a9f3632477b289 ]
+[ master commit d41c353fc20318ee2282c959cdf676f2e9c53437 ]
+
+prandom_u32 was dropped from 6.1, but get_random_u32 is not oob-safe. So
+we only use it for initializing a seed and then rely on our own version
+of next_pseudo_random32. The latter is still available via
+linux/prandom.h, but given that there are no more in-tree users, it
+could be dropped at any point in the future.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/drivers/experimental/e1000/e1000_82540.c | 2 +-
- kernel/drivers/net/drivers/experimental/e1000/e1000_82571.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ kernel/drivers/testing/heapcheck.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_82540.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_82540.c
-index 5c4fec0cb..6e6e1f085 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000_82540.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_82540.c
-@@ -91,7 +91,7 @@ static s32 e1000_init_phy_params_82540(struct e1000_hw *hw)
- 	case e1000_82546_rev_3:
- 		if (phy->id == M88E1011_I_PHY_ID)
- 			break;
--		/* Fall Through */
-+		fallthrough;
- 	default:
- 		ret_val = -E1000_ERR_PHY;
- 		goto out;
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_82571.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_82571.c
-index ab43f4990..af32a34d0 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000_82571.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_82571.c
-@@ -200,7 +200,7 @@ static s32 e1000_init_nvm_params_82571(struct e1000_hw *hw)
- 			E1000_WRITE_REG(hw, E1000_EECD, eecd);
- 			break;
+diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
+index 1b97d1d02..fc6e91d3a 100644
+--- a/kernel/drivers/testing/heapcheck.c
++++ b/kernel/drivers/testing/heapcheck.c
+@@ -53,6 +53,8 @@ static struct runstats *statistics;
+ 
+ static int nrstats;
+ 
++static unsigned int random_seed;
++
+ static inline void breathe(int loops)
+ {
+ 	if ((loops % 1000) == 0)
+@@ -68,6 +70,12 @@ static inline void do_swap(void *left, void *right)
+ 	memcpy(right, trans, sizeof(struct chunk));
+ }
+ 
++static inline unsigned int pseudo_random(void)
++{
++	random_seed = random_seed * 1664525 + 1013904223;
++	return random_seed;
++}
++
+ static void random_shuffle(void *vbase, size_t nmemb)
+ {
+ 	struct {
+@@ -76,7 +84,7 @@ static void random_shuffle(void *vbase, size_t nmemb)
+ 	unsigned int j, k;
+ 
+ 	for (j = nmemb; j > 0; j--) {
+-		k = (unsigned int)(prandom_u32() % nmemb) + 1;
++		k = (unsigned int)(pseudo_random() % nmemb) + 1;
+ 		if (j == k)
+ 			continue;
+ 		do_swap(&base[j - 1], &base[k - 1]);
+@@ -166,6 +174,8 @@ static int test_seq(size_t heap_size, size_t block_size, int flags)
+ 	bool done_frag;
+ 	void *mem, *p;
+ 
++	random_seed = get_random_u32();
++
+ 	maxblocks = heap_size / block_size;
+ 
+ 	mem = vmalloc(heap_size);
+@@ -224,7 +234,7 @@ static int test_seq(size_t heap_size, size_t block_size, int flags)
  		}
--		/* Fall Through */
-+		fallthrough;
- 	default:
- 		nvm->type	= e1000_nvm_eeprom_spi;
- 		size = (u16)((eecd & E1000_EECD_SIZE_EX_MASK) >>
+ 		chunks[n].ptr = p;
+ 		if (flags & RTTST_HEAPCHECK_PATTERN) {
+-			chunks[n].pattern = (enum pattern)(prandom_u32() % 3);
++			chunks[n].pattern = (enum pattern)(pseudo_random() % 3);
+ 			fill_pattern(chunks[n].ptr, block_size, chunks[n].pattern);
+ 		}
+ 		breathe(n);
 
 -- 
 2.39.2
