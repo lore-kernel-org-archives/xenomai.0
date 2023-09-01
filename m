@@ -1,22 +1,22 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B56CA5A
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:33 +0000 (UTC)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230901194531ffac0fa1a8adabc3ac
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B429C8E8
+	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:31 +0000 (UTC)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202309011945296a503500e5caa4cb70
         for <xenomai@lists.linux.dev>;
-        Fri, 01 Sep 2023 21:45:31 +0200
+        Fri, 01 Sep 2023 21:45:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=X6d9HUMzigKG7y82Pt7unGZ0bU9JeBnMJoewyzvrDKk=;
- b=UD3KKBsJI17vXdwhcTW+I8DsAOm2pJfNUrlXi1w6y1CCqaiJ7d4TQWGl+/Ghl5DrQ7i2zv
- /z5vK7Zo6yK+1OuxypbO5fe1nz4s3IsHmWUU8Ba5UXP6HTmGlehH1f5ic/1knI/sfMZk2sik
- ORnTIEyTZcccHuZtKN72Tux9LDhHs=;
+ bh=qCL9k2R/UxIVOfhn9BgmjgbEYcqJNEdbPs2RonLBMKc=;
+ b=X6n0/9P0HuAfH+3THhjN8b8Tmje7NJrVt+gOHiEM64VJl3YJKOPfCjjzGiZpU2tSdGEQR8
+ B0/S5Q++g3SrGqL/24FPxemy+lvtmlYU5Khl6g0s5cSkmXi6WSVUfhSm2+73EuveevbRzQ6M
+ YLPI0C1UL+4c/3qUoN1+oy+UKe/ag=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 01 Sep 2023 21:45:31 +0200
-Subject: [PATCH stable/v3.2.x v2 08/17] drivers: Convert
- pci_dma_sync_single_for_cpu/device to DMA API
+Date: Fri, 01 Sep 2023 21:45:27 +0200
+Subject: [PATCH stable/v3.2.x v2 04/17] drivers/net: Switch to dev_addr_set
+ and eth_hw_addr_set
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-8-5189cfb05a62@siemens.com>
+Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-4-5189cfb05a62@siemens.com>
 References: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
@@ -33,137 +33,113 @@ Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+[ master commit 5af4f16609c11805e86dc35164727235185b8676 ]
 
-[ master commit c1be648a9e6aa1f580f1727f2d22e25ebe33b6d2 ]
-
-The legacy API has been finally dropped, and the new one was "already"
-available with 5.10.
+Latest kernel complain about accessing dev_addr directly and push us
+toward the accessor functions. Use them and provide wrappers for
+kernels prior to 5.15.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+[Florian: Backport to stable, add 4.19 support]
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/eepro100.c | 26 ++++++++++++++------------
- kernel/drivers/net/drivers/r8169.c    | 10 +++++-----
- 2 files changed, 19 insertions(+), 17 deletions(-)
+ kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 11 +++++++++++
+ kernel/drivers/net/addons/cap.c                      |  5 ++---
+ kernel/drivers/net/addons/proxy.c                    |  2 +-
+ kernel/drivers/net/drivers/freescale/fec_main.c      | 11 +++++++----
+ kernel/drivers/net/stack/rtmac/rtmac_vnic.c          |  5 ++---
+ 5 files changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/eepro100.c b/kernel/drivers/net/drivers/eepro100.c
-index 74385d61d..1985befe7 100644
---- a/kernel/drivers/net/drivers/eepro100.c
-+++ b/kernel/drivers/net/drivers/eepro100.c
-@@ -1076,8 +1076,9 @@ speedo_init_rx_ring(struct rtnet_device *rtdev)
- 		rtskb_reserve(skb, sizeof(struct RxFD));
- 		if (last_rxf) {
- 			last_rxf->link = cpu_to_le32(sp->rx_ring_dma[i]);
--			pci_dma_sync_single_for_device(sp->pdev, last_rxf_dma,
--					sizeof(struct RxFD), PCI_DMA_TODEVICE);
-+			dma_sync_single_for_device(&sp->pdev->dev, last_rxf_dma,
-+						   sizeof(struct RxFD),
-+						   DMA_TO_DEVICE);
- 		}
- 		last_rxf = rxf;
- 		last_rxf_dma = sp->rx_ring_dma[i];
-@@ -1086,14 +1087,15 @@ speedo_init_rx_ring(struct rtnet_device *rtdev)
- 		/* This field unused by i82557. */
- 		rxf->rx_buf_addr = 0xffffffff;
- 		rxf->count = cpu_to_le32(PKT_BUF_SZ << 16);
--		pci_dma_sync_single_for_device(sp->pdev, sp->rx_ring_dma[i],
--				sizeof(struct RxFD), PCI_DMA_TODEVICE);
-+		dma_sync_single_for_device(&sp->pdev->dev, sp->rx_ring_dma[i],
-+					   sizeof(struct RxFD), DMA_TO_DEVICE);
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index 99059d2e9..7654047b4 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -252,6 +252,17 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define close_fd(__ufd)	__close_fd(current->files, __ufd)
+ #endif
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0) && \
++    (LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0) || \
++     LINUX_VERSION_CODE < KERNEL_VERSION(5,10,188)) && \
++    (LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0) || \
++     LINUX_VERSION_CODE < KERNEL_VERSION(5,4,251)) && \
++    (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0) || \
++     LINUX_VERSION_CODE < KERNEL_VERSION(4,19,291))
++#define dev_addr_set(dev, addr)		memcpy((dev)->dev_addr, addr, MAX_ADDR_LEN)
++#define eth_hw_addr_set(dev, addr)	memcpy((dev)->dev_addr, addr, ETH_ALEN)
++#endif
++
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0)
+ #define pde_data(i)	PDE_DATA(i)
+ #endif
+diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
+index 1e8644069..3784b6522 100644
+--- a/kernel/drivers/net/addons/cap.c
++++ b/kernel/drivers/net/addons/cap.c
+@@ -263,9 +263,8 @@ static int tap_dev_open(struct net_device *dev)
+ 	if (err == 0)
+ 		return -EIDRM;
+ 
+-	memcpy(dev->dev_addr,
+-	       (*(struct rtnet_device **)netdev_priv(dev))->dev_addr,
+-	       MAX_ADDR_LEN);
++	dev_addr_set(dev,
++		     (*(struct rtnet_device **)netdev_priv(dev))->dev_addr);
+ 
+ 	return 0;
+ }
+diff --git a/kernel/drivers/net/addons/proxy.c b/kernel/drivers/net/addons/proxy.c
+index 0b3ec74fa..f61794a4a 100644
+--- a/kernel/drivers/net/addons/proxy.c
++++ b/kernel/drivers/net/addons/proxy.c
+@@ -324,7 +324,7 @@ static void __init rtnetproxy_init(struct net_device *dev)
+ 
+ 	dev->tx_queue_len = 0;
+ #ifdef CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP
+-	memcpy(dev->dev_addr, rtnetproxy_rtdev->dev_addr, MAX_ADDR_LEN);
++	dev_addr_set(dev, rtnetproxy_rtdev->dev_addr);
+ #else
+ 	dev->flags |= IFF_NOARP;
+ #endif
+diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
+index ba2d3ed0d..50db6bc6a 100644
+--- a/kernel/drivers/net/drivers/freescale/fec_main.c
++++ b/kernel/drivers/net/drivers/freescale/fec_main.c
+@@ -1319,11 +1319,14 @@ static void fec_get_mac(struct net_device *ndev)
+ 		return;
  	}
- 	sp->dirty_rx = (unsigned int)(i - RX_RING_SIZE);
- 	/* Mark the last entry as end-of-list. */
- 	last_rxf->status = cpu_to_le32(0xC0000002);	/* '2' is flag value only. */
--	pci_dma_sync_single_for_device(sp->pdev, sp->rx_ring_dma[RX_RING_SIZE-1],
--			sizeof(struct RxFD), PCI_DMA_TODEVICE);
-+	dma_sync_single_for_device(&sp->pdev->dev,
-+				   sp->rx_ring_dma[RX_RING_SIZE-1],
-+				   sizeof(struct RxFD), DMA_TO_DEVICE);
- 	sp->last_rxf = last_rxf;
- 	sp->last_rxf_dma = last_rxf_dma;
- }
-@@ -1400,8 +1402,8 @@ static inline struct RxFD *speedo_rx_alloc(struct rtnet_device *rtdev, int entry
- 			       DMA_FROM_DEVICE);
- 	rtskb_reserve(skb, sizeof(struct RxFD));
- 	rxf->rx_buf_addr = 0xffffffff;
--	pci_dma_sync_single_for_device(sp->pdev, sp->rx_ring_dma[entry],
--			sizeof(struct RxFD), PCI_DMA_TODEVICE);
-+	dma_sync_single_for_device(&sp->pdev->dev, sp->rx_ring_dma[entry],
-+				   sizeof(struct RxFD), DMA_TO_DEVICE);
- 	return rxf;
+ 
+-	memcpy(ndev->dev_addr, iap, ETH_ALEN);
+-
+ 	/* Adjust MAC if using macaddr */
+-	if (iap == macaddr)
+-		 ndev->dev_addr[ETH_ALEN-1] = macaddr[ETH_ALEN-1] + fep->dev_id;
++	if (iap == macaddr) {
++		memcpy(tmpaddr, macaddr, ETH_ALEN);
++		tmpaddr[ETH_ALEN-1] += fep->dev_id;
++		eth_hw_addr_set(ndev, tmpaddr);
++	} else {
++		eth_hw_addr_set(ndev, iap);
++	}
  }
  
-@@ -1414,8 +1416,8 @@ static inline void speedo_rx_link(struct rtnet_device *rtdev, int entry,
- 	rxf->count = cpu_to_le32(PKT_BUF_SZ << 16);
- 	sp->last_rxf->link = cpu_to_le32(rxf_dma);
- 	sp->last_rxf->status &= cpu_to_le32(~0xC0000000);
--	pci_dma_sync_single_for_device(sp->pdev, sp->last_rxf_dma,
--			sizeof(struct RxFD), PCI_DMA_TODEVICE);
-+	dma_sync_single_for_device(&sp->pdev->dev, sp->last_rxf_dma,
-+				   sizeof(struct RxFD), DMA_TO_DEVICE);
- 	sp->last_rxf = rxf;
- 	sp->last_rxf_dma = rxf_dma;
+ /* ------------------------------------------------------------------------- */
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+index 138e276ad..4b41785db 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+@@ -114,9 +114,8 @@ static void rtmac_vnic_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
+ 
+ static int rtmac_vnic_copy_mac(struct net_device *dev)
+ {
+-	memcpy(dev->dev_addr,
+-	       (*(struct rtnet_device **)netdev_priv(dev))->dev_addr,
+-	       MAX_ADDR_LEN);
++	dev_addr_set(dev,
++		     (*(struct rtnet_device **)netdev_priv(dev))->dev_addr);
+ 
+ 	return 0;
  }
-@@ -1487,8 +1489,8 @@ speedo_rx(struct rtnet_device *rtdev, int* packets, nanosecs_abs_t *time_stamp)
- 		int status;
- 		int pkt_len;
- 
--		pci_dma_sync_single_for_cpu(sp->pdev, sp->rx_ring_dma[entry],
--			sizeof(struct RxFD), PCI_DMA_FROMDEVICE);
-+		dma_sync_single_for_cpu(&sp->pdev->dev, sp->rx_ring_dma[entry],
-+					sizeof(struct RxFD), DMA_FROM_DEVICE);
- 		status = le32_to_cpu(sp->rx_ringp[entry]->status);
- 		pkt_len = le32_to_cpu(sp->rx_ringp[entry]->count) & 0x3fff;
- 
-diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
-index eb059d32a..9b2ac7495 100644
---- a/kernel/drivers/net/drivers/r8169.c
-+++ b/kernel/drivers/net/drivers/r8169.c
-@@ -1314,7 +1314,7 @@ static void rtl8169_init_ring (struct rtnet_device *rtdev)
- 			}
- 		}//-----------------------------------------------------------------------
- 		priv->rxdesc_array_dma_addr[i] = dma_map_single(&pdev->dev, &priv->RxDescArray[i], sizeof(struct RxDesc), DMA_TO_DEVICE);
--		pci_dma_sync_single_for_device(pdev, priv->rxdesc_array_dma_addr[i], sizeof(struct RxDesc), PCI_DMA_TODEVICE);
-+		dma_sync_single_for_device(&pdev->dev, priv->rxdesc_array_dma_addr[i], sizeof(struct RxDesc), DMA_TO_DEVICE);
- 	}
- }
- 
-@@ -1448,7 +1448,7 @@ static int rtl8169_start_xmit (struct rtskb *skb, struct rtnet_device *rtdev)
- 		}
- 		priv->TxDescArray[entry].status = cpu_to_le32(status);
- 
--		pci_dma_sync_single_for_device(pdev, priv->txdesc_array_dma_addr[entry], sizeof(struct TxDesc), PCI_DMA_TODEVICE);
-+		dma_sync_single_for_device(&pdev->dev, priv->txdesc_array_dma_addr[entry], sizeof(struct TxDesc), DMA_TO_DEVICE);
- 
- 		RTL_W8 ( TxPoll, 0x40);		//set polling bit
- 
-@@ -1558,7 +1558,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
- 	cur_rx = priv->cur_rx;
- 
- 	rxdesc = &priv->RxDescArray[cur_rx];
--	pci_dma_sync_single_for_cpu(pdev, priv->rxdesc_array_dma_addr[cur_rx], sizeof(struct RxDesc), PCI_DMA_FROMDEVICE);
-+	dma_sync_single_for_cpu(&pdev->dev, priv->rxdesc_array_dma_addr[cur_rx], sizeof(struct RxDesc), DMA_FROM_DEVICE);
- 
- 	while ( ((le32_to_cpu(rxdesc->status) & OWNbit)== 0) && (rxdesc_cnt < max_interrupt_work) ){
- 
-@@ -1593,7 +1593,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
- 
- 					// Indicate rx_skb
- 					if( rx_skb != NULL ){
--						pci_dma_sync_single_for_cpu(pdev, priv->rx_skbuff_dma_addr[cur_rx], sizeof(struct RxDesc), PCI_DMA_FROMDEVICE);
-+						dma_sync_single_for_cpu(&pdev->dev, priv->rx_skbuff_dma_addr[cur_rx], sizeof(struct RxDesc), DMA_FROM_DEVICE);
- 
- 						rtskb_put ( rx_skb, pkt_size );
- 						rx_skb->protocol = rt_eth_type_trans ( rx_skb, rtdev );
-@@ -1643,7 +1643,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
- 
- 	    cur_rx = (cur_rx +1) % NUM_RX_DESC;
- 	    rxdesc = &priv->RxDescArray[cur_rx];
--	    pci_dma_sync_single_for_cpu(pdev, priv->rxdesc_array_dma_addr[cur_rx], sizeof(struct RxDesc), PCI_DMA_FROMDEVICE);
-+	    dma_sync_single_for_cpu(&pdev->dev, priv->rxdesc_array_dma_addr[cur_rx], sizeof(struct RxDesc), DMA_FROM_DEVICE);
- 
- 	}// end of while ( (priv->RxDescArray[cur_rx].status & 0x80000000)== 0)
- 
 
 -- 
 2.39.2
