@@ -1,186 +1,140 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2069.outbound.protection.outlook.com [40.107.22.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E74D0BA58
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 13:33:34 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id E82611C000D;
-	Fri,  1 Sep 2023 13:33:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1693575212;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Qhixd4HEIHo7nCqUTZe/2wTZCJ45SzZpYetBiBpREKc=;
-	b=c4MFYyXt0RUszpAqE3EpCBWbGUE8sQe2cQQFCDGt7IofxjkiQ0yx2ckMjF17aegdWpqjmV
-	EvecD0+q+RNDfV7t9NxP3AsGf2msNvXGCm8lPOhlXEwRKfYjR0lu9KNLoKwgSvpwzxpQcw
-	LtzmtOmblwjizs0FytsAgRFC8ra9GkQkvze6sWwBJhbI5vE8wH+4kAOsmRDXfZI0g67/Qr
-	gpLUWYiSyaWsaIx1xmsyMweJ1wXIc4txWVykuT/knqrM11nfDwzRP7fEf3KXmMimD2wRia
-	aOGSwkLgIJAYv2KUSI5+W64IvIkZDpVUt3wVRsoB8T8t7aUUlwd3dZPI1ln2jg==
-References: <20230825125844.588598-1-florian.bezdeka@siemens.com>
- <ec37174a-39fe-44c7-82a9-342b95682f81@siemens.com>
- <92c6af9151c4b3d2a1737484487ff1ea55e5f131.camel@siemens.com>
- <9cd49fec-3f65-47c9-91cc-d13754e29d94@siemens.com>
- <87sf83ky7h.fsf@xenomai.org>
- <618b6fc31635f1227270790282a02eaba3a02f38.camel@siemens.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev, Clara
- Kowalsky <clara.kowalsky@siemens.com>
-Subject: Re: [PATCH] arm64: dovetail: Fix undefinstr/break trap handling
-Date: Fri, 01 Sep 2023 15:29:50 +0200
-In-reply-to: <618b6fc31635f1227270790282a02eaba3a02f38.camel@siemens.com>
-Message-ID: <87edjiuifo.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 486DCBE5C
+	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 13:34:15 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aKmy+cuy9ImO58B9d/GBUj3wtmzuedVhDH/3uSlFuJmRXvbhCCxF6md65/JaMnUDXU6gnRsMWZ7UIJc3FXEXKOTJuI2QC644zfzh3gl2Vq0DgiJ0LCozzjIaCaq8KXOXkMbWcTUQmQZobjeuQtHJ2udux4J2Ur5Rh09lX70uWynfMBwh9P0NMwU5TDknRLvOOvwdEF16AxltlSv0OkYjFVn9r9eOnBGb+PTOdI69zB+ji+SrQFQbNwc38LOyLvdcEesCr607erxWyb5jBwWzBe10e/JpB8D5a2cXP5KjPcRTRybjKKMfKQVadqQl+BzPQ3B4rpOxqstv1kXtSHgSeQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p6jBgiOzggp5vm8tu/e5x5/NscZlSVLCG9uJd6oMB0o=;
+ b=IogMfel9NDfNCTMpYIOE19xNOAbN/u0o2Yf0ZHem7t5aNzQYgPB+RuGxK8nOjjpwgfsUlv6/wkolL81e8Qpi3d6/OY37NzH0JYn0ee4j3jV0/tCifqDuvzWCm1IYyLXsWCE03IMKI0DbOwzxUUdC/RjclD1CPVPOxBk33goK5KFwOcwtvd2E4SmXTjh9tt/eCGAiUy+izzU0XOyjo9aKfYkmTsAVBQcDhAj+ikYwab23Hs94RNKERcQ8sUwS3aRDvD0vKGCDtnbtLXTVLF1I6D+AfgiWaqg817zxcDzUfv4T7VRmJH1QpzLK0/HW5Fxg3JyEbJgnVo1IiPJZK+/D0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p6jBgiOzggp5vm8tu/e5x5/NscZlSVLCG9uJd6oMB0o=;
+ b=bEhelgiQb/EavYr6UtkjN197ATHHN18cI9shgXVhxOUq/9gfhzheoNf4bUqrQKk9AA/LCbuVR/9W4WZwmJie9Jj7grCfA14u4HeJBNzkCQJ4BLKExrkaJqV3dpLkA/2dcu525dKiyT3wYGyChZnCiyocwA4rBgzDWDOf/Y/fkqTFRZT23Dz7g5DxcIn2J10PcPdchiNNS2KAsvPKX3QHoZMzjL9t9+wurmWPgR6rT1rNN6w5EoDTrcrOPDsZJ/cIHWTwVnAC30b5N5iWAdz6PFIDtfD78KWzVjXk7JagjtpQQBr7KBPVaOxXAQaMZPqQHTbd92/v//a60Rn52dqByw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by GV2PR10MB6358.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:c1::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.21; Fri, 1 Sep
+ 2023 13:34:11 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2%3]) with mapi id 15.20.6745.023; Fri, 1 Sep 2023
+ 13:34:11 +0000
+Message-ID: <926e7876-c2b0-43eb-91b7-7b7f969ab208@siemens.com>
+Date: Fri, 1 Sep 2023 15:34:10 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: Status of Xenomai-images
+Content-Language: en-US
+To: Per Oberg <pero@wolfram.com>, xenomai@lists.linux.dev
+References: <340325180.1522934.1693574777740.JavaMail.zimbra@wolfram.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <340325180.1522934.1693574777740.JavaMail.zimbra@wolfram.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0122.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:97::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV2PR10MB6358:EE_
+X-MS-Office365-Filtering-Correlation-Id: 31b62d83-3307-401d-ff2a-08dbaaf0205f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	qqtyo1SdP8SYOMPsLGKk+7a+pBzSPCkQtxAX097RfT4tiUYAIajSxQxpXUZf6wb2RX9iV7YJioMLTIKE0QSMj4CAuQqdljqm2/WH6UA5OLCSfIJpHTsLFPZRaZDncnvVAUg4xMwg4I9/3BabDpQYWZTvLhCYHmysyukdVwgJa86/sTqQ4mI48o4/a8/0/M24IdQAA0hkw2F8QVjvy2E0fa7fHf8vBJQcaSG/3qnmyQc/RI8djZLMyGDN41/SV4qXvvbFFwrevOdUxU6FjBoQpcbxT38Sby6sAIeldKVwB4yfMFDKnifGelHqikrnqBAsOghMiWXEK0M3IxHaIqROhUnwChbXtyRluKFhEj3pKAYo3mqMqsn+qLu79SYo2FhsvPEHExNEY6+vvolEWfLKSwRwbyiKEAYArXEeuiOfW8KZdeg3V/lXUqfpxD166M3npT4Qz/TgUQuWrx5ql6S0N7ucyoGqCvZldcczRS6hYkuVgMNHNk2QAzr6LBUxH8e0ZnegE9GhO+hMtcogdeoKbhfR2K+ANveuD6Zu6b7ksDxSZ5W7wO4l21BP+R8okjYpoNUdupomNSb4ru3XEx9WhjnAT+zvRUf3rXolfr9QJc4Y9rbfR0p7KD8bmRQn0Ph1/bQj5Tp+P1Z3b60aQMcK5w==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(396003)(366004)(39860400002)(136003)(451199024)(186009)(1800799009)(41300700001)(6506007)(6486002)(53546011)(31696002)(6512007)(3480700007)(66476007)(82960400001)(316002)(38100700002)(2906002)(66946007)(36756003)(478600001)(66556008)(2616005)(8936002)(8676002)(26005)(31686004)(83380400001)(5660300002)(44832011)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MVd4MUt4Q29YdDMyN1JiRDk5WndReGt3M3dQaWZWSjJFelc1N1U0Rzg3aG0r?=
+ =?utf-8?B?WFg5TnJzY0JVcng0VEU2Q1p5NFBQTWFPUXVxOFJuNHRKUnpIeDVGbW53RjBO?=
+ =?utf-8?B?Q0Y3Ymx3Rm16YnFyM2ZOWGx4c092ZXM2OXc5YmFxbUVIekRXUWpDbzZyYTZE?=
+ =?utf-8?B?K01KZzFMOTZ4VEJMbVg5Q3hmL2lDMXZpT0ZCUlAxdTg3V1FaQU5LZDUrTm1X?=
+ =?utf-8?B?bXJpS2Rlb1RLdms4bTFWQjRMZGxyQkNCNEVISXhnTUdKb25nbFRub3R5ZHhV?=
+ =?utf-8?B?Yjh2eVRXRVloN1RYSU12bWtwR2pIOTJ5bjViZkhDRkJXUDVHQitjT2xWRDZq?=
+ =?utf-8?B?MUhrL1h5MDRtSlRqRVRNRkU1L21sbmQyQmtPckd1NFg0cGdxTXl0a0s0cTJw?=
+ =?utf-8?B?MVNSTFpVdFNVYjhhNG9RTzJ3TlNiRzFjbFJOTXVxUDdHbTBtc1cvZ3VycHV5?=
+ =?utf-8?B?ejROeWF5ako1ZWRyNEJsWENxUEQxUkVVdHdGNkRHQzM3QTJaRnk2UFhPQ2lL?=
+ =?utf-8?B?VENaK3BUTEszOHpzcmpSMVdZTVB0cVNLUTR1OXRUY3hnWXpCN3JQTVREWEN3?=
+ =?utf-8?B?LzVxamROUVVqcXY3ZnEzQWpSWDJkeHVldGRFcUtmYk5CbXRGOCtyeVp3MUR3?=
+ =?utf-8?B?YTgrdnhkSXdjTFZ5THg2ZHBHN1lOaUZ2c1JQOXhRamJjWTV2RUVPUHhHSnQx?=
+ =?utf-8?B?TTJFZC9TRWZIdzRrMDdLN21ZNUI1OTJOSWlyUUpuWWplYTJCcEhQQ29VOVdr?=
+ =?utf-8?B?NkJDelFFVjdVZGNPTWRabit2MWZETGlPQXdMQzE1MXBydkM4djBHTS9FMnYw?=
+ =?utf-8?B?Y08xKzB6SUtDbTh4R0RmenlrNjV1YUI5eVd4aGFZY1NrenhOckNwSFZPcytB?=
+ =?utf-8?B?NzlmZGFBd3puT0NQU3U4czBacWp1VFp5ZkVNM0loNXhiZGVzZTR5dnoyalVM?=
+ =?utf-8?B?aDlGaWlNeGI5dEZGSjA0cEJXR24vOVIrdVRaZHh1aGNiR2o4MEZUcXRaYUVY?=
+ =?utf-8?B?b2xVNGh0blIzd0hUaG5lY0lrSjRYODcxMzRtRWsyVm5FT1NTZmVFNkZ6YXFL?=
+ =?utf-8?B?dmlabVZxVlRSZUNhZ2YvSTFuWnE0cWlySHZndFJMYWEwcmU3V0pVbmJZclVq?=
+ =?utf-8?B?aUJOMTZvaHNNTHhvdzl6b0NlampnNndqRVg3SkN1LzVYWDZNYmxZM1JsWlZn?=
+ =?utf-8?B?dnFSUE1DNU1wMEhsMHZ4Qlo4K21ZVzJYM3ZTVFAyMW5YNy9pYzdxakJNYllr?=
+ =?utf-8?B?dDd0ZTdxVE51eldOcmZQS2NRMk5ObjBMOXNGU1pDdEM5L2t1L1lWdWdsRkxp?=
+ =?utf-8?B?cXZka2xrUXhMT1NiTDE4RHhwZUZNZUg2R0Jlb3JWenNnTU92Qy9WWDA4eXl5?=
+ =?utf-8?B?ZStGWXloQ3JIRWZ3d2VrL3ovdjN1L3VTOUtpNDJZRnRFMUlZUCs3NExlLzJp?=
+ =?utf-8?B?ekhuT3JkQ3hEYU81ZzNXVTllbWhXVjNDWjRrTVp2TjJkNzVLcnhDWmlpNVlD?=
+ =?utf-8?B?QVBNbkRSYlRGbGdQdGZ0cThsZ1h1dER4UFhRVG90a0xXQy9xdGxXSC8rQi8r?=
+ =?utf-8?B?M014Vm5wRkI0aFprQlJVQUtFanVQRnB4ODliazhzOUxSVWRUUGI1RC81MzlP?=
+ =?utf-8?B?OFNZc1pUM0xQWXJXbUZFajlWcmFwWExUSS9sUG9SRFUrU0dzWFdPTWNsV1Zh?=
+ =?utf-8?B?SEZSV1pEeEJOczU0Yk94NnBpUU9ZeUd6Ni9HQ05RbW9LVXVkMlQzb3VrWjF1?=
+ =?utf-8?B?MzdKbVYvWkgrZjI3a1E0VW5wUFVuRTl1Q00rOVcvdWc4dm1BbURCL3VnSjY3?=
+ =?utf-8?B?N1pWS2x2VS8xM3JCWnF0aytkakhKNnFHcmRPc0VSc2x6UDZ2ZVlvL3dlQ2po?=
+ =?utf-8?B?a0lBdVdISk1EaDBsdmJaOHNMR1k4Vk5TbUtwT2N3TDRuUjdyTXpZTVhsd290?=
+ =?utf-8?B?UFdVMlVOeXpUdlJCY1JkY3R1aTBJV1NXMURNVGlkU0dsRmxZS08rQms4bi9N?=
+ =?utf-8?B?aEQ1ZHFXdmtiNzJtUTJWYzJ6TXo4YXFnSjc5SmVhRDhyVnN1dmcwaTl0TjRq?=
+ =?utf-8?B?bnEvc1F6a1BndkdERmNpcW91QkpGU3RVOTZkTEJhMEswczVPS1JtemNXbUFl?=
+ =?utf-8?B?SFZCZ0Y0bk1BVFVocFN0dEpqSGRtVUNYalpJcGhCUnYvS3ZIeGNuSUlKMWRo?=
+ =?utf-8?B?MVE9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31b62d83-3307-401d-ff2a-08dbaaf0205f
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2023 13:34:11.7000
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: x2WW6uCHBWQqT3U6N1gBZTrDiEFIDiy2yI+Ne7+YRfr24IZPOhmKoEGmX9NfBFotKA6r7xTmhP9lYA6+MfDMwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB6358
 
+On 01.09.23 15:26, Per Oberg wrote:
+> Hello list
+> 
+> I just tried out the xenomai-images [1] but I couldn't make the images boot on my hardware. The qemu variants worked.
+> 
+> I used "kas-container menu" without any changes and tried a few combinations like
+> 
+> * Generic x86-64 EFI target
+> * Latest 3.2.x release / Head of stable/v3.2.x branch
+> * Latest 4.19-cip I-pipe version / Latest 5.4 I-pipe version / Latest 5.10 Dovetail version
+> 
+> The hardware I tried so far were PCs with intel core i3 or AMD Ryzen based architectures. I managed to get my USB stick flashed with the wic-file and boot into grub. But then it hung with a blinking cursor when trying to boot the linux kernel. 
+> 
+> Am I making some sort of silly mistake ? 
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Maybe framebuffer output is not working, and you are only "seeing" boot
+messages on the UART then.
 
-> On Mon, 2023-08-28 at 16:36 +0200, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->> > On 28.08.23 14:52, Florian Bezdeka wrote:
->> > > On Mon, 2023-08-28 at 14:33 +0200, Jan Kiszka wrote:
->> > > > On 25.08.23 14:58, Florian Bezdeka wrote:
->> > > > > When running an compat RT application on arm64 the break trap is
->> > > > > handled via the undefined instruction trap.
->> > > > > 
->> > > > > A possible call stack looks like this:
->> > > > > 
->> > > > > Call trace:
->> > > > >   handle_inband_event+0x2d0/0x320
->> > > > >   inband_event_notify+0x28/0x50
->> > > > >   signal_wake_up_state+0x7c/0xa4
->> > > > >   complete_signal+0x104/0x2d0
->> > > > >   __send_signal_locked+0x1d0/0x3e4
->> > > > >   send_signal_locked+0xf0/0x140
->> > > > >   force_sig_info_to_task+0xa0/0x164
->> > > > >   force_sig_fault+0x64/0x94
->> > > > >   arm64_force_sig_fault+0x48/0x80
->> > > > >   send_user_sigtrap+0x50/0x8c
->> > > > >   aarch32_break_handler+0xac/0x1d0
->> > > > >   do_undefinstr+0x6c/0x360
->> > > > >   el0_undef+0x4c/0xd0
->> > > > >   el0t_32_sync_handler+0xd0/0x140
->> > > > >   el0t_32_sync+0x190/0x194
->> > > > > 
->> > > > > The trap is never reported to the companion core at that stage so
->> > > > > running_oob() in do_undefinstr() will always return true. As the
->> > > > > following bailout happens before calling the compat breakpoint
->> > > > > detection (aarch32_break_handler()) debugging the compat 
->> > > > > application does not work.
->> > > > > 
->> > > > > In addition aarch32_break_handler() has to report the trap entry to the
->> > > > > companion core.
->> > > > > 
->> > > > > Reported-by: Clara Kowalsky <clara.kowalsky@siemens.com>
->> > > > > Tested-by: Clara Kowalsky <clara.kowalsky@siemens.com>
->> > > > > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> > > > > ---
->> > > > >  arch/arm64/kernel/debug-monitors.c | 3 +++
->> > > > >  arch/arm64/kernel/traps.c          | 7 -------
->> > > > >  2 files changed, 3 insertions(+), 7 deletions(-)
->> > > > > 
->> > > > > diff --git a/arch/arm64/kernel/debug-monitors.c b/arch/arm64/kernel/debug-monitors.c
->> > > > > index 32271ed24ef5..ef7ac042a0a6 100644
->> > > > > --- a/arch/arm64/kernel/debug-monitors.c
->> > > > > +++ b/arch/arm64/kernel/debug-monitors.c
->> > > > > @@ -373,7 +373,10 @@ int aarch32_break_handler(struct pt_regs *regs)
->> > > > >  	if (!bp)
->> > > > >  		return -EFAULT;
->> > > > >  
->> > > > > +	mark_trap_entry(ARM64_TRAP_UNDI, regs);
->> > > > >  	send_user_sigtrap(TRAP_BRKPT);
->> > > > > +	mark_trap_exit(ARM64_TRAP_UNDI, regs);
->> > > > > +
->> > > > >  	return 0;
->> > > > >  }
->> > > > >  NOKPROBE_SYMBOL(aarch32_break_handler);
->> > > > > diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
->> > > > > index cc68be400244..9bf2f309248f 100644
->> > > > > --- a/arch/arm64/kernel/traps.c
->> > > > > +++ b/arch/arm64/kernel/traps.c
->> > > > > @@ -489,13 +489,6 @@ void arm64_notify_segfault(unsigned long addr)
->> > > > >  
->> > > > >  void do_undefinstr(struct pt_regs *regs, unsigned long esr)
->> > > > >  {
->> > > > > -	/*
->> > > > > -	 * If the companion core did not switched us to in-band
->> > > > > -	 * context, we may assume that it has handled the trap.
->> > > > > -	 */
->> > > > > -	if (running_oob())
->> > > > > -		return;
->> > > > > -
->> > > > >  	/* check for AArch32 breakpoint instructions */
->> > > > >  	if (!aarch32_break_handler(regs))
->> > > > >  		return;
->> > > > 
->> > > > This is not against v6.5-dovetail-rebase, right? We likely need to start
->> > > > from the top, then backport to stable.
->> > > 
->> > > That applied for 6.1 and all other (lower) versions that are currently
->> > > covered by our CI. Might need some lifting for 6.5, didn't check yet.
->> > > 
->> > > > 
->> > > > Also note that this change came in via
->> > > > https://source.denx.de/Xenomai/linux-dovetail/-/commit/2b2ccdaeb8116727cf4076960d664a3cedff0ac6,
->> > > > so just dropping it will likely cause problems elsewhere. Should we
->> > > > rather move that down in the handler?
->> > > 
->> > > Well, as written in the commit message running_oob() will always return
->> > > true for RT tasks so I'm quite sure that the invalid instruction
->> > > handling was broken on arm64 for some time now. We bailed out even
->> > > before sending the notification to the companion core.
->> > > 
->> > > Moving it down might fix the compat case but native arm64 would stay
->> > > broken. No?
->> > > 
->> > 
->> > Something looks still fishy, either in the original patch that
->> > introduced the condition (I still don't get that special case) or now
->> > with this change trying to restore things. I agree that also the
->> > original change needed the notification to be delivered.
->> > 
->> > Philippe, can you help clarifying the logic behind
->> > do_undefinstr/do_el0_undef?
->> > 
->> 
->> This very much looks like an unfortunate attempt to mimic the arm32
->> logic, which does notify the core about the undefined insn trap prior to
->> calling do_undefinstr() (und_fault from the asm entry code).
->> 
->> So Florian is right, this should not apply to the arm64 side because
->> unlike arm32, we need to wait until all branches which might be able to
->> handle this fault directly from oob are considered
->> (e.g. try_emulate_mrs()), before assuming that we might need the core to
->> switch us in-band. IOW, do_el0_undef() is broken since it wrongly
->> assumes that such switch might already have happened on entry. As a
->> matter of fact, it did not for a reason.
->> 
->> I see another issue hiding in the dark: emulation of the deprecated
->> armv8 SWP{B} instruction cannot be done from the oob stage.  So in
->> addition to fixing the aarch32 break handler, I would notify the core
->> before handling the CONDTEST_PASS case as well (bluntly disabling
->> all emulations from the oob stage entirely seems wrong ATM).
->
-> So it seems we are on the same page now, that's great.
->
-> To sum up: my "backport" is missing the armv8 SWP{B} part and we still
-> lack a fix for recent dovetail versions.
->
-> Who will write the necessary fixes? Philippe, could you jump on that?
->
+Not sure if we allow for an interactive grub session, but you could try
+adjusting the kernel command line there to use console=tty0 instead of
+ttyS. If that was the reason, we should likely fix something.
 
-Would you submit a consolidated patch against 6.1 or 6.5 which would
-include all the bits we have been discussing first? I could pick it from
-there and update other branches.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Technology
+Linux Expert Center
+
