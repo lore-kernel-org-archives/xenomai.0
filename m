@@ -1,50 +1,31 @@
-Received: from relay-ext.wolfram.com (relay.wolfram.com [140.177.205.37])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22D09BE4D
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 13:26:18 +0000 (UTC)
-Received: from relay-10-128.wolfram.com (relay.wolfram.com [10.128.2.101])
-	by relay-ext.wolfram.com (Postfix) with ESMTPS id EAA8B613E
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay-ext.wolfram.com EAA8B613E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wolfram.com; s=relay;
-	t=1693574777; bh=4ER1daXRX3jAbF4sWC/VZoUfMVvAQ0sdLT+k8fLjEUw=;
-	h=Date:From:To:From;
-	b=sUieNtQfj4PDNpM7NRTvRVkfORP4S8ihFnracfyjL5vLj3pCl3gfYGpzTdcEbNV9w
-	 NcTpmk53wy+34sO5ybxmS7jXuOpaPizqSmlXkOTqYGH87AV6mbqCP5cEGg9sTqziOW
-	 NXfB6gFjYcyG7xESY7rnUyVVUJmeFXWfUNZ7oDfE=
-Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
-	by relay-10-128.wolfram.com (Postfix) with ESMTPS id E4739300053
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-Received: from wrimail03.wolfram.com (localhost [127.0.0.1])
-	by wrimail03.wolfram.com (Postfix) with ESMTPS id DF73C1006A8
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-Received: from localhost (localhost [127.0.0.1])
-	by wrimail03.wolfram.com (Postfix) with ESMTP id C9CFD1006AA
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 wrimail03.wolfram.com C9CFD1006AA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
-	s=E3ED0494-3FFA-11EB-8895-C5FFDA13CE33; t=1693574777;
-	bh=4ER1daXRX3jAbF4sWC/VZoUfMVvAQ0sdLT+k8fLjEUw=;
-	h=Date:From:To:Message-ID:MIME-Version;
-	b=CScBwmL+bZDOMZnYQ+vtI5oqj6A7ZrtX86mbIrr1+iYxUas8NLoDdI7so6AbAGfBp
-	 dFmnl3ngTRAPKU2EC4Xu6hHqtmJzUwZEqYdHpRYPB2oEcJfEHNws57ToSzIbYIhiM+
-	 hM4jvLfPDRwRLJ6qS9/tvEyC9Y14CDUhVrOhDtSaj9nQ/zgqv4qYXZcO/UuomQdcMe
-	 AOOEj5TwSBuv1+4e4xTkkW4O3D53Bc85Ae3ua4jk2D9kjpw+DU9uFcW8+4SNWxC8UF
-	 2kAOoRE5/Bo5cJWeKULToecqifvk1QbZbA8Nj5bQbqOGFp26pwpwYuSNadmfQVYts7
-	 YcnkIIFh+FFNg==
-Received: from wrimail03.wolfram.com ([127.0.0.1])
-	by localhost (wrimail03.wolfram.com [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 9jmieE4PRKhR for <xenomai@lists.linux.dev>;
-	Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
-	by wrimail03.wolfram.com (Postfix) with ESMTP id B9C961006A8
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 08:26:17 -0500 (CDT)
-Date: Fri, 1 Sep 2023 08:26:17 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-To: xenomai@lists.linux.dev
-Message-ID: <340325180.1522934.1693574777740.JavaMail.zimbra@wolfram.com>
-Subject: Status of Xenomai-images
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7ADBE4D
+	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 13:28:32 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 3B3D960002;
+	Fri,  1 Sep 2023 13:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1693574904;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Y5qz6svRrwOJW0y0gQudXJaG+hLDdyAn5Q/G771kzKk=;
+	b=MDNRl6hwgSVRmLKl9uAka+k3l8Ccgz8eF/8Pp9DcbISZgEzq7gXTmZv5R3YD7ZKsyIl1r7
+	jl0vNi4DqTexNkiy3M76TQdVyknj3Y5iVGl+DIt/39Ycb6efb4GP7DDlR3h58dBYvH/Jx1
+	PPBGPWqCS1Fl59i469DnNExKeJi3Y1PF9PyvbgOVI2Pk9twhTOjal/xBhz0J8Tn+8M83ge
+	9Ee4G3RnGYcsfwDcovGrBFspQD+2GUK/sjg3eH7E1T29v+y/57BRVhhYTPRMoEwJFOMjW2
+	Dhw+x9ouPPt2aP8pQK645padDhHcd3SfyN6R6gFeyjTn0fkfF7UOGPitnT5Rpg==
+References: <DB8PR10MB3706C1F288ABC9A40F6E7E3AF9E5A@DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jesus Villena <j.villena@ecler.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: [EVL] GPIO driver error
+Date: Fri, 01 Sep 2023 15:11:59 +0200
+In-reply-to: <DB8PR10MB3706C1F288ABC9A40F6E7E3AF9E5A@DB8PR10MB3706.EURPRD10.PROD.OUTLOOK.COM>
+Message-ID: <87il8uuio8.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -53,32 +34,29 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [46.59.13.250]
-X-Mailer: Zimbra 9.0.0_GA_4485 (ZimbraWebClient - GC116 (Linux)/9.0.0_GA_4478)
-Thread-Index: Hdoi+24XfcBzMXDjRJK6UNYLsiFkyg==
-Thread-Topic: Status of Xenomai-images
+X-GND-Sasl: rpm@xenomai.org
 
-Hello list
 
-I just tried out the xenomai-images [1] but I couldn't make the images boot=
- on my hardware. The qemu variants worked.
+Jesus Villena <j.villena@ecler.com> writes:
 
-I used "kas-container menu" without any changes and tried a few combination=
-s like
+> Hello,
+>
+> I have found and error on drivers/gpio/gpiolib-cdev.c: the function linee=
+vent_create doesn't call to init_waitqueue_head(&le->wait), which leads to =
+a critical kernel error plus rebooting when trying to use GPIOs under an EV=
+L enabled kernel.
+>
+> On branch v5.10.y-evl-rebase the fix would be on line 2026:
+>
+> 2025 =C2=A0=C2=A0=C2=A0INIT_KFIFO(le->events);
+> 2026 + init_waitqueue_head(&le->wait);
+>
+> I have seen that this error is present also on the other branches.
+>
 
-* Generic x86-64 EFI target
-* Latest 3.2.x release / Head of stable/v3.2.x branch
-* Latest 4.19-cip I-pipe version / Latest 5.4 I-pipe version / Latest 5.10 =
-Dovetail version
+Merged, thanks. You have been credited via the Reported-by tag in the
+corresponding commits, please do not hesitate to send 'formal' patches
+with your sign-off to submit them for inclusion.
 
-The hardware I tried so far were PCs with intel core i3 or AMD Ryzen based =
-architectures. I managed to get my USB stick flashed with the wic-file and =
-boot into grub. But then it hung with a blinking cursor when trying to boot=
- the linux kernel.=20
-
-Am I making some sort of silly mistake ?=20
-
-[1] https://source.denx.de/Xenomai/xenomai-images
-
-Per =C3=96berg=20
-
+--=20
+Philippe.
