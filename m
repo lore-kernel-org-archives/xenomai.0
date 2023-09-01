@@ -1,22 +1,23 @@
 Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0741C134
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43F6C8DD
 	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:30 +0000 (UTC)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202309011945273bc45c158f086b5a2a
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230901194527d8b43bab93acc94654
         for <xenomai@lists.linux.dev>;
-        Fri, 01 Sep 2023 21:45:28 +0200
+        Fri, 01 Sep 2023 21:45:27 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=96Z74E/3VspxvqKIhVYMGKUKnjO1cLAA5rfovGHKIBU=;
- b=FyWCC8RlSkQLdq2gnLQCbWBfvaM5BnXUxGGE6BKDKVrfSNT2ReCySwvfHM2E5BNn5dOd2N
- kZJhlo1oFJz0K4Y+YC/MShiKdrX7XqReIrfWy+GBKwabzSIUlhGbkji8ekVgDda1OJlU+g1n
- Ix1Km+8nKu2+QLyXp2M98XK1IuzHY=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=2bDPzCsLbVPWZDt22/Nvbo4GhzCxBBKKNo0Bpz0nYJM=;
+ b=nd/+ocLXM5JUjPwJzIfmA51vmTWaNVMRFIuVvhwmU7sZ1M0ux9qqqR4Sea9MVwJOrTvpWA
+ XImirnag6Q7qwZ+lYmgmoZG43ERh3BdHNjLIBlMyIcqq/ijxF0Ljl4r4ob2epuwJFrzXlCyu
+ fmmHN7iIAHs1av45ZDOOZB5dXinHA=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 01 Sep 2023 21:45:24 +0200
-Subject: [PATCH stable/v3.2.x v2 01/17] Account for switch to pde_data in
- 5.17
+Subject: [PATCH v2 00/17] Enable stable/v3.2.x branch to be buildable with
+ 6.1 kernels
+Date: Fri, 01 Sep 2023 21:45:23 +0200
+Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -25,129 +26,108 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-1-5189cfb05a62@siemens.com>
-References: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
-In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
+X-B4-Tracking: v=1; b=H4sIAFM/8mQC/5WOQQ6DIBBFr2Jm3bGItZKueo/GBeJQSRAasMTGe
+ PcSeoKuJn9m/vt/h0jBUIRbtUOgZKLxLgt+qkDN0j0JzZQ1cMZbJrhAbX0w0iE5OVrCuJbRIkf
+ tA16xQcUmcZlIaN11kDmjjIRjkE7NmeTe1ublK5A2Wwl+wA9yTm3N6w2GfJ5NXH34lFqpKU9/N
+ EgNMmTERN9nByNxj4YWcrFWfoHhOI4vLOnYPPgAAAA=
 To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi all,
 
-[ master commit 142a88155d2b96ab859a0ed5c86ffe2eb2a16053 ]
+with this series applied the stable/3.2.x branch gets buildable with
+the 6.1 LTS series of Linux / dovetail.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Most of the patches were taken 1:1 from the master branch. The commit id
+on the master branch is mentioned in each patch / commit.
+
+The last patch is a manual backport to support 4.19 kernels. The
+referenced commit in master did not have to care about such old kernels.
+We already stopped supporting them in master. Please review carefully!
+
+Best regards,
+Florian
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 ++++
- kernel/cobalt/vfile.c                                | 8 ++++----
- kernel/drivers/analogy/device.c                      | 2 +-
- kernel/drivers/can/rtcan_module.c                    | 4 ++--
- kernel/drivers/can/sja1000/rtcan_sja1000_proc.c      | 2 +-
- 5 files changed, 12 insertions(+), 8 deletions(-)
+Changes in v2:
+- Folded backports into the patches that introduced the need for a
+  backport
+- Link to v1: https://lore.kernel.org/r/20230828-florian-enable-stable-3-2-for-6-1-v1-0-0e08770820e8@siemens.com
 
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index 05dd6c8c5..99059d2e9 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -252,4 +252,8 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
- #define close_fd(__ufd)	__close_fd(current->files, __ufd)
- #endif
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0)
-+#define pde_data(i)	PDE_DATA(i)
-+#endif
-+
- #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
-diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
-index a0ec5cad1..05fa48a09 100644
---- a/kernel/cobalt/vfile.c
-+++ b/kernel/cobalt/vfile.c
-@@ -146,7 +146,7 @@ static void vfile_snapshot_free(struct xnvfile_snapshot_iterator *it, void *buf)
- 
- static int vfile_snapshot_open(struct inode *inode, struct file *file)
- {
--	struct xnvfile_snapshot *vfile = PDE_DATA(inode);
-+	struct xnvfile_snapshot *vfile = pde_data(inode);
- 	struct xnvfile_snapshot_ops *ops = vfile->ops;
- 	struct xnvfile_snapshot_iterator *it;
- 	int revtag, ret, nrdata;
-@@ -318,7 +318,7 @@ ssize_t vfile_snapshot_write(struct file *file, const char __user *buf,
- 			     size_t size, loff_t *ppos)
- {
- 	struct xnvfile_snapshot *vfile =
--		PDE_DATA(file->f_path.dentry->d_inode);
-+		pde_data(file->f_path.dentry->d_inode);
- 	struct xnvfile_input input;
- 	ssize_t ret;
- 
-@@ -497,7 +497,7 @@ static struct seq_operations vfile_regular_ops = {
- 
- static int vfile_regular_open(struct inode *inode, struct file *file)
- {
--	struct xnvfile_regular *vfile = PDE_DATA(inode);
-+	struct xnvfile_regular *vfile = pde_data(inode);
- 	struct xnvfile_regular_ops *ops = vfile->ops;
- 	struct xnvfile_regular_iterator *it;
- 	struct seq_file *seq;
-@@ -566,7 +566,7 @@ ssize_t vfile_regular_write(struct file *file, const char __user *buf,
- 			    size_t size, loff_t *ppos)
- {
- 	struct xnvfile_regular *vfile =
--		PDE_DATA(file->f_path.dentry->d_inode);
-+		pde_data(file->f_path.dentry->d_inode);
- 	struct xnvfile_input input;
- 	ssize_t ret;
- 
-diff --git a/kernel/drivers/analogy/device.c b/kernel/drivers/analogy/device.c
-index 5033c5d66..69492b96b 100644
---- a/kernel/drivers/analogy/device.c
-+++ b/kernel/drivers/analogy/device.c
-@@ -92,7 +92,7 @@ int a4l_rdproc_devs(struct seq_file *p, void *data)
- 
- static int a4l_proc_transfer_open(struct inode *inode, struct file *file)
- {
--	return single_open(file, a4l_rdproc_transfer, PDE_DATA(inode));
-+	return single_open(file, a4l_rdproc_transfer, pde_data(inode));
- }
- 
- static const DEFINE_PROC_OPS(a4l_proc_transfer_ops,
-diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
-index 3d07eaed9..c071e12c6 100644
---- a/kernel/drivers/can/rtcan_module.c
-+++ b/kernel/drivers/can/rtcan_module.c
-@@ -265,7 +265,7 @@ static int rtcan_read_proc_info(struct seq_file *p, void *data)
- 
- static int rtcan_proc_info_open(struct inode *inode, struct file *file)
- {
--	return single_open(file, rtcan_read_proc_info, PDE_DATA(inode));
-+	return single_open(file, rtcan_read_proc_info, pde_data(inode));
- }
- 
- static const DEFINE_PROC_OPS(rtcan_proc_info_ops,
-@@ -310,7 +310,7 @@ static int rtcan_read_proc_filter(struct seq_file *p, void *data)
- 
- static int rtcan_proc_filter_open(struct inode *inode, struct file *file)
- {
--	return single_open(file, rtcan_read_proc_filter, PDE_DATA(inode));
-+	return single_open(file, rtcan_read_proc_filter, pde_data(inode));
- }
- 
- static const DEFINE_PROC_OPS(rtcan_proc_filter_ops,
-diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c b/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
-index 4813c5009..57fd80704 100644
---- a/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
-+++ b/kernel/drivers/can/sja1000/rtcan_sja1000_proc.c
-@@ -47,7 +47,7 @@ static int rtcan_sja_proc_regs(struct seq_file *p, void *data)
- 
- static int rtcan_sja_proc_regs_open(struct inode *inode, struct file *file)
- {
--	return single_open(file, rtcan_sja_proc_regs, PDE_DATA(inode));
-+	return single_open(file, rtcan_sja_proc_regs, pde_data(inode));
- }
- 
- static const DEFINE_PROC_OPS(rtcan_sja_proc_regs_ops,
+---
+Florian Bezdeka (5):
+      drivers/net: Switch to dev_addr_set and eth_hw_addr_set
+      drivers/spi: Convert to GPIO descriptor API
+      drivers/spi: Switch to spi_controller API
+      cobalt/pipe: Allow building with kernels up to 6.1
+      cobalt/x86: Allow building with kernels up to 6.1
 
+Jan Kiszka (12):
+      Account for switch to pde_data in 5.17
+      Use linux/stddef.h instead of toolchain header
+      drivers/serial/16550A: Account for privatized defines in 5.17
+      drivers: Convert pci_set_*dma_mask to DMA API
+      drivers: Convert pci_alloc/free_consistent to DMA API
+      drivers: Convert pci_map/unmap_single/page to DMA API
+      drivers: Convert pci_dma_sync_single_for_cpu/device to DMA API
+      cobalt: Resolve cast-function-type warnings
+      drivers/net/experimental/e1000: Use fallthrough
+      drivers/spi: Account for dropped return value of spi_driver.remove
+      drivers/testing/heapcheck: Replace prandom_u32 with custom implementation
+      drivers/net/pcnet32: Adjust for kernel 6.1
+
+ .../arch/x86/include/asm/xenomai/syscall32.h       |   3 +-
+ .../cobalt/arch/x86/include/asm/xenomai/wrappers.h |   4 +-
+ .../cobalt/include/asm-generic/xenomai/wrappers.h  |  15 +++
+ kernel/cobalt/pipe.c                               |   1 +
+ kernel/cobalt/posix/sem.c                          |   2 +-
+ kernel/cobalt/posix/syscall.c                      |   3 +-
+ kernel/cobalt/rtdm/device.c                        |  10 +-
+ kernel/cobalt/rtdm/fd.c                            |   2 +-
+ kernel/cobalt/vfile.c                              |   8 +-
+ kernel/drivers/analogy/device.c                    |   2 +-
+ kernel/drivers/analogy/national_instruments/mite.c |  12 +-
+ kernel/drivers/analogy/national_instruments/mite.h |   4 +-
+ kernel/drivers/can/rtcan_module.c                  |   4 +-
+ kernel/drivers/can/sja1000/rtcan_sja1000_proc.c    |   2 +-
+ kernel/drivers/net/addons/cap.c                    |   5 +-
+ kernel/drivers/net/addons/proxy.c                  |   2 +-
+ kernel/drivers/net/drivers/8139too.c               |  18 ++-
+ kernel/drivers/net/drivers/e1000/e1000_main.c      |  84 ++++++++------
+ kernel/drivers/net/drivers/eepro100.c              |  75 +++++++------
+ kernel/drivers/net/drivers/experimental/3c59x.c    |  21 ++--
+ .../net/drivers/experimental/e1000/e1000_82540.c   |   2 +-
+ .../net/drivers/experimental/e1000/e1000_82571.c   |   2 +-
+ .../net/drivers/experimental/e1000/e1000_ethtool.c |  14 ++-
+ .../net/drivers/experimental/e1000/e1000_main.c    | 122 +++++++++++----------
+ .../net/drivers/experimental/rt2500/rt2500pci.c    |   4 +-
+ kernel/drivers/net/drivers/freescale/fec_main.c    |  11 +-
+ kernel/drivers/net/drivers/natsemi.c               |  35 +++---
+ kernel/drivers/net/drivers/pcnet32.c               |  57 +++++-----
+ kernel/drivers/net/drivers/r8169.c                 |  36 +++---
+ kernel/drivers/net/drivers/tulip/interrupt.c       |  18 +--
+ kernel/drivers/net/drivers/tulip/tulip_core.c      |  51 +++++----
+ kernel/drivers/net/drivers/via-rhine.c             |  71 ++++++------
+ kernel/drivers/net/stack/rtmac/nomac/nomac_dev.c   |   4 +-
+ kernel/drivers/net/stack/rtmac/rtmac_vnic.c        |   5 +-
+ kernel/drivers/serial/16550A_pci.h                 |  19 +++-
+ kernel/drivers/spi/spi-bcm2835.c                   |  63 +++++++----
+ kernel/drivers/spi/spi-device.c                    |  61 +++++++----
+ kernel/drivers/spi/spi-device.h                    |   1 -
+ kernel/drivers/spi/spi-master.c                    |  31 +++---
+ kernel/drivers/spi/spi-master.h                    |   2 +-
+ kernel/drivers/spi/spi-omap2-mcspi-rt.c            |  20 ++--
+ kernel/drivers/spi/spi-sun6i.c                     |  24 ++--
+ kernel/drivers/testing/heapcheck.c                 |  14 ++-
+ 43 files changed, 542 insertions(+), 402 deletions(-)
+---
+base-commit: ee85e330c26c72974d57d4130c24e3369f1d85c4
+change-id: 20230828-florian-enable-stable-3-2-for-6-1-c0d84de8ff55
+
+Best regards,
 -- 
-2.39.2
+Florian Bezdeka <florian.bezdeka@siemens.com>
 
