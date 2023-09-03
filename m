@@ -1,23 +1,23 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 962E63D70
-	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:08 +0000 (UTC)
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202309031505006572753ae911f8aa08
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32A9B525A
+	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:09 +0000 (UTC)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230903150459f22dee3ea318b51a09
         for <xenomai@lists.linux.dev>;
-        Sun, 03 Sep 2023 17:05:00 +0200
+        Sun, 03 Sep 2023 17:04:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=C3U37rcc/Bj3r6AV7V6R5bkLYN9QPJBS62IGsShPJ/U=;
- b=OKeZS0hXUDp7OiZiQhfng6xYIk5KX3IC7RzBS4tX5RVgWz0n7Fg4XHWWYFlB89IoyDR9dx
- r+cpaUsm1qUw5GOfisXPFHZOvlngWtaQMhhfo3fxoN3Xc/e5tYMCvWRwlAzqyDjE0fpFT1cy
- 7h2cQvbfA0kl9PZymtlSnGF7dMDvs=;
+ bh=UBv8MObHIizYKNP3gnS7DFHD0OZys7W2XK3sHgS7is8=;
+ b=iswO+DUEeviXU4ocB7KMrd6hmd+8FNQPXjqg0MUxUz37AsipZhXb7MCXsRrHpZSiSFWdJ4
+ iz/kmqsR2ERHsiUghkWRYpdwBpcexdY99F2ida9S+VfCoBjhKntCyHJlCNj+nN7+do3Q+UdK
+ fZ9rYWvr5eUZOaxZfWi7MShbJA1uc=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 06/20] testsuite/smokey: Remove VDSO test
-Date: Sun,  3 Sep 2023 17:04:43 +0200
-Message-Id: <f85ac99ca00533c6abf5933b8c9a9b533a8dfa56.1693753497.git.jan.kiszka@siemens.com>
+Subject: [PATCH 04/20] testsuite/smokey/y2038: Activate minimal clock_settime64
+Date: Sun,  3 Sep 2023 17:04:41 +0200
+Message-Id: <c5c4fa95852cd25596d07beffb6d8664562c5370.1693753497.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1693753497.git.jan.kiszka@siemens.com>
 References: <cover.1693753497.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -32,102 +32,67 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The Xenomai VDSO is about to be removed.
+The clock_settime64 syscall is theoretically still relevant, even with
+libc-based settime for standard clocks, but only for external clocks -
+which we do not have in-tree. But we can at least check that invalid
+parameters are detected and rejected
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- configure.ac                               |  1 -
- testsuite/smokey/Makefile.am               |  2 --
- testsuite/smokey/vdso-access/Makefile.am   |  9 -------
- testsuite/smokey/vdso-access/vdso-access.c | 31 ----------------------
- 4 files changed, 43 deletions(-)
- delete mode 100644 testsuite/smokey/vdso-access/Makefile.am
- delete mode 100644 testsuite/smokey/vdso-access/vdso-access.c
+ testsuite/smokey/y2038/syscall-tests.c | 30 --------------------------
+ 1 file changed, 30 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index a601f94cd3..86dd8ba4f8 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1015,7 +1015,6 @@ AC_CONFIG_FILES([ \
- 	testsuite/smokey/sched-tp/Makefile \
- 	testsuite/smokey/setsched/Makefile \
- 	testsuite/smokey/rtdm/Makefile \
--	testsuite/smokey/vdso-access/Makefile \
- 	testsuite/smokey/posix-cond/Makefile \
- 	testsuite/smokey/posix-mutex/Makefile \
- 	testsuite/smokey/posix-clock/Makefile \
-diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index b7654682d5..c49a5d77f0 100644
---- a/testsuite/smokey/Makefile.am
-+++ b/testsuite/smokey/Makefile.am
-@@ -38,7 +38,6 @@ COBALT_SUBDIRS = 	\
- 	sigdebug	\
- 	timerfd		\
- 	tsc		\
--	vdso-access 	\
- 	xddp		\
- 	y2038		\
- 	alchemytests	\
-@@ -84,7 +83,6 @@ DIST_SUBDIRS = 		\
- 	sigdebug	\
- 	timerfd		\
- 	tsc		\
--	vdso-access 	\
- 	xddp		\
- 	y2038		\
- 	alchemytests	\
-diff --git a/testsuite/smokey/vdso-access/Makefile.am b/testsuite/smokey/vdso-access/Makefile.am
-deleted file mode 100644
-index 250ef08400..0000000000
---- a/testsuite/smokey/vdso-access/Makefile.am
-+++ /dev/null
-@@ -1,9 +0,0 @@
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 0c7de52161..3d4a9106bd 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -278,18 +278,9 @@ static int test_sc_cobalt_clock_settime64(void)
+ {
+ 	int ret;
+ 	int sc_nr = sc_cobalt_clock_settime64;
+-	struct xn_timespec64 ts64, now64;
+-	struct timespec now;
 -
--noinst_LIBRARIES = libvdso-access.a
--
--libvdso_access_a_SOURCES = vdso-access.c
--
--libvdso_access_a_CPPFLAGS = 	\
--	@XENO_USER_CFLAGS@	\
--	-I$(top_srcdir)		\
--	-I$(top_srcdir)/include
-diff --git a/testsuite/smokey/vdso-access/vdso-access.c b/testsuite/smokey/vdso-access/vdso-access.c
-deleted file mode 100644
-index 42c1b28f72..0000000000
---- a/testsuite/smokey/vdso-access/vdso-access.c
-+++ /dev/null
-@@ -1,31 +0,0 @@
--/*
-- * VDSO feature set testcase
-- * by Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-- */
--#include <stdio.h>
--#include <time.h>
--#include <boilerplate/atomic.h>
--#include <cobalt/uapi/kernel/vdso.h>
--#include <smokey/smokey.h>
--
--smokey_test_plugin(vdso_access,
--		   SMOKEY_NOARGS,
--		   "Check VDSO access."
--);
--
--extern void *cobalt_umm_shared;
--
--extern struct xnvdso *cobalt_vdso;
--
--int run_vdso_access(struct smokey_test *t, int argc, char *const argv[])
--{
--	if (cobalt_umm_shared == NULL) {
--		warning("could not determine position of the VDSO segment");
--		return 1;
+-	if (!cobalt_use_legacy_tsc())
+-		return 0; // Not implemented, nothing to test, success
+ 
+ 	/* Make sure we don't crash because of NULL pointers */
+ 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+-	if (ret == -ENOSYS) {
+-		smokey_note("clock_settime64: skipped. (no kernel support)");
+-		return 0; // Not implemented, nothing to test, success
 -	}
+ 	if (!smokey_assert(ret == -EFAULT))
+ 		return ret ? ret : -EINVAL;
+ 
+@@ -298,27 +289,6 @@ static int test_sc_cobalt_clock_settime64(void)
+ 	if (!smokey_assert(ret == -EFAULT))
+ 		return ret ? ret : -EINVAL;
+ 
+-	ret = clock_gettime(CLOCK_REALTIME, &now);
+-	if (ret)
+-		return -errno;
 -
--	smokey_trace("VDSO: features detected: %llx",
--		     (long long)cobalt_vdso->features);
+-	/* Provide a valid 64bit timespec */
+-	ts64.tv_sec  = now.tv_sec + 1;
+-	ts64.tv_nsec = now.tv_nsec;
+-	ret = XENOMAI_SYSCALL2(sc_nr, CLOCK_REALTIME, &ts64);
+-	if (!smokey_assert(!ret))
+-		return ret;
 -
--	return 0;
--}
+-	ret = clock_gettime(CLOCK_REALTIME, &now);
+-	if (ret)
+-		return -errno;
+-
+-	now64.tv_sec = now.tv_sec;
+-	now64.tv_nsec = now.tv_nsec;
+-
+-	if (ts_less(&now64, &ts64))
+-		smokey_warning("clock_settime() reported no error but no new time seen");
+-
+ 	return 0;
+ }
+ 
 -- 
 2.35.3
 
