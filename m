@@ -1,23 +1,23 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35E05539A
-	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:09 +0000 (UTC)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202309031504593d7d147a728174778a
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D23743D8B
+	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:08 +0000 (UTC)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023090315050089b31e30398241422c
         for <xenomai@lists.linux.dev>;
-        Sun, 03 Sep 2023 17:04:59 +0200
+        Sun, 03 Sep 2023 17:05:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=e2XKXRg6zqtchk2sSwNvaGV/4IfQoS03ufomaCEHGOI=;
- b=gE1XtiJNv5xa1V4BCQFBbO4YbZFagsOHPfEFJjGLw+J+9Z97KvqLtmC3NjrnzKBWO9bwZh
- DlPujrJGU/tFvkO9upEUNrb9g8sMLYaV1kHU5PXGZ+fz5L3XzDQhNoytBNYdkudMKsfefHTq
- OGQMnYN+xHkBnPWyDeR3vUHQzyurs=;
+ bh=dhnJ5jukao3ZADEpxFihB1m8/bv5wh6t6dlSH4J4mGA=;
+ b=NkIji1QDEiyOadElIHvmbI5d8iwRIp3qHnbuXXmdk8f6yy/ARN3U6G3sssw1wITrHLmnUz
+ Uy18Sn0rD+z3fxrfTVI8nczA7mnlIDyupg/p05Q0w0Cdbnu9DhUgVo5e5PGE4hT7B1HeqOru
+ wQIOYE+ie97BJqYzBKZaq/7xi5X3g=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 03/20] cobalt: Drop not longer supported CONFIG_XENO_OPT_STATS_IRQS
-Date: Sun,  3 Sep 2023 17:04:40 +0200
-Message-Id: <5cc0ad828e9e7e2c4ba7dc7dfc0e3a54694b607d.1693753497.git.jan.kiszka@siemens.com>
+Subject: [PATCH 08/20] lib/cobalt: Drop tsc.h
+Date: Sun,  3 Sep 2023 17:04:45 +0200
+Message-Id: <9e18052e399744a9df12c61ff6c70cea1587b824.1693753497.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1693753497.git.jan.kiszka@siemens.com>
 References: <cover.1693753497.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -32,184 +32,212 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This was I-pipe-only, and I-pipe is gone.
+Was providing cobalt_read_legacy_tsc which is no longer used.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/kernel/intr.h | 30 ---------------------
- kernel/cobalt/Kconfig        | 12 ---------
- kernel/cobalt/sched.c        | 51 ++----------------------------------
- 3 files changed, 2 insertions(+), 91 deletions(-)
+ .../arch/arm/include/asm/xenomai/Makefile.am  |  3 +-
+ lib/cobalt/arch/arm/include/asm/xenomai/tsc.h | 48 -----------------
+ .../arm64/include/asm/xenomai/Makefile.am     |  3 +-
+ .../arch/arm64/include/asm/xenomai/tsc.h      | 54 -------------------
+ .../arch/x86/include/asm/xenomai/Makefile.am  |  3 +-
+ lib/cobalt/arch/x86/include/asm/xenomai/tsc.h | 38 -------------
+ 6 files changed, 3 insertions(+), 146 deletions(-)
+ delete mode 100644 lib/cobalt/arch/arm/include/asm/xenomai/tsc.h
+ delete mode 100644 lib/cobalt/arch/arm64/include/asm/xenomai/tsc.h
+ delete mode 100644 lib/cobalt/arch/x86/include/asm/xenomai/tsc.h
 
-diff --git a/include/cobalt/kernel/intr.h b/include/cobalt/kernel/intr.h
-index 393ad96830..060edc8a57 100644
---- a/include/cobalt/kernel/intr.h
-+++ b/include/cobalt/kernel/intr.h
-@@ -84,10 +84,6 @@ struct xnintr {
- 	const char *name;
- 	/** Descriptor maintenance lock. */
- 	raw_spinlock_t lock;
--#ifdef CONFIG_XENO_OPT_STATS_IRQS
--	/** Statistics. */
--	struct xnirqstat *stats;
--#endif
- };
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am b/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am
+index d308b06e62..a7dd090432 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am
+@@ -1,5 +1,4 @@
  
- struct xnintr_iterator {
-@@ -126,32 +122,6 @@ void xnintr_disable(struct xnintr *intr);
- 
- int xnintr_affinity(struct xnintr *intr, const cpumask_t *cpumask);
- 
--#ifdef CONFIG_XENO_OPT_STATS_IRQS
+ noinst_HEADERS =	\
+ 	features.h	\
+-	syscall.h	\
+-	tsc.h
++	syscall.h
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/tsc.h b/lib/cobalt/arch/arm/include/asm/xenomai/tsc.h
+deleted file mode 100644
+index 2be4009d84..0000000000
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/tsc.h
++++ /dev/null
+@@ -1,48 +0,0 @@
+-/*
+- * Copyright (C) 2001,2002,2003,2004 Philippe Gerum <rpm@xenomai.org>.
+- * Copyright (C) 2013 Gilles Chanteperdrix <gch@xenomai.org>.
+- *
+- * ARM port
+- *   Copyright (C) 2005 Stelian Pop
+- *
+- * Copyright (C) 2007 Sebastian Smolorz <sesmo@gmx.net>
+- *	Support for TSC emulation in user space for decrementing counters
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
+-#ifndef _LIB_COBALT_ARM_TSC_H
+-#define _LIB_COBALT_ARM_TSC_H
 -
--int xnintr_query_init(struct xnintr_iterator *iterator);
+-#include <asm/xenomai/uapi/tsc.h>
+-#include <asm/xenomai/features.h>
 -
--int xnintr_get_query_lock(void);
+-/*
+- * Putting kuser_tsc_get and kinfo.counter in the same struct results
+- * in less operations in PIC code, thus optimizes.
+- */
+-typedef unsigned long long __xn_rdtsc_t(volatile unsigned *vaddr);
+-struct __xn_full_tscinfo {
+-	__xn_rdtsc_t *kuser_tsc_get;
+-	struct __xn_tscinfo kinfo;
+-};
+-extern struct __xn_full_tscinfo __xn_tscinfo;
 -
--void xnintr_put_query_lock(void);
--
--int xnintr_query_next(int irq, struct xnintr_iterator *iterator,
--		      char *name_buf);
--
--#else /* !CONFIG_XENO_OPT_STATS_IRQS */
--
--static inline int xnintr_query_init(struct xnintr_iterator *iterator)
+-static inline __attribute__((always_inline))
+-unsigned long long cobalt_read_legacy_tsc(void)
 -{
--	return 0;
+-	return __xn_tscinfo.kuser_tsc_get(__xn_tscinfo.kinfo.counter);
 -}
 -
--static inline int xnintr_get_query_lock(void)
+-#endif /* !_LIB_COBALT_ARM_TSC_H */
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am b/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am
+index d308b06e62..a7dd090432 100644
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am
++++ b/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am
+@@ -1,5 +1,4 @@
+ 
+ noinst_HEADERS =	\
+ 	features.h	\
+-	syscall.h	\
+-	tsc.h
++	syscall.h
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/tsc.h b/lib/cobalt/arch/arm64/include/asm/xenomai/tsc.h
+deleted file mode 100644
+index e664adb07a..0000000000
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/tsc.h
++++ /dev/null
+@@ -1,54 +0,0 @@
+-/*
+- * Copyright (C) 2001,2002,2003,2004 Philippe Gerum <rpm@xenomai.org>.
+- * Copyright (C) 2013 Gilles Chanteperdrix <gch@xenomai.org>.
+- *
+- * ARM port
+- *   Copyright (C) 2005 Stelian Pop
+- *
+- * Copyright (C) 2007 Sebastian Smolorz <sesmo@gmx.net>
+- *	Support for TSC emulation in user space for decrementing counters
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
+-#ifndef _LIB_COBALT_ARM64_TSC_H
+-#define _LIB_COBALT_ARM64_TSC_H
+-
+-#include <asm/xenomai/uapi/tsc.h>
+-#include <asm/xenomai/features.h>
+-#include <inttypes.h>
+-#include <sys/time.h>
+-
+-typedef unsigned long long __xn_rdtsc_t(volatile unsigned *vaddr);
+-struct __xn_full_tscinfo {
+-	struct __xn_tscinfo kinfo;
+-};
+-extern struct __xn_full_tscinfo __xn_tscinfo;
+-
+-static inline uint64_t get_counter(void)
 -{
--	return 0;
+-        uint64_t cval;
+-
+-	asm volatile("isb; mrs %0, cntvct_el0; isb; " : "=r" (cval) :: "memory");
+-
+-	return cval;
 -}
 -
--static inline void xnintr_put_query_lock(void) {}
--#endif /* !CONFIG_XENO_OPT_STATS_IRQS */
+-static inline __attribute__((always_inline))
+-unsigned long long cobalt_read_legacy_tsc(void)
+-{
+-	return get_counter();
+-}
 -
- /** @} */
+-#endif /* !_LIB_COBALT_ARM64_TSC_H */
+diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am b/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am
+index d308b06e62..a7dd090432 100644
+--- a/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am
++++ b/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am
+@@ -1,5 +1,4 @@
  
- #endif /* !_COBALT_KERNEL_INTR_H */
-diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
-index 3233de1b18..6ba4cdc5db 100644
---- a/kernel/cobalt/Kconfig
-+++ b/kernel/cobalt/Kconfig
-@@ -135,18 +135,6 @@ config XENO_OPT_STATS
- 	per-thread runtime statistics, which are accessible through
- 	the /proc/xenomai/sched/stat interface.
- 
--config XENO_OPT_STATS_IRQS
--	bool "Account IRQ handlers separatly"
--	depends on XENO_OPT_STATS && IPIPE
--	default y
--	help
--	When enabled, the runtime of interrupt handlers is accounted
--	separately from the threads they interrupt. Also, the
--	occurrence of shared interrupts is accounted on a per-handler
--	basis.
+ noinst_HEADERS =	\
+ 	features.h	\
+-	syscall.h	\
+-	tsc.h
++	syscall.h
+diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/tsc.h b/lib/cobalt/arch/x86/include/asm/xenomai/tsc.h
+deleted file mode 100644
+index bf400e8505..0000000000
+--- a/lib/cobalt/arch/x86/include/asm/xenomai/tsc.h
++++ /dev/null
+@@ -1,38 +0,0 @@
+-/*
+- * Copyright (C) 2001,2002,2003,2007 Philippe Gerum <rpm@xenomai.org>.
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
 -
--	This option is available to legacy I-pipe builds only.
+-#ifndef _LIB_COBALT_X86_TSC_H
+-#define _LIB_COBALT_X86_TSC_H
 -
- config XENO_OPT_SHIRQ
- 	bool "Shared interrupts"
- 	help
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index aa65fd7f5d..62db291a71 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -1121,11 +1121,6 @@ static spl_t vfile_schedstat_lock_s;
- 
- static int vfile_schedstat_get_lock(struct xnvfile *vfile)
- {
--	int ret;
+-static inline unsigned long long cobalt_read_legacy_tsc(void)
+-{
+-#ifdef __i386__
+-	unsigned long long t;
 -
--	ret = xnintr_get_query_lock();
--	if (ret < 0)
--		return ret;
- 	xnlock_get_irqsave(&nklock, vfile_schedstat_lock_s);
- 	return 0;
- }
-@@ -1133,7 +1128,6 @@ static int vfile_schedstat_get_lock(struct xnvfile *vfile)
- static void vfile_schedstat_put_lock(struct xnvfile *vfile)
- {
- 	xnlock_put_irqrestore(&nklock, vfile_schedstat_lock_s);
--	xnintr_put_query_lock();
- }
- 
- static struct xnvfile_lock_ops vfile_schedstat_lockops = {
-@@ -1177,7 +1171,6 @@ static struct xnvfile_snapshot schedstat_vfile = {
- static int vfile_schedstat_rewind(struct xnvfile_snapshot_iterator *it)
- {
- 	struct vfile_schedstat_priv *priv = xnvfile_iterator_priv(it);
--	int irqnr;
- 
- 	/*
- 	 * The activity numbers on each valid interrupt descriptor are
-@@ -1185,9 +1178,8 @@ static int vfile_schedstat_rewind(struct xnvfile_snapshot_iterator *it)
- 	 */
- 	priv->curr = list_first_entry(&nkthreadq, struct xnthread, glink);
- 	priv->irq = 0;
--	irqnr = xnintr_query_init(&priv->intr_it) * num_online_cpus();
- 
--	return irqnr + cobalt_nrthreads;
-+	return cobalt_nrthreads;
- }
- 
- static int vfile_schedstat_next(struct xnvfile_snapshot_iterator *it,
-@@ -1201,11 +1193,7 @@ static int vfile_schedstat_next(struct xnvfile_snapshot_iterator *it,
- 	int __maybe_unused ret;
- 
- 	if (priv->curr == NULL)
--		/*
--		 * We are done with actual threads, scan interrupt
--		 * descriptors.
--		 */
--		goto scan_irqs;
-+		return 0; /* We are done. */
- 
- 	thread = priv->curr;
- 	if (list_is_last(&thread->glink, &nkthreadq))
-@@ -1242,41 +1230,6 @@ static int vfile_schedstat_next(struct xnvfile_snapshot_iterator *it,
- 	thread->stat.lastperiod.start = sched->last_account_switch;
- 
- 	return 1;
+-	__asm__ __volatile__ ("rdtsc" : "=A" (t));
+-	return t;
 -
--scan_irqs:
--#ifdef CONFIG_XENO_OPT_STATS_IRQS
--	if (priv->irq >= PIPELINE_NR_IRQS)
--		return 0;	/* All done. */
+-#else /* x86_64 */
+-	unsigned int __a,__d;
 -
--	ret = xnintr_query_next(priv->irq, &priv->intr_it, p->name);
--	if (ret) {
--		if (ret == -EAGAIN)
--			xnvfile_touch(it->vfile); /* force rewind. */
--		priv->irq++;
--		return VFILE_SEQ_SKIP;
--	}
+-	__asm__ __volatile__ ("rdtsc" : "=a" (__a), "=d" (__d));
+-	return ((unsigned long)__a) | (((unsigned long)__d) << 32);
+-#endif /* x86_64 */
+-}
 -
--	if (!xnsched_supported_cpu(priv->intr_it.cpu))
--		return VFILE_SEQ_SKIP;
--
--	p->cpu = priv->intr_it.cpu;
--	p->csw = priv->intr_it.hits;
--	p->exectime_period = priv->intr_it.exectime_period;
--	p->account_period = priv->intr_it.account_period;
--	p->exectime_total = priv->intr_it.exectime_total;
--	p->pid = 0;
--	p->state =  0;
--	p->ssw = 0;
--	p->xsc = 0;
--	p->pf = 0;
--	p->sched_class = &xnsched_class_idle;
--	p->cprio = 0;
--	p->period = 0;
--
--	return 1;
--#else /* !CONFIG_XENO_OPT_STATS_IRQS */
--	return 0;
--#endif /* !CONFIG_XENO_OPT_STATS_IRQS */
- }
- 
- static int vfile_schedstat_show(struct xnvfile_snapshot_iterator *it,
+-#endif /* !_LIB_COBALT_X86_TSC_H */
 -- 
 2.35.3
 
