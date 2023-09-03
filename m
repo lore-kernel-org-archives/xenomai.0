@@ -1,69 +1,73 @@
 Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC15AF9CD
-	for <xenomai@lists.linux.dev>; Fri,  1 Sep 2023 19:45:42 +0000 (UTC)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202309011945344679a969ce981f813f
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E553C2B
+	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:07 +0000 (UTC)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230903150459eb18a8b54e2055978e
         for <xenomai@lists.linux.dev>;
-        Fri, 01 Sep 2023 21:45:34 +0200
+        Sun, 03 Sep 2023 17:04:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=V4S6qw+FHFXYEepgI7urlkX8UjfYtnOB2NoxS+5na3c=;
- b=PTsDhWWIAOWw8k7JNVERr9Zwpl/llOdfeXUoapwv1i3pJwjK/cGDFyNR4WGtjOEfYAc9vO
- Wk49NP4CQaNk3DdpjNkEae+bo0cWMM0n52o4dA2cz45p6zc+Bm3WFcBV5mdoIBxyZ4jPn3o/
- tld3NYiDsFEpyyA7dHaTs+kj+RgzQ=;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 01 Sep 2023 21:45:38 +0200
-Subject: [PATCH stable/v3.2.x v2 15/17] drivers/net/pcnet32: Adjust for
- kernel 6.1
+ d=siemens.com; i=jan.kiszka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=7uJ33nsEwnw0jNsxjarna90lfeLDu5pfB2B4fAYg0SA=;
+ b=ZbvHyWfEBqkuetuEMJ9H7hKizeHPe6644zqEylOF3BAVADGreqh4eIwl7GopoiYkVHQ2j2
+ UJ0LZCpUtwmto534Gwn9xljibVCaUnMy/H27I9Hd7GZs9VcvedXemxs4u8ySh7ihm888oMLk
+ iyb6tz43N4avL/VISG3q/2ghwQpf4=;
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: xenomai@lists.linux.dev
+Subject: [PATCH 02/20] drivers/udd: Drop self element from irqswitch_work
+Date: Sun,  3 Sep 2023 17:04:39 +0200
+Message-Id: <d309531113bb7054ee0c3eebdecb751289307205.1693753497.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1693753497.git.jan.kiszka@siemens.com>
+References: <cover.1693753497.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230828-florian-enable-stable-3-2-for-6-1-v2-15-5189cfb05a62@siemens.com>
-References: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
-In-Reply-To: <20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com>
-To: xenomai@lists.linux.dev, jan.kiszka@siemens.com
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-[ master commit 30472d79b0bc3055f23e6ae2dbb87753f505c341 ]
-
-Align with mainline regarding DMA mask setting to allow compilation
-against recent kernels up to 6.1.
+This was only needed for I-pipe which was dropped.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/drivers/pcnet32.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ kernel/drivers/udd/udd.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/pcnet32.c b/kernel/drivers/net/drivers/pcnet32.c
-index 4fd5ba0b4..eebb66ecb 100644
---- a/kernel/drivers/net/drivers/pcnet32.c
-+++ b/kernel/drivers/net/drivers/pcnet32.c
-@@ -520,10 +520,11 @@ static int pcnet32_probe_pci(struct pci_dev *pdev,
- 		return -ENODEV;
- 	}
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index 958208ec7e..b1efcebd0f 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -520,7 +520,6 @@ struct irqswitch_work {
+ 	rtdm_irq_t *irqh;
+ 	int enabled;
+ 	rtdm_event_t *done;
+-	struct irqswitch_work *self; /* Revisit: I-pipe requirement */
+ };
  
--	if (!dma_supported(&pdev->dev, PCNET32_DMA_MASK)) {
-+	err = dma_set_mask(&pdev->dev, PCNET32_DMA_MASK);
-+	if (err) {
- 		printk(KERN_ERR PFX
- 		       "architecture does not support 32bit PCI busmaster DMA\n");
--		return -ENODEV;
-+		return err;
- 	}
+ static void lostage_irqswitch_line(struct pipeline_inband_work *inband_work)
+@@ -540,7 +539,7 @@ static void lostage_irqswitch_line(struct pipeline_inband_work *inband_work)
+ 	if (rq->done)
+ 		rtdm_event_signal(rq->done);
  
- 	return pcnet32_probe1(ioaddr, pdev->irq, 1, pdev);
-
+-	xnfree(rq->self);
++	xnfree(rq);
+ }
+ 
+ static void switch_irq_line(rtdm_irq_t *irqh, int enable, rtdm_event_t *done)
+@@ -556,7 +555,6 @@ static void switch_irq_line(rtdm_irq_t *irqh, int enable, rtdm_event_t *done)
+ 	rq->irqh = irqh;
+ 	rq->enabled = enable;
+ 	rq->done = done;
+-	rq->self = rq;	/* Revisit: I-pipe requirement */
+ 
+ 	/*
+ 	 * Not pretty, but we may not traverse the kernel code for
 -- 
-2.39.2
+2.35.3
 
