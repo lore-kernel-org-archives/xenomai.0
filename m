@@ -1,23 +1,23 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374623FDC
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 962E63D70
 	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:08 +0000 (UTC)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202309031505006ab76ef5d3ffdd4442
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202309031505006572753ae911f8aa08
         for <xenomai@lists.linux.dev>;
         Sun, 03 Sep 2023 17:05:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=E3ZKbbuVMet66lYEgNSkAxqYAR92EyUf/lhaY/XMXU8=;
- b=Jc3PLQoYeCi7DPrnen+vdR/p7ylNnPAQpNDNDyvFz1g7v4z32Mez59AcYEnUxSSgTOU6bu
- aLZbFHwuZfZ94ivO+Pa1KeM3yV4TtJtgQcOun/JQSRBZ4q+sIbfQ01/CInIU7jZzaE/isU1+
- MfAeVLRkSiN19J05Iqb261OH4ot08=;
+ bh=C3U37rcc/Bj3r6AV7V6R5bkLYN9QPJBS62IGsShPJ/U=;
+ b=OKeZS0hXUDp7OiZiQhfng6xYIk5KX3IC7RzBS4tX5RVgWz0n7Fg4XHWWYFlB89IoyDR9dx
+ r+cpaUsm1qUw5GOfisXPFHZOvlngWtaQMhhfo3fxoN3Xc/e5tYMCvWRwlAzqyDjE0fpFT1cy
+ 7h2cQvbfA0kl9PZymtlSnGF7dMDvs=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 09/20] cobalt/uapi: Drop tsc.h
-Date: Sun,  3 Sep 2023 17:04:46 +0200
-Message-Id: <21080cd94309eb834132b5497d54d84ae78ceb3c.1693753497.git.jan.kiszka@siemens.com>
+Subject: [PATCH 06/20] testsuite/smokey: Remove VDSO test
+Date: Sun,  3 Sep 2023 17:04:43 +0200
+Message-Id: <f85ac99ca00533c6abf5933b8c9a9b533a8dfa56.1693753497.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1693753497.git.jan.kiszka@siemens.com>
 References: <cover.1693753497.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -32,78 +32,102 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-No longer used.
+The Xenomai VDSO is about to be removed.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .../arch/arm/include/asm/xenomai/uapi/tsc.h   | 25 -------------------
- .../arch/arm64/include/asm/xenomai/uapi/tsc.h | 25 -------------------
- 2 files changed, 50 deletions(-)
- delete mode 100644 kernel/cobalt/arch/arm/include/asm/xenomai/uapi/tsc.h
- delete mode 100644 kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/tsc.h
+ configure.ac                               |  1 -
+ testsuite/smokey/Makefile.am               |  2 --
+ testsuite/smokey/vdso-access/Makefile.am   |  9 -------
+ testsuite/smokey/vdso-access/vdso-access.c | 31 ----------------------
+ 4 files changed, 43 deletions(-)
+ delete mode 100644 testsuite/smokey/vdso-access/Makefile.am
+ delete mode 100644 testsuite/smokey/vdso-access/vdso-access.c
 
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/tsc.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/tsc.h
+diff --git a/configure.ac b/configure.ac
+index a601f94cd3..86dd8ba4f8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1015,7 +1015,6 @@ AC_CONFIG_FILES([ \
+ 	testsuite/smokey/sched-tp/Makefile \
+ 	testsuite/smokey/setsched/Makefile \
+ 	testsuite/smokey/rtdm/Makefile \
+-	testsuite/smokey/vdso-access/Makefile \
+ 	testsuite/smokey/posix-cond/Makefile \
+ 	testsuite/smokey/posix-mutex/Makefile \
+ 	testsuite/smokey/posix-clock/Makefile \
+diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
+index b7654682d5..c49a5d77f0 100644
+--- a/testsuite/smokey/Makefile.am
++++ b/testsuite/smokey/Makefile.am
+@@ -38,7 +38,6 @@ COBALT_SUBDIRS = 	\
+ 	sigdebug	\
+ 	timerfd		\
+ 	tsc		\
+-	vdso-access 	\
+ 	xddp		\
+ 	y2038		\
+ 	alchemytests	\
+@@ -84,7 +83,6 @@ DIST_SUBDIRS = 		\
+ 	sigdebug	\
+ 	timerfd		\
+ 	tsc		\
+-	vdso-access 	\
+ 	xddp		\
+ 	y2038		\
+ 	alchemytests	\
+diff --git a/testsuite/smokey/vdso-access/Makefile.am b/testsuite/smokey/vdso-access/Makefile.am
 deleted file mode 100644
-index b17cfb24fc..0000000000
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/tsc.h
+index 250ef08400..0000000000
+--- a/testsuite/smokey/vdso-access/Makefile.am
 +++ /dev/null
-@@ -1,25 +0,0 @@
--/*
-- * Copyright (C) 2013 Gilles Chanteperdrix <gch@xenomai.org>.
-- *
-- * This library is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU Lesser General Public
-- * License as published by the Free Software Foundation; either
-- * version 2 of the License, or (at your option) any later version.
-- *
-- * This library is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * Lesser General Public License for more details.
-- *
-- * You should have received a copy of the GNU Lesser General Public
-- * License along with this library; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-- */
--#ifndef _COBALT_ARM_ASM_UAPI_TSC_H
--#define _COBALT_ARM_ASM_UAPI_TSC_H
+@@ -1,9 +0,0 @@
 -
--struct __xn_tscinfo {
--	volatile unsigned int *counter;
--};
+-noinst_LIBRARIES = libvdso-access.a
 -
--#endif /* !_COBALT_ARM_ASM_UAPI_TSC_H */
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/tsc.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/tsc.h
+-libvdso_access_a_SOURCES = vdso-access.c
+-
+-libvdso_access_a_CPPFLAGS = 	\
+-	@XENO_USER_CFLAGS@	\
+-	-I$(top_srcdir)		\
+-	-I$(top_srcdir)/include
+diff --git a/testsuite/smokey/vdso-access/vdso-access.c b/testsuite/smokey/vdso-access/vdso-access.c
 deleted file mode 100644
-index 20a4eaa882..0000000000
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/tsc.h
+index 42c1b28f72..0000000000
+--- a/testsuite/smokey/vdso-access/vdso-access.c
 +++ /dev/null
-@@ -1,25 +0,0 @@
+@@ -1,31 +0,0 @@
 -/*
-- * Copyright (C) 2013 Gilles Chanteperdrix <gch@xenomai.org>.
-- *
-- * This library is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU Lesser General Public
-- * License as published by the Free Software Foundation; either
-- * version 2 of the License, or (at your option) any later version.
-- *
-- * This library is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * Lesser General Public License for more details.
-- *
-- * You should have received a copy of the GNU Lesser General Public
-- * License along with this library; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- * VDSO feature set testcase
+- * by Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 - */
--#ifndef _COBALT_ARM64_ASM_UAPI_TSC_H
--#define _COBALT_ARM64_ASM_UAPI_TSC_H
+-#include <stdio.h>
+-#include <time.h>
+-#include <boilerplate/atomic.h>
+-#include <cobalt/uapi/kernel/vdso.h>
+-#include <smokey/smokey.h>
 -
--struct __xn_tscinfo {
--	volatile unsigned int *counter;
--};
+-smokey_test_plugin(vdso_access,
+-		   SMOKEY_NOARGS,
+-		   "Check VDSO access."
+-);
 -
--#endif /* !_COBALT_ARM64_ASM_UAPI_TSC_H */
+-extern void *cobalt_umm_shared;
+-
+-extern struct xnvdso *cobalt_vdso;
+-
+-int run_vdso_access(struct smokey_test *t, int argc, char *const argv[])
+-{
+-	if (cobalt_umm_shared == NULL) {
+-		warning("could not determine position of the VDSO segment");
+-		return 1;
+-	}
+-
+-	smokey_trace("VDSO: features detected: %llx",
+-		     (long long)cobalt_vdso->features);
+-
+-	return 0;
+-}
 -- 
 2.35.3
 
