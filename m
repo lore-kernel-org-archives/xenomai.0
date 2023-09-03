@@ -1,23 +1,23 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D073FFA
-	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:09 +0000 (UTC)
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202309031505017ef2769e27205d871b
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E8503D9C
+	for <xenomai@lists.linux.dev>; Sun,  3 Sep 2023 15:05:08 +0000 (UTC)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202309031505010b04f3b5ec0cd208db
         for <xenomai@lists.linux.dev>;
         Sun, 03 Sep 2023 17:05:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=zg5E8Mje0AjlX1OJpO7j7+gJQcPJ3wEZb/bedaUfCFg=;
- b=RvXhiGWJrhlMOl1vjXtaFKf7YQ4tD6mCtFsYuJt/z5+SGCQuehnkaQoxN4ZSO13rFxRMd/
- BUaPV0bRMN10B9q8sznFgjCLMd9bErKe+QY0aRndmSP6ogISksN8hcnJTo4Z05LYXs2oLTOj
- tHfCyjR4QNc20KiDBX3PmD03opRjo=;
+ bh=0Q1nisjs7ilUX6epMtYFYc1jRDcXWKGzFfpRxvMyuhg=;
+ b=V2NZevwJdk3ijacrSeQ036Go1UB+sYJBSXuglvmk0jvCKEE5AOcCnhcVffrHGsnOofkBIM
+ /9xgIhzmIwRNEHIJvtIhsXyY1xBLZSjWefjQRuE9GIukCMMm2ZjqBuVqkRbRBrJI+MKNcASH
+ c0SfTVV6KWiAA8Z3EqsdJpfWOAQHo=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 16/20] lib/copperplate: Refactor clockobj_get_tsc API to clockobj_get_ns
-Date: Sun,  3 Sep 2023 17:04:53 +0200
-Message-Id: <5b83978ba61d186058832f7b8ddddd614d5f990d.1693753497.git.jan.kiszka@siemens.com>
+Subject: [PATCH 13/20] kernel/cobalt: Remove VDSO support
+Date: Sun,  3 Sep 2023 17:04:50 +0200
+Message-Id: <c5b2aaa8f83279a059745502f38df0686a1a2151.1693753497.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1693753497.git.jan.kiszka@siemens.com>
 References: <cover.1693753497.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -32,338 +32,470 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-As we are now only reading nanoseconds via clockobj_get_tsc, change the
-API to make this clear, obsoleting clockobj_tsc_to_ns and
-clockobj_ns_to_tsc at the same time.
-
-Existing users are adjusted accordingly.
+No longer used, and userspace no longer expects it with the latest ABI
+revision.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/copperplate/clockobj.h           | 23 ++++--------
- lib/copperplate/clockobj.c               |  6 ++--
- lib/copperplate/threadobj.c              |  4 +--
- lib/psos/tm.c                            |  2 +-
- testsuite/smokey/arith/arith.c           |  6 ++--
- testsuite/smokey/posix-cond/posix-cond.c | 46 ++++++++++--------------
- 6 files changed, 33 insertions(+), 54 deletions(-)
+ include/cobalt/kernel/Makefile.am          |   1 -
+ include/cobalt/kernel/vdso.h               |  49 ---------
+ include/cobalt/sys/cobalt.h                |   1 -
+ include/cobalt/uapi/asm-generic/features.h |   4 +-
+ include/cobalt/uapi/kernel/Makefile.am     |   4 +-
+ include/cobalt/uapi/kernel/urw.h           | 113 ---------------------
+ include/cobalt/uapi/kernel/vdso.h          |  66 ------------
+ kernel/cobalt/clock.c                      |   2 -
+ kernel/cobalt/dovetail/kevents.c           |   1 -
+ kernel/cobalt/init.c                       |   1 -
+ kernel/cobalt/posix/memory.c               |  21 ----
+ kernel/cobalt/posix/process.c              |   1 -
+ kernel/cobalt/posix/syscall.c              |   3 -
+ 13 files changed, 3 insertions(+), 264 deletions(-)
+ delete mode 100644 include/cobalt/kernel/vdso.h
+ delete mode 100644 include/cobalt/uapi/kernel/urw.h
+ delete mode 100644 include/cobalt/uapi/kernel/vdso.h
 
-diff --git a/include/copperplate/clockobj.h b/include/copperplate/clockobj.h
-index b29c58bdb7..c06737e115 100644
---- a/include/copperplate/clockobj.h
-+++ b/include/copperplate/clockobj.h
-@@ -114,14 +114,13 @@ void __clockobj_ticks_to_timespec(struct clockobj *clkobj,
+diff --git a/include/cobalt/kernel/Makefile.am b/include/cobalt/kernel/Makefile.am
+index 6413481f8b..aa6d1de8a5 100644
+--- a/include/cobalt/kernel/Makefile.am
++++ b/include/cobalt/kernel/Makefile.am
+@@ -31,7 +31,6 @@ noinst_HEADERS =	\
+ 	timer.h		\
+ 	trace.h		\
+ 	tree.h		\
+-	vdso.h		\
+ 	vfile.h
  
- /*
-  * The Cobalt core exclusively deals with aperiodic timings, so a
-- * Cobalt _tick_ is actually a _TSC_ unit. In contrast, Copperplate
-- * deals with _TSC_ units and periodic _ticks_ which duration depend
-- * on the clock resolution. Therefore, Cobalt ticks are strictly
-- * equivalent to Copperplate TSC units, and Copperplate ticks are
-- * periods of the reference clockobj which Cobalt does not know about.
-+ * Cobalt _tick_ is actually a nanosecond unit. In contrast, Copperplate
-+ * deals with both nanosecond units and periodic _ticks_ which duration
-+ * depend on the clock resolution. Copperplate ticks are periods of the
-+ * reference clockobj which Cobalt does not know about.
-  */
- 
--static inline ticks_t clockobj_get_tsc(void)
-+static inline ticks_t clockobj_get_ns(void)
- {
- 	/* Guaranteed to be the source of CLOCK_COPPERPLATE. */
- 	return cobalt_read_ns();
-@@ -138,7 +137,7 @@ void clockobj_ns_to_timespec(ticks_t ns, struct timespec *ts)
- 
- #else /* CONFIG_XENO_MERCURY */
- 
--ticks_t clockobj_get_tsc(void);
-+ticks_t clockobj_get_ns(void);
- 
- static inline
- void clockobj_ns_to_timespec(ticks_t ns, struct timespec *ts)
-@@ -149,16 +148,6 @@ void clockobj_ns_to_timespec(ticks_t ns, struct timespec *ts)
- 
- #endif /* CONFIG_XENO_MERCURY */
- 
--static inline sticks_t clockobj_ns_to_tsc(sticks_t ns)
+ SUBDIRS = rtdm
+diff --git a/include/cobalt/kernel/vdso.h b/include/cobalt/kernel/vdso.h
+deleted file mode 100644
+index 7da88a7309..0000000000
+--- a/include/cobalt/kernel/vdso.h
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/*
+- * Copyright (C) 2009 Wolfgang Mauerer <wolfgang.mauerer@siemens.com>.
+- *
+- * Xenomai is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published
+- * by the Free Software Foundation; either version 2 of the License,
+- * or (at your option) any later version.
+- *
+- * Xenomai is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with Xenomai; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+- * 02111-1307, USA.
+- */
+-#ifndef _COBALT_KERNEL_VDSO_H
+-#define _COBALT_KERNEL_VDSO_H
+-
+-#include <linux/time.h>
+-#include <asm/barrier.h>
+-#include <asm/atomic.h>
+-#include <asm/processor.h>
+-#include <cobalt/uapi/kernel/vdso.h>
+-
+-extern struct xnvdso *nkvdso;
+-
+-/*
+- * Define the available feature set here. We have a single feature
+- * defined for now, only in the I-pipe case.
+- */
+-#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+-
+-#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+-
+-static inline struct xnvdso_hostrt_data *get_hostrt_data(void)
 -{
--	return ns;
+-	return &nkvdso->hostrt_data;
 -}
 -
--static inline sticks_t clockobj_tsc_to_ns(sticks_t tsc)
+-#else
+-
+-#define XNVDSO_FEATURES 0
+-
+-#endif
+-
+-#endif /* _COBALT_KERNEL_VDSO_H */
+diff --git a/include/cobalt/sys/cobalt.h b/include/cobalt/sys/cobalt.h
+index 46096e8801..39c9a8493a 100644
+--- a/include/cobalt/sys/cobalt.h
++++ b/include/cobalt/sys/cobalt.h
+@@ -29,7 +29,6 @@
+ #include <boilerplate/atomic.h>
+ #include <boilerplate/list.h>
+ #include <cobalt/uapi/kernel/synch.h>
+-#include <cobalt/uapi/kernel/vdso.h>
+ #include <cobalt/uapi/corectl.h>
+ #include <cobalt/uapi/mutex.h>
+ #include <cobalt/uapi/event.h>
+diff --git a/include/cobalt/uapi/asm-generic/features.h b/include/cobalt/uapi/asm-generic/features.h
+index 4f069b1ceb..4b0635d0c7 100644
+--- a/include/cobalt/uapi/asm-generic/features.h
++++ b/include/cobalt/uapi/asm-generic/features.h
+@@ -25,8 +25,8 @@
+ struct cobalt_featinfo {
+ 	/* Used to be real-time clock frequency. */
+ 	__u64 __reserved1;
+-	/** Offset of nkvdso in the sem heap. */
+-	__u32 vdso_offset;
++	/* Used to be vdso_offset. */
++	__u32 __reserved2;
+ 	/** ABI revision level. */
+ 	__u32 feat_abirev;
+ 	/** Available feature set. */
+diff --git a/include/cobalt/uapi/kernel/Makefile.am b/include/cobalt/uapi/kernel/Makefile.am
+index 12e1b37285..093d917bdb 100644
+--- a/include/cobalt/uapi/kernel/Makefile.am
++++ b/include/cobalt/uapi/kernel/Makefile.am
+@@ -7,6 +7,4 @@ includesub_HEADERS =	\
+ 	synch.h		\
+ 	thread.h	\
+ 	trace.h		\
+-	types.h		\
+-	urw.h		\
+-	vdso.h
++	types.h
+diff --git a/include/cobalt/uapi/kernel/urw.h b/include/cobalt/uapi/kernel/urw.h
+deleted file mode 100644
+index fcfde21a02..0000000000
+--- a/include/cobalt/uapi/kernel/urw.h
++++ /dev/null
+@@ -1,113 +0,0 @@
+-/*
+- * Copyright (C) 2013 Philippe Gerum <rpm@xenomai.org>.
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
+-#ifndef _COBALT_UAPI_KERNEL_URW_H
+-#define _COBALT_UAPI_KERNEL_URW_H
+-
+-#include <linux/types.h>
+-
+-/*
+- * A restricted version of the kernel seqlocks with a slightly
+- * different interface, allowing for unsynced reads with concurrent
+- * write detection, without serializing writers.  Caller should
+- * provide for proper locking to deal with concurrent updates.
+- *
+- * urw_t lock = URW_INITIALIZER;
+- * urwstate_t tmp;
+- *
+- * unsynced_read_block(&tmp, &lock) {
+- *          (will redo until clean read)...
+- * }
+- *
+- * unsynced_write_block(&tmp, &lock) {
+- *          ...
+- * }
+- *
+- * This code was inspired by Wolfgang Mauerer's linux/seqlock.h
+- * adaptation for Xenomai 2.6 to support the VDSO feature.
+- */
+-
+-typedef struct {
+-	__u32 sequence;
+-} urw_t;
+-
+-typedef struct {
+-	__u32 token;
+-	__u32 dirty;
+-} urwstate_t;
+-
+-#define URW_INITIALIZER     { 0 }
+-#define DEFINE_URW(__name)  urw_t __name = URW_INITIALIZER
+-
+-#ifndef READ_ONCE
+-#define READ_ONCE ACCESS_ONCE
+-#endif
+-
+-static inline void __try_read_start(const urw_t *urw, urwstate_t *tmp)
 -{
--	return tsc;
+-	__u32 token;
+-repeat:
+-	token = READ_ONCE(urw->sequence);
+-	smp_rmb();
+-	if (token & 1) {
+-		cpu_relax();
+-		goto repeat;
+-	}
+-
+-	tmp->token = token;
+-	tmp->dirty = 1;
 -}
 -
- #ifdef CONFIG_XENO_LORES_CLOCK_DISABLED
+-static inline void __try_read_end(const urw_t *urw, urwstate_t *tmp)
+-{
+-	smp_rmb();
+-	if (urw->sequence != tmp->token) {
+-		__try_read_start(urw, tmp);
+-		return;
+-	}
+-
+-	tmp->dirty = 0;
+-}
+-
+-static inline void __do_write_start(urw_t *urw, urwstate_t *tmp)
+-{
+-	urw->sequence++;
+-	tmp->dirty = 1;
+-	smp_wmb();
+-}
+-
+-static inline void __do_write_end(urw_t *urw, urwstate_t *tmp)
+-{
+-	smp_wmb();
+-	tmp->dirty = 0;
+-	urw->sequence++;
+-}
+-
+-static inline void unsynced_rw_init(urw_t *urw)
+-{
+-	urw->sequence = 0;
+-}
+-
+-#define unsynced_read_block(__tmp, __urw)		\
+-	for (__try_read_start(__urw, __tmp);		\
+-	     (__tmp)->dirty; __try_read_end(__urw, __tmp))
+-
+-#define unsynced_write_block(__tmp, __urw)		\
+-	for (__do_write_start(__urw, __tmp);		\
+-	     (__tmp)->dirty; __do_write_end(__urw, __tmp))
+-
+-#endif /* !_COBALT_UAPI_KERNEL_URW_H */
+diff --git a/include/cobalt/uapi/kernel/vdso.h b/include/cobalt/uapi/kernel/vdso.h
+deleted file mode 100644
+index 5b9b1b66b2..0000000000
+--- a/include/cobalt/uapi/kernel/vdso.h
++++ /dev/null
+@@ -1,66 +0,0 @@
+-/*
+- * Copyright (C) 2009 Wolfgang Mauerer <wolfgang.mauerer@siemens.com>.
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
+-#ifndef _COBALT_UAPI_KERNEL_VDSO_H
+-#define _COBALT_UAPI_KERNEL_VDSO_H
+-
+-#include <cobalt/uapi/kernel/urw.h>
+-
+-/*
+- * I-pipe only. Dovetail enables the common vDSO for getting
+- * CLOCK_REALTIME timestamps from the out-of-band stage
+- * (XNVDSO_FEAT_HOST_REALTIME is cleared in this case).
+- */
+-struct xnvdso_hostrt_data {
+-	__u64 wall_sec;
+-	__u64 wtom_sec;
+-	__u64 cycle_last;
+-	__u64 mask;
+-	__u32 wall_nsec;
+-	__u32 wtom_nsec;
+-	__u32 mult;
+-	__u32 shift;
+-	__u32 live;
+-	urw_t lock;
+-};
+-
+-/*
+- * Data shared between the Cobalt kernel and applications, which lives
+- * in the shared memory heap (COBALT_MEMDEV_SHARED).
+- * xnvdso_hostrt_data.features tells which data is present. Notice
+- * that struct xnvdso may only grow, but never shrink.
+- */
+-struct xnvdso {
+-	__u64 features;
+-	/* XNVDSO_FEAT_HOST_REALTIME */
+-	struct xnvdso_hostrt_data hostrt_data;
+-	/* XNVDSO_FEAT_WALLCLOCK_OFFSET */
+-	__u64 wallclock_offset;
+-};
+-
+-/* For each shared feature, add a flag below. */
+-
+-#define XNVDSO_FEAT_HOST_REALTIME	0x0000000000000001ULL
+-#define XNVDSO_FEAT_WALLCLOCK_OFFSET	0x0000000000000002ULL
+-
+-static inline int xnvdso_test_feature(struct xnvdso *vdso,
+-				      __u64 feature)
+-{
+-	return (vdso->features & feature) != 0;
+-}
+-
+-#endif /* !_COBALT_UAPI_KERNEL_VDSO_H */
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index 2b9efad4e7..fbb7ddbe95 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -22,7 +22,6 @@
+ #include <cobalt/kernel/timer.h>
+ #include <cobalt/kernel/clock.h>
+ #include <cobalt/kernel/arith.h>
+-#include <cobalt/kernel/vdso.h>
+ #include <cobalt/uapi/time.h>
+ #include <asm/xenomai/calibration.h>
+ #include <trace/events/cobalt-core.h>
+@@ -292,7 +291,6 @@ void xnclock_set_wallclock(xnticks_t epoch_ns)
+ 	old_offset_ns = nkclock.wallclock_offset;
+ 	offset_ns = (xnsticks_t)(epoch_ns - xnclock_core_read_monotonic());
+ 	nkclock.wallclock_offset = offset_ns;
+-	nkvdso->wallclock_offset = offset_ns;
+ 	xnclock_apply_offset(&nkclock, offset_ns - old_offset_ns);
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+index 4da4f51b7a..817aa954dc 100644
+--- a/kernel/cobalt/dovetail/kevents.c
++++ b/kernel/cobalt/dovetail/kevents.c
+@@ -14,7 +14,6 @@
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/thread.h>
+ #include <cobalt/kernel/clock.h>
+-#include <cobalt/kernel/vdso.h>
+ #include <cobalt/kernel/init.h>
+ #include <rtdm/driver.h>
+ #include <trace/events/cobalt-core.h>
+diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
+index 5168b56035..509ba3fc4c 100644
+--- a/kernel/cobalt/init.c
++++ b/kernel/cobalt/init.c
+@@ -28,7 +28,6 @@
+ #include <cobalt/kernel/ppd.h>
+ #include <cobalt/kernel/pipe.h>
+ #include <cobalt/kernel/select.h>
+-#include <cobalt/kernel/vdso.h>
+ #include <rtdm/fd.h>
+ #include "rtdm/internal.h"
+ #include "posix/internal.h"
+diff --git a/kernel/cobalt/posix/memory.c b/kernel/cobalt/posix/memory.c
+index 25cc784ea9..79db01cebd 100644
+--- a/kernel/cobalt/posix/memory.c
++++ b/kernel/cobalt/posix/memory.c
+@@ -23,7 +23,6 @@
+ #include <linux/gfp.h>
+ #include <linux/vmalloc.h>
+ #include <rtdm/driver.h>
+-#include <cobalt/kernel/vdso.h>
+ #include "process.h"
+ #include "memory.h"
  
- static inline
-diff --git a/lib/copperplate/clockobj.c b/lib/copperplate/clockobj.c
-index a9a8f8a25a..3a771e474b 100644
---- a/lib/copperplate/clockobj.c
-+++ b/lib/copperplate/clockobj.c
-@@ -257,7 +257,7 @@ void clockobj_get_date(struct clockobj *clkobj, ticks_t *pticks)
+@@ -31,9 +30,6 @@
+ #define UMM_SHARED   1	/* Shared user-mapped memory heap */
+ #define SYS_GLOBAL   2	/* System heap (not mmapped) */
  
- 	read_lock_nocancel(&clkobj->lock);
- 
--	ns = clockobj_get_tsc();
-+	ns = clockobj_get_ns();
- 	/* Add offset to epoch. */
- 	ns += (ticks_t)clkobj->offset.tv_sec * 1000000000ULL;
- 	ns += clkobj->offset.tv_nsec;
-@@ -270,7 +270,7 @@ void clockobj_get_date(struct clockobj *clkobj, ticks_t *pticks)
- 
- #else /* CONFIG_XENO_MERCURY */
- 
--ticks_t clockobj_get_tsc(void)
-+ticks_t clockobj_get_ns(void)
+-struct xnvdso *nkvdso;
+-EXPORT_SYMBOL_GPL(nkvdso);
+-
+ static void umm_vmopen(struct vm_area_struct *vma)
  {
- 	struct timespec now;
- 	clock_gettime(CLOCK_COPPERPLATE, &now);
-@@ -279,7 +279,7 @@ ticks_t clockobj_get_tsc(void)
+ 	struct cobalt_umm *umm = vma->vm_private_data;
+@@ -252,12 +248,6 @@ static struct rtdm_device sysmem_device = {
+ 	.label = COBALT_MEMDEV_SYS,
+ };
  
- ticks_t clockobj_get_time(struct clockobj *clkobj)
+-static inline void init_vdso(void)
+-{
+-	nkvdso->features = XNVDSO_FEATURES;
+-	nkvdso->wallclock_offset = nkclock.wallclock_offset;
+-}
+-
+ int cobalt_memdev_init(void)
  {
--	ticks_t ns = clockobj_get_tsc();
-+	ticks_t ns = clockobj_get_ns();
+ 	int ret;
+@@ -269,14 +259,6 @@ int cobalt_memdev_init(void)
  
- 	if (clockobj_get_resolution(clkobj) > 1)
- 		return ns / clockobj_get_resolution(clkobj);
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
-index db18f4ffa3..b97807c8a7 100644
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -1693,8 +1693,8 @@ void threadobj_spin(ticks_t ns)
- {
- 	ticks_t end;
+ 	cobalt_umm_set_name(&cobalt_kernel_ppd.umm, "shared heap");
  
--	end = clockobj_get_tsc() + clockobj_ns_to_tsc(ns);
--	while (clockobj_get_tsc() < end)
-+	end = clockobj_get_ns() + ns;
-+	while (clockobj_get_ns() < end)
- 		cpu_relax();
+-	nkvdso = cobalt_umm_alloc(&cobalt_kernel_ppd.umm, sizeof(*nkvdso));
+-	if (nkvdso == NULL) {
+-		ret = -ENOMEM;
+-		goto fail_vdso;
+-	}
+-
+-	init_vdso();
+-
+ 	ret = rtdm_dev_register(umm_devices + UMM_PRIVATE);
+ 	if (ret)
+ 		goto fail_private;
+@@ -296,8 +278,6 @@ fail_sysmem:
+ fail_shared:
+ 	rtdm_dev_unregister(umm_devices + UMM_PRIVATE);
+ fail_private:
+-	cobalt_umm_free(&cobalt_kernel_ppd.umm, nkvdso);
+-fail_vdso:
+ 	cobalt_umm_destroy(&cobalt_kernel_ppd.umm);
+ 
+ 	return ret;
+@@ -308,7 +288,6 @@ void cobalt_memdev_cleanup(void)
+ 	rtdm_dev_unregister(&sysmem_device);
+ 	rtdm_dev_unregister(umm_devices + UMM_SHARED);
+ 	rtdm_dev_unregister(umm_devices + UMM_PRIVATE);
+-	cobalt_umm_free(&cobalt_kernel_ppd.umm, nkvdso);
+ 	cobalt_umm_destroy(&cobalt_kernel_ppd.umm);
  }
  
-diff --git a/lib/psos/tm.c b/lib/psos/tm.c
-index c315335236..de7d56d1ed 100644
---- a/lib/psos/tm.c
-+++ b/lib/psos/tm.c
-@@ -347,6 +347,6 @@ u_long tm_get(u_long *date_r, u_long *time_r, u_long *ticks_r)
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 1abc86f37b..23ed913bb2 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -44,7 +44,6 @@
+ #include <cobalt/kernel/trace.h>
+ #include <cobalt/kernel/stat.h>
+ #include <cobalt/kernel/ppd.h>
+-#include <cobalt/kernel/vdso.h>
+ #include <cobalt/kernel/thread.h>
+ #include <cobalt/uapi/signal.h>
+ #include <cobalt/uapi/syscall.h>
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 59c45d0499..66dd1aec85 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -23,7 +23,6 @@
+ #include <linux/unistd.h>
+ #include <cobalt/uapi/corectl.h>
+ #include <cobalt/kernel/tree.h>
+-#include <cobalt/kernel/vdso.h>
+ #include <cobalt/kernel/init.h>
+ #include <pipeline/kevents.h>
+ #include <pipeline/vdso_fallback.h>
+@@ -331,8 +330,6 @@ static COBALT_SYSCALL(bind, lostage,
+ 	f->feat_abirev = XENOMAI_ABI_REV;
+ 	collect_arch_features(f);
  
- u_long tm_getm(unsigned long long *ns_r)
- {
--	*ns_r = clockobj_tsc_to_ns(clockobj_get_tsc());
-+	*ns_r = clockobj_get_ns();
- 	return SUCCESS;
- }
-diff --git a/testsuite/smokey/arith/arith.c b/testsuite/smokey/arith/arith.c
-index c927d1d122..edb87229a0 100644
---- a/testsuite/smokey/arith/arith.c
-+++ b/testsuite/smokey/arith/arith.c
-@@ -20,9 +20,9 @@ static volatile long long arg = 0x3ffffffffffffffULL;
- 		  	ticks_t start, end;				\
- 			unsigned long delta;				\
- 									\
--			start = clockobj_get_tsc();			\
-+			start = clockobj_get_ns();			\
- 			result = (f);					\
--			end = clockobj_get_tsc();			\
-+			end = clockobj_get_ns();			\
- 			delta = end - start;				\
- 									\
- 			if (i == 0 || delta < (avg / i) * 4) {		\
-@@ -32,7 +32,7 @@ static volatile long long arg = 0x3ffffffffffffffULL;
- 		}							\
- 		if (rejected < 10000) {					\
- 			avg = xnarch_llimd(avg, 10000, 10000 - rejected); \
--			avg = clockobj_tsc_to_ns(avg) - calib;		\
-+			avg -= calib;		\
- 			smokey_trace("%s: 0x%016llx: %lld.%03llu ns,"	\
- 				    " rejected %d/10000",		\
- 				    display, result, avg / 10000,	\
-diff --git a/testsuite/smokey/posix-cond/posix-cond.c b/testsuite/smokey/posix-cond/posix-cond.c
-index e49c44727e..a664aab1bb 100644
---- a/testsuite/smokey/posix-cond/posix-cond.c
-+++ b/testsuite/smokey/posix-cond/posix-cond.c
-@@ -33,16 +33,6 @@ static unsigned long long timer_read(void)
- 	return (unsigned long long)ts.tv_sec * NS_PER_S + ts.tv_nsec;
- }
- 
--static inline unsigned long long timer_get_tsc(void)
--{
--	return clockobj_get_tsc();
--}
+-	f->vdso_offset = cobalt_umm_offset(&cobalt_ppd_get(1)->umm, nkvdso);
 -
--static inline unsigned long long timer_tsc2ns(unsigned long long tsc)
--{
--	return clockobj_tsc_to_ns(tsc);
--}
--
- static void check_inner(const char *file, int line, const char *fn, const char *msg, int status, int expected)
- {
- 	if (status == expected)
-@@ -64,7 +54,7 @@ static void check_inner(const char *file, int line, const char *fn, const char *
- static void check_sleep_inner(const char *fn,
- 		       const char *prefix, unsigned long long start)
- {
--	unsigned long long diff = timer_tsc2ns(timer_get_tsc() - start);
-+	unsigned long long diff = clockobj_get_ns() - start;
+ 	if (cobalt_copy_to_user(u_breq, &breq, sizeof(breq)))
+ 		return -EFAULT;
  
- 	if (diff < 10 * NS_PER_MS) {
- 		fprintf(stderr, "%s waited %Ld.%03u us\n",
-@@ -212,7 +202,7 @@ static void *cond_signaler(void *cookie)
- 	unsigned long long start;
- 	struct cond_mutex *cm = cookie;
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("mutex_lock", mutex_lock(cm->mutex), 0);
- 	check_sleep("mutex_lock", start);
- 	thread_msleep(10);
-@@ -256,7 +246,7 @@ static void autoinit_simple_condwait(void)
- 	      thread_spawn(&cond_signaler_tid, 2, cond_signaler, &cm), 0);
- 	thread_msleep(11);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
- 	thread_msleep(10);
-@@ -287,7 +277,7 @@ static void simple_condwait(void)
- 	      thread_spawn(&cond_signaler_tid, 2, cond_signaler, &cm), 0);
- 	thread_msleep(11);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
- 	thread_msleep(10);
-@@ -310,7 +300,7 @@ static void relative_condwait(void)
- 	check("cond_init", cond_init(&cond, 0), 0);
- 	check("mutex_lock", mutex_lock(&mutex), 0);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait",
- 	      cond_wait(&cond, &mutex, 10 * NS_PER_MS), -ETIMEDOUT);
- 	check_sleep("cond_wait", start);
-@@ -333,7 +323,7 @@ static void autoinit_absolute_condwait(void)
- 				       PTHREAD_PRIO_NONE), 0);
- 	check("mutex_lock", mutex_lock(&mutex), 0);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait",
- 	      cond_wait_until(&cond, &mutex, timer_read() + 10 * NS_PER_MS),
- 	      -ETIMEDOUT);
-@@ -357,7 +347,7 @@ static void absolute_condwait(void)
- 	check("cond_init", cond_init(&cond, 1), 0);
- 	check("mutex_lock", mutex_lock(&mutex), 0);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait",
- 	      cond_wait_until(&cond, &mutex, timer_read() + 10 * NS_PER_MS),
- 	      -ETIMEDOUT);
-@@ -373,7 +363,7 @@ static void *cond_killer(void *cookie)
- 	unsigned long long start;
- 	struct cond_mutex *cm = cookie;
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("mutex_lock", mutex_lock(cm->mutex), 0);
- 	check_sleep("mutex_lock", start);
- 	thread_msleep(10);
-@@ -418,7 +408,7 @@ static void sig_norestart_condwait(void)
- 	      thread_spawn(&cond_killer_tid, 2, cond_killer, &cm), 0);
- 	thread_msleep(11);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	sig_seen = 0;
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
-@@ -457,7 +447,7 @@ static void sig_restart_condwait(void)
- 	      thread_spawn(&cond_killer_tid, 2, cond_killer, &cm), 0);
- 	thread_msleep(11);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	sig_seen = 0;
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
-@@ -473,7 +463,7 @@ static void *mutex_killer(void *cookie)
- 	unsigned long long start;
- 	struct cond_mutex *cm = cookie;
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("mutex_lock", mutex_lock(cm->mutex), 0);
- 	check_sleep("mutex_lock", start);
- 	check("cond_signal", cond_signal(cm->cond), 0);
-@@ -513,7 +503,7 @@ static void sig_norestart_condwait_mutex(void)
- 	thread_msleep(11);
- 
- 	sig_seen = 0;
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
- 	check("sig_seen", sig_seen, 1);
-@@ -554,7 +544,7 @@ static void sig_restart_condwait_mutex(void)
- 	thread_msleep(11);
- 
- 	sig_seen = 0;
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
-@@ -571,7 +561,7 @@ static void *double_killer(void *cookie)
- 	unsigned long long start;
- 	struct cond_mutex *cm = cookie;
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("mutex_lock", mutex_lock(cm->mutex), 0);
- 	check_sleep("mutex_lock", start);
- 	check("thread_kill 1", thread_kill(cm->tid, SIGRTMIN), 0);
-@@ -611,7 +601,7 @@ static void sig_norestart_double(void)
- 	thread_msleep(11);
- 
- 	sig_seen = 0;
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
- 	check("sig_seen", sig_seen, 2);
-@@ -652,7 +642,7 @@ static void sig_restart_double(void)
- 	thread_msleep(11);
- 
- 	sig_seen = 0;
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 
- 	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
- 	check_sleep("cond_wait", start);
-@@ -670,7 +660,7 @@ static void *cond_destroyer(void *cookie)
- 	unsigned long long start;
- 	struct cond_mutex *cm = cookie;
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 	check("mutex_lock", mutex_lock(cm->mutex), 0);
- 	check_sleep("mutex_lock", start);
- 	thread_msleep(10);
-@@ -708,7 +698,7 @@ static void cond_destroy_whilewait(void)
- 	      thread_spawn(&cond_destroyer_tid, 2, cond_destroyer, &cm), 0);
- 	thread_msleep(11);
- 
--	start = timer_get_tsc();
-+	start = clockobj_get_ns();
- 
- 	check("cond_wait", cond_wait(&cond, &mutex, 10 * NS_PER_MS), -ETIMEDOUT);
- 	check_sleep("cond_wait", start);
 -- 
 2.35.3
 
