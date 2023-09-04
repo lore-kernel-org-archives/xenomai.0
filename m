@@ -1,88 +1,68 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9517442D
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 12:51:49 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 575B31C000D;
-	Mon,  4 Sep 2023 12:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1693831900;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZChMA0Rov776g65EJiqg4M3UT/AlBcRk2I4A3xYNTo4=;
-	b=OFQYvylWU1laF5WIr2UYUnNGnbOzjbEiUKNnEH7ARQCwKu+sygfctNQcTFRkz0xFRcuQLd
-	23KQWhDtxDQD2akCHwjAti27z4piOINZZV4Nm+HMybcgIyMdQkEEX6rugIQnoPXD/Vu2qq
-	3P3TW9oSU+7c48Yi747bt7Ar2xUWhfbiu1T9WLPBjZ4rmloGDrLCRIjWPjFkxAeLmOQbW0
-	93sdd9E3hUB1Vcb+U4y+HpHVDywcTdLPwmXWtelcsp72GD6n4asLHOb5s8GTZcQl+6qZcf
-	Na7rEoJz3RlXgQxBmKM6N/DIfbYuB1MPJHioZlIkrAVbbC/1XSfiLd5KrXdv6Q==
-References: <295930955.1965703.1693822486006.JavaMail.zimbra@wolfram.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Per Oberg <pero@wolfram.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: Xenomai Wiki updates
-Date: Mon, 04 Sep 2023 14:35:01 +0200
-In-reply-to: <295930955.1965703.1693822486006.JavaMail.zimbra@wolfram.com>
-Message-ID: <87fs3up0dg.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBCE79D5
+	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 13:05:15 +0000 (UTC)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202309041305103c94fcbebcca1779d9
+        for <xenomai@lists.linux.dev>;
+        Mon, 04 Sep 2023 15:05:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=iUlQp0UlBoEMqD1S/li7XHaqMn9UjQ7fkWsEG1BWagY=;
+ b=GT2WUl7yQ0X88JWY8w6gVYa2rFUSyKYUFUfW9/SbAyerny/ztI9rOohpU2N7Ssn4AJE+JF
+ Zm80pz14FzvE6Idy8AwmvjVKhQXxT6Hu9EKsuRNMTLfeSVQiWlsAOmCGJ5ACR+ATHDBBSGxc
+ k6AMvWuW9YfundQTzNUHg2jCAk00w=;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH][xenomai-images] ci: Add kernel 6.1 tests to xenomai stable 3.2.x branch
+Date: Mon,  4 Sep 2023 15:04:04 +0200
+Message-Id: <20230904130404.3838872-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
 
-Per Oberg <pero@wolfram.com> writes:
+Hi all,
 
-> Hi
->
-> I was looking at the Xenomai Wiki and noticed that there were some outdated information.
->
-> E.g. : 
->
-> * https://source.denx.de/Xenomai/xenomai/-/wikis/Installing_Xenomai_3
-> Dovetail, kernel git trees and recommendations are not mentioned. There is a section on the powerpc part which I seem to remember has been deprecated. 
->
->  
-> * https://source.denx.de/Xenomai/xenomai/-/wikis/Start_Here
-> Embedded Linux distributions & Xenomai points to ELDK which seems to be no longer available. 
->
+once 6.1 is supported by the Xenomai stable 3.2.x series we should
+enable CI tests accordingly.
 
-Significant updates to the v3 documentation is direly needed for sure.
+Related to 
+https://lore.kernel.org/xenomai/20230828-florian-enable-stable-3-2-for-6-1-v2-0-5189cfb05a62@siemens.com/T/#t
 
->
-> I think I might find some time update some of the stuff. What are the guidelines and procedure to contribute to th Wiki ?
->
+Best regards,
+Florian
 
-The content of the upcoming website at v3.xenomai.org is maintained in a
-git tree, which is now public. This is a Hugo generated (static) site
-using the 'learn' theme, see [2][3]. Likewise for Xenomai 4/evl at
-v4.xenomai.org, content available as a git tree from [4].
+ ci/xenomai_3_2_x.yml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The workflow is pretty simple:
-
-- apt/dnf install the 'hugo' package
-- git clone the website repo
-- make changes to $repo/content/*
-
-hugo provides a local web server [5] serving the pages in $repo to a
-local browser, which automatically renders any update live:
-
-- cd $repo
-- hugo server
-
-The website should be accessible from localhost:1313.
-
-Contributions are welcome, patches should be sent to this list.
-
-[1] https://source.denx.de/Xenomai/website.git
-[2] https://gohugo.io/
-[3] https://learn.netlify.app/en/
-[4] https://source.denx.de/Xenomai/xenomai4/website.git
-[5] https://gohugo.io/commands/hugo_server/
-
+diff --git a/ci/xenomai_3_2_x.yml b/ci/xenomai_3_2_x.yml
+index 781eec8..a0e777c 100644
+--- a/ci/xenomai_3_2_x.yml
++++ b/ci/xenomai_3_2_x.yml
+@@ -15,9 +15,10 @@ include:
+   - local: '/ci/kernel_5_4.yml'
+   - local: '/ci/kernel_5_10.yml'
+   - local: '/ci/kernel_5_15.yml'
++  - local: '/ci/kernel_6_1.yml'
+   - local: '/ci/xenomai_3_2_x_compat.yml'
+ 
+ variables:
+   XENOMAI_BUILD_OPTION: ":opt-xenomai-3.2.x.yml"
+   XENOMAI_VERSION: "3.2.x"
+-  LATEST_KERNEL_VERSION: "5.15"
++  LATEST_KERNEL_VERSION: "6.1"
 -- 
-Philippe.
+2.39.2
+
