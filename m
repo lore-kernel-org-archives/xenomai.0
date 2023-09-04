@@ -1,82 +1,75 @@
-Received: from relay-ext.wolfram.com (relay.wolfram.com [140.177.205.37])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDFEA7E
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 10:14:52 +0000 (UTC)
-Received: from relay-10-128.wolfram.com (relay.wolfram.com [10.128.2.101])
-	by relay-ext.wolfram.com (Postfix) with ESMTPS id 4AC645FF7
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay-ext.wolfram.com 4AC645FF7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wolfram.com; s=relay;
-	t=1693822486; bh=YRitSSoI1QfxZW+jVvx4N/sxaJD/fSBsgAeYoG8goac=;
-	h=Date:From:To:From;
-	b=lUOtS/JCUKJ30WF2woEOW8eDSDyZbe5MhqztuDWrcFUUnfUvbdCABQ7jmcIqbKNE3
-	 YBE9XVM4YmvfTsnXb4MSeCQMXdK0qEuwNYbK20V/RQijvqct4wNhpeXddOW834Ccrz
-	 V0xiaexOkkH/befTY136yPqngHq3nlKynWWOyp5M=
-Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
-	by relay-10-128.wolfram.com (Postfix) with ESMTPS id 46E2930004E
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-Received: from wrimail03.wolfram.com (localhost [127.0.0.1])
-	by wrimail03.wolfram.com (Postfix) with ESMTPS id 43E59100672
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-Received: from localhost (localhost [127.0.0.1])
-	by wrimail03.wolfram.com (Postfix) with ESMTP id 262F91006B7
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 wrimail03.wolfram.com 262F91006B7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
-	s=E3ED0494-3FFA-11EB-8895-C5FFDA13CE33; t=1693822486;
-	bh=YRitSSoI1QfxZW+jVvx4N/sxaJD/fSBsgAeYoG8goac=;
-	h=Date:From:To:Message-ID:MIME-Version;
-	b=bjwjpwdD1jJ3DAyvQSQL+S5Ra55MueV6IW8zFi/KSrvBXZttQihupONXQ0TFSn6D+
-	 d+o/LF82NOfCRyu+bT8Y2KL4cJisaRk0iJqYKOOOjoGQrDtPgxotHKv6uAzsxoC3pm
-	 m99KrminSAN+BdIyEoF8qPizOgHTctgr1R+l9iku3076+jQY66g1vGMkq8dbObQ3Q2
-	 0buwZbOHuizdDGCcXw51U4WJ8YxGHXyvV8ozRGkornsuBVwFcJ5DCMJ0gfKT4kgzhg
-	 +gaTZjODcvSYEp++bYCD8Fi7yAg3tQoT/6i1zDO4czRLX5NRqVFU/t1HpyoESw/BxL
-	 n0HO2IiCt5v7Q==
-Received: from wrimail03.wolfram.com ([127.0.0.1])
-	by localhost (wrimail03.wolfram.com [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id sp717Pghzliq for <xenomai@lists.linux.dev>;
-	Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
-	by wrimail03.wolfram.com (Postfix) with ESMTP id 0CF53100672
-	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 05:14:46 -0500 (CDT)
-Date: Mon, 4 Sep 2023 05:14:46 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680AB20FD
+	for <xenomai@lists.linux.dev>; Mon,  4 Sep 2023 10:53:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693824803; x=1725360803;
+  h=from:to:subject:date:message-id;
+  bh=DnG9M0oTtMSYFdvcqDanUUeXs88PbIi3onNvysLn5cs=;
+  b=XKXw+RhmB1rOIAFr7zGih+9Oy+vonR/Nk72Z7MDwh8a/MLYHnoCYd1Hw
+   d9C1uE1YRsRxjYJEdmkK8PA6DnvAPKCd3dBsMnQAxcvzlhekQjT4/cxDv
+   kXD+TNd3lEDIb0Nz50qTqEpwOZ0h2R0bt2jr81mVTmGC8viS6wrTz8iUT
+   dhm2MOCDgTnbhByTRypAm+A6RuETtz1lZaQZK3bF4F0Fbaj4oKNixHrGl
+   HvMSY2X0HNFIw8ioGWsQLcdznCyGSNasJYH4XKoyBNzCcvm7PsPOIesrC
+   VnGOqbrIbisN05O2+qqSW+ZLezJBCcH6X7H3CFvxEqBp0YbwpoHdIIDIc
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10822"; a="373962346"
+X-IronPort-AV: E=Sophos;i="6.02,226,1688454000"; 
+   d="scan'208";a="373962346"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 03:53:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10822"; a="914470869"
+X-IronPort-AV: E=Sophos;i="6.02,226,1688454000"; 
+   d="scan'208";a="914470869"
+Received: from intel-z97x-ud5h.sh.intel.com ([10.67.103.184])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 03:53:20 -0700
+From: Hongzhan Chen <hongzhan.chen@intel.com>
 To: xenomai@lists.linux.dev
-Message-ID: <295930955.1965703.1693822486006.JavaMail.zimbra@wolfram.com>
-Subject: Xenomai Wiki updates
+Subject: [PATCH 1/2] pinctrl: intel: irq_pipeline: enable pipelined interrupt control for pintctrl-intel
+Date: Mon,  4 Sep 2023 06:25:32 -0400
+Message-Id: <20230904102533.22448-1-hongzhan.chen@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [46.59.13.250]
-X-Mailer: Zimbra 9.0.0_GA_4485 (ZimbraWebClient - GC116 (Linux)/9.0.0_GA_4478)
-Thread-Index: j0jDyxRCJI1fvbzeeDAkZbH5CK5uZQ==
-Thread-Topic: Xenomai Wiki updates
 
-Hi
+This is required to run the locking code from the pipeline
+entry context and the out-of-band stage.
 
-I was looking at the Xenomai Wiki and noticed that there were some outdated=
- information.
+Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
 
-E.g. :=20
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 2ef9e2d8fd9c..7797618a899b 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1322,7 +1322,8 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
+ 	pctrl->irqchip.irq_unmask = intel_gpio_irq_unmask;
+ 	pctrl->irqchip.irq_set_type = intel_gpio_irq_type;
+ 	pctrl->irqchip.irq_set_wake = intel_gpio_irq_wake;
+-	pctrl->irqchip.flags = IRQCHIP_MASK_ON_SUSPEND;
++	pctrl->irqchip.flags = IRQCHIP_MASK_ON_SUSPEND |
++			IRQCHIP_PIPELINE_SAFE;
+ 
+ 	/*
+ 	 * On some platforms several GPIO controllers share the same interrupt
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.h b/drivers/pinctrl/intel/pinctrl-intel.h
+index ad34b7a3f6ed..89ef4e37511f 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.h
++++ b/drivers/pinctrl/intel/pinctrl-intel.h
+@@ -228,7 +228,7 @@ struct intel_pinctrl_context {
+  */
+ struct intel_pinctrl {
+ 	struct device *dev;
+-	raw_spinlock_t lock;
++	hard_spinlock_t lock;
+ 	struct pinctrl_desc pctldesc;
+ 	struct pinctrl_dev *pctldev;
+ 	struct gpio_chip chip;
+-- 
+2.17.1
 
-* https://source.denx.de/Xenomai/xenomai/-/wikis/Installing_Xenomai_3
-Dovetail, kernel git trees and recommendations are not mentioned. There is =
-a section on the powerpc part which I seem to remember has been deprecated.=
-=20
-
-=20
-* https://source.denx.de/Xenomai/xenomai/-/wikis/Start_Here
-Embedded Linux distributions & Xenomai points to ELDK which seems to be no =
-longer available.=20
-
-
-I think I might find some time update some of the stuff. What are the guide=
-lines and procedure to contribute to th Wiki ?
-
-Per =C3=96berg=20
