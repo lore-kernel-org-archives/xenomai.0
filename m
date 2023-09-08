@@ -1,41 +1,43 @@
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2102.outbound.protection.outlook.com [40.107.14.102])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2091.outbound.protection.outlook.com [40.107.20.91])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255A51871
-	for <xenomai@lists.linux.dev>; Fri,  8 Sep 2023 10:51:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2C32108
+	for <xenomai@lists.linux.dev>; Fri,  8 Sep 2023 10:51:54 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Inz+nhp+aaD/pIviEq2EMSez5Iexp3VZW7M1A5FPSzemC9o0uWbsbHB5VZUAPtpLtV0zydisxAq1gmuGIkG6hunKma6zpkFVaNgBQC2s1vIrGES9s+kuoqCdXenOgJocGAD1Uaf04Ntze70goRLUTM8/T3VpyNWNIo3c0loFZSTVLkMixwRvU7mjW4mSKAxV6MJjTKd8pPey/CnW122zz1cvG6sE/On3MU+tKaZQqN/PON4asorpxQ9YUy49W1z+Q7hS97HR/W3gZoQrJze+HZJx7qzKoWGGHsYfDILZntlLeDIaHCCz9muV37HG0W8tLk9dDroiZy5Pudn+8JBM8Q==
+ b=aik5H9ffuIRI4sCbypxBPIZga+Z7WZ2Zc8I9PaO9CyaKYJOVmE5tZs4G2PDCZIJ7UP8fB9nESy8VW8HIe4DkpOAEhQbI13Mfq6MlX+qeHLYabS4KF3WeWRjq6AVGvwelhbhw/5GvgZIkYcdGLZYeMDdpIxuuNbJJqCUC0RhfzH+OKyZilztiv9AfLIcHjUPvSDG0QCIkqTTcD4waDR8Z9h41yTYDYPP902ONT8MGIHEweYL2g05fJDz6va0yZzbsf8Lff7SolEL3bq2dZBblXrQ7NUxx/SY6lgT389K/raTaUASEmB8/QKR/zHuRxZFvfDaegAkYqFZH267Eqf9wEw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mJ3YsHymjJ15NhBrb8HiJLv6VHk9jTE5ORbP+Wcm9Wc=;
- b=hD87uZ12JX8kXqaIwo2L2uihzpnZRuMbCJHnLduPGshFe0s3X1Z50wL2JtPtrTP/9kgn/TJNUiNy+GccDW6Wv5r2a8HA84t/MNuF+vsDv8sNnHygeBPqmk4tGU6v8nn/l6tgiLRkREXz8m5ieGb1gCWPo0zATOyKgPkTWo9mvPmmMHcnWTQFvY6U0uu6LdE0415oAuUy+3wvGx0fOD5/R5DI04sjuEsVhESP1YL7RxtNyBOycX9D+0VI380BQniasCaUU5W/WRvXlgGOFD0z/aMOgg2+Whm0AfPddV1qFg0gS1+fbTjAy/jSGej45DgP8rj9sIlGDqbmdorg6iuWDQ==
+ bh=2dVU1vlZBdBQO8wUDdDBn9r6XXLPeWUszBk5JSBs49E=;
+ b=nndfxQhE5rJTMm6X+yCykwguS1lVa4XoswR2cgm8EXUfxYMewRLVk7BqwEeGVjiMinKfQc5vvgelzP0y7HQi+ag04ctPM/hItkxLPsA2KhtQm8RYlt8vAgET1fUH+PsJeCq9PV+Gj0HNIKqbEvLX54jLmTBukanim66wDJ1hPD2GzA8Ibm3OxC1DvWGYkz6RrgToIDSXsoMT1KpQb8cu86pI9fEUSoCM7MDH+R5asHKPml74eUW61T2OI+f+Lv+d7KAVERS4KSWTfyHYoMF8e+aJk3wGmh18AP3jwoq5m6hTI3bYTVC/UMsBdwX66Lq9jVwnjWM1dtAsMgiyDuo4Bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mJ3YsHymjJ15NhBrb8HiJLv6VHk9jTE5ORbP+Wcm9Wc=;
- b=wFdt1LCDISOYhfsv7rJwpGCcLE6hfkrtZpDffaUjCD6UtsWjuz2dAtBjM24VZBOkQrYILSbaGS6ShKYaNvUkXAj3djZeKVWGGsZ/vlzdyNgaq1xZXGX2XQDcERuEoSeEt25QZ+p8zfg4pDAWV/InlC1FYMnPoRV+xXJFqzcnTfQ=
+ bh=2dVU1vlZBdBQO8wUDdDBn9r6XXLPeWUszBk5JSBs49E=;
+ b=gSQcYCdbZQGHwBN6Ytl7QaM7ml5DW+TkrFccQwdRfsYZcybE5qKyEHp90aakiihiNppVUA2KXn7a9TGKEmzCT9uEkAHCN83TeVIypsYDZTktwmt6Ql+l22YrKLis5m2o2INqQX2zwD9M/EATkDpG+Q44Vl/B44/cOfE8VnbPyZE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com (2603:10a6:802:a8::22)
- by PAWPR08MB10059.eurprd08.prod.outlook.com (2603:10a6:102:35d::14) with
+ by GV1PR08MB8570.eurprd08.prod.outlook.com (2603:10a6:150:82::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.34; Fri, 8 Sep
- 2023 10:51:48 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Fri, 8 Sep
+ 2023 10:51:49 +0000
 Received: from VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::1c00:64f3:d6fd:832b]) by VE1PR08MB4909.eurprd08.prod.outlook.com
  ([fe80::1c00:64f3:d6fd:832b%4]) with mapi id 15.20.6745.034; Fri, 8 Sep 2023
- 10:51:47 +0000
+ 10:51:49 +0000
 From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 To: xenomai@lists.linux.dev
 Cc: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Subject: [PATCH 1/3] [POC] test implementaion of rt-signals
-Date: Fri,  8 Sep 2023 12:50:41 +0200
-Message-Id: <20230908105043.1355310-1-johannes.kirchmair@sigmatek.at>
+Subject: [PATCH 2/3] [POC] Add rt_signal test
+Date: Fri,  8 Sep 2023 12:50:42 +0200
+Message-Id: <20230908105043.1355310-2-johannes.kirchmair@sigmatek.at>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230908105043.1355310-1-johannes.kirchmair@sigmatek.at>
+References: <20230908105043.1355310-1-johannes.kirchmair@sigmatek.at>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: VI1PR06CA0122.eurprd06.prod.outlook.com
@@ -48,451 +50,366 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VE1PR08MB4909:EE_|PAWPR08MB10059:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b32c407-a310-4cad-2126-08dbb0599968
+X-MS-TrafficTypeDiagnostic: VE1PR08MB4909:EE_|GV1PR08MB8570:EE_
+X-MS-Office365-Filtering-Correlation-Id: dfb993dd-4722-44b7-e8b2-08dbb0599a77
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	iEon2TGb54VnLEGPv9UJDlqDCRVTcQqrrCJ2FzXLazlby9ZDo2QZIVP6bYh8kHaVgt21hptMHdVMfSO1BKMiqsgGzazQeIPHakHox0+zm8ulbyMrR4j6jyxGMFMoNknHAP5+GkNtWYAA7jelIDemBeU1/tXcGmV+03lDBwTN2KomUe8sJlQcjtpQbxaInUFc0io8JLWoIrkq3mVOZWVXjuORd4dCoLAKtqjJp2xMMpZrGyQFR6XCIgYYg7YucwXv1n8LbRdsB6m0XtZUbb58Pf+wLxNEQrjGO6jvg59dD3629LvJ5WJ1d1HCHl1GdfAkHbbWcfrLm67SovskQkom9PnWd/l59tVUIRBpC/DEg3JERYs7UQqsooaEdpvv1RYVmryN3/Mc4YmQsNtSFViuzJ8lNf2fjWwBvhuPhz6lJINKTVDLu5Vf4A+wHp3sFS60NV4jw2yDrKJ6Fu6RsX2gX/R83+YbiZD2zAT3NV0XlL2GvnSEn4OgKXBbQ58WEW6s7rXentLmIDnfnDZkpnjjM9WUDBL1ri+R8LpfWwBj8qOzvS+B34GPQYzDm6VyOg18BAe5o97Gmq3Jqy1Up5TL70wJtdUBZDETx3QSPOeOdOE/mIRK5lcNLBNe4XKUw3ia
+	SgetABV7nu9xObQgvFa3Y1USTUsFk5ZAGX96E/S0eurx9oda/vZMZ7jC81jkdMZMKgaJ0RrvBiRGBT9S6PFTVpBVfZLHsSUyMKH73aC7/H6ovPpnKOXCAfs62EtftGQkjImrGGxSYKA+phCZi8nnkQJl83Du+duuapMbBqg4HZuwWeM7f6EZC0ZGxZIUDxTZ/BI8FFpWdU9Q76b+fwO6p9NhbL0P0Cm+pd0+TXo1mPQJL9yygqMoDjPXYOBJ8DA+p9tj4c+tbfDp1q6xwi5g/YDJrDfP2qOCMGXfcxk8v+qVL8laT2E3gTOIJK+OtGbGm3Sa7FOML/DcWHYeP8oigjDUY4eRAE9d7C/Yoc1Osb0rJwt7nhJd15cZTK+eVqRe2em5o8h7Ip1zdUf2oRY/4J/mSBTf+Wd8PQc3bcHlfduPOpMPHa357chtNOK1AJi+stWalFS1EMzhppdQ0Oj7+RyGnDjkxp3JYzPBcDdqmeBiDL4ms76Z6uV9Mqbk7dGw7xeUWwaQcNjvpzzhZKfv9JPXIiku1EBFoOiBZahC/9cGGHTr4smjJU0E/D4ONtPJ6emlu3EF7Sk9l59qbrQaMCRFhs5aeifibTwNVUcrB9v8vBmVcFGpoRa+Hx9M/2NW/NuT+UwQk4Ai0BEJvMzLdQ==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(366004)(136003)(39840400004)(346002)(1800799009)(451199024)(186009)(6666004)(6506007)(52116002)(6486002)(86362001)(36756003)(1076003)(38100700002)(107886003)(38350700002)(26005)(30864003)(83380400001)(6512007)(478600001)(4326008)(8676002)(5660300002)(8936002)(66556008)(316002)(2616005)(6916009)(2906002)(66476007)(41300700001)(66946007)(44832011);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4909.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39840400004)(366004)(376002)(396003)(136003)(1800799009)(186009)(451199024)(6506007)(6486002)(52116002)(6666004)(6512007)(478600001)(83380400001)(1076003)(26005)(2616005)(107886003)(41300700001)(2906002)(6916009)(44832011)(66556008)(316002)(66476007)(66946007)(4326008)(5660300002)(8676002)(8936002)(86362001)(36756003)(38350700002)(38100700002)(21314003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?kZA74VWpxjOqHqf+kXBoU79FlpwCgGtTFjSCVIsLSTs34iyG5OWX2ae4tKJz?=
- =?us-ascii?Q?sODdpfQt5N+3d002/ofPWrQXauqmg4pRvZkwOw/y/YAhKEwqKhGezBaIh0tV?=
- =?us-ascii?Q?1U1t09dsnRMQg6Ff7ToGnp+uFhtp8kdycJQELsTwI881ZNqj/nVQlnSAd2Q6?=
- =?us-ascii?Q?QuRUsp6d8NcvFfrfvOeg3XVj7muwNxv7s2wjWF2j3yjsJiU3qfsUSks4nRLy?=
- =?us-ascii?Q?8fbdGyrntrDlwu8IIIhLA4qtAFfvUGvvmuPCd5v92nztWDO4hTzMzkaUOXN+?=
- =?us-ascii?Q?V3rYUyDbtUywDvnwkhwKgfZIgu5gCinj5HztT789SXZ28oMyFja9mUBA8URA?=
- =?us-ascii?Q?rXfbfxqcqD91WfcoVpjV6KT+7ZGFHLMill1/mNAQI4egfTPdNeNLud+ZyZ7Y?=
- =?us-ascii?Q?bpow+h03sZQSx47St4JUQgots2+NBpISxelk1PUv4VgO1fQnjMDGihu7fqt6?=
- =?us-ascii?Q?DG/VPamezshwu/yv290AwaLiNvb9DrGe9hkqyQkPg+fF5mQo3822wfe09/Bm?=
- =?us-ascii?Q?hliu0FRN0fivLkgjqtFOBKwpYAlr3Je4N6/jpeuGvTmIzqVYjhKdg82O4eEr?=
- =?us-ascii?Q?P/zbG0f6MvmorlM6JUFstDOxNMeX6y+yVRjs2xJ7RV+hojn1+6UT1FTSkD5A?=
- =?us-ascii?Q?pjhku2BWhAGKQbRhXvGRGVGV5E7qG/jl7+3NPOFJLnnCNcsWWP1hRGrRuLJJ?=
- =?us-ascii?Q?jduNdIAOBzoGac+bw+dpRoU568h3aDLqV9xrrCRVZ56uPGibrkDkG2aNWi2p?=
- =?us-ascii?Q?GEG3oRAscEsTiP+kWv3lNe/4VkQcjT0Io4Jr9EdNiQk/7/zq0hkP2Remq7Ip?=
- =?us-ascii?Q?Si7baNZNsUNL4nF5qmjhy3unxVTPx3wjtque890+tBHDZlcCqRKwN4sY7/DV?=
- =?us-ascii?Q?O2rj73U4ard/kl7qt713Z3MxSI24XEwsJWGTZQJl1QL70h5RGYtxNymgyhWj?=
- =?us-ascii?Q?O9zsEvKzYIJYvZGY3XsjtSKhKTcB8iXX4VHkS4GxJ97akjONIenAEE/8r5eY?=
- =?us-ascii?Q?+Z6lKJU2UV/tDnR5fWyWIF6Zf4C3Ep1X6KGKuV5kLuoA0o/W27dFsqQAsEey?=
- =?us-ascii?Q?E4UlIEkeO08Ko607lFxWH3uZrRvqZaGa8h8FG69gOTq6OXfoUGSOqp+ls/jO?=
- =?us-ascii?Q?wSxefN+aFFlzze8IHtrFLELTcsm0gPWKK/9YSm6Qvuvg//LhM5DLplSDJeP0?=
- =?us-ascii?Q?T8bs9KLjbttDkIMetx4t1D/a/BeKC4lKlTiGQP9FluMG3fN4rzsK6juLJ0dh?=
- =?us-ascii?Q?vHG4B28ovWdNUOFCZLP99g0SU2JiuWRcpIlaWtAf7DHPXh4U9ColvkdgipId?=
- =?us-ascii?Q?6UjYk1GEfgkwr/B1OHDA5mBB/TW0ZcIAjLhHUsL3OPy6ykiTZ74pXjAbCVdZ?=
- =?us-ascii?Q?C9Zjet5ydZtcfPbZoYkWTFmGWsSy+hRMRgiTsAFz8ieHRKfd1OqYS7VvduEG?=
- =?us-ascii?Q?6LPtSXu+AXCkqwi7x4nN9/SNhj9k4E69cLA0z2bqXeglUksoureCg5olxbfr?=
- =?us-ascii?Q?x0ae81aHc1vRetbmnt6kzULiBni+YccIfQhihIcwjv1VlT522TUw+dDtx3Qd?=
- =?us-ascii?Q?6eFMPxhLdtl+E6m1LLJbKa9+Im7nb8O8cB+upwci7x1HmU/SKel21IIHS7My?=
- =?us-ascii?Q?lVO2zknYT2x0rYnpLqPeoaE=3D?=
+	=?us-ascii?Q?9rsQ5o1QjG6Uf2yoXtHAZajw/F2EG4wMTR3Vl1spFlQ3muAArD4bv1mXU7w7?=
+ =?us-ascii?Q?ZVwXLtpTKIqfdkXoW6c+vb1WVjOMAJLsw2digsM9izBSYKiOIbsd5PLQY3zF?=
+ =?us-ascii?Q?g5T7oPtLYeseHLgMi+aqnUruBjYW6KupYnT3u1onLf6sLxiPxWHRq/IKo/qs?=
+ =?us-ascii?Q?FX2TPMxlUXuGidY2v3rznPFWaqWCcVUwudfyqM0iipJHo0NWC6qN2i9Hv6Lm?=
+ =?us-ascii?Q?bRBM3BNFyj8lAUdZtyJT5y1YaF1KY1i6arp4HFIfMvqY9Mb7k7eD0615Ob7b?=
+ =?us-ascii?Q?/DN3ouWP9IEfenxP/i9+IQwTdtNsalBRDT0AvDd46A6AlLOp7am7QWAJBNB8?=
+ =?us-ascii?Q?WC5oJSG++652U0jcYisvdX/nnq0FlI0N8mo3afynwnI9jrgGY7ZW8+w4fiXU?=
+ =?us-ascii?Q?GhPox8k7NP2wKVcylOK0mDBiZUM6cFxly31E5BGDv61eN5qRoK7fhfxFMFWt?=
+ =?us-ascii?Q?2D/ApbEDZ4/IBfgWaG0FftmpxUReUGjdI17HM6bOYQkL9VR8HeDxi3haih/O?=
+ =?us-ascii?Q?900+76T+aRtEf+LdEzqHwbjcQsXXuRBH8mCQd5IoeV5AZhB7EN6IQ8DEyiF3?=
+ =?us-ascii?Q?Lgek1FMY8ScXZEQ8iqsFb6d4Dzxjuq0L1ouLHqoHXrpooE13hLFQvibORBvW?=
+ =?us-ascii?Q?mjnu6oDOdTNrraoFZG15eu2TKg9HvpqWW9gS3V6zRRTFShtnCFLlhU0hujzy?=
+ =?us-ascii?Q?dEWlNPaPYACBfldMw1DGvD2XkJgsJTmt93gAqwxx3Jzuge+g8VrtQFk7UMTt?=
+ =?us-ascii?Q?k2Vu43SZR5mUsbxIMO+VSPNyhWONUVNodkd09d29Kuof5GSQTK1lleco0zPp?=
+ =?us-ascii?Q?7RmJoRPrFsq26UO5N/dZ3oEMfvTNoDkMWtkLV76Gs5xke5o67rVhBl1Sw5Bn?=
+ =?us-ascii?Q?sSBhDjPFtRd96kRjRpi7QjztsECRe+Z01JM3e2a4VIR3nXD68eRIG2rmJdCI?=
+ =?us-ascii?Q?YIfv7CFOxTCy6G/iAJ06GtZtOVYXqHzUUY213HN4PcDvTS1iVbWCu0VgAWFA?=
+ =?us-ascii?Q?o+17QVcuLQC6VMT5N5F4h+JjN3IVWI7gtt8SD7dwwQZMoc9hg7zjy1vN+7T4?=
+ =?us-ascii?Q?1hJCFuT2WMfKcFvjps6ecksLAm0WY+9iqZuHfnhvptczwHCbPU2wc6RjsMkS?=
+ =?us-ascii?Q?b32SYqDAbWDz/MA9BtCiIaetLarcsZnf2s/ZiALHsCWFYiNiaJWEJeseJM0n?=
+ =?us-ascii?Q?4m8RszYBiba0z5w1qraA1E9YYHaftahNCBuPLcEbQ53hFIj6ykAHtkU1LJdT?=
+ =?us-ascii?Q?ANhM+YsEu6iiUNx6udx7Z7S3oQpJG1qgUdmFRCVxvtMGAgT+coxcYje56Imj?=
+ =?us-ascii?Q?tD7IVA4Kem4Nn++K/3W/BRPvVMnI6tcz0kzGwssqQAJir5VehC1gfWEkKYqm?=
+ =?us-ascii?Q?X1iAma3P3grZ1T2YXF0fve86PA95Mka/FT0HmEFJ2/d5cnZobD600SPI/DyR?=
+ =?us-ascii?Q?gcIdqG6iJ+oNHpSw3m0cdn8VNVBUSs1uZp+61rUNl7VYs9PpZuc0PUq9iPEX?=
+ =?us-ascii?Q?TrWIJByhhx0VOqZ1F7MulIBYu2hRU6o9rV1yRNjA3nrhUmvxVynQTKMSdH6P?=
+ =?us-ascii?Q?aooPehs/DUqhqPmH/jtY9vGnuHRZ/z4OCM0Y2lF02wdRLRf+R/sTAOPXokyL?=
+ =?us-ascii?Q?3yiMu6kBGC2C1x2BB072Y7Y=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b32c407-a310-4cad-2126-08dbb0599968
+X-MS-Exchange-CrossTenant-Network-Message-Id: dfb993dd-4722-44b7-e8b2-08dbb0599a77
 X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4909.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2023 10:51:47.6572
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2023 10:51:49.6179
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Yp+9w9IWbJs7/MCeNsybNT4HVTyleJyHM9F0CJwxDlUcuQtFn80X8NIx1Cnf233zgQfGoGoCNW1u8EVj2tkwrd4Ty+ymbv0bqisk3ZneWLY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR08MB10059
+X-MS-Exchange-CrossTenant-UserPrincipalName: ceWpxiwRkrhkJinPHBJ94PGWxHwqmfY3JrUwDhdUML+MPRMpRKB3ZmLfgPcqhVDTzhQaHQDBhEuQjDZ41or3kE1ErRWr58F4KMBCcyOeK7Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR08MB8570
 
-We implement rt signals to handle exceptions in rt stage.
-
-This is done using dovetail specific functions for setting up the signal
-frame.
-
-This can be used to handle fpe exceptions on the fly, like fixing
-division by zero. An other use case are breakpoints, implemented using the
-illegal opcode exception. The real time handling of the breakpoints would
-be handy for conditional breakpoints or also for stopping watchdogs and
-other tasks in time.
+This commit adds simple rt signal test for SIGFPE, SIGILL and SIGSEGV.
 
 Signed-off-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 ---
- include/cobalt/kernel/ppd.h                   |  3 ++
- include/cobalt/kernel/thread.h                |  2 +
- include/cobalt/signal.h                       |  2 +
- include/cobalt/uapi/syscall.h                 |  2 +
- kernel/cobalt/arch/x86/Makefile               |  2 +-
- .../arch/x86/include/asm/xenomai/thread.h     |  3 ++
- kernel/cobalt/arch/x86/signal.c               | 51 +++++++++++++++++++
- kernel/cobalt/dovetail/kevents.c              |  3 ++
- kernel/cobalt/posix/syscall.c                 | 32 ++++++++++++
- kernel/cobalt/thread.c                        | 38 ++++++++++++++
- kernel/cobalt/trace/cobalt-posix.h            |  4 +-
- lib/cobalt/arch/x86/Makefile.am               |  2 +-
- lib/cobalt/arch/x86/sigreturn.c               | 36 +++++++++++++
- lib/cobalt/internal.h                         |  2 +
- lib/cobalt/signal.c                           | 13 +++++
- 15 files changed, 192 insertions(+), 3 deletions(-)
- create mode 100644 kernel/cobalt/arch/x86/signal.c
- create mode 100644 lib/cobalt/arch/x86/sigreturn.c
+ configure.ac                               |   1 +
+ testsuite/Makefile.am                      |   1 +
+ testsuite/rt-signal-tests/Makefile.am      |  31 +++
+ testsuite/rt-signal-tests/rt_signal_test.c | 231 +++++++++++++++++++++
+ 4 files changed, 264 insertions(+)
+ create mode 100644 testsuite/rt-signal-tests/Makefile.am
+ create mode 100644 testsuite/rt-signal-tests/rt_signal_test.c
 
-diff --git a/include/cobalt/kernel/ppd.h b/include/cobalt/kernel/ppd.h
-index f0079fe6e..fb2f682da 100644
---- a/include/cobalt/kernel/ppd.h
-+++ b/include/cobalt/kernel/ppd.h
-@@ -22,6 +22,7 @@
- #include <linux/types.h>
- #include <linux/atomic.h>
- #include <linux/rbtree.h>
-+#include <linux/signal.h>
- #include <cobalt/kernel/heap.h>
- 
- struct cobalt_umm {
-@@ -32,6 +33,8 @@ struct cobalt_umm {
- 
- struct cobalt_ppd {
- 	struct cobalt_umm umm;
-+	void __user *sighand[_NSIG];
-+	void __user *sigrestorer;
- 	atomic_t refcnt;
- 	char *exe_path;
- 	struct rb_root fds;
-diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-index b79cb8429..33d468419 100644
---- a/include/cobalt/kernel/thread.h
-+++ b/include/cobalt/kernel/thread.h
-@@ -574,6 +574,8 @@ static inline void xnthread_propagate_schedparam(struct xnthread *curr)
- 		__xnthread_propagate_schedparam(curr);
- }
- 
-+int xnthread_handle_rt_signals(unsigned int trapnr, struct pt_regs *regs);
-+
- extern struct xnthread_personality xenomai_personality;
- 
- /** @} */
-diff --git a/include/cobalt/signal.h b/include/cobalt/signal.h
-index 62694f93a..3d6540aff 100644
---- a/include/cobalt/signal.h
-+++ b/include/cobalt/signal.h
-@@ -54,6 +54,8 @@ COBALT_DECL(int, kill(pid_t pid, int sig));
- COBALT_DECL(int, sigqueue(pid_t pid, int sig,
- 			  const union sigval value));
- 
-+int cobalt_rt_signal(int sig, void (*handler)(int, siginfo_t *, void *));
-+
- #ifdef __cplusplus
- }
- #endif
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 3e65efaab..3913cc610 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -141,6 +141,8 @@
- #define sc_cobalt_timerfd_settime64		118
- #define sc_cobalt_timerfd_gettime64		119
- #define sc_cobalt_pselect64			120
-+#define sc_cobalt_sigreturn			121
-+#define sc_cobalt_sigaction			122
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/arch/x86/Makefile b/kernel/cobalt/arch/x86/Makefile
-index 93929b645..e3d8eb476 100644
---- a/kernel/cobalt/arch/x86/Makefile
-+++ b/kernel/cobalt/arch/x86/Makefile
-@@ -1,5 +1,5 @@
- 
- obj-$(CONFIG_XENOMAI) += xenomai.o
--xenomai-y := machine.o smi.o c1e.o
-+xenomai-y := machine.o smi.o c1e.o signal.o
- 
- ccflags-y := -I$(srctree)/arch/x86/xenomai/include -I$(srctree)/include/xenomai
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-index 745c32467..70f3df2f1 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-@@ -28,5 +28,8 @@
- #define xnarch_fault_bp_p(__nr)		((current->ptrace & PT_PTRACED) &&	\
- 					 ((__nr) == X86_TRAP_DB || (__nr) == X86_TRAP_BP))
- #define xnarch_fault_notify(__nr)	(!xnarch_fault_bp_p(__nr))
-+#define xnarch_fault_code(__regs)		((__regs)->orig_ax)
-+int xnarch_setup_trap_info(unsigned int vector, struct pt_regs *regs,
-+			   long errcode, int *sig, struct kernel_siginfo *info);
- 
- #endif /* !_COBALT_X86_ASM_THREAD_H */
-diff --git a/kernel/cobalt/arch/x86/signal.c b/kernel/cobalt/arch/x86/signal.c
+diff --git a/configure.ac b/configure.ac
+index 3ce34048e..3325482fc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1007,6 +1007,7 @@ AC_CONFIG_FILES([ \
+ 	testsuite/switchtest/Makefile \
+ 	testsuite/gpiotest/Makefile \
+ 	testsuite/gpiobench/Makefile \
++	testsuite/rt-signal-tests/Makefile \
+ 	testsuite/spitest/Makefile \
+ 	testsuite/smokey/Makefile \
+ 	testsuite/smokey/arith/Makefile \
+diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
+index 4932f6d33..59f36967a 100644
+--- a/testsuite/Makefile.am
++++ b/testsuite/Makefile.am
+@@ -5,6 +5,7 @@ if XENO_COBALT
+ SUBDIRS += 		\
+ 	clocktest	\
+ 	gpiotest	\
++	rt-signal-tests	\
+ 	spitest		\
+ 	switchtest	\
+ 	xeno-test
+diff --git a/testsuite/rt-signal-tests/Makefile.am b/testsuite/rt-signal-tests/Makefile.am
 new file mode 100644
-index 000000000..2e8fdc571
+index 000000000..084347631
 --- /dev/null
-+++ b/kernel/cobalt/arch/x86/signal.c
-@@ -0,0 +1,51 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/testsuite/rt-signal-tests/Makefile.am
+@@ -0,0 +1,31 @@
++testdir = @XENO_TEST_DIR@
 +
-+#include <linux/signal.h>
-+#include <linux/uaccess.h>
-+#include <cobalt/kernel/thread.h>
++CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
-+#include <asm/sigframe.h>
-+#include <asm/sighandling.h>
-+#include <asm/fpu/signal.h>
-+#include <asm/trapnr.h>
++test_PROGRAMS = rt_signal_test_fpe rt_signal_test_segfault rt_signal_test_ill
 +
-+int xnarch_setup_trap_info(unsigned int vector, struct pt_regs *regs,
-+			   long errcode, int *sig, struct kernel_siginfo *info)
++alchemycppflags =              			 \
++	$(XENO_USER_CFLAGS)    			 \
++	-I$(top_srcdir)/include
++
++alchemyldadd =					\
++	@XENO_AUTOINIT_LDFLAGS@			\
++	$(XENO_POSIX_WRAPPERS)			\
++	../../lib/alchemy/libalchemy.la		\
++	../../lib/copperplate/libcopperplate.la	\
++	@XENO_CORE_LDADD@			\
++	@XENO_USER_LDADD@			\
++	-lrt -lpthread -lm
++
++rt_signal_test_fpe_SOURCES = rt_signal_test.c
++rt_signal_test_fpe_CPPFLAGS = $(alchemycppflags) -DTEST_FPE=1
++rt_signal_test_fpe_LDADD = $(alchemyldadd)
++
++rt_signal_test_segfault_SOURCES = rt_signal_test.c
++rt_signal_test_segfault_CPPFLAGS = $(alchemycppflags) -DTEST_SEGFAULT=1
++rt_signal_test_segfault_LDADD = $(alchemyldadd)
++
++rt_signal_test_ill_SOURCES = rt_signal_test.c
++rt_signal_test_ill_CPPFLAGS = $(alchemycppflags)
++rt_signal_test_ill_LDADD = $(alchemyldadd)
++
+diff --git a/testsuite/rt-signal-tests/rt_signal_test.c b/testsuite/rt-signal-tests/rt_signal_test.c
+new file mode 100644
+index 000000000..ef569b30d
+--- /dev/null
++++ b/testsuite/rt-signal-tests/rt_signal_test.c
+@@ -0,0 +1,231 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <sys/types.h>
++#include <copperplate/traceobj.h>
++#include <alchemy/task.h>
++#include <assert.h>
++#include <setjmp.h>
++#include <asm/ucontext.h>
++
++#ifdef TEST_SEGFAULT
++#define TEST_SIGNAL SIGSEGV
++#elif defined(TEST_FPE)
++#define TEST_SIGNAL SIGFPE
++#else
++#define TEST_SIGNAL SIGILL
++#endif
++
++#define BIT_FAULT_HANDLER_ENTERD     1
++#define BIT_FAULT_HANDLER_FINISHED   2
++#define BIT_FAULT_HANDLER_WRONG_TASK 4
++#define BIT_FAULT_HANDLER_WRONG_SIG  8
++#define BIT_DOMAIN_SWITCH            16
++
++static RT_TASK t1;
++static sig_atomic_t status = 0;
++static sig_atomic_t cause = 0;
++
++// #define JMP_CLEANUP
++#ifdef JMP_CLEANUP
++static jmp_buf jmpenv;
++#endif
++
++static int status_ok(void)
 +{
-+	switch (vector) {
-+	case X86_TRAP_DE: /* divide_error */
-+		*sig = SIGFPE;
-+		info->si_signo = *sig;
-+		info->si_errno = 0;
-+		info->si_code = FPE_INTDIV;
-+		info->si_addr = (void __user *)regs->ip;
-+		return 0;
-+	case X86_TRAP_UD: /* invalid_op */
-+		*sig = SIGILL;
-+		info->si_signo = *sig;
-+		info->si_errno = 0;
-+		info->si_code = ILL_ILLOPN;
-+		info->si_addr = (void __user *)regs->ip;
-+		return 0;
-+	case X86_TRAP_MF:
-+		*sig = SIGFPE;
-+
-+		info->si_signo = *sig;
-+		info->si_errno = 0;
-+		info->si_code = 0;
-+		info->si_addr = (void __user *)regs->ip;
-+		return 0;
-+        case X86_TRAP_PF:
-+                *sig = SIGSEGV;
-+                info->si_signo = *sig;
-+                info->si_errno = errcode;
-+                info->si_code = 0;
-+                info->si_addr = 0;
-+                return 0;
-+	default:
-+		break;
-+	}
-+
-+	return -ENOSYS;
++	return status ==
++	       (BIT_FAULT_HANDLER_ENTERD | BIT_FAULT_HANDLER_FINISHED);
 +}
 +
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index 4da4f51b7..09eb12acb 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -57,6 +57,9 @@ void handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
- 		xnsched_run();
- 	}
- 
-+	if (xnthread_handle_rt_signals(trapnr, regs) == 0)
++static const char *sigdebug_msg[] = {
++	[SIGDEBUG_UNDEFINED] = "latency: received SIGXCPU for unknown reason",
++	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
++	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
++	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
++	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
++	[SIGDEBUG_NOMLOCK] = "Xenomai: process memory not locked "
++			     "(missing mlockall?)",
++	[SIGDEBUG_WATCHDOG] = "Xenomai: watchdog triggered "
++			      "(period too short?)",
++};
++
++
++#ifndef JMP_CLEANUP
++static int get_step(void)
++{
++#ifdef TEST_SEGFAULT
++#if defined(__i386__) || defined(__x86_64__)
++	return 11;
++#else
++	return 4;
++#endif
++#elif defined(TEST_FPE)
++	return 2;
++#else
++#if defined(__i386__) || defined(__x86_64__)
++	return 2;
++#else
++	return 4;
++#endif
++#endif
++}
++
++static void do_cleanup(void *context)
++{
++	int step = 0;
++	struct ucontext *uc = context;
++
++	step = get_step();
++
++#if defined(__i386__)
++	uc->uc_mcontext.eip += step;
++#elif defined(__x86_64__)
++	uc->uc_mcontext.rip += step;
++#elif defined(__aarch64__)
++	uc->uc_mcontext.pc += step;
++#endif
++}
++#endif
++
++static void signal_handler(int sig, siginfo_t *info, void *context)
++{
++	RT_TASK *self;
++	(void)context;
++
++	if (sig == SIGDEBUG) {
++		cause = sigdebug_reason(info);
++
++		if (cause > SIGDEBUG_WATCHDOG)
++			cause = SIGDEBUG_UNDEFINED;
++
++		/* XXX: caused by rt_task_delete() */
++		if (!(status & BIT_FAULT_HANDLER_ENTERD) &&
++		    cause == SIGDEBUG_MIGRATE_SYSCALL) {
++			return;
++		}
++
++		status |= BIT_DOMAIN_SWITCH;
++	} else {
++		status |= BIT_FAULT_HANDLER_ENTERD;
++		if (sig != TEST_SIGNAL) {
++			status |= BIT_FAULT_HANDLER_WRONG_SIG;
++			return;
++		}
++
++		self = rt_task_self();
++
++		if (self == NULL || !rt_task_same(self, &t1)) {
++			status |= BIT_FAULT_HANDLER_WRONG_TASK;
++		} else {
++			status |= BIT_FAULT_HANDLER_FINISHED;
++		}
++
++#ifdef JMP_CLEANUP
++		longjmp(jmpenv, 1);
++#else
++		do_cleanup(context);
++#endif
++	}
++}
++
++static void do_div_by_0(void)
++{
++#if defined(__i386__) || defined (__x86_64__)
++	__asm__("xorl %eax, %eax\n\t"
++		"movl %eax, %ecx\n\t"
++		"cltd\n\t"
++		"idivl %ecx");
++#endif
++	//TODO find a cortex-A way to trigger an FPE
++}
++
++static void do_ill(void)
++{
++#if defined(__i386__) || defined (__x86_64__)
++	__asm__("ud2");
++#else
++	__asm__("udf #0xdead");
++#endif
++}
++
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Warray-bounds"
++static void do_segfault(void)
++{
++	*((int *)0x73) = 0xdecafbad;
++}
++#pragma GCC diagnostic pop
++
++static void task_proc(void *arg)
++{
++	int ret;
++	(void)arg;
++
++	ret = cobalt_rt_signal(TEST_SIGNAL, signal_handler);
++	assert(ret == 0);
++	(void)ret;
++
++#ifdef JMP_CLEANUP
++	if (setjmp(jmpenv) != 0)
 +		return;
-+
- 	/*
- 	 * If we experienced a trap on behalf of a shadow thread
- 	 * running in primary mode, move it to the Linux domain,
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index 46c4998e4..d570bd595 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -277,6 +277,38 @@ static COBALT_SYSCALL(serialdbg, current,
- 	return 0;
- }
- 
-+static COBALT_SYSCALL(sigreturn, current, (void))
-+{
-+	struct pt_regs *regs = task_pt_regs(current);
-+	int ret;
-+
-+	ret = dovetail_restore_rt_signal_frame(regs);
-+	if (ret < 0)
-+		goto badframe;
-+
-+	return __xn_reg_rval(regs);
-+
-+badframe:
-+	xnthread_signal(xnthread_current(), SIGSEGV, 0);
-+	return -1;
-+}
-+
-+static COBALT_SYSCALL(sigaction, current, (int sig, void __user *handler,
-+		      void __user *restorer))
-+{
-+	struct cobalt_ppd *sys_ppd = cobalt_ppd_get(0);
-+
-+	if (sig < 0 || sig >= _NSIG)
-+		return -EINVAL;
-+
-+	sys_ppd->sighand[sig] = handler;
-+
-+	if (!sys_ppd->sigrestorer)
-+		sys_ppd->sigrestorer = restorer;
-+
-+	return 0;
-+}
-+
- static void stringify_feature_set(unsigned long fset, char *buf, int size)
- {
- 	unsigned long feature;
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 41804b24f..ae8fa5c88 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -25,6 +25,7 @@
- #include <linux/signal.h>
- #include <linux/pid.h>
- #include <linux/sched.h>
-+#include <asm/sighandling.h>
- #include <uapi/linux/sched/types.h>
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/timer.h>
-@@ -43,6 +44,7 @@
- #include <pipeline/inband_work.h>
- #include <pipeline/sched.h>
- #include <trace/events/cobalt-core.h>
-+#include "posix/process.h"
- #include "debug.h"
- 
- static DECLARE_WAIT_QUEUE_HEAD(join_all);
-@@ -2520,6 +2522,42 @@ int xnthread_killall(int grace, int mask)
- }
- EXPORT_SYMBOL_GPL(xnthread_killall);
- 
-+int xnthread_handle_rt_signals(unsigned int trapnr, struct pt_regs *regs)
-+{
-+	unsigned int code = xnarch_fault_code(regs);
-+	unsigned int vector = trapnr;
-+	struct cobalt_ppd *sys_ppd;
-+	struct kernel_siginfo si;
-+	struct ksignal ksig;
-+	int sig, ret = 0;
-+
-+	code = xnarch_fault_code(regs);
-+	ret = xnarch_setup_trap_info(vector, regs, code, &sig, &si);
-+	if (ret || sig == 0)
-+		return 1;
-+
-+	sys_ppd = cobalt_ppd_get(0);
-+	if (sig >= _NSIG ||
-+	    sys_ppd->sighand[sig] == NULL ||
-+	    sys_ppd->sighand[sig] == SIG_DFL)
-+		return 1;
-+
-+	if (sys_ppd->sigrestorer == NULL)
-+		return 1;
-+
-+	ksig.sig = sig;
-+	memcpy(&ksig.info, &si, sizeof(si));
-+	ksig.ka.sa.sa_flags = SA_SIGINFO | SA_RESTORER;
-+	ksig.ka.sa.sa_restorer = sys_ppd->sigrestorer;
-+	ksig.ka.sa.sa_handler = sys_ppd->sighand[sig];
-+
-+	ret = dovetail_setup_rt_signal_frame(&ksig, regs);
-+	if (ret)
-+		return 1;
-+
-+	return 0;
-+}
-+
- /* Xenomai's generic personality. */
- struct xnthread_personality xenomai_personality = {
- 	.name = "core",
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 47dc77e1c..8eda3bb27 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -173,7 +173,9 @@
- 		__cobalt_symbolic_syscall(timer_gettime64),		\
- 		__cobalt_symbolic_syscall(timerfd_settime64),		\
- 		__cobalt_symbolic_syscall(timerfd_gettime64),		\
--		__cobalt_symbolic_syscall(pselect64))
-+		__cobalt_symbolic_syscall(pselect64),			\
-+		__cobalt_symbolic_syscall(sigreturn),			\
-+		__cobalt_symbolic_syscall(sigaction))
- 
- DECLARE_EVENT_CLASS(cobalt_syscall_entry,
- 	TP_PROTO(unsigned int nr),
-diff --git a/lib/cobalt/arch/x86/Makefile.am b/lib/cobalt/arch/x86/Makefile.am
-index a5095be3d..14f5eff97 100644
---- a/lib/cobalt/arch/x86/Makefile.am
-+++ b/lib/cobalt/arch/x86/Makefile.am
-@@ -2,7 +2,7 @@ noinst_LTLIBRARIES = libarch.la
- 
- libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@
- 
--libarch_la_SOURCES = features.c
-+libarch_la_SOURCES = features.c sigreturn.c
- 
- libarch_la_CPPFLAGS =			\
- 	@XENO_COBALT_CFLAGS@ 		\
-diff --git a/lib/cobalt/arch/x86/sigreturn.c b/lib/cobalt/arch/x86/sigreturn.c
-new file mode 100644
-index 000000000..df961469e
---- /dev/null
-+++ b/lib/cobalt/arch/x86/sigreturn.c
-@@ -0,0 +1,36 @@
-+#include <cobalt/uapi/syscall.h>
-+#include "internal.h"
-+
-+extern void cobalt_sigreturn (void) asm ("__cobalt_sigreturn") __attribute__ ((visibility ("hidden")));
-+
-+#define TO_STR(x) #x
-+
-+#ifdef __x86_64__
-+#define build_restorer(syscall_bit, syscall)                                   \
-+	asm(".text\n"                                                          \
-+	    "    .align 16\n"                                                  \
-+	    "__cobalt_sigreturn:\n"                                            \
-+	    "    movq $ " TO_STR(syscall_bit) ", %rax\n"                       \
-+	    "    orq $ " TO_STR(syscall) ", %rax\n"                            \
-+	    "    syscall")
 +#endif
 +
-+#ifdef __i386__
-+#define build_restorer(syscall_bit, syscall)                                   \
-+	asm(".text\n"                                                          \
-+	    "    .align 16\n"                                                  \
-+	    "__cobalt_sigreturn:\n"                                            \
-+	    "    movl $ " TO_STR(syscall_bit) ", %eax\n"                       \
-+	    "    orl $ " TO_STR(syscall) ", %eax\n"                            \
-+	    "    int  $0x80")
++#ifdef TEST_SEGFAULT
++	do_segfault();
++#elif defined(TEST_FPE)
++	do_div_by_0();
++#else
++	do_ill();
 +#endif
 +
-+/*
-+ * __COBALT_SYSCALL_BIT | sc_cobalt_sigreturn
-+ */
-+build_restorer(__COBALT_SYSCALL_BIT, sc_cobalt_sigreturn);
-+
-+void *cobalt_get_restorer(void)
-+{
-+	return &cobalt_sigreturn;
++	if (0) { // so we don't geht defined but not used errors
++		do_segfault();
++		do_div_by_0();
++		do_ill();
++	}
 +}
-diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
-index acb3989f1..4782d154a 100644
---- a/lib/cobalt/internal.h
-+++ b/lib/cobalt/internal.h
-@@ -132,4 +132,6 @@ static inline bool cobalt_features_available(unsigned int feat_mask)
- 	return (cobalt_features & feat_mask) == feat_mask;
- }
- 
-+extern void *cobalt_get_restorer(void);
 +
- #endif /* _LIB_COBALT_INTERNAL_H */
-diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
-index 40d315ebb..af174d570 100644
---- a/lib/cobalt/signal.c
-+++ b/lib/cobalt/signal.c
-@@ -126,3 +126,16 @@ COBALT_IMPL(int, sigqueue, (pid_t pid, int sig, const union sigval value))
- 
- 	return 0;
- }
-+
-+int cobalt_rt_signal(int sig, void (*handler)(int, siginfo_t *, void *))
++static int test_sucessfull(void)
 +{
-+	int ret;
++	if (status_ok()) {
++		fputs("Test passed\n", stderr);
++		return 1;
++	}
 +
-+	ret = XENOMAI_SYSCALL3(sc_cobalt_sigaction, sig, handler, cobalt_get_restorer());
-+	if (ret) {
-+		errno = -ret;
-+		return -1;
++	if (!(status & BIT_FAULT_HANDLER_ENTERD))
++		fputs("Test failed: signal handler not invoked!\n", stderr);
++	if ((status & BIT_FAULT_HANDLER_WRONG_TASK))
++		fputs("Test failed: Signal handler in wrong task!\n", stderr);
++	if ((status & BIT_FAULT_HANDLER_WRONG_SIG))
++		fputs("Test failed: Signal handler of wrong signal!\n", stderr);
++	if ((status & BIT_DOMAIN_SWITCH)) {
++		fputs("Test failed: domain switch happened!\n", stderr);
++		fprintf(stderr, "Caused by: %s\n", sigdebug_msg[cause]);
 +	}
 +
 +	return 0;
++}
++
++int main(void)
++{
++	struct sigaction sa;
++	int ret;
++
++	memset(&sa, 0, sizeof(sa));
++	sa.sa_sigaction = signal_handler;
++	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
++	sigaction(TEST_SIGNAL, &sa, NULL);
++	sigaction(SIGDEBUG, &sa, NULL);
++
++	ret = rt_task_create(&t1, "rt-task", 0, 20, T_JOINABLE | T_WARNSW);
++	assert(ret == 0);
++
++	ret = rt_task_start(&t1, task_proc, NULL);
++	assert(ret == 0);
++
++	ret = rt_task_join(&t1);
++	assert(ret == 0);
++	(void)ret; // so the compiler does not complain about not checking ret
++
++	return test_sucessfull() ? EXIT_SUCCESS : EXIT_FAILURE;
 +}
 -- 
 2.25.1
