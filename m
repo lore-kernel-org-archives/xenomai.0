@@ -1,80 +1,154 @@
 Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9028237F
-	for <xenomai@lists.linux.dev>; Wed, 13 Sep 2023 18:43:03 +0000 (UTC)
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 320AC200002
-	for <xenomai@lists.linux.dev>; Wed, 13 Sep 2023 18:42:55 +0000 (UTC)
-Received: from sonic307-2.consmr.mail.bf2.yahoo.com (sonic307-2.consmr.mail.bf2.yahoo.com [74.6.134.41])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 2B2CBAC0C82
-	for <xenomai@xenomai.org>; Wed, 13 Sep 2023 18:42:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ymail.com; s=s2048; t=1694630573; bh=jMm7u+6lcPUb+YS4cCeyHOZbvFjPdZsBMjq1cErcTN8=; h=Date:From:To:Subject:References:From:Subject:Reply-To; b=oNPswnXS4Nfh38HVo3UuPh2YE5uIxNicVePUi2zs+L8MOY7ehTUNhRYmxmt5F1PJ5q2TMHkiMokudO+67NE3Bt9fpBRfKc7aW9qDqSQiV8S02LG+sIq3swYSK/yBykEL3Gjto2P/bu55NHul3NrmfCMUUcLw07gSZGD/5168re/nkQvIRznYTJ6r6aUKYKEcGmTkat6KhmGCb2jGsLNcu0Fs9arM9Q9p5Ng21+bK+o922t9XE3CGUvwkPbM4f5u6S90k1B86xUt/LLkm8YCjd2fdNNkmAux2AQokbBAchBDi7UjeahyG9jFBldtf8O8KPCXixysdx3dUahJyzx7xvA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1694630573; bh=bwS2UxLKwTC3D2pQWVIVaGhMtdGXqtTbPGD1GK9ECUW=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=ajYVlPcWNqtr7OWrsK1DeWVA2JU+QfymWVByEjloRSlDB+k46hYTSbMB+DPGUaFXYJVSutlEeUUx6FZizb1oC0bfnsYtNs99Veea9eo9X+qxdaNmnQNMmLrJlDmTQ0UaT+++YUY3ORe+I6Vlzp3sS83y3PE1smXDxnOsT6/BqCAn0QDo3wN6QSUm43qE4dygACT7SwYDQZkQpJZyRxOAKJ0/Z0vk/oZ48qmmr81yfbRyjOm/Z9k/mI3b2UlveIRgGmys0JdlWUI/7xa6S5X/c/gOYdcd51HXmsa6XtI+ElzSHS3ZYAedzGNsCGgfx7TH4SIsFp36C3HZf2jSePi/mQ==
-X-YMail-OSG: uU6UmtUVM1kuK_9Qpa8NG89Pxc3.ixL0uSrQXR28ZLzN4OE5XNWEXHoCbm7Qfwe
- wrHpPaSfeInpwHOM2ekPlcRchQfQtId5TRDXZIaLY8XP6uVOlKfpXvPUDLs013zaqfGDWfqriNrQ
- 57LmK1n8fv9zhR5yGOwgMCh3T114YzyyV4zCY2zHhXKJs3zCQ0GFNOQrP5D7Sm9Q1AYQp4ytGRmB
- Hnk1UhKOVD9LQRbzE4AFYCnu5DjH4S4aSmse.LmEsovnDqFCMjWFyuzb6BSTSScfJOTMCvyq.V65
- mOhbrLSVb8GnYX35D.zgSPLu7Yte69njjtLR1acjx_qIzaBH65VtOvb41cKJ4ahcp5_0ZOlOigJ3
- QSrX5AjJgazuIIDYeaq.yqpXDeUEhvn0gLnZYKtFkql44ykwwRd3zoqoMoZX2j053jJNZFSMgU6O
- yO1LAhebnZ8ngj2A755z.jQXHDr7J3lxltNXSncZkLYcvaKpwfnvPJCCUHK47d2w0waVMC.DLTSY
- 8IoFuDHgv1tS.NBz2RlUXCvGyfSPwRneGUqcZfeOzCBv6pZZfjK.ICr6xRqNmLu2SrJQlC8hyimG
- caxdW_2VHz_s7ztI3y40Qcrl1IG4VGJlUeOFScoQN.0tMeKNU6ARQKlMECwTbIxqfq0NiIl42P4A
- vkH33jnWNzUNx8NCLfkNi4YPfLcdoGhzRNwFTUhW72hu0dWZ5whNKhQKiBHM6lCvy5JV5GqbUqdZ
- PiHhUG1QpGZlNpFXO0SZDb3aD9G52JuBeO.E_WqrTPehplJcoguwUSdLKMJdzoqCNb0K20IoTMmu
- mTRt3XDTl4uMUe10j7ntQRXqtM_LJDa89SCQwCtIn7WXrg__FBB9lZiP3VvOt4uWG_PGRgq9mI4I
- MYFkX9b5Icw9zpL0WzFXx51NDRxObKQYBKdbIIQ65Kap5Mrbc7UwmUsPAsnl4KS5DlbVM.HhAhlh
- 3F0ZkIW3a39LbR4c8lAPpyX7d5dI7mgqWoKnHe.aEbcC_hpAJsLJT35AkO2BgUgI_rsBG.RXdzBh
- S0PmZ6DOHbcAA1t1Rnln_Vrq88FBTUFe6cNEwX02cN04YVJSJDpMXrfesZYykbr3VKnFO.wxjkr0
- ndRODlKMSuGLcXTdvToLv2xGbQCmfl5nik1y.YtbMW6cDGgqXAyZjBFl3bvnOF1tAejRFv65r.1T
- YONdqjdhnyO4wOEbADQNVzMA_Y1_dRan_axwEnIhSq9UQbEtFqieRvkhm1TA9UYqo05g2YudERpc
- KeZS2Z7V.8vT6sWlfLRVUD7fweZFoee6_Hd0vf8bXHOxrWwPqcj5i3rX6CJlRmNa1PlDdfFrAeJ8
- xxLW5gAY5j53eSfdU_Q4E9LYf1DNijbALWyZM9YzvK2tsMNLVZJbgKdXOw3GrjIovKxVNaqt5XfH
- _hQo19Er4J34MZwhKWX98kM3Wr2hO1YQCF2Ka.jCxvkoCilsL9EdPnXx9EmCoS5aMnlNMJELv3Zn
- _Hf2q_wU6Ppk1QiTh1DxiSazNGAKH3M4HjBd7yhGOc2GrOYBzZBtgipS7MFaRYONOQp6qfrC2TMt
- 17TYzqS9Efb2SGbG5tyP9fWiqScdzMFzCuISNX9gMG6CMxdIjGMc_39ktRipxZK4L7L5cZI1sjKi
- Z36n4UAPOca2LIMJUwavJLbtgpPZh_rHDPEdZSJD81ejZi3fQojPZvP0YlnuqFP2Q3YO6TIdjRi3
- ECRKh7CG.iqzdKvy4Xhw37AYp7rtKYFrxhODR3rOSDOxgIDSIjwoCnq0BwujMuISvQLQsrETPuKm
- 6dvWR.RSUEOOpsB0g5ret8q2prcFG5eY.gFoO6QtDPVBkQBN.0Yae2T6qCwIlWavbXcqMuGO1mAz
- QS3_oonxLAPzKFXZTvGrVx0TdRZOA.a4GV_CZk6zrLJvFCqhl3Htnlf_D2RpimQSAeKxSMftUWwt
- cfD6In9qQI_6U_GeopCJauGCzDOS89X3hZC7ddKobi1IIeUvdiQs8TT8xwCnQDiPwErQv9pnAhNu
- ZR_cwVxgn23nT79sW8ajy2U7ls4hzSgBxd919VfKG2NWEYVI.MFNme4MoO4QGGNu21k7zlBBP5MD
- k9dWzNjn92yRrRDkJzOs6cYJL7C4BuL8UxOixnTeDXYwtZycjYCnoUkxYlMSiSTMz6OY_yIWLzWt
- HGwbS8A3ceuhYZ5AKbB502zvnn.Z2Uf1kbA1PPAhHqWiD5c2oXV8FwVUamF7S0kP_5SSJjUBKX3n
- JSyrRz6ZLlAKLbOOo7o7nLB0k
-X-Sonic-MF: <neotheuser@ymail.com>
-X-Sonic-ID: 8897cb4e-f9b3-4faf-bd1b-2551a01a0cc2
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.bf2.yahoo.com with HTTP; Wed, 13 Sep 2023 18:42:53 +0000
-Date: Wed, 13 Sep 2023 18:42:52 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Message-ID: <2099512930.605027.1694630572180@mail.yahoo.com>
-Subject: Downloads and mailing list pages broken
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D3861C02
+	for <xenomai@lists.linux.dev>; Thu, 14 Sep 2023 05:48:55 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay12.mail.gandi.net (Postfix) with ESMTPS id 9B81E200007
+	for <xenomai@lists.linux.dev>; Thu, 14 Sep 2023 05:48:53 +0000 (UTC)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on0604.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0e::604])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 4D1EA740038;
+	Thu, 14 Sep 2023 05:48:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bq9UpU+VxlV9HK0zxFyDOBI7FItuFsJLLsQV5HTvuZUe5ATPC8LaGwsc9/ZMqfXDFTFFK5ivRU7f5L0UWNNDvTcXPOw6DA1INwuyM0KBCZzHEYQD2kYe6+wQDlzQf+zBU2kPLPVVuTT6SGnk+Ig+rzNF9v4gEwRk+t6CpqxhPuudrviSxQk0USgx4xFYScxCCdd+2t7FACgRIwIjkr5uZXcq8+wQfs4+znPmiuRgd0P5/x3uqtyIIR2WBS+TH0mIvE1L4lEdMSco8OhXJs+Q4UMnCDxMlxtLB/Ue7uSD0D5ilji7DY/rah2vxPombT6tt28Rh4Th3OCjdr/5rJe+qQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kBlWX4lUwerRXcZkCSWhJ0aHfXIsioFAnyiaQ0P11to=;
+ b=YxcjX+yMfcWiBGvB4bWNEuiD7OrS8hQLcZtGq5xSj9hHXvqZlivEvnmIL2MUziPGmGIgZv9tQrbHnytgSMaoBHQEMdPlXggTMJUddogPOazsBht82wJUXLCIpSVKrfpH/T84DaBLuwz3lq/brI/KCbQMstuzt49VCFSq6YFw/jyFRE55SpvPsryOrVN+6ZVqWtcyDLGLbm6uCzMU/XRW0cj7q9HGJyoDkl1Uva7ky9Pc6J7dfkGSX9yBWjb82U5EyP1UVBkuh9NiDyL3PgdAXpAiJ6gf7mftb+REZ02+XwcvOBWmdAET83w9Lt5PbbmlBQxNld8hsHL4xZJwCL1LDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kBlWX4lUwerRXcZkCSWhJ0aHfXIsioFAnyiaQ0P11to=;
+ b=jOS+KFshsa6URKpr/hoCEZmkpx6qE55lpSMRyj2HycQii+tmwOg4GcUZCLDxhP0z4I0ra7jx67PG8zWRWsBVAYAoOlFtp0np2139l/J82B99lDjQ1cxJhMjgx+bLSD99fXa1+AfgCL3YMK8mm/pDe/PNePJNj6C0viOIdflO2IyYAelTXeYqusHzWF49D1tzRQYBuKcZDoQOq+mMf7oHQfqSJT3Go2/RJ2zX4+okz76TNbOz7u18/0HlhTtKvoZAdGd0EWhaJi6Ykvof+3izkunKdO/jgguEV2f2L+1cK6TpXmVOngEJFUkPzUBktW4mIIPlVtL57v7Vh/TbyvCs5w==
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by GV2PR10MB6671.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:b3::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.31; Thu, 14 Sep
+ 2023 05:48:52 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2%3]) with mapi id 15.20.6768.029; Thu, 14 Sep 2023
+ 05:48:52 +0000
+Message-ID: <95d4f7a6-1237-4ae0-9fb6-3979fa058bcc@siemens.com>
+Date: Thu, 14 Sep 2023 11:18:42 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: Downloads and mailing list pages broken
+Content-Language: en-US
+To: Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org"
+ <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+References: <2099512930.605027.1694630572180.ref@mail.yahoo.com>
+ <2099512930.605027.1694630572180@mail.yahoo.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <2099512930.605027.1694630572180@mail.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA1PR01CA0172.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:d::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <2099512930.605027.1694630572180.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.21797 YMailNorrin
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV2PR10MB6671:EE_
+X-MS-Office365-Filtering-Correlation-Id: 35c0a87c-2f36-43c4-6d94-08dbb4e64636
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	0v2ch5N4OSBPW5kr5izl4iJFo/zx/uauIsUgOd+BCVUhrS7+klnT9Tvi7Ytjzd0/JOifpTw226LofMhUUSxhefAh4RUmUR+qklXzjxpxhd76ZWV+N8kgB4B75KK8Lyk4wJdOPOfnPN4Wwu3eOnKvVmk6HwBBPpwhdUaJzrKGVMZK48ForgI54XYwqYj/n4/KZKYgHV3kVVcUnlhT7lTWIWMWZTfs07eOkByycI+1QxQc1PkZlo5g7Z+OmzOnIQEc833C2yjkK9GrmSrv2Pe450Ktsb/zjjJ3evkWnyTO7+8zCkFFGunxX0vKk9qw8/pYWUDKGBzmSwRjPs66q10q0IgegsAejs9X+8xClr1a7IUwLdItXDe/vYB06a3GvPZEK3gL9jBFUv4l51VGLdJF5ykKPcNAMdT6UeAqvJ4TNbv85opNKyMojYDDAxhS9Algryh89f3foSUKMm/cdXZCx3OvmFPucuyXUeZBJxvANV5WNCg7MuloCTsFSOcHtKDEAX8EswCTslTsIlL11fiuoT7GaANRnUafLrqTHAuqZxmu/PKdFLe6/SgFUxQPMIzT6xEFZctak2bTuzn+56OXMr9sRdeTPMaG1sxXNTWUNravjqSTw1rlWQOyG22vAywiwiODHl9tnM2mv+LSbPDxCfpweAh8L6OXeqbSE2iEQZ0/c5giZmPqvliY+4V6jMy5
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(376002)(366004)(396003)(39860400002)(186009)(1800799009)(451199024)(316002)(5660300002)(110136005)(2906002)(66476007)(66946007)(66556008)(38100700002)(478600001)(966005)(4744005)(83380400001)(26005)(8936002)(6506007)(53546011)(82960400001)(44832011)(41300700001)(6512007)(6486002)(2616005)(8676002)(86362001)(6666004)(31696002)(36756003)(31686004)(45980500001)(43740500002)(130980200001)(223123001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OEpvbFU0K1AvN2lJQzVuMGNjeE9GNUdyWis0ZlQrU1NYRXFoMWtxbU1rcG5h?=
+ =?utf-8?B?cTIrZGdEMVNXNEUrYnljT3FsTklCL0xESUtqVWZFbUx5TGtHSk9LaTdRWi80?=
+ =?utf-8?B?ZjZIMzI3dk94MGFHbE8zOGE5bURIbFBhK2x3Z3Z2eFV2cS9ndy92dG8wNm91?=
+ =?utf-8?B?aVRnQnJTYWJwY0thU3VnYmo3SXFuOVVDZTgyUFR1c0RjNGpvM1ZFM2JVWUgw?=
+ =?utf-8?B?NkdNSmdEWGFNK0hlQ2NQTW90amFma2IzQUtHeUIzOHRrN1ZiSEpLZE10cVlk?=
+ =?utf-8?B?R3lzMnBWY2poYWZlT1ZndC9OditoVnFrbVZZdS9xTTczb0dWcXpsZjNCNC9h?=
+ =?utf-8?B?WmgrWjhUSFNhUmpNMFE2STMzUm5wRnN4WkJ2OFdYenA1ODJSTkgyL253ckNM?=
+ =?utf-8?B?dUdIanI4QVZuektlK0poMGZhUWFQL2VYSkI2MG1VdGNodTNqWnVmaURJN2NG?=
+ =?utf-8?B?WXVCM2M1NXNmREQrRmpBUUV5M1VqUk1QTkcwa2xybUhWSUJNaDFFd05POWVr?=
+ =?utf-8?B?UmEwdDZ5WUJMNkJJQzhIR2R2THRNdjUvaWZ0a25QNVArckhuNW9ZVEY5MndI?=
+ =?utf-8?B?RDgzY0x5aVV0aVFSM2FKYW9mZUVldGVRM2JLclZxYmJjMGgrZW1TbXdEWEJu?=
+ =?utf-8?B?VVlRb1hvSzV4TWZPZ0E4WDRiR0JSMnVZaTlXRi9neURHNVU1dUN4TGxSajZy?=
+ =?utf-8?B?akI5VWV2L2c1QlBlWlpwWmtKVVpiL1AremxYb1Fzd2p3M0lJSWJvTURaMFA5?=
+ =?utf-8?B?RkRjWWszT3BIQXhUdGc2bGx6d1JENFNaeU5XV1RFS3NSYjBEZ1k1WkZaYkFF?=
+ =?utf-8?B?ZTVwc0QvanRUMTg4TGN6Y0RoQTRzRDRQcWY3cG43Y0ZzQmJpd0xWSkVrZDlq?=
+ =?utf-8?B?bUtQK3JmT25XTmRybTNVOXVxV2VuckFITFZmS2NWMjR6bkIvRlBXM3BOOHd6?=
+ =?utf-8?B?SXVYOHRMZWd0SGRqOElET3V5aWNlWmtzOHRwcWcwejIrRDR1UTdiNFFuaHVa?=
+ =?utf-8?B?VGI5cVUzVXhoYWVLV2RWZXczMi9nWFg4bmdlUVduSkQveDdiZjBsN1V6bU9G?=
+ =?utf-8?B?M1VTSnhrajBPYytQK2NRYTVSdzFEVXYyY1lTa3pMSDA3QmZEdFNGQkZEWEtQ?=
+ =?utf-8?B?cjZIMHppM0szTDVQcHlFdXVMYll4OWZRczJwYVNrVGttNUJZZGFoWHhyNllu?=
+ =?utf-8?B?Tm05WFBFQmJuOWZ2TkNBMUtLSXd3Z1lyVHBmejZrK1FibERpWnJPWEszWjJh?=
+ =?utf-8?B?RHBjZnZGazdHa1E1NFFYYW1lNjNiY3YvdWZ3S2ZPVlVZKzVKc05US2picldS?=
+ =?utf-8?B?ZlhEZEt2TFg0TjZMMUQ3WDZrSXhFR2NWbWRXQVk3a3hqekwxQkVZUDQ3VlZD?=
+ =?utf-8?B?NUFrWXFWNTJrbVlrR2ExckY3cGY4OEVRMFRjRmlHQzYrbER5czZ2cm1XTmRP?=
+ =?utf-8?B?aS9Jb2twL0paZWEwQys1YVRtWUJxNTN2dG5vcG5CUTJjMDJGbGI3ZU5TTE1O?=
+ =?utf-8?B?cTlMcHVMMkcvWElMM040ZWg4S0lUZTFuOGRhVC9xL2xDMTFBSjlMNTcxRnJh?=
+ =?utf-8?B?QmpnWU5Hc24vSmNoMHNJL01DdkI1TFluaWZWZ3JtaVJCakRSSHZGVFlENFdD?=
+ =?utf-8?B?ekxXcFlaTi81dzZqS3ozLzBub082eGxhaXRQK3llNXFyVnVFdnFkeldRWTFB?=
+ =?utf-8?B?TW9JNzB2dTFUN2paZW52Nmg1ZkQxcmx5T3p4RVpXSTZkeEx4bzBTdnNrck5r?=
+ =?utf-8?B?V3RMN2ZGVjhEQ28zd0RlSXFWTFZMaUNrdTM0TmZjSTh5QVN0RThCQjhIOGt6?=
+ =?utf-8?B?WTRGTW1hYnhVci8wempzVHczdk5IZjlQb281K2VIc0c1dHI4K2VwK2ltVmhu?=
+ =?utf-8?B?NGJHNGV2QTQ4bG5tUCtXWUk5VEd4elYwYnUzNEIzT2pHZHRLekFlaGI5RmNM?=
+ =?utf-8?B?R0JrSldvNVRFMkVCbEhqZTJkT1JMWFhQa2xuNlVZVFZCU3RTMG85WmdwTXgv?=
+ =?utf-8?B?dTB5d3NXbmJoaytodEw4Zk42UHVLZ1hQOVRaTzJWRDhmSmNBTmxHa3V4dXpt?=
+ =?utf-8?B?YThEWEpWU0xhRjVodi9nNGgvaWpPeXdVWkg3RTI1akd3SVZMeWQ5TFpVbm5h?=
+ =?utf-8?B?R0pQOHcwSjVCblp3M1FBeGZpVVExOWpldUl5NWViZ2JKbzAwSEtHQzQybDZU?=
+ =?utf-8?B?bVE9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35c0a87c-2f36-43c4-6d94-08dbb4e64636
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2023 05:48:51.9654
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: johCDawb2bRGPLqn5i1kfyRPzF0vVzIVfxPOeCPmFHV+khFs9fVAzcyzYH06JSS2t6xrj38UroDA9mg+J9Hjhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB6671
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=ymail.com header.s=s2048 header.b=oNPswnXS;
-	dmarc=pass (policy=reject) header.from=ymail.com;
-	spf=pass (spool.mail.gandi.net: domain of neotheuser@ymail.com designates 74.6.134.41 as permitted sender) smtp.mailfrom=neotheuser@ymail.com
+	dkim=pass header.d=siemens.com header.s=selector2 header.b=jOS+KFsh;
+	dmarc=pass (policy=reject) header.from=siemens.com;
+	spf=pass (spool.mail.gandi.net: domain of jan.kiszka@siemens.com designates 2a01:111:f400:fe0e::604 as permitted sender) smtp.mailfrom=jan.kiszka@siemens.com;
+	arc=pass ("microsoft.com:s=arcselector9901:i=1")
 
-The following links no longer work:
+On 14.09.23 00:12, Alec Ari wrote:
+> The following links no longer work:
+> 
+> https://xenomai.org/downloads/
+> 
+> https://xenomai.org/downloads/xenomai/stable/
+> 
+> https://xenomai.org/mailman/listinfo
+> 
+> https://xenomai.org/mailman/listinfo/xenomai
+> 
+> Just letting you know.
 
-https://xenomai.org/downloads/
+Yes, we rearranged things recently, see also [1].
 
-https://xenomai.org/downloads/xenomai/stable/
+The mailing list moved to kernel.org a while ago, you now find it under
+[2]. Older downloads are now at [3].
 
-https://xenomai.org/mailman/listinfo
+Philippe, setting aliases, specifically for historic download URLs, is
+not possible with the new hosting, right?
 
-https://xenomai.org/mailman/listinfo/xenomai
+Jan
 
-Just letting you know.
+[1] https://lore.kernel.org/xenomai/878r9atwev.fsf@xenomai.org/T/#u
+[2] https://subspace.kernel.org/lists.linux.dev.html
+[3] https://ftp.denx.de/pub/xenomai/
 
-Alec
+-- 
+Siemens AG, Technology
+Linux Expert Center
+
