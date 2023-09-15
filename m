@@ -1,34 +1,31 @@
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55654101EB
-	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 13:08:21 +0000 (UTC)
-Received: from relay8-d.mail.gandi.net (unknown [217.70.183.201])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id ACD4FC8FFD
-	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 13:00:37 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id E80601BF20E;
-	Fri, 15 Sep 2023 13:00:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4AC31A90
+	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 14:31:27 +0000 (UTC)
+Received: from relay9-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::229])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id D9657D29D8
+	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 14:10:34 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id CFADFFF808;
+	Fri, 15 Sep 2023 14:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1694782830;
+	t=1694787027;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=T42AT/Oo0qnkLmynJzYSWRDRXmP9i2+4+l9vkq/CEHc=;
-	b=VTJMqbqw7kE14NSlEUv92ak4i93DmbHJ8iiYsujF3ZRNWfWyLEln+zT3AEy8GFCoA0XrHH
-	4pUpTNc73Da7tYIfwig9HreJ3l8gVT9phz75hLTJY2D8K4Xxiybh04vn6LJVYOowBvPLm/
-	urVUGYTDcEvt9/GVVg9XloQiFOz//S9VrR1TgNQiyR8xXUM3S5lG3MS8Kee5vuZftpUwiN
-	JE9yz3VSeayL5mJIRVdy5+qE3DsxPntplacKJyySOmAgBbGLBEF0gCkLtcvJ0k3xAq98Fc
-	RPjc5icLstZ6FoPmtRTz6hVm4O0/qkUDXmntpryNVY1aJHVC/XSnfOKm/SEhRg==
-References: <20230907125623.12266-1-hongzhan.chen@intel.com>
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=T9viKAtdEG9xmUbsrk50Rferb7UlU6h9nHkh0pm7Hew=;
+	b=Fnc8OzYednV7XeWIl43pxS/xzXcjShlllgruCxG6k6t7mv/eRNGlENAN3CWeZ3Vrw92CVS
+	ubhnQYeDcIpcL8Ix33zqZ/H8MsIRmVTQGeQ6iipWJuptnDqJQm9UeDSBWJgiz0bd+aZ19I
+	pnR4TPJsEqCoSY9ANS97oz5XgzDljmdMfchfxWLLJQ2ZUXPiS3bnvAF/SMLqzyRt5+PFkU
+	tAOwEf9qlwEKQUt1TS31QoM5uG5lGI2kuicdQ2NzuF9aCOj9drHaywqcG4u1rNnEu6kBDA
+	cHvy5S4p3sEKbG2cRVVDVfwjVRHqn7unzBUWxGGNtL9P8/jQ+3Fo6SbDMA5nzQ==
 User-agent: mu4e 1.8.11; emacs 28.2
 From: Philippe Gerum <rpm@xenomai.org>
-To: Hongzhan Chen <hongzhan.chen@intel.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH] pipeline: irq: ack the irq when it is postponed inband
- irq from outside of the pipeline entry path.
-Date: Fri, 15 Sep 2023 14:10:16 +0200
-In-reply-to: <20230907125623.12266-1-hongzhan.chen@intel.com>
-Message-ID: <87sf7foaky.fsf@xenomai.org>
+To: xenomai@lists.linux.dev
+Cc: Hongzhan Chen <hongzhan.chen@intel.com>
+Subject: [PATCH] genirq: irq_pipeline: fix irq flow handling with stacked
+ irqchips
+Date: Fri, 15 Sep 2023 15:59:37 +0200
+Message-ID: <87o7i3o7cd.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,93 +36,432 @@ Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 
 
-Hongzhan Chen <hongzhan.chen@intel.com> writes:
+This implementation extends Hongzhan's original proposal, extending the
+irq flow logic in order to account for any type of stacked flow handler
+(although the ones masking the incoming irq were safe already).
 
-> 1. To avoid double ack for the interrupt that already acked in
->    pipeline entry path, we add new flag to note such status and
->    differentiate.
-> 2. For postponed stacked edge irq that is handling outside of the
->    pipeline entry path, as discussed in [1], ack the irq directly
->    because it would never be acked in the pipeline entry path.
->
-> [1]: https://lore.kernel.org/xenomai/BY5PR11MB4276FEFA2C6D88C4B6CFFEFCF2E9A@BY5PR11MB4276.namprd11.prod.outlook.com/T/#t
->
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
->
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 6aca6c036ada..b8d8aba38e17 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -862,15 +862,25 @@ void handle_edge_irq(struct irq_desc *desc)
->  	if (on_pipeline_entry()) {
->  		chip->irq_ack(&desc->irq_data);
->  		desc->istate |= IRQS_EDGE;
-> -		handle_oob_irq(desc);
-> +		if (!handle_oob_irq(desc)) {
-> +
-> +			/* For inband irq, we tag acked status
-> +			 * to avoid double ack
-> +			 */
-> +			if (!oob_stage_present() || !irq_settings_is_oob(desc))
-> +				desc->istate |= IRQS_ACK;
+Tested here on odroid c4 (armv8), xu4q and sabre (armv7), embedded x86
+and kvm/x86, so far so good. However, I never stumbled upon the cascaded
+irqchip issue this aims at fixing, so we need much more testing.
 
-This code could move to handle_oob_irq(), provided that we account for
-this generic behavior in the x86-specific APIC flow handler.
+---
 
-> +		}
-> +
->  		goto out_unlock;
->  	}
->  
->  	kstat_incr_irqs_this_cpu(desc);
->  
->  	/* Start handling the irq */
-> -	if (!irqs_pipelined())
-> +	if (!(desc->istate & IRQS_ACK))
+    When irqchips are stacked, a cascaded event decoded by a parent irq
+    which is not delivered oob won't receive any ack/eoi, which is
+    wrong. Failing to ack any unmasked edge event could quickly yield an
+    interrupt storm. E.g. on x86, with a gpio irq controller stacked on
+    top of the IO/APIC:
+    
+    handle_irq_pipelined_prepare()
+    [on_pipeline_entry: true]
+    arch_handle_irq()
+            handle_fasteoi_irq()
+                    handle_oob_irq()
+                            mask_cond_eoi_irq()
+    handle_irq_pipelined_finish()
+    [on_pipeline_entry: false]
+            synchronize_pipeline_on_irq()
+                    handle_fasteoi_irq() [!on_pipeline_entry]
+                          intel_gpio_irq()
+                               handle_edge_irq() <<< failed to ack
+    
+    To solve this, we need to track the deferral status of every irq
+    event, running the latter through the pipeline injection code when
+    required, regardless of the current stage.
+    
+    See https://lore.kernel.org/xenomai/MN2PR11MB42855A234CF8BF7D17E9E2ECF2E6A@MN2PR11MB4285.namprd11.prod.outlook.com/.
+    
+    Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 
-Disabling the IRQ pipeline should compile out any Dovetail-specific
-code. In addition to ensuring zero overhead in this case, this is
-important when chasing bugs as well, so that we can reliably compare
-pipelined vs non-pipelined behavior with the very same kernel tree.
-
->  		chip->irq_ack(&desc->irq_data);
-> +	else
-> +		desc->istate &= ~IRQS_ACK;
-
-Ok, this is going somewhere. I believe we need to generalize this
-approach for all kinds of flow handlers, so that cascading any of them
-would work, not only the edge one. There is also yet another tricky case
-to care about when dealing with unmasked acked/eoi events, i.e.:
-
-[IRQ-A] (acked, cascading, deferred handling to in-band stage)
-  |
-  +--> handler(A): demux IRQ-B (in-band)
-       ...
-       synchronize_pipeline_on_irq()
-               hard irqs ON
-               [IRQ-A]
-                  |
-                  +--> handler(A): demux IRQ-B
-                       ...
-                       synchronize_pipeline_on_irq()
-                       hard irqs ON
-                       flow_handler(B) (replay)
-                       ...
-                flow_handler(B) (replay)
-                ...
-
-and so on (a few intermediate steps were omitted). So we might have a
-parent IRQ piling up prior to (re)playing the earlier one in-band with
-hard irqs on, since we acked it early in the pipelining injection
-path. IOW, the code which tracks the ack/eoi status for a cascaded event
-from a stacked irqchip should be robust wrt this case too.
-
-To achieve this, we could track the deferral status of irq events,
-i.e. whether we expect them to be replayed in-band, instead of tracking
-their acknowledge status on pipeline entry - this would disambiguate
-some logic. We'd also need to track the state of the interrupt flow in a
-more elaborate way than Dovetail currently implements. I'll follow up
-with a patch illustrating this.
+diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+index 831a04a2ea146..b590986d16990 100644
+--- a/arch/x86/kernel/irq_pipeline.c
++++ b/arch/x86/kernel/irq_pipeline.c
+@@ -116,6 +116,8 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+ 	 * don't want to break.
+ 	 */
+ 
++	irq_clear_deferral(desc);
++
+ 	switch (vector) {
+ #ifdef CONFIG_SMP
+ 	case RESCHEDULE_VECTOR:
+@@ -174,7 +176,6 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+ 
+ static void do_irq_inband(struct pt_regs *regs, u32 irq)
+ {
+-
+ 	struct irq_desc *desc = irq_to_desc(irq);
+ 
+ 	desc->handle_irq(desc);
+diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
+index cf633c758b1e4..ef41904b46304 100644
+--- a/include/linux/hardirq.h
++++ b/include/linux/hardirq.h
+@@ -143,11 +143,6 @@ void irq_exit_rcu(void);
+ 		irq_pipeline_nmi_exit();			\
+ 	} while (0)
+ 
+-static inline bool start_irq_flow(void)
+-{
+-	return !irqs_pipelined() || in_pipeline();
+-}
+-
+ static inline bool on_pipeline_entry(void)
+ {
+ 	return irqs_pipelined() && in_pipeline();
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index d242ab0df11f0..cf7139c9059b5 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -1239,11 +1239,16 @@ static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
+ 
+ #ifdef CONFIG_IRQ_PIPELINE
+ int irq_switch_oob(unsigned int irq, bool on);
++void irq_clear_deferral(struct irq_desc *desc);
+ #else
+ static inline int irq_switch_oob(unsigned int irq, bool on)
+ {
+ 	return 0;
+ }
++
++static inline void irq_clear_deferral(struct irq_desc *desc)
++{
++}
+ #endif	/* !CONFIG_IRQ_PIPELINE */
+ 
+ #ifdef CONFIG_SMP
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 05fb1f8d4713b..d17eda14784ca 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -413,6 +413,11 @@ void irq_percpu_disable(struct irq_desc *desc, unsigned int cpu)
+ 	cpumask_clear_cpu(cpu, desc->percpu_enabled);
+ }
+ 
++void irq_clear_deferral(struct irq_desc *desc)
++{
++	desc->istate &= ~IRQS_DEFERRED;
++}
++
+ static inline void mask_ack_irq(struct irq_desc *desc)
+ {
+ 	if (desc->irq_data.chip->irq_mask_ack) {
+@@ -509,6 +514,78 @@ static bool irq_check_poll(struct irq_desc *desc)
+ 	return irq_wait_for_poll(desc);
+ }
+ 
++enum {
++	IRQ_FLOW_START,
++	IRQ_FLOW_PILEUP,
++	IRQ_FLOW_REPLAY,
++};
++
++/*
++ * irq_starting_flow - Determine whether we are actually starting an
++ * interrupt flow.
++ *
++ * When interrupt pipelining is enabled, interrupt flow handlers may
++ * be called twice for each event, once from the pipeline entry
++ * context in an attempt to handle the hardware event from the oob
++ * stage, a second time if the event was deferred to the in-band
++ * stage. In the first case, we have to ack the hardware before
++ * feeding the pipeline. Otherwise, we should simply run the action
++ * associated to the event from the in-band stage.
++ *
++ * With stacked irqchips, handlers of parent irqs not delivered to the
++ * oob stage would decode and post the cascaded events to the in-band
++ * stage as well. The internal per-descriptor IRQS_DEFERRED flag
++ * disambiguates between the latter context and events being replayed
++ * after deferral to the in-band stage, so that we do ack the hardware
++ * for cascaded events as expected.
++ *
++ * We might also receive a subsequent unmasked edge event on the same
++ * line while a deferred one is still pending replay from the in-band
++ * stage (hard irqs are on for replay). The flow state enumeration
++ * disambiguates all cases as follows:
++ *
++ * - IRQ_FLOW_START: we are running oob on behalf of the low-level irq
++ *   entry code, no deferred event is pending replay for the same
++ *   line, we need to send ack to the hardware.
++ *
++ * - IRQ_FLOW_PILEUP: we are running in-band for synchronizing the irq
++ *   log, one or more deferred events are already pending replay for
++ *   the same line, we need to ack the subsequent event to the
++ *   hardware too.
++ *
++ * - IRQ_FLOW_REPLAY: we are (re)playing a deferred event from the
++ *   in-band stage, as a result of synchronizing the irq log.
++ */
++static inline unsigned int irq_starting_flow(struct irq_desc *desc)
++{
++	if (!irqs_pipelined())
++		return IRQ_FLOW_START;
++
++	if (!in_pipeline())
++		return IRQ_FLOW_REPLAY;
++
++	return desc->istate & IRQS_DEFERRED ? IRQ_FLOW_PILEUP : IRQ_FLOW_START;
++}
++
++/*
++ * irq_feeding_pipeline - Determine whether we should be feeding the
++ * interrupt pipeline with the incoming event.
++ *
++ * Depending on the flow state determined by irq_starting_flow(), the
++ * event is passed to the oob handler or directly replayed from the
++ * current in-band stage.
++ */
++static inline bool irq_feeding_pipeline(struct irq_desc *desc, int state)
++{
++	if (irqs_pipelined()) {
++		if (state != IRQ_FLOW_REPLAY)
++			return true;
++		irq_clear_deferral(desc);
++	}
++
++	return false;
++}
++
+ static bool irq_may_run(struct irq_desc *desc)
+ {
+ 	unsigned int mask = IRQD_IRQ_INPROGRESS | IRQD_WAKEUP_ARMED;
+@@ -561,12 +638,15 @@ static bool irq_may_run(struct irq_desc *desc)
+  */
+ void handle_simple_irq(struct irq_desc *desc)
+ {
++	int flow;
++
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow() && !irq_may_run(desc))
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
+ 		goto out_unlock;
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		handle_oob_irq(desc);
+ 		goto out_unlock;
+ 	}
+@@ -601,12 +681,15 @@ EXPORT_SYMBOL_GPL(handle_simple_irq);
+  */
+ void handle_untracked_irq(struct irq_desc *desc)
+ {
++	int flow;
++
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow() && !irq_may_run(desc))
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
+ 		goto out_unlock;
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		handle_oob_irq(desc);
+ 		goto out_unlock;
+ 	}
+@@ -675,16 +758,19 @@ static void cond_unmask_irq(struct irq_desc *desc)
+  */
+ void handle_level_irq(struct irq_desc *desc)
+ {
++	int flow;
++
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow()) {
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY) {
+ 		mask_ack_irq(desc);
+ 
+ 		if (!irq_may_run(desc))
+ 			goto out_unlock;
+ 	}
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		if (handle_oob_irq(desc))
+ 			goto out_unmask;
+ 		goto out_unlock;
+@@ -749,6 +835,7 @@ static void cond_unmask_eoi_irq(struct irq_desc *desc, struct irq_chip *chip)
+ void handle_fasteoi_irq(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = desc->irq_data.chip;
++	int flow;
+ 
+ 	raw_spin_lock(&desc->lock);
+ 
+@@ -757,13 +844,14 @@ void handle_fasteoi_irq(struct irq_desc *desc)
+ 	 * can arrive on the new CPU before the original CPU has completed
+ 	 * handling the previous one - it may need to be resent.
+ 	 */
+-	if (start_irq_flow() && !irq_may_run(desc)) {
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc)) {
+ 		if (irqd_needs_resend_when_in_progress(&desc->irq_data))
+ 			desc->istate |= IRQS_PENDING;
+ 		goto out;
+ 	}
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		if (handle_oob_irq(desc))
+ 			chip->irq_eoi(&desc->irq_data);
+ 		else
+@@ -858,10 +946,12 @@ EXPORT_SYMBOL_GPL(handle_fasteoi_nmi);
+ void handle_edge_irq(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
++	int flow;
+ 
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow()) {
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY) {
+ 		desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+ 
+ 		if (!irq_may_run(desc)) {
+@@ -881,7 +971,7 @@ void handle_edge_irq(struct irq_desc *desc)
+ 		}
+ 	}
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		chip->irq_ack(&desc->irq_data);
+ 		desc->istate |= IRQS_EDGE;
+ 		handle_oob_irq(desc);
+@@ -934,10 +1024,12 @@ EXPORT_SYMBOL(handle_edge_irq);
+ void handle_edge_eoi_irq(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
++	int flow;
+ 
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow()) {
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY) {
+ 		desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+ 
+ 		if (!irq_may_run(desc)) {
+@@ -946,7 +1038,7 @@ void handle_edge_eoi_irq(struct irq_desc *desc)
+ 		}
+ 	}
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		desc->istate |= IRQS_EDGE;
+ 		if (handle_oob_irq(desc))
+ 			goto out_eoi;
+@@ -1341,13 +1433,15 @@ void irq_cpu_offline(void)
+ void handle_fasteoi_ack_irq(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = desc->irq_data.chip;
++	int flow;
+ 
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow() && !irq_may_run(desc))
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
+ 		goto out;
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		chip->irq_ack(&desc->irq_data);
+ 		if (handle_oob_irq(desc))
+ 			chip->irq_eoi(&desc->irq_data);
+@@ -1404,17 +1498,19 @@ EXPORT_SYMBOL_GPL(handle_fasteoi_ack_irq);
+ void handle_fasteoi_mask_irq(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = desc->irq_data.chip;
++	int flow;
+ 
+ 	raw_spin_lock(&desc->lock);
+ 
+-	if (start_irq_flow()) {
++	flow = irq_starting_flow(desc);
++	if (flow != IRQ_FLOW_REPLAY) {
+ 		mask_ack_irq(desc);
+ 
+ 		if (!irq_may_run(desc))
+ 			goto out;
+ 	}
+ 
+-	if (on_pipeline_entry()) {
++	if (irq_feeding_pipeline(desc, flow)) {
+ 		if (handle_oob_irq(desc))
+ 			chip->irq_eoi(&desc->irq_data);
+ 		else
+diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
+index e4f66a7a24c2c..a3b40ce2e1dd7 100644
+--- a/kernel/irq/internals.h
++++ b/kernel/irq/internals.h
+@@ -56,7 +56,8 @@ enum {
+  * IRQS_SUSPENDED		- irq is suspended
+  * IRQS_NMI			- irq line is used to deliver NMIs
+  * IRQS_SYSFS			- descriptor has been added to sysfs
+- * IRQS_EDGE			- irq line received an edge event
++ * IRQS_EDGE			- irq line received an edge event (irq_pipeline)
++ * IRQS_DEFERRED		- irq event deferred to inband (irq_pipeline)
+  */
+ enum {
+ 	IRQS_AUTODETECT		= 0x00000001,
+@@ -71,6 +72,7 @@ enum {
+ 	IRQS_NMI		= 0x00002000,
+ 	IRQS_SYSFS		= 0x00004000,
+ 	IRQS_EDGE		= 0x00008000,
++	IRQS_DEFERRED		= 0x00010000,
+ };
+ 
+ #include "debug.h"
+diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
+index 550bacf2cb77d..d550a37a895e9 100644
+--- a/kernel/irq/pipeline.c
++++ b/kernel/irq/pipeline.c
+@@ -144,7 +144,12 @@ static struct irq_domain_ops sirq_domain_ops = {
+  *	@desc:	the interrupt description structure for this irq
+  *
+  *	Handles synthetic interrupts flowing down the IRQ pipeline
+- *	with per-CPU semantics.
++ *	with per-CPU semantics (accessing desc needs no locking).
++ *
++ *	Since the SIPIC cannot be stacked on top of a parent irqchip,
++ * 	we can bypass most of the IRQS_DEFERRED logic, testing
++ * 	on_pipeline_entry() directly - although we should still clear
++ * 	IRQS_DEFERRED when in-band since handle_oob_irq() raises it.
+  *
+  *      CAUTION: synthetic IRQs may be used to map hardware-generated
+  *      events (e.g. IPIs or traps), we must start handling them as
+@@ -162,6 +167,8 @@ void handle_synthetic_irq(struct irq_desc *desc)
+ 		return;
+ 	}
+ 
++	irq_clear_deferral(desc);
++
+ 	action = desc->action;
+ 	if (action == NULL) {
+ 		if (printk_ratelimit())
+@@ -955,7 +962,8 @@ static inline bool is_active_edge_event(struct irq_desc *desc)
+ 		!irqd_irq_disabled(&desc->irq_data);
+ }
+ 
+-bool handle_oob_irq(struct irq_desc *desc) /* hardirqs off */
++/* desc->lock held unless per-CPU, hardirqs off. */
++bool handle_oob_irq(struct irq_desc *desc)
+ {
+ 	struct irq_stage_data *oobd = this_oob_staged();
+ 	unsigned int irq = irq_desc_get_irq(desc);
+@@ -981,6 +989,7 @@ bool handle_oob_irq(struct irq_desc *desc) /* hardirqs off */
+ 	 * whether an out-of-band interrupt was delivered.
+ 	 */
+ 	if (!oob_stage_present() || !irq_settings_is_oob(desc)) {
++		desc->istate |= IRQS_DEFERRED;
+ 		irq_post_stage(&inband_stage, irq);
+ 		return false;
+ 	}
 
 -- 
 Philippe.
