@@ -1,467 +1,405 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4AC31A90
-	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 14:31:27 +0000 (UTC)
-Received: from relay9-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::229])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id D9657D29D8
-	for <xenomai@lists.linux.dev>; Fri, 15 Sep 2023 14:10:34 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id CFADFFF808;
-	Fri, 15 Sep 2023 14:10:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1694787027;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=T9viKAtdEG9xmUbsrk50Rferb7UlU6h9nHkh0pm7Hew=;
-	b=Fnc8OzYednV7XeWIl43pxS/xzXcjShlllgruCxG6k6t7mv/eRNGlENAN3CWeZ3Vrw92CVS
-	ubhnQYeDcIpcL8Ix33zqZ/H8MsIRmVTQGeQ6iipWJuptnDqJQm9UeDSBWJgiz0bd+aZ19I
-	pnR4TPJsEqCoSY9ANS97oz5XgzDljmdMfchfxWLLJQ2ZUXPiS3bnvAF/SMLqzyRt5+PFkU
-	tAOwEf9qlwEKQUt1TS31QoM5uG5lGI2kuicdQ2NzuF9aCOj9drHaywqcG4u1rNnEu6kBDA
-	cHvy5S4p3sEKbG2cRVVDVfwjVRHqn7unzBUWxGGNtL9P8/jQ+3Fo6SbDMA5nzQ==
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: xenomai@lists.linux.dev
-Cc: Hongzhan Chen <hongzhan.chen@intel.com>
-Subject: [PATCH] genirq: irq_pipeline: fix irq flow handling with stacked
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098C715CE
+	for <xenomai@lists.linux.dev>; Sun, 17 Sep 2023 07:16:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694935003; x=1726471003;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version;
+  bh=kHWanA87otCgCtEQEj5TgSvbgQgtBrjRCVpDqv5dSmo=;
+  b=HbFY37zZvRsO6oM9CTk14fHL8kYIOeK7PrduggxTQNeTkPWvHVqceGC3
+   HztHhHipTUEAg8wSdz3bLFugHNyjLuSRiqMCO51WO1MboeJDaCxN3h8UP
+   R9W+ggcoK3GvuR+QL6LG2PXfO2riyZlDSaKtGIhtUaw2Vyp4ULrC5w04f
+   xOkNExqIxzzzPMQ1Whsd6yRG2ao2XliRXgxdAWHw8oMFMY5hNxOzaaZfd
+   CGtFCFIBe1jPUcT7m3RRzB7EI/HZWVsDtunjs8Gu5U2fGWcMGb1FLCJ7Z
+   /j8z52fQCkWA57kkVTKbmAf/LzhaCgixeMw6I6buLQygd8cRCllJEntv0
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10835"; a="358889451"
+X-IronPort-AV: E=Sophos;i="6.02,153,1688454000"; 
+   d="scan'208";a="358889451"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2023 00:16:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10835"; a="722150070"
+X-IronPort-AV: E=Sophos;i="6.02,153,1688454000"; 
+   d="scan'208";a="722150070"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Sep 2023 00:16:41 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Sun, 17 Sep 2023 00:16:40 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Sun, 17 Sep 2023 00:16:40 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.43) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Sun, 17 Sep 2023 00:16:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YVFOOEPs1iJiR4qxJYzEC6ULNx5zk47rt0JvPSnIUjV3xlgsoqb4dDOWUIgxgKmBkT8Lm9lW/aGHP5tsJqhgXRuHBI1i9XNuNyNdcAJMPjRmKTxanGprLPaRQ/Ph+/ac3wqPqW+84iN/r8R/yUTqQEdTmq3b3p4lK/lhqMVjFju0iH48MEYW+3ldJ3zT9oomOkrSm0HHk4hvXnBHKEa03sDKIqBmVUuEOCDxV6QO3X6QSppL2MqvPy7m18YBPDgPO4tRruEYh0JNqOqkCmlMTRIbiIHl+X6RHKMAmJB9Jd+uDJnSvrCGxjnWxqbTEXqw2Ix/XGnWZSs/sIdkn1/hHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kHWanA87otCgCtEQEj5TgSvbgQgtBrjRCVpDqv5dSmo=;
+ b=fS4wiPEYbbxGqopZn2bHBFJAyQ018x5eOyj41oqFn+6Xgi9uQl5t+WtJTstQs4SycwIU+xL7pd6CI7ILI4XXV+vZYlosIXC9RpIlrV3WJfLuWQYMSSIc9oid8WsL7ERa+Qb/iKsj94sIhE4vAbKy1BuEiajJy4jUphgJkE6KIrKNmgYmIDby7adiRy3H6Mjtnkge62J8rG8IB007a7G1AYK7ytQU6DymhofBYqp2n9qsOPgf4BWH9dV4O7UAtdKEv3JsnectEMD6Z9KBGrZ1c+FCShCI/z5tRXND86iHgRXc5dCbRlIprZ2SYC+GpotCC/op6YniBEKbqYi0RtNqxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com (2603:10b6:208:191::32)
+ by DM4PR11MB7351.namprd11.prod.outlook.com (2603:10b6:8:104::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.24; Sun, 17 Sep
+ 2023 07:16:30 +0000
+Received: from MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::39e:eb8d:6d9d:78fe]) by MN2PR11MB4285.namprd11.prod.outlook.com
+ ([fe80::39e:eb8d:6d9d:78fe%3]) with mapi id 15.20.6792.024; Sun, 17 Sep 2023
+ 07:16:30 +0000
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+Subject: RE: [PATCH] genirq: irq_pipeline: fix irq flow handling with stacked
  irqchips
-Date: Fri, 15 Sep 2023 15:59:37 +0200
-Message-ID: <87o7i3o7cd.fsf@xenomai.org>
+Thread-Topic: [PATCH] genirq: irq_pipeline: fix irq flow handling with stacked
+ irqchips
+Thread-Index: AQHZ595rgwDLOaKO8U2U8baARsLYXLAelhww
+Date: Sun, 17 Sep 2023 07:16:29 +0000
+Message-ID: <MN2PR11MB4285939337A3D811141514B7F2F4A@MN2PR11MB4285.namprd11.prod.outlook.com>
+References: <87o7i3o7cd.fsf@xenomai.org>
+In-Reply-To: <87o7i3o7cd.fsf@xenomai.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN2PR11MB4285:EE_|DM4PR11MB7351:EE_
+x-ms-office365-filtering-correlation-id: 5bda4fab-80d3-4a53-50e9-08dbb74e035c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OOmjy3Qb8lbK7ASYOddvIsIYmhBUIPQPmRee3vX7/pFDQKRJqztClcIpUftjSUfx4uMTn0VhgfxI0s9a4O4D7kC5nPrPf/5use9CUCaKn98ZlY/f9lWXIs0bnb8m6fQ5TWwsDDYsszyO/MK2xC4P4UKvX7Ci0kiP19x++oSkM/blMfZMvlfwu0pAT/Rr5ZjhNBq1GhZmZIOYg0x5Eiy/b4qVCu0ZfVWEu8CpDfSKW6/0BTEc/dLhKFPhPHxViva704aDXunx/Qo0kzqWqnfrntEL3QZIQ1HR/2lXJcFfnE5UXvHSpFRWV7K9lEATWmb7rY/VPNLiOx+aEkwyUzSGYknegU5YbNhOZLjokAtoaA+EF1u3usbcUo25rSLfEXTPX4TRjMZS5Lr4JgvRpXDDfPqOBZC8OOq08aAUGnFcgECJiu0zaIarl7W+4bV9TzXbxWw8hupsQrd4P0xKHX4c3WfBPDeRwDin1ACi7hTqhxus2hXBHYAdxqmI1BDOBB63jWwPw632ak1R7WFdikJA4aK396k5zUf7sAsglyEb4f58Yxyb9yd7r1Dbs2Wp8Tp/qGQ3vvhBL0JexvlIq6bITULbi5xUz0vYabuxpzU2hnM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4285.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(396003)(376002)(346002)(39860400002)(366004)(1800799009)(451199024)(186009)(7696005)(6506007)(33656002)(38100700002)(38070700005)(122000001)(82960400001)(55016003)(86362001)(26005)(2906002)(30864003)(9686003)(71200400001)(45080400002)(478600001)(83380400001)(5660300002)(52536014)(8676002)(110136005)(8936002)(41300700001)(66556008)(66946007)(66476007)(66446008)(76116006)(316002)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?U0xzNFhlZ3ZTRDNqYjNNQjRIYTg3M2dRRmlWQmFzaWNGY0s0VG1SeUY2WUxz?=
+ =?utf-8?B?VmdybWpsbS9PS0F1V1VPVy9HakYxWWNSZFZqbVZ1NFJxUDd4Nk5aM3lCY3pJ?=
+ =?utf-8?B?cUIxaFhqY2tUcUcrRVJsVlAwa2JhNGFFSlNZVUJ1NWF1UTdMejRGR0ZneXpt?=
+ =?utf-8?B?MTVlcEFpV0grK1NVUFQ3SVlsUU9QZmZtd1hZY01iWTcwRGM1V3Y4U0R2Mk9m?=
+ =?utf-8?B?UXljOG5UMkRKZ2RGRFk4cTZtRlFDWkhBWmVKWDU2bWEybGp3K0ZCMCttT0Ns?=
+ =?utf-8?B?MXp1cExmZnJKRnZneTNzKy9Nb3V4czg4NEo3SE5WaW5wNVU5Qy9xVTVTemxm?=
+ =?utf-8?B?TnE1aU1RcVdGcUpMMWZDTXJCRTdyVTQ1OElWQUZhR0ZzRW5kK0txcGxIcXJl?=
+ =?utf-8?B?SjJIeE93NVlOVExPR3BPVStITmFNdW9nNkp0UlV1bmFrekFkL0Z2UVBKTmxK?=
+ =?utf-8?B?bk04M0NGYUNEZlkwMFBUTGlwZGJKbUNvQTliYjZEVGRtNmZNcWZMVVRNMjV5?=
+ =?utf-8?B?eC9qTFN5amgya1B1VW1VM1krZ05FK2xLaytSL3FrM0NRY1Nnd3B6R2VRbDdx?=
+ =?utf-8?B?Z3pJSUlEQnZLd2ZkUCtMMVRrUWMzTDdiUFRveDRuZ2o2TjFLV0drYk4wUnIz?=
+ =?utf-8?B?ZkhjYmlDaXI0MmdwNlJ2aWpJM2tDV2JvWExtOHdoOEtzL3d2eVl6bUlMdm5I?=
+ =?utf-8?B?a1pHTjM4a0loS2F1bnRyTi9QNS9YS2wxYTk2b1VSUElVenpWNXl6L3BwbnFB?=
+ =?utf-8?B?emF3UUxzOExrdHREQ0ZsVDFLMEFqbHB0ajBicHRsdHVpREUvYWlzNHg5VTJw?=
+ =?utf-8?B?S3lZaVJSRCtkbGhFMGlwWUFvTjdqd3JXQjA5L3g1d1U1Zk5XSXMzSllWRHhl?=
+ =?utf-8?B?cDlNRVJoTzQvTWlKUmhQN25ZU2hWYzRmLy9qdlZ0eHRhRmpQSGdCVXU1SnRn?=
+ =?utf-8?B?MHBlbXd4WkNLcHdQUTRHeHcyNGFjRlNtZGJGUXZYVE9leitHK1BLNU5ORER6?=
+ =?utf-8?B?UExzRXdlNnRVcitIaVhPNFlUSDBRb3Y1akhsb0s4bzJiZmNMb2FjSVRFZzkx?=
+ =?utf-8?B?VzJsWDRteFQzSE9SMmYvcGxsQ3dPZW5wM1M0UXBKOGJFQUd6WndHQmdET2lm?=
+ =?utf-8?B?Q0twenVLc2RjR013RG04T3lQdENMYkJWMTJOalBPMmFGNFhqa0xjamduR096?=
+ =?utf-8?B?REdKUlhaS0cyOUs5SkFNQU96Ty9ic3k5TXFNVVFNeU5zZGM3dEdTTllzYnVr?=
+ =?utf-8?B?Y2xzbzNseUpRV3pxM3FXU1JxMVJYK1UyNTBsR3gyb0NnOVZ1UWhXazZ2eXNS?=
+ =?utf-8?B?SThsakRKUzArcUhmTFhTR3NLZ0xLU1Z5ZEVhYUJlNTFucnBGb3EyT3dzRWlV?=
+ =?utf-8?B?aG5sVmxqRENHcytWTU5pSzhNZXZTRnBGU0doRHREQ3lMTUlyZ255bENXQzhF?=
+ =?utf-8?B?dUoyVWg5R0dNN2sweFNXZXBqN1RaUFR2SmdNTDBkekJBRkd1WFpkUHVqbUoz?=
+ =?utf-8?B?anZTRkMvb3dqTE1NbTJrQUg1elovbFJka0tkR0VKSXFsZHBRUTY3MDRXVDJL?=
+ =?utf-8?B?VkNBMHAyTGVYaE5RcS9PQUNZcldNNVJRcUpZcHVQRFcwSkZ3NmJKQ3hWb0J0?=
+ =?utf-8?B?eUpqNklsbHE3V1ppVW1aZC9xRTBHNnBTc2ltRFFVdHphbXJxRFZEUnRSK1c2?=
+ =?utf-8?B?ck5jSFhQZ1cvUm9FZlRCU0NDbGxQRVNtVXVSZkRvNjJkVFJsR3lKM29VVTlK?=
+ =?utf-8?B?c1VLQnplRlhUOHk5QmZZQlluYWkrOWdCL0l3Q3BXZ205cVJBaTNvYkRXYXpM?=
+ =?utf-8?B?UW0xS0ZPbU1xTTM2Z3JDK09VVXZyU04xL09IZzNiZUZHNDRtOUEyejFkZlFC?=
+ =?utf-8?B?bnVXSHp1bUdYNGg3UGFaZWNOYnl1Z3RqUy9mOEhZMk5pZHg3Wnp1WjJmZCtw?=
+ =?utf-8?B?eVMvTG43a0Z1SmcxWURIWE42KzYweFlsSjJEQ0lEbXZNQXhGZ01VZ2c2eVor?=
+ =?utf-8?B?QlZwNWQ2RUlHRkNralhRU214d1gvaEVnaDhPNXlIZkJtMlU3dHllMGovcXEw?=
+ =?utf-8?B?eTFJY0V0RmZPUXkxZkltNnoxTW91N0UrUzFxdDFPTGRHcG52MTBXRGEwSDZC?=
+ =?utf-8?Q?HkQCplQKIauoSFhrGHIC2wyd9?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4285.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bda4fab-80d3-4a53-50e9-08dbb74e035c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2023 07:16:29.4178
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Z5e5ksJDp4aoexjrCrlZzmw1KzA0nDZEH+dNs4yg+oEJTeeuRJ5LfZuzeQyj2Qt0rmnMJiZ1EBbrSE2knr1C2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7351
+X-OriginatorOrg: intel.com
 
-
-This implementation extends Hongzhan's original proposal, extending the
-irq flow logic in order to account for any type of stacked flow handler
-(although the ones masking the incoming irq were safe already).
-
-Tested here on odroid c4 (armv8), xu4q and sabre (armv7), embedded x86
-and kvm/x86, so far so good. However, I never stumbled upon the cascaded
-irqchip issue this aims at fixing, so we need much more testing.
-
----
-
-    When irqchips are stacked, a cascaded event decoded by a parent irq
-    which is not delivered oob won't receive any ack/eoi, which is
-    wrong. Failing to ack any unmasked edge event could quickly yield an
-    interrupt storm. E.g. on x86, with a gpio irq controller stacked on
-    top of the IO/APIC:
-    
-    handle_irq_pipelined_prepare()
-    [on_pipeline_entry: true]
-    arch_handle_irq()
-            handle_fasteoi_irq()
-                    handle_oob_irq()
-                            mask_cond_eoi_irq()
-    handle_irq_pipelined_finish()
-    [on_pipeline_entry: false]
-            synchronize_pipeline_on_irq()
-                    handle_fasteoi_irq() [!on_pipeline_entry]
-                          intel_gpio_irq()
-                               handle_edge_irq() <<< failed to ack
-    
-    To solve this, we need to track the deferral status of every irq
-    event, running the latter through the pipeline injection code when
-    required, regardless of the current stage.
-    
-    See https://lore.kernel.org/xenomai/MN2PR11MB42855A234CF8BF7D17E9E2ECF2E6A@MN2PR11MB4285.namprd11.prod.outlook.com/.
-    
-    Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-
-diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
-index 831a04a2ea146..b590986d16990 100644
---- a/arch/x86/kernel/irq_pipeline.c
-+++ b/arch/x86/kernel/irq_pipeline.c
-@@ -116,6 +116,8 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
- 	 * don't want to break.
- 	 */
- 
-+	irq_clear_deferral(desc);
-+
- 	switch (vector) {
- #ifdef CONFIG_SMP
- 	case RESCHEDULE_VECTOR:
-@@ -174,7 +176,6 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
- 
- static void do_irq_inband(struct pt_regs *regs, u32 irq)
- {
--
- 	struct irq_desc *desc = irq_to_desc(irq);
- 
- 	desc->handle_irq(desc);
-diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
-index cf633c758b1e4..ef41904b46304 100644
---- a/include/linux/hardirq.h
-+++ b/include/linux/hardirq.h
-@@ -143,11 +143,6 @@ void irq_exit_rcu(void);
- 		irq_pipeline_nmi_exit();			\
- 	} while (0)
- 
--static inline bool start_irq_flow(void)
--{
--	return !irqs_pipelined() || in_pipeline();
--}
--
- static inline bool on_pipeline_entry(void)
- {
- 	return irqs_pipelined() && in_pipeline();
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index d242ab0df11f0..cf7139c9059b5 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -1239,11 +1239,16 @@ static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
- 
- #ifdef CONFIG_IRQ_PIPELINE
- int irq_switch_oob(unsigned int irq, bool on);
-+void irq_clear_deferral(struct irq_desc *desc);
- #else
- static inline int irq_switch_oob(unsigned int irq, bool on)
- {
- 	return 0;
- }
-+
-+static inline void irq_clear_deferral(struct irq_desc *desc)
-+{
-+}
- #endif	/* !CONFIG_IRQ_PIPELINE */
- 
- #ifdef CONFIG_SMP
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 05fb1f8d4713b..d17eda14784ca 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -413,6 +413,11 @@ void irq_percpu_disable(struct irq_desc *desc, unsigned int cpu)
- 	cpumask_clear_cpu(cpu, desc->percpu_enabled);
- }
- 
-+void irq_clear_deferral(struct irq_desc *desc)
-+{
-+	desc->istate &= ~IRQS_DEFERRED;
-+}
-+
- static inline void mask_ack_irq(struct irq_desc *desc)
- {
- 	if (desc->irq_data.chip->irq_mask_ack) {
-@@ -509,6 +514,78 @@ static bool irq_check_poll(struct irq_desc *desc)
- 	return irq_wait_for_poll(desc);
- }
- 
-+enum {
-+	IRQ_FLOW_START,
-+	IRQ_FLOW_PILEUP,
-+	IRQ_FLOW_REPLAY,
-+};
-+
-+/*
-+ * irq_starting_flow - Determine whether we are actually starting an
-+ * interrupt flow.
-+ *
-+ * When interrupt pipelining is enabled, interrupt flow handlers may
-+ * be called twice for each event, once from the pipeline entry
-+ * context in an attempt to handle the hardware event from the oob
-+ * stage, a second time if the event was deferred to the in-band
-+ * stage. In the first case, we have to ack the hardware before
-+ * feeding the pipeline. Otherwise, we should simply run the action
-+ * associated to the event from the in-band stage.
-+ *
-+ * With stacked irqchips, handlers of parent irqs not delivered to the
-+ * oob stage would decode and post the cascaded events to the in-band
-+ * stage as well. The internal per-descriptor IRQS_DEFERRED flag
-+ * disambiguates between the latter context and events being replayed
-+ * after deferral to the in-band stage, so that we do ack the hardware
-+ * for cascaded events as expected.
-+ *
-+ * We might also receive a subsequent unmasked edge event on the same
-+ * line while a deferred one is still pending replay from the in-band
-+ * stage (hard irqs are on for replay). The flow state enumeration
-+ * disambiguates all cases as follows:
-+ *
-+ * - IRQ_FLOW_START: we are running oob on behalf of the low-level irq
-+ *   entry code, no deferred event is pending replay for the same
-+ *   line, we need to send ack to the hardware.
-+ *
-+ * - IRQ_FLOW_PILEUP: we are running in-band for synchronizing the irq
-+ *   log, one or more deferred events are already pending replay for
-+ *   the same line, we need to ack the subsequent event to the
-+ *   hardware too.
-+ *
-+ * - IRQ_FLOW_REPLAY: we are (re)playing a deferred event from the
-+ *   in-band stage, as a result of synchronizing the irq log.
-+ */
-+static inline unsigned int irq_starting_flow(struct irq_desc *desc)
-+{
-+	if (!irqs_pipelined())
-+		return IRQ_FLOW_START;
-+
-+	if (!in_pipeline())
-+		return IRQ_FLOW_REPLAY;
-+
-+	return desc->istate & IRQS_DEFERRED ? IRQ_FLOW_PILEUP : IRQ_FLOW_START;
-+}
-+
-+/*
-+ * irq_feeding_pipeline - Determine whether we should be feeding the
-+ * interrupt pipeline with the incoming event.
-+ *
-+ * Depending on the flow state determined by irq_starting_flow(), the
-+ * event is passed to the oob handler or directly replayed from the
-+ * current in-band stage.
-+ */
-+static inline bool irq_feeding_pipeline(struct irq_desc *desc, int state)
-+{
-+	if (irqs_pipelined()) {
-+		if (state != IRQ_FLOW_REPLAY)
-+			return true;
-+		irq_clear_deferral(desc);
-+	}
-+
-+	return false;
-+}
-+
- static bool irq_may_run(struct irq_desc *desc)
- {
- 	unsigned int mask = IRQD_IRQ_INPROGRESS | IRQD_WAKEUP_ARMED;
-@@ -561,12 +638,15 @@ static bool irq_may_run(struct irq_desc *desc)
-  */
- void handle_simple_irq(struct irq_desc *desc)
- {
-+	int flow;
-+
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow() && !irq_may_run(desc))
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
- 		goto out_unlock;
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		handle_oob_irq(desc);
- 		goto out_unlock;
- 	}
-@@ -601,12 +681,15 @@ EXPORT_SYMBOL_GPL(handle_simple_irq);
-  */
- void handle_untracked_irq(struct irq_desc *desc)
- {
-+	int flow;
-+
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow() && !irq_may_run(desc))
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
- 		goto out_unlock;
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		handle_oob_irq(desc);
- 		goto out_unlock;
- 	}
-@@ -675,16 +758,19 @@ static void cond_unmask_irq(struct irq_desc *desc)
-  */
- void handle_level_irq(struct irq_desc *desc)
- {
-+	int flow;
-+
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow()) {
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY) {
- 		mask_ack_irq(desc);
- 
- 		if (!irq_may_run(desc))
- 			goto out_unlock;
- 	}
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		if (handle_oob_irq(desc))
- 			goto out_unmask;
- 		goto out_unlock;
-@@ -749,6 +835,7 @@ static void cond_unmask_eoi_irq(struct irq_desc *desc, struct irq_chip *chip)
- void handle_fasteoi_irq(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = desc->irq_data.chip;
-+	int flow;
- 
- 	raw_spin_lock(&desc->lock);
- 
-@@ -757,13 +844,14 @@ void handle_fasteoi_irq(struct irq_desc *desc)
- 	 * can arrive on the new CPU before the original CPU has completed
- 	 * handling the previous one - it may need to be resent.
- 	 */
--	if (start_irq_flow() && !irq_may_run(desc)) {
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc)) {
- 		if (irqd_needs_resend_when_in_progress(&desc->irq_data))
- 			desc->istate |= IRQS_PENDING;
- 		goto out;
- 	}
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		if (handle_oob_irq(desc))
- 			chip->irq_eoi(&desc->irq_data);
- 		else
-@@ -858,10 +946,12 @@ EXPORT_SYMBOL_GPL(handle_fasteoi_nmi);
- void handle_edge_irq(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	int flow;
- 
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow()) {
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY) {
- 		desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
- 
- 		if (!irq_may_run(desc)) {
-@@ -881,7 +971,7 @@ void handle_edge_irq(struct irq_desc *desc)
- 		}
- 	}
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		chip->irq_ack(&desc->irq_data);
- 		desc->istate |= IRQS_EDGE;
- 		handle_oob_irq(desc);
-@@ -934,10 +1024,12 @@ EXPORT_SYMBOL(handle_edge_irq);
- void handle_edge_eoi_irq(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	int flow;
- 
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow()) {
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY) {
- 		desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
- 
- 		if (!irq_may_run(desc)) {
-@@ -946,7 +1038,7 @@ void handle_edge_eoi_irq(struct irq_desc *desc)
- 		}
- 	}
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		desc->istate |= IRQS_EDGE;
- 		if (handle_oob_irq(desc))
- 			goto out_eoi;
-@@ -1341,13 +1433,15 @@ void irq_cpu_offline(void)
- void handle_fasteoi_ack_irq(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = desc->irq_data.chip;
-+	int flow;
- 
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow() && !irq_may_run(desc))
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY && !irq_may_run(desc))
- 		goto out;
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		chip->irq_ack(&desc->irq_data);
- 		if (handle_oob_irq(desc))
- 			chip->irq_eoi(&desc->irq_data);
-@@ -1404,17 +1498,19 @@ EXPORT_SYMBOL_GPL(handle_fasteoi_ack_irq);
- void handle_fasteoi_mask_irq(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = desc->irq_data.chip;
-+	int flow;
- 
- 	raw_spin_lock(&desc->lock);
- 
--	if (start_irq_flow()) {
-+	flow = irq_starting_flow(desc);
-+	if (flow != IRQ_FLOW_REPLAY) {
- 		mask_ack_irq(desc);
- 
- 		if (!irq_may_run(desc))
- 			goto out;
- 	}
- 
--	if (on_pipeline_entry()) {
-+	if (irq_feeding_pipeline(desc, flow)) {
- 		if (handle_oob_irq(desc))
- 			chip->irq_eoi(&desc->irq_data);
- 		else
-diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
-index e4f66a7a24c2c..a3b40ce2e1dd7 100644
---- a/kernel/irq/internals.h
-+++ b/kernel/irq/internals.h
-@@ -56,7 +56,8 @@ enum {
-  * IRQS_SUSPENDED		- irq is suspended
-  * IRQS_NMI			- irq line is used to deliver NMIs
-  * IRQS_SYSFS			- descriptor has been added to sysfs
-- * IRQS_EDGE			- irq line received an edge event
-+ * IRQS_EDGE			- irq line received an edge event (irq_pipeline)
-+ * IRQS_DEFERRED		- irq event deferred to inband (irq_pipeline)
-  */
- enum {
- 	IRQS_AUTODETECT		= 0x00000001,
-@@ -71,6 +72,7 @@ enum {
- 	IRQS_NMI		= 0x00002000,
- 	IRQS_SYSFS		= 0x00004000,
- 	IRQS_EDGE		= 0x00008000,
-+	IRQS_DEFERRED		= 0x00010000,
- };
- 
- #include "debug.h"
-diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
-index 550bacf2cb77d..d550a37a895e9 100644
---- a/kernel/irq/pipeline.c
-+++ b/kernel/irq/pipeline.c
-@@ -144,7 +144,12 @@ static struct irq_domain_ops sirq_domain_ops = {
-  *	@desc:	the interrupt description structure for this irq
-  *
-  *	Handles synthetic interrupts flowing down the IRQ pipeline
-- *	with per-CPU semantics.
-+ *	with per-CPU semantics (accessing desc needs no locking).
-+ *
-+ *	Since the SIPIC cannot be stacked on top of a parent irqchip,
-+ * 	we can bypass most of the IRQS_DEFERRED logic, testing
-+ * 	on_pipeline_entry() directly - although we should still clear
-+ * 	IRQS_DEFERRED when in-band since handle_oob_irq() raises it.
-  *
-  *      CAUTION: synthetic IRQs may be used to map hardware-generated
-  *      events (e.g. IPIs or traps), we must start handling them as
-@@ -162,6 +167,8 @@ void handle_synthetic_irq(struct irq_desc *desc)
- 		return;
- 	}
- 
-+	irq_clear_deferral(desc);
-+
- 	action = desc->action;
- 	if (action == NULL) {
- 		if (printk_ratelimit())
-@@ -955,7 +962,8 @@ static inline bool is_active_edge_event(struct irq_desc *desc)
- 		!irqd_irq_disabled(&desc->irq_data);
- }
- 
--bool handle_oob_irq(struct irq_desc *desc) /* hardirqs off */
-+/* desc->lock held unless per-CPU, hardirqs off. */
-+bool handle_oob_irq(struct irq_desc *desc)
- {
- 	struct irq_stage_data *oobd = this_oob_staged();
- 	unsigned int irq = irq_desc_get_irq(desc);
-@@ -981,6 +989,7 @@ bool handle_oob_irq(struct irq_desc *desc) /* hardirqs off */
- 	 * whether an out-of-band interrupt was delivered.
- 	 */
- 	if (!oob_stage_present() || !irq_settings_is_oob(desc)) {
-+		desc->istate |= IRQS_DEFERRED;
- 		irq_post_stage(&inband_stage, irq);
- 		return false;
- 	}
-
--- 
-Philippe.
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IFBoaWxpcHBlIEdlcnVtIDxy
+cG1AeGVub21haS5vcmc+DQo+U2VudDogRnJpZGF5LCBTZXB0ZW1iZXIgMTUsIDIwMjMgMTA6MDAg
+UE0NCj5UbzogeGVub21haUBsaXN0cy5saW51eC5kZXYNCj5DYzogQ2hlbiwgSG9uZ3poYW4gPGhv
+bmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KPlN1YmplY3Q6IFtQQVRDSF0gZ2VuaXJxOiBpcnFfcGlw
+ZWxpbmU6IGZpeCBpcnEgZmxvdyBoYW5kbGluZyB3aXRoIHN0YWNrZWQNCj5pcnFjaGlwcw0KPg0K
+Pg0KPlRoaXMgaW1wbGVtZW50YXRpb24gZXh0ZW5kcyBIb25nemhhbidzIG9yaWdpbmFsIHByb3Bv
+c2FsLCBleHRlbmRpbmcgdGhlDQo+aXJxIGZsb3cgbG9naWMgaW4gb3JkZXIgdG8gYWNjb3VudCBm
+b3IgYW55IHR5cGUgb2Ygc3RhY2tlZCBmbG93IGhhbmRsZXINCj4oYWx0aG91Z2ggdGhlIG9uZXMg
+bWFza2luZyB0aGUgaW5jb21pbmcgaXJxIHdlcmUgc2FmZSBhbHJlYWR5KS4NCj4NCj5UZXN0ZWQg
+aGVyZSBvbiBvZHJvaWQgYzQgKGFybXY4KSwgeHU0cSBhbmQgc2FicmUgKGFybXY3KSwgZW1iZWRk
+ZWQgeDg2DQo+YW5kIGt2bS94ODYsIHNvIGZhciBzbyBnb29kLiBIb3dldmVyLCBJIG5ldmVyIHN0
+dW1ibGVkIHVwb24gdGhlIGNhc2NhZGVkDQo+aXJxY2hpcCBpc3N1ZSB0aGlzIGFpbXMgYXQgZml4
+aW5nLCBzbyB3ZSBuZWVkIG11Y2ggbW9yZSB0ZXN0aW5nLg0KPg0KPi0tLQ0KPg0KPiAgICBXaGVu
+IGlycWNoaXBzIGFyZSBzdGFja2VkLCBhIGNhc2NhZGVkIGV2ZW50IGRlY29kZWQgYnkgYSBwYXJl
+bnQgaXJxDQo+ICAgIHdoaWNoIGlzIG5vdCBkZWxpdmVyZWQgb29iIHdvbid0IHJlY2VpdmUgYW55
+IGFjay9lb2ksIHdoaWNoIGlzDQo+ICAgIHdyb25nLiBGYWlsaW5nIHRvIGFjayBhbnkgdW5tYXNr
+ZWQgZWRnZSBldmVudCBjb3VsZCBxdWlja2x5IHlpZWxkIGFuDQo+ICAgIGludGVycnVwdCBzdG9y
+bS4gRS5nLiBvbiB4ODYsIHdpdGggYSBncGlvIGlycSBjb250cm9sbGVyIHN0YWNrZWQgb24NCj4g
+ICAgdG9wIG9mIHRoZSBJTy9BUElDOg0KPg0KPiAgICBoYW5kbGVfaXJxX3BpcGVsaW5lZF9wcmVw
+YXJlKCkNCj4gICAgW29uX3BpcGVsaW5lX2VudHJ5OiB0cnVlXQ0KPiAgICBhcmNoX2hhbmRsZV9p
+cnEoKQ0KPiAgICAgICAgICAgIGhhbmRsZV9mYXN0ZW9pX2lycSgpDQo+ICAgICAgICAgICAgICAg
+ICAgICBoYW5kbGVfb29iX2lycSgpDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1hc2tf
+Y29uZF9lb2lfaXJxKCkNCj4gICAgaGFuZGxlX2lycV9waXBlbGluZWRfZmluaXNoKCkNCj4gICAg
+W29uX3BpcGVsaW5lX2VudHJ5OiBmYWxzZV0NCj4gICAgICAgICAgICBzeW5jaHJvbml6ZV9waXBl
+bGluZV9vbl9pcnEoKQ0KPiAgICAgICAgICAgICAgICAgICAgaGFuZGxlX2Zhc3Rlb2lfaXJxKCkg
+WyFvbl9waXBlbGluZV9lbnRyeV0NCj4gICAgICAgICAgICAgICAgICAgICAgICAgIGludGVsX2dw
+aW9faXJxKCkNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaGFuZGxlX2VkZ2VfaXJx
+KCkgPDw8IGZhaWxlZCB0byBhY2sNCj4NCj4gICAgVG8gc29sdmUgdGhpcywgd2UgbmVlZCB0byB0
+cmFjayB0aGUgZGVmZXJyYWwgc3RhdHVzIG9mIGV2ZXJ5IGlycQ0KPiAgICBldmVudCwgcnVubmlu
+ZyB0aGUgbGF0dGVyIHRocm91Z2ggdGhlIHBpcGVsaW5lIGluamVjdGlvbiBjb2RlIHdoZW4NCj4g
+ICAgcmVxdWlyZWQsIHJlZ2FyZGxlc3Mgb2YgdGhlIGN1cnJlbnQgc3RhZ2UuDQo+DQo+ICAgIFNl
+ZQ0KPmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3hlbm9tYWkvTU4yUFIxMU1CNDI4NTVBMjM0Q0Y4
+QkY3RDE3RTlFMkVDRjINCj5FNkFATU4yUFIxMU1CNDI4NS5uYW1wcmQxMS5wcm9kLm91dGxvb2su
+Y29tLy4NCj4NCj4gICAgU2lnbmVkLW9mZi1ieTogUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFp
+Lm9yZz4NCj4NCj5kaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL2lycV9waXBlbGluZS5jIGIv
+YXJjaC94ODYva2VybmVsL2lycV9waXBlbGluZS5jDQo+aW5kZXggODMxYTA0YTJlYTE0Ni4uYjU5
+MDk4NmQxNjk5MCAxMDA2NDQNCj4tLS0gYS9hcmNoL3g4Ni9rZXJuZWwvaXJxX3BpcGVsaW5lLmMN
+Cj4rKysgYi9hcmNoL3g4Ni9rZXJuZWwvaXJxX3BpcGVsaW5lLmMNCj5AQCAtMTE2LDYgKzExNiw4
+IEBAIHN0YXRpYyB2b2lkIGRvX3N5c3ZlY19pbmJhbmQoc3RydWN0IGlycV9kZXNjICpkZXNjLA0K
+PnN0cnVjdCBwdF9yZWdzICpyZWdzKQ0KPiAJICogZG9uJ3Qgd2FudCB0byBicmVhay4NCj4gCSAq
+Lw0KPg0KPisJaXJxX2NsZWFyX2RlZmVycmFsKGRlc2MpOw0KPisNCj4gCXN3aXRjaCAodmVjdG9y
+KSB7DQo+ICNpZmRlZiBDT05GSUdfU01QDQo+IAljYXNlIFJFU0NIRURVTEVfVkVDVE9SOg0KPkBA
+IC0xNzQsNyArMTc2LDYgQEAgc3RhdGljIHZvaWQgZG9fc3lzdmVjX2luYmFuZChzdHJ1Y3QgaXJx
+X2Rlc2MgKmRlc2MsDQo+c3RydWN0IHB0X3JlZ3MgKnJlZ3MpDQo+DQo+IHN0YXRpYyB2b2lkIGRv
+X2lycV9pbmJhbmQoc3RydWN0IHB0X3JlZ3MgKnJlZ3MsIHUzMiBpcnEpDQo+IHsNCj4tDQo+IAlz
+dHJ1Y3QgaXJxX2Rlc2MgKmRlc2MgPSBpcnFfdG9fZGVzYyhpcnEpOw0KPg0KPiAJZGVzYy0+aGFu
+ZGxlX2lycShkZXNjKTsNCj5kaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9oYXJkaXJxLmggYi9p
+bmNsdWRlL2xpbnV4L2hhcmRpcnEuaA0KPmluZGV4IGNmNjMzYzc1OGIxZTQuLmVmNDE5MDRiNDYz
+MDQgMTAwNjQ0DQo+LS0tIGEvaW5jbHVkZS9saW51eC9oYXJkaXJxLmgNCj4rKysgYi9pbmNsdWRl
+L2xpbnV4L2hhcmRpcnEuaA0KPkBAIC0xNDMsMTEgKzE0Myw2IEBAIHZvaWQgaXJxX2V4aXRfcmN1
+KHZvaWQpOw0KPiAJCWlycV9waXBlbGluZV9ubWlfZXhpdCgpOwkJCVwNCj4gCX0gd2hpbGUgKDAp
+DQo+DQo+LXN0YXRpYyBpbmxpbmUgYm9vbCBzdGFydF9pcnFfZmxvdyh2b2lkKQ0KPi17DQo+LQly
+ZXR1cm4gIWlycXNfcGlwZWxpbmVkKCkgfHwgaW5fcGlwZWxpbmUoKTsNCj4tfQ0KPi0NCj4gc3Rh
+dGljIGlubGluZSBib29sIG9uX3BpcGVsaW5lX2VudHJ5KHZvaWQpDQo+IHsNCj4gCXJldHVybiBp
+cnFzX3BpcGVsaW5lZCgpICYmIGluX3BpcGVsaW5lKCk7DQo+ZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+bGludXgvaXJxLmggYi9pbmNsdWRlL2xpbnV4L2lycS5oDQo+aW5kZXggZDI0MmFiMGRmMTFmMC4u
+Y2Y3MTM5YzkwNTliNSAxMDA2NDQNCj4tLS0gYS9pbmNsdWRlL2xpbnV4L2lycS5oDQo+KysrIGIv
+aW5jbHVkZS9saW51eC9pcnEuaA0KPkBAIC0xMjM5LDExICsxMjM5LDE2IEBAIHN0YXRpYyBpbmxp
+bmUgc3RydWN0IGlycV9jaGlwX3R5cGUNCj4qaXJxX2RhdGFfZ2V0X2NoaXBfdHlwZShzdHJ1Y3Qg
+aXJxX2RhdGEgKmQpDQo+DQo+ICNpZmRlZiBDT05GSUdfSVJRX1BJUEVMSU5FDQo+IGludCBpcnFf
+c3dpdGNoX29vYih1bnNpZ25lZCBpbnQgaXJxLCBib29sIG9uKTsNCj4rdm9pZCBpcnFfY2xlYXJf
+ZGVmZXJyYWwoc3RydWN0IGlycV9kZXNjICpkZXNjKTsNCj4gI2Vsc2UNCj4gc3RhdGljIGlubGlu
+ZSBpbnQgaXJxX3N3aXRjaF9vb2IodW5zaWduZWQgaW50IGlycSwgYm9vbCBvbikNCj4gew0KPiAJ
+cmV0dXJuIDA7DQo+IH0NCj4rDQo+K3N0YXRpYyBpbmxpbmUgdm9pZCBpcnFfY2xlYXJfZGVmZXJy
+YWwoc3RydWN0IGlycV9kZXNjICpkZXNjKQ0KPit7DQo+K30NCj4gI2VuZGlmCS8qICFDT05GSUdf
+SVJRX1BJUEVMSU5FICovDQo+DQo+ICNpZmRlZiBDT05GSUdfU01QDQo+ZGlmZiAtLWdpdCBhL2tl
+cm5lbC9pcnEvY2hpcC5jIGIva2VybmVsL2lycS9jaGlwLmMNCj5pbmRleCAwNWZiMWY4ZDQ3MTNi
+Li5kMTdlZGExNDc4NGNhIDEwMDY0NA0KPi0tLSBhL2tlcm5lbC9pcnEvY2hpcC5jDQo+KysrIGIv
+a2VybmVsL2lycS9jaGlwLmMNCj5AQCAtNDEzLDYgKzQxMywxMSBAQCB2b2lkIGlycV9wZXJjcHVf
+ZGlzYWJsZShzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MsDQo+dW5zaWduZWQgaW50IGNwdSkNCj4gCWNw
+dW1hc2tfY2xlYXJfY3B1KGNwdSwgZGVzYy0+cGVyY3B1X2VuYWJsZWQpOw0KPiB9DQo+DQo+K3Zv
+aWQgaXJxX2NsZWFyX2RlZmVycmFsKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4rew0KPisJZGVz
+Yy0+aXN0YXRlICY9IH5JUlFTX0RFRkVSUkVEOw0KPit9DQo+Kw0KPiBzdGF0aWMgaW5saW5lIHZv
+aWQgbWFza19hY2tfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gew0KPiAJaWYgKGRlc2Mt
+PmlycV9kYXRhLmNoaXAtPmlycV9tYXNrX2Fjaykgew0KPkBAIC01MDksNiArNTE0LDc4IEBAIHN0
+YXRpYyBib29sIGlycV9jaGVja19wb2xsKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gCXJldHVy
+biBpcnFfd2FpdF9mb3JfcG9sbChkZXNjKTsNCj4gfQ0KPg0KPitlbnVtIHsNCj4rCUlSUV9GTE9X
+X1NUQVJULA0KPisJSVJRX0ZMT1dfUElMRVVQLA0KPisJSVJRX0ZMT1dfUkVQTEFZLA0KPit9Ow0K
+PisNCj4rLyoNCj4rICogaXJxX3N0YXJ0aW5nX2Zsb3cgLSBEZXRlcm1pbmUgd2hldGhlciB3ZSBh
+cmUgYWN0dWFsbHkgc3RhcnRpbmcgYW4NCj4rICogaW50ZXJydXB0IGZsb3cuDQo+KyAqDQo+KyAq
+IFdoZW4gaW50ZXJydXB0IHBpcGVsaW5pbmcgaXMgZW5hYmxlZCwgaW50ZXJydXB0IGZsb3cgaGFu
+ZGxlcnMgbWF5DQo+KyAqIGJlIGNhbGxlZCB0d2ljZSBmb3IgZWFjaCBldmVudCwgb25jZSBmcm9t
+IHRoZSBwaXBlbGluZSBlbnRyeQ0KPisgKiBjb250ZXh0IGluIGFuIGF0dGVtcHQgdG8gaGFuZGxl
+IHRoZSBoYXJkd2FyZSBldmVudCBmcm9tIHRoZSBvb2INCj4rICogc3RhZ2UsIGEgc2Vjb25kIHRp
+bWUgaWYgdGhlIGV2ZW50IHdhcyBkZWZlcnJlZCB0byB0aGUgaW4tYmFuZA0KPisgKiBzdGFnZS4g
+SW4gdGhlIGZpcnN0IGNhc2UsIHdlIGhhdmUgdG8gYWNrIHRoZSBoYXJkd2FyZSBiZWZvcmUNCj4r
+ICogZmVlZGluZyB0aGUgcGlwZWxpbmUuIE90aGVyd2lzZSwgd2Ugc2hvdWxkIHNpbXBseSBydW4g
+dGhlIGFjdGlvbg0KPisgKiBhc3NvY2lhdGVkIHRvIHRoZSBldmVudCBmcm9tIHRoZSBpbi1iYW5k
+IHN0YWdlLg0KPisgKg0KPisgKiBXaXRoIHN0YWNrZWQgaXJxY2hpcHMsIGhhbmRsZXJzIG9mIHBh
+cmVudCBpcnFzIG5vdCBkZWxpdmVyZWQgdG8gdGhlDQo+KyAqIG9vYiBzdGFnZSB3b3VsZCBkZWNv
+ZGUgYW5kIHBvc3QgdGhlIGNhc2NhZGVkIGV2ZW50cyB0byB0aGUgaW4tYmFuZA0KPisgKiBzdGFn
+ZSBhcyB3ZWxsLiBUaGUgaW50ZXJuYWwgcGVyLWRlc2NyaXB0b3IgSVJRU19ERUZFUlJFRCBmbGFn
+DQo+KyAqIGRpc2FtYmlndWF0ZXMgYmV0d2VlbiB0aGUgbGF0dGVyIGNvbnRleHQgYW5kIGV2ZW50
+cyBiZWluZyByZXBsYXllZA0KPisgKiBhZnRlciBkZWZlcnJhbCB0byB0aGUgaW4tYmFuZCBzdGFn
+ZSwgc28gdGhhdCB3ZSBkbyBhY2sgdGhlIGhhcmR3YXJlDQo+KyAqIGZvciBjYXNjYWRlZCBldmVu
+dHMgYXMgZXhwZWN0ZWQuDQo+KyAqDQo+KyAqIFdlIG1pZ2h0IGFsc28gcmVjZWl2ZSBhIHN1YnNl
+cXVlbnQgdW5tYXNrZWQgZWRnZSBldmVudCBvbiB0aGUgc2FtZQ0KPisgKiBsaW5lIHdoaWxlIGEg
+ZGVmZXJyZWQgb25lIGlzIHN0aWxsIHBlbmRpbmcgcmVwbGF5IGZyb20gdGhlIGluLWJhbmQNCj4r
+ICogc3RhZ2UgKGhhcmQgaXJxcyBhcmUgb24gZm9yIHJlcGxheSkuIFRoZSBmbG93IHN0YXRlIGVu
+dW1lcmF0aW9uDQo+KyAqIGRpc2FtYmlndWF0ZXMgYWxsIGNhc2VzIGFzIGZvbGxvd3M6DQo+KyAq
+DQo+KyAqIC0gSVJRX0ZMT1dfU1RBUlQ6IHdlIGFyZSBydW5uaW5nIG9vYiBvbiBiZWhhbGYgb2Yg
+dGhlIGxvdy1sZXZlbCBpcnENCj4rICogICBlbnRyeSBjb2RlLCBubyBkZWZlcnJlZCBldmVudCBp
+cyBwZW5kaW5nIHJlcGxheSBmb3IgdGhlIHNhbWUNCj4rICogICBsaW5lLCB3ZSBuZWVkIHRvIHNl
+bmQgYWNrIHRvIHRoZSBoYXJkd2FyZS4NCj4rICoNCj4rICogLSBJUlFfRkxPV19QSUxFVVA6IHdl
+IGFyZSBydW5uaW5nIGluLWJhbmQgZm9yIHN5bmNocm9uaXppbmcgdGhlIGlycQ0KPisgKiAgIGxv
+Zywgb25lIG9yIG1vcmUgZGVmZXJyZWQgZXZlbnRzIGFyZSBhbHJlYWR5IHBlbmRpbmcgcmVwbGF5
+IGZvcg0KPisgKiAgIHRoZSBzYW1lIGxpbmUsIHdlIG5lZWQgdG8gYWNrIHRoZSBzdWJzZXF1ZW50
+IGV2ZW50IHRvIHRoZQ0KPisgKiAgIGhhcmR3YXJlIHRvby4NCj4rICoNCj4rICogLSBJUlFfRkxP
+V19SRVBMQVk6IHdlIGFyZSAocmUpcGxheWluZyBhIGRlZmVycmVkIGV2ZW50IGZyb20gdGhlDQo+
+KyAqICAgaW4tYmFuZCBzdGFnZSwgYXMgYSByZXN1bHQgb2Ygc3luY2hyb25pemluZyB0aGUgaXJx
+IGxvZy4NCj4rICovDQo+K3N0YXRpYyBpbmxpbmUgdW5zaWduZWQgaW50IGlycV9zdGFydGluZ19m
+bG93KHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4rew0KPisJaWYgKCFpcnFzX3BpcGVsaW5lZCgp
+KQ0KPisJCXJldHVybiBJUlFfRkxPV19TVEFSVDsNCj4rDQo+KwlpZiAoIWluX3BpcGVsaW5lKCkp
+DQo+KwkJcmV0dXJuIElSUV9GTE9XX1JFUExBWTsNCj4rDQo+KwlyZXR1cm4gZGVzYy0+aXN0YXRl
+ICYgSVJRU19ERUZFUlJFRCA/IElSUV9GTE9XX1BJTEVVUCA6DQo+SVJRX0ZMT1dfU1RBUlQ7DQo+
+K30NCj4rDQo+Ky8qDQo+KyAqIGlycV9mZWVkaW5nX3BpcGVsaW5lIC0gRGV0ZXJtaW5lIHdoZXRo
+ZXIgd2Ugc2hvdWxkIGJlIGZlZWRpbmcgdGhlDQo+KyAqIGludGVycnVwdCBwaXBlbGluZSB3aXRo
+IHRoZSBpbmNvbWluZyBldmVudC4NCj4rICoNCj4rICogRGVwZW5kaW5nIG9uIHRoZSBmbG93IHN0
+YXRlIGRldGVybWluZWQgYnkgaXJxX3N0YXJ0aW5nX2Zsb3coKSwgdGhlDQo+KyAqIGV2ZW50IGlz
+IHBhc3NlZCB0byB0aGUgb29iIGhhbmRsZXIgb3IgZGlyZWN0bHkgcmVwbGF5ZWQgZnJvbSB0aGUN
+Cj4rICogY3VycmVudCBpbi1iYW5kIHN0YWdlLg0KPisgKi8NCj4rc3RhdGljIGlubGluZSBib29s
+IGlycV9mZWVkaW5nX3BpcGVsaW5lKHN0cnVjdCBpcnFfZGVzYyAqZGVzYywgaW50IHN0YXRlKQ0K
+Pit7DQo+KwlpZiAoaXJxc19waXBlbGluZWQoKSkgew0KPisJCWlmIChzdGF0ZSAhPSBJUlFfRkxP
+V19SRVBMQVkpDQo+KwkJCXJldHVybiB0cnVlOw0KPisJCWlycV9jbGVhcl9kZWZlcnJhbChkZXNj
+KTsNCj4rCX0NCj4rDQo+KwlyZXR1cm4gZmFsc2U7DQo+K30NCj4rDQo+IHN0YXRpYyBib29sIGly
+cV9tYXlfcnVuKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gew0KPiAJdW5zaWduZWQgaW50IG1h
+c2sgPSBJUlFEX0lSUV9JTlBST0dSRVNTIHwgSVJRRF9XQUtFVVBfQVJNRUQ7DQo+QEAgLTU2MSwx
+MiArNjM4LDE1IEBAIHN0YXRpYyBib29sIGlycV9tYXlfcnVuKHN0cnVjdCBpcnFfZGVzYyAqZGVz
+YykNCj4gICovDQo+IHZvaWQgaGFuZGxlX3NpbXBsZV9pcnEoc3RydWN0IGlycV9kZXNjICpkZXNj
+KQ0KPiB7DQo+KwlpbnQgZmxvdzsNCj4rDQo+IAlyYXdfc3Bpbl9sb2NrKCZkZXNjLT5sb2NrKTsN
+Cj4NCj4tCWlmIChzdGFydF9pcnFfZmxvdygpICYmICFpcnFfbWF5X3J1bihkZXNjKSkNCj4rCWZs
+b3cgPSBpcnFfc3RhcnRpbmdfZmxvdyhkZXNjKTsNCj4rCWlmIChmbG93ICE9IElSUV9GTE9XX1JF
+UExBWSAmJiAhaXJxX21heV9ydW4oZGVzYykpDQo+IAkJZ290byBvdXRfdW5sb2NrOw0KPg0KPi0J
+aWYgKG9uX3BpcGVsaW5lX2VudHJ5KCkpIHsNCj4rCWlmIChpcnFfZmVlZGluZ19waXBlbGluZShk
+ZXNjLCBmbG93KSkgew0KPiAJCWhhbmRsZV9vb2JfaXJxKGRlc2MpOw0KPiAJCWdvdG8gb3V0X3Vu
+bG9jazsNCj4gCX0NCj5AQCAtNjAxLDEyICs2ODEsMTUgQEAgRVhQT1JUX1NZTUJPTF9HUEwoaGFu
+ZGxlX3NpbXBsZV9pcnEpOw0KPiAgKi8NCj4gdm9pZCBoYW5kbGVfdW50cmFja2VkX2lycShzdHJ1
+Y3QgaXJxX2Rlc2MgKmRlc2MpDQo+IHsNCj4rCWludCBmbG93Ow0KPisNCj4gCXJhd19zcGluX2xv
+Y2soJmRlc2MtPmxvY2spOw0KPg0KPi0JaWYgKHN0YXJ0X2lycV9mbG93KCkgJiYgIWlycV9tYXlf
+cnVuKGRlc2MpKQ0KPisJZmxvdyA9IGlycV9zdGFydGluZ19mbG93KGRlc2MpOw0KPisJaWYgKGZs
+b3cgIT0gSVJRX0ZMT1dfUkVQTEFZICYmICFpcnFfbWF5X3J1bihkZXNjKSkNCj4gCQlnb3RvIG91
+dF91bmxvY2s7DQo+DQo+LQlpZiAob25fcGlwZWxpbmVfZW50cnkoKSkgew0KPisJaWYgKGlycV9m
+ZWVkaW5nX3BpcGVsaW5lKGRlc2MsIGZsb3cpKSB7DQo+IAkJaGFuZGxlX29vYl9pcnEoZGVzYyk7
+DQo+IAkJZ290byBvdXRfdW5sb2NrOw0KPiAJfQ0KPkBAIC02NzUsMTYgKzc1OCwxOSBAQCBzdGF0
+aWMgdm9pZCBjb25kX3VubWFza19pcnEoc3RydWN0IGlycV9kZXNjICpkZXNjKQ0KPiAgKi8NCj4g
+dm9pZCBoYW5kbGVfbGV2ZWxfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gew0KPisJaW50
+IGZsb3c7DQo+Kw0KPiAJcmF3X3NwaW5fbG9jaygmZGVzYy0+bG9jayk7DQo+DQo+LQlpZiAoc3Rh
+cnRfaXJxX2Zsb3coKSkgew0KPisJZmxvdyA9IGlycV9zdGFydGluZ19mbG93KGRlc2MpOw0KPisJ
+aWYgKGZsb3cgIT0gSVJRX0ZMT1dfUkVQTEFZKSB7DQo+IAkJbWFza19hY2tfaXJxKGRlc2MpOw0K
+Pg0KPiAJCWlmICghaXJxX21heV9ydW4oZGVzYykpDQo+IAkJCWdvdG8gb3V0X3VubG9jazsNCj4g
+CX0NCj4NCj4tCWlmIChvbl9waXBlbGluZV9lbnRyeSgpKSB7DQo+KwlpZiAoaXJxX2ZlZWRpbmdf
+cGlwZWxpbmUoZGVzYywgZmxvdykpIHsNCj4gCQlpZiAoaGFuZGxlX29vYl9pcnEoZGVzYykpDQo+
+IAkJCWdvdG8gb3V0X3VubWFzazsNCj4gCQlnb3RvIG91dF91bmxvY2s7DQo+QEAgLTc0OSw2ICs4
+MzUsNyBAQCBzdGF0aWMgdm9pZCBjb25kX3VubWFza19lb2lfaXJxKHN0cnVjdCBpcnFfZGVzYw0K
+PipkZXNjLCBzdHJ1Y3QgaXJxX2NoaXAgKmNoaXApDQo+IHZvaWQgaGFuZGxlX2Zhc3Rlb2lfaXJx
+KHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gew0KPiAJc3RydWN0IGlycV9jaGlwICpjaGlwID0g
+ZGVzYy0+aXJxX2RhdGEuY2hpcDsNCj4rCWludCBmbG93Ow0KPg0KPiAJcmF3X3NwaW5fbG9jaygm
+ZGVzYy0+bG9jayk7DQo+DQo+QEAgLTc1NywxMyArODQ0LDE0IEBAIHZvaWQgaGFuZGxlX2Zhc3Rl
+b2lfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gCSAqIGNhbiBhcnJpdmUgb24gdGhlIG5l
+dyBDUFUgYmVmb3JlIHRoZSBvcmlnaW5hbCBDUFUgaGFzIGNvbXBsZXRlZA0KPiAJICogaGFuZGxp
+bmcgdGhlIHByZXZpb3VzIG9uZSAtIGl0IG1heSBuZWVkIHRvIGJlIHJlc2VudC4NCj4gCSAqLw0K
+Pi0JaWYgKHN0YXJ0X2lycV9mbG93KCkgJiYgIWlycV9tYXlfcnVuKGRlc2MpKSB7DQo+KwlmbG93
+ID0gaXJxX3N0YXJ0aW5nX2Zsb3coZGVzYyk7DQo+KwlpZiAoZmxvdyAhPSBJUlFfRkxPV19SRVBM
+QVkgJiYgIWlycV9tYXlfcnVuKGRlc2MpKSB7DQo+IAkJaWYgKGlycWRfbmVlZHNfcmVzZW5kX3do
+ZW5faW5fcHJvZ3Jlc3MoJmRlc2MtPmlycV9kYXRhKSkNCj4gCQkJZGVzYy0+aXN0YXRlIHw9IElS
+UVNfUEVORElORzsNCj4gCQlnb3RvIG91dDsNCj4gCX0NCj4NCj4tCWlmIChvbl9waXBlbGluZV9l
+bnRyeSgpKSB7DQo+KwlpZiAoaXJxX2ZlZWRpbmdfcGlwZWxpbmUoZGVzYywgZmxvdykpIHsNCj4g
+CQlpZiAoaGFuZGxlX29vYl9pcnEoZGVzYykpDQo+IAkJCWNoaXAtPmlycV9lb2koJmRlc2MtPmly
+cV9kYXRhKTsNCj4gCQllbHNlDQo+QEAgLTg1OCwxMCArOTQ2LDEyIEBAIEVYUE9SVF9TWU1CT0xf
+R1BMKGhhbmRsZV9mYXN0ZW9pX25taSk7DQo+IHZvaWQgaGFuZGxlX2VkZ2VfaXJxKHN0cnVjdCBp
+cnFfZGVzYyAqZGVzYykNCj4gew0KPiAJc3RydWN0IGlycV9jaGlwICpjaGlwID0gaXJxX2Rlc2Nf
+Z2V0X2NoaXAoZGVzYyk7DQo+KwlpbnQgZmxvdzsNCj4NCj4gCXJhd19zcGluX2xvY2soJmRlc2Mt
+PmxvY2spOw0KPg0KPi0JaWYgKHN0YXJ0X2lycV9mbG93KCkpIHsNCj4rCWZsb3cgPSBpcnFfc3Rh
+cnRpbmdfZmxvdyhkZXNjKTsNCj4rCWlmIChmbG93ICE9IElSUV9GTE9XX1JFUExBWSkgew0KPiAJ
+CWRlc2MtPmlzdGF0ZSAmPSB+KElSUVNfUkVQTEFZIHwgSVJRU19XQUlUSU5HKTsNCj4NCj4gCQlp
+ZiAoIWlycV9tYXlfcnVuKGRlc2MpKSB7DQo+QEAgLTg4MSw3ICs5NzEsNyBAQCB2b2lkIGhhbmRs
+ZV9lZGdlX2lycShzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MpDQo+IAkJfQ0KPiAJfQ0KPg0KPi0JaWYg
+KG9uX3BpcGVsaW5lX2VudHJ5KCkpIHsNCj4rCWlmIChpcnFfZmVlZGluZ19waXBlbGluZShkZXNj
+LCBmbG93KSkgew0KPiAJCWNoaXAtPmlycV9hY2soJmRlc2MtPmlycV9kYXRhKTsNCj4gCQlkZXNj
+LT5pc3RhdGUgfD0gSVJRU19FREdFOw0KPiAJCWhhbmRsZV9vb2JfaXJxKGRlc2MpOw0KDQoNCldo
+ZW4gdGhlIGlycSBpcyBQSUxFVVAsIGFjdHVhbGx5IHRoZSBwcmV2aW91cyBJUlFTX0RFRkVSUkVE
+IGJpdCBoYXMgbm90IGJlZW4gY2xlYXJlZCBhbmQgdGhlIGxvZ2dlZCBpbi1iYW5kIGlycSBoYXMg
+bm90IGJlZW4gc2VydmljZWQgeWV0LiBEbyB3ZSBuZWVkIHRvIGNhbGwgaGFuZGxlX29vYl9pcnEg
+dG8gc2V0IElSUVNfREVGRVJSRUQgYW5kIGxvZyB0aGUgaW5iYW5kIGlycSBhZ2FpbiB3aGVuIHdl
+IGFscmVhZHkgZmluZCB0aGUgaXJxIGlzIFBJTEVVUD8NCg0KUmVnYXJkcw0KDQpIb25nemhhbiBD
+aGVuDQoNCj5AQCAtOTM0LDEwICsxMDI0LDEyIEBAIEVYUE9SVF9TWU1CT0woaGFuZGxlX2VkZ2Vf
+aXJxKTsNCj4gdm9pZCBoYW5kbGVfZWRnZV9lb2lfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykN
+Cj4gew0KPiAJc3RydWN0IGlycV9jaGlwICpjaGlwID0gaXJxX2Rlc2NfZ2V0X2NoaXAoZGVzYyk7
+DQo+KwlpbnQgZmxvdzsNCj4NCj4gCXJhd19zcGluX2xvY2soJmRlc2MtPmxvY2spOw0KPg0KPi0J
+aWYgKHN0YXJ0X2lycV9mbG93KCkpIHsNCj4rCWZsb3cgPSBpcnFfc3RhcnRpbmdfZmxvdyhkZXNj
+KTsNCj4rCWlmIChmbG93ICE9IElSUV9GTE9XX1JFUExBWSkgew0KPiAJCWRlc2MtPmlzdGF0ZSAm
+PSB+KElSUVNfUkVQTEFZIHwgSVJRU19XQUlUSU5HKTsNCj4NCj4gCQlpZiAoIWlycV9tYXlfcnVu
+KGRlc2MpKSB7DQo+QEAgLTk0Niw3ICsxMDM4LDcgQEAgdm9pZCBoYW5kbGVfZWRnZV9lb2lfaXJx
+KHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4gCQl9DQo+IAl9DQo+DQo+LQlpZiAob25fcGlwZWxp
+bmVfZW50cnkoKSkgew0KPisJaWYgKGlycV9mZWVkaW5nX3BpcGVsaW5lKGRlc2MsIGZsb3cpKSB7
+DQo+IAkJZGVzYy0+aXN0YXRlIHw9IElSUVNfRURHRTsNCj4gCQlpZiAoaGFuZGxlX29vYl9pcnEo
+ZGVzYykpDQo+IAkJCWdvdG8gb3V0X2VvaTsNCj5AQCAtMTM0MSwxMyArMTQzMywxNSBAQCB2b2lk
+IGlycV9jcHVfb2ZmbGluZSh2b2lkKQ0KPiB2b2lkIGhhbmRsZV9mYXN0ZW9pX2Fja19pcnEoc3Ry
+dWN0IGlycV9kZXNjICpkZXNjKQ0KPiB7DQo+IAlzdHJ1Y3QgaXJxX2NoaXAgKmNoaXAgPSBkZXNj
+LT5pcnFfZGF0YS5jaGlwOw0KPisJaW50IGZsb3c7DQo+DQo+IAlyYXdfc3Bpbl9sb2NrKCZkZXNj
+LT5sb2NrKTsNCj4NCj4tCWlmIChzdGFydF9pcnFfZmxvdygpICYmICFpcnFfbWF5X3J1bihkZXNj
+KSkNCj4rCWZsb3cgPSBpcnFfc3RhcnRpbmdfZmxvdyhkZXNjKTsNCj4rCWlmIChmbG93ICE9IElS
+UV9GTE9XX1JFUExBWSAmJiAhaXJxX21heV9ydW4oZGVzYykpDQo+IAkJZ290byBvdXQ7DQo+DQo+
+LQlpZiAob25fcGlwZWxpbmVfZW50cnkoKSkgew0KPisJaWYgKGlycV9mZWVkaW5nX3BpcGVsaW5l
+KGRlc2MsIGZsb3cpKSB7DQo+IAkJY2hpcC0+aXJxX2FjaygmZGVzYy0+aXJxX2RhdGEpOw0KPiAJ
+CWlmIChoYW5kbGVfb29iX2lycShkZXNjKSkNCj4gCQkJY2hpcC0+aXJxX2VvaSgmZGVzYy0+aXJx
+X2RhdGEpOw0KPkBAIC0xNDA0LDE3ICsxNDk4LDE5IEBAIEVYUE9SVF9TWU1CT0xfR1BMKGhhbmRs
+ZV9mYXN0ZW9pX2Fja19pcnEpOw0KPiB2b2lkIGhhbmRsZV9mYXN0ZW9pX21hc2tfaXJxKHN0cnVj
+dCBpcnFfZGVzYyAqZGVzYykNCj4gew0KPiAJc3RydWN0IGlycV9jaGlwICpjaGlwID0gZGVzYy0+
+aXJxX2RhdGEuY2hpcDsNCj4rCWludCBmbG93Ow0KPg0KPiAJcmF3X3NwaW5fbG9jaygmZGVzYy0+
+bG9jayk7DQo+DQo+LQlpZiAoc3RhcnRfaXJxX2Zsb3coKSkgew0KPisJZmxvdyA9IGlycV9zdGFy
+dGluZ19mbG93KGRlc2MpOw0KPisJaWYgKGZsb3cgIT0gSVJRX0ZMT1dfUkVQTEFZKSB7DQo+IAkJ
+bWFza19hY2tfaXJxKGRlc2MpOw0KPg0KPiAJCWlmICghaXJxX21heV9ydW4oZGVzYykpDQo+IAkJ
+CWdvdG8gb3V0Ow0KPiAJfQ0KPg0KPi0JaWYgKG9uX3BpcGVsaW5lX2VudHJ5KCkpIHsNCj4rCWlm
+IChpcnFfZmVlZGluZ19waXBlbGluZShkZXNjLCBmbG93KSkgew0KPiAJCWlmIChoYW5kbGVfb29i
+X2lycShkZXNjKSkNCj4gCQkJY2hpcC0+aXJxX2VvaSgmZGVzYy0+aXJxX2RhdGEpOw0KPiAJCWVs
+c2UNCj5kaWZmIC0tZ2l0IGEva2VybmVsL2lycS9pbnRlcm5hbHMuaCBiL2tlcm5lbC9pcnEvaW50
+ZXJuYWxzLmgNCj5pbmRleCBlNGY2NmE3YTI0YzJjLi5hM2I0MGNlMmUxZGQ3IDEwMDY0NA0KPi0t
+LSBhL2tlcm5lbC9pcnEvaW50ZXJuYWxzLmgNCj4rKysgYi9rZXJuZWwvaXJxL2ludGVybmFscy5o
+DQo+QEAgLTU2LDcgKzU2LDggQEAgZW51bSB7DQo+ICAqIElSUVNfU1VTUEVOREVECQktIGlycSBp
+cyBzdXNwZW5kZWQNCj4gICogSVJRU19OTUkJCQktIGlycSBsaW5lIGlzIHVzZWQgdG8gZGVsaXZl
+ciBOTUlzDQo+ICAqIElSUVNfU1lTRlMJCQktIGRlc2NyaXB0b3IgaGFzIGJlZW4gYWRkZWQgdG8g
+c3lzZnMNCj4tICogSVJRU19FREdFCQkJLSBpcnEgbGluZSByZWNlaXZlZCBhbiBlZGdlIGV2ZW50
+DQo+KyAqIElSUVNfRURHRQkJCS0gaXJxIGxpbmUgcmVjZWl2ZWQgYW4gZWRnZSBldmVudCAoaXJx
+X3BpcGVsaW5lKQ0KPisgKiBJUlFTX0RFRkVSUkVECQktIGlycSBldmVudCBkZWZlcnJlZCB0byBp
+bmJhbmQgKGlycV9waXBlbGluZSkNCj4gICovDQo+IGVudW0gew0KPiAJSVJRU19BVVRPREVURUNU
+CQk9IDB4MDAwMDAwMDEsDQo+QEAgLTcxLDYgKzcyLDcgQEAgZW51bSB7DQo+IAlJUlFTX05NSQkJ
+PSAweDAwMDAyMDAwLA0KPiAJSVJRU19TWVNGUwkJPSAweDAwMDA0MDAwLA0KPiAJSVJRU19FREdF
+CQk9IDB4MDAwMDgwMDAsDQo+KwlJUlFTX0RFRkVSUkVECQk9IDB4MDAwMTAwMDAsDQo+IH07DQo+
+DQo+ICNpbmNsdWRlICJkZWJ1Zy5oIg0KPmRpZmYgLS1naXQgYS9rZXJuZWwvaXJxL3BpcGVsaW5l
+LmMgYi9rZXJuZWwvaXJxL3BpcGVsaW5lLmMNCj5pbmRleCA1NTBiYWNmMmNiNzdkLi5kNTUwYTM3
+YTg5NWU5IDEwMDY0NA0KPi0tLSBhL2tlcm5lbC9pcnEvcGlwZWxpbmUuYw0KPisrKyBiL2tlcm5l
+bC9pcnEvcGlwZWxpbmUuYw0KPkBAIC0xNDQsNyArMTQ0LDEyIEBAIHN0YXRpYyBzdHJ1Y3QgaXJx
+X2RvbWFpbl9vcHMgc2lycV9kb21haW5fb3BzID0gew0KPiAgKglAZGVzYzoJdGhlIGludGVycnVw
+dCBkZXNjcmlwdGlvbiBzdHJ1Y3R1cmUgZm9yIHRoaXMgaXJxDQo+ICAqDQo+ICAqCUhhbmRsZXMg
+c3ludGhldGljIGludGVycnVwdHMgZmxvd2luZyBkb3duIHRoZSBJUlEgcGlwZWxpbmUNCj4tICoJ
+d2l0aCBwZXItQ1BVIHNlbWFudGljcy4NCj4rICoJd2l0aCBwZXItQ1BVIHNlbWFudGljcyAoYWNj
+ZXNzaW5nIGRlc2MgbmVlZHMgbm8gbG9ja2luZykuDQo+KyAqDQo+KyAqCVNpbmNlIHRoZSBTSVBJ
+QyBjYW5ub3QgYmUgc3RhY2tlZCBvbiB0b3Agb2YgYSBwYXJlbnQgaXJxY2hpcCwNCj4rICogCXdl
+IGNhbiBieXBhc3MgbW9zdCBvZiB0aGUgSVJRU19ERUZFUlJFRCBsb2dpYywgdGVzdGluZw0KPisg
+KiAJb25fcGlwZWxpbmVfZW50cnkoKSBkaXJlY3RseSAtIGFsdGhvdWdoIHdlIHNob3VsZCBzdGls
+bCBjbGVhcg0KPisgKiAJSVJRU19ERUZFUlJFRCB3aGVuIGluLWJhbmQgc2luY2UgaGFuZGxlX29v
+Yl9pcnEoKSByYWlzZXMgaXQuDQo+ICAqDQo+ICAqICAgICAgQ0FVVElPTjogc3ludGhldGljIElS
+UXMgbWF5IGJlIHVzZWQgdG8gbWFwIGhhcmR3YXJlLWdlbmVyYXRlZA0KPiAgKiAgICAgIGV2ZW50
+cyAoZS5nLiBJUElzIG9yIHRyYXBzKSwgd2UgbXVzdCBzdGFydCBoYW5kbGluZyB0aGVtIGFzDQo+
+QEAgLTE2Miw2ICsxNjcsOCBAQCB2b2lkIGhhbmRsZV9zeW50aGV0aWNfaXJxKHN0cnVjdCBpcnFf
+ZGVzYyAqZGVzYykNCj4gCQlyZXR1cm47DQo+IAl9DQo+DQo+KwlpcnFfY2xlYXJfZGVmZXJyYWwo
+ZGVzYyk7DQo+Kw0KPiAJYWN0aW9uID0gZGVzYy0+YWN0aW9uOw0KPiAJaWYgKGFjdGlvbiA9PSBO
+VUxMKSB7DQo+IAkJaWYgKHByaW50a19yYXRlbGltaXQoKSkNCj5AQCAtOTU1LDcgKzk2Miw4IEBA
+IHN0YXRpYyBpbmxpbmUgYm9vbCBpc19hY3RpdmVfZWRnZV9ldmVudChzdHJ1Y3QgaXJxX2Rlc2MN
+Cj4qZGVzYykNCj4gCQkhaXJxZF9pcnFfZGlzYWJsZWQoJmRlc2MtPmlycV9kYXRhKTsNCj4gfQ0K
+Pg0KPi1ib29sIGhhbmRsZV9vb2JfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykgLyogaGFyZGly
+cXMgb2ZmICovDQo+Ky8qIGRlc2MtPmxvY2sgaGVsZCB1bmxlc3MgcGVyLUNQVSwgaGFyZGlycXMg
+b2ZmLiAqLw0KPitib29sIGhhbmRsZV9vb2JfaXJxKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykNCj4g
+ew0KPiAJc3RydWN0IGlycV9zdGFnZV9kYXRhICpvb2JkID0gdGhpc19vb2Jfc3RhZ2VkKCk7DQo+
+IAl1bnNpZ25lZCBpbnQgaXJxID0gaXJxX2Rlc2NfZ2V0X2lycShkZXNjKTsNCj5AQCAtOTgxLDYg
+Kzk4OSw3IEBAIGJvb2wgaGFuZGxlX29vYl9pcnEoc3RydWN0IGlycV9kZXNjICpkZXNjKSAvKg0K
+PmhhcmRpcnFzIG9mZiAqLw0KPiAJICogd2hldGhlciBhbiBvdXQtb2YtYmFuZCBpbnRlcnJ1cHQg
+d2FzIGRlbGl2ZXJlZC4NCj4gCSAqLw0KPiAJaWYgKCFvb2Jfc3RhZ2VfcHJlc2VudCgpIHx8ICFp
+cnFfc2V0dGluZ3NfaXNfb29iKGRlc2MpKSB7DQo+KwkJZGVzYy0+aXN0YXRlIHw9IElSUVNfREVG
+RVJSRUQ7DQo+IAkJaXJxX3Bvc3Rfc3RhZ2UoJmluYmFuZF9zdGFnZSwgaXJxKTsNCj4gCQlyZXR1
+cm4gZmFsc2U7DQo+IAl9DQo+DQo+LS0NCj5QaGlsaXBwZS4NCg==
