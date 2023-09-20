@@ -1,51 +1,51 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42DF338DEA
-	for <xenomai@lists.linux.dev>; Wed, 20 Sep 2023 13:53:11 +0000 (UTC)
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-9a64619d8fbso915712066b.0
-        for <xenomai@lists.linux.dev>; Wed, 20 Sep 2023 06:53:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F7D238DE8
+	for <xenomai@lists.linux.dev>; Wed, 20 Sep 2023 13:53:14 +0000 (UTC)
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2c00df105f8so53841101fa.2
+        for <xenomai@lists.linux.dev>; Wed, 20 Sep 2023 06:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1695217989; x=1695822789; darn=lists.linux.dev;
+        d=sigma-star.at; s=google; t=1695217993; x=1695822793; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PnWtuRkzJWj0w35dUrDcuNna9o00bcPjEz88O0MP2MY=;
-        b=WOnHzGMCUSQ9KTz1kUcIUEfQ7jkUa3VcTXzRFOwVdWFVFRn46SnSlz/QM6XxAVGyo8
-         Y0NRKkSxe5Pz2di0GkFZjATh34RsWKWu8jZpLq5Zhpk/isDcXTwIWSQLa+kWIF8pnveW
-         2CY/3kjebk1hI+/BPRY9MD7e1rOv68RJh4u+jbpoyyFMqvADCK8sF0sRBrk9SzNLswNJ
-         XHqcHWcLAERzfuNrKUARDQ4RY9vE/xthaACjBSAdkclbWWu6kj8/NrZBVlSRZ3XhvkJx
-         QijeKIsQ64gMbETfH2Cfk8S3T0QlNaferBCleOTyfZ/8X85kY8j+h491mLuutKDh4K95
-         rpuA==
+        bh=j1xs8t4NEM9AEbIP/mcPujuz1OoARfiarufHJA1qY7w=;
+        b=ju4ukLlOu1oPkt1XnRToDpLwpSSeZRcuUGE5FkbWBERkoKQE6XwJCB23E0UUswaujL
+         ofRlb9mkckRcoJJcB0zi4fX4W1rq3rR9zJwzIOrPEXeUe2kpsoLejydu6aSXeYH9FHzH
+         X19u34FqbBqy1ZEoTtF+smpIOUKVGoF9tFlNSg+l8FeptwnJHsCdWkXP2gttKM8VS8Oo
+         iSVzY17SOoOahCYK60QwoJt4cAOpZKDuzEzaVbU8vOZNraHLaTSSJ2R3DcAW9NZqsZ5/
+         gIsB/22wIadyTgsMuX2vzRdB7/51zPtaCk8FaaGxwdFTiqmIH7MgAWuF5w1WCMi+QO5G
+         mcNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695217989; x=1695822789;
+        d=1e100.net; s=20230601; t=1695217993; x=1695822793;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PnWtuRkzJWj0w35dUrDcuNna9o00bcPjEz88O0MP2MY=;
-        b=TfAxRD7Vrdmvak15MGNDHOHPUicniUNn6/DjBFqJxkrSz8LHM8v15MCSRZFUJW07k/
-         UC5znMYb4CgoK20sQr9dQ1TMhKKyYm6udK4/X1guNFdlNkVUN6V9iv/azS9gbaBcIfmQ
-         66np8rDZL1IiDGC95KX2YMA7JsfYAzQOaD/hBdT2SyUuQpPIxKFVxOimvZF5Af86/LQP
-         T9H+orTrC3QwKHu5VWG30TmQ8/kxEPFCsmzOoZPTsWWiVTz/DLoOj+Q07RlEl3Fh3kOL
-         ZCwa7sLilZfW2sdcJWJshLXs77+rPbI78A4dlRxiM0SErs5CzDsNFMWIj4Qd2XE33Suh
-         0paA==
-X-Gm-Message-State: AOJu0YxNYD8UZO0jkv5xW1tDehM0iIqQA4CZ9uBQKO28pPzzhB05zpx0
-	XvtW8X7bcoJdUt2OhDG2Cp7SczGRnBW8IMdd/dk=
-X-Google-Smtp-Source: AGHT+IGAgpfj64bFHI35Lc755h+B2Z7q9dwfArOlabzuv61InQw9Y6PTYe+qkZM6auW7jZK8Ra3jUw==
-X-Received: by 2002:a17:907:6087:b0:99e:1201:48bc with SMTP id ht7-20020a170907608700b0099e120148bcmr2118614ejc.64.1695217989717;
-        Wed, 20 Sep 2023 06:53:09 -0700 (PDT)
+        bh=j1xs8t4NEM9AEbIP/mcPujuz1OoARfiarufHJA1qY7w=;
+        b=Rqg2qKymehbG+515O63VSpR6Irnw9/hKjQjdtpLdgR5/Q8myyP9Ke4i8pG0N0sY3C0
+         YE2by1glAqGLXISNnSbOs3F0qZkfbnitmh5lTQe91whsMI9e/VkX1Eq/9BcB3dVDUlSY
+         iOleIZTTmgRlaXAX2bwLcFgTYoqUMeWl7w5Yepjrd7LnLU2zSCVrXejrspVuHsXKyfbv
+         WLVgNAmmuZkwHDrBjwYMJMWDpEX5hZTZJ/0g0ycLalfK7TbYhPLGlYFJ37KF3wN5Xp8A
+         n6SRWVais4uG93Ogugf3VnhBRgrx7q2mAFlHDPVPO2p+yeMW1e7SAmZo5qLtNf271WRT
+         59Ow==
+X-Gm-Message-State: AOJu0YxXgeEhGyRgPVKurJ0xHpVboRKIi9cxPFotwNQwhNU0h1Z6BXm9
+	tMRQ3QHoTIGhcjcR/3Lgb6H/Ap3pVUcZnSYuEqc=
+X-Google-Smtp-Source: AGHT+IHO4LYHKxazaGpYuHIbVcS6RgcfDapbnLIB1MPZ8tM6MMTkH1/ZBr6SqBYQfDfxJ9oIrTODcA==
+X-Received: by 2002:a2e:b2cf:0:b0:2bd:10ee:7d22 with SMTP id 15-20020a2eb2cf000000b002bd10ee7d22mr1936155ljz.51.1695217992741;
+        Wed, 20 Sep 2023 06:53:12 -0700 (PDT)
 Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id mc17-20020a170906eb5100b0098733a40bb7sm9324008ejb.155.2023.09.20.06.53.09
+        by smtp.gmail.com with ESMTPSA id mc17-20020a170906eb5100b0098733a40bb7sm9324008ejb.155.2023.09.20.06.53.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Sep 2023 06:53:09 -0700 (PDT)
+        Wed, 20 Sep 2023 06:53:12 -0700 (PDT)
 From: Aaron Marcher <aaron@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	jan.kiszka@siemens.com,
 	Aaron Marcher <aaron@sigma-star.at>
-Subject: [PATCH 3/5] testsuite: Merge psostests in a single smokey case
-Date: Wed, 20 Sep 2023 15:52:51 +0200
-Message-Id: <20230920135253.5842-4-aaron@sigma-star.at>
+Subject: [PATCH 4/5] testsuite: Merge vxworkstests in a single smokey case
+Date: Wed, 20 Sep 2023 15:52:52 +0200
+Message-Id: <20230920135253.5842-5-aaron@sigma-star.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230920135253.5842-1-aaron@sigma-star.at>
 References: <901c80cc-d506-445e-add9-00aa0e536803@siemens.com>
@@ -62,14 +62,14 @@ Cleans up includes
 
 Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
 ---
- testsuite/smokey/psostests/psostests.c | 111 +++++++++++++------------
- 1 file changed, 56 insertions(+), 55 deletions(-)
+ testsuite/smokey/vxworkstests/vxworkstests.c | 66 ++++++++++----------
+ 1 file changed, 34 insertions(+), 32 deletions(-)
 
-diff --git a/testsuite/smokey/psostests/psostests.c b/testsuite/smokey/psostests/psostests.c
-index 13397894d..a54e6ea31 100644
---- a/testsuite/smokey/psostests/psostests.c
-+++ b/testsuite/smokey/psostests/psostests.c
-@@ -1,68 +1,69 @@
+diff --git a/testsuite/smokey/vxworkstests/vxworkstests.c b/testsuite/smokey/vxworkstests/vxworkstests.c
+index 183df3509..d3ac891ae 100644
+--- a/testsuite/smokey/vxworkstests/vxworkstests.c
++++ b/testsuite/smokey/vxworkstests/vxworkstests.c
+@@ -1,45 +1,47 @@
  // SPDX-License-Identifier: GPL-2.0
  #include <error.h>
 -#include <libgen.h>
@@ -89,48 +89,26 @@ index 13397894d..a54e6ea31 100644
 +#include <smokey/smokey.h>
  
 -static int __run_extprog(struct smokey_test *t, int argc, char *const argv[])
-+static int run_psostests(struct smokey_test *t, int argc, char *const argv[])
++static int run_vxworkstests(struct smokey_test *t, int argc, char *const argv[])
  {
 -	int ret;
 -	char *tst_path;
 +	int ret = 0;
 +
 +	char *tests[] = {
-+		"psostests_mq1",
-+		"psostests_mq2",
-+		"psostests_mq3",
-+		"psostests_pt1",
-+		// 0"000.679| BUG in __traceobj_assert_failed(): [rn1] trace assertion failed:
-+		// testsuite/psostests/rn-1.c:46
-+		// => "ret == 0"
-+		//"psostests_rn1"
-+		"psostests_sem1",
-+		"psostests_sem2",
-+		"psostests_task1",
-+		// 0"014.452| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
-+		//		../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-2.c:56 => "ret == 0"
-+		//"psostests_task2",
-+		"psostests_task3",
-+		"psostests_task4",
-+		"psostests_task5",
-+		// 0"011.370| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
-+		//		testsuite/psostests/task-6.c:62
-+		// => "ret == 0 && oldprio == myprio"
-+		//"psostests_task6",
-+		"psostests_task7",
-+		// Runs forever (100% CPU)
-+		//"psostests_task8"
-+		// 0"002.198| WARNING: [main] lack of resources for core thread, EBUSY
-+		// 0"003.421| BUG in __traceobj_assert_failed(): [root] trace assertion failed:
-+		//	   ../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-9.c:29 => "ret == 0"
-+		//"psostests_task9",
-+		"psostests_tm1",
-+		"psostests_tm2",
-+		"psostests_tm3",
-+		"psostests_tm4",
-+		"psostests_tm5",
-+		"psostests_tm6",
-+		"psostests_tm7"
++		"vxworkstests",
++		"vxworkstests_lst1",
++		"vxworkstests_msgQ1",
++		"vxworkstests_msgQ2",
++		"vxworkstests_msgQ3",
++		"vxworkstests_rng1",
++		"vxworkstests_sem1",
++		"vxworkstests_sem2",
++		"vxworkstests_sem3",
++		"vxworkstests_sem4",
++		"vxworkstests_wd1",
++		"vxworkstests_task1",
++		"vxworkstests_task2"
 +	};
  
 -	ret = asprintf(&tst_path, "%s/%s --cpu-affinity=0", XENO_TEST_DIR, t->name);
@@ -156,44 +134,21 @@ index 13397894d..a54e6ea31 100644
  
  	return ret;
  }
-+smokey_test_plugin(psostests, SMOKEY_NOARGS, "Run external psostests");
++smokey_test_plugin(vxworkstests, SMOKEY_NOARGS, "Run external vxworkstests");
  
--TEST(psostests)
--TEST(psostests_mq1)
--TEST(psostests_mq2)
--TEST(psostests_mq3)
--TEST(psostests_pt1)
--// 0"000.679| BUG in __traceobj_assert_failed(): [rn1] trace assertion failed:
--//            testsuite/psostests/rn-1.c:46
--// => "ret == 0"
--//TEST(psostests_rn1)
--TEST(psostests_sem1)
--TEST(psostests_sem2)
--TEST(psostests_task1)
--// 0"014.452| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
--//            ../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-2.c:56 => "ret == 0"
--//TEST(psostests_task2)
--TEST(psostests_task3)
--TEST(psostests_task4)
--TEST(psostests_task5)
--// 0"011.370| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
--//            testsuite/psostests/task-6.c:62
--// => "ret == 0 && oldprio == myprio"
--// TEST(psostests_task6)
--TEST(psostests_task7)
--// runs forever (100% CPU)
--//TEST(psostests_task8)
--// 0"002.198| WARNING: [main] lack of resources for core thread, EBUSY
--// 0"003.421| BUG in __traceobj_assert_failed(): [root] trace assertion failed:
--//           ../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-9.c:29 => "ret == 0"
--//TEST(psostests_task9)
--TEST(psostests_tm1)
--TEST(psostests_tm2)
--TEST(psostests_tm3)
--TEST(psostests_tm4)
--TEST(psostests_tm5)
--TEST(psostests_tm6)
--TEST(psostests_tm7)
+-TEST(vxworkstests)
+-TEST(vxworkstests_lst1)
+-TEST(vxworkstests_msgQ1)
+-TEST(vxworkstests_msgQ2)
+-TEST(vxworkstests_msgQ3)
+-TEST(vxworkstests_rng1)
+-TEST(vxworkstests_sem1)
+-TEST(vxworkstests_sem2)
+-TEST(vxworkstests_sem3)
+-TEST(vxworkstests_sem4)
+-TEST(vxworkstests_wd1)
+-TEST(vxworkstests_task1)
+-TEST(vxworkstests_task2)
 -- 
 2.35.3
 
