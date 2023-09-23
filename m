@@ -1,31 +1,35 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAE1DDAB
-	for <xenomai@lists.linux.dev>; Sat, 23 Sep 2023 10:23:27 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 690CB40002;
-	Sat, 23 Sep 2023 10:23:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30C45DDAB
+	for <xenomai@lists.linux.dev>; Sat, 23 Sep 2023 10:25:05 +0000 (UTC)
+Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id B1144C8203
+	for <xenomai@lists.linux.dev>; Sat, 23 Sep 2023 10:12:36 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id F1619C0002;
+	Sat, 23 Sep 2023 10:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1695464605;
+	t=1695463949;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=krszoIXeYeIoX8QtlaU6844p6RLkKZ2NAtrUuLV7bn0=;
-	b=B9o0z/aZHlswfpli4p6dB+xwCXFOK8zXltj/rI25zv0O7mgSBp9T5644hjgjUBqwEr+R5c
-	eHJWN6j8/8DcyTsJuBBa1yO6Be7dCKLPWDEJPaBJ4Z4kWhsHxhuBlF2rIeakyFKm52/az1
-	Yb6jODXj5T+jb7geC4hKL7LEO0jdPbcFwqsiCGTG/5nrgF5J/AfEW2d5pMyf8Zg5uqkSme
-	xbBdrcNGuHB62ys34EHQtV1xphdU66Dd1SB/X+EWaW/XvJTIJMcygG1Hv8uolPu6+Rq580
-	NR3V6PJQEAVFPf6g+D/aXBq91hhaIjsLo+yHIH3uTzB3sz0B011AopxGFttKPQ==
-References: <20586e6d-090b-4cff-b616-e637f2e4d9d1@siemens.com>
+	bh=LK6UBgnGOWSsxckCwVR6F5ScvDY9tKvhgk9nz8q3Xp0=;
+	b=GkBeSVrDphAlQt8pxBjQgMbHpJ7MMAUsffGsNrof/37hTmmtFQygdXtupng4ytwuFjjLaf
+	kH/5d5a1427bZ+WCQE5KUtigFjxVXuEN1a9W8YXMDtATH+kurUKgwLrCyDOsAC0o7PJgfv
+	966T1drQYxa0q5ZbAjdlFrqZM2Zoe7EFD6rhwwz8Sdg8GSoqNDCnV0Za4SZyWGN93YIXVp
+	C4Q1uzxbLhwzr4cr1ZYdB50mpo2/oQUMlGyjAu9qAsuEPMmeC1cQdNKZZDI5t0EM4e9aUD
+	o0/YXMqFNyjLf3wQXIKRtl6ADPAONqfVr6dP8mpF8b7hlcPMMC5MAjtwxFaCvg==
+References: <f5149f19-4eaa-4844-8602-1c181532dd88@siemens.com>
+ <878r8ymqzp.fsf@xenomai.org>
+ <544dee0a-c072-4f7d-b5e3-84e6d50df093@siemens.com>
 User-agent: mu4e 1.8.11; emacs 28.2
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [dovetail 6.6][PATCH] x86: dovetail: Fix Intel shadow stack
- support
-Date: Sat, 23 Sep 2023 12:23:16 +0200
-In-reply-to: <20586e6d-090b-4cff-b616-e637f2e4d9d1@siemens.com>
-Message-ID: <87lecxxk6b.fsf@xenomai.org>
+Subject: Re: Dovetail 5.15.129 and 6.1.54: New kernel warning on ARM
+Date: Sat, 23 Sep 2023 12:07:32 +0200
+In-reply-to: <544dee0a-c072-4f7d-b5e3-84e6d50df093@siemens.com>
+Message-ID: <87pm29xkon.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,193 +42,49 @@ X-GND-Sasl: rpm@xenomai.org
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
+> On 22.09.23 12:21, Philippe Gerum wrote:
+>> 
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> Hi Philippe,
+>>>
+>>> something regressed:
+>>>
+>>> 2023-09-21T18:21:40 [    0.000000] ------------[ cut here ]------------
+>>> 2023-09-21T18:21:40 [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/irq/pipeline.c:1829 irq_pipeline_init+0xbc/0xe0
+>>> 2023-09-21T18:21:40 [    0.000000] Modules linked in:
+>>> 2023-09-21T18:21:40 [    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.15.129+ #1
+>>> 2023-09-21T18:21:40 [    0.000000] Hardware name: Generic AM33XX (Flattened Device Tree)
+>>> 2023-09-21T18:21:40 [    0.000000] IRQ stage: Linux
+>>> 2023-09-21T18:21:40 [    0.000000] [<c03117e0>] (unwind_backtrace) from [<c030bd10>] (show_stack+0x10/0x14)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c030bd10>] (show_stack) from [<c1092dd0>] (dump_stack_lvl+0x8c/0xc0)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c1092dd0>] (dump_stack_lvl) from [<c0346b00>] (__warn+0x88/0x128)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c0346b00>] (__warn) from [<c108ea28>] (warn_slowpath_fmt+0x70/0xc8)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c108ea28>] (warn_slowpath_fmt) from [<c171d37c>] (irq_pipeline_init+0xbc/0xe0)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c171d37c>] (irq_pipeline_init) from [<c1700fec>] (start_kernel+0x4ec/0x6d8)
+>>> 2023-09-21T18:21:40 [    0.000000] [<c1700fec>] (start_kernel) from [<00000000>] (0x0)
+>>> 2023-09-21T18:21:40 [    0.000000] ---[ end trace 58996bc4bee07162 ]---
+>>>
+>>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/693461#L544
+>>> https://source.denx.de/Xenomai/xenomai-images/-/jobs/693455#L543
+>>>
+>>> Not seeing this with latest 5.10-dovetail.
+>>>
+>> 
+>> This means the CI runs a SMP kernel on this uniprocessor SoC. It's fine
+>> except for latency measurement - the impact of the SMP glue on the worst
+>> case figure is noticeable in this case (+10%). Anyway, I'll work around
+>> this.
 >
-> Let fpregs_lock_and_load return the saved flags of fpregs_lock and make
-> sure that the shadow stack callers use that properly.
+> Yes, we are running the same kernel config on arm in xenomai-images.
+> Given that you basically can't buy new single-core SOCs anymore, it's
+> more important to test and qualify SMP than UP.
 >
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  arch/x86/include/asm/fpu/api.h |  2 +-
->  arch/x86/kernel/fpu/core.c     |  8 ++++++--
->  arch/x86/kernel/shstk.c        | 31 +++++++++++++++++++------------
->  3 files changed, 26 insertions(+), 15 deletions(-)
->
-> diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
-> index 84ce78d643792..0cd5f7642326f 100644
-> --- a/arch/x86/include/asm/fpu/api.h
-> +++ b/arch/x86/include/asm/fpu/api.h
-> @@ -98,7 +98,7 @@ static inline void fpregs_unlock(unsigned long flags)
->   * being automatically saved/restored. Then FPU state can be modified safely in the
->   * registers, before unlocking with fpregs_unlock().
->   */
-> -void fpregs_lock_and_load(void);
-> +unsigned long fpregs_lock_and_load(void);
->  
->  #ifdef CONFIG_X86_DEBUG_FPU
->  extern void fpregs_assert_state_consistent(void);
-> diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-> index 0d86706b962a4..85925b10ee045 100644
-> --- a/arch/x86/kernel/fpu/core.c
-> +++ b/arch/x86/kernel/fpu/core.c
-> @@ -817,8 +817,10 @@ void switch_fpu_return(void)
->  }
->  EXPORT_SYMBOL_GPL(switch_fpu_return);
->  
-> -void fpregs_lock_and_load(void)
-> +unsigned long fpregs_lock_and_load(void)
->  {
-> +	unsigned long flags;
-> +
->  	/*
->  	 * fpregs_lock() only disables preemption (mostly). So modifying state
->  	 * in an interrupt could screw up some in progress fpregs operation.
-> @@ -827,12 +829,14 @@ void fpregs_lock_and_load(void)
->  	WARN_ON_ONCE(!irq_fpu_usable());
->  	WARN_ON_ONCE(current->flags & PF_KTHREAD);
->  
-> -	fpregs_lock();
-> +	flags = fpregs_lock();
->  
->  	fpregs_assert_state_consistent();
->  
->  	if (test_thread_flag(TIF_NEED_FPU_LOAD))
->  		fpregs_restore_userregs();
-> +
-> +	return flags;
->  }
->  
->  #ifdef CONFIG_X86_DEBUG_FPU
-> diff --git a/arch/x86/kernel/shstk.c b/arch/x86/kernel/shstk.c
-> index fd689921a1dba..fbaeb08bdc8d0 100644
-> --- a/arch/x86/kernel/shstk.c
-> +++ b/arch/x86/kernel/shstk.c
-> @@ -158,6 +158,7 @@ static int shstk_setup(void)
->  {
->  	struct thread_shstk *shstk = &current->thread.shstk;
->  	unsigned long addr, size;
-> +	unsigned long flags;
->  
->  	/* Already enabled */
->  	if (features_enabled(ARCH_SHSTK_SHSTK))
-> @@ -172,10 +173,10 @@ static int shstk_setup(void)
->  	if (IS_ERR_VALUE(addr))
->  		return PTR_ERR((void *)addr);
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  	wrmsrl(MSR_IA32_PL3_SSP, addr + size);
->  	wrmsrl(MSR_IA32_U_CET, CET_SHSTK_EN);
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	shstk->base = addr;
->  	shstk->size = size;
-> @@ -225,12 +226,13 @@ unsigned long shstk_alloc_thread_stack(struct task_struct *tsk, unsigned long cl
->  static unsigned long get_user_shstk_addr(void)
->  {
->  	unsigned long long ssp;
-> +	unsigned long flags;
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  
->  	rdmsrl(MSR_IA32_PL3_SSP, ssp);
->  
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	return ssp;
->  }
-> @@ -336,6 +338,7 @@ static int shstk_pop_sigframe(unsigned long *ssp)
->  int setup_signal_shadow_stack(struct ksignal *ksig)
->  {
->  	void __user *restorer = ksig->ka.sa.sa_restorer;
-> +	unsigned long flags;
->  	unsigned long ssp;
->  	int err;
->  
-> @@ -360,15 +363,16 @@ int setup_signal_shadow_stack(struct ksignal *ksig)
->  	if (unlikely(err))
->  		return -EFAULT;
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  	wrmsrl(MSR_IA32_PL3_SSP, ssp);
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	return 0;
->  }
->  
->  int restore_signal_shadow_stack(void)
->  {
-> +	unsigned long flags;
->  	unsigned long ssp;
->  	int err;
->  
-> @@ -384,9 +388,9 @@ int restore_signal_shadow_stack(void)
->  	if (unlikely(err))
->  		return err;
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  	wrmsrl(MSR_IA32_PL3_SSP, ssp);
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	return 0;
->  }
-> @@ -413,6 +417,7 @@ void shstk_free(struct task_struct *tsk)
->  
->  static int wrss_control(bool enable)
->  {
-> +	unsigned long flags;
->  	u64 msrval;
->  
->  	if (!cpu_feature_enabled(X86_FEATURE_USER_SHSTK))
-> @@ -430,7 +435,7 @@ static int wrss_control(bool enable)
->  	if (features_enabled(ARCH_SHSTK_WRSS) == enable)
->  		return 0;
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  	rdmsrl(MSR_IA32_U_CET, msrval);
->  
->  	if (enable) {
-> @@ -447,13 +452,15 @@ static int wrss_control(bool enable)
->  	wrmsrl(MSR_IA32_U_CET, msrval);
->  
->  unlock:
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	return 0;
->  }
->  
->  static int shstk_disable(void)
->  {
-> +	unsigned long flags;
-> +
->  	if (!cpu_feature_enabled(X86_FEATURE_USER_SHSTK))
->  		return -EOPNOTSUPP;
->  
-> @@ -461,11 +468,11 @@ static int shstk_disable(void)
->  	if (!features_enabled(ARCH_SHSTK_SHSTK))
->  		return 0;
->  
-> -	fpregs_lock_and_load();
-> +	flags = fpregs_lock_and_load();
->  	/* Disable WRSS too when disabling shadow stack */
->  	wrmsrl(MSR_IA32_U_CET, 0);
->  	wrmsrl(MSR_IA32_PL3_SSP, 0);
-> -	fpregs_unlock();
-> +	fpregs_unlock(flags);
->  
->  	shstk_free(current);
->  	features_clr(ARCH_SHSTK_SHSTK | ARCH_SHSTK_WRSS);
 
-Merged, thanks.
+You are not testing much of the SMP capabilities on a bbb anyway, but I
+get the idea. The warning is fixed upstream, including v5.10.y which
+also had the issue - SMP was most likely disabled for this one in the CI
+image.
 
 -- 
 Philippe.
