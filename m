@@ -1,70 +1,75 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87691CF85
-	for <xenomai@lists.linux.dev>; Mon, 25 Sep 2023 15:06:59 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id BC3AF1BF206;
-	Mon, 25 Sep 2023 15:06:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1695654411;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oPp5XuXatRm9Q4OsstHkCgwYPN1fAxQpA+XjFwxpLuc=;
-	b=ngWjDTPFExhERvVRzpKiapKrxktMWG/DvcqyaKhfDNm8W2mQuCnJQJ0H5ZRk5MGPBO2Dpm
-	szyahiT5gGd4qRnLZksGJc0sYRPe5hPnGw9kdUBRZApYBoLoEeZ9YKJBzpSjq5K3StWPBD
-	6FL6kJOIKXdnMHZ2X+5hVeIMRiBo/uWZ3ws67bdCnCFXzQ4AdKojJfwHn77wU7CpswWGXt
-	UI5LMJgmwn5PBOrn8YcgbPK/hApFzyEDKfydfys48UfaCG4a9XVTzWxkj42UKBGjewtzPX
-	qLNMEY+hORmxd83E7GE0WzCp+vX3BY1qO/qFm/ZTEn7xTo5pTH09QiRMzkl0cQ==
-References: <23cc119f-7301-49d8-9a95-03ff9e061ab1@siemens.com>
- <20230925130311.17757-1-aaron@sigma-star.at>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Aaron Marcher <aaron@sigma-star.at>
-Cc: xenomai@lists.linux.dev, richard@nod.at, jan.kiszka@siemens.com
-Subject: Re: [PATCH] lib: Drop cpu-affinity=0 from skin-tests helper
-Date: Mon, 25 Sep 2023 17:04:24 +0200
-In-reply-to: <20230925130311.17757-1-aaron@sigma-star.at>
-Message-ID: <87edime1h1.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA2FF1CAA1
+	for <xenomai@lists.linux.dev>; Mon, 25 Sep 2023 15:13:06 +0000 (UTC)
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2c00c0f11b2so109150031fa.1
+        for <xenomai@lists.linux.dev>; Mon, 25 Sep 2023 08:13:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sigma-star.at; s=google; t=1695654784; x=1696259584; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ALjb8bAYDO2NyAEQXOyLqm35gzP3mbF8ybFeyjUWIu0=;
+        b=jjCzfavPI0CQGuXR8wfQZqBzXkGuy46GP5fn2EkJ7I7hXlQ2lbzQ43fV1gOC4UmUDE
+         4+Dyu6i85uSq9NtF3HZctGzOIAoy10N38gofojUygdmsA3FEzt2tqzorLAL04Pn4ut+H
+         Z8iExJfxBcaL/VWcLwGyFrQvJcatMwhgMqBEmXRoygJT6N4N27axs7JzsyutyMNeSNWT
+         GUPl/VweI1rdww0M4BQfvAuNSoQcYBlJtnbF/OZkN4XfDfwSHeXZHur4EdHHUmjonnC4
+         nPbJkX3UuqERMvJmYWqzFL5pIQk7W8Bt3mpPsQIDYKUH62ZM2KTdzW2kqgk61vQV54Bo
+         T7xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695654784; x=1696259584;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ALjb8bAYDO2NyAEQXOyLqm35gzP3mbF8ybFeyjUWIu0=;
+        b=fI5hHi46wGC36FtgsxdB+Y1fqGOr5rHTPfH1F/AS0KO4BLfB+wLxMiW/dVC2Fo3Icd
+         EERFaF4q0zKQ1rhqXuZmiqYJeTtNScDMMfFB25wdRkGCBOvCA3jMI07Fzn7Ukz8pnPI7
+         zcMPkkFYjiPBbQ6sPT5eJSMLoE7MKmsyCBy40JaSq/2xuFd40O2ZnnK6B9uYrTwFbccx
+         B9FIu8YOifbmWLOSrK47oQ2qzRNBPP5hRtQSPpUTXsqLgAdAGGsLbro6/5xuAMomHEry
+         zpFbHO+7BK6l22aiaJCVjMEPA80AmmfBtsPo20emyG+KeBlnHsAvNpEuLRW+i2ZQgb4A
+         4OFA==
+X-Gm-Message-State: AOJu0YxrxW6JfHT/L8esC6BlBsMzwrt9lLZFdbm6XUWCFrjGOO8cNY7d
+	irQksxjv3EuHJ1b8mWZl77WZB1OFMHD383JZG54=
+X-Google-Smtp-Source: AGHT+IFOyv0nFoxJKCDXrnzXwYIqYdIu1qXjvEFaVPyvvO+mKQ9OW+Jpx3hjikZzfdCj5EE6Dh7zfg==
+X-Received: by 2002:a2e:8512:0:b0:2b6:df6b:84c0 with SMTP id j18-20020a2e8512000000b002b6df6b84c0mr5993756lji.25.1695654784417;
+        Mon, 25 Sep 2023 08:13:04 -0700 (PDT)
+Received: from foxxylove.corp.sigma-star.at ([82.150.214.1])
+        by smtp.gmail.com with ESMTPSA id t15-20020a170906608f00b009a9fbeb15f2sm6430007ejj.62.2023.09.25.08.13.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Sep 2023 08:13:04 -0700 (PDT)
+From: Aaron Marcher <aaron@sigma-star.at>
+To: xenomai@lists.linux.dev
+Cc: richard@nod.at,
+	jan.kiszka@siemens.com,
+	Aaron Marcher <aaron@sigma-star.at>
+Subject: [PATCH 0/1 V2] lib: Drop cpu-affinity=0 from skin-tests helper
+Date: Mon, 25 Sep 2023 17:12:55 +0200
+Message-Id: <20230925151256.22161-1-aaron@sigma-star.at>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20230925130311.17757-1-aaron@sigma-star.at>
+References: <20230925130311.17757-1-aaron@sigma-star.at>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+Content-Transfer-Encoding: 8bit
 
+Changes since v1:
+- Introduce parameter to control arguments on a case-to-case basis
 
-Aaron Marcher <aaron@sigma-star.at> writes:
+Aaron Marcher (1):
+  lib: Drop cpu-affinity=0 from skin-tests helper
 
-> Alchemy, pSos and VxWorks tests assume zero CPU affinity, but we cannot
-> enforce that in general.
->
-> Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
-> ---
->  lib/smokey/helpers.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/lib/smokey/helpers.c b/lib/smokey/helpers.c
-> index dfd63b409..b50d9fbb1 100644
-> --- a/lib/smokey/helpers.c
-> +++ b/lib/smokey/helpers.c
-> @@ -416,7 +416,7 @@ int smokey_run_extprog(const char *dir, const char *name, int argc, char *const
->  	int ret;
->  	char *tst_path;
->  
-> -	ret = asprintf(&tst_path, "%s/%s --cpu-affinity=0", dir, name);
-> +	ret = asprintf(&tst_path, "%s/%s", dir, name);
->  	if (ret == -1)
->  		return -ENOMEM;
-
-This is going to break the tests on SMP, because the test logic checks
-whether some series of actions happen sequentially, in the right
-order. Allowing the threads to run in parallel on multiple CPUs would
-prevent that.
-
-CPU0 is by design always available as the boot CPU.
+ include/smokey/smokey.h                      | 2 +-
+ lib/smokey/helpers.c                         | 8 ++++++--
+ testsuite/smokey/alchemytests/alchemytests.c | 3 ++-
+ testsuite/smokey/psostests/psostests.c       | 3 ++-
+ testsuite/smokey/vxworkstests/vxworkstests.c | 3 ++-
+ 5 files changed, 13 insertions(+), 6 deletions(-)
 
 -- 
-Philippe.
+2.35.3
+
