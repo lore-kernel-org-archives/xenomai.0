@@ -1,26 +1,25 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B4A1D6AE
-	for <xenomai@lists.linux.dev>; Wed, 27 Sep 2023 18:03:41 +0000 (UTC)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202309271803388c962d078a062522e0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 886261A589
+	for <xenomai@lists.linux.dev>; Wed, 27 Sep 2023 20:21:39 +0000 (UTC)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230927202136206a1dcb579e29b09c
         for <xenomai@lists.linux.dev>;
-        Wed, 27 Sep 2023 20:03:38 +0200
+        Wed, 27 Sep 2023 22:21:36 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=UpMlY1WLavrpjzlpqaMABr5NG/NwimMWrglNJV2NuUg=;
- b=K0TdcxoLZGg255vlnQaADyMMYrVBwb3jEAbKlUssqHiSuwEx2GNdVlrCAQj9M9QpUVyjyX
- 2rFEjUPIbGPjbEJOKOHL0sSXVs9XPkkaNJ7GxJRt+CJmMRseSGDOItqCDTylXzvACum1HvcE
- 5KE+uggZlJVF4N+o88CqicSrLExH4=;
-Message-ID: <756760aba823b02730cccf4e995019f889777567.camel@siemens.com>
-Subject: Re: [stable/v3.2.x][PATCH] Fix detection of dev_addr_set
- availability on 4.19 kernels
+ bh=zjjzvASdw8EI6UYyHf9DtMkxRxqUBIVXMjjm19+aiUQ=;
+ b=jjSUOBNKCkB1XAmkYqQHKonCxyyjYUc77qbq0Eppi3HIHSBU1+m3lVwHXZ94zjMn1WA7rv
+ F5lanA2oaJNLuV5DClkkXyjrJi/+8NlP9yNeWKbRQtiH7SIV82JPqqFrfuoZ7n3odDG26wMk
+ PtAVYoRwNUYshGloYNQH+KxX4ELGY=;
+Message-ID: <10067eb6a762f8f468b5f81db9f49b825f3ea96e.camel@siemens.com>
+Subject: Re: accept after select for RTNet/TCP
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Wed, 27 Sep 2023 20:03:37 +0200
-In-Reply-To: <5379efca-76b3-4413-85ab-41db5a9e7524@siemens.com>
-References: <5379efca-76b3-4413-85ab-41db5a9e7524@siemens.com>
+To: Per Oberg <pero@wolfram.com>, xenomai@lists.linux.dev
+Date: Wed, 27 Sep 2023 22:21:27 +0200
+In-Reply-To: <1477790382.2402907.1695827633513.JavaMail.zimbra@wolfram.com>
+References: <1477790382.2402907.1695827633513.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -32,80 +31,67 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Wed, 2023-09-27 at 08:15 +0200, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->=20
-> As the SUBLEVEL in LINUX_VERSION_CODE is 8-bits only and is clamped at
-> 255, we cannot detect this way that 4.19.291 also gained support for
-> dev_addr_set and eth_hw_addr_set. Upstream does not care about
-> out-of-tree, so work around this limitation by extracting the true
-> SUBLEVEL in prepare-kernel.sh and exporting it via Kconfig.
->=20
-> This is expected to remain limited to 4.19, thus is stable/v3.2.x only.
-> And since 5.12, upstream has a KERNEL_VERSION_SUBLEVEL define in the
-> generated version.h.
+Hi Per,
 
-I'm not a fan of this solution, but I don't have a better idea ATM.
+On Wed, 2023-09-27 at 10:13 -0500, Per Oberg wrote:
+> Hi=20
+>=20
+> I'm currently porting parts of an application that uses some TCP during s=
+tartup to Xenomai. I have a working example of a TCP server but i cannot ma=
+ke the "select" part work.
+>=20
+> If I do=20
+>=20
+> fd =3D __COBALT(accept(list_fd, (struct sockaddr *) &client_addr, &client=
+_len)))
 
-There is a strong feeling here that this problem will come back at some
-point in time. We enabled 6.1 support for stable/v3.2.x recently so it
-is not expected that this branch will disappear soon. Let's hope we
-manage to maintain it over time.
+The usage of __COBALT() should not be necessary, the Xenomai function
+wrapping will take care of redirecting the call to the cobalt world.
+(Assuming you are using the LDFLAGS and CFLAGS delivered by xeno-
+config)
+
+That allows you to compile the same code - but with different flags -
+for both worlds without modifications.
+
+>=20
+> without the select part it works. If I do a select before it returns  "In=
+valid argument".=20
+
+I can remember that I saw something similar in the past. If I recall
+correctly there was an ordering problem. It somehow crashed when the
+first connection request came in before the accept() call happened, or
+something in this direction. The socket state was somehow "corrupted".
+
+I should have it on one of my TODO lists... Unable to find it right
+now.
+
+> The "select" part:
+> ------------------------------------
+> fd_set in_fds;
+> FD_ZERO(&in_fds);
+> FD_SET(list_fd, &in_fds);
+> int selRet =3D __COBALT(select(list_fd + 1, &in_fds, 0, 0, 0));
+> (FD_ISSET(list_fd, &in_fds))
+> {
+>   printf("list_fd (%i)  is in FDSET\n", list_fd);
+> }
+> ------------------------------------
+>=20
+> The program works when compiled for regular linux.
+> Is select for TCP RTNet a no no ?
+>=20
+
+select() should work as expected.
+
+Can you share a complete reproducer? That would simplify things and
+increases the chance that someone is able to look into it.
 
 Best regards,
 Florian
 
 >=20
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 +++-
->  scripts/Kconfig.frag                                 | 4 ++++
->  scripts/prepare-kernel.sh                            | 1 +
->  3 files changed, 8 insertions(+), 1 deletion(-)
+> Best Regards
+> Per =C3=96berg=20
 >=20
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kerne=
-l/cobalt/include/asm-generic/xenomai/wrappers.h
-> index 7654047b4d..8ba95af27d 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-> @@ -258,7 +258,9 @@ devm_hwmon_device_register_with_groups(struct device =
-*dev, const char *name,
->      (LINUX_VERSION_CODE >=3D KERNEL_VERSION(5,5,0) || \
->       LINUX_VERSION_CODE < KERNEL_VERSION(5,4,251)) && \
->      (LINUX_VERSION_CODE >=3D KERNEL_VERSION(4,20,0) || \
-> -     LINUX_VERSION_CODE < KERNEL_VERSION(4,19,291))
-> +     LINUX_VERSION_CODE < KERNEL_VERSION(4,19,255) || \
-> +     (LINUX_VERSION_CODE =3D=3D KERNEL_VERSION(4,19,255) && \
-> +      CONFIG_KVER_SUBLEVEL < 291))
->  #define dev_addr_set(dev, addr)		memcpy((dev)->dev_addr, addr, MAX_ADDR_=
-LEN)
->  #define eth_hw_addr_set(dev, addr)	memcpy((dev)->dev_addr, addr, ETH_ALE=
-N)
->  #endif
-> diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-> index 7921286638..8eae9da693 100644
-> --- a/scripts/Kconfig.frag
-> +++ b/scripts/Kconfig.frag
-> @@ -47,3 +47,7 @@ config XENO_REVISION_LEVEL
->  config XENO_VERSION_STRING
->         string
->         default "@VERSION_STRING@"
-> +
-> +config KVER_SUBLEVEL
-> +       int
-> +       default @KVER_SUBLEVEL@
-> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-> index 64e2484e16..a06a9f2308 100755
-> --- a/scripts/prepare-kernel.sh
-> +++ b/scripts/prepare-kernel.sh
-> @@ -399,6 +399,7 @@ case $linux_VERSION.$linux_PATCHLEVEL in
->  	    -e "s,@VERSION_MINOR@,$version_minor,g" \
->  	    -e "s,@REVISION_LEVEL@,$revision_level,g" \
->  	    -e "s,@VERSION_STRING@,$version_string,g" \
-> +	    -e "s,@KVER_SUBLEVEL@,$linux_SUBLEVEL,g" \
->  	    -e "s,@SRCARCH@,$linux_arch,g" \
->  	    $xenomai_root/scripts/Kconfig.frag |
->              patch_append init/Kconfig
-> --=20
-> 2.35.3
+>=20
 
