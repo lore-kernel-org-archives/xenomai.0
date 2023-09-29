@@ -1,197 +1,133 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2087.outbound.protection.outlook.com [40.107.13.87])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2245D8465
-	for <xenomai@lists.linux.dev>; Fri, 29 Sep 2023 12:12:46 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-313e742a787so370915f8f.1
-        for <xenomai@lists.linux.dev>; Fri, 29 Sep 2023 05:12:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1695989565; x=1696594365; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1zVB9yFFzw4p6CCLqxx/HUcJv0EZ0Yqz30ComTtG7rU=;
-        b=WYtN7fyKo+SUoOQYsYhJZoGTk50SL65iOgaj8i3Amu4oaUmXP+aN/r7gMArUDlxa/V
-         ZQ7gqex69Nwm6L6X/ymfSGzKvrXz4xJ6clNOJMr97CI3q2QceBdVx6j6F15sbpIrTPsR
-         brb5hDCdB17zplIywlkHxh5x/P0SbpQQ7XFmV7nDYiaaruPLMUdQHcoMQRbfXJ0neywc
-         tCady1aTSle77ZvAu+n+YNilYSCJFVjf/aCR4/o+knRGTh8nOFz8cR/y1bvBMcJz2dyF
-         beWigIACgPjQfmFsyd0QhoVJe/EGuCiWyuKPwNu8CzEZZHQ8AYa5d1CcPrwWmNid4TMY
-         3/Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695989565; x=1696594365;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1zVB9yFFzw4p6CCLqxx/HUcJv0EZ0Yqz30ComTtG7rU=;
-        b=viQjLENPDGLxd1mGyF2ctAb8cmd7g5MeaZbXn5xW0A43a9LYPHDUE5lje7IZz/R9o8
-         ssz4pJJc/Z0zK907lt1U7bl6oTcbnTSrokDR0cmQLILGyHHHhgDieQaFOBtq+Hfrk2sD
-         KnKgonauC0uf2rGpzy/21m2CYqI8mf4bS5JwRe9NYRiwpcjtdygVHDOSvGA6u7Ly79FZ
-         wr3HKzKpo78vdr7WerparWA/B1pupu5p2aBy46rErd88f1LruY4y0G0ykmOueuR94AAN
-         gwswjCS1Wc4be1r4rGSyrFAYh24YjI5TvVL7hFHQw9OMAerNOR2HuhaGtFDavip5kwaT
-         WOhA==
-X-Gm-Message-State: AOJu0Ywdv2pLT+nMbpFAJuuwCIdIq7bfpoeiQ9giiUXFF2y6VV42mfiO
-	SsA4C4y+uRoWnNVeGKYc7zYxew==
-X-Google-Smtp-Source: AGHT+IGR3rpU4ISbELfkyTsOkH2NvtduQ8tfX3mMKRZ+oPd01Zw5telOlxR3lD1Szs6KLeZlxTTSiw==
-X-Received: by 2002:a5d:4049:0:b0:323:3b45:c452 with SMTP id w9-20020a5d4049000000b003233b45c452mr3792366wrp.14.1695989564865;
-        Fri, 29 Sep 2023 05:12:44 -0700 (PDT)
-Received: from mail (212-186-60-23.cable.dynamic.surfer.at. [212.186.60.23])
-        by smtp.gmail.com with ESMTPSA id c25-20020adfa319000000b00324853fc8adsm3425203wrb.104.2023.09.29.05.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Sep 2023 05:12:44 -0700 (PDT)
-Date: Fri, 29 Sep 2023 14:12:43 +0200
-From: Aaron Marcher <aaron@sigma-star.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A23D3C1D
+	for <xenomai@lists.linux.dev>; Fri, 29 Sep 2023 12:34:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AGZKo5sPXknddLdXqB15jg1mNdMehXV+s9Km444M2D7tW19SimieU++U651NS2yjqiwIhEFciezNLXglwKWnNdVt2YERab4UvQmOfRzUo+6KzNAICQO1ov6jT4R7O5egTvjANmuzuJ/Mwucy0LL2vYMm7ti+E9LWXEEmeBR2ka+hIJRhafVbt4jzRDlBS+lhHi7V8M7DYwGvt5N+Kc0Jtf/NPxH1lUShvKFtMdo+7oupclnRghlloN7pXK06sLGotyi+f6qPScA2ANKSFDwbC4Yqp6rAW0f2Qhc6Yw8/85tUS0ZxTUXZEL3msj6O8QeVfaYxQ2KyJvbGgP2pJRZvaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5q1Ld8dB0MQnNIi+K1YX4JiCECpVv35QEwRtOLNEcOM=;
+ b=diri245V4p2g7wkrK39GwAeAqEs3DOIkK/wGW0MtcUYiJnS75Pr7R8I+ds4mqDExgcD7r8+TmSlOwRlDLfBtRqrcdjx1ef3E5w1dzKwnViiVWG32Yssb9r/eE1euJ5d2XFfGDN03+XSKhidt1HD/EBfFUz3kSnZTbMA26GvJziAnHgmNHiFjtzJdAOWyZwwhpXXyUrXOgGO8V+T7pAyhiNOVn744Yuvxx4yHvqVOu+fs92Z8ge1tbOZFtX23WYo8LYGZ+XQ2yJjRAx2QcogISTWC0WS7PQHdolvg69dL3yR/v5jO+FVHfkCuF9g/snQElWj88Rt9KyLS93m804dBXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5q1Ld8dB0MQnNIi+K1YX4JiCECpVv35QEwRtOLNEcOM=;
+ b=ZmTUXlwAqnq1G3FV9thL4LJeSfVgrPDrcG7ZxZZXFwbIB0graTkHWNGclGxITcb+cSAEaO/+Zxu+65wz03JP36wdYCweGq0XTSctiRDBJaelngq1WFn9sFUAeAny+cKVZVOIqoLR9GRw1FQ8Jk3Rog4nNS0Zhi/UO+1mky7AG8wNGmXo9qTvMctNOE7TovJ4BAIUyUqpKPpMNyq2zEAxtgNksRaHQhVgiSxRPqqCPPzNe2BeK8uY4jgqf7BNpWPOSpcVYO8WtSuQkDqg6Qelc6AFnCyvm1BlJtUvAsioHMTtAKV2xcE0Blm9uxi+9K1CJZvT0AmyyIZANVZ0/eZ4bg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS8PR10MB5952.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:52f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.27; Fri, 29 Sep
+ 2023 12:34:35 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7f20:d403:b43d:12e2%3]) with mapi id 15.20.6838.016; Fri, 29 Sep 2023
+ 12:34:34 +0000
+Message-ID: <b9f20d0d-035d-4a13-bce3-899bacb05603@siemens.com>
+Date: Fri, 29 Sep 2023 14:34:27 +0200
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 1/1] lib: Drop cpu-affinity=0 from skin-tests helper
-Message-ID: <20230929121243.vyurasjmnhsbzxyq@mail>
-Mail-Followup-To: Aaron Marcher <aaron@sigma-star.at>,
-	Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Content-Language: en-US
+To: Aaron Marcher <aaron@sigma-star.at>, xenomai@lists.linux.dev
 References: <20230925130311.17757-1-aaron@sigma-star.at>
  <20230925151256.22161-1-aaron@sigma-star.at>
  <20230925151256.22161-2-aaron@sigma-star.at>
  <fb162398-31b5-4b67-9d2c-69955e76b689@siemens.com>
+ <20230929121243.vyurasjmnhsbzxyq@mail>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20230929121243.vyurasjmnhsbzxyq@mail>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH2PR03CA0015.namprd03.prod.outlook.com
+ (2603:10b6:610:59::25) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <fb162398-31b5-4b67-9d2c-69955e76b689@siemens.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB5952:EE_
+X-MS-Office365-Filtering-Correlation-Id: d89d6cf1-23b9-42ab-f8f5-08dbc0e86ffb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	99hlQOeZpAR1/uppbSQJ28ZYaDnNaWvrxne8qzInqRRXUEBDIBOM8U8Dy2yEdmsEAachBOhMfujFX7jiRktP5MbZaog/c2seBGLhs9+QGkQnYBIHCeh3S62q6lczt1b41oUUpUceBl8AdBHREJjv94WPS724PNQuZlGAOttmQqA1bJ13AVTN1/xhkAgi1DJyPH82VC8Hbg7AUapHxjur82VdFrl0IfTk9eX3c57+sKPFhs1A3KuM722RBKElvVg0jxjwFodwfDX1JqAQ918XK9U8uJKY38DwqeamxE3AAgxquvR673WJOZCjr99lPVrQDP8nFFYlXW/T9hRI5hyHIINtCyeKM3Fa8WVTRXTYMurjH12O2imqOWR3WAtDAee6B4ouYLWFf0xGw8CFJKVOMLXX6YEGFLok5XyT1K5kqvWx9M1Po3GmfarIfE1OVzbR6q8KeevWA98AAjBeaPHua/vrHfI6ICeheRMcduKmSefULOFB20mC1w/AOk0C/kNKwBlS4wyafEpAo4OeN7acgqgkPcdTsvpyad+JWLHqRyHV7AZOrcS9AvzsCk2byn+P+lg+w2JugQO3RlBQyaVZ9DrSj1jySpxVHXSM3KrdRM9z+W8ebo4qv21UkmyfQlD+Y1347/Zu2xVUCv/DsS2OUg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(366004)(396003)(136003)(376002)(230922051799003)(186009)(451199024)(64100799003)(1800799009)(316002)(66946007)(2906002)(41300700001)(8936002)(4744005)(66556008)(66476007)(31686004)(8676002)(44832011)(6512007)(478600001)(6666004)(26005)(6486002)(5660300002)(38100700002)(6506007)(53546011)(2616005)(31696002)(82960400001)(86362001)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?K3JNWVgwZWF5bHpDa1hzNjdmSWlqMGRYYlhuUkpCUG1xWXUrMmFvWEhqWHZL?=
+ =?utf-8?B?b0t3eVVZWVlvZ1ltYTJYbGk5bkdPZTdJd3VJSzNKN1BMY3dVR1gzSmdsbyto?=
+ =?utf-8?B?NTAzN0ZvQkhTaUowSTZYWThvWkxVcWlxamgzbHB3TFU0R0RvcEM0U3R5Y3dZ?=
+ =?utf-8?B?dmVMekcyU0hCT1MrSGVEdUNYK3YwaFRPTk9NWmRQOWhrUld6R3BmQllzblpq?=
+ =?utf-8?B?dk5FaVBuRHlTRnFkSngxalhOUlE2TGs2MTZJaG1UZmtQM2RUVUxYUTFUbHJr?=
+ =?utf-8?B?NVpRK1FwTjVUQXpJUENjeEpTRjNYRitINXVjUlpQdVF1UUlZZFVPU0hnbXA0?=
+ =?utf-8?B?ckFQdHVNdnZrTnA0dEZTNndmOXpiUmZZbnVBYUoySS9XNDE2blVMTDZOdUZV?=
+ =?utf-8?B?b0tDRzNMOFZBVGFsNllleG5LR0x3YmYwcEU2eE1RdWhpbHRaK2NFWmRhdnlW?=
+ =?utf-8?B?Tklva0RzaWhiY2JNNERjb2lsMDllSzdqZDlKbkY4TWg1d0tleUNYa2ZUaksy?=
+ =?utf-8?B?YVJEL3Rqb3QwNlQvWTJ5bm9lMkFVUW1iQmVOTm52SmZPOWFKYThMVGJud0FO?=
+ =?utf-8?B?c2xITlpucDZ2VU1FeXpJcWVPWWIvNFRBdkR5N3A5dVNIRVFBRGJ5Yzl6S3d4?=
+ =?utf-8?B?bExQNnI0V1ZlckR6aktqWmdock9mNDI4aExRbHpGbGM5UjhPUEp2VTJOeHdi?=
+ =?utf-8?B?eS95QmREZ1kyNTRYTFhGTytZWHczN1ZiZlVUbEhXdVI2cSsrdFNpYmNidDIw?=
+ =?utf-8?B?Um4rL2VDY3BqZzFpbmNCM2Q0a1o3MDdva2RwVW50M1Q0N3JoUFdkMm5pT1NQ?=
+ =?utf-8?B?Wmxuak5WdFVPd1RqMXJsOGZyUEtwaUFBcEg5YlhvdSthWHBIMlpPdzY1blZa?=
+ =?utf-8?B?amR2TVdrdmxrYVFqTmtFSjVxVFZ5WGV3aWMvZXlYMFduRit4RHBGd1ozR2Ft?=
+ =?utf-8?B?a2hGcDdiRmp3OWRoUGM4VktNck4yMjNXb2U3bVpYZkxGWHpOenRJK1FaRmFj?=
+ =?utf-8?B?V2Z6Sk1uTGdtSUhFczdEbW51SUJmdmRGeGQ0OVlFT0tSVVh4K3FtLzU4dGdm?=
+ =?utf-8?B?dS9uODBzMENlL2FIcXlwSS9hWlFaNGw4NmxWVU50eCsyT0tVZ2w1dmNpMk9G?=
+ =?utf-8?B?S0k0azcwWHJScnE1bCtKQVF6OUVjQ3dLbHpXYWJkeUFQQSs5TFBsMW41SC9D?=
+ =?utf-8?B?L3pVM21nQlh0VTYzeDJzaWxEYjZRWGdCZmF4S2wzNjNJSnlsWnNpcHdqdWJq?=
+ =?utf-8?B?WXVBb1R2anVwejRocStLWW9qM2pMV3VEUGNyUUw4eW9NTGk0WjhTTERhMW40?=
+ =?utf-8?B?a05jR3RDUWg0WS9vNjJWaFZHc3A4NVFnMjNNSHlCbWVwMnNxVDNuSHBHNnJr?=
+ =?utf-8?B?Wk5EQUlqZGs5cU95eFJZM0EvTWVBMVkydE50UXZ2Szl0ekhmVEFjQkJSOUtw?=
+ =?utf-8?B?WWNuaXpkUlZwdXUxM1V2UTFKaG0rdU52Vy9WN1RXcCtWdDhPSURGbUNKbndv?=
+ =?utf-8?B?d0ZoRFkwNlloMVVvbnpZUVg4cVU5U3BYblRpS2lhRlFVQ1RpV09IYTNIV2tj?=
+ =?utf-8?B?WHlMd0NRdDFVMnpZTGVZYXdhZ0Z5eTBrNDZZUzJXUDNucU9KVVdWSm9DcU1T?=
+ =?utf-8?B?L3dvREJWemgzN0NFSG9hTFJRWGNhZmFjaDNuRE5pbWtlT2pYbE1xWE5pY0l1?=
+ =?utf-8?B?bW1ybXdubjFLWGdIQnlBV2tsTndpb1lqcDQybWRuNG9TeTJTN082TXd2T0hM?=
+ =?utf-8?B?SHl5UGx1V281SHo0S2M5OU9wWnJKNVM2cjgxUi9OOXFIbFd5ZmVyV3BWWjNn?=
+ =?utf-8?B?dzNKenlGZms5QjBjemZ5SUFNSzhXNVdYTFNXMG1QOGY3dVZrOHU4MFoyRG5a?=
+ =?utf-8?B?Zm9IYXdlaUZZZURiMHcyMmFQUG1kNFBHT2FzcTVKRHY3cTFIc1Zxcjc4MDg1?=
+ =?utf-8?B?N2tTZGJNU0s1SXFxc0wwS2pkWE9QVzNsREJRbEJPWUp1b1lZbGJ6UHZPeHJO?=
+ =?utf-8?B?Yjd0cGlUdGQvd3NTcXNPUEJNWHNKZ0VNTFVaU0x5TXp6aGlYVmNURE1IcHdy?=
+ =?utf-8?B?bnVXdmZKYXpJOExod3VWeHhHbjdLSlBHS0xkRDN4WWRJTklxVzJqNnVLQnE3?=
+ =?utf-8?B?V25obFZwaVpIRWhnVWhMdnlYTWIrN3lsZjNnSGhjd29nZ2xjQ2NWZ09mQ3NK?=
+ =?utf-8?B?N1E9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d89d6cf1-23b9-42ab-f8f5-08dbc0e86ffb
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2023 12:34:34.9252
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OhUi+GM4snyMhJ50asiisVUSiBPvirQVCSEJWEYa39L+6SOHbtmyPkwl8PouclazQAvJLFtkSIgGJsSsCWowlg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB5952
 
-Hi Jan,
+On 29.09.23 14:12, Aaron Marcher wrote:
+> Hi Jan,
+> 
+> should I still rebase the original series into clean commits we can
+> re-apply to `next` then or do you want to keep it like that?
+> 
 
-should I still rebase the original series into clean commits we can
-re-apply to `next` then or do you want to keep it like that?
+Next should be clean now, but please cross check if you like to add
+something.
 
-Aaron
+Thanks,
+Jan
 
 -- 
-sigma star gmbh | Eduard-Bodem-Gasse 6, 6020 Innsbruck, AUT
-UID/VAT Nr: ATU 66964118 | FN: 374287y
+Siemens AG, Technology
+Linux Expert Center
 
-On Mon, Sep 25, 2023 at 05:42:47PM +0200, Jan Kiszka wrote:
-> On 25.09.23 17:12, Aaron Marcher wrote:
-> > Alchemy, pSos and VxWorks tests assume zero CPU affinity, but we cannot
-> > enforce that in general.
-> > 
-> > Introduces a parameter to control the arguments.
-> > 
-> > Signed-off-by: Aaron Marcher <aaron@sigma-star.at>
-> > ---
-> >  include/smokey/smokey.h                      | 2 +-
-> >  lib/smokey/helpers.c                         | 8 ++++++--
-> >  testsuite/smokey/alchemytests/alchemytests.c | 3 ++-
-> >  testsuite/smokey/psostests/psostests.c       | 3 ++-
-> >  testsuite/smokey/vxworkstests/vxworkstests.c | 3 ++-
-> >  5 files changed, 13 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/include/smokey/smokey.h b/include/smokey/smokey.h
-> > index 4d0fe011f..3623ba18c 100644
-> > --- a/include/smokey/smokey.h
-> > +++ b/include/smokey/smokey.h
-> > @@ -259,7 +259,7 @@ int smokey_modprobe(const char *name, bool silent);
-> >  
-> >  int smokey_rmmod(const char *name);
-> >  
-> > -int smokey_run_extprog(const char *dir, const char *name, int argc, char *const argv[]);
-> > +int smokey_run_extprog(const char *dir, const char *name, const char *args);
-> >  
-> >  #ifdef __cplusplus
-> >  }
-> > diff --git a/lib/smokey/helpers.c b/lib/smokey/helpers.c
-> > index dfd63b409..99cd019aa 100644
-> > --- a/lib/smokey/helpers.c
-> > +++ b/lib/smokey/helpers.c
-> > @@ -411,12 +411,16 @@ int smokey_rmmod(const char *name)
-> >  	return err;
-> >  }
-> >  
-> > -int smokey_run_extprog(const char *dir, const char *name, int argc, char *const argv[])
-> > +int smokey_run_extprog(const char *dir, const char *name, const char *args)
-> 
-> Actually, argc/argv were dead vars before...
-> 
-> >  {
-> >  	int ret;
-> >  	char *tst_path;
-> >  
-> > -	ret = asprintf(&tst_path, "%s/%s --cpu-affinity=0", dir, name);
-> > +	if (args == NULL)
-> > +		ret = asprintf(&tst_path, "%s/%s", dir, name);
-> > +	else
-> > +		ret = asprintf(&tst_path, "%s/%s %s", dir, name, args);
-> > +
-> >  	if (ret == -1)
-> >  		return -ENOMEM;
-> >  
-> > diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
-> > index 5753af423..04f631bac 100644
-> > --- a/testsuite/smokey/alchemytests/alchemytests.c
-> > +++ b/testsuite/smokey/alchemytests/alchemytests.c
-> > @@ -33,12 +33,13 @@ static int run_alchemytests(struct smokey_test *t, int argc, char *const argv[])
-> >  		"alchemytests_task9",
-> >  		"alchemytests_task10"
-> >  	};
-> > +	char *args = "--cpu-affinity=0";
-> 
-> const? Maybe even inline into the call?
-> 
-> >  
-> >  	for (size_t t = 0; t < sizeof(tests) / sizeof(tests[0]); t++)
-> >  	{
-> >  		int fails = 0;
-> >  
-> > -		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], argc, argv);
-> > +		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], args);
-> >  		if (ret) {
-> >  			fails++;
-> >  			if (smokey_keep_going)
-> > diff --git a/testsuite/smokey/psostests/psostests.c b/testsuite/smokey/psostests/psostests.c
-> > index a54e6ea31..f2a75c841 100644
-> > --- a/testsuite/smokey/psostests/psostests.c
-> > +++ b/testsuite/smokey/psostests/psostests.c
-> > @@ -46,12 +46,13 @@ static int run_psostests(struct smokey_test *t, int argc, char *const argv[])
-> >  		"psostests_tm6",
-> >  		"psostests_tm7"
-> >  	};
-> > +	char *args = "--cpu-affinity=0";
-> >  
-> >  	for (size_t t = 0; t < sizeof(tests) / sizeof(tests[0]); t++)
-> >  	{
-> >  		int fails = 0;
-> >  
-> > -		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], argc, argv);
-> > +		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], args);
-> >  		if (ret) {
-> >  			fails++;
-> >  			if (smokey_keep_going)
-> > diff --git a/testsuite/smokey/vxworkstests/vxworkstests.c b/testsuite/smokey/vxworkstests/vxworkstests.c
-> > index d3ac891ae..24ea8f0a1 100644
-> > --- a/testsuite/smokey/vxworkstests/vxworkstests.c
-> > +++ b/testsuite/smokey/vxworkstests/vxworkstests.c
-> > @@ -24,12 +24,13 @@ static int run_vxworkstests(struct smokey_test *t, int argc, char *const argv[])
-> >  		"vxworkstests_task1",
-> >  		"vxworkstests_task2"
-> >  	};
-> > +	char *args = "--cpu-affinity=0";
-> >  
-> >  	for (size_t t = 0; t < sizeof(tests) / sizeof(tests[0]); t++)
-> >  	{
-> >  		int fails = 0;
-> >  
-> > -		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], argc, argv);
-> > +		ret = smokey_run_extprog(XENO_TEST_DIR, tests[t], args);
-> >  		if (ret) {
-> >  			fails++;
-> >  			if (smokey_keep_going)
-> 
-> I'm inclined to ask for v2 of the original series. 'next' is not
-> 'master', we can still update it.
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, Technology
-> Linux Expert Center
