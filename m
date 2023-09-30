@@ -1,140 +1,215 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2061.outbound.protection.outlook.com [40.107.241.61])
+Received: from relay-ext.wolfram.com (relay.wolfram.com [140.177.205.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E187B41216
-	for <xenomai@lists.linux.dev>; Fri, 29 Sep 2023 13:53:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RstwsQDNYCZ6SE734pn5LEsDH2Sfl0nFwhE5ojQSDJoI8neF9OOAIa9vi9afXj13wYUUXVSLFbAnerTZKc5NG4bleP6dKyjLJ9XSdjn12FRiw8zDS7gdmKWFW4BH0gNazz7XBV59SvtolJEUeSxrm1TrZ1yqUoYkCzo7zz2p1WQUin9pHEDzfG2EQ4tlWcGLslTEY7rxaD9S/SSGWM3T8Vzf8wHk/IldDY5S/0MeZxOGwKDGJsfM0ZIga2Ou4ZsPnv/aDUQMywgsVRiFx94gdIRCOKckQ7f5VHn4poza72WiY+M6w5qj95JrmoVGBQt6nzbv7lIgoMoYIgrcodcixg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MTP6ykSnjONGVtXHV7wpX/hhFidRob7TjprPO1TvP6g=;
- b=YtSuXiLGyVkdr1Cp/JnEkrs8vWuvTqau6FqBsoa7D3pAQyEyizohCK9ZxVaoLkGSRZ1Rx9xcmCy50DaBFVlzwO3LNNiFXcP1aUex+musxiTdq1lfburSMTd7YD6J1x8505C+C7nDuwiBuvu0xgoq04x2paE8Q1GYt6n9QmJRXRydC7ogf6uqWibrt1DtC/aiHUxEcGlSKeBDPhqnFlx/egP6lCOt8aGKfnrWQo5eBlwRDWEDY8IQB8nm4Lxuz++pIWxirprApuabSTvVuIxWSvMIWyav6bgvjHG6QeNxAp9WvqpZkqwkTMvFEVHUXjVe77YFoD9VPdNMsVTFLx0JDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MTP6ykSnjONGVtXHV7wpX/hhFidRob7TjprPO1TvP6g=;
- b=T4CtrNLVstX30tE0HRUtN8FMIbW1zPYOQkPyjxfYcFipvjOQmZ43EBibva+pGT41B23Fj6cpW923t+eN/kqtVPhSc1ZW08mW0WoIGSM/pId6a+CBv1tg0r7jWD5coBo9n33Bm6lbFmpbIaaOLpOvsF8btmaavJiJecbSncw5N9l/NWmsz1gbjHkCvVvqB224yINm83lw6WvSSFPVNQESBfYtDCZLwMkB8DnWgtk3eVqZys93t6weJgnqA3PAcQ3NbpNjn4vyKzm8WyHIrsXABAroU/jez4aWAKnf6kEDonJcRjj3dU2PCFDhJdm0yZAwbiBHi8bcqO5ehp/6bAFyWg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS8PR10MB7588.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:562::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.21; Fri, 29 Sep
- 2023 13:53:57 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7f20:d403:b43d:12e2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7f20:d403:b43d:12e2%3]) with mapi id 15.20.6838.016; Fri, 29 Sep 2023
- 13:53:57 +0000
-Message-ID: <4ebec015-0aad-4292-97f2-5310cd10de6e@siemens.com>
-Date: Fri, 29 Sep 2023 15:53:50 +0200
-User-Agent: Mozilla Thunderbird
-Subject: [xenomai-images][PATCH v2 4/4] Update Isar revision
-Content-Language: en-US
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: xenomai@lists.linux.dev
-References: <cover.1695915167.git.jan.kiszka@siemens.com>
- <3f1040095513514d822a8db109d7bde87df48d75.1695915167.git.jan.kiszka@siemens.com>
-In-Reply-To: <3f1040095513514d822a8db109d7bde87df48d75.1695915167.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR17CA0029.namprd17.prod.outlook.com
- (2603:10b6:610:53::39) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B4391C2B
+	for <xenomai@lists.linux.dev>; Sat, 30 Sep 2023 12:42:25 +0000 (UTC)
+Received: from relay-10-128.wolfram.com (relay.wolfram.com [10.128.2.101])
+	by relay-ext.wolfram.com (Postfix) with ESMTPS id CDBC06044;
+	Sat, 30 Sep 2023 07:42:17 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay-ext.wolfram.com CDBC06044
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wolfram.com; s=relay;
+	t=1696077737; bh=HmydHPtFZLf6Wyo7DHhT0v4b/uOswpN2AZdNc6i7ojc=;
+	h=Date:From:To:In-Reply-To:References:From;
+	b=1im6SHN33mpYUPU5odEGDd2TkNVMJrr13fi6Mq6GFazO6/lOdAeLmnBR80WkflsLr
+	 w7kTfP6u3pNJy8qmv+EVnLAWGXiUbOv2Lcrmy+GeaNQRqDPMQYQT2ZhzaCEfGZpY3W
+	 f21iWmCsrqpzUm4hvLCKfXjNghgH03tKMf6HyLm8=
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by relay-10-128.wolfram.com (Postfix) with ESMTPS id AA49430004E;
+	Sat, 30 Sep 2023 07:42:17 -0500 (CDT)
+Received: from wrimail03.wolfram.com (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTPS id 66F97100671;
+	Sat, 30 Sep 2023 07:42:17 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 0FA451006C2;
+	Sat, 30 Sep 2023 07:42:16 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 wrimail03.wolfram.com 0FA451006C2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
+	s=E3ED0494-3FFA-11EB-8895-C5FFDA13CE33; t=1696077737;
+	bh=HmydHPtFZLf6Wyo7DHhT0v4b/uOswpN2AZdNc6i7ojc=;
+	h=Date:From:To:Message-ID:MIME-Version;
+	b=HOXpHJOaojPLZ2HAWsa2QZUY7cCUdY2mKOA+1TYl3J5YH7fDzOEgnZ5uLSbd71yw7
+	 ZD6l8lTQIlRFHlesjxlJSiYfL23bY3lx0YPQqJhQgKEiZ63BOiZspwzluYCtirMwHL
+	 ZQpYnCGH9sMVNtG1qPVOV/RwyQEynXIdhE8e9kuH1n17yeoOwsVsmA7JFjF2ciNkKK
+	 EUWUztdIVuOlwVVIgzaBSQ71og5hZJW7H9RYv+57gVfSm7b47Y8FHoBzWvwPpXqglk
+	 SYXlcn1Tme1R/4ZFSxN2dv5QqRw+eVGotx2rnQoSp8woWUKWwt3hXcMt2ZSs9WVfpW
+	 jp5VeqdEM8rSA==
+Received: from wrimail03.wolfram.com ([127.0.0.1])
+	by localhost (wrimail03.wolfram.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id BHeIVwO7Kpph; Sat, 30 Sep 2023 07:42:16 -0500 (CDT)
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 83A28100671;
+	Sat, 30 Sep 2023 07:42:16 -0500 (CDT)
+Date: Sat, 30 Sep 2023 07:42:16 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+Message-ID: <968364753.2878655.1696077736342.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <3429d1091991ec499009a88b080657d0a7640e8c.camel@siemens.com>
+References: <1477790382.2402907.1695827633513.JavaMail.zimbra@wolfram.com> <10067eb6a762f8f468b5f81db9f49b825f3ea96e.camel@siemens.com> <1723160879.2522128.1695880477176.JavaMail.zimbra@wolfram.com> <759339022.2543916.1695899840518.JavaMail.zimbra@wolfram.com> <3429d1091991ec499009a88b080657d0a7640e8c.camel@siemens.com>
+Subject: Re: accept after select for RTNet/TCP
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB7588:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7ff8bc9-c03e-4f7c-c011-08dbc0f38664
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	5My9Seg1YIgTc9+RjFxVHamtPkw8BKyM3wc3W6Ub5ghqQhVmXUaw0teBz11xDbqbxKRqcmWTV+5SP7gq7O9mEug1qmBOTS4DILdzVQRBbfn5sY6s+im0gKzqCb6ayZswn5hwtrU5xXQ8hd7fy4GH0J3ttwfU4we73lTMkpWgJwljKUyyStX4eVMy1LUTMAdCx5OrBDtjesOIjE/GnIJK5fo1CbRmMo0hcak4GzEN7ElXFor9lSOFJet/v0FStpm/UwnA5RWs5RSEDnfOtmip7hYvDG0FzlJWD7+cqGCgQ7bXN3DbRRAXhVmghzoL4GtNsYWO3fdClrdO5eZAFtu/NhdMcSK7ar6wqOZ2c6/i5a8YDs9b7am5nGi4U65ENHftAYfNQMAqtbe3SsBXRi1VF+ga06f6VdTRo15wHFPgyN328XUo7SnxQUsr8q6WokQVZaLiXnyVSRAVwBjicsyGlzqUDXF186TdzapjBPU6psMeNlVQfKsvR9EKHtIrSoV/M03vRAD3RiSWSNK9Fc9j1t/kR6TZjfWKpiyK335PJE593iXHc6qfhIHWQBLTiw666tdSteAZsm2nKYEmKDutbEMtQ7GIbkOCuTGHCGqmYVfjC5knXC/mjaJT507fO+vu/u62Y16IrW94c6NWa91XMQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(396003)(376002)(346002)(366004)(39860400002)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(83380400001)(6512007)(6506007)(2616005)(478600001)(966005)(66556008)(6486002)(44832011)(316002)(66946007)(66476007)(6916009)(26005)(8936002)(4744005)(5660300002)(8676002)(41300700001)(6666004)(82960400001)(36756003)(38100700002)(86362001)(31696002)(2906002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UG9Vbm1hOVE5bW1BMjdhb0pISjlBWTVUUnZkQkhwanNvbnJZWEo1SE1qOFU0?=
- =?utf-8?B?dEdwSkhZTVhLbkphMElPSE5UcjdlZTgxTi9Uc0VKY29hMHI0SEFReXBOQXQx?=
- =?utf-8?B?MG5iK0dqZWxHazlJcGVOaU00aTQwbmxiZzIvQjZqWldHVHRYdDBFY1VDK2hI?=
- =?utf-8?B?aDhLaWhvMW0xQlJWZnRCaWhaR000eS9McHA2Zy9pZzdzcnlzaWxDUmh3eVZQ?=
- =?utf-8?B?bzhodWNlaWxmK1NnZ1lET3VvcDhvNjFZYUVybWNhMGxZZW1LNHczNm1rek1T?=
- =?utf-8?B?eU5QVUZBVGxrWGZxT094YzlqaTVkWm5iWTkvUmRhQ1FGU01LR1FXT2d6b2ZT?=
- =?utf-8?B?bk05ZnJmNW9jRkhHL1ZYZU45WHVtWHJzRmdZQ0h5KytNYVpQaWZKTGVsZXJX?=
- =?utf-8?B?SS9XTnB0Y0YxTDhhM2ZRdC9CV3RLUTZUZ2phM05HRnI2N0tQdG5WZHpBRGd6?=
- =?utf-8?B?cC9LYXp1U3JXTXd5bC9NZk1kWUJaMG5yUFN3WXFRWVJhYkxYVTZCR0M4N1kz?=
- =?utf-8?B?Mldmc3V1RlhxcjFhYlZxa3VOekw0cDEzN1JNc2cvQmlwbkZKaHk2eHRmYWYw?=
- =?utf-8?B?N3F3MUV4VFdRK01aNG9XUWxrdExZUHdydmhHNThhMk8rWk9BZ0NHOC8xYU9B?=
- =?utf-8?B?QzhGejh1ZDh2UzY0VSsyZjFuTmtYM1hnMWtWazVFaTFJZlBseEhudmZMYU52?=
- =?utf-8?B?WjNiV3EralFEMWhZKzFiUjcva1Z2eFdhNDNSTjM2aHZzMXJrdVZ6Z2JWWWpN?=
- =?utf-8?B?d1FIRWljRDhYMHZLYmZpMVlaRkRsM1BxUEU2V05VY2JieC9QdFVZZGVjQXcr?=
- =?utf-8?B?d2JiQk1VYTI0NzNVWDJMcGZQQWZzSFlCL2wzZzRnY24xM2JYazA5S1FUN0ho?=
- =?utf-8?B?elRKZ3lCYzZ5QnlianFyVnFDdWx1NXJPMkVDTndhV1RPSSsreklRa0dwb0Ey?=
- =?utf-8?B?clAwNkhPTUxLQ3E2aEpLVjVCRkR0TjErMitTMmV2S1Q1d3pFSlpLai9EMXBn?=
- =?utf-8?B?TW1XS1FySUd4cXNnd280clJFdDdKc0xJRmg3TjhndmJ0Q0ZyZU5VSDFaQkIw?=
- =?utf-8?B?UGQ5Tkg0ZUVEM0FHTzVtVWVrRXpZc2twYm5qdjZzcUZmaEw2YU9ubC9xOW84?=
- =?utf-8?B?ZEpFam5jUDQ4eFBqL0FwdDZtUmw0S25VM1F0QkdOdTUxMkloSHltbThCdllX?=
- =?utf-8?B?QjhNY3FyYWtBWlU1Zm50aUs4c2lKUHFveEswWXdKbXI1elZBYnBraFBSV29M?=
- =?utf-8?B?OEY4dlZKSDM5c001WVQ0Rkk4eXU0eDJQaVIzaER6aEtjOFJjb3luV2drVm1W?=
- =?utf-8?B?VTh6ZVQwZ1RjYVNyMDJoVktsc00yM1dEZGJ0LzlJK2xJTzFHcjZwbTBvc0Z0?=
- =?utf-8?B?SHdwUFFUVjl3MXlsbWNTcHg2ZnVQRzYydzFSVTRES3BHRnZRT2FsYkhpS0s5?=
- =?utf-8?B?amVyNHI1c0lCNFIrOGY4Qjc2SitxNzFMVlJrUFAxM3ZlWFpYcnlrZEZDNS9i?=
- =?utf-8?B?OVVhV0VlMjNwcUhlejVIQTZiYWd3emk4dVhXV1ZScXpidFlyYk5WOHl4V0Vx?=
- =?utf-8?B?U0FtQk83UmNPSjE1NHJGNnh3RkFkMFVxVEdmUldoR2ZScGZUQitubVRNRzcw?=
- =?utf-8?B?NVQ3RUs2QjJQUEdVZTlBeUs5bVJVV0hhZVYxaTE3Wm9KRWVmdHlSdWJLdnh2?=
- =?utf-8?B?d3pzcERJOVFWTy9zeXVnYVNWdWFFTUo4V1dLM0Fkd0pxakplOUJEWHNmY0Za?=
- =?utf-8?B?aHBjTnpmbk9NQW0zeHB0YWpmelRqZlA2L3ZNNHd6NkJSaUJzc2JQMmxWcFBz?=
- =?utf-8?B?L0tod1MyZndFdDJqc3BRbmVPM3MwdWJPYlNMdHExWVR1dVZIM3hrSGtWMGxT?=
- =?utf-8?B?MllLWCtqRjVqWjhKcUhJVVYwZEsxODEvMU1pY3ZUYTFiQjkwM3dHdE1RL0dP?=
- =?utf-8?B?M0lTcUpjSDRZU2V3WHEycldOLzIrQVZYUTJodTNEbmxXNmhOYXRjMGZrRVdZ?=
- =?utf-8?B?MW1SVEtxbXRCdUsvUmVSYWFSSldzbXhGenY4alQvVUpPQnNES3BrV1VETnpy?=
- =?utf-8?B?U04wVmVBMlJwaGZaek4vZjJRbDBsRXBrS3JIcVdsWkp2WkY4ZEVSVjczTzlB?=
- =?utf-8?B?dys3cGloclVYUEVsOTdYclJwUVZtRndEdFIyYXdzTk0zSjEvT2dBK2kvVDQy?=
- =?utf-8?B?dVE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7ff8bc9-c03e-4f7c-c011-08dbc0f38664
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2023 13:53:57.0978
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NOGLk8X7KlivkeqliDZs9fm/PcT+0jkPzhHg5UWcZsI+Nn1hpyGhucDwiBF84NkuUEj0RNXDRVZQGHw5Q4ncqw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7588
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [46.59.13.250]
+X-Mailer: Zimbra 9.0.0_GA_4485 (ZimbraWebClient - GC116 (Linux)/9.0.0_GA_4478)
+Thread-Topic: accept after select for RTNet/TCP
+Thread-Index: jPKbEgFhS626qNsKxMD8ZyoZNbsUhA==
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
 
-No adjustments needed on our side.
+----- Den 29 sep 2023, p=C3=A5 kl 12:41, Florian Bezdeka florian.bezdeka@si=
+emens.com skrev:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+> On Thu, 2023-09-28 at 06:17 -0500, Per Oberg wrote:
+> > ----- Den 28 sep 2023, p=C3=A5 kl 7:54, Per =C3=96berg pero@wolfram.com=
+ skrev:
 
-Patch from v1 is now upstream.
+> > > ----- Den 27 sep 2023, p=C3=A5 kl 22:21, Florian Bezdeka florian.bezd=
+eka@siemens.com
+> > > skrev:
 
- kas.yml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > Hi Per,
 
-diff --git a/kas.yml b/kas.yml
-index 26ea415..1b2e857 100644
---- a/kas.yml
-+++ b/kas.yml
-@@ -22,7 +22,7 @@ repos:
- 
-   isar:
-     url: https://github.com/ilbers/isar.git
--    commit: 4de8b0d5d68ad46829fa1360eabcf3fc8662a39e
-+    commit: 216f0721265fcfe965ac48b51a0128d612d89bf4
-     layers:
-       meta:
- 
--- 
-2.35.3
+> > > > On Wed, 2023-09-27 at 10:13 -0500, Per Oberg wrote:
+> > > > > Hi
+
+> > > > > I'm currently porting parts of an application that uses some TCP =
+during startup
+> > > > > to Xenomai. I have a working example of a TCP server but i cannot=
+ make the
+> > > > > "select" part work.
+
+> > > > > If I do
+
+> > > > > fd =3D __COBALT(accept(list_fd, (struct sockaddr *) &client_addr,=
+ &client_len)))
+
+> > > > The usage of __COBALT() should not be necessary, the Xenomai functi=
+on
+> > > > wrapping will take care of redirecting the call to the cobalt world=
+.
+> > > > (Assuming you are using the LDFLAGS and CFLAGS delivered by xeno-
+> > > > config)
+
+> > > > That allows you to compile the same code - but with different flags=
+ -
+> > > > for both worlds without modifications.
+
+> > > > > without the select part it works. If I do a select before it retu=
+rns "Invalid
+> > > > > argument".
+
+> > > > I can remember that I saw something similar in the past. If I recal=
+l
+> > > > correctly there was an ordering problem. It somehow crashed when th=
+e
+> > > > first connection request came in before the accept() call happened,=
+ or
+> > > > something in this direction. The socket state was somehow "corrupte=
+d".
+
+> > > > I should have it on one of my TODO lists... Unable to find it right
+> > > > now.
+
+> > > > > The "select" part:
+> > > > > ------------------------------------
+> > > > > fd_set in_fds;
+> > > > > FD_ZERO(&in_fds);
+> > > > > FD_SET(list_fd, &in_fds);
+> > > > > int selRet =3D __COBALT(select(list_fd + 1, &in_fds, 0, 0, 0));
+> > > > > (FD_ISSET(list_fd, &in_fds))
+> > > > > {
+> > > > > printf("list_fd (%i) is in FDSET\n", list_fd);
+> > > > > }
+> > > > > ------------------------------------
+
+> > > > > The program works when compiled for regular linux.
+> > > > > Is select for TCP RTNet a no no ?
+
+> > > > select() should work as expected.
+
+> > > > Can you share a complete reproducer? That would simplify things and
+> > > > increases the chance that someone is able to look into it.
+
+> > > > Best regards,
+> > > > Florian
+
+> > > > > Best Regards
+> > > > > Per =C3=96berg
+
+> > > Hi Florian and thanks for answering
+
+> > > The explicit use __COBALT / __STD wrappers is for some of my code tha=
+t sometimes
+> > > go on a real time socket and sometimes on a regular socket (depending=
+ on the
+> > > destination). I think I found an issue when leaving it out for some s=
+pecial
+> > > cases. (But it might have been the missing pselect that was the real =
+issue)
+
+> > > That said, I also use it to ensure that there are no missing syscalls=
+ when
+> > > debugging. E.g. I think I recall that pselect was missing in the impl=
+ementation
+> > > and that became apparent when putting __COBALT in front of it.
+
+> > > My issue is 100% reproducible (afaik) so no timing issues show up for=
+ me in the
+> > > regard.
+
+> > > I can certainly share the code. My example is an adapted version of a=
+ TCP
+> > > Client/Server demo. I will put it on github if that would work?
+
+> > > A few other notes that came up during the porting:
+
+> > > 1. It seems like accept does not like beeing called with null pointer=
+s to client
+> > > address
+
+> That might be a bug, or a RT simplification. Would have to look into it
+> in more details. Jan, any idea?
+
+
+> > > 2. Accept returns the same socket number as the listen socket, and th=
+us closes
+> > > the socket when the connection closes. I guessed that this was a simp=
+lification
+> > > deemed ok for real time. This effectively makes the TCP server single=
+ client
+> > > because SOCK_REUSE is not supported, right?
+
+> I'm not familiar with that code yet. But yes, might be a simplification
+> for RT. Jan, any thoughts?
+
+
+> > > Best Regards
+> > > Per =C3=96berg
+
+> > The example code is now available on
+
+> > https://github.com/droberg/XenomaiTCP
+
+> Thanks! I found
+> https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/34 meanwhile.
+> So we would be happy to take patches filling this gap. Are you
+> interested in working on that?
+
+Please elaborate. My kernel hacking experience is not great but I'd like to=
+ get more experience. Perhaps this is a good way of getting my hands dirty.=
+=20
+
+Are there any ideas right now for what needs to be done, especially in term=
+s of testing and conformance? I would need to get started with smaller piec=
+es to be able to get up and running properly.
+
+> > Best Regards
+> > Per =C3=96berg
+
+
+Best Regards=20
+Per =C3=96berg
