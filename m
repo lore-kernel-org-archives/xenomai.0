@@ -1,179 +1,156 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2074.outbound.protection.outlook.com [40.107.21.74])
+Received: from relay-ext.wolfram.com (relay.wolfram.com [140.177.205.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C96101F0
-	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 08:24:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E2fvQbDMzBlqHJ18TAMgsNlAfM9Dei+8ljo/Mq8qP5fUp7WB+RSieSxu9wmHJ6sTCXDH7t5om1Icfq3YKt3wmjB1/JR6oydjkxgb5w3bEUQfqdl4WpjQN/UQlqQMLEEbHhYPlWepeZ+bqL2z5BVngTHcMvme3l7xGJR8ExxA0u5NLHqSPqZfRjbtInUGcWftw9pk3k/KM7/RF8wbolgRz0Z/KY7nhFnZpXds2Baj+lGQTlRGVEQb/dZauGt8/v4en6YrP7KviKY8oJ5MKsJLXUQOrrNw3wZE6DET7XxbNTbKYBuA9W6v5jKI5xFXBQ9H5ZEXj6yWPTRPG2lUBrRN/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YRlvr9ybGymsTdpulBWp2H2yeOwnocSuUOuhK+6wbCY=;
- b=DZon1xNQJGnsj5P7Ymdpjqd4s4Q8wsoTV1hekQ3CRKo8IiVLaRznEi+gLnVpCqSWKA6YEZtisMuFmSPBotB1TuGk7gEH1JM665dnI4NAcsqkxALdS9qe4YQSqTyTbybJMoCLfEMpGyQiZ833zkIIjaqUzVyJgLjY7uobxlmsp/UUt+q7mewpgWdqPdTPRUfXp3q3UBFRUpSpS4h0mfkVZfyuGvmpcTlLyVr6d6yUyQExokkdHC8KO5pTO7ws/o6ivJouDwBgd8BUKdQMNTodvLQtRcJ7hGFVJWlbu9WL/pq9haqhZzPkYAjHCT/C6fnj0W6ZRAd2IKcN5hu2FNUQcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YRlvr9ybGymsTdpulBWp2H2yeOwnocSuUOuhK+6wbCY=;
- b=Ljw51GEzkQh3Ly6vS54vTiSDVLHwguE8Mou2axWS02vdZnw5VjqvZs49W0LVsGFo4n7nNUP7GijbpcbK9uTWELxhftscKZcwmIa21Kg0ieNU5mXV+OnqJFdkYw6kpmyiFZ1NBsEXP9M57l/SKmO3QG3WLyrhsbpAtIO6Keky1LzTzehaK9eBWQcudyVdaXrFDWUovpMZnGYBn42Rb/eySs3Cl8nZgXBpeB+ag2IY7oTkqVdzkGGCI+3cJ7L+6Mg+qj3df/QBXdQMxy7c4GU4sSnPPBV4nBgOupDcLgV1PU/2qwWgJFifG0S6wGjOyv5YLv0o8BWjgaHetECC4lF0Kg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS1PR10MB5746.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:47d::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.33; Wed, 4 Oct
- 2023 08:24:04 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7f20:d403:b43d:12e2]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7f20:d403:b43d:12e2%3]) with mapi id 15.20.6838.033; Wed, 4 Oct 2023
- 08:24:04 +0000
-Message-ID: <c3132113-ffd8-4783-975f-4c601d4d0181@siemens.com>
-Date: Wed, 4 Oct 2023 10:24:02 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Call for Participation] Xenomai Community Meet-Up in Wuxi
-Content-Language: en-US
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
- "Wang, Rick Y" <rick.y.wang@intel.com>
-References: <56c4c74c-d971-4cd3-88b4-0cf1ef50c4f4@siemens.com>
-In-Reply-To: <56c4c74c-d971-4cd3-88b4-0cf1ef50c4f4@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0001.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:15::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B567101E2
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 08:45:34 +0000 (UTC)
+Received: from relay-10-128.wolfram.com (relay.wolfram.com [10.128.2.101])
+	by relay-ext.wolfram.com (Postfix) with ESMTPS id ACD135D73
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay-ext.wolfram.com ACD135D73
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wolfram.com; s=relay;
+	t=1696409126; bh=H/QvGk+OG8nddZRDXXa/o4ZPlTJpst0FkAdrunxWIi8=;
+	h=Date:From:To:From;
+	b=tp29XWcxQIHe49loCrXWKoQ39DzCN51GUmKuvLlMZdZTh+OHhWl3hRv12qDydl9d4
+	 A/MB8i5naRExqt6/mKGXmPKGutbAruR90RtVbPpsuhqoGKHRrPq+VqLyXBppR7LAwJ
+	 zaPWo6WdI66hQs+T+HtODpKg/b/HW1JB7pXVOotA=
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by relay-10-128.wolfram.com (Postfix) with ESMTPS id A882630004E
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+Received: from wrimail03.wolfram.com (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTPS id 9C19F100673
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 8008D1006B3
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 wrimail03.wolfram.com 8008D1006B3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
+	s=E3ED0494-3FFA-11EB-8895-C5FFDA13CE33; t=1696409126;
+	bh=oaFxu1K68Wz+TWHOf08NhkrM0EdmZ+//22frRAmDujM=;
+	h=Date:From:To:Message-ID:MIME-Version;
+	b=FHVvcoydapmPm0z9uSTLD3zkDNFtoP3QDe8wr5XgFvzuNKY5FRwPo0BVW7GB9v7Jh
+	 CSBNGCtGWGBSxXb1NH1W3cxU/QfHuf8DcVXFhf2xDbHffmkdoRZIqU7xmEnMsxY09Q
+	 o5yir+5+/dBgpra6keTu8Vg8vVsIGdoQ3ZMMts6XfZBHX0eZwSLF0zEj5DwdYaxA4C
+	 KmqkHVy9hiNS19a32T+EvCVbGkFoLHy/uKseLFY//2K3DyMCzd9cC+8sf+BWudULbv
+	 M31sWEnAiUb0BK4wtIVW3rhVjdAI+3E8xRprmIhV/AD/doUriPhcHstcP9oOaTGjsP
+	 CLqNfsmaYiHfw==
+Received: from wrimail03.wolfram.com ([127.0.0.1])
+	by localhost (wrimail03.wolfram.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id j_oNpEhO9Uw2 for <xenomai@lists.linux.dev>;
+	Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 68258100673
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 03:45:26 -0500 (CDT)
+Date: Wed, 4 Oct 2023 03:45:26 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+To: xenomai@lists.linux.dev
+Message-ID: <1516654157.3383261.1696409126391.JavaMail.zimbra@wolfram.com>
+Subject: RTNet unable to handle kernel NULL pointer dereference at
+ 0000000000000068
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS1PR10MB5746:EE_
-X-MS-Office365-Filtering-Correlation-Id: 71359439-a1df-47b4-49e7-08dbc4b3457c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	70W+Ikxon/Q/0+or3AjrZi8x3PwwbHGN7hIwDydqjHeAfh5G5+xEVyitXQ37oDT5RY298cSp+QFcYfYMMBtOE4ZEhXnCa77Fu3aAbH2/7Lsn4icGI/Z0AaEOv6Au500BjVyzozUsO8HBOIThOJmiPrhVCmPaFVzrpMg4qNejFem3a4iAvyZJqil4wwVu1tPZAG8GXweX5OkwNoBueOMhJtj3btl637K7lTkIfgTnJqZacGrIDi6FRU9N1lSt1Hdw+Y1jj/RCY9j0g4XrAOT51Go6PjUwSOZ2rlwFsxUROOBkfi0JHoUxmRuagdICgNBEvBoCfjCLogc+TnfZOWrFitJiTIvQkfp11h25OIn3gPObu5tsEDdb03XS+Xj7L3fmwxbtQ5rUvfd5gwJ0TkG691BAtxtT3PmYJ3lFxPGbICcaP5JXQe6ez6valYMW5fe47xopUUV2FeDclzxaiM6UO6JhN0cdRls1ROKbVNiYvfkU552pZyvS2+1uGmYIr2biQNnKP1IEmaaQjV4JiwgmgCrEK37qKxkyMUjTqAv7rOq8FL8jIJBVcWSYm5ijL0Vnx7Ry/UbLnzWsRtY5KEcs3/u/JhFHcHAW3XXbTHmzZ04i6eZv2tFB/XSZYi/lFrMN00U/PU7ZoNt9i44ielmwgg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:zh-cn;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(346002)(39860400002)(376002)(396003)(230922051799003)(451199024)(1800799009)(186009)(64100799003)(2616005)(31686004)(6512007)(6486002)(6506007)(478600001)(53546011)(82960400001)(38100700002)(31696002)(86362001)(66946007)(2906002)(316002)(6916009)(66574015)(83380400001)(26005)(36756003)(8676002)(66556008)(66476007)(4326008)(54906003)(44832011)(8936002)(41300700001)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZWF2dDJmMzNUTDRma3hYV1VkeG9NS2g5WXlSY1oxTkNrYzNsMHh3M3VMVzVO?=
- =?utf-8?B?VDBKc1lRS2k0MTRQQ20xWXZmWHpnc01tVEp6QU0vUWFZNENKQk9KWWs1OU15?=
- =?utf-8?B?WWpGYzZ5eHRrMmtpZCs1cENXTVRBOXhZUm1PaS95K3ord3NjVHZIZ3dwNnhJ?=
- =?utf-8?B?VGZaOEF5ZWluUHZnd1BXZS83NHVuMUt0b3JpRUxKcDNsMDhvVTAzYW9DZ1ZN?=
- =?utf-8?B?M2RzbjJJWUg2R0xLb0dIMHdETUF2V09FZ3RBbGJmc0ZCbW9PYm51UWNBN1Vp?=
- =?utf-8?B?YkdBdnphSVRic2ZBRjVyU1BUbnpaK2t2OVJqaXFtSWpSWk1yQVQzdDRObzVP?=
- =?utf-8?B?UEVGWTRsbHpNUGlPRVM3SjBxbTlScDVibm9PNmhtMTFVOEhIUFVBdVpkRnpC?=
- =?utf-8?B?VjhOWlE0ZFY5b0ZnTXNaWEZ3S2g0WDhtUTZnMW9vUDZ4MW5XYmpEdDlRUDVP?=
- =?utf-8?B?YWlKbGZBMUxpOVltSHNrQi9qcmgyT2ZPQmFlZVZwUndTbkpqbng5Z2NCL0RS?=
- =?utf-8?B?c1hhaHZ1QVh0eVh5alJPR1dvMHFwZ0lWSWR1Z043TCszczhRYWVtQjNFSGht?=
- =?utf-8?B?a293ZFRvQytyLzZoT2piUzcwb3dKQzBKT0xzcnc3UVI0anRJZS94Q282K0V5?=
- =?utf-8?B?ZCtPNVVubUJLL2Jnak0waGdQc2NCK2xOdDdHY1R3cHhZbTZZNDVzTVhhZUhC?=
- =?utf-8?B?Q0x3UTNKait4aWJJczk0RHViMjRDZGViL29ONVozSzh4Vnc0d2RQeG5PUHh4?=
- =?utf-8?B?SWRHTmM2YTVoWkVrMXNVaStodDBLeFpzOWtIWngzWVliOEtPZlROTm1SRW9R?=
- =?utf-8?B?N2crT1ovUDliMXRjR3h4ZmJOTjN5VEw5eGVFR29yTVlYU2dRamRkeHBKSllB?=
- =?utf-8?B?S0Q2L2lkaFArSGxDSVMreHgzSEwzcDA0SGUzWkV4T3BQZXdyaFUrc1FwajVQ?=
- =?utf-8?B?VDlRa1Z2QlpQalZudmZPRFlQVERENU0yMllWMEk2SlZ6U0V6M0ZKY2JxMUpt?=
- =?utf-8?B?cGJJRHY3VWx4Tk5hM2pSVmRzOUhzQnhvYVoyN0dMZkU3L2xFOXlkTTc2ZWhh?=
- =?utf-8?B?L3d1UDl3RGxONXlvRFlDRTQyOU9uSURqQkNjcU0xVVBNTGNWUEM3T2EvS2pP?=
- =?utf-8?B?cGpkVzJqdFBiNkdpTlV4RDZTaFUyVHJFdldvRzFDM29lZWNnb2JLL2gySUdG?=
- =?utf-8?B?R2VFMURma0tnMzk5bG5rUUoybEovOFJWNjF3OWh4OHpjWnM0RW5uRU9iWW1P?=
- =?utf-8?B?Yjgzc3ZZamhaTmVoa2J0aVRjNGxDRm5OdnRMNDMzai83M0Jlcm9XL3d3Witz?=
- =?utf-8?B?QitwOVNCbmxWeW1jKzNoQWt4blZSRjIyTlVxNWxkSUhwVFNTeWEwNW5idkpT?=
- =?utf-8?B?TXlqZEZIVGVSZUxpTXJjU2hzTFA5QStsa2pROS9SRExFZmNKUUpzU3VGU0My?=
- =?utf-8?B?QWM4Umx0SEhMK2NSSWFrS25EU3RCRVRGc3FTV2FOMnBkQVdFSWRhVkF4OGl0?=
- =?utf-8?B?YkdMQUx1T0E2ZnhUM29LZGVRNFJqNU8vaFB4cXhYNEwrZEdZVWkxU1EyUkM3?=
- =?utf-8?B?UTZIaXd4NDhlU1dBQ2doZVUyNjlZVXR6NVpMSUpqVkpheVMrN2cwYkY1NVhw?=
- =?utf-8?B?V25Uczh0bzJpTGhwNVU2YXBNZ2dXRzFubWdWV1hyZEQyVkZ1UFpCQ1VFTHov?=
- =?utf-8?B?V25BS1Q4RTRnYXR3dHIvTXNrd3dzUDNLMlNVdXNONTNhdWtHTysyajV2TjV3?=
- =?utf-8?B?enVQaURGTzAwaUd0alFMS2pPVkI5SFI3WUNkN2ZTZVp4T3M4S3lmYXMrSC9n?=
- =?utf-8?B?eHNEVTcyQWpTRGhJUDlqZmo2UnpoV2N0aHlienVpYXAvNUREbk90dEJlSUVz?=
- =?utf-8?B?dERkQVQ3WFQ2bDZCZThIMWZrSXZhOFB3L3M1UXFFdG5OelZEVHNvVTgxTmhv?=
- =?utf-8?B?bU5NNHVPS3NUM3FzMFdxeEZoM0lQbUNnNUxhdjNRZThRUFNnMThYcXBiWW5N?=
- =?utf-8?B?YXhzaWFlVDhGQU1yQWRtbENEbnVaWksyZHRuQXpMb3FiYUprQmU2Uk5IODlr?=
- =?utf-8?B?NnZhQmZyTkZjQi9meE1lSG9IVnVxNW13bFhFQnYvR0U3dVFUdVNwWmlmblUr?=
- =?utf-8?B?TmVRaS96RjlCakh2Q3FjVnJZaHNnSXhyM1J2SEZYMXgyWUlFTGlXOGE0QndC?=
- =?utf-8?B?aUE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71359439-a1df-47b4-49e7-08dbc4b3457c
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2023 08:24:04.8134
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: l50UsHS9JPJ8eP3rZz5+wHgTbHo/uf6X17pt5Nny7cQI+OMnpgYOrDF+LXHPZwey1rwB/ShBMYrOigJk+DyZjQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB5746
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.10.156.136]
+X-Mailer: Zimbra 9.0.0_GA_4485 (ZimbraWebClient - GC117 (Linux)/9.0.0_GA_4478)
+Thread-Index: z7oMtg5zsWyig8hWMyvUH5wEmXMAlg==
+Thread-Topic: RTNet unable to handle kernel NULL pointer dereference at 0000000000000068
 
-On 12.09.23 18:55, Jan Kiszka wrote:
-> The Xenomai community is planning to hold an in-person meet-up with
-> presentations and live discussions on November 30th in Wuxi, China.
-> Attendance will be free for everyone, just a registration will be needed
-> because we have limited capacity. More details will follow.
-> 
-> Xenomai社区正计划举行一次面对面的聚会演讲和现场讨论，
-> 计划于11月30日在中国无锡举行。每个人只需注册即可免费参加。
-> 由于能力所限，更多细节将随后公布。
-> 
-> Sessions will be live-translated and also recorded to share them
-> afterwards. One session will be given by the Xenomai maintainer on
-> the latest news and plans of the project. We will furthermore have a 
-> slot with Q&A and open discussions. Beyond that, we are looking for 
-> talks from the community, in Chinese or English:
-> 
-> - How are you using Xenomai?
-> - Are you working on ports or extensions of it?
-> - Do you have best practices to share?
-> - What do you expect from Xenomai in the future?
-> 
-> 会议将进行现场翻译和录音，以便之后分享。
-> 其中一项日程将由Xenomai维护者提供项目的最新消息和计划。
-> 之后还会提供问答和公开讨论环节。
-> 除此之外，我们也在寻找来自社区的演讲，内容中英均可:
-> 
-> - 你是如何使用Xenomai的?
-> - 你们在做移植或者扩展吗?
-> - 有最佳实践可以分享吗?
-> - 你对Xenomai未来有什么期待?
-> 
-> Please send your proposals consisting of a title and short abstract to
-> jan.kiszka@siemens.com and hongzhan.chen@intel.com.
-> 
-> 请将您的提案，包括标题和简短摘要发送到
-> jan.kiszka@siemens.com和hongzhan.chen@intel.com。
-> 
-> Important dates:
-> 
-> - CFP closes:            Sunday, October 8, 2023
-> - CFP notifications:     Wednesday, October 11, 2023
-> - Schedule announcement: Friday, October 13, 2023
-> - Event:                 Thursday, November 30, 2023
-> 
-> 重要日期:
-> 
-> - 提案征集截止：2023年10月8日星期日
-> - 提案结果通知：2023年10月11日星期三
-> - 日程公告:    2023年10月13日星期五
-> - 活动:        2023年11月30日，星期四
-> 
-> Looking forward to seeing you at the meet-up!
-> 期待与您相见！
-> 
-> Jan, Hongzhan, Rick
-> 
+Hi list
+I experienced a crash  with Xenomai-3.1 on Linux 4.19.114-cip24
 
-A gentle reminder to all who haven't submitted something yet.
+It does not seem to be the end of the world though because things were not =
+immediately broken for me and I can't reproduce it.
 
-Jan
+Any thoughts ?
 
--- 
-Siemens AG, Technology
-Linux Expert Center
+[  129.326872] RTnet: registered rteth1
+[  129.326874] rt_igb 0000:02:00.0: Intel(R) Gigabit Ethernet Network Conne=
+ction
+[  129.326875] rt_igb 0000:02:00.0: rteth1: (PCIe:2.5Gb/s:Width x1) 00:1b:2=
+1:e0:b6:31
+[  129.327002] rt_igb 0000:02:00.0: rteth1: PBA No: G69016-005
+[  129.327003] rt_igb 0000:02:00.0: Using MSI-X interrupts. 1 rx queue(s), =
+1 tx queue(s)
+[  321.182356] rt_igb: rteth1: igb: rteth1 NIC Link is Up 1000 Mbps Full Du=
+plex, Flow Control: RX
+[  361.783381] [Xenomai] switching rtnet-rtpc to secondary mode after excep=
+tion #14 in kernel-space at 0xffffffffc03855a0 (pid 1445)
+[  361.783386] BUG: unable to handle kernel NULL pointer dereference at 000=
+0000000000068
+[  361.783415] PGD 0 P4D 0=20
+[  361.783428] Oops: 0000 [#1] PREEMPT SMP PTI
+[  361.784109] CPU: 2 PID: 1445 Comm: rtnet-rtpc Tainted: G        W  O    =
+  4.19.114-cip24-xeno-cobolt #1
+[  361.784809] Hardware name: Default string Default string/SKYBAY, BIOS 5.=
+11 09/22/2016
+[  361.785504] I-pipe domain: Linux
+[  361.786214] RIP: 0010:rtdev_reference+0x0/0x70 [rtnet]
+[  361.786911] Code: 00 eb e0 48 89 ef e8 ff 25 00 00 89 de 48 c7 c7 19 cf =
+38 c0 e8 da fb 91 c1 eb c8 0f 1f 44 00 00 66 2e 0f 1f 84 00 00 00 00 00 <48=
+> 8b 57 68 48 85 d2 74 52 53 8b 47 5c 85 c0 74 19 8d 50 01 48 8d
+[  361.787708] RSP: 0018:ffff947dc01a7df0 EFLAGS: 00010206
+[  361.788516] RAX: 000000000000587e RBX: 0000000000000000 RCX: 00000000000=
+00000
+[  361.789333] RDX: 0000000083ca0000 RSI: 0000000000001a00 RDI: 00000000000=
+00000
+[  361.790153] RBP: ffff891e64a4c058 R08: ffff891e617e8138 R09: 00000000000=
+00002
+[  361.790980] R10: 0000000000000000 R11: 00000000000005dc R12: ffff891e617=
+e8110
+[  361.791812] R13: 0000000000025540 R14: ffff891e64a4c278 R15: ffff891e617=
+e8000
+[  361.792646] FS:  0000000000000000(0000) GS:ffff891e65b00000(0000) knlGS:=
+0000000000000000
+[  361.793490] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  361.794334] CR2: 0000000000000068 CR3: 0000000051c0a005 CR4: 00000000003=
+606e0
+[  361.795182] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000000000=
+00000
+[  361.796026] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 00000000000=
+00400
+[  361.796869] Call Trace:
+[  361.797721]  rt_tcp_segment.constprop.21+0x1ca/0x510 [rttcp]
+[  361.798557]  rt_tcp_send+0x3e/0xd0 [rttcp]
+[  361.799411]  ? rtdm_event_timedwait+0x181/0x320
+[  361.800271]  rtpc_dispatch_handler+0xd4/0x1f0 [rtnet]
+[  361.801137]  ? xnthread_map+0x370/0x370
+[  361.802002]  kthread_trampoline+0x77/0x133
+[  361.802868]  kthread+0x10e/0x130
+[  361.803716]  ? kthread_create_worker_on_cpu+0x70/0x70
+[  361.804591]  ret_from_fork+0x36/0x50
+[  361.805464] Modules linked in: rttcp rtpacket rtudp rtipv4 igb rt_igb rt=
+net x86_pkg_temp_thermal e1000e pcan(O)
+[  361.806378] CR2: 0000000000000068
+[  361.807284] ---[ end trace a94628c3ed940012 ]---
+[  361.808201] RIP: 0010:rtdev_reference+0x0/0x70 [rtnet]
+[  361.809144] Code: 00 eb e0 48 89 ef e8 ff 25 00 00 89 de 48 c7 c7 19 cf =
+38 c0 e8 da fb 91 c1 eb c8 0f 1f 44 00 00 66 2e 0f 1f 84 00 00 00 00 00 <48=
+> 8b 57 68 48 85 d2 74 52 53 8b 47 5c 85 c0 74 19 8d 50 01 48 8d
+[  361.810147] RSP: 0018:ffff947dc01a7df0 EFLAGS: 00010206
+[  361.811161] RAX: 000000000000587e RBX: 0000000000000000 RCX: 00000000000=
+00000
+[  361.812184] RDX: 0000000083ca0000 RSI: 0000000000001a00 RDI: 00000000000=
+00000
+[  361.813207] RBP: ffff891e64a4c058 R08: ffff891e617e8138 R09: 00000000000=
+00002
+[  361.814222] R10: 0000000000000000 R11: 00000000000005dc R12: ffff891e617=
+e8110
+[  361.815248] R13: 0000000000025540 R14: ffff891e64a4c278 R15: ffff891e617=
+e8000
+[  361.816246] FS:  0000000000000000(0000) GS:ffff891e65b00000(0000) knlGS:=
+0000000000000000
+[  361.817247] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  361.818213] CR2: 0000000000000068 CR3: 0000000051c0a005 CR4: 00000000003=
+606e0
+[  361.819152] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000000000=
+00000
+[  361.820047] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 00000000000=
+00400
 
+
+Regards
+Per =C3=96berg=20
