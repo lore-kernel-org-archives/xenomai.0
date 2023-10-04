@@ -1,62 +1,61 @@
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0FF62D
-	for <xenomai@lists.linux.dev>; Tue,  3 Oct 2023 07:10:09 +0000 (UTC)
-Received: from relay8-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::228])
-	by mslow1.mail.gandi.net (Postfix) with ESMTP id EBCDDD0643
-	for <xenomai@lists.linux.dev>; Tue,  3 Oct 2023 07:06:43 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 79DBB1BF20E;
-	Tue,  3 Oct 2023 07:06:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1696316796;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=AleeyNyZK01KSroxhEVTHjgWdyPHh/ujS0jB8ji8UyI=;
-	b=J5JC/NXLoUzXpEMgSWopxHBvtQc9UkIzf6vzXIbOC1hZ+5hj87KWiP6xkA+fJrMxO32ioY
-	wosZyG7FmD8PRjmRQXs+yosPp5jCjby0VK9JfyYcR3qneIQbkFN1t52dho9dNCUe1Aa6SN
-	SXWMTDx0HWKev35oWO3/ZNXG65kRsmfyxTAFnH9F2WLzR0Pm8PvzhC+ABvQcVysYzaxKib
-	k5wsjpXl2Ax7B3MA4K/3PdGhM/Vv4FsU91vr+cwkDEy8y4E5i7kBHm2nMqyOgYJo08vgR+
-	ZPdBFjIIUAmgXf2uoy6znVjCK1XmKmdzObJyG/DmIx5lpcLaKvGhZLywx77b4w==
-References: <1cd875106cdf555e52734462a9d846ffd3549556.camel@siemens.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: Dovetail 6.1.54: IRQ handler enables HW irqs
-Date: Tue, 03 Oct 2023 08:56:08 +0200
-In-reply-to: <1cd875106cdf555e52734462a9d846ffd3549556.camel@siemens.com>
-Message-ID: <877co4rxqh.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B424F610E
+	for <xenomai@lists.linux.dev>; Wed,  4 Oct 2023 06:53:51 +0000 (UTC)
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-50567477b29so2035102e87.3
+        for <xenomai@lists.linux.dev>; Tue, 03 Oct 2023 23:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696402429; x=1697007229; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RUv7gi4/o9Hy6qdqwKt2letdUpweyOIGKwPjzHPpqw8=;
+        b=XoqftPQCCPlzkBe0dGISLwSN6NhDiRRQXJ/DUclFBVsrufgXqKwZP8h0COTDf5+hy/
+         L1bI0QTwqj9/6Xw68erJ2UpjsF20OMMfyzaC6va7WyCre7DZrdxzSphOfd2UIFCoZA6c
+         QxUj72Hausrj06hxEMVhI+K/u9+lqZSa3WTbVirFLfB2HaNE9Tg9SwvtJSXeuLj/4f0g
+         fP+6xmdfrzVtzqKanAVH5GbzzK1StpPgJIEyY3DrIfGYhU/yu0DBI/p7ekB6eGJBopI8
+         YttdfFKc48ODJb4Z1vEzMZ9O4iwIfawEA+La2kdj4KuogySgKwMgtRHUU/V03D8z1l/2
+         5a9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696402429; x=1697007229;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RUv7gi4/o9Hy6qdqwKt2letdUpweyOIGKwPjzHPpqw8=;
+        b=Mj6HSyC5Sos+ou7nN1EieIfYkLFoRGUm0g6Ga/t1gwWrjnBWPBszA/wJVfAOcXHQ2S
+         /t/luoxMSxCbneLwDrCDII4Y+9EA9WigybGgLx+vTxKs2SO7fb4ZnFJm+95A9m2AXwAO
+         PSXViAT5/Y72dUmzUEH3EDIXigpkJXBP+1f4alPyBgFRlsr55wOUNHyYsVg1H16WIwhY
+         HyIZaiHmgcL3/4nQEAUxs2UyXS+Z1X84yoD7RrTgbcs7lsPC0AqFMfvAfzMmua1/Xq2L
+         qUa3mO+Ckz4H4J5uRLVjAdcNVix6Fti1IOBN/zwI0VbJd52e3LOg7S0r5gGDKYPZH1oX
+         h6sg==
+X-Gm-Message-State: AOJu0YwsgOjFz64tRMYBa5Er7HxYfpY+0Qp+bTH3Q0AR5skcIXbiLu/h
+	jhlUNM73jXb0ulFV/xxkIYI1Ejk47AL3jZcDK5E=
+X-Google-Smtp-Source: AGHT+IFzqwUt1oQnc2l1XVJ3fy3sNVsxdSz6w/ydjDgSlWVSWFfeI1UGH9IqmkC2kMuSbjlh8iWSRH3hSjBFXNcS44c=
+X-Received: by 2002:a19:6d1a:0:b0:4fe:7e1f:766a with SMTP id
+ i26-20020a196d1a000000b004fe7e1f766amr1073029lfc.24.1696402429244; Tue, 03
+ Oct 2023 23:53:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+References: <MN2PR11MB4285288BBE0F81E94669D614F2F9A@MN2PR11MB4285.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB4285288BBE0F81E94669D614F2F9A@MN2PR11MB4285.namprd11.prod.outlook.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Wed, 4 Oct 2023 08:53:36 +0200
+Message-ID: <CAFLxGvz0Rov5jmASLW95ndxmAH-shKBRgwb0eFr+uFk=-fU+Jw@mail.gmail.com>
+Subject: Re: Reminder: Xenomai community call on Wednesday, Sep 20, 2023, UTC
+ 7:00 AM
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Sep 20, 2023 at 4:17=E2=80=AFAM Chen, Hongzhan <hongzhan.chen@intel=
+.com> wrote:
+>
+> We have the Xenomai community call today.
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
-> Hi Philippe, Hi Jan,
->
-> I'm currently testing the latest Dovetail 6.1.x release, which is
-> 6.1.54 to my best knowledge. 
->
-> After updating I run into the following problem. There have been recent
-> changes to the handling of per-cpu IRQs, that might be related.
->
-> The problem occurs when using stress-ng to simulate system load when
-> running on VirtualBox as VMM on a Windows Host. The Linux host is still
-> running the test but might be affected too.
->
-> The machine "dies"/"hangs" a few seconds after the first reporting.
->
-
-Capturing a trace dump would help in debugging this, with
-traceoff_on_warning set on the bootcmd line.
-
--- 
-Philippe.
+I'm lost. What is the current community call cycle? Shouldn't be one today?
