@@ -1,31 +1,34 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC171C3D
-	for <xenomai@lists.linux.dev>; Thu,  5 Oct 2023 07:16:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6AC63A
+	for <xenomai@lists.linux.dev>; Thu,  5 Oct 2023 08:08:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="cIK66TAs"
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ELtovDpN"
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202310050705538329e252fd9058ae72
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202310050807537015d88cab70d729de
         for <xenomai@lists.linux.dev>;
-        Thu, 05 Oct 2023 09:05:53 +0200
+        Thu, 05 Oct 2023 10:07:53 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=3inmsD1kYiotaCZMeRHK5PQnbHu+A5EK316N9BjVhxQ=;
- b=cIK66TAsLm8univSoX5bqgAgJnrtHBR1xlLfhfAlEkKzcE77AdmOzMu75y4vygWj3vLLP4
- 1Ysw905XTN3J69I4vF1YLwSOAl44tzXk6A1vE/WVL7I8UmyRWTfylNtQLbnjuAXqp4IWrCs0
- ayWvtnkU9I8bqr+bAcug7KW+fo4eg=;
-Message-ID: <39be75e9fd66fc5d3c85409b0cb13be8c9b27f02.camel@siemens.com>
-Subject: Re: Dovetail 6.1.54: IRQ handler enables HW irqs
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=fOgBS0GvN3jEkp7w7+1P5OiMDJI64Fkx4Nd6ODnnMww=;
+ b=ELtovDpNtdLB6QWKNfGye52GtfMSg6AF6m3vE+IrEIs6Oc6LCngv6Dp7QepwJSz6GrkxRs
+ CpDwq7/B+nl78Su7qAAg6QqRXUaqELUSyyDh5Hrme24+m2pRefB6L1Rl/VdtlsHDSIkrdN7e
+ GyoMdLwWJclvNwh3QK2LKrFp9lJmc=;
+Message-ID: <4fa78eef54fe310b9028ef7663cc6899a2afb6f2.camel@siemens.com>
+Subject: Re: accept after select for RTNet/TCP
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
-Date: Thu, 05 Oct 2023 09:05:53 +0200
-In-Reply-To: <877co4rxqh.fsf@xenomai.org>
-References: <1cd875106cdf555e52734462a9d846ffd3549556.camel@siemens.com>
-	 <877co4rxqh.fsf@xenomai.org>
+To: Per Oberg <pero@wolfram.com>, xenomai@lists.linux.dev
+Date: Thu, 05 Oct 2023 10:07:53 +0200
+In-Reply-To: <968364753.2878655.1696077736342.JavaMail.zimbra@wolfram.com>
+References: <1477790382.2402907.1695827633513.JavaMail.zimbra@wolfram.com>
+	 <10067eb6a762f8f468b5f81db9f49b825f3ea96e.camel@siemens.com>
+	 <1723160879.2522128.1695880477176.JavaMail.zimbra@wolfram.com>
+	 <759339022.2543916.1695899840518.JavaMail.zimbra@wolfram.com>
+	 <3429d1091991ec499009a88b080657d0a7640e8c.camel@siemens.com>
+	 <968364753.2878655.1696077736342.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -37,171 +40,172 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Philippe,
-
-On Tue, 2023-10-03 at 08:56 +0200, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Sat, 2023-09-30 at 07:42 -0500, Per Oberg wrote:
+> ----- Den 29 sep 2023, p=C3=A5 kl 12:41, Florian Bezdeka florian.bezdeka@=
+siemens.com skrev:
 >=20
-> > Hi Philippe, Hi Jan,
-> >=20
-> > I'm currently testing the latest Dovetail 6.1.x release, which is
-> > 6.1.54 to my best knowledge.=20
-> >=20
-> > After updating I run into the following problem. There have been recent
-> > changes to the handling of per-cpu IRQs, that might be related.
-> >=20
-> > The problem occurs when using stress-ng to simulate system load when
-> > running on VirtualBox as VMM on a Windows Host. The Linux host is still
-> > running the test but might be affected too.
-> >=20
-> > The machine "dies"/"hangs" a few seconds after the first reporting.
-> >=20
+> > On Thu, 2023-09-28 at 06:17 -0500, Per Oberg wrote:
+> > > ----- Den 28 sep 2023, p=C3=A5 kl 7:54, Per =C3=96berg pero@wolfram.c=
+om skrev:
 >=20
-> Capturing a trace dump would help in debugging this, with
-> traceoff_on_warning set on the bootcmd line.
+> > > > ----- Den 27 sep 2023, p=C3=A5 kl 22:21, Florian Bezdeka florian.be=
+zdeka@siemens.com
+> > > > skrev:
 >=20
+> > > > > Hi Per,
+>=20
+> > > > > On Wed, 2023-09-27 at 10:13 -0500, Per Oberg wrote:
+> > > > > > Hi
+>=20
+> > > > > > I'm currently porting parts of an application that uses some TC=
+P during startup
+> > > > > > to Xenomai. I have a working example of a TCP server but i cann=
+ot make the
+> > > > > > "select" part work.
+>=20
+> > > > > > If I do
+>=20
+> > > > > > fd =3D __COBALT(accept(list_fd, (struct sockaddr *) &client_add=
+r, &client_len)))
+>=20
+> > > > > The usage of __COBALT() should not be necessary, the Xenomai func=
+tion
+> > > > > wrapping will take care of redirecting the call to the cobalt wor=
+ld.
+> > > > > (Assuming you are using the LDFLAGS and CFLAGS delivered by xeno-
+> > > > > config)
+>=20
+> > > > > That allows you to compile the same code - but with different fla=
+gs -
+> > > > > for both worlds without modifications.
+>=20
+> > > > > > without the select part it works. If I do a select before it re=
+turns "Invalid
+> > > > > > argument".
+>=20
+> > > > > I can remember that I saw something similar in the past. If I rec=
+all
+> > > > > correctly there was an ordering problem. It somehow crashed when =
+the
+> > > > > first connection request came in before the accept() call happene=
+d, or
+> > > > > something in this direction. The socket state was somehow "corrup=
+ted".
+>=20
+> > > > > I should have it on one of my TODO lists... Unable to find it rig=
+ht
+> > > > > now.
+>=20
+> > > > > > The "select" part:
+> > > > > > ------------------------------------
+> > > > > > fd_set in_fds;
+> > > > > > FD_ZERO(&in_fds);
+> > > > > > FD_SET(list_fd, &in_fds);
+> > > > > > int selRet =3D __COBALT(select(list_fd + 1, &in_fds, 0, 0, 0));
+> > > > > > (FD_ISSET(list_fd, &in_fds))
+> > > > > > {
+> > > > > > printf("list_fd (%i) is in FDSET\n", list_fd);
+> > > > > > }
+> > > > > > ------------------------------------
+>=20
+> > > > > > The program works when compiled for regular linux.
+> > > > > > Is select for TCP RTNet a no no ?
+>=20
+> > > > > select() should work as expected.
+>=20
+> > > > > Can you share a complete reproducer? That would simplify things a=
+nd
+> > > > > increases the chance that someone is able to look into it.
+>=20
+> > > > > Best regards,
+> > > > > Florian
+>=20
+> > > > > > Best Regards
+> > > > > > Per =C3=96berg
+>=20
+> > > > Hi Florian and thanks for answering
+>=20
+> > > > The explicit use __COBALT / __STD wrappers is for some of my code t=
+hat sometimes
+> > > > go on a real time socket and sometimes on a regular socket (dependi=
+ng on the
+> > > > destination). I think I found an issue when leaving it out for some=
+ special
+> > > > cases. (But it might have been the missing pselect that was the rea=
+l issue)
+>=20
+> > > > That said, I also use it to ensure that there are no missing syscal=
+ls when
+> > > > debugging. E.g. I think I recall that pselect was missing in the im=
+plementation
+> > > > and that became apparent when putting __COBALT in front of it.
+>=20
+> > > > My issue is 100% reproducible (afaik) so no timing issues show up f=
+or me in the
+> > > > regard.
+>=20
+> > > > I can certainly share the code. My example is an adapted version of=
+ a TCP
+> > > > Client/Server demo. I will put it on github if that would work?
+>=20
+> > > > A few other notes that came up during the porting:
+>=20
+> > > > 1. It seems like accept does not like beeing called with null point=
+ers to client
+> > > > address
+>=20
+> > That might be a bug, or a RT simplification. Would have to look into it
+> > in more details. Jan, any idea?
+>=20
+>=20
+> > > > 2. Accept returns the same socket number as the listen socket, and =
+thus closes
+> > > > the socket when the connection closes. I guessed that this was a si=
+mplification
+> > > > deemed ok for real time. This effectively makes the TCP server sing=
+le client
+> > > > because SOCK_REUSE is not supported, right?
+>=20
+> > I'm not familiar with that code yet. But yes, might be a simplification
+> > for RT. Jan, any thoughts?
+>=20
+>=20
+> > > > Best Regards
+> > > > Per =C3=96berg
+>=20
+> > > The example code is now available on
+>=20
+> > > https://github.com/droberg/XenomaiTCP
+>=20
+> > Thanks! I found
+> > https://gitlab.com/Xenomai/xenomai-hacker-space/-/issues/34 meanwhile.
+> > So we would be happy to take patches filling this gap. Are you
+> > interested in working on that?
+>=20
+> Please elaborate. My kernel hacking experience is not great but I'd like =
+to get=C2=A0
+> more experience. Perhaps this is a good way of getting my hands dirty.=
+=20
+>=20
+> Are there any ideas right now for what needs to be done, especially in te=
+rms=C2=A0
+> of testing and conformance? I would need to get started with smaller piec=
+es=C2=A0
+> to be able to get up and running properly.
 
-I tried hard to come up with a trace, stared at it for a while now and
-came to the point where I had to realize that it doesn't make sense and
-doesn't match the code I'm looking at.
+A possible first step would be extending the smokey testsuite. Try
+adding a simple client/server application sending some data around.
 
-It turned out that I made a serious configuration mistake.
-CONFIG_IRQ_PIPELINE was set to n.
+You already found some corner cases, testing them as well and fixing
+the issues would be part of the journey. You would basically start in
+user-land (from user perspective) and might end up in fixing
+cobalt/rtdm infrastructure.
 
-IOW, it seems we have a problem when CONFIG_IRQ_PIPELINE is set to n.
-
-IRQ 21 is a shared IRQ, taken from /proc/interrupts:
-
-     CPU0   CPU1   CPU2   CPU3
-21: 100330   0      0      0    IO-APIC     21    -fasteoi   ahci[0000:00:0=
-d.0], snd_intel8x0
-
-As long as the system seems fine the trace looks like that:
-
-stress-ng-iomix-981   [000]  6241.171317: irq_handler_entry:    irq=3D21 na=
-me=3Dahci[0000:00:0d.0]
-stress-ng-iomix-981   [000]  6241.175512: irq_handler_exit:     irq=3D21 re=
-t=3Dhandled
-stress-ng-iomix-981   [000]  6241.175513: irq_handler_entry:    irq=3D21 na=
-me=3Dsnd_intel8x0
-stress-ng-iomix-981   [000]  6241.175567: irq_handler_exit:     irq=3D21 re=
-t=3Dunhandled
-
-Both IRQ actions are handled.
-
-The last thing I get out of my machine before it dies:
-
-stress-ng-iomix-981   [000]  6241.179080: irq_handler_entry:    irq=3D21 na=
-me=3Dahci[0000:00:0d.0]
-stress-ng-iomix-981   [000]  6241.181057: local_timer_entry:    vector=3D23=
-6
-stress-ng-iomix-981   [000]  6241.181062: softirq_raise:        vec=3D1 [ac=
-tion=3DTIMER]
-stress-ng-iomix-981   [000]  6241.181063: softirq_raise:        vec=3D9 [ac=
-tion=3DRCU]
-stress-ng-iomix-981   [000]  6241.181121: local_timer_exit:     vector=3D23=
-6
-stress-ng-iomix-981   [000]  6241.181359: irq_handler_exit:     irq=3D21 re=
-t=3Dhandled
-stress-ng-iomix-981   [000]  6241.191936: local_timer_entry:    vector=3D23=
-6
-stress-ng-iomix-981   [000]  6241.191942: softirq_raise:        vec=3D1 [ac=
-tion=3DTIMER]
-stress-ng-iomix-981   [000]  6241.191943: softirq_raise:        vec=3D9 [ac=
-tion=3DRCU]
-stress-ng-iomix-981   [000]  6241.193224: local_timer_exit:     vector=3D23=
-6
-
-Somehow a timer IRQ managed to intercepted the currently running ahci
-IRQ.
-
-Now back to CONFIG_IRQ_PIPELINE=3Dy. Different problem, now related to
-spin locks:
-
-[  190.344675] [Xenomai] lock 00000000654e1a40 already unlocked on CPU #2
-                         last owner =3D kernel/xenomai/pipeline/intr.c:28 (=
-xnintr_core_clock_handler(), CPU #-2)
-[  190.344681] CPU: 2 PID: 589 Comm: stress-ng-iomix Not tainted 6.1.54-xen=
-omai-1 #1
-[  190.344684] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS Virt=
-ualBox 12/01/2006
-[  190.344684] IRQ stage: Xenomai
-[  190.344685] Call Trace:
-[  190.344688]  <TASK>
-[  190.344691]  dump_stack_lvl+0x71/0xa0
-[  190.344696]  xnlock_dbg_release.cold+0x21/0x2c
-[  190.344699]  xnintr_core_clock_handler+0xa4/0x140
-[  190.344703]  lapic_oob_handler+0x41/0xf0
-[  190.344707]  do_oob_irq+0x25a/0x3e0
-[  190.344710]  ? page_add_file_rmap+0x85/0xb0
-[  190.344713]  handle_oob_irq+0x4e/0xe0
-[  190.344715]  generic_pipeline_irq_desc+0xb0/0x160
-[  190.344717]  arch_handle_irq+0x5d/0x1e0
-[  190.344720]  arch_pipeline_entry+0xa1/0x110
-[  190.344724]  asm_sysvec_apic_timer_interrupt+0x16/0x20
-[  190.344936] RIP: 0010:bpf_lsm_mmap_addr+0x0/0x10
-[  190.344939] Code: c0 c3 cc cc cc cc 0f 1f 40 00 0f 1f 44 00 00 c3 cc cc =
-cc cc 66=C2=A0
-0f 1f 44 00 00 0f 1f 44 00 00 31 c0 c3 cc cc cc cc 0f 1f 40 00 <0f> 1f 44 0=
-0 00 31=C2=A0
-c0 c3 cc cc cc cc 0f 1f 40 00 0f 1f 44 00 00 31
-[  190.344941] RSP: 0018:ffffb59481177d58 EFLAGS: 00010286
-[  190.344943] RAX: ffffffff94a4a950 RBX: ffffffff95c39b18 RCX: 00005609132=
-0bfff
-[  190.344944] RDX: 0000000000000000 RSI: 00005609131eb000 RDI: 00007f85ff0=
-42000
-[  190.344945] RBP: 00007f85ff042000 R08: ffff914eca5bda00 R09: ffff914eca5=
-bda90
-[  190.344946] R10: ffff914eca5bda08 R11: 0000000000000fff R12: 00000000000=
-08021
-[  190.344947] R13: 0000000000000003 R14: 0000000000000000 R15: 00000000000=
-093f1
-[  190.344950]  ? bpf_lsm_file_ioctl+0x10/0x10
-[  190.344954]  ? bpf_lsm_file_ioctl+0x10/0x10
-[  190.344955]  security_mmap_addr+0x2c/0x40
-[  190.344959]  get_unmapped_area+0xc3/0x130
-[  190.345163]  do_mmap+0x110/0x5c0
-[  190.345165]  ? mlock_page_drain_local+0x3f/0x70
-[  190.345167]  vm_mmap_pgoff+0xe3/0x180
-[  190.345172]  do_syscall_64+0x65/0xd0
-[  190.345175]  ? syscall_exit_to_user_mode+0x27/0x70
-[  190.345177]  ? do_syscall_64+0x71/0xd0
-[  190.345179]  ? syscall_exit_to_user_mode+0x27/0x70
-[  190.345182]  ? do_syscall_64+0x71/0xd0
-[  190.345183]  ? do_syscall_64+0x71/0xd0
-[  190.345185]  ? syscall_exit_to_user_mode+0x27/0x70
-[  190.345188]  ? do_syscall_64+0x71/0xd0
-[  190.345189]  ? do_syscall_64+0x71/0xd0
-[  190.345191]  entry_SYSCALL_64_after_hwframe+0x64/0xce
-[  190.345193] RIP: 0033:0x7f860017c733
-[  190.345195] Code: Unable to access opcode bytes at 0x7f860017c709.
-[  190.345196] RSP: 002b:00007fff5284b438 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000009
-[  190.345198] RAX: ffffffffffffffda RBX: 00007fff5284b460 RCX: 00007f86001=
-7c733
-[  190.345199] RDX: 0000000000000003 RSI: 0000000000001000 RDI: 00000000000=
-00000
-[  190.345200] RBP: 0000000000001000 R08: 0000000000000004 R09: 00000000093=
-f1000
-[  190.345201] R10: 0000000000008021 R11: 0000000000000246 R12: 00007fff528=
-4b860
-[  190.345202] R13: 00007fff5284b490 R14: 00007f85fefc8000 R15: fffffffffff=
-ff000
-[  190.345204]  </TASK>
-
-I can mitigate this problem by adding "nopvspin" to the kernel cmdline.
-I would like to learn why Linux (vanilla) is running fine, but Xenomai
-is not.
-
-The problem is triggered by the timer proxy tick which fires quite
-often. My feeling is that we trigger a VirtualBox bug, but how to prove
-that?
-
-In addition I'm quite sure it's related to timing. The problem can not
-be reproduced running on 5.10-dovetail, but quite easy with 6.1-
-dovetail.
-
-Best regards,
-Florian
-
+>=20
+> > > Best Regards
+> > > Per =C3=96berg
+>=20
+>=20
+> Best Regards=20
+> Per =C3=96berg
 
