@@ -1,105 +1,106 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from fromintouta.tno.nl (fromintouta.tno.nl [134.221.1.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416B518E30
-	for <xenomai@lists.linux.dev>; Wed, 18 Oct 2023 10:59:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0935311C80
+	for <xenomai@lists.linux.dev>; Wed, 18 Oct 2023 11:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tno.nl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tno.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="KiQMHLG3"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202310181048595ab298398cb62a65fc
-        for <xenomai@lists.linux.dev>;
-        Wed, 18 Oct 2023 12:48:59 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=7ytZR+9L/O16wPaIcc6RaWu5pArcrfNpedt8p+Cn/JI=;
- b=KiQMHLG3uwBFKdFRUi1g72q5LdiXY/MziCZra1NhOXD1/MWA+rWSOeTNJYSNwZf6nVP7zP
- bRCr1lxvCboq4uoOI0+9d/OmUAxSi8B+4cVCC56lXWnn9GWfMtV+UAOt2O+OV5wuf8BL5wdH
- WzwJvvVkpZweE1PWGzU7WhSHFeYqo=;
-Message-ID: <221340fee33336dd554ce147943c2575f7658393.camel@siemens.com>
-Subject: Re: initramfs can't find root filesystem device
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: "Baeten, M.J.J. (Max)" <max.baeten@tno.nl>, "xenomai@lists.linux.dev"
-	 <xenomai@lists.linux.dev>
-Date: Wed, 18 Oct 2023 12:48:57 +0200
-In-Reply-To: <40202c26ad1440aaad6cca4463af0e29@tno.nl>
+	dkim=pass (1024-bit key) header.d=tno.nl header.i=@tno.nl header.b="FgQ/pdvQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tno.nl; l=3996; s=mta1; t=1697626883;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version;
+  bh=WEdq9BrWi2va7+KwMDHbVQ68HsA+SbzlDfPYQzQ2eRc=;
+  b=FgQ/pdvQ/Z0B3K5Z4pTmj5L9NZCkVqN3EwTrm3cEuL+p1ppVaW11bsSB
+   TqJWJk/R6pDbc8+gVT2TmCBTMgrRzIc+4QiezMRNHvouPKFVpdqj7ZteR
+   ismR8lqAQfbQjCq51ati1JVVOApuX9etjD2ZEsILbAHkECyxLe3vPwlZT
+   k=;
+X-IronPort-AV: E=Sophos;i="6.03,234,1694728800"; 
+   d="scan'208";a="82585139"
+Received: from UCP34.tsn.tno.nl (134.221.225.179) by UCP13.tsn.tno.nl
+ (134.221.225.173) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.32; Wed, 18 Oct
+ 2023 13:01:18 +0200
+Received: from UCP34.tsn.tno.nl ([fe80::b4b0:1650:7d0f:a54e]) by
+ UCP34.tsn.tno.nl ([fe80::b4b0:1650:7d0f:a54e%2]) with mapi id 15.01.2507.032;
+ Wed, 18 Oct 2023 13:01:18 +0200
+From: "Baeten, M.J.J. (Max)" <max.baeten@tno.nl>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+Subject: RE: initramfs can't find root filesystem device
+Thread-Topic: initramfs can't find root filesystem device
+Thread-Index: AdoBn4iSwkSub+2RQDi3DmckbiHhHwAAGW2AAARWHMA=
+Date: Wed, 18 Oct 2023 11:01:18 +0000
+Message-ID: <e09f074430c042c7861b4e5eb95851ea@tno.nl>
 References: <40202c26ad1440aaad6cca4463af0e29@tno.nl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <221340fee33336dd554ce147943c2575f7658393.camel@siemens.com>
+In-Reply-To: <221340fee33336dd554ce147943c2575f7658393.camel@siemens.com>
+Accept-Language: nl-NL, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [134.221.225.191]
+x-esetresult: clean, is OK
+x-esetid: 37303A295AAA765D677766
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Wed, 2023-10-18 at 09:32 +0000, Baeten, M.J.J. (Max) wrote:
->=20
->=20
->=20
-> Hello!
-> =C2=A0
-> After compiling a xenomai 3.2.1 patched kernel the initramfs can=E2=80=99=
-t boot this kernel because it can=E2=80=99t find the root filesystem device=
-.
-> =C2=A0
-> Error:
-> Gave up waiting for root file system device. Common problems:
-> - Boot args (cat /proc/cmdline)
-> =C2=A0=C2=A0 - Check rootdelay=3D (did the system wait long enough?)
-> - Missing modules (cat /proc/modules; ls /dev)
-> ALERT! /dev/mapper/ubuntu-vg-ubuntu=E2=80=94lv does not exist.
-> =C2=A0
-> When I compile the same kernel sources without xenomai patch it works.
-> =C2=A0
-> My .config is included and a screenshot of the error as well.
-> Cat /proc/modules =3D empty=20
-> Cat /proc/cmdline =3D BOOT_IMAGE=3D/vmlinuz-5.4.253-xeno-3.2.1 root=3D/de=
-v/mapper/ubuntu--vg
-> =C2=A0
-> I have tried on two systems with different ubuntu versions, kernels and x=
-enomai patches.
-> Ubuntu is installed with LVM but I tried as well without LVM. (Similar er=
-ror: UUID does not exist)
-> =C2=A0
-> # Config FOR UBUNTU 18.04
-> KERNEL_VERSION=3D"4.19.66"
-> XENO_VERSION=3D"3.2.1"
-> XENO_PATCH=3D"ipipe-core-4.19.66-x86-6.patch"
-> =C2=A0
-> # UBUNTU SRV 20.04
-> KERNEL_VERSION=3D"5.4.253"
-> XENO_VERSION=3D"3.2.1"
-> XENO_PATCH=3D"ipipe-core-5.4.253-x86-14.patch"
-> =C2=A0
-> Any ideas on what I am doing wrong or how I can debug this problem?
-
-Where does your rootfs reside? Some external device like USB? Are you
-sure that the kernel configuration you are using is the same (content
-wise) for both setups?
-
-Seems your missing a driver / subsystem enablement.
-
-It might have happened that you deactivated some required configuration
-options while migrating the configuration from 4.19 to 5.4.
-
-Best regards,
-Florian
-> =C2=A0
-> Kind regards,
-> Max Baeten
-> =C2=A0
-> =C2=A0
-> =C2=A0
->=20
-> This message may contain information that is not intended for you. If you=
- are not the addressee or if this message was sent to you by mistake, you a=
-re requested to inform the sender and delete the message. TNO accepts no li=
-ability for the content of this e-mail, for the manner in which you use it =
-and for damage of any kind resulting from the risks inherent to the electro=
-nic transmission of messages.
->=20
-
+SGkgRmxvcmlhbiwgSm9obg0KDQpJdCBpcyByZXNpZGluZyBvbiBhIE0yIFNTRCB3aGVyZSBJIHVz
+ZSBhbGwgZGVmYXVsdCBvcHRpb25zIHdoZW4gaW5zdGFsbGluZyB1YnVudHUgc2VydmVyLiBPbmNl
+IHdpdGggTFZNIGFuZCBvbmNlIHdpdGhvdXQuDQpJIHN0YXJ0ZWQgd2l0aCBhIGZyZXNoIGNvbmZp
+ZyBtYWRlIGJ5IHN1ZG8gbWFrZSBkZWZjb25maWcgYW5kIGNoYW5nZWQgYSBmZXcgb3B0aW9ucyB0
+aGVyZSBzaW1pbGFyIHRvIHdoYXQgSSBoYXZlIGRvbmUgaW4gdGhlIHBhc3QuDQoNCkkgaGF2ZSB1
+c2VkIGEgc2NyaXB0IHRoYXQgcnVucyB0aGlzIHByZXBhcmUta2VybmVsLnNoIHNjcmlwdCBzbyBJ
+IGFtIHF1aXRlIHN1cmUgdGhhdCBpdCB3YXMgZXhlY3V0ZWQuIEkgd2lsbCBjaGVjayB0aGlzIGFm
+dGVybm9vbiBhbmQgdmVyaWZ5IHRoYXQgSSBpbmNsdWRlZCB0aGUgY29ycmVjdCAuY29uZmlnLiAN
+Cg0KUmVnYXJkcyBNYXgNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEZsb3Jp
+YW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiANClNlbnQ6IHdvZW5zZGFn
+IDE4IG9rdG9iZXIgMjAyMyAxMjo0OQ0KVG86IEJhZXRlbiwgTS5KLkouIChNYXgpIDxtYXguYmFl
+dGVuQHRuby5ubD47IHhlbm9tYWlAbGlzdHMubGludXguZGV2DQpTdWJqZWN0OiBSZTogaW5pdHJh
+bWZzIGNhbid0IGZpbmQgcm9vdCBmaWxlc3lzdGVtIGRldmljZQ0KDQpPbiBXZWQsIDIwMjMtMTAt
+MTggYXQgMDk6MzIgKzAwMDAsIEJhZXRlbiwgTS5KLkouIChNYXgpIHdyb3RlOg0KPiANCj4gDQo+
+IA0KPiBIZWxsbyENCj4gwqANCj4gQWZ0ZXIgY29tcGlsaW5nIGEgeGVub21haSAzLjIuMSBwYXRj
+aGVkIGtlcm5lbCB0aGUgaW5pdHJhbWZzIGNhbuKAmXQgYm9vdCB0aGlzIGtlcm5lbCBiZWNhdXNl
+IGl0IGNhbuKAmXQgZmluZCB0aGUgcm9vdCBmaWxlc3lzdGVtIGRldmljZS4NCj4gwqANCj4gRXJy
+b3I6DQo+IEdhdmUgdXAgd2FpdGluZyBmb3Igcm9vdCBmaWxlIHN5c3RlbSBkZXZpY2UuIENvbW1v
+biBwcm9ibGVtczoNCj4gLSBCb290IGFyZ3MgKGNhdCAvcHJvYy9jbWRsaW5lKQ0KPiDCoMKgIC0g
+Q2hlY2sgcm9vdGRlbGF5PSAoZGlkIHRoZSBzeXN0ZW0gd2FpdCBsb25nIGVub3VnaD8pDQo+IC0g
+TWlzc2luZyBtb2R1bGVzIChjYXQgL3Byb2MvbW9kdWxlczsgbHMgL2RldikgQUxFUlQhIA0KPiAv
+ZGV2L21hcHBlci91YnVudHUtdmctdWJ1bnR14oCUbHYgZG9lcyBub3QgZXhpc3QuDQo+IMKgDQo+
+IFdoZW4gSSBjb21waWxlIHRoZSBzYW1lIGtlcm5lbCBzb3VyY2VzIHdpdGhvdXQgeGVub21haSBw
+YXRjaCBpdCB3b3Jrcy4NCj4gwqANCj4gTXkgLmNvbmZpZyBpcyBpbmNsdWRlZCBhbmQgYSBzY3Jl
+ZW5zaG90IG9mIHRoZSBlcnJvciBhcyB3ZWxsLg0KPiBDYXQgL3Byb2MvbW9kdWxlcyA9IGVtcHR5
+DQo+IENhdCAvcHJvYy9jbWRsaW5lID0gQk9PVF9JTUFHRT0vdm1saW51ei01LjQuMjUzLXhlbm8t
+My4yLjEgDQo+IHJvb3Q9L2Rldi9tYXBwZXIvdWJ1bnR1LS12Zw0KPiDCoA0KPiBJIGhhdmUgdHJp
+ZWQgb24gdHdvIHN5c3RlbXMgd2l0aCBkaWZmZXJlbnQgdWJ1bnR1IHZlcnNpb25zLCBrZXJuZWxz
+IGFuZCB4ZW5vbWFpIHBhdGNoZXMuDQo+IFVidW50dSBpcyBpbnN0YWxsZWQgd2l0aCBMVk0gYnV0
+IEkgdHJpZWQgYXMgd2VsbCB3aXRob3V0IExWTS4gKFNpbWlsYXIgDQo+IGVycm9yOiBVVUlEIGRv
+ZXMgbm90IGV4aXN0KQ0KPiDCoA0KPiAjIENvbmZpZyBGT1IgVUJVTlRVIDE4LjA0DQo+IEtFUk5F
+TF9WRVJTSU9OPSI0LjE5LjY2Ig0KPiBYRU5PX1ZFUlNJT049IjMuMi4xIg0KPiBYRU5PX1BBVENI
+PSJpcGlwZS1jb3JlLTQuMTkuNjYteDg2LTYucGF0Y2giDQo+IMKgDQo+ICMgVUJVTlRVIFNSViAy
+MC4wNA0KPiBLRVJORUxfVkVSU0lPTj0iNS40LjI1MyINCj4gWEVOT19WRVJTSU9OPSIzLjIuMSIN
+Cj4gWEVOT19QQVRDSD0iaXBpcGUtY29yZS01LjQuMjUzLXg4Ni0xNC5wYXRjaCINCj4gwqANCj4g
+QW55IGlkZWFzIG9uIHdoYXQgSSBhbSBkb2luZyB3cm9uZyBvciBob3cgSSBjYW4gZGVidWcgdGhp
+cyBwcm9ibGVtPw0KDQpXaGVyZSBkb2VzIHlvdXIgcm9vdGZzIHJlc2lkZT8gU29tZSBleHRlcm5h
+bCBkZXZpY2UgbGlrZSBVU0I/IEFyZSB5b3Ugc3VyZSB0aGF0IHRoZSBrZXJuZWwgY29uZmlndXJh
+dGlvbiB5b3UgYXJlIHVzaW5nIGlzIHRoZSBzYW1lIChjb250ZW50DQp3aXNlKSBmb3IgYm90aCBz
+ZXR1cHM/DQoNClNlZW1zIHlvdXIgbWlzc2luZyBhIGRyaXZlciAvIHN1YnN5c3RlbSBlbmFibGVt
+ZW50Lg0KDQpJdCBtaWdodCBoYXZlIGhhcHBlbmVkIHRoYXQgeW91IGRlYWN0aXZhdGVkIHNvbWUg
+cmVxdWlyZWQgY29uZmlndXJhdGlvbiBvcHRpb25zIHdoaWxlIG1pZ3JhdGluZyB0aGUgY29uZmln
+dXJhdGlvbiBmcm9tIDQuMTkgdG8gNS40Lg0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQo+IMKg
+DQo+IEtpbmQgcmVnYXJkcywNCj4gTWF4IEJhZXRlbg0KPiDCoA0KPiDCoA0KPiDCoA0KPiANCj4g
+VGhpcyBtZXNzYWdlIG1heSBjb250YWluIGluZm9ybWF0aW9uIHRoYXQgaXMgbm90IGludGVuZGVk
+IGZvciB5b3UuIElmIHlvdSBhcmUgbm90IHRoZSBhZGRyZXNzZWUgb3IgaWYgdGhpcyBtZXNzYWdl
+IHdhcyBzZW50IHRvIHlvdSBieSBtaXN0YWtlLCB5b3UgYXJlIHJlcXVlc3RlZCB0byBpbmZvcm0g
+dGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlLiBUTk8gYWNjZXB0cyBubyBsaWFiaWxp
+dHkgZm9yIHRoZSBjb250ZW50IG9mIHRoaXMgZS1tYWlsLCBmb3IgdGhlIG1hbm5lciBpbiB3aGlj
+aCB5b3UgdXNlIGl0IGFuZCBmb3IgZGFtYWdlIG9mIGFueSBraW5kIHJlc3VsdGluZyBmcm9tIHRo
+ZSByaXNrcyBpbmhlcmVudCB0byB0aGUgZWxlY3Ryb25pYyB0cmFuc21pc3Npb24gb2YgbWVzc2Fn
+ZXMuDQo+IA0KDQo=
