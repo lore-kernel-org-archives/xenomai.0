@@ -1,106 +1,63 @@
-Received: from fromintouta.tno.nl (fromintouta.tno.nl [134.221.1.26])
+Received: from mxout34.expurgate.net (mxout34.expurgate.net [91.198.224.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0935311C80
-	for <xenomai@lists.linux.dev>; Wed, 18 Oct 2023 11:01:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tno.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tno.nl
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=tno.nl header.i=@tno.nl header.b="FgQ/pdvQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tno.nl; l=3996; s=mta1; t=1697626883;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version;
-  bh=WEdq9BrWi2va7+KwMDHbVQ68HsA+SbzlDfPYQzQ2eRc=;
-  b=FgQ/pdvQ/Z0B3K5Z4pTmj5L9NZCkVqN3EwTrm3cEuL+p1ppVaW11bsSB
-   TqJWJk/R6pDbc8+gVT2TmCBTMgrRzIc+4QiezMRNHvouPKFVpdqj7ZteR
-   ismR8lqAQfbQjCq51ati1JVVOApuX9etjD2ZEsILbAHkECyxLe3vPwlZT
-   k=;
-X-IronPort-AV: E=Sophos;i="6.03,234,1694728800"; 
-   d="scan'208";a="82585139"
-Received: from UCP34.tsn.tno.nl (134.221.225.179) by UCP13.tsn.tno.nl
- (134.221.225.173) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.32; Wed, 18 Oct
- 2023 13:01:18 +0200
-Received: from UCP34.tsn.tno.nl ([fe80::b4b0:1650:7d0f:a54e]) by
- UCP34.tsn.tno.nl ([fe80::b4b0:1650:7d0f:a54e%2]) with mapi id 15.01.2507.032;
- Wed, 18 Oct 2023 13:01:18 +0200
-From: "Baeten, M.J.J. (Max)" <max.baeten@tno.nl>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, "xenomai@lists.linux.dev"
-	<xenomai@lists.linux.dev>
-Subject: RE: initramfs can't find root filesystem device
-Thread-Topic: initramfs can't find root filesystem device
-Thread-Index: AdoBn4iSwkSub+2RQDi3DmckbiHhHwAAGW2AAARWHMA=
-Date: Wed, 18 Oct 2023 11:01:18 +0000
-Message-ID: <e09f074430c042c7861b4e5eb95851ea@tno.nl>
-References: <40202c26ad1440aaad6cca4463af0e29@tno.nl>
- <221340fee33336dd554ce147943c2575f7658393.camel@siemens.com>
-In-Reply-To: <221340fee33336dd554ce147943c2575f7658393.camel@siemens.com>
-Accept-Language: nl-NL, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [134.221.225.191]
-x-esetresult: clean, is OK
-x-esetid: 37303A295AAA765D677766
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A09194
+	for <xenomai@lists.linux.dev>; Thu, 19 Oct 2023 04:38:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ipg-automotive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ipg-automotive.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from [127.0.0.1] (helo=localhost)
+	by relay.expurgate.net with smtp (Exim 4.92)
+	(envelope-from <prasanna.kannan@ipg-automotive.com>)
+	id 1qtKTk-000SOP-Cf
+	for xenomai@lists.linux.dev; Thu, 19 Oct 2023 06:17:48 +0200
+Received: from [185.2.140.90] (helo=mail.ipg-automotive.com)
+	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <prasanna.kannan@ipg-automotive.com>)
+	id 1qtKTk-00E1zd-01
+	for xenomai@lists.linux.dev; Thu, 19 Oct 2023 06:17:48 +0200
+Received: from localhost (localhost [127.0.0.1])
+	by mail.ipg-automotive.com (Postfix) with ESMTP id 673EF2EE031A
+	for <xenomai@lists.linux.dev>; Thu, 19 Oct 2023 06:17:47 +0200 (CEST)
+Received: from mail.ipg-automotive.com ([127.0.0.1])
+ by localhost (mail.ipg-automotive.com [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id csYchyHPOnT6 for <xenomai@lists.linux.dev>;
+ Thu, 19 Oct 2023 06:17:47 +0200 (CEST)
+Received: from mail.ipg-automotive.com (mail.ipg-automotive.com [192.168.200.11])
+	by mail.ipg-automotive.com (Postfix) with ESMTP id 827FA2EE0190
+	for <xenomai@lists.linux.dev>; Thu, 19 Oct 2023 06:17:46 +0200 (CEST)
+Date: Thu, 19 Oct 2023 06:17:45 +0200 (CEST)
+From: Prasanna Kannan <prasanna.kannan@ipg-automotive.com>
+To: xenomai@lists.linux.dev
+Message-ID: <2047000542.27707045.1697689065162.JavaMail.zimbra@ipg-automotive.com>
+Subject: Cobalt kernel parameters
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [192.168.200.11]
+Thread-Index: qhlTWHyRkgs81WW7AM9xEt1tw1JLwA==
+Thread-Topic: Cobalt kernel parameters
+X-purgate-Ad: Checked for spam and viruses by eXpurgate(R), see www.cyren.com for details.
+X-purgate-ID: 151534::1697689068-DDB7B1F7-9B0B7E91/0/0
+X-purgate-type: clean
+X-purgate: clean
 
-SGkgRmxvcmlhbiwgSm9obg0KDQpJdCBpcyByZXNpZGluZyBvbiBhIE0yIFNTRCB3aGVyZSBJIHVz
-ZSBhbGwgZGVmYXVsdCBvcHRpb25zIHdoZW4gaW5zdGFsbGluZyB1YnVudHUgc2VydmVyLiBPbmNl
-IHdpdGggTFZNIGFuZCBvbmNlIHdpdGhvdXQuDQpJIHN0YXJ0ZWQgd2l0aCBhIGZyZXNoIGNvbmZp
-ZyBtYWRlIGJ5IHN1ZG8gbWFrZSBkZWZjb25maWcgYW5kIGNoYW5nZWQgYSBmZXcgb3B0aW9ucyB0
-aGVyZSBzaW1pbGFyIHRvIHdoYXQgSSBoYXZlIGRvbmUgaW4gdGhlIHBhc3QuDQoNCkkgaGF2ZSB1
-c2VkIGEgc2NyaXB0IHRoYXQgcnVucyB0aGlzIHByZXBhcmUta2VybmVsLnNoIHNjcmlwdCBzbyBJ
-IGFtIHF1aXRlIHN1cmUgdGhhdCBpdCB3YXMgZXhlY3V0ZWQuIEkgd2lsbCBjaGVjayB0aGlzIGFm
-dGVybm9vbiBhbmQgdmVyaWZ5IHRoYXQgSSBpbmNsdWRlZCB0aGUgY29ycmVjdCAuY29uZmlnLiAN
-Cg0KUmVnYXJkcyBNYXgNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEZsb3Jp
-YW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiANClNlbnQ6IHdvZW5zZGFn
-IDE4IG9rdG9iZXIgMjAyMyAxMjo0OQ0KVG86IEJhZXRlbiwgTS5KLkouIChNYXgpIDxtYXguYmFl
-dGVuQHRuby5ubD47IHhlbm9tYWlAbGlzdHMubGludXguZGV2DQpTdWJqZWN0OiBSZTogaW5pdHJh
-bWZzIGNhbid0IGZpbmQgcm9vdCBmaWxlc3lzdGVtIGRldmljZQ0KDQpPbiBXZWQsIDIwMjMtMTAt
-MTggYXQgMDk6MzIgKzAwMDAsIEJhZXRlbiwgTS5KLkouIChNYXgpIHdyb3RlOg0KPiANCj4gDQo+
-IA0KPiBIZWxsbyENCj4gwqANCj4gQWZ0ZXIgY29tcGlsaW5nIGEgeGVub21haSAzLjIuMSBwYXRj
-aGVkIGtlcm5lbCB0aGUgaW5pdHJhbWZzIGNhbuKAmXQgYm9vdCB0aGlzIGtlcm5lbCBiZWNhdXNl
-IGl0IGNhbuKAmXQgZmluZCB0aGUgcm9vdCBmaWxlc3lzdGVtIGRldmljZS4NCj4gwqANCj4gRXJy
-b3I6DQo+IEdhdmUgdXAgd2FpdGluZyBmb3Igcm9vdCBmaWxlIHN5c3RlbSBkZXZpY2UuIENvbW1v
-biBwcm9ibGVtczoNCj4gLSBCb290IGFyZ3MgKGNhdCAvcHJvYy9jbWRsaW5lKQ0KPiDCoMKgIC0g
-Q2hlY2sgcm9vdGRlbGF5PSAoZGlkIHRoZSBzeXN0ZW0gd2FpdCBsb25nIGVub3VnaD8pDQo+IC0g
-TWlzc2luZyBtb2R1bGVzIChjYXQgL3Byb2MvbW9kdWxlczsgbHMgL2RldikgQUxFUlQhIA0KPiAv
-ZGV2L21hcHBlci91YnVudHUtdmctdWJ1bnR14oCUbHYgZG9lcyBub3QgZXhpc3QuDQo+IMKgDQo+
-IFdoZW4gSSBjb21waWxlIHRoZSBzYW1lIGtlcm5lbCBzb3VyY2VzIHdpdGhvdXQgeGVub21haSBw
-YXRjaCBpdCB3b3Jrcy4NCj4gwqANCj4gTXkgLmNvbmZpZyBpcyBpbmNsdWRlZCBhbmQgYSBzY3Jl
-ZW5zaG90IG9mIHRoZSBlcnJvciBhcyB3ZWxsLg0KPiBDYXQgL3Byb2MvbW9kdWxlcyA9IGVtcHR5
-DQo+IENhdCAvcHJvYy9jbWRsaW5lID0gQk9PVF9JTUFHRT0vdm1saW51ei01LjQuMjUzLXhlbm8t
-My4yLjEgDQo+IHJvb3Q9L2Rldi9tYXBwZXIvdWJ1bnR1LS12Zw0KPiDCoA0KPiBJIGhhdmUgdHJp
-ZWQgb24gdHdvIHN5c3RlbXMgd2l0aCBkaWZmZXJlbnQgdWJ1bnR1IHZlcnNpb25zLCBrZXJuZWxz
-IGFuZCB4ZW5vbWFpIHBhdGNoZXMuDQo+IFVidW50dSBpcyBpbnN0YWxsZWQgd2l0aCBMVk0gYnV0
-IEkgdHJpZWQgYXMgd2VsbCB3aXRob3V0IExWTS4gKFNpbWlsYXIgDQo+IGVycm9yOiBVVUlEIGRv
-ZXMgbm90IGV4aXN0KQ0KPiDCoA0KPiAjIENvbmZpZyBGT1IgVUJVTlRVIDE4LjA0DQo+IEtFUk5F
-TF9WRVJTSU9OPSI0LjE5LjY2Ig0KPiBYRU5PX1ZFUlNJT049IjMuMi4xIg0KPiBYRU5PX1BBVENI
-PSJpcGlwZS1jb3JlLTQuMTkuNjYteDg2LTYucGF0Y2giDQo+IMKgDQo+ICMgVUJVTlRVIFNSViAy
-MC4wNA0KPiBLRVJORUxfVkVSU0lPTj0iNS40LjI1MyINCj4gWEVOT19WRVJTSU9OPSIzLjIuMSIN
-Cj4gWEVOT19QQVRDSD0iaXBpcGUtY29yZS01LjQuMjUzLXg4Ni0xNC5wYXRjaCINCj4gwqANCj4g
-QW55IGlkZWFzIG9uIHdoYXQgSSBhbSBkb2luZyB3cm9uZyBvciBob3cgSSBjYW4gZGVidWcgdGhp
-cyBwcm9ibGVtPw0KDQpXaGVyZSBkb2VzIHlvdXIgcm9vdGZzIHJlc2lkZT8gU29tZSBleHRlcm5h
-bCBkZXZpY2UgbGlrZSBVU0I/IEFyZSB5b3Ugc3VyZSB0aGF0IHRoZSBrZXJuZWwgY29uZmlndXJh
-dGlvbiB5b3UgYXJlIHVzaW5nIGlzIHRoZSBzYW1lIChjb250ZW50DQp3aXNlKSBmb3IgYm90aCBz
-ZXR1cHM/DQoNClNlZW1zIHlvdXIgbWlzc2luZyBhIGRyaXZlciAvIHN1YnN5c3RlbSBlbmFibGVt
-ZW50Lg0KDQpJdCBtaWdodCBoYXZlIGhhcHBlbmVkIHRoYXQgeW91IGRlYWN0aXZhdGVkIHNvbWUg
-cmVxdWlyZWQgY29uZmlndXJhdGlvbiBvcHRpb25zIHdoaWxlIG1pZ3JhdGluZyB0aGUgY29uZmln
-dXJhdGlvbiBmcm9tIDQuMTkgdG8gNS40Lg0KDQpCZXN0IHJlZ2FyZHMsDQpGbG9yaWFuDQo+IMKg
-DQo+IEtpbmQgcmVnYXJkcywNCj4gTWF4IEJhZXRlbg0KPiDCoA0KPiDCoA0KPiDCoA0KPiANCj4g
-VGhpcyBtZXNzYWdlIG1heSBjb250YWluIGluZm9ybWF0aW9uIHRoYXQgaXMgbm90IGludGVuZGVk
-IGZvciB5b3UuIElmIHlvdSBhcmUgbm90IHRoZSBhZGRyZXNzZWUgb3IgaWYgdGhpcyBtZXNzYWdl
-IHdhcyBzZW50IHRvIHlvdSBieSBtaXN0YWtlLCB5b3UgYXJlIHJlcXVlc3RlZCB0byBpbmZvcm0g
-dGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlLiBUTk8gYWNjZXB0cyBubyBsaWFiaWxp
-dHkgZm9yIHRoZSBjb250ZW50IG9mIHRoaXMgZS1tYWlsLCBmb3IgdGhlIG1hbm5lciBpbiB3aGlj
-aCB5b3UgdXNlIGl0IGFuZCBmb3IgZGFtYWdlIG9mIGFueSBraW5kIHJlc3VsdGluZyBmcm9tIHRo
-ZSByaXNrcyBpbmhlcmVudCB0byB0aGUgZWxlY3Ryb25pYyB0cmFuc21pc3Npb24gb2YgbWVzc2Fn
-ZXMuDQo+IA0KDQo=
+Hello,
+
+I=E2=80=99m currently using Xenomai 3.2.2, and here passing the kernel para=
+meter =E2=80=9Cxenomai.clockfreq=E2=80=9D doesn=E2=80=99t seem to have any =
+effect.
+In Xenomai 3.1 I was able to successfully use this parameters. Is this para=
+meter still valid with Xenomai 3.2.2,=20
+if not are there any suitable alternatives?
+In the past I also used to check the clockfreq registered by Xenomai using =
+/sys/module/xenomai/parameters/clockfreq.=20
+Somehow this is also missing in 3.2.2. I am thankful for any pointers here.
+
+Prasanna
