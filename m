@@ -1,126 +1,66 @@
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3508414F9E
-	for <xenomai@lists.linux.dev>; Tue, 24 Oct 2023 09:33:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0D9DD289
+	for <xenomai@lists.linux.dev>; Mon, 30 Oct 2023 23:14:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="jDDl0da1"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2023102409330981cc2082c13256e276
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Aq3ltqqR"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20231030231450396a189e5d874df61d
         for <xenomai@lists.linux.dev>;
-        Tue, 24 Oct 2023 11:33:09 +0200
+        Tue, 31 Oct 2023 00:14:50 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=clara.kowalsky@siemens.com;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=nl4wq5jkMg5v4qpumj2o01GSUP/5yv9PLq2/D6/OuDU=;
- b=jDDl0da10J9A+9LW7SBZ77epiRBoz9+aF7IXKU3+hjr+cW1CSy18ICeeA9H3AApeyMBQUg
- hSoNu/NF4FxxZTAJtvSuEHDgQDgoeR88nMBXpAggiIecZeTAgP7721ffkYK018OX/Kfz7K+2
- d8i9AXREzW5KOvLHhaRvf/MzyurZg=;
-From: Clara Kowalsky <clara.kowalsky@siemens.com>
-To: xenomai@lists.linux.dev,
-	rpm@xenomai.org
-Cc: florian.bezdeka@siemens.com,
-	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [PATCH v3][Dovetail 6.6] arm64: dovetail: Fix undefinstr/break trap handling
-Date: Tue, 24 Oct 2023 11:32:42 +0200
-Message-Id: <20231024093242.1077831-1-clara.kowalsky@siemens.com>
+ bh=3e2xVSBHL/yhmTND1Yj1BdbF43L9IW3drDZUMcdIGUE=;
+ b=Aq3ltqqR/72I+C+cSFZE1M3iO00G4ppwV15/6WAoEm6Yj5JQ/AOo9e9H+2RUvdfHvwrHse
+ 2+pt920KaV7ZM5w5pDqFhx5cywEpX1AL0OSFy5pmt9uqLseK6GbywNSIL2GjHdVSaq+gU6ey
+ wn3ovpBucHly4mPDaP76bTMGyDZhQ=;
+Message-ID: <3eda6fb3c3b5d1c000f7e41205bca2e96e04bc0d.camel@siemens.com>
+Subject: Dovetail build failure
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: rpm@xenomai.org
+Cc: xenomai@lists.linux.dev, jan.kiszka@siemens.com
+Date: Tue, 31 Oct 2023 00:14:49 +0100
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-1047747:519-21489:flowmailer
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-When running an compat RT application on arm64 the break trap is
-handled via the undefined instruction trap.
+Hi Philippe,
 
-A possible call stack looks like this:
+current CI jobs are failing with the following error. The reason
+resides inside a recently added patch titled=20
 
-Call trace:
-  handle_inband_event+0x2d0/0x320
-  inband_event_notify+0x28/0x50
-  signal_wake_up_state+0x7c/0xa4
-  complete_signal+0x104/0x2d0
-  __send_signal_locked+0x1d0/0x3e4
-  send_signal_locked+0xf0/0x140
-  force_sig_info_to_task+0xa0/0x164
-  force_sig_fault+0x64/0x94
-  arm64_force_sig_fault+0x48/0x80
-  send_user_sigtrap+0x50/0x8c
-  aarch32_break_handler+0xac/0x1d0
-  do_undefinstr+0x6c/0x360
-  el0_undef+0x4c/0xd0
-  el0t_32_sync_handler+0xd0/0x140
-  el0t_32_sync+0x190/0x194
+  dmaengine: bcm2835: dovetail: use IRQ forwarding=20
 
-The trap is never reported to the companion core at that stage so
-running_oob() in do_undefinstr() will always return true. As the
-following bailout happens before calling the compat breakpoint
-detection (aarch32_break_handler()) debugging the compat
-application does not work.
+The declaration of the flags variable has been removed but the variable
+is still being used:
 
-In addition the emulation of the deprecated armv8 SWP{B} instruction
-(try_emulate_armv8_deprecated()) cannot be done from the out-of-band
-stage.
+2023-10-30 20:16:40 - INFO     - | ../drivers/dma/bcm2835-dma.c: In functio=
+n 'bcm2835_dma_callback':
+2023-10-30 20:16:40 - INFO     - | ../drivers/dma/bcm2835-dma.c:507:17: err=
+or: 'flags' undeclared (first use in this function)
+2023-10-30 20:16:40 - INFO     - |   507 |                 flags =3D readl(=
+c->chan_base + BCM2835_DMA_CS);
+2023-10-30 20:16:40 - INFO     - |       |                 ^~~~~
+2023-10-30 20:16:40 - INFO     - | ../drivers/dma/bcm2835-dma.c:507:17: not=
+e: each undeclared identifier is reported only once for each function it ap=
+pears in
 
-Therefore do_undefinstr()/do_el0_undef reports the trap entry to the
-companion core. If the companion core handles the undefined instruction,
-running_oob returns true and the bailout occurs. Otherwise, switching to
-the in-band stage takes place and the undefined instruction handler
-continues with the compat breakpoint detection and the SWP{B}
-instruction emulation.
+At least 5.10 and 6.1 -rebase branches are affected.
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- arch/arm64/kernel/traps.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+Best regards,
+Florian
 
-diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
-index b0db35eda8f5..0811aa219ea7 100644
---- a/arch/arm64/kernel/traps.c
-+++ b/arch/arm64/kernel/traps.c
-@@ -456,29 +456,32 @@ void do_el0_undef(struct pt_regs *regs, unsigned long esr)
- {
- 	u32 insn;
- 
-+	mark_trap_entry(ARM64_TRAP_UNDI, regs);
-+
- 	/*
- 	 * If the companion core did not switched us to in-band
- 	 * context, we may assume that it has handled the trap.
- 	 */
- 	if (running_oob())
--		return;
-+		goto out_exit;
- 
- 	/* check for AArch32 breakpoint instructions */
- 	if (!aarch32_break_handler(regs))
--		return;
-+		goto out_exit;
- 
- 	if (user_insn_read(regs, &insn))
- 		goto out_err;
- 
- 	if (try_emulate_mrs(regs, insn))
--		return;
-+		goto out_exit;
- 
- 	if (try_emulate_armv8_deprecated(regs, insn))
--		return;
-+		goto out_exit;
- 
- out_err:
--	mark_trap_entry(ARM64_TRAP_UNDI, regs);
- 	force_signal_inject(SIGILL, ILL_ILLOPC, regs->pc, 0);
-+
-+out_exit:
- 	mark_trap_exit(ARM64_TRAP_UNDI, regs);
- }
- 
--- 
-2.39.2
+--=20
+Siemens AG, Technology
+Linux Expert Center
 
