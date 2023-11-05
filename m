@@ -1,135 +1,125 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C4EF10940
-	for <xenomai@lists.linux.dev>; Sun,  5 Nov 2023 15:52:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60C5B1641B
+	for <xenomai@lists.linux.dev>; Sun,  5 Nov 2023 17:45:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-408382da7f0so27834115e9.0
-        for <xenomai@lists.linux.dev>; Sun, 05 Nov 2023 07:52:17 -0800 (PST)
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4084e49a5e5so33133765e9.3
+        for <xenomai@lists.linux.dev>; Sun, 05 Nov 2023 09:45:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699199536; x=1699804336;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XZJd9NCLIwzcNnyRjJaysp08enzh2CnM1MelxvBMdy0=;
-        b=FkwvEEv89KdXjLyPY+bQku4TE6qzdZp5UEi+CGPI9LPXHjWDIyZKTWMz1A/zS1pL8S
-         PzewglgZy0kfVZvMRMdm/bpHd4UdMHloefsFGqawC4ANUEikCjTsyq8kgTJ9MGXNPwWI
-         rnunvRJThGc+pPHxYWuVzfrae/heUDRRZiJXPirPpIbjqyvV7DaeZfeWRi1PF25nnVBE
-         PWh51Fdjv2GDr4N81XjANwxte1F45ZLyQKwDYDO2M4at2BJ4OEMQFyfXCBWYAv9QhzTj
-         iw2ApTHCTW/V15V0lwwApTy6brQtIdxlnpnWmB3+gj1fdpM7UDGUJJFV1X49pfLMAjPm
-         s4xA==
-X-Gm-Message-State: AOJu0YwfvkGNeBpodNfVeg6eiQSHiJyCrCLq68MFZM5RA7mLGRd5ObCL
-	1cSxZI/XBgIwkpW6vpYSKIQ=
-X-Google-Smtp-Source: AGHT+IFG7Bz+CzF/zUjsiTyXqKhHKxeoFlErj2/u64Yag5z33qYGu8CeiNL+VHXOcS8vQJUI/rxqXQ==
-X-Received: by 2002:a05:600c:1988:b0:402:ea96:c09a with SMTP id t8-20020a05600c198800b00402ea96c09amr22085711wmq.16.1699199535840;
-        Sun, 05 Nov 2023 07:52:15 -0800 (PST)
+        d=1e100.net; s=20230601; t=1699206318; x=1699811118;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=fJAHnV+yTaM4n8oWHu4nT9PUdmHvAkn+KzF74Tfd5aQ=;
+        b=tFLgaN+Bo+MHGqBxkKyXpPFNT1Me39ZBbb5TUHZR8/cXPMwYNfhMz3fZy3K8CusXkt
+         q0/e/fcRKJkytFQ1lYjkbogjYY4NfhFNThS+Vthlv+5bWeke4zxLttHq3NWrHiKzfG07
+         uZqSKn3sNp/c5QwHUn5JhjACMspP+RbWFxX0jB0cZf9K2kTkXKQSGMgGo72CtuN4cIHt
+         Xae+q1Oirapz8xn/mV0PrwRfSulGJPfXfmiU4yI7GwwBXCD6wM5hSZOyj9ggWTI0cBOh
+         e49QOhC4qKB2/5KkcYOT8A8sD+r8bXk2KPSxr+nONcswQh8q/+sS4KVs5v1tEKTGpTJm
+         QalQ==
+X-Gm-Message-State: AOJu0YyCmXlMkLWQFcvZX6XIbewVx/Wyq+XQif8xl4cWPhlP6bIQy+e2
+	jQPBsIlnXaiCaYW6H1cUL12pCSdx849bBg==
+X-Google-Smtp-Source: AGHT+IGq2voslksNFbzuJf90TdgdyQxYOSgFtFtqpP5XNeLNUc/HwQIpECm9j6li9MvupiDqGfVv1w==
+X-Received: by 2002:a05:600c:1f87:b0:409:5a92:470e with SMTP id je7-20020a05600c1f8700b004095a92470emr11254987wmb.28.1699206318101;
+        Sun, 05 Nov 2023 09:45:18 -0800 (PST)
 Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id fb14-20020a05600c520e00b0040841e79715sm9074457wmb.27.2023.11.05.07.52.15
+        by smtp.gmail.com with ESMTPSA id g20-20020a05600c4ed400b003fee8793911sm9674041wmq.44.2023.11.05.09.45.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Nov 2023 07:52:15 -0800 (PST)
-References: <20231103081107.3400986-1-clara.kowalsky@siemens.com>
+        Sun, 05 Nov 2023 09:45:17 -0800 (PST)
+References: <4481c3ac97badd74e74849a97b049f1bb5c89fb7.camel@siemens.com>
 User-agent: mu4e 1.8.11; emacs 28.3
 From: Philippe Gerum <rpm@xenomai.org>
-To: Clara Kowalsky <clara.kowalsky@siemens.com>
-Cc: xenomai@lists.linux.dev, florian.bezdeka@siemens.com
-Subject: Re: [PATCH][Dovetail 6.1] arm64: dovetail: Fix undefinstr/break
- trap handling
-Date: Sun, 05 Nov 2023 16:52:03 +0100
-In-reply-to: <20231103081107.3400986-1-clara.kowalsky@siemens.com>
-Message-ID: <871qd4kxjp.fsf@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: clara.kowalsky@siemens.com, xenomai@lists.linux.dev
+Subject: Re: evl: Problems while trying to build up a debianization
+Date: Sun, 05 Nov 2023 18:23:07 +0100
+In-reply-to: <4481c3ac97badd74e74849a97b049f1bb5c89fb7.camel@siemens.com>
+Message-ID: <87wmuwjdqq.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
-Clara Kowalsky <clara.kowalsky@siemens.com> writes:
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-> [ This is a backport of ca33f993e7b677f20a29150b14fd120416bf548e ]
+> Hi Philippe,
 >
-> When running an compat RT application on arm64 the break trap is
-> handled via the undefined instruction trap.
+> we're starting with some very first steps regarding EVL here. The idea
+> was to enable the xenomai-images project to generate images with EVL as
+> well.
 >
-> A possible call stack looks like this:
+> Currently we're failing because there is some confusion about the UAPI
+> installation here.
 >
-> Call trace:
->   handle_inband_event+0x2d0/0x320
->   inband_event_notify+0x28/0x50
->   signal_wake_up_state+0x7c/0xa4
->   complete_signal+0x104/0x2d0
->   __send_signal_locked+0x1d0/0x3e4
->   send_signal_locked+0xf0/0x140
->   force_sig_info_to_task+0xa0/0x164
->   force_sig_fault+0x64/0x94
->   arm64_force_sig_fault+0x48/0x80
->   send_user_sigtrap+0x50/0x8c
->   aarch32_break_handler+0xac/0x1d0
->   do_undefinstr+0x6c/0x360
->   el0_undef+0x4c/0xd0
->   el0t_32_sync_handler+0xd0/0x140
->   el0t_32_sync+0x190/0x194
+> The meson build and install steps of libevl refer to some headers
+> coming from the (sources) of linux-evl.=C2=A0
 >
-> The trap is never reported to the companion core at that stage so
-> running_oob() in do_undefinstr() will always return true. As the
-> following bailout happens before calling the compat breakpoint
-> detection (aarch32_break_handler()) debugging the compat
-> application does not work.
+> We're trying to integrate this meson based build into a debianization.
+> As libevl depends on some headers delivered by the kernel "package" we
+> would model that as a build dependency. libevl would depend on linux-
+> evl-headers.
 >
-> Therefore do_undefinstr() reports the trap entry to the
-> companion core. If the companion core handles the undefined instruction,
-> running_oob returns true and the bailout occurs. Otherwise, switching to
-> the in-band stage takes place and the undefined instruction handler
-> continues with the compat breakpoint detection.
+> Right now we're failing inside the setup-uapi.sh script because the
+> sources of linux-evl are not available. We were not able to set -Duapi
+> correctly.
 >
-> Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> ---
->  arch/arm64/kernel/traps.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
+> To my understanding the dance with include/ inside the meson build
+> directory is necessary to limit the number of "special" include paths.
+> Is that correct?
 >
-> diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
-> index cc68be400244..5ea4cf543113 100644
-> --- a/arch/arm64/kernel/traps.c
-> +++ b/arch/arm64/kernel/traps.c
-> @@ -489,25 +489,28 @@ void arm64_notify_segfault(unsigned long addr)
->  
->  void do_undefinstr(struct pt_regs *regs, unsigned long esr)
->  {
-> +	mark_trap_entry(ARM64_TRAP_UNDI, regs);
-> +
->  	/*
->  	 * If the companion core did not switched us to in-band
->  	 * context, we may assume that it has handled the trap.
->  	 */
->  	if (running_oob())
-> -		return;
-> +		goto out_exit;
->  
->  	/* check for AArch32 breakpoint instructions */
->  	if (!aarch32_break_handler(regs))
-> -		return;
-> +		goto out_exit;
->  
->  	if (call_undef_hook(regs) == 0)
-> -		return;
-> +		goto out_exit;
->  
->  	if (!user_mode(regs))
->  		die("Oops - Undefined instruction", regs, esr);
->  
-> -	mark_trap_entry(ARM64_TRAP_UNDI, regs);
->  	force_signal_inject(SIGILL, ILL_ILLOPC, regs->pc, 0);
-> +
-> +out_exit:
->  	mark_trap_exit(ARM64_TRAP_UNDI, regs);
->  }
->  NOKPROBE_SYMBOL(do_undefinstr);
 
-Merged, thanks.
+Correct.
 
--- 
+> Another issue we came across is the installation of the UAPI headers by
+> the libevl install step. Why is that necessary at all? The only
+> component that should depend on that headers is libevl itself. No?
+>
+
+Actually, many user-facing headers from include/evl do pull bits from
+inner uapi/ headers, so we need the later. However, installing the
+kernel uapi/ files as part of the libevl artefacts is a relic from the
+Dark Ages, when the target toolchain would not have a copy of those. In
+this day and age, we build proper toolchains which do include a copy of
+the exported uapi/ headers.
+
+IOW, I agree that libevl should not be exporting the uapi/, this is
+some kernel-headers package's business which some toolchain builder
+would use.
+
+> Any idea how we could fix that up without breaking your local build
+> process?
+>
+
+In fact, I'm the one who needs to fix his own process here. So, I bit
+the bullet eventually, fixing the way the EVL uapi/ files are referred
+to by the kernel code, aligning libevl on the sanitized result.
+
+As a by-product, CONFIG_UAPI_HEADER_TEST is now happy with the EVL uapi/
+headers, which is good news for preparing a kernel-headers
+package. Meanwhile, libevl does not copy the uapi/ anymore during the
+installation process. I'll fix my meta layers to get them properly from
+a linux-evl-headers package on my end.
+
+Referring to a local custom copy of the kernel headers via the -Duapi
+option still makes sense in maintainer mode (only), when rebuilding a
+toolchain to include an updated set of exported kernel headers would be
+overkill. Said differently, when working on changes involving the uapi/
+on the kernel side, I don't want to have to bootstrap bitbake, so I'd
+rather pull the uapi/ headers in place directly from the development
+kernel tree. That is the rational for keeping this option basically.
+
+All of the v5.10.y, v6.1.y and v6.6 EVL kernel branches have been
+updated accordingly. The associated libevl changes are available from
+the -next branch. I think the debianization should be easier. Let me
+know if I can help in fixing other rough edge(s).
+
+--=20
 Philippe.
