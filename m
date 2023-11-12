@@ -1,128 +1,89 @@
-Received: from sonic306-20.consmr.mail.ir2.yahoo.com (sonic306-20.consmr.mail.ir2.yahoo.com [77.238.176.206])
+Received: from sonic308-3.consmr.mail.bf2.yahoo.com (sonic308-3.consmr.mail.bf2.yahoo.com [74.6.130.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D6CC14A94
-	for <xenomai@lists.linux.dev>; Sat, 11 Nov 2023 15:03:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D9EA23AF
+	for <xenomai@lists.linux.dev>; Sun, 12 Nov 2023 06:55:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=aim.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aim.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="D/dxLPuY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1699715003; bh=SjNAdEbw1S2YyWxKKSE62XZQ8dFc2BQp2uq26M4Em9M=; h=Date:From:Subject:To:References:From:Subject:Reply-To; b=D/dxLPuYv3FLRdkCUmB8Rxyh86OtJDN0xl+Ou3/h9gtkxYK0tbE7Rd+mDdJbjJxEqp6QM6TncBTkiDN7aHZ3VjX1zEdlhZ26Kq/qxEWYVkF7I+DvjAk6MTXeR8c4Ni0OoRJvLqdTI6ApQmP5ocCk4OXOoRQ0txHjkfi2s2oIZNrQjt3oy8tZLUOE36EpOjGpKeqy/TzXZjVAMNmccHj+DKN6AKCAcrDEBDnROIlIRQq0JS10chFI3KaUwfwxad+h7wPlpi0aGK0JB5xjacZ/iBSnAe+V05xLEtoXwQ24TOLg2fPq9qNO2DySQCWJsb1hQHIlkypP1VCcSYd0lDxbTQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1699715003; bh=MkM0foRkdPvnMPRIu8fOWD28C8lowmDLb5foPL6iw9t=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=q6wOa2P9Z6yZVao6o44wYKjtWuPfest3C3wT4CPwQS6PDk+RRvJr5Vj/YkWcPjNrK+nlILw1NLT0c5qil171aSnZvOSc+K7xga30LUmRQND8MifA3IvQd0zpRYoAQaPQyQmDOjcYAFGqSAeEVMED1hOCtqCrKjCiU9nJSBKmcOxXLYV3pulUWv7K6zcAX9HS+pv9qCxkeydXvQxbPas+OofOs6u1ciD2PzrVJGk7r4xdjy0AoP4DQS+TeTQmi2L67fTYGuuZttgxcjw6W4jMOiY9ISjydmbhbmmvzpDC1Hn+01xefyRqGj0fJNOgxVV1vcCD43IeY7g+ArRTiUtg9g==
-X-YMail-OSG: DG6cgucVM1lALWxDRy6K7GfsH7zXVc6JJq7dKjQKRs0wIVotgloYKPd9UtiWaeV
- grsXl.0COvDsXdxLkHQm5tP0yianC0rdBp7rEaRBOjRR9w24rWrm2AsOck7ykNpi7XAeuDpBZ8KQ
- BYqqyNGvRK9qIxEsT1b8siCSkxClOqeiSNzLqNSh.N42JFUkEM9XXsaliU.LfUvzNhypZ4o1YRW8
- 2sbYDCeKwXNJRWm6sGoqya0pzhcLfPHRgIuoJiT.Gr.EkGIweP8P.nUo2cJBgXa2DxsGcmZLJWN5
- erjVCh98S6ztuuiP8lmz4kGcWhg3kJZZk.zyXPR582TpFOzKTX2M5_E.wICD3v5P.8B3TDeVeumR
- HXmJaBDKf506rFx.gXuB2HFZbQKYctTQX79GIexqKCLgnijhBtk7WeHFkg8S.2A6FWCg5gNq.4oX
- tSvuKF35tgDWIXXzpKJ3zT76XBvoISyQQr2erf0ZPtz4ynvuXNcqAKNsikWYZnfVFQfIlB16R5jk
- ts4OdQcdQN7PKtBSElM1LCjVk0aVxsHGTEFDmuUz_De44DdWONF7UWx1rRfLbelQfM__m0Uwmkoh
- 18WGjISwrieGBW.Bf5YFvMK3GZ8kzcVLjm5xeFOfZqGl4UfD3xijDcaNUXyllav0bDLuSxODM1r1
- Brs_JkNpCa6Jus7ef5AlGxu.y_cQI2MovYgE35QXKvmf7zi7fEE7qs_o5oaAs9dmgIof5xtyGvjJ
- ksozMAAQG0xk6Udek9KA0JdxZB3Vnmv2APLX2M5d8Sn5KMIb7r9gBO1pQ3jhLGTxJZo.jj2lFLVC
- nuAjzkocxzzVzGzOkzLcBrB3d053t.fQZvEcQK5yqM5ORUgfXGumnnM6woXktWW4YZrmtRDrOtNd
- 3hZ4GOnrLw3Ggd4J_ddMC1S6qOEwGZVTZ1BXa8k44oVJqLUhuQaA9nSKp2MG.WJNjFSHjOhSZ_vd
- cS3cCWCJqTLDDY6zmaF83NPBXGxAFcAJkn1jGzr7P9qcLDk_N8L8vBedSsso8mDQDu0KfeoDYhlL
- 35TM3k.eUEfbjGkUldfl3x6AA7e1_ViUwdTPUuQE_q3.KXWro7hVWiOBgZRDnkw3nWxw.YcicVOI
- q8pITwJ8rufZLezKComVJZFXIIVnE0CgIDp0ed9qcUZhATr8qCq_7f4joDv_Kn.wnOw4LGzRNbFN
- z7A03LdQVapYUvSZz5DIjKElaRG7AnnSZmaPJrnS9f2qIcinpPC8MFmws1hXsOFfmF1WxApa3EIK
- rl4_zBEqJfF6V9f0Qqgf57eCEKK66BwO9T7_TJjr0gT1yxRZJoATS3yZITrB8MPRPh6ppxbP3nZK
- 6.ACka3TG7YCr8M06Vil.gahmPxEdP8KY1FDadWEyQIWInA44P3V3EPHYRxqQ4XzATwawpP0oiN5
- da6qh0rNcqgJ4ozdRmNouZnO7iCNzbt_b89nw8QPboQzg1hcOD2TKlG51q8ErCFI6Rnjq3ZH5Nmj
- PP.ydYGHt9yNdN0XyU1gGiMItD41A3klHSQu1SMUGgVaPQX3zhhBQdoPv2YRmGDYywdVVluhqKVO
- Jj_qBdaPkU1f0W_k0Nyg1Iqkc.5zyoooxsnV8oZ9rCAknHXH8b3OFnsocHb.RvZn.yaE3U_xPuFd
- dBlvo7uR7x1dj7pEgmQ4eGTjyJHJG0PFb.DDmZtuHWDjDBWSMYv5Q5L.wNaKnBeUkF2cihHMqbPR
- uVX3Z0yYBNVK4W_j22ypnwogmSPyMaJfGFsjMg6p3gMBRe0g7EB.2faWFS7f6fy4pU3shH7HYu3r
- d.iQUy5O2S.lXLmLkMRCwBF5vzofT7tyUkfkab0gRUMbfKCf110sKOGmojnbhvFSIH7nC68S4ZMg
- Io1H6CImVUunwxhNhyMMOp7yqeJTBpKgwGhAecmkJtZSks_yuhJtjS_Y6XVaxCh9Q_Qs.orFfRtC
- 9MQ6R.JoyWC.FGEmmCqhPYU900MBkZ4cIE4pjm6PiMgrmnmiMTdEtqeY.J210YmJ4WHQm98UHcVk
- pZw9tTwROBvKeypLX12UE5.isW76aPLjoseobtVRNVoGmc20XD._AWuokBakUAasN.5gtmk9zbKK
- 0aQQBHyQTmuSLzuNFZ.BxrgOonZibSplNTQsvM3U6pEHP154Th3cXS93MVYqIF51z6.i5rJRNofO
- emcjvInLXsoRBgSRhA4oHl576tuU5V4H09Q6sDxOYZqdfjdUu.2P1CWjvkcOzDXbJiYBfpSjb
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: 0be43693-ea4d-4da9-8876-e88484355a49
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.ir2.yahoo.com with HTTP; Sat, 11 Nov 2023 15:03:23 +0000
-Received: by hermes--production-ir2-6755f9ff7c-2s8jq (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID f35ebb6f57f0f5dee1391d8f3f76b3b1;
-          Sat, 11 Nov 2023 15:03:22 +0000 (UTC)
-Message-ID: <9d5bb262-0646-451e-a5af-82c0473a3003@yahoo.com>
-Date: Sat, 11 Nov 2023 16:03:20 +0100
+	dkim=pass (2048-bit key) header.d=aim.com header.i=@aim.com header.b="agxXQjrQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aim.com; s=a2048; t=1699772116; bh=mG6EKMH0HyQ1/aj7NfGD+jDqtCnFLRU5RKSafmMNDa0=; h=Date:From:To:Subject:References:From:Subject:Reply-To; b=agxXQjrQyVI5H0CaZb26RcfE1p3hQsNWAtkW40DCOpT7vLDOT7hVYb604HBOleExEn+FGHcA3BTusgJ4sEf2muxXbx0kEzMilbRe8jTXoAS3RoxFB4Qo1SMCra89Emwz7+ul+UWwL//ic1AQn89qubclCDZBnW0HmSKYWarn0au1QDud1ECz7IhdR8PyqrXztTGz/hJsMn8L4V6HPJofuERs+HBaKJOgQI9xLTqY2xOA285BrlxDChRtm9BY3SCemaK8eKJseOtW9Pk967rvz7hv7hR/BRQbtVzfQ0/t6n45YJnLTv9YbwdbuPhTZptbCs1vW3lG2Py8i6Aw9xAzcw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1699772116; bh=uvL9ZFvdwj0h7EM4C+fKtS4av8ALPQwpMjlVeML5jUy=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=hBFPutnH/j8XiChiVOI+c+9StIzHtN439E5+55AvKJTj5CLe02Wb3iLEtBQ8unWWkR7uvPEggZLV5L2hUYcKQ78GwZui3QIn8ZSno0YygxVVQTHAOI2lqxA3rKS2q6zbAsIw0C97gKDIUukVsqp9QG0ngG89sXDceB6FtYkWxhfuHRa8ELA+yhlabN8lDRRe1pcFBtqGhyW/CFpmrK3DJaaQVeN+KUw/4EeMuhUV7aLhspZ4mWePnpyOBFmsBd3kYJIjbIIO+hU+VTTDM9NiXPyplXz9RMo1m8jlLnDu6STgFWXsXR6cmTFtBDvMjlwoQ8Ni+pNRnoaIsCa1Q7n19g==
+X-YMail-OSG: kfyH7EwVM1k3p3ePOBV25F2J96Y.O5ooMttPtZmKNGIcp55fFnkAlzyiBwpLCy_
+ 6c372SPAzxBlCMM6ATkNr5ChgxU2oiPdInY_k0g2TJYchKPnRe72pD2F2b3KylYqyAonwssRbt6I
+ wKS7mROH4Sh6svRPUYqFCiBw7OLvsmnpB4zBlQi5VzcRvIHQDoVIA7YuD4EE.wpkg30v1tvH8az_
+ w3mrRtkHa8TSAYpCpR6IAfSvnbNyM3vhrU7hwYp8Igstud7chcDSRB_TI7VoVU2rlGX9A8luz.cS
+ TEldSvQBsFh3RUo99imfpGwa6OsowsXSmuk0XaQRscQgMK99JCBEVeNlX_h5291l8IbCOGxQB.vx
+ ne.p5X6AxDCOmsTD.78NQ0F6VARsMxtTMQQISwfAXSkyI8SgA2qP3prHnQ1wyZRnuycGD4Tfv2.R
+ OF_YCE65Zq3G6vi3aAEnlPr9eVp8CdnpRYq56G4OsnnLrubgkx37eabv.6cbsmKhCbsh3DAHaSxU
+ laj43JIbeIyFUDUvAcBNr8EU1Qc25cBxBCVud9rIK4gbKwYRo4PJVxXKHV4EEN9HeV10KDK9Osb9
+ jNW.PzDofatO1xjYfpVFMblZrEvt9zBnMysk4cDONdWDEelGVwX3Auj6i5nQIR2Lj7mQm5sHFsVl
+ sjFgWEW1sKBFi6Do48bmmu1qc3UypzoExiEJd7bFQVv41wkUcEBr.Tp.MlnWbrU.AMD2l7x9B1BS
+ rSeLCnv54R3V7lYSaof_IlTKMW4GJTJXuJeHMHGzpmPkGA_BBfbrsWnKug.oYe4uZNjhB.TiEohQ
+ jG8r8T0Fq00f8T.ZXt4_Ukj0lo9Ww45OkOzIFJ4oNldlJ6wYlWxNasOuz1T5_d.IIo7p.Itr1bCg
+ D4MgmEquYp9cNcAdQBWYDG6jvTnCvHd1CkYuifMXWfrCepJycvWzGFi1tMtUkIKGeKE3LSTqrG29
+ huSr03SDMnz5M0UQlHdK8GZUxwYKykPY2EQc7.YmOKVMTa7q0mnXI5eMFxJsIAxF9Li9gK0qKQks
+ XyffWYIZy_g2XfxxG5rs2nEv18Opb3P3S6IsG1vEcphsQBmrorrv8ojOBnWUWqedrI6fe_CkRB7O
+ XUlpdxo64jC_L9LRp.tszVHc.hoLyo4a24YPnga6B1p4qRBan6NiEMLIImvN.blAEv74Rah.NH0v
+ CyP3dzPBksNN4NiTJu8.KdWrPSy75lsI.0JlM7UDJ8K__iLzWv27DKjz14gP44u_7A9mzxFgyGwW
+ gCL.JbuNj6qRbExh_uXjsvRo6EZVWVIeModRL3VZBIhEPcJ024kFDIFbd9CoUoK4BQ.vTLFwPmCT
+ gX28.vmnbTJ2sk6JW_yhA_Q6rCrqr_Mo9lV9kCIVzBynZhzyDhFT7w7QLk3XInhyzXOGZYXfDhAe
+ O1FlFERhyASeCP4S.WsbGq3Ub3KOX19nKnz1rk9RLCmldg5JG8Hq_3MxnkYSWiwoDnZh7YrZYX.G
+ yePF3R_OEAJkDy_x_A2D7e9BBdAR8eSBpx8zUnuwoWB14KNCdVksCIXbNAcL5gbiQu7Ub6Jk.Ko7
+ VHpss1kOBKJM5vlLwZwZBEXQoktqWRWqvFnDp83x8O3ZDr6Iea3Oco6KEC2C5H7UnJtrYQzCEXUE
+ MPU4zGYM8bSo.vM6JYpSSYIE9NmqGjU.2nKyoq4RJB5I9mRBSw2cksWXlwZXOA6zCdPRaVvRxFvk
+ fLvw3b6VJ1wVk5ioMPD9kMraoJfCqUfYy3w8HyqzQoLyRfDHpRK7ZKbiWg3WOqLMC01OsLw5RLye
+ nD.kA9R_C73Yz1mV92EEERlO57Kgct04xesXGWwT9gYTuUPBjYteQ3NJpaw0H4juKolz6dQa6we5
+ iaYJmyjZe8xGpasLPbSnO2wdIvcOkO9IJFFNSytLDcVGLsQHVsJZhToqFxUyVZ9CVlx3W83jC76y
+ Vb0Ru3xHDwqv.q3I9ZDmN5gY5lgzyVCePgEucLDbtXL.oI.cc9lJLtE7T6HhLu8D_Zv3MVVwLLSh
+ 1RD9nINxgvL..WGClJwd7N7D2FngAsf2Y8oS03O5AiuHmwuwpsC2vFwB1PewHY356yvetdVZTo6x
+ ao2c0lEG6eLt.bAHPpEJ2n_pETAxbNw3LfQppS7PSUtWMSj8uxMy.W67J.MntXGASQoBv_LXlk8n
+ hJeiMRJBqkq5kuFbKF44UPG1QAXVSPrA8NXLBow--
+X-Sonic-MF: <mazenarakji@aim.com>
+X-Sonic-ID: d1054aa8-e640-4e88-be1b-0bed29b6352d
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.bf2.yahoo.com with HTTP; Sun, 12 Nov 2023 06:55:16 +0000
+Date: Sun, 12 Nov 2023 06:55:14 +0000 (UTC)
+From: Mazen Arakji <mazenarakji@aim.com>
+To: dev@mynewt.apache.org, info@chibios.org, 
+	canoncustomersupport@cusa.canon.com, questions@rowebots.com, 
+	ecos-maintainers@ecos.sourceware.org, info@enea.com, 
+	admin@evidence.eu.com, info@freertos.org, 
+	info@highintegritysystems.com, info@ghs.com, info@intervalzero.com, 
+	kingstarsales@kingstar.com, info@tenasys.com, inside@lynx.com, 
+	info@weston-embedded.com, info@nxp.com, tech.support@nxp.com, 
+	info@nokia-bell-labs.com, info@nokia.com, info@DigitalResearch.biz, 
+	contact@siemens.com, dev@nuttx.apache.org, info@altreonic.com, 
+	info@avaya.com, info@microware.com, niisi@niisi.msk.ru, dz@dz.ru, 
+	contact@phoenix-rtos.com, info@sysgo.com, info@px5rtos.com, 
+	info@blackberry.com, info@state-machine.com, devel@riot-os.org, 
+	support@rt-thread.com, roberto.bucher@supsi.ch, 
+	lorenzo.dozio@polimi.it, devel@rtems.org, info@intervalzero.com, 
+	info@quadros.com, juniper-info@juniper.net, 
+	shark-help@gandalf.sssup.it, mail@miray.de, info@ibm.com, 
+	csosoft@us.ibm.com, fednotes@us.ibm.com, office@tron.org, 
+	inquiries@windriver.com, csiroenquiries@csiro.au, 
+	xenomai@lists.linux.dev, main@lists.zephyrproject.org, 
+	devel@lists.zephyrproject.org
+Message-ID: <797142864.1347764.1699772114971@mail.yahoo.com>
+Subject: Patent Infringement Notice
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US, it
-From: "Mauro S." <mau.salvi@yahoo.com>
-Subject: Process stuck in cobalt_monitor_enter
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
-X-Mailer: WebService/1.1.21896 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <797142864.1347764.1699772114971.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.21896 AolMailNodin
 
-Hi all,
+Do=C2=A0not,=C2=A0in=C2=A0the=C2=A0United=C2=A0States,=C2=A0benefit=C2=A0fr=
+om=C2=A0an=C2=A0RTOS=C2=A0that=C2=A0does=C2=A0not=C2=A0proceed=C2=A0to=C2=
+=A0disable=C2=A0interrupts=C2=A0in=C2=A0order=C2=A0to=C2=A0insert=C2=A0a=C2=
+=A0task=C2=A0into=C2=A0a=C2=A0collection=C2=A0of=C2=A0tasks.
 
-I'm using Xenomai 3.2.3 on an Atom x84_64 with a 5.4.255 ipipe kernel.
+If=C2=A0you=C2=A0do,=C2=A0you=C2=A0will=C2=A0owe=C2=A0me=C2=A0money.
 
-The application I'm running (a complex application, with about 60-70 RT 
-threads) has a simple loop in the main function, something like that:
 
-while (stay_in) {
-     ret = rt_buffer_read(...);  // with 50ms timeout
-     if(ret) do_something
-}
 
-The main loop reads the buffer to receive some commands from outside, 
-and when the application gets a SIGINT, the custom signal handler simply 
-does "stay_in = false" breaking the main loop, and then the program closes.
-During normal running, I can see the timer associated to the 
-rt_buffer_read() timeout get fired and reprogrammed, calling multiple 
-times "cat /proc/xenomai/timer/coreclk" e.g.:
-
-0    291/290         2ms970us           -           myapp
-...
-0    609/608         34ms860us           -           myapp
-
-I also see the thread in "w" state (waiting for a resource with timeout) 
-doing "cat cat /proc/xenomai/sched/threads":
-
-   0  16328  rt     cobalt     50   21ms279us         w          myapp
-
-Sometimes, in a non reproducible way (at least for the moment), when the 
-process get the SIGINT it never exits, remaining in this status:
-
-/proc/xenomai/sched/threads:
-   0  16328  rt     cobalt     50   -             W          flxcore
-
-The state becomed "W" (waiting for a resource without timeout) and in 
-fact the remaining timeout is not present in the row, also in 
-/proc/xenomai/timer/coreclk:
-
-0    291609/291362         -           -           myapp
-
-(BTW, seems that some timeouts got lost, because scheds are many that 
-shots, and this happens also on other timers in coreclk)
-
-This is the backtrace in gdb:
-
-#0  0x00007f5b15bb05f7 in cobalt_monitor_enter () from 
-/usr/lib/libcobalt.so.2
-#1  0x00007f5b15bb0748 in cobalt_monitor_wait () from 
-/usr/lib/libcobalt.so.2
-#2  0x00007f5b15bd7497 in syncobj_wait_grant () from 
-/usr/lib/libcopperplate.so.0
-#3  0x00007f5b15bea691 in rt_buffer_read_timed () from 
-/usr/lib/libalchemy.so.0
-#4  0x000055d2d6e7e689 in rt_buffer_read (timeout=50000000, size=19216, 
-ptr=0x55d2d6e82180 <Request>,
-     bf=0x55d2d6e82168 <Flxcore_ReqBuf>)
-     at /usr/include/xenomai/alchemy/buffer.h:129
-#5  main (argc=<optimized out>, argv=<optimized out>) at myapp.c:421
-
-Do you have any hints about that?
-
-Thanks in advance, best regards
--- 
-Mauro S.
+Mazen=C2=A0Arakji
