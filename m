@@ -1,63 +1,73 @@
-Received: from forward2.bravehost.com (forward2.bravehost.com [65.39.211.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6D637461
-	for <xenomai@lists.linux.dev>; Sun, 12 Nov 2023 14:59:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=state-machine.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=state-machine.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-X-Virus-Scanned: amavis at mboxlogin.com
-DKIM-Filter: OpenDKIM Filter v2.11.0 forward2.bravehost.com 9E62229D321
-Received: from [192.168.1.64] (75-58-60-207.lightspeed.rlghnc.sbcglobal.net [75.58.60.207])
-	(Authenticated sender: admin@state-machine.com)
-	by forward2.bravehost.com (Postfix) with ESMTPSA id CD13C28045D;
-	Sun, 12 Nov 2023 06:50:00 -0800 (PST)
-Message-ID: <509b283b-3de6-42d2-8cd8-edcca17cbe63@state-machine.com>
-Date: Sun, 12 Nov 2023 09:49:58 -0500
+Received: from m1510.mail.126.com (m1510.mail.126.com [220.181.15.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05AC312B7E
+	for <xenomai@lists.linux.dev>; Mon, 13 Nov 2023 09:36:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=126.com header.i=@126.com header.b="ohc0bwlu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=FXhJoHjvYqGoEnwXDWSoahE8CzVonEWdWut7AN5Z1us=; b=o
+	hc0bwlu4M/68NoQiSf8kIr85zx0cqQ585vAXHwZJ7ulxCa11ZjLV8e8pYl4v+gLR
+	w24ZI+UE6sxEqh/yoh0I8A4U+Pm0NyYFQrfHkEaFgC9YVLASZywo0mZzU7thHgXI
+	BwAb4kL58Q6eEC0QpEkKfe98LiyIL9Y2SwWKE6YGqM=
+Received: from yxianyao$126.com ( [103.161.254.5] ) by ajax-webmail-wmsvr10
+ (Coremail) ; Mon, 13 Nov 2023 17:21:16 +0800 (CST)
+X-Originating-IP: [103.161.254.5]
+Date: Mon, 13 Nov 2023 17:21:16 +0800 (CST)
+From: "Yao Yongxian" <yxianyao@126.com>
+To: xenomai@lists.linux.dev
+Subject: Kernel panic
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 126com
+X-NTES-SC: AL_QuySC/SduEos4CKZZukfm0sSheY2WcK4uf0l1YJUOp9wjCPk1ykldH9DBn7T3/6LLSOsuRiXXRxt5fxBXbF+T4MijZJJ7SfDz0ooIDy5wW6PzA==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Reply-To: info@state-machine.com
-Subject: STOP
-To: Mazen Arakji <mazenarakji@aim.com>, dev@mynewt.apache.org,
- info@chibios.org, canoncustomersupport@cusa.canon.com,
- questions@rowebots.com, ecos-maintainers@ecos.sourceware.org, info@enea.com,
- admin@evidence.eu.com, info@freertos.org, info@highintegritysystems.com,
- info@ghs.com, info@intervalzero.com, kingstarsales@kingstar.com,
- info@tenasys.com, inside@lynx.com, info@weston-embedded.com, info@nxp.com,
- tech.support@nxp.com, info@nokia-bell-labs.com, info@nokia.com,
- info@digitalresearch.biz, contact@siemens.com, dev@nuttx.apache.org,
- info@altreonic.com, info@avaya.com, info@microware.com, niisi@niisi.msk.ru,
- dz@dz.ru, contact@phoenix-rtos.com, info@sysgo.com, info@px5rtos.com,
- info@blackberry.com, devel@riot-os.org, support@rt-thread.com,
- roberto.bucher@supsi.ch, lorenzo.dozio@polimi.it, devel@rtems.org,
- info@quadros.com, juniper-info@juniper.net, shark-help@gandalf.sssup.it,
- mail@miray.de, info@ibm.com, csosoft@us.ibm.com, fednotes@us.ibm.com,
- office@tron.org, inquiries@windriver.com, csiroenquiries@csiro.au,
- xenomai@lists.linux.dev, main@lists.zephyrproject.org,
- devel@lists.zephyrproject.org, info-azure-rtos-supprot@microsoft.com
-References: <797142864.1347764.1699772114971.ref@mail.yahoo.com>
- <797142864.1347764.1699772114971@mail.yahoo.com>
- <1641995453.1340205.1699772516422@mail.yahoo.com>
- <1811697794.1339066.1699773777919@mail.yahoo.com>
-Content-Language: en-US
-From: Quantum Leaps <info@state-machine.com>
-Organization: Quantum Leaps
-In-Reply-To: <1811697794.1339066.1699773777919@mail.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Message-ID: <2afba52.4d46.18bc7fc33b7.Coremail.yxianyao@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:CsqowAD3f3iN6lFldmEXAA--.63488W
+X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbibRcns1pEFsJbVQACso
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-
-On 11/12/2023 2:22 AM, Mazen Arakji wrote:
-> 
-> Do not, in the United States, benefit from an RTOS that does not proceed to disable interrupts in order to insert a task into a collection of tasks.
-> 
-> If you do, you will owe me money.
-> 
-> 
-> 
-> Mazen Arakji
+CkhpIGFsbCwKClRoZSBrZW5lbCBsaW51eC00LjE5Ljg5LWlwaXBlLTkteGVub21haS0zLjEgKGxp
+bnV4LTQuMTkuODkswqBpcGlwZS1jb3JlLTQuMTkuODkteDg2LTkucGF0Y2gswqB4ZW5vbWFpIDMu
+MSkgZW5jb3VudGVyZWQgdGhlIGZvbGxvd2luZyBleGNlcHRpb24uCgpJcyBpdCBhIGhhcmR3YXJl
+IGlzc3VlIG9yIHNvbWV0aGluZyBlbHNlPyBQbGVhc2UgZ2l2ZSBtZSBzb21lIGhpbnRzIQoKVGhh
+bmtzLgoKCls2MjAwMS4wMTQyODZdIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBOTUk6IE5v
+dCBjb250aW51aW5nCls2MjAwMS4wMTQyODZdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlci8w
+IEtkdW1wOiBsb2FkZWQgVGFpbnRlZDogUCAgICAgICAgICAgTyAgICAgIDQuMTkuODktaXBpcGUt
+OS14ZW5vbWFpLTMuMS0yMDIwMTAyNyAjMQpbNjIwMDEuMDE0Mjg3XSBIYXJkd2FyZSBuYW1lOiBT
+dXBlcm1pY3JvIFN1cGVyIFNlcnZlci9DNDIyLVNGLCBCSU9TIEU5MDYuMSAwNC8yNy8yMDIxCls2
+MjAwMS4wMTQyODddIEktcGlwZSBkb21haW46IExpbnV4Cls2MjAwMS4wMTQyODddIENhbGwgVHJh
+Y2U6Cls2MjAwMS4wMTQyODhdICA8Tk1JPgpbNjIwMDEuMDE0Mjg4XSAgZHVtcF9zdGFjaysweDk4
+LzB4YjgKWzYyMDAxLjAxNDI4OF0gIHBhbmljKzB4ZTcvMHgyMzYKWzYyMDAxLjAxNDI4OF0gID8g
+cHJpbnRrKzB4NTMvMHg2YQpbNjIwMDEuMDE0Mjg5XSAgbm1pX3BhbmljLmNvbGQuMTArMHhjLzB4
+YwpbNjIwMDEuMDE0Mjg5XSAgcGNpX3NlcnJfZXJyb3IrMHg0ZC8weDYwCls2MjAwMS4wMTQyODld
+ICBkZWZhdWx0X2RvX25taSsweDE2NS8weDE3MApbNjIwMDEuMDE0Mjg5XSAgZG9fbm1pKzB4MTRl
+LzB4MTkwCls2MjAwMS4wMTQyOTBdICBlbmRfcmVwZWF0X25taSsweDE2LzB4NTAKWzYyMDAxLjAx
+NDI5MF0gUklQOiAwMDEwOl9faXBpcGVfaGFsdF9yb290KzB4MmUvMHg0MApbNjIwMDEuMDE0Mjkx
+XSBDb2RlOiA2MCBjNSAwMSAwMCA2NSA0OCA4YiAxNSBlOCA3NSBmZCA3ZSA0OCAwMSBkMCA0OCAw
+ZiBiYSAzMCAwMCA0OCA4MyA3OCAwOCAwMCA3NSAxMCA4NSBmZiA3NCAwOSAzMSBjMCA4OSBjMSBm
+YiAwZiAwMSBjOSBjMyBmYiBmNCA8YzM+IGU4IGJjIDE0IDBlIDAwIGZiIGMzIDY2IDJlIDBmIDFm
+IDg0IDAwIDAwIDAwIDAwIDAwIDQ4IGM3IDg3IDQ4Cls2MjAwMS4wMTQyOTFdIFJTUDogMDAxODpm
+ZmZmZmZmZjgyMDAzZWE4IEVGTEFHUzogMDAwMDAyNDYKWzYyMDAxLjAxNDI5Ml0gUkFYOiBmZmZm
+ODg4ODVmYzFjNTYwIFJCWDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IDAwMDAwMDAwMDAwMDAyNDYK
+WzYyMDAxLjAxNDI5Ml0gUkRYOiBmZmZmODg4ODVmYzAwMDAwIFJTSTogZmZmZmZmZmY4MWUwZjBh
+NyBSREk6IDAwMDAwMDAwMDAwMDAwMDAKWzYyMDAxLjAxNDI5Ml0gUkJQOiAwMDAwMDAwMDAwMDAw
+MDAwIFIwODogZmZmZjg4ODg1ZmMwMDAwMCBSMDk6IGZmZmZjOTAwMDVmYzdlODgKWzYyMDAxLjAx
+NDI5M10gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogMDAwMDAwMDAwMDAyYjU3MiBSMTI6IGZm
+ZmZmZmZmODIwMTE3NDAKWzYyMDAxLjAxNDI5M10gUjEzOiBmZmZmZmZmZjgyNGYzMmUwIFIxNDog
+MDAwMDAwMDAwMDAwMDAxZiBSMTU6IDAwMDAwMDAwMDAwMDAwMDAKWzYyMDAxLjAxNDI5M10gID8g
+X19pcGlwZV9oYWx0X3Jvb3QrMHgyZS8weDQwCls2MjAwMS4wMTQyOTNdICA/IF9faXBpcGVfaGFs
+dF9yb290KzB4MmUvMHg0MApbNjIwMDEuMDE0Mjk0XSAgPC9OTUk+Cls2MjAwMS4wMTQyOTRdICBk
+ZWZhdWx0X2lkbGUrMHgxZS8weDE3MApbNjIwMDEuMDE0Mjk0XSAgZG9faWRsZSsweGU1LzB4MTIw
+Cls2MjAwMS4wMTQyOTRdICBjcHVfc3RhcnR1cF9lbnRyeSsweDZhLzB4NzAKWzYyMDAxLjAxNDI5
+NF0gIHN0YXJ0X2tlcm5lbCsweDRhMS8weDRjMQpbNjIwMDEuMDE0Mjk1XSAgc2Vjb25kYXJ5X3N0
+YXJ0dXBfNjQrMHhhNC8weGIwCgoK
