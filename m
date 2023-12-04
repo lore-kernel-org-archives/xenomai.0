@@ -1,160 +1,105 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3B66C126
-	for <xenomai@lists.linux.dev>; Mon,  4 Dec 2023 07:47:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6554C7A
+	for <xenomai@lists.linux.dev>; Mon,  4 Dec 2023 08:41:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="axBRC+C2"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-50bf4f97752so900257e87.1
-        for <xenomai@lists.linux.dev>; Sun, 03 Dec 2023 23:47:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hk9TlZs/"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3316d3d11e1so2529912f8f.0
+        for <xenomai@lists.linux.dev>; Mon, 04 Dec 2023 00:41:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701676067; x=1702280867; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4ThahpOf9A+EAIMWWiqtVDumZ6JdooIbxtvZzu8iBWA=;
-        b=axBRC+C2JxQnwhvbslHYiLpOdd6vyzQF39nslg5VhCTUf7W9xer79FPjetPkxJ1bpX
-         rRqfnWTGYoR3v89b9mFWU/aIYIYXmcig3Phg6v2iXSecg2BPKzHHhXiQ0nZGQj88gXwS
-         JSMTFqgR0Vkk1l28c1Ns35PZZLaOsQRx4vWiU50H3p2QjmkMOAj+UZi973rvL6+cemhy
-         SwqWx1L+c5g9Fu6rGhgIVUR4lkplT/hCo4A+skUQ/mscWyIrTW0jHKPWjwzjKpSj/Y16
-         Ob8kKQzzSEoBzvZuduBls58GCJdU7wz9qMmZW8GPIM2nTOzre0Ag+vhK8gP5Ss9KJXHe
-         0fbQ==
+        d=gmail.com; s=20230601; t=1701679300; x=1702284100; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=cVV+KvS5SbL1RhATYRHrRT+G5jCpyZrAqygM3lEidRs=;
+        b=Hk9TlZs/Qg5BwHA5UKf1wb1gAyBiTwslsKfKcCcx+PauV3C6T5BLVygbFxskimFwfo
+         paGfP3WbwcfeG3Auc5k2FdjOquGSwGiryDXMkf1nGWRxme0hD7+CD/hw7cWwbHXn3z+e
+         vZz6irx0+2hMy3BAzkLJBwNL6lExFS1pDWLYk6BQnbLYfqfNRV4b6Vbtb9T4bQYLnWPX
+         DOXP8Hj7aPCVf/DBRYhokqYmM/uhjgUrBo9+VpSPCX9udE2IhkgBbm0Qv9jc3UwmhHme
+         knclQg5lSdTcJ7CNX7MjxLyaQTw5xwXyxnoDWR8wXbAp/AcjFwMZsFxUkFSTW7PrH0gE
+         H0Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701676067; x=1702280867;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4ThahpOf9A+EAIMWWiqtVDumZ6JdooIbxtvZzu8iBWA=;
-        b=EwXDGC/7WLh3cFgTo6yQ0AP5XDJ9/bbxBTUw8RZoBOAjhUwAKytBRBIKsLBWLS4A8f
-         uqjozM0hxKcpNwiJa2nyYaXkWpAtWEYMGZkHHzuzCYTHDGGSoj4nBSBIIzbM+WR5Eh8F
-         WxQv8uQ5OnUxHeTQE4y8hrZKdJAtj/M7oX1xRRcVVfsKAprKwjfl3nRt+BKaeFUuRTrZ
-         ncl25MfL7pfdnZ6rMf2eewKy9BvS3r/niLZCIPCf7X5RecSf5scLIB0zp1XTjXGaRP8x
-         JcoKIu4Zm/1fqGj1iKvBmLNXgcgtK1BuiBxcvCAWAsJDtQVm2FcCrk0rLZcAziILMOD9
-         Vjyw==
-X-Gm-Message-State: AOJu0YyZ8Qx6ectbcB0rK5GEG1CUQ2ERcgeraxWPKM0YoDNAro59LezU
-	bvKKC4+Hll8KGbkGHWrLKZhEJCNW/IfLlO0wKvk=
-X-Google-Smtp-Source: AGHT+IGWAhQN+MCSFMO2ofiG46h0G1WzM/KXqlDbmzs+UdbzugPE1rywBvK87b5hLUwuRn0UN/cplAx3L6ToZb4pKWk=
-X-Received: by 2002:ac2:5222:0:b0:50b:f262:8d00 with SMTP id
- i2-20020ac25222000000b0050bf2628d00mr833927lfl.43.1701676066657; Sun, 03 Dec
- 2023 23:47:46 -0800 (PST)
+        d=1e100.net; s=20230601; t=1701679300; x=1702284100;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cVV+KvS5SbL1RhATYRHrRT+G5jCpyZrAqygM3lEidRs=;
+        b=XOcGMl1fOs3+85+zJnoL7GdqUdaMQoYbzxlEK6y1hAwv2FrrmBb2QDN9d6uJAlI8I1
+         h+CpT1ZAfi3oahnj8y1DkVl1Dj2q/xUs8xVXMqLz1KiBxYYxDxiy8PD10xfTyWYogGGu
+         QCSLxrPkYP2kS4mBihe0O58U2uurltgskFO41PAz5YQcUioFRq1rR3l14OZxo/SQ2aNs
+         4LtIwj7Tdbcu0yc0dRt5zVMAmOiARQ650i2UnJWv6ttU/IRhuOPAn8zO8+Wx1KKCWDeL
+         ydFvviQNeYsb5y0yz17Dw8f3XTheO1IWKyeb6EPF8w8EKfnaBozKqhBcTBYrnGsEAL23
+         xdbQ==
+X-Gm-Message-State: AOJu0YyDUJuucIWXBLNw0ACvsZg3nPPxWtnn6AgBpnYZhha2gMhxRZoC
+	MyYkpk2DHlryq0Fox/RYnfV/phD7FK8=
+X-Google-Smtp-Source: AGHT+IFrRpgECAR0+lkbm3udseWwdUbVXcb5dNpAjVMfaBws4uubHv1PkE6WnpAXAkMtmmGeaP7kTw==
+X-Received: by 2002:a5d:4443:0:b0:333:1c93:9b91 with SMTP id x3-20020a5d4443000000b003331c939b91mr2361867wrr.20.1701679300073;
+        Mon, 04 Dec 2023 00:41:40 -0800 (PST)
+Received: from kali.home (lfbn-ren-1-2129-239.w92-167.abo.wanadoo.fr. [92.167.208.239])
+        by smtp.gmail.com with ESMTPSA id b5-20020adfe645000000b00333404e9935sm4445654wrn.54.2023.12.04.00.41.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Dec 2023 00:41:39 -0800 (PST)
+From: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+To: xenomai@lists.linux.dev
+Cc: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+Subject: [PATCH v3] lib/psos/task.c: fix build with gcc >= 12 and -Ofast
+Date: Mon,  4 Dec 2023 09:39:35 +0100
+Message-ID: <20231204083935.629619-1-fontaine.fabrice@gmail.com>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231203221711.339018-1-fontaine.fabrice@gmail.com> <acfd97356e832f0160e16f135ddfc13a3e726906.camel@siemens.com>
-In-Reply-To: <acfd97356e832f0160e16f135ddfc13a3e726906.camel@siemens.com>
-From: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-Date: Mon, 4 Dec 2023 08:47:35 +0100
-Message-ID: <CAPi7W82vYitqhy8ut2x_Fz_hWh8BFBPFChnaBELJzTB+PhYiCw@mail.gmail.com>
-Subject: Re: [PATCH v2,1/1] lib/psos/task.c: fix build with gcc >= 12
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Jan, Florian,
+Fix the following build failure with gcc >= 12 and -Ofast (found by
+buildroot autobuilders on xenomai 3.0.10 [1]):
 
-Le lun. 4 d=C3=A9c. 2023 =C3=A0 07:00, Florian Bezdeka
-<florian.bezdeka@siemens.com> a =C3=A9crit :
->
-> Hi Fabrice,
->
-> On Sun, 2023-12-03 at 23:17 +0100, Fabrice Fontaine wrote:
-> > Fix the following build failure with gcc >=3D 12:
-> >
->
-> I'm on gcc 13 here and didn't spot this problem (so far). Is it really
-> gcc 12 that matters or some configure / compiler flag that makes the
-> difference?
+task.c: In function 't_start':
+task.c:398:16: error: 'ret' may be used uninitialized [-Werror=maybe-uninitialized]
+  398 |         return ret;
+      |                ^~~
+task.c:364:13: note: 'ret' was declared here
+  364 |         int ret;
+      |             ^~~
+task.c: In function 't_resume':
+task.c:444:16: error: 'ret' may be used uninitialized [-Werror=maybe-uninitialized]
+  444 |         return ret;
+      |                ^~~
+task.c:428:13: note: 'ret' was declared here
+  428 |         int ret;
+      |             ^~~
 
-Indeed, you're right the build failure is not only linked to gcc 12
-but also to -Ofast.
-There is no build failure if -Ofast is replaced by -Os.
-I'll update the commit log in v3 (and also move ERR_OBJDEL to get_psos_task=
-).
+[1] http://autobuild.buildroot.org/results/bc1b40de22e563b704ad7f20b6bf4d1f73a6ed8a
 
->
-> > task.c: In function 't_start':
-> > task.c:398:16: error: 'ret' may be used uninitialized [-Werror=3Dmaybe-=
-uninitialized]
-> >   398 |         return ret;
-> >       |                ^~~
-> > task.c:364:13: note: 'ret' was declared here
-> >   364 |         int ret;
-> >       |             ^~~
-> > task.c: In function 't_resume':
-> > task.c:444:16: error: 'ret' may be used uninitialized [-Werror=3Dmaybe-=
-uninitialized]
-> >   444 |         return ret;
-> >       |                ^~~
-> > task.c:428:13: note: 'ret' was declared here
-> >   428 |         int ret;
-> >       |             ^~~
-> >
-> > Fixes:
-> >  - http://autobuild.buildroot.org/results/bc1b40de22e563b704ad7f20b6bf4=
-d1f73a6ed8a
->
-> The Fixes: tag I know from kernel development is different and normally
-> points to git commits that introduced a regression. Not sure if we
-> (should) follow this convention in Xenomai as well.
->
-> I like the reference to your problem, but maybe we should change the
-> "syntax" a bit.
+Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+---
+Changes v2 -> v3 (after review of Jan Kiszka and Florian Bezdeka):
+ - Move ERR_OBJDEL to get_psos_task
+ - Update commit message to mention -Ofast and xenomai 3.0.10
 
-I'll replace "Fixes:" by a simple reference (i.e. [1])
+Changes v1 -> v2 (after review of Jan Kiszka):
+ - Replace SUCCESS by ERR_OBJDEL
 
->
-> Btw: When following the URL I see Xenomai 3.0.10, that might explain
-> why I did not see the problem yet. This information is important for
-> Jan as well because this patch is then not targeting next but the
-> stable branch.
->
-> If that "analysis" is right there must be a difference between next and
-> the stable 3.0 branch that matters. Maybe we can get closer to next?
->
-> Best regards,
-> Florian
->
-> >
-> > Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-> > ---
-> > Changes v1 -> v2 (after review of Jan Kiszka):
-> >  - Replace SUCCESS by ERR_OBJDEL
-> >
-> >  lib/psos/task.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/lib/psos/task.c b/lib/psos/task.c
-> > index f678be61d..cc7e5c9c4 100644
-> > --- a/lib/psos/task.c
-> > +++ b/lib/psos/task.c
-> > @@ -362,7 +362,7 @@ u_long t_start(u_long tid,
-> >  {
-> >       struct psos_task *task;
-> >       struct service svc;
-> > -     int ret;
-> > +     int ret =3D ERR_OBJDEL;
-> >
-> >       CANCEL_DEFER(svc);
-> >
-> > @@ -426,7 +426,7 @@ u_long t_resume(u_long tid)
-> >  {
-> >       struct psos_task *task;
-> >       struct service svc;
-> > -     int ret;
-> > +     int ret =3D ERR_OBJDEL;
-> >
-> >       CANCEL_DEFER(svc);
-> >
-> > --
-> > 2.42.0
->
+ lib/psos/task.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best Regards,
+diff --git a/lib/psos/task.c b/lib/psos/task.c
+index f678be61d..b5cd087e4 100644
+--- a/lib/psos/task.c
++++ b/lib/psos/task.c
+@@ -99,6 +99,7 @@ static struct psos_task *find_psos_task_or_self(u_long tid, int *err_r)
+ 
+ struct psos_task *get_psos_task(u_long tid, int *err_r)
+ {
++	*err_r = ERR_OBJDEL;
+ 	struct psos_task *task = find_psos_task(tid, err_r);
+ 
+ 	/*
+-- 
+2.42.0
 
-Fabrice
