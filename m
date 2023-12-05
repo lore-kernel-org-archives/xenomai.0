@@ -1,72 +1,94 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D558368E90
-	for <xenomai@lists.linux.dev>; Tue,  5 Dec 2023 15:22:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="qWvwtuqB"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20231205152204e9637093ef91713e45
-        for <xenomai@lists.linux.dev>;
-        Tue, 05 Dec 2023 16:22:04 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=gGYkWXHPYeQud5NXIyOSQYWA89EaHiMDMUo1NDucUHk=;
- b=qWvwtuqBggE0F9p8cGeujGz1xhw8LdxOFO4pb8LETs3mKb7xNXBBm0XmUGxNvhtqKtFEC/
- KdGKY0B/bVJhFfyAiPLrCt0/NvfkulrHasoHc75t4tureborgiJNqRuLZXvN0KzOEy3KdPKx
- EREpYTxGAJDuZcofRvTO69sjAz9Zk=;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A83066DCF9
+	for <xenomai@lists.linux.dev>; Tue,  5 Dec 2023 20:29:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id D13626435FF8;
+	Tue,  5 Dec 2023 21:22:16 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id I9-TpZe6KtaR; Tue,  5 Dec 2023 21:22:16 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 69BA46436004;
+	Tue,  5 Dec 2023 21:22:16 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id JshzoT5wlWxv; Tue,  5 Dec 2023 21:22:16 +0100 (CET)
+Received: from blindfold.corp.sigma-star.at (84-115-239-180.cable.dynamic.surfer.at [84.115.239.180])
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 216556435FF8;
+	Tue,  5 Dec 2023 21:22:16 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	quirin.gylstorff@siemens.com,
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [xenomai-images][PATCH] tests/jobs: Fix warning about an invalid value for kernel type
-Date: Tue,  5 Dec 2023 16:22:02 +0100
-Message-Id: <20231205152202.924589-1-florian.bezdeka@siemens.com>
+Cc: wg@denx.de,
+	rpm@xenomai.org,
+	Richard Weinberger <richard@nod.at>
+Subject: [PATCH] cobalt/drvlib: Prefault io memory again
+Date: Tue,  5 Dec 2023 21:22:10 +0100
+Message-Id: <20231205202210.25477-1-richard@nod.at>
+X-Mailer: git-send-email 2.26.2
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Transfer-Encoding: quoted-printable
 
-The following warning could be seen in the LAVA web gui for all x86 test
-jobs. An example available at [1]:
+This issue was fixed a long time ago by
+03d5b0b0083c ("cobalt/rtdm: fix caching and page fault issues with rtdm_i=
+omap_to_user()"),
+later with commit c8e9e166b ("cobalt/rtdm: introduce mmap() support")
+iomap code lost again the call to cobalt_machine.prefault().
 
-    Invalid job definition:
-    not a valid value @ data['actions[0]']['deploy']['tftp']['kernel']['type']
+I have no idea why this took so longer to come up again.
+Last week, while upgrading an aarch32 setup from Xenomai 2 to Xenomai 3, =
+the application
+failed due to massive latencies caused by page faults after writing to io=
+ memory.
 
-According to the docs [2] the supported values are:
-    image, uimage and zimage
-
-As kernel type for x86 bootloaders is never used we can remove the type
-property completely.
-
-[1] https://lava.xenomai.org/scheduler/job/11720
-[2] https://docs.lavasoftware.org/lava/actions-deploy.html#type
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- tests/jobs/xenomai-x86-64-efi.yml | 1 -
- 1 file changed, 1 deletion(-)
+ kernel/cobalt/rtdm/drvlib.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
-index ec28291..d71b5ae 100644
---- a/tests/jobs/xenomai-x86-64-efi.yml
-+++ b/tests/jobs/xenomai-x86-64-efi.yml
-@@ -33,7 +33,6 @@ actions:
-     to: tftp
-     kernel:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
--      type: bzimage
-     ramdisk:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-initrd.img
-       compression: gz
--- 
-2.39.2
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 30455c3d7..620be27fa 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct =
+*vma, phys_addr_t pa)
+ {
+ 	pgprot_t prot =3D PAGE_SHARED;
+ 	unsigned long len;
++	int ret;
+=20
+ 	len =3D vma->vm_end - vma->vm_start;
+ #ifndef CONFIG_MMU
+@@ -1774,8 +1775,17 @@ static int mmap_iomem_helper(struct vm_area_struct=
+ *vma, phys_addr_t pa)
+ #endif
+ 	vma->vm_page_prot =3D pgprot_noncached(prot);
+=20
+-	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+-			       len, vma->vm_page_prot);
++	ret =3D remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
++			      len, vma->vm_page_prot);
++	if (ret)
++		return ret;
++
++#ifdef CONFIG_MMU
++	if (cobalt_machine.prefault)
++		cobalt_machine.prefault(vma);
++#endif
++
++	return 0;
+ }
+=20
+ static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct =
+*vma)
+--=20
+2.35.3
 
