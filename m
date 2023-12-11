@@ -1,122 +1,164 @@
-Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.219])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 855C21FAA
-	for <xenomai@lists.linux.dev>; Sun, 10 Dec 2023 11:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3E236AFE
+	for <xenomai@lists.linux.dev>; Mon, 11 Dec 2023 11:28:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="o4q7n91R"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=ITdeaIjZ1CeLh/Zmr0kxUtj0PB1IcEPQcEs7/oz9ZPw=; b=o
-	4q7n91RMnr8zZZhcT4TmkAFLJm5gzGjjhJJeKu/JiRYciu/t3HCur/GSZGTlLerz
-	VomyL/jbQvOht2DdhCVCDn3qSxnE9U78w4DE6yTHQY2ZDSH1elYvhwaf/hIyatbr
-	mLyzpIZlguMoYouqZ+cuDUBnxt3VYqt9ebDmS1Edl0=
-Received: from mars_liu2023$163.com ( [14.153.113.83] ) by
- ajax-webmail-wmsvr-40-104 (Coremail) ; Sun, 10 Dec 2023 19:31:25 +0800
- (CST)
-Date: Sun, 10 Dec 2023 19:31:25 +0800 (CST)
-From: mars_liu2023  <mars_liu2023@163.com>
-To: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-Cc: "Philippe Gerum" <rpm@xenomai.org>, "Jan Kiszka" <jan.kiszka@siemens.com>, 
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="mAHWhcKM"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20231211112847ff2d183fcdd7d745ef
+        for <xenomai@lists.linux.dev>;
+        Mon, 11 Dec 2023 12:28:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=GtubxZESGDGFkNt9gLWwjPzN4o1EgTigRueYNLM8cTU=;
+ b=mAHWhcKMb4yY9YSho4Ox1LP4YBoVKmD3KMqcxuGRG4Ak5YXMUftgEeY/PMzmnnGIfsgh9R
+ BCRauxZaOo7kRkxo8UUmt4a0me9pyomLOf43yz05Z0GaOftW8jt+Vg63CSi7uWhLkjn7ljlT
+ ymtBGCR8yc4WIrF2J0ngGbgDXY4/o=;
+Message-ID: <bbd8eaf4c6d38c6fbc13adf564229a02a8b65c7c.camel@siemens.com>
+Subject: Re: Re: Can xenomai-kernel boot on the second-generation hyper-v ?
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: mars_liu2023 <mars_liu2023@163.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
 	xenomai <xenomai@lists.linux.dev>
-Subject: Re:Re: Can xenomai-kernel boot on the second-generation hyper-v ?
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2023 www.mailtech.cn 163com
-In-Reply-To: <a7756962bd637d2738611761c600bf81d367aab9.camel@siemens.com>
+Date: Mon, 11 Dec 2023 12:28:46 +0100
+In-Reply-To: <31323726.c97.18c537f1296.Coremail.mars_liu2023@163.com>
 References: <420e5f7c.141a.18c2e864085.Coremail.mars_liu2023@163.com>
- <3718a82d-7421-49b0-8a4d-21b8886d2e8a@siemens.com>
- <cd40b0a44612f1f233aba3b3e8fe3748833771c9.camel@siemens.com>
- <87il5al8zb.fsf@xenomai.org>
- <a7756962bd637d2738611761c600bf81d367aab9.camel@siemens.com>
-X-NTES-SC: AL_Qu2bAP6buEAj4ymebOkXkkkah+8+UMa0vv4i24VROp80tiTI8Co4UVNmDETs/ua0BiuynDSFczhs0+peQZVSQrMBj3TKDQxkGyN0Qy0bR7UT
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	 <3718a82d-7421-49b0-8a4d-21b8886d2e8a@siemens.com>
+	 <cd40b0a44612f1f233aba3b3e8fe3748833771c9.camel@siemens.com>
+	 <87il5al8zb.fsf@xenomai.org>
+	 <a7756962bd637d2738611761c600bf81d367aab9.camel@siemens.com>
+	 <31323726.c97.18c537f1296.Coremail.mars_liu2023@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <31323726.c97.18c537f1296.Coremail.mars_liu2023@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:_____wD3_8eOoXVlCT8gAA--.48501W
-X-CM-SenderInfo: 5pdu2sholxjiist6il2tof0z/1tbiqAw-D2VOA0sDlgAGsk
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-CgoKCgoKCgoKCgoKCgoKCgpBdCAyMDIzLTEyLTA3IDIxOjIxOjQyLCAiRmxvcmlhbiBCZXpkZWth
-IiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cm90ZToKPk9uIFRodSwgMjAyMy0xMi0w
-NyBhdCAwODo1MiArMDEwMCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+IEZsb3JpYW4gQmV6ZGVr
-YSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cml0ZXM6Cj4+IAo+PiA+IE9uIFR1ZSwg
-MjAyMy0xMi0wNSBhdCAxNTo0MCArMDkwMCwgSmFuIEtpc3prYSB3cm90ZToKPj4gPiA+IE9uIDAz
-LjEyLjIzIDE1OjEzLCBtYXJzX2xpdTIwMjNAMTYzLmNvbSB3cm90ZToKPj4gPiA+ID4gSGkgeGVu
-b21haSwKPj4gPiA+ID4gCj4+ID4gPiA+IEkgdHJpZWQgdG8gbGVhcm4gdGhlIFhlbm9tYWkga2Vy
-bmVsIG9uIMKgSHlwZXItVu+8jGFuZCBhcHBlYXIgc29tZSBwcm9ibGVtcy4KPj4gPiA+ID4geGVu
-by1rZXJuZWwgY2FuJ3QgYm9vdCBvbiB0aGUgaHlwZXItdiAsc28gaSBkaWQgdGhlIGZvbGxvd2lu
-ZyAuCj4+ID4gPiA+IEkgc2F3IHN1Y2ggYSBtZXNzYWdlIGluIG90aGVyIG1haWxzIGluIHRoZSBj
-b21tdW5pdHkgdGhhdCAicHJldmVudCBDT05GSUdfSFlQRVIgZnJvbSBiZWluZyBidWlsdCBpZiBp
-bnRlcnJ1cHQgcGlwZWxpbmUgaXMgZW5hYmxlZCIsc28gaSBkaXNhYmxlZCBDT05GSUdfSFlQRVIg
-Zm9yIMKgYm9vdCB4ZW5vX2tlcm5lbCh2ZXJzaW9uIDo1LjEwLjE4MC14ZW5vbWFpLjMuMi4yKcKg
-IG9uIGh5cGVyLXYgLgo+PiA+ID4gPiBpdCBjYW4gd29yayB3ZWxsIG9uIHRoZSBmaXN0LWdlbmVy
-YXRpb24gaHlwZXItdixidXQgaXQncyBib290IGZhaWxlZCBvbiB0aGUgc2Vjb25kLWdlbmVyYXRp
-b24gaHlwZXItdi4KPj4gPiA+ID4gVGhpcyBpcyBhbHNvIHRoZcKgIGNhc2Ugd2hlbiBkaXNhYmxl
-ZCBDT05GSUdfSFlQRVIgb24gbm9ybWFsIGxpbnV4IGtlcm5lbC4KPj4gPiA+ID4gRGlkIGkgZG8g
-c29tZXRoaW5nIHdyb25nID8gaXQgc2VlbXMgbGludXggKHZlc3Jpb24gNS4xMC4xODApIGRpc2Fi
-bGVkIENPTkZJR19IWVBFUiBjYW4ndCB3b3JrIG9uIHRoZSBzZWNvbmQtZ2VuZXJhdGlvbiBoeXBl
-ci12Lgo+PiA+ID4gPiBJcyB4ZW5vLWtlcm5lbChkb3ZldGFpbCkgbm90IGFsbG93ZWQgdG8gd29y
-ayBvbiB0aGUgc2Vjb25kLWdlbmVyYXRpb24gaHlwZXItdj8gaWYgbm90ICxob3cgZG8gaSBkbyBp
-dCA/Cj4+ID4gPiA+IHRoYW5rcyBmb3IgYW55IHJlcGx5Lgo+PiA+ID4gCj4+ID4gPiBJIHZhZ3Vl
-bHkgcmVjYWxsIHNvbWUgdmVyeSB1bmZvcnR1bmF0ZSBpbnRlcm5hbCBkZXBlbmRlbmNpZXMgb2Yg
-SHlwZXItVgo+PiA+ID4gZGV2aWNlIGRyaXZlcnMgc3VwcG9ydCBvbiBDUFUgcGFyYXZpcnQgZmVh
-dHVyZXMsIGF0IGxlYXN0IEtjb25maWctd2lzZSwKPj4gPiA+IGJ1dCBJIGRvbid0IHJlY2FsbCBh
-bGwgZGV0YWlscy4gRmxvcmlhbiwgZG8geW91Pwo+PiA+IAo+PiA+IE5vLiBUaGUgc2l0dWF0aW9u
-IGlzIGEgYml0IHN0cmFuZ2UgaGVyZS4gQWRkaW5nIFBoaWxpcHBlLCB3ZSBtaWdodCBoYXZlCj4+
-ID4gYSB0eXBvIGluIGRyaXZlcnMvaHYvS2NvbmZpOgo+PiA+IAo+PiA+IFRha2VuIGZyb20gZHJp
-dmVycy9odi9LY29uZmlnOgo+PiA+IAo+PiA+IGNvbmZpZyBIWVBFUlYKPj4gPiAJdHJpc3RhdGUg
-Ik1pY3Jvc29mdCBIeXBlci1WIGNsaWVudCBkcml2ZXJzIgo+PiA+IAlkZXBlbmRzIG9uIEFDUEkg
-JiYgIUlSUV9QSVBJUEVMSU5FICYmIFwKPj4gPiAJCSgoWDg2ICYmIFg4Nl9MT0NBTF9BUElDICYm
-IEhZUEVSVklTT1JfR1VFU1QpIFwKPj4gPiAJCXx8IChBUk02NCAmJiAhQ1BVX0JJR19FTkRJQU4p
-KQo+PiA+IAo+PiA+ICFJUlFfUElQSVBFTElORSB3aWxsIGFsd2F5cyBiZSB0cnVlIChkdWUgdG8g
-dGhlIHR5cG8pLgo+PiA+IAo+PiAKPj4gWWVwLCB3YXMgZml4ZWQgaW4gNi40IGFuZCBhYm92ZS4K
-Pj4gCj4+ID4gVGhhdCBleHBsYWlucyB3aHkgb25lIG9mIG15IGtlcm5lbCBjb25maWd1cmF0aW9u
-cyB3aXRoCj4+ID4gCUNPTkZJR19JUlFfUElQRUxJTkU9eQo+PiA+IAlDT05GSUdfSFlQRVJWPW0K
-Pj4gPiBidWlsZHMsIGJ1dCBJIGhhdmUgbmV2ZXIgdHJpZWQgdG8gYm9vdCBpdCB1cCBvbiBhbnkg
-aHlwZXItdiBlbmFibGVkCj4+ID4gbWFjaGluZSBzbyBmYXIuCj4+ID4gCj4+ID4gUXVlc3Rpb24g
-dG8gUGhpbGlwcGU6IFdoeSBkaWQgeW91IHRyeSB0byBkaXNhYmxlIHRoZSBIWVBFUlYgYml0cz8g
-RHVlCj4+ID4gdG8gdGhlIGxhY2sgb2YgdGVzdGluZyBvciBpcyB0aGVyZSBtb3JlIGJlaGluZCBp
-dD8gQnVpbGRpbmcgd29ya3MsIHNvCj4+ID4gaXQgbXVzdCBoYXZlIGJlZW4gc29tZXRoaW5nIGhh
-dCBoYXBwZW5zIGR1cmluZyBydW50aW1lLi4uCj4+ID4gCj4+IAo+PiBJIGRpZCBub3QgY2FyZSBh
-Ym91dCBIWVBFUlYsIHRoYXQncyBwcmV0dHkgbXVjaCB0aGUgcmVhc29uLiBXaGljaCBtZWFucwo+
-PiBubyB1c2UgY2FzZSwgdGhlcmVmb3JlIG5vIHNwZWNpZmljIHdvcmsgb24gZW5hYmxpbmcvdGVz
-dGluZyBpbnRlcnJ1cHQKPj4gcGlwZWxpbmluZyBmb3IgdGhpcyBiZWFzdCwgc28gSSBmb3JjZWQg
-aXQgb2ZmLiBPbmx5IFBBUkFWSVJUX1hYTCBpcwo+PiBvZmZpY2lhbGx5IGEgbm8tZ28gZm9yIERv
-dmV0YWlsIEFUTSwgYmVjYXVzZSB0aGUgY3VycmVudCBpcnFmbGFncwo+PiBpbXBsZW1lbnRhdGlv
-biBmb3IgeDg2IHByZXZlbnRzIGl0Lgo+PiAKPgo+UGhpbGlwcGUsIHRoYW5rcyBmb3IgdGhlIGNs
-YXJpZmljYXRpb24uIEkgbWlnaHQgaGF2ZSB0byByZXZpc2l0IHRoaXMKPnRvcGljIGluIHRoZSBm
-dXR1cmUgYXMgc29tZSBjb2xsZWFndWVzIGhhZCBzb21lIHRob3VnaHRzIGFib3V0IHVzaW5nCj5o
-eXBlci12IGR1cmluZyBkZXZlbG9wbWVudC4gSWYgd2Ugd291bGQgcmVwb3J0IGJhY2sgdGhhdCBp
-dCB3b3Jrcwo+KG1heWJlIHdpdGggc29tZSBuZWNlc3NhcnkgZml4ZXMpIHlvdSB3b3VsZCBjb25z
-aWRlciByZW1vdmluZyB0aGUKPnJlc3RyaWN0aW9uPwo+Cj5UbyB0aGUgb3JpZ2luYWwgdGhyZWFk
-IGNyZWF0b3I6IEl0J3MgcXVpdGUgY2xlYXIgdGhhdCB5b3UgZmFjZSBib290Cj5wcm9ibGVtcyBv
-dmVyIGh5cGVyLXYgd2l0aG91dCBoeXBlci12IGd1ZXN0IHN1cHBvcnQgaW4gdGhlIGtlcm5lbAo+
-KD1kaXNhYmxlZCBDT05GSUdfSFlQRVJWKS4gSSBjYW4ndCBzYXkgc29tZXRoaW5nIGFib3V0IHRo
-ZSBkaWZmZXJlbnQKPnZlcnNpb25zIG9mIGh5cGVyLXYgcmVnYXJkaW5nIGRvdmV0YWlsL3hlbm9t
-YWkgeWV0LiBJIGhhdmUgbmV2ZXIgdHJpZWQKPml0LiBDYW4geW91IGZvbGxvdyB0aGUgYm9vdCBw
-cm9jZXNzIGJ5IHNvbWUga2luZCBvZiB2aXJ0dWFsIHNlcmlhbAo+Y29uc29sZT8gQW55IHJlbGV2
-YW50IG91dHB1dD8KCj4KUmVwbHkgdG8gZmxvcmlhbjogVGhlIGxvZ3Mgb2YgIHRoZSB4ZW5vLWtl
-cm5lbCAoZGlzYWJsZSBDT05GSUdfSFlQRVIpIGJvb3QgcHJvY2VzcyAgb24gdGhlIHNlY29uZCBn
-ZW5lcm5hdGlvbiBoeXBlci12IGlzIGFzIGZvbGxvd3PvvIwKICAgIEJlZ2luOiBSdW5uaW5nIC9z
-Y3JpcHRzL2xvY2FsLWJsb2NrIC4uLiBkb25lCiAgICBCZWdpbjogUnVubmluZyAvc2NyaXB0cy9s
-b2NhbC1ibG9jayAuLi4gZG9uZQogICAgQmVnaW46IFJ1bm5pbmcgL3NjcmlwdHMvbG9jYWwtYmxv
-Y2sgLi4uIGRvbmUuCiAgICBkb25lCiAgICBHYXZlIHVwIHdhaXRpbmcgZm9yIHN1c3BlbmQvcmVz
-dW1lIGRldmljZQogICAgZG9uZQogICAgQmVnaW46IFdhaXRpbmcgZm9yIHJvb3QgZmlsZSBzeXN0
-ZW0gLi4uIEJlZ2luOiBSdW5uaW5nIC9zY3JpcHRzL2xvY2FsLWJsb2NrIC4uLiBkb25lLgogICAg
-ZG9uZQogICAgR2F2ZSB1cCB3YWl0aW5nIGZvciByb290IGZpbGUgc3lzdGVtIGRldmljZS4gQ29t
-bW9uIHByb2JsZW1zCiAgICAtIEJvb3QgYXJncyAoY2F0IC9wcm9jL2NtZGxpbmUpCiAgICAtIENo
-ZWNrIHJvb3RkZWxheT0gKGRpZCB0aGUgc3lzdGVtIHdhaXQgbG9uZyBlbm91Z2g/KQogICAgTWlz
-c2luZyBtb2R1bGVzIChjYXQgL3Byb2MvbW9kdWxlczsgbHMgL2RldikKICAgIEFMRVJUISBVVUlE
-PWI3NGU1MmE0LTBmY2QtNDQwYy1hMzQ4LTAyOTU0ODBkNGU1MCBkb2Vzbm90IGV4aXN0LiBEcm9w
-cGluZyB0byBhIHNoZWxsIQogICAgQnVzeUJveCB2MS4zMC4xIChEZWJpYW4gMToxLjMwLjEtNiti
-MykgYnVpbHQtaW4gc2hlbGwgKGFzaCkKICAgIEVudGVyICdoZWxwJyBmb3IgYSBsaXN0IG9mIGJ1
-aWx0LWluIGNvbW1hbmRzLgpHZXQgaGVyZSAsdGhlIHNoZWxsIGNhbid0IHRha2UgYW55IGlucHV0
-KGtleWJvYXJkIGFuZCBtb3VzZSBkb24ndCB3b3JrIGhlcmUpLgoKQmVzdCByZWdhcmRz
+On Sun, 2023-12-10 at 19:31 +0800, mars_liu2023 wrote:
+>=20
+> At 2023-12-07 21:21:42, "Florian Bezdeka" <florian.bezdeka@siemens.com> w=
+rote:
+> > On Thu, 2023-12-07 at 08:52 +0100, Philippe Gerum wrote:
+> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> > >=20
+> > > > On Tue, 2023-12-05 at 15:40 +0900, Jan Kiszka wrote:
+> > > > > On 03.12.23 15:13, mars_liu2023@163.com wrote:
+> > > > > > Hi xenomai,
+> > > > > >=20
+> > > > > > I tried to learn the Xenomai kernel on =C2=A0Hyper-V=EF=BC=8Can=
+d appear some problems.
+> > > > > > xeno-kernel can't boot on the hyper-v ,so i did the following .
+> > > > > > I saw such a message in other mails in the community that "prev=
+ent CONFIG_HYPER from being built if interrupt pipeline is enabled",so i di=
+sabled CONFIG_HYPER for =C2=A0boot xeno_kernel(version :5.10.180-xenomai.3.=
+2.2)=C2=A0 on hyper-v .
+> > > > > > it can work well on the fist-generation hyper-v,but it's boot f=
+ailed on the second-generation hyper-v.
+> > > > > > This is also the=C2=A0 case when disabled CONFIG_HYPER on norma=
+l linux kernel.
+> > > > > > Did i do something wrong ? it seems linux (vesrion 5.10.180) di=
+sabled CONFIG_HYPER can't work on the second-generation hyper-v.
+> > > > > > Is xeno-kernel(dovetail) not allowed to work on the second-gene=
+ration hyper-v? if not ,how do i do it ?
+> > > > > > thanks for any reply.
+> > > > >=20
+> > > > > I vaguely recall some very unfortunate internal dependencies of H=
+yper-V
+> > > > > device drivers support on CPU paravirt features, at least Kconfig=
+-wise,
+> > > > > but I don't recall all details. Florian, do you?
+> > > >=20
+> > > > No. The situation is a bit strange here. Adding Philippe, we might =
+have
+> > > > a typo in drivers/hv/Kconfi:
+> > > >=20
+> > > > Taken from drivers/hv/Kconfig:
+> > > >=20
+> > > > config HYPERV
+> > > > 	tristate "Microsoft Hyper-V client drivers"
+> > > > 	depends on ACPI && !IRQ_PIPIPELINE && \
+> > > > 		((X86 && X86_LOCAL_APIC && HYPERVISOR_GUEST) \
+> > > > 		|| (ARM64 && !CPU_BIG_ENDIAN))
+> > > >=20
+> > > > !IRQ_PIPIPELINE will always be true (due to the typo).
+> > > >=20
+> > >=20
+> > > Yep, was fixed in 6.4 and above.
+> > >=20
+> > > > That explains why one of my kernel configurations with
+> > > > 	CONFIG_IRQ_PIPELINE=3Dy
+> > > > 	CONFIG_HYPERV=3Dm
+> > > > builds, but I have never tried to boot it up on any hyper-v enabled
+> > > > machine so far.
+> > > >=20
+> > > > Question to Philippe: Why did you try to disable the HYPERV bits? D=
+ue
+> > > > to the lack of testing or is there more behind it? Building works, =
+so
+> > > > it must have been something hat happens during runtime...
+> > > >=20
+> > >=20
+> > > I did not care about HYPERV, that's pretty much the reason. Which mea=
+ns
+> > > no use case, therefore no specific work on enabling/testing interrupt
+> > > pipelining for this beast, so I forced it off. Only PARAVIRT_XXL is
+> > > officially a no-go for Dovetail ATM, because the current irqflags
+> > > implementation for x86 prevents it.
+> > >=20
+> >=20
+> > Philippe, thanks for the clarification. I might have to revisit this
+> > topic in the future as some colleagues had some thoughts about using
+> > hyper-v during development. If we would report back that it works
+> > (maybe with some necessary fixes) you would consider removing the
+> > restriction?
+> >=20
+> > To the original thread creator: It's quite clear that you face boot
+> > problems over hyper-v without hyper-v guest support in the kernel
+> > (=3Ddisabled CONFIG_HYPERV). I can't say something about the different
+> > versions of hyper-v regarding dovetail/xenomai yet. I have never tried
+> > it. Can you follow the boot process by some kind of virtual serial
+> > console? Any relevant output?
+>=20
+> >=20
+> Reply to florian: The logs of  the xeno-kernel (disable CONFIG_HYPER) boo=
+t process  on the second genernation hyper-v is as follows=EF=BC=8C
+>     Begin: Running /scripts/local-block ... done
+>     Begin: Running /scripts/local-block ... done
+>     Begin: Running /scripts/local-block ... done.
+>     done
+>     Gave up waiting for suspend/resume device
+>     done
+>     Begin: Waiting for root file system ... Begin: Running /scripts/local=
+-block ... done.
+>     done
+>     Gave up waiting for root file system device. Common problems
+>     - Boot args (cat /proc/cmdline)
+>     - Check rootdelay=3D (did the system wait long enough?)
+>     Missing modules (cat /proc/modules; ls /dev)
+>     ALERT! UUID=3Db74e52a4-0fcd-440c-a348-0295480d4e50 doesnot exist. Dro=
+pping to a shell!
+>     BusyBox v1.30.1 (Debian 1:1.30.1-6+b3) built-in shell (ash)
+>     Enter 'help' for a list of built-in commands.
+> Get here ,the shell can't take any input(keyboard and mouse don't work he=
+re).
+>=20
+> Best regards
+
+Well, your rootfs can not be found. Likely because of a missing driver.
+How is the virtual hard disk modeled on that kind of hypervisor? SATA,
+SCSI, virtio, ...?
+
+Once again: It doesn't make sense trying to boot Linux without the
+necessary VMM tools/drivers enabled. You can enable them right now,
+this is still an accident, but if it works we might ask Philippe in the
+future to remove this restriction.
+
+
