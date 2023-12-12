@@ -1,97 +1,121 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03A5171B0
-	for <xenomai@lists.linux.dev>; Tue, 12 Dec 2023 08:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-40c39e936b4so31003815e9.1
-        for <xenomai@lists.linux.dev>; Tue, 12 Dec 2023 00:40:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702370400; x=1702975200;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kwjx9MbThRP4X+ujZWuaLmDNe+UF8G9VGccLRmtIo2g=;
-        b=MZdzUGLC+MSskYWitKzj2ubU6B5D9smFHgfT141zI9cJFOA8anDRzrRQa+Td3Q0VKK
-         M9rL2j5fTQ+FUQjA6gj6tQTtx4OhtW+aXgEh+cD32/spr1Bwuf9WGUk2HQGdUhiiHSh3
-         jfOFbKQk+nFZvktUHQJknrttejOLyTTEKeiyJsdn7jzOh9EqJ6618ErlaiexXhQ8BWSa
-         rnJBu1My/2EAXfxQkHMul7VPAaYLnZkqDrZAxUFyoypa5l1qVIPnxcgnBYolzt6HVgds
-         QtKi/pMz0QPcmnWwGYSwSo6H/NF0tF+IAO7m7oQ3TyOQBKBmBxlwQSfDsMgTCLqRpAd/
-         /erA==
-X-Gm-Message-State: AOJu0YxIoifZZipDc0mYwFz2flCb343aVlNyYeNLrMCSP/H8tumxdQJr
-	g3zdW0Wnjlp2BKTVeTp/25yCkhia6/Y=
-X-Google-Smtp-Source: AGHT+IGMpqwlahPwEJsoWOM86KxwhIY039fbZaY/RWilcZCjSgWdtT2g8YIa7FCGxYWFoxRHRE3BBA==
-X-Received: by 2002:a05:600c:1715:b0:40b:5f02:99ba with SMTP id c21-20020a05600c171500b0040b5f0299bamr1564974wmn.121.1702370399460;
-        Tue, 12 Dec 2023 00:39:59 -0800 (PST)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id n10-20020a05600c500a00b004094e565e71sm15717070wmr.23.2023.12.12.00.39.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Dec 2023 00:39:59 -0800 (PST)
-References: <69ae4c12-197f-423e-b19f-b078573b73e6@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [dovetail-6.7][PATCH 1/2] genirq: irq_pipeline: Add lock guard
- support for hard spinlocks
-Date: Tue, 12 Dec 2023 09:39:40 +0100
-In-reply-to: <69ae4c12-197f-423e-b19f-b078573b73e6@siemens.com>
-Message-ID: <87bkavlspx.fsf@xenomai.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E48956B9B
+	for <xenomai@lists.linux.dev>; Tue, 12 Dec 2023 08:59:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IPzYRC6E"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20231212085909fae695926705ea60b4
+        for <xenomai@lists.linux.dev>;
+        Tue, 12 Dec 2023 09:59:09 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=UuyhiSW4DWsmcIY/osAmHAc/rnk5lfGBjwS37LLWtyo=;
+ b=IPzYRC6Evarwmj6AYZ2lBaOors8ITXJqipmNhjutrpCtQXuW1JFpu5Wu4zIyXDCl16pCPp
+ UPVVrVwxb1+7rAtXm5XPS6Qx01OOd0UjQc+Jg1s3iX8/FOK7zYPluKVohl8yb1PBiZvGbh6b
+ uTSnL+UZQ8U0RZh7x7QklCIVYQyAw=;
+Message-ID: <5897736d591a75e317a0c60b2f3fb102043d94d2.camel@siemens.com>
+Subject: Re: [PATCH v3] lib/psos/task.c: fix build with gcc >= 12 and -Ofast
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Fabrice Fontaine
+	 <fontaine.fabrice@gmail.com>, xenomai@lists.linux.dev
+Date: Tue, 12 Dec 2023 09:59:07 +0100
+In-Reply-To: <fddc0898-7281-4d72-8d0b-0b712319dd3f@siemens.com>
+References: <20231204083935.629619-1-fontaine.fabrice@gmail.com>
+	 <e0089ecf-a597-49e8-8186-9944101260f8@siemens.com>
+	 <51181fc4df79c4b6cbfd17fea731eb512d4740d9.camel@siemens.com>
+	 <fddc0898-7281-4d72-8d0b-0b712319dd3f@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+On Tue, 2023-12-05 at 07:14 +0900, Jan Kiszka wrote:
+> On 04.12.23 21:36, Florian Bezdeka wrote:
+> > On Mon, 2023-12-04 at 21:52 +0900, Jan Kiszka wrote:
+> > > On 04.12.23 16:39, Fabrice Fontaine wrote:
+> > > > Fix the following build failure with gcc >=3D 12 and -Ofast (found =
+by
+> > > > buildroot autobuilders on xenomai 3.0.10 [1]):
+> > > >=20
+> > > > task.c: In function 't_start':
+> > > > task.c:398:16: error: 'ret' may be used uninitialized [-Werror=3Dma=
+ybe-uninitialized]
+> > > >   398 |         return ret;
+> > > >       |                ^~~
+> > > > task.c:364:13: note: 'ret' was declared here
+> > > >   364 |         int ret;
+> > > >       |             ^~~
+> > > > task.c: In function 't_resume':
+> > > > task.c:444:16: error: 'ret' may be used uninitialized [-Werror=3Dma=
+ybe-uninitialized]
+> > > >   444 |         return ret;
+> > > >       |                ^~~
+> > > > task.c:428:13: note: 'ret' was declared here
+> > > >   428 |         int ret;
+> > > >       |             ^~~
+> > > >=20
+> > > > [1] http://autobuild.buildroot.org/results/bc1b40de22e563b704ad7f20=
+b6bf4d1f73a6ed8a
+> > > >=20
+> > > > Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+> > > > ---
+> > > > Changes v2 -> v3 (after review of Jan Kiszka and Florian Bezdeka):
+> > > >  - Move ERR_OBJDEL to get_psos_task
+> > > >  - Update commit message to mention -Ofast and xenomai 3.0.10
+> > > >=20
+> > > > Changes v1 -> v2 (after review of Jan Kiszka):
+> > > >  - Replace SUCCESS by ERR_OBJDEL
+> > > >=20
+> > > >  lib/psos/task.c | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >=20
+> > > > diff --git a/lib/psos/task.c b/lib/psos/task.c
+> > > > index f678be61d..b5cd087e4 100644
+> > > > --- a/lib/psos/task.c
+> > > > +++ b/lib/psos/task.c
+> > > > @@ -99,6 +99,7 @@ static struct psos_task *find_psos_task_or_self(u=
+_long tid, int *err_r)
+> > > > =20
+> > > >  struct psos_task *get_psos_task(u_long tid, int *err_r)
+> > > >  {
+> > > > +	*err_r =3D ERR_OBJDEL;
+> > > >  	struct psos_task *task =3D find_psos_task(tid, err_r);
+> > > > =20
+> > > >  	/*
+> > >=20
+> > > Thanks, applied.
+> >=20
+> > Hm... err_r can never be NULL?
+> >=20
+>=20
+> This function already assumed that err_r is always non-NULL before this
+> change.
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+This patch makes the smokey testsuite fail, psostests reports:
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> Will be needed when converting guard users of raw spinlocks to hard
-> ones.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  include/linux/spinlock.h | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->
-> diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
-> index d5ab32d64cab..0f01c1cce343 100644
-> --- a/include/linux/spinlock.h
-> +++ b/include/linux/spinlock.h
-> @@ -554,6 +554,26 @@ DEFINE_LOCK_GUARD_1(raw_spinlock_irqsave, raw_spinlock_t,
->  		    raw_spin_unlock_irqrestore(_T->lock, _T->flags),
->  		    unsigned long flags)
->  
-> +DEFINE_LOCK_GUARD_1(hard_spinlock, hard_spinlock_t,
-> +		    hard_spin_lock((raw_spinlock_t *)_T->lock),
-> +		    hard_spin_unlock((raw_spinlock_t *)_T->lock))
-> +
-> +DEFINE_LOCK_GUARD_1(hard_spinlock_nested, hard_spinlock_t,
-> +		    hard_spin_lock_nested((raw_spinlock_t *)_T->lock,
-> +					  SINGLE_DEPTH_NESTING),
-> +		    hard_spin_unlock((raw_spinlock_t *)_T->lock))
-> +
-> +DEFINE_LOCK_GUARD_1(hard_spinlock_irq, hard_spinlock_t,
-> +		    hard_spin_lock_irq((raw_spinlock_t *)_T->lock),
-> +		    hard_spin_unlock_irq((raw_spinlock_t *)_T->lock))
-> +
-> +DEFINE_LOCK_GUARD_1(hard_spinlock_irqsave, hard_spinlock_t,
-> +		    hard_spin_lock_irqsave((raw_spinlock_t *)_T->lock,
-> +					   _T->flags),
-> +		    hard_spin_unlock_irqrestore((raw_spinlock_t *)_T->lock,
-> +						_T->flags),
-> +		    unsigned long flags)
-> +
->  DEFINE_LOCK_GUARD_1(spinlock, spinlock_t,
->  		    spin_lock(_T->lock),
->  		    spin_unlock(_T->lock))
+2023-12-07T10:59:27 [1] at task-4.c:22
+2023-12-07T10:59:27    0\"011.394| BUG in __traceobj_assert_failed(): [TASK=
+] trace assertion failed:
+2023-12-07T10:59:27               task-4.c:36 =3D> \"ret =3D=3D 0 && regval=
+ =3D=3D 0xdeadbeef\"
+2023-12-07T10:59:27 test psostests_task4 failed: 256
 
-Series merged, thanks.
+ret is now 5 (ERR_OBJDEL) instead of the expected 0 (SUCCESS).
 
--- 
-Philippe.
+>=20
+> Jan
+>=20
+> --=20
+> Siemens AG, Technology
+> Linux Expert Center
+
