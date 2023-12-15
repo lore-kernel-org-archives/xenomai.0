@@ -1,30 +1,30 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E4F2DB7C
-	for <xenomai@lists.linux.dev>; Fri, 15 Dec 2023 11:45:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0364C2DB72
+	for <xenomai@lists.linux.dev>; Fri, 15 Dec 2023 11:45:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="gmmW5zzm"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202312151145010b43547026f8968526
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="SZ5k7fN6"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202312151144547c508cc315a3c1dc71
         for <xenomai@lists.linux.dev>;
-        Fri, 15 Dec 2023 12:45:01 +0100
+        Fri, 15 Dec 2023 12:44:55 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=+/lQ+aXbCurKIRryz8n9mR3BgmESgXkg+us2BIxHRK4=;
- b=gmmW5zzmb7os5ZlyHulL/OI7+/ODrthE+eX2pWNeb63oNF65k7DUzcP/1W/YhQWx3LqZpN
- WUvJSVzuAQICo4MxlpLQELdN9gRb7OHmhDdO/5vnkYVvnShQ9yjhfszA5EBa97RMnDesi+dV
- FnB1aP1qPCYIy0FuTtVQLzdXJmV7I=;
+ bh=O7U/NSaDA5zJWuAmM20AjGRmZoQ0D9R0pc69mvPSEk4=;
+ b=SZ5k7fN6udqJ8uiAJSPby27OVsqapGsfINAgW+n+EBAaimxik4tLk+/lyNJuq6k8uZbgD0
+ uo8IuCZrHsj7/7Vvi3nGWsm9fmua8Nyy5yUgccDPQ6h5vnvHLrfL7z/j2MdxecO4ihuY0Bw5
+ 04nl0EKLM+t6CQTFNMRNtdJNGyyMw=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev,
 	rpm@xenomai.org
 Cc: jan.kiszka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH v1 5/5] kconfig: Add build options for evl
-Date: Fri, 15 Dec 2023 12:43:49 +0100
-Message-Id: <20231215114349.2913803-6-clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH v1 2/5] libevl: Add libevl recipe
+Date: Fri, 15 Dec 2023 12:43:46 +0100
+Message-Id: <20231215114349.2913803-3-clara.kowalsky@siemens.com>
 In-Reply-To: <20231215114349.2913803-1-clara.kowalsky@siemens.com>
 References: <20231215114349.2913803-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -37,83 +37,176 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-Options are included to build the linux-evl kernel v6.1 and v6.6
-together with the libevl branches master and next.
+This recipe allows building the evl userspace.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- Kconfig | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+ opt-libevl-master.yml                      | 17 +++++++++
+ opt-libevl-next.yml                        | 17 +++++++++
+ recipes-core/libevl/files/debian/changelog |  5 +++
+ recipes-core/libevl/files/debian/compat    |  1 +
+ recipes-core/libevl/files/debian/control   | 12 ++++++
+ recipes-core/libevl/files/debian/rules     | 12 ++++++
+ recipes-core/libevl/libevl_0.1.bb          | 44 ++++++++++++++++++++++
+ 7 files changed, 108 insertions(+)
+ create mode 100644 opt-libevl-master.yml
+ create mode 100644 opt-libevl-next.yml
+ create mode 100644 recipes-core/libevl/files/debian/changelog
+ create mode 100644 recipes-core/libevl/files/debian/compat
+ create mode 100644 recipes-core/libevl/files/debian/control
+ create mode 100755 recipes-core/libevl/files/debian/rules
+ create mode 100644 recipes-core/libevl/libevl_0.1.bb
 
-diff --git a/Kconfig b/Kconfig
-index 953634e..dea7d4d 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -58,6 +58,20 @@ config KAS_INCLUDE_TARGET
- 
- choice
- 	prompt "Xenomai version"
-+	default XENOMAI3
+diff --git a/opt-libevl-master.yml b/opt-libevl-master.yml
+new file mode 100644
+index 0000000..b241541
+--- /dev/null
++++ b/opt-libevl-master.yml
+@@ -0,0 +1,17 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
 +
-+config XENOMAI3
-+	bool "Xenomai 3"
++header:
++  version: 10
 +
-+config EVL
-+	bool "Xenomai 4 / EVL"
++local_conf_header:
++  libevl-version: |
++    LIBEVL_BRANCH = "master"
+diff --git a/opt-libevl-next.yml b/opt-libevl-next.yml
+new file mode 100644
+index 0000000..6b64ac7
+--- /dev/null
++++ b/opt-libevl-next.yml
+@@ -0,0 +1,17 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
 +
-+endchoice
++header:
++  version: 10
 +
-+if XENOMAI3
++local_conf_header:
++  libevl-version: |
++    LIBEVL_BRANCH = "next"
+diff --git a/recipes-core/libevl/files/debian/changelog b/recipes-core/libevl/files/debian/changelog
+new file mode 100644
+index 0000000..b8f8279
+--- /dev/null
++++ b/recipes-core/libevl/files/debian/changelog
+@@ -0,0 +1,5 @@
++libevl (0.1) UNRELEASED; urgency=low
 +
-+choice
-+	prompt "Xenomai 3 subversion"
- 	default XENOMAI_3_2
- 
- config XENOMAI_LATEST
-@@ -183,3 +197,43 @@ config COMPAT
- config KAS_INCLUDE_COMPAT
- 	string
- 	default "opt-compat.yml" if COMPAT
++  * generated by Isar
 +
-+endif	# if XENOMAI3
++ -- Unknown maintainer <unknown@example.com>  Thu, 01 Jan 1970 01:00:00 +0000
+diff --git a/recipes-core/libevl/files/debian/compat b/recipes-core/libevl/files/debian/compat
+new file mode 100644
+index 0000000..f599e28
+--- /dev/null
++++ b/recipes-core/libevl/files/debian/compat
+@@ -0,0 +1 @@
++10
+diff --git a/recipes-core/libevl/files/debian/control b/recipes-core/libevl/files/debian/control
+new file mode 100644
+index 0000000..94d2d8a
+--- /dev/null
++++ b/recipes-core/libevl/files/debian/control
+@@ -0,0 +1,12 @@
++Source: libevl
++Section: misc
++Priority: optional
++Standards-Version: 3.9.6
++Maintainer: Unknown maintainer <unknown@example.com>
++Build-Depends: debhelper (>= 10), meson, linux-libc-dev (= 6.1+r0)
 +
-+if EVL
++Package: libevl
++Architecture: any
++Depends:
++Conflicts:
++Description: install libevl related repositories
+diff --git a/recipes-core/libevl/files/debian/rules b/recipes-core/libevl/files/debian/rules
+new file mode 100755
+index 0000000..80e995e
+--- /dev/null
++++ b/recipes-core/libevl/files/debian/rules
+@@ -0,0 +1,12 @@
++#!/usr/bin/make -f
 +
-+choice
-+	prompt "Linux-evl kernel version"
-+	default LINUXEVL_6_1_LATEST
++override_dh_fixperms:
++	dh_fixperms
 +
-+config LINUXEVL_6_1_LATEST
-+	bool "Head of 6.1 Linux-evl branch"
++%:
++	dh $@ --buildsystem=meson
 +
-+config LINUXEVL_6_6_LATEST
-+	bool "Head of 6.6 Linux-evl branch"
++override_dh_auto_configure:
++	dh_auto_configure -- \
++		-Ddeb_host_multiarch=$(shell dpkg-architecture -q \
++		DEB_HOST_MULTIARCH)
+diff --git a/recipes-core/libevl/libevl_0.1.bb b/recipes-core/libevl/libevl_0.1.bb
+new file mode 100644
+index 0000000..76a45aa
+--- /dev/null
++++ b/recipes-core/libevl/libevl_0.1.bb
+@@ -0,0 +1,44 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2018-2023
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
 +
-+endchoice
++DESCRIPTION="install libevl related repositories"
 +
-+config KAS_INCLUDE_LINUXEVL
-+	string
-+	default "opt-linuxevl-latest-6.1.yml" if LINUXEVL_6_1_LATEST
-+	default "opt-linuxevl-latest-6.6.yml" if LINUXEVL_6_6_LATEST
++inherit dpkg
 +
-+choice
-+	prompt "Libevl version"
-+	default LIBEVL_MASTER
++LIBEVL_BRANCH ?= "master"
 +
-+config LIBEVL_MASTER
-+	bool "Head of master branch"
++SRCREV = "${LIBEVL_BRANCH}"
++PV ?= "${@d.getVar('SRCREV')}"
++SRC_URI = " \
++        git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=${LIBEVL_BRANCH} \
++        file://debian \
++        "
++SRCREV = "${AUTOREV}"
 +
-+config LIBEVL_NEXT
-+	bool "Head of next branch"
++DEPENDS="linux-evl"
 +
-+endchoice
++S = "${WORKDIR}/git"
 +
-+config KAS_INCLUDE_LIBEVL
-+	string
-+	default "opt-libevl-master.yml" if LIBEVL_MASTER
-+	default "opt-libevl-next.yml" if LIBEVL_NEXT
++do_prepare_build[cleandirs] += "${S}/debian"
++do_prepare_build() {
++    cp -r ${WORKDIR}/debian ${S}
 +
-+endif	# if EVL
++    bbplain $(printf "libevl-%s: Building revision %.20s\n" \
++                    ${PV} ${COMMIT})
++}
++
++def get_commit(d):
++    try:
++        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
++    except bb.fetch2.FetchError:
++        return ""
++
++COMMIT="${@get_commit(d)}"
 -- 
 2.39.2
 
