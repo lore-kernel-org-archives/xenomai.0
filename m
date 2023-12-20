@@ -1,44 +1,44 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2165F1F5E4
-	for <xenomai@lists.linux.dev>; Wed, 20 Dec 2023 09:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FEF40BE2
+	for <xenomai@lists.linux.dev>; Wed, 20 Dec 2023 10:09:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QYTNAdyQ"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-28b71490fbbso1837964a91.0
-        for <xenomai@lists.linux.dev>; Wed, 20 Dec 2023 01:00:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VDiJLdqu"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-6dbaf9b1674so127377a34.2
+        for <xenomai@lists.linux.dev>; Wed, 20 Dec 2023 02:09:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1703062818; x=1703667618; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1703066955; x=1703671755; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RaL0Lckxt4LL63v0/7jDL5rqePG+WWCU8UYK/axTnoc=;
-        b=QYTNAdyQ9llfVdaZKuxjqi5XxPkJM+RrWydj45jzZd1atTVktAJuso5Hd7yRftwc79
-         +2Z2IaPdY2vLJqO6we4Dbn/XlGi13/fep4Fr+JSM4Q+YSyM3ONbzNGvfRkob4YRoXIQN
-         b6Tw7mxN6SLBReoCAzCHyWVfmyltDEPYW+PLl4NHaEC/mcZgvZkefdUzZkN/tZCsZGaC
-         HpIlw8lFQlnoVsPIv+HY5mxao9GstIkhMTVhICDozDJNIMRZiVuUhzoDQqO93i3BdHVY
-         lr5/wZ9itNt/nmfkyA6RlrTMgMlm3kojrOyqsCAle1bqhlowHAiSDkc+lzsMbEyUlEl/
-         0j9Q==
+        bh=MAocmkbxm2FroGDumXWx+s+4VEZE3vtA1A1ldBysq8M=;
+        b=VDiJLdqugFYeXPIKUw9Ibr0mMZs0CF/2HpmNcz8KCRo4MSXBvWtq4G/Sq5Mb5Tq5by
+         bm+MgoLiuGhF9cPHagr2vHRYfdJEWfLcoyXORnMF1sxcmY9lqFO8squcBnQ4PUNEeL4f
+         bdMJbkKUoaNAvwjwkbxMwKuoZHoAffF/qOaBhFSSt3TVzFMWrjQXZ/hTzDqwt+5raxOp
+         460kaJfh3r2wke0saLcDZWc6pH2BFmOfLCZzDKPq+BkTRDKvzk2VKC35e2hEuzuPH9Fd
+         o3VNjlna0rEMBRlBrPuufpoVgrzzkkqWHM43M9KfGq6mCmDur92CKGxzlMrdo7pCsXmR
+         W7Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703062818; x=1703667618;
+        d=1e100.net; s=20230601; t=1703066955; x=1703671755;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=RaL0Lckxt4LL63v0/7jDL5rqePG+WWCU8UYK/axTnoc=;
-        b=doqcg4unHEn12gy53ZWtHyjd++DzpLEfnGNfzPARxrSW7PpuIvbRbbAVVuREuOFLZT
-         Bb+vopq0rjhV1QlNAlwHQ0mcU+uNshUo2a74l+JtwUuYEevrZKMTkoHylX7rggkrvPzK
-         4+DPsNHv8uNVjrwYR//c0fWXeYmIG2rhue+x3VZ7STJSICVW7QSpIVePyS7co0cLSBlw
-         yS6F0iLp5Rw/kyPWEOkZsptKIh+uDqq4PahaBnpXG8QjpbrhJI/80zTVEJ65smkc+pYB
-         chG/kQrEbsp8hUn7e1l8TPe6TNLVzxn+r7082FQj80KpEwcn/69QI1HVtarj/LQlWuK+
-         v9Hw==
-X-Gm-Message-State: AOJu0YxJXPMZycchz+o9px3llraa3MwuZfj768j0JubnoeDetQxBxxZl
-	14zL6WGvcwvEsyoTGJz+afN71QlMWETbkejOCNQ=
-X-Google-Smtp-Source: AGHT+IFx3cSnZVB95QR/mku5Z8dmRRv96wcgH40hlONDWcHd0u/csFRyv6c9ecvjkOMlmh4ZwEhBwW/6uzljIUrrgPk=
-X-Received: by 2002:a17:90a:5b0f:b0:28b:bc0d:b861 with SMTP id
- o15-20020a17090a5b0f00b0028bbc0db861mr1258403pji.34.1703062817657; Wed, 20
- Dec 2023 01:00:17 -0800 (PST)
+        bh=MAocmkbxm2FroGDumXWx+s+4VEZE3vtA1A1ldBysq8M=;
+        b=RSWEKTNxKtMHPP7t4B8sSmA7hJOIhd/49TjtnKBH7KLW2WI93fN5vAWkgMSLvKZa+m
+         XC6BYVs+/5E+jNTehriAAYW9sB3j4NAGTXA2po3tn0ojCXxLtXZp+MusJsQEKZpJQhEE
+         XX2Xef765nwMZTjd/qUdvem4eFcXVz7CGbNhD5JLTl0Xa4OEjk6EGID3AZz1OiW2RvAh
+         VWotCkRkPHmbtedZBIa1UPPwLlixBal2Ym0I06m3VlAdsFmUfAPhh+MSY63wAjohM0tE
+         qB62YmhKH3Jjgg4l1Eat2XIoDhTFKYZOPt7qt19E4i46kWog8TKmbe6drpIPIEglY61F
+         nQtw==
+X-Gm-Message-State: AOJu0YwGP9PcBbgIZ8CwWW8xa0rsiZmvCLLh0t1BGBR/EipJ0sHmBPb6
+	UAqY0hMi3YIwPuHU/zPlfWFfGNXmtfRDLMkif6Q=
+X-Google-Smtp-Source: AGHT+IHFmreQECyv6gT3MpA5k3Ce+IKdTVjDKgbDfSTU4U7I41JAvMT2eHp9oFQ/4yxVXKR3fmaqZRo/vTrACSRvf0g=
+X-Received: by 2002:a05:6358:71c5:b0:174:7b93:7921 with SMTP id
+ u5-20020a05635871c500b001747b937921mr6714rwu.46.1703066954525; Wed, 20 Dec
+ 2023 02:09:14 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -47,10 +47,11 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <CAH0t8y2Y6OP0g1c6duLKK6GnEjd2AYtsBfGJp_GKUprz+-kz7Q@mail.gmail.com>
  <e7624208-3436-44ce-b46e-eeb8e73d9f27@siemens.com> <398875541.48372669.1702980839753.JavaMail.zimbra@telenet.be>
-In-Reply-To: <398875541.48372669.1702980839753.JavaMail.zimbra@telenet.be>
+ <CAH0t8y0Ck3A9A311Qy9qEXaXNFK3fmVrjycDQOB7tTyB_k_q9Q@mail.gmail.com>
+In-Reply-To: <CAH0t8y0Ck3A9A311Qy9qEXaXNFK3fmVrjycDQOB7tTyB_k_q9Q@mail.gmail.com>
 From: =?UTF-8?B?VGFtw6FzIFBhw6Fs?= <paal.tam@gmail.com>
-Date: Wed, 20 Dec 2023 10:00:06 +0100
-Message-ID: <CAH0t8y0Ck3A9A311Qy9qEXaXNFK3fmVrjycDQOB7tTyB_k_q9Q@mail.gmail.com>
+Date: Wed, 20 Dec 2023 11:09:03 +0100
+Message-ID: <CAH0t8y3nsRRNRmtP_YqKH1Vh7EiE==ruZTOrE1vJfmaDj+_OmA@mail.gmail.com>
 Subject: Re: rt_e1000e and Intel i219
 To: g.strobbe@telenet.be
 Cc: xenomai <xenomai@lists.linux.dev>
@@ -59,57 +60,73 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Gino,
 
-Thank you very much!
-Just for sure. I should apply these patches on the Linux kernel source
-tree, and the result is the xenomai driver source, that I need to copy
-into the xenomai master source directory, by overwriting the files
-already there. Am I right?
-Does the v6.4-dovetail-rebase Linux source tree that I should choose
-as a starting point?
+In the meantime I realized that I need to apply the pathes to the
+xenomai master tree.
 
 Best Regards,
 Tamas
 
-
-
-<g.strobbe@telenet.be> ezt =C3=ADrta (id=C5=91pont: 2023. dec. 19., K, 11:1=
-4):
+Tam=C3=A1s Pa=C3=A1l <paal.tam@gmail.com> ezt =C3=ADrta (id=C5=91pont: 2023=
+. dec. 20., Sze, 10:00):
 >
-> Hi Tamas,
+> Hi Gino,
 >
-> Please find attached the latest version of those patches.
-> They were created against the v6.4-rc5 kernel.
+> Thank you very much!
+> Just for sure. I should apply these patches on the Linux kernel source
+> tree, and the result is the xenomai driver source, that I need to copy
+> into the xenomai master source directory, by overwriting the files
+> already there. Am I right?
+> Does the v6.4-dovetail-rebase Linux source tree that I should choose
+> as a starting point?
 >
 > Best Regards,
-> Gino
+> Tamas
 >
-> ----- On Dec 18, 2023, at 5:49 PM, Jan Kiszka jan.kiszka@siemens.com wrot=
+>
+>
+> <g.strobbe@telenet.be> ezt =C3=ADrta (id=C5=91pont: 2023. dec. 19., K, 11=
+:14):
+> >
+> > Hi Tamas,
+> >
+> > Please find attached the latest version of those patches.
+> > They were created against the v6.4-rc5 kernel.
+> >
+> > Best Regards,
+> > Gino
+> >
+> > ----- On Dec 18, 2023, at 5:49 PM, Jan Kiszka jan.kiszka@siemens.com wr=
+ote:
+> >
+> > > On 18.12.23 13:33, Tam=C3=A1s Pa=C3=A1l wrote:
+> > >> Dear All,
+> > >>
+> > >> The current version of the rt_e1000e driver does not support any Int=
+el
+> > >> i219 network device. I found a mailing about this from 2019. This on=
 e:
->
-> > On 18.12.23 13:33, Tam=C3=A1s Pa=C3=A1l wrote:
-> >> Dear All,
-> >>
-> >> The current version of the rt_e1000e driver does not support any Intel
-> >> i219 network device. I found a mailing about this from 2019. This one:
-> >>
-> >> https://www.mail-archive.com/xenomai@xenomai.org/msg16000.html
-> >>
-> >> The "unofficial" patches (created by Gino Strobbe), that upgrades the
-> >> rt_e1000e driver should be there as attachement, but I could not
-> >> download it. Probably when the mailing list had been moved to the
-> >> archive server, something happened with those attachements.
-> >>
-> >> Does anybody has those patches? If yes, could you please them send me.
-> >>
-> >
-> > I'm afraid, those are lost in the unfortunate settings of the old
-> > mailing list.
-> >
-> > But given their age and the source kernel, it would be better to resync
-> > the driver against a recent version anyway.
-> >
-> > Jan
-> >
-> > --
-> > Siemens AG, Technology
-> > Linux Expert Center
+> > >>
+> > >> https://www.mail-archive.com/xenomai@xenomai.org/msg16000.html
+> > >>
+> > >> The "unofficial" patches (created by Gino Strobbe), that upgrades th=
+e
+> > >> rt_e1000e driver should be there as attachement, but I could not
+> > >> download it. Probably when the mailing list had been moved to the
+> > >> archive server, something happened with those attachements.
+> > >>
+> > >> Does anybody has those patches? If yes, could you please them send m=
+e.
+> > >>
+> > >
+> > > I'm afraid, those are lost in the unfortunate settings of the old
+> > > mailing list.
+> > >
+> > > But given their age and the source kernel, it would be better to resy=
+nc
+> > > the driver against a recent version anyway.
+> > >
+> > > Jan
+> > >
+> > > --
+> > > Siemens AG, Technology
+> > > Linux Expert Center
