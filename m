@@ -1,32 +1,30 @@
 Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 699EA55E79
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 699B055E77
 	for <xenomai@lists.linux.dev>; Thu, 21 Dec 2023 16:38:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="gGYbKk+i"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20231221163825576f558ba10606738a
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="HGm4/roW"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2023122116381930b87015cd8e779b1e
         for <xenomai@lists.linux.dev>;
-        Thu, 21 Dec 2023 17:38:26 +0100
+        Thu, 21 Dec 2023 17:38:19 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=clara.kowalsky@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=/8zhkbi/VRFonxk+JJ55yTL+Naa8Hg1nTi5G0pkpY7A=;
- b=gGYbKk+iusCEQMOcTIbRh3D7CemPOXts4OrWLp+/8Agj5R1zd4jHSP6ty3uV/Jar4Y2coe
- U1Jt+3+lgfLLb6YPKmeldzzDi6+KSR8msVFTMY+HR7NXlvwWF6+RgA6GH2sCc9BHZIPDGiut
- 2G0o8+l3tnC82+4Gg1jZ7A7CUaPN4=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=EIA5gWw6pZwl0EvoA9CTQRraOADgJ/jPctQop8Fms7w=;
+ b=HGm4/roWhUtH68lbV1TwqoONyxEQ3l+pXd6LP0f5JZyNkfddJHjNevBFMIubK+rcfEhyCn
+ zAfYL2/FK7vxaLfPnvGuYsqlTK6UGAM5Lsv9D3o2iywRjD4/OWc+wV580IWg56XzFMcTQDrp
+ phU8DDn9CsSoUalnJ/CyTdE/cidGw=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev,
 	rpm@xenomai.org
 Cc: jan.kiszka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH v2 2/7] xenomai-3: Mark xenomai 3 specific configs
-Date: Thu, 21 Dec 2023 17:37:38 +0100
-Message-Id: <20231221163743.2923801-3-clara.kowalsky@siemens.com>
-In-Reply-To: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
-References: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH v2 0/7] Add evl support to xenomai-images
+Date: Thu, 21 Dec 2023 17:37:36 +0100
+Message-Id: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -37,109 +35,128 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-In preparation for the integration of EVL, a xenomai-3 override is
-added.
+Hi all,
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- conf/distro/xenomai-demo.conf                  | 2 +-
- opt-xenomai-3.0.x.yml                          | 2 ++
- opt-xenomai-3.1.x.yml                          | 2 ++
- opt-xenomai-3.2.x.yml                          | 2 ++
- opt-xenomai-next.yml                           | 2 ++
- recipes-core/images/demo-image.bb              | 8 ++++----
- recipes-kernel/linux/linux-xenomai-3_latest.bb | 2 +-
- 7 files changed, 14 insertions(+), 6 deletions(-)
+this is the second version of the series for adding xenomai-4/evl build support to xenomai-images.
+Thank you Jan for your comments so far.
 
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index c99669d..d96cdaf 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -16,7 +16,7 @@ include conf/distro/include/xenomai-version.inc
- 
- HOST_DISTRO ?= "debian-bookworm"
- 
--KERNEL_NAME = "xenomai"
-+KERNEL_NAME:xenomai3 = "xenomai-3"
- 
- WKS_FILE = "${MACHINE}.wks"
- 
-diff --git a/opt-xenomai-3.0.x.yml b/opt-xenomai-3.0.x.yml
-index 4559de8..35714b1 100644
---- a/opt-xenomai-3.0.x.yml
-+++ b/opt-xenomai-3.0.x.yml
-@@ -15,3 +15,5 @@ header:
- local_conf_header:
-   xenomai-3-0-x: |
-     PREFERRED_VERSION_xenomai = "stable-3.0.x"
-+  xenomai-3_override: |
-+    OVERRIDES .= ":xenomai3"
-diff --git a/opt-xenomai-3.1.x.yml b/opt-xenomai-3.1.x.yml
-index 2479e96..c5417d7 100644
---- a/opt-xenomai-3.1.x.yml
-+++ b/opt-xenomai-3.1.x.yml
-@@ -15,3 +15,5 @@ header:
- local_conf_header:
-   xenomai-3-1-x: |
-     PREFERRED_VERSION_xenomai = "stable-3.1.x"
-+  xenomai-3_override: |
-+    OVERRIDES .= ":xenomai3"
-diff --git a/opt-xenomai-3.2.x.yml b/opt-xenomai-3.2.x.yml
-index 1abcef9..54d0e9a 100644
---- a/opt-xenomai-3.2.x.yml
-+++ b/opt-xenomai-3.2.x.yml
-@@ -15,3 +15,5 @@ header:
- local_conf_header:
-   xenomai-3-2-x: |
-     PREFERRED_VERSION_xenomai = "stable-3.2.x"
-+  xenomai-3_override: |
-+    OVERRIDES .= ":xenomai3"
-diff --git a/opt-xenomai-next.yml b/opt-xenomai-next.yml
-index ba0b2da..9d74ed0 100644
---- a/opt-xenomai-next.yml
-+++ b/opt-xenomai-next.yml
-@@ -15,3 +15,5 @@ header:
- local_conf_header:
-   xenomai-latest: |
-     PREFERRED_VERSION_xenomai = "next"
-+  xenomai-3_override: |
-+    OVERRIDES .= ":xenomai3"
-diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
-index 540583b..db7e2c7 100644
---- a/recipes-core/images/demo-image.bb
-+++ b/recipes-core/images/demo-image.bb
-@@ -33,7 +33,7 @@ def get_testsuite_package_names(d):
- 
- # Install gdb only for older stable releases. Enables gdb tests and avoids a
- # arch missmatch for compat builds on newer releases.
--IMAGE_PREINSTALL += "${@ 'gdb' if not has_testsuite_package(d) else '' }"
-+IMAGE_PREINSTALL:append:xenomai3 = " ${@ 'gdb' if not has_testsuite_package(d) else '' }"
- 
- IMAGE_PREINSTALL += " \
-     bash-completion less vim nano man \
-@@ -41,7 +41,7 @@ IMAGE_PREINSTALL += " \
-     iw wireless-tools wpasupplicant dbus \
-     lsb-release"
- 
--IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym"
--IMAGE_INSTALL += "${@get_testsuite_package_names(d)}"
--IMAGE_INSTALL += "libxenomai1-dbgsym"
-+IMAGE_INSTALL:append:xenomai3 = " xenomai-runtime xenomai-runtime-dbgsym"
-+IMAGE_INSTALL:append:xenomai3 = " ${@get_testsuite_package_names(d)}"
-+IMAGE_INSTALL:append:xenomai3 = " libxenomai1-dbgsym"
- IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_latest.bb b/recipes-kernel/linux/linux-xenomai-3_latest.bb
-index adda9b5..a9c223a 100644
---- a/recipes-kernel/linux/linux-xenomai-3_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_latest.bb
-@@ -72,6 +72,6 @@ GIT_BRANCH:arm64 = "${@ \
-     else d.getVar('LATEST_KERNEL_BRANCH') }"
- 
- SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
--SRCREV = "${AUTOREV}"
-+SRCREV:xenomai3 = "${AUTOREV}"
- 
- SRC_URI:append:beagle-bone-black = " ${@ 'file://bbb_4.4.cfg' if is_xeno_3_0(d) else '' }"
+Best regards,
+Clara
+
+Clara Kowalsky (7):
+  linux-xenomai: Rename linux-xenomai to linux-xenomai-3
+  xenomai-3: Mark xenomai 3 specific configs
+  xenomai-4: Enable kernel build
+  xenomai-4: Add evl userspace
+  ci: Rename xenomai 3 files
+  ci: Add xenomai-4 test cases
+  kconfig: Add build options for evl
+
+ .gitlab-ci.yml                                | 14 ++++-
+ Kconfig                                       | 62 +++++++++++++++++++
+ ci/xenomai_3_1_x.yml                          |  2 +-
+ ci/xenomai_3_2_x.yml                          |  8 +--
+ ...nel_4_19.yml => xenomai_3_kernel_4_19.yml} |  0
+ ...nel_5_10.yml => xenomai_3_kernel_5_10.yml} |  0
+ ...nel_5_15.yml => xenomai_3_kernel_5_15.yml} |  0
+ ...ernel_5_4.yml => xenomai_3_kernel_5_4.yml} |  0
+ ...ernel_6_1.yml => xenomai_3_kernel_6_1.yml} |  0
+ ci/{xenomai_next.yml => xenomai_3_next.yml}   |  8 +--
+ ...t_compat.yml => xenomai_3_next_compat.yml} |  0
+ ci/xenomai_4_kernel_6_1.yml                   | 17 +++++
+ ci/xenomai_4_kernel_6_6.yml                   | 17 +++++
+ ci/xenomai_4_master.yml                       | 20 ++++++
+ ci/xenomai_4_next.yml                         | 20 ++++++
+ ci/xenomai_4_r46.yml                          | 20 ++++++
+ ci/xenomai_4_stable.yml                       | 20 ++++++
+ conf/distro/include/xenomai-version.inc       |  2 +-
+ conf/distro/xenomai-demo.conf                 |  3 +-
+ opt-libevl-master.yml                         | 19 ++++++
+ opt-libevl-next.yml                           | 20 ++++++
+ opt-libevl-r46.yml                            | 19 ++++++
+ opt-libevl-stable.yml                         | 19 ++++++
+ opt-linux-4.19.yml                            |  2 +-
+ opt-linux-4.4.yml                             |  2 +-
+ opt-linux-5.10.yml                            |  2 +-
+ opt-linux-5.15.yml                            |  2 +-
+ opt-linux-5.4.yml                             |  2 +-
+ opt-linux-6.1.yml                             |  2 +-
+ opt-linux-latest-4.19.yml                     |  2 +-
+ opt-linux-latest-4.4.yml                      |  2 +-
+ opt-linux-latest-5.10.yml                     |  2 +-
+ opt-linux-latest-5.15.yml                     |  2 +-
+ opt-linux-latest-5.4.yml                      |  2 +-
+ opt-linux-latest-6.1.yml                      |  2 +-
+ opt-linux-latest.yml                          |  2 +-
+ opt-xen4-linux-latest-6.1.yml                 | 18 ++++++
+ opt-xen4-linux-latest-6.6.yml                 | 18 ++++++
+ opt-xenomai-3.0.x.yml                         |  2 +
+ opt-xenomai-3.1.x.yml                         |  2 +
+ opt-xenomai-3.2.x.yml                         |  2 +
+ opt-xenomai-next.yml                          |  2 +
+ recipes-core/images/demo-image.bb             | 10 +--
+ recipes-kernel/linux/files/xen4.cfg           |  3 +
+ ...etail.inc => linux-xenomai-3-dovetail.inc} |  2 +-
+ recipes-kernel/linux/linux-xenomai-3.inc      | 33 ++++++++++
+ ...enomai_4.19.bb => linux-xenomai-3_4.19.bb} |  2 +-
+ ...-xenomai_4.4.bb => linux-xenomai-3_4.4.bb} |  2 +-
+ ...enomai_5.10.bb => linux-xenomai-3_5.10.bb} |  2 +-
+ ...enomai_5.15.bb => linux-xenomai-3_5.15.bb} |  2 +-
+ ...-xenomai_5.4.bb => linux-xenomai-3_5.4.bb} |  2 +-
+ ...-xenomai_6.1.bb => linux-xenomai-3_6.1.bb} |  2 +-
+ ...ai_latest.bb => linux-xenomai-3_latest.bb} |  4 +-
+ recipes-kernel/linux/linux-xenomai-4.inc      | 24 +++++++
+ recipes-kernel/linux/linux-xenomai-4_6.1.bb   | 14 +++++
+ recipes-kernel/linux/linux-xenomai-4_6.6.bb   | 14 +++++
+ recipes-kernel/linux/linux-xenomai.inc        | 19 ------
+ recipes-xenomai/libevl/files/debian/compat    |  1 +
+ .../libevl/files/debian/control.tmpl          | 10 +++
+ recipes-xenomai/libevl/files/debian/rules     |  7 +++
+ recipes-xenomai/libevl/libevl_master.bb       | 47 ++++++++++++++
+ recipes-xenomai/libevl/libevl_next.bb         |  1 +
+ recipes-xenomai/libevl/libevl_r46.bb          | 46 ++++++++++++++
+ recipes-xenomai/libevl/libevl_r47.bb          |  1 +
+ 64 files changed, 551 insertions(+), 57 deletions(-)
+ rename ci/{kernel_4_19.yml => xenomai_3_kernel_4_19.yml} (100%)
+ rename ci/{kernel_5_10.yml => xenomai_3_kernel_5_10.yml} (100%)
+ rename ci/{kernel_5_15.yml => xenomai_3_kernel_5_15.yml} (100%)
+ rename ci/{kernel_5_4.yml => xenomai_3_kernel_5_4.yml} (100%)
+ rename ci/{kernel_6_1.yml => xenomai_3_kernel_6_1.yml} (100%)
+ rename ci/{xenomai_next.yml => xenomai_3_next.yml} (66%)
+ rename ci/{xenomai_next_compat.yml => xenomai_3_next_compat.yml} (100%)
+ create mode 100644 ci/xenomai_4_kernel_6_1.yml
+ create mode 100644 ci/xenomai_4_kernel_6_6.yml
+ create mode 100644 ci/xenomai_4_master.yml
+ create mode 100644 ci/xenomai_4_next.yml
+ create mode 100644 ci/xenomai_4_r46.yml
+ create mode 100644 ci/xenomai_4_stable.yml
+ create mode 100644 opt-libevl-master.yml
+ create mode 100644 opt-libevl-next.yml
+ create mode 100644 opt-libevl-r46.yml
+ create mode 100644 opt-libevl-stable.yml
+ create mode 100644 opt-xen4-linux-latest-6.1.yml
+ create mode 100644 opt-xen4-linux-latest-6.6.yml
+ create mode 100644 recipes-kernel/linux/files/xen4.cfg
+ rename recipes-kernel/linux/{linux-xenomai-dovetail.inc => linux-xenomai-3-dovetail.inc} (86%)
+ create mode 100644 recipes-kernel/linux/linux-xenomai-3.inc
+ rename recipes-kernel/linux/{linux-xenomai_4.19.bb => linux-xenomai-3_4.19.bb} (93%)
+ rename recipes-kernel/linux/{linux-xenomai_4.4.bb => linux-xenomai-3_4.4.bb} (92%)
+ rename recipes-kernel/linux/{linux-xenomai_5.10.bb => linux-xenomai-3_5.10.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_5.15.bb => linux-xenomai-3_5.15.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_5.4.bb => linux-xenomai-3_5.4.bb} (92%)
+ rename recipes-kernel/linux/{linux-xenomai_6.1.bb => linux-xenomai-3_6.1.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_latest.bb => linux-xenomai-3_latest.bb} (97%)
+ create mode 100644 recipes-kernel/linux/linux-xenomai-4.inc
+ create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.1.bb
+ create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.6.bb
+ create mode 100644 recipes-xenomai/libevl/files/debian/compat
+ create mode 100644 recipes-xenomai/libevl/files/debian/control.tmpl
+ create mode 100755 recipes-xenomai/libevl/files/debian/rules
+ create mode 100644 recipes-xenomai/libevl/libevl_master.bb
+ create mode 120000 recipes-xenomai/libevl/libevl_next.bb
+ create mode 100644 recipes-xenomai/libevl/libevl_r46.bb
+ create mode 120000 recipes-xenomai/libevl/libevl_r47.bb
+
 -- 
 2.39.2
 
