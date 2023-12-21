@@ -1,30 +1,30 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC78E55E79
-	for <xenomai@lists.linux.dev>; Thu, 21 Dec 2023 16:38:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0127B1DA43
+	for <xenomai@lists.linux.dev>; Thu, 21 Dec 2023 16:38:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="LR8w5wQU"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20231221163827504ce2254b75931688
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="HtMY5aOV"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202312211638295be6b59ed93c7996fb
         for <xenomai@lists.linux.dev>;
-        Thu, 21 Dec 2023 17:38:27 +0100
+        Thu, 21 Dec 2023 17:38:29 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=9QRAhllQVF/8g5JFsmB1nk0R3QT01TFXWFJCh7tL4kU=;
- b=LR8w5wQUg1n1BlGDCWxeR6aw3Qo46MJACcC/vimM3+dcmpj0o7FSYaoW+qqbQ0h+uiuR6G
- uQpMhr/8qvRG8wmIPZKHsn3pOWnLguNPCIqBe7GW4UCd1U8NX42MBeJ+beN8K3ItMkSp0e72
- klpTh1c4C8IRp21cwi1B1SpQ/Q0aY=;
+ bh=rhlgeOYriFFJwynjAjQEYPpS3ufbBRfwh7JkGGOdhbE=;
+ b=HtMY5aOVGKJvWNHahjQNAGW/zz2aFsmnMmQMhiXDE5U/tOklIb9uirW4kYdv+P/sZJ/7tJ
+ shReQB9Q4JCtjeC660NvAiYPjhxkAxEvnV55/QRrtpBjZuV+mIisQgA1gj7qWLtN3LN9zEdc
+ BNgCd3M5Oh6tV/xYWbwbChMIAKofY=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev,
 	rpm@xenomai.org
 Cc: jan.kiszka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH v2 3/7] xenomai-4: Enable kernel build
-Date: Thu, 21 Dec 2023 17:37:39 +0100
-Message-Id: <20231221163743.2923801-4-clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH v2 4/7] xenomai-4: Add evl userspace
+Date: Thu, 21 Dec 2023 17:37:40 +0100
+Message-Id: <20231221163743.2923801-5-clara.kowalsky@siemens.com>
 In-Reply-To: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
 References: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -37,43 +37,41 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-This permits to build the linux-evl kernel v6.1 and v6.6.
+The libevl recipe allows building the evl userspace.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- conf/distro/xenomai-demo.conf               |  1 +
- opt-xen4-linux-latest-6.1.yml               | 18 ++++++++++++++++
- opt-xen4-linux-latest-6.6.yml               | 18 ++++++++++++++++
- recipes-kernel/linux/files/xen4.cfg         |  3 +++
- recipes-kernel/linux/linux-xenomai-4.inc    | 24 +++++++++++++++++++++
- recipes-kernel/linux/linux-xenomai-4_6.1.bb | 14 ++++++++++++
- recipes-kernel/linux/linux-xenomai-4_6.6.bb | 14 ++++++++++++
- 7 files changed, 92 insertions(+)
- create mode 100644 opt-xen4-linux-latest-6.1.yml
- create mode 100644 opt-xen4-linux-latest-6.6.yml
- create mode 100644 recipes-kernel/linux/files/xen4.cfg
- create mode 100644 recipes-kernel/linux/linux-xenomai-4.inc
- create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.1.bb
- create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.6.bb
+ opt-libevl-master.yml                         | 19 ++++++++
+ opt-libevl-next.yml                           | 20 ++++++++
+ opt-libevl-r46.yml                            | 19 ++++++++
+ opt-libevl-stable.yml                         | 19 ++++++++
+ recipes-core/images/demo-image.bb             |  2 +
+ recipes-xenomai/libevl/files/debian/compat    |  1 +
+ .../libevl/files/debian/control.tmpl          | 10 ++++
+ recipes-xenomai/libevl/files/debian/rules     |  7 +++
+ recipes-xenomai/libevl/libevl_master.bb       | 47 +++++++++++++++++++
+ recipes-xenomai/libevl/libevl_next.bb         |  1 +
+ recipes-xenomai/libevl/libevl_r46.bb          | 46 ++++++++++++++++++
+ recipes-xenomai/libevl/libevl_r47.bb          |  1 +
+ 12 files changed, 192 insertions(+)
+ create mode 100644 opt-libevl-master.yml
+ create mode 100644 opt-libevl-next.yml
+ create mode 100644 opt-libevl-r46.yml
+ create mode 100644 opt-libevl-stable.yml
+ create mode 100644 recipes-xenomai/libevl/files/debian/compat
+ create mode 100644 recipes-xenomai/libevl/files/debian/control.tmpl
+ create mode 100755 recipes-xenomai/libevl/files/debian/rules
+ create mode 100644 recipes-xenomai/libevl/libevl_master.bb
+ create mode 120000 recipes-xenomai/libevl/libevl_next.bb
+ create mode 100644 recipes-xenomai/libevl/libevl_r46.bb
+ create mode 120000 recipes-xenomai/libevl/libevl_r47.bb
 
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index d96cdaf..db5a5df 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -17,6 +17,7 @@ include conf/distro/include/xenomai-version.inc
- HOST_DISTRO ?= "debian-bookworm"
- 
- KERNEL_NAME:xenomai3 = "xenomai-3"
-+KERNEL_NAME:xenomai4 = "xenomai-4"
- 
- WKS_FILE = "${MACHINE}.wks"
- 
-diff --git a/opt-xen4-linux-latest-6.1.yml b/opt-xen4-linux-latest-6.1.yml
+diff --git a/opt-libevl-master.yml b/opt-libevl-master.yml
 new file mode 100644
-index 0000000..a71cf92
+index 0000000..a3fb14f
 --- /dev/null
-+++ b/opt-xen4-linux-latest-6.1.yml
-@@ -0,0 +1,18 @@
++++ b/opt-libevl-master.yml
+@@ -0,0 +1,19 @@
 +#
 +# Xenomai Real-Time System
 +#
@@ -89,15 +87,16 @@ index 0000000..a71cf92
 +  version: 10
 +
 +local_conf_header:
-+  linux-xenomai-version: |
-+    PREFERRED_VERSION_linux-xenomai-4 = "6.1"
-+    LATEST_GIT_BRANCH = "6.1"
-diff --git a/opt-xen4-linux-latest-6.6.yml b/opt-xen4-linux-latest-6.6.yml
++  libevl-version: |
++    PREFERRED_VERSION_libevl = "master"
++  xenomai-4_override: |
++    OVERRIDES .= ":xenomai4"
+diff --git a/opt-libevl-next.yml b/opt-libevl-next.yml
 new file mode 100644
-index 0000000..5710222
+index 0000000..5e22d43
 --- /dev/null
-+++ b/opt-xen4-linux-latest-6.6.yml
-@@ -0,0 +1,18 @@
++++ b/opt-libevl-next.yml
+@@ -0,0 +1,20 @@
 +#
 +# Xenomai Real-Time System
 +#
@@ -113,25 +112,114 @@ index 0000000..5710222
 +  version: 10
 +
 +local_conf_header:
-+  linux-xenomai-version: |
-+    PREFERRED_VERSION_linux-xenomai-4 = "6.6"
-+    LATEST_GIT_BRANCH = "6.6"
-diff --git a/recipes-kernel/linux/files/xen4.cfg b/recipes-kernel/linux/files/xen4.cfg
++  libevl-version: |
++    PREFERRED_VERSION_libevl = "next"
++  xenomai-4_override: |
++    OVERRIDES .= ":xenomai4"
++
+diff --git a/opt-libevl-r46.yml b/opt-libevl-r46.yml
 new file mode 100644
-index 0000000..0460249
+index 0000000..53d15f0
 --- /dev/null
-+++ b/recipes-kernel/linux/files/xen4.cfg
-@@ -0,0 +1,3 @@
-+CONFIG_EVL=y
-+CONFIG_EVL_SCHED_QUOTA=y
-+CONFIG_EVL_SCHED_TP=y
-\ No newline at end of file
-diff --git a/recipes-kernel/linux/linux-xenomai-4.inc b/recipes-kernel/linux/linux-xenomai-4.inc
++++ b/opt-libevl-r46.yml
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 10
++
++local_conf_header:
++  libevl-version: |
++    PREFERRED_VERSION_libevl = "r46"
++  xenomai-4_override: |
++    OVERRIDES .= ":xenomai4"
+diff --git a/opt-libevl-stable.yml b/opt-libevl-stable.yml
 new file mode 100644
-index 0000000..d91d618
+index 0000000..d9ce4a1
 --- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai-4.inc
-@@ -0,0 +1,24 @@
++++ b/opt-libevl-stable.yml
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2023
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 10
++
++local_conf_header:
++  libevl-version: |
++    PREFERRED_VERSION_libevl = "r47"
++  xenomai-4_override: |
++    OVERRIDES .= ":xenomai4"
+diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
+index db7e2c7..e19a038 100644
+--- a/recipes-core/images/demo-image.bb
++++ b/recipes-core/images/demo-image.bb
+@@ -44,4 +44,6 @@ IMAGE_PREINSTALL += " \
+ IMAGE_INSTALL:append:xenomai3 = " xenomai-runtime xenomai-runtime-dbgsym"
+ IMAGE_INSTALL:append:xenomai3 = " ${@get_testsuite_package_names(d)}"
+ IMAGE_INSTALL:append:xenomai3 = " libxenomai1-dbgsym"
++IMAGE_INSTALL:append:xenomai4 = " libevl"
++
+ IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
+diff --git a/recipes-xenomai/libevl/files/debian/compat b/recipes-xenomai/libevl/files/debian/compat
+new file mode 100644
+index 0000000..f599e28
+--- /dev/null
++++ b/recipes-xenomai/libevl/files/debian/compat
+@@ -0,0 +1 @@
++10
+diff --git a/recipes-xenomai/libevl/files/debian/control.tmpl b/recipes-xenomai/libevl/files/debian/control.tmpl
+new file mode 100644
+index 0000000..9880ee9
+--- /dev/null
++++ b/recipes-xenomai/libevl/files/debian/control.tmpl
+@@ -0,0 +1,10 @@
++Source: ${PN}
++Section: misc
++Priority: optional
++Standards-Version: 3.9.6
++Maintainer: Xenomai project <xenomai@lists.linux.dev>
++Build-Depends: ${DEBIAN_BUILD_DEPENDS}
++
++Package: libevl
++Architecture: ${DISTRO_ARCH}
++Description: ${DESCRIPTION}
+diff --git a/recipes-xenomai/libevl/files/debian/rules b/recipes-xenomai/libevl/files/debian/rules
+new file mode 100755
+index 0000000..9d9670e
+--- /dev/null
++++ b/recipes-xenomai/libevl/files/debian/rules
+@@ -0,0 +1,7 @@
++#!/usr/bin/make -f
++
++override_dh_fixperms:
++	dh_fixperms
++
++%:
++	dh $@ --buildsystem=meson
+diff --git a/recipes-xenomai/libevl/libevl_master.bb b/recipes-xenomai/libevl/libevl_master.bb
+new file mode 100644
+index 0000000..d5ad572
+--- /dev/null
++++ b/recipes-xenomai/libevl/libevl_master.bb
+@@ -0,0 +1,47 @@
 +#
 +# Xenomai Real-Time System
 +#
@@ -143,29 +231,60 @@ index 0000000..d91d618
 +# SPDX-License-Identifier: MIT
 +#
 +
-+require recipes-kernel/linux/linux-xenomai.inc
++inherit dpkg
 +
-+KERNEL_LIBC_DEV_DEPLOY = "1"
++CHANGELOG_V = "9999-${PV}"
++SRCREV = "${AUTOREV}"
 +
-+SRC_URI += "file://xen4.cfg"
++SRC_URI = " \
++        git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=${PV} \
++        file://debian \
++        "
 +
-+SRC_URI += "git://source.denx.de/Xenomai/xenomai4/linux-evl.git;protocol=https;nobranch=1"
-+PV ?= "${@d.getVar('SRCREV').strip('-')[0].lstrip('v')}+"
++DEPENDS="linux-xenomai-4"
 +
-+dpkg_runbuild:prepend() {
-+    bbplain $(printf "linux-xenomai-4-%s: Building revision %.20s\n" \
-+                     ${PV} ${LINUX_COMMIT})
++S = "${WORKDIR}/git"
++
++def get_commit(d):
++    try:
++        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
++    except bb.fetch2.FetchError:
++        return ""
++
++COMMIT="${@get_commit(d)}"
++
++DESCRIPTION ?= "install libevl libraries and tools"
++DEBIAN_BUILD_DEPENDS ?= "debhelper (>= 10), meson, linux-libc-dev"
++
++TEMPLATE_FILES = "debian/control.tmpl"
++TEMPLATE_VARS += "DEBIAN_BUILD_DEPENDS"
++
++do_prepare_build[cleandirs] += "${S}/debian"
++do_prepare_build() {
++    cp -r ${WORKDIR}/debian ${S}
++    deb_add_changelog
++
++    bbplain $(printf "libevl-%s: Building revision %.20s\n" \
++                    ${PV} ${COMMIT})
 +}
-diff --git a/recipes-kernel/linux/linux-xenomai-4_6.1.bb b/recipes-kernel/linux/linux-xenomai-4_6.1.bb
-new file mode 100644
-index 0000000..89683dc
+diff --git a/recipes-xenomai/libevl/libevl_next.bb b/recipes-xenomai/libevl/libevl_next.bb
+new file mode 120000
+index 0000000..85ab518
 --- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai-4_6.1.bb
-@@ -0,0 +1,14 @@
++++ b/recipes-xenomai/libevl/libevl_next.bb
+@@ -0,0 +1 @@
++libevl_master.bb
+\ No newline at end of file
+diff --git a/recipes-xenomai/libevl/libevl_r46.bb b/recipes-xenomai/libevl/libevl_r46.bb
+new file mode 100644
+index 0000000..a8bc597
+--- /dev/null
++++ b/recipes-xenomai/libevl/libevl_r46.bb
+@@ -0,0 +1,46 @@
 +#
 +# Xenomai Real-Time System
 +#
-+# Copyright (c) Siemens AG, 2021-2023
++# Copyright (c) Siemens AG, 2018-2023
 +#
 +# Authors:
 +#  Clara Kowalsky <clara.kowalsky@siemens.com>
@@ -173,29 +292,49 @@ index 0000000..89683dc
 +# SPDX-License-Identifier: MIT
 +#
 +
-+require recipes-kernel/linux/linux-xenomai-4.inc
++inherit dpkg
 +
-+SRCREV ?= "v6.1.y-evl-rebase"
-diff --git a/recipes-kernel/linux/linux-xenomai-4_6.6.bb b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-new file mode 100644
-index 0000000..0ce145e
++CHANGELOG_V = "9999-${PV}"
++
++SRC_URI = " \
++        git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=master;tag=${PV} \
++        file://debian \
++        "
++
++DEPENDS="linux-xenomai-4"
++
++S = "${WORKDIR}/git"
++
++def get_commit(d):
++    try:
++        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
++    except bb.fetch2.FetchError:
++        return ""
++
++COMMIT="${@get_commit(d)}"
++
++DESCRIPTION ?= "install libevl libraries and tools"
++DEBIAN_BUILD_DEPENDS ?= "debhelper (>= 10), meson, linux-libc-dev"
++
++TEMPLATE_FILES = "debian/control.tmpl"
++TEMPLATE_VARS += "DEBIAN_BUILD_DEPENDS"
++
++do_prepare_build[cleandirs] += "${S}/debian"
++do_prepare_build() {
++    cp -r ${WORKDIR}/debian ${S}
++    deb_add_changelog
++
++    bbplain $(printf "libevl-%s: Building revision %.20s\n" \
++                    ${PV} ${COMMIT})
++}
+diff --git a/recipes-xenomai/libevl/libevl_r47.bb b/recipes-xenomai/libevl/libevl_r47.bb
+new file mode 120000
+index 0000000..54ca27a
 --- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-@@ -0,0 +1,14 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2021-2023
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require recipes-kernel/linux/linux-xenomai-4.inc
-+
-+SRCREV ?= "v6.6-evl-rebase"
++++ b/recipes-xenomai/libevl/libevl_r47.bb
+@@ -0,0 +1 @@
++libevl_r46.bb
+\ No newline at end of file
 -- 
 2.39.2
 
