@@ -1,53 +1,51 @@
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2087.outbound.protection.outlook.com [40.107.249.87])
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2077.outbound.protection.outlook.com [40.107.6.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6245D19442
-	for <xenomai@lists.linux.dev>; Wed,  3 Jan 2024 12:26:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1A8E1C692
+	for <xenomai@lists.linux.dev>; Wed,  3 Jan 2024 18:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="FXdcBzjB"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ICEW9BVw"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WTW+vytzDSRH9g0ta5HZdnht6X7sgnUrsYRZD8NtodlwUc+q0Umo4LUdTnbb6iLo8V29EgvGoaukt3UVxP36tdMdVPsA0rBpc/iF5AKuTaloasVzaPRtHOzGp8ZvN77TTtmOM+iMelKiQUyNBCUbIs4GH+1GMY3h2+bbHE9ZDhZ3j3HPRmKE9wnK96JODqcwRySux3JmISNr4rNHoDoRmwf1UdNieZRDSl/VPX2LxJx2dsJ8XMjvh+VG/2SasRNTYOKTZwWGbwanEQcywL4AKVQlQcIzv4AuM0DcB2NXvuvZwfjjj9HuieBmAsmkmS7xkUjY4BSgPjp28y5+BVYNvw==
+ b=Tj1+ruvZKEw4V+dtEaPrk+lVTSFk9FFP4sgfECMkKGUjS4KL/FA6A5grLcajIPM5xuMxnmnXJA6QCILlFg1r6AmSIrhait2ExCJClJP260vfksKuAvUxg6y0mu4ht1SIpWWLtEUAJhwRCDB6zSWJEaBtBBSWHIfU8KJPdYGjSa9iLfv7JyMBG4PW50rF4F0GquLt1qm4Uyn30najMD1c5h/G1nYDy3eb6w1MOQvGJUpVwEuNAqKGk8kEnXL1uJ5oA5wS6AvENJUzQyjFCok5LD9+IWVv5ljxEZaZh2XEp19NMvSFR+abyPOZ0SsKB7Od0dSCDgMDifPntrC+i/Uy9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a3KsmfrY0yfCnt76ZjWxTC5DxmmGyYdwQweIYsiCTlw=;
- b=S7SNVQpg1emahhVMuYOg05vaaiHQxvrgGnf6gq2s1iRG3HOzPUVLBNV3azVSYfLcS7JuzEqls0H1TahAPmDJ0SiILSFZJWFTfxuM+eXZ3rCay3yVdnPBJQpQ3i5LQ/gbGF9AkbG21tG2qKvIeMI1+Q4YaNcH20sD9eN3ogLlAVrW3OMy2+ccmehe8qe129C7ie6OArV4yXniKGzBUOWClJtGjFhRFsiYXVrYY58+FysgnGNr3vSn63XMNWS65roCvKOx7tGi9j+0DvDbh1S5SJhZD3YCJUy+lw6oZU6RdiaQVLUHbhYhTgzfLZnDrzmOg4/1Dx8ZJ5V6HkNzdsdtkw==
+ bh=iHGikrcqKFK5k+annOos7V4m3QUt8UN+zvnkeBXUemM=;
+ b=J3hk1Bry/I8g0BmPQgZ16drON7wvCtJJF+Y7Akvzqi+Ib1haX8j6zBbOCiHpfzArNXcWMPoSDAeJz/afnEsBWOyddh7yuWDJMK2ysyk/+ScFTr6LLR51wKJH1kK7nC7PSbRmZ8pao6zI3Y5MtkpJHh4okuwXheU1wN8lJflVOG2TKIU8h/XbNzJEsQRve9f3B5YgAeOwiDWhvmIFiv4jmhkpDcMMeZg3Zu/eP+KUs95dfSzqHD/w9gwY+oz6hjQeatm7SzW300jzigpvisB2FQdw/y9rUK1OpzWYnIgVP16YcoPkwKHfVIpCOUK02See8twKFfdhsfJUiuL2lnjTlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a3KsmfrY0yfCnt76ZjWxTC5DxmmGyYdwQweIYsiCTlw=;
- b=FXdcBzjBqTFCXF4AyNKP1N1zx6TQW7wVJkcm6x26u6VjUckXS/VoOEfxQCk7e/d2l8mTQSoqEE+qzKCikHSqGPded3KnCQFw9QlwXGb/yJrQQ7zqkZjqnCMklJVpkybVlmDJdyDPL1ju0fIvXlh7k1Bhe48vPycBy2hxdlLRq7jH3FQrQTdtkb7EX0mc1q1bAV6MuE0HSYg0WMMDi75wHEeurqIQrJurdUAZOl5Wdm3jYyM7mP2US4TJ3TWJnyUa4V3SqQfrmYUtun7ot/7lptTV7PQwDQADUNl1HQJZT4XA/jQLg5yJqzSEk9KdEoIuI+5Dr2wEGAuYSUGlumjKLA==
+ bh=iHGikrcqKFK5k+annOos7V4m3QUt8UN+zvnkeBXUemM=;
+ b=ICEW9BVwKFYqP9PW7fe5XLUqJa3CcH1lRbLzhWne/AvpHDJ53geLXH4AmVEibaaKAytQfkA8eY/TIq7jVEBsV1WoC9SykSxzn9kUtJ6NNDyMFPNwRPpy3GbjAL/I/Ab1JQlNNvcLUwDD17kx2MzNZi5uM++FjDPbN6gNEkdPNUqhobDxnDrRL9Zr16x01yT483umTamrR2QnMo+qktatyI5e+EABNJphTyFpm+frau8/OqXafZuw5LvMTzStHwiH2YRN+JAaV41XdaBAtbzWb52Xb30X5L9Jad3HI0Jx4RDt6Vpk5z9Y8ppDP3GmVmi9imHpaXQaMVVEQsKPbJiFQQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS1PR10MB7958.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:47f::12) with
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
+ by VI1PR10MB3360.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:13c::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7135.25; Wed, 3 Jan
- 2024 12:26:51 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::96c7:d239:1723:8761]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::96c7:d239:1723:8761%5]) with mapi id 15.20.7135.023; Wed, 3 Jan 2024
- 12:26:51 +0000
-Message-ID: <ee263824-c81e-4713-9597-c8fccac64b1f@siemens.com>
-Date: Wed, 3 Jan 2024 13:26:48 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5] lib/psos/task.c: fix build with gcc >= 12 and -Ofast
-Content-Language: en-US
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-Cc: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-References: <20231212-flo-fix-psos-tests-v5-1-60f2c0acbbae@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20231212-flo-fix-psos-tests-v5-1-60f2c0acbbae@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0341.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ea::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+ 2024 18:28:43 +0000
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::55c1:2302:1bd8:d9db]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::55c1:2302:1bd8:d9db%5]) with mapi id 15.20.7159.013; Wed, 3 Jan 2024
+ 18:28:43 +0000
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [xenomai-images][PATCH] customizations: Enable systemd-networkd on installation
+Date: Wed,  3 Jan 2024 19:28:39 +0100
+Message-ID: <20240103182839.2512889-1-florian.bezdeka@siemens.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0064.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:49::8) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:248::14)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -55,186 +53,92 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS1PR10MB7958:EE_
-X-MS-Office365-Filtering-Correlation-Id: c97c74da-e362-4ba5-9fcb-08dc0c57439c
+X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|VI1PR10MB3360:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48922b1b-cfb3-45ac-9673-08dc0c89d11a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	nmh6KOazkQ14SRIUsCP4U19i9P0IinjIeEzGjdt9zr3w9/T7DqQguzehkRNyNLg3DA7t9vm+n2oAz2ZG7GUbyfSNv5zrP43f2Qmpu1qF2UdlkOwrm18xT23ZK1rOyMZABkoNmLmurhlK/ZdmoBA1w4JtXrJ1mXCoo2mgctDvFyWHpJJF4D14KK5E7gfozImk1xWgW6a8busZr750Y+KflUtN2nMNbggpBefq0wdE1GRCK34/xb+vHvUyhORHLmWmEdB191cZ5sqY+WKWsu1c+4iK1DCDQyxXi9EmVo32A7WOmmvhbtaYaDGmUlIKL8yf+c561vhmYiXgj1KLVgR8pU99QAGKFkuUtmsh7yPR4jQ94l/wKFNXpJ2bZl9BU7NfjcfOPMzbe8TdK5vtf96ZaRIvgAI6hFn2DzJ2UGE9KIu0P4XwxRzOArRyv5gIZlaotUNLF73x16qd09Ib6MYcvZtdn3c8I650dhyDKuqh4kt3PEbc7lNv7eXvI8QVkFJukT1tHuIkLzUFqsJ8JtWxnTszBoIg2DQsxf6H0zIjomvNYXxE7sioFGa8cS4szG/7DjTnTGHw24DZixUrYsFcc92paCUDDXlRf+dbRaCvfxrbSdzvk7GBcEKzuUZveh8FY32ZWsCOaAdT8+HNJGQELg==
+	gmVzVC0IdZluIG84w0/ZFtCV1Nx8KMt1Mf39XoPHghKJ0bdWGLSNwdyLS4Khe0VxFnBCL1nCfYNwrhf67i8Kf/71Jb7nrxrnVoXqmN2p83zNkplSTsjx0UQytkx2cRCBsVp5tLkOvjN3vfgIbCu8HXBv6ttW5bj7E41VfVWejJxyLvFdtFE8dYzoQ7IeM/W5uAjp+8lxJQig6pHKg6rptgHWyLkOW7TBdThTsKPW+owQ+3lfRYdKlaBuAVd6QYnMZGPtIrMfy4WiTxuJcvwkXr6ZNTStWbUlnWzlB8z+W8m7ocZD+YLK0WMxMiv70QSHmejd6DkR8YJ6eqB/FC23zzQmu5yP67ekQU0CwxyX3LGDVOFXaQOHS/rHhjk9fmDnUoNbrTKoUv06EfSwI8jpmjA/8GOGCp7zv9L8syd1QawdzC36tQIlMoO1FDTU/aVIROC7mPQGpVhb8+oVNudZXLmkHFkLir5M59jTUgEJ1hzqklqDka4EjUpRBWIgCobLjosIUfNMnlRKl/dQxs+zC1iluXEEAYy3rLrFVKrt10cBnAlE7Ns8rKCn9xXNcP1B
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(366004)(136003)(396003)(39860400002)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(41300700001)(26005)(2616005)(38100700002)(83380400001)(82960400001)(8676002)(6666004)(5660300002)(8936002)(316002)(44832011)(4326008)(2906002)(966005)(478600001)(66556008)(6486002)(6506007)(53546011)(66476007)(6512007)(31696002)(66946007)(86362001)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(396003)(346002)(136003)(366004)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(36756003)(6916009)(66556008)(66946007)(6506007)(6512007)(6486002)(66476007)(86362001)(107886003)(82960400001)(38100700002)(83380400001)(2616005)(1076003)(2906002)(5660300002)(6666004)(478600001)(44832011)(41300700001)(8676002)(4326008)(316002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?M0lRZzcrcTVSd0RaYmMzVEtLNDFJc2tFOU5oRkRlZWVFcERXV3FLNmhEQ2V0?=
- =?utf-8?B?WHdkRm9VditoWG02WS96cDJCajRnWDZnR082ZzBiQXluTGFKemI5K2l1QXUr?=
- =?utf-8?B?L21mdHpIY1pTUFc1WjFFOTlaTC93VWxGRkw1dy9ZdGo4MDVqVlVGU1YrdTRi?=
- =?utf-8?B?aWtEMW15Y2tGWFB0OWxCK0ZwZTEyT2poaWtCalUrUlAvQU5CYjlBRlRsRG4v?=
- =?utf-8?B?aCszc3pvN1JQT1d2UFR6VXF4NGJhc1Z6TmVxNml6czFXR1N5eFk5K2VnRDJp?=
- =?utf-8?B?eU9vTENIa3IyUXdxbHBNMWNDQk43TnFDQ1JSM2VZcWtxeDNZSHNneFd0T1VV?=
- =?utf-8?B?MXdQcStmL3JzYVlQK01wb3IvMjQxTVJ2ZFZrTVhxaHN3b3p1cFdRVHoxdk4z?=
- =?utf-8?B?alRnS01zZXBScUg1ZDc0SmVMcUtzWnI5b0xUY2d3eWd1dGZRT0lYQTc4bUhV?=
- =?utf-8?B?RGNTdW9SL295Mll3Q1dUL1lEK1NCSTF1dGN6MEZmLytJL0NjM1c0TXlMZFo5?=
- =?utf-8?B?UWNFNXhWbDhISnNGZkMwSHBBcmI5VitKR2w0RnZ0N05IV0hwZnN4Y1ZyaXN5?=
- =?utf-8?B?aUN5SlM0a3ZKZXpyR0xzWEJIZ3h5QnhyMGMwQWNxRU95UzFGVnNhUm9EVEdo?=
- =?utf-8?B?M0V0UEp5T2daR2c0YkdEbnM4WFE3S2dOZGpqZlAzNTMyOXVoeTZIVW5qdDhK?=
- =?utf-8?B?ZVpFNGE5L2pHbTA2ZkV0MFBZTUx6a3NDMEtWQWExSk54OGY1Ty9PVmZ1aWhR?=
- =?utf-8?B?WVVHcjFUYVJ4RVI2UkI4NnlBb2pCYXEwUGRBcmEvMXlmRjd3bFdVM1JNb0dN?=
- =?utf-8?B?aVk1cWFaSXRxOXpkZFB5d1N3b2g2ckU5U0VlTUMxRHdlc1c5S2Iwa3F2Y2tD?=
- =?utf-8?B?UEtTOERTeWhyQ0F6b3YrZE9oQWpjbUE1NXI2dGRaSmpWWUZPUzFQSDE2UVV2?=
- =?utf-8?B?dE1lMWVRSm8yM2ZhOUhidG95S2FpNHk3bWw3TkZJUVY2MWlYNGlmNmd4UTNa?=
- =?utf-8?B?VlMrN1ZBS2lmemt2Q1FkaGdJUml6TlN1UGFFakJEcDFFbGFNSGRTUkIxNktp?=
- =?utf-8?B?Q2cyUGI0YS9QVnF6L09Yc1o1V0JBY2dwbUxnUGY4RGNSYm9FVkpUSmlxVG8w?=
- =?utf-8?B?Sm9LclBETmdNMlpyS0hEMnhRd2FGd2QzdzM5MDZ5TUpwM0UyL1BWTTQ3ekhn?=
- =?utf-8?B?U3NnSWc2N21MZy83am4zemlrcFNVY0tmZUVpSUtLWVk1dHVYSGFERW9QWGgz?=
- =?utf-8?B?UDdicEJHMWowcEh3QnVISytOZWV2Ky9lS2tsTW9OVGs0UE5IR0RJdjRFaml6?=
- =?utf-8?B?Q09uVGt2akpJUDU3RHFrSXU4cFllQkw1ckRlbitvZFJYL2g5UDhoN1Exc3Fa?=
- =?utf-8?B?VTVxcHMzdFgzVGJpeGtIWkdWZUNOUjFFejJWcGZxdnkzcFR2dmVnQ1JGYUVs?=
- =?utf-8?B?anVMTG4xRmE3UHpPdEZUaFkzMmVzVHJ4dlo3U0cvUEZjYUNLOGhRZXgzaVEx?=
- =?utf-8?B?Q2FjRWdHZEZpS3ZWN2RndUZ4OHYzbGxGc3FDODZxVUg3SjVqNjVmTkJYMFd6?=
- =?utf-8?B?NEo2bFhFaWgvM2dKOHc5U1k3Q05NbjA4QzlaN25HeVNIZ2g0ZmFzNmYxdC83?=
- =?utf-8?B?QnRjZHpoRGpxWHJ0OGxDUENXSWgwbDlWditKZXJlK1lyZTNWdmxybTRyMU5j?=
- =?utf-8?B?MUR6UDN2QllLVUpBdzhFeDJPVDRBcWtHUVN4VEtGaXFWT01jQS9qMThDODBM?=
- =?utf-8?B?RWY0eXdrVnZyMDg1cTh3YmFHbytSNTc5SmNNa3FCbFZQekZWQ0NTcEwvU2sy?=
- =?utf-8?B?MDh4UEJyK2FGZkxpMWwxTWdJRUdQbGlBMDlKcTNhbXNHT0QvNmVpVUd5OGdT?=
- =?utf-8?B?YytaeFlrQzJNd0ppWTdTc1NHeXV4NnVhR1NUckwwTUpOeHlIM2hCS2QxQWw2?=
- =?utf-8?B?QzQ5YVBrZXI2aSt1dmMrSndiVnVHN1h5RXdOZGVJbkxBKzBQaGNzLyt0V3ov?=
- =?utf-8?B?ZFVEemNzWTVEZDlsS0d6cmhIa05hWkFVYlloRjJPeWE4ZkZpM0IrT2Izb2RH?=
- =?utf-8?B?VlNKSTBPZ0JuT0FvOHkralFaampQd2J1QW1HZmFXc2g1TWxBRVJsbXkxU0dC?=
- =?utf-8?B?VGxzMG9wb1JZSDk4SjA3ZFNMeW0zc2dqSy9uK29hSGpuYkU4Z2UwZHM5M1dJ?=
- =?utf-8?B?cEE9PQ==?=
+	=?us-ascii?Q?5ABbgTAYO0JiqPaVPytm1KpO1BD1wMSPZdB4luR+fjIadKGy8qw50v4fxMAp?=
+ =?us-ascii?Q?rlLN5iJqIKAZkHZ+kc9cgbJyOcejgZ2+MEI3OjK01KdFWgK1a2mrrK8x1BY7?=
+ =?us-ascii?Q?kkWhAUbD9JC1mCIODqA7vP7kpjS1ghAYdX31evN0uUeNjU2M/y6L2m4LCE1L?=
+ =?us-ascii?Q?YIewd1Y49ECjYeXg+YB5VbCtNMdKPLYiUr8e9S91s7jHRezvEi6fLnrNV8PC?=
+ =?us-ascii?Q?OqmsPiNkK/M4I/bXnRFFpsQitnDiulyIFUq5NZ2LKUnv2FdHMn/ZT19F07Qw?=
+ =?us-ascii?Q?eu9PD6s5FhLM8Ome5b0+WHQiMX5+VYrR4xMthxGfpfkV6cegHHAvpoKEnpjI?=
+ =?us-ascii?Q?wmfoulao7TUXOiTPZEP6OGfJrxsbUlAXeHav6kUgKNQbOjZSTYvCxhJVtRzR?=
+ =?us-ascii?Q?wYJs2fec9a4DvabeoSACMvWE3MXbZnSw+rommbJL9xE0GuEpOtEZgkM3Bw0s?=
+ =?us-ascii?Q?uki0dVc7jBt99RVDqVHISR9GeJPVCZiMV+xFJ6XhoqQWP9C/c5TWFqu96Vp+?=
+ =?us-ascii?Q?pdUkSvMR/RdzSPiaWRUIGLHpRhOTrnMPqMd1XMdFrmBPMQXi2EbvcVn2fdZc?=
+ =?us-ascii?Q?np/hDvGt9ZmZzf3QPWsLMeBTowWGb6xB+MM7uI7VQhl2YdbKf+wHs6PfZ/F/?=
+ =?us-ascii?Q?KCOpC8OW1lmgkbjWoh8v0/1xyjA8o7WMFkWLt6eW5wLwzvMTlJXD9ZnSGxGD?=
+ =?us-ascii?Q?kPWpkd1jZxY9dSNYevk2LUTtU6bHUgSVQ4bZ2dBm0zMPjqSulvloKCkbiY2s?=
+ =?us-ascii?Q?bpVSBm3g28OaNVmkKodaRMiE5MlFmbCveNW0qfXLvI4tEAEb1Glp7AND2lBC?=
+ =?us-ascii?Q?aqnlOMRtkickJ7cH14dHzRD11DJKRjZkywRYLoGcIUHeZ+hngdDO7G/uovC3?=
+ =?us-ascii?Q?x0kIKixMJHRszQHLyS7O7DJYXiWwXGr3QVcVcsO30p4Wc+x3o5zZ/HsJVq1T?=
+ =?us-ascii?Q?UIX360A8cVITqO/iGUY+u6m8jDp5XnUkcsFo/4x1E/SF9Qs1fvIVphi5xWHl?=
+ =?us-ascii?Q?UPxDupP+ik/UG/h4+T3SoAjMCDLFE4GyGyq94mmqm/c1U+w+jg5IznEfT25W?=
+ =?us-ascii?Q?9PMzWRKlfKngfBc7U4i2ewcUOVp3ldDmZnWyZmFHk1+fc46vud1YrfWwGfUH?=
+ =?us-ascii?Q?gB/VWavByZZMujgcfqP+EmAvdhoV0j76zK8/NuZO9651jWBdlxKwySRxHgnh?=
+ =?us-ascii?Q?lkj+0Mnrs4FM5SA2wus+SLe0ew47XuOlFBdpPUCTBa78hkUtgM7wucJBvuVd?=
+ =?us-ascii?Q?/VG9sW1RzghSoUAyWgLlH7sK6im4iJK0zztSyfA5SmG3AGvoTYVACPA+Wnvm?=
+ =?us-ascii?Q?oe3YlSJnn6uMPUsFQIkxqU8KSV7xMJ4eQAO8AWEMtOndKv3r7eEQ+ZDl+Xuj?=
+ =?us-ascii?Q?m9EO7irl17IWRCw+t8fRJ9xEFSLx040+eS3Ii74lnJnmXmU7gEKmF/rYeLRD?=
+ =?us-ascii?Q?iG0z8fp1x8Mg0il2NDcxDq3lEGtMpZYiXbEujxs+xNyC+/pdrJPevahA8wZa?=
+ =?us-ascii?Q?keoiD8Yc8FlFryboAaeflDBkqjxtR1G8IaH1nbcPvWYASkCnOnuEjtIQGRsg?=
+ =?us-ascii?Q?niAT2q/eJi8IzQY/Oj9Q3pw1l2qdG7Yz3GZG73NF0n3qVm82GVLmdt/lD82V?=
+ =?us-ascii?Q?N/s+iUM1xBlhr9Ei+DIdHioxvl8OhWhCC6Xh7WX5j5hebfcG1HzwF2jj6BT4?=
+ =?us-ascii?Q?o+cfFA=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c97c74da-e362-4ba5-9fcb-08dc0c57439c
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48922b1b-cfb3-45ac-9673-08dc0c89d11a
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jan 2024 12:26:51.6749
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jan 2024 18:28:43.9005
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7tqNtJDu78ohHTPkHHth8N2lu45gHEnuuUtc7eZesvZrLwL4VOhLDzwHK7qXF0ev+uqobnXl9TOlD6fE45ZtrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB7958
+X-MS-Exchange-CrossTenant-UserPrincipalName: mM1HUFk6ZPA6/y2GQuDcyY2HG6wXP8yAK0Tb2Rejk4VkpAUT1lSpmNv2wH8jXA1POcwWhZEVlmHltXJwkhBKk7O3NB/hEYcdi72FdAoRC0s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3360
 
-On 15.12.23 23:59, Florian Bezdeka wrote:
-> Fix the following build failure with gcc >= 12 and -Ofast (found by
-> buildroot autobuilders on xenomai 3.0.10 [1]):
-> 
-> task.c: In function 't_start':
-> task.c:398:16: error: 'ret' may be used uninitialized [-Werror=maybe-uninitialized]
->   398 |         return ret;
->       |                ^~~
-> task.c:364:13: note: 'ret' was declared here
->   364 |         int ret;
->       |             ^~~
-> task.c: In function 't_resume':
-> task.c:444:16: error: 'ret' may be used uninitialized [-Werror=maybe-uninitialized]
->   444 |         return ret;
->       |                ^~~
-> task.c:428:13: note: 'ret' was declared here
->   428 |         int ret;
->       |             ^~~
-> 
-> [1] http://autobuild.buildroot.org/results/bc1b40de22e563b704ad7f20b6bf4d1f73a6ed8a
-> 
-> CC: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Changes in v5:
-> - Set err_r to ERR_OBJDEL in case threadobj_lock() failed in
->   get_psos_task()
-> - Link to v4: https://lore.kernel.org/r/20231212-flo-fix-psos-tests-v4-1-8c694902c07a@siemens.com
-> ---
->  lib/psos/task.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
-> 
-> diff --git a/lib/psos/task.c b/lib/psos/task.c
-> index f678be61d..b8b516dc9 100644
-> --- a/lib/psos/task.c
-> +++ b/lib/psos/task.c
-> @@ -62,8 +62,10 @@ static struct psos_task *find_psos_task(u_long tid, int *err_r)
->  
->  	magic = threadobj_get_magic(&task->thobj);
->  
-> -	if (magic == task_magic)
-> +	if (magic == task_magic) {
-> +		*err_r = SUCCESS;
->  		return task;
-> +	}
->  
->  	if (magic == ~task_magic) {
->  		*err_r = ERR_OBJDEL;
-> @@ -115,8 +117,10 @@ struct psos_task *get_psos_task(u_long tid, int *err_r)
->  	 * holding the lock. Therefore we need no cleanup handler
->  	 * here.
->  	 */
-> -	if (task == NULL || threadobj_lock(&task->thobj) == -EINVAL)
-> +	if (task == NULL || threadobj_lock(&task->thobj) == -EINVAL) {
-> +		*err_r = ERR_OBJDEL;
->  		return NULL;
-> +	}
->  
->  	/* Check the magic word again, while we hold the lock. */
->  	if (threadobj_get_magic(&task->thobj) != task_magic) {
-> @@ -141,6 +145,8 @@ struct psos_task *get_psos_task_or_self(u_long tid, int *err_r)
->  		return NULL;
->  	}
->  
-> +	*err_r = SUCCESS;
-> +
->  	/* This one might block but can't fail, it is ours. */
->  	threadobj_lock(&current->thobj);
->  
-> @@ -447,8 +453,8 @@ out:
->  
->  u_long t_setpri(u_long tid, u_long newprio, u_long *oldprio_r)
->  {
-> -	int policy, ret = SUCCESS, cprio = 1;
->  	struct sched_param_ex param_ex;
-> +	int policy, ret, cprio = 1;
->  	struct psos_task *task;
->  	struct service svc;
->  
-> @@ -556,7 +562,7 @@ u_long t_getreg(u_long tid, u_long regnum, u_long *regvalue_r)
->  {
->  	struct psos_task *task;
->  	struct service svc;
-> -	int ret = SUCCESS;
-> +	int ret;
->  
->  	if (regnum >= PSOSTASK_NR_REGS)
->  		return ERR_REGNUM;
-> @@ -579,7 +585,7 @@ u_long t_setreg(u_long tid, u_long regnum, u_long regvalue)
->  {
->  	struct psos_task *task;
->  	struct service svc;
-> -	int ret = SUCCESS;
-> +	int ret;
->  
->  	if (regnum >= PSOSTASK_NR_REGS)
->  		return ERR_REGNUM;
-> @@ -601,9 +607,9 @@ out:
->  u_long t_mode(u_long mask, u_long newmask, u_long *oldmode_r)
->  {
->  	struct sched_param_ex param_ex;
-> -	int policy, ret = SUCCESS;
->  	struct psos_task *task;
->  	struct service svc;
-> +	int policy, ret;
->  
->  	CANCEL_DEFER(svc);
->  
-> 
-> ---
-> base-commit: ed69c34214f9fcf57b459e701ed4f65f6753bb8c
-> change-id: 20231212-flo-fix-psos-tests-d3ba4e7c27d4
-> 
-> Best regards,
+The network configuration for systemd-networkd was inplace but the
+service itself was never enabled so the (default) interface stayed
+unconfigured after booting up.
 
-Thanks, applied.
-Jan
+This is a left-over from the Debian 11 => 12 transition. The service was
+previously enabled by default.
 
+CI does not detect that as the ip=dhcp kernel cmdline argument is being
+used and triggers a kernel based network configuration.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ recipes-core/customizations/files/postinst | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/recipes-core/customizations/files/postinst b/recipes-core/customizations/files/postinst
+index d8d141c..c7c688f 100644
+--- a/recipes-core/customizations/files/postinst
++++ b/recipes-core/customizations/files/postinst
+@@ -2,7 +2,7 @@
+ #
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+-# Copyright (c) Siemens AG, 2018
++# Copyright (c) Siemens AG, 2018-2024
+ #
+ # Authors:
+ #  Jan Kiszka <jan.kiszka@siemens.com>
+@@ -16,4 +16,5 @@ echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+ 
+ echo "demo" > /etc/hostname
+ 
++/usr/bin/systemctl enable systemd-networkd
+ /usr/bin/systemctl mask systemd-network-generator
 -- 
-Siemens AG, Technology
-Linux Expert Center
+2.43.0
 
