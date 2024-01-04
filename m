@@ -1,49 +1,49 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2072.outbound.protection.outlook.com [40.107.7.72])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2045.outbound.protection.outlook.com [40.107.22.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56AF2231D
-	for <xenomai@lists.linux.dev>; Thu,  4 Jan 2024 12:40:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9DE219FC
+	for <xenomai@lists.linux.dev>; Thu,  4 Jan 2024 12:41:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="hqU3Kz6U"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="wvgOwPR2"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JnvJ9za6OG0iUPKRlLt9hau1BC+Va/EnCUH7npO+qOpzU9w+HJENrxYjBM8R/qu/ECiZh4sAcNMuDDvIr+EKeAxjunXkk0x2S73IjK69uYQLZGWbIBVMpt+QWUPtSvamJtbDEEhF1ziJzAT3rJWGZRIVIMnBI/Ws1ksBTcNSAicjnOSeH4RpftKPl2QPK0zJt5U+eYof9Pn0S7yJg7uaYDJ9b66DDiPqGOQVKmJSYqSZpGcMU8Px8vMlE3Naaw2+zpiDz1795qt38ezNVdFCBCzRtj8casDIgnTGTJrGQUmtODjQAvyC0eE08zhrd2d3v+HOLDGT0RkduvtFl3klNg==
+ b=QZFJkfehLlVi8LoyrmwCXttFuihWDGlBbRedODY+t2mTMwCE8NbRgLp8AeHnVRjdznRgWElqMsL1HEeWD455an44Gtuy1sAtIIJi1nTPowZ8ydgeaEE32A0nhv+oRGA7BEhU9YBPTn/gkhr+9SkFg9LLasRubm1ZQKZ2Vi2UuhlYzDhl9l6xI65pqvcHeX73BzE+yEdctIUQz2NyKbY9n07OZK5Tuox5xdvUqnAowKrVBJoJaYM85V9s008MAhNkOINZOeroeT4HvozRa6j1CCdekuSK04Dcad9s4si6/e1ssXWhTGHv0vGysehynyiVl2alcGDPx0j07P7LuDjsIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iKFvaznWbk8yDvoQYGF1RvEzVl1YVFaXfZ15zT+EaIA=;
- b=JHxjpCAq7FkvzRHwvTKcHo/a+FdMfOybOi2wyarDEeCcJ7bfXY9GCmRXEs4M7S5F+JlW7WCXJsL5tf9VYw4kB5/6/K0nkVY2RNuiv2IL2kN6OuKtOK2zflGskBqnhKdjjieUOvDbXOA6vyz/KteB0/q2PSAJEZzXz2KTRIQZgVxvEj8QcH3uQVBAFAtMpixfrC6vG7MnqhI0L0uyneSMeFFsRRqN+jLcDBM/V1HA1ZGg8EN9mIyCzGnYteFvH7tjTo3HUmb2AnEBeagA04t7EtBVQvBlPZCc9eeM73K8WUSjsIGKVM2GNLWYyPftDjLVMMhO1RHToj0vCQb1OPX4yQ==
+ bh=iuBa1kgfDhFud9DNOsz4krDuYg7KTRvwz4hrYotCgNM=;
+ b=UrGUIQbnqDj0JHfheqYjPC5/cCPQwbSYS3iiUHADP4HhDQaGlj3WE4BKgfxmn69LawX9indIoM5A1ttwYp8xSYaIpA4fLoWQO0SzUAgTZHX2r9ucj0iDlnn1G9RSkRDrD1nLDZVR9Pb2qCkfh2va3c4GhbnQ1qz8w5PkkBSgGLQpH5nXJevjk9vEQhEzlJShwAhjsIZcaXS7Dk19HGc1Sw7WA4ze5mPNpoJy9m6cJlUqyLhk0dQIftavQC+uiSUSVut4W6SGKPQd2GvPholjwgYmVDGXqZVzjNZCXt/te27ZQdPkF2vYmapVpsoeBtIcblEF6+eueskHd61FYqWp9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iKFvaznWbk8yDvoQYGF1RvEzVl1YVFaXfZ15zT+EaIA=;
- b=hqU3Kz6UFon8PrNG/IqbaIITbPZjZYVOBSYGXzoD2F/P+6prwq6EWGEjR9ABDW6c6OLjZ1BIepTdUrNOWIP3Bk0CDrngux+iAtj4imm3UzJxDj9RFuFrKNkrtzUrc3ZqB4r4AQ3adCMO8i9Px7kN29/4Dutroi0cCPxYOfwdHqr+qEGQAr/9fTvPa3r4ACSaf4TQUvgXlTG2q72wNQ7oP89ENwGZSwTq5IMGK34oLZqCO8Vcep2hxebMJcAxxBIk1GbjYeJ9qBt+2Vv9vabBDz2Qy4jsP8Gm9zGeU6Rq7ZcvyLSDnbFsOLY+670H2BCMNB0h16V3dcYAjJeIhiWotA==
+ bh=iuBa1kgfDhFud9DNOsz4krDuYg7KTRvwz4hrYotCgNM=;
+ b=wvgOwPR2PaknbW8nOANGDteV6QS7+zXWUoMROS076H3TWyV2Ruw9Z/a35jhjXGZDNhZZsuXrmH/h4n1aAwb5W0YssNhvzp+8tWnPrh0J1tLzUEjM7/0lPa5IVTq+862XrtGN9jFMr5HN6TYWRU2+thj3kSEmMCjSp39CS1R4toao1/b/hOyX1s1VJyrxkkMPQvirDQ0ad/4ssL2h7DiDYjX2Ff+jV/l6+Z9glCwwP5+kOHnZyLhcZXMNSiMR8Cm5lF0WoHL2ZTuoFyhO6lyFCIQpjH0VzbLCwa8aPrYsaR6LlJDa2Q8Oj/g+Pf8T0WluPf31/LNnsAk2kPoOP/ip1g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by GV2PR10MB7462.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:e2::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7135.25; Thu, 4 Jan
- 2024 12:40:12 +0000
+ 2024 12:41:50 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::96c7:d239:1723:8761]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::96c7:d239:1723:8761%5]) with mapi id 15.20.7159.013; Thu, 4 Jan 2024
- 12:40:12 +0000
-Message-ID: <5fa6714c-4c81-4d09-909a-7f1ced7634be@siemens.com>
-Date: Thu, 4 Jan 2024 13:40:11 +0100
+ 12:41:50 +0000
+Message-ID: <04e1a518-545a-4e1a-9fed-aea5cf055cff@siemens.com>
+Date: Thu, 4 Jan 2024 13:41:50 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [xenomai-images][PATCH v2 3/7] xenomai-4: Enable kernel build
+Subject: Re: [xenomai-images][PATCH v2 4/7] xenomai-4: Add evl userspace
 Content-Language: en-US
 To: Clara Kowalsky <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev,
  rpm@xenomai.org
 References: <20231221163743.2923801-1-clara.kowalsky@siemens.com>
- <20231221163743.2923801-4-clara.kowalsky@siemens.com>
+ <20231221163743.2923801-5-clara.kowalsky@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20231221163743.2923801-4-clara.kowalsky@siemens.com>
+In-Reply-To: <20231221163743.2923801-5-clara.kowalsky@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-ClientProxiedBy: FR4P281CA0320.DEUP281.PROD.OUTLOOK.COM
@@ -57,130 +57,101 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV2PR10MB7462:EE_
-X-MS-Office365-Filtering-Correlation-Id: e96738d9-3f1a-48de-ccba-08dc0d224b36
+X-MS-Office365-Filtering-Correlation-Id: 77b672f9-6538-4a5a-a334-08dc0d2285ea
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	2/HZhrQWZXn5T9ZFzwQWZR72cbxtwG8g7L6Xxzd7Aryu4kBkFHQLPup1yi6j4U20JmbtGbTieffaO3GmTWl8QSaKFPB4jufIwZkF5T7qNTKBXaLFihEgeJRDh+SOYX4NHK7nG8QammWKvXSk86qIIYxl5AZz8u0mPZ2w7im0h3R+glGKinqHuixeaB+6DyiaLqzqtkllZ28RQPn9XkS8tC+KHiZ9LwwTZV+j88SZTwVtVxQxuvOmx53nwa39pgsPfm67/o5zuE/xlvbIZ3Q49ahkXG4agcWvwwrfN/n7+4jSAs+pXXkBErdfAD3I1zoC+Z4Jpq9nQUS0UhuXh82wgvxVyO9xgx0CcHB65F7pkTGvU9U1o7dsokRvbrprsVw+9oMuZf4JEPpizZuLk2wpJwT91p30/OEPun2TpMD/zUkNE761ghLq66vW8t5jzM8ZMW0QgrvT+zV40qJH/LYXBmDB35rcnE4UeFNXIB6L5AWSYZxeFojtDdgRVh8G525ve59wKa6uCCp2wAgsfFmZwB8h4XtJm93JomRWHIPB4MvEuLFRTc3WJh2apHOw1SMZRVr4V/CIsaUbWAPWhCOVLC2AA5E8nfIB+ypuurRLpHi/om8wWZ1LKpv3AHgh/GOjQDZrJOWLbpDE8SrQ/bDUmg==
+	bkvP6Y2lL0jvLMHFq7Of4DZOIZtOlgG3yGPEbevwaCpLaK1X7JrHxJlI8KaQw8K+3FeC/RyBPEZE7dQ9lS80XBMKBE4PgkgtEPFuxCxqdtbhxtSUFWfAEk0/iHfi53Fylr+OOTqg8FOR4EkZ5WGGt6pM68AfOuRIglBMmaL+9MEl0C/1zKtkdc8opZqbb4FyYqmh1O1NhtEKFW9zod+CPzy3Wfwufhd9ZXYJCjvWAT7ADoqcX+IrEVCekKp2z1U2/l8c0QejYCf7nUI7LgJI7aZKfjhZDbN7cIgUi2NB+SAHHq8Z6I160Ox5XGy/nug7YQ3ddbQfnQlnyeTJt9UE/9uLr3kfPmfKet+GmljNTjSw2Zm5jnkUFIkMUXH1JqTemJep8wz1Cn1PSKF6MKD5sy3IIt/SGPPRSyiKQ/WecBvwf6Zr5XKAQlrmr+NS+6JrhCOlwI3cIu4FJGAo2wWABLdgqUBrb3G4cEkW1AYCjKMN5tTmRWyxsmZUT/fiIDnzSjKg8i/5dUlerb4q9ONrToMUgmMa3AOC6ZNlxiuwMITRwiqBru/iHz4b30TMRqnqYhlzrMOpyhymggpJTpaoRUaSvpbmYLbd0/ekf9QEZECuMChPZ2aJaT9+eB0H6RdKswKhbVFhYyowgKtC1BfpAw==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376002)(136003)(396003)(366004)(346002)(39860400002)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(31686004)(2906002)(8676002)(8936002)(44832011)(66476007)(6486002)(36756003)(86362001)(316002)(5660300002)(478600001)(31696002)(41300700001)(6512007)(53546011)(6506007)(82960400001)(26005)(2616005)(83380400001)(66556008)(38100700002)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VzhYRlJ1T2lkNjl4MnNXcmY2SCtEaGg1VjI2ZmhwNHI4VHNkMGpRa3oxdkNa?=
- =?utf-8?B?T2xqQ0VrRFBKc3lzT0tNVTljUExHbytmaUxJM3lIV1hwZXdrTjZKK3JJdXQ3?=
- =?utf-8?B?RjF3T2p4MHV2ajU2TjFCOEg3VHJjbTJEVDFhcFZKemw3eWVobWQ4SGg5dE9j?=
- =?utf-8?B?L3A1VVZQZDE0QUU0V05MMHhGTUdYaU8yYjRFbnRWS0lIb2RQdGhLSHhBRHo1?=
- =?utf-8?B?aWhYbHFZRGN3ZGhzUXdSaGkyME5CSzBZU3M3WGdOZktKNkx1aVdqRC8wWDdK?=
- =?utf-8?B?YldMZmtPNWwzOXhlSWw2RzVxcVhVbXkrSUNYKzFnOVZVYXFybVMvdWNZYUZi?=
- =?utf-8?B?N3J4ZjJhcUJ4QlBRcmhRM1N0NFRwSzdMeE1PWWkrcC9vTnZ1elE1MjlRblRK?=
- =?utf-8?B?b3pYaDg3NDI5S2pvRzUxdjgxUUczYmVPQmcyV2J0eThKKzdaNjhUVkdicTlF?=
- =?utf-8?B?TzJvRDNYeEtxK241UEZhTUNMSlBFZWJuTUNoSk80N21UeE9rYS9pTDZIM3p4?=
- =?utf-8?B?aThNVEhoV1ZVUUFVV21PTzVueWQzVmN6VmlSbFpaUXFIUFAzWFJUTXkwTzA3?=
- =?utf-8?B?Q0NGN0tuUlVmUjJmRzFMb2xVU09SYmNJVE1jZ25lQjVzYTN1TEc1OXQrN1dT?=
- =?utf-8?B?cDNUNmY1ZmNFc2ovS0l5WmZ2YmZHQ2c4b2poZEVOVUtCT2t0c1E1TTRhRldt?=
- =?utf-8?B?dGJhMndVeUhyblpyQVRtZzRnMStIMkZmR0RLbmd3ZzFwNDZpRkhMNkIwQkE1?=
- =?utf-8?B?bjZHQkZVYnVXeGV4Zk9lUmdLbGx0RC8xelFjQkJEVTNqRDYvTS9ucFZ6UjFC?=
- =?utf-8?B?NXM4TXlMeUtqTE5ZdlFBN2dqTjlhK0JHTGRWM1craHF2ZFpnU0M4bll4VzV0?=
- =?utf-8?B?THdrR29pOG9uc0hLQjBaSnpYbkErSU8zRjFVRDVJNEU5TUZZMzRCc3c3bjE5?=
- =?utf-8?B?MWhiSEVQamdWdFN1QmIxUkNMR0oyMWFHMzcwdzRQYlJsNUFFTTkxR0R2T0RQ?=
- =?utf-8?B?Z25HL0x1T2lhY3QwN2Z6dVdIQUZEd05jY01NUnlORmRvQ1hCYmFlREU3ODAx?=
- =?utf-8?B?M0RuTjIzYldjM2VVK1RUaDV2OVpnaDFXakZvUE02blJ0VjJjYzh0YWV4ZDdC?=
- =?utf-8?B?bCtqUTVuZXVKMFo0Z3pvbFpQS2FKRU5XOWdRWVA0OGx0U0UrNjR1Rkc5dzhP?=
- =?utf-8?B?VktDUzllbTBoUFVqekFhT0NvNVBWc3VUWWRxWGkyUXBMQU9JcXQyNTVLcldo?=
- =?utf-8?B?anFJbjIvZ21hODFabm9jNDR2ZWVUQUhZR25MaW1KN0x6ZktESGVPeExjYis3?=
- =?utf-8?B?cmZsRVh6ZFROTzFZekpmMlpnVi82SjkyWWtGSGtvenlNSUxJRDNiTXN6dzRj?=
- =?utf-8?B?VDhoY2pQMHNVTUNjS2YzUU9wQjdyeHVMNXErdVRXQmlpN0ovZlhXNGhReEFU?=
- =?utf-8?B?UFZnRlNmSytReEIxN0NCeDREb2JvZ3lPa0Y4RFpUS1dnQjc3ZE1IMFYzRytj?=
- =?utf-8?B?UFYzNG1icU1oQjRJZ1Q2eVRRV1I4c0hhNW5VNUwxY2tFU21jNmJHb01Ucmow?=
- =?utf-8?B?VGVxY2dQV0JqQjh4bnNIUWdvK01SeitWZWtVbkZIOHhjL0gvbDh1VmNGd1k1?=
- =?utf-8?B?L1JkWEJNQ3FNR0VnZVppVWNMb3ZCSGhWNFlGSDhVT3ZqTFNtbzhZSUx1Wlgv?=
- =?utf-8?B?WjhPajRwQThGb2QrSEp3VlJYVUx1aEdpQnRjTGt5YkZpY2JPbng1T1QzTzky?=
- =?utf-8?B?aU1UT3RGaDI3NDdZZE4zY1A5Zk5QMWcyRlZoSVA3QWlaZW41MjNQcGs0V01S?=
- =?utf-8?B?SnVRRVBIODVUMkNnbUwwT1NKRTFxTVlpb296M0tnS0lrS3lJT25QTmI1bUFq?=
- =?utf-8?B?TWV4bmw5N0JQb1JESm1FbEpDQ3RuN1BtZ0Q3VXVxUnUrRGVwQWNZRmlyNG9U?=
- =?utf-8?B?QkV2YXArL2lsQngvRmVadzZpdHErRUdxTlh3ak5YdFN5akp5M1luRnpMa0hG?=
- =?utf-8?B?a29EQlJZK00yeVF1WGhJRTA4VmpXWndRQm1xQW9XK0FUUXptTlVweUI3U3hw?=
- =?utf-8?B?OHJ0VTFqcnJnOVArTVlWSmJLVFhMaUYveGNVL0NiM0xFUTZlejR1K1dOSmFT?=
- =?utf-8?B?VHpURlc3NThwbjdrZ2MwMHRtamtiRnRUMEp5elV1eHJsYnVHZGZqZXlzQi9N?=
- =?utf-8?B?OHc9PQ==?=
+	=?utf-8?B?aU03czlEKzZNUFV0aStMRXczdG5Bb0pqdkhYYlVzY0VDdEl0MmZ1bVV5YWNo?=
+ =?utf-8?B?Y1h6RWJaYXErN1VtQXhBUHJXUUxyMXVhbFVUU2RXYWgvd3R0TC9jdDJoYXdJ?=
+ =?utf-8?B?SFJzR0JCQ1FyT0U2b3JEK3FneXVVblpPdFRqNDFhZ2J1eks0UDFCcU9rRjZt?=
+ =?utf-8?B?aDJpUGhtSFd1WGtNRVBBYXFWeWJPWU02L01ZLy83U0hjZW1iaGF2MDBIdXk5?=
+ =?utf-8?B?YzVkTFFOMTI1L2FDY1pDMjhnYWFHem9EWXk4YkNLS21MSmYwV083OVJwYU5z?=
+ =?utf-8?B?YTBXM3FVNDAwd3loaUVFYzAvcHF1akQ3eXdONlkwbkxzMUVCQXdZQjZQb29j?=
+ =?utf-8?B?eVoyVy9heDdCMXRWcXpYblYrTjkyVjBFQkpVMThPL3Nzd1V0OURkS3BVYWVw?=
+ =?utf-8?B?eE5lSlBqYjdkVDF2dER6TjVHTGZINngxQWYrUGR2ZjI2emIvelZRQlo3b0tn?=
+ =?utf-8?B?N1ppMTcxRlFjTG9uUHRvdGVWMUdFUTFTU2pLTGt6em1Za1E1bUJSK0JIenZi?=
+ =?utf-8?B?VjlqUSt1Nk1rbnRhRHI3a05RbjJTam80TkxtTENmbE1RU0ZmQkNaNkRXakZh?=
+ =?utf-8?B?Vk1tdExjUzkzSXZhTDhIZU5iSzE3cDhQdm12UktRM0pheDZLNWsreExvNThX?=
+ =?utf-8?B?Q0laZDF5amdpUzl4WlRRbFAveFNBbTJYOHlxZHovMllRRzFkK0ZONXl5YTJ5?=
+ =?utf-8?B?anRmM3d4VGFhL2VuR1hHNkpvMmJ1ZDJnVkovN3NpZDBCQXhneGR2cXRzRXJ2?=
+ =?utf-8?B?cmMyNlVha2JoTHE1Y2tqZ0kycmNjYlE4Syt6RE8vUGJPVDZraC8wTUsraFlL?=
+ =?utf-8?B?T2JLQVF3b1d1b082K3liNjE3V3BMaXFFa3BzSUpvQ2xVL1daZUF4NThLdUlI?=
+ =?utf-8?B?WlZBalNuUmZCWjB2SXJ4VXptaU1WYitSNFBQQWJuSXhYQm5uTlhTWDBMOXFl?=
+ =?utf-8?B?VnU3dWM4MFlwR29oUVpEb0pPaGVSNUxKcGhucWNCQXFKZm5lRWE3bFp1ZFZF?=
+ =?utf-8?B?K0lpODI0N2pzQ1RUcXJqSEVrTHhSY09PRTVHRUNsYXN5RFJoSXRiK0tyc3ls?=
+ =?utf-8?B?TUZ5akFkQlVPemx6TFNLT0owOFgyT0JHSkhERnpXb1hhUzdaQVFqQlFoTG0z?=
+ =?utf-8?B?SWJxU2srbkxyNlRpVWRyQWsvUWs5UndCWFVpODcybVhYNFNWd012b1VISDJk?=
+ =?utf-8?B?RHhENnlsQXBLb21ybVcvZ25IM1IxL1UxRlpuWldaazFRaDZpSk50a2JTL0Fo?=
+ =?utf-8?B?UmdMdU5jU3pmVlBvQzNtK3RUKzJTTnVuaTY2U1hheVB6RjduNGtTS3lTSm11?=
+ =?utf-8?B?YWNHU2dCUU5vazhzQXMycG1UN3luRVVoS3l1R3FKSllEWnQ0d0VXY2hIRjdT?=
+ =?utf-8?B?VkdKdTdjUGFNTDg1dVBuejNtWVJhWHBwMGNTRm83WFVRNGJLSER3V3JIV0JV?=
+ =?utf-8?B?MXhEaWFQQldDK0ZBU1A1TGxCYy93QVpESVZuU1p1V0xpNmkzU0FMVjhEcXpr?=
+ =?utf-8?B?SERWcVpmaktUdlZvblRFN2huNjkxV3lTNzRERWZPRGVncU5NdDl0TkdZc1lI?=
+ =?utf-8?B?VmRNV1JqNGlCL2hYalVydnZaeDVWL2ltTEVxUnM0eHdlYkFJZVRsZk9kdlNz?=
+ =?utf-8?B?a3h4K3JhZkZWdW93R2xrRkxXa3J5ZzVkdzZrZks1eTBvMTBmWnpNald0SEFO?=
+ =?utf-8?B?QmNpNndwNTV2RDBoTzYrMHYrOUsybnh3YXE5SURBOHRiQWtxV1NpdW9vL25H?=
+ =?utf-8?B?MGM0R29sdDkxcUkybXVPUlhyc1E3d1ZkbjJVZmdTc3pIN3lraVJKREo0bExq?=
+ =?utf-8?B?WkNWZ2dGN3gyM24rdXlocm1OVVRSaElBS0ZkbHpvTDhkUTliTi9PbmF2UHE0?=
+ =?utf-8?B?Mzhobk9ZdGdFcmd1RjE5bmpqL2U0NmJKcUh3YWFwOEZjc01JLzlPeXRzUURH?=
+ =?utf-8?B?dTRBM1Q4U0IrTkUrQjR0ZWhlUmdlWVZXMFhramhnZi9ET2RCWkxrb21zdnhX?=
+ =?utf-8?B?L0JhT2habklQQWpLaklzd2UyMjBTRWl4N3dwditncityMDlrWkJVdTFDa3Zo?=
+ =?utf-8?B?eWdMK0Jvb3h1cWtGZkZrejdDZDhoaHFDOXRBaEd6SDZwUDM4MjAvSVBXbnlw?=
+ =?utf-8?B?eXdSMlVtTWthT0VZQm9oQ2x6MHZRT1Q3dDRRM0dHaENDWEVta2s1UThKaVlB?=
+ =?utf-8?B?cEE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e96738d9-3f1a-48de-ccba-08dc0d224b36
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77b672f9-6538-4a5a-a334-08dc0d2285ea
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2024 12:40:12.2635
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2024 12:41:50.7737
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WUy1O4x9T6uFSdUIxVv4PaQN6gcTathXaOctIKQPX+zF/wo0l0HGQ3cKFAGdBBgSyV59jXByiSrg4zN9LhC+Xg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: dXHWXf99Zy5SNXuNLy9xsN70jlyzejYj7ioXjyGFd3/ONbDqDUb0ErgbvuoxxnmfJ22CLxubKgsKRBsnPjRn5A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB7462
 
 On 21.12.23 17:37, Clara Kowalsky wrote:
-> This permits to build the linux-evl kernel v6.1 and v6.6.
+> The libevl recipe allows building the evl userspace.
 > 
 > Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 > ---
->  conf/distro/xenomai-demo.conf               |  1 +
->  opt-xen4-linux-latest-6.1.yml               | 18 ++++++++++++++++
->  opt-xen4-linux-latest-6.6.yml               | 18 ++++++++++++++++
->  recipes-kernel/linux/files/xen4.cfg         |  3 +++
->  recipes-kernel/linux/linux-xenomai-4.inc    | 24 +++++++++++++++++++++
->  recipes-kernel/linux/linux-xenomai-4_6.1.bb | 14 ++++++++++++
->  recipes-kernel/linux/linux-xenomai-4_6.6.bb | 14 ++++++++++++
->  7 files changed, 92 insertions(+)
->  create mode 100644 opt-xen4-linux-latest-6.1.yml
->  create mode 100644 opt-xen4-linux-latest-6.6.yml
->  create mode 100644 recipes-kernel/linux/files/xen4.cfg
->  create mode 100644 recipes-kernel/linux/linux-xenomai-4.inc
->  create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.1.bb
->  create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.6.bb
+>  opt-libevl-master.yml                         | 19 ++++++++
+>  opt-libevl-next.yml                           | 20 ++++++++
+>  opt-libevl-r46.yml                            | 19 ++++++++
+>  opt-libevl-stable.yml                         | 19 ++++++++
+>  recipes-core/images/demo-image.bb             |  2 +
+>  recipes-xenomai/libevl/files/debian/compat    |  1 +
+>  .../libevl/files/debian/control.tmpl          | 10 ++++
+>  recipes-xenomai/libevl/files/debian/rules     |  7 +++
+>  recipes-xenomai/libevl/libevl_master.bb       | 47 +++++++++++++++++++
+>  recipes-xenomai/libevl/libevl_next.bb         |  1 +
+>  recipes-xenomai/libevl/libevl_r46.bb          | 46 ++++++++++++++++++
+>  recipes-xenomai/libevl/libevl_r47.bb          |  1 +
+>  12 files changed, 192 insertions(+)
+>  create mode 100644 opt-libevl-master.yml
+>  create mode 100644 opt-libevl-next.yml
+>  create mode 100644 opt-libevl-r46.yml
+>  create mode 100644 opt-libevl-stable.yml
+>  create mode 100644 recipes-xenomai/libevl/files/debian/compat
+>  create mode 100644 recipes-xenomai/libevl/files/debian/control.tmpl
+>  create mode 100755 recipes-xenomai/libevl/files/debian/rules
+>  create mode 100644 recipes-xenomai/libevl/libevl_master.bb
+>  create mode 120000 recipes-xenomai/libevl/libevl_next.bb
+>  create mode 100644 recipes-xenomai/libevl/libevl_r46.bb
+>  create mode 120000 recipes-xenomai/libevl/libevl_r47.bb
 > 
-> diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-> index d96cdaf..db5a5df 100644
-> --- a/conf/distro/xenomai-demo.conf
-> +++ b/conf/distro/xenomai-demo.conf
-> @@ -17,6 +17,7 @@ include conf/distro/include/xenomai-version.inc
->  HOST_DISTRO ?= "debian-bookworm"
->  
->  KERNEL_NAME:xenomai3 = "xenomai-3"
-> +KERNEL_NAME:xenomai4 = "xenomai-4"
->  
->  WKS_FILE = "${MACHINE}.wks"
->  
-> diff --git a/opt-xen4-linux-latest-6.1.yml b/opt-xen4-linux-latest-6.1.yml
+> diff --git a/opt-libevl-master.yml b/opt-libevl-master.yml
 > new file mode 100644
-> index 0000000..a71cf92
+> index 0000000..a3fb14f
 > --- /dev/null
-> +++ b/opt-xen4-linux-latest-6.1.yml
-> @@ -0,0 +1,18 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2023
-> +#
-> +# Authors:
-> +#  Clara Kowalsky <clara.kowalsky@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
-> +
-> +header:
-> +  version: 10
-
-We are at 14 by now.
-
-> +
-> +local_conf_header:
-> +  linux-xenomai-version: |
-> +    PREFERRED_VERSION_linux-xenomai-4 = "6.1"
-> +    LATEST_GIT_BRANCH = "6.1"
-> diff --git a/opt-xen4-linux-latest-6.6.yml b/opt-xen4-linux-latest-6.6.yml
-> new file mode 100644
-> index 0000000..5710222
-> --- /dev/null
-> +++ b/opt-xen4-linux-latest-6.6.yml
-> @@ -0,0 +1,18 @@
+> +++ b/opt-libevl-master.yml
+> @@ -0,0 +1,19 @@
 > +#
 > +# Xenomai Real-Time System
 > +#
@@ -196,25 +167,144 @@ We are at 14 by now.
 > +  version: 10
 > +
 > +local_conf_header:
-> +  linux-xenomai-version: |
-> +    PREFERRED_VERSION_linux-xenomai-4 = "6.6"
-> +    LATEST_GIT_BRANCH = "6.6"
-> diff --git a/recipes-kernel/linux/files/xen4.cfg b/recipes-kernel/linux/files/xen4.cfg
+> +  libevl-version: |
+> +    PREFERRED_VERSION_libevl = "master"
+> +  xenomai-4_override: |
+> +    OVERRIDES .= ":xenomai4"
+> diff --git a/opt-libevl-next.yml b/opt-libevl-next.yml
 > new file mode 100644
-> index 0000000..0460249
+> index 0000000..5e22d43
 > --- /dev/null
-> +++ b/recipes-kernel/linux/files/xen4.cfg
-> @@ -0,0 +1,3 @@
-> +CONFIG_EVL=y
-> +CONFIG_EVL_SCHED_QUOTA=y
-> +CONFIG_EVL_SCHED_TP=y
-> \ No newline at end of file
-> diff --git a/recipes-kernel/linux/linux-xenomai-4.inc b/recipes-kernel/linux/linux-xenomai-4.inc
+> +++ b/opt-libevl-next.yml
+> @@ -0,0 +1,20 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2023
+> +#
+> +# Authors:
+> +#  Clara Kowalsky <clara.kowalsky@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 10
+> +
+> +local_conf_header:
+> +  libevl-version: |
+> +    PREFERRED_VERSION_libevl = "next"
+> +  xenomai-4_override: |
+> +    OVERRIDES .= ":xenomai4"
+> +
+
+".git/rebase-apply/patch:77: new blank line at EOF."
+
+Jan
+
+> diff --git a/opt-libevl-r46.yml b/opt-libevl-r46.yml
 > new file mode 100644
-> index 0000000..d91d618
+> index 0000000..53d15f0
 > --- /dev/null
-> +++ b/recipes-kernel/linux/linux-xenomai-4.inc
-> @@ -0,0 +1,24 @@
+> +++ b/opt-libevl-r46.yml
+> @@ -0,0 +1,19 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2023
+> +#
+> +# Authors:
+> +#  Clara Kowalsky <clara.kowalsky@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 10
+> +
+> +local_conf_header:
+> +  libevl-version: |
+> +    PREFERRED_VERSION_libevl = "r46"
+> +  xenomai-4_override: |
+> +    OVERRIDES .= ":xenomai4"
+> diff --git a/opt-libevl-stable.yml b/opt-libevl-stable.yml
+> new file mode 100644
+> index 0000000..d9ce4a1
+> --- /dev/null
+> +++ b/opt-libevl-stable.yml
+> @@ -0,0 +1,19 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2023
+> +#
+> +# Authors:
+> +#  Clara Kowalsky <clara.kowalsky@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 10
+> +
+> +local_conf_header:
+> +  libevl-version: |
+> +    PREFERRED_VERSION_libevl = "r47"
+> +  xenomai-4_override: |
+> +    OVERRIDES .= ":xenomai4"
+> diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
+> index db7e2c7..e19a038 100644
+> --- a/recipes-core/images/demo-image.bb
+> +++ b/recipes-core/images/demo-image.bb
+> @@ -44,4 +44,6 @@ IMAGE_PREINSTALL += " \
+>  IMAGE_INSTALL:append:xenomai3 = " xenomai-runtime xenomai-runtime-dbgsym"
+>  IMAGE_INSTALL:append:xenomai3 = " ${@get_testsuite_package_names(d)}"
+>  IMAGE_INSTALL:append:xenomai3 = " libxenomai1-dbgsym"
+> +IMAGE_INSTALL:append:xenomai4 = " libevl"
+> +
+>  IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
+> diff --git a/recipes-xenomai/libevl/files/debian/compat b/recipes-xenomai/libevl/files/debian/compat
+> new file mode 100644
+> index 0000000..f599e28
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/compat
+> @@ -0,0 +1 @@
+> +10
+> diff --git a/recipes-xenomai/libevl/files/debian/control.tmpl b/recipes-xenomai/libevl/files/debian/control.tmpl
+> new file mode 100644
+> index 0000000..9880ee9
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/control.tmpl
+> @@ -0,0 +1,10 @@
+> +Source: ${PN}
+> +Section: misc
+> +Priority: optional
+> +Standards-Version: 3.9.6
+> +Maintainer: Xenomai project <xenomai@lists.linux.dev>
+> +Build-Depends: ${DEBIAN_BUILD_DEPENDS}
+> +
+> +Package: libevl
+> +Architecture: ${DISTRO_ARCH}
+> +Description: ${DESCRIPTION}
+> diff --git a/recipes-xenomai/libevl/files/debian/rules b/recipes-xenomai/libevl/files/debian/rules
+> new file mode 100755
+> index 0000000..9d9670e
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/rules
+> @@ -0,0 +1,7 @@
+> +#!/usr/bin/make -f
+> +
+> +override_dh_fixperms:
+> +	dh_fixperms
+> +
+> +%:
+> +	dh $@ --buildsystem=meson
+> diff --git a/recipes-xenomai/libevl/libevl_master.bb b/recipes-xenomai/libevl/libevl_master.bb
+> new file mode 100644
+> index 0000000..d5ad572
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/libevl_master.bb
+> @@ -0,0 +1,47 @@
 > +#
 > +# Xenomai Real-Time System
 > +#
@@ -226,29 +316,60 @@ We are at 14 by now.
 > +# SPDX-License-Identifier: MIT
 > +#
 > +
-> +require recipes-kernel/linux/linux-xenomai.inc
+> +inherit dpkg
 > +
-> +KERNEL_LIBC_DEV_DEPLOY = "1"
+> +CHANGELOG_V = "9999-${PV}"
+> +SRCREV = "${AUTOREV}"
 > +
-> +SRC_URI += "file://xen4.cfg"
+> +SRC_URI = " \
+> +        git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=${PV} \
+> +        file://debian \
+> +        "
 > +
-> +SRC_URI += "git://source.denx.de/Xenomai/xenomai4/linux-evl.git;protocol=https;nobranch=1"
-> +PV ?= "${@d.getVar('SRCREV').strip('-')[0].lstrip('v')}+"
+> +DEPENDS="linux-xenomai-4"
 > +
-> +dpkg_runbuild:prepend() {
-> +    bbplain $(printf "linux-xenomai-4-%s: Building revision %.20s\n" \
-> +                     ${PV} ${LINUX_COMMIT})
+> +S = "${WORKDIR}/git"
+> +
+> +def get_commit(d):
+> +    try:
+> +        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
+> +    except bb.fetch2.FetchError:
+> +        return ""
+> +
+> +COMMIT="${@get_commit(d)}"
+> +
+> +DESCRIPTION ?= "install libevl libraries and tools"
+> +DEBIAN_BUILD_DEPENDS ?= "debhelper (>= 10), meson, linux-libc-dev"
+> +
+> +TEMPLATE_FILES = "debian/control.tmpl"
+> +TEMPLATE_VARS += "DEBIAN_BUILD_DEPENDS"
+> +
+> +do_prepare_build[cleandirs] += "${S}/debian"
+> +do_prepare_build() {
+> +    cp -r ${WORKDIR}/debian ${S}
+> +    deb_add_changelog
+> +
+> +    bbplain $(printf "libevl-%s: Building revision %.20s\n" \
+> +                    ${PV} ${COMMIT})
 > +}
-> diff --git a/recipes-kernel/linux/linux-xenomai-4_6.1.bb b/recipes-kernel/linux/linux-xenomai-4_6.1.bb
-> new file mode 100644
-> index 0000000..89683dc
+> diff --git a/recipes-xenomai/libevl/libevl_next.bb b/recipes-xenomai/libevl/libevl_next.bb
+> new file mode 120000
+> index 0000000..85ab518
 > --- /dev/null
-> +++ b/recipes-kernel/linux/linux-xenomai-4_6.1.bb
-> @@ -0,0 +1,14 @@
+> +++ b/recipes-xenomai/libevl/libevl_next.bb
+> @@ -0,0 +1 @@
+> +libevl_master.bb
+> \ No newline at end of file
+> diff --git a/recipes-xenomai/libevl/libevl_r46.bb b/recipes-xenomai/libevl/libevl_r46.bb
+> new file mode 100644
+> index 0000000..a8bc597
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/libevl_r46.bb
+> @@ -0,0 +1,46 @@
 > +#
 > +# Xenomai Real-Time System
 > +#
-> +# Copyright (c) Siemens AG, 2021-2023
+> +# Copyright (c) Siemens AG, 2018-2023
 > +#
 > +# Authors:
 > +#  Clara Kowalsky <clara.kowalsky@siemens.com>
@@ -256,31 +377,49 @@ We are at 14 by now.
 > +# SPDX-License-Identifier: MIT
 > +#
 > +
-> +require recipes-kernel/linux/linux-xenomai-4.inc
+> +inherit dpkg
 > +
-> +SRCREV ?= "v6.1.y-evl-rebase"
-> diff --git a/recipes-kernel/linux/linux-xenomai-4_6.6.bb b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-> new file mode 100644
-> index 0000000..0ce145e
+> +CHANGELOG_V = "9999-${PV}"
+> +
+> +SRC_URI = " \
+> +        git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=master;tag=${PV} \
+> +        file://debian \
+> +        "
+> +
+> +DEPENDS="linux-xenomai-4"
+> +
+> +S = "${WORKDIR}/git"
+> +
+> +def get_commit(d):
+> +    try:
+> +        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
+> +    except bb.fetch2.FetchError:
+> +        return ""
+> +
+> +COMMIT="${@get_commit(d)}"
+> +
+> +DESCRIPTION ?= "install libevl libraries and tools"
+> +DEBIAN_BUILD_DEPENDS ?= "debhelper (>= 10), meson, linux-libc-dev"
+> +
+> +TEMPLATE_FILES = "debian/control.tmpl"
+> +TEMPLATE_VARS += "DEBIAN_BUILD_DEPENDS"
+> +
+> +do_prepare_build[cleandirs] += "${S}/debian"
+> +do_prepare_build() {
+> +    cp -r ${WORKDIR}/debian ${S}
+> +    deb_add_changelog
+> +
+> +    bbplain $(printf "libevl-%s: Building revision %.20s\n" \
+> +                    ${PV} ${COMMIT})
+> +}
+> diff --git a/recipes-xenomai/libevl/libevl_r47.bb b/recipes-xenomai/libevl/libevl_r47.bb
+> new file mode 120000
+> index 0000000..54ca27a
 > --- /dev/null
-> +++ b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-> @@ -0,0 +1,14 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2021-2023
-> +#
-> +# Authors:
-> +#  Clara Kowalsky <clara.kowalsky@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
-> +
-> +require recipes-kernel/linux/linux-xenomai-4.inc
-> +
-> +SRCREV ?= "v6.6-evl-rebase"
-
-Jan
+> +++ b/recipes-xenomai/libevl/libevl_r47.bb
+> @@ -0,0 +1 @@
+> +libevl_r46.bb
+> \ No newline at end of file
 
 -- 
 Siemens AG, Technology
