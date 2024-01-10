@@ -1,27 +1,27 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3FDECA4A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA0A28BF7
 	for <xenomai@lists.linux.dev>; Wed, 10 Jan 2024 04:46:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="GQJa3k2R"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240110044603875aafdf625c202726
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="E0+A/qIV"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202401100446031fc1dbda985d90b514
         for <xenomai@lists.linux.dev>;
-        Wed, 10 Jan 2024 05:46:04 +0100
+        Wed, 10 Jan 2024 05:46:03 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=QwB4PGscfX5cWp1a7YRDhrVC1eqKbX1rxiNuFbkmWSM=;
- b=GQJa3k2RKMV5pHSdaDZgmiLXJq6ZD9f+5iMdifaA4lvoiPWp1/1otL/haCTZ4MY3jTuCN/
- 7LDPXiNjdftMObWp/oTSmZPUqVnekK/5r+yg9OBbXVhxuamQOmPPtYhGRQEOcx6iLkVkNK3l
- 7tJRMWgi2O2plbTQ/RZLW1ng0fMXw=;
+ bh=IQvUjuHwRTC0/RqIqb1yqtrLtwID8CMMLT+iJ6T3pic=;
+ b=E0+A/qIVlwFmoW8nA0SCYcbQqSxUwq73ZxNnbpk2ZZmebbkUjQ8m+7vCV9w3rISNLEd/HG
+ ylX0amVv4LA1tZ0F58BwprF6uojheUOZBgWBWRmKvuMqYI377zLzoMTIYOhnxLAV1c9LWd15
+ reMYlJiRE30Csc7uwingJZ1UNsl0g=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH v3 07/10] xenomai-4: Add evl userspace
-Date: Wed, 10 Jan 2024 05:45:59 +0100
-Message-Id: <4308209312d585ddeb399ced286f216e267b6284.1704861962.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v3 04/10] linux-xenomai: Rename linux-xenomai to linux-xenomai-3
+Date: Wed, 10 Jan 2024 05:45:56 +0100
+Message-Id: <08e8454f1922316686fe60b366cca43af07250f2.1704861962.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1704861962.git.jan.kiszka@siemens.com>
 References: <cover.1704861962.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -36,369 +36,436 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 
-The libevl recipe allows building the evl userspace.
+In preparation for the integration of EVL, files are renamed. Shared
+parts for xenomai-3 and EVL are placed into linux-xenomai.inc.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-[Jan: reduced duplications, introduced opt-evl.yml and libevl_latest.bb,
-      added required patch for r47, added runtime deps]
+[Jan: fix build, account for new 6.6 kernel, keep more bits in xenomai-linux.inc]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- conf/distro/xenomai-demo.conf                 |  2 +
- opt-evl.yml                                   | 17 ++++++++
- opt-libevl-latest-release.yml                 | 19 +++++++++
- opt-libevl-next.yml                           | 19 +++++++++
- recipes-core/images/demo-image.bb             |  2 +
- .../linux/linux-xenomai-4_latest.bb           |  4 ++
- ...i-Take-Debian-multiarch-into-account.patch | 40 +++++++++++++++++++
- recipes-xenomai/libevl/files/debian/compat    |  1 +
- .../libevl/files/debian/control.tmpl          | 11 +++++
- recipes-xenomai/libevl/files/debian/rules     | 19 +++++++++
- recipes-xenomai/libevl/libevl.inc             | 31 ++++++++++++++
- recipes-xenomai/libevl/libevl_47.bb           | 15 +++++++
- recipes-xenomai/libevl/libevl_latest.bb       | 25 ++++++++++++
- recipes-xenomai/libevl/libevl_master.bb       | 17 ++++++++
- recipes-xenomai/libevl/libevl_next.bb         |  1 +
- 15 files changed, 223 insertions(+)
- create mode 100644 opt-evl.yml
- create mode 100644 opt-libevl-latest-release.yml
- create mode 100644 opt-libevl-next.yml
- create mode 100644 recipes-xenomai/libevl/files/0001-meson-setup-uapi-Take-Debian-multiarch-into-account.patch
- create mode 100644 recipes-xenomai/libevl/files/debian/compat
- create mode 100644 recipes-xenomai/libevl/files/debian/control.tmpl
- create mode 100755 recipes-xenomai/libevl/files/debian/rules
- create mode 100644 recipes-xenomai/libevl/libevl.inc
- create mode 100644 recipes-xenomai/libevl/libevl_47.bb
- create mode 100644 recipes-xenomai/libevl/libevl_latest.bb
- create mode 100644 recipes-xenomai/libevl/libevl_master.bb
- create mode 120000 recipes-xenomai/libevl/libevl_next.bb
+ conf/distro/include/xenomai-version.inc             |  2 +-
+ conf/distro/xenomai-demo.conf                       |  4 +++-
+ opt-linux-4.19.yml                                  |  2 +-
+ opt-linux-4.4.yml                                   |  2 +-
+ opt-linux-5.10.yml                                  |  2 +-
+ opt-linux-5.15.yml                                  |  2 +-
+ opt-linux-5.4.yml                                   |  2 +-
+ opt-linux-6.1.yml                                   |  2 +-
+ opt-linux-6.6.yml                                   |  2 +-
+ opt-linux-latest-4.19.yml                           |  2 +-
+ opt-linux-latest-4.4.yml                            |  2 +-
+ opt-linux-latest-5.10.yml                           |  2 +-
+ opt-linux-latest-5.15.yml                           |  2 +-
+ opt-linux-latest-5.4.yml                            |  2 +-
+ opt-linux-latest-6.1.yml                            |  2 +-
+ opt-linux-latest-6.6.yml                            |  2 +-
+ opt-linux-latest.yml                                |  2 +-
+ ...ai-dovetail.inc => linux-xenomai-3-dovetail.inc} |  2 +-
+ .../{linux-xenomai.inc => linux-xenomai-3.inc}      | 13 +------------
+ ...inux-xenomai_4.19.bb => linux-xenomai-3_4.19.bb} |  2 +-
+ ...{linux-xenomai_4.4.bb => linux-xenomai-3_4.4.bb} |  2 +-
+ ...inux-xenomai_5.10.bb => linux-xenomai-3_5.10.bb} |  2 +-
+ ...inux-xenomai_5.15.bb => linux-xenomai-3_5.15.bb} |  2 +-
+ ...{linux-xenomai_5.4.bb => linux-xenomai-3_5.4.bb} |  2 +-
+ ...{linux-xenomai_6.1.bb => linux-xenomai-3_6.1.bb} |  2 +-
+ ...{linux-xenomai_6.6.bb => linux-xenomai-3_6.6.bb} |  2 +-
+ ...-xenomai_latest.bb => linux-xenomai-3_latest.bb} |  2 +-
+ recipes-kernel/linux/linux-xenomai.inc              | 12 ------------
+ 28 files changed, 29 insertions(+), 50 deletions(-)
+ rename recipes-kernel/linux/{linux-xenomai-dovetail.inc => linux-xenomai-3-dovetail.inc} (86%)
+ copy recipes-kernel/linux/{linux-xenomai.inc => linux-xenomai-3.inc} (52%)
+ rename recipes-kernel/linux/{linux-xenomai_4.19.bb => linux-xenomai-3_4.19.bb} (93%)
+ rename recipes-kernel/linux/{linux-xenomai_4.4.bb => linux-xenomai-3_4.4.bb} (92%)
+ rename recipes-kernel/linux/{linux-xenomai_5.10.bb => linux-xenomai-3_5.10.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_5.15.bb => linux-xenomai-3_5.15.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_5.4.bb => linux-xenomai-3_5.4.bb} (92%)
+ rename recipes-kernel/linux/{linux-xenomai_6.1.bb => linux-xenomai-3_6.1.bb} (76%)
+ rename recipes-kernel/linux/{linux-xenomai_6.6.bb => linux-xenomai-3_6.6.bb} (75%)
+ rename recipes-kernel/linux/{linux-xenomai_latest.bb => linux-xenomai-3_latest.bb} (98%)
 
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index 754a738..bed78e8 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
+@@ -22,7 +22,7 @@ XENOMAI_3_2_KERNEL_VERSION = "6.1%"
+ 
+ # If PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
+ # XENOMAI_3_0_KERNEL_VERSION. Same for the other XENOMAI_*_VERSION_LIST.
+-PREFERRED_VERSION_linux-xenomai ?= \
++PREFERRED_VERSION_linux-xenomai-3 ?= \
+     "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
+         '${XENOMAI_3_0_VERSION_LIST}', '${XENOMAI_3_0_KERNEL_VERSION}', \
+         bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
 diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index e6d690e..2915dbf 100644
+index c99669d..7b2b0a4 100644
 --- a/conf/distro/xenomai-demo.conf
 +++ b/conf/distro/xenomai-demo.conf
-@@ -18,6 +18,8 @@ OVERRIDES .= ":xenomai${XENOMAI_MAJOR_VERSION}"
+@@ -11,12 +11,14 @@
+ 
+ require conf/distro/debian-bookworm.conf
+ 
++XENOMAI_MAJOR_VERSION ?= "3"
++
  PREFERRED_VERSION_xenomai ?= "3.2%"
  include conf/distro/include/xenomai-version.inc
  
-+PREFERRED_VERSION_libevl ?= "4%"
-+
  HOST_DISTRO ?= "debian-bookworm"
  
- KERNEL_NAME = "xenomai-${XENOMAI_MAJOR_VERSION}"
-diff --git a/opt-evl.yml b/opt-evl.yml
-new file mode 100644
-index 0000000..5cfef59
---- /dev/null
-+++ b/opt-evl.yml
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+
-+local_conf_header:
-+  xenomai-4: |
-+    XENOMAI_MAJOR_VERSION ?= "4"
-diff --git a/opt-libevl-latest-release.yml b/opt-libevl-latest-release.yml
-new file mode 100644
-index 0000000..7468b67
---- /dev/null
-+++ b/opt-libevl-latest-release.yml
-@@ -0,0 +1,19 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2023-2024
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+  includes:
-+    - opt-evl.yml
-+
-+local_conf_header:
-+  libevl-version: |
-+    PREFERRED_VERSION_libevl = "latest"
-diff --git a/opt-libevl-next.yml b/opt-libevl-next.yml
-new file mode 100644
-index 0000000..aa83d1f
---- /dev/null
-+++ b/opt-libevl-next.yml
-@@ -0,0 +1,19 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2023-2024
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+  includes:
-+    - opt-evl.yml
-+
-+local_conf_header:
-+  libevl-version: |
-+    PREFERRED_VERSION_libevl = "next"
-diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
-index db7e2c7..e19a038 100644
---- a/recipes-core/images/demo-image.bb
-+++ b/recipes-core/images/demo-image.bb
-@@ -44,4 +44,6 @@ IMAGE_PREINSTALL += " \
- IMAGE_INSTALL:append:xenomai3 = " xenomai-runtime xenomai-runtime-dbgsym"
- IMAGE_INSTALL:append:xenomai3 = " ${@get_testsuite_package_names(d)}"
- IMAGE_INSTALL:append:xenomai3 = " libxenomai1-dbgsym"
-+IMAGE_INSTALL:append:xenomai4 = " libevl"
-+
- IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
-diff --git a/recipes-kernel/linux/linux-xenomai-4_latest.bb b/recipes-kernel/linux/linux-xenomai-4_latest.bb
-index c225034..c4a254f 100644
---- a/recipes-kernel/linux/linux-xenomai-4_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai-4_latest.bb
-@@ -13,6 +13,10 @@ require recipes-kernel/linux/linux-xenomai-4.inc
+-KERNEL_NAME = "xenomai"
++KERNEL_NAME = "xenomai-${XENOMAI_MAJOR_VERSION}"
+ 
+ WKS_FILE = "${MACHINE}.wks"
+ 
+diff --git a/opt-linux-4.19.yml b/opt-linux-4.19.yml
+index 960292d..760cfce 100644
+--- a/opt-linux-4.19.yml
++++ b/opt-linux-4.19.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "4.19%"
++    PREFERRED_VERSION_linux-xenomai-3 = "4.19%"
+diff --git a/opt-linux-4.4.yml b/opt-linux-4.4.yml
+index e455a38..b026c70 100644
+--- a/opt-linux-4.4.yml
++++ b/opt-linux-4.4.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "4.4%"
++    PREFERRED_VERSION_linux-xenomai-3 = "4.4%"
+diff --git a/opt-linux-5.10.yml b/opt-linux-5.10.yml
+index ec9dab3..28cf554 100644
+--- a/opt-linux-5.10.yml
++++ b/opt-linux-5.10.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "5.10%"
++    PREFERRED_VERSION_linux-xenomai-3 = "5.10%"
+diff --git a/opt-linux-5.15.yml b/opt-linux-5.15.yml
+index bc0b9d2..c02ad37 100644
+--- a/opt-linux-5.15.yml
++++ b/opt-linux-5.15.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "5.15%"
++    PREFERRED_VERSION_linux-xenomai-3 = "5.15%"
+diff --git a/opt-linux-5.4.yml b/opt-linux-5.4.yml
+index 1b43394..4e0ee0a 100644
+--- a/opt-linux-5.4.yml
++++ b/opt-linux-5.4.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "5.4%"
++    PREFERRED_VERSION_linux-xenomai-3 = "5.4%"
+diff --git a/opt-linux-6.1.yml b/opt-linux-6.1.yml
+index e723454..76c2a8b 100644
+--- a/opt-linux-6.1.yml
++++ b/opt-linux-6.1.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "6.1%"
++    PREFERRED_VERSION_linux-xenomai-3 = "6.1%"
+diff --git a/opt-linux-6.6.yml b/opt-linux-6.6.yml
+index 06e0d5d..1b0bbb4 100644
+--- a/opt-linux-6.6.yml
++++ b/opt-linux-6.6.yml
+@@ -14,4 +14,4 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "6.6%"
++    PREFERRED_VERSION_linux-xenomai-3 = "6.6%"
+diff --git a/opt-linux-latest-4.19.yml b/opt-linux-latest-4.19.yml
+index c1a3040..e9272b1 100644
+--- a/opt-linux-latest-4.19.yml
++++ b/opt-linux-latest-4.19.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-latest: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "4.19"
+diff --git a/opt-linux-latest-4.4.yml b/opt-linux-latest-4.4.yml
+index d4864b7..34b57be 100644
+--- a/opt-linux-latest-4.4.yml
++++ b/opt-linux-latest-4.4.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-latest: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "4.4"
+diff --git a/opt-linux-latest-5.10.yml b/opt-linux-latest-5.10.yml
+index e9ddd7f..a60e58c 100644
+--- a/opt-linux-latest-5.10.yml
++++ b/opt-linux-latest-5.10.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "5.10"
+diff --git a/opt-linux-latest-5.15.yml b/opt-linux-latest-5.15.yml
+index 288836f..aeca6a8 100644
+--- a/opt-linux-latest-5.15.yml
++++ b/opt-linux-latest-5.15.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "5.15"
+diff --git a/opt-linux-latest-5.4.yml b/opt-linux-latest-5.4.yml
+index 2d15e06..e1a20e1 100644
+--- a/opt-linux-latest-5.4.yml
++++ b/opt-linux-latest-5.4.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "5.4"
+diff --git a/opt-linux-latest-6.1.yml b/opt-linux-latest-6.1.yml
+index 3e9ef29..388f116 100644
+--- a/opt-linux-latest-6.1.yml
++++ b/opt-linux-latest-6.1.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "6.1"
+diff --git a/opt-linux-latest-6.6.yml b/opt-linux-latest-6.6.yml
+index 7293d94..2287d4b 100644
+--- a/opt-linux-latest-6.6.yml
++++ b/opt-linux-latest-6.6.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "6.6"
+diff --git a/opt-linux-latest.yml b/opt-linux-latest.yml
+index aab2342..795f8fe 100644
+--- a/opt-linux-latest.yml
++++ b/opt-linux-latest.yml
+@@ -14,5 +14,5 @@ header:
+ 
+ local_conf_header:
+   linux-xenomai-version: |
+-    PREFERRED_VERSION_linux-xenomai = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
+     LATEST_GIT_BRANCH = "latest"
+diff --git a/recipes-kernel/linux/linux-xenomai-dovetail.inc b/recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+similarity index 86%
+rename from recipes-kernel/linux/linux-xenomai-dovetail.inc
+rename to recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+index 05d775e..a8612ba 100644
+--- a/recipes-kernel/linux/linux-xenomai-dovetail.inc
++++ b/recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+@@ -9,7 +9,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai.inc
++require recipes-kernel/linux/linux-xenomai-3.inc
+ 
+ SRC_URI += "git://source.denx.de/xenomai/linux-dovetail.git;protocol=https;nobranch=1"
+ 
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai-3.inc
+similarity index 52%
+copy from recipes-kernel/linux/linux-xenomai.inc
+copy to recipes-kernel/linux/linux-xenomai-3.inc
+index 1d7d78a..64ed9d0 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai-3.inc
+@@ -9,21 +9,10 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-custom.inc
+-inherit print-revision
++require recipes-kernel/linux/linux-xenomai.inc
+ 
+-FILESPATH =. "${LAYERDIR_xenomai}/recipes-kernel/linux/files:"
+-
+-XENOMAI_DEFCONFIG = "${DISTRO_ARCH}_defconfig"
+-KERNEL_DEFCONFIG ?= "${XENOMAI_DEFCONFIG}"
+-XENOMAI_DEBUG ?= "0"
+-
+-SRC_URI += "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_DEFCONFIG') == d.getVar('XENOMAI_DEFCONFIG') else ''}"
+-SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBUG') == '0' else ''}"
+ SRC_URI += "file://rules.tmpl"
+ 
+-S = "${WORKDIR}/git"
+-
+ DEPENDS += "xenomai-kernel-source"
+ KBUILD_DEPENDS += "xenomai-kernel-source:native"
+ 
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai-3_4.19.bb
+similarity index 93%
+rename from recipes-kernel/linux/linux-xenomai_4.19.bb
+rename to recipes-kernel/linux/linux-xenomai-3_4.19.bb
+index 249ffb4..e6c56ca 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.19.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_4.19.bb
+@@ -9,7 +9,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai.inc
++require recipes-kernel/linux/linux-xenomai-3.inc
+ 
+ SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
+ SRCREV:amd64 ?= "ipipe-core-4.19.266-cip86-x86-25"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai-3_4.4.bb
+similarity index 92%
+rename from recipes-kernel/linux/linux-xenomai_4.4.bb
+rename to recipes-kernel/linux/linux-xenomai-3_4.4.bb
+index 2b32ae3..09ba2a7 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.4.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_4.4.bb
+@@ -9,7 +9,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai.inc
++require recipes-kernel/linux/linux-xenomai-3.inc
+ 
+ SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
+ SRCREV:amd64 ?= "ipipe-core-4.4.302-cip71-x86-35"
+diff --git a/recipes-kernel/linux/linux-xenomai_5.10.bb b/recipes-kernel/linux/linux-xenomai-3_5.10.bb
+similarity index 76%
+rename from recipes-kernel/linux/linux-xenomai_5.10.bb
+rename to recipes-kernel/linux/linux-xenomai-3_5.10.bb
+index 986060d..9b01708 100644
+--- a/recipes-kernel/linux/linux-xenomai_5.10.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_5.10.bb
+@@ -9,6 +9,6 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai-dovetail.inc
++require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+ 
+ SRCREV ?= "v5.10.161-dovetail1"
+diff --git a/recipes-kernel/linux/linux-xenomai_5.15.bb b/recipes-kernel/linux/linux-xenomai-3_5.15.bb
+similarity index 76%
+rename from recipes-kernel/linux/linux-xenomai_5.15.bb
+rename to recipes-kernel/linux/linux-xenomai-3_5.15.bb
+index 63865eb..9c5ba27 100644
+--- a/recipes-kernel/linux/linux-xenomai_5.15.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_5.15.bb
+@@ -9,6 +9,6 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai-dovetail.inc
++require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+ 
+ SRCREV ?= "v5.15.85-dovetail1"
+diff --git a/recipes-kernel/linux/linux-xenomai_5.4.bb b/recipes-kernel/linux/linux-xenomai-3_5.4.bb
+similarity index 92%
+rename from recipes-kernel/linux/linux-xenomai_5.4.bb
+rename to recipes-kernel/linux/linux-xenomai-3_5.4.bb
+index 7796cd3..827cba5 100644
+--- a/recipes-kernel/linux/linux-xenomai_5.4.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_5.4.bb
+@@ -9,7 +9,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai.inc
++require recipes-kernel/linux/linux-xenomai-3.inc
+ 
+ SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
+ SRCREV:amd64 ?= "ipipe-core-5.4.228-x86-12"
+diff --git a/recipes-kernel/linux/linux-xenomai_6.1.bb b/recipes-kernel/linux/linux-xenomai-3_6.1.bb
+similarity index 76%
+rename from recipes-kernel/linux/linux-xenomai_6.1.bb
+rename to recipes-kernel/linux/linux-xenomai-3_6.1.bb
+index d9655e0..1b41692 100644
+--- a/recipes-kernel/linux/linux-xenomai_6.1.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_6.1.bb
+@@ -9,6 +9,6 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai-dovetail.inc
++require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+ 
+ SRCREV ?= "v6.1.11-dovetail1"
+diff --git a/recipes-kernel/linux/linux-xenomai_6.6.bb b/recipes-kernel/linux/linux-xenomai-3_6.6.bb
+similarity index 75%
+rename from recipes-kernel/linux/linux-xenomai_6.6.bb
+rename to recipes-kernel/linux/linux-xenomai-3_6.6.bb
+index 7fce714..b20eb19 100644
+--- a/recipes-kernel/linux/linux-xenomai_6.6.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_6.6.bb
+@@ -9,6 +9,6 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai-dovetail.inc
++require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
+ 
+ SRCREV ?= "v6.6-dovetail1"
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai-3_latest.bb
+similarity index 98%
+rename from recipes-kernel/linux/linux-xenomai_latest.bb
+rename to recipes-kernel/linux/linux-xenomai-3_latest.bb
+index d1b0226..c65c28d 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_latest.bb
+@@ -10,7 +10,7 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-require recipes-kernel/linux/linux-xenomai.inc
++require recipes-kernel/linux/linux-xenomai-3.inc
  
  PV = "9999-g${COMMIT}"
  
-+def is_kernel(d, ver):
-+    linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
-+    return linux_ver == ver
-+
- python () {
-     import subprocess
-     if is_kernel(d, 'latest'):
-diff --git a/recipes-xenomai/libevl/files/0001-meson-setup-uapi-Take-Debian-multiarch-into-account.patch b/recipes-xenomai/libevl/files/0001-meson-setup-uapi-Take-Debian-multiarch-into-account.patch
-new file mode 100644
-index 0000000..3c1f48c
---- /dev/null
-+++ b/recipes-xenomai/libevl/files/0001-meson-setup-uapi-Take-Debian-multiarch-into-account.patch
-@@ -0,0 +1,40 @@
-+From b4447250c7fff6940c1bb6f0308da617bebaa643 Mon Sep 17 00:00:00 2001
-+From: Jan Kiszka <jan.kiszka@siemens.com>
-+Date: Tue, 2 Jan 2024 14:01:19 +0100
-+Subject: [PATCH] meson: setup-uapi: Take Debian multiarch into account
-+
-+Check also the Debian multiarch include path for the chosen architecture
-+so that we can support (self-built) linux-libc-dev packages that contain
-+the evl headers.
-+
-+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-+---
-+ meson/setup-uapi.sh | 12 +++++++++++-
-+ 1 file changed, 11 insertions(+), 1 deletion(-)
-+
-+diff --git a/meson/setup-uapi.sh b/meson/setup-uapi.sh
-+index f2d0774..633c5ed 100644
-+--- a/meson/setup-uapi.sh
-++++ b/meson/setup-uapi.sh
-+@@ -17,7 +17,17 @@ if test -r $UAPI/Kbuild; then
-+     link_dir $UAPI/arch/$ARCH/include/uapi/asm/evl asm
-+     link_dir $UAPI/include/uapi/asm-generic .
-+ else
-++    DEB_HOST_ARCH=$ARCH
-++    if [ "$DEB_HOST_ARCH" = "x86" ]; then
-++        DEB_HOST_ARCH=amd64
-++    fi
-++    DEB_HOST_MULTIARCH=$( \
-++        dpkg-architecture -q DEB_HOST_MULTIARCH -a $DEB_HOST_ARCH 2>/dev/null)
-+     link_dir $UAPI/evl .
-+-    link_dir $UAPI/asm/evl asm
-++    if [ -d $UAPI/$DEB_HOST_MULTIARCH/asm/evl ]; then
-++        link_dir $UAPI/$DEB_HOST_MULTIARCH/asm/evl asm
-++    else
-++        link_dir $UAPI/asm/evl asm
-++    fi
-+     link_dir $UAPI/asm-generic .
-+ fi
-+-- 
-+2.35.3
-+
-diff --git a/recipes-xenomai/libevl/files/debian/compat b/recipes-xenomai/libevl/files/debian/compat
-new file mode 100644
-index 0000000..f599e28
---- /dev/null
-+++ b/recipes-xenomai/libevl/files/debian/compat
-@@ -0,0 +1 @@
-+10
-diff --git a/recipes-xenomai/libevl/files/debian/control.tmpl b/recipes-xenomai/libevl/files/debian/control.tmpl
-new file mode 100644
-index 0000000..36eb68c
---- /dev/null
-+++ b/recipes-xenomai/libevl/files/debian/control.tmpl
-@@ -0,0 +1,11 @@
-+Source: ${PN}
-+Section: misc
-+Priority: optional
-+Standards-Version: 3.9.6
-+Maintainer: Xenomai project <xenomai@lists.linux.dev>
-+Build-Depends: ${DEBIAN_BUILD_DEPENDS}
-+
-+Package: libevl
-+Architecture: ${DISTRO_ARCH}
-+Description: ${DESCRIPTION}
-+Depends: ${shlibs:Depends}
-diff --git a/recipes-xenomai/libevl/files/debian/rules b/recipes-xenomai/libevl/files/debian/rules
-new file mode 100755
-index 0000000..9c9148f
---- /dev/null
-+++ b/recipes-xenomai/libevl/files/debian/rules
-@@ -0,0 +1,19 @@
-+#!/usr/bin/make -f
-+
-+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-+
-+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-+UAPI=/usr/include
-+else
-+UAPI=/usr/$(DEB_HOST_GNU_TYPE)/include
-+endif
-+
-+override_dh_fixperms:
-+	dh_fixperms
-+
-+override_dh_auto_configure:
-+	dh_auto_configure -- -Duapi=$(UAPI)
-+
-+%:
-+	dh $@ --buildsystem=meson
-diff --git a/recipes-xenomai/libevl/libevl.inc b/recipes-xenomai/libevl/libevl.inc
-new file mode 100644
-index 0000000..405be8b
---- /dev/null
-+++ b/recipes-xenomai/libevl/libevl.inc
-@@ -0,0 +1,31 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2023-2024
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+inherit dpkg
-+inherit print-revision
-+
-+DESCRIPTION ?= "libevl libraries and tools"
-+
-+SRC_URI += "file://debian"
-+
-+DEPENDS = "linux-xenomai-4"
-+DEBIAN_BUILD_DEPENDS ?= "debhelper (>= 10), meson"
-+
-+TEMPLATE_FILES = "debian/control.tmpl"
-+TEMPLATE_VARS += "DEBIAN_BUILD_DEPENDS"
-+
-+S = "${WORKDIR}/git"
-+
-+do_prepare_build[cleandirs] += "${S}/debian"
-+do_prepare_build() {
-+    cp -r ${WORKDIR}/debian ${S}
-+    deb_add_changelog
-+}
-diff --git a/recipes-xenomai/libevl/libevl_47.bb b/recipes-xenomai/libevl/libevl_47.bb
-new file mode 100644
-index 0000000..1d93e1d
---- /dev/null
-+++ b/recipes-xenomai/libevl/libevl_47.bb
-@@ -0,0 +1,15 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2023-2024
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require libevl.inc
-+
-+SRC_URI += "git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=master;tag=r${PV}"
-+SRC_URI += "file://0001-meson-setup-uapi-Take-Debian-multiarch-into-account.patch"
-diff --git a/recipes-xenomai/libevl/libevl_latest.bb b/recipes-xenomai/libevl/libevl_latest.bb
-new file mode 100644
-index 0000000..2b57083
---- /dev/null
-+++ b/recipes-xenomai/libevl/libevl_latest.bb
-@@ -0,0 +1,25 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require libevl.inc
-+
-+python () {
-+    import subprocess
-+    cmd = 'git ls-remote --tags --head --refs https://source.denx.de/Xenomai/xenomai4/libevl.git | ' \
-+          'sed -e "s/.*[[:space:]]refs\/\(tags\|heads\)\///" | grep "r[0-9]\+" | ' \
-+          'sort -r -n -k 1.2 | head -1'
-+    (ret, out) = subprocess.getstatusoutput(cmd)
-+    d.setVar('LATEST_RELEASE', out)
-+}
-+
-+SRC_URI += "git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=master;tag=${LATEST_RELEASE}"
-+
-+CHANGELOG_V = "${@ d.getVar('LATEST_RELEASE').strip('r') }"
-diff --git a/recipes-xenomai/libevl/libevl_master.bb b/recipes-xenomai/libevl/libevl_master.bb
-new file mode 100644
-index 0000000..a1809ab
---- /dev/null
-+++ b/recipes-xenomai/libevl/libevl_master.bb
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2023-2024
-+#
-+# Authors:
-+#  Clara Kowalsky <clara.kowalsky@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require libevl.inc
-+
-+SRC_URI += "git://source.denx.de/Xenomai/xenomai4/libevl.git;protocol=https;branch=${PV}"
-+
-+CHANGELOG_V = "9999-${PV}"
-+SRCREV = "${AUTOREV}"
-diff --git a/recipes-xenomai/libevl/libevl_next.bb b/recipes-xenomai/libevl/libevl_next.bb
-new file mode 120000
-index 0000000..85ab518
---- /dev/null
-+++ b/recipes-xenomai/libevl/libevl_next.bb
-@@ -0,0 +1 @@
-+libevl_master.bb
-\ No newline at end of file
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index 1d7d78a..8c7df40 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -20,17 +20,5 @@ XENOMAI_DEBUG ?= "0"
+ 
+ SRC_URI += "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_DEFCONFIG') == d.getVar('XENOMAI_DEFCONFIG') else ''}"
+ SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBUG') == '0' else ''}"
+-SRC_URI += "file://rules.tmpl"
+ 
+ S = "${WORKDIR}/git"
+-
+-DEPENDS += "xenomai-kernel-source"
+-KBUILD_DEPENDS += "xenomai-kernel-source:native"
+-
+-TEMPLATE_FILES += "rules.tmpl"
+-
+-do_prepare_debian_rules() {
+-    mv ${WORKDIR}/debian/rules ${WORKDIR}/debian/rules.isar
+-    mv ${WORKDIR}/rules ${WORKDIR}/debian/rules
+-}
+-addtask prepare_debian_rules after do_transform_template before do_dpkg_build
 -- 
 2.35.3
 
