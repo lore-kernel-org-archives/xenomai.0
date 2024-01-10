@@ -1,31 +1,30 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D248B3B185
-	for <xenomai@lists.linux.dev>; Wed, 10 Jan 2024 09:01:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0499A3EA6D
+	for <xenomai@lists.linux.dev>; Wed, 10 Jan 2024 09:03:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gzuUtjd4"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202401100900545d129676925a365c06
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="QiS/mpE9"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240110090332bc2957d61b4a499bba
         for <xenomai@lists.linux.dev>;
-        Wed, 10 Jan 2024 10:00:56 +0100
+        Wed, 10 Jan 2024 10:03:32 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=9NB98ilxBEP3w37+lM7ec407PQruNvVpklYmumPJIQo=;
- b=gzuUtjd4sdXtf7D7qWTKY1k90mGltkKmlVwW6AZEi7cdQ3q7eJ9+spkLNRl0yEvysh0C2h
- RvG5pDcApdEw4LwrKFKOcMVxq2ucpqLa6YPJDfAUq1sGOJsGQNB17i+GtAx1FlRvs9DdRTxg
- jgN3/Of5YwnHLTIJ+FStDQfrpjzzU=;
-Message-ID: <2cf2e60d9bd55ff637167704bb0e6c740f865559.camel@siemens.com>
-Subject: Re: [xenomai-images][PATCH v3 01/10] Add Isar patch to permit
- linux-libc-dev upgrades in the sbuild environment
+ bh=YYCW5qYpj23sk7Cv7Gs3T5r/zkEr5wmgnI+dd1Ul1XA=;
+ b=QiS/mpE92hmulGTp7Uyyglq75VjqdcIW12cglpLhRFS3fzCLMbqDal88vtAWAf2gGGbiwq
+ kvTEiz9/xbGFOAImcpjTifwksY+KoG9jNNRP14Agb1yXyBkkZsWyerJjE7y72oTCAGSH/TCY
+ lASsS54VODQ5Aryk65GgJ0HE+Si3c=;
+Message-ID: <ecf1a4f2e7e2c73c68bba8734cb994d6f2d66971.camel@siemens.com>
+Subject: Re: [xenomai-images][PATCH v3 07/10] xenomai-4: Add evl userspace
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Date: Wed, 10 Jan 2024 10:00:54 +0100
-In-Reply-To: <46b62659d3ca20a7ad418d44432e4359bd6d4a03.1704861962.git.jan.kiszka@siemens.com>
+Date: Wed, 10 Jan 2024 10:03:31 +0100
+In-Reply-To: <4308209312d585ddeb399ced286f216e267b6284.1704861962.git.jan.kiszka@siemens.com>
 References: <cover.1704861962.git.jan.kiszka@siemens.com>
-	 <46b62659d3ca20a7ad418d44432e4359bd6d4a03.1704861962.git.jan.kiszka@siemens.com>
+	 <4308209312d585ddeb399ced286f216e267b6284.1704861962.git.jan.kiszka@siemens.com>
 Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
  =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
  =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
@@ -71,30 +70,86 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 On Wed, 2024-01-10 at 05:45 +0100, Jan Kiszka wrote:
-> diff --git a/kas.yml b/kas.yml
-> index 1b2e857..2017e68 100644
-> --- a/kas.yml
-> +++ b/kas.yml
-> @@ -22,9 +22,13 @@ repos:
-> =20
->    isar:
->      url: https://github.com/ilbers/isar.git
-> -    commit: 216f0721265fcfe965ac48b51a0128d612d89bf4
-> +    commit: 853784cf1732c093acd537fbb1b0b1c54e6b59ff
->      layers:
->        meta:
-> +    patches:
-> +      01:
-> +        repo: xenomai
-> +        path: isar-patches/0001-dpkg-Restore-support-for-replacing-pre-i=
-nstalled-pac.patch
-> =20
->  bblayers_conf_header:
->    standard: |
-> --=20
-> 2.35.3
+> @@ -0,0 +1,40 @@
+> +From b4447250c7fff6940c1bb6f0308da617bebaa643 Mon Sep 17 00:00:00 2001
+> +From: Jan Kiszka <jan.kiszka@siemens.com>
+> +Date: Tue, 2 Jan 2024 14:01:19 +0100
+> +Subject: [PATCH] meson: setup-uapi: Take Debian multiarch into account
+> +
+> +Check also the Debian multiarch include path for the chosen architecture
+> +so that we can support (self-built) linux-libc-dev packages that contain
+> +the evl headers.
+> +
+> +Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> +---
+> + meson/setup-uapi.sh | 12 +++++++++++-
+> + 1 file changed, 11 insertions(+), 1 deletion(-)
+> +
+> +diff --git a/meson/setup-uapi.sh b/meson/setup-uapi.sh
+> +index f2d0774..633c5ed 100644
+> +--- a/meson/setup-uapi.sh
+> ++++ b/meson/setup-uapi.sh
+> +@@ -17,7 +17,17 @@ if test -r $UAPI/Kbuild; then
+> +     link_dir $UAPI/arch/$ARCH/include/uapi/asm/evl asm
+> +     link_dir $UAPI/include/uapi/asm-generic .
+> + else
+> ++    DEB_HOST_ARCH=3D$ARCH
+> ++    if [ "$DEB_HOST_ARCH" =3D "x86" ]; then
+> ++        DEB_HOST_ARCH=3Damd64
+> ++    fi
+> ++    DEB_HOST_MULTIARCH=3D$( \
+> ++        dpkg-architecture -q DEB_HOST_MULTIARCH -a $DEB_HOST_ARCH 2>/de=
+v/null)
+> +     link_dir $UAPI/evl .
+> +-    link_dir $UAPI/asm/evl asm
+> ++    if [ -d $UAPI/$DEB_HOST_MULTIARCH/asm/evl ]; then
+> ++        link_dir $UAPI/$DEB_HOST_MULTIARCH/asm/evl asm
+> ++    else
+> ++        link_dir $UAPI/asm/evl asm
+> ++    fi
+> +     link_dir $UAPI/asm-generic .
+> + fi
+> +--=20
+> +2.35.3
+> +
+> diff --git a/recipes-xenomai/libevl/files/debian/compat b/recipes-xenomai=
+/libevl/files/debian/compat
+> new file mode 100644
+> index 0000000..f599e28
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/compat
+> @@ -0,0 +1 @@
+> +10
+> diff --git a/recipes-xenomai/libevl/files/debian/control.tmpl b/recipes-x=
+enomai/libevl/files/debian/control.tmpl
+> new file mode 100644
+> index 0000000..36eb68c
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/control.tmpl
+> @@ -0,0 +1,11 @@
+> +Source: ${PN}
+> +Section: misc
+> +Priority: optional
+> +Standards-Version: 3.9.6
+> +Maintainer: Xenomai project <xenomai@lists.linux.dev>
+> +Build-Depends: ${DEBIAN_BUILD_DEPENDS}
+> +
+> +Package: libevl
+> +Architecture: ${DISTRO_ARCH}
+> +Description: ${DESCRIPTION}
+> +Depends: ${shlibs:Depends}
+> diff --git a/recipes-xenomai/libevl/files/debian/rules b/recipes-xenomai/=
+libevl/files/debian/rules
+> new file mode 100755
+> index 0000000..9c9148f
+> --- /dev/null
+> +++ b/recipes-xenomai/libevl/files/debian/rules
 
-We we're "ISAR patch free" for a long time now. Upstream first? Doesn't
-seem to be Xenomai or libevl specific, so I think we shouldn't carry it
-here.
+Wouldn't it make sense to move the debianization into evl like we have
+it for Xenomai as well? In addition it would follow the "upstream
+first" again.
 
+I think it has some value if someone can run dpkg-buildpackage on evl
+and doesn't have to use xenomai-images for building packages.
+
+Florian
