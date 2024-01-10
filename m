@@ -1,27 +1,27 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD0596FD9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D268579F2
 	for <xenomai@lists.linux.dev>; Wed, 10 Jan 2024 04:46:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="ZuRjKbJu"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240110044603c397cc7cf496b27419
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="UvuEoYq9"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20240110044604b02839beee34b58bf3
         for <xenomai@lists.linux.dev>;
-        Wed, 10 Jan 2024 05:46:03 +0100
+        Wed, 10 Jan 2024 05:46:04 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=wRQQ7t8I8EmIPbK/k5sCnKm/jMRYDEiuCg2I0J75yAQ=;
- b=ZuRjKbJulI0yoim7S09cJCzNaHwUTyKM6s5aqMpFP7NE66LcUyyex3NPLAPU1GgHzBeNbk
- mtn1jGeUOSJuFM5PzpJTyV71/BwYQfd4TWYM1QzrT3m3UNb3ILlAR01HfagA8G0w9Sdx5fZu
- gDMmMiyJv2pw6qrRKEpdKTxl9jOiM=;
+ bh=Zqk4yCLEQ7NAqQID97q0CwEad1y4pAhjCXz4trzNwkk=;
+ b=UvuEoYq90VzMIO0lQ2LnpctqREtIN2u8EfDXbZj4S5LTGsOS5cQuiSnTvqd3usZv3tUDO1
+ Lnjwpqofpl/4DfDEpiMw7mRdsgi09NdAcXxou5cq2LzCKCyRSM6iscNpfV11z/cx28UlmXCB
+ fAIp3GFXl/cXcrkpZKSUGwSWt3u7c=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH v3 03/10] Factor out print-revision class
-Date: Wed, 10 Jan 2024 05:45:55 +0100
-Message-Id: <2f7c8cf61b71aff10490b45c1c8c68c99bfe0fd0.1704861962.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH v3 08/10] kconfig: Add build options for evl
+Date: Wed, 10 Jan 2024 05:46:00 +0100
+Message-Id: <302bdf8c12a05a1a41bb866ae7833633f9251f73.1704861962.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1704861962.git.jan.kiszka@siemens.com>
 References: <cover.1704861962.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -34,130 +34,98 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
 
-This logic is already shared by kernel and xenomai recipes, more to
-come.
+Options are included to build the linux-evl kernel v6.1 and v6.6.
 
+Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
+[Jan: adjusted to renamed options, more kernel options, less libevl]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- classes/print-revision.bbclass               | 23 ++++++++++++++++++++
- recipes-kernel/linux/linux-xenomai.inc       | 14 +-----------
- recipes-kernel/linux/linux-xenomai_latest.bb |  2 +-
- recipes-xenomai/xenomai/xenomai.inc          | 13 +----------
- 4 files changed, 26 insertions(+), 26 deletions(-)
- create mode 100644 classes/print-revision.bbclass
+ Kconfig | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-diff --git a/classes/print-revision.bbclass b/classes/print-revision.bbclass
-new file mode 100644
-index 0000000..ca4aa7b
---- /dev/null
-+++ b/classes/print-revision.bbclass
-@@ -0,0 +1,23 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2018-2024
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
+diff --git a/Kconfig b/Kconfig
+index 0f4855c..669ea65 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -58,6 +58,20 @@ config KAS_INCLUDE_TARGET
+ 
+ choice
+ 	prompt "Xenomai version"
++	default XENOMAI3
 +
-+def get_commit(d):
-+    try:
-+        return bb.fetch2.get_srcrev(d).replace('AUTOINC+', '')
-+    except bb.fetch2.FetchError:
-+        return ""
++config XENOMAI3
++	bool "Xenomai 3"
 +
-+COMMIT="${@get_commit(d)}"
++config XENOMAI4
++	bool "Xenomai 4 / EVL"
 +
-+dpkg_runbuild:prepend() {
-+    bbplain $(printf "%s-%s: Building revision %.20s\n" \
-+                     ${PN} ${PV} ${COMMIT})
-+}
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 4761d01..1d7d78a 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -10,6 +10,7 @@
- #
++endchoice
++
++if XENOMAI3
++
++choice
++	prompt "Xenomai 3 subversion"
+ 	default XENOMAI_3_2
  
- require recipes-kernel/linux/linux-custom.inc
-+inherit print-revision
- 
- FILESPATH =. "${LAYERDIR_xenomai}/recipes-kernel/linux/files:"
- 
-@@ -28,19 +29,6 @@ KBUILD_DEPENDS += "xenomai-kernel-source:native"
- 
- TEMPLATE_FILES += "rules.tmpl"
- 
--def get_commit(d):
--    try:
--        return bb.fetch2.get_srcrev(d).replace('AUTOINC+', '')
--    except bb.fetch2.FetchError:
--        return ""
--
--LINUX_COMMIT ?= "${@get_commit(d)}"
--
--dpkg_runbuild:prepend() {
--    bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
--                     ${PV} ${LINUX_COMMIT})
--}
--
- do_prepare_debian_rules() {
-     mv ${WORKDIR}/debian/rules ${WORKDIR}/debian/rules.isar
-     mv ${WORKDIR}/rules ${WORKDIR}/debian/rules
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index c9b2513..d1b0226 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -12,7 +12,7 @@
- 
- require recipes-kernel/linux/linux-xenomai.inc
- 
--PV = "9999-g${LINUX_COMMIT}"
-+PV = "9999-g${COMMIT}"
- 
- def is_xeno_3_0(d):
-     xeno_ver = d.getVar('PREFERRED_VERSION_xenomai') or ''
-diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-index 26ee654..95b2875 100644
---- a/recipes-xenomai/xenomai/xenomai.inc
-+++ b/recipes-xenomai/xenomai/xenomai.inc
-@@ -10,6 +10,7 @@
- #
- 
- inherit dpkg
-+inherit print-revision
- 
- PROVIDES += "xenomai-kernel-source"
- PROVIDES += "xenomai-runtime"
-@@ -22,15 +23,6 @@ PROVIDES += "libxenomai1-dbgsym"
- 
- PACKAGE_ARCH:compat-arch = "${COMPAT_DISTRO_ARCH}"
- 
--# use bitbake get_srcrev to get the current commit id
--def get_commit(d):
--    try:
--        return bb.fetch2.get_srcrev(d).replace('AUTOINC+', '')
--    except bb.fetch2.FetchError:
--        return ""
--
--COMMIT="${@get_commit(d)}"
--
- do_prepare_build() {
-     # Xenomai currently does not maintain its changelog, plus we want the
-     # actual package version in there.
-@@ -39,7 +31,4 @@ do_prepare_build() {
-     # Remove upstream's "3.0 (native)" declaration so that we can define the
-     # package version more freely.
-     rm -f ${S}/debian/source/format
--
--    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
--                     ${PV} ${COMMIT})
- }
+ config XENOMAI_LATEST
+@@ -193,3 +207,55 @@ config COMPAT
+ config KAS_INCLUDE_COMPAT
+ 	string
+ 	default "opt-compat.yml" if COMPAT
++
++endif	# if XENOMAI3
++
++if XENOMAI4
++
++choice
++	prompt "Kernel version"
++	default EVL_KERNEL_6_6
++
++config EVL_KERNEL_LATEST
++	bool "Head of latest EVL branch"
++
++config EVL_KERNEL_6_6_LATEST
++	bool "Head of 6.6 EVL branch"
++
++config EVL_KERNEL_6_6
++	bool "Latest 6.6 EVL release"
++
++config EVL_KERNEL_6_1_LATEST
++	bool "Head of 6.1 EVL branch"
++
++config EVL_KERNEL_6_1
++	bool "Latest 6.1 EVL release"
++
++endchoice
++
++config KAS_INCLUDE_EVL_KERNEL
++	string
++	default "opt-linux-latest.yml" if EVL_KERNEL_LATEST
++	default "opt-linux-latest-6.6.yml" if EVL_KERNEL_6_6_LATEST
++	default "opt-linux-6.6.yml" if EVL_KERNEL_6_6
++	default "opt-linux-latest-6.1.yml" if EVL_KERNEL_6_1_LATEST
++	default "opt-linux-6.1.yml" if EVL_KERNEL_6_1
++
++choice
++	prompt "libevl version"
++	default LIBEVL_NEXT
++
++config LIBEVL_NEXT
++	bool "Head of next branch"
++
++config LIBEVL_RELEASE
++	bool "Latest release"
++
++endchoice
++
++config KAS_INCLUDE_LIBEVL
++	string
++	default "opt-libevl-next.yml" if LIBEVL_NEXT
++	default "opt-libevl-latest-release.yml" if LIBEVL_RELEASE
++
++endif	# if XENOMAI4
 -- 
 2.35.3
 
