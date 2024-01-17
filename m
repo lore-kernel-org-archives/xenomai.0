@@ -1,118 +1,141 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from se4w-iad1.servconfig.com (se4w-iad1.servconfig.com [23.235.198.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A07B61171F
-	for <xenomai@lists.linux.dev>; Tue, 16 Jan 2024 08:22:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 02F27641041F;
-	Tue, 16 Jan 2024 09:22:04 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id bzPJNvuVfZLk; Tue, 16 Jan 2024 09:22:03 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 7C86B626FB01;
-	Tue, 16 Jan 2024 09:22:03 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id LmQBsSYFyHUS; Tue, 16 Jan 2024 09:22:03 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 59A8F641041F;
-	Tue, 16 Jan 2024 09:22:03 +0100 (CET)
-Date: Tue, 16 Jan 2024 09:22:03 +0100 (CET)
-From: Richard Weinberger <richard@nod.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>, 
-	wg@denx.de
-Message-ID: <404252638.239962.1705393323222.JavaMail.zimbra@nod.at>
-In-Reply-To: <c1aa91be-a8c3-4d36-83fc-1dcce598dcef@siemens.com>
-References: <20231205202210.25477-1-richard@nod.at> <c1aa91be-a8c3-4d36-83fc-1dcce598dcef@siemens.com>
-Subject: Re: [PATCH] cobalt/drvlib: Prefault io memory again
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06EF4288DD
+	for <xenomai@lists.linux.dev>; Wed, 17 Jan 2024 23:50:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.235.198.106
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705535430; cv=none; b=cpNEsLduPa3L2Wb+/G6W4frQgXgFAPanybMfjMjXYjfTLox1nwb7zzgg14edP6Y8ccauX6XN5JxDn1wObO5axJSiAsKtDg+tpqW9QBOu/Ihpi2bJNCch7EzYd5MYPzrBsvYvRafkhVHv13KoFsX1lZDLVC7sq3ZoSFdUO06+GwE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705535430; c=relaxed/simple;
+	bh=ghCn4MovkYZCgztlynH47yELqMJTPvhbQH+EWxglQ8o=;
+	h=Received:DKIM-Signature:Received:MIME-Version:Date:From:To:
+	 Subject:In-Reply-To:References:User-Agent:Message-ID:X-Sender:
+	 Content-Type:Content-Transfer-Encoding:X-Get-Message-Sender-Via:
+	 X-Authenticated-Sender:X-Originating-IP:X-SpamExperts-Domain:
+	 X-SpamExperts-Username:X-SpamExperts-Outgoing-Class:
+	 X-SpamExperts-Outgoing-Evidence:X-Recommended-Action:X-Filter-ID:
+	 X-Report-Abuse-To; b=Aa85goUCadHc5oQILx0XBNalW9UOGZzhTpwHVwiGLdT287sBiDhjuBUbde8wiShPY0l+24lTeH8UdzRNKowqTy2o1eDk+WfOX8x8+WA8weyF6YxWEOll7cqh0hS1g6o1qva4bvBZLq+BJMVeWTo/uNWuL5udoiq7MxrOCmU9EWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rtxi.org; spf=none smtp.mailfrom=rtxi.org; dkim=fail (0-bit key) header.d=rtxi.org header.i=@rtxi.org header.b=g462mAU9 reason="key not found in DNS"; arc=none smtp.client-ip=23.235.198.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rtxi.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=rtxi.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=rtxi.org header.i=@rtxi.org header.b="g462mAU9"
+Received: from ecbiz330.inmotionhosting.com ([69.174.52.25])
+	by se4-iad1.servconfig.com with esmtps (TLSv1.2:AES128-GCM-SHA256:128)
+	(Exim 4.92)
+	(envelope-from <ivan@rtxi.org>)
+	id 1rQFEu-0006TV-V2
+	for xenomai@lists.linux.dev; Wed, 17 Jan 2024 18:22:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=rtxi.org;
+	s=default; h=Content-Transfer-Encoding:Content-Type:Message-ID:References:
+	In-Reply-To:Subject:To:From:Date:MIME-Version:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=ws8kxeTyPR+mVonQaeCN4Zyy9bDaWaG0lUmwMZlsMSE=; b=g462mAU9zM7LnhrkFzSL1Mq1S+
+	Q34Lw20bkrZnKMuqcPYcfVwiBd/5mhbX2q81jHIRTE6F+yBLKsyMcF9IUUNQhi/OWfIgJAtC/ujNz
+	VAvebvkGBTKYVSH3PUuH+Adbay3Ub66+SjfRnIAtd94zUwEdyoAu3ZUtjXqduDcoA5qfGNcCx7fSc
+	d63VjX/a5vyhlMfRKjAQkyLD7OsFYLFXZ5MK0GfT0Kt6nS2Cigsb66URp0gs8nLFr4K72n7EF5cJS
+	b5FpGQqPQORzQWjWRRKDlG5XEYuwbEqF/QVpGqwNjoSTDYsqcC9fClwN+kzLqud+iYDxEWIWKXx+L
+	Rt/RwApg==;
+Received: from [::1] (port=46328 helo=ecbiz330.inmotionhosting.com)
+	by ecbiz330.inmotionhosting.com with esmtpa (Exim 4.96.2)
+	(envelope-from <ivan@rtxi.org>)
+	id 1rQFEu-00Ga4H-1V
+	for xenomai@lists.linux.dev;
+	Wed, 17 Jan 2024 18:22:32 -0500
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: cobalt/drvlib: Prefault io memory again
-Thread-Index: nGnhGhNxZlFTglxEVKMyXwU8pInZuA==
+Date: Wed, 17 Jan 2024 18:22:32 -0500
+From: ivan@rtxi.org
+To: xenomai@lists.linux.dev
+Subject: Re: Troubleshooting x86_64 evl bootup
+In-Reply-To: <37d6d286847eb0126c938a1c5826ed13@rtxi.org>
+References: <37d6d286847eb0126c938a1c5826ed13@rtxi.org>
+User-Agent: Roundcube Webmail/1.6.0
+Message-ID: <34ba04db1b45f6c546a2195f0a8e0ad3@rtxi.org>
+X-Sender: ivan@rtxi.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Get-Message-Sender-Via: ecbiz330.inmotionhosting.com: authenticated_id: ivan@rtxi.org
+X-Authenticated-Sender: ecbiz330.inmotionhosting.com: ivan@rtxi.org
+X-SpamExperts-Domain: ecbiz330.inmotionhosting.com
+X-SpamExperts-Username: 69.174.52.25
+Authentication-Results: servconfig.com; auth=pass smtp.auth=69.174.52.25@ecbiz330.inmotionhosting.com
+X-SpamExperts-Outgoing-Class: ham
+X-SpamExperts-Outgoing-Evidence: Combined (0.08)
+X-Recommended-Action: accept
+X-Filter-ID: Pt3MvcO5N4iKaDQ5O6lkdGlMVN6RH8bjRMzItlySaT+Mrb3tjy7t3hBxgQGTbj2NPUtbdvnXkggZ
+ 3YnVId/Y5jcf0yeVQAvfjHznO7+bT5zM2Yn+ifXDUaVfcH2UdAod81AJ1TFUyPPWZD/fbWINKOfH
+ zJ6mVE7ewsipSVIfs4YpjymycbeamHkHy1jHxvMQABHVTw1lV42ob3hDgXVUNRrZmhutlYgqreu/
+ P9NI45012jOF85Kv6fCAxgcD8ltXtPrQqsGLrECr51ySuHmtre3om1NOCXE1kCr91rpFr6RoWVCb
+ J90C820C8IDV94ZMIyjbFUQY1CUernJTO7qkOddCYgcgr835yVjKQZA6hJL1LiMHCxRezvZaFOrU
+ Vh8zaVyj66M1yz85ZZhpUrhTRbASVYnBhdKUnGmBdHG7BUn2dK6UtSEdwn3yFtfkzf2ggTHzfqZI
+ wwACW9bQ+KDdJhsM51Mye8eo6Y/hXEFbc9MIm4qZ5/UkJuZ+By/rOgnAAKmW7SISmwD3O07KW3Zh
+ YDkW7+erWZ92q8bI/tBEya5tuBWXiK6eoWgQZnNLL6SbpUc7peFeo3eDQNYbhOKhzzgqmaDn5SlD
+ Y9mmtv6e91aWBLor1oCWetcUjeG94V2XRv0eLDH2VxfUpX1i2sQBtmaKnUd4mN3xkONnx9HiFPU+
+ Ah38ENdxgw7ixFZaXcShwvNj+trPHbioooz4SraaM+AC+9Z356apX8Ql6vjzl5/FFwtmK8QNyakB
+ sz1lFzQC/DjVp9r4/TQ9+fLMXXltsrOVETDvX1r6juAzzCdkl9QRwusdS4GFqVHXFW5WReuVLYZY
+ owgCrdbMX997wRREoxtak6yLrWcnyndkB0F012ZmMRr+w2X69ygMahiTQMBdfP4xeY4Ex4L9zZIk
+ hhx7ZsOpyKA69LF1Ge2GaGfxmfq8bxon8djJ4ZfshZL8IhO77duugWgmqZHBDDH3Mm//g/VSoffW
+ 7VAGp45zAgB9nKNjzpm0lxYA3q6cDY3g7yjrRH1hNwTDHehLmTlW0tbLmDBtUD9+Z7GHz/OHPkRS
+ typsFt3EfutjrssjiWZbF0wADuiMjPRTVWNyTJ7O0CWtBzEvuGslKTrRIXcXpFg5ivY=
+X-Report-Abuse-To: spam@se1-lax1.servconfig.com
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> An: "richard" <richard@nod.at>, "xenomai" <xenomai@lists.linux.dev>, "Phi=
-lippe Gerum" <rpm@xenomai.org>
-> CC: wg@denx.de
-> Gesendet: Donnerstag, 7. Dezember 2023 10:12:27
-> Betreff: Re: [PATCH] cobalt/drvlib: Prefault io memory again
+On 2024-01-04 13:34, ivan@rtxi.org wrote:
 
-> On 06.12.23 04:22, Richard Weinberger wrote:
->> This issue was fixed a long time ago by
->> 03d5b0b0083c ("cobalt/rtdm: fix caching and page fault issues with
->> rtdm_iomap_to_user()"),
->> later with commit c8e9e166b ("cobalt/rtdm: introduce mmap() support")
->> iomap code lost again the call to cobalt_machine.prefault().
->>=20
->> I have no idea why this took so longer to come up again.
->> Last week, while upgrading an aarch32 setup from Xenomai 2 to Xenomai 3,=
- the
->> application
->> failed due to massive latencies caused by page faults after writing to i=
-o
->> memory.
->>=20
->> Signed-off-by: Richard Weinberger <richard@nod.at>
->> ---
->>  kernel/cobalt/rtdm/drvlib.c | 14 ++++++++++++--
->>  1 file changed, 12 insertions(+), 2 deletions(-)
->>=20
->> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
->> index 30455c3d7..620be27fa 100644
->> --- a/kernel/cobalt/rtdm/drvlib.c
->> +++ b/kernel/cobalt/rtdm/drvlib.c
->> @@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct=
- *vma,
->> phys_addr_t pa)
->>  {
->>  =09pgprot_t prot =3D PAGE_SHARED;
->>  =09unsigned long len;
->> +=09int ret;
->> =20
->>  =09len =3D vma->vm_end - vma->vm_start;
->>  #ifndef CONFIG_MMU
->> @@ -1774,8 +1775,17 @@ static int mmap_iomem_helper(struct vm_area_struc=
-t *vma,
->> phys_addr_t pa)
->>  #endif
->>  =09vma->vm_page_prot =3D pgprot_noncached(prot);
->> =20
->> -=09return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
->> -=09=09=09       len, vma->vm_page_prot);
->> +=09ret =3D remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
->> +=09=09=09      len, vma->vm_page_prot);
->> +=09if (ret)
->> +=09=09return ret;
->> +
->> +#ifdef CONFIG_MMU
->> +=09if (cobalt_machine.prefault)
->> +=09=09cobalt_machine.prefault(vma);
->> +#endif
->> +
->> +=09return 0;
->>  }
->> =20
->>  static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct=
- *vma)
->=20
-> This makes sense to me, specifically as c8e9e166bce43 didn't provide any
-> reason nor even mentioned the fact that it didn't add prefault to the
-> iomem_helper. Philippe, was there a reason? Are we side-effect-free /wrt
-> actual IO memory accesses when pre-faulting?
+Hello everyone,
 
-*friendly ping*
+I tried building and installing with a newer kernel version 
+(v6.6.y-evl-rebase) and i get the same error during bootup. This time 
+however, there is an additional message:
+
+clocksource: Switched to clocksource tsc
+
+After which it hangs for a minute then the same output previously 
+described is printed. Am I doing something wrong? What additional 
+information do you need?
 
 Thanks,
-//richard
+Ivan F. Valerio
+
+> Hello all!
+> 
+> I have been trying to upgrade a desktop that used to have Xenomai 3 + 
+> IPIPE to the new EVL system. Compilation is successful but the kernel 
+> hangs during boot with an rcu error message followed by a stack dump:
+> 
+> rcu: unless rcu_preempt kthread gets sufficient CPU time, OOM is now 
+> expected behavior.
+> ...
+> Call Trace:
+> <TASK>
+> __schedule+0xd76/0x1950
+> ? sched_clock+0x9/0x10
+> ? sched_clock_local+0x17/0x90
+> ? inband_irq_save+0xe/Ux30
+> schedule+0x69/0x110
+> schedule_timeout+0x19a/8x2f0
+> ? del_timer_sync+0x50/0x50
+> rcu_gp_fqs_loop+0xf9/0x470
+> rcu_gp_kthread+0x15a/0x210
+> ? rcu_gp_init+0x640/0x640
+> kthread+0x12a/0x150
+> ? set_kthread_struct+0x50/0×50
+> ret_fron_fork+0x22/0x30
+> </TASK>
+> 
+> After some digging, the evl page references possible issue as "loosing 
+> the tick device" but don't know how to confirm whether that is the case 
+> here. This computer uses an AMD Phenom II X6 1035T processor and The 
+> kernel branch used from linux-evl repo is "v5.15.y-evl-rebase". Any 
+> suggestions on how to track down the issue?
+> 
+> Regards,
+> -Ivan F. Valerio
