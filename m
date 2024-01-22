@@ -1,119 +1,84 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C441C20
-	for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 13:53:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4BC34CB5D
+	for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 16:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705931638; cv=none; b=TIWudhaJhbBWRKdzOn7XHYMdtBrybj1B8qeKwNnK7GdKVehryEWbctUyGDaMxXFIXJfOw5fanpS3YH5OIzZX4mBCtfSlgsiRRFwleGsSU60GQxXw9zvmy48vEFX2yvh9qs6ty/O1/WfJCiam7raXWzqO0JntAgtGiKevDKYLRpY=
+	t=1705939306; cv=none; b=E/uh4UzNiSt1LTskmYsLTzNdHVL6eycxDXpvx30k8dNTdkqPFRO1QN7Ga6cW8O1uXHKGbNPkJHdmxXfLJe1obG89JDnOh3d1kIG/vEokhXOxQJQumTvUTObbF6i4fpXNA+uWDTd3EC9N9Gzo37zl2kBTB/aY+g+B/XGRQkONHKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705931638; c=relaxed/simple;
-	bh=UhzPs3qSANqqzuJzIqyNieTbY2Sg2YOCZCepsgvE9ck=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=GeR4raKZq5JgIp0+RfoWs62Ko+I/YxO3byYntOFhClmp5OUJjkS3eHK1cMp5fijlObX8ajLRgd1ZBlyjxMnCkqTy8w4ZDF2ltHE6hj29dpdvSzSMHiostEDM9TRTwu/B/DFTK0uBv2g1GYXGjmk8KkH2A7uX5/DZebzw4WxI3Hg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3392b045e0aso1617278f8f.2
-        for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 05:53:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705931635; x=1706536435;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0FSSHHHUuM6Z2ZKr5ZwdR2/hTG1EbpDXxqhNBMQQXFA=;
-        b=fNO5h9XTRz2fFJ5uixHL1qr52TUrvHVD4tlILN78X737ZCog/PfClS4spp5i8Szs4f
-         riYY9V4KQvqdMHM/XpP1I4TOsyaFR7YoZcUPJDmGp5gRC6/tmTWIiNCYep/bRUHGkjC2
-         MxiuIH9zOnKnHjGgDJWXZralO9+MFiU7BD+fBmy10/56vpa3F8yVIh4qL9a/IEJOwPYl
-         6Lm/R4tmxavBSNdHawxC2lQ9WDBvWH1IyDc+VTKJpXhRpsY+6jaNo6zmkrovIccwaEpg
-         xjfsBUdyw3KM6aXYvZwBFYdFbHz/5UmUn/tnc3T6uc5voRct69T3iwrHApgK3g68JiGq
-         lp1Q==
-X-Gm-Message-State: AOJu0YxbHL//i+5Q31olP9P2rrW28WMdIDK2xCeaTiQyNAp/uqF4sFg1
-	Z3RwnN0dYoZWYjDZoiSN6LfuV3mkrmBQgKvw0POIe7T5GmHz5K30wSY7nM2c9aE=
-X-Google-Smtp-Source: AGHT+IENVuMsKc7+B6gd8ySR4rcK105UPf0ai+q4qvYi7dGv8wLwrnM33CqyAQ/5GqcOInMTy23YyQ==
-X-Received: by 2002:a5d:4e0f:0:b0:337:c54a:1991 with SMTP id p15-20020a5d4e0f000000b00337c54a1991mr2522481wrt.77.1705931634680;
-        Mon, 22 Jan 2024 05:53:54 -0800 (PST)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id q5-20020adff505000000b00339214d70b5sm8724571wro.85.2024.01.22.05.53.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jan 2024 05:53:54 -0800 (PST)
-References: <55f09668-f73b-448e-8c4a-0d43c67af092@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [ibevl][PATCH] Install tests under libexec/evl
-Date: Mon, 22 Jan 2024 14:53:49 +0100
-In-reply-to: <55f09668-f73b-448e-8c4a-0d43c67af092@siemens.com>
-Message-ID: <87h6j5fp8u.fsf@xenomai.org>
+	s=arc-20240116; t=1705939306; c=relaxed/simple;
+	bh=wWGMgQnUH1ifWC9uhQ8a9DpGjQpjM/byZQVUpuoM8Yg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rqcUCRA2nd5a2r9nJLsxOO9Ulls8tSGfqWYkzN3ZdYszJZ6FJxz9dqlflgr0QFesOdb4bqBPY3q/grOr0Kgfc6Zeh/uGgofcougIQy8ED+PsTkFWCZZq2jzkNavO6P+/zEW/bGt3b6IutG4Jj+N9ftE15lq/CqMtLDpNt6i/w90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=dd3sRWpG; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="dd3sRWpG"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202401221601313fc00c00376b2284a7
+        for <xenomai@lists.linux.dev>;
+        Mon, 22 Jan 2024 17:01:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=clara.kowalsky@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=PQ4fS0H/Ipb+IMNCkd0jmGtWR+ExLfaw/DdGLuRBbs0=;
+ b=dd3sRWpGPac125K+DofCN+Ta7DNHrCdud56fsOSelRZCBL/y7TmHipptLDJitJ/DJhVD9/
+ rGe9ih/v0Qei62LyGLDOuwXsGgJMUzLk6WV9u5xb0m8XLEEMAK4/8/xyxzZAmRa4F0+m0E5W
+ HOT8tt7a5Or3LUeLKfScM3DY8VY5E=;
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
+To: xenomai@lists.linux.dev,
+	rpm@xenomai.org
+Cc: jan.kiszka@siemens.com,
+	Clara Kowalsky <clara.kowalsky@siemens.com>
+Subject: [PATCH v1 0/7] Add 32-bit compat support for arm64 to xenomai
+Date: Mon, 22 Jan 2024 17:00:58 +0100
+Message-Id: <20240122160105.2452024-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
+Hi all,
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+this series adds the 32-bit compat support for arm64 to xenomai 3. 
+It allows us to run arm(hf) applications on arm64 kernels.
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> /usr/[local/]tests is unconventional. Better move the test executables
-> under the evl directory.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  tests/meson.build | 6 +++---
->  utils/evl.c       | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/tests/meson.build b/tests/meson.build
-> index b831725..140b862 100644
-> --- a/tests/meson.build
-> +++ b/tests/meson.build
-> @@ -79,7 +79,7 @@ test_programs = [
->  foreach t : test_programs
->      x = executable(t, t + '.c',
->      install : true,
-> -    install_dir : 'tests',
-> +    install_dir : libexec_evl + '/tests',
->      dependencies : [ libtest_dep, libevl_dep ]
->  )
->  endforeach
-> @@ -93,7 +93,7 @@ foreach t : test_programs_with_m
->      x = executable(t, t + '.c',
->      c_args : '-Wno-array-bounds',
->      install : true,
-> -    install_dir : 'tests',
-> +    install_dir : libexec_evl + '/tests',
->      dependencies : [ libtest_dep, libevl_dep, m_dep ]
->  )
->  endforeach
-> @@ -106,7 +106,7 @@ atomic_dep = cc.find_library('atomic', required : true)
->  foreach t : test_programs_with_atomic
->      x = executable(t, t + '.c',
->      install : true,
-> -    install_dir : 'tests',
-> +    install_dir : libexec_evl + '/tests',
->      dependencies : [ libtest_dep, libevl_dep, atomic_dep ]
->  )
->  endforeach
-> diff --git a/utils/evl.c b/utils/evl.c
-> index d14fce4..eed0d96 100644
-> --- a/utils/evl.c
-> +++ b/utils/evl.c
-> @@ -124,7 +124,7 @@ int main(int argc, char *const argv[])
->  	if (ret < 0)
->  		error(1, ENOMEM, "%s", arg0);
->  
-> -	testdir = find_install_dir(arg0, "tests");
-> +	testdir = find_install_dir(arg0, LIBEXECDIR "/evl/tests");
->  
->  	setenv("EVL_CMDDIR", cmddir, 1);
->  	setenv("EVL_TESTDIR", testdir, 1);
+Best regards,
+Clara Kowalsky
 
-Merged, thanks.
+Clara Kowalsky (7):
+  compat support: cobalt: Move 32-bit compat files to generic
+  compat support: cobalt/arm: Refactor registers
+  compat support: cobalt/arm64: Add compat support and clean-up
+  compat support: cobalt/arm64: Update ABI revision level
+  compat support: cobalt/posix/syscall: Use syscall_get_arguments()
+  compat support: lib/cobalt: Fix VFP detection for arm on arm64
+  compat support: cobalt/arm64: Enable compat support for arm64
+
+ .../arch/arm/include/asm/xenomai/syscall.h    |   4 +-
+ .../arch/arm/include/asm/xenomai/syscall32.h  |   8 +-
+ kernel/cobalt/arch/arm64/Kconfig              |   2 +-
+ .../arch/arm64/include/asm/xenomai/syscall.h  |  10 +-
+ .../arm64/include/asm/xenomai/syscall32.h     |  12 ---
+ .../arm64/include/asm/xenomai/uapi/features.h |   2 +-
+ .../arch/x86/include/asm/xenomai/syscall32.h  | 102 ------------------
+ .../asm-generic}/xenomai/syscall32-table.h    |   6 +-
+ .../include/asm-generic/xenomai/syscall32.h   |  78 +++++++++++++-
+ kernel/cobalt/posix/syscall.c                 |  16 +--
+ kernel/cobalt/posix/syscall.h                 |   2 +-
+ kernel/cobalt/trace/cobalt-posix.h            |   4 +-
+ lib/cobalt/arch/arm/features.c                |   5 +
+ .../arch/arm/include/asm/xenomai/syscall.h    |  65 ++++++-----
+ 14 files changed, 143 insertions(+), 173 deletions(-)
+ delete mode 100644 kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h
+ delete mode 100644 kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+ rename kernel/cobalt/{arch/x86/include/asm => include/asm-generic}/xenomai/syscall32-table.h (94%)
 
 -- 
-Philippe.
+2.39.2
+
