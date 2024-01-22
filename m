@@ -1,51 +1,51 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3EA31C20
-	for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 13:53:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C441C20
+	for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 13:53:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705931630; cv=none; b=pYfRb0u31Of8pnod245TVSiQMwBFWtEnhkGeieQB7Zm+W3+j0PebVB8A6GmlVrSSiXTXybPiH3HZWhQ9hawHZ9rz4hdmJo58PwwvtOMcxGs1XRbD18LwXdBFu9xlit24O9H3YPtn/lbS6R2uYwNDt7eZsC9VD0Q2l/Tq+SIzOeg=
+	t=1705931638; cv=none; b=TIWudhaJhbBWRKdzOn7XHYMdtBrybj1B8qeKwNnK7GdKVehryEWbctUyGDaMxXFIXJfOw5fanpS3YH5OIzZX4mBCtfSlgsiRRFwleGsSU60GQxXw9zvmy48vEFX2yvh9qs6ty/O1/WfJCiam7raXWzqO0JntAgtGiKevDKYLRpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705931630; c=relaxed/simple;
-	bh=Gr7x0JEeLV6LsgX9Fs5Rb19Exxfestpu31uHP2C9tNo=;
+	s=arc-20240116; t=1705931638; c=relaxed/simple;
+	bh=UhzPs3qSANqqzuJzIqyNieTbY2Sg2YOCZCepsgvE9ck=;
 	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=Z7a3KWZfgm82l7EZok4Z6VIDkI385QBbbVewrrzY+dES+/8EAVnJpyAdLTkIuvMIa7lH5jM21HNwfggqzi6bkJZUA96rFxYuM2pvo+CFrh7g/uzHvUY6F9C6aLLlxv+dQNtUwdPpBLVWp444F9CeZm6B70ssQTv2X/3tShrcSDM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.48
+	 MIME-Version:Content-Type; b=GeR4raKZq5JgIp0+RfoWs62Ko+I/YxO3byYntOFhClmp5OUJjkS3eHK1cMp5fijlObX8ajLRgd1ZBlyjxMnCkqTy8w4ZDF2ltHE6hj29dpdvSzSMHiostEDM9TRTwu/B/DFTK0uBv2g1GYXGjmk8KkH2A7uX5/DZebzw4WxI3Hg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3367a304091so3537409f8f.3
-        for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 05:53:48 -0800 (PST)
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3392b045e0aso1617278f8f.2
+        for <xenomai@lists.linux.dev>; Mon, 22 Jan 2024 05:53:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705931627; x=1706536427;
+        d=1e100.net; s=20230601; t=1705931635; x=1706536435;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KmGtZqb/jSolSRvUWTbG9to3Xs3ftpFNnEDZXoOsMi8=;
-        b=M3ieNresNPkThC2CARwJzoP1sXA7bAc370Urjr5rTNbItCWwGuRz//MBwhH+UVzHc4
-         vUG0vwHXdMANg0h06K8MWWV/3QFP9JExXtJrODC1/v1wijGhw/kA3H9bwfZKrtw40RKW
-         AX8UjisuRKvGeF2TYmQzn2yYC0YKHESppz840z1y0c48ijOMLxYN3nm0zGXHPH0Dwy2u
-         IsMoJ/fdtOR6p+/LYkRRiimSkmCSBbHvaXvuryvjEkR+LX20410vYCTjKWBmn+03Sspn
-         QpDe5Rg+rruMfmKRNoJ4ksDpkq1QGjxbW8kOvJL1ZAC/mGzFeu6M1InYDlBKnlf5d7nh
-         9LIA==
-X-Gm-Message-State: AOJu0Yw/3oCRtbaFERqAW4ESJgeEnzjE7d0c3zqBnsGhg60jz3T6aGCA
-	UkmtsoNgrjbFFB1HHKiqFT34YQPgOHvUhDp3dmRtqZ1prEGJzkvKhjmyq5soLlU=
-X-Google-Smtp-Source: AGHT+IEq5ctpvRcO7IyeBDiA7HVsdyCv6f0B79Evc6zz5/Aco+xXYtE9M5nODHZjz3/AxQItirVAjA==
-X-Received: by 2002:adf:fd07:0:b0:333:3983:409b with SMTP id e7-20020adffd07000000b003333983409bmr1698536wrr.117.1705931626795;
-        Mon, 22 Jan 2024 05:53:46 -0800 (PST)
+        bh=0FSSHHHUuM6Z2ZKr5ZwdR2/hTG1EbpDXxqhNBMQQXFA=;
+        b=fNO5h9XTRz2fFJ5uixHL1qr52TUrvHVD4tlILN78X737ZCog/PfClS4spp5i8Szs4f
+         riYY9V4KQvqdMHM/XpP1I4TOsyaFR7YoZcUPJDmGp5gRC6/tmTWIiNCYep/bRUHGkjC2
+         MxiuIH9zOnKnHjGgDJWXZralO9+MFiU7BD+fBmy10/56vpa3F8yVIh4qL9a/IEJOwPYl
+         6Lm/R4tmxavBSNdHawxC2lQ9WDBvWH1IyDc+VTKJpXhRpsY+6jaNo6zmkrovIccwaEpg
+         xjfsBUdyw3KM6aXYvZwBFYdFbHz/5UmUn/tnc3T6uc5voRct69T3iwrHApgK3g68JiGq
+         lp1Q==
+X-Gm-Message-State: AOJu0YxbHL//i+5Q31olP9P2rrW28WMdIDK2xCeaTiQyNAp/uqF4sFg1
+	Z3RwnN0dYoZWYjDZoiSN6LfuV3mkrmBQgKvw0POIe7T5GmHz5K30wSY7nM2c9aE=
+X-Google-Smtp-Source: AGHT+IENVuMsKc7+B6gd8ySR4rcK105UPf0ai+q4qvYi7dGv8wLwrnM33CqyAQ/5GqcOInMTy23YyQ==
+X-Received: by 2002:a5d:4e0f:0:b0:337:c54a:1991 with SMTP id p15-20020a5d4e0f000000b00337c54a1991mr2522481wrt.77.1705931634680;
+        Mon, 22 Jan 2024 05:53:54 -0800 (PST)
 Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id o17-20020a5d4a91000000b003392206c808sm8498412wrq.105.2024.01.22.05.53.46
+        by smtp.gmail.com with ESMTPSA id q5-20020adff505000000b00339214d70b5sm8724571wro.85.2024.01.22.05.53.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jan 2024 05:53:46 -0800 (PST)
-References: <cafa3048-07bb-4a72-a7ce-3de961b971f7@siemens.com>
+        Mon, 22 Jan 2024 05:53:54 -0800 (PST)
+References: <55f09668-f73b-448e-8c4a-0d43c67af092@siemens.com>
 User-agent: mu4e 1.10.5; emacs 29.1
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [libevl][PATCH] utils/evl: Respect custom libexecdir
-Date: Mon, 22 Jan 2024 14:53:41 +0100
-In-reply-to: <cafa3048-07bb-4a72-a7ce-3de961b971f7@siemens.com>
-Message-ID: <87le8hfp92.fsf@xenomai.org>
+Subject: Re: [ibevl][PATCH] Install tests under libexec/evl
+Date: Mon, 22 Jan 2024 14:53:49 +0100
+In-reply-to: <55f09668-f73b-448e-8c4a-0d43c67af092@siemens.com>
+Message-ID: <87h6j5fp8u.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -59,40 +59,59 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> This fixes execution of evl on Debian which uses multiarch-compatible
-> paths for libexecdir.
+> /usr/[local/]tests is unconventional. Better move the test executables
+> under the evl directory.
 >
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
+>  tests/meson.build | 6 +++---
 >  utils/evl.c       | 2 +-
->  utils/meson.build | 1 +
->  2 files changed, 2 insertions(+), 1 deletion(-)
+>  2 files changed, 4 insertions(+), 4 deletions(-)
 >
+> diff --git a/tests/meson.build b/tests/meson.build
+> index b831725..140b862 100644
+> --- a/tests/meson.build
+> +++ b/tests/meson.build
+> @@ -79,7 +79,7 @@ test_programs = [
+>  foreach t : test_programs
+>      x = executable(t, t + '.c',
+>      install : true,
+> -    install_dir : 'tests',
+> +    install_dir : libexec_evl + '/tests',
+>      dependencies : [ libtest_dep, libevl_dep ]
+>  )
+>  endforeach
+> @@ -93,7 +93,7 @@ foreach t : test_programs_with_m
+>      x = executable(t, t + '.c',
+>      c_args : '-Wno-array-bounds',
+>      install : true,
+> -    install_dir : 'tests',
+> +    install_dir : libexec_evl + '/tests',
+>      dependencies : [ libtest_dep, libevl_dep, m_dep ]
+>  )
+>  endforeach
+> @@ -106,7 +106,7 @@ atomic_dep = cc.find_library('atomic', required : true)
+>  foreach t : test_programs_with_atomic
+>      x = executable(t, t + '.c',
+>      install : true,
+> -    install_dir : 'tests',
+> +    install_dir : libexec_evl + '/tests',
+>      dependencies : [ libtest_dep, libevl_dep, atomic_dep ]
+>  )
+>  endforeach
 > diff --git a/utils/evl.c b/utils/evl.c
-> index bb6aeb7..d14fce4 100644
+> index d14fce4..eed0d96 100644
 > --- a/utils/evl.c
 > +++ b/utils/evl.c
-> @@ -118,7 +118,7 @@ int main(int argc, char *const argv[])
+> @@ -124,7 +124,7 @@ int main(int argc, char *const argv[])
+>  	if (ret < 0)
 >  		error(1, ENOMEM, "%s", arg0);
 >  
->  	if (cmddir == NULL)
-> -		cmddir = find_install_dir(arg0, "libexec/evl");
-> +		cmddir = find_install_dir(arg0, LIBEXECDIR "/evl");
+> -	testdir = find_install_dir(arg0, "tests");
+> +	testdir = find_install_dir(arg0, LIBEXECDIR "/evl/tests");
 >  
->  	ret = asprintf(&searchpath, "%s:%s", getenv("PATH"), cmddir);
->  	if (ret < 0)
-> diff --git a/utils/meson.build b/utils/meson.build
-> index a34ff19..59d818a 100644
-> --- a/utils/meson.build
-> +++ b/utils/meson.build
-> @@ -2,6 +2,7 @@
->  
->  executable('evl',
->      'evl.c',
-> +    c_args: [ '-DLIBEXECDIR="' + get_option('libexecdir') + '"' ],
->      install: true,
->      dependencies: libevl_dep
->  )
+>  	setenv("EVL_CMDDIR", cmddir, 1);
+>  	setenv("EVL_TESTDIR", testdir, 1);
 
 Merged, thanks.
 
