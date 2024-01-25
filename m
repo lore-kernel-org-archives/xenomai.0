@@ -1,38 +1,38 @@
 Received: from mout.web.de (mout.web.de [212.227.15.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7ED1CF95
-	for <xenomai@lists.linux.dev>; Thu, 25 Jan 2024 09:38:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C81D1CAA9
+	for <xenomai@lists.linux.dev>; Thu, 25 Jan 2024 09:41:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706175534; cv=none; b=dNN5YWh+tl2VfiPgIG1KJct8tgJWzbc3emtNLw/NefuisdoUkPhj2+lr88iF3i1e1ZAU5nA66OXk7Q/LdkUPlFZBpeH+ZX0IgYHXawaCw4/NWzr5/Uavku3ZAQmOZxmXp3sIMuIQcpVBCvCVO6mKwZ+WRfm3fplQ7dht0lelmKk=
+	t=1706175712; cv=none; b=fBGYQXXsdtcBM57206A6W3RppZT+G5BksbjPVHnuiKD8r6Eyaqv3h1pmq9AZQ/2BufPVwbqzuepXtTOh2f6XrKdJQ1lNZtj9MqWH9+r7+sttiiYxB3U9I1SYE79tCcktRKYYpan/sM4B67ObcepYgQxtNwNwRoGL7xVHHIkNkh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706175534; c=relaxed/simple;
-	bh=FbzhhNmUZUxamYb30CGpQ4koHNrNqplfaiLYSIco8ic=;
+	s=arc-20240116; t=1706175712; c=relaxed/simple;
+	bh=NlhFb72o3WRWBdOYFx0gmaIan3UN/qCmhKvW54XOrsU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=holFuWzhwlPqS2q5I1Q6N3MpWm7e2Fi86qlBjQJ6V1s+n0tWd5mDeblRBbORpc2hFvx3u05fbErZBTC5sXOQcQjplxMpUMkfurLurozx/uz7LHRrSMqFigPCTkhzN36QT1gzwbdEGiBAThOC/DVr4hLE+1XCNt5BPlSm6yfoKIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b=j/bXikBh; arc=none smtp.client-ip=212.227.15.14
+	 In-Reply-To:Content-Type; b=iZJ0r9rCoCZQK4GDyl3kx7ZKKyTGFzw6zR44yOtSgg6Q0lDjLK0p3dQv0ZIbeJsOwttaJCiJyMWuPtJ7oYjNMcKabEgBV4XpW2YqNhcdMxeYbJ7vFI+tIrxld22Fr2PD8Az8zjMA/RbNgNYr5Yelb5CwS4j/UilziCwRWii6I+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b=I34RaFl0; arc=none smtp.client-ip=212.227.15.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b="j/bXikBh"
+	dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b="I34RaFl0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1706175518; x=1706780318; i=jan.kiszka@web.de;
-	bh=FbzhhNmUZUxamYb30CGpQ4koHNrNqplfaiLYSIco8ic=;
+	t=1706175708; x=1706780508; i=jan.kiszka@web.de;
+	bh=NlhFb72o3WRWBdOYFx0gmaIan3UN/qCmhKvW54XOrsU=;
 	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
 	 In-Reply-To;
-	b=j/bXikBh4uyE6pmQa0pzKBQj29eO0qU1U5PMERNe+gZUXomfsP9J9DBR1LKINIfw
-	 17Vq2NDhOXh10zNm2akcWAJeieWezV9zY1c8ganKQLmU2jnj2AZybMbrCTlB08TQI
-	 ZpcKwaE8k0BGHHZZFXftM5rUoZyvZOZJYrQncavX5xGDsr+oIBtAlq94qiJojBJ7q
-	 YpXG/W7xKy5BhceQFv9XvTKbligH/s40xVAkpvEOqpWzui3e0TRRxJ2YakyvK0m4+
-	 tyhKwQ1TDsn8CLqCnvrRpYrxEP+Tt5tjcZdqAhDjLU0m5CFWAPs+3hoKMpCih6MQd
-	 aim0Zoz5kusOqDs8Qg==
+	b=I34RaFl0sxzcQzt2YMPMwWfxM1hw9RtymszvHpgSTfThVM8xnoEsLB5NjVEnYSG6
+	 RkzFxrt+B+FAMsLfz1FlaouZukHztvoMuDWw1yc25bnVWb9QhXzFBez2ysueLQCtz
+	 xFoNndTo1FeNhRF4ihmJeB79ArVp59ffNnMTISF80TvJMMs2msSuTA2bxGRi3/7Uq
+	 5welkqfReFxukKf38XgKU/DCXWFGP+jv2dYSspdlIravCpf8esvKju8XcN57OEjLO
+	 AhwzgY4cuBT2lJ/Ok7MI5kosgTG3ao1nhWvaEuL3NVUStModWwPwo/nORKFcAYQbM
+	 aNwsS4HK7HR5eftGVA==
 X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.10.10] ([46.128.89.130]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MEUWM-1rHMfs1aiA-00Fwzb; Thu, 25
- Jan 2024 10:38:38 +0100
-Message-ID: <eeca8d27-c3b7-4a89-8bbb-55a5a188a287@web.de>
-Date: Thu, 25 Jan 2024 10:38:37 +0100
+Received: from [192.168.10.10] ([46.128.89.130]) by smtp.web.de (mrweb005
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mq182-1qg7693y7e-00nQVp; Thu, 25
+ Jan 2024 10:41:48 +0100
+Message-ID: <d3fe414e-b82a-47c3-89c9-0b5ae1a4fc78@web.de>
+Date: Thu, 25 Jan 2024 10:41:46 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,15 +40,15 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: latency: pthread_create(latency): Operation not permitted
+Subject: Re: Troubleshooting x86_64 evl bootup
 Content-Language: en-US
-To: Florian Bezdeka <florian.bezdeka@siemens.com>,
- mars_liu2023 <mars_liu2023@163.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-References: <789c8c7f.87f2.18d1bd6752c.Coremail.mars_liu2023@163.com>
- <12402f4121aca76943a0dfadd02149f074aab801.camel@siemens.com>
- <5da66ea7.23e4.18d2c1eddae.Coremail.mars_liu2023@163.com>
- <9933892442fcf9195f1ac75e23b9fee46b830ef2.camel@siemens.com>
+To: ivan@rtxi.org
+Cc: xenomai@lists.linux.dev
+References: <37d6d286847eb0126c938a1c5826ed13@rtxi.org>
+ <34ba04db1b45f6c546a2195f0a8e0ad3@rtxi.org>
+ <e70b0272-8c4a-479e-b7f9-2dbfc6771389@siemens.com>
+ <ce6d6d1504bb7d589daa14d03fd81d76@rtxi.org>
+ <4e81f900746c1d6580e4d2711782cd25@rtxi.org>
 From: Jan Kiszka <jan.kiszka@web.de>
 Autocrypt: addr=jan.kiszka@web.de; keydata=
  xsDhBEq0i8QRBAD2wOxlC9m/8t/vqjm1U9yQCT6OJ2Wbv/qys9DYM0CvcOTDMWQwmV1/VsZj
@@ -73,73 +73,50 @@ Autocrypt: addr=jan.kiszka@web.de; keydata=
  oNysBGEuEm5GCcn0VmGtQpSYnR5cVm5b2yPz4bIuFOSuZUo/l7vitdY0iy0/wvKbBC+NK8JJ
  BBgRAgAJBQJKtIvEAhsMAAoJEIrUrG965ecULvAAoKGvxs5T3IhyQT8I8sMsyAvCE4wHAJ46
  S16yab+OxNkvOeoOEX0EnHVHaA==
-In-Reply-To: <9933892442fcf9195f1ac75e23b9fee46b830ef2.camel@siemens.com>
+In-Reply-To: <4e81f900746c1d6580e4d2711782cd25@rtxi.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:vurRJoKg6B9Yl0rMK2IGGQP7RWwzu7OAl1YUkSmTfLc10W4TQC5
- KkFC1LNqI8YN4RXdFeMMHLHEn398SnSeDT3kv4yu49/UGQvZCriV5Bf9Qi4lX09sCyeI7i5
- A7EvWtFYbCs9nSbORiUJfF55swD28Y3PoAysl07nCp7FC1j18m1tvbYczF7gqFjUKtndfb6
- ljb+4xSATf1FpwBTe/WEw==
+X-Provags-ID: V03:K1:pLLicU+XjVujxPysO6/6/0ip1V4X+mFpUbJ2ouq+mNhHS41I/en
+ zbaAKO6xczcxLXpiP+I03FQsICsc4dhdINNthapt+l70VRnL/Ise3u4h/kJT9beH0GW9ezv
+ gIV987FdykrAuq4S0ZrrNw/ZSQwOmNJf1nPwkpNyLv933c+3Gef6UsKNMLcvVFiu0KVYr4x
+ swQ0D7UnPXiQplSsO2p8A==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:h6hhHS0eFVY=;HSStzvaFbNw7ZH/GkokWGriG8V/
- 9dXy5pDEGOd4310jME6PSzHnJSuVjOyiTlS4QL785bg/KkQlW9vCLjSOnCXVSZin1fKcG/RVb
- nEPClWhna1x1tuTPde/sIwPId2qZSUZBlZ736cfbhttnnBFEPTP0bL4i1i0K7iheg5hkmHVXP
- 25HyaJFBQ/Kj+X0Y3BwL1opG4eOewHfRCL0gVVb0KEg+SkH8/H+QHp1U/ZiFRZ7uYkCSTqJhK
- 3OFWi1k+iEPBbIcv1iVyKl2OZRuET8/Av2m3D2Bhgf6LSWa0NZ+pksCrFBP6rpMH1KdBoSiBF
- FzZHcCV6njlrxdILfG80tUzkMXHqCT08FgKabV1nJugTESXA/Yb26yHNPdq3nrr5nNbMhlHf9
- UrDt3bXo5RmoO/yGi9mcsifPLqFXAA44SQ3/LTEnrU/ec3UwAoxkvGh5wvmb8MrID+o17q48l
- SED3t4ulyspYL1varmvyaK5GitWpd3DnvqxJ37D/jbcKr81V35maOvjpt6eZUvZgoQtNHAT5y
- lH4WpckyP9OBpZwDCo+uTEepp1Zy/Mi3RYs0PTg00awSd7+O8Z4OagBn4WqzNA5/RYeeXIjx6
- xI0k6oTXds6X5zbt6QBGoP+RAEgDhSZAVCs7ZH6DXMhM+wS6gL/Dw0sAdj6PKjdeHPL1d6BoR
- aYuTr3YxVJAcBy0xtI59CRIyNi39rpQZZiLJwQw7CeFfUtMhgp4dVGkIOPfuslwUFC5vlCwqO
- O/mJ9XVv5OU6g2xoT+U6/LyPRlMOgC3QDOIEn44omWY2wraILknB4uKJGwzvs0QX/gKgz5goe
- Lramm62fTOdNpL/xQhLRgSVqTCtiuc6LwL/PjkUW+DPH94PMJhiZFtWOtHQdIPubt9wbu4+ge
- 7kuZfhwCHtLfVI/8gza45Cl5I1c9NhJefjZmyXPF1dzfABQHirBSFW9ymKaplqVxT9BnhoTth
- icp/RsTtNVgjrVqawNQJ6jphAgM=
+UI-OutboundReport: notjunk:1;M01:P0:Ef+tGNd0G0o=;znBS72nUZXHtK1b8kpt+RYf/ZxX
+ bx0TovvkSltibNss298uo0TnqIjlCYi92sOInak5Jke5GrhbSO9AsrSPhv7lk/192kLZa7rGV
+ H0Vngc4Y7rGu5GhemehESYcGICZ/g029prC5Ce9iUP8AT/toCMl6mWM2LMVvsCk+bSfV/iMmH
+ AWiohYZgZ0kERmeBygx6eA44Nyn9vV7NJPGD2rPVeRpWpbB+7jb0BJPnt0aar+x27YNH7XEU7
+ D3YeTg+US2E/3BPqwoBYV3rJPGdTw0QwHb+AAhD3km02LsK8hCDOC2tUYixgV+uBrGU2rGizX
+ UNV5KYPkVhKn6qgeZjYM7O6vSkWsflOhZkLw/BIhNEtk1J1QWdLDv8SxL45Rj+rDMiykfDJX5
+ u4eUz3/172CNDID28oOg99/gKW3bEOgFluNqYmYYT+S2zdbxy56nf+mImjYAHpG7VSfnpDfwA
+ m7qsUHym38wrqh+4UIQTpp44XY9s9d9bjppQge9jNEMxGHhyuZlXPzojPMQ+/09lMSzTiOqYT
+ 1v5enz5VIEEGxwwq9dwwC0aAtyOGNkYoc7z5Udg7uVqvVpEARVQY+BNwVg7I77+Nw0ph71TOy
+ EOVz51iHxkqKpQu8g2r+an3iKIy+29XqAzOeVn2nymK6o+40ap0tMJHBJlapC426TqPowXP04
+ dh31AvwkyHKb2WwAABYqMQd3TzuBY8/sn7zcML0fGeVlkmG4Vc/X8vNvwSg5XtO1pIkz10LLC
+ WN2rcNcVhCytOgAVZaKK/8/53rPApRysh7gmHCczUCqqbyswBcW3EG661C3AuZSPAVFY1eHAF
+ vDDFnLU5Pc6YvEmTD2Hd3/3b7UOWbdgijrxThCM3WL/VRBcZdbZRr0Jk6ex3yg9MFH/5rLX4j
+ Klfg3ts77o6c+PKFmoy4lWS5tTUQFJfLxPENZpx7+xOLuCzjclIwulZ/QTWOJA7PtRymUvsRY
+ hFuimg==
 
-On 24.01.24 17:39, Florian Bezdeka wrote:
-> On Sun, 2024-01-21 at 21:03 +0800, mars_liu2023 wrote:
->>
->> To=C2=A0Florian
->> This error is running the latency=C2=A0utility=C2=A0outside the contain=
-er.
->> I installed the containerd.io package through the dpkg -i command =EF=
-=BC=8Cthen running latency utility=C2=A0 outside the container and this er=
-ror will occur.
->>
+On 22.01.24 20:40, ivan@rtxi.org wrote:
+> Hello,
 >
-> I tried to reproduce that here in three different combinations:
+> I used the config from xenomai-images suggested with EVL enabled and
+> that reached the login screen! It is obvious from this that some
+> configuration or module is the problem, but I don't know what it could b=
+e.
 >
-> a)
-> - docker 20.10.24+dfsg1 (docker.io package from Debian 12)
-> - Xenomai 3.2.4
-> - Dovetail/Kernel 5.10.
+> What should I do next? The only thing I can think of is slowly start
+> enabling any drivers I need until I hit a problem, but that seems like a
+> crude way to find the problem. Any suggestions?
 >
-> b)
-> - Dovetail/Kernel 6.1 instead of 5.10
->
-> c)
-> - Xenomai 3.3-dev (next branch) instead of stable
-> - Dovetail/Kernel 6.6 instead of 6.1/5.10
->
-> a) is running fine here
-> b) showed the problem
->    /usr/lib/xenomai/testsuite/latency: pthread_create(latency): Operatio=
-n not permitted
-> c) Same result as b)
->
-> Disabling the systemd units docker, docker.socket and containerd
-> followed by a reboot "solves" this problem. I have no idea what's going
-> on, but I guess it's something related to cgroups or any resource limit
-> that is changed by one of the daemons on startup.
->
-> Further investigations necessary, unclear if I will look into that
-> soon.
 
-I vaguely recall such an issue... Once you run a docker runtime, there
-is a policy change applied that even prevents normal cyclictest to be
-started under preempt-rt outside of any container. I don't recall the
-needed changes to make that work again ATM.
+Finding the needed configs switches to make something work can be
+tedious work. You need to diff the configs, first focus on "suspicious"
+switches and throw them on one of the configs to see if they
+resolve/create the issue. If there is no obvious switch, copy in have of
+the remaining delta, bisecting to the triggering switch. Note that there
+might be multiple switches needed in case of dependencies of multiple
+features missing.
 
 Jan
 
