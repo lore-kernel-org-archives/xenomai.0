@@ -1,146 +1,133 @@
-Received: from redirect.mail.gandi.net (relay13.mail.gandi.net [217.70.178.233])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C6D54BCC
-	for <xenomai@lists.linux.dev>; Mon, 29 Jan 2024 08:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.233
+Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.219])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 992D457337
+	for <xenomai@lists.linux.dev>; Wed, 31 Jan 2024 07:25:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.50.219
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706518003; cv=none; b=SSHrPynCNunjVFoLoXJISnI6ys8akL0bZCnFZzq1Qou+KtcV4xeGL9BdigJqqRwVFQJi1/3HoghQJB1Lxk1sy+oTRT7hx/wRMd9sqO3c5VoyLuIMeROFVhrEqtPoROiuXB1drh6FOEJqiP5GqBELUOKGxzSv75+Bbxb0MkFNBgc=
+	t=1706685952; cv=none; b=MxEsRwJod7T6qhcVLtXACAuPj6cIhelwVHgPBc3G1MzbA55dU7jzstoi6uKyqgiiuwmY8UAI0mnziYoGmyLeS5tZXOpzNAVeIuCe13xf0BlOe1hanN6jSoeshDxETxbOMiO/ilTU/9layzOTCVwbLQFXLEe/HMQkEs/Di+0lDv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706518003; c=relaxed/simple;
-	bh=FFac8jsbgTIb1DFORXNuIA7n8HkS+p7CPCuGsMwK4c4=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=trUyUR8W3AjsGXHb0SYp5Ky9IocKMWzrRglBH49E5Tf7xSyNEJXk4pntu2MXFOP4+k3NN4A92l2+03KymYMJRN5dqHI8qrHa0dIFarwVExSjEGE5Q0VirNDe0nIs2/svTdM+jZIKpTVYUaRcEG+/ujsqMBaIsY0/Qqm0LT2sBCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; arc=none smtp.client-ip=217.70.178.233
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay13.mail.gandi.net (Postfix) with ESMTPS id CCA9780005
-	for <xenomai@lists.linux.dev>; Mon, 29 Jan 2024 08:46:37 +0000 (UTC)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id E6E64941598
-	for <xenomai@xenomai.org>; Mon, 29 Jan 2024 08:46:36 +0000 (UTC)
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40e76109cdeso35806335e9.0
-        for <xenomai@xenomai.org>; Mon, 29 Jan 2024 00:46:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706517996; x=1707122796;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=JS3qyDOitexRhq1w8WiMaOCsW3TJu1lFbMu2zhWDuJA=;
-        b=sYfetlB9lkNP+U88JC/GbwmaOvp8rybNQXKd+bWEzdUyLOiLAqOTPeJIVnkX0bzY8o
-         iFCEi/rnSlMjHeYcVQ/2TQScygTMX+F9v4YZOX4HkAf+WY9PPGsgHE6+OHzN+5IcYh+d
-         HE9NgCCOl7e2UOkl/LzrQSXjuUdCUznIeQeHWa3JDzUff1Xk/zvH8bj09/nIsNFge5Th
-         1YlhWlJKT5rDIUVd7NKWihIwJZuY8dDaxiNfk3B6O7Qgr5dZ7jkpbLrDrhv4diV2r6iV
-         7WD3uwzgEkzdOmmIzrcx0fIVVcvvwAcIARquKPueqDG2O4AfypoaOS72IauLPxLWeO1e
-         jccw==
-X-Gm-Message-State: AOJu0YxyaJrW4ian4DLuXmAg2wUkcRw7TF6wssLDhsw4igTnvDgmWTmw
-	EaFhpCU10B1Kz4kgzNVAEXnlxU8cxEpWLBFY6kOCa7warzq3wdMymbkTAOlG7qM=
-X-Google-Smtp-Source: AGHT+IFuEVPoCfi1mhrUGTXiz9vmpgTdgKJ/zl/tg7ufVx9G0+wnJkrxuyBflwAzXjr3FUUjeaUcJw==
-X-Received: by 2002:a05:600c:5123:b0:40d:484e:935 with SMTP id o35-20020a05600c512300b0040d484e0935mr4446323wms.12.1706517996271;
-        Mon, 29 Jan 2024 00:46:36 -0800 (PST)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id m28-20020a05600c3b1c00b0040ecea3c4dbsm13163647wms.46.2024.01.29.00.46.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jan 2024 00:46:35 -0800 (PST)
-References: <867aed54-563a-4c06-b750-4a7727e6e4c0@163.com>
- <103fdf7d-d3c8-45a9-b25d-283c9af400eb@siemens.com>
- <77c3e1fd-dab9-4b7c-b4f7-67c38dfc37bc@siemens.com>
- <79e83ee2-7406-43c1-9a71-e79cb2cbd127@163.com>
- <d799980b-fbfc-467b-87b7-5a4fbc6ddf50@web.de>
-User-agent: mu4e 1.10.5; emacs 29.1
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: linz <powertree@163.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Subject: Re: calling __get_cpu_fpsimd_context twice in a row when
- kernel_neon_begin running
-Date: Mon, 29 Jan 2024 09:42:38 +0100
-In-reply-to: <d799980b-fbfc-467b-87b7-5a4fbc6ddf50@web.de>
-Message-ID: <87ttmwo7by.fsf@xenomai.org>
+	s=arc-20240116; t=1706685952; c=relaxed/simple;
+	bh=PHIcwy6gKMlKq3JhtSoAwGCQh3LMMyTh7ot3J3G5uMU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=MFPmYkbvCDd2KRnhhfJXVFNTdD0PaPIhFWoffx4A5Rve5nqSV9HYeGYJIc3ejw41XTKhcOtTrHigfBhg4yLvCk5ZBdoEkDLn09NscYjdDQnIq/vBxW/kfK9uHyd1E7EpQ11l6b+GuwtY5RaoRhPCAbqHzFgqtmQTwu0LhBG+PYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=S5Fkf3cv reason="signature verification failed"; arc=none smtp.client-ip=45.254.50.219
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="S5Fkf3cv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=nkQY5+B0Sx36QSqTDKyMtl8KimR6qFpgiAWpqLNE3XY=; b=S
+	5Fkf3cvimf4y2r4ALXooWVbHlsFT87H+XkQXiUmGkxgO3U6P1iNuyy7bMz/c2vba
+	62vIpMlLPCiu1zqv/Yg3/XFzpSD+1NwC7lcne4qClJK7od67JOUtYI+4MYpWBZr5
+	VWtZvoYgO6WfJwOL05/mvOQ7QnpgGPTc+oQWi6u4YM=
+Received: from jerryjun123$163.com ( [103.161.254.5] ) by
+ ajax-webmail-wmsvr-40-101 (Coremail) ; Wed, 31 Jan 2024 15:25:43 +0800
+ (CST)
+Date: Wed, 31 Jan 2024 15:25:43 +0800 (CST)
+From: JerryJun  <jerryjun123@163.com>
+To: "Jan Kiszka" <jan.kiszka@web.de>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re:Re: NX-protected page
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2024 www.mailtech.cn 163com
+In-Reply-To: <87ca0f83-bb2f-49fd-8e30-8873778cd8a9@web.de>
+References: <3ce13f2b.183be.18d2f264758.Coremail.jerryjun123@163.com>
+ <87ca0f83-bb2f-49fd-8e30-8873778cd8a9@web.de>
+X-NTES-SC: AL_Qu2bBPqTukEv5SmeZekfm0sSheY2WcK4uf0l1YJUOp9wjCvpxTAFdl9jFmHT7tiSDDytkzi3aAJqy/heYIlgba4U4Y+WBRJNSFu295AVf0EhwQ==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Authentication-Results: spool.mail.gandi.net;
-	dkim=none;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of philippegerum@gmail.com designates 209.85.128.44 as permitted sender) smtp.mailfrom=philippegerum@gmail.com
+Message-ID: <6bec8d20.61c9.18d5e68d09d.Coremail.jerryjun123@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:_____wD3n1D49blltRuhAA--.28954W
+X-CM-SenderInfo: xmhu25pmxqijqt6rljoofrz/xtbBDg92LGVOBe7LygADsZ
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-
-Jan Kiszka <jan.kiszka@web.de> writes:
-
-> On 25.01.24 04:18, linz wrote:
->> I think my patch is not suitable after listening to your suggestions.
->> And I don't have any other good solutions.
->>
->> I think x86 is ok because there is no operation of writing global
->> variables in the critical zone.
->>
->> kernel_fpu_begin
->> =C2=A0=C2=A0=C2=A0 =3D>kernel_fpu_begin_mask
->> =3D>preempt_disable // enter the critical zone
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>WARN_ON_FPU(!irq_fpu_usab=
-le());
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>WARN_ON_FPU(this_cpu_read=
-(in_kernel_fpu));
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>flags =3D hard_cond_local=
-_irq_save(); // leave the critcal zone
->>
->>
->> But in arm64, there is operation of writing global variables in the
->> critical zone, unfortunernaly.
->> efi_call_rts
->> =C2=A0 =3D>__efi_fpsimd_begin
->> =C2=A0=C2=A0=C2=A0 =3D>kernel_neon_begin
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>get_cpu_fpsimd_context
->> =3D>hard_preempt_disable // disable interrupt, enter the critical zone
->> =3D>__get_cpu_fpsimd_context //=C2=A0 first call, modify global variable
->> fpsimd_context_busy
->> =3D>hard_cond_local_irq_restore // enable interrupt, leave the critcal z=
-one
->>
->> handle_arch_irq_pipelined // Latency timer interrupt triggered
->> =3D>handle_irq_pipelined_finish
->> =C2=A0 =3D>irq_exit_pipeline
->> =C2=A0=C2=A0=C2=A0 =3D>xnsched_run
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>__xnsched_run
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>pipeline_schedule
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>run_oob_call
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>_=
-__xnsched_run
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 =3D>pipeline_switch_to
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 =3D>dovetail_context_switch
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>__switch_to
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>fpsimd_thread_switch
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D>__get_cpu_fpsimd=
-_context // second call
->>
->> So, I think there are more todos on arm64. Do you have any other good
->> suggestions?
->>
->
-> Philippe, some input on this issue would be helpful to know what the
-> next step needs to be. It's still unclear to me how fundemental this
-> issue is (false positive warning or real state corruption?).
->
-
-This is a current limitation on arm64 which amounts to a bug
-actually. x86 has the proper implementation, which allows oob threads to
-safely preempt kernel_fpu_begin() / kernel_fpu_end sections.  Since
-kernel_neon_begin() re-enables hard irqs before leaving, it is creating
-the opportunity for a mess.
-
-The way to fix this is to implement the x86 logic to arm64 when it comes
-to in-kernel fpu usage.
-
---=20
-Philippe.
+eWV077yMIHlvdSBqdXN0IGRvIG1ha2UgaW4gdGhlIHByb2plY3QgdG8gcHJvZHVjdCB0aGUgYmlu
+YXJ5IG9mIG9vcC10ZXN0LCBydW4ga2lsbF90ZXN0LnNoICwgYW5kIGZpbmFsbHnCoHdhaXQga2Vy
+bmVsIG9vcCAuCndlIGdldCB0aGUgc2FtZSByZXN1bHRzIG9mIGtlcm5lbCBvb3AgaW4gdGhlIHFl
+bXUtYW1kNjQsIHdoaWNoIHVzZSB0aGUgY29uZmlnIGZyb20geGVub21haS1pbWFnZXMgLCJodHRw
+czovL3NvdXJjZS5kZW54LmRlL1hlbm9tYWkveGVub21haS1pbWFnZXMvLS9ibG9iL21hc3Rlci9y
+ZWNpcGVzLWtlcm5lbC9saW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWc/cmVmX3R5cGU9aGVhZHMi
+LCBhcyBmb2xsb3cuClsgNjE5MS42NzE5NTNdIEJVRzoga2VybmVsIE5VTEwgcG9pbnRlciBkZXJl
+ZmVyZW5jZSwgYWRkcmVzczogMDAwMDAwMDAwMDAwMDAwMApbIDYxOTEuNjcxOTU1XSAjUEY6IHN1
+cGVydmlzb3IgaW5zdHJ1Y3Rpb24gZmV0Y2ggaW4ga2VybmVsIG1vZGUKWyA2MTkxLjY3MTk1Nl0g
+I1BGOiBlcnJvcl9jb2RlKDB4MDAxMCkgLSBub3QtcHJlc2VudCBwYWdlClsgNjE5MS42NzE5NTZd
+IFBHRCAwIFA0RCAwClsgNjE5MS42NzE5NThdIE9vcHM6IDAwMTAgWyMxXSBQUkVFTVBUIFNNUCBQ
+VEkgSVJRX1BJUEVMSU5FClsgNjE5MS42NzE5NTldIENQVTogMyBQSUQ6IDcwNDcgQ29tbTogb29w
+LXRlc3QgS2R1bXA6IGxvYWRlZCBOb3QgdGFpbnRlZCA1LjEwLjE5OS1kZXZvLTMuMi40LTIwMjQw
+MTMwICMxClsgNjE5MS42NzE5NjBdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3RhbmRhcmQgUEMgKGk0
+NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTQuMC0yIDA0LzAxLzIwMTQKWyA2MTkxLjY3MTk2
+MV0gSVJRIHN0YWdlOiBMaW51eApbIDYxOTEuNjcxOTYxXSBSSVA6IDAwMTA6MHgwClsgNjE5MS42
+NzE5NjJdIENvZGU6IFVuYWJsZSB0byBhY2Nlc3Mgb3Bjb2RlIGJ5dGVzIGF0IFJJUCAweGZmZmZm
+ZmZmZmZmZmZmZDYuClsgNjE5MS42NzE5NjJdIFJTUDogMDAxODpmZmZmYzkwMDAwMTE4ZjgwIEVG
+TEFHUzogMDAwMTAyNDYKWyA2MTkxLjY3MTk2M10gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDog
+ZmZmZjg4ODEwOGQzZDczMCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDAKWyA2MTkxLjY3MTk2NF0gUkRY
+OiBmZmZmODg4MTA4ZDNkNzM4IFJTSTogZmZmZmZmZmY4MjUxNjI4NCBSREk6IGZmZmY4ODgxMDhk
+M2Q3MzAKWyA2MTkxLjY3MTk2NV0gUkJQOiAwMDAwMDAwMDAwMDAwMDAwIFIwODogMDAwMDAwMDAw
+MDAwMDAwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDEKWyA2MTkxLjY3MTk2NV0gUjEwOiAwMDAwMDAw
+MDAwMDAwMDAwIFIxMTogMDAwMDAwMDAwMDAwMDAwMSBSMTI6IDAwMDAwMDAwMDAwMDAwMDAKWyA2
+MTkxLjY3MTk2Nl0gUjEzOiAwMDAwMDAwMDAwMDAwMDE4IFIxNDogZmZmZmZmZmY4MTFkMzdlMCBS
+MTU6IDAwMDAwMDAwMDAwMDAwMDAKWyA2MTkxLjY3MTk2N10gRlM6wqDCoDAwMDA3ZmM2ZTgzZWE3
+ODAoMDAwMCkgR1M6ZmZmZjg4ODEzYmQ4MDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAw
+ClsgNjE5MS42NzE5NjddIENTOsKgwqAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAw
+MDA4MDA1MDAzMwpbIDYxOTEuNjcxOTY4XSBDUjI6IGZmZmZmZmZmZmZmZmZmZDYgQ1IzOiAwMDAw
+MDAwMTA2NzUwMDA1IENSNDogMDAwMDAwMDAwMDE3MGVlMApbIDYxOTEuNjcxOTY4XSBDYWxsIFRy
+YWNlOgpbIDYxOTEuNjcxOTY4XcKgwqA8SVJRPgpbIDYxOTEuNjcxOTY5XcKgwqA/IHNob3dfdHJh
+Y2VfbG9nX2x2bCsweDFjMi8weDJjOQpbIDYxOTEuNjcxOTY5XcKgwqA/IGlycV93b3JrX3Npbmds
+ZSsweDQyLzB4ODAKWyA2MTkxLjY3MTk2OV3CoMKgPyBfX2RpZV9ib2R5LmNvbGQrMHg4LzB4ZApb
+IDYxOTEuNjcxOTcwXcKgwqA/IG5vX2NvbnRleHQrMHgxM2EvMHgyNzAKWyA2MTkxLjY3MTk3MF3C
+oMKgPyBleGNfcGFnZV9mYXVsdCsweDZmLzB4MjAwClsgNjE5MS42NzE5NzBdwqDCoD8gYXNtX2V4
+Y19wYWdlX2ZhdWx0KzB4MWUvMHgzMApbIDYxOTEuNjcxOTcwXcKgwqA/IGhhbmRsZV9vb2JfaXJx
+KzB4OTAvMHg5MApbIDYxOTEuNjcxOTcxXcKgwqBpcnFfd29ya19zaW5nbGUrMHg0Mi8weDgwClsg
+NjE5MS42NzE5NzFdwqDCoGlycV93b3JrX3J1bl9saXN0KzB4MmQvMHg0MApbIDYxOTEuNjcxOTcx
+XcKgwqBpcnFfd29ya19ydW4rMHgyNi8weDQwClsgNjE5MS42NzE5NzJdwqDCoGluYmFuZF93b3Jr
+X2ludGVycnVwdCsweGEvMHgyMApbIDYxOTEuNjcxOTcyXcKgwqBoYW5kbGVfc3ludGhldGljX2ly
+cSsweGIxLzB4MjEwClsgNjE5MS42NzE5NzJdwqDCoGFzbV9jYWxsX2lycV9vbl9zdGFjaysweDEy
+LzB4MjAKWyA2MTkxLjY3MTk3M13CoMKgPC9JUlE+ClsgNjE5MS42NzE5NzNdwqDCoGFyY2hfZG9f
+SVJRX3BpcGVsaW5lZCsweDE1ZC8weDJhMApbIDYxOTEuNjcxOTczXcKgwqBzeW5jX2N1cnJlbnRf
+aXJxX3N0YWdlKzB4MTU3LzB4MWYwClsgNjE5MS42NzE5NzRdwqDCoF9faW5iYW5kX2lycV9lbmFi
+bGUrMHg0Yi8weDcwClsgNjE5MS42NzE5NzRdwqDCoF9yYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9y
+ZSsweDM1LzB4NzAKWyA2MTkxLjY3MTk3NF3CoMKgX19zZXRfY3B1c19hbGxvd2VkX3B0cisweGJm
+LzB4MjMwClsgNjE5MS42NzE5NzVdwqDCoHNjaGVkX3NldGFmZmluaXR5KzB4MzgzLzB4NmIwClsg
+NjE5MS42NzE5NzVdwqDCoF9feDY0X3N5c19zY2hlZF9zZXRhZmZpbml0eSsweDQ1LzB4ODAKWyA2
+MTkxLjY3MTk3NV3CoMKgZG9fc3lzY2FsbF82NCsweDM5LzB4NTAKWyA2MTkxLjY3MTk3OF3CoMKg
+ZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NjIvMHhjNwpbIDYxOTEuNjcxOTc5XSBS
+SVA6IDAwMzM6MHg3ZmM2ZTg0ZDY2MTcKWyA2MTkxLjY3MTk3OV0gQ29kZTogMWYgNDAgMDAgNDgg
+OGIgMTUgNzkgYzggMGUgMDAgZjcgZDggNDEgYjkgZmYgZmYgZmYgZmYgNjQgODkgMDIgNDQgODkg
+YzggYzMgNjYgMmUgMGYgMWYgODQgMDAgMDAgMDAgMDAgMDAgYjggY2IgMDAgMDAgMDAgMGYgMDUg
+PDQ4PiAzZCAwMCBmMCBmZiBmZiA3NyAyOSA0MSA4OSBjMCA4MyBmOCBmZiA3NCAxOCA2NCBjNyAw
+NCAyNSAzOCAwMApbIDYxOTEuNjcxOTgwXSBSU1A6IDAwMmI6MDAwMDdmZmQ1NzRkZmRlOCBFRkxB
+R1M6IDAwMDAwMjA2IE9SSUdfUkFYOiAwMDAwMDAwMDAwMDAwMGNiClsgNjE5MS42NzE5ODFdIFJB
+WDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDA3ZmM2ZTdiOTg1YzggUkNYOiAwMDAwN2ZjNmU4
+NGQ2NjE3ClsgNjE5MS42NzE5ODJdIFJEWDogMDAwMDdmYzZlN2I5ODVmMCBSU0k6IDAwMDAwMDAw
+MDAwMDAwODAgUkRJOiAwMDAwMDAwMDAwMDAxYjhkClsgNjE5MS42NzE5ODJdIFJCUDogMDAwMDdm
+ZmQ1NzRkZmU3MCBSMDg6IDAwMDA3ZmM2ZTgzZWE3ODAgUjA5OiAwMDAwMDAwMGZmZmZmZmZmClsg
+NjE5MS42NzE5ODNdIFIxMDogZmZmZmZmZmZmZmZmZmRjYSBSMTE6IDAwMDAwMDAwMDAwMDAyMDYg
+UjEyOiAwMDAwNTVhODE4ZWI2MWMwClsgNjE5MS42NzE5ODNdIFIxMzogMDAwMDAwMDAwMDAwMDAw
+MCBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAwMDAwMDAwMDAwClsgNjE5MS42NzE5
+ODRdIE1vZHVsZXMgbGlua2VkIGluOgpbIDYxOTEuNjcxOTg1XSBDUjI6IDAwMDAwMDAwMDAwMDAw
+MDAKCgpBdCAyMDI0LTAxLTI1IDE3OjUwOjE3LCAiSmFuIEtpc3prYSIgPGphbi5raXN6a2FAd2Vi
+LmRlPiB3cm90ZToKPk9uIDIyLjAxLjI0IDA0OjEwLCBKZXJyeUp1biB3cm90ZToKPj4gaGkswqB4
+ZW5vbWFpOgo+Pgo+PiB3ZcKgdXNlwqBhwqBzbWFsbMKgeGVub21hacKgYXBwbGljYXRpb27CoHJl
+cHJvZHVjdMKgTlgtcHJvdGVjdGVkwqBwYWdlwqBxdWVzdGlvbsKgLMKgaXTCoHdpbGzCoGFwcGVh
+csKgd2l0aGluwqAxMsKgaG91cnMuwqBwbGVhc2XCoGdpdmXCoG1lwqBhwqBoaW50O8KgCj4+Cj4+
+IHRoZcKgYXBwbGljYXRpb27CoGlzwqBpbXBsZW1lbnRlZMKgdG/CoGNyZWF0ZcKgbXVsdGlwbGXC
+oFJUwqB0YXNrwqB3aGljaMKgc2V0wqBhZmZpbml0ecKgb2bCoHRoZcKgMsKgY3B1LMKgcHJpb8Kg
+OTDCoGFuZMKgbWFudWFswqBib290c3RyYXDCoCzCoHBlcmZvcm3CoEZGVMKgb25secKgb2NjdWlw
+ZWTCoENQVcKgd2l0aMKgcnRfc2xlZXAswqB3aGljaMKgYmXCoGtpbGxlZMKgYcKgZmV3wqBzZWNv
+bmRzwqBsYXRlci7CoAo+Pgo+PiB0aGXCoGtlcm5lbMKgb29wc8KgYXBwZWFywqB3aGVuwqBraWxs
+wqB0aGXCoGFwcGxpY2F0aW9uLgo+Pgo+Cj5XaGF0IGV4YWN0bHkgbmVlZHMgdG8gYmUgZG9uZSB0
+byByZXByb2R1Y2UgdGhlIGlzc3VlIHdpdGggeW91ciBjb2RlPwo+Cj5BbHNvLCBkb2VzIHRoZSBo
+YXJkd2FyZSBwbGF5IGEgcm9sZSwgb3IgY2FuIHlvdSByZXByb2R1Y2UgaXQgaW4gYQo+cWVtdS1h
+bWQ2NCBpbnN0YW5jZSBhcyB3ZWxsPwo+Cj5BbHJlYWR5IGNoZWNrZWQgaWYgdGhlcmUgYXJlIGRp
+ZmZlcmVuY2VzIHdoZW4gdXNpbmcgWzFdIGZyb20geGVub21haS1pbWFnZXM/Cj4KPlRoYW5rcywK
+Pkphbgo+Cj5bMV0KPmh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS94ZW5vbWFpLWltYWdl
+cy8tL2Jsb2IvbWFzdGVyL3JlY2lwZXMta2VybmVsL2xpbnV4L2ZpbGVzL2FtZDY0X2RlZmNvbmZp
+Zz9yZWZfdHlwZT1oZWFkcwo=
