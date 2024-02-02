@@ -1,97 +1,121 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7718148FF0
-	for <xenomai@lists.linux.dev>; Fri,  2 Feb 2024 17:04:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BECD14C594
+	for <xenomai@lists.linux.dev>; Fri,  2 Feb 2024 17:09:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706893453; cv=none; b=ka3aKic4WieOCdij46sexlMK4JkyfAO9tti25VN1Xw1pUqvANCkjKWmADbgo1ogBPSaQig55NYe/qWHcBEjpvrnxMGKZE0NQw/2yZGO4fn1t/vOFtZ2fVEmlrdCJnaZkDIUa8uAINvBXiQkz1/uPJz2lvCLEpaqsucOKZy7KReg=
+	t=1706893751; cv=none; b=g9HJ4XH5E2LGCWSoUJqg/kQAbN5sokpaLQHoSILWCRHm4vNSYZUphtSabDNZgR7sNzfu+RRRFgSBY8FwI7NTzCoefM2Vk+TV9Z6KTF2fktNxjn4OQtMsOemjXzCABHnT1cjOw1RiakPH1cdrp4PNqnIQfQt90gp11SqRxpC/2Vg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706893453; c=relaxed/simple;
-	bh=1AJH+eRgktg3jyd8Z1Dbtm/IZhok/yag0q8/lvBUdIU=;
+	s=arc-20240116; t=1706893751; c=relaxed/simple;
+	bh=yIj23cXm33Xxihh3SKuFr+OGE6zQmYtKfw7u8E1Qr9k=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=L5t5KoMZ5wWEv+DXPtTKZN8KxZiJaSXYxKuyo9GyOGJxSC+NAjvIj3Y2Pc5NNx4fDabfGSgU/xrhz/GJg+kP2+C376jWtnS+5VPxyEX/WdOCDLsaIx/j/HQNIG24ljzO46ALI/bvKhtS5bFAOiyMyYmyPDPC8zoUOpp29inftoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hz9IRXWJ; arc=none smtp.client-ip=209.85.216.41
+	 To:Cc:Content-Type; b=Hx2uyWofEzGzHwjAzxVRXaNO0V+5T6G6/did7Ao7682MIIyrZTUB3stsBJzEU5Z8wqoxBvRjZpkx9yIE+okMMZZiS7i94dBfEB7c1UGcJryk/zgINXMSBMg7UJfe3HKgmpvnpcyjBWhbST8PrL8iXu3uy1QnDuYGbzchyipa9sg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gOcPU/yS; arc=none smtp.client-ip=209.85.210.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hz9IRXWJ"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2909a632e40so1922304a91.0
-        for <xenomai@lists.linux.dev>; Fri, 02 Feb 2024 09:04:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gOcPU/yS"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6dddf4fc85dso1846109b3a.0
+        for <xenomai@lists.linux.dev>; Fri, 02 Feb 2024 09:09:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1706893451; x=1707498251; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1706893749; x=1707498549; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LS/iqNBVyMGNY0FSZJlKAdfPAgsT5S85kCeb6MULuAI=;
-        b=hz9IRXWJ80CnkmwZUEEgoidlGg22JbCwei59/lQ9AMXNhN+Lcobu9DOjxq4O0vbwAz
-         bxa6Tz/s86UT5ZgX4cXVBpnvy+E2wnHFPHjGgKLOt0u+3nPA8pGcm0tmdud0JfwWHvkV
-         gt0oZrBLvYJ/6ePZh4/n6d0tzGD5wH7vB1kReF29Oja8i+NIH2NNY0X6gz/I65DueWp1
-         u87vuXu39aAWYU8lwNcSaaSB1PbNiLQvVgY/qrOn4wbNKixajuem28GdLhKFoIYZXepr
-         Vnvnq4oXqP4QF5WydB5DxUPpldzrFaLLkW8M/HSipHZ2k3nOarWNwyUKOMmildNcIlwm
-         MNfg==
+        bh=ml1OafCapvd62h/Trgwlh8FZDiz5eK/tLQNaTLi9Ecg=;
+        b=gOcPU/ySo2JLFSnWz3i7thA3/xrp7v1s+wCiEAVQL8lUiy3zwG5RxRHuB1FI01bEWA
+         PA5TL5RHs9SBA9D5Rmkvq+ANN6zL6PMDDlMvBq7Q1nz8nevNQqB5fSidv6nFV3UyAuQY
+         1h46VXyBhMXAyRB+iGK5e8iSaZkwuZawxKfqAX7txdUVdj6rjd9puf9QErFJ9HcPwa+g
+         tYzcenHXlbtvJlJtihDiFptSUZ+oEqzdvEa6JY94OkFqe+KTs1jmb/zN8DXDft2BNRcI
+         jU7latv1b6q1bw/4jgu9iCgidMpVFYALCUJR64+6HQKPdUhON9qFo4Y7xhShP8W303i2
+         zS0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706893451; x=1707498251;
+        d=1e100.net; s=20230601; t=1706893749; x=1707498549;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=LS/iqNBVyMGNY0FSZJlKAdfPAgsT5S85kCeb6MULuAI=;
-        b=mOWdkoR/oDmKnaNRqNjmXa54pOZDByFzu1n7ER+oIIzTHRUB0QIEijert4+EuAbCY8
-         +poeX691RUBJHgEDoYmmttEdEKLDAbz87HVfLHmniTi5qGBREpexchTmVFAKcDfItkZM
-         2dc0YgofmS7J2afZNW2QgWbf2Uy+41vkiSM+T53BpOyxMBenldWX5FxMG+UuxSKqgOb9
-         rVeB0T9i5qpn9OcGpopFZ8vzhktjxinK8wOcxmgPoSaez0f+DVtDMMWIfy3Me8em5dfm
-         nCJXXA2D2TGXtMeUwpYZ1hCiv0jpk3I2ef8sovIaKcMPBksack6ych6x83R9hV015ezx
-         uqVw==
-X-Gm-Message-State: AOJu0YxfK1IX5UTkyMvUdQoCy/plBfqyv01tMFdflNCGV4WXUI4G0lNs
-	AtLgX07LusOfmrV5SZF0TLAG+f7K7+FNJprwN9NCrpPgbVgdxBPdDmMYkEjpS3xQKt+khzPDJ0y
-	qHvesZHaRro/u4tAuKyDn1Vr9N6S0INJMyMk=
-X-Google-Smtp-Source: AGHT+IGsuoUqsLhAZOM0N2u1pqTIEyG4dS6nV6KuwsOPBUPOzLFI9BGEl1hQbiOF6LirwIdSXNjMq3Ee61+KN1IxQ4w=
-X-Received: by 2002:a17:90a:eac4:b0:296:207b:c917 with SMTP id
- ev4-20020a17090aeac400b00296207bc917mr4818220pjb.23.1706893451024; Fri, 02
- Feb 2024 09:04:11 -0800 (PST)
+        bh=ml1OafCapvd62h/Trgwlh8FZDiz5eK/tLQNaTLi9Ecg=;
+        b=lwr62oF3XVxoCPfw41sVZPlXCRwdt5CNTUtwU2KcqJEHwN/LDnc5WWr+NmD7QEj8OM
+         IL77H8b2QDsPd8NyT3zu8e3q8A3Vmm9F7cl+A9NlQJeycwhL+1Sm2BD4FZIM9rzAkAoT
+         I/Aw3/bo1msTCZGYyqQ6Sl5iOyQ68ymqIlmyrn2+HaTmRox5EEzno8Bs7hrWEWMEufUJ
+         Flx/nAxrQtdZCFgnC/JeTiR5jaDKiYo7MyR1yFRJxWome6Rro46pkLb7Vk50RtoW2Nsb
+         V63pfyNUNXbM7Bcr/zNHhx9Zq9cdiTQTWTV8D8s6yu4cKBv3giv85ReAtL9LYGikc0JU
+         +z9Q==
+X-Gm-Message-State: AOJu0YzbMilAv6U2iX418YO5uDrU+/XCjRbbeZWGW/8LhyN5ofSE1rei
+	IgJB9VbYEnKmP/5Qz4ZqvZ1kg1f53Tz1382Uja2bH+lUWeBRE+FgEN5zCtTbXHNZ2Lp1yKhBF9R
+	SVxs37NV4AzCnAL2CXnI0P3CDhDQ=
+X-Google-Smtp-Source: AGHT+IGUHHLt/CUTO7usqyP1HXPv1a2PHrLlgvBmfRxpTGRaEV19zzCZJYf3js5ypQbklnWpS+Yx81EvndliZbvs+no=
+X-Received: by 2002:aa7:8502:0:b0:6d9:b266:16c3 with SMTP id
+ v2-20020aa78502000000b006d9b26616c3mr2891487pfn.4.1706893748819; Fri, 02 Feb
+ 2024 09:09:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240122160105.2452024-1-clara.kowalsky@siemens.com> <20240122160105.2452024-6-clara.kowalsky@siemens.com>
-In-Reply-To: <20240122160105.2452024-6-clara.kowalsky@siemens.com>
+References: <20240122160105.2452024-1-clara.kowalsky@siemens.com>
+In-Reply-To: <20240122160105.2452024-1-clara.kowalsky@siemens.com>
 From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Fri, 2 Feb 2024 18:03:57 +0100
-Message-ID: <CAFLxGvwH5i=u9_7ffN_uwctBHOANFDe3SFfoL9mxYbkpQJx8sg@mail.gmail.com>
-Subject: Re: [PATCH v1 5/7] compat support: cobalt/posix/syscall: Use syscall_get_arguments()
+Date: Fri, 2 Feb 2024 18:08:55 +0100
+Message-ID: <CAFLxGvyy2r5dWUVNbXHtT6W=60DAByh63hi+1U_ynjrECtHvLA@mail.gmail.com>
+Subject: Re: [PATCH v1 0/7] Add 32-bit compat support for arm64 to xenomai
 To: Clara Kowalsky <clara.kowalsky@siemens.com>
 Cc: xenomai@lists.linux.dev, rpm@xenomai.org, jan.kiszka@siemens.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 22, 2024 at 6:51=E2=80=AFPM Clara Kowalsky
+On Mon, Jan 22, 2024 at 6:55=E2=80=AFPM Clara Kowalsky
 <clara.kowalsky@siemens.com> wrote:
 >
-> Use the generic implementation for fetching the syscall arguments.
+> Hi all,
 >
-> Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> ---
->  kernel/cobalt/posix/syscall.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> this series adds the 32-bit compat support for arm64 to xenomai 3.
+> It allows us to run arm(hf) applications on arm64 kernels.
 >
-> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.=
-c
-> index 6e1f15ea5..1d37cb279 100644
-> --- a/kernel/cobalt/posix/syscall.c
-> +++ b/kernel/cobalt/posix/syscall.c
-> @@ -584,7 +584,7 @@ restart:
->          */
+> Best regards,
+> Clara Kowalsky
 >
->         p =3D current;
-> -       pipeline_get_syscall_args(p, regs, args);
-> +       syscall_get_arguments(p, regs, args);
+> Clara Kowalsky (7):
+>   compat support: cobalt: Move 32-bit compat files to generic
+>   compat support: cobalt/arm: Refactor registers
+>   compat support: cobalt/arm64: Add compat support and clean-up
+>   compat support: cobalt/arm64: Update ABI revision level
+>   compat support: cobalt/posix/syscall: Use syscall_get_arguments()
+>   compat support: lib/cobalt: Fix VFP detection for arm on arm64
+>   compat support: cobalt/arm64: Enable compat support for arm64
+>
+>  .../arch/arm/include/asm/xenomai/syscall.h    |   4 +-
+>  .../arch/arm/include/asm/xenomai/syscall32.h  |   8 +-
+>  kernel/cobalt/arch/arm64/Kconfig              |   2 +-
+>  .../arch/arm64/include/asm/xenomai/syscall.h  |  10 +-
+>  .../arm64/include/asm/xenomai/syscall32.h     |  12 ---
+>  .../arm64/include/asm/xenomai/uapi/features.h |   2 +-
+>  .../arch/x86/include/asm/xenomai/syscall32.h  | 102 ------------------
+>  .../asm-generic}/xenomai/syscall32-table.h    |   6 +-
+>  .../include/asm-generic/xenomai/syscall32.h   |  78 +++++++++++++-
+>  kernel/cobalt/posix/syscall.c                 |  16 +--
+>  kernel/cobalt/posix/syscall.h                 |   2 +-
+>  kernel/cobalt/trace/cobalt-posix.h            |   4 +-
+>  lib/cobalt/arch/arm/features.c                |   5 +
+>  .../arch/arm/include/asm/xenomai/syscall.h    |  65 ++++++-----
+>  14 files changed, 143 insertions(+), 173 deletions(-)
+>  delete mode 100644 kernel/cobalt/arch/arm64/include/asm/xenomai/syscall3=
+2.h
+>  delete mode 100644 kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.=
+h
+>  rename kernel/cobalt/{arch/x86/include/asm =3D> include/asm-generic}/xen=
+omai/syscall32-table.h (94%)
 
-Hmm, how does this worth with Xenomai arm32 ABI, do you fixup regs
-somewhere else?
-It places XENO_ARM_SYSCALL into r7 and uses r0 for the cobalt syscall id.
-So we're wasting one argument and they need shifting.
+I don't know how I missed your patches but I spent yesterday the whole
+day with the very same cleanup. :-S
+What I miss in your changes is the VDSO handling.
+By default aarm64 does not offer AT_SYSINFO_EHDR, so
+cobalt_lookup_vdso() will fail.
+Enabling CONFIG_COMPAT_VDSO on aarm64 is tricky because you need
+wither clang or a second cross compiler.
+In my version I'm using a fallback to sc_cobalt_clock_gettime/64().
 
 --=20
 Thanks,
