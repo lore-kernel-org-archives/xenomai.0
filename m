@@ -1,129 +1,150 @@
-Received: from redirect.mail.gandi.net (relay13.mail.gandi.net [217.70.178.233])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC0C17C69
-	for <xenomai@lists.linux.dev>; Fri,  2 Feb 2024 07:25:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.233
+Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.219])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5894F1799D
+	for <xenomai@lists.linux.dev>; Fri,  2 Feb 2024 07:49:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.50.219
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706858753; cv=none; b=YCZsccDk0RSTreDFPf8lY7i45p0MVhC0PGy5E/UCzX5uWUBxxYq/zfNHAfPhMaDa9YJHXMOBOD3JOsF8/hpJN5itIajNtc95T55vM/8LXKS8Y2zVsqg0UKt83WheZ2+8JlRe/VmaReRlSGsGmiearxo3JWvbu50qBP3MIJtEhSA=
+	t=1706860187; cv=none; b=n25TAcIqCfSf1Yu7BJqR73VLZYsl9TSXRRHgKr4mt9qDsDjQvEizZQh5pIa5hGffa2EmJYMOPdDj508RSCxVYkUEpmuO9QQTtSRqxNaFjqFbtoDnaWqdXi2G5skbJWXJrlh2tKt7IU+Q245ilvHAMS0hdaOkq9G3KPbvp1VCwOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706858753; c=relaxed/simple;
-	bh=CO37xQK7N0N8iqNGlrYCD0ysOCaF3cPyMsBMCNOHwkA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KhjHaVHs8cYx/pj+mdhlAOKil8dZdKJr31MCX23Lz9lnpRfSErMTZvL/XdNlVsbWJjO+oN4TGbia4YXgVQ36BBRpqhWDeQHvPX3+0G5VOToRi2aJqMNA9YtdCBmLU2Ud4nIc6T1e1FxrzpI23Dr+AZkvV6VMJ7SSIemXOYkOfPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Gb+P1iJA; arc=none smtp.client-ip=217.70.178.233
+	s=arc-20240116; t=1706860187; c=relaxed/simple;
+	bh=Vg59KcBSXMm1D69jjIxrraRFY0jO2QM0Ti2j0Ytz49c=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=dmo/0HnH5fUSZOwcxPgP9qtq5cdYk8hjyKpDZ/xMYZ7nTlWpUtiZIVCH7Eqf5CK4Fwry1zKu95jcRVtO+4nve0m1iOqqnRtVgHr9GWc6UQm7j80TsmOzcOG1/mTwBoTAW2EpFDTFZqZ0YCDJ0ghdyeMNVbBmxocJsMo2ySIQAH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=jk9WOKfj reason="signature verification failed"; arc=none smtp.client-ip=45.254.50.219
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Gb+P1iJA"
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay13.mail.gandi.net (Postfix) with ESMTPS id E75F180004;
-	Fri,  2 Feb 2024 07:25:41 +0000 (UTC)
-Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.220])
-	by spool.mail.gandi.net (Postfix) with ESMTP id EE60C7803D9;
-	Fri,  2 Feb 2024 07:25:39 +0000 (UTC)
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="jk9WOKfj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Message-ID:Date:MIME-Version:Subject:From:
-	Content-Type; bh=iJrp+0GxhD7YeZA8ePoj6y7DcgHmMF5oRgxSHmEptKM=;
-	b=Gb+P1iJAalJUBzdifNi4Tmk9x23pj30o4DpssIxRS6MgIwGQBeNO6FMGyNH3SP
-	n/soUQA/1yOa4dVKaKtOCs5h35btMJwAT0vNgIrDko69NVq4MPKBlFA1yz7/YrpK
-	+6+7PZANv1TPkA1lXYBxIdGpnBKM2uNciFvbyZwlx80Wc=
-Received: from [10.10.80.177] (unknown [219.142.137.151])
-	by gzga-smtp-mta-g0-4 (Coremail) with SMTP id _____wAHrSfpmLxlbY8wCA--.28656S2;
-	Fri, 02 Feb 2024 15:25:29 +0800 (CST)
-Message-ID: <ff580dec-096d-45cb-b906-527446c4fa87@163.com>
-Date: Fri, 2 Feb 2024 15:25:29 +0800
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=yCBK1/Ue7h8PtXeg8dEzgS9yZA7oWxdyt6Om4rHA+pQ=; b=j
+	k9WOKfjKKVT/euuSSDF7HEXXOOo4AHiZQPXCIWwXfUn0xg3IaS5f47ObYezXMrhi
+	kKzQ+0gznpKasI5ydeiciO91M6k+/HgZodCY63kX99TQA7g8NjooNw5/sMncXgeg
+	6FZ3IIVNbwRN614n6AH1Kman1Ik0sQ/oPU9su69SIY=
+Received: from jerryjun123$163.com ( [103.161.254.5] ) by
+ ajax-webmail-wmsvr-40-113 (Coremail) ; Fri, 2 Feb 2024 15:49:33 +0800 (CST)
+Date: Fri, 2 Feb 2024 15:49:33 +0800 (CST)
+From: JerryJun  <jerryjun123@163.com>
+To: "Jan Kiszka" <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re:Re: NX-protected page
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2024 www.mailtech.cn 163com
+In-Reply-To: <fd2a3821-c4e6-4866-bc65-0bbadaf603e5@siemens.com>
+References: <3ce13f2b.183be.18d2f264758.Coremail.jerryjun123@163.com>
+ <87ca0f83-bb2f-49fd-8e30-8873778cd8a9@web.de>
+ <6bec8d20.61c9.18d5e68d09d.Coremail.jerryjun123@163.com>
+ <e1accac9-4044-4379-8d4f-f0eb7cd9d713@siemens.com>
+ <fd2a3821-c4e6-4866-bc65-0bbadaf603e5@siemens.com>
+X-NTES-SC: AL_Qu2bBPSdv0ks5SCebOkWmEsQju45WMW0uPwu3YZTOJs0oiTExD4BTE5DAmTk1+2lOQWlgSmNaAJA1c1mb7dleYnORHqBvsaW6EuTc0MnWPNj
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: calling __get_cpu_fpsimd_context twice in a row when
- kernel_neon_begin running
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@web.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-References: <867aed54-563a-4c06-b750-4a7727e6e4c0@163.com>
- <103fdf7d-d3c8-45a9-b25d-283c9af400eb@siemens.com>
- <77c3e1fd-dab9-4b7c-b4f7-67c38dfc37bc@siemens.com>
- <79e83ee2-7406-43c1-9a71-e79cb2cbd127@163.com>
- <d799980b-fbfc-467b-87b7-5a4fbc6ddf50@web.de> <87ttmwo7by.fsf@xenomai.org>
-Content-Language: en-US
-From: linz <powertree@163.com>
-In-Reply-To: <87ttmwo7by.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wAHrSfpmLxlbY8wCA--.28656S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Ww18Gw1xCr4xJFyfur4fGrg_yoW8Kr1kpF
-	y3WF10yr4DA3WYvasF9F4Ivr1Fq34Utr13W3s8Wr1fCayqqF9Fqr42krya9F9xur18Z3W7
-	Z3yqyFZaq3Z5ta7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Uj1v3UUUUU=
-X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/xtbB0g54lWWXv2DX6gAAsh
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=163.com header.s=s110527 header.b=Gb+P1iJA;
-	dmarc=pass (policy=none) header.from=163.com;
-	spf=pass (spool.mail.gandi.net: domain of powertree@163.com designates 45.254.50.220 as permitted sender) smtp.mailfrom=powertree@163.com
+Message-ID: <799babe6.660d.18d68cb571a.Coremail.jerryjun123@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:_____wD3n7+Nnrxlbvy2AA--.6358W
+X-CM-SenderInfo: xmhu25pmxqijqt6rljoofrz/1tbitwd4LGV4HwoqdQACsx
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-I understand, thank you. Do you have a plan to solve this problem?
-
-在 2024/1/29 16:42, Philippe Gerum 写道:
-> Jan Kiszka <jan.kiszka@web.de> writes:
->
->> On 25.01.24 04:18, linz wrote:
->>> I think my patch is not suitable after listening to your suggestions.
->>> And I don't have any other good solutions.
->>>
->>> I think x86 is ok because there is no operation of writing global
->>> variables in the critical zone.
->>>
->>> kernel_fpu_begin
->>>      =>kernel_fpu_begin_mask
->>> =>preempt_disable // enter the critical zone
->>>          =>WARN_ON_FPU(!irq_fpu_usable());
->>>          =>WARN_ON_FPU(this_cpu_read(in_kernel_fpu));
->>>          =>flags = hard_cond_local_irq_save(); // leave the critcal zone
->>>
->>>
->>> But in arm64, there is operation of writing global variables in the
->>> critical zone, unfortunernaly.
->>> efi_call_rts
->>>    =>__efi_fpsimd_begin
->>>      =>kernel_neon_begin
->>>        =>get_cpu_fpsimd_context
->>> =>hard_preempt_disable // disable interrupt, enter the critical zone
->>> =>__get_cpu_fpsimd_context //  first call, modify global variable
->>> fpsimd_context_busy
->>> =>hard_cond_local_irq_restore // enable interrupt, leave the critcal zone
->>>
->>> handle_arch_irq_pipelined // Latency timer interrupt triggered
->>> =>handle_irq_pipelined_finish
->>>    =>irq_exit_pipeline
->>>      =>xnsched_run
->>>        =>__xnsched_run
->>>          =>pipeline_schedule
->>>            =>run_oob_call
->>>              =>___xnsched_run
->>>                =>pipeline_switch_to
->>>                  =>dovetail_context_switch
->>>                    =>__switch_to
->>>                      =>fpsimd_thread_switch
->>>                        =>__get_cpu_fpsimd_context // second call
->>>
->>> So, I think there are more todos on arm64. Do you have any other good
->>> suggestions?
->>>
->> Philippe, some input on this issue would be helpful to know what the
->> next step needs to be. It's still unclear to me how fundemental this
->> issue is (false positive warning or real state corruption?).
->>
-> This is a current limitation on arm64 which amounts to a bug
-> actually. x86 has the proper implementation, which allows oob threads to
-> safely preempt kernel_fpu_begin() / kernel_fpu_end sections.  Since
-> kernel_neon_begin() re-enables hard irqs before leaving, it is creating
-> the opportunity for a mess.
->
-> The way to fix this is to implement the x86 logic to arm64 when it comes
-> to in-kernel fpu usage.
->
-
+CmhvdyBsb25nIGRpZCB5b3UgcnVuIGl077yfaXQgd2lsbCB0YWtlIGEgd2hpbGUgZm9yIHRoaXMg
+Y3Jhc2ggYnV0IG5vdCBtb3JlIHRoYW4gMTIgaG91cnMgYXQgbW9zdGx5Lgpva++8jGkgd2lsbCB0
+cnkgdG8gcnVuIGl0IHdpdGhvdXQgZ2V0IC9wcm9j4oCm4oCmCnRoYW5rIHlvdSB2ZXJ5IG11Y2gu
+CgoKQXQgMjAyNC0wMi0wMiAxNDo0OTo1MywgIkphbiBLaXN6a2EiIDxqYW4ua2lzemthQHNpZW1l
+bnMuY29tPiB3cm90ZToKPk9uIDAxLjAyLjI0IDA4OjA5LCBKYW4gS2lzemthIHdyb3RlOgo+PiBP
+biAzMS4wMS4yNCAwODoyNSwgSmVycnlKdW4gd3JvdGU6Cj4+PiB5ZXTvvIwgeW91IGp1c3QgZG8g
+bWFrZSBpbiB0aGUgcHJvamVjdCB0byBwcm9kdWN0IHRoZSBiaW5hcnkgb2Ygb29wLXRlc3QsIHJ1
+biBraWxsX3Rlc3Quc2ggLCBhbmQgZmluYWxsecKgd2FpdCBrZXJuZWwgb29wIC4KPj4+IHdlIGdl
+dCB0aGUgc2FtZSByZXN1bHRzIG9mIGtlcm5lbCBvb3AgaW4gdGhlIHFlbXUtYW1kNjQsIHdoaWNo
+IHVzZSB0aGUgY29uZmlnIGZyb20geGVub21haS1pbWFnZXMgLCJodHRwczovL3NvdXJjZS5kZW54
+LmRlL1hlbm9tYWkveGVub21haS1pbWFnZXMvLS9ibG9iL21hc3Rlci9yZWNpcGVzLWtlcm5lbC9s
+aW51eC9maWxlcy9hbWQ2NF9kZWZjb25maWc/cmVmX3R5cGU9aGVhZHMiLCBhcyBmb2xsb3cuCj4+
+PiBbIDYxOTEuNjcxOTUzXSBCVUc6IGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UsIGFk
+ZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDAKPj4+IFsgNjE5MS42NzE5NTVdICNQRjogc3VwZXJ2aXNv
+ciBpbnN0cnVjdGlvbiBmZXRjaCBpbiBrZXJuZWwgbW9kZQo+Pj4gWyA2MTkxLjY3MTk1Nl0gI1BG
+OiBlcnJvcl9jb2RlKDB4MDAxMCkgLSBub3QtcHJlc2VudCBwYWdlCj4+PiBbIDYxOTEuNjcxOTU2
+XSBQR0QgMCBQNEQgMAo+Pj4gWyA2MTkxLjY3MTk1OF0gT29wczogMDAxMCBbIzFdIFBSRUVNUFQg
+U01QIFBUSSBJUlFfUElQRUxJTkUKPj4+IFsgNjE5MS42NzE5NTldIENQVTogMyBQSUQ6IDcwNDcg
+Q29tbTogb29wLXRlc3QgS2R1bXA6IGxvYWRlZCBOb3QgdGFpbnRlZCA1LjEwLjE5OS1kZXZvLTMu
+Mi40LTIwMjQwMTMwICMxCj4+PiBbIDYxOTEuNjcxOTYwXSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0
+YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjE0LjAtMiAwNC8wMS8yMDE0
+Cj4+PiBbIDYxOTEuNjcxOTYxXSBJUlEgc3RhZ2U6IExpbnV4Cj4+PiBbIDYxOTEuNjcxOTYxXSBS
+SVA6IDAwMTA6MHgwCj4+PiBbIDYxOTEuNjcxOTYyXSBDb2RlOiBVbmFibGUgdG8gYWNjZXNzIG9w
+Y29kZSBieXRlcyBhdCBSSVAgMHhmZmZmZmZmZmZmZmZmZmQ2Lgo+Pj4gWyA2MTkxLjY3MTk2Ml0g
+UlNQOiAwMDE4OmZmZmZjOTAwMDAxMThmODAgRUZMQUdTOiAwMDAxMDI0Ngo+Pj4gWyA2MTkxLjY3
+MTk2M10gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjg4ODEwOGQzZDczMCBSQ1g6IDAw
+MDAwMDAwMDAwMDAwMDAKPj4+IFsgNjE5MS42NzE5NjRdIFJEWDogZmZmZjg4ODEwOGQzZDczOCBS
+U0k6IGZmZmZmZmZmODI1MTYyODQgUkRJOiBmZmZmODg4MTA4ZDNkNzMwCj4+PiBbIDYxOTEuNjcx
+OTY1XSBSQlA6IDAwMDAwMDAwMDAwMDAwMDAgUjA4OiAwMDAwMDAwMDAwMDAwMDAwIFIwOTogMDAw
+MDAwMDAwMDAwMDAwMQo+Pj4gWyA2MTkxLjY3MTk2NV0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIx
+MTogMDAwMDAwMDAwMDAwMDAwMSBSMTI6IDAwMDAwMDAwMDAwMDAwMDAKPj4+IFsgNjE5MS42NzE5
+NjZdIFIxMzogMDAwMDAwMDAwMDAwMDAxOCBSMTQ6IGZmZmZmZmZmODExZDM3ZTAgUjE1OiAwMDAw
+MDAwMDAwMDAwMDAwCj4+PiBbIDYxOTEuNjcxOTY3XSBGUzrCoMKgMDAwMDdmYzZlODNlYTc4MCgw
+MDAwKSBHUzpmZmZmODg4MTNiZDgwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAKPj4+
+IFsgNjE5MS42NzE5NjddIENTOsKgwqAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAw
+MDA4MDA1MDAzMwo+Pj4gWyA2MTkxLjY3MTk2OF0gQ1IyOiBmZmZmZmZmZmZmZmZmZmQ2IENSMzog
+MDAwMDAwMDEwNjc1MDAwNSBDUjQ6IDAwMDAwMDAwMDAxNzBlZTAKPj4+IFsgNjE5MS42NzE5Njhd
+IENhbGwgVHJhY2U6Cj4+PiBbIDYxOTEuNjcxOTY4XcKgwqA8SVJRPgo+Pj4gWyA2MTkxLjY3MTk2
+OV3CoMKgPyBzaG93X3RyYWNlX2xvZ19sdmwrMHgxYzIvMHgyYzkKPj4+IFsgNjE5MS42NzE5Njld
+wqDCoD8gaXJxX3dvcmtfc2luZ2xlKzB4NDIvMHg4MAo+Pj4gWyA2MTkxLjY3MTk2OV3CoMKgPyBf
+X2RpZV9ib2R5LmNvbGQrMHg4LzB4ZAo+Pj4gWyA2MTkxLjY3MTk3MF3CoMKgPyBub19jb250ZXh0
+KzB4MTNhLzB4MjcwCj4+PiBbIDYxOTEuNjcxOTcwXcKgwqA/IGV4Y19wYWdlX2ZhdWx0KzB4NmYv
+MHgyMDAKPj4+IFsgNjE5MS42NzE5NzBdwqDCoD8gYXNtX2V4Y19wYWdlX2ZhdWx0KzB4MWUvMHgz
+MAo+Pj4gWyA2MTkxLjY3MTk3MF3CoMKgPyBoYW5kbGVfb29iX2lycSsweDkwLzB4OTAKPj4+IFsg
+NjE5MS42NzE5NzFdwqDCoGlycV93b3JrX3NpbmdsZSsweDQyLzB4ODAKPj4+IFsgNjE5MS42NzE5
+NzFdwqDCoGlycV93b3JrX3J1bl9saXN0KzB4MmQvMHg0MAo+Pj4gWyA2MTkxLjY3MTk3MV3CoMKg
+aXJxX3dvcmtfcnVuKzB4MjYvMHg0MAo+Pj4gWyA2MTkxLjY3MTk3Ml3CoMKgaW5iYW5kX3dvcmtf
+aW50ZXJydXB0KzB4YS8weDIwCj4+PiBbIDYxOTEuNjcxOTcyXcKgwqBoYW5kbGVfc3ludGhldGlj
+X2lycSsweGIxLzB4MjEwCj4+PiBbIDYxOTEuNjcxOTcyXcKgwqBhc21fY2FsbF9pcnFfb25fc3Rh
+Y2srMHgxMi8weDIwCj4+PiBbIDYxOTEuNjcxOTczXcKgwqA8L0lSUT4KPj4+IFsgNjE5MS42NzE5
+NzNdwqDCoGFyY2hfZG9fSVJRX3BpcGVsaW5lZCsweDE1ZC8weDJhMAo+Pj4gWyA2MTkxLjY3MTk3
+M13CoMKgc3luY19jdXJyZW50X2lycV9zdGFnZSsweDE1Ny8weDFmMAo+Pj4gWyA2MTkxLjY3MTk3
+NF3CoMKgX19pbmJhbmRfaXJxX2VuYWJsZSsweDRiLzB4NzAKPj4+IFsgNjE5MS42NzE5NzRdwqDC
+oF9yYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSsweDM1LzB4NzAKPj4+IFsgNjE5MS42NzE5NzRd
+wqDCoF9fc2V0X2NwdXNfYWxsb3dlZF9wdHIrMHhiZi8weDIzMAo+Pj4gWyA2MTkxLjY3MTk3NV3C
+oMKgc2NoZWRfc2V0YWZmaW5pdHkrMHgzODMvMHg2YjAKPj4+IFsgNjE5MS42NzE5NzVdwqDCoF9f
+eDY0X3N5c19zY2hlZF9zZXRhZmZpbml0eSsweDQ1LzB4ODAKPj4+IFsgNjE5MS42NzE5NzVdwqDC
+oGRvX3N5c2NhbGxfNjQrMHgzOS8weDUwCj4+PiBbIDYxOTEuNjcxOTc4XcKgwqBlbnRyeV9TWVND
+QUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg2Mi8weGM3Cj4+PiBbIDYxOTEuNjcxOTc5XSBSSVA6IDAw
+MzM6MHg3ZmM2ZTg0ZDY2MTcKPj4+IFsgNjE5MS42NzE5NzldIENvZGU6IDFmIDQwIDAwIDQ4IDhi
+IDE1IDc5IGM4IDBlIDAwIGY3IGQ4IDQxIGI5IGZmIGZmIGZmIGZmIDY0IDg5IDAyIDQ0IDg5IGM4
+IGMzIDY2IDJlIDBmIDFmIDg0IDAwIDAwIDAwIDAwIDAwIGI4IGNiIDAwIDAwIDAwIDBmIDA1IDw0
+OD4gM2QgMDAgZjAgZmYgZmYgNzcgMjkgNDEgODkgYzAgODMgZjggZmYgNzQgMTggNjQgYzcgMDQg
+MjUgMzggMDAKPj4+IFsgNjE5MS42NzE5ODBdIFJTUDogMDAyYjowMDAwN2ZmZDU3NGRmZGU4IEVG
+TEFHUzogMDAwMDAyMDYgT1JJR19SQVg6IDAwMDAwMDAwMDAwMDAwY2IKPj4+IFsgNjE5MS42NzE5
+ODFdIFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDA3ZmM2ZTdiOTg1YzggUkNYOiAwMDAw
+N2ZjNmU4NGQ2NjE3Cj4+PiBbIDYxOTEuNjcxOTgyXSBSRFg6IDAwMDA3ZmM2ZTdiOTg1ZjAgUlNJ
+OiAwMDAwMDAwMDAwMDAwMDgwIFJESTogMDAwMDAwMDAwMDAwMWI4ZAo+Pj4gWyA2MTkxLjY3MTk4
+Ml0gUkJQOiAwMDAwN2ZmZDU3NGRmZTcwIFIwODogMDAwMDdmYzZlODNlYTc4MCBSMDk6IDAwMDAw
+MDAwZmZmZmZmZmYKPj4+IFsgNjE5MS42NzE5ODNdIFIxMDogZmZmZmZmZmZmZmZmZmRjYSBSMTE6
+IDAwMDAwMDAwMDAwMDAyMDYgUjEyOiAwMDAwNTVhODE4ZWI2MWMwCj4+PiBbIDYxOTEuNjcxOTgz
+XSBSMTM6IDAwMDAwMDAwMDAwMDAwMDAgUjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIxNTogMDAwMDAw
+MDAwMDAwMDAwMAo+Pj4gWyA2MTkxLjY3MTk4NF0gTW9kdWxlcyBsaW5rZWQgaW46Cj4+PiBbIDYx
+OTEuNjcxOTg1XSBDUjI6IDAwMDAwMDAwMDAwMDAwMDAKPj4+Cj4+IAo+PiBPa2F5Li4uIHRoYXQg
+aXMgImdvb2QiIG5ld3MgLSBsb29raW5nIGZvciBzb21lIHRpbWUgc2xvdCB0byByZXByb2R1Y2UK
+Pj4gYW5kIGRlYnVnIG15c2VsZiBub3cuCj4+IAo+Cj5JJ3ZlIHRyaWVkIHRvIHJlcHJvZHVjZSwg
+dXNpbmcgdGhlIC5jb25maWcueWFtbCBiZWxvdyBmb3IKPnhlbm9tYWktaW1hZ2VzLCBidXQgaXQg
+ZG9lcyBub3QgdHJpZ2dlciBoZXJlLiBEbyBJIG5lZWQgdG8gcnVuIHRoaXMgZm9yCj5ob3Vycz8g
+V2hhdCBleGFjdGx5IGRpZCB5b3UgZG8gdG8gdHJpZ2dlciBpdCBpbiB0aGUgcWVtdSBpbWFnZSBv
+Zgo+eGVub21haS1pbWFnZXM/Cj4KPkJUVywgSSBhc3N1bWUgdGhlIGFjY2VzcyBvZiAvcHJvYy94
+ZW5vbWFpL3NjaGVkL3N0YXQgcGxheXMgYW4gaW1wb3J0YW50Cj5yb2xlIGluIGNhdXNpbmcgdGhl
+IGNyYXNoLCByaWdodD8gWW91IGRvbid0IGdldCBpdCB3aXRob3V0IHRoZW0/Cj4KPkphbgo+Cj4j
+Cj4jIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGJ5IGthcyA0LjIKPiMKPl9zb3VyY2VfZGlyOiAv
+cmVwbwo+YnVpbGRfc3lzdGVtOiBpc2FyCj5oZWFkZXI6Cj4gIGluY2x1ZGVzOgo+ICAtIGthcy55
+bWwKPiAgLSBib2FyZC1xZW11LWFtZDY0LnltbAo+ICAtIG9wdC1saW51eC1sYXRlc3QtNS4xMC55
+bWwKPiAgdmVyc2lvbjogMTYKPm1lbnVfY29uZmlndXJhdGlvbjoKPiAgREVCVUc6IGZhbHNlCj4g
+IEtFUk5FTF80XzE5OiBmYWxzZQo+ICBLRVJORUxfNF8xOV9MQVRFU1Q6IGZhbHNlCj4gIEtFUk5F
+TF81XzEwOiBmYWxzZQo+ICBLRVJORUxfNV8xMF9MQVRFU1Q6IHRydWUKPiAgS0VSTkVMXzVfMTU6
+IGZhbHNlCj4gIEtFUk5FTF81XzE1X0xBVEVTVDogZmFsc2UKPiAgS0VSTkVMXzVfNDogZmFsc2UK
+PiAgS0VSTkVMXzVfNF9MQVRFU1Q6IGZhbHNlCj4gIEtFUk5FTF82XzE6IGZhbHNlCj4gIEtFUk5F
+TF82XzFfTEFURVNUOiBmYWxzZQo+ICBUQVJHRVRfQkJCOiBmYWxzZQo+ICBUQVJHRVRfSElLRVk6
+IGZhbHNlCj4gIFRBUkdFVF9RRU1VX0FNRDY0OiB0cnVlCj4gIFRBUkdFVF9RRU1VX0FSTTogZmFs
+c2UKPiAgVEFSR0VUX1FFTVVfQVJNNjQ6IGZhbHNlCj4gIFRBUkdFVF9YODZfNjRfRUZJOiBmYWxz
+ZQo+ICBYRU5PTUFJMzogdHJ1ZQo+ICBYRU5PTUFJNDogZmFsc2UKPiAgWEVOT01BSV8zXzBfTEFU
+RVNUOiBmYWxzZQo+ICBYRU5PTUFJXzNfMV9MQVRFU1Q6IGZhbHNlCj4gIFhFTk9NQUlfM18yOiB0
+cnVlCj4gIFhFTk9NQUlfM18yX0xBVEVTVDogZmFsc2UKPiAgWEVOT01BSV9MQVRFU1Q6IGZhbHNl
+Cj4KPi0tIAo+U2llbWVucyBBRywgVGVjaG5vbG9neQo+TGludXggRXhwZXJ0IENlbnRlcgo=
