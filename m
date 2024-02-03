@@ -1,43 +1,41 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F389C13FE5
-	for <xenomai@lists.linux.dev>; Sat,  3 Feb 2024 23:19:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45611640B
+	for <xenomai@lists.linux.dev>; Sat,  3 Feb 2024 23:29:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707002348; cv=none; b=UaL3h7nthOD+zib4upUB+vhrne3RokxAbDnwmGtcv1/99erd0zS1ic6ndha0CKc+HE9JfEIsjoq7eCb6LOyW44/muzCDWehOvvXkSmJHwxpc/7ksnHdwaACba0Lju9vuqFrwUeSzGWb0qTY03KlhZ5eH3JAMZKukSsaxavo/PN8=
+	t=1707002959; cv=none; b=BYegNv72dxIBmgMu35Jyc9SR7JJdzF4tp+Zm/fGGoAgUCLTsJpyTStFSBoWga4DHM4A7EIc9F1SuNrrZ7jXBwk7G5VY/Ynj1JX4nUsCn8ZmFZzUo8oViB4N7DQZN1pToQkvxVqlXcDfKhUCRC6Eh4vMQwObIGGjYCnUwUjvLLlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707002348; c=relaxed/simple;
-	bh=U23vddkEYMOMPg6uB/nHDaEuEw8PEJVx/66CTHu+Dsw=;
+	s=arc-20240116; t=1707002959; c=relaxed/simple;
+	bh=4frsvEJkF3KwBExldT2cvkfCO4PyEZjpkAYekDf448c=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=g2bsun1Y19BvspTu2AbJvXmyJ/bqjARWcMCqzjgklEMhSeMuQQzRL+9CBuN3wTD7jV9ztPSM840KacF9YHBiyUIOPsJWyHKhegCTwXEpCt+ITrVj/wOx5ceCjgkws88RSJK2LvvrW68czy2KmBOXT01wzazPYHta8p7rZ3eKVfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=gzCzVNMy; arc=none smtp.client-ip=185.136.64.227
+	 Content-Type:MIME-Version; b=cwLgJjnV2fH1IVxAipptjEUZz2ezM9iNO/fNsdGvGD1Cs4LOZ9KSK1SFS78G3a0GBymJBhTZWqDl+3J6F0I2WqcughSnpNtBMMI0SBrar/GDjkMnmz/hOcdAEN+YSjdZQmFfceLNtitEm7pjuMQChzIGxQdyihJjXz4jQ0vHFYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YtBW5KcG; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gzCzVNMy"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202402032238429596c824ad01799cd3
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YtBW5KcG"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20240203224855705873fa1d1aa84dee
         for <xenomai@lists.linux.dev>;
-        Sat, 03 Feb 2024 23:38:42 +0100
+        Sat, 03 Feb 2024 23:48:55 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=dMsPuutatDiRygbZvAV6LIKICJ8JInlGKy5vuZr4CCc=;
- b=gzCzVNMyvF3XWow/2IWpNqfx5tBbL0V4+/MXO/sBifeBrV089NDP/OrxdM19az9T8T1VhI
- ZptiUe0K8I70IUrSyRrxGIDmSg8TvX7tenZcF2W44tTm3aJVr6POmY97RttBBEdgirSSHQJW
- wjjAcH2CEwZZd9Am1phDkmGi1y8RA=;
-Message-ID: <6ab00f96df765db93faf2c3da14737e1f796a6a1.camel@siemens.com>
-Subject: Re: [PATCH v1 5/7] compat support: cobalt/posix/syscall: Use
- syscall_get_arguments()
+ bh=+sCDL4pEqXJSheEYR6gq84pSmYyijGif7BJDhrZ+O9s=;
+ b=YtBW5KcG0+OBqQC1ILu5bXn73rIq13jlRYQ3qRuLsTAzoU+AXoQUcvBzypXL9xQ8dM86LM
+ vtFESjVWAfNNTnvuipiLZ8YERu0IJQUc28TocvumwHNBTXZaSHncRcfkOvLFJ4pE4aIUk329
+ 3kOwsncq0JDJ7E2JubC+AtGmfLnqg=;
+Message-ID: <7efb05228e8b73d7c77041b2b962aa7ce91b9c4d.camel@siemens.com>
+Subject: Re: [PATCH v1 0/7] Add 32-bit compat support for arm64 to xenomai
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Richard Weinberger <richard.weinberger@gmail.com>, Clara Kowalsky
 	 <clara.kowalsky@siemens.com>
 Cc: xenomai@lists.linux.dev, rpm@xenomai.org, jan.kiszka@siemens.com
-Date: Sat, 03 Feb 2024 23:38:41 +0100
-In-Reply-To: <CAFLxGvwH5i=u9_7ffN_uwctBHOANFDe3SFfoL9mxYbkpQJx8sg@mail.gmail.com>
+Date: Sat, 03 Feb 2024 23:48:54 +0100
+In-Reply-To: <CAFLxGvyy2r5dWUVNbXHtT6W=60DAByh63hi+1U_ynjrECtHvLA@mail.gmail.com>
 References: <20240122160105.2452024-1-clara.kowalsky@siemens.com>
-	 <20240122160105.2452024-6-clara.kowalsky@siemens.com>
-	 <CAFLxGvwH5i=u9_7ffN_uwctBHOANFDe3SFfoL9mxYbkpQJx8sg@mail.gmail.com>
+	 <CAFLxGvyy2r5dWUVNbXHtT6W=60DAByh63hi+1U_ynjrECtHvLA@mail.gmail.com>
 Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
  =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
  =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
@@ -84,43 +82,67 @@ Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 Hi Richard,
 
-On Fri, 2024-02-02 at 18:03 +0100, Richard Weinberger wrote:
-> On Mon, Jan 22, 2024 at 6:51=E2=80=AFPM Clara Kowalsky
+On Fri, 2024-02-02 at 18:08 +0100, Richard Weinberger wrote:
+> On Mon, Jan 22, 2024 at 6:55=E2=80=AFPM Clara Kowalsky
 > <clara.kowalsky@siemens.com> wrote:
 > >=20
-> > Use the generic implementation for fetching the syscall arguments.
+> > Hi all,
 > >=20
-> > Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> > ---
-> >  kernel/cobalt/posix/syscall.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > this series adds the 32-bit compat support for arm64 to xenomai 3.
+> > It allows us to run arm(hf) applications on arm64 kernels.
 > >=20
-> > diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscal=
-l.c
-> > index 6e1f15ea5..1d37cb279 100644
-> > --- a/kernel/cobalt/posix/syscall.c
-> > +++ b/kernel/cobalt/posix/syscall.c
-> > @@ -584,7 +584,7 @@ restart:
-> >          */
+> > Best regards,
+> > Clara Kowalsky
 > >=20
-> >         p =3D current;
-> > -       pipeline_get_syscall_args(p, regs, args);
-> > +       syscall_get_arguments(p, regs, args);
+> > Clara Kowalsky (7):
+> >   compat support: cobalt: Move 32-bit compat files to generic
+> >   compat support: cobalt/arm: Refactor registers
+> >   compat support: cobalt/arm64: Add compat support and clean-up
+> >   compat support: cobalt/arm64: Update ABI revision level
+> >   compat support: cobalt/posix/syscall: Use syscall_get_arguments()
+> >   compat support: lib/cobalt: Fix VFP detection for arm on arm64
+> >   compat support: cobalt/arm64: Enable compat support for arm64
+> >=20
+> >  .../arch/arm/include/asm/xenomai/syscall.h    |   4 +-
+> >  .../arch/arm/include/asm/xenomai/syscall32.h  |   8 +-
+> >  kernel/cobalt/arch/arm64/Kconfig              |   2 +-
+> >  .../arch/arm64/include/asm/xenomai/syscall.h  |  10 +-
+> >  .../arm64/include/asm/xenomai/syscall32.h     |  12 ---
+> >  .../arm64/include/asm/xenomai/uapi/features.h |   2 +-
+> >  .../arch/x86/include/asm/xenomai/syscall32.h  | 102 ------------------
+> >  .../asm-generic}/xenomai/syscall32-table.h    |   6 +-
+> >  .../include/asm-generic/xenomai/syscall32.h   |  78 +++++++++++++-
+> >  kernel/cobalt/posix/syscall.c                 |  16 +--
+> >  kernel/cobalt/posix/syscall.h                 |   2 +-
+> >  kernel/cobalt/trace/cobalt-posix.h            |   4 +-
+> >  lib/cobalt/arch/arm/features.c                |   5 +
+> >  .../arch/arm/include/asm/xenomai/syscall.h    |  65 ++++++-----
+> >  14 files changed, 143 insertions(+), 173 deletions(-)
+> >  delete mode 100644 kernel/cobalt/arch/arm64/include/asm/xenomai/syscal=
+l32.h
+> >  delete mode 100644 kernel/cobalt/arch/x86/include/asm/xenomai/syscall3=
+2.h
+> >  rename kernel/cobalt/{arch/x86/include/asm =3D> include/asm-generic}/x=
+enomai/syscall32-table.h (94%)
 >=20
-> Hmm, how does this worth with Xenomai arm32 ABI, do you fixup regs
-> somewhere else?
-> It places XENO_ARM_SYSCALL into r7 and uses r0 for the cobalt syscall id.
-> So we're wasting one argument and they need shifting.
+> I don't know how I missed your patches but I spent yesterday the whole
+> day with the very same cleanup. :-S
+> What I miss in your changes is the VDSO handling.
+> By default aarm64 does not offer AT_SYSINFO_EHDR, so
+> cobalt_lookup_vdso() will fail.
 
-This is just a cleanup - in case I recall correctly.
+Is that hidden behind a specific (kernel) configuration? Wondering why
+we did not see that problem yet...
 
-Re-read patch 2 carefully. We changed the register usage, basically
-aligned it with the Xenomai arm64 ABI.
+Richard, are you based on current next? compat applications should have
+y2038 support enabled by default now, and I can remember that I had to
+deal with some VDSO stuff at this time...
 
-r7 =3D __xn_syscode(op)
-r0 =3D first argument
+> Enabling CONFIG_COMPAT_VDSO on aarm64 is tricky because you need
+> wither clang or a second cross compiler.
+> In my version I'm using a fallback to sc_cobalt_clock_gettime/64().
 
-No register wasting, no argument shifting necessary. No?
+To Clara: do we have CONFIG_COMPAT_VDSO enabled?
 
 Best regards,
 Florian
