@@ -1,43 +1,41 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C13F12E6D
-	for <xenomai@lists.linux.dev>; Sat,  3 Feb 2024 22:53:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E2EA12E50
+	for <xenomai@lists.linux.dev>; Sat,  3 Feb 2024 23:02:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707000830; cv=none; b=E9Mwm8ryI192b3Ws6wvWgi87B1lehfo0umY1CgKkk2mO93KSo5J5udDS50WJ5pjIDvrNzkm52g9R5XBn4EUDO+wvH0DwZl/TplenoFMHPMN6WDwiDcKLzrcfW9kdDoeUAVl4dKBVr1P41+Mng/iKNVUpwOJaB8oovYXf71xAH5Y=
+	t=1707001338; cv=none; b=TFDmvRs4Vg16aQEuXkfqVCDgo53VtElNABDhWibDR41XGhSS1TlZ4th1sE5cq6dJLVAC9RpJ7qii98xtsNgSfPo3kBgTZN/KtC0uUb6NTtcga9GYH1pcH/AhTP2Ec59WWJQUN5a/N8BhzWeCBZ4rYubyhvR2/TZxwoVw9pXccLg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707000830; c=relaxed/simple;
-	bh=SN6hta3tJ/ef2AdLKpqAonZaLe2perHUpLAOwXSuIwA=;
+	s=arc-20240116; t=1707001338; c=relaxed/simple;
+	bh=s9a7w6HJiiOKcnqQQhjr5ebMZmFfaXrJugCo+dfMhhI=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=P3W49Y6QyY0MvzV+4Qw12VXAs/74NTPNLHDb/mmjDqbymdm8Dx9zicZCkdgr9DV0RUMbN1FxhogmvDl62H7zHGPsoEY/Ur4MYYRe9cDwnP/5kUN9MGdE82KIxu2H+tNZuaffMFuic+qFZd4oMH8i7YwqZjTjvvqjcNiDfHMIqw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=fR4iCQ5O; arc=none smtp.client-ip=185.136.65.226
+	 Content-Type:MIME-Version; b=dJ/21G3PkcUMPOzzPIhis/DmxQWKhr3DJipYtL+bOxX1GWKdseirYrXnJDPyf0w3WZoSiozrZkzqIIO4VheHkJWOKz/1tE1Kh8EXAyWuR+tA9bUDjvx3CHT2EA1PqVsZ8iX8j4RMqNXeevFFJjvq894Ip39KYxJWGi11VTbUssk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Dp5RUuZs; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="fR4iCQ5O"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2024020322433413496cc843149474dd
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Dp5RUuZs"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2024020323021001be9ae547721a22ab
         for <xenomai@lists.linux.dev>;
-        Sat, 03 Feb 2024 23:43:34 +0100
+        Sun, 04 Feb 2024 00:02:10 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=uj4Nogry4OCXlsHnRmkPSe6VGq3njCa10pRfefahiQ4=;
- b=fR4iCQ5OPbeykHKyM5UxhiXwLHBzSAOtnefbFEuotCYbJfOBcWfvj6jISOnhGNM3hYiqLs
- 20II0LQ4X9ruHN0WiqHGtnYEhpV0hunWptCvwJFKFJZvnvRln8LA3+ZUcyDqo8nUOiPedW7C
- vGzFDYjg78SNl9pOzBFo3z4ytsN8Q=;
-Message-ID: <fe53ed9bd299b56614d2d79f523aec7c2422a3d9.camel@siemens.com>
-Subject: Re: [PATCH v1 4/7] compat support: cobalt/arm64: Update ABI
- revision level
+ bh=s9a7w6HJiiOKcnqQQhjr5ebMZmFfaXrJugCo+dfMhhI=;
+ b=Dp5RUuZsWOB+HJnNbpKpQrfKtak66CXaa7uCD8PVY1GipI+8xHN3TgYyOVmzDRUHpWh5IZ
+ dTDvz6QaRenYL7cGgobfwGBFTwxAX8zyfZb4rHqcub7GrwE/Udz4ReFKoXMur5uVKWXeGH7l
+ R/vrYuOMNov+E6FyBU1EFzzbzOAWg=;
+Message-ID: <3020e412aeca8625d054d72bed65c1a16128db7e.camel@siemens.com>
+Subject: Re: [PATCH v1 0/7] Add 32-bit compat support for arm64 to xenomai
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Richard Weinberger <richard.weinberger@gmail.com>, Clara Kowalsky
 	 <clara.kowalsky@siemens.com>
 Cc: xenomai@lists.linux.dev, rpm@xenomai.org, jan.kiszka@siemens.com
-Date: Sat, 03 Feb 2024 23:43:33 +0100
-In-Reply-To: <CAFLxGvzgbZdgzpwc8QSMxY0KJRDAKymmiMkPJ3WM4taogdmPKw@mail.gmail.com>
+Date: Sun, 04 Feb 2024 00:02:09 +0100
+In-Reply-To: <CAFLxGvyy2r5dWUVNbXHtT6W=60DAByh63hi+1U_ynjrECtHvLA@mail.gmail.com>
 References: <20240122160105.2452024-1-clara.kowalsky@siemens.com>
-	 <20240122160105.2452024-5-clara.kowalsky@siemens.com>
-	 <CAFLxGvzgbZdgzpwc8QSMxY0KJRDAKymmiMkPJ3WM4taogdmPKw@mail.gmail.com>
+	 <CAFLxGvyy2r5dWUVNbXHtT6W=60DAByh63hi+1U_ynjrECtHvLA@mail.gmail.com>
 Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
  =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
  =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
@@ -82,45 +80,29 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Fri, 2024-02-02 at 18:26 +0100, Richard Weinberger wrote:
-> On Mon, Jan 22, 2024 at 6:20=E2=80=AFPM Clara Kowalsky
-> <clara.kowalsky@siemens.com> wrote:
-> >=20
-> > Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> > ---
-> >  kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features=
-.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-> > index fba1db391..3060bcfae 100644
-> > --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-> > +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-> > @@ -22,7 +22,7 @@
-> >  #define _COBALT_ARM64_ASM_UAPI_FEATURES_H
-> >=20
-> >  /* The ABI revision level we use on this arch. */
-> > -#define XENOMAI_ABI_REV   3UL
-> > +#define XENOMAI_ABI_REV   19UL
->=20
-> Doesn't this unnecessarily force everyone to rebuild their arm64 applicat=
-ions?
-> The ABI revision check could also test whether the calling task is in
-> compat mode or not
-> and then either compare against the arm64 or arm32 ABI revision.
+Hi Richard,
 
-This will hopefully never be backported to stable branches, so
-rebuilding (for the new release) will be necessary anyhow.
+On Fri, 2024-02-02 at 18:08 +0100, Richard Weinberger wrote:
+> I don't know how I missed your patches but I spent yesterday the whole
+> day with the very same cleanup. :-S
+> What I miss in your changes is the VDSO handling.
+> By default aarm64 does not offer AT_SYSINFO_EHDR, so
+> cobalt_lookup_vdso() will fail.
+> Enabling CONFIG_COMPAT_VDSO on aarm64 is tricky because you need
+> wither clang or a second cross compiler.
+> In my version I'm using a fallback to sc_cobalt_clock_gettime/64().
 
-But: Clara, I think this patch is wrong. We changed the armhf ABI
-(independent from compat, for all armhf systems), but you're
-incrementing the arm64 ABI revision here.
+just forgot: I can't recall the correct / concrete names, but we simply
+set something like CONFIG_CROSS_COMPILE_COMPAT or
+CONFIG_CROSS_COMPILE_COMPAT_VDSO.
 
-To Richard: As we changed the armhf ABI, we should increment the ABI
-revision to protect users from running a mismatch between kernel and
-userspace (on armhf systems, compat does not matter).
+IIRC, the debian build process (or the Makefile machinery of Linux)
+takes care when you set CROSS_COMPILE in combination with COMPAT_VDSO.
 
-Does that make sense?
+Thanks for all your input! Very valuable!
+
+To Clara: We should double-check everything around CONFIG_COMPAT_VDSO
+again...
 
 Best regards,
 Florian
