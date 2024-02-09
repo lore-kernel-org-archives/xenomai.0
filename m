@@ -1,40 +1,40 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09D7B31A82
-	for <xenomai@lists.linux.dev>; Fri,  9 Feb 2024 11:51:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A798331A89
+	for <xenomai@lists.linux.dev>; Fri,  9 Feb 2024 11:51:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707479477; cv=none; b=nV3NN9wCjINKMnxeT5anlNNan8dTIiy2LbP72uiLzt8WmwegA57ZIHHC4kRJgHNFKhcRtPJcY1EdWmiYIc/pynws1FHT1NIL5Uq9yzg8lfr+iebX1AmFykBofYSsAfTsHpahCi/9B1x3YBrPsQr1KZG5WV2WS+dtHUy3eJrET1s=
+	t=1707479477; cv=none; b=oZXZoVZa1Y5pzkg1TGTLy9lL5D3d5Oo2VEAeoHqmZ2DudZdhXqe4D2reBmj7jmeNB7s02CXnnnWIrttaJhdrSOSo0NdtkgvHj7qmSNlmXwQO1UDHzLCzQ1+j2LY0bQwx5XttykcPi5pSC04E/sW/wPRdSkmSP5veI3BP+ng6TXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707479477; c=relaxed/simple;
-	bh=MVFvw7OTwwMsgqYW3jHfxzAeqnlT1sQ8Z5w6MW/wvWg=;
+	bh=apqbQ+MUcLeUgyirMQFUwV95MP16avxXUv2g20yTHXg=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=YPYA9KWfcWKo3qPA6znSLIHwrWikYio/VLETkgXb5A2zhxEXRBA0/KKMHAmomks3gDiL6wceb9L3Ecw14tE4z6Hi4DjBhf7YUfsdL0AmMKBJgJh5m4xab09a9QGfVWXKRshfg/CSSEkqWpnlrAbvb/yf2DG55tl4ewIGLS+Nx50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=lsR1WqqA; arc=none smtp.client-ip=185.136.64.225
+	 MIME-Version; b=lRAb9EfONhZGq9tJJkmJjRC9PfC9WWp6RuvWrKpxYPl9w+w304Dz+Nqk4bkdt1gVcKuZB8jXqrSMKYn20QxJZkTDcWkNH9N9l7QsaC25nnwhdVhvTM0SSNKAIjBDuxpfGvZf1XY8UdLVDdkQ5t/xWktW7KIFp6dyEE7CXCa83e8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=UKyUlCJJ; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="lsR1WqqA"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2024020911511281c7ac614dd4217147
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="UKyUlCJJ"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202402091151158a24b577b41c864633
         for <xenomai@lists.linux.dev>;
-        Fri, 09 Feb 2024 12:51:12 +0100
+        Fri, 09 Feb 2024 12:51:15 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=dWlRtsI5g/A44WiAEo8Qh/kSXHjOx7SWG3PswpEew4I=;
- b=lsR1WqqAxBWlo+3t6u5tkONAn6Qw6AF4z4PJNLkAoNMfMBtPsyvVkfnuq27ZxbxvlzKpJ5
- UsXjlwIY4VOHdUhV0v2cY4LHH4x6wUC4T5xcDI7NVccVNb67uL0uxQI/YRwaw6ROgbLoMzOq
- d1AmurEAhATvxcMhEe/xP+J0Jks74=;
+ bh=u22knRVoB4CF9IFg1+Tfu/pESd1w5xUSNcr93GCBiC4=;
+ b=UKyUlCJJJnI7ug7L4wrwuvN6dEyyHio3SDcEXQKKuf1RRM5/G0D8Z9lxhrr8LZ3yw809/X
+ s2zOe86eas6aBG1w9widX9ycnsHJN/+sZa9m+5NMW46TR1j4IDDwfbn4Jtlf/Rhr6AXqRzrJ
+ bkB6tSRghpdI+PN0JkOBf3I619IwA=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev,
 	rpm@xenomai.org
 Cc: florian.bezdeka@siemens.com,
 	jan.kiszka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [PATCH v2 3/7] compat support: cobalt/arm64: Add compat support and clean-up
-Date: Fri,  9 Feb 2024 12:50:21 +0100
-Message-Id: <20240209115025.1884451-4-clara.kowalsky@siemens.com>
+Subject: [PATCH v2 5/7] compat support: cobalt/posix/syscall: Use syscall_get_arguments()
+Date: Fri,  9 Feb 2024 12:50:23 +0100
+Message-Id: <20240209115025.1884451-6-clara.kowalsky@siemens.com>
 In-Reply-To: <20240209115025.1884451-1-clara.kowalsky@siemens.com>
 References: <20240209115025.1884451-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -47,47 +47,35 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
+Use the generic implementation for fetching the syscall arguments.
+
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ kernel/cobalt/posix/syscall.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-index 26e4ed8c3..42057e986 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-@@ -9,8 +9,6 @@
- #define _COBALT_ARM64_SYSCALL_H
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 6e1f15ea5..1d37cb279 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -584,7 +584,7 @@ restart:
+ 	 */
  
- #include <linux/errno.h>
--#include <linux/uaccess.h>
--#include <asm/unistd.h>
- #include <asm/ptrace.h>
- #include <asm-generic/xenomai/syscall.h>
+ 	p = current;
+-	pipeline_get_syscall_args(p, regs, args);
++	syscall_get_arguments(p, regs, args);
  
-@@ -20,7 +18,13 @@
-  */
- #define __xn_reg_sys(__regs)	((unsigned long)(__regs)->syscallno)
- #define __xn_syscall_p(regs)	((__xn_reg_sys(regs) & __COBALT_SYSCALL_BIT) != 0)
-+
-+#ifdef CONFIG_XENO_ARCH_SYS3264
-+#define __xn_syscall(__regs)    __COBALT_SYSNR32emu(__xn_reg_sys(__regs)	\
-+				    & ~__COBALT_SYSCALL_BIT)
-+#else
- #define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
-+#endif
+ 	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
+@@ -733,7 +733,7 @@ restart:
+ 	}
  
- #define __xn_reg_rval(__regs)	((__regs)->regs[0])
- #define __xn_reg_pc(__regs)	((__regs)->pc)
-@@ -32,7 +36,7 @@
-  */
- #define __xn_rootcall_p(__regs, __code)			\
- 	({						\
--		*(__code) = __xn_syscall(__regs);	\
-+		*(__code) = __xn_reg_sys(__regs);	\
- 		*(__code) < NR_syscalls;		\
- 	})
+ 	p = current;
+-	pipeline_get_syscall_args(p, regs, args);
++	syscall_get_arguments(p, regs, args);
  
+ 	ret = handler(args[0], args[1], args[2], args[3], args[4]);
+ 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
 -- 
 2.39.2
 
