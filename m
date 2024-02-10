@@ -1,33 +1,33 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A56B55FBA2
-	for <xenomai@lists.linux.dev>; Sat, 10 Feb 2024 21:34:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 315495FEE5
+	for <xenomai@lists.linux.dev>; Sat, 10 Feb 2024 21:57:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707600849; cv=none; b=HpTSWkigPViSSxX+wnnWDmy1h9KDtNRaX7rgLKSRVRw8Fy9DalzanLdia1RPK2F3TVGBCtU6j6CpULRfGeWvKIHXI/a3/pX8cszf48/c+I073ElT+Drvx4NKvqTfA0wa81jQVt1EGMtwDWuo9qWy4JoTNzQyFfXWjcCifmwXhV8=
+	t=1707602286; cv=none; b=dAyHvgUoLkqDr9b1GxpBpqdB79hu306FjszrxkWojNuXZjc+myUZqQbbNu/XT7xZiBQBp2o+9kO6fb/tYqZ/KtnmPPI54m4Ube8UpCiGCyk6lKTEZMWaacrHTMWHqPmy5gheI10Wo7EIaerfpUoG+4m49TLXg/mUcCQmO/jepbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707600849; c=relaxed/simple;
-	bh=JTgeQ6kAUxkyc0JQaEHT+LDHv+gL8dE97nl6morq1io=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=BjLZBb7mDpmQO8Y91yv+NNsHp6zu0WcrJsfAsyehKAqFgKPMoV7AAGUX3TnYErMBcg1OKaBIvaywAzfOxi5vxKtjYi8lVX0yh0IkcvFmhpKwEjWb0eusHWsXjcXjdiHF4wbGRCicuelm66o1rOkcJVhD/U+vkPgKLrCTqZU5F5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=bQ7nZnJX; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1707602286; c=relaxed/simple;
+	bh=xFn3ol335F35m6JUo1umgnff4nPjcEdkGfttVjxd6Zw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=HGv0cA1fodYGO6kQI0rtJD2F/LdLyJ09SqJKnPNrUcHYFUzVE4doL+tYycRIixti1e1B6epbAxpzpNfhLe/gWjhbrjBa6Mda1sKuNTBNDS0f/URFiswDCSkZAa1Nr3Kr+AYg5sREWBrzEDhksm5GSevN+0ghgQzuwvP3espoM7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ldGx72oL; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="bQ7nZnJX"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202402102133533cfecab1569ff4bacd
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ldGx72oL"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20240210215751fd13e695e8bf84cfe7
         for <xenomai@lists.linux.dev>;
-        Sat, 10 Feb 2024 22:33:53 +0100
+        Sat, 10 Feb 2024 22:57:51 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=BbAAxjQYjk82XO13Ieb2ILjzFAMqgPM30jcMsm1MYds=;
- b=bQ7nZnJX2+4g6m3sO4Y9F9i0wN4TjfRP7Fzan7k2Np25fwQ/0KCSZ32WaSSol7yUd/bghN
- xv2ng4O0qxBAb6+QE3ZVGZZqPAWdMMdsygQQD5YaVHkx6Vn3YdUQuBDl6geKoBsgVkekE8Cq
- O8yCjqK/wgdN6py7RXzhybNQaZAUI=;
+ bh=K960FUkHqFKFiveH16YYIxNXwrofZiDHfirocyfVGls=;
+ b=ldGx72oLlyvK9+Tbir6PupQduoN1rxm1zSPF5BUm5YDhCU9SBFImDRcgDg3zfy0ZM3I702
+ v/Nt6sex+2pCmUPKhCPHlEZkXDEDtJWrUzG1A2P55HLfwG03bNqeMsZKYoNpa1BuNKAiCiyz
+ Rt8+wXsh/n9Hz+s1F967IfMIbfqtA=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Sat, 10 Feb 2024 22:33:51 +0100
-Subject: [PATCH xenomai-images v2] compat: Fix compat builds, switch to new
+Date: Sat, 10 Feb 2024 22:57:50 +0100
+Subject: [PATCH xenomai-images v3] compat: Fix compat builds, switch to new
  ISAR compat API
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -37,11 +37,11 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240209-flo-fix-compat-testing-v2-v2-1-01fc5bf3a33f@siemens.com>
-X-B4-Tracking: v=1; b=H4sIAL7rx2UC/41OSw6DIBC9imHdaYTUX1e9R+MCcdBJFAxQYmO8e
- yeeoMv3f4eIGAijeBaHCJgpkncM1K0QZtZuQqCRsVClepSq7MAuHiztYPy66QQJYyI3QVYgtZR
- VM9Rdq7Tg/KAjwhC0MzM3uM+yMLkF5PQ1+BY7Or9qAlr1xFTP+kwx+fC9/mR5uf6YzhIkGFuOz
- VgpW7fmFQlXdPHOXtGf5/kD6+6x5ekAAAA=
+Message-Id: <20240209-flo-fix-compat-testing-v2-v3-1-72e81671f1ec@siemens.com>
+X-B4-Tracking: v=1; b=H4sIAF3xx2UC/42PvQ7CMAyEXwVlxihJKX8T74EY3NRpLbUJSkoEq
+ vruWN3YOp599509q0yJKavbblaJCmeOQUS13ynXY+gIuBWtrLZHbfUV/BDB8wdcHF84wUR54tB
+ BsWDQmPrcnK4Xi0ryDWaCJmFwvRDCexhk+Eok6bXwoT4U4ogMPGIno6fse85TTN/1nmJW14bqY
+ sCA87o9t7X1p4u7Z6aRQj6Id+UWu5kln4A23tWNr7Cq/D9rWZYfGukh3jUBAAA=
 To: xenomai@lists.linux.dev
 Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, 
  Jan Kiszka <jan.kiszka@siemens.com>, 
@@ -74,6 +74,10 @@ Internal CI run was successful, but still: Review carefully!
 CC: Jan Kiszka <jan.kiszka@siemens.com>
 CC: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
+Changes in v3:
+- Set PREFERRED_VERSION_xenomai-compat in distro config as well
+- Link to v2: https://lore.kernel.org/r/20240209-flo-fix-compat-testing-v2-v2-1-01fc5bf3a33f@siemens.com
+
 Changes in v2:
 - Simplify get_package_names(), address review comments from Jan 
 - Set PREFERRED_VERSION_xenomai-compat in all remaining option files as
@@ -81,6 +85,7 @@ Changes in v2:
 - Link to v1: https://lore.kernel.org/r/20240209-flo-fix-compat-testing-v2-v1-1-cf0d7d52f68c@siemens.com
 ---
  classes/print-revision.bbclass      |  4 ++--
+ conf/distro/xenomai-demo.conf       |  3 ++-
  opt-compat.yml                      |  3 ++-
  opt-xenomai-3.0.x.yml               |  3 ++-
  opt-xenomai-3.1.x.yml               |  3 ++-
@@ -88,7 +93,7 @@ Changes in v2:
  opt-xenomai-next.yml                |  3 ++-
  recipes-core/images/demo-image.bb   | 17 +++++++++++------
  recipes-xenomai/xenomai/xenomai.inc |  4 +---
- 8 files changed, 24 insertions(+), 16 deletions(-)
+ 9 files changed, 26 insertions(+), 17 deletions(-)
 
 diff --git a/classes/print-revision.bbclass b/classes/print-revision.bbclass
 index ca4aa7b..7674129 100644
@@ -103,6 +108,27 @@ index ca4aa7b..7674129 100644
 +    bbplain $(printf "%s-%s: Building revision %.20s for %s\n" \
 +                     ${PN} ${PV} ${COMMIT} ${PACKAGE_ARCH})
  }
+diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
+index 2915dbf..9e8c346 100644
+--- a/conf/distro/xenomai-demo.conf
++++ b/conf/distro/xenomai-demo.conf
+@@ -1,7 +1,7 @@
+ #
+ # Xenomai Real-Time System
+ #
+-# Copyright (c) Siemens AG, 2018-2023
++# Copyright (c) Siemens AG, 2018-2024
+ #
+ # Authors:
+ #  Jan Kiszka <jan.kiszka@siemens.com>
+@@ -16,6 +16,7 @@ XENOMAI_MAJOR_VERSION ?= "3"
+ OVERRIDES .= ":xenomai${XENOMAI_MAJOR_VERSION}"
+ 
+ PREFERRED_VERSION_xenomai ?= "3.2%"
++PREFERRED_VERSION_xenomai-compat ?= "3.2%"
+ include conf/distro/include/xenomai-version.inc
+ 
+ PREFERRED_VERSION_libevl ?= "4%"
 diff --git a/opt-compat.yml b/opt-compat.yml
 index 734066a..df01da8 100644
 --- a/opt-compat.yml
