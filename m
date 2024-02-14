@@ -1,184 +1,407 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2074.outbound.protection.outlook.com [40.107.7.74])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1A71A58B
-	for <xenomai@lists.linux.dev>; Wed, 14 Feb 2024 14:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.7.74
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707920846; cv=fail; b=r0+QE6maBM+M+SyR85V2QBOLAZs9zsF5UZuWJGYF0cqKHuKQcl+O0SjciGBAi6UimTAHfN4R2pJMJnGiwG+2ok+PVH+2T1BNgqTgs/YQJav00o7+CGeEocv9tB6nS9EylvkChpOik8WORDikXU2Bka//s/sty5AvxCthb6O2rA8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707920846; c=relaxed/simple;
-	bh=JPZuka9Khs17lBTMIy/7NPWg5UEUGFyAkidMnOJ/X/A=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=BMvwat3rRCu9RC3uzZfWPTKCmzBDzWXfGN+WXiLgNi02BciIbRze1TIfQUh0+ASo8DpsChYMV6DA39FDLIbhGDh4NrW96DmnYZomBN8LOo1iOvqPav0fKsoRB2iXp8uMno0xzCDDGrSoWtSh+pcCKb1EoeQJd9xfX6wvyXN1amM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=RAUQymUl; arc=fail smtp.client-ip=40.107.7.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4C560240
+	for <xenomai@lists.linux.dev>; Wed, 14 Feb 2024 16:21:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707927677; cv=none; b=OtJmA7u427SlpkF1n/NH6Jwm1yw6N7j0BqiwUiHz6uwFxMyS2qXQs3Au7g4htfSwQ981IiGIlYqADExjO58mP8sbWA/S/Tv/H2yXMlYh/FdT66onxgJGOyAknyljewt1NS4xXS4XlBe8bQw5V4lb6jkIQ/lrepGmklSWoXzU4Jk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707927677; c=relaxed/simple;
+	bh=8f4lhVcfdwuY3X7HXSceZwdMNbWDcTBARsxp9Xzm7WA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=ItDRQd/IZ0cmggwcbBoIvAHr80CiNNQljIXFBRlThMYkHcKUz/64/Wv+nlfOZrX2Mtc/nOVwS/3LZK2MDpEkwl3/5cPJJpn9kMAfgq+OXD/Ax+A68ZOtsMTg/2Y0hT6LyI1x3ZOdnN0jBJQQkKv53SUJ2mDGN/NwShde1RKw678=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=BapXF/hV; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="RAUQymUl"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n/xCpwu6cq0WL6hwOi6PQQnqBYnkpFJEgBQY5CWeVxhOHJE6XhqTThTLtMH0nAJQb4gDQHaialwCwT+nQ+ECdhVUqJPKdp4V9i5R9JmeZdolk2wZ4uFIfqCF9SqpWvNwSRoU/80L1P+pPc/udnFHFF8/fveXPFMf0Q9O55ywV3RvFH7bzDJIEUyioItua8QbnYH9KcIMbzUdq+VI5kkS1F26RVCgS7V5GQdIpOjn6IZvAQTDfE1PH77f4GR4t0Txt5JHE7guD+38KFJeDuE2uqyUr4vO7BOJrDH3JX1cBQJeq/OH7HVGbjYQxAhRPz2nXOewZA5/WYrFNceY97edEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gxSSImycD06ZjCRuzcv1F2xBXtl9zer9uxhYmTE6//Q=;
- b=ODUIFY/Ykg/lpXT3opAKF2H/pphMpRAuskqphWZZ2bfXFV3RMZHoZM8eULm4IAYcnriveogrJXf8LU210jlFrXJdF/DV8ZbjklVEcWrl1wQMxZszbJpJzDD6t7v6Zq0zYgZ+IEbbJZI8NPYLMjvPVeannxW+fLGHSqCCPuDSr0GmroNuRq3GhRaxQGoDkrNiwy9xwctGeE5MvxgP6BRQSrvYMOe48yKIt9S8yLSgLxnGcX+cdNNHNroz/eHIpkBVzY6ttnAbdoS1OsB++U32+62D2p+l3UjppjYXQ8kFrEeHMY5zJ/fSTjxgGws0WKZaC/CDcf+loiyBZ3E4xp6y4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gxSSImycD06ZjCRuzcv1F2xBXtl9zer9uxhYmTE6//Q=;
- b=RAUQymUl7xqj34ZGrlf+DzGGbPBYah6Vbf/yNfmqX34d+gje87US8DYxOMKpwJoxBcEXaINByA7TVp3fZNF54BI5ViuslnKiOjznE5LejfSB9AbI+cgsEG2F8V128yPNvKoEJVqNcIX0ylzx3fHZ8CoWLe68bVUu3zpY9RAs18me4ziHe7nAtg0KL0aicjJ4cLOVyOhP8RUgOuh0bMGdOx7l2fOjyJ/+LKkoRkd3ZjethYxh/k0dfB31hOiw5ng8mwIq7czGE2j0tpGFvkaKlX/03mh4ZJEbH6iOlbpLW/d/dZaiuvdxBs8LzU6xADBObYj55RBwWyvauOon3V2zxw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB5932.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:39c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.36; Wed, 14 Feb
- 2024 14:27:19 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8d16:7fbb:4964:94fe]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8d16:7fbb:4964:94fe%3]) with mapi id 15.20.7270.036; Wed, 14 Feb 2024
- 14:27:19 +0000
-Message-ID: <58292771-181f-4b8a-b8bb-6ae464c5643e@siemens.com>
-Date: Wed, 14 Feb 2024 15:27:18 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] cobalt/drvlib: Prefault io memory again
-Content-Language: en-US
-To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
-Cc: wg@denx.de, rpm@xenomai.org
-References: <20231205202210.25477-1-richard@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20231205202210.25477-1-richard@nod.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0129.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:94::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="BapXF/hV"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202402141621041efd16bd0167484682
+        for <xenomai@lists.linux.dev>;
+        Wed, 14 Feb 2024 17:21:04 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=clara.kowalsky@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=uyuVhq5Yc+SyRIbylvW2/FyvL2MrjeI9x3dOasMsbq0=;
+ b=BapXF/hVMvWvF/1iqG4si42kkOk5P+Aw/gVmaUPfMbXQB8EId+qm8DvBheopuVsUZReE7w
+ rZnt4QSY7MvW399AS5RfDClUOnsQC8jd8JKyokYtALdawa6ojdf7N06bUg7I4zFmhyNZ6DDz
+ V1YhLuAZD4F2+9qHmrkc8avtqqFAQ=;
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: florian.bezdeka@siemens.com,
+	jan.kiszka@siemens.com,
+	Clara Kowalsky <clara.kowalsky@siemens.com>
+Subject: [PATCH v3 1/6] compat support: cobalt: Move 32-bit compat files to generic
+Date: Wed, 14 Feb 2024 17:20:40 +0100
+Message-Id: <20240214162045.2017832-2-clara.kowalsky@siemens.com>
+In-Reply-To: <20240214162045.2017832-1-clara.kowalsky@siemens.com>
+References: <20240214162045.2017832-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5932:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0fb91db2-cf90-4d3a-2a1a-08dc2d690d22
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4cPO5W52fNmazsfT6ZbWc+VGOWjUlnfN8C83uaEDqEQiF876LNzHjwmFhkTIf5RIQRhDJg3/no1LJoVflaa5zKhoxxdlwcRo4LeBHp2OTlYYzNCJChSRnoRIwYcZIpKqMAQCSyQnM8DbZy61dGBhGmAFG+hh0rO+QUYEOUliIIjzluXRrqRF43uZa4o0Pjx3KFEoh1iTRaWN59obwvUkCk+LHdj03EGTXtVRKiOpAKjUKwP7AUqYDyRg+WF4dvffNMYOIMZmUIdKvDCcDS0vAFIBxyUbxLXHYnvzdiRFp47gYhMm0d78gEmVWlwmoBN3ronZXkMs4AHydUKSEfXJZHdWxjUc471x2dCkFRPhU8kUIT9BIuj8X5lbxjUwIlunmdUGs9MsUHygih1LSVVM1PMS9lka+9nqBqaQFKQaIV6HG/nIaEafxTYqcWw2C3QKDIDSM7Iqy9+6aWpufE+B+nrRCUjqmeXlcWXcRsI+AdIx/R1iB4p7Lm+dfA+/RYPRM/icJbvcM5OyFMmRG38+p8jxx+8yXXBJeFPQhDtBeti5At1jOL0Crc3gnj8PCN40
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(366004)(39860400002)(346002)(136003)(230922051799003)(64100799003)(451199024)(1800799012)(186009)(41300700001)(2906002)(8936002)(38100700002)(478600001)(6486002)(26005)(5660300002)(6512007)(44832011)(66556008)(66476007)(8676002)(6506007)(2616005)(53546011)(82960400001)(66946007)(36756003)(316002)(4326008)(31696002)(83380400001)(86362001)(31686004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Mnlpcng4UVpUcGoxNEY4Rk13MGp0V0lWRUpHU3NQSEtZUWViYTUxT0RrK2NW?=
- =?utf-8?B?elBObjNZMWc3TG9TVzQxSUFUTndCR2crQ0dYUUJvUmo1TlR2WE1yNEp3ejVC?=
- =?utf-8?B?SHloYUJyZWRERHZETHMycEJnMGYyZHZaYXVtclE2aWNUaUFTcU5TYVVqVGpS?=
- =?utf-8?B?VEl6UmJGREdJN3hITFZaazcyc1FqVDU1L0xHdzRqSDVCU2NUUUxMZ1pPeG9L?=
- =?utf-8?B?VnIrTHJ6SXdHU3pSSkU0dGY3V2tpVXVvR1k0c2hkK2xDYkZ4QWFtRWhhMEpD?=
- =?utf-8?B?Z0N0Q2xBRXZwaDRyK1N3SWFRT0Z1c0E0Y3h3OUZFc1dxSjY2RUppTmJoYkd6?=
- =?utf-8?B?OWxRMVFlWGFXVEZNN1ZEUTZQK0VFTHdacWpra2J3Z1ZIV0lUMXZ3dlZNQ2dn?=
- =?utf-8?B?d1RNZllxYmtGNmM5SGpHVkZ4d3JoMUdNNVZveEFER3ZyZ1IvRGhkRlhuK0kv?=
- =?utf-8?B?Z1BQeW54eXhEL1BUWkJpYzdLZ3RDcjBPWFN0bEtab3BwREJubHFuWGEvd2pm?=
- =?utf-8?B?OE1iTFJzME1uNTNWT0hEc29WRWs2QmtwbS82VG1adlBxamZwQ0JpMHpDbExp?=
- =?utf-8?B?KzVjWXNiL21QYTVCZWUyUE9ma3drQUlUV3V1OFpuM1FHNi9ocS9wdjhyOUJu?=
- =?utf-8?B?ZEYrZDkwWnFTUjQyb0ZoUXMvZkJaQ3BEdUdTRVl5SzE3OEdxSHRpeU5kRUlV?=
- =?utf-8?B?Tmg1YUZpZjBQUS8raEhsOXllV1R3SUhoZW4rWHJjdm9QVm50VkEvMmxDY081?=
- =?utf-8?B?Y2tZRUxMdVYxdndZY2tKMmFFMzBsd2J0YTREanFRYnlaUDhRaENJeml0Ylc3?=
- =?utf-8?B?TzhtSVhONEJ2YTIxWFRXa3dWbWRjbjdBZ0VEcUJIUHpTcWRkUVVRNDBtV3RU?=
- =?utf-8?B?alhPeGo2ZXpoNE5kdHpkd1N2RlluYmdzZnVkNWtVZm0yMSs1MzA1VEJYYWpv?=
- =?utf-8?B?NzdMMlM4TldtdURML1cxamluSXFmWmhVSnNrQXJ1Y1FGRXlaWG8wRHV0RFVJ?=
- =?utf-8?B?NU5XWWE5cUJQdk1ZdTZ3dWFVYTFteFROdUw4Y3VnK0djYmtwQjZmd1cwWFdY?=
- =?utf-8?B?VG5EWEFqeGZ3Z3RkRnZZakdxUU5OV0NPRkZTdGNoQjJiNDAyMGtKZ2Mrd0M5?=
- =?utf-8?B?UzNDWXlsSUMrQkNXRXZaSkJiWDBJSlRzdlZuYURidUo0ZUMrelVtN0dwZUZJ?=
- =?utf-8?B?TnlINnpFNUUxZldqcHlLeitzcHJTMmdlNWVlS0xxRUNmZDJMSm5scGMxMFR3?=
- =?utf-8?B?Mm4vUUJDTzFyb3RockEyVjc5d1ZRNmkzYjJoV1ZHa1hMaHZRM1VwUjJpemZY?=
- =?utf-8?B?ZlFLMit2U1Jsem5UYzBjTG10V25rVjRmTnRnT3dKUExDcnUwWDNWVHlTN0xu?=
- =?utf-8?B?cERoTkRzR05aczdrSVZtQVBnbzFOVVVLVzZGVW9kVVFKOENwZkdoeDdUaEo2?=
- =?utf-8?B?M2dKSVZScU1OOW5PUXhXejljSmx0bjBIaFN0OXFWQVRSazBnQXRCMG16Q3NZ?=
- =?utf-8?B?Y1FEa21WS2ZPaGJCVTlGd1RWblVZdGd5MlJUSit5VWNxQlFHOVVlMEp6WEI2?=
- =?utf-8?B?dFlYQm9TQ01NblNuVWdyc2tYNUhRbFJlZ2d5QXdpenVGV2VkYktGSWhqREI0?=
- =?utf-8?B?UStiVUlCaWlWYVpiNFdCb0dBTjRhRHhuTDZpbzFtT29mREJOa09kR3ArOWdY?=
- =?utf-8?B?Ny9jWHJNUWFsYXQyaXN1NmtPV1VBdEtuMlVzWS9Vcjc2SWxvVExzVGVzWkw4?=
- =?utf-8?B?TDcvOFpxWEwwbG9PSHA2dGlzb3lFZjZERmtrLzdJb201ZlUzQWZueUpoOWtv?=
- =?utf-8?B?bDBrbkJEOXJFZG5ueDI4UnlaWlVZL205S2g1Z1pzWXZQcnVQNmxPZEJpeksr?=
- =?utf-8?B?WXFQSWN0b0VydSs3YVIydXFHejByeUVtZGdLU0hBSDJLWmZhREFKK1RLYjQw?=
- =?utf-8?B?TWdZWkxpVkJ1VFZZZkpsUEN4ZDNQWkhOWlh2VFVGQWh0VXZORFN3bFlXdms0?=
- =?utf-8?B?K1loRngyNVNWSE1ET3pwdTVsVktPZ2g0UG5EdGY3YU0vWSt0eStCTVg1Ujlz?=
- =?utf-8?B?cEN1Y085T05iNGJFZkV1bnFzZE1HL3ZkQ2FmNUxFRnh2eHJHd1lQN2hDNTky?=
- =?utf-8?B?T3Z3bWt1d3o1ckhjR2V3Ym9rNEY0RTA0aHZHcHZBMmtFTHJDOGV3UGI1TW5k?=
- =?utf-8?B?SkE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0fb91db2-cf90-4d3a-2a1a-08dc2d690d22
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2024 14:27:19.6019
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gaaf3KnZYo6YLulI8nEn+CpdBjBwhUzsFA4FB7MKEwSIR6V9QGbnl83epgKyqY9XY0KZ3vuymGel382VkjuDbg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5932
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-On 05.12.23 21:22, Richard Weinberger wrote:
-> This issue was fixed a long time ago by
-> 03d5b0b0083c ("cobalt/rtdm: fix caching and page fault issues with rtdm_iomap_to_user()"),
-> later with commit c8e9e166b ("cobalt/rtdm: introduce mmap() support")
-> iomap code lost again the call to cobalt_machine.prefault().
-> 
-> I have no idea why this took so longer to come up again.
-> Last week, while upgrading an aarch32 setup from Xenomai 2 to Xenomai 3, the application
-> failed due to massive latencies caused by page faults after writing to io memory.
-> 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  kernel/cobalt/rtdm/drvlib.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index 30455c3d7..620be27fa 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -1761,6 +1761,7 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
->  {
->  	pgprot_t prot = PAGE_SHARED;
->  	unsigned long len;
-> +	int ret;
->  
->  	len = vma->vm_end - vma->vm_start;
->  #ifndef CONFIG_MMU
-> @@ -1774,8 +1775,17 @@ static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
->  #endif
->  	vma->vm_page_prot = pgprot_noncached(prot);
->  
-> -	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
-> -			       len, vma->vm_page_prot);
-> +	ret = remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
-> +			      len, vma->vm_page_prot);
-> +	if (ret)
-> +		return ret;
-> +
-> +#ifdef CONFIG_MMU
-> +	if (cobalt_machine.prefault)
-> +		cobalt_machine.prefault(vma);
-> +#endif
-> +
-> +	return 0;
->  }
->  
->  static int mmap_buffer_helper(struct rtdm_fd *fd, struct vm_area_struct *vma)
+In preparation for the 32-bit compat support for arm64, the compat files
+from x86 are moved to the asm-generic directory. This allows us to use
+these files also for arm64.
 
-Thanks, finally applied.
+Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
+---
+ .../arch/arm/include/asm/xenomai/syscall32.h  |   8 +-
+ .../arm64/include/asm/xenomai/syscall32.h     |  12 ---
+ .../arch/x86/include/asm/xenomai/syscall32.h  | 102 ------------------
+ .../asm-generic}/xenomai/syscall32-table.h    |   6 +-
+ .../include/asm-generic/xenomai/syscall32.h   |  78 +++++++++++++-
+ kernel/cobalt/posix/syscall.c                 |  12 +--
+ kernel/cobalt/posix/syscall.h                 |   2 +-
+ kernel/cobalt/trace/cobalt-posix.h            |   4 +-
+ 8 files changed, 93 insertions(+), 131 deletions(-)
+ delete mode 100644 kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h
+ delete mode 100644 kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+ rename kernel/cobalt/{arch/x86/include/asm => include/asm-generic}/xenomai/syscall32-table.h (94%)
 
-I suppose we also want this in stable versions...
-
-Jan
-
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h
+index 95c5a1168..11587bd71 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall32.h
+@@ -19,6 +19,12 @@
+ #ifndef _COBALT_ARM_ASM_SYSCALL32_H
+ #define _COBALT_ARM_ASM_SYSCALL32_H
+ 
+-#include <asm-generic/xenomai/syscall32.h>
++#define __COBALT_CALL32_INITHAND(__handler)
++
++#define __COBALT_CALL32_INITMODE(__mode)
++
++#define __COBALT_CALL32_ENTRY(__name, __handler)
++
++#define __COBALT_CALL_COMPAT(__reg)	0
+ 
+ #endif /* !_COBALT_ARM_ASM_SYSCALL32_H */
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h
+deleted file mode 100644
+index 13aa8a761..000000000
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall32.h
++++ /dev/null
+@@ -1,12 +0,0 @@
+-/*
+- * SPDX-License-Identifier: GPL-2.0
+- *
+- * Copyright (C) 2014 Philippe Gerum  <rpm@xenomai.org>
+- */
+-
+-#ifndef _COBALT_ARM64_SYSCALL32_H
+-#define _COBALT_ARM64_SYSCALL32_H
+-
+-#include <asm-generic/xenomai/syscall32.h>
+-
+-#endif /* !_COBALT_ARM64_SYSCALL32_H */
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+deleted file mode 100644
+index f023de354..000000000
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
++++ /dev/null
+@@ -1,102 +0,0 @@
+-/*
+- * Copyright (C) 2014 Philippe Gerum <rpm@xenomai.org>.
+- *
+- * Xenomai is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published
+- * by the Free Software Foundation; either version 2 of the License,
+- * or (at your option) any later version.
+- *
+- * Xenomai is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with Xenomai; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+- * 02111-1307, USA.
+- */
+-#ifndef _COBALT_X86_ASM_SYSCALL32_H
+-#define _COBALT_X86_ASM_SYSCALL32_H
+-
+-#include <asm/unistd.h>
+-
+-#ifdef CONFIG_IA32_EMULATION
+-
+-#define __COBALT_IA32_BASE		256 /* Power of two. */
+-
+-#define __COBALT_SYSNR32emu(__reg)					\
+-	({								\
+-		long __nr = __reg;					\
+-		if (in_ia32_syscall())					\
+-			__nr += __COBALT_IA32_BASE;			\
+-		__nr;							\
+-	})
+-
+-#define __COBALT_COMPAT32emu(__reg)					\
+-	(in_ia32_syscall() ? __COBALT_COMPAT_BIT : 0)
+-
+-#if __NR_COBALT_SYSCALLS > __COBALT_IA32_BASE
+-#error "__NR_COBALT_SYSCALLS > __COBALT_IA32_BASE"
+-#endif
+-
+-#define __syshand32emu__(__name)	\
+-	((cobalt_syshand)(void (*)(void))(CoBaLt32emu_ ## __name))
+-
+-#define __COBALT_CALL32emu_INITHAND(__handler)	\
+-	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
+-
+-#define __COBALT_CALL32emu_INITMODE(__mode)	\
+-	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
+-
+-/* ia32 default entry (no thunk) */
+-#define __COBALT_CALL32emu_ENTRY(__name, __handler)		\
+-	[sc_cobalt_ ## __name + __COBALT_IA32_BASE] = __handler,
+-
+-/* ia32 thunk installation */
+-#define __COBALT_CALL32emu_THUNK(__name)	\
+-	__COBALT_CALL32emu_ENTRY(__name, __syshand32emu__(__name))
+-
+-/* ia32 thunk implementation. */
+-#define COBALT_SYSCALL32emu(__name, __mode, __args)	\
+-	long CoBaLt32emu_ ## __name __args
+-
+-/* ia32 thunk declaration. */
+-#define COBALT_SYSCALL32emu_DECL(__name, __args)	\
+-	long CoBaLt32emu_ ## __name __args
+-
+-#else /* !CONFIG_IA32_EMULATION */
+-
+-/* ia32 emulation support disabled. */
+-
+-#define __COBALT_SYSNR32emu(__reg)	(__reg)
+-
+-#define __COBALT_COMPAT32emu(__reg)	0
+-
+-#define __COBALT_CALL32emu_INITHAND(__handler)
+-
+-#define __COBALT_CALL32emu_INITMODE(__mode)
+-
+-#define __COBALT_CALL32emu_ENTRY(__name, __handler)
+-
+-#define __COBALT_CALL32emu_THUNK(__name)
+-
+-#define COBALT_SYSCALL32emu_DECL(__name, __args)
+-
+-#endif /* !CONFIG_IA32_EMULATION */
+-
+-#define __COBALT_CALL32_ENTRY(__name, __handler)	\
+-	__COBALT_CALL32emu_ENTRY(__name, __handler)
+-
+-#define __COBALT_CALL32_INITHAND(__handler)	\
+-	__COBALT_CALL32emu_INITHAND(__handler)
+-
+-#define __COBALT_CALL32_INITMODE(__mode)	\
+-	__COBALT_CALL32emu_INITMODE(__mode)
+-
+-/* Already checked for __COBALT_SYSCALL_BIT */
+-#define __COBALT_CALL32_SYSNR(__reg)	__COBALT_SYSNR32emu(__reg)
+-
+-#define __COBALT_CALL_COMPAT(__reg)	__COBALT_COMPAT32emu(__reg)
+-
+-#endif /* !_COBALT_X86_ASM_SYSCALL32_H */
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h b/kernel/cobalt/include/asm-generic/xenomai/syscall32-table.h
+similarity index 94%
+rename from kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
+rename to kernel/cobalt/include/asm-generic/xenomai/syscall32-table.h
+index 3d64c46a7..91a65235f 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall32-table.h
+@@ -16,8 +16,8 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+  * 02111-1307, USA.
+  */
+-#ifndef _COBALT_X86_ASM_SYSCALL32_TABLE_H
+-#define _COBALT_X86_ASM_SYSCALL32_TABLE_H
++#ifndef _COBALT_ASM_SYSCALL32_TABLE_H
++#define _COBALT_ASM_SYSCALL32_TABLE_H
+ 
+ /*
+  * CAUTION: This file is read verbatim into the main syscall
+@@ -59,4 +59,4 @@ __COBALT_CALL32emu_THUNK(mq_timedreceive64)
+ __COBALT_CALL32emu_THUNK(sigtimedwait64)
+ __COBALT_CALL32emu_THUNK(recvmmsg64)
+ 
+-#endif /* !_COBALT_X86_ASM_SYSCALL32_TABLE_H */
++#endif /* !_COBALT_ASM_SYSCALL32_TABLE_H */
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall32.h b/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
+index b0c6f4a7c..3e1fcab8f 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
+@@ -19,12 +19,82 @@
+ #ifndef _COBALT_ASM_GENERIC_SYSCALL32_H
+ #define _COBALT_ASM_GENERIC_SYSCALL32_H
+ 
+-#define __COBALT_CALL32_INITHAND(__handler)
++#ifdef CONFIG_XENO_ARCH_SYS3264
+ 
+-#define __COBALT_CALL32_INITMODE(__mode)
++#define __COBALT_COMPAT32_BASE		256 /* Power of two. */
+ 
+-#define __COBALT_CALL32_ENTRY(__name, __handler)
++#define __COBALT_SYSNR32emu(__reg)					\
++	({								\
++		long __nr = __reg;					\
++		if (in_compat_syscall())				\
++			__nr += __COBALT_COMPAT32_BASE;			\
++		__nr;							\
++	})
+ 
+-#define __COBALT_CALL_COMPAT(__reg)	0
++#define __COBALT_COMPAT32emu(__reg)					\
++	(in_compat_syscall() ? __COBALT_COMPAT_BIT : 0)
++
++#if __NR_COBALT_SYSCALLS > __COBALT_COMPAT32_BASE
++#error "__NR_COBALT_SYSCALLS > __COBALT_COMPAT32_BASE"
++#endif
++
++#define __syshand32emu__(__name)	\
++	((cobalt_syshand)(void (*)(void))(CoBaLt32emu_ ## __name))
++
++#define __COBALT_CALL32emu_INITHAND(__handler)	\
++	[__COBALT_COMPAT32_BASE ... __COBALT_COMPAT32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
++
++#define __COBALT_CALL32emu_INITMODE(__mode)	\
++	[__COBALT_COMPAT32_BASE ... __COBALT_COMPAT32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
++
++/* compat default entry (no thunk) */
++#define __COBALT_CALL32emu_ENTRY(__name, __handler)		\
++	[sc_cobalt_ ## __name + __COBALT_COMPAT32_BASE] = __handler,
++
++/* compat thunk installation */
++#define __COBALT_CALL32emu_THUNK(__name)	\
++	__COBALT_CALL32emu_ENTRY(__name, __syshand32emu__(__name))
++
++/* compat thunk implementation. */
++#define COBALT_SYSCALL32emu(__name, __mode, __args)	\
++	long CoBaLt32emu_ ## __name __args
++
++/* compat thunk declaration. */
++#define COBALT_SYSCALL32emu_DECL(__name, __args)	\
++	long CoBaLt32emu_ ## __name __args
++
++#else /* !CONFIG_XENO_ARCH_SYS3264 */
++
++/* compat support disabled. */
++
++#define __COBALT_SYSNR32emu(__reg)	(__reg)
++
++#define __COBALT_COMPAT32emu(__reg)	0
++
++#define __COBALT_CALL32emu_INITHAND(__handler)
++
++#define __COBALT_CALL32emu_INITMODE(__mode)
++
++#define __COBALT_CALL32emu_ENTRY(__name, __handler)
++
++#define __COBALT_CALL32emu_THUNK(__name)
++
++#define COBALT_SYSCALL32emu_DECL(__name, __args)
++
++#endif /* !CONFIG_XENO_ARCH_SYS3264 */
++
++#define __COBALT_CALL32_ENTRY(__name, __handler)	\
++	__COBALT_CALL32emu_ENTRY(__name, __handler)
++
++#define __COBALT_CALL32_INITHAND(__handler)	\
++	__COBALT_CALL32emu_INITHAND(__handler)
++
++#define __COBALT_CALL32_INITMODE(__mode)	\
++	__COBALT_CALL32emu_INITMODE(__mode)
++
++/* Already checked for __COBALT_SYSCALL_BIT */
++#define __COBALT_CALL32_SYSNR(__reg)	__COBALT_SYSNR32emu(__reg)
++
++#define __COBALT_CALL_COMPAT(__reg)	__COBALT_COMPAT32emu(__reg)
+ 
+ #endif /* !_COBALT_ASM_GENERIC_SYSCALL32_H */
+diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
+index 66dd1aec8..6e1f15ea5 100644
+--- a/kernel/cobalt/posix/syscall.c
++++ b/kernel/cobalt/posix/syscall.c
+@@ -371,12 +371,12 @@ static int CoBaLt_ni(void)
+  * handler for a 32bit architecture), optionally followed by a set of
+  * 32bit syscall entries offset by an arch-specific base index, which
+  * default to the native calls. These nitty-gritty details are defined
+- * by <asm/xenomai/syscall32.h>. 32bit architectures - or 64bit ones
++ * by <asm-generic/xenomai/syscall32.h>. 32bit architectures - or 64bit ones
+  * for which we don't support any 32bit ABI model - will simply define
+  * __COBALT_CALL32_ENTRY() as an empty macro.
+  *
+  * - finally, 32bit thunk entries are generated by including
+- * <asm/xenomai/syscall32-table.h>, overriding the default handlers
++ * <asm-generic/xenomai/syscall32-table.h>, overriding the default handlers
+  * installed during the previous step.
+  *
+  * For instance, with CONFIG_IA32_EMULATION support enabled in an
+@@ -385,7 +385,7 @@ static int CoBaLt_ni(void)
+  *
+  * [sc_cobalt_mq_timedreceive] = CoBaLt_mq_timedreceive,
+  * ...
+- * [sc_cobalt_mq_timedreceive + __COBALT_IA32_BASE] = CoBaLt32emu_mq_timedreceive,
++ * [sc_cobalt_mq_timedreceive + __COBALT_COMPAT32_BASE] = CoBaLt32emu_mq_timedreceive,
+  *
+  * CoBaLt32emu_mq_timedreceive() would do the required thunking for
+  * dealing with the 32<->64bit conversion of arguments. On the other
+@@ -395,10 +395,10 @@ static int CoBaLt_ni(void)
+  *
+  * [sc_cobalt_sched_yield] = CoBaLt_sched_yield,
+  * ...
+- * [sc_cobalt_sched_yield + __COBALT_IA32_BASE] = CoBaLt_sched_yield,
++ * [sc_cobalt_sched_yield + __COBALT_COMPAT32_BASE] = CoBaLt_sched_yield,
+  *
+  * Accordingly, applications targeting the ia32 model issue syscalls
+- * in the range [__COBALT_IA32_BASE..__COBALT_IA32_BASE +
++ * in the range [__COBALT_COMPAT32_BASE..__COBALT_COMPAT32_BASE +
+  * __NR_COBALT_SYSCALLS-1], whilst native (32/64bit) ones issue
+  * syscalls in the range [0..__NR_COBALT_SYSCALLS-1].
+  *
+@@ -444,7 +444,7 @@ static const cobalt_syshand cobalt_syscalls[] = {
+ 	__COBALT_CALL_NI
+ 	__COBALT_CALL_ENTRIES
+ #ifdef CONFIG_XENO_ARCH_SYS3264
+-#include <asm/xenomai/syscall32-table.h>
++#include <asm-generic/xenomai/syscall32-table.h>
+ #endif
+ };
+ 
+diff --git a/kernel/cobalt/posix/syscall.h b/kernel/cobalt/posix/syscall.h
+index 3a4c98d7a..e43f8d991 100644
+--- a/kernel/cobalt/posix/syscall.h
++++ b/kernel/cobalt/posix/syscall.h
+@@ -30,7 +30,7 @@ struct pt_regs;
+ #define COBALT_SYSCALL_DECL(__name, __args)	\
+ 	long CoBaLt_ ## __name __args
+ 
+-#include <asm/xenomai/syscall32.h>
++#include <asm-generic/xenomai/syscall32.h>
+ 
+ int handle_head_syscall(bool caller_is_relaxed,
+ 			struct pt_regs *regs);
+diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
+index 1c9302324..fc8e72e39 100644
+--- a/kernel/cobalt/trace/cobalt-posix.h
++++ b/kernel/cobalt/trace/cobalt-posix.h
+@@ -42,8 +42,8 @@
+ #define __timespec_args(__name)					\
+ 	(long long)__entry->tv_sec_##__name, __entry->tv_nsec_##__name
+ 
+-#ifdef CONFIG_IA32_EMULATION
+-#define __sc_compat(__name)	, { sc_cobalt_##__name + __COBALT_IA32_BASE, "compat-" #__name }
++#ifdef CONFIG_XENO_ARCH_SYS3264
++#define __sc_compat(__name)	, { sc_cobalt_##__name + __COBALT_COMPAT32_BASE, "compat-" #__name }
+ #else
+ #define __sc_compat(__name)
+ #endif
 -- 
-Siemens AG, Technology
-Linux Expert Center
+2.39.2
 
