@@ -1,164 +1,92 @@
-Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.219])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1819212BF12
-	for <xenomai@lists.linux.dev>; Mon, 26 Feb 2024 14:34:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.50.219
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F3AE12F39F
+	for <xenomai@lists.linux.dev>; Mon, 26 Feb 2024 16:29:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708958066; cv=none; b=E50PWLXKFIGRSZebJQQpb0cxUklmsRY/JESYqUstBlRUnXsuXmKgpX0EpF3F0Gu4K4lCBA1W6no2rJobfBIF3BGzLaKaMOujI6cppwwQL+mBeU2XTPdgZWLmHmOeJVOfF356Q3427iI4D14BYIsXZCzpDwbFIK3sTGubNO5rUPU=
+	t=1708964965; cv=none; b=PBASHVnpmIt0raaZkauouqVMsOKYsykBWUMO9i1E8jF+0pgw96ZCRygV4AEiATWqUeMRjcrGlIhbNkLvOF3JOdvyr351xV/9n4xO4Gi0EaE/cpSVttg8N9S/Ddi/SToZX65MFwRkSiJ/WVeLjO8fsm6e+1MDj0fzMJsi4lfDYt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708958066; c=relaxed/simple;
-	bh=29UdxtT3j9L9kBMzPDJHlXcgTWeg91ABjsPq6pOOMeY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=oM/mS75eeVfmY7O1cow6DMmpiRtTZJ7Oq3Hamb+1FKVMIgFoRtlt2USmvfg4FhMUZE40dsQFW7sy0/I+VVvRkd+kZtKnfHRGbKXpCpyUrrzYa/IPRBVM7SN+hKanTqrtwBPtlTh8VG4ZxGiXEG8IfYBWB65Vei25iykwj/78SsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=RwD73rUp reason="signature verification failed"; arc=none smtp.client-ip=45.254.50.219
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1708964965; c=relaxed/simple;
+	bh=nTwvmlhkqiKctdTziGhMdYOXcDuJ03wA6jY1dq7XYSE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=f8ITMMIE4Uc3LYHhE5+ipkgfBU0MkdADSb0VYRdSRaW+ZD1HYBjwu1rWMV9XZ2y/Bi7FO6/zqRifwlylZpcO4knAG6xeIZ+y1G/niptqTycGpUYsVlTfBrvNm3dBp8ATwPK3kTymlhg2XIZ/Gwp6QeqgxAII+Lj65+KIBeWJuf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=CnM80Bdc; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="RwD73rUp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=gAoIO9KjGsUwY/GEHYKzaZG6XEaGrNA1pVd6a7i58bE=; b=R
-	wD73rUpcJZUgrldxj0mgPdIC4UFsjbtOOtycgT/xZeTSC12wtCcC1KkaDGQr8P6U
-	kETN5Ujzk0qgoY/Qn50mkyOGKuH3NXeOVHr+KToK+UakWP6/Ajdvn9Lx4UMuC+JF
-	ztjH0/QTw1jH1eQY/c4AorEkPko0j4PNiDCnwzRZxI=
-Received: from jerryjun123$163.com ( [116.30.124.2] ) by
- ajax-webmail-wmsvr-40-105 (Coremail) ; Mon, 26 Feb 2024 22:34:15 +0800
- (CST)
-Date: Mon, 26 Feb 2024 22:34:15 +0800 (CST)
-From: JerryJun  <jerryjun123@163.com>
-To: "Jan Kiszka" <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-Subject: Re:Re: NX-protected page
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2024 www.mailtech.cn 163com
-In-Reply-To: <c79218e4-cc6d-4f34-93b3-e1405978476a@siemens.com>
-References: <3ce13f2b.183be.18d2f264758.Coremail.jerryjun123@163.com>
- <87ca0f83-bb2f-49fd-8e30-8873778cd8a9@web.de>
- <6bec8d20.61c9.18d5e68d09d.Coremail.jerryjun123@163.com>
- <e1accac9-4044-4379-8d4f-f0eb7cd9d713@siemens.com>
- <fd2a3821-c4e6-4866-bc65-0bbadaf603e5@siemens.com>
- <799babe6.660d.18d68cb571a.Coremail.jerryjun123@163.com>
- <c79218e4-cc6d-4f34-93b3-e1405978476a@siemens.com>
-X-NTES-SC: AL_Qu2bCvWet0gu4ySYbOkfm0gag+05XsCyvf8n24JVOJp+jC/p5wYYZH9RBFTu9M+rBCKulgqFUhpz9u13epB/c7MgdCOVjjWMG1vgDEO+PzassA==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="CnM80Bdc"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240226162914b127b0ed92a1d25666
+        for <xenomai@lists.linux.dev>;
+        Mon, 26 Feb 2024 17:29:14 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=y7Soozhxo/hs+JdvSCXFzZdWRyU1AQxkTpOzXx7qtts=;
+ b=CnM80Bdc+AKrYXNBzVDdCs/zoiYVqxk+QFrWFfRVzsp11mw/SQmZ6tHwPLIEu+TmmXI4xf
+ uLOHVpTY8DMS1iT3e/hGgvwRHEJKk3HRg6P9X/NPiLc14e1SYfSS93BH1Xg6dLeyfCp0Jj6v
+ dfwvWxCDG2AtVQaBdoe8Hywp9dHFE=;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Mon, 26 Feb 2024 17:29:13 +0100
+Subject: [PATCH dovetail 6.7-6.1 1/2] dovetail: x86: Fix detection of prctl
+ based compat syscalls
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <40cc100b.12313.18de5d67bf5.Coremail.jerryjun123@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:_____wD3n1JnodxlEEQyAQ--.6469W
-X-CM-SenderInfo: xmhu25pmxqijqt6rljoofrz/1tbiLgiQLGV4HqdMGQADso
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240226-v6-7-dovetail-rebase-v1-1-2962213b5e9c@siemens.com>
+References: <20240226-v6-7-dovetail-rebase-v1-0-2962213b5e9c@siemens.com>
+In-Reply-To: <20240226-v6-7-dovetail-rebase-v1-0-2962213b5e9c@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-aGksIEphbiwgIGlmICB5b3UgaGF2ZSByZXByb2R1Y3RlZCBpdCAgYWZ0ZXIgdHJ5aW5nIHRvIHJ1
-biB0aGUgY2FzZSBmb3IgaG91cnMgaW4gcWVtde+8nyBvciBpcyB0aGVyZSBhbnkgZG91YnTvvJ8K
-CjIwMjQtMDItMDIgMTY6Mzc6NTksICJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNv
-bT4gd3JvdGU6Cj5PbiAwMi4wMi4yNCAwODo0OSwgSmVycnlKdW4gd3JvdGU6Cj4+IAo+PiBob3cg
-bG9uZyBkaWQgeW91IHJ1biBpdO+8n2l0IHdpbGwgdGFrZSBhIHdoaWxlIGZvciB0aGlzIGNyYXNo
-IGJ1dCBub3QgbW9yZSB0aGFuIDEyIGhvdXJzIGF0IG1vc3RseS4KPj4gb2vvvIxpIHdpbGwgdHJ5
-IHRvIHJ1biBpdCB3aXRob3V0IGdldCAvcHJvY+KApuKApgo+PiB0aGFuayB5b3UgdmVyeSBtdWNo
-Lgo+PiAKPgo+Tm90IGZvciBob3VycywgYnV0IG9uZSBzZXR1cCB3YXMgcnVubmluZyBmb3IgYWJv
-dXQgMzAgbWluLiBhdCBsZWFzdC4KPgo+SmFuCj4KPj4gCj4+IEF0IDIwMjQtMDItMDIgMTQ6NDk6
-NTMsICJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gd3JvdGU6Cj4+PiBPbiAw
-MS4wMi4yNCAwODowOSwgSmFuIEtpc3prYSB3cm90ZToKPj4+PiBPbiAzMS4wMS4yNCAwODoyNSwg
-SmVycnlKdW4gd3JvdGU6Cj4+Pj4+IHlldO+8jCB5b3UganVzdCBkbyBtYWtlIGluIHRoZSBwcm9q
-ZWN0IHRvIHByb2R1Y3QgdGhlIGJpbmFyeSBvZiBvb3AtdGVzdCwgcnVuIGtpbGxfdGVzdC5zaCAs
-IGFuZCBmaW5hbGx5wqB3YWl0IGtlcm5lbCBvb3AgLgo+Pj4+PiB3ZSBnZXQgdGhlIHNhbWUgcmVz
-dWx0cyBvZiBrZXJuZWwgb29wIGluIHRoZSBxZW11LWFtZDY0LCB3aGljaCB1c2UgdGhlIGNvbmZp
-ZyBmcm9tIHhlbm9tYWktaW1hZ2VzICwiaHR0cHM6Ly9zb3VyY2UuZGVueC5kZS9YZW5vbWFpL3hl
-bm9tYWktaW1hZ2VzLy0vYmxvYi9tYXN0ZXIvcmVjaXBlcy1rZXJuZWwvbGludXgvZmlsZXMvYW1k
-NjRfZGVmY29uZmlnP3JlZl90eXBlPWhlYWRzIiwgYXMgZm9sbG93Lgo+Pj4+PiBbIDYxOTEuNjcx
-OTUzXSBCVUc6IGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UsIGFkZHJlc3M6IDAwMDAw
-MDAwMDAwMDAwMDAKPj4+Pj4gWyA2MTkxLjY3MTk1NV0gI1BGOiBzdXBlcnZpc29yIGluc3RydWN0
-aW9uIGZldGNoIGluIGtlcm5lbCBtb2RlCj4+Pj4+IFsgNjE5MS42NzE5NTZdICNQRjogZXJyb3Jf
-Y29kZSgweDAwMTApIC0gbm90LXByZXNlbnQgcGFnZQo+Pj4+PiBbIDYxOTEuNjcxOTU2XSBQR0Qg
-MCBQNEQgMAo+Pj4+PiBbIDYxOTEuNjcxOTU4XSBPb3BzOiAwMDEwIFsjMV0gUFJFRU1QVCBTTVAg
-UFRJIElSUV9QSVBFTElORQo+Pj4+PiBbIDYxOTEuNjcxOTU5XSBDUFU6IDMgUElEOiA3MDQ3IENv
-bW06IG9vcC10ZXN0IEtkdW1wOiBsb2FkZWQgTm90IHRhaW50ZWQgNS4xMC4xOTktZGV2by0zLjIu
-NC0yMDI0MDEzMCAjMQo+Pj4+PiBbIDYxOTEuNjcxOTYwXSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0
-YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjE0LjAtMiAwNC8wMS8yMDE0
-Cj4+Pj4+IFsgNjE5MS42NzE5NjFdIElSUSBzdGFnZTogTGludXgKPj4+Pj4gWyA2MTkxLjY3MTk2
-MV0gUklQOiAwMDEwOjB4MAo+Pj4+PiBbIDYxOTEuNjcxOTYyXSBDb2RlOiBVbmFibGUgdG8gYWNj
-ZXNzIG9wY29kZSBieXRlcyBhdCBSSVAgMHhmZmZmZmZmZmZmZmZmZmQ2Lgo+Pj4+PiBbIDYxOTEu
-NjcxOTYyXSBSU1A6IDAwMTg6ZmZmZmM5MDAwMDExOGY4MCBFRkxBR1M6IDAwMDEwMjQ2Cj4+Pj4+
-IFsgNjE5MS42NzE5NjNdIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY4ODgxMDhkM2Q3
-MzAgUkNYOiAwMDAwMDAwMDAwMDAwMDAwCj4+Pj4+IFsgNjE5MS42NzE5NjRdIFJEWDogZmZmZjg4
-ODEwOGQzZDczOCBSU0k6IGZmZmZmZmZmODI1MTYyODQgUkRJOiBmZmZmODg4MTA4ZDNkNzMwCj4+
-Pj4+IFsgNjE5MS42NzE5NjVdIFJCUDogMDAwMDAwMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAw
-MDAwMDAgUjA5OiAwMDAwMDAwMDAwMDAwMDAxCj4+Pj4+IFsgNjE5MS42NzE5NjVdIFIxMDogMDAw
-MDAwMDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDEgUjEyOiAwMDAwMDAwMDAwMDAwMDAw
-Cj4+Pj4+IFsgNjE5MS42NzE5NjZdIFIxMzogMDAwMDAwMDAwMDAwMDAxOCBSMTQ6IGZmZmZmZmZm
-ODExZDM3ZTAgUjE1OiAwMDAwMDAwMDAwMDAwMDAwCj4+Pj4+IFsgNjE5MS42NzE5NjddIEZTOsKg
-wqAwMDAwN2ZjNmU4M2VhNzgwKDAwMDApIEdTOmZmZmY4ODgxM2JkODAwMDAoMDAwMCkga25sR1M6
-MDAwMDAwMDAwMDAwMDAwMAo+Pj4+PiBbIDYxOTEuNjcxOTY3XSBDUzrCoMKgMDAxMCBEUzogMDAw
-MCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMKPj4+Pj4gWyA2MTkxLjY3MTk2OF0gQ1Iy
-OiBmZmZmZmZmZmZmZmZmZmQ2IENSMzogMDAwMDAwMDEwNjc1MDAwNSBDUjQ6IDAwMDAwMDAwMDAx
-NzBlZTAKPj4+Pj4gWyA2MTkxLjY3MTk2OF0gQ2FsbCBUcmFjZToKPj4+Pj4gWyA2MTkxLjY3MTk2
-OF3CoMKgPElSUT4KPj4+Pj4gWyA2MTkxLjY3MTk2OV3CoMKgPyBzaG93X3RyYWNlX2xvZ19sdmwr
-MHgxYzIvMHgyYzkKPj4+Pj4gWyA2MTkxLjY3MTk2OV3CoMKgPyBpcnFfd29ya19zaW5nbGUrMHg0
-Mi8weDgwCj4+Pj4+IFsgNjE5MS42NzE5NjldwqDCoD8gX19kaWVfYm9keS5jb2xkKzB4OC8weGQK
-Pj4+Pj4gWyA2MTkxLjY3MTk3MF3CoMKgPyBub19jb250ZXh0KzB4MTNhLzB4MjcwCj4+Pj4+IFsg
-NjE5MS42NzE5NzBdwqDCoD8gZXhjX3BhZ2VfZmF1bHQrMHg2Zi8weDIwMAo+Pj4+PiBbIDYxOTEu
-NjcxOTcwXcKgwqA/IGFzbV9leGNfcGFnZV9mYXVsdCsweDFlLzB4MzAKPj4+Pj4gWyA2MTkxLjY3
-MTk3MF3CoMKgPyBoYW5kbGVfb29iX2lycSsweDkwLzB4OTAKPj4+Pj4gWyA2MTkxLjY3MTk3MV3C
-oMKgaXJxX3dvcmtfc2luZ2xlKzB4NDIvMHg4MAo+Pj4+PiBbIDYxOTEuNjcxOTcxXcKgwqBpcnFf
-d29ya19ydW5fbGlzdCsweDJkLzB4NDAKPj4+Pj4gWyA2MTkxLjY3MTk3MV3CoMKgaXJxX3dvcmtf
-cnVuKzB4MjYvMHg0MAo+Pj4+PiBbIDYxOTEuNjcxOTcyXcKgwqBpbmJhbmRfd29ya19pbnRlcnJ1
-cHQrMHhhLzB4MjAKPj4+Pj4gWyA2MTkxLjY3MTk3Ml3CoMKgaGFuZGxlX3N5bnRoZXRpY19pcnEr
-MHhiMS8weDIxMAo+Pj4+PiBbIDYxOTEuNjcxOTcyXcKgwqBhc21fY2FsbF9pcnFfb25fc3RhY2sr
-MHgxMi8weDIwCj4+Pj4+IFsgNjE5MS42NzE5NzNdwqDCoDwvSVJRPgo+Pj4+PiBbIDYxOTEuNjcx
-OTczXcKgwqBhcmNoX2RvX0lSUV9waXBlbGluZWQrMHgxNWQvMHgyYTAKPj4+Pj4gWyA2MTkxLjY3
-MTk3M13CoMKgc3luY19jdXJyZW50X2lycV9zdGFnZSsweDE1Ny8weDFmMAo+Pj4+PiBbIDYxOTEu
-NjcxOTc0XcKgwqBfX2luYmFuZF9pcnFfZW5hYmxlKzB4NGIvMHg3MAo+Pj4+PiBbIDYxOTEuNjcx
-OTc0XcKgwqBfcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUrMHgzNS8weDcwCj4+Pj4+IFsgNjE5
-MS42NzE5NzRdwqDCoF9fc2V0X2NwdXNfYWxsb3dlZF9wdHIrMHhiZi8weDIzMAo+Pj4+PiBbIDYx
-OTEuNjcxOTc1XcKgwqBzY2hlZF9zZXRhZmZpbml0eSsweDM4My8weDZiMAo+Pj4+PiBbIDYxOTEu
-NjcxOTc1XcKgwqBfX3g2NF9zeXNfc2NoZWRfc2V0YWZmaW5pdHkrMHg0NS8weDgwCj4+Pj4+IFsg
-NjE5MS42NzE5NzVdwqDCoGRvX3N5c2NhbGxfNjQrMHgzOS8weDUwCj4+Pj4+IFsgNjE5MS42NzE5
-NzhdwqDCoGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDYyLzB4YzcKPj4+Pj4gWyA2
-MTkxLjY3MTk3OV0gUklQOiAwMDMzOjB4N2ZjNmU4NGQ2NjE3Cj4+Pj4+IFsgNjE5MS42NzE5Nzld
-IENvZGU6IDFmIDQwIDAwIDQ4IDhiIDE1IDc5IGM4IDBlIDAwIGY3IGQ4IDQxIGI5IGZmIGZmIGZm
-IGZmIDY0IDg5IDAyIDQ0IDg5IGM4IGMzIDY2IDJlIDBmIDFmIDg0IDAwIDAwIDAwIDAwIDAwIGI4
-IGNiIDAwIDAwIDAwIDBmIDA1IDw0OD4gM2QgMDAgZjAgZmYgZmYgNzcgMjkgNDEgODkgYzAgODMg
-ZjggZmYgNzQgMTggNjQgYzcgMDQgMjUgMzggMDAKPj4+Pj4gWyA2MTkxLjY3MTk4MF0gUlNQOiAw
-MDJiOjAwMDA3ZmZkNTc0ZGZkZTggRUZMQUdTOiAwMDAwMDIwNiBPUklHX1JBWDogMDAwMDAwMDAw
-MDAwMDBjYgo+Pj4+PiBbIDYxOTEuNjcxOTgxXSBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJYOiAw
-MDAwN2ZjNmU3Yjk4NWM4IFJDWDogMDAwMDdmYzZlODRkNjYxNwo+Pj4+PiBbIDYxOTEuNjcxOTgy
-XSBSRFg6IDAwMDA3ZmM2ZTdiOTg1ZjAgUlNJOiAwMDAwMDAwMDAwMDAwMDgwIFJESTogMDAwMDAw
-MDAwMDAwMWI4ZAo+Pj4+PiBbIDYxOTEuNjcxOTgyXSBSQlA6IDAwMDA3ZmZkNTc0ZGZlNzAgUjA4
-OiAwMDAwN2ZjNmU4M2VhNzgwIFIwOTogMDAwMDAwMDBmZmZmZmZmZgo+Pj4+PiBbIDYxOTEuNjcx
-OTgzXSBSMTA6IGZmZmZmZmZmZmZmZmZkY2EgUjExOiAwMDAwMDAwMDAwMDAwMjA2IFIxMjogMDAw
-MDU1YTgxOGViNjFjMAo+Pj4+PiBbIDYxOTEuNjcxOTgzXSBSMTM6IDAwMDAwMDAwMDAwMDAwMDAg
-UjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIxNTogMDAwMDAwMDAwMDAwMDAwMAo+Pj4+PiBbIDYxOTEu
-NjcxOTg0XSBNb2R1bGVzIGxpbmtlZCBpbjoKPj4+Pj4gWyA2MTkxLjY3MTk4NV0gQ1IyOiAwMDAw
-MDAwMDAwMDAwMDAwCj4+Pj4+Cj4+Pj4KPj4+PiBPa2F5Li4uIHRoYXQgaXMgImdvb2QiIG5ld3Mg
-LSBsb29raW5nIGZvciBzb21lIHRpbWUgc2xvdCB0byByZXByb2R1Y2UKPj4+PiBhbmQgZGVidWcg
-bXlzZWxmIG5vdy4KPj4+Pgo+Pj4KPj4+IEkndmUgdHJpZWQgdG8gcmVwcm9kdWNlLCB1c2luZyB0
-aGUgLmNvbmZpZy55YW1sIGJlbG93IGZvcgo+Pj4geGVub21haS1pbWFnZXMsIGJ1dCBpdCBkb2Vz
-IG5vdCB0cmlnZ2VyIGhlcmUuIERvIEkgbmVlZCB0byBydW4gdGhpcyBmb3IKPj4+IGhvdXJzPyBX
-aGF0IGV4YWN0bHkgZGlkIHlvdSBkbyB0byB0cmlnZ2VyIGl0IGluIHRoZSBxZW11IGltYWdlIG9m
-Cj4+PiB4ZW5vbWFpLWltYWdlcz8KPj4+Cj4+PiBCVFcsIEkgYXNzdW1lIHRoZSBhY2Nlc3Mgb2Yg
-L3Byb2MveGVub21haS9zY2hlZC9zdGF0IHBsYXlzIGFuIGltcG9ydGFudAo+Pj4gcm9sZSBpbiBj
-YXVzaW5nIHRoZSBjcmFzaCwgcmlnaHQ/IFlvdSBkb24ndCBnZXQgaXQgd2l0aG91dCB0aGVtPwo+
-Pj4KPj4+IEphbgo+Pj4KPj4+ICMKPj4+ICMgQXV0b21hdGljYWxseSBnZW5lcmF0ZWQgYnkga2Fz
-IDQuMgo+Pj4gIwo+Pj4gX3NvdXJjZV9kaXI6IC9yZXBvCj4+PiBidWlsZF9zeXN0ZW06IGlzYXIK
-Pj4+IGhlYWRlcjoKPj4+ICBpbmNsdWRlczoKPj4+ICAtIGthcy55bWwKPj4+ICAtIGJvYXJkLXFl
-bXUtYW1kNjQueW1sCj4+PiAgLSBvcHQtbGludXgtbGF0ZXN0LTUuMTAueW1sCj4+PiAgdmVyc2lv
-bjogMTYKPj4+IG1lbnVfY29uZmlndXJhdGlvbjoKPj4+ICBERUJVRzogZmFsc2UKPj4+ICBLRVJO
-RUxfNF8xOTogZmFsc2UKPj4+ICBLRVJORUxfNF8xOV9MQVRFU1Q6IGZhbHNlCj4+PiAgS0VSTkVM
-XzVfMTA6IGZhbHNlCj4+PiAgS0VSTkVMXzVfMTBfTEFURVNUOiB0cnVlCj4+PiAgS0VSTkVMXzVf
-MTU6IGZhbHNlCj4+PiAgS0VSTkVMXzVfMTVfTEFURVNUOiBmYWxzZQo+Pj4gIEtFUk5FTF81XzQ6
-IGZhbHNlCj4+PiAgS0VSTkVMXzVfNF9MQVRFU1Q6IGZhbHNlCj4+PiAgS0VSTkVMXzZfMTogZmFs
-c2UKPj4+ICBLRVJORUxfNl8xX0xBVEVTVDogZmFsc2UKPj4+ICBUQVJHRVRfQkJCOiBmYWxzZQo+
-Pj4gIFRBUkdFVF9ISUtFWTogZmFsc2UKPj4+ICBUQVJHRVRfUUVNVV9BTUQ2NDogdHJ1ZQo+Pj4g
-IFRBUkdFVF9RRU1VX0FSTTogZmFsc2UKPj4+ICBUQVJHRVRfUUVNVV9BUk02NDogZmFsc2UKPj4+
-ICBUQVJHRVRfWDg2XzY0X0VGSTogZmFsc2UKPj4+ICBYRU5PTUFJMzogdHJ1ZQo+Pj4gIFhFTk9N
-QUk0OiBmYWxzZQo+Pj4gIFhFTk9NQUlfM18wX0xBVEVTVDogZmFsc2UKPj4+ICBYRU5PTUFJXzNf
-MV9MQVRFU1Q6IGZhbHNlCj4+PiAgWEVOT01BSV8zXzI6IHRydWUKPj4+ICBYRU5PTUFJXzNfMl9M
-QVRFU1Q6IGZhbHNlCj4+PiAgWEVOT01BSV9MQVRFU1Q6IGZhbHNlCj4+Pgo+Pj4gLS0gCj4+PiBT
-aWVtZW5zIEFHLCBUZWNobm9sb2d5Cj4+PiBMaW51eCBFeHBlcnQgQ2VudGVyCj4KPi0tIAo+U2ll
-bWVucyBBRywgVGVjaG5vbG9neQo+TGludXggRXhwZXJ0IENlbnRlcgo=
+In case a compat application is requesting a dovetail service the
+syscall number will not be equal to __NR_prctl (= the x86_64 syscall
+number).
+
+The same problem exists on the arm64 architecture where the problem was
+already addressed. Apply the same to x86.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/x86/include/asm/dovetail.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/arch/x86/include/asm/dovetail.h b/arch/x86/include/asm/dovetail.h
+index 2a85995d6564..001520262ce6 100644
+--- a/arch/x86/include/asm/dovetail.h
++++ b/arch/x86/include/asm/dovetail.h
+@@ -10,6 +10,7 @@
+ 
+ #include <asm/io_bitmap.h>
+ #include <asm/fpu/api.h>
++#include <linux/compat.h>
+ 
+ static inline void arch_dovetail_exec_prepare(void)
+ {
+@@ -40,6 +41,14 @@ void arch_dovetail_switch_finish(bool enter_inband)
+ 	}
+ }
+ 
++/*
++ * 172 is __NR_prctl from unistd in compat mode, without #inclusion
++ * hell. At the end of the day, this number is written in stone to
++ * honor the ABI stability promise anyway.
++ */
++#define arch_dovetail_is_syscall(__nr)	\
++	(in_compat_syscall() ? (__nr) == 172 : (__nr) == __NR_prctl)
++
+ #endif
+ 
+ #endif /* _ASM_X86_DOVETAIL_H */
+
+-- 
+2.39.2
+
