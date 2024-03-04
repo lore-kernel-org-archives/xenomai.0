@@ -1,140 +1,102 @@
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC47673501
-	for <xenomai@lists.linux.dev>; Wed, 28 Feb 2024 13:44:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8268620DD2
+	for <xenomai@lists.linux.dev>; Mon,  4 Mar 2024 09:43:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709127895; cv=none; b=Xyxq8QF8X23neF76bQncqzlKwQ99wFFDtYVpqLzgoDl4gPBsDLfLBQXTLW19gyEyUmOZdX4d16ZDw2KumQdxze0go/T/c3h3tgWkGY9grzEQBbNTB4/UBwJoHaDL58eJ/d06/cPUtFDO6et8rPl3Yvz+6bnQn0ACOlFMTbHCbD0=
+	t=1709545423; cv=none; b=u/rBATKo8v6YlF0OWboxx+N6WxRt7w6hCAiBLdHruK80CeQAkahjAZJeh9QHaq+kd4v/FMdo9m3jjt0v1SRYidnslgQIudg0USqOPMqaUfjPDG42lZTU306YsEOO6PclPAUyx6zH4bVd5usZzgdGThA8wlcRZ323of2mJVVWzHk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709127895; c=relaxed/simple;
-	bh=ODVX5ZHRVBYVlF3c+cVeDE7iXEX1gJRk5rKsfHp3Y6Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=plBDNdKDIcRwIbYgCT/7/CH0gEuLYUI+nNOS/Ln5ZCZbXdhadBh3I0b0ZjWCNKDbkXbxpxeqVuED+LNrDTYyKlJWnl68nnQ59IhWjjntBmoiA1URbAXtRazyWYyMYU8u75PKKJ85PQ6v88LIGBH51etPE0RFLHYL2xnhFCPTrDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ljg0sSVi; arc=none smtp.client-ip=209.85.215.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1709545423; c=relaxed/simple;
+	bh=/WVre4qi+2XhzxhvmGWyrgOP/kkTpymMprE3pSmmBCI=;
+	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
+	 MIME-Version:Content-Type; b=J3kAy9YS6uErea75WBSE3KZBAjH48ii/ULrPWC7t+JmSS7urZIO4gjuuBzb/kpPu65oM6oAHHe3dkW1Svwq7atgpFSWZp9lRNIuEkeSV8max07bTdKvxuIrvmTGqvNirT0EsnCNt7Udyh+GDUpQAjijjaql/rgvvg+Qt0sHAiC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ljg0sSVi"
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-5c229dabbb6so3079449a12.0
-        for <xenomai@lists.linux.dev>; Wed, 28 Feb 2024 05:44:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1709127893; x=1709732693; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z16cC8zMmAkFjQXpu8l3DkuVuibFBW4S2IhlkdtT/aU=;
-        b=ljg0sSViW0zeBLF1CFpCD44mfp0K7sifqAOQWMBqZcFvl6ukb83xIhR502sd4JgzA1
-         6z1sdPotjXUhUS1OoSt4SlV+V3IM6fjoEqStfBRf/xNN6e1CKQEyalUBuUXg8J3WZjPV
-         aBKxxsvm2fhTHPfIHwwk/PLbg1O6PCkOIDzwzoY5GFKAAF/pFUhGQEq5ZSGOxWqfMPAt
-         tUJ0RrfZjA38jkcp/WQvKl4QnJvJw/toy2HdbQPQzFz/ZBX7tiNWwhUVzv6fT0iY4rzd
-         GUuWsT1m/gmh3D44cDHi052WvMzG+r6McPH6rAUe6k0+mLJbEwJev32U5quL/evP8qp0
-         zINw==
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-513382f40e9so2191167e87.2
+        for <xenomai@lists.linux.dev>; Mon, 04 Mar 2024 01:43:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709127893; x=1709732693;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Z16cC8zMmAkFjQXpu8l3DkuVuibFBW4S2IhlkdtT/aU=;
-        b=POpEWtHnRme+Lj3jrvLnLdHbLeXGGrl5gDY6CUHO3DWqHzO5Vx1Rq1kQWV6R91YUQ1
-         gYvUWTzMWCN0Kc3oPvQaSfuVwBojfsgv+u7H2p5DCUR1BGBv8D75jgfD3p7V2rvKGIFI
-         LFvaM4ZFtJiYs4gXmC4yruN5iMjOnqMk4i/wGVwzfFDVtKRugxTpIdJ0aTTPpqHoMQGO
-         hBUPjDKQPFBhyzdrSQ4+Nua+rypzLWpvGstSexb5LiwpHNSaGY4yA5B6X3HViiWOtuLa
-         OvrUUwt6LlYjP2eeZXTJYD/lVllHqfbOWpejpXMm6zF4MSxO91lJ+HZnoaX5LCY2p8jr
-         J5OA==
-X-Gm-Message-State: AOJu0YyeAt8JUDVyvT7tbJPiCQ7VeG0jNcFhAQXa33hwFtlVhfNi1o+s
-	sKzJXpuNz+efXLKxgavURGGn4qNHXcUf/+kz0HKqB4cmrSaJCLMJrpUHC4jeXbW9PAkwk2jLL9m
-	2T2utLQRZNdme8qUi+FIdMV7wxXeYtbjkxjU=
-X-Google-Smtp-Source: AGHT+IHfYCvwhLqHig+zdAzRgnrs+8pFEreg/TEgJnnKBEUWRVVarMwByHaqZwTwaZF744JJZrrfSir41MjjqdGPDds=
-X-Received: by 2002:a17:90a:bd98:b0:299:e313:b0ad with SMTP id
- z24-20020a17090abd9800b00299e313b0admr12002519pjr.9.1709127892916; Wed, 28
- Feb 2024 05:44:52 -0800 (PST)
+        d=1e100.net; s=20230601; t=1709545419; x=1710150219;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hoQkiHcVPnqns5OMTR4IJzHfEnOtP58rKX45x0+1W44=;
+        b=SAgnEV07ZAnxVzNpPeSMNNDInxXoWaPI+LL57EtNl7D/Wbr4OTrDotokkANNaiVgZH
+         9HREJn889nHx7n/BFBSydddN+cuB1+8oI3TqzNHa5nvfqDEpckWi4QYLsk4JmhJqt2ls
+         61pMnoJoyyzvD8KqT22ai772NB33T0xh3XLDvk+nxHyt4tjPlQD+pxTgBLR0GZo4jauk
+         /TQgZgjFYiplnt/TDKq7FlGSk8ShA1qlNIjMU0U0XGuQMl+R0z3id5hG2iS2glllnqRl
+         srP7Y3PpnMFDecSl4GUV126B1XhyiIdkxOada0iPXTNXcokae9HWE347ypuwvA0q01Ps
+         NzwA==
+X-Gm-Message-State: AOJu0Yy/tJiyIzRyLXGWcR1WC4AowZCh94THtIqAa08KLwMdtk7QWOUs
+	9WE2rHwFu0FBrugKyJDP82ujR2wTL46qR4Bi1UbxqsRpSbf713ae9AKmDyT7
+X-Google-Smtp-Source: AGHT+IENfONzLv3yhWraM8HiWMpkEZE/NItC+9kv3aCNJz8MWp6p+Z/O/dri3+RQviX5TRcx7IwmjQ==
+X-Received: by 2002:a05:6512:1395:b0:513:2347:4988 with SMTP id fc21-20020a056512139500b0051323474988mr7725201lfb.12.1709545418350;
+        Mon, 04 Mar 2024 01:43:38 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id f14-20020a5d50ce000000b0033b66c2d61esm11690178wrt.48.2024.03.04.01.43.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Mar 2024 01:43:37 -0800 (PST)
+References: <20240226-v6-7-dovetail-rebase-v2-0-7d457d60d376@siemens.com>
+User-agent: mu4e 1.10.5; emacs 29.2
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH dovetail 6.7-6.1 v2 0/2] dovetail: x86: Fix handling of
+ prctl based compat syscalls
+Date: Mon, 04 Mar 2024 10:41:21 +0100
+In-reply-to: <20240226-v6-7-dovetail-rebase-v2-0-7d457d60d376@siemens.com>
+Message-ID: <878r2yfi2j.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFLxGvzXWdySKjXmWv=onYk0urPzkn8bxWuvoFEmLzLyuQTj1Q@mail.gmail.com>
-In-Reply-To: <CAFLxGvzXWdySKjXmWv=onYk0urPzkn8bxWuvoFEmLzLyuQTj1Q@mail.gmail.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 28 Feb 2024 14:44:40 +0100
-Message-ID: <CAFLxGvwE76ud4K9iE-Vh8XOdsePWC7JPuearPxZu0omGTFE=ww@mail.gmail.com>
-Subject: Re: ARM64 prefault weirdness
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Tue, Feb 27, 2024 at 10:24=E2=80=AFAM Richard Weinberger
-<richard.weinberger@gmail.com> wrote:
->
-> Hi!
->
-> The more code I read, the more I get confused by Xenomai's prefault code.=
- ;-)
->
-> On Kernel 6.1, David and I have the following situation:
-> 1. A kernel module does vmalloc_user() followed by rtdm_mmap_to_user()
-> with PROT_READ | PROT_EXEC
-> 2. Arm64's prefault code triggers VM_BUG_ON_VMA(prev !=3D vma, vma); in
-> find_mergeable_anon_vma()
-> 3. It triggers only when PROT_WRITE in rtdm_mmap_to_user() is *not* set.
->
-> While playing with David's reproducer I discovered that even without
-> calling cobalt_machine.prefault() I don't
-> get page faults in the RT application while accessing the area.
-> rtdm_mmap_to_user() calls for vmalloc'ed areas vm_insert_page(), so I
-> guess(!) we get there already
-> page table entries.
->
-> Can it be that cobalt_machine.prefault() is not really needed on arm64
-> for vmalloc'ed memory?
-> Maybe older kernels are just more forgiving and tolerate unneeded
-> calls of handle_mm_fault()?
-> The VM_BUG_ON_VMA() assertion is also rather new and you need to have
-> CONFIG_DEBUG_VM=3Dy,
-> maybe nobody noticed ever.
->
-> What do you think?
 
-FWIW, with this change applied I get no unexpected page faults nor the
-VM_BUG_ON_VMA() triggers:
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 99d54f58f..c2061b776 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -1721,6 +1721,7 @@ static int mmap_kmem_helper(struct
-vm_area_struct *vma, void *va)
-{
-       unsigned long addr, len, pfn, to;
-       int ret =3D 0;
-+       int skip_prefault =3D 0;
+> Hi Philippe, Hi Jan, Hi all,
+>
+> while switching to prctl based syscalls on Xenomai 3 I found some issues
+> in dovetail. Seems the compt support for x86 is not fully tested here.
+>
+> The patches apply to the 6.7, 6.6 and 6.1 branches. 5.10 will need some
+> backporting. I think I can provide backports once this series was applied.
+>
+> Best regards,
+> Florian
+>
+> CC: Jan Kiszka <jan.kiszka@siemens.com>
+> CC: Philippe Gerum <rpm@xenomai.org>
+>
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+> Changes in v2:
+> - Addressed review comments from Philippe 
+> - Link to v1: https://lore.kernel.org/r/20240226-v6-7-dovetail-rebase-v1-0-2962213b5e9c@siemens.com
+>
+> ---
+> Florian Bezdeka (2):
+>       dovetail: x86: Fix detection of prctl based compat syscalls
+>       dovetail: x86: Fix fetching of the first syscall argument from compat tasks
+>
+>  arch/arm/include/asm/syscall.h   | 3 ++-
+>  arch/arm64/include/asm/syscall.h | 3 ++-
+>  arch/x86/include/asm/dovetail.h  | 9 +++++++++
+>  arch/x86/include/asm/syscall.h   | 7 ++++++-
+>  kernel/dovetail.c                | 5 ++++-
+>  5 files changed, 23 insertions(+), 4 deletions(-)
+> ---
+> base-commit: 2e3ed248f02a47dba4e5077031d285ff5c397372
+> change-id: 20240226-v6-7-dovetail-rebase-ea22554608c0
+>
+> Best regards,
 
-       to =3D (unsigned long)va;
-       addr =3D vma->vm_start;
-@@ -1740,6 +1741,9 @@ static int mmap_kmem_helper(struct
-vm_area_struct *vma, void *va)
-               if (ret)
-                       return ret;
-       } else {
-+               if ((vma->vm_flags & VM_MAYWRITE) =3D=3D 0)
-+                       skip_prefault =3D 1;
-+
-               /* vmalloc memory. */
-               while (len > 0) {
-                       struct page *page =3D vmalloc_to_page((void *)to);
-@@ -1751,7 +1755,7 @@ static int mmap_kmem_helper(struct
-vm_area_struct *vma, void *va)
-               }
-       }
+Merged, thanks. Slightly changed the short log of the last commit for
+practical reasons.
 
--       if (cobalt_machine.prefault)
-+       if (cobalt_machine.prefault && !skip_prefault)
-               cobalt_machine.prefault(vma);
-#endif
-
---=20
-Thanks,
-//richard
+-- 
+Philippe.
