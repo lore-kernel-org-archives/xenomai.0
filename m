@@ -1,63 +1,60 @@
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2046.outbound.protection.outlook.com [40.107.105.46])
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2076.outbound.protection.outlook.com [40.107.105.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41B985C52
-	for <xenomai@lists.linux.dev>; Tue,  5 Mar 2024 15:00:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E41584A48
+	for <xenomai@lists.linux.dev>; Tue,  5 Mar 2024 15:20:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.76
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709650816; cv=fail; b=qW3rP9z2vDLoC2YD01wZVd2gMu2ao6EDAvKxHVt/kipGlTpMJj151937fNMXNb6kBYTCHmkSQSsv/KLEa9x0azn40UQ4X+2OxWwbwmNn7AQSa1JqqeH98SSJaxpYq7KBhC7nil3UHs5tYsBPgkS9GJl0oUm8ptSiAQ/rI+UexBA=
+	t=1709652054; cv=fail; b=iGCG7c5nxf7SK8ptBHQ5fzoUCVFMIhNqFCSy+3Kaj9rCaZP9cix7DJHP9oIZas9nWvH5ZOCHdgS+7kU8DKOj0+o6NL6fiMa7LBkcx4bcUaKjuM5FcGKEESbLsmwka9X5d3wX/IO/VuKX7xDD4mNhJx/uvZexvFLWjeqF8wwYn0s=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709650816; c=relaxed/simple;
-	bh=Apy349u06i/4hBM0+fs2yZtaxcBF91QX//363vWNPmY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=arRrFDqs2woM56t4bA+BfLb9HAz4w4ZRcks03M+iLR7reyt4S4UYjWDQ8eeOsSBBCyDRt4r5je6FvZnwCjtp+wp/TleWnJwNeYAWaMkjZeiz5a7RvnRfRkZhE/LRSkd+i2UPJ2chjyvtPcRBm6qHXFAlRyW8wqSoAH8FUum7SXo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ofAk+B3k; arc=fail smtp.client-ip=40.107.105.46
+	s=arc-20240116; t=1709652054; c=relaxed/simple;
+	bh=D89C/c7Vy7hn70sk0gXofBr7IDRBG5koFG2iMwOgwkc=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=WSQzKoyuYoBdQP7nCeqCAUyFXYFc4jfm0hFt+GvHRSO74iQ6iBqaQcroY6LldoRBO4562rdwZOq7Kvcevmvyjm/AJ5a8tSaJhGa2sHwVvVU0TylsCy/oRqBmPxoklHOBHyqFNIPFylBzUH3wswlc2mp1amaGH/29xgzwoE/ORd8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=QrItdCrG; arc=fail smtp.client-ip=40.107.105.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ofAk+B3k"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="QrItdCrG"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IY4pC3hYGlDu2iEIwIE8CfjcvD2JgVpOaffBfVY/ijRjF9EUsPlKwlze6rusH8+WHQGbDsP5nMlf259ukQyeu96pin8luVoWSNCsIIYMLlTNL4sYFKs2EiDsRzbjbE6q2QGtnknWum7Byj++vpckstieZCwefq8rlcHzsi1IOJUUx0KqQ+llQm2zwt2eH4eXM1gBX8M3ng/0/htSPem7pMLrlfT1AEmd97IzPa3AwRp9DW1uSnpDIgytRq96Ft65AVIqrLx7x12siev2pjH+5MRxWAqQ5UUYGTG9HOCoXMIs2NxhIwVv5gnMX/gGP8s2dtH8WZmIk3nh4Q2Z937IlQ==
+ b=EmScFIhte3L9QbFIvopkAi/0hjvBl5hPI1Y+dShSi5tezXM3Dc0pmvnQXFTQgw0v/lHD1vak0+FHmstxGm3jkbS+lNeMDLhawjaIHA7B56fEENAHUtkjPkUoF1SDXr5GcUtpRf4ioJaN8umMEFvyi6eGCyqu8QdNievHOHiUzpobnZKuH5atNVtXVSx5sxrDvnDJsbL9PyfDSevAWvjFdewhzsoDmpSh3XkxPNHFls2LodFxqo0RAux+T/uCVqQPX/eX092kCi6YcWDGuhFAL6TyGxMo99LMFrpKt/BYjYGXX7IKKOTxM+AXdQr1lBJIuvIsFjsgTn2+x11Gd/zuBg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hx366WYs6aezl60T3+ZULNX2vu8SJlOgMV0FwptY9Ew=;
- b=jPPlsCq9RTtwXfPszRenF5Top6kZtru5/qTxYsfu7fR5OwNyYN1mqHP0mE5V7L5qPQjy0fNuicyxyxB3NT1gNu/0XnJejLBdm5JZ6gwmsKRP3/lm98ve2AGWD2WkIva3iqiFGkMeXG12H8/iau/HuAPAH6dvZOJRQiaMAP1bHHkYc/zSv/brD30duXf3roVogZiamEaWPZ1z+lLjNxP3YUGEtJqOYtbuhxd/cZohKII6JIWiFTXn95b1mGIpzG+soNaO705H8w/XwspIdkxLvxxPxPeVIDv+g6R2rbjYuT9hO38rz0sgs4jZQcN7xbpC6I2y8kDFXa011dmADMR2Lw==
+ bh=VLalKgyU2zq9oqPFLtRxnWjaUXUqlweRFvzpyVXCQTQ=;
+ b=DAa9eR8duxLCWtnyzZoEUaqFYinTlXsbPvY2X8BurhHZfR4AGGd30iSNoupyrvVt43ipYnQcGSaBPg4prXnVcQFIkUxwRyarLMjIqsQAVvQnEPKl8z57T+vwd6WsXZAsnoNvHA3nQGXNBkrN7Z2ovhfRqBdhhjV2kdcw9TaNKmDEHFeMMcTTrUNDp7Resm5ylP8hDOJloN/SD0CproKhmeOG9nmD/NTHXvT2SFc8yZ0uDYQb+x/Vp8QYMhOkH74z+I6W8Xv73Pye4n49mgFFbeMdkrflaDcAHc3BB+0SWx4oKSCEKQDEkAWBfJ5HMi7DWhgrh1Fbt/5qFsthrig6+Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hx366WYs6aezl60T3+ZULNX2vu8SJlOgMV0FwptY9Ew=;
- b=ofAk+B3klMe7XxsNN9bB9DhGj/6p1h5Hgp3XGRKh5I4pgoLeh3abNe9Qwelkq+GLyLcGyCVupp46umOTJmDUHy5lWLht8KFugbHDpJ0SPlAohs33Fi2ya61uZcZcm3VMiBqAwTlmWhnEgB/EDmukaKzWiNuLemxiS0ZetJxfLBF5ptCp+210jIpsLz77dSPaSk9Px5aqQxl/IKmn7GOv5pb1bsUqzlEeSEi/V4oxsDrer/XP6LSUT4kqT+mnOUJY2Vlc8GUB9TecEk+lhJPSxfACXr0VkhpDKrzNh50ZGHd7F1vEeY7deo5YvI72bU9jSokyyYKx96vFK0jQnp3PCA==
+ bh=VLalKgyU2zq9oqPFLtRxnWjaUXUqlweRFvzpyVXCQTQ=;
+ b=QrItdCrGhBMVQrE8E7og4+Hojy7h2igvfmvMFsifoV/LO2jykwrHzSRObFpF7204bPRtndQcslovzEfi1L4X8c1D8d1n7T88G0ZpOympbmdkzhxVqypH1pHCyW+hMTX7cNln1ok0SJEdwA3j03z/1ZnoLuK0m625ndpd+54PQ97uaPV5EJ6YdtWv78RrMD6EutREoyURMyEMPL7vj/4nJUpEjG7ZL6+rYJGfGwdA/dmC5rTNvW92fMrrz73j4Jh5WtSEiqFjpM3aRq1UbWJj9oKb0W2VdRMCdlG+8lKV6yNLvAkYKygeYmfCEd176bWVsVDSielcMv4bcY3a7EbsRA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB8PR10MB3532.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:140::18) with
+ by VI1PR10MB3744.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:135::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Tue, 5 Mar
- 2024 15:00:08 +0000
+ 2024 15:20:47 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8d16:7fbb:4964:94fe]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8d16:7fbb:4964:94fe%3]) with mapi id 15.20.7339.035; Tue, 5 Mar 2024
- 15:00:08 +0000
-Message-ID: <5501876e-57cb-4b24-b83f-815f3ee1cf61@siemens.com>
-Date: Tue, 5 Mar 2024 16:00:03 +0100
+ 15:20:47 +0000
+Message-ID: <f524d73e-5282-4256-ae7f-7add90312c43@siemens.com>
+Date: Tue, 5 Mar 2024 16:20:44 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: ARM64 prefault weirdness
+Subject: Re: [PATCH] cobalt: Print symbolic code location upon mode switch
 Content-Language: en-US
-To: Richard Weinberger <richard.weinberger@gmail.com>,
- Xenomai <xenomai@lists.linux.dev>
-Cc: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-References: <CAFLxGvzXWdySKjXmWv=onYk0urPzkn8bxWuvoFEmLzLyuQTj1Q@mail.gmail.com>
- <CAFLxGvwE76ud4K9iE-Vh8XOdsePWC7JPuearPxZu0omGTFE=ww@mail.gmail.com>
+To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
+References: <20240305081815.10560-1-richard@nod.at>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <CAFLxGvwE76ud4K9iE-Vh8XOdsePWC7JPuearPxZu0omGTFE=ww@mail.gmail.com>
+In-Reply-To: <20240305081815.10560-1-richard@nod.at>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH2PR10CA0014.namprd10.prod.outlook.com
- (2603:10b6:610:4c::24) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0435.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:d1::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -66,139 +63,96 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB8PR10MB3532:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f8d5806-54db-444f-62b7-08dc3d24f2d6
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3744:EE_
+X-MS-Office365-Filtering-Correlation-Id: 560dab54-3413-40cf-3409-08dc3d27d56b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	knCa1paFkPG/Fsex1/KTN4Av7pL9ahDUK+LxZMywk7RSE1jh3GWdgG1odE+nqslUxbv5eFMqT2IZL9rBVfdGFUqUBG1oATguMaO0SwoXmdgUZMMXfvrFCUDQBTkvxGERkJ3DbQla6jstAoEeF+S8e9s+WC7AJg6jFkShexGtADob4CV1aFkwLjFqdzBBEG2uLOPPGEkE7glx/hDebfv3pONinORwJR4vwB0uhAyJeqPkQPYGJ50DzkVthQAvbZexCLBQBAwdudEH2fHKbe6VEXAS6DFikLLmvRBEkmQqpB1P02XA6sG5MlyJ7zE15gUdDuI94HlBD5QbH9dFyBq4aW8LNDQGq606Yz5gQBtXFH7o44UHeW/ztSwtxpAvXpClTtVXc66dqZjnsR41ftOU3SwRGCulKZ4lr/4rUPFEHUD+OYLwaKjoD6uamhQwPFjwoVOfxVYqGqJhJjUunmNDJddX1Eyd9dyUGlFso+xa/6lkDwRaubNNkRxL+b3kXKeDCPAUkPLILb716Fg4Sb4DKqH4uVbwZw1dSkfbdPCr+E+i31Me6ppmpYW3oZE+pwW7ilCuiPm7rihgmw6GGTuWvmAgdWiWxowkhqXuRpcJOhuv9xejd2GA4adWtDjaSnX8adl8uZ+ynSimKHSeMl2o/d8PJwuvUqHRJWbmRm2654w=
+	PtCnG9xwUo+ePG6gPs7BlTp5ONJ0lEmL4MT6xu0DeBNGRKOn1+IknDTIhVaervP+W9hpcJsqBPbdR0v85xSQY9uJ5Krxj8nCTwedu52/LJHMTXMC4EknqTGP1NGw9BSMJnnWJ3je4igeZ+B/15oNUc2ARfKMvRcrYHMLIdJIRmhUc3jdmymCBV2hxypOQ9H0qvNKYS6c6Q3cjKdN+/Ksy2MA1KyAFqMN/MhGYrCyDqaMUVslRpQx/lcnC0OOnO7woDjnzA2Ckb+ZF6QvhqYgQFTtPR5KSzf3161lUdDB0oZfiRs54s9F+XMNSd/GWixI08irr1iZz0xCXc3QRzqbDOsyOWS+VKI4wM/H9DhhOVJjuoAZMfiZV6oNlejZSy1Acb8PZnhfsvXr9WPHjSeqAV/LSLiFPm8Qb17kegOdETsPjv/NSdIOxxpgsR/jbIQ7zZpY9TH5OisBVWBXNkcA5etKrkv2B/3J8D3ti6XcLkLEnlNHI64RGjfuV8M6FviEl+s4E/Da3c1D/aWv6a6jdV1ZLiYiHO3+1KJCne7g2DOrjF/lDQBoFrdu0sDmUsZu3zl5stMYZjGBU0TBZ2XogKWIv+bWUSr1pEg07eKXu3fdp//HQFNiZcOQf5iXquKsKMNTipgsH5vihqsy16CkIrxQ3h6vOJwuhvg8otG2LgU=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZHBCRlZ4WDdMWXo2anhlaW8wQXg1VklDQ1BPMFhvU04ybmRpeWtGVGgrSEhS?=
- =?utf-8?B?M211Um5lNWEyb3BRbjJHajJudzN2dWZNeWhPTWkzeGVLOUl1WVE5blc1Zlgv?=
- =?utf-8?B?MTNKbnQ3SjVVdXVLSU9oSkpXQlVTVXpLdXJjNmhyWmgwSENZaHpjYW9oZGxF?=
- =?utf-8?B?aUttM1MwY2hCQk1zbXBDdEZ0UytTTWlCTE11V2JJdlhYR1J3NUtRVWVKR0Ro?=
- =?utf-8?B?NHdKa2ZvcDh4TEo1QVBkRVBVNVFXUGVRdnFPMEZCRlBhckxJeW01aEJqeWRG?=
- =?utf-8?B?dWdzZjFDdzV6VUNhNGRLV3ZCL005c3lwRUUzTGQ1ZDRBdUxJazVVWWJENGlQ?=
- =?utf-8?B?aDQ2YUpvOUQxZ0NORVEvOWNVSVhOUXZIOWN2eG04bnNNVFdmeWxmZWpaNjUy?=
- =?utf-8?B?TFpvNzJiQVN3SmJodUkyMmQrYlloRFA5RDB2S0I0R3lYeXAySHZTVm1GeUxk?=
- =?utf-8?B?aTl5NG9JL0IrMzQ4R3poNlF1WU1NMHRxUXR0ejlYeGhqSi9WNlh4T29ad1Vz?=
- =?utf-8?B?eWFWSTIzZFQxdExTT20vd000ZDFoQUp4VzZtbEpJSkdGaVV1eWI4bTh0MjI2?=
- =?utf-8?B?MEJGZ2d5aVV1WDA4UHpML253anFtZ3NFNTFPajBBeElCNGV4VHlnU3hMMHBi?=
- =?utf-8?B?T3FCa2djTzBRdEViUEpkUkMxYjZydTlkYUtiUCtVV055THpEcnBFUlFoL3kv?=
- =?utf-8?B?WFRVNmxGU3NqVTFQVUtEOHRvcDdCemtNdDR5QVhTc1V1V0U1NVFqUHVsQUds?=
- =?utf-8?B?R05UMHpxOW5LYzlsS3k2MGFnOWJIQzd5NlA5Vm83a2NRclc5WWxjMVBvMm53?=
- =?utf-8?B?VUgrQjNPWUc4Uk9rTHZxdTVHVnZ6MFlWbk8vWEN0Ukx6WkhrTG5DUUM5R3ZB?=
- =?utf-8?B?NkZTUWpkYkJ2M2dER2J4dGw5NDhqWVRQYkgzbTVNYVIvaE0zdHlUWGhNR3dD?=
- =?utf-8?B?N3IwTWovTk45UFVlQzRHNDNqNEtaRWk2citPUkdDMnR4cDRXM0U3VWlrckRx?=
- =?utf-8?B?bjZFbklWUnE3WkFzZk9KTnhNRUI4L1JDdXJTTHgvMU1Fdk83eHl5QjhPb2Rn?=
- =?utf-8?B?eEVPR1M2bGl2QzlaOTM3eDVmMElCVVFIUVlYVUhzUzBpV29MbitHblFZQm9W?=
- =?utf-8?B?RTliT2FkVkxIZGgwR0dsak5pNHBBalM4K3NIQ055QWJtOXlEeW9uMVcyLzhD?=
- =?utf-8?B?cDJwdk9nRFNFS0ZJRjRxU2dROTViY3hrcW56TDl0RFF3eTJJVmlaYXdEQ3c3?=
- =?utf-8?B?UWtwUit6Ny8zT2hNREpSak4yNkVVTW9GbFJpbWhVMGJ3Vm9XS0RScDlLSEtM?=
- =?utf-8?B?WnVybmlCdzE1dVA2cjJNSDhVMGdkZkJ1MmVQUFRwY1hJRGMxTlVWY2xmdTFS?=
- =?utf-8?B?UlhQSFdzakY0M1NVYUpuaXpMUEU0by83VFl1MTBxMVlHSW5SVExsZDNraGIx?=
- =?utf-8?B?UkNlZnYvcGVTVlp4YkJzZWV3bnVhZ3B2S2UvZnJmeFVJcW9vRGNLMXFKbFhD?=
- =?utf-8?B?b1JveXk5L3JmcEo5YnNLTUhObnJkbDZEYlpnWE1jSU56UXorT01kdzFvVXYy?=
- =?utf-8?B?YndsMVhZVk1qL2lHQTNWVE94V0d6T0Z3UkljczU2eFp5R2lMNDAxZTl2SW1j?=
- =?utf-8?B?Z2YrSG5TbEU5R01ON2pJNWlnckdURTQ5MHVUeWIvbHFiWVNNako4WGZQb05U?=
- =?utf-8?B?cUd2blVKY2JQcGM3emJGUVRlNGUxWVVPWUZNaGxWdTZPTzM2eXZvczM2QVY3?=
- =?utf-8?B?bzFRaGthVlc3OXBtaTVoaXdrUzMwWnFUTUFWMzJpdUtmL000aTlaTS9UY0N1?=
- =?utf-8?B?SkdHT2Z2SFFsQ2szMkg0dUp2UWRLZDlYeis4ekdEdWE0WDFhWkt2TytjUjh2?=
- =?utf-8?B?MllBNkZmZ1c0UnlZcW9tYy9qSXB1NHZsQkh2RWtQUUhoYStEekhMNEVoWEFL?=
- =?utf-8?B?YkZYVTRadHdIbi9rOUllaCtTUDNObGZrTjc4cE12MGJmaUNHOHQ1a285My9k?=
- =?utf-8?B?SWhSaDFzQ092azZMSmVReVNTaHZYbVZ1Qm5OUWhzVHlyb0NWZWZndE0veHo3?=
- =?utf-8?B?ZUVYL2ZCMVUxdzNuc0N5Q2k4ejhhaGt6VEFCd25QcVBKb0FaSzRFdkVvS3Zk?=
- =?utf-8?B?bXR1d3dmelphSWVVMmRFbDJVWnN4ZGVkUHJmRDZJRjgzRjl0eEx5Q3RPVWJ5?=
- =?utf-8?B?RWc9PQ==?=
+	=?utf-8?B?V1IwSWlLK0R6aUdmYllkczh6N2lySDRCRVNJNnJKQUdHc2ZmbUg5dGs2UW1V?=
+ =?utf-8?B?elhielBoYWpXdW9xK0wvelZtK21Td3lWSmFaYjMvYzFSWG5YREc5T09SVHA5?=
+ =?utf-8?B?a1I1MzhxcnAxa3FYVVBmMzllQU95YUlUTHpMRlNhQ1FrSE1kdjFwT0Q0eVU1?=
+ =?utf-8?B?QXlJdk5BRTBnd3FjdjJYQ2dST3hhcDhFMm5zWUdrM2JPLzdaaWliOWUwY1BR?=
+ =?utf-8?B?emlwcVNETDZBOU92cWdLVksyUnNvMTlnUGlwaFljd2VlVk9WakZDVWhhZmhk?=
+ =?utf-8?B?YUF5TmNHUGt4T2hPRlY2SjZMVGV2bWp4MzFReWU4R3ZDN3FTdGdYT1Y2THcz?=
+ =?utf-8?B?SDV3NjBCdmpmbzIxaU12UEZIRFd6N2x3dGlUUkd1MnJoK1pGK3VBTDVNc00v?=
+ =?utf-8?B?cVpnR3V1SVhJYWhpaFQ1UHZRRmkxYkE3aVBOQWdQZGJmNGVPSzE5TDl0V2R0?=
+ =?utf-8?B?WVZiTXJaODNTR2YrRytTaEtwaHA0NmhibU0wRE93RWpqV3g5MFRUTDJwY3dK?=
+ =?utf-8?B?Uk53UTBKaVdHRjFzcVZDdVN5VktOQ1dGTlRFSEpQSXcvdUJzbGhCVFBuQms1?=
+ =?utf-8?B?aFgrYkQzeHBBN3N0clUrdVQyNjNER1BLV2NrODMrWlVaVWFnaUJjb1o3ZXc4?=
+ =?utf-8?B?cU5iNloxYUZxdFpyMTRqZ21oWXprcG1uUXFhR0xrSm5MdzVneXptZ2xmZW5S?=
+ =?utf-8?B?ODVnanpUMUk1d1RuNlN3ZFppSm1uK0xicnB4NW5nWU85VXN6ZTFuejNZWTl4?=
+ =?utf-8?B?aHd1U3BKYVhYamFycC9NVzBpZnE3NFY5Zm1GMjVmcEh0cDMwcDN2VGpPTTdk?=
+ =?utf-8?B?ZS9sb1BZQUkyN283d1duQnpONHJ1Q1lEL2xId0M2QVJOS2hqLzdSRUoyNkFK?=
+ =?utf-8?B?R1RZYXo2Z3ZtMGV5RVBqd08rUXFXdmNJTDVOcjBHT2duMmpxd0tUS0REK1dE?=
+ =?utf-8?B?cDdQSU9pNzhWcVBSTStMYnlGVVJGeGtmMU9sRmFMQTN3NEdUMDJVNE45RThL?=
+ =?utf-8?B?Rkw3SHBBeTY3cE53L2Z1KzVXbGtvcm1Qa08vaUI3cEZmQlJDNU1wNzMzS0l0?=
+ =?utf-8?B?ekRISWlWaWxtd3RUYks4dTV6RTZjMkdLZ2pmTXpaQXZJWFhwWnV4SE5nc0NL?=
+ =?utf-8?B?SVJ6eDRvZVFJYmpUM3FOajE5L3hmUlFoM0JYUzhvck9NZUNUNzJ6RVZwTDZC?=
+ =?utf-8?B?a1AxL0xKMWNnN1czeUhpUnVkdWh0WTFOUWNvbW9hZldkdEtDZnViWW9IWjZu?=
+ =?utf-8?B?K3Z4OTBXa0tBY1VlNStIdmpjLzZnZFdtRjJyTU1INk9ZUWI5WmMxenRlY1Ny?=
+ =?utf-8?B?dFA4aDBockpSMzc1S3BkdGxJVDVub2VkOFlJSE9ua1ViZWs3L1I4REJJa1NH?=
+ =?utf-8?B?WUVxQTlqdkhWbWlwOURZMFVWV085d0RtWmZUZHdydnFUU2lzRURRNjFYdEtS?=
+ =?utf-8?B?eStxOXpVaUtUZ2RTVTFQVG92ZkQrLzFaYzZVcXlOdmRYMFYvVUFCU1N6aU1q?=
+ =?utf-8?B?NWlGTjFFNktZWHNHSm05emZiYkpJZW9lVlkyV2E5NWNlYVZReCtPcTgrTTk2?=
+ =?utf-8?B?WDdBOTNndnptMS9GYkFZaUg1OGNvUWduS2l1VG1Wb0RIS2lCdmNuMG52RVFB?=
+ =?utf-8?B?M3BIZktOY0tOU1Y5blJFTWtCTG5YaUlvZ0VhQ2M1dHlTZnErVldiSUc5SEZV?=
+ =?utf-8?B?R2JNdEcrbzJ1dVJHcU5EQmdnNGI5V1UybVlkVXB0S3IweW5OZUFIRWFLRDJk?=
+ =?utf-8?B?TVRuYTNzOXUwS2FIWGIwcDhUbktwQzd5MUFoSEgraFJ1dGlnMTBsVlp5UVpH?=
+ =?utf-8?B?WXc2MS9BemdCWjFzRHVJeDJ5Ry9RU2Q5aGFyUHFpMWdjcmhoUUtzNERpWHNr?=
+ =?utf-8?B?NnhVTFlPSGRwWklKampVd29NS0lxYjJxQVVwS09kcDNmenlXcnFRMjJzdC9B?=
+ =?utf-8?B?RGdoK0c4bTlkYTRibUJybGNXMHh3T2tMSnpmLy94ZVpqUWJOSk9FWmNEV1Qx?=
+ =?utf-8?B?VHJHQWs5eWxMUDZqZC9nR2FKSzNRRjFlUnlvMjAxMUphS0xNV2FpeDlWSXFu?=
+ =?utf-8?B?aWJFdENEUUxuaHAvM1BUSUJQUHM4clNXUkRzQjF3Z0pnRkxYQUFlOEtRbUJr?=
+ =?utf-8?B?V3NjTmZpYnNLblcxRUU1c1gzbTBmdC9MbjRuaEJrVmljWEE1UFNoWDVCVUFx?=
+ =?utf-8?B?OUE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f8d5806-54db-444f-62b7-08dc3d24f2d6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 560dab54-3413-40cf-3409-08dc3d27d56b
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 15:00:08.4189
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 15:20:47.4205
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OCfr7QYP3F8Sn5o0Kh1NHAmlLYMu4FKT0RQYWgg/JZZNznrfZF5k7IEFzorni1SZvRsXh4iKdzxdXZOzrHJfHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3532
+X-MS-Exchange-CrossTenant-UserPrincipalName: TxkXkhb05aznQYbN3T9/KnCJ0dG1dmnroDLkpKrU/6mQLVqUiIRA0fI49LApFoVDx5v/poT9rKuHDdfnEW+fdg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3744
 
-On 28.02.24 14:44, Richard Weinberger wrote:
-> On Tue, Feb 27, 2024 at 10:24 AM Richard Weinberger
-> <richard.weinberger@gmail.com> wrote:
->>
->> Hi!
->>
->> The more code I read, the more I get confused by Xenomai's prefault code. ;-)
->>
->> On Kernel 6.1, David and I have the following situation:
->> 1. A kernel module does vmalloc_user() followed by rtdm_mmap_to_user()
->> with PROT_READ | PROT_EXEC
->> 2. Arm64's prefault code triggers VM_BUG_ON_VMA(prev != vma, vma); in
->> find_mergeable_anon_vma()
->> 3. It triggers only when PROT_WRITE in rtdm_mmap_to_user() is *not* set.
->>
->> While playing with David's reproducer I discovered that even without
->> calling cobalt_machine.prefault() I don't
->> get page faults in the RT application while accessing the area.
->> rtdm_mmap_to_user() calls for vmalloc'ed areas vm_insert_page(), so I
->> guess(!) we get there already
->> page table entries.
->>
->> Can it be that cobalt_machine.prefault() is not really needed on arm64
->> for vmalloc'ed memory?
->> Maybe older kernels are just more forgiving and tolerate unneeded
->> calls of handle_mm_fault()?
->> The VM_BUG_ON_VMA() assertion is also rather new and you need to have
->> CONFIG_DEBUG_VM=y,
->> maybe nobody noticed ever.
->>
->> What do you think?
+On 05.03.24 09:18, Richard Weinberger wrote:
+> These days the raw program counter is close to useless, do it like
+> the rest of the kernel and print fn+offset [module name].
 > 
-> FWIW, with this change applied I get no unexpected page faults nor the
-> VM_BUG_ON_VMA() triggers:
+> Example log output after this change:
+> [Xenomai] switching testx to secondary mode after exception #0 in kernel-space at test_ioctl_rt+0x14/0x20 [maptest] (pid 879)
 > 
-> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> index 99d54f58f..c2061b776 100644
-> --- a/kernel/cobalt/rtdm/drvlib.c
-> +++ b/kernel/cobalt/rtdm/drvlib.c
-> @@ -1721,6 +1721,7 @@ static int mmap_kmem_helper(struct
-> vm_area_struct *vma, void *va)
-> {
->        unsigned long addr, len, pfn, to;
->        int ret = 0;
-> +       int skip_prefault = 0;
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+>  kernel/cobalt/dovetail/kevents.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
->        to = (unsigned long)va;
->        addr = vma->vm_start;
-> @@ -1740,6 +1741,9 @@ static int mmap_kmem_helper(struct
-> vm_area_struct *vma, void *va)
->                if (ret)
->                        return ret;
->        } else {
-> +               if ((vma->vm_flags & VM_MAYWRITE) == 0)
-> +                       skip_prefault = 1;
-> +
->                /* vmalloc memory. */
->                while (len > 0) {
->                        struct page *page = vmalloc_to_page((void *)to);
-> @@ -1751,7 +1755,7 @@ static int mmap_kmem_helper(struct
-> vm_area_struct *vma, void *va)
->                }
->        }
-> 
-> -       if (cobalt_machine.prefault)
-> +       if (cobalt_machine.prefault && !skip_prefault)
->                cobalt_machine.prefault(vma);
-> #endif
-> 
+> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+> index 817aa954dc01..f78abbdc792f 100644
+> --- a/kernel/cobalt/dovetail/kevents.c
+> +++ b/kernel/cobalt/dovetail/kevents.c
+> @@ -65,9 +65,9 @@ void handle_oob_trap_entry(unsigned int trapnr, struct pt_regs *regs)
+>  	if (!user_mode(regs)) {
+>  		printk(XENO_WARNING
+>  		       "switching %s to secondary mode after exception #%u in "
+> -		       "kernel-space at 0x%lx (pid %d)\n", thread->name,
+> +		       "kernel-space at %pS (pid %d)\n", thread->name,
+>  		       trapnr,
+> -		       xnarch_fault_pc(regs),
+> +		       (void *)xnarch_fault_pc(regs),
+>  		       xnthread_host_pid(thread));
+>  	} else if (xnarch_fault_notify(trapnr)) /* Don't report debug traps */
+>  		printk(XENO_WARNING
 
-If prefault was only about breaking copy-on-write early, this would be
-fine. But we just readded it to iomem mapping helper. Something still
-does not fit together for me.
+Thanks, applied.
 
 Jan
 
