@@ -1,194 +1,208 @@
-Received: from redirect.mail.gandi.net (relay13.mail.gandi.net [217.70.178.233])
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2046.outbound.protection.outlook.com [40.107.105.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31EE79F2
-	for <xenomai@lists.linux.dev>; Tue,  5 Mar 2024 08:27:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.233
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709627244; cv=none; b=rcFw3PbZ86IpL+c33I6jl97PAqcsDvqouiy1OdLtH6L54ShaYshLZxPzs5F78Hiwd6mmbUPIOW8AsvC4lGcy4kyux/htp7WnsNfwteJ6peYhwQnP+DVveEkuahnsU3V40EJeJ57C8TAf2KL5ku+b00xmowySoCB4kf/2XqiPJIA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709627244; c=relaxed/simple;
-	bh=fJyiOne/++rgdIiqDJmmbbnd/ndyfa5DYJwn6Oh6SgY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NzuHl2eMu2DIWgaOajkDM3QPjGybVzU+KyaI8ZGGTkV1ZGLcOopN20V4u1phT0gS9kA3LPEj1Ec8iOxy7Rbycje6sAnZr1xHim2lttGt6259uuEEHxJ/WzHDtBZMnPjv1e7xiXo3J8Ri8W7/3Q0ARQDEkweEAF0hjtO9l6Hm+WY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=LDjSma2V; arc=none smtp.client-ip=217.70.178.233
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41B985C52
+	for <xenomai@lists.linux.dev>; Tue,  5 Mar 2024 15:00:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709650816; cv=fail; b=qW3rP9z2vDLoC2YD01wZVd2gMu2ao6EDAvKxHVt/kipGlTpMJj151937fNMXNb6kBYTCHmkSQSsv/KLEa9x0azn40UQ4X+2OxWwbwmNn7AQSa1JqqeH98SSJaxpYq7KBhC7nil3UHs5tYsBPgkS9GJl0oUm8ptSiAQ/rI+UexBA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709650816; c=relaxed/simple;
+	bh=Apy349u06i/4hBM0+fs2yZtaxcBF91QX//363vWNPmY=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=arRrFDqs2woM56t4bA+BfLb9HAz4w4ZRcks03M+iLR7reyt4S4UYjWDQ8eeOsSBBCyDRt4r5je6FvZnwCjtp+wp/TleWnJwNeYAWaMkjZeiz5a7RvnRfRkZhE/LRSkd+i2UPJ2chjyvtPcRBm6qHXFAlRyW8wqSoAH8FUum7SXo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ofAk+B3k; arc=fail smtp.client-ip=40.107.105.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="LDjSma2V"
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay13.mail.gandi.net (Postfix) with ESMTPS id 5D4DB80007
-	for <xenomai@lists.linux.dev>; Tue,  5 Mar 2024 08:27:13 +0000 (UTC)
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 8496B941475
-	for <xenomai@xenomai.org>; Tue,  5 Mar 2024 08:27:12 +0000 (UTC)
-Received: by mail-lj1-x22c.google.com with SMTP id 38308e7fff4ca-2d3ee1c9ea9so6716371fa.3
-        for <xenomai@xenomai.org>; Tue, 05 Mar 2024 00:27:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1709627232; x=1710232032; darn=xenomai.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hFhMmJt//hA02f82EecyhEm1I3OIo288dAz8xLkQp6E=;
-        b=LDjSma2VswhKBAjlhTX+giTLu6JSNAzlyVbjtix9RFwp3uX0vI7Gu/qtFYoK3leZua
-         UHC18nlZJevI1gK4tGKaRnbE2zPdxxrrvxS5uKdyqWJYUCcM9upKn3ZBJZdlQ1Ca0bOU
-         QWRwcf28yUt8iFi649zVLwh41iGEIyjJ7dOlHfqE2o9I6MPtPiPcxGbLlI8s6vuNghd9
-         1/wNiGM87B10n4t/DC50llg0+ZNweZ3Xi5ph63RCp/nd94zd5azyS/AYFjXTj7YM4n+x
-         5bfEdXhr7/cf2PKT/bPy2q+6HEYoCrKVmiMHAC3daNacj8oRlxP+rXutXmXY+/2t2sFG
-         LIBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709627232; x=1710232032;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hFhMmJt//hA02f82EecyhEm1I3OIo288dAz8xLkQp6E=;
-        b=JFfOvThhHxK65iER1AKaHrVBuWSSXf/TC1b5eA49RY3GoH7LcJpgEp2tp9LOmgJiY7
-         Yi0Ch3RuiQzuFNH8MeXAVZu4gVZHKqwFVbKVesZzwCk5imv9AoBJBrOlJNsCBWtJI95i
-         8TekupE7BSWoo624RHqjEcFhSpLu0xGHyCai/uwC7ZO2W33d/A5MHB9YNWNzWEjQuh0w
-         9Qy3+IWKl/1NPaKqscb037PsdxRne0lk3tp9CVpGO1NRC+32i4Vywsd/dySjqeZ+4NYs
-         YuEPglG7WGt500wWYO96jr0yUwfc72IMwMR53tAUJsnCjjmBcpF1BuK5vjMffBJytzrn
-         hjXg==
-X-Gm-Message-State: AOJu0YzJTeDqzWrLF4DMPHg0lY+nAUsZSJigduTVqZojRK8K8ceFcCls
-	xvVPN/Dy3aeVT/fYTRnFVvwqIsg3u/6/B9pq6+iJaTmzWLfZKoHrkkwD5HyTxSYC/49fKT0ywFK
-	1v3JnDpGDDL05i4/oFmLJXWTzu9XwZmSirYykxw==
-X-Google-Smtp-Source: AGHT+IF8A7bNQFour3HeNIubtchhlzZ9qTq2Wt+TbG2bcbDQwXQ8EKI7bj0kDIaWA1ZSN5HW3zqbIIv8pK7MJKI4ifo=
-X-Received: by 2002:a2e:780c:0:b0:2d3:f09d:6563 with SMTP id
- t12-20020a2e780c000000b002d3f09d6563mr699696ljc.27.1709627231745; Tue, 05 Mar
- 2024 00:27:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ofAk+B3k"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IY4pC3hYGlDu2iEIwIE8CfjcvD2JgVpOaffBfVY/ijRjF9EUsPlKwlze6rusH8+WHQGbDsP5nMlf259ukQyeu96pin8luVoWSNCsIIYMLlTNL4sYFKs2EiDsRzbjbE6q2QGtnknWum7Byj++vpckstieZCwefq8rlcHzsi1IOJUUx0KqQ+llQm2zwt2eH4eXM1gBX8M3ng/0/htSPem7pMLrlfT1AEmd97IzPa3AwRp9DW1uSnpDIgytRq96Ft65AVIqrLx7x12siev2pjH+5MRxWAqQ5UUYGTG9HOCoXMIs2NxhIwVv5gnMX/gGP8s2dtH8WZmIk3nh4Q2Z937IlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hx366WYs6aezl60T3+ZULNX2vu8SJlOgMV0FwptY9Ew=;
+ b=jPPlsCq9RTtwXfPszRenF5Top6kZtru5/qTxYsfu7fR5OwNyYN1mqHP0mE5V7L5qPQjy0fNuicyxyxB3NT1gNu/0XnJejLBdm5JZ6gwmsKRP3/lm98ve2AGWD2WkIva3iqiFGkMeXG12H8/iau/HuAPAH6dvZOJRQiaMAP1bHHkYc/zSv/brD30duXf3roVogZiamEaWPZ1z+lLjNxP3YUGEtJqOYtbuhxd/cZohKII6JIWiFTXn95b1mGIpzG+soNaO705H8w/XwspIdkxLvxxPxPeVIDv+g6R2rbjYuT9hO38rz0sgs4jZQcN7xbpC6I2y8kDFXa011dmADMR2Lw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hx366WYs6aezl60T3+ZULNX2vu8SJlOgMV0FwptY9Ew=;
+ b=ofAk+B3klMe7XxsNN9bB9DhGj/6p1h5Hgp3XGRKh5I4pgoLeh3abNe9Qwelkq+GLyLcGyCVupp46umOTJmDUHy5lWLht8KFugbHDpJ0SPlAohs33Fi2ya61uZcZcm3VMiBqAwTlmWhnEgB/EDmukaKzWiNuLemxiS0ZetJxfLBF5ptCp+210jIpsLz77dSPaSk9Px5aqQxl/IKmn7GOv5pb1bsUqzlEeSEi/V4oxsDrer/XP6LSUT4kqT+mnOUJY2Vlc8GUB9TecEk+lhJPSxfACXr0VkhpDKrzNh50ZGHd7F1vEeY7deo5YvI72bU9jSokyyYKx96vFK0jQnp3PCA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by DB8PR10MB3532.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:140::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Tue, 5 Mar
+ 2024 15:00:08 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8d16:7fbb:4964:94fe]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8d16:7fbb:4964:94fe%3]) with mapi id 15.20.7339.035; Tue, 5 Mar 2024
+ 15:00:08 +0000
+Message-ID: <5501876e-57cb-4b24-b83f-815f3ee1cf61@siemens.com>
+Date: Tue, 5 Mar 2024 16:00:03 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: ARM64 prefault weirdness
+Content-Language: en-US
+To: Richard Weinberger <richard.weinberger@gmail.com>,
+ Xenomai <xenomai@lists.linux.dev>
+Cc: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+References: <CAFLxGvzXWdySKjXmWv=onYk0urPzkn8bxWuvoFEmLzLyuQTj1Q@mail.gmail.com>
+ <CAFLxGvwE76ud4K9iE-Vh8XOdsePWC7JPuearPxZu0omGTFE=ww@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <CAFLxGvwE76ud4K9iE-Vh8XOdsePWC7JPuearPxZu0omGTFE=ww@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CH2PR10CA0014.namprd10.prod.outlook.com
+ (2603:10b6:610:4c::24) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <PH7PR11MB74998DAE5D29AB428EAC3BB9F2222@PH7PR11MB7499.namprd11.prod.outlook.com>
- <1591F599-3AF7-4BEE-9742-56DBCD4DADAF@smile.fr> <PH7PR11MB74990E278E333490012A9ABEF2222@PH7PR11MB7499.namprd11.prod.outlook.com>
-In-Reply-To: <PH7PR11MB74990E278E333490012A9ABEF2222@PH7PR11MB7499.namprd11.prod.outlook.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Tue, 5 Mar 2024 09:27:00 +0100
-Message-ID: <CAFc1U0sgm9gMve_RJdiaRbG76-5__y2cN98ZQUWfbMw_OpQieA@mail.gmail.com>
-Subject: Re: DYNAMIC_FTRACE and I-pipe patch
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: xenomai <xenomai@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Authentication-Results: spool.mail.gandi.net;
-	dmarc=pass (policy=none) header.from=smile.fr;
-	spf=pass (spool.mail.gandi.net: domain of pierre.ficheux@smile.fr designates 2a00:1450:4864:20::22c as permitted sender) smtp.mailfrom=pierre.ficheux@smile.fr
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB8PR10MB3532:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6f8d5806-54db-444f-62b7-08dc3d24f2d6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	knCa1paFkPG/Fsex1/KTN4Av7pL9ahDUK+LxZMywk7RSE1jh3GWdgG1odE+nqslUxbv5eFMqT2IZL9rBVfdGFUqUBG1oATguMaO0SwoXmdgUZMMXfvrFCUDQBTkvxGERkJ3DbQla6jstAoEeF+S8e9s+WC7AJg6jFkShexGtADob4CV1aFkwLjFqdzBBEG2uLOPPGEkE7glx/hDebfv3pONinORwJR4vwB0uhAyJeqPkQPYGJ50DzkVthQAvbZexCLBQBAwdudEH2fHKbe6VEXAS6DFikLLmvRBEkmQqpB1P02XA6sG5MlyJ7zE15gUdDuI94HlBD5QbH9dFyBq4aW8LNDQGq606Yz5gQBtXFH7o44UHeW/ztSwtxpAvXpClTtVXc66dqZjnsR41ftOU3SwRGCulKZ4lr/4rUPFEHUD+OYLwaKjoD6uamhQwPFjwoVOfxVYqGqJhJjUunmNDJddX1Eyd9dyUGlFso+xa/6lkDwRaubNNkRxL+b3kXKeDCPAUkPLILb716Fg4Sb4DKqH4uVbwZw1dSkfbdPCr+E+i31Me6ppmpYW3oZE+pwW7ilCuiPm7rihgmw6GGTuWvmAgdWiWxowkhqXuRpcJOhuv9xejd2GA4adWtDjaSnX8adl8uZ+ynSimKHSeMl2o/d8PJwuvUqHRJWbmRm2654w=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZHBCRlZ4WDdMWXo2anhlaW8wQXg1VklDQ1BPMFhvU04ybmRpeWtGVGgrSEhS?=
+ =?utf-8?B?M211Um5lNWEyb3BRbjJHajJudzN2dWZNeWhPTWkzeGVLOUl1WVE5blc1Zlgv?=
+ =?utf-8?B?MTNKbnQ3SjVVdXVLSU9oSkpXQlVTVXpLdXJjNmhyWmgwSENZaHpjYW9oZGxF?=
+ =?utf-8?B?aUttM1MwY2hCQk1zbXBDdEZ0UytTTWlCTE11V2JJdlhYR1J3NUtRVWVKR0Ro?=
+ =?utf-8?B?NHdKa2ZvcDh4TEo1QVBkRVBVNVFXUGVRdnFPMEZCRlBhckxJeW01aEJqeWRG?=
+ =?utf-8?B?dWdzZjFDdzV6VUNhNGRLV3ZCL005c3lwRUUzTGQ1ZDRBdUxJazVVWWJENGlQ?=
+ =?utf-8?B?aDQ2YUpvOUQxZ0NORVEvOWNVSVhOUXZIOWN2eG04bnNNVFdmeWxmZWpaNjUy?=
+ =?utf-8?B?TFpvNzJiQVN3SmJodUkyMmQrYlloRFA5RDB2S0I0R3lYeXAySHZTVm1GeUxk?=
+ =?utf-8?B?aTl5NG9JL0IrMzQ4R3poNlF1WU1NMHRxUXR0ejlYeGhqSi9WNlh4T29ad1Vz?=
+ =?utf-8?B?eWFWSTIzZFQxdExTT20vd000ZDFoQUp4VzZtbEpJSkdGaVV1eWI4bTh0MjI2?=
+ =?utf-8?B?MEJGZ2d5aVV1WDA4UHpML253anFtZ3NFNTFPajBBeElCNGV4VHlnU3hMMHBi?=
+ =?utf-8?B?T3FCa2djTzBRdEViUEpkUkMxYjZydTlkYUtiUCtVV055THpEcnBFUlFoL3kv?=
+ =?utf-8?B?WFRVNmxGU3NqVTFQVUtEOHRvcDdCemtNdDR5QVhTc1V1V0U1NVFqUHVsQUds?=
+ =?utf-8?B?R05UMHpxOW5LYzlsS3k2MGFnOWJIQzd5NlA5Vm83a2NRclc5WWxjMVBvMm53?=
+ =?utf-8?B?VUgrQjNPWUc4Uk9rTHZxdTVHVnZ6MFlWbk8vWEN0Ukx6WkhrTG5DUUM5R3ZB?=
+ =?utf-8?B?NkZTUWpkYkJ2M2dER2J4dGw5NDhqWVRQYkgzbTVNYVIvaE0zdHlUWGhNR3dD?=
+ =?utf-8?B?N3IwTWovTk45UFVlQzRHNDNqNEtaRWk2citPUkdDMnR4cDRXM0U3VWlrckRx?=
+ =?utf-8?B?bjZFbklWUnE3WkFzZk9KTnhNRUI4L1JDdXJTTHgvMU1Fdk83eHl5QjhPb2Rn?=
+ =?utf-8?B?eEVPR1M2bGl2QzlaOTM3eDVmMElCVVFIUVlYVUhzUzBpV29MbitHblFZQm9W?=
+ =?utf-8?B?RTliT2FkVkxIZGgwR0dsak5pNHBBalM4K3NIQ055QWJtOXlEeW9uMVcyLzhD?=
+ =?utf-8?B?cDJwdk9nRFNFS0ZJRjRxU2dROTViY3hrcW56TDl0RFF3eTJJVmlaYXdEQ3c3?=
+ =?utf-8?B?UWtwUit6Ny8zT2hNREpSak4yNkVVTW9GbFJpbWhVMGJ3Vm9XS0RScDlLSEtM?=
+ =?utf-8?B?WnVybmlCdzE1dVA2cjJNSDhVMGdkZkJ1MmVQUFRwY1hJRGMxTlVWY2xmdTFS?=
+ =?utf-8?B?UlhQSFdzakY0M1NVYUpuaXpMUEU0by83VFl1MTBxMVlHSW5SVExsZDNraGIx?=
+ =?utf-8?B?UkNlZnYvcGVTVlp4YkJzZWV3bnVhZ3B2S2UvZnJmeFVJcW9vRGNLMXFKbFhD?=
+ =?utf-8?B?b1JveXk5L3JmcEo5YnNLTUhObnJkbDZEYlpnWE1jSU56UXorT01kdzFvVXYy?=
+ =?utf-8?B?YndsMVhZVk1qL2lHQTNWVE94V0d6T0Z3UkljczU2eFp5R2lMNDAxZTl2SW1j?=
+ =?utf-8?B?Z2YrSG5TbEU5R01ON2pJNWlnckdURTQ5MHVUeWIvbHFiWVNNako4WGZQb05U?=
+ =?utf-8?B?cUd2blVKY2JQcGM3emJGUVRlNGUxWVVPWUZNaGxWdTZPTzM2eXZvczM2QVY3?=
+ =?utf-8?B?bzFRaGthVlc3OXBtaTVoaXdrUzMwWnFUTUFWMzJpdUtmL000aTlaTS9UY0N1?=
+ =?utf-8?B?SkdHT2Z2SFFsQ2szMkg0dUp2UWRLZDlYeis4ekdEdWE0WDFhWkt2TytjUjh2?=
+ =?utf-8?B?MllBNkZmZ1c0UnlZcW9tYy9qSXB1NHZsQkh2RWtQUUhoYStEekhMNEVoWEFL?=
+ =?utf-8?B?YkZYVTRadHdIbi9rOUllaCtTUDNObGZrTjc4cE12MGJmaUNHOHQ1a285My9k?=
+ =?utf-8?B?SWhSaDFzQ092azZMSmVReVNTaHZYbVZ1Qm5OUWhzVHlyb0NWZWZndE0veHo3?=
+ =?utf-8?B?ZUVYL2ZCMVUxdzNuc0N5Q2k4ejhhaGt6VEFCd25QcVBKb0FaSzRFdkVvS3Zk?=
+ =?utf-8?B?bXR1d3dmelphSWVVMmRFbDJVWnN4ZGVkUHJmRDZJRjgzRjl0eEx5Q3RPVWJ5?=
+ =?utf-8?B?RWc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f8d5806-54db-444f-62b7-08dc3d24f2d6
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 15:00:08.4189
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OCfr7QYP3F8Sn5o0Kh1NHAmlLYMu4FKT0RQYWgg/JZZNznrfZF5k7IEFzorni1SZvRsXh4iKdzxdXZOzrHJfHQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3532
 
-So a piece of advice could be to switch to a Dovetail compatible kernel ?
+On 28.02.24 14:44, Richard Weinberger wrote:
+> On Tue, Feb 27, 2024 at 10:24 AM Richard Weinberger
+> <richard.weinberger@gmail.com> wrote:
+>>
+>> Hi!
+>>
+>> The more code I read, the more I get confused by Xenomai's prefault code. ;-)
+>>
+>> On Kernel 6.1, David and I have the following situation:
+>> 1. A kernel module does vmalloc_user() followed by rtdm_mmap_to_user()
+>> with PROT_READ | PROT_EXEC
+>> 2. Arm64's prefault code triggers VM_BUG_ON_VMA(prev != vma, vma); in
+>> find_mergeable_anon_vma()
+>> 3. It triggers only when PROT_WRITE in rtdm_mmap_to_user() is *not* set.
+>>
+>> While playing with David's reproducer I discovered that even without
+>> calling cobalt_machine.prefault() I don't
+>> get page faults in the RT application while accessing the area.
+>> rtdm_mmap_to_user() calls for vmalloc'ed areas vm_insert_page(), so I
+>> guess(!) we get there already
+>> page table entries.
+>>
+>> Can it be that cobalt_machine.prefault() is not really needed on arm64
+>> for vmalloc'ed memory?
+>> Maybe older kernels are just more forgiving and tolerate unneeded
+>> calls of handle_mm_fault()?
+>> The VM_BUG_ON_VMA() assertion is also rather new and you need to have
+>> CONFIG_DEBUG_VM=y,
+>> maybe nobody noticed ever.
+>>
+>> What do you think?
+> 
+> FWIW, with this change applied I get no unexpected page faults nor the
+> VM_BUG_ON_VMA() triggers:
+> 
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index 99d54f58f..c2061b776 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -1721,6 +1721,7 @@ static int mmap_kmem_helper(struct
+> vm_area_struct *vma, void *va)
+> {
+>        unsigned long addr, len, pfn, to;
+>        int ret = 0;
+> +       int skip_prefault = 0;
+> 
+>        to = (unsigned long)va;
+>        addr = vma->vm_start;
+> @@ -1740,6 +1741,9 @@ static int mmap_kmem_helper(struct
+> vm_area_struct *vma, void *va)
+>                if (ret)
+>                        return ret;
+>        } else {
+> +               if ((vma->vm_flags & VM_MAYWRITE) == 0)
+> +                       skip_prefault = 1;
+> +
+>                /* vmalloc memory. */
+>                while (len > 0) {
+>                        struct page *page = vmalloc_to_page((void *)to);
+> @@ -1751,7 +1755,7 @@ static int mmap_kmem_helper(struct
+> vm_area_struct *vma, void *va)
+>                }
+>        }
+> 
+> -       if (cobalt_machine.prefault)
+> +       if (cobalt_machine.prefault && !skip_prefault)
+>                cobalt_machine.prefault(vma);
+> #endif
+> 
 
-The soc is an imx8m mini (designed by Compulab) using an adapted
-version of linux-imx. Is there any porting guide?
+If prefault was only about breaking copy-on-write early, this would be
+fine. But we just readded it to iomem mapping helper. Something still
+does not fit together for me.
 
-https://mediawiki.compulab.com/w/index.php?title=3DUCM-iMX8M-Mini_NXP_iMX8M=
--Mini_Yocto_Linux
+Jan
 
-Le mar. 5 mars 2024 =C3=A0 06:03, Chen, Hongzhan <hongzhan.chen@intel.com> =
-a =C3=A9crit :
->
->
->
-> >-----Original Message-----
-> >From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-> >Sent: Tuesday, March 5, 2024 12:39 PM
-> >To: Chen, Hongzhan <hongzhan.chen@intel.com>
-> >Cc: xenomai <xenomai@xenomai.org>
-> >Subject: Re: DYNAMIC_FTRACE and I-pipe patch
-> >
-> >Hi,
-> >
-> >You talk about the I-pipe tracer?
->
-> I am talking about the issues that dovetail want to address as Philippe d=
-escribed in the link. The DYNAMIC_FTRACE limitation you mentioned with I-PI=
-PE maybe one of the issues that dovetail already fixed. That is why it is n=
-ot the case for dovetail.
->
-> Regards
->
-> Hongzhan Chen
->
-> >
-> >--
-> >Pierre
-> >
-> >> Le 5 mars 2024 =C3=A0 02:13, Chen, Hongzhan <hongzhan.chen@intel.com> =
-a
-> >=C3=A9crit :
-> >>
-> >>
-> >>
-> >>> -----Original Message-----
-> >>> From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-> >>> Sent: Tuesday, March 5, 2024 7:44 AM
-> >>> To: xenomai <xenomai@xenomai.org>
-> >>> Subject: DYNAMIC_FTRACE and I-pipe patch
-> >>>
-> >>> Hi,
-> >>>
-> >>> One of my customers uses a 5.4.70 kernel with an iMX8M board and a
-> >>> custom I-pipe patch (with Xenomai 3.1). It looks like all the I-pipe
-> >>> patches disable the DYNAMIC_FTRACE option :
-> >>>
-> >>> diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-> >>> index f3f2fc8ad81a..98d7c64b7b8f 100644
-> >>> --- a/kernel/trace/Kconfig
-> >>> +++ b/kernel/trace/Kconfig
-> >>> @@ -532,6 +532,7 @@ config DYNAMIC_FTRACE
-> >>> bool "enable/disable function tracing dynamically"
-> >>> depends on FUNCTION_TRACER
-> >>> depends on HAVE_DYNAMIC_FTRACE
-> >>> + depends on !IPIPE
-> >>> default y
-> >>> help
-> >>>  This option will modify all the calls to function tracing
-> >>>
-> >>> That's not the case for a recent Dovetail based kernel.
-> >>>
-> >>> Could you give me some information about such a limitation ?
-> >>
-> >> Maybe you can refer to
-> >https://www.google.com/url?q=3Dhttps://source.denx.de/Xenomai/xenomai/-
-> >/wikis/Dovetail&source=3Dgmail-
-> >imap&ust=3D1710206004000000&usg=3DAOvVaw0IXHqzeoruHeu6lnhYcPQw.
-> >> It mentioned " The I-pipe provides its own function tracer based on th=
-e
-> >Ftrace
-> >> engine, but still duplicating some of its features while
-> >> restricting others." but  I do not know if it includes such limitation=
- IPIPE was
-> >restricting but
-> >> dovetail improved.
-> >>
-> >> Regards
-> >>
-> >> Hongzhan Chen
-> >>>
-> >>> Thanks in advance.
-> >>>
-> >>> regards
-> >>>
-> >>> --
-> >>>
-> >>> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-> >>>
-> >https://www.google.com/url?q=3Dhttp://www.smile.fr&source=3Dgmail-
-> >imap&ust=3D1710206004000000&usg=3DAOvVaw2X5QyoSLrMfOonkGBSzX5c
-> >>>
-> >https://www.google.com/url?q=3Dhttps://smile.eu/fr/offres/embarque-
-> >iot&source=3Dgmail-
-> >imap&ust=3D1710206004000000&usg=3DAOvVaw3N1t1B1QlZt68DA6MYbiQJ
-> >>> I would love to change the world, but they won't give me the source c=
-ode
-> >>
+-- 
+Siemens AG, Technology
+Linux Expert Center
 
-
-
---
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-
-I would love to change the world, but they won't give me the source code
