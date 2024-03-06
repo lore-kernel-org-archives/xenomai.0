@@ -1,122 +1,73 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141005C8EB
-	for <xenomai@lists.linux.dev>; Wed,  6 Mar 2024 09:00:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F745F56A
+	for <xenomai@lists.linux.dev>; Wed,  6 Mar 2024 09:13:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709715640; cv=none; b=SMqRE3+o07nEO+HEazsml0XuNsVt+QFBxktvhNbUMrrvCKu1Tebn7QD/ox/NcK4Jzv6Lh9IqRGbhXmSldwshmKXxpZTz2QvRQA0pe87hii+TsY7Lq+ASQ6/2Mzm0c8Sjr7On3AGHnd8TA8XoiMwkk0MV7ehQWBEz80nSgOjRosM=
+	t=1709716444; cv=none; b=t/knKk+kUqyCbRi8cGsaY1hUP+P7WWE7RCtaCm39xYwV46fH5T8NWccnmZGUAn7RPvx6wM8EqSUBG732nm9T/v+KWTeYfsC5GVWebQmnhqBdLARdC68+1aDctZWkDcXCSv/q+T/Eqp/QGDLsoDnZ2HIe3tIQbIR8UQDtUOSkuM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709715640; c=relaxed/simple;
-	bh=GwP+b3H9ZXM9IRvzfnyCPGzpKFnjeZ7pF1cSFBd0vWM=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=XEtV2xvOyce5dl2T64iq3TwWzuF5HBsl62uIyJ1IFcm81Hdee9TrjcrFmA1Am+ON53h/Yhbz9KK6deUEwjeu10Bwi8r/RmUtnxTHl5Ggin8SdnbJ+sCsFkwXAhj9L+QeaWywUb6X0WEpq/wc/wQnJCr3qZQYrRJzQ9sx4ZNdXek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-412f988b601so727945e9.0
-        for <xenomai@lists.linux.dev>; Wed, 06 Mar 2024 01:00:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709715636; x=1710320436;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rcCwTcfs4FKJPy7H2W7B353beqPw4QIGSJmsFRcrJA8=;
-        b=sjfbjPsR4TzxGuYih9v1Qh98nNLoigBhitV9ePVzZgTmyfGDlD7YxXJrd7XQQTRw4L
-         bOUUllRmhrbKReeLage84Eh5fb4o8Q5iuuzBaRreSvpT1mkqlPF4gMrHxdpfC5SWgzhx
-         4KoZNN67fqlclCF0bhcN/C2xyeMwoi9JZZot6Y0OnFaP/24hazrclCw09AoDYpH0+tjg
-         ZftvVBgv8xyFHXOVKGtQY6ke/Y5lzOMxpRUtGR/yXYArHAT1uQY2V+U1Hfi3SszB56RK
-         jv1Gsa5GkvdRdIQhTrhbjFnaqpSlXJnSbybS9hMhY1AVoFklSDdA0/pqT6M/4QhyyfgK
-         TedA==
-X-Gm-Message-State: AOJu0Yz7nLFzjlqr1lSYDCOoKuT/yv0Du0g7XjHyWg4u59OG5Bo+d0AS
-	7tt4lvPjAwT9a6Zn0freRU87xtM8hjBuxyeJDbKyffC7BJxh/D7H0G1GwuA5
-X-Google-Smtp-Source: AGHT+IEJZ1w+cBTMkBTiD6PVJQkKxW3k6X1HDkl6Fam84GvHKK/1LZUhVuh7EX+tBs3JeABkh0K8YA==
-X-Received: by 2002:adf:ffd2:0:b0:33e:dd4:ca5c with SMTP id x18-20020adfffd2000000b0033e0dd4ca5cmr10002374wrs.45.1709715636018;
-        Wed, 06 Mar 2024 01:00:36 -0800 (PST)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id cl5-20020a5d5f05000000b0033ce727e728sm4478103wrb.94.2024.03.06.01.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Mar 2024 01:00:35 -0800 (PST)
-References: <74e8a18c-32c6-4bf4-aa92-215be1a91857@siemens.com>
- <7023067c-956e-45ac-b8db-7710ff53a001@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: dovetail kernel maintenance
-Date: Wed, 06 Mar 2024 09:41:09 +0100
-In-reply-to: <7023067c-956e-45ac-b8db-7710ff53a001@siemens.com>
-Message-ID: <877cifwx8x.fsf@xenomai.org>
+	s=arc-20240116; t=1709716444; c=relaxed/simple;
+	bh=m1FmVPOTMr13Y0L9cMgjoq2OlmGPHNnZ807CYP0CS5E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hb6fbgjLox7m/06Ao+txNJK5sIuBkkX10HXmgQ2xgixhaRmQkrNYxGPsIyPzGI0coFrsE169WhqFWh5OSqDiv1VUbT/VK1s3rmchJewaee+ZJzI+Iu05lkFUVt8N0ArojLAKy2BCJNKWIJkU5EedtzCdbjZ/8SnuXBDx/9Bdggk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=HBFhTJof; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="HBFhTJof"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240306091356be97f31c8bbedd21fd
+        for <xenomai@lists.linux.dev>;
+        Wed, 06 Mar 2024 10:13:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=clara.kowalsky@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=1X+ZWQMxIUSwBHp1K9QbMjmZd3RFb6PRskd3m8CZ+pM=;
+ b=HBFhTJof6/1x+nkfClZhs0XMly9qANqK4VNqDs0UnsTj1jcMEfptj5Rlsx0sy9QjH4mt/9
+ xbHI2BBtCfrn8gD4fQ4wYNJzWZaBhBF52nsJwMO/ltoyb6PgxWF9wYhZBBq4H4FhQngvsdU3
+ aM+rOGO+VwhszjFi9KuOeFH8HQxLM=;
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Clara Kowalsky <clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH] linux-xenomai: x86: Disable group scheduling for SCHED_RR/FIFO
+Date: Wed,  6 Mar 2024 10:13:36 +0100
+Message-Id: <20240306091336.2365758-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
+Trying to run the latency tool on the example image on an x86 board with
+Docker installed failed. This was due to the fact that the use of
+CONFIG_RT_GROUP_SCHED results in Docker and its child containers not
+being able to use system functions like sched_setscheduler() to raise
+the realtime priority of a process.
+The x86 defconfig has been synchronized with the arm64 defconfig to
+disable support for group scheduling for SCHED_RR/FIFO.
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
+---
+ recipes-kernel/linux/files/amd64_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> On 21.02.24 19:30, Jan Kiszka wrote:
->> Hi Philippe,
->> 
->> people started to ask about updates for our kernel trees, and you
->> mentioned to me before that you would focus on the last two LTS kernels.
->> Right now, there are to-be-tagged updated sleeping in 6.1 and 6.6 but
->> then also in 5.10 (all referring to the -rebase branches). Before taking
->> over 5.10 and 5.15, I would like to clarify their state. But I would
->> also like to know what is delaying the tagging of 6.1 and 6.6.
->> 
->
-> Gentle ping for this question.
->
+diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
+index 2b7e63f..4f58c34 100644
+--- a/recipes-kernel/linux/files/amd64_defconfig
++++ b/recipes-kernel/linux/files/amd64_defconfig
+@@ -154,7 +154,7 @@ CONFIG_CGROUPS=y
+ CONFIG_CGROUP_SCHED=y
+ CONFIG_FAIR_GROUP_SCHED=y
+ # CONFIG_CFS_BANDWIDTH is not set
+-CONFIG_RT_GROUP_SCHED=y
++# CONFIG_RT_GROUP_SCHED is not set
+ # CONFIG_CGROUP_PIDS is not set
+ # CONFIG_CGROUP_RDMA is not set
+ CONFIG_CGROUP_FREEZER=y
+-- 
+2.39.2
 
-Well, my posts to the mailing list from my usual address have been
-rejected a couple of weeks ago due to smtp authentication issues it
-seems, which are now (mostly) sorted out, I thought you did receive this
-reply as a direct recipient though. Looks like you did not. So here it
-is.
-
-PS: Since this reply was written, the x86 status with respect to the
-Dovetail port to v6.8-rc7 has improved. Still in the process of
-rewriting the arm64/fpsimd stuff.
-
-> From: Philippe Gerum <rpm@xenomai.org>
-> Subject: Re: dovetail kernel maintenance
-> To: Jan Kiszka <jan.kiszka@siemens.com>
-> Cc: Xenomai <xenomai@lists.linux.dev>
-> Date: Wed, 21 Feb 2024 21:00:17 +0100
-> 
-> 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
-> 
-> > Hi Philippe,
-> >
-> > people started to ask about updates for our kernel trees, and you
-> > mentioned to me before that you would focus on the last two LTS kernels.
-> > Right now, there are to-be-tagged updated sleeping in 6.1 and 6.6 but
-> > then also in 5.10 (all referring to the -rebase branches). Before taking
-> > over 5.10 and 5.15, I would like to clarify their state.
-> 
-> Dovetail ports to 5.10 and 5.15 are not maintained anymore, although I'm
-> still upgrading 5.10 from time to time for work-related reasons, but
-> nobody should expect this to last for long.
-> 
-> > But I would
-> > also like to know what is delaying the tagging of 6.1 and 6.6.
-> >
-> 
-> Those two have been tagged this afternoon. Dovetail maintenance takes
-> time I must divert from my day-to-day workload where the real-time
-> network stack for xenomai4 has precedence. The delay was mostly due to
-> lack of basic testing until recently. Btw, the situation is going to get
-> worse with 6.8 which requires a significant rewrite of the arm64/fpu
-> support for Dovetail, not to speak of breaking changes in the generic
-> entry path x86 uses.
-> 
-> 
-> 
-> -- 
-> Philippe.
-> 
