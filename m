@@ -1,136 +1,125 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53059CA47
-	for <xenomai@lists.linux.dev>; Mon, 11 Mar 2024 21:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3C7D43AAF
+	for <xenomai@lists.linux.dev>; Tue, 12 Mar 2024 06:39:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710193501; cv=none; b=DTcGBSia4YfpjL7bpqDdFWRKgSfFKcuDGGaH6oxQLsR1DYuPg1IQHvKe0YPGVb3TzF/fGXXdCRcpDU50QRLSDK6IrEjczKRNDjq5HQyJRH7ZQw/rhicqMd9uz+fStktk/MPBkijFlWRZGh8i5fBsThzXwFDTgmMR02dtft99AnU=
+	t=1710225585; cv=none; b=Fh8700UEq+DR0Du/pmBbXQcfW70tPDiKY8ULk7HQIN2hyXr8nwsnuKQ5cmWIUvlEZLH+g7J7DYnKvKwZ9RhLAxDW1pehFzJmwUjPDVaIHMm5nP9X38YGLaVA/5O3FgDVUabfB7P0rKu3SzK66putqxKUQqfKjbWImBE7rudxBiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710193501; c=relaxed/simple;
-	bh=aTDBqc1f4ven3pLYFkt/H9xcY/toO6nxI3Y6kK5pCCI=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=B497MKwavm7jYHOkRCrIZnUPeafyAjCUM5wnbaSjWbek/R/vVEi+c8EdzhvRauwtVJ3FgmbjlXFGqJ6sQ7CGKatc3v6cKSkfSnU/ESHkPaisH0JoOLhxZ/+PVzAG2CEx6tc1bKQL+/BEB04st69eFN4DJ3J2F1BabWv8K5R7Jzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-33e899ce9e3so1654698f8f.1
-        for <xenomai@lists.linux.dev>; Mon, 11 Mar 2024 14:44:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710193497; x=1710798297;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Uf+4wNHU8cO/YgkhbG8WVPrYradoW2KVtEvyAXcRXMg=;
-        b=faqbgCw4pTypnUX5SDQ+IYII8nWsYUBnZOfRiT3OcHHftKFXho0GOcLOrCecxEuv3y
-         esWV5F+lhAEvcpHW+3++uCVB9s3k7C3dwTkdju5peu6z1qUOGNv8EzUKDXSCvKtcO+WA
-         P2d4rwCQJGf7g2LX72DBMXic4UoesWoClceabJ+hUqif4KkStIcnAP5s7ewTXpdvPtIw
-         EX0Mo204mWudgmon5JC55jbaHq+Nhe0fyuw7zBHHNmmwIUn4becMwREKU3771Ex5ryhQ
-         IHP5BFSV6k5rsMmmEaTu9WjWMF0P4RYOcdcZzGQEgPbDMu2fYFZjWFojvnQ+dALwbVxm
-         3bvA==
-X-Gm-Message-State: AOJu0YzULgXQhDXfjjGflhn4N29lOgLP12b5W1FREw9liq6zJIu8WIo8
-	CC+THBR8ISDIc++9bjgZtLMLHwiYlejgOP94XRBv9QVWdROkG5NrRldYpWP6
-X-Google-Smtp-Source: AGHT+IHbPBOGDPGRoc/iWEZFcKfL/puOcNciQuodQ5432r/7FklqoHyC4+tFES5kDUfO1gPFU4N0SA==
-X-Received: by 2002:adf:f7c2:0:b0:33e:79d3:2cb with SMTP id a2-20020adff7c2000000b0033e79d302cbmr4855502wrq.38.1710193497294;
-        Mon, 11 Mar 2024 14:44:57 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id bq30-20020a5d5a1e000000b0033ea499c645sm168566wrb.4.2024.03.11.14.44.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Mar 2024 14:44:56 -0700 (PDT)
-References: <74e8a18c-32c6-4bf4-aa92-215be1a91857@siemens.com>
- <7023067c-956e-45ac-b8db-7710ff53a001@siemens.com>
- <877cifwx8x.fsf@xenomai.org>
- <7d95d478-2f28-4ecb-8f59-b59758a20597@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: dovetail kernel maintenance
-Date: Mon, 11 Mar 2024 22:30:16 +0100
-In-reply-to: <7d95d478-2f28-4ecb-8f59-b59758a20597@siemens.com>
-Message-ID: <87il1stpd4.fsf@xenomai.org>
+	s=arc-20240116; t=1710225585; c=relaxed/simple;
+	bh=kI6lr4pwF4xxwcdR7B0lqJ87cJIrdX9m6A+Gcaj1YCY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dE21QNP02pb9nDLkT2sPygDfGUHNaOepbtvf7ySMBEZNvCThfPxe5xJ56c2ttyiFrOouBS+iCcXBF96aP61YLjKl1baOsHaFStcOl5hjyMOdcvqupWBTruvG5Cz1pv7wmUe287+6SU+swU8ZWn5ThP/CXPvrNfiaGVE4d9Hya+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=Fabian.Scheler@siemens.com header.b=UsEYMMKm; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=Fabian.Scheler@siemens.com header.b="UsEYMMKm"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240312063931db87e203fe8f02817d
+        for <xenomai@lists.linux.dev>;
+        Tue, 12 Mar 2024 07:39:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=Fabian.Scheler@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=xykH+ZXoBWq0AhncTZRAvEhv0ILUKPhH87G6QBgXhDk=;
+ b=UsEYMMKmaIjypmKkym8VKZ7FrCxB+PKhVwVMyy4JsI8svXkVXj3R+/WwbeMKfmWujsgFZ8
+ Tj4dyG6tpW7pwA3robT1xBtcV+xJ84960kQhmLGA1dkFZ7AC0jaS/DhXmMq7XM51aUKHAoTn
+ X99kggM2UMeKjacsXIjWa4Js5KHR0=;
+From: Fabian Scheler <Fabian.Scheler@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Fabian Scheler <Fabian.Scheler@siemens.com>
+Subject: [PATCH] testsuite/smokey/gdb: Fix race-condition
+Date: Tue, 12 Mar 2024 07:38:13 +0100
+Message-ID: <20240312063813.27021-1-Fabian.Scheler@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1325281:519-21489:flowmailer
 
+When quitting gdb by sending the quit-command, gdb may actually finish before
+the father-process calls pause. In that case the father-process would wait
+endlessly.
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+The fix now uses waitpid instead of pause to explicitly wait for the
+child-process, in contrast to pause waitpid also handles child-processes that
+already have been terminated.
 
-> On 06.03.24 09:41, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 21.02.24 19:30, Jan Kiszka wrote:
->>>> Hi Philippe,
->>>>
->>>> people started to ask about updates for our kernel trees, and you
->>>> mentioned to me before that you would focus on the last two LTS kernels.
->>>> Right now, there are to-be-tagged updated sleeping in 6.1 and 6.6 but
->>>> then also in 5.10 (all referring to the -rebase branches). Before taking
->>>> over 5.10 and 5.15, I would like to clarify their state. But I would
->>>> also like to know what is delaying the tagging of 6.1 and 6.6.
->>>>
->>>
->>> Gentle ping for this question.
->>>
->> 
->> Well, my posts to the mailing list from my usual address have been
->> rejected a couple of weeks ago due to smtp authentication issues it
->> seems, which are now (mostly) sorted out, I thought you did receive this
->> reply as a direct recipient though. Looks like you did not. So here it
->> is.
->> 
->> PS: Since this reply was written, the x86 status with respect to the
->> Dovetail port to v6.8-rc7 has improved. Still in the process of
->> rewriting the arm64/fpsimd stuff.
->> 
->
-> Let us know where exactly help could be provided. I just want to avoid
-> duplicate attempts, so the development should be coordinated publicly.
->
+Signed-off-by: Fabian Scheler <Fabian.Scheler@siemens.com>
+---
+ testsuite/smokey/gdb/gdb.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-Addressing [1] comes to mind. As I said in this thread, one could use
-the same logic which allows x86 to support preemption of the helpers for
-in-kernel fpu by the real-time core.  However, I have to upgrade the
-basic arm64/fpsimd port to v6.8 before someone else can handle this
-task. ETA, hopefully next week.
-
->>> From: Philippe Gerum <rpm@xenomai.org>
->>> Subject: Re: dovetail kernel maintenance
->>> To: Jan Kiszka <jan.kiszka@siemens.com>
->>> Cc: Xenomai <xenomai@lists.linux.dev>
->>> Date: Wed, 21 Feb 2024 21:00:17 +0100
->>>
->>>
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> Hi Philippe,
->>>>
->>>> people started to ask about updates for our kernel trees, and you
->>>> mentioned to me before that you would focus on the last two LTS kernels.
->>>> Right now, there are to-be-tagged updated sleeping in 6.1 and 6.6 but
->>>> then also in 5.10 (all referring to the -rebase branches). Before taking
->>>> over 5.10 and 5.15, I would like to clarify their state.
->>>
->>> Dovetail ports to 5.10 and 5.15 are not maintained anymore, although I'm
->>> still upgrading 5.10 from time to time for work-related reasons, but
->>> nobody should expect this to last for long.
->>>
->
-> I can take over those two, but we should coordinate that to avoid
-> parallel updates, at least of 5.10. As 5.15 is dropped already, I would
-> grab it now officially. Still need to decide whether I continue the
-> rebase branches, though.
-
-I don't plan to merge the generic support for oob networking (in
-net/core/) which underlies the UDP implementation for xenomai4. So I'm
-fine with handing over the maintenance of v5.10 asap.
-
-[1] https://lore.kernel.org/xenomai/ff580dec-096d-45cb-b906-527446c4fa87@163.com/T/#t
-
+diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+index b09b78b4e..5e9e9d101 100644
+--- a/testsuite/smokey/gdb/gdb.c
++++ b/testsuite/smokey/gdb/gdb.c
+@@ -77,8 +77,7 @@ static void handle_sigchld(int signum)
+ 	wait(&status);
+ 	if (WEXITSTATUS(status) == ESRCH)
+ 		smokey_note("gdb: skipped (gdb not available)");
+-	else
+-		check("gdb execution", WEXITSTATUS(status), 0);
++
+ 	child_terminated = 1;
+ 	close(pipe_out[0]);
+ }
+@@ -202,6 +201,8 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 	pthread_attr_t attr;
+ 	char run_param[32];
+ 	cpu_set_t cpu_set;
++	pid_t childpid;
++	int status;
+ 	int err;
+ 
+ 	smokey_parse_args(t, argc, argv);
+@@ -257,7 +258,8 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 		err = pipe(pipe_out);
+ 		check_no_error("pipe_out", err);
+ 
+-		switch (do_fork()) {
++		childpid = do_fork();
++		switch (childpid) {
+ 		case -1:
+ 			error(1, errno, "fork/vfork");
+ 
+@@ -283,8 +285,14 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 
+ 		default:
+ 			wait_for_pattern("(gdb) ");
++
++			/* the signal handler only is used to skip the test if
++			   gdb is missing */
+ 			if (child_terminated)
+ 				break;
++                        else
++				signal(SIGCHLD, SIG_DFL);
++
+ 			send_command("b breakpoint_target\n", 1);
+ 			send_command("r\n", 1);
+ 
+@@ -301,13 +309,11 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 			eval_expression("thread_loops==expected_loops", "1");
+ 
+ 			send_command("q\n", 0);
+-			pause();
+ 
+-			if (!child_terminated) {
+-				fprintf(stderr,
+-					"FAILURE: gdb still running?!\n");
+-				exit(1);
+-			}
++			err = waitpid(childpid, &status, 0);
++			check("waitpid", err, childpid);
++			check("gdb execution", WEXITSTATUS(status), 0);
++			close(pipe_out[0]);                        
+ 		}
+ 
+ 		signal(SIGCHLD, SIG_DFL);
 -- 
-Philippe.
+2.44.0
+
