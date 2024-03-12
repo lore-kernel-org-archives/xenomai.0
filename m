@@ -1,62 +1,62 @@
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2044.outbound.protection.outlook.com [40.107.105.44])
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2084.outbound.protection.outlook.com [40.107.13.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E126B69D01
-	for <xenomai@lists.linux.dev>; Tue, 12 Mar 2024 08:29:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD4955E73
+	for <xenomai@lists.linux.dev>; Tue, 12 Mar 2024 10:44:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.13.84
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710232195; cv=fail; b=rhi9E5Pk5EFME2ho7uEdVvH/IA+FCEFxoDmX7bGV+nFuVDzo9lsFW2oC4iioARCuwdhz3DXC5TYQE8qOY5Pqn8nNFYLg7Cs1ATsGdeojKv1c7u0x8PtmjojeSkXr7OcPDmPiUuxLl1fa4qslHjaBre39r2fqb07iPnIlMIDAe5c=
+	t=1710240286; cv=fail; b=Zoy4trlYvAgTpdPcnAM71I4qzla8hAF/BwDqusCYI46AAWwkb9fPQvPc8O0BbwCvl2aldKZNd4rj4c9+0UpMSxCmca4qISqOH/EYFYp5Q/6roftYyQbNB03KqPkgw2RxUvwjghrCCxsSMdGzSRNlJe5vq2otsvXnmSw3Uy+m/B4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710232195; c=relaxed/simple;
-	bh=QhwYvFAf6skXnrPNL6PwQ0TUXvKFcRaJ7tdi2VXxpak=;
+	s=arc-20240116; t=1710240286; c=relaxed/simple;
+	bh=oHpm5KrZfwrfCks+R9L4A4bcR/EqqIjt9abLT+EnJO4=;
 	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=JXk97+LEIHb27CAdVC6HzoI5vKH4wopAY3xLUKQ2MgkIFNj41hA3LQYrYOwTZ6zvC5bE8mwgpWZP6EXcmDeFeJ/rfWBnwSRVMXWTR3QukiBja2+ciaJoLnG1ShiKQQAOBXdMf2Yno3bFP8EQMjb90s7EIL+1iMFn4HJf/85AL44=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=hOEi2P1W; arc=fail smtp.client-ip=40.107.105.44
+	 Content-Type:MIME-Version; b=dMC0/gz6amX3CWxXxdN1pwACkPBdVDX7aojyb5q72NJmV5RTiM0nA46X8MRaAYzT2dIWCVcoRjdUl9jz2JIutfWEFh9yYHOOdhBeIdap9doHoisuYy83gWvG2nKaLDsyGfSggjezt2rakgDvRsv4XLxqwySZJZTQYkuDcFnUC7M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=mTpZo47q; arc=fail smtp.client-ip=40.107.13.84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="hOEi2P1W"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="mTpZo47q"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cIjCNKrkNKbGSkYlGzYPZwsc4uGA1QDtM2lO7xWPGQ2n+0x/enXL+gyf9OA0Gg1honpAnx+O5Yo8QLiQXWHbtOMQP95qScsUjfz1QKAh1nMB0JlaO22WGZcrv0mk22wM9sWTwEqY/lgkcenaTKIskK/yk1QINE1qMyKdmHneynLwRlY37dT5hMi41Nq0na4a1WyNs2DJuRGAz6kQlGWCXh9DZNlCdYVRozxwg0Qdme8mpXGjUr9iQCZuSB53734Z/u/94fmFTI8Avk1hbOTrm7I+kXqi2SoX7Iw6wAKj3plo6tek5OLNGgkZEYYrEWeH78hXY6tvJVLtGpQov5zvgw==
+ b=QMhrl6gwC+L3sqJefd+Qr3oC55Nicd4oeUEaiQPCuxhBlY21AEN0hXls/Dw1VXRa1OdlGA+CenlSgJ/bCDLYyMXuj2gj1sycrOBwI0hO5grf+AUTufKp1XCHL96JKxI/+DH8DgdI1eWbwM+pGh2vi9gqJbLIrdQ18pXj9boDU/kl60BYhMh5jh5fFibgcdzsD+PFaNE8YE7kj4DJEcimYyzrDK7YNbpQWK+puTadSrRT1+5xTDVG5W2J9S+6A0YS8viPZT4lQV7cQ3yRjsWXEcrK55tojd7gRGWTrpcx7YAJ7nV+4oSLw7mBa/vO54W7McfkLAnaIVUBK+jPyqs5zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xteyOYGBEFb/Vqjss1sYSev9hZp9kP5Butldw4u8ilc=;
- b=LcCd2lNwSDU2K5DTBKF7WVuis179W8XR6mJoS+WFFhD6yyW5fqN8uaKXtHwJ3Y9/bdb8L7qXL3KOlmS9vTUQo5N6kp9ghzTsRy/U6t4mFgLefVmEzoT0dxGEc1jqsRRbjDzpnLL3GL8Nki9SSz8pZj1xh9Pw40ZE8unY0/a3SDZTUEX5k0ZrJuFHUSxmNZ+ot1shbUlUBFjS6sZljqnEaOwfGcrmNKprLlTPE1pIoqGgmEyTgzYokCVM9mYzva+See3Jks58Sl8Roz+I44iWv7zq4r5tK7kuwILD33x6I1XoyCfIhHpDTUZ7soB62Aoo458RmjSRvzuA3pcUetDYbQ==
+ bh=AQivM6HQgpgYH3opUqSfEx9PD1l7cbUonNYDagYmKHQ=;
+ b=d3qogUqSGOljdhpxk3oD7BguqQKxIhKo+PdAkjeVOJeCR89P4sj7fcGm4P3tcg7oytsNF00nDiDCzfFtCda5J8CPW78AYI/Y12Md64QIE0XThmXZU82tQMzxa7hGT9s7zZ0hxYAH8MXmCcZKtq3l8noNOS5gAkSj+HxtY/UYE6/gJT37tW3BzENJvundAGb5raFCCv+bE4Do5sLsHKwuWAvciX4l7e3C2xdVAHmmNCx/1YETdfd/VH+IJgJfhTSYy/EyEefEvFuKaTsBBZ/etAhQm8z6/YDoeaWojL3SuF5BoLzBytXjSFBvj1Wt+vP98HpjnU6Mby6Ao8mJpkNTNQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xteyOYGBEFb/Vqjss1sYSev9hZp9kP5Butldw4u8ilc=;
- b=hOEi2P1WQPclDSyZrnVDJOdEV82viTqEg8BZObaEy+6Td8h3KJzey0F+QOE/t478D4u155IfgqlF39RJeucMZCktgQHydl/S1B1iijVWE0PDGeulqr0fnmQybRqHRSZag6TMWWLKOUObIeVfvt3xNs6ICUTug6I9zNrCli2TtypRbm5JV563ch0EYhTI1u9goJY2/3U9ZumYLUJOwzISN1ImihvA3VyM1UI+jK1F/pYJuYg7/KviiVmi+9VSLLy9gcpoTJKpw2/V/fnuTifFZ7sxys9ddCPo76JTzoDt2E/OHPYxlwF1a15lfzp/5D83irtYFfFcc7fMUDmI3J6GTg==
+ bh=AQivM6HQgpgYH3opUqSfEx9PD1l7cbUonNYDagYmKHQ=;
+ b=mTpZo47qbzVRCQjDn5KNRZWmDruDziX1QQyBakExRSZfH8ttXQrnk7zrB5KkHmoPyarMvnzP+5PbvrfqyMGYcgcnIvplV4jQZ6lunIBDxq8aIbKkWCKoQ2IZFhDx/8/49iX8len5/6v+7MQIQTN76hlgRwzlSKIZa1wKGdag6IXwo3oAqqCqv5hksfgMoNJv9Yq62nSWv2FBdNFc/SuWMpfVy08fnzwufr5RQJPT47sbCQdyQZ/u38Rb2QZdMG+Mhm/uhbXaIkT2RQNIP7cmJGPgjqCbZhIhYPoGu/MgRje71ELR/4VSgmLUU2zcucv8q1wLZJn91ULkjBCIMxyRHw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:1c3::21)
- by DB8PR10MB3561.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:13c::8) with
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by VI1PR10MB3135.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:130::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36; Tue, 12 Mar
- 2024 08:29:46 +0000
-Received: from VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::d884:a30c:ee37:5cb9]) by VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::d884:a30c:ee37:5cb9%7]) with mapi id 15.20.7362.035; Tue, 12 Mar 2024
- 08:29:46 +0000
-Message-ID: <1f33c7cb-06f8-4873-a7b1-153062fdc8c2@siemens.com>
-Date: Tue, 12 Mar 2024 09:29:42 +0100
-User-Agent: Mozilla Thunderbird Beta
+ 2024 10:44:38 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8d16:7fbb:4964:94fe]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8d16:7fbb:4964:94fe%3]) with mapi id 15.20.7362.035; Tue, 12 Mar 2024
+ 10:44:38 +0000
+Message-ID: <df16b465-e1b3-4783-ab0d-749bbdc0f802@siemens.com>
+Date: Tue, 12 Mar 2024 11:44:36 +0100
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] testsuite: smokey - new testcase
  pi_nesting_contend_multicore
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Content-Language: en-US
+To: Fabian Scheler <Fabian.Scheler@siemens.com>, xenomai@lists.linux.dev
 References: <20240312072341.27967-1-Fabian.Scheler@siemens.com>
- <28da2b72-87a3-4b3e-b59a-9bba18b290cc@siemens.com>
-From: "Scheler, Fabian (T CED SES-DE)" <Fabian.Scheler@siemens.com>
-In-Reply-To: <28da2b72-87a3-4b3e-b59a-9bba18b290cc@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20240312072341.27967-1-Fabian.Scheler@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR07CA0061.namprd07.prod.outlook.com
- (2603:10b6:610:5b::35) To VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:800:1c3::21)
+X-ClientProxiedBy: FR0P281CA0247.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:af::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -64,128 +64,486 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR10MB7672:EE_|DB8PR10MB3561:EE_
-X-MS-Office365-Filtering-Correlation-Id: 829efe2e-e4ff-4fe1-a577-08dc426e9361
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3135:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0b96ab56-d8e9-42bd-53ee-08dc42816a64
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	K/H7yGAjvPzIfvKB2kMIIWUB0tzhPMaueIBpLSWYcoeUQ/wOmwWlsJllpmkwoN3NGc8DZxwxrIp8IwNGEqZsAE9UAc6PbrgSGVHwDC1k4Y2XjTYwbP01+/1e6w+u3CZeS45jXBuXmEHGX5nAFO7yQcb9aYpHfpMUKOpH1x1l5bHNdbel84EtsxYhrAv+BNqxR57Pcki/FQSKwKZcJCCjyrBHRCjwzXBUEz5XLvL8b/uFnS6J+r1xKM+MYn7vuDngOSkl9eH5lfHsPPbA33RhtxRs3zb/Dy1nTmeZn+KfuBT7RchyDqT7FD88iG16aEdwkUOOXxCs23av29J5RQaMTVPXnPApossqC1B8DrR0BAd7RC8+87F6oxbUr7VfmaF/U7/WKOmFu9cgrAUCPckXJlLwjxk6zx4CKcCX2pRReVq3Vg4EgCXKuMecNDYV2rcWGBByte9X2qV6/6KVqjTy8u5ql5mPaQLmJ8CHnxOvt+qxXnbP76zhtvM37NQx20Y+yQlIdpQSBT9veec3AIQq67t+jsqUTZhZhV9WfVYmkW06DPMKJzr2DoSwqAGVlpR3JAESGWQsTQ4EI7f/0EG3K44deZV0+XSPLVE62dCrfik=
+	/gY5dgQLveUrSD+EtOEGMUEb7pIcPcO4+8MPpPTmhQJoI1sG1RcaDzmjmNx9Rkn/lWy9j2YF9+gViRoRl2XpcQq2f7DT9tnrG2Ohz2OAhnlUI/cM7muh4mUR1nLmOTrTcKwGmHnS5W/GRjQfSLA4JK1ftOSJkOcS0M4Wen/Ouakc46ExuzNb3q6MsiZBvSrlsEOpHyfecGMST5rKlMMQtbGmqoZ5A494P0HTFmdZa9MtFUBK3wVOmzVBttDESqWFRd6AwPR5NQoO/c3d6Iax3RX0gTELrA4tXRCjIZgZntmEUsMVB8gs3l9BvzAdeOVEwCWGT+DSZmmz5Jg/o1c+otXv3YHNduP2+ZDXlH04GQaO3LLrlZtwpVh7tx/sTMNDia0epB9FQ/G+0e85Nmggnyy+i7QwaT2JfX1uUx0VgLum2dwudze7JetJxEqeVmsJ1a44C9HDhk0Tin7AUfNglE8LtTkW1MiqgpQT+7nEvZ2TLrc4uLpgFaQbiuJfXeCYnChKh62FREmyDqv8gJ4seubW3Lo2iibd4Y27W2zmBgmb0laEk24SEu5X8lsFKL0LBet2szt5FnCyuQdhPOfz0bcHD8oA/F01XGi7VyxTdfnJxIhH5qQJ7+/EFMDcfO55HCv5vC5k2rWLLHLJ6EYrdw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bFJiT1FzYmIxWmVGYnBscForWVFQaENlbGtrYm5sT1ZCZFVDVjlLWklOWjM2?=
- =?utf-8?B?dHVra0RWTEtVVHZLUTBxeWNWQk9kdW5ZeFM2aDJLUDBUQnlQbEwzNUVlVERH?=
- =?utf-8?B?OWxHbTNJTG5ScVdBb2taVDFaV041TlpzV250YnFWZE9Rb1k2WHNLS2RHeVhD?=
- =?utf-8?B?UitLZWF2UG42b2thSkFTbDBpanY4ZXljYkZad3A1ZmNkZTNXYnZ3dmdhTWFw?=
- =?utf-8?B?MGFHZktRbmIwdEZPcXZkMG5Na21odWpMQ3NmQy9Fd2pyVlgrNWRWRjVTbkkw?=
- =?utf-8?B?V1JGWmZVcEZqRTBZMW5DVTh5MTJxTkdwL25LZnBLTDZ2aVpYTHo1allDUFky?=
- =?utf-8?B?UU1mYzU2MTRqNDJEbTdLR0JLTmVzRm52S0pJejhySk9tMGlpRndEODdPZ1ps?=
- =?utf-8?B?RGlWQWpFOTBFWDZnVXRCR05CNkk0OWc2Q3hDZlAwcTNpUjBTWENYcVdDNWFM?=
- =?utf-8?B?ZkNoYWRKWGZVVXV3a2xPY0x4VytaY2NIdUJxQjVQaG5JeTRmVmJCUDdlcWQ0?=
- =?utf-8?B?Mml5b1daQW1aT0N4dTJScVFZMUdyL3luQ0RoNkN1Q0N4RFJyZjlpdlk3cUxV?=
- =?utf-8?B?TTVybWZvRHd6blFuWWkzKzJNWGJhSWVoMVU1clNRdnRxVnFtV2NML2pJK0xH?=
- =?utf-8?B?QnordDV1eHdjRm1Tb0ZicC9GWWhST3c0THNGZ0EwNW5hOWdpT211cUVVdFY3?=
- =?utf-8?B?UG43Yzc1VFhTbTJkcnpQSm8zSFBZOE02MFA0MG1iL1ZISEZtUWQ0Ylp6U002?=
- =?utf-8?B?OW9VQ25NWGkzdVRkMlNjMTBvNDZPdmJqdmVXUzduczZjY2JhMTVUTU5pOHRr?=
- =?utf-8?B?SDIyeERLS2x2eERxbFo4eXV3WUdaVUJERE0renNGSlZkMXlKVTVySFlzUkZ6?=
- =?utf-8?B?M254dTRpNWVjQkdjckc3NHhmYXk3S3NFTHJoYWJyK2NtQnR5MHhEaGNWRDFE?=
- =?utf-8?B?QW5HaXVTUzBoaktjZzdSMFRmeGwxMzIvaEx0dW5MODZVTEN4bXRpdzlnajdp?=
- =?utf-8?B?NytJTHdrNmJxazdSQ1NjckRjR0RlK2o0cG0rQWQzUVNaRlFjL2w1NW5ya2xs?=
- =?utf-8?B?aGNFZTFoL3lJQ1ZueGZoWTlJekczREhWMlBpcUpadFVZV2llU0hIcFJNVEVa?=
- =?utf-8?B?MzE1VGk2eDc0Mit0WG01YlpmcUJMZWxEQUpEZHRMOFZHS21uUUtvcm5VanBv?=
- =?utf-8?B?bXE0KzA3RTNNcjQyckFLbFlJSmJGQkgyWnJTRC9LVHhpTFo4K0JPaExTYjR2?=
- =?utf-8?B?QnNqVXF4NUJzUDRlUjJqNy9ORkVadnFDcnZIV2JtVEMyZEJoMXpSLzNrTy9J?=
- =?utf-8?B?elhsS2VIVjBJVGw4UHVpUmZVZGNHc3hNei9UcXNuYkhYYTVGSTdIdXAzMzRM?=
- =?utf-8?B?MDRsOFhBTHBpb0oxQlVTMVJub00wcDE2ZUhkcTdjRXliTWpRNFlIS04wZUpW?=
- =?utf-8?B?MW5nL3Q1UXR4UUtmZXBRUE94OGsxUnNBL2Y5RktnZ1poWmpVMFI1Q20vRUVX?=
- =?utf-8?B?ejhmell2WkRlUDV3QU5tSkd5V2VqUlQ0VDVJWW1jbitoK3BpU0YrTmJhS1Nm?=
- =?utf-8?B?ZXhQVjQ3VWlDREZmUE1sbGlrRmZtc3U2bHJiWmF3cmZDem1OaSszRjYrbGlH?=
- =?utf-8?B?alhTSjlLbGwvUk9jWWdDVWwzT05QQ3BvOUlWOHhHSDJuYU9DenBPUnBHMVJ5?=
- =?utf-8?B?clBmeWExemJqd0RuWW9JcG9kVVRUWnpZNFp4WG1taytiRGNXLzI4VFhLclYy?=
- =?utf-8?B?bGo3R1IrZ3FWSTE0Ny80UzlnL3Q5RHpEdmNueGNYVFlrMzUrZkhTbnBCeGU0?=
- =?utf-8?B?L2hENC9jaHNlVXFtOWttWHJJVVRNc0QvQlJtd05YdGJEdllQRnoyNG5nT0VE?=
- =?utf-8?B?ZHBpb05Rdm02eW94UDZOQkJkN0JUaXRYQ2lTa0xra3VBUzdvTmYvdUFVT2o1?=
- =?utf-8?B?c3BjV3lrTTJEczliSGdKS3JKVzZ1SU80SXJvUFo0ZkxRYVFNZloxeUlTYmhH?=
- =?utf-8?B?QmU2UHdvSHdweFdGWkhNdE5FTjNteGtHNHNKUXRxNk4wek53Y0ZCd0RqSG5Q?=
- =?utf-8?B?M3VRdWlJWkxrZmRBVDN0L0diZFhGaGM5Y2tvN0ZlWEJ6aGlaU0tWdEZBeHlJ?=
- =?utf-8?B?NmtDYUNXUkg4dlUxbFREYU9UK2RhU2xQMGtwemtCRWhKQS9MYzFiNEhyZDAy?=
- =?utf-8?B?Y0E9PQ==?=
+	=?utf-8?B?cktPeWhwOEZVZmVQbkZyWnlQQjJ0SThBdjltbE5QNkpJYk51ZXJENkVZTkVO?=
+ =?utf-8?B?cFVTS09YOXZ0R1QrdjVuemU3LzdoeG1XNzhEd1RUekFvMEVYSk9JaHdhdmhJ?=
+ =?utf-8?B?dnRpUkYyakNMMmgydVk0ZjhmQTVCektaeWNKenhHcFhCYjFGUVJmNXppQ0t6?=
+ =?utf-8?B?dStuL2NiTDBOZElpR3JGQUdpUDNJVDlndWFYa1RGbVVuK1J1Sm9ZMXJhWGlr?=
+ =?utf-8?B?TVI5WkxsYzdSWElyWUNTQlQyOU5Da3k4MHY2aS9hSU13Qzhmb3FURDQrUEJT?=
+ =?utf-8?B?Njl4TEtmV3lDUzFZZ1YyZkxhSnZUQzFXMHR5YkY1TlM5b0pzM3d5TWpZK1Mw?=
+ =?utf-8?B?d3k0THlpMzVJY2hLb0FNamdjUUdyejNONlJVbXpabmNWRU0zZkI2OUVNejlu?=
+ =?utf-8?B?N00zUWZ5akVzSFBBcXo4d0ltY002dkIzYlNTbzVnN292QVhqcEtKMXdINDZa?=
+ =?utf-8?B?UDl2UW4wMzhWUDllQkFaUjhIdStqc3dUeVlmRjhSbW1rQmlhSnh2ei84RXlZ?=
+ =?utf-8?B?aEJOSFV5dEdnVEJnamg2UlJ6YWRoY2V3SmRjT0h5WXlkVHloeDVYZ3A5WXVq?=
+ =?utf-8?B?d2VUNGYxK3JLUjNVODBhVjFnbFFYZ3V4V09lUWdMbFZ4T2R2REFneE9JY3Br?=
+ =?utf-8?B?aHF6UWU1Wnc4M0NnNnY2QllVSm1Xb01vbXpJYzMwZEhpNDRoOU1OK3VVR0N4?=
+ =?utf-8?B?UEN0djdDUDh6YUxZcmJldUx6VTZhZVBuRS9idFpDYzNyYkRwempXY3Y3OG9R?=
+ =?utf-8?B?M2tQanNSa0RZM2RINFZ4MUdFQXZOSjRGdkpxUjN0aWl4bTA3UGpLMm9uK25w?=
+ =?utf-8?B?eU1kajV0ODJmTWJGdlowaUdxYVg1MGQ1cVQyR0xaZWgwK2RKYUdYTzB3RlM5?=
+ =?utf-8?B?aU1LaU9kamIrS3hDRXRGUE9NbVZjQmtCRWc2UHBhTENLTnpZRFk0bitsSEEy?=
+ =?utf-8?B?dG53MEZPc3RIS051d0RKTkJ3a0l5WlowSW5hd09uSUJ4VnFFbTNSNG1yN2JH?=
+ =?utf-8?B?bHBhZkdLMHVobTFIbHpsRXlFVlVHdlNGa2xjejcwd1lRUWQ5R1VrdU5aai9v?=
+ =?utf-8?B?a1RBSzBuZVA2SGtMc1FUQkp5ME1ZcDNUOHBQbjlmUG52VkhRNEI1clh1REhY?=
+ =?utf-8?B?bG4weGxJeDFQTDhENFpsanhhOUxTV3JJOCt0ZFpiUWNUdWxrUW9qaXZpbzlR?=
+ =?utf-8?B?c3Z2QzZPZUpEVXlwTnFXVnJHSlJuUHpycHdGdzBWYjA1ci9GMmY0Y2JNK1hD?=
+ =?utf-8?B?UlRxYVdwaW8vZ2QvK3l2b21UV3VDbFVLbXZBQXE5MTVHZGdlUUd6UTVSZVJQ?=
+ =?utf-8?B?TENnV1NrTUFkWWdHdDhSTXk2VFZKNnlXSDNQMFEyV2pvWlA4aHpFSjZ3UDhl?=
+ =?utf-8?B?NXBucFh0RllPMDN2U0sxVWd3YnFuMW1zanBXc2ZCQkxydkRqNWNoNFFjR2VS?=
+ =?utf-8?B?ZE9UV0hTQVJETmIvL0pYeXhQQ21LNDhpZEorZVIzcEdLa09MamkxR05MRDg2?=
+ =?utf-8?B?ZytybnBJNnFFL3Ewa3F3UHBTc1hhbUhtOUtISUZLSXVUTlo2OTRTYndUSXNy?=
+ =?utf-8?B?Nkh2ZmR6K2tDWUwwT2pVS3UvbVQyOS84a29iZE9NazloTkJWZkZmOSs2Rlpk?=
+ =?utf-8?B?TjR5V1RXY240TFQ4d1cya21QZGpCMnhHZ3dGaGxISkRnampnUVhjVkNjMEdS?=
+ =?utf-8?B?MDRpSFU2V2kzZzdxc1RYR25CQ1JxdUdtQ3NCU3k2Zmw3djVlRjBiYlJTbzYz?=
+ =?utf-8?B?Q3EvaHNOMEY1Q1ZnWU1HaUhYdzhnVnBlV01TVFByTmtCUEFrcHR5b0kweDZR?=
+ =?utf-8?B?WHY4UmRuak1UcDN4cDcwWjJCbncxUWJrdWo2cW5mczhqanlHR0dPbU9nWWEw?=
+ =?utf-8?B?NnVYbTNNNTVkTWcrR1BQTkwzSWxUTmZYclZVaDRlNE9YdU9tRzlKN1ZxdmhY?=
+ =?utf-8?B?MjZqdWEvbmRuNXVpSEcvemVISHdEVmtaSEk2SWMybjhrU2xqWm9iekl3K2cx?=
+ =?utf-8?B?Ykp3RVJHRkx2YkM2VlJVT3NaRGp1K01TT0gvQ0ZRTWpFOWJnVTh6WlV5aG8y?=
+ =?utf-8?B?aDRuUVU4Rk5ZQWh5cWJrNmJrRmVCNUF5S2lrZkE1VVdJY1FObGU1YkdvaWNB?=
+ =?utf-8?B?elplZEJGeFlwZzU2QU5DNHU2bzgyMlkzZVpieEllYTlDTnl4aTVJU3JlaEY2?=
+ =?utf-8?B?aVE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 829efe2e-e4ff-4fe1-a577-08dc426e9361
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR10MB7672.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b96ab56-d8e9-42bd-53ee-08dc42816a64
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2024 08:29:46.8351
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2024 10:44:38.4665
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sMoF/VUeLz11rqa1pV4sjjFrYZHOPUdMHJi//4ehPKfK142u+Gc2XX4/9gcJ2HcPt49Cg5yVn0Dgit9JvTekkNx6EIRRfJZKmZ6zFWL5AmU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3561
+X-MS-Exchange-CrossTenant-UserPrincipalName: uwE10rt2KpHl61PJP++hmcNk+gCVyXWlv1rcc24vmEtRwJKGCkg6MNSCUIJX3kMoluX6ooUJzFt/Z5evbiVocg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3135
 
-Hi Jan,
-
-Am 12.03.2024 um 08:44 schrieb Jan Kiszka:
-> On 12.03.24 08:23, Fabian Scheler wrote:
->> The testcase adds checks the correct handling of priority boosts in a nested
->> priroity-inheritance scenario and distributes the high-priority threads involved
+On 12.03.24 08:23, Fabian Scheler wrote:
+> The testcase adds checks the correct handling of priority boosts in a nested
+> priroity-inheritance scenario and distributes the high-priority threads involved
+> in this testcase to different cores if possible. In contrast to
+> protect_nesting_protect and protect_nesting_pi only priority-inheritance is
+> involved here.
 > 
-> priority
-
-thanks!
-
+> The testcase implements that check as follows:
+> - A low priority thread locks two mutexes initialized as pi-mutexes.
+> - Two priority threads (prio high and very high) block on these mutexes, thus
+>   the priority of the low priority thread is boosted.
+> - A medium priority thread is started on the same core as the low priority
+>   thread that must no interrupt the low priority thread as this one is running
+>   on a boosted priority.
+> - The low priority thread unlocks the mutexes one by one, the medium priority
+>   thread must not run until all mutexes are unlocked and the low priority thread
+>   falls back to its original priority.
+> - The correct execution of the medium priority thread is checked by the low
+>   priority thread by checking a flag that is set by the medium priority thread.
 > 
->> in this testcase to different cores if possible. In contrast to
->> protect_nesting_protect and protect_nesting_pi only priority-inheritance is
->> involved here.
->>
->> The testcase implements that check as follows:
->> - A low priority thread locks two mutexes initialized as pi-mutexes.
->> - Two priority threads (prio high and very high) block on these mutexes, thus
->>    the priority of the low priority thread is boosted.
->> - A medium priority thread is started on the same core as the low priority
->>    thread that must no interrupt the low priority thread as this one is running
+> Signed-off-by: Fabian Scheler <Fabian.Scheler@siemens.com>
+> ---
+>  testsuite/smokey/posix-mutex/posix-mutex.c | 301 ++++++++++++++++++++-
+>  1 file changed, 294 insertions(+), 7 deletions(-)
 > 
-> must not
+> diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
+> index 4aad24964..08d473e41 100644
+> --- a/testsuite/smokey/posix-mutex/posix-mutex.c
+> +++ b/testsuite/smokey/posix-mutex/posix-mutex.c
+> @@ -86,11 +86,12 @@ static int get_effective_prio(void)
+>  	return stat.cprio;
+>  }
+>  
+> -static int create_thread(pthread_t *tid, int policy, int prio,
+> +static int create_thread(pthread_t *tid, int policy, int prio, int cpu,
+>  			 void *(*thread)(void *), void *arg)
+>  {
+>  	struct sched_param param;
+>  	pthread_attr_t thattr;
+> +	cpu_set_t cpuset;
+>  	int ret;
+>  
+>  	pthread_attr_init(&thattr);
+> @@ -99,6 +100,14 @@ static int create_thread(pthread_t *tid, int policy, int prio,
+>  	pthread_attr_setschedparam(&thattr, &param);
+>  	pthread_attr_setinheritsched(&thattr, PTHREAD_EXPLICIT_SCHED);
+>  
+> +	if (cpu != -1) {
+> +		CPU_ZERO(&cpuset);
+> +		CPU_SET(cpu, &cpuset);
+> +
+> +		pthread_attr_setaffinity_np(&thattr, sizeof(cpu_set_t),
+> +					    &cpuset);
 
-thanks!
+Intentionally ignoring any errors here?
 
-> 
->>    on a boosted priority.
->> - The low priority thread unlocks the mutexes one by one, the medium priority
->>    thread must not run until all mutexes are unlocked and the low priority thread
->>    falls back to its original priority.
->> - The correct execution of the medium priority thread is checked by the low
->>    priority thread by checking a flag that is set by the medium priority thread.
->>
-> 
-> (Not yet having read the code)
-> How does core distribution come into play here?
+> +	}
+> +
+>  	if (!__T(ret, pthread_create(tid, &thattr, thread, arg)))
+>  		return ret;
+>  
+> @@ -194,7 +203,7 @@ static int do_timed_contend(pthread_mutex_t *mutex, int prio)
+>  		return ret;
+>  
+>  	args.mutex = mutex;
+> -	ret = create_thread(&tid, SCHED_FIFO, prio,
+> +	ret = create_thread(&tid, SCHED_FIFO, prio, -1,
+>  			    mutex_timed_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -256,7 +265,7 @@ static int do_contend(pthread_mutex_t *mutex, int type)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_MEDIUM,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_MEDIUM, -1,
+>  			    mutex_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -496,7 +505,7 @@ static int do_pi_contend(int prio)
+>  	args.mutex = &mutex;
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+> -	ret = create_thread(&tid, SCHED_FIFO, prio,
+> +	ret = create_thread(&tid, SCHED_FIFO, prio, -1,
+>  			    mutex_timed_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -533,6 +542,283 @@ static int pi_contend(void)
+>  	return do_pi_contend(THREAD_PRIO_HIGH);
+>  }
+>  
+> +struct multicore_low_context {
+> +	pthread_mutex_t *mutex1;
+> +	pthread_mutex_t *mutex2;
+> +	struct smokey_barrier *low_barrier;
+> +	struct smokey_barrier *locker1_barrier;
+> +	struct smokey_barrier *locker2_barrier;
+> +	struct smokey_barrier *medium_barrier;
+> +	int *medium_flag;
+> +};
+> +
+> +struct multicore_mutex_locker_context {
+> +	pthread_mutex_t *mutex;
+> +	struct smokey_barrier *barrier;
+> +};
+> +
+> +struct multicore_medium_context {
+> +	int *flag;
+> +	struct smokey_barrier *barrier;
+> +};
+> +
+> +static void *pi_nesting_contend_multicore_low(void *arg)
+> +{
+> +	struct multicore_low_context *context =
+> +		(struct multicore_low_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->low_barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex1)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex2)))
+> +		return (void *)(long)ret;
+> +
+> +	smokey_barrier_release(context->locker1_barrier);
+> +	smokey_barrier_release(context->locker2_barrier);
+> +	smokey_barrier_release(context->medium_barrier);
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex1)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__Tassert(*(context->medium_flag) == 0))
+> +		return (void *)(long)-10;
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex2)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__Tassert(*(context->medium_flag) == 1))
+> +		return (void *)(long)-20;
+> +
+> +	return NULL;
+> +}
+> +
+> +static void *pi_nesting_contend_multicore_mutex_locker(void *arg)
+> +{
+> +	struct multicore_mutex_locker_context *context =
+> +		(struct multicore_mutex_locker_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex)))
+> +		return (void *)(long)ret;
+> +
+> +	return NULL;
+> +}
+> +
+> +static void *pi_nesting_contend_multicore_medium(void *arg)
+> +{
+> +	struct multicore_medium_context *context =
+> +		(struct multicore_medium_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	*(context->flag) = 1;
+> +
+> +	return NULL;
+> +}
+> +
+> +static int pi_nesting_contend_multicore_getcpu(cpu_set_t *rt_cpus,
+> +					       cpu_set_t *online_cpus,
+> +					       int num_cpus, int start_cpu)
+> +{
+> +	int tmp_cpu = start_cpu;
+> +	int result_cpu = 0;
+> +	do {
+> +		result_cpu = ++tmp_cpu % num_cpus;
+> +		if (result_cpu == start_cpu) {
+> +			break;
+> +		}
+> +	} while (CPU_ISSET(tmp_cpu, rt_cpus) == 0 ||
+> +		 CPU_ISSET(tmp_cpu, online_cpus));
+> +
+> +	return result_cpu;
+> +}
+> +
+> +/*
+> + * This testcase exercises a nested priority-inheritance-scenario preventing
+> + * uncrontrolled prioritoty-inversion caused by a thread with a medium
+> + * priority.
+> + *
+> + * In this test there are four threads involved:
+> + *
+> + * - low (prio THREAD_PRIO_LOW): holds mutexes mutex1 and mutex2
+> + * - locker1 (prio THREAD_PRIO_HIGH): blocked by mutex1
+> + * - locker2 (prio THREAD_PRIO_VERY_HIGH): blocked by mutex2
+> + * - medium (prio THREAD_PRIO_MEDIUM): "tries" to preempt low
+> + *
+> + * The test ensures that the priority of the low-prio thread is correctly
+> + * restored when it unlocks the pi-mutex and thus is deboosted. This test also
+> + * checks this behavior in a multi-core environment by assigning different
+> + * threads to different cores if this is possible. If only a single core is
+> + * available, all threads are assigned to that core, i.e. the test also works on
+> + * single-core targets.
 
-The two threads with priority high and very high are distributed to 
-different cores if this is possible. I will add this information also to 
-the commit-message.
+Ah, here is the explanation I was looking for in the commit message. You
+don't need to duplicate all that in the commit log. Just refer to this
+block on focus more on the "why we want this test".
 
-Ciao
-Fabian
+> + *
+> + * The threads are allocated to processor cores as follows:
+> + * - low & medium: same core => low_medium_cpu, this is necessary, otherwise
+> + *   medium could not prevent low from running
+> + * - locker1: locker1_cpu != low_medium_cpu if possible
+> + * - locker2: locker2_cpu != low_medium_cpu && locker1_cpu != locker2_cpu if possible
+> + *
+> + * (rough) exeuction sequence:
+
+execution
+
+> + * 1.  setup test
+> + * 2.  unblock thread low
+> + * 3.  low: lock mutex1 and mutex2
+> + * 4.  low: unblock locker1, locker2 and medium (in that order)
+> + * 5.  locker1 and locker2: block when locking mutex1 and mutex2 respectively
+> + * 6.  medium: blocked by low due to priority inheritance
+> + * 7.  low: unlock mutex1 => locker1 can finish, medium => still blocked
+> + * 8.  low: unlock mutex2 => locker2 can finish
+> + * 9.  medium: run to completion
+> + * 10. low: run to completion
+> + */
+> +static int pi_nesting_contend_multicore(void)
+> +{
+> +	struct multicore_mutex_locker_context locker1_args, locker2_args;
+> +	int cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
+> +	struct smokey_barrier locker1_barrier, locker2_barrier;
+> +	struct smokey_barrier low_barrier, medium_barrier;
+> +	struct multicore_medium_context medium_args;
+> +	pthread_t low, locker1, locker2, medium;
+> +	struct multicore_low_context low_args;
+> +	pthread_mutex_t mutex1, mutex2;
+> +	cpu_set_t rt_cpus, online_cpus;
+> +	int medium_flag = 0;
+> +	void *status;
+> +	int ret;
+> +
+> +	/* setup test */
+> +
+> +	cpu = get_current_cpu();
+> +
+> +	num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+> +
+> +	if (!__T(ret, get_realtime_cpu_set(&rt_cpus)))
+> +		return ret;
+> +
+> +	if (!__T(ret, get_online_cpu_set(&online_cpus)))
+> +		return ret;
+> +
+> +	low_medium_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, cpu);
+> +	locker1_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, low_medium_cpu);
+> +	locker2_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, locker1_cpu);
+> +
+> +	if (!__T(ret, smokey_barrier_init(&low_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&locker1_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&locker2_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&medium_barrier)))
+> +		return ret;
+> +
+> +	ret = do_init_mutex(&mutex1, PTHREAD_MUTEX_NORMAL,
+> +			    PTHREAD_PRIO_INHERIT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = do_init_mutex(&mutex2, PTHREAD_MUTEX_NORMAL,
+> +			    PTHREAD_PRIO_INHERIT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	low_args.mutex1 = &mutex1;
+> +	low_args.mutex2 = &mutex2;
+> +	low_args.low_barrier = &low_barrier;
+> +	low_args.locker1_barrier = &locker1_barrier;
+> +	low_args.locker2_barrier = &locker2_barrier;
+> +	low_args.medium_barrier = &medium_barrier;
+> +	low_args.medium_flag = &medium_flag;
+> +
+> +	locker1_args.mutex = &mutex1;
+> +	locker1_args.barrier = &locker1_barrier;
+> +
+> +	locker2_args.mutex = &mutex2;
+> +	locker2_args.barrier = &locker2_barrier;
+> +
+> +	medium_args.barrier = &medium_barrier;
+> +	medium_args.flag = &medium_flag;
+> +
+> +	if (!__T(ret, create_thread(
+> +			      &low, SCHED_FIFO, THREAD_PRIO_LOW, low_medium_cpu,
+> +			      pi_nesting_contend_multicore_low, &low_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&locker1, SCHED_FIFO, THREAD_PRIO_HIGH,
+> +				    locker1_cpu,
+> +				    pi_nesting_contend_multicore_mutex_locker,
+> +				    &locker1_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&locker2, SCHED_FIFO, THREAD_PRIO_VERY_HIGH,
+> +				    locker2_cpu,
+> +				    pi_nesting_contend_multicore_mutex_locker,
+> +				    &locker2_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&medium, SCHED_FIFO, THREAD_PRIO_MEDIUM,
+> +				    low_medium_cpu,
+> +				    pi_nesting_contend_multicore_medium,
+> +				    &medium_args)))
+> +		return ret;
+> +
+> +	/* start test */
+> +
+> +	smokey_barrier_release(&low_barrier);
+> +
+> +	/* wait for threads to finish */
+> +
+> +	if (!__T(ret, pthread_join(low, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(locker1, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(locker2, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(medium, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	/* cleanup test */
+> +
+> +	smokey_barrier_destroy(&low_barrier);
+> +	smokey_barrier_destroy(&locker1_barrier);
+> +	smokey_barrier_destroy(&locker2_barrier);
+> +	smokey_barrier_destroy(&medium_barrier);
+> +
+> +	if (!__T(ret, pthread_mutex_destroy(&mutex1)))
+> +		return ret;
+> +	if (!__T(ret, pthread_mutex_destroy(&mutex2)))
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+>  static void *mutex_locker_steal(void *arg)
+>  {
+>  	struct locker_context *p = arg;
+> @@ -572,7 +858,7 @@ static int do_steal(int may_steal)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_locker_steal, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -974,7 +1260,7 @@ static int protect_handover(void)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -1040,7 +1326,7 @@ static int check_timedlock_abstime_validation(void)
+>  	 * validate the (invalid) timeout
+>  	 */
+>  	args.mutex = &mutex;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_timed_locker_inv_timeout, &args);
+>  
+>  	if (ret)
+> @@ -1114,6 +1400,7 @@ static int run_posix_mutex(struct smokey_test *t, int argc, char *const argv[])
+>  	do_test(timed_contend, MAX_100_MS);
+>  	do_test(weak_mode_switch, MAX_100_MS);
+>  	do_test(pi_contend, MAX_100_MS);
+> +	do_test(pi_nesting_contend_multicore, MAX_100_MS);
+>  	do_test(steal, MAX_100_MS);
+>  	do_test(no_steal, MAX_100_MS);
+>  	do_test(protect_raise, MAX_100_MS);
+
+Thanks,
+Jan
+
 -- 
-With best regards,
-Dr. Fabian Scheler
-
-Siemens AG
-T CED EDC-DE
-Hertha-Sponer-Weg 3
-91058 Erlangen, Germany
-Phone: +49 (1522) 1702973
-Mobile: +49 (1522) 1702973
-mailto:fabian.scheler@siemens.com
-www.siemens.com
-
-Siemens Aktiengesellschaft: Chairman of the Supervisory Board: Jim 
-Hagemann Snabe; Managing Board: Roland Busch, Chairman, President and 
-Chief Executive Officer; Cedrik Neike, Matthias Rebellius, Ralf P. 
-Thomas, Judith Wiese; Registered offices: Berlin and Munich, Germany; 
-Commercial registries: Berlin-Charlottenburg, HRB 12300, Munich, HRB 
-6684; WEEE-Reg.-No. DE 23691322
+Siemens AG, Technology
+Linux Expert Center
 
