@@ -1,75 +1,91 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF061EEE8
-	for <xenomai@lists.linux.dev>; Tue, 19 Mar 2024 15:40:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F7B2745E
+	for <xenomai@lists.linux.dev>; Tue, 19 Mar 2024 17:14:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710862854; cv=none; b=ROtIgChfSDlgcb5ubFlZQDo51TZc+uRYYnCBrF12+hrK9dlJRGkaX0+9B2kUo1v5zpP8mk0nU7z4TuyCXHicuXpFDLbWI01mGZgC2ao2Ylzs0ut5ZzNQEprlQSlKCmlGjtjL/sih00hGFW1EA6imAIl1xQOBk+sSB+IDn6uM/tY=
+	t=1710868481; cv=none; b=PLr7c4qzHT1AU73MXgxXPXxSUoPXJ/9mJKz+Ri3cvHdQF4jVy8lgbv9XzZCk5B9UH8PFeQw3w0X28XbQHIVZYl5x6ENXYvWBlQxmu6qYo+8FalV/nL9tob+H0AGkdFnq/vaHX2mrtpOPyPZtj8q0TLSELJmq8uuTbGjzu0MiaQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710862854; c=relaxed/simple;
-	bh=M8gcDXokUji/0HjC5JNaKX8v7C6WiF6iKvKCq0hL49k=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=nvtmML4zmr1yrIBm3qk47wRtnsKT3Zj1Hhvh+CbSo44WQ37KBfen/Pn24gn0MFWanvyAwJb3NUOWR82REDQd9T3kVu7foqEpjDIuBDkqCRKr7DNM0bOofe/UKjTPCemzmZ+NKqSsQ9G5/fGvkce9ataQLC+WwE2xAT2o18b6kuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-34005b5927eso2058633f8f.1
-        for <xenomai@lists.linux.dev>; Tue, 19 Mar 2024 08:40:52 -0700 (PDT)
+	s=arc-20240116; t=1710868481; c=relaxed/simple;
+	bh=KYYei26qtB7WfdGnmtWZaqnUhonXLM2shZ4NWwkDQMo=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=B4QS5QliA9EEw2pUHzMW4KC9IUOW6gSljSRwhfUWyAxoKjrNsOwVggv2qj6+du0ATdF3EBsHtxiVE8qbrf2RFrhrNeYlcbqJ+oTqJwaXQ0cm5R1/XRYYiohY4q5TPv4H/DSEB0H6sgcfVB7EwNu0EUO6PS/qGRRzOPyt+lRukAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=ECZIDtNb; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=smile.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="ECZIDtNb"
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id EABCD100003
+	for <xenomai@lists.linux.dev>; Tue, 19 Mar 2024 17:14:29 +0000 (UTC)
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 10E6674003A
+	for <xenomai@xenomai.org>; Tue, 19 Mar 2024 17:14:29 +0000 (UTC)
+Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2d47a92cfefso76682561fa.1
+        for <xenomai@xenomai.org>; Tue, 19 Mar 2024 10:14:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1710868468; x=1711473268; darn=xenomai.org;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=+eSBnSoZM4/mz5KHW9p+JP0vcgzXywjTMkZWNqJxVwY=;
+        b=ECZIDtNbb+P+1jYyDeLpkj3yBKsUZ9OHN7WrFwUNnTUkMudD1SXMYpls/paPBZDsKv
+         kbmW3lE+SukUM3es6FNAwPPjEQBLCkdDxZ9bB61WjsWgCOd4iDTm9ewwH8UU+29Pxjoi
+         MxZE4GCum+xYh5REApeqEOVA1A8Y0nMioHxUkfaYZujWMCHt1dZflz58RZkh9frGhn45
+         WIvxr1AjuuS+aTQLuYfrWIsmhMaC3xYyzQ/gzpqPS/jLEP2DA/lRW41bVUYeMaI0ketq
+         XeAX5lma3QeICHRX8lvzpbWvr9dxKYkNj8KKgEuh1950IcVL/3APW1AXiI2KEmxQQ6l+
+         tOMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710862851; x=1711467651;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1P4TPJf8qYusnsm/dywxDib6e5E+n4lOnUBPCVFvIm4=;
-        b=oMjDTyexs4MurK1I3RmhU4Q1nUMP7H+3sTEBZQ9L3schRre2GQTCxrqre8cb1HasVP
-         HaAB7sLX9ucmyiSCThVazBrx67O4xTWt+d5TBfkQ8Y/TOuGSUxK0qOeheFOIfGX+lgZZ
-         ZfsRZP34pHZiSXQ4+Mscxr71JVwPnwKJTd4PsG52sL+Z4s++CdzeX5Dg7K7rrra/2Rp2
-         RSzOGuLQggxyrYJCDLRBlDO/T6srpPhZz/wfQdeFRZLKl9ohYu7/ROroX9pC4t/lxXUb
-         vNaYvKIp4YyhsI7A5mCP1cfzXFiSBit4+JtvijIhEm8yRhbuetKwHRr4YDEtyy6n+Rb+
-         toag==
-X-Gm-Message-State: AOJu0Yzn65vEORVc6J6GILYipAh9pACaLpQ9mY0eaHMU4aYvV3eGydPc
-	gUS/bUZ8NUJxZajUMtJkEZZL4m+c68cCwyavC3N0Fp+IH/c0Ju7FO5w7wepc
-X-Google-Smtp-Source: AGHT+IGlJxzg+WBBhjEK/n8VpYThvPK0YMTfprvrabnsVc/0GRB+vCIxSvcG5Y2fueEa0TvhjjFnPg==
-X-Received: by 2002:a5d:4ec5:0:b0:33e:652b:d6db with SMTP id s5-20020a5d4ec5000000b0033e652bd6dbmr10525955wrv.23.1710862850551;
-        Tue, 19 Mar 2024 08:40:50 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id bo6-20020a056000068600b003418016b04csm3793822wrb.76.2024.03.19.08.40.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Mar 2024 08:40:50 -0700 (PDT)
-References: <DM6PR04MB538655375C57CF07EDDE5089E2242@DM6PR04MB5386.namprd04.prod.outlook.com>
- <DM6PR04MB538673AA2E912100093BBA7CE2242@DM6PR04MB5386.namprd04.prod.outlook.com>
- <DM6PR04MB53864A2698B4F2147B79413CE2242@DM6PR04MB5386.namprd04.prod.outlook.com>
- <87bk7kwu9z.fsf@xenomai.org>
- <DM6PR04MB53868485664BC9374914AC69E22A2@DM6PR04MB5386.namprd04.prod.outlook.com>
- <DM6PR04MB5386D31E1CB453165917BD24E22A2@DM6PR04MB5386.namprd04.prod.outlook.com>
- <DM6PR04MB538672EDF4ADC9538AB418FDE22C2@DM6PR04MB5386.namprd04.prod.outlook.com>
-User-agent: mu4e 1.10.5; emacs 29.2
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Rosenow, James" <jim.rosenow@mts.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: Hang at "loading initial ramdisk ..." on Generation 11 CPU, Gen
- 9, 7, and 6 work.
-Date: Tue, 19 Mar 2024 16:40:33 +0100
-In-reply-to: <DM6PR04MB538672EDF4ADC9538AB418FDE22C2@DM6PR04MB5386.namprd04.prod.outlook.com>
-Message-ID: <87zfuudybi.fsf@xenomai.org>
+        d=1e100.net; s=20230601; t=1710868468; x=1711473268;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+eSBnSoZM4/mz5KHW9p+JP0vcgzXywjTMkZWNqJxVwY=;
+        b=uIxNNZfeumIK9CpWnaXzq6ZhEOa8ppT3WNQ4gjMgtGw5joiJAe4De1c0AP/j4d3Gqu
+         TA3laOjIYAUFDBTmY99W54bnTE+oOThtVl0u4mWd411NzBVZ3Bk2K1lldEz7fP4vmOae
+         01Y3k+gkjTsysEpl0q+JtE7E18lcd+bRXSC9B4bYR03ZjsZV2yrAsZtYYzdeRtQnXaQk
+         wis3cgWbSvyVdd84YdKv4cfrhSISYAj04rI4IVEz1ony3ry3HBs5X2/yyVkMvsZz+uvU
+         sHMTLgAnrLVg2rg1cP0UTAq+eXV/fY2Zn6F+m3xQF2aLdYXsNWAW1gbVHwbFux77b+Uo
+         bRwg==
+X-Gm-Message-State: AOJu0YxJLE+Lo0He3RaaucB8dojDJg4eNiXwkdUqVzNyL95DOJuhL3Y7
+	aLvJkKBxHIRu8zaGEJeEyA6fOA+iZ4dxZJxXt9xvofSvdsF6CfKML0/CJxsCX3G3lG8evYewT1g
+	wWSkJDm2JWYEsZQ0zeC6m1nxGagBsVDAjlQhXkqSL2eFCsPbyGHE=
+X-Google-Smtp-Source: AGHT+IFd22x0mN0Otq6p6NfPWmh8IjhCIxYVCcWSQr/p22YZ0lhIDk6Ljl3mXyzgeFqWioNxQVEejQ2Mg+ltzCmewwc=
+X-Received: by 2002:a2e:22c3:0:b0:2d4:764f:8256 with SMTP id
+ i186-20020a2e22c3000000b002d4764f8256mr8623427lji.53.1710868467994; Tue, 19
+ Mar 2024 10:14:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Tue, 19 Mar 2024 18:14:16 +0100
+Message-ID: <CAFc1U0taqtH_iP=f1z6E=Gm91YG4q_2Wosmstygb9wiadThj7Q@mail.gmail.com>
+Subject: Detecting migration
+To: xenomai <xenomai@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: spool.mail.gandi.net;
+	dmarc=pass (policy=none) header.from=smile.fr;
+	spf=pass (spool.mail.gandi.net: domain of pierre.ficheux@smile.fr designates 2a00:1450:4864:20::22f as permitted sender) smtp.mailfrom=pierre.ficheux@smile.fr
 
+Hi,
 
-"Rosenow, James" <jim.rosenow@mts.com> writes:
+Using the SIGDEBUG signal, is there a way to know the source of the
+migration (function name) ?
 
-> Anyone have any advice on how to root cause this hang.
->
-> The requested /proc/interrupts output is below and the system does hang with only CONFIG_IRQ_PIPELINE enabled.
->
+I did a test with:
 
-I'll have a look asap this week.
+nentries = backtrace(bt,sizeof(bt) / sizeof(bt[0]));
+backtrace_symbols_fd(bt,nentries,fileno(stdout));
+
+It seems to work (using nm + readelf)   but it's a bit "rough".
+
+Thx a lot.
+
 
 -- 
-Philippe.
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
